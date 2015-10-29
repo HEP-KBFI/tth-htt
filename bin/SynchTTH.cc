@@ -25,7 +25,7 @@
 #include <boost/filesystem.hpp> // boost::filesystem::
 #include <boost/algorithm/string/predicate.hpp> // boost::iequals()
 
-#include "HistogramManager.h" // HistogramManager, join_strings()
+#include "tthAnalysis/HiggsToTauTau/interface/HistogramManager.h" // HistogramManager, join_strings()
 
 typedef math::PtEtaPhiMLorentzVector LV;
 
