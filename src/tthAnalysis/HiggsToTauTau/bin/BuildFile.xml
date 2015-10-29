@@ -1,0 +1,11 @@
+<bin   file="SynchTTH.cpp" name="SynchTTH">
+  <use   name="FWCore/FWLite"/>
+  <use   name="FWCore/ParameterSet"/>
+  <use   name="FWCore/PythonParameterSet"/>
+  <use   name="FWCore/Utilities"/>
+  <use   name="DataFormats/Math"/>
+  <use   name="PhysicsTools/FWLite"/>
+  <use   name="root"/>
+  <use   name="roottmva"/>
+  <use   name="boost" />
+</bin>

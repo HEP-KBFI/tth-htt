@@ -1,0 +1,4 @@
+*.pyc
+histograms.root
+table.txt
+log.txt
