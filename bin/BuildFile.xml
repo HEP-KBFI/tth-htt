@@ -1,4 +1,4 @@
-<bin   file="SynchTTH.cpp" name="SynchTTH">
+<bin   file="SynchTTH.cc" name="SynchTTH">
   <use   name="FWCore/FWLite"/>
   <use   name="FWCore/ParameterSet"/>
   <use   name="FWCore/PythonParameterSet"/>

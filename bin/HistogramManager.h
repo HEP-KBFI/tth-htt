@@ -1,5 +1,5 @@
-#ifndef HISTOGRAMMANAGER_HPP
-#define HISTOGRAMMANAGER_HPP
+#ifndef HISTOGRAMMANAGER_H
+#define HISTOGRAMMANAGER_H
 
 #include <string> // std::string
 #include <map> // std::map<>
@@ -414,4 +414,4 @@ private:
   std::vector<HistogramVariable> variables;
 };
 
-#endif // HISTOGRAMMANAGER_HPP
+#endif // HISTOGRAMMANAGER_H
