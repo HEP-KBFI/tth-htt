@@ -459,13 +459,18 @@ main(int argc,
   };
 
 //--- set up the histogram manager
-  enum cp { preselection, final };
+  enum cp { final };
   HistogramManager<ch, cp> hm;
-  hm.add_channel(ch_str);
-  hm.add_cutpoint({cp::preselection, "preselection"})
-    .add_cutpoint({cp::final,        "final"});
-  hm.add_variable({"pT", 120, 5, 1205})
-    .add_variable({"eta", 100, -2.4, 2.4});
+  hm.add_channel(ch::ee, "ee")
+    .add_channel(ch::mumu, "mumu")
+    .add_channel(ch::emu, "emu");
+  hm.add_cutpoint({cp::final, "final"});
+  hm.add_variable({"pT(l2)", 16, 10, 90})
+    .add_variable({"|eta(l2)|", 12, 0, 2.4})
+    .add_variable({"min(dR(l2,j))", 12, 0, 4})
+    .add_variable({"mT(MET,l1)", 15, 0, 200})
+    .add_variable({"HT", 15, 0, 1200})
+    .add_variable({"MHT", 12, 0, 250});
   hm.initialize();
 
 //--- open the ROOT file and the tree
@@ -498,6 +503,9 @@ main(int argc,
   Int_t evt;
   Int_t njets;
   Double_t met_pt;
+  Double_t met_eta;
+  Double_t met_phi;
+  Double_t met_mass;
   Double_t dxy        [max_nleptons];
   Double_t dz         [max_nleptons];
   Double_t rel_iso    [max_nleptons];
@@ -527,6 +535,9 @@ main(int argc,
   chain.SetBranchAddress("evt",                       &evt);
   chain.SetBranchAddress("nJet",                      &njets);
   chain.SetBranchAddress("met_pt",                    &met_pt);
+  chain.SetBranchAddress("met_eta",                   &met_eta);
+  chain.SetBranchAddress("met_phi",                   &met_phi);
+  chain.SetBranchAddress("met_mass",                  &met_mass);
   chain.SetBranchAddress("selLeptons_dxy",            &dxy);
   chain.SetBranchAddress("selLeptons_dz",             &dz);
   chain.SetBranchAddress("selLeptons_relIso03",       &rel_iso);
@@ -617,12 +628,6 @@ main(int argc,
     if(preselected_leptons.size() < 2) continue;
 
     increment_all(cuts::PS);
-    for(auto & lept: preselected_leptons)
-    {
-      const Int_t k = lept.first;
-      for(ch channel: {ch::ee, ch::mumu, ch::emu, ch::_3l, ch::_4l})
-        hm[channel][cp::preselection].fill(pt[k], eta[k]);
-    }
 
 //--- let's order the leptons by their pT beforehand
     leading_lept(preselected_leptons);
@@ -887,8 +892,31 @@ main(int argc,
 
       ++counter[channel][cuts::charge_quality];
 
-      hm[channel][cp::final].fill(pt[lept_0], eta[lept_0]);
-      hm[channel][cp::final].fill(pt[lept_1], eta[lept_1]);
+//---------------------------------------------------------------------- PLOT
+      {
+
+        Double_t min_dR_l2j = 1000;
+        Double_t ht = pt[lept_0] + pt[lept_1];
+        LV ht_vec = p4_0 + p4_1;
+        for(Int_t h: hadronic_jets)
+        {
+          const Double_t dR_tmp =
+            std::sqrt(std::pow(eta[lept_1] - jet_eta[h], 2) +
+                      std::pow(phi[lept_1] - jet_phi[h], 2));
+          const LV hjet(jet_pt[h], jet_eta[h], jet_phi[h], jet_mass[h]);
+          if(dR_tmp < min_dR_l2j) min_dR_l2j = dR_tmp;
+          ht += jet_pt[h];
+          ht_vec += hjet;
+        }
+        const Double_t pt_trailing = pt[lept_1];
+        const Double_t eta_trailing = std::fabs(eta[lept_1]);
+        const Double_t mt_metl1 =
+            (p4_0 + LV(met_pt, met_eta, met_phi, met_mass)).mass();
+        const Double_t mht = std::fabs(ht_vec.pt());
+        hm[channel][cp::final].fill(pt_trailing, eta_trailing, min_dR_l2j,
+                                    mt_metl1, ht, mht);
+      }
+
     }
 
 //=========================== TRILEPTON CHANNEL =============================
@@ -927,9 +955,6 @@ main(int argc,
         if(met_ld <= 0.2) continue;
       }
       ++counter[ch::_3l][cuts::j4_plus_met_ld_02];
-
-      for(Int_t j: selected_leptons)
-        hm[ch::_3l][cp::final].fill(pt[j], eta[j]);
 
 //---------------------------------------------------------------- SFOS ZVETO
       for(std::size_t j = 0; j < 3; ++j)
@@ -1002,9 +1027,6 @@ main(int argc,
       if(! proceed) continue;
 
       ++counter[ch::_4l][cuts::sfos_zveto];
-
-      for(Int_t j: selected_leptons)
-        hm[ch::_4l][cp::final].fill(pt[j], eta[j]);
     }
   }
 //===========================================================================

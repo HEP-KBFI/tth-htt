@@ -94,12 +94,12 @@ public:
     , xlabel(xlabel)
     , ylabel(ylabel)
   {}
-  const std::string name;
-  const Int_t nbins;
-  const Double_t xmin;
-  const Double_t xmax;
-  const std::string xlabel;
-  const std::string ylabel;
+  std::string name;
+  Int_t nbins;
+  Double_t xmin;
+  Double_t xmax;
+  std::string xlabel;
+  std::string ylabel;
 };
 
 /**
@@ -270,25 +270,11 @@ public:
    *        The function is used as the base case for the variadic version.
    * @param channel The enum-string pair.
    */
-  void add_channel(const std::pair<Channel,
-                                   std::string> & channel)
+  HistogramManager & add_channel(Channel ch,
+                                 std::string ch_str)
   {
-    channels.emplace(channel);
-  }
-  /**
-   * @brief Add channel enum and the corresponding string;
-   *        the latter used in naming individual histograms.
-   *        The function takes variable number of such pairs as an argument.
-   * @param channel The first enum-string pair.
-   * @param args    The rest of the pairs (unpacked).
-   */
-  template <typename... Args>
-  void add_channel(const std::pair<Channel,
-                                   std::string> & channel,
-                   Args... args)
-  {
-    channels.emplace(channel);
-    add_channel(args...);
+    channels[ch] = ch_str;
+    return * this;
   }
   /**
    * @brief Add a map of channel enums and the corresponding strings;
@@ -341,7 +327,14 @@ public:
    */
   HistogramManager & add_variable(HistogramVariable variable)
   {
-    variables.push_back(variable);
+    common_variables.push_back(variable);
+    return * this;
+  }
+
+  HistogramManager & add_variable(Cutpoint cp,
+                                  HistogramVariable variable)
+  {
+    specific_variables[cp].push_back(variable);
     return * this;
   }
 
@@ -356,7 +349,12 @@ public:
     {
       for(auto & cp: cut_points)
       {
-        HistogramCollection hc(variables);
+        std::vector<HistogramVariable> vars;
+        std::vector<HistogramVariable> sp_vars = specific_variables[cp.first];
+        vars.reserve(common_variables.size() + sp_vars.size());
+        vars.insert(vars.end(), common_variables.begin(), common_variables.end());
+        vars.insert(vars.end(), sp_vars.begin(), sp_vars.end());
+        HistogramCollection hc(vars);
         hc.set_name_title(ch.second, cp.second);
         histograms[ch.first][cp.first] = hc;
       }
@@ -391,9 +389,20 @@ public:
     TFile f(file_path.c_str(), "recreate");
     for(auto & ch: channels)
     {
-      for(auto & var: variables)
+      for(auto & var: common_variables)
       {
         for(auto & cp: cut_points)
+        {
+          TCanvas c;
+          TH1D & h = histograms[ch.first][cp.first].get_histogram(var.name);
+          h.Draw("hist e");
+          c.Update();
+          h.Write();
+        }
+      }
+      for(auto & cp: cut_points)
+      {
+        for(auto & var: specific_variables[cp.first])
         {
           TCanvas c;
           TH1D & h = histograms[ch.first][cp.first].get_histogram(var.name);
@@ -411,7 +420,8 @@ private:
 
   std::map<Channel, std::string> channels;
   std::map<Cutpoint, std::string> cut_points;
-  std::vector<HistogramVariable> variables;
+  std::vector<HistogramVariable> common_variables;
+  std::map<Cutpoint, std::vector<HistogramVariable>> specific_variables;
 };
 
 #endif // HISTOGRAMMANAGER_H
