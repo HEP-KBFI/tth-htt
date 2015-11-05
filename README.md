@@ -2,6 +2,7 @@
 code and python config files for ttH, H -> tautau analysis with matrix element techniques
 ### Setup
 
+Clone this repository into `$CMSSW_BASE/src/tthAnalysis/HiggsToTauTau`, i.e. `git clone git@github.com:HEP-KBFI/tth-htt.git $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau`.
 Set up your CMSSW working environment, do `scram b -j8` in `$CMSSW_BASE/src`. Then proceed with
 ```bash
 mkdir -p tth_cutflow && cd $_ # make a folder (of any name, e.g. "tth_cutflow") somewhere
