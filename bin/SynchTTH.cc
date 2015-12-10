@@ -497,7 +497,6 @@ main(int argc,
 
 //--- declare the variables
   Int_t nleptons;
-  Int_t genH_decayMode;
   Int_t run;
   Int_t lumi;
   Int_t evt;
@@ -529,7 +528,6 @@ main(int argc,
   Int_t pass_conv_veto[max_nleptons];
 
   chain.SetBranchAddress("nselLeptons",               &nleptons);
-  chain.SetBranchAddress("genH_decayMode",            &genH_decayMode);
   chain.SetBranchAddress("run",                       &run);
   chain.SetBranchAddress("lumi",                      &lumi);
   chain.SetBranchAddress("evt",                       &evt);
