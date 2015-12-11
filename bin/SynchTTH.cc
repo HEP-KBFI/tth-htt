@@ -26,6 +26,8 @@
 #include <boost/algorithm/string/predicate.hpp> // boost::iequals()
 
 #include "tthAnalysis/HiggsToTauTau/interface/HistogramManager.h" // HistogramManager, join_strings()
+#include "tthAnalysis/HiggsToTauTau/interface/RecoLepton.h"
+#include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h"
 
 typedef math::PtEtaPhiMLorentzVector LV;
 
@@ -145,6 +147,33 @@ get_all_files(const std::string & dir,
   if(! file_list.size()) return 3;
 
   return 0;
+}
+
+/**
+ * @brief Checks whether a given lepton passes preselection criteria
+ * @param Given lepton
+ * @return True, if passes; false otherwise
+ */
+inline bool
+passes_preselection(const RecoLepton & lept)
+{
+  if(std::fabs(lept.dxy)     <= 0.05 && // 500um in cm
+     std::fabs(lept.dz)      < 0.1   && // 1 mm in cm
+     lept.rel_iso            < 0.5    )
+  {
+    if(lept.is_electron()      &&
+       lept.lost_hits  <= 1    &&
+       lept.ele_mva_id >= 1    &&
+       lept.pt         > 7.0   &&
+       std::fabs(lept.eta) < 2.5)
+      return true;
+    else if(lept.is_muon()          &&
+            lept.loose_id >= 1      &&
+            lept.pt       > 5.0     &&
+            std::fabs(lept.eta) < 2.4)
+      return true;
+  }
+  return false;
 }
 
 /**
@@ -589,64 +618,60 @@ main(int argc,
 //--- get the event
     chain.GetEntry(i);
 
+//--- create the lepton collection
+    std::vector<RecoLepton> leptons;
+    leptons.reserve(nleptons);
+    for(Int_t n = 0; n < nleptons; ++n)
+      leptons.push_back({ dxy[n], dz[n], rel_iso[n], sip3d[n],
+                          mass[n], pt[n], eta[n], mva_tth[n], phi[n],
+                          pdg_id[n], med_mu_id[n], ele_mva_id[n],
+                          lost_hits[n], loose_id[n], tight_charge[n],
+                          pass_conv_veto[n] });
+
+//--- create the jet collection
+    std::vector<RecoJet> jets;
+    jets.reserve(njets);
+    for(Int_t n = 0; n < njets; ++n)
+      jets.push_back({ jet_pt[n], jet_eta[n], jet_phi[n],
+                       jet_csv[n], jet_mass[n], n });
+
 //------------------------------------------------------------ COUNTER STARTS
     increment_all(cuts::entry_point);
 
-    std::vector<std::pair<Int_t, Double_t>> preselected_leptons;
-
-//--- loop over all leptons
-    for(Int_t j = 0; j < nleptons; ++j)
-    {
 //-------------------------------------------------------------- PRESELECTION
-//---  - dxy <= 500 um
-//---  - dz < 1 mm
-//---  - rel_iso < 0.5
-      if(std::fabs(dxy[j])     <= 0.05 && // 500um in cm
-         std::fabs(dz[j])      < 0.1   && // 1 mm in cm
-         rel_iso[j]            < 0.5    )
-      {
-//--- we have a lepton
-
-//--- electron
-        if(std::abs(pdg_id[j]) == 11  &&
-           lost_hits [j] <= 1         &&
-           ele_mva_id[j] >= 1         &&
-           pt        [j] > 7.0        &&
-           std::fabs(eta[j]) < 2.5     )
-          preselected_leptons.push_back(std::make_pair(j, pt[j]));
-
-//--- muon
-        else if(std::abs(pdg_id[j]) == 13 &&
-                loose_id[j] >= 1          &&
-                pt      [j] > 5.0         &&
-                std::fabs(eta[j]) < 2.4    )
-          preselected_leptons.push_back(std::make_pair(j, pt[j]));
-      }
-    }
+    std::vector<RecoLepton> preselected_leptons;
+    preselected_leptons.reserve(nleptons);
+    for(auto & lept: leptons)
+      if(passes_preselection(lept)) preselected_leptons.push_back(lept);
     if(preselected_leptons.size() < 2) continue;
 
     increment_all(cuts::PS);
 
 //--- let's order the leptons by their pT beforehand
-    leading_lept(preselected_leptons);
+    std::sort(preselected_leptons.begin(),
+              preselected_leptons.end(),
+              [](const RecoLepton & lhs,
+                 const RecoLepton & rhs) -> bool
+      {
+        return rhs.pt < lhs.pt;
+      });
 
 //---------------------------------------------------------- NOF GOOD LEPTONS
 //--- we need to count, how many tight and loose leptons we have
-    std::vector<Int_t> loose_leptons,
-                       tight_leptons;
+    std::vector<RecoLepton> loose_leptons,
+                            tight_leptons;
     for(auto & lept: preselected_leptons)
     {
-      const Int_t k = lept.first;
-      if(mva_tth[k] > loose_mva_wp) loose_leptons.push_back(k);
-      if(mva_tth[k] > tight_mva_wp) tight_leptons.push_back(k);
+      if(lept.mva_tth > loose_mva_wp) loose_leptons.push_back(lept);
+      if(lept.mva_tth > tight_mva_wp) tight_leptons.push_back(lept);
     }
 
 //--- require exactly 2/3 tight leptons or 4 loose leptons
-    std::vector<Int_t> selected_leptons;
+    std::vector<RecoLepton> selected_leptons;
     if(tight_leptons.size() == 2 ||
        tight_leptons.size() == 3  ) selected_leptons = tight_leptons;
     else
-    if(loose_leptons.size() == 4  ) selected_leptons = loose_leptons; // >=4?
+    if(loose_leptons.size() == 4)   selected_leptons = loose_leptons;
     else continue;
     const std::size_t nof_selected_leptons = selected_leptons.size();
 
@@ -654,55 +679,49 @@ main(int argc,
 
 //------------------------------------------------------- DANGLING LEPTON CUT
     if((nof_selected_leptons == 2 && loose_leptons.size() == 1) ||
-       (nof_selected_leptons == 3 && loose_leptons.size() == 1)  ) continue;
+       (nof_selected_leptons == 3 && loose_leptons.size() == 1))
+      continue;
 
     for(ch channel: {ch::ee, ch::emu, ch::mumu, ch::_3l})
       ++counter[channel][cuts::dangling];
 
 //------------------------------------------ DILEPTON INVARIANT MASS > 12 GeV
     bool proceed = true; // this guy is used throughout the analysis
-    for(std::size_t j = 0; j < nof_selected_leptons; ++j)
-    {
-      for(std::size_t k = 0; k < j; ++k)
-        {
-          const LV p4_j(pt[j], eta[j], phi[j], mass[j]);
-          const LV p4_k(pt[k], eta[k], phi[k], mass[k]);
-          if((p4_j + p4_k).mass() < 12.0)
-          {
-            proceed = false;
-            break;
-          }
-        }
-      if(! proceed) break;
-    }
+    for(unsigned j = 0; j < nof_selected_leptons && proceed; ++j)
+      for(unsigned k = 0; k < j && proceed; ++k)
+        if((selected_leptons[j].p4 + selected_leptons[k].p4).mass() < 12.0)
+          proceed = false;
     if(! proceed) continue;
 
     increment_all(cuts::minDilepMass);
 
 //-------------------------------------------------------- LEPTON PT > 20, 10
-    if(! (pt[selected_leptons[0]] > 20 &&            // leading lepton
-          pt[selected_leptons[1]] > 10  )) continue; // subleading lepton
+    if(! (selected_leptons[0].pt > 20 &&           // leading lepton
+          selected_leptons[1].pt > 10) ) continue; // subleading lepton
+
     increment_all(cuts::pT2010);
 
 //------------------------------------------------ 2+ HADRONIC JETS (>25 GeV)
-    std::vector<Int_t> hadronic_jets;
-    for(Int_t j = 0; j < njets; ++j)
-      if(jet_pt[j] > 25) hadronic_jets.push_back(j);
+    std::vector<RecoJet> hadronic_jets;
+    for(auto & jet: jets)
+      if(jet.pt > 25) hadronic_jets.push_back(jet);
     if(hadronic_jets.size() < 2) continue;
 
     increment_all(cuts::j2_plus);
 
 //---------------------------------------- 2+ LOOSE B JETS / 1+ MEDIUM B JETS
-    std::map<std::string, std::vector<Int_t>> bjets =
+    std::map<std::string, std::vector<RecoJet>> bjets =
+    {
+      { "loose",  {} },
+      { "medium", {} }
+    };
+    for(auto & jet: jets)
+      if(std::fabs(jet.eta) < 2.4)
       {
-        {"loose",  {} },
-        {"medium", {} }
-      };
-    for(Int_t j = 0; j < njets; ++j)
-      if(std::fabs(jet_eta[j]) < 2.4)
-      {
-        if(jet_csv[j] > loose_csv_wp)  bjets["loose"].push_back(j);
-        if(jet_csv[j] > medium_csv_wp) bjets["medium"].push_back(j);
+        if(jet.csv > loose_csv_wp)  bjets["loose"].push_back(jet);
+        if(jet.csv > medium_csv_wp) bjets["medium"].push_back(jet);
+        // note: consider the case where a loose bjet might be a medium one
+        //       this could be crucial in some cases
       }
     if(bjets["loose"].size() < 2 && bjets["medium"].size() < 1) continue;
 
@@ -710,15 +729,12 @@ main(int argc,
 
 //-------------------------------------------------------------- MEDIUM MU ID
 //--- applies to all muons?
-    for(Int_t j: selected_leptons)
-    {
-      if(std::abs(pdg_id[j]) == 13 &&
-         med_mu_id[j] < 1           )
+    for(auto & lept: selected_leptons)
+      if(lept.is_muon() && lept.med_mu_id < 1)
       {
         proceed = false;
         break;
       }
-    }
     if(! proceed) continue;
 
     for(ch channel: {ch::emu, ch::mumu, ch::_3l, ch::_4l})
@@ -729,31 +745,24 @@ main(int argc,
     {
 //-------------------------------------------------- ELECTRON CONVERSION VETO
 //--- applies to tight electrons only
-      for(Int_t j: selected_leptons)
-      {
-        if(std::abs(pdg_id[j]) == 11 &&
-           pass_conv_veto[j] < 1      )
+      for(auto & lept: selected_leptons)
+        if(lept.is_electron() && lept.pass_conv_veto < 1)
         {
           proceed = false;
           break;
         }
-      }
       if(! proceed) continue;
-
       for(ch channel: {ch::ee, ch::emu, ch::_3l})
         ++counter[channel][cuts::conv_veto];
 
 //--------------------------------------------------------------- 0 LOST HITS
 //--- applies to tight electrons only
-      for(Int_t j: selected_leptons)
-      {
-        if(std::abs(pdg_id[j]) == 11 &&
-           lost_hits[j] != 0          )
+      for(auto & lept: selected_leptons)
+        if(lept.is_electron() && lept.lost_hits != 0)
         {
           proceed = false;
           break;
         }
-      }
 
       if(! proceed) continue;
 
@@ -762,16 +771,13 @@ main(int argc,
 
 //--------------------------------------------------- ELECTRON IDENTIFICATION
 //--- applies to tight electrons only
-
-      for(Int_t j: selected_leptons)
-      {
-        if(std::abs(pdg_id[j]) == 11 &&
-           ele_mva_id[j] < 2          )
+      for(auto & lept: selected_leptons)
+        if(lept.is_electron() && lept.ele_mva_id < 2)
         {
           proceed = false;
           break;
         }
-      }
+
       if(! proceed) continue;
 
       for(ch channel: {ch::ee, ch::emu, ch::_3l})
@@ -779,15 +785,12 @@ main(int argc,
 
 //-------------------------------------------------- RELATIVE ISOLATION < 0.1
 //--- applies to tight leptons only
-
-      for(Int_t j: selected_leptons)
-      {
-        if(rel_iso[j] >= 0.1)
+      for(auto & lept: selected_leptons)
+        if(lept.rel_iso >= 0.1)
         {
           proceed = false;
           break;
         }
-      }
       if(! proceed) continue;
 
       for(ch channel: {ch::ee, ch::mumu, ch::emu, ch::_3l})
@@ -795,15 +798,13 @@ main(int argc,
 
 //--------------------------------------------------------------- SIP3D < 4.0
 //--- applies to tight leptons only
-
-      for(Int_t j: selected_leptons)
-      {
-        if(sip3d[j] >= 4.0)
+      for(auto & lept: selected_leptons)
+        if(lept.sip3d >= 4.0)
         {
           proceed = false;
           break;
         }
-      }
+
       if(! proceed) continue;
 
       for(ch channel: {ch::ee, ch::mumu, ch::emu, ch::_3l})
@@ -813,22 +814,19 @@ main(int argc,
 //=========================== DILEPTON CHANNEL ==============================
     if(nof_selected_leptons == 2)
     {
-      const Int_t lept_0 = selected_leptons[0];
-      const Int_t lept_1 = selected_leptons[1];
+      const RecoLepton & lept_0 = selected_leptons[0]; // make it const?
+      const RecoLepton & lept_1 = selected_leptons[1];
 
       ch channel = ch::unspecified;
-      if(std::abs(pdg_id[lept_0]) == 11 && std::abs(pdg_id[lept_1]) == 11)
-        channel = ch::ee;
-      else
-      if(std::abs(pdg_id[lept_0]) == 13 && std::abs(pdg_id[lept_1]) == 13)
-        channel = ch::mumu;
-      else
-        channel = ch::emu;
+
+      if(lept_0.is_electron() && lept_1.is_electron()) channel = ch::ee;
+      else if(lept_0.is_muon() && lept_1.is_muon()) channel = ch::mumu;
+      else channel = ch::emu;
 
       ++counter[channel][cuts::tight_mva];
 
 //----------------------------------------------------------------- SAME SIGN
-      if(pdg_id[lept_0] * pdg_id[lept_1] < 0) continue;
+      if(lept_0.pdg_id * lept_1.pdg_id < 0) continue;
 
       ++counter[channel][cuts::ss];
 
@@ -839,77 +837,78 @@ main(int argc,
 
 //-------------------------------------------------------------- MET_LD > 0.2
 //--- merge all jets
-      std::vector<Int_t> all_bjets,
-                         selected_jets;
+      std::vector<RecoJet> all_bjets,
+                           all_selected_jets;
       std::set_union
         (
           bjets["loose"].begin(), bjets["loose"].end(),
           bjets["medium"].begin(), bjets["medium"].end(),
-          std::back_inserter(all_bjets)
+          std::back_inserter(all_bjets),
+          [](const RecoJet & lhs, const RecoJet rhs) -> bool
+          {
+            return lhs.idx < rhs.idx;
+          }
         );
       std::set_union
         (
           all_bjets.begin(), all_bjets.end(),
           hadronic_jets.begin(), hadronic_jets.end(),
-          std::back_inserter(selected_jets)
+          std::back_inserter(all_selected_jets),
+          [](const RecoJet & lhs, const RecoJet rhs) -> bool
+          {
+            return lhs.idx < rhs.idx;
+          }
         );
 
 //--- calculate MHT
       LV mht_vec(0, 0, 0, 0);
-      for(Int_t j: hadronic_jets)
-        mht_vec += LV(jet_pt[j], jet_eta[j], jet_phi[j], jet_mass[j]);
-
-      const LV p4_0(pt[lept_0], eta[lept_0], phi[lept_0], mass[lept_0]);
-      const LV p4_1(pt[lept_1], eta[lept_1], phi[lept_1], mass[lept_1]);
-      mht_vec += p4_0 + p4_1;
-
+      for(auto & jet: hadronic_jets) // shouldn't it be all_selected_jets ?
+        mht_vec += jet.p4;
+      mht_vec += lept_0.p4 + lept_1.p4;
       const Double_t mht_pt = mht_vec.pt();
-
       const Double_t met_ld = met_coef * met_pt + mht_coef * mht_pt;
       if(met_ld <= 0.2) continue;
 
       ++counter[channel][cuts::met_ld_02];
 
 //-------------------------------------------------------- LEPTON PT > 20, 20
-      if(pt[lept_0] <= 20 || pt[lept_1] <= 20) continue;
+      if(lept_0.pt <= 20 || lept_1.pt <= 20) continue;
 
       ++counter[channel][cuts::pT2020];
 
 //----------------------------------------- SCALAR SUM(L0, L1, MET) > 100 GeV
-      if(pt[lept_0] + pt[lept_1] + met_pt <= 100) continue;
+      if(lept_0.pt + lept_1.pt + met_pt <= 100) continue;
 
       ++counter[channel][cuts::ht_l1l2_met_100];
 
 //-------------------------------------------------------------------- Z VETO
-      if(std::fabs((p4_0 + p4_1).mass() - z_mass) <= z_th) continue;
+      if(std::fabs((lept_0.p4 + lept_1.p4).mass() - z_mass) <= z_th) continue;
 
       ++counter[channel][cuts::zveto];
 
 //-------------------------------------------------------------- TIGHT CHARGE
-      if(tight_charge[lept_0] < 2 || tight_charge[lept_1] < 2) continue;
+      if(lept_0.tight_charge < 2 || lept_1.tight_charge < 2) continue;
 
       ++counter[channel][cuts::charge_quality];
 
-//---------------------------------------------------------------------- PLOT
+//----------------------------------------------------------------------
       {
-
         Double_t min_dR_l2j = 1000;
-        Double_t ht = pt[lept_0] + pt[lept_1];
-        LV ht_vec = p4_0 + p4_1;
-        for(Int_t h: hadronic_jets)
+        Double_t ht = lept_0.pt + lept_1.pt;
+        LV ht_vec = lept_0.p4 + lept_1.p4;
+        for(auto & jet: hadronic_jets)
         {
           const Double_t dR_tmp =
-            std::sqrt(std::pow(eta[lept_1] - jet_eta[h], 2) +
-                      std::pow(phi[lept_1] - jet_phi[h], 2));
-          const LV hjet(jet_pt[h], jet_eta[h], jet_phi[h], jet_mass[h]);
+            std::sqrt(std::pow(lept_1.eta - jet.eta, 2) +
+                      std::pow(lept_1.phi - jet.phi, 2));
           if(dR_tmp < min_dR_l2j) min_dR_l2j = dR_tmp;
-          ht += jet_pt[h];
-          ht_vec += hjet;
+          ht += jet.pt;
+          ht_vec += jet.p4;
         }
-        const Double_t pt_trailing = pt[lept_1];
-        const Double_t eta_trailing = std::fabs(eta[lept_1]);
+        const Double_t pt_trailing = lept_1.pt;
+        const Double_t eta_trailing = std::fabs(lept_1.eta);
         const Double_t mt_metl1 =
-            (p4_0 + LV(met_pt, met_eta, met_phi, met_mass)).mass();
+            (lept_0.p4 + LV(met_pt, met_eta, met_phi, met_mass)).mass();
         const Double_t mht = std::fabs(ht_vec.pt());
         hm[channel][cp::final].fill(pt_trailing, eta_trailing, min_dR_l2j,
                                     mt_metl1, ht, mht);
@@ -925,56 +924,48 @@ main(int argc,
 //------------------------------------------ 4+ HADRONIC JETS or MET_LD > 0.2
       if(hadronic_jets.size() < 4)
       {
-//--- merge all jets
-        std::vector<Int_t> all_bjets,
-                           selected_jets;
+        std::vector<RecoJet> all_bjets,
+                             all_selected_jets;
         std::set_union
           (
             bjets["loose"].begin(), bjets["loose"].end(),
             bjets["medium"].begin(), bjets["medium"].end(),
-            std::back_inserter(all_bjets)
+            std::back_inserter(all_bjets),
+            [](const RecoJet & lhs, const RecoJet rhs) -> bool
+            {
+              return lhs.idx < rhs.idx;
+            }
           );
         std::set_union
           (
             all_bjets.begin(), all_bjets.end(),
             hadronic_jets.begin(), hadronic_jets.end(),
-            std::back_inserter(selected_jets)
+            std::back_inserter(all_selected_jets),
+            [](const RecoJet & lhs, const RecoJet rhs) -> bool
+            {
+              return lhs.idx < rhs.idx;
+            }
           );
 
 //--- calculate MHT
         LV mht_vec(0, 0, 0, 0);
-        for(Int_t j: hadronic_jets)
-          mht_vec += LV(jet_pt[j], jet_eta[j], jet_phi[j], jet_mass[j]);
-        for(Int_t j: selected_leptons)
-          mht_vec += LV(pt[j], eta[j], phi[j], mass[j]);
+        for(auto & jet: hadronic_jets) // shouldn't it be all_selected_jets ?
+          mht_vec += jet.p4;
+        for(auto & lept: selected_leptons)
+          mht_vec += lept.p4;
         const Double_t mht_pt = mht_vec.pt();
-
         const Double_t met_ld = met_coef * met_pt + mht_coef * mht_pt;
         if(met_ld <= 0.2) continue;
       }
       ++counter[ch::_3l][cuts::j4_plus_met_ld_02];
 
 //---------------------------------------------------------------- SFOS ZVETO
-      for(std::size_t j = 0; j < 3; ++j)
-      {
-        for(std::size_t k = 0; k < j; ++k)
-        {
-          if(pdg_id[j] == -pdg_id[k])
-          {
-            const Int_t lept_j = selected_leptons[j];
-            const Int_t lept_k = selected_leptons[k];
-            const LV p4_j(pt[lept_j], eta[lept_j], phi[lept_j], mass[lept_j]);
-            const LV p4_k(pt[lept_k], eta[lept_k], phi[lept_k], mass[lept_k]);
-            if(std::fabs((p4_j + p4_k).mass() - z_mass) <= z_th)
-            {
+      for(unsigned j = 0; j < 3 && proceed; ++j)
+        for(unsigned k = 0; k < j && proceed; ++k)
+          if(selected_leptons[j].pdg_id == -selected_leptons[k].pdg_id &&
+             std::fabs((selected_leptons[j].p4 +
+                        selected_leptons[k].p4).mass() - z_mass) <= z_th)
               proceed = false;
-              break;
-            }
-          }
-          if(! proceed) break;
-        }
-        if(! proceed) break;
-      }
       if(! proceed) continue;
 
       ++counter[ch::_3l][cuts::sfos_zveto];
@@ -991,10 +982,10 @@ main(int argc,
           selected_leptons.begin(),
           selected_leptons.end(),
           0,
-          [&pdg_id](Int_t j, Int_t k) -> Int_t
+          [](Int_t lhs, const RecoLepton & rhs)
           {
-            const Int_t charge = pdg_id[k] > 0 ? 1 : -1;
-            return j + charge;
+            const Int_t charge = rhs.pdg_id > 0 ? 1 : -1;
+            return lhs + charge;
           }
         );
       if(charge_sum != 0) continue;
@@ -1002,26 +993,12 @@ main(int argc,
       ++counter[ch::_4l][cuts::neutral_sum];
 
 //---------------------------------------------------------------- SFOS ZVETO
-      for(std::size_t j = 0; j < 4; ++j)
-      {
-        for(std::size_t k = 0; k < j; ++k)
-        {
-          if(pdg_id[j] == -pdg_id[k])
-          {
-            const Int_t lept_j = selected_leptons[j];
-            const Int_t lept_k = selected_leptons[k];
-            const LV p4_j(pt[lept_j], eta[lept_j], phi[lept_j], mass[lept_j]);
-            const LV p4_k(pt[lept_k], eta[lept_k], phi[lept_k], mass[lept_k]);
-            if(std::fabs((p4_j + p4_k).mass() - z_mass) <= z_th)
-            {
+      for(unsigned j = 0; j < 4 && proceed; ++j)
+        for(unsigned k = 0; k < j && proceed; ++k)
+          if(selected_leptons[j].pdg_id == -selected_leptons[k].pdg_id &&
+             std::fabs((selected_leptons[j].p4 +
+                        selected_leptons[k].p4).mass() - z_mass) <= z_th)
               proceed = false;
-              break;
-            }
-          }
-          if(! proceed) break;
-        }
-        if(! proceed) break;
-      }
       if(! proceed) continue;
 
       ++counter[ch::_4l][cuts::sfos_zveto];

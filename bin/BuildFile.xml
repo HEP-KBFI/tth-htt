@@ -1,4 +1,4 @@
-<bin   file="SynchTTH.cc" name="SynchTTH">
+<bin   file="SynchTTH.cc,RecoLepton.cc,RecoJet.cc" name="SynchTTH">
   <use   name="FWCore/FWLite"/>
   <use   name="FWCore/ParameterSet"/>
   <use   name="FWCore/PythonParameterSet"/>
@@ -7,5 +7,5 @@
   <use   name="PhysicsTools/FWLite"/>
   <use   name="root"/>
   <use   name="roottmva"/>
-  <use   name="boost" />
+  <use   name="boost"/>
 </bin>
