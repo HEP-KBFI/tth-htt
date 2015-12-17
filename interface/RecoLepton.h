@@ -39,6 +39,24 @@ public:
   bool
   is_muon() const;
 
+  /**
+   * @brief Calculates dR between our and the other lepton.
+   * @param other  The other lepton.
+   * @return dR = sqrt((eta_1 - eta_2)^2 + (phi_1 - phi_2)^2)
+   */
+  inline double
+  dR(const RecoLepton & other) const;
+
+  /**
+   * @brief Checks if a given lepton is in the same cone as our lepton.
+   * @param other  The given lepton.
+   * @param dR_min Max size of the lepton cone (think of it as a threshold).
+   * @return True, if there is an overlap (= is in the cone); false otherwise.
+   */
+  bool
+  is_overlap(const RecoLepton & other,
+             double dR_min) const;
+
   Double_t dxy;         ///< d_{xy}, distance in the transverse plane w.r.t PV
   Double_t dz;          ///< d_{z}, distance on the z axis w.r.t PV
   Double_t rel_iso;     ///< relative isolation

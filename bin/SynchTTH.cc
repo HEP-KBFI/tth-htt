@@ -291,10 +291,11 @@ main(int argc,
     PS,
     dangling,
     good_leptons,
-    minDilepMass,
+    min_dilep_mass,
     pT2010,
     j2_plus,
     bjet_2l_1m,
+    specific_cuts,
     medium_mu_id,
     conv_veto,
     lost_hits_0,
@@ -312,7 +313,8 @@ main(int argc,
     j4_plus_met_ld_02,
     loose_mva,
     neutral_sum,
-    sfos_zveto
+    sfos_zveto,
+    good_tau
   };
   enum ch {
     ee = 0,
@@ -320,6 +322,7 @@ main(int argc,
     emu,
     _3l,
     _4l,
+    _2l_1tau,
     unspecified
   };
 
@@ -329,10 +332,11 @@ main(int argc,
     {cuts::PS,                "preselection"},
     {cuts::good_leptons,      "2/3 T leptons or 4 L leptons"},
     {cuts::dangling,          "dangling lepton cut"},
-    {cuts::minDilepMass,      "minDilepMass>12 GeV"},
+    {cuts::min_dilep_mass,    "minDilepMass>12 GeV"},
     {cuts::pT2010,            "pT(l1),pT(l2) >20,>10 GeV"},
     {cuts::j2_plus,           "nJet>=2 (25 GeV)"},
     {cuts::bjet_2l_1m,        "2+L bJet or 1+M bJet"},
+    {cuts::specific_cuts,     "2l1t: dilepton-specific cuts"},
     {cuts::medium_mu_id,      "medium muon ID"},
     {cuts::conv_veto,         "electron conversion veto"},
     {cuts::lost_hits_0,       "lost hits == 0"},
@@ -350,7 +354,8 @@ main(int argc,
     {cuts::j4_plus_met_ld_02, "nJet>=4 (25 GeV) or MET_LD>0.2"},
     {cuts::loose_mva,         "loose lepton mva"},
     {cuts::neutral_sum,       "neutral charge sum"},
-    {cuts::sfos_zveto,        "SFOS Z veto"}
+    {cuts::sfos_zveto,        "SFOS Z veto"},
+    {cuts::good_tau,          "good tau"}
   };
   const std::map<ch, std::string> ch_str =
   {
@@ -358,7 +363,8 @@ main(int argc,
     {ch::mumu,     "mumu"},
     {ch::emu,      "emu"},
     {ch::_3l,      "3l"},
-    {ch::_4l,      "4l"}
+    {ch::_4l,      "4l"},
+    {ch::_2l_1tau, "2l1tau"}
   };
 
 //--- set up event counter for each channel
@@ -370,7 +376,7 @@ main(int argc,
         {cuts::PS,              0},
         {cuts::good_leptons,    0},
         {cuts::dangling,        0},
-        {cuts::minDilepMass,    0},
+        {cuts::min_dilep_mass,  0},
         {cuts::pT2010,          0},
         {cuts::j2_plus,         0},
         {cuts::bjet_2l_1m,      0}, // common end
@@ -395,7 +401,7 @@ main(int argc,
         {cuts::PS,              0},
         {cuts::good_leptons,    0},
         {cuts::dangling,        0},
-        {cuts::minDilepMass,    0},
+        {cuts::min_dilep_mass,  0},
         {cuts::pT2010,          0},
         {cuts::j2_plus,         0},
         {cuts::bjet_2l_1m,      0}, // common end
@@ -418,7 +424,7 @@ main(int argc,
         {cuts::PS,              0},
         {cuts::good_leptons,    0},
         {cuts::dangling,        0},
-        {cuts::minDilepMass,    0},
+        {cuts::min_dilep_mass,  0},
         {cuts::pT2010,          0},
         {cuts::j2_plus,         0},
         {cuts::bjet_2l_1m,      0}, // common end
@@ -444,7 +450,7 @@ main(int argc,
         {cuts::PS,                0},
         {cuts::good_leptons,      0},
         {cuts::dangling,          0},
-        {cuts::minDilepMass,      0},
+        {cuts::min_dilep_mass,    0},
         {cuts::pT2010,            0},
         {cuts::j2_plus,           0},
         {cuts::bjet_2l_1m,        0}, // common end
@@ -461,18 +467,42 @@ main(int argc,
     },
     {ch::_4l,
       {
-        {cuts::entry_point,  0},
-        {cuts::PS,           0},
-        {cuts::good_leptons, 0},
-        {cuts::minDilepMass, 0},
-        {cuts::pT2010,       0},
-        {cuts::j2_plus,      0},
-        {cuts::bjet_2l_1m,   0}, // common end
-        {cuts::medium_mu_id, 0},
-        {cuts::loose_mva,    0},
-        {cuts::neutral_sum,  0},
-        {cuts::sfos_zveto,   0}
+        {cuts::entry_point,    0},
+        {cuts::PS,             0},
+        {cuts::good_leptons,   0},
+        {cuts::min_dilep_mass, 0},
+        {cuts::pT2010,         0},
+        {cuts::j2_plus,        0},
+        {cuts::bjet_2l_1m,     0}, // common end
+        {cuts::medium_mu_id,   0},
+        {cuts::loose_mva,      0},
+        {cuts::neutral_sum,    0},
+        {cuts::sfos_zveto,     0}
       }
+    },
+    {ch::_2l_1tau,
+      {
+        {cuts::entry_point,     0},
+        {cuts::PS,              0},
+        {cuts::good_leptons,    0},
+        {cuts::dangling,        0},
+        {cuts::min_dilep_mass,  0},
+        {cuts::pT2010,          0},
+        {cuts::j2_plus,         0},
+        {cuts::bjet_2l_1m,      0},
+        {cuts::specific_cuts,   0}, // med_mu_id, conv_veto, lost_hits, ele_mva
+        {cuts::rel_iso_01,      0},
+        {cuts::sip3d_4,         0},
+        {cuts::tight_mva,       0},
+        {cuts::ss,              0},
+        {cuts::j4_plus,         0},
+        {cuts::met_ld_02,       0},
+        {cuts::pT2020,          0},
+        {cuts::ht_l1l2_met_100, 0},
+        {cuts::zveto,           0},
+        {cuts::charge_quality,  0},
+        {cuts::good_tau,        0}
+     }
     }
   };
   auto increment_all = [&counter](cuts c)
@@ -721,7 +751,7 @@ main(int argc,
           proceed = false;
     if(! proceed) continue;
 
-    increment_all(cuts::minDilepMass);
+    increment_all(cuts::min_dilep_mass);
 
 //-------------------------------------------------------- LEPTON PT > 20, 10
     if(! (selected_leptons[0].pt > 20 &&           // leading lepton
@@ -811,6 +841,8 @@ main(int argc,
       for(ch channel: {ch::ee, ch::emu, ch::_3l})
         ++counter[channel][cuts::ele_id];
 
+      ++counter[ch::_2l_1tau][cuts::specific_cuts]; // for dilepton + tau
+
 //-------------------------------------------------- RELATIVE ISOLATION < 0.1
 //--- applies to tight leptons only
       for(auto & lept: selected_leptons)
@@ -821,7 +853,7 @@ main(int argc,
         }
       if(! proceed) continue;
 
-      for(ch channel: {ch::ee, ch::mumu, ch::emu, ch::_3l})
+      for(ch channel: {ch::ee, ch::mumu, ch::emu, ch::_3l, ch::_2l_1tau})
         ++counter[channel][cuts::rel_iso_01];
 
 //--------------------------------------------------------------- SIP3D < 4.0
@@ -835,7 +867,7 @@ main(int argc,
 
       if(! proceed) continue;
 
-      for(ch channel: {ch::ee, ch::mumu, ch::emu, ch::_3l})
+      for(ch channel: {ch::ee, ch::mumu, ch::emu, ch::_3l, ch::_2l_1tau})
         ++counter[channel][cuts::sip3d_4];
     }
 
@@ -852,16 +884,19 @@ main(int argc,
       else channel = ch::emu;
 
       ++counter[channel][cuts::tight_mva];
+      ++counter[ch::_2l_1tau][cuts::tight_mva];
 
 //----------------------------------------------------------------- SAME SIGN
       if(lept_0.pdg_id * lept_1.pdg_id < 0) continue;
 
       ++counter[channel][cuts::ss];
+      ++counter[ch::_2l_1tau][cuts::ss];
 
 //---------------------------------------------------------- 4+ HADRONIC JETS
       if(hadronic_jets.size() < 4) continue;
 
       ++counter[channel][cuts::j4_plus];
+      ++counter[ch::_2l_1tau][cuts::j4_plus];
 
 //-------------------------------------------------------------- MET_LD > 0.2
 //--- merge all jets
@@ -890,7 +925,7 @@ main(int argc,
 
 //--- calculate MHT
       LV mht_vec(0, 0, 0, 0);
-      for(auto & jet: all_selected_jets) // shouldn't it be all_selected_jets ?
+      for(auto & jet: all_selected_jets)
         mht_vec += jet.p4;
       mht_vec += lept_0.p4 + lept_1.p4;
       const Double_t mht_pt = mht_vec.pt();
@@ -898,28 +933,53 @@ main(int argc,
       if(met_ld <= 0.2) continue;
 
       ++counter[channel][cuts::met_ld_02];
+      ++counter[ch::_2l_1tau][cuts::met_ld_02];
 
 //-------------------------------------------------------- LEPTON PT > 20, 20
       if(lept_0.pt <= 20 || lept_1.pt <= 20) continue;
 
       ++counter[channel][cuts::pT2020];
+      ++counter[ch::_2l_1tau][cuts::pT2020];
 
 //----------------------------------------- SCALAR SUM(L0, L1, MET) > 100 GeV
       if(lept_0.pt + lept_1.pt + met_pt <= 100) continue;
 
       ++counter[channel][cuts::ht_l1l2_met_100];
+      ++counter[ch::_2l_1tau][cuts::ht_l1l2_met_100];
 
 //-------------------------------------------------------------------- Z VETO
       if(std::fabs((lept_0.p4 + lept_1.p4).mass() - z_mass) <= z_th) continue;
 
       ++counter[channel][cuts::zveto];
+      ++counter[ch::_2l_1tau][cuts::zveto];
 
 //-------------------------------------------------------------- TIGHT CHARGE
       if(lept_0.tight_charge < 2 || lept_1.tight_charge < 2) continue;
 
       ++counter[channel][cuts::charge_quality];
+      ++counter[ch::_2l_1tau][cuts::charge_quality];
 
-//----------------------------------------------------------------------
+//======================== DILEPTON + TAU CHANNEL ===========================
+      {
+        std::vector<HadronicTau> good_taus;
+//--- see if any of our taus is a good candidate
+        for(auto & tau: taus)
+        {
+          if(tau.pt > 20              &&
+             std::fabs(tau.eta) < 2.3 &&
+             tau.decmode >= 1         &&
+             tau.id_mva >= 4          &&
+             tau.anti_e >= 2          &&
+             tau.anti_mu >= 2          )
+            good_taus.push_back(tau);
+        }
+//--- TODO: check if our tau overlaps with some other object; remove duplicates
+
+        if(good_taus.size() == 1)
+          ++counter[ch::_2l_1tau][cuts::good_tau];
+      }
+
+//---------------------------------------------------------------------- PLOT
       {
         Double_t min_dR_l2j = 1000;
         Double_t ht = lept_0.pt + lept_1.pt;
@@ -977,7 +1037,7 @@ main(int argc,
 
 //--- calculate MHT
         LV mht_vec(0, 0, 0, 0);
-        for(auto & jet: all_selected_jets) // shouldn't it be all_selected_jets ?
+        for(auto & jet: all_selected_jets)
           mht_vec += jet.p4;
         for(auto & lept: selected_leptons)
           mht_vec += lept.p4;

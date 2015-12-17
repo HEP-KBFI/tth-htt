@@ -1,6 +1,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoLepton.h"
 
-#include <cmath> // std::abs()
+#define _USE_MATH_DEFINES // M_PI
+#include <cmath> // std::abs(), std::fabs(), std::sqrt(), std::pow()
 
 RecoLepton::RecoLepton(Double_t _dxy,
                        Double_t _dz,
@@ -48,4 +49,21 @@ bool
 RecoLepton::is_muon() const
 {
   return std::abs(pdg_id) == 13;
+}
+
+inline double
+RecoLepton::dR(const RecoLepton & other) const
+{
+  const double d_eta = std::fabs(eta - other.eta);
+  double d_phi = std::fabs(phi - other.phi);
+  if (d_phi > static_cast<double>(M_PI))
+    d_phi -= 2 * static_cast<double>(M_PI);
+  return std::sqrt(std::pow(d_eta, 2) + std::pow(d_phi, 2));
+}
+
+bool
+RecoLepton::is_overlap(const RecoLepton & other,
+                       double dR_min) const
+{
+  return dR(other) < dR_min;
 }
