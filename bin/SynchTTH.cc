@@ -28,6 +28,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/HistogramManager.h" // HistogramManager, join_strings()
 #include "tthAnalysis/HiggsToTauTau/interface/RecoLepton.h"
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h"
+#include "tthAnalysis/HiggsToTauTau/interface/HadronicTau.h"
 
 typedef math::PtEtaPhiMLorentzVector LV;
 
@@ -353,11 +354,11 @@ main(int argc,
   };
   const std::map<ch, std::string> ch_str =
   {
-    {ch::ee,   "ee"},
-    {ch::mumu, "mumu"},
-    {ch::emu,  "emu"},
-    {ch::_3l,  "3l"},
-    {ch::_4l,  "4l"}
+    {ch::ee,       "ee"},
+    {ch::mumu,     "mumu"},
+    {ch::emu,      "emu"},
+    {ch::_3l,      "3l"},
+    {ch::_4l,      "4l"}
   };
 
 //--- set up event counter for each channel
@@ -519,6 +520,7 @@ main(int argc,
   const double medium_csv_wp = 0.679;
   const unsigned max_nleptons = 16;
   const unsigned max_njets = 32;
+  const unsigned max_ntaus = 32;
   const double z_mass = 91.1876;
   const double z_th = 10;
   const double met_coef = 0.00397;
@@ -530,6 +532,7 @@ main(int argc,
   Int_t lumi;
   Int_t evt;
   Int_t njets;
+  Int_t ntaus;
   Double_t met_pt;
   Double_t met_eta;
   Double_t met_phi;
@@ -548,6 +551,10 @@ main(int argc,
   Double_t jet_phi    [max_njets];
   Double_t jet_csv    [max_njets];
   Double_t jet_mass   [max_njets];
+  Double_t tau_pt     [max_ntaus];
+  Double_t tau_eta    [max_ntaus];
+  Double_t tau_phi    [max_ntaus];
+  Double_t tau_mass   [max_ntaus];
   Int_t med_mu_id     [max_nleptons];
   Int_t pdg_id        [max_nleptons];
   Int_t ele_mva_id    [max_nleptons];
@@ -555,6 +562,10 @@ main(int argc,
   Int_t loose_id      [max_nleptons];
   Int_t tight_charge  [max_nleptons];
   Int_t pass_conv_veto[max_nleptons];
+  Int_t tau_decmode   [max_ntaus];
+  Int_t tau_id_mva    [max_ntaus];
+  Int_t tau_anti_e    [max_ntaus];
+  Int_t tau_anti_mu   [max_ntaus];
 
   chain.SetBranchAddress("nselLeptons",               &nleptons);
   chain.SetBranchAddress("run",                       &run);
@@ -586,6 +597,15 @@ main(int argc,
   chain.SetBranchAddress("selLeptons_looseIdPOG",     &loose_id);
   chain.SetBranchAddress("selLeptons_tightCharge",    &tight_charge);
   chain.SetBranchAddress("selLeptons_convVeto",       &pass_conv_veto);
+  chain.SetBranchAddress("nTauGood",                  &ntaus);
+  chain.SetBranchAddress("TauGood_pt",                &tau_pt);
+  chain.SetBranchAddress("TauGood_eta",               &tau_eta);
+  chain.SetBranchAddress("TauGood_phi",               &tau_phi);
+  chain.SetBranchAddress("TauGood_mass",              &tau_mass);
+  chain.SetBranchAddress("TauGood_idDecayMode",       &tau_decmode);
+  chain.SetBranchAddress("TauGood_idMVA",             &tau_id_mva);
+  chain.SetBranchAddress("TauGood_idAntiE",           &tau_anti_e);
+  chain.SetBranchAddress("TauGood_idAntiMu",          &tau_anti_mu);
 
   Long64_t nof_events = chain.GetEntries();
   log_file << "Total number of events: "
@@ -634,6 +654,14 @@ main(int argc,
     for(Int_t n = 0; n < njets; ++n)
       jets.push_back({ jet_pt[n], jet_eta[n], jet_phi[n],
                        jet_csv[n], jet_mass[n], n });
+
+//--- create the tau collection
+    std::vector<HadronicTau> taus;
+    taus.reserve(ntaus);
+    for(Int_t n = 0; n < ntaus; ++n)
+      taus.push_back({ tau_pt[n], tau_eta[n], tau_phi[n], tau_mass[n],
+                       tau_decmode[n], tau_id_mva[n], tau_anti_e[n],
+                       tau_anti_mu[n] });
 
 //------------------------------------------------------------ COUNTER STARTS
     increment_all(cuts::entry_point);
@@ -820,7 +848,7 @@ main(int argc,
       ch channel = ch::unspecified;
 
       if(lept_0.is_electron() && lept_1.is_electron()) channel = ch::ee;
-      else if(lept_0.is_muon() && lept_1.is_muon()) channel = ch::mumu;
+      else if(lept_0.is_muon() && lept_1.is_muon())    channel = ch::mumu;
       else channel = ch::emu;
 
       ++counter[channel][cuts::tight_mva];
@@ -844,7 +872,7 @@ main(int argc,
           bjets["loose"].begin(), bjets["loose"].end(),
           bjets["medium"].begin(), bjets["medium"].end(),
           std::back_inserter(all_bjets),
-          [](const RecoJet & lhs, const RecoJet rhs) -> bool
+          [](const RecoJet & lhs, const RecoJet & rhs) -> bool
           {
             return lhs.idx < rhs.idx;
           }
@@ -854,7 +882,7 @@ main(int argc,
           all_bjets.begin(), all_bjets.end(),
           hadronic_jets.begin(), hadronic_jets.end(),
           std::back_inserter(all_selected_jets),
-          [](const RecoJet & lhs, const RecoJet rhs) -> bool
+          [](const RecoJet & lhs, const RecoJet & rhs) -> bool
           {
             return lhs.idx < rhs.idx;
           }
@@ -862,7 +890,7 @@ main(int argc,
 
 //--- calculate MHT
       LV mht_vec(0, 0, 0, 0);
-      for(auto & jet: hadronic_jets) // shouldn't it be all_selected_jets ?
+      for(auto & jet: all_selected_jets) // shouldn't it be all_selected_jets ?
         mht_vec += jet.p4;
       mht_vec += lept_0.p4 + lept_1.p4;
       const Double_t mht_pt = mht_vec.pt();
@@ -931,7 +959,7 @@ main(int argc,
             bjets["loose"].begin(), bjets["loose"].end(),
             bjets["medium"].begin(), bjets["medium"].end(),
             std::back_inserter(all_bjets),
-            [](const RecoJet & lhs, const RecoJet rhs) -> bool
+            [](const RecoJet & lhs, const RecoJet & rhs) -> bool
             {
               return lhs.idx < rhs.idx;
             }
@@ -941,7 +969,7 @@ main(int argc,
             all_bjets.begin(), all_bjets.end(),
             hadronic_jets.begin(), hadronic_jets.end(),
             std::back_inserter(all_selected_jets),
-            [](const RecoJet & lhs, const RecoJet rhs) -> bool
+            [](const RecoJet & lhs, const RecoJet & rhs) -> bool
             {
               return lhs.idx < rhs.idx;
             }
@@ -949,7 +977,7 @@ main(int argc,
 
 //--- calculate MHT
         LV mht_vec(0, 0, 0, 0);
-        for(auto & jet: hadronic_jets) // shouldn't it be all_selected_jets ?
+        for(auto & jet: all_selected_jets) // shouldn't it be all_selected_jets ?
           mht_vec += jet.p4;
         for(auto & lept: selected_leptons)
           mht_vec += lept.p4;
