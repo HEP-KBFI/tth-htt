@@ -289,6 +289,7 @@ main(int argc,
   enum cuts {
     entry_point = 0,
     PS,
+    tight_lepton,
     dangling,
     good_leptons,
     min_dilep_mass,
@@ -323,6 +324,7 @@ main(int argc,
     _3l,
     _4l,
     _2l_1tau,
+    _1l_2tau,
     unspecified
   };
 
@@ -330,6 +332,7 @@ main(int argc,
   {
     {cuts::entry_point,       "entry point"},
     {cuts::PS,                "preselection"},
+    {cuts::tight_lepton,      "tight lepton"},
     {cuts::good_leptons,      "2/3 T leptons or 4 L leptons"},
     {cuts::dangling,          "dangling lepton cut"},
     {cuts::min_dilep_mass,    "minDilepMass>12 GeV"},
@@ -364,7 +367,8 @@ main(int argc,
     {ch::emu,      "emu"},
     {ch::_3l,      "3l"},
     {ch::_4l,      "4l"},
-    {ch::_2l_1tau, "2l1tau"}
+    {ch::_2l_1tau, "2l1tau"},
+    {ch::_1l_2tau, "1l2tau"}
   };
 
 //--- set up event counter for each channel
@@ -503,19 +507,25 @@ main(int argc,
         {cuts::charge_quality,  0},
         {cuts::good_tau,        0}
      }
+    },
+    {ch::_1l_2tau,
+      {
+        {cuts::entry_point,  0},
+        {cuts::PS,           0},
+        {cuts::tight_lepton, 0},
+        {cuts::j2_plus,      0},
+        {cuts::bjet_2l_1m,   0},
+        {cuts::good_tau,     0}
+      }
     }
   };
+  /**
+   * Increments all but 1 lepton + 2 tau channel.
+   */
   auto increment_all = [&counter](cuts c)
   {
-    std::for_each
-    (
-      counter.begin(),
-      counter.end(),
-      [&counter,c] (typename decltype(counter)::value_type & p) -> void
-      {
-        ++p.second[c];
-      }
-    );
+    for(auto channel: {ch::ee, ch::mumu, ch::emu, ch::_3l, ch::_4l, ch::_2l_1tau})
+      ++counter[channel][c];
   };
 
 //--- set up the histogram manager
@@ -693,15 +703,81 @@ main(int argc,
                        tau_decmode[n], tau_id_mva[n], tau_anti_e[n],
                        tau_anti_mu[n] });
 
+//--- collect the hadronic jets
+    std::vector<RecoJet> hadronic_jets;
+    for(auto & jet: jets)
+      if(jet.pt > 25) hadronic_jets.push_back(jet);
+
+//--- collect bjets
+    std::map<std::string, std::vector<RecoJet>> bjets =
+    {
+      { "loose",  {} },
+      { "medium", {} }
+    };
+    for(auto & jet: jets)
+      if(std::fabs(jet.eta) < 2.4)
+      {
+        if(jet.csv > loose_csv_wp)  bjets["loose"].push_back(jet);
+        if(jet.csv > medium_csv_wp) bjets["medium"].push_back(jet);
+        // note: consider the case where a loose bjet might be a medium one
+        //       this could be crucial in some cases
+      }
+
 //------------------------------------------------------------ COUNTER STARTS
     increment_all(cuts::entry_point);
+    ++counter[ch::_1l_2tau][cuts::entry_point];
 
 //-------------------------------------------------------------- PRESELECTION
     std::vector<RecoLepton> preselected_leptons;
     preselected_leptons.reserve(nleptons);
     for(auto & lept: leptons)
       if(passes_preselection(lept)) preselected_leptons.push_back(lept);
-    if(preselected_leptons.size() < 2) continue;
+
+    if(preselected_leptons.size() == 1)
+    {
+//====================== 2 TAU SINGLE LEPTON CHANNEL =========================
+      ++counter[ch::_1l_2tau][cuts::PS];
+
+//--- single tight lepton
+      const auto & lepton = preselected_leptons[0];
+      if(! (lepton.mva_tth > tight_mva_wp &&
+            lepton.pt > 20                &&
+            lepton.rel_iso < 0.1          &&
+            lepton.sip3d < 4.0            &&
+            ((lepton.is_muon()       &&
+              lepton.med_mu_id >= 1   )   ||
+             (lepton.is_electron()   && lepton.pass_conv_veto >= 1 &&
+                                       lepton.lost_hits == 0       &&
+                                       lepton.ele_mva_id >= 2       ))))
+        continue;
+      ++counter[ch::_1l_2tau][cuts::tight_lepton];
+
+//--- at least two hadronic jets
+      if(hadronic_jets.size() < 2) continue;
+      ++counter[ch::_1l_2tau][cuts::j2_plus];
+
+//--- at least two loose bjets or one medium bjet
+      if(bjets["loose"].size() < 2 && bjets["medium"].size() < 1) continue;
+      ++counter[ch::_1l_2tau][cuts::bjet_2l_1m];
+
+//--- exactly two good taus
+      std::vector<HadronicTau> good_taus;
+      for(auto & tau: taus)
+        if(tau.pt > 20              &&
+           std::fabs(tau.eta) < 2.3 &&
+           tau.decmode >= 1         &&
+           tau.id_mva >= 4          &&
+           tau.anti_e >= 2          &&
+           tau.anti_mu >= 2          )
+          good_taus.push_back(tau);
+//--- TODO: check if our tau overlaps with some other object; remove duplicates
+
+      if(good_taus.size() == 2)
+        ++counter[ch::_1l_2tau][cuts::good_tau];
+
+      continue;
+    }
+    else if(preselected_leptons.size() == 0) continue;
 
     increment_all(cuts::PS);
 
@@ -760,27 +836,11 @@ main(int argc,
     increment_all(cuts::pT2010);
 
 //------------------------------------------------ 2+ HADRONIC JETS (>25 GeV)
-    std::vector<RecoJet> hadronic_jets;
-    for(auto & jet: jets)
-      if(jet.pt > 25) hadronic_jets.push_back(jet);
     if(hadronic_jets.size() < 2) continue;
 
     increment_all(cuts::j2_plus);
 
 //---------------------------------------- 2+ LOOSE B JETS / 1+ MEDIUM B JETS
-    std::map<std::string, std::vector<RecoJet>> bjets =
-    {
-      { "loose",  {} },
-      { "medium", {} }
-    };
-    for(auto & jet: jets)
-      if(std::fabs(jet.eta) < 2.4)
-      {
-        if(jet.csv > loose_csv_wp)  bjets["loose"].push_back(jet);
-        if(jet.csv > medium_csv_wp) bjets["medium"].push_back(jet);
-        // note: consider the case where a loose bjet might be a medium one
-        //       this could be crucial in some cases
-      }
     if(bjets["loose"].size() < 2 && bjets["medium"].size() < 1) continue;
 
     increment_all(cuts::bjet_2l_1m);
@@ -961,10 +1021,9 @@ main(int argc,
 
 //======================== DILEPTON + TAU CHANNEL ===========================
       {
-        std::vector<HadronicTau> good_taus;
 //--- see if any of our taus is a good candidate
+        std::vector<HadronicTau> good_taus;
         for(auto & tau: taus)
-        {
           if(tau.pt > 20              &&
              std::fabs(tau.eta) < 2.3 &&
              tau.decmode >= 1         &&
@@ -972,7 +1031,6 @@ main(int argc,
              tau.anti_e >= 2          &&
              tau.anti_mu >= 2          )
             good_taus.push_back(tau);
-        }
 //--- TODO: check if our tau overlaps with some other object; remove duplicates
 
         if(good_taus.size() == 1)
