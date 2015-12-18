@@ -29,6 +29,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoLepton.h"
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h"
 #include "tthAnalysis/HiggsToTauTau/interface/HadronicTau.h"
+#include "tthAnalysis/HiggsToTauTau/interface/GenLepton.h"
 
 typedef math::PtEtaPhiMLorentzVector LV;
 
@@ -268,6 +269,9 @@ main(int argc,
   const std::string histogram_fn =
       (boost::filesystem::path(output_dir) /
        boost::filesystem::path("histograms.root")).string();
+  const std::string pdgid_histogram_fn =
+      (boost::filesystem::path(output_dir) /
+       boost::filesystem::path("pdg_id.root")).string();
 
 //--- create the log file
   std::ofstream log_file;
@@ -543,6 +547,48 @@ main(int argc,
     .add_variable({"MHT", 12, 0, 250});
   hm.initialize();
 
+//--- set up PDG ID plots
+  enum charge { same, flipped, unmatched };
+  HistogramManager<charge, ch> pdg_id_plots;
+  pdg_id_plots.add_channel(charge::same,      "same_sign")
+              .add_channel(charge::flipped,   "flipped sign")
+              .add_channel(charge::unmatched, "unmatched");
+  pdg_id_plots.add_cutpoint({ch::ee,   "ee"})
+              .add_cutpoint({ch::mumu, "mumu"})
+              .add_cutpoint({ch::emu,  "emu"})
+              .add_cutpoint({ch::_3l,  "3l"})
+              .add_cutpoint({ch::_4l,  "4l"});
+  pdg_id_plots.add_variable({"e-", 3, 0, 3})
+              .add_variable({"e+", 3, 0, 3})
+              .add_variable({"mu-", 3, 0, 3})
+              .add_variable({"mu+", 3, 0, 3});
+  pdg_id_plots.initialize();
+  const std::map<int, std::string> pdg_id_keys =
+  {
+    { 11, "e-"},
+    {-11, "e+"},
+    { 13, "mu-"},
+    {-13, "mu+"}
+  };
+  auto fill_pdg_plot = [&pdg_id_keys, &pdg_id_plots]
+                         (const std::vector<GenLepton> & gen_leptons,
+                          const std::vector<RecoLepton> & leptons,
+                          ch channel) -> void
+  {
+    for(auto & lepton: leptons)
+      for(auto & gen_lepton: gen_leptons)
+        if(lepton.is_overlap(gen_lepton, 0.3)) // maybe add a pT check?
+        {
+          const std::string pdg_id_key = pdg_id_keys.at(lepton.pdg_id);
+          if(lepton.pdg_id == gen_lepton.pdg_id)
+            pdg_id_plots[charge::same][channel].fill(pdg_id_key, 1);
+          else if(lepton.pdg_id == -gen_lepton.pdg_id)
+            pdg_id_plots[charge::flipped][channel].fill(pdg_id_key, 1);
+          else
+            pdg_id_plots[charge::unmatched][channel].fill(pdg_id_key, 1);
+        }
+  };
+
 //--- open the ROOT file and the tree
   TChain chain("tree");
   for(const std::string & file: file_list)
@@ -558,9 +604,10 @@ main(int argc,
   const double loose_mva_wp = 0.5;
   const double loose_csv_wp = 0.244;
   const double medium_csv_wp = 0.679;
-  const unsigned max_nleptons = 16;
+  const unsigned max_nleptons = 32;
   const unsigned max_njets = 32;
   const unsigned max_ntaus = 32;
+  const unsigned max_ngenlept = 32;
   const double z_mass = 91.1876;
   const double z_th = 10;
   const double met_coef = 0.00397;
@@ -573,6 +620,7 @@ main(int argc,
   Int_t evt;
   Int_t njets;
   Int_t ntaus;
+  Int_t gen_nleptons;
   Double_t met_pt;
   Double_t met_eta;
   Double_t met_phi;
@@ -595,6 +643,10 @@ main(int argc,
   Double_t tau_eta    [max_ntaus];
   Double_t tau_phi    [max_ntaus];
   Double_t tau_mass   [max_ntaus];
+  Double_t gen_pt     [max_ngenlept];
+  Double_t gen_eta    [max_ngenlept];
+  Double_t gen_phi    [max_ngenlept];
+  Double_t gen_mass   [max_ngenlept];
   Int_t med_mu_id     [max_nleptons];
   Int_t pdg_id        [max_nleptons];
   Int_t ele_mva_id    [max_nleptons];
@@ -606,6 +658,7 @@ main(int argc,
   Int_t tau_id_mva    [max_ntaus];
   Int_t tau_anti_e    [max_ntaus];
   Int_t tau_anti_mu   [max_ntaus];
+  Int_t gen_pdgid     [max_ngenlept];
 
   chain.SetBranchAddress("nselLeptons",               &nleptons);
   chain.SetBranchAddress("run",                       &run);
@@ -646,6 +699,12 @@ main(int argc,
   chain.SetBranchAddress("TauGood_idMVA",             &tau_id_mva);
   chain.SetBranchAddress("TauGood_idAntiE",           &tau_anti_e);
   chain.SetBranchAddress("TauGood_idAntiMu",          &tau_anti_mu);
+  chain.SetBranchAddress("nGenLep",                   &gen_nleptons);
+  chain.SetBranchAddress("GenLep_pdgId",              &gen_pdgid);
+  chain.SetBranchAddress("GenLep_pt",                 &gen_pt);
+  chain.SetBranchAddress("GenLep_eta",                &gen_eta);
+  chain.SetBranchAddress("GenLep_phi",                &gen_phi);
+  chain.SetBranchAddress("GenLep_mass",               &gen_mass);
 
   Long64_t nof_events = chain.GetEntries();
   log_file << "Total number of events: "
@@ -682,11 +741,10 @@ main(int argc,
     std::vector<RecoLepton> leptons;
     leptons.reserve(nleptons);
     for(Int_t n = 0; n < nleptons; ++n)
-      leptons.push_back({ dxy[n], dz[n], rel_iso[n], sip3d[n],
-                          mass[n], pt[n], eta[n], mva_tth[n], phi[n],
-                          pdg_id[n], med_mu_id[n], ele_mva_id[n],
-                          lost_hits[n], loose_id[n], tight_charge[n],
-                          pass_conv_veto[n] });
+      leptons.push_back({ pdg_id[n], pt[n], eta[n], phi[n], mass[n],
+                          dxy[n], dz[n], rel_iso[n], sip3d[n], mva_tth[n],
+                          med_mu_id[n], ele_mva_id[n], lost_hits[n], loose_id[n],
+                          tight_charge[n], pass_conv_veto[n] });
 
 //--- create the jet collection
     std::vector<RecoJet> jets;
@@ -702,6 +760,12 @@ main(int argc,
       taus.push_back({ tau_pt[n], tau_eta[n], tau_phi[n], tau_mass[n],
                        tau_decmode[n], tau_id_mva[n], tau_anti_e[n],
                        tau_anti_mu[n] });
+
+//--- create the collection of generator level leptons
+    std::vector<GenLepton> gen_leptons;
+    for(Int_t n = 0; n < gen_nleptons; ++n)
+      gen_leptons.push_back({ gen_pdgid[n], gen_pt[n], gen_eta[n],
+                              gen_phi[n], gen_mass[n] });
 
 //--- collect the hadronic jets
     std::vector<RecoJet> hadronic_jets;
@@ -1037,7 +1101,7 @@ main(int argc,
           ++counter[ch::_2l_1tau][cuts::good_tau];
       }
 
-//---------------------------------------------------------------------- PLOT
+//------------------------------------------------ PLOT OF KINEMATIC VARIABLES
       {
         Double_t min_dR_l2j = 1000;
         Double_t ht = lept_0.pt + lept_1.pt;
@@ -1059,6 +1123,9 @@ main(int argc,
         hm[channel][cp::final].fill(pt_trailing, eta_trailing, min_dR_l2j,
                                     mt_metl1, ht, mht);
       }
+
+//---------------------------------------------------------------- PDG ID PLOT
+      fill_pdg_plot(gen_leptons, selected_leptons, channel);
 
     }
 
@@ -1115,6 +1182,9 @@ main(int argc,
       if(! proceed) continue;
 
       ++counter[ch::_3l][cuts::sfos_zveto];
+
+//---------------------------------------------------------------- PDG ID PLOT
+      fill_pdg_plot(gen_leptons, selected_leptons, ch::_3l);
     }
 
 //=========================== 4-LEPTON CHANNEL ==============================
@@ -1148,6 +1218,9 @@ main(int argc,
       if(! proceed) continue;
 
       ++counter[ch::_4l][cuts::sfos_zveto];
+
+//---------------------------------------------------------------- PDG ID PLOT
+      fill_pdg_plot(gen_leptons, selected_leptons, ch::_4l);
     }
   }
 //===========================================================================
@@ -1194,6 +1267,10 @@ main(int argc,
   hm.write(histogram_fn);
   log_file << "Wrote the histograms to: "
            << histogram_fn
+           << "\n";
+  pdg_id_plots.write(pdgid_histogram_fn);
+  log_file << "Wrote PDG ID plots to: "
+           << pdgid_histogram_fn
            << "\n";
 
   log_file.close();

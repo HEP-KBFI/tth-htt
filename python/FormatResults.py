@@ -30,7 +30,8 @@ def print_cuts(_rows, col_width, xsection = False):
         if xsection:
           new_row = [rows[c][r][0]]
           for i in xrange(len(rows[c][r][1:])):
-            weight = Samples[rows[c][0][i + 1]]["x_section"] * LUMI / Samples[rows[c][0][i + 1]]["nof_events"]
+            weight = Samples[rows[c][0][i + 1]]["x_section"] * LUMI / \
+                     Samples[rows[c][0][i + 1]]["nof_events"]
             new_row.append(weight * rows[c][r][1:][i])
           rows[c][r] = new_row
         rows[c][r] = rows[c][r] + [sum(rows[c][r][2:])]
