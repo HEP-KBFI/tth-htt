@@ -31,6 +31,7 @@ if __name__ == '__main__':
   results = {}
   results["Nevents"] = collections.OrderedDict()
   results["weighted"] = collections.OrderedDict()
+  channels = ["ee", "mumu", "emu", "3l", "4l"]
   
   for s in samples:
     results_file = os.path.join(RESULTS_DIR, s, "table.txt")
@@ -42,6 +43,7 @@ if __name__ == '__main__':
         # neglect l1
         l2 = l2.rstrip("\n").split(";")
         channel = l2[0]
+        if channel not in channels: continue
         final_cut = int(l2[-1])
         
         if channel not in results["Nevents"]:
@@ -89,7 +91,6 @@ if __name__ == '__main__':
               err += " %"
             diffs[diff_key][result_type][channel][sample] = err
   
-  channels = ["ee", "mumu", "emu", "3l", "4l"]
   samples += ["ALL BKG"]
   rjust_val = 15
   samples_header = "".join([s.replace("_", "+").rjust(rjust_val) for s in samples])
