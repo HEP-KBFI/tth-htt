@@ -551,7 +551,7 @@ main(int argc,
   enum charge { same, flipped, unmatched };
   HistogramManager<charge, ch> pdg_id_plots;
   pdg_id_plots.add_channel(charge::same,      "same_sign")
-              .add_channel(charge::flipped,   "flipped sign")
+              .add_channel(charge::flipped,   "flipped_sign")
               .add_channel(charge::unmatched, "unmatched");
   pdg_id_plots.add_cutpoint({ch::ee,   "ee"})
               .add_cutpoint({ch::mumu, "mumu"})
