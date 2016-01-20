@@ -600,7 +600,8 @@ main(int argc,
 
       if(any_overlap) continue;
       for(auto & gen_jet: gen_jets)
-        if(lepton.is_overlap(gen_jet, 0.3)) // maybe add a pT check?
+        if(lepton.is_overlap(gen_jet, 0.3) &&
+           lepton.rel_pT_diff(gen_jet, 0.1) )
         {
           pdg_id_plots[charge::due_jets][channel].fill(pdg_id_key, 1);
           any_overlap = true;

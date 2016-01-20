@@ -21,7 +21,7 @@ public:
   math::PtEtaPhiMLorentzVector p4; ///< 4-momentum constructed from the pT, eta, phi and mass
 
   /**
-   * @brief Calculates dR between our and the other lepton.
+   * @brief Calculates dR between our and the other particle.
    * @param other  The other lepton.
    * @return dR = sqrt((eta_1 - eta_2)^2 + (phi_1 - phi_2)^2)
    */
@@ -29,9 +29,19 @@ public:
   dR(const GenParticle & other) const;
 
   /**
-   * @brief Checks if a given lepton is in the same cone as our lepton.
-   * @param other  The given lepton.
-   * @param dR_min Max size of the lepton cone (think of it as a threshold).
+   * @brief Calculates relative pT difference between our and the other particle.
+   * @param other     The other particle
+   * @param tolerance Tolerance, below which the the pT of the particles are though as similar
+   * @return          True, if their relative difference is below the tolerance; false otherwise
+   */
+  bool
+  rel_pT_diff(const GenParticle & other,
+              double tolerance) const;
+
+  /**
+   * @brief Checks if a given particle is in the same cone as our particle.
+   * @param other  The given particle.
+   * @param dR_min Max size of the particle cone (think of it as a threshold).
    * @return True, if there is an overlap (= is in the cone); false otherwise.
    */
   bool

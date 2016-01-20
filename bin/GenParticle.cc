@@ -26,6 +26,15 @@ GenParticle::dR(const GenParticle & other) const
 }
 
 bool
+GenParticle::rel_pT_diff(const GenParticle & other,
+                         double tolerance) const
+{
+  return pt > 0                                    &&
+         other.pt > 0                              &&
+         (std::fabs(pt - other.pt) / pt) < tolerance;
+}
+
+bool
 GenParticle::is_overlap(const GenParticle & other,
                         double dR_min) const
 {
