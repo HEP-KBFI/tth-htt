@@ -1,13 +1,10 @@
-#include "tthAnalysis/HiggsToTauTau/interface/RecoLepton.h"
+#include "tthAnalysis/HiggsToTauTau/interface/RecoLepton.h" // RecoLepton, GenLepton
 
-#define _USE_MATH_DEFINES // M_PI
-#include <cmath> // std::abs(), std::fabs(), std::sqrt(), std::pow()
-
-RecoLepton::RecoLepton(Int_t _pdg_id,
-                       Double_t _pt,
+RecoLepton::RecoLepton(Double_t _pt,
                        Double_t _eta,
                        Double_t _phi,
                        Double_t _mass,
+                       Int_t _pdg_id,
                        Double_t _dxy,
                        Double_t _dz,
                        Double_t _rel_iso,
@@ -20,7 +17,7 @@ RecoLepton::RecoLepton(Int_t _pdg_id,
                        Int_t _tight_charge,
                        Int_t _pass_conv_veto)
 
-  : GenLepton(_pdg_id, _pt, _eta, _phi, _mass)
+  : GenLepton(_pt, _eta, _phi, _mass, _pdg_id)
   , dxy(_dxy)
   , dz(_dz)
   , rel_iso(_rel_iso)
@@ -32,7 +29,7 @@ RecoLepton::RecoLepton(Int_t _pdg_id,
   , loose_id(_loose_id)
   , tight_charge(_tight_charge)
   , pass_conv_veto(_pass_conv_veto)
-{ }
+{}
 
 bool
 RecoLepton::is_electron() const
@@ -44,21 +41,4 @@ bool
 RecoLepton::is_muon() const
 {
   return std::abs(pdg_id) == 13;
-}
-
-inline double
-RecoLepton::dR(const GenLepton & other) const
-{
-  const double d_eta = std::fabs(eta - other.eta);
-  double d_phi = std::fabs(phi - other.phi);
-  if (d_phi > static_cast<double>(M_PI))
-    d_phi -= 2 * static_cast<double>(M_PI);
-  return std::sqrt(std::pow(d_eta, 2) + std::pow(d_phi, 2));
-}
-
-bool
-RecoLepton::is_overlap(const GenLepton & other,
-                       double dR_min) const
-{
-  return dR(other) < dR_min;
 }

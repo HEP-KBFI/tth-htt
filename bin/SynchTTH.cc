@@ -26,10 +26,11 @@
 #include <boost/algorithm/string/predicate.hpp> // boost::iequals()
 
 #include "tthAnalysis/HiggsToTauTau/interface/HistogramManager.h" // HistogramManager, join_strings()
-#include "tthAnalysis/HiggsToTauTau/interface/RecoLepton.h"
-#include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h"
-#include "tthAnalysis/HiggsToTauTau/interface/HadronicTau.h"
-#include "tthAnalysis/HiggsToTauTau/interface/GenLepton.h"
+#include "tthAnalysis/HiggsToTauTau/interface/RecoLepton.h" // RecoLepton
+#include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h" // RecoJet
+#include "tthAnalysis/HiggsToTauTau/interface/HadronicTau.h" // HardronicTau
+#include "tthAnalysis/HiggsToTauTau/interface/GenLepton.h" // GenLepton
+#include "tthAnalysis/HiggsToTauTau/interface/GenJet.h" // GenJet
 
 typedef math::PtEtaPhiMLorentzVector LV;
 
@@ -548,11 +549,13 @@ main(int argc,
   hm.initialize();
 
 //--- set up PDG ID plots
-  enum charge { same, flipped, unmatched };
+  enum charge { same, flipped, unmatched, due_jets, no_overlap };
   HistogramManager<charge, ch> pdg_id_plots;
-  pdg_id_plots.add_channel(charge::same,      "same_sign")
-              .add_channel(charge::flipped,   "flipped_sign")
-              .add_channel(charge::unmatched, "unmatched");
+  pdg_id_plots.add_channel(charge::same,       "same_sign")
+              .add_channel(charge::flipped,    "flipped_sign")
+              .add_channel(charge::unmatched,  "unmatched")
+              .add_channel(charge::due_jets,   "due_jets")
+              .add_channel(charge::no_overlap, "no_overlap");
   pdg_id_plots.add_cutpoint({ch::ee,   "ee"})
               .add_cutpoint({ch::mumu, "mumu"})
               .add_cutpoint({ch::emu,  "emu"})
@@ -572,21 +575,41 @@ main(int argc,
   };
   auto fill_pdg_plot = [&pdg_id_keys, &pdg_id_plots]
                          (const std::vector<GenLepton> & gen_leptons,
+                          const std::vector<GenJet> & gen_jets,
                           const std::vector<RecoLepton> & leptons,
                           ch channel) -> void
   {
     for(auto & lepton: leptons)
+    {
+      bool any_overlap = false;
+      const std::string pdg_id_key = pdg_id_keys.at(lepton.pdg_id);
+
       for(auto & gen_lepton: gen_leptons)
-        if(lepton.is_overlap(gen_lepton, 0.3)) // maybe add a pT check?
+        if(lepton.is_overlap(gen_lepton, 0.3))
         {
-          const std::string pdg_id_key = pdg_id_keys.at(lepton.pdg_id);
           if(lepton.pdg_id == gen_lepton.pdg_id)
             pdg_id_plots[charge::same][channel].fill(pdg_id_key, 1);
           else if(lepton.pdg_id == -gen_lepton.pdg_id)
             pdg_id_plots[charge::flipped][channel].fill(pdg_id_key, 1);
           else
             pdg_id_plots[charge::unmatched][channel].fill(pdg_id_key, 1);
+
+          any_overlap = true;
+          break;
         }
+
+      if(any_overlap) continue;
+      for(auto & gen_jet: gen_jets)
+        if(lepton.is_overlap(gen_jet, 0.3)) // maybe add a pT check?
+        {
+          pdg_id_plots[charge::due_jets][channel].fill(pdg_id_key, 1);
+          any_overlap = true;
+          break;
+        }
+
+      if(any_overlap) continue;
+      pdg_id_plots[charge::no_overlap][channel].fill(pdg_id_key, 1);
+    }
   };
 
 //--- open the ROOT file and the tree
@@ -608,6 +631,7 @@ main(int argc,
   const unsigned max_njets = 32;
   const unsigned max_ntaus = 32;
   const unsigned max_ngenlept = 32;
+  const unsigned max_ngenjet = 32;
   const double z_mass = 91.1876;
   const double z_th = 10;
   const double met_coef = 0.00397;
@@ -621,44 +645,49 @@ main(int argc,
   Int_t njets;
   Int_t ntaus;
   Int_t gen_nleptons;
+  Int_t gen_njets;
   Double_t met_pt;
   Double_t met_eta;
   Double_t met_phi;
   Double_t met_mass;
-  Double_t dxy        [max_nleptons];
-  Double_t dz         [max_nleptons];
-  Double_t rel_iso    [max_nleptons];
-  Double_t sip3d      [max_nleptons];
-  Double_t pt         [max_nleptons];
-  Double_t eta        [max_nleptons];
-  Double_t mva_tth    [max_nleptons];
-  Double_t phi        [max_nleptons];
-  Double_t mass       [max_nleptons];
-  Double_t jet_pt     [max_njets];
-  Double_t jet_eta    [max_njets];
-  Double_t jet_phi    [max_njets];
-  Double_t jet_csv    [max_njets];
-  Double_t jet_mass   [max_njets];
-  Double_t tau_pt     [max_ntaus];
-  Double_t tau_eta    [max_ntaus];
-  Double_t tau_phi    [max_ntaus];
-  Double_t tau_mass   [max_ntaus];
-  Double_t gen_pt     [max_ngenlept];
-  Double_t gen_eta    [max_ngenlept];
-  Double_t gen_phi    [max_ngenlept];
-  Double_t gen_mass   [max_ngenlept];
-  Int_t med_mu_id     [max_nleptons];
-  Int_t pdg_id        [max_nleptons];
-  Int_t ele_mva_id    [max_nleptons];
-  Int_t lost_hits     [max_nleptons];
-  Int_t loose_id      [max_nleptons];
-  Int_t tight_charge  [max_nleptons];
-  Int_t pass_conv_veto[max_nleptons];
-  Int_t tau_decmode   [max_ntaus];
-  Int_t tau_id_mva    [max_ntaus];
-  Int_t tau_anti_e    [max_ntaus];
-  Int_t tau_anti_mu   [max_ntaus];
-  Int_t gen_pdgid     [max_ngenlept];
+  Double_t dxy         [max_nleptons];
+  Double_t dz          [max_nleptons];
+  Double_t rel_iso     [max_nleptons];
+  Double_t sip3d       [max_nleptons];
+  Double_t pt          [max_nleptons];
+  Double_t eta         [max_nleptons];
+  Double_t mva_tth     [max_nleptons];
+  Double_t phi         [max_nleptons];
+  Double_t mass        [max_nleptons];
+  Double_t jet_pt      [max_njets];
+  Double_t jet_eta     [max_njets];
+  Double_t jet_phi     [max_njets];
+  Double_t jet_csv     [max_njets];
+  Double_t jet_mass    [max_njets];
+  Double_t tau_pt      [max_ntaus];
+  Double_t tau_eta     [max_ntaus];
+  Double_t tau_phi     [max_ntaus];
+  Double_t tau_mass    [max_ntaus];
+  Double_t gen_pt      [max_ngenlept];
+  Double_t gen_eta     [max_ngenlept];
+  Double_t gen_phi     [max_ngenlept];
+  Double_t gen_mass    [max_ngenlept];
+  Double_t gen_jet_pt  [max_ngenjet];
+  Double_t gen_jet_eta [max_ngenjet];
+  Double_t gen_jet_phi [max_ngenjet];
+  Double_t gen_jet_mass[max_ngenjet];
+  Int_t med_mu_id      [max_nleptons];
+  Int_t pdg_id         [max_nleptons];
+  Int_t ele_mva_id     [max_nleptons];
+  Int_t lost_hits      [max_nleptons];
+  Int_t loose_id       [max_nleptons];
+  Int_t tight_charge   [max_nleptons];
+  Int_t pass_conv_veto [max_nleptons];
+  Int_t tau_decmode    [max_ntaus];
+  Int_t tau_id_mva     [max_ntaus];
+  Int_t tau_anti_e     [max_ntaus];
+  Int_t tau_anti_mu    [max_ntaus];
+  Int_t gen_pdgid      [max_ngenlept];
 
   chain.SetBranchAddress("nselLeptons",               &nleptons);
   chain.SetBranchAddress("run",                       &run);
@@ -705,6 +734,11 @@ main(int argc,
   chain.SetBranchAddress("GenLep_eta",                &gen_eta);
   chain.SetBranchAddress("GenLep_phi",                &gen_phi);
   chain.SetBranchAddress("GenLep_mass",               &gen_mass);
+  chain.SetBranchAddress("nGenJet",                   &gen_njets);
+  chain.SetBranchAddress("GenJet_pt",                 &gen_jet_pt);
+  chain.SetBranchAddress("GenJet_eta",                &gen_jet_eta);
+  chain.SetBranchAddress("GenJet_phi",                &gen_jet_phi);
+  chain.SetBranchAddress("GenJet_mass",               &gen_jet_mass);
 
   Long64_t nof_events = chain.GetEntries();
   log_file << "Total number of events: "
@@ -741,7 +775,7 @@ main(int argc,
     std::vector<RecoLepton> leptons;
     leptons.reserve(nleptons);
     for(Int_t n = 0; n < nleptons; ++n)
-      leptons.push_back({ pdg_id[n], pt[n], eta[n], phi[n], mass[n],
+      leptons.push_back({ pt[n], eta[n], phi[n], mass[n], pdg_id[n],
                           dxy[n], dz[n], rel_iso[n], sip3d[n], mva_tth[n],
                           med_mu_id[n], ele_mva_id[n], lost_hits[n], loose_id[n],
                           tight_charge[n], pass_conv_veto[n] });
@@ -750,8 +784,15 @@ main(int argc,
     std::vector<RecoJet> jets;
     jets.reserve(njets);
     for(Int_t n = 0; n < njets; ++n)
-      jets.push_back({ jet_pt[n], jet_eta[n], jet_phi[n],
-                       jet_csv[n], jet_mass[n], n });
+      jets.push_back({ jet_pt[n], jet_eta[n], jet_phi[n], jet_mass[n],
+                       jet_csv[n], n });
+
+//--- create the generator level jet collection
+    std::vector<GenJet> gen_jets;
+    gen_jets.reserve(gen_njets);
+    for(Int_t n = 0; n < gen_njets; ++n)
+      gen_jets.push_back({ gen_jet_pt[n], gen_jet_eta[n],
+                           gen_jet_phi[n], gen_jet_mass[n] });
 
 //--- create the tau collection
     std::vector<HadronicTau> taus;
@@ -764,8 +805,8 @@ main(int argc,
 //--- create the collection of generator level leptons
     std::vector<GenLepton> gen_leptons;
     for(Int_t n = 0; n < gen_nleptons; ++n)
-      gen_leptons.push_back({ gen_pdgid[n], gen_pt[n], gen_eta[n],
-                              gen_phi[n], gen_mass[n] });
+      gen_leptons.push_back({ gen_pt[n], gen_eta[n], gen_phi[n], gen_mass[n],
+                              gen_pdgid[n] });
 
 //--- collect the hadronic jets
     std::vector<RecoJet> hadronic_jets;
@@ -1125,7 +1166,7 @@ main(int argc,
       }
 
 //---------------------------------------------------------------- PDG ID PLOT
-      fill_pdg_plot(gen_leptons, selected_leptons, channel);
+      fill_pdg_plot(gen_leptons, gen_jets, selected_leptons, channel);
 
     }
 
@@ -1184,7 +1225,7 @@ main(int argc,
       ++counter[ch::_3l][cuts::sfos_zveto];
 
 //---------------------------------------------------------------- PDG ID PLOT
-      fill_pdg_plot(gen_leptons, selected_leptons, ch::_3l);
+      fill_pdg_plot(gen_leptons, gen_jets, selected_leptons, ch::_3l);
     }
 
 //=========================== 4-LEPTON CHANNEL ==============================
@@ -1220,7 +1261,7 @@ main(int argc,
       ++counter[ch::_4l][cuts::sfos_zveto];
 
 //---------------------------------------------------------------- PDG ID PLOT
-      fill_pdg_plot(gen_leptons, selected_leptons, ch::_4l);
+      fill_pdg_plot(gen_leptons, gen_jets, selected_leptons, ch::_4l);
     }
   }
 //===========================================================================
