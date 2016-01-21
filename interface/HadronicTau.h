@@ -17,10 +17,6 @@ public:
               Int_t    _anti_e,
               Int_t    _anti_mu);
 
-  Double_t pt;
-  Double_t eta;
-  Double_t phi;
-  Double_t mass;
   Int_t decmode;
   Int_t id_mva;
   Int_t anti_e;
