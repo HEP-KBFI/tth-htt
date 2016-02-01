@@ -1,4 +1,5 @@
 <bin   file="SynchTTH.cc,RecoLepton.cc,RecoJet.cc,HadronicTau.cc,GenLepton.cc,GenJet.cc,GenParticle.cc" name="SynchTTH">
+  <Flags CPPDEFINES="M125" />
   <use   name="FWCore/FWLite"/>
   <use   name="FWCore/ParameterSet"/>
   <use   name="FWCore/PythonParameterSet"/>

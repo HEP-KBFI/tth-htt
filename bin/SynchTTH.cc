@@ -32,6 +32,10 @@
 #include "tthAnalysis/HiggsToTauTau/interface/GenLepton.h" // GenLepton
 #include "tthAnalysis/HiggsToTauTau/interface/GenJet.h" // GenJet
 
+#ifdef M125
+#include "tthAnalysis/HiggsToTauTau/interface/KeyTypes125.h"
+#endif
+
 typedef math::PtEtaPhiMLorentzVector LV;
 
 /**
@@ -639,107 +643,119 @@ main(int argc,
   const double mht_coef = 0.00265;
 
 //--- declare the variables
-  Int_t nleptons;
-  Int_t run;
-  Int_t lumi;
-  Int_t evt;
-  Int_t njets;
-  Int_t ntaus;
-  Int_t gen_nleptons;
-  Int_t gen_njets;
-  Double_t met_pt;
-  Double_t met_eta;
-  Double_t met_phi;
-  Double_t met_mass;
-  Double_t dxy         [max_nleptons];
-  Double_t dz          [max_nleptons];
-  Double_t rel_iso     [max_nleptons];
-  Double_t sip3d       [max_nleptons];
-  Double_t pt          [max_nleptons];
-  Double_t eta         [max_nleptons];
-  Double_t mva_tth     [max_nleptons];
-  Double_t phi         [max_nleptons];
-  Double_t mass        [max_nleptons];
-  Double_t jet_pt      [max_njets];
-  Double_t jet_eta     [max_njets];
-  Double_t jet_phi     [max_njets];
-  Double_t jet_csv     [max_njets];
-  Double_t jet_mass    [max_njets];
-  Double_t tau_pt      [max_ntaus];
-  Double_t tau_eta     [max_ntaus];
-  Double_t tau_phi     [max_ntaus];
-  Double_t tau_mass    [max_ntaus];
-  Double_t gen_pt      [max_ngenlept];
-  Double_t gen_eta     [max_ngenlept];
-  Double_t gen_phi     [max_ngenlept];
-  Double_t gen_mass    [max_ngenlept];
-  Double_t gen_jet_pt  [max_ngenjet];
-  Double_t gen_jet_eta [max_ngenjet];
-  Double_t gen_jet_phi [max_ngenjet];
-  Double_t gen_jet_mass[max_ngenjet];
-  Int_t med_mu_id      [max_nleptons];
-  Int_t pdg_id         [max_nleptons];
-  Int_t ele_mva_id     [max_nleptons];
-  Int_t lost_hits      [max_nleptons];
-  Int_t loose_id       [max_nleptons];
-  Int_t tight_charge   [max_nleptons];
-  Int_t pass_conv_veto [max_nleptons];
-  Int_t tau_decmode    [max_ntaus];
-  Int_t tau_id_mva     [max_ntaus];
-  Int_t tau_anti_e     [max_ntaus];
-  Int_t tau_anti_mu    [max_ntaus];
-  Int_t gen_pdgid      [max_ngenlept];
+  RUN_TYPE                 run;
+  LUMI_TYPE                lumi;
+  EVT_TYPE                 evt;
 
-  chain.SetBranchAddress("nselLeptons",               &nleptons);
-  chain.SetBranchAddress("run",                       &run);
-  chain.SetBranchAddress("lumi",                      &lumi);
-  chain.SetBranchAddress("evt",                       &evt);
-  chain.SetBranchAddress("nJet",                      &njets);
-  chain.SetBranchAddress("met_pt",                    &met_pt);
-  chain.SetBranchAddress("met_eta",                   &met_eta);
-  chain.SetBranchAddress("met_phi",                   &met_phi);
-  chain.SetBranchAddress("met_mass",                  &met_mass);
-  chain.SetBranchAddress("selLeptons_dxy",            &dxy);
-  chain.SetBranchAddress("selLeptons_dz",             &dz);
-  chain.SetBranchAddress("selLeptons_relIso03",       &rel_iso);
-  chain.SetBranchAddress("selLeptons_sip3d",          &sip3d);
-  chain.SetBranchAddress("selLeptons_pt",             &pt);
-  chain.SetBranchAddress("selLeptons_eta",            &eta);
-  chain.SetBranchAddress("selLeptons_mvaTTH",         &mva_tth);
-  chain.SetBranchAddress("selLeptons_phi",            &phi);
-  chain.SetBranchAddress("selLeptons_mass",           &mass);
-  chain.SetBranchAddress("Jet_pt",                    &jet_pt);
-  chain.SetBranchAddress("Jet_eta",                   &jet_eta);
-  chain.SetBranchAddress("Jet_phi",                   &jet_phi);
-  chain.SetBranchAddress("Jet_btagCSV",               &jet_csv);
-  chain.SetBranchAddress("Jet_mass",                  &jet_mass);
-  chain.SetBranchAddress("selLeptons_mediumMuonId",   &med_mu_id);
-  chain.SetBranchAddress("selLeptons_pdgId",          &pdg_id);
-  chain.SetBranchAddress("selLeptons_eleMVAIdPhys14", &ele_mva_id);
-  chain.SetBranchAddress("selLeptons_lostHits",       &lost_hits);
-  chain.SetBranchAddress("selLeptons_looseIdPOG",     &loose_id);
-  chain.SetBranchAddress("selLeptons_tightCharge",    &tight_charge);
-  chain.SetBranchAddress("selLeptons_convVeto",       &pass_conv_veto);
-  chain.SetBranchAddress("nTauGood",                  &ntaus);
-  chain.SetBranchAddress("TauGood_pt",                &tau_pt);
-  chain.SetBranchAddress("TauGood_eta",               &tau_eta);
-  chain.SetBranchAddress("TauGood_phi",               &tau_phi);
-  chain.SetBranchAddress("TauGood_mass",              &tau_mass);
-  chain.SetBranchAddress("TauGood_idDecayMode",       &tau_decmode);
-  chain.SetBranchAddress("TauGood_idMVA",             &tau_id_mva);
-  chain.SetBranchAddress("TauGood_idAntiE",           &tau_anti_e);
-  chain.SetBranchAddress("TauGood_idAntiMu",          &tau_anti_mu);
-  chain.SetBranchAddress("nGenLep",                   &gen_nleptons);
-  chain.SetBranchAddress("GenLep_pdgId",              &gen_pdgid);
-  chain.SetBranchAddress("GenLep_pt",                 &gen_pt);
-  chain.SetBranchAddress("GenLep_eta",                &gen_eta);
-  chain.SetBranchAddress("GenLep_phi",                &gen_phi);
-  chain.SetBranchAddress("GenLep_mass",               &gen_mass);
-  chain.SetBranchAddress("nGenJet",                   &gen_njets);
-  chain.SetBranchAddress("GenJet_pt",                 &gen_jet_pt);
-  chain.SetBranchAddress("GenJet_eta",                &gen_jet_eta);
-  chain.SetBranchAddress("GenJet_phi",                &gen_jet_phi);
-  chain.SetBranchAddress("GenJet_mass",               &gen_jet_mass);
+  NLEPTONS_TYPE nleptons;
+  LEPT_PT_TYPE             pt             [max_nleptons];
+  LEPT_ETA_TYPE            eta            [max_nleptons];
+  LEPT_PHI_TYPE            phi            [max_nleptons];
+  LEPT_MASS_TYPE           mass           [max_nleptons];
+  LEPT_DXY_TYPE            dxy            [max_nleptons];
+  LEPT_DZ_TYPE             dz             [max_nleptons];
+  LEPT_REL_ISO_TYPE        rel_iso        [max_nleptons];
+  LEPT_SIP3D_TYPE          sip3d          [max_nleptons];
+  LEPT_MVA_TTH_TYPE        mva_tth        [max_nleptons];
+  LEPT_MED_MU_ID_TYPE      med_mu_id      [max_nleptons];
+  LEPT_PDG_ID_TYPE         pdg_id         [max_nleptons];
+  LEPT_ELE_MVA_ID_TYPE     ele_mva_id     [max_nleptons];
+  LEPT_LOST_HITS_TYPE      lost_hits      [max_nleptons];
+  LEPT_LOOSE_ID_TYPE       loose_id       [max_nleptons];
+  LEPT_TIGHT_CHARGE_TYPE   tight_charge   [max_nleptons];
+  LEPT_CONV_VETO_TYPE      pass_conv_veto [max_nleptons];
+
+  MET_PT_TYPE              met_pt;
+  MET_ETA_TYPE             met_eta;
+  MET_PHI_TYPE             met_phi;
+  MET_MASS_TYPE            met_mass;
+
+  NJETS_TYPE               njets;
+  JET_PT_TYPE              jet_pt         [max_njets];
+  JET_ETA_TYPE             jet_eta        [max_njets];
+  JET_PHI_TYPE             jet_phi        [max_njets];
+  JET_MASS_TYPE            jet_mass       [max_njets];
+  JET_CSV_TYPE             jet_csv        [max_njets];
+
+  NTAUS_TYPE               ntaus;
+  TAU_PT_TYPE              tau_pt         [max_ntaus];
+  TAU_ETA_TYPE             tau_eta        [max_ntaus];
+  TAU_PHI_TYPE             tau_phi        [max_ntaus];
+  TAU_MASS_TYPE            tau_mass       [max_ntaus];
+  TAU_DECMODE_TYPE         tau_decmode    [max_ntaus];
+  TAU_ID_MVA_TYPE          tau_id_mva     [max_ntaus];
+  TAU_ANTI_E_TYPE          tau_anti_e     [max_ntaus];
+  TAU_ANTI_MU_TYPE         tau_anti_mu    [max_ntaus];
+
+  GEN_NLEPTONS_TYPE        gen_nleptons;
+  GEN_PT_TYPE              gen_pt         [max_ngenlept];
+  GEN_ETA_TYPE             gen_eta        [max_ngenlept];
+  GEN_PHI_TYPE             gen_phi        [max_ngenlept];
+  GEN_MASS_TYPE            gen_mass       [max_ngenlept];
+  GEN_PDG_ID_TYPE          gen_pdgid      [max_ngenlept];
+
+  GEN_NJETS_TYPE           gen_njets;
+  GEN_JET_PT_TYPE          gen_jet_pt     [max_ngenjet];
+  GEN_JET_ETA_TYPE         gen_jet_eta    [max_ngenjet];
+  GEN_JET_PHI_TYPE         gen_jet_phi    [max_ngenjet];
+  GEN_JET_MASS_TYPE        gen_jet_mass   [max_ngenjet];
+
+  chain.SetBranchAddress(RUN_KEY,               &run);
+  chain.SetBranchAddress(LUMI_KEY,              &lumi);
+  chain.SetBranchAddress(EVT_KEY,               &evt);
+
+  chain.SetBranchAddress(NLEPTONS_KEY,          &nleptons);
+  chain.SetBranchAddress(LEPT_PT_KEY,           &pt);
+  chain.SetBranchAddress(LEPT_ETA_KEY,          &eta);
+  chain.SetBranchAddress(LEPT_PHI_KEY,          &phi);
+  chain.SetBranchAddress(LEPT_MASS_KEY,         &mass);
+  chain.SetBranchAddress(LEPT_DXY_KEY,          &dxy);
+  chain.SetBranchAddress(LEPT_DZ_KEY,           &dz);
+  chain.SetBranchAddress(LEPT_REL_ISO_KEY,      &rel_iso);
+  chain.SetBranchAddress(LEPT_SIP3D_KEY,        &sip3d);
+  chain.SetBranchAddress(LEPT_MVA_TTH_KEY,      &mva_tth);
+  chain.SetBranchAddress(LEPT_MED_MU_ID_KEY,    &med_mu_id);
+  chain.SetBranchAddress(LEPT_PDG_ID_KEY,       &pdg_id);
+  chain.SetBranchAddress(LEPT_ELE_MVA_ID_KEY,   &ele_mva_id);
+  chain.SetBranchAddress(LEPT_LOST_HITS_KEY,    &lost_hits);
+  chain.SetBranchAddress(LEPT_LOOSE_ID_KEY,     &loose_id);
+  chain.SetBranchAddress(LEPT_TIGHT_CHARGE_KEY, &tight_charge);
+  chain.SetBranchAddress(LEPT_CONV_VETO_KEY,    &pass_conv_veto);
+
+  chain.SetBranchAddress(MET_PT_KEY,            &met_pt);
+  chain.SetBranchAddress(MET_ETA_KEY,           &met_eta);
+  chain.SetBranchAddress(MET_PHI_KEY,           &met_phi);
+  chain.SetBranchAddress(MET_MASS_KEY,          &met_mass);
+
+  chain.SetBranchAddress(NJETS_KEY,             &njets);
+  chain.SetBranchAddress(JET_PT_KEY,            &jet_pt);
+  chain.SetBranchAddress(JET_ETA_KEY,           &jet_eta);
+  chain.SetBranchAddress(JET_PHI_KEY,           &jet_phi);
+  chain.SetBranchAddress(JET_CSV_KEY,           &jet_csv);
+  chain.SetBranchAddress(JET_MASS_KEY,          &jet_mass);
+
+  chain.SetBranchAddress(NTAUS_KEY,             &ntaus);
+  chain.SetBranchAddress(TAU_PT_KEY,            &tau_pt);
+  chain.SetBranchAddress(TAU_ETA_KEY,           &tau_eta);
+  chain.SetBranchAddress(TAU_PHI_KEY,           &tau_phi);
+  chain.SetBranchAddress(TAU_MASS_KEY,          &tau_mass);
+  chain.SetBranchAddress(TAU_DECMODE_KEY,       &tau_decmode);
+  chain.SetBranchAddress(TAU_ID_MVA_KEY,        &tau_id_mva);
+  chain.SetBranchAddress(TAU_ANTI_E_KEY,        &tau_anti_e);
+  chain.SetBranchAddress(TAU_ANTI_MU_KEY,       &tau_anti_mu);
+
+  chain.SetBranchAddress(GEN_NLEPTONS_KEY,      &gen_nleptons);
+  chain.SetBranchAddress(GEN_PT_KEY,            &gen_pt);
+  chain.SetBranchAddress(GEN_ETA_KEY,           &gen_eta);
+  chain.SetBranchAddress(GEN_PHI_KEY,           &gen_phi);
+  chain.SetBranchAddress(GEN_MASS_KEY,          &gen_mass);
+  chain.SetBranchAddress(GEN_PDG_ID_KEY,        &gen_pdgid);
+
+  chain.SetBranchAddress(GEN_NJETS_KEY,         &gen_njets);
+  chain.SetBranchAddress(GEN_JET_PT_KEY,        &gen_jet_pt);
+  chain.SetBranchAddress(GEN_JET_ETA_KEY,       &gen_jet_eta);
+  chain.SetBranchAddress(GEN_JET_PHI_KEY,       &gen_jet_phi);
+  chain.SetBranchAddress(GEN_JET_MASS_KEY,      &gen_jet_mass);
 
   Long64_t nof_events = chain.GetEntries();
   log_file << "Total number of events: "
