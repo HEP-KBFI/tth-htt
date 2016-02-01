@@ -32,8 +32,10 @@
 #include "tthAnalysis/HiggsToTauTau/interface/GenLepton.h" // GenLepton
 #include "tthAnalysis/HiggsToTauTau/interface/GenJet.h" // GenJet
 
-#ifdef M125
+#if defined(M125)
 #include "tthAnalysis/HiggsToTauTau/interface/KeyTypes125.h"
+#elif defined(M120)
+#include "tthAnalysis/HiggsToTauTau/interface/KeyTypes120.h"
 #endif
 
 typedef math::PtEtaPhiMLorentzVector LV;
