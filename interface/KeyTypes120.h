@@ -78,7 +78,7 @@
 #define LEPT_MVA_TTH_KEY      "selLeptons_mvaTTH"
 #define LEPT_MED_MU_ID_KEY    "selLeptons_mediumMuonId"
 #define LEPT_PDG_ID_KEY       "selLeptons_pdgId"
-#define LEPT_ELE_MVA_ID_KEY   "selLeptons_eleMVAIdPhys14NonTrig"
+#define LEPT_ELE_MVA_ID_KEY   "selLeptons_eleMVAIdSpring15NonTrig"
 #define LEPT_LOST_HITS_KEY    "selLeptons_lostHits"
 #define LEPT_LOOSE_ID_KEY     "selLeptons_looseIdPOG"
 #define LEPT_TIGHT_CHARGE_KEY "selLeptons_tightCharge"
