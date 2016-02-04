@@ -555,11 +555,10 @@ main(int argc,
   hm.initialize();
 
 //--- set up PDG ID plots
-  enum charge { same, flipped, unmatched, due_jets, no_overlap };
+  enum charge { same, flipped, due_jets, no_overlap };
   HistogramManager<charge, ch> pdg_id_plots;
   pdg_id_plots.add_channel(charge::same,       "same_sign")
               .add_channel(charge::flipped,    "flipped_sign")
-              .add_channel(charge::unmatched,  "unmatched")
               .add_channel(charge::due_jets,   "due_jets")
               .add_channel(charge::no_overlap, "no_overlap");
   pdg_id_plots.add_cutpoint({ch::ee,   "ee"})
@@ -594,14 +593,17 @@ main(int argc,
         if(lepton.is_overlap(gen_lepton, 0.3))
         {
           if(lepton.pdg_id == gen_lepton.pdg_id)
+          {
             pdg_id_plots[charge::same][channel].fill(pdg_id_key, 1);
+            any_overlap = true;
+            break;
+          }
           else if(lepton.pdg_id == -gen_lepton.pdg_id)
+          {
             pdg_id_plots[charge::flipped][channel].fill(pdg_id_key, 1);
-          else
-            pdg_id_plots[charge::unmatched][channel].fill(pdg_id_key, 1);
-
-          any_overlap = true;
-          break;
+            any_overlap = true;
+            break;
+          }
         }
 
       if(any_overlap) continue;
