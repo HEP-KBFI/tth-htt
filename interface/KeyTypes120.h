@@ -60,6 +60,12 @@
 #define GEN_JET_PHI_TYPE       Float_t
 #define GEN_JET_MASS_TYPE      Float_t
 
+#define GEN_NTAUS_TYPE         Int_t
+#define GEN_TAU_PT_TYPE        Float_t
+#define GEN_TAU_ETA_TYPE       Float_t
+#define GEN_TAU_PHI_TYPE       Float_t
+#define GEN_TAU_MASS_TYPE      Float_t
+
 ///////////////////////////////////////////////////////
 
 #define RUN_KEY               "run"
@@ -118,5 +124,11 @@
 #define GEN_JET_ETA_KEY       "GenJet_eta"
 #define GEN_JET_PHI_KEY       "GenJet_phi"
 #define GEN_JET_MASS_KEY      "GenJet_mass"
+
+#define GEN_NTAUS_KEY         "nGenHadTaus"
+#define GEN_TAU_PT_KEY        "GenHadTaus_pt"
+#define GEN_TAU_ETA_KEY       "GenHadTaus_eta"
+#define GEN_TAU_PHI_KEY       "GenHadTaus_phi"
+#define GEN_TAU_MASS_KEY      "GenHadTaus_mass"
 
 #endif // KEYTYPES125_H

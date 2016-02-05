@@ -31,6 +31,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/HadronicTau.h" // HardronicTau
 #include "tthAnalysis/HiggsToTauTau/interface/GenLepton.h" // GenLepton
 #include "tthAnalysis/HiggsToTauTau/interface/GenJet.h" // GenJet
+#include "tthAnalysis/HiggsToTauTau/interface/GenHadronicTau.h" // GenHadronicTau
 
 #if defined(M125)
 #include "tthAnalysis/HiggsToTauTau/interface/KeyTypes125.h"
@@ -640,6 +641,7 @@ main(int argc,
   const unsigned max_ntaus = 32;
   const unsigned max_ngenlept = 32;
   const unsigned max_ngenjet = 32;
+  const unsigned max_ngentau = 32;
   const double z_mass = 91.1876;
   const double z_th = 10;
   const double met_coef = 0.00397;
@@ -703,6 +705,12 @@ main(int argc,
   GEN_JET_PHI_TYPE         gen_jet_phi    [max_ngenjet];
   GEN_JET_MASS_TYPE        gen_jet_mass   [max_ngenjet];
 
+  GEN_NTAUS_TYPE           gen_ntaus;
+  GEN_TAU_PT_TYPE          gen_tau_pt     [max_ngentau];
+  GEN_TAU_ETA_TYPE         gen_tau_eta    [max_ngentau];
+  GEN_TAU_PHI_TYPE         gen_tau_phi    [max_ngentau];
+  GEN_TAU_MASS_TYPE        gen_tau_mass   [max_ngentau];
+
   chain.SetBranchAddress(RUN_KEY,               &run);
   chain.SetBranchAddress(LUMI_KEY,              &lumi);
   chain.SetBranchAddress(EVT_KEY,               &evt);
@@ -759,6 +767,12 @@ main(int argc,
   chain.SetBranchAddress(GEN_JET_ETA_KEY,       &gen_jet_eta);
   chain.SetBranchAddress(GEN_JET_PHI_KEY,       &gen_jet_phi);
   chain.SetBranchAddress(GEN_JET_MASS_KEY,      &gen_jet_mass);
+
+  chain.SetBranchAddress(GEN_NJETS_KEY,         &gen_ntaus);
+  chain.SetBranchAddress(GEN_TAU_PT_KEY,        &gen_tau_pt);
+  chain.SetBranchAddress(GEN_TAU_ETA_KEY,       &gen_tau_eta);
+  chain.SetBranchAddress(GEN_TAU_PHI_KEY,       &gen_tau_phi);
+  chain.SetBranchAddress(GEN_TAU_MASS_KEY,      &gen_tau_mass);
 
   Long64_t nof_events = chain.GetEntries();
   log_file << "Total number of events: "
@@ -827,6 +841,12 @@ main(int argc,
     for(Int_t n = 0; n < gen_nleptons; ++n)
       gen_leptons.push_back({ gen_pt[n], gen_eta[n], gen_phi[n], gen_mass[n],
                               gen_pdgid[n] });
+
+//--- create the collection of generator level hadronic taus
+    std::vector<GenHadronicTau> gen_taus;
+    for(Int_t n = 0; n < gen_ntaus; ++n)
+      gen_taus.push_back({ gen_tau_pt[n], gen_tau_eta[n],
+                           gen_tau_phi[n], gen_tau_mass[n] });
 
 //--- collect the hadronic jets
     std::vector<RecoJet> hadronic_jets;
