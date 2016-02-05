@@ -22,6 +22,18 @@ Samples["ttH"] = {
     "x_section" : 0.5085,
     "nof_files" : 7,
   }
+Samples["ttH_Htt"] = {
+    "path" : os.path.join(PREFIX,
+                          "TTbarH_HToTauTau_M-125_13TeV_amcatnlo-pythia8-tauola",
+                          "VHBB_HEPPY_V11_008_TTbarH_HToTauTau_M-125_13TeV_amcatnlo-pythia8-tauola__Phys14DR-AVE30BX50_tsg_PHYS",
+                          "160204_130912",
+                          "0000"),
+    "token" : "TTbarH_HToTauTau_M-125_13TeV_amcatnlo-pythia8-tauola",
+    "subtoken" : "PU40bx25_PHYS14_25_V1-v1",
+    "nof_events" : 187400,
+    "x_section" : 0.5085, # ?
+    "nof_files" : 5,
+  }
 Samples["tt_j"] = {
     "path" : os.path.join(PREFIX,
                           "TTJets_MSDecaysCKM_central_Tune4C_13TeV-madgraph-tauola",
