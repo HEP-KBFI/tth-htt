@@ -72,7 +72,7 @@ if __name__ == '__main__':
   for s in samples:
     rf_path = os.path.join(RESULTS_DIR, s, results_file)
     if not os.path.isfile(rf_path):
-      logging.error("The file %s doesn't exists. Aborting")
+      logging.error("The file %s doesn't exists. Aborting" % rf_path)
       sys.exit(1)
     with codecs.open(rf_path, 'r', 'utf-8') as f:
       logging.info("Opened %s" % rf_path)
