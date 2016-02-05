@@ -25,7 +25,7 @@ Samples["ttH"] = {
 Samples["ttH_Htt"] = {
     "path" : os.path.join(PREFIX,
                           "TTbarH_HToTauTau_M-125_13TeV_amcatnlo-pythia8-tauola",
-                          "VHBB_HEPPY_V11_008_TTbarH_HToTauTau_M-125_13TeV_amcatnlo-pythia8-tauola__Phys14DR-AVE30BX50_tsg_PHYS",
+                          "VHBB_HEPPY_V11_TTbarH_HToTauTau_M-125_13TeV_amcatnlo-pythia8-tauola__Phys14DR-AVE30BX50_tsg_PHYS14_ST_V1-v1",
                           "160204_130912",
                           "0000"),
     "token" : "TTbarH_HToTauTau_M-125_13TeV_amcatnlo-pythia8-tauola",

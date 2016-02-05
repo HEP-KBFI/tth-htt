@@ -1,4 +1,4 @@
-from TTH13TeVsamples import Samples, RESULTS_DIR
+from TTH_13TeV_M125_samples import Samples, RESULTS_DIR
 from jinja2 import Template
 import os, codecs, logging, sys, stat
 
@@ -39,7 +39,7 @@ import os, codecs, logging, sys, stat
 """
 
 """Function that creates the contents of a job file from a template.
-   @param s            TTH13TeVsamples.Sample key, e.g. "ttH" or "Z_j"
+   @param s            TTH_13TeV_M125_samples.Sample key, e.g. "ttH" or "Z_j"
    @param _results_dir directory for job output files, e.g. "results/ttH"
 """
 def create_cfg(s, _results_dir):

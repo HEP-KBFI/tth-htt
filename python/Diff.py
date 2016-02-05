@@ -1,5 +1,5 @@
 from ComparisonResults import cg, nd
-from TTH13TeVsamples import Samples, RESULTS_DIR, LUMI
+from TTH_13TeV_M125_samples import Samples, RESULTS_DIR, LUMI
 import codecs, os, logging, sys, itertools, collections
 
 """Finds relative (expressed in percentages) and absolute differences

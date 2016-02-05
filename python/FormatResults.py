@@ -1,4 +1,4 @@
-from TTH13TeVsamples import Samples, RESULTS_DIR, LUMI
+from TTH_13TeV_M125_samples import Samples, RESULTS_DIR, LUMI
 import codecs, logging, os, sys, itertools, collections, copy
 
 """This script generates a nice cutflow table from the output of SynchTTH program.
