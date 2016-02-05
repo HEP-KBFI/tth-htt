@@ -6,6 +6,7 @@
 class GenHadronicTau
   : public GenParticle
 {
+public:
   GenHadronicTau() = default;
   GenHadronicTau(Double_t _pt,
                  Double_t _eta,
