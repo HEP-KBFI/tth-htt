@@ -556,21 +556,26 @@ main(int argc,
   hm.initialize();
 
 //--- set up PDG ID plots
-  enum charge { same, flipped, due_jets, no_overlap };
-  HistogramManager<charge, ch> pdg_id_plots;
-  pdg_id_plots.add_channel(charge::same,       "same_sign")
-              .add_channel(charge::flipped,    "flipped_sign")
-              .add_channel(charge::due_jets,   "due_jets")
-              .add_channel(charge::no_overlap, "no_overlap");
-  pdg_id_plots.add_cutpoint({ch::ee,   "ee"})
-              .add_cutpoint({ch::mumu, "mumu"})
-              .add_cutpoint({ch::emu,  "emu"})
-              .add_cutpoint({ch::_3l,  "3l"})
-              .add_cutpoint({ch::_4l,  "4l"});
+  enum match_type { same, flipped, gen_match, due_jets, no_overlap };
+  HistogramManager<match_type, ch> pdg_id_plots;
+  pdg_id_plots.add_channel(match_type::same,       "same_sign")
+              .add_channel(match_type::flipped,    "flipped_sign")
+              .add_channel(match_type::gen_match,  "gen_match")
+              .add_channel(match_type::due_jets,   "due_jets")
+              .add_channel(match_type::no_overlap, "no_overlap");
+  pdg_id_plots.add_cutpoint({ch::ee,       "ee"})
+              .add_cutpoint({ch::mumu,     "mumu"})
+              .add_cutpoint({ch::emu,      "emu"})
+              .add_cutpoint({ch::_3l,      "3l"})
+              .add_cutpoint({ch::_4l,      "4l"})
+              .add_cutpoint({ch::_1l_2tau, "1l_2tau"})
+              .add_cutpoint({ch::_2l_1tau, "2l_1tau"});
   pdg_id_plots.add_variable({"e-", 3, 0, 3})
               .add_variable({"e+", 3, 0, 3})
               .add_variable({"mu-", 3, 0, 3})
-              .add_variable({"mu+", 3, 0, 3});
+              .add_variable({"mu+", 3, 0, 3})
+              .add_variable({"e", 3, 0, 3})
+              .add_variable({"mu", 3, 0, 3});
   pdg_id_plots.initialize();
   const std::map<int, std::string> pdg_id_keys =
   {
@@ -583,27 +588,42 @@ main(int argc,
                          (const std::vector<GenLepton> & gen_leptons,
                           const std::vector<GenJet> & gen_jets,
                           const std::vector<RecoLepton> & leptons,
-                          ch channel) -> void
+                          ch channel,
+                          bool check_pdg_id) -> void
   {
     for(auto & lepton: leptons)
     {
       bool any_overlap = false;
-      const std::string pdg_id_key = pdg_id_keys.at(lepton.pdg_id);
+      std::string pdg_id_key = pdg_id_keys.at(lepton.pdg_id);
+      if(! check_pdg_id)
+        pdg_id_key = pdg_id_key.substr(0, pdg_id_key.size() - 1);
 
       for(auto & gen_lepton: gen_leptons)
         if(lepton.is_overlap(gen_lepton, 0.3))
         {
-          if(lepton.pdg_id == gen_lepton.pdg_id)
+          if(check_pdg_id)
           {
-            pdg_id_plots[charge::same][channel].fill(pdg_id_key, 1);
-            any_overlap = true;
-            break;
+            if(lepton.pdg_id == gen_lepton.pdg_id)
+            {
+              pdg_id_plots[match_type::same][channel].fill(pdg_id_key, 1);
+              any_overlap = true;
+              break;
+            }
+            else if(lepton.pdg_id == -gen_lepton.pdg_id)
+            {
+              pdg_id_plots[match_type::flipped][channel].fill(pdg_id_key, 1);
+              any_overlap = true;
+              break;
+            }
           }
-          else if(lepton.pdg_id == -gen_lepton.pdg_id)
+          else
           {
-            pdg_id_plots[charge::flipped][channel].fill(pdg_id_key, 1);
-            any_overlap = true;
-            break;
+            if(std::abs(lepton.pdg_id) == std::abs(gen_lepton.pdg_id))
+            {
+              pdg_id_plots[match_type::gen_match][channel].fill(pdg_id_key, 1);
+              any_overlap = true;
+              break;
+            }
           }
         }
 
@@ -611,13 +631,13 @@ main(int argc,
       for(auto & gen_jet: gen_jets)
         if(lepton.is_overlap(gen_jet, 0.3))
         {
-          pdg_id_plots[charge::due_jets][channel].fill(pdg_id_key, 1);
+          pdg_id_plots[match_type::due_jets][channel].fill(pdg_id_key, 1);
           any_overlap = true;
           break;
         }
 
       if(any_overlap) continue;
-      pdg_id_plots[charge::no_overlap][channel].fill(pdg_id_key, 1);
+      pdg_id_plots[match_type::no_overlap][channel].fill(pdg_id_key, 1);
     }
   };
 
@@ -768,7 +788,7 @@ main(int argc,
   chain.SetBranchAddress(GEN_JET_PHI_KEY,       &gen_jet_phi);
   chain.SetBranchAddress(GEN_JET_MASS_KEY,      &gen_jet_mass);
 
-  chain.SetBranchAddress(GEN_NJETS_KEY,         &gen_ntaus);
+  chain.SetBranchAddress(GEN_NTAUS_KEY,         &gen_ntaus);
   chain.SetBranchAddress(GEN_TAU_PT_KEY,        &gen_tau_pt);
   chain.SetBranchAddress(GEN_TAU_ETA_KEY,       &gen_tau_eta);
   chain.SetBranchAddress(GEN_TAU_PHI_KEY,       &gen_tau_phi);
@@ -838,12 +858,14 @@ main(int argc,
 
 //--- create the collection of generator level leptons
     std::vector<GenLepton> gen_leptons;
+    gen_leptons.reserve(gen_nleptons);
     for(Int_t n = 0; n < gen_nleptons; ++n)
       gen_leptons.push_back({ gen_pt[n], gen_eta[n], gen_phi[n], gen_mass[n],
                               gen_pdgid[n] });
 
 //--- create the collection of generator level hadronic taus
     std::vector<GenHadronicTau> gen_taus;
+    gen_taus.reserve(gen_ntaus);
     for(Int_t n = 0; n < gen_ntaus; ++n)
       gen_taus.push_back({ gen_tau_pt[n], gen_tau_eta[n],
                            gen_tau_phi[n], gen_tau_mass[n] });
@@ -915,7 +937,7 @@ main(int argc,
            tau.anti_e >= 2          &&
            tau.anti_mu >= 2          )
           good_taus.push_back(tau);
-//--- TODO: check if our tau overlaps with some other object; remove duplicates
+//--- TODO: check if our tau overlaps with some other object; remove duplicates?
 
       if(good_taus.size() == 2)
         ++counter[ch::_1l_2tau][cuts::good_tau];
@@ -1176,7 +1198,7 @@ main(int argc,
              tau.anti_e >= 2          &&
              tau.anti_mu >= 2          )
             good_taus.push_back(tau);
-//--- TODO: check if our tau overlaps with some other object; remove duplicates
+//--- TODO: check if our tau overlaps with some other object; remove duplicates?
 
         if(good_taus.size() == 1)
           ++counter[ch::_2l_1tau][cuts::good_tau];
@@ -1206,7 +1228,7 @@ main(int argc,
       }
 
 //---------------------------------------------------------------- PDG ID PLOT
-      fill_pdg_plot(gen_leptons, gen_jets, selected_leptons, channel);
+      fill_pdg_plot(gen_leptons, gen_jets, selected_leptons, channel, true);
 
     }
 
@@ -1265,7 +1287,7 @@ main(int argc,
       ++counter[ch::_3l][cuts::sfos_zveto];
 
 //---------------------------------------------------------------- PDG ID PLOT
-      fill_pdg_plot(gen_leptons, gen_jets, selected_leptons, ch::_3l);
+      fill_pdg_plot(gen_leptons, gen_jets, selected_leptons, ch::_3l, false);
     }
 
 //=========================== 4-LEPTON CHANNEL ==============================
@@ -1301,7 +1323,7 @@ main(int argc,
       ++counter[ch::_4l][cuts::sfos_zveto];
 
 //---------------------------------------------------------------- PDG ID PLOT
-      fill_pdg_plot(gen_leptons, gen_jets, selected_leptons, ch::_4l);
+      fill_pdg_plot(gen_leptons, gen_jets, selected_leptons, ch::_4l, false);
     }
   }
 //===========================================================================
