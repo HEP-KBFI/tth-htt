@@ -15,12 +15,14 @@ public:
               Int_t    _decmode,
               Int_t    _id_mva,
               Int_t    _anti_e,
-              Int_t    _anti_mu);
+              Int_t    _anti_mu,
+              Int_t    _pdg_id);
 
   Int_t decmode;
   Int_t id_mva;
   Int_t anti_e;
   Int_t anti_mu;
+  Int_t pdg_id;
 };
 
 #endif // HADRONICTAU_H

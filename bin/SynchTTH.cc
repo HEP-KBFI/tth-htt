@@ -569,20 +569,15 @@ main(int argc,
               .add_cutpoint({ch::_4l,      "4l"})
               .add_cutpoint({ch::_1l_2tau, "1l_2tau"})
               .add_cutpoint({ch::_2l_1tau, "2l_1tau"});
-  pdg_id_plots.add_variable({"e-", 3, 0, 3})
-              .add_variable({"e+", 3, 0, 3})
-              .add_variable({"mu-", 3, 0, 3})
-              .add_variable({"mu+", 3, 0, 3})
-              .add_variable({"e", 3, 0, 3})
+  pdg_id_plots.add_variable({"e", 3, 0, 3})
               .add_variable({"mu", 3, 0, 3})
               .add_variable({"tau", 3, 0, 3});
   pdg_id_plots.initialize();
   const std::map<int, std::string> pdg_id_keys =
   {
-    { 11, "e-"},
-    {-11, "e+"},
-    { 13, "mu-"},
-    {-13, "mu+"}
+    {11, "e"},
+    {13, "mu"},
+    {15, "tau"}
   };
   auto fill_pdg_plot = [&pdg_id_keys, &pdg_id_plots]
                          (const std::vector<GenLepton> & gen_leptons,
@@ -596,9 +591,7 @@ main(int argc,
     for(auto & lepton: leptons)
     {
       bool any_overlap = false;
-      std::string pdg_id_key = pdg_id_keys.at(lepton.pdg_id);
-      if(! check_pdg_id)
-        pdg_id_key = pdg_id_key.substr(0, pdg_id_key.size() - 1);
+      std::string pdg_id_key = pdg_id_keys.at(std::abs(lepton.pdg_id));
 
       for(auto & gen_lepton: gen_leptons)
         if(lepton.is_overlap(gen_lepton, 0.3))
@@ -644,14 +637,14 @@ main(int argc,
 
     if(taus && gen_taus)
     {
-      const std::string tau_str = "tau";
       for(auto & tau: *taus)
       {
         bool any_overlap = false;
+        std::string pdg_id_key = pdg_id_keys.at(std::abs(tau.pdg_id));
         for(auto & gen_tau: *gen_taus)
           if(tau.is_overlap(gen_tau, 0.3))
           {
-            pdg_id_plots[match_type::gen_match][channel].fill(tau_str, 1);
+            pdg_id_plots[match_type::gen_match][channel].fill(pdg_id_key, 1);
             any_overlap = true;
             break;
           }
@@ -660,13 +653,13 @@ main(int argc,
         for(auto & gen_jet: gen_jets)
           if(tau.is_overlap(gen_jet, 0.3))
           {
-            pdg_id_plots[match_type::due_jets][channel].fill(tau_str, 1);
+            pdg_id_plots[match_type::due_jets][channel].fill(pdg_id_key, 1);
             any_overlap = true;
             break;
           }
 
         if(any_overlap) continue;
-        pdg_id_plots[match_type::no_overlap][channel].fill(tau_str, 1);
+        pdg_id_plots[match_type::no_overlap][channel].fill(pdg_id_key, 1);
       }
     }
   };
@@ -741,6 +734,7 @@ main(int argc,
   TAU_ID_MVA_TYPE          tau_id_mva     [max_ntaus];
   TAU_ANTI_E_TYPE          tau_anti_e     [max_ntaus];
   TAU_ANTI_MU_TYPE         tau_anti_mu    [max_ntaus];
+  TAU_PDG_ID_TYPE          tau_pdg_id     [max_ntaus];
 
   GEN_NLEPTONS_TYPE        gen_nleptons;
   GEN_PT_TYPE              gen_pt         [max_ngenlept];
@@ -804,6 +798,7 @@ main(int argc,
   chain.SetBranchAddress(TAU_ID_MVA_KEY,        &tau_id_mva);
   chain.SetBranchAddress(TAU_ANTI_E_KEY,        &tau_anti_e);
   chain.SetBranchAddress(TAU_ANTI_MU_KEY,       &tau_anti_mu);
+  chain.SetBranchAddress(TAU_PDG_ID_KEY,        &tau_pdg_id);
 
   chain.SetBranchAddress(GEN_NLEPTONS_KEY,      &gen_nleptons);
   chain.SetBranchAddress(GEN_PT_KEY,            &gen_pt);
@@ -884,7 +879,7 @@ main(int argc,
     for(Int_t n = 0; n < ntaus; ++n)
       taus.push_back({ tau_pt[n], tau_eta[n], tau_phi[n], tau_mass[n],
                        tau_decmode[n], tau_id_mva[n], tau_anti_e[n],
-                       tau_anti_mu[n] });
+                       tau_anti_mu[n], tau_pdg_id[n] });
 
 //--- create the collection of generator level leptons
     std::vector<GenLepton> gen_leptons;

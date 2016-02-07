@@ -46,6 +46,7 @@
 #define TAU_ID_MVA_TYPE        Int_t
 #define TAU_ANTI_E_TYPE        Int_t
 #define TAU_ANTI_MU_TYPE       Int_t
+#define TAU_PDG_ID_TYPE        Int_t
 
 #define GEN_NLEPTONS_TYPE      Int_t
 #define GEN_PT_TYPE            Double_t
@@ -111,6 +112,7 @@
 #define TAU_ID_MVA_KEY        "TauGood_idMVA"
 #define TAU_ANTI_E_KEY        "TauGood_idAntiE"
 #define TAU_ANTI_MU_KEY       "TauGood_idAntiMu"
+#define TAU_PDG_ID_KEY        "TauGood_pdgId"
 
 #define GEN_NLEPTONS_KEY      "nGenLep"
 #define GEN_PT_KEY            "GenLep_pt"
