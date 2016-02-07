@@ -3,7 +3,6 @@
 #include <string> // std::string
 #include <vector> // std::vector<>
 #include <cstdlib> // EXIT_SUCCESS, EXIT_FAILURE
-#include <memory> // std::unique_ptr<>
 #include <utility> // std::pair<>
 #include <map> // std::map<>
 #include <iomanip> // std::setprecision(), std::setw()
@@ -575,7 +574,8 @@ main(int argc,
               .add_variable({"mu-", 3, 0, 3})
               .add_variable({"mu+", 3, 0, 3})
               .add_variable({"e", 3, 0, 3})
-              .add_variable({"mu", 3, 0, 3});
+              .add_variable({"mu", 3, 0, 3})
+              .add_variable({"tau", 3, 0, 3});
   pdg_id_plots.initialize();
   const std::map<int, std::string> pdg_id_keys =
   {
@@ -588,6 +588,8 @@ main(int argc,
                          (const std::vector<GenLepton> & gen_leptons,
                           const std::vector<GenJet> & gen_jets,
                           const std::vector<RecoLepton> & leptons,
+                          const std::vector<HadronicTau> * const taus,
+                          const std::vector<GenHadronicTau> * const gen_taus,
                           ch channel,
                           bool check_pdg_id) -> void
   {
@@ -638,6 +640,34 @@ main(int argc,
 
       if(any_overlap) continue;
       pdg_id_plots[match_type::no_overlap][channel].fill(pdg_id_key, 1);
+    }
+
+    if(taus && gen_taus)
+    {
+      const std::string tau_str = "tau";
+      for(auto & tau: *taus)
+      {
+        bool any_overlap = false;
+        for(auto & gen_tau: *gen_taus)
+          if(tau.is_overlap(gen_tau, 0.3))
+          {
+            pdg_id_plots[match_type::gen_match][channel].fill(tau_str, 1);
+            any_overlap = true;
+            break;
+          }
+
+        if(any_overlap) continue;
+        for(auto & gen_jet: gen_jets)
+          if(tau.is_overlap(gen_jet, 0.3))
+          {
+            pdg_id_plots[match_type::due_jets][channel].fill(tau_str, 1);
+            any_overlap = true;
+            break;
+          }
+
+        if(any_overlap) continue;
+        pdg_id_plots[match_type::no_overlap][channel].fill(tau_str, 1);
+      }
     }
   };
 
@@ -937,10 +967,13 @@ main(int argc,
            tau.anti_e >= 2          &&
            tau.anti_mu >= 2          )
           good_taus.push_back(tau);
-//--- TODO: check if our tau overlaps with some other object; remove duplicates?
 
       if(good_taus.size() == 2)
+      {
         ++counter[ch::_1l_2tau][cuts::good_tau];
+        fill_pdg_plot(gen_leptons, gen_jets, preselected_leptons,
+                      &good_taus, &gen_taus, ch::_1l_2tau, false);
+      }
 
       continue;
     }
@@ -1187,22 +1220,27 @@ main(int argc,
       ++counter[ch::_2l_1tau][cuts::charge_quality];
 
 //======================== DILEPTON + TAU CHANNEL ===========================
-      {
 //--- see if any of our taus is a good candidate
-        std::vector<HadronicTau> good_taus;
-        for(auto & tau: taus)
-          if(tau.pt > 20              &&
-             std::fabs(tau.eta) < 2.3 &&
-             tau.decmode >= 1         &&
-             tau.id_mva >= 4          &&
-             tau.anti_e >= 2          &&
-             tau.anti_mu >= 2          )
-            good_taus.push_back(tau);
-//--- TODO: check if our tau overlaps with some other object; remove duplicates?
+      std::vector<HadronicTau> good_taus;
+      for(auto & tau: taus)
+        if(tau.pt > 20              &&
+           std::fabs(tau.eta) < 2.3 &&
+           tau.decmode >= 1         &&
+           tau.id_mva >= 4          &&
+           tau.anti_e >= 2          &&
+           tau.anti_mu >= 2          )
+          good_taus.push_back(tau);
 
-        if(good_taus.size() == 1)
-          ++counter[ch::_2l_1tau][cuts::good_tau];
+//---------------------------------------------------------------- PDG ID PLOT
+      if(good_taus.size() == 1)
+      {
+        ++counter[ch::_2l_1tau][cuts::good_tau]; // add fill_pdg_plot here as well
+        fill_pdg_plot(gen_leptons, gen_jets, selected_leptons,
+                      &good_taus, &gen_taus, ch::_2l_1tau, true);
       }
+      else
+        fill_pdg_plot(gen_leptons, gen_jets, selected_leptons,
+                      nullptr, nullptr, channel, true);
 
 //------------------------------------------------ PLOT OF KINEMATIC VARIABLES
       {
@@ -1226,9 +1264,6 @@ main(int argc,
         hm[channel][cp::final].fill(pt_trailing, eta_trailing, min_dR_l2j,
                                     mt_metl1, ht, mht);
       }
-
-//---------------------------------------------------------------- PDG ID PLOT
-      fill_pdg_plot(gen_leptons, gen_jets, selected_leptons, channel, true);
 
     }
 
@@ -1287,7 +1322,8 @@ main(int argc,
       ++counter[ch::_3l][cuts::sfos_zveto];
 
 //---------------------------------------------------------------- PDG ID PLOT
-      fill_pdg_plot(gen_leptons, gen_jets, selected_leptons, ch::_3l, false);
+      fill_pdg_plot(gen_leptons, gen_jets, selected_leptons,
+                    nullptr, nullptr, ch::_3l, false);
     }
 
 //=========================== 4-LEPTON CHANNEL ==============================
@@ -1323,7 +1359,8 @@ main(int argc,
       ++counter[ch::_4l][cuts::sfos_zveto];
 
 //---------------------------------------------------------------- PDG ID PLOT
-      fill_pdg_plot(gen_leptons, gen_jets, selected_leptons, ch::_4l, false);
+      fill_pdg_plot(gen_leptons, gen_jets, selected_leptons,
+                    nullptr, nullptr, ch::_4l, false);
     }
   }
 //===========================================================================
