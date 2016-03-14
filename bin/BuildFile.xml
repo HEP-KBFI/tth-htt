@@ -10,3 +10,16 @@
   <use   name="roottmva"/>
   <use   name="boost"/>
 </bin>
+<bin file="ntuples_ttHJetToTT.cc">
+  <Flags CPPDEFINES="DISABLE_BOOST_LOG" />
+  <Flags CPPDEFINES="PYTHON_CONFIG" />
+  <use   name="FWCore/FWLite"/>
+  <use   name="FWCore/ParameterSet"/>
+  <use   name="FWCore/PythonParameterSet"/>
+  <use   name="FWCore/Utilities"/>
+  <use   name="DataFormats/Math"/>
+  <use   name="PhysicsTools/FWLite"/>
+  <use   name="root"/>
+  <use   name="roottmva"/>
+  <use   name="boost"/>
+</bin>
