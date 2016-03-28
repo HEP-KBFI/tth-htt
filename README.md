@@ -13,3 +13,11 @@ python2.7 $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/python/FormatResults.py # on
 python2.7 $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/python/Diff.py # difference table
 ```
 Now you should have two files in your `$PWD`: the cutflow table `cutflow.txt` and the difference table `diff.txt`. Above Python commands and `sbatch` jobs will overwrite the existing files, so make a copy of your `*.txt`s.
+
+### Synchronization
+
+If you want to produce the ntuples for the synchronization exercise, run
+```bash
+ntuples_ttHJetToTT $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/python/ttHJetToTT_M125_13TeV_ntuples_config.py
+```
+Check the input/output parameters in the configuration file first, though.
