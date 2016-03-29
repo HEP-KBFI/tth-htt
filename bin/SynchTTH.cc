@@ -31,6 +31,8 @@
 #include "tthAnalysis/HiggsToTauTau/interface/GenLepton.h" // GenLepton
 #include "tthAnalysis/HiggsToTauTau/interface/GenJet.h" // GenJet
 #include "tthAnalysis/HiggsToTauTau/interface/GenHadronicTau.h" // GenHadronicTau
+#include "tthAnalysis/HiggsToTauTau/interface/TMVAInterface.h" // TMVAInterface
+#include "tthAnalysis/HiggsToTauTau/interface/mvaInputVariables.h" // auxiliary functions for computing input variables of the MVA used for signal extraction in the 2lss_1tau category 
 
 #if defined(M125)
 #include "tthAnalysis/HiggsToTauTau/interface/KeyTypes125.h"
@@ -184,6 +186,17 @@ passes_preselection(const RecoLepton & lept)
   }
   return false;
 }
+
+/**
+ * @brief Auxiliary function used for sorting leptons by decreasing pT
+ * @param Given pair of leptons
+ * @return True, if first lepton has higher pT; false if second lepton has higher pT
+ */
+bool isHigherPt(const GenParticle& particle1, const GenParticle& particle2)
+{
+  return (particle1.pt > particle2.pt);
+}
+
 
 /**
  * @brief Cutflow code.
@@ -551,7 +564,8 @@ main(int argc,
     .add_variable({"min(dR(l2,j))", 12, 0, 4})
     .add_variable({"mT(MET,l1)", 15, 0, 200})
     .add_variable({"HT", 15, 0, 1200})
-    .add_variable({"MHT", 12, 0, 250});
+    .add_variable({"MHT", 12, 0, 250})
+    .add_variable({"mvaDiscr_2lss", 6, 0.5, 6.5});
   hm.initialize();
 
 //--- set up PDG ID plots
@@ -677,8 +691,8 @@ main(int argc,
 //--- declare the constants
   const double tight_mva_wp = 0.8;
   const double loose_mva_wp = 0.5;
-  const double loose_csv_wp = 0.244;
-  const double medium_csv_wp = 0.679;
+  const double loose_csv_wp = 0.460;  // loose and medium WPs of CSV disciminator training for Spring15 (CMSSW 7_6_x) samples,
+  const double medium_csv_wp = 0.800; // cf. https://twiki.cern.ch/twiki/bin/view/CMS/BtagRecommendation76X 
   const unsigned max_nleptons = 32;
   const unsigned max_njets = 32;
   const unsigned max_ntaus = 32;
@@ -818,6 +832,30 @@ main(int argc,
   chain.SetBranchAddress(GEN_TAU_ETA_KEY,       &gen_tau_eta);
   chain.SetBranchAddress(GEN_TAU_PHI_KEY,       &gen_tau_phi);
   chain.SetBranchAddress(GEN_TAU_MASS_KEY,      &gen_tau_mass);
+
+//--- initialize BDTs used to discriminate ttH vs. ttV and ttH vs. ttbar 
+//    in 2lss_1tau category of ttH multilepton analysis
+  std::string mvaFileName_2lss_ttV = "tthAnalysis/HiggsToTauTau/data/2lss_ttV_BDTG.weights.xml";
+  std::vector<std::string> mvaInputVariables_2lss_ttV;
+  mvaInputVariables_2lss_ttV.push_back("MT_met_lep1");
+  mvaInputVariables_2lss_ttV.push_back("nJet25_Recl");
+  mvaInputVariables_2lss_ttV.push_back("mindr_lep1_jet");
+  mvaInputVariables_2lss_ttV.push_back("mindr_lep2_jet");
+  mvaInputVariables_2lss_ttV.push_back("LepGood_conePt[iF_Recl[0]]");
+  mvaInputVariables_2lss_ttV.push_back("LepGood_conePt[iF_Recl[1]]");
+  TMVAInterface mva_2lss_ttV(mvaFileName_2lss_ttV, mvaInputVariables_2lss_ttV);
+
+  std::string mvaFileName_2lss_ttbar = "tthAnalysis/HiggsToTauTau/data/2lss_ttbar_BDTG.weights.xml";
+  std::vector<std::string> mvaInputVariables_2lss_ttbar;
+  mvaInputVariables_2lss_ttbar.push_back("nJet25_Recl");
+  mvaInputVariables_2lss_ttbar.push_back("mindr_lep1_jet");
+  mvaInputVariables_2lss_ttbar.push_back("mindr_lep2_jet");
+  mvaInputVariables_2lss_ttbar.push_back("min(met_pt,400)");
+  mvaInputVariables_2lss_ttbar.push_back("avg_dr_jet");
+  mvaInputVariables_2lss_ttbar.push_back("MT_met_lep1");
+  TMVAInterface mva_2lss_ttbar(mvaFileName_2lss_ttbar, mvaInputVariables_2lss_ttbar);
+
+  std::map<std::string, double> mvaInputs;
 
   Long64_t nof_events = chain.GetEntries();
   log_file << "Total number of events: "
@@ -1002,6 +1040,8 @@ main(int argc,
     else
     if(loose_leptons.size() == 4)   selected_leptons = loose_leptons;
     else continue;
+//--- sort selected leptons by decreasing pT
+    std::sort(selected_leptons.begin(), selected_leptons.end(), isHigherPt);
     const std::size_t nof_selected_leptons = selected_leptons.size();
 
     increment_all(cuts::good_leptons);
@@ -1129,8 +1169,8 @@ main(int argc,
 //=========================== DILEPTON CHANNEL ==============================
     if(nof_selected_leptons == 2)
     {
-      const RecoLepton & lept_0 = selected_leptons[0]; // make it const?
-      const RecoLepton & lept_1 = selected_leptons[1];
+      const RecoLepton & lept_0 = selected_leptons[0]; // leading lepton
+      const RecoLepton & lept_1 = selected_leptons[1]; // subleading lepton
 
       ch channel = ch::unspecified;
 
@@ -1214,6 +1254,30 @@ main(int argc,
       ++counter[channel][cuts::charge_quality];
       ++counter[ch::_2l_1tau][cuts::charge_quality];
 
+//--- compute output of BDTs used to discriminate ttH vs. ttV and ttH vs. ttbar 
+//    in 2lss_1tau category of ttH multilepton analysis 
+      mvaInputs["MT_met_lep1"]                = comp_MT_met_lep1(lept_0, met_pt, met_phi);
+      mvaInputs["nJet25_Recl"]                = comp_n_jet25_recl(all_selected_jets);
+      mvaInputs["mindr_lep1_jet"]             = comp_mindr_lep1_jet(lept_0, all_selected_jets);
+      mvaInputs["mindr_lep2_jet"]             = comp_mindr_lep2_jet(lept_1, all_selected_jets);
+      mvaInputs["LepGood_conePt[iF_Recl[0]]"] = comp_lep1_conePt(lept_0);
+      mvaInputs["LepGood_conePt[iF_Recl[1]]"] = comp_lep2_conePt(lept_1);
+      mvaInputs["min(met_pt,400)"]            = std::min(met_pt, 400.);
+      mvaInputs["avg_dr_jet"]                 = comp_avg_dr_jet(all_selected_jets);
+
+      double mvaOutput_2lss_ttV = mva_2lss_ttV(mvaInputs);
+      double mvaOutput_2lss_ttbar = mva_2lss_ttbar(mvaInputs);
+
+//--- compute integer discriminant based on both BDT outputs,
+//    as defined in Table X of AN-2015/321
+      int mvaDiscr_2lss = -1;
+      if      ( mvaOutput_2lss_ttbar > +0.3 && mvaOutput_2lss_ttV >  -0.1 ) mvaDiscr_2lss = 6;
+      else if ( mvaOutput_2lss_ttbar > +0.3 && mvaOutput_2lss_ttV <= -0.1 ) mvaDiscr_2lss = 5;
+      else if ( mvaOutput_2lss_ttbar > -0.2 && mvaOutput_2lss_ttV >  -0.1 ) mvaDiscr_2lss = 4;
+      else if ( mvaOutput_2lss_ttbar > -0.2 && mvaOutput_2lss_ttV <= -0.1 ) mvaDiscr_2lss = 3;
+      else if (                                mvaOutput_2lss_ttV >  -0.1 ) mvaDiscr_2lss = 2;
+      else                                                                  mvaDiscr_2lss = 1;
+
 //======================== DILEPTON + TAU CHANNEL ===========================
 //--- see if any of our taus is a good candidate
       std::vector<HadronicTau> good_taus;
@@ -1257,7 +1321,7 @@ main(int argc,
             (lept_0.p4 + LV(met_pt, met_eta, met_phi, met_mass)).mass();
         const Double_t mht = std::fabs(ht_vec.pt());
         hm[channel][cp::final].fill(pt_trailing, eta_trailing, min_dR_l2j,
-                                    mt_metl1, ht, mht);
+                                    mt_metl1, ht, mht, mvaDiscr_2lss);
       }
 
     }

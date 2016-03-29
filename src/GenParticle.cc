@@ -1,6 +1,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/GenParticle.h" // GenParticle
 
-#define _USE_MATH_DEFINES // M_PI
+#include "DataFormats/Math/interface/deltaR.h" // deltaR
+
 #include <cmath> // std::abs(), std::fabs(), std::sqrt(), std::pow()
 
 GenParticle::GenParticle(Double_t _pt,
@@ -18,11 +19,7 @@ GenParticle::GenParticle(Double_t _pt,
 inline double
 GenParticle::dR(const GenParticle & other) const
 {
-  const double d_eta = std::fabs(eta - other.eta);
-  double d_phi = std::fabs(phi - other.phi);
-  if (d_phi > static_cast<double>(M_PI))
-    d_phi -= 2 * static_cast<double>(M_PI);
-  return std::sqrt(std::pow(d_eta, 2) + std::pow(d_phi, 2));
+  return deltaR(eta, phi, other.eta, other.phi);
 }
 
 bool

@@ -6,6 +6,7 @@
   <use   name="FWCore/Utilities"/>
   <use   name="DataFormats/Math"/>
   <use   name="PhysicsTools/FWLite"/>
+  <use   name="tthAnalysis/HiggsToTauTau"/>
   <use   name="root"/>
   <use   name="roottmva"/>
   <use   name="boost"/>
@@ -19,6 +20,7 @@
   <use   name="FWCore/Utilities"/>
   <use   name="DataFormats/Math"/>
   <use   name="PhysicsTools/FWLite"/>
+  <use   name="tthAnalysis/HiggsToTauTau"/>
   <use   name="root"/>
   <use   name="roottmva"/>
   <use   name="boost"/>
