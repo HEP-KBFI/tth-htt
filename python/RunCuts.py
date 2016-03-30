@@ -54,6 +54,8 @@ process.fwliteInput = cms.PSet(
   outputEvery = cms.uint32(100000)
 )
 process.SynchTTH = cms.PSet(
+  isMC = cms.bool({{ isMC }}),
+  central_or_shift = cms.string('central'),
   outputDir = cms.string(os.path.join('{{ results_dir }}', '{{ sample_name }}')),
   forceOverwrite = cms.bool(True)
 )
@@ -61,6 +63,7 @@ process.SynchTTH = cms.PSet(
 """
   return Template(cfg_file).render(
            input_file = Samples[s]["path"],
+           isMC = Samples[s]["isMC"],
            results_dir = _results_dir,
            sample_name = s)
 
