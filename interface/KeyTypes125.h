@@ -32,10 +32,12 @@
 
 #define NJETS_TYPE             Int_t
 #define JET_PT_TYPE            Double_t
+#define JET_CORR_TYPE          Double_t
 #define JET_ETA_TYPE           Double_t
 #define JET_PHI_TYPE           Double_t
 #define JET_MASS_TYPE          Double_t
 #define JET_CSV_TYPE           Double_t
+#define JET_BTAGWEIGHT_TYPE    Double_t
 
 #define NTAUS_TYPE             Int_t
 #define TAU_PT_TYPE            Double_t
@@ -43,7 +45,10 @@
 #define TAU_PHI_TYPE           Double_t
 #define TAU_MASS_TYPE          Double_t
 #define TAU_DECMODE_TYPE       Int_t
-#define TAU_ID_MVA_TYPE        Int_t
+#define TAU_ID_MVA_DR03_TYPE   Int_t
+#define TAU_ID_MVA_DR05_TYPE   Int_t
+#define TAU_ID_CUT_DR03_TYPE   Int_t
+#define TAU_ID_CUT_DR05_TYPE   Int_t
 #define TAU_ANTI_E_TYPE        Int_t
 #define TAU_ANTI_MU_TYPE       Int_t
 #define TAU_PDG_ID_TYPE        Int_t
@@ -85,7 +90,7 @@
 #define LEPT_MVA_TTH_KEY      "selLeptons_mvaTTH"
 #define LEPT_MED_MU_ID_KEY    "selLeptons_mediumMuonId"
 #define LEPT_PDG_ID_KEY       "selLeptons_pdgId"
-#define LEPT_ELE_MVA_ID_KEY   "selLeptons_eleMVAIdPhys14"
+#define LEPT_ELE_MVA_ID_KEY   "selLeptons_eleMVAIdSpring15NonTrig"
 #define LEPT_LOST_HITS_KEY    "selLeptons_lostHits"
 #define LEPT_LOOSE_ID_KEY     "selLeptons_looseIdPOG"
 #define LEPT_TIGHT_CHARGE_KEY "selLeptons_tightCharge"
@@ -98,6 +103,9 @@
 
 #define NJETS_KEY             "nJet"
 #define JET_PT_KEY            "Jet_pt"
+#define JET_CORR_KEY          "Jet_corr"
+#define JET_CORR_JECUP_KEY    "Jet_corr_JECUp"
+#define JET_CORR_JECDOWN_KEY  "Jet_corr_JECDown"
 #define JET_ETA_KEY           "Jet_eta"
 #define JET_PHI_KEY           "Jet_phi"
 #define JET_MASS_KEY          "Jet_mass"
@@ -109,8 +117,11 @@
 #define TAU_PHI_KEY           "TauGood_phi"
 #define TAU_MASS_KEY          "TauGood_mass"
 #define TAU_DECMODE_KEY       "TauGood_idDecayMode"
-#define TAU_ID_MVA_KEY        "TauGood_idMVA"
-#define TAU_ANTI_E_KEY        "TauGood_idAntiE"
+#define TAU_ID_MVA_DR03_KEY   "TauGood_idMVArun2dR03"
+#define TAU_ID_MVA_DR05_KEY   "TauGood_idMVArun2"
+#define TAU_ID_CUT_DR03_KEY   "TauGood_idCI3hit"
+#define TAU_ID_CUT_DR05_KEY   "TauGood_idCI3hitdR03"
+#define TAU_ANTI_E_KEY        "TauGood_idAntiErun2"
 #define TAU_ANTI_MU_KEY       "TauGood_idAntiMu"
 #define TAU_PDG_ID_KEY        "TauGood_pdgId"
 

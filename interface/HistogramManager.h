@@ -174,9 +174,9 @@ public:
    * @param val      Its value.
    */
   void fill(const std::string var_name,
-            Double_t val)
+            Double_t evtWeight, Double_t val)
   {
-    histograms[var_name].Fill(val);
+    histograms[var_name].Fill(val, evtWeight);
   }
   /**
    * @brief Fills the histogram corresponding to the first element
@@ -184,9 +184,9 @@ public:
    *        Used as the base case in variadic version of this function.
    * @param The value to fill it with.
    */
-  void fill(Double_t val)
+  void fill(Double_t evtWeight, Double_t val)
   {
-    histograms[variables[pos]].Fill(val);
+    histograms[variables[pos]].Fill(val, evtWeight);
     pos = 0;
   }
   /**
@@ -199,19 +199,19 @@ public:
    * @param args The rest of the values (unpacked).
    */
   template <typename... Args>
-  void fill(Double_t val,
-            Args... args)
+  void fill(Double_t evtWeight, Double_t val,
+	    Args... args)
   {
-    const std::size_t nof_arguments = sizeof...(args) + 1;
-    if(nof_arguments > variables.size() - pos)
+    const std::size_t nof_variables = sizeof...(args) + 1;
+    if(nof_variables > variables.size() - pos)
     {
       std::cerr << "Too many arguments to fill the histogram: "
-                << nof_arguments
+                << nof_variables
                 << "\nResetting.\n";
       pos = 0;
     }
-    histograms[variables[pos++]].Fill(val);
-    fill(args...);
+    histograms[variables[pos++]].Fill(val, evtWeight);
+    fill(evtWeight, args...);
   }
 
   /**

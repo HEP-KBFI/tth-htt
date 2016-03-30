@@ -13,13 +13,19 @@ public:
               Double_t _phi,
               Double_t _mass,
               Int_t    _decmode,
-              Int_t    _id_mva,
+              Int_t    _id_mva_dR03,
+	      Int_t    _id_mva_dR05,
+	      Int_t    _id_cut_dR03,
+	      Int_t    _id_cut_dR05,
               Int_t    _anti_e,
               Int_t    _anti_mu,
               Int_t    _pdg_id);
 
   Int_t decmode;
-  Int_t id_mva;
+  Int_t id_mva_dR03;
+  Int_t id_mva_dR05;
+  Int_t id_cut_dR03;
+  Int_t id_cut_dR05;
   Int_t anti_e;
   Int_t anti_mu;
   Int_t pdg_id;

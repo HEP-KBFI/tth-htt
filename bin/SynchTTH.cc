@@ -20,6 +20,7 @@
 #include <TChain.h> // TChain
 #include <TTree.h> // TTree
 #include <TBenchmark.h> // TBenchmark
+#include <TString.h> // TString, Form
 
 #include <boost/filesystem.hpp> // boost::filesystem::
 #include <boost/algorithm/string/predicate.hpp> // boost::iequals()
@@ -252,6 +253,34 @@ main(int argc,
       getParameter<edm::ParameterSet>("process");
   const edm::ParameterSet cfg_presel =
       cfg.getParameter<edm::ParameterSet>("SynchTTH");
+  bool isMC = cfg_presel.getParameter<bool>("isMC"); 
+  std::string central_or_shift = cfg_presel.getParameter<std::string>("central_or_shift");
+  std::string jet_btagWeight_branch = ( isMC ) ? "Jet_bTagWeight" : "";
+  enum { kJetPt_central, kJetPt_jecUp, kJetPt_jecDown };
+  int jetPt_option = kJetPt_central;
+  if ( isMC && central_or_shift != "central" ) {
+    TString central_or_shift_tstring = central_or_shift.data();
+    std::string shiftUp_or_Down = "";
+    if      ( central_or_shift_tstring.EndsWith("Up")   ) shiftUp_or_Down = "Up";
+    else if ( central_or_shift_tstring.EndsWith("Down") ) shiftUp_or_Down = "Down";
+    else throw cms::Exception("SynchTTH")
+      << "Invalid Configuration parameter 'central_or_shift' = " << central_or_shift << " !!\n";
+    if      ( central_or_shift_tstring.BeginsWith("CMS_ttHl_btag_HF")       ) jet_btagWeight_branch = "Jet_bTagWeight_HF" + shiftUp_or_Down;
+    else if ( central_or_shift_tstring.BeginsWith("CMS_ttHl_btag_HFStats1") ) jet_btagWeight_branch = "Jet_bTagWeight_HFStats1" + shiftUp_or_Down;
+    else if ( central_or_shift_tstring.BeginsWith("CMS_ttHl_btag_HFStats2") ) jet_btagWeight_branch = "Jet_bTagWeight_HFStats2" + shiftUp_or_Down;
+    else if ( central_or_shift_tstring.BeginsWith("CMS_ttHl_btag_LF")       ) jet_btagWeight_branch = "Jet_bTagWeight_LF" + shiftUp_or_Down;
+    else if ( central_or_shift_tstring.BeginsWith("CMS_ttHl_btag_LFStats1") ) jet_btagWeight_branch = "Jet_bTagWeight_LFStats1" + shiftUp_or_Down;
+    else if ( central_or_shift_tstring.BeginsWith("CMS_ttHl_btag_LFStats2") ) jet_btagWeight_branch = "Jet_bTagWeight_LFStats2" + shiftUp_or_Down;
+    else if ( central_or_shift_tstring.BeginsWith("CMS_ttHl_btag_cErr1")    ) jet_btagWeight_branch = "Jet_bTagWeight_cErr1" + shiftUp_or_Down;
+    else if ( central_or_shift_tstring.BeginsWith("CMS_ttHl_btag_cErr2")    ) jet_btagWeight_branch = "Jet_bTagWeight_cErr2" + shiftUp_or_Down;
+    else if ( central_or_shift_tstring.BeginsWith("CMS_ttHl_JES") ) {
+      jet_btagWeight_branch = "Jet_bTagWeight_JES" + shiftUp_or_Down;
+      if      ( shiftUp_or_Down == "Up"   ) jetPt_option = kJetPt_jecUp;
+      else if ( shiftUp_or_Down == "Down" ) jetPt_option = kJetPt_jecDown;
+      else assert(0);
+    } else throw cms::Exception("SynchTTH")
+	<< "Invalid Configuration parameter 'central_or_shift' = " << central_or_shift << " !!\n";
+  }
   std::string output_dir =
       cfg_presel.getParameter<std::string>("outputDir");
   const bool force_overwrite =
@@ -600,7 +629,7 @@ main(int argc,
                           const std::vector<HadronicTau> * const taus,
                           const std::vector<GenHadronicTau> * const gen_taus,
                           ch channel,
-                          bool check_pdg_id) -> void
+                          bool check_pdg_id, double evtWeight = 1.) -> void
   {
     for(auto & lepton: leptons)
     {
@@ -614,13 +643,13 @@ main(int argc,
           {
             if(lepton.pdg_id == gen_lepton.pdg_id)
             {
-              pdg_id_plots[match_type::same][channel].fill(pdg_id_key, 1);
+              pdg_id_plots[match_type::same][channel].fill(pdg_id_key, evtWeight, 1);
               any_overlap = true;
               break;
             }
             else if(lepton.pdg_id == -gen_lepton.pdg_id)
             {
-              pdg_id_plots[match_type::flipped][channel].fill(pdg_id_key, 1);
+              pdg_id_plots[match_type::flipped][channel].fill(pdg_id_key, evtWeight, 1);
               any_overlap = true;
               break;
             }
@@ -629,7 +658,7 @@ main(int argc,
           {
             if(std::abs(lepton.pdg_id) == std::abs(gen_lepton.pdg_id))
             {
-              pdg_id_plots[match_type::gen_match][channel].fill(pdg_id_key, 1);
+              pdg_id_plots[match_type::gen_match][channel].fill(pdg_id_key, evtWeight, 1);
               any_overlap = true;
               break;
             }
@@ -640,13 +669,13 @@ main(int argc,
       for(auto & gen_jet: gen_jets)
         if(lepton.is_overlap(gen_jet, 0.3))
         {
-          pdg_id_plots[match_type::due_jets][channel].fill(pdg_id_key, 1);
+          pdg_id_plots[match_type::due_jets][channel].fill(pdg_id_key, evtWeight, 1);
           any_overlap = true;
           break;
         }
 
       if(any_overlap) continue;
-      pdg_id_plots[match_type::no_overlap][channel].fill(pdg_id_key, 1);
+      pdg_id_plots[match_type::no_overlap][channel].fill(pdg_id_key, evtWeight, 1);
     }
 
     if(taus && gen_taus)
@@ -658,7 +687,7 @@ main(int argc,
         for(auto & gen_tau: *gen_taus)
           if(tau.is_overlap(gen_tau, 0.3))
           {
-            pdg_id_plots[match_type::gen_match][channel].fill(pdg_id_key, 1);
+            pdg_id_plots[match_type::gen_match][channel].fill(pdg_id_key, evtWeight, 1);
             any_overlap = true;
             break;
           }
@@ -667,13 +696,13 @@ main(int argc,
         for(auto & gen_jet: gen_jets)
           if(tau.is_overlap(gen_jet, 0.3))
           {
-            pdg_id_plots[match_type::due_jets][channel].fill(pdg_id_key, 1);
+            pdg_id_plots[match_type::due_jets][channel].fill(pdg_id_key, evtWeight, 1);
             any_overlap = true;
             break;
           }
 
         if(any_overlap) continue;
-        pdg_id_plots[match_type::no_overlap][channel].fill(pdg_id_key, 1);
+        pdg_id_plots[match_type::no_overlap][channel].fill(pdg_id_key, evtWeight, 1);
       }
     }
   };
@@ -710,22 +739,22 @@ main(int argc,
   EVT_TYPE                 evt;
 
   NLEPTONS_TYPE nleptons;
-  LEPT_PT_TYPE             pt             [max_nleptons];
-  LEPT_ETA_TYPE            eta            [max_nleptons];
-  LEPT_PHI_TYPE            phi            [max_nleptons];
-  LEPT_MASS_TYPE           mass           [max_nleptons];
-  LEPT_DXY_TYPE            dxy            [max_nleptons];
-  LEPT_DZ_TYPE             dz             [max_nleptons];
-  LEPT_REL_ISO_TYPE        rel_iso        [max_nleptons];
-  LEPT_SIP3D_TYPE          sip3d          [max_nleptons];
-  LEPT_MVA_TTH_TYPE        mva_tth        [max_nleptons];
-  LEPT_MED_MU_ID_TYPE      med_mu_id      [max_nleptons];
-  LEPT_PDG_ID_TYPE         pdg_id         [max_nleptons];
-  LEPT_ELE_MVA_ID_TYPE     ele_mva_id     [max_nleptons];
-  LEPT_LOST_HITS_TYPE      lost_hits      [max_nleptons];
-  LEPT_LOOSE_ID_TYPE       loose_id       [max_nleptons];
-  LEPT_TIGHT_CHARGE_TYPE   tight_charge   [max_nleptons];
-  LEPT_CONV_VETO_TYPE      pass_conv_veto [max_nleptons];
+  LEPT_PT_TYPE             pt               [max_nleptons];
+  LEPT_ETA_TYPE            eta              [max_nleptons];
+  LEPT_PHI_TYPE            phi              [max_nleptons];
+  LEPT_MASS_TYPE           mass             [max_nleptons];
+  LEPT_DXY_TYPE            dxy              [max_nleptons];
+  LEPT_DZ_TYPE             dz               [max_nleptons];
+  LEPT_REL_ISO_TYPE        rel_iso          [max_nleptons];
+  LEPT_SIP3D_TYPE          sip3d            [max_nleptons];
+  LEPT_MVA_TTH_TYPE        mva_tth          [max_nleptons];
+  LEPT_MED_MU_ID_TYPE      med_mu_id        [max_nleptons];
+  LEPT_PDG_ID_TYPE         pdg_id           [max_nleptons];
+  LEPT_ELE_MVA_ID_TYPE     ele_mva_id       [max_nleptons];
+  LEPT_LOST_HITS_TYPE      lost_hits        [max_nleptons];
+  LEPT_LOOSE_ID_TYPE       loose_id         [max_nleptons];
+  LEPT_TIGHT_CHARGE_TYPE   tight_charge     [max_nleptons];
+  LEPT_CONV_VETO_TYPE      pass_conv_veto   [max_nleptons];
 
   MET_PT_TYPE              met_pt;
   MET_ETA_TYPE             met_eta;
@@ -733,41 +762,49 @@ main(int argc,
   MET_MASS_TYPE            met_mass;
 
   NJETS_TYPE               njets;
-  JET_PT_TYPE              jet_pt         [max_njets];
-  JET_ETA_TYPE             jet_eta        [max_njets];
-  JET_PHI_TYPE             jet_phi        [max_njets];
-  JET_MASS_TYPE            jet_mass       [max_njets];
-  JET_CSV_TYPE             jet_csv        [max_njets];
+  JET_PT_TYPE              jet_pt_tmp       [max_njets];
+  JET_CORR_TYPE            jet_corr         [max_njets];
+  JET_CORR_TYPE            jet_corr_jecUp   [max_njets];
+  JET_CORR_TYPE            jet_corr_jecDown [max_njets];
+  JET_PT_TYPE              jet_pt           [max_njets];
+  JET_ETA_TYPE             jet_eta          [max_njets];
+  JET_PHI_TYPE             jet_phi          [max_njets];
+  JET_MASS_TYPE            jet_mass         [max_njets];
+  JET_CSV_TYPE             jet_csv          [max_njets];
+  JET_BTAGWEIGHT_TYPE      jet_btagWeight   [max_njets];
 
   NTAUS_TYPE               ntaus;
-  TAU_PT_TYPE              tau_pt         [max_ntaus];
-  TAU_ETA_TYPE             tau_eta        [max_ntaus];
-  TAU_PHI_TYPE             tau_phi        [max_ntaus];
-  TAU_MASS_TYPE            tau_mass       [max_ntaus];
-  TAU_DECMODE_TYPE         tau_decmode    [max_ntaus];
-  TAU_ID_MVA_TYPE          tau_id_mva     [max_ntaus];
-  TAU_ANTI_E_TYPE          tau_anti_e     [max_ntaus];
-  TAU_ANTI_MU_TYPE         tau_anti_mu    [max_ntaus];
-  TAU_PDG_ID_TYPE          tau_pdg_id     [max_ntaus];
+  TAU_PT_TYPE              tau_pt           [max_ntaus];
+  TAU_ETA_TYPE             tau_eta          [max_ntaus];
+  TAU_PHI_TYPE             tau_phi          [max_ntaus];
+  TAU_MASS_TYPE            tau_mass         [max_ntaus];
+  TAU_DECMODE_TYPE         tau_decmode      [max_ntaus];
+  TAU_ID_MVA_DR03_TYPE     tau_id_mva_dR03  [max_ntaus];
+  TAU_ID_MVA_DR03_TYPE     tau_id_mva_dR05  [max_ntaus];
+  TAU_ID_CUT_DR03_TYPE     tau_id_cut_dR03  [max_ntaus];
+  TAU_ID_CUT_DR05_TYPE     tau_id_cut_dR05  [max_ntaus];  
+  TAU_ANTI_E_TYPE          tau_anti_e       [max_ntaus];
+  TAU_ANTI_MU_TYPE         tau_anti_mu      [max_ntaus];
+  TAU_PDG_ID_TYPE          tau_pdg_id       [max_ntaus];
 
   GEN_NLEPTONS_TYPE        gen_nleptons;
-  GEN_PT_TYPE              gen_pt         [max_ngenlept];
-  GEN_ETA_TYPE             gen_eta        [max_ngenlept];
-  GEN_PHI_TYPE             gen_phi        [max_ngenlept];
-  GEN_MASS_TYPE            gen_mass       [max_ngenlept];
-  GEN_PDG_ID_TYPE          gen_pdgid      [max_ngenlept];
+  GEN_PT_TYPE              gen_pt           [max_ngenlept];
+  GEN_ETA_TYPE             gen_eta          [max_ngenlept];
+  GEN_PHI_TYPE             gen_phi          [max_ngenlept];
+  GEN_MASS_TYPE            gen_mass         [max_ngenlept];
+  GEN_PDG_ID_TYPE          gen_pdgid        [max_ngenlept];
 
   GEN_NJETS_TYPE           gen_njets;
-  GEN_JET_PT_TYPE          gen_jet_pt     [max_ngenjet];
-  GEN_JET_ETA_TYPE         gen_jet_eta    [max_ngenjet];
-  GEN_JET_PHI_TYPE         gen_jet_phi    [max_ngenjet];
-  GEN_JET_MASS_TYPE        gen_jet_mass   [max_ngenjet];
+  GEN_JET_PT_TYPE          gen_jet_pt       [max_ngenjet];
+  GEN_JET_ETA_TYPE         gen_jet_eta      [max_ngenjet];
+  GEN_JET_PHI_TYPE         gen_jet_phi      [max_ngenjet];
+  GEN_JET_MASS_TYPE        gen_jet_mass     [max_ngenjet];
 
   GEN_NTAUS_TYPE           gen_ntaus;
-  GEN_TAU_PT_TYPE          gen_tau_pt     [max_ngentau];
-  GEN_TAU_ETA_TYPE         gen_tau_eta    [max_ngentau];
-  GEN_TAU_PHI_TYPE         gen_tau_phi    [max_ngentau];
-  GEN_TAU_MASS_TYPE        gen_tau_mass   [max_ngentau];
+  GEN_TAU_PT_TYPE          gen_tau_pt       [max_ngentau];
+  GEN_TAU_ETA_TYPE         gen_tau_eta      [max_ngentau];
+  GEN_TAU_PHI_TYPE         gen_tau_phi      [max_ngentau];
+  GEN_TAU_MASS_TYPE        gen_tau_mass     [max_ngentau];
 
   chain.SetBranchAddress(RUN_KEY,               &run);
   chain.SetBranchAddress(LUMI_KEY,              &lumi);
@@ -800,8 +837,9 @@ main(int argc,
   chain.SetBranchAddress(JET_PT_KEY,            &jet_pt);
   chain.SetBranchAddress(JET_ETA_KEY,           &jet_eta);
   chain.SetBranchAddress(JET_PHI_KEY,           &jet_phi);
-  chain.SetBranchAddress(JET_CSV_KEY,           &jet_csv);
   chain.SetBranchAddress(JET_MASS_KEY,          &jet_mass);
+  chain.SetBranchAddress(JET_CSV_KEY,           &jet_csv);
+  chain.SetBranchAddress(jet_btagWeight_branch.data(), &jet_btagWeight);
 
   chain.SetBranchAddress(NTAUS_KEY,             &ntaus);
   chain.SetBranchAddress(TAU_PT_KEY,            &tau_pt);
@@ -809,7 +847,10 @@ main(int argc,
   chain.SetBranchAddress(TAU_PHI_KEY,           &tau_phi);
   chain.SetBranchAddress(TAU_MASS_KEY,          &tau_mass);
   chain.SetBranchAddress(TAU_DECMODE_KEY,       &tau_decmode);
-  chain.SetBranchAddress(TAU_ID_MVA_KEY,        &tau_id_mva);
+  chain.SetBranchAddress(TAU_ID_MVA_DR03_KEY,   &tau_id_mva_dR03);
+  chain.SetBranchAddress(TAU_ID_MVA_DR05_KEY,   &tau_id_mva_dR05);
+  chain.SetBranchAddress(TAU_ID_CUT_DR03_KEY,   &tau_id_cut_dR03);
+  chain.SetBranchAddress(TAU_ID_CUT_DR05_KEY,   &tau_id_cut_dR05);
   chain.SetBranchAddress(TAU_ANTI_E_KEY,        &tau_anti_e);
   chain.SetBranchAddress(TAU_ANTI_MU_KEY,       &tau_anti_mu);
   chain.SetBranchAddress(TAU_PDG_ID_KEY,        &tau_pdg_id);
@@ -837,23 +878,25 @@ main(int argc,
 //    in 2lss_1tau category of ttH multilepton analysis
   std::string mvaFileName_2lss_ttV = "tthAnalysis/HiggsToTauTau/data/2lss_ttV_BDTG.weights.xml";
   std::vector<std::string> mvaInputVariables_2lss_ttV;
+  mvaInputVariables_2lss_ttV.push_back("max(abs(LepGood_eta[iF_Recl[0]]),abs(LepGood_eta[iF_Recl[1]]))");
   mvaInputVariables_2lss_ttV.push_back("MT_met_lep1");
   mvaInputVariables_2lss_ttV.push_back("nJet25_Recl");
   mvaInputVariables_2lss_ttV.push_back("mindr_lep1_jet");
   mvaInputVariables_2lss_ttV.push_back("mindr_lep2_jet");
   mvaInputVariables_2lss_ttV.push_back("LepGood_conePt[iF_Recl[0]]");
   mvaInputVariables_2lss_ttV.push_back("LepGood_conePt[iF_Recl[1]]");
-  TMVAInterface mva_2lss_ttV(mvaFileName_2lss_ttV, mvaInputVariables_2lss_ttV);
+  TMVAInterface mva_2lss_ttV(mvaFileName_2lss_ttV, mvaInputVariables_2lss_ttV, { "iF_Recl[0]", "iF_Recl[1]", "iF_Recl[2]" });
 
   std::string mvaFileName_2lss_ttbar = "tthAnalysis/HiggsToTauTau/data/2lss_ttbar_BDTG.weights.xml";
   std::vector<std::string> mvaInputVariables_2lss_ttbar;
+  mvaInputVariables_2lss_ttbar.push_back("max(abs(LepGood_eta[iF_Recl[0]]),abs(LepGood_eta[iF_Recl[1]]))");
   mvaInputVariables_2lss_ttbar.push_back("nJet25_Recl");
   mvaInputVariables_2lss_ttbar.push_back("mindr_lep1_jet");
   mvaInputVariables_2lss_ttbar.push_back("mindr_lep2_jet");
   mvaInputVariables_2lss_ttbar.push_back("min(met_pt,400)");
   mvaInputVariables_2lss_ttbar.push_back("avg_dr_jet");
   mvaInputVariables_2lss_ttbar.push_back("MT_met_lep1");
-  TMVAInterface mva_2lss_ttbar(mvaFileName_2lss_ttbar, mvaInputVariables_2lss_ttbar);
+  TMVAInterface mva_2lss_ttbar(mvaFileName_2lss_ttbar, mvaInputVariables_2lss_ttbar, { "iF_Recl[0]", "iF_Recl[1]", "iF_Recl[2]" });
 
   std::map<std::string, double> mvaInputs;
 
@@ -900,9 +943,15 @@ main(int argc,
 //--- create the jet collection
     std::vector<RecoJet> jets;
     jets.reserve(njets);
-    for(Int_t n = 0; n < njets; ++n)
+    for(Int_t n = 0; n < njets; ++n) {
+      jet_pt[n] = -1.;
+      if      ( jetPt_option == kJetPt_central ) jet_pt[n] = jet_pt_tmp[n];
+      else if ( jetPt_option == kJetPt_jecUp   ) jet_pt[n] = jet_pt_tmp[n]*jet_corr_jecUp[n]/jet_corr[n];
+      else if ( jetPt_option == kJetPt_jecDown ) jet_pt[n] = jet_pt_tmp[n]*jet_corr_jecDown[n]/jet_corr[n];
+      else assert(0);
       jets.push_back({ jet_pt[n], jet_eta[n], jet_phi[n], jet_mass[n],
-                       jet_csv[n], n });
+		       jet_csv[n], jet_btagWeight[n], n });
+    }
 
 //--- create the generator level jet collection
     std::vector<GenJet> gen_jets;
@@ -915,9 +964,9 @@ main(int argc,
     std::vector<HadronicTau> taus;
     taus.reserve(ntaus);
     for(Int_t n = 0; n < ntaus; ++n)
-      taus.push_back({ tau_pt[n], tau_eta[n], tau_phi[n], tau_mass[n],
-                       tau_decmode[n], tau_id_mva[n], tau_anti_e[n],
-                       tau_anti_mu[n], tau_pdg_id[n] });
+      taus.push_back({ tau_pt[n], tau_eta[n], tau_phi[n], tau_mass[n], tau_decmode[n], 
+                       tau_id_mva_dR03[n], tau_id_mva_dR05[n], tau_id_cut_dR03[n], tau_id_cut_dR05[n], 
+		       tau_anti_e[n], tau_anti_mu[n], tau_pdg_id[n] });
 
 //--- create the collection of generator level leptons
     std::vector<GenLepton> gen_leptons;
@@ -936,7 +985,7 @@ main(int argc,
 //--- collect the hadronic jets
     std::vector<RecoJet> hadronic_jets;
     for(auto & jet: jets)
-      if(jet.pt > 25) hadronic_jets.push_back(jet);
+      if(jet.pt > 25 && std::fabs(jet.eta) < 2.4) hadronic_jets.push_back(jet);
 
 //--- collect bjets
     std::map<std::string, std::vector<RecoJet>> bjets =
@@ -945,7 +994,7 @@ main(int argc,
       { "medium", {} }
     };
     for(auto & jet: jets)
-      if(std::fabs(jet.eta) < 2.4)
+      if(jet.pt > 25 && std::fabs(jet.eta) < 2.4)
       {
         if(jet.csv > loose_csv_wp)  bjets["loose"].push_back(jet);
         if(jet.csv > medium_csv_wp) bjets["medium"].push_back(jet);
@@ -996,7 +1045,7 @@ main(int argc,
         if(tau.pt > 20              &&
            std::fabs(tau.eta) < 2.3 &&
            tau.decmode >= 1         &&
-           tau.id_mva >= 4          &&
+           tau.id_mva_dR03 >= 4     &&
            tau.anti_e >= 2          &&
            tau.anti_mu >= 2          )
           good_taus.push_back(tau);
@@ -1218,6 +1267,13 @@ main(int argc,
           }
         );
 
+//--- compute event-level weight for data/MC correction of b-tagging efficiency and mistag rate
+//   (using the method "Event reweighting using scale factors calculated with a tag and probe method", 
+//    described on the BTV POG twiki https://twiki.cern.ch/twiki/bin/view/CMS/BTagShapeCalibration )
+      double evtWeight = 1.;
+      for(auto & jet: all_selected_jets)
+	evtWeight *= jet.btagWeight;
+
 //--- calculate MHT
       LV mht_vec(0, 0, 0, 0);
       for(auto & jet: all_selected_jets)
@@ -1256,6 +1312,7 @@ main(int argc,
 
 //--- compute output of BDTs used to discriminate ttH vs. ttV and ttH vs. ttbar 
 //    in 2lss_1tau category of ttH multilepton analysis 
+      mvaInputs["max(abs(LepGood_eta[iF_Recl[0]]),abs(LepGood_eta[iF_Recl[1]]))"] = std::max(std::fabs(lept_0.eta), std::fabs(lept_1.eta));
       mvaInputs["MT_met_lep1"]                = comp_MT_met_lep1(lept_0, met_pt, met_phi);
       mvaInputs["nJet25_Recl"]                = comp_n_jet25_recl(all_selected_jets);
       mvaInputs["mindr_lep1_jet"]             = comp_mindr_lep1_jet(lept_0, all_selected_jets);
@@ -1270,13 +1327,13 @@ main(int argc,
 
 //--- compute integer discriminant based on both BDT outputs,
 //    as defined in Table X of AN-2015/321
-      int mvaDiscr_2lss = -1;
-      if      ( mvaOutput_2lss_ttbar > +0.3 && mvaOutput_2lss_ttV >  -0.1 ) mvaDiscr_2lss = 6;
-      else if ( mvaOutput_2lss_ttbar > +0.3 && mvaOutput_2lss_ttV <= -0.1 ) mvaDiscr_2lss = 5;
-      else if ( mvaOutput_2lss_ttbar > -0.2 && mvaOutput_2lss_ttV >  -0.1 ) mvaDiscr_2lss = 4;
-      else if ( mvaOutput_2lss_ttbar > -0.2 && mvaOutput_2lss_ttV <= -0.1 ) mvaDiscr_2lss = 3;
-      else if (                                mvaOutput_2lss_ttV >  -0.1 ) mvaDiscr_2lss = 2;
-      else                                                                  mvaDiscr_2lss = 1;
+      Double_t mvaDiscr_2lss = -1;
+      if      ( mvaOutput_2lss_ttbar > +0.3 && mvaOutput_2lss_ttV >  -0.1 ) mvaDiscr_2lss = 6.;
+      else if ( mvaOutput_2lss_ttbar > +0.3 && mvaOutput_2lss_ttV <= -0.1 ) mvaDiscr_2lss = 5.;
+      else if ( mvaOutput_2lss_ttbar > -0.2 && mvaOutput_2lss_ttV >  -0.1 ) mvaDiscr_2lss = 4.;
+      else if ( mvaOutput_2lss_ttbar > -0.2 && mvaOutput_2lss_ttV <= -0.1 ) mvaDiscr_2lss = 3.;
+      else if (                                mvaOutput_2lss_ttV >  -0.1 ) mvaDiscr_2lss = 2.;
+      else                                                                  mvaDiscr_2lss = 1.;
 
 //======================== DILEPTON + TAU CHANNEL ===========================
 //--- see if any of our taus is a good candidate
@@ -1285,7 +1342,7 @@ main(int argc,
         if(tau.pt > 20              &&
            std::fabs(tau.eta) < 2.3 &&
            tau.decmode >= 1         &&
-           tau.id_mva >= 4          &&
+           tau.id_mva_dR03 >= 4     &&
            tau.anti_e >= 2          &&
            tau.anti_mu >= 2          )
           good_taus.push_back(tau);
@@ -1320,8 +1377,8 @@ main(int argc,
         const Double_t mt_metl1 =
             (lept_0.p4 + LV(met_pt, met_eta, met_phi, met_mass)).mass();
         const Double_t mht = std::fabs(ht_vec.pt());
-        hm[channel][cp::final].fill(pt_trailing, eta_trailing, min_dR_l2j,
-                                    mt_metl1, ht, mht, mvaDiscr_2lss);
+        hm[channel][cp::final].fill(evtWeight,
+          pt_trailing, eta_trailing, min_dR_l2j, mt_metl1, ht, mht, mvaDiscr_2lss);
       }
 
     }

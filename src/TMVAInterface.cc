@@ -6,7 +6,7 @@
 #include "TMVA/Factory.h"
 #include "TMVA/Tools.h"
 
-TMVAInterface::TMVAInterface(const std::string& mvaFileName, const std::vector<std::string>& mvaInputVariables)
+TMVAInterface::TMVAInterface(const std::string& mvaFileName, const std::vector<std::string>& mvaInputVariables, const std::vector<std::string>& spectators)
   : mva_(0)
 {
   edm::FileInPath mvaFileName_fip(mvaFileName);
@@ -17,6 +17,10 @@ TMVAInterface::TMVAInterface(const std::string& mvaFileName, const std::vector<s
 	mvaInputVariable != mvaInputVariables.end(); ++mvaInputVariable ) {
     mvaInputVariables_[*mvaInputVariable] = -1.;
     mva_->AddVariable(*mvaInputVariable, &mvaInputVariables_[*mvaInputVariable]);
+  }
+  for ( std::vector<std::string>::const_iterator spectator = spectators.begin();
+	spectator != spectators.end(); ++spectator ) {
+    mva_->AddSpectator(*spectator, &spectators_[*spectator]);
   }
   mva_->BookMVA("BDTG", mvaFileName_full);
 }

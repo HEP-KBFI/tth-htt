@@ -10,7 +10,7 @@
 class TMVAInterface
 {
  public:
-  TMVAInterface(const std::string& mvaFileName, const std::vector<std::string>& mvaInputVariables);
+  TMVAInterface(const std::string& mvaFileName, const std::vector<std::string>& mvaInputVariables, const std::vector<std::string>& spectators);
   ~TMVAInterface();
 
   /**
@@ -25,6 +25,7 @@ class TMVAInterface
   TMVA::Reader* mva_;
 
   mutable std::map<std::string, Float_t> mvaInputVariables_; // key = MVA input variable name
+  mutable std::map<std::string, Float_t> spectators_; // we do not really care about variables declared as "spectators" during TMVA training, but TMVA requires that we keep track of these variables...
 };
 
 #endif // TMVAInterface_h

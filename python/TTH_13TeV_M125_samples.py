@@ -18,6 +18,7 @@ Samples["ttH"] = {
                           "0000"),
     "token" : "TTbarH_M-125_13TeV_amcatnlo-pythia8-tauola",
     "subtoken" : "PU40bx25_PHYS14_25_V1-v1",
+    "isMC" : True,
     "nof_events" : 199500,
     "x_section" : 0.5085,
     "nof_files" : 7,
@@ -30,6 +31,7 @@ Samples["ttH_Htt"] = {
                           "0000"),
     "token" : "TTbarH_HToTauTau_M-125_13TeV_amcatnlo-pythia8-tauola",
     "subtoken" : "PU40bx25_PHYS14_25_V1-v1",
+    "isMC" : True,
     "nof_events" : 187400,
     "x_section" : 0.5085, # ?
     "nof_files" : 5,
@@ -42,6 +44,7 @@ Samples["tt_j"] = {
                           "0000"),
     "token" : "TTJets_MSDecaysCKM_central_Tune4C_13TeV-madgraph-tauola",
     "subtoken" : "PU20bx25_PHYS14_25_V1-v1",
+    "isMC" : True,
     "nof_events" : 25446993, # 116 missing
     "x_section" : 831.76,
     "nof_files" : 552,
@@ -54,6 +57,7 @@ Samples["Z_j"] = {
                           "0000"),
     "token" : "DYJetsToLL_M-50_13TeV-madgraph-pythia8",
     "subtoken" : "PU20bx25_PHYS14_25_V1-v1",
+    "isMC" : True,
     "nof_events" : 2829164, # 8 missing
     "x_section" : 6025.2,
     "nof_files" : 59,
@@ -66,6 +70,7 @@ Samples["W_j"] = {
                           "0000"),
     "token" : "WJetsToLNu_13TeV-madgraph-pythia8-tauola",
     "subtoken" : "PU20bx25_PHYS14_25_V1-v1",
+    "isMC" : True,
     "nof_events" : 10017462, # 31 missing
     "x_section" : 61526.7,
     "nof_files" : 222,
@@ -78,6 +83,7 @@ Samples["tt_W"] = {
                           "0000"),
     "token" : "TTWJets_Tune4C_13TeV-madgraph-tauola",
     "subtoken" : "PU20bx25_PHYS14_25_V1-v1",
+    "isMC" : True,
     "nof_events" : 246521,
     "x_section" : 0.665,
     "nof_files" : 9,
@@ -90,6 +96,7 @@ Samples["tt_Z"] = {
                           "0000"),
     "token" : "TTZJets_Tune4C_13TeV-madgraph-tauola",
     "subtoken" : "PU20bx25_PHYS14_25_V1-v1",
+    "isMC" : True,
     "nof_events" : 249275,
     "x_section" : 0.857,
     "nof_files" : 11,
@@ -102,6 +109,7 @@ Samples["WZ"] = {
                           "0000"),
     "token" : "WZJetsTo3LNu_Tune4C_13TeV-madgraph-tauola",
     "subtoken" : "PU20bx25_PHYS14_25_V1-v1",
+    "isMC" : True,
     "nof_events" : 237484, # 3 missing
     "x_section" : 2.1132,
     "nof_files" : 7,
@@ -114,6 +122,7 @@ Samples["ZZ"] = {
                           "0000"),
     "token" : "ZZTo4L_Tune4C_13TeV-powheg-pythia8",
     "subtoken" : "PU20bx25_PHYS14_25_V1-v1",
+    "isMC" : True,
     "nof_events" : 1958600, # 6 missing
     "x_section" : 0.08415,
     "nof_files" : 41,

@@ -13,9 +13,11 @@ public:
           Double_t _phi,
           Double_t _mass,
           Double_t _csv,
+	  Double_t _btagWeight,
           Int_t _idx);
 
   Double_t csv;  ///< CSV of the jet
+  Double_t btagWeight;  ///< weight for data/MC correction of b-tagging efficiency and mistag rate
   Int_t idx;     ///< its index in the ntuple
 };
 
