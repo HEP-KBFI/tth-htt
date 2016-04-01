@@ -17,6 +17,7 @@
 #define LEPT_REL_ISO_TYPE      Double_t
 #define LEPT_SIP3D_TYPE        Double_t
 #define LEPT_MVA_TTH_TYPE      Double_t
+#define LEPT_JETPTRATIO_TYPE   Double_t
 #define LEPT_MED_MU_ID_TYPE    Int_t
 #define LEPT_PDG_ID_TYPE       Int_t
 #define LEPT_ELE_MVA_ID_TYPE   Int_t
@@ -88,6 +89,7 @@
 #define LEPT_REL_ISO_KEY      "selLeptons_relIso03"
 #define LEPT_SIP3D_KEY        "selLeptons_sip3d"
 #define LEPT_MVA_TTH_KEY      "selLeptons_mvaTTH"
+#define LEPT_JETPTRATIO_KEY   "selLeptons_jetPtRatio"
 #define LEPT_MED_MU_ID_KEY    "selLeptons_mediumMuonId"
 #define LEPT_PDG_ID_KEY       "selLeptons_pdgId"
 #define LEPT_ELE_MVA_ID_KEY   "selLeptons_eleMVAIdSpring15NonTrig"

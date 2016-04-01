@@ -748,6 +748,7 @@ main(int argc,
   LEPT_REL_ISO_TYPE        rel_iso          [max_nleptons];
   LEPT_SIP3D_TYPE          sip3d            [max_nleptons];
   LEPT_MVA_TTH_TYPE        mva_tth          [max_nleptons];
+  LEPT_JETPTRATIO_TYPE     jetPtRatio       [max_nleptons];
   LEPT_MED_MU_ID_TYPE      med_mu_id        [max_nleptons];
   LEPT_PDG_ID_TYPE         pdg_id           [max_nleptons];
   LEPT_ELE_MVA_ID_TYPE     ele_mva_id       [max_nleptons];
@@ -820,6 +821,7 @@ main(int argc,
   chain.SetBranchAddress(LEPT_REL_ISO_KEY,      &rel_iso);
   chain.SetBranchAddress(LEPT_SIP3D_KEY,        &sip3d);
   chain.SetBranchAddress(LEPT_MVA_TTH_KEY,      &mva_tth);
+  chain.SetBranchAddress(LEPT_JETPTRATIO_KEY,   &jetPtRatio);
   chain.SetBranchAddress(LEPT_MED_MU_ID_KEY,    &med_mu_id);
   chain.SetBranchAddress(LEPT_PDG_ID_KEY,       &pdg_id);
   chain.SetBranchAddress(LEPT_ELE_MVA_ID_KEY,   &ele_mva_id);
@@ -936,7 +938,7 @@ main(int argc,
     leptons.reserve(nleptons);
     for(Int_t n = 0; n < nleptons; ++n)
       leptons.push_back({ pt[n], eta[n], phi[n], mass[n], pdg_id[n],
-                          dxy[n], dz[n], rel_iso[n], sip3d[n], mva_tth[n],
+			  dxy[n], dz[n], rel_iso[n], sip3d[n], mva_tth[n], jetPtRatio[n],
                           med_mu_id[n], ele_mva_id[n], lost_hits[n], loose_id[n],
                           tight_charge[n], pass_conv_veto[n] });
 

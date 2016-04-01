@@ -46,14 +46,22 @@ double comp_mindr_lep2_jet(const GenParticle& lepton, const std::vector<RecoJet>
   return comp_mindr_lep1_jet(lepton, jets_cleaned);
 }
 
-double comp_lep1_conePt(const GenParticle& lepton)
+double comp_lep1_conePt(const RecoLepton& lepton)
 {
-  return 0.; // not yet implemented 
+  double conePt = 0.;
+  int abs_pdg_id = std::abs(lepton.pdg_id);
+  if ( abs_pdg_id == 11 || abs_pdg_id == 13 ) {
+    if ( (abs_pdg_id == 11 || lepton.med_mu_id > 0) && lepton.mva_tth > 0.75 ) conePt = lepton.pt;
+    else conePt = 0.85*lepton.pt/lepton.jetPtRatio;
+  } else {
+    conePt = lepton.pt;
+  }
+  return conePt;
 }
 
-double comp_lep2_conePt(const GenParticle& lepton)
+double comp_lep2_conePt(const RecoLepton& lepton)
 {
-  return 0.; // not yet implemented 
+  return comp_lep1_conePt(lepton);
 }
 
 double comp_avg_dr_jet(const std::vector<RecoJet>& jets_cleaned)
@@ -73,6 +81,6 @@ double comp_avg_dr_jet(const std::vector<RecoJet>& jets_cleaned)
       }
     }
   }
-  if ( n_jet_pairs > 0 ) dRsum /= n_jet_pairs;
-  return dRsum;
+  double avg_dr_jet = ( n_jet_pairs > 0 ) ? dRsum/n_jet_pairs : 0.;
+  return avg_dr_jet;
 }
