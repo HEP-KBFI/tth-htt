@@ -10,6 +10,7 @@ RecoLepton::RecoLepton(Double_t _pt,
                        Double_t _rel_iso,
                        Double_t _sip3d,
                        Double_t _mva_tth,
+		       Double_t _jetPtRatio,
                        Int_t _med_mu_id,
                        Int_t _ele_mva_id,
                        Int_t _lost_hits,
@@ -23,6 +24,7 @@ RecoLepton::RecoLepton(Double_t _pt,
   , rel_iso(_rel_iso)
   , sip3d(_sip3d)
   , mva_tth(_mva_tth)
+  , jetPtRatio(_jetPtRatio)
   , med_mu_id(_med_mu_id)
   , ele_mva_id(_ele_mva_id)
   , lost_hits(_lost_hits)

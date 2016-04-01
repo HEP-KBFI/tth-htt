@@ -18,6 +18,7 @@ public:
              Double_t _rel_iso,
              Double_t _sip3d,
              Double_t _mva_tth,
+	     Double_t _jetPtRatio,
              Int_t _med_mu_id,
              Int_t _ele_mva_id,
              Int_t _lost_hits,
@@ -44,6 +45,7 @@ public:
   Double_t rel_iso;     ///< relative isolation
   Double_t sip3d;       ///< significance of IP
   Double_t mva_tth;     ///< lepton MVA discriminator
+  Double_t jetPtRatio;  ///< ratio of lepton pT to pT of nearby jet
   Int_t med_mu_id;      ///< Muon medium ID (muon only)
   Int_t ele_mva_id;     ///< Electron MVA id (electron only)
   Int_t lost_hits;      ///< Lost hits in the innermost layer of the tracker (electrons only)
