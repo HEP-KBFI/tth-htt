@@ -4,31 +4,32 @@
 
 #include <cmath> // std::abs(), std::fabs(), std::sqrt(), std::pow()
 
-GenParticle::GenParticle(Double_t _pt,
-                         Double_t _eta,
-                         Double_t _phi,
-                         Double_t _mass)
-  : pt(_pt)
-  , eta(_eta)
-  , phi(_phi)
-  , mass(_mass)
+GenParticle::GenParticle(Double_t pt,
+                         Double_t eta,
+                         Double_t phi,
+                         Double_t mass)
+  : pt_(pt)
+  , eta_(eta)
+  , phi_(phi)
+  , mass_(mass)
 {
-  p4 = math::PtEtaPhiMLorentzVector(pt, eta, phi, mass);
+  absEta_ = std::fabs(eta_);
+  p4_ = math::PtEtaPhiMLorentzVector(pt_, eta_, phi_, mass_);
 }
 
 inline double
 GenParticle::dR(const GenParticle & other) const
 {
-  return deltaR(eta, phi, other.eta, other.phi);
+  return deltaR(eta_, phi_, other.eta_, other.phi_);
 }
 
 bool
 GenParticle::rel_pT_diff(const GenParticle & other,
                          double tolerance) const
 {
-  return pt > 0                                    &&
-         other.pt > 0                              &&
-         (std::fabs(pt - other.pt) / pt) < tolerance;
+  return pt_ > 0.                                    &&
+         other.pt_ > 0.                              &&
+         (std::fabs(pt_ - other.pt_) / pt_) < tolerance;
 }
 
 bool

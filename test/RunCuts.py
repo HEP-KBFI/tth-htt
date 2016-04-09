@@ -55,7 +55,6 @@ process.fwliteInput = cms.PSet(
 )
 process.SynchTTH = cms.PSet(
   isMC = cms.bool({{ isMC }}),
-  central_or_shift = cms.string('central'),
   outputDir = cms.string(os.path.join('{{ results_dir }}', '{{ sample_name }}')),
   forceOverwrite = cms.bool(True)
 )

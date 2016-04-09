@@ -1,46 +1,25 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoLepton.h" // RecoLepton, GenLepton
 
-RecoLepton::RecoLepton(Double_t _pt,
-                       Double_t _eta,
-                       Double_t _phi,
-                       Double_t _mass,
-                       Int_t _pdg_id,
-                       Double_t _dxy,
-                       Double_t _dz,
-                       Double_t _rel_iso,
-                       Double_t _sip3d,
-                       Double_t _mva_tth,
-		       Double_t _jetPtRatio,
-                       Int_t _med_mu_id,
-                       Int_t _ele_mva_id,
-                       Int_t _lost_hits,
-                       Int_t _loose_id,
-                       Int_t _tight_charge,
-                       Int_t _pass_conv_veto)
-
-  : GenLepton(_pt, _eta, _phi, _mass, _pdg_id)
-  , dxy(_dxy)
-  , dz(_dz)
-  , rel_iso(_rel_iso)
-  , sip3d(_sip3d)
-  , mva_tth(_mva_tth)
-  , jetPtRatio(_jetPtRatio)
-  , med_mu_id(_med_mu_id)
-  , ele_mva_id(_ele_mva_id)
-  , lost_hits(_lost_hits)
-  , loose_id(_loose_id)
-  , tight_charge(_tight_charge)
-  , pass_conv_veto(_pass_conv_veto)
+RecoLepton::RecoLepton(Double_t pt,
+                       Double_t eta,
+                       Double_t phi,
+                       Double_t mass,
+                       Int_t pdgId,
+                       Double_t dxy,
+                       Double_t dz,
+                       Double_t relIso,
+                       Double_t sip3d,
+		       Double_t mvaRawTTH,
+		       Double_t jetPtRatio,
+		       Double_t jetBtagCSV,
+		       Int_t tightCharge)
+  : GenLepton(pt, eta, phi, mass, pdgId)
+  , dxy_(dxy)
+  , dz_(dz)
+  , relIso_(relIso)
+  , sip3d_(sip3d)
+  , mvaRawTTH_(mvaRawTTH)
+  , jetPtRatio_(jetPtRatio)
+  , jetBtagCSV_(jetBtagCSV)  
+  , tightCharge_(tightCharge)
 {}
-
-bool
-RecoLepton::is_electron() const
-{
-  return std::abs(pdg_id) == 11;
-}
-
-bool
-RecoLepton::is_muon() const
-{
-  return std::abs(pdg_id) == 13;
-}

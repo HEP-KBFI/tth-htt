@@ -8,17 +8,19 @@ class GenParticle
 {
 public:
   GenParticle() = default;
-  GenParticle(Double_t _pt,
-              Double_t _eta,
-              Double_t _phi,
-              Double_t _mass);
+  GenParticle(Double_t pt,
+              Double_t eta,
+              Double_t phi,
+              Double_t mass);
 
-  Double_t pt;   ///< pT of the particle
-  Double_t eta;  ///< eta of the particle
-  Double_t phi;  ///< phi of the particle
-  Double_t mass; ///< mass of the particle
+  Double_t pt_;   ///< pT of the particle
+  Double_t eta_;  ///< eta of the particle
+  Double_t phi_;  ///< phi of the particle
+  Double_t mass_; ///< mass of the particle
 
-  math::PtEtaPhiMLorentzVector p4; ///< 4-momentum constructed from the pT, eta, phi and mass
+  Double_t absEta_; ///< |eta| of the particle
+
+  math::PtEtaPhiMLorentzVector p4_; ///< 4-momentum constructed from the pT, eta, phi and mass
 
   /**
    * @brief Calculates dR between our and the other particle.

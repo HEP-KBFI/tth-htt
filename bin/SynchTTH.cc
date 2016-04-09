@@ -15,6 +15,7 @@
 #include "FWCore/Utilities/interface/Exception.h" // cms::Exception
 #include "DataFormats/FWLite/interface/InputSource.h" // fwlite::InputSource
 #include "DataFormats/Math/interface/LorentzVector.h" // math::PtEtaPhiMLorentzVector
+#include "DataFormats/Math/interface/deltaR.h" // deltaR
 
 #include <Rtypes.h> // Int_t, Long64_t, Double_t
 #include <TChain.h> // TChain
@@ -28,18 +29,21 @@
 #include "tthAnalysis/HiggsToTauTau/interface/HistogramManager.h" // HistogramManager, join_strings()
 #include "tthAnalysis/HiggsToTauTau/interface/RecoLepton.h" // RecoLepton
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h" // RecoJet
-#include "tthAnalysis/HiggsToTauTau/interface/HadronicTau.h" // HardronicTau
+#include "tthAnalysis/HiggsToTauTau/interface/RecoHadTau.h" // RecoHadTau
 #include "tthAnalysis/HiggsToTauTau/interface/GenLepton.h" // GenLepton
 #include "tthAnalysis/HiggsToTauTau/interface/GenJet.h" // GenJet
-#include "tthAnalysis/HiggsToTauTau/interface/GenHadronicTau.h" // GenHadronicTau
+#include "tthAnalysis/HiggsToTauTau/interface/GenHadTau.h" // GenHadTau
 #include "tthAnalysis/HiggsToTauTau/interface/TMVAInterface.h" // TMVAInterface
 #include "tthAnalysis/HiggsToTauTau/interface/mvaInputVariables.h" // auxiliary functions for computing input variables of the MVA used for signal extraction in the 2lss_1tau category 
-
-#if defined(M125)
-#include "tthAnalysis/HiggsToTauTau/interface/KeyTypes125.h"
-#elif defined(M120)
-#include "tthAnalysis/HiggsToTauTau/interface/KeyTypes120.h"
-#endif
+#include "tthAnalysis/HiggsToTauTau/interface/KeyTypes.h"
+#include "tthAnalysis/HiggsToTauTau/interface/RecoElectronReader.h" // RecoElectronReader
+#include "tthAnalysis/HiggsToTauTau/interface/RecoMuonReader.h" // RecoMuonReader
+#include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauReader.h" // RecoHadTauReader
+#include "tthAnalysis/HiggsToTauTau/interface/RecoJetReader.h" // RecoJetReader
+#include "tthAnalysis/HiggsToTauTau/interface/GenLeptonReader.h" // GenLeptonReader
+#include "tthAnalysis/HiggsToTauTau/interface/GenHadTauReader.h" // GenHadTauReader
+#include "tthAnalysis/HiggsToTauTau/interface/GenJetReader.h" // GenJetReader
+#include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionSelector.h" // RecoElectronSelectorLoose, RecoElectronSelectorTight, RecoMuonSelectorLoose, RecoMuonSelectorTight, RecoHadTauSelector
 
 typedef math::PtEtaPhiMLorentzVector LV;
 
@@ -162,40 +166,17 @@ get_all_files(const std::string & dir,
 }
 
 /**
- * @brief Checks whether a given lepton passes preselection criteria
- * @param Given lepton
- * @return True, if passes; false otherwise
- */
-inline bool
-passes_preselection(const RecoLepton & lept)
-{
-  if(std::fabs(lept.dxy)     <= 0.05 && // 500um in cm
-     std::fabs(lept.dz)      < 0.1   && // 1 mm in cm
-     lept.rel_iso            < 0.5    )
-  {
-    if(lept.is_electron()      &&
-       lept.lost_hits  <= 1    &&
-       lept.ele_mva_id >= 1    &&
-       lept.pt         > 7.0   &&
-       std::fabs(lept.eta) < 2.5)
-      return true;
-    else if(lept.is_muon()          &&
-            lept.loose_id >= 1      &&
-            lept.pt       > 5.0     &&
-            std::fabs(lept.eta) < 2.4)
-      return true;
-  }
-  return false;
-}
-
-/**
  * @brief Auxiliary function used for sorting leptons by decreasing pT
  * @param Given pair of leptons
  * @return True, if first lepton has higher pT; false if second lepton has higher pT
  */
-bool isHigherPt(const GenParticle& particle1, const GenParticle& particle2)
+//bool isHigherPt(const GenParticle& particle1, const GenParticle& particle2)
+//{
+//  return (particle1.pt_ > particle2.pt_);
+//}
+bool isHigherPt_ptr(const GenParticle* particle1, const GenParticle* particle2)
 {
-  return (particle1.pt > particle2.pt);
+  return (particle1->pt_ > particle2->pt_);
 }
 
 
@@ -254,33 +235,7 @@ main(int argc,
   const edm::ParameterSet cfg_presel =
       cfg.getParameter<edm::ParameterSet>("SynchTTH");
   bool isMC = cfg_presel.getParameter<bool>("isMC"); 
-  std::string central_or_shift = cfg_presel.getParameter<std::string>("central_or_shift");
   std::string jet_btagWeight_branch = ( isMC ) ? "Jet_bTagWeight" : "";
-  enum { kJetPt_central, kJetPt_jecUp, kJetPt_jecDown };
-  int jetPt_option = kJetPt_central;
-  if ( isMC && central_or_shift != "central" ) {
-    TString central_or_shift_tstring = central_or_shift.data();
-    std::string shiftUp_or_Down = "";
-    if      ( central_or_shift_tstring.EndsWith("Up")   ) shiftUp_or_Down = "Up";
-    else if ( central_or_shift_tstring.EndsWith("Down") ) shiftUp_or_Down = "Down";
-    else throw cms::Exception("SynchTTH")
-      << "Invalid Configuration parameter 'central_or_shift' = " << central_or_shift << " !!\n";
-    if      ( central_or_shift_tstring.BeginsWith("CMS_ttHl_btag_HF")       ) jet_btagWeight_branch = "Jet_bTagWeight_HF" + shiftUp_or_Down;
-    else if ( central_or_shift_tstring.BeginsWith("CMS_ttHl_btag_HFStats1") ) jet_btagWeight_branch = "Jet_bTagWeight_HFStats1" + shiftUp_or_Down;
-    else if ( central_or_shift_tstring.BeginsWith("CMS_ttHl_btag_HFStats2") ) jet_btagWeight_branch = "Jet_bTagWeight_HFStats2" + shiftUp_or_Down;
-    else if ( central_or_shift_tstring.BeginsWith("CMS_ttHl_btag_LF")       ) jet_btagWeight_branch = "Jet_bTagWeight_LF" + shiftUp_or_Down;
-    else if ( central_or_shift_tstring.BeginsWith("CMS_ttHl_btag_LFStats1") ) jet_btagWeight_branch = "Jet_bTagWeight_LFStats1" + shiftUp_or_Down;
-    else if ( central_or_shift_tstring.BeginsWith("CMS_ttHl_btag_LFStats2") ) jet_btagWeight_branch = "Jet_bTagWeight_LFStats2" + shiftUp_or_Down;
-    else if ( central_or_shift_tstring.BeginsWith("CMS_ttHl_btag_cErr1")    ) jet_btagWeight_branch = "Jet_bTagWeight_cErr1" + shiftUp_or_Down;
-    else if ( central_or_shift_tstring.BeginsWith("CMS_ttHl_btag_cErr2")    ) jet_btagWeight_branch = "Jet_bTagWeight_cErr2" + shiftUp_or_Down;
-    else if ( central_or_shift_tstring.BeginsWith("CMS_ttHl_JES") ) {
-      jet_btagWeight_branch = "Jet_bTagWeight_JES" + shiftUp_or_Down;
-      if      ( shiftUp_or_Down == "Up"   ) jetPt_option = kJetPt_jecUp;
-      else if ( shiftUp_or_Down == "Down" ) jetPt_option = kJetPt_jecDown;
-      else assert(0);
-    } else throw cms::Exception("SynchTTH")
-	<< "Invalid Configuration parameter 'central_or_shift' = " << central_or_shift << " !!\n";
-  }
   std::string output_dir =
       cfg_presel.getParameter<std::string>("outputDir");
   const bool force_overwrite =
@@ -625,29 +580,29 @@ main(int argc,
   auto fill_pdg_plot = [&pdg_id_keys, &pdg_id_plots]
                          (const std::vector<GenLepton> & gen_leptons,
                           const std::vector<GenJet> & gen_jets,
-                          const std::vector<RecoLepton> & leptons,
-                          const std::vector<HadronicTau> * const taus,
-                          const std::vector<GenHadronicTau> * const gen_taus,
+                          const std::vector<RecoLepton*> & leptons,
+                          const std::vector<RecoHadTau> * const taus,
+                          const std::vector<GenHadTau> * const gen_taus,
                           ch channel,
                           bool check_pdg_id, double evtWeight = 1.) -> void
   {
     for(auto & lepton: leptons)
     {
       bool any_overlap = false;
-      std::string pdg_id_key = pdg_id_keys.at(std::abs(lepton.pdg_id));
+      std::string pdg_id_key = pdg_id_keys.at(std::abs(lepton->pdgId_));
 
       for(auto & gen_lepton: gen_leptons)
-        if(lepton.is_overlap(gen_lepton, 0.3))
+        if(lepton->is_overlap(gen_lepton, 0.3))
         {
           if(check_pdg_id)
           {
-            if(lepton.pdg_id == gen_lepton.pdg_id)
+            if(lepton->pdgId_ == gen_lepton.pdgId_)
             {
               pdg_id_plots[match_type::same][channel].fill(pdg_id_key, evtWeight, 1);
               any_overlap = true;
               break;
             }
-            else if(lepton.pdg_id == -gen_lepton.pdg_id)
+            else if(lepton->pdgId_ == -gen_lepton.pdgId_)
             {
               pdg_id_plots[match_type::flipped][channel].fill(pdg_id_key, evtWeight, 1);
               any_overlap = true;
@@ -656,7 +611,7 @@ main(int argc,
           }
           else
           {
-            if(std::abs(lepton.pdg_id) == std::abs(gen_lepton.pdg_id))
+            if(std::abs(lepton->pdgId_) == std::abs(gen_lepton.pdgId_))
             {
               pdg_id_plots[match_type::gen_match][channel].fill(pdg_id_key, evtWeight, 1);
               any_overlap = true;
@@ -667,7 +622,7 @@ main(int argc,
 
       if(any_overlap) continue;
       for(auto & gen_jet: gen_jets)
-        if(lepton.is_overlap(gen_jet, 0.3))
+        if(lepton->is_overlap(gen_jet, 0.3))
         {
           pdg_id_plots[match_type::due_jets][channel].fill(pdg_id_key, evtWeight, 1);
           any_overlap = true;
@@ -683,7 +638,7 @@ main(int argc,
       for(auto & tau: *taus)
       {
         bool any_overlap = false;
-        std::string pdg_id_key = pdg_id_keys.at(std::abs(tau.pdg_id));
+        std::string pdg_id_key = pdg_id_keys.at(std::abs(tau.pdgId_));
         for(auto & gen_tau: *gen_taus)
           if(tau.is_overlap(gen_tau, 0.3))
           {
@@ -718,163 +673,51 @@ main(int argc,
   }
 
 //--- declare the constants
-  const double tight_mva_wp = 0.8;
-  const double loose_mva_wp = 0.5;
-  const double loose_csv_wp = 0.460;  // loose and medium WPs of CSV disciminator training for Spring15 (CMSSW 7_6_x) samples,
-  const double medium_csv_wp = 0.800; // cf. https://twiki.cern.ch/twiki/bin/view/CMS/BtagRecommendation76X 
-  const unsigned max_nleptons = 32;
-  const unsigned max_njets = 32;
-  const unsigned max_ntaus = 32;
-  const unsigned max_ngenlept = 32;
-  const unsigned max_ngenjet = 32;
-  const unsigned max_ngentau = 32;
   const double z_mass = 91.1876;
   const double z_th = 10;
   const double met_coef = 0.00397;
   const double mht_coef = 0.00265;
 
 //--- declare the variables
-  RUN_TYPE                 run;
-  LUMI_TYPE                lumi;
-  EVT_TYPE                 evt;
+  RUN_TYPE run;
+  chain.SetBranchAddress(RUN_KEY, &run);
+  LUMI_TYPE lumi;
+  chain.SetBranchAddress(LUMI_KEY, &lumi);
+  EVT_TYPE evt;
+  chain.SetBranchAddress(EVT_KEY, &evt);
+  
+  RecoElectronReader* electronReader = new RecoElectronReader("nselLeptons", "selLeptons");
+  electronReader->setBranchAddresses(&chain);
+  RecoElectronCollectionSelectorLoose preselElectronSelector;
+  RecoElectronCollectionSelectorTight tightElectronSelector;
+  RecoMuonReader* muonReader = new RecoMuonReader("nselLeptons", "selLeptons");
+  muonReader->setBranchAddresses(&chain);
+  RecoMuonCollectionSelectorLoose preselMuonSelector;
+  RecoMuonCollectionSelectorTight tightMuonSelector;
+  RecoHadTauReader* hadTauReader = new RecoHadTauReader("nTauGood", "TauGood");
+  hadTauReader->setBranchAddresses(&chain);
+  RecoHadTauCollectionSelectorTight hadTauSelector;
+  RecoJetReader* jetReader = new RecoJetReader("nJet", "Jet");
+  jetReader->setSranchName_BtagWeight(jet_btagWeight_branch);
+  jetReader->setBranchAddresses(&chain);
+  RecoJetCollectionSelector jetSelector;
+  RecoJetCollectionSelectorBtagLoose jetSelectorBtagLoose;
+  RecoJetCollectionSelectorBtagMedium jetSelectorBtagMedium;
 
-  NLEPTONS_TYPE nleptons;
-  LEPT_PT_TYPE             pt               [max_nleptons];
-  LEPT_ETA_TYPE            eta              [max_nleptons];
-  LEPT_PHI_TYPE            phi              [max_nleptons];
-  LEPT_MASS_TYPE           mass             [max_nleptons];
-  LEPT_DXY_TYPE            dxy              [max_nleptons];
-  LEPT_DZ_TYPE             dz               [max_nleptons];
-  LEPT_REL_ISO_TYPE        rel_iso          [max_nleptons];
-  LEPT_SIP3D_TYPE          sip3d            [max_nleptons];
-  LEPT_MVA_TTH_TYPE        mva_tth          [max_nleptons];
-  LEPT_JETPTRATIO_TYPE     jetPtRatio       [max_nleptons];
-  LEPT_MED_MU_ID_TYPE      med_mu_id        [max_nleptons];
-  LEPT_PDG_ID_TYPE         pdg_id           [max_nleptons];
-  LEPT_ELE_MVA_ID_TYPE     ele_mva_id       [max_nleptons];
-  LEPT_LOST_HITS_TYPE      lost_hits        [max_nleptons];
-  LEPT_LOOSE_ID_TYPE       loose_id         [max_nleptons];
-  LEPT_TIGHT_CHARGE_TYPE   tight_charge     [max_nleptons];
-  LEPT_CONV_VETO_TYPE      pass_conv_veto   [max_nleptons];
+  MET_PT_TYPE met_pt;
+  chain.SetBranchAddress(MET_PT_KEY, &met_pt);
+  MET_ETA_TYPE met_eta;
+  chain.SetBranchAddress(MET_ETA_KEY, &met_eta);
+  MET_PHI_TYPE met_phi;
+  chain.SetBranchAddress(MET_PHI_KEY, &met_phi);
+  LV met_p4(met_pt, met_eta, met_phi, 0.);
 
-  MET_PT_TYPE              met_pt;
-  MET_ETA_TYPE             met_eta;
-  MET_PHI_TYPE             met_phi;
-  MET_MASS_TYPE            met_mass;
-
-  NJETS_TYPE               njets;
-  JET_PT_TYPE              jet_pt_tmp       [max_njets];
-  JET_CORR_TYPE            jet_corr         [max_njets];
-  JET_CORR_TYPE            jet_corr_jecUp   [max_njets];
-  JET_CORR_TYPE            jet_corr_jecDown [max_njets];
-  JET_PT_TYPE              jet_pt           [max_njets];
-  JET_ETA_TYPE             jet_eta          [max_njets];
-  JET_PHI_TYPE             jet_phi          [max_njets];
-  JET_MASS_TYPE            jet_mass         [max_njets];
-  JET_CSV_TYPE             jet_csv          [max_njets];
-  JET_BTAGWEIGHT_TYPE      jet_btagWeight   [max_njets];
-
-  NTAUS_TYPE               ntaus;
-  TAU_PT_TYPE              tau_pt           [max_ntaus];
-  TAU_ETA_TYPE             tau_eta          [max_ntaus];
-  TAU_PHI_TYPE             tau_phi          [max_ntaus];
-  TAU_MASS_TYPE            tau_mass         [max_ntaus];
-  TAU_DECMODE_TYPE         tau_decmode      [max_ntaus];
-  TAU_ID_MVA_DR03_TYPE     tau_id_mva_dR03  [max_ntaus];
-  TAU_ID_MVA_DR03_TYPE     tau_id_mva_dR05  [max_ntaus];
-  TAU_ID_CUT_DR03_TYPE     tau_id_cut_dR03  [max_ntaus];
-  TAU_ID_CUT_DR05_TYPE     tau_id_cut_dR05  [max_ntaus];  
-  TAU_ANTI_E_TYPE          tau_anti_e       [max_ntaus];
-  TAU_ANTI_MU_TYPE         tau_anti_mu      [max_ntaus];
-  TAU_PDG_ID_TYPE          tau_pdg_id       [max_ntaus];
-
-  GEN_NLEPTONS_TYPE        gen_nleptons;
-  GEN_PT_TYPE              gen_pt           [max_ngenlept];
-  GEN_ETA_TYPE             gen_eta          [max_ngenlept];
-  GEN_PHI_TYPE             gen_phi          [max_ngenlept];
-  GEN_MASS_TYPE            gen_mass         [max_ngenlept];
-  GEN_PDG_ID_TYPE          gen_pdgid        [max_ngenlept];
-
-  GEN_NJETS_TYPE           gen_njets;
-  GEN_JET_PT_TYPE          gen_jet_pt       [max_ngenjet];
-  GEN_JET_ETA_TYPE         gen_jet_eta      [max_ngenjet];
-  GEN_JET_PHI_TYPE         gen_jet_phi      [max_ngenjet];
-  GEN_JET_MASS_TYPE        gen_jet_mass     [max_ngenjet];
-
-  GEN_NTAUS_TYPE           gen_ntaus;
-  GEN_TAU_PT_TYPE          gen_tau_pt       [max_ngentau];
-  GEN_TAU_ETA_TYPE         gen_tau_eta      [max_ngentau];
-  GEN_TAU_PHI_TYPE         gen_tau_phi      [max_ngentau];
-  GEN_TAU_MASS_TYPE        gen_tau_mass     [max_ngentau];
-
-  chain.SetBranchAddress(RUN_KEY,               &run);
-  chain.SetBranchAddress(LUMI_KEY,              &lumi);
-  chain.SetBranchAddress(EVT_KEY,               &evt);
-
-  chain.SetBranchAddress(NLEPTONS_KEY,          &nleptons);
-  chain.SetBranchAddress(LEPT_PT_KEY,           &pt);
-  chain.SetBranchAddress(LEPT_ETA_KEY,          &eta);
-  chain.SetBranchAddress(LEPT_PHI_KEY,          &phi);
-  chain.SetBranchAddress(LEPT_MASS_KEY,         &mass);
-  chain.SetBranchAddress(LEPT_DXY_KEY,          &dxy);
-  chain.SetBranchAddress(LEPT_DZ_KEY,           &dz);
-  chain.SetBranchAddress(LEPT_REL_ISO_KEY,      &rel_iso);
-  chain.SetBranchAddress(LEPT_SIP3D_KEY,        &sip3d);
-  chain.SetBranchAddress(LEPT_MVA_TTH_KEY,      &mva_tth);
-  chain.SetBranchAddress(LEPT_JETPTRATIO_KEY,   &jetPtRatio);
-  chain.SetBranchAddress(LEPT_MED_MU_ID_KEY,    &med_mu_id);
-  chain.SetBranchAddress(LEPT_PDG_ID_KEY,       &pdg_id);
-  chain.SetBranchAddress(LEPT_ELE_MVA_ID_KEY,   &ele_mva_id);
-  chain.SetBranchAddress(LEPT_LOST_HITS_KEY,    &lost_hits);
-  chain.SetBranchAddress(LEPT_LOOSE_ID_KEY,     &loose_id);
-  chain.SetBranchAddress(LEPT_TIGHT_CHARGE_KEY, &tight_charge);
-  chain.SetBranchAddress(LEPT_CONV_VETO_KEY,    &pass_conv_veto);
-
-  chain.SetBranchAddress(MET_PT_KEY,            &met_pt);
-  chain.SetBranchAddress(MET_ETA_KEY,           &met_eta);
-  chain.SetBranchAddress(MET_PHI_KEY,           &met_phi);
-  chain.SetBranchAddress(MET_MASS_KEY,          &met_mass);
-
-  chain.SetBranchAddress(NJETS_KEY,             &njets);
-  chain.SetBranchAddress(JET_PT_KEY,            &jet_pt);
-  chain.SetBranchAddress(JET_ETA_KEY,           &jet_eta);
-  chain.SetBranchAddress(JET_PHI_KEY,           &jet_phi);
-  chain.SetBranchAddress(JET_MASS_KEY,          &jet_mass);
-  chain.SetBranchAddress(JET_CSV_KEY,           &jet_csv);
-  chain.SetBranchAddress(jet_btagWeight_branch.data(), &jet_btagWeight);
-
-  chain.SetBranchAddress(NTAUS_KEY,             &ntaus);
-  chain.SetBranchAddress(TAU_PT_KEY,            &tau_pt);
-  chain.SetBranchAddress(TAU_ETA_KEY,           &tau_eta);
-  chain.SetBranchAddress(TAU_PHI_KEY,           &tau_phi);
-  chain.SetBranchAddress(TAU_MASS_KEY,          &tau_mass);
-  chain.SetBranchAddress(TAU_DECMODE_KEY,       &tau_decmode);
-  chain.SetBranchAddress(TAU_ID_MVA_DR03_KEY,   &tau_id_mva_dR03);
-  chain.SetBranchAddress(TAU_ID_MVA_DR05_KEY,   &tau_id_mva_dR05);
-  chain.SetBranchAddress(TAU_ID_CUT_DR03_KEY,   &tau_id_cut_dR03);
-  chain.SetBranchAddress(TAU_ID_CUT_DR05_KEY,   &tau_id_cut_dR05);
-  chain.SetBranchAddress(TAU_ANTI_E_KEY,        &tau_anti_e);
-  chain.SetBranchAddress(TAU_ANTI_MU_KEY,       &tau_anti_mu);
-  chain.SetBranchAddress(TAU_PDG_ID_KEY,        &tau_pdg_id);
-
-  chain.SetBranchAddress(GEN_NLEPTONS_KEY,      &gen_nleptons);
-  chain.SetBranchAddress(GEN_PT_KEY,            &gen_pt);
-  chain.SetBranchAddress(GEN_ETA_KEY,           &gen_eta);
-  chain.SetBranchAddress(GEN_PHI_KEY,           &gen_phi);
-  chain.SetBranchAddress(GEN_MASS_KEY,          &gen_mass);
-  chain.SetBranchAddress(GEN_PDG_ID_KEY,        &gen_pdgid);
-
-  chain.SetBranchAddress(GEN_NJETS_KEY,         &gen_njets);
-  chain.SetBranchAddress(GEN_JET_PT_KEY,        &gen_jet_pt);
-  chain.SetBranchAddress(GEN_JET_ETA_KEY,       &gen_jet_eta);
-  chain.SetBranchAddress(GEN_JET_PHI_KEY,       &gen_jet_phi);
-  chain.SetBranchAddress(GEN_JET_MASS_KEY,      &gen_jet_mass);
-
-  chain.SetBranchAddress(GEN_NTAUS_KEY,         &gen_ntaus);
-  chain.SetBranchAddress(GEN_TAU_PT_KEY,        &gen_tau_pt);
-  chain.SetBranchAddress(GEN_TAU_ETA_KEY,       &gen_tau_eta);
-  chain.SetBranchAddress(GEN_TAU_PHI_KEY,       &gen_tau_phi);
-  chain.SetBranchAddress(GEN_TAU_MASS_KEY,      &gen_tau_mass);
+  GenLeptonReader* genLeptonReader = new GenLeptonReader("nGenLep", "GenLep");
+  genLeptonReader->setBranchAddresses(&chain);
+  GenHadTauReader* genHadTauReader = new GenHadTauReader("nGenHadTaus", "GenHadTaus");
+  genHadTauReader->setBranchAddresses(&chain);
+  GenJetReader* genJetReader = new GenJetReader("nGenJet", "GenJet");
+  genJetReader->setBranchAddresses(&chain);
 
 //--- initialize BDTs used to discriminate ttH vs. ttV and ttH vs. ttbar 
 //    in 2lss_1tau category of ttH multilepton analysis
@@ -934,172 +777,112 @@ main(int argc,
     chain.GetEntry(i);
 
 //--- create the lepton collection
-    std::vector<RecoLepton> leptons;
-    leptons.reserve(nleptons);
-    for(Int_t n = 0; n < nleptons; ++n)
-      leptons.push_back({ pt[n], eta[n], phi[n], mass[n], pdg_id[n],
-			  dxy[n], dz[n], rel_iso[n], sip3d[n], mva_tth[n], jetPtRatio[n],
-                          med_mu_id[n], ele_mva_id[n], lost_hits[n], loose_id[n],
-                          tight_charge[n], pass_conv_veto[n] });
+    std::vector<RecoElectron> electrons = electronReader->read();
+    std::vector<RecoElectron> preselElectrons = preselElectronSelector(electrons);
+    std::vector<RecoElectron> tightElectrons = tightElectronSelector(preselElectrons);
+    std::vector<RecoMuon> muons = muonReader->read();
+    std::vector<RecoMuon> preselMuons = preselMuonSelector(muons);
+    std::vector<RecoMuon> tightMuons = tightMuonSelector(preselMuons);
 
 //--- create the jet collection
-    std::vector<RecoJet> jets;
-    jets.reserve(njets);
-    for(Int_t n = 0; n < njets; ++n) {
-      jet_pt[n] = -1.;
-      if      ( jetPt_option == kJetPt_central ) jet_pt[n] = jet_pt_tmp[n];
-      else if ( jetPt_option == kJetPt_jecUp   ) jet_pt[n] = jet_pt_tmp[n]*jet_corr_jecUp[n]/jet_corr[n];
-      else if ( jetPt_option == kJetPt_jecDown ) jet_pt[n] = jet_pt_tmp[n]*jet_corr_jecDown[n]/jet_corr[n];
-      else assert(0);
-      jets.push_back({ jet_pt[n], jet_eta[n], jet_phi[n], jet_mass[n],
-		       jet_csv[n], jet_btagWeight[n], n });
-    }
+    std::vector<RecoJet> jets = jetReader->read();
+    std::vector<RecoJet> selJets = jetSelector(jets);
+    // TO-DO: clean selJets collection w.r.t tightLeptons and selHadTaus
+
+//--- compute event-level weight for data/MC correction of b-tagging efficiency and mistag rate
+//   (using the method "Event reweighting using scale factors calculated with a tag and probe method", 
+//    described on the BTV POG twiki https://twiki.cern.ch/twiki/bin/view/CMS/BTagShapeCalibration )
+    double evtWeight = 1.;
+    for ( auto & jet: selJets )
+      evtWeight *= jet.BtagWeight_;
 
 //--- create the generator level jet collection
-    std::vector<GenJet> gen_jets;
-    gen_jets.reserve(gen_njets);
-    for(Int_t n = 0; n < gen_njets; ++n)
-      gen_jets.push_back({ gen_jet_pt[n], gen_jet_eta[n],
-                           gen_jet_phi[n], gen_jet_mass[n] });
+    std::vector<GenJet> genJets = genJetReader->read();
 
 //--- create the tau collection
-    std::vector<HadronicTau> taus;
-    taus.reserve(ntaus);
-    for(Int_t n = 0; n < ntaus; ++n)
-      taus.push_back({ tau_pt[n], tau_eta[n], tau_phi[n], tau_mass[n], tau_decmode[n], 
-                       tau_id_mva_dR03[n], tau_id_mva_dR05[n], tau_id_cut_dR03[n], tau_id_cut_dR05[n], 
-		       tau_anti_e[n], tau_anti_mu[n], tau_pdg_id[n] });
+    std::vector<RecoHadTau> hadTaus = hadTauReader->read();
+    std::vector<RecoHadTau> selHadTaus = hadTauSelector(hadTaus);
 
 //--- create the collection of generator level leptons
-    std::vector<GenLepton> gen_leptons;
-    gen_leptons.reserve(gen_nleptons);
-    for(Int_t n = 0; n < gen_nleptons; ++n)
-      gen_leptons.push_back({ gen_pt[n], gen_eta[n], gen_phi[n], gen_mass[n],
-                              gen_pdgid[n] });
+    std::vector<GenLepton> genLeptons = genLeptonReader->read();
 
 //--- create the collection of generator level hadronic taus
-    std::vector<GenHadronicTau> gen_taus;
-    gen_taus.reserve(gen_ntaus);
-    for(Int_t n = 0; n < gen_ntaus; ++n)
-      gen_taus.push_back({ gen_tau_pt[n], gen_tau_eta[n],
-                           gen_tau_phi[n], gen_tau_mass[n] });
+    std::vector<GenHadTau> genHadTaus = genHadTauReader->read();
 
-//--- collect the hadronic jets
-    std::vector<RecoJet> hadronic_jets;
-    for(auto & jet: jets)
-      if(jet.pt > 25 && std::fabs(jet.eta) < 2.4) hadronic_jets.push_back(jet);
-
-//--- collect bjets
-    std::map<std::string, std::vector<RecoJet>> bjets =
-    {
-      { "loose",  {} },
-      { "medium", {} }
-    };
-    for(auto & jet: jets)
-      if(jet.pt > 25 && std::fabs(jet.eta) < 2.4)
-      {
-        if(jet.csv > loose_csv_wp)  bjets["loose"].push_back(jet);
-        if(jet.csv > medium_csv_wp) bjets["medium"].push_back(jet);
-        // note: consider the case where a loose bjet might be a medium one
-        //       this could be crucial in some cases
-      }
+//--- select b-jets
+    std::map<std::string, std::vector<RecoJet>> bjets;
+    bjets["loose"] = jetSelectorBtagLoose(jets);
+    bjets["medium"] = jetSelectorBtagMedium(jets);
 
 //------------------------------------------------------------ COUNTER STARTS
     increment_all(cuts::entry_point);
     ++counter[ch::_1l_2tau][cuts::entry_point];
 
 //-------------------------------------------------------------- PRESELECTION
-    std::vector<RecoLepton> preselected_leptons;
-    preselected_leptons.reserve(nleptons);
-    for(auto & lept: leptons)
-      if(passes_preselection(lept)) preselected_leptons.push_back(lept);
+    std::vector<RecoLepton*> preselLeptons;
+    preselLeptons.reserve(preselElectrons.size() + preselMuons.size());
+    for ( auto & electron: preselElectrons ) 
+      preselLeptons.push_back(&electron);
+    for ( auto & muon: preselMuons ) 
+      preselLeptons.push_back(&muon);
 
-    if(preselected_leptons.size() == 1)
+    std::vector<RecoLepton*> tightLeptons;
+    preselLeptons.reserve(tightElectrons.size() + tightMuons.size());
+    for ( auto & electron: tightElectrons ) 
+      tightLeptons.push_back(&electron);
+    for ( auto & muon: tightMuons ) 
+      tightLeptons.push_back(&muon);
+
+    if(preselLeptons.size() == 1)
     {
 //====================== 2 TAU SINGLE LEPTON CHANNEL =========================
       ++counter[ch::_1l_2tau][cuts::PS];
 
 //--- single tight lepton
-      const auto & lepton = preselected_leptons[0];
-      if(! (lepton.mva_tth > tight_mva_wp &&
-            lepton.pt > 20                &&
-            lepton.rel_iso < 0.1          &&
-            lepton.sip3d < 4.0            &&
-            ((lepton.is_muon()       &&
-              lepton.med_mu_id >= 1   )   ||
-             (lepton.is_electron()   && lepton.pass_conv_veto >= 1 &&
-                                       lepton.lost_hits == 0       &&
-                                       lepton.ele_mva_id >= 2       ))))
+      if ( !(tightLeptons.size() >= 1) )
         continue;
       ++counter[ch::_1l_2tau][cuts::tight_lepton];
 
-//--- at least two hadronic jets
-      if(hadronic_jets.size() < 2) continue;
+//--- at least two jets
+      if ( !(selJets.size() >= 2) ) continue;
       ++counter[ch::_1l_2tau][cuts::j2_plus];
 
 //--- at least two loose bjets or one medium bjet
-      if(bjets["loose"].size() < 2 && bjets["medium"].size() < 1) continue;
+      if ( !(bjets["loose"].size() >= 2 || bjets["medium"].size() >= 1) ) continue;
       ++counter[ch::_1l_2tau][cuts::bjet_2l_1m];
 
-//--- exactly two good taus
-      std::vector<HadronicTau> good_taus;
-      for(auto & tau: taus)
-        if(tau.pt > 20              &&
-           std::fabs(tau.eta) < 2.3 &&
-           tau.decmode >= 1         &&
-           tau.id_mva_dR03 >= 4     &&
-           tau.anti_e >= 2          &&
-           tau.anti_mu >= 2          )
-          good_taus.push_back(tau);
-
-      if(good_taus.size() == 2)
-      {
-        ++counter[ch::_1l_2tau][cuts::good_tau];
-        fill_pdg_plot(gen_leptons, gen_jets, preselected_leptons,
-                      &good_taus, &gen_taus, ch::_1l_2tau, false);
-      }
+//--- two good taus
+      if ( !(selHadTaus.size() >= 2) ) continue;
+      ++counter[ch::_1l_2tau][cuts::good_tau];
+      fill_pdg_plot(genLeptons, genJets, preselLeptons,
+		    &selHadTaus, &genHadTaus, ch::_1l_2tau, false);
 
       continue;
     }
-    else if(preselected_leptons.size() == 0) continue;
+    else if(preselLeptons.size() == 0) continue;
 
     increment_all(cuts::PS);
 
-//--- let's order the leptons by their pT beforehand
-    std::sort(preselected_leptons.begin(),
-              preselected_leptons.end(),
-              [](const RecoLepton & lhs,
-                 const RecoLepton & rhs) -> bool
-      {
-        return rhs.pt < lhs.pt;
-      });
-
 //---------------------------------------------------------- NOF GOOD LEPTONS
 //--- we need to count, how many tight and loose leptons we have
-    std::vector<RecoLepton> loose_leptons,
-                            tight_leptons;
-    for(auto & lept: preselected_leptons)
-    {
-      if(lept.mva_tth > loose_mva_wp) loose_leptons.push_back(lept);
-      if(lept.mva_tth > tight_mva_wp) tight_leptons.push_back(lept);
-    }
 
 //--- require exactly 2/3 tight leptons or 4 loose leptons
-    std::vector<RecoLepton> selected_leptons;
-    if(tight_leptons.size() == 2 ||
-       tight_leptons.size() == 3  ) selected_leptons = tight_leptons;
-    else
-    if(loose_leptons.size() == 4)   selected_leptons = loose_leptons;
+    std::vector<RecoLepton*> selLeptons;
+    if( tightLeptons.size() == 2 ||
+        tightLeptons.size() == 3  ) selLeptons = tightLeptons;
+    //CV: 4l category not used by ttH multilepton analysis of 2015 data
+    //else
+    //if(looseLeptons.size() == 4) selLeptons = looseLeptons;
     else continue;
 //--- sort selected leptons by decreasing pT
-    std::sort(selected_leptons.begin(), selected_leptons.end(), isHigherPt);
-    const std::size_t nof_selected_leptons = selected_leptons.size();
+    std::sort(selLeptons.begin(), selLeptons.end(), isHigherPt_ptr);
+    const std::size_t nSelLeptons = selLeptons.size();
 
     increment_all(cuts::good_leptons);
 
 //------------------------------------------------------- DANGLING LEPTON CUT
-    if((nof_selected_leptons == 2 && loose_leptons.size() == 1) ||
-       (nof_selected_leptons == 3 && loose_leptons.size() == 1))
+    if((nSelLeptons == 2 && preselLeptons.size() != 2) ||
+       (nSelLeptons == 3 && preselLeptons.size() != 3))
       continue;
 
     for(ch channel: {ch::ee, ch::emu, ch::mumu, ch::_3l})
@@ -1107,81 +890,79 @@ main(int argc,
 
 //------------------------------------------ DILEPTON INVARIANT MASS > 12 GeV
     bool proceed = true; // this guy is used throughout the analysis
-    for(unsigned j = 0; j < nof_selected_leptons && proceed; ++j)
+    for(unsigned j = 0; j < nSelLeptons && proceed; ++j)
       for(unsigned k = 0; k < j && proceed; ++k)
-        if((selected_leptons[j].p4 + selected_leptons[k].p4).mass() < 12.0)
+        if((selLeptons[j]->p4_ + selLeptons[k]->p4_).mass() < 12.0)
           proceed = false;
     if(! proceed) continue;
 
     increment_all(cuts::min_dilep_mass);
 
 //-------------------------------------------------------- LEPTON PT > 20, 10
-    if(! (selected_leptons[0].pt > 20 &&           // leading lepton
-          selected_leptons[1].pt > 10) ) continue; // subleading lepton
+    if(! (selLeptons[0]->pt_ > 20. &&           // leading lepton
+          selLeptons[1]->pt_ > 10.) ) continue; // subleading lepton
 
     increment_all(cuts::pT2010);
 
-//------------------------------------------------ 2+ HADRONIC JETS (>25 GeV)
-    if(hadronic_jets.size() < 2) continue;
+//------------------------------------------------ 2+ JETS (>25 GeV)
+    if ( !(selJets.size() >= 2) ) continue;
 
     increment_all(cuts::j2_plus);
 
 //---------------------------------------- 2+ LOOSE B JETS / 1+ MEDIUM B JETS
-    if(bjets["loose"].size() < 2 && bjets["medium"].size() < 1) continue;
+    if ( !(bjets["loose"].size() >= 2 || bjets["medium"].size() >= 1) ) continue;
 
     increment_all(cuts::bjet_2l_1m);
 
 //-------------------------------------------------------------- MEDIUM MU ID
-//--- applies to all muons?
-    for(auto & lept: selected_leptons)
-      if(lept.is_muon() && lept.med_mu_id < 1)
-      {
-        proceed = false;
-        break;
-      }
+//--- CV: not neccessary anymore ?
+    //for ( auto & lepton: selLeptons)
+    //  if(lept.is_muon() && lept.muon_passesMediumIdPOG_ < 1)
+    //  {
+    //    proceed = false;
+    //    break;
+    //  }
     if(! proceed) continue;
 
     for(ch channel: {ch::emu, ch::mumu, ch::_3l, ch::_4l})
       ++counter[channel][cuts::medium_mu_id];
 
 //--- tight lepton cuts
-    if(nof_selected_leptons < 4)
+    if ( nSelLeptons < 4 )
     {
 //-------------------------------------------------- ELECTRON CONVERSION VETO
-//--- applies to tight electrons only
-      for(auto & lept: selected_leptons)
-        if(lept.is_electron() && lept.pass_conv_veto < 1)
-        {
-          proceed = false;
-          break;
-        }
+//--- CV: not neccessary anymore ?
+      //for(auto & lept: selected_leptons)
+      //  if(lept.is_electron() && lept.electron_passesConversionVeto_ < 1)
+      //  {
+      //    proceed = false;
+      //    break;
+      //  }
       if(! proceed) continue;
       for(ch channel: {ch::ee, ch::emu, ch::_3l})
         ++counter[channel][cuts::conv_veto];
 
 //--------------------------------------------------------------- 0 LOST HITS
-//--- applies to tight electrons only
-      for(auto & lept: selected_leptons)
-        if(lept.is_electron() && lept.lost_hits != 0)
-        {
-          proceed = false;
-          break;
-        }
-
+//--- CV: not neccessary anymore ?
+      //for(auto & lept: selected_leptons)
+      //  if(lept.is_electron() && lept.electron_nLostHits_ != 0)
+      //  {
+      //    proceed = false;
+      //    break;
+      //  }
       if(! proceed) continue;
 
       for(ch channel: {ch::ee, ch::emu, ch::_3l})
         ++counter[channel][cuts::lost_hits_0];
 
 //--------------------------------------------------- ELECTRON IDENTIFICATION
-//--- applies to tight electrons only
-      for(auto & lept: selected_leptons)
-        if(lept.is_electron() && lept.ele_mva_id < 2)
-        {
-          proceed = false;
-          break;
-        }
-
+//--- CV: not neccessary anymore ?
+      //for(auto & lept: selected_leptons)
+      //  if(lept.is_electron() && lept.electron_mvaRawPOG_ < 2)
+      //  {
+      //    proceed = false;
+      //    break;
+      //  }
       if(! proceed) continue;
 
       for(ch channel: {ch::ee, ch::emu, ch::_3l})
@@ -1190,27 +971,26 @@ main(int argc,
       ++counter[ch::_2l_1tau][cuts::specific_cuts]; // for dilepton + tau
 
 //-------------------------------------------------- RELATIVE ISOLATION < 0.1
-//--- applies to tight leptons only
-      for(auto & lept: selected_leptons)
-        if(lept.rel_iso >= 0.1)
-        {
-          proceed = false;
-          break;
-        }
+//--- CV: not neccessary anymore ?
+      //for(auto & lept: selected_leptons)
+      //  if(lept.rel_iso >= 0.1)
+      //  {
+      //    proceed = false;
+      //    break;
+      //  }
       if(! proceed) continue;
 
       for(ch channel: {ch::ee, ch::mumu, ch::emu, ch::_3l, ch::_2l_1tau})
         ++counter[channel][cuts::rel_iso_01];
 
 //--------------------------------------------------------------- SIP3D < 4.0
-//--- applies to tight leptons only
-      for(auto & lept: selected_leptons)
-        if(lept.sip3d >= 4.0)
-        {
-          proceed = false;
-          break;
-        }
-
+//--- CV: not neccessary anymore ?
+      //for(auto & lept: selected_leptons)
+      //  if(lept.sip3d_ >= 4.0)
+      //  {
+      //    proceed = false;
+      //    break;
+      //  }
       if(! proceed) continue;
 
       for(ch channel: {ch::ee, ch::mumu, ch::emu, ch::_3l, ch::_2l_1tau})
@@ -1218,111 +998,81 @@ main(int argc,
     }
 
 //=========================== DILEPTON CHANNEL ==============================
-    if(nof_selected_leptons == 2)
+    if ( nSelLeptons == 2 )
     {
-      const RecoLepton & lept_0 = selected_leptons[0]; // leading lepton
-      const RecoLepton & lept_1 = selected_leptons[1]; // subleading lepton
+      const RecoLepton * lepton1 = selLeptons[0]; // leading lepton
+      const RecoLepton * lepton2 = selLeptons[1]; // subleading lepton
+      assert(lepton1 && lepton2);
 
       ch channel = ch::unspecified;
 
-      if(lept_0.is_electron() && lept_1.is_electron()) channel = ch::ee;
-      else if(lept_0.is_muon() && lept_1.is_muon())    channel = ch::mumu;
-      else channel = ch::emu;
+      if      ( lepton1->is_electron() && lepton2->is_electron() ) channel = ch::ee;
+      else if ( lepton1->is_muon()     && lepton2->is_muon()     ) channel = ch::mumu;
+      else                                                         channel = ch::emu;
 
       ++counter[channel][cuts::tight_mva];
       ++counter[ch::_2l_1tau][cuts::tight_mva];
 
 //----------------------------------------------------------------- SAME SIGN
-      if(lept_0.pdg_id * lept_1.pdg_id < 0) continue;
+      if ( !(lepton1->pdgId_ * lepton2->pdgId_) > 0 ) continue;
 
       ++counter[channel][cuts::ss];
       ++counter[ch::_2l_1tau][cuts::ss];
 
-//---------------------------------------------------------- 4+ HADRONIC JETS
-      if(hadronic_jets.size() < 4) continue;
+//------------------------------------------------------------------- 4+ JETS
+      if ( !(selJets.size() >= 4) ) continue;
 
       ++counter[channel][cuts::j4_plus];
       ++counter[ch::_2l_1tau][cuts::j4_plus];
 
 //-------------------------------------------------------------- MET_LD > 0.2
-//--- merge all jets
-      std::vector<RecoJet> all_bjets,
-                           all_selected_jets;
-      std::set_union
-        (
-          bjets["loose"].begin(), bjets["loose"].end(),
-          bjets["medium"].begin(), bjets["medium"].end(),
-          std::back_inserter(all_bjets),
-          [](const RecoJet & lhs, const RecoJet & rhs) -> bool
-          {
-            return lhs.idx < rhs.idx;
-          }
-        );
-      std::set_union
-        (
-          all_bjets.begin(), all_bjets.end(),
-          hadronic_jets.begin(), hadronic_jets.end(),
-          std::back_inserter(all_selected_jets),
-          [](const RecoJet & lhs, const RecoJet & rhs) -> bool
-          {
-            return lhs.idx < rhs.idx;
-          }
-        );
-
-//--- compute event-level weight for data/MC correction of b-tagging efficiency and mistag rate
-//   (using the method "Event reweighting using scale factors calculated with a tag and probe method", 
-//    described on the BTV POG twiki https://twiki.cern.ch/twiki/bin/view/CMS/BTagShapeCalibration )
-      double evtWeight = 1.;
-      for(auto & jet: all_selected_jets)
-	evtWeight *= jet.btagWeight;
-
 //--- calculate MHT
-      LV mht_vec(0, 0, 0, 0);
-      for(auto & jet: all_selected_jets)
-        mht_vec += jet.p4;
-      mht_vec += lept_0.p4 + lept_1.p4;
+      LV mht_vec(0,0,0,0);
+      for ( auto & jet: selJets )
+        mht_vec += jet.p4_;
+      mht_vec += lepton1->p4_ + lepton2->p4_;
       const Double_t mht_pt = mht_vec.pt();
       const Double_t met_ld = met_coef * met_pt + mht_coef * mht_pt;
-      if(met_ld <= 0.2) continue;
+      if ( !(met_ld >= 0.2) ) continue;
 
       ++counter[channel][cuts::met_ld_02];
       ++counter[ch::_2l_1tau][cuts::met_ld_02];
 
 //-------------------------------------------------------- LEPTON PT > 20, 20
-      if(lept_0.pt <= 20 || lept_1.pt <= 20) continue;
+      if ( !(lepton1->pt_ >= 20. && lepton2->pt_ >= 20.) ) continue;
 
       ++counter[channel][cuts::pT2020];
       ++counter[ch::_2l_1tau][cuts::pT2020];
 
 //----------------------------------------- SCALAR SUM(L0, L1, MET) > 100 GeV
-      if(lept_0.pt + lept_1.pt + met_pt <= 100) continue;
+      if ( !(lepton1->pt_ + lepton2->pt_ + met_pt >= 100) ) continue;
 
       ++counter[channel][cuts::ht_l1l2_met_100];
       ++counter[ch::_2l_1tau][cuts::ht_l1l2_met_100];
 
 //-------------------------------------------------------------------- Z VETO
-      if(std::fabs((lept_0.p4 + lept_1.p4).mass() - z_mass) <= z_th) continue;
+      if ( std::fabs((lepton1->p4_ + lepton2->p4_).mass() - z_mass) <= z_th ) continue;
 
       ++counter[channel][cuts::zveto];
       ++counter[ch::_2l_1tau][cuts::zveto];
 
 //-------------------------------------------------------------- TIGHT CHARGE
-      if(lept_0.tight_charge < 2 || lept_1.tight_charge < 2) continue;
+      if ( !(lepton1->tightCharge_ >= 2 && lepton2->tightCharge_ >= 2) ) continue;
 
       ++counter[channel][cuts::charge_quality];
       ++counter[ch::_2l_1tau][cuts::charge_quality];
 
 //--- compute output of BDTs used to discriminate ttH vs. ttV and ttH vs. ttbar 
 //    in 2lss_1tau category of ttH multilepton analysis 
-      mvaInputs["max(abs(LepGood_eta[iF_Recl[0]]),abs(LepGood_eta[iF_Recl[1]]))"] = std::max(std::fabs(lept_0.eta), std::fabs(lept_1.eta));
-      mvaInputs["MT_met_lep1"]                = comp_MT_met_lep1(lept_0, met_pt, met_phi);
-      mvaInputs["nJet25_Recl"]                = comp_n_jet25_recl(all_selected_jets);
-      mvaInputs["mindr_lep1_jet"]             = comp_mindr_lep1_jet(lept_0, all_selected_jets);
-      mvaInputs["mindr_lep2_jet"]             = comp_mindr_lep2_jet(lept_1, all_selected_jets);
-      mvaInputs["LepGood_conePt[iF_Recl[0]]"] = comp_lep1_conePt(lept_0);
-      mvaInputs["LepGood_conePt[iF_Recl[1]]"] = comp_lep2_conePt(lept_1);
+      mvaInputs["max(abs(LepGood_eta[iF_Recl[0]]),abs(LepGood_eta[iF_Recl[1]]))"] = std::max(std::fabs(lepton1->eta_), std::fabs(lepton2->eta_));
+      mvaInputs["MT_met_lep1"]                = comp_MT_met_lep1(*lepton1, met_pt, met_phi);
+      mvaInputs["nJet25_Recl"]                = comp_n_jet25_recl(selJets);
+      mvaInputs["mindr_lep1_jet"]             = comp_mindr_lep1_jet(*lepton1, selJets);
+      mvaInputs["mindr_lep2_jet"]             = comp_mindr_lep2_jet(*lepton2, selJets);
+      mvaInputs["LepGood_conePt[iF_Recl[0]]"] = comp_lep1_conePt(*lepton1);
+      mvaInputs["LepGood_conePt[iF_Recl[1]]"] = comp_lep2_conePt(*lepton2);
       mvaInputs["min(met_pt,400)"]            = std::min(met_pt, 400.);
-      mvaInputs["avg_dr_jet"]                 = comp_avg_dr_jet(all_selected_jets);
+      mvaInputs["avg_dr_jet"]                 = comp_avg_dr_jet(selJets);
 
       double mvaOutput_2lss_ttV = mva_2lss_ttV(mvaInputs);
       double mvaOutput_2lss_ttbar = mva_2lss_ttbar(mvaInputs);
@@ -1338,46 +1088,33 @@ main(int argc,
       else                                                                  mvaDiscr_2lss = 1.;
 
 //======================== DILEPTON + TAU CHANNEL ===========================
-//--- see if any of our taus is a good candidate
-      std::vector<HadronicTau> good_taus;
-      for(auto & tau: taus)
-        if(tau.pt > 20              &&
-           std::fabs(tau.eta) < 2.3 &&
-           tau.decmode >= 1         &&
-           tau.id_mva_dR03 >= 4     &&
-           tau.anti_e >= 2          &&
-           tau.anti_mu >= 2          )
-          good_taus.push_back(tau);
 
 //---------------------------------------------------------------- PDG ID PLOT
-      if(good_taus.size() == 1)
+      if ( selHadTaus.size() >= 1 )
       {
         ++counter[ch::_2l_1tau][cuts::good_tau]; // add fill_pdg_plot here as well
-        fill_pdg_plot(gen_leptons, gen_jets, selected_leptons,
-                      &good_taus, &gen_taus, ch::_2l_1tau, true);
+        fill_pdg_plot(genLeptons, genJets, selLeptons,
+                      &selHadTaus, &genHadTaus, ch::_2l_1tau, true);
       }
       else
-        fill_pdg_plot(gen_leptons, gen_jets, selected_leptons,
+        fill_pdg_plot(genLeptons, genJets, selLeptons,
                       nullptr, nullptr, channel, true);
 
 //------------------------------------------------ PLOT OF KINEMATIC VARIABLES
       {
         Double_t min_dR_l2j = 1000;
-        Double_t ht = lept_0.pt + lept_1.pt;
-        LV ht_vec = lept_0.p4 + lept_1.p4;
-        for(auto & jet: hadronic_jets)
+        Double_t ht = lepton1->pt_ + lepton2->pt_;
+        LV ht_vec = lepton1->p4_ + lepton2->p4_;
+        for ( auto & jet: selJets )
         {
-          const Double_t dR_tmp =
-            std::sqrt(std::pow(lept_1.eta - jet.eta, 2) +
-                      std::pow(lept_1.phi - jet.phi, 2));
-          if(dR_tmp < min_dR_l2j) min_dR_l2j = dR_tmp;
-          ht += jet.pt;
-          ht_vec += jet.p4;
+          const Double_t dR = deltaR(lepton2->eta_, lepton2->phi_, jet.eta_, jet.phi_);
+          if ( dR < min_dR_l2j ) min_dR_l2j = dR;
+          ht += jet.pt_;
+          ht_vec += jet.p4_;
         }
-        const Double_t pt_trailing = lept_1.pt;
-        const Double_t eta_trailing = std::fabs(lept_1.eta);
-        const Double_t mt_metl1 =
-            (lept_0.p4 + LV(met_pt, met_eta, met_phi, met_mass)).mass();
+        const Double_t pt_trailing = lepton2->pt_;
+        const Double_t eta_trailing = std::fabs(lepton2->eta_);
+        const Double_t mt_metl1 = comp_MT_met_lep1(*lepton1, met_pt, met_phi);
         const Double_t mht = std::fabs(ht_vec.pt());
         hm[channel][cp::final].fill(evtWeight,
           pt_trailing, eta_trailing, min_dR_l2j, mt_metl1, ht, mht, mvaDiscr_2lss);
@@ -1386,61 +1123,39 @@ main(int argc,
     }
 
 //=========================== TRILEPTON CHANNEL =============================
-    else if(nof_selected_leptons == 3)
+    else if ( nSelLeptons == 3 )
     {
       ++counter[ch::_3l][cuts::tight_mva];
 
-//------------------------------------------ 4+ HADRONIC JETS or MET_LD > 0.2
-      if(hadronic_jets.size() < 4)
+//--------------------------------------------------- 4+ JETS or MET_LD > 0.2
+      if ( selJets.size() < 4 )
       {
-        std::vector<RecoJet> all_bjets,
-                             all_selected_jets;
-        std::set_union
-          (
-            bjets["loose"].begin(), bjets["loose"].end(),
-            bjets["medium"].begin(), bjets["medium"].end(),
-            std::back_inserter(all_bjets),
-            [](const RecoJet & lhs, const RecoJet & rhs) -> bool
-            {
-              return lhs.idx < rhs.idx;
-            }
-          );
-        std::set_union
-          (
-            all_bjets.begin(), all_bjets.end(),
-            hadronic_jets.begin(), hadronic_jets.end(),
-            std::back_inserter(all_selected_jets),
-            [](const RecoJet & lhs, const RecoJet & rhs) -> bool
-            {
-              return lhs.idx < rhs.idx;
-            }
-          );
 
 //--- calculate MHT
-        LV mht_vec(0, 0, 0, 0);
-        for(auto & jet: all_selected_jets)
-          mht_vec += jet.p4;
-        for(auto & lept: selected_leptons)
-          mht_vec += lept.p4;
+        LV mht_vec(0,0,0,0);
+        for ( auto & jet: selJets )
+          mht_vec += jet.p4_;
+        for ( auto & lepton: selLeptons )
+          mht_vec += lepton->p4_;
         const Double_t mht_pt = mht_vec.pt();
         const Double_t met_ld = met_coef * met_pt + mht_coef * mht_pt;
-        if(met_ld <= 0.2) continue;
+        if ( !(met_ld >= 0.2) ) continue;
       }
       ++counter[ch::_3l][cuts::j4_plus_met_ld_02];
 
 //---------------------------------------------------------------- SFOS ZVETO
-      for(unsigned j = 0; j < 3 && proceed; ++j)
-        for(unsigned k = 0; k < j && proceed; ++k)
-          if(selected_leptons[j].pdg_id == -selected_leptons[k].pdg_id &&
-             std::fabs((selected_leptons[j].p4 +
-                        selected_leptons[k].p4).mass() - z_mass) <= z_th)
+      for ( unsigned j = 0; j < 3 && proceed; ++j )
+        for ( unsigned k = 0; k < j && proceed; ++k )
+          if ( selLeptons[j]->pdgId_ == -selLeptons[k]->pdgId_ &&
+             std::fabs((selLeptons[j]->p4_ +
+                        selLeptons[k]->p4_).mass() - z_mass) <= z_th )
               proceed = false;
-      if(! proceed) continue;
+      if ( !proceed ) continue;
 
       ++counter[ch::_3l][cuts::sfos_zveto];
 
 //---------------------------------------------------------------- PDG ID PLOT
-      fill_pdg_plot(gen_leptons, gen_jets, selected_leptons,
+      fill_pdg_plot(genLeptons, genJets, selLeptons,
                     nullptr, nullptr, ch::_3l, false);
     }
 
@@ -1452,32 +1167,32 @@ main(int argc,
 //-------------------------------------------------------- NEUTRAL CHARGE SUM
       const Int_t charge_sum = std::accumulate
         (
-          selected_leptons.begin(),
-          selected_leptons.end(),
+	  selLeptons.begin(),
+          selLeptons.end(),
           0,
-          [](Int_t lhs, const RecoLepton & rhs)
+          [](Int_t lhs, const RecoLepton * rhs)
           {
-            const Int_t charge = rhs.pdg_id > 0 ? 1 : -1;
+            const Int_t charge = ( rhs->pdgId_ > 0 ) ? 1 : -1;
             return lhs + charge;
           }
         );
-      if(charge_sum != 0) continue;
+      if ( charge_sum != 0 ) continue;
 
       ++counter[ch::_4l][cuts::neutral_sum];
 
 //---------------------------------------------------------------- SFOS ZVETO
-      for(unsigned j = 0; j < 4 && proceed; ++j)
-        for(unsigned k = 0; k < j && proceed; ++k)
-          if(selected_leptons[j].pdg_id == -selected_leptons[k].pdg_id &&
-             std::fabs((selected_leptons[j].p4 +
-                        selected_leptons[k].p4).mass() - z_mass) <= z_th)
+      for ( unsigned j = 0; j < 4 && proceed; ++j )
+        for ( unsigned k = 0; k < j && proceed; ++k )
+          if ( selLeptons[j]->pdgId_ == -selLeptons[k]->pdgId_ &&
+             std::fabs((selLeptons[j]->p4_ +
+                        selLeptons[k]->p4_).mass() - z_mass) <= z_th)
               proceed = false;
-      if(! proceed) continue;
+      if ( !proceed ) continue;
 
       ++counter[ch::_4l][cuts::sfos_zveto];
 
 //---------------------------------------------------------------- PDG ID PLOT
-      fill_pdg_plot(gen_leptons, gen_jets, selected_leptons,
+      fill_pdg_plot(genLeptons, genJets, selLeptons,
                     nullptr, nullptr, ch::_4l, false);
     }
   }

@@ -1,5 +1,4 @@
-<bin   file="SynchTTH.cc" name="SynchTTH">
-  <Flags CPPDEFINES="M125" />
+<bin file="SynchTTH.cc" name="SynchTTH">
   <use   name="FWCore/FWLite"/>
   <use   name="FWCore/ParameterSet"/>
   <use   name="FWCore/PythonParameterSet"/>
@@ -11,7 +10,7 @@
   <use   name="roottmva"/>
   <use   name="boost"/>
 </bin>
-<bin file="ntuples_ttHJetToTT.cc">
+<bin file="ntuples_ttHJetToTT.cc" name="ntuples_ttHJetToTT">
   <Flags CPPDEFINES="DISABLE_BOOST_LOG" />
   <Flags CPPDEFINES="PYTHON_CONFIG" />
   <use   name="FWCore/FWLite"/>

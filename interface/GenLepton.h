@@ -1,20 +1,20 @@
-#ifndef GENLEPTON_H
-#define GENLEPTON_H
+#ifndef tthAnalysis_HiggsToTauTau_GenLepton_h
+#define tthAnalysis_HiggsToTauTau_GenLepton_h
 
 #include "tthAnalysis/HiggsToTauTau/interface/GenParticle.h" // GenParticle
 
 class GenLepton
   : public GenParticle
 {
-public:
+ public:
   GenLepton() = default;
-  GenLepton(Double_t _pt,
-            Double_t _eta,
-            Double_t _phi,
-            Double_t _mass,
-            Int_t _pdg_id);
+  GenLepton(Double_t pt,
+            Double_t eta,
+            Double_t phi,
+            Double_t mass,
+            Int_t pdgId);
 
-  Int_t pdg_id;  ///< PDG id of the lepton (signed)
+  Int_t pdgId_;  ///< PDG id of the lepton (signed)
 };
 
-#endif // GENLEPTON_H
+#endif // tthAnalysis_HiggsToTauTau_GenLepton_h

@@ -1,5 +1,5 @@
-#ifndef RECOJET_H
-#define RECOJET_H
+#ifndef tthAnalysis_HiggsToTauTau_RecoJet_h
+#define tthAnalysis_HiggsToTauTau_RecoJet_h
 
 #include "tthAnalysis/HiggsToTauTau/interface/GenJet.h" // GenJet
 
@@ -8,18 +8,24 @@ class RecoJet
 {
 public:
   RecoJet() = default;
-  RecoJet(Double_t _pt,
-          Double_t _eta,
-          Double_t _phi,
-          Double_t _mass,
-          Double_t _csv,
-	  Double_t _btagWeight,
-          Int_t _idx);
+  RecoJet(Double_t pt,
+          Double_t eta,
+          Double_t phi,
+          Double_t mass,
+	  Double_t corr,
+	  Double_t corr_JECUp,
+	  Double_t corr_JECDown,
+          Double_t BtagCSV,
+	  Double_t BtagWeight,
+          Int_t idx);
 
-  Double_t csv;  ///< CSV of the jet
-  Double_t btagWeight;  ///< weight for data/MC correction of b-tagging efficiency and mistag rate
-  Int_t idx;     ///< its index in the ntuple
+  Double_t corr_;         ///< nominal jet energy correction (L1FastL2L3 for MC, L1FastL2L3Residual for data)
+  Double_t corr_JECUp_;   ///< +1 sigma (upward shifted) jet energy correction
+  Double_t corr_JECDown_; ///< -1 sigma (downward shifted) jet energy correction
+  Double_t BtagCSV_;      ///< CSV b-tagging discriminator value
+  Double_t BtagWeight_;   ///< weight for data/MC correction of b-tagging efficiency and mistag rate
+  Int_t idx_;             ///< index of jet in the ntuple
 };
 
-#endif // RECOJET_H
+#endif // tthAnalysis_HiggsToTauTau_RecoJet_h
 
