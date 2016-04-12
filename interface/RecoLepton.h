@@ -2,6 +2,9 @@
 #define tthAnalysis_HiggsToTauTau_RecoLepton_h
 
 #include "tthAnalysis/HiggsToTauTau/interface/GenLepton.h" // GenLepton
+#include "tthAnalysis/HiggsToTauTau/interface/GenLepton.h" // GenLepton
+#include "tthAnalysis/HiggsToTauTau/interface/GenHadTau.h" // GenHadTau
+#include "tthAnalysis/HiggsToTauTau/interface/GenJet.h" // GenJet
 
 class RecoLepton
   : public GenLepton
@@ -45,6 +48,11 @@ public:
   Double_t jetPtRatio_;                 ///< ratio of lepton pT to pT of nearby jet
   Double_t jetBtagCSV_;                 ///< CSV b-tagging discriminator value of nearby jet
   Int_t tightCharge_;                   ///< Flag indicating if lepton passes (>= 2) or fails (< 2) tight charge requirement
+
+//--- matching to generator level particles
+  const GenLepton* genLepton_;
+  const GenHadTau* genHadTau_;
+  const GenJet* genJet_;
 };
 
 #endif // tthAnalysis_HiggsToTauTau_RecoLepton_h

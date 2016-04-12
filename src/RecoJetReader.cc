@@ -122,8 +122,12 @@ std::vector<RecoJet> RecoJetReader::read() const
   }
   jets.reserve(nJets);
   for ( Int_t idxJet = 0; idxJet < nJets; ++idxJet ) {
+    Double_t jet_pt = -1.;
+    if      ( jetPt_option_ == kJetPt_central ) jet_pt = jet_pt_[idxJet];
+    else if ( jetPt_option_ == kJetPt_jecUp   ) jet_pt = jet_pt_[idxJet]*jet_corr_JECUp_[idxJet]/jet_corr_[idxJet];
+    else if ( jetPt_option_ == kJetPt_jecDown ) jet_pt = jet_pt_[idxJet]*jet_corr_JECDown_[idxJet]/jet_corr_[idxJet];    
     jets.push_back(RecoJet({ 
-      gInstance->jet_pt_[idxJet],      
+      jet_pt,      
       gInstance->jet_eta_[idxJet],
       gInstance->jet_phi_[idxJet],
       gInstance->jet_mass_[idxJet],

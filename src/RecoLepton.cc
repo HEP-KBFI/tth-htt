@@ -22,4 +22,7 @@ RecoLepton::RecoLepton(Double_t pt,
   , jetPtRatio_(jetPtRatio)
   , jetBtagCSV_(jetBtagCSV)  
   , tightCharge_(tightCharge)
+  , genLepton_(0)
+  , genHadTau_(0)
+  , genJet_(0)
 {}

@@ -17,7 +17,10 @@ class RecoJetReader
   RecoJetReader(const std::string& branchName_num, const std::string& branchName_obj); 
   ~RecoJetReader();
 
-  void setSranchName_BtagWeight(const std::string& branchName_BtagWeight) { branchName_BtagWeight_ = branchName_BtagWeight; }
+  enum { kJetPt_central, kJetPt_jecUp, kJetPt_jecDown };
+  void setJetPt_central_or_shift(int jetPt_option) { jetPt_option_ = jetPt_option; }
+
+  void setBranchName_BtagWeight(const std::string& branchName_BtagWeight) { branchName_BtagWeight_ = branchName_BtagWeight; }
 
   /**
    * @brief Call tree->SetBranchAddress for all RecoJet branches
@@ -49,6 +52,8 @@ class RecoJetReader
   std::string branchName_corr_JECDown_;
   std::string branchName_BtagCSV_;
   std::string branchName_BtagWeight_;
+
+  int jetPt_option_;
 
   Int_t nJets_;
   Double_t* jet_pt_;

@@ -17,15 +17,15 @@ class ParticleCollectionCleaner
    * @return Collection of non-overlapping particles
    */
   template <typename Toverlap>
-  std::vector<T> operator()(const std::vector<T>& particles, const std::vector<Toverlap>& overlaps)
+  std::vector<const T*> operator()(const std::vector<const T*>& particles, const std::vector<Toverlap>& overlaps)
   {
-    std::vector<T> cleanedParticles;
-    for ( typename std::vector<T>::const_iterator particle = particles.begin();
+    std::vector<const T*> cleanedParticles;
+    for ( typename std::vector<const T*>::const_iterator particle = particles.begin();
 	  particle != particles.end(); ++particle ) {
       bool isOverlap = false;
       for ( typename std::vector<Toverlap>::const_iterator overlap = overlaps.begin();
 	    overlap != overlaps.end(); ++overlap ) {
-	double dRoverlap = deltaR(particle->eta_, particle->phi_, overlap->eta_, overlap->phi_);
+	double dRoverlap = deltaR((*particle)->eta_, (*particle)->phi_, overlap->eta_, overlap->phi_);
 	if ( dRoverlap < dR_ ) {
 	  isOverlap = true;
 	  break;
@@ -38,15 +38,15 @@ class ParticleCollectionCleaner
     return cleanedParticles;
   }
   template <typename Toverlap, typename... Args>
-  std::vector<T> operator()(const std::vector<T>& particles, const std::vector<Toverlap>& overlaps, Args... args)
+  std::vector<const T*> operator()(const std::vector<T>& particles, const std::vector<Toverlap>& overlaps, Args... args)
   {
-    std::vector<T> cleanedParticles;
-    for ( typename std::vector<T>::const_iterator particle = particles.begin();
+    std::vector<const T*> cleanedParticles;
+    for ( typename std::vector<const T*>::const_iterator particle = particles.begin();
 	  particle != particles.end(); ++particle ) {
       bool isOverlap = false;
       for ( typename std::vector<Toverlap>::const_iterator overlap = overlaps.begin();
 	    overlap != overlaps.end(); ++overlap ) {
-	double dRoverlap = deltaR(particle->eta_, particle->phi_, overlap->eta_, overlap->phi_);
+	double dRoverlap = deltaR((*particle)->eta_, (*particle)->phi_, overlap->eta_, overlap->phi_);
 	if ( dRoverlap < dR_ ) {
 	  isOverlap = true;
 	  break;
@@ -63,9 +63,13 @@ class ParticleCollectionCleaner
   double dR_;
 };
 
-#include "tthAnalysis/HiggsToTauTau/interface/RecoLepton.h"
+#include "tthAnalysis/HiggsToTauTau/interface/RecoElectron.h"
 
-typedef ParticleCollectionCleaner<RecoLepton> RecoLeptonCollectionCleaner;
+typedef ParticleCollectionCleaner<RecoElectron> RecoElectronCollectionCleaner;
+
+#include "tthAnalysis/HiggsToTauTau/interface/RecoMuon.h"
+
+typedef ParticleCollectionCleaner<RecoMuon> RecoMuonCollectionCleaner;
 
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadronicTau.h"
 

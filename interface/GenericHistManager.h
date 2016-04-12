@@ -1,5 +1,5 @@
-#ifndef HISTOGRAMMANAGER_H
-#define HISTOGRAMMANAGER_H
+#ifndef tthAnalysis_HiggsToTauTau_GenericHistManager_h
+#define tthAnalysis_HiggsToTauTau_GenericHistManager_h
 
 #include <string> // std::string
 #include <map> // std::map<>
@@ -47,11 +47,11 @@ join_strings(const std::vector<std::string> & v,
  *           - label on the x axis (by default -- name of the histogram)
  *           - label on the y axis (by default -- number of events)
  */
-struct HistogramVariable
+struct GenericHistVariable
 {
 public:
-  HistogramVariable() = default;
-  ~HistogramVariable() = default;
+  GenericHistVariable() = default;
+  ~GenericHistVariable() = default;
   /**
    * @brief Constructs the class with the following information.
    *        Default labels on the x axis on the y axis are used here
@@ -61,10 +61,10 @@ public:
    * @param xmin  Minimum value on the x axis.
    * @param xmax  Maximum value on the x axis.
    */
-  HistogramVariable(const std::string & name,
-                    Int_t nbins,
-                    Double_t xmin,
-                    Double_t xmax)
+  GenericHistVariable(const std::string & name,
+		      Int_t nbins,
+		      Double_t xmin,
+		      Double_t xmax)
     : name(name)
     , nbins(nbins)
     , xmin(xmin)
@@ -81,12 +81,12 @@ public:
    * @param xlabel Label on the x axis.
    * @param ylabel Label on the y axis.
    */
-  HistogramVariable(const std::string & name,
-                    Int_t nbins,
-                    Double_t xmin,
-                    Double_t xmax,
-                    const std::string & xlabel,
-                    const std::string & ylabel)
+  GenericHistVariable(const std::string & name,
+		      Int_t nbins,
+		      Double_t xmin,
+		      Double_t xmax,
+		      const std::string & xlabel,
+		      const std::string & ylabel)
     : name(name)
     , nbins(nbins)
     , xmin(xmin)
@@ -105,13 +105,13 @@ public:
 /**
  * @brief A class containing all histograms for a set of variables
  */
-class HistogramCollection
+class GenericHistCollection
 {
 public:
   /**
     * @brief Do not use; only there for to use it as a map value
     */
-  HistogramCollection() = default;
+  GenericHistCollection() = default;
   /**
    * @brief Initializes the histograms with a vector, where each element
    *        specifies a variable name, number of bins and the endpoints
@@ -121,7 +121,7 @@ public:
    *        would fill only the histogram that matches to the first element
    *        of the vector.
    */
-  HistogramCollection(const std::vector<HistogramVariable> & _variables)
+  GenericHistCollection(const std::vector<GenericHistVariable> & _variables)
   {
     for(const auto & var: _variables)
     {
@@ -141,7 +141,7 @@ public:
       histograms[var_name] = h;
     }
   }
-  ~HistogramCollection() = default;
+  ~GenericHistCollection() = default;
 
   /**
    * @brief Modifies the histogram name and title by adding
@@ -232,7 +232,7 @@ private:
 };
 
 /**
- * @brief A class that manages individual HistogramCollection instances.
+ * @brief A class that manages individual GenericHistCollection instances.
  *        The histograms are stored in two levels:
  *          - Channel, which holds all histograms corresponding to
  *            a particular channel
@@ -258,11 +258,11 @@ template <typename Channel,
               Cutpoint
             >::type
          >
-class HistogramManager
+class GenericHistManager
 {
 public:
-  HistogramManager() = default;
-  ~HistogramManager() = default;
+  GenericHistManager() = default;
+  ~GenericHistManager() = default;
 
   /**
    * @brief Add channel enum and the corresponding string;
@@ -270,8 +270,8 @@ public:
    *        The function is used as the base case for the variadic version.
    * @param channel The enum-string pair.
    */
-  HistogramManager & add_channel(Channel ch,
-                                 std::string ch_str)
+  GenericHistManager & add_channel(Channel ch,
+				   std::string ch_str)
   {
     channels[ch] = ch_str;
     return * this;
@@ -296,8 +296,8 @@ public:
    * @param cut_point The cut point-string pair.
    * @return Reference to this instance.
    */
-  HistogramManager & add_cutpoint(const std::pair<Cutpoint,
-                                  std::string> & cut_point)
+  GenericHistManager & add_cutpoint(const std::pair<Cutpoint,
+				    std::string> & cut_point)
   {
     cut_points.emplace(cut_point);
     return * this;
@@ -325,14 +325,14 @@ public:
    *                 number of bins).
    * @return Reference to this instance.
    */
-  HistogramManager & add_variable(HistogramVariable variable)
+  GenericHistManager & add_variable(GenericHistVariable variable)
   {
     common_variables.push_back(variable);
     return * this;
   }
 
-  HistogramManager & add_variable(Cutpoint cp,
-                                  HistogramVariable variable)
+  GenericHistManager & add_variable(Cutpoint cp,
+				    GenericHistVariable variable)
   {
     specific_variables[cp].push_back(variable);
     return * this;
@@ -349,12 +349,12 @@ public:
     {
       for(auto & cp: cut_points)
       {
-        std::vector<HistogramVariable> vars;
-        std::vector<HistogramVariable> sp_vars = specific_variables[cp.first];
+        std::vector<GenericHistVariable> vars;
+        std::vector<GenericHistVariable> sp_vars = specific_variables[cp.first];
         vars.reserve(common_variables.size() + sp_vars.size());
         vars.insert(vars.end(), common_variables.begin(), common_variables.end());
         vars.insert(vars.end(), sp_vars.begin(), sp_vars.end());
-        HistogramCollection hc(vars);
+        GenericHistCollection hc(vars);
         hc.set_name_title(ch.second, cp.second);
         histograms[ch.first][cp.first] = hc;
       }
@@ -374,7 +374,7 @@ public:
    *           cutpoint map.
    * @return Reference to the cutpoint map.
    */
-  std::map<Cutpoint, HistogramCollection> &
+  std::map<Cutpoint, GenericHistCollection> &
   operator[] (Channel ch)
   {
     return histograms[ch];
@@ -416,12 +416,12 @@ public:
   }
 
 private:
-  std::map<Channel, std::map<Cutpoint, HistogramCollection>> histograms;
+  std::map<Channel, std::map<Cutpoint, GenericHistCollection>> histograms;
 
   std::map<Channel, std::string> channels;
   std::map<Cutpoint, std::string> cut_points;
-  std::vector<HistogramVariable> common_variables;
-  std::map<Cutpoint, std::vector<HistogramVariable>> specific_variables;
+  std::vector<GenericHistVariable> common_variables;
+  std::map<Cutpoint, std::vector<GenericHistVariable>> specific_variables;
 };
 
-#endif // HISTOGRAMMANAGER_H
+#endif // tthAnalysis_HiggsToTauTau_GenericHistManager_h

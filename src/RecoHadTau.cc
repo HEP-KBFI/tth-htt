@@ -23,4 +23,7 @@ RecoHadTau::RecoHadTau(Double_t pt,
   , id_cut_dR05_(id_cut_dR05)
   , antiElectron_(antiElectron)
   , antiMuon_(antiMuon)
+  , genLepton_(0)
+  , genHadTau_(0)
+  , genJet_(0)
 {}

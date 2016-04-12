@@ -26,7 +26,7 @@
 #include <boost/filesystem.hpp> // boost::filesystem::
 #include <boost/algorithm/string/predicate.hpp> // boost::iequals()
 
-#include "tthAnalysis/HiggsToTauTau/interface/HistogramManager.h" // HistogramManager, join_strings()
+#include "tthAnalysis/HiggsToTauTau/interface/GenericHistManager.h" // GenericHistManager, join_strings()
 #include "tthAnalysis/HiggsToTauTau/interface/RecoLepton.h" // RecoLepton
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h" // RecoJet
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTau.h" // RecoHadTau
@@ -43,6 +43,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/GenLeptonReader.h" // GenLeptonReader
 #include "tthAnalysis/HiggsToTauTau/interface/GenHadTauReader.h" // GenHadTauReader
 #include "tthAnalysis/HiggsToTauTau/interface/GenJetReader.h" // GenJetReader
+#include "tthAnalysis/HiggsToTauTau/interface/convert_to_ptrs.h" // convert_to_ptrs
 #include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionSelector.h" // RecoElectronSelectorLoose, RecoElectronSelectorTight, RecoMuonSelectorLoose, RecoMuonSelectorTight, RecoHadTauSelector
 
 typedef math::PtEtaPhiMLorentzVector LV;
@@ -107,25 +108,6 @@ create_log_folder(std::string & output_dir,
     return 1;
   }
   return 0;
-}
-
-/**
- * @brief Function that sort tight leptons by their pT
- * @param vec The vector containing [index, pT] pair
- */
-void
-leading_lept(std::vector<std::pair<Int_t, Double_t>> & vec)
-{
-  std::sort
-  (
-    vec.begin(),
-    vec.end(),
-    [](std::pair<Int_t, Double_t> A,
-       std::pair<Int_t, Double_t> B) -> bool
-    {
-      return A.second > B.second;
-    }
-  );
 }
 
 /**
@@ -538,7 +520,7 @@ main(int argc,
 
 //--- set up the histogram manager
   enum cp { final };
-  HistogramManager<ch, cp> hm;
+  GenericHistManager<ch, cp> hm;
   hm.add_channel(ch::ee, "ee")
     .add_channel(ch::mumu, "mumu")
     .add_channel(ch::emu, "emu");
@@ -554,7 +536,7 @@ main(int argc,
 
 //--- set up PDG ID plots
   enum match_type { same, flipped, gen_match, due_jets, no_overlap };
-  HistogramManager<match_type, ch> pdg_id_plots;
+  GenericHistManager<match_type, ch> pdg_id_plots;
   pdg_id_plots.add_channel(match_type::same,       "same_sign")
               .add_channel(match_type::flipped,    "flipped_sign")
               .add_channel(match_type::gen_match,  "gen_match")
@@ -580,8 +562,8 @@ main(int argc,
   auto fill_pdg_plot = [&pdg_id_keys, &pdg_id_plots]
                          (const std::vector<GenLepton> & gen_leptons,
                           const std::vector<GenJet> & gen_jets,
-                          const std::vector<RecoLepton*> & leptons,
-                          const std::vector<RecoHadTau> * const taus,
+                          const std::vector<const RecoLepton*> & leptons,
+                          const std::vector<const RecoHadTau*> * const taus,
                           const std::vector<GenHadTau> * const gen_taus,
                           ch channel,
                           bool check_pdg_id, double evtWeight = 1.) -> void
@@ -638,9 +620,9 @@ main(int argc,
       for(auto & tau: *taus)
       {
         bool any_overlap = false;
-        std::string pdg_id_key = pdg_id_keys.at(std::abs(tau.pdgId_));
+        std::string pdg_id_key = pdg_id_keys.at(std::abs(tau->pdgId_));
         for(auto & gen_tau: *gen_taus)
-          if(tau.is_overlap(gen_tau, 0.3))
+          if(tau->is_overlap(gen_tau, 0.3))
           {
             pdg_id_plots[match_type::gen_match][channel].fill(pdg_id_key, evtWeight, 1);
             any_overlap = true;
@@ -649,7 +631,7 @@ main(int argc,
 
         if(any_overlap) continue;
         for(auto & gen_jet: gen_jets)
-          if(tau.is_overlap(gen_jet, 0.3))
+          if(tau->is_overlap(gen_jet, 0.3))
           {
             pdg_id_plots[match_type::due_jets][channel].fill(pdg_id_key, evtWeight, 1);
             any_overlap = true;
@@ -698,7 +680,7 @@ main(int argc,
   hadTauReader->setBranchAddresses(&chain);
   RecoHadTauCollectionSelectorTight hadTauSelector;
   RecoJetReader* jetReader = new RecoJetReader("nJet", "Jet");
-  jetReader->setSranchName_BtagWeight(jet_btagWeight_branch);
+  jetReader->setBranchName_BtagWeight(jet_btagWeight_branch);
   jetReader->setBranchAddresses(&chain);
   RecoJetCollectionSelector jetSelector;
   RecoJetCollectionSelectorBtagLoose jetSelectorBtagLoose;
@@ -778,15 +760,18 @@ main(int argc,
 
 //--- create the lepton collection
     std::vector<RecoElectron> electrons = electronReader->read();
-    std::vector<RecoElectron> preselElectrons = preselElectronSelector(electrons);
-    std::vector<RecoElectron> tightElectrons = tightElectronSelector(preselElectrons);
+    std::vector<const RecoElectron*> electron_ptrs = convert_to_ptrs(electrons);
+    std::vector<const RecoElectron*> preselElectrons = preselElectronSelector(electron_ptrs);
+    std::vector<const RecoElectron*> tightElectrons = tightElectronSelector(preselElectrons);
     std::vector<RecoMuon> muons = muonReader->read();
-    std::vector<RecoMuon> preselMuons = preselMuonSelector(muons);
-    std::vector<RecoMuon> tightMuons = tightMuonSelector(preselMuons);
+    std::vector<const RecoMuon*> muon_ptrs = convert_to_ptrs(muons);
+    std::vector<const RecoMuon*> preselMuons = preselMuonSelector(muon_ptrs);
+    std::vector<const RecoMuon*> tightMuons = tightMuonSelector(preselMuons);
 
 //--- create the jet collection
     std::vector<RecoJet> jets = jetReader->read();
-    std::vector<RecoJet> selJets = jetSelector(jets);
+    std::vector<const RecoJet*> jet_ptrs = convert_to_ptrs(jets);
+    std::vector<const RecoJet*> selJets = jetSelector(jet_ptrs);
     // TO-DO: clean selJets collection w.r.t tightLeptons and selHadTaus
 
 //--- compute event-level weight for data/MC correction of b-tagging efficiency and mistag rate
@@ -794,14 +779,15 @@ main(int argc,
 //    described on the BTV POG twiki https://twiki.cern.ch/twiki/bin/view/CMS/BTagShapeCalibration )
     double evtWeight = 1.;
     for ( auto & jet: selJets )
-      evtWeight *= jet.BtagWeight_;
+      evtWeight *= jet->BtagWeight_;
 
 //--- create the generator level jet collection
     std::vector<GenJet> genJets = genJetReader->read();
 
 //--- create the tau collection
     std::vector<RecoHadTau> hadTaus = hadTauReader->read();
-    std::vector<RecoHadTau> selHadTaus = hadTauSelector(hadTaus);
+    std::vector<const RecoHadTau*> hadTau_ptrs = convert_to_ptrs(hadTaus);
+    std::vector<const RecoHadTau*> selHadTaus = hadTauSelector(hadTau_ptrs);
 
 //--- create the collection of generator level leptons
     std::vector<GenLepton> genLeptons = genLeptonReader->read();
@@ -810,28 +796,24 @@ main(int argc,
     std::vector<GenHadTau> genHadTaus = genHadTauReader->read();
 
 //--- select b-jets
-    std::map<std::string, std::vector<RecoJet>> bjets;
-    bjets["loose"] = jetSelectorBtagLoose(jets);
-    bjets["medium"] = jetSelectorBtagMedium(jets);
+    std::map<std::string, std::vector<const RecoJet*>> bjets;
+    bjets["loose"] = jetSelectorBtagLoose(jet_ptrs);
+    bjets["medium"] = jetSelectorBtagMedium(jet_ptrs);
 
 //------------------------------------------------------------ COUNTER STARTS
     increment_all(cuts::entry_point);
     ++counter[ch::_1l_2tau][cuts::entry_point];
 
 //-------------------------------------------------------------- PRESELECTION
-    std::vector<RecoLepton*> preselLeptons;
+    std::vector<const RecoLepton*> preselLeptons;    
     preselLeptons.reserve(preselElectrons.size() + preselMuons.size());
-    for ( auto & electron: preselElectrons ) 
-      preselLeptons.push_back(&electron);
-    for ( auto & muon: preselMuons ) 
-      preselLeptons.push_back(&muon);
+    preselLeptons.insert(preselLeptons.end(), preselElectrons.begin(), preselElectrons.end());
+    preselLeptons.insert(preselLeptons.end(), preselMuons.begin(), preselMuons.end());
 
-    std::vector<RecoLepton*> tightLeptons;
-    preselLeptons.reserve(tightElectrons.size() + tightMuons.size());
-    for ( auto & electron: tightElectrons ) 
-      tightLeptons.push_back(&electron);
-    for ( auto & muon: tightMuons ) 
-      tightLeptons.push_back(&muon);
+    std::vector<const RecoLepton*> tightLeptons;    
+    tightLeptons.reserve(tightElectrons.size() + tightMuons.size());
+    tightLeptons.insert(tightLeptons.end(), tightElectrons.begin(), tightElectrons.end());
+    tightLeptons.insert(tightLeptons.end(), tightMuons.begin(), tightMuons.end());
 
     if(preselLeptons.size() == 1)
     {
@@ -867,7 +849,7 @@ main(int argc,
 //--- we need to count, how many tight and loose leptons we have
 
 //--- require exactly 2/3 tight leptons or 4 loose leptons
-    std::vector<RecoLepton*> selLeptons;
+    std::vector<const RecoLepton*> selLeptons;
     if( tightLeptons.size() == 2 ||
         tightLeptons.size() == 3  ) selLeptons = tightLeptons;
     //CV: 4l category not used by ttH multilepton analysis of 2015 data
@@ -1029,7 +1011,7 @@ main(int argc,
 //--- calculate MHT
       LV mht_vec(0,0,0,0);
       for ( auto & jet: selJets )
-        mht_vec += jet.p4_;
+        mht_vec += jet->p4_;
       mht_vec += lepton1->p4_ + lepton2->p4_;
       const Double_t mht_pt = mht_vec.pt();
       const Double_t met_ld = met_coef * met_pt + mht_coef * mht_pt;
@@ -1107,10 +1089,10 @@ main(int argc,
         LV ht_vec = lepton1->p4_ + lepton2->p4_;
         for ( auto & jet: selJets )
         {
-          const Double_t dR = deltaR(lepton2->eta_, lepton2->phi_, jet.eta_, jet.phi_);
+          const Double_t dR = deltaR(lepton2->eta_, lepton2->phi_, jet->eta_, jet->phi_);
           if ( dR < min_dR_l2j ) min_dR_l2j = dR;
-          ht += jet.pt_;
-          ht_vec += jet.p4_;
+          ht += jet->pt_;
+          ht_vec += jet->p4_;
         }
         const Double_t pt_trailing = lepton2->pt_;
         const Double_t eta_trailing = std::fabs(lepton2->eta_);
@@ -1134,7 +1116,7 @@ main(int argc,
 //--- calculate MHT
         LV mht_vec(0,0,0,0);
         for ( auto & jet: selJets )
-          mht_vec += jet.p4_;
+          mht_vec += jet->p4_;
         for ( auto & lepton: selLeptons )
           mht_vec += lepton->p4_;
         const Double_t mht_pt = mht_vec.pt();

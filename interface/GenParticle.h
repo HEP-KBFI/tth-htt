@@ -1,5 +1,5 @@
-#ifndef GENPARTICLE_H
-#define GENPARTICLE_H
+#ifndef tthAnalysis_HiggsToTauTau_GenParticle_h
+#define tthAnalysis_HiggsToTauTau_GenParticle_h
 
 #include <Rtypes.h> // Int_t, Long64_t, Double_t
 #include "DataFormats/Math/interface/LorentzVector.h" // math::PtEtaPhiMLorentzVector
@@ -51,4 +51,4 @@ public:
              double dR_min) const;
 };
 
-#endif // GENPARTICLE_H
+#endif // tthAnalysis_HiggsToTauTau_GenParticle_h

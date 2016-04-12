@@ -17,4 +17,7 @@ RecoJet::RecoJet(Double_t pt,
   , BtagCSV_(BtagCSV)
   , BtagWeight_(BtagWeight)
   , idx_(idx)
+  , genLepton_(0)
+  , genHadTau_(0)
+  , genJet_(0)
 {}

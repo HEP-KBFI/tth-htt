@@ -23,28 +23,28 @@ double comp_MT_met_lep1(const GenParticle& lepton, double met_pt, double met_phi
   return mT;
 }
 
-double comp_n_jet25_recl(const std::vector<RecoJet>& jets_cleaned)
+double comp_n_jet25_recl(const std::vector<const RecoJet*>& jets_cleaned)
 {
   int n_jets = 0;
-  for ( std::vector<RecoJet>::const_iterator jet = jets_cleaned.begin();
+  for ( std::vector<const RecoJet*>::const_iterator jet = jets_cleaned.begin();
 	jet != jets_cleaned.end(); ++jet ) {
-    if ( jet->pt_ > 25. && std::fabs(jet->eta_) < 2.4 ) ++n_jets;
+    if ( (*jet)->pt_ > 25. && std::fabs((*jet)->eta_) < 2.4 ) ++n_jets;
   }
   return n_jets;
 }
 
-double comp_mindr_lep1_jet(const GenParticle& lepton, const std::vector<RecoJet>& jets_cleaned)
+double comp_mindr_lep1_jet(const GenParticle& lepton, const std::vector<const RecoJet*>& jets_cleaned)
 {
   double dRmin = 1.e+3;
-  for ( std::vector<RecoJet>::const_iterator jet = jets_cleaned.begin();
+  for ( std::vector<const RecoJet*>::const_iterator jet = jets_cleaned.begin();
 	jet != jets_cleaned.end(); ++jet ) {
-    double dR = deltaR(lepton.eta_, lepton.phi_, jet->eta_, jet->phi_);
+    double dR = deltaR(lepton.eta_, lepton.phi_, (*jet)->eta_, (*jet)->phi_);
     if ( dR < dRmin ) dRmin = dR;
   }
   return dRmin;
 }
 
-double comp_mindr_lep2_jet(const GenParticle& lepton, const std::vector<RecoJet>& jets_cleaned)
+double comp_mindr_lep2_jet(const GenParticle& lepton, const std::vector<const RecoJet*>& jets_cleaned)
 {
   return comp_mindr_lep1_jet(lepton, jets_cleaned);
 }
@@ -69,17 +69,17 @@ double comp_lep2_conePt(const RecoLepton& lepton)
   return comp_lep1_conePt(lepton);
 }
 
-double comp_avg_dr_jet(const std::vector<RecoJet>& jets_cleaned)
+double comp_avg_dr_jet(const std::vector<const RecoJet*>& jets_cleaned)
 {
   int n_jet_pairs = 0;
   double dRsum = 0.;
-  for ( std::vector<RecoJet>::const_iterator jet1 = jets_cleaned.begin();
+  for ( std::vector<const RecoJet*>::const_iterator jet1 = jets_cleaned.begin();
 	jet1 != jets_cleaned.end(); ++jet1 ) {
-    if ( jet1->pt_ > 25. && std::fabs(jet1->eta_) < 2.4 ) {
-      for ( std::vector<RecoJet>::const_iterator jet2 = jet1 + 1;
+    if ( (*jet1)->pt_ > 25. && std::fabs((*jet1)->eta_) < 2.4 ) {
+      for ( std::vector<const RecoJet*>::const_iterator jet2 = jet1 + 1;
 	    jet2 != jets_cleaned.end(); ++jet2 ) {
-	if ( jet2->pt_ > 25. && std::fabs(jet2->eta_) < 2.4 ) {
-	  double dR = deltaR(jet1->eta_, jet1->phi_, jet2->eta_, jet2->phi_);
+	if ( (*jet2)->pt_ > 25. && std::fabs((*jet2)->eta_) < 2.4 ) {
+	  double dR = deltaR((*jet1)->eta_, (*jet1)->phi_, (*jet2)->eta_, (*jet2)->phi_);
 	  dRsum += dR;
 	  ++n_jet_pairs;
 	}

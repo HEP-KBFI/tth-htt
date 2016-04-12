@@ -2,6 +2,9 @@
 #define tthAnalysis_HiggsToTauTau_RecoHadTau_h
 
 #include "tthAnalysis/HiggsToTauTau/interface/GenParticle.h" // GenParticle
+#include "tthAnalysis/HiggsToTauTau/interface/GenLepton.h" // GenLepton
+#include "tthAnalysis/HiggsToTauTau/interface/GenHadTau.h" // GenHadTau
+#include "tthAnalysis/HiggsToTauTau/interface/GenJet.h" // GenJet
 
 class RecoHadTau
   : public GenParticle
@@ -31,6 +34,11 @@ class RecoHadTau
   Int_t id_cut_dR05_;      ///< cut-based tau id computed with dR=0.5 isolation cone
   Int_t antiElectron_;     ///< discriminator against electrons
   Int_t antiMuon_;         ///< discriminator against muons
+
+//--- matching to generator level particles
+  const GenLepton* genLepton_;
+  const GenHadTau* genHadTau_;
+  const GenJet* genJet_;
 };
 
 #endif // tthAnalysis_HiggsToTauTau_RecoHadTau_h
