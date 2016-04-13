@@ -44,10 +44,10 @@ class GenJetReader
   std::string branchName_mass_;
 
   Int_t nJets_;
-  Double_t* jet_pt_;
-  Double_t* jet_eta_;
-  Double_t* jet_phi_;
-  Double_t* jet_mass_;
+  Float_t* jet_pt_;
+  Float_t* jet_eta_;
+  Float_t* jet_phi_;
+  Float_t* jet_mass_;
 
   // CV: make sure that only one RecoJetReader instance exists for a given branchName,
   //     as ROOT cannot handle multiple TTree::SetBranchAddress calls for the same branch.

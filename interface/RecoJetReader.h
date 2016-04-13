@@ -3,7 +3,7 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h" // RecoJet
 
-#include <Rtypes.h> // Int_t, Double_t
+#include <Rtypes.h> // Int_t, Float_t
 #include <TTree.h> // TTree
 
 #include <string>
@@ -56,15 +56,15 @@ class RecoJetReader
   int jetPt_option_;
 
   Int_t nJets_;
-  Double_t* jet_pt_;
-  Double_t* jet_eta_;
-  Double_t* jet_phi_;
-  Double_t* jet_mass_;
-  Double_t* jet_corr_;
-  Double_t* jet_corr_JECUp_;
-  Double_t* jet_corr_JECDown_;
-  Double_t* jet_BtagCSV_;
-  Double_t* jet_BtagWeight_;
+  Float_t* jet_pt_;
+  Float_t* jet_eta_;
+  Float_t* jet_phi_;
+  Float_t* jet_mass_;
+  Float_t* jet_corr_;
+  Float_t* jet_corr_JECUp_;
+  Float_t* jet_corr_JECDown_;
+  Float_t* jet_BtagCSV_;
+  Float_t* jet_BtagWeight_;
 
   // CV: make sure that only one RecoJetReader instance exists for a given branchName,
   //     as ROOT cannot handle multiple TTree::SetBranchAddress calls for the same branch.

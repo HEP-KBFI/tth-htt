@@ -73,13 +73,13 @@ void GenLeptonReader::setBranchAddresses(TTree* tree)
 {
   if ( instances_[branchName_obj_] == this ) {
     tree->SetBranchAddress(branchName_num_.data(), &nLeptons_);   
-    lepton_pt_ = new Double_t[max_nLeptons_];
+    lepton_pt_ = new Float_t[max_nLeptons_];
     tree->SetBranchAddress(branchName_pt_.data(), lepton_pt_); 
-    lepton_eta_ = new Double_t[max_nLeptons_];
+    lepton_eta_ = new Float_t[max_nLeptons_];
     tree->SetBranchAddress(branchName_eta_.data(), lepton_eta_); 
-    lepton_phi_ = new Double_t[max_nLeptons_];
+    lepton_phi_ = new Float_t[max_nLeptons_];
     tree->SetBranchAddress(branchName_phi_.data(), lepton_phi_); 
-    lepton_mass_ = new Double_t[max_nLeptons_];
+    lepton_mass_ = new Float_t[max_nLeptons_];
     tree->SetBranchAddress(branchName_mass_.data(), lepton_mass_); 
     lepton_pdgId_ = new Int_t[max_nLeptons_];
     tree->SetBranchAddress(branchName_pdgId_.data(), lepton_pdgId_); 

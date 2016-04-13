@@ -4,7 +4,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectron.h" // RecoElectron
 #include "tthAnalysis/HiggsToTauTau/interface/RecoLeptonReader.h" // RecoLeptonReader
 
-#include <Rtypes.h> // Int_t, Double_t
+#include <Rtypes.h> // Int_t, Float_t
 #include <TTree.h> // TTree
 
 #include <string>
@@ -49,12 +49,12 @@ class RecoElectronReader
   std::string branchName_lostHits_;
   std::string branchName_conversionVeto_;
 
-  Double_t* mvaRawPOG_; 
-  Double_t* sigmaEtaEta_;
-  Double_t* HoE_;
-  Double_t* deltaEta_;
-  Double_t* deltaPhi_;
-  Double_t* OoEminusOoP_;
+  Float_t* mvaRawPOG_; 
+  Float_t* sigmaEtaEta_;
+  Float_t* HoE_;
+  Float_t* deltaEta_;
+  Float_t* deltaPhi_;
+  Float_t* OoEminusOoP_;
   Int_t* lostHits_; 
   Int_t* conversionVeto_;
 

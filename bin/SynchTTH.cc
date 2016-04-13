@@ -1053,7 +1053,7 @@ main(int argc,
       mvaInputs["mindr_lep2_jet"]             = comp_mindr_lep2_jet(*lepton2, selJets);
       mvaInputs["LepGood_conePt[iF_Recl[0]]"] = comp_lep1_conePt(*lepton1);
       mvaInputs["LepGood_conePt[iF_Recl[1]]"] = comp_lep2_conePt(*lepton2);
-      mvaInputs["min(met_pt,400)"]            = std::min(met_pt, 400.);
+      mvaInputs["min(met_pt,400)"]            = std::min(met_pt, (Float_t)400.);
       mvaInputs["avg_dr_jet"]                 = comp_avg_dr_jet(selJets);
 
       double mvaOutput_2lss_ttV = mva_2lss_ttV(mvaInputs);

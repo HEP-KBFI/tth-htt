@@ -3,7 +3,7 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/RecoLepton.h" // RecoLepton
 
-#include <Rtypes.h> // Int_t, Double_t
+#include <Rtypes.h> // Int_t, Float_t
 #include <TTree.h> // TTree
 
 #include <string>
@@ -50,18 +50,18 @@ class RecoLeptonReader
   std::string branchName_tightCharge_;
 
   Int_t nLeptons_;
-  Double_t* pt_;
-  Double_t* eta_;
-  Double_t* phi_;
-  Double_t* mass_;
+  Float_t* pt_;
+  Float_t* eta_;
+  Float_t* phi_;
+  Float_t* mass_;
   Int_t* pdgId_;
-  Double_t* dxy_;
-  Double_t* dz_;
-  Double_t* relIso_;
-  Double_t* sip3d_;
-  Double_t* mvaRawTTH_;
-  Double_t* jetPtRatio_; 
-  Double_t* jetBtagCSV_; 
+  Float_t* dxy_;
+  Float_t* dz_;
+  Float_t* relIso_;
+  Float_t* sip3d_;
+  Float_t* mvaRawTTH_;
+  Float_t* jetPtRatio_; 
+  Float_t* jetBtagCSV_; 
   Int_t* tightCharge_;
 
   // CV: make sure that only one RecoLeptonReader instance exists for a given branchName,

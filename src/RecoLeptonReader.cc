@@ -104,30 +104,33 @@ void RecoLeptonReader::setBranchNames()
 void RecoLeptonReader::setBranchAddresses(TTree* tree)
 {
   if ( instances_[branchName_obj_] == this ) {
+    //std::cout << "<RecoLeptonReader::setBranchAddresses>:" << std::endl;
+    //std::cout << " branchName_num = " << branchName_num_ << std::endl;
+    //std::cout << " branchName_obj = " << branchName_obj_ << std::endl;
     tree->SetBranchAddress(branchName_num_.data(), &nLeptons_);   
-    pt_ = new Double_t[max_nLeptons_];
+    pt_ = new Float_t[max_nLeptons_];
     tree->SetBranchAddress(branchName_pt_.data(), pt_); 
-    eta_ = new Double_t[max_nLeptons_];
+    eta_ = new Float_t[max_nLeptons_];
     tree->SetBranchAddress(branchName_eta_.data(), eta_); 
-    phi_ = new Double_t[max_nLeptons_];
+    phi_ = new Float_t[max_nLeptons_];
     tree->SetBranchAddress(branchName_phi_.data(), phi_); 
-    mass_ = new Double_t[max_nLeptons_];
+    mass_ = new Float_t[max_nLeptons_];
     tree->SetBranchAddress(branchName_mass_.data(), mass_); 
     pdgId_ = new Int_t[max_nLeptons_];
     tree->SetBranchAddress(branchName_pdgId_.data(), pdgId_); 
-    dxy_ = new Double_t[max_nLeptons_];
+    dxy_ = new Float_t[max_nLeptons_];
     tree->SetBranchAddress(branchName_dxy_.data(), dxy_); 
-    dz_ = new Double_t[max_nLeptons_];
+    dz_ = new Float_t[max_nLeptons_];
     tree->SetBranchAddress(branchName_dz_.data(), dz_); 
-    relIso_ = new Double_t[max_nLeptons_];
+    relIso_ = new Float_t[max_nLeptons_];
     tree->SetBranchAddress(branchName_relIso_.data(), relIso_); 
-    sip3d_ = new Double_t[max_nLeptons_];
+    sip3d_ = new Float_t[max_nLeptons_];
     tree->SetBranchAddress(branchName_sip3d_.data(), sip3d_); 
-    mvaRawTTH_ = new Double_t[max_nLeptons_];
+    mvaRawTTH_ = new Float_t[max_nLeptons_];
     tree->SetBranchAddress(branchName_mvaRawTTH_.data(), mvaRawTTH_); 
-    jetPtRatio_ = new Double_t[max_nLeptons_];
+    jetPtRatio_ = new Float_t[max_nLeptons_];
     tree->SetBranchAddress(branchName_jetPtRatio_.data(), jetPtRatio_); 
-    jetBtagCSV_ = new Double_t[max_nLeptons_];
+    jetBtagCSV_ = new Float_t[max_nLeptons_];
     tree->SetBranchAddress(branchName_jetBtagCSV_.data(), jetBtagCSV_); 
     tightCharge_ = new Int_t[max_nLeptons_];
     tree->SetBranchAddress(branchName_tightCharge_.data(), tightCharge_);

@@ -90,18 +90,19 @@ void RecoElectronReader::setBranchNames()
 void RecoElectronReader::setBranchAddresses(TTree* tree)
 {
   if ( instances_[branchName_obj_] == this ) {
+    leptonReader_->setBranchAddresses(tree);
     int max_nLeptons = leptonReader_->max_nLeptons_;
-    mvaRawPOG_ = new Double_t[max_nLeptons];
+    mvaRawPOG_ = new Float_t[max_nLeptons];
     tree->SetBranchAddress(branchName_mvaRawPOG_.data(), mvaRawPOG_);
-    sigmaEtaEta_ = new Double_t[max_nLeptons];
+    sigmaEtaEta_ = new Float_t[max_nLeptons];
     tree->SetBranchAddress(branchName_sigmaEtaEta_.data(), sigmaEtaEta_);
-    HoE_ = new Double_t[max_nLeptons];
+    HoE_ = new Float_t[max_nLeptons];
     tree->SetBranchAddress(branchName_HoE_.data(), HoE_);
-    deltaEta_ = new Double_t[max_nLeptons];
+    deltaEta_ = new Float_t[max_nLeptons];
     tree->SetBranchAddress(branchName_deltaEta_.data(), deltaEta_);
-    deltaPhi_ = new Double_t[max_nLeptons];
+    deltaPhi_ = new Float_t[max_nLeptons];
     tree->SetBranchAddress(branchName_deltaPhi_.data(), deltaPhi_);
-    OoEminusOoP_ = new Double_t[max_nLeptons];
+    OoEminusOoP_ = new Float_t[max_nLeptons];
     tree->SetBranchAddress(branchName_OoEminusOoP_.data(), OoEminusOoP_);
     lostHits_ = new Int_t[max_nLeptons];
     tree->SetBranchAddress(branchName_lostHits_.data(), lostHits_); 

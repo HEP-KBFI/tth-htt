@@ -4,7 +4,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuon.h" // RecoMuon
 #include "tthAnalysis/HiggsToTauTau/interface/RecoLeptonReader.h" // RecoLeptonReader
 
-#include <Rtypes.h> // Int_t, Double_t
+#include <Rtypes.h> // Int_t
 #include <TTree.h> // TTree
 
 #include <string>

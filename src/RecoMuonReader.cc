@@ -64,6 +64,7 @@ void RecoMuonReader::setBranchNames()
 void RecoMuonReader::setBranchAddresses(TTree* tree)
 {
   if ( instances_[branchName_obj_] == this ) {
+    leptonReader_->setBranchAddresses(tree);
     int max_nLeptons = leptonReader_->max_nLeptons_;
     looseIdPOG_ = new Int_t[max_nLeptons];
     tree->SetBranchAddress(branchName_looseIdPOG_.data(), looseIdPOG_); 

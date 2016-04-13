@@ -3,7 +3,7 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTau.h" // RecoHadTau
 
-#include <Rtypes.h> // Int_t, Double_t
+#include <Rtypes.h> // Int_t, Float_t
 #include <TTree.h> // TTree
 
 #include <string>
@@ -53,12 +53,12 @@ class RecoHadTauReader
   std::string branchName_idAgainstMu_;
   
   Int_t nHadTaus_;
-  Double_t* hadTau_pt_;
-  Double_t* hadTau_eta_;
-  Double_t* hadTau_phi_;
-  Double_t* hadTau_mass_;
+  Float_t* hadTau_pt_;
+  Float_t* hadTau_eta_;
+  Float_t* hadTau_phi_;
+  Float_t* hadTau_mass_;
   Int_t* hadTau_pdgId_;
-  Double_t* hadTau_dz_;
+  Float_t* hadTau_dz_;
   Int_t* hadTau_idDecayMode_;
   Int_t* hadTau_idMVA_dR03_;
   Int_t* hadTau_idMVA_dR05_;

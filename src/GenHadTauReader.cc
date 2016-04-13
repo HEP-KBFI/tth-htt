@@ -69,13 +69,13 @@ void GenHadTauReader::setBranchAddresses(TTree* tree)
 {
   if ( instances_[branchName_obj_] == this ) {
     tree->SetBranchAddress(branchName_num_.data(), &nHadTaus_);   
-    hadTau_pt_ = new Double_t[max_nHadTaus_];
+    hadTau_pt_ = new Float_t[max_nHadTaus_];
     tree->SetBranchAddress(branchName_pt_.data(), hadTau_pt_); 
-    hadTau_eta_ = new Double_t[max_nHadTaus_];
+    hadTau_eta_ = new Float_t[max_nHadTaus_];
     tree->SetBranchAddress(branchName_eta_.data(), hadTau_eta_); 
-    hadTau_phi_ = new Double_t[max_nHadTaus_];
+    hadTau_phi_ = new Float_t[max_nHadTaus_];
     tree->SetBranchAddress(branchName_phi_.data(), hadTau_phi_); 
-    hadTau_mass_ = new Double_t[max_nHadTaus_];
+    hadTau_mass_ = new Float_t[max_nHadTaus_];
     tree->SetBranchAddress(branchName_mass_.data(), hadTau_mass_); 
   }
 }

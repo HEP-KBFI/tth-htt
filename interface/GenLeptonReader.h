@@ -45,10 +45,10 @@ class GenLeptonReader
   std::string branchName_pdgId_;
 
   Int_t nLeptons_;
-  Double_t* lepton_pt_;
-  Double_t* lepton_eta_;
-  Double_t* lepton_phi_;
-  Double_t* lepton_mass_;
+  Float_t* lepton_pt_;
+  Float_t* lepton_eta_;
+  Float_t* lepton_phi_;
+  Float_t* lepton_mass_;
   Int_t* lepton_pdgId_;
 
   // CV: make sure that only one GenLeptonReader instance exists for a given branchName,

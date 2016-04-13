@@ -69,13 +69,13 @@ void GenJetReader::setBranchAddresses(TTree* tree)
 {
   if ( instances_[branchName_obj_] == this ) {
     tree->SetBranchAddress(branchName_num_.data(), &nJets_);   
-    jet_pt_ = new Double_t[max_nJets_];
+    jet_pt_ = new Float_t[max_nJets_];
     tree->SetBranchAddress(branchName_pt_.data(), jet_pt_); 
-    jet_eta_ = new Double_t[max_nJets_];
+    jet_eta_ = new Float_t[max_nJets_];
     tree->SetBranchAddress(branchName_eta_.data(), jet_eta_); 
-    jet_phi_ = new Double_t[max_nJets_];
+    jet_phi_ = new Float_t[max_nJets_];
     tree->SetBranchAddress(branchName_phi_.data(), jet_phi_); 
-    jet_mass_ = new Double_t[max_nJets_];
+    jet_mass_ = new Float_t[max_nJets_];
     tree->SetBranchAddress(branchName_mass_.data(), jet_mass_); 
   }
 }

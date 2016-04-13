@@ -89,23 +89,23 @@ void RecoJetReader::setBranchAddresses(TTree* tree)
 {
   if ( instances_[branchName_obj_] == this ) {
     tree->SetBranchAddress(branchName_num_.data(), &nJets_);   
-    jet_pt_ = new Double_t[max_nJets_];
+    jet_pt_ = new Float_t[max_nJets_];
     tree->SetBranchAddress(branchName_pt_.data(), jet_pt_); 
-    jet_eta_ = new Double_t[max_nJets_];
+    jet_eta_ = new Float_t[max_nJets_];
     tree->SetBranchAddress(branchName_eta_.data(), jet_eta_); 
-    jet_phi_ = new Double_t[max_nJets_];
+    jet_phi_ = new Float_t[max_nJets_];
     tree->SetBranchAddress(branchName_phi_.data(), jet_phi_); 
-    jet_mass_ = new Double_t[max_nJets_];
+    jet_mass_ = new Float_t[max_nJets_];
     tree->SetBranchAddress(branchName_mass_.data(), jet_mass_); 
-    jet_corr_ = new Double_t[max_nJets_];
+    jet_corr_ = new Float_t[max_nJets_];
     tree->SetBranchAddress(branchName_corr_.data(), jet_corr_); 
-    jet_corr_JECUp_ = new Double_t[max_nJets_];
+    jet_corr_JECUp_ = new Float_t[max_nJets_];
     tree->SetBranchAddress(branchName_corr_JECUp_.data(), jet_corr_JECUp_); 
-    jet_corr_JECDown_ = new Double_t[max_nJets_];
+    jet_corr_JECDown_ = new Float_t[max_nJets_];
     tree->SetBranchAddress(branchName_corr_JECDown_.data(), jet_corr_JECDown_);     
-    jet_BtagCSV_ = new Double_t[max_nJets_];
+    jet_BtagCSV_ = new Float_t[max_nJets_];
     tree->SetBranchAddress(branchName_BtagCSV_.data(), jet_BtagCSV_); 
-    jet_BtagWeight_ = new Double_t[max_nJets_];
+    jet_BtagWeight_ = new Float_t[max_nJets_];
     tree->SetBranchAddress(branchName_BtagWeight_.data(), jet_BtagWeight_); 
   }
 }
@@ -122,7 +122,7 @@ std::vector<RecoJet> RecoJetReader::read() const
   }
   jets.reserve(nJets);
   for ( Int_t idxJet = 0; idxJet < nJets; ++idxJet ) {
-    Double_t jet_pt = -1.;
+    Float_t jet_pt = -1.;
     if      ( jetPt_option_ == kJetPt_central ) jet_pt = jet_pt_[idxJet];
     else if ( jetPt_option_ == kJetPt_jecUp   ) jet_pt = jet_pt_[idxJet]*jet_corr_JECUp_[idxJet]/jet_corr_[idxJet];
     else if ( jetPt_option_ == kJetPt_jecDown ) jet_pt = jet_pt_[idxJet]*jet_corr_JECDown_[idxJet]/jet_corr_[idxJet];    
