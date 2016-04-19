@@ -45,8 +45,7 @@ void MuonHistManager::fillHistograms(const std::vector<const RecoMuon*>& muon_pt
     fillWithOverFlow(histogram_pt_, muon->pt_, evtWeight, evtWeightErr);
     fillWithOverFlow(histogram_eta_, muon->eta_, evtWeight, evtWeightErr);
     fillWithOverFlow(histogram_phi_, muon->phi_, evtWeight, evtWeightErr);
-    int charge = -muon->pdgId_/std::abs(muon->pdgId_);
-    fillWithOverFlow(histogram_charge_, charge, evtWeight, evtWeightErr);
+    fillWithOverFlow(histogram_charge_, muon->charge_, evtWeight, evtWeightErr);
     
     fillWithOverFlow(histogram_dxy_, muon->dxy_, evtWeight, evtWeightErr);
     fillWithOverFlow(histogram_dz_, muon->dz_, evtWeight, evtWeightErr);
@@ -66,8 +65,7 @@ void MuonHistManager::fillHistograms(const std::vector<const RecoMuon*>& muon_pt
     else                         abs_genPdgId = 0;                                  // no match to any generator level particle (reconstructed muon most likely due to pileup)
     fillWithOverFlow(histogram_abs_genPdgId_, abs_genPdgId, evtWeight, evtWeightErr);
     if ( abs_genPdgId == 13 ) {
-      int genCharge = muon->genLepton_->pdgId_/abs_genPdgId;
-      fillWithOverFlow(histogram_gen_times_recCharge_, charge*genCharge, evtWeight, evtWeightErr);
+      fillWithOverFlow(histogram_gen_times_recCharge_, muon->charge_*muon->genLepton_->charge_, evtWeight, evtWeightErr);
     }
   }
 }

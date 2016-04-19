@@ -51,8 +51,7 @@ void ElectronHistManager::fillHistograms(const std::vector<const RecoElectron*>&
     fillWithOverFlow(histogram_pt_, electron->pt_, evtWeight, evtWeightErr);
     fillWithOverFlow(histogram_eta_, electron->eta_, evtWeight, evtWeightErr);
     fillWithOverFlow(histogram_phi_, electron->phi_, evtWeight, evtWeightErr);
-    int charge = -electron->pdgId_/std::abs(electron->pdgId_);
-    fillWithOverFlow(histogram_charge_, charge, evtWeight, evtWeightErr);
+    fillWithOverFlow(histogram_charge_, electron->charge_, evtWeight, evtWeightErr);
     
     fillWithOverFlow(histogram_dxy_, electron->dxy_, evtWeight, evtWeightErr);
     fillWithOverFlow(histogram_dz_, electron->dz_, evtWeight, evtWeightErr);
@@ -78,8 +77,7 @@ void ElectronHistManager::fillHistograms(const std::vector<const RecoElectron*>&
     else                             abs_genPdgId = 0;                                      // no match to any generator level particle (reconstructed electron most likely due to pileup)
     fillWithOverFlow(histogram_abs_genPdgId_, abs_genPdgId, evtWeight, evtWeightErr);
     if ( abs_genPdgId == 11 ) {
-      int genCharge = electron->genLepton_->pdgId_/abs_genPdgId;
-      fillWithOverFlow(histogram_gen_times_recCharge_, charge*genCharge, evtWeight, evtWeightErr);
+      fillWithOverFlow(histogram_gen_times_recCharge_, electron->charge_*electron->genLepton_->charge_, evtWeight, evtWeightErr);
     }
   }
 }

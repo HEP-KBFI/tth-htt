@@ -15,6 +15,7 @@ class GenLepton
             Int_t pdgId);
 
   Int_t pdgId_;  ///< PDG id of the lepton (signed)
+  Int_t charge_; ///< charge of lepton (either +1 or -1, depending on pdgId)
 };
 
 #endif // tthAnalysis_HiggsToTauTau_GenLepton_h

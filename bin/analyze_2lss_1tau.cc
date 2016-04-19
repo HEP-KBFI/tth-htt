@@ -51,6 +51,7 @@
 #include <fstream> // std::ofstream
 
 typedef math::PtEtaPhiMLorentzVector LV;
+typedef std::vector<std::string> vstring;
 
 //--- declare constants
 const double z_mass   = 91.1876;
@@ -101,6 +102,17 @@ int main(int argc, char* argv[])
    std::string treeName = cfg_analyze.getParameter<std::string>("treeName");
 
   std::string process_string = cfg_analyze.getParameter<std::string>("process");
+
+  vstring triggers_1e = cfg_analyze.getParameter<vstring>("triggers_1e");
+  bool use_triggers_1e = cfg_analyze.getParameter<bool>("use_triggers_1e");
+  vstring triggers_2e = cfg_analyze.getParameter<vstring>("triggers_2e");
+  bool use_triggers_2e = cfg_analyze.getParameter<bool>("use_triggers_2e");
+  vstring triggers_1mu = cfg_analyze.getParameter<vstring>("triggers_1mu");
+  bool use_triggers_1mu = cfg_analyze.getParameter<bool>("use_triggers_1mu");
+  vstring triggers_2mu = cfg_analyze.getParameter<vstring>("triggers_2mu");
+  bool use_triggers_2mu = cfg_analyze.getParameter<bool>("use_triggers_2mu");
+  vstring triggers_1e1mu = cfg_analyze.getParameter<vstring>("triggers_1e1mu");
+  bool use_triggers_1e1mu = cfg_analyze.getParameter<bool>("use_triggers_1e1mu");
 
   enum { kOS, kSS };
   std::string chargeSelection_string = cfg_analyze.getParameter<std::string>("chargeSelection");
@@ -475,20 +487,24 @@ int main(int argc, char* argv[])
     std::vector<const RecoMuon*> muon_ptrs = convert_to_ptrs(muons);
     std::vector<const RecoMuon*> cleanedMuons = muon_ptrs; // CV: no cleaning needed for muons, as they have the highest priority in the overlap removal
     std::vector<const RecoMuon*> preselMuons = preselMuonSelector(cleanedMuons);
+    std::vector<const RecoMuon*> fakeableMuons = fakeableMuonSelector(preselMuons);
+    std::vector<const RecoMuon*> tightMuons = tightMuonSelector(preselMuons);
     std::vector<const RecoMuon*> selMuons;
     if      ( leptonSelection == kLoose    ) selMuons = preselMuons;
-    else if ( leptonSelection == kFakeable ) selMuons = fakeableMuonSelector(preselMuons);
-    else if ( leptonSelection == kTight    ) selMuons = tightMuonSelector(preselMuons);
+    else if ( leptonSelection == kFakeable ) selMuons = fakeableMuons;
+    else if ( leptonSelection == kTight    ) selMuons = tightMuons;
     else assert(0);
 
     std::vector<RecoElectron> electrons = electronReader->read();
     std::vector<const RecoElectron*> electron_ptrs = convert_to_ptrs(electrons);
     std::vector<const RecoElectron*> cleanedElectrons = electronCleaner(electron_ptrs, selMuons);
     std::vector<const RecoElectron*> preselElectrons = preselElectronSelector(cleanedElectrons);
+    std::vector<const RecoElectron*> fakeableElectrons = fakeableElectronSelector(preselElectrons);
+    std::vector<const RecoElectron*> tightElectrons = tightElectronSelector(preselElectrons);
     std::vector<const RecoElectron*> selElectrons;
     if      ( leptonSelection == kLoose    ) selElectrons = preselElectrons;
-    else if ( leptonSelection == kFakeable ) selElectrons = fakeableElectronSelector(preselElectrons);
-    else if ( leptonSelection == kTight    ) selElectrons = tightElectronSelector(preselElectrons);
+    else if ( leptonSelection == kFakeable ) selElectrons = fakeableElectrons;
+    else if ( leptonSelection == kTight    ) selElectrons = tightElectrons;
     else assert(0);
 
     std::vector<RecoHadTau> hadTaus = hadTauReader->read();
@@ -571,6 +587,29 @@ int main(int argc, char* argv[])
       evtWeight *= (*jet)->BtagWeight_;
     }
 
+    double evtWeight_pp = evtWeight;
+    double evtWeight_mm = evtWeight;
+    if ( chargeSelection == kOS ) {
+      const RecoLepton* preselLepton_lead = preselLeptons[0];
+      int preselLepton_lead_type = getLeptonType(preselLepton_lead->pdgId_);      
+      double prob_chargeMisId_lead = prob_chargeMisId(preselLepton_lead_type, preselLepton_lead->pt_, preselLepton_lead->eta_);
+
+      const RecoLepton* preselLepton_sublead = preselLeptons[1];
+      int preselLepton_sublead_type = getLeptonType(preselLepton_sublead->pdgId_);
+      double prob_chargeMisId_sublead = prob_chargeMisId(preselLepton_sublead_type, preselLepton_sublead->pt_, preselLepton_sublead->eta_);
+
+      evtWeight *= ( prob_chargeMisId_lead + prob_chargeMisId_sublead);
+
+      if ( preselLepton_lead->charge_ < 0 && preselLepton_sublead->charge_ > 0 ) {
+	evtWeight_pp *= prob_chargeMisId_lead;
+	evtWeight_mm *= prob_chargeMisId_sublead;
+      }
+      if ( preselLepton_lead->charge_ > 0 && preselLepton_sublead->charge_ < 0 ) {
+	evtWeight_pp *= prob_chargeMisId_sublead;
+	evtWeight_mm *= prob_chargeMisId_lead;
+      }
+    } 
+
 //--- compute output of BDTs used to discriminate ttH vs. ttV and ttH vs. ttbar 
 //    in 2lss_1tau category of ttH multilepton analysis 
     const RecoLepton* preselLepton_lead = preselLeptons[0];
@@ -636,8 +675,8 @@ int main(int argc, char* argv[])
     double minPt_sublead = selLepton_sublead->is_electron() ? 15. : 10.;
     if ( !(selLepton_lead->pt_ > minPt_lead && selLepton_sublead->pt_ > minPt_sublead) ) continue;
 
-    bool isCharge_SS = selLepton_lead->pdgId_*selLepton_sublead->pdgId_ > 0;
-    bool isCharge_OS = selLepton_lead->pdgId_*selLepton_sublead->pdgId_ < 0;
+    bool isCharge_SS = selLepton_lead->charge_*selLepton_sublead->charge_ > 0;
+    bool isCharge_OS = selLepton_lead->charge_*selLepton_sublead->charge_ < 0;
     if ( chargeSelection == kOS && isCharge_SS ) continue;
     if ( chargeSelection == kSS && isCharge_OS ) continue;
 
@@ -656,6 +695,8 @@ int main(int argc, char* argv[])
 
       if ( met_LD < 0.2 ) continue;
     }
+
+    if ( leptonSelection == kFakeable && (tightMuons.size() + tightElectrons.size()) >= 2 ) continue; // CV: avoid overlap with signal region
 
 //--- fill histograms with events passing final selection 
     selMuonHistManager.fillHistograms(selMuons, evtWeight);
@@ -690,21 +731,24 @@ int main(int argc, char* argv[])
     else assert(0);
 
     if ( category == k2epp_btight ) {
-      selElectronHistManager_2epp_btight_lead.fillHistograms(selElectrons, evtWeight);
-      selElectronHistManager_2epp_btight_sublead.fillHistograms(selElectrons, evtWeight);
-      selEvtHistManager_2epp_btight.fillHistograms(mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, evtWeight);
+      selElectronHistManager_2epp_btight_lead.fillHistograms(selElectrons, evtWeight_pp);
+      selElectronHistManager_2epp_btight_sublead.fillHistograms(selElectrons, evtWeight_pp);
+      selEvtHistManager_2epp_btight.fillHistograms(mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, evtWeight_pp);
     } else if ( category == k2epp_bloose ) {
-      selElectronHistManager_2epp_bloose_lead.fillHistograms(selElectrons, evtWeight);
-      selElectronHistManager_2epp_bloose_sublead.fillHistograms(selElectrons, evtWeight);
-      selEvtHistManager_2epp_bloose.fillHistograms(mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, evtWeight);
+      selElectronHistManager_2epp_bloose_lead.fillHistograms(selElectrons, evtWeight_pp);
+      selElectronHistManager_2epp_bloose_sublead.fillHistograms(selElectrons, evtWeight_pp);
+      selEvtHistManager_2epp_bloose.fillHistograms(mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, evtWeight_pp);
     } else if ( category == k2emm_btight ) {
-      selElectronHistManager_2emm_btight_lead.fillHistograms(selElectrons, evtWeight);
-      selElectronHistManager_2emm_btight_sublead.fillHistograms(selElectrons, evtWeight);
-      selEvtHistManager_2emm_btight.fillHistograms(mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, evtWeight);
+      selElectronHistManager_2emm_btight_lead.fillHistograms(selElectrons, evtWeight_mm);
+      selElectronHistManager_2emm_btight_sublead.fillHistograms(selElectrons, evtWeight_mm);
+      selEvtHistManager_2emm_btight.fillHistograms(mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, evtWeight_mm);
     } else if ( category == k2emm_bloose ) {
-      selElectronHistManager_2emm_bloose_lead.fillHistograms(selElectrons, evtWeight);
-      selElectronHistManager_2emm_bloose_sublead.fillHistograms(selElectrons, evtWeight);
-      selEvtHistManager_2emm_bloose.fillHistograms(mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, evtWeight);
+      selElectronHistManager_2emm_bloose_lead.fillHistograms(selElectrons, evtWeight_mm);
+      selElectronHistManager_2emm_bloose_sublead.fillHistograms(selElectrons, evtWeight_mm);
+      selEvtHistManager_2emm_bloose.fillHistograms(mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, evtWeight_mm);
+
+BIS HIER !!!
+
     } else if ( category == k1e1mupp_btight ) {
       selElectronHistManager_1e1mupp_btight.fillHistograms(selElectrons, evtWeight);
       selMuonHistManager_1e1mupp_btight.fillHistograms(selMuons, evtWeight);
