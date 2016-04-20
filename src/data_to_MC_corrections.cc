@@ -49,10 +49,8 @@ double sf_electronID_and_Iso_loose(double electron_pt, double electron_eta)
   return sf;
 }
 
-double sf_electronID_and_Iso_tight(double electron_pt, double electron_eta)
+double sf_electronID_and_Iso_tight_to_loose(double electron_pt, double electron_eta)
 {
-  double sf_loose = sf_electronID_and_Iso_loose(electron_pt, electron_eta);
-
   // efficiency for electron to pass tight conversion veto and missing inner hits cut: AN-2015/321, Fig. 10 bottom
   static TH2* lut_convVeto = 0;
   if ( !lut_convVeto ) {
@@ -85,8 +83,15 @@ double sf_electronID_and_Iso_tight(double electron_pt, double electron_eta)
     sf_id_tight = get_sf_from_TH1(lut_id_tight_endcap, electron_pt);
   }
 
-  double sf = sf_loose*sf_convVeto*sf_id_tight;
+  double sf = sf_convVeto*sf_id_tight;
   return sf;
+}
+
+double sf_electronID_and_Iso_tight(double electron_pt, double electron_eta)
+{
+  double sf_loose = sf_electronID_and_Iso_loose(electron_pt, electron_eta);
+  double sf_tight_to_loose = sf_electronID_and_Iso_tight_to_loose(electron_pt, electron_eta);
+  return sf_loose*sf_tight_to_loose;
 }
 //-------------------------------------------------------------------------------
 
@@ -139,10 +144,8 @@ double sf_muonID_and_Iso_loose(double muon_pt, double muon_eta)
   return sf;
 }
 
-double sf_muonID_and_Iso_tight(double muon_pt, double muon_eta)
+double sf_muonID_and_Iso_tight_to_loose(double muon_pt, double muon_eta)
 {
-  double sf_loose = sf_muonID_and_Iso_loose(muon_pt, muon_eta);
-
   // efficiency for muon to pass tight identification criteria: AN-2015/321, Fig. 13 top left (barrel) and center (endcap)
   double sf_id_tight = 1.;
   if ( fabs(muon_eta) < 1.2 ) {
@@ -165,8 +168,15 @@ double sf_muonID_and_Iso_tight(double muon_pt, double muon_eta)
     sf_id_tight = get_sf_from_TH1(lut_id_tight_endcap, muon_pt);
   }
 
-  double sf = sf_loose*sf_id_tight;
+  double sf = sf_id_tight;
   return sf;
+}
+
+double sf_muonID_and_Iso_tight(double muon_pt, double muon_eta)
+{
+  double sf_loose = sf_muonID_and_Iso_loose(muon_pt, muon_eta);
+  double sf_tight_to_loose = sf_muonID_and_Iso_tight_to_loose(muon_pt, muon_eta);
+  return sf_loose*sf_tight_to_loose;
 }
 //-------------------------------------------------------------------------------
 
@@ -187,24 +197,94 @@ double sf_leptonID_and_Iso_loose(int lepton1_type, double lepton1_pt, double lep
   return sf;
 }
 
+double sf_leptonID_and_Iso_fakeable_to_loose(int lepton1_type, double lepton1_pt, double lepton1_eta, int lepton2_type, double lepton2_pt, double lepton2_eta)
+{
+  return 1.;
+}
+
 double sf_leptonID_and_Iso_fakeable(int lepton1_type, double lepton1_pt, double lepton1_eta, int lepton2_type, double lepton2_pt, double lepton2_eta)
 {
-  return sf_leptonID_and_Iso_loose(lepton1_type, lepton1_pt, lepton1_eta, lepton2_type, lepton2_pt, lepton2_eta);
+  double sf_loose = sf_leptonID_and_Iso_loose(lepton1_type, lepton1_pt, lepton1_eta, lepton2_type, lepton2_pt, lepton2_eta);
+  double sf_fakeable_to_loose = sf_leptonID_and_Iso_fakeable_to_loose(lepton1_type, lepton1_pt, lepton1_eta, lepton2_type, lepton2_pt, lepton2_eta);
+  return sf_loose*sf_fakeable_to_loose;
+}
+
+double sf_leptonID_and_Iso_tight_to_loose(int lepton1_type, double lepton1_pt, double lepton1_eta, int lepton2_type, double lepton2_pt, double lepton2_eta)
+{
+  double lepton1_sf = 1.;
+  if      ( lepton1_type == kElectron ) lepton1_sf = sf_electronID_and_Iso_tight_to_loose(lepton1_pt, lepton1_eta);
+  else if ( lepton1_type == kMuon     ) lepton1_sf = sf_muonID_and_Iso_tight_to_loose(lepton1_pt, lepton1_eta);
+  else assert(0);
+
+  double lepton2_sf = 1.;
+  if      ( lepton2_type == kElectron ) lepton2_sf = sf_electronID_and_Iso_tight_to_loose(lepton2_pt, lepton2_eta);
+  else if ( lepton2_type == kMuon     ) lepton2_sf = sf_muonID_and_Iso_tight_to_loose(lepton2_pt, lepton2_eta);
+  else assert(0);
+
+  double sf = lepton1_sf*lepton2_sf;
+  return sf;
 }
 
 double sf_leptonID_and_Iso_tight(int lepton1_type, double lepton1_pt, double lepton1_eta, int lepton2_type, double lepton2_pt, double lepton2_eta)
 {
-  double lepton1_sf = 1.;
-  if      ( lepton1_type == kElectron ) lepton1_sf = sf_electronID_and_Iso_tight(lepton1_pt, lepton1_eta);
-  else if ( lepton1_type == kMuon     ) lepton1_sf = sf_muonID_and_Iso_tight(lepton1_pt, lepton1_eta);
-  else assert(0);
+  double sf_loose = sf_leptonID_and_Iso_loose(lepton1_type, lepton1_pt, lepton1_eta, lepton2_type, lepton2_pt, lepton2_eta);
+  double sf_tight_to_loose = sf_leptonID_and_Iso_tight_to_loose(lepton1_type, lepton1_pt, lepton1_eta, lepton2_type, lepton2_pt, lepton2_eta);
+  return sf_loose*sf_tight_to_loose;
+}
+//-------------------------------------------------------------------------------
 
-  double lepton2_sf = 1.;
-  if      ( lepton2_type == kElectron ) lepton2_sf = sf_electronID_and_Iso_tight(lepton2_pt, lepton2_eta);
-  else if ( lepton2_type == kMuon     ) lepton2_sf = sf_muonID_and_Iso_tight(lepton2_pt, lepton2_eta);
-  else assert(0);
+/**
+ * @brief Evaluate data/MC correction for efficiencies of single electron and single muon triggers 
+ * @param type (either kElectron or kMuon), pT and eta 
+ * @return data/MC scale-factor, to be applied as event weight to simulated events
+ */
+double sf_triggerEff(int lepton1_type, double lepton1_pt, double lepton1_eta)
+{
+  if ( lepton1_type == kElectron ) {
+    if ( lepton1_pt > 40. ) return 0.99;
+    else return 0.95;
+  } else if ( lepton1_type == kMuon ) {
+    return 0.98;
+  } else {
+    return 1.00;
+  }
+}
 
-  double sf = lepton1_sf*lepton2_sf;
+//-------------------------------------------------------------------------------
+double sf_leptonID_and_Iso_loose(int lepton1_type, double lepton1_pt, double lepton1_eta)
+{
+  double sf = 1.;
+  if      ( lepton1_type == kElectron ) sf = sf_electronID_and_Iso_loose(lepton1_pt, lepton1_eta);
+  else if ( lepton1_type == kMuon     ) sf = sf_muonID_and_Iso_loose(lepton1_pt, lepton1_eta);
+  else assert(0);
+  return sf;
+}
+
+double sf_leptonID_and_Iso_fakeable(int lepton1_type, double lepton1_pt, double lepton1_eta)
+{
+  double sf_loose = sf_leptonID_and_Iso_loose(lepton1_type, lepton1_pt, lepton1_eta);
+  double sf_fakeable_to_loose = sf_leptonID_and_Iso_fakeable_to_loose(lepton1_type, lepton1_pt, lepton1_eta);
+  return sf_loose*sf_fakeable_to_loose;
+}
+
+double sf_leptonID_and_Iso_fakeable_to_loose(int lepton1_type, double lepton1_pt, double lepton1_eta)
+{
+  return 1.;
+}
+
+double sf_leptonID_and_Iso_tight(int lepton1_type, double lepton1_pt, double lepton1_eta)
+{
+  double sf_loose = sf_leptonID_and_Iso_loose(lepton1_type, lepton1_pt, lepton1_eta);
+  double sf_tight_to_loose = sf_leptonID_and_Iso_tight_to_loose(lepton1_type, lepton1_pt, lepton1_eta);
+  return sf_loose*sf_tight_to_loose;
+}
+
+double sf_leptonID_and_Iso_tight_to_loose(int lepton1_type, double lepton1_pt, double lepton1_eta)
+{
+  double sf = 1.;
+  if      ( lepton1_type == kElectron ) sf = sf_electronID_and_Iso_tight_to_loose(lepton1_pt, lepton1_eta);
+  else if ( lepton1_type == kMuon     ) sf = sf_muonID_and_Iso_tight_to_loose(lepton1_pt, lepton1_eta);
+  else assert(0);
   return sf;
 }
 //-------------------------------------------------------------------------------

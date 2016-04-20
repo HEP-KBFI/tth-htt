@@ -22,7 +22,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/GenJet.h" // GenJet
 #include "tthAnalysis/HiggsToTauTau/interface/GenHadTau.h" // GenHadTau
 #include "tthAnalysis/HiggsToTauTau/interface/TMVAInterface.h" // TMVAInterface
-#include "tthAnalysis/HiggsToTauTau/interface/mvaInputVariables.h" // auxiliary functions for computing input variables of the MVA used for signal extraction in the 2lss_1tau category 
+#include "tthAnalysis/HiggsToTauTau/interface/mvaInputVariables.h" // auxiliary functions for computing input variables of the MVA used for signal extraction in the 2los_1tau category 
 #include "tthAnalysis/HiggsToTauTau/interface/KeyTypes.h"
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronReader.h" // RecoElectronReader
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonReader.h" // RecoMuonReader
@@ -41,7 +41,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/HadTauHistManager.h" // HadTauHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/JetHistManager.h" // JetHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/MEtHistManager.h" // MEtHistManager
-#include "tthAnalysis/HiggsToTauTau/interface/EvtHistManager_2lss_1tau.h" // EvtHistManager_2lss_1tau
+#include "tthAnalysis/HiggsToTauTau/interface/EvtHistManager_2los_1tau.h" // EvtHistManager_2los_1tau
 #include "tthAnalysis/HiggsToTauTau/interface/leptonTypes.h" // getLeptonType, kElectron, kMuon
 #include "tthAnalysis/HiggsToTauTau/interface/backgroundEstimation.h" // prob_chargeMisId
 #include "tthAnalysis/HiggsToTauTau/interface/hltPath.h" // hltPath, create_hltPaths, hltPaths_setBranchAddresses, hltPaths_isTriggered, hltPaths_delete
@@ -65,7 +65,7 @@ const double z_window = 10.;
 const double met_coef =  0.00397;
 const double mht_coef =  0.00265;
 
-enum { k2epp_btight, k2epp_bloose, k2emm_btight, k2emm_bloose, k1e1mupp_btight, k1e1mupp_bloose, k1e1mumm_btight, k1e1mumm_bloose, k2mupp_btight, k2mupp_bloose, k2mumm_btight, k2mumm_bloose };
+enum { k2eos_btight, k2eos_bloose, k1e1muos_btight, k1e1muos_bloose, k2muos_btight, k2muos_bloose };
 
 /**
  * @brief Auxiliary function used for sorting leptons by decreasing pT
@@ -78,7 +78,7 @@ bool isHigherPt(const GenParticle* particle1, const GenParticle* particle2)
 }
 
 /**
- * @brief Produce datacard and control plots for 2lss_1tau categories.
+ * @brief Produce datacard and control plots for 2los_1tau categories.
  */
 int main(int argc, char* argv[]) 
 {
@@ -88,20 +88,20 @@ int main(int argc, char* argv[])
     return EXIT_SUCCESS;
   }
 
-  std::cout << "<analyze_2lss_1tau>:" << std::endl;
+  std::cout << "<analyze_2los_1tau>:" << std::endl;
 
 //--- keep track of time it takes the macro to execute
   TBenchmark clock;
-  clock.Start("analyze_2lss_1tau");
+  clock.Start("analyze_2los_1tau");
 
 //--- read python configuration parameters
   if ( !edm::readPSetsFrom(argv[1])->existsAs<edm::ParameterSet>("process") ) 
-    throw cms::Exception("analyze_2lss_1tau") 
+    throw cms::Exception("analyze_2los_1tau") 
       << "No ParameterSet 'process' found in configuration file = " << argv[1] << " !!\n";
 
   edm::ParameterSet cfg = edm::readPSetsFrom(argv[1])->getParameter<edm::ParameterSet>("process");
 
-  edm::ParameterSet cfg_analyze = cfg.getParameter<edm::ParameterSet>("analyze_2lss_1tau");
+  edm::ParameterSet cfg_analyze = cfg.getParameter<edm::ParameterSet>("analyze_2los_1tau");
 
   std::string treeName = cfg_analyze.getParameter<std::string>("treeName");
 
@@ -123,21 +123,13 @@ int main(int argc, char* argv[])
   std::vector<hltPath*> triggers_1e1mu = create_hltPaths(triggerNames_1e1mu);
   bool use_triggers_1e1mu = cfg_analyze.getParameter<bool>("use_triggers_1e1mu");
 
-  enum { kOS, kSS };
-  std::string chargeSelection_string = cfg_analyze.getParameter<std::string>("chargeSelection");
-  int chargeSelection = -1;
-  if      ( chargeSelection_string == "OS" ) chargeSelection = kOS;
-  else if ( chargeSelection_string == "SS" ) chargeSelection = kSS;
-  else throw cms::Exception("analyze_2lss_1tau") 
-    << "Invalid Configuration parameter 'chargeSelection' = " << chargeSelection_string << " !!\n";
-
   enum { kLoose, kFakeable, kTight };
   std::string leptonSelection_string = cfg_analyze.getParameter<std::string>("leptonSelection");
   int leptonSelection = -1;
   if      ( leptonSelection_string == "Loose"    ) leptonSelection = kLoose;
   else if ( leptonSelection_string == "Fakeable" ) leptonSelection = kFakeable;
   else if ( leptonSelection_string == "Tight"    ) leptonSelection = kTight;
-  else throw cms::Exception("analyze_2lss_1tau") 
+  else throw cms::Exception("analyze_2los_1tau") 
     << "Invalid Configuration parameter 'leptonSelection' = " << leptonSelection_string << " !!\n";
 
   bool isMC = cfg_analyze.getParameter<bool>("isMC"); 
@@ -152,7 +144,7 @@ int main(int argc, char* argv[])
     std::string shiftUp_or_Down = "";
     if      ( central_or_shift_tstring.EndsWith("Up")   ) shiftUp_or_Down = "Up";
     else if ( central_or_shift_tstring.EndsWith("Down") ) shiftUp_or_Down = "Down";
-    else throw cms::Exception("analyze_2lss_1tau")
+    else throw cms::Exception("analyze_2los_1tau")
       << "Invalid Configuration parameter 'central_or_shift' = " << central_or_shift << " !!\n";
     if      ( central_or_shift_tstring.BeginsWith("CMS_ttHl_btag_HF")       ) jet_btagWeight_branch = "Jet_bTagWeight_HF" + shiftUp_or_Down;
     else if ( central_or_shift_tstring.BeginsWith("CMS_ttHl_btag_HFStats1") ) jet_btagWeight_branch = "Jet_bTagWeight_HFStats1" + shiftUp_or_Down;
@@ -167,7 +159,7 @@ int main(int argc, char* argv[])
       if      ( shiftUp_or_Down == "Up"   ) jetPt_option = RecoJetReader::kJetPt_jecUp;
       else if ( shiftUp_or_Down == "Down" ) jetPt_option = RecoJetReader::kJetPt_jecDown;
       else assert(0);
-    } else throw cms::Exception("analyze_2lss_1tau")
+    } else throw cms::Exception("analyze_2los_1tau")
 	<< "Invalid Configuration parameter 'central_or_shift' = " << central_or_shift << " !!\n";
   }
 
@@ -199,7 +191,7 @@ int main(int argc, char* argv[])
   }
   
   if ( !(inputTree->GetListOfFiles()->GetEntries() >= 1) ) {
-    throw cms::Exception("analyze_2lss_1tau") 
+    throw cms::Exception("analyze_2los_1tau") 
       << "Failed to identify input Tree !!\n";
   }
   
@@ -277,28 +269,28 @@ int main(int argc, char* argv[])
   }
 
 //--- initialize BDTs used to discriminate ttH vs. ttV and ttH vs. ttbar 
-//    in 2lss_1tau category of ttH multilepton analysis
-  std::string mvaFileName_2lss_ttV = "tthAnalysis/HiggsToTauTau/data/2lss_ttV_BDTG.weights.xml";
-  std::vector<std::string> mvaInputVariables_2lss_ttV;
-  mvaInputVariables_2lss_ttV.push_back("max(abs(LepGood_eta[iF_Recl[0]]),abs(LepGood_eta[iF_Recl[1]]))");
-  mvaInputVariables_2lss_ttV.push_back("MT_met_lep1");
-  mvaInputVariables_2lss_ttV.push_back("nJet25_Recl");
-  mvaInputVariables_2lss_ttV.push_back("mindr_lep1_jet");
-  mvaInputVariables_2lss_ttV.push_back("mindr_lep2_jet");
-  mvaInputVariables_2lss_ttV.push_back("LepGood_conePt[iF_Recl[0]]");
-  mvaInputVariables_2lss_ttV.push_back("LepGood_conePt[iF_Recl[1]]");
-  TMVAInterface mva_2lss_ttV(mvaFileName_2lss_ttV, mvaInputVariables_2lss_ttV, { "iF_Recl[0]", "iF_Recl[1]", "iF_Recl[2]" });
+//    in 2los_1tau category of ttH multilepton analysis
+  std::string mvaFileName_2los_ttV = "tthAnalysis/HiggsToTauTau/data/2lss_ttV_BDTG.weights.xml";
+  std::vector<std::string> mvaInputVariables_2los_ttV;
+  mvaInputVariables_2los_ttV.push_back("max(abs(LepGood_eta[iF_Recl[0]]),abs(LepGood_eta[iF_Recl[1]]))");
+  mvaInputVariables_2los_ttV.push_back("MT_met_lep1");
+  mvaInputVariables_2los_ttV.push_back("nJet25_Recl");
+  mvaInputVariables_2los_ttV.push_back("mindr_lep1_jet");
+  mvaInputVariables_2los_ttV.push_back("mindr_lep2_jet");
+  mvaInputVariables_2los_ttV.push_back("LepGood_conePt[iF_Recl[0]]");
+  mvaInputVariables_2los_ttV.push_back("LepGood_conePt[iF_Recl[1]]");
+  TMVAInterface mva_2los_ttV(mvaFileName_2los_ttV, mvaInputVariables_2los_ttV, { "iF_Recl[0]", "iF_Recl[1]", "iF_Recl[2]" });
 
-  std::string mvaFileName_2lss_ttbar = "tthAnalysis/HiggsToTauTau/data/2lss_ttbar_BDTG.weights.xml";
-  std::vector<std::string> mvaInputVariables_2lss_ttbar;
-  mvaInputVariables_2lss_ttbar.push_back("max(abs(LepGood_eta[iF_Recl[0]]),abs(LepGood_eta[iF_Recl[1]]))");
-  mvaInputVariables_2lss_ttbar.push_back("nJet25_Recl");
-  mvaInputVariables_2lss_ttbar.push_back("mindr_lep1_jet");
-  mvaInputVariables_2lss_ttbar.push_back("mindr_lep2_jet");
-  mvaInputVariables_2lss_ttbar.push_back("min(met_pt,400)");
-  mvaInputVariables_2lss_ttbar.push_back("avg_dr_jet");
-  mvaInputVariables_2lss_ttbar.push_back("MT_met_lep1");
-  TMVAInterface mva_2lss_ttbar(mvaFileName_2lss_ttbar, mvaInputVariables_2lss_ttbar, { "iF_Recl[0]", "iF_Recl[1]", "iF_Recl[2]" });
+  std::string mvaFileName_2los_ttbar = "tthAnalysis/HiggsToTauTau/data/2lss_ttbar_BDTG.weights.xml";
+  std::vector<std::string> mvaInputVariables_2los_ttbar;
+  mvaInputVariables_2los_ttbar.push_back("max(abs(LepGood_eta[iF_Recl[0]]),abs(LepGood_eta[iF_Recl[1]]))");
+  mvaInputVariables_2los_ttbar.push_back("nJet25_Recl");
+  mvaInputVariables_2los_ttbar.push_back("mindr_lep1_jet");
+  mvaInputVariables_2los_ttbar.push_back("mindr_lep2_jet");
+  mvaInputVariables_2los_ttbar.push_back("min(met_pt,400)");
+  mvaInputVariables_2los_ttbar.push_back("avg_dr_jet");
+  mvaInputVariables_2los_ttbar.push_back("MT_met_lep1");
+  TMVAInterface mva_2los_ttbar(mvaFileName_2los_ttbar, mvaInputVariables_2los_ttbar, { "iF_Recl[0]", "iF_Recl[1]", "iF_Recl[2]" });
 
   std::map<std::string, double> mvaInputs;
 
@@ -306,131 +298,130 @@ int main(int argc, char* argv[])
   std::ostream* selEventsFile = new std::ofstream(selEventsFileName_output.data(), std::ios::out);
 
 //--- declare histograms
-  std::string charge_and_leptonSelection = Form("%s_%s", chargeSelection_string.data(), leptonSelection_string.data());
   ElectronHistManager preselElectronHistManager(makeHistManager_cfg(process_string, 
-    Form("2lss_1tau_%s/presel/electrons", charge_and_leptonSelection.data()), central_or_shift));
+    Form("2los_1tau_%s/presel/electrons", leptonSelection_string.data()), central_or_shift));
   preselElectronHistManager.bookHistograms(fs);
   MuonHistManager preselMuonHistManager(makeHistManager_cfg(process_string, 
-    Form("2lss_1tau_%s/presel/muons", charge_and_leptonSelection.data()), central_or_shift));
+    Form("2los_1tau_%s/presel/muons", leptonSelection_string.data()), central_or_shift));
   preselMuonHistManager.bookHistograms(fs);
   HadTauHistManager preselHadTauHistManager(makeHistManager_cfg(process_string, 
-    Form("2lss_1tau_%s/presel/hadTaus", charge_and_leptonSelection.data()), central_or_shift));
+    Form("2los_1tau_%s/presel/hadTaus", leptonSelection_string.data()), central_or_shift));
   preselHadTauHistManager.bookHistograms(fs);
   JetHistManager preselJetHistManager(makeHistManager_cfg(process_string, 
-    Form("2lss_1tau_%s/presel/jets", charge_and_leptonSelection.data()), central_or_shift));
+    Form("2los_1tau_%s/presel/jets", leptonSelection_string.data()), central_or_shift));
   preselJetHistManager.bookHistograms(fs);
   JetHistManager preselBJet_looseHistManager(makeHistManager_cfg(process_string, 
-    Form("2lss_1tau_%s/presel/BJets_loose", charge_and_leptonSelection.data()), central_or_shift));
+    Form("2los_1tau_%s/presel/BJets_loose", leptonSelection_string.data()), central_or_shift));
   preselBJet_looseHistManager.bookHistograms(fs);
   JetHistManager preselBJet_mediumHistManager(makeHistManager_cfg(process_string, 
-    Form("2lss_1tau_%s/presel/BJets_medium", charge_and_leptonSelection.data()), central_or_shift));
+    Form("2los_1tau_%s/presel/BJets_medium", leptonSelection_string.data()), central_or_shift));
   preselBJet_mediumHistManager.bookHistograms(fs);
   MEtHistManager preselMEtHistManager(makeHistManager_cfg(process_string, 
-    Form("2lss_1tau_%s/presel/met", charge_and_leptonSelection.data()), central_or_shift));
+    Form("2los_1tau_%s/presel/met", leptonSelection_string.data()), central_or_shift));
   preselMEtHistManager.bookHistograms(fs);
-  EvtHistManager_2lss_1tau preselEvtHistManager(makeHistManager_cfg(process_string, 
-    Form("2lss_1tau_%s/presel/evt", charge_and_leptonSelection.data()), central_or_shift));
+  EvtHistManager_2los_1tau preselEvtHistManager(makeHistManager_cfg(process_string, 
+    Form("2los_1tau_%s/presel/evt", leptonSelection_string.data()), central_or_shift));
   preselEvtHistManager.bookHistograms(fs);
 
   ElectronHistManager selElectronHistManager(makeHistManager_cfg(process_string, 
-    Form("2lss_1tau_%s/sel/electrons", charge_and_leptonSelection.data()), central_or_shift));
+    Form("2los_1tau_%s/sel/electrons", leptonSelection_string.data()), central_or_shift));
   selElectronHistManager.bookHistograms(fs);
   vstring categories_e = { 
-    "2epp_1tau_bloose", "2epp_1tau_btight", "2emm_1tau_bloose", "2emm_1tau_btight", 
-    "1e1mupp_1tau_bloose", "1e1mupp_1tau_btight", "1e1mumm_1tau_bloose", "1e1mumm_1tau_btight" };
+    "2eos_1tau_bloose", "2eos_1tau_btight",
+    "1e1muos_1tau_bloose", "1e1muos_1tau_btight" };
   std::map<std::string, std::map<std::string, ElectronHistManager*>> selElectronHistManager_category; // key = category, "leadElectron"/"subleadElectron"/"electron"
   for ( vstring::const_iterator category = categories_e.begin();
 	category != categories_e.end(); ++category ) {
-    if ( category->find("2epp") != std::string::npos || category->find("2emm") != std::string::npos ) {
+    if ( category->find("2eos") != std::string::npos ) {
       ElectronHistManager* selElectronHistManager_lead = new ElectronHistManager(makeHistManager_cfg(process_string, 
-	Form("%s_%s/sel/leadElectron", category->data(), charge_and_leptonSelection.data()), central_or_shift, 0));
+	Form("%s_%s/sel/leadElectron", category->data(), leptonSelection_string.data()), central_or_shift, 0));
       selElectronHistManager_lead->bookHistograms(fs);
       selElectronHistManager_category[*category]["leadElectron"] = selElectronHistManager_lead;
       ElectronHistManager* selElectronHistManager_sublead = new ElectronHistManager(makeHistManager_cfg(process_string, 
-	Form("%s_%s/sel/subleadElectron", category->data(), charge_and_leptonSelection.data()), central_or_shift, 0));
+	Form("%s_%s/sel/subleadElectron", category->data(), leptonSelection_string.data()), central_or_shift, 0));
       selElectronHistManager_sublead->bookHistograms(fs);
       selElectronHistManager_category[*category]["subleadElectron"] = selElectronHistManager_sublead;
     }
-    if ( category->find("1e1mupp") != std::string::npos || category->find("1e1mumm") != std::string::npos ) {
+    if ( category->find("1e1muos") != std::string::npos ) {
       ElectronHistManager* selElectronHistManager = new ElectronHistManager(makeHistManager_cfg(process_string, 
-	Form("%s_%s/sel/electron", category->data(), charge_and_leptonSelection.data()), central_or_shift, 0));
+	Form("%s_%s/sel/electron", category->data(), leptonSelection_string.data()), central_or_shift, 0));
       selElectronHistManager->bookHistograms(fs);
       selElectronHistManager_category[*category]["electron"] = selElectronHistManager;
     }
   }
 
   MuonHistManager selMuonHistManager(makeHistManager_cfg(process_string, 
-    Form("2lss_1tau_%s/sel/muons", charge_and_leptonSelection.data()), central_or_shift));
+    Form("2los_1tau_%s/sel/muons", leptonSelection_string.data()), central_or_shift));
   selMuonHistManager.bookHistograms(fs);
   vstring categories_mu = { 
-    "1e1mupp_1tau_bloose", "1e1mupp_1tau_btight", "1e1mumm_1tau_bloose", "1e1mumm_1tau_btight",
-    "2mupp_1tau_bloose", "2mupp_1tau_btight", "2mumm_1tau_bloose", "2mumm_1tau_btight" 
+    "1e1muos_1tau_bloose", "1e1muos_1tau_btight", 
+    "2muos_1tau_bloose", "2muos_1tau_btight" 
   };
   std::map<std::string, std::map<std::string, MuonHistManager*>> selMuonHistManager_category; // key = category, "leadMuon"/"subleadMuon"/"muon"
   for ( vstring::const_iterator category = categories_mu.begin();
 	category != categories_mu.end(); ++category ) {
-    if ( category->find("1e1mupp") != std::string::npos || category->find("1e1mumm") != std::string::npos ) {
+    if ( category->find("1e1muos") != std::string::npos ) {
       MuonHistManager* selMuonHistManager = new MuonHistManager(makeHistManager_cfg(process_string, 
-	Form("%s_%s/sel/muon", category->data(), charge_and_leptonSelection.data()), central_or_shift, 0));
+	Form("%s_%s/sel/muon", category->data(), leptonSelection_string.data()), central_or_shift, 0));
       selMuonHistManager->bookHistograms(fs);
       selMuonHistManager_category[*category]["muon"] = selMuonHistManager;
     }
-    if ( category->find("2epp") != std::string::npos || category->find("2emm") != std::string::npos ) {
+    if ( category->find("2eos") != std::string::npos ) {
       MuonHistManager* selMuonHistManager_lead = new MuonHistManager(makeHistManager_cfg(process_string, 
-	Form("%s_%s/sel/leadMuon", category->data(), charge_and_leptonSelection.data()), central_or_shift, 0));
+	Form("%s_%s/sel/leadMuon", category->data(), leptonSelection_string.data()), central_or_shift, 0));
       selMuonHistManager_lead->bookHistograms(fs);
       selMuonHistManager_category[*category]["leadMuon"] = selMuonHistManager_lead;
       MuonHistManager* selMuonHistManager_sublead = new MuonHistManager(makeHistManager_cfg(process_string, 
-	Form("%s_%s/sel/subleadMuon", category->data(), charge_and_leptonSelection.data()), central_or_shift, 0));
+	Form("%s_%s/sel/subleadMuon", category->data(), leptonSelection_string.data()), central_or_shift, 0));
       selMuonHistManager_sublead->bookHistograms(fs);
       selMuonHistManager_category[*category]["subleadMuon"] = selMuonHistManager_sublead;
     }
   }
 
   HadTauHistManager selHadTauHistManager(makeHistManager_cfg(process_string, 
-    Form("2lss_1tau_%s/sel/hadTaus", charge_and_leptonSelection.data()), central_or_shift));
+    Form("2los_1tau_%s/sel/hadTaus", leptonSelection_string.data()), central_or_shift));
   selHadTauHistManager.bookHistograms(fs);
 
   JetHistManager selJetHistManager(makeHistManager_cfg(process_string, 
-    Form("2lss_1tau_%s/sel/jets", charge_and_leptonSelection.data()), central_or_shift));
+    Form("2los_1tau_%s/sel/jets", leptonSelection_string.data()), central_or_shift));
   selJetHistManager.bookHistograms(fs);
   JetHistManager selJetHistManager_lead(makeHistManager_cfg(process_string, 
-    Form("2lss_1tau_%s/sel/leadJet", charge_and_leptonSelection.data()), central_or_shift, 0));
+    Form("2los_1tau_%s/sel/leadJet", leptonSelection_string.data()), central_or_shift, 0));
   selJetHistManager_lead.bookHistograms(fs);
   JetHistManager selJetHistManager_sublead(makeHistManager_cfg(process_string, 
-    Form("2lss_1tau_%s/sel/subleadJet", charge_and_leptonSelection.data()), central_or_shift, 1));
+    Form("2los_1tau_%s/sel/subleadJet", leptonSelection_string.data()), central_or_shift, 1));
   selJetHistManager_sublead.bookHistograms(fs);
 
   JetHistManager selBJet_looseHistManager(makeHistManager_cfg(process_string, 
-    Form("2lss_1tau_%s/sel/BJets_loose", charge_and_leptonSelection.data()), central_or_shift));
+    Form("2los_1tau_%s/sel/BJets_loose", leptonSelection_string.data()), central_or_shift));
   selBJet_looseHistManager.bookHistograms(fs);
   JetHistManager selBJet_looseHistManager_lead(makeHistManager_cfg(process_string, 
-    Form("2lss_1tau_%s/sel/leadBJet_loose", charge_and_leptonSelection.data()), central_or_shift, 0));
+    Form("2los_1tau_%s/sel/leadBJet_loose", leptonSelection_string.data()), central_or_shift, 0));
   selBJet_looseHistManager_lead.bookHistograms(fs);
   JetHistManager selBJet_looseHistManager_sublead(makeHistManager_cfg(process_string, 
-    Form("2lss_1tau_%s/sel/subleadBJet_loose", charge_and_leptonSelection.data()), central_or_shift, 1));
+    Form("2los_1tau_%s/sel/subleadBJet_loose", leptonSelection_string.data()), central_or_shift, 1));
   selBJet_looseHistManager_sublead.bookHistograms(fs);
   JetHistManager selBJet_mediumHistManager(makeHistManager_cfg(process_string, 
-    Form("2lss_1tau_%s/sel/BJets_medium", charge_and_leptonSelection.data()), central_or_shift));
+    Form("2los_1tau_%s/sel/BJets_medium", leptonSelection_string.data()), central_or_shift));
   selBJet_mediumHistManager.bookHistograms(fs);
 
   MEtHistManager selMEtHistManager(makeHistManager_cfg(process_string, 
-    Form("2lss_1tau_%s/sel/met", charge_and_leptonSelection.data()), central_or_shift));
+    Form("2los_1tau_%s/sel/met", leptonSelection_string.data()), central_or_shift));
   selMEtHistManager.bookHistograms(fs);
 
-  EvtHistManager_2lss_1tau selEvtHistManager(makeHistManager_cfg(process_string, 
-    Form("2lss_1tau_%s/sel/evt", charge_and_leptonSelection.data()), central_or_shift));
+  EvtHistManager_2los_1tau selEvtHistManager(makeHistManager_cfg(process_string, 
+    Form("2los_1tau_%s/sel/evt", leptonSelection_string.data()), central_or_shift));
   selEvtHistManager.bookHistograms(fs);
   vstring categories_evt = { 
-    "2epp_1tau_bloose", "2epp_1tau_btight", "2emm_1tau_bloose", "2emm_1tau_btight",
-    "1e1mupp_1tau_bloose", "1e1mupp_1tau_btight", "1e1mumm_1tau_bloose", "1e1mumm_1tau_btight",
-    "2mupp_1tau_bloose", "2mupp_1tau_btight", "2mumm_1tau_bloose", "2mumm_1tau_btight" 
+    "2eos_1tau_bloose", "2eos_1tau_btight", 
+    "1e1muos_1tau_bloose", "1e1muos_1tau_btight", 
+    "2muos_1tau_bloose", "2muos_1tau_btight"
   };
-  std::map<std::string, EvtHistManager_2lss_1tau*> selEvtHistManager_category; // key = category
+  std::map<std::string, EvtHistManager_2los_1tau*> selEvtHistManager_category; // key = category
   for ( vstring::const_iterator category = categories_evt.begin();
 	category != categories_evt.end(); ++category ) {
-    EvtHistManager_2lss_1tau* selEvtHistManager = new EvtHistManager_2lss_1tau(makeHistManager_cfg(process_string, 
-      Form("%s_%s/sel/evt", category->data(), charge_and_leptonSelection.data()), central_or_shift));
+    EvtHistManager_2los_1tau* selEvtHistManager = new EvtHistManager_2los_1tau(makeHistManager_cfg(process_string, 
+      Form("%s_%s/sel/evt", category->data(), leptonSelection_string.data()), central_or_shift));
     selEvtHistManager->bookHistograms(fs);
     selEvtHistManager_category[*category] = selEvtHistManager;
   }
@@ -585,28 +576,10 @@ int main(int argc, char* argv[])
     if ( isMC ) {
       evtWeight *= sf_triggerEff(preselLepton_lead_type, preselLepton_lead->pt_, preselLepton_lead->eta_, preselLepton_sublead_type, preselLepton_sublead->pt_, preselLepton_sublead->eta_);
       evtWeight *= sf_leptonID_and_Iso_loose(preselLepton_lead_type, preselLepton_lead->pt_, preselLepton_lead->eta_, preselLepton_sublead_type, preselLepton_sublead->pt_, preselLepton_sublead->eta_);
-    }
-
-    double evtWeight_pp = evtWeight;
-    double evtWeight_mm = evtWeight;
-    if ( chargeSelection == kOS ) {
-      double prob_chargeMisId_lead = prob_chargeMisId(getLeptonType(preselLepton_lead->pdgId_), preselLepton_lead->pt_, preselLepton_lead->eta_);
-      double prob_chargeMisId_sublead = prob_chargeMisId(getLeptonType(preselLepton_sublead->pdgId_), preselLepton_sublead->pt_, preselLepton_sublead->eta_);
-
-      evtWeight *= ( prob_chargeMisId_lead + prob_chargeMisId_sublead);
-
-      if ( preselLepton_lead->charge_ < 0 && preselLepton_sublead->charge_ > 0 ) {
-	evtWeight_pp *= prob_chargeMisId_lead;
-	evtWeight_mm *= prob_chargeMisId_sublead;
-      }
-      if ( preselLepton_lead->charge_ > 0 && preselLepton_sublead->charge_ < 0 ) {
-	evtWeight_pp *= prob_chargeMisId_sublead;
-	evtWeight_mm *= prob_chargeMisId_lead;
-      }
-    } 
+    }    
 
 //--- compute output of BDTs used to discriminate ttH vs. ttV and ttH vs. ttbar 
-//    in 2lss_1tau category of ttH multilepton analysis 
+//    in 2los_1tau category of ttH multilepton analysis 
     mvaInputs["max(abs(LepGood_eta[iF_Recl[0]]),abs(LepGood_eta[iF_Recl[1]]))"] = std::max(std::fabs(preselLepton_lead->eta_), std::fabs(preselLepton_sublead->eta_));
     mvaInputs["MT_met_lep1"]                = comp_MT_met_lep1(*preselLepton_lead, met_pt, met_phi);
     mvaInputs["nJet25_Recl"]                = comp_n_jet25_recl(selJets);
@@ -617,18 +590,18 @@ int main(int argc, char* argv[])
     mvaInputs["min(met_pt,400)"]            = std::min(met_pt, (Float_t)400.);
     mvaInputs["avg_dr_jet"]                 = comp_avg_dr_jet(selJets);
 
-    double mvaOutput_2lss_ttV = mva_2lss_ttV(mvaInputs);
-    double mvaOutput_2lss_ttbar = mva_2lss_ttbar(mvaInputs);
+    double mvaOutput_2los_ttV = mva_2los_ttV(mvaInputs);
+    double mvaOutput_2los_ttbar = mva_2los_ttbar(mvaInputs);
 
 //--- compute integer discriminant based on both BDT outputs,
 //    as defined in Table X of AN-2015/321
-    Double_t mvaDiscr_2lss = -1;
-    if      ( mvaOutput_2lss_ttbar > +0.3 && mvaOutput_2lss_ttV >  -0.1 ) mvaDiscr_2lss = 6.;
-    else if ( mvaOutput_2lss_ttbar > +0.3 && mvaOutput_2lss_ttV <= -0.1 ) mvaDiscr_2lss = 5.;
-    else if ( mvaOutput_2lss_ttbar > -0.2 && mvaOutput_2lss_ttV >  -0.1 ) mvaDiscr_2lss = 4.;
-    else if ( mvaOutput_2lss_ttbar > -0.2 && mvaOutput_2lss_ttV <= -0.1 ) mvaDiscr_2lss = 3.;
-    else if (                                mvaOutput_2lss_ttV >  -0.1 ) mvaDiscr_2lss = 2.;
-    else                                                                  mvaDiscr_2lss = 1.;
+    Double_t mvaDiscr_2los = -1;
+    if      ( mvaOutput_2los_ttbar > +0.3 && mvaOutput_2los_ttV >  -0.1 ) mvaDiscr_2los = 6.;
+    else if ( mvaOutput_2los_ttbar > +0.3 && mvaOutput_2los_ttV <= -0.1 ) mvaDiscr_2los = 5.;
+    else if ( mvaOutput_2los_ttbar > -0.2 && mvaOutput_2los_ttV >  -0.1 ) mvaDiscr_2los = 4.;
+    else if ( mvaOutput_2los_ttbar > -0.2 && mvaOutput_2los_ttV <= -0.1 ) mvaDiscr_2los = 3.;
+    else if (                                mvaOutput_2los_ttV >  -0.1 ) mvaDiscr_2los = 2.;
+    else                                                                  mvaDiscr_2los = 1.;
 
 //--- fill histograms with events passing preselection
     preselMuonHistManager.fillHistograms(preselMuons, evtWeight);
@@ -638,7 +611,7 @@ int main(int argc, char* argv[])
     selBJet_looseHistManager.fillHistograms(selBJets_loose, evtWeight);
     selBJet_mediumHistManager.fillHistograms(selBJets_medium, evtWeight);
     preselMEtHistManager.fillHistograms(met_p4, mht_p4, met_LD, evtWeight);
-    preselEvtHistManager.fillHistograms(mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, evtWeight);
+    preselEvtHistManager.fillHistograms(mvaOutput_2los_ttV, mvaOutput_2los_ttbar, mvaDiscr_2los, selJets.size(), evtWeight);
 
 //--- apply final event selection 
     std::vector<const RecoLepton*> selLeptons;    
@@ -677,10 +650,8 @@ int main(int argc, char* argv[])
     double minPt_sublead = selLepton_sublead->is_electron() ? 15. : 10.;
     if ( !(selLepton_lead->pt_ > minPt_lead && selLepton_sublead->pt_ > minPt_sublead) ) continue;
 
-    bool isCharge_SS = selLepton_lead->charge_*selLepton_sublead->charge_ > 0;
     bool isCharge_OS = selLepton_lead->charge_*selLepton_sublead->charge_ < 0;
-    if ( chargeSelection == kOS && isCharge_SS ) continue;
-    if ( chargeSelection == kSS && isCharge_OS ) continue;
+    if ( !isCharge_OS ) continue;
 
     if ( selLepton_lead->is_electron() && selLepton_sublead->is_electron() ) {
       bool failsZbosonMassVeto = false;
@@ -710,8 +681,6 @@ int main(int argc, char* argv[])
 	sf_tight_to_loose = sf_leptonID_and_Iso_tight_to_loose(preselLepton_lead_type, preselLepton_lead->pt_, preselLepton_lead->eta_, preselLepton_sublead_type, preselLepton_sublead->pt_, preselLepton_sublead->eta_);
       }
       evtWeight *= sf_tight_to_loose;
-      evtWeight_pp *= sf_tight_to_loose;
-      evtWeight_mm *= sf_tight_to_loose;
     }
 
 //--- fill histograms with events passing final selection 
@@ -726,74 +695,41 @@ int main(int argc, char* argv[])
     selBJet_looseHistManager_sublead.fillHistograms(selBJets_loose, evtWeight);
     selBJet_mediumHistManager.fillHistograms(selBJets_medium, evtWeight);
     selMEtHistManager.fillHistograms(met_p4, mht_p4, met_LD, evtWeight);
-    selEvtHistManager.fillHistograms(mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, evtWeight);
-
-    bool isCharge_pp = selLepton_lead->pdgId_ < 0 && selLepton_sublead->pdgId_ < 0;
-    bool isCharge_mm = selLepton_lead->pdgId_ > 0 && selLepton_sublead->pdgId_ > 0;
+    selEvtHistManager.fillHistograms(mvaOutput_2los_ttV, mvaOutput_2los_ttbar, mvaDiscr_2los, selJets.size(), evtWeight);
 
     int category = -1;
-    if      ( selElectrons.size() == 2 &&                         isCharge_pp && selBJets_medium.size() >= 1 ) category = k2epp_btight;
-    else if ( selElectrons.size() == 2 &&                         isCharge_pp                                ) category = k2epp_bloose;
-    else if ( selElectrons.size() == 2 &&                         isCharge_mm && selBJets_medium.size() >= 1 ) category = k2emm_btight;
-    else if ( selElectrons.size() == 2 &&                         isCharge_mm                                ) category = k2emm_bloose;
-    else if ( selElectrons.size() == 1 && selMuons.size() == 1 && isCharge_pp && selBJets_medium.size() >= 1 ) category = k1e1mupp_btight;
-    else if ( selElectrons.size() == 1 && selMuons.size() == 1 && isCharge_pp                                ) category = k1e1mupp_bloose;
-    else if ( selElectrons.size() == 1 && selMuons.size() == 1 && isCharge_mm && selBJets_medium.size() >= 1 ) category = k1e1mumm_btight;
-    else if ( selElectrons.size() == 1 && selMuons.size() == 1 && isCharge_mm                                ) category = k1e1mumm_bloose;
-    else if (                             selMuons.size() == 2 && isCharge_pp && selBJets_medium.size() >= 1 ) category = k2mupp_btight;
-    else if (                             selMuons.size() == 2 && isCharge_pp                                ) category = k2mupp_bloose;
-    else if (                             selMuons.size() == 2 && isCharge_mm && selBJets_medium.size() >= 1 ) category = k2mumm_btight;
-    else if (                             selMuons.size() == 2 && isCharge_mm                                ) category = k2mumm_bloose;
+    if      ( selElectrons.size() == 2 &&                         selBJets_medium.size() >= 1 ) category = k2eos_btight;
+    else if ( selElectrons.size() == 2                                                        ) category = k2eos_bloose;
+    else if ( selElectrons.size() == 1 && selMuons.size() == 1 && selBJets_medium.size() >= 1 ) category = k1e1muos_btight;
+    else if ( selElectrons.size() == 1 && selMuons.size() == 1                                ) category = k1e1muos_bloose;
+    else if (                             selMuons.size() == 2 && selBJets_medium.size() >= 1 ) category = k2muos_btight;
+    else if (                             selMuons.size() == 2                                ) category = k2muos_bloose;
     else assert(0);
 
-    if ( category == k2epp_btight ) {
-      selElectronHistManager_category["2epp_1tau_btight"]["leadElectron"]->fillHistograms(selElectrons, evtWeight_pp);
-      selElectronHistManager_category["2epp_1tau_btight"]["subleadElectron"]->fillHistograms(selElectrons, evtWeight_pp);
-      selEvtHistManager_category["2epp_1tau_btight"]->fillHistograms(mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, evtWeight_pp);
-    } else if ( category == k2epp_bloose ) {
-      selElectronHistManager_category["2epp_1tau_bloose"]["leadElectron"]->fillHistograms(selElectrons, evtWeight_pp);
-      selElectronHistManager_category["2epp_1tau_bloose"]["subleadElectron"]->fillHistograms(selElectrons, evtWeight_pp);
-      selEvtHistManager_category["2epp_1tau_bloose"]->fillHistograms(mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, evtWeight_pp);
-    } else if ( category == k2emm_btight ) {
-      selElectronHistManager_category["2emm_1tau_btight"]["leadElectron"]->fillHistograms(selElectrons, evtWeight_mm);
-      selElectronHistManager_category["2emm_1tau_btight"]["subleadElectron"]->fillHistograms(selElectrons, evtWeight_mm);
-      selEvtHistManager_category["2emm_1tau_btight"]->fillHistograms(mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, evtWeight_mm);
-    } else if ( category == k2emm_bloose ) {
-      selElectronHistManager_category["2emm_1tau_bloose"]["leadElectron"]->fillHistograms(selElectrons, evtWeight_mm);
-      selElectronHistManager_category["2emm_1tau_bloose"]["subleadElectron"]->fillHistograms(selElectrons, evtWeight_mm);
-      selEvtHistManager_category["2emm_1tau_bloose"]->fillHistograms(mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, evtWeight_mm);
-    } else if ( category == k1e1mupp_btight ) {
-      selElectronHistManager_category["1e1mupp_1tau_btight"]["electron"]->fillHistograms(selElectrons, evtWeight_pp);
-      selMuonHistManager_category["1e1mupp_1tau_btight"]["muon"]->fillHistograms(selMuons, evtWeight_pp);
-      selEvtHistManager_category["1e1mupp_1tau_btight"]->fillHistograms(mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, evtWeight_pp);
-    } else if ( category == k1e1mupp_bloose ) {
-      selElectronHistManager_category["1e1mupp_1tau_bloose"]["electron"]->fillHistograms(selElectrons, evtWeight_pp);
-      selMuonHistManager_category["1e1mupp_1tau_bloose"]["muon"]->fillHistograms(selMuons, evtWeight_pp);
-      selEvtHistManager_category["1e1mupp_1tau_bloose"]->fillHistograms(mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, evtWeight_pp);
-    } else if ( category == k1e1mumm_btight ) {
-      selElectronHistManager_category["1e1mumm_1tau_btight"]["electron"]->fillHistograms(selElectrons, evtWeight_mm);
-      selMuonHistManager_category["1e1mumm_1tau_btight"]["muon"]->fillHistograms(selMuons, evtWeight_mm);
-      selEvtHistManager_category["1e1mumm_1tau_btight"]->fillHistograms(mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, evtWeight_mm);
-    } else if ( category == k1e1mumm_bloose ) {
-      selElectronHistManager_category["1e1mumm_1tau_bloose"]["electron"]->fillHistograms(selElectrons, evtWeight_mm);
-      selMuonHistManager_category["1e1mumm_1tau_bloose"]["muon"]->fillHistograms(selMuons, evtWeight_mm);
-      selEvtHistManager_category["1e1mumm_1tau_bloose"]->fillHistograms(mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, evtWeight_mm);
-    } else if ( category == k2mupp_btight ) {
-      selMuonHistManager_category["2mupp_1tau_btight"]["leadMuon"]->fillHistograms(selMuons, evtWeight_pp);
-      selMuonHistManager_category["2mupp_1tau_btight"]["subleadMuon"]->fillHistograms(selMuons, evtWeight_pp);
-      selEvtHistManager_category["2mupp_1tau_btight"]->fillHistograms(mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, evtWeight_pp);
-    } else if ( category == k2mupp_bloose ) {
-      selMuonHistManager_category["2mupp_1tau_bloose"]["leadMuon"]->fillHistograms(selMuons, evtWeight_pp);
-      selMuonHistManager_category["2mupp_1tau_bloose"]["subleadMuon"]->fillHistograms(selMuons, evtWeight_pp);
-      selEvtHistManager_category["2mupp_1tau_bloose"]->fillHistograms(mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, evtWeight_pp);
-    } else if ( category == k2mumm_btight ) {
-      selMuonHistManager_category["2mumm_1tau_btight"]["leadMuon"]->fillHistograms(selMuons, evtWeight_mm);
-      selMuonHistManager_category["2mumm_1tau_btight"]["subleadMuon"]->fillHistograms(selMuons, evtWeight_mm);
-      selEvtHistManager_category["2mumm_1tau_btight"]->fillHistograms(mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, evtWeight_mm);
-    } else if ( category == k2mumm_bloose ) {
-      selMuonHistManager_category["2mumm_1tau_bloose"]["leadMuon"]->fillHistograms(selMuons, evtWeight_mm);
-      selMuonHistManager_category["2mumm_1tau_bloose"]["subleadMuon"]->fillHistograms(selMuons, evtWeight_mm);
-      selEvtHistManager_category["2mumm_1tau_bloose"]->fillHistograms(mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, evtWeight_mm);
+    if ( category == k2eos_btight ) {
+      selElectronHistManager_category["2eos_1tau_btight"]["leadElectron"]->fillHistograms(selElectrons, evtWeight);
+      selElectronHistManager_category["2eos_1tau_btight"]["subleadElectron"]->fillHistograms(selElectrons, evtWeight);
+      selEvtHistManager_category["2eos_1tau_btight"]->fillHistograms(mvaOutput_2los_ttV, mvaOutput_2los_ttbar, mvaDiscr_2los, selJets.size(), evtWeight);
+    } else if ( category == k2eos_bloose ) {
+      selElectronHistManager_category["2eos_1tau_bloose"]["leadElectron"]->fillHistograms(selElectrons, evtWeight);
+      selElectronHistManager_category["2eos_1tau_bloose"]["subleadElectron"]->fillHistograms(selElectrons, evtWeight);
+      selEvtHistManager_category["2eos_1tau_bloose"]->fillHistograms(mvaOutput_2los_ttV, mvaOutput_2los_ttbar, mvaDiscr_2los, selJets.size(), evtWeight);
+    } else if ( category == k1e1muos_btight ) {
+      selElectronHistManager_category["1e1muos_1tau_btight"]["electron"]->fillHistograms(selElectrons, evtWeight);
+      selMuonHistManager_category["1e1muos_1tau_btight"]["muon"]->fillHistograms(selMuons, evtWeight);
+      selEvtHistManager_category["1e1muos_1tau_btight"]->fillHistograms(mvaOutput_2los_ttV, mvaOutput_2los_ttbar, mvaDiscr_2los, selJets.size(), evtWeight);
+    } else if ( category == k1e1muos_bloose ) {
+      selElectronHistManager_category["1e1muos_1tau_bloose"]["electron"]->fillHistograms(selElectrons, evtWeight);
+      selMuonHistManager_category["1e1muos_1tau_bloose"]["muon"]->fillHistograms(selMuons, evtWeight);
+      selEvtHistManager_category["1e1muos_1tau_bloose"]->fillHistograms(mvaOutput_2los_ttV, mvaOutput_2los_ttbar, mvaDiscr_2los, selJets.size(), evtWeight);
+    } else if ( category == k2muos_btight ) {
+      selMuonHistManager_category["2muos_1tau_btight"]["leadMuon"]->fillHistograms(selMuons, evtWeight);
+      selMuonHistManager_category["2muos_1tau_btight"]["subleadMuon"]->fillHistograms(selMuons, evtWeight);
+      selEvtHistManager_category["2muos_1tau_btight"]->fillHistograms(mvaOutput_2los_ttV, mvaOutput_2los_ttbar, mvaDiscr_2los, selJets.size(), evtWeight);
+    } else if ( category == k2muos_bloose ) {
+      selMuonHistManager_category["2muos_1tau_bloose"]["leadMuon"]->fillHistograms(selMuons, evtWeight);
+      selMuonHistManager_category["2muos_1tau_bloose"]["subleadMuon"]->fillHistograms(selMuons, evtWeight);
+      selEvtHistManager_category["2muos_1tau_bloose"]->fillHistograms(mvaOutput_2los_ttV, mvaOutput_2los_ttbar, mvaDiscr_2los, selJets.size(), evtWeight);
     } 
 
     (*selEventsFile) << run << ":" << lumi << ":" << event;
@@ -824,7 +760,7 @@ int main(int argc, char* argv[])
   hltPaths_delete(triggers_2mu);
   hltPaths_delete(triggers_1e1mu);
 
-  clock.Show("analyze_2lss_1tau");
+  clock.Show("analyze_2los_1tau");
 
   return EXIT_SUCCESS;
 }

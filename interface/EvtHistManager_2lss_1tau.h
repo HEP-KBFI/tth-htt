@@ -4,6 +4,7 @@
 /** \class EvtHistManager_2lss_1tau
  *
  * Book and fill histograms for event-level quantities in ttH, H->tautau analysis
+ * in 2lss_1tau category
  *
  * \author Christian Veelken, Tallin
  *
