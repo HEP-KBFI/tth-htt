@@ -296,22 +296,6 @@ TDirectory* getDirectory(TFile* inputFile, const std::string& dirName, bool enab
   return dir;
 }
 
-TDirectory* getDirectory(TFile* inputFile, const std::string& region, const std::string& category, const std::string& tauPtBin, bool enableException)
-{
-  //std::cout << "<getDirectory>:" << std::endl;
-  //std::cout << " inputFile = " << inputFile->GetName() << std::endl;
-  //std::cout << " region = " << region << std::endl;
-  //std::cout << " category = " << category << std::endl;
-  //std::cout << " tauPtBin = " << tauPtBin << std::endl;
-  //std::cout << " enableException = " << enableException << std::endl;
-  std::string dirName = Form("tauTau_%s_%s/%s", region.data(), category.data(), tauPtBin.data());
-  TDirectory* dir = getDirectory(inputFile, dirName, false);
-  if ( enableException && !dir )
-    throw cms::Exception("getDirectory") 
-      << "Failed to find directory for region = " << region << ", category = " << category << ", tauPtBin = " << tauPtBin << " in file = " << inputFile->GetName() << " !!\n";
-  return dir;
-}
-
 TH1* getHistogram(TDirectory* dir, const std::string& process, const std::string& histogramName, const std::string& central_or_shift, bool enableException)
 {
   //std::cout << "<getHistogram>:" << std::endl;

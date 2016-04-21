@@ -62,8 +62,8 @@ TDirectory* HistManagerBase::createHistogramSubdirectory(TFileDirectory& dir)
  
 std::string HistManagerBase::getHistogramName(const std::string& distribution) const
 {
-  std::string retVal = std::string(process_);
-  if ( !(central_or_shift_ == "" || central_or_shift_ == "central") ) retVal.append("_").append(central_or_shift_);
+  std::string retVal = "";
+  if ( !(central_or_shift_ == "" || central_or_shift_ == "central") ) retVal = central_or_shift_;
   retVal.append("_").append(distribution);
   return retVal;
 }
