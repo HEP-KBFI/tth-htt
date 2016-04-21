@@ -338,13 +338,13 @@ int main(int argc, char* argv[])
       selElectronHistManager_lead->bookHistograms(fs);
       selElectronHistManager_category[*category]["leadElectron"] = selElectronHistManager_lead;
       ElectronHistManager* selElectronHistManager_sublead = new ElectronHistManager(makeHistManager_cfg(process_string, 
-	Form("%s_%s/sel/subleadElectron", category->data(), leptonSelection_string.data()), central_or_shift, 0));
+	Form("%s_%s/sel/subleadElectron", category->data(), leptonSelection_string.data()), central_or_shift, 1));
       selElectronHistManager_sublead->bookHistograms(fs);
       selElectronHistManager_category[*category]["subleadElectron"] = selElectronHistManager_sublead;
     }
     if ( category->find("1e1muos") != std::string::npos ) {
       ElectronHistManager* selElectronHistManager = new ElectronHistManager(makeHistManager_cfg(process_string, 
-	Form("%s_%s/sel/electron", category->data(), leptonSelection_string.data()), central_or_shift, 0));
+	Form("%s_%s/sel/electron", category->data(), leptonSelection_string.data()), central_or_shift));
       selElectronHistManager->bookHistograms(fs);
       selElectronHistManager_category[*category]["electron"] = selElectronHistManager;
     }
@@ -362,7 +362,7 @@ int main(int argc, char* argv[])
 	category != categories_mu.end(); ++category ) {
     if ( category->find("1e1muos") != std::string::npos ) {
       MuonHistManager* selMuonHistManager = new MuonHistManager(makeHistManager_cfg(process_string, 
-	Form("%s_%s/sel/muon", category->data(), leptonSelection_string.data()), central_or_shift, 0));
+	Form("%s_%s/sel/muon", category->data(), leptonSelection_string.data()), central_or_shift));
       selMuonHistManager->bookHistograms(fs);
       selMuonHistManager_category[*category]["muon"] = selMuonHistManager;
     }
@@ -372,7 +372,7 @@ int main(int argc, char* argv[])
       selMuonHistManager_lead->bookHistograms(fs);
       selMuonHistManager_category[*category]["leadMuon"] = selMuonHistManager_lead;
       MuonHistManager* selMuonHistManager_sublead = new MuonHistManager(makeHistManager_cfg(process_string, 
-	Form("%s_%s/sel/subleadMuon", category->data(), leptonSelection_string.data()), central_or_shift, 0));
+	Form("%s_%s/sel/subleadMuon", category->data(), leptonSelection_string.data()), central_or_shift, 1));
       selMuonHistManager_sublead->bookHistograms(fs);
       selMuonHistManager_category[*category]["subleadMuon"] = selMuonHistManager_sublead;
     }

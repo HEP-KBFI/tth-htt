@@ -4,7 +4,7 @@ RecoHadTau::RecoHadTau(Double_t pt,
 		       Double_t eta,
 		       Double_t phi,
 		       Double_t mass,
-		       Int_t pdgId,
+		       Int_t charge,
 		       Double_t dz,
 		       Int_t decayModeFinding,
 		       Int_t id_mva_dR03,		       
@@ -18,7 +18,7 @@ RecoHadTau::RecoHadTau(Double_t pt,
 		       Int_t antiElectron,
 		       Int_t antiMuon)
   : GenParticle(pt, eta, phi, mass)
-  , pdgId_(pdgId)
+  , charge_(charge)
   , dz_(dz)
   , decayModeFinding_(decayModeFinding)
   , id_mva_dR03_(id_mva_dR03)

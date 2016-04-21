@@ -140,7 +140,7 @@ std::vector<RecoJet> RecoJetReader::read() const
     if      ( jetPt_option_ == kJetPt_central ) jet_pt = jet_pt_[idxJet];
     else if ( jetPt_option_ == kJetPt_jecUp   ) jet_pt = jet_pt_[idxJet]*jet_corr_JECUp_[idxJet]/jet_corr_[idxJet];
     else if ( jetPt_option_ == kJetPt_jecDown ) jet_pt = jet_pt_[idxJet]*jet_corr_JECDown_[idxJet]/jet_corr_[idxJet];    
-    jets.push_back(RecoJet({ 
+    jets.push_back(RecoJet(
       jet_pt,      
       gInstance->jet_eta_[idxJet],
       gInstance->jet_phi_[idxJet],
@@ -150,7 +150,7 @@ std::vector<RecoJet> RecoJetReader::read() const
       gInstance->jet_corr_JECDown_[idxJet],
       gInstance->jet_BtagCSV_[idxJet],
       gInstance->jet_BtagWeight_[idxJet],	
-      idxJet }));
+      idxJet ));
   }
   return jets;
 }

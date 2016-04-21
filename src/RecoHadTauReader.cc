@@ -15,7 +15,7 @@ RecoHadTauReader::RecoHadTauReader()
   , hadTau_eta_(0)
   , hadTau_phi_(0)
   , hadTau_mass_(0)
-  , hadTau_pdgId_(0)
+  , hadTau_charge_(0)
   , hadTau_dz_(0)
   , hadTau_idDecayMode_(0)
   , hadTau_idMVA_dR03_(0)
@@ -40,7 +40,7 @@ RecoHadTauReader::RecoHadTauReader(const std::string& branchName_num, const std:
   , hadTau_eta_(0)
   , hadTau_phi_(0)
   , hadTau_mass_(0)
-  , hadTau_pdgId_(0)
+  , hadTau_charge_(0)
   , hadTau_dz_(0)
   , hadTau_idDecayMode_(0)
   , hadTau_idMVA_dR03_(0)
@@ -80,7 +80,7 @@ RecoHadTauReader::~RecoHadTauReader()
     delete gInstance->hadTau_rawCombIso_dR05_;
     delete gInstance->hadTau_idAgainstElec_;
     delete gInstance->hadTau_idAgainstMu_;
-    delete gInstance->hadTau_pdgId_;
+    delete gInstance->hadTau_charge_;
     instances_[branchName_obj_] = 0;
   }
 }
@@ -92,7 +92,7 @@ void RecoHadTauReader::setBranchNames()
     branchName_eta_ = Form("%s_%s", branchName_obj_.data(), "eta");
     branchName_phi_ = Form("%s_%s", branchName_obj_.data(), "phi");
     branchName_mass_ = Form("%s_%s", branchName_obj_.data(), "mass");
-    branchName_pdgId_ = Form("%s_%s", branchName_obj_.data(), "pdgId");
+    branchName_charge_ = Form("%s_%s", branchName_obj_.data(), "charge");
     branchName_dz_ = Form("%s_%s", branchName_obj_.data(), "dz");
     branchName_idDecayMode_ = Form("%s_%s", branchName_obj_.data(), "idDecayMode");
     branchName_idMVA_dR03_ = Form("%s_%s", branchName_obj_.data(), "idMVArun2dR03");
@@ -129,8 +129,8 @@ void RecoHadTauReader::setBranchAddresses(TTree* tree)
     tree->SetBranchAddress(branchName_phi_.data(), hadTau_phi_); 
     hadTau_mass_ = new Float_t[max_nHadTaus_];
     tree->SetBranchAddress(branchName_mass_.data(), hadTau_mass_); 
-    hadTau_pdgId_ = new Int_t[max_nHadTaus_];
-    tree->SetBranchAddress(branchName_pdgId_.data(), hadTau_pdgId_); 
+    hadTau_charge_ = new Int_t[max_nHadTaus_];
+    tree->SetBranchAddress(branchName_charge_.data(), hadTau_charge_); 
     hadTau_dz_ = new Float_t[max_nHadTaus_];
     tree->SetBranchAddress(branchName_dz_.data(), hadTau_dz_); 
     hadTau_idDecayMode_ = new Int_t[max_nHadTaus_];
@@ -170,12 +170,12 @@ std::vector<RecoHadTau> RecoHadTauReader::read() const
   }
   hadTaus.reserve(nHadTaus);
   for ( Int_t idxHadTau = 0; idxHadTau < nHadTaus; ++idxHadTau ) {
-    hadTaus.push_back(RecoHadTau({ 
+    hadTaus.push_back(RecoHadTau(
       gInstance->hadTau_pt_[idxHadTau],
       gInstance->hadTau_eta_[idxHadTau],
       gInstance->hadTau_phi_[idxHadTau],
       gInstance->hadTau_mass_[idxHadTau],
-      gInstance->hadTau_pdgId_[idxHadTau],
+      gInstance->hadTau_charge_[idxHadTau],
       gInstance->hadTau_dz_[idxHadTau],
       gInstance->hadTau_idDecayMode_[idxHadTau],
       gInstance->hadTau_idMVA_dR03_[idxHadTau],
@@ -187,7 +187,7 @@ std::vector<RecoHadTau> RecoHadTauReader::read() const
       gInstance->hadTau_idCombIso_dR05_[idxHadTau],
       gInstance->hadTau_rawCombIso_dR05_[idxHadTau],	
       gInstance->hadTau_idAgainstElec_[idxHadTau],
-      gInstance->hadTau_idAgainstMu_[idxHadTau] }));
+      gInstance->hadTau_idAgainstMu_[idxHadTau] ));
   }
   return hadTaus;
 }

@@ -50,7 +50,6 @@
   <use   name="roottmva"/>
   <use   name="boost"/>
 </bin>
-<!--
 <bin file="analyze_1l_2tau.cc" name="analyze_1l_2tau">
   <use   name="FWCore/FWLite"/>
   <use   name="FWCore/ParameterSet"/>
@@ -64,4 +63,3 @@
   <use   name="roottmva"/>
   <use   name="boost"/>
 </bin>
--->

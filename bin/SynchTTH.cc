@@ -620,7 +620,8 @@ main(int argc,
       for(auto & tau: *taus)
       {
         bool any_overlap = false;
-        std::string pdg_id_key = pdg_id_keys.at(std::abs(tau->pdgId_));
+	int tau_pdgId = -15*tau->charge_;
+        std::string pdg_id_key = pdg_id_keys.at(std::abs(tau_pdgId));
         for(auto & gen_tau: *gen_taus)
           if(tau->is_overlap(gen_tau, 0.3))
           {

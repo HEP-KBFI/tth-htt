@@ -44,8 +44,7 @@ void HadTauHistManager::fillHistograms(const std::vector<const RecoHadTau*>& had
     fillWithOverFlow(histogram_eta_, hadTau->eta_, evtWeight, evtWeightErr);
     fillWithOverFlow(histogram_phi_, hadTau->phi_, evtWeight, evtWeightErr);
     fillWithOverFlow(histogram_mass_, hadTau->mass_, evtWeight, evtWeightErr);
-    int charge = -hadTau->pdgId_/std::abs(hadTau->pdgId_);
-    fillWithOverFlow(histogram_charge_, charge, evtWeight, evtWeightErr);
+    fillWithOverFlow(histogram_charge_, hadTau->charge_, evtWeight, evtWeightErr);
 
     fillWithOverFlow(histogram_dz_, hadTau->dz_, evtWeight, evtWeightErr);
     fillWithOverFlow(histogram_decayModeFinding_, hadTau->decayModeFinding_, evtWeight, evtWeightErr);
@@ -60,7 +59,7 @@ void HadTauHistManager::fillHistograms(const std::vector<const RecoHadTau*>& had
     if      ( hadTau->genHadTau_ ) abs_genPdgId = 15;                                   // generator level match to hadronic tau decay 
     else if ( hadTau->genLepton_ ) abs_genPdgId = std::abs(hadTau->genLepton_->pdgId_); // generator level match to electron or muon
     else if ( hadTau->genJet_    ) abs_genPdgId = 21;                                   // generator level match to jet; fill histogram with pdgId of gluon
-    else                          abs_genPdgId = 0;                                     // no match to any generator level particle (reconstructed tauh most likely due to pileup)
+    else                           abs_genPdgId = 0;                                    // no match to any generator level particle (reconstructed tauh most likely due to pileup)
     fillWithOverFlow(histogram_abs_genPdgId_, abs_genPdgId, evtWeight, evtWeightErr);
   }
 }

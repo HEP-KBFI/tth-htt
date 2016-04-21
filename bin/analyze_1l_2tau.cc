@@ -22,7 +22,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/GenJet.h" // GenJet
 #include "tthAnalysis/HiggsToTauTau/interface/GenHadTau.h" // GenHadTau
 #include "tthAnalysis/HiggsToTauTau/interface/TMVAInterface.h" // TMVAInterface
-#include "tthAnalysis/HiggsToTauTau/interface/mvaInputVariables.h" // auxiliary functions for computing input variables of the MVA used for signal extraction in the 2lss_1tau category 
+#include "tthAnalysis/HiggsToTauTau/interface/mvaInputVariables.h" // auxiliary functions for computing input variables of the MVA used for signal extraction in the 2los_1tau category 
 #include "tthAnalysis/HiggsToTauTau/interface/KeyTypes.h"
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronReader.h" // RecoElectronReader
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonReader.h" // RecoMuonReader
@@ -34,7 +34,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/convert_to_ptrs.h" // convert_to_ptrs
 #include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionCleaner.h" // RecoElectronCollectionCleaner, RecoMuonCollectionCleaner, RecoHadTauCollectionCleaner, RecoJetCollectionCleaner
 #include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionGenMatcher.h" // RecoElectronCollectionGenMatcher, RecoMuonCollectionGenMatcher, RecoHadTauCollectionGenMatcher, RecoJetCollectionGenMatcher
-#include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionSelector.h" // RecoElectronSelectorTight, RecoMuonSelectorTight, RecoHadTauSelectorLoose, RecoHadTauSelectorTight
+#include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionSelector.h" // RecoElectronSelectorLoose, RecoElectronSelectorTight, RecoMuonSelectorLoose, RecoMuonSelectorTight, RecoHadTauSelectorLoose, RecoHadTauSelectorTight
 #include "tthAnalysis/HiggsToTauTau/interface/RunLumiEventSelector.h" // RunLumiEventSelector
 #include "tthAnalysis/HiggsToTauTau/interface/ElectronHistManager.h" // ElectronHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/MuonHistManager.h" // MuonHistManager
@@ -222,19 +222,21 @@ int main(int argc, char* argv[])
   RecoMuonReader* muonReader = new RecoMuonReader("nselLeptons", "selLeptons");
   muonReader->setBranchAddresses(inputTree);
   RecoMuonCollectionGenMatcher muonGenMatcher;
+  RecoMuonCollectionSelectorLoose preselMuonSelector;
   RecoMuonCollectionSelectorTight tightMuonSelector;
 
   RecoElectronReader* electronReader = new RecoElectronReader("nselLeptons", "selLeptons");
   electronReader->setBranchAddresses(inputTree);
   RecoElectronCollectionGenMatcher electronGenMatcher;
   RecoElectronCollectionCleaner electronCleaner(0.3);
+  RecoElectronCollectionSelectorLoose preselElectronSelector;
   RecoElectronCollectionSelectorTight tightElectronSelector;
 
   RecoHadTauReader* hadTauReader = new RecoHadTauReader("nTauGood", "TauGood");
   hadTauReader->setBranchAddresses(inputTree);
   RecoHadTauCollectionGenMatcher hadTauGenMatcher;
   RecoHadTauCollectionCleaner hadTauCleaner(0.3);
-  RecoHadTauCollectionSelectorPresel preselHadTauSelector;
+  RecoHadTauCollectionSelectorLoose preselHadTauSelector;
   RecoHadTauCollectionSelectorFakeable fakeableHadTauSelector;
   RecoHadTauCollectionSelectorTight tightHadTauSelector;
   
@@ -274,6 +276,12 @@ int main(int argc, char* argv[])
   HadTauHistManager preselHadTauHistManager(makeHistManager_cfg(process_string, 
     Form("1l_2tau_%s/presel/hadTaus", charge_and_hadTauSelection.data()), central_or_shift));
   preselHadTauHistManager.bookHistograms(fs);
+  HadTauHistManager preselHadTauHistManager_lead(makeHistManager_cfg(process_string, 
+    Form("1l_2tau_%s/presel/leadHadTau", charge_and_hadTauSelection.data()), central_or_shift));
+  preselHadTauHistManager_lead.bookHistograms(fs);
+  HadTauHistManager preselHadTauHistManager_sublead(makeHistManager_cfg(process_string, 
+    Form("1l_2tau_%s/presel/subleadHadTau", charge_and_hadTauSelection.data()), central_or_shift));
+  preselHadTauHistManager_sublead.bookHistograms(fs);
   JetHistManager preselJetHistManager(makeHistManager_cfg(process_string, 
     Form("1l_2tau_%s/presel/jets", charge_and_hadTauSelection.data()), central_or_shift));
   preselJetHistManager.bookHistograms(fs);
@@ -300,7 +308,7 @@ int main(int argc, char* argv[])
   for ( vstring::const_iterator category = categories_e.begin();
 	category != categories_e.end(); ++category ) {
     ElectronHistManager* selElectronHistManager = new ElectronHistManager(makeHistManager_cfg(process_string, 
-      Form("%s_%s/sel/electron", category->data(), charge_and_hadTauSelection.data()), central_or_shift, 0));
+      Form("%s_%s/sel/electron", category->data(), charge_and_hadTauSelection.data()), central_or_shift));
     selElectronHistManager->bookHistograms(fs);
     selElectronHistManager_category[*category] = selElectronHistManager;
   }
@@ -315,7 +323,7 @@ int main(int argc, char* argv[])
   for ( vstring::const_iterator category = categories_mu.begin();
 	category != categories_mu.end(); ++category ) {
     MuonHistManager* selMuonHistManager = new MuonHistManager(makeHistManager_cfg(process_string, 
-      Form("%s_%s/sel/muon", category->data(), charge_and_hadTauSelection.data()), central_or_shift, 0));
+      Form("%s_%s/sel/muon", category->data(), charge_and_hadTauSelection.data()), central_or_shift));
     selMuonHistManager->bookHistograms(fs);
     selMuonHistManager_category[*category] = selMuonHistManager;
   }
@@ -335,7 +343,7 @@ int main(int argc, char* argv[])
     selHadTauHistManager_lead->bookHistograms(fs);
     selHadTauHistManager_category[*category]["leadHadTau"] = selHadTauHistManager_lead;
     HadTauHistManager* selHadTauHistManager_sublead = new HadTauHistManager(makeHistManager_cfg(process_string, 
-      Form("%s_%s/sel/subleadHadTau", category->data(), charge_and_hadTauSelection.data()), central_or_shift, 0));
+      Form("%s_%s/sel/subleadHadTau", category->data(), charge_and_hadTauSelection.data()), central_or_shift, 1));
     selHadTauHistManager_sublead->bookHistograms(fs);
     selHadTauHistManager_category[*category]["subleadHadTau"] = selHadTauHistManager_sublead;
   }
@@ -406,11 +414,13 @@ int main(int argc, char* argv[])
     std::vector<RecoMuon> muons = muonReader->read();
     std::vector<const RecoMuon*> muon_ptrs = convert_to_ptrs(muons);
     std::vector<const RecoMuon*> cleanedMuons = muon_ptrs; // CV: no cleaning needed for muons, as they have the highest priority in the overlap removal
+    std::vector<const RecoMuon*> preselMuons = preselMuonSelector(cleanedMuons);
     std::vector<const RecoMuon*> selMuons = tightMuonSelector(preselMuons);
     
     std::vector<RecoElectron> electrons = electronReader->read();
     std::vector<const RecoElectron*> electron_ptrs = convert_to_ptrs(electrons);
     std::vector<const RecoElectron*> cleanedElectrons = electronCleaner(electron_ptrs, selMuons);
+    std::vector<const RecoElectron*> preselElectrons = preselElectronSelector(cleanedElectrons);
     std::vector<const RecoElectron*> selElectrons = tightElectronSelector(preselElectrons);
 
     std::vector<RecoHadTau> hadTaus = hadTauReader->read();
@@ -493,7 +503,8 @@ int main(int argc, char* argv[])
     if ( !(preselHadTaus.size() >= 2) ) continue;
     const RecoHadTau* preselHadTau_lead = preselHadTaus[0];
     const RecoHadTau* preselHadTau_sublead = preselHadTaus[1];
-    
+    double mTauTauVis_presel = (preselHadTau_lead->p4_ + preselHadTau_sublead->p4_).mass();
+
     // apply requirement on jets (incl. b-tagged jets) on preselection level
     if ( !(selJets.size() >= 2) ) continue;
     if ( !(selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) ) continue;
@@ -534,11 +545,13 @@ int main(int argc, char* argv[])
     preselMuonHistManager.fillHistograms(preselMuons, evtWeight);
     preselElectronHistManager.fillHistograms(preselElectrons, evtWeight);
     preselHadTauHistManager.fillHistograms(preselHadTaus, evtWeight);
+    preselHadTauHistManager_lead.fillHistograms(preselHadTaus, evtWeight);
+    preselHadTauHistManager_sublead.fillHistograms(preselHadTaus, evtWeight);
     preselJetHistManager.fillHistograms(selJets, evtWeight);
     selBJet_looseHistManager.fillHistograms(selBJets_loose, evtWeight);
     selBJet_mediumHistManager.fillHistograms(selBJets_medium, evtWeight);
     preselMEtHistManager.fillHistograms(met_p4, mht_p4, met_LD, evtWeight);
-    preselEvtHistManager.fillHistograms(mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, evtWeight);
+    preselEvtHistManager.fillHistograms(selJets.size(), mTauTauVis_presel, evtWeight);
 
 //--- apply final event selection 
     std::vector<const RecoLepton*> selLeptons;    
