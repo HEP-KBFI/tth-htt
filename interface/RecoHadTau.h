@@ -19,9 +19,13 @@ class RecoHadTau
 	     Double_t dz,
 	     Int_t decayModeFinding,
 	     Int_t id_mva_dR03,
+	     Double_t raw_mva_dR03,
 	     Int_t id_mva_dR05,
+	     Double_t raw_mva_dR05,
 	     Int_t id_cut_dR03,
+	     Double_t raw_cut_dR03,
 	     Int_t id_cut_dR05,
+	     Double_t raw_cut_dR05,
 	     Int_t antiElectron,
 	     Int_t antiMuon);
 
@@ -29,9 +33,13 @@ class RecoHadTau
   Double_t dz_;            ///< d_{z}, distance on the z axis w.r.t PV
   Int_t decayModeFinding_; ///< decayModeFinding discriminator
   Int_t id_mva_dR03_;      ///< MVA-based tau id computed with dR=0.3 isolation cone
+  Double_t raw_mva_dR03_;  ///< raw output of MVA-based tau id computed with dR=0.3 isolation cone
   Int_t id_mva_dR05_;      ///< MVA-based tau id computed with dR=0.5 isolation cone
+  Double_t raw_mva_dR05_;  ///< raw output of MVA-based tau id computed with dR=0.5 isolation cone
   Int_t id_cut_dR03_;      ///< cut-based tau id computed with dR=0.3 isolation cone
+  Double_t raw_cut_dR03_;  ///< raw isolation pT-sum of cut-based tau id computed with dR=0.3 isolation cone
   Int_t id_cut_dR05_;      ///< cut-based tau id computed with dR=0.5 isolation cone
+  Double_t raw_cut_dR05_;  ///< raw isolation pT-sum of cut-based tau id computed with dR=0.5 isolation cone
   Int_t antiElectron_;     ///< discriminator against electrons
   Int_t antiMuon_;         ///< discriminator against muons
 

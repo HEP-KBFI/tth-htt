@@ -85,6 +85,16 @@ void RecoJetReader::setBranchNames()
   ++numInstances_[branchName_obj_];
 }
 
+namespace
+{
+  void initializeArray(Float_t* array, int numElements, double value = 0.)
+  {
+    for ( int idxElement = 0; idxElement < numElements; ++idxElement ) {
+      array[idxElement] = value;
+    }
+  }
+}
+
 void RecoJetReader::setBranchAddresses(TTree* tree)
 {
   if ( instances_[branchName_obj_] == this ) {
@@ -106,7 +116,11 @@ void RecoJetReader::setBranchAddresses(TTree* tree)
     jet_BtagCSV_ = new Float_t[max_nJets_];
     tree->SetBranchAddress(branchName_BtagCSV_.data(), jet_BtagCSV_); 
     jet_BtagWeight_ = new Float_t[max_nJets_];
-    tree->SetBranchAddress(branchName_BtagWeight_.data(), jet_BtagWeight_); 
+    if ( branchName_BtagWeight_ != "" ) {
+      tree->SetBranchAddress(branchName_BtagWeight_.data(), jet_BtagWeight_); 
+    } else {
+      initializeArray(jet_BtagWeight_, max_nJets_, 1.);
+    }
   }
 }
 

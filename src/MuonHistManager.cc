@@ -46,7 +46,7 @@ void MuonHistManager::fillHistograms(const std::vector<const RecoMuon*>& muon_pt
     fillWithOverFlow(histogram_eta_, muon->eta_, evtWeight, evtWeightErr);
     fillWithOverFlow(histogram_phi_, muon->phi_, evtWeight, evtWeightErr);
     fillWithOverFlow(histogram_charge_, muon->charge_, evtWeight, evtWeightErr);
-    
+
     fillWithOverFlow(histogram_dxy_, muon->dxy_, evtWeight, evtWeightErr);
     fillWithOverFlow(histogram_dz_, muon->dz_, evtWeight, evtWeightErr);
     fillWithOverFlow(histogram_relIso_, muon->relIso_, evtWeight, evtWeightErr);
@@ -57,7 +57,7 @@ void MuonHistManager::fillHistograms(const std::vector<const RecoMuon*>& muon_pt
     fillWithOverFlow(histogram_tightCharge_, muon->tightCharge_, evtWeight, evtWeightErr);
     fillWithOverFlow(histogram_passesLooseIdPOG_, muon->passesLooseIdPOG_, evtWeight, evtWeightErr);
     fillWithOverFlow(histogram_passesMediumIdPOG_, muon->passesMediumIdPOG_, evtWeight, evtWeightErr);
-    
+
     int abs_genPdgId = 0;
     if      ( muon->genLepton_ ) abs_genPdgId = std::abs(muon->genLepton_->pdgId_); // generator level match to electron or muon
     else if ( muon->genHadTau_ ) abs_genPdgId = 15;                                 // generator level match to hadronic tau decay 

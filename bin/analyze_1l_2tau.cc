@@ -462,9 +462,9 @@ int main(int argc, char* argv[])
       electronGenMatcher.addGenHadTauMatch(preselElectrons, genHadTaus, 0.3);
       electronGenMatcher.addGenJetMatch(preselElectrons, genJets, 0.5);
 
-      hadTauGenMatcher.addGenLeptonMatch(selHadTaus, genLeptons, 0.3);
-      hadTauGenMatcher.addGenHadTauMatch(selHadTaus, genHadTaus, 0.3);
-      hadTauGenMatcher.addGenJetMatch(selHadTaus, genJets, 0.5);
+      hadTauGenMatcher.addGenLeptonMatch(preselHadTaus, genLeptons, 0.3);
+      hadTauGenMatcher.addGenHadTauMatch(preselHadTaus, genHadTaus, 0.3);
+      hadTauGenMatcher.addGenJetMatch(preselHadTaus, genJets, 0.5);
 
       jetGenMatcher.addGenLeptonMatch(selJets, genLeptons, 0.3);
       jetGenMatcher.addGenHadTauMatch(selJets, genHadTaus, 0.3);
@@ -480,15 +480,23 @@ int main(int argc, char* argv[])
     // requirement exactly one lepton passing loose preselection criteria
     if ( !(preselLeptons.size() == 1) ) continue;
     const RecoLepton* preselLepton = preselLeptons[0];
+    int preselLepton_type = getLeptonType(preselLepton->pdgId_);
 
-    // require that trigger paths match event category (with event category based on preselLeptons);
+    // require that trigger paths match event category (with event category based on preselLeptons)
     if ( preselElectrons.size() == 1 && !isTriggered_1e  ) continue;
     if ( preselMuons.size()     == 1 && !isTriggered_1mu ) continue;
 
-    // apply requirement on jets (incl. b-tagged jets) and hadronic taus on preselection level
+    // require presence of at least two hadronic taus passing loose preselection criteria
+    // (do not veto events with more than two loosely selected hadronic tau candidates,
+    //  as sample of hadronic tau candidates passing loose preselection criteria contains significant contamination from jets)
+    std::sort(preselHadTaus.begin(), preselHadTaus.end(), isHigherPt);
+    if ( !(preselHadTaus.size() >= 2) ) continue;
+    const RecoHadTau* preselHadTau_lead = preselHadTaus[0];
+    const RecoHadTau* preselHadTau_sublead = preselHadTaus[1];
+    
+    // apply requirement on jets (incl. b-tagged jets) on preselection level
     if ( !(selJets.size() >= 2) ) continue;
     if ( !(selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) ) continue;
-    if ( !(selHadTaus.size() == 2) ) continue;
 
 //--- compute MHT and linear MET discriminant (met_LD)
     LV mht_p4(0,0,0,0);
@@ -518,14 +526,14 @@ int main(int argc, char* argv[])
 //--- apply data/MC corrections for trigger efficiency,
 //    and efficiencies for lepton to pass loose identification and isolation criteria
     if ( isMC ) {
-      evtWeight *= sf_triggerEff(preselLepton_lead_type, preselLepton_lead->pt_, preselLepton_lead->eta_);
-      evtWeight *= sf_leptonID_and_Iso_loose(preselLepton_lead_type, preselLepton_lead->pt_, preselLepton_lead->eta_);
+      evtWeight *= sf_triggerEff(preselLepton_type, preselLepton->pt_, preselLepton->eta_);
+      evtWeight *= sf_leptonID_and_Iso_loose(preselLepton_type, preselLepton->pt_, preselLepton->eta_);
     }       
 
 //--- fill histograms with events passing preselection
     preselMuonHistManager.fillHistograms(preselMuons, evtWeight);
     preselElectronHistManager.fillHistograms(preselElectrons, evtWeight);
-    preselHadTauHistManager.fillHistograms(selHadTaus, evtWeight);
+    preselHadTauHistManager.fillHistograms(preselHadTaus, evtWeight);
     preselJetHistManager.fillHistograms(selJets, evtWeight);
     selBJet_looseHistManager.fillHistograms(selBJets_loose, evtWeight);
     selBJet_mediumHistManager.fillHistograms(selBJets_medium, evtWeight);
@@ -538,22 +546,25 @@ int main(int argc, char* argv[])
     selLeptons.insert(selLeptons.end(), selElectrons.begin(), selElectrons.end());
     selLeptons.insert(selLeptons.end(), selMuons.begin(), selMuons.end());
     std::sort(selLeptons.begin(), selLeptons.end(), isHigherPt);
-    // requirement exactly two leptons passing tight selection criteria of final event selection 
+    // requirement exactly one lepton passing tight selection criteria of final event selection 
     if ( !(selLeptons.size() == 1) ) continue;
     const RecoLepton* selLepton = selLeptons[0];
 
-    // require that trigger paths match event category (with event category based on selLeptons);
+    // require that trigger paths match event category (with event category based on selLeptons)
     if ( selElectrons.size() == 1 && !isTriggered_1e  ) continue;
     if ( selMuons.size()     == 1 && !isTriggered_1mu ) continue;
 
-    // apply requirement on jets (incl. b-tagged jets) and hadronic taus on level of final event selection
-    if ( !(selJets.size() >= 4) ) continue;
-    if ( !(selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) ) continue;
-    if ( !(selHadTaus.size() == 2) ) continue;
+    // require presence of exactly two hadronic taus passing tight selection criteria of final event selection
+    std::sort(selHadTaus.begin(), selHadTaus.end(), isHigherPt);
+    if ( !(selHadTaus.size() >= 2) ) continue;
     const RecoHadTau* selHadTau_lead = selHadTaus[0];
     const RecoHadTau* selHadTau_sublead = selHadTaus[1];
     double mTauTauVis = (selHadTau_lead->p4_ + selHadTau_sublead->p4_).mass();
 
+    // apply requirement on jets (incl. b-tagged jets) and hadronic taus on level of final event selection
+    if ( !(selJets.size() >= 4) ) continue;
+    if ( !(selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) ) continue;
+ 
     double minPt = 20.;
     if ( !(selLepton->pt_ > minPt) ) continue;
 
@@ -569,7 +580,7 @@ int main(int argc, char* argv[])
 //--- apply data/MC corrections for efficiencies of leptons passing the loose identification and isolation criteria
 //    to also pass the tight identification and isolation criteria
     if ( isMC ) {
-      double sf_tight_to_loose = sf_leptonID_and_Iso_tight_to_loose(preselLepton_lead_type, preselLepton_lead->pt_, preselLepton_lead->eta_);
+      double sf_tight_to_loose = sf_leptonID_and_Iso_tight_to_loose(preselLepton_type, preselLepton->pt_, preselLepton->eta_);
       evtWeight *= sf_tight_to_loose;
     }
 

@@ -5,7 +5,8 @@ import os
 process = cms.PSet()
   
 process.fwliteInput = cms.PSet(
-    fileNames = cms.vstring('/afs/cern.ch/user/v/veelken/scratch0/VHbbNtuples_7_6_x/CMSSW_7_6_3/src/VHbbAnalysis/Heppy/test/latest_Loop/tree.root'),
+    ##fileNames = cms.vstring('/afs/cern.ch/user/v/veelken/scratch0/VHbbNtuples_7_6_x/CMSSW_7_6_3/src/VHbbAnalysis/Heppy/test/latest_Loop/tree.root'),
+    fileNames = cms.vstring('/afs/cern.ch/user/k/kaehatah/public/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/VHBB_HEPPY_V12_ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_Py8_mWCutfix__fall15MAv2-pu25ns15v1_76r2as_v12-v1/160330_172426/0000/tree_1.root'),
     maxEvents = cms.int32(-1),
     outputEvery = cms.uint32(100000)
 )
@@ -33,7 +34,7 @@ process.analyze_2lss_1tau = cms.PSet(
     chargeSelection = cms.string('SS'),
     leptonSelection = cms.string('Tight'),
     
-    isMC = cms.bool(True),
+    isMC = cms.bool(False),
     central_or_shift = cms.string('central'),
     lumiScale = cms.double(1.),
     

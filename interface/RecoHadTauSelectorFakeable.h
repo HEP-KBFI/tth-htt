@@ -1,5 +1,5 @@
-#ifndef tthAnalysis_HiggsToTauTau_RecoHadTauSelectorTight_h
-#define tthAnalysis_HiggsToTauTau_RecoHadTauSelectorTight_h
+#ifndef tthAnalysis_HiggsToTauTau_RecoHadTauSelectorFakeable_h
+#define tthAnalysis_HiggsToTauTau_RecoHadTauSelectorFakeable_h
 
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTau.h" // RecoHadTau
 
@@ -8,14 +8,15 @@
 #include <string>
 #include <map>
 
-class RecoHadTauSelectorTight
+class RecoHadTauSelectorFakeable
 {
  public:
-  RecoHadTauSelectorTight();
-  ~RecoHadTauSelectorTight() {}
+  RecoHadTauSelectorFakeable();
+  ~RecoHadTauSelectorFakeable() {}
 
   /**
-   * @brief Check if hadronic tau given as function argument passes nominal selection criteria defined in Section 3.5 of AN-2015/321
+   * @brief Check if hadronic tau given as function argument passes selection criteria for "fakeable" tau candidates, 
+   *   used to estimate the background contribution arising from jets that are misidentified as hadronic tau decays
    * @return True if hadronic tau passes selection; false otherwise
    */
   bool operator()(const RecoHadTau& hadTau) const;
@@ -37,5 +38,5 @@ class RecoHadTauSelectorTight
   Int_t min_antiMuon_;         ///< lower cut threshold on discriminator against muons
 };
 
-#endif // tthAnalysis_HiggsToTauTau_RecoHadTauSelectorTight_h
+#endif // tthAnalysis_HiggsToTauTau_RecoHadTauSelectorFakeable_h
 

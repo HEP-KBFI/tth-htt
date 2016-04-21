@@ -33,7 +33,7 @@ process.analyze_2lss_1tau = cms.PSet(
     chargeSelection = cms.string('SS'),
     leptonSelection = cms.string('Tight'),
     
-    isMC = cms.bool(True),
+    isMC = cms.bool(False),
     central_or_shift = cms.string('central'),
     lumiScale = cms.double(1.),
     

@@ -7,10 +7,14 @@ RecoHadTau::RecoHadTau(Double_t pt,
 		       Int_t pdgId,
 		       Double_t dz,
 		       Int_t decayModeFinding,
-		       Int_t id_mva_dR03,
+		       Int_t id_mva_dR03,		       
+		       Double_t raw_mva_dR03,
 		       Int_t id_mva_dR05,
+		       Double_t raw_mva_dR05,
 		       Int_t id_cut_dR03,
+		       Double_t raw_cut_dR03,
 		       Int_t id_cut_dR05,
+		       Double_t raw_cut_dR05,
 		       Int_t antiElectron,
 		       Int_t antiMuon)
   : GenParticle(pt, eta, phi, mass)
@@ -18,9 +22,13 @@ RecoHadTau::RecoHadTau(Double_t pt,
   , dz_(dz)
   , decayModeFinding_(decayModeFinding)
   , id_mva_dR03_(id_mva_dR03)
+  , raw_mva_dR03_(raw_mva_dR03)
   , id_mva_dR05_(id_mva_dR05)
+  , raw_mva_dR05_(raw_mva_dR05)
   , id_cut_dR03_(id_cut_dR03)
+  , raw_cut_dR03_(raw_cut_dR03)
   , id_cut_dR05_(id_cut_dR05)
+  , raw_cut_dR05_(raw_cut_dR05)   
   , antiElectron_(antiElectron)
   , antiMuon_(antiMuon)
   , genLepton_(0)

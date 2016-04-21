@@ -375,7 +375,7 @@ int main(int argc, char* argv[])
       selMuonHistManager->bookHistograms(fs);
       selMuonHistManager_category[*category]["muon"] = selMuonHistManager;
     }
-    if ( category->find("2epp") != std::string::npos || category->find("2emm") != std::string::npos ) {
+    if ( category->find("2mupp") != std::string::npos || category->find("2mumm") != std::string::npos ) {
       MuonHistManager* selMuonHistManager_lead = new MuonHistManager(makeHistManager_cfg(process_string, 
 	Form("%s_%s/sel/leadMuon", category->data(), charge_and_leptonSelection.data()), central_or_shift, 0));
       selMuonHistManager_lead->bookHistograms(fs);
