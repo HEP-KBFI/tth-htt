@@ -34,7 +34,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/convert_to_ptrs.h" // convert_to_ptrs
 #include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionCleaner.h" // RecoElectronCollectionCleaner, RecoMuonCollectionCleaner, RecoHadTauCollectionCleaner, RecoJetCollectionCleaner
 #include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionGenMatcher.h" // RecoElectronCollectionGenMatcher, RecoMuonCollectionGenMatcher, RecoHadTauCollectionGenMatcher, RecoJetCollectionGenMatcher
-#include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionSelector.h" // RecoElectronSelectorLoose, RecoElectronSelectorTight, RecoMuonSelectorLoose, RecoMuonSelectorTight, RecoHadTauSelector
+#include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionSelector.h" // RecoElectronSelectorLoose, RecoElectronSelectorTight, RecoMuonSelectorLoose, RecoMuonSelectorTight, RecoHadTauSelectorTight
 #include "tthAnalysis/HiggsToTauTau/interface/RunLumiEventSelector.h" // RunLumiEventSelector
 #include "tthAnalysis/HiggsToTauTau/interface/ElectronHistManager.h" // ElectronHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/MuonHistManager.h" // MuonHistManager
@@ -529,7 +529,7 @@ int main(int argc, char* argv[])
     preselLeptons.insert(preselLeptons.end(), preselElectrons.begin(), preselElectrons.end());
     preselLeptons.insert(preselLeptons.end(), preselMuons.begin(), preselMuons.end());
     std::sort(preselLeptons.begin(), preselLeptons.end(), isHigherPt);
-    // requirement exactly two leptons passing loose preselection criteria
+    // require exactly two leptons passing loose preselection criteria
     if ( !(preselLeptons.size() == 2) ) continue;
     const RecoLepton* preselLepton_lead = preselLeptons[0];
     int preselLepton_lead_type = getLeptonType(preselLepton_lead->pdgId_);
@@ -537,9 +537,9 @@ int main(int argc, char* argv[])
     int preselLepton_sublead_type = getLeptonType(preselLepton_sublead->pdgId_);
 
     // require that trigger paths match event category (with event category based on preselLeptons);
-    if ( preselElectrons.size() == 2 &&                            !(isTriggered_1e  || isTriggered_2e)  ) continue;
-    if (                                preselMuons.size() == 2 && !(isTriggered_1mu || isTriggered_2mu) ) continue;
-    if ( preselElectrons.size() == 1 && preselMuons.size() == 1 && !isTriggered_1e1mu                    ) continue;
+    if ( preselElectrons.size() == 2 &&                            !(isTriggered_1e  || isTriggered_2e)                       ) continue;
+    if (                                preselMuons.size() == 2 && !(isTriggered_1mu || isTriggered_2mu)                      ) continue;
+    if ( preselElectrons.size() == 1 && preselMuons.size() == 1 && !(isTriggered_1e  || isTriggered_1mu || isTriggered_1e1mu) ) continue;
 
     // apply requirement on jets (incl. b-tagged jets) and hadronic taus on preselection level
     if ( !(selJets.size() >= 2) ) continue;
@@ -619,15 +619,15 @@ int main(int argc, char* argv[])
     selLeptons.insert(selLeptons.end(), selElectrons.begin(), selElectrons.end());
     selLeptons.insert(selLeptons.end(), selMuons.begin(), selMuons.end());
     std::sort(selLeptons.begin(), selLeptons.end(), isHigherPt);
-    // requirement exactly two leptons passing tight selection criteria of final event selection 
+    // require exactly two leptons passing tight selection criteria of final event selection 
     if ( !(selLeptons.size() == 2) ) continue;
     const RecoLepton* selLepton_lead = selLeptons[0];
     const RecoLepton* selLepton_sublead = selLeptons[1];
 
     // require that trigger paths match event category (with event category based on selLeptons);
-    if ( selElectrons.size() == 2 &&                         !(isTriggered_1e  || isTriggered_2e)  ) continue;
-    if (                             selMuons.size() == 2 && !(isTriggered_1mu || isTriggered_2mu) ) continue;
-    if ( selElectrons.size() == 1 && selMuons.size() == 1 && !isTriggered_1e1mu                    ) continue;
+    if ( selElectrons.size() == 2 &&                         !(isTriggered_1e  || isTriggered_2e)                       ) continue;
+    if (                             selMuons.size() == 2 && !(isTriggered_1mu || isTriggered_2mu)                      ) continue;
+    if ( selElectrons.size() == 1 && selMuons.size() == 1 && !(isTriggered_1e  || isTriggered_1mu || isTriggered_1e1mu) ) continue;
 
     // apply requirement on jets (incl. b-tagged jets) and hadronic taus on level of final event selection
     if ( !(selJets.size() >= 4) ) continue;

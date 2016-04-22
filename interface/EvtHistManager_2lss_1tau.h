@@ -28,6 +28,8 @@ class EvtHistManager_2lss_1tau
   TH1* histogram_mvaOutput_2lss_ttbar_;
   TH1* histogram_mvaDiscr_2lss_;
 
+  TH1* histogram_EventCounter_;
+
   std::vector<TH1*> histograms_;
 };
 

@@ -30,6 +30,8 @@ class EvtHistManager_2los_1tau
 
   TH1* histogram_numJets_;
 
+  TH1* histogram_EventCounter_;
+
   std::vector<TH1*> histograms_;
 };
 

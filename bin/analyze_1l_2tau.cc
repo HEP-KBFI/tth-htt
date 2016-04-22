@@ -46,6 +46,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/backgroundEstimation.h" // prob_chargeMisId
 #include "tthAnalysis/HiggsToTauTau/interface/hltPath.h" // hltPath, create_hltPaths, hltPaths_setBranchAddresses, hltPaths_isTriggered, hltPaths_delete
 #include "tthAnalysis/HiggsToTauTau/interface/data_to_MC_corrections.h"
+#include "tthAnalysis/HiggsToTauTau/interface/particleIDlooseToTightWeightEntryType.h" // particleIDlooseToTightWeightEntryType
 
 #include <iostream> // std::cerr, std::fixed
 #include <iomanip> // std::setprecision(), std::setw()
@@ -58,6 +59,7 @@
 
 typedef math::PtEtaPhiMLorentzVector LV;
 typedef std::vector<std::string> vstring;
+typedef std::vector<double> vdouble;
 
 //--- declare constants
 const double met_coef = 0.00397;
@@ -158,6 +160,69 @@ int main(int argc, char* argv[])
       else assert(0);
     } else throw cms::Exception("analyze_1l_2tau")
 	<< "Invalid Configuration parameter 'central_or_shift' = " << central_or_shift << " !!\n";
+  }
+
+  std::vector<particleIDlooseToTightWeightEntryType*> jetToTauFakeRateWeights;
+  bool applyJetToTauFakeRateWeight = cfg_analyze.getParameter<bool>("applyJetToTauFakeRateWeight");
+  if ( applyJetToTauFakeRateWeight ) {
+    edm::ParameterSet cfg_jetToTauFakeRateWeight = cfg_analyze.getParameter<edm::ParameterSet>("jetToTauFakeRateWeight");
+
+    vdouble tau1EtaBins = cfg_jetToTauFakeRateWeight.getParameter<vdouble>("tau1EtaBins"); // CV: eta bins in which jet->tau fake-rates have been measured
+    vdouble tau2EtaBins = cfg_jetToTauFakeRateWeight.getParameter<vdouble>("tau2EtaBins");
+    
+    std::string fitFunctionNormName = cfg_jetToTauFakeRateWeight.getParameter<std::string>("fitFunctionNormName");
+    std::string fitFunctionShapeName_tau1_central = cfg_jetToTauFakeRateWeight.getParameter<std::string>("fitFunctionShapeName_tau1_central");
+    std::string graphShapeName_tau1, fitFunctionShapeName_tau1_shift;    
+    int applyFitFunction_or_graph_tau1 = particleIDlooseToTightWeightEntryType::kFitFunction;
+    if ( cfg_jetToTauFakeRateWeight.exists("graphShapeName_tau1") ) {
+      graphShapeName_tau1 = cfg_jetToTauFakeRateWeight.getParameter<std::string>("graphShapeName_tau1");
+      fitFunctionShapeName_tau1_shift = cfg_jetToTauFakeRateWeight.getParameter<std::string>("fitFunctionShapeName_tau1_shift");
+      std::string applyFitFunction_or_graph_tau1_string = cfg_jetToTauFakeRateWeight.getParameter<std::string>("applyFitFunction_or_graph_tau1");
+      if      ( applyFitFunction_or_graph_tau1_string == "fitFunction" ) applyFitFunction_or_graph_tau1 = particleIDlooseToTightWeightEntryType::kFitFunction;
+      else if ( applyFitFunction_or_graph_tau1_string == "graph"       ) applyFitFunction_or_graph_tau1 = particleIDlooseToTightWeightEntryType::kGraph;
+      else if ( applyFitFunction_or_graph_tau1_string == "notApplied"  ) applyFitFunction_or_graph_tau1 = particleIDlooseToTightWeightEntryType::kNotApplied;
+      else throw cms::Exception("analyze_1l_2tau") 
+        << "Invalid Configuration parameter 'applyFitFunction_or_graph_tau1' = " << applyFitFunction_or_graph_tau1_string << " !!\n";
+    }
+    double fitFunctionShapePower_tau1 = cfg_jetToTauFakeRateWeight.getParameter<double>("fitFunctionShapePower_tau1");
+    std::string fitFunctionShapeName_tau2_central = cfg_jetToTauFakeRateWeight.getParameter<std::string>("fitFunctionShapeName_tau2_central");
+    std::string graphShapeName_tau2, fitFunctionShapeName_tau2_shift;
+    int applyFitFunction_or_graph_tau2 = particleIDlooseToTightWeightEntryType::kFitFunction;
+    if ( cfg_jetToTauFakeRateWeight.exists("graphShapeName_tau2") ) {
+      graphShapeName_tau2 = cfg_jetToTauFakeRateWeight.getParameter<std::string>("graphShapeName_tau2");
+      fitFunctionShapeName_tau2_shift = cfg_jetToTauFakeRateWeight.getParameter<std::string>("fitFunctionShapeName_tau2_shift");
+      std::string applyFitFunction_or_graph_tau2_string = cfg_jetToTauFakeRateWeight.getParameter<std::string>("applyFitFunction_or_graph_tau2");
+      if      ( applyFitFunction_or_graph_tau2_string == "fitFunction" ) applyFitFunction_or_graph_tau2 = particleIDlooseToTightWeightEntryType::kFitFunction;
+      else if ( applyFitFunction_or_graph_tau2_string == "graph"       ) applyFitFunction_or_graph_tau2 = particleIDlooseToTightWeightEntryType::kGraph;
+      else if ( applyFitFunction_or_graph_tau2_string == "notApplied"  ) applyFitFunction_or_graph_tau2 = particleIDlooseToTightWeightEntryType::kNotApplied;
+      else throw cms::Exception("analyze_1l_2tau") 
+        << "Invalid Configuration parameter 'applyFitFunction_or_graph_tau2' = " << applyFitFunction_or_graph_tau2_string << " !!\n";
+    }
+    double fitFunctionShapePower_tau2 = cfg_jetToTauFakeRateWeight.getParameter<double>("fitFunctionShapePower_tau2");
+
+    std::string inputFileName = cfg_jetToTauFakeRateWeight.getParameter<std::string>("inputFileName");
+    TFile* inputFile = new TFile(inputFileName.data());
+
+    int numTau1EtaBins = tau1EtaBins.size() - 1;
+    for ( int idxTau1EtaBin = 0; idxTau1EtaBin < numTau1EtaBins; ++idxTau1EtaBin ) {
+      double tau1EtaMin = tau1EtaBins[idxTau1EtaBin];
+      double tau1EtaMax = tau1EtaBins[idxTau1EtaBin + 1];
+
+      int numTau2EtaBins = tau2EtaBins.size() - 1;
+      for ( int idxTau2EtaBin = 0; idxTau2EtaBin < numTau2EtaBins; ++idxTau2EtaBin ) {
+        double tau2EtaMin = tau2EtaBins[idxTau2EtaBin];
+        double tau2EtaMax = tau2EtaBins[idxTau2EtaBin + 1];
+
+        particleIDlooseToTightWeightEntryType* jetToTauFakeRateWeight = new particleIDlooseToTightWeightEntryType(
+          inputFile,
+          "tau", tau1EtaMin, tau1EtaMax, tau2EtaMin, tau2EtaMax,
+          fitFunctionNormName, 
+          graphShapeName_tau1, fitFunctionShapeName_tau1_central, fitFunctionShapeName_tau1_shift, applyFitFunction_or_graph_tau1, fitFunctionShapePower_tau1, 
+          graphShapeName_tau2, fitFunctionShapeName_tau2_central, fitFunctionShapeName_tau2_shift, applyFitFunction_or_graph_tau2, fitFunctionShapePower_tau2);
+        jetToTauFakeRateWeights.push_back(jetToTauFakeRateWeight);
+      }
+    }
+    delete inputFile;
   }
 
   std::string selEventsFileName_input = cfg_analyze.getParameter<std::string>("selEventsFileName_input");
@@ -487,7 +552,7 @@ int main(int argc, char* argv[])
     preselLeptons.insert(preselLeptons.end(), preselElectrons.begin(), preselElectrons.end());
     preselLeptons.insert(preselLeptons.end(), preselMuons.begin(), preselMuons.end());
     std::sort(preselLeptons.begin(), preselLeptons.end(), isHigherPt);
-    // requirement exactly one lepton passing loose preselection criteria
+    // require exactly one lepton passing loose preselection criteria
     if ( !(preselLeptons.size() == 1) ) continue;
     const RecoLepton* preselLepton = preselLeptons[0];
     int preselLepton_type = getLeptonType(preselLepton->pdgId_);
@@ -559,7 +624,7 @@ int main(int argc, char* argv[])
     selLeptons.insert(selLeptons.end(), selElectrons.begin(), selElectrons.end());
     selLeptons.insert(selLeptons.end(), selMuons.begin(), selMuons.end());
     std::sort(selLeptons.begin(), selLeptons.end(), isHigherPt);
-    // requirement exactly one lepton passing tight selection criteria of final event selection 
+    // require exactly one lepton passing tight selection criteria of final event selection 
     if ( !(selLeptons.size() == 1) ) continue;
     const RecoLepton* selLepton = selLeptons[0];
 
@@ -595,6 +660,30 @@ int main(int argc, char* argv[])
     if ( isMC ) {
       double sf_tight_to_loose = sf_leptonID_and_Iso_tight_to_loose(preselLepton_type, preselLepton->pt_, preselLepton->eta_);
       evtWeight *= sf_tight_to_loose;
+    }
+
+//--- 
+    if ( applyJetToTauFakeRateWeight ) {
+      double selHadTau_lead_pt = selHadTau_lead->pt_;
+      double selHadTau_lead_absEta = std::fabs(selHadTau_lead->eta_);
+      double selHadTau_sublead_pt = selHadTau_sublead->pt_;
+      double selHadTau_sublead_absEta = std::fabs(selHadTau_sublead->eta_);
+      particleIDlooseToTightWeightEntryType* jetToTauFakeRateWeight_tauEtaBin = 0;
+      for ( std::vector<particleIDlooseToTightWeightEntryType*>::const_iterator jetToTauFakeRateWeight = jetToTauFakeRateWeights.begin();
+            jetToTauFakeRateWeight != jetToTauFakeRateWeights.end(); ++jetToTauFakeRateWeight ) {
+        if ( ((*jetToTauFakeRateWeight)->particle1EtaMin_ < 0. || selHadTau_lead_absEta    > (*jetToTauFakeRateWeight)->particle1EtaMin_) &&
+             ((*jetToTauFakeRateWeight)->particle1EtaMax_ > 5. || selHadTau_lead_absEta    < (*jetToTauFakeRateWeight)->particle1EtaMax_) &&
+             ((*jetToTauFakeRateWeight)->particle2EtaMin_ < 0. || selHadTau_sublead_absEta > (*jetToTauFakeRateWeight)->particle2EtaMin_) &&
+             ((*jetToTauFakeRateWeight)->particle2EtaMax_ > 5. || selHadTau_sublead_absEta < (*jetToTauFakeRateWeight)->particle2EtaMax_) ) {
+          jetToTauFakeRateWeight_tauEtaBin = (*jetToTauFakeRateWeight);
+          break;
+        }
+      }
+      if ( jetToTauFakeRateWeight_tauEtaBin ) {
+        evtWeight *= jetToTauFakeRateWeight_tauEtaBin->weight(selHadTau_lead_pt, selHadTau_sublead_pt);
+      } else {
+        std::cerr << "Warning: leadHadTauEta = " << selHadTau_lead_absEta << ", subleadHadTauEta = " << selHadTau_sublead_absEta << " outside range !!" << std::endl;
+      }
     }
 
 //--- fill histograms with events passing final selection 

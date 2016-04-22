@@ -28,6 +28,8 @@ class EvtHistManager_1l_2tau
 
   TH1* histogram_mTauTauVis_;
 
+  TH1* histogram_EventCounter_;
+
   std::vector<TH1*> histograms_;
 };
 
