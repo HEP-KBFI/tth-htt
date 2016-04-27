@@ -16,8 +16,10 @@ class RecoHadTau
 	     Double_t phi,
 	     Double_t mass,
 	     Int_t charge,
+	     Double_t dxy,
 	     Double_t dz,
 	     Int_t decayModeFinding,
+	     Int_t decayModeFindingNew,
 	     Int_t id_mva_dR03,
 	     Double_t raw_mva_dR03,
 	     Int_t id_mva_dR05,
@@ -30,18 +32,20 @@ class RecoHadTau
 	     Int_t antiMuon);
 
   Int_t charge_;
-  Double_t dz_;            ///< d_{z}, distance on the z axis w.r.t PV
-  Int_t decayModeFinding_; ///< decayModeFinding discriminator
-  Int_t id_mva_dR03_;      ///< MVA-based tau id computed with dR=0.3 isolation cone
-  Double_t raw_mva_dR03_;  ///< raw output of MVA-based tau id computed with dR=0.3 isolation cone
-  Int_t id_mva_dR05_;      ///< MVA-based tau id computed with dR=0.5 isolation cone
-  Double_t raw_mva_dR05_;  ///< raw output of MVA-based tau id computed with dR=0.5 isolation cone
-  Int_t id_cut_dR03_;      ///< cut-based tau id computed with dR=0.3 isolation cone
-  Double_t raw_cut_dR03_;  ///< raw isolation pT-sum of cut-based tau id computed with dR=0.3 isolation cone
-  Int_t id_cut_dR05_;      ///< cut-based tau id computed with dR=0.5 isolation cone
-  Double_t raw_cut_dR05_;  ///< raw isolation pT-sum of cut-based tau id computed with dR=0.5 isolation cone
-  Int_t antiElectron_;     ///< discriminator against electrons
-  Int_t antiMuon_;         ///< discriminator against muons
+  Double_t dxy_;              ///< d_{xy}, distance in the transverse plane w.r.t PV
+  Double_t dz_;               ///< d_{z}, distance on the z axis w.r.t PV
+  Int_t decayModeFinding_;    ///< decayModeFinding discriminator
+  Int_t decayModeFindingNew_; ///< new decayModeFinding discriminator
+  Int_t id_mva_dR03_;         ///< MVA-based tau id computed with dR=0.3 isolation cone
+  Double_t raw_mva_dR03_;     ///< raw output of MVA-based tau id computed with dR=0.3 isolation cone
+  Int_t id_mva_dR05_;         ///< MVA-based tau id computed with dR=0.5 isolation cone
+  Double_t raw_mva_dR05_;     ///< raw output of MVA-based tau id computed with dR=0.5 isolation cone
+  Int_t id_cut_dR03_;         ///< cut-based tau id computed with dR=0.3 isolation cone
+  Double_t raw_cut_dR03_;     ///< raw isolation pT-sum of cut-based tau id computed with dR=0.3 isolation cone
+  Int_t id_cut_dR05_;         ///< cut-based tau id computed with dR=0.5 isolation cone
+  Double_t raw_cut_dR05_;     ///< raw isolation pT-sum of cut-based tau id computed with dR=0.5 isolation cone
+  Int_t antiElectron_;        ///< discriminator against electrons
+  Int_t antiMuon_;            ///< discriminator against muons
 
 //--- matching to generator level particles
   const GenLepton* genLepton_;

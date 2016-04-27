@@ -128,11 +128,11 @@ private:
   Float_t * tau_phi;
   Float_t * tau_E;
   Int_t * tau_charge;
-  Float_t * tau_dxy; // missing
+  Float_t * tau_dxy;
   Float_t * tau_dz;
   Int_t * tau_decayModeFindingOldDMs;
   Int_t * tau_decayModeFindingNewDMs;
-  Int_t * tau_byCombinedIsolationDeltaBetaCorr3Hits; // Float_t ?
+  Float_t * tau_byCombinedIsolationDeltaBetaCorr3Hits;
   Int_t * tau_byLooseCombinedIsolationDeltaBetaCorr3Hits;
   Int_t * tau_byMediumCombinedIsolationDeltaBetaCorr3Hits;
   Int_t * tau_byTightCombinedIsolationDeltaBetaCorr3Hits;

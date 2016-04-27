@@ -313,9 +313,37 @@ SyncNtupleManager::read(std::vector<const RecoHadTau *> & hadtaus)
     tau_phi[i] = hadtau -> phi_;
     tau_E[i] = (hadtau -> p4_).E();
     tau_charge[i] = hadtau -> charge_;
-    //
+    tau_dxy[i] = hadtau -> dxy_;
     tau_dz[i] = hadtau -> dz_;
-    //
+    tau_decayModeFindingOldDMs[i] = hadtau -> decayModeFinding_;
+    tau_decayModeFindingNewDMs[i] = hadtau -> decayModeFindingNew_;
+    tau_byCombinedIsolationDeltaBetaCorr3Hits[i] = hadtau -> raw_cut_dR05_;
+
+    const Int_t idCI3hit = hadtau -> id_cut_dR05_;
+    if(idCI3hit >= 1) tau_byLooseCombinedIsolationDeltaBetaCorr3Hits[i] = 1;
+    if(idCI3hit >= 2) tau_byMediumCombinedIsolationDeltaBetaCorr3Hits[i] = 1;
+    if(idCI3hit >= 3) tau_byTightCombinedIsolationDeltaBetaCorr3Hits[i] = 1;
+
+    const Int_t idCI3hitdR03 = hadtau -> id_cut_dR03_;
+    if(idCI3hitdR03 >= 1) tau_byLooseCombinedIsolationDeltaBetaCorr3HitsdR03[i] = 1;
+    if(idCI3hitdR03 >= 2) tau_byMediumCombinedIsolationDeltaBetaCorr3HitsdR03[i] = 1;
+    if(idCI3hitdR03 >= 3) tau_byTightCombinedIsolationDeltaBetaCorr3HitsdR03[i] = 1;
+
+    const Int_t idMVArun2dR03 = hadtau -> id_mva_dR03_;
+    if(idMVArun2dR03 >= 2) tau_byLooseIsolationMVArun2v1DBdR03oldDMwLT[i] = 1;
+    if(idMVArun2dR03 >= 3) tau_byMediumIsolationMVArun2v1DBdR03oldDMwLT[i] = 1;
+    if(idMVArun2dR03 >= 4) tau_byTightIsolationMVArun2v1DBdR03oldDMwLT[i] = 1;
+    if(idMVArun2dR03 >= 5) tau_byVTightIsolationMVArun2v1DBdR03oldDMwLT[i] = 1;
+
+    const Int_t idAntiMu = hadtau -> antiMuon_;
+    if(idAntiMu >= 1) tau_againstMuonLoose3[i] = 1;
+    if(idAntiMu >= 2) tau_againstMuonTight3[i] = 1;
+
+    const Int_t idAntiErun2 = hadtau -> antiElectron_;
+    if(idAntiErun2 >= 1) tau_againstElectronVLooseMVA6[i] = 1;
+    if(idAntiErun2 >= 2) tau_againstElectronLooseMVA6[i] = 1;
+    if(idAntiErun2 >= 3) tau_againstElectronMediumMVA6[i] = 1;
+    if(idAntiErun2 >= 4) tau_againstElectronTightMVA6[i] = 1;
   }
 }
 

@@ -43,8 +43,10 @@ class RecoHadTauReader
   std::string branchName_phi_;
   std::string branchName_mass_;
   std::string branchName_charge_;
+  std::string branchName_dxy_;
   std::string branchName_dz_;
   std::string branchName_idDecayMode_;
+  std::string branchName_idDecayModeNewDMs_;
   std::string branchName_idMVA_dR03_;
   std::string branchName_rawMVA_dR03_;
   std::string branchName_idMVA_dR05_;
@@ -62,8 +64,10 @@ class RecoHadTauReader
   Float_t* hadTau_phi_;
   Float_t* hadTau_mass_;
   Int_t* hadTau_charge_;
+  Float_t* hadTau_dxy_;
   Float_t* hadTau_dz_;
   Int_t* hadTau_idDecayMode_;
+  Int_t* hadTau_idDecayModeNewDMs_;
   Int_t* hadTau_idMVA_dR03_;
   Float_t* hadTau_rawMVA_dR03_;
   Int_t* hadTau_idMVA_dR05_;
