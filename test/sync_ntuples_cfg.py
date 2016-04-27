@@ -19,8 +19,6 @@ process.syncNtuple = cms.PSet(
     outputTreeName = cms.string('tree'),
     
     process = cms.string('ttH'),
-    chargeSelection = cms.string('SS'),
-    leptonSelection = cms.string('Tight'),
     
     selEventsFileName_input = cms.string(''),
     selEventsFileName_output = cms.string('')

@@ -133,14 +133,14 @@ int main(int argc, char* argv[])
 //  else throw cms::Exception("analyze_2lss_1tau")
 //    << "Invalid Configuration parameter 'chargeSelection' = " << chargeSelection_string << " !!\n";
 
-  enum { kLoose, kFakeable, kTight };
-  std::string leptonSelection_string = cfg_analyze.getParameter<std::string>("leptonSelection");
-  int leptonSelection = -1;
-  if      ( leptonSelection_string == "Loose"    ) leptonSelection = kLoose;
-  else if ( leptonSelection_string == "Fakeable" ) leptonSelection = kFakeable;
-  else if ( leptonSelection_string == "Tight"    ) leptonSelection = kTight;
-  else throw cms::Exception("analyze_2lss_1tau") 
-    << "Invalid Configuration parameter 'leptonSelection' = " << leptonSelection_string << " !!\n";
+
+//  std::string leptonSelection_string = cfg_analyze.getParameter<std::string>("leptonSelection");
+//  int leptonSelection = -1;
+//  if      ( leptonSelection_string == "Loose"    ) leptonSelection = kLoose;
+//  else if ( leptonSelection_string == "Fakeable" ) leptonSelection = kFakeable;
+//  else if ( leptonSelection_string == "Tight"    ) leptonSelection = kTight;
+//  else throw cms::Exception("analyze_2lss_1tau")
+//    << "Invalid Configuration parameter 'leptonSelection' = " << leptonSelection_string << " !!\n";
 
 //  bool isMC = cfg_analyze.getParameter<bool>("isMC");
 //  std::string central_or_shift = cfg_analyze.getParameter<std::string>("central_or_shift");
@@ -469,30 +469,33 @@ int main(int argc, char* argv[])
     std::vector<const RecoMuon*> muon_ptrs = convert_to_ptrs(muons);
     std::vector<const RecoMuon*> cleanedMuons = muon_ptrs; // CV: no cleaning needed for muons, as they have the highest priority in the overlap removal
     std::vector<const RecoMuon*> preselMuons = preselMuonSelector(cleanedMuons);
-    std::vector<const RecoMuon*> fakeableMuons = fakeableMuonSelector(preselMuons);
-    std::vector<const RecoMuon*> tightMuons = tightMuonSelector(preselMuons);
+    //std::vector<const RecoMuon*> fakeableMuons = fakeableMuonSelector(preselMuons); // KE: we need it later
+    //std::vector<const RecoMuon*> tightMuons = tightMuonSelector(preselMuons); // KE: we need it later
     std::vector<const RecoMuon*> selMuons;
-    if      ( leptonSelection == kLoose    ) selMuons = preselMuons;
-    else if ( leptonSelection == kFakeable ) selMuons = fakeableMuons;
-    else if ( leptonSelection == kTight    ) selMuons = tightMuons;
-    else assert(0);
+//    if      ( leptonSelection == kLoose    ) selMuons = preselMuons;
+//    else if ( leptonSelection == kFakeable ) selMuons = fakeableMuons;
+//    else if ( leptonSelection == kTight    ) selMuons = tightMuons;
+//    else assert(0);
+    snm.read(preselMuons);
 
     std::vector<RecoElectron> electrons = electronReader->read();
     std::vector<const RecoElectron*> electron_ptrs = convert_to_ptrs(electrons);
     std::vector<const RecoElectron*> cleanedElectrons = electronCleaner(electron_ptrs, selMuons);
     std::vector<const RecoElectron*> preselElectrons = preselElectronSelector(cleanedElectrons);
-    std::vector<const RecoElectron*> fakeableElectrons = fakeableElectronSelector(preselElectrons);
-    std::vector<const RecoElectron*> tightElectrons = tightElectronSelector(preselElectrons);
+//    std::vector<const RecoElectron*> fakeableElectrons = fakeableElectronSelector(preselElectrons); // KE: we need it later
+//    std::vector<const RecoElectron*> tightElectrons = tightElectronSelector(preselElectrons); // KE: we need it later
     std::vector<const RecoElectron*> selElectrons;
-    if      ( leptonSelection == kLoose    ) selElectrons = preselElectrons;
-    else if ( leptonSelection == kFakeable ) selElectrons = fakeableElectrons;
-    else if ( leptonSelection == kTight    ) selElectrons = tightElectrons;
-    else assert(0);
+//    if      ( leptonSelection == kLoose    ) selElectrons = preselElectrons;
+//    else if ( leptonSelection == kFakeable ) selElectrons = fakeableElectrons;
+//    else if ( leptonSelection == kTight    ) selElectrons = tightElectrons;
+//    else assert(0);
+    snm.read(preselElectrons);
 
     std::vector<RecoHadTau> hadTaus = hadTauReader->read();
     std::vector<const RecoHadTau*> hadTau_ptrs = convert_to_ptrs(hadTaus);
     std::vector<const RecoHadTau*> cleanedHadTaus = hadTauCleaner(hadTau_ptrs, selMuons, selElectrons);
     std::vector<const RecoHadTau*> selHadTaus = hadTauSelector(cleanedHadTaus);
+    snm.read(selHadTaus);
     
 //--- build collections of jets and select subset of jets passing b-tagging criteria
     std::vector<RecoJet> jets = jetReader->read();
