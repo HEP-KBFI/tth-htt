@@ -13,6 +13,7 @@ RecoMuonReader::RecoMuonReader()
   , leptonReader_(0)
   , looseIdPOG_(0)
   , mediumIdPOG_(0)
+  , segmentCompatibility_(0)
 {
   leptonReader_ = new RecoLeptonReader(branchName_num_, branchName_obj_);
   leptonReader_->setBranchNames();
@@ -25,6 +26,7 @@ RecoMuonReader::RecoMuonReader(const std::string& branchName_num, const std::str
   , leptonReader_(0)
   , looseIdPOG_(0)
   , mediumIdPOG_(0)
+  , segmentCompatibility_(0)
 {
   leptonReader_ = new RecoLeptonReader(branchName_num_, branchName_obj_);
   leptonReader_->setBranchNames();
@@ -40,6 +42,7 @@ RecoMuonReader::~RecoMuonReader()
     assert(gInstance);
     delete gInstance->looseIdPOG_;
     delete gInstance->mediumIdPOG_; 
+    delete gInstance->segmentCompatibility_;
     instances_[branchName_obj_] = 0;
   }
 }
@@ -49,6 +52,7 @@ void RecoMuonReader::setBranchNames()
   if ( numInstances_[branchName_obj_] == 0 ) {
     branchName_looseIdPOG_ = Form("%s_%s", branchName_obj_.data(), "looseIdPOG");
     branchName_mediumIdPOG_ = Form("%s_%s", branchName_obj_.data(), "mediumMuonId");
+    branchName_segmentCompatibility_ = Form("%s_%s", branchName_obj_.data(), "segmentCompatibility");
     instances_[branchName_obj_] = this;
   } else {
     if ( branchName_num_ != instances_[branchName_obj_]->branchName_num_ ) {
@@ -67,9 +71,11 @@ void RecoMuonReader::setBranchAddresses(TTree* tree)
     leptonReader_->setBranchAddresses(tree);
     int max_nLeptons = leptonReader_->max_nLeptons_;
     looseIdPOG_ = new Int_t[max_nLeptons];
-    tree->SetBranchAddress(branchName_looseIdPOG_.data(), looseIdPOG_); 
+    tree->SetBranchAddress(branchName_looseIdPOG_.data(), looseIdPOG_);
     mediumIdPOG_ = new Int_t[max_nLeptons];
-    tree->SetBranchAddress(branchName_mediumIdPOG_.data(), mediumIdPOG_); 
+    tree->SetBranchAddress(branchName_mediumIdPOG_.data(), mediumIdPOG_);
+    segmentCompatibility_ = new Float_t[max_nLeptons];
+    tree->SetBranchAddress(branchName_segmentCompatibility_.data(), segmentCompatibility_);
   }
 }
 
@@ -97,13 +103,18 @@ std::vector<RecoMuon> RecoMuonReader::read() const
         gLeptonReader->dxy_[idxLepton],
         gLeptonReader->dz_[idxLepton],
         gLeptonReader->relIso_[idxLepton],
+        gLeptonReader->miniIsoCharged_[idxLepton],
+        gLeptonReader->miniIsoNeutral_[idxLepton],
         gLeptonReader->sip3d_[idxLepton],
         gLeptonReader->mvaRawTTH_[idxLepton],
+        gLeptonReader->jetNDauChargedMVASel_[idxLepton],
+        gLeptonReader->jetPtRel_[idxLepton],
         gLeptonReader->jetPtRatio_[idxLepton],
         gLeptonReader->jetBtagCSV_[idxLepton],	
         gLeptonReader->tightCharge_[idxLepton],
         gMuonReader->looseIdPOG_[idxLepton],
-        gMuonReader->mediumIdPOG_[idxLepton] }));
+        gMuonReader->mediumIdPOG_[idxLepton],
+        gMuonReader->segmentCompatibility_[idxLepton] }));
     }
   }
   return muons;

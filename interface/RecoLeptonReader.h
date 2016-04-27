@@ -43,10 +43,14 @@ class RecoLeptonReader
   std::string branchName_dxy_;
   std::string branchName_dz_;
   std::string branchName_relIso_;
+  std::string branchName_miniIsoCharged_;
+  std::string branchName_miniIsoNeutral_;
   std::string branchName_sip3d_;
-  std::string branchName_mvaRawTTH_;      
-  std::string branchName_jetPtRatio_;  
-  std::string branchName_jetBtagCSV_; 
+  std::string branchName_mvaRawTTH_;
+  std::string branchName_jetNDauChargedMVASel_;
+  std::string branchName_jetPtRel_;
+  std::string branchName_jetPtRatio_;
+  std::string branchName_jetBtagCSV_;
   std::string branchName_tightCharge_;
 
   Int_t nLeptons_;
@@ -58,10 +62,14 @@ class RecoLeptonReader
   Float_t* dxy_;
   Float_t* dz_;
   Float_t* relIso_;
+  Float_t* miniIsoCharged_;
+  Float_t* miniIsoNeutral_;
   Float_t* sip3d_;
   Float_t* mvaRawTTH_;
-  Float_t* jetPtRatio_; 
-  Float_t* jetBtagCSV_; 
+  Float_t* jetNDauChargedMVASel_;
+  Float_t* jetPtRel_;
+  Float_t* jetPtRatio_;
+  Float_t* jetBtagCSV_;
   Int_t* tightCharge_;
 
   // CV: make sure that only one RecoLeptonReader instance exists for a given branchName,

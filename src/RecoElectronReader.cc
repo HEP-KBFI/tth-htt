@@ -105,9 +105,9 @@ void RecoElectronReader::setBranchAddresses(TTree* tree)
     OoEminusOoP_ = new Float_t[max_nLeptons];
     tree->SetBranchAddress(branchName_OoEminusOoP_.data(), OoEminusOoP_);
     lostHits_ = new Int_t[max_nLeptons];
-    tree->SetBranchAddress(branchName_lostHits_.data(), lostHits_); 
+    tree->SetBranchAddress(branchName_lostHits_.data(), lostHits_);
     conversionVeto_ = new Int_t[max_nLeptons];
-    tree->SetBranchAddress(branchName_conversionVeto_.data(), conversionVeto_); 
+    tree->SetBranchAddress(branchName_conversionVeto_.data(), conversionVeto_);
   }
 }
 
@@ -135,8 +135,12 @@ std::vector<RecoElectron> RecoElectronReader::read() const
         gLeptonReader->dxy_[idxLepton],
         gLeptonReader->dz_[idxLepton],
         gLeptonReader->relIso_[idxLepton],
+        gLeptonReader->miniIsoCharged_[idxLepton],
+        gLeptonReader->miniIsoNeutral_[idxLepton],
         gLeptonReader->sip3d_[idxLepton],
         gLeptonReader->mvaRawTTH_[idxLepton],
+        gLeptonReader->jetNDauChargedMVASel_[idxLepton],
+        gLeptonReader->jetPtRel_[idxLepton],
         gLeptonReader->jetPtRatio_[idxLepton],
         gLeptonReader->jetBtagCSV_[idxLepton],	
         gLeptonReader->tightCharge_[idxLepton],

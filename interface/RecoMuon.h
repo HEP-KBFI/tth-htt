@@ -16,13 +16,18 @@ public:
 	   Double_t dxy,
 	   Double_t dz,
 	   Double_t relIso,
+	   Double_t miniIsoCharged,
+	   Double_t miniIsoNeutral,
 	   Double_t sip3d,
 	   Double_t mvaRawTTH,
+	   Double_t jetNDauChargedMVASel,
+	   Double_t jetPtRel,
 	   Double_t jetPtRatio,
 	   Double_t jetBtagCSV,
 	   Int_t passesTightCharge,
 	   Int_t passesLooseIdPOG,
-	   Int_t passesMediumIdPOG);
+	   Int_t passesMediumIdPOG,
+	   Float_t segmentCompatibility);
 
   /**
    * @brief Checks whether a given lepton is an electron by its PDG id
@@ -39,8 +44,9 @@ public:
   is_muon() const { return true; }
 
 //--- observables specific to muons
-  Int_t passesLooseIdPOG_;  ///< flag indicating if muon passes (1) or fails (0) loose PFMuon id
-  Int_t passesMediumIdPOG_; ///< flag indicating if muon passes (1) or fails (0) medium PFMuon id
+  Int_t passesLooseIdPOG_;       ///< flag indicating if muon passes (1) or fails (0) loose PFMuon id
+  Int_t passesMediumIdPOG_;      ///< flag indicating if muon passes (1) or fails (0) medium PFMuon id
+  Float_t segmentCompatibility_; ///< muon segment compatibility
 };
 
 #endif // tthAnalysis_HiggsToTauTau_RecoMuon_h

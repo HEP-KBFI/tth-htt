@@ -259,14 +259,18 @@ SyncNtupleManager::read(std::vector<const RecoMuon *> & muons)
     mu_E[i] = (muon -> p4_).E();
     mu_charge[i] = muon -> pdgId_ > 0 ? 1 : -1;
     mu_miniRelIso[i] = muon -> relIso_;
-    //
+    mu_miniIsoCharged[i] = muon -> miniIsoCharged_;
+    mu_miniIsoNeutral[i] = muon -> miniIsoNeutral_;
+    mu_jetNDauChargedMVASel[i] = muon -> jetNDauChargedMVASel_;
+    mu_jetPtRel[i] = muon -> jetPtRel_;
     mu_jetPtRatio[i] = muon -> jetPtRatio_;
     mu_jetCSV[i] = muon -> jetBtagCSV_;
     mu_sip3D[i] = muon -> sip3d_;
     mu_dxy[i] = muon -> dxy_;
     mu_dz[i] = muon -> dz_;
-    //
+    mu_segmentCompatibility[i] = muon -> segmentCompatibility_;
     mu_leptonMVA[i] = muon -> mvaRawTTH_;
+    mu_mediumID[i] = muon -> passesMediumIdPOG_;
     //
   }
 }
@@ -285,7 +289,10 @@ SyncNtupleManager::read(std::vector<const RecoElectron *> & electrons)
     ele_E[i] = (electron -> p4_).E();
     ele_charge[i] = electron -> pdgId_ > 0 ? 1 : -1;
     ele_miniRelIso[i] = electron -> relIso_;
-    //
+    ele_miniIsoCharged[i] = electron -> miniIsoCharged_;
+    ele_miniIsoNeutral[i] = electron -> miniIsoNeutral_;
+    ele_jetNDauChargedMVASel[i] = electron -> jetNDauChargedMVASel_;
+    ele_jetPtRel[i] = electron -> jetPtRel_;
     ele_jetPtRatio[i] = electron -> jetPtRatio_;
     ele_jetCSV[i] = electron -> jetBtagCSV_;
     ele_sip3D[i] = electron -> sip3d_;
@@ -293,7 +300,7 @@ SyncNtupleManager::read(std::vector<const RecoElectron *> & electrons)
     ele_dz[i] = electron -> dz_;
     ele_ntMVAeleID[i] = electron -> mvaRawPOG_;
     ele_leptonMVA[i] = electron -> mvaRawTTH_;
-    //
+    ele_isChargeConsistent[i] = electron -> tightCharge_ == 2 ? 1 : 0;
     ele_passesConversionVeto[i] = electron -> passesConversionVeto_;
     ele_nMissingHits[i] = electron -> nLostHits_;
     //

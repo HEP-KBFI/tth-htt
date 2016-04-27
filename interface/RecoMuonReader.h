@@ -42,9 +42,11 @@ class RecoMuonReader
 
   std::string branchName_looseIdPOG_; 
   std::string branchName_mediumIdPOG_; 
+  std::string branchName_segmentCompatibility_;
 
   Int_t* looseIdPOG_;
-  Int_t* mediumIdPOG_; 
+  Int_t* mediumIdPOG_;
+  Float_t* segmentCompatibility_;
 
   // CV: make sure that only one RecoMuonReader instance exists for a given branchName,
   //     as ROOT cannot handle multiple TTree::SetBranchAddress calls for the same branch.
