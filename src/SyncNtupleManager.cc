@@ -120,18 +120,18 @@ SyncNtupleManager::initializeBranches()
     outputTree -> Branch("ls", &(ls), Form("ls/%s", Traits<decltype(ls)>::TYPE_NAME));
     outputTree -> Branch("run", &(run), Form("run/%s", Traits<decltype(run)>::TYPE_NAME));
 
-    outputTree -> Branch("n_presel_mu", &(n_presel_mu), Form("n_presel_%s/%s", mstr, Traits<decltype(n_presel_mu)>::TYPE_NAME));
-    outputTree -> Branch("n_fakeablesel_mu", &(n_fakeablesel_mu), Form("n_fakeablesel_%s/%s", mstr, Traits<decltype(n_fakeablesel_mu)>::TYPE_NAME));
-    outputTree -> Branch("n_cutsel_mu", &(n_cutsel_mu), Form("n_cutsel_%s/%s", mstr, Traits<decltype(n_cutsel_mu)>::TYPE_NAME));
-    outputTree -> Branch("n_mvasel_mu", &(n_mvasel_mu), Form("n_mvasel_%s/%s", mstr, Traits<decltype(n_mvasel_mu)>::TYPE_NAME));
+    outputTree -> Branch(Form("n_presel_%s", mstr), &(n_presel_mu), Form("n_presel_%s/%s", mstr, Traits<decltype(n_presel_mu)>::TYPE_NAME));
+    outputTree -> Branch(Form("n_fakeablesel_%s", mstr), &(n_fakeablesel_mu), Form("n_fakeablesel_%s/%s", mstr, Traits<decltype(n_fakeablesel_mu)>::TYPE_NAME));
+    outputTree -> Branch(Form("n_cutsel_%s", mstr), &(n_cutsel_mu), Form("n_cutsel_%s/%s", mstr, Traits<decltype(n_cutsel_mu)>::TYPE_NAME));
+    outputTree -> Branch(Form("n_mvasel_%s", mstr), &(n_mvasel_mu), Form("n_mvasel_%s/%s", mstr, Traits<decltype(n_mvasel_mu)>::TYPE_NAME));
 
-    outputTree -> Branch("n_presel_ele", &(n_presel_ele), Form("n_presel_%s/%s", estr, Traits<decltype(n_presel_ele)>::TYPE_NAME));
-    outputTree -> Branch("n_fakeablesel_ele", &(n_fakeablesel_ele), Form("n_fakeablesel_%s/%s", estr, Traits<decltype(n_fakeablesel_ele)>::TYPE_NAME));
-    outputTree -> Branch("n_cutsel_ele", &(n_cutsel_ele), Form("n_cutsel_%s/%s", estr, Traits<decltype(n_cutsel_ele)>::TYPE_NAME));
-    outputTree -> Branch("n_mvasel_ele", &(n_mvasel_ele), Form("n_mvasel_%s/%s", estr, Traits<decltype(n_mvasel_ele)>::TYPE_NAME));
+    outputTree -> Branch(Form("n_presel_%s", estr), &(n_presel_ele), Form("n_presel_%s/%s", estr, Traits<decltype(n_presel_ele)>::TYPE_NAME));
+    outputTree -> Branch(Form("n_fakeablesel_%s", estr), &(n_fakeablesel_ele), Form("n_fakeablesel_%s/%s", estr, Traits<decltype(n_fakeablesel_ele)>::TYPE_NAME));
+    outputTree -> Branch(Form("n_cutsel_%s", estr), &(n_cutsel_ele), Form("n_cutsel_%s/%s", estr, Traits<decltype(n_cutsel_ele)>::TYPE_NAME));
+    outputTree -> Branch(Form("n_mvasel_%s", estr), &(n_mvasel_ele), Form("n_mvasel_%s/%s", estr, Traits<decltype(n_mvasel_ele)>::TYPE_NAME));
 
-    outputTree -> Branch("n_presel_tau", &(n_presel_tau), Form("n_presel_%s/%s", tstr, Traits<decltype(n_presel_tau)>::TYPE_NAME));
-    outputTree -> Branch("n_presel_jet", &(n_presel_jet), Form("n_presel_%s/%s", jstr, Traits<decltype(n_presel_jet)>::TYPE_NAME));
+    outputTree -> Branch(Form("n_presel_%s", tstr), &(n_presel_tau), Form("n_presel_%s/%s", tstr, Traits<decltype(n_presel_tau)>::TYPE_NAME));
+    outputTree -> Branch(Form("n_presel_%s", jstr), &(n_presel_jet), Form("n_presel_%s/%s", jstr, Traits<decltype(n_presel_jet)>::TYPE_NAME));
 
     for(Int_t i = 0; i < nof_mus; ++i)
     {
@@ -239,7 +239,7 @@ SyncNtupleManager::initializeBranches()
     outputTree -> Branch("MVA_2lss_ttV", &(MVA_2lss_ttV), Form("MVA_2lss_ttV/%s", Traits<decltype(MVA_2lss_ttV)>::TYPE_NAME));
     outputTree -> Branch("MVA_2lss_ttbar", &(MVA_2lss_ttbar), Form("MVA_2lss_ttbar/%s", Traits<decltype(MVA_2lss_ttbar)>::TYPE_NAME));
 
-    reset();
+    reset(true);
   }
   else
     std::cerr << "SyncNtuple:WARNING:Should initialize the instance only once!\n";
@@ -258,10 +258,15 @@ SyncNtupleManager::read(std::vector<const RecoMuon *> & muons)
     mu_phi[i] = muon -> phi_;
     mu_E[i] = (muon -> p4_).E();
     mu_charge[i] = muon -> pdgId_ > 0 ? 1 : -1;
+    mu_miniRelIso[i] = muon -> relIso_;
     //
+    mu_jetPtRatio[i] = muon -> jetPtRatio_;
+    mu_jetCSV[i] = muon -> jetBtagCSV_;
     mu_sip3D[i] = muon -> sip3d_;
     mu_dxy[i] = muon -> dxy_;
     mu_dz[i] = muon -> dz_;
+    //
+    mu_leptonMVA[i] = muon -> mvaRawTTH_;
     //
   }
 }
@@ -278,10 +283,19 @@ SyncNtupleManager::read(std::vector<const RecoElectron *> & electrons)
     ele_eta[i] = electron -> eta_;
     ele_phi[i] = electron -> phi_;
     ele_E[i] = (electron -> p4_).E();
+    ele_charge[i] = electron -> pdgId_ > 0 ? 1 : -1;
+    ele_miniRelIso[i] = electron -> relIso_;
     //
+    ele_jetPtRatio[i] = electron -> jetPtRatio_;
+    ele_jetCSV[i] = electron -> jetBtagCSV_;
     ele_sip3D[i] = electron -> sip3d_;
     ele_dxy[i] = electron -> dxy_;
     ele_dz[i] = electron -> dz_;
+    ele_ntMVAeleID[i] = electron -> mvaRawPOG_;
+    ele_leptonMVA[i] = electron -> mvaRawTTH_;
+    //
+    ele_passesConversionVeto[i] = electron -> passesConversionVeto_;
+    ele_nMissingHits[i] = electron -> nLostHits_;
     //
   }
 }
@@ -298,6 +312,7 @@ SyncNtupleManager::read(std::vector<const RecoHadTau *> & hadtaus)
     tau_eta[i] = hadtau -> eta_;
     tau_phi[i] = hadtau -> phi_;
     tau_E[i] = (hadtau -> p4_).E();
+    tau_charge[i] = hadtau -> charge_;
     //
     tau_dz[i] = hadtau -> dz_;
     //
@@ -321,13 +336,13 @@ SyncNtupleManager::read(std::vector<const RecoJet *> & jets)
 }
 
 void
-SyncNtupleManager::reset()
+SyncNtupleManager::reset(bool is_initializing)
 {
   nEvent = 0;
   ls = 0;
   run = 0;
 
-  const Int_t nof_mu_iterations = std::min(n_presel_mu, nof_mus);
+  const Int_t nof_mu_iterations = is_initializing ? nof_mus : std::min(n_presel_mu, nof_mus);
   for(Int_t i = 0; i < nof_mu_iterations; ++i)
   {
     mu_pt[i] = placeholder_value;
@@ -358,7 +373,7 @@ SyncNtupleManager::reset()
   n_cutsel_mu = placeholder_value;
   n_mvasel_mu = placeholder_value;
 
-  const Int_t nof_ele_iterations = std::min(n_presel_ele, nof_eles);
+  const Int_t nof_ele_iterations = is_initializing ? nof_eles : std::min(n_presel_ele, nof_eles);
   for(Int_t i = 0; i < nof_ele_iterations; ++i)
   {
     ele_pt[i] = placeholder_value;
@@ -390,7 +405,7 @@ SyncNtupleManager::reset()
   n_cutsel_ele = placeholder_value;
   n_mvasel_ele = placeholder_value;
 
-  const Int_t nof_tau_iterations = std::min(n_presel_tau, nof_taus);
+  const Int_t nof_tau_iterations = is_initializing ? nof_taus : std::min(n_presel_tau, nof_taus);
   for(Int_t i = 0; i < nof_tau_iterations; ++i)
   {
     tau_pt[i] = placeholder_value;
@@ -422,7 +437,7 @@ SyncNtupleManager::reset()
   }
   n_presel_tau = placeholder_value;
 
-  const Int_t nof_jet_iterations = std::min(n_presel_jet, nof_jets);
+  const Int_t nof_jet_iterations = is_initializing ? nof_jets : std::min(n_presel_jet, nof_jets);
   for(Int_t i = 0; i < nof_jet_iterations; ++i)
   {
     jet_pt[i] = placeholder_value;
@@ -452,7 +467,7 @@ void
 SyncNtupleManager::fill()
 {
   outputTree -> Fill();
-  reset();
+  reset(false);
 }
 
 void

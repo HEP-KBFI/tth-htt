@@ -52,7 +52,7 @@ public:
   void fill();
   void write();
 private:
-  void reset();
+  void reset(bool is_initializing);
 
   TFile * outputFile;
   TTree * outputTree;
@@ -68,46 +68,46 @@ private:
   UInt_t run;
 
   Int_t n_presel_mu;
-  Int_t n_fakeablesel_mu;
-  Int_t n_cutsel_mu;
-  Int_t n_mvasel_mu;
+  Int_t n_fakeablesel_mu; // will implement in a moment
+  Int_t n_cutsel_mu; // will implement in a moment
+  Int_t n_mvasel_mu; // will implement in a moment
   Float_t * mu_pt;
   Float_t * mu_eta;
   Float_t * mu_phi;
   Float_t * mu_E;
   Int_t * mu_charge;
   Float_t * mu_miniRelIso;
-  Float_t * mu_miniIsoCharged;
-  Float_t * mu_miniIsoNeutral;
-  Int_t * mu_jetNDauChargedMVASel;
-  Float_t * mu_jetPtRel;
+  Float_t * mu_miniIsoCharged; // missing
+  Float_t * mu_miniIsoNeutral; // missing
+  Int_t * mu_jetNDauChargedMVASel; // missing
+  Float_t * mu_jetPtRel; // missing
   Float_t * mu_jetPtRatio;
   Float_t * mu_jetCSV;
   Float_t * mu_sip3D;
   Float_t * mu_dxy;
   Float_t * mu_dz;
-  Float_t * mu_segmentCompatibility;
+  Float_t * mu_segmentCompatibility; // missing
   Float_t * mu_leptonMVA;
-  Float_t * mu_mediumID; // type ?
-  Float_t * mu_dpt_div_pt;
-  Int_t * mu_isfakeablesel;
-  Int_t * mu_iscutsel;
-  Int_t * mu_ismvasel;
+  Float_t * mu_mediumID; // type ? missing
+  Float_t * mu_dpt_div_pt; // ? missing
+  Int_t * mu_isfakeablesel; // missing; difficult to implement
+  Int_t * mu_iscutsel; // missing; difficult to implement
+  Int_t * mu_ismvasel; // missing; difficult to implement
 
   Int_t n_presel_ele;
-  Int_t n_fakeablesel_ele;
-  Int_t n_cutsel_ele;
-  Int_t n_mvasel_ele;
+  Int_t n_fakeablesel_ele; // will implement in a moment
+  Int_t n_cutsel_ele; // will implement in a moment
+  Int_t n_mvasel_ele; // will implement in a moment
   Float_t * ele_pt;
   Float_t * ele_eta;
   Float_t * ele_phi;
   Float_t * ele_E;
   Int_t * ele_charge;
   Float_t * ele_miniRelIso;
-  Float_t * ele_miniIsoCharged;
-  Float_t * ele_miniIsoNeutral;
-  Int_t * ele_jetNDauChargedMVASel;
-  Float_t * ele_jetPtRel;
+  Float_t * ele_miniIsoCharged; // missing
+  Float_t * ele_miniIsoNeutral; // missing
+  Int_t * ele_jetNDauChargedMVASel; // missing
+  Float_t * ele_jetPtRel; // missing
   Float_t * ele_jetPtRatio;
   Float_t * ele_jetCSV;
   Float_t * ele_sip3D;
@@ -115,12 +115,12 @@ private:
   Float_t * ele_dz;
   Float_t * ele_ntMVAeleID;
   Float_t * ele_leptonMVA;
-  Float_t * ele_isChargeConsistent; // type ?
+  Float_t * ele_isChargeConsistent; // type ? missing
   Float_t * ele_passesConversionVeto; // type ?
-  Int_t * ele_nMissingHits;
-  Int_t * ele_isfakeablesel;
-  Int_t * ele_iscutsel;
-  Int_t * ele_ismvasel;
+  Int_t * ele_nMissingHits; // double-check the branch
+  Int_t * ele_isfakeablesel; // missing; difficult to implement
+  Int_t * ele_iscutsel; // missing; difficult to implement
+  Int_t * ele_ismvasel; // missing; difficult to implement
 
   Int_t n_presel_tau;
   Float_t * tau_pt;
@@ -128,7 +128,7 @@ private:
   Float_t * tau_phi;
   Float_t * tau_E;
   Int_t * tau_charge;
-  Float_t * tau_dxy;
+  Float_t * tau_dxy; // missing
   Float_t * tau_dz;
   Int_t * tau_decayModeFindingOldDMs;
   Int_t * tau_decayModeFindingNewDMs;
@@ -162,14 +162,14 @@ private:
   Float_t MHT;
   Float_t metLD;
 
-  Float_t lep0_conept;
-  Float_t lep1_conePt;
-  Float_t mindr_lep0_jet;
-  Float_t mindr_lep1_jet;
-  Float_t MT_met_lep0;
-  Float_t avg_dr_jet;
-  Float_t MVA_2lss_ttV;
-  Float_t MVA_2lss_ttbar;
+  Float_t lep0_conept; // missing
+  Float_t lep1_conePt; // missing
+  Float_t mindr_lep0_jet; // missing
+  Float_t mindr_lep1_jet; // missing
+  Float_t MT_met_lep0; // missing
+  Float_t avg_dr_jet; // missing
+  Float_t MVA_2lss_ttV; // missing
+  Float_t MVA_2lss_ttbar; // missing
 };
 
 #endif // SYNCNTUPLEMANAGER_H
