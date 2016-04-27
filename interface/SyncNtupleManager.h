@@ -13,6 +13,30 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTau.h"
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h"
 
+template <typename T>
+struct Traits
+{
+  static const char * TYPE_NAME;
+};
+
+template <typename T> const char * Traits<T>::TYPE_NAME = "unknown";
+
+#define DECLARE_TYPE_TRAIT(type,name) template <> const char * Traits<type>::TYPE_NAME = name;
+
+DECLARE_TYPE_TRAIT(Char_t, "B")
+DECLARE_TYPE_TRAIT(UChar_t, "b")
+DECLARE_TYPE_TRAIT(Short_t, "S")
+DECLARE_TYPE_TRAIT(UShort_t, "s")
+DECLARE_TYPE_TRAIT(Int_t, "I")
+DECLARE_TYPE_TRAIT(Int_t *, "I")
+DECLARE_TYPE_TRAIT(UInt_t, "i")
+DECLARE_TYPE_TRAIT(Float_t, "F")
+DECLARE_TYPE_TRAIT(Float_t *, "F")
+DECLARE_TYPE_TRAIT(Double_t, "D")
+DECLARE_TYPE_TRAIT(Long64_t, "L")
+DECLARE_TYPE_TRAIT(ULong64_t, "l")
+DECLARE_TYPE_TRAIT(Bool_t, "o")
+
 class SyncNtupleManager
 {
 public:
@@ -55,16 +79,16 @@ private:
   Float_t * mu_miniRelIso;
   Float_t * mu_miniIsoCharged;
   Float_t * mu_miniIsoNeutral;
-  Float_t * mu_jetNDauChargedMVASel;
+  Int_t * mu_jetNDauChargedMVASel;
   Float_t * mu_jetPtRel;
   Float_t * mu_jetPtRatio;
   Float_t * mu_jetCSV;
   Float_t * mu_sip3D;
   Float_t * mu_dxy;
   Float_t * mu_dz;
-  Int_t * mu_segmentCompatibility;
+  Float_t * mu_segmentCompatibility;
   Float_t * mu_leptonMVA;
-  Float_t * mu_mediumID;
+  Float_t * mu_mediumID; // type ?
   Float_t * mu_dpt_div_pt;
   Int_t * mu_isfakeablesel;
   Int_t * mu_iscutsel;
@@ -82,7 +106,7 @@ private:
   Float_t * ele_miniRelIso;
   Float_t * ele_miniIsoCharged;
   Float_t * ele_miniIsoNeutral;
-  Float_t * ele_jetNDauChargedMVASel;
+  Int_t * ele_jetNDauChargedMVASel;
   Float_t * ele_jetPtRel;
   Float_t * ele_jetPtRatio;
   Float_t * ele_jetCSV;
@@ -91,8 +115,8 @@ private:
   Float_t * ele_dz;
   Float_t * ele_ntMVAeleID;
   Float_t * ele_leptonMVA;
-  Float_t * ele_isChargeConsistent;
-  Float_t * ele_passesConversionVeto;
+  Float_t * ele_isChargeConsistent; // type ?
+  Float_t * ele_passesConversionVeto; // type ?
   Int_t * ele_nMissingHits;
   Int_t * ele_isfakeablesel;
   Int_t * ele_iscutsel;
@@ -108,7 +132,7 @@ private:
   Float_t * tau_dz;
   Int_t * tau_decayModeFindingOldDMs;
   Int_t * tau_decayModeFindingNewDMs;
-  Int_t * tau_byCombinedIsolationDeltaBetaCorr3Hits;
+  Int_t * tau_byCombinedIsolationDeltaBetaCorr3Hits; // Float_t ?
   Int_t * tau_byLooseCombinedIsolationDeltaBetaCorr3Hits;
   Int_t * tau_byMediumCombinedIsolationDeltaBetaCorr3Hits;
   Int_t * tau_byTightCombinedIsolationDeltaBetaCorr3Hits;
@@ -130,8 +154,8 @@ private:
   Float_t * jet_pt;
   Float_t * jet_eta;
   Float_t * jet_phi;
-  Float_t * jet_mass;
-  Float_t * jet_btagCSV;
+  Float_t * jet_E;
+  Float_t * jet_CSV;
 
   Float_t PFMET;
   Float_t PFMETphi;

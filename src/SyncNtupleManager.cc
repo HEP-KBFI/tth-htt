@@ -1,6 +1,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/SyncNtupleManager.h"
 
 #include <algorithm> // std::min()
+#include <type_traits> // std::remove_pointer<>
 
 #include <TString.h> // Form()
 
@@ -28,85 +29,85 @@ SyncNtupleManager::~SyncNtupleManager()
 void
 SyncNtupleManager::initializeBranches()
 {
-  mu_pt = new Float_t[nof_mus];
-  mu_eta = new Float_t[nof_mus];
-  mu_phi = new Float_t[nof_mus];
-  mu_E = new Float_t[nof_mus];
-  mu_charge = new Int_t[nof_mus];
-  mu_miniRelIso = new Float_t[nof_mus];
-  mu_miniIsoCharged = new Float_t[nof_mus];
-  mu_miniIsoNeutral = new Float_t[nof_mus];
-  mu_jetNDauChargedMVASel = new Float_t[nof_mus];
-  mu_jetPtRel = new Float_t[nof_mus];
-  mu_jetPtRatio = new Float_t[nof_mus];
-  mu_jetCSV = new Float_t[nof_mus];
-  mu_sip3D = new Float_t[nof_mus];
-  mu_dxy = new Float_t[nof_mus];
-  mu_dz = new Float_t[nof_mus];
-  mu_segmentCompatibility = new Int_t[nof_mus];
-  mu_leptonMVA = new Float_t[nof_mus];
-  mu_mediumID = new Float_t[nof_mus];
-  mu_dpt_div_pt = new Float_t[nof_mus];
-  mu_isfakeablesel = new Int_t[nof_mus];
-  mu_iscutsel = new Int_t[nof_mus];
-  mu_ismvasel = new Int_t[nof_mus];
+  mu_pt = new std::remove_pointer<decltype(mu_pt)>::type[nof_eles];
+  mu_eta = new std::remove_pointer<decltype(mu_eta)>::type[nof_eles];
+  mu_phi = new std::remove_pointer<decltype(mu_phi)>::type[nof_eles];
+  mu_E = new std::remove_pointer<decltype(mu_E)>::type[nof_eles];
+  mu_charge = new std::remove_pointer<decltype(mu_charge)>::type[nof_eles];
+  mu_miniRelIso = new std::remove_pointer<decltype(mu_miniRelIso)>::type[nof_eles];
+  mu_miniIsoCharged = new std::remove_pointer<decltype(mu_miniIsoCharged)>::type[nof_eles];
+  mu_miniIsoNeutral = new std::remove_pointer<decltype(mu_miniIsoNeutral)>::type[nof_eles];
+  mu_jetNDauChargedMVASel = new std::remove_pointer<decltype(mu_jetNDauChargedMVASel)>::type[nof_eles];
+  mu_jetPtRel = new std::remove_pointer<decltype(mu_jetPtRel)>::type[nof_eles];
+  mu_jetPtRatio = new std::remove_pointer<decltype(mu_jetPtRatio)>::type[nof_eles];
+  mu_jetCSV = new std::remove_pointer<decltype(mu_jetCSV)>::type[nof_eles];
+  mu_sip3D = new std::remove_pointer<decltype(mu_sip3D)>::type[nof_eles];
+  mu_dxy = new std::remove_pointer<decltype(mu_dxy)>::type[nof_eles];
+  mu_dz = new std::remove_pointer<decltype(mu_dz)>::type[nof_eles];
+  mu_segmentCompatibility = new std::remove_pointer<decltype(mu_segmentCompatibility)>::type[nof_eles];
+  mu_leptonMVA = new std::remove_pointer<decltype(mu_leptonMVA)>::type[nof_eles];
+  mu_mediumID = new std::remove_pointer<decltype(mu_mediumID)>::type[nof_eles];
+  mu_dpt_div_pt = new std::remove_pointer<decltype(mu_dpt_div_pt)>::type[nof_eles];
+  mu_isfakeablesel = new std::remove_pointer<decltype(mu_isfakeablesel)>::type[nof_eles];
+  mu_iscutsel = new std::remove_pointer<decltype(mu_iscutsel)>::type[nof_eles];
+  mu_ismvasel = new std::remove_pointer<decltype(mu_ismvasel)>::type[nof_eles];
 
-  ele_pt = new Float_t[nof_eles];
-  ele_eta = new Float_t[nof_eles];
-  ele_phi = new Float_t[nof_eles];
-  ele_E = new Float_t[nof_eles];
-  ele_charge = new Int_t[nof_eles];
-  ele_miniRelIso = new Float_t[nof_eles];
-  ele_miniIsoCharged = new Float_t[nof_eles];
-  ele_miniIsoNeutral = new Float_t[nof_eles];
-  ele_jetNDauChargedMVASel = new Float_t[nof_eles];
-  ele_jetPtRel = new Float_t[nof_eles];
-  ele_jetPtRatio = new Float_t[nof_eles];
-  ele_jetCSV = new Float_t[nof_eles];
-  ele_sip3D = new Float_t[nof_eles];
-  ele_dxy = new Float_t[nof_eles];
-  ele_dz = new Float_t[nof_eles];
-  ele_ntMVAeleID = new Float_t[nof_eles];
-  ele_leptonMVA = new Float_t[nof_eles];
-  ele_isChargeConsistent = new Float_t[nof_eles];
-  ele_passesConversionVeto = new Float_t[nof_eles];
-  ele_nMissingHits = new Int_t[nof_eles];
-  ele_isfakeablesel = new Int_t[nof_eles];
-  ele_iscutsel = new Int_t[nof_eles];
-  ele_ismvasel = new Int_t[nof_eles];
+  ele_pt = new std::remove_pointer<decltype(ele_pt)>::type[nof_eles];
+  ele_eta = new std::remove_pointer<decltype(ele_eta)>::type[nof_eles];
+  ele_phi = new std::remove_pointer<decltype(ele_phi)>::type[nof_eles];
+  ele_E = new std::remove_pointer<decltype(ele_E)>::type[nof_eles];
+  ele_charge = new std::remove_pointer<decltype(ele_charge)>::type[nof_eles];
+  ele_miniRelIso = new std::remove_pointer<decltype(ele_miniRelIso)>::type[nof_eles];
+  ele_miniIsoCharged = new std::remove_pointer<decltype(ele_miniIsoCharged)>::type[nof_eles];
+  ele_miniIsoNeutral = new std::remove_pointer<decltype(ele_miniIsoNeutral)>::type[nof_eles];
+  ele_jetNDauChargedMVASel = new std::remove_pointer<decltype(ele_jetNDauChargedMVASel)>::type[nof_eles];
+  ele_jetPtRel = new std::remove_pointer<decltype(ele_jetPtRel)>::type[nof_eles];
+  ele_jetPtRatio = new std::remove_pointer<decltype(ele_jetPtRatio)>::type[nof_eles];
+  ele_jetCSV = new std::remove_pointer<decltype(ele_jetCSV)>::type[nof_eles];
+  ele_sip3D = new std::remove_pointer<decltype(ele_sip3D)>::type[nof_eles];
+  ele_dxy = new std::remove_pointer<decltype(ele_dxy)>::type[nof_eles];
+  ele_dz = new std::remove_pointer<decltype(ele_dz)>::type[nof_eles];
+  ele_ntMVAeleID = new std::remove_pointer<decltype(ele_ntMVAeleID)>::type[nof_eles];
+  ele_leptonMVA = new std::remove_pointer<decltype(ele_leptonMVA)>::type[nof_eles];
+  ele_isChargeConsistent = new std::remove_pointer<decltype(ele_isChargeConsistent)>::type[nof_eles];
+  ele_passesConversionVeto = new std::remove_pointer<decltype(ele_passesConversionVeto)>::type[nof_eles];
+  ele_nMissingHits = new std::remove_pointer<decltype(ele_nMissingHits)>::type[nof_eles];
+  ele_isfakeablesel = new std::remove_pointer<decltype(ele_isfakeablesel)>::type[nof_eles];
+  ele_iscutsel = new std::remove_pointer<decltype(ele_iscutsel)>::type[nof_eles];
+  ele_ismvasel = new std::remove_pointer<decltype(ele_ismvasel)>::type[nof_eles];
 
-  tau_pt = new Float_t[nof_eles];
-  tau_eta = new Float_t[nof_eles];
-  tau_phi = new Float_t[nof_eles];
-  tau_E = new Float_t[nof_eles];
-  tau_charge = new Int_t[nof_eles];
-  tau_dxy = new Float_t[nof_eles];
-  tau_dz = new Float_t[nof_eles];
-  tau_decayModeFindingOldDMs = new Int_t[nof_eles];
-  tau_decayModeFindingNewDMs = new Int_t[nof_eles];
-  tau_byCombinedIsolationDeltaBetaCorr3Hits = new Int_t[nof_eles];
-  tau_byLooseCombinedIsolationDeltaBetaCorr3Hits = new Int_t[nof_eles];
-  tau_byMediumCombinedIsolationDeltaBetaCorr3Hits = new Int_t[nof_eles];
-  tau_byTightCombinedIsolationDeltaBetaCorr3Hits = new Int_t[nof_eles];
-  tau_byLooseCombinedIsolationDeltaBetaCorr3HitsdR03 = new Int_t[nof_eles];
-  tau_byMediumCombinedIsolationDeltaBetaCorr3HitsdR03 = new Int_t[nof_eles];
-  tau_byTightCombinedIsolationDeltaBetaCorr3HitsdR03 = new Int_t[nof_eles];
-  tau_byLooseIsolationMVArun2v1DBdR03oldDMwLT = new Int_t[nof_eles];
-  tau_byMediumIsolationMVArun2v1DBdR03oldDMwLT = new Int_t[nof_eles];
-  tau_byTightIsolationMVArun2v1DBdR03oldDMwLT = new Int_t[nof_eles];
-  tau_byVTightIsolationMVArun2v1DBdR03oldDMwLT = new Int_t[nof_eles];
-  tau_againstMuonLoose3 = new Int_t[nof_eles];
-  tau_againstMuonTight3 = new Int_t[nof_eles];
-  tau_againstElectronVLooseMVA6 = new Int_t[nof_eles];
-  tau_againstElectronLooseMVA6 = new Int_t[nof_eles];
-  tau_againstElectronMediumMVA6 = new Int_t[nof_eles];
-  tau_againstElectronTightMVA6 = new Int_t[nof_eles];
+  tau_pt = new std::remove_pointer<decltype(tau_pt)>::type[nof_eles];
+  tau_eta = new std::remove_pointer<decltype(tau_eta)>::type[nof_eles];
+  tau_phi = new std::remove_pointer<decltype(tau_phi)>::type[nof_eles];
+  tau_E = new std::remove_pointer<decltype(tau_E)>::type[nof_eles];
+  tau_charge = new std::remove_pointer<decltype(tau_charge)>::type[nof_eles];
+  tau_dxy = new std::remove_pointer<decltype(tau_dxy)>::type[nof_eles];
+  tau_dz = new std::remove_pointer<decltype(tau_dz)>::type[nof_eles];
+  tau_decayModeFindingOldDMs = new std::remove_pointer<decltype(tau_decayModeFindingOldDMs)>::type[nof_eles];
+  tau_decayModeFindingNewDMs = new std::remove_pointer<decltype(tau_decayModeFindingNewDMs)>::type[nof_eles];
+  tau_byCombinedIsolationDeltaBetaCorr3Hits = new std::remove_pointer<decltype(tau_byCombinedIsolationDeltaBetaCorr3Hits)>::type[nof_eles];
+  tau_byLooseCombinedIsolationDeltaBetaCorr3Hits = new std::remove_pointer<decltype(tau_byLooseCombinedIsolationDeltaBetaCorr3Hits)>::type[nof_eles];
+  tau_byMediumCombinedIsolationDeltaBetaCorr3Hits = new std::remove_pointer<decltype(tau_byMediumCombinedIsolationDeltaBetaCorr3Hits)>::type[nof_eles];
+  tau_byTightCombinedIsolationDeltaBetaCorr3Hits = new std::remove_pointer<decltype(tau_byTightCombinedIsolationDeltaBetaCorr3Hits)>::type[nof_eles];
+  tau_byLooseCombinedIsolationDeltaBetaCorr3HitsdR03 = new std::remove_pointer<decltype(tau_byLooseCombinedIsolationDeltaBetaCorr3HitsdR03)>::type[nof_eles];
+  tau_byMediumCombinedIsolationDeltaBetaCorr3HitsdR03 = new std::remove_pointer<decltype(tau_byMediumCombinedIsolationDeltaBetaCorr3HitsdR03)>::type[nof_eles];
+  tau_byTightCombinedIsolationDeltaBetaCorr3HitsdR03 = new std::remove_pointer<decltype(tau_byTightCombinedIsolationDeltaBetaCorr3HitsdR03)>::type[nof_eles];
+  tau_byLooseIsolationMVArun2v1DBdR03oldDMwLT = new std::remove_pointer<decltype(tau_byLooseIsolationMVArun2v1DBdR03oldDMwLT)>::type[nof_eles];
+  tau_byMediumIsolationMVArun2v1DBdR03oldDMwLT = new std::remove_pointer<decltype(tau_byMediumIsolationMVArun2v1DBdR03oldDMwLT)>::type[nof_eles];
+  tau_byTightIsolationMVArun2v1DBdR03oldDMwLT = new std::remove_pointer<decltype(tau_byTightIsolationMVArun2v1DBdR03oldDMwLT)>::type[nof_eles];
+  tau_byVTightIsolationMVArun2v1DBdR03oldDMwLT = new std::remove_pointer<decltype(tau_byVTightIsolationMVArun2v1DBdR03oldDMwLT)>::type[nof_eles];
+  tau_againstMuonLoose3 = new std::remove_pointer<decltype(tau_againstMuonLoose3)>::type[nof_eles];
+  tau_againstMuonTight3 = new std::remove_pointer<decltype(tau_againstMuonTight3)>::type[nof_eles];
+  tau_againstElectronVLooseMVA6 = new std::remove_pointer<decltype(tau_againstElectronVLooseMVA6)>::type[nof_eles];
+  tau_againstElectronLooseMVA6 = new std::remove_pointer<decltype(tau_againstElectronLooseMVA6)>::type[nof_eles];
+  tau_againstElectronMediumMVA6 = new std::remove_pointer<decltype(tau_againstElectronMediumMVA6)>::type[nof_eles];
+  tau_againstElectronTightMVA6 = new std::remove_pointer<decltype(tau_againstElectronTightMVA6)>::type[nof_eles];
 
-  jet_pt = new Float_t[nof_jets];
-  jet_eta = new Float_t[nof_jets];
-  jet_phi = new Float_t[nof_jets];
-  jet_mass = new Float_t[nof_jets];
-  jet_btagCSV = new Float_t[nof_jets];
+  jet_pt = new std::remove_pointer<decltype(jet_pt)>::type[nof_eles];
+  jet_eta = new std::remove_pointer<decltype(jet_eta)>::type[nof_eles];
+  jet_phi = new std::remove_pointer<decltype(jet_phi)>::type[nof_eles];
+  jet_E = new std::remove_pointer<decltype(jet_E)>::type[nof_eles];
+  jet_CSV = new std::remove_pointer<decltype(jet_CSV)>::type[nof_eles];
 
   if(outputTree)
   {
@@ -115,128 +116,128 @@ SyncNtupleManager::initializeBranches()
     const char * tstr = "tau";
     const char * jstr = "jet";
 
-    outputTree -> Branch("nEvent", &(nEvent), "nEvent/l");
-    outputTree -> Branch("ls", &(ls), "ls/i");
-    outputTree -> Branch("run", &(run), "run/i");
+    outputTree -> Branch("nEvent", &(nEvent), Form("nEvent/%s", Traits<decltype(nEvent)>::TYPE_NAME));
+    outputTree -> Branch("ls", &(ls), Form("ls/%s", Traits<decltype(ls)>::TYPE_NAME));
+    outputTree -> Branch("run", &(run), Form("run/%s", Traits<decltype(run)>::TYPE_NAME));
 
-    outputTree -> Branch(Form("n_presel_%s", mstr), &(n_presel_mu), Form("n_presel_%s/I", mstr));
-    outputTree -> Branch(Form("n_fakeablesel_%s", mstr), &(n_fakeablesel_mu), Form("n_fakeablesel_%s/I", mstr));
-    outputTree -> Branch(Form("n_cutsel_%s", mstr), &(n_cutsel_mu), Form("n_cutsel_%s/I", mstr));
-    outputTree -> Branch(Form("n_mvasel_%s", mstr), &(n_mvasel_mu), Form("n_mvasel_%s/I", mstr));
+    outputTree -> Branch("n_presel_mu", &(n_presel_mu), Form("n_presel_%s/%s", mstr, Traits<decltype(n_presel_mu)>::TYPE_NAME));
+    outputTree -> Branch("n_fakeablesel_mu", &(n_fakeablesel_mu), Form("n_fakeablesel_%s/%s", mstr, Traits<decltype(n_fakeablesel_mu)>::TYPE_NAME));
+    outputTree -> Branch("n_cutsel_mu", &(n_cutsel_mu), Form("n_cutsel_%s/%s", mstr, Traits<decltype(n_cutsel_mu)>::TYPE_NAME));
+    outputTree -> Branch("n_mvasel_mu", &(n_mvasel_mu), Form("n_mvasel_%s/%s", mstr, Traits<decltype(n_mvasel_mu)>::TYPE_NAME));
 
-    outputTree -> Branch(Form("n_presel_%s", estr), &(n_presel_ele), Form("n_presel_%s/I", estr));
-    outputTree -> Branch(Form("n_fakeablesel_%s", estr), &(n_fakeablesel_ele), Form("n_fakeablesel_%s/I", estr));
-    outputTree -> Branch(Form("n_cutsel_%s", estr), &(n_cutsel_ele), Form("n_cutsel_%s/I", estr));
-    outputTree -> Branch(Form("n_mvasel_%s", estr), &(n_mvasel_ele), Form("n_mvasel_%s/I", estr));
+    outputTree -> Branch("n_presel_ele", &(n_presel_ele), Form("n_presel_%s/%s", estr, Traits<decltype(n_presel_ele)>::TYPE_NAME));
+    outputTree -> Branch("n_fakeablesel_ele", &(n_fakeablesel_ele), Form("n_fakeablesel_%s/%s", estr, Traits<decltype(n_fakeablesel_ele)>::TYPE_NAME));
+    outputTree -> Branch("n_cutsel_ele", &(n_cutsel_ele), Form("n_cutsel_%s/%s", estr, Traits<decltype(n_cutsel_ele)>::TYPE_NAME));
+    outputTree -> Branch("n_mvasel_ele", &(n_mvasel_ele), Form("n_mvasel_%s/%s", estr, Traits<decltype(n_mvasel_ele)>::TYPE_NAME));
 
-    outputTree -> Branch(Form("n_presel_%s", tstr), &(n_presel_tau), Form("n_presel_%s/I", tstr));
-    outputTree -> Branch(Form("n_presel_%s", jstr), &(n_presel_jet), Form("n_presel_%s/I", jstr));
+    outputTree -> Branch("n_presel_tau", &(n_presel_tau), Form("n_presel_%s/%s", tstr, Traits<decltype(n_presel_tau)>::TYPE_NAME));
+    outputTree -> Branch("n_presel_jet", &(n_presel_jet), Form("n_presel_%s/%s", jstr, Traits<decltype(n_presel_jet)>::TYPE_NAME));
 
     for(Int_t i = 0; i < nof_mus; ++i)
     {
-      outputTree -> Branch(Form("%s%d_%s", mstr, i, "pt"), &(mu_pt[i]), Form("%s%d_%s/F", mstr, i, "pt"));
-      outputTree -> Branch(Form("%s%d_%s", mstr, i, "eta"), &(mu_eta[i]), Form("%s%d_%s/F", mstr, i, "eta"));
-      outputTree -> Branch(Form("%s%d_%s", mstr, i, "phi"), &(mu_phi[i]), Form("%s%d_%s/F", mstr, i, "phi"));
-      outputTree -> Branch(Form("%s%d_%s", mstr, i, "E"), &(mu_E[i]), Form("%s%d_%s/F", mstr, i, "E"));
-      outputTree -> Branch(Form("%s%d_%s", mstr, i, "charge"), &(mu_charge[i]), Form("%s%d_%s/I", mstr, i, "charge"));
-      outputTree -> Branch(Form("%s%d_%s", mstr, i, "miniRelIso"), &(mu_miniRelIso[i]), Form("%s%d_%s/F", mstr, i, "miniRelIso"));
-      outputTree -> Branch(Form("%s%d_%s", mstr, i, "miniIsoCharged"), &(mu_miniIsoCharged[i]), Form("%s%d_%s/F", mstr, i, "miniIsoCharged"));
-      outputTree -> Branch(Form("%s%d_%s", mstr, i, "miniIsoNeutral"), &(mu_miniIsoNeutral[i]), Form("%s%d_%s/F", mstr, i, "miniIsoNeutral"));
-      outputTree -> Branch(Form("%s%d_%s", mstr, i, "jetNDauChargedMVASel"), &(mu_jetNDauChargedMVASel[i]), Form("%s%d_%s/F", mstr, i, "jetNDauChargedMVASel"));
-      outputTree -> Branch(Form("%s%d_%s", mstr, i, "jetPtRel"), &(mu_jetPtRel[i]), Form("%s%d_%s/F", mstr, i, "jetPtRel"));
-      outputTree -> Branch(Form("%s%d_%s", mstr, i, "jetPtRatio"), &(mu_jetPtRatio[i]), Form("%s%d_%s/F", mstr, i, "jetPtRatio"));
-      outputTree -> Branch(Form("%s%d_%s", mstr, i, "jetCSV"), &(mu_jetCSV[i]), Form("%s%d_%s/F", mstr, i, "jetCSV"));
-      outputTree -> Branch(Form("%s%d_%s", mstr, i, "sip3D"), &(mu_sip3D[i]), Form("%s%d_%s/F", mstr, i, "sip3D"));
-      outputTree -> Branch(Form("%s%d_%s", mstr, i, "dxy"), &(mu_dxy[i]), Form("%s%d_%s/F", mstr, i, "dxy"));
-      outputTree -> Branch(Form("%s%d_%s", mstr, i, "dz"), &(mu_dz[i]), Form("%s%d_%s/F", mstr, i, "dz"));
-      outputTree -> Branch(Form("%s%d_%s", mstr, i, "segmentCompatibility"), &(mu_segmentCompatibility[i]), Form("%s%d_%s/I", mstr, i, "segmentCompatibility"));
-      outputTree -> Branch(Form("%s%d_%s", mstr, i, "leptonMVA"), &(mu_leptonMVA[i]), Form("%s%d_%s/F", mstr, i, "leptonMVA"));
-      outputTree -> Branch(Form("%s%d_%s", mstr, i, "mediumID"), &(mu_mediumID[i]), Form("%s%d_%s/F", mstr, i, "mediumID"));
-      outputTree -> Branch(Form("%s%d_%s", mstr, i, "dpt_div_pt"), &(mu_dpt_div_pt[i]), Form("%s%d_%s/F", mstr, i, "dpt_div_pt"));
-      outputTree -> Branch(Form("%s%d_%s", mstr, i, "isfakeablesel"), &(mu_isfakeablesel[i]), Form("%s%d_%s/I", mstr, i, "isfakeablesel"));
-      outputTree -> Branch(Form("%s%d_%s", mstr, i, "iscutsel"), &(mu_iscutsel[i]), Form("%s%d_%s/I", mstr, i, "iscutsel"));
-      outputTree -> Branch(Form("%s%d_%s", mstr, i, "ismvasel"), &(mu_ismvasel[i]), Form("%s%d_%s/I", mstr, i, "ismvasel"));
+      outputTree -> Branch(Form("%s%d_%s", mstr, i, "pt"), &(mu_pt[i]), Form("%s%d_%s/%s", mstr, i, "pt", Traits<decltype(mu_pt)>::TYPE_NAME));
+      outputTree -> Branch(Form("%s%d_%s", mstr, i, "eta"), &(mu_eta[i]), Form("%s%d_%s/%s", mstr, i, "eta", Traits<decltype(mu_eta)>::TYPE_NAME));
+      outputTree -> Branch(Form("%s%d_%s", mstr, i, "phi"), &(mu_phi[i]), Form("%s%d_%s/%s", mstr, i, "phi", Traits<decltype(mu_phi)>::TYPE_NAME));
+      outputTree -> Branch(Form("%s%d_%s", mstr, i, "E"), &(mu_E[i]), Form("%s%d_%s/%s", mstr, i, "E", Traits<decltype(mu_E)>::TYPE_NAME));
+      outputTree -> Branch(Form("%s%d_%s", mstr, i, "charge"), &(mu_charge[i]), Form("%s%d_%s/%s", mstr, i, "charge", Traits<decltype(mu_charge)>::TYPE_NAME));
+      outputTree -> Branch(Form("%s%d_%s", mstr, i, "miniRelIso"), &(mu_miniRelIso[i]), Form("%s%d_%s/%s", mstr, i, "miniRelIso", Traits<decltype(mu_miniRelIso)>::TYPE_NAME));
+      outputTree -> Branch(Form("%s%d_%s", mstr, i, "miniIsoCharged"), &(mu_miniIsoCharged[i]), Form("%s%d_%s/%s", mstr, i, "miniIsoCharged", Traits<decltype(mu_miniIsoCharged)>::TYPE_NAME));
+      outputTree -> Branch(Form("%s%d_%s", mstr, i, "miniIsoNeutral"), &(mu_miniIsoNeutral[i]), Form("%s%d_%s/%s", mstr, i, "miniIsoNeutral", Traits<decltype(mu_miniIsoNeutral)>::TYPE_NAME));
+      outputTree -> Branch(Form("%s%d_%s", mstr, i, "jetNDauChargedMVASel"), &(mu_jetNDauChargedMVASel[i]), Form("%s%d_%s/%s", mstr, i, "jetNDauChargedMVASel", Traits<decltype(mu_jetNDauChargedMVASel)>::TYPE_NAME));
+      outputTree -> Branch(Form("%s%d_%s", mstr, i, "jetPtRel"), &(mu_jetPtRel[i]), Form("%s%d_%s/%s", mstr, i, "jetPtRel", Traits<decltype(mu_jetPtRel)>::TYPE_NAME));
+      outputTree -> Branch(Form("%s%d_%s", mstr, i, "jetPtRatio"), &(mu_jetPtRatio[i]), Form("%s%d_%s/%s", mstr, i, "jetPtRatio", Traits<decltype(mu_jetPtRatio)>::TYPE_NAME));
+      outputTree -> Branch(Form("%s%d_%s", mstr, i, "jetCSV"), &(mu_jetCSV[i]), Form("%s%d_%s/%s", mstr, i, "jetCSV", Traits<decltype(mu_jetCSV)>::TYPE_NAME));
+      outputTree -> Branch(Form("%s%d_%s", mstr, i, "sip3D"), &(mu_sip3D[i]), Form("%s%d_%s/%s", mstr, i, "sip3D", Traits<decltype(mu_sip3D)>::TYPE_NAME));
+      outputTree -> Branch(Form("%s%d_%s", mstr, i, "dxy"), &(mu_dxy[i]), Form("%s%d_%s/%s", mstr, i, "dxy", Traits<decltype(mu_dxy)>::TYPE_NAME));
+      outputTree -> Branch(Form("%s%d_%s", mstr, i, "dz"), &(mu_dz[i]), Form("%s%d_%s/%s", mstr, i, "dz", Traits<decltype(mu_dz)>::TYPE_NAME));
+      outputTree -> Branch(Form("%s%d_%s", mstr, i, "segmentCompatibility"), &(mu_segmentCompatibility[i]), Form("%s%d_%s/%s", mstr, i, "segmentCompatibility", Traits<decltype(mu_segmentCompatibility)>::TYPE_NAME));
+      outputTree -> Branch(Form("%s%d_%s", mstr, i, "leptonMVA"), &(mu_leptonMVA[i]), Form("%s%d_%s/%s", mstr, i, "leptonMVA", Traits<decltype(mu_leptonMVA)>::TYPE_NAME));
+      outputTree -> Branch(Form("%s%d_%s", mstr, i, "mediumID"), &(mu_mediumID[i]), Form("%s%d_%s/%s", mstr, i, "mediumID", Traits<decltype(mu_mediumID)>::TYPE_NAME));
+      outputTree -> Branch(Form("%s%d_%s", mstr, i, "dpt_div_pt"), &(mu_dpt_div_pt[i]), Form("%s%d_%s/%s", mstr, i, "dpt_div_pt", Traits<decltype(mu_dpt_div_pt)>::TYPE_NAME));
+      outputTree -> Branch(Form("%s%d_%s", mstr, i, "isfakeablesel"), &(mu_isfakeablesel[i]), Form("%s%d_%s/%s", mstr, i, "isfakeablesel", Traits<decltype(mu_isfakeablesel)>::TYPE_NAME));
+      outputTree -> Branch(Form("%s%d_%s", mstr, i, "iscutsel"), &(mu_iscutsel[i]), Form("%s%d_%s/%s", mstr, i, "iscutsel", Traits<decltype(mu_iscutsel)>::TYPE_NAME));
+      outputTree -> Branch(Form("%s%d_%s", mstr, i, "ismvasel"), &(mu_ismvasel[i]), Form("%s%d_%s/%s", mstr, i, "ismvasel", Traits<decltype(mu_ismvasel)>::TYPE_NAME));
     }
 
     for(Int_t i = 0; i < nof_eles; ++i)
     {
-      outputTree -> Branch(Form("%s%d_%s", estr, i, "pt"), &(ele_pt[i]), Form("%s%d_%s/F", estr, i, "pt"));
-      outputTree -> Branch(Form("%s%d_%s", estr, i, "eta"), &(ele_eta[i]), Form("%s%d_%s/F", estr, i, "eta"));
-      outputTree -> Branch(Form("%s%d_%s", estr, i, "phi"), &(ele_phi[i]), Form("%s%d_%s/F", estr, i, "phi"));
-      outputTree -> Branch(Form("%s%d_%s", estr, i, "E"), &(ele_E[i]), Form("%s%d_%s/F", estr, i, "E"));
-      outputTree -> Branch(Form("%s%d_%s", estr, i, "charge"), &(ele_charge[i]), Form("%s%d_%s/I", estr, i, "charge"));
-      outputTree -> Branch(Form("%s%d_%s", estr, i, "miniRelIso"), &(ele_miniRelIso[i]), Form("%s%d_%s/F", estr, i, "miniRelIso"));
-      outputTree -> Branch(Form("%s%d_%s", estr, i, "miniIsoCharged"), &(ele_miniIsoCharged[i]), Form("%s%d_%s/F", estr, i, "miniIsoCharged"));
-      outputTree -> Branch(Form("%s%d_%s", estr, i, "miniIsoNeutral"), &(ele_miniIsoNeutral[i]), Form("%s%d_%s/F", estr, i, "miniIsoNeutral"));
-      outputTree -> Branch(Form("%s%d_%s", estr, i, "jetNDauChargedMVASel"), &(ele_jetNDauChargedMVASel[i]), Form("%s%d_%s/F", estr, i, "jetNDauChargedMVASel"));
-      outputTree -> Branch(Form("%s%d_%s", estr, i, "jetPtRel"), &(ele_jetPtRel[i]), Form("%s%d_%s/F", estr, i, "jetPtRel"));
-      outputTree -> Branch(Form("%s%d_%s", estr, i, "jetPtRatio"), &(ele_jetPtRatio[i]), Form("%s%d_%s/F", estr, i, "jetPtRatio"));
-      outputTree -> Branch(Form("%s%d_%s", estr, i, "jetCSV"), &(ele_jetCSV[i]), Form("%s%d_%s/F", estr, i, "jetCSV"));
-      outputTree -> Branch(Form("%s%d_%s", estr, i, "sip3D"), &(ele_sip3D[i]), Form("%s%d_%s/F", estr, i, "sip3D"));
-      outputTree -> Branch(Form("%s%d_%s", estr, i, "dxy"), &(ele_dxy[i]), Form("%s%d_%s/F", estr, i, "dxy"));
-      outputTree -> Branch(Form("%s%d_%s", estr, i, "dz"), &(ele_dz[i]), Form("%s%d_%s/F", estr, i, "dz"));
-      outputTree -> Branch(Form("%s%d_%s", estr, i, "ntMVAeleID"), &(ele_ntMVAeleID[i]), Form("%s%d_%s/F", estr, i, "ntMVAeleID"));
-      outputTree -> Branch(Form("%s%d_%s", estr, i, "leptonMVA"), &(ele_leptonMVA[i]), Form("%s%d_%s/F", estr, i, "leptonMVA"));
-      outputTree -> Branch(Form("%s%d_%s", estr, i, "isChargeConsistent"), &(ele_isChargeConsistent[i]), Form("%s%d_%s/F", estr, i, "isChargeConsistent"));
-      outputTree -> Branch(Form("%s%d_%s", estr, i, "passesConversionVeto"), &(ele_passesConversionVeto[i]), Form("%s%d_%s/F", estr, i, "passesConversionVeto"));
-      outputTree -> Branch(Form("%s%d_%s", estr, i, "nMissingHits"), &(ele_nMissingHits[i]), Form("%s%d_%s/I", estr, i, "nMissingHits"));
-      outputTree -> Branch(Form("%s%d_%s", estr, i, "isfakeablesel"), &(ele_isfakeablesel[i]), Form("%s%d_%s/I", estr, i, "isfakeablesel"));
-      outputTree -> Branch(Form("%s%d_%s", estr, i, "iscutsel"), &(ele_iscutsel[i]), Form("%s%d_%s/I", estr, i, "iscutsel"));
-      outputTree -> Branch(Form("%s%d_%s", estr, i, "ismvasel"), &(ele_ismvasel[i]), Form("%s%d_%s/I", estr, i, "ismvasel"));
+      outputTree -> Branch(Form("%s%d_%s", estr, i, "pt"), &(ele_pt[i]), Form("%s%d_%s/%s", estr, i, "pt", Traits<decltype(ele_pt)>::TYPE_NAME));
+      outputTree -> Branch(Form("%s%d_%s", estr, i, "eta"), &(ele_eta[i]), Form("%s%d_%s/%s", estr, i, "eta", Traits<decltype(ele_eta)>::TYPE_NAME));
+      outputTree -> Branch(Form("%s%d_%s", estr, i, "phi"), &(ele_phi[i]), Form("%s%d_%s/%s", estr, i, "phi", Traits<decltype(ele_phi)>::TYPE_NAME));
+      outputTree -> Branch(Form("%s%d_%s", estr, i, "E"), &(ele_E[i]), Form("%s%d_%s/%s", estr, i, "E", Traits<decltype(ele_E)>::TYPE_NAME));
+      outputTree -> Branch(Form("%s%d_%s", estr, i, "charge"), &(ele_charge[i]), Form("%s%d_%s/%s", estr, i, "charge", Traits<decltype(ele_charge)>::TYPE_NAME));
+      outputTree -> Branch(Form("%s%d_%s", estr, i, "miniRelIso"), &(ele_miniRelIso[i]), Form("%s%d_%s/%s", estr, i, "miniRelIso", Traits<decltype(ele_miniRelIso)>::TYPE_NAME));
+      outputTree -> Branch(Form("%s%d_%s", estr, i, "miniIsoCharged"), &(ele_miniIsoCharged[i]), Form("%s%d_%s/%s", estr, i, "miniIsoCharged", Traits<decltype(ele_miniIsoCharged)>::TYPE_NAME));
+      outputTree -> Branch(Form("%s%d_%s", estr, i, "miniIsoNeutral"), &(ele_miniIsoNeutral[i]), Form("%s%d_%s/%s", estr, i, "miniIsoNeutral", Traits<decltype(ele_miniIsoNeutral)>::TYPE_NAME));
+      outputTree -> Branch(Form("%s%d_%s", estr, i, "jetNDauChargedMVASel"), &(ele_jetNDauChargedMVASel[i]), Form("%s%d_%s/%s", estr, i, "jetNDauChargedMVASel", Traits<decltype(ele_jetNDauChargedMVASel)>::TYPE_NAME));
+      outputTree -> Branch(Form("%s%d_%s", estr, i, "jetPtRel"), &(ele_jetPtRel[i]), Form("%s%d_%s/%s", estr, i, "jetPtRel", Traits<decltype(ele_jetPtRel)>::TYPE_NAME));
+      outputTree -> Branch(Form("%s%d_%s", estr, i, "jetPtRatio"), &(ele_jetPtRatio[i]), Form("%s%d_%s/%s", estr, i, "jetPtRatio", Traits<decltype(ele_jetPtRatio)>::TYPE_NAME));
+      outputTree -> Branch(Form("%s%d_%s", estr, i, "jetCSV"), &(ele_jetCSV[i]), Form("%s%d_%s/%s", estr, i, "jetCSV", Traits<decltype(ele_jetCSV)>::TYPE_NAME));
+      outputTree -> Branch(Form("%s%d_%s", estr, i, "sip3D"), &(ele_sip3D[i]), Form("%s%d_%s/%s", estr, i, "sip3D", Traits<decltype(ele_sip3D)>::TYPE_NAME));
+      outputTree -> Branch(Form("%s%d_%s", estr, i, "dxy"), &(ele_dxy[i]), Form("%s%d_%s/%s", estr, i, "dxy", Traits<decltype(ele_dxy)>::TYPE_NAME));
+      outputTree -> Branch(Form("%s%d_%s", estr, i, "dz"), &(ele_dz[i]), Form("%s%d_%s/%s", estr, i, "dz", Traits<decltype(ele_dz)>::TYPE_NAME));
+      outputTree -> Branch(Form("%s%d_%s", estr, i, "ntMVAeleID"), &(ele_ntMVAeleID[i]), Form("%s%d_%s/%s", estr, i, "ntMVAeleID", Traits<decltype(ele_ntMVAeleID)>::TYPE_NAME));
+      outputTree -> Branch(Form("%s%d_%s", estr, i, "leptonMVA"), &(ele_leptonMVA[i]), Form("%s%d_%s/%s", estr, i, "leptonMVA", Traits<decltype(ele_leptonMVA)>::TYPE_NAME));
+      outputTree -> Branch(Form("%s%d_%s", estr, i, "isChargeConsistent"), &(ele_isChargeConsistent[i]), Form("%s%d_%s/%s", estr, i, "isChargeConsistent", Traits<decltype(ele_isChargeConsistent)>::TYPE_NAME));
+      outputTree -> Branch(Form("%s%d_%s", estr, i, "passesConversionVeto"), &(ele_passesConversionVeto[i]), Form("%s%d_%s/%s", estr, i, "passesConversionVeto", Traits<decltype(ele_passesConversionVeto)>::TYPE_NAME));
+      outputTree -> Branch(Form("%s%d_%s", estr, i, "nMissingHits"), &(ele_nMissingHits[i]), Form("%s%d_%s/%s", estr, i, "nMissingHits", Traits<decltype(ele_nMissingHits)>::TYPE_NAME));
+      outputTree -> Branch(Form("%s%d_%s", estr, i, "isfakeablesel"), &(ele_isfakeablesel[i]), Form("%s%d_%s/%s", estr, i, "isfakeablesel", Traits<decltype(ele_isfakeablesel)>::TYPE_NAME));
+      outputTree -> Branch(Form("%s%d_%s", estr, i, "iscutsel"), &(ele_iscutsel[i]), Form("%s%d_%s/%s", estr, i, "iscutsel", Traits<decltype(ele_iscutsel)>::TYPE_NAME));
+      outputTree -> Branch(Form("%s%d_%s", estr, i, "ismvasel"), &(ele_ismvasel[i]), Form("%s%d_%s/%s", estr, i, "ismvasel", Traits<decltype(ele_ismvasel)>::TYPE_NAME));
     }
 
     for(Int_t i = 0; i < nof_taus; ++i)
     {
-      outputTree -> Branch(Form("%s%d_%s", tstr, i, "pt"), &(tau_pt[i]), Form("%s%d_%s/F", tstr, i, "pt"));
-      outputTree -> Branch(Form("%s%d_%s", tstr, i, "eta"), &(tau_eta[i]), Form("%s%d_%s/F", tstr, i, "eta"));
-      outputTree -> Branch(Form("%s%d_%s", tstr, i, "phi"), &(tau_phi[i]), Form("%s%d_%s/F", tstr, i, "phi"));
-      outputTree -> Branch(Form("%s%d_%s", tstr, i, "E"), &(tau_E[i]), Form("%s%d_%s/F", tstr, i, "E"));
-      outputTree -> Branch(Form("%s%d_%s", tstr, i, "charge"), &(tau_charge[i]), Form("%s%d_%s/I", tstr, i, "charge"));
-      outputTree -> Branch(Form("%s%d_%s", tstr, i, "dxy"), &(tau_dxy[i]), Form("%s%d_%s/F", tstr, i, "dxy"));
-      outputTree -> Branch(Form("%s%d_%s", tstr, i, "dz"), &(tau_dz[i]), Form("%s%d_%s/F", tstr, i, "dz"));
-      outputTree -> Branch(Form("%s%d_%s", tstr, i, "decayModeFindingOldDMs"), &(tau_decayModeFindingOldDMs[i]), Form("%s%d_%s/I", tstr, i, "decayModeFindingOldDMs"));
-      outputTree -> Branch(Form("%s%d_%s", tstr, i, "decayModeFindingNewDMs"), &(tau_decayModeFindingNewDMs[i]), Form("%s%d_%s/I", tstr, i, "decayModeFindingNewDMs"));
-      outputTree -> Branch(Form("%s%d_%s", tstr, i, "byCombinedIsolationDeltaBetaCorr3Hits"), &(tau_byCombinedIsolationDeltaBetaCorr3Hits[i]), Form("%s%d_%s/I", tstr, i, "byCombinedIsolationDeltaBetaCorr3Hits"));
-      outputTree -> Branch(Form("%s%d_%s", tstr, i, "byLooseCombinedIsolationDeltaBetaCorr3Hits"), &(tau_byLooseCombinedIsolationDeltaBetaCorr3Hits[i]), Form("%s%d_%s/I", tstr, i, "byLooseCombinedIsolationDeltaBetaCorr3Hits"));
-      outputTree -> Branch(Form("%s%d_%s", tstr, i, "byMediumCombinedIsolationDeltaBetaCorr3Hits"), &(tau_byMediumCombinedIsolationDeltaBetaCorr3Hits[i]), Form("%s%d_%s/I", tstr, i, "byMediumCombinedIsolationDeltaBetaCorr3Hits"));
-      outputTree -> Branch(Form("%s%d_%s", tstr, i, "byTightCombinedIsolationDeltaBetaCorr3Hits"), &(tau_byTightCombinedIsolationDeltaBetaCorr3Hits[i]), Form("%s%d_%s/I", tstr, i, "byTightCombinedIsolationDeltaBetaCorr3Hits"));
-      outputTree -> Branch(Form("%s%d_%s", tstr, i, "byLooseCombinedIsolationDeltaBetaCorr3HitsdR03"), &(tau_byLooseCombinedIsolationDeltaBetaCorr3HitsdR03[i]), Form("%s%d_%s/I", tstr, i, "byLooseCombinedIsolationDeltaBetaCorr3HitsdR03"));
-      outputTree -> Branch(Form("%s%d_%s", tstr, i, "byMediumCombinedIsolationDeltaBetaCorr3HitsdR03"), &(tau_byMediumCombinedIsolationDeltaBetaCorr3HitsdR03[i]), Form("%s%d_%s/I", tstr, i, "byMediumCombinedIsolationDeltaBetaCorr3HitsdR03"));
-      outputTree -> Branch(Form("%s%d_%s", tstr, i, "byTightCombinedIsolationDeltaBetaCorr3HitsdR03"), &(tau_byTightCombinedIsolationDeltaBetaCorr3HitsdR03[i]), Form("%s%d_%s/I", tstr, i, "byTightCombinedIsolationDeltaBetaCorr3HitsdR03"));
-      outputTree -> Branch(Form("%s%d_%s", tstr, i, "byLooseIsolationMVArun2v1DBdR03oldDMwLT"), &(tau_byLooseIsolationMVArun2v1DBdR03oldDMwLT[i]), Form("%s%d_%s/I", tstr, i, "byLooseIsolationMVArun2v1DBdR03oldDMwLT"));
-      outputTree -> Branch(Form("%s%d_%s", tstr, i, "byMediumIsolationMVArun2v1DBdR03oldDMwLT"), &(tau_byMediumIsolationMVArun2v1DBdR03oldDMwLT[i]), Form("%s%d_%s/I", tstr, i, "byMediumIsolationMVArun2v1DBdR03oldDMwLT"));
-      outputTree -> Branch(Form("%s%d_%s", tstr, i, "byTightIsolationMVArun2v1DBdR03oldDMwLT"), &(tau_byTightIsolationMVArun2v1DBdR03oldDMwLT[i]), Form("%s%d_%s/I", tstr, i, "byTightIsolationMVArun2v1DBdR03oldDMwLT"));
-      outputTree -> Branch(Form("%s%d_%s", tstr, i, "byVTightIsolationMVArun2v1DBdR03oldDMwLT"), &(tau_byVTightIsolationMVArun2v1DBdR03oldDMwLT[i]), Form("%s%d_%s/I", tstr, i, "byVTightIsolationMVArun2v1DBdR03oldDMwLT"));
-      outputTree -> Branch(Form("%s%d_%s", tstr, i, "againstMuonLoose3"), &(tau_againstMuonLoose3[i]), Form("%s%d_%s/I", tstr, i, "againstMuonLoose3"));
-      outputTree -> Branch(Form("%s%d_%s", tstr, i, "againstMuonTight3"), &(tau_againstMuonTight3[i]), Form("%s%d_%s/I", tstr, i, "againstMuonTight3"));
-      outputTree -> Branch(Form("%s%d_%s", tstr, i, "againstElectronVLooseMVA6"), &(tau_againstElectronVLooseMVA6[i]), Form("%s%d_%s/I", tstr, i, "againstElectronVLooseMVA6"));
-      outputTree -> Branch(Form("%s%d_%s", tstr, i, "againstElectronLooseMVA6"), &(tau_againstElectronLooseMVA6[i]), Form("%s%d_%s/I", tstr, i, "againstElectronLooseMVA6"));
-      outputTree -> Branch(Form("%s%d_%s", tstr, i, "againstElectronMediumMVA6"), &(tau_againstElectronMediumMVA6[i]), Form("%s%d_%s/I", tstr, i, "againstElectronMediumMVA6"));
-      outputTree -> Branch(Form("%s%d_%s", tstr, i, "againstElectronTightMVA6"), &(tau_againstElectronTightMVA6[i]), Form("%s%d_%s/I", tstr, i, "againstElectronTightMVA6"));
+      outputTree -> Branch(Form("%s%d_%s", tstr, i, "pt"), &(tau_pt[i]), Form("%s%d_%s/%s", tstr, i, "pt", Traits<decltype(tau_pt)>::TYPE_NAME));
+      outputTree -> Branch(Form("%s%d_%s", tstr, i, "eta"), &(tau_eta[i]), Form("%s%d_%s/%s", tstr, i, "eta", Traits<decltype(tau_eta)>::TYPE_NAME));
+      outputTree -> Branch(Form("%s%d_%s", tstr, i, "phi"), &(tau_phi[i]), Form("%s%d_%s/%s", tstr, i, "phi", Traits<decltype(tau_phi)>::TYPE_NAME));
+      outputTree -> Branch(Form("%s%d_%s", tstr, i, "E"), &(tau_E[i]), Form("%s%d_%s/%s", tstr, i, "E", Traits<decltype(tau_E)>::TYPE_NAME));
+      outputTree -> Branch(Form("%s%d_%s", tstr, i, "charge"), &(tau_charge[i]), Form("%s%d_%s/%s", tstr, i, "charge", Traits<decltype(tau_charge)>::TYPE_NAME));
+      outputTree -> Branch(Form("%s%d_%s", tstr, i, "dxy"), &(tau_dxy[i]), Form("%s%d_%s/%s", tstr, i, "dxy", Traits<decltype(tau_dxy)>::TYPE_NAME));
+      outputTree -> Branch(Form("%s%d_%s", tstr, i, "dz"), &(tau_dz[i]), Form("%s%d_%s/%s", tstr, i, "dz", Traits<decltype(tau_dz)>::TYPE_NAME));
+      outputTree -> Branch(Form("%s%d_%s", tstr, i, "decayModeFindingOldDMs"), &(tau_decayModeFindingOldDMs[i]), Form("%s%d_%s/%s", tstr, i, "decayModeFindingOldDMs", Traits<decltype(tau_decayModeFindingOldDMs)>::TYPE_NAME));
+      outputTree -> Branch(Form("%s%d_%s", tstr, i, "decayModeFindingNewDMs"), &(tau_decayModeFindingNewDMs[i]), Form("%s%d_%s/%s", tstr, i, "decayModeFindingNewDMs", Traits<decltype(tau_decayModeFindingNewDMs)>::TYPE_NAME));
+      outputTree -> Branch(Form("%s%d_%s", tstr, i, "byCombinedIsolationDeltaBetaCorr3Hits"), &(tau_byCombinedIsolationDeltaBetaCorr3Hits[i]), Form("%s%d_%s/%s", tstr, i, "byCombinedIsolationDeltaBetaCorr3Hits", Traits<decltype(tau_byCombinedIsolationDeltaBetaCorr3Hits)>::TYPE_NAME));
+      outputTree -> Branch(Form("%s%d_%s", tstr, i, "byLooseCombinedIsolationDeltaBetaCorr3Hits"), &(tau_byLooseCombinedIsolationDeltaBetaCorr3Hits[i]), Form("%s%d_%s/%s", tstr, i, "byLooseCombinedIsolationDeltaBetaCorr3Hits", Traits<decltype(tau_byLooseCombinedIsolationDeltaBetaCorr3Hits)>::TYPE_NAME));
+      outputTree -> Branch(Form("%s%d_%s", tstr, i, "byMediumCombinedIsolationDeltaBetaCorr3Hits"), &(tau_byMediumCombinedIsolationDeltaBetaCorr3Hits[i]), Form("%s%d_%s/%s", tstr, i, "byMediumCombinedIsolationDeltaBetaCorr3Hits", Traits<decltype(tau_byMediumCombinedIsolationDeltaBetaCorr3Hits)>::TYPE_NAME));
+      outputTree -> Branch(Form("%s%d_%s", tstr, i, "byTightCombinedIsolationDeltaBetaCorr3Hits"), &(tau_byTightCombinedIsolationDeltaBetaCorr3Hits[i]), Form("%s%d_%s/%s", tstr, i, "byTightCombinedIsolationDeltaBetaCorr3Hits", Traits<decltype(tau_byTightCombinedIsolationDeltaBetaCorr3Hits)>::TYPE_NAME));
+      outputTree -> Branch(Form("%s%d_%s", tstr, i, "byLooseCombinedIsolationDeltaBetaCorr3HitsdR03"), &(tau_byLooseCombinedIsolationDeltaBetaCorr3HitsdR03[i]), Form("%s%d_%s/%s", tstr, i, "byLooseCombinedIsolationDeltaBetaCorr3HitsdR03", Traits<decltype(tau_byLooseCombinedIsolationDeltaBetaCorr3HitsdR03)>::TYPE_NAME));
+      outputTree -> Branch(Form("%s%d_%s", tstr, i, "byMediumCombinedIsolationDeltaBetaCorr3HitsdR03"), &(tau_byMediumCombinedIsolationDeltaBetaCorr3HitsdR03[i]), Form("%s%d_%s/%s", tstr, i, "byMediumCombinedIsolationDeltaBetaCorr3HitsdR03", Traits<decltype(tau_byMediumCombinedIsolationDeltaBetaCorr3HitsdR03)>::TYPE_NAME));
+      outputTree -> Branch(Form("%s%d_%s", tstr, i, "byTightCombinedIsolationDeltaBetaCorr3HitsdR03"), &(tau_byTightCombinedIsolationDeltaBetaCorr3HitsdR03[i]), Form("%s%d_%s/%s", tstr, i, "byTightCombinedIsolationDeltaBetaCorr3HitsdR03", Traits<decltype(tau_byTightCombinedIsolationDeltaBetaCorr3HitsdR03)>::TYPE_NAME));
+      outputTree -> Branch(Form("%s%d_%s", tstr, i, "byLooseIsolationMVArun2v1DBdR03oldDMwLT"), &(tau_byLooseIsolationMVArun2v1DBdR03oldDMwLT[i]), Form("%s%d_%s/%s", tstr, i, "byLooseIsolationMVArun2v1DBdR03oldDMwLT", Traits<decltype(tau_byLooseIsolationMVArun2v1DBdR03oldDMwLT)>::TYPE_NAME));
+      outputTree -> Branch(Form("%s%d_%s", tstr, i, "byMediumIsolationMVArun2v1DBdR03oldDMwLT"), &(tau_byMediumIsolationMVArun2v1DBdR03oldDMwLT[i]), Form("%s%d_%s/%s", tstr, i, "byMediumIsolationMVArun2v1DBdR03oldDMwLT", Traits<decltype(tau_byMediumIsolationMVArun2v1DBdR03oldDMwLT)>::TYPE_NAME));
+      outputTree -> Branch(Form("%s%d_%s", tstr, i, "byTightIsolationMVArun2v1DBdR03oldDMwLT"), &(tau_byTightIsolationMVArun2v1DBdR03oldDMwLT[i]), Form("%s%d_%s/%s", tstr, i, "byTightIsolationMVArun2v1DBdR03oldDMwLT", Traits<decltype(tau_byTightIsolationMVArun2v1DBdR03oldDMwLT)>::TYPE_NAME));
+      outputTree -> Branch(Form("%s%d_%s", tstr, i, "byVTightIsolationMVArun2v1DBdR03oldDMwLT"), &(tau_byVTightIsolationMVArun2v1DBdR03oldDMwLT[i]), Form("%s%d_%s/%s", tstr, i, "byVTightIsolationMVArun2v1DBdR03oldDMwLT", Traits<decltype(tau_byVTightIsolationMVArun2v1DBdR03oldDMwLT)>::TYPE_NAME));
+      outputTree -> Branch(Form("%s%d_%s", tstr, i, "againstMuonLoose3"), &(tau_againstMuonLoose3[i]), Form("%s%d_%s/%s", tstr, i, "againstMuonLoose3", Traits<decltype(tau_againstMuonLoose3)>::TYPE_NAME));
+      outputTree -> Branch(Form("%s%d_%s", tstr, i, "againstMuonTight3"), &(tau_againstMuonTight3[i]), Form("%s%d_%s/%s", tstr, i, "againstMuonTight3", Traits<decltype(tau_againstMuonTight3)>::TYPE_NAME));
+      outputTree -> Branch(Form("%s%d_%s", tstr, i, "againstElectronVLooseMVA6"), &(tau_againstElectronVLooseMVA6[i]), Form("%s%d_%s/%s", tstr, i, "againstElectronVLooseMVA6", Traits<decltype(tau_againstElectronVLooseMVA6)>::TYPE_NAME));
+      outputTree -> Branch(Form("%s%d_%s", tstr, i, "againstElectronLooseMVA6"), &(tau_againstElectronLooseMVA6[i]), Form("%s%d_%s/%s", tstr, i, "againstElectronLooseMVA6", Traits<decltype(tau_againstElectronLooseMVA6)>::TYPE_NAME));
+      outputTree -> Branch(Form("%s%d_%s", tstr, i, "againstElectronMediumMVA6"), &(tau_againstElectronMediumMVA6[i]), Form("%s%d_%s/%s", tstr, i, "againstElectronMediumMVA6", Traits<decltype(tau_againstElectronMediumMVA6)>::TYPE_NAME));
+      outputTree -> Branch(Form("%s%d_%s", tstr, i, "againstElectronTightMVA6"), &(tau_againstElectronTightMVA6[i]), Form("%s%d_%s/%s", tstr, i, "againstElectronTightMVA6", Traits<decltype(tau_againstElectronTightMVA6)>::TYPE_NAME));
     }
 
     for(Int_t i = 0; i < nof_jets; ++i)
     {
-      outputTree -> Branch(Form("%s%d_%s", jstr, i, "pt"), &(jet_pt[i]), Form("%s%d_%s/F", jstr, i, "pt"));
-      outputTree -> Branch(Form("%s%d_%s", jstr, i, "eta"), &(jet_eta[i]), Form("%s%d_%s/F", jstr, i, "eta"));
-      outputTree -> Branch(Form("%s%d_%s", jstr, i, "phi"), &(jet_phi[i]), Form("%s%d_%s/F", jstr, i, "phi"));
-      outputTree -> Branch(Form("%s%d_%s", jstr, i, "mass"), &(jet_mass[i]), Form("%s%d_%s/F", jstr, i, "mass"));
-      outputTree -> Branch(Form("%s%d_%s", jstr, i, "btagCSV"), &(jet_btagCSV[i]), Form("%s%d_%s/F", jstr, i, "btagCSV"));
+      outputTree -> Branch(Form("%s%d_%s", jstr, i, "pt"), &(jet_pt[i]), Form("%s%d_%s/%s", jstr, i, "pt", Traits<decltype(jet_pt)>::TYPE_NAME));
+      outputTree -> Branch(Form("%s%d_%s", jstr, i, "eta"), &(jet_eta[i]), Form("%s%d_%s/%s", jstr, i, "eta", Traits<decltype(jet_eta)>::TYPE_NAME));
+      outputTree -> Branch(Form("%s%d_%s", jstr, i, "phi"), &(jet_phi[i]), Form("%s%d_%s/%s", jstr, i, "phi", Traits<decltype(jet_phi)>::TYPE_NAME));
+      outputTree -> Branch(Form("%s%d_%s", jstr, i, "E"), &(jet_E[i]), Form("%s%d_%s/%s", jstr, i, "E", Traits<decltype(jet_E)>::TYPE_NAME));
+      outputTree -> Branch(Form("%s%d_%s", jstr, i, "CSV"), &(jet_CSV[i]), Form("%s%d_%s/%s", jstr, i, "CSV", Traits<decltype(jet_CSV)>::TYPE_NAME));
     }
 
-    outputTree -> Branch("PFMET", &(PFMET), "PFMET/F");
-    outputTree -> Branch("PFMETphi", &(PFMETphi), "PFMETphi/F");
-    outputTree -> Branch("MHT", &(MHT), "MHT/F");
-    outputTree -> Branch("metLD", &(metLD), "metLD/F");
+    outputTree -> Branch("PFMET", &(PFMET), Form("PFMET/%s", Traits<decltype(PFMET)>::TYPE_NAME));
+    outputTree -> Branch("PFMETphi", &(PFMETphi), Form("PFMETphi/%s", Traits<decltype(PFMETphi)>::TYPE_NAME));
+    outputTree -> Branch("MHT", &(MHT), Form("MHT/%s", Traits<decltype(MHT)>::TYPE_NAME));
+    outputTree -> Branch("metLD", &(metLD), Form("metLD/%s", Traits<decltype(metLD)>::TYPE_NAME));
 
-    outputTree -> Branch("lep0_conept", &(lep0_conept), "lep0_conept/F");
-    outputTree -> Branch("lep1_conePt", &(lep1_conePt), "lep1_conePt/F");
-    outputTree -> Branch("mindr_lep0_jet", &(mindr_lep0_jet), "mindr_lep0_jet/F");
-    outputTree -> Branch("mindr_lep1_jet", &(mindr_lep1_jet), "mindr_lep1_jet/F");
-    outputTree -> Branch("MT_met_lep0", &(MT_met_lep0), "MT_met_lep0/F");
-    outputTree -> Branch("avg_dr_jet", &(avg_dr_jet), "avg_dr_jet/F");
-    outputTree -> Branch("MVA_2lss_ttV", &(MVA_2lss_ttV), "MVA_2lss_ttV/F");
-    outputTree -> Branch("MVA_2lss_ttbar", &(MVA_2lss_ttbar), "MVA_2lss_ttbar/F");
+    outputTree -> Branch("lep0_conept", &(lep0_conept), Form("lep0_conept/%s", Traits<decltype(lep0_conept)>::TYPE_NAME));
+    outputTree -> Branch("lep1_conePt", &(lep1_conePt), Form("lep1_conePt/%s", Traits<decltype(lep1_conePt)>::TYPE_NAME));
+    outputTree -> Branch("mindr_lep0_jet", &(mindr_lep0_jet), Form("mindr_lep0_jet/%s", Traits<decltype(mindr_lep0_jet)>::TYPE_NAME));
+    outputTree -> Branch("mindr_lep1_jet", &(mindr_lep1_jet), Form("mindr_lep1_jet/%s", Traits<decltype(mindr_lep1_jet)>::TYPE_NAME));
+    outputTree -> Branch("MT_met_lep0", &(MT_met_lep0), Form("MT_met_lep0/%s", Traits<decltype(MT_met_lep0)>::TYPE_NAME));
+    outputTree -> Branch("avg_dr_jet", &(avg_dr_jet), Form("avg_dr_jet/%s", Traits<decltype(avg_dr_jet)>::TYPE_NAME));
+    outputTree -> Branch("MVA_2lss_ttV", &(MVA_2lss_ttV), Form("MVA_2lss_ttV/%s", Traits<decltype(MVA_2lss_ttV)>::TYPE_NAME));
+    outputTree -> Branch("MVA_2lss_ttbar", &(MVA_2lss_ttbar), Form("MVA_2lss_ttbar/%s", Traits<decltype(MVA_2lss_ttbar)>::TYPE_NAME));
 
     reset();
   }
@@ -314,8 +315,8 @@ SyncNtupleManager::read(std::vector<const RecoJet *> & jets)
     jet_pt[i] = jet -> pt_;
     jet_eta[i] = jet -> eta_;
     jet_phi[i] = jet -> phi_;
-    jet_mass[i] = jet -> mass_;
-    jet_btagCSV[i] = jet -> BtagCSV_;
+    jet_E[i] = (jet -> p4_).E();
+    jet_CSV[i] = jet -> BtagCSV_;
   }
 }
 
@@ -427,8 +428,8 @@ SyncNtupleManager::reset()
     jet_pt[i] = placeholder_value;
     jet_eta[i] = placeholder_value;
     jet_phi[i] = placeholder_value;
-    jet_mass[i] = placeholder_value;
-    jet_btagCSV[i] = placeholder_value;
+    jet_E[i] = placeholder_value;
+    jet_CSV[i] = placeholder_value;
   }
   n_presel_jet = placeholder_value;
 
