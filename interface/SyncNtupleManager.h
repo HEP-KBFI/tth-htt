@@ -52,10 +52,12 @@ public:
                         ULong64_t event);
   void read(std::vector<const RecoMuon *> & muons,
             std::vector<const RecoMuon *> & fakeable_muons,
-            std::vector<const RecoMuon *> & cutbased_muons);
+            std::vector<const RecoMuon *> & cutbased_muons,
+            std::vector<const RecoMuon *> & mvabased_muons);
   void read(std::vector<const RecoElectron *> & electrons,
             std::vector<const RecoElectron *> & fakeable_electrons,
-            std::vector<const RecoElectron *> & cutbased_electrons);
+            std::vector<const RecoElectron *> & cutbased_electrons,
+            std::vector<const RecoElectron *> & mvabased_electrons);
   void read(std::vector<const RecoHadTau *> & hadtaus);
   void read(std::vector<const RecoJet *> & jets);
   void read(Float_t value,
@@ -81,7 +83,7 @@ private:
   Int_t n_presel_mu;
   Int_t n_fakeablesel_mu;
   Int_t n_cutsel_mu;
-  Int_t n_mvasel_mu; // missing
+  Int_t n_mvasel_mu;
   Float_t * mu_pt;
   Float_t * mu_eta;
   Float_t * mu_phi;
@@ -103,12 +105,12 @@ private:
   Float_t * mu_dpt_div_pt; // missing
   Int_t * mu_isfakeablesel;
   Int_t * mu_iscutsel;
-  Int_t * mu_ismvasel; // missing
+  Int_t * mu_ismvasel;
 
   Int_t n_presel_ele;
   Int_t n_fakeablesel_ele;
   Int_t n_cutsel_ele;
-  Int_t n_mvasel_ele; // missing
+  Int_t n_mvasel_ele;
   Float_t * ele_pt;
   Float_t * ele_eta;
   Float_t * ele_phi;
@@ -131,7 +133,7 @@ private:
   Int_t * ele_nMissingHits;
   Int_t * ele_isfakeablesel;
   Int_t * ele_iscutsel;
-  Int_t * ele_ismvasel; // missing
+  Int_t * ele_ismvasel;
 
   Int_t n_presel_tau;
   Float_t * tau_pt;

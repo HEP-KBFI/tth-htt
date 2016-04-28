@@ -242,6 +242,7 @@ int main(int argc, char* argv[])
   RecoMuonCollectionSelectorLoose preselMuonSelector;
   RecoMuonCollectionSelectorFakeable fakeableMuonSelector;
   RecoMuonCollectionSelectorCutBased cutBasedSelector;
+  RecoMuonCollectionSelectorMVABased mvaBasedSelector;
 
   RecoElectronReader* electronReader = new RecoElectronReader("nselLeptons", "selLeptons");
   electronReader->setBranchAddresses(inputTree);
@@ -250,6 +251,7 @@ int main(int argc, char* argv[])
   RecoElectronCollectionSelectorLoose preselElectronSelector;
   RecoElectronCollectionSelectorFakeable fakeableElectronSelector;
   RecoElectronCollectionSelectorCutBased cutBasedElectronSelector;
+  RecoElectronCollectionSelectorMVABased mvaBasedElectronSelector;
 
   RecoHadTauReader* hadTauReader = new RecoHadTauReader("nTauGood", "TauGood");
   hadTauReader->setBranchAddresses(inputTree);
@@ -472,19 +474,21 @@ int main(int argc, char* argv[])
     std::vector<const RecoMuon*> preselMuons = preselMuonSelector(cleanedMuons);
     std::vector<const RecoMuon*> fakeableMuons = fakeableMuonSelector(preselMuons);
     std::vector<const RecoMuon*> cutBasedMuons = cutBasedSelector(preselMuons);
+    std::vector<const RecoMuon*> mvaBasedMuons = mvaBasedSelector(preselMuons);
     std::vector<const RecoMuon*> selMuons = preselMuons;
     std::sort(preselMuons.begin(), preselMuons.end(), isHigherPt);
-    snm.read(preselMuons, fakeableMuons, cutBasedMuons);
+    snm.read(preselMuons, fakeableMuons, cutBasedMuons, mvaBasedMuons);
 
     std::vector<RecoElectron> electrons = electronReader->read();
     std::vector<const RecoElectron*> electron_ptrs = convert_to_ptrs(electrons);
     std::vector<const RecoElectron*> cleanedElectrons = electronCleaner(electron_ptrs, selMuons);
     std::vector<const RecoElectron*> preselElectrons = preselElectronSelector(cleanedElectrons);
     std::vector<const RecoElectron*> fakeableElectrons = fakeableElectronSelector(preselElectrons);
-    std::vector<const RecoElectron*> cutbasedElectrons = cutBasedElectronSelector(preselElectrons);
+    std::vector<const RecoElectron*> cutBasedElectrons = cutBasedElectronSelector(preselElectrons);
+    std::vector<const RecoElectron*> mvaBasedElectrons = mvaBasedElectronSelector(preselElectrons);
     std::vector<const RecoElectron*> selElectrons = preselElectrons;
     std::sort(preselElectrons.begin(), preselElectrons.end(), isHigherPt);
-    snm.read(preselElectrons, fakeableElectrons, cutbasedElectrons);
+    snm.read(preselElectrons, fakeableElectrons, cutBasedElectrons, mvaBasedElectrons);
 
     std::vector<RecoHadTau> hadTaus = hadTauReader->read();
     std::vector<const RecoHadTau*> hadTau_ptrs = convert_to_ptrs(hadTaus);

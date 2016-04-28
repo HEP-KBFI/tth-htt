@@ -5,8 +5,7 @@
 
 #include <Rtypes.h> // Int_t, Double_t
 
-#include <string>
-#include <map>
+#include <vector> // std::vector<>
 
 class RecoElectronSelectorCutBased
 {

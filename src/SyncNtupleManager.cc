@@ -258,11 +258,13 @@ SyncNtupleManager::readRunLumiEvent(UInt_t run_,
 void
 SyncNtupleManager::read(std::vector<const RecoMuon *> & muons,
                         std::vector<const RecoMuon *> & fakeable_muons,
-                        std::vector<const RecoMuon *> & cutbased_muons)
+                        std::vector<const RecoMuon *> & cutbased_muons,
+                        std::vector<const RecoMuon *> & mvabased_muons)
 {
   n_presel_mu = muons.size();
   n_fakeablesel_mu = fakeable_muons.size();
   n_cutsel_mu = cutbased_muons.size();
+  n_mvasel_mu = mvabased_muons.size();
   const Int_t nof_iterations = std::min(n_presel_mu, nof_mus);
   for(Int_t i = 0; i < nof_iterations; ++i)
   {
@@ -299,18 +301,26 @@ SyncNtupleManager::read(std::vector<const RecoMuon *> & muons,
         mu_iscutsel[i] = 1;
         break;
       }
-    //
+    mu_ismvasel[i] = 0;
+    for(const auto & mvabased_muon: mvabased_muons)
+      if(muon == mvabased_muon)
+      {
+        mu_ismvasel[i] = 1;
+        break;
+      }
   }
 }
 
 void
 SyncNtupleManager::read(std::vector<const RecoElectron *> & electrons,
                         std::vector<const RecoElectron *> & fakeable_electrons,
-                        std::vector<const RecoElectron *> & cutbased_electrons)
+                        std::vector<const RecoElectron *> & cutbased_electrons,
+                        std::vector<const RecoElectron *> & mvabased_electrons)
 {
   n_presel_ele = electrons.size();
   n_fakeablesel_ele = fakeable_electrons.size();
   n_cutsel_ele = cutbased_electrons.size();
+  n_mvasel_ele = mvabased_electrons.size();
   const Int_t nof_iterations = std::min(n_presel_ele, nof_eles);
   for(Int_t i = 0; i < nof_iterations; ++i)
   {
@@ -349,7 +359,13 @@ SyncNtupleManager::read(std::vector<const RecoElectron *> & electrons,
         ele_iscutsel[i] = 1;
         break;
       }
-    //
+    ele_ismvasel[i] = 0;
+    for(const auto & mvabased_electron: mvabased_electrons)
+      if(electron == mvabased_electron)
+      {
+        ele_ismvasel[i] = 1;
+        break;
+      }
   }
 }
 

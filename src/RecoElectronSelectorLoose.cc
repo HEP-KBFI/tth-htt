@@ -1,6 +1,6 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronSelectorLoose.h" // RecoElectronSelectorLoose
 
-#include <cmath> // fabs
+#include <cmath> // std::fabs()
 
 RecoElectronSelectorLoose::RecoElectronSelectorLoose()
   : min_pt_(7.)
