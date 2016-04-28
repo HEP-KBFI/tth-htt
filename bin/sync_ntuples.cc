@@ -63,8 +63,8 @@ typedef std::vector<std::string> vstring;
 //--- declare constants
 //const double z_mass   = 91.1876;
 //const double z_window = 10.;
-const double met_coef =  0.00397; // KE: we'll use it later
-const double mht_coef =  0.00265; // KE: we'll use it later
+const double met_coef =  0.00397;
+const double mht_coef =  0.00265;
 
 //enum { k2epp_btight, k2epp_bloose, k2emm_btight, k2emm_bloose, k1e1mupp_btight, k1e1mupp_bloose, k1e1mumm_btight, k1e1mumm_bloose, k2mupp_btight, k2mupp_bloose, k2mumm_btight, k2mumm_bloose };
 
@@ -241,7 +241,7 @@ int main(int argc, char* argv[])
 //  RecoMuonCollectionGenMatcher muonGenMatcher;
   RecoMuonCollectionSelectorLoose preselMuonSelector;
   RecoMuonCollectionSelectorFakeable fakeableMuonSelector;
-  RecoMuonCollectionSelectorTight tightMuonSelector;
+  RecoMuonCollectionSelectorCutBased cutBasedSelector;
 
   RecoElectronReader* electronReader = new RecoElectronReader("nselLeptons", "selLeptons");
   electronReader->setBranchAddresses(inputTree);
@@ -249,7 +249,7 @@ int main(int argc, char* argv[])
   RecoElectronCollectionCleaner electronCleaner(0.05); // KE: 0.3 -> 0.05
   RecoElectronCollectionSelectorLoose preselElectronSelector;
   RecoElectronCollectionSelectorFakeable fakeableElectronSelector;
-  RecoElectronCollectionSelectorTight tightElectronSelector;
+  RecoElectronCollectionSelectorCutBased cutBasedElectronSelector;
 
   RecoHadTauReader* hadTauReader = new RecoHadTauReader("nTauGood", "TauGood");
   hadTauReader->setBranchAddresses(inputTree);
@@ -470,29 +470,21 @@ int main(int argc, char* argv[])
     std::vector<const RecoMuon*> muon_ptrs = convert_to_ptrs(muons);
     std::vector<const RecoMuon*> cleanedMuons = muon_ptrs; // CV: no cleaning needed for muons, as they have the highest priority in the overlap removal
     std::vector<const RecoMuon*> preselMuons = preselMuonSelector(cleanedMuons);
-    //std::vector<const RecoMuon*> fakeableMuons = fakeableMuonSelector(preselMuons); // KE: we need it later
-    //std::vector<const RecoMuon*> tightMuons = tightMuonSelector(preselMuons); // KE: we need it later
+    std::vector<const RecoMuon*> fakeableMuons = fakeableMuonSelector(preselMuons);
+    std::vector<const RecoMuon*> cutBasedMuons = cutBasedSelector(preselMuons);
     std::vector<const RecoMuon*> selMuons = preselMuons;
-//    if      ( leptonSelection == kLoose    ) selMuons = preselMuons;
-//    else if ( leptonSelection == kFakeable ) selMuons = fakeableMuons;
-//    else if ( leptonSelection == kTight    ) selMuons = tightMuons;
-//    else assert(0);
     std::sort(preselMuons.begin(), preselMuons.end(), isHigherPt);
-    snm.read(preselMuons);
+    snm.read(preselMuons, fakeableMuons, cutBasedMuons);
 
     std::vector<RecoElectron> electrons = electronReader->read();
     std::vector<const RecoElectron*> electron_ptrs = convert_to_ptrs(electrons);
     std::vector<const RecoElectron*> cleanedElectrons = electronCleaner(electron_ptrs, selMuons);
     std::vector<const RecoElectron*> preselElectrons = preselElectronSelector(cleanedElectrons);
-//    std::vector<const RecoElectron*> fakeableElectrons = fakeableElectronSelector(preselElectrons); // KE: we need it later
-//    std::vector<const RecoElectron*> tightElectrons = tightElectronSelector(preselElectrons); // KE: we need it later
+    std::vector<const RecoElectron*> fakeableElectrons = fakeableElectronSelector(preselElectrons);
+    std::vector<const RecoElectron*> cutbasedElectrons = cutBasedElectronSelector(preselElectrons);
     std::vector<const RecoElectron*> selElectrons = preselElectrons;
-//    if      ( leptonSelection == kLoose    ) selElectrons = preselElectrons;
-//    else if ( leptonSelection == kFakeable ) selElectrons = fakeableElectrons;
-//    else if ( leptonSelection == kTight    ) selElectrons = tightElectrons;
-//    else assert(0);
     std::sort(preselElectrons.begin(), preselElectrons.end(), isHigherPt);
-    snm.read(preselElectrons);
+    snm.read(preselElectrons, fakeableElectrons, cutbasedElectrons);
 
     std::vector<RecoHadTau> hadTaus = hadTauReader->read();
     std::vector<const RecoHadTau*> hadTau_ptrs = convert_to_ptrs(hadTaus);
@@ -574,15 +566,15 @@ int main(int argc, char* argv[])
 //--- compute MHT and linear MET discriminant (met_LD)
     LV mht_p4(0,0,0,0);
     for ( std::vector<const RecoJet*>::const_iterator jet = selJets.begin();
-	  jet != selJets.end(); ++jet ) {
+          jet != selJets.end(); ++jet ) {
       mht_p4 += (*jet)->p4_;
     }
     for ( std::vector<const RecoLepton*>::const_iterator lepton = preselLeptons.begin();
-	  lepton != preselLeptons.end(); ++lepton ) {
+          lepton != preselLeptons.end(); ++lepton ) {
       mht_p4 += (*lepton)->p4_;
     }
     for ( std::vector<const RecoHadTau*>::const_iterator hadTau = selHadTaus.begin();
-	  hadTau != selHadTaus.end(); ++hadTau ) {
+          hadTau != selHadTaus.end(); ++hadTau ) {
       mht_p4 += (*hadTau)->p4_;
     }
     const Double_t met_LD = met_coef*met_p4.pt() + mht_coef*mht_p4.pt();

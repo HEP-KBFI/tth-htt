@@ -32,19 +32,23 @@ class ParticleCollectionSelector
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronSelectorLoose.h"
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronSelectorTight.h"
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronSelectorFakeable.h"
+#include "tthAnalysis/HiggsToTauTau/interface/RecoElectronSelectorCutBased.h"
 
 typedef ParticleCollectionSelector<RecoElectron, RecoElectronSelectorLoose> RecoElectronCollectionSelectorLoose;
 typedef ParticleCollectionSelector<RecoElectron, RecoElectronSelectorTight> RecoElectronCollectionSelectorTight;
 typedef ParticleCollectionSelector<RecoElectron, RecoElectronSelectorFakeable> RecoElectronCollectionSelectorFakeable;
+typedef ParticleCollectionSelector<RecoElectron, RecoElectronSelectorCutBased> RecoElectronCollectionSelectorCutBased;
 
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuon.h"
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonSelectorLoose.h"
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonSelectorTight.h"
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonSelectorFakeable.h"
+#include "tthAnalysis/HiggsToTauTau/interface/RecoMuonSelectorCutBased.h"
 
 typedef ParticleCollectionSelector<RecoMuon, RecoMuonSelectorLoose> RecoMuonCollectionSelectorLoose;
 typedef ParticleCollectionSelector<RecoMuon, RecoMuonSelectorTight> RecoMuonCollectionSelectorTight;
 typedef ParticleCollectionSelector<RecoMuon, RecoMuonSelectorFakeable> RecoMuonCollectionSelectorFakeable;
+typedef ParticleCollectionSelector<RecoMuon, RecoMuonSelectorCutBased> RecoMuonCollectionSelectorCutBased;
 
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTau.h"
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauSelectorLoose.h"

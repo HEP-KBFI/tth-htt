@@ -256,9 +256,13 @@ SyncNtupleManager::readRunLumiEvent(UInt_t run_,
 }
 
 void
-SyncNtupleManager::read(std::vector<const RecoMuon *> & muons)
+SyncNtupleManager::read(std::vector<const RecoMuon *> & muons,
+                        std::vector<const RecoMuon *> & fakeable_muons,
+                        std::vector<const RecoMuon *> & cutbased_muons)
 {
   n_presel_mu = muons.size();
+  n_fakeablesel_mu = fakeable_muons.size();
+  n_cutsel_mu = cutbased_muons.size();
   const Int_t nof_iterations = std::min(n_presel_mu, nof_mus);
   for(Int_t i = 0; i < nof_iterations; ++i)
   {
@@ -281,14 +285,32 @@ SyncNtupleManager::read(std::vector<const RecoMuon *> & muons)
     mu_segmentCompatibility[i] = muon -> segmentCompatibility_;
     mu_leptonMVA[i] = muon -> mvaRawTTH_;
     mu_mediumID[i] = muon -> passesMediumIdPOG_;
+    mu_isfakeablesel[i] = 0;
+    for(const auto & fakeable_muon: fakeable_muons)
+      if(muon == fakeable_muon)
+      {
+        mu_isfakeablesel[i] = 1;
+        break;
+      }
+    mu_iscutsel[i] = 0;
+    for(const auto & cutbased_muon: cutbased_muons)
+      if(muon == cutbased_muon)
+      {
+        mu_iscutsel[i] = 1;
+        break;
+      }
     //
   }
 }
 
 void
-SyncNtupleManager::read(std::vector<const RecoElectron *> & electrons)
+SyncNtupleManager::read(std::vector<const RecoElectron *> & electrons,
+                        std::vector<const RecoElectron *> & fakeable_electrons,
+                        std::vector<const RecoElectron *> & cutbased_electrons)
 {
   n_presel_ele = electrons.size();
+  n_fakeablesel_ele = fakeable_electrons.size();
+  n_cutsel_ele = cutbased_electrons.size();
   const Int_t nof_iterations = std::min(n_presel_ele, nof_eles);
   for(Int_t i = 0; i < nof_iterations; ++i)
   {
@@ -313,6 +335,20 @@ SyncNtupleManager::read(std::vector<const RecoElectron *> & electrons)
     ele_isChargeConsistent[i] = electron -> tightCharge_ == 2 ? 1 : 0;
     ele_passesConversionVeto[i] = electron -> passesConversionVeto_;
     ele_nMissingHits[i] = electron -> nLostHits_;
+    ele_isfakeablesel[i] = 0;
+    for(const auto & fakeable_electron: fakeable_electrons)
+      if(electron == fakeable_electron)
+      {
+        ele_isfakeablesel[i] = 1;
+        break;
+      }
+    ele_iscutsel[i] = 0;
+    for(const auto & cutbased_electron: cutbased_electrons)
+      if(electron == cutbased_electron)
+      {
+        ele_iscutsel[i] = 1;
+        break;
+      }
     //
   }
 }
