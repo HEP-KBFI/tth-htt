@@ -246,6 +246,16 @@ SyncNtupleManager::initializeBranches()
 }
 
 void
+SyncNtupleManager::readRunLumiEvent(UInt_t run_,
+                                    UInt_t lumi_,
+                                    ULong64_t event_)
+{
+  nEvent = event_;
+  ls = lumi_;
+  run = run_;
+}
+
+void
 SyncNtupleManager::read(std::vector<const RecoMuon *> & muons)
 {
   n_presel_mu = muons.size();
@@ -368,6 +378,16 @@ SyncNtupleManager::read(std::vector<const RecoJet *> & jets)
     jet_E[i] = (jet -> p4_).E();
     jet_CSV[i] = jet -> BtagCSV_;
   }
+}
+
+void
+SyncNtupleManager::read(Float_t value,
+                        FloatVariableType type)
+{
+  if     (type == FloatVariableType::PFMET)    PFMET = value;
+  else if(type == FloatVariableType::PFMETphi) PFMETphi = value;
+  else if(type == FloatVariableType::MHT)      MHT = value;
+  else if(type == FloatVariableType::metLD)    metLD = value;
 }
 
 void

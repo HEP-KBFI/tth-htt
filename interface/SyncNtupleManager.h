@@ -13,6 +13,8 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTau.h"
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h"
 
+enum FloatVariableType { PFMET, PFMETphi, MHT, metLD };
+
 template <typename T>
 struct Traits
 {
@@ -45,10 +47,15 @@ public:
   ~SyncNtupleManager();
 
   void initializeBranches();
+  void readRunLumiEvent(UInt_t run,
+                        UInt_t lumi,
+                        ULong64_t event);
   void read(std::vector<const RecoMuon *> & muons);
   void read(std::vector<const RecoElectron *> & electrons);
   void read(std::vector<const RecoHadTau *> & hadtaus);
   void read(std::vector<const RecoJet *> & jets);
+  void read(Float_t value,
+            FloatVariableType type);
   void fill();
   void write();
 private:

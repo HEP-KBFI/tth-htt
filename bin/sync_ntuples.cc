@@ -233,7 +233,7 @@ int main(int argc, char* argv[])
   inputTree->SetBranchAddress(MET_ETA_KEY, &met_eta);
   MET_PHI_TYPE met_phi;
   inputTree->SetBranchAddress(MET_PHI_KEY, &met_phi);
-//  LV met_p4(met_pt, met_eta, met_phi, 0.); // KE: use it later, though
+  LV met_p4(met_pt, met_eta, met_phi, 0.);
 
 //--- declare particle collections
   RecoMuonReader* muonReader = new RecoMuonReader("nselLeptons", "selLeptons");
@@ -455,6 +455,7 @@ int main(int argc, char* argv[])
     inputTree->GetEntry(idxEntry);
 
     if ( run_lumi_eventSelector && !(*run_lumi_eventSelector)(run, lumi, event) ) continue;
+    snm.readRunLumiEvent(run, lumi, event);
 
 //    bool isTriggered_1e = use_triggers_1e && hltPaths_isTriggered(triggers_1e);
 //    bool isTriggered_2e = use_triggers_2e && hltPaths_isTriggered(triggers_2e);
@@ -471,11 +472,12 @@ int main(int argc, char* argv[])
     std::vector<const RecoMuon*> preselMuons = preselMuonSelector(cleanedMuons);
     //std::vector<const RecoMuon*> fakeableMuons = fakeableMuonSelector(preselMuons); // KE: we need it later
     //std::vector<const RecoMuon*> tightMuons = tightMuonSelector(preselMuons); // KE: we need it later
-    std::vector<const RecoMuon*> selMuons;
+    std::vector<const RecoMuon*> selMuons = preselMuons;
 //    if      ( leptonSelection == kLoose    ) selMuons = preselMuons;
 //    else if ( leptonSelection == kFakeable ) selMuons = fakeableMuons;
 //    else if ( leptonSelection == kTight    ) selMuons = tightMuons;
 //    else assert(0);
+    std::sort(preselMuons.begin(), preselMuons.end(), isHigherPt);
     snm.read(preselMuons);
 
     std::vector<RecoElectron> electrons = electronReader->read();
@@ -484,17 +486,19 @@ int main(int argc, char* argv[])
     std::vector<const RecoElectron*> preselElectrons = preselElectronSelector(cleanedElectrons);
 //    std::vector<const RecoElectron*> fakeableElectrons = fakeableElectronSelector(preselElectrons); // KE: we need it later
 //    std::vector<const RecoElectron*> tightElectrons = tightElectronSelector(preselElectrons); // KE: we need it later
-    std::vector<const RecoElectron*> selElectrons;
+    std::vector<const RecoElectron*> selElectrons = preselElectrons;
 //    if      ( leptonSelection == kLoose    ) selElectrons = preselElectrons;
 //    else if ( leptonSelection == kFakeable ) selElectrons = fakeableElectrons;
 //    else if ( leptonSelection == kTight    ) selElectrons = tightElectrons;
 //    else assert(0);
+    std::sort(preselElectrons.begin(), preselElectrons.end(), isHigherPt);
     snm.read(preselElectrons);
 
     std::vector<RecoHadTau> hadTaus = hadTauReader->read();
     std::vector<const RecoHadTau*> hadTau_ptrs = convert_to_ptrs(hadTaus);
     std::vector<const RecoHadTau*> cleanedHadTaus = hadTauCleaner(hadTau_ptrs, selMuons, selElectrons);
     std::vector<const RecoHadTau*> selHadTaus = hadTauSelector(cleanedHadTaus);
+    std::sort(selHadTaus.begin(), selHadTaus.end(), isHigherPt);
     snm.read(selHadTaus);
     
 //--- build collections of jets and select subset of jets passing b-tagging criteria
@@ -581,7 +585,12 @@ int main(int argc, char* argv[])
 	  hadTau != selHadTaus.end(); ++hadTau ) {
       mht_p4 += (*hadTau)->p4_;
     }
-//    double met_LD = met_coef*met_p4.pt() + mht_coef*mht_p4.pt();    // KE: use it, though
+    const Double_t met_LD = met_coef*met_p4.pt() + mht_coef*mht_p4.pt();
+
+    snm.read(met_pt, FloatVariableType::PFMET);
+    snm.read(met_phi, FloatVariableType::PFMETphi);
+    snm.read(mht_p4.pt(), FloatVariableType::MHT);
+    snm.read(met_LD, FloatVariableType::metLD);
 
 //--- compute event-level weight for data/MC correction of b-tagging efficiency and mistag rate
 //   (using the method "Event reweighting using scale factors calculated with a tag and probe method", 
@@ -653,11 +662,11 @@ int main(int argc, char* argv[])
 //    preselEvtHistManager.fillHistograms(mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, evtWeight);
 
 //--- apply final event selection 
-    std::vector<const RecoLepton*> selLeptons;    
-    selLeptons.reserve(selElectrons.size() + selMuons.size());
-    selLeptons.insert(selLeptons.end(), selElectrons.begin(), selElectrons.end());
-    selLeptons.insert(selLeptons.end(), selMuons.begin(), selMuons.end());
-    std::sort(selLeptons.begin(), selLeptons.end(), isHigherPt);
+//    std::vector<const RecoLepton*> selLeptons;
+//    selLeptons.reserve(selElectrons.size() + selMuons.size());
+//    selLeptons.insert(selLeptons.end(), selElectrons.begin(), selElectrons.end());
+//    selLeptons.insert(selLeptons.end(), selMuons.begin(), selMuons.end());
+//    std::sort(selLeptons.begin(), selLeptons.end(), isHigherPt);
     // require exactly two leptons passing tight selection criteria of final event selection 
 //    if ( !(selLeptons.size() == 2) ) continue;
 //    const RecoLepton* selLepton_lead = selLeptons[0];
