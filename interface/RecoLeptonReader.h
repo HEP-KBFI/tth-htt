@@ -52,6 +52,7 @@ class RecoLeptonReader
   std::string branchName_jetPtRatio_;
   std::string branchName_jetBtagCSV_;
   std::string branchName_tightCharge_;
+  std::string branchName_charge_;
 
   Int_t nLeptons_;
   Float_t* pt_;
@@ -71,6 +72,7 @@ class RecoLeptonReader
   Float_t* jetPtRatio_;
   Float_t* jetBtagCSV_;
   Int_t* tightCharge_;
+  Int_t* charge_;
 
   // CV: make sure that only one RecoLeptonReader instance exists for a given branchName,
   //     as ROOT cannot handle multiple TTree::SetBranchAddress calls for the same branch.

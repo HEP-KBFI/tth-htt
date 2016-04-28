@@ -267,7 +267,7 @@ SyncNtupleManager::read(std::vector<const RecoMuon *> & muons)
     mu_eta[i] = muon -> eta_;
     mu_phi[i] = muon -> phi_;
     mu_E[i] = (muon -> p4_).E();
-    mu_charge[i] = muon -> pdgId_ > 0 ? 1 : -1;
+    mu_charge[i] = muon -> charge_;
     mu_miniRelIso[i] = muon -> relIso_;
     mu_miniIsoCharged[i] = muon -> miniIsoCharged_;
     mu_miniIsoNeutral[i] = muon -> miniIsoNeutral_;
@@ -297,7 +297,7 @@ SyncNtupleManager::read(std::vector<const RecoElectron *> & electrons)
     ele_eta[i] = electron -> eta_;
     ele_phi[i] = electron -> phi_;
     ele_E[i] = (electron -> p4_).E();
-    ele_charge[i] = electron -> pdgId_ > 0 ? 1 : -1;
+    ele_charge[i] = electron -> charge_;
     ele_miniRelIso[i] = electron -> relIso_;
     ele_miniIsoCharged[i] = electron -> miniIsoCharged_;
     ele_miniIsoNeutral[i] = electron -> miniIsoNeutral_;
@@ -337,30 +337,30 @@ SyncNtupleManager::read(std::vector<const RecoHadTau *> & hadtaus)
     tau_byCombinedIsolationDeltaBetaCorr3Hits[i] = hadtau -> raw_cut_dR05_;
 
     const Int_t idCI3hit = hadtau -> id_cut_dR05_;
-    if(idCI3hit >= 1) tau_byLooseCombinedIsolationDeltaBetaCorr3Hits[i] = 1;
-    if(idCI3hit >= 2) tau_byMediumCombinedIsolationDeltaBetaCorr3Hits[i] = 1;
-    if(idCI3hit >= 3) tau_byTightCombinedIsolationDeltaBetaCorr3Hits[i] = 1;
+    tau_byLooseCombinedIsolationDeltaBetaCorr3Hits[i] = idCI3hit >= 1 ? 1 : 0;
+    tau_byMediumCombinedIsolationDeltaBetaCorr3Hits[i] = idCI3hit >= 2 ? 1 : 0;
+    tau_byTightCombinedIsolationDeltaBetaCorr3Hits[i] = idCI3hit >= 3 ? 1 : 0;
 
     const Int_t idCI3hitdR03 = hadtau -> id_cut_dR03_;
-    if(idCI3hitdR03 >= 1) tau_byLooseCombinedIsolationDeltaBetaCorr3HitsdR03[i] = 1;
-    if(idCI3hitdR03 >= 2) tau_byMediumCombinedIsolationDeltaBetaCorr3HitsdR03[i] = 1;
-    if(idCI3hitdR03 >= 3) tau_byTightCombinedIsolationDeltaBetaCorr3HitsdR03[i] = 1;
+    tau_byLooseCombinedIsolationDeltaBetaCorr3HitsdR03[i] = idCI3hitdR03 >= 1 ? 1 : 0;
+    tau_byMediumCombinedIsolationDeltaBetaCorr3HitsdR03[i] = idCI3hitdR03 >= 2 ? 1 : 0;
+    tau_byTightCombinedIsolationDeltaBetaCorr3HitsdR03[i] = idCI3hitdR03 >= 3 ? 1 : 0;
 
     const Int_t idMVArun2dR03 = hadtau -> id_mva_dR03_;
-    if(idMVArun2dR03 >= 2) tau_byLooseIsolationMVArun2v1DBdR03oldDMwLT[i] = 1;
-    if(idMVArun2dR03 >= 3) tau_byMediumIsolationMVArun2v1DBdR03oldDMwLT[i] = 1;
-    if(idMVArun2dR03 >= 4) tau_byTightIsolationMVArun2v1DBdR03oldDMwLT[i] = 1;
-    if(idMVArun2dR03 >= 5) tau_byVTightIsolationMVArun2v1DBdR03oldDMwLT[i] = 1;
+    tau_byLooseIsolationMVArun2v1DBdR03oldDMwLT[i] = idMVArun2dR03 >= 2 ? 1 : 0;
+    tau_byMediumIsolationMVArun2v1DBdR03oldDMwLT[i] = idMVArun2dR03 >= 3 ? 1 : 0;
+    tau_byTightIsolationMVArun2v1DBdR03oldDMwLT[i] = idMVArun2dR03 >= 4 ? 1 : 0;
+    tau_byVTightIsolationMVArun2v1DBdR03oldDMwLT[i] = idMVArun2dR03 >= 5 ? 1 : 0;
 
     const Int_t idAntiMu = hadtau -> antiMuon_;
-    if(idAntiMu >= 1) tau_againstMuonLoose3[i] = 1;
-    if(idAntiMu >= 2) tau_againstMuonTight3[i] = 1;
+    tau_againstMuonLoose3[i] = idAntiMu >= 1 ? 1 : 0;
+    tau_againstMuonTight3[i] = idAntiMu >= 2 ? 1 : 0;
 
     const Int_t idAntiErun2 = hadtau -> antiElectron_;
-    if(idAntiErun2 >= 1) tau_againstElectronVLooseMVA6[i] = 1;
-    if(idAntiErun2 >= 2) tau_againstElectronLooseMVA6[i] = 1;
-    if(idAntiErun2 >= 3) tau_againstElectronMediumMVA6[i] = 1;
-    if(idAntiErun2 >= 4) tau_againstElectronTightMVA6[i] = 1;
+    tau_againstElectronVLooseMVA6[i] = idAntiErun2 >= 1 ? 1 : 0;
+    tau_againstElectronLooseMVA6[i] = idAntiErun2 >= 2 ? 1 : 0;
+    tau_againstElectronMediumMVA6[i] = idAntiErun2 >= 3 ? 1 : 0;
+    tau_againstElectronTightMVA6[i] = idAntiErun2 >= 4 ? 1 : 0;
   }
 }
 

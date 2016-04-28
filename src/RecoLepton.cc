@@ -16,7 +16,8 @@ RecoLepton::RecoLepton(Double_t pt,
                        Double_t jetPtRel,
                        Double_t jetPtRatio,
                        Double_t jetBtagCSV,
-                       Int_t tightCharge)
+                       Int_t tightCharge,
+                       Int_t charge)
   : GenLepton(pt, eta, phi, mass, pdgId)
   , dxy_(dxy)
   , dz_(dz)
@@ -30,6 +31,7 @@ RecoLepton::RecoLepton(Double_t pt,
   , jetPtRatio_(jetPtRatio)
   , jetBtagCSV_(jetBtagCSV)  
   , tightCharge_(tightCharge)
+  , charge_(charge)
   , genLepton_(0)
   , genHadTau_(0)
   , genJet_(0)

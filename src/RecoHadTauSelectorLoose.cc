@@ -13,10 +13,10 @@ RecoHadTauSelectorLoose::RecoHadTauSelectorLoose()
   , min_raw_mva_dR05_(-1.e+6)
   , min_id_cut_dR03_(-1000)
   , max_raw_cut_dR03_(1.e+6)
-  , min_id_cut_dR05_(-1000)
+  , min_id_cut_dR05_(1)
   , max_raw_cut_dR05_(10.) // maximum value of HPS combined isolation 3-hit pT-sum
   , min_antiElectron_(-1000)
-  , min_antiMuon_(-1000)   
+  , min_antiMuon_(-1000)
 {}
 
 bool RecoHadTauSelectorLoose::operator()(const RecoHadTau& hadTau) const

@@ -12,7 +12,7 @@ RecoElectronSelectorLoose::RecoElectronSelectorLoose()
   , min_mvaRawPOG_({ -0.7, -0.83, -0.92 })
   , binning_absEta_({ 0.8, 1.479 })
   , apply_tightCharge_(false)
-  , apply_conversionVeto_(false)
+  , apply_conversionVeto_(true)
   , max_nLostHits_(1)
 {
   assert(min_mvaRawPOG_.size() == 3);
@@ -28,7 +28,7 @@ bool RecoElectronSelectorLoose::operator()(const RecoElectron& electron) const
        electron.relIso_ <= max_relIso_ &&
        electron.sip3d_ <= max_sip3d_ &&
        (electron.tightCharge_ >= 2 || !apply_tightCharge_) && 
-       (electron.passesConversionVeto_ || !apply_conversionVeto_) &&
+       (electron.passesConversionVeto_ > 0 || !apply_conversionVeto_) &&
        electron.nLostHits_ <= max_nLostHits_ ) {
     int idxBin = -1;
     if      ( electron.absEta_ <= binning_absEta_[0] ) idxBin = 0;

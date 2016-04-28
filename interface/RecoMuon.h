@@ -25,6 +25,7 @@ public:
 	   Double_t jetPtRatio,
 	   Double_t jetBtagCSV,
 	   Int_t passesTightCharge,
+	   Int_t charge,
 	   Int_t passesLooseIdPOG,
 	   Int_t passesMediumIdPOG,
 	   Float_t segmentCompatibility);

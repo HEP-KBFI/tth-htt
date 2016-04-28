@@ -25,6 +25,7 @@ class RecoElectron
 	       Double_t jetPtRatio,
 	       Double_t jetBtagCSV,
 	       Int_t passesTightCharge,
+	       Int_t charge,
 	       Double_t mvaRawPOG,
 	       Double_t sigmaEtaEta,
 	       Double_t HoE,

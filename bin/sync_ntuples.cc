@@ -246,7 +246,7 @@ int main(int argc, char* argv[])
   RecoElectronReader* electronReader = new RecoElectronReader("nselLeptons", "selLeptons");
   electronReader->setBranchAddresses(inputTree);
 //  RecoElectronCollectionGenMatcher electronGenMatcher;
-  RecoElectronCollectionCleaner electronCleaner(0.3);
+  RecoElectronCollectionCleaner electronCleaner(0.05); // KE: 0.3 -> 0.05
   RecoElectronCollectionSelectorLoose preselElectronSelector;
   RecoElectronCollectionSelectorFakeable fakeableElectronSelector;
   RecoElectronCollectionSelectorTight tightElectronSelector;
@@ -254,8 +254,8 @@ int main(int argc, char* argv[])
   RecoHadTauReader* hadTauReader = new RecoHadTauReader("nTauGood", "TauGood");
   hadTauReader->setBranchAddresses(inputTree);
 //  RecoHadTauCollectionGenMatcher hadTauGenMatcher;
-  RecoHadTauCollectionCleaner hadTauCleaner(0.3);
-  RecoHadTauCollectionSelectorTight hadTauSelector;
+  RecoHadTauCollectionCleaner hadTauCleaner(0.4); // KE: 0.3 -> 0.4
+  RecoHadTauCollectionSelectorLoose hadTauSelector; // KE: Tight -> Loose
   
   RecoJetReader* jetReader = new RecoJetReader("nJet", "Jet");
   jetReader->setJetPt_central_or_shift(jetPt_option);
@@ -263,7 +263,7 @@ int main(int argc, char* argv[])
   jetReader->setBranchName_BtagWeight("");
   jetReader->setBranchAddresses(inputTree);
 //  RecoJetCollectionGenMatcher jetGenMatcher;
-  RecoJetCollectionCleaner jetCleaner(0.5);
+  RecoJetCollectionCleaner jetCleaner(0.4); // KE: 0.5 -> 0.4
   RecoJetCollectionSelector jetSelector;  
 //  RecoJetCollectionSelectorBtagLoose jetSelectorBtagLoose;
 //  RecoJetCollectionSelectorBtagMedium jetSelectorBtagMedium;

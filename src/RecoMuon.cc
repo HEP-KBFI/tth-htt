@@ -17,11 +17,12 @@ RecoMuon::RecoMuon(Double_t pt,
 		   Double_t jetPtRatio,
 		   Double_t jetBtagCSV,
 		   Int_t passesTightCharge,
+		   Int_t charge,
 		   Int_t passesLooseIdPOG,
 		   Int_t passesMediumIdPOG,
 		   Float_t segmentCompatibility)
   : RecoLepton(pt, eta, phi, mass, pdgId, dxy, dz, relIso, miniIsoCharged, miniIsoNeutral, sip3d, mvaRawTTH,
-               jetNDauChargedMVASel, jetPtRel, jetPtRatio, jetBtagCSV, passesTightCharge)
+               jetNDauChargedMVASel, jetPtRel, jetPtRatio, jetBtagCSV, passesTightCharge, charge)
   , passesLooseIdPOG_(passesLooseIdPOG)
   , passesMediumIdPOG_(passesMediumIdPOG)
   , segmentCompatibility_(segmentCompatibility)

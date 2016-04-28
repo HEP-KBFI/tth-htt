@@ -17,6 +17,7 @@ RecoElectron::RecoElectron(Double_t pt,
 			   Double_t jetPtRatio,
 			   Double_t jetBtagCSV,
 			   Int_t passesTightCharge,
+			   Int_t charge,
 			   Double_t mvaRawPOG,
 			   Double_t sigmaEtaEta,
 			   Double_t HoE,
@@ -26,7 +27,7 @@ RecoElectron::RecoElectron(Double_t pt,
 			   Int_t nLostHits,
 			   Int_t passesConversionVeto)
   : RecoLepton(pt, eta, phi, mass, pdgId, dxy, dz, relIso, miniIsoCharged, miniIsoNeutral, sip3d, mvaRawTTH,
-               jetNDauChargedMVASel, jetPtRel, jetPtRatio, jetBtagCSV, passesTightCharge)
+               jetNDauChargedMVASel, jetPtRel, jetPtRatio, jetBtagCSV, passesTightCharge, charge)
   , mvaRawPOG_(mvaRawPOG)
   , sigmaEtaEta_(sigmaEtaEta)
   , HoE_(HoE)

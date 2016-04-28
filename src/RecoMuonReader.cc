@@ -110,8 +110,9 @@ std::vector<RecoMuon> RecoMuonReader::read() const
         gLeptonReader->jetNDauChargedMVASel_[idxLepton],
         gLeptonReader->jetPtRel_[idxLepton],
         gLeptonReader->jetPtRatio_[idxLepton],
-        gLeptonReader->jetBtagCSV_[idxLepton],	
+        gLeptonReader->jetBtagCSV_[idxLepton],
         gLeptonReader->tightCharge_[idxLepton],
+        gLeptonReader->charge_[idxLepton],
         gMuonReader->looseIdPOG_[idxLepton],
         gMuonReader->mediumIdPOG_[idxLepton],
         gMuonReader->segmentCompatibility_[idxLepton] }));

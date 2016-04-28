@@ -28,6 +28,7 @@ RecoLeptonReader::RecoLeptonReader()
   , jetPtRatio_(0)
   , jetBtagCSV_(0)  
   , tightCharge_(0)
+  , charge_(0)
 {
   setBranchNames();
 }
@@ -53,6 +54,7 @@ RecoLeptonReader::RecoLeptonReader(const std::string& branchName_num, const std:
   , jetPtRatio_(0)
   , jetBtagCSV_(0)
   , tightCharge_(0)
+  , charge_(0)
 {
   setBranchNames();
 }
@@ -81,6 +83,7 @@ RecoLeptonReader::~RecoLeptonReader()
     delete gInstance->jetPtRatio_;
     delete gInstance->jetBtagCSV_;
     delete gInstance->tightCharge_;
+    delete gInstance->charge_;
     instances_[branchName_obj_] = 0;
   }
 }
@@ -105,6 +108,7 @@ void RecoLeptonReader::setBranchNames()
     branchName_jetPtRatio_ = Form("%s_%s", branchName_obj_.data(), "jetPtRatio");
     branchName_jetBtagCSV_ = Form("%s_%s", branchName_obj_.data(), "jetBTagCSV");
     branchName_tightCharge_ = Form("%s_%s", branchName_obj_.data(), "tightCharge");
+    branchName_charge_ = Form("%s_%s", branchName_obj_.data(), "charge");
     instances_[branchName_obj_] = this;
   } else {
     if ( branchName_num_ != instances_[branchName_obj_]->branchName_num_ ) {
@@ -158,5 +162,7 @@ void RecoLeptonReader::setBranchAddresses(TTree* tree)
     tree->SetBranchAddress(branchName_jetBtagCSV_.data(), jetBtagCSV_);
     tightCharge_ = new Int_t[max_nLeptons_];
     tree->SetBranchAddress(branchName_tightCharge_.data(), tightCharge_);
+    charge_ = new Int_t[max_nLeptons_];
+    tree->SetBranchAddress(branchName_charge_.data(), charge_);
   }
 }

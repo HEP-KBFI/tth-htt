@@ -27,7 +27,8 @@ public:
 	     Double_t jetPtRel,
 	     Double_t jetPtRatio,
 	     Double_t jetBtagCSV,
-	     Int_t tightCharge);
+	     Int_t tightCharge,
+	     Int_t charge);
 
   /**
    * @brief Checks whether a given lepton is an electron by its PDG id
@@ -56,6 +57,7 @@ public:
   Double_t jetPtRatio_;                 ///< ratio of lepton pT to pT of nearby jet
   Double_t jetBtagCSV_;                 ///< CSV b-tagging discriminator value of nearby jet
   Int_t tightCharge_;                   ///< Flag indicating if lepton passes (>= 2) or fails (< 2) tight charge requirement
+  Int_t charge_;                        ///< lepton charge
 
 //--- matching to generator level particles
   const GenLepton* genLepton_;
