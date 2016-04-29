@@ -12,7 +12,7 @@ RecoElectronSelectorLoose::RecoElectronSelectorLoose()
   , min_mvaRawPOG_({ -0.7, -0.83, -0.92 })
   , binning_absEta_({ 0.8, 1.479 })
   , apply_tightCharge_(false)
-  , apply_conversionVeto_(true)
+  , apply_conversionVeto_(false)
   , max_nLostHits_(1)
 {
   assert(min_mvaRawPOG_.size() == 3);
