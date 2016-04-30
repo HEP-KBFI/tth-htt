@@ -287,6 +287,7 @@ SyncNtupleManager::read(std::vector<const RecoMuon *> & muons,
     mu_segmentCompatibility[i] = muon -> segmentCompatibility_;
     mu_leptonMVA[i] = muon -> mvaRawTTH_;
     mu_mediumID[i] = muon -> passesMediumIdPOG_;
+    mu_dpt_div_pt[i] = muon -> dpt_div_pt_;
     mu_isfakeablesel[i] = 0;
     for(const auto & fakeable_muon: fakeable_muons)
       if(muon == fakeable_muon)

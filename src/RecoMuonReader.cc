@@ -13,6 +13,9 @@ RecoMuonReader::RecoMuonReader()
   , leptonReader_(0)
   , looseIdPOG_(0)
   , mediumIdPOG_(0)
+#ifdef DPT_DIV_PT
+  , dpt_div_pt_(0)
+#endif
   , segmentCompatibility_(0)
 {
   leptonReader_ = new RecoLeptonReader(branchName_num_, branchName_obj_);
@@ -26,6 +29,7 @@ RecoMuonReader::RecoMuonReader(const std::string& branchName_num, const std::str
   , leptonReader_(0)
   , looseIdPOG_(0)
   , mediumIdPOG_(0)
+  , dpt_div_pt_(0)
   , segmentCompatibility_(0)
 {
   leptonReader_ = new RecoLeptonReader(branchName_num_, branchName_obj_);
@@ -41,7 +45,8 @@ RecoMuonReader::~RecoMuonReader()
     RecoMuonReader* gInstance = instances_[branchName_obj_];
     assert(gInstance);
     delete gInstance->looseIdPOG_;
-    delete gInstance->mediumIdPOG_; 
+    delete gInstance->mediumIdPOG_;
+    delete gInstance->dpt_div_pt_;
     delete gInstance->segmentCompatibility_;
     instances_[branchName_obj_] = 0;
   }
@@ -52,6 +57,7 @@ void RecoMuonReader::setBranchNames()
   if ( numInstances_[branchName_obj_] == 0 ) {
     branchName_looseIdPOG_ = Form("%s_%s", branchName_obj_.data(), "looseIdPOG");
     branchName_mediumIdPOG_ = Form("%s_%s", branchName_obj_.data(), "mediumMuonId");
+    branchName_dpt_div_pt_ = Form("%s_%s", branchName_obj_.data(), "dpt_div_pt");
     branchName_segmentCompatibility_ = Form("%s_%s", branchName_obj_.data(), "segmentCompatibility");
     instances_[branchName_obj_] = this;
   } else {
@@ -74,6 +80,8 @@ void RecoMuonReader::setBranchAddresses(TTree* tree)
     tree->SetBranchAddress(branchName_looseIdPOG_.data(), looseIdPOG_);
     mediumIdPOG_ = new Int_t[max_nLeptons];
     tree->SetBranchAddress(branchName_mediumIdPOG_.data(), mediumIdPOG_);
+    dpt_div_pt_ = new Float_t[max_nLeptons];
+    tree->SetBranchAddress(branchName_dpt_div_pt_.data(), dpt_div_pt_);
     segmentCompatibility_ = new Float_t[max_nLeptons];
     tree->SetBranchAddress(branchName_segmentCompatibility_.data(), segmentCompatibility_);
   }
@@ -115,6 +123,7 @@ std::vector<RecoMuon> RecoMuonReader::read() const
         gLeptonReader->charge_[idxLepton],
         gMuonReader->looseIdPOG_[idxLepton],
         gMuonReader->mediumIdPOG_[idxLepton],
+        gMuonReader->dpt_div_pt_[idxLepton],
         gMuonReader->segmentCompatibility_[idxLepton] }));
     }
   }

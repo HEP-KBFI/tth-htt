@@ -41,11 +41,13 @@ class RecoMuonReader
   RecoLeptonReader* leptonReader_;
 
   std::string branchName_looseIdPOG_; 
-  std::string branchName_mediumIdPOG_; 
+  std::string branchName_mediumIdPOG_;
+  std::string branchName_dpt_div_pt_;
   std::string branchName_segmentCompatibility_;
 
   Int_t* looseIdPOG_;
   Int_t* mediumIdPOG_;
+  Float_t* dpt_div_pt_;
   Float_t* segmentCompatibility_;
 
   // CV: make sure that only one RecoMuonReader instance exists for a given branchName,
