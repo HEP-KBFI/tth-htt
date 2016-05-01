@@ -13,9 +13,7 @@ RecoMuonReader::RecoMuonReader()
   , leptonReader_(0)
   , looseIdPOG_(0)
   , mediumIdPOG_(0)
-#ifdef DPT_DIV_PT
   , dpt_div_pt_(0)
-#endif
   , segmentCompatibility_(0)
 {
   leptonReader_ = new RecoLeptonReader(branchName_num_, branchName_obj_);
