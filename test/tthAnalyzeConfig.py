@@ -94,7 +94,7 @@ def generate_input_list(job_ids, secondary_files, primary_store, secondary_store
     input_list = []
     for job in job_ids:
         input_file = ""
-        subdir = "000" + job / 1000
+        subdir = "000" + str(job / 1000)
         if job in secondary_files:
             input_file = os.path.join(secondary_store, subdir, "tree_" + str(job) + ".root")
         else:
