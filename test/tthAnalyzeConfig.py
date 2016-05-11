@@ -94,10 +94,11 @@ def generate_input_list(job_ids, secondary_files, primary_store, secondary_store
     input_list = []
     for job in job_ids:
         input_file = ""
+        subdir = "000" + job / 1000
         if job in secondary_files:
-            input_file = os.path.join(secondary_store, "tree_" + str(job) + ".root")
+            input_file = os.path.join(secondary_store, subdir, "tree_" + str(job) + ".root")
         else:
-            input_file = os.path.join(primary_store, "tree_" + str(job) + ".root")
+            input_file = os.path.join(primary_store, subdir, "tree_" + str(job) + ".root")
         if debug:
             if not os.path.exists(input_file):
                 logging.error("File %s doesn't exists!" % input_file)
