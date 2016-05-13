@@ -89,7 +89,7 @@ int main(int argc, char* argv[])
     return EXIT_SUCCESS;
   }
 
-  std::cout << "<analyze_2lss_1tau>:" << std::endl;
+  std::cout << "<sync_ntuples>:" << std::endl;
 
 //--- keep track of time it takes the macro to execute
   TBenchmark clock;

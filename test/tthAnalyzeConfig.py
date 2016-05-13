@@ -1,7 +1,7 @@
 import json, os, codecs, stat, logging, sys
 from jinja2 import Template
 
-local_test = True
+local_test = False
 if local_test:
     import imp
     samples_module = imp.load_source("", "/home/karl/repos/tth-htt/test/tthAnalyzeSamples.py")
@@ -131,6 +131,7 @@ def create_setup(output_dir, exec_name, charge_selection, lepton_selection, max_
     cfg_dir = os.path.join(output_dir, "cfgs", subdir) # contains python config files
     histogram_dir = os.path.join(output_dir, "histograms", subdir) # contains histograms
     log_dir = os.path.join(output_dir, "logs", subdir) # contains logs of job outputs
+    datacard_dir = os.path.join(output_dir, "datacards", subdir) # contains datacard (*.root) files
     
     for d in [bashscript_dir, cfg_dir, histogram_dir, log_dir]:
         create_if_not_exists(d)
