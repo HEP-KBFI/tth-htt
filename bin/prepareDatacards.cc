@@ -34,6 +34,7 @@
 #include <string>
 #include <vector>
 #include <assert.h>
+#include <iomanip> // std::boolalpha
 
 typedef std::vector<std::string> vstring;
 
@@ -153,6 +154,9 @@ int main(int argc, char* argv[])
   std::string histogramToFit = cfg_prepareDatacards.getParameter<std::string>("histogramToFit");
   int histogramToFit_rebin = cfg_prepareDatacards.getParameter<int>("histogramToFit_rebin");
 
+  std::cout << "Histogram to fit: " << histogramToFit << "\n";
+  std::cout << "Histogram to fit rebin: " << histogramToFit_rebin << "\n";
+
   double setBinsToZeroBelow = cfg_prepareDatacards.getParameter<double>("setBinsToZeroBelow");
 
   vstring central_or_shifts = cfg_prepareDatacards.getParameter<vstring>("sysShifts");
@@ -184,17 +188,22 @@ int main(int argc, char* argv[])
       while ( (key = dynamic_cast<TKey*>(next())) ) {
 	TObject* object = key->ReadObj();
 	TDirectory* subdir = dynamic_cast<TDirectory*>(object);
+	std::cout << "Subdir name: " << subdir->GetName() << "\n";
 	if ( !subdir ) continue;
 	bool isToCopy = false;
 	for ( std::vector<TPRegexp*>::iterator processToCopy = processesToCopy.begin();
 	      processToCopy != processesToCopy.end(); ++processToCopy ) {
+	  std::cout << "Subdirectory name: " << subdir->GetName() << "\n";
 	  if ( (*processToCopy)->Match(subdir->GetName()) ) isToCopy = true;
 	}
+	std::cout << "Is to copy: " << std::boolalpha << isToCopy << "\n";
 	bool isSignal = false;
 	for ( std::vector<TPRegexp*>::iterator signal = signals.begin();
 	      signal != signals.end(); ++signal ) {
+	  std::cout << "Subdirectory name (signal): " << subdir->GetName() << "\n";
 	  if ( (*signal)->Match(subdir->GetName()) ) isSignal = true;
 	}
+	std::cout << "Is signal: " << std::boolalpha << isSignal << "\n";
 	if ( isToCopy ) {
 	  for ( vstring::const_iterator central_or_shift = central_or_shifts.begin();
 		central_or_shift != central_or_shifts.end(); ++central_or_shift ) {

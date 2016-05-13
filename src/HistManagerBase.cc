@@ -64,7 +64,8 @@ std::string HistManagerBase::getHistogramName(const std::string& distribution) c
 {
   std::string retVal = "";
   if ( !(central_or_shift_ == "" || central_or_shift_ == "central") ) retVal = central_or_shift_;
-  retVal.append("_").append(distribution);
+  if ( retVal != "" ) retVal.append("_");
+  retVal.append(distribution);
   return retVal;
 }
 
