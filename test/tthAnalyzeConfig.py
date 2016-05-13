@@ -68,7 +68,7 @@ process.{{ execName }} = cms.PSet(
         process = process_name,
         chargeSelection = charge_selection,
         leptonSelection = lepton_selection,
-        isMC = is_mc,
+        isMC = False, # NOTE: temporary fix; previously: is_mc
         idx = idx)
 
 def create_job(exec_name, py_cfg):
