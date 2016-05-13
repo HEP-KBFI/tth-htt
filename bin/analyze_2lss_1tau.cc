@@ -47,6 +47,9 @@
 #include "tthAnalysis/HiggsToTauTau/interface/hltPath.h" // hltPath, create_hltPaths, hltPaths_setBranchAddresses, hltPaths_isTriggered, hltPaths_delete
 #include "tthAnalysis/HiggsToTauTau/interface/data_to_MC_corrections.h"
 
+#include <boost/range/algorithm/copy.hpp> // boost::copy()
+#include <boost/range/adaptor/map.hpp> // boost::adaptors::map_keys
+
 #include <iostream> // std::cerr, std::fixed
 #include <iomanip> // std::setprecision(), std::setw()
 #include <string> // std::string
@@ -55,6 +58,8 @@
 #include <algorithm> // std::sort
 #include <fstream> // std::ofstream
 #include <assert.h> // assert
+
+#define EPS 1E-2
 
 typedef math::PtEtaPhiMLorentzVector LV;
 typedef std::vector<std::string> vstring;
@@ -217,6 +222,8 @@ int main(int argc, char* argv[])
   inputTree->SetBranchAddress(LUMI_KEY, &lumi);
   EVT_TYPE event;
   inputTree->SetBranchAddress(EVT_KEY, &event);
+  GENHIGGSDECAYMODE_TYPE genHiggsDecayMode;
+  inputTree->SetBranchAddress(GENHIGGSDECAYMODE_KEY, &genHiggsDecayMode);
 
   hltPaths_setBranchAddresses(inputTree, triggers_1e);
   hltPaths_setBranchAddresses(inputTree, triggers_2e);
@@ -421,6 +428,22 @@ int main(int argc, char* argv[])
   EvtHistManager_2lss_1tau selEvtHistManager(makeHistManager_cfg(process_string, 
     Form("2lss_1tau_%s/sel/evt", charge_and_leptonSelection.data()), central_or_shift));
   selEvtHistManager.bookHistograms(fs);
+  std::map<std::string, EvtHistManager_2lss_1tau*> selEvtHistManager_decayMode; // key = decay mode
+  const std::map<std::string, GENHIGGSDECAYMODE_TYPE> decayMode_idString = {
+    { "ttH_hww", static_cast<GENHIGGSDECAYMODE_TYPE>(24) },
+    { "ttH_hzz", static_cast<GENHIGGSDECAYMODE_TYPE>(23) },
+    { "ttH_htt", static_cast<GENHIGGSDECAYMODE_TYPE>(15) }
+  };
+  vstring decayModes_evt;
+  decayModes_evt.reserve(decayMode_idString.size());
+  boost::copy(decayMode_idString | boost::adaptors::map_keys, std::back_inserter(decayModes_evt));
+  for ( vstring::const_iterator decayMode = decayModes_evt.begin();
+        decayMode != decayModes_evt.end(); ++decayMode) {
+      EvtHistManager_2lss_1tau* selEvtHistManager_ptr = new EvtHistManager_2lss_1tau(makeHistManager_cfg(decayMode->data(),
+        Form("2lss_1tau_%s/sel/evt", charge_and_leptonSelection.data()), central_or_shift));
+      selEvtHistManager_ptr->bookHistograms(fs);
+      selEvtHistManager_decayMode[*decayMode] = selEvtHistManager_ptr;
+  }
   vstring categories_evt = { 
     "2epp_1tau_bloose", "2epp_1tau_btight", "2emm_1tau_bloose", "2emm_1tau_btight",
     "1e1mupp_1tau_bloose", "1e1mupp_1tau_btight", "1e1mumm_1tau_bloose", "1e1mumm_1tau_btight",
@@ -429,10 +452,10 @@ int main(int argc, char* argv[])
   std::map<std::string, EvtHistManager_2lss_1tau*> selEvtHistManager_category; // key = category
   for ( vstring::const_iterator category = categories_evt.begin();
 	category != categories_evt.end(); ++category ) {
-    EvtHistManager_2lss_1tau* selEvtHistManager = new EvtHistManager_2lss_1tau(makeHistManager_cfg(process_string, 
+    EvtHistManager_2lss_1tau* selEvtHistManager_ptr = new EvtHistManager_2lss_1tau(makeHistManager_cfg(process_string,
       Form("%s_%s/sel/evt", category->data(), charge_and_leptonSelection.data()), central_or_shift));
-    selEvtHistManager->bookHistograms(fs);
-    selEvtHistManager_category[*category] = selEvtHistManager;
+    selEvtHistManager_ptr->bookHistograms(fs);
+    selEvtHistManager_category[*category] = selEvtHistManager_ptr;
   }
 
   int numEntries = inputTree->GetEntries();
@@ -727,6 +750,14 @@ int main(int argc, char* argv[])
     selBJet_mediumHistManager.fillHistograms(selBJets_medium, evtWeight);
     selMEtHistManager.fillHistograms(met_p4, mht_p4, met_LD, evtWeight);
     selEvtHistManager.fillHistograms(mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, evtWeight);
+    for ( const auto & kv: decayMode_idString ) {
+      if ( std::fabs(genHiggsDecayMode - kv.second) < EPS ) {
+        selEvtHistManager_decayMode[kv.first] -> fillHistograms(mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, evtWeight);
+        break;
+      }
+    }
+
+    //--GENHIGGSDECAYMODE_TYPE
 
     bool isCharge_pp = selLepton_lead->pdgId_ < 0 && selLepton_sublead->pdgId_ < 0;
     bool isCharge_mm = selLepton_lead->pdgId_ > 0 && selLepton_sublead->pdgId_ > 0;
