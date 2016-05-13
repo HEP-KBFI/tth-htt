@@ -1,6 +1,13 @@
-import imp, json, os, codecs, stat, logging, sys
+import json, os, codecs, stat, logging, sys
 from jinja2 import Template
-from tthAnalyzeSamples import samples
+
+local_test = True
+if local_test:
+    import imp
+    samples_module = imp.load_source("", "/home/karl/repos/tth-htt/test/tthAnalyzeSamples.py")
+    samples = samples_module.samples
+else:
+    from tthAnalyzeSamples import samples
 
 delim_list = ["13TeV", "M120", "M125", "M130", "M-10to50", "M-50", "TuneCUETP8M1"]
 
@@ -15,7 +22,11 @@ def get_mc_process_name(x):
 def get_data_process_name(x):
     return iterative_split(x, ["-", "_"]).replace("/", "_")[1:]
 
-def create_config(root_filenames, exec_name, output_file, process_name,
+def add_chmodX(fullpath):
+    st = os.stat(fullpath)
+    os.chmod(fullpath, st.st_mode | stat.S_IEXEC)
+
+def create_config(root_filenames, exec_name, output_file, category_name,
                   charge_selection, lepton_selection, is_mc, idx):
     cfg_file = """import os
 import FWCore.ParameterSet.Config as cms
@@ -33,7 +44,7 @@ process.fwliteOutput = cms.PSet(
 
 process.{{ execName }} = cms.PSet(
     treeName = cms.string('tree'),
-    process = cms.string('{{ process }}'),
+    process = cms.string('{{ categoryName }}'),
 
     triggers_1e = cms.vstring("HLT_BIT_HLT_Ele23_WPLoose_Gsf_v"),
     use_triggers_1e = cms.bool(True),
@@ -65,7 +76,7 @@ process.{{ execName }} = cms.PSet(
         fileNames = root_filenames,
         execName = exec_name,
         outputFile = output_file,
-        process = process_name,
+        categoryName = category_name,
         chargeSelection = charge_selection,
         leptonSelection = lepton_selection,
         isMC = False, # NOTE: temporary fix; previously: is_mc
@@ -77,6 +88,14 @@ def create_job(exec_name, py_cfg):
 
 """
     return Template(contents).render(exec_name = exec_name, py_cfg = py_cfg)
+
+def create_sbatch(sbatch_logfiles, commands):
+    sbatch_meta = zip(sbatch_logfiles, commands)
+    sbatch_template = """#!/bin/bash
+{% for logfile,command in sbatch_meta %}
+sbatch --output={{ logfile }} {{ command }}{% endfor %}
+"""
+    return Template(sbatch_template).render(sbatch_meta = sbatch_meta)
 
 def create_if_not_exists(dir_fullpath):
     if not os.path.exists(dir_fullpath): os.makedirs(dir_fullpath)
@@ -111,7 +130,7 @@ def create_setup(output_dir, exec_name, charge_selection, lepton_selection, max_
     bashscript_dir = os.path.join(output_dir, "jobs", subdir) # contains bash scripts
     cfg_dir = os.path.join(output_dir, "cfgs", subdir) # contains python config files
     histogram_dir = os.path.join(output_dir, "histograms", subdir) # contains histograms
-    log_dir = os.path.join(output_dir, "logs", subdir)
+    log_dir = os.path.join(output_dir, "logs", subdir) # contains logs of job outputs
     
     for d in [bashscript_dir, cfg_dir, histogram_dir, log_dir]:
         create_if_not_exists(d)
@@ -119,10 +138,13 @@ def create_setup(output_dir, exec_name, charge_selection, lepton_selection, max_
     cfg_basenames = []
     
     for k, v in samples.items():
+        if not v["use_it"]: continue
+        if v["sample_type"] in ["additional_signal_overlap", "background_data_estimate"]: continue
         is_mc = v["type"] == "mc"
         process_name = ""
         if is_mc: process_name = get_mc_process_name(k)
         else:     process_name = get_data_process_name(k)
+        category_name = v["sample_type"]
         cfg_outputdir = os.path.join(cfg_dir, process_name)
         create_if_not_exists(cfg_outputdir)
         logging.info("Created config and job files for sample %s" % process_name)
@@ -143,11 +165,11 @@ def create_setup(output_dir, exec_name, charge_selection, lepton_selection, max_
             cfg_filelist = generate_input_list(job_ids[idx], secondary_files,
                                                primary_store, secondary_store, debug)
             cfg_outputfile = "_".join([process_name, charge_selection, lepton_selection, str(idx)]) + ".root"
-            histogram_outputdir = os.path.join(histogram_dir, process_name)
+            histogram_outputdir = os.path.join(histogram_dir, category_name)
             cfg_outputfile_fullpath = os.path.join(histogram_outputdir, cfg_outputfile)
             create_if_not_exists(histogram_outputdir)
 
-            cfg_contents = create_config(cfg_filelist, exec_name, cfg_outputfile_fullpath, process_name,
+            cfg_contents = create_config(cfg_filelist, exec_name, cfg_outputfile_fullpath, category_name,
                                          charge_selection, lepton_selection, is_mc, idx)
             cfg_basename = "_".join([process_name, str(idx)])
             cfg_file_fullpath = os.path.join(cfg_outputdir,  cfg_basename + ".py")
@@ -158,8 +180,7 @@ def create_setup(output_dir, exec_name, charge_selection, lepton_selection, max_
             bsh_file_fullpath = os.path.join(bashscript_dir, cfg_basename + ".sh")
             with codecs.open(bsh_file_fullpath, "w", "utf-8") as f:
                 f.write(bsh_contents)
-            st = os.stat(bsh_file_fullpath)
-            os.chmod(bsh_file_fullpath, st.st_mode | stat.S_IEXEC)
+            add_chmodX(bsh_file_fullpath)
             cfg_basenames.append(cfg_basename)
     
     logging.info("Creating Makefile")
@@ -179,16 +200,10 @@ def create_setup(output_dir, exec_name, charge_selection, lepton_selection, max_
     logging.info("Creating SLURM jobs")
     sbatch_fullpath = os.path.join(output_dir, "sbatch.sh")
     sbatch_logfiles = map(lambda x: os.path.join(log_dir, x + "-%a.out"), cfg_basenames)
-    sbatch_meta = zip(sbatch_logfiles, commands)
-    sbatch_template = """#!/bin/bash
-{% for logfile,command in sbatch_meta %}
-sbatch --output={{ logfile }} {{ command }}{% endfor %}
-"""
-    sbatch_contents = Template(sbatch_template).render(sbatch_meta = sbatch_meta)
+    sbatch_contents = create_sbatch(sbatch_logfiles, commands)
     with codecs.open(sbatch_fullpath, 'w', 'utf-8') as f:
         f.write(sbatch_contents)
-    st = os.stat(sbatch_fullpath)
-    os.chmod(sbatch_fullpath, st.st_mode | stat.S_IEXEC)
+    add_chmodX(sbatch_fullpath)
     
     logging.info("Done")
 
