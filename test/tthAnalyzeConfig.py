@@ -139,12 +139,12 @@ def create_setup(output_dir, exec_name, charge_selection, lepton_selection, max_
     
     for k, v in samples.items():
         if not v["use_it"]: continue
-        if v["sample_type"] in ["additional_signal_overlap", "background_data_estimate"]: continue
+        if v["sample_category"] in ["additional_signal_overlap", "background_data_estimate"]: continue
         is_mc = v["type"] == "mc"
         process_name = ""
         if is_mc: process_name = get_mc_process_name(k)
         else:     process_name = get_data_process_name(k)
-        category_name = v["sample_type"]
+        category_name = v["sample_category"]
         cfg_outputdir = os.path.join(cfg_dir, process_name)
         create_if_not_exists(cfg_outputdir)
         logging.info("Created config and job files for sample %s" % process_name)
