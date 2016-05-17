@@ -2,13 +2,43 @@ import json, os, codecs, stat, logging, sys, jinja2, subprocess, getpass, time
 import tthAnalyzeSamples
 
 LUMI = 10000.
-DKEY_JOBS = "jobs"
-DKEY_CFGS = "cfgs"
-DKEY_HIST = "histograms"
-DKEY_LOGS = "logs"
-DKEY_DCRD = "datacards"
+DKEY_JOBS = "jobs"       # dir for jobs aka bash scripts that run a single analysis executable
+DKEY_CFGS = "cfgs"       # dir for python configuration file for each job
+DKEY_HIST = "histograms" # dir for histograms = output of the jobs
+DKEY_LOGS = "logs"       # dir for log files (stdout/stderr of jobs)
+DKEY_DCRD = "datacards"  # dir for the datacard
 
 class analyzeConfig:
+  """Configuration metadata needed to run analysis in a single go.
+  
+  Sets up a folder structure by defining full path names; no directory creation is delegated here.
+  
+  Args:
+    output_dir: The root output dir -- all configuration, log and output files are stored in its subdirectories
+    exec_name: Name of the executable that runs the analysis; possible values are `analyze_2lss_1tau`, `analyze_2los_1tau` and `analyze_1l_2tau`
+    charge_selection: either `OS` or `SS` (opposite-sign or same-sign)
+    lepton_selection: either `Tight`, `Loose` or `Fakeable`
+    max_files_per_job: maximum number of input root files (Ntuples) are allowed to chain together per job
+    use_lumi: if True, use lumiSection aka event weight ( = xsection * luminosity / nof events), otherwise uses plain event count
+    debug: if True, checks each input root file (Ntuple) before creating the python configuration files
+    running_method: either `sbatch` (uses SLURM) or `Makefile`
+    nof_parallel_jobs: number of jobs that can be run in parallel (matters only if `running_method` is set to `Makefile`)
+    poll_interval: the interval of checking whether all sbatch jobs are completed (matters only if `running_method` is set to `sbatch`)
+    prep_dcard_exec: executable name for preparing the datacards
+    histogram_to_fit: what histograms are filtered in datacard preparation
+  
+  Other:
+    is_sbatch: boolean that is True if the `running_method` is set to `sbatch`; False otherwise
+    is_makefile: boolean that is True if the `running_method` is set to `Makefile`; False otherwise
+    output_category: output category of the datacard
+    subdir: all analysis-specific files are placed under this subdirectory
+    dirs: list of subdirectories under `subdir` -- jobs, cfgs, histograms, logs, datacards
+    makefile_fullpath: full path to the Makefile
+    sbatch_fullpath: full path to the bash script that submits all jobs to SLURM
+    histogram_file: the histogram file obtained by hadding the output of all jobs
+    datacard_outputfile: the datacard -- final output file of this execution flow
+    dcard_cfg_fullpath: python configuration file for datacard preparation executable
+  """
   def __init__(self, output_dir, exec_name, charge_selection, lepton_selection,
                max_files_per_job, use_lumi, debug, running_method, nof_parallel_jobs,
                poll_interval, prep_dcard_exec, histogram_to_fit):
@@ -49,6 +79,12 @@ class analyzeConfig:
     self.dcard_cfg_fullpath = os.path.join(self.dirs[DKEY_CFGS], "prepareDatacards_cfg.py")
 
 def query_yes_no(question, default = "yes"):
+  """Prompts user yes/no
+
+  Args:
+    question: question to ask from the user
+    default: default option to use; acceptable values: "yes", "no" or None
+  """
   default = default.lower()
   valid = { "yes": True, "y": True, "ye": True, "no": False, "n": False }
   if default is None:    prompt = " [y/n] "
@@ -66,10 +102,29 @@ def query_yes_no(question, default = "yes"):
       sys.stdout.write("Please respond with 'yes' or 'no' (or 'y' or 'n').\n")
 
 def add_chmodX(fullpath):
+  """Adds execution rights to a given file.
+
+  Args:
+    fullpath: full path of the file to give execution rights (effectively chmod +x'es the thing)
+  """
   st = os.stat(fullpath)
   os.chmod(fullpath, st.st_mode | stat.S_IEXEC)
 
 def create_config(root_filenames, output_file, category_name, is_mc, lumi_scale, cfg, idx):
+  """Fill python configuration file for the job exectuable (analysis code)
+
+  Args:
+    root_filesnames: list of full path to the input root files (Ntupes)
+    output_file: output file of the job -- a histogram
+    category_name: either `TTW`, `TTZ`, `WZ`, `Rares`, `data_obs`, `ttH_hww`, `ttH_hzz` or `ttH_htt`
+    is_mc: is a given sample an MC (True) or data (False)
+    lumi_scale: event weight ( = xsection * luminosity / nof events)
+    cfg: configuration instance that contains paths; see `analyzeConfig`
+    idx: job index
+
+  Returns:
+    Filled template
+  """
   cfg_file = """import os
 import FWCore.ParameterSet.Config as cms
 
@@ -126,6 +181,15 @@ process.{{ execName }} = cms.PSet(
     idx = idx)
 
 def create_job(exec_name, py_cfg):
+  """Fills bash job template (run by either sbatch or make)
+
+  Args:
+    exec_name: analysis code executable
+    py_cfg: full path to the python configuration file
+
+  Returns:
+    Filled template
+  """
   contents = """#!/bin/bash
 {{ exec_name }} {{ py_cfg }}
 
@@ -133,6 +197,15 @@ def create_job(exec_name, py_cfg):
   return jinja2.Template(contents).render(exec_name = exec_name, py_cfg = py_cfg)
 
 def create_makefile(commands, num):
+  """Fills Makefile template
+
+  Args:
+    commands: list of commands (full paths to the bash scripts, followed by redirection clauses)
+    num: number of rules per one line (so that the file still remains human-readable)
+
+  Returns:
+    Filled template
+  """
   nof_jobs = len(commands)
   job_labels_seq = map(lambda x: "j" + str(x), range(1, nof_jobs))
   job_labels_nested = [job_labels_seq[i:i + num] for i  in range(0, nof_jobs, num)]
@@ -155,6 +228,15 @@ j{{ loop.index }}:
     jobLabelsNestedSpaced = job_labels_nested_spaced)
 
 def create_sbatch(sbatch_logfiles, commands):
+  """Fills sbatch submission template (a bash script)
+
+  Args:
+    sbatch_logfiles: list of full paths to the log files for each jobs
+    commands: list of commands (full paths to the bash scripts)
+
+  Returns:
+    Filled template
+  """
   sbatch_meta = zip(sbatch_logfiles, commands)
   sbatch_template = """#!/bin/bash
 {% for logfile,command in sbatch_meta %}
@@ -163,6 +245,14 @@ sbatch --output={{ logfile }} {{ command }}{% endfor %}
   return jinja2.Template(sbatch_template).render(sbatch_meta = sbatch_meta)
 
 def create_prep_dcard_cfg(cfg):
+  """Fills the template of python configuration file for datacard preparation
+
+  Args:
+    cfg: contains full paths to the relevant files (input, output, analysis type); see `analyzeConfig`
+
+  Returns:
+    Filled template
+  """
   cfg_file = """
 import FWCore.ParameterSet.Config as cms
 import os
@@ -234,15 +324,46 @@ process.prepareDatacards = cms.PSet(
     histogramToFit = cfg.histogram_to_fit)
 
 def create_if_not_exists(dir_fullpath):
+  """Creates a given directory if it doesn't exist yet
+
+  Args:
+    dir_fullpath: full path to the directory
+  """
   if not os.path.exists(dir_fullpath): os.makedirs(dir_fullpath)
 
-def generate_job_ids(nof_files, max_files_per_job):
+def generate_file_ids(nof_files, max_files_per_job):
+  """Subsets file ids
+
+    Given N total number of input files, the function splits them into sublists, each
+    containing up to M files (maximum number of input files). The function only workds with
+    indexes, not full paths, though.
+
+  Args:
+    nof_files: Total number of input files
+    max_files_per_job: Maximum number of input files a job can take
+
+  Returns:
+    File ids split into sublists of length `max_files_per_job`
+  """
   file_limits = range(1, nof_files, max_files_per_job)
   file_limits.append(nof_files + 1)
   job_ids = [range(file_limits[i], file_limits[i + 1]) for i in range(len(file_limits) - 1)]
   return job_ids
 
 def generate_input_list(job_ids, secondary_files, primary_store, secondary_store, debug = False):
+  """Generates input file list for each job
+
+    Since CRAB was unable to resubmit failed jobs, we had to run the jobs 2nd time. Thus, the full sample
+    is complete if we include both storage directories.
+    The primary directory contains most of the input files, and the secondary the missing ones.
+
+  Args:
+    job_ids: list of file ids (one of the sublists generated in `generate_file_ids`)
+    secondary_files: list of input file id's missing in the primary storage
+    primary_store: full path to the primary subdirectory containing most of the sample
+    secondary_store: full path to the second subdirectory
+    debug: if True, checks whether each file is present in the file system
+  """
   input_list = []
   for job in job_ids:
     actual_storedir = secondary_store if job in secondary_files else primary_store
@@ -254,6 +375,11 @@ def generate_input_list(job_ids, secondary_files, primary_store, secondary_store
   return input_list
 
 def create_setup(cfg):
+  """Creates the whole workflow setup -- directory tree, configuration files, job execution files
+
+  Args:
+    cfg: Configuration object containig relevant full paths (see `analyzeConfig`)
+  """
   for k, d in cfg.dirs.items(): create_if_not_exists(d)
   cfg_basenames = []
 
@@ -280,7 +406,7 @@ def create_setup(cfg):
       else:
         secondary_store = store_dir["path"]
         secondary_files = map(lambda x: int(x), store_dir["selection"].split(","))
-    job_ids = generate_job_ids(nof_files, cfg.max_files_per_job)
+    job_ids = generate_file_ids(nof_files, cfg.max_files_per_job)
 
     lumi_scale = 1. if not (cfg.use_lumi and is_mc) else v["xsection"] * LUMI / v["nof_events"]
     for idx in range(len(job_ids)):
@@ -323,10 +449,25 @@ def create_setup(cfg):
   logging.info("Done")
 
 def run_setup(cfg):
+  """Runs jobs, hadds output files and prepares the datacard
+
+  Either submits the jobs to SLURM or runs make in parallel, depending on the configuration.
+  In the latter case we have to wait it out until subprocess module handles the script execution
+  over to this very function. In the former case, however, we have to periodically check SLURM
+  queue and see how many submitted jobs are finished. This is done periodically (every cfg.poll_interval
+  seconds). If all jobs have finished, the resulting histograms are hadded and passed to
+  the datacard preparation binary, which is the final stage of this workflow.
+  Stdout and stderr are logged to the files in the upmost directory.
+
+  Args:
+    cfg: Configuration object containig relevant full paths (see `analyzeConfig`)
+  """
   stdout_file = codecs.open(os.path.join(cfg.output_dir, "stdout.log"), 'w', 'utf-8')
   stderr_file = codecs.open(os.path.join(cfg.output_dir, "stderr.log"), 'w', 'utf-8')
 
   def run_cmd(command, do_not_log = False):
+    """Runs given commands and logs stdout and stderr to files
+    """
     if not do_not_log: logging.info(command)
     p = subprocess.Popen(command, shell = True, stdout = subprocess.PIPE, stderr = subprocess.PIPE)
     stdout, stderr = p.communicate()
@@ -340,7 +481,7 @@ def run_setup(cfg):
   
   stdout = run_cmd(sbatch_command)
   if cfg.is_sbatch:
-    sbatch_taskids = "\\|".join([x.split()[-1] for x in stdout.split("\n")[:-1]])
+    sbatch_taskids = "\\|".join([x.split()[-1] for x in stdout.split("\n")[:-1]]) # sbatch job nr is the last one
     whoami = getpass.getuser()
     command_poll = "squeue -u %s | grep \"%s\" | wc -l" % (whoami, sbatch_taskids)
     while True:
