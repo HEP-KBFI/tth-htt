@@ -100,7 +100,7 @@ sbatch --output={{ logfile }} {{ command }}{% endfor %}
 def create_if_not_exists(dir_fullpath):
     if not os.path.exists(dir_fullpath): os.makedirs(dir_fullpath)
 
-def generate_job_ids(nof_files):
+def generate_job_ids(nof_files, max_files_per_job):
     file_limits = range(1, nof_files, max_files_per_job)
     file_limits.append(nof_files + 1)
     
@@ -133,7 +133,7 @@ def create_setup(output_dir, exec_name, charge_selection, lepton_selection, max_
     log_dir = os.path.join(output_dir, "logs", subdir) # contains logs of job outputs
     datacard_dir = os.path.join(output_dir, "datacards", subdir) # contains datacard (*.root) files
     
-    for d in [bashscript_dir, cfg_dir, histogram_dir, log_dir]:
+    for d in [bashscript_dir, cfg_dir, histogram_dir, log_dir, datacard_dir]:
         create_if_not_exists(d)
     
     cfg_basenames = []
@@ -160,7 +160,7 @@ def create_setup(output_dir, exec_name, charge_selection, lepton_selection, max_
             else:
                 secondary_store = store_dir["path"]
                 secondary_files = map(lambda x: int(x), store_dir["selection"].split(","))
-        job_ids = generate_job_ids(nof_files)
+        job_ids = generate_job_ids(nof_files, max_files_per_job)
 
         for idx in range(len(job_ids)):
             cfg_filelist = generate_input_list(job_ids[idx], secondary_files,
@@ -209,9 +209,9 @@ def create_setup(output_dir, exec_name, charge_selection, lepton_selection, max_
     logging.info("Done")
 
 if __name__ == '__main__':
-    logging.basicConfig(stream=sys.stdout,
-                        level=logging.INFO,
-                        format='%(asctime)s - %(levelname)s: %(message)s')
+    logging.basicConfig(stream = sys.stdout,
+                        level = logging.INFO,
+                        format = '%(asctime)s - %(levelname)s: %(message)s')
 
     output_dir = "/home/karl/test"
     exec_name = "analyze_2lss_1tau" # other execs: analyze_2los_1tau, analyze_1l_2tau

@@ -611,7 +611,7 @@ samples["/SingleMuon/Run2015D-16Dec2015-v1/MINIAOD"] = OD([
         ("selection", "2,9,13,21,25,49,57,66,68,81,87,88,91,163,189,193,284,300,329,361,367,400,428,440,464,466,468,485,494,495,531,"
          "532,552,604,617,622,651,652,691,703,722,738,746,766,767,797,802,843,848,850,859,882,888,927,1083,1091,1107,1115,1116,1117,"
          "1129,1145,1165,1166,1174,1182,1188,1200,1203,1216,1222,1225,1262,1368,1386,1411,1421,1435,1459,1490,1523,1569,1594,1615,1642,"
-         "1659,1750,1753"), # NOTE: 767!
+         "1659,1750,1753"),
       ]),
     ]
   )
@@ -663,7 +663,7 @@ samples["/TTTT_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIIFall15MiniAODv2-PU25nsDa
   ("sample_category", "Rares"),
   ("nof_files", 24),
   ("nof_events", 960521),
-  ("use_it", False),
+  ("use_it", True),
   ("local_paths",
     [
       OD([
@@ -678,7 +678,7 @@ samples["/TTZToLLNuNu_M-10_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIIFall15MiniAO
   ("sample_category", "TTZ"),
   ("nof_files", 10),
   ("nof_events", 394200),
-  ("use_it", False),
+  ("use_it", True),
   ("local_paths",
     [
       OD([

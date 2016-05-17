@@ -196,7 +196,7 @@ int main(int argc, char* argv[])
 	      signal != signals.end(); ++signal ) {
 	  if ( (*signal)->Match(subdir->GetName()) ) isSignal = true;
 	}
-	if ( isToCopy ) {
+	if ( isToCopy || isSignal ) {
 	  for ( vstring::const_iterator central_or_shift = central_or_shifts.begin();
 		central_or_shift != central_or_shifts.end(); ++central_or_shift ) {
 	    std::cout << "histogramToFit = " << histogramToFit << ", central_or_shift = " << (*central_or_shift) << std::endl;
