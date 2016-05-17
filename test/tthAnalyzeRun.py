@@ -505,7 +505,7 @@ def run_setup(cfg):
   stdout_file.close()
   stderr_file.close()
 
-  logging.info("Done")
+  logging.info("Done! The datacard is at %s" % cfg.datacard_outputfile)
 
 if __name__ == '__main__':
   logging.basicConfig(stream = sys.stdout,
