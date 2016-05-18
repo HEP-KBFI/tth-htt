@@ -28,7 +28,9 @@ Run sbatch, hadder and prepareDatacards? [Y/n]
 ```
 Press enter and wait til the script tells you `"Done"`. Or, you could decline and run `sbatch`/`make` separately. All the results are stored in `output_dir` defined in `tthAnalyzeRun.py`:
 <details> 
-  <summary>Directory structure</summary>/home/user/test
+  <summary>Directory structure</summary>
+```text
+/home/user/test
 ├── cfgs
 │   └── 2lss_1tau_SS_Tight
 │       ├── DoubleEG_Run2015C
@@ -87,6 +89,7 @@ Press enter and wait til the script tells you `"Done"`. Or, you could decline an
 ├── sbatch.sh
 ├── stderr.log
 └── stdout.log
+```
 </details>
 The datacard is located in e.g. `/home/user/test/datacards/2lss_1tau_SS_Tight/prepareDatacards.root`.
 
