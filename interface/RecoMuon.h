@@ -3,6 +3,13 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/RecoLepton.h" // RecoLepton
 
+// KE: set the following flag to 1 if the branch exists
+#define DPT_DIV_PT_FLAG 0
+
+#if DPT_DIV_PT_FLAG == 1
+#define DPT_DIV_PT
+#endif
+
 class RecoMuon
   : public RecoLepton
 {
@@ -28,7 +35,9 @@ public:
            Int_t charge,
            Int_t passesLooseIdPOG,
            Int_t passesMediumIdPOG,
+#ifdef DPT_DIV_PT
            Float_t dpt_div_pt,
+#endif
            Float_t segmentCompatibility);
 
   /**
@@ -48,7 +57,9 @@ public:
 //--- observables specific to muons
   Int_t passesLooseIdPOG_;       ///< flag indicating if muon passes (1) or fails (0) loose PFMuon id
   Int_t passesMediumIdPOG_;      ///< flag indicating if muon passes (1) or fails (0) medium PFMuon id
+#ifdef DPT_DIV_PT
   Float_t dpt_div_pt_;           ///< relative pT error
+#endif
   Float_t segmentCompatibility_; ///< muon segment compatibility
 };
 

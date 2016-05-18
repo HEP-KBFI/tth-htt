@@ -42,12 +42,16 @@ class RecoMuonReader
 
   std::string branchName_looseIdPOG_; 
   std::string branchName_mediumIdPOG_;
+#ifdef DPT_DIV_PT
   std::string branchName_dpt_div_pt_;
+#endif
   std::string branchName_segmentCompatibility_;
 
   Int_t* looseIdPOG_;
   Int_t* mediumIdPOG_;
+#ifdef DPT_DIV_PT
   Float_t* dpt_div_pt_;
+#endif
   Float_t* segmentCompatibility_;
 
   // CV: make sure that only one RecoMuonReader instance exists for a given branchName,

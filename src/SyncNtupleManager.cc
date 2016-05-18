@@ -47,7 +47,9 @@ SyncNtupleManager::initializeBranches()
   mu_segmentCompatibility = new std::remove_pointer<decltype(mu_segmentCompatibility)>::type[nof_eles];
   mu_leptonMVA = new std::remove_pointer<decltype(mu_leptonMVA)>::type[nof_eles];
   mu_mediumID = new std::remove_pointer<decltype(mu_mediumID)>::type[nof_eles];
+#ifdef DPT_DIV_PT
   mu_dpt_div_pt = new std::remove_pointer<decltype(mu_dpt_div_pt)>::type[nof_eles];
+#endif
   mu_isfakeablesel = new std::remove_pointer<decltype(mu_isfakeablesel)>::type[nof_eles];
   mu_iscutsel = new std::remove_pointer<decltype(mu_iscutsel)>::type[nof_eles];
   mu_ismvasel = new std::remove_pointer<decltype(mu_ismvasel)>::type[nof_eles];
@@ -153,7 +155,9 @@ SyncNtupleManager::initializeBranches()
       outputTree -> Branch(Form("%s%d_%s", mstr, i, "segmentCompatibility"), &(mu_segmentCompatibility[i]), Form("%s%d_%s/%s", mstr, i, "segmentCompatibility", Traits<decltype(mu_segmentCompatibility)>::TYPE_NAME));
       outputTree -> Branch(Form("%s%d_%s", mstr, i, "leptonMVA"), &(mu_leptonMVA[i]), Form("%s%d_%s/%s", mstr, i, "leptonMVA", Traits<decltype(mu_leptonMVA)>::TYPE_NAME));
       outputTree -> Branch(Form("%s%d_%s", mstr, i, "mediumID"), &(mu_mediumID[i]), Form("%s%d_%s/%s", mstr, i, "mediumID", Traits<decltype(mu_mediumID)>::TYPE_NAME));
+#ifdef DPT_DIV_PT
       outputTree -> Branch(Form("%s%d_%s", mstr, i, "dpt_div_pt"), &(mu_dpt_div_pt[i]), Form("%s%d_%s/%s", mstr, i, "dpt_div_pt", Traits<decltype(mu_dpt_div_pt)>::TYPE_NAME));
+#endif
       outputTree -> Branch(Form("%s%d_%s", mstr, i, "isfakeablesel"), &(mu_isfakeablesel[i]), Form("%s%d_%s/%s", mstr, i, "isfakeablesel", Traits<decltype(mu_isfakeablesel)>::TYPE_NAME));
       outputTree -> Branch(Form("%s%d_%s", mstr, i, "iscutsel"), &(mu_iscutsel[i]), Form("%s%d_%s/%s", mstr, i, "iscutsel", Traits<decltype(mu_iscutsel)>::TYPE_NAME));
       outputTree -> Branch(Form("%s%d_%s", mstr, i, "ismvasel"), &(mu_ismvasel[i]), Form("%s%d_%s/%s", mstr, i, "ismvasel", Traits<decltype(mu_ismvasel)>::TYPE_NAME));
@@ -287,7 +291,9 @@ SyncNtupleManager::read(std::vector<const RecoMuon *> & muons,
     mu_segmentCompatibility[i] = muon -> segmentCompatibility_;
     mu_leptonMVA[i] = muon -> mvaRawTTH_;
     mu_mediumID[i] = muon -> passesMediumIdPOG_;
+#ifdef DPT_DIV_PT
     mu_dpt_div_pt[i] = muon -> dpt_div_pt_;
+#endif
     mu_isfakeablesel[i] = 0;
     for(const auto & fakeable_muon: fakeable_muons)
       if(muon == fakeable_muon)
@@ -471,7 +477,9 @@ SyncNtupleManager::reset(bool is_initializing)
     mu_segmentCompatibility[i] = placeholder_value;
     mu_leptonMVA[i] = placeholder_value;
     mu_mediumID[i] = placeholder_value;
+#ifdef DPT_DIV_PT
     mu_dpt_div_pt[i] = placeholder_value;
+#endif
     mu_isfakeablesel[i] = placeholder_value;
     mu_iscutsel[i] = placeholder_value;
     mu_ismvasel[i] = placeholder_value;

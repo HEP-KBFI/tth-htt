@@ -20,13 +20,17 @@ RecoMuon::RecoMuon(Double_t pt,
                    Int_t charge,
                    Int_t passesLooseIdPOG,
                    Int_t passesMediumIdPOG,
+#ifdef DPT_DIV_PT
                    Float_t dpt_div_pt,
+#endif
                    Float_t segmentCompatibility)
   : RecoLepton(pt, eta, phi, mass, pdgId, dxy, dz, relIso, miniIsoCharged, miniIsoNeutral, sip3d, mvaRawTTH,
                jetNDauChargedMVASel, jetPtRel, jetPtRatio, jetBtagCSV, passesTightCharge, charge)
   , passesLooseIdPOG_(passesLooseIdPOG)
   , passesMediumIdPOG_(passesMediumIdPOG)
+#ifdef DPT_DIV_PT
   , dpt_div_pt_(dpt_div_pt)
+#endif
   , segmentCompatibility_(segmentCompatibility)
 {}
 

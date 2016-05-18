@@ -102,7 +102,9 @@ private:
   Float_t * mu_segmentCompatibility;
   Float_t * mu_leptonMVA;
   Int_t * mu_mediumID;
+#ifdef DPT_DIV_PT
   Float_t * mu_dpt_div_pt;
+#endif
   Int_t * mu_isfakeablesel;
   Int_t * mu_iscutsel;
   Int_t * mu_ismvasel;
