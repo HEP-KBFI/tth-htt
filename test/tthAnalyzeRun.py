@@ -8,6 +8,11 @@ DKEY_HIST = "histograms" # dir for histograms = output of the jobs
 DKEY_LOGS = "logs"       # dir for log files (stdout/stderr of jobs)
 DKEY_DCRD = "datacards"  # dir for the datacard
 
+"""
+TODO:
+  * isMC is always False in the analysis config since we're missing some necessary input files for MC
+"""
+
 class analyzeConfig:
   """Configuration metadata needed to run analysis in a single go.
   
