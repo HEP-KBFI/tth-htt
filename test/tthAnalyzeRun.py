@@ -1,7 +1,7 @@
 import json, os, codecs, stat, logging, sys, jinja2, subprocess, getpass, time
 import tthAnalyzeSamples
 
-LUMI = 10000.
+LUMI = 2260. # 1/pb
 DKEY_JOBS = "jobs"       # dir for jobs aka bash scripts that run a single analysis executable
 DKEY_CFGS = "cfgs"       # dir for python configuration file for each job
 DKEY_HIST = "histograms" # dir for histograms = output of the jobs
