@@ -514,7 +514,7 @@ samples["/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/RunIIFa
   ("nof_files", 186),
   ("nof_events", 8139275),
   ("use_it", True),
-  ("xsection", 0.2586),
+  ("xsection", 0.2151), # (1 - 0.577) * 0.5085 or (1 - BR(ttH -> bb)) * sigma(ttH)
   ("local_paths",
     [
       OD([
