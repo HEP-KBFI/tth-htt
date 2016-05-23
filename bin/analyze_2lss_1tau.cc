@@ -475,12 +475,26 @@ int main(int argc, char* argv[])
 
     if ( run_lumi_eventSelector && !(*run_lumi_eventSelector)(run, lumi, event) ) continue;
 
-    bool isTriggered_1e = use_triggers_1e && hltPaths_isTriggered(triggers_1e);
-    bool isTriggered_2e = use_triggers_2e && hltPaths_isTriggered(triggers_2e);
-    bool isTriggered_1mu = use_triggers_1mu && hltPaths_isTriggered(triggers_1mu);
-    bool isTriggered_2mu = use_triggers_2mu && hltPaths_isTriggered(triggers_2mu);
-    bool isTriggered_1e1mu = use_triggers_1e1mu && hltPaths_isTriggered(triggers_1e1mu);
-    if ( !(isTriggered_1e || isTriggered_2e || isTriggered_1mu || isTriggered_2mu || isTriggered_1e1mu) ) continue;
+    bool isTriggered_1e = hltPaths_isTriggered(triggers_1e);
+    bool isTriggered_2e = hltPaths_isTriggered(triggers_2e);
+    bool isTriggered_1mu = hltPaths_isTriggered(triggers_1mu);
+    bool isTriggered_2mu = hltPaths_isTriggered(triggers_2mu);
+    bool isTriggered_1e1mu = hltPaths_isTriggered(triggers_1e1mu);
+
+    bool selTrigger_1e = use_triggers_1e && isTriggered_1e;
+    bool selTrigger_2e = use_triggers_2e && isTriggered_2e;
+    bool selTrigger_1mu = use_triggers_1mu && isTriggered_1mu;
+    bool selTrigger_2mu = use_triggers_2mu && isTriggered_2mu;
+    bool selTrigger_1e1mu = use_triggers_1e1mu && isTriggered_1e1mu;
+    if ( !(selTrigger_1e || selTrigger_2e || selTrigger_1mu || selTrigger_2mu || selTrigger_1e1mu) ) continue;
+
+//--- rank triggers by priority and ignore triggers of lower priority if a trigger of higher priority has fired for given event;
+//    the ranking of the triggers is as follows: 2mu, 1e1mu, 2e, 1mu, 1e
+// CV: this logic is necessary to avoid that the same event is selected multiple times when processing different primary datasets
+    if ( selTrigger_1e && (isTriggered_2e || isTriggered_1mu || isTriggered_2mu || isTriggered_1e1mu) ) continue; 
+    if ( selTrigger_2e && (isTriggered_2mu || isTriggered_1e1mu) ) continue; 
+    if ( selTrigger_1mu && (isTriggered_2e || isTriggered_2mu || isTriggered_1e1mu) ) continue; 
+    if ( selTrigger_1e1mu && isTriggered_2mu ) continue; 
 
 //--- build collections of electrons, muons and hadronic taus;
 //    resolve overlaps in order of priority: muon, electron,
@@ -575,9 +589,9 @@ int main(int argc, char* argv[])
     if ( !(preselElectrons.size() + preselMuons.size()) == 2 ) continue;
 
     // require that trigger paths match event category (with event category based on preselLeptons);
-    if ( preselElectrons.size() == 2 &&                            !(isTriggered_1e  || isTriggered_2e)                       ) continue;
-    if (                                preselMuons.size() == 2 && !(isTriggered_1mu || isTriggered_2mu)                      ) continue;
-    if ( preselElectrons.size() == 1 && preselMuons.size() == 1 && !(isTriggered_1e  || isTriggered_1mu || isTriggered_1e1mu) ) continue;
+    if ( preselElectrons.size() == 2                            && !(selTrigger_1e  || selTrigger_2e)                      ) continue;
+    if (                                preselMuons.size() == 2 && !(selTrigger_1mu || selTrigger_2mu)                     ) continue;
+    if ( preselElectrons.size() == 1 && preselMuons.size() == 1 && !(selTrigger_1e  || selTrigger_1mu || selTrigger_1e1mu) ) continue;
 
     // apply requirement on jets (incl. b-tagged jets) and hadronic taus on preselection level
     if ( !(selJets.size() >= 2) ) continue;
@@ -681,9 +695,9 @@ int main(int argc, char* argv[])
     const RecoLepton* selLepton_sublead = selLeptons[1];
 
     // require that trigger paths match event category (with event category based on selLeptons);
-    if ( selElectrons.size() == 2 &&                         !(isTriggered_1e  || isTriggered_2e)                       ) continue;
-    if (                             selMuons.size() == 2 && !(isTriggered_1mu || isTriggered_2mu)                      ) continue;
-    if ( selElectrons.size() == 1 && selMuons.size() == 1 && !(isTriggered_1e  || isTriggered_1mu || isTriggered_1e1mu) ) continue;
+    if ( selElectrons.size() == 2 &&                         !(selTrigger_1e  || selTrigger_2e)                       ) continue;
+    if (                             selMuons.size() == 2 && !(selTrigger_1mu || selTrigger_2mu)                      ) continue;
+    if ( selElectrons.size() == 1 && selMuons.size() == 1 && !(selTrigger_1e  || selTrigger_1mu || selTrigger_1e1mu) ) continue;
 
     // apply requirement on jets (incl. b-tagged jets) and hadronic taus on level of final event selection
     if ( !(selJets.size() >= 4) ) continue;
