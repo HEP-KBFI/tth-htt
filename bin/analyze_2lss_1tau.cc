@@ -571,6 +571,9 @@ int main(int argc, char* argv[])
     const RecoLepton* preselLepton_sublead = preselLeptons[1];
     int preselLepton_sublead_type = getLeptonType(preselLepton_sublead->pdgId_);
 
+    // require exactly two preselected leptons to avoid overlap with 3l category
+    if ( !(preselElectrons.size() + preselMuons.size()) == 2 ) continue;
+
     // require that trigger paths match event category (with event category based on preselLeptons);
     if ( preselElectrons.size() == 2 &&                            !(isTriggered_1e  || isTriggered_2e)                       ) continue;
     if (                                preselMuons.size() == 2 && !(isTriggered_1mu || isTriggered_2mu)                      ) continue;
