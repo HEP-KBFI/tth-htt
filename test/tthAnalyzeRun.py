@@ -44,19 +44,21 @@ class analyzeConfig:
     datacard_outputfile: the datacard -- final output file of this execution flow
     dcard_cfg_fullpath: python configuration file for datacard preparation executable
   """
-  def __init__(self, output_dir, exec_name, charge_selection, lepton_selection,
+  def __init__(self, output_dir, exec_name, charge_selection, lepton_selection, data_selection,
                max_files_per_job, use_lumi, debug, running_method, nof_parallel_jobs,
                poll_interval, prep_dcard_exec, histogram_to_fit):
 
-    assert(exec_name in ["analyze_2lss_1tau", "analyze_2los_1tau", "analyze_1l_2tau"]), "Invalid exec name: %s" % exec_name
+    assert(exec_name in ["analyze_2lss_1tau", "analyze_2los_1tau", "analyze_1l_2tau", "analyze_charge_flip"]), "Invalid exec name: %s" % exec_name
     assert(charge_selection in ["OS", "SS"]),                                           "Invalid charge selection: %s" % charge_selection
-    assert(lepton_selection in ["Tight", "Loose", "Fakeable"]),                         "Invalid lepton selection: %s" % lepton_selection
+    assert(lepton_selection in ["Tight", "Loose", "Fakeable"]),                          "Invalid lepton selection: %s" % lepton_selection
+    assert(data_selection in ["regular", "chargeFlip"]),                                "Invalid data_selection: %s" % data_selection
     assert(running_method.lower() in ["sbatch", "makefile"]),                           "Invalid running method: %s" % running_method
 
     self.output_dir = output_dir
     self.exec_name = exec_name
     self.charge_selection = charge_selection
     self.lepton_selection = lepton_selection
+    self.data_selection = data_selection
     self.max_files_per_job = max_files_per_job
     self.use_lumi = use_lumi
     self.debug = debug
@@ -389,8 +391,12 @@ def create_setup(cfg):
   cfg_basenames = []
 
   for k, v in tthAnalyzeSamples.samples.items():
-    if not v["use_it"] or v["sample_category"] in \
-      ["additional_signal_overlap", "background_data_estimate"]: continue
+    if cfg.data_selection == "regular":
+      if not v["use_it"] or v["sample_category"] in \
+        ["additional_signal_overlap", "background_data_estimate"]: continue
+    if cfg.data_selection == "chargeFlip":
+      if not (v["sample_category"] == "background_data_estimate" and "DY" in v["process_name_specific"]) and \
+        not (v["sample_category"] == "data_obs"): continue
 
     is_mc = v["type"] == "mc"
     process_name = v["process_name_specific"]
@@ -517,10 +523,11 @@ if __name__ == '__main__':
                       level = logging.INFO,
                       format = '%(asctime)s - %(levelname)s: %(message)s')
 
-  cfg = analyzeConfig(output_dir = "/home/karl/test",
+  cfg = analyzeConfig(output_dir = os.path.join(["/scratch", getpass.getuser(), "tth", "test"]),
                       exec_name = "analyze_2lss_1tau",
                       charge_selection = "SS",
                       lepton_selection = "Tight",
+                      data_selection = "regular",
                       max_files_per_job = 30,
                       use_lumi = True,
                       debug = False,
