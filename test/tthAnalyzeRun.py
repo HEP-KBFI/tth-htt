@@ -397,7 +397,7 @@ def create_setup(cfg):
     if cfg.data_selection == "chargeFlip":
       if not (v["sample_category"] == "background_data_estimate" and "DY" in v["process_name_specific"]) and \
         not (v["sample_category"] == "data_obs"): continue
-
+      
     is_mc = v["type"] == "mc"
     process_name = v["process_name_specific"]
     category_name = v["sample_category"]
@@ -523,7 +523,7 @@ if __name__ == '__main__':
                       level = logging.INFO,
                       format = '%(asctime)s - %(levelname)s: %(message)s')
 
-  cfg = analyzeConfig(output_dir = os.path.join(["/scratch", getpass.getuser(), "tth", "test"]),
+  cfg = analyzeConfig(output_dir = os.path.join("/home", getpass.getuser(), "test"),
                       exec_name = "analyze_2lss_1tau",
                       charge_selection = "SS",
                       lepton_selection = "Tight",
