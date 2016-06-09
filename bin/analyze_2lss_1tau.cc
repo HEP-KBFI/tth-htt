@@ -612,7 +612,7 @@ int main(int argc, char* argv[])
     int preselLepton_sublead_type = getLeptonType(preselLepton_sublead->pdgId_);
 
     // require exactly two preselected leptons to avoid overlap with 3l category
-    if ( !(preselElectrons.size() + preselMuons.size()) == 2 ) continue;
+    if ( !(preselElectrons.size() + preselMuons.size() == 2) ) continue;
 
     // require that trigger paths match event category (with event category based on preselLeptons);
     if ( preselElectrons.size() == 2                            && !(selTrigger_1e  || selTrigger_2e)                      ) continue;
