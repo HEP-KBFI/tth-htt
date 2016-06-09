@@ -46,6 +46,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/backgroundEstimation.h" // prob_chargeMisId
 #include "tthAnalysis/HiggsToTauTau/interface/hltPath.h" // hltPath, create_hltPaths, hltPaths_setBranchAddresses, hltPaths_isTriggered, hltPaths_delete
 #include "tthAnalysis/HiggsToTauTau/interface/data_to_MC_corrections.h"
+#include "tthAnalysis/HiggsToTauTau/interface/lutAuxFunctions.h" // loadTH2, get_sf_from_TH2
 
 #include <boost/range/algorithm/copy.hpp> // boost::copy()
 #include <boost/range/adaptor/map.hpp> // boost::adaptors::map_keys
@@ -82,6 +83,20 @@ bool isHigherPt(const GenParticle* particle1, const GenParticle* particle2)
   return (particle1->pt_ > particle2->pt_);
 }
 
+/**
+ * @brief Auxiliary function for checking if leptons passing fake-able lepton selection pass tight lepton identification criteria also
+ */
+template <typename Tfakeable, typename Ttight>
+bool isMatched(const Tfakeable& fakeableLepton, const std::vector<Ttight*>& tightLeptons, double dRmax = 1.e-2)
+{
+  for ( typename std::vector<const Ttight*>::const_iterator tightLepton = tightLeptons.begin();
+        tightLepton != tightLeptons.end(); ++tightLepton ) {
+    double dR = deltaR(fakeableLepton.eta_, fakeableLepton.phi_, (*tightLepton)->eta_, (*tightLepton)->phi_);
+    if ( dR < dRmax ) return true; // found match
+  }
+  return false; // no match found
+}
+ 
 /**
  * @brief Produce datacard and control plots for 2lss_1tau categories.
  */
@@ -144,6 +159,17 @@ int main(int argc, char* argv[])
   else if ( leptonSelection_string == "Tight"    ) leptonSelection = kTight;
   else throw cms::Exception("analyze_2lss_1tau") 
     << "Invalid Configuration parameter 'leptonSelection' = " << leptonSelection_string << " !!\n";
+
+  TH2* lutFakeRate_e = 0;
+  TH2* lutFakeRate_mu = 0;
+  if ( leptonSelection == kFakeable ) {
+    edm::ParameterSet cfg_leptonFakeRate = cfg_analyze.getParameter<edm::ParameterSet>("leptonFakeRateLooseToTightWeight");
+    std::string inputFileName = cfg_leptonFakeRate.getParameter<std::string>("inputFileName");
+    std::string histogramName_e = cfg_leptonFakeRate.getParameter<std::string>("histogramName_e");
+    std::string histogramName_mu = cfg_leptonFakeRate.getParameter<std::string>("histogramName_mu");
+    lutFakeRate_e = loadTH2(edm::FileInPath(inputFileName), histogramName_e);
+    lutFakeRate_mu = loadTH2(edm::FileInPath(inputFileName), histogramName_mu);
+  }
 
   bool isMC = cfg_analyze.getParameter<bool>("isMC"); 
   std::string central_or_shift = cfg_analyze.getParameter<std::string>("central_or_shift");
@@ -755,6 +781,31 @@ int main(int argc, char* argv[])
       evtWeight *= sf_tight_to_loose;
       evtWeight_pp *= sf_tight_to_loose;
       evtWeight_mm *= sf_tight_to_loose;
+    }
+
+    if ( leptonSelection == kFakeable ) {
+      TH2* lutFakeRate_lead = 0;
+      if      ( std::abs(selLepton_lead->pdgId_) == 11 ) lutFakeRate_lead = lutFakeRate_e;
+      else if ( std::abs(selLepton_lead->pdgId_) == 13 ) lutFakeRate_lead = lutFakeRate_mu;
+      assert(lutFakeRate_lead);
+      double prob_fake_lead = get_sf_from_TH2(lutFakeRate_lead, selLepton_lead->pt_, selLepton_lead->eta_);
+      TH2* lutFakeRate_sublead = 0;
+      if      ( std::abs(selLepton_sublead->pdgId_) == 11 ) lutFakeRate_sublead = lutFakeRate_e;
+      else if ( std::abs(selLepton_sublead->pdgId_) == 13 ) lutFakeRate_sublead = lutFakeRate_mu;
+      assert(lutFakeRate_sublead);
+      double prob_fake_sublead = get_sf_from_TH2(lutFakeRate_sublead, selLepton_sublead->pt_, selLepton_sublead->eta_);
+
+      bool passesTight_lead = isMatched(*selLepton_lead, tightElectrons) || isMatched(*selLepton_lead, tightMuons);
+      bool passesTight_sublead = isMatched(*selLepton_sublead, tightElectrons) || isMatched(*selLepton_sublead, tightMuons);
+
+      double evtWeight_tight_to_loose = 0.;
+      if      (  passesTight_lead && !passesTight_sublead ) evtWeight_tight_to_loose =  prob_fake_sublead/(1. - prob_fake_sublead);
+      else if ( !passesTight_lead &&  passesTight_sublead ) evtWeight_tight_to_loose =  prob_fake_lead/(1. - prob_fake_lead);
+      else if ( !passesTight_lead && !passesTight_sublead ) evtWeight_tight_to_loose = -prob_fake_lead*prob_fake_sublead/((1. - prob_fake_lead)*(1. - prob_fake_sublead));
+
+      evtWeight *= evtWeight_tight_to_loose;
+      evtWeight_pp *= evtWeight_tight_to_loose;
+      evtWeight_mm *= evtWeight_tight_to_loose;
     }
 
 //--- fill histograms with events passing final selection 
