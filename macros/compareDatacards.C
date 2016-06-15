@@ -633,7 +633,7 @@ void compareDatacards()
   std::string category_ref = "ttH_2lss_1tau";
   std::string legendEntry_ref = "HIG-15-008";
 
-  std::string inputFilePath_test = "/afs/cern.ch/user/v/veelken/scratch0/VHbbNtuples_7_6_x/CMSSW_7_6_3/src/tthAnalysis/HiggsToTauTau/macros/data/fromKarl_2016May20/";
+  std::string inputFilePath_test = "/home/veelken/ttHAnalysis/datacards/2lss_1tau_SS_Tight/";
   std::string inputFileName_test = "prepareDatacards.root";
   std::string category_test = "tauTau_ttH_2lss_1tau";
   std::string legendEntry_test = "Tallinn";
@@ -643,7 +643,7 @@ void compareDatacards()
   std::string category_test2 = "";
   std::string legendEntry_test2 = "";
 
-  std::string outputFilePath = "/afs/cern.ch/user/v/veelken/scratch0/VHbbNtuples_7_6_x/CMSSW_7_6_3/src/tthAnalysis/HiggsToTauTau/macros/plots";
+  std::string outputFilePath = "/home/veelken/VHbbNtuples_7_6_x/CMSSW_7_6_3/src/tthAnalysis/HiggsToTauTau/macros/plots";
 
   std::vector<std::string> processes; 
   processes.push_back("data_obs");

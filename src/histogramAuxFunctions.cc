@@ -304,9 +304,8 @@ TH1* getHistogram(TDirectory* dir, const std::string& process, const std::string
   //std::cout << " histogramName = " << histogramName << std::endl;
   //std::cout << " central_or_shift = " << central_or_shift << std::endl;
   //std::cout << " enableException = " << enableException << std::endl;
-  std::string histogramName_full = Form("%s/%s", process.data(), process.data());
+  std::string histogramName_full = Form("%s/%s", process.data(), histogramName.data());
   if ( !(central_or_shift == "" || central_or_shift == "central") ) histogramName_full.append("_").append(central_or_shift);
-  histogramName_full.append("_").append(histogramName);
   TH1* histogram = dynamic_cast<TH1*>(dir->Get(histogramName_full.data()));
   if ( enableException && !histogram ) 
     throw cms::Exception("getHistogram") 

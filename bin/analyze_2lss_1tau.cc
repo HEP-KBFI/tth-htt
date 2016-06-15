@@ -160,6 +160,8 @@ int main(int argc, char* argv[])
   else throw cms::Exception("analyze_2lss_1tau") 
     << "Invalid Configuration parameter 'leptonSelection' = " << leptonSelection_string << " !!\n";
 
+  std::vector<TFile*> inputFilesToClose;
+
   TH2* lutFakeRate_e = 0;
   TH2* lutFakeRate_mu = 0;
   if ( leptonSelection == kFakeable ) {
@@ -167,8 +169,10 @@ int main(int argc, char* argv[])
     std::string inputFileName = cfg_leptonFakeRate.getParameter<std::string>("inputFileName");
     std::string histogramName_e = cfg_leptonFakeRate.getParameter<std::string>("histogramName_e");
     std::string histogramName_mu = cfg_leptonFakeRate.getParameter<std::string>("histogramName_mu");
-    lutFakeRate_e = loadTH2(edm::FileInPath(inputFileName), histogramName_e);
-    lutFakeRate_mu = loadTH2(edm::FileInPath(inputFileName), histogramName_mu);
+    TFile* inputFile = openFile(edm::FileInPath(inputFileName));
+    lutFakeRate_e = loadTH2(inputFile, histogramName_e);
+    lutFakeRate_mu = loadTH2(inputFile, histogramName_mu);
+    inputFilesToClose.push_back(inputFile);
   }
 
   bool isMC = cfg_analyze.getParameter<bool>("isMC"); 
@@ -789,6 +793,7 @@ int main(int argc, char* argv[])
       else if ( std::abs(selLepton_lead->pdgId_) == 13 ) lutFakeRate_lead = lutFakeRate_mu;
       assert(lutFakeRate_lead);
       double prob_fake_lead = get_sf_from_TH2(lutFakeRate_lead, selLepton_lead->pt_, selLepton_lead->eta_);
+
       TH2* lutFakeRate_sublead = 0;
       if      ( std::abs(selLepton_sublead->pdgId_) == 11 ) lutFakeRate_sublead = lutFakeRate_e;
       else if ( std::abs(selLepton_sublead->pdgId_) == 13 ) lutFakeRate_sublead = lutFakeRate_mu;
@@ -802,7 +807,6 @@ int main(int argc, char* argv[])
       if      (  passesTight_lead && !passesTight_sublead ) evtWeight_tight_to_loose =  prob_fake_sublead/(1. - prob_fake_sublead);
       else if ( !passesTight_lead &&  passesTight_sublead ) evtWeight_tight_to_loose =  prob_fake_lead/(1. - prob_fake_lead);
       else if ( !passesTight_lead && !passesTight_sublead ) evtWeight_tight_to_loose = -prob_fake_lead*prob_fake_sublead/((1. - prob_fake_lead)*(1. - prob_fake_sublead));
-
       evtWeight *= evtWeight_tight_to_loose;
       evtWeight_pp *= evtWeight_tight_to_loose;
       evtWeight_mm *= evtWeight_tight_to_loose;
@@ -907,6 +911,11 @@ int main(int argc, char* argv[])
   std::cout << "num. Entries = " << numEntries << std::endl;
   std::cout << " analyzed = " << analyzedEntries << std::endl;
   std::cout << " selected = " << selectedEntries << " (weighted = " << selectedEntries_weighted << ")" << std::endl;
+
+  for ( std::vector<TFile*>::iterator inputFile = inputFilesToClose.begin();
+	inputFile != inputFilesToClose.end(); ++inputFile ) {
+    delete (*inputFile);
+  }  
 
   delete run_lumi_eventSelector;
 

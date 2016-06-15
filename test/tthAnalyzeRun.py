@@ -1,7 +1,7 @@
 import json, os, codecs, stat, logging, sys, jinja2, subprocess, getpass, time
 import tthAnalyzeSamples
 
-LUMI = 2260. # 1/pb
+LUMI = 2301. # 1/pb
 DKEY_JOBS = "jobs"       # dir for jobs aka bash scripts that run a single analysis executable
 DKEY_CFGS = "cfgs"       # dir for python configuration file for each job
 DKEY_HIST = "histograms" # dir for histograms = output of the jobs
@@ -12,6 +12,17 @@ DKEY_DCRD = "datacards"  # dir for the datacard
 TODO:
   * isMC is always False in the analysis config since we're missing some necessary input files for MC
 """
+
+def initDict(dictionary, keys):
+    """Auxiliary function to initialize dictionary for access with multiple keys
+    """
+    dictionary_at_keylevel = dictionary
+    numKeys = len(keys)
+    for idxKey in range(numKeys - 1):
+        key = keys[idxKey]
+        if key not in dictionary_at_keylevel.keys():
+            dictionary_at_keylevel[key] = {}
+        dictionary_at_keylevel = dictionary_at_keylevel[key]
 
 class analyzeConfig:
   """Configuration metadata needed to run analysis in a single go.
@@ -29,6 +40,8 @@ class analyzeConfig:
     running_method: either `sbatch` (uses SLURM) or `Makefile`
     nof_parallel_jobs: number of jobs that can be run in parallel (matters only if `running_method` is set to `Makefile`)
     poll_interval: the interval of checking whether all sbatch jobs are completed (matters only if `running_method` is set to `sbatch`)
+    addFakes_exec: executable for estimating 'Fakes' background from data
+    addFakes_exec: executable for estimating 'Flips' background from data
     prep_dcard_exec: executable name for preparing the datacards
     histogram_to_fit: what histograms are filtered in datacard preparation
   
@@ -40,31 +53,40 @@ class analyzeConfig:
     dirs: list of subdirectories under `subdir` -- jobs, cfgs, histograms, logs, datacards
     makefile_fullpath: full path to the Makefile
     sbatch_fullpath: full path to the bash script that submits all jobs to SLURM
-    histogram_file: the histogram file obtained by hadding the output of all jobs
+    histogram_files_jobs: the histogram files produced by 'analyze_2lss_1tau' jobs
+    histogram_file_hadd_stage1: the histogram file obtained by hadding the output of all jobs
+    histogram_file_addFakes: the histogram file containing 'Fakes' background 
+    histogram_file_addFlips: the histogram file containing 'Flips' background 
+    histogram_file_hadd_stage2: the final histogram file with data-driven background estimates added
     datacard_outputfile: the datacard -- final output file of this execution flow
-    dcard_cfg_fullpath: python configuration file for datacard preparation executable
+    addFakes_cfg_fullpath: python configuration file for executable that estimates 'Fakes' background from data 
+    addFlips_cfg_fullpath: python configuration file for executable that estimates 'Flips' background from data 
+    prep_dcard_cfg_fullpath: python configuration file for datacard preparation executable
   """
-  def __init__(self, output_dir, exec_name, charge_selection, lepton_selection, data_selection,
-               max_files_per_job, use_lumi, debug, running_method, nof_parallel_jobs,
-               poll_interval, prep_dcard_exec, histogram_to_fit):
+  def __init__(self, output_dir, exec_name, lepton_selections, charge_selections, central_or_shifts,
+               max_files_per_job, use_lumi, debug, running_method, nof_parallel_jobs, poll_interval, 
+	       addFakes_exec, addFlips_exec, prep_dcard_exec, histogram_to_fit):
 
-    assert(exec_name in ["analyze_2lss_1tau", "analyze_2los_1tau", "analyze_1l_2tau", "analyze_charge_flip"]), "Invalid exec name: %s" % exec_name
-    assert(charge_selection in ["OS", "SS"]),                                           "Invalid charge selection: %s" % charge_selection
-    assert(lepton_selection in ["Tight", "Loose", "Fakeable"]),                          "Invalid lepton selection: %s" % lepton_selection
-    assert(data_selection in ["regular", "chargeFlip"]),                                "Invalid data_selection: %s" % data_selection
+    assert(exec_name in [ "analyze_2lss_1tau", "analyze_2los_1tau", "analyze_1l_2tau", "analyze_charge_flip" ]), "Invalid exec name: %s" % exec_name
+    for charge_selection in charge_selections:
+      assert(charge_selection in ["OS", "SS"]),                                         "Invalid charge selection: %s" % charge_selection
+    for lepton_selection in lepton_selections:
+      assert(lepton_selection in ["Tight", "Loose", "Fakeable"]),                       "Invalid lepton selection: %s" % lepton_selection
     assert(running_method.lower() in ["sbatch", "makefile"]),                           "Invalid running method: %s" % running_method
 
     self.output_dir = output_dir
     self.exec_name = exec_name
-    self.charge_selection = charge_selection
-    self.lepton_selection = lepton_selection
-    self.data_selection = data_selection
+    self.lepton_selections = lepton_selections
+    self.charge_selections = charge_selections
+    self.central_or_shifts = central_or_shifts
     self.max_files_per_job = max_files_per_job
     self.use_lumi = use_lumi
     self.debug = debug
     self.running_method = running_method
     self.nof_parallel_jobs = nof_parallel_jobs
     self.poll_interval = poll_interval
+    self.addFakes_exec = addFakes_exec
+    self.addFlips_exec = addFlips_exec
     self.prep_dcard_exec = prep_dcard_exec
     self.histogram_to_fit = histogram_to_fit
     
@@ -74,16 +96,32 @@ class analyzeConfig:
     else:                                       self.is_makefile = True
 
     self.output_category = self.exec_name.replace("analyze_", "")
-    self.subdir = "_".join([self.output_category, self.charge_selection, self.lepton_selection])
-    self.analysis_type = self.subdir
-    dir_types = [DKEY_JOBS, DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_DCRD]
-    self.dirs = {dkey: os.path.join(self.output_dir, dkey, self.subdir) for dkey in dir_types}
+    self.subdir = {} 
+    for lepton_selection in self.lepton_selections:
+      for charge_selection in self.charge_selections:
+        initDict(self.subdir, [ lepton_selection, charge_selection ])
+    	self.subdir[lepton_selection][charge_selection] = \
+          "_".join([self.output_category, lepton_selection, charge_selection])
+    self.dirs = {} 
+    for lepton_selection in self.lepton_selections:
+      for charge_selection in self.charge_selections:
+        dir_types = [ DKEY_JOBS, DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_DCRD ]
+        initDict(self.dirs, [ lepton_selection, charge_selection ])
+        self.dirs[lepton_selection][charge_selection] = \
+          { dkey: os.path.join(self.output_dir, dkey, self.subdir[lepton_selection][charge_selection]) for dkey in dir_types }
+    print "self.dirs = ", self.dirs
 
     self.makefile_fullpath = os.path.join(self.output_dir, "Makefile")
     self.sbatch_fullpath = os.path.join(self.output_dir, "sbatch.sh")
-    self.histogram_file = os.path.join(self.dirs[DKEY_HIST], "allHistograms.root")
-    self.datacard_outputfile = os.path.join(self.dirs[DKEY_DCRD], "prepareDatacards.root")
-    self.dcard_cfg_fullpath = os.path.join(self.dirs[DKEY_CFGS], "prepareDatacards_cfg.py")
+    self.histogram_files_jobs = {}
+    self.histogram_file_hadd_stage1 = os.path.join(self.output_dir, DKEY_HIST, "histograms_harvested.root")
+    self.histogram_file_addFakes = os.path.join(self.output_dir, DKEY_HIST, "addBackgroundLeptonFakes.root")
+    self.addFakes_cfg_fullpath = os.path.join(self.output_dir, DKEY_CFGS, "addBackgroundLeptonFakes_cfg.py")
+    self.histogram_file_addFlips = os.path.join(self.output_dir, DKEY_HIST, "addBackgroundLeptonFlips.root")
+    self.addFlips_cfg_fullpath = os.path.join(self.output_dir, DKEY_CFGS, "addBackgroundLeptonFlips_cfg.py")
+    self.histogram_file_hadd_stage2 = os.path.join(self.output_dir, DKEY_HIST, "allHistograms.root")
+    self.datacard_outputfile = os.path.join(self.output_dir, DKEY_DCRD, "prepareDatacards.root")
+    self.prep_dcard_cfg_fullpath = os.path.join(self.output_dir, DKEY_CFGS, "prepareDatacards_cfg.py")
 
 def query_yes_no(question, default = "yes"):
   """Prompts user yes/no
@@ -117,11 +155,11 @@ def add_chmodX(fullpath):
   st = os.stat(fullpath)
   os.chmod(fullpath, st.st_mode | stat.S_IEXEC)
 
-def create_config(root_filenames, output_file, category_name, is_mc, lumi_scale, cfg, idx):
+def create_config(root_filenames, output_file, category_name, triggers, lepton_selection, charge_selection, is_mc, central_or_shift, lumi_scale, cfg, idx):
   """Fill python configuration file for the job exectuable (analysis code)
 
   Args:
-    root_filesnames: list of full path to the input root files (Ntupes)
+    root_filesnames: list of full path to the input root files (Ntuples)
     output_file: output file of the job -- a histogram
     category_name: either `TTW`, `TTZ`, `WZ`, `Rares`, `data_obs`, `ttH_hww`, `ttH_hzz` or `ttH_htt`
     is_mc: is a given sample an MC (True) or data (False)
@@ -151,24 +189,30 @@ process.{{ execName }} = cms.PSet(
     process = cms.string('{{ categoryName }}'),
 
     triggers_1e = cms.vstring("HLT_BIT_HLT_Ele23_WPLoose_Gsf_v"),
-    use_triggers_1e = cms.bool(True),
+    use_triggers_1e = cms.bool({{ use_triggers_1e }}),
     triggers_1mu = cms.vstring("HLT_BIT_HLT_IsoMu20_v", "HLT_BIT_HLT_IsoTkMu20_v"),
-    use_triggers_1mu = cms.bool(True),
+    use_triggers_1mu = cms.bool({{ use_triggers_1mu }}),
     {% if execName != "analyze_1l_2tau" %}
     triggers_2e = cms.vstring("HLT_BIT_HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v"),
-    use_triggers_2e = cms.bool(True),
+    use_triggers_2e = cms.bool({{ use_triggers_2e }}),
     triggers_2mu = cms.vstring("HLT_BIT_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v",
                                "HLT_BIT_HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v"),
-    use_triggers_2mu = cms.bool(True),
+    use_triggers_2mu = cms.bool({{ use_triggers_2mu }}),
     triggers_1e1mu = cms.vstring("HLT_BIT_HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v",
                                  "HLT_BIT_HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v"),
-    use_triggers_1e1mu = cms.bool(True),
+    use_triggers_1e1mu = cms.bool({{ use_triggers_1e1mu }}),
     {% endif %}
     chargeSelection = cms.string('{{ chargeSelection }}'),
     leptonSelection = cms.string('{{ leptonSelection }}'),
+
+    leptonFakeRateLooseToTightWeight = cms.PSet(
+        inputFileName = cms.string('{{ leptonFakeRateLooseToTightWeight_inputFileName }}'),
+        histogramName_e = cms.string("FR_mva075_el_data_comb"),
+        histogramName_mu = cms.string("FR_mva075_mu_data_comb")
+    ),			
     
     isMC = cms.bool({{ isMC }}),
-    central_or_shift = cms.string('central'),
+    central_or_shift = cms.string('{{ central_or_shift }}'),
     lumiScale = cms.double({{ lumiScale }}),
 
     selEventsFileName_input = cms.string(''),
@@ -176,18 +220,31 @@ process.{{ execName }} = cms.PSet(
 )
 
 """
+  leptonFakeRateLooseToTightWeight_inputFileName = None
+  if lepton_selection == "Fakeable":
+    leptonFakeRateLooseToTightWeight_inputFileName = "tthAnalysis/HiggsToTauTau/data/FR_data_ttH_mva.root"
+  else:
+    leptonFakeRateLooseToTightWeight_inputFileName = ""	
+  leptonFakeRateLooseToTightWeight_inputFileName
   return jinja2.Template(cfg_file).render(
     fileNames = root_filenames,
     execName = cfg.exec_name,
     outputFile = output_file,
     categoryName = category_name,
-    chargeSelection = cfg.charge_selection,
-    leptonSelection = cfg.lepton_selection,
+    use_triggers_1e = "1e" in triggers,
+    use_triggers_1mu = "1mu" in triggers,
+    use_triggers_2e = "2e" in triggers,
+    use_triggers_2mu = "2mu" in triggers,
+    use_triggers_1e1mu = "1e1mu" in triggers,	
+    chargeSelection = charge_selection,
+    leptonSelection = lepton_selection,
+    leptonFakeRateLooseToTightWeight_inputFileName = leptonFakeRateLooseToTightWeight_inputFileName,
     isMC = False, # NOTE: temporary fix; previously: is_mc
+    central_or_shift = central_or_shift,
     lumiScale = lumi_scale,
     idx = idx)
 
-def create_job(exec_name, py_cfg):
+def create_job(working_dir, exec_name, py_cfg):
   """Fills bash job template (run by either sbatch or make)
 
   Args:
@@ -198,10 +255,21 @@ def create_job(exec_name, py_cfg):
     Filled template
   """
   contents = """#!/bin/bash
+echo "current time:"
+date
+echo "executing 'hostname':"
+hostname
+echo "initializing cmssw run-time environment"
+source /cvmfs/cms.cern.ch/cmsset_default.sh 
+cd {{ working_dir }}
+cmsenv
+cd -
+echo "executing 'pwd'"
+pwd
 {{ exec_name }} {{ py_cfg }}
 
 """
-  return jinja2.Template(contents).render(exec_name = exec_name, py_cfg = py_cfg)
+  return jinja2.Template(contents).render(working_dir = working_dir, exec_name = exec_name, py_cfg = py_cfg)
 
 def create_makefile(commands, num):
   """Fills Makefile template
@@ -234,7 +302,7 @@ j{{ loop.index }}:
     commands = commands,
     jobLabelsNestedSpaced = job_labels_nested_spaced)
 
-def create_sbatch(sbatch_logfiles, commands):
+def create_sbatch(sbatch_logfiles, commands, sbatch_queue = "short"):
   """Fills sbatch submission template (a bash script)
 
   Args:
@@ -247,9 +315,203 @@ def create_sbatch(sbatch_logfiles, commands):
   sbatch_meta = zip(sbatch_logfiles, commands)
   sbatch_template = """#!/bin/bash
 {% for logfile,command in sbatch_meta %}
-sbatch --output={{ logfile }} {{ command }}{% endfor %}
+sbatch --partition={{ sbatch_queue }} --output={{ logfile }} {{ command }}{% endfor %}
 """
-  return jinja2.Template(sbatch_template).render(sbatch_meta = sbatch_meta)
+  return jinja2.Template(sbatch_template).render(sbatch_meta = sbatch_meta, sbatch_queue = sbatch_queue)
+
+def create_addFakes_cfg(cfg):
+  """Fills the template of python configuration file for estimating 'Fakes' background from data
+
+  Args:
+    cfg: contains full paths to the relevant files (input, output, analysis type); see `analyzeConfig`
+
+  Returns:
+    Filled template
+  """
+  cfg_file = """
+import FWCore.ParameterSet.Config as cms
+import os
+
+process = cms.PSet()
+process.fwliteInput = cms.PSet(
+    fileNames = cms.vstring('{{ histogramFile }}'),
+    maxEvents = cms.int32(-1),
+    outputEvery = cms.uint32(100000)
+)
+
+process.fwliteOutput = cms.PSet(
+    fileName = cms.string('{{ outputFile }}')
+)
+
+process.addBackgroundLeptonFakes = cms.PSet(
+
+    categories = cms.VPSet(
+        cms.PSet(
+            signal = cms.string("2lss_1tau_SS_Tight"),
+	    sideband = cms.string("2lss_1tau_SS_Fakeable")
+        ),
+        cms.PSet(
+            signal = cms.string("2epp_1tau_bloose_SS_Tight"),
+	    sideband = cms.string("2epp_1tau_bloose_SS_Fakeable")
+        ),        
+        cms.PSet(
+            signal = cms.string("2epp_1tau_btight_SS_Tight"),
+	    sideband = cms.string("2epp_1tau_btight_SS_Fakeable")
+        ),        
+        cms.PSet(
+            signal = cms.string("2emm_1tau_bloose_SS_Tight"),
+	    sideband = cms.string("2emm_1tau_bloose_SS_Fakeable")
+        ),        
+        cms.PSet(
+            signal = cms.string("2emm_1tau_btight_SS_Tight"),
+	    sideband = cms.string("2emm_1tau_btight_SS_Fakeable")
+        ),        
+        cms.PSet(
+            signal = cms.string("1e1mupp_1tau_bloose_SS_Tight"),
+	    sideband = cms.string("1e1mupp_1tau_bloose_SS_Fakeable")
+        ),        
+        cms.PSet(
+            signal = cms.string("1e1mupp_1tau_btight_SS_Tight"),
+	    sideband = cms.string("1e1mupp_1tau_btight_SS_Fakeable")
+        ),        
+        cms.PSet(
+            signal = cms.string("1e1mumm_1tau_bloose_SS_Tight"),
+	    sideband = cms.string("1e1mumm_1tau_bloose_SS_Fakeable")
+        ),        
+        cms.PSet(
+            signal = cms.string("1e1mumm_1tau_btight_SS_Tight"),
+	    sideband = cms.string("1e1mumm_1tau_btight_SS_Fakeable")
+        ),        
+	cms.PSet(
+            signal = cms.string("2mupp_1tau_bloose_SS_Tight"),
+	    sideband = cms.string("2mupp_1tau_bloose_SS_Fakeable")
+        ),        
+        cms.PSet(
+            signal = cms.string("2mupp_1tau_btight_SS_Tight"),
+	    sideband = cms.string("2mupp_1tau_btight_SS_Fakeable")
+        ),        
+        cms.PSet(
+            signal = cms.string("2mumm_1tau_bloose_SS_Tight"),
+	    sideband = cms.string("2mumm_1tau_bloose_SS_Fakeable")
+        ),        
+        cms.PSet(
+            signal = cms.string("2mumm_1tau_btight_SS_Tight"),
+	    sideband = cms.string("2mumm_1tau_btight_SS_Fakeable")
+        )
+    ),
+
+    processData = cms.string("data_obs"),
+    processLeptonFakes = cms.string("Fakes"),
+    processesToSubtract = cms.vstring(
+	"TTW",
+        "TTZ",
+        "WZ",
+        "Rares"
+    ),
+
+    sysShifts = cms.vstring()
+)
+"""
+  return jinja2.Template(cfg_file).render(
+    histogramFile = cfg.histogram_file_hadd_stage1,
+    outputFile = cfg.histogram_file_addFakes)
+
+def create_addFlips_cfg(cfg):
+  """Fills the template of python configuration file for estimating 'Flips' background from data
+
+  Args:
+    cfg: contains full paths to the relevant files (input, output, analysis type); see `analyzeConfig`
+
+  Returns:
+    Filled template
+  """
+  cfg_file = """
+import FWCore.ParameterSet.Config as cms
+import os
+
+process = cms.PSet()
+process.fwliteInput = cms.PSet(
+    fileNames = cms.vstring('{{ histogramFile }}'),
+    maxEvents = cms.int32(-1),
+    outputEvery = cms.uint32(100000)
+)
+
+process.fwliteOutput = cms.PSet(
+    fileName = cms.string('{{ outputFile }}')
+)
+
+process.addBackgroundLeptonFlips = cms.PSet(
+
+    categories = cms.VPSet(
+        cms.PSet(
+            signal = cms.string("2lss_1tau_SS_Tight"),
+	    sideband = cms.string("2lss_1tau_OS_Tight")
+        ),
+        cms.PSet(
+            signal = cms.string("2epp_1tau_bloose_SS_Tight"),
+	    sideband = cms.string("2epp_1tau_bloose_OS_Tight")
+        ),        
+        cms.PSet(
+            signal = cms.string("2epp_1tau_btight_SS_Tight"),
+	    sideband = cms.string("2epp_1tau_btight_OS_Tight")
+        ),        
+        cms.PSet(
+            signal = cms.string("2emm_1tau_bloose_SS_Tight"),
+	    sideband = cms.string("2emm_1tau_bloose_OS_Tight")
+        ),        
+        cms.PSet(
+            signal = cms.string("2emm_1tau_btight_SS_Tight"),
+	    sideband = cms.string("2emm_1tau_btight_OS_Tight")
+        ),        
+        cms.PSet(
+            signal = cms.string("1e1mupp_1tau_bloose_SS_Tight"),
+	    sideband = cms.string("1e1mupp_1tau_bloose_OS_Tight")
+        ),        
+        cms.PSet(
+            signal = cms.string("1e1mupp_1tau_btight_SS_Tight"),
+	    sideband = cms.string("1e1mupp_1tau_btight_OS_Tight")
+        ),        
+        cms.PSet(
+            signal = cms.string("1e1mumm_1tau_bloose_SS_Tight"),
+	    sideband = cms.string("1e1mumm_1tau_bloose_OS_Tight")
+        ),        
+        cms.PSet(
+            signal = cms.string("1e1mumm_1tau_btight_SS_Tight"),
+	    sideband = cms.string("1e1mumm_1tau_btight_OS_Tight")
+        ),        
+	cms.PSet(
+            signal = cms.string("2mupp_1tau_bloose_SS_Tight"),
+	    sideband = cms.string("2mupp_1tau_bloose_OS_Tight")
+        ),        
+        cms.PSet(
+            signal = cms.string("2mupp_1tau_btight_SS_Tight"),
+	    sideband = cms.string("2mupp_1tau_btight_OS_Tight")
+        ),        
+        cms.PSet(
+            signal = cms.string("2mumm_1tau_bloose_SS_Tight"),
+	    sideband = cms.string("2mumm_1tau_bloose_OS_Tight")
+        ),        
+        cms.PSet(
+            signal = cms.string("2mumm_1tau_btight_SS_Tight"),
+	    sideband = cms.string("2mumm_1tau_btight_OS_Tight")
+        )
+    ),
+
+    processData = cms.string("data_obs"),
+    processLeptonFlips = cms.string("Flips"),
+    processesToSubtract = cms.vstring(
+	"TTW",
+        "TTZ",
+        "WZ",
+        "Rares"
+    ),
+
+    sysShifts = cms.vstring()
+)
+"""
+  return jinja2.Template(cfg_file).render(
+    histogramFile = cfg.histogram_file_hadd_stage1,
+    outputFile = cfg.histogram_file_addFlips)
 
 def create_prep_dcard_cfg(cfg):
   """Fills the template of python configuration file for datacard preparation
@@ -274,6 +536,7 @@ process.fwliteInput = cms.PSet(
 process.fwliteOutput = cms.PSet(
     fileName = cms.string('{{ outputFile }}')
 )
+
 process.prepareDatacards = cms.PSet(
     processesToCopy = cms.vstring(
         "data_obs",
@@ -292,7 +555,7 @@ process.prepareDatacards = cms.PSet(
     ),
     categories = cms.VPSet(
         cms.PSet(
-            input = cms.string("{{ analysisType }}/sel/evt"),
+            input = cms.string("{{ dir }}/sel/evt"),
             output = cms.string("ttH_{{ outputCategory }}")
         )
     ),
@@ -324,9 +587,9 @@ process.prepareDatacards = cms.PSet(
 )
 """
   return jinja2.Template(cfg_file).render(
-    histogramFile = cfg.histogram_file,
+    histogramFile = cfg.histogram_file_hadd_stage2,
     outputFile = cfg.datacard_outputfile,
-    analysisType = cfg.analysis_type,
+    dir = cfg.dirs["Tight"]["SS"],
     outputCategory = cfg.output_category,
     histogramToFit = cfg.histogram_to_fit)
 
@@ -387,24 +650,39 @@ def create_setup(cfg):
   Args:
     cfg: Configuration object containig relevant full paths (see `analyzeConfig`)
   """
-  for k, d in cfg.dirs.items(): create_if_not_exists(d)
-  cfg_basenames = []
+  for lepton_selection in cfg.lepton_selections:
+    for charge_selection in cfg.charge_selections:	
+      for k, d in cfg.dirs[lepton_selection][charge_selection].items(): 
+        create_if_not_exists(d)
+
+  cfg_basenames = {}
+  for lepton_selection in cfg.lepton_selections:
+    for charge_selection in cfg.charge_selections:
+      for central_or_shift in cfg.central_or_shifts:
+        initDict(cfg_basenames, [ lepton_selection, charge_selection, central_or_shift ])
+        cfg_basenames[lepton_selection][charge_selection][central_or_shift] = []
+        initDict(cfg.histogram_files_jobs, [ lepton_selection, charge_selection, central_or_shift ])
+	cfg.histogram_files_jobs[lepton_selection][charge_selection][central_or_shift] = []
 
   for k, v in tthAnalyzeSamples.samples.items():
-    if cfg.data_selection == "regular":
-      if not v["use_it"] or v["sample_category"] in \
-        ["additional_signal_overlap", "background_data_estimate"]: continue
-    if cfg.data_selection == "chargeFlip":
-      if not (v["sample_category"] == "background_data_estimate" and "DY" in v["process_name_specific"]) and \
-        not (v["sample_category"] == "data_obs"): continue
+    if not v["use_it"] or v["sample_category"] in \
+      ["additional_signal_overlap", "background_data_estimate"]: continue
       
     is_mc = v["type"] == "mc"
     process_name = v["process_name_specific"]
     category_name = v["sample_category"]
-    
-    cfg_outputdir = os.path.join(cfg.dirs[DKEY_CFGS], process_name)
-    histogram_outputdir = os.path.join(cfg.dirs[DKEY_HIST], category_name)
-    for d in [cfg_outputdir, histogram_outputdir]: create_if_not_exists(d)
+    triggers = v["triggers"]
+
+    cfg_outputdir = {}
+    histogram_outputdir = {}
+    for lepton_selection in cfg.lepton_selections: 
+      for charge_selection in cfg.charge_selections:   
+        initDict(cfg_outputdir, [ lepton_selection, charge_selection ])
+        cfg_outputdir[lepton_selection][charge_selection] = os.path.join(cfg.dirs[lepton_selection][charge_selection][DKEY_CFGS], process_name)
+        initDict(histogram_outputdir, [ lepton_selection, charge_selection ])
+        histogram_outputdir[lepton_selection][charge_selection] = os.path.join(cfg.dirs[lepton_selection][charge_selection][DKEY_HIST], category_name)
+        for d in [ cfg_outputdir[lepton_selection][charge_selection], histogram_outputdir[lepton_selection][charge_selection] ]: 
+  	  create_if_not_exists(d)
     logging.info("Created config and job files for sample %s" % process_name)
 
     nof_files = v["nof_files"]
@@ -421,41 +699,69 @@ def create_setup(cfg):
 
     lumi_scale = 1. if not (cfg.use_lumi and is_mc) else v["xsection"] * LUMI / v["nof_events"]
     for idx in range(len(job_ids)):
-      cfg_basename = "_".join([process_name, str(idx)])
-      cfg_basenames.append(cfg_basename)
+      for lepton_selection in cfg.lepton_selections:
+	for charge_selection in cfg.charge_selections:
+	  for central_or_shift in cfg.central_or_shifts:
+	    if central_or_shift != "central" and not (lepton_selection == "Tight" and charge_selection == "SS"):
+	      continue
+            if central_or_shift != "central" and not is_mc:
+	      continue
+      	    cfg_basename = "_".join([process_name, str(idx), lepton_selection, charge_selection, central_or_shift])
+            cfg_basenames[lepton_selection][charge_selection][central_or_shift].append(cfg_basename)
 
-      cfg_filelist = generate_input_list(job_ids[idx], secondary_files,
-                                         primary_store, secondary_store, cfg.debug)
-      cfg_outputfile = "_".join([process_name, cfg.charge_selection, cfg.lepton_selection, str(idx)]) + ".root"
-      cfg_outputfile_fullpath = os.path.join(histogram_outputdir, cfg_outputfile)
+            cfg_filelist = generate_input_list(job_ids[idx], secondary_files, primary_store, secondary_store, cfg.debug)
+            cfg_outputfile = "_".join([process_name, lepton_selection, charge_selection, central_or_shift, str(idx)]) + ".root"
+            cfg_outputfile_fullpath = os.path.join(histogram_outputdir[lepton_selection][charge_selection], cfg_outputfile)
+	    cfg.histogram_files_jobs[lepton_selection][charge_selection][central_or_shift].append(cfg_outputfile_fullpath) 	
 
-      cfg_contents = create_config(cfg_filelist, cfg_outputfile_fullpath, category_name, is_mc, lumi_scale, cfg, idx)
-      cfg_file_fullpath = os.path.join(cfg_outputdir,  cfg_basename + ".py")
-      with codecs.open(cfg_file_fullpath, "w", "utf-8") as f: f.write(cfg_contents)
+            cfg_contents = create_config(cfg_filelist, cfg_outputfile_fullpath, category_name, triggers, lepton_selection, charge_selection, 
+	      is_mc, central_or_shift, lumi_scale, cfg, idx)
+            cfg_file_fullpath = os.path.join(cfg_outputdir[lepton_selection][charge_selection], cfg_basename + ".py")
+            with codecs.open(cfg_file_fullpath, "w", "utf-8") as f: f.write(cfg_contents)
 
-      bsh_contents = create_job(cfg.exec_name, cfg_file_fullpath)
-      bsh_file_fullpath = os.path.join(cfg.dirs[DKEY_JOBS], cfg_basename + ".sh")
-      with codecs.open(bsh_file_fullpath, "w", "utf-8") as f: f.write(bsh_contents)
-      add_chmodX(bsh_file_fullpath)
+	    working_dir = os.getcwd()    
+            bsh_contents = create_job(working_dir, cfg.exec_name, cfg_file_fullpath)
+            bsh_file_fullpath = os.path.join(cfg.dirs[lepton_selection][charge_selection][DKEY_JOBS], cfg_basename + ".sh")
+            with codecs.open(bsh_file_fullpath, "w", "utf-8") as f: f.write(bsh_contents)
+            add_chmodX(bsh_file_fullpath)
   
-  if cfg.is_makefile:
-    commands = map(lambda x: os.path.join(cfg.dirs[DKEY_JOBS], x + ".sh") + \
-      " >> " + os.path.join(cfg.dirs[DKEY_LOGS], x + ".log") + " 2>&1", cfg_basenames)
-    logging.info("Creating Makefile")
-    makefile_contents = create_makefile(commands, num = 20)
-    with codecs.open(cfg.makefile_fullpath, 'w', 'utf-8') as f: f.write(makefile_contents)
-  elif cfg.is_sbatch:
-    logging.info("Creating SLURM jobs")
-    commands = map(lambda x: os.path.join(cfg.dirs[DKEY_JOBS], x + ".sh"), cfg_basenames)
-    
-    sbatch_logfiles = map(lambda x: os.path.join(cfg.dirs[DKEY_LOGS], x + "-%a.out"), cfg_basenames)
-    sbatch_contents = create_sbatch(sbatch_logfiles, commands)
-    with codecs.open(cfg.sbatch_fullpath, 'w', 'utf-8') as f: f.write(sbatch_contents)
-    add_chmodX(cfg.sbatch_fullpath)
+    if cfg.is_makefile:
+      commands = []
+      for lepton_selection in cfg.lepton_selections:
+        for charge_selection in cfg.charge_selections:
+	  for central_or_shift in cfg.central_or_shifts:
+            commands.extend(map(lambda x: os.path.join(cfg.dirs[lepton_selection][charge_selection][DKEY_JOBS], x + ".sh") + \
+              " >> " + os.path.join(cfg.dirs[lepton_selection][charge_selection][DKEY_LOGS], x + ".log") + " 2>&1", 
+	      cfg_basenames[lepton_selection][charge_selection][central_or_shift]))
+      logging.info("Creating Makefile")
+      makefile_contents = create_makefile(commands, num = 20)
+      with codecs.open(cfg.makefile_fullpath, 'w', 'utf-8') as f: f.write(makefile_contents)
+    elif cfg.is_sbatch:
+      logging.info("Creating SLURM jobs")
+      commands = []
+      sbatch_logfiles = []
+      for lepton_selection in cfg.lepton_selections:
+        for charge_selection in cfg.charge_selections:
+	  for central_or_shift in cfg.central_or_shifts:
+            commands.extend(map(lambda x: os.path.join(cfg.dirs[lepton_selection][charge_selection][DKEY_JOBS], x + ".sh"), 
+              cfg_basenames[lepton_selection][charge_selection][central_or_shift]))
+            sbatch_logfiles.extend(map(lambda x: os.path.join(cfg.dirs[lepton_selection][charge_selection][DKEY_LOGS], x + "-%a.out"), 
+              cfg_basenames[lepton_selection][charge_selection][central_or_shift]))
+      sbatch_contents = create_sbatch(sbatch_logfiles, commands)
+      with codecs.open(cfg.sbatch_fullpath, 'w', 'utf-8') as f: f.write(sbatch_contents)
+      add_chmodX(cfg.sbatch_fullpath)
 
-  logging.info("Creating configuration file for data cards")
-  dcard_cfg_contents = create_prep_dcard_cfg(cfg)
-  with codecs.open(cfg.dcard_cfg_fullpath, 'w', 'utf-8') as f: f.write(dcard_cfg_contents)
+  logging.info("Creating configuration file for executing 'addBackgroundLeptonFakes'")
+  addFakes_cfg_contents = create_addFakes_cfg(cfg)
+  with codecs.open(cfg.addFakes_cfg_fullpath, 'w', 'utf-8') as f: f.write(addFakes_cfg_contents)
+
+  logging.info("Creating configuration file for executing 'addBackgroundLeptonFlips'")
+  addFlips_cfg_contents = create_addFlips_cfg(cfg)
+  with codecs.open(cfg.addFlips_cfg_fullpath, 'w', 'utf-8') as f: f.write(addFlips_cfg_contents)  
+
+  logging.info("Creating configuration file for executing 'prepareDatacards'")
+  prep_dcard_cfg_contents = create_prep_dcard_cfg(cfg)
+  with codecs.open(cfg.prep_dcard_cfg_fullpath, 'w', 'utf-8') as f: f.write(prep_dcard_cfg_contents)
 
   logging.info("Done")
 
@@ -501,16 +807,34 @@ def run_setup(cfg):
       else:                  break
       logging.info("Waiting for sbatch to finish (%d still left) ..." % nof_jobs_left)
   
-  logging.info("Running hadd on all the histograms ...")
-  subd_list = []
-  for subd_name in os.listdir(cfg.dirs[DKEY_HIST]):
-    subd = os.path.join(cfg.dirs[DKEY_HIST], subd_name, "*.root")
-    subd_list.append(subd)
-  command_hadd = " ".join(["hadd", cfg.histogram_file] + subd_list)
-  run_cmd(command_hadd)
+  logging.info("Running 'hadd' on histograms produced by 'analyze_2lss_1tau' jobs ...")
+  subd_list_stage1 = []
+  for lepton_selection in cfg.histogram_files_jobs.keys():
+    for charge_selection in cfg.histogram_files_jobs[lepton_selection].keys():
+      for central_or_shift in cfg.histogram_files_jobs[lepton_selection][charge_selection].keys():
+	subd = cfg.histogram_files_jobs[lepton_selection][charge_selection][central_or_shift]
+        subd_list_stage1.append(subd)
+  command_hadd_stage1 = " ".join(["hadd", cfg.histogram_file_hadd_stage1] + subd_list_stage1)
+  run_cmd(command_hadd_stage1)
 
-  logging.info("Running %s on the resulting histogram file %s ..." % (cfg.prep_dcard_exec, cfg.histogram_file))
-  command_dcard = "%s %s" % (cfg.prep_dcard_exec, cfg.dcard_cfg_fullpath)
+  logging.info("Running 'addBackgroundLeptonFakes' ...")
+  command_addFakes = "%s %s" % (cfg.addFakes_exec, cfg.addFakes_cfg_fullpath)
+  run_cmd(command_addFakes)
+
+  logging.info("Running 'addBackgroundLeptonFlips' ...")
+  command_addFlips = "%s %s" % (cfg.addFlips_exec, cfg.addFlips_cfg_fullpath)
+  run_cmd(command_addFlips)
+
+  logging.info("Running 'hadd' to produce final file containing all histograms ...")
+  subd_list_stage2 = []
+  subd_list_stage2.append(cfg.histogram_file_hadd_stage1)
+  subd_list_stage2.append(cfg.histogram_file_addFakes)
+  subd_list_stage2.append(cfg.histogram_file_addFlips)	
+  command_hadd_stage2 = " ".join(["hadd", cfg.histogram_file_hadd_stage2] + subd_list_stage2)
+  run_cmd(command_hadd_stage2)
+
+  logging.info("Running '%s' on the resulting histogram file %s ..." % (cfg.prep_dcard_exec, cfg.histogram_file_hadd_stage2))
+  command_dcard = "%s %s" % (cfg.prep_dcard_exec, cfg.prep_dcard_cfg_fullpath)
   run_cmd(command_dcard)
 
   stdout_file.close()
@@ -523,17 +847,39 @@ if __name__ == '__main__':
                       level = logging.INFO,
                       format = '%(asctime)s - %(levelname)s: %(message)s')
 
-  cfg = analyzeConfig(output_dir = os.path.join("/home", getpass.getuser(), "test"),
+  cfg = analyzeConfig(output_dir = os.path.join("/home", getpass.getuser(), "ttHAnalysis"),
                       exec_name = "analyze_2lss_1tau",
-                      charge_selection = "SS",
-                      lepton_selection = "Tight",
-                      data_selection = "regular",
+		      lepton_selections = [ "Tight", "Fakeable" ],	
+                      charge_selections = [ "OS", "SS" ],
+		      central_or_shifts = [ 
+			"central",
+			"CMS_ttHl_btag_HFUp", 
+			"CMS_ttHl_btag_HFDown",	
+			"CMS_ttHl_btag_HFStats1Up", 
+			"CMS_ttHl_btag_HFStats1Down",
+			"CMS_ttHl_btag_HFStats2Up", 
+			"CMS_ttHl_btag_HFStats2Down",
+			"CMS_ttHl_btag_HFUp", 
+			"CMS_ttHl_btag_HFDown",	
+			"CMS_ttHl_btag_HFStats1Up", 
+			"CMS_ttHl_btag_HFStats1Down",
+			"CMS_ttHl_btag_HFStats2Up", 
+			"CMS_ttHl_btag_HFStats2Down",
+			"CMS_ttHl_btag_cErr1Up",
+			"CMS_ttHl_btag_cErr1Down",
+			"CMS_ttHl_btag_cErr2Up",
+			"CMS_ttHl_btag_cErr2Down",
+			"CMS_ttHl_JESUp",
+			"CMS_ttHl_JESDown"
+	              ],
                       max_files_per_job = 30,
                       use_lumi = True,
                       debug = False,
                       running_method = "sbatch",
                       nof_parallel_jobs = 10,
                       poll_interval = 30,
+		      addFakes_exec = "addBackgroundLeptonFakes",
+                      addFlips_exec = "addBackgroundLeptonFlips", 
                       prep_dcard_exec = "prepareDatacards",
                       histogram_to_fit = "mvaDiscr_2lss")
 
