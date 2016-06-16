@@ -71,8 +71,6 @@ const double z_window = 10.;
 const double met_coef =  0.00397;
 const double mht_coef =  0.00265;
 
-enum { k2epp_btight, k2epp_bloose, k2emm_btight, k2emm_bloose, k1e1mupp_btight, k1e1mupp_bloose, k1e1mumm_btight, k1e1mumm_bloose, k2mupp_btight, k2mupp_bloose, k2mumm_btight, k2mumm_bloose };
-
 /**
  * @brief Auxiliary function used for sorting leptons by decreasing pT
  * @param Given pair of leptons
@@ -825,7 +823,7 @@ int main(int argc, char* argv[])
     selBJet_mediumHistManager.fillHistograms(selBJets_medium, evtWeight);
     selMEtHistManager.fillHistograms(met_p4, mht_p4, met_LD, evtWeight);
     selEvtHistManager.fillHistograms(mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, evtWeight);
-    if(process_string != "data_obs") {
+    if ( process_string != "data_obs" ) {
       for ( const auto & kv: decayMode_idString ) {
         if ( std::fabs(genHiggsDecayMode - kv.second) < EPS ) {
           selEvtHistManager_decayMode[kv.first] -> fillHistograms(mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, evtWeight);
@@ -837,66 +835,75 @@ int main(int argc, char* argv[])
     bool isCharge_pp = selLepton_lead->pdgId_ < 0 && selLepton_sublead->pdgId_ < 0;
     bool isCharge_mm = selLepton_lead->pdgId_ > 0 && selLepton_sublead->pdgId_ > 0;
 
-    int category = -1;
-    if      ( selElectrons.size() == 2 &&                         isCharge_pp && selBJets_medium.size() >= 1 ) category = k2epp_btight;
-    else if ( selElectrons.size() == 2 &&                         isCharge_pp                                ) category = k2epp_bloose;
-    else if ( selElectrons.size() == 2 &&                         isCharge_mm && selBJets_medium.size() >= 1 ) category = k2emm_btight;
-    else if ( selElectrons.size() == 2 &&                         isCharge_mm                                ) category = k2emm_bloose;
-    else if ( selElectrons.size() == 1 && selMuons.size() == 1 && isCharge_pp && selBJets_medium.size() >= 1 ) category = k1e1mupp_btight;
-    else if ( selElectrons.size() == 1 && selMuons.size() == 1 && isCharge_pp                                ) category = k1e1mupp_bloose;
-    else if ( selElectrons.size() == 1 && selMuons.size() == 1 && isCharge_mm && selBJets_medium.size() >= 1 ) category = k1e1mumm_btight;
-    else if ( selElectrons.size() == 1 && selMuons.size() == 1 && isCharge_mm                                ) category = k1e1mumm_bloose;
-    else if (                             selMuons.size() == 2 && isCharge_pp && selBJets_medium.size() >= 1 ) category = k2mupp_btight;
-    else if (                             selMuons.size() == 2 && isCharge_pp                                ) category = k2mupp_bloose;
-    else if (                             selMuons.size() == 2 && isCharge_mm && selBJets_medium.size() >= 1 ) category = k2mumm_btight;
-    else if (                             selMuons.size() == 2 && isCharge_mm                                ) category = k2mumm_bloose;
-    else assert(0);
+    bool isCategory_2epp_btight = selElectrons.size() == 2 && (isCharge_pp || chargeSelection == kOS) && selBJets_medium.size() >= 1;
+    bool isCategory_2epp_bloose = selElectrons.size() == 2 && (isCharge_pp || chargeSelection == kOS);
+    bool isCategory_2emm_btight = selElectrons.size() == 2 && (isCharge_mm || chargeSelection == kOS) && selBJets_medium.size() >= 1;
+    bool isCategory_2emm_bloose = selElectrons.size() == 2 && (isCharge_mm || chargeSelection == kOS);
+    bool isCategory_1e1mupp_btight = selElectrons.size() == 1 && selMuons.size() == 1 && (isCharge_pp || chargeSelection == kOS) && selBJets_medium.size() >= 1;
+    bool isCategory_1e1mupp_bloose = selElectrons.size() == 1 && selMuons.size() == 1 && (isCharge_pp || chargeSelection == kOS);
+    bool isCategory_1e1mumm_btight = selElectrons.size() == 1 && selMuons.size() == 1 && (isCharge_mm || chargeSelection == kOS) && selBJets_medium.size() >= 1;
+    bool isCategory_1e1mumm_bloose = selElectrons.size() == 1 && selMuons.size() == 1 && (isCharge_mm || chargeSelection == kOS);
+    bool isCategory_2mupp_btight = selMuons.size() == 2 && (isCharge_pp || chargeSelection == kOS) && selBJets_medium.size() >= 1;
+    bool isCategory_2mupp_bloose = selMuons.size() == 2 && (isCharge_pp || chargeSelection == kOS);
+    bool isCategory_2mumm_btight = selMuons.size() == 2 && (isCharge_mm || chargeSelection == kOS) && selBJets_medium.size() >= 1;
+    bool isCategory_2mumm_bloose = selMuons.size() == 2 && (isCharge_mm || chargeSelection == kOS);
 
-    if ( category == k2epp_btight ) {
+    if ( isCategory_2epp_btight ) {
       selElectronHistManager_category["2epp_1tau_btight"]["leadElectron"]->fillHistograms(selElectrons, evtWeight_pp);
       selElectronHistManager_category["2epp_1tau_btight"]["subleadElectron"]->fillHistograms(selElectrons, evtWeight_pp);
       selEvtHistManager_category["2epp_1tau_btight"]->fillHistograms(mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, evtWeight_pp);
-    } else if ( category == k2epp_bloose ) {
+    } 
+    if ( isCategory_2epp_bloose ) {
       selElectronHistManager_category["2epp_1tau_bloose"]["leadElectron"]->fillHistograms(selElectrons, evtWeight_pp);
       selElectronHistManager_category["2epp_1tau_bloose"]["subleadElectron"]->fillHistograms(selElectrons, evtWeight_pp);
       selEvtHistManager_category["2epp_1tau_bloose"]->fillHistograms(mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, evtWeight_pp);
-    } else if ( category == k2emm_btight ) {
+    } 
+    if ( isCategory_2emm_btight ) {
       selElectronHistManager_category["2emm_1tau_btight"]["leadElectron"]->fillHistograms(selElectrons, evtWeight_mm);
       selElectronHistManager_category["2emm_1tau_btight"]["subleadElectron"]->fillHistograms(selElectrons, evtWeight_mm);
       selEvtHistManager_category["2emm_1tau_btight"]->fillHistograms(mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, evtWeight_mm);
-    } else if ( category == k2emm_bloose ) {
+    } 
+    if ( isCategory_2emm_bloose ) {
       selElectronHistManager_category["2emm_1tau_bloose"]["leadElectron"]->fillHistograms(selElectrons, evtWeight_mm);
       selElectronHistManager_category["2emm_1tau_bloose"]["subleadElectron"]->fillHistograms(selElectrons, evtWeight_mm);
       selEvtHistManager_category["2emm_1tau_bloose"]->fillHistograms(mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, evtWeight_mm);
-    } else if ( category == k1e1mupp_btight ) {
+    } 
+    if ( isCategory_1e1mupp_btight ) {
       selElectronHistManager_category["1e1mupp_1tau_btight"]["electron"]->fillHistograms(selElectrons, evtWeight_pp);
       selMuonHistManager_category["1e1mupp_1tau_btight"]["muon"]->fillHistograms(selMuons, evtWeight_pp);
       selEvtHistManager_category["1e1mupp_1tau_btight"]->fillHistograms(mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, evtWeight_pp);
-    } else if ( category == k1e1mupp_bloose ) {
+    } 
+    if ( isCategory_1e1mupp_bloose ) {
       selElectronHistManager_category["1e1mupp_1tau_bloose"]["electron"]->fillHistograms(selElectrons, evtWeight_pp);
       selMuonHistManager_category["1e1mupp_1tau_bloose"]["muon"]->fillHistograms(selMuons, evtWeight_pp);
       selEvtHistManager_category["1e1mupp_1tau_bloose"]->fillHistograms(mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, evtWeight_pp);
-    } else if ( category == k1e1mumm_btight ) {
+    } 
+    if ( isCategory_1e1mumm_btight ) {
       selElectronHistManager_category["1e1mumm_1tau_btight"]["electron"]->fillHistograms(selElectrons, evtWeight_mm);
       selMuonHistManager_category["1e1mumm_1tau_btight"]["muon"]->fillHistograms(selMuons, evtWeight_mm);
       selEvtHistManager_category["1e1mumm_1tau_btight"]->fillHistograms(mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, evtWeight_mm);
-    } else if ( category == k1e1mumm_bloose ) {
+    } 
+    if ( isCategory_1e1mumm_bloose ) {
       selElectronHistManager_category["1e1mumm_1tau_bloose"]["electron"]->fillHistograms(selElectrons, evtWeight_mm);
       selMuonHistManager_category["1e1mumm_1tau_bloose"]["muon"]->fillHistograms(selMuons, evtWeight_mm);
       selEvtHistManager_category["1e1mumm_1tau_bloose"]->fillHistograms(mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, evtWeight_mm);
-    } else if ( category == k2mupp_btight ) {
+    } 
+    if ( isCategory_2mupp_btight ) {
       selMuonHistManager_category["2mupp_1tau_btight"]["leadMuon"]->fillHistograms(selMuons, evtWeight_pp);
       selMuonHistManager_category["2mupp_1tau_btight"]["subleadMuon"]->fillHistograms(selMuons, evtWeight_pp);
       selEvtHistManager_category["2mupp_1tau_btight"]->fillHistograms(mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, evtWeight_pp);
-    } else if ( category == k2mupp_bloose ) {
+    } 
+    if ( isCategory_2mupp_bloose ) {
       selMuonHistManager_category["2mupp_1tau_bloose"]["leadMuon"]->fillHistograms(selMuons, evtWeight_pp);
       selMuonHistManager_category["2mupp_1tau_bloose"]["subleadMuon"]->fillHistograms(selMuons, evtWeight_pp);
       selEvtHistManager_category["2mupp_1tau_bloose"]->fillHistograms(mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, evtWeight_pp);
-    } else if ( category == k2mumm_btight ) {
+    } 
+    if ( isCategory_2mumm_btight ) {
       selMuonHistManager_category["2mumm_1tau_btight"]["leadMuon"]->fillHistograms(selMuons, evtWeight_mm);
       selMuonHistManager_category["2mumm_1tau_btight"]["subleadMuon"]->fillHistograms(selMuons, evtWeight_mm);
       selEvtHistManager_category["2mumm_1tau_btight"]->fillHistograms(mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, evtWeight_mm);
-    } else if ( category == k2mumm_bloose ) {
+    } 
+    if ( isCategory_2mumm_bloose ) {
       selMuonHistManager_category["2mumm_1tau_bloose"]["leadMuon"]->fillHistograms(selMuons, evtWeight_mm);
       selMuonHistManager_category["2mumm_1tau_bloose"]["subleadMuon"]->fillHistograms(selMuons, evtWeight_mm);
       selEvtHistManager_category["2mumm_1tau_bloose"]->fillHistograms(mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, evtWeight_mm);
