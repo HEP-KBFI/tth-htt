@@ -6,6 +6,7 @@
 
 #include <iostream>
 #include <iomanip>
+#include <assert.h>
 
 /**
  * @brief Open ROOT file the name of which is given as function argument
