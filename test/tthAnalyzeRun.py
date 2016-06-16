@@ -54,6 +54,7 @@ class analyzeConfig:
     makefile_fullpath: full path to the Makefile
     sbatch_fullpath: full path to the bash script that submits all jobs to SLURM
     histogram_files_jobs: the histogram files produced by 'analyze_2lss_1tau' jobs
+    histogram_files_jobs_exists: flags indicating if histogram files already exist from a previous execution of 'tthAnalyzeRun.py', so that 'analyze_2lss_1tau' jobs do not have to be submitted again	
     histogram_file_hadd_stage1: the histogram file obtained by hadding the output of all jobs
     histogram_file_addFakes: the histogram file containing 'Fakes' background 
     histogram_file_addFlips: the histogram file containing 'Flips' background 
@@ -114,6 +115,7 @@ class analyzeConfig:
     self.makefile_fullpath = os.path.join(self.output_dir, "Makefile")
     self.sbatch_fullpath = os.path.join(self.output_dir, "sbatch.sh")
     self.histogram_files_jobs = {}
+    self.histogram_files_jobs_exist = {}
     self.histogram_file_hadd_stage1 = os.path.join(self.output_dir, DKEY_HIST, "histograms_harvested.root")
     self.histogram_file_addFakes = os.path.join(self.output_dir, DKEY_HIST, "addBackgroundLeptonFakes.root")
     self.addFakes_cfg_fullpath = os.path.join(self.output_dir, DKEY_CFGS, "addBackgroundLeptonFakes_cfg.py")
@@ -589,7 +591,7 @@ process.prepareDatacards = cms.PSet(
   return jinja2.Template(cfg_file).render(
     histogramFile = cfg.histogram_file_hadd_stage2,
     outputFile = cfg.datacard_outputfile,
-    dir = cfg.dirs["Tight"]["SS"],
+    dir = "2lss_1tau_SS_Tight",
     outputCategory = cfg.output_category,
     histogramToFit = cfg.histogram_to_fit)
 
@@ -652,26 +654,17 @@ def create_setup(cfg):
   """
   for lepton_selection in cfg.lepton_selections:
     for charge_selection in cfg.charge_selections:	
-      for k, d in cfg.dirs[lepton_selection][charge_selection].items(): 
-        create_if_not_exists(d)
+      for sample_name, dir in cfg.dirs[lepton_selection][charge_selection].items(): 
+        create_if_not_exists(dir)
 
-  cfg_basenames = {}
-  for lepton_selection in cfg.lepton_selections:
-    for charge_selection in cfg.charge_selections:
-      for central_or_shift in cfg.central_or_shifts:
-        initDict(cfg_basenames, [ lepton_selection, charge_selection, central_or_shift ])
-        cfg_basenames[lepton_selection][charge_selection][central_or_shift] = []
-        initDict(cfg.histogram_files_jobs, [ lepton_selection, charge_selection, central_or_shift ])
-	cfg.histogram_files_jobs[lepton_selection][charge_selection][central_or_shift] = []
-
-  for k, v in tthAnalyzeSamples.samples.items():
-    if not v["use_it"] or v["sample_category"] in \
+  for sample_name, sample_info in tthAnalyzeSamples.samples.items():
+    if not sample_info["use_it"] or sample_info["sample_category"] in \
       ["additional_signal_overlap", "background_data_estimate"]: continue
       
-    is_mc = v["type"] == "mc"
-    process_name = v["process_name_specific"]
-    category_name = v["sample_category"]
-    triggers = v["triggers"]
+    is_mc = sample_info["type"] == "mc"
+    process_name = sample_info["process_name_specific"]
+    category_name = sample_info["sample_category"]
+    triggers = sample_info["triggers"]
 
     cfg_outputdir = {}
     histogram_outputdir = {}
@@ -681,12 +674,12 @@ def create_setup(cfg):
         cfg_outputdir[lepton_selection][charge_selection] = os.path.join(cfg.dirs[lepton_selection][charge_selection][DKEY_CFGS], process_name)
         initDict(histogram_outputdir, [ lepton_selection, charge_selection ])
         histogram_outputdir[lepton_selection][charge_selection] = os.path.join(cfg.dirs[lepton_selection][charge_selection][DKEY_HIST], category_name)
-        for d in [ cfg_outputdir[lepton_selection][charge_selection], histogram_outputdir[lepton_selection][charge_selection] ]: 
-  	  create_if_not_exists(d)
+        for dir in [ cfg_outputdir[lepton_selection][charge_selection], histogram_outputdir[lepton_selection][charge_selection] ]: 
+  	  create_if_not_exists(dir)
     logging.info("Created config and job files for sample %s" % process_name)
 
-    nof_files = v["nof_files"]
-    store_dirs = v["local_paths"]
+    nof_files = sample_info["nof_files"]
+    store_dirs = sample_info["local_paths"]
     assert(len(store_dirs) <= 2), "There is more than one secondary dir!"
     primary_store, secondary_store = "", ""
     secondary_files = []
@@ -696,24 +689,28 @@ def create_setup(cfg):
         secondary_store = store_dir["path"]
         secondary_files = map(lambda x: int(x), store_dir["selection"].split(","))
     job_ids = generate_file_ids(nof_files, cfg.max_files_per_job)
+    
+    lumi_scale = 1. if not (cfg.use_lumi and is_mc) else sample_info["xsection"] * LUMI / sample_info["nof_events"]
 
-    lumi_scale = 1. if not (cfg.use_lumi and is_mc) else v["xsection"] * LUMI / v["nof_events"]
-    for idx in range(len(job_ids)):
-      for lepton_selection in cfg.lepton_selections:
-	for charge_selection in cfg.charge_selections:
-	  for central_or_shift in cfg.central_or_shifts:
+    cfg_basenames = {}   
+    for lepton_selection in cfg.lepton_selections:
+      for charge_selection in cfg.charge_selections:
+	for central_or_shift in cfg.central_or_shifts:
+          for idx in range(len(job_ids)):
 	    if central_or_shift != "central" and not (lepton_selection == "Tight" and charge_selection == "SS"):
 	      continue
             if central_or_shift != "central" and not is_mc:
 	      continue
       	    cfg_basename = "_".join([process_name, str(idx), lepton_selection, charge_selection, central_or_shift])
-            cfg_basenames[lepton_selection][charge_selection][central_or_shift].append(cfg_basename)
+            initDict(cfg_basenames, [ sample_name, lepton_selection, charge_selection, central_or_shift, idx ])
+            cfg_basenames[sample_name][lepton_selection][charge_selection][central_or_shift][idx] = cfg_basename
 
             cfg_filelist = generate_input_list(job_ids[idx], secondary_files, primary_store, secondary_store, cfg.debug)
             cfg_outputfile = "_".join([process_name, lepton_selection, charge_selection, central_or_shift, str(idx)]) + ".root"
             cfg_outputfile_fullpath = os.path.join(histogram_outputdir[lepton_selection][charge_selection], cfg_outputfile)
-	    cfg.histogram_files_jobs[lepton_selection][charge_selection][central_or_shift].append(cfg_outputfile_fullpath) 	
-
+            initDict(cfg.histogram_files_jobs, [ sample_name, lepton_selection, charge_selection, central_or_shift, idx ])
+            cfg.histogram_files_jobs[sample_name][lepton_selection][charge_selection][central_or_shift][idx] = cfg_outputfile_fullpath
+	   
             cfg_contents = create_config(cfg_filelist, cfg_outputfile_fullpath, category_name, triggers, lepton_selection, charge_selection, 
 	      is_mc, central_or_shift, lumi_scale, cfg, idx)
             cfg_file_fullpath = os.path.join(cfg_outputdir[lepton_selection][charge_selection], cfg_basename + ".py")
@@ -725,31 +722,53 @@ def create_setup(cfg):
             with codecs.open(bsh_file_fullpath, "w", "utf-8") as f: f.write(bsh_contents)
             add_chmodX(bsh_file_fullpath)
   
-    if cfg.is_makefile:
-      commands = []
-      for lepton_selection in cfg.lepton_selections:
-        for charge_selection in cfg.charge_selections:
-	  for central_or_shift in cfg.central_or_shifts:
-            commands.extend(map(lambda x: os.path.join(cfg.dirs[lepton_selection][charge_selection][DKEY_JOBS], x + ".sh") + \
-              " >> " + os.path.join(cfg.dirs[lepton_selection][charge_selection][DKEY_LOGS], x + ".log") + " 2>&1", 
-	      cfg_basenames[lepton_selection][charge_selection][central_or_shift]))
-      logging.info("Creating Makefile")
-      makefile_contents = create_makefile(commands, num = 20)
-      with codecs.open(cfg.makefile_fullpath, 'w', 'utf-8') as f: f.write(makefile_contents)
-    elif cfg.is_sbatch:
-      logging.info("Creating SLURM jobs")
-      commands = []
-      sbatch_logfiles = []
-      for lepton_selection in cfg.lepton_selections:
-        for charge_selection in cfg.charge_selections:
-	  for central_or_shift in cfg.central_or_shifts:
-            commands.extend(map(lambda x: os.path.join(cfg.dirs[lepton_selection][charge_selection][DKEY_JOBS], x + ".sh"), 
-              cfg_basenames[lepton_selection][charge_selection][central_or_shift]))
-            sbatch_logfiles.extend(map(lambda x: os.path.join(cfg.dirs[lepton_selection][charge_selection][DKEY_LOGS], x + "-%a.out"), 
-              cfg_basenames[lepton_selection][charge_selection][central_or_shift]))
-      sbatch_contents = create_sbatch(sbatch_logfiles, commands)
-      with codecs.open(cfg.sbatch_fullpath, 'w', 'utf-8') as f: f.write(sbatch_contents)
-      add_chmodX(cfg.sbatch_fullpath)
+  # check if output files already exist from a previous execution of 'tthAnalyzeRun.py'
+  for sample_name in cfg.histogram_files_jobs.keys(): 
+    for lepton_selection in cfg.histogram_files_jobs[sample_name].keys():
+      for charge_selection in cfg.histogram_files_jobs[sample_name][lepton_selection].keys():
+	for central_or_shift in cfg.histogram_files_jobs[sample_name][lepton_selection][charge_selection].keys():
+          for idx in cfg.histogram_files_jobs[sample_name][lepton_selection][charge_selection][central_or_shift].keys():
+            initDict(cfg.histogram_files_jobs_exist, [ sample_name, lepton_selection, charge_selection, central_or_shift, idx ])
+	    cfg.histogram_files_jobs_exist[sample_name][lepton_selection][charge_selection][central_or_shift][idx] = \
+	      os.path.isfile(cfg.histogram_files_jobs[sample_name][lepton_selection][charge_selection][central_or_shift][idx])
+
+  if cfg.is_makefile:
+    commands = []
+    for sample_name in cfg.histogram_files_jobs.keys(): 
+      for lepton_selection in cfg.histogram_files_jobs[sample_name].keys():
+        for charge_selection in cfg.histogram_files_jobs[sample_name][lepton_selection].keys():
+	  for central_or_shift in cfg.histogram_files_jobs[sample_name][lepton_selection][charge_selection].keys():
+            for idx in cfg.histogram_files_jobs[sample_name][lepton_selection][charge_selection][central_or_shift].keys():	
+              if cfg.histogram_files_jobs_exist[sample_name][lepton_selection][charge_selection][central_or_shift][idx]:
+                print "output file %s already exists" % \
+                  cfg.histogram_files_jobs[sample_name][lepton_selection][charge_selection][central_or_shift][idx]
+              else:
+                commands.append(os.path.join(cfg.dirs[lepton_selection][charge_selection][DKEY_JOBS], x + ".sh") + \
+                  " >> " + os.path.join(cfg.dirs[lepton_selection][charge_selection][DKEY_LOGS], x + ".log") + " 2>&1", 
+	          cfg_basenames[sample_name][lepton_selection][charge_selection][central_or_shift][idx])
+    logging.info("Creating Makefile")
+    makefile_contents = create_makefile(commands, num = 20)
+    with codecs.open(cfg.makefile_fullpath, 'w', 'utf-8') as f: f.write(makefile_contents)
+  elif cfg.is_sbatch:
+    logging.info("Creating SLURM jobs")
+    commands = []
+    sbatch_logfiles = []
+    for sample_name in cfg.histogram_files_jobs.keys(): 
+      for lepton_selection in cfg.histogram_files_jobs[sample_name].keys():
+        for charge_selection in cfg.histogram_files_jobs[sample_name][lepton_selection].keys():
+	  for central_or_shift in cfg.histogram_files_jobs[sample_name][lepton_selection][charge_selection].keys():
+            for idx in cfg.histogram_files_jobs[sample_name][lepton_selection][charge_selection][central_or_shift].keys():
+              if cfg.histogram_files_jobs_exist[sample_name][lepton_selection][charge_selection][central_or_shift][idx]:
+                print "output file %s already exists" % \
+                  cfg.histogram_files_jobs[sample_name][lepton_selection][charge_selection][central_or_shift][idx]
+              else:
+                commands.append(os.path.join(cfg.dirs[lepton_selection][charge_selection][DKEY_JOBS], x + ".sh"), 
+                  cfg_basenames[sample_name][lepton_selection][charge_selection][central_or_shift][idx])
+                sbatch_logfiles.append(os.path.join(cfg.dirs[lepton_selection][charge_selection][DKEY_LOGS], x + "-%a.out"), 
+                  cfg_basenames[sample_name][lepton_selection][charge_selection][central_or_shift][idx])
+    sbatch_contents = create_sbatch(sbatch_logfiles, commands)
+    with codecs.open(cfg.sbatch_fullpath, 'w', 'utf-8') as f: f.write(sbatch_contents)
+    add_chmodX(cfg.sbatch_fullpath)
 
   logging.info("Creating configuration file for executing 'addBackgroundLeptonFakes'")
   addFakes_cfg_contents = create_addFakes_cfg(cfg)
@@ -799,21 +818,34 @@ def run_setup(cfg):
   stdout = run_cmd(sbatch_command)
   if cfg.is_sbatch:
     sbatch_taskids = "\\|".join([x.split()[-1] for x in stdout.split("\n")[:-1]]) # sbatch job nr is the last one
-    whoami = getpass.getuser()
-    command_poll = "squeue -u %s | grep \"%s\" | wc -l" % (whoami, sbatch_taskids)
-    while True:
-      nof_jobs_left = int(run_cmd(command_poll, True).rstrip("\n"))
-      if nof_jobs_left != 0: time.sleep(cfg.poll_interval)
-      else:                  break
-      logging.info("Waiting for sbatch to finish (%d still left) ..." % nof_jobs_left)
+    if len(sbatch_taskids) > 0:
+      whoami = getpass.getuser()
+      command_poll = "squeue -u %s | grep \"%s\" | wc -l" % (whoami, sbatch_taskids)
+      while True:
+        nof_jobs_left = int(run_cmd(command_poll, True).rstrip("\n"))
+        if nof_jobs_left != 0: time.sleep(cfg.poll_interval)
+        else:                  break
+        logging.info("Waiting for sbatch to finish (%d still left) ..." % nof_jobs_left)
   
   logging.info("Running 'hadd' on histograms produced by 'analyze_2lss_1tau' jobs ...")
-  subd_list_stage1 = []
-  for lepton_selection in cfg.histogram_files_jobs.keys():
-    for charge_selection in cfg.histogram_files_jobs[lepton_selection].keys():
-      for central_or_shift in cfg.histogram_files_jobs[lepton_selection][charge_selection].keys():
-	subd = cfg.histogram_files_jobs[lepton_selection][charge_selection][central_or_shift]
-        subd_list_stage1.append(subd)
+  subd_list_stage1 = []  
+  for sample_name, sample_info in tthAnalyzeSamples.samples.items():
+    if not sample_name in cfg.histogram_files_jobs.keys():
+      continue
+    subd_list_sample = []
+    for lepton_selection in cfg.histogram_files_jobs[sample_name].keys():
+      for charge_selection in cfg.histogram_files_jobs[sample_name][lepton_selection].keys():
+	for central_or_shift in cfg.histogram_files_jobs[sample_name][lepton_selection][charge_selection].keys():
+          for idx in cfg.histogram_files_jobs[sample_name][lepton_selection][charge_selection][central_or_shift].keys():
+            subd = cfg.histogram_files_jobs[sample_name][lepton_selection][charge_selection][central_or_shift][idx]
+            subd_list_sample.append(subd)
+    process_name = sample_info["process_name_specific"]
+    histogram_file_hadd_sample = cfg.histogram_file_hadd_stage1.replace(".root", "_%s.root" % process_name)
+    run_cmd(" ".join(["rm", histogram_file_hadd_sample]))
+    command_hadd_sample = " ".join(["hadd", histogram_file_hadd_sample] + subd_list_sample)
+    run_cmd(command_hadd_sample)
+    subd_list_stage1.append(histogram_file_hadd_sample)
+  run_cmd(" ".join(["rm", cfg.histogram_file_hadd_stage1]))
   command_hadd_stage1 = " ".join(["hadd", cfg.histogram_file_hadd_stage1] + subd_list_stage1)
   run_cmd(command_hadd_stage1)
 
@@ -830,6 +862,7 @@ def run_setup(cfg):
   subd_list_stage2.append(cfg.histogram_file_hadd_stage1)
   subd_list_stage2.append(cfg.histogram_file_addFakes)
   subd_list_stage2.append(cfg.histogram_file_addFlips)	
+  run_cmd(" ".join(["rm", cfg.histogram_file_hadd_stage2]))
   command_hadd_stage2 = " ".join(["hadd", cfg.histogram_file_hadd_stage2] + subd_list_stage2)
   run_cmd(command_hadd_stage2)
 
