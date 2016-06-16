@@ -8,6 +8,8 @@ DKEY_HIST = "histograms" # dir for histograms = output of the jobs
 DKEY_LOGS = "logs"       # dir for log files (stdout/stderr of jobs)
 DKEY_DCRD = "datacards"  # dir for the datacard
 
+version = "2016Jun16"
+
 """
 TODO:
   * isMC is always False in the analysis config since we're missing some necessary input files for MC
@@ -403,7 +405,7 @@ process.addBackgroundLeptonFakes = cms.PSet(
     ),
 
     processData = cms.string("data_obs"),
-    processLeptonFakes = cms.string("Fakes"),
+    processLeptonFakes = cms.string("fakes_data"),
     processesToSubtract = cms.vstring(
 	"TTW",
         "TTZ",
@@ -500,7 +502,7 @@ process.addBackgroundLeptonFlips = cms.PSet(
     ),
 
     processData = cms.string("data_obs"),
-    processLeptonFlips = cms.string("Flips"),
+    processLeptonFlips = cms.string("flips_data"),
     processesToSubtract = cms.vstring(
 	"TTW",
         "TTZ",
@@ -657,6 +659,7 @@ def create_setup(cfg):
       for sample_name, dir in cfg.dirs[lepton_selection][charge_selection].items(): 
         create_if_not_exists(dir)
 
+  cfg_basenames = {}   
   for sample_name, sample_info in tthAnalyzeSamples.samples.items():
     if not sample_info["use_it"] or sample_info["sample_category"] in \
       ["additional_signal_overlap", "background_data_estimate"]: continue
@@ -691,8 +694,7 @@ def create_setup(cfg):
     job_ids = generate_file_ids(nof_files, cfg.max_files_per_job)
     
     lumi_scale = 1. if not (cfg.use_lumi and is_mc) else sample_info["xsection"] * LUMI / sample_info["nof_events"]
-
-    cfg_basenames = {}   
+    
     for lepton_selection in cfg.lepton_selections:
       for charge_selection in cfg.charge_selections:
 	for central_or_shift in cfg.central_or_shifts:
@@ -743,9 +745,9 @@ def create_setup(cfg):
                 print "output file %s already exists" % \
                   cfg.histogram_files_jobs[sample_name][lepton_selection][charge_selection][central_or_shift][idx]
               else:
-                commands.append(os.path.join(cfg.dirs[lepton_selection][charge_selection][DKEY_JOBS], x + ".sh") + \
-                  " >> " + os.path.join(cfg.dirs[lepton_selection][charge_selection][DKEY_LOGS], x + ".log") + " 2>&1", 
-	          cfg_basenames[sample_name][lepton_selection][charge_selection][central_or_shift][idx])
+                cfg_basename = cfg_basenames[sample_name][lepton_selection][charge_selection][central_or_shift][idx]
+                commands.append(os.path.join(cfg.dirs[lepton_selection][charge_selection][DKEY_JOBS], cfg_basename + ".sh") + \
+                  " >> " + os.path.join(cfg.dirs[lepton_selection][charge_selection][DKEY_LOGS], cfg_basename + ".log") + " 2>&1")
     logging.info("Creating Makefile")
     makefile_contents = create_makefile(commands, num = 20)
     with codecs.open(cfg.makefile_fullpath, 'w', 'utf-8') as f: f.write(makefile_contents)
@@ -762,10 +764,9 @@ def create_setup(cfg):
                 print "output file %s already exists" % \
                   cfg.histogram_files_jobs[sample_name][lepton_selection][charge_selection][central_or_shift][idx]
               else:
-                commands.append(os.path.join(cfg.dirs[lepton_selection][charge_selection][DKEY_JOBS], x + ".sh"), 
-                  cfg_basenames[sample_name][lepton_selection][charge_selection][central_or_shift][idx])
-                sbatch_logfiles.append(os.path.join(cfg.dirs[lepton_selection][charge_selection][DKEY_LOGS], x + "-%a.out"), 
-                  cfg_basenames[sample_name][lepton_selection][charge_selection][central_or_shift][idx])
+                cfg_basename = cfg_basenames[sample_name][lepton_selection][charge_selection][central_or_shift][idx]
+                commands.append(os.path.join(cfg.dirs[lepton_selection][charge_selection][DKEY_JOBS], cfg_basename + ".sh"))
+                sbatch_logfiles.append(os.path.join(cfg.dirs[lepton_selection][charge_selection][DKEY_LOGS], cfg_basename + "-%a.out"))
     sbatch_contents = create_sbatch(sbatch_logfiles, commands)
     with codecs.open(cfg.sbatch_fullpath, 'w', 'utf-8') as f: f.write(sbatch_contents)
     add_chmodX(cfg.sbatch_fullpath)
@@ -841,13 +842,19 @@ def run_setup(cfg):
             subd_list_sample.append(subd)
     process_name = sample_info["process_name_specific"]
     histogram_file_hadd_sample = cfg.histogram_file_hadd_stage1.replace(".root", "_%s.root" % process_name)
-    run_cmd(" ".join(["rm", histogram_file_hadd_sample]))
-    command_hadd_sample = " ".join(["hadd", histogram_file_hadd_sample] + subd_list_sample)
-    run_cmd(command_hadd_sample)
-    subd_list_stage1.append(histogram_file_hadd_sample)
-  run_cmd(" ".join(["rm", cfg.histogram_file_hadd_stage1]))
-  command_hadd_stage1 = " ".join(["hadd", cfg.histogram_file_hadd_stage1] + subd_list_stage1)
-  run_cmd(command_hadd_stage1)
+    if os.path.isfile(histogram_file_hadd_sample):
+      print "hadd file %s already exists" % histogram_file_hadd_sample
+    else:
+      run_cmd(" ".join(["rm", histogram_file_hadd_sample]))
+      command_hadd_sample = " ".join(["hadd", histogram_file_hadd_sample] + subd_list_sample)
+      run_cmd(command_hadd_sample)
+      subd_list_stage1.append(histogram_file_hadd_sample)
+  if os.path.isfile(cfg.histogram_file_hadd_stage1):
+    print "hadd file %s already exists" % cfg.histogram_file_hadd_stage1
+  else:
+    run_cmd(" ".join(["rm", cfg.histogram_file_hadd_stage1]))
+    command_hadd_stage1 = " ".join(["hadd", cfg.histogram_file_hadd_stage1] + subd_list_stage1)
+    run_cmd(command_hadd_stage1)
 
   logging.info("Running 'addBackgroundLeptonFakes' ...")
   command_addFakes = "%s %s" % (cfg.addFakes_exec, cfg.addFakes_cfg_fullpath)
@@ -880,7 +887,7 @@ if __name__ == '__main__':
                       level = logging.INFO,
                       format = '%(asctime)s - %(levelname)s: %(message)s')
 
-  cfg = analyzeConfig(output_dir = os.path.join("/home", getpass.getuser(), "ttHAnalysis"),
+  cfg = analyzeConfig(output_dir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", version),
                       exec_name = "analyze_2lss_1tau",
 		      lepton_selections = [ "Tight", "Fakeable" ],	
                       charge_selections = [ "OS", "SS" ],
