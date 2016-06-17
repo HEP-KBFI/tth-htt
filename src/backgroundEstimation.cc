@@ -25,7 +25,7 @@ double prob_chargeMisId(int lepton_type, double lepton_pt, double lepton_eta)
       else if ( lepton_pt >= 50.                   ) prob = 0.3457;
     }
   } else if ( lepton_type == kMuon ) {
-    prob = 1.;
+    prob = 0.;
   } else assert(0);
   return prob;
 }
