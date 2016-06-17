@@ -628,12 +628,12 @@ void compareDatacards()
 
   TH1::AddDirectory(false);
 
-  std::string inputFilePath_ref = "/afs/cern.ch/user/v/veelken/scratch0/VHbbNtuples_7_6_x/CMSSW_7_6_3/src/tthAnalysis/HiggsToTauTau/macros/data/HIG-15-008/";
+  std::string inputFilePath_ref = "/home/veelken/VHbbNtuples_7_6_x/CMSSW_7_6_3/src/tthAnalysis/HiggsToTauTau/macros/data/";
   std::string inputFileName_ref = "ttH_2lss_1tau.root";
   std::string category_ref = "ttH_2lss_1tau";
   std::string legendEntry_ref = "HIG-15-008";
 
-  std::string inputFilePath_test = "/home/veelken/ttHAnalysis/datacards/2lss_1tau_SS_Tight/";
+  std::string inputFilePath_test = "/home/veelken/ttHAnalysis/2016Jun16/datacards/";
   std::string inputFileName_test = "prepareDatacards.root";
   std::string category_test = "tauTau_ttH_2lss_1tau";
   std::string legendEntry_test = "Tallinn";

@@ -193,9 +193,10 @@ int main(int argc, char* argv[])
 	    TDirectory* subdir_output = createSubdirectory_recursively(fs, subdirName_output);
 	    subdir_output->cd();
 
-	    std::string histogramNameLeptonFlips = processLeptonFlips;
-	    if ( !((*central_or_shift) == "" || (*central_or_shift) == "central") ) histogramNameLeptonFlips.append("_").append(*central_or_shift);
-	    histogramNameLeptonFlips.append("_").append(*histogram);
+	    std::string histogramNameLeptonFlips;
+	    if ( !((*central_or_shift) == "" || (*central_or_shift) == "central") ) histogramNameLeptonFlips.append(*central_or_shift);
+	    if ( histogramNameLeptonFlips.length() > 0 ) histogramNameLeptonFlips.append("_");
+	    histogramNameLeptonFlips.append(*histogram);
 	    TH1* histogramLeptonFlips = subtractHistograms(histogramNameLeptonFlips, histogramData, histogramsToSubtract, verbosity);
 	    if ( verbosity ) {
 	      std::cout << " integral(Flips) = " << histogramLeptonFlips->Integral() << std::endl;

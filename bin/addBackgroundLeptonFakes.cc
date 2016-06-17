@@ -193,9 +193,10 @@ int main(int argc, char* argv[])
 	    TDirectory* subdir_output = createSubdirectory_recursively(fs, subdirName_output);
 	    subdir_output->cd();
 
-	    std::string histogramNameLeptonFakes = processLeptonFakes;
-	    if ( !((*central_or_shift) == "" || (*central_or_shift) == "central") ) histogramNameLeptonFakes.append("_").append(*central_or_shift);
-	    histogramNameLeptonFakes.append("_").append(*histogram);
+	    std::string histogramNameLeptonFakes;
+	    if ( !((*central_or_shift) == "" || (*central_or_shift) == "central") ) histogramNameLeptonFakes.append(*central_or_shift);
+	    if ( histogramNameLeptonFakes.length() > 0 ) histogramNameLeptonFakes.append("_");
+	    histogramNameLeptonFakes.append(*histogram);
 	    TH1* histogramLeptonFakes = subtractHistograms(histogramNameLeptonFakes, histogramData, histogramsToSubtract, verbosity);
 	    if ( verbosity ) {
 	      std::cout << " integral(Fakes) = " << histogramLeptonFakes->Integral() << std::endl;
