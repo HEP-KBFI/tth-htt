@@ -616,7 +616,9 @@ int main(int argc, char* argv[])
     selBJet_looseHistManager.fillHistograms(selBJets_loose, evtWeight);
     selBJet_mediumHistManager.fillHistograms(selBJets_medium, evtWeight);
     preselMEtHistManager.fillHistograms(met_p4, mht_p4, met_LD, evtWeight);
-    preselEvtHistManager.fillHistograms(selJets.size(), mTauTauVis_presel, evtWeight);
+    preselEvtHistManager.fillHistograms(preselElectrons.size(), preselMuons.size(), selHadTaus.size(), 
+        selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
+        mTauTauVis_presel, evtWeight);
 
 //--- apply final event selection 
     std::vector<const RecoLepton*> selLeptons;    
@@ -698,7 +700,9 @@ int main(int argc, char* argv[])
     selBJet_looseHistManager_sublead.fillHistograms(selBJets_loose, evtWeight);
     selBJet_mediumHistManager.fillHistograms(selBJets_medium, evtWeight);
     selMEtHistManager.fillHistograms(met_p4, mht_p4, met_LD, evtWeight);
-    selEvtHistManager.fillHistograms(selJets.size(), mTauTauVis, evtWeight);
+    selEvtHistManager.fillHistograms(preselElectrons.size(), preselMuons.size(), selHadTaus.size(), 
+      selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
+      mTauTauVis, evtWeight);
 
     int category = -1;
     if      ( selElectrons.size() == 1 && selBJets_medium.size() >= 1 ) category = k1e_btight;
@@ -711,22 +715,30 @@ int main(int argc, char* argv[])
       selElectronHistManager_category["1e_2tau_btight"]->fillHistograms(selElectrons, evtWeight);
       selHadTauHistManager_category["1e_2tau_btight"]["leadHadTau"]->fillHistograms(selHadTaus, evtWeight);
       selHadTauHistManager_category["1e_2tau_btight"]["subleadHadTau"]->fillHistograms(selHadTaus, evtWeight);
-      selEvtHistManager_category["1e_2tau_btight"]->fillHistograms(selJets.size(), mTauTauVis, evtWeight);
+      selEvtHistManager_category["1e_2tau_btight"]->fillHistograms(preselElectrons.size(), preselMuons.size(), selHadTaus.size(), 
+        selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
+        mTauTauVis, evtWeight);
     } else if ( category == k1e_bloose ) {
       selElectronHistManager_category["1e_2tau_bloose"]->fillHistograms(selElectrons, evtWeight);
       selHadTauHistManager_category["1e_2tau_bloose"]["leadHadTau"]->fillHistograms(selHadTaus, evtWeight);
       selHadTauHistManager_category["1e_2tau_bloose"]["subleadHadTau"]->fillHistograms(selHadTaus, evtWeight);
-      selEvtHistManager_category["1e_2tau_bloose"]->fillHistograms(selJets.size(), mTauTauVis, evtWeight);
+      selEvtHistManager_category["1e_2tau_bloose"]->fillHistograms(preselElectrons.size(), preselMuons.size(), selHadTaus.size(), 
+        selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
+        mTauTauVis, evtWeight);
     } else if ( category == k1mu_btight ) {
       selMuonHistManager_category["1mu_2tau_btight"]->fillHistograms(selMuons, evtWeight);
       selHadTauHistManager_category["1mu_2tau_btight"]["leadHadTau"]->fillHistograms(selHadTaus, evtWeight);
       selHadTauHistManager_category["1mu_2tau_btight"]["subleadHadTau"]->fillHistograms(selHadTaus, evtWeight);
-      selEvtHistManager_category["1mu_2tau_btight"]->fillHistograms(selJets.size(), mTauTauVis, evtWeight);
+      selEvtHistManager_category["1mu_2tau_btight"]->fillHistograms(preselElectrons.size(), preselMuons.size(), selHadTaus.size(), 
+        selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
+        mTauTauVis, evtWeight);
     } else if ( category == k1mu_bloose ) {
       selMuonHistManager_category["1mu_2tau_btight"]->fillHistograms(selMuons, evtWeight);
       selHadTauHistManager_category["1mu_2tau_btight"]["leadHadTau"]->fillHistograms(selHadTaus, evtWeight);
       selHadTauHistManager_category["1mu_2tau_btight"]["subleadHadTau"]->fillHistograms(selHadTaus, evtWeight);
-      selEvtHistManager_category["1mu_2tau_btight"]->fillHistograms(selJets.size(), mTauTauVis, evtWeight);
+      selEvtHistManager_category["1mu_2tau_btight"]->fillHistograms(preselElectrons.size(), preselMuons.size(), selHadTaus.size(), 
+        selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
+        mTauTauVis, evtWeight);
     } 
 
     (*selEventsFile) << run << ":" << lumi << ":" << event;

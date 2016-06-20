@@ -8,7 +8,7 @@ DKEY_HIST = "histograms" # dir for histograms = output of the jobs
 DKEY_LOGS = "logs"       # dir for log files (stdout/stderr of jobs)
 DKEY_DCRD = "datacards"  # dir for the datacard
 
-version = "2016Jun16"
+version = "2016Jun20"
 
 """
 TODO:
@@ -694,6 +694,7 @@ def create_setup(cfg):
     job_ids = generate_file_ids(nof_files, cfg.max_files_per_job)
     
     lumi_scale = 1. if not (cfg.use_lumi and is_mc) else sample_info["xsection"] * LUMI / sample_info["nof_events"]
+    ##print "sample = %s: lumi_scale = %f" % (sample_name, lumi_scale)
     
     for lepton_selection in cfg.lepton_selections:
       for charge_selection in cfg.charge_selections:

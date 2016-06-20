@@ -1,5 +1,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTau.h" // RecoHadTau, GenParticle
 
+#include <iomanip>
+
 RecoHadTau::RecoHadTau(Double_t pt,
 		       Double_t eta,
 		       Double_t phi,
@@ -39,3 +41,14 @@ RecoHadTau::RecoHadTau(Double_t pt,
   , genHadTau_(0)
   , genJet_(0)
 {}
+
+std::ostream& operator<<(std::ostream& stream, const RecoHadTau& hadTau)
+{
+  stream << " pT = " << hadTau.pt_ << ","
+	 << " eta = " << hadTau.eta_ << "," 
+	 << " phi = " << hadTau.phi_ << "," 
+	 << " mass = " << hadTau.mass_ << "," 
+	 << " charge = " << hadTau.charge_ << std::endl; 
+  return stream;
+}
+

@@ -611,7 +611,9 @@ int main(int argc, char* argv[])
     selBJet_looseHistManager.fillHistograms(selBJets_loose, evtWeight);
     selBJet_mediumHistManager.fillHistograms(selBJets_medium, evtWeight);
     preselMEtHistManager.fillHistograms(met_p4, mht_p4, met_LD, evtWeight);
-    preselEvtHistManager.fillHistograms(mvaOutput_2los_ttV, mvaOutput_2los_ttbar, mvaDiscr_2los, selJets.size(), evtWeight);
+    preselEvtHistManager.fillHistograms(preselElectrons.size(), preselMuons.size(), selHadTaus.size(), 
+      selJets.size(), selBJets_loose.size(), selBJets_medium.size(), 
+      mvaOutput_2los_ttV, mvaOutput_2los_ttbar, mvaDiscr_2los, evtWeight);
 
 //--- apply final event selection 
     std::vector<const RecoLepton*> selLeptons;    
@@ -695,7 +697,9 @@ int main(int argc, char* argv[])
     selBJet_looseHistManager_sublead.fillHistograms(selBJets_loose, evtWeight);
     selBJet_mediumHistManager.fillHistograms(selBJets_medium, evtWeight);
     selMEtHistManager.fillHistograms(met_p4, mht_p4, met_LD, evtWeight);
-    selEvtHistManager.fillHistograms(mvaOutput_2los_ttV, mvaOutput_2los_ttbar, mvaDiscr_2los, selJets.size(), evtWeight);
+    selEvtHistManager.fillHistograms(selElectrons.size(), selMuons.size(), selHadTaus.size(), 
+      selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
+      mvaOutput_2los_ttV, mvaOutput_2los_ttbar, mvaDiscr_2los, evtWeight);
 
     int category = -1;
     if      ( selElectrons.size() == 2 &&                         selBJets_medium.size() >= 1 ) category = k2eos_btight;
@@ -709,27 +713,39 @@ int main(int argc, char* argv[])
     if ( category == k2eos_btight ) {
       selElectronHistManager_category["2eos_1tau_btight"]["leadElectron"]->fillHistograms(selElectrons, evtWeight);
       selElectronHistManager_category["2eos_1tau_btight"]["subleadElectron"]->fillHistograms(selElectrons, evtWeight);
-      selEvtHistManager_category["2eos_1tau_btight"]->fillHistograms(mvaOutput_2los_ttV, mvaOutput_2los_ttbar, mvaDiscr_2los, selJets.size(), evtWeight);
+      selEvtHistManager_category["2eos_1tau_btight"]->fillHistograms(preselElectrons.size(), preselMuons.size(), selHadTaus.size(), 
+        selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
+        mvaOutput_2los_ttV, mvaOutput_2los_ttbar, mvaDiscr_2los, evtWeight);
     } else if ( category == k2eos_bloose ) {
       selElectronHistManager_category["2eos_1tau_bloose"]["leadElectron"]->fillHistograms(selElectrons, evtWeight);
       selElectronHistManager_category["2eos_1tau_bloose"]["subleadElectron"]->fillHistograms(selElectrons, evtWeight);
-      selEvtHistManager_category["2eos_1tau_bloose"]->fillHistograms(mvaOutput_2los_ttV, mvaOutput_2los_ttbar, mvaDiscr_2los, selJets.size(), evtWeight);
+      selEvtHistManager_category["2eos_1tau_bloose"]->fillHistograms(preselElectrons.size(), preselMuons.size(), selHadTaus.size(), 
+        selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
+        mvaOutput_2los_ttV, mvaOutput_2los_ttbar, mvaDiscr_2los, evtWeight);
     } else if ( category == k1e1muos_btight ) {
       selElectronHistManager_category["1e1muos_1tau_btight"]["electron"]->fillHistograms(selElectrons, evtWeight);
       selMuonHistManager_category["1e1muos_1tau_btight"]["muon"]->fillHistograms(selMuons, evtWeight);
-      selEvtHistManager_category["1e1muos_1tau_btight"]->fillHistograms(mvaOutput_2los_ttV, mvaOutput_2los_ttbar, mvaDiscr_2los, selJets.size(), evtWeight);
+      selEvtHistManager_category["1e1muos_1tau_btight"]->fillHistograms(preselElectrons.size(), preselMuons.size(), selHadTaus.size(), 
+        selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
+        mvaOutput_2los_ttV, mvaOutput_2los_ttbar, mvaDiscr_2los, evtWeight);
     } else if ( category == k1e1muos_bloose ) {
       selElectronHistManager_category["1e1muos_1tau_bloose"]["electron"]->fillHistograms(selElectrons, evtWeight);
       selMuonHistManager_category["1e1muos_1tau_bloose"]["muon"]->fillHistograms(selMuons, evtWeight);
-      selEvtHistManager_category["1e1muos_1tau_bloose"]->fillHistograms(mvaOutput_2los_ttV, mvaOutput_2los_ttbar, mvaDiscr_2los, selJets.size(), evtWeight);
+      selEvtHistManager_category["1e1muos_1tau_bloose"]->fillHistograms(preselElectrons.size(), preselMuons.size(), selHadTaus.size(), 
+        selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
+        mvaOutput_2los_ttV, mvaOutput_2los_ttbar, mvaDiscr_2los, evtWeight);
     } else if ( category == k2muos_btight ) {
       selMuonHistManager_category["2muos_1tau_btight"]["leadMuon"]->fillHistograms(selMuons, evtWeight);
       selMuonHistManager_category["2muos_1tau_btight"]["subleadMuon"]->fillHistograms(selMuons, evtWeight);
-      selEvtHistManager_category["2muos_1tau_btight"]->fillHistograms(mvaOutput_2los_ttV, mvaOutput_2los_ttbar, mvaDiscr_2los, selJets.size(), evtWeight);
+      selEvtHistManager_category["2muos_1tau_btight"]->fillHistograms(preselElectrons.size(), preselMuons.size(), selHadTaus.size(), 
+        selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
+        mvaOutput_2los_ttV, mvaOutput_2los_ttbar, mvaDiscr_2los, evtWeight);
     } else if ( category == k2muos_bloose ) {
       selMuonHistManager_category["2muos_1tau_bloose"]["leadMuon"]->fillHistograms(selMuons, evtWeight);
       selMuonHistManager_category["2muos_1tau_bloose"]["subleadMuon"]->fillHistograms(selMuons, evtWeight);
-      selEvtHistManager_category["2muos_1tau_bloose"]->fillHistograms(mvaOutput_2los_ttV, mvaOutput_2los_ttbar, mvaDiscr_2los, selJets.size(), evtWeight);
+      selEvtHistManager_category["2muos_1tau_bloose"]->fillHistograms(preselElectrons.size(), preselMuons.size(), selHadTaus.size(), 
+        selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
+        mvaOutput_2los_ttV, mvaOutput_2los_ttbar, mvaDiscr_2los, evtWeight);
     } 
 
     (*selEventsFile) << run << ":" << lumi << ":" << event;

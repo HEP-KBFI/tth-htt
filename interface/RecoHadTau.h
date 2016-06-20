@@ -6,6 +6,8 @@
 #include "tthAnalysis/HiggsToTauTau/interface/GenHadTau.h" // GenHadTau
 #include "tthAnalysis/HiggsToTauTau/interface/GenJet.h" // GenJet
 
+#include <ostream>
+
 class RecoHadTau
   : public GenParticle
 {
@@ -52,6 +54,8 @@ class RecoHadTau
   const GenHadTau* genHadTau_;
   const GenJet* genJet_;
 };
+
+std::ostream& operator<<(std::ostream& stream, const RecoHadTau& hadTau);
 
 #endif // tthAnalysis_HiggsToTauTau_RecoHadTau_h
 
