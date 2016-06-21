@@ -266,7 +266,7 @@ int main(int argc, char* argv[])
   inputTree->SetBranchAddress(MET_ETA_KEY, &met_eta);
   MET_PHI_TYPE met_phi;
   inputTree->SetBranchAddress(MET_PHI_KEY, &met_phi);
-  LV met_p4(met_pt, met_eta, met_phi, 0.);
+
 
 //--- declare particle collections
   RecoMuonReader* muonReader = new RecoMuonReader("nselLeptons", "selLeptons");
@@ -746,6 +746,7 @@ int main(int argc, char* argv[])
 	  hadTau != selHadTaus.end(); ++hadTau ) {
       mht_p4 += (*hadTau)->p4_;
     }
+    const LV met_p4(met_pt, met_eta, met_phi, 0.);
     double met_LD = met_coef*met_p4.pt() + mht_coef*mht_p4.pt();    
 
 //--- compute event-level weight for data/MC correction of b-tagging efficiency and mistag rate

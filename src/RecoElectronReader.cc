@@ -52,14 +52,14 @@ RecoElectronReader::~RecoElectronReader()
   if ( numInstances_[branchName_obj_] == 0 ) {
     RecoElectronReader* gInstance = instances_[branchName_obj_];
     assert(gInstance);
-    delete gInstance->mvaRawPOG_; 
-    delete gInstance->sigmaEtaEta_;
-    delete gInstance->HoE_;
-    delete gInstance->deltaEta_;
-    delete gInstance->deltaPhi_;
-    delete gInstance->OoEminusOoP_;
-    delete gInstance->lostHits_; 
-    delete gInstance->conversionVeto_;
+    delete[] gInstance->mvaRawPOG_;
+    delete[] gInstance->sigmaEtaEta_;
+    delete[] gInstance->HoE_;
+    delete[] gInstance->deltaEta_;
+    delete[] gInstance->deltaPhi_;
+    delete[] gInstance->OoEminusOoP_;
+    delete[] gInstance->lostHits_;
+    delete[] gInstance->conversionVeto_;
     instances_[branchName_obj_] = 0;
   }
 }

@@ -68,25 +68,25 @@ RecoHadTauReader::~RecoHadTauReader()
   if ( numInstances_[branchName_obj_] == 0 ) {
     RecoHadTauReader* gInstance = instances_[branchName_obj_];
     assert(gInstance);
-    delete gInstance->hadTau_pt_;
-    delete gInstance->hadTau_eta_;
-    delete gInstance->hadTau_phi_;
-    delete gInstance->hadTau_mass_;
-    delete gInstance->hadTau_dxy_;
-    delete gInstance->hadTau_dz_;
-    delete gInstance->hadTau_idDecayMode_;
-    delete gInstance->hadTau_idDecayModeNewDMs_;
-    delete gInstance->hadTau_idMVA_dR03_;
-    delete gInstance->hadTau_rawMVA_dR03_;
-    delete gInstance->hadTau_idMVA_dR05_;
-    delete gInstance->hadTau_rawMVA_dR05_;
-    delete gInstance->hadTau_idCombIso_dR03_;
-    delete gInstance->hadTau_rawCombIso_dR03_;
-    delete gInstance->hadTau_idCombIso_dR05_;
-    delete gInstance->hadTau_rawCombIso_dR05_;
-    delete gInstance->hadTau_idAgainstElec_;
-    delete gInstance->hadTau_idAgainstMu_;
-    delete gInstance->hadTau_charge_;
+    delete[] gInstance->hadTau_pt_;
+    delete[] gInstance->hadTau_eta_;
+    delete[] gInstance->hadTau_phi_;
+    delete[] gInstance->hadTau_mass_;
+    delete[] gInstance->hadTau_dxy_;
+    delete[] gInstance->hadTau_dz_;
+    delete[] gInstance->hadTau_idDecayMode_;
+    delete[] gInstance->hadTau_idDecayModeNewDMs_;
+    delete[] gInstance->hadTau_idMVA_dR03_;
+    delete[] gInstance->hadTau_rawMVA_dR03_;
+    delete[] gInstance->hadTau_idMVA_dR05_;
+    delete[] gInstance->hadTau_rawMVA_dR05_;
+    delete[] gInstance->hadTau_idCombIso_dR03_;
+    delete[] gInstance->hadTau_rawCombIso_dR03_;
+    delete[] gInstance->hadTau_idCombIso_dR05_;
+    delete[] gInstance->hadTau_rawCombIso_dR05_;
+    delete[] gInstance->hadTau_idAgainstElec_;
+    delete[] gInstance->hadTau_idAgainstMu_;
+    delete[] gInstance->hadTau_charge_;
     instances_[branchName_obj_] = 0;
   }
 }
