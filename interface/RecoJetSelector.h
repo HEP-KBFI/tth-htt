@@ -11,7 +11,7 @@
 class RecoJetSelector
 {
  public:
-  RecoJetSelector();
+  RecoJetSelector(bool debug = false);
   ~RecoJetSelector() {}
 
   /**

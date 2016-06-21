@@ -11,7 +11,7 @@
 class RecoHadTauSelectorLoose
 {
  public:
-  RecoHadTauSelectorLoose();
+  RecoHadTauSelectorLoose(bool debug = false);
   ~RecoHadTauSelectorLoose() {}
 
   /**

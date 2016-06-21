@@ -11,7 +11,7 @@
 class RecoHadTauSelectorTight
 {
  public:
-  RecoHadTauSelectorTight();
+  RecoHadTauSelectorTight(bool debug = false);
   ~RecoHadTauSelectorTight() {}
 
   /**

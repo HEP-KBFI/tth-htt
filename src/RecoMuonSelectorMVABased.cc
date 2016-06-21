@@ -1,6 +1,6 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonSelectorMVABased.h" // RecoMuonSelectorMVABased
 
-RecoMuonSelectorMVABased::RecoMuonSelectorMVABased()
+RecoMuonSelectorMVABased::RecoMuonSelectorMVABased(bool debug)
   : min_pt_(10)
   , min_mvaTTH_(0.75)
   , max_jetBtagCSV_(0.89)

@@ -2,7 +2,7 @@
 
 #include <cmath> // std::fabs()
 
-RecoElectronSelectorLoose::RecoElectronSelectorLoose()
+RecoElectronSelectorLoose::RecoElectronSelectorLoose(bool debug)
   : min_pt_(7.)
   , max_absEta_(2.5)
   , max_dxy_(0.05)

@@ -34,3 +34,20 @@ RecoMuon::RecoMuon(Double_t pt,
   , segmentCompatibility_(segmentCompatibility)
 {}
 
+std::ostream& operator<<(std::ostream& stream, const RecoMuon& muon)
+{
+  stream << " pT = " << muon.pt_ << ","
+	 << " eta = " << muon.eta_ << "," 
+	 << " phi = " << muon.phi_ << "," 
+	 << " pdgId = " << muon.pdgId_ << std::endl;
+  stream << " dxy = " << muon.dxy_ << ", dz = " << muon.dz_ << ", sip3d = " << muon.sip3d_ << std::endl;
+  stream << " relIso = " << muon.relIso_ << std::endl;
+  stream << " passesLooseIdPOG = " << muon.passesLooseIdPOG_ << ", passesMediumIdPOG = " << muon.passesMediumIdPOG_ << std::endl;
+  stream << " tightCharge = " << muon.tightCharge_ << std::endl;
+  stream << " jetBtagCSV = " << muon.jetBtagCSV_ << std::endl;
+  stream << " mvaRawTTH = " << muon.mvaRawTTH_ << std::endl;
+  return stream;
+}
+
+
+

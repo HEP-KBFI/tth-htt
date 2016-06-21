@@ -10,7 +10,7 @@
 class RecoElectronSelectorCutBased
 {
  public:
-  RecoElectronSelectorCutBased();
+  RecoElectronSelectorCutBased(bool debug = false);
   ~RecoElectronSelectorCutBased() {}
 
   /**

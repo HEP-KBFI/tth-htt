@@ -2,8 +2,9 @@
 
 #include <cmath> // fabs
 
-RecoElectronSelectorTight::RecoElectronSelectorTight()
-  : min_pt_(15.) // 15 GeV for 2lss channel, 10 GeV for 3l channel (cf. Table 13 of AN-2015/321)
+RecoElectronSelectorTight::RecoElectronSelectorTight(bool debug)
+  : debug_(debug)
+  , min_pt_(15.) // 15 GeV for 2lss channel, 10 GeV for 3l channel (cf. Table 13 of AN-2015/321)
   , max_absEta_(2.5)
   , max_dxy_(0.05)
   , max_dz_(0.1)
@@ -35,29 +36,86 @@ RecoElectronSelectorTight::RecoElectronSelectorTight()
 
 bool RecoElectronSelectorTight::operator()(const RecoElectron& electron) const
 {
-  if ( electron.pt_ >= min_pt_ &&
-       electron.absEta_ <= max_absEta_ &&
-       std::fabs(electron.dxy_) <= max_dxy_ &&
-       std::fabs(electron.dz_) <= max_dz_ &&
-       electron.relIso_ <= max_relIso_ &&
-       electron.sip3d_ <= max_sip3d_ &&
-       electron.nLostHits_ <= max_nLostHits_ &&
-       (electron.tightCharge_ >= 2 || !apply_tightCharge_) && 
-       (electron.passesConversionVeto_ || !apply_conversionVeto_) &&
-       electron.mvaRawTTH_ >= min_mvaTTH_ ) {
-    int idxBin = -1;
-    if      ( electron.absEta_ <= binning_absEta_[0] ) idxBin = 0;
-    else if ( electron.absEta_ <= binning_absEta_[1] ) idxBin = 1;
-    else                                               idxBin = 2;
-    assert(idxBin >= 0 && idxBin <= 2);
-    if ( electron.mvaRawPOG_ >= min_mvaRawPOG_[idxBin] ) {
-      if ( electron.pt_ <= min_pt_trig_ ) return true;
-      else if ( electron.sigmaEtaEta_ <= max_sigmaEtaEta_trig_[idxBin] &&
-		electron.HoE_ <= max_HoE_trig_[idxBin] &&
-		electron.deltaEta_ <= max_deltaEta_trig_[idxBin] &&
-		electron.deltaPhi_ <= max_deltaPhi_trig_[idxBin] &&
-		electron.OoEminusOoP_ >= min_OoEminusOoP_trig_ && electron.OoEminusOoP_ <= max_OoEminusOoP_trig_[idxBin] ) return true;
+  if ( debug_ ) {
+    std::cout << "<RecoElectronSelectorTight::operator()>:" << std::endl;
+    std::cout << " electron: pT = " << electron.pt_ << ", eta = " << electron.eta_ << ", phi = " << electron.phi_ << ", charge = " << electron.charge_ << std::endl;
+  }
+  if ( electron.pt_ < min_pt_ ) {
+    if ( debug_ ) std::cout << "FAILS pT cut." << std::endl;
+    return false;
+  }
+  if ( electron.absEta_ > max_absEta_ ) {
+    if ( debug_ ) std::cout << "FAILS eta cut." << std::endl;
+    return false;
+  }
+  if ( std::fabs(electron.dxy_) > max_dxy_ ) {
+    if ( debug_ ) std::cout << "FAILS dxy cut." << std::endl;
+    return false;
+  }
+  if ( std::fabs(electron.dz_) > max_dz_ ) {
+    if ( debug_ ) std::cout << "FAILS dz cut." << std::endl;
+    return false;
+  }
+  if ( electron.relIso_ > max_relIso_ ) {
+    if ( debug_ ) std::cout << "FAILS relIso cut." << std::endl;
+    return false;
+  }
+  if ( electron.sip3d_ > max_sip3d_ ) {
+    if ( debug_ ) std::cout << "FAILS sip3d cut." << std::endl;
+    return false;
+  }
+  if ( electron.jetBtagCSV_ > max_jetBtagCSV_ ) {
+    if ( debug_ ) std::cout << "FAILS jetBtagCSV cut." << std::endl;
+    return false;
+  }
+  if ( electron.nLostHits_ > max_nLostHits_ ) {
+    if ( debug_ ) std::cout << "FAILS nLostHits cut." << std::endl;
+    return false;
+  }
+  if ( apply_tightCharge_ && electron.tightCharge_ < 2 ) {
+    if ( debug_ ) std::cout << "FAILS tightCharge cut." << std::endl;
+    return false;
+  }
+  if ( apply_conversionVeto_ && !electron.passesConversionVeto_ ) {
+    if ( debug_ ) std::cout << "FAILS conversion veto." << std::endl;
+    return false;
+  }
+  if ( electron.mvaRawTTH_ < min_mvaTTH_ ) {
+    if ( debug_ ) std::cout << "FAILS mvaTTH cut." << std::endl;
+    return false;
+  }
+  int idxBin = -1;
+  if      ( electron.absEta_ <= binning_absEta_[0] ) idxBin = 0;
+  else if ( electron.absEta_ <= binning_absEta_[1] ) idxBin = 1;
+  else                                               idxBin = 2;
+  assert(idxBin >= 0 && idxBin <= 2);
+  if ( electron.mvaRawPOG_ < min_mvaRawPOG_[idxBin] ) {
+    if ( debug_ ) std::cout << "FAILS mvaPOG cut." << std::endl;
+    return false;
+  }
+  // extra cuts for electrons passing pT threshold of single electron trigger, as explained in section 3.3.4 of AN-2015/321
+  if ( electron.pt_ >= min_pt_trig_ ) { 
+    if ( electron.sigmaEtaEta_ > max_sigmaEtaEta_trig_[idxBin] ) {
+      if ( debug_ ) std::cout << "FAILS sigmaEtaEta cut." << std::endl;
+      return false;
+    }
+    if ( electron.HoE_ > max_HoE_trig_[idxBin] ) {
+      if ( debug_ ) std::cout << "FAILS HoE cut." << std::endl;
+      return false;
+    }
+    if ( electron.deltaEta_ > max_deltaEta_trig_[idxBin] ) {
+      if ( debug_ ) std::cout << "FAILS deltaEta cut." << std::endl;
+      return false;
+    }
+    if ( electron.deltaPhi_ > max_deltaPhi_trig_[idxBin] ) {
+      if ( debug_ ) std::cout << "FAILS deltaPhi cut." << std::endl;
+      return false;
+    }
+    if ( !(electron.OoEminusOoP_ >= min_OoEminusOoP_trig_ && electron.OoEminusOoP_ <= max_OoEminusOoP_trig_[idxBin]) ) {
+      if ( debug_ ) std::cout << "FAILS OoEminusOoP cut." << std::endl;
+      return false;
     }
   }
-  return false;
+  // electron passes all cuts
+  return true;
 }

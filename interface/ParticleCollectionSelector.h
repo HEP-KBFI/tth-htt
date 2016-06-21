@@ -5,7 +5,9 @@ template <typename Tobj, typename Tsel>
 class ParticleCollectionSelector
 {
  public:
-  ParticleCollectionSelector() {}
+  ParticleCollectionSelector(bool debug = false) 
+    : selector_(debug)
+  {}
   ~ParticleCollectionSelector() {}
 
   /**

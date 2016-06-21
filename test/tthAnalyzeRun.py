@@ -8,7 +8,7 @@ DKEY_HIST = "histograms" # dir for histograms = output of the jobs
 DKEY_LOGS = "logs"       # dir for log files (stdout/stderr of jobs)
 DKEY_DCRD = "datacards"  # dir for the datacard
 
-version = "2016Jun20"
+version = "2016Jun21"
 
 """
 TODO:
@@ -243,7 +243,7 @@ process.{{ execName }} = cms.PSet(
     chargeSelection = charge_selection,
     leptonSelection = lepton_selection,
     leptonFakeRateLooseToTightWeight_inputFileName = leptonFakeRateLooseToTightWeight_inputFileName,
-    isMC = False, # NOTE: temporary fix; previously: is_mc
+    isMC = is_mc,      
     central_or_shift = central_or_shift,
     lumiScale = lumi_scale,
     idx = idx)
