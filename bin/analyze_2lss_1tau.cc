@@ -1155,7 +1155,7 @@ int main(int argc, char* argv[])
         mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, evtWeight_mm);
     } 
 
-    (*selEventsFile) << run << ":" << lumi << ":" << event;
+    (*selEventsFile) << run << ":" << lumi << ":" << event << std::endl;
 
     ++selectedEntries;
     selectedEntries_weighted += evtWeight;
