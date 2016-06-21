@@ -3,6 +3,8 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/RecoLepton.h" // RecoLepton
 
+#include <ostream>
+
 class RecoElectron
   : public RecoLepton
 {
@@ -59,6 +61,8 @@ class RecoElectron
   Int_t nLostHits_;            ///< number of operational tracker layers between interaction point and innermost hit on track
   Int_t passesConversionVeto_; ///< Flag indicating if electron passes (1) or fails (0) photon conversion veto
 };
+
+std::ostream& operator<<(std::ostream& stream, const RecoElectron& electron);
 
 #endif // tthAnalysis_HiggsToTauTau_RecoElectron_h
 

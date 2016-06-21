@@ -10,7 +10,7 @@
 class RecoElectronSelectorMVABased
 {
  public:
-  RecoElectronSelectorMVABased();
+  RecoElectronSelectorMVABased(bool debug = false);
   ~RecoElectronSelectorMVABased() {}
 
   /**

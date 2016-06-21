@@ -542,7 +542,7 @@ samples["/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/RunIIFa
   ("process_name_specific", "ttHJetToNonbb_M125"),
   ("nof_files", 186),
   ("nof_events", 8139275),
-  ("use_it", False),
+  ("use_it", True),
   ("xsection", 0.2151), # (1 - BR(ttH -> bb)) * sigma(ttH) = (1 - 0.577) * 0.5085 pb according to https://twiki.cern.ch/twiki/bin/view/LHCPhysics/CrossSections#Higgs_cross_sections_and_decay_b 
   ("triggers", [ "1e", "2e", "1mu", "2mu", "1e1mu" ]),
   ("local_paths",
@@ -578,7 +578,7 @@ samples["/ttHToNonbb_M125_13TeV_powheg_pythia8/RunIIFall15MiniAODv2-PU25nsData20
   ("process_name_specific", "ttHToNonbb_M125"),
   ("nof_files", 91),
   ("nof_events", 3945824),
-  ("use_it", True),
+  ("use_it", False),
   ("xsection", 0.2151), # (1 - BR(ttH -> bb)) * sigma(ttH) = (1 - 0.577) * 0.5085 pb according to https://twiki.cern.ch/twiki/bin/view/LHCPhysics/CrossSections#Higgs_cross_sections_and_decay_b
   ("triggers", [ "1e", "2e", "1mu", "2mu", "1e1mu" ]),
   ("local_paths",

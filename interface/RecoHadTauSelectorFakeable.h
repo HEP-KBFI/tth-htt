@@ -11,7 +11,7 @@
 class RecoHadTauSelectorFakeable
 {
  public:
-  RecoHadTauSelectorFakeable();
+  RecoHadTauSelectorFakeable(bool debug = false);
   ~RecoHadTauSelectorFakeable() {}
 
   /**

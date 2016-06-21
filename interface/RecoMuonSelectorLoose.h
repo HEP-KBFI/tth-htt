@@ -11,7 +11,7 @@
 class RecoMuonSelectorLoose
 {
  public:
-  RecoMuonSelectorLoose();
+  RecoMuonSelectorLoose(bool debug = false);
   ~RecoMuonSelectorLoose() {}
 
   /**

@@ -38,3 +38,20 @@ RecoElectron::RecoElectron(Double_t pt,
   , passesConversionVeto_(passesConversionVeto)
 {}
 
+std::ostream& operator<<(std::ostream& stream, const RecoElectron& electron)
+{
+  stream << " pT = " << electron.pt_ << ","
+	 << " eta = " << electron.eta_ << "," 
+	 << " phi = " << electron.phi_ << "," 
+	 << " charge = " << electron.charge_ << std::endl;
+  stream << " dxy = " << electron.dxy_ << ", dz = " << electron.dz_ << ", sip3d = " << electron.sip3d_ << std::endl;
+  stream << " relIso = " << electron.relIso_ << std::endl;
+  stream << " tightCharge = " << electron.tightCharge_ << std::endl;
+  stream << " nLostHits = " << electron.nLostHits_ << ", passesConversionVeto = " << electron.passesConversionVeto_ << std::endl;
+  stream << " sigmaEtaEta = " << electron.sigmaEtaEta_ << ", deltaEta = " << electron.deltaEta_ << ", deltaPhi = " << electron.deltaPhi_ << std::endl;
+  stream << " HoE = " << electron.HoE_ << ", OoEminusOoP = " << electron.OoEminusOoP_ << std::endl;
+  stream << " jetBtagCSV = " << electron.jetBtagCSV_ << std::endl;
+  stream << " mvaRawTTH = " << electron.mvaRawTTH_ << std::endl;
+  return stream;
+}
+
