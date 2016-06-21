@@ -103,7 +103,7 @@ std::vector<GenHadTau> GenHadTauReader::read() const
       gInstance->hadTau_eta_[idxHadTau],
       gInstance->hadTau_phi_[idxHadTau],
       gInstance->hadTau_mass_[idxHadTau],
-      gInstance->hadTau_charge_[idxHadTau] }));
+      static_cast<Int_t>(gInstance->hadTau_charge_[idxHadTau]) }));
   }
   return hadTaus;
 }
