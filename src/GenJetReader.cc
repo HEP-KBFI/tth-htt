@@ -38,10 +38,10 @@ GenJetReader::~GenJetReader()
   if ( numInstances_[branchName_obj_] == 0 ) {
     GenJetReader* gInstance = instances_[branchName_obj_];
     assert(gInstance);
-    delete gInstance->jet_pt_;
-    delete gInstance->jet_eta_;
-    delete gInstance->jet_phi_;
-    delete gInstance->jet_mass_;
+    delete[] gInstance->jet_pt_;
+    delete[] gInstance->jet_eta_;
+    delete[] gInstance->jet_phi_;
+    delete[] gInstance->jet_mass_;
     instances_[branchName_obj_] = 0;
   }
 }
