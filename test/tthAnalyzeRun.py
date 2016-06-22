@@ -8,7 +8,7 @@ DKEY_HIST = "histograms" # dir for histograms = output of the jobs
 DKEY_LOGS = "logs"       # dir for log files (stdout/stderr of jobs)
 DKEY_DCRD = "datacards"  # dir for the datacard
 
-version = "2016Jun21"
+version = "2016Jun22v2"
 
 """
 TODO:
@@ -900,12 +900,12 @@ if __name__ == '__main__':
 			"CMS_ttHl_btag_HFStats1Down",
 			"CMS_ttHl_btag_HFStats2Up", 
 			"CMS_ttHl_btag_HFStats2Down",
-			"CMS_ttHl_btag_HFUp", 
-			"CMS_ttHl_btag_HFDown",	
-			"CMS_ttHl_btag_HFStats1Up", 
-			"CMS_ttHl_btag_HFStats1Down",
-			"CMS_ttHl_btag_HFStats2Up", 
-			"CMS_ttHl_btag_HFStats2Down",
+			"CMS_ttHl_btag_LFUp", 
+			"CMS_ttHl_btag_LFDown",	
+			"CMS_ttHl_btag_LFStats1Up", 
+			"CMS_ttHl_btag_LFStats1Down",
+			"CMS_ttHl_btag_LFStats2Up", 
+			"CMS_ttHl_btag_LFStats2Down",
 			"CMS_ttHl_btag_cErr1Up",
 			"CMS_ttHl_btag_cErr1Down",
 			"CMS_ttHl_btag_cErr2Up",

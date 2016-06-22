@@ -19,7 +19,7 @@ double comp_MT_met_lep1(const GenParticle& lepton, double met_pt, double met_phi
 {
   double met_px = met_pt*std::cos(met_phi);
   double met_py = met_pt*std::sin(met_phi);
-  double mT = std::sqrt(square(lepton.p4_.Et() + met_pt) - (square(lepton.p4_.px() + met_px) + square(lepton.p4_.py() + met_py)));
+  double mT = std::sqrt(std::max(0., square(lepton.p4_.Et() + met_pt) - (square(lepton.p4_.px() + met_px) + square(lepton.p4_.py() + met_py))));
   return mT;
 }
 
