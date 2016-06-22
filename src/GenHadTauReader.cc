@@ -40,11 +40,11 @@ GenHadTauReader::~GenHadTauReader()
   if ( numInstances_[branchName_obj_] == 0 ) {
     GenHadTauReader* gInstance = instances_[branchName_obj_];
     assert(gInstance);
-    delete gInstance->hadTau_pt_;
-    delete gInstance->hadTau_eta_;
-    delete gInstance->hadTau_phi_;
-    delete gInstance->hadTau_mass_;
-    delete gInstance->hadTau_charge_;
+    delete[] gInstance->hadTau_pt_;
+    delete[] gInstance->hadTau_eta_;
+    delete[] gInstance->hadTau_phi_;
+    delete[] gInstance->hadTau_mass_;
+    delete[] gInstance->hadTau_charge_;
     instances_[branchName_obj_] = 0;
   }
 }
@@ -81,7 +81,7 @@ void GenHadTauReader::setBranchAddresses(TTree* tree)
     tree->SetBranchAddress(branchName_phi_.data(), hadTau_phi_); 
     hadTau_mass_ = new Float_t[max_nHadTaus_];
     tree->SetBranchAddress(branchName_mass_.data(), hadTau_mass_); 
-    hadTau_charge_ = new Int_t[max_nHadTaus_];
+    hadTau_charge_ = new Float_t[max_nHadTaus_];
     tree->SetBranchAddress(branchName_charge_.data(), hadTau_charge_);
   }
 }
@@ -103,7 +103,7 @@ std::vector<GenHadTau> GenHadTauReader::read() const
       gInstance->hadTau_eta_[idxHadTau],
       gInstance->hadTau_phi_[idxHadTau],
       gInstance->hadTau_mass_[idxHadTau],
-      gInstance->hadTau_charge_[idxHadTau] }));
+      static_cast<Int_t>(gInstance->hadTau_charge_[idxHadTau]) }));
   }
   return hadTaus;
 }
