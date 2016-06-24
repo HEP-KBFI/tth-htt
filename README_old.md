@@ -22,11 +22,11 @@ cfg = analyzeConfig(output_dir = "/home/user/test",
                     prep_dcard_exec = "prepareDatacards",
                     histogram_to_fit = "mvaDiscr_2lss")
 ```
-Run the file with `python tthAnalyzeRun_2lss_1tau.py` and wait until you're prompted to run the job exectution, e.g.
+Run the file with `python tthAnalyzeRun.py` and wait until you're prompted to run the job exectution, e.g.
 ```text
 Run sbatch, hadder and prepareDatacards? [Y/n]
 ```
-Press enter and wait til the script tells you `"Done"`. Or, you could decline and run `sbatch`/`make` separately. All the results are stored in `output_dir` defined in `tthAnalyzeRun_2lss_1tau.py`:
+Press enter and wait til the script tells you `"Done"`. Or, you could decline and run `sbatch`/`make` separately. All the results are stored in `output_dir` defined in `tthAnalyzeRun.py`:
 <details> 
   <summary>Directory structure</summary>
 ```text
@@ -92,6 +92,19 @@ Press enter and wait til the script tells you `"Done"`. Or, you could decline an
 ```
 </details>
 The datacard is located in e.g. `/home/user/test/datacards/2lss_1tau_SS_Tight/prepareDatacards.root`.
+
+### Cutflow tables
+
+Proceed with
+```bash
+mkdir -p tth_cutflow && cd $_ # make a folder (of any name, e.g. "tth_cutflow") somewhere
+python2.7 $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/python/RunCuts.py # create jobs and cfgs
+./run_cuts.sh # run the jobs; wait
+watch -n5 squeue -u `whoami` # check your SLURM queue real time
+python2.7 $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/python/FormatResults.py # once ready, create the cutflow table
+python2.7 $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/python/Diff.py # difference table
+```
+Now you should have two files in your `$PWD`: the cutflow table `cutflow.txt` and the difference table `diff.txt`. Above Python commands and `sbatch` jobs will overwrite the existing files, so make a copy of your `*.txt`s.
 
 ### Synchronization
 
