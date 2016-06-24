@@ -1,5 +1,5 @@
 import json, os, codecs, stat, logging, sys, jinja2, subprocess, getpass, time
-import tthAnalyzeSamples
+import tthAnalyzeSamples_2lss_1tau
 
 LUMI = 2301. # 1/pb
 DKEY_JOBS = "jobs"       # dir for jobs aka bash scripts that run a single analysis executable
@@ -8,7 +8,7 @@ DKEY_HIST = "histograms" # dir for histograms = output of the jobs
 DKEY_LOGS = "logs"       # dir for log files (stdout/stderr of jobs)
 DKEY_DCRD = "datacards"  # dir for the datacard
 
-version = "2016Jun22v2"
+version = "2016Jun24"
 
 """
 TODO:
@@ -660,7 +660,7 @@ def create_setup(cfg):
         create_if_not_exists(dir)
 
   cfg_basenames = {}   
-  for sample_name, sample_info in tthAnalyzeSamples.samples.items():
+  for sample_name, sample_info in tthAnalyzeSamples_2lss_1tau.samples.items():
     if not sample_info["use_it"] or sample_info["sample_category"] in \
       ["additional_signal_overlap", "background_data_estimate"]: continue
       
@@ -831,7 +831,7 @@ def run_setup(cfg):
   
   logging.info("Running 'hadd' on histograms produced by 'analyze_2lss_1tau' jobs ...")
   subd_list_stage1 = []  
-  for sample_name, sample_info in tthAnalyzeSamples.samples.items():
+  for sample_name, sample_info in tthAnalyzeSamples_2lss_1tau.samples.items():
     if not sample_name in cfg.histogram_files_jobs.keys():
       continue
     subd_list_sample = []
