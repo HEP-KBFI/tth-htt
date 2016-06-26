@@ -11,7 +11,7 @@
 class RecoMuonSelectorTight
 {
  public:
-  RecoMuonSelectorTight(bool debug = false);
+  RecoMuonSelectorTight(int index = -1, bool debug = false);
   ~RecoMuonSelectorTight() {}
 
   /**
@@ -21,6 +21,7 @@ class RecoMuonSelectorTight
   bool operator()(const RecoMuon& muon) const;
 
  protected: 
+  int index_;
   bool debug_;
 
   Double_t min_pt_;         ///< lower cut threshold on pT

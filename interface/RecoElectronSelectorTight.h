@@ -11,7 +11,7 @@
 class RecoElectronSelectorTight
 {
  public:
-  RecoElectronSelectorTight(bool debug = false);
+  RecoElectronSelectorTight(int index = -1, bool debug = false);
   ~RecoElectronSelectorTight() {}
 
   /**

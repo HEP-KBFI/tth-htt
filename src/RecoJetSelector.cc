@@ -2,7 +2,7 @@
 
 #include <cmath> // fabs
 
-RecoJetSelector::RecoJetSelector(bool debug)
+RecoJetSelector::RecoJetSelector(int index, bool debug)
   : min_pt_(25.)
   , max_absEta_(2.4)
 {}

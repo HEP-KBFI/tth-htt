@@ -11,7 +11,7 @@
 class RecoJetSelectorBtag
 {
  public:
-  RecoJetSelectorBtag(bool debug = false);
+  RecoJetSelectorBtag(int index = -1, bool debug = false);
   ~RecoJetSelectorBtag() {}
 
   /**
@@ -30,8 +30,8 @@ class RecoJetSelectorBtagLoose
   : public RecoJetSelectorBtag
 {
  public:
-  RecoJetSelectorBtagLoose(bool debug = false)
-    : RecoJetSelectorBtag(debug) 
+  RecoJetSelectorBtagLoose(int index = -1, bool debug = false)
+    : RecoJetSelectorBtag(index, debug) 
   {
     min_BtagCSV_ = 0.460; // CSV loose WP, cf. https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation76X#Supported_Algorithms_and_Operati
   }
@@ -41,8 +41,8 @@ class RecoJetSelectorBtagMedium
   : public RecoJetSelectorBtag
 {
  public:
-  RecoJetSelectorBtagMedium(bool debug = false)
-    : RecoJetSelectorBtag(debug)
+  RecoJetSelectorBtagMedium(int index = -1, bool debug = false)
+    : RecoJetSelectorBtag(index, debug)
   {
     min_BtagCSV_ = 0.800; // CSV medium WP, cf. https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation76X#Supported_Algorithms_and_Operati
   }

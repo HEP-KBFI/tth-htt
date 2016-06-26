@@ -1,6 +1,6 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronSelectorCutBased.h" // RecoElectronSelectorCutBased
 
-RecoElectronSelectorCutBased::RecoElectronSelectorCutBased(bool debug)
+RecoElectronSelectorCutBased::RecoElectronSelectorCutBased(int index, bool debug)
   : min_pt_(15.)
   , max_relIso_(0.1)
   , max_sip3d_(4.)

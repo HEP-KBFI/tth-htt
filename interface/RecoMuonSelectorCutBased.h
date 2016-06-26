@@ -8,7 +8,7 @@
 class RecoMuonSelectorCutBased
 {
  public:
-  RecoMuonSelectorCutBased(bool debug = false);
+  RecoMuonSelectorCutBased(int index = -1, bool debug = false);
   ~RecoMuonSelectorCutBased() {}
 
   /**

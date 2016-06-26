@@ -2,7 +2,7 @@
 
 #include <cmath> // fabs
 
-RecoHadTauSelectorFakeable::RecoHadTauSelectorFakeable(bool debug)
+RecoHadTauSelectorFakeable::RecoHadTauSelectorFakeable(int index, bool debug)
   : min_pt_(20.)
   , max_absEta_(2.3)
   , max_dz_(0.2)

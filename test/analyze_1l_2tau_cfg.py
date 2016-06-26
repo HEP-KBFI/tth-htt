@@ -27,6 +27,12 @@ process.analyze_1l_2tau = cms.PSet(
         
     chargeSelection = cms.string('OS'),
     hadTauSelection = cms.string('Tight'),
+
+    hadTauEtaBins_lead = cms.vdouble(-1., 1.2, 1.7, 9.9),
+    hadTauEtaBins_sublead = cms.vdouble(-1., 1.2, 1.7, 9.9),
+
+    applyJetToTauFakeRateWeight = cms.bool(False),
+    jetToTauFakeRateWeight = cms.PSet(),
     
     isMC = cms.bool(False),
     central_or_shift = cms.string('central'),

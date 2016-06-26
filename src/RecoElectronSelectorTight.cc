@@ -2,7 +2,7 @@
 
 #include <cmath> // fabs
 
-RecoElectronSelectorTight::RecoElectronSelectorTight(bool debug)
+RecoElectronSelectorTight::RecoElectronSelectorTight(int index, bool debug)
   : debug_(debug)
   , min_pt_(15.) // 15 GeV for 2lss channel, 10 GeV for 3l channel (cf. Table 13 of AN-2015/321)
   , max_absEta_(2.5)

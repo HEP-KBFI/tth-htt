@@ -56,7 +56,7 @@ class analyzeConfig:
     makefile_fullpath: full path to the Makefile
     sbatch_fullpath: full path to the bash script that submits all jobs to SLURM
     histogram_files_jobs: the histogram files produced by 'analyze_2lss_1tau' jobs
-    histogram_files_jobs_exists: flags indicating if histogram files already exist from a previous execution of 'tthAnalyzeRun.py', so that 'analyze_2lss_1tau' jobs do not have to be submitted again	
+    histogram_files_jobs_exists: flags indicating if histogram files already exist from a previous execution of 'tthAnalyzeRun_2lss_1tau.py', so that 'analyze_2lss_1tau' jobs do not have to be submitted again	
     histogram_file_hadd_stage1: the histogram file obtained by hadding the output of all jobs
     histogram_file_addFakes: the histogram file containing 'Fakes' background 
     histogram_file_addFlips: the histogram file containing 'Flips' background 

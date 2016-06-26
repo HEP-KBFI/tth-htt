@@ -2,7 +2,7 @@
 
 #include <cmath> // fabs
 
-RecoMuonSelectorTight::RecoMuonSelectorTight(bool debug)
+RecoMuonSelectorTight::RecoMuonSelectorTight(int index, bool debug)
   : debug_(debug)
   , min_pt_(10.)
   , max_absEta_(2.4)
