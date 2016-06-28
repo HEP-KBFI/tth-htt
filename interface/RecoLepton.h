@@ -6,6 +6,8 @@
 #include "tthAnalysis/HiggsToTauTau/interface/GenHadTau.h" // GenHadTau
 #include "tthAnalysis/HiggsToTauTau/interface/GenJet.h" // GenJet
 
+#include <ostream>
+
 class RecoLepton
   : public GenLepton
 {
@@ -64,6 +66,8 @@ public:
   const GenHadTau* genHadTau_;
   const GenJet* genJet_;
 };
+
+std::ostream& operator<<(std::ostream& stream, const RecoLepton& lepton);
 
 #endif // tthAnalysis_HiggsToTauTau_RecoLepton_h
 

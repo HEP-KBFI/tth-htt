@@ -46,12 +46,12 @@ RecoMuonReader::~RecoMuonReader()
   if ( numInstances_[branchName_obj_] == 0 ) {
     RecoMuonReader* gInstance = instances_[branchName_obj_];
     assert(gInstance);
-    delete gInstance->looseIdPOG_;
-    delete gInstance->mediumIdPOG_;
+    delete[] gInstance->looseIdPOG_;
+    delete[] gInstance->mediumIdPOG_;
 #ifdef DPT_DIV_PT
-    delete gInstance->dpt_div_pt_;
+    delete[] gInstance->dpt_div_pt_;
 #endif
-    delete gInstance->segmentCompatibility_;
+    delete[] gInstance->segmentCompatibility_;
     instances_[branchName_obj_] = 0;
   }
 }

@@ -11,7 +11,7 @@
 class RecoJetSelector
 {
  public:
-  RecoJetSelector();
+  RecoJetSelector(int index = -1, bool debug = false);
   ~RecoJetSelector() {}
 
   /**

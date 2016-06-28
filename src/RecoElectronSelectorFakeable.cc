@@ -2,7 +2,7 @@
 
 #include <cmath> // fabs
 
-RecoElectronSelectorFakeable::RecoElectronSelectorFakeable()
+RecoElectronSelectorFakeable::RecoElectronSelectorFakeable(int index, bool debug)
   : min_pt_(10.)
   , max_absEta_(2.5)
   , max_dxy_(0.05)

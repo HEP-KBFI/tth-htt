@@ -11,7 +11,7 @@
 class RecoMuonSelectorFakeable
 {
  public:
-  RecoMuonSelectorFakeable();
+  RecoMuonSelectorFakeable(int index = -1, bool debug = false);
   ~RecoMuonSelectorFakeable() {}
 
   /**

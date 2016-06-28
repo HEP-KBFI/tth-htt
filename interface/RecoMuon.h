@@ -3,6 +3,8 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/RecoLepton.h" // RecoLepton
 
+#include <ostream>
+
 // KE: set the following flag to 1 if the branch exists
 #define DPT_DIV_PT_FLAG 0
 
@@ -62,6 +64,8 @@ public:
 #endif
   Float_t segmentCompatibility_; ///< muon segment compatibility
 };
+
+std::ostream& operator<<(std::ostream& stream, const RecoMuon& muon);
 
 #endif // tthAnalysis_HiggsToTauTau_RecoMuon_h
 

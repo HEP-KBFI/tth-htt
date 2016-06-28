@@ -61,7 +61,7 @@ namespace
       return;
     }   
     std::cout << " integral(" << process << ") = " << histogram_input->Integral() << std::endl;
-    std::string histogramName_output_full = process;
+    std::string histogramName_output_full = std::string("x").append("_").append(process);
     if ( !(central_or_shift == "" || central_or_shift == "central") ) histogramName_output_full.append("_").append(central_or_shift);
     if ( histogramName_output != "" ) histogramName_output_full.append("_").append(histogramName_output);
     TArrayD histogramBinning = getBinning(histogram_input);
@@ -85,12 +85,6 @@ namespace
     }
   }
     
-  std::string getSubdirNameOutput(const std::string& category) 
-  {
-    std::string subdirName_output = Form("tauTau_%s", category.data());
-    return subdirName_output;
-  }
-
   struct categoryType
   {
     categoryType(const edm::ParameterSet& cfg)
@@ -201,8 +195,7 @@ int main(int argc, char* argv[])
 		central_or_shift != central_or_shifts.end(); ++central_or_shift ) {
 	    std::cout << "histogramToFit = " << histogramToFit << ", central_or_shift = " << (*central_or_shift) << std::endl;
 	    
-	    std::string subdirName_output = getSubdirNameOutput(category->output_);
-	    TDirectory* subdir_output = createSubdirectory_recursively(fs, subdirName_output);
+	    TFileDirectory* subdir_output = &fs;
 	    subdir_output->cd();
 	    double sf = ( isSignal ) ? sf_signal : 1.;
 	    copyHistogram(

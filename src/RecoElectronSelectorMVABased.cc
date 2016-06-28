@@ -1,6 +1,6 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronSelectorMVABased.h" // RecoElectronSelectorMVABased
 
-RecoElectronSelectorMVABased::RecoElectronSelectorMVABased()
+RecoElectronSelectorMVABased::RecoElectronSelectorMVABased(int index, bool debug)
   : min_pt_(15.)
   , binning_absEta_({ 0.8, 1.479 })
   , min_pt_trig_(30.)

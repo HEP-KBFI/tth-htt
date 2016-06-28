@@ -1,5 +1,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoLepton.h" // RecoLepton, GenLepton
 
+#include <iomanip>
+
 RecoLepton::RecoLepton(Double_t pt,
                        Double_t eta,
                        Double_t phi,
@@ -36,3 +38,17 @@ RecoLepton::RecoLepton(Double_t pt,
   , genHadTau_(0)
   , genJet_(0)
 {}
+
+std::ostream& operator<<(std::ostream& stream, const RecoLepton& lepton)
+{
+  stream << " pT = " << lepton.pt_ << ","
+	 << " eta = " << lepton.eta_ << "," 
+	 << " phi = " << lepton.phi_ << "," 
+	 << " pdgId = " << lepton.pdgId_ << std::endl;
+  stream << " dxy = " << lepton.dxy_ << ", dz = " << lepton.dz_ << ", sip3d = " << lepton.sip3d_ << std::endl;
+  stream << " relIso = " << lepton.relIso_ << std::endl;
+  stream << " tightCharge = " << lepton.tightCharge_ << std::endl;
+  stream << " mvaRawTTH = " << lepton.mvaRawTTH_ << std::endl;
+  return stream;
+}
+

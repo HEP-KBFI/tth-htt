@@ -10,7 +10,7 @@ namespace
   {
     std::string fitFunctionName_particleEtaBin = TString(fitFunctionName.data()).ReplaceAll("$particleEtaBin", particleEtaBin_label.data()).Data();
     TF1* fitFunction = dynamic_cast<TF1*>(inputFile->Get(fitFunctionName_particleEtaBin.data()));
-    if ( !fitFunction ) throw cms::Exception("FWLiteTauTauAnalyzer") 
+    if ( !fitFunction ) throw cms::Exception("analyze_1l_2tau") 
       << "Failed to load fitFunction = " << fitFunctionName_particleEtaBin << " from file = " << inputFile->GetName() << " !!\n";
     TF1* fitFunction_cloned = (TF1*)fitFunction->Clone();
     return fitFunction_cloned;

@@ -11,7 +11,7 @@
 class RecoMuonSelectorTight
 {
  public:
-  RecoMuonSelectorTight();
+  RecoMuonSelectorTight(int index = -1, bool debug = false);
   ~RecoMuonSelectorTight() {}
 
   /**
@@ -21,6 +21,9 @@ class RecoMuonSelectorTight
   bool operator()(const RecoMuon& muon) const;
 
  protected: 
+  int index_;
+  bool debug_;
+
   Double_t min_pt_;         ///< lower cut threshold on pT
   Double_t max_absEta_;     ///< upper cut threshold on absolute value of eta
   Double_t max_dxy_;        ///< upper cut threshold on d_{xy}, distance in the transverse plane w.r.t PV

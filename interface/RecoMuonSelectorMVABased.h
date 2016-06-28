@@ -8,7 +8,7 @@
 class RecoMuonSelectorMVABased
 {
  public:
-  RecoMuonSelectorMVABased();
+  RecoMuonSelectorMVABased(int index = -1, bool debug = false);
   ~RecoMuonSelectorMVABased() {}
 
   /**

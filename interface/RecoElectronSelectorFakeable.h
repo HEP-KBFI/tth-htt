@@ -11,7 +11,7 @@
 class RecoElectronSelectorFakeable
 {
  public:
-  RecoElectronSelectorFakeable();
+  RecoElectronSelectorFakeable(int index = -1, bool debug = false);
   ~RecoElectronSelectorFakeable() {}
 
   /**

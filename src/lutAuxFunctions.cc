@@ -2,24 +2,24 @@
 
 #include "FWCore/Utilities/interface/Exception.h" // cms::Exception
 
-#include <TFile.h> // TFile
 #include <TAxis.h> // TAxis
 
-namespace
-{
+#include <iostream>
+#include <iomanip>
+#include <assert.h>
+
 /**
  * @brief Open ROOT file the name of which is given as function argument
  * @param fileName name of ROOT file
  * @return pointer to TFile object
  */
-  TFile* openFile(const edm::FileInPath& fileName)
-  {
-    if ( fileName.fullPath() == "" ) 
-      throw cms::Exception("openFile") 
-        << " Failed to find file = " << fileName << " !!\n";
-    TFile* inputFile = new TFile(fileName.fullPath().data());
-    return inputFile;
-  }
+TFile* openFile(const edm::FileInPath& fileName)
+{
+  if ( fileName.fullPath() == "" ) 
+    throw cms::Exception("openFile") 
+      << " Failed to find file = " << fileName << " !!\n";
+  TFile* inputFile = new TFile(fileName.fullPath().data());
+  return inputFile;
 }
 
 /**
@@ -27,16 +27,14 @@ namespace
  * @param fileName name of ROOT file, histogramName name of the histogram
  * @return pointer to TH1 object
  */
-TH1* loadTH1(const edm::FileInPath& fileName, const std::string& histogramName)
+TH1* loadTH1(TFile* inputFile, const std::string& histogramName)
 {
-  TFile* inputFile = openFile(fileName);
   TH1* histogram = dynamic_cast<TH1*>(inputFile->Get(histogramName.data()));
   if ( !histogram ) 
     throw cms::Exception("loadTH1") 
-      << " Failed to load TH1 = " << histogramName.data() << " from file = " << fileName.fullPath() << " !!\n";
+      << " Failed to load TH1 = " << histogramName.data() << " from file = " << inputFile->GetName() << " !!\n";
   std::string histogramName_cloned = Form("%s_cloned", histogram->GetName());
   TH1* histogram_cloned = (TH1*)histogram->Clone(histogramName_cloned.data());
-  delete inputFile;
   return histogram_cloned;
 }
 /**
@@ -44,16 +42,14 @@ TH1* loadTH1(const edm::FileInPath& fileName, const std::string& histogramName)
  * @param fileName name of ROOT file, histogramName name of the histogram
  * @return pointer to TH2 object
  */
-TH2* loadTH2(const edm::FileInPath& fileName, const std::string& histogramName)
+TH2* loadTH2(TFile* inputFile, const std::string& histogramName)
 {
-  TFile* inputFile = openFile(fileName);
   TH2* histogram = dynamic_cast<TH2*>(inputFile->Get(histogramName.data()));
   if ( !histogram ) 
     throw cms::Exception("loadTH2") 
-      << " Failed to load TH2 = " << histogramName.data() << " from file = " << fileName.fullPath() << " !!\n";
+      << " Failed to load TH2 = " << histogramName.data() << " from file = " << inputFile->GetName() << " !!\n";
   std::string histogramName_cloned = Form("%s_cloned", histogram->GetName());
   TH2* histogram_cloned = (TH2*)histogram->Clone(histogramName_cloned.data());
-  delete inputFile;
   return histogram_cloned;
 }
 

@@ -5,7 +5,10 @@ template <typename Tobj, typename Tsel>
 class ParticleCollectionSelector
 {
  public:
-  ParticleCollectionSelector() {}
+  ParticleCollectionSelector(int index = -1, bool debug = false) 
+    : selIndex_(index)
+    , selector_(index, debug)
+  {}
   ~ParticleCollectionSelector() {}
 
   /**
@@ -15,16 +18,19 @@ class ParticleCollectionSelector
   std::vector<const Tobj*> operator()(const std::vector<const Tobj*>& particles) const
   {
     std::vector<const Tobj*> selParticles;
+    int idx = 0;
     for ( typename std::vector<const Tobj*>::const_iterator particle = particles.begin();
 	  particle != particles.end(); ++particle ) {
-      if ( selector_(**particle) ) {
+      if ( (idx == selIndex_ || selIndex_ == -1) && selector_(**particle) ) {
 	selParticles.push_back(*particle);
       }
+      ++idx;
     }
     return selParticles;
   }
   
  protected: 
+  int selIndex_;
   Tsel selector_;
 };
 
@@ -56,12 +62,19 @@ typedef ParticleCollectionSelector<RecoMuon, RecoMuonSelectorMVABased> RecoMuonC
 
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTau.h"
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauSelectorLoose.h"
+#include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauSelectorLoose_1l_2tau.h"
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauSelectorTight.h"
+#include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauSelectorTight_1l_2tau.h"
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauSelectorFakeable.h"
+#include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauSelectorFakeable_1l_2tau.h"
 
 typedef ParticleCollectionSelector<RecoHadTau, RecoHadTauSelectorLoose> RecoHadTauCollectionSelectorLoose;
+typedef ParticleCollectionSelector<RecoHadTau, RecoHadTauSelectorLoose_1l_2tau> RecoHadTauCollectionSelectorLoose_1l_2tau;
 typedef ParticleCollectionSelector<RecoHadTau, RecoHadTauSelectorTight> RecoHadTauCollectionSelectorTight;
+typedef ParticleCollectionSelector<RecoHadTau, RecoHadTauSelectorTight_1l_2tau> RecoHadTauCollectionSelectorTight_1l_2tau;
 typedef ParticleCollectionSelector<RecoHadTau, RecoHadTauSelectorFakeable> RecoHadTauCollectionSelectorFakeable;
+typedef ParticleCollectionSelector<RecoHadTau, RecoHadTauSelectorFakeable_1l_2tau> RecoHadTauCollectionSelectorFakeable_1l_2tau;
+
 
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h"
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetSelector.h"

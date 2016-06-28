@@ -1,5 +1,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h"
 
+#include <iomanip>
+
 RecoJet::RecoJet(Double_t pt,
                  Double_t eta,
                  Double_t phi,
@@ -21,3 +23,13 @@ RecoJet::RecoJet(Double_t pt,
   , genHadTau_(0)
   , genJet_(0)
 {}
+
+std::ostream& operator<<(std::ostream& stream, const RecoJet& jet)
+{
+  stream << " pT = " << jet.pt_ << ","
+	 << " eta = " << jet.eta_ << "," 
+	 << " phi = " << jet.phi_ << "," 
+	 << " mass = " << jet.mass_ << "," 
+	 << " CSV = " << jet.BtagCSV_ << std::endl; 
+  return stream;
+}

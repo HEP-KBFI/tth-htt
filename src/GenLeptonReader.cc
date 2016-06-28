@@ -40,11 +40,11 @@ GenLeptonReader::~GenLeptonReader()
   if ( numInstances_[branchName_obj_] == 0 ) {
     GenLeptonReader* gInstance = instances_[branchName_obj_];
     assert(gInstance);
-    delete gInstance->lepton_pt_;
-    delete gInstance->lepton_eta_;
-    delete gInstance->lepton_phi_;
-    delete gInstance->lepton_mass_;
-    delete gInstance->lepton_pdgId_;
+    delete[] gInstance->lepton_pt_;
+    delete[] gInstance->lepton_eta_;
+    delete[] gInstance->lepton_phi_;
+    delete[] gInstance->lepton_mass_;
+    delete[] gInstance->lepton_pdgId_;
     instances_[branchName_obj_] = 0;
   }
 }

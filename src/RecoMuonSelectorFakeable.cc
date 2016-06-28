@@ -2,7 +2,7 @@
 
 #include <cmath> // fabs
 
-RecoMuonSelectorFakeable::RecoMuonSelectorFakeable()
+RecoMuonSelectorFakeable::RecoMuonSelectorFakeable(int index, bool debug)
   : min_pt_(10.)
   , max_absEta_(2.4)
   , max_dxy_(0.05)

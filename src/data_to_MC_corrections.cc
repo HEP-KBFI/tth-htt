@@ -28,9 +28,13 @@ double sf_electronID_and_Iso_loose(double electron_pt, double electron_eta)
   // efficiency for electron to pass loose identification criteria: AN-2015/321, Fig. 10 top left
   static TH2* lut_id_loose = 0;
   if ( !lut_id_loose ) {
-    edm::FileInPath fileName_id_loose("tthAnalysis/HiggsToTauTau/data/");
-    std::string histogramName_id_loose = "";
-    lut_id_loose = loadTH2(fileName_id_loose, histogramName_id_loose);
+    edm::FileInPath fileName_id_loose("tthAnalysis/HiggsToTauTau/data/dummy.root");
+    TH1::AddDirectory(false);
+    TFile* inputFile_id_loose = openFile(fileName_id_loose);
+    std::string histogramName_id_loose = "dummy_pt_eta";
+    lut_id_loose = loadTH2(inputFile_id_loose, histogramName_id_loose);
+    delete inputFile_id_loose;
+    TH1::AddDirectory(true);
   }
   assert(lut_id_loose);
   double sf_id_loose = get_sf_from_TH2(lut_id_loose, electron_pt, electron_eta);
@@ -38,9 +42,13 @@ double sf_electronID_and_Iso_loose(double electron_pt, double electron_eta)
   // electron isolation efficiency: AN-2015/321, Fig. 10 top right
   static TH2* lut_iso = 0;
   if ( !lut_iso ) {
-    edm::FileInPath fileName_iso("tthAnalysis/HiggsToTauTau/data/");
-    std::string histogramName_iso = "";
-    lut_iso = loadTH2(fileName_iso, histogramName_iso);
+    edm::FileInPath fileName_iso("tthAnalysis/HiggsToTauTau/data/dummy.root");
+    TH1::AddDirectory(false);
+    TFile* inputFile_iso = openFile(fileName_iso);
+    std::string histogramName_iso = "dummy_pt_eta";
+    lut_iso = loadTH2(inputFile_iso, histogramName_iso);
+    delete inputFile_iso;
+    TH1::AddDirectory(true);
   }
   assert(lut_iso);
   double sf_iso = get_sf_from_TH2(lut_iso, electron_pt, electron_eta);
@@ -54,9 +62,13 @@ double sf_electronID_and_Iso_tight_to_loose(double electron_pt, double electron_
   // efficiency for electron to pass tight conversion veto and missing inner hits cut: AN-2015/321, Fig. 10 bottom
   static TH2* lut_convVeto = 0;
   if ( !lut_convVeto ) {
-    edm::FileInPath fileName_convVeto("tthAnalysis/HiggsToTauTau/data/");
-    std::string histogramName_convVeto = "";
-    lut_convVeto = loadTH2(fileName_convVeto, histogramName_convVeto);
+    edm::FileInPath fileName_convVeto("tthAnalysis/HiggsToTauTau/data/dummy.root");
+    TH1::AddDirectory(false);
+    TFile* inputFile_convVeto = openFile(fileName_convVeto);
+    std::string histogramName_convVeto = "dummy_pt_eta";
+    lut_convVeto = loadTH2(inputFile_convVeto, histogramName_convVeto);
+    delete inputFile_convVeto;
+    TH1::AddDirectory(true);
   }
   assert(lut_convVeto);
   double sf_convVeto = get_sf_from_TH2(lut_convVeto, electron_pt, electron_eta);
@@ -66,18 +78,26 @@ double sf_electronID_and_Iso_tight_to_loose(double electron_pt, double electron_
   if ( fabs(electron_eta) < 1.479 ) {
     static TH1* lut_id_tight_barrel = 0;
     if ( !lut_id_tight_barrel ) {
-      edm::FileInPath fileName_id_tight_barrel("tthAnalysis/HiggsToTauTau/data/");
-      std::string histogramName_id_tight_barrel = "";
-      lut_id_tight_barrel = loadTH1(fileName_id_tight_barrel, histogramName_id_tight_barrel);
+      edm::FileInPath fileName_id_tight_barrel("tthAnalysis/HiggsToTauTau/data/dummy.root");
+      TH1::AddDirectory(false);
+      TFile* inputFile_id_tight_barrel = openFile(fileName_id_tight_barrel);
+      std::string histogramName_id_tight_barrel = "dummy_pt";
+      lut_id_tight_barrel = loadTH1(inputFile_id_tight_barrel, histogramName_id_tight_barrel);
+      delete inputFile_id_tight_barrel;
+      TH1::AddDirectory(true);
     }
     assert(lut_id_tight_barrel);
     sf_id_tight = get_sf_from_TH1(lut_id_tight_barrel, electron_pt);
   } else {
     static TH1* lut_id_tight_endcap = 0;
     if ( !lut_id_tight_endcap ) {
-      edm::FileInPath fileName_id_tight_endcap("tthAnalysis/HiggsToTauTau/data/");
-      std::string histogramName_id_tight_endcap = "";
-      lut_id_tight_endcap = loadTH1(fileName_id_tight_endcap, histogramName_id_tight_endcap);
+      edm::FileInPath fileName_id_tight_endcap("tthAnalysis/HiggsToTauTau/data/dummy.root");
+      TH1::AddDirectory(false);
+      TFile* inputFile_id_tight_endcap = openFile(fileName_id_tight_endcap);
+      std::string histogramName_id_tight_endcap = "dummy_pt";
+      lut_id_tight_endcap = loadTH1(inputFile_id_tight_endcap, histogramName_id_tight_endcap);
+      delete inputFile_id_tight_endcap;
+      TH1::AddDirectory(true);
     }
     assert(lut_id_tight_endcap);
     sf_id_tight = get_sf_from_TH1(lut_id_tight_endcap, electron_pt);
@@ -101,9 +121,13 @@ double sf_muonID_and_Iso_loose(double muon_pt, double muon_eta)
   // efficiency for muon to pass loose identification criteria: AN-2015/321, Fig. 11 bottom
   static TH2* lut_id_loose = 0;
   if ( !lut_id_loose ) {
-    edm::FileInPath fileName_id_loose("tthAnalysis/HiggsToTauTau/data/");
-    std::string histogramName_id_loose = "";
-    lut_id_loose = loadTH2(fileName_id_loose, histogramName_id_loose);
+    edm::FileInPath fileName_id_loose("tthAnalysis/HiggsToTauTau/data/dummy.root");
+    TH1::AddDirectory(false);
+    TFile* inputFile_id_loose = openFile(fileName_id_loose);
+    std::string histogramName_id_loose = "dummy_pt_eta";
+    lut_id_loose = loadTH2(inputFile_id_loose, histogramName_id_loose);
+    delete inputFile_id_loose;
+    TH1::AddDirectory(true);
   }
   assert(lut_id_loose);
   double sf_id_loose = get_sf_from_TH2(lut_id_loose, muon_pt, muon_eta);
@@ -113,18 +137,26 @@ double sf_muonID_and_Iso_loose(double muon_pt, double muon_eta)
   if ( fabs(muon_eta) < 1.2 ) {
     static TH1* lut_iso_barrel = 0;
     if ( !lut_iso_barrel ) {
-      edm::FileInPath fileName_iso_barrel("tthAnalysis/HiggsToTauTau/data/");
-      std::string histogramName_iso_barrel = "";
-      lut_iso_barrel = loadTH1(fileName_iso_barrel, histogramName_iso_barrel);
+      edm::FileInPath fileName_iso_barrel("tthAnalysis/HiggsToTauTau/data/dummy.root");
+      TH1::AddDirectory(false);
+      TFile* inputFile_iso_barrel = openFile(fileName_iso_barrel);
+      std::string histogramName_iso_barrel = "dummy_pt";
+      lut_iso_barrel = loadTH1(inputFile_iso_barrel, histogramName_iso_barrel);
+      delete inputFile_iso_barrel;
+      TH1::AddDirectory(true);
     }
     assert(lut_iso_barrel);
     sf_iso = get_sf_from_TH1(lut_iso_barrel, muon_pt);
   } else {
     static TH1* lut_iso_endcap = 0;
     if ( !lut_iso_endcap ) {
-      edm::FileInPath fileName_iso_endcap("tthAnalysis/HiggsToTauTau/data/");
-      std::string histogramName_iso_endcap = "";
-      lut_iso_endcap = loadTH1(fileName_iso_endcap, histogramName_iso_endcap);
+      edm::FileInPath fileName_iso_endcap("tthAnalysis/HiggsToTauTau/data/dummy.root");
+      TH1::AddDirectory(false);
+      TFile* inputFile_iso_endcap = openFile(fileName_iso_endcap);
+      std::string histogramName_iso_endcap = "dummy_pt";
+      lut_iso_endcap = loadTH1(inputFile_iso_endcap, histogramName_iso_endcap);
+      delete inputFile_iso_endcap;
+      TH1::AddDirectory(true);
     }
     assert(lut_iso_endcap);
     sf_iso = get_sf_from_TH1(lut_iso_endcap, muon_pt);
@@ -133,9 +165,13 @@ double sf_muonID_and_Iso_loose(double muon_pt, double muon_eta)
   // efficiency for muon to pass transverse impact parameter cut: AN-2015/321, Fig. 11 top right
   static TH1* lut_ip = 0;
   if ( !lut_ip ) {
-    edm::FileInPath fileName_ip("tthAnalysis/HiggsToTauTau/data/");
-    std::string histogramName_ip = "";
-    lut_ip = loadTH2(fileName_ip, histogramName_ip);
+    edm::FileInPath fileName_ip("tthAnalysis/HiggsToTauTau/data/dummy.root");
+    TH1::AddDirectory(false);
+    TFile* inputFile_ip = openFile(fileName_ip);
+    std::string histogramName_ip = "dummy_eta";
+    lut_ip = loadTH1(inputFile_ip, histogramName_ip);
+    delete inputFile_ip;
+    TH1::AddDirectory(true);
   }
   assert(lut_ip);
   double sf_ip = get_sf_from_TH1(lut_ip, muon_eta);
@@ -151,18 +187,26 @@ double sf_muonID_and_Iso_tight_to_loose(double muon_pt, double muon_eta)
   if ( fabs(muon_eta) < 1.2 ) {
     static TH1* lut_id_tight_barrel = 0;
     if ( !lut_id_tight_barrel ) {
-      edm::FileInPath fileName_id_tight_barrel("tthAnalysis/HiggsToTauTau/data/");
-      std::string histogramName_id_tight_barrel = "";
-      lut_id_tight_barrel = loadTH1(fileName_id_tight_barrel, histogramName_id_tight_barrel);
+      edm::FileInPath fileName_id_tight_barrel("tthAnalysis/HiggsToTauTau/data/dummy.root");
+      TH1::AddDirectory(false);
+      TFile* inputFile_id_tight_barrel = openFile(fileName_id_tight_barrel);
+      std::string histogramName_id_tight_barrel = "dummy_pt";
+      lut_id_tight_barrel = loadTH1(inputFile_id_tight_barrel, histogramName_id_tight_barrel);
+      delete inputFile_id_tight_barrel;
+      TH1::AddDirectory(true);
     }
     assert(lut_id_tight_barrel);
     sf_id_tight = get_sf_from_TH1(lut_id_tight_barrel, muon_pt);
   } else {
     static TH1* lut_id_tight_endcap = 0;
     if ( !lut_id_tight_endcap ) {
-      edm::FileInPath fileName_id_tight_endcap("tthAnalysis/HiggsToTauTau/data/");
-      std::string histogramName_id_tight_endcap = "";
-      lut_id_tight_endcap = loadTH1(fileName_id_tight_endcap, histogramName_id_tight_endcap);
+      edm::FileInPath fileName_id_tight_endcap("tthAnalysis/HiggsToTauTau/data/dummy.root");
+      TH1::AddDirectory(false);
+      TFile* inputFile_id_tight_endcap = openFile(fileName_id_tight_endcap);
+      std::string histogramName_id_tight_endcap = "dummy_pt";
+      lut_id_tight_endcap = loadTH1(inputFile_id_tight_endcap, histogramName_id_tight_endcap);
+      delete inputFile_id_tight_endcap;
+      TH1::AddDirectory(true);
     }
     assert(lut_id_tight_endcap);
     sf_id_tight = get_sf_from_TH1(lut_id_tight_endcap, muon_pt);

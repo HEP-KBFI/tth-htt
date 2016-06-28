@@ -11,7 +11,7 @@
 class RecoHadTauSelectorLoose
 {
  public:
-  RecoHadTauSelectorLoose();
+  RecoHadTauSelectorLoose(int index = -1, bool debug = false);
   ~RecoHadTauSelectorLoose() {}
 
   /**
@@ -37,5 +37,5 @@ class RecoHadTauSelectorLoose
   Int_t min_antiMuon_;         ///< lower cut threshold on discriminator against muons
 };
 
-#endif // tthAnalysis_HiggsToTauTau_RecoHadTauSelectorTight_h
+#endif // tthAnalysis_HiggsToTauTau_RecoHadTauSelectorLoose_h
 
