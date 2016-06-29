@@ -81,7 +81,7 @@ RecoHadTauReader::~RecoHadTauReader()
     delete[] gInstance->hadTau_idMVA_dR05_;
     delete[] gInstance->hadTau_rawMVA_dR05_;
     delete[] gInstance->hadTau_idCombIso_dR03_;
-    delete[] gInstance->hadTau_rawCombIso_dR03_;
+    //delete[] gInstance->hadTau_rawCombIso_dR03_;
     delete[] gInstance->hadTau_idCombIso_dR05_;
     delete[] gInstance->hadTau_rawCombIso_dR05_;
     delete[] gInstance->hadTau_idAgainstElec_;
@@ -108,7 +108,7 @@ void RecoHadTauReader::setBranchNames()
     branchName_idMVA_dR05_ = Form("%s_%s", branchName_obj_.data(), "idMVArun2");
     branchName_rawMVA_dR05_ = Form("%s_%s", branchName_obj_.data(), "rawMVArun2");
     branchName_idCombIso_dR03_ = Form("%s_%s", branchName_obj_.data(), "idCI3hitdR03");
-    branchName_rawCombIso_dR03_ = Form("%s_%s", branchName_obj_.data(), "isoCI3hitdR03"); // CV: branch does not exist in VHbb Ntuples yet
+    //branchName_rawCombIso_dR03_ = Form("%s_%s", branchName_obj_.data(), "isoCI3hitdR03"); // CV: branch does not exist in VHbb Ntuples yet
     branchName_idCombIso_dR05_ = Form("%s_%s", branchName_obj_.data(), "idCI3hit");
     branchName_rawCombIso_dR05_ = Form("%s_%s", branchName_obj_.data(), "isoCI3hit"); 
     branchName_idAgainstElec_ = Form("%s_%s", branchName_obj_.data(), "idAntiErun2");
@@ -157,7 +157,7 @@ void RecoHadTauReader::setBranchAddresses(TTree* tree)
     tree->SetBranchAddress(branchName_rawMVA_dR05_.data(), hadTau_rawMVA_dR05_); 
     hadTau_idCombIso_dR03_ = new Int_t[max_nHadTaus_];
     tree->SetBranchAddress(branchName_idCombIso_dR03_.data(), hadTau_idCombIso_dR03_); 
-    hadTau_rawCombIso_dR03_ = new Float_t[max_nHadTaus_];
+    //hadTau_rawCombIso_dR03_ = new Float_t[max_nHadTaus_]; // KE: unused allocated memory (check the next comment)
     //tree->SetBranchAddress(branchName_rawCombIso_dR03_.data(), hadTau_rawCombIso_dR03_); // CV: branch does not exist in VHbb Ntuples yet
     hadTau_idCombIso_dR05_ = new Int_t[max_nHadTaus_];
     tree->SetBranchAddress(branchName_idCombIso_dR05_.data(), hadTau_idCombIso_dR05_); 
@@ -197,7 +197,7 @@ std::vector<RecoHadTau> RecoHadTauReader::read() const
       gInstance->hadTau_idMVA_dR05_[idxHadTau],
       gInstance->hadTau_rawMVA_dR05_[idxHadTau],	
       gInstance->hadTau_idCombIso_dR03_[idxHadTau],
-      gInstance->hadTau_rawCombIso_dR03_[idxHadTau],
+      0, // gInstance->hadTau_rawCombIso_dR03_[idxHadTau], // KE: still unused branch
       gInstance->hadTau_idCombIso_dR05_[idxHadTau],
       gInstance->hadTau_rawCombIso_dR05_[idxHadTau],	
       gInstance->hadTau_idAgainstElec_[idxHadTau],
