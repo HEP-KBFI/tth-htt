@@ -27,6 +27,7 @@ process.analyze_1l_2tau = cms.PSet(
         
     chargeSelection = cms.string('OS'),
     hadTauSelection = cms.string('Tight'),
+    hadTauGenMatch = cms.string('all'),
 
     hadTauEtaBins_lead = cms.vdouble(-1., 1.2, 1.7, 9.9),
     hadTauEtaBins_sublead = cms.vdouble(-1., 1.2, 1.7, 9.9),
