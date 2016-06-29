@@ -139,14 +139,13 @@ int main(int argc, char* argv[])
   else throw cms::Exception("analyze_1l_2tau") 
     << "Invalid Configuration parameter 'hadTauSelection' = " << hadTauSelection_string << " !!\n";
 
-  enum { kGenElectron, kGenMuon, kGenHadTau, kGenJet, kAll };
+  enum { kGenLepton, kGenHadTau, kGenJet, kAll };
   std::string hadTauGenMatch_string = cfg_analyze.getParameter<std::string>("hadTauGenMatch");
   int hadTauGenMatch = -1;
-  if      ( hadTauGenMatch_string == "electron" ) hadTauGenMatch = kGenElectron;
-  else if ( hadTauGenMatch_string == "muon"     ) hadTauGenMatch = kGenMuon;
-  else if ( hadTauGenMatch_string == "hadTau"   ) hadTauGenMatch = kGenHadTau;
-  else if ( hadTauGenMatch_string == "jet"      ) hadTauGenMatch = kGenJet;
-  else if ( hadTauGenMatch_string == "all"      ) hadTauGenMatch = kAll;  
+  if      ( hadTauGenMatch_string == "lepton" ) hadTauGenMatch = kGenLepton;
+  else if ( hadTauGenMatch_string == "hadTau" ) hadTauGenMatch = kGenHadTau;
+  else if ( hadTauGenMatch_string == "jet"    ) hadTauGenMatch = kGenJet;
+  else if ( hadTauGenMatch_string == "all"    ) hadTauGenMatch = kAll;  
   else throw cms::Exception("analyze_1l_2tau") 
     << "Invalid Configuration parameter 'hadTauGenMatch' = " << hadTauGenMatch_string << " !!\n";
 
@@ -698,23 +697,19 @@ int main(int argc, char* argv[])
     // require presence of exactly two hadronic taus passing tight selection criteria of final event selection
     if ( !(selHadTaus_lead.size() >= 1 && selHadTaus_sublead.size() >= 1) ) continue;
     const RecoHadTau* selHadTau_lead = selHadTaus_lead[0];
-    bool isGenMuonMatched_lead = selHadTau_lead->genLepton_ && std::fabs(selHadTau_lead->genLepton_->pdgId_) == 13;
-    bool isGenElectronMatched_lead = selHadTau_lead->genLepton_ && std::fabs(selHadTau_lead->genLepton_->pdgId_) == 11 && !isGenMuonMatched_lead;
-    bool isGenHadTauMatched_lead = selHadTau_lead->genHadTau_ && !(isGenMuonMatched_lead || isGenElectronMatched_lead);
-    bool isGenJetMatched_lead = !(isGenMuonMatched_lead || isGenElectronMatched_lead || isGenHadTauMatched_lead);
-    if ( hadTauGenMatch == kGenElectron && !isGenElectronMatched_lead ) continue;
-    if ( hadTauGenMatch == kGenMuon     && !isGenMuonMatched_lead     ) continue;
-    if ( hadTauGenMatch == kGenHadTau   && !isGenHadTauMatched_lead   ) continue;
-    if ( hadTauGenMatch == kGenJet      && !isGenJetMatched_lead      ) continue;
+    bool isGenHadTauMatched_lead = selHadTau_lead->genHadTau_;
+    bool isGenLeptonMatched_lead = selHadTau_lead->genLepton_ && !isGenHadTauMatched_lead;
     const RecoHadTau* selHadTau_sublead = selHadTaus_sublead[0];
-    bool isGenMuonMatched_sublead = selHadTau_sublead->genLepton_ && std::fabs(selHadTau_sublead->genLepton_->pdgId_) == 13;
-    bool isGenElectronMatched_sublead = selHadTau_sublead->genLepton_ && std::fabs(selHadTau_sublead->genLepton_->pdgId_) == 11 && !isGenMuonMatched_sublead;
-    bool isGenHadTauMatched_sublead = selHadTau_sublead->genHadTau_ && !(isGenMuonMatched_sublead || isGenElectronMatched_sublead);
-    bool isGenJetMatched_sublead = !(isGenMuonMatched_sublead || isGenElectronMatched_sublead || isGenHadTauMatched_sublead);
-    if ( hadTauGenMatch == kGenElectron && !isGenElectronMatched_sublead ) continue;
-    if ( hadTauGenMatch == kGenMuon     && !isGenMuonMatched_sublead     ) continue;
-    if ( hadTauGenMatch == kGenHadTau   && !isGenHadTauMatched_sublead   ) continue;
-    if ( hadTauGenMatch == kGenJet      && !isGenJetMatched_sublead      ) continue;
+    bool isGenHadTauMatched_sublead = selHadTau_sublead->genHadTau_;
+    bool isGenLeptonMatched_sublead = selHadTau_sublead->genLepton_ && !isGenHadTauMatched_sublead;
+    
+    bool isGen_t = isGenHadTauMatched_lead && isGenHadTauMatched_sublead;
+    bool isGen_l = (isGenLeptonMatched_lead || isGenLeptonMatched_sublead) && !isGen_t;
+    bool isGen_j = !(isGen_t || isGen_l);
+    if ( hadTauGenMatch == kGenLepton && !isGen_l ) continue;
+    if ( hadTauGenMatch == kGenHadTau && !isGen_t ) continue;
+    if ( hadTauGenMatch == kGenJet    && !isGen_j ) continue;
+
     double mTauTauVis = (selHadTau_lead->p4_ + selHadTau_sublead->p4_).mass();
 
     // apply requirement on jets (incl. b-tagged jets) and hadronic taus on level of final event selection
