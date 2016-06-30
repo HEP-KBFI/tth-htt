@@ -41,6 +41,28 @@
 #include <assert.h>
 
 typedef std::vector<std::string> vstring;
+typedef std::vector<double> vdouble;
+
+std::string getParticleEtaLabel(double etaMin_lead, double etaMax_lead, double etaMin_sublead, double etaMax_sublead)
+{
+  std::string etaBin_label = "";
+  if ( etaMin_lead > 0. && etaMax_lead < 5. ) {
+    etaBin_label.append(Form("eta%1.1fto%1.1f", etaMin_lead, etaMax_lead));
+  } else if ( etaMin_lead > 0. ) {
+    etaBin_label.append(Form("etaGt%1.1f", etaMin_lead));
+  } else if ( etaMax_lead < 5. ) {
+    etaBin_label.append(Form("etaLt%1.1f", etaMax_lead));
+  }
+  if ( etaMin_sublead > 0. && etaMax_sublead < 5. ) {
+    etaBin_label.append(Form("eta%1.1fto%1.1f", etaMin_sublead, etaMax_sublead));
+  } else if ( etaMin_lead > 0. ) {
+    etaBin_label.append(Form("etaGt%1.1f", etaMin_sublead));
+  } else if ( etaMax_lead < 5. ) {
+    etaBin_label.append(Form("etaLt%1.1f", etaMax_sublead));
+  }
+  etaBin_label = TString(etaBin_label).ReplaceAll(".", "").Data();
+  return etaBin_label;
+}
 
 double square(double x)
 {
@@ -448,17 +470,17 @@ int main(int argc, char* argv[])
 
   edm::ParameterSet cfg_comp = cfg.getParameter<edm::ParameterSet>("comp_jetToTauFakeRate");
   
-  std::string type = cfg_comp.getParameter<std::string>("type");
-
   std::string looseRegion = cfg_comp.getParameter<std::string>("looseRegion");
   std::string tightRegion = cfg_comp.getParameter<std::string>("tightRegion");
 
   std::string processData = cfg_comp.getParameter<std::string>("processData");
-  std::string processFakes = cfg_comp.getParameter<std::string>("processFakes");
   vstring processesToSubtract = cfg_comp.getParameter<vstring>("processesToSubtract");
+  std::string processFakes = cfg_comp.getParameter<std::string>("processFakes");
   
-  std::string particle1EtaBin = cfg_comp.getParameter<std::string>("particle1EtaBin");
-  std::string particle2EtaBin = cfg_comp.getParameter<std::string>("particle2EtaBin");
+  vdouble etaBins_lead = cfg_comp.getParameter<vdouble>("etaBins_lead");
+  int numEtaBins_lead = etaBins_lead.size() - 1;
+  vdouble etaBins_sublead = cfg_comp.getParameter<vdouble>("etaBins_sublead");
+  int numEtaBins_sublead = etaBins_sublead.size() - 1;
 
   vstring histogramsToFit = cfg_comp.getParameter<vstring>("histogramsToFit");
 
@@ -494,152 +516,169 @@ int main(int argc, char* argv[])
   assert(inputDir_tight);
   std::cout << "inputDir_tight = " << inputDir_tight << ": name = " << inputDir_tight->GetName() << std::endl;
 
-  TDirectory* outputDir = createSubdirectory_recursively(fs, Form("%s/%s%s", type.data(), particle1EtaBin.data(), particle2EtaBin.data()));
-  outputDir->cd();
+  for ( int idxEtaBin_lead = 0; idxEtaBin_lead < numEtaBins_lead; ++idxEtaBin_lead ) {
+    double etaMin_lead = etaBins_lead[idxEtaBin_lead];
+    double etaMax_lead = etaBins_lead[idxEtaBin_lead + 1];
+    for ( int idxEtaBin_sublead = 0; idxEtaBin_sublead < numEtaBins_sublead; ++idxEtaBin_sublead ) {
+      double etaMin_sublead = etaBins_sublead[idxEtaBin_sublead];
+      double etaMax_sublead = etaBins_sublead[idxEtaBin_sublead + 1];
+      std::string etaBin_label = getParticleEtaLabel(etaMin_lead, etaMax_lead, etaMin_sublead, etaMax_sublead);
 
-  std::pair<TH1*, TH1*> histogram_pass_and_fail = getHistogramsPass_and_Fail(
-    inputDir_loose, looseRegion, inputDir_tight, tightRegion, 
-    processData, processesToSubtract, 
-    Form("EventCounter_%s%s", particle1EtaBin.data(), particle2EtaBin.data()));
-  double nPass, nPassErr;
-  compIntegral_and_Error(histogram_pass_and_fail.first, nPass, nPassErr);
-  double nFail, nFailErr;
-  compIntegral_and_Error(histogram_pass_and_fail.second, nFail, nFailErr);
-  double avJetToTauFakeRate, avJetToTauFakeRateErrUp, avJetToTauFakeRateErrDown;
-  bool errorFlag;
-  compFakeRate(nPass, nPassErr, nFail, nFailErr, avJetToTauFakeRate, avJetToTauFakeRateErrUp, avJetToTauFakeRateErrDown, errorFlag);
+      TDirectory* outputDir = createSubdirectory_recursively(fs, Form("jetToTauFakeRate/%s", etaBin_label.data()));
+      outputDir->cd();
 
-  std::string fitFunctionNormName = Form("fitFunctionNorm_%s_div_%s", tightRegion.data(), looseRegion.data());
-  TF1* fitFunctionNorm = new TF1(fitFunctionNormName.data(), Form("%f", avJetToTauFakeRate), xMin, xMax);
-  fitFunctionNorm->Write();
-  std::string fitFunctionNormUpName = Form("fitFunctionNormUp_%s_div_%s", tightRegion.data(), looseRegion.data());
-  TF1* fitFunctionNormUp = new TF1(fitFunctionNormUpName.data(), Form("%f", avJetToTauFakeRate + avJetToTauFakeRateErrUp), xMin, xMax);
-  fitFunctionNormUp->Write();
-  std::string fitFunctionNormDownName = Form("fitFunctionNormDown_%s_div_%s", tightRegion.data(), looseRegion.data());
-  TF1* fitFunctionNormDown = new TF1(fitFunctionNormDownName.data(), Form("%f", TMath::Max(0., avJetToTauFakeRate - avJetToTauFakeRateErrDown)), xMin, xMax);
-  fitFunctionNormDown->Write();
+      std::pair<TH1*, TH1*> histogram_pass_and_fail = getHistogramsPass_and_Fail(
+        inputDir_loose, looseRegion, inputDir_tight, tightRegion, 
+        processData, processesToSubtract, 
+        Form("EventCounter_%s", etaBin_label.data()));
+      double nPass, nPassErr;
+      compIntegral_and_Error(histogram_pass_and_fail.first, nPass, nPassErr);
+      double nFail, nFailErr;
+      compIntegral_and_Error(histogram_pass_and_fail.second, nFail, nFailErr);
+      double avJetToTauFakeRate, avJetToTauFakeRateErrUp, avJetToTauFakeRateErrDown;
+      bool errorFlag;
+      compFakeRate(nPass, nPassErr, nFail, nFailErr, avJetToTauFakeRate, avJetToTauFakeRateErrUp, avJetToTauFakeRateErrDown, errorFlag);
 
-  for ( vstring::const_iterator histogramToFit = histogramsToFit.begin();
-	histogramToFit != histogramsToFit.end(); ++histogramToFit ) {
-    std::cout << "fitting " << (*histogramToFit) << ":" << std::endl;
+      std::string fitFunctionNormName = Form("fitFunctionNorm_%s_div_%s", tightRegion.data(), looseRegion.data());
+      TF1* fitFunctionNorm = new TF1(fitFunctionNormName.data(), Form("%f", avJetToTauFakeRate), xMin, xMax);
+      fitFunctionNorm->Write();
+      std::string fitFunctionNormUpName = Form("fitFunctionNormUp_%s_div_%s", tightRegion.data(), looseRegion.data());
+      TF1* fitFunctionNormUp = new TF1(fitFunctionNormUpName.data(), Form("%f", avJetToTauFakeRate + avJetToTauFakeRateErrUp), xMin, xMax);
+      fitFunctionNormUp->Write();
+      std::string fitFunctionNormDownName = Form("fitFunctionNormDown_%s_div_%s", tightRegion.data(), looseRegion.data());
+      TF1* fitFunctionNormDown = new TF1(fitFunctionNormDownName.data(), Form("%f", TMath::Max(0., avJetToTauFakeRate - avJetToTauFakeRateErrDown)), xMin, xMax);
+      fitFunctionNormDown->Write();
 
-    std::string particleEtaBin = "";
-    if ( histogramToFit->find("tau1") != std::string::npos || histogramToFit->find("bJet1") != std::string::npos ) particleEtaBin.append(particle1EtaBin);
-    if ( histogramToFit->find("tau2") != std::string::npos || histogramToFit->find("bJet2") != std::string::npos ) particleEtaBin.append(particle2EtaBin);
-    std::pair<TH1*, TH1*> histogram_pass_and_fail = getHistogramsPass_and_Fail(
-      inputDir_loose, looseRegion, inputDir_tight, tightRegion, 
-      processData, processesToSubtract, 
-      Form("%s_%s", histogramToFit->data(), particleEtaBin.data()));
-    TH1* histogram_pass = histogram_pass_and_fail.first;
-    TH1* histogram_fail = histogram_pass_and_fail.second;
+      for ( vstring::const_iterator histogramToFit = histogramsToFit.begin();
+	    histogramToFit != histogramsToFit.end(); ++histogramToFit ) {
+        std::cout << "fitting " << (*histogramToFit) << ":" << std::endl;
 
-    assert(histogram_pass->GetNbinsX() == histogram_fail->GetNbinsX());
-    int numBins = histogram_fail->GetNbinsX();
-    std::vector<double> points_x;
-    std::vector<double> points_xErrUp;
-    std::vector<double> points_xErrDown;
-    std::vector<double> points_y;
-    std::vector<double> points_yErrUp;
-    std::vector<double> points_yErrDown;
-    for ( int iBin = 1; iBin <= numBins; ++iBin ) {
-      double nPass = histogram_pass->GetBinContent(iBin);
-      double nPassErr = histogram_pass->GetBinError(iBin);
-      double nFail = histogram_fail->GetBinContent(iBin);
-      double nFailErr = histogram_fail->GetBinError(iBin);     
-      double jetToTauFakeRate, jetToTauFakeRateErrUp, jetToTauFakeRateErrDown;
-      std::cout << "bin #" << iBin << "(x = " << histogram_pass->GetBinCenter(iBin) << ")" << ":";
-      compFakeRate(nPass, nPassErr, nFail, nFailErr, jetToTauFakeRate, jetToTauFakeRateErrUp, jetToTauFakeRateErrDown, errorFlag);
-      if ( errorFlag ) continue;
-      assert(TMath::Abs(histogram_fail->GetBinCenter(iBin) - histogram_pass->GetBinCenter(iBin)) < 1.e-3*TMath::Abs(histogram_fail->GetBinCenter(iBin) + histogram_pass->GetBinCenter(iBin)));
-      TAxis* xAxis = histogram_fail->GetXaxis();
-      double x = xAxis->GetBinCenter(iBin);
-      points_x.push_back(x);
-      double y = jetToTauFakeRate/avJetToTauFakeRate;
-      //double y = jetToTauFakeRate; // CV: only to be used for the purpose of making control plots !!
-      points_y.push_back(y);
-      double xErrUp = xAxis->GetBinUpEdge(iBin) - xAxis->GetBinCenter(iBin);
-      points_xErrUp.push_back(xErrUp);
-      double xErrDown = xAxis->GetBinCenter(iBin) - xAxis->GetBinLowEdge(iBin);
-      points_xErrDown.push_back(xErrDown);
-      double yErrUp = jetToTauFakeRateErrUp/avJetToTauFakeRate;
-      //double yErrUp = jetToTauFakeRateErrUp; // CV: only to be used for the purpose of making control plots !!
-      points_yErrUp.push_back(yErrUp);
-      double yErrDown = jetToTauFakeRateErrDown/avJetToTauFakeRate;
-      //double yErrDown = jetToTauFakeRateErrDown; // CV: only to be used for the purpose of making control plots !!
-      points_yErrDown.push_back(yErrDown);
-    }
-    int numPoints = points_x.size();
-    TGraphAsymmErrors* graph_pass_div_fail = new TGraphAsymmErrors(numPoints);
-    for ( int iPoint = 0; iPoint < numPoints; ++iPoint ) {
-      graph_pass_div_fail->SetPoint(iPoint, points_x[iPoint], points_y[iPoint]);
-      graph_pass_div_fail->SetPointError(iPoint, points_xErrDown[iPoint], points_xErrUp[iPoint], points_yErrDown[iPoint], points_yErrUp[iPoint]);
-    }
-    std::string graphName_pass_div_fail = Form("%s_%s_%s_div_%s", type.data(), histogramToFit->data(), tightRegion.data(), looseRegion.data());
-    graph_pass_div_fail->SetName(graphName_pass_div_fail.data());
-    graph_pass_div_fail->Write();
+	std::string etaBin_label = "";
+	if      ( histogramToFit->find("_lead")    != std::string::npos ) etaBin_label = getParticleEtaLabel(etaMin_lead, etaMax_lead, -1., 9.9);
+	else if ( histogramToFit->find("_sublead") != std::string::npos ) etaBin_label = getParticleEtaLabel(-1., 9.9, etaMin_sublead, etaMax_sublead);
+	else assert(0);
+	std::pair<TH1*, TH1*> histogram_pass_and_fail = getHistogramsPass_and_Fail(
+	  inputDir_loose, looseRegion, inputDir_tight, tightRegion, 
+          processData, processesToSubtract, 
+          Form("%s_%s", histogramToFit->data(), etaBin_label.data()));
+	TH1* histogram_pass = histogram_pass_and_fail.first;
+	TH1* histogram_fail = histogram_pass_and_fail.second;
 
-    std::string fitFunctionShapeName = Form("fitFunctionShape_%s_%s_div_%s", histogramToFit->data(), tightRegion.data(), looseRegion.data());
-    double x0 = histogram_fail->GetMean();
-    std::string fitFunction_formula_wrt_x0 = TString(fitFunction_formula.data()).ReplaceAll("x", Form("(x - %f)", x0)).Data();
-    std::cout << "fitFunction = " << fitFunction_formula_wrt_x0 << std::endl;
-    TF1* fitFunctionShape = new TF1(fitFunctionShapeName.data(), fitFunction_formula_wrt_x0.data(), xMin, xMax);
-    int numFitParameter = fitFunctionShape->GetNpar();
-    for ( int iFitParameter = 0; iFitParameter < numFitParameter; ++iFitParameter ) {
-      std::string fitParameterName = Form("p%i", iFitParameter);
-      if ( initialParameters.find(fitParameterName) != initialParameters.end() ) {
-	double initialParameter_value = initialParameters[fitParameterName];
-	std::cout << "initializing fitParameter #" << iFitParameter << " = " << initialParameter_value << std::endl;
-	fitFunctionShape->SetParameter(iFitParameter, initialParameter_value);
+	assert(histogram_pass->GetNbinsX() == histogram_fail->GetNbinsX());
+	int numBins = histogram_fail->GetNbinsX();
+	std::vector<double> points_x;
+	std::vector<double> points_xErrUp;
+	std::vector<double> points_xErrDown;
+	std::vector<double> points_y;
+	std::vector<double> points_yErrUp;
+	std::vector<double> points_yErrDown;
+	for ( int idxBin = 1; idxBin <= numBins; ++idxBin ) {
+	  double nPass = histogram_pass->GetBinContent(idxBin);
+	  double nPassErr = histogram_pass->GetBinError(idxBin);
+	  double nFail = histogram_fail->GetBinContent(idxBin);
+	  double nFailErr = histogram_fail->GetBinError(idxBin);     
+	  double jetToTauFakeRate, jetToTauFakeRateErrUp, jetToTauFakeRateErrDown;
+	  std::cout << "bin #" << idxBin << "(x = " << histogram_pass->GetBinCenter(idxBin) << ")" << ":";
+	  compFakeRate(nPass, nPassErr, nFail, nFailErr, jetToTauFakeRate, jetToTauFakeRateErrUp, jetToTauFakeRateErrDown, errorFlag);
+	  if ( errorFlag ) continue;
+	  double binCenter_fail = histogram_fail->GetBinCenter(idxBin);
+	  double binCenter_pass = histogram_pass->GetBinCenter(idxBin);
+	  assert(TMath::Abs(binCenter_fail - binCenter_pass) < 1.e-3*TMath::Abs(binCenter_fail + binCenter_pass));
+	  TAxis* xAxis = histogram_fail->GetXaxis();
+	  double x = xAxis->GetBinCenter(idxBin);
+	  points_x.push_back(x);
+	  double y = jetToTauFakeRate/avJetToTauFakeRate;
+	  //double y = jetToTauFakeRate; // CV: only to be used for the purpose of making control plots !!
+	  points_y.push_back(y);
+	  double xErrUp = xAxis->GetBinUpEdge(idxBin) - xAxis->GetBinCenter(idxBin);
+	  points_xErrUp.push_back(xErrUp);
+	  double xErrDown = xAxis->GetBinCenter(idxBin) - xAxis->GetBinLowEdge(idxBin);
+	  points_xErrDown.push_back(xErrDown);
+	  double yErrUp = jetToTauFakeRateErrUp/avJetToTauFakeRate;
+	  //double yErrUp = jetToTauFakeRateErrUp; // CV: only to be used for the purpose of making control plots !!
+	  points_yErrUp.push_back(yErrUp);
+	  double yErrDown = jetToTauFakeRateErrDown/avJetToTauFakeRate;
+	  //double yErrDown = jetToTauFakeRateErrDown; // CV: only to be used for the purpose of making control plots !!
+	  points_yErrDown.push_back(yErrDown);
+	}
+	int numPoints = points_x.size();
+	TGraphAsymmErrors* graph_pass_div_fail = new TGraphAsymmErrors(numPoints);
+	for ( int idxPoint = 0; idxPoint < numPoints; ++idxPoint ) {
+	  graph_pass_div_fail->SetPoint(idxPoint, points_x[idxPoint], points_y[idxPoint]);
+	  graph_pass_div_fail->SetPointError(idxPoint, points_xErrDown[idxPoint], points_xErrUp[idxPoint], points_yErrDown[idxPoint], points_yErrUp[idxPoint]);
+	}
+	std::string graphName_pass_div_fail = Form("jetToTauFakeRate_%s_%s_div_%s", histogramToFit->data(), tightRegion.data(), looseRegion.data());
+	graph_pass_div_fail->SetName(graphName_pass_div_fail.data());
+	graph_pass_div_fail->Write();
+
+	std::string fitFunctionShapeName = Form("fitFunctionShape_%s_%s_div_%s", histogramToFit->data(), tightRegion.data(), looseRegion.data());
+	double x0 = histogram_fail->GetMean();
+	std::string fitFunction_formula_wrt_x0 = TString(fitFunction_formula.data()).ReplaceAll("x", Form("(x - %f)", x0)).Data();
+	std::cout << "fitFunction = " << fitFunction_formula_wrt_x0 << std::endl;
+	TF1* fitFunctionShape = new TF1(fitFunctionShapeName.data(), fitFunction_formula_wrt_x0.data(), xMin, xMax);
+	int numFitParameter = fitFunctionShape->GetNpar();
+	for ( int idxFitParameter = 0; idxFitParameter < numFitParameter; ++idxFitParameter ) {
+	  std::string fitParameterName = Form("p%i", idxFitParameter);
+	  if ( initialParameters.find(fitParameterName) != initialParameters.end() ) {
+	    double initialParameter_value = initialParameters[fitParameterName];
+	    std::cout << "initializing fitParameter #" << idxFitParameter << " = " << initialParameter_value << std::endl;
+	    fitFunctionShape->SetParameter(idxFitParameter, initialParameter_value);
+	  }
+	}
+	
+	TFitResultPtr fitResult = graph_pass_div_fail->Fit(fitFunctionShape, "ERNS");
+	std::vector<fitFunction_and_legendEntry> fitFunctions_sysShifts;
+	if ( fitResult->IsValid() ) {
+	  fitFunctionShape->Write();
+	  TMatrixD cov = fitResult->GetCovarianceMatrix();
+	  std::vector<EigenVector_and_Value> eigenVectors_and_Values = compEigenVectors_and_Values(cov);
+	  size_t dimension = fitFunctionShape->GetNpar();
+	  assert(eigenVectors_and_Values.size() == dimension);
+	  int idxPar = 1;
+	  for ( std::vector<EigenVector_and_Value>::const_iterator eigenVector_and_Value = eigenVectors_and_Values.begin();
+		eigenVector_and_Value != eigenVectors_and_Values.end(); ++eigenVector_and_Value ) {
+	    assert(eigenVector_and_Value->eigenVector_.GetNrows() == (int)dimension);
+	    std::cout << "EigenVector #" << idxPar << ":" << std::endl;
+	    eigenVector_and_Value->eigenVector_.Print();
+	    std::cout << "EigenValue #" << idxPar << " = " << eigenVector_and_Value->eigenValue_ << std::endl;
+	    assert(eigenVector_and_Value->eigenValue_ >= 0.);
+	    std::string fitFunctionShapeParUpName = Form("fitFunctionShapePar%iUp_%s_%s_div_%s", 
+              idxPar, histogramToFit->data(), tightRegion.data(), looseRegion.data());
+	    TF1* fitFunctionShapeParUp = new TF1(fitFunctionShapeParUpName.data(), fitFunction_formula_wrt_x0.data(), xMin, xMax);
+	    for ( size_t idxComponent = 0; idxComponent < dimension; ++idxComponent ) {    
+	      fitFunctionShapeParUp->SetParameter(
+		idxComponent, 
+		fitFunctionShape->GetParameter(idxComponent) + TMath::Sqrt(eigenVector_and_Value->eigenValue_)*eigenVector_and_Value->eigenVector_(idxComponent));
+	    }
+	    fitFunctions_sysShifts.push_back(fitFunction_and_legendEntry(fitFunctionShapeParUp, Form("EigenVec #%i", idxPar)));
+	    fitFunctionShapeParUp->Write();
+	    std::string fitFunctionShapeParDownName = Form("fitFunctionShapePar%iDown_%s_%s_div_%s", 
+              idxPar, histogramToFit->data(), tightRegion.data(), looseRegion.data());
+	    TF1* fitFunctionShapeParDown = new TF1(fitFunctionShapeParDownName.data(), fitFunction_formula_wrt_x0.data(), xMin, xMax);
+	    for ( size_t idxComponent = 0; idxComponent < dimension; ++idxComponent ) {    
+	      fitFunctionShapeParDown->SetParameter(
+		idxComponent, 
+		fitFunctionShape->GetParameter(idxComponent) - TMath::Sqrt(eigenVector_and_Value->eigenValue_)*eigenVector_and_Value->eigenVector_(idxComponent));
+	    }
+	    fitFunctions_sysShifts.push_back(fitFunction_and_legendEntry(fitFunctionShapeParDown, Form("EigenVec #%i", idxPar)));
+	    fitFunctionShapeParDown->Write();
+	    ++idxPar;
+	  }    
+	} else {
+	  std::cerr << "Warning: Fit failed to converge --> setting fitFunction to constant value !!" << std::endl;
+	  delete fitFunctionShape;
+	  fitFunctionShape = new TF1(fitFunctionShapeName.data(), "1.0", xMin, xMax);
+	  fitFunctionShape->Write();
+	}
+	std::string controlPlotFileName = TString(outputFile.file().data()).ReplaceAll(".root", Form("_%s_controlPlot.png", histogramToFit->data())).Data();
+	makeControlPlot(graph_pass_div_fail, 
+          avJetToTauFakeRate, avJetToTauFakeRate + avJetToTauFakeRateErrUp, TMath::Max(0., avJetToTauFakeRate - avJetToTauFakeRateErrDown),
+	  fitFunctionShape, fitFunctions_sysShifts, xMin, xMax, "P_{T} [GeV]", false, 0., 3., controlPlotFileName);    
+	makeControlPlot(graph_pass_div_fail, 
+          avJetToTauFakeRate, avJetToTauFakeRate + avJetToTauFakeRateErrUp, TMath::Max(0., avJetToTauFakeRate - avJetToTauFakeRateErrDown), 
+	  fitFunctionShape, fitFunctions_sysShifts, xMin, xMax, "P_{T} [GeV]", true, 1.e-1, 1.e+1, controlPlotFileName);
       }
     }
-
-    TFitResultPtr fitResult = graph_pass_div_fail->Fit(fitFunctionShape, "ERNS");
-    std::vector<fitFunction_and_legendEntry> fitFunctions_sysShifts;
-    if ( fitResult->IsValid() ) {
-      fitFunctionShape->Write();
-      TMatrixD cov = fitResult->GetCovarianceMatrix();
-      std::vector<EigenVector_and_Value> eigenVectors_and_Values = compEigenVectors_and_Values(cov);
-      size_t dimension = fitFunctionShape->GetNpar();
-      assert(eigenVectors_and_Values.size() == dimension);
-      int idxPar = 1;
-      for ( std::vector<EigenVector_and_Value>::const_iterator eigenVector_and_Value = eigenVectors_and_Values.begin();
-	    eigenVector_and_Value != eigenVectors_and_Values.end(); ++eigenVector_and_Value ) {
-	assert(eigenVector_and_Value->eigenVector_.GetNrows() == (int)dimension);
-	std::cout << "EigenVector #" << idxPar << ":" << std::endl;
-	eigenVector_and_Value->eigenVector_.Print();
-	std::cout << "EigenValue #" << idxPar << " = " << eigenVector_and_Value->eigenValue_ << std::endl;
-	assert(eigenVector_and_Value->eigenValue_ >= 0.);
-	std::string fitFunctionShapeParUpName = Form("fitFunctionShapePar%iUp_%s_%s_div_%s", idxPar, histogramToFit->data(), tightRegion.data(), looseRegion.data());
-	TF1* fitFunctionShapeParUp = new TF1(fitFunctionShapeParUpName.data(), fitFunction_formula_wrt_x0.data(), xMin, xMax);
-	for ( size_t iComponent = 0; iComponent < dimension; ++iComponent ) {    
-	  fitFunctionShapeParUp->SetParameter(
-            iComponent, 
-	    fitFunctionShape->GetParameter(iComponent) + TMath::Sqrt(eigenVector_and_Value->eigenValue_)*eigenVector_and_Value->eigenVector_(iComponent));
-	}
-	fitFunctions_sysShifts.push_back(fitFunction_and_legendEntry(fitFunctionShapeParUp, Form("EigenVec #%i", idxPar)));
-	fitFunctionShapeParUp->Write();
-	std::string fitFunctionShapeParDownName = Form("fitFunctionShapePar%iDown_%s_%s_div_%s", idxPar, histogramToFit->data(), tightRegion.data(), looseRegion.data());
-	TF1* fitFunctionShapeParDown = new TF1(fitFunctionShapeParDownName.data(), fitFunction_formula_wrt_x0.data(), xMin, xMax);
-	for ( size_t iComponent = 0; iComponent < dimension; ++iComponent ) {    
-	  fitFunctionShapeParDown->SetParameter(
-            iComponent, 
-	    fitFunctionShape->GetParameter(iComponent) - TMath::Sqrt(eigenVector_and_Value->eigenValue_)*eigenVector_and_Value->eigenVector_(iComponent));
-	}
-	fitFunctions_sysShifts.push_back(fitFunction_and_legendEntry(fitFunctionShapeParDown, Form("EigenVec #%i", idxPar)));
-	fitFunctionShapeParDown->Write();
-	++idxPar;
-      }    
-    } else {
-      std::cerr << "Warning: Fit failed to converge --> setting fitFunction to constant value !!" << std::endl;
-      delete fitFunctionShape;
-      fitFunctionShape = new TF1(fitFunctionShapeName.data(), "1.0", xMin, xMax);
-      fitFunctionShape->Write();
-    }
-    std::string controlPlotFileName = TString(outputFile.file().data()).ReplaceAll(".root", Form("_%s_controlPlot.png", histogramToFit->data())).Data();
-    makeControlPlot(graph_pass_div_fail, avJetToTauFakeRate, avJetToTauFakeRate + avJetToTauFakeRateErrUp, TMath::Max(0., avJetToTauFakeRate - avJetToTauFakeRateErrDown),
-                    fitFunctionShape, fitFunctions_sysShifts, xMin, xMax, "P_{T} [GeV]", false, 0., 3., controlPlotFileName);    
-    makeControlPlot(graph_pass_div_fail, avJetToTauFakeRate, avJetToTauFakeRate + avJetToTauFakeRateErrUp, TMath::Max(0., avJetToTauFakeRate - avJetToTauFakeRateErrDown), 
-		    fitFunctionShape, fitFunctions_sysShifts, xMin, xMax, "P_{T} [GeV]", true, 1.e-1, 1.e+1, controlPlotFileName);
   }
 
   delete inputFile;
