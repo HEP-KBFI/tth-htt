@@ -496,6 +496,8 @@ int main(int argc, char* argv[])
   int analyzedEntries = 0;
   int selectedEntries = 0;
   double selectedEntries_weighted = 0.;
+  std::map<std::string, double> cutFlowTable;
+  std::map<std::string, double> cutFlowTable_weighted;
   for ( int idxEntry = 0; idxEntry < numEntries && (maxEvents == -1 || idxEntry < maxEvents); ++idxEntry ) {
     if ( idxEntry > 0 && (idxEntry % reportEvery) == 0 ) {
       std::cout << "processing Entry " << idxEntry << " (" << selectedEntries << " Entries selected)" << std::endl;
@@ -825,6 +827,15 @@ int main(int argc, char* argv[])
   std::cout << "num. Entries = " << numEntries << std::endl;
   std::cout << " analyzed = " << analyzedEntries << std::endl;
   std::cout << " selected = " << selectedEntries << " (weighted = " << selectedEntries_weighted << ")" << std::endl;
+  std::cout << std::endl;
+
+  std::cout << "cut-flow table" << std::endl;
+  for ( std::map<std::string, double>::const_iterator row = cutFlowTable.begin();
+	row != cutFlowTable.end(); ++row ) {
+    assert(cutFlowTable_weighted.find(row->first) != cutFlowTable_weighted.end()); 
+    std::cout << " " << row->first << " = " << row->second << " (weighted = " << cutFlowTable_weighted[row->first] << ")" << std::endl;
+  }
+  std::cout << std::endl;
 
   delete run_lumi_eventSelector;
 

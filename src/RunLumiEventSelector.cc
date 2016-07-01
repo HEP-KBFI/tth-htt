@@ -91,11 +91,11 @@ void RunLumiEventSelector::readInputFile()
 {
 //--- read run + luminosity section + event number pairs from ASCII file
 
-  std::string regexpParser_threeColumnLine_string = std::string("[[:digit:]]+");
-  regexpParser_threeColumnLine_string.append(separator_).append("[[:digit:]]+").append(separator_).append("[[:digit:]]+\\s*");
+  std::string regexpParser_threeColumnLine_string = std::string("\\s*[[:digit:]]+\\s*");
+  regexpParser_threeColumnLine_string.append(separator_).append("\\s*[[:digit:]]+\\s*").append(separator_).append("\\s*[[:digit:]]+\\s*");
   TPRegexp regexpParser_threeColumnLine(regexpParser_threeColumnLine_string.data());
-  std::string regexpParser_threeColumnNumber_string = std::string("([[:digit:]]+)");
-  regexpParser_threeColumnNumber_string.append(separator_).append("([[:digit:]]+)").append(separator_).append("([[:digit:]]+)\\s*");
+  std::string regexpParser_threeColumnNumber_string = std::string("\\s*([[:digit:]]+)\\s*");
+  regexpParser_threeColumnNumber_string.append(separator_).append("\\s*([[:digit:]]+)\\s*").append(separator_).append("\\s*([[:digit:]]+)\\s*");
   TPRegexp regexpParser_threeColumnNumber(regexpParser_threeColumnNumber_string.data());
 
   std::ifstream inputFile(inputFileName_.data());
