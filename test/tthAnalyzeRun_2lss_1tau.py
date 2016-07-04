@@ -8,7 +8,7 @@ DKEY_HIST = "histograms" # dir for histograms = output of the jobs
 DKEY_LOGS = "logs"       # dir for log files (stdout/stderr of jobs)
 DKEY_DCRD = "datacards"  # dir for the datacard
 
-version = "2016Jun30"
+version = "2016Jul04"
 
 """
 TODO:
@@ -114,18 +114,18 @@ class analyzeConfig:
           { dkey: os.path.join(self.output_dir, dkey, self.subdir[lepton_selection][charge_selection]) for dkey in dir_types }
     print "self.dirs = ", self.dirs
 
-    self.makefile_fullpath = os.path.join(self.output_dir, "Makefile")
-    self.sbatch_fullpath = os.path.join(self.output_dir, "sbatch.sh")
+    self.makefile_fullpath = os.path.join(self.output_dir, "Makefile_2lss_1tau")
+    self.sbatch_fullpath = os.path.join(self.output_dir, "sbatch_2lss_1tau.sh")
     self.histogram_files_jobs = {}
     self.histogram_files_jobs_exist = {}
-    self.histogram_file_hadd_stage1 = os.path.join(self.output_dir, DKEY_HIST, "histograms_harvested.root")
-    self.histogram_file_addFakes = os.path.join(self.output_dir, DKEY_HIST, "addBackgroundLeptonFakes.root")
-    self.addFakes_cfg_fullpath = os.path.join(self.output_dir, DKEY_CFGS, "addBackgroundLeptonFakes_cfg.py")
-    self.histogram_file_addFlips = os.path.join(self.output_dir, DKEY_HIST, "addBackgroundLeptonFlips.root")
-    self.addFlips_cfg_fullpath = os.path.join(self.output_dir, DKEY_CFGS, "addBackgroundLeptonFlips_cfg.py")
-    self.histogram_file_hadd_stage2 = os.path.join(self.output_dir, DKEY_HIST, "allHistograms.root")
-    self.datacard_outputfile = os.path.join(self.output_dir, DKEY_DCRD, "prepareDatacards.root")
-    self.prep_dcard_cfg_fullpath = os.path.join(self.output_dir, DKEY_CFGS, "prepareDatacards_cfg.py")
+    self.histogram_file_hadd_stage1 = os.path.join(self.output_dir, DKEY_HIST, "histograms_harvested_2lss_1tau.root")
+    self.histogram_file_addFakes = os.path.join(self.output_dir, DKEY_HIST, "addBackgroundLeptonFakes_2lss_1tau.root")
+    self.addFakes_cfg_fullpath = os.path.join(self.output_dir, DKEY_CFGS, "addBackgroundLeptonFakes_2lss_1tau_cfg.py")
+    self.histogram_file_addFlips = os.path.join(self.output_dir, DKEY_HIST, "addBackgroundLeptonFlips_2lss_1tau.root")
+    self.addFlips_cfg_fullpath = os.path.join(self.output_dir, DKEY_CFGS, "addBackgroundLeptonFlips_2lss_1tau_cfg.py")
+    self.histogram_file_hadd_stage2 = os.path.join(self.output_dir, DKEY_HIST, "allHistograms_2lss_1tau.root")
+    self.datacard_outputfile = os.path.join(self.output_dir, DKEY_DCRD, "prepareDatacards_2lss_1tau.root")
+    self.prep_dcard_cfg_fullpath = os.path.join(self.output_dir, DKEY_CFGS, "prepareDatacards_2lss_1tau_cfg.py")
 
 def query_yes_no(question, default = "yes"):
   """Prompts user yes/no
@@ -159,7 +159,7 @@ def add_chmodX(fullpath):
   st = os.stat(fullpath)
   os.chmod(fullpath, st.st_mode | stat.S_IEXEC)
 
-def create_config(root_filenames, output_file, category_name, triggers, lepton_selection, charge_selection, is_mc, central_or_shift, lumi_scale, cfg, idx):
+def create_config(root_filenames, output_file, category_name, triggers, lepton_selection, charge_selection, is_mc, central_or_shift, lumi_scale, selEventsFileName_output, cfg, idx):
   """Fill python configuration file for the job exectuable (analysis code)
 
   Args:
@@ -220,7 +220,7 @@ process.{{ execName }} = cms.PSet(
     lumiScale = cms.double({{ lumiScale }}),
 
     selEventsFileName_input = cms.string(''),
-    selEventsFileName_output = cms.string('')
+    selEventsFileName_output = cms.string('{{ selEventsFileName_output }}')
 )
 
 """
@@ -246,6 +246,7 @@ process.{{ execName }} = cms.PSet(
     isMC = is_mc,      
     central_or_shift = central_or_shift,
     lumiScale = lumi_scale,
+    selEventsFileName_output = selEventsFileName_output,  
     idx = idx)
 
 def create_job(working_dir, exec_name, py_cfg):
@@ -675,10 +676,10 @@ def create_setup(cfg):
       for charge_selection in cfg.charge_selections:   
         initDict(cfg_outputdir, [ lepton_selection, charge_selection ])
         cfg_outputdir[lepton_selection][charge_selection] = os.path.join(cfg.dirs[lepton_selection][charge_selection][DKEY_CFGS], process_name)
+        create_if_not_exists(cfg_outputdir[lepton_selection][charge_selection])
         initDict(histogram_outputdir, [ lepton_selection, charge_selection ])
         histogram_outputdir[lepton_selection][charge_selection] = os.path.join(cfg.dirs[lepton_selection][charge_selection][DKEY_HIST], category_name)
-        for dir in [ cfg_outputdir[lepton_selection][charge_selection], histogram_outputdir[lepton_selection][charge_selection] ]: 
-  	  create_if_not_exists(dir)
+        create_if_not_exists(histogram_outputdir[lepton_selection][charge_selection])
     logging.info("Created config and job files for sample %s" % process_name)
 
     nof_files = sample_info["nof_files"]
@@ -713,9 +714,14 @@ def create_setup(cfg):
             cfg_outputfile_fullpath = os.path.join(histogram_outputdir[lepton_selection][charge_selection], cfg_outputfile)
             initDict(cfg.histogram_files_jobs, [ sample_name, lepton_selection, charge_selection, central_or_shift, idx ])
             cfg.histogram_files_jobs[sample_name][lepton_selection][charge_selection][central_or_shift][idx] = cfg_outputfile_fullpath
-	   
+
+            selEventsFileName_output = None
+            if central_or_shift == "central" and lepton_selection == "Tight" and charge_selection == "SS" and not is_mc:
+              selEventsFileName_output = "selEvents_%s_%s_%s_%i.txt" % (process_name, lepton_selection, charge_selection, idx) 
+	    else:
+              selEventsFileName_output = ""
             cfg_contents = create_config(cfg_filelist, cfg_outputfile_fullpath, category_name, triggers, lepton_selection, charge_selection, 
-	      is_mc, central_or_shift, lumi_scale, cfg, idx)
+	      is_mc, central_or_shift, lumi_scale, selEventsFileName_output, cfg, idx)
             cfg_file_fullpath = os.path.join(cfg_outputdir[lepton_selection][charge_selection], cfg_basename + ".py")
             with codecs.open(cfg_file_fullpath, "w", "utf-8") as f: f.write(cfg_contents)
 
@@ -800,8 +806,8 @@ def run_setup(cfg):
   Args:
     cfg: Configuration object containig relevant full paths (see `analyzeConfig`)
   """
-  stdout_file = codecs.open(os.path.join(cfg.output_dir, "stdout.log"), 'w', 'utf-8')
-  stderr_file = codecs.open(os.path.join(cfg.output_dir, "stderr.log"), 'w', 'utf-8')
+  stdout_file = codecs.open(os.path.join(cfg.output_dir, "stdout_2lss_1tau.log"), 'w', 'utf-8')
+  stderr_file = codecs.open(os.path.join(cfg.output_dir, "stderr_2lss_1tau.log"), 'w', 'utf-8')
 
   def run_cmd(command, do_not_log = False):
     """Runs given commands and logs stdout and stderr to files
@@ -830,31 +836,31 @@ def run_setup(cfg):
         logging.info("Waiting for sbatch to finish (%d still left) ..." % nof_jobs_left)
   
   logging.info("Running 'hadd' on histograms produced by 'analyze_2lss_1tau' jobs ...")
-  subd_list_stage1 = []  
+  inputFiles_stage1 = []  
   for sample_name, sample_info in tthAnalyzeSamples_2lss_1tau.samples.items():
     if not sample_name in cfg.histogram_files_jobs.keys():
       continue
-    subd_list_sample = []
+    inputFiles_sample = []
     for lepton_selection in cfg.histogram_files_jobs[sample_name].keys():
       for charge_selection in cfg.histogram_files_jobs[sample_name][lepton_selection].keys():
 	for central_or_shift in cfg.histogram_files_jobs[sample_name][lepton_selection][charge_selection].keys():
           for idx in cfg.histogram_files_jobs[sample_name][lepton_selection][charge_selection][central_or_shift].keys():
-            subd = cfg.histogram_files_jobs[sample_name][lepton_selection][charge_selection][central_or_shift][idx]
-            subd_list_sample.append(subd)
+            inputFile = cfg.histogram_files_jobs[sample_name][lepton_selection][charge_selection][central_or_shift][idx]
+            inputFiles_sample.append(inputFile)
     process_name = sample_info["process_name_specific"]
     histogram_file_hadd_sample = cfg.histogram_file_hadd_stage1.replace(".root", "_%s.root" % process_name)
     if os.path.isfile(histogram_file_hadd_sample):
       print "hadd file %s already exists" % histogram_file_hadd_sample
     else:
       run_cmd(" ".join(["rm", histogram_file_hadd_sample]))
-      command_hadd_sample = " ".join(["hadd", histogram_file_hadd_sample] + subd_list_sample)
+      command_hadd_sample = " ".join(["hadd", histogram_file_hadd_sample] + inputFiles_sample)
       run_cmd(command_hadd_sample)
-      subd_list_stage1.append(histogram_file_hadd_sample)
+      inputFiles_stage1.append(histogram_file_hadd_sample)
   if os.path.isfile(cfg.histogram_file_hadd_stage1):
     print "hadd file %s already exists" % cfg.histogram_file_hadd_stage1
   else:
     run_cmd(" ".join(["rm", cfg.histogram_file_hadd_stage1]))
-    command_hadd_stage1 = " ".join(["hadd", cfg.histogram_file_hadd_stage1] + subd_list_stage1)
+    command_hadd_stage1 = " ".join(["hadd", cfg.histogram_file_hadd_stage1] + inputFiles_stage1)
     run_cmd(command_hadd_stage1)
 
   logging.info("Running 'addBackgroundLeptonFakes' ...")
