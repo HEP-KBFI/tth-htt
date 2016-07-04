@@ -124,3 +124,14 @@
   <use   name="roottmva"/>
   <use   name="boost"/>
 </bin>
+<bin file="analyze_charge_flip.cc" name="analyze_charge_flip">
+  <use   name="FWCore/FWLite"/>
+  <use   name="FWCore/ParameterSet"/>
+  <use   name="FWCore/PythonParameterSet"/>
+  <use   name="FWCore/Utilities"/>
+  <use   name="DataFormats/FWLite"/>
+  <use   name="DataFormats/Math"/>
+  <use   name="PhysicsTools/FWLite"/>
+  <use   name="tthAnalysis/HiggsToTauTau"/>
+  <Flags CXXFLAGS="-g"/>
+</bin>
