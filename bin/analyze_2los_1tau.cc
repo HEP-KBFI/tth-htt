@@ -47,6 +47,9 @@
 #include "tthAnalysis/HiggsToTauTau/interface/hltPath.h" // hltPath, create_hltPaths, hltPaths_setBranchAddresses, hltPaths_isTriggered, hltPaths_delete
 #include "tthAnalysis/HiggsToTauTau/interface/data_to_MC_corrections.h"
 
+#include <boost/range/algorithm/copy.hpp> // boost::copy()
+#include <boost/range/adaptor/map.hpp> // boost::adaptors::map_keys
+
 #include <iostream> // std::cerr, std::fixed
 #include <iomanip> // std::setprecision(), std::setw()
 #include <string> // std::string
@@ -55,6 +58,8 @@
 #include <algorithm> // std::sort
 #include <fstream> // std::ofstream
 #include <assert.h> // assert
+
+#define EPS 1E-2
 
 typedef math::PtEtaPhiMLorentzVector LV;
 typedef std::vector<std::string> vstring;
@@ -106,6 +111,7 @@ int main(int argc, char* argv[])
   std::string treeName = cfg_analyze.getParameter<std::string>("treeName");
 
   std::string process_string = cfg_analyze.getParameter<std::string>("process");
+  bool isSignal = ( process_string == "signal" ) ? true : false;
 
   vstring triggerNames_1e = cfg_analyze.getParameter<vstring>("triggers_1e");
   std::vector<hltPath*> triggers_1e = create_hltPaths(triggerNames_1e);
@@ -209,6 +215,10 @@ int main(int argc, char* argv[])
   inputTree->SetBranchAddress(LUMI_KEY, &lumi);
   EVT_TYPE event;
   inputTree->SetBranchAddress(EVT_KEY, &event);
+  GENHIGGSDECAYMODE_TYPE genHiggsDecayMode;
+  if ( isSignal ) {
+    inputTree->SetBranchAddress(GENHIGGSDECAYMODE_KEY, &genHiggsDecayMode);
+  }
 
   hltPaths_setBranchAddresses(inputTree, triggers_1e);
   hltPaths_setBranchAddresses(inputTree, triggers_2e);
@@ -412,6 +422,24 @@ int main(int argc, char* argv[])
   EvtHistManager_2los_1tau selEvtHistManager(makeHistManager_cfg(process_string, 
     Form("2los_1tau_%s/sel/evt", leptonSelection_string.data()), central_or_shift));
   selEvtHistManager.bookHistograms(fs);
+  std::map<std::string, EvtHistManager_2los_1tau*> selEvtHistManager_decayMode; // key = decay mode
+  const std::map<std::string, GENHIGGSDECAYMODE_TYPE> decayMode_idString = {
+    { "ttH_hww", static_cast<GENHIGGSDECAYMODE_TYPE>(24) },
+    { "ttH_hzz", static_cast<GENHIGGSDECAYMODE_TYPE>(23) },
+    { "ttH_htt", static_cast<GENHIGGSDECAYMODE_TYPE>(15) }
+  };
+  vstring decayModes_evt;
+  decayModes_evt.reserve(decayMode_idString.size());
+  boost::copy(decayMode_idString | boost::adaptors::map_keys, std::back_inserter(decayModes_evt));
+  if ( isSignal ) {
+    for ( vstring::const_iterator decayMode = decayModes_evt.begin();
+          decayMode != decayModes_evt.end(); ++decayMode) {
+      EvtHistManager_2los_1tau* selEvtHistManager_ptr = new EvtHistManager_2los_1tau(makeHistManager_cfg(decayMode->data(),
+        Form("2los_1tau_%s/sel/evt", leptonSelection_string.data()), central_or_shift));
+      selEvtHistManager_ptr->bookHistograms(fs);
+      selEvtHistManager_decayMode[*decayMode] = selEvtHistManager_ptr;
+    }
+  }
   vstring categories_evt = { 
     "2eos_1tau_bloose", "2eos_1tau_btight", 
     "1e1muos_1tau_bloose", "1e1muos_1tau_btight", 
@@ -700,6 +728,16 @@ int main(int argc, char* argv[])
     selEvtHistManager.fillHistograms(selElectrons.size(), selMuons.size(), selHadTaus.size(), 
       selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
       mvaOutput_2los_ttV, mvaOutput_2los_ttbar, mvaDiscr_2los, evtWeight);
+    if ( isSignal ) {
+      for ( const auto & kv: decayMode_idString ) {
+        if ( std::fabs(genHiggsDecayMode - kv.second) < EPS ) {
+          selEvtHistManager_decayMode[kv.first]->fillHistograms(selElectrons.size(), selMuons.size(), selHadTaus.size(), 
+            selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
+	    mvaOutput_2los_ttV, mvaOutput_2los_ttbar, mvaDiscr_2los, evtWeight);
+          break;
+        }
+      }
+    }
 
     int category = -1;
     if      ( selElectrons.size() == 2 &&                         selBJets_medium.size() >= 1 ) category = k2eos_btight;
