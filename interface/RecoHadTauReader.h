@@ -17,6 +17,9 @@ class RecoHadTauReader
   RecoHadTauReader(const std::string& branchName_num, const std::string& branchName_obj); 
   ~RecoHadTauReader();
 
+  enum { kHadTauPt_central, kHadTauPt_shiftUp, kHadTauPt_shiftDown };
+  void setHadTauPt_central_or_shift(int hadTauPt_option) { hadTauPt_option_ = hadTauPt_option; }
+
   /**
    * @brief Call tree->SetBranchAddress for all RecoHadTau branches
    */
@@ -58,6 +61,8 @@ class RecoHadTauReader
   std::string branchName_idAgainstElec_;
   std::string branchName_idAgainstMu_;
   
+  int hadTauPt_option_;
+
   Int_t nHadTaus_;
   Float_t* hadTau_pt_;
   Float_t* hadTau_eta_;

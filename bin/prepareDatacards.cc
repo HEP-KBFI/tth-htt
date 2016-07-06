@@ -96,6 +96,25 @@ namespace
     std::string input_;
     std::string output_;
   };
+
+  bool compMatch(const std::string& s, TPRegexp* pattern)
+  {
+    bool isMatched = false;
+    if ( pattern->Match(s.data()) ) {
+      TObjArray* matches = pattern->MatchS(s.data());
+      int numMatches = matches->GetEntries();
+      for ( int idxMatch = 0; idxMatch < numMatches; ++idxMatch ) {
+	TObjString* s_matched = dynamic_cast<TObjString*>(matches->At(idxMatch));
+	assert(s_matched); 
+	if ( std::string(s_matched->GetString().Data()).size() == s.size() ) {
+	  isMatched = true;
+	  break;
+	}
+      }
+      delete matches;
+    }
+    return isMatched;
+  }
 }
 
 int main(int argc, char* argv[]) 
@@ -180,15 +199,28 @@ int main(int argc, char* argv[])
 	TObject* object = key->ReadObj();
 	TDirectory* subdir = dynamic_cast<TDirectory*>(object);
 	if ( !subdir ) continue;
+	std::cout << "subdir = " << subdir->GetName() << std::endl;
 	bool isToCopy = false;
 	for ( std::vector<TPRegexp*>::iterator processToCopy = processesToCopy.begin();
 	      processToCopy != processesToCopy.end(); ++processToCopy ) {
-	  if ( (*processToCopy)->Match(subdir->GetName()) ) isToCopy = true;
+	  bool isMatched = compMatch(subdir->GetName(), *processToCopy);
+	  if ( isMatched ) {
+	    std::cout << " matches processToCopy = " << (*processToCopy)->GetPattern() << std::endl;
+	    isToCopy = true;
+	  } else {
+	    std::cout << " does not match processToCopy = " << (*processToCopy)->GetPattern() << std::endl;
+	  }
 	}
 	bool isSignal = false;
 	for ( std::vector<TPRegexp*>::iterator signal = signals.begin();
 	      signal != signals.end(); ++signal ) {
-	  if ( (*signal)->Match(subdir->GetName()) ) isSignal = true;
+	  bool isMatched = compMatch(subdir->GetName(), *signal);
+	  if ( isMatched ) {
+	    std::cout << " matches signal = " << (*signal)->GetPattern() << std::endl;
+	    isSignal = true;
+	  } else {
+	    std::cout << " does not match signal = " << (*signal)->GetPattern() << std::endl;
+	  }
 	}
 	if ( isToCopy || isSignal ) {
 	  for ( vstring::const_iterator central_or_shift = central_or_shifts.begin();

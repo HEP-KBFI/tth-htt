@@ -8,7 +8,7 @@ DKEY_HIST = "histograms" # dir for histograms = output of the jobs
 DKEY_LOGS = "logs"       # dir for log files (stdout/stderr of jobs)
 DKEY_DCRD = "datacards"  # dir for the datacard
 
-version = "2016Jun29"
+version = "2016Jul04"
 
 """
 TODO:
@@ -25,6 +25,15 @@ def initDict(dictionary, keys):
         if key not in dictionary_at_keylevel.keys():
             dictionary_at_keylevel[key] = {}
         dictionary_at_keylevel = dictionary_at_keylevel[key]
+
+def get_hadTau_selection_and_frWeight(hadTau_selection, hadTau_frWeight):
+    hadTau_selection_and_frWeight = hadTau_selection
+    if hadTau_selection == "Fakeable":
+      if hadTau_frWeight == "enabled":
+        hadTau_selection_and_frWeight += "_wFakeRateWeights"
+      elif hadTau_frWeight == "disabled":
+        hadTau_selection_and_frWeight += "_woFakeRateWeights"
+    return hadTau_selection_and_frWeight
 
 class analyzeConfig:
   """Configuration metadata needed to run analysis in a single go.
@@ -92,43 +101,39 @@ class analyzeConfig:
     else:                                       self.is_makefile = True
 
     self.output_category = self.exec_name.replace("analyze_", "")
-    self.subdir = {} 
+    self.subdir = {}
     for hadTau_selection in self.hadTau_selections:
       for hadTau_frWeight in [ "enabled", "disabled" ]:
-        hadTau_selection_and_frWeight = hadTau_selection
-        if hadTau_selection == "Fakeable":
-          if hadTau_frWeight == "enabled":
-            hadTau_selection_and_frWeight += "_woFakeRateWeights"
-          elif hadTau_frWeight == "disabled":
-            hadTau_selection_and_frWeight += "_woFakeRateWeights"
-        else:
-          if hadTau_frWeight != "disabled":
-            continue     
+        hadTau_selection_and_frWeight = get_hadTau_selection_and_frWeight(hadTau_selection, hadTau_frWeight)
+        if hadTau_frWeight != "enabled" and hadTau_selection != "Fakeable":
+          continue
         for charge_selection in self.charge_selections:
           initDict(self.subdir, [ hadTau_selection_and_frWeight, charge_selection ])
     	  self.subdir[hadTau_selection_and_frWeight][charge_selection] = \
             "_".join([self.output_category, hadTau_selection_and_frWeight, charge_selection])
     self.dirs = {} 
-    for hadTau_selection in self.subdir.keys():
-        for charge_selection in self.subdir[hadTau_selection].keys():
-          dir_types = [ DKEY_JOBS, DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_DCRD ]
-          initDict(self.dirs, [ hadTau_selection, charge_selection ])
-          self.dirs[hadTau_selection][charge_selection] = \
-            { dkey: os.path.join(self.output_dir, dkey, self.subdir[hadTau_selection][charge_selection]) for dkey in dir_types }
+    for hadTau_selection_and_frWeight in self.subdir.keys():        
+      for charge_selection in self.subdir[hadTau_selection_and_frWeight].keys():
+        dir_types = [ DKEY_JOBS, DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_DCRD ]
+        initDict(self.dirs, [ hadTau_selection_and_frWeight, charge_selection ])
+        self.dirs[hadTau_selection_and_frWeight][charge_selection] = \
+          { dkey: os.path.join(self.output_dir, dkey, self.subdir[hadTau_selection_and_frWeight][charge_selection]) for dkey in dir_types }        
     print "self.dirs = ", self.dirs
 
-    self.makefile_fullpath_woFakeRateWeight = os.path.join(self.output_dir, "Makefile_woFakeRateWeight")
-    self.sbatch_fullpath_woFakeRateWeight = os.path.join(self.output_dir, "sbatch_woFakeRateWeight.sh")
-    self.makefile_fullpath_wFakeRateWeight = os.path.join(self.output_dir, "Makefile_wFakeRateWeight")
-    self.sbatch_fullpath_wFakeRateWeight = os.path.join(self.output_dir, "sbatch_wFakeRateWeight.sh")
+    self.makefile_fullpath_woFakeRateWeight = os.path.join(self.output_dir, "Makefile_1l_2tau_woFakeRateWeight")
+    self.sbatch_fullpath_woFakeRateWeight = os.path.join(self.output_dir, "sbatch_1l_2tau_woFakeRateWeight.sh")
+    self.makefile_fullpath_wFakeRateWeight = os.path.join(self.output_dir, "Makefile_1l_2tau_wFakeRateWeight")
+    self.sbatch_fullpath_wFakeRateWeight = os.path.join(self.output_dir, "sbatch_1l_2tau_wFakeRateWeight.sh")
+    self.histogram_files_jobs_woFakeRateWeight = {}
+    self.histogram_files_jobs_wFakeRateWeight = {}
     self.histogram_files_jobs = {}
     self.histogram_files_jobs_exist = {}
-    self.histogram_file_hadd_stage1 = os.path.join(self.output_dir, DKEY_HIST, "histograms_harvested.root")
-    self.jetToTauFakeRate_outputfile = os.path.join(self.output_dir, DKEY_DCRD, "comp_jetToTauFakeRate.root")
-    self.comp_jetToTauFakeRate_cfg_fullpath = os.path.join(self.output_dir, DKEY_CFGS, "comp_jetToTauFakeRate_cfg.py")
-    self.histogram_file_hadd_stage2 = os.path.join(self.output_dir, DKEY_HIST, "allHistograms.root")    
-    self.datacard_outputfile = os.path.join(self.output_dir, DKEY_DCRD, "prepareDatacards.root")
-    self.prep_dcard_cfg_fullpath = os.path.join(self.output_dir, DKEY_CFGS, "prepareDatacards_cfg.py")
+    self.histogram_file_hadd_stage1 = os.path.join(self.output_dir, DKEY_HIST, "histograms_harvested_stage1_1l_2tau.root")
+    self.jetToTauFakeRate_outputfile = os.path.join(self.output_dir, DKEY_DCRD, "comp_jetToTauFakeRate_1l_2tau.root")
+    self.comp_jetToTauFakeRate_cfg_fullpath = os.path.join(self.output_dir, DKEY_CFGS, "comp_jetToTauFakeRate_1l_2tau_cfg.py")
+    self.histogram_file_hadd_stage2 = os.path.join(self.output_dir, DKEY_HIST, "histograms_harvested_stage2_1l_2tau.root")    
+    self.datacard_outputfile = os.path.join(self.output_dir, DKEY_DCRD, "prepareDatacards_1l_2tau.root")
+    self.prep_dcard_cfg_fullpath = os.path.join(self.output_dir, DKEY_CFGS, "prepareDatacards_1l_2tau_cfg.py")
 
 def query_yes_no(question, default = "yes"):
   """Prompts user yes/no
@@ -423,7 +428,7 @@ process.prepareDatacards = cms.PSet(
         "TT",
         "TTW",
         "TTZ",
-        "WZ",
+        "EWK",
         "Rares"
     ),
     sf_signal = cms.double(1.),
@@ -461,7 +466,9 @@ process.prepareDatacards = cms.PSet(
         "CMS_ttHl_btag_cErr2Up",
         "CMS_ttHl_btag_cErr2Down",
         "CMS_ttHl_JESUp",
-        "CMS_ttHl_JESDown"
+        "CMS_ttHl_JESDown",
+        "CMS_ttHl_tauESUp",
+        "CMS_ttHl_tauESDown"
     )
 )
 """
@@ -529,10 +536,6 @@ def create_setup(cfg):
   Args:
     cfg: Configuration object containig relevant full paths (see `analyzeConfig`)
   """
-  for hadTau_selection in cfg.dirs.keys():
-    for charge_selection in cfg.dirs[hadTau_selection].keys():
-      for sample_name, dir in cfg.dirs[hadTau_selection][charge_selection].items(): 
-        create_if_not_exists(dir)
 
   cfg_basenames = {}   
   for sample_name, sample_info in tthAnalyzeSamples_1l_2tau.samples.items():
@@ -545,15 +548,23 @@ def create_setup(cfg):
     triggers = sample_info["triggers"]
 
     cfg_outputdir = {}
+    job_outputdir = {}
+    log_outputdir = {}
     histogram_outputdir = {}
-    for hadTau_selection in cfg.dirs.keys():
-      for charge_selection in cfg.dirs[hadTau_selection].keys():
-        initDict(cfg_outputdir, [ hadTau_selection, charge_selection ])
-        cfg_outputdir[hadTau_selection][charge_selection] = os.path.join(cfg.dirs[hadTau_selection][charge_selection][DKEY_CFGS], process_name)
-        initDict(histogram_outputdir, [ hadTau_selection, charge_selection ])
-        histogram_outputdir[hadTau_selection][charge_selection] = os.path.join(cfg.dirs[hadTau_selection][charge_selection][DKEY_HIST], category_name)
-        for dir in [ cfg_outputdir[hadTau_selection][charge_selection], histogram_outputdir[hadTau_selection][charge_selection] ]: 
-  	  create_if_not_exists(dir)
+    for hadTau_selection_and_frWeight in cfg.dirs.keys():        
+      for charge_selection in cfg.dirs[hadTau_selection_and_frWeight].keys():
+        initDict(cfg_outputdir, [ hadTau_selection_and_frWeight, charge_selection ])
+        cfg_outputdir[hadTau_selection_and_frWeight][charge_selection] = os.path.join(cfg.dirs[hadTau_selection_and_frWeight][charge_selection][DKEY_CFGS], process_name)
+        create_if_not_exists(cfg_outputdir[hadTau_selection_and_frWeight][charge_selection])
+        initDict(job_outputdir, [ hadTau_selection_and_frWeight, charge_selection ])
+        job_outputdir[hadTau_selection_and_frWeight][charge_selection] = os.path.join(cfg.dirs[hadTau_selection_and_frWeight][charge_selection][DKEY_JOBS], process_name)
+        create_if_not_exists(job_outputdir[hadTau_selection_and_frWeight][charge_selection])
+        initDict(log_outputdir, [ hadTau_selection_and_frWeight, charge_selection ])
+        log_outputdir[hadTau_selection_and_frWeight][charge_selection] = os.path.join(cfg.dirs[hadTau_selection_and_frWeight][charge_selection][DKEY_LOGS], process_name)
+        create_if_not_exists(log_outputdir[hadTau_selection_and_frWeight][charge_selection])
+        initDict(histogram_outputdir, [ hadTau_selection_and_frWeight, charge_selection ])
+        histogram_outputdir[hadTau_selection_and_frWeight][charge_selection] = os.path.join(cfg.dirs[hadTau_selection_and_frWeight][charge_selection][DKEY_HIST], category_name)
+        create_if_not_exists(histogram_outputdir[hadTau_selection_and_frWeight][charge_selection])
     logging.info("Created config and job files for sample %s" % process_name)
 
     nof_files = sample_info["nof_files"]
@@ -572,15 +583,9 @@ def create_setup(cfg):
     
     for hadTau_selection in cfg.hadTau_selections:
       for hadTau_frWeight in [ "enabled", "disabled" ]:
-        hadTau_selection_and_frWeight = hadTau_selection
-        if hadTau_selection == "Fakeable":
-          if hadTau_frWeight == "enabled":
-            hadTau_selection_and_frWeight += "_woFakeRateWeights"
-          elif hadTau_frWeight == "disabled":
-            hadTau_selection_and_frWeight += "_woFakeRateWeights"
-        else:
-          if hadTau_frWeight != "disabled":
-            continue    
+        hadTau_selection_and_frWeight = get_hadTau_selection_and_frWeight(hadTau_selection, hadTau_frWeight)
+        if hadTau_frWeight != "enabled" and hadTau_selection != "Fakeable":
+          continue
         for hadTau_genMatch in [ "lepton", "hadTau", "jet", "all" ]:
           for charge_selection in cfg.charge_selections:
 	    for central_or_shift in cfg.central_or_shifts:
@@ -609,9 +614,17 @@ def create_setup(cfg):
                 cfg_filelist = generate_input_list(job_ids[idx], secondary_files, primary_store, secondary_store, cfg.debug)
                 cfg_outputfile = "_".join([process_name, hadTau_selection_and_frWeight, hadTau_genMatch, charge_selection, central_or_shift, str(idx)]) + ".root"
                 cfg_outputfile_fullpath = os.path.join(histogram_outputdir[hadTau_selection_and_frWeight][charge_selection], cfg_outputfile)
+                if hadTau_selection.find("_wFakeRateWeight") != -1:
+                  initDict(cfg.histogram_files_jobs_wFakeRateWeight, [ sample_name, hadTau_selection_and_frWeight, hadTau_genMatch, charge_selection, central_or_shift, idx ])
+                  cfg.histogram_files_jobs_wFakeRateWeight[sample_name][hadTau_selection_and_frWeight][hadTau_genMatch][charge_selection][central_or_shift][idx] = \
+                    cfg_outputfile_fullpath
+                else:
+                  initDict(cfg.histogram_files_jobs_woFakeRateWeight, [ sample_name, hadTau_selection_and_frWeight, hadTau_genMatch, charge_selection, central_or_shift, idx ])
+                  cfg.histogram_files_jobs_woFakeRateWeight[sample_name][hadTau_selection_and_frWeight][hadTau_genMatch][charge_selection][central_or_shift][idx] = \
+                    cfg_outputfile_fullpath
                 initDict(cfg.histogram_files_jobs, [ sample_name, hadTau_selection_and_frWeight, hadTau_genMatch, charge_selection, central_or_shift, idx ])
                 cfg.histogram_files_jobs[sample_name][hadTau_selection_and_frWeight][hadTau_genMatch][charge_selection][central_or_shift][idx] = \
-                cfg_outputfile_fullpath
+                  cfg_outputfile_fullpath
 	   
                 cfg_contents = create_config(cfg_filelist, cfg_outputfile_fullpath, category_name, triggers, hadTau_selection, hadTau_genMatch, hadTau_frWeight,
                   charge_selection, is_mc, central_or_shift, lumi_scale, cfg, idx)
@@ -620,43 +633,44 @@ def create_setup(cfg):
 
 	        working_dir = os.getcwd()    
                 bsh_contents = create_job(working_dir, cfg.exec_name, cfg_file_fullpath)
-                bsh_file_fullpath = os.path.join(cfg.dirs[hadTau_selection_and_frWeight][charge_selection][DKEY_JOBS], cfg_basename + ".sh")
+                bsh_file_fullpath = os.path.join(job_outputdir[hadTau_selection_and_frWeight][charge_selection], cfg_basename + ".sh")
                 with codecs.open(bsh_file_fullpath, "w", "utf-8") as f: f.write(bsh_contents)
                 add_chmodX(bsh_file_fullpath)
   
   # check if output files already exist from a previous execution of 'tthAnalyzeRun.py'
   for sample_name in cfg.histogram_files_jobs.keys(): 
-    for hadTau_selection in cfg.histogram_files_jobs[sample_name].keys():
-      for hadTau_genMatch in cfg.histogram_files_jobs[sample_name][hadTau_selection].keys():
-        for charge_selection in cfg.histogram_files_jobs[sample_name][hadTau_selection][hadTau_genMatch].keys():
-	  for central_or_shift in cfg.histogram_files_jobs[sample_name][hadTau_selection][hadTau_genMatch][charge_selection].keys():
-            for idx in cfg.histogram_files_jobs[sample_name][hadTau_selection][hadTau_genMatch][charge_selection][central_or_shift].keys():
-              initDict(cfg.histogram_files_jobs_exist, [ sample_name, hadTau_selection, hadTau_genMatch, charge_selection, central_or_shift, idx ])
-	      cfg.histogram_files_jobs_exist[sample_name][hadTau_selection][hadTau_genMatch][charge_selection][central_or_shift][idx] = \
-	        os.path.isfile(cfg.histogram_files_jobs[sample_name][hadTau_selection][hadTau_genMatch][charge_selection][central_or_shift][idx])
+    for hadTau_selection_and_frWeight in cfg.histogram_files_jobs[sample_name].keys():
+      for hadTau_genMatch in cfg.histogram_files_jobs[sample_name][hadTau_selection_and_frWeight].keys():
+        for charge_selection in cfg.histogram_files_jobs[sample_name][hadTau_selection_and_frWeight][hadTau_genMatch].keys():
+	  for central_or_shift in cfg.histogram_files_jobs[sample_name][hadTau_selection_and_frWeight][hadTau_genMatch][charge_selection].keys():
+            for idx in cfg.histogram_files_jobs[sample_name][hadTau_selection_and_frWeight][hadTau_genMatch][charge_selection][central_or_shift].keys():
+              initDict(cfg.histogram_files_jobs_exist, [ sample_name, hadTau_selection_and_frWeight, hadTau_genMatch, charge_selection, central_or_shift, idx ])
+	      cfg.histogram_files_jobs_exist[sample_name][hadTau_selection_and_frWeight][hadTau_genMatch][charge_selection][central_or_shift][idx] = \
+	        os.path.isfile(cfg.histogram_files_jobs[sample_name][hadTau_selection_and_frWeight][hadTau_genMatch][charge_selection][central_or_shift][idx])
 
   if cfg.is_makefile:
     commands_woFakeRateWeight = []
     commands_wFakeRateWeight = []
-    for sample_name in cfg.histogram_files_jobs.keys(): 
-      for hadTau_selection in cfg.histogram_files_jobs[sample_name].keys():
-        if hadTau_selection.find("_wFakeRateWeight") != -1:
-          continue
-        for hadTau_genMatch in cfg.histogram_files_jobs[sample_name][hadTau_selection].keys():  
-          for charge_selection in cfg.histogram_files_jobs[sample_name][hadTau_selection][hadTau_genMatch].keys():
-	    for central_or_shift in cfg.histogram_files_jobs[sample_name][hadTau_selection][hadTau_genMatch][charge_selection].keys():
-              for idx in cfg.histogram_files_jobs[sample_name][hadTau_selection][hadTau_genMatch][charge_selection][central_or_shift].keys():	
-                if cfg.histogram_files_jobs_exist[sample_name][hadTau_selection][hadTau_genMatch][charge_selection][central_or_shift][idx]:
+    for sample_name, sample_info in tthAnalyzeSamples_1l_2tau.samples.items():
+      if not sample_name in cfg.histogram_files_jobs.keys():
+        continue
+      process_name = sample_info["process_name_specific"]
+      for hadTau_selection_and_frWeight in cfg.histogram_files_jobs[sample_name].keys():
+        for hadTau_genMatch in cfg.histogram_files_jobs[sample_name][hadTau_selection_and_frWeight].keys():  
+          for charge_selection in cfg.histogram_files_jobs[sample_name][hadTau_selection_and_frWeight][hadTau_genMatch].keys():
+	    for central_or_shift in cfg.histogram_files_jobs[sample_name][hadTau_selection_and_frWeight][hadTau_genMatch][charge_selection].keys():
+              for idx in cfg.histogram_files_jobs[sample_name][hadTau_selection_and_frWeight][hadTau_genMatch][charge_selection][central_or_shift].keys():	
+                if cfg.histogram_files_jobs_exist[sample_name][hadTau_selection_and_frWeight][hadTau_genMatch][charge_selection][central_or_shift][idx]:
                   print "output file %s already exists" % \
-                    cfg.histogram_files_jobs[sample_name][hadTau_selection][hadTau_genMatch][charge_selection][central_or_shift][idx]
+                    cfg.histogram_files_jobs[sample_name][hadTau_selection_and_frWeight][hadTau_genMatch][charge_selection][central_or_shift][idx]
                 else:
-                  cfg_basename = cfg_basenames[sample_name][hadTau_selection][hadTau_genMatch][charge_selection][central_or_shift][idx]
-                  command = os.path.join(cfg.dirs[hadTau_selection][charge_selection][DKEY_JOBS], cfg_basename + ".sh") + \
-                    " >> " + os.path.join(cfg.dirs[hadTau_selection][charge_selection][DKEY_LOGS], cfg_basename + ".log") + " 2>&1"
-                  if hadTau_selection.find("_woFakeRateWeight") != -1:
-                    commands_woFakeRateWeight.append(command)
+                  cfg_basename = cfg_basenames[sample_name][hadTau_selectio_and_frWeightn][hadTau_genMatch][charge_selection][central_or_shift][idx]
+                  command = os.path.join(cfg.dirs[hadTau_selection_and_frWeight][charge_selection][DKEY_JOBS], process_name, cfg_basename + ".sh") + \
+                    " >> " + os.path.join(cfg.dirs[hadTau_selection_and_frWeight][charge_selection][DKEY_LOGS], process_name, cfg_basename + ".log") + " 2>&1"
+                  if hadTau_selection.find("_wFakeRateWeight") != -1:
+                    commands_wFakeRateWeight.append(command)
                   else:
-                    commands_wFakeRateWeight.append(command)  
+                    commands_woFakeRateWeight.append(command)  
     logging.info("Creating Makefile")
     makefile_contents_woFakeRateWeight = create_makefile(commands_woFakeRateWeight, num = 20)
     with codecs.open(cfg.makefile_fullpath_woFakeRateWeight, 'w', 'utf-8') as f: f.write(makefile_contents_woFakeRateWeight)
@@ -668,7 +682,10 @@ def create_setup(cfg):
     sbatch_logfiles_woFakeRateWeight = []
     commands_wFakeRateWeight = []
     sbatch_logfiles_wFakeRateWeight = []
-    for sample_name in cfg.histogram_files_jobs.keys(): 
+    for sample_name, sample_info in tthAnalyzeSamples_1l_2tau.samples.items():
+      if not sample_name in cfg.histogram_files_jobs.keys():
+        continue
+      process_name = sample_info["process_name_specific"]
       for hadTau_selection in cfg.histogram_files_jobs[sample_name].keys():
         for hadTau_genMatch in cfg.histogram_files_jobs[sample_name][hadTau_selection].keys():
           for charge_selection in cfg.histogram_files_jobs[sample_name][hadTau_selection][hadTau_genMatch].keys():
@@ -679,14 +696,14 @@ def create_setup(cfg):
                     cfg.histogram_files_jobs[sample_name][hadTau_selection][hadTau_genMatch][charge_selection][central_or_shift][idx]
                 else:
                   cfg_basename = cfg_basenames[sample_name][hadTau_selection][hadTau_genMatch][charge_selection][central_or_shift][idx]
-                  command = os.path.join(cfg.dirs[hadTau_selection][charge_selection][DKEY_JOBS], cfg_basename + ".sh")
-                  sbatch_logfile = os.path.join(cfg.dirs[hadTau_selection][charge_selection][DKEY_LOGS], cfg_basename + "-%a.out")
-                  if hadTau_selection.find("_woFakeRateWeight") != -1:
-                    commands_woFakeRateWeight.append(command)
-                    sbatch_logfiles_woFakeRateWeight.append(sbatch_logfile)
-                  else:
+                  command = os.path.join(cfg.dirs[hadTau_selection][charge_selection][DKEY_JOBS], process_name, cfg_basename + ".sh")
+                  sbatch_logfile = os.path.join(cfg.dirs[hadTau_selection][charge_selection][DKEY_LOGS], process_name, cfg_basename + "-%a.out")
+                  if hadTau_selection.find("_wFakeRateWeight") != -1:
                     commands_wFakeRateWeight.append(command)
                     sbatch_logfiles_wFakeRateWeight.append(sbatch_logfile)
+                  else:
+                    commands_woFakeRateWeight.append(command)
+                    sbatch_logfiles_woFakeRateWeight.append(sbatch_logfile)
     sbatch_contents_woFakeRateWeight = create_sbatch(sbatch_logfiles_woFakeRateWeight, commands_woFakeRateWeight)
     with codecs.open(cfg.sbatch_fullpath_woFakeRateWeight, 'w', 'utf-8') as f: f.write(sbatch_contents_woFakeRateWeight)
     add_chmodX(cfg.sbatch_fullpath_woFakeRateWeight)
@@ -718,8 +735,8 @@ def run_setup(cfg):
   Args:
     cfg: Configuration object containig relevant full paths (see `analyzeConfig`)
   """
-  stdout_file = codecs.open(os.path.join(cfg.output_dir, "stdout.log"), 'w', 'utf-8')
-  stderr_file = codecs.open(os.path.join(cfg.output_dir, "stderr.log"), 'w', 'utf-8')
+  stdout_file = codecs.open(os.path.join(cfg.output_dir, "stdout_1l_2tau.log"), 'w', 'utf-8')
+  stderr_file = codecs.open(os.path.join(cfg.output_dir, "stderr_1l_2tau.log"), 'w', 'utf-8')
 
   def run_cmd(command, do_not_log = False):
     """Runs given commands and logs stdout and stderr to files
@@ -753,40 +770,41 @@ def run_setup(cfg):
     sbatch_taskids = "\\|".join([x.split()[-1] for x in stdout.split("\n")[:-1]]) # sbatch job nr is the last one
     wait_for_sbatch(sbatch_taskids)
 
-    def run_hadd(inputFiles, outputFile):
-      """Creates outputFile given as function argument, containing sum of histograms of all input files
-      """  
-      if os.path.isfile(outputFile):
-        print "hadd file %s already exists" % outputFile
-      else:
-        run_cmd(" ".join(["rm", outputFile]))
-        command_hadd_sample = " ".join(["hadd", outputFile] + inputFiles)
-        run_cmd(command_hadd_sample)
+  def run_hadd(inputFiles, outputFile):
+    """Creates outputFile given as function argument, containing sum of histograms of all input files
+    """  
+    if os.path.isfile(outputFile):
+      print "hadd file %s already exists" % outputFile
+    else:
+      run_cmd(" ".join(["rm", outputFile]))
+      command_hadd_sample = " ".join(["hadd", outputFile] + inputFiles)
+      run_cmd(command_hadd_sample)
 
-    inputFiles_hadd_stage1 = []
-    for sample_name, sample_info in tthAnalyzeSamples_1l_2tau.samples.items():
-      if not sample_name in cfg.histogram_files_jobs.keys():
-        continue
+  inputFiles_hadd_stage1 = []
+  for sample_name, sample_info in tthAnalyzeSamples_1l_2tau.samples.items():
+    if not sample_name in cfg.histogram_files_jobs_woFakeRateWeight.keys():
+      continue
 
-      process_name = sample_info["process_name_specific"]
+    process_name = sample_info["process_name_specific"]
 
-      logging.info("Running 'hadd' for sample '%s' ..." % sample_name)
-      inputFiles_sample = []
-      for hadTau_selection in cfg.histogram_files_jobs[sample_name].keys():
-        for hadTau_genMatch in cfg.histogram_files_jobs[sample_name][hadTau_selection].keys():  
-          for charge_selection in cfg.histogram_files_jobs[sample_name][hadTau_selection][hadTau_genMatch].keys():
-	    for central_or_shift in cfg.histogram_files_jobs[sample_name][hadTau_selection][hadTau_genMatch][charge_selection].keys():
-              inputFiles_chunks = []
-              for idx in cfg.histogram_files_jobs[sample_name][hadTau_selection][hadTau_genMatch][charge_selection][central_or_shift].keys():
-                inputFile = cfg.histogram_files_jobs[sample_name][hadTau_selection][hadTau_genMatch][charge_selection][central_or_shift][idx]
-                inputFiles_chunks.append(inputFile)
-              outputFile_chunks = cfg.histogram_file_hadd_stage1.replace(".root", "_%s_%s_%s_%s_%s.root" % \
-                (process_name, hadTau_selection, hadTau_genMatch, charge_selection, central_or_shift))
-              run_hadd(inputFiles_chunks, outputFile_chunks)
-              inputFiles_sample.append(outputFile_chunks)
+    logging.info("Running 'hadd' for sample '%s' woFakeRateWeights..." % sample_name)
+    inputFiles_sample = []
+    for hadTau_selection in cfg.histogram_files_jobs_woFakeRateWeight[sample_name].keys():
+      for hadTau_genMatch in cfg.histogram_files_jobs_woFakeRateWeight[sample_name][hadTau_selection].keys():  
+        for charge_selection in cfg.histogram_files_jobs_woFakeRateWeight[sample_name][hadTau_selection][hadTau_genMatch].keys():
+          for central_or_shift in cfg.histogram_files_jobs_woFakeRateWeight[sample_name][hadTau_selection][hadTau_genMatch][charge_selection].keys():
+            inputFiles_chunks = []
+            for idx in cfg.histogram_files_jobs_woFakeRateWeight[sample_name][hadTau_selection][hadTau_genMatch][charge_selection][central_or_shift].keys():
+              inputFile = cfg.histogram_files_jobs_woFakeRateWeight[sample_name][hadTau_selection][hadTau_genMatch][charge_selection][central_or_shift][idx]
+              inputFiles_chunks.append(inputFile)
+            outputFile_chunks = cfg.histogram_file_hadd_stage1.replace(".root", "_%s_%s_%s_%s_%s.root" % \
+              (process_name, hadTau_selection, hadTau_genMatch, charge_selection, central_or_shift))
+            run_hadd(inputFiles_chunks, outputFile_chunks)
+            inputFiles_sample.append(outputFile_chunks)
     outputFile_sample = cfg.histogram_file_hadd_stage1.replace(".root", "_%s.root" % process_name)
     run_hadd(inputFiles_sample, outputFile_sample)
-    inputFiles_hadd_stage1.append(outputFile_sample)                                                                    
+    inputFiles_hadd_stage1.append(outputFile_sample)
+  run_cmd(" ".join(["rm", cfg.histogram_file_hadd_stage1]))  
   run_hadd(inputFiles_hadd_stage1, cfg.histogram_file_hadd_stage1)
 
   logging.info("Running '%s' ..." % cfg.comp_jetToTauFakeRate_exec)
@@ -802,12 +820,35 @@ def run_setup(cfg):
     sbatch_taskids = "\\|".join([x.split()[-1] for x in stdout.split("\n")[:-1]]) # sbatch job nr is the last one
     wait_for_sbatch(sbatch_taskids)
 
+  inputFiles_hadd_stage2 = []
+  for sample_name, sample_info in tthAnalyzeSamples_1l_2tau.samples.items():
+    if not sample_name in cfg.histogram_files_jobs_wFakeRateWeight.keys():
+      continue
+
+    process_name = sample_info["process_name_specific"]
+
+    logging.info("Running 'hadd' for sample '%s' wFakeRateWeights..." % sample_name)
+    inputFiles_sample = []
+    for hadTau_selection in cfg.histogram_files_jobs_wFakeRateWeight[sample_name].keys():
+      for hadTau_genMatch in cfg.histogram_files_jobs_wFakeRateWeight[sample_name][hadTau_selection].keys():  
+        for charge_selection in cfg.histogram_files_jobs_wFakeRateWeight[sample_name][hadTau_selection][hadTau_genMatch].keys():
+          for central_or_shift in cfg.histogram_files_jobs_wFakeRateWeight[sample_name][hadTau_selection][hadTau_genMatch][charge_selection].keys():
+            inputFiles_chunks = []
+            for idx in cfg.histogram_files_jobs_wFakeRateWeight[sample_name][hadTau_selection][hadTau_genMatch][charge_selection][central_or_shift].keys():
+              inputFile = cfg.histogram_files_jobs_wFakeRateWeight[sample_name][hadTau_selection][hadTau_genMatch][charge_selection][central_or_shift][idx]
+              inputFiles_chunks.append(inputFile)
+            outputFile_chunks = cfg.histogram_file_hadd_stage2.replace(".root", "_%s_%s_%s_%s_%s.root" % \
+              (process_name, hadTau_selection, hadTau_genMatch, charge_selection, central_or_shift))
+            run_hadd(inputFiles_chunks, outputFile_chunks)
+            inputFiles_sample.append(outputFile_chunks)
+    outputFile_sample = cfg.histogram_file_hadd_stage2.replace(".root", "_%s.root" % process_name)
+    run_hadd(inputFiles_sample, outputFile_sample)
+    inputFiles_hadd_stage2.append(outputFile_sample)
+  inputFiles_hadd_stage2.append(cfg.histogram_file_hadd_stage1)
+
   logging.info("Running second 'hadd' ...")
-  subd_list_stage2 = []
-  subd_list_stage2.append(cfg.histogram_file_hadd_stage1)
-  subd_list_stage2.append(cfg.jetToTauFakeRate_outputfile)
   run_cmd(" ".join(["rm", cfg.histogram_file_hadd_stage2]))
-  command_hadd_stage2 = " ".join(["hadd", cfg.histogram_file_hadd_stage2] + subd_list_stage2)
+  command_hadd_stage2 = " ".join(["hadd", cfg.histogram_file_hadd_stage2] + inputFiles_hadd_stage2)
   run_cmd(command_hadd_stage2)
 
   logging.info("Running '%s' ..." % cfg.prep_dcard_exec)
@@ -830,24 +871,26 @@ if __name__ == '__main__':
                       charge_selections = [ "OS", "SS" ],
 		      central_or_shifts = [ 
 			"central",
-##			"CMS_ttHl_btag_HFUp", 
-##			"CMS_ttHl_btag_HFDown",	
-##			"CMS_ttHl_btag_HFStats1Up", 
-##			"CMS_ttHl_btag_HFStats1Down",
-##			"CMS_ttHl_btag_HFStats2Up", 
-##			"CMS_ttHl_btag_HFStats2Down",
-##			"CMS_ttHl_btag_LFUp", 
-##			"CMS_ttHl_btag_LFDown",	
-##			"CMS_ttHl_btag_LFStats1Up", 
-##			"CMS_ttHl_btag_LFStats1Down",
-##			"CMS_ttHl_btag_LFStats2Up", 
-##			"CMS_ttHl_btag_LFStats2Down",
-##			"CMS_ttHl_btag_cErr1Up",
-##			"CMS_ttHl_btag_cErr1Down",
-##			"CMS_ttHl_btag_cErr2Up",
-##			"CMS_ttHl_btag_cErr2Down",
-##			"CMS_ttHl_JESUp",
-##			"CMS_ttHl_JESDown"
+			"CMS_ttHl_btag_HFUp", 
+			"CMS_ttHl_btag_HFDown",	
+			"CMS_ttHl_btag_HFStats1Up", 
+			"CMS_ttHl_btag_HFStats1Down",
+			"CMS_ttHl_btag_HFStats2Up", 
+			"CMS_ttHl_btag_HFStats2Down",
+			"CMS_ttHl_btag_LFUp", 
+			"CMS_ttHl_btag_LFDown",	
+			"CMS_ttHl_btag_LFStats1Up", 
+			"CMS_ttHl_btag_LFStats1Down",
+			"CMS_ttHl_btag_LFStats2Up", 
+			"CMS_ttHl_btag_LFStats2Down",
+			"CMS_ttHl_btag_cErr1Up",
+			"CMS_ttHl_btag_cErr1Down",
+			"CMS_ttHl_btag_cErr2Up",
+			"CMS_ttHl_btag_cErr2Down",
+			"CMS_ttHl_JESUp",
+			"CMS_ttHl_JESDown",
+                        "CMS_ttHl_tauESUp",
+			"CMS_ttHl_tauESDown"  
 	              ],
                       max_files_per_job = 30,
                       use_lumi = True,
@@ -857,7 +900,7 @@ if __name__ == '__main__':
                       poll_interval = 30,
                       comp_jetToTauFakeRate_exec = "comp_jetToTauFakeRate",
                       prep_dcard_exec = "prepareDatacards",
-                      histogram_to_fit = "numJets")
+                      histogram_to_fit = "mTauTauVis")
 
   create_setup(cfg)
   run_jobs = query_yes_no("Run %s, hadder and %s?" % (cfg.running_method, cfg.prep_dcard_exec))

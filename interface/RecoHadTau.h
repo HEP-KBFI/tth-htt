@@ -6,7 +6,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/GenHadTau.h" // GenHadTau
 #include "tthAnalysis/HiggsToTauTau/interface/GenJet.h" // GenJet
 
-#include <ostream>
+#include <ostream> // ostream
 
 class RecoHadTau
   : public GenParticle

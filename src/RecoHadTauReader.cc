@@ -11,6 +11,7 @@ RecoHadTauReader::RecoHadTauReader()
   : max_nHadTaus_(32)
   , branchName_num_("nTauGood")
   , branchName_obj_("TauGood")
+  , hadTauPt_option_(RecoHadTauReader::kHadTauPt_central)
   , hadTau_pt_(0)
   , hadTau_eta_(0)
   , hadTau_phi_(0)
@@ -38,6 +39,7 @@ RecoHadTauReader::RecoHadTauReader(const std::string& branchName_num, const std:
   : max_nHadTaus_(32)
   , branchName_num_(branchName_num)
   , branchName_obj_(branchName_obj)
+  , hadTauPt_option_(RecoHadTauReader::kHadTauPt_central)
   , hadTau_pt_(0)
   , hadTau_eta_(0)
   , hadTau_phi_(0)
@@ -182,8 +184,13 @@ std::vector<RecoHadTau> RecoHadTauReader::read() const
   }
   hadTaus.reserve(nHadTaus);
   for ( Int_t idxHadTau = 0; idxHadTau < nHadTaus; ++idxHadTau ) {
+    Float_t hadTau_pt = -1.;
+    if      ( hadTauPt_option_ == kHadTauPt_central   ) hadTau_pt = 1.00*gInstance->hadTau_pt_[idxHadTau];
+    else if ( hadTauPt_option_ == kHadTauPt_shiftUp   ) hadTau_pt = 1.03*gInstance->hadTau_pt_[idxHadTau];
+    else if ( hadTauPt_option_ == kHadTauPt_shiftDown ) hadTau_pt = 0.97*gInstance->hadTau_pt_[idxHadTau];
+    else assert(0);
     hadTaus.push_back(RecoHadTau(
-      gInstance->hadTau_pt_[idxHadTau],
+      hadTau_pt,
       gInstance->hadTau_eta_[idxHadTau],
       gInstance->hadTau_phi_[idxHadTau],
       gInstance->hadTau_mass_[idxHadTau],

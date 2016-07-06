@@ -11,6 +11,7 @@ RecoJetReader::RecoJetReader()
   : max_nJets_(32)
   , branchName_num_("nJet")
   , branchName_obj_("Jet")
+  , jetPt_option_(RecoJetReader::kJetPt_central)
   , jet_pt_(0)
   , jet_eta_(0)
   , jet_phi_(0)
@@ -28,6 +29,7 @@ RecoJetReader::RecoJetReader(const std::string& branchName_num, const std::strin
   : max_nJets_(32)
   , branchName_num_(branchName_num)
   , branchName_obj_(branchName_obj)
+  , jetPt_option_(RecoJetReader::kJetPt_central)
   , jet_pt_(0)
   , jet_eta_(0)
   , jet_phi_(0)
@@ -137,9 +139,10 @@ std::vector<RecoJet> RecoJetReader::read() const
   jets.reserve(nJets);
   for ( Int_t idxJet = 0; idxJet < nJets; ++idxJet ) {
     Float_t jet_pt = -1.;
-    if      ( jetPt_option_ == kJetPt_central ) jet_pt = jet_pt_[idxJet];
-    else if ( jetPt_option_ == kJetPt_jecUp   ) jet_pt = jet_pt_[idxJet]*jet_corr_JECUp_[idxJet]/jet_corr_[idxJet];
-    else if ( jetPt_option_ == kJetPt_jecDown ) jet_pt = jet_pt_[idxJet]*jet_corr_JECDown_[idxJet]/jet_corr_[idxJet];    
+    if      ( jetPt_option_ == kJetPt_central ) jet_pt = gInstance->jet_pt_[idxJet];
+    else if ( jetPt_option_ == kJetPt_jecUp   ) jet_pt = gInstance->jet_pt_[idxJet]*gInstance->jet_corr_JECUp_[idxJet]/gInstance->jet_corr_[idxJet];
+    else if ( jetPt_option_ == kJetPt_jecDown ) jet_pt = gInstance->jet_pt_[idxJet]*gInstance->jet_corr_JECDown_[idxJet]/gInstance->jet_corr_[idxJet];    
+    else assert(0);
     jets.push_back(RecoJet(
       jet_pt,      
       gInstance->jet_eta_[idxJet],
