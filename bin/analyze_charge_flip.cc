@@ -100,13 +100,13 @@ int main(int argc, char* argv[])
   bool use_triggers_2e = cfg_analyze.getParameter<bool>("use_triggers_2e");
   vstring triggerNames_1mu = cfg_analyze.getParameter<vstring>("triggers_1mu");
   std::vector<hltPath*> triggers_1mu = create_hltPaths(triggerNames_1mu);
-  bool use_triggers_1mu = cfg_analyze.getParameter<bool>("use_triggers_1mu");
+  //bool use_triggers_1mu = cfg_analyze.getParameter<bool>("use_triggers_1mu");
   vstring triggerNames_2mu = cfg_analyze.getParameter<vstring>("triggers_2mu");
   std::vector<hltPath*> triggers_2mu = create_hltPaths(triggerNames_2mu);
-  bool use_triggers_2mu = cfg_analyze.getParameter<bool>("use_triggers_2mu");
+  //bool use_triggers_2mu = cfg_analyze.getParameter<bool>("use_triggers_2mu");
   vstring triggerNames_1e1mu = cfg_analyze.getParameter<vstring>("triggers_1e1mu");
   std::vector<hltPath*> triggers_1e1mu = create_hltPaths(triggerNames_1e1mu);
-  bool use_triggers_1e1mu = cfg_analyze.getParameter<bool>("use_triggers_1e1mu");
+  //bool use_triggers_1e1mu = cfg_analyze.getParameter<bool>("use_triggers_1e1mu");
   /*enum { kSS };
   std::string chargeSelection_string = cfg_analyze.getParameter<std::string>("chargeSelection");
   //int chargeSelection = -1;
@@ -159,6 +159,7 @@ int main(int argc, char* argv[])
   std::string selEventsFileName_input = cfg_analyze.getParameter<std::string>("selEventsFileName_input");
   std::cout << "selEventsFileName_input = " << selEventsFileName_input << std::endl;
   RunLumiEventSelector* run_lumi_eventSelector = 0;
+
   if ( selEventsFileName_input != "" ) {
     edm::ParameterSet cfgRunLumiEventSelector;
     cfgRunLumiEventSelector.addParameter<std::string>("inputFileName", selEventsFileName_input);
@@ -207,9 +208,9 @@ int main(int argc, char* argv[])
 
   hltPaths_setBranchAddresses(inputTree, triggers_1e);
   hltPaths_setBranchAddresses(inputTree, triggers_2e);
-  hltPaths_setBranchAddresses(inputTree, triggers_1mu);
+  /*hltPaths_setBranchAddresses(inputTree, triggers_1mu);
   hltPaths_setBranchAddresses(inputTree, triggers_2mu);
-  hltPaths_setBranchAddresses(inputTree, triggers_1e1mu);
+  hltPaths_setBranchAddresses(inputTree, triggers_1e1mu);*/
 
   /*MET_PT_TYPE met_pt;
   inputTree->SetBranchAddress(MET_PT_KEY, &met_pt);
@@ -251,7 +252,6 @@ int main(int argc, char* argv[])
   RecoJetCollectionSelectorBtagLoose jetSelectorBtagLoose;
   RecoJetCollectionSelectorBtagMedium jetSelectorBtagMedium;
 
-
   GenLeptonReader* genLeptonReader = 0;
   //GenHadTauReader* genHadTauReader = 0;
   //GenJetReader* genJetReader = 0;
@@ -263,7 +263,6 @@ int main(int argc, char* argv[])
     genJetReader = new GenJetReader("nGenJet", "GenJet");
     genJetReader->setBranchAddresses(inputTree);*/
   }
-
 
 //--- open output file containing run:lumi:event numbers of events passing final event selection criteria
   std::ostream* selEventsFile = new std::ofstream(selEventsFileName_output.data(), std::ios::out);
@@ -298,10 +297,15 @@ int main(int argc, char* argv[])
       }
     }
   }
-
   vstring categories_charge_gen = {
     "ID", "MisID"
   };
+
+  TFileDirectory subDir_fails = fs.mkdir( Form("failed_cuts") );
+  TH1I* fail_counter = subDir_fails.make<TH1I>( process_string.data(), "Rejected events", 10,  0, 10 );
+  const char *rejcs[10] = {"Trigger", "Trig_2e1e", "2e", "0mu", "2e_trig", "2e_sel", "2e_sel_trig", "0mu_sel", "pT_el", "m_ll"};
+  for (int i=1;i<=10;i++) fail_counter->GetXaxis()->SetBinLabel(i,rejcs[i-1]); 
+
 
   /*vstring categories_etapt_gen = {  //B-barrel, E-endcap, L-low pT (10 <= pT < 25), M-med pT (25 <= pT < 50), H-high pT (pT > 50)
     "B_L", "B_M", "B_H", "E_L", "E_M", "E_M", "E_H"
@@ -322,7 +326,6 @@ int main(int argc, char* argv[])
   int analyzedEntries = 0;
   int selectedEntries = 0;
   double selectedEntries_weighted = 0.;
-
   for ( int idxEntry = 0; idxEntry < numEntries && (maxEvents == -1 || idxEntry < maxEvents); ++idxEntry ) {
     if ( idxEntry > 0 && (idxEntry % reportEvery) == 0 ) {
       std::cout << "processing Entry " << idxEntry << " (" << selectedEntries << " Entries selected)" << std::endl;
@@ -332,27 +335,44 @@ int main(int argc, char* argv[])
     inputTree->GetEntry(idxEntry);
 
     if ( run_lumi_eventSelector && !(*run_lumi_eventSelector)(run, lumi, event) ) continue;
-
     bool isTriggered_1e = hltPaths_isTriggered(triggers_1e);
     bool isTriggered_2e = hltPaths_isTriggered(triggers_2e);
     bool isTriggered_1mu = hltPaths_isTriggered(triggers_1mu);
     bool isTriggered_2mu = hltPaths_isTriggered(triggers_2mu);
     bool isTriggered_1e1mu = hltPaths_isTriggered(triggers_1e1mu);
-
+    
     bool selTrigger_1e = use_triggers_1e && isTriggered_1e;
     bool selTrigger_2e = use_triggers_2e && isTriggered_2e;
-    bool selTrigger_1mu = use_triggers_1mu && isTriggered_1mu;
-    bool selTrigger_2mu = use_triggers_2mu && isTriggered_2mu;
-    bool selTrigger_1e1mu = use_triggers_1e1mu && isTriggered_1e1mu;
-    if ( !(selTrigger_1e || selTrigger_2e || selTrigger_1mu || selTrigger_2mu || selTrigger_1e1mu) ) continue;
-
+    //bool selTrigger_1mu = use_triggers_1mu && isTriggered_1mu;
+    //bool selTrigger_2mu = use_triggers_2mu && isTriggered_2mu;
+    //bool selTrigger_1e1mu = use_triggers_1e1mu && isTriggered_1e1mu;
+    if ( !(selTrigger_1e || selTrigger_2e) ) {
+        if ( run_lumi_eventSelector ) {
+	        std::cout << "event FAILS trigger selection." << std::endl; 
+	        std::cout << " (selTrigger_1e = " << isTriggered_1e 
+		      << ", selTrigger_2e = " << isTriggered_2e 
+          << ", selTrigger_1mu = " << isTriggered_1mu
+          << ", selTrigger_2mu = " << isTriggered_2mu  
+		      << ", selTrigger_1e1mu = " << isTriggered_1e1mu <<")" << std::endl;
+        }
+        fail_counter->Fill("Trigger", 1);
+        continue;
+    }
+    
 //--- rank triggers by priority and ignore triggers of lower priority if a trigger of higher priority has fired for given event;
 //    the ranking of the triggers is as follows: 2mu, 1e1mu, 2e, 1mu, 1e
 // CV: this logic is necessary to avoid that the same event is selected multiple times when processing different primary datasets
-    if ( selTrigger_1e && (isTriggered_2e || isTriggered_1mu || isTriggered_2mu || isTriggered_1e1mu) ) continue;
-    if ( selTrigger_2e && (isTriggered_2mu || isTriggered_1e1mu) ) continue;
-    if ( selTrigger_1mu && (isTriggered_2e || isTriggered_2mu || isTriggered_1e1mu) ) continue;
-    if ( selTrigger_1e1mu && isTriggered_2mu ) continue;
+    if ( !isMC ) {
+      if ( selTrigger_1e && isTriggered_2e ) {
+	      if ( run_lumi_eventSelector ) {
+	        std::cout << "event FAILS trigger selection." << std::endl; 
+	        std::cout << " (selTrigger_1e = " << selTrigger_1e 
+		          << ", isTriggered_2e = " << isTriggered_2e << ")" << std::endl;
+	      }
+        fail_counter->Fill("Trig_2e1e", 1);
+	      continue; 
+      }
+  }
 
 //--- build collections of electrons, muons and hadronic taus;
 //    resolve overlaps in order of priority: muon, electron,
@@ -392,7 +412,7 @@ int main(int argc, char* argv[])
     std::vector<const RecoJet*> selJets = jetSelector(cleanedJets);
     std::vector<const RecoJet*> selBJets_loose = jetSelectorBtagLoose(cleanedJets);
     std::vector<const RecoJet*> selBJets_medium = jetSelectorBtagMedium(cleanedJets);
-
+    
 //--- build collections of generator level particles
     std::vector<GenLepton> genLeptons;
     std::vector<GenLepton> genElectrons;
@@ -429,39 +449,49 @@ int main(int argc, char* argv[])
       jetGenMatcher.addGenHadTauMatch(selJets, genHadTaus, 0.3);
       jetGenMatcher.addGenJetMatch(selJets, genJets, 0.5);*/
     }
-
 //--- apply preselection
     std::vector<const RecoLepton*> preselLeptons;
     preselLeptons.reserve(preselElectrons.size() + preselMuons.size());
     preselLeptons.insert(preselLeptons.end(), preselElectrons.begin(), preselElectrons.end());
     preselLeptons.insert(preselLeptons.end(), preselMuons.begin(), preselMuons.end());
     std::sort(preselLeptons.begin(), preselLeptons.end(), isHigherPt);
-    // require exactly two leptons passing loose preselection criteria
-    if ( !(preselLeptons.size() == 2) ) continue;
+    
+    // require exactly two preselected electrons
+    if ( !(preselElectrons.size() == 2) ) {
+      if ( run_lumi_eventSelector ) {
+	      std::cout << "event FAILS 2 presel Electrons selection" << std::endl; 
+	      std::cout << " #preselElectrons = " << preselElectrons.size() 
+		        << std::endl;
+      }
+      fail_counter->Fill("2e", 1);
+      continue;
+    }
     const RecoLepton* preselLepton_lead = preselLeptons[0];
     int preselLepton_lead_type = getLeptonType(preselLepton_lead->pdgId_);
     const RecoLepton* preselLepton_sublead = preselLeptons[1];
     int preselLepton_sublead_type = getLeptonType(preselLepton_sublead->pdgId_);
-
-    // require exactly two preselected electrons
-    if ( !(preselElectrons.size() >= 1) ) continue;
-
+    
+    // require exactly zero preselected muons
+    if ( !(preselMuons.size() == 0) ) {
+      if ( run_lumi_eventSelector ) {
+	      std::cout << "event FAILS 0 presel Muons selection" << std::endl; 
+	      std::cout << " (#preselMuons = " << preselMuons.size() 
+           << ")" << std::endl;
+      }
+      fail_counter->Fill("0mu", 1);
+      continue;
+    }
     // require that trigger paths match event category (with event category based on preselLeptons);
-    if ( preselElectrons.size() == 2                            && !(selTrigger_1e  || selTrigger_2e)                      ) continue;
-    if ( preselElectrons.size() == 1 && preselMuons.size() == 1 && !(selTrigger_1e  || selTrigger_1mu || selTrigger_1e1mu) ) continue;
-
-    /*// apply requirement on jets (incl. b-tagged jets) and hadronic taus on preselection level
-    if ( !(selJets.size() >= 2) ) continue;
-    if ( !(selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) ) continue;
-    if ( !(selHadTaus.size() == 1) ) continue;
-    */
-
-    // apply requirement on jets (incl. b-tagged jets) and hadronic taus on preselection level
-    /*if ( !(selJets.size() >= 2) ) continue;
-    if ( !(selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) ) continue;
-    if ( !(selHadTaus.size() == 1) ) continue;
-    */
-
+    if ( preselElectrons.size() == 2 && !(selTrigger_1e  || selTrigger_2e) ) {
+      if ( run_lumi_eventSelector ) {
+	      std::cout << "event FAILS trigger selection for given preselLepton multiplicity." << std::endl; 
+	      std::cout << " (#preselElectrons = " << preselElectrons.size() 
+		        << ", selTrigger_1e = " << selTrigger_1e 
+		        << ", selTrigger_2e = " << selTrigger_2e << ")" << std::endl;
+      }
+      fail_counter->Fill("2e_trig", 1);
+      continue;
+    }
 //--- compute event-level weight for data/MC correction of b-tagging efficiency and mistag rate
 //   (using the method "Event reweighting using scale factors calculated with a tag and probe method",
 //    described on the BTV POG twiki https://twiki.cern.ch/twiki/bin/view/CMS/BTagShapeCalibration )
@@ -484,10 +514,44 @@ int main(int argc, char* argv[])
     selLeptons.insert(selLeptons.end(), selElectrons.begin(), selElectrons.end());
     selLeptons.insert(selLeptons.end(), selMuons.begin(), selMuons.end());
     std::sort(selLeptons.begin(), selLeptons.end(), isHigherPt);
-    
     // require exactly two electrons passing selection criteria of final event selection
-    if ( !(selLeptons.size() == 2) ) continue;
-    if ( !(selElectrons.size() == 2) ) continue;
+    if ( selElectrons.size() != 2 ) {
+      if ( run_lumi_eventSelector ) {
+	      std::cout << "event FAILS selElectrons selection." << std::endl;
+	      std::cout << " (#selElectrons = " << selElectrons.size() << ")" << std::endl;
+	      for ( size_t idxSelElectron = 0; idxSelElectron < selElectrons.size(); ++idxSelElectron ) {
+	        std::cout << "selElectron #" << idxSelElectron << ":" << std::endl;
+	        std::cout << (*selElectrons[idxSelElectron]);
+	      }
+        for ( size_t idxPreSelElectron = 0; idxPreSelElectron < preselElectrons.size(); ++idxPreSelElectron ) {
+	        std::cout << "preselElectron #" << idxPreSelElectron << ":" << std::endl;
+	        std::cout << (*preselElectrons[idxPreSelElectron]);
+	      }
+      }
+      fail_counter->Fill("2e_sel", 1);
+      continue;
+    }
+    
+    if ( selElectrons.size() == 2 && !(selTrigger_1e  || selTrigger_2e) ) {
+      if ( run_lumi_eventSelector ) {
+	      std::cout << "event FAILS trigger selection for given selElectron multiplicity." << std::endl; 
+	      std::cout << " (#selElectrons = " << selElectrons.size() 
+		        << ", selTrigger_1e = " << selTrigger_1e 
+		        << ", selTrigger_2e = " << selTrigger_2e << ")" << std::endl;
+      }
+      fail_counter->Fill("2e_sel_trig", 1);
+      continue;
+    }
+
+    if ( selMuons.size() != 0) {
+      if ( run_lumi_eventSelector ) {
+	      std::cout << "event FAILS selection for selMuon = 0." << std::endl; 
+	      std::cout << " (#selMuons = " << selMuons.size() << ")" << std::endl;
+      }
+      fail_counter->Fill("0mu_sel", 1);
+      continue;
+    }
+
     const RecoLepton* selLepton_lead = selLeptons[0];
     const RecoLepton* selLepton_sublead = selLeptons[1];
 
@@ -495,35 +559,32 @@ int main(int argc, char* argv[])
     /*if ( selElectrons.size() == 2 &&                         !(selTrigger_1e  || selTrigger_2e)                       ) continue;
     if ( selElectrons.size() == 1 && selMuons.size() == 1 && !(selTrigger_1e  || selTrigger_1mu || selTrigger_1e1mu) ) continue;
     */
-    /*
-    // apply requirement on jets (incl. b-tagged jets) and hadronic taus on level of final event selection
-    if ( !(selJets.size() >= 4) ) continue;
-    if ( !(selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) ) continue;
-    if ( !(selHadTaus.size() == 1) ) continue;
-
-    bool failsLowMassVeto = false;
-    for ( std::vector<const RecoLepton*>::const_iterator lepton1 = selLeptons.begin();
-	  lepton1 != selLeptons.end(); ++lepton1 ) {
-      for ( std::vector<const RecoLepton*>::const_iterator lepton2 = lepton1 + 1;
-	    lepton2 != selLeptons.end(); ++lepton2 ) {
-	      if ( ((*lepton1)->p4_ + (*lepton2)->p4_).mass() < 12. ) {
-	        failsLowMassVeto = true;
-	      }
-      }
-    }
-    if ( failsLowMassVeto ) continue;
-    */
-    //double minPt_lead = 20.;
-    //double minPt_sublead = selLepton_sublead->is_electron() ? 15. : 10.;
+    
+    double minPt_lead = 20.;
+    double minPt_sublead = selLepton_sublead->is_electron() ? 15. : 10.;
     //TODO: verify treatment:
-    double minPt_lead = 10.;
-    double minPt_sublead = 10.;
-    if ( !(selLepton_lead->pt_ > minPt_lead && selLepton_sublead->pt_ > minPt_sublead) ) continue;
+    //double minPt_lead = 10.;
+    //double minPt_sublead = 10.;
+    if ( !(selLepton_lead->pt_ > minPt_lead && selLepton_sublead->pt_ > minPt_sublead) ) {
+      if ( run_lumi_eventSelector ) {
+	      std::cout << "event FAILS lepton pT selection." << std::endl;
+	      std::cout << " (leading selLepton pT = " << selLepton_lead->pt_ << ", minPt_lead = " << minPt_lead
+		        << ", subleading selLepton pT = " << selLepton_sublead->pt_ << ", minPt_sublead = " << minPt_sublead << ")" << std::endl;
+      }
+      fail_counter->Fill("pT_el", 1);
+      continue;
+    }  
     bool isCharge_SS = selLepton_lead->charge_*selLepton_sublead->charge_ > 0;
     bool isCharge_OS = selLepton_lead->charge_*selLepton_sublead->charge_ < 0;
     
 
-    //if ( leptonSelection == kFakeable && (tightMuons.size() + tightElectrons.size()) >= 2 ) continue; // CV: avoid overlap with signal region
+    /*if ( leptonSelection == kFakeable && (tightMuons.size() + tightElectrons.size()) >= 2 ) {
+      if ( run_lumi_eventSelector ) {
+	      std::cout << "event FAILS tightElectrons+tightMuons selection." << std::endl;
+	      std::cout << " (#tightElectrons = " << tightElectrons.size() << ", #tightMuons = " << tightMuons.size() << ")" << std::endl;
+            }
+      continue; // CV: avoid overlap with signal region
+    }*/
 
 //--- apply data/MC corrections for efficiencies of leptons passing the loose identification and isolation criteria
 //    to also pass the tight identification and isolation criteria
@@ -545,7 +606,14 @@ int main(int argc, char* argv[])
       math::PtEtaPhiMLorentzVector(preselElectrons[1]->pt_, preselElectrons[1]->eta_, preselElectrons[1]->phi_, preselElectrons[1]->mass_);
 
     Double_t mass_ll = p4.M();
-    if (mass_ll < 60 || mass_ll > 120) continue;
+    if (mass_ll < 60 || mass_ll > 120) {
+      if ( run_lumi_eventSelector ) {
+	      std::cout << "event FAILS dilepton mass selection." << std::endl;
+	      std::cout << " (dilepton mass = " << mass_ll << ")" << std::endl;
+      }
+      fail_counter->Fill("m_ll", 1);
+      continue;
+    }
 //--- fill histograms with events passing final selection
 
     std::string stEta;
@@ -582,6 +650,7 @@ int main(int argc, char* argv[])
       histos["OS"]["total"][process_string]->Fill(mass_ll, evtWeight);
     }
     else assert(0);
+
     if (!useData){
       if (isCharge_SS)
       {
@@ -596,14 +665,14 @@ int main(int argc, char* argv[])
       else assert(0);
 
     }
-    /*if (isMC)
+    if (isMC)
     {
       /*if(preselElectrons[0]->genLepton_ == 0 && preselElectrons[1]->genLepton_ == 0)
         std::cout << "doublejama " << std::endl;
       else if (preselElectrons[0]->genLepton_ == 0 || preselElectrons[1]->genLepton_ == 0)
         std::cout << "lihtjama " << std::endl;
       else
-        std::cout << "nojama " << std::endl;*//*
+        std::cout << "nojama " << std::endl;*/
       for (int i = 0; i < 2; i++)
       {
         const GenLepton *gp = preselElectrons[i]->genLepton_;
@@ -622,7 +691,7 @@ int main(int argc, char* argv[])
         }
         else assert(0);
       }
-    }*/
+    }
 
     if (isCharge_SS)
       preselElectronHistManagerSS.fillHistograms(preselElectrons, evtWeight);
@@ -639,7 +708,7 @@ int main(int argc, char* argv[])
         }
       }
     }
-    (*selEventsFile) << run << ":" << lumi << ":" << event;
+    (*selEventsFile) << run << ":" << lumi << ":" << event << std::endl;
 
     ++selectedEntries;
     selectedEntries_weighted += evtWeight;
@@ -653,9 +722,9 @@ int main(int argc, char* argv[])
 
 
 
-//  delete run_lumi_eventSelector;
+  delete run_lumi_eventSelector;
 
-//  delete selEventsFile;
+  delete selEventsFile;
 
   delete muonReader;
   delete electronReader;
@@ -664,9 +733,6 @@ int main(int argc, char* argv[])
 
   hltPaths_delete(triggers_1e);
   hltPaths_delete(triggers_2e);
-  hltPaths_delete(triggers_1mu);
-  hltPaths_delete(triggers_2mu);
-  hltPaths_delete(triggers_1e1mu);
 
   clock.Show("analyze_charge_flip");
 
