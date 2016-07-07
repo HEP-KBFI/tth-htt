@@ -3,7 +3,8 @@
 #include <cmath> // fabs
 
 RecoElectronSelectorFakeable::RecoElectronSelectorFakeable(int index, bool debug)
-  : min_pt_(10.)
+  : apply_offline_e_trigger_cuts_(true)
+  , min_pt_(10.)
   , max_absEta_(2.5)
   , max_dxy_(0.05)
   , max_dz_(0.1)
@@ -60,7 +61,7 @@ bool RecoElectronSelectorFakeable::operator()(const RecoElectron& electron) cons
       assert(idxBin_mvaTTH >= 0 && idxBin_mvaTTH <= 1);
       if ( electron.jetPtRatio_ >= min_jetPtRatio_[idxBin_mvaTTH] &&
 	   electron.jetBtagCSV_ <= max_jetBtagCSV_[idxBin_mvaTTH] ) {
-	if ( electron.pt_ <= min_pt_trig_ ) return true;
+	if ( electron.pt_ <= min_pt_trig_ || !apply_offline_e_trigger_cuts_ ) return true;
 	else if ( electron.sigmaEtaEta_ <= max_sigmaEtaEta_trig_[idxBin_absEta] &&
 		  electron.HoE_ <= max_HoE_trig_[idxBin_absEta] &&
 		  electron.deltaEta_ <= max_deltaEta_trig_[idxBin_absEta] &&

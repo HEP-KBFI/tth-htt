@@ -3,8 +3,9 @@
 #include <cmath> // fabs
 
 RecoElectronSelectorTight::RecoElectronSelectorTight(int index, bool debug)
-  : debug_(debug)
-  , min_pt_(15.) // 15 GeV for 2lss channel, 10 GeV for 3l channel (cf. Table 13 of AN-2015/321)
+  : apply_offline_e_trigger_cuts_(true)
+  , debug_(debug)
+  , min_pt_(10.) // 15 GeV for 2lss channel, 10 GeV for 3l channel (cf. Table 13 of AN-2015/321)
   , max_absEta_(2.5)
   , max_dxy_(0.05)
   , max_dz_(0.1)
@@ -94,7 +95,7 @@ bool RecoElectronSelectorTight::operator()(const RecoElectron& electron) const
     return false;
   }
   // extra cuts for electrons passing pT threshold of single electron trigger, as explained in section 3.3.4 of AN-2015/321
-  if ( electron.pt_ >= min_pt_trig_ ) { 
+  if ( apply_offline_e_trigger_cuts_ && electron.pt_ >= min_pt_trig_ ) { 
     if ( electron.sigmaEtaEta_ > max_sigmaEtaEta_trig_[idxBin] ) {
       if ( debug_ ) std::cout << "FAILS sigmaEtaEta cut." << std::endl;
       return false;

@@ -14,6 +14,10 @@ class RecoElectronSelectorTight
   RecoElectronSelectorTight(int index = -1, bool debug = false);
   ~RecoElectronSelectorTight() {}
 
+  // enable/disable cuts on electron ID variables to mimic electron ID cuts applied by single electron trigger 
+  void enable_offline_e_trigger_cuts()  { apply_offline_e_trigger_cuts_ = true; }
+  void disable_offline_e_trigger_cuts() { apply_offline_e_trigger_cuts_ = false; }
+
   /**
    * @brief Check if electron given as function argument passes "tight" electron selection, defined in Table 13 of AN-2015/321
    * @return True if electron passes selection; false otherwise
@@ -21,6 +25,7 @@ class RecoElectronSelectorTight
   bool operator()(const RecoElectron& electron) const;
 
  protected: 
+  bool apply_offline_e_trigger_cuts_;
   bool debug_;
 
   Double_t min_pt_;                   ///< lower cut threshold on pT

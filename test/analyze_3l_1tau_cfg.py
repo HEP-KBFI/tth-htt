@@ -12,10 +12,10 @@ process.fwliteInput = cms.PSet(
 )
 
 process.fwliteOutput = cms.PSet(
-    fileName = cms.string('analyze_2lss_1tau.root')
+    fileName = cms.string('analyze_3l_1tau.root')
 )
 
-process.analyze_2lss_1tau = cms.PSet(
+process.analyze_3l_1tau = cms.PSet(
     treeName = cms.string('tree'),
 
     process = cms.string('ttH'),
@@ -35,7 +35,6 @@ process.analyze_2lss_1tau = cms.PSet(
     apply_offline_e_trigger_cuts_2e = cms.bool(False),
     apply_offline_e_trigger_cuts_1e1mu = cms.bool(False),
     
-    chargeSelection = cms.string('SS'),
     leptonSelection = cms.string('Tight'),
     
     leptonFakeRateLooseToTightWeight = cms.PSet(

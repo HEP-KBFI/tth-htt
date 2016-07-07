@@ -5,17 +5,17 @@ import os
 process = cms.PSet()
   
 process.fwliteInput = cms.PSet(
-    fileNames = cms.vstring('/afs/cern.ch/user/v/veelken/scratch0/VHbbNtuples_7_6_x/CMSSW_7_6_3/src/VHbbAnalysis/Heppy/test/latest_Loop/tree.root'),
-    ##fileNames = cms.vstring('/afs/cern.ch/user/k/kaehatah/public/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/VHBB_HEPPY_V12_ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_Py8_mWCutfix__fall15MAv2-pu25ns15v1_76r2as_v12-v1/160330_172426/0000/tree_1.root'),
+    ##fileNames = cms.vstring('/afs/cern.ch/user/v/veelken/scratch0/VHbbNtuples_7_6_x/CMSSW_7_6_3/src/VHbbAnalysis/Heppy/test/latest_Loop/tree.root'),
+    fileNames = cms.vstring('/afs/cern.ch/user/k/kaehatah/public/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/VHBB_HEPPY_V12_ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_Py8_mWCutfix__fall15MAv2-pu25ns15v1_76r2as_v12-v1/160330_172426/0000/tree_1.root'),
     maxEvents = cms.int32(-1),
     outputEvery = cms.uint32(100000)
 )
 
 process.fwliteOutput = cms.PSet(
-    fileName = cms.string('analyze_2lss_1tau.root')
+    fileName = cms.string('analyze_2l_2tau.root')
 )
 
-process.analyze_2lss_1tau = cms.PSet(
+process.analyze_2l_2tau = cms.PSet(
     treeName = cms.string('tree'),
 
     process = cms.string('ttH'),
@@ -34,15 +34,17 @@ process.analyze_2lss_1tau = cms.PSet(
     apply_offline_e_trigger_cuts_1e = cms.bool(True),
     apply_offline_e_trigger_cuts_2e = cms.bool(False),
     apply_offline_e_trigger_cuts_1e1mu = cms.bool(False),
-    
-    chargeSelection = cms.string('SS'),
-    leptonSelection = cms.string('Tight'),
-    
-    leptonFakeRateLooseToTightWeight = cms.PSet(
-        inputFileName = cms.string(""),
-        histogramName_e = cms.string("FR_mva075_el_data_comb"),
-        histogramName_mu = cms.string("FR_mva075_mu_data_comb")
-    ),
+        
+    chargeSelection_lepton = cms.string('OS'),
+    chargeSelection_hadTau = cms.string('OS'),
+    hadTauSelection = cms.string('Tight'),
+    hadTauGenMatch = cms.string('all'),
+
+    hadTauEtaBins_lead = cms.vdouble(-1., 1.2, 1.7, 9.9),
+    hadTauEtaBins_sublead = cms.vdouble(-1., 1.2, 1.7, 9.9),
+
+    applyJetToTauFakeRateWeight = cms.bool(False),
+    jetToTauFakeRateWeight = cms.PSet(),
     
     isMC = cms.bool(False),
     central_or_shift = cms.string('central'),

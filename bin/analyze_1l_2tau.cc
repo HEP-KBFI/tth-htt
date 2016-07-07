@@ -705,8 +705,8 @@ int main(int argc, char* argv[])
 //--- apply data/MC corrections for trigger efficiency,
 //    and efficiencies for lepton to pass loose identification and isolation criteria
     if ( isMC ) {
-      evtWeight *= sf_triggerEff(preselLepton_type, preselLepton->pt_, preselLepton->eta_);
-      evtWeight *= sf_leptonID_and_Iso_loose(preselLepton_type, preselLepton->pt_, preselLepton->eta_);
+      evtWeight *= sf_triggerEff(1, preselLepton_type, preselLepton->pt_, preselLepton->eta_);
+      evtWeight *= sf_leptonID_and_Iso_loose(1, preselLepton_type, preselLepton->pt_, preselLepton->eta_);
     }       
 
 //--- fill histograms with events passing preselection
@@ -775,9 +775,6 @@ int main(int argc, char* argv[])
     if ( chargeSelection == kSS && isCharge_OS ) continue;
     cutFlowTable.update(Form("tau-pair %s charge", chargeSelection_string.data()), evtWeight);
 
-    //if ( met_LD < 0.2 ) continue;
-    //cutFlowTable.update("met LD > 0.2", evtWeight);
-    
     if ( hadTauSelection == kFakeable ) {
       if ( tightHadTaus_lead.size() >= 1 && tightHadTaus_sublead.size() >= 1 ) continue; // CV: avoid overlap with signal region
       cutFlowTable.update("signal region veto", evtWeight);
@@ -786,11 +783,10 @@ int main(int argc, char* argv[])
 //--- apply data/MC corrections for efficiencies of leptons passing the loose identification and isolation criteria
 //    to also pass the tight identification and isolation criteria
     if ( isMC ) {
-      double sf_tight_to_loose = sf_leptonID_and_Iso_tight_to_loose(preselLepton_type, preselLepton->pt_, preselLepton->eta_);
+      double sf_tight_to_loose = sf_leptonID_and_Iso_tight_to_loose(1, preselLepton_type, preselLepton->pt_, preselLepton->eta_);
       evtWeight *= sf_tight_to_loose;
-    }
+    }    
 
-//--- 
     if ( applyJetToTauFakeRateWeight ) {
       double selHadTau_lead_pt = selHadTau_lead->pt_;
       double selHadTau_lead_absEta = std::fabs(selHadTau_lead->eta_);

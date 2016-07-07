@@ -11,7 +11,7 @@ RecoHadTauSelectorFakeable_1l_2tau::RecoHadTauSelectorFakeable_1l_2tau(int index
   min_id_mva_dR03_ = 2;
   max_raw_cut_dR05_ = 1.e+6;
   // CV: require leading (subleading) hadronic tau candidates selected in 1l_2tau channel to pass very loose (loose) WP of discriminator against electrons
-  if ( index == 0 ) {
+  if ( index == -1 || index == 0 ) {
     min_antiElectron_ = 1;
   } else if ( index == 1 ) {
     min_antiElectron_ = 2;

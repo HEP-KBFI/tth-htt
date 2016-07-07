@@ -1,5 +1,5 @@
 import json, os, codecs, stat, logging, sys, jinja2, subprocess, getpass, time
-import tthAnalyzeSamples_1l_2tau
+import tthAnalyzeSamples_2l_2tau
 
 LUMI = 2301. # 1/pb
 DKEY_JOBS = "jobs"       # dir for jobs aka bash scripts that run a single analysis executable
@@ -42,7 +42,7 @@ class analyzeConfig:
   
   Args:
     output_dir: The root output dir -- all configuration, log and output files are stored in its subdirectories
-    exec_name: Name of the executable that runs the analysis; possible values are `analyze_2lss_1tau`, `analyze_2los_1tau` and `analyze_1l_2tau`
+    exec_name: Name of the executable that runs the analysis; possible values are `analyze_2lss_1tau`, `analyze_2los_1tau` and `analyze_2l_2tau`
     charge_selection: either `OS` or `SS` (opposite-sign or same-sign)
     tau_selection: either `Tight`, `Loose` or `Fakeable`
     max_files_per_job: maximum number of input root files (Ntuples) are allowed to chain together per job
@@ -62,8 +62,8 @@ class analyzeConfig:
     dirs: list of subdirectories under `subdir` -- jobs, cfgs, histograms, logs, datacards
     makefile_fullpath: full path to the Makefile
     sbatch_fullpath: full path to the bash script that submits all jobs to SLURM
-    histogram_files_jobs: the histogram files produced by 'analyze_1l_2tau' jobs
-    histogram_files_jobs_exists: flags indicating if histogram files already exist from a previous execution of 'tthAnalyzeRun_1l_2tau.py', so that 'analyze_1l_2tau' jobs do not have to be submitted again	
+    histogram_files_jobs: the histogram files produced by 'analyze_2l_2tau' jobs
+    histogram_files_jobs_exists: flags indicating if histogram files already exist from a previous execution of 'tthAnalyzeRun_2l_2tau.py', so that 'analyze_2l_2tau' jobs do not have to be submitted again	
     histogram_file_hadd_stage1: the histogram file obtained by hadding the output of all jobs
     histogram_file_hadd_stage2: the final histogram file with data-driven background estimates added
     datacard_outputfile: the datacard -- final output file of this execution flow
@@ -73,7 +73,7 @@ class analyzeConfig:
                max_files_per_job, use_lumi, debug, running_method, nof_parallel_jobs, poll_interval, 
 	       comp_jetToTauFakeRate_exec, prep_dcard_exec, histogram_to_fit):
 
-    assert(exec_name in [ "analyze_1l_2tau" ]), "Invalid exec name: %s" % exec_name
+    assert(exec_name in [ "analyze_2l_2tau" ]), "Invalid exec name: %s" % exec_name
     for charge_selection in charge_selections:
       assert(charge_selection in [ "OS", "SS" ]),                                         "Invalid charge selection: %s" % charge_selection
     for hadTau_selection in hadTau_selections:
@@ -120,20 +120,20 @@ class analyzeConfig:
           { dkey: os.path.join(self.output_dir, dkey, self.subdir[hadTau_selection_and_frWeight][charge_selection]) for dkey in dir_types }        
     print "self.dirs = ", self.dirs
 
-    self.makefile_fullpath_woFakeRateWeight = os.path.join(self.output_dir, "Makefile_1l_2tau_woFakeRateWeight")
-    self.sbatch_fullpath_woFakeRateWeight = os.path.join(self.output_dir, "sbatch_1l_2tau_woFakeRateWeight.sh")
-    self.makefile_fullpath_wFakeRateWeight = os.path.join(self.output_dir, "Makefile_1l_2tau_wFakeRateWeight")
-    self.sbatch_fullpath_wFakeRateWeight = os.path.join(self.output_dir, "sbatch_1l_2tau_wFakeRateWeight.sh")
+    self.makefile_fullpath_woFakeRateWeight = os.path.join(self.output_dir, "Makefile_2l_2tau_woFakeRateWeight")
+    self.sbatch_fullpath_woFakeRateWeight = os.path.join(self.output_dir, "sbatch_2l_2tau_woFakeRateWeight.sh")
+    self.makefile_fullpath_wFakeRateWeight = os.path.join(self.output_dir, "Makefile_2l_2tau_wFakeRateWeight")
+    self.sbatch_fullpath_wFakeRateWeight = os.path.join(self.output_dir, "sbatch_2l_2tau_wFakeRateWeight.sh")
     self.histogram_files_jobs_woFakeRateWeight = {}
     self.histogram_files_jobs_wFakeRateWeight = {}
     self.histogram_files_jobs = {}
     self.histogram_files_jobs_exist = {}
-    self.histogram_file_hadd_stage1 = os.path.join(self.output_dir, DKEY_HIST, "histograms_harvested_stage1_1l_2tau.root")
-    self.jetToTauFakeRate_outputfile = os.path.join(self.output_dir, DKEY_DCRD, "comp_jetToTauFakeRate_1l_2tau.root")
-    self.comp_jetToTauFakeRate_cfg_fullpath = os.path.join(self.output_dir, DKEY_CFGS, "comp_jetToTauFakeRate_1l_2tau_cfg.py")
-    self.histogram_file_hadd_stage2 = os.path.join(self.output_dir, DKEY_HIST, "histograms_harvested_stage2_1l_2tau.root")    
-    self.datacard_outputfile = os.path.join(self.output_dir, DKEY_DCRD, "prepareDatacards_1l_2tau.root")
-    self.prep_dcard_cfg_fullpath = os.path.join(self.output_dir, DKEY_CFGS, "prepareDatacards_1l_2tau_cfg.py")
+    self.histogram_file_hadd_stage1 = os.path.join(self.output_dir, DKEY_HIST, "histograms_harvested_stage1_2l_2tau.root")
+    self.jetToTauFakeRate_outputfile = os.path.join(self.output_dir, DKEY_DCRD, "comp_jetToTauFakeRate_2l_2tau.root")
+    self.comp_jetToTauFakeRate_cfg_fullpath = os.path.join(self.output_dir, DKEY_CFGS, "comp_jetToTauFakeRate_2l_2tau_cfg.py")
+    self.histogram_file_hadd_stage2 = os.path.join(self.output_dir, DKEY_HIST, "histograms_harvested_stage2_2l_2tau.root")    
+    self.datacard_outputfile = os.path.join(self.output_dir, DKEY_DCRD, "prepareDatacards_2l_2tau.root")
+    self.prep_dcard_cfg_fullpath = os.path.join(self.output_dir, DKEY_CFGS, "prepareDatacards_2l_2tau_cfg.py")
 
 def query_yes_no(question, default = "yes"):
   """Prompts user yes/no
@@ -202,11 +202,22 @@ process.{{ execName }} = cms.PSet(
     process = cms.string('{{ categoryName }}'),
 
     triggers_1e = cms.vstring("HLT_BIT_HLT_Ele23_WPLoose_Gsf_v"),
-    use_triggers_1e = cms.bool({{ use_triggers_1e }}),
+    use_triggers_1e = cms.bool(True),
+    triggers_2e = cms.vstring("HLT_BIT_HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v"),
+    use_triggers_2e = cms.bool(True),
     triggers_1mu = cms.vstring("HLT_BIT_HLT_IsoMu20_v", "HLT_BIT_HLT_IsoTkMu20_v"),
-    use_triggers_1mu = cms.bool({{ use_triggers_1mu }}),
-    
-    chargeSelection = cms.string('{{ chargeSelection }}'),
+    use_triggers_1mu = cms.bool(True),
+    triggers_2mu = cms.vstring("HLT_BIT_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v", "HLT_BIT_HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v"),
+    use_triggers_2mu = cms.bool(True),
+    triggers_1e1mu = cms.vstring("HLT_BIT_HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v", "HLT_BIT_HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v"),
+    use_triggers_1e1mu = cms.bool(True),
+
+    apply_offline_e_trigger_cuts_1e = cms.bool(True),
+    apply_offline_e_trigger_cuts_2e = cms.bool(False),
+    apply_offline_e_trigger_cuts_1e1mu = cms.bool(False),
+
+    chargeSelection_lepton = cms.string('OS'),
+    chargeSelection_hadTau = cms.string('{{ chargeSelection }}'),
     hadTauSelection = cms.string('{{ hadTauSelection }}'),
     hadTauGenMatch = cms.string('{{ hadTauGenMatch }}'),
 
@@ -252,6 +263,9 @@ process.{{ execName }} = cms.PSet(
     categoryName = category_name,
     use_triggers_1e = "1e" in triggers,
     use_triggers_1mu = "1mu" in triggers,
+    use_triggers_2e = "2e" in triggers,
+    use_triggers_2mu = "2mu" in triggers,
+    use_triggers_1e1mu = "1e1mu" in triggers,  
     chargeSelection = charge_selection,
     hadTauSelection = hadTau_selection,
     hadTauGenMatch = hadTau_genMatch,
@@ -475,7 +489,7 @@ process.prepareDatacards = cms.PSet(
   return jinja2.Template(cfg_file).render(
     histogramFile = cfg.histogram_file_hadd_stage2,
     outputFile = cfg.datacard_outputfile,
-    dir = "1l_2tau_OS_Tight",
+    dir = "2l_2tau_OS_Tight",
     outputCategory = cfg.output_category,
     histogramToFit = cfg.histogram_to_fit)
 
@@ -538,7 +552,7 @@ def create_setup(cfg):
   """
 
   cfg_basenames = {}   
-  for sample_name, sample_info in tthAnalyzeSamples_1l_2tau.samples.items():
+  for sample_name, sample_info in tthAnalyzeSamples_2l_2tau.samples.items():
     if not sample_info["use_it"] or sample_info["sample_category"] in \
       ["additional_signal_overlap", "background_data_estimate"]: continue
 
@@ -652,7 +666,7 @@ def create_setup(cfg):
   if cfg.is_makefile:
     commands_woFakeRateWeight = []
     commands_wFakeRateWeight = []
-    for sample_name, sample_info in tthAnalyzeSamples_1l_2tau.samples.items():
+    for sample_name, sample_info in tthAnalyzeSamples_2l_2tau.samples.items():
       if not sample_name in cfg.histogram_files_jobs.keys():
         continue
       process_name = sample_info["process_name_specific"]
@@ -683,7 +697,7 @@ def create_setup(cfg):
     sbatch_logfiles_woFakeRateWeight = []
     commands_wFakeRateWeight = []
     sbatch_logfiles_wFakeRateWeight = []
-    for sample_name, sample_info in tthAnalyzeSamples_1l_2tau.samples.items():
+    for sample_name, sample_info in tthAnalyzeSamples_2l_2tau.samples.items():
       if not sample_name in cfg.histogram_files_jobs.keys():
         continue
       process_name = sample_info["process_name_specific"]
@@ -736,8 +750,8 @@ def run_setup(cfg):
   Args:
     cfg: Configuration object containig relevant full paths (see `analyzeConfig`)
   """
-  stdout_file = codecs.open(os.path.join(cfg.output_dir, "stdout_1l_2tau.log"), 'w', 'utf-8')
-  stderr_file = codecs.open(os.path.join(cfg.output_dir, "stderr_1l_2tau.log"), 'w', 'utf-8')
+  stdout_file = codecs.open(os.path.join(cfg.output_dir, "stdout_2l_2tau.log"), 'w', 'utf-8')
+  stderr_file = codecs.open(os.path.join(cfg.output_dir, "stderr_2l_2tau.log"), 'w', 'utf-8')
 
   def run_cmd(command, do_not_log = False):
     """Runs given commands and logs stdout and stderr to files
@@ -774,7 +788,7 @@ def run_setup(cfg):
         else:                  break
         logging.info("Waiting for sbatch to finish (%d still left) ..." % nof_jobs_left)
 
-  logging.info("Running 'analyze_1l_2tau' jobs without jet->tau fake rate weights ...")
+  logging.info("Running 'analyze_2l_2tau' jobs without jet->tau fake rate weights ...")
   sbatch_command = cfg.sbatch_fullpath_woFakeRateWeight if cfg.is_sbatch \
                    else "make -f %s -j %d" % (cfg.makefile_fullpath_woFakeRateWeight, cfg.nof_parallel_jobs)
   
@@ -794,7 +808,7 @@ def run_setup(cfg):
       run_cmd(command_hadd_sample)
 
   inputFiles_hadd_stage1 = []
-  for sample_name, sample_info in tthAnalyzeSamples_1l_2tau.samples.items():
+  for sample_name, sample_info in tthAnalyzeSamples_2l_2tau.samples.items():
     if not sample_name in cfg.histogram_files_jobs_woFakeRateWeight.keys():
       continue
 
@@ -824,7 +838,7 @@ def run_setup(cfg):
   command_jetToTauFakeRate = "%s %s" % (cfg.comp_jetToTauFakeRate_exec, cfg.comp_jetToTauFakeRate_cfg_fullpath)
   run_cmd(command_jetToTauFakeRate)
 
-  logging.info("Running 'analyze_1l_2tau' jobs with jet->tau fake rate weights ...")
+  logging.info("Running 'analyze_2l_2tau' jobs with jet->tau fake rate weights ...")
   sbatch_command = cfg.sbatch_fullpath_wFakeRateWeight if cfg.is_sbatch \
                    else "make -f %s -j %d" % (cfg.makefile_fullpath_wFakeRateWeight, cfg.nof_parallel_jobs)
   
@@ -834,7 +848,7 @@ def run_setup(cfg):
     wait_for_sbatch(sbatch_taskids)
 
   inputFiles_hadd_stage2 = []
-  for sample_name, sample_info in tthAnalyzeSamples_1l_2tau.samples.items():
+  for sample_name, sample_info in tthAnalyzeSamples_2l_2tau.samples.items():
     if not sample_name in cfg.histogram_files_jobs_wFakeRateWeight.keys():
       continue
 
@@ -879,7 +893,7 @@ if __name__ == '__main__':
                       format = '%(asctime)s - %(levelname)s: %(message)s')
 
   cfg = analyzeConfig(output_dir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", version),
-                      exec_name = "analyze_1l_2tau",
+                      exec_name = "analyze_2l_2tau",
 		      hadTau_selections = [ "Tight", "Fakeable" ],	
                       charge_selections = [ "OS", "SS" ],
 		      central_or_shifts = [ 

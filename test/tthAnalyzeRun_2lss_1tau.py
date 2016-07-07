@@ -8,7 +8,7 @@ DKEY_HIST = "histograms" # dir for histograms = output of the jobs
 DKEY_LOGS = "logs"       # dir for log files (stdout/stderr of jobs)
 DKEY_DCRD = "datacards"  # dir for the datacard
 
-version = "2016Jul04"
+version = "2016Jul06"
 
 """
 TODO:
@@ -206,6 +206,10 @@ process.{{ execName }} = cms.PSet(
                                  "HLT_BIT_HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v"),
     use_triggers_1e1mu = cms.bool({{ use_triggers_1e1mu }}),
     {% endif %}
+    apply_offline_e_trigger_cuts_1e = cms.bool(True),
+    apply_offline_e_trigger_cuts_2e = cms.bool(False),
+    apply_offline_e_trigger_cuts_1e1mu = cms.bool(False),
+    
     chargeSelection = cms.string('{{ chargeSelection }}'),
     leptonSelection = cms.string('{{ leptonSelection }}'),
 

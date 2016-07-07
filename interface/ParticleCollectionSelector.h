@@ -47,6 +47,70 @@ typedef ParticleCollectionSelector<RecoElectron, RecoElectronSelectorFakeable> R
 typedef ParticleCollectionSelector<RecoElectron, RecoElectronSelectorCutBased> RecoElectronCollectionSelectorCutBased;
 typedef ParticleCollectionSelector<RecoElectron, RecoElectronSelectorMVABased> RecoElectronCollectionSelectorMVABased;
 
+template<>
+class ParticleCollectionSelector<RecoElectron, RecoElectronSelectorTight>
+{
+ public:
+  ParticleCollectionSelector(int index = -1, bool debug = false)
+    : selIndex_(index)
+    , selector_(index, debug)
+  {}
+  ~ParticleCollectionSelector() {}
+
+  void enable_offline_e_trigger_cuts() { selector_.enable_offline_e_trigger_cuts(); }
+  void disable_offline_e_trigger_cuts() { selector_.disable_offline_e_trigger_cuts(); }
+
+  std::vector<const RecoElectron*> operator()(const std::vector<const RecoElectron*>& particles) const
+  {
+    std::vector<const RecoElectron*> selParticles;
+    int idx = 0;
+    for ( typename std::vector<const RecoElectron*>::const_iterator particle = particles.begin();
+	  particle != particles.end(); ++particle ) {
+      if ( (idx == selIndex_ || selIndex_ == -1) && selector_(**particle) ) {
+	selParticles.push_back(*particle);
+      }
+      ++idx;
+    }
+    return selParticles;
+  }
+
+ protected: 
+  int selIndex_;
+  RecoElectronSelectorTight selector_;
+};
+
+template<>
+class ParticleCollectionSelector<RecoElectron, RecoElectronSelectorFakeable>
+{
+ public:
+  ParticleCollectionSelector(int index = -1, bool debug = false)
+    : selIndex_(index)
+    , selector_(index, debug)
+  {}
+  ~ParticleCollectionSelector() {}
+
+  void enable_offline_e_trigger_cuts() { selector_.enable_offline_e_trigger_cuts(); }
+  void disable_offline_e_trigger_cuts() { selector_.disable_offline_e_trigger_cuts(); }
+
+  std::vector<const RecoElectron*> operator()(const std::vector<const RecoElectron*>& particles) const
+  {
+    std::vector<const RecoElectron*> selParticles;
+    int idx = 0;
+    for ( typename std::vector<const RecoElectron*>::const_iterator particle = particles.begin();
+	  particle != particles.end(); ++particle ) {
+      if ( (idx == selIndex_ || selIndex_ == -1) && selector_(**particle) ) {
+	selParticles.push_back(*particle);
+      }
+      ++idx;
+    }
+    return selParticles;
+  }
+  
+ protected: 
+  int selIndex_;
+  RecoElectronSelectorFakeable selector_;
+};
+
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuon.h"
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonSelectorLoose.h"
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonSelectorTight.h"

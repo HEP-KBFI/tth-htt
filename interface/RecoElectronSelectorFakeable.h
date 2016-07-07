@@ -14,6 +14,10 @@ class RecoElectronSelectorFakeable
   RecoElectronSelectorFakeable(int index = -1, bool debug = false);
   ~RecoElectronSelectorFakeable() {}
 
+  // enable/disable cuts on electron ID variables to mimic electron ID cuts applied by single electron trigger 
+  void enable_offline_e_trigger_cuts()  { apply_offline_e_trigger_cuts_ = true; }
+  void disable_offline_e_trigger_cuts() { apply_offline_e_trigger_cuts_ = false; }
+
   /**
    * @brief Check if electron given as function argument passes "tight" electron selection, defined in Table 13 of AN-2015/321
    * @return True if electron passes selection; false otherwise
@@ -21,6 +25,8 @@ class RecoElectronSelectorFakeable
   bool operator()(const RecoElectron& electron) const;
 
  protected: 
+  bool apply_offline_e_trigger_cuts_;
+
   Double_t min_pt_;                   ///< lower cut threshold on pT
   Double_t max_absEta_;               ///< upper cut threshold on absolute value of eta
   Double_t max_dxy_;                  ///< upper cut threshold on d_{xy}, distance in the transverse plane w.r.t PV
