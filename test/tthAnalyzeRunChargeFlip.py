@@ -11,6 +11,7 @@ DKEY_CFGS = "cfgs"       # dir for python configuration file for each job
 DKEY_HIST = "histograms" # dir for histograms = output of the jobs
 DKEY_LOGS = "logs"       # dir for log files (stdout/stderr of jobs)
 DKEY_DCRD = "datacards"  # dir for the datacard
+DKEY_EVLIST = "eventlists"  # dir for the datacard
 
 """
 TODO:
@@ -49,7 +50,7 @@ class analyzeCFConfig:
   """
   def __init__(self, output_dir, exec_name, lepton_selection,
                max_files_per_job, use_lumi, use_data, debug, running_method, nof_parallel_jobs,
-               poll_interval, prep_dcard_exec):
+               poll_interval, selected_datasets, sel_events_file, prep_dcard_exec):
 
     assert(exec_name in ["analyze_charge_flip"]), "Invalid exec name: %s" % exec_name
     assert(lepton_selection in ["Tight", "Loose", "Fakeable"]),                          "Invalid lepton selection: %s" % lepton_selection
@@ -65,6 +66,8 @@ class analyzeCFConfig:
     self.running_method = running_method
     self.nof_parallel_jobs = nof_parallel_jobs
     self.poll_interval = poll_interval
+    self.selected_datasets = selected_datasets
+    self.sel_events_file = sel_events_file
     self.prep_dcard_exec = prep_dcard_exec
     
     self.is_sbatch = False
@@ -75,7 +78,7 @@ class analyzeCFConfig:
     self.output_category = self.exec_name.replace("analyze_", "")
     self.subdir = "_".join([self.output_category, self.lepton_selection])
     self.analysis_type = self.subdir
-    dir_types = [DKEY_JOBS, DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_DCRD]
+    dir_types = [DKEY_JOBS, DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_DCRD, DKEY_EVLIST]
     self.dirs = {dkey: os.path.join(self.output_dir, dkey, self.subdir) for dkey in dir_types}
 
     self.makefile_fullpath = os.path.join(self.output_dir, "Makefile")
@@ -84,7 +87,7 @@ class analyzeCFConfig:
     self.datacard_outputfile = os.path.join(self.dirs[DKEY_DCRD], "prepareDatacardsCF.root")
     self.dcard_cfg_fullpath = os.path.join(self.dirs[DKEY_CFGS], "prepareDatacardsCF_cfg.py")
 
-def create_config(root_filenames, output_file, category_name, is_mc, use_data, lumi_scale, cfg, idx):
+def create_config(root_filenames, output_file, category_name, triggers, is_mc, use_data, lumi_scale, cfg, idx):
   """Fill python configuration file for the job exectuable (analysis code)
 
   Args:
@@ -119,19 +122,17 @@ process.{{ execName }} = cms.PSet(
     process = cms.string('{{ categoryName }}'),
 
     triggers_1e = cms.vstring("HLT_BIT_HLT_Ele23_WPLoose_Gsf_v"),
-    use_triggers_1e = cms.bool(True),
-    triggers_1mu = cms.vstring("HLT_BIT_HLT_IsoMu20_v", "HLT_BIT_HLT_IsoTkMu20_v"),
-    use_triggers_1mu = cms.bool(True),
-    {% if execName != "analyze_1l_2tau" %}
+    use_triggers_1e = cms.bool({{ use_triggers_1e }}),
     triggers_2e = cms.vstring("HLT_BIT_HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v"),
-    use_triggers_2e = cms.bool(True),
+    use_triggers_2e = cms.bool({{ use_triggers_2e }}),
+    triggers_1mu = cms.vstring("HLT_BIT_HLT_IsoMu20_v", "HLT_BIT_HLT_IsoTkMu20_v"),
+    use_triggers_1mu = cms.bool({{ use_triggers_1mu }}),
     triggers_2mu = cms.vstring("HLT_BIT_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v",
                                "HLT_BIT_HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v"),
-    use_triggers_2mu = cms.bool(True),
+    use_triggers_2mu = cms.bool({{ use_triggers_2mu }}),
     triggers_1e1mu = cms.vstring("HLT_BIT_HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v",
                                  "HLT_BIT_HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v"),
-    use_triggers_1e1mu = cms.bool(True),
-    {% endif %}
+    use_triggers_1e1mu = cms.bool({{ use_triggers_1e1mu }}),
     chargeSelection = cms.string('{{ chargeSelection }}'),
     leptonSelection = cms.string('{{ leptonSelection }}'),
 
@@ -140,8 +141,8 @@ process.{{ execName }} = cms.PSet(
     central_or_shift = cms.string('central'),
     lumiScale = cms.double({{ lumiScale }}),
 
-    selEventsFileName_input = cms.string(''),
-    selEventsFileName_output = cms.string('')
+    selEventsFileName_input = cms.string('{{ selEvents }}'),
+    selEventsFileName_output = cms.string('{{ outEvents }}')
 )
 
 """
@@ -150,14 +151,19 @@ process.{{ execName }} = cms.PSet(
     execName = cfg.exec_name,
     outputFile = output_file,
     categoryName = category_name,
+    use_triggers_1e = "1e" in triggers,
+    use_triggers_2e = "2e" in triggers,
+    use_triggers_1mu = False,
+    use_triggers_2mu = False,
+    use_triggers_1e1mu = False,
     leptonSelection = cfg.lepton_selection,
     #isMC = False, # NOTE: temporary fix; previously: is_mc
     isMC = is_mc,
     useData = use_data,
     lumiScale = lumi_scale,
+    selEvents = cfg.sel_events_file,
+    outEvents = output_file.replace("histograms", "eventlists").replace(".root", ".txt"),
     idx = idx)
-
-
 
 def create_makefile(commands, num):
   """Fills Makefile template
@@ -297,15 +303,19 @@ def create_setup(cfg):
     if not v["use_it"] or \
         (v["sample_category"] in ["background_data_estimate"] and "DY" not in v["process_name_specific"]): continue
     if not cfg.use_data and v["sample_category"] == "data_obs": continue
+    if len(cfg.selected_datasets) > 0 and v["sample_category"] not in cfg.selected_datasets and v["process_name_specific"] not in cfg.selected_datasets: continue
     #if not (v["sample_category"] in ["background_data_estimate"] and "DY" in v["process_name_specific"]): continue
 
     is_mc = v["type"] == "mc"
     process_name = v["process_name_specific"]
     category_name = v["sample_category"]
+    triggers = v["triggers"]
+
 
     cfg_outputdir = os.path.join(cfg.dirs[DKEY_CFGS], process_name)
     histogram_outputdir = os.path.join(cfg.dirs[DKEY_HIST], category_name)
-    for d in [cfg_outputdir, histogram_outputdir]: create_if_not_exists(d)
+    eventlist_outputdir = os.path.join(cfg.dirs[DKEY_EVLIST], category_name)
+    for d in [cfg_outputdir, histogram_outputdir, eventlist_outputdir]: create_if_not_exists(d)
     logging.info("Created config and job files for sample %s" % process_name)
 
     nof_files = v["nof_files"]
@@ -330,7 +340,7 @@ def create_setup(cfg):
       cfg_outputfile = "_".join([process_name, cfg.lepton_selection, str(idx)]) + ".root"
       cfg_outputfile_fullpath = os.path.join(histogram_outputdir, cfg_outputfile)
 
-      cfg_contents = create_config(cfg_filelist, cfg_outputfile_fullpath, category_name, is_mc, cfg.use_data, lumi_scale, cfg, idx)
+      cfg_contents = create_config(cfg_filelist, cfg_outputfile_fullpath, category_name, triggers, is_mc, cfg.use_data, lumi_scale, cfg, idx)
       cfg_file_fullpath = os.path.join(cfg_outputdir,  cfg_basename + ".py")
       with codecs.open(cfg_file_fullpath, "w", "utf-8") as f: f.write(cfg_contents)
 
@@ -425,7 +435,7 @@ if __name__ == '__main__':
                       level = logging.DEBUG,
                       format = '%(asctime)s - %(levelname)s: %(message)s')
 
-  cfg = analyzeCFConfig(output_dir = os.path.join("/home", getpass.getuser(), "tth", "testCF11"),
+  cfg = analyzeCFConfig(output_dir = os.path.join("/home", getpass.getuser(), "tth", "test_triggercutsON"),
                       exec_name = "analyze_charge_flip",
                       lepton_selection = "Tight",
                       max_files_per_job = 20,
@@ -435,6 +445,8 @@ if __name__ == '__main__':
                       running_method = "sbatch",
                       nof_parallel_jobs = 10,
                       poll_interval = 30,
+                      selected_datasets = ["data_obs", "DY"],
+                      sel_events_file = '',#os.path.join(os.environ["CMSSW_BASE"] , "src/tthAnalysis/HiggsToTauTau/data/eventlist_diff.txt"),
                       prep_dcard_exec = "prepareDatacardsCF"
                       )
 
