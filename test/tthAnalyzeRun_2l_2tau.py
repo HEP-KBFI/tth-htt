@@ -52,7 +52,7 @@ class analyzeConfig:
     nof_parallel_jobs: number of jobs that can be run in parallel (matters only if `running_method` is set to `Makefile`)
     poll_interval: the interval of checking whether all sbatch jobs are completed (matters only if `running_method` is set to `sbatch`)
     prep_dcard_exec: executable name for preparing the datacards
-    histogram_to_fit: what histograms are filtered in datacard preparation
+    histograms_to_fit: what histograms are filtered in datacard preparation
   
   Other:
     is_sbatch: boolean that is True if the `running_method` is set to `sbatch`; False otherwise
@@ -93,7 +93,7 @@ class analyzeConfig:
     self.poll_interval = poll_interval
     self.comp_jetToTauFakeRate_exec = comp_jetToTauFakeRate_exec
     self.prep_dcard_exec = prep_dcard_exec
-    self.histogram_to_fit = histogram_to_fit
+    self.histograms_to_fit = histograms_to_fit
     
     self.is_sbatch = False
     self.is_makefile = False
@@ -132,8 +132,8 @@ class analyzeConfig:
     self.jetToTauFakeRate_outputfile = os.path.join(self.output_dir, DKEY_DCRD, "comp_jetToTauFakeRate_2l_2tau.root")
     self.comp_jetToTauFakeRate_cfg_fullpath = os.path.join(self.output_dir, DKEY_CFGS, "comp_jetToTauFakeRate_2l_2tau_cfg.py")
     self.histogram_file_hadd_stage2 = os.path.join(self.output_dir, DKEY_HIST, "histograms_harvested_stage2_2l_2tau.root")    
-    self.datacard_outputfile = os.path.join(self.output_dir, DKEY_DCRD, "prepareDatacards_2l_2tau.root")
-    self.prep_dcard_cfg_fullpath = os.path.join(self.output_dir, DKEY_CFGS, "prepareDatacards_2l_2tau_cfg.py")
+    self.datacard_outputfile = os.path.join(self.output_dir, DKEY_DCRD, "prepareDatacards_2l_2tau_%s.root")
+    self.prep_dcard_cfg_fullpath = os.path.join(self.output_dir, DKEY_CFGS, "prepareDatacards_2l_2tau_%s_cfg.py")
 
 def query_yes_no(question, default = "yes"):
   """Prompts user yes/no
@@ -412,7 +412,7 @@ process.comp_jetToTauFakeRate = cms.PSet(
     histogramFile = cfg.histogram_file_hadd_stage1,
     outputFile = cfg.jetToTauFakeRate_outputfile)
 
-def create_prep_dcard_cfg(cfg):
+def create_prep_dcard_cfg(histogramFile, outputFile, dir, outputCategory, histogramToFit):
   """Fills the template of python configuration file for datacard preparation
 
   Args:
@@ -487,11 +487,11 @@ process.prepareDatacards = cms.PSet(
 )
 """
   return jinja2.Template(cfg_file).render(
-    histogramFile = cfg.histogram_file_hadd_stage2,
-    outputFile = cfg.datacard_outputfile,
-    dir = "2l_2tau_lepOS_tauOS_Tight",
-    outputCategory = cfg.output_category,
-    histogramToFit = cfg.histogram_to_fit)
+    histogramFile = histogramFile,
+    outputFile = outputFile,
+    dir = dir,
+    outputCategory = outputCategory,
+    histogramToFit = histogramToFit)
 
 def create_if_not_exists(dir_fullpath):
   """Creates a given directory if it doesn't exist yet
@@ -736,9 +736,11 @@ def create_setup(cfg):
   with codecs.open(cfg.comp_jetToTauFakeRate_cfg_fullpath, 'w', 'utf-8') as f: f.write(comp_jetToTauFakeRate_cfg_contents)
 
   logging.info("Creating configuration file for executing 'prepareDatacards'")
-  prep_dcard_cfg_contents = create_prep_dcard_cfg(cfg)
-  with codecs.open(cfg.prep_dcard_cfg_fullpath, 'w', 'utf-8') as f: f.write(prep_dcard_cfg_contents)
-
+  for histogramToFit in cfg.histograms_to_fit:
+    prep_dcard_cfg_contents = create_prep_dcard_cfg(cfg.histogram_file_hadd_stage2, cfg.datacard_outputfile % histogramToFit,
+      "2l_2tau_lepOS_tauOS_Tight", cfg.output_category, histogramToFit)
+    with codecs.open(cfg.prep_dcard_cfg_fullpath % histogramToFit, 'w', 'utf-8') as f: f.write(prep_dcard_cfg_contents)
+  
   logging.info("Done")
 
 def run_setup(cfg):
@@ -887,8 +889,9 @@ def run_setup(cfg):
   run_cmd(command_hadd_stage2)
 
   logging.info("Running '%s' ..." % cfg.prep_dcard_exec)
-  command_dcard = "%s %s" % (cfg.prep_dcard_exec, cfg.prep_dcard_cfg_fullpath)
-  run_cmd(command_dcard)
+  for histogramToFit in cfg.histograms_to_fit:
+    command_dcard = "%s %s" % (cfg.prep_dcard_exec, cfg.prep_dcard_cfg_fullpath % histogramToFit)
+    run_cmd(command_dcard)
 
   stdout_file.close()
   stderr_file.close()
@@ -935,7 +938,7 @@ if __name__ == '__main__':
                       poll_interval = 30,
                       comp_jetToTauFakeRate_exec = "comp_jetToTauFakeRate",
                       prep_dcard_exec = "prepareDatacards",
-                      histogram_to_fit = "mTauTauVis")
+                      histograms_to_fit = [ "EventCounter", "numJets", "mTauTauVis" ])
 
   create_setup(cfg)
   run_jobs = query_yes_no("Run %s, hadder and %s?" % (cfg.running_method, cfg.prep_dcard_exec))

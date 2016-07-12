@@ -45,7 +45,7 @@ class analyzeConfig:
     addFakes_exec: executable for estimating 'Fakes' background from data
     addFakes_exec: executable for estimating 'Flips' background from data
     prep_dcard_exec: executable name for preparing the datacards
-    histogram_to_fit: what histograms are filtered in datacard preparation
+    histograms_to_fit: what histograms are filtered in datacard preparation
   
   Other:
     is_sbatch: boolean that is True if the `running_method` is set to `sbatch`; False otherwise
@@ -91,7 +91,7 @@ class analyzeConfig:
     self.addFakes_exec = addFakes_exec
     self.addFlips_exec = addFlips_exec
     self.prep_dcard_exec = prep_dcard_exec
-    self.histogram_to_fit = histogram_to_fit
+    self.histograms_to_fit = histograms_to_fit
     
     self.is_sbatch = False
     self.is_makefile = False
@@ -124,8 +124,8 @@ class analyzeConfig:
     self.histogram_file_addFlips = os.path.join(self.output_dir, DKEY_HIST, "addBackgroundLeptonFlips_2lss_1tau.root")
     self.addFlips_cfg_fullpath = os.path.join(self.output_dir, DKEY_CFGS, "addBackgroundLeptonFlips_2lss_1tau_cfg.py")
     self.histogram_file_hadd_stage2 = os.path.join(self.output_dir, DKEY_HIST, "allHistograms_2lss_1tau.root")
-    self.datacard_outputfile = os.path.join(self.output_dir, DKEY_DCRD, "prepareDatacards_2lss_1tau.root")
-    self.prep_dcard_cfg_fullpath = os.path.join(self.output_dir, DKEY_CFGS, "prepareDatacards_2lss_1tau_cfg.py")
+    self.datacard_outputfile = os.path.join(self.output_dir, DKEY_DCRD, "prepareDatacards_2lss_1tau_%s.root")
+    self.prep_dcard_cfg_fullpath = os.path.join(self.output_dir, DKEY_CFGS, "prepareDatacards_2lss_1tau_%s_cfg.py")
 
 def query_yes_no(question, default = "yes"):
   """Prompts user yes/no
@@ -522,7 +522,7 @@ process.addBackgroundLeptonFlips = cms.PSet(
     histogramFile = cfg.histogram_file_hadd_stage1,
     outputFile = cfg.histogram_file_addFlips)
 
-def create_prep_dcard_cfg(cfg):
+def create_prep_dcard_cfg(histogramFile, outputFile, dir, outputCategory, histogramToFit):
   """Fills the template of python configuration file for datacard preparation
 
   Args:
@@ -596,11 +596,11 @@ process.prepareDatacards = cms.PSet(
 )
 """
   return jinja2.Template(cfg_file).render(
-    histogramFile = cfg.histogram_file_hadd_stage2,
-    outputFile = cfg.datacard_outputfile,
-    dir = "2lss_1tau_SS_Tight",
-    outputCategory = cfg.output_category,
-    histogramToFit = cfg.histogram_to_fit)
+    histogramFile = histogramFile,
+    outputFile = outputFile,
+    dir = dir,
+    outputCategory = outputCategory,
+    histogramToFit = histogramToFit)
 
 def create_if_not_exists(dir_fullpath):
   """Creates a given directory if it doesn't exist yet
@@ -721,7 +721,8 @@ def create_setup(cfg):
 
             selEventsFileName_output = None
             if central_or_shift == "central" and lepton_selection == "Tight" and charge_selection == "SS" and not is_mc:
-              selEventsFileName_output = "selEvents_%s_%s_%s_%i.txt" % (process_name, lepton_selection, charge_selection, idx) 
+              selEventsFileName_output = os.path.join(histogram_outputdir[lepton_selection][charge_selection],
+                "selEvents_%s_%s_%s_%i.txt" % (process_name, lepton_selection, charge_selection, idx))
 	    else:
               selEventsFileName_output = ""
             cfg_contents = create_config(cfg_filelist, cfg_outputfile_fullpath, category_name, triggers, lepton_selection, charge_selection, 
@@ -791,9 +792,11 @@ def create_setup(cfg):
   with codecs.open(cfg.addFlips_cfg_fullpath, 'w', 'utf-8') as f: f.write(addFlips_cfg_contents)  
 
   logging.info("Creating configuration file for executing 'prepareDatacards'")
-  prep_dcard_cfg_contents = create_prep_dcard_cfg(cfg)
-  with codecs.open(cfg.prep_dcard_cfg_fullpath, 'w', 'utf-8') as f: f.write(prep_dcard_cfg_contents)
-
+  for histogramToFit in cfg.histograms_to_fit:
+    prep_dcard_cfg_contents = create_prep_dcard_cfg(cfg.histogram_file_hadd_stage2, cfg.datacard_outputfile % histogramToFit,
+      "2lss_1tau_SS_Tight", cfg.output_category, histogramToFit)
+    with codecs.open(cfg.prep_dcard_cfg_fullpath % histogramToFit, 'w', 'utf-8') as f: f.write(prep_dcard_cfg_contents)
+  
   logging.info("Done")
 
 def run_setup(cfg):
@@ -884,9 +887,10 @@ def run_setup(cfg):
   command_hadd_stage2 = " ".join(["hadd", cfg.histogram_file_hadd_stage2] + subd_list_stage2)
   run_cmd(command_hadd_stage2)
 
-  logging.info("Running '%s' on the resulting histogram file %s ..." % (cfg.prep_dcard_exec, cfg.histogram_file_hadd_stage2))
-  command_dcard = "%s %s" % (cfg.prep_dcard_exec, cfg.prep_dcard_cfg_fullpath)
-  run_cmd(command_dcard)
+  logging.info("Running '%s' ..." % cfg.prep_dcard_exec)
+  for histogramToFit in cfg.histograms_to_fit:
+    command_dcard = "%s %s" % (cfg.prep_dcard_exec, cfg.prep_dcard_cfg_fullpath % histogramToFit)
+    run_cmd(command_dcard)
 
   stdout_file.close()
   stderr_file.close()
@@ -932,7 +936,7 @@ if __name__ == '__main__':
 		      addFakes_exec = "addBackgroundLeptonFakes",
                       addFlips_exec = "addBackgroundLeptonFlips", 
                       prep_dcard_exec = "prepareDatacards",
-                      histogram_to_fit = "mvaDiscr_2lss")
+                      histograms_to_fit = [ "EventCounter", "numJets", "mvaDiscr_2lss", "mTauTauVis" ])
 
   create_setup(cfg)
   run_jobs = query_yes_no("Run %s, hadder and %s?" % (cfg.running_method, cfg.prep_dcard_exec))

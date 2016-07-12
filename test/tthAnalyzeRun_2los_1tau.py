@@ -8,7 +8,7 @@ DKEY_HIST = "histograms" # dir for histograms = output of the jobs
 DKEY_LOGS = "logs"       # dir for log files (stdout/stderr of jobs)
 DKEY_DCRD = "datacards"  # dir for the datacard
 
-version = "2016Jul11_dR03mvaTight"
+version = "2016Jul12_dR03mvaTight"
 
 """
 TODO:
@@ -41,7 +41,7 @@ class analyzeConfig:
     nof_parallel_jobs: number of jobs that can be run in parallel (matters only if `running_method` is set to `Makefile`)
     poll_interval: the interval of checking whether all sbatch jobs are completed (matters only if `running_method` is set to `sbatch`)
     prep_dcard_exec: executable name for preparing the datacards
-    histogram_to_fit: what histograms are filtered in datacard preparation
+    histograms_to_fit: what histograms are filtered in datacard preparation
   
   Other:
     is_sbatch: boolean that is True if the `running_method` is set to `sbatch`; False otherwise
@@ -74,7 +74,7 @@ class analyzeConfig:
     self.nof_parallel_jobs = nof_parallel_jobs
     self.poll_interval = poll_interval
     self.prep_dcard_exec = prep_dcard_exec
-    self.histogram_to_fit = histogram_to_fit
+    self.histograms_to_fit = histograms_to_fit
     
     self.is_sbatch = False
     self.is_makefile = False
@@ -92,8 +92,8 @@ class analyzeConfig:
     self.histogram_files_jobs = {}
     self.histogram_files_jobs_exist = {}
     self.histogram_file_hadd = os.path.join(self.output_dir, DKEY_HIST, "histograms_harvested_2los_1tau.root")
-    self.datacard_outputfile = os.path.join(self.output_dir, DKEY_DCRD, "prepareDatacards_2los_1tau.root")
-    self.prep_dcard_cfg_fullpath = os.path.join(self.output_dir, DKEY_CFGS, "prepareDatacards_2los_1tau_cfg.py")
+    self.datacard_outputfile = os.path.join(self.output_dir, DKEY_DCRD, "prepareDatacards_2los_1tau_%s.root")
+    self.prep_dcard_cfg_fullpath = os.path.join(self.output_dir, DKEY_CFGS, "prepareDatacards_2los_1tau_%s_cfg.py")
 
 def query_yes_no(question, default = "yes"):
   """Prompts user yes/no
@@ -279,7 +279,7 @@ sbatch --partition={{ sbatch_queue }} --output={{ logfile }} {{ command }}{% end
 """
   return jinja2.Template(sbatch_template).render(sbatch_meta = sbatch_meta, sbatch_queue = sbatch_queue)
 
-def create_prep_dcard_cfg(cfg):
+def create_prep_dcard_cfg(histogramFile, outputFile, dir, outputCategory, histogramToFit):
   """Fills the template of python configuration file for datacard preparation
 
   Args:
@@ -354,11 +354,11 @@ process.prepareDatacards = cms.PSet(
 )
 """
   return jinja2.Template(cfg_file).render(
-    histogramFile = cfg.histogram_file_hadd,
-    outputFile = cfg.datacard_outputfile,
-    dir = "2los_1tau_Tight",
-    outputCategory = cfg.output_category,
-    histogramToFit = cfg.histogram_to_fit)
+    histogramFile = histogramFile,
+    outputFile = outputFile,
+    dir = dir,
+    outputCategory = outputCategory,
+    histogramToFit = histogramToFit)
 
 def create_if_not_exists(dir_fullpath):
   """Creates a given directory if it doesn't exist yet
@@ -536,8 +536,10 @@ def create_setup(cfg):
     add_chmodX(cfg.sbatch_fullpath)
 
   logging.info("Creating configuration file for executing 'prepareDatacards'")
-  prep_dcard_cfg_contents = create_prep_dcard_cfg(cfg)
-  with codecs.open(cfg.prep_dcard_cfg_fullpath, 'w', 'utf-8') as f: f.write(prep_dcard_cfg_contents)
+  for histogramToFit in cfg.histograms_to_fit:
+    prep_dcard_cfg_contents = create_prep_dcard_cfg(cfg.histogram_file_hadd_stage2, cfg.datacard_outputfile % histogramToFit,
+      "2los_1tau_Tight", cfg.output_category, histogramToFit)
+    with codecs.open(cfg.prep_dcard_cfg_fullpath % histogramToFit, 'w', 'utf-8') as f: f.write(prep_dcard_cfg_contents)
 
   logging.info("Done")
 
@@ -640,8 +642,9 @@ def run_setup(cfg):
   run_hadd(inputFiles_hadd, cfg.histogram_file_hadd)
 
   logging.info("Running '%s' ..." % cfg.prep_dcard_exec)
-  command_dcard = "%s %s" % (cfg.prep_dcard_exec, cfg.prep_dcard_cfg_fullpath)
-  run_cmd(command_dcard)
+  for histogramToFit in cfg.histograms_to_fit:
+    command_dcard = "%s %s" % (cfg.prep_dcard_exec, cfg.prep_dcard_cfg_fullpath % histogramToFit)
+    run_cmd(command_dcard)
 
   stdout_file.close()
   stderr_file.close()
@@ -685,7 +688,7 @@ if __name__ == '__main__':
                       nof_parallel_jobs = 10,
                       poll_interval = 30,
                       prep_dcard_exec = "prepareDatacards",
-                      histogram_to_fit = "numJets")
+                      histograms_to_fit = [ "EventCounter", "numJets", "mvaDiscr_2los", "mTauTauVis" ])
 
   create_setup(cfg)
   run_jobs = query_yes_no("Run %s, hadder and %s?" % (cfg.running_method, cfg.prep_dcard_exec))
