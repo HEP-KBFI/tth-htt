@@ -679,7 +679,7 @@ int main(int argc, char* argv[])
     preselLeptons.insert(preselLeptons.end(), preselMuons.begin(), preselMuons.end());
     std::sort(preselLeptons.begin(), preselLeptons.end(), isHigherPt);
     // require exactly two leptons passing loose preselection criteria to avoid overlap with 3l category
-    if ( !(preselLeptons.size() == 3) ) {
+    if ( !(preselLeptons.size() == 2) ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS preselLeptons selection." << std::endl;
 	std::cout << " (#preselLeptons = " << preselLeptons.size() << ")" << std::endl;
