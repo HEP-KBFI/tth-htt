@@ -1,5 +1,5 @@
 import json, os, codecs, stat, logging, sys, jinja2, subprocess, getpass, time
-import tthAnalyzeSamples_3l_1tau
+import tthAnalyzeSamples_2los_1tau
 
 LUMI = 2301. # 1/pb
 DKEY_JOBS = "jobs"       # dir for jobs aka bash scripts that run a single analysis executable
@@ -8,7 +8,7 @@ DKEY_HIST = "histograms" # dir for histograms = output of the jobs
 DKEY_LOGS = "logs"       # dir for log files (stdout/stderr of jobs)
 DKEY_DCRD = "datacards"  # dir for the datacard
 
-version = "2016Jul07"
+version = "2016Jul11_dR03mvaTight"
 
 """
 TODO:
@@ -33,7 +33,7 @@ class analyzeConfig:
   
   Args:
     output_dir: The root output dir -- all configuration, log and output files are stored in its subdirectories
-    exec_name: Name of the executable that runs the analysis; possible values are `analyze_2lss_1tau`, `analyze_2los_1tau` and `analyze_3l_1tau`
+    exec_name: Name of the executable that runs the analysis; possible values are `analyze_2lss_1tau`, `analyze_2los_1tau` and `analyze_2los_1tau`
     max_files_per_job: maximum number of input root files (Ntuples) are allowed to chain together per job
     use_lumi: if True, use lumiSection aka event weight ( = xsection * luminosity / nof events), otherwise uses plain event count
     debug: if True, checks each input root file (Ntuple) before creating the python configuration files
@@ -51,8 +51,8 @@ class analyzeConfig:
     dirs: list of subdirectories under `subdir` -- jobs, cfgs, histograms, logs, datacards
     makefile_fullpath: full path to the Makefile
     sbatch_fullpath: full path to the bash script that submits all jobs to SLURM
-    histogram_files_jobs: the histogram files produced by 'analyze_3l_1tau' jobs
-    histogram_files_jobs_exists: flags indicating if histogram files already exist from a previous execution of 'tthAnalyzeRun_3l_1tau.py', so that 'analyze_3l_1tau' jobs do not have to be submitted again	
+    histogram_files_jobs: the histogram files produced by 'analyze_2los_1tau' jobs
+    histogram_files_jobs_exists: flags indicating if histogram files already exist from a previous execution of 'tthAnalyzeRun_2los_1tau.py', so that 'analyze_2los_1tau' jobs do not have to be submitted again	
     histogram_file_hadd_stage: the histogram file obtained by hadding the output of all jobs
     datacard_outputfile: the datacard -- final output file of this execution flow
     prep_dcard_cfg_fullpath: python configuration file for datacard preparation executable
@@ -61,7 +61,7 @@ class analyzeConfig:
                max_files_per_job, use_lumi, debug, running_method, nof_parallel_jobs, poll_interval, 
 	       prep_dcard_exec, histogram_to_fit):
 
-    assert(exec_name in [ "analyze_3l_1tau" ]), "Invalid exec name: %s" % exec_name
+    assert(exec_name in [ "analyze_2los_1tau" ]), "Invalid exec name: %s" % exec_name
     assert(running_method.lower() in [ "sbatch", "makefile" ]),                           "Invalid running method: %s" % running_method
 
     self.output_dir = output_dir
@@ -87,13 +87,13 @@ class analyzeConfig:
     self.dirs = { dkey: os.path.join(self.output_dir, dkey, self.subdir) for dkey in dir_types }        
     print "self.dirs = ", self.dirs
 
-    self.makefile_fullpath = os.path.join(self.output_dir, "Makefile_3l_1tau")
-    self.sbatch_fullpath = os.path.join(self.output_dir, "sbatch_3l_1tau.sh")
+    self.makefile_fullpath = os.path.join(self.output_dir, "Makefile_2los_1tau")
+    self.sbatch_fullpath = os.path.join(self.output_dir, "sbatch_2los_1tau.sh")
     self.histogram_files_jobs = {}
     self.histogram_files_jobs_exist = {}
-    self.histogram_file_hadd = os.path.join(self.output_dir, DKEY_HIST, "histograms_harvested_3l_1tau.root")
-    self.datacard_outputfile = os.path.join(self.output_dir, DKEY_DCRD, "prepareDatacards_3l_1tau.root")
-    self.prep_dcard_cfg_fullpath = os.path.join(self.output_dir, DKEY_CFGS, "prepareDatacards_3l_1tau_cfg.py")
+    self.histogram_file_hadd = os.path.join(self.output_dir, DKEY_HIST, "histograms_harvested_2los_1tau.root")
+    self.datacard_outputfile = os.path.join(self.output_dir, DKEY_DCRD, "prepareDatacards_2los_1tau.root")
+    self.prep_dcard_cfg_fullpath = os.path.join(self.output_dir, DKEY_CFGS, "prepareDatacards_2los_1tau_cfg.py")
 
 def query_yes_no(question, default = "yes"):
   """Prompts user yes/no
@@ -179,12 +179,6 @@ process.{{ execName }} = cms.PSet(
     apply_offline_e_trigger_cuts_1e1mu = cms.bool(False),
 
     leptonSelection = cms.string('Tight'),
-    
-    leptonFakeRateLooseToTightWeight = cms.PSet(
-        inputFileName = cms.string(""),
-        histogramName_e = cms.string("FR_mva075_el_data_comb"),
-        histogramName_mu = cms.string("FR_mva075_mu_data_comb")
-    ),
 
     isMC = cms.bool({{ isMC }}),
     central_or_shift = cms.string('{{ central_or_shift }}'),
@@ -362,7 +356,7 @@ process.prepareDatacards = cms.PSet(
   return jinja2.Template(cfg_file).render(
     histogramFile = cfg.histogram_file_hadd,
     outputFile = cfg.datacard_outputfile,
-    dir = "3l_1tau_Tight",
+    dir = "2los_1tau_Tight",
     outputCategory = cfg.output_category,
     histogramToFit = cfg.histogram_to_fit)
 
@@ -428,7 +422,7 @@ def create_setup(cfg):
     create_if_not_exists(dir)
 
   cfg_basenames = {}   
-  for sample_name, sample_info in tthAnalyzeSamples_3l_1tau.samples.items():
+  for sample_name, sample_info in tthAnalyzeSamples_2los_1tau.samples.items():
     if not sample_info["use_it"] or sample_info["sample_category"] in \
       ["additional_signal_overlap", "background_data_estimate"]: continue
 
@@ -501,7 +495,7 @@ def create_setup(cfg):
 
   if cfg.is_makefile:
     commands = []
-    for sample_name, sample_info in tthAnalyzeSamples_3l_1tau.samples.items():
+    for sample_name, sample_info in tthAnalyzeSamples_2los_1tau.samples.items():
       if not sample_name in cfg.histogram_files_jobs.keys():
         continue
       process_name = sample_info["process_name_specific"]
@@ -522,7 +516,7 @@ def create_setup(cfg):
     logging.info("Creating SLURM jobs")
     commands = []
     sbatch_logfiles = []
-    for sample_name, sample_info in tthAnalyzeSamples_3l_1tau.samples.items():
+    for sample_name, sample_info in tthAnalyzeSamples_2los_1tau.samples.items():
       if not sample_name in cfg.histogram_files_jobs.keys():
         continue
       process_name = sample_info["process_name_specific"]
@@ -561,8 +555,8 @@ def run_setup(cfg):
   Args:
     cfg: Configuration object containig relevant full paths (see `analyzeConfig`)
   """
-  stdout_file = codecs.open(os.path.join(cfg.output_dir, "stdout_3l_1tau.log"), 'w', 'utf-8')
-  stderr_file = codecs.open(os.path.join(cfg.output_dir, "stderr_3l_1tau.log"), 'w', 'utf-8')
+  stdout_file = codecs.open(os.path.join(cfg.output_dir, "stdout_2los_1tau.log"), 'w', 'utf-8')
+  stderr_file = codecs.open(os.path.join(cfg.output_dir, "stderr_2los_1tau.log"), 'w', 'utf-8')
 
   def run_cmd(command, do_not_log = False):
     """Runs given commands and logs stdout and stderr to files
@@ -602,7 +596,7 @@ def run_setup(cfg):
         else:                  break
         logging.info("Waiting for sbatch to finish (%d still left) ..." % nof_jobs_left)
 
-  logging.info("Running 'analyze_3l_1tau' jobs ...")
+  logging.info("Running 'analyze_2los_1tau' jobs ...")
   sbatch_command = cfg.sbatch_fullpath if cfg.is_sbatch \
                    else "make -f %s -j %d" % (cfg.makefile_fullpath, cfg.nof_parallel_jobs)
   
@@ -622,7 +616,7 @@ def run_setup(cfg):
       run_cmd(command_hadd_sample)
 
   inputFiles_hadd = []
-  for sample_name, sample_info in tthAnalyzeSamples_3l_1tau.samples.items():
+  for sample_name, sample_info in tthAnalyzeSamples_2los_1tau.samples.items():
     if not sample_name in cfg.histogram_files_jobs.keys():
       continue
 
@@ -660,7 +654,7 @@ if __name__ == '__main__':
                       format = '%(asctime)s - %(levelname)s: %(message)s')
 
   cfg = analyzeConfig(output_dir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", version),
-                      exec_name = "analyze_3l_1tau",
+                      exec_name = "analyze_2los_1tau",
 		      central_or_shifts = [ 
 			"central",
 			"CMS_ttHl_btag_HFUp", 

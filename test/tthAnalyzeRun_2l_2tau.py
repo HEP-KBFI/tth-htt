@@ -489,7 +489,7 @@ process.prepareDatacards = cms.PSet(
   return jinja2.Template(cfg_file).render(
     histogramFile = cfg.histogram_file_hadd_stage2,
     outputFile = cfg.datacard_outputfile,
-    dir = "2l_2tau_OS_Tight",
+    dir = "2l_2tau_lepOS_tauOS_Tight",
     outputCategory = cfg.output_category,
     histogramToFit = cfg.histogram_to_fit)
 
@@ -550,6 +550,11 @@ def create_setup(cfg):
   Args:
     cfg: Configuration object containig relevant full paths (see `analyzeConfig`)
   """
+  
+  for hadTau_selection_and_frWeight in cfg.dirs.keys():        
+    for charge_selection in cfg.dirs[hadTau_selection_and_frWeight].keys():
+      for sample_name, dir in cfg.dirs[hadTau_selection_and_frWeight][charge_selection].items(): 
+        create_if_not_exists(dir)
 
   cfg_basenames = {}   
   for sample_name, sample_info in tthAnalyzeSamples_2l_2tau.samples.items():
@@ -777,13 +782,16 @@ def run_setup(cfg):
       while True:
         nof_jobs_left = 0      
         for idx_poll_group in range(num_poll_groups):
-          sbatch_taskids_poll_group = sbatch_taskids[idx_poll_group*taskids_per_poll_group:(idx_poll_group + 1)*taskids_per_poll_group]
+          idx_first = idx_poll_group*taskids_per_poll_group
+          idx_last = min((idx_poll_group + 1)*taskids_per_poll_group, len(sbatch_taskids))
+          sbatch_taskids_poll_group = sbatch_taskids[idx_first:idx_last]
           print "idx_poll_group = %i: len(sbatch_taskids_poll_group) = %i" % (idx_poll_group, len(sbatch_taskids_poll_group))
           command_poll = "squeue -u %s | grep \"%s\" | wc -l" % (whoami, "\\|".join(sbatch_taskids_poll_group))
           print "command_poll = '%s'" % command_poll
           retVal_poll = run_cmd(command_poll, True).rstrip("\n")
           print "retVal_poll = '%s'" % retVal_poll
           nof_jobs_left = nof_jobs_left + int(retVal_poll)
+          time.sleep(1)
         if nof_jobs_left != 0: time.sleep(cfg.poll_interval)
         else:                  break
         logging.info("Waiting for sbatch to finish (%d still left) ..." % nof_jobs_left)

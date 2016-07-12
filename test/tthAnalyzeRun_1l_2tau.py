@@ -8,7 +8,7 @@ DKEY_HIST = "histograms" # dir for histograms = output of the jobs
 DKEY_LOGS = "logs"       # dir for log files (stdout/stderr of jobs)
 DKEY_DCRD = "datacards"  # dir for the datacard
 
-version = "2016Jul07"
+version = "2016Jul11_dR03mvaTight"
 
 """
 TODO:
@@ -763,13 +763,16 @@ def run_setup(cfg):
       while True:
         nof_jobs_left = 0      
         for idx_poll_group in range(num_poll_groups):
-          sbatch_taskids_poll_group = sbatch_taskids[idx_poll_group*taskids_per_poll_group:(idx_poll_group + 1)*taskids_per_poll_group]
+          idx_first = idx_poll_group*taskids_per_poll_group
+          idx_last = min((idx_poll_group + 1)*taskids_per_poll_group, len(sbatch_taskids))
+          sbatch_taskids_poll_group = sbatch_taskids[idx_first:idx_last]
           print "idx_poll_group = %i: len(sbatch_taskids_poll_group) = %i" % (idx_poll_group, len(sbatch_taskids_poll_group))
           command_poll = "squeue -u %s | grep \"%s\" | wc -l" % (whoami, "\\|".join(sbatch_taskids_poll_group))
           print "command_poll = '%s'" % command_poll
           retVal_poll = run_cmd(command_poll, True).rstrip("\n")
           print "retVal_poll = '%s'" % retVal_poll
           nof_jobs_left = nof_jobs_left + int(retVal_poll)
+          time.sleep(1)
         if nof_jobs_left != 0: time.sleep(cfg.poll_interval)
         else:                  break
         logging.info("Waiting for sbatch to finish (%d still left) ..." % nof_jobs_left)
@@ -830,7 +833,7 @@ def run_setup(cfg):
   
   stdout = run_cmd(sbatch_command)
   if cfg.is_sbatch:
-    sbatch_taskids = "\\|".join([x.split()[-1] for x in stdout.split("\n")[:-1]]) # sbatch job nr is the last one
+    sbatch_taskids = [ x.split()[-1] for x in stdout.split("\n")[:-1] ] # sbatch job nr is the last one
     wait_for_sbatch(sbatch_taskids)
 
   inputFiles_hadd_stage2 = []
