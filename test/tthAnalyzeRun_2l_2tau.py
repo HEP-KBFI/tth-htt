@@ -71,7 +71,7 @@ class analyzeConfig:
   """
   def __init__(self, output_dir, exec_name, hadTau_selections, charge_selections, central_or_shifts,
                max_files_per_job, use_lumi, debug, running_method, nof_parallel_jobs, poll_interval, 
-	       comp_jetToTauFakeRate_exec, prep_dcard_exec, histogram_to_fit):
+	       comp_jetToTauFakeRate_exec, prep_dcard_exec, histograms_to_fit):
 
     assert(exec_name in [ "analyze_2l_2tau" ]), "Invalid exec name: %s" % exec_name
     for charge_selection in charge_selections:

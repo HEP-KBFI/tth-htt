@@ -59,7 +59,7 @@ class analyzeConfig:
   """
   def __init__(self, output_dir, exec_name, central_or_shifts,
                max_files_per_job, use_lumi, debug, running_method, nof_parallel_jobs, poll_interval, 
-	       prep_dcard_exec, histogram_to_fit):
+	       prep_dcard_exec, histograms_to_fit):
 
     assert(exec_name in [ "analyze_2los_1tau" ]), "Invalid exec name: %s" % exec_name
     assert(running_method.lower() in [ "sbatch", "makefile" ]),                           "Invalid running method: %s" % running_method
@@ -537,7 +537,7 @@ def create_setup(cfg):
 
   logging.info("Creating configuration file for executing 'prepareDatacards'")
   for histogramToFit in cfg.histograms_to_fit:
-    prep_dcard_cfg_contents = create_prep_dcard_cfg(cfg.histogram_file_hadd_stage2, cfg.datacard_outputfile % histogramToFit,
+    prep_dcard_cfg_contents = create_prep_dcard_cfg(cfg.histogram_file_hadd, cfg.datacard_outputfile % histogramToFit,
       "2los_1tau_Tight", cfg.output_category, histogramToFit)
     with codecs.open(cfg.prep_dcard_cfg_fullpath % histogramToFit, 'w', 'utf-8') as f: f.write(prep_dcard_cfg_contents)
 

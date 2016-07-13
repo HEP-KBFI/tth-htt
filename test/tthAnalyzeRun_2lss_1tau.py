@@ -36,6 +36,7 @@ class analyzeConfig:
     exec_name: Name of the executable that runs the analysis; possible values are `analyze_2lss_1tau`, `analyze_2los_1tau` and `analyze_1l_2tau`
     charge_selection: either `OS` or `SS` (opposite-sign or same-sign)
     lepton_selection: either `Tight`, `Loose` or `Fakeable`
+    hadTau_selection: either `dR05isoXXX` (with XXX = `Loose`, `Medium` or `Tight`) or `dR03mvaXXX` (with XXX = `Loose`, `Medium`, `Tight`, `VTight` or `VVTight`)
     max_files_per_job: maximum number of input root files (Ntuples) are allowed to chain together per job
     use_lumi: if True, use lumiSection aka event weight ( = xsection * luminosity / nof events), otherwise uses plain event count
     debug: if True, checks each input root file (Ntuple) before creating the python configuration files
@@ -68,7 +69,7 @@ class analyzeConfig:
   """
   def __init__(self, output_dir, exec_name, lepton_selections, charge_selections, central_or_shifts,
                max_files_per_job, use_lumi, debug, running_method, nof_parallel_jobs, poll_interval, 
-	       addFakes_exec, addFlips_exec, prep_dcard_exec, histogram_to_fit):
+	       addFakes_exec, addFlips_exec, prep_dcard_exec, histograms_to_fit):
 
     assert(exec_name in [ "analyze_2lss_1tau", "analyze_2los_1tau", "analyze_1l_2tau", "analyze_charge_flip" ]), "Invalid exec name: %s" % exec_name
     for charge_selection in charge_selections:
@@ -80,6 +81,7 @@ class analyzeConfig:
     self.output_dir = output_dir
     self.exec_name = exec_name
     self.lepton_selections = lepton_selections
+    self.hadTau_selection = hadTau_selection    
     self.charge_selections = charge_selections
     self.central_or_shifts = central_or_shifts
     self.max_files_per_job = max_files_per_job
@@ -159,7 +161,7 @@ def add_chmodX(fullpath):
   st = os.stat(fullpath)
   os.chmod(fullpath, st.st_mode | stat.S_IEXEC)
 
-def create_config(root_filenames, output_file, category_name, triggers, lepton_selection, charge_selection, is_mc, central_or_shift, lumi_scale, selEventsFileName_output, cfg, idx):
+def create_config(root_filenames, output_file, category_name, triggers, lepton_selection, charge_selection, hadTau_selection, is_mc, central_or_shift, lumi_scale, selEventsFileName_output, cfg, idx):
   """Fill python configuration file for the job exectuable (analysis code)
 
   Args:
@@ -218,6 +220,8 @@ process.{{ execName }} = cms.PSet(
         histogramName_e = cms.string("FR_mva075_el_data_comb"),
         histogramName_mu = cms.string("FR_mva075_mu_data_comb")
     ),			
+
+    hadTauSelection = cms.string('{{ hadTauSelection }}'),
     
     isMC = cms.bool({{ isMC }}),
     central_or_shift = cms.string('{{ central_or_shift }}'),
@@ -247,6 +251,7 @@ process.{{ execName }} = cms.PSet(
     chargeSelection = charge_selection,
     leptonSelection = lepton_selection,
     leptonFakeRateLooseToTightWeight_inputFileName = leptonFakeRateLooseToTightWeight_inputFileName,
+    hadTauSelection = hadTau_selection,      
     isMC = is_mc,      
     central_or_shift = central_or_shift,
     lumiScale = lumi_scale,
@@ -725,7 +730,7 @@ def create_setup(cfg):
                 "selEvents_%s_%s_%s_%i.txt" % (process_name, lepton_selection, charge_selection, idx))
 	    else:
               selEventsFileName_output = ""
-            cfg_contents = create_config(cfg_filelist, cfg_outputfile_fullpath, category_name, triggers, lepton_selection, charge_selection, 
+            cfg_contents = create_config(cfg_filelist, cfg_outputfile_fullpath, category_name, triggers, lepton_selection, charge_selection, cfg.hadTau_selection, 
 	      is_mc, central_or_shift, lumi_scale, selEventsFileName_output, cfg, idx)
             cfg_file_fullpath = os.path.join(cfg_outputdir[lepton_selection][charge_selection], cfg_basename + ".py")
             with codecs.open(cfg_file_fullpath, "w", "utf-8") as f: f.write(cfg_contents)
@@ -904,7 +909,9 @@ if __name__ == '__main__':
 
   cfg = analyzeConfig(output_dir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", version),
                       exec_name = "analyze_2lss_1tau",
-		      lepton_selections = [ "Tight", "Fakeable" ],	
+		      lepton_selections = [ "Tight", "Fakeable" ],
+                      ##hadTau_selection = [ "dR05isoLoose" ],
+                      hadTau_selection = [ "dR03mvaTight" ],
                       charge_selections = [ "OS", "SS" ],
 		      central_or_shifts = [ 
 			"central",

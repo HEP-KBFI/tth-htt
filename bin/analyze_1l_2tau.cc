@@ -34,7 +34,15 @@
 #include "tthAnalysis/HiggsToTauTau/interface/convert_to_ptrs.h" // convert_to_ptrs
 #include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionCleaner.h" // RecoElectronCollectionCleaner, RecoMuonCollectionCleaner, RecoHadTauCollectionCleaner, RecoJetCollectionCleaner
 #include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionGenMatcher.h" // RecoElectronCollectionGenMatcher, RecoMuonCollectionGenMatcher, RecoHadTauCollectionGenMatcher, RecoJetCollectionGenMatcher
-#include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionSelector.h" // RecoElectronSelectorLoose, RecoElectronSelectorTight, RecoMuonSelectorLoose, RecoMuonSelectorTight, RecoHadTauSelectorLoose, RecoHadTauSelectorTight
+#include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorLoose.h" // RecoElectronCollectionSelectorLoose
+#include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorTight.h" // RecoElectronCollectionSelectorTight
+#include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorLoose.h" // RecoMuonCollectionSelectorLoose
+#include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorTight.h" // RecoMuonCollectionSelectorTight
+#include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelectorLoose.h" // RecoHadTauCollectionSelectorLoose
+#include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelectorFakeable.h" // RecoHadTauCollectionSelectorFakeable
+#include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelectorTight.h" // RecoHadTauCollectionSelectorTight
+#include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelector.h" // RecoJetCollectionSelector
+#include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelectorBtag.h" // RecoJetCollectionSelectorBtagLoose, RecoJetCollectionSelectorBtagMedium
 #include "tthAnalysis/HiggsToTauTau/interface/RunLumiEventSelector.h" // RunLumiEventSelector
 #include "tthAnalysis/HiggsToTauTau/interface/ElectronHistManager.h" // ElectronHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/MuonHistManager.h" // MuonHistManager
@@ -339,12 +347,22 @@ int main(int argc, char* argv[])
   hadTauReader->setBranchAddresses(inputTree);
   RecoHadTauCollectionGenMatcher hadTauGenMatcher;
   RecoHadTauCollectionCleaner hadTauCleaner(0.3);
-  RecoHadTauCollectionSelectorLoose_1l_2tau preselHadTauSelector;
-  RecoHadTauCollectionSelectorFakeable_1l_2tau fakeableHadTauSelector_lead(0);
-  RecoHadTauCollectionSelectorFakeable_1l_2tau fakeableHadTauSelector_sublead(1);
-  RecoHadTauCollectionSelectorTight_1l_2tau tightHadTauSelector_lead(0);
-  RecoHadTauCollectionSelectorTight_1l_2tau tightHadTauSelector_sublead(1);
-  
+  RecoHadTauCollectionSelectorLoose preselHadTauSelector;
+  preselHadTauSelector.set_min_antiElectron(1);
+  preselHadTauSelector.set_min_antiMuon(1);
+  RecoHadTauCollectionSelectorFakeable fakeableHadTauSelector_lead(0);
+  fakeableHadTauSelector_lead.set_min_antiElectron(1);
+  fakeableHadTauSelector_lead.set_min_antiMuon(1);
+  RecoHadTauCollectionSelectorFakeable fakeableHadTauSelector_sublead(1);
+  fakeableHadTauSelector_sublead.set_min_antiElectron(2);
+  fakeableHadTauSelector_sublead.set_min_antiMuon(1);
+  RecoHadTauCollectionSelectorTight tightHadTauSelector_lead(0);
+  tightHadTauSelector_lead.set_min_antiElectron(1);
+  tightHadTauSelector_lead.set_min_antiMuon(1);
+  RecoHadTauCollectionSelectorTight tightHadTauSelector_sublead(1);
+  tightHadTauSelector_sublead.set_min_antiElectron(2);
+  tightHadTauSelector_sublead.set_min_antiMuon(1);
+
   RecoJetReader* jetReader = new RecoJetReader("nJet", "Jet");
   jetReader->setJetPt_central_or_shift(jetPt_option);
   jetReader->setBranchName_BtagWeight(jet_btagWeight_branch);
@@ -774,6 +792,17 @@ int main(int argc, char* argv[])
     if ( chargeSelection == kOS && isCharge_SS ) continue;
     if ( chargeSelection == kSS && isCharge_OS ) continue;
     cutFlowTable.update(Form("tau-pair %s charge", chargeSelection_string.data()), evtWeight);
+
+    if ( std::abs(selLepton->charge_ + selHadTau_lead->charge_+ selHadTau_sublead->charge_) != 1 ) {
+      if ( run_lumi_eventSelector ) {
+	std::cout << "event FAILS lepton+tau charge selection." << std::endl;
+	std::cout << " (selLepton charge = " << selLepton->charge_ 
+		  << ", leading selHadTau charge = " << selHadTau_lead->charge_ 
+		  << ", subleading selHadTau charge = " << selHadTau_sublead->charge_ << ")" << std::endl;
+      }
+      continue;
+    }
+    cutFlowTable.update("lepton+tau charge");
 
     if ( hadTauSelection == kFakeable ) {
       if ( tightHadTaus_lead.size() >= 1 && tightHadTaus_sublead.size() >= 1 ) continue; // CV: avoid overlap with signal region
