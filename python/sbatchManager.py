@@ -53,7 +53,7 @@ class sbatchManager:
     script = jinja2.Template(job_template).render(working_dir = self.workingDir, exec_name = executable, cfg_file = cfgFile)
     with codecs.open(scriptFile, "w", "utf-8") as f: f.write(script)
     if not logFile:
-      if not self.workingDir:
+      if not self.logFileDir:
         raise ValueError("Please call 'setLogFileDir' before calling 'submitJob' !!")
       logFile = os.path.join(self.logFileDir, os.path.basename(scriptFile).replace(".sh", ".log"))
     command = "%s --partition=%s --output=%s %s" % (self.command_submit, self.queue, logFile, scriptFile)
