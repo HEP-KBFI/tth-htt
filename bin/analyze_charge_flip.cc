@@ -285,6 +285,7 @@ int main(int argc, char* argv[])
   };
   //std::map<std::string, std::map<std::string, CompositeParticleHistManager*>> preselZHistManager_cat; // key = category
   std::map<std::string, std::map<std::string, std::map<std::string, TH1D*>>> histos;
+  
 
   for ( vstring::const_iterator which = categories_charge.begin(); 	which != categories_charge.end(); ++which ) {
     TFileDirectory subDir = fs.mkdir( which->data() );
@@ -292,6 +293,9 @@ int main(int argc, char* argv[])
     for ( vstring::const_iterator category = categories_etapt.begin(); 	category != categories_etapt.end(); ++category ) {
       TFileDirectory subDir2 = subDir.mkdir(category->data());
       histos[which->data()][*category][process_string] = subDir2.make<TH1D>( process_string.data(), "m_{ll}", 60,  60., 120. );
+      if (std::strncmp(process_string.data(), "DY", 2) == 0){
+          histos[which->data()][*category]["DY_fake"] = subDir2.make<TH1D>( "DY_fake", "m_{ll}", 60,  60., 120. );
+      }      
       if (!useData){
         histos[which->data()][*category]["data_obs"] = subDir2.make<TH1D>( Form("data_obs"), "m_{ll}", 60,  60., 120. );
       }
@@ -639,31 +643,27 @@ int main(int argc, char* argv[])
     }
     std::string category = Form("%s_%s%s", stEta.data(), stLeadPt.data(), stSubPt.data());
 
-    if (isCharge_SS) 
-    {
-      histos["SS"][category.data()][process_string]->Fill(mass_ll, evtWeight);
-      histos["SS"]["total"][process_string]->Fill(mass_ll, evtWeight);
+    std::string charge_cat = ( isCharge_SS ) ? "SS" : "OS";
+    if (std::strncmp(process_string.data(), "DY", 2) == 0){    //Split DY
+      const GenLepton *gp0 = preselElectrons[0]->genLepton_;
+      const GenLepton *gp1 = preselElectrons[1]->genLepton_;
+      if (gp0 != 0 && gp1 != 0 && abs(preselElectrons[0]->pdgId_) == abs(gp0->pdgId_) && abs(preselElectrons[1]->pdgId_) == abs(gp1->pdgId_)) {
+        histos[charge_cat][category.data()]["DY"]->Fill(mass_ll, evtWeight);
+        histos[charge_cat]["total"]["DY"]->Fill(mass_ll, evtWeight);
+      }
+      else {
+        histos[charge_cat][category.data()]["DY_fake"]->Fill(mass_ll, evtWeight);
+        histos[charge_cat]["total"]["DY_fake"]->Fill(mass_ll, evtWeight);
+      }
     }
-    else if (isCharge_OS)
-    {
-      histos["OS"][category.data()][process_string]->Fill(mass_ll, evtWeight);
-      histos["OS"]["total"][process_string]->Fill(mass_ll, evtWeight);
-    }
-    else assert(0);
+    else {//Otherwise
+      histos[charge_cat][category.data()][process_string]->Fill(mass_ll, evtWeight);
+      histos[charge_cat]["total"][process_string]->Fill(mass_ll, evtWeight);
+    }     
 
     if (!useData){
-      if (isCharge_SS)
-      {
-        histos["SS"][category.data()]["data_obs"]->Fill(mass_ll, evtWeight);
-        histos["SS"]["total"]["data_obs"]->Fill(mass_ll, evtWeight);
-      }
-      else if (isCharge_OS) 
-      {
-        histos["OS"][category.data()]["data_obs"]->Fill(mass_ll, evtWeight);
-        histos["OS"]["total"]["data_obs"]->Fill(mass_ll, evtWeight);
-      }
-      else assert(0);
-
+      histos[charge_cat][category.data()]["data_obs"]->Fill(mass_ll, evtWeight);
+      histos[charge_cat]["total"]["data_obs"]->Fill(mass_ll, evtWeight);      
     }
     if (isMC)
     {
