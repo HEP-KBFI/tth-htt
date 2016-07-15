@@ -435,17 +435,17 @@ if __name__ == '__main__':
                       level = logging.DEBUG,
                       format = '%(asctime)s - %(levelname)s: %(message)s')
 
-  cfg = analyzeCFConfig(output_dir = os.path.join("/home", getpass.getuser(), "tth", "test_triggercutsON"),
+  cfg = analyzeCFConfig(output_dir = os.path.join("/home", getpass.getuser(), "tth", "histosCF_pseudodata"),
                       exec_name = "analyze_charge_flip",
                       lepton_selection = "Tight",
                       max_files_per_job = 20,
                       use_lumi = True,
-                      use_data = True,
+                      use_data = False,
                       debug = False,
                       running_method = "sbatch",
                       nof_parallel_jobs = 10,
                       poll_interval = 30,
-                      selected_datasets = ["data_obs", "DY"],
+                      selected_datasets = ["data_obs", "DY", "WJets", "TTbar", "Singletop", "Diboson"],
                       sel_events_file = '',#os.path.join(os.environ["CMSSW_BASE"] , "src/tthAnalysis/HiggsToTauTau/data/eventlist_diff.txt"),
                       prep_dcard_exec = "prepareDatacardsCF"
                       )
