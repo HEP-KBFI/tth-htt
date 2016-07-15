@@ -138,12 +138,12 @@ int main(int argc, char* argv[])
   bool use_triggers_1mu = cfg_analyze.getParameter<bool>("use_triggers_1mu");
 
   enum { kOS, kSS };
-  std::string chargeSelection_string = cfg_analyze.getParameter<std::string>("chargeSelection");
-  int chargeSelection = -1;
-  if      ( chargeSelection_string == "OS" ) chargeSelection = kOS;
-  else if ( chargeSelection_string == "SS" ) chargeSelection = kSS;
+  std::string hadTauChargeSelection_string = cfg_analyze.getParameter<std::string>("hadTauChargeSelection");
+  int hadTauChargeSelection = -1;
+  if      ( hadTauChargeSelection_string == "OS" ) hadTauChargeSelection = kOS;
+  else if ( hadTauChargeSelection_string == "SS" ) hadTauChargeSelection = kSS;
   else throw cms::Exception("analyze_1l_2tau") 
-    << "Invalid Configuration parameter 'chargeSelection' = " << chargeSelection_string << " !!\n";
+    << "Invalid Configuration parameter 'hadTauChargeSelection' = " << hadTauChargeSelection_string << " !!\n";
 
   enum { kLoose, kFakeable, kTight };
   std::string hadTauSelection_string = cfg_analyze.getParameter<std::string>("hadTauSelection");
@@ -389,7 +389,7 @@ int main(int argc, char* argv[])
   std::ostream* selEventsFile = new std::ofstream(selEventsFileName_output.data(), std::ios::out);
 
 //--- declare histograms
-  std::string charge_and_hadTauSelection = Form("%s_%s", chargeSelection_string.data(), hadTauSelection_string.data());
+  std::string charge_and_hadTauSelection = Form("%s_%s", hadTauChargeSelection_string.data(), hadTauSelection_string.data());
   ElectronHistManager preselElectronHistManager(makeHistManager_cfg(process_string, 
     Form("1l_2tau_%s/presel/electrons", charge_and_hadTauSelection.data()), central_or_shift));
   preselElectronHistManager.bookHistograms(fs);
@@ -789,9 +789,9 @@ int main(int argc, char* argv[])
 
     bool isCharge_SS = selHadTau_lead->charge_*selHadTau_sublead->charge_ > 0;
     bool isCharge_OS = selHadTau_lead->charge_*selHadTau_sublead->charge_ < 0;
-    if ( chargeSelection == kOS && isCharge_SS ) continue;
-    if ( chargeSelection == kSS && isCharge_OS ) continue;
-    cutFlowTable.update(Form("tau-pair %s charge", chargeSelection_string.data()), evtWeight);
+    if ( hadTauChargeSelection == kOS && isCharge_SS ) continue;
+    if ( hadTauChargeSelection == kSS && isCharge_OS ) continue;
+    cutFlowTable.update(Form("tau-pair %s charge", hadTauChargeSelection_string.data()), evtWeight);
 
     if ( std::abs(selLepton->charge_ + selHadTau_lead->charge_+ selHadTau_sublead->charge_) != 1 ) {
       if ( run_lumi_eventSelector ) {
