@@ -38,7 +38,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
     self.hadTau_selections = hadTau_selections
     self.hadTau_charge_selections = hadTau_charge_selections
     self.hadTau_frWeights = [ "enabled", "disabled" ]
-    self.hadTau_genMatches = [ "lepton", "hadTau", "jet", "all" ]
+    ##self.hadTau_genMatches = [ "lepton", "hadTau", "jet", "all" ]
     self.hadTau_genMatches = [ "all" ]
 
     for sample_name, sample_info in self.samples.items():
@@ -54,7 +54,8 @@ class analyzeConfig_1l_2tau(analyzeConfig):
             key_dir = getKey(sample_name, hadTau_selection, hadTau_frWeight, hadTau_charge_selection)  
             for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_DCRD ]:
               initDict(self.dirs, [ key_dir, dir_type ])
-              self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel, "_".join([ hadTau_selection_and_frWeight, hadTau_charge_selection ]), process_name)
+              self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel,
+                "_".join([ hadTau_selection_and_frWeight, hadTau_charge_selection ]), process_name)
     print "self.dirs = ", self.dirs
 
     self.cfgFile_analyze_original = os.path.join(self.workingDir, "analyze_1l_2tau_cfg.py")
@@ -62,7 +63,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
 
   def createCfg_analyze(self, inputFiles, outputFile, sample_category, triggers, hadTau_selection, hadTau_genMatch, hadTau_frWeight, hadTau_charge_selection,
                         is_mc, central_or_shift, lumi_scale, cfgFile_modified):
-    """Create python configuration file for the analyze_1l_2tau exectuable (analysis code)
+    """Create python configuration file for the analyze_1l_2tau executable (analysis code)
 
     Args:
       inputFiles: list of input files (Ntuples)
@@ -76,10 +77,8 @@ class analyzeConfig_1l_2tau(analyzeConfig):
     lines.append("process.fwliteInput.fileNames = cms.vstring(%s)" % inputFiles)
     lines.append("process.fwliteOutput.fileName = cms.string('%s')" % outputFile)
     lines.append("process.analyze_1l_2tau.process = cms.string('%s')" % sample_category)
-    use_triggers_1e = "1e" in triggers
-    lines.append("process.analyze_1l_2tau.use_triggers_1e = cms.bool(%s)" % use_triggers_1e)
-    use_triggers_1mu = "1mu" in triggers
-    lines.append("process.analyze_1l_2tau.use_triggers_1mu = cms.bool(%s)" % use_triggers_1mu)
+    lines.append("process.analyze_1l_2tau.use_triggers_1e = cms.bool(%s)" % ("1e" in triggers))
+    lines.append("process.analyze_1l_2tau.use_triggers_1mu = cms.bool(%s)" % ("1mu" in triggers))
     lines.append("process.analyze_1l_2tau.hadTauChargeSelection = cms.string('%s')" % hadTau_charge_selection)
     lines.append("process.analyze_1l_2tau.hadTauSelection = cms.string('%s')" % hadTau_selection)
     lines.append("process.analyze_1l_2tau.hadTauGenMatch = cms.string('%s')" % hadTau_genMatch)
@@ -94,7 +93,9 @@ class analyzeConfig_1l_2tau(analyzeConfig):
 
   def addToMakefile_hadd_stage1(self, lines_makefile):
     inputFiles_hadd_stage1 = []
-    for sample_name, sample_info in self.samples.items():    
+    for sample_name, sample_info in self.samples.items():
+      if not sample_name in self.inputFileIds.keys():
+        continue
       process_name = sample_info["process_name_specific"]
       inputFiles_sample = []
       for hadTau_selection in self.hadTau_selections:
@@ -197,13 +198,9 @@ class analyzeConfig_1l_2tau(analyzeConfig):
 
     lines_makefile = []
     self.addToMakefile_analyze(lines_makefile)
-    lines_makefile.append("")
     self.addToMakefile_hadd_stage1(lines_makefile)
-    lines_makefile.append("")
     self.addToMakefile_backgrounds_from_data(lines_makefile)
-    lines_makefile.append("")
     self.addToMakefile_hadd_stage2(lines_makefile)
-    lines_makefile.append("")
     self.addToMakefile_prep_dcard(lines_makefile)
     self.createMakefile(lines_makefile)
   

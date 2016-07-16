@@ -151,20 +151,20 @@ int main(int argc, char* argv[])
   bool apply_offline_e_trigger_cuts_1e1mu = cfg_analyze.getParameter<bool>("apply_offline_e_trigger_cuts_1e1mu");
 
   enum { kOS, kSS, kDisabled };
-  std::string chargeSelection_lepton_string = cfg_analyze.getParameter<std::string>("chargeSelection_lepton");
-  int chargeSelection_lepton = -1;
-  if      ( chargeSelection_lepton_string == "OS"       ) chargeSelection_lepton = kOS;
-  else if ( chargeSelection_lepton_string == "SS"       ) chargeSelection_lepton = kSS;
-  else if ( chargeSelection_lepton_string == "disabled" ) chargeSelection_lepton = kDisabled;
+  std::string leptonChargeSelection_string = cfg_analyze.getParameter<std::string>("leptonChargeSelection");
+  int leptonChargeSelection = -1;
+  if      ( leptonChargeSelection_string == "OS"       ) leptonChargeSelection = kOS;
+  else if ( leptonChargeSelection_string == "SS"       ) leptonChargeSelection = kSS;
+  else if ( leptonChargeSelection_string == "disabled" ) leptonChargeSelection = kDisabled;
   else throw cms::Exception("analyze_2l_2tau") 
-    << "Invalid Configuration parameter 'chargeSelection_lepton' = " << chargeSelection_lepton_string << " !!\n";
-  std::string chargeSelection_hadTau_string = cfg_analyze.getParameter<std::string>("chargeSelection_hadTau");
-  int chargeSelection_hadTau = -1;
-  if      ( chargeSelection_hadTau_string == "OS"       ) chargeSelection_hadTau = kOS;
-  else if ( chargeSelection_hadTau_string == "SS"       ) chargeSelection_hadTau = kSS;
-  else if ( chargeSelection_hadTau_string == "disabled" ) chargeSelection_hadTau = kDisabled;
+    << "Invalid Configuration parameter 'leptonChargeSelection' = " << leptonChargeSelection_string << " !!\n";
+  std::string hadTauChargeSelection_string = cfg_analyze.getParameter<std::string>("hadTauChargeSelection");
+  int hadTauChargeSelection = -1;
+  if      ( hadTauChargeSelection_string == "OS"       ) hadTauChargeSelection = kOS;
+  else if ( hadTauChargeSelection_string == "SS"       ) hadTauChargeSelection = kSS;
+  else if ( hadTauChargeSelection_string == "disabled" ) hadTauChargeSelection = kDisabled;
   else throw cms::Exception("analyze_2l_2tau") 
-    << "Invalid Configuration parameter 'chargeSelection_hadTau' = " << chargeSelection_hadTau_string << " !!\n";
+    << "Invalid Configuration parameter 'hadTauChargeSelection' = " << hadTauChargeSelection_string << " !!\n";
 
   enum { kLoose, kFakeable, kTight };
   std::string hadTauSelection_string = cfg_analyze.getParameter<std::string>("hadTauSelection");
@@ -403,7 +403,7 @@ int main(int argc, char* argv[])
   std::ostream* selEventsFile = new std::ofstream(selEventsFileName_output.data(), std::ios::out);
 
 //--- declare histograms
-  std::string charge_and_hadTauSelection = Form("lep%s_tau%s_%s", chargeSelection_lepton_string.data(), chargeSelection_hadTau_string.data(), hadTauSelection_string.data());
+  std::string charge_and_hadTauSelection = Form("lep%s_tau%s_%s", leptonChargeSelection_string.data(), hadTauChargeSelection_string.data(), hadTauSelection_string.data());
   ElectronHistManager preselElectronHistManager(makeHistManager_cfg(process_string, 
     Form("2l_2tau_%s/presel/electrons", charge_and_hadTauSelection.data()), central_or_shift));
   preselElectronHistManager.bookHistograms(fs);
@@ -928,23 +928,23 @@ int main(int argc, char* argv[])
 
     bool isCharge_lepton_SS = selLepton_lead->charge_*selLepton_sublead->charge_ > 0;
     bool isCharge_lepton_OS = selLepton_lead->charge_*selLepton_sublead->charge_ < 0;
-    if ( chargeSelection_lepton == kOS && isCharge_lepton_SS ) {
+    if ( leptonChargeSelection == kOS && isCharge_lepton_SS ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS lepton charge selection." << std::endl;
 	std::cout << " (leading selLepton charge = " << selLepton_lead->charge_ 
-		  << ", subleading selLepton charge = " << selLepton_sublead->charge_ << ", chargeSelection_lepton = OS)" << std::endl;
+		  << ", subleading selLepton charge = " << selLepton_sublead->charge_ << ", leptonChargeSelection = OS)" << std::endl;
       }
       continue;
     }
-    if ( chargeSelection_lepton == kSS && isCharge_lepton_OS ) {
+    if ( leptonChargeSelection == kSS && isCharge_lepton_OS ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS lepton charge selection." << std::endl;
 	std::cout << " (leading selLepton charge = " << selLepton_lead->charge_ 
-		  << ", subleading selLepton charge = " << selLepton_sublead->charge_ << ", chargeSelection_lepton = SS)" << std::endl;
+		  << ", subleading selLepton charge = " << selLepton_sublead->charge_ << ", leptonChargeSelection = SS)" << std::endl;
       }
       continue;
     }
-    cutFlowTable.update(Form("lepton-pair %s charge", chargeSelection_lepton_string.data()), evtWeight);
+    cutFlowTable.update(Form("lepton-pair %s charge", leptonChargeSelection_string.data()), evtWeight);
 
     if ( selLepton_lead->is_electron() && selLepton_sublead->is_electron() ) {
       bool failsZbosonMassVeto = false;
@@ -968,26 +968,26 @@ int main(int argc, char* argv[])
     
     bool isCharge_hadTau_SS = selHadTau_lead->charge_*selHadTau_sublead->charge_ > 0;
     bool isCharge_hadTau_OS = selHadTau_lead->charge_*selHadTau_sublead->charge_ < 0;
-    if ( chargeSelection_hadTau == kOS && isCharge_hadTau_SS ) {
+    if ( hadTauChargeSelection == kOS && isCharge_hadTau_SS ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS hadTau charge selection." << std::endl;
 	std::cout << " (leading selHadTau charge = " << selHadTau_lead->charge_ 
-		  << ", subleading selHadTau charge = " << selHadTau_sublead->charge_ << ", chargeSelection_hadTau = SS)" << std::endl;
+		  << ", subleading selHadTau charge = " << selHadTau_sublead->charge_ << ", hadTauChargeSelection = SS)" << std::endl;
       }
       continue;
     }
-    if ( chargeSelection_hadTau == kSS && isCharge_hadTau_OS ) {
+    if ( hadTauChargeSelection == kSS && isCharge_hadTau_OS ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS hadTau charge selection." << std::endl;
 	std::cout << " (leading selHadTau charge = " << selHadTau_lead->charge_ 
-		  << ", subleading selHadTau charge = " << selHadTau_sublead->charge_ << ", chargeSelection_hadTau = OS)" << std::endl;
+		  << ", subleading selHadTau charge = " << selHadTau_sublead->charge_ << ", hadTauChargeSelection = OS)" << std::endl;
       }
       continue;
     }
-    cutFlowTable.update(Form("tau-pair %s charge", chargeSelection_hadTau_string.data()), evtWeight);
+    cutFlowTable.update(Form("tau-pair %s charge", hadTauChargeSelection_string.data()), evtWeight);
 
-    if ( (chargeSelection_lepton == kOS && chargeSelection_hadTau == kOS) ||
-	 (chargeSelection_lepton == kSS && chargeSelection_hadTau == kSS) ) {
+    if ( (leptonChargeSelection == kOS && hadTauChargeSelection == kOS) ||
+	 (leptonChargeSelection == kSS && hadTauChargeSelection == kSS) ) {
       if ( (selLepton_lead->charge_ + selLepton_sublead->charge_ + selHadTau_lead->charge_+ selHadTau_sublead->charge_) != 0 ) {
 	if ( run_lumi_eventSelector ) {
 	  std::cout << "event FAILS lepton+tau charge selection." << std::endl;

@@ -156,12 +156,12 @@ int main(int argc, char* argv[])
   bool apply_offline_e_trigger_cuts_1e1mu = cfg_analyze.getParameter<bool>("apply_offline_e_trigger_cuts_1e1mu");
 
   enum { kOS, kSS };
-  std::string chargeSelection_string = cfg_analyze.getParameter<std::string>("chargeSelection");
-  int chargeSelection = -1;
-  if      ( chargeSelection_string == "OS" ) chargeSelection = kOS;
-  else if ( chargeSelection_string == "SS" ) chargeSelection = kSS;
+  std::string leptonChargeSelection_string = cfg_analyze.getParameter<std::string>("leptonChargeSelection");
+  int leptonChargeSelection = -1;
+  if      ( leptonChargeSelection_string == "OS" ) leptonChargeSelection = kOS;
+  else if ( leptonChargeSelection_string == "SS" ) leptonChargeSelection = kSS;
   else throw cms::Exception("analyze_2lss_1tau") 
-    << "Invalid Configuration parameter 'chargeSelection' = " << chargeSelection_string << " !!\n";
+    << "Invalid Configuration parameter 'leptonChargeSelection' = " << leptonChargeSelection_string << " !!\n";
 
   enum { kLoose, kFakeable, kTight };
   std::string leptonSelection_string = cfg_analyze.getParameter<std::string>("leptonSelection");
@@ -363,7 +363,7 @@ int main(int argc, char* argv[])
   std::ostream* selEventsFile = new std::ofstream(selEventsFileName_output.data(), std::ios::out);
 
 //--- declare histograms
-  std::string charge_and_leptonSelection = Form("%s_%s", chargeSelection_string.data(), leptonSelection_string.data());
+  std::string charge_and_leptonSelection = Form("%s_%s", leptonChargeSelection_string.data(), leptonSelection_string.data());
   ElectronHistManager preselElectronHistManager(makeHistManager_cfg(process_string, 
     Form("2lss_1tau_%s/presel/electrons", charge_and_leptonSelection.data()), central_or_shift));
   preselElectronHistManager.bookHistograms(fs);
@@ -814,7 +814,7 @@ int main(int argc, char* argv[])
 
     double evtWeight_pp = evtWeight;
     double evtWeight_mm = evtWeight;
-    if ( chargeSelection == kOS ) {
+    if ( leptonChargeSelection == kOS ) {
       double prob_chargeMisId_lead = prob_chargeMisId(getLeptonType(preselLepton_lead->pdgId_), preselLepton_lead->pt_, preselLepton_lead->eta_);
       double prob_chargeMisId_sublead = prob_chargeMisId(getLeptonType(preselLepton_sublead->pdgId_), preselLepton_sublead->pt_, preselLepton_sublead->eta_);
 
@@ -1014,23 +1014,23 @@ int main(int argc, char* argv[])
 
     bool isCharge_SS = selLepton_lead->charge_*selLepton_sublead->charge_ > 0;
     bool isCharge_OS = selLepton_lead->charge_*selLepton_sublead->charge_ < 0;
-    if ( chargeSelection == kOS && isCharge_SS ) {
+    if ( leptonChargeSelection == kOS && isCharge_SS ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS lepton charge selection." << std::endl;
 	std::cout << " (leading selLepton charge = " << selLepton_lead->charge_ 
-		  << ", subleading selLepton charge = " << selLepton_sublead->charge_ << ", chargeSelection = OS)" << std::endl;
+		  << ", subleading selLepton charge = " << selLepton_sublead->charge_ << ", leptonChargeSelection = OS)" << std::endl;
       }
       continue;
     }
-    if ( chargeSelection == kSS && isCharge_OS ) {
+    if ( leptonChargeSelection == kSS && isCharge_OS ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS lepton charge selection." << std::endl;
 	std::cout << " (leading selLepton charge = " << selLepton_lead->charge_ 
-		  << ", subleading selLepton charge = " << selLepton_sublead->charge_ << ", chargeSelection = SS)" << std::endl;
+		  << ", subleading selLepton charge = " << selLepton_sublead->charge_ << ", leptonChargeSelection = SS)" << std::endl;
       }
       continue;
     }
-    cutFlowTable.update(Form("lepton-pair %s charge", chargeSelection_string.data()), evtWeight);
+    cutFlowTable.update(Form("lepton-pair %s charge", leptonChargeSelection_string.data()), evtWeight);
 
     if ( std::abs(selLepton_lead->charge_ + selLepton_sublead->charge_ + selHadTau_lead->charge_) != 1 ) {
       if ( run_lumi_eventSelector ) {
@@ -1161,18 +1161,18 @@ int main(int argc, char* argv[])
     bool isCharge_pp = selLepton_lead->pdgId_ < 0 && selLepton_sublead->pdgId_ < 0;
     bool isCharge_mm = selLepton_lead->pdgId_ > 0 && selLepton_sublead->pdgId_ > 0;
 
-    bool isCategory_2epp_btight = selElectrons.size() == 2 && (isCharge_pp || chargeSelection == kOS) && selBJets_medium.size() >= 1;
-    bool isCategory_2epp_bloose = selElectrons.size() == 2 && (isCharge_pp || chargeSelection == kOS);
-    bool isCategory_2emm_btight = selElectrons.size() == 2 && (isCharge_mm || chargeSelection == kOS) && selBJets_medium.size() >= 1;
-    bool isCategory_2emm_bloose = selElectrons.size() == 2 && (isCharge_mm || chargeSelection == kOS);
-    bool isCategory_1e1mupp_btight = selElectrons.size() == 1 && selMuons.size() == 1 && (isCharge_pp || chargeSelection == kOS) && selBJets_medium.size() >= 1;
-    bool isCategory_1e1mupp_bloose = selElectrons.size() == 1 && selMuons.size() == 1 && (isCharge_pp || chargeSelection == kOS);
-    bool isCategory_1e1mumm_btight = selElectrons.size() == 1 && selMuons.size() == 1 && (isCharge_mm || chargeSelection == kOS) && selBJets_medium.size() >= 1;
-    bool isCategory_1e1mumm_bloose = selElectrons.size() == 1 && selMuons.size() == 1 && (isCharge_mm || chargeSelection == kOS);
-    bool isCategory_2mupp_btight = selMuons.size() == 2 && (isCharge_pp || chargeSelection == kOS) && selBJets_medium.size() >= 1;
-    bool isCategory_2mupp_bloose = selMuons.size() == 2 && (isCharge_pp || chargeSelection == kOS);
-    bool isCategory_2mumm_btight = selMuons.size() == 2 && (isCharge_mm || chargeSelection == kOS) && selBJets_medium.size() >= 1;
-    bool isCategory_2mumm_bloose = selMuons.size() == 2 && (isCharge_mm || chargeSelection == kOS);
+    bool isCategory_2epp_btight = selElectrons.size() == 2 && (isCharge_pp || leptonChargeSelection == kOS) && selBJets_medium.size() >= 1;
+    bool isCategory_2epp_bloose = selElectrons.size() == 2 && (isCharge_pp || leptonChargeSelection == kOS);
+    bool isCategory_2emm_btight = selElectrons.size() == 2 && (isCharge_mm || leptonChargeSelection == kOS) && selBJets_medium.size() >= 1;
+    bool isCategory_2emm_bloose = selElectrons.size() == 2 && (isCharge_mm || leptonChargeSelection == kOS);
+    bool isCategory_1e1mupp_btight = selElectrons.size() == 1 && selMuons.size() == 1 && (isCharge_pp || leptonChargeSelection == kOS) && selBJets_medium.size() >= 1;
+    bool isCategory_1e1mupp_bloose = selElectrons.size() == 1 && selMuons.size() == 1 && (isCharge_pp || leptonChargeSelection == kOS);
+    bool isCategory_1e1mumm_btight = selElectrons.size() == 1 && selMuons.size() == 1 && (isCharge_mm || leptonChargeSelection == kOS) && selBJets_medium.size() >= 1;
+    bool isCategory_1e1mumm_bloose = selElectrons.size() == 1 && selMuons.size() == 1 && (isCharge_mm || leptonChargeSelection == kOS);
+    bool isCategory_2mupp_btight = selMuons.size() == 2 && (isCharge_pp || leptonChargeSelection == kOS) && selBJets_medium.size() >= 1;
+    bool isCategory_2mupp_bloose = selMuons.size() == 2 && (isCharge_pp || leptonChargeSelection == kOS);
+    bool isCategory_2mumm_btight = selMuons.size() == 2 && (isCharge_mm || leptonChargeSelection == kOS) && selBJets_medium.size() >= 1;
+    bool isCategory_2mumm_bloose = selMuons.size() == 2 && (isCharge_mm || leptonChargeSelection == kOS);
 
     if ( isCategory_2epp_btight ) {
       selElectronHistManager_category["2epp_1tau_btight"]["leadElectron"]->fillHistograms(selElectrons, evtWeight_pp);

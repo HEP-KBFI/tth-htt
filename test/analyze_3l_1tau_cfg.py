@@ -38,7 +38,7 @@ process.analyze_3l_1tau = cms.PSet(
     leptonSelection = cms.string('Tight'),
     
     leptonFakeRateLooseToTightWeight = cms.PSet(
-        inputFileName = cms.string(""),
+        inputFileName = cms.string("tthAnalysis/HiggsToTauTau/data/FR_data_ttH_mva.root"),
         histogramName_e = cms.string("FR_mva075_el_data_comb"),
         histogramName_mu = cms.string("FR_mva075_mu_data_comb")
     ),

@@ -37,11 +37,7 @@ process.analyze_2los_1tau = cms.PSet(
     
     leptonSelection = cms.string('Tight'),
 
-    leptonFakeRateLooseToTightWeight = cms.PSet(
-        inputFileName = cms.string(""),
-        histogramName_e = cms.string("FR_mva075_el_data_comb"),
-        histogramName_mu = cms.string("FR_mva075_mu_data_comb")
-    ),
+    hadTauSelection = cms.string('dR03mvaTight'),
     
     isMC = cms.bool(False),
     central_or_shift = cms.string('central'),
