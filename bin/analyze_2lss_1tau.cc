@@ -172,6 +172,8 @@ int main(int argc, char* argv[])
   else throw cms::Exception("analyze_2lss_1tau") 
     << "Invalid Configuration parameter 'leptonSelection' = " << leptonSelection_string << " !!\n";
 
+  std::string hadTauSelection_string = cfg_analyze.getParameter<std::string>("hadTauSelection");
+
   std::vector<TFile*> inputFilesToClose;
 
   TH2* lutFakeRate_e = 0;
@@ -310,6 +312,7 @@ int main(int argc, char* argv[])
   RecoHadTauCollectionGenMatcher hadTauGenMatcher;
   RecoHadTauCollectionCleaner hadTauCleaner(0.3);
   RecoHadTauCollectionSelectorTight hadTauSelector;
+  hadTauSelector.set(hadTauSelection_string);
   
   RecoJetReader* jetReader = new RecoJetReader("nJet", "Jet");
   jetReader->setJetPt_central_or_shift(jetPt_option);

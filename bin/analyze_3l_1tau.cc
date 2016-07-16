@@ -335,10 +335,12 @@ int main(int argc, char* argv[])
   mvaInputVariables_3l_ttV.push_back("mindr_lep1_jet");
   mvaInputVariables_3l_ttV.push_back("mindr_lep2_jet");
   mvaInputVariables_3l_ttV.push_back("LepGood_conePt[iF_Recl[0]]");
+  mvaInputVariables_3l_ttV.push_back("LepGood_conePt[iF_Recl[2]]");
   TMVAInterface mva_3l_ttV(mvaFileName_3l_ttV, mvaInputVariables_3l_ttV, { "iF_Recl[0]", "iF_Recl[1]", "iF_Recl[2]" });
 
   std::string mvaFileName_3l_ttbar = "tthAnalysis/HiggsToTauTau/data/3l_ttbar_BDTG.weights.xml";
   std::vector<std::string> mvaInputVariables_3l_ttbar;
+  mvaInputVariables_3l_ttbar.push_back("max(abs(LepGood_eta[iF_Recl[0]]),abs(LepGood_eta[iF_Recl[1]]))");
   mvaInputVariables_3l_ttbar.push_back("MT_met_lep1");
   mvaInputVariables_3l_ttbar.push_back("nJet25_Recl");
   mvaInputVariables_3l_ttbar.push_back("mhtJet25_Recl");
@@ -740,8 +742,10 @@ int main(int argc, char* argv[])
     mvaInputs["mindr_lep1_jet"]             = comp_mindr_lep1_jet(*preselLepton_lead, selJets);
     mvaInputs["mindr_lep2_jet"]             = comp_mindr_lep2_jet(*preselLepton_sublead, selJets);
     mvaInputs["LepGood_conePt[iF_Recl[0]]"] = comp_lep1_conePt(*preselLepton_lead);
+    mvaInputs["LepGood_conePt[iF_Recl[2]]"] = comp_lep3_conePt(*preselLepton_third);
     mvaInputs["avg_dr_jet"]                 = comp_avg_dr_jet(selJets);
     mvaInputs["mhtJet25_Recl"]              = mht_p4.pt();
+
     int index = 1;
     for ( std::map<std::string, double>::const_iterator mvaInput = mvaInputs.begin();
 	  mvaInput != mvaInputs.end(); ++mvaInput ) {

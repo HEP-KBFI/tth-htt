@@ -7,6 +7,8 @@
 
 #include <string>
 #include <map>
+#include <iostream>
+#include <iomanip>
 
 class RecoHadTauSelectorTight
 {
@@ -56,6 +58,27 @@ class RecoHadTauCollectionSelectorTight
   void set_max_raw_cut_dR03(double max_raw_cut_dR03) { selector_.max_raw_cut_dR03_ = max_raw_cut_dR03; }
   void set_min_id_cut_dR05(int min_id_cut_dR05) { selector_.min_id_cut_dR05_ = min_id_cut_dR05; }
   void set_max_raw_cut_dR05(double max_raw_cut_dR05) { selector_.max_raw_cut_dR05_ = max_raw_cut_dR05; }
+
+  void set(const std::string& cut)
+  {
+    set_min_id_mva_dR03(-1000);
+    set_min_id_mva_dR05(-1000);
+    set_min_id_cut_dR03(-1000);
+    set_min_id_cut_dR05(-1000);
+    if      ( cut == "dR05isoLoose"   ) set_min_id_cut_dR05(1);
+    else if ( cut == "dR05isoLoose"   ) set_min_id_cut_dR05(2);
+    else if ( cut == "dR05isoLoose"   ) set_min_id_cut_dR05(3);
+    else if ( cut == "dR03mvaVLoose"  ) set_min_id_mva_dR03(1);
+    else if ( cut == "dR03mvaLoose"   ) set_min_id_mva_dR03(2);
+    else if ( cut == "dR03mvaMedium"  ) set_min_id_mva_dR03(3);
+    else if ( cut == "dR03mvaTight"   ) set_min_id_mva_dR03(4);
+    else if ( cut == "dR03mvaVTight"  ) set_min_id_mva_dR03(5);
+    else if ( cut == "dR03mvaVVTight" ) set_min_id_mva_dR03(6);
+    else {
+      std::cerr << "Invalid Configuration parameter 'cut' = " << cut << " !!" << std::endl;
+      assert(0);
+    }
+  }
 
   void set_min_antiElectron(int min_antiElectron) { selector_.min_antiElectron_ = min_antiElectron; }
   void set_min_antiMuon(int min_antiMuon) { selector_.min_antiMuon_ = min_antiMuon; }

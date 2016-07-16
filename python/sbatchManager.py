@@ -15,7 +15,6 @@ cd -
 echo "executing 'pwd'"
 pwd
 {{ exec_name }} {{ cfg_file }}
-
 """
 
 class sbatchManager:
@@ -51,6 +50,16 @@ class sbatchManager:
     scriptFile = cfgFile.replace(".py", ".sh")
     scriptFile = scriptFile.replace("_cfg", "")
     script = jinja2.Template(job_template).render(working_dir = self.workingDir, exec_name = executable, cfg_file = cfgFile)
+    if outputFile:
+      script += "\n" 
+      script += "file=%s\n" % outputFile
+      script += "filesize=$(stat -c '\%s' $file)\n"
+      script += "if [ $filesize -ge 1000 ]; then\n"
+      script += "  return 0\n"
+      script += "else\n"
+      script += "  rm %s\n" % outputFile
+      script += "  return 1\n"
+      script += "fi\n"
     with codecs.open(scriptFile, "w", "utf-8") as f: f.write(script)
     if not logFile:
       if not self.logFileDir:
@@ -67,7 +76,7 @@ class sbatchManager:
     """Waits for all sbatch jobs submitted by this instance of sbatchManager to finish processing
     """    
     numJobs = len(self.jobIds)
-    print "<waitForJobs>: numJobs = %i" % numJobs
+    ##print "<waitForJobs>: numJobs = %i" % numJobs
     if numJobs > 0:
       jobIds_per_poll_group = 500
       num_poll_groups = numJobs / jobIds_per_poll_group
@@ -81,12 +90,12 @@ class sbatchManager:
           idx_last = min((idx_poll_group + 1)*jobIds_per_poll_group, numJobs)
           jobIds_poll_group = self.jobIds[idx_first:idx_last]
           command = "%s -u %s | grep \"%s\" | wc -l" % (self.command_poll, whoami, "\\|".join(jobIds_poll_group))
-          print "idx_poll_group = %i: command = %s" % (idx_poll_group, command)
+          ##print "idx_poll_group = %i: command = %s" % (idx_poll_group, command)
           poll_result = run_cmd(command, True).rstrip("\n")
-          print " poll_result = %s" % poll_result
+          ##print " poll_result = %s" % poll_result
           numJobs_left = numJobs_left + int(poll_result)
           time.sleep(1)
-        print "numJobs_left = %i" % numJobs_left
+        ##print "numJobs_left = %i" % numJobs_left
         if numJobs_left > 0:
           time.sleep(self.poll_interval)
         else:

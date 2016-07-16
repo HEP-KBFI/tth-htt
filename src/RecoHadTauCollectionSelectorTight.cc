@@ -9,7 +9,6 @@ RecoHadTauSelectorTight::RecoHadTauSelectorTight(int index, bool debug)
   , min_decayModeFinding_(1)
   //, min_id_mva_dR03_(-1000)
   , min_id_mva_dR03_(4) // tight
-  //, min_id_mva_dR03_(5) // very tight
   , min_raw_mva_dR03_(-1.e+6)
   , min_id_mva_dR05_(-1000)
   , min_raw_mva_dR05_(-1.e+6)

@@ -69,6 +69,11 @@ double comp_lep2_conePt(const RecoLepton& lepton)
   return comp_lep1_conePt(lepton);
 }
 
+double comp_lep3_conePt(const RecoLepton& lepton)
+{
+  return comp_lep1_conePt(lepton);
+}
+
 double comp_avg_dr_jet(const std::vector<const RecoJet*>& jets_cleaned)
 {
   int n_jet_pairs = 0;
