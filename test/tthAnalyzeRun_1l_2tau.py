@@ -6,7 +6,7 @@ from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 
 LUMI = 2301. # 1/pb
 
-version = "2016Jul13_dR03mvaTight"
+version = "2016Jul19_dR03mvaTight"
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -18,7 +18,7 @@ if __name__ == '__main__':
     outputDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", version),
     executable_analyze = "analyze_1l_2tau",
     ##hadTau_selections = [ "Tight", "Fakeable" ],
-    hadTau_selections = [ "Tight" ],
+    hadTau_selections = [ "Tight|dR03mvaTight" ],
     hadTau_charge_selections = [ "OS" ],
     central_or_shifts = [ 
       "central",

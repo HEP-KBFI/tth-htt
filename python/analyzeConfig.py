@@ -49,8 +49,8 @@ def create_cfg(cfgFile_original, cfgFile_modified, lines):
   f_modified.close()
 
 def createFile(fileName, lines):
-  print "<createFile>:"
-  print " lines = ", lines
+  ##print "<createFile>:"
+  ##print " lines = ", lines
   content = ""
   for line in lines:
     content += "%s\n" % line

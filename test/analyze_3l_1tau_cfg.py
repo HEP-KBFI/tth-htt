@@ -36,6 +36,8 @@ process.analyze_3l_1tau = cms.PSet(
     apply_offline_e_trigger_cuts_1e1mu = cms.bool(False),
     
     leptonSelection = cms.string('Tight'),
+
+    hadTauSelection = cms.string('dR03mvaTight'),
     
     leptonFakeRateLooseToTightWeight = cms.PSet(
         inputFileName = cms.string("tthAnalysis/HiggsToTauTau/data/FR_data_ttH_mva.root"),

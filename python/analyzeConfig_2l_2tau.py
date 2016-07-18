@@ -11,6 +11,7 @@ def get_hadTau_selection_and_frWeight(hadTau_selection, hadTau_frWeight):
       hadTau_selection_and_frWeight += "_wFakeRateWeights"
     elif hadTau_frWeight == "disabled":
       hadTau_selection_and_frWeight += "_woFakeRateWeights"
+  hadTau_selection_and_frWeight = hadTau_selection_and_frWeight.replace("|", "_")
   return hadTau_selection_and_frWeight
 
 class analyzeConfig_2l_2tau(analyzeConfig):
@@ -59,7 +60,7 @@ class analyzeConfig_2l_2tau(analyzeConfig):
                 initDict(self.dirs, [ key_dir, dir_type ])
                 self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel,
                   "_".join([ "lep" + lepton_charge_selection, hadTau_selection_and_frWeight, "tau" + hadTau_charge_selection ]), process_name)
-    print "self.dirs = ", self.dirs
+    ##print "self.dirs = ", self.dirs
 
     self.cfgFile_analyze_original = os.path.join(self.workingDir, "analyze_2l_2tau_cfg.py")
     self.histogramDir_prep_dcard = "2l_2tau_lepOS_tauOS_Tight"
@@ -119,19 +120,22 @@ class analyzeConfig_2l_2tau(analyzeConfig):
                       inputFiles_jobIds.append(self.histogramFiles[key_file])
                   if len(inputFiles_jobIds) > 0:
                     haddFile_jobIds = self.histogramFile_hadd_stage1.replace(".root", "_%s_%s_%s_%s_%s_%s.root" % \
-                      (process_name, lepton_charge_selection, hadTau_selection, hadTau_genMatch, hadTau_charge_selection, central_or_shift))
+                      (process_name, lepton_charge_selection, hadTau_selection_and_frWeight, hadTau_genMatch, hadTau_charge_selection, central_or_shift))
                     lines_makefile.append("%s: %s" % (haddFile_jobIds, " ".join(inputFiles_jobIds)))
+                    lines_makefile.append("\t%s %s" % ("rm -f", haddFile_jobIds))
                     lines_makefile.append("\t%s %s %s" % ("hadd", haddFile_jobIds, " ".join(inputFiles_jobIds)))
                     lines_makefile.append("")
                     inputFiles_sample.append(haddFile_jobIds)
       if len(inputFiles_sample) > 0:
         haddFile_sample = self.histogramFile_hadd_stage1.replace(".root", "_%s.root" % process_name)
         lines_makefile.append("%s: %s" % (haddFile_sample, " ".join(inputFiles_sample)))
+        lines_makefile.append("\t%s %s" % ("rm -f", haddFile_sample))
         lines_makefile.append("\t%s %s %s" % ("hadd", haddFile_sample, " ".join(inputFiles_sample)))
         lines_makefile.append("")
         inputFiles_hadd_stage1.append(haddFile_sample)
     lines_makefile.append("%s: %s" % (self.histogramFile_hadd_stage1, " ".join(inputFiles_hadd_stage1)))
-    lines_makefile.append("\t%s %s %s" % ("hadd", self.histogramFile_hadd_stage1, " ".join(inputFiles_sample)))
+    lines_makefile.append("\t%s %s" % ("rm -f", self.histogramFile_hadd_stage1))
+    lines_makefile.append("\t%s %s %s" % ("hadd", self.histogramFile_hadd_stage1, " ".join(inputFiles_hadd_stage1)))
     lines_makefile.append("")
 
   def create(self):

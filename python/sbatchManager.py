@@ -53,7 +53,7 @@ class sbatchManager:
     if outputFile:
       script += "\n" 
       script += "file=%s\n" % outputFile
-      script += "filesize=$(stat -c '\%s' $file)\n"
+      script += "filesize=$(stat -c '%s' $file)\n"
       script += "if [ $filesize -ge 1000 ]; then\n"
       script += "  return 0\n"
       script += "else\n"

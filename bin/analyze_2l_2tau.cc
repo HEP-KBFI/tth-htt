@@ -167,13 +167,18 @@ int main(int argc, char* argv[])
     << "Invalid Configuration parameter 'hadTauChargeSelection' = " << hadTauChargeSelection_string << " !!\n";
 
   enum { kLoose, kFakeable, kTight };
-  std::string hadTauSelection_string = cfg_analyze.getParameter<std::string>("hadTauSelection");
+  TString hadTauSelection_string = cfg_analyze.getParameter<std::string>("hadTauSelection").data();
+  TObjArray* hadTauSelection_parts = hadTauSelection_string.Tokenize("|");
+  assert(hadTauSelection_parts->GetEntries() >= 1);
+  std::string hadTauSelection_part1 = (dynamic_cast<TObjString*>(hadTauSelection_parts->At(0)))->GetString().Data();
   int hadTauSelection = -1;
-  if      ( hadTauSelection_string == "Loose"    ) hadTauSelection = kLoose;
-  else if ( hadTauSelection_string == "Fakeable" ) hadTauSelection = kFakeable;
-  else if ( hadTauSelection_string == "Tight"    ) hadTauSelection = kTight;
+  if      ( hadTauSelection_part1 == "Loose"    ) hadTauSelection = kLoose;
+  else if ( hadTauSelection_part1 == "Fakeable" ) hadTauSelection = kFakeable;
+  else if ( hadTauSelection_part1 == "Tight"    ) hadTauSelection = kTight;
   else throw cms::Exception("analyze_2l_2tau") 
     << "Invalid Configuration parameter 'hadTauSelection' = " << hadTauSelection_string << " !!\n";
+  std::string hadTauSelection_part2 = ( hadTauSelection_parts->GetEntries() == 2 ) ? (dynamic_cast<TObjString*>(hadTauSelection_parts->At(1)))->GetString().Data() : "";
+  delete hadTauSelection_parts;
 
   enum { kGenLepton, kGenHadTau, kGenJet, kAll };
   std::string hadTauGenMatch_string = cfg_analyze.getParameter<std::string>("hadTauGenMatch");
@@ -375,7 +380,9 @@ int main(int argc, char* argv[])
   RecoHadTauCollectionSelectorFakeable fakeableHadTauSelector_lead(0);
   RecoHadTauCollectionSelectorFakeable fakeableHadTauSelector_sublead(1);
   RecoHadTauCollectionSelectorTight tightHadTauSelector_lead(0);
+  if ( hadTauSelection_part2 != "" ) tightHadTauSelector_lead.set(hadTauSelection_part2);
   RecoHadTauCollectionSelectorTight tightHadTauSelector_sublead(1);
+  if ( hadTauSelection_part2 != "" ) tightHadTauSelector_sublead.set(hadTauSelection_part2);
   
   RecoJetReader* jetReader = new RecoJetReader("nJet", "Jet");
   jetReader->setJetPt_central_or_shift(jetPt_option);
@@ -403,7 +410,7 @@ int main(int argc, char* argv[])
   std::ostream* selEventsFile = new std::ofstream(selEventsFileName_output.data(), std::ios::out);
 
 //--- declare histograms
-  std::string charge_and_hadTauSelection = Form("lep%s_tau%s_%s", leptonChargeSelection_string.data(), hadTauChargeSelection_string.data(), hadTauSelection_string.data());
+  std::string charge_and_hadTauSelection = Form("lep%s_tau%s_%s", leptonChargeSelection_string.data(), hadTauChargeSelection_string.data(), hadTauSelection_part1.data());
   ElectronHistManager preselElectronHistManager(makeHistManager_cfg(process_string, 
     Form("2l_2tau_%s/presel/electrons", charge_and_hadTauSelection.data()), central_or_shift));
   preselElectronHistManager.bookHistograms(fs);

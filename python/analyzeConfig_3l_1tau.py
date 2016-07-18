@@ -16,7 +16,7 @@ class analyzeConfig_3l_1tau(analyzeConfig):
   for documentation of further Args.
   
   """
-  def __init__(self, outputDir, executable_analyze, lepton_selections, central_or_shifts,
+  def __init__(self, outputDir, executable_analyze, lepton_selections, hadTau_selection, central_or_shifts,
                max_files_per_job, use_lumi, lumi, debug, running_method, num_parallel_jobs, 
                histograms_to_fit, executable_prep_dcard="prepareDatacard"):
     analyzeConfig.__init__(self, outputDir, executable_analyze, "3l_1tau", central_or_shifts,
@@ -26,6 +26,8 @@ class analyzeConfig_3l_1tau(analyzeConfig):
     self.samples = tthAnalyzeSamples_3l_1tau.samples
 
     self.lepton_selections = lepton_selections
+
+    self.hadTau_selection = hadTau_selection
 
     for sample_name, sample_info in self.samples.items():
       if not sample_info["use_it"] or sample_info["sample_category"] in [ "additional_signal_overlap", "background_data_estimate" ]:
@@ -37,12 +39,12 @@ class analyzeConfig_3l_1tau(analyzeConfig):
           initDict(self.dirs, [ key_dir, dir_type ])
           self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel,
             "_".join([ lepton_selection ]), process_name)
-    print "self.dirs = ", self.dirs
+    ##print "self.dirs = ", self.dirs
 
     self.cfgFile_analyze_original = os.path.join(self.workingDir, "analyze_3l_1tau_cfg.py")
     self.histogramDir_prep_dcard = "3l_1tau_Tight"
 
-  def createCfg_analyze(self, inputFiles, outputFile, sample_category, triggers, lepton_selection,
+  def createCfg_analyze(self, inputFiles, outputFile, sample_category, triggers, lepton_selection, hadTau_selection,
                         is_mc, central_or_shift, lumi_scale, cfgFile_modified):
     """Create python configuration file for the analyze_3l_1tau executable (analysis code)
 
@@ -64,6 +66,7 @@ class analyzeConfig_3l_1tau(analyzeConfig):
     lines.append("process.analyze_3l_1tau.use_triggers_2mu = cms.bool(%s)" % ("2mu" in triggers))
     lines.append("process.analyze_3l_1tau.use_triggers_1e1mu = cms.bool(%s)" % ("1e1mu" in triggers))
     lines.append("process.analyze_3l_1tau.leptonSelection = cms.string('%s')" % lepton_selection)
+    lines.append("process.analyze_3l_1tau.hadTauSelection = cms.string('%s')" % hadTau_selection)
     lines.append("process.analyze_3l_1tau.isMC = cms.bool(%s)" % is_mc)
     lines.append("process.analyze_3l_1tau.central_or_shift = cms.string('%s')" % central_or_shift)
     lines.append("process.analyze_3l_1tau.lumiScale = cms.double(%f)" % lumi_scale)
@@ -83,21 +86,24 @@ class analyzeConfig_3l_1tau(analyzeConfig):
             key_file = getKey(sample_name, lepton_selection, central_or_shift, jobId)
             if key_file in self.histogramFiles.keys():
               inputFiles_jobIds.append(self.histogramFiles[key_file])
-            if len(inputFiles_jobIds) > 0:
-              haddFile_jobIds = self.histogramFile_hadd_stage1.replace(".root", "_%s_%s_%s.root" % \
-                (process_name, lepton_selection, central_or_shift))
-              lines_makefile.append("%s: %s" % (haddFile_jobIds, " ".join(inputFiles_jobIds)))
-              lines_makefile.append("\t%s %s %s" % ("hadd", haddFile_jobIds, " ".join(inputFiles_jobIds)))
-              lines_makefile.append("")
-              inputFiles_sample.append(haddFile_jobIds)
+          if len(inputFiles_jobIds) > 0:
+            haddFile_jobIds = self.histogramFile_hadd_stage1.replace(".root", "_%s_%s_%s.root" % \
+              (process_name, lepton_selection, central_or_shift))
+            lines_makefile.append("%s: %s" % (haddFile_jobIds, " ".join(inputFiles_jobIds)))
+            lines_makefile.append("\t%s %s" % ("rm -f", haddFile_jobIds))
+            lines_makefile.append("\t%s %s %s" % ("hadd", haddFile_jobIds, " ".join(inputFiles_jobIds)))
+            lines_makefile.append("")
+            inputFiles_sample.append(haddFile_jobIds)
       if len(inputFiles_sample) > 0:
         haddFile_sample = self.histogramFile_hadd_stage1.replace(".root", "_%s.root" % process_name)
         lines_makefile.append("%s: %s" % (haddFile_sample, " ".join(inputFiles_sample)))
+        lines_makefile.append("\t%s %s" % ("rm -f", haddFile_sample))
         lines_makefile.append("\t%s %s %s" % ("hadd", haddFile_sample, " ".join(inputFiles_sample)))
         lines_makefile.append("")
         inputFiles_hadd_stage1.append(haddFile_sample)
     lines_makefile.append("%s: %s" % (self.histogramFile_hadd_stage1, " ".join(inputFiles_hadd_stage1)))
-    lines_makefile.append("\t%s %s %s" % ("hadd", self.histogramFile_hadd_stage1, " ".join(inputFiles_sample)))
+    lines_makefile.append("\t%s %s" % ("rm -f", self.histogramFile_hadd_stage1))
+    lines_makefile.append("\t%s %s %s" % ("hadd", self.histogramFile_hadd_stage1, " ".join(inputFiles_hadd_stage1)))
     lines_makefile.append("")
 
   def create(self):
@@ -143,7 +149,7 @@ class analyzeConfig_3l_1tau(analyzeConfig):
               (self.channel, process_name, lepton_selection, central_or_shift, jobId))
                 
             self.createCfg_analyze(inputFiles, self.histogramFiles[key_file], sample_category, triggers,
-              lepton_selection, 
+              lepton_selection, self.hadTau_selection,
               is_mc, central_or_shift, lumi_scale, self.cfgFiles_analyze_modified[key_file])
                 
     if self.is_sbatch:

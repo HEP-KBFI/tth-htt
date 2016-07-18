@@ -45,7 +45,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
             initDict(self.dirs, [ key_dir, dir_type ])
             self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel,
               "_".join([ lepton_selection, lepton_charge_selection ]), process_name)
-    print "self.dirs = ", self.dirs
+    ##print "self.dirs = ", self.dirs
 
     self.cfgFile_analyze_original = os.path.join(self.workingDir, "analyze_2lss_1tau_cfg.py")
     self.histogramFile_addFakes = os.path.join(self.outputDir, DKEY_HIST, "addBackgroundLeptonFakes_%s.root" % self.channel)
@@ -54,7 +54,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
     self.histogramFile_addFlips = os.path.join(self.outputDir, DKEY_HIST, "addBackgroundLeptonFlips_%s.root" % self.channel)
     self.cfgFile_addFlips_original = os.path.join(self.workingDir, "addBackgroundLeptonFlips_cfg.py")
     self.cfgFile_addFlips_modified = os.path.join(self.outputDir, DKEY_CFGS, "addBackgroundLeptonFlips_%s_cfg.py" % self.channel)
-    self.histogramDir_prep_dcard = "2lss_1tau_Tight"
+    self.histogramDir_prep_dcard = "2lss_1tau_SS_Tight"
 
   def createCfg_analyze(self, inputFiles, outputFile, sample_category, triggers, lepton_selection, lepton_charge_selection, hadTau_selection,
                         is_mc, central_or_shift, lumi_scale, cfgFile_modified):
@@ -128,17 +128,20 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
               haddFile_jobIds = self.histogramFile_hadd_stage1.replace(".root", "_%s_%s_%s_%s.root" % \
                 (process_name, lepton_selection, lepton_charge_selection, central_or_shift))
               lines_makefile.append("%s: %s" % (haddFile_jobIds, " ".join(inputFiles_jobIds)))
+              lines_makefile.append("\t%s %s" % ("rm -f", haddFile_jobIds))
               lines_makefile.append("\t%s %s %s" % ("hadd", haddFile_jobIds, " ".join(inputFiles_jobIds)))
               lines_makefile.append("")
               inputFiles_sample.append(haddFile_jobIds)
       if len(inputFiles_sample) > 0:
         haddFile_sample = self.histogramFile_hadd_stage1.replace(".root", "_%s.root" % process_name)
         lines_makefile.append("%s: %s" % (haddFile_sample, " ".join(inputFiles_sample)))
+        lines_makefile.append("\t%s %s" % ("rm -f", haddFile_sample))
         lines_makefile.append("\t%s %s %s" % ("hadd", haddFile_sample, " ".join(inputFiles_sample)))
         lines_makefile.append("")
         inputFiles_hadd_stage1.append(haddFile_sample)
     lines_makefile.append("%s: %s" % (self.histogramFile_hadd_stage1, " ".join(inputFiles_hadd_stage1)))
-    lines_makefile.append("\t%s %s %s" % ("hadd", self.histogramFile_hadd_stage1, " ".join(inputFiles_sample)))
+    lines_makefile.append("\t%s %s" % ("rm -f", self.histogramFile_hadd_stage1))
+    lines_makefile.append("\t%s %s %s" % ("hadd", self.histogramFile_hadd_stage1, " ".join(inputFiles_hadd_stage1)))
     lines_makefile.append("")
 
   def addToMakefile_addFakes(self, lines_makefile):
@@ -159,6 +162,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
     """Adds the commands to Makefile that are necessary for building the final histogram file.
     """
     lines_makefile.append("%s: %s" % (self.histogramFile_hadd_stage2, " ".join([ self.histogramFile_hadd_stage1, self.histogramFile_addFakes, self.histogramFile_addFlips ])))
+    lines_makefile.append("\t%s %s" % ("rm -f", self.histogramFile_hadd_stage2))
     lines_makefile.append("\t%s %s %s" % ("hadd", self.histogramFile_hadd_stage2, " ".join([ self.histogramFile_hadd_stage1, self.histogramFile_addFakes, self.histogramFile_addFlips ])))
     lines_makefile.append("")
 

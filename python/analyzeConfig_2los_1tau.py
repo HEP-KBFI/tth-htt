@@ -18,12 +18,12 @@ class analyzeConfig_2los_1tau(analyzeConfig):
   """
   def __init__(self, outputDir, executable_analyze, hadTau_selection, central_or_shifts,
                max_files_per_job, use_lumi, lumi, debug, running_method, num_parallel_jobs, 
-               executable_addFakes, executable_addFlips, histograms_to_fit, executable_prep_dcard="prepareDatacard"):
+               histograms_to_fit, executable_prep_dcard="prepareDatacard"):
     analyzeConfig.__init__(self, outputDir, executable_analyze, "2los_1tau", central_or_shifts,
       max_files_per_job, use_lumi, lumi, debug, running_method, num_parallel_jobs, 
       histograms_to_fit)
 
-    self.samples = tthAnalyzeSamples_2lss_1tau.samples
+    self.samples = tthAnalyzeSamples_2los_1tau.samples
 
     self.lepton_selection = "Tight"
 
@@ -36,9 +36,9 @@ class analyzeConfig_2los_1tau(analyzeConfig):
       key_dir = getKey(sample_name)  
       for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_DCRD ]:
         initDict(self.dirs, [ key_dir, dir_type ])
-      self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel,
-        process_name)
-    print "self.dirs = ", self.dirs
+        self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel,
+          process_name)
+    ##print "self.dirs = ", self.dirs
 
     self.cfgFile_analyze_original = os.path.join(self.workingDir, "analyze_2los_1tau_cfg.py")
     self.histogramDir_prep_dcard = "2los_1tau_Tight"
@@ -65,7 +65,6 @@ class analyzeConfig_2los_1tau(analyzeConfig):
     lines.append("process.analyze_2los_1tau.use_triggers_2mu = cms.bool(%s)" % ("2mu" in triggers))
     lines.append("process.analyze_2los_1tau.use_triggers_1e1mu = cms.bool(%s)" % ("1e1mu" in triggers))
     lines.append("process.analyze_2los_1tau.leptonSelection = cms.string('%s')" % lepton_selection)
-    lines.append("process.analyze_2los_1tau.leptonChargeSelection = cms.string('%s')" % lepton_charge_selection)
     lines.append("process.analyze_2los_1tau.hadTauSelection = cms.string('%s')" % hadTau_selection)
     lines.append("process.analyze_2los_1tau.isMC = cms.bool(%s)" % is_mc)
     lines.append("process.analyze_2los_1tau.central_or_shift = cms.string('%s')" % central_or_shift)
@@ -89,17 +88,20 @@ class analyzeConfig_2los_1tau(analyzeConfig):
           haddFile_jobIds = self.histogramFile_hadd_stage1.replace(".root", "_%s_%s.root" % \
             (process_name, central_or_shift))
           lines_makefile.append("%s: %s" % (haddFile_jobIds, " ".join(inputFiles_jobIds)))
+          lines_makefile.append("\t%s %s" % ("rm -f", haddFile_jobIds))
           lines_makefile.append("\t%s %s %s" % ("hadd", haddFile_jobIds, " ".join(inputFiles_jobIds)))
           lines_makefile.append("")
           inputFiles_sample.append(haddFile_jobIds)
       if len(inputFiles_sample) > 0:
         haddFile_sample = self.histogramFile_hadd_stage1.replace(".root", "_%s.root" % process_name)
         lines_makefile.append("%s: %s" % (haddFile_sample, " ".join(inputFiles_sample)))
+        lines_makefile.append("\t%s %s" % ("rm -f", haddFile_sample))
         lines_makefile.append("\t%s %s %s" % ("hadd", haddFile_sample, " ".join(inputFiles_sample)))
         lines_makefile.append("")
         inputFiles_hadd_stage1.append(haddFile_sample)
     lines_makefile.append("%s: %s" % (self.histogramFile_hadd_stage1, " ".join(inputFiles_hadd_stage1)))
-    lines_makefile.append("\t%s %s %s" % ("hadd", self.histogramFile_hadd_stage1, " ".join(inputFiles_sample)))
+    lines_makefile.append("\t%s %s" % ("rm -f", self.histogramFile_hadd_stage1))
+    lines_makefile.append("\t%s %s %s" % ("hadd", self.histogramFile_hadd_stage1, " ".join(inputFiles_hadd_stage1)))
     lines_makefile.append("")
 
   def create(self):
@@ -134,7 +136,7 @@ class analyzeConfig_2los_1tau(analyzeConfig):
           inputFiles = generate_input_list(self.inputFileIds[sample_name][jobId], secondary_files, primary_store, secondary_store, self.debug)
   
           key_dir = getKey(sample_name)
-          key_file = getKey(sample_namecentral_or_shift, jobId)
+          key_file = getKey(sample_name, central_or_shift, jobId)
 
           self.cfgFiles_analyze_modified[key_file] = os.path.join(self.dirs[key_dir][DKEY_CFGS], "analyze_%s_%s_%s_%i_cfg.py" % \
             (self.channel, process_name, central_or_shift, jobId))
