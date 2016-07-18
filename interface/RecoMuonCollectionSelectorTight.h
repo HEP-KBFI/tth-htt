@@ -15,6 +15,10 @@ class RecoMuonSelectorTight
   RecoMuonSelectorTight(int index = -1, bool debug = false);
   ~RecoMuonSelectorTight() {}
 
+  // enable/disable tight charge cut
+  void enable_tightCharge_cut() { apply_tightCharge_ = true; }
+  void disable_tightCharge_cut() { apply_tightCharge_ = false; }
+
   /**
    * @brief Check if muon given as function argument passes "tight" muon selection, defined in Table 12 of AN-2015/321
    * @return True if muon passes selection; false otherwise
@@ -38,7 +42,37 @@ class RecoMuonSelectorTight
   Double_t min_mvaTTH_;     ///< lower cut threshold on lepton MVA of ttH multilepton analysis
 };
 
-typedef ParticleCollectionSelector<RecoMuon, RecoMuonSelectorTight> RecoMuonCollectionSelectorTight;
+class RecoMuonCollectionSelectorTight
+{
+ public:
+  RecoMuonCollectionSelectorTight(int index = -1, bool debug = false)
+    : selIndex_(index)
+    , selector_(index, debug)
+  {}
+  ~RecoMuonCollectionSelectorTight() {}
+
+  // enable/disable tight charge cut
+  void enable_tightCharge_cut() { selector_.enable_tightCharge_cut(); }
+  void disable_tightCharge_cut() { selector_.disable_tightCharge_cut(); }
+
+  std::vector<const RecoMuon*> operator()(const std::vector<const RecoMuon*>& muons) const
+  {
+    std::vector<const RecoMuon*> selMuons;
+    int idx = 0;
+    for ( typename std::vector<const RecoMuon*>::const_iterator muon = muons.begin();
+	  muon != muons.end(); ++muon ) {
+      if ( (idx == selIndex_ || selIndex_ == -1) && selector_(**muon) ) {
+	selMuons.push_back(*muon);
+      }
+      ++idx;
+    }
+    return selMuons;
+  }
+  
+ protected: 
+  int selIndex_;
+  RecoMuonSelectorTight selector_;
+};
 
 #endif // tthAnalysis_HiggsToTauTau_RecoMuonCollectionSelectorTight_h
 
