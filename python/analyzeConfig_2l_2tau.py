@@ -126,6 +126,7 @@ class analyzeConfig_2l_2tau(analyzeConfig):
                     lines_makefile.append("\t%s %s %s" % ("hadd", haddFile_jobIds, " ".join(inputFiles_jobIds)))
                     lines_makefile.append("")
                     inputFiles_sample.append(haddFile_jobIds)
+                    self.filesToClean.append(haddFile_jobIds)
       if len(inputFiles_sample) > 0:
         haddFile_sample = self.histogramFile_hadd_stage1.replace(".root", "_%s.root" % process_name)
         lines_makefile.append("%s: %s" % (haddFile_sample, " ".join(inputFiles_sample)))
@@ -133,10 +134,12 @@ class analyzeConfig_2l_2tau(analyzeConfig):
         lines_makefile.append("\t%s %s %s" % ("hadd", haddFile_sample, " ".join(inputFiles_sample)))
         lines_makefile.append("")
         inputFiles_hadd_stage1.append(haddFile_sample)
+        self.filesToClean.append(haddFile_sample)
     lines_makefile.append("%s: %s" % (self.histogramFile_hadd_stage1, " ".join(inputFiles_hadd_stage1)))
     lines_makefile.append("\t%s %s" % ("rm -f", self.histogramFile_hadd_stage1))
     lines_makefile.append("\t%s %s %s" % ("hadd", self.histogramFile_hadd_stage1, " ".join(inputFiles_hadd_stage1)))
     lines_makefile.append("")
+    self.filesToClean.append(self.histogramFile_hadd_stage1)
 
   def create(self):
     """Creates all necessary config files and runs the complete analysis workfow -- either locally or on the batch system
@@ -216,6 +219,7 @@ class analyzeConfig_2l_2tau(analyzeConfig):
     self.addToMakefile_backgrounds_from_data(lines_makefile)
     self.addToMakefile_hadd_stage2(lines_makefile)
     self.addToMakefile_prep_dcard(lines_makefile)
+    self.addToMakefile_clean(lines_makefile)
     self.createMakefile(lines_makefile)
   
     logging.info("Done")

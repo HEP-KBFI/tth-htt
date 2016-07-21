@@ -15,32 +15,37 @@ process.fwliteOutput = cms.PSet(
     fileName = cms.string('analyze_2los_1tau.root')
 )
 
-process.analyze_2los_1tau = cms.PSet(
+process.analyze_1l_1tau = cms.PSet(
     treeName = cms.string('tree'),
 
     process = cms.string('ttH'),
 
     triggers_1e = cms.vstring("HLT_BIT_HLT_Ele23_WPLoose_Gsf_v"),
     use_triggers_1e = cms.bool(True),
-    triggers_2e = cms.vstring("HLT_BIT_HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v"),
-    use_triggers_2e = cms.bool(True),
     triggers_1mu = cms.vstring("HLT_BIT_HLT_IsoMu20_v", "HLT_BIT_HLT_IsoTkMu20_v"),
     use_triggers_1mu = cms.bool(True),
-    triggers_2mu = cms.vstring("HLT_BIT_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v", "HLT_BIT_HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v"),
-    use_triggers_2mu = cms.bool(True),
-    triggers_1e1mu = cms.vstring("HLT_BIT_HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v", "HLT_BIT_HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v"),
-    use_triggers_1e1mu = cms.bool(True),
 
     apply_offline_e_trigger_cuts_1e = cms.bool(True),
-    apply_offline_e_trigger_cuts_2e = cms.bool(False),
     apply_offline_e_trigger_cuts_1mu = cms.bool(False),
-    apply_offline_e_trigger_cuts_2mu = cms.bool(False),
-    apply_offline_e_trigger_cuts_1e1mu = cms.bool(False),
-    
-    leptonSelection = cms.string('Tight'),
 
-    hadTauSelection = cms.string('dR03mvaTight'),
+    chargeSelection = cms.string('OS'),
     
+    hadTauSelection = cms.string('Tight'),
+    hadTauGenMatch = cms.string('all'),
+
+    hadTauEtaBins = cms.vdouble(-1., 1.2, 1.7, 9.9),
+
+    applyJetToTauFakeRateWeight = cms.bool(False),
+    jetToTauFakeRateWeight = cms.PSet(
+        inputFileName = cms.string("tthAnalysis/HiggsToTauTau/data/tauFR_data_dR03MVATight.root"),
+        fitFunctionNormName = cms.string("jetToTauFakeRate/$etaBin/fitFunctionNorm_SS_Tight_div_SS_Fakeable"),
+        graphShapeName = cms.string(""),
+        fitFunctionShapeName_central = cms.string("jetToTauFakeRate/$etaBin/fitFunctionShape_hadTauPt_lead_SS_Tight_div_SS_Fakeable"),
+        fitFunctionShapeName_shift = cms.string(""),
+        fitFunctionShapePower = cms.double(1.),
+        applyFitFunction_or_graph = cms.string("fitFunction")
+    ),
+        
     isMC = cms.bool(False),
     central_or_shift = cms.string('central'),
     lumiScale = cms.double(1.),

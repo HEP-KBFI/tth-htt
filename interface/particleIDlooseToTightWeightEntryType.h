@@ -20,11 +20,16 @@
 
 struct particleIDlooseToTightWeightEntryType
 {
+  particleIDlooseToTightWeightEntryType(TFile*, const std::string&, double, double, 
+					const std::string&, 
+					const std::string&, const std::string&, const std::string&, bool, double);
   particleIDlooseToTightWeightEntryType(TFile*, const std::string&, double, double, double, double,
 					const std::string&, 
 					const std::string&, const std::string&, const std::string&, bool, double, 
 					const std::string&, const std::string&, const std::string&, bool, double);
   ~particleIDlooseToTightWeightEntryType();
+  double weight(double particle1Pt) const;
+  double weightErr_relative(double particle1Pt) const;
   double weight(double particle1Pt, double particle2Pt) const;
   double weightErr_relative(double particle1Pt, double particle2Pt) const;
   double particle1EtaMin_;

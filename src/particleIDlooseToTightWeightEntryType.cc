@@ -75,6 +75,49 @@ namespace
 
 particleIDlooseToTightWeightEntryType::particleIDlooseToTightWeightEntryType(
   TFile* inputFile, 
+  const std::string& particleType, double particle1EtaMin, double particle1EtaMax, 
+  const std::string& fitFunctionNormName, 
+  const std::string& graphShapeName_particle1, const std::string& fitFunctionShapeName_particle1_central, const std::string& fitFunctionShapeName_particle1_shift, 
+  bool applyFitFunction_or_graph_tau1, double fitFunctionShapePower_particle1)
+  : particle1EtaMin_(particle1EtaMin),
+    particle1EtaMax_(particle1EtaMax),
+    particle2EtaMin_(-1.),
+    particle2EtaMax_(9.9),
+    norm_(0),
+    graphShapeCorr_particle1_(0),
+    graphShapeCorrErrUp_particle1_(0),
+    graphShapeCorrErrDown_particle1_(0),
+    fitFunctionShapeCorr_particle1_central_(0),
+    fitFunctionShapeCorr_particle1_shift_(0),
+    shapeCorrPow_particle1_(fitFunctionShapePower_particle1),	
+    applyFitFunction_or_graph_tau1_(applyFitFunction_or_graph_tau1),
+    graphShapeCorr_particle2_(0),
+    graphShapeCorrErrUp_particle2_(0),
+    graphShapeCorrErrDown_particle2_(0),
+    fitFunctionShapeCorr_particle2_central_(0),
+    fitFunctionShapeCorr_particle2_shift_(0),
+    shapeCorrPow_particle2_(0.),
+    applyFitFunction_or_graph_tau2_(false)
+{
+  std::string particleEtaBin_label = getParticleEtaLabel(particleType, particle1EtaMin_, particle1EtaMax_, particle2EtaMin_, particle2EtaMax_);
+
+  norm_ = loadFitFunction(inputFile, fitFunctionNormName, particleEtaBin_label);
+
+  if ( applyFitFunction_or_graph_tau1_ == kGraph ) {
+    graphShapeCorr_particle1_ = loadGraph(inputFile, graphShapeName_particle1, particleEtaBin_label);
+    graphShapeCorrErrUp_particle1_ = getGraphErr(graphShapeCorr_particle1_, kShiftUp);
+    graphShapeCorrErrDown_particle1_ = getGraphErr(graphShapeCorr_particle1_, kShiftDown);
+    fitFunctionShapeCorr_particle1_central_ = loadFitFunction(inputFile, fitFunctionShapeName_particle1_central, particleEtaBin_label);
+    if ( fitFunctionShapeName_particle1_shift != "" ) { 
+      fitFunctionShapeCorr_particle1_shift_ = loadFitFunction(inputFile, fitFunctionShapeName_particle1_shift, particleEtaBin_label);
+    }
+  } else if ( applyFitFunction_or_graph_tau1_ == kFitFunction ) {
+    fitFunctionShapeCorr_particle1_central_ = loadFitFunction(inputFile, fitFunctionShapeName_particle1_central, particleEtaBin_label);
+  }
+}
+
+particleIDlooseToTightWeightEntryType::particleIDlooseToTightWeightEntryType(
+  TFile* inputFile, 
   const std::string& particleType, double particle1EtaMin, double particle1EtaMax, double particle2EtaMin, double particle2EtaMax,
   const std::string& fitFunctionNormName, 
   const std::string& graphShapeName_particle1, const std::string& fitFunctionShapeName_particle1_central, const std::string& fitFunctionShapeName_particle1_shift, 
@@ -91,7 +134,7 @@ particleIDlooseToTightWeightEntryType::particleIDlooseToTightWeightEntryType(
     graphShapeCorrErrDown_particle1_(0),
     fitFunctionShapeCorr_particle1_central_(0),
     fitFunctionShapeCorr_particle1_shift_(0),
-    shapeCorrPow_particle1_(fitFunctionShapePower_particle1),																      
+    shapeCorrPow_particle1_(fitFunctionShapePower_particle1),
     applyFitFunction_or_graph_tau1_(applyFitFunction_or_graph_tau1),
     graphShapeCorr_particle2_(0),
     graphShapeCorrErrUp_particle2_(0),
@@ -142,6 +185,46 @@ particleIDlooseToTightWeightEntryType::~particleIDlooseToTightWeightEntryType()
   delete graphShapeCorrErrDown_particle2_;
   delete fitFunctionShapeCorr_particle2_central_;
   delete fitFunctionShapeCorr_particle2_shift_;
+}
+
+double particleIDlooseToTightWeightEntryType::weight(double particle1Pt) const
+{
+  //std::cout << "<particleIDlooseToTightWeightEntryType::weight>:" << std::endl;
+  double weight = norm_->Eval(1.);
+  //std::cout << " norm = " << norm_->Eval(1.) << std::endl;
+  double shapeCorr_particle1 = 1.;
+  if ( applyFitFunction_or_graph_tau1_ == kGraph ) {
+    assert(graphShapeCorr_particle1_);
+    shapeCorr_particle1 = graphShapeCorr_particle1_->Eval(particle1Pt);
+    if ( fitFunctionShapeCorr_particle1_central_ && fitFunctionShapeCorr_particle1_shift_ ) {
+      double shapeCorr_particle1_central = fitFunctionShapeCorr_particle1_central_->Eval(particle1Pt);
+      double shapeCorr_particle1_shift = fitFunctionShapeCorr_particle1_shift_->Eval(particle1Pt);
+      if ( shapeCorr_particle1_central > 0. ) shapeCorr_particle1 *= (shapeCorr_particle1_shift/shapeCorr_particle1_central);
+    }
+  } else if ( applyFitFunction_or_graph_tau1_ == kFitFunction ) {
+    assert(fitFunctionShapeCorr_particle1_central_);
+    shapeCorr_particle1 = fitFunctionShapeCorr_particle1_central_->Eval(particle1Pt);
+    //std::cout << " shape(tau1) = " << fitFunctionShapeCorr_particle1_central_->Eval(particle1Pt) << std::endl;
+  }
+  weight *= TMath::Power(TMath::Max(0., shapeCorr_particle1), shapeCorrPow_particle1_);
+  if ( weight < 0.    ) weight = 0.;
+  if ( weight > 1.e+1 ) weight = 1.e+1; // CV: ratio anti-iso/iso can indeed be greater than 1.0 in case anti-iso sideband is very "narrow"
+  return weight;
+}
+
+double particleIDlooseToTightWeightEntryType::weightErr_relative(double particle1Pt) const
+{
+  double weightErr_relative = 0.;
+  if ( applyFitFunction_or_graph_tau1_ == kGraph ) {
+    assert(graphShapeCorr_particle1_);
+    double shapeCorr_particle1 = graphShapeCorr_particle1_->Eval(particle1Pt);
+    if ( shapeCorr_particle1 > 0. ) {
+      double shapeCorrErrUp_particle1 = graphShapeCorrErrUp_particle1_->Eval(particle1Pt);
+      double shapeCorrErrDown_particle1 = graphShapeCorrErrDown_particle1_->Eval(particle1Pt);
+      weightErr_relative += TMath::Sqrt(0.5*(square(shapeCorrErrUp_particle1 - shapeCorr_particle1) + square(shapeCorr_particle1 - shapeCorrErrDown_particle1)))/shapeCorr_particle1;      
+      }
+  }
+  return weightErr_relative;
 }
 
 double particleIDlooseToTightWeightEntryType::weight(double particle1Pt, double particle2Pt) const

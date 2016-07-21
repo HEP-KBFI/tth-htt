@@ -47,6 +47,8 @@ class RecoHadTauCollectionSelectorLoose
   {}
   ~RecoHadTauCollectionSelectorLoose() {}
 
+  void set_min_pt(double min_pt) { selector_.min_pt_ = min_pt; }
+
   void set_min_antiElectron(int min_antiElectron) { selector_.min_antiElectron_ = min_antiElectron; }
   void set_min_antiMuon(int min_antiMuon) { selector_.min_antiMuon_ = min_antiMuon; }
 

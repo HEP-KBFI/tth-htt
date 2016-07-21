@@ -49,6 +49,8 @@ class RecoHadTauCollectionSelectorTight
   {}
   ~RecoHadTauCollectionSelectorTight() {}
 
+  void set_min_pt(double min_pt) { selector_.min_pt_ = min_pt; }
+
   void set_min_id_mva_dR03(int min_id_mva_dR03) { selector_.min_id_mva_dR03_ = min_id_mva_dR03; }
   void set_min_raw_mva_dR03(double min_raw_mva_dR03) { selector_.min_raw_mva_dR03_ = min_raw_mva_dR03; }
   void set_min_id_mva_dR05(int min_id_mva_dR05) { selector_.min_id_mva_dR05_ = min_id_mva_dR05; }

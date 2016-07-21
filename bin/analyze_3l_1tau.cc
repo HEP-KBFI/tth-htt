@@ -153,6 +153,8 @@ int main(int argc, char* argv[])
 
   bool apply_offline_e_trigger_cuts_1e = cfg_analyze.getParameter<bool>("apply_offline_e_trigger_cuts_1e");
   bool apply_offline_e_trigger_cuts_2e = cfg_analyze.getParameter<bool>("apply_offline_e_trigger_cuts_2e");
+  bool apply_offline_e_trigger_cuts_1mu = cfg_analyze.getParameter<bool>("apply_offline_e_trigger_cuts_1mu");
+  bool apply_offline_e_trigger_cuts_2mu = cfg_analyze.getParameter<bool>("apply_offline_e_trigger_cuts_2mu");
   bool apply_offline_e_trigger_cuts_1e1mu = cfg_analyze.getParameter<bool>("apply_offline_e_trigger_cuts_1e1mu");
 
   enum { kLoose, kFakeable, kTight };
@@ -530,7 +532,9 @@ int main(int argc, char* argv[])
     }
     cutFlowTable.update("trigger");
 
-    if ( (selTrigger_2e    && !apply_offline_e_trigger_cuts_2e)    ||
+    if ( (selTrigger_2mu   && !apply_offline_e_trigger_cuts_2mu)   ||
+	 (selTrigger_1mu   && !apply_offline_e_trigger_cuts_1mu)   ||
+	 (selTrigger_2e    && !apply_offline_e_trigger_cuts_2e)    ||
 	 (selTrigger_1e1mu && !apply_offline_e_trigger_cuts_1e1mu) ||
 	 (selTrigger_1e    && !apply_offline_e_trigger_cuts_1e)    ) {
       fakeableElectronSelector.disable_offline_e_trigger_cuts();

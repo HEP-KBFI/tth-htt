@@ -1,7 +1,7 @@
 import logging
 
 from tthAnalysis.HiggsToTauTau.analyzeConfig import *
-import tthAnalyzeSamples_1l_2tau
+import tthAnalyzeSamples_0l_2tau
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists
 
 def get_hadTau_selection_and_frWeight(hadTau_selection, hadTau_frWeight):
@@ -14,12 +14,12 @@ def get_hadTau_selection_and_frWeight(hadTau_selection, hadTau_frWeight):
   hadTau_selection_and_frWeight = hadTau_selection_and_frWeight.replace("|", "_")    
   return hadTau_selection_and_frWeight
 
-class analyzeConfig_1l_2tau(analyzeConfig):
+class analyzeConfig_0l_2tau(analyzeConfig):
   """Configuration metadata needed to run analysis in a single go.
   
   Sets up a folder structure by defining full path names; no directory creation is delegated here.
   
-  Args specific to analyzeConfig_1l_2tau:
+  Args specific to analyzeConfig_0l_2tau:
     hadTau_selection: either `Tight`, `Loose` or `Fakeable`
     hadTau_charge_selection: either `OS` or `SS` (opposite-sign or same-sign)
 
@@ -30,11 +30,11 @@ class analyzeConfig_1l_2tau(analyzeConfig):
   def __init__(self, outputDir, executable_analyze, hadTau_selections, hadTau_charge_selections, central_or_shifts,
                max_files_per_job, use_lumi, lumi, debug, running_method, num_parallel_jobs, 
                histograms_to_fit, executable_prep_dcard="prepareDatacard"):
-    analyzeConfig.__init__(self, outputDir, executable_analyze, "1l_2tau", central_or_shifts,
+    analyzeConfig.__init__(self, outputDir, executable_analyze, "0l_2tau", central_or_shifts,
       max_files_per_job, use_lumi, lumi, debug, running_method, num_parallel_jobs, 
       histograms_to_fit)
 
-    self.samples = tthAnalyzeSamples_1l_2tau.samples
+    self.samples = tthAnalyzeSamples_0l_2tau.samples
 
     self.hadTau_selections = hadTau_selections
     self.hadTau_charge_selections = hadTau_charge_selections
@@ -59,12 +59,12 @@ class analyzeConfig_1l_2tau(analyzeConfig):
                 "_".join([ hadTau_selection_and_frWeight, hadTau_charge_selection ]), process_name)
     ##print "self.dirs = ", self.dirs
 
-    self.cfgFile_analyze_original = os.path.join(self.workingDir, "analyze_1l_2tau_cfg.py")
-    self.histogramDir_prep_dcard = "1l_2tau_OS_Tight"
+    self.cfgFile_analyze_original = os.path.join(self.workingDir, "analyze_0l_2tau_cfg.py")
+    self.histogramDir_prep_dcard = "0l_2tau_OS_Tight"
 
   def createCfg_analyze(self, inputFiles, outputFile, sample_category, triggers, hadTau_selection, hadTau_genMatch, hadTau_frWeight, hadTau_charge_selection,
                         is_mc, central_or_shift, lumi_scale, cfgFile_modified):
-    """Create python configuration file for the analyze_1l_2tau executable (analysis code)
+    """Create python configuration file for the analyze_0l_2tau executable (analysis code)
 
     Args:
       inputFiles: list of input files (Ntuples)
@@ -72,24 +72,24 @@ class analyzeConfig_1l_2tau(analyzeConfig):
       process: either `TT`, `TTW`, `TTZ`, `EWK`, `Rares`, `data_obs`, `ttH_hww`, `ttH_hzz` or `ttH_htt`
       is_mc: flag indicating whether job runs on MC (True) or data (False)
       lumi_scale: event weight (= xsection * luminosity / number of events)
-      central_or_shift: either 'central' or one of the systematic uncertainties defined in $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/bin/analyze_1l_2tau.cc
+      central_or_shift: either 'central' or one of the systematic uncertainties defined in $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/bin/analyze_0l_2tau.cc
     """  
     lines = []
     lines.append("process.fwliteInput.fileNames = cms.vstring(%s)" % inputFiles)
     lines.append("process.fwliteOutput.fileName = cms.string('%s')" % outputFile)
-    lines.append("process.analyze_1l_2tau.process = cms.string('%s')" % sample_category)
-    lines.append("process.analyze_1l_2tau.use_triggers_1e = cms.bool(%s)" % ("1e" in triggers))
-    lines.append("process.analyze_1l_2tau.use_triggers_1mu = cms.bool(%s)" % ("1mu" in triggers))
-    lines.append("process.analyze_1l_2tau.hadTauChargeSelection = cms.string('%s')" % hadTau_charge_selection)
-    lines.append("process.analyze_1l_2tau.hadTauSelection = cms.string('%s')" % hadTau_selection)
-    lines.append("process.analyze_1l_2tau.hadTauGenMatch = cms.string('%s')" % hadTau_genMatch)
+    lines.append("process.analyze_0l_2tau.process = cms.string('%s')" % sample_category)
+    lines.append("process.analyze_0l_2tau.use_triggers_1e = cms.bool(%s)" % ("1e" in triggers))
+    lines.append("process.analyze_0l_2tau.use_triggers_1mu = cms.bool(%s)" % ("1mu" in triggers))
+    lines.append("process.analyze_0l_2tau.hadTauChargeSelection = cms.string('%s')" % hadTau_charge_selection)
+    lines.append("process.analyze_0l_2tau.hadTauSelection = cms.string('%s')" % hadTau_selection)
+    lines.append("process.analyze_0l_2tau.hadTauGenMatch = cms.string('%s')" % hadTau_genMatch)
     if hadTau_frWeight == "enabled":
-      lines.append("process.analyze_1l_2tau.applyJetToTauFakeRateWeight = cms.bool(True)")
+      lines.append("process.analyze_0l_2tau.applyJetToTauFakeRateWeight = cms.bool(True)")
     elif hadTau_frWeight != "disabled":
       raise ValueError("Invalid parameter 'hadTau_frWeight' = %s !!" % hadTau_frWeight) 
-    lines.append("process.analyze_1l_2tau.isMC = cms.bool(%s)" % is_mc)
-    lines.append("process.analyze_1l_2tau.central_or_shift = cms.string('%s')" % central_or_shift)
-    lines.append("process.analyze_1l_2tau.lumiScale = cms.double(%f)" % lumi_scale)
+    lines.append("process.analyze_0l_2tau.isMC = cms.bool(%s)" % is_mc)
+    lines.append("process.analyze_0l_2tau.central_or_shift = cms.string('%s')" % central_or_shift)
+    lines.append("process.analyze_0l_2tau.lumiScale = cms.double(%f)" % lumi_scale)
     create_cfg(self.cfgFile_analyze_original, cfgFile_modified, lines)
 
   def addToMakefile_hadd_stage1(self, lines_makefile):
@@ -118,6 +118,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
                   lines_makefile.append("\t%s %s %s" % ("hadd", haddFile_jobIds, " ".join(inputFiles_jobIds)))
                   lines_makefile.append("")
                   inputFiles_sample.append(haddFile_jobIds)
+                  self.filesToClean.append(haddFile_jobIds)
       if len(inputFiles_sample) > 0:
         haddFile_sample = self.histogramFile_hadd_stage1.replace(".root", "_%s.root" % process_name)
         lines_makefile.append("%s: %s" % (haddFile_sample, " ".join(inputFiles_sample)))
@@ -125,10 +126,12 @@ class analyzeConfig_1l_2tau(analyzeConfig):
         lines_makefile.append("\t%s %s %s" % ("hadd", haddFile_sample, " ".join(inputFiles_sample)))
         lines_makefile.append("")
         inputFiles_hadd_stage1.append(haddFile_sample)
+        self.filesToClean.append(haddFile_sample)
     lines_makefile.append("%s: %s" % (self.histogramFile_hadd_stage1, " ".join(inputFiles_hadd_stage1)))
     lines_makefile.append("\t%s %s" % ("rm -f", self.histogramFile_hadd_stage1))
     lines_makefile.append("\t%s %s %s" % ("hadd", self.histogramFile_hadd_stage1, " ".join(inputFiles_hadd_stage1)))
     lines_makefile.append("")
+    self.filesToClean.append(self.histogramFile_hadd_stage1)
 
   def create(self):
     """Creates all necessary config files and runs the complete analysis workfow -- either locally or on the batch system

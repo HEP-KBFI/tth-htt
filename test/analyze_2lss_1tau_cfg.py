@@ -33,6 +33,8 @@ process.analyze_2lss_1tau = cms.PSet(
 
     apply_offline_e_trigger_cuts_1e = cms.bool(True),
     apply_offline_e_trigger_cuts_2e = cms.bool(False),
+    apply_offline_e_trigger_cuts_1mu = cms.bool(False),
+    apply_offline_e_trigger_cuts_2mu = cms.bool(False),
     apply_offline_e_trigger_cuts_1e1mu = cms.bool(False),
     
     leptonSelection = cms.string('Tight'),

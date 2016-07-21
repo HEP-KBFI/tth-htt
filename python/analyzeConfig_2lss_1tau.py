@@ -25,6 +25,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
       histograms_to_fit)
 
     self.samples = tthAnalyzeSamples_2lss_1tau.samples
+    self.prep_dcard_processesToCopy = [ "data_obs", "TTW", "TTZ", "WZ", "Rares", "fakes_data", "flips_data" ]
 
     self.lepton_selections = lepton_selections
     self.lepton_charge_selections = lepton_charge_selections
@@ -33,7 +34,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
 
     self.executable_addFakes = executable_addFakes
     self.executable_addFlips = executable_addFlips
-
+    
     for sample_name, sample_info in self.samples.items():
       if not sample_info["use_it"] or sample_info["sample_category"] in [ "additional_signal_overlap", "background_data_estimate" ]:
         continue
@@ -132,6 +133,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
               lines_makefile.append("\t%s %s %s" % ("hadd", haddFile_jobIds, " ".join(inputFiles_jobIds)))
               lines_makefile.append("")
               inputFiles_sample.append(haddFile_jobIds)
+              self.filesToClean.append(haddFile_jobIds)
       if len(inputFiles_sample) > 0:
         haddFile_sample = self.histogramFile_hadd_stage1.replace(".root", "_%s.root" % process_name)
         lines_makefile.append("%s: %s" % (haddFile_sample, " ".join(inputFiles_sample)))
@@ -139,20 +141,24 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
         lines_makefile.append("\t%s %s %s" % ("hadd", haddFile_sample, " ".join(inputFiles_sample)))
         lines_makefile.append("")
         inputFiles_hadd_stage1.append(haddFile_sample)
+        self.filesToClean.append(haddFile_sample)
     lines_makefile.append("%s: %s" % (self.histogramFile_hadd_stage1, " ".join(inputFiles_hadd_stage1)))
     lines_makefile.append("\t%s %s" % ("rm -f", self.histogramFile_hadd_stage1))
     lines_makefile.append("\t%s %s %s" % ("hadd", self.histogramFile_hadd_stage1, " ".join(inputFiles_hadd_stage1)))
     lines_makefile.append("")
+    self.filesToClean.append(self.histogramFile_hadd_stage1)
 
   def addToMakefile_addFakes(self, lines_makefile):
     lines_makefile.append("%s: %s" % (self.histogramFile_addFakes, self.histogramFile_hadd_stage1))
     lines_makefile.append("\t%s %s" % (self.executable_addFakes, self.cfgFile_addFakes_modified))
     lines_makefile.append("")
+    self.filesToClean.append(self.histogramFile_addFakes)
 
   def addToMakefile_addFlips(self, lines_makefile):
     lines_makefile.append("%s: %s" % (self.histogramFile_addFlips, self.histogramFile_hadd_stage1))
     lines_makefile.append("\t%s %s" % (self.executable_addFlips, self.cfgFile_addFlips_modified))
     lines_makefile.append("")
+    self.filesToClean.append(self.histogramFile_addFlips)
 
   def addToMakefile_backgrounds_from_data(self, lines_makefile):
     self.addToMakefile_addFakes(lines_makefile)
@@ -165,6 +171,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
     lines_makefile.append("\t%s %s" % ("rm -f", self.histogramFile_hadd_stage2))
     lines_makefile.append("\t%s %s %s" % ("hadd", self.histogramFile_hadd_stage2, " ".join([ self.histogramFile_hadd_stage1, self.histogramFile_addFakes, self.histogramFile_addFlips ])))
     lines_makefile.append("")
+    self.filesToClean.append(self.histogramFile_hadd_stage2)
 
   def create(self):
     """Creates all necessary config files and runs the complete analysis workfow -- either locally or on the batch system
@@ -235,6 +242,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
     self.addToMakefile_backgrounds_from_data(lines_makefile)
     self.addToMakefile_hadd_stage2(lines_makefile)
     self.addToMakefile_prep_dcard(lines_makefile)
+    self.addToMakefile_clean(lines_makefile)
     self.createMakefile(lines_makefile)
   
     logging.info("Done")

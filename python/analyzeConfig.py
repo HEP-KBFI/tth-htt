@@ -133,6 +133,7 @@ class analyzeConfig:
     self.cfgFile_prep_dcard_original = os.path.join(self.workingDir, "prepareDatacards_cfg.py")
     self.cfgFile_prep_dcard_modified = {}
     self.histogramDir_prep_dcard = None
+    self.filesToClean = []
 
   def createCfg_analyze(self, *args):
     raise ValueError("Function 'createCfg_analyze' not implemented in derrived class !!")      
@@ -219,6 +220,7 @@ class analyzeConfig:
         lines_makefile.append("%s: %s" % (histogramFile, "sbatch"))
         lines_makefile.append("\t%s" % ":") # CV: null command
         lines_makefile.append("")
+      self.filesToClean.append(histogramFile)
 
   def addToMakefile_hadd_stage1(self, lines_makefile):
     raise ValueError("Method 'addToMakefile_hadd_stage1' not implemented in derrived class !!")
@@ -244,12 +246,22 @@ class analyzeConfig:
     for histogramToFit in self.histograms_to_fit:
       lines_makefile.append("%s: %s" % (self.datacardFiles[histogramToFit], self.histogramFile_hadd_stage2))
       lines_makefile.append("\t%s %s" % (self.executable_prep_dcard, self.cfgFile_prep_dcard_modified[histogramToFit]))
+      self.filesToClean.append(self.datacardFiles[histogramToFit])
     lines_makefile.append("")
     lines_makefile.append("all: %s" % " ".join(self.datacardFiles.values()))
     lines_makefile.append("")
 
+  def addToMakefile_clean(self, lines_makefile):
+    """Adds the commands to Makefile that are necessary for removing all ROOT files from previous execution of analysis workfow.
+    """
+    lines_makefile.append(".PHONY: clean")
+    lines_makefile.append("clean:")
+    for fileToClean in self.filesToClean:
+      lines_makefile.append("\trm -f %s" % fileToClean)
+    lines_makefile.append("")
+
   def createMakefile(self, lines_makefile):
-    """Creates Makefile that runs the complete analysis workfow
+    """Creates Makefile that runs the complete analysis workfow.
     """
     lines_makefile_with_header = []
     lines_makefile_with_header.append(".DEFAULT_GOAL := all")
@@ -258,11 +270,11 @@ class analyzeConfig:
     createFile(self.makefile, lines_makefile_with_header)
 
   def create(self):
-    """Creates all config files necessary for runing the complete analysis workfow
+    """Creates all config files necessary for runing the complete analysis workfow.
     """
     raise ValueError("Method 'create' not implemented in derrived class !!")
 
   def run(self):
-    """Runs the complete analysis workfow -- either locally or on the batch system
+    """Runs the complete analysis workfow -- either locally or on the batch system.
     """
     run_cmd("make -f %s -j %i " % (self.makefile, self.num_parallel_jobs), False, self.stdout_file, self.stderr_file)
