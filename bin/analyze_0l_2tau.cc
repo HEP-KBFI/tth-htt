@@ -1,4 +1,4 @@
-
+//aaa
 #include "FWCore/ParameterSet/interface/ParameterSet.h" // edm::ParameterSet
 #include "FWCore/PythonParameterSet/interface/MakeParameterSets.h" // edm::readPSetsFrom()
 #include "FWCore/ParameterSet/interface/FileInPath.h" // edm::FileInPath
@@ -14,6 +14,7 @@
 #include <TTree.h> // TTree
 #include <TBenchmark.h> // TBenchmark
 #include <TString.h> // TString, Form
+#include <TMatrixD.h> // TMatrixD
 
 #include "tthAnalysis/HiggsToTauTau/interface/RecoLepton.h" // RecoLepton
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h" // RecoJet
@@ -54,6 +55,10 @@
 #include "tthAnalysis/HiggsToTauTau/interface/particleIDlooseToTightWeightEntryType.h" // particleIDlooseToTightWeightEntryType
 #include "tthAnalysis/HiggsToTauTau/interface/cutFlowTable.h" // cutFlowTableType
 
+#include "TauAnalysis/ClassicSVfit/interface/ClassicSVfit.h"
+#include "TauAnalysis/ClassicSVfit/interface/MeasuredTauLepton.h"
+#include "TauAnalysis/ClassicSVfit/interface/svFitAuxFunctions.h"
+
 #include <boost/range/algorithm/copy.hpp> // boost::copy()
 #include <boost/range/adaptor/map.hpp> // boost::adaptors::map_keys
 
@@ -86,6 +91,75 @@ enum { k0l_btight, k0l_bloose };
 bool isHigherPt(const GenParticle* particle1, const GenParticle* particle2)
 {
   return (particle1->pt_ > particle2->pt_);
+}
+
+/**
+ * @brief Integral of Crystal Ball function for fitting trigger efficiency turn-on curves (code from Pascal Paganini)
+ * @param m = pT of reconstructed hadronic tau candidates; the other parameters refer to the shape of the Crystal Ball function, cf. Section 6.2.3 of AN-2016/027
+ * @return efficiency for passing trigger, per hadronic tau leg
+ */
+
+double integralCrystalBall(double m, double m0, double sigma, double alpha, double n, double norm) 
+{
+  const double sqrtPiOver2 = 1.2533141373;
+  const double sqrt2 = 1.4142135624;
+  
+  double sig = fabs((double)sigma);
+  
+  double t = (m - m0)/sig;
+  
+  if (alpha < 0) t = -t;
+  
+  double absAlpha = fabs(alpha / sig);
+  double a = TMath::Power(n/absAlpha, n)*exp(-0.5*absAlpha*absAlpha);
+  double b = absAlpha - n/absAlpha;
+  
+  if ( a >= std::numeric_limits<double>::max() ) return -1.;
+  
+  double ApproxErf;
+  double arg = absAlpha / sqrt2;
+  if      ( arg >  5. ) ApproxErf =  1;
+  else if ( arg < -5. ) ApproxErf = -1;
+  else                  ApproxErf = erf(arg);
+  
+  double leftArea = (1 + ApproxErf) * sqrtPiOver2;
+  double rightArea = ( a * 1/TMath::Power(absAlpha - b,n-1)) / (n - 1);
+  double area = leftArea + rightArea;
+  
+  if ( t <= absAlpha ) {
+    arg = t / sqrt2;
+    if      ( arg >  5.) ApproxErf =  1;
+    else if ( arg < -5.) ApproxErf = -1;
+    else                 ApproxErf = erf(arg);
+    return norm * (1 + ApproxErf) * sqrtPiOver2 / area;
+  } else {
+    return norm * (leftArea +  a * (1/TMath::Power(t-b, n - 1) - 1/TMath::Power(absAlpha - b, n - 1)) / (1 - n)) / area;
+  }
+}
+
+/**
+ * @brief Trigger efficiency turn-on curve for HLT_DoubleMediumIsoPFTau35_Trk1_eta2p1_Reg trigger measured by Riccardo for 2016 data
+ * @param pT and eta of both reconstructed hadronic tau candidates
+ * @return efficiency for passing trigger,
+    cf. slide 6 of https://indico.cern.ch/event/544712/contributions/2213574/attachments/1295299/1930984/htt_tau_trigger_17_6_2016.pdf
+   (parameters of Crystal Ball function taken for Tight WP of MVA-based tau ID trained with dR=0.5 isolation cone)
+ */
+
+double effHLT_DoubleMediumIsoPFTau35_Trk1_eta2p1_Reg(double tau1Pt, double tau1Eta, double tau2Pt, double tau2Eta) 
+{
+  double m1 = tau1Pt;
+  if ( m1 <  20. ) m1 =  20.; // CV: restrict m to Pt-range actually fitted
+  if ( m1 > 170. ) m1 = 170.;
+  double m2 = tau2Pt;
+  if ( m2 <  20. ) m2 =  20.; // CV: restrict m to Pt-range actually fitted
+  if ( m2 > 170. ) m2 = 170.;
+  
+  const double m0 = 3.76157e+1;
+  const double sigma = 4.76127e0;
+  const double alpha = 3.62497e0;
+  const double n = 3.51839e0;
+  const double norm = 9.83701e-1;
+  return TMath::Max(0., integralCrystalBall(m1, m0, sigma, alpha, n, norm))*TMath::Max(0., integralCrystalBall(m2, m0, sigma, alpha, n, norm)); 
 }
 
 /**
@@ -309,6 +383,11 @@ int main(int argc, char* argv[])
   }
 
   //hltPaths_setBranchAddresses(inputTree, triggers);
+
+  PUWEIGHT_TYPE pileupWeight;
+  if ( isMC ) {
+    inputTree->SetBranchAddress(PUWEIGHT_KEY, &pileupWeight);
+  }
 
   MET_PT_TYPE met_pt;
   inputTree->SetBranchAddress(MET_PT_KEY, &met_pt);
@@ -661,10 +740,14 @@ int main(int argc, char* argv[])
 //--- compute event-level weight for data/MC correction of b-tagging efficiency and mistag rate
 //   (using the method "Event reweighting using scale factors calculated with a tag and probe method", 
 //    described on the BTV POG twiki https://twiki.cern.ch/twiki/bin/view/CMS/BTagShapeCalibration )
-    double evtWeight = lumiScale;
-    for ( std::vector<const RecoJet*>::const_iterator jet = selJets.begin();
-	  jet != selJets.end(); ++jet ) {
-      evtWeight *= (*jet)->BtagWeight_;
+    double evtWeight = 1.;
+    if ( isMC ) {
+      evtWeight *= lumiScale;
+      evtWeight *= pileupWeight;
+      for ( std::vector<const RecoJet*>::const_iterator jet = selJets.begin();
+	    jet != selJets.end(); ++jet ) {
+	evtWeight *= (*jet)->BtagWeight_;
+      }
     }
 
 //--- fill histograms with events passing preselection
@@ -677,7 +760,7 @@ int main(int argc, char* argv[])
     preselMEtHistManager.fillHistograms(met_p4, mht_p4, met_LD, evtWeight);
     preselEvtHistManager.fillHistograms(preselElectrons.size(), preselMuons.size(), selHadTaus.size(), 
       selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
-      mTauTauVis_presel, evtWeight);
+      mTauTauVis_presel, -1., evtWeight);
 
 //--- apply final event selection 
     // require presence of exactly two hadronic taus passing tight selection criteria of final event selection
@@ -689,6 +772,14 @@ int main(int argc, char* argv[])
     const RecoHadTau* selHadTau_sublead = selHadTaus_sublead[0];
     bool isGenHadTauMatched_sublead = selHadTau_sublead->genHadTau_;
     bool isGenLeptonMatched_sublead = selHadTau_sublead->genLepton_ && !isGenHadTauMatched_sublead;
+
+//--- weight simulated events by efficiency to pass HLT_DoubleMediumIsoPFTau35_Trk1_eta2p1_Reg trigger
+//   (triggers not simulated in Spring16 MC samples)
+    if ( isMC ) {
+      evtWeight *= effHLT_DoubleMediumIsoPFTau35_Trk1_eta2p1_Reg(
+        selHadTau_lead->pt_, selHadTau_lead->eta_, 
+	selHadTau_sublead->pt_, selHadTau_sublead->eta_);
+    }   
     
     bool isGen_t = isGenHadTauMatched_lead && isGenHadTauMatched_sublead;
     bool isGen_l = (isGenLeptonMatched_lead || isGenLeptonMatched_sublead) && !isGen_t;
@@ -740,6 +831,32 @@ int main(int argc, char* argv[])
       }
     }
 
+//--- reconstruct mass of tau-pair using SVfit algorithm
+//
+//    NOTE: SVfit needs to be run after all event selection cuts are applied,
+//          because the algorithm takes O(1 second per event) to run
+//
+    std::vector<classic_svFit::MeasuredTauLepton> measuredTauLeptons;
+    classic_svFit::MeasuredTauLepton::kDecayType leg1Type = classic_svFit::MeasuredTauLepton::kTauToHadDecay;
+    double leg1Mass = selHadTau_lead->mass_;
+    if ( leg1Mass < classic_svFit::chargedPionMass ) leg1Mass = classic_svFit::chargedPionMass;
+    if ( leg1Mass > 1.5                            ) leg1Mass = 1.5;
+    classic_svFit::MeasuredTauLepton::kDecayType leg2Type = classic_svFit::MeasuredTauLepton::kTauToHadDecay;
+    double leg2Mass = selHadTau_sublead->mass_;
+    if ( leg2Mass < classic_svFit::chargedPionMass ) leg2Mass = classic_svFit::chargedPionMass;
+    if ( leg2Mass > 1.5                            ) leg2Mass = 1.5;
+    measuredTauLeptons.push_back(classic_svFit::MeasuredTauLepton(leg1Type, selHadTau_lead->pt_, selHadTau_lead->eta_, selHadTau_lead->phi_, leg1Mass));
+    measuredTauLeptons.push_back(classic_svFit::MeasuredTauLepton(leg2Type, selHadTau_sublead->pt_, selHadTau_sublead->eta_, selHadTau_sublead->phi_, leg2Mass));
+    ClassicSVfit svFitAlgo;
+    svFitAlgo.addLogM_fixed(true, 5.);
+    TMatrixD metCov(2,2);
+    metCov[0][0] = 400.;
+    metCov[0][1] =   0.;
+    metCov[1][0] = 400.;
+    metCov[1][1] =   0.;
+    svFitAlgo.integrate(measuredTauLeptons, met_p4.px(), met_p4.py(), metCov);
+    double mTauTau = ( svFitAlgo.isValidSolution() ) ? svFitAlgo.mass() : -1.;
+
 //--- fill histograms with events passing final selection 
     selHadTauHistManager_lead.fillHistograms(selHadTaus_lead, evtWeight);
     selHadTauHistManager_sublead.fillHistograms(selHadTaus_sublead, evtWeight);
@@ -756,13 +873,13 @@ int main(int argc, char* argv[])
     selMEtHistManager.fillHistograms(met_p4, mht_p4, met_LD, evtWeight);
     selEvtHistManager.fillHistograms(preselElectrons.size(), preselMuons.size(), selHadTaus.size(), 
       selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
-      mTauTauVis, evtWeight);
+      mTauTauVis, mTauTau, evtWeight);
     if ( isSignal ) {
       for ( const auto & kv: decayMode_idString ) {
         if ( std::fabs(genHiggsDecayMode - kv.second) < EPS ) {
           selEvtHistManager_decayMode[kv.first]->fillHistograms(preselElectrons.size(), preselMuons.size(), selHadTaus.size(), 
             selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
-	    mTauTauVis, evtWeight);
+	    mTauTauVis, mTauTau, evtWeight);
           break;
         }
       }
@@ -777,13 +894,13 @@ int main(int argc, char* argv[])
       selHadTauHistManager_sublead_category["0l_2tau_btight"]->fillHistograms(selHadTaus_sublead, evtWeight);
       selEvtHistManager_category["0l_2tau_btight"]->fillHistograms(preselElectrons.size(), preselMuons.size(), selHadTaus.size(), 
         selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
-        mTauTauVis, evtWeight);
+        mTauTauVis, mTauTau, evtWeight);
     } else if ( category == k0l_bloose ) {
       selHadTauHistManager_lead_category["0l_2tau_bloose"]->fillHistograms(selHadTaus_lead, evtWeight);
       selHadTauHistManager_sublead_category["0l_2tau_bloose"]->fillHistograms(selHadTaus_sublead, evtWeight);
       selEvtHistManager_category["0l_2tau_bloose"]->fillHistograms(preselElectrons.size(), preselMuons.size(), selHadTaus.size(), 
         selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
-        mTauTauVis, evtWeight);
+        mTauTauVis, mTauTau, evtWeight);
     } 
 
     (*selEventsFile) << run << ":" << lumi << ":" << event;
