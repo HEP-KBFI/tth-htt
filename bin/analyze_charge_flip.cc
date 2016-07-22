@@ -285,16 +285,21 @@ int main(int argc, char* argv[])
   };
   //std::map<std::string, std::map<std::string, CompositeParticleHistManager*>> preselZHistManager_cat; // key = category
   std::map<std::string, std::map<std::string, std::map<std::string, TH1D*>>> histos;
+  std::map<std::string, std::map<std::string, std::map<std::string, TH1D*>>> histos_2gen;
   
-
   for ( vstring::const_iterator which = categories_charge.begin(); 	which != categories_charge.end(); ++which ) {
     TFileDirectory subDir = fs.mkdir( which->data() );
     //TFileDirectory subDir2 = subDir.mkdir(process_string);
+    TFileDirectory subD1 = fs.mkdir("gen");
+    TFileDirectory subD = subD1.mkdir(which->data());
+
     for ( vstring::const_iterator category = categories_etapt.begin(); 	category != categories_etapt.end(); ++category ) {
       TFileDirectory subDir2 = subDir.mkdir(category->data());
+      TFileDirectory subD2 = subD.mkdir(category->data());
       histos[which->data()][*category][process_string] = subDir2.make<TH1D>( process_string.data(), "m_{ll}", 60,  60., 120. );
       if (std::strncmp(process_string.data(), "DY", 2) == 0){
           histos[which->data()][*category]["DY_fake"] = subDir2.make<TH1D>( "DY_fake", "m_{ll}", 60,  60., 120. );
+          histos_2gen[which->data()][*category][process_string] = subD2.make<TH1D>( process_string.data(), "m_{ll}", 60,  60., 120. );
       }      
       if (!useData){
         histos[which->data()][*category]["data_obs"] = subDir2.make<TH1D>( Form("data_obs"), "m_{ll}", 60,  60., 120. );
@@ -665,7 +670,7 @@ int main(int argc, char* argv[])
       histos[charge_cat][category.data()]["data_obs"]->Fill(mass_ll, evtWeight);
       histos[charge_cat]["total"]["data_obs"]->Fill(mass_ll, evtWeight);      
     }
-    if (isMC)
+    if (std::strncmp(process_string.data(), "DY", 2) == 0)
     {
       /*if(preselElectrons[0]->genLepton_ == 0 && preselElectrons[1]->genLepton_ == 0)
         std::cout << "doublejama " << std::endl;
@@ -690,6 +695,46 @@ int main(int argc, char* argv[])
           histos_gen["MisID"]->Fill(gp->pt_, std::fabs(gp->eta_),evtWeight);
         }
         else assert(0);
+      }
+      const GenLepton *gen1 = preselElectrons[0]->genLepton_;
+      const GenLepton *gen2 = preselElectrons[1]->genLepton_;
+      if (!(gen1 == 0 || gen2 == 0)){
+        const GenLepton *gp1;
+        const GenLepton *gp2;
+        if (gen2->pt_ > gen1->pt_){        
+          gp1 = gen2;
+          gp2 = gen1;
+        }
+        else {
+          gp1 = gen1;
+          gp2 = gen2;
+        }
+        std::string stEtaGen;
+        std::string stLeadPtGen;
+        std::string stSubPtGen;
+        assert(gp1->pt_ >= gp2->pt_);
+        if (gp1->pt_ >= 10 && gp1->pt_ < 25) stLeadPtGen = "L";
+        else if (gp1->pt_ >= 25 && gp1->pt_ < 50) stLeadPtGen = "M";
+        else if (gp1->pt_ > 50) stLeadPtGen = "H";
+        if (gp2->pt_ >= 10 && gp2->pt_ < 25) stSubPtGen = "L";
+        else if (gp2->pt_ >= 25 && gp2->pt_ < 50) stSubPtGen = "M";
+        else if (gp2->pt_ > 50) stSubPtGen = "H";
+        else assert(0);
+
+        Double_t etaL1Gen = std::fabs(gp1->eta_);
+        Double_t etaL2Gen = std::fabs(gp2->eta_);
+        if (etaL1Gen < 1.479 && etaL2Gen < 1.479) stEtaGen = "BB";
+        else if (etaL1Gen > 1.479 && etaL2Gen > 1.479) stEtaGen = "EE";
+        else if (etaL1Gen < etaL2Gen) stEtaGen = "BE";
+        else
+        {
+          if (std::strncmp(stLeadPtGen.data(), stSubPtGen.data(), 1) == 0) stEtaGen = "BE";       //Symmetric case
+          else stEtaGen = "EB";
+        }
+        std::string categoryGen = Form("%s_%s%s", stEtaGen.data(), stLeadPtGen.data(), stSubPtGen.data());
+        std::string charge_catGen = ( isCharge_SS ) ? "SS" : "OS";
+        histos_2gen[charge_catGen][categoryGen.data()][process_string]->Fill(mass_ll, evtWeight);
+        histos_2gen[charge_catGen]["total"][process_string]->Fill(mass_ll, evtWeight);
       }
     }
 
