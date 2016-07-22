@@ -1,4 +1,3 @@
-
 #include "FWCore/ParameterSet/interface/ParameterSet.h" // edm::ParameterSet
 #include "FWCore/PythonParameterSet/interface/MakeParameterSets.h" // edm::readPSetsFrom()
 #include "FWCore/ParameterSet/interface/FileInPath.h" // edm::FileInPath
@@ -13,6 +12,7 @@
 #include <TTree.h> // TTree
 #include <TBenchmark.h> // TBenchmark
 #include <TString.h> // TString, Form
+#include <TEfficiency.h>
 
 #include "tthAnalysis/HiggsToTauTau/interface/RecoLepton.h" // RecoLepton
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h" // RecoJet
@@ -323,13 +323,9 @@ int main(int argc, char* argv[])
   Double_t bins_eta[3] = {0, 1.479, 2.5};
   Double_t bins_pt[4] = {10, 25, 50, 1000};
 
-  std::map<std::string, TH2D*> histos_gen;
+  TEfficiency* gen_eff;
   TFileDirectory subD = fs.mkdir("gen_ratio");
-  TFileDirectory subD2 = subD.mkdir( process_string );
-  for ( vstring::const_iterator which = categories_charge_gen.begin(); 	which != categories_charge_gen.end(); ++which ) {
-    //TFileDirectory subDir = fs.mkdir( which->data() );
-    histos_gen[which->data()] = subD2.make<TH2D>( Form("pt_eta_%s", which->data()), "pt_eta", 3,  bins_pt, 2, bins_eta );
-  }
+  gen_eff = subD.make<TEfficiency>(Form("pt_eta_%s", process_string.data()),"pt_eta;pT;#eta;charge_misID", 3,  bins_pt, 2, bins_eta);
 
   int numEntries = inputTree->GetEntries();
   int analyzedEntries = 0;
@@ -686,15 +682,7 @@ int main(int argc, char* argv[])
           //std::cout << "jama " << i << " " << preselElectrons[i]->pt_ << " " << preselElectrons[i]->eta_ << std::endl;
           continue;
         }
-        if (preselElectrons[i]->charge_ == gp->charge_)
-        {
-          histos_gen["ID"]->Fill(gp->pt_, std::fabs(gp->eta_), evtWeight);
-        }
-        else if (preselElectrons[i]->charge_ != gp->charge_)
-        {
-          histos_gen["MisID"]->Fill(gp->pt_, std::fabs(gp->eta_),evtWeight);
-        }
-        else assert(0);
+        gen_eff->FillWeighted(preselElectrons[i]->charge_ != gp->charge_, evtWeight, gp->pt_, std::fabs(gp->eta_));
       }
       const GenLepton *gen1 = preselElectrons[0]->genLepton_;
       const GenLepton *gen2 = preselElectrons[1]->genLepton_;
