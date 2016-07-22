@@ -1,4 +1,4 @@
-//aaa
+
 #include "FWCore/ParameterSet/interface/ParameterSet.h" // edm::ParameterSet
 #include "FWCore/PythonParameterSet/interface/MakeParameterSets.h" // edm::readPSetsFrom()
 #include "FWCore/ParameterSet/interface/FileInPath.h" // edm::FileInPath
