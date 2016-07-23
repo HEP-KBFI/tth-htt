@@ -34,7 +34,15 @@
 #include "tthAnalysis/HiggsToTauTau/interface/convert_to_ptrs.h" // convert_to_ptrs
 #include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionCleaner.h" // RecoElectronCollectionCleaner, RecoMuonCollectionCleaner, RecoHadTauCollectionCleaner, RecoJetCollectionCleaner
 #include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionGenMatcher.h" // RecoElectronCollectionGenMatcher, RecoMuonCollectionGenMatcher, RecoHadTauCollectionGenMatcher, RecoJetCollectionGenMatcher
-#include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionSelector.h" // RecoElectronSelectorLoose, RecoElectronSelectorTight, RecoMuonSelectorLoose, RecoMuonSelectorTight, RecoHadTauSelectorLoose, RecoHadTauSelectorTight
+#include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorLoose.h" // RecoElectronCollectionSelectorLoose
+#include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorTight.h" // RecoElectronCollectionSelectorTight
+#include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorLoose.h" // RecoMuonCollectionSelectorLoose
+#include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorTight.h" // RecoMuonCollectionSelectorTight
+#include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelectorLoose.h" // RecoHadTauCollectionSelectorLoose
+#include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelectorFakeable.h" // RecoHadTauCollectionSelectorFakeable
+#include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelectorTight.h" // RecoHadTauCollectionSelectorTight
+#include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelector.h" // RecoJetCollectionSelector
+#include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelectorBtag.h" // RecoJetCollectionSelectorBtagLoose, RecoJetCollectionSelectorBtagMedium
 #include "tthAnalysis/HiggsToTauTau/interface/RunLumiEventSelector.h" // RunLumiEventSelector
 #include "tthAnalysis/HiggsToTauTau/interface/ElectronHistManager.h" // ElectronHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/MuonHistManager.h" // MuonHistManager
@@ -130,21 +138,26 @@ int main(int argc, char* argv[])
   bool use_triggers_1mu = cfg_analyze.getParameter<bool>("use_triggers_1mu");
 
   enum { kOS, kSS };
-  std::string chargeSelection_string = cfg_analyze.getParameter<std::string>("chargeSelection");
-  int chargeSelection = -1;
-  if      ( chargeSelection_string == "OS" ) chargeSelection = kOS;
-  else if ( chargeSelection_string == "SS" ) chargeSelection = kSS;
+  std::string hadTauChargeSelection_string = cfg_analyze.getParameter<std::string>("hadTauChargeSelection");
+  int hadTauChargeSelection = -1;
+  if      ( hadTauChargeSelection_string == "OS" ) hadTauChargeSelection = kOS;
+  else if ( hadTauChargeSelection_string == "SS" ) hadTauChargeSelection = kSS;
   else throw cms::Exception("analyze_1l_2tau") 
-    << "Invalid Configuration parameter 'chargeSelection' = " << chargeSelection_string << " !!\n";
+    << "Invalid Configuration parameter 'hadTauChargeSelection' = " << hadTauChargeSelection_string << " !!\n";
 
   enum { kLoose, kFakeable, kTight };
-  std::string hadTauSelection_string = cfg_analyze.getParameter<std::string>("hadTauSelection");
+  TString hadTauSelection_string = cfg_analyze.getParameter<std::string>("hadTauSelection").data();
+  TObjArray* hadTauSelection_parts = hadTauSelection_string.Tokenize("|");
+  assert(hadTauSelection_parts->GetEntries() >= 1);
+  std::string hadTauSelection_part1 = (dynamic_cast<TObjString*>(hadTauSelection_parts->At(0)))->GetString().Data();
   int hadTauSelection = -1;
-  if      ( hadTauSelection_string == "Loose"    ) hadTauSelection = kLoose;
-  else if ( hadTauSelection_string == "Fakeable" ) hadTauSelection = kFakeable;
-  else if ( hadTauSelection_string == "Tight"    ) hadTauSelection = kTight;
+  if      ( hadTauSelection_part1 == "Loose"    ) hadTauSelection = kLoose;
+  else if ( hadTauSelection_part1 == "Fakeable" ) hadTauSelection = kFakeable;
+  else if ( hadTauSelection_part1 == "Tight"    ) hadTauSelection = kTight;
   else throw cms::Exception("analyze_1l_2tau") 
     << "Invalid Configuration parameter 'hadTauSelection' = " << hadTauSelection_string << " !!\n";
+  std::string hadTauSelection_part2 = ( hadTauSelection_parts->GetEntries() == 2 ) ? (dynamic_cast<TObjString*>(hadTauSelection_parts->At(1)))->GetString().Data() : "";
+  delete hadTauSelection_parts;
 
   enum { kGenLepton, kGenHadTau, kGenJet, kAll };
   std::string hadTauGenMatch_string = cfg_analyze.getParameter<std::string>("hadTauGenMatch");
@@ -326,6 +339,7 @@ int main(int argc, char* argv[])
   RecoMuonCollectionGenMatcher muonGenMatcher;
   RecoMuonCollectionSelectorLoose preselMuonSelector;
   RecoMuonCollectionSelectorTight tightMuonSelector;
+  tightMuonSelector.disable_tightCharge_cut();
 
   RecoElectronReader* electronReader = new RecoElectronReader("nselLeptons", "selLeptons");
   electronReader->setBranchAddresses(inputTree);
@@ -333,18 +347,31 @@ int main(int argc, char* argv[])
   RecoElectronCollectionCleaner electronCleaner(0.3);
   RecoElectronCollectionSelectorLoose preselElectronSelector;
   RecoElectronCollectionSelectorTight tightElectronSelector;
+  tightElectronSelector.disable_tightCharge_cut();
 
   RecoHadTauReader* hadTauReader = new RecoHadTauReader("nTauGood", "TauGood");
   hadTauReader->setHadTauPt_central_or_shift(hadTauPt_option);
   hadTauReader->setBranchAddresses(inputTree);
   RecoHadTauCollectionGenMatcher hadTauGenMatcher;
   RecoHadTauCollectionCleaner hadTauCleaner(0.3);
-  RecoHadTauCollectionSelectorLoose_1l_2tau preselHadTauSelector;
-  RecoHadTauCollectionSelectorFakeable_1l_2tau fakeableHadTauSelector_lead(0);
-  RecoHadTauCollectionSelectorFakeable_1l_2tau fakeableHadTauSelector_sublead(1);
-  RecoHadTauCollectionSelectorTight_1l_2tau tightHadTauSelector_lead(0);
-  RecoHadTauCollectionSelectorTight_1l_2tau tightHadTauSelector_sublead(1);
-  
+  RecoHadTauCollectionSelectorLoose preselHadTauSelector;
+  preselHadTauSelector.set_min_antiElectron(1);
+  preselHadTauSelector.set_min_antiMuon(1);
+  RecoHadTauCollectionSelectorFakeable fakeableHadTauSelector_lead(0);
+  fakeableHadTauSelector_lead.set_min_antiElectron(1);
+  fakeableHadTauSelector_lead.set_min_antiMuon(1);
+  RecoHadTauCollectionSelectorFakeable fakeableHadTauSelector_sublead(1);
+  fakeableHadTauSelector_sublead.set_min_antiElectron(2);
+  fakeableHadTauSelector_sublead.set_min_antiMuon(1);
+  RecoHadTauCollectionSelectorTight tightHadTauSelector_lead(0);
+  if ( hadTauSelection_part2 != "" ) tightHadTauSelector_lead.set(hadTauSelection_part2);
+  tightHadTauSelector_lead.set_min_antiElectron(1);
+  tightHadTauSelector_lead.set_min_antiMuon(1);
+  RecoHadTauCollectionSelectorTight tightHadTauSelector_sublead(1);
+  if ( hadTauSelection_part2 != "" ) tightHadTauSelector_sublead.set(hadTauSelection_part2);
+  tightHadTauSelector_sublead.set_min_antiElectron(2);
+  tightHadTauSelector_sublead.set_min_antiMuon(1);
+
   RecoJetReader* jetReader = new RecoJetReader("nJet", "Jet");
   jetReader->setJetPt_central_or_shift(jetPt_option);
   jetReader->setBranchName_BtagWeight(jet_btagWeight_branch);
@@ -371,7 +398,7 @@ int main(int argc, char* argv[])
   std::ostream* selEventsFile = new std::ofstream(selEventsFileName_output.data(), std::ios::out);
 
 //--- declare histograms
-  std::string charge_and_hadTauSelection = Form("%s_%s", chargeSelection_string.data(), hadTauSelection_string.data());
+  std::string charge_and_hadTauSelection = Form("%s_%s", hadTauChargeSelection_string.data(), hadTauSelection_part1.data());
   ElectronHistManager preselElectronHistManager(makeHistManager_cfg(process_string, 
     Form("1l_2tau_%s/presel/electrons", charge_and_hadTauSelection.data()), central_or_shift));
   preselElectronHistManager.bookHistograms(fs);
@@ -705,8 +732,8 @@ int main(int argc, char* argv[])
 //--- apply data/MC corrections for trigger efficiency,
 //    and efficiencies for lepton to pass loose identification and isolation criteria
     if ( isMC ) {
-      evtWeight *= sf_triggerEff(preselLepton_type, preselLepton->pt_, preselLepton->eta_);
-      evtWeight *= sf_leptonID_and_Iso_loose(preselLepton_type, preselLepton->pt_, preselLepton->eta_);
+      evtWeight *= sf_triggerEff(1, preselLepton_type, preselLepton->pt_, preselLepton->eta_);
+      evtWeight *= sf_leptonID_and_Iso_loose(1, preselLepton_type, preselLepton->pt_, preselLepton->eta_);
     }       
 
 //--- fill histograms with events passing preselection
@@ -771,13 +798,21 @@ int main(int argc, char* argv[])
 
     bool isCharge_SS = selHadTau_lead->charge_*selHadTau_sublead->charge_ > 0;
     bool isCharge_OS = selHadTau_lead->charge_*selHadTau_sublead->charge_ < 0;
-    if ( chargeSelection == kOS && isCharge_SS ) continue;
-    if ( chargeSelection == kSS && isCharge_OS ) continue;
-    cutFlowTable.update(Form("tau-pair %s charge", chargeSelection_string.data()), evtWeight);
+    if ( hadTauChargeSelection == kOS && isCharge_SS ) continue;
+    if ( hadTauChargeSelection == kSS && isCharge_OS ) continue;
+    cutFlowTable.update(Form("tau-pair %s charge", hadTauChargeSelection_string.data()), evtWeight);
 
-    //if ( met_LD < 0.2 ) continue;
-    //cutFlowTable.update("met LD > 0.2", evtWeight);
-    
+    if ( std::abs(selLepton->charge_ + selHadTau_lead->charge_+ selHadTau_sublead->charge_) != 1 ) {
+      if ( run_lumi_eventSelector ) {
+	std::cout << "event FAILS lepton+tau charge selection." << std::endl;
+	std::cout << " (selLepton charge = " << selLepton->charge_ 
+		  << ", leading selHadTau charge = " << selHadTau_lead->charge_ 
+		  << ", subleading selHadTau charge = " << selHadTau_sublead->charge_ << ")" << std::endl;
+      }
+      continue;
+    }
+    cutFlowTable.update("lepton+tau charge");
+
     if ( hadTauSelection == kFakeable ) {
       if ( tightHadTaus_lead.size() >= 1 && tightHadTaus_sublead.size() >= 1 ) continue; // CV: avoid overlap with signal region
       cutFlowTable.update("signal region veto", evtWeight);
@@ -786,11 +821,10 @@ int main(int argc, char* argv[])
 //--- apply data/MC corrections for efficiencies of leptons passing the loose identification and isolation criteria
 //    to also pass the tight identification and isolation criteria
     if ( isMC ) {
-      double sf_tight_to_loose = sf_leptonID_and_Iso_tight_to_loose(preselLepton_type, preselLepton->pt_, preselLepton->eta_);
+      double sf_tight_to_loose = sf_leptonID_and_Iso_tight_to_loose(1, preselLepton_type, preselLepton->pt_, preselLepton->eta_);
       evtWeight *= sf_tight_to_loose;
-    }
+    }    
 
-//--- 
     if ( applyJetToTauFakeRateWeight ) {
       double selHadTau_lead_pt = selHadTau_lead->pt_;
       double selHadTau_lead_absEta = std::fabs(selHadTau_lead->eta_);

@@ -25,7 +25,7 @@ process.analyze_1l_2tau = cms.PSet(
     triggers_1mu = cms.vstring("HLT_BIT_HLT_IsoMu20_v", "HLT_BIT_HLT_IsoTkMu20_v"),
     use_triggers_1mu = cms.bool(True),
         
-    chargeSelection = cms.string('OS'),
+    hadTauChargeSelection = cms.string('OS'),
     hadTauSelection = cms.string('Tight'),
     hadTauGenMatch = cms.string('all'),
 
@@ -33,7 +33,20 @@ process.analyze_1l_2tau = cms.PSet(
     hadTauEtaBins_sublead = cms.vdouble(-1., 1.2, 1.7, 9.9),
 
     applyJetToTauFakeRateWeight = cms.bool(False),
-    jetToTauFakeRateWeight = cms.PSet(),
+    jetToTauFakeRateWeight = cms.PSet(
+        inputFileName = cms.string("tthAnalysis/HiggsToTauTau/data/tauFR_data_dR03MVATight.root"),
+        fitFunctionNormName = cms.string("jetToTauFakeRate/$etaBin/fitFunctionNorm_SS_Tight_div_SS_Fakeable"),
+        graphShapeName_lead = cms.string(""),
+        fitFunctionShapeName_lead_central = cms.string("jetToTauFakeRate/$etaBin/fitFunctionShape_hadTauPt_lead_SS_Tight_div_SS_Fakeable"),
+        fitFunctionShapeName_lead_shift = cms.string(""),
+        fitFunctionShapePower_lead = cms.double(1.),
+        applyFitFunction_or_graph_lead = cms.string("fitFunction"),
+        graphShapeName_sublead = cms.string(""),
+        fitFunctionShapeName_sublead_central = cms.string("jetToTauFakeRate/$etaBin/fitFunctionShape_hadTauPt_sublead_SS_Tight_div_SS_Fakeable"),
+        fitFunctionShapeName_sublead_shift = cms.string(""),
+        fitFunctionShapePower_sublead = cms.double(1.),
+        applyFitFunction_or_graph_sublead = cms.string("fitFunction")
+    ),
     
     isMC = cms.bool(False),
     central_or_shift = cms.string('central'),

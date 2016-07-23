@@ -75,7 +75,7 @@ process.addBackgroundLeptonFakes = cms.PSet(
     ),
 
     processData = cms.string("data_obs"),
-    processLeptonFakes = cms.string("Fakes"),
+    processLeptonFakes = cms.string("fakes_data"),
     processesToSubtract = cms.vstring(
 	"TTW",
         "TTZ",

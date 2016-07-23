@@ -1,6 +1,6 @@
 import json, os, codecs, stat, logging, sys, jinja2, subprocess, getpass, time
-import tthAnalyzeSamples_chargeflip as samples
-from tthAnalyzeRun import query_yes_no, add_chmodX, create_job, create_if_not_exists, generate_file_ids, generate_input_list
+import tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_chargeflip as samples
+from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no, add_chmodX, create_job, create_if_not_exists, generate_file_ids, generate_input_list
 
 
 

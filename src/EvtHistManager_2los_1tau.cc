@@ -21,11 +21,14 @@ void EvtHistManager_2los_1tau::bookHistograms(TFileDirectory& dir)
   histogram_mvaOutput_2los_ttbar_  = book1D(dir, "mvaOutput_2los_ttbar", "mvaOutput_2los_ttbar", 40, -1., +1.);
   histogram_mvaDiscr_2los_  = book1D(dir, "mvaDiscr_2los", "mvaDiscr_2los", 6, 0.5, 6.5);
 
+  histogram_mTauTauVis_ = book1D(dir, "mTauTauVis", "mTauTauVis", 40, 0., 200.);
+
   histogram_EventCounter_ = book1D(dir, "EventCounter", "EventCounter", 1, -0.5, +0.5);
 }
 
 void EvtHistManager_2los_1tau::fillHistograms(int numElectrons, int numMuons, int numHadTaus, int numJets, int numBJets_loose, int numBJets_medium,
-					      double mvaOutput_2los_ttV, double mvaOutput_2los_ttbar, double mvaDiscr_2los, double evtWeight)
+					      double mvaOutput_2los_ttV, double mvaOutput_2los_ttbar, double mvaDiscr_2los, 
+					      double mTauTauVis, double evtWeight)
 {
   double evtWeightErr = 0.;
 
@@ -39,6 +42,8 @@ void EvtHistManager_2los_1tau::fillHistograms(int numElectrons, int numMuons, in
   fillWithOverFlow(histogram_mvaOutput_2los_ttV_, mvaOutput_2los_ttV, evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_mvaOutput_2los_ttbar_, mvaOutput_2los_ttbar, evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_mvaDiscr_2los_, mvaDiscr_2los, evtWeight, evtWeightErr);
+
+  fillWithOverFlow(histogram_mTauTauVis_, mTauTauVis, evtWeight, evtWeightErr);
 
   fillWithOverFlow(histogram_EventCounter_, 0., evtWeight, evtWeightErr);
 }

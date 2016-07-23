@@ -30,12 +30,20 @@ process.analyze_2lss_1tau = cms.PSet(
     use_triggers_2mu = cms.bool(True),
     triggers_1e1mu = cms.vstring("HLT_BIT_HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v", "HLT_BIT_HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v"),
     use_triggers_1e1mu = cms.bool(True),
+
+    apply_offline_e_trigger_cuts_1e = cms.bool(True),
+    apply_offline_e_trigger_cuts_2e = cms.bool(False),
+    apply_offline_e_trigger_cuts_1mu = cms.bool(False),
+    apply_offline_e_trigger_cuts_2mu = cms.bool(False),
+    apply_offline_e_trigger_cuts_1e1mu = cms.bool(False),
     
-    chargeSelection = cms.string('SS'),
     leptonSelection = cms.string('Tight'),
+    leptonChargeSelection = cms.string('SS'),
+
+    hadTauSelection = cms.string('dR03mvaTight'),
     
     leptonFakeRateLooseToTightWeight = cms.PSet(
-        inputFileName = cms.string(""),
+        inputFileName = cms.string("tthAnalysis/HiggsToTauTau/data/FR_data_ttH_mva.root"),
         histogramName_e = cms.string("FR_mva075_el_data_comb"),
         histogramName_mu = cms.string("FR_mva075_mu_data_comb")
     ),
