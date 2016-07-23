@@ -283,7 +283,6 @@ int main(int argc, char* argv[])
   vstring categories_charge = {
     "SS", "OS"
   };
-  //std::map<std::string, std::map<std::string, CompositeParticleHistManager*>> preselZHistManager_cat; // key = category
   std::map<std::string, std::map<std::string, std::map<std::string, TH1D*>>> histos;
   std::map<std::string, std::map<std::string, std::map<std::string, TH1D*>>> histos_2gen;
   
