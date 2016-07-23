@@ -435,12 +435,12 @@ if __name__ == '__main__':
                       level = logging.DEBUG,
                       format = '%(asctime)s - %(levelname)s: %(message)s')
 
-  cfg = analyzeCFConfig(output_dir = os.path.join("/home", getpass.getuser(), "tth", "histosCF_pseudodata"),
+  cfg = analyzeCFConfig(output_dir = os.path.join("/home", getpass.getuser(), "tth", "histosCF_data_effs"),
                       exec_name = "analyze_charge_flip",
                       lepton_selection = "Tight",
                       max_files_per_job = 20,
                       use_lumi = True,
-                      use_data = False,
+                      use_data = True,
                       debug = False,
                       running_method = "sbatch",
                       nof_parallel_jobs = 10,
