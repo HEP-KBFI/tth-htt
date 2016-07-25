@@ -8,6 +8,8 @@
 #define EVT_TYPE               ULong64_t
 #define GENHIGGSDECAYMODE_TYPE Float_t
 
+#define PUWEIGHT_TYPE          Float_t
+
 #define MET_PT_TYPE            Float_t
 #define MET_ETA_TYPE           Float_t
 #define MET_PHI_TYPE           Float_t
@@ -19,6 +21,8 @@
 #define LUMI_KEY              "lumi"
 #define EVT_KEY               "evt"
 #define GENHIGGSDECAYMODE_KEY "genHiggsDecayMode"
+
+#define PUWEIGHT_KEY          "puWeight"
 
 #define MET_PT_KEY            "met_pt"
 #define MET_ETA_KEY           "met_eta"

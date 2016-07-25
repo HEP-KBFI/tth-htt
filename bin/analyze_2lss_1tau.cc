@@ -284,13 +284,17 @@ int main(int argc, char* argv[])
   hltPaths_setBranchAddresses(inputTree, triggers_2mu);
   hltPaths_setBranchAddresses(inputTree, triggers_1e1mu);
 
+  PUWEIGHT_TYPE pileupWeight;
+  if ( isMC ) {
+    inputTree->SetBranchAddress(PUWEIGHT_KEY, &pileupWeight);
+  }
+
   MET_PT_TYPE met_pt;
   inputTree->SetBranchAddress(MET_PT_KEY, &met_pt);
   MET_ETA_TYPE met_eta;
   inputTree->SetBranchAddress(MET_ETA_KEY, &met_eta);
   MET_PHI_TYPE met_phi;
   inputTree->SetBranchAddress(MET_PHI_KEY, &met_phi);
-
 
 //--- declare particle collections
   RecoMuonReader* muonReader = new RecoMuonReader("nselLeptons", "selLeptons");
@@ -802,10 +806,14 @@ int main(int argc, char* argv[])
 //--- compute event-level weight for data/MC correction of b-tagging efficiency and mistag rate
 //   (using the method "Event reweighting using scale factors calculated with a tag and probe method", 
 //    described on the BTV POG twiki https://twiki.cern.ch/twiki/bin/view/CMS/BTagShapeCalibration )
-    double evtWeight = lumiScale;
-    for ( std::vector<const RecoJet*>::const_iterator jet = selJets.begin();
-	  jet != selJets.end(); ++jet ) {
-      evtWeight *= (*jet)->BtagWeight_;
+    double evtWeight = 1.;
+    if ( isMC ) {
+      evtWeight *= lumiScale;
+      evtWeight *= pileupWeight;
+      for ( std::vector<const RecoJet*>::const_iterator jet = selJets.begin();
+	    jet != selJets.end(); ++jet ) {
+	evtWeight *= (*jet)->BtagWeight_;
+      }
     }
 
 //--- apply data/MC corrections for trigger efficiency,

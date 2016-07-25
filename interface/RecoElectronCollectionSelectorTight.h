@@ -14,6 +14,10 @@ class RecoElectronSelectorTight
   RecoElectronSelectorTight(int index = -1, bool debug = false);
   ~RecoElectronSelectorTight() {}
 
+  /**
+   * @brief Set cut thresholds
+   */
+
   // enable/disable cuts on electron ID variables to mimic electron ID cuts applied by single electron trigger 
   void enable_offline_e_trigger_cuts()  { apply_offline_e_trigger_cuts_ = true; }
   void disable_offline_e_trigger_cuts() { apply_offline_e_trigger_cuts_ = false; }

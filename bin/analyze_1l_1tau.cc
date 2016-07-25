@@ -58,6 +58,10 @@
 #include "tthAnalysis/HiggsToTauTau/interface/particleIDlooseToTightWeightEntryType.h" // particleIDlooseToTightWeightEntryType
 #include "tthAnalysis/HiggsToTauTau/interface/cutFlowTable.h" // cutFlowTableType
 
+#include "TauAnalysis/ClassicSVfit/interface/ClassicSVfit.h"
+#include "TauAnalysis/ClassicSVfit/interface/MeasuredTauLepton.h"
+#include "TauAnalysis/ClassicSVfit/interface/svFitAuxFunctions.h"
+
 #include <boost/range/algorithm/copy.hpp> // boost::copy()
 #include <boost/range/adaptor/map.hpp> // boost::adaptors::map_keys
 
@@ -311,6 +315,11 @@ int main(int argc, char* argv[])
 
   hltPaths_setBranchAddresses(inputTree, triggers_1e);
   hltPaths_setBranchAddresses(inputTree, triggers_1mu);
+
+  PUWEIGHT_TYPE pileupWeight;
+  if ( isMC ) {
+    inputTree->SetBranchAddress(PUWEIGHT_KEY, &pileupWeight);
+  }
 
   MET_PT_TYPE met_pt;
   inputTree->SetBranchAddress(MET_PT_KEY, &met_pt);
@@ -698,6 +707,7 @@ int main(int argc, char* argv[])
     }
     cutFlowTable.update(">= 1 presel tau");
     const RecoHadTau* preselHadTau = preselHadTaus[0];
+    double mTauTauVis_presel = (preselLepton->p4_ + preselHadTau->p4_).mass();
 
 //--- compute MHT and linear MET discriminant (met_LD)
     LV mht_p4(0,0,0,0);
@@ -719,10 +729,14 @@ int main(int argc, char* argv[])
 //--- compute event-level weight for data/MC correction of b-tagging efficiency and mistag rate
 //   (using the method "Event reweighting using scale factors calculated with a tag and probe method", 
 //    described on the BTV POG twiki https://twiki.cern.ch/twiki/bin/view/CMS/BTagShapeCalibration )
-    double evtWeight = lumiScale;
-    for ( std::vector<const RecoJet*>::const_iterator jet = selJets.begin();
-	  jet != selJets.end(); ++jet ) {
-      evtWeight *= (*jet)->BtagWeight_;
+    double evtWeight = 1.;
+    if ( isMC ) {
+      evtWeight *= lumiScale;
+      evtWeight *= pileupWeight;
+      for ( std::vector<const RecoJet*>::const_iterator jet = selJets.begin();
+	    jet != selJets.end(); ++jet ) {
+	evtWeight *= (*jet)->BtagWeight_;
+      }
     }
 
 //--- apply data/MC corrections for trigger efficiency,
@@ -734,8 +748,6 @@ int main(int argc, char* argv[])
         preselLepton_type, preselLepton->pt_, preselLepton->eta_);
     }
 
-    double mTauTauVis_presel = (preselLepton->p4_ + preselHadTau->p4_).mass();
-
 //--- fill histograms with events passing preselection
     preselMuonHistManager.fillHistograms(preselMuons, evtWeight);
     preselElectronHistManager.fillHistograms(preselElectrons, evtWeight);
@@ -746,7 +758,7 @@ int main(int argc, char* argv[])
     preselMEtHistManager.fillHistograms(met_p4, mht_p4, met_LD, evtWeight);
     preselEvtHistManager.fillHistograms(preselElectrons.size(), preselMuons.size(), selHadTaus.size(), 
       selJets.size(), selBJets_loose.size(), selBJets_medium.size(), 
-      mTauTauVis_presel, evtWeight);
+      mTauTauVis_presel, -1., evtWeight);
 
 //--- apply final event selection 
     std::vector<const RecoLepton*> selLeptons;    
@@ -816,6 +828,8 @@ int main(int argc, char* argv[])
     }
     cutFlowTable.update("1 sel tau", evtWeight);    
     const RecoHadTau* selHadTau = selHadTaus[0];
+    double mTauTauVis = (selLepton->p4_ + selHadTau->p4_).mass();
+
     bool isGenHadTauMatched = selHadTau->genHadTau_;
     bool isGenLeptonMatched = selHadTau->genLepton_ && !isGenHadTauMatched;
 
@@ -869,6 +883,37 @@ int main(int argc, char* argv[])
       }
     }
 
+//--- reconstruct mass of tau-pair using SVfit algorithm
+//
+//    NOTE: SVfit needs to be run after all event selection cuts are applied,
+//          because the algorithm takes O(1 second per event) to run
+//
+    std::vector<classic_svFit::MeasuredTauLepton> measuredTauLeptons;
+    classic_svFit::MeasuredTauLepton::kDecayType leg1Type = classic_svFit::MeasuredTauLepton::kUndefinedDecayType;
+    double leg1Mass;
+    if ( std::abs(selLepton->pdgId_) == 11 ) {
+      leg1Type = classic_svFit::MeasuredTauLepton::kTauToElecDecay;
+      leg1Mass = classic_svFit::electronMass;
+    } else if ( std::abs(selLepton->pdgId_) == 13 ) {
+      leg1Type = classic_svFit::MeasuredTauLepton::kTauToMuDecay;
+      leg1Mass = classic_svFit::muonMass;
+    } else assert(0);
+    classic_svFit::MeasuredTauLepton::kDecayType leg2Type = classic_svFit::MeasuredTauLepton::kTauToHadDecay;
+    double leg2Mass = selHadTau->mass_;
+    if ( leg2Mass < classic_svFit::chargedPionMass ) leg2Mass = classic_svFit::chargedPionMass;
+    if ( leg2Mass > 1.5                            ) leg2Mass = 1.5;
+    measuredTauLeptons.push_back(classic_svFit::MeasuredTauLepton(leg1Type, selLepton->pt_, selLepton->eta_, selLepton->phi_, leg1Mass));
+    measuredTauLeptons.push_back(classic_svFit::MeasuredTauLepton(leg2Type, selHadTau->pt_, selHadTau->eta_, selHadTau->phi_, leg2Mass));
+    ClassicSVfit svFitAlgo;
+    svFitAlgo.addLogM_fixed(true, 5.);
+    TMatrixD metCov(2,2);
+    metCov[0][0] = 400.;
+    metCov[0][1] =   0.;
+    metCov[1][0] = 400.;
+    metCov[1][1] =   0.;
+    svFitAlgo.integrate(measuredTauLeptons, met_p4.px(), met_p4.py(), metCov);
+    double mTauTau = ( svFitAlgo.isValidSolution() ) ? svFitAlgo.mass() : -1.;
+
 //--- fill histograms with events passing final selection 
     selMuonHistManager.fillHistograms(selMuons, evtWeight);
     selElectronHistManager.fillHistograms(selElectrons, evtWeight);
@@ -883,13 +928,13 @@ int main(int argc, char* argv[])
     selMEtHistManager.fillHistograms(met_p4, mht_p4, met_LD, evtWeight);
     selEvtHistManager.fillHistograms(selElectrons.size(), selMuons.size(), selHadTaus.size(), 
       selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
-      mTauTauVis_presel, evtWeight);
+      mTauTauVis, mTauTau, evtWeight);
     if ( isSignal ) {
       for ( const auto & kv: decayMode_idString ) {
         if ( std::fabs(genHiggsDecayMode - kv.second) < EPS ) {
           selEvtHistManager_decayMode[kv.first]->fillHistograms(selElectrons.size(), selMuons.size(), selHadTaus.size(), 
             selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
-            mTauTauVis_presel, evtWeight);
+            mTauTauVis, mTauTau, evtWeight);
           break;
         }
       }
@@ -906,22 +951,22 @@ int main(int argc, char* argv[])
       selElectronHistManager_category["1e_1tau_btight"]->fillHistograms(selElectrons, evtWeight);
       selEvtHistManager_category["1e_1tau_btight"]->fillHistograms(preselElectrons.size(), preselMuons.size(), selHadTaus.size(), 
         selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
-        mTauTauVis_presel, evtWeight);
+        mTauTauVis, mTauTau, evtWeight);
     } else if ( category == k1e_bloose ) {
       selElectronHistManager_category["1e_1tau_bloose"]->fillHistograms(selElectrons, evtWeight);
       selEvtHistManager_category["1e_1tau_bloose"]->fillHistograms(preselElectrons.size(), preselMuons.size(), selHadTaus.size(), 
         selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
-        mTauTauVis_presel, evtWeight);
+        mTauTauVis, mTauTau, evtWeight);
     } else if ( category == k1mu_btight ) {
       selMuonHistManager_category["1mu_1tau_btight"]->fillHistograms(selMuons, evtWeight);
       selEvtHistManager_category["1mu_1tau_btight"]->fillHistograms(preselElectrons.size(), preselMuons.size(), selHadTaus.size(), 
         selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
-        mTauTauVis_presel, evtWeight);
+        mTauTauVis, mTauTau, evtWeight);
     } else if ( category == k1mu_bloose ) {
       selMuonHistManager_category["1mu_1tau_bloose"]->fillHistograms(selMuons, evtWeight);
       selEvtHistManager_category["1mu_1tau_bloose"]->fillHistograms(preselElectrons.size(), preselMuons.size(), selHadTaus.size(), 
         selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
-        mTauTauVis_presel, evtWeight);
+        mTauTauVis, mTauTau, evtWeight);
     } 
     
     (*selEventsFile) << run << ":" << lumi << ":" << event << std::endl;
