@@ -323,12 +323,16 @@ def create_setup(cfg):
     assert(len(store_dirs) <= 2), "There is more than one secondary dir!"
     primary_store, secondary_store = "", ""
     secondary_files = []
+    blacklist = []
     for store_dir in store_dirs:
-      if store_dir["selection"] == "*": primary_store = store_dir["path"]
+      if store_dir["selection"] == "*":
+        primary_store = store_dir["path"]
+        if "blacklist" in store_dir.keys():
+          blacklist = store_dir["blacklist"]
       else:
         secondary_store = store_dir["path"]
         secondary_files = map(lambda x: int(x), store_dir["selection"].split(","))
-    job_ids = generate_file_ids(nof_files, cfg.max_files_per_job)
+    job_ids = generate_file_ids(nof_files, cfg.max_files_per_job, blacklist)
 
     lumi_scale = 1. if not (cfg.use_lumi and is_mc) else v["xsection"] * LUMI / v["nof_events"]
     for idx in range(len(job_ids)):
