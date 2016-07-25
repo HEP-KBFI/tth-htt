@@ -40,7 +40,7 @@ samples["/GluGluHToZZTo4L_M125_13TeV_powheg2_JHUgenV6_pythia8/RunIIFall15MiniAOD
 ])
 samples["/TTJets_SingleLeptFromTbar_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v2/MINIAODSIM"] = OD([
   ("type", "mc"),
-  ("sample_category", "background_data_TTJets"),
+  ("sample_category", "TTbar"),
   ("process_name_specific", "TTJets_SingleLeptFromTbar"),
   ("nof_files", 275),
   ("nof_events", 11957090),
@@ -62,7 +62,7 @@ samples["/TTJets_SingleLeptFromTbar_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunII
 ])
 samples["/TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM"] = OD([
   ("type", "mc"),
-  ("sample_category", "background_data_TTJets"),
+  ("sample_category", "TTbar"),
   ("process_name_specific", "TTJets_SingleLeptFromT"),
   ("nof_files", 290),
   ("nof_events", 11953980),
@@ -80,7 +80,7 @@ samples["/TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIIFal
 ])
 samples["/TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM"] = OD([
   ("type", "mc"),
-  ("sample_category", "background_data_TTJets"),
+  ("sample_category", "TTbar"),
   ("process_name_specific", "TTJets_DiLept"),
   ("nof_files", 149),
   ("nof_events", 6102376),
@@ -134,7 +134,7 @@ samples["/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIIFall15Mini
 ])
 samples["/WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM"] = OD([
   ("type", "mc"),
-  ("sample_category", "background_data_WJets"),
+  ("sample_category", "WJets"),
   ("process_name_specific", "WJetsToLNu"),
   ("nof_files", 595),
   ("nof_events", 24156124),
@@ -152,7 +152,7 @@ samples["/WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIIFall15MiniAODv
 ])
 samples["/ST_tW_top_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM"] = OD([
   ("type", "mc"),
-  ("sample_category", "background_data_singletop"),
+  ("sample_category", "Singletop"),
   ("process_name_specific", "ST_tW_top_5f_inclusiveDecays"),
   ("nof_files", 23),
   ("nof_events", 1000000),
@@ -170,7 +170,7 @@ samples["/ST_tW_top_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1/RunIIFa
 ])
 samples["/ST_tW_antitop_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM"] = OD([
   ("type", "mc"),
-  ("sample_category", "background_data_singletop"),
+  ("sample_category", "Singletop"),
   ("process_name_specific", "ST_tW_antitop_5f_inclusiveDecays"),
   ("nof_files", 27),
   ("nof_events", 999400),
@@ -188,7 +188,7 @@ samples["/ST_tW_antitop_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1/Run
 ])
 samples["/ST_t-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM"] = OD([
   ("type", "mc"),
-  ("sample_category", "background_data_singletop"),
+  ("sample_category", "Singletop"),
   ("process_name_specific", "ST_t-channel_4f_leptonDecays"),
   ("nof_files", 478),
   ("nof_events", 19938230),
@@ -210,7 +210,7 @@ samples["/ST_t-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1/RunII
 ])
 samples["/ST_t-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12_ext1-v1/MINIAODSIM"] = OD([
   ("type", "mc"),
-  ("sample_category", "background_data_singletop"),
+  ("sample_category", "Singletop"),
   ("process_name_specific", "ST_t-channel_4f_leptonDecays_ext1"),
   ("nof_files", 690),
   ("nof_events", 29206391),
@@ -232,7 +232,7 @@ samples["/ST_t-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1/RunII
 ])
 samples["/ST_s-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v2/MINIAODSIM"] = OD([
   ("type", "mc"),
-  ("sample_category", "background_data_singletop"),
+  ("sample_category", "Singletop"),
   ("process_name_specific", "ST_s-channel_4f_leptonDecays"),
   ("nof_files", 24),
   ("nof_events", 998400),
@@ -250,7 +250,7 @@ samples["/ST_s-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1/RunII
 ])
 samples["/WZTo3LNu_TuneCUETP8M1_13TeV-powheg-pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM"] = OD([
   ("type", "mc"),
-  ("sample_category", "WZ"), # previously: background_data_estimate
+  ("sample_category", "Diboson"), # previously: background_data_estimate
   ("process_name_specific", "WZTo3LNu"),
   ("nof_files", 46),
   ("nof_events", 2000000),
@@ -268,7 +268,7 @@ samples["/WZTo3LNu_TuneCUETP8M1_13TeV-powheg-pythia8/RunIIFall15MiniAODv2-PU25ns
 ])
 samples["/WWTo2L2Nu_13TeV-powheg/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM"] = OD([
   ("type", "mc"),
-  ("sample_category", "background_data_WW"),
+  ("sample_category", "Diboson"),
   ("process_name_specific", "WWTo2L2Nu"),
   ("nof_files", 51),
   ("nof_events", 1979988),
@@ -286,7 +286,7 @@ samples["/WWTo2L2Nu_13TeV-powheg/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun
 ])
 samples["/ZZTo4L_13TeV_powheg_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM"] = OD([
   ("type", "mc"),
-  ("sample_category", "background_data_ZZ"),
+  ("sample_category", "Diboson"),
   ("process_name_specific", "ZZTo4L"),
   ("nof_files", 154),
   ("nof_events", 6669188),
