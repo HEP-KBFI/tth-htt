@@ -152,7 +152,7 @@ samples["/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIIFall15Mini
       ])
     ]
   )
-)]
+])
 samples["/WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM"] = OD([
   ("type", "mc"),
   ("sample_category", "WJets"),
