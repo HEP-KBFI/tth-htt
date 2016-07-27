@@ -189,3 +189,30 @@
   <use   name="tthAnalysis/HiggsToTauTau"/>
   <Flags CXXFLAGS="-g"/>
 </bin>
+<bin file="produceTTHMVATrainingNtuple_1l_2tau.cc" name="produceTTHMVATrainingNtuple_1l_2tau"> 
+  <use   name="FWCore/FWLite"/> 
+  <use   name="FWCore/ParameterSet"/> 
+  <use   name="FWCore/PythonParameterSet"/> 
+  <use   name="FWCore/Utilities"/> 
+  <use   name="DataFormats/FWLite"/> 
+  <use   name="DataFormats/Math"/> 
+  <use   name="PhysicsTools/FWLite"/> 
+  <use   name="tthAnalysis/HiggsToTauTau"/> 
+  <use   name="root"/> 
+  <use   name="roottmva"/> 
+  <use   name="boost"/> 
+</bin>
+<bin file="trainTTHMVA_1l_2tau.cc" name="trainTTHMVA_1l_2tau"> 
+  <!--  <Flags CppDefines="DEBUG=1"/> --> 
+  <use   name="FWCore/FWLite"/> 
+  <use   name="FWCore/ParameterSet"/> 
+  <use   name="FWCore/PythonParameterSet"/> 
+  <use   name="FWCore/Utilities"/> 
+  <use   name="DataFormats/FWLite"/> 
+  <use   name="DataFormats/Math"/> 
+  <use   name="PhysicsTools/FWLite"/> 
+  <use   name="tthAnalysis/HiggsToTauTau"/> 
+  <use   name="root"/> 
+  <use   name="roottmva"/> 
+  <use   name="boost"/> 
+</bin>
