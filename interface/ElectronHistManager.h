@@ -21,6 +21,7 @@ class ElectronHistManager
 
   /// book and fill histograms
   void bookHistograms(TFileDirectory& dir);
+  void fillHistograms(const RecoElectron& electron, double evtWeight);
   void fillHistograms(const std::vector<const RecoElectron*>& electrons, double evtWeight);
 
  private:

@@ -16,6 +16,13 @@ class RecoJetSelector
   ~RecoJetSelector() {}
 
   /**
+   * @brief Set cut thresholds
+   */
+
+  void set_min_pt(double min_pt) { min_pt_ = min_pt; }
+  void set_max_absEta(double max_absEta) { max_absEta_ = max_absEta; }
+
+  /**
    * @brief Check if jet given as function argument passes pT and eta cuts (pT > 25 GeV and |eta| < 2.4, cf. Section 3.1 of AN-2015/321)
    * @return True if jet passes selection; false otherwise
    */

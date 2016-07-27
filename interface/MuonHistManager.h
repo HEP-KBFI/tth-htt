@@ -21,6 +21,7 @@ class MuonHistManager
 
   /// book and fill histograms
   void bookHistograms(TFileDirectory& dir);
+  void fillHistograms(const RecoMuon& muon, double evtWeight);
   void fillHistograms(const std::vector<const RecoMuon*>& muons, double evtWeight);
 
  private:

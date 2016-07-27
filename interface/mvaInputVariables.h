@@ -13,6 +13,8 @@ double comp_MT_met_lep1(const GenParticle& lepton, double met_pt, double met_phi
 double comp_n_jet25_recl(const std::vector<const RecoJet*>& jets_cleaned);
 double comp_mindr_lep1_jet(const GenParticle& lepton, const std::vector<const RecoJet*>& jets_cleaned);
 double comp_mindr_lep2_jet(const GenParticle& lepton, const std::vector<const RecoJet*>& jets_cleaned);
+double comp_mindr_hadTau1_jet(const GenParticle& hadTau, const std::vector<const RecoJet*>& jets_cleaned);
+double comp_mindr_hadTau2_jet(const GenParticle& hadTau, const std::vector<const RecoJet*>& jets_cleaned);
 double comp_lep1_conePt(const RecoLepton& lepton);
 double comp_lep2_conePt(const RecoLepton& lepton);
 double comp_lep3_conePt(const RecoLepton& lepton);

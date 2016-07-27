@@ -25,7 +25,7 @@ class HistManagerBase
 {
  public:
   HistManagerBase(const edm::ParameterSet& cfg);
-  ~HistManagerBase() {}
+  virtual ~HistManagerBase() {}
 
   /// book and fill histograms
   virtual void bookHistograms(TFileDirectory& dir) = 0;

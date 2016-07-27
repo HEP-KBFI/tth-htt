@@ -32,40 +32,45 @@ void MuonHistManager::bookHistograms(TFileDirectory& dir)
   histogram_gen_times_recCharge_ = book1D(dir, "gen_times_recCharge", "gen_times_recCharge", 3, -1.5, +1.5);
 }
 
-void MuonHistManager::fillHistograms(const std::vector<const RecoMuon*>& muon_ptrs, double evtWeight)
+void MuonHistManager::fillHistograms(const RecoMuon& muon, double evtWeight)
 {
   double evtWeightErr = 0.;
   
+  fillWithOverFlow(histogram_pt_, muon.pt_, evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_eta_, muon.eta_, evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_phi_, muon.phi_, evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_charge_, muon.charge_, evtWeight, evtWeightErr);
+
+  fillWithOverFlow(histogram_dxy_, muon.dxy_, evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_dz_, muon.dz_, evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_relIso_, muon.relIso_, evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_sip3d_, muon.sip3d_, evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_mvaRawTTH_, muon.mvaRawTTH_, evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_jetPtRatio_, muon.jetPtRatio_, evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_jetBtagCSV_, muon.jetBtagCSV_, evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_tightCharge_, muon.tightCharge_, evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_passesLooseIdPOG_, muon.passesLooseIdPOG_, evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_passesMediumIdPOG_, muon.passesMediumIdPOG_, evtWeight, evtWeightErr);
+  
+  int abs_genPdgId = 0;
+  if      ( muon.genLepton_ ) abs_genPdgId = std::abs(muon.genLepton_->pdgId_); // generator level match to electron or muon
+  else if ( muon.genHadTau_ ) abs_genPdgId = 15;                                // generator level match to hadronic tau decay 
+  else if ( muon.genJet_    ) abs_genPdgId = 21;                                // generator level match to jet; fill histogram with pdgId of gluon
+  else                        abs_genPdgId = 0;                                 // no match to any generator level particle (reconstructed muon most likely due to pileup)
+  fillWithOverFlow(histogram_abs_genPdgId_, abs_genPdgId, evtWeight, evtWeightErr);
+  if ( abs_genPdgId == 13 ) {
+    fillWithOverFlow(histogram_gen_times_recCharge_, muon.charge_*muon.genLepton_->charge_, evtWeight, evtWeightErr);
+  }
+}
+
+void MuonHistManager::fillHistograms(const std::vector<const RecoMuon*>& muon_ptrs, double evtWeight)
+{
   size_t numMuons = muon_ptrs.size();
   for ( size_t idxMuon = 0; idxMuon < numMuons; ++idxMuon ) {
     const RecoMuon* muon = muon_ptrs[idxMuon];
 
     if ( idx_ >= 0 && (int)idxMuon != idx_ ) continue;
 
-    fillWithOverFlow(histogram_pt_, muon->pt_, evtWeight, evtWeightErr);
-    fillWithOverFlow(histogram_eta_, muon->eta_, evtWeight, evtWeightErr);
-    fillWithOverFlow(histogram_phi_, muon->phi_, evtWeight, evtWeightErr);
-    fillWithOverFlow(histogram_charge_, muon->charge_, evtWeight, evtWeightErr);
-
-    fillWithOverFlow(histogram_dxy_, muon->dxy_, evtWeight, evtWeightErr);
-    fillWithOverFlow(histogram_dz_, muon->dz_, evtWeight, evtWeightErr);
-    fillWithOverFlow(histogram_relIso_, muon->relIso_, evtWeight, evtWeightErr);
-    fillWithOverFlow(histogram_sip3d_, muon->sip3d_, evtWeight, evtWeightErr);
-    fillWithOverFlow(histogram_mvaRawTTH_, muon->mvaRawTTH_, evtWeight, evtWeightErr);
-    fillWithOverFlow(histogram_jetPtRatio_, muon->jetPtRatio_, evtWeight, evtWeightErr);
-    fillWithOverFlow(histogram_jetBtagCSV_, muon->jetBtagCSV_, evtWeight, evtWeightErr);
-    fillWithOverFlow(histogram_tightCharge_, muon->tightCharge_, evtWeight, evtWeightErr);
-    fillWithOverFlow(histogram_passesLooseIdPOG_, muon->passesLooseIdPOG_, evtWeight, evtWeightErr);
-    fillWithOverFlow(histogram_passesMediumIdPOG_, muon->passesMediumIdPOG_, evtWeight, evtWeightErr);
-
-    int abs_genPdgId = 0;
-    if      ( muon->genLepton_ ) abs_genPdgId = std::abs(muon->genLepton_->pdgId_); // generator level match to electron or muon
-    else if ( muon->genHadTau_ ) abs_genPdgId = 15;                                 // generator level match to hadronic tau decay 
-    else if ( muon->genJet_    ) abs_genPdgId = 21;                                 // generator level match to jet; fill histogram with pdgId of gluon
-    else                         abs_genPdgId = 0;                                  // no match to any generator level particle (reconstructed muon most likely due to pileup)
-    fillWithOverFlow(histogram_abs_genPdgId_, abs_genPdgId, evtWeight, evtWeightErr);
-    if ( abs_genPdgId == 13 ) {
-      fillWithOverFlow(histogram_gen_times_recCharge_, muon->charge_*muon->genLepton_->charge_, evtWeight, evtWeightErr);
-    }
+    fillHistograms(*muon, evtWeight);
   }
 }
