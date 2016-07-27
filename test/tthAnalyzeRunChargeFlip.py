@@ -1,6 +1,6 @@
 import json, os, codecs, stat, logging, sys, jinja2, subprocess, getpass, time
 import tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_chargeflip as samples
-from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no, add_chmodX, create_job, create_if_not_exists, generate_file_ids, generate_input_list
+from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no, add_chmodX, create_if_not_exists, generate_file_ids, generate_input_list
 
 
 
@@ -86,6 +86,25 @@ class analyzeCFConfig:
     self.histogram_file = os.path.join(self.dirs[DKEY_HIST], "allHistogramsCF.root")
     self.datacard_outputfile = os.path.join(self.dirs[DKEY_DCRD], "prepareDatacardsCF.root")
     self.dcard_cfg_fullpath = os.path.join(self.dirs[DKEY_CFGS], "prepareDatacardsCF_cfg.py")
+
+def create_job(exec_name, py_cfg):
+  """Fills bash job template (run by either sbatch or make)
+  Args:
+    exec_name: analysis code executable
+    py_cfg: full path to the python configuration file
+  Returns:
+    Filled template
+  """
+  contents = """#!/bin/bash
+echo "current time:"
+date
+echo "executing 'hostname':"
+hostname
+
+{{ exec_name }} {{ py_cfg }}
+"""
+  return jinja2.Template(contents).render(exec_name = exec_name, py_cfg = py_cfg)
+
 
 def create_config(root_filenames, output_file, category_name, triggers, is_mc, use_data, lumi_scale, cfg, idx):
   """Fill python configuration file for the job exectuable (analysis code)
