@@ -5,6 +5,43 @@ from tthAnalyzeSamples_1l_2tau import samples
 for sample_name, sample_info in samples.items():
   sample_info["triggers"] = [ "1e", "2e", "1mu", "2mu", "1e1mu" ]
 
+samples["/TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12_ext3-v1/MINIAODSIM"] = OD([
+  ("type", "mc"),
+  ("sample_category", "TT"),
+  ("process_name_specific", "TT_TuneCUETP8M1_ext3"),
+  ("nof_files", 2413),
+  ("nof_events", 97994442),
+  ("use_it", False),
+  ("xsection", None),
+  ("triggers", [ "1e", "2e", "1mu", "2mu", "1e1mu" ]),
+  ("local_paths",
+    [
+      OD([
+        ("path", "/hdfs/cms/store/user/kaehatah/TT_TuneCUETP8M1_13TeV-powheg-pythia8/VHBB_HEPPY_V12_TT_TuneCUETP8M1_13TeV-powheg-Py8__fall15MAv2-pu25ns15v1_76r2as_v12_ext3-v1/160721_133505"),
+        ("selection", "*")
+      ])
+    ]
+  )
+])
+samples["/TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12_ext4-v1/MINIAODSIM"] = OD([
+  ("type", "mc"),
+  ("sample_category", "TT"),
+  ("process_name_specific", "TT_TuneCUETP8M1_ext4"),
+  ("nof_files", 4653),
+  ("nof_events", 187626200),
+  ("use_it", False),
+  ("xsection", None),
+  ("triggers", [ "1e", "2e", "1mu", "2mu", "1e1mu" ]),
+  ("local_paths",
+    [
+      OD([
+        ("path", "/hdfs/cms/store/user/kaehatah/TT_TuneCUETP8M1_13TeV-powheg-pythia8/VHBB_HEPPY_V12_TT_TuneCUETP8M1_13TeV-powheg-Py8__fall15MAv2-pu25ns15v1_76r2as_v12_ext4-v1/160721_133402"),
+        ("selection", "*")
+      ])
+    ]
+  )
+])
+
 samples["/DoubleMuon/Run2015C_25ns-16Dec2015-v1/MINIAOD"] = OD([
   ("type", "data"),
   ("sample_category", "data_obs"),

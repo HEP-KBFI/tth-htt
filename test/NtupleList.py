@@ -1,5 +1,5 @@
 import os, sys
-from tthAnalyzeSamples import samples
+from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2los_1tau import samples
 
 def generate_input_list(job_ids, secondary_files, primary_store, secondary_store, debug = False):
   input_list = []
@@ -49,6 +49,6 @@ if __name__ == '__main__':
 
   # examples
 
-  doubleEG_15C = get_filelist('DoubleEG_Run2015C')
-  for f in doubleEG_15C: print(f)
+  TT_ext3 = get_filelist('TT_TuneCUETP8M1_ext3')
+  for f in TT_ext3: print(f)
   print(get_process_list())
