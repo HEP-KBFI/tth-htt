@@ -63,8 +63,8 @@ class RecoMuonCollectionSelectorTight
 	  muon != muons.end(); ++muon ) {
       if ( (idx == selIndex_ || selIndex_ == -1) && selector_(**muon) ) {
 	selMuons.push_back(*muon);
+	++idx;
       }
-      ++idx;
     }
     return selMuons;
   }

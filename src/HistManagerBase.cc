@@ -2,6 +2,9 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/histogramAuxFunctions.h"
 
+#include <iostream>
+#include <iomanip>
+
 HistManagerBase::HistManagerBase(const edm::ParameterSet& cfg)
 {
   process_ = cfg.getParameter<std::string>("process");
@@ -79,6 +82,11 @@ std::string HistManagerBase::getHistogramName(const std::string& distribution) c
  */
 edm::ParameterSet makeHistManager_cfg(const std::string& process, const std::string& category, const std::string& central_or_shift, int idx)
 {
+  //std::cout << "<makeHistManager_cfg>:" << std::endl;
+  //std::cout << " process = " << process << std::endl;
+  //std::cout << " category = " << category << std::endl;
+  //std::cout << " central_or_shift = " << central_or_shift << std::endl;
+  //std::cout << " idx = " << idx << std::endl;
   edm::ParameterSet cfg;
   cfg.addParameter<std::string>("process", process);
   cfg.addParameter<std::string>("category", category);

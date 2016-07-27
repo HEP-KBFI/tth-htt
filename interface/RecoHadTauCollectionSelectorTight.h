@@ -112,8 +112,8 @@ class RecoHadTauCollectionSelectorTight
 	  hadTau != hadTaus.end(); ++hadTau ) {
       if ( (idx == selIndex_ || selIndex_ == -1) && selector_(**hadTau) ) {
 	selHadTaus.push_back(*hadTau);
+	++idx;
       }
-      ++idx;
     }
     return selHadTaus;
   }

@@ -25,14 +25,14 @@ void JetHistManager::bookHistograms(TFileDirectory& dir)
 void JetHistManager::fillHistograms(const RecoJet& jet, double evtWeight)
 {
   double evtWeightErr = 0.;
-  
+
   fillWithOverFlow(histogram_pt_, jet.pt_, evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_eta_, jet.eta_, evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_phi_, jet.phi_, evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_mass_, jet.mass_, evtWeight, evtWeightErr);
-  
+
   fillWithOverFlow(histogram_BtagCSV_, jet.BtagCSV_, evtWeight, evtWeightErr);
-  
+
   int abs_genPdgId = 0;
   if      ( jet.genLepton_ ) abs_genPdgId = std::abs(jet.genLepton_->pdgId_); // generator level match to electron or muon
   else if ( jet.genHadTau_ ) abs_genPdgId = 15;                               // generator level match to hadronic tau decay 

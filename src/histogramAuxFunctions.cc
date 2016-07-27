@@ -289,10 +289,13 @@ TDirectory* getDirectory(TFile* inputFile, const std::string& dirName, bool enab
   //std::cout << " inputFile = " << inputFile->GetName() << std::endl;
   //std::cout << " dirName = " << dirName << std::endl;
   //std::cout << " enableException = " << enableException << std::endl;
-  TDirectory* dir = dynamic_cast<TDirectory*>(inputFile->Get(dirName.data()));
-  if ( enableException && !dir )
+  std::string dirName_tmp = ( dirName.find_last_of('/') == (dirName.length() - 1) ) ? std::string(dirName, 0, dirName.length() - 1) : dirName;
+  TDirectory* dir = dynamic_cast<TDirectory*>(inputFile->Get(dirName_tmp.data()));
+  if ( enableException && !dir ) {
+    inputFile->ls();
     throw cms::Exception("getDirectory") 
       << "Failed to find directory = " << dirName << " in file = " << inputFile->GetName() << " !!\n";
+  }
   return dir;
 }
 
@@ -302,10 +305,13 @@ TDirectory* getSubdirectory(TDirectory* dir, const std::string& subdirName, bool
   //std::cout << " dir = " << dir->GetName() << std::endl;
   //std::cout << " subdirName = " << subdirName << std::endl;
   //std::cout << " enableException = " << enableException << std::endl;
-  TDirectory* subdir = dynamic_cast<TDirectory*>(dir->Get(subdirName.data()));
-  if ( enableException && !subdir )
+  std::string subdirName_tmp = ( subdirName.find_last_of('/') == (subdirName.length() - 1) ) ? std::string(subdirName, 0, subdirName.length() - 1) : subdirName;
+  TDirectory* subdir = dynamic_cast<TDirectory*>(dir->Get(subdirName_tmp.data()));
+  if ( enableException && !subdir ) {
+    dir->ls();
     throw cms::Exception("getSubdirectory") 
       << "Failed to find subdirectory = " << subdirName << " in directory = " << dir->GetName() << " !!\n";
+  }
   return dir;
 }
 
@@ -320,9 +326,11 @@ TH1* getHistogram(TDirectory* dir, const std::string& process, const std::string
   std::string histogramName_full = Form("%s/%s", process.data(), histogramName.data());
   if ( !(central_or_shift == "" || central_or_shift == "central") ) histogramName_full.append("_").append(central_or_shift);
   TH1* histogram = dynamic_cast<TH1*>(dir->Get(histogramName_full.data()));
-  if ( enableException && !histogram ) 
+  if ( enableException && !histogram ) {
+    dir->ls();
     throw cms::Exception("getHistogram") 
       << "Failed to find histogram = " << histogramName_full << " in directory = " << dir->GetName() << " !!\n";    
+  }
   return histogram;
 }
 
