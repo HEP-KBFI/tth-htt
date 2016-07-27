@@ -1,4 +1,4 @@
-import getpass, logging, os, subprocess, sys, time
+import getpass, logging, os, subprocess, sys, time, stat
 
 def query_yes_no(question, default = "yes"):
   """Prompts user yes/no
