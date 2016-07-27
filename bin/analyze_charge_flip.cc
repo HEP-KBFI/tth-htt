@@ -304,9 +304,12 @@ int main(int argc, char* argv[])
       TFileDirectory subDir2 = subDir.mkdir(category->data());
       TFileDirectory subD2 = subD.mkdir(category->data());
       histos[which->data()][*category][process_string] = subDir2.make<TH1D>( process_string.data(), "m_{ll}", 60,  60., 120. );
+      histos[which->data()][*category][process_string]->Sumw2();
       if (std::strncmp(process_string.data(), "DY", 2) == 0){
           histos[which->data()][*category]["DY_fake"] = subDir2.make<TH1D>( "DY_fake", "m_{ll}", 60,  60., 120. );
+          histos[which->data()][*category]["DY_fake"]->Sumw2();
           histos_2gen[which->data()][*category][process_string] = subD2.make<TH1D>( process_string.data(), "m_{ll}", 60,  60., 120. );
+          histos_2gen[which->data()][*category][process_string]->Sumw2();
       }      
       if (!useData){
         histos[which->data()][*category]["data_obs"] = subDir2.make<TH1D>( Form("data_obs"), "m_{ll}", 60,  60., 120. );
@@ -331,8 +334,16 @@ int main(int argc, char* argv[])
   Double_t bins_pt[4] = {10, 25, 50, 1000};
 
   TEfficiency* gen_eff;
+  std::map<std::string, TH2D*> histos_gen;
   TFileDirectory subD = fs.mkdir("gen_ratio");
+  TFileDirectory subD2 = subD.mkdir( process_string );
+  for ( vstring::const_iterator which = categories_charge_gen.begin(); 	which != categories_charge_gen.end(); ++which ) {
+    //TFileDirectory subDir = fs.mkdir( which->data() );
+    histos_gen[which->data()] = subD2.make<TH2D>( Form("pt_eta_%s", which->data()), "pt_eta", 3,  bins_pt, 2, bins_eta );
+    histos_gen[which->data()]->Sumw2();
+  }
   gen_eff = subD.make<TEfficiency>(Form("pt_eta_%s", process_string.data()),"pt_eta;pT;#eta;charge_misID", 3,  bins_pt, 2, bins_eta);
+  gen_eff->SetStatisticOption(TEfficiency::kFNormal);
 
   int numEntries = inputTree->GetEntries();
   int analyzedEntries = 0;
@@ -690,6 +701,15 @@ int main(int argc, char* argv[])
           continue;
         }
         gen_eff->FillWeighted(preselElectrons[i]->charge_ != gp->charge_, evtWeight, gp->pt_, std::fabs(gp->eta_));
+        //if (preselElectrons[i]->charge_ == gp->charge_)
+        //{
+          histos_gen["ID"]->Fill(gp->pt_, std::fabs(gp->eta_), evtWeight);
+        //}
+        if (preselElectrons[i]->charge_ != gp->charge_)
+        {
+          histos_gen["MisID"]->Fill(gp->pt_, std::fabs(gp->eta_),evtWeight);
+        }
+        //else assert(0);
       }
       const GenLepton *gen1 = preselElectrons[0]->genLepton_;
       const GenLepton *gen2 = preselElectrons[1]->genLepton_;
