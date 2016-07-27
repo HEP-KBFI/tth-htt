@@ -132,24 +132,6 @@ samples["/DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIIFall1
     ]
   )
 ])"""
-samples["/hdfs/cms/store/user/kaehatah/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/VHBB_HEPPY_V12_DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-Py8__fall15MAv2-pu25ns15v1_76r2as_v12_ext1-v1/160721_154639  NIAODSIM"] = OD([
-  ("type", "mc"),
-  ("sample_category", "DY"),
-  ("process_name_specific", "DYJetsToLL_M-50"),
-  ("nof_files", 5875),
-  ("nof_events", 247512446),
-  ("use_it", True),
-  ("xsection", 6025.2),
-  ("triggers", [ "1e", "2e" ]),
-  ("local_paths",
-    [
-      OD([
-        ("path", "/hdfs/cms/store/user/kaehatah/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/VHBB_HEPPY_V12_DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-Py8__fall15MAv2-pu25ns15v1_76r2as_v12_ext1-v1/160721_154639"),
-        ("selection", "*"),
-      ])
-    ]
-  )
-])
 samples["/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12_ext1-v1/MINIAODSIM"] = OD([
   ("type", "mc"),
   ("sample_category", "DY"),
