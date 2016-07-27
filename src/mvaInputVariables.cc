@@ -49,6 +49,16 @@ double comp_mindr_lep2_jet(const GenParticle& lepton, const std::vector<const Re
   return comp_mindr_lep1_jet(lepton, jets_cleaned);
 }
 
+double comp_mindr_hadTau1_jet(const GenParticle& hadTau, const std::vector<const RecoJet*>& jets_cleaned)
+{
+  return comp_mindr_lep1_jet(hadTau, jets_cleaned);
+}
+
+double comp_mindr_hadTau2_jet(const GenParticle& hadTau, const std::vector<const RecoJet*>& jets_cleaned)
+{
+  return comp_mindr_lep1_jet(hadTau, jets_cleaned);
+}
+
 double comp_lep1_conePt(const RecoLepton& lepton)
 {
   double conePt = 0.;

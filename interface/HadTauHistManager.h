@@ -21,6 +21,7 @@ class HadTauHistManager
 
   /// book and fill histograms
   void bookHistograms(TFileDirectory& dir);
+  void fillHistograms(const RecoHadTau& hadTau, double evtWeight);
   void fillHistograms(const std::vector<const RecoHadTau*>& hadTau_ptrs, double evtWeight);
 
  private:

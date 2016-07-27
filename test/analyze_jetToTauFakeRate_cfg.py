@@ -26,11 +26,30 @@ process.analyze_jetToTauFakeRate = cms.PSet(
     use_triggers_1mu = cms.bool(True),
     triggers_1e1mu = cms.vstring("HLT_BIT_HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v", "HLT_BIT_HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v"),
     use_triggers_1e1mu = cms.bool(True),
+
+    apply_offline_e_trigger_cuts_1e = cms.bool(True),
+    apply_offline_e_trigger_cuts_1mu = cms.bool(False),
+    apply_offline_e_trigger_cuts_1e1mu = cms.bool(False),
     
     chargeSelection = cms.string('OS'),
-    hadTauSelection = cms.string('Fakeable'),
-    hadTau_minAbsEta = cms.double(-1.),
-    hadTau_maxAbsEta = cms.double(9.9),
+
+    jet_minPt = cms.double(20.),
+    jet_maxPt = cms.double(1.e+6),
+    jet_minAbsEta = cms.double(-1.),
+    jet_maxAbsEta = cms.double(2.3),
+    
+    hadTauSelections = cms.vstring(
+        'dR05isoLoose',
+        'dR05isoMedium',
+        'dR05isoTight',
+        'dR03mvaVLoose',
+        'dR03mvaLoose',
+        'dR03mvaMedium',
+        'dR03mvaTight',
+        'dR03mvaVTight',
+        'dR03mvaVVTight'
+    ),
+    hadTauAbsEtaBins = cms.vdouble(-1., 1.2, 1.7, 9.9),
                                       
     isMC = cms.bool(False),
     central_or_shift = cms.string('central'),

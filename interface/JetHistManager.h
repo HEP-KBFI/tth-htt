@@ -21,6 +21,7 @@ class JetHistManager
 
   /// book and fill histograms
   void bookHistograms(TFileDirectory& dir);
+  void fillHistograms(const RecoJet& jet, double evtWeight);
   void fillHistograms(const std::vector<const RecoJet*>& jets, double evtWeight);
 
  private:

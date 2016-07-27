@@ -22,6 +22,7 @@ class EvtHistManager_1l_2tau
   /// book and fill histograms
   void bookHistograms(TFileDirectory& dir);
   void fillHistograms(int numElectrons, int numMuons, int numHadTaus, int numJets, int numBJets_loose, int numBJets_medium,
+                      double mvaOutput_1l_2tau_ttbar,
 		      double mTauTauVis, double evtWeight);
 
  private:
@@ -31,6 +32,8 @@ class EvtHistManager_1l_2tau
   TH1* histogram_numJets_;
   TH1* histogram_numBJets_loose_;
   TH1* histogram_numBJets_medium_;
+
+  TH1* histogram_mvaOutput_1l_2tau_ttbar_;
 
   TH1* histogram_mTauTauVis_;
 

@@ -18,28 +18,36 @@ process.fwliteOutput = cms.PSet(
 
 process.comp_jetToTauFakeRate = cms.PSet(
 
-    looseRegion = cms.string("SS_Fakeable"),
-    tightRegion = cms.string("SS_Tight"),
+    looseRegion = cms.string("jetToTauFakeRate_OS/denominator/"),
+    tightRegion = cms.string("jetToTauFakeRate_OS/numerator/"),
 
     processData = cms.string("data_obs"),    
     processesToSubtract = cms.vstring(
-        "TTt",
-        "TTl",
+        "TT_t",
+        "TT_l", 
         "EWK",
         "Rares",
         "TTW",
         "TTZ",
         "signal"
     ),
-    processFakes = cms.string("fakes_data"),
 
-    hadTauEtaBins_lead = cms.vdouble(-1., 1.2, 1.7, 9.9),
-    hadTauEtaBins_sublead = cms.vdouble(-1., 1.2, 1.7, 9.9),
-    
-    histogramsToFit = cms.vstring(
-        "hadTauPt_lead",
-        "hadTauPt_sublead"
+    hadTauSelections = cms.vstring(
+        "dR05isoLoose",
+        "dR05isoMedium",
+        "dR05isoTight",
+        "dR03mvaVLoose",
+        "dR03mvaLoose",
+        "dR03mvaMedium",
+        "dR03mvaTight",
+        "dR03mvaVTight",
+        "dR03mvaVVTight"
     ),
+    hadTauAbsEtaBins = cms.vdouble(-1., 1.2, 1.7, 9.9),
+
+    isMC = cms.bool(False),
+
+    histogramsToFit = cms.vstring("jets/pt"),
 
     fitFunction = cms.string("[0] + [1]*x"),
     xMin = cms.double(0.),

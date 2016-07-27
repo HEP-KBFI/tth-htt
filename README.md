@@ -5,7 +5,15 @@ code and python config files for ttH, H -> tautau analysis with matrix element t
 Clone this repository into `$CMSSW_BASE/src/tthAnalysis/HiggsToTauTau`, i.e. `git clone git@github.com:HEP-KBFI/tth-htt.git $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau`.
 Set up your CMSSW working environment, do `scram b -j8` in `$CMSSW_BASE/src`.
 
-### Running the analysis
+#### Dependencies
+
+One needs to install `ClassicSVfit` in order to compile the whole project; do
+```bash
+git clone git@github.com:veelken/ClassicSVfit.git $CMSSW_BASE/src/TauAnalysis/ClassicSVfit
+```
+and compile the project.
+
+### Running the analysis (needs an update)
 
 Review the `__main__` section in `$CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/test/tthAnalyzeRun.py`:
 ```python

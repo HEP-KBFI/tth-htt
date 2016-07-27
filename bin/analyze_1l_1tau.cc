@@ -710,6 +710,7 @@ int main(int argc, char* argv[])
     double mTauTauVis_presel = (preselLepton->p4_ + preselHadTau->p4_).mass();
 
 //--- compute MHT and linear MET discriminant (met_LD)
+    LV met_p4(met_pt, met_eta, met_phi, 0.);
     LV mht_p4(0,0,0,0);
     for ( std::vector<const RecoJet*>::const_iterator jet = selJets.begin();
 	  jet != selJets.end(); ++jet ) {
@@ -723,7 +724,6 @@ int main(int argc, char* argv[])
 	  hadTau != selHadTaus.end(); ++hadTau ) {
       mht_p4 += (*hadTau)->p4_;
     }
-    const LV met_p4(met_pt, met_eta, met_phi, 0.);
     double met_LD = met_coef*met_p4.pt() + mht_coef*mht_p4.pt();    
 
 //--- compute event-level weight for data/MC correction of b-tagging efficiency and mistag rate
