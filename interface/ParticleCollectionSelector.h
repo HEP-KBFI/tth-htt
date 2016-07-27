@@ -23,8 +23,8 @@ class ParticleCollectionSelector
 	  particle != particles.end(); ++particle ) {
       if ( (idx == selIndex_ || selIndex_ == -1) && selector_(**particle) ) {
 	selParticles.push_back(*particle);
+	++idx;
       }
-      ++idx;
     }
     return selParticles;
   }

@@ -95,8 +95,8 @@ class RecoElectronCollectionSelectorTight
 	  electron != electrons.end(); ++electron ) {
       if ( (idx == selIndex_ || selIndex_ == -1) && selector_(**electron) ) {
 	selElectrons.push_back(*electron);
+	++idx;
       }
-      ++idx;
     }
     return selElectrons;
   }
