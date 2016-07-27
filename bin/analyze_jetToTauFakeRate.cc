@@ -87,9 +87,10 @@ bool isHigherPt(const GenParticle* particle1, const GenParticle* particle2)
 std::string getEtaBin(double minAbsEta, double maxAbsEta)
 {
   std::string absEtaBin = "";
-  if      ( minAbsEta > 0. && maxAbsEta > 0. ) absEtaBin.append(Form("absEta%1.0fto%1.0f", minAbsEta, maxAbsEta));
-  else if ( minAbsEta > 0.                   ) absEtaBin.append(Form("absEtaGt%1.0f", minAbsEta));
-  else if (                   maxAbsEta > 0. ) absEtaBin.append(Form("absEtaLt%1.0f", maxAbsEta));
+  if      ( minAbsEta > 0. && maxAbsEta > 0. ) absEtaBin.append(Form("absEta%1.1fto%1.1f", minAbsEta, maxAbsEta));
+  else if ( minAbsEta > 0.                   ) absEtaBin.append(Form("absEtaGt%1.1f", minAbsEta));
+  else if (                   maxAbsEta > 0. ) absEtaBin.append(Form("absEtaLt%1.1f", maxAbsEta));
+  absEtaBin = TString(absEtaBin.data()).ReplaceAll(".", "_").Data();
   return absEtaBin;
 }
 
@@ -99,9 +100,10 @@ std::string getEtaBin(double minAbsEta, double maxAbsEta)
 struct denominatorHistManagers
 {
   denominatorHistManagers(
-    const std::string& process, const std::string& chargeSelection, 
+    const std::string& process, bool isMC, const std::string& chargeSelection, 
     double minAbsEta, double maxAbsEta, const std::string& central_or_shift)
     : process_(process),
+      isMC_(isMC),
       chargeSelection_(chargeSelection),
       minAbsEta_(minAbsEta),
       maxAbsEta_(maxAbsEta),
@@ -110,7 +112,10 @@ struct denominatorHistManagers
       jetHistManager_genHadTau_(0),
       jetHistManager_genLepton_(0),
       jetHistManager_genJet_(0)
-  {}
+  {
+    std::string etaBin = getEtaBin(minAbsEta_, maxAbsEta_);
+    subdir_ = Form("jetToTauFakeRate_%s/denominator/%s", chargeSelection_.data(), etaBin.data());
+  }
   ~denominatorHistManagers()
   {
     delete jetHistManager_;
@@ -120,36 +125,43 @@ struct denominatorHistManagers
   }
   void bookHistograms(TFileDirectory& dir)
   {
-    std::string etaBin = getEtaBin(minAbsEta_, maxAbsEta_);
+    //std::cout << "<denominatorHistManagers::bookHistograms>:" << std::endl;
+    //std::cout << " subdir = " << subdir_ << std::endl;
     jetHistManager_ = new JetHistManager(makeHistManager_cfg(process_, 
-      Form("jetToTauFakeRate_%s/denominator/%s/jets", chargeSelection_.data(), etaBin.data()), central_or_shift_));
+      Form("%s/jets", subdir_.data()), central_or_shift_));
     jetHistManager_->bookHistograms(dir);
-    std::string process_and_genMatchedHadTau = process_ + "_t";
-    jetHistManager_genHadTau_ = new JetHistManager(makeHistManager_cfg(process_and_genMatchedHadTau, 
-      Form("jetToTauFakeRate_%s/denominator/%s/jets", chargeSelection_.data(), etaBin.data()), central_or_shift_));
-    jetHistManager_genHadTau_->bookHistograms(dir);
-    std::string process_and_genMatchedLepton = process_ + "_l";
-    jetHistManager_genLepton_ = new JetHistManager(makeHistManager_cfg(process_and_genMatchedLepton, 
-      Form("jetToTauFakeRate_%s/denominator/%s/jets", chargeSelection_.data(), etaBin.data()), central_or_shift_));
-    jetHistManager_genLepton_->bookHistograms(dir);
-    std::string process_and_genMatchedJet = process_ + "_j";
-    jetHistManager_genJet_ = new JetHistManager(makeHistManager_cfg(process_and_genMatchedJet, 
-      Form("jetToTauFakeRate_%s/denominator/%s/jets", chargeSelection_.data(), etaBin.data()), central_or_shift_));
-    jetHistManager_genJet_->bookHistograms(dir);
+    if ( isMC_ ) {
+      std::string process_and_genMatchedHadTau = process_ + "t";
+      jetHistManager_genHadTau_ = new JetHistManager(makeHistManager_cfg(process_and_genMatchedHadTau, 
+        Form("%s/jets", subdir_.data()), central_or_shift_));
+      jetHistManager_genHadTau_->bookHistograms(dir);
+      std::string process_and_genMatchedLepton = process_ + "l";
+      jetHistManager_genLepton_ = new JetHistManager(makeHistManager_cfg(process_and_genMatchedLepton, 
+        Form("%s/jets", subdir_.data()), central_or_shift_));
+      jetHistManager_genLepton_->bookHistograms(dir);
+      std::string process_and_genMatchedJet = process_ + "j";
+      jetHistManager_genJet_ = new JetHistManager(makeHistManager_cfg(process_and_genMatchedJet, 
+        Form("%s/jets", subdir_.data()), central_or_shift_));
+      jetHistManager_genJet_->bookHistograms(dir);
+    }
   } 					 
   void fillHistograms(const RecoJet& jet, double evtWeight)					 
   {
     if ( !(jet.absEta_ > minAbsEta_ && jet.absEta_ < maxAbsEta_) ) return;
     jetHistManager_->fillHistograms(jet, evtWeight);
-    if      ( jet.genHadTau_ ) jetHistManager_genHadTau_->fillHistograms(jet, evtWeight);
-    else if ( jet.genLepton_ ) jetHistManager_genLepton_->fillHistograms(jet, evtWeight);
-    else                       jetHistManager_genJet_->fillHistograms(jet, evtWeight);
+    if ( isMC_ ) {
+      if      ( jet.genHadTau_ ) jetHistManager_genHadTau_->fillHistograms(jet, evtWeight);
+      else if ( jet.genLepton_ ) jetHistManager_genLepton_->fillHistograms(jet, evtWeight);
+      else                       jetHistManager_genJet_->fillHistograms(jet, evtWeight);
+    }
   }			
   std::string process_;
+  bool isMC_;
   std::string chargeSelection_;
   double minAbsEta_;
   double maxAbsEta_;
   std::string central_or_shift_;
+  std::string subdir_;
   JetHistManager* jetHistManager_;
   JetHistManager* jetHistManager_genHadTau_;
   JetHistManager* jetHistManager_genLepton_;
@@ -162,9 +174,9 @@ struct denominatorHistManagers
 struct numeratorSelector_and_HistManagers : public denominatorHistManagers
 {
   numeratorSelector_and_HistManagers(
-    const std::string& process, const std::string& chargeSelection, 
+    const std::string& process, bool isMC, const std::string& chargeSelection, 
     const std::string& hadTauSelection, double minAbsEta, double maxAbsEta, const std::string& central_or_shift)
-    : denominatorHistManagers(process, chargeSelection, minAbsEta, maxAbsEta, central_or_shift),
+    : denominatorHistManagers(process, isMC, chargeSelection, minAbsEta, maxAbsEta, central_or_shift),
       hadTauSelection_(hadTauSelection),
       hadTauSelector_(0),
       hadTauHistManager_(0), 
@@ -172,6 +184,8 @@ struct numeratorSelector_and_HistManagers : public denominatorHistManagers
       hadTauHistManager_genLepton_(0),
       hadTauHistManager_genJet_(0)
   {
+    std::string etaBin = getEtaBin(minAbsEta_, maxAbsEta_);    
+    subdir_ = Form("jetToTauFakeRate_%s/numerator/%s/%s", chargeSelection_.data(), hadTauSelection_.data(), etaBin.data());
     hadTauSelector_ = new RecoHadTauSelectorTight();
     hadTauSelector_->set(hadTauSelection);
   }
@@ -185,31 +199,37 @@ struct numeratorSelector_and_HistManagers : public denominatorHistManagers
   }
   void bookHistograms(TFileDirectory& dir)
   {
-    std::string etaBin = getEtaBin(minAbsEta_, maxAbsEta_);    
-    jetHistManager_ = new JetHistManager(makeHistManager_cfg(process_, 
-      Form("jetToTauFakeRate_%s/numerator/%s/%s/jets", chargeSelection_.data(), hadTauSelection_.data(), etaBin.data()), central_or_shift_));
-    jetHistManager_->bookHistograms(dir);
-    std::string process_and_genMatchedHadTau = process_ + "_t";
-    jetHistManager_genHadTau_ = new JetHistManager(makeHistManager_cfg(process_and_genMatchedHadTau, 
-      Form("jetToTauFakeRate_%s/numerator/%s/%s/jets", chargeSelection_.data(), hadTauSelection_.data(), etaBin.data()), central_or_shift_));
-    jetHistManager_genHadTau_->bookHistograms(dir);
-    std::string process_and_genMatchedLepton = process_ + "_l";
-    jetHistManager_genLepton_ = new JetHistManager(makeHistManager_cfg(process_and_genMatchedLepton, 
-      Form("jetToTauFakeRate_%s/numerator/%s/%s/jets", chargeSelection_.data(), hadTauSelection_.data(), etaBin.data()), central_or_shift_));
-    jetHistManager_genLepton_->bookHistograms(dir);
-    std::string process_and_genMatchedJet = process_ + "_j";
-    jetHistManager_genJet_ = new JetHistManager(makeHistManager_cfg(process_and_genMatchedJet, 
-      Form("jetToTauFakeRate_%s/numerator/%s/%s/jets", chargeSelection_.data(), hadTauSelection_.data(), etaBin.data()), central_or_shift_));
-    jetHistManager_genJet_->bookHistograms(dir);
+    //std::cout << "<numeratorSelector_and_HistManagers::bookHistograms>:" << std::endl;
+    //std::cout << " subdir = " << subdir_ << std::endl;
+    denominatorHistManagers::bookHistograms(dir);
+    hadTauHistManager_ = new HadTauHistManager(makeHistManager_cfg(process_, 
+      Form("%s/hadTaus", subdir_.data()), central_or_shift_));
+    hadTauHistManager_->bookHistograms(dir);
+    if ( isMC_ ) {
+      std::string process_and_genMatchedHadTau = process_ + "t";
+      hadTauHistManager_genHadTau_ = new HadTauHistManager(makeHistManager_cfg(process_and_genMatchedHadTau, 
+        Form("%s/hadTaus", subdir_.data()), central_or_shift_));
+      hadTauHistManager_genHadTau_->bookHistograms(dir);
+      std::string process_and_genMatchedLepton = process_ + "l";
+      hadTauHistManager_genLepton_ = new HadTauHistManager(makeHistManager_cfg(process_and_genMatchedLepton, 
+        Form("%s/hadTaus", subdir_.data()), central_or_shift_));
+      hadTauHistManager_genLepton_->bookHistograms(dir);
+      std::string process_and_genMatchedJet = process_ + "j";
+      hadTauHistManager_genJet_ = new HadTauHistManager(makeHistManager_cfg(process_and_genMatchedJet, 
+        Form("%s/hadTaus", subdir_.data()), central_or_shift_));
+      hadTauHistManager_genJet_->bookHistograms(dir);
+    }
   } 		
   void fillHistograms(const RecoJet& jet, const RecoHadTau& hadTau, double evtWeight)					 
   {
     denominatorHistManagers::fillHistograms(jet, evtWeight);
     if ( !(jet.absEta_ > minAbsEta_ && jet.absEta_ < maxAbsEta_) ) return;
     hadTauHistManager_->fillHistograms(hadTau, evtWeight);
-    if      ( hadTau.genHadTau_ ) hadTauHistManager_genHadTau_->fillHistograms(hadTau, evtWeight);
-    else if ( hadTau.genLepton_ ) hadTauHistManager_genLepton_->fillHistograms(hadTau, evtWeight);
-    else                          hadTauHistManager_genJet_->fillHistograms(hadTau, evtWeight);
+    if ( isMC_ ) {
+      if      ( hadTau.genHadTau_ ) hadTauHistManager_genHadTau_->fillHistograms(hadTau, evtWeight);
+      else if ( hadTau.genLepton_ ) hadTauHistManager_genLepton_->fillHistograms(hadTau, evtWeight);
+      else                          hadTauHistManager_genJet_->fillHistograms(hadTau, evtWeight);
+    }
   }
   std::string hadTauSelection_;
   RecoHadTauSelectorTight* hadTauSelector_;
@@ -467,14 +487,14 @@ int main(int argc, char* argv[])
     double maxAbsEta = hadTauAbsEtaBins[idxEtaBin + 1];
 
     denominatorHistManagers* denominator = new denominatorHistManagers(
-      process_string, chargeSelection_string, minAbsEta, maxAbsEta, central_or_shift);
+      process_string, isMC, chargeSelection_string, minAbsEta, maxAbsEta, central_or_shift);
     denominator->bookHistograms(fs);
     denominators.push_back(denominator);
 
     for ( vstring::const_iterator hadTauSelection = hadTauSelections.begin();
 	  hadTauSelection != hadTauSelections.end(); ++hadTauSelection ) {
       numeratorSelector_and_HistManagers* numerator = new numeratorSelector_and_HistManagers(
-        process_string, chargeSelection_string, *hadTauSelection, minAbsEta, maxAbsEta, central_or_shift);
+        process_string, isMC, chargeSelection_string, *hadTauSelection, minAbsEta, maxAbsEta, central_or_shift);
       numerator->bookHistograms(fs);
       numerators.push_back(numerator);
     }
@@ -589,6 +609,7 @@ int main(int argc, char* argv[])
     std::vector<const RecoHadTau*> preselHadTaus_genElectron;
     std::vector<const RecoHadTau*> preselHadTaus_genMuon;
     std::vector<const RecoHadTau*> preselHadTaus_genJet;
+
     for ( std::vector<const RecoHadTau*>::const_iterator hadTau = preselHadTaus.begin();
           hadTau != preselHadTaus.end(); ++hadTau ) {
       if      ( (*hadTau)->genHadTau_                                                  ) preselHadTaus_genHadTau.push_back(*hadTau);   // generator level match to hadronic tau decay 
@@ -925,7 +946,7 @@ int main(int argc, char* argv[])
 	double dR = deltaR((*preselHadTau)->eta_, (*preselHadTau)->phi_, (*cleanedJet)->eta_, (*cleanedJet)->phi_);
 	if ( dR < 0.3 ) preselHadTaus_dRmatched.push_back(*preselHadTau);
       }
-      
+
       for ( std::vector<numeratorSelector_and_HistManagers*>::iterator numerator = numerators.begin();
 	    numerator != numerators.end(); ++numerator ) {
 	const RecoHadTau* selHadTau_dRmatched = 0;
@@ -933,14 +954,14 @@ int main(int argc, char* argv[])
 	for ( std::vector<const RecoHadTau*>::const_iterator preselHadTau = preselHadTaus_dRmatched.begin();
 	      preselHadTau != preselHadTaus_dRmatched.end(); ++preselHadTau ) {
 	  if ( !(*(*numerator)->hadTauSelector_)(**preselHadTau) ) continue;
-	      
 	  double dR = deltaR((*preselHadTau)->eta_, (*preselHadTau)->phi_, (*cleanedJet)->eta_, (*cleanedJet)->phi_);
 	  if ( dR < dRmin || !selHadTau_dRmatched ) {
 	    selHadTau_dRmatched = (*preselHadTau);
 	    dRmin = dR;
 	  }
 	}
-	
+	if ( !(selHadTau_dRmatched && dRmin < 0.3) ) continue;
+
 	std::vector<const RecoHadTau*> selHadTau_ptrs;
 	selHadTau_ptrs.push_back(selHadTau_dRmatched);
 	std::vector<const RecoJet*> cleanedJets_wrtSelHadTau = jetCleaner(selJets, selHadTau_ptrs);

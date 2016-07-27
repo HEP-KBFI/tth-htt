@@ -45,9 +45,10 @@ typedef std::vector<double> vdouble;
 std::string getEtaBin(double minAbsEta, double maxAbsEta)
 {
   std::string absEtaBin = "";
-  if      ( minAbsEta > 0. && maxAbsEta > 0. ) absEtaBin.append(Form("absEta%1.0fto%1.0f", minAbsEta, maxAbsEta));
-  else if ( minAbsEta > 0.                   ) absEtaBin.append(Form("absEtaGt%1.0f", minAbsEta));
-  else if (                   maxAbsEta > 0. ) absEtaBin.append(Form("absEtaLt%1.0f", maxAbsEta));
+  if      ( minAbsEta > 0. && maxAbsEta > 0. ) absEtaBin.append(Form("absEta%1.1fto%1.1f", minAbsEta, maxAbsEta));
+  else if ( minAbsEta > 0.                   ) absEtaBin.append(Form("absEtaGt%1.1f", minAbsEta));
+  else if (                   maxAbsEta > 0. ) absEtaBin.append(Form("absEtaLt%1.1f", maxAbsEta));
+  absEtaBin = TString(absEtaBin.data()).ReplaceAll(".", "_").Data();
   return absEtaBin;
 }
 
@@ -350,11 +351,11 @@ std::pair<TH1*, TH1*> getHistogramsLoose_and_Tight(
   if ( idx != std::string::npos ) {
     histogramName = std::string(histogramToFit, idx + 1, std::string::npos);
     subdirName_loose = Form("%s/%s", etaBin.data(), std::string(histogramToFit, 0, idx).data());
-    subdirName_tight = Form("%s/%s/%s", etaBin.data(), hadTauSelection.data(), std::string(histogramToFit, 0, idx).data());
+    subdirName_tight = Form("%s/%s/%s", hadTauSelection.data(), etaBin.data(), std::string(histogramToFit, 0, idx).data());
   } else {
     histogramName = histogramToFit;
     subdirName_loose = Form("%s", etaBin.data());
-    subdirName_tight = Form("%s/%s", etaBin.data(), hadTauSelection.data());
+    subdirName_tight = Form("%s/%s", hadTauSelection.data(), etaBin.data());
   }
   TDirectory* inputSubdir_loose = getSubdirectory(inputDir_loose, subdirName_loose, true);
   TDirectory* inputSubdir_tight = getSubdirectory(inputDir_tight, subdirName_tight, true);

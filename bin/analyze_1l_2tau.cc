@@ -886,8 +886,8 @@ int main(int argc, char* argv[])
     mvaInputs["nJet"]           = selJets.size();
     mvaInputs["nBJetLoose"]     = selBJets_loose.size();
     mvaInputs["nBJetMedium"]    = selBJets_medium.size();
-    mvaInputs["mindr_tau1_jet"] = TMath::Max(10., comp_mindr_hadTau1_jet(*selHadTau_lead, selJets));
-    mvaInputs["mindr_tau2_jet"] = TMath::Max(10., comp_mindr_hadTau2_jet(*selHadTau_sublead, selJets));
+    mvaInputs["mindr_tau1_jet"] = TMath::Min(10., comp_mindr_hadTau1_jet(*selHadTau_lead, selJets));
+    mvaInputs["mindr_tau2_jet"] = TMath::Min(10., comp_mindr_hadTau2_jet(*selHadTau_sublead, selJets));
     mvaInputs["avg_dr_jet"]     = comp_avg_dr_jet(selJets);
     mvaInputs["ptmiss"]         = met_pt;
     mvaInputs["mT_lep"]         = comp_MT_met_lep1(*selLepton, met_pt, met_phi);
