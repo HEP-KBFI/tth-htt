@@ -40,7 +40,7 @@ def create_if_not_exists(dir_fullpath):
   """
   if not os.path.exists(dir_fullpath): os.makedirs(dir_fullpath)
 
-def generate_file_ids(nof_files, max_files_per_job):
+def generate_file_ids(nof_files, max_files_per_job, blacklist = []):
   """Subsets file ids
 
     Given N total number of input files, the function splits them into sublists, each
@@ -54,7 +54,7 @@ def generate_file_ids(nof_files, max_files_per_job):
   Returns:
     File ids split into sublists of length `max_files_per_job`
   """
-  file_limits = range(1, nof_files, max_files_per_job, blacklist = [])
+  file_limits = range(1, nof_files, max_files_per_job)
   file_limits.append(nof_files + 1)
   job_ids = [[x for x in range(file_limits[i], file_limits[i + 1]) if x not in blacklist] \
              for i in range(len(file_limits) - 1)]
