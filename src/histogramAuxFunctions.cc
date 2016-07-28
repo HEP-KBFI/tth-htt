@@ -285,9 +285,9 @@ void dumpHistogram(const TH1* histogram)
 
 TDirectory* getDirectory(TFile* inputFile, const std::string& dirName, bool enableException)
 {
-  //std::cout << "<getDirectory>:" << std::endl;
-  //std::cout << " inputFile = " << inputFile->GetName() << std::endl;
-  //std::cout << " dirName = " << dirName << std::endl;
+  std::cout << "<getDirectory>:" << std::endl;
+  std::cout << " inputFile = " << inputFile->GetName() << std::endl;
+  std::cout << " dirName = " << dirName << std::endl;
   //std::cout << " enableException = " << enableException << std::endl;
   std::string dirName_tmp = ( dirName.find_last_of('/') == (dirName.length() - 1) ) ? std::string(dirName, 0, dirName.length() - 1) : dirName;
   TDirectory* dir = dynamic_cast<TDirectory*>(inputFile->Get(dirName_tmp.data()));
@@ -296,23 +296,25 @@ TDirectory* getDirectory(TFile* inputFile, const std::string& dirName, bool enab
     throw cms::Exception("getDirectory") 
       << "Failed to find directory = " << dirName << " in file = " << inputFile->GetName() << " !!\n";
   }
+  std::cout << "--> returning dir = " << dir << ": name = " << dir->GetName() << std::endl;    
   return dir;
 }
 
 TDirectory* getSubdirectory(TDirectory* dir, const std::string& subdirName, bool enableException)
 {
-  //std::cout << "<getSubdirectory>:" << std::endl;
-  //std::cout << " dir = " << dir->GetName() << std::endl;
-  //std::cout << " subdirName = " << subdirName << std::endl;
+  std::cout << "<getSubdirectory>:" << std::endl;
+  std::cout << " dir = " << dir->GetName() << std::endl;
+  std::cout << " subdirName = " << subdirName << std::endl;
   //std::cout << " enableException = " << enableException << std::endl;
   std::string subdirName_tmp = ( subdirName.find_last_of('/') == (subdirName.length() - 1) ) ? std::string(subdirName, 0, subdirName.length() - 1) : subdirName;
   TDirectory* subdir = dynamic_cast<TDirectory*>(dir->Get(subdirName_tmp.data()));
   if ( enableException && !subdir ) {
     dir->ls();
     throw cms::Exception("getSubdirectory") 
-      << "Failed to find subdirectory = " << subdirName << " in directory = " << dir->GetName() << " !!\n";
+      << "Failed to find subdirectory = " << subdirName << " in directory = " << dir << ": name = " << dir->GetName() << " !!\n";    
   }
-  return dir;
+  std::cout << "--> returning subdir = " << subdir << ": name = " << subdir->GetName() << std::endl;    
+  return subdir;
 }
 
 TH1* getHistogram(TDirectory* dir, const std::string& process, const std::string& histogramName, const std::string& central_or_shift, bool enableException)
@@ -329,7 +331,7 @@ TH1* getHistogram(TDirectory* dir, const std::string& process, const std::string
   if ( enableException && !histogram ) {
     dir->ls();
     throw cms::Exception("getHistogram") 
-      << "Failed to find histogram = " << histogramName_full << " in directory = " << dir->GetName() << " !!\n";    
+      << "Failed to find histogram = " << histogramName_full << " in directory = " << dir << ": name = " << dir->GetName() << " !!\n";    
   }
   return histogram;
 }

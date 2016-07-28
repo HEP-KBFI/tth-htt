@@ -21,8 +21,10 @@ class ParticleCollectionSelector
     int idx = 0;
     for ( typename std::vector<const Tobj*>::const_iterator particle = particles.begin();
 	  particle != particles.end(); ++particle ) {
-      if ( (idx == selIndex_ || selIndex_ == -1) && selector_(**particle) ) {
-	selParticles.push_back(*particle);
+      if ( selector_(**particle) ) {
+	if ( idx == selIndex_ || selIndex_ == -1 ) {
+	  selParticles.push_back(*particle);
+	}
 	++idx;
       }
     }

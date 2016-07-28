@@ -61,8 +61,10 @@ class RecoMuonCollectionSelectorTight
     int idx = 0;
     for ( typename std::vector<const RecoMuon*>::const_iterator muon = muons.begin();
 	  muon != muons.end(); ++muon ) {
-      if ( (idx == selIndex_ || selIndex_ == -1) && selector_(**muon) ) {
-	selMuons.push_back(*muon);
+      if ( selector_(**muon) ) {
+	if ( idx == selIndex_ || selIndex_ == -1 ) {
+	  selMuons.push_back(*muon);
+	}
 	++idx;
       }
     }

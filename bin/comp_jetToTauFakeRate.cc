@@ -640,8 +640,9 @@ int main(int argc, char* argv[])
 	  fitFunction = new TF1(fitFunctionName.data(), "1.0", xMin, xMax);
 	  fitFunction->Write();
 	}
-	std::string controlPlotFileName = TString(outputFile.file().data()).ReplaceAll(".root", Form(
-	  "_%s_%s_%s_%s_controlPlot.png", hadTauSelection->data(), etaBin.data(), data_or_mc.data(), histogramToFit->data())).Data();
+	std::string controlPlotFileName_suffix = Form("_%s_%s_%s_%s_controlPlot.png", hadTauSelection->data(), etaBin.data(), data_or_mc.data(), histogramToFit->data());
+	controlPlotFileName_suffix = TString(controlPlotFileName_suffix.data()).ReplaceAll("/", "_").Data();
+	std::string controlPlotFileName = TString(outputFile.file().data()).ReplaceAll(".root", controlPlotFileName_suffix.data()).Data();
 	makeControlPlot(graph_jetToTauFakeRate, 
 			fitFunction, fitFunctions_sysShifts, xMin, xMax, "p_{T} [GeV]", true, 1.e-3, 1.e0, controlPlotFileName);
       }

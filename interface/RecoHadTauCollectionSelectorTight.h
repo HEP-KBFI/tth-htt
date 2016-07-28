@@ -110,8 +110,10 @@ class RecoHadTauCollectionSelectorTight
     int idx = 0;
     for ( typename std::vector<const RecoHadTau*>::const_iterator hadTau = hadTaus.begin();
 	  hadTau != hadTaus.end(); ++hadTau ) {
-      if ( (idx == selIndex_ || selIndex_ == -1) && selector_(**hadTau) ) {
-	selHadTaus.push_back(*hadTau);
+      if ( selector_(**hadTau) ) {
+	if ( idx == selIndex_ || selIndex_ == -1 ) {
+	  selHadTaus.push_back(*hadTau);
+	}
 	++idx;
       }
     }

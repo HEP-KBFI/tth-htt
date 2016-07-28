@@ -75,8 +75,10 @@ class RecoElectronCollectionSelectorFakeable
     int idx = 0;
     for ( typename std::vector<const RecoElectron*>::const_iterator electron = electrons.begin();
 	  electron != electrons.end(); ++electron ) {
-      if ( (idx == selIndex_ || selIndex_ == -1) && selector_(**electron) ) {
-	selElectrons.push_back(*electron);
+      if ( selector_(**electron) ) {
+	if ( idx == selIndex_ || selIndex_ == -1 ) {
+	  selElectrons.push_back(*electron);
+	}
 	++idx;
       }
     }
