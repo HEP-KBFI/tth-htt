@@ -44,9 +44,15 @@ def calc_probs(infile, processes):
 
 if __name__ == "__main__":
   #procs = ["additional_signal_overlap", "WZ", "TTW", "Rares", "TTZ", "signal", "DY"]
-  procs = ["DY"]  
-  infile = "/home/andres/tth/histosCF_newDY/histograms/charge_flip_Tight/allHistogramsCF.root"
-  calc_probs(infile, procs)
-  calc_probs_hist(infile, procs)
+  procs = ["DY"]
+  for infile in ["/home/andres/tth/histosCF_pseudodata_oldDY_notrig_somesfs/histograms/charge_flip_Tight/allHistogramsCF.root",
+      "/home/andres/tth/histosCF_pseudodata_newDY_notrig/histograms/charge_flip_Tight/allHistogramsCF.root",
+      "/home/andres/tth/histosCF_pseudodata_newDY/histograms/charge_flip_Tight/allHistogramsCF.root",
+      "/home/andres/tth/histosCF_data_oldDY_notrig_somesfs/histograms/charge_flip_Tight/allHistogramsCF.root",
+      "/home/andres/tth/histosCF_data_newDY_notrig/histograms/charge_flip_Tight/allHistogramsCF.root",
+      "/home/andres/tth/histosCF_data_newDY/histograms/charge_flip_Tight/allHistogramsCF.root"]:
+    print infile
+    calc_probs(infile, procs)
+    calc_probs_hist(infile, procs)
   
   
