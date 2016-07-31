@@ -2,42 +2,6 @@ from collections import OrderedDict as OD
 
 samples = OD()
 
-samples["/THW_Hincl_13TeV-madgraph-pythia8_TuneCUETP8M1/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM"] = OD([
-  ("type", "mc"),
-  ("sample_category", "additional_signal_overlap"),
-  ("process_name_specific", "THW_Hincl"),
-  ("nof_files", 34),
-  ("nof_events", 1496000),
-  ("use_it", True),
-  ("xsection", 0.01561),
-  ("triggers", [ "1e", "2e", "1mu", "2mu", "1e1mu" ]),
-  ("local_paths",
-    [
-      OD([
-        ("path", "/hdfs/cms/store/user/kaehatah/THW_Hincl_13TeV-madgraph-pythia8_TuneCUETP8M1/VHBB_HEPPY_V12_THW_Hincl_13TeV-madgraph-Py8_TuneCUETP8M1__fall15MAv2-pu25ns15v1_76r2as_v12-v1/160405_112509"),
-        ("selection", "*"),
-      ]),
-    ]
-  )
-])
-samples["/GluGluHToZZTo4L_M125_13TeV_powheg2_JHUgenV6_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM"] = OD([
-  ("type", "mc"),
-  ("sample_category", "additional_signal_overlap"),
-  ("process_name_specific", "GluGluHToZZTo4L"),
-  ("nof_files", 25),
-  ("nof_events", 999000),
-  ("use_it", True),
-  ("xsection", 0.0119),
-  ("triggers", [ "1e", "2e", "1mu", "2mu", "1e1mu" ]),	
-  ("local_paths",
-    [
-      OD([
-        ("path", "/hdfs/cms/store/user/kaehatah/GluGluHToZZTo4L_M125_13TeV_powheg2_JHUgenV6_pythia8/VHBB_HEPPY_V12_GluGluHToZZTo4L_M125_13TeV_powheg2_JHUgenV6_Py8__fall15MAv2-pu25ns15v1_76r2as_v12-v1/160406_221911"),
-        ("selection", "*"),
-      ]),
-    ]
-  )
-])
 samples["/TTJets_SingleLeptFromTbar_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v2/MINIAODSIM"] = OD([
   ("type", "mc"),
   ("sample_category", "TTbar"),
@@ -323,7 +287,7 @@ samples["/ZZTo4L_13TeV_powheg_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_
     ]
   )
 ])
-samples["/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM"] = OD([
+"""samples["/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM"] = OD([
   ("type", "mc"),
   ("sample_category", "TTW"),
   ("process_name_specific", "TTWJetsToLNu"),
@@ -611,7 +575,7 @@ samples["/ttHToNonbb_M125_13TeV_powheg_pythia8/RunIIFall15MiniAODv2-PU25nsData20
     ]
   )
 ])
-
+"""
 samples["/DoubleEG/Run2015C_25ns-16Dec2015-v1/MINIAOD"] = OD([
   ("type", "data"),
   ("sample_category", "data_obs"),
