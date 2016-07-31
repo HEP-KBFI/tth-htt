@@ -6,6 +6,9 @@ DKEY_CFGS = "cfgs"       # dir for python configuration and batch script files f
 DKEY_HIST = "histograms" # dir for histograms = output of the jobs
 DKEY_LOGS = "logs"       # dir for log files (stdout/stderr of jobs)
 DKEY_DCRD = "datacards"  # dir for the datacard
+DKEY_RLES = "output_rle" # dir for the selected run:lumi:event numbers
+
+DIRLIST = [DKEY_CFGS, DKEY_DCRD, DKEY_HIST, DKEY_LOGS, DKEY_RLES]
 
 def initDict(dictionary, keys):
   """Auxiliary function to initialize dictionary for access with multiple keys
@@ -134,6 +137,7 @@ class analyzeConfig:
     self.cfgFile_prep_dcard_modified = {}
     self.histogramDir_prep_dcard = None
     self.filesToClean = []
+    self.rleOutputFiles = {}
 
   def createCfg_analyze(self, *args):
     raise ValueError("Function 'createCfg_analyze' not implemented in derrived class !!")      
