@@ -22,7 +22,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/GenJet.h" // GenJet
 #include "tthAnalysis/HiggsToTauTau/interface/GenHadTau.h" // GenHadTau
 #include "tthAnalysis/HiggsToTauTau/interface/TMVAInterface.h" // TMVAInterface
-#include "tthAnalysis/HiggsToTauTau/interface/mvaInputVariables.h" // auxiliary functions for computing input variables of the MVA used for signal extraction in the 2los_1tau category 
+#include "tthAnalysis/HiggsToTauTau/interface/mvaInputVariables.h" // auxiliary functions for computing input variables of the MVA used for signal extraction in the 1l_2tau category 
 #include "tthAnalysis/HiggsToTauTau/interface/KeyTypes.h"
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronReader.h" // RecoElectronReader
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonReader.h" // RecoMuonReader
@@ -405,6 +405,7 @@ int main(int argc, char* argv[])
   mvaInputVariables_1l_2tau_ttbar.push_back("nJet");
   mvaInputVariables_1l_2tau_ttbar.push_back("nBJetLoose");
   mvaInputVariables_1l_2tau_ttbar.push_back("nBJetMedium");
+  mvaInputVariables_1l_2tau_ttbar.push_back("mindr_lep_jet");
   mvaInputVariables_1l_2tau_ttbar.push_back("mindr_tau1_jet");
   mvaInputVariables_1l_2tau_ttbar.push_back("mindr_tau2_jet");
   mvaInputVariables_1l_2tau_ttbar.push_back("avg_dr_jet");
@@ -886,6 +887,7 @@ int main(int argc, char* argv[])
     mvaInputs["nJet"]           = selJets.size();
     mvaInputs["nBJetLoose"]     = selBJets_loose.size();
     mvaInputs["nBJetMedium"]    = selBJets_medium.size();
+    mvaInputs["mindr_lep_jet"]  = TMath::Min(10., comp_mindr_lep1_jet(*selLepton, selJets));
     mvaInputs["mindr_tau1_jet"] = TMath::Min(10., comp_mindr_hadTau1_jet(*selHadTau_lead, selJets));
     mvaInputs["mindr_tau2_jet"] = TMath::Min(10., comp_mindr_hadTau2_jet(*selHadTau_sublead, selJets));
     mvaInputs["avg_dr_jet"]     = comp_avg_dr_jet(selJets);
@@ -898,6 +900,7 @@ int main(int argc, char* argv[])
     mvaInputs["tau2_pt"]        = selHadTau_sublead->pt_;
     mvaInputs["dr_taus"]        = deltaR(selHadTau_lead->p4_, selHadTau_sublead->p4_);
     mvaInputs["mTauTauVis"]     = mTauTauVis;
+
     int index = 1;
     for ( std::map<std::string, double>::const_iterator mvaInput = mvaInputs.begin();
 	  mvaInput != mvaInputs.end(); ++mvaInput ) {

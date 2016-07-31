@@ -298,9 +298,9 @@ int main(int argc, char* argv[])
 
   vstring hadTauSelections = cfg_analyze.getParameter<vstring>("hadTauSelections");
 
-  vdouble hadTauAbsEtaBins = cfg_analyze.getParameter<vdouble>("hadTauAbsEtaBins");
-  if ( hadTauAbsEtaBins.size() < 2 ) throw cms::Exception("analyze_jetToTauFakeRate") 
-    << "Invalid Configuration parameter 'hadTauAbsEtaBins' !!\n";
+  vdouble absEtaBins = cfg_analyze.getParameter<vdouble>("absEtaBins");
+  if ( absEtaBins.size() < 2 ) throw cms::Exception("analyze_jetToTauFakeRate") 
+    << "Invalid Configuration parameter 'absEtaBins' !!\n";
 
   bool isMC = cfg_analyze.getParameter<bool>("isMC"); 
   std::string central_or_shift = cfg_analyze.getParameter<std::string>("central_or_shift");
@@ -481,10 +481,10 @@ int main(int argc, char* argv[])
 
   std::vector<denominatorHistManagers*> denominators;
   std::vector<numeratorSelector_and_HistManagers*> numerators;
-  int numEtaBins = hadTauAbsEtaBins.size() - 1;
+  int numEtaBins = absEtaBins.size() - 1;
   for ( int idxEtaBin = 0; idxEtaBin < numEtaBins; ++idxEtaBin ) {
-    double minAbsEta = hadTauAbsEtaBins[idxEtaBin];
-    double maxAbsEta = hadTauAbsEtaBins[idxEtaBin + 1];
+    double minAbsEta = absEtaBins[idxEtaBin];
+    double maxAbsEta = absEtaBins[idxEtaBin + 1];
 
     denominatorHistManagers* denominator = new denominatorHistManagers(
       process_string, isMC, chargeSelection_string, minAbsEta, maxAbsEta, central_or_shift);

@@ -23,8 +23,8 @@ process.comp_jetToTauFakeRate = cms.PSet(
 
     processData = cms.string("data_obs"),    
     processesToSubtract = cms.vstring(
-        "TT_t",
-        "TT_l", 
+        "TTt",
+        "TTl", 
         "EWK",
         "Rares",
         "TTW",
@@ -32,6 +32,8 @@ process.comp_jetToTauFakeRate = cms.PSet(
         "signal"
     ),
 
+    processMC = cms.string("TTj"),
+    
     hadTauSelections = cms.vstring(
         "dR05isoLoose",
         "dR05isoMedium",
@@ -43,7 +45,9 @@ process.comp_jetToTauFakeRate = cms.PSet(
         "dR03mvaVTight",
         "dR03mvaVVTight"
     ),
-    hadTauAbsEtaBins = cms.vdouble(-1., 1.2, 1.7, 9.9),
+    
+    absEtaBins = cms.vdouble(-1., 1.479, 9.9),
+    ptBins = cms.vdouble(20., 25., 30., 35., 40., 45., 50., 60., 70., 80., 100., 200.),
 
     isMC = cms.bool(False),
 

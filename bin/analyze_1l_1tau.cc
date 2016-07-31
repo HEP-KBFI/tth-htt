@@ -905,12 +905,13 @@ int main(int argc, char* argv[])
     measuredTauLeptons.push_back(classic_svFit::MeasuredTauLepton(leg1Type, selLepton->pt_, selLepton->eta_, selLepton->phi_, leg1Mass));
     measuredTauLeptons.push_back(classic_svFit::MeasuredTauLepton(leg2Type, selHadTau->pt_, selHadTau->eta_, selHadTau->phi_, leg2Mass));
     ClassicSVfit svFitAlgo;
-    svFitAlgo.addLogM_fixed(true, 5.);
+    svFitAlgo.addLogM_dynamic(false);
+    svFitAlgo.addLogM_fixed(true, 6.);
     TMatrixD metCov(2,2);
     metCov[0][0] = 400.;
     metCov[0][1] =   0.;
-    metCov[1][0] = 400.;
-    metCov[1][1] =   0.;
+    metCov[1][0] =   0.;
+    metCov[1][1] = 400.;
     svFitAlgo.integrate(measuredTauLeptons, met_p4.px(), met_p4.py(), metCov);
     double mTauTau = ( svFitAlgo.isValidSolution() ) ? svFitAlgo.mass() : -1.;
 

@@ -49,7 +49,8 @@ process.analyze_jetToTauFakeRate = cms.PSet(
         'dR03mvaVTight',
         'dR03mvaVVTight'
     ),
-    hadTauAbsEtaBins = cms.vdouble(-1., 1.2, 1.7, 9.9),
+    
+    absEtaBins = cms.vdouble(-1., 1.479, 9.9),
                                       
     isMC = cms.bool(False),
     central_or_shift = cms.string('central'),
