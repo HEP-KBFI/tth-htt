@@ -383,12 +383,9 @@ int main(int argc, char* argv[])
   RecoHadTauCollectionGenMatcher hadTauGenMatcher;
   RecoHadTauCollectionCleaner hadTauCleaner(0.3);
   RecoHadTauCollectionSelectorLoose preselHadTauSelector;
-  RecoHadTauCollectionSelectorFakeable fakeableHadTauSelector_lead(0);
-  RecoHadTauCollectionSelectorFakeable fakeableHadTauSelector_sublead(1);
-  RecoHadTauCollectionSelectorTight tightHadTauSelector_lead(0);
-  if ( hadTauSelection_part2 != "" ) tightHadTauSelector_lead.set(hadTauSelection_part2);
-  RecoHadTauCollectionSelectorTight tightHadTauSelector_sublead(1);
-  if ( hadTauSelection_part2 != "" ) tightHadTauSelector_sublead.set(hadTauSelection_part2);
+  RecoHadTauCollectionSelectorFakeable fakeableHadTauSelector;
+  RecoHadTauCollectionSelectorTight tightHadTauSelector;
+  if ( hadTauSelection_part2 != "" ) tightHadTauSelector.set(hadTauSelection_part2);
   
   RecoJetReader* jetReader = new RecoJetReader("nJet", "Jet");
   jetReader->setJetPt_central_or_shift(jetPt_option);
@@ -631,38 +628,13 @@ int main(int argc, char* argv[])
     std::vector<const RecoHadTau*> hadTau_ptrs = convert_to_ptrs(hadTaus);
     std::vector<const RecoHadTau*> cleanedHadTaus = hadTauCleaner(hadTau_ptrs, selMuons, selElectrons);
     std::vector<const RecoHadTau*> preselHadTaus = preselHadTauSelector(cleanedHadTaus);
-    std::vector<const RecoHadTau*> fakeableHadTaus_lead = fakeableHadTauSelector_lead(preselHadTaus);
-    std::vector<const RecoHadTau*> fakeableHadTaus_sublead = hadTauCleaner(fakeableHadTauSelector_sublead(preselHadTaus), fakeableHadTaus_lead);
-    assert(fakeableHadTaus_lead.size() <= 1 && fakeableHadTaus_sublead.size() <= 1);
-    std::vector<const RecoHadTau*> fakeableHadTaus;
-    fakeableHadTaus.insert(fakeableHadTaus.end(), fakeableHadTaus_lead.begin(), fakeableHadTaus_lead.end());
-    fakeableHadTaus.insert(fakeableHadTaus.end(), fakeableHadTaus_sublead.begin(), fakeableHadTaus_sublead.end());
-    std::vector<const RecoHadTau*> tightHadTaus_lead = tightHadTauSelector_lead(preselHadTaus);
-    std::vector<const RecoHadTau*> tightHadTaus_sublead = hadTauCleaner(tightHadTauSelector_sublead(preselHadTaus), tightHadTaus_lead);
-    assert(tightHadTaus_lead.size() <= 1 && tightHadTaus_sublead.size() <= 1);
-    std::vector<const RecoHadTau*> tightHadTaus;
-    tightHadTaus.insert(tightHadTaus.end(), tightHadTaus_lead.begin(), tightHadTaus_lead.end());
-    tightHadTaus.insert(tightHadTaus.end(), tightHadTaus_sublead.begin(), tightHadTaus_sublead.end());
-    std::vector<const RecoHadTau*> selHadTaus_lead;
-    std::vector<const RecoHadTau*> selHadTaus_sublead;
+    std::vector<const RecoHadTau*> fakeableHadTaus = fakeableHadTauSelector(preselHadTaus);
+    std::vector<const RecoHadTau*> tightHadTaus = tightHadTauSelector(preselHadTaus);
     std::vector<const RecoHadTau*> selHadTaus;
-    if ( hadTauSelection == kLoose ) {
-      std::vector<const RecoHadTau*> preselHadTaus_lead;
-      if ( preselHadTaus.size() >= 1 ) preselHadTaus_lead.push_back(preselHadTaus[0]);
-      selHadTaus_lead = preselHadTaus_lead;
-      std::vector<const RecoHadTau*> preselHadTaus_sublead;
-      if ( preselHadTaus.size() >= 2 ) preselHadTaus_sublead.push_back(preselHadTaus[1]);
-      selHadTaus_sublead = preselHadTaus_sublead;
-      selHadTaus = preselHadTaus;
-    } else if ( hadTauSelection == kFakeable ) {
-      selHadTaus_lead = fakeableHadTaus_lead;
-      selHadTaus_sublead = fakeableHadTaus_sublead;
-      selHadTaus = fakeableHadTaus;
-    } else if ( hadTauSelection == kTight ) {
-      selHadTaus_lead = tightHadTaus_lead;
-      selHadTaus_sublead = tightHadTaus_sublead;
-      selHadTaus = tightHadTaus;
-    } else assert(0);
+    if      ( hadTauSelection == kLoose    ) selHadTaus = preselHadTaus;
+    else if ( hadTauSelection == kFakeable ) selHadTaus = fakeableHadTaus;
+    else if ( hadTauSelection == kTight    ) selHadTaus = tightHadTaus;
+    else assert(0);
 
 //--- build collections of jets and select subset of jets passing b-tagging criteria
     std::vector<RecoJet> jets = jetReader->read();
@@ -881,12 +853,12 @@ int main(int argc, char* argv[])
     cutFlowTable.update("sel lepton trigger match", evtWeight);
 
     // require presence of exactly two hadronic taus passing tight selection criteria of final event selection
-    if ( !(selHadTaus_lead.size() >= 1 && selHadTaus_sublead.size() >= 1) ) continue;
+    if ( !(selHadTaus.size() >= 2) ) continue;
     cutFlowTable.update(">= 2 sel taus", evtWeight);
-    const RecoHadTau* selHadTau_lead = selHadTaus_lead[0];
+    const RecoHadTau* selHadTau_lead = selHadTaus[0];
     bool isGenHadTauMatched_lead = selHadTau_lead->genHadTau_;
     bool isGenLeptonMatched_lead = selHadTau_lead->genLepton_ && !isGenHadTauMatched_lead;
-    const RecoHadTau* selHadTau_sublead = selHadTaus_sublead[0];
+    const RecoHadTau* selHadTau_sublead = selHadTaus[1];
     bool isGenHadTauMatched_sublead = selHadTau_sublead->genHadTau_;
     bool isGenLeptonMatched_sublead = selHadTau_sublead->genLepton_ && !isGenHadTauMatched_sublead;
     
@@ -905,14 +877,6 @@ int main(int argc, char* argv[])
     cutFlowTable.update(">= 2 jets (2)", evtWeight);
     if ( !(selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) ) continue;
     cutFlowTable.update(">= 2 loose b-jets || 1 medium b-jet (2)", evtWeight);
-    if ( !(selHadTaus.size() >= 1) ) {
-      if ( run_lumi_eventSelector ) {
-	std::cout << "event FAILS selHadTaus selection." << std::endl;
-	std::cout << " (#selHadTaus = " << selHadTaus.size() << ")" << std::endl;
-      }
-      continue;
-    }
-    cutFlowTable.update(">= 1 sel tau (2)", evtWeight);
     
     bool failsLowMassVeto = false;
     for ( std::vector<const RecoLepton*>::const_iterator lepton1 = selLeptons.begin();
@@ -1020,7 +984,7 @@ int main(int argc, char* argv[])
     }
 
     if ( hadTauSelection == kFakeable ) {
-      if ( tightHadTaus_lead.size() >= 1 && tightHadTaus_sublead.size() >= 1 ) continue; // CV: avoid overlap with signal region
+      if ( tightHadTaus.size() >= 2 ) continue; // CV: avoid overlap with signal region
       cutFlowTable.update("signal region veto", evtWeight);
     }
 
@@ -1059,10 +1023,9 @@ int main(int argc, char* argv[])
 //--- fill histograms with events passing final selection 
     selMuonHistManager.fillHistograms(selMuons, evtWeight);
     selElectronHistManager.fillHistograms(selElectrons, evtWeight);
-    selHadTauHistManager_lead.fillHistograms(selHadTaus_lead, evtWeight);
-    selHadTauHistManager_sublead.fillHistograms(selHadTaus_sublead, evtWeight);
-    selHadTauHistManager.fillHistograms(selHadTaus_lead, evtWeight);
-    selHadTauHistManager.fillHistograms(selHadTaus_sublead, evtWeight);
+    selHadTauHistManager_lead.fillHistograms({ selHadTau_lead }, evtWeight);
+    selHadTauHistManager_sublead.fillHistograms({ selHadTau_sublead }, evtWeight);
+    selHadTauHistManager.fillHistograms(selHadTaus, evtWeight);
     selHadTauFakeRateHistManager.fillHistograms(selHadTau_lead, selHadTau_sublead, evtWeight);
     selJetHistManager.fillHistograms(selJets, evtWeight);
     selJetHistManager_lead.fillHistograms(selJets, evtWeight);

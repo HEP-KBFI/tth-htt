@@ -1,12 +1,12 @@
 import os, logging, sys, getpass
 
-import tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2los_1tau
-from tthAnalysis.HiggsToTauTau.analyzeConfig_2los_1tau import analyzeConfig_2los_1tau
+import tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_jetToTauFakeRate
+from tthAnalysis.HiggsToTauTau.analyzeConfig_jetToTauFakeRate import analyzeConfig_jetToTauFakeRate
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 
 LUMI = 2301. # 1/pb
 
-version = "2016Aug01_dR03mvaTight"
+version = "2016Jul29"
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -14,10 +14,27 @@ if __name__ == '__main__':
     level = logging.INFO,
     format = '%(asctime)s - %(levelname)s: %(message)s')
 
-  analysis = analyzeConfig_2los_1tau(
+  analysis = analyzeConfig_jetToTauFakeRate(
     outputDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", version),
-    executable_analyze = "analyze_2los_1tau",
-    hadTau_selection = "dR03mvaTight",
+    executable_analyze = "analyze_jetToTauFakeRate",
+    charge_selections = [ "OS" ],
+    jet_minPt = 20.,
+    jet_maxPt = 1.e+6,
+    jet_minAbsEta = -1.,
+    jet_maxAbsEta = 2.3, 
+    hadTau_selections = [
+      "dR05isoLoose",
+      "dR05isoMedium",
+      "dR05isoTight",
+      "dR03mvaVLoose",
+      "dR03mvaLoose",
+      "dR03mvaMedium",
+      "dR03mvaTight",
+      "dR03mvaVTight",
+      "dR03mvaVVTight"
+    ],
+    absEtaBins = [ -1., 1.479, 9.9 ],
+    ptBins = [ 20., 25., 30., 35., 40., 45., 50., 60., 70., 80., 100., 200. ],
     central_or_shifts = [ 
       "central",
 ##       "CMS_ttHl_btag_HFUp", 
@@ -46,7 +63,7 @@ if __name__ == '__main__':
     debug = False,
     running_method = "sbatch",
     num_parallel_jobs = 4,
-    histograms_to_fit = [ "EventCounter", "numJets", "mvaDiscr_2lss", "mvaOutput_2los_1tau_ttbar", "mTauTauVis" ])
+    executable_comp_jetToTauFakeRate = "comp_jetToTauFakeRate")
 
   analysis.create()
 

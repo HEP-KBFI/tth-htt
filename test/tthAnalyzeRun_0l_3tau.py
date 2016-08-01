@@ -1,12 +1,12 @@
 import os, logging, sys, getpass
 
-import tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2los_1tau
-from tthAnalysis.HiggsToTauTau.analyzeConfig_2los_1tau import analyzeConfig_2los_1tau
+import tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_0l_3tau
+from tthAnalysis.HiggsToTauTau.analyzeConfig_0l_3tau import analyzeConfig_0l_3tau
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 
 LUMI = 2301. # 1/pb
 
-version = "2016Aug01_dR03mvaTight"
+version = "2016Jul31_dR03mvaTight"
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -14,10 +14,11 @@ if __name__ == '__main__':
     level = logging.INFO,
     format = '%(asctime)s - %(levelname)s: %(message)s')
 
-  analysis = analyzeConfig_2los_1tau(
+  analysis = analyzeConfig_0l_3tau(
     outputDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", version),
-    executable_analyze = "analyze_2los_1tau",
-    hadTau_selection = "dR03mvaTight",
+    executable_analyze = "analyze_0l_3tau",
+    ##hadTau_selections = [ "Tight", "Fakeable" ],
+    hadTau_selections = [ "Tight|dR03mvaTight" ],
     central_or_shifts = [ 
       "central",
 ##       "CMS_ttHl_btag_HFUp", 
@@ -46,7 +47,7 @@ if __name__ == '__main__':
     debug = False,
     running_method = "sbatch",
     num_parallel_jobs = 4,
-    histograms_to_fit = [ "EventCounter", "numJets", "mvaDiscr_2lss", "mvaOutput_2los_1tau_ttbar", "mTauTauVis" ])
+    histograms_to_fit = [ "EventCounter", "numJets", "mTauTauVis" ])
 
   analysis.create()
 

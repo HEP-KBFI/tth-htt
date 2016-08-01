@@ -6,7 +6,7 @@ for sample_name, sample_info in samples.items():
   sample_info["triggers"] = [ "2tau" ]
 
 # CV: these samples are place-holders to fill some data_obs histograms at all;
-#     we really need to process the TauPlusX datasets in order to compare data_obs with expected backgrounds in the 0l_2tau channel !!
+#     we really need to process the TauPlusX datasets in order to compare data_obs with expected backgrounds in the 0l_3tau channel !!
 samples["/DoubleMuon/Run2015C_25ns-16Dec2015-v1/MINIAOD"] = OD([
   ("type", "data"),
   ("sample_category", "data_obs"),

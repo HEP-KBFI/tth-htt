@@ -784,7 +784,7 @@ int main(int argc, char* argv[])
       continue;
     }
     cutFlowTable.update(">= 1 sel tau (1)");
-    const RecoHadTau* selHadTau_lead = selHadTaus[0];
+    const RecoHadTau* selHadTau = selHadTaus[0];
 
 //--- compute MHT and linear MET discriminant (met_LD)
     LV met_p4(met_pt, met_eta, met_phi, 0.);
@@ -845,6 +845,18 @@ int main(int argc, char* argv[])
       }
     } 
 
+    const RecoLepton* preselLepton1_SS = 0;
+    const RecoLepton* preselLepton2_SS = 0;
+    if ( preselLepton_lead->charge_*selHadTau->charge_ > 0. ) {
+      preselLepton1_SS = preselLepton_lead;
+    } 
+    if ( preselLepton_sublead->charge_*selHadTau->charge_ > 0. ) {
+      if ( !preselLepton1_SS ) preselLepton1_SS = preselLepton_sublead;
+      else preselLepton2_SS = preselLepton_sublead;
+    }
+    double mTauTauVis1_presel = ( preselLepton1_SS ) ? (preselLepton1_SS->p4_ + selHadTau->p4_).mass() : -1.;
+    double mTauTauVis2_presel = ( preselLepton2_SS ) ? (preselLepton2_SS->p4_ + selHadTau->p4_).mass() : -1.;
+
 //--- compute output of BDTs used to discriminate ttH vs. ttV and ttH vs. ttbar 
 //    in 2lss_1tau category of ttH multilepton analysis 
     mvaInputs["max(abs(LepGood_eta[iF_Recl[0]]),abs(LepGood_eta[iF_Recl[1]]))"] = std::max(std::fabs(preselLepton_lead->eta_), std::fabs(preselLepton_sublead->eta_));
@@ -856,6 +868,7 @@ int main(int argc, char* argv[])
     mvaInputs["LepGood_conePt[iF_Recl[1]]"] = comp_lep2_conePt(*preselLepton_sublead);
     mvaInputs["min(met_pt,400)"]            = std::min(met_pt, (Float_t)400.);
     mvaInputs["avg_dr_jet"]                 = comp_avg_dr_jet(selJets);
+
     int index = 1;
     for ( std::map<std::string, double>::const_iterator mvaInput = mvaInputs.begin();
 	  mvaInput != mvaInputs.end(); ++mvaInput ) {
@@ -879,18 +892,6 @@ int main(int argc, char* argv[])
     else if ( mvaOutput_2lss_ttbar > -0.2 && mvaOutput_2lss_ttV <= -0.1 ) mvaDiscr_2lss = 3.;
     else if (                                mvaOutput_2lss_ttV >  -0.1 ) mvaDiscr_2lss = 2.;
     else                                                                  mvaDiscr_2lss = 1.;
-
-    const RecoLepton* preselLepton1_SS = 0;
-    const RecoLepton* preselLepton2_SS = 0;
-    if ( preselLepton_lead->charge_*selHadTau_lead->charge_ > 0. ) {
-      preselLepton1_SS = preselLepton_lead;
-    } 
-    if ( preselLepton_sublead->charge_*selHadTau_lead->charge_ > 0. ) {
-      if ( !preselLepton1_SS ) preselLepton1_SS = preselLepton_sublead;
-      else preselLepton2_SS = preselLepton_sublead;
-    }
-    double mTauTauVis1_presel = ( preselLepton1_SS ) ? (preselLepton1_SS->p4_ + selHadTau_lead->p4_).mass() : -1.;
-    double mTauTauVis2_presel = ( preselLepton2_SS ) ? (preselLepton2_SS->p4_ + selHadTau_lead->p4_).mass() : -1.;
 
 //--- fill histograms with events passing preselection
     preselMuonHistManager.fillHistograms(preselMuons, evtWeight);
@@ -1047,12 +1048,12 @@ int main(int argc, char* argv[])
     }
     cutFlowTable.update(Form("lepton-pair %s charge", leptonChargeSelection_string.data()), evtWeight);
 
-    if ( std::abs(selLepton_lead->charge_ + selLepton_sublead->charge_ + selHadTau_lead->charge_) != 1 ) {
+    if ( std::abs(selLepton_lead->charge_ + selLepton_sublead->charge_ + selHadTau->charge_) != 1 ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS lepton+tau charge selection." << std::endl;
 	std::cout << " (leading selLepton charge = " << selLepton_lead->charge_ 
 		  << ", subleading selLepton charge = " << selLepton_sublead->charge_ 
-		  << ", selHadTau charge = " << selHadTau_lead->charge_ << ")" << std::endl;
+		  << ", selHadTau charge = " << selHadTau->charge_ << ")" << std::endl;
       }
       continue;
     }
