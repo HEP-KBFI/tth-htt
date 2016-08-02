@@ -135,7 +135,7 @@ int main(int argc, char* argv[])
   bool isMC = cfg_analyze.getParameter<bool>("isMC");
   bool useData = cfg_analyze.getParameter<bool>("useData");
   std::string central_or_shift = cfg_analyze.getParameter<std::string>("central_or_shift");
-  std::string central_or_shift_label = central_or_shift == "central" ? "" : central_or_shift;
+  std::string central_or_shift_label = central_or_shift == "central" ? "" : "_"+central_or_shift;
   double lumiScale = ( process_string != "data_obs" ) ? cfg_analyze.getParameter<double>("lumiScale") : 1.;
 
   std::string jet_btagWeight_branch = ( isMC ) ? "Jet_bTagWeight" : "";
@@ -161,7 +161,7 @@ int main(int argc, char* argv[])
       if      ( shiftUp_or_Down == "Up"   ) jetPt_option = RecoJetReader::kJetPt_jecUp;
       else if ( shiftUp_or_Down == "Down" ) jetPt_option = RecoJetReader::kJetPt_jecDown;
       else assert(0);
-    } else if (!central_or_shift_tstring.BeginsWith("CMS_ttHl_electronES")) throw cms::Exception("analyze_charge_flip")
+    } else if (!central_or_shift_tstring.BeginsWith("CMS_ttHl_electronE")) throw cms::Exception("analyze_charge_flip")
 	<< "Invalid Configuration parameter 'central_or_shift' = " << central_or_shift << " !!\n";
   }
 
@@ -304,10 +304,10 @@ int main(int argc, char* argv[])
     for ( vstring::const_iterator category = categories_etapt.begin(); 	category != categories_etapt.end(); ++category ) {
       TFileDirectory subDir2 = subDir.mkdir(category->data());
       TFileDirectory subD2 = subD.mkdir(category->data());
-      histos[which->data()][*category][process_string] = subDir2.make<TH1D>( Form("%s_%s", process_string.data(), central_or_shift_label.data()), "m_{ll}", 60,  60., 120. );
+      histos[which->data()][*category][process_string] = subDir2.make<TH1D>( Form("%s%s", process_string.data(), central_or_shift_label.data()), "m_{ll}", 60,  60., 120. );
       histos[which->data()][*category][process_string]->Sumw2();
       if (std::strncmp(process_string.data(), "DY", 2) == 0){
-          histos[which->data()][*category]["DY_fake"] = subDir2.make<TH1D>( Form("%s_%s", "DY_fake", central_or_shift_label.data()) , "m_{ll}", 60,  60., 120. );
+          histos[which->data()][*category]["DY_fake"] = subDir2.make<TH1D>( Form("%s%s", "DY_fake", central_or_shift_label.data()) , "m_{ll}", 60,  60., 120. );
           histos[which->data()][*category]["DY_fake"]->Sumw2();
           if (central_or_shift == "central") {
             histos_2gen[which->data()][*category][process_string] = subD2.make<TH1D>( process_string.data(), "m_{ll}", 60,  60., 120. );
