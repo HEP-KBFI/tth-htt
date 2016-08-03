@@ -594,11 +594,11 @@ int main(int argc, char* argv[])
     std::string stLeadPt;
     std::string stSubPt;
 
-    Double_t etaL1 = std::fabs(selLepton_lead->eta_);
-    Double_t etaL2 = std::fabs(selLepton_sublead->eta_);
-    if (etaL1 < 1.479 && etaL2 < 1.479) stEta = "BB";
-    else if (etaL1 > 1.479 && etaL2 > 1.479) stEta = "EE";
-    else if (etaL1 < etaL2) stEta = "BE";
+    Double_t etaL0 = std::fabs(selLepton_lead->eta_);
+    Double_t etaL1 = std::fabs(selLepton_sublead->eta_);
+    if (etaL0 < 1.479 && etaL1 < 1.479) stEta = "BB";
+    else if (etaL0 >= 1.479 && etaL1 >= 1.479) stEta = "EE";
+    else if (etaL0 < etaL1) stEta = "BE";
     else
     {
       if (std::strncmp(stLeadPt.data(), stSubPt.data(), 1) == 0) stEta = "BE";       //Symmetric case
@@ -607,20 +607,20 @@ int main(int argc, char* argv[])
 
     double pt0, pt1;
     if (central_or_shift == "CMS_ttHl_electronESBarrelUp") {
-      if (etaL1 < 1.479) pt0 = selLepton_lead->pt_ * 1.01;
-      if (etaL2 < 1.479) pt1 = selLepton_sublead->pt_ * 1.01;
+      if (etaL0 < 1.479) pt0 = selLepton_lead->pt_ * 1.01;
+      if (etaL1 < 1.479) pt1 = selLepton_sublead->pt_ * 1.01;
     }
     else if (central_or_shift == "CMS_ttHl_electronESBarrelDown"){
-      if (etaL1 < 1.479) pt0 = selLepton_lead->pt_ * 0.99;
-      if (etaL2 < 1.479) pt1 = selLepton_sublead->pt_ * 0.99;
+      if (etaL0 < 1.479) pt0 = selLepton_lead->pt_ * 0.99;
+      if (etaL1 < 1.479) pt1 = selLepton_sublead->pt_ * 0.99;
     }
     else if (central_or_shift == "CMS_ttHl_electronESEndcapUp") {
-      if (etaL1 >= 1.479) pt0 = selLepton_lead->pt_ * 1.025;
-      if (etaL2 >= 1.479) pt1 = selLepton_sublead->pt_ * 1.025;
+      if (etaL0 >= 1.479) pt0 = selLepton_lead->pt_ * 1.025;
+      if (etaL1 >= 1.479) pt1 = selLepton_sublead->pt_ * 1.025;
     }
     else if (central_or_shift == "CMS_ttHl_electronESEndcapDown") {
-      if (etaL1 >= 1.479) pt0 = selLepton_lead->pt_ * 0.975;
-      if (etaL2 >= 1.479) pt1 = selLepton_sublead->pt_ * 0.975;
+      if (etaL0 >= 1.479) pt0 = selLepton_lead->pt_ * 0.975;
+      if (etaL1 >= 1.479) pt1 = selLepton_sublead->pt_ * 0.975;
     }
     else{
       pt0 = selLepton_lead->pt_;
@@ -749,40 +749,40 @@ int main(int argc, char* argv[])
         }
         //else assert(0);
       }
-      const GenLepton *gen1 = preselElectrons[0]->genLepton_;
-      const GenLepton *gen2 = preselElectrons[1]->genLepton_;
-      if (!(gen1 == 0 || gen2 == 0)){
+      const GenLepton *gen0 = preselElectrons[0]->genLepton_;
+      const GenLepton *gen1 = preselElectrons[1]->genLepton_;
+      if (!(gen0 == 0 || gen1 == 0)){
+        const GenLepton *gp0;
         const GenLepton *gp1;
-        const GenLepton *gp2;
-        if (gen2->pt_ > gen1->pt_){        
-          gp1 = gen2;
-          gp2 = gen1;
+        if (gen1->pt_ > gen0->pt_){        
+          gp0 = gen1;
+          gp1 = gen0;
         }
         else {
+          gp0 = gen0;
           gp1 = gen1;
-          gp2 = gen2;
         }
         std::string stEtaGen;
         std::string stLeadPtGen;
         std::string stSubPtGen;
-        assert(gp1->pt_ >= gp2->pt_);
-        if (gp1->pt_ >= 10 && gp1->pt_ < 25) stLeadPtGen = "L";
-        else if (gp1->pt_ >= 25 && gp1->pt_ < 50) stLeadPtGen = "M";
-        else if (gp1->pt_ > 50) stLeadPtGen = "H";
-        if (gp2->pt_ >= 10 && gp2->pt_ < 25) stSubPtGen = "L";
-        else if (gp2->pt_ >= 25 && gp2->pt_ < 50) stSubPtGen = "M";
-        else if (gp2->pt_ > 50) stSubPtGen = "H";
+        assert(gp0->pt_ >= gp1->pt_);
+        if (gp0->pt_ >= 10 && gp0->pt_ < 25) stLeadPtGen = "L";
+        else if (gp0->pt_ >= 25 && gp0->pt_ < 50) stLeadPtGen = "M";
+        else if (gp0->pt_ > 50) stLeadPtGen = "H";
+        if (gp1->pt_ >= 10 && gp1->pt_ < 25) stSubPtGen = "L";
+        else if (gp1->pt_ >= 25 && gp1->pt_ < 50) stSubPtGen = "M";
+        else if (gp1->pt_ > 50) stSubPtGen = "H";
         else{
-          std::cout << "PT<10 " << gp1->pt_ << " " << gp2->pt_ << std::endl; 
+          std::cout << "PT<10 " << gp0->pt_ << " " << gp1->pt_ << std::endl; 
           stSubPtGen = "L";
           //assert(0);
         }
 
+        Double_t etaL0Gen = std::fabs(gp0->eta_);
         Double_t etaL1Gen = std::fabs(gp1->eta_);
-        Double_t etaL2Gen = std::fabs(gp2->eta_);
-        if (etaL1Gen < 1.479 && etaL2Gen < 1.479) stEtaGen = "BB";
-        else if (etaL1Gen > 1.479 && etaL2Gen > 1.479) stEtaGen = "EE";
-        else if (etaL1Gen < etaL2Gen) stEtaGen = "BE";
+        if (etaL0Gen < 1.479 && etaL1Gen < 1.479) stEtaGen = "BB";
+        else if (etaL0Gen > 1.479 && etaL1Gen > 1.479) stEtaGen = "EE";
+        else if (etaL0Gen < etaL1Gen) stEtaGen = "BE";
         else
         {
           if (std::strncmp(stLeadPtGen.data(), stSubPtGen.data(), 1) == 0) stEtaGen = "BE";       //Symmetric case
