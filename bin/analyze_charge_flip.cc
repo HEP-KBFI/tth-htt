@@ -628,10 +628,18 @@ int main(int argc, char* argv[])
       pt1 = selLepton_sublead->pt_;
     }
 
-    
+    if(pt1 > pt0){ //Lepton pt order changed due to systematic
+      double temp = pt1;
+      pt1 = pt0;
+      pt0 = temp;
+      temp = etaL1;
+      etaL1 = etaL0;
+      etaL0 = temp;
+    }
+
     double minPt_lead = 20.;
     double minPt_sublead = selLepton_sublead->is_electron() ? 15. : 10.;
-    if ( !(selLepton_lead->pt_ > minPt_lead && selLepton_sublead->pt_ > minPt_sublead) ) {
+    if ( !(pt0 > minPt_lead && pt1 > minPt_sublead) ) {
       if ( run_lumi_eventSelector ) {
 	      std::cout << "event FAILS lepton pT selection." << std::endl;
 	      std::cout << " (leading selLepton pT = " << selLepton_lead->pt_ << ", minPt_lead = " << minPt_lead
@@ -671,7 +679,6 @@ int main(int argc, char* argv[])
     math::PtEtaPhiMLorentzVector p4 =
       math::PtEtaPhiMLorentzVector(pt0, preselElectrons[0]->eta_, preselElectrons[0]->phi_, preselElectrons[0]->mass_) +
       math::PtEtaPhiMLorentzVector(pt1, preselElectrons[1]->eta_, preselElectrons[1]->phi_, preselElectrons[1]->mass_);
-
     Double_t mass_ll = p4.M();
     if (mass_ll < 60 || mass_ll > 120) {
       if ( run_lumi_eventSelector ) {
@@ -722,20 +729,14 @@ int main(int argc, char* argv[])
       histos[charge_cat][category.data()]["data_obs"]->Fill(mass_ll, evtWeight);
       histos[charge_cat]["total"]["data_obs"]->Fill(mass_ll, evtWeight);      
     }
+
     if (isMC && central_or_shift == "central" && std::strncmp(process_string.data(), "DY", 2) == 0)
     {
-      /*if(preselElectrons[0]->genLepton_ == 0 && preselElectrons[1]->genLepton_ == 0)
-        std::cout << "doublejama " << std::endl;
-      else if (preselElectrons[0]->genLepton_ == 0 || preselElectrons[1]->genLepton_ == 0)
-        std::cout << "lihtjama " << std::endl;
-      else
-        std::cout << "nojama " << std::endl;*/
       for (int i = 0; i < 2; i++)
       {
         const GenLepton *gp = preselElectrons[i]->genLepton_;
         if (gp == 0)
         {
-          //std::cout << "jama " << i << " " << preselElectrons[i]->pt_ << " " << preselElectrons[i]->eta_ << std::endl;
           continue;
         }
         #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
@@ -795,7 +796,6 @@ int main(int argc, char* argv[])
         histos_2gen[charge_catGen]["total"][process_string]->Fill(mass_ll, evtWeight);
       }
     }
-
     if (isCharge_SS)
       preselElectronHistManagerSS.fillHistograms(preselElectrons, evtWeight);
     else if (isCharge_OS)
