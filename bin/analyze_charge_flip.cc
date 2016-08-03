@@ -588,12 +588,48 @@ int main(int argc, char* argv[])
     /*if ( selElectrons.size() == 2 &&                         !(selTrigger_1e  || selTrigger_2e)                       ) continue;
     if ( selElectrons.size() == 1 && selMuons.size() == 1 && !(selTrigger_1e  || selTrigger_1mu || selTrigger_1e1mu) ) continue;
     */
+
+    // Determine event category
+    std::string stEta;
+    std::string stLeadPt;
+    std::string stSubPt;
+
+    Double_t etaL1 = std::fabs(selLepton_lead->eta_);
+    Double_t etaL2 = std::fabs(selLepton_sublead->eta_);
+    if (etaL1 < 1.479 && etaL2 < 1.479) stEta = "BB";
+    else if (etaL1 > 1.479 && etaL2 > 1.479) stEta = "EE";
+    else if (etaL1 < etaL2) stEta = "BE";
+    else
+    {
+      if (std::strncmp(stLeadPt.data(), stSubPt.data(), 1) == 0) stEta = "BE";       //Symmetric case
+      else stEta = "EB";
+    }
+
+    double pt0, pt1;
+    if (central_or_shift == "CMS_ttHl_electronESBarrelUp") {
+      if (etaL1 < 1.479) pt0 = selLepton_lead->pt_ * 1.01;
+      if (etaL2 < 1.479) pt1 = selLepton_sublead->pt_ * 1.01;
+    }
+    else if (central_or_shift == "CMS_ttHl_electronESBarrelDown"){
+      if (etaL1 < 1.479) pt0 = selLepton_lead->pt_ * 0.99;
+      if (etaL2 < 1.479) pt1 = selLepton_sublead->pt_ * 0.99;
+    }
+    else if (central_or_shift == "CMS_ttHl_electronESEndcapUp") {
+      if (etaL1 >= 1.479) pt0 = selLepton_lead->pt_ * 1.025;
+      if (etaL2 >= 1.479) pt1 = selLepton_sublead->pt_ * 1.025;
+    }
+    else if (central_or_shift == "CMS_ttHl_electronESEndcapDown") {
+      if (etaL1 >= 1.479) pt0 = selLepton_lead->pt_ * 0.975;
+      if (etaL2 >= 1.479) pt1 = selLepton_sublead->pt_ * 0.975;
+    }
+    else{
+      pt0 = selLepton_lead->pt_;
+      pt1 = selLepton_sublead->pt_;
+    }
+
     
     double minPt_lead = 20.;
     double minPt_sublead = selLepton_sublead->is_electron() ? 15. : 10.;
-    //TODO: verify treatment:
-    //double minPt_lead = 10.;
-    //double minPt_sublead = 10.;
     if ( !(selLepton_lead->pt_ > minPt_lead && selLepton_sublead->pt_ > minPt_sublead) ) {
       if ( run_lumi_eventSelector ) {
 	      std::cout << "event FAILS lepton pT selection." << std::endl;
@@ -629,10 +665,11 @@ int main(int argc, char* argv[])
       //evtWeight_mm *= sf_tight_to_loose;
     }
 
+//--- fill histograms with events passing final selection
 //--- Calclulate mass of lepton system
     math::PtEtaPhiMLorentzVector p4 =
-      math::PtEtaPhiMLorentzVector(preselElectrons[0]->pt_, preselElectrons[0]->eta_, preselElectrons[0]->phi_, preselElectrons[0]->mass_) +
-      math::PtEtaPhiMLorentzVector(preselElectrons[1]->pt_, preselElectrons[1]->eta_, preselElectrons[1]->phi_, preselElectrons[1]->mass_);
+      math::PtEtaPhiMLorentzVector(pt0, preselElectrons[0]->eta_, preselElectrons[0]->phi_, preselElectrons[0]->mass_) +
+      math::PtEtaPhiMLorentzVector(pt1, preselElectrons[1]->eta_, preselElectrons[1]->phi_, preselElectrons[1]->mass_);
 
     Double_t mass_ll = p4.M();
     if (mass_ll < 60 || mass_ll > 120) {
@@ -643,29 +680,15 @@ int main(int argc, char* argv[])
       if (central_or_shift == "central") fail_counter->Fill("m_ll", 1);
       continue;
     }
-//--- fill histograms with events passing final selection
 
-    std::string stEta;
-    std::string stLeadPt;
-    std::string stSubPt;
-    if (selLepton_lead->pt_ >= 10 && selLepton_lead->pt_ < 25) stLeadPt = "L";
-    else if (selLepton_lead->pt_ >= 25 && selLepton_lead->pt_ < 50) stLeadPt = "M";
-    else if (selLepton_lead->pt_ > 50) stLeadPt = "H";
-    if (selLepton_sublead->pt_ >= 10 && selLepton_sublead->pt_ < 25) stSubPt = "L";
-    else if (selLepton_sublead->pt_ >= 25 && selLepton_sublead->pt_ < 50) stSubPt = "M";
-    else if (selLepton_sublead->pt_ > 50) stSubPt = "H";
-    else assert(0);
+    if (pt0 >= 10 && pt0 < 25) stLeadPt = "L";
+    else if (pt0 >= 25 && pt0 < 50) stLeadPt = "M";
+    else if (pt0 > 50) stLeadPt = "H";
+    if (pt1 >= 10 && pt1 < 25) stSubPt = "L";
+    else if (pt1 >= 25 && pt1 < 50) stSubPt = "M";
+    else if (pt1 > 50) stSubPt = "H";
+    //else assert(0);
 
-    Double_t etaL1 = std::fabs(selLepton_lead->eta_);
-    Double_t etaL2 = std::fabs(selLepton_sublead->eta_);
-    if (etaL1 < 1.479 && etaL2 < 1.479) stEta = "BB";
-    else if (etaL1 > 1.479 && etaL2 > 1.479) stEta = "EE";
-    else if (etaL1 < etaL2) stEta = "BE";
-    else
-    {
-      if (std::strncmp(stLeadPt.data(), stSubPt.data(), 1) == 0) stEta = "BE";       //Symmetric case
-      else stEta = "EB";
-    }
     std::string category = Form("%s_%s%s", stEta.data(), stLeadPt.data(), stSubPt.data());
 
     std::string charge_cat = ( isCharge_SS ) ? "SS" : "OS";
