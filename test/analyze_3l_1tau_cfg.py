@@ -52,5 +52,6 @@ process.analyze_3l_1tau = cms.PSet(
     lumiScale = cms.double(1.),
     
     selEventsFileName_input = cms.string(''),
-    selEventsFileName_output = cms.string('')
+    selEventsFileName_output = cms.string(''),
+    selEventsTFileName = cms.string('')
 )

@@ -2,13 +2,14 @@ import codecs, os
 
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd, generate_file_ids, generate_input_list
 
-DKEY_CFGS = "cfgs"       # dir for python configuration and batch script files for each job
-DKEY_HIST = "histograms" # dir for histograms = output of the jobs
-DKEY_LOGS = "logs"       # dir for log files (stdout/stderr of jobs)
-DKEY_DCRD = "datacards"  # dir for the datacard
-DKEY_RLES = "output_rle" # dir for the selected run:lumi:event numbers
+DKEY_CFGS = "cfgs"        # dir for python configuration and batch script files for each job
+DKEY_HIST = "histograms"  # dir for histograms = output of the jobs
+DKEY_LOGS = "logs"        # dir for log files (stdout/stderr of jobs)
+DKEY_DCRD = "datacards"   # dir for the datacard
+DKEY_RLES = "output_rle"  # dir for the selected run:lumi:event numbers
+DKEY_ROOT = "output_root" # dir for the selected events dumped into a root file
 
-DIRLIST = [DKEY_CFGS, DKEY_DCRD, DKEY_HIST, DKEY_LOGS, DKEY_RLES]
+DIRLIST = [DKEY_CFGS, DKEY_DCRD, DKEY_HIST, DKEY_LOGS, DKEY_RLES, DKEY_ROOT]
 
 def initDict(dictionary, keys):
   """Auxiliary function to initialize dictionary for access with multiple keys
@@ -138,6 +139,7 @@ class analyzeConfig:
     self.histogramDir_prep_dcard = None
     self.filesToClean = []
     self.rleOutputFiles = {}
+    self.rootOutputFiles = {}
 
   def createCfg_analyze(self, *args):
     raise ValueError("Function 'createCfg_analyze' not implemented in derrived class !!")      
