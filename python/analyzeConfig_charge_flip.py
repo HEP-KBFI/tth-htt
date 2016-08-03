@@ -18,10 +18,10 @@ class analyzeConfig_charge_flip(analyzeConfig):
   """
   def __init__(self, outputDir, executable_analyze, lepton_selections, central_or_shifts,
                max_files_per_job, use_lumi, lumi, use_data, debug, running_method, num_parallel_jobs, 
-               executable_prep_dcard="prepareDatacardCF"):
+               histograms_to_fit = [], executable_prep_dcard="prepareDatacardCF"):
     analyzeConfig.__init__(self, outputDir, executable_analyze, "charge_flip", central_or_shifts,
       max_files_per_job, use_lumi, lumi, debug, running_method, num_parallel_jobs, 
-      histograms_to_fit = [])
+      histograms_to_fit)
 
     self.samples = tthAnalyzeSamples_chargeflip.samples
     self.prep_dcard_processesToCopy = ["data_obs", "DY", "WJets", "TTbar", "Singletop", "Diboson"]
@@ -83,6 +83,8 @@ class analyzeConfig_charge_flip(analyzeConfig):
       inputFiles_sample = []
       for lepton_selection in self.lepton_selections:
         for central_or_shift in self.central_or_shifts:
+          #Electron ER only for DY
+          if (not "DY" in process_name) and "CMS_ttHl_electronER" in cental_or_shift: continue
           inputFiles_jobIds = []                  
           for jobId in range(len(self.inputFileIds[sample_name])):
             key_file = getKey(sample_name, lepton_selection, central_or_shift, jobId)
@@ -120,6 +122,31 @@ class analyzeConfig_charge_flip(analyzeConfig):
     lines_makefile.append("")
     self.filesToClean.append(self.histogramFile_hadd_stage2)
 
+  def createCfg_addFakes(self, inputFile, outputFile, cfgFile_modified):
+    """Create python configuration file for the addBackgroundLeptonFakes executable (data-driven estimation of 'Fakes' backgrounds)
+
+    Args:
+      inputFiles: input file (the ROOT file produced by hadd_stage1)
+      outputFile: output file of the job
+    """  
+    lines = []
+    lines.append("process.fwliteInput.fileNames = cms.vstring('%s')" % inputFile)
+    lines.append("process.fwliteOutput.fileName = cms.string('%s')" % outputFile)
+    create_cfg(self.cfgFile_addFakes_original, cfgFile_modified, lines)
+
+  def createCfg_addFlips(self, inputFile, outputFile, cfgFile_modified):
+    """Create python configuration file for the addBackgroundLeptonFlips executable (data-driven estimation of 'Flips' backgrounds)
+
+    Args:
+      inputFiles: input file (the ROOT file produced by hadd_stage1)
+      outputFile: output file of the job
+    """  
+    lines = []
+    lines.append("process.fwliteInput.fileNames = cms.vstring('%s')" % inputFile)
+    lines.append("process.fwliteOutput.fileName = cms.string('%s')" % outputFile)
+    create_cfg(self.cfgFile_addFlips_original, cfgFile_modified, lines)
+
+
   def create(self):
     """Creates all necessary config files and runs the complete analysis workfow -- either locally or on the batch system
     """
@@ -149,7 +176,7 @@ class analyzeConfig_charge_flip(analyzeConfig):
       for lepton_selection in self.lepton_selections:
         for central_or_shift in self.central_or_shifts:
           for jobId in range(len(self.inputFileIds[sample_name])):
-            if central_or_shift != "central" and not (lepton_selection == "Tight" and charge_selection == "SS"):
+            if central_or_shift != "central" and not (lepton_selection == "Tight"):
               continue
             if central_or_shift != "central" and not is_mc:
               continue
@@ -174,22 +201,22 @@ class analyzeConfig_charge_flip(analyzeConfig):
       logging.info("Creating script for submitting '%s' jobs to batch system" % self.executable_analyze)
       self.createScript_sbatch()
       print self.sbatchFile_analyze
-    #logging.info("Creating configuration files for executing 'addBackgroundLeptonFakes'")
+    logging.info("Creating configuration files for executing 'addBackgroundLeptonFakes'")
     #self.createCfg_addFakes(self.histogramFile_hadd_stage1, self.histogramFile_addFakes, self.cfgFile_addFakes_modified)
 
-    #logging.info("Creating configuration files for executing 'addBackgroundLeptonFlips'")
+    logging.info("Creating configuration files for executing 'addBackgroundLeptonFlips'")
     #self.createCfg_addFlips(self.histogramFile_hadd_stage1, self.histogramFile_addFlips, self.cfgFile_addFlips_modified)
 
     logging.info("Creating configuration files for executing 'prepareDatacards'")
-    #for histogramToFit in self.histograms_to_fit:
-    #  self.createCfg_prep_dcard(histogramToFit)
+    for histogramToFit in self.histograms_to_fit:
+      self.createCfg_prep_dcard(histogramToFit)
 
     lines_makefile = []
     self.addToMakefile_analyze(lines_makefile)
     self.addToMakefile_hadd_stage1(lines_makefile)
-    #self.addToMakefile_backgrounds_from_data(lines_makefile)
+    self.addToMakefile_backgrounds_from_data(lines_makefile)
     self.addToMakefile_hadd_stage2(lines_makefile)
-    #self.addToMakefile_prep_dcard(lines_makefile)
+    self.addToMakefile_prep_dcard(lines_makefile)
     self.addToMakefile_clean(lines_makefile)
     self.createMakefile(lines_makefile)
   

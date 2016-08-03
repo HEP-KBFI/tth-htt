@@ -141,8 +141,8 @@ int main(int argc, char* argv[])
   std::string jet_btagWeight_branch = ( isMC ) ? "Jet_bTagWeight" : "";
 
   int jetPt_option = RecoJetReader::kJetPt_central;
+  TString central_or_shift_tstring = central_or_shift.data();
   if ( isMC && central_or_shift != "central" ) {
-    TString central_or_shift_tstring = central_or_shift.data();
     std::string shiftUp_or_Down = "";
     if      ( central_or_shift_tstring.EndsWith("Up")   ) shiftUp_or_Down = "Up";
     else if ( central_or_shift_tstring.EndsWith("Down") ) shiftUp_or_Down = "Down";
@@ -304,9 +304,10 @@ int main(int argc, char* argv[])
     for ( vstring::const_iterator category = categories_etapt.begin(); 	category != categories_etapt.end(); ++category ) {
       TFileDirectory subDir2 = subDir.mkdir(category->data());
       TFileDirectory subD2 = subD.mkdir(category->data());
+      
       histos[which->data()][*category][process_string] = subDir2.make<TH1D>( Form("%s%s", process_string.data(), central_or_shift_label.data()), "m_{ll}", 60,  60., 120. );
       histos[which->data()][*category][process_string]->Sumw2();
-      if (std::strncmp(process_string.data(), "DY", 2) == 0){
+      if (std::strncmp(process_string.data(), "DY", 2) == 0 && !central_or_shift_tstring.BeginsWith("CMS_ttHl_electronER")){
           histos[which->data()][*category]["DY_fake"] = subDir2.make<TH1D>( Form("%s%s", "DY_fake", central_or_shift_label.data()) , "m_{ll}", 60,  60., 120. );
           histos[which->data()][*category]["DY_fake"]->Sumw2();
           if (central_or_shift == "central") {
