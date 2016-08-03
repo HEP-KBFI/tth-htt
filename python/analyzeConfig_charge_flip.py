@@ -84,7 +84,7 @@ class analyzeConfig_charge_flip(analyzeConfig):
       for lepton_selection in self.lepton_selections:
         for central_or_shift in self.central_or_shifts:
           #Electron ER only for DY
-          if (not "DY" in process_name) and "CMS_ttHl_electronER" in cental_or_shift: continue
+          if (not "DY" in process_name) and "CMS_ttHl_electronER" in central_or_shift: continue
           inputFiles_jobIds = []                  
           for jobId in range(len(self.inputFileIds[sample_name])):
             key_file = getKey(sample_name, lepton_selection, central_or_shift, jobId)
