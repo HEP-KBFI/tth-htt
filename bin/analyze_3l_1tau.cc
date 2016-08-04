@@ -65,9 +65,10 @@
 #include <string> // std::string
 #include <vector> // std::vector<>
 #include <cstdlib> // EXIT_SUCCESS, EXIT_FAILURE
-#include <algorithm> // std::sort
+#include <algorithm> // std::sort(), std::find()
 #include <fstream> // std::ofstream
 #include <assert.h> // assert
+#include <array> // std::array<>
 
 #define EPS 1E-2
 
@@ -91,6 +92,16 @@ bool isHigherPt(const GenParticle* particle1, const GenParticle* particle2)
 }
 
 /**
+ * @brief Auxiliary function used for sorting jets by decreasing btagging CSV value
+ * @param Given pair of jets
+ * @return True, if first jet has higher CSV; false if second jet has higher CSV
+ */
+bool isHigherCSV(const RecoJet* jet1, const RecoJet* jet2)
+{
+  return (jet1->BtagCSV_ > jet2->BtagCSV_);
+}
+
+/**
  * @brief Auxiliary function for checking if leptons passing fake-able lepton selection pass tight lepton identification criteria also
  */
 template <typename Tfakeable, typename Ttight>
@@ -103,6 +114,172 @@ bool isMatched(const Tfakeable& fakeableLepton, const std::vector<Ttight*>& tigh
   }
   return false; // no match found
 }
+
+/**
+ * @brief Encapsulated input information of an event
+ *        (run, lumi, event numbers; MET) needed by MEM
+ * @todo Drop it into a separate file
+ */
+struct
+EventSpecifics_Out
+{
+  UInt_t run;
+  UInt_t lumi;
+  ULong64_t evt;
+  Double_t met_pt;
+  Double_t met_phi;
+
+  TBranch * branch_run = 0;
+  TBranch * branch_lumi = 0;
+  TBranch * branch_evt = 0;
+  TBranch * branch_met_pt = 0;
+  TBranch * branch_met_phi = 0;
+
+  void
+  setBranches(TTree * t)
+  {
+    branch_run     = t -> Branch("run",     &run,     "run/i");
+    branch_lumi    = t -> Branch("lumi",    &lumi,    "lumi/i");
+    branch_evt     = t -> Branch("evt",     &evt,     "evt/l");
+    branch_met_pt  = t -> Branch("met_pt",  &met_pt,  "met_pt/D");
+    branch_met_phi = t -> Branch("met_phi", &met_phi, "met_phi/D");
+  }
+};
+
+/**
+ * @brief MVA-specific variables
+ * @note Not needed by MEM per se, but still necessary in BDT training
+ *       (the root file containing all events passing the cuts might
+ *        be used as an input in separate BDT training routines)
+ */
+struct
+EventMVAIO_Out
+{
+  Double_t max2LeptonEta;
+  Double_t MT_met_lep1;
+  Double_t nJet25_Recl;
+  Double_t mindr_lep1_jet;
+  Double_t mindr_lep2_jet;
+  Double_t lep1_cone_pt;
+  Double_t lep3_cone_pt;
+  Double_t avg_dr_jet;
+  Double_t mhtJet25_Recl;
+  Double_t mvaOutput_3l_ttV;
+  Double_t mvaOutput_3l_ttbar;
+
+  TBranch * branch_max2LeptonEta;
+  TBranch * branch_MT_met_lep1;
+  TBranch * branch_nJet25_Recl;
+  TBranch * branch_mindr_lep1_jet;
+  TBranch * branch_mindr_lep2_jet;
+  TBranch * branch_lep1_cone_pt;
+  TBranch * branch_lep3_cone_pt;
+  TBranch * branch_avg_dr_jet;
+  TBranch * branch_mhtJet25_Recl;
+  TBranch * branch_mvaOutput_3l_ttV;
+  TBranch * branch_mvaOutput_3l_ttbar;
+
+  void
+  setBranches(TTree * t)
+  {
+    branch_max2LeptonEta      = t -> Branch("max2LeptonEta",
+                                            &max2LeptonEta,      "max2LeptonEta/D");
+    branch_MT_met_lep1        = t -> Branch("MT_met_lep1",
+                                            &MT_met_lep1,        "MT_met_lep1/D");
+    branch_nJet25_Recl        = t -> Branch("nJet25_Recl",
+                                            &nJet25_Recl,        "nJet25_Recl/D");
+    branch_mindr_lep1_jet     = t -> Branch("mindr_lep1_jet",
+                                            &mindr_lep1_jet,     "mindr_lep1_jet/D");
+    branch_mindr_lep2_jet     = t -> Branch("mindr_lep2_jet",
+                                            &mindr_lep2_jet,     "mindr_lep2_jet/D");
+    branch_lep1_cone_pt       = t -> Branch("lep1_cone_pt",
+                                            &lep1_cone_pt,       "lep1_cone_pt/D");
+    branch_lep3_cone_pt       = t -> Branch("lep3_cone_pt",
+                                            &lep3_cone_pt,       "lep3_cone_pt/D");
+    branch_avg_dr_jet         = t -> Branch("avg_dr_jet",
+                                            &avg_dr_jet,         "avg_dr_jet/D");
+    branch_mhtJet25_Recl      = t -> Branch("mhtJet25_Recl",
+                                            &mhtJet25_Recl,      "mhtJet25_Recl/D");
+    branch_mvaOutput_3l_ttV   = t -> Branch("mvaOutput_3l_ttV",
+                                            &mvaOutput_3l_ttV,   "mvaOutput_3l_ttV/D");
+    branch_mvaOutput_3l_ttbar = t -> Branch("mvaOutput_3l_ttbar",
+                                            &mvaOutput_3l_ttbar, "mvaOutput_3l_ttbar/D");
+  }
+
+  void
+  setValues(const std::map<std::string, Double_t> & mvaInputs,
+            Double_t mvaOutput_3l_ttV,
+            Double_t mvaOutput_3l_ttbar)
+  {
+    max2LeptonEta  = mvaInputs.at("max(abs(LepGood_eta[iF_Recl[0]]),abs(LepGood_eta[iF_Recl[1]]))");
+    MT_met_lep1    = mvaInputs.at("MT_met_lep1");
+    nJet25_Recl    = mvaInputs.at("nJet25_Recl");
+    mindr_lep1_jet = mvaInputs.at("mindr_lep1_jet");
+    mindr_lep2_jet = mvaInputs.at("mindr_lep2_jet");
+    lep1_cone_pt   = mvaInputs.at("LepGood_conePt[iF_Recl[0]]");
+    lep3_cone_pt   = mvaInputs.at("LepGood_conePt[iF_Recl[2]]");
+    avg_dr_jet     = mvaInputs.at("avg_dr_jet");
+    mhtJet25_Recl  = mvaInputs.at("mhtJet25_Recl");
+    this -> mvaOutput_3l_ttV   = mvaOutput_3l_ttV;
+    this -> mvaOutput_3l_ttbar = mvaOutput_3l_ttbar;
+  }
+};
+
+/**
+ * @brief Encapsulated input information of an event
+ *        (particle collection) needed by MEM
+ * @todo Drop it into a separate file
+ */
+struct
+EventObject_Out
+{
+  Double_t pt;
+  Double_t eta;
+  Double_t phi;
+  Double_t mass;
+  Int_t   charge;
+
+  TBranch * branch_pt = 0;
+  TBranch * branch_eta = 0;
+  TBranch * branch_phi = 0;
+  TBranch * branch_mass = 0;
+  TBranch * branch_charge = 0;
+
+  void
+  setBranches(TTree * t,
+              const std::string & s,
+              bool hasIncludeCharge = false)
+  {
+    branch_pt     = t -> Branch(Form("%s_pt", s.c_str()),
+                                &pt,   Form("%s_pt/D", s.c_str()));
+    branch_eta    = t -> Branch(Form("%s_eta", s.c_str()),
+                                &eta,  Form("%s_eta/D", s.c_str()));
+    branch_phi    = t -> Branch(Form("%s_phi", s.c_str()),
+                                &phi,  Form("%s_phi/D", s.c_str()));
+    branch_mass   = t -> Branch(Form("%s_mass", s.c_str()),
+                                &mass, Form("%s_mass/D", s.c_str()));
+    if(hasIncludeCharge)
+      branch_charge = t -> Branch(Form("%s_charge", s.c_str()),
+                                  &charge, Form("%s_charge/I", s.c_str()));
+  }
+
+  void
+  setValues(const GenParticle * p)
+  {
+    pt = p -> pt_;
+    eta = p -> eta_;
+    phi = p -> phi_;
+    mass = p -> mass_;
+  }
+
+  void
+  setValues(const GenLepton * p)
+  {
+    setValues(static_cast<const GenParticle *>(p));
+    charge = p -> charge_;
+  }
+};
+typedef struct EventObject_Out EO_O;
  
 /**
  * @brief Produce datacard and control plots for 3l_1tau categories.
@@ -231,6 +408,9 @@ int main(int argc, char* argv[])
 
   std::string selEventsFileName_output = cfg_analyze.getParameter<std::string>("selEventsFileName_output");
 
+  std::string selEventsTFileName = cfg_analyze.getParameter<std::string>("selEventsTFileName");
+  const bool writeSelEventsFile = selEventsTFileName != "";
+
   fwlite::InputSource inputFiles(cfg); 
   int maxEvents = inputFiles.maxEvents();
   std::cout << " maxEvents = " << maxEvents << std::endl;
@@ -256,7 +436,33 @@ int main(int argc, char* argv[])
   //     cf. http://root.cern.ch/phpBB3/viewtopic.php?t=10062
   inputTree->LoadTree(0);
 
-  std::cout << "input Tree contains " << inputTree->GetEntries() << " Entries in " << inputTree->GetListOfFiles()->GetEntries() << " files." << std::endl;
+//--- create output root file from selected events if needed
+  TFile * selEventsTFile = 0;
+  TTree * selEventsTTree = 0;
+  EventSpecifics_Out eventSpecificsOut;
+  std::array<EventObject_Out, 3> leptonsOut {{  EO_O(), EO_O(), EO_O() }};
+  std::array<EventObject_Out, 2> jetsOut {{ EO_O(), EO_O() }};
+  EventObject_Out htauOut;
+  EventMVAIO_Out MVAOut;
+
+  if(writeSelEventsFile)
+  {
+    selEventsTFile = new TFile(selEventsTFileName.c_str(), "recreate");
+    selEventsTTree = new TTree("tree", "Selected events created for MEM");
+    eventSpecificsOut.setBranches(selEventsTTree);
+    for(std::size_t i = 0; i < leptonsOut.size(); ++i)
+      leptonsOut[i].setBranches(selEventsTTree,
+                                std::string(TString::Format("lepton%lu", i + 1)), true);
+    for(std::size_t i = 0; i < jetsOut.size(); ++i)
+      jetsOut[i].setBranches(selEventsTTree,
+                             std::string(TString::Format("jet%lu", i + 1)), false);
+    htauOut.setBranches(selEventsTTree, "htau1", false);
+    MVAOut.setBranches(selEventsTTree);
+  }
+
+  std::cout << "input Tree contains " << inputTree->GetEntries()
+            << " Entries in " << inputTree->GetListOfFiles()->GetEntries()
+            << " files." << std::endl;
 
 //--- declare event-level variables
   RUN_TYPE run;
@@ -868,7 +1074,7 @@ int main(int argc, char* argv[])
       continue;
     }
     cutFlowTable.update(">= 2 jets (2)", evtWeight);
-    if ( !(selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) ) {
+    if ( !(selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1)) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS selBJets selection." << std::endl;
 	std::cout << " (#selBJets_loose = " << selBJets_loose.size() << ", #selBJets_medium = " << selBJets_medium.size() << ")" << std::endl;
@@ -1078,6 +1284,44 @@ int main(int argc, char* argv[])
       }
     }
 
+    if(writeSelEventsFile)
+    {
+      // KE: unique merge loose and medium B-jets, and hadronic jets
+      std::sort(selBJets_medium.begin(), selBJets_medium.end(), isHigherPt);
+      std::sort(selBJets_loose.begin(), selBJets_loose.end(), isHigherPt);
+      std::sort(selJets.begin(), selJets.end(), isHigherCSV); // optional: sort by pT
+      std::vector<const RecoJet *> selBJetsMerged(selBJets_medium);
+      auto unique_push_back = [&selBJetsMerged](const std::vector<const RecoJet *> & v) -> void
+      {
+        for(const RecoJet * j: v)
+          if(std::find(selBJetsMerged.begin(), selBJetsMerged.end(), j) == selBJetsMerged.end())
+            selBJetsMerged.push_back(j);
+      };
+      unique_push_back(selBJets_loose);
+      unique_push_back(selJets);
+      if(selBJetsMerged.size() < 2)
+      {
+        std::cerr << "Error: merged b-jets contains less than two jets\n";
+        assert(0);
+      }
+
+      eventSpecificsOut.run  = run;
+      eventSpecificsOut.lumi = lumi;
+      eventSpecificsOut.evt  = event;
+
+      eventSpecificsOut.met_pt  = met_pt;
+      eventSpecificsOut.met_phi = met_phi;
+
+      for(std::size_t i = 0; i < 3; ++i)
+        leptonsOut[i].setValues(selLeptons[i]);
+      for(std::size_t i = 0; i < 2; ++i)
+        jetsOut[i].setValues(selBJetsMerged[i]);
+      htauOut.setValues(selHadTau_lead);
+      MVAOut.setValues(mvaInputs, mvaOutput_3l_ttV, mvaOutput_3l_ttbar);
+
+      selEventsTTree -> Fill();
+    }
+
     (*selEventsFile) << run << ":" << lumi << ":" << event << std::endl;
 
     ++selectedEntries;
@@ -1096,6 +1340,12 @@ int main(int argc, char* argv[])
   std::cout << "cut-flow table" << std::endl;
   cutFlowTable.print(std::cout);
   std::cout << std::endl;
+
+  if(writeSelEventsFile)
+  {
+    selEventsTFile -> Write();
+    delete selEventsTFile;
+  }
 
   delete run_lumi_eventSelector;
 
