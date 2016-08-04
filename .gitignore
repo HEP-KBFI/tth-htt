@@ -2,11 +2,11 @@
 histograms.root
 table.txt
 log.txt
-tth-htt.config
-tth-htt.creator
-tth-htt.creator.user
-tth-htt.files
-tth-htt.includes
-tth-htt.creator.user.3.2-pre1
+*.config
+*.creator
+*.creator.user
+*.files
+*.includes
+*.creator.user.3.2-pre1
 __init__.py
 
