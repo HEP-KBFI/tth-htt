@@ -38,8 +38,8 @@ RecoHadTauReader::RecoHadTauReader()
   , hadTau_idAgainstElec_(0)
   , hadTau_idAgainstMu_(0)
 {
-  readDBdR03oldDMwLTEff95();
   setBranchNames();
+  readDBdR03oldDMwLTEff95();
 }
 
 RecoHadTauReader::RecoHadTauReader(const std::string& branchName_num, const std::string& branchName_obj)
@@ -71,8 +71,8 @@ RecoHadTauReader::RecoHadTauReader(const std::string& branchName_num, const std:
   , hadTau_idAgainstElec_(0)
   , hadTau_idAgainstMu_(0)
 {
-  readDBdR03oldDMwLTEff95();
   setBranchNames();
+  readDBdR03oldDMwLTEff95();
 }
 
 RecoHadTauReader::~RecoHadTauReader()
