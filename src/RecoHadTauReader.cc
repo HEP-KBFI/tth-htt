@@ -2,13 +2,18 @@
 
 #include "FWCore/Utilities/interface/Exception.h"
 
+#include "FWCore/ParameterSet/interface/FileInPath.h" // edm::FileInPath
+
 #include <TString.h> // Form
 
 std::map<std::string, int> RecoHadTauReader::numInstances_;
 std::map<std::string, RecoHadTauReader*> RecoHadTauReader::instances_;
 
 RecoHadTauReader::RecoHadTauReader()
-  : max_nHadTaus_(32)
+  : tauIdMVArun2dR03DB_wpFile_(0)
+  , DBdR03oldDMwLTEff95_(0)
+  , mvaOutput_normalization_DBdR03oldDMwLT_(0)
+  , max_nHadTaus_(32)
   , branchName_num_("nTauGood")
   , branchName_obj_("TauGood")
   , hadTauPt_option_(RecoHadTauReader::kHadTauPt_central)
@@ -32,11 +37,15 @@ RecoHadTauReader::RecoHadTauReader()
   , hadTau_idAgainstElec_(0)
   , hadTau_idAgainstMu_(0)
 {
+  readDBdR03oldDMwLTEff95();
   setBranchNames();
 }
 
 RecoHadTauReader::RecoHadTauReader(const std::string& branchName_num, const std::string& branchName_obj)
-  : max_nHadTaus_(32)
+  : tauIdMVArun2dR03DB_wpFile_(0)
+  , DBdR03oldDMwLTEff95_(0)
+  , mvaOutput_normalization_DBdR03oldDMwLT_(0)
+  , max_nHadTaus_(32)
   , branchName_num_(branchName_num)
   , branchName_obj_(branchName_obj)
   , hadTauPt_option_(RecoHadTauReader::kHadTauPt_central)
@@ -60,6 +69,7 @@ RecoHadTauReader::RecoHadTauReader(const std::string& branchName_num, const std:
   , hadTau_idAgainstElec_(0)
   , hadTau_idAgainstMu_(0)
 {
+  readDBdR03oldDMwLTEff95();
   setBranchNames();
 }
 
@@ -70,6 +80,7 @@ RecoHadTauReader::~RecoHadTauReader()
   if ( numInstances_[branchName_obj_] == 0 ) {
     RecoHadTauReader* gInstance = instances_[branchName_obj_];
     assert(gInstance);
+    delete gInstance->tauIdMVArun2dR03DB_wpFile_;
     delete[] gInstance->hadTau_pt_;
     delete[] gInstance->hadTau_eta_;
     delete[] gInstance->hadTau_phi_;
@@ -91,6 +102,18 @@ RecoHadTauReader::~RecoHadTauReader()
     delete[] gInstance->hadTau_charge_;
     instances_[branchName_obj_] = 0;
   }
+}
+
+void RecoHadTauReader::readDBdR03oldDMwLTEff95()
+{
+  RecoHadTauReader* gInstance = instances_[branchName_obj_];
+  assert(gInstance);
+  if ( !gInstance->tauIdMVArun2dR03DB_wpFile_ ) {
+    edm::FileInPath tauIdMVArun2dR03DB_wpFilePath = edm::FileInPath("tthAnalysis/HiggsToTauTau/data/wpDiscriminationByIsolationMVARun2v1_DBdR03oldDMwLT.root");
+    gInstance->tauIdMVArun2dR03DB_wpFile_ = new TFile(tauIdMVArun2dR03DB_wpFilePath.fullPath().c_str());
+  }
+  DBdR03oldDMwLTEff95_ = dynamic_cast<TGraph*>(gInstance->tauIdMVArun2dR03DB_wpFile_->Get("DBdR03oldDMwLTEff95"));
+  mvaOutput_normalization_DBdR03oldDMwLT_ = dynamic_cast<TFormula*>(gInstance->tauIdMVArun2dR03DB_wpFile_->Get("mvaOutput_normalization_DBdR03oldDMwLT"));
 }
 
 void RecoHadTauReader::setBranchNames()
@@ -189,6 +212,19 @@ std::vector<RecoHadTau> RecoHadTauReader::read() const
     else if ( hadTauPt_option_ == kHadTauPt_shiftUp   ) hadTau_pt = 1.03*gInstance->hadTau_pt_[idxHadTau];
     else if ( hadTauPt_option_ == kHadTauPt_shiftDown ) hadTau_pt = 0.97*gInstance->hadTau_pt_[idxHadTau];
     else assert(0);
+    // compute "VVLose" (95% signal efficiency) working point for tau ID MVA trained for dR=0.3 isolation cone,
+    // used to enhance background event statistics for training of event-level MVAs that separate ttH signal from backgrounds
+    Int_t hadTau_idMVA_dR03 = hadTau_idMVA_dR03_[idxHadTau];
+    if ( hadTau_idMVA_dR03 >= 1 ) {
+      hadTau_idMVA_dR03 += 1;
+    } else {
+      assert(DBdR03oldDMwLTEff95_ && mvaOutput_normalization_DBdR03oldDMwLT_);
+      if ( mvaOutput_normalization_DBdR03oldDMwLT_->Eval(gInstance->hadTau_rawMVA_dR03_[idxHadTau]) > DBdR03oldDMwLTEff95_->Eval(gInstance->hadTau_pt_[idxHadTau]) ) {
+	hadTau_idMVA_dR03 = 1;
+      } else {
+	hadTau_idMVA_dR03 = 0;
+      }
+    }
     hadTaus.push_back(RecoHadTau(
       hadTau_pt,
       gInstance->hadTau_eta_[idxHadTau],
@@ -199,7 +235,7 @@ std::vector<RecoHadTau> RecoHadTauReader::read() const
       gInstance->hadTau_dz_[idxHadTau],
       gInstance->hadTau_idDecayMode_[idxHadTau],
       gInstance->hadTau_idDecayModeNewDMs_[idxHadTau],
-      gInstance->hadTau_idMVA_dR03_[idxHadTau],
+      hadTau_idMVA_dR03,
       gInstance->hadTau_rawMVA_dR03_[idxHadTau],
       gInstance->hadTau_idMVA_dR05_[idxHadTau],
       gInstance->hadTau_rawMVA_dR05_[idxHadTau],	

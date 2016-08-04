@@ -340,7 +340,7 @@ int main(int argc, char* argv[])
   RecoHadTauCollectionGenMatcher hadTauGenMatcher;
   RecoHadTauCollectionCleaner hadTauCleaner(0.3);
   RecoHadTauCollectionSelectorLoose preselHadTauSelector;
-  preselHadTauSelector.set_min_pt(40.);
+  preselHadTauSelector.set_min_pt(20.);
   preselHadTauSelector.set_min_antiElectron(1);
   preselHadTauSelector.set_min_antiMuon(1);
   RecoHadTauCollectionSelectorFakeable fakeableHadTauSelector_lead;
@@ -762,8 +762,8 @@ int main(int argc, char* argv[])
     double mTauTauVis2 = ( selHadTau2_SS && selHadTau_OS ) ? (selHadTau2_SS->p4_ + selHadTau_OS->p4_).mass() : -1.;
 
     // apply requirement on jets (incl. b-tagged jets) and hadronic taus on level of final event selection
-    if ( !(selJets.size() >= 5) ) continue;
-    cutFlowTable.update(">= 5 jets", evtWeight);
+    if ( !(selJets.size() >= 4) ) continue;
+    cutFlowTable.update(">= 4 jets", evtWeight);
     if ( !(selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) ) continue;
     cutFlowTable.update(">= 2 loose b-jets || 1 medium b-jet (2)", evtWeight);
  
