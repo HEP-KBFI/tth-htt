@@ -18,9 +18,12 @@ void EvtTreeManager_1l_2tau::bookTree(TFileDirectory& dir)
   EventTree_ = new TTree("evtTree", "evtTree"); 
 
   EventTree_->Branch("lep_pt_max", &lep_pt_max_, "lep_pt_max/F"); 
+  EventTree_->Branch("lep_eta_max", &lep_eta_max_, "lep_eta_max/F");
+  EventTree_->Branch("lep_tth_mva", &lep_tth_mva_, "lep_tth_mva/F");
   EventTree_->Branch("nJet", &nJet_, "nJet/I");
   EventTree_->Branch("nBJetLoose", &nBJetLoose_, "nBJetLoose/I");
   EventTree_->Branch("nBJetMedium", &nBJetMedium_, "nBJetMedium/I");
+  EventTree_->Branch("mindr_lep_jet", &mindr_lep_jet_, "mindr_lep_jet/F");
   EventTree_->Branch("mindr_tau1_jet", &mindr_tau1_jet_, "mindr_tau1_jet/F");
   EventTree_->Branch("mindr_tau2_jet", &mindr_tau2_jet_, "mindr_tau2_jet/F");
   EventTree_->Branch("avg_dr_jet", &avg_dr_jet_, "avg_dr_jet/F"); 
@@ -35,14 +38,17 @@ void EvtTreeManager_1l_2tau::bookTree(TFileDirectory& dir)
   EventTree_->Branch("mTauTauVis", &mTauTauVis_, "mTauTauVis/F");
 }
 
-void EvtTreeManager_1l_2tau::fillTree(float lep_pt_max, int nJet, int nBJetLoose, int nBJetMedium, float mindr_tau1_jet, float mindr_tau2_jet, 
-				      float avg_dr_jet, float ptmiss, float mT_lep, float htmiss, float tau1_mva, float tau2_mva, 
-				      float tau1_pt, float tau2_pt, float dr_taus, float mTauTauVis)
+void EvtTreeManager_1l_2tau::fillTree(float lep_pt_max, float lep_eta_max, float lep_tth_mva, int nJet, int nBJetLoose, int nBJetMedium, 
+				      float mindr_lep_jet, float mindr_tau1_jet, float mindr_tau2_jet, float avg_dr_jet, float ptmiss, float mT_lep, 
+				      float htmiss, float tau1_mva, float tau2_mva, float tau1_pt, float tau2_pt, float dr_taus, float mTauTauVis)
 {
   lep_pt_max_ = lep_pt_max;
+  lep_eta_max_ = lep_eta_max;
+  lep_tth_mva_ = lep_tth_mva;
   nJet_ = nJet;
   nBJetLoose_ = nBJetLoose;
   nBJetMedium_ = nBJetMedium;
+  mindr_lep_jet_ = mindr_lep_jet;
   mindr_tau1_jet_ = mindr_tau1_jet;
   mindr_tau2_jet_ = mindr_tau2_jet;
   avg_dr_jet_ = avg_dr_jet; 
