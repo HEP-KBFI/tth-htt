@@ -437,6 +437,15 @@ int main(int argc, char* argv[])
   tightHadTauSelector_sublead.set_min_pt(40.);
   tightHadTauSelector_sublead.set_min_antiElectron(2);
   tightHadTauSelector_sublead.set_min_antiMuon(1);
+  RecoHadTauCollectionSelectorTight tightHadTauSelector;
+  if ( hadTauSelection_part2 != "" ) tightHadTauSelector.set(hadTauSelection_part2);
+  tightHadTauSelector.set_min_pt(40.); 
+  tightHadTauSelector.set_min_antiElectron(1); 
+  tightHadTauSelector.set_min_antiMuon(1);
+  edm::FileInPath tauIdMVArun2dR03DB_wpFilePath = edm::FileInPath("tthAnalysis/HiggsToTauTau/data/wpDiscriminationByIsolationMVARun2v1_DBdR03oldDMwLT.root");
+  TFile* tauIdMVArun2dR03DB_wpFile = new TFile(tauIdMVArun2dR03DB_wpFilePath.fullPath().c_str());
+  TGraph* DBdR03oldDMwLTEff95 = (TGraph*)tauIdMVArun2dR03DB_wpFile->Get("DBdR03oldDMwLTEff95");
+  TFormula* mvaOutput_normalization_DBdR03oldDMwLT = (TFormula*)tauIdMVArun2dR03DB_wpFile->Get("mvaOutput_normalization_DBdR03oldDMwLT");
 
   RecoJetReader* jetReader = new RecoJetReader("nJet", "Jet");
   jetReader->setJetPt_central_or_shift(jetPt_option);
@@ -628,6 +637,7 @@ int main(int argc, char* argv[])
     std::vector<const RecoHadTau*> fakeableHadTaus;
     fakeableHadTaus.insert(fakeableHadTaus.end(), fakeableHadTaus_lead.begin(), fakeableHadTaus_lead.end());
     fakeableHadTaus.insert(fakeableHadTaus.end(), fakeableHadTaus_sublead.begin(), fakeableHadTaus_sublead.end());
+    std::vector<const RecoHadTau*> tightHadTausVVLoose = tightHadTauSelector(preselHadTaus);
     std::vector<const RecoHadTau*> tightHadTaus_lead = tightHadTauSelector_lead(preselHadTaus);
     std::vector<const RecoHadTau*> tightHadTaus_sublead = hadTauCleaner(tightHadTauSelector_sublead(preselHadTaus), tightHadTaus_lead);
     assert(tightHadTaus_lead.size() <= 1 && tightHadTaus_sublead.size() <= 1);
@@ -650,9 +660,24 @@ int main(int argc, char* argv[])
       selHadTaus_sublead = fakeableHadTaus_sublead;
       selHadTaus = fakeableHadTaus;
     } else if ( hadTauSelection == kTight ) {
-      selHadTaus_lead = tightHadTaus_lead;
-      selHadTaus_sublead = tightHadTaus_sublead;
-      selHadTaus = tightHadTaus;
+      if(hadTauSelection_part2 == "dR03mvaVVLoose"){
+	tightHadTaus.clear();
+	for(size_t it = 0; it < tightHadTausVVLoose.size(); it++){
+	  if(mvaOutput_normalization_DBdR03oldDMwLT->Eval(tightHadTausVVLoose[it]->raw_mva_dR03_) > DBdR03oldDMwLTEff95->Eval(tightHadTausVVLoose[it]->pt_))
+	    {
+	      tightHadTaus.push_back(tightHadTausVVLoose[it]);
+	    }
+	}
+	std::sort(tightHadTaus.begin(), tightHadTaus.end(), isHigherPt);
+	if(tightHadTaus.size() > 0)selHadTaus_lead.push_back(tightHadTaus[0]); 
+	if(tightHadTaus.size() > 1)selHadTaus_sublead.push_back(tightHadTaus[1]); 
+	selHadTaus = tightHadTaus;
+      }
+      else{
+	selHadTaus_lead = tightHadTaus_lead;
+	selHadTaus_sublead = tightHadTaus_sublead;
+	selHadTaus = tightHadTaus;
+      }
     } else assert(0);
 
 //--- build collections of jets and select subset of jets passing b-tagging criteria
