@@ -30,12 +30,12 @@ double comp_MT_met_lep2(const GenParticle& lepton, double met_pt, double met_phi
 
 double comp_MT_met_hadTau1(const GenParticle& hadTau, double met_pt, double met_phi)
 {
-  return comp_MT_met_hadTau1(hadTau, met_pt, met_phi);
+  return comp_MT_met_lep1(hadTau, met_pt, met_phi);
 }
 
 double comp_MT_met_hadTau2(const GenParticle& hadTau, double met_pt, double met_phi)
 {
-  return comp_MT_met_hadTau2(hadTau, met_pt, met_phi);
+  return comp_MT_met_lep1(hadTau, met_pt, met_phi);
 }
 
 double comp_n_jet25_recl(const std::vector<const RecoJet*>& jets_cleaned)

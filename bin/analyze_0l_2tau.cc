@@ -830,7 +830,7 @@ int main(int argc, char* argv[])
 	++index;
       }
     }
-    
+
     double mvaOutput_0l_2tau_ttbar = mva_0l_2tau_ttbar(mvaInputs);
 
 //--- fill histograms with events passing final selection 
