@@ -537,7 +537,7 @@ int main(int argc, char* argv[])
       evtWeight *= sf_triggerEff(preselLepton_lead_type, preselLepton_lead->pt_, preselLepton_lead->eta_, preselLepton_sublead_type, preselLepton_sublead->pt_, preselLepton_sublead->eta_);
       evtWeight *= sf_leptonID_and_Iso_loose(preselLepton_lead_type, preselLepton_lead->pt_, preselLepton_lead->eta_, preselLepton_sublead_type, preselLepton_sublead->pt_, preselLepton_sublead->eta_);
     }
-
+  
     //--- apply final event selection
     std::vector<const RecoLepton*> selLeptons;
     selLeptons.reserve(selElectrons.size() + selMuons.size());
@@ -607,27 +607,27 @@ int main(int argc, char* argv[])
     }
 
     double pt0, pt1;
+    //std::cout << "Before " << selLepton_lead->pt_ << ", " << selLepton_sublead->pt_ << "   " << central_or_shift << std::endl;
+    pt0 = selLepton_lead->pt_;
+    pt1 = selLepton_sublead->pt_;
     if (central_or_shift == "CMS_ttHl_electronESBarrelUp") {
-      if (etaL0 < 1.479) pt0 = selLepton_lead->pt_ * 1.01;
-      if (etaL1 < 1.479) pt1 = selLepton_sublead->pt_ * 1.01;
+      if (etaL0 < 1.479) pt0 *= 1.01;
+      if (etaL1 < 1.479) pt1 *= 1.01;
     }
     else if (central_or_shift == "CMS_ttHl_electronESBarrelDown"){
-      if (etaL0 < 1.479) pt0 = selLepton_lead->pt_ * 0.99;
-      if (etaL1 < 1.479) pt1 = selLepton_sublead->pt_ * 0.99;
+      if (etaL0 < 1.479) pt0 *= 0.99;
+      if (etaL1 < 1.479) pt1 *= 0.99;
     }
     else if (central_or_shift == "CMS_ttHl_electronESEndcapUp") {
-      if (etaL0 >= 1.479) pt0 = selLepton_lead->pt_ * 1.025;
-      if (etaL1 >= 1.479) pt1 = selLepton_sublead->pt_ * 1.025;
+      if (etaL0 >= 1.479) pt0 *= 1.025;
+      if (etaL1 >= 1.479) pt1 *= 1.025;
     }
     else if (central_or_shift == "CMS_ttHl_electronESEndcapDown") {
-      if (etaL0 >= 1.479) pt0 = selLepton_lead->pt_ * 0.975;
-      if (etaL1 >= 1.479) pt1 = selLepton_sublead->pt_ * 0.975;
+      if (etaL0 >= 1.479) pt0 *= 0.975;
+      if (etaL1 >= 1.479) pt1 *= 0.975;
     }
-    else{
-      pt0 = selLepton_lead->pt_;
-      pt1 = selLepton_sublead->pt_;
-    }
-
+    //std::cout << "After: " << pt0 << ", " << pt1 << std::endl;
+    
     if(pt1 > pt0){ //Lepton pt order changed due to systematic
       double temp = pt1;
       pt1 = pt0;
@@ -636,7 +636,6 @@ int main(int argc, char* argv[])
       etaL1 = etaL0;
       etaL0 = temp;
     }
-
     double minPt_lead = 20.;
     double minPt_sublead = selLepton_sublead->is_electron() ? 15. : 10.;
     if ( !(pt0 > minPt_lead && pt1 > minPt_sublead) ) {
@@ -651,7 +650,6 @@ int main(int argc, char* argv[])
     bool isCharge_SS = selLepton_lead->charge_*selLepton_sublead->charge_ > 0;
     bool isCharge_OS = selLepton_lead->charge_*selLepton_sublead->charge_ < 0;
     
-
     /*if ( leptonSelection == kFakeable && (tightMuons.size() + tightElectrons.size()) >= 2 ) {
       if ( run_lumi_eventSelector ) {
 	      std::cout << "event FAILS tightElectrons+tightMuons selection." << std::endl;
@@ -688,7 +686,6 @@ int main(int argc, char* argv[])
       if (central_or_shift == "central") fail_counter->Fill("m_ll", 1);
       continue;
     }
-
     if (pt0 >= 10 && pt0 < 25) stLeadPt = "L";
     else if (pt0 >= 25 && pt0 < 50) stLeadPt = "M";
     else if (pt0 > 50) stLeadPt = "H";
@@ -703,28 +700,30 @@ int main(int argc, char* argv[])
     if (std::strncmp(process_string.data(), "DY", 2) == 0){    //Split DY
       const GenLepton *gp0 = preselElectrons[0]->genLepton_;
       const GenLepton *gp1 = preselElectrons[1]->genLepton_;
+      //std::cout << gp0 << " " << gp1 << " " << abs(preselElectrons[0]->pdgId_) << " " << abs(gp0->pdgId_) << " " << abs(preselElectrons[1]->pdgId_) << " " << abs(gp1->pdgId_) << std::endl;
       if (gp0 != 0 && gp1 != 0 && abs(preselElectrons[0]->pdgId_) == abs(gp0->pdgId_) && abs(preselElectrons[1]->pdgId_) == abs(gp1->pdgId_)) {
         math::PtEtaPhiMLorentzVector p4_gen =
             math::PtEtaPhiMLorentzVector(gp0->pt_, gp0->eta_, gp0->phi_, gp0->mass_) +
             math::PtEtaPhiMLorentzVector(gp1->pt_, gp1->eta_, gp1->phi_, gp1->mass_);
         Double_t mass_ll_gen = p4_gen.M();
+        //std::cout << "Before: " << mass_ll << std::endl;
         if (central_or_shift == "CMS_ttHl_electronERDown")   
           mass_ll = mass_ll - 0.2 * (mass_ll - mass_ll_gen);
         else if (central_or_shift == "CMS_ttHl_electronERUp")
           mass_ll = mass_ll + 0.2 * (mass_ll - mass_ll_gen);
+        //std::cout << "After:  " << mass_ll << std::endl;
         histos[charge_cat][category.data()]["DY"]->Fill(mass_ll, evtWeight);
         histos[charge_cat]["total"]["DY"]->Fill(mass_ll, evtWeight);
       }
-      else {
+      else if (central_or_shift == "central"){
         histos[charge_cat][category.data()]["DY_fake"]->Fill(mass_ll, evtWeight);
-        histos[charge_cat]["total"]["DY_fake"]->Fill(mass_ll, evtWeight);
+        histos[charge_cat]["total"]["DY_fake"]->Fill(mass_ll, evtWeight);        
       }
     }
     else {//Otherwise
       histos[charge_cat][category.data()][process_string]->Fill(mass_ll, evtWeight);
       histos[charge_cat]["total"][process_string]->Fill(mass_ll, evtWeight);
     }     
-
     if (!useData && central_or_shift == "central"){
       histos[charge_cat][category.data()]["data_obs"]->Fill(mass_ll, evtWeight);
       histos[charge_cat]["total"]["data_obs"]->Fill(mass_ll, evtWeight);      

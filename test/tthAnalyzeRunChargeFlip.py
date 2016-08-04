@@ -46,7 +46,7 @@ if __name__ == '__main__':
        #"CMS_ttHl_electronESUp",
        #"CMS_ttHl_electronESDown",
        "CMS_ttHl_electronERUp",
-       "CMS_ttHl_electronERDown"
+       "CMS_ttHl_electronERDown",
        "CMS_ttHl_electronESEndcapUp",
        "CMS_ttHl_electronESEndcapDown",
        "CMS_ttHl_electronESBarrelUp",
