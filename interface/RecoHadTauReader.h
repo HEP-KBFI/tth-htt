@@ -5,6 +5,9 @@
 
 #include <Rtypes.h> // Int_t, Float_t
 #include <TTree.h> // TTree
+#include <TFile.h> // TFile
+#include <TGraph.h> // TGraph
+#include <TFormula.h> // TFormula
 
 #include <string>
 #include <vector>
@@ -32,6 +35,17 @@ class RecoHadTauReader
   std::vector<RecoHadTau> read() const;
   
  protected: 
+  /**
+   * @brief Compute "VVLose" (95% signal efficiency) working point for tau ID MVA trained for dR=0.3 isolation cone,
+   *        used to enhance background event statistics for training of event-level MVAs that separate ttH signal from backgrounds
+   */
+
+  void readDBdR03oldDMwLTEff95();
+
+  TFile* tauIdMVArun2dR03DB_wpFile_;
+  TGraph* DBdR03oldDMwLTEff95_;
+  TFormula* mvaOutput_normalization_DBdR03oldDMwLT_;
+
  /**
    * @brief Initialize names of branches to be read from tree
    */
