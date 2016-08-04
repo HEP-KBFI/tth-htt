@@ -47,9 +47,11 @@
 #include "tthAnalysis/HiggsToTauTau/interface/ElectronHistManager.h" // ElectronHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/MuonHistManager.h" // MuonHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/HadTauHistManager.h" // HadTauHistManager
+#include "tthAnalysis/HiggsToTauTau/interface/HadTauFakeRateHistManager.h" // HadTauFakeRateHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/JetHistManager.h" // JetHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/MEtHistManager.h" // MEtHistManager
-#include "tthAnalysis/HiggsToTauTau/interface/EvtHistManager_3l_1tau.h" // EvtHistManager_3l_1tau
+#include "tthAnalysis/HiggsToTauTau/interface/EvtHistManager_2los_1tau.h" // EvtHistManager_2los_1tau
+#include "tthAnalysis/HiggsToTauTau/interface/EvtTreeManager_2los_1tau.h"
 #include "tthAnalysis/HiggsToTauTau/interface/leptonTypes.h" // getLeptonType, kElectron, kMuon
 #include "tthAnalysis/HiggsToTauTau/interface/backgroundEstimation.h" // prob_chargeMisId
 #include "tthAnalysis/HiggsToTauTau/interface/hltPath.h" // hltPath, create_hltPaths, hltPaths_setBranchAddresses, hltPaths_isTriggered, hltPaths_delete
@@ -65,10 +67,11 @@
 #include <string> // std::string
 #include <vector> // std::vector<>
 #include <cstdlib> // EXIT_SUCCESS, EXIT_FAILURE
-#include <algorithm> // std::sort(), std::find()
+#include <algorithm> // std::sort
 #include <fstream> // std::ofstream
 #include <assert.h> // assert
-#include <array> // std::array<>
+#include "TGraph.h"
+#include "TFormula.h"
 
 #define EPS 1E-2
 
@@ -81,6 +84,8 @@ const double z_window = 10.;
 const double met_coef =  0.00397;
 const double mht_coef =  0.00265;
 
+enum { k2eos_btight, k2eos_bloose, k1e1muos_btight, k1e1muos_bloose, k2muos_btight, k2muos_bloose };
+
 /**
  * @brief Auxiliary function used for sorting leptons by decreasing pT
  * @param Given pair of leptons
@@ -89,16 +94,6 @@ const double mht_coef =  0.00265;
 bool isHigherPt(const GenParticle* particle1, const GenParticle* particle2)
 {
   return (particle1->pt_ > particle2->pt_);
-}
-
-/**
- * @brief Auxiliary function used for sorting jets by decreasing btagging CSV value
- * @param Given pair of jets
- * @return True, if first jet has higher CSV; false if second jet has higher CSV
- */
-bool isHigherCSV(const RecoJet* jet1, const RecoJet* jet2)
-{
-  return (jet1->BtagCSV_ > jet2->BtagCSV_);
 }
 
 /**
@@ -114,175 +109,9 @@ bool isMatched(const Tfakeable& fakeableLepton, const std::vector<Ttight*>& tigh
   }
   return false; // no match found
 }
-
-/**
- * @brief Encapsulated input information of an event
- *        (run, lumi, event numbers; MET) needed by MEM
- * @todo Drop it into a separate file
- */
-struct
-EventSpecifics_Out
-{
-  UInt_t run;
-  UInt_t lumi;
-  ULong64_t evt;
-  Double_t met_pt;
-  Double_t met_phi;
-
-  TBranch * branch_run = 0;
-  TBranch * branch_lumi = 0;
-  TBranch * branch_evt = 0;
-  TBranch * branch_met_pt = 0;
-  TBranch * branch_met_phi = 0;
-
-  void
-  setBranches(TTree * t)
-  {
-    branch_run     = t -> Branch("run",     &run,     "run/i");
-    branch_lumi    = t -> Branch("lumi",    &lumi,    "lumi/i");
-    branch_evt     = t -> Branch("evt",     &evt,     "evt/l");
-    branch_met_pt  = t -> Branch("met_pt",  &met_pt,  "met_pt/D");
-    branch_met_phi = t -> Branch("met_phi", &met_phi, "met_phi/D");
-  }
-};
-
-/**
- * @brief MVA-specific variables
- * @note Not needed by MEM per se, but still necessary in BDT training
- *       (the root file containing all events passing the cuts might
- *        be used as an input in separate BDT training routines)
- */
-struct
-EventMVAIO_Out
-{
-  Double_t max2LeptonEta;
-  Double_t MT_met_lep1;
-  Double_t nJet25_Recl;
-  Double_t mindr_lep1_jet;
-  Double_t mindr_lep2_jet;
-  Double_t lep1_cone_pt;
-  Double_t lep3_cone_pt;
-  Double_t avg_dr_jet;
-  Double_t mhtJet25_Recl;
-  Double_t mvaOutput_3l_ttV;
-  Double_t mvaOutput_3l_ttbar;
-
-  TBranch * branch_max2LeptonEta;
-  TBranch * branch_MT_met_lep1;
-  TBranch * branch_nJet25_Recl;
-  TBranch * branch_mindr_lep1_jet;
-  TBranch * branch_mindr_lep2_jet;
-  TBranch * branch_lep1_cone_pt;
-  TBranch * branch_lep3_cone_pt;
-  TBranch * branch_avg_dr_jet;
-  TBranch * branch_mhtJet25_Recl;
-  TBranch * branch_mvaOutput_3l_ttV;
-  TBranch * branch_mvaOutput_3l_ttbar;
-
-  void
-  setBranches(TTree * t)
-  {
-    branch_max2LeptonEta      = t -> Branch("max2LeptonEta",
-                                            &max2LeptonEta,      "max2LeptonEta/D");
-    branch_MT_met_lep1        = t -> Branch("MT_met_lep1",
-                                            &MT_met_lep1,        "MT_met_lep1/D");
-    branch_nJet25_Recl        = t -> Branch("nJet25_Recl",
-                                            &nJet25_Recl,        "nJet25_Recl/D");
-    branch_mindr_lep1_jet     = t -> Branch("mindr_lep1_jet",
-                                            &mindr_lep1_jet,     "mindr_lep1_jet/D");
-    branch_mindr_lep2_jet     = t -> Branch("mindr_lep2_jet",
-                                            &mindr_lep2_jet,     "mindr_lep2_jet/D");
-    branch_lep1_cone_pt       = t -> Branch("lep1_cone_pt",
-                                            &lep1_cone_pt,       "lep1_cone_pt/D");
-    branch_lep3_cone_pt       = t -> Branch("lep3_cone_pt",
-                                            &lep3_cone_pt,       "lep3_cone_pt/D");
-    branch_avg_dr_jet         = t -> Branch("avg_dr_jet",
-                                            &avg_dr_jet,         "avg_dr_jet/D");
-    branch_mhtJet25_Recl      = t -> Branch("mhtJet25_Recl",
-                                            &mhtJet25_Recl,      "mhtJet25_Recl/D");
-    branch_mvaOutput_3l_ttV   = t -> Branch("mvaOutput_3l_ttV",
-                                            &mvaOutput_3l_ttV,   "mvaOutput_3l_ttV/D");
-    branch_mvaOutput_3l_ttbar = t -> Branch("mvaOutput_3l_ttbar",
-                                            &mvaOutput_3l_ttbar, "mvaOutput_3l_ttbar/D");
-  }
-
-  void
-  setValues(const std::map<std::string, Double_t> & mvaInputs,
-            Double_t mvaOutput_3l_ttV,
-            Double_t mvaOutput_3l_ttbar)
-  {
-    max2LeptonEta  = mvaInputs.at("max(abs(LepGood_eta[iF_Recl[0]]),abs(LepGood_eta[iF_Recl[1]]))");
-    MT_met_lep1    = mvaInputs.at("MT_met_lep1");
-    nJet25_Recl    = mvaInputs.at("nJet25_Recl");
-    mindr_lep1_jet = mvaInputs.at("mindr_lep1_jet");
-    mindr_lep2_jet = mvaInputs.at("mindr_lep2_jet");
-    lep1_cone_pt   = mvaInputs.at("LepGood_conePt[iF_Recl[0]]");
-    lep3_cone_pt   = mvaInputs.at("LepGood_conePt[iF_Recl[2]]");
-    avg_dr_jet     = mvaInputs.at("avg_dr_jet");
-    mhtJet25_Recl  = mvaInputs.at("mhtJet25_Recl");
-    this -> mvaOutput_3l_ttV   = mvaOutput_3l_ttV;
-    this -> mvaOutput_3l_ttbar = mvaOutput_3l_ttbar;
-  }
-};
-
-/**
- * @brief Encapsulated input information of an event
- *        (particle collection) needed by MEM
- * @todo Drop it into a separate file
- */
-struct
-EventObject_Out
-{
-  Double_t pt;
-  Double_t eta;
-  Double_t phi;
-  Double_t mass;
-  Int_t   charge;
-
-  TBranch * branch_pt = 0;
-  TBranch * branch_eta = 0;
-  TBranch * branch_phi = 0;
-  TBranch * branch_mass = 0;
-  TBranch * branch_charge = 0;
-
-  void
-  setBranches(TTree * t,
-              const std::string & s,
-              bool hasIncludeCharge = false)
-  {
-    branch_pt     = t -> Branch(Form("%s_pt", s.c_str()),
-                                &pt,   Form("%s_pt/D", s.c_str()));
-    branch_eta    = t -> Branch(Form("%s_eta", s.c_str()),
-                                &eta,  Form("%s_eta/D", s.c_str()));
-    branch_phi    = t -> Branch(Form("%s_phi", s.c_str()),
-                                &phi,  Form("%s_phi/D", s.c_str()));
-    branch_mass   = t -> Branch(Form("%s_mass", s.c_str()),
-                                &mass, Form("%s_mass/D", s.c_str()));
-    if(hasIncludeCharge)
-      branch_charge = t -> Branch(Form("%s_charge", s.c_str()),
-                                  &charge, Form("%s_charge/I", s.c_str()));
-  }
-
-  void
-  setValues(const GenParticle * p)
-  {
-    pt = p -> pt_;
-    eta = p -> eta_;
-    phi = p -> phi_;
-    mass = p -> mass_;
-  }
-
-  void
-  setValues(const GenLepton * p)
-  {
-    setValues(static_cast<const GenParticle *>(p));
-    charge = p -> charge_;
-  }
-};
-typedef struct EventObject_Out EO_O;
  
 /**
- * @brief Produce datacard and control plots for 3l_1tau categories.
+ * @brief Produce datacard and control plots for 2los_1tau categories.
  */
 int main(int argc, char* argv[]) 
 {
@@ -292,20 +121,20 @@ int main(int argc, char* argv[])
     return EXIT_SUCCESS;
   }
 
-  std::cout << "<analyze_3l_1tau>:" << std::endl;
+  std::cout << "<produceTTHMVATrainingNtuple_2los_1tau>:" << std::endl;
 
 //--- keep track of time it takes the macro to execute
   TBenchmark clock;
-  clock.Start("analyze_3l_1tau");
+  clock.Start("produceTTHMVATrainingNtuple_2los_1tau");
 
 //--- read python configuration parameters
   if ( !edm::readPSetsFrom(argv[1])->existsAs<edm::ParameterSet>("process") ) 
-    throw cms::Exception("analyze_3l_1tau") 
+    throw cms::Exception("produceTTHMVATrainingNtuple_2los_1tau") 
       << "No ParameterSet 'process' found in configuration file = " << argv[1] << " !!\n";
 
   edm::ParameterSet cfg = edm::readPSetsFrom(argv[1])->getParameter<edm::ParameterSet>("process");
 
-  edm::ParameterSet cfg_analyze = cfg.getParameter<edm::ParameterSet>("analyze_3l_1tau");
+  edm::ParameterSet cfg_analyze = cfg.getParameter<edm::ParameterSet>("produceTTHMVATrainingNtuple_2los_1tau");
 
   std::string treeName = cfg_analyze.getParameter<std::string>("treeName");
 
@@ -340,7 +169,7 @@ int main(int argc, char* argv[])
   if      ( leptonSelection_string == "Loose"    ) leptonSelection = kLoose;
   else if ( leptonSelection_string == "Fakeable" ) leptonSelection = kFakeable;
   else if ( leptonSelection_string == "Tight"    ) leptonSelection = kTight;
-  else throw cms::Exception("analyze_3l_1tau") 
+  else throw cms::Exception("produceTTHMVATrainingNtuple_2los_1tau") 
     << "Invalid Configuration parameter 'leptonSelection' = " << leptonSelection_string << " !!\n";
 
   std::string hadTauSelection_string = cfg_analyze.getParameter<std::string>("hadTauSelection");
@@ -359,7 +188,7 @@ int main(int argc, char* argv[])
     lutFakeRate_mu = loadTH2(inputFile, histogramName_mu);
     inputFilesToClose.push_back(inputFile);
   }
-
+  
   bool isMC = cfg_analyze.getParameter<bool>("isMC"); 
   std::string central_or_shift = cfg_analyze.getParameter<std::string>("central_or_shift");
   double lumiScale = ( process_string != "data_obs" ) ? cfg_analyze.getParameter<double>("lumiScale") : 1.;
@@ -373,7 +202,7 @@ int main(int argc, char* argv[])
     std::string shiftUp_or_Down = "";
     if      ( central_or_shift_tstring.EndsWith("Up")   ) shiftUp_or_Down = "Up";
     else if ( central_or_shift_tstring.EndsWith("Down") ) shiftUp_or_Down = "Down";
-    else throw cms::Exception("analyze_3l_1tau")
+    else throw cms::Exception("produceTTHMVATrainingNtuple_2los_1tau")
       << "Invalid Configuration parameter 'central_or_shift' = " << central_or_shift << " !!\n";
     if      ( central_or_shift_tstring.BeginsWith("CMS_ttHl_btag_HF")       ) jet_btagWeight_branch = "Jet_bTagWeightHF" + shiftUp_or_Down;
     else if ( central_or_shift_tstring.BeginsWith("CMS_ttHl_btag_HFStats1") ) jet_btagWeight_branch = "Jet_bTagWeightHFStats1" + shiftUp_or_Down;
@@ -392,7 +221,7 @@ int main(int argc, char* argv[])
       if      ( shiftUp_or_Down == "Up"   ) hadTauPt_option = RecoHadTauReader::kHadTauPt_shiftUp;
       else if ( shiftUp_or_Down == "Down" ) hadTauPt_option = RecoHadTauReader::kHadTauPt_shiftDown;
       else assert(0);
-    } else throw cms::Exception("analyze_3l_1tau")
+    } else throw cms::Exception("produceTTHMVATrainingNtuple_2los_1tau")
 	<< "Invalid Configuration parameter 'central_or_shift' = " << central_or_shift << " !!\n";
   }
 
@@ -407,9 +236,6 @@ int main(int argc, char* argv[])
   }
 
   std::string selEventsFileName_output = cfg_analyze.getParameter<std::string>("selEventsFileName_output");
-
-  std::string selEventsTFileName = cfg_analyze.getParameter<std::string>("selEventsTFileName");
-  const bool writeSelEventsFile = selEventsTFileName != "";
 
   fwlite::InputSource inputFiles(cfg); 
   int maxEvents = inputFiles.maxEvents();
@@ -427,7 +253,7 @@ int main(int argc, char* argv[])
   }
   
   if ( !(inputTree->GetListOfFiles()->GetEntries() >= 1) ) {
-    throw cms::Exception("analyze_3l_1tau") 
+    throw cms::Exception("produceTTHMVATrainingNtuple_2los_1tau") 
       << "Failed to identify input Tree !!\n";
   }
   
@@ -436,33 +262,7 @@ int main(int argc, char* argv[])
   //     cf. http://root.cern.ch/phpBB3/viewtopic.php?t=10062
   inputTree->LoadTree(0);
 
-//--- create output root file from selected events if needed
-  TFile * selEventsTFile = 0;
-  TTree * selEventsTTree = 0;
-  EventSpecifics_Out eventSpecificsOut;
-  std::array<EventObject_Out, 3> leptonsOut {{  EO_O(), EO_O(), EO_O() }};
-  std::array<EventObject_Out, 2> jetsOut {{ EO_O(), EO_O() }};
-  EventObject_Out htauOut;
-  EventMVAIO_Out MVAOut;
-
-  if(writeSelEventsFile)
-  {
-    selEventsTFile = new TFile(selEventsTFileName.c_str(), "recreate");
-    selEventsTTree = new TTree("tree", "Selected events created for MEM");
-    eventSpecificsOut.setBranches(selEventsTTree);
-    for(std::size_t i = 0; i < leptonsOut.size(); ++i)
-      leptonsOut[i].setBranches(selEventsTTree,
-                                std::string(TString::Format("lepton%lu", i + 1)), true);
-    for(std::size_t i = 0; i < jetsOut.size(); ++i)
-      jetsOut[i].setBranches(selEventsTTree,
-                             std::string(TString::Format("jet%lu", i + 1)), false);
-    htauOut.setBranches(selEventsTTree, "htau1", false);
-    MVAOut.setBranches(selEventsTTree);
-  }
-
-  std::cout << "input Tree contains " << inputTree->GetEntries()
-            << " Entries in " << inputTree->GetListOfFiles()->GetEntries()
-            << " files." << std::endl;
+  std::cout << "input Tree contains " << inputTree->GetEntries() << " Entries in " << inputTree->GetListOfFiles()->GetEntries() << " files." << std::endl;
 
 //--- declare event-level variables
   RUN_TYPE run;
@@ -519,7 +319,11 @@ int main(int argc, char* argv[])
   RecoHadTauCollectionCleaner hadTauCleaner(0.3);
   RecoHadTauCollectionSelectorTight hadTauSelector;
   hadTauSelector.set(hadTauSelection_string);
-  
+  edm::FileInPath tauIdMVArun2dR03DB_wpFilePath = edm::FileInPath("tthAnalysis/HiggsToTauTau/data/wpDiscriminationByIsolationMVARun2v1_DBdR03oldDMwLT.root");
+  TFile* tauIdMVArun2dR03DB_wpFile = new TFile(tauIdMVArun2dR03DB_wpFilePath.fullPath().c_str());
+  TGraph* DBdR03oldDMwLTEff95 = (TGraph*)tauIdMVArun2dR03DB_wpFile->Get("DBdR03oldDMwLTEff95");
+  TFormula* mvaOutput_normalization_DBdR03oldDMwLT = (TFormula*)tauIdMVArun2dR03DB_wpFile->Get("mvaOutput_normalization_DBdR03oldDMwLT");  
+
   RecoJetReader* jetReader = new RecoJetReader("nJet", "Jet");
   jetReader->setJetPt_central_or_shift(jetPt_option);
   jetReader->setBranchName_BtagWeight(jet_btagWeight_branch);
@@ -543,103 +347,150 @@ int main(int argc, char* argv[])
   }
 
 //--- initialize BDTs used to discriminate ttH vs. ttV and ttH vs. ttbar 
-//    in 3l category of ttH multilepton analysis
-  std::string mvaFileName_3l_ttV = "tthAnalysis/HiggsToTauTau/data/3l_ttV_BDTG.weights.xml";
-  std::vector<std::string> mvaInputVariables_3l_ttV;
-  mvaInputVariables_3l_ttV.push_back("max(abs(LepGood_eta[iF_Recl[0]]),abs(LepGood_eta[iF_Recl[1]]))");
-  mvaInputVariables_3l_ttV.push_back("MT_met_lep1");
-  mvaInputVariables_3l_ttV.push_back("nJet25_Recl");
-  mvaInputVariables_3l_ttV.push_back("mindr_lep1_jet");
-  mvaInputVariables_3l_ttV.push_back("mindr_lep2_jet");
-  mvaInputVariables_3l_ttV.push_back("LepGood_conePt[iF_Recl[0]]");
-  mvaInputVariables_3l_ttV.push_back("LepGood_conePt[iF_Recl[2]]");
-  TMVAInterface mva_3l_ttV(mvaFileName_3l_ttV, mvaInputVariables_3l_ttV, { "iF_Recl[0]", "iF_Recl[1]", "iF_Recl[2]" });
+//    in 2los_1tau category of ttH multilepton analysis
+  std::string mvaFileName_2los_ttV = "tthAnalysis/HiggsToTauTau/data/2lss_ttV_BDTG.weights.xml";
+  std::vector<std::string> mvaInputVariables_2los_ttV;
+  mvaInputVariables_2los_ttV.push_back("max(abs(LepGood_eta[iF_Recl[0]]),abs(LepGood_eta[iF_Recl[1]]))");
+  mvaInputVariables_2los_ttV.push_back("MT_met_lep1");
+  mvaInputVariables_2los_ttV.push_back("nJet25_Recl");
+  mvaInputVariables_2los_ttV.push_back("mindr_lep1_jet");
+  mvaInputVariables_2los_ttV.push_back("mindr_lep2_jet");
+  mvaInputVariables_2los_ttV.push_back("LepGood_conePt[iF_Recl[0]]");
+  mvaInputVariables_2los_ttV.push_back("LepGood_conePt[iF_Recl[1]]");
+  TMVAInterface mva_2los_ttV(mvaFileName_2los_ttV, mvaInputVariables_2los_ttV, { "iF_Recl[0]", "iF_Recl[1]", "iF_Recl[2]" });
 
-  std::string mvaFileName_3l_ttbar = "tthAnalysis/HiggsToTauTau/data/3l_ttbar_BDTG.weights.xml";
-  std::vector<std::string> mvaInputVariables_3l_ttbar;
-  mvaInputVariables_3l_ttbar.push_back("max(abs(LepGood_eta[iF_Recl[0]]),abs(LepGood_eta[iF_Recl[1]]))");
-  mvaInputVariables_3l_ttbar.push_back("MT_met_lep1");
-  mvaInputVariables_3l_ttbar.push_back("nJet25_Recl");
-  mvaInputVariables_3l_ttbar.push_back("mhtJet25_Recl");
-  mvaInputVariables_3l_ttbar.push_back("avg_dr_jet");
-  mvaInputVariables_3l_ttbar.push_back("mindr_lep1_jet");
-  mvaInputVariables_3l_ttbar.push_back("mindr_lep2_jet");
-  TMVAInterface mva_3l_ttbar(mvaFileName_3l_ttbar, mvaInputVariables_3l_ttbar, { "iF_Recl[0]", "iF_Recl[1]", "iF_Recl[2]" });
+  std::string mvaFileName_2los_ttbar = "tthAnalysis/HiggsToTauTau/data/2lss_ttbar_BDTG.weights.xml";
+  std::vector<std::string> mvaInputVariables_2los_ttbar;
+  mvaInputVariables_2los_ttbar.push_back("max(abs(LepGood_eta[iF_Recl[0]]),abs(LepGood_eta[iF_Recl[1]]))");
+  mvaInputVariables_2los_ttbar.push_back("nJet25_Recl");
+  mvaInputVariables_2los_ttbar.push_back("mindr_lep1_jet");
+  mvaInputVariables_2los_ttbar.push_back("mindr_lep2_jet");
+  mvaInputVariables_2los_ttbar.push_back("min(met_pt,400)");
+  mvaInputVariables_2los_ttbar.push_back("avg_dr_jet");
+  mvaInputVariables_2los_ttbar.push_back("MT_met_lep1");
+  TMVAInterface mva_2los_ttbar(mvaFileName_2los_ttbar, mvaInputVariables_2los_ttbar, { "iF_Recl[0]", "iF_Recl[1]", "iF_Recl[2]" });
 
-  std::map<std::string, double> mvaInputs;
-
+  std::map<std::string, double> mvaInputs;    
+  
 //--- open output file containing run:lumi:event numbers of events passing final event selection criteria
   std::ostream* selEventsFile = new std::ofstream(selEventsFileName_output.data(), std::ios::out);
 
 //--- declare histograms
   ElectronHistManager preselElectronHistManager(makeHistManager_cfg(process_string, 
-    Form("3l_1tau_%s/presel/electrons", leptonSelection_string.data()), central_or_shift));
+    Form("2los_1tau_%s/presel/electrons", leptonSelection_string.data()), central_or_shift));
   preselElectronHistManager.bookHistograms(fs);
   MuonHistManager preselMuonHistManager(makeHistManager_cfg(process_string, 
-    Form("3l_1tau_%s/presel/muons", leptonSelection_string.data()), central_or_shift));
+    Form("2los_1tau_%s/presel/muons", leptonSelection_string.data()), central_or_shift));
   preselMuonHistManager.bookHistograms(fs);
   HadTauHistManager preselHadTauHistManager(makeHistManager_cfg(process_string, 
-    Form("3l_1tau_%s/presel/hadTaus", leptonSelection_string.data()), central_or_shift));
+    Form("2los_1tau_%s/presel/hadTaus", leptonSelection_string.data()), central_or_shift));
   preselHadTauHistManager.bookHistograms(fs);
   JetHistManager preselJetHistManager(makeHistManager_cfg(process_string, 
-    Form("3l_1tau_%s/presel/jets", leptonSelection_string.data()), central_or_shift));
+    Form("2los_1tau_%s/presel/jets", leptonSelection_string.data()), central_or_shift));
   preselJetHistManager.bookHistograms(fs);
   JetHistManager preselBJet_looseHistManager(makeHistManager_cfg(process_string, 
-    Form("3l_1tau_%s/presel/BJets_loose", leptonSelection_string.data()), central_or_shift));
+    Form("2los_1tau_%s/presel/BJets_loose", leptonSelection_string.data()), central_or_shift));
   preselBJet_looseHistManager.bookHistograms(fs);
   JetHistManager preselBJet_mediumHistManager(makeHistManager_cfg(process_string, 
-    Form("3l_1tau_%s/presel/BJets_medium", leptonSelection_string.data()), central_or_shift));
+    Form("2los_1tau_%s/presel/BJets_medium", leptonSelection_string.data()), central_or_shift));
   preselBJet_mediumHistManager.bookHistograms(fs);
   MEtHistManager preselMEtHistManager(makeHistManager_cfg(process_string, 
-    Form("3l_1tau_%s/presel/met", leptonSelection_string.data()), central_or_shift));
+    Form("2los_1tau_%s/presel/met", leptonSelection_string.data()), central_or_shift));
   preselMEtHistManager.bookHistograms(fs);
-  EvtHistManager_3l_1tau preselEvtHistManager(makeHistManager_cfg(process_string, 
-    Form("3l_1tau_%s/presel/evt", leptonSelection_string.data()), central_or_shift));
+  EvtHistManager_2los_1tau preselEvtHistManager(makeHistManager_cfg(process_string, 
+    Form("2los_1tau_%s/presel/evt", leptonSelection_string.data()), central_or_shift));
   preselEvtHistManager.bookHistograms(fs);
 
   ElectronHistManager selElectronHistManager(makeHistManager_cfg(process_string, 
-    Form("3l_1tau_%s/sel/electrons", leptonSelection_string.data()), central_or_shift));
+    Form("2los_1tau_%s/sel/electrons", leptonSelection_string.data()), central_or_shift));
   selElectronHistManager.bookHistograms(fs);
+  vstring categories_e = { 
+    "2eos_1tau_bloose", "2eos_1tau_btight",
+    "1e1muos_1tau_bloose", "1e1muos_1tau_btight" };
+  std::map<std::string, std::map<std::string, ElectronHistManager*>> selElectronHistManager_category; // key = category, "leadElectron"/"subleadElectron"/"electron"
+  for ( vstring::const_iterator category = categories_e.begin();
+        category != categories_e.end(); ++category ) {
+    if ( category->find("2eos") != std::string::npos ) {
+      ElectronHistManager* selElectronHistManager_lead = new ElectronHistManager(makeHistManager_cfg(process_string, 
+        Form("%s_%s/sel/leadElectron", category->data(), leptonSelection_string.data()), central_or_shift, 0));
+      selElectronHistManager_lead->bookHistograms(fs);
+      selElectronHistManager_category[*category]["leadElectron"] = selElectronHistManager_lead;
+      ElectronHistManager* selElectronHistManager_sublead = new ElectronHistManager(makeHistManager_cfg(process_string, 
+        Form("%s_%s/sel/subleadElectron", category->data(), leptonSelection_string.data()), central_or_shift, 1));
+      selElectronHistManager_sublead->bookHistograms(fs);
+      selElectronHistManager_category[*category]["subleadElectron"] = selElectronHistManager_sublead;
+    }
+    if ( category->find("1e1muos") != std::string::npos ) {
+      ElectronHistManager* selElectronHistManager = new ElectronHistManager(makeHistManager_cfg(process_string, 
+        Form("%s_%s/sel/electron", category->data(), leptonSelection_string.data()), central_or_shift));
+      selElectronHistManager->bookHistograms(fs);
+      selElectronHistManager_category[*category]["electron"] = selElectronHistManager;
+    }
+  }
 
   MuonHistManager selMuonHistManager(makeHistManager_cfg(process_string, 
-    Form("3l_1tau_%s/sel/muons", leptonSelection_string.data()), central_or_shift));
+    Form("2los_1tau_%s/sel/muons", leptonSelection_string.data()), central_or_shift));
   selMuonHistManager.bookHistograms(fs);
-
+  vstring categories_mu = { 
+    "1e1muos_1tau_bloose", "1e1muos_1tau_btight", 
+    "2muos_1tau_bloose", "2muos_1tau_btight" 
+  };
+  std::map<std::string, std::map<std::string, MuonHistManager*>> selMuonHistManager_category; // key = category, "leadMuon"/"subleadMuon"/"muon"
+  for ( vstring::const_iterator category = categories_mu.begin();
+        category != categories_mu.end(); ++category ) {
+    if ( category->find("1e1muos") != std::string::npos ) {
+      MuonHistManager* selMuonHistManager = new MuonHistManager(makeHistManager_cfg(process_string, 
+        Form("%s_%s/sel/muon", category->data(), leptonSelection_string.data()), central_or_shift));
+      selMuonHistManager->bookHistograms(fs);
+      selMuonHistManager_category[*category]["muon"] = selMuonHistManager;
+    }
+    if ( category->find("2muos") != std::string::npos ) {
+      MuonHistManager* selMuonHistManager_lead = new MuonHistManager(makeHistManager_cfg(process_string, 
+        Form("%s_%s/sel/leadMuon", category->data(), leptonSelection_string.data()), central_or_shift, 0));
+      selMuonHistManager_lead->bookHistograms(fs);
+      selMuonHistManager_category[*category]["leadMuon"] = selMuonHistManager_lead;
+      MuonHistManager* selMuonHistManager_sublead = new MuonHistManager(makeHistManager_cfg(process_string, 
+        Form("%s_%s/sel/subleadMuon", category->data(), leptonSelection_string.data()), central_or_shift, 1));
+      selMuonHistManager_sublead->bookHistograms(fs);
+      selMuonHistManager_category[*category]["subleadMuon"] = selMuonHistManager_sublead;
+    }
+  }
+  
   HadTauHistManager selHadTauHistManager(makeHistManager_cfg(process_string, 
-    Form("3l_1tau_%s/sel/hadTaus", leptonSelection_string.data()), central_or_shift));
+    Form("2los_1tau_%s/sel/hadTaus", leptonSelection_string.data()), central_or_shift));
   selHadTauHistManager.bookHistograms(fs);
 
   JetHistManager selJetHistManager(makeHistManager_cfg(process_string, 
-    Form("3l_1tau_%s/sel/jets", leptonSelection_string.data()), central_or_shift));
+    Form("2los_1tau_%s/sel/jets", leptonSelection_string.data()), central_or_shift));
   selJetHistManager.bookHistograms(fs);
   JetHistManager selJetHistManager_lead(makeHistManager_cfg(process_string, 
-    Form("3l_1tau_%s/sel/leadJet", leptonSelection_string.data()), central_or_shift, 0));
+    Form("2los_1tau_%s/sel/leadJet", leptonSelection_string.data()), central_or_shift, 0));
   selJetHistManager_lead.bookHistograms(fs);
   JetHistManager selJetHistManager_sublead(makeHistManager_cfg(process_string, 
-    Form("3l_1tau_%s/sel/subleadJet", leptonSelection_string.data()), central_or_shift, 1));
+    Form("2los_1tau_%s/sel/subleadJet", leptonSelection_string.data()), central_or_shift, 1));
   selJetHistManager_sublead.bookHistograms(fs);
 
   JetHistManager selBJet_looseHistManager(makeHistManager_cfg(process_string, 
-    Form("3l_1tau_%s/sel/BJets_loose", leptonSelection_string.data()), central_or_shift));
+    Form("2los_1tau_%s/sel/BJets_loose", leptonSelection_string.data()), central_or_shift));
   selBJet_looseHistManager.bookHistograms(fs);
   JetHistManager selBJet_looseHistManager_lead(makeHistManager_cfg(process_string, 
-    Form("3l_1tau_%s/sel/leadBJet_loose", leptonSelection_string.data()), central_or_shift, 0));
+    Form("2los_1tau_%s/sel/leadBJet_loose", leptonSelection_string.data()), central_or_shift, 0));
   selBJet_looseHistManager_lead.bookHistograms(fs);
   JetHistManager selBJet_looseHistManager_sublead(makeHistManager_cfg(process_string, 
-    Form("3l_1tau_%s/sel/subleadBJet_loose", leptonSelection_string.data()), central_or_shift, 1));
+    Form("2los_1tau_%s/sel/subleadBJet_loose", leptonSelection_string.data()), central_or_shift, 1));
   selBJet_looseHistManager_sublead.bookHistograms(fs);
   JetHistManager selBJet_mediumHistManager(makeHistManager_cfg(process_string, 
-    Form("3l_1tau_%s/sel/BJets_medium", leptonSelection_string.data()), central_or_shift));
+    Form("2los_1tau_%s/sel/BJets_medium", leptonSelection_string.data()), central_or_shift));
   selBJet_mediumHistManager.bookHistograms(fs);
 
   MEtHistManager selMEtHistManager(makeHistManager_cfg(process_string, 
-    Form("3l_1tau_%s/sel/met", leptonSelection_string.data()), central_or_shift));
+    Form("2los_1tau_%s/sel/met", leptonSelection_string.data()), central_or_shift));
   selMEtHistManager.bookHistograms(fs);
 
-  EvtHistManager_3l_1tau selEvtHistManager(makeHistManager_cfg(process_string, 
-    Form("3l_1tau_%s/sel/evt", leptonSelection_string.data()), central_or_shift));
+  EvtHistManager_2los_1tau selEvtHistManager(makeHistManager_cfg(process_string, 
+    Form("2los_1tau_%s/sel/evt", leptonSelection_string.data()), central_or_shift));
   selEvtHistManager.bookHistograms(fs);
-  std::map<std::string, EvtHistManager_3l_1tau*> selEvtHistManager_decayMode; // key = decay mode
+  std::map<std::string, EvtHistManager_2los_1tau*> selEvtHistManager_decayMode; // key = decay mode
   const std::map<std::string, GENHIGGSDECAYMODE_TYPE> decayMode_idString = {
     { "ttH_hww", static_cast<GENHIGGSDECAYMODE_TYPE>(24) },
     { "ttH_hzz", static_cast<GENHIGGSDECAYMODE_TYPE>(23) },
@@ -651,12 +502,29 @@ int main(int argc, char* argv[])
   if ( isSignal ) {
     for ( vstring::const_iterator decayMode = decayModes_evt.begin();
           decayMode != decayModes_evt.end(); ++decayMode) {
-      EvtHistManager_3l_1tau* selEvtHistManager_ptr = new EvtHistManager_3l_1tau(makeHistManager_cfg(decayMode->data(),
-        Form("3l_1tau_%s/sel/evt", leptonSelection_string.data()), central_or_shift));
+      EvtHistManager_2los_1tau* selEvtHistManager_ptr = new EvtHistManager_2los_1tau(makeHistManager_cfg(decayMode->data(),
+        Form("2los_1tau_%s/sel/evt", leptonSelection_string.data()), central_or_shift));
       selEvtHistManager_ptr->bookHistograms(fs);
       selEvtHistManager_decayMode[*decayMode] = selEvtHistManager_ptr;
     }
   }
+  vstring categories_evt = { 
+    "2eos_1tau_bloose", "2eos_1tau_btight", 
+    "1e1muos_1tau_bloose", "1e1muos_1tau_btight", 
+    "2muos_1tau_bloose", "2muos_1tau_btight"
+  };
+  std::map<std::string, EvtHistManager_2los_1tau*> selEvtHistManager_category; // key = category
+  for ( vstring::const_iterator category = categories_evt.begin();
+        category != categories_evt.end(); ++category ) {
+    EvtHistManager_2los_1tau* selEvtHistManager = new EvtHistManager_2los_1tau(makeHistManager_cfg(process_string, 
+      Form("%s_%s/sel/evt", category->data(), leptonSelection_string.data()), central_or_shift));
+    selEvtHistManager->bookHistograms(fs);
+    selEvtHistManager_category[*category] = selEvtHistManager;
+  }
+  
+  EvtTreeManager_2los_1tau selEvtTreeManager(makeHistManager_cfg(process_string,  
+   Form("2los_1tau_%s/sel/evtntuple", leptonSelection_string.data()), central_or_shift));
+  selEvtTreeManager.bookTree(fs);
 
   int numEntries = inputTree->GetEntries();
   int analyzedEntries = 0;
@@ -791,8 +659,23 @@ int main(int argc, char* argv[])
     std::vector<RecoHadTau> hadTaus = hadTauReader->read();
     std::vector<const RecoHadTau*> hadTau_ptrs = convert_to_ptrs(hadTaus);
     std::vector<const RecoHadTau*> cleanedHadTaus = hadTauCleaner(hadTau_ptrs, selMuons, selElectrons);
-    std::vector<const RecoHadTau*> selHadTaus = hadTauSelector(cleanedHadTaus);    
-
+    std::vector<const RecoHadTau*> tightHadTaus;
+    if(hadTauSelection_string == "dR03mvaVVLoose"){
+      std::vector<const RecoHadTau*> tightHadTausVVLoose = hadTauSelector(cleanedHadTaus);
+      tightHadTaus.clear();
+      for(size_t it = 0; it < tightHadTausVVLoose.size(); it++){
+	if(mvaOutput_normalization_DBdR03oldDMwLT->Eval(tightHadTausVVLoose[it]->raw_mva_dR03_) > DBdR03oldDMwLTEff95->Eval(tightHadTausVVLoose[it]->pt_))
+	  {
+	    tightHadTaus.push_back(tightHadTausVVLoose[it]);
+	  }
+      }
+      std::sort(tightHadTaus.begin(), tightHadTaus.end(), isHigherPt);
+    }
+    else{
+      tightHadTaus = hadTauSelector(cleanedHadTaus);
+    }
+    std::vector<const RecoHadTau*> selHadTaus = tightHadTaus;
+    
 //--- build collections of jets and select subset of jets passing b-tagging criteria
     std::vector<RecoJet> jets = jetReader->read();
     std::vector<const RecoJet*> jet_ptrs = convert_to_ptrs(jets);
@@ -845,7 +728,7 @@ int main(int argc, char* argv[])
     preselLeptons.insert(preselLeptons.end(), preselMuons.begin(), preselMuons.end());
     std::sort(preselLeptons.begin(), preselLeptons.end(), isHigherPt);
     // require exactly two leptons passing loose preselection criteria to avoid overlap with 3l category
-    if ( !(preselLeptons.size() == 3) ) {
+    if ( !(preselLeptons.size() == 2) ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS preselLeptons selection." << std::endl;
 	std::cout << " (#preselLeptons = " << preselLeptons.size() << ")" << std::endl;
@@ -856,31 +739,22 @@ int main(int argc, char* argv[])
       }
       continue;
     }
-    cutFlowTable.update("3 presel leptons");
+    cutFlowTable.update("2 presel leptons");
     const RecoLepton* preselLepton_lead = preselLeptons[0];
     int preselLepton_lead_type = getLeptonType(preselLepton_lead->pdgId_);
     const RecoLepton* preselLepton_sublead = preselLeptons[1];
     int preselLepton_sublead_type = getLeptonType(preselLepton_sublead->pdgId_);
-    const RecoLepton* preselLepton_third = preselLeptons[2];
-    int preselLepton_third_type = getLeptonType(preselLepton_third->pdgId_);
-
+    
     // require that trigger paths match event category (with event category based on preselLeptons);
-    if ( (preselElectrons.size() == 3 &&                            !(selTrigger_1e || selTrigger_2e                                                        ) ) ||
-	 (preselElectrons.size() == 2 && preselMuons.size() == 1 && !(selTrigger_1e || selTrigger_2e || selTrigger_1mu ||                   selTrigger_1e1mu) ) ||
-	 (preselElectrons.size() == 1 && preselMuons.size() == 2 && !(selTrigger_1e ||                  selTrigger_1mu || selTrigger_2mu || selTrigger_1e1mu) ) ||
-	 (                               preselMuons.size() == 3 && !(                                  selTrigger_1mu || selTrigger_2mu                    ) ) ) {
-      if ( run_lumi_eventSelector ) {
-	std::cout << "event FAILS trigger selection for given preselLepton multiplicity." << std::endl; 
-	std::cout << " (#preselElectrons = " << preselElectrons.size() 
-		  << ", #preselMuons = " << preselMuons.size() 
-		  << ", selTrigger_1e = " << selTrigger_1e 
-		  << ", selTrigger_2e = " << selTrigger_2e 
-		  << ", selTrigger_1mu = " << selTrigger_1mu 
-		  << ", selTrigger_2mu = " << selTrigger_2mu 
-		  << ", selTrigger_1e1mu = " << selTrigger_1e1mu << ")" << std::endl;
-      }
+     if ( preselElectrons.size() == 2 && !(selTrigger_1e  || selTrigger_2e) ) {
       continue;
-    } 
+    }
+    if ( preselMuons.size() == 2 && !(selTrigger_1mu || selTrigger_2mu) ) {
+      continue;
+    }
+    if ( preselElectrons.size() == 1 && preselMuons.size() == 1 && !(selTrigger_1e  || selTrigger_1mu || selTrigger_1e1mu) ) {
+      continue;
+    }
     cutFlowTable.update("presel lepton trigger match");
 
     // apply requirement on jets (incl. b-tagged jets) and hadronic taus on preselection level
@@ -891,7 +765,7 @@ int main(int argc, char* argv[])
       }
       continue;
     }
-    cutFlowTable.update(">= 2 jets (1)");
+    cutFlowTable.update(">= 2 jets");
     if ( !(selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS selBJets selection." << std::endl;
@@ -942,70 +816,59 @@ int main(int argc, char* argv[])
 	    jet != selJets.end(); ++jet ) {
 	evtWeight *= (*jet)->BtagWeight_;
       }
-    }    
+    }
 
 //--- apply data/MC corrections for trigger efficiency,
 //    and efficiencies for lepton to pass loose identification and isolation criteria
     if ( isMC ) {
-      evtWeight *= sf_triggerEff(3,
+      evtWeight *= sf_triggerEff(2,
         preselLepton_lead_type, preselLepton_lead->pt_, preselLepton_lead->eta_, 
-	preselLepton_sublead_type, preselLepton_sublead->pt_, preselLepton_sublead->eta_,
-        preselLepton_third_type, preselLepton_third->pt_, preselLepton_third->eta_);
-      evtWeight *= sf_leptonID_and_Iso_loose(3,
+	preselLepton_sublead_type, preselLepton_sublead->pt_, preselLepton_sublead->eta_);
+      evtWeight *= sf_leptonID_and_Iso_loose(2,
         preselLepton_lead_type, preselLepton_lead->pt_, preselLepton_lead->eta_, 
-	preselLepton_sublead_type, preselLepton_sublead->pt_, preselLepton_sublead->eta_,
-        preselLepton_third_type, preselLepton_third->pt_, preselLepton_third->eta_);
+	preselLepton_sublead_type, preselLepton_sublead->pt_, preselLepton_sublead->eta_);
     }
 
 //--- compute output of BDTs used to discriminate ttH vs. ttV and ttH vs. ttbar 
-//    in 3l category of ttH multilepton analysis 
+//    in 2los_1tau category of ttH multilepton analysis 
     mvaInputs["max(abs(LepGood_eta[iF_Recl[0]]),abs(LepGood_eta[iF_Recl[1]]))"] = std::max(std::fabs(preselLepton_lead->eta_), std::fabs(preselLepton_sublead->eta_));
     mvaInputs["MT_met_lep1"]                = comp_MT_met_lep1(*preselLepton_lead, met_pt, met_phi);
     mvaInputs["nJet25_Recl"]                = comp_n_jet25_recl(selJets);
     mvaInputs["mindr_lep1_jet"]             = comp_mindr_lep1_jet(*preselLepton_lead, selJets);
     mvaInputs["mindr_lep2_jet"]             = comp_mindr_lep2_jet(*preselLepton_sublead, selJets);
     mvaInputs["LepGood_conePt[iF_Recl[0]]"] = comp_lep1_conePt(*preselLepton_lead);
-    mvaInputs["LepGood_conePt[iF_Recl[2]]"] = comp_lep3_conePt(*preselLepton_third);
+    mvaInputs["LepGood_conePt[iF_Recl[1]]"] = comp_lep2_conePt(*preselLepton_sublead);
+    mvaInputs["min(met_pt,400)"]            = std::min(met_pt, (Float_t)400.);
     mvaInputs["avg_dr_jet"]                 = comp_avg_dr_jet(selJets);
-    mvaInputs["mhtJet25_Recl"]              = mht_p4.pt();
-
     int index = 1;
     for ( std::map<std::string, double>::const_iterator mvaInput = mvaInputs.begin();
-	  mvaInput != mvaInputs.end(); ++mvaInput ) {
+          mvaInput != mvaInputs.end(); ++mvaInput ) {
       if ( TMath::IsNaN(mvaInput->second) ) {
-	std::cout << "Warning in run = " << run << ", lumi = " << lumi << ", event = " << event << ":" << std::endl; 
-	std::cout << " mvaInput #" << index << " ('" << mvaInput->first << "') = " << mvaInput->second << " --> setting mvaInput value to zero !!" << std::endl; 
-	mvaInputs[mvaInput->first] = 0.;
-	++index;
+        std::cout << "Warning in run = " << run << ", lumi = " << lumi << ", event = " << event << ":" << std::endl; 
+        std::cout << " mvaInput #" << index << " ('" << mvaInput->first << "') = " << mvaInput->second << " --> setting mvaInput value to zero !!" << std::endl; 
+        mvaInputs[mvaInput->first] = 0.;
+        ++index;
       }
     }
 
-    double mvaOutput_3l_ttV = mva_3l_ttV(mvaInputs);
-    double mvaOutput_3l_ttbar = mva_3l_ttbar(mvaInputs);
+    double mvaOutput_2los_ttV = mva_2los_ttV(mvaInputs);
+    double mvaOutput_2los_ttbar = mva_2los_ttbar(mvaInputs);
 
 //--- compute integer discriminant based on both BDT outputs,
-//    as defined in Table 10 of AN-2016/211
-    Double_t mvaDiscr_3l = -1;
-    if      ( mvaOutput_3l_ttbar >  +0.3 && mvaOutput_3l_ttV >  -0.1 ) mvaDiscr_3l = 3.;
-    else if ( mvaOutput_3l_ttbar <= +0.3 && mvaOutput_3l_ttV <= -0.1 ) mvaDiscr_3l = 1.;
-    else                                                               mvaDiscr_3l = 2.;
+//    as defined in Table X of AN-2015/321
+    Double_t mvaDiscr_2los = -1;
+    if      ( mvaOutput_2los_ttbar > +0.3 && mvaOutput_2los_ttV >  -0.1 ) mvaDiscr_2los = 6.;
+    else if ( mvaOutput_2los_ttbar > +0.3 && mvaOutput_2los_ttV <= -0.1 ) mvaDiscr_2los = 5.;
+    else if ( mvaOutput_2los_ttbar > -0.2 && mvaOutput_2los_ttV >  -0.1 ) mvaDiscr_2los = 4.;
+    else if ( mvaOutput_2los_ttbar > -0.2 && mvaOutput_2los_ttV <= -0.1 ) mvaDiscr_2los = 3.;
+    else if (                                mvaOutput_2los_ttV >  -0.1 ) mvaDiscr_2los = 2.;
+    else                                                                  mvaDiscr_2los = 1.;    
 
-    const RecoLepton* preselLepton1_OS = 0;
-    const RecoLepton* preselLepton2_OS = 0;
-    if ( preselLepton_lead->charge_*selHadTau_lead->charge_ < 0. ) {
-      preselLepton1_OS = preselLepton_lead;
-    } 
-    if ( preselLepton_sublead->charge_*selHadTau_lead->charge_ < 0. ) {
-      if ( !preselLepton1_OS ) preselLepton1_OS = preselLepton_sublead;
-      else preselLepton2_OS = preselLepton_sublead;
-    }
-    if ( preselLepton_third->charge_*selHadTau_lead->charge_ < 0. ) {
-      if ( !preselLepton1_OS ) preselLepton1_OS = preselLepton_third;
-      else if ( !preselLepton2_OS ) preselLepton2_OS = preselLepton_third;
-    }
-    double mTauTauVis1_presel = ( preselLepton1_OS ) ? (preselLepton1_OS->p4_ + selHadTau_lead->p4_).mass() : -1.;
-    double mTauTauVis2_presel = ( preselLepton2_OS ) ? (preselLepton2_OS->p4_ + selHadTau_lead->p4_).mass() : -1.;
-     
+    const RecoLepton* preselLepton_OS = 0;
+    if      ( preselLepton_lead->charge_*selHadTau_lead->charge_    < 0. ) preselLepton_OS = preselLepton_lead;
+    else if ( preselLepton_sublead->charge_*selHadTau_lead->charge_ < 0. ) preselLepton_OS = preselLepton_sublead;
+    double mTauTauVis_presel = ( preselLepton_OS ) ? (preselLepton_OS->p4_ + selHadTau_lead->p4_).mass() : -1.;
+
 //--- fill histograms with events passing preselection
     preselMuonHistManager.fillHistograms(preselMuons, evtWeight);
     preselElectronHistManager.fillHistograms(preselElectrons, evtWeight);
@@ -1016,8 +879,8 @@ int main(int argc, char* argv[])
     preselMEtHistManager.fillHistograms(met_p4, mht_p4, met_LD, evtWeight);
     preselEvtHistManager.fillHistograms(preselElectrons.size(), preselMuons.size(), selHadTaus.size(), 
       selJets.size(), selBJets_loose.size(), selBJets_medium.size(), 
-      mvaOutput_3l_ttV, mvaOutput_3l_ttbar, mvaDiscr_3l, 
-      mTauTauVis1_presel, mTauTauVis2_presel, evtWeight);
+      mvaOutput_2los_ttV, mvaOutput_2los_ttbar, mvaDiscr_2los, 
+      -1., mTauTauVis_presel, evtWeight);
 
 //--- apply final event selection 
     std::vector<const RecoLepton*> selLeptons;    
@@ -1026,7 +889,7 @@ int main(int argc, char* argv[])
     selLeptons.insert(selLeptons.end(), selMuons.begin(), selMuons.end());
     std::sort(selLeptons.begin(), selLeptons.end(), isHigherPt);
     // require exactly two leptons passing tight selection criteria of final event selection 
-    if ( !(selLeptons.size() == 3) ) {
+    if ( !(selLeptons.size() == 2) ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS selLeptons selection." << std::endl;
 	std::cout << " (#selLeptons = " << selLeptons.size() << ")" << std::endl;
@@ -1037,32 +900,24 @@ int main(int argc, char* argv[])
       }
       continue;
     }
-    cutFlowTable.update("3 sel leptons", evtWeight);
+    cutFlowTable.update("2 sel leptons", evtWeight);
     const RecoLepton* selLepton_lead = selLeptons[0];
     const RecoLepton* selLepton_sublead = selLeptons[1];
-    const RecoLepton* selLepton_third = selLeptons[2];
-
+    
     // require that trigger paths match event category (with event category based on selLeptons);
-    if ( (selElectrons.size() == 3 &&                         !(selTrigger_1e || selTrigger_2e                                                        ) ) ||
-	 (selElectrons.size() == 2 && selMuons.size() == 1 && !(selTrigger_1e || selTrigger_2e || selTrigger_1mu ||                   selTrigger_1e1mu) ) ||
-	 (selElectrons.size() == 1 && selMuons.size() == 2 && !(selTrigger_1e ||                  selTrigger_1mu || selTrigger_2mu || selTrigger_1e1mu) ) ||
-	 (                            selMuons.size() == 3 && !(                                  selTrigger_1mu || selTrigger_2mu                    ) ) ) {
-      if ( run_lumi_eventSelector ) {
-	std::cout << "event FAILS trigger selection for given selLepton multiplicity." << std::endl; 
-	std::cout << " (#selElectrons = " << selElectrons.size() 
-		  << ", #selMuons = " << selMuons.size() 
-		  << ", selTrigger_1e = " << selTrigger_1e 
-		  << ", selTrigger_2e = " << selTrigger_2e 
-		  << ", selTrigger_1mu = " << selTrigger_1mu 
-		  << ", selTrigger_2mu = " << selTrigger_2mu 
-		  << ", selTrigger_1e1mu = " << selTrigger_1e1mu << ")" << std::endl;
-      }
+    if ( selElectrons.size() == 2 && !(selTrigger_1e  || selTrigger_2e) ) {
       continue;
-    } 
-    cutFlowTable.update("sel lepton trigger match");
+    }
+    if ( selMuons.size() == 2 && !(selTrigger_1mu || selTrigger_2mu) ) {
+      continue;
+    }
+    if ( selElectrons.size() == 1 && selMuons.size() == 1 && !(selTrigger_1e  || selTrigger_1mu || selTrigger_1e1mu) ) {
+      continue;
+    }
+    cutFlowTable.update("sel lepton trigger match", evtWeight);
 
     // apply requirement on jets (incl. b-tagged jets) and hadronic taus on level of final event selection
-    if ( !(selJets.size() >= 2) ) {
+    if ( !(selJets.size() >= 4) ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS selJets selection." << std::endl;
 	std::cout << " (#selJets = " << selJets.size() << ")" << std::endl;
@@ -1073,8 +928,8 @@ int main(int argc, char* argv[])
       }
       continue;
     }
-    cutFlowTable.update(">= 2 jets (2)", evtWeight);
-    if ( !(selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1)) {
+    cutFlowTable.update(">= 4 jets", evtWeight);
+    if ( !(selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS selBJets selection." << std::endl;
 	std::cout << " (#selBJets_loose = " << selBJets_loose.size() << ", #selBJets_medium = " << selBJets_medium.size() << ")" << std::endl;
@@ -1097,7 +952,7 @@ int main(int argc, char* argv[])
       }
       continue;
     }
-    cutFlowTable.update(">= 1 sel tau (2)", evtWeight);
+    cutFlowTable.update(">= 1 sel tau (2)", evtWeight);    
 
     bool failsLowMassVeto = false;
     for ( std::vector<const RecoLepton*>::const_iterator lepton1 = selLeptons.begin();
@@ -1119,102 +974,54 @@ int main(int argc, char* argv[])
 
     double minPt_lead = 20.;
     double minPt_sublead = selLepton_sublead->is_electron() ? 15. : 10.;
-    double minPt_third = 10.;
-    if ( !(selLepton_lead->pt_ > minPt_lead && selLepton_sublead->pt_ > minPt_sublead && selLepton_third->pt_ > minPt_third) ) {
-      if ( run_lumi_eventSelector ) {
-	std::cout << "event FAILS lepton pT selection." << std::endl;
-	std::cout << " (leading selLepton pT = " << selLepton_lead->pt_ << ", minPt_lead = " << minPt_lead
-		  << ", subleading selLepton pT = " << selLepton_sublead->pt_ << ", minPt_sublead = " << minPt_sublead 
-		  << ", third selLepton pT = " << selLepton_third->pt_ << ", minPt_third = " << minPt_third << ")" << std::endl;
-      }
-      continue;
-    }
-    cutFlowTable.update("lead lepton pT > 20 GeV && sublead lepton pT > 15(e)/10(mu) GeV && third lepton pT > 10 GeV", evtWeight);
-    
-    if ( std::fabs(selLepton_lead->charge_ + selLepton_sublead->charge_ + selLepton_third->charge_) != 1 ) {
-      if ( run_lumi_eventSelector ) {
-	std::cout << "event FAILS lepton charge selection." << std::endl;
-	std::cout << " (leading selLepton charge = " << selLepton_lead->charge_ 
-		  << ", subleading selLepton charge = " << selLepton_sublead->charge_ 
-		  << ", third selLepton charge = " << selLepton_third->charge_ << ")" << std::endl;
-      }
-      continue;
-    }
-    cutFlowTable.update("sel lepton charge");
+    if ( !(selLepton_lead->pt_ > minPt_lead && selLepton_sublead->pt_ > minPt_sublead) ) continue;
+    cutFlowTable.update("lead lepton pT > 20 GeV && sublead lepton pT > 15(e)/10(mu) GeV", evtWeight);
 
-    if ( (selLepton_lead->charge_ + selLepton_sublead->charge_ + selLepton_third->charge_ + selHadTau_lead->charge_) != 0 ) {
-      if ( run_lumi_eventSelector ) {
-	std::cout << "event FAILS lepton+tau charge selection." << std::endl;
-	std::cout << " (leading selLepton charge = " << selLepton_lead->charge_ 
-		  << ", subleading selLepton charge = " << selLepton_sublead->charge_ 
-		  << ", third selLepton charge = " << selLepton_third->charge_ 
-		  << ", selHadTau charge = " << selHadTau_lead->charge_ << ")" << std::endl;
-      }
-      continue;
-    }
-    cutFlowTable.update("sel lepton+tau charge");
+    bool isCharge_OS = selLepton_lead->charge_*selLepton_sublead->charge_ < 0;
+    if ( !isCharge_OS ) continue;
+    cutFlowTable.update("lepton-pair OS charge", evtWeight);
 
-    bool isSameFlavor_OS = false;
-    double massSameFlavor_OS = -1.;
-    for ( std::vector<const RecoLepton*>::const_iterator lepton1 = selLeptons.begin();
-	  lepton1 != selLeptons.end(); ++lepton1 ) {
-      for ( std::vector<const RecoLepton*>::const_iterator lepton2 = lepton1 + 1;
-	    lepton2 != selLeptons.end(); ++lepton2 ) {
-	if ( (*lepton1)->pdgId_ == -(*lepton2)->pdgId_ ) { // pair of same flavor leptons of opposite charge
-	  isSameFlavor_OS = true;
-	  double mass = ((*lepton1)->p4_ + (*lepton2)->p4_).mass();
-	  if ( std::fabs(mass - z_mass) < std::fabs(massSameFlavor_OS - z_mass) ) massSameFlavor_OS = mass;
-	}
+    if ( selLepton_lead->is_electron() && selLepton_sublead->is_electron() ) {
+      bool failsZbosonMassVeto = false;
+      for ( std::vector<const RecoLepton*>::const_iterator lepton1 = selLeptons.begin();
+            lepton1 != selLeptons.end(); ++lepton1 ) {
+        for ( std::vector<const RecoLepton*>::const_iterator lepton2 = lepton1 + 1;
+              lepton2 != selLeptons.end(); ++lepton2 ) {
+          if ( std::fabs(((*lepton1)->p4_ + (*lepton2)->p4_).mass() - z_mass) < z_window ) {
+            failsZbosonMassVeto = true;
+          }
+        }
       }
-    }
+      if ( failsZbosonMassVeto ) continue;
+      cutFlowTable.update("Z-boson mass veto", evtWeight);
 
-    bool failsZbosonMassVeto = isSameFlavor_OS && std::fabs(massSameFlavor_OS - z_mass) < z_window;
-    if ( failsZbosonMassVeto ) {
-      if ( run_lumi_eventSelector ) {
-	std::cout << "event FAILS Z-boson veto." << std::endl;
+      if ( selLepton_lead->is_electron() && selLepton_sublead->is_electron() ) {
+        if ( met_LD < 0.2 ) {
+          continue;
+        }
       }
-      continue;
+      cutFlowTable.update("met LD > 0.2", evtWeight);
     }
-    cutFlowTable.update("Z-boson mass veto", evtWeight);
-
-    double met_LD_cut = 0.;
-    if      ( selJets.size() >= 4 ) met_LD_cut = -1.; // MET LD cut not applied
-    else if ( isSameFlavor_OS     ) met_LD_cut =  0.3;
-    else                            met_LD_cut =  0.2;
-    if ( met_LD_cut > 0 && met_LD < met_LD_cut ) {
-      if ( run_lumi_eventSelector ) {
-	std::cout << "event FAILS MET LD selection." << std::endl;
-	std::cout << " (met_LD = " << met_LD << ", met_LD_cut = " << met_LD_cut << ")" << std::endl;
-      }
-      continue;
-    }
-    cutFlowTable.update("met LD", evtWeight);
 
     if ( leptonSelection == kFakeable ) {
-      if ( (tightMuons.size() + tightElectrons.size()) >= 3 ) {
-	if ( run_lumi_eventSelector ) {
-	  std::cout << "event FAILS tightElectrons+tightMuons selection." << std::endl;
-	  std::cout << " (#tightElectrons = " << tightElectrons.size() << ", #tightMuons = " << tightMuons.size() << ")" << std::endl;
-	}
-	continue; // CV: avoid overlap with signal region
+      if ( (tightMuons.size() + tightElectrons.size()) >= 2 ) {
+        continue; // CV: avoid overlap with signal region
       }
     }
     cutFlowTable.update("signal region veto", evtWeight);
-
+    
 //--- apply data/MC corrections for efficiencies of leptons passing the loose identification and isolation criteria
 //    to also pass the tight identification and isolation criteria
     if ( isMC ) {
       double sf_tight_to_loose = 1.;
       if ( leptonSelection == kFakeable ) {
-	sf_tight_to_loose = sf_leptonID_and_Iso_fakeable_to_loose(3, 
+	sf_tight_to_loose = sf_leptonID_and_Iso_fakeable_to_loose(2, 
           preselLepton_lead_type, preselLepton_lead->pt_, preselLepton_lead->eta_, 
-	  preselLepton_sublead_type, preselLepton_sublead->pt_, preselLepton_sublead->eta_,
-          preselLepton_third_type, preselLepton_third->pt_, preselLepton_third->eta_);
+	  preselLepton_sublead_type, preselLepton_sublead->pt_, preselLepton_sublead->eta_);
       } else if ( leptonSelection == kTight ) {
-	sf_tight_to_loose = sf_leptonID_and_Iso_tight_to_loose(3, 
+	sf_tight_to_loose = sf_leptonID_and_Iso_tight_to_loose(2, 
           preselLepton_lead_type, preselLepton_lead->pt_, preselLepton_lead->eta_, 
-          preselLepton_sublead_type, preselLepton_sublead->pt_, preselLepton_sublead->eta_,
-          preselLepton_third_type, preselLepton_third->pt_, preselLepton_third->eta_);
+          preselLepton_sublead_type, preselLepton_sublead->pt_, preselLepton_sublead->eta_);
       }
       evtWeight *= sf_tight_to_loose;
     }
@@ -1232,27 +1039,15 @@ int main(int argc, char* argv[])
       assert(lutFakeRate_sublead);
       double prob_fake_sublead = get_sf_from_TH2(lutFakeRate_sublead, selLepton_sublead->pt_, selLepton_sublead->eta_);
 
-      TH2* lutFakeRate_third = 0;
-      if      ( std::abs(selLepton_third->pdgId_) == 11 ) lutFakeRate_third = lutFakeRate_e;
-      else if ( std::abs(selLepton_third->pdgId_) == 13 ) lutFakeRate_third = lutFakeRate_mu;
-      assert(lutFakeRate_third);
-      double prob_fake_third = get_sf_from_TH2(lutFakeRate_third, selLepton_third->pt_, selLepton_third->eta_);
-
       bool passesTight_lead = isMatched(*selLepton_lead, tightElectrons) || isMatched(*selLepton_lead, tightMuons);
       bool passesTight_sublead = isMatched(*selLepton_sublead, tightElectrons) || isMatched(*selLepton_sublead, tightMuons);
-      bool passesTight_third = isMatched(*selLepton_third, tightElectrons) || isMatched(*selLepton_third, tightMuons);
 
       double p1 = prob_fake_lead/(1. - prob_fake_lead);
       double p2 = prob_fake_sublead/(1. - prob_fake_sublead);
-      double p3 = prob_fake_third/(1. - prob_fake_third);
       double evtWeight_tight_to_loose = 0.;
-      if      ( !passesTight_lead &&  passesTight_sublead &&  passesTight_third ) evtWeight_tight_to_loose =  p1;
-      else if (  passesTight_lead && !passesTight_sublead &&  passesTight_third ) evtWeight_tight_to_loose =  p2;
-      else if (  passesTight_lead &&  passesTight_sublead && !passesTight_third ) evtWeight_tight_to_loose =  p3;
-      else if ( !passesTight_lead && !passesTight_sublead &&  passesTight_third ) evtWeight_tight_to_loose = -p1*p2;
-      else if ( !passesTight_lead &&  passesTight_sublead && !passesTight_third ) evtWeight_tight_to_loose = -p1*p3;
-      else if (  passesTight_lead && !passesTight_sublead && !passesTight_third ) evtWeight_tight_to_loose = -p2*p3;
-      else if ( !passesTight_lead && !passesTight_sublead && !passesTight_third ) evtWeight_tight_to_loose =  p1*p2*p3;
+      if      ( !passesTight_lead &&  passesTight_sublead ) evtWeight_tight_to_loose =  p1;
+      else if (  passesTight_lead && !passesTight_sublead ) evtWeight_tight_to_loose =  p2;
+      else if ( !passesTight_lead && !passesTight_sublead ) evtWeight_tight_to_loose = -p1*p2;
       evtWeight *= evtWeight_tight_to_loose;
     }
 
@@ -1269,58 +1064,87 @@ int main(int argc, char* argv[])
     selBJet_mediumHistManager.fillHistograms(selBJets_medium, evtWeight);
     selMEtHistManager.fillHistograms(met_p4, mht_p4, met_LD, evtWeight);
     selEvtHistManager.fillHistograms(selElectrons.size(), selMuons.size(), selHadTaus.size(), 
-      selJets.size(), selBJets_loose.size(), selBJets_medium.size(), 
-      mvaOutput_3l_ttV, mvaOutput_3l_ttbar, mvaDiscr_3l, 
-      mTauTauVis1_presel, mTauTauVis2_presel, evtWeight);
+      selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
+      mvaOutput_2los_ttV, mvaOutput_2los_ttbar, mvaDiscr_2los, 
+      -1., mTauTauVis_presel, evtWeight);
     if ( isSignal ) {
       for ( const auto & kv: decayMode_idString ) {
         if ( std::fabs(genHiggsDecayMode - kv.second) < EPS ) {
           selEvtHistManager_decayMode[kv.first]->fillHistograms(selElectrons.size(), selMuons.size(), selHadTaus.size(), 
-            selJets.size(), selBJets_loose.size(), selBJets_medium.size(), 
-            mvaOutput_3l_ttV, mvaOutput_3l_ttbar, mvaDiscr_3l, 
-            mTauTauVis1_presel, mTauTauVis2_presel, evtWeight);
+            selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
+            mvaOutput_2los_ttV, mvaOutput_2los_ttbar, mvaDiscr_2los, 
+            -1., mTauTauVis_presel, evtWeight);
           break;
         }
       }
     }
 
-    if(writeSelEventsFile)
-    {
-      // KE: unique merge loose and medium B-jets, and hadronic jets
-      std::sort(selBJets_medium.begin(), selBJets_medium.end(), isHigherPt);
-      std::sort(selBJets_loose.begin(), selBJets_loose.end(), isHigherPt);
-      std::sort(selJets.begin(), selJets.end(), isHigherCSV); // optional: sort by pT
-      std::vector<const RecoJet *> selBJetsMerged(selBJets_medium);
-      auto unique_push_back = [&selBJetsMerged](const std::vector<const RecoJet *> & v) -> void
-      {
-        for(const RecoJet * j: v)
-          if(std::find(selBJetsMerged.begin(), selBJetsMerged.end(), j) == selBJetsMerged.end())
-            selBJetsMerged.push_back(j);
-      };
-      unique_push_back(selBJets_loose);
-      unique_push_back(selJets);
-      if(selBJetsMerged.size() < 2)
-      {
-        std::cerr << "Error: merged b-jets contains less than two jets\n";
-        assert(0);
-      }
+    int category = -1;
+    if      ( selElectrons.size() == 2 &&                         selBJets_medium.size() >= 1 ) category = k2eos_btight;
+    else if ( selElectrons.size() == 2                                                        ) category = k2eos_bloose;
+    else if ( selElectrons.size() == 1 && selMuons.size() == 1 && selBJets_medium.size() >= 1 ) category = k1e1muos_btight;
+    else if ( selElectrons.size() == 1 && selMuons.size() == 1                                ) category = k1e1muos_bloose;
+    else if (                             selMuons.size() == 2 && selBJets_medium.size() >= 1 ) category = k2muos_btight;
+    else if (                             selMuons.size() == 2                                ) category = k2muos_bloose;
+    else assert(0);
 
-      eventSpecificsOut.run  = run;
-      eventSpecificsOut.lumi = lumi;
-      eventSpecificsOut.evt  = event;
-
-      eventSpecificsOut.met_pt  = met_pt;
-      eventSpecificsOut.met_phi = met_phi;
-
-      for(std::size_t i = 0; i < 3; ++i)
-        leptonsOut[i].setValues(selLeptons[i]);
-      for(std::size_t i = 0; i < 2; ++i)
-        jetsOut[i].setValues(selBJetsMerged[i]);
-      htauOut.setValues(selHadTau_lead);
-      MVAOut.setValues(mvaInputs, mvaOutput_3l_ttV, mvaOutput_3l_ttbar);
-
-      selEventsTTree -> Fill();
-    }
+    if ( category == k2eos_btight ) {
+      selElectronHistManager_category["2eos_1tau_btight"]["leadElectron"]->fillHistograms(selElectrons, evtWeight);
+      selElectronHistManager_category["2eos_1tau_btight"]["subleadElectron"]->fillHistograms(selElectrons, evtWeight);
+      selEvtHistManager_category["2eos_1tau_btight"]->fillHistograms(preselElectrons.size(), preselMuons.size(), selHadTaus.size(), 
+        selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
+        mvaOutput_2los_ttV, mvaOutput_2los_ttbar, mvaDiscr_2los, 
+        -1., mTauTauVis_presel, evtWeight);
+    } else if ( category == k2eos_bloose ) {
+      selElectronHistManager_category["2eos_1tau_bloose"]["leadElectron"]->fillHistograms(selElectrons, evtWeight);
+      selElectronHistManager_category["2eos_1tau_bloose"]["subleadElectron"]->fillHistograms(selElectrons, evtWeight);
+      selEvtHistManager_category["2eos_1tau_bloose"]->fillHistograms(preselElectrons.size(), preselMuons.size(), selHadTaus.size(), 
+        selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
+        mvaOutput_2los_ttV, mvaOutput_2los_ttbar, mvaDiscr_2los, 
+        -1., mTauTauVis_presel, evtWeight);
+    } else if ( category == k1e1muos_btight ) {
+      selElectronHistManager_category["1e1muos_1tau_btight"]["electron"]->fillHistograms(selElectrons, evtWeight);
+      selMuonHistManager_category["1e1muos_1tau_btight"]["muon"]->fillHistograms(selMuons, evtWeight);
+      selEvtHistManager_category["1e1muos_1tau_btight"]->fillHistograms(preselElectrons.size(), preselMuons.size(), selHadTaus.size(), 
+        selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
+        mvaOutput_2los_ttV, mvaOutput_2los_ttbar, mvaDiscr_2los, 
+        -1., mTauTauVis_presel, evtWeight);
+    } else if ( category == k1e1muos_bloose ) {
+      selElectronHistManager_category["1e1muos_1tau_bloose"]["electron"]->fillHistograms(selElectrons, evtWeight);
+      selMuonHistManager_category["1e1muos_1tau_bloose"]["muon"]->fillHistograms(selMuons, evtWeight);
+      selEvtHistManager_category["1e1muos_1tau_bloose"]->fillHistograms(preselElectrons.size(), preselMuons.size(), selHadTaus.size(), 
+        selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
+        mvaOutput_2los_ttV, mvaOutput_2los_ttbar, mvaDiscr_2los, 
+        -1., mTauTauVis_presel, evtWeight);
+    } else if ( category == k2muos_btight ) {
+      selMuonHistManager_category["2muos_1tau_btight"]["leadMuon"]->fillHistograms(selMuons, evtWeight);
+      selMuonHistManager_category["2muos_1tau_btight"]["subleadMuon"]->fillHistograms(selMuons, evtWeight);
+      selEvtHistManager_category["2muos_1tau_btight"]->fillHistograms(preselElectrons.size(), preselMuons.size(), selHadTaus.size(), 
+        selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
+        mvaOutput_2los_ttV, mvaOutput_2los_ttbar, mvaDiscr_2los, 
+        -1., mTauTauVis_presel, evtWeight);
+    } else if ( category == k2muos_bloose ) {
+      selMuonHistManager_category["2muos_1tau_bloose"]["leadMuon"]->fillHistograms(selMuons, evtWeight);
+      selMuonHistManager_category["2muos_1tau_bloose"]["subleadMuon"]->fillHistograms(selMuons, evtWeight);
+      selEvtHistManager_category["2muos_1tau_bloose"]->fillHistograms(preselElectrons.size(), preselMuons.size(), selHadTaus.size(), 
+        selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
+        mvaOutput_2los_ttV, mvaOutput_2los_ttbar, mvaDiscr_2los, 
+        -1., mTauTauVis_presel, evtWeight);
+    } 
+    
+    //Fill tree for MVA training
+    float mindr_tau_jet = TMath::Min(10., comp_mindr_hadTau1_jet(*selHadTau_lead, selJets));
+    float mindr_lep1_jet  = TMath::Min(10., comp_mindr_lep1_jet(*selLepton_lead, selJets)); 
+    float mindr_lep2_jet  = TMath::Min(10., comp_mindr_lep2_jet(*selLepton_sublead, selJets));
+    float mT_lep1 = comp_MT_met_lep1(*selLepton_lead, met_pt, met_phi);
+    float mT_lep2 = comp_MT_met_lep1(*selLepton_sublead, met_pt, met_phi);
+    float avg_dr_jet = comp_avg_dr_jet(selJets);
+    float dr_leps = deltaR(selLepton_lead->p4_, selLepton_sublead->p4_);
+    selEvtTreeManager.fillTree(selLepton_lead->pt_, TMath::Max(TMath::Abs(selLepton_lead->eta_), TMath::Abs(selLepton_sublead->eta_)),
+			       selLepton_lead->mvaRawTTH_, selLepton_sublead->mvaRawTTH_,
+			       selJets.size(), selBJets_loose.size(), selBJets_medium.size(), mindr_lep1_jet, mindr_lep2_jet, 
+			       mindr_tau_jet, avg_dr_jet, float(met_p4.pt()), mT_lep1, mT_lep2, float(mht_p4.pt()), 
+			       float(selHadTau_lead->raw_mva_dR03_), float(selHadTau_lead->pt_), dr_leps, float(mTauTauVis_presel));
 
     (*selEventsFile) << run << ":" << lumi << ":" << event << std::endl;
 
@@ -1341,12 +1165,6 @@ int main(int argc, char* argv[])
   cutFlowTable.print(std::cout);
   std::cout << std::endl;
 
-  if(writeSelEventsFile)
-  {
-    selEventsTFile -> Write();
-    delete selEventsTFile;
-  }
-
   delete run_lumi_eventSelector;
 
   delete selEventsFile;
@@ -1365,7 +1183,7 @@ int main(int argc, char* argv[])
   hltPaths_delete(triggers_2mu);
   hltPaths_delete(triggers_1e1mu);
 
-  clock.Show("analyze_3l_1tau");
+  clock.Show("produceTTHMVATrainingNtuple_2los_1tau");
 
   return EXIT_SUCCESS;
 }

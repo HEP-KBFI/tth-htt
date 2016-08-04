@@ -1,12 +1,12 @@
 import os, logging, sys, getpass
 
-import tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_3l_1tau
-from tthAnalysis.HiggsToTauTau.analyzeConfig_3l_1tau import analyzeConfig_3l_1tau
+import tthAnalysis.HiggsToTauTau.tthMVATrainingNtupleSamples_2los_1tau
+from tthAnalysis.HiggsToTauTau.mvaTrainingNtupleConfig_2los_1tau import mvaTrainingNtupleConfig_2los_1tau
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 
 LUMI = 2301. # 1/pb
 
-version = "2016Aug01_dR03mvaTight"
+version = "2016Jul31_dR03mvaVLoose"
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -14,12 +14,11 @@ if __name__ == '__main__':
     level = logging.INFO,
     format = '%(asctime)s - %(levelname)s: %(message)s')
 
-  analysis = analyzeConfig_3l_1tau(
+  analysis = mvaTrainingNtupleConfig_2los_1tau(
     outputDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", version),
-    executable_analyze = "analyze_3l_1tau",
-    ##lepton_selections = [ "Tight", "Fakeable" ],
-    lepton_selections = [ "Tight" ],
-    hadTau_selection = "dR03mvaTight",
+    executable_analyze = "produceTTHMVATrainingNtuple_2los_1tau",
+    #hadTau_selection = "dR03mvaTight",
+    hadTau_selection = "dR03mvaVLoose",
     central_or_shifts = [ 
       "central",
 ##       "CMS_ttHl_btag_HFUp", 
@@ -48,9 +47,7 @@ if __name__ == '__main__':
     debug = False,
     running_method = "sbatch",
     num_parallel_jobs = 4,
-    histograms_to_fit = [ "EventCounter", "numJets", "mvaDiscr_3l", "mTauTauVis" ],
-    select_rle_output = False,
-    select_root_output = False)
+    histograms_to_fit = [ "EventCounter", "numJets", "mvaDiscr_2los", "mTauTauVis" ])
 
   analysis.create()
 

@@ -22,18 +22,21 @@ class EvtTreeManager_1l_2tau
 
   /// book and fill histograms
   void bookTree(TFileDirectory& dir);
-  void fillTree(float lep_pt_max, int nJet, int nBJetLoose, int nBJetMedium, float mindr_tau1_jet, float mindr_tau2_jet, 
-		float avg_dr_jet, float ptmiss, float mT_lep, float htmiss, float tau1_mva, float tau2_mva, 
-		float tau1_pt, float tau2_pt, float dr_taus, float mTauTauVis);
+  void fillTree(float lep_pt_max, float lep_eta_max, float lep_tth_mva, int nJet, int nBJetLoose, int nBJetMedium, float mindr_lep_jet, 
+		float mindr_tau1_jet, float mindr_tau2_jet, float avg_dr_jet, float ptmiss, float mT_lep, float htmiss, float tau1_mva, 
+		float tau2_mva, float tau1_pt, float tau2_pt, float dr_taus, float mTauTauVis);
   void bookHistograms(TFileDirectory& dir){};
 
  private:
   TTree* EventTree_;
 
   float lep_pt_max_;
+  float lep_eta_max_;
+  float lep_tth_mva_;
   int   nJet_;
   int nBJetLoose_;
   int nBJetMedium_;
+  float mindr_lep_jet_;
   float mindr_tau1_jet_;
   float mindr_tau2_jet_;  
   float avg_dr_jet_;
