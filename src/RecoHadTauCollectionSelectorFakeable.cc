@@ -9,7 +9,7 @@ RecoHadTauSelectorFakeable::RecoHadTauSelectorFakeable(int index, bool debug)
   max_absEta_ = 2.3;
   max_dz_ = 0.2;
   min_decayModeFinding_ = 1;
-  min_id_mva_dR03_ = 1;
+  min_id_mva_dR03_ = 2; // VLoose
   min_raw_mva_dR03_ = -1.e+6;
   min_id_mva_dR05_ = -1000;
   min_raw_mva_dR05_ = -1.e+6;
