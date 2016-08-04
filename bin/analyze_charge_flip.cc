@@ -715,7 +715,7 @@ int main(int argc, char* argv[])
         histos[charge_cat][category.data()]["DY"]->Fill(mass_ll, evtWeight);
         histos[charge_cat]["total"]["DY"]->Fill(mass_ll, evtWeight);
       }
-      else if (central_or_shift == "central"){
+      else if (!central_or_shift_tstring.BeginsWith("CMS_ttHl_electronER")){
         histos[charge_cat][category.data()]["DY_fake"]->Fill(mass_ll, evtWeight);
         histos[charge_cat]["total"]["DY_fake"]->Fill(mass_ll, evtWeight);        
       }
