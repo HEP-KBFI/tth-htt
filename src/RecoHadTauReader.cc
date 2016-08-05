@@ -37,8 +37,8 @@ RecoHadTauReader::RecoHadTauReader()
   , hadTau_idAgainstElec_(0)
   , hadTau_idAgainstMu_(0)
 {
-  readDBdR03oldDMwLTEff95();
   setBranchNames();
+  readDBdR03oldDMwLTEff95();
 }
 
 RecoHadTauReader::RecoHadTauReader(const std::string& branchName_num, const std::string& branchName_obj)
@@ -69,8 +69,8 @@ RecoHadTauReader::RecoHadTauReader(const std::string& branchName_num, const std:
   , hadTau_idAgainstElec_(0)
   , hadTau_idAgainstMu_(0)
 {
-  readDBdR03oldDMwLTEff95();
   setBranchNames();
+  readDBdR03oldDMwLTEff95();
 }
 
 RecoHadTauReader::~RecoHadTauReader()
@@ -78,9 +78,21 @@ RecoHadTauReader::~RecoHadTauReader()
   --numInstances_[branchName_obj_];
   assert(numInstances_[branchName_obj_] >= 0);
   if ( numInstances_[branchName_obj_] == 0 ) {
+    numInstances_.erase(branchName_obj_);
+
+    int numInstances_total = 0;
+    for ( std::map<std::string, int>::const_iterator it = numInstances_.begin();
+	  it != numInstances_.end(); ++it ) {
+      numInstances_total += it->second;
+    }
+    if ( numInstances_total == 0 ) {
+      RecoHadTauReader* gInstance = instances_.begin()->second;
+      assert(gInstance);
+      delete gInstance->tauIdMVArun2dR03DB_wpFile_;
+    }
+    
     RecoHadTauReader* gInstance = instances_[branchName_obj_];
     assert(gInstance);
-    delete gInstance->tauIdMVArun2dR03DB_wpFile_;
     delete[] gInstance->hadTau_pt_;
     delete[] gInstance->hadTau_eta_;
     delete[] gInstance->hadTau_phi_;
@@ -100,13 +112,14 @@ RecoHadTauReader::~RecoHadTauReader()
     delete[] gInstance->hadTau_idAgainstElec_;
     delete[] gInstance->hadTau_idAgainstMu_;
     delete[] gInstance->hadTau_charge_;
-    instances_[branchName_obj_] = 0;
+
+    instances_.erase(branchName_obj_);
   }
 }
 
 void RecoHadTauReader::readDBdR03oldDMwLTEff95()
 {
-  RecoHadTauReader* gInstance = instances_[branchName_obj_];
+  RecoHadTauReader* gInstance = instances_.begin()->second;
   assert(gInstance);
   if ( !gInstance->tauIdMVArun2dR03DB_wpFile_ ) {
     edm::FileInPath tauIdMVArun2dR03DB_wpFilePath = edm::FileInPath("tthAnalysis/HiggsToTauTau/data/wpDiscriminationByIsolationMVARun2v1_DBdR03oldDMwLT.root");

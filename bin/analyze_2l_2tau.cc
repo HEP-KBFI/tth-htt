@@ -928,8 +928,8 @@ int main(int argc, char* argv[])
     }
     cutFlowTable.update(Form("lepton-pair %s charge", leptonChargeSelection_string.data()), evtWeight);
 
+    bool failsZbosonMassVeto = false;
     if ( selLepton_lead->is_electron() && selLepton_sublead->is_electron() ) {
-      bool failsZbosonMassVeto = false;
       for ( std::vector<const RecoLepton*>::const_iterator lepton1 = selLeptons.begin();
 	    lepton1 != selLeptons.end(); ++lepton1 ) {
 	for ( std::vector<const RecoLepton*>::const_iterator lepton2 = lepton1 + 1;
@@ -939,12 +939,12 @@ int main(int argc, char* argv[])
 	  }
 	}
       }
-      if ( failsZbosonMassVeto ) {
-	if ( run_lumi_eventSelector ) {
-	  std::cout << "event FAILS Z-boson veto." << std::endl;
-	}
-	continue;
+    }
+    if ( failsZbosonMassVeto ) {
+      if ( run_lumi_eventSelector ) {
+	std::cout << "event FAILS Z-boson veto." << std::endl;
       }
+      continue;
     }
     cutFlowTable.update("Z-boson mass veto", evtWeight);
     
