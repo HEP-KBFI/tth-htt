@@ -9,6 +9,7 @@ RecoHadTau::RecoHadTau(Double_t pt,
 		       Int_t charge,
 		       Double_t dxy,
 		       Double_t dz,
+		       Int_t decayMode,
 		       Int_t decayModeFinding,
 		       Int_t decayModeFindingNew,
 		       Int_t id_mva_dR03,		       
@@ -25,6 +26,7 @@ RecoHadTau::RecoHadTau(Double_t pt,
   , charge_(charge)
   , dxy_(dxy)
   , dz_(dz)
+  , decayMode_(decayMode)
   , decayModeFinding_(decayModeFinding)
   , decayModeFindingNew_(decayModeFindingNew)
   , id_mva_dR03_(id_mva_dR03)

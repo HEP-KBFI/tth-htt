@@ -233,22 +233,26 @@ EventMVAIO_Out
 struct
 EventObject_Out
 {
+  enum ParticleType_Out { kLepton, kJet, kHadronicTau };
+
   Double_t pt;
   Double_t eta;
   Double_t phi;
   Double_t mass;
-  Int_t   charge;
+  Int_t    charge;
+  Int_t    decayMode;
 
   TBranch * branch_pt = 0;
   TBranch * branch_eta = 0;
   TBranch * branch_phi = 0;
   TBranch * branch_mass = 0;
   TBranch * branch_charge = 0;
+  TBranch * branch_decayMode = 0;
 
   void
   setBranches(TTree * t,
               const std::string & s,
-              bool hasIncludeCharge = false)
+              ParticleType_Out particleType)
   {
     branch_pt     = t -> Branch(Form("%s_pt", s.c_str()),
                                 &pt,   Form("%s_pt/D", s.c_str()));
@@ -258,9 +262,12 @@ EventObject_Out
                                 &phi,  Form("%s_phi/D", s.c_str()));
     branch_mass   = t -> Branch(Form("%s_mass", s.c_str()),
                                 &mass, Form("%s_mass/D", s.c_str()));
-    if(hasIncludeCharge)
+    if(particleType == ParticleType_Out::kLepton)
       branch_charge = t -> Branch(Form("%s_charge", s.c_str()),
                                   &charge, Form("%s_charge/I", s.c_str()));
+    if(particleType == ParticleType_Out::kHadronicTau)
+      branch_decayMode = t -> Branch(Form("%s_decayMode", s.c_str()),
+                                     &decayMode, Form("%s_decayMode/I", s.c_str()));
   }
 
   void
@@ -277,6 +284,13 @@ EventObject_Out
   {
     setValues(static_cast<const GenParticle *>(p));
     charge = p -> charge_;
+  }
+
+  void
+  setValues(const RecoHadTau * p)
+  {
+    setValues(static_cast<const GenParticle *>(p));
+    decayMode = p -> decayMode_;
   }
 };
 typedef struct EventObject_Out EO_O;
@@ -452,11 +466,13 @@ int main(int argc, char* argv[])
     eventSpecificsOut.setBranches(selEventsTTree);
     for(std::size_t i = 0; i < leptonsOut.size(); ++i)
       leptonsOut[i].setBranches(selEventsTTree,
-                                std::string(TString::Format("lepton%lu", i + 1)), true);
+                                std::string(TString::Format("lepton%lu", i + 1)),
+                                EventObject_Out::ParticleType_Out::kLepton);
     for(std::size_t i = 0; i < jetsOut.size(); ++i)
       jetsOut[i].setBranches(selEventsTTree,
-                             std::string(TString::Format("jet%lu", i + 1)), false);
-    htauOut.setBranches(selEventsTTree, "htau1", false);
+                             std::string(TString::Format("jet%lu", i + 1)),
+                             EventObject_Out::ParticleType_Out::kJet);
+    htauOut.setBranches(selEventsTTree, "htau1", EventObject_Out::ParticleType_Out::kHadronicTau);
     MVAOut.setBranches(selEventsTTree);
   }
 
