@@ -244,7 +244,7 @@ class analyzeConfig:
        so that the hadd stage2 file is simply a copy of the hadd stage1 file.
     """
     lines_makefile.append("%s: %s" % (self.histogramFile_hadd_stage2, self.histogramFile_hadd_stage1))
-    lines_makefile.append("\tln -s %s %s" % (self.histogramFile_hadd_stage1, self.histogramFile_hadd_stage2))
+    lines_makefile.append("\tln -sf %s %s" % (self.histogramFile_hadd_stage1, self.histogramFile_hadd_stage2))
     lines_makefile.append("")
 
   def addToMakefile_outRoot(self, lines_makefile):
