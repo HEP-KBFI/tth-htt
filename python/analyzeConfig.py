@@ -254,8 +254,8 @@ class analyzeConfig:
     if not self.rootOutputAux: return
     lines_makefile.append("selEventTree_hadd: prepareDatacards_targets")
     for rootOutputResult, rootOutputAsterisk in self.rootOutputAux.items():
+      lines_makefile.append("\trm -f %s" % rootOutputResult)
       lines_makefile.append("\thadd %s $(shell for f in `ls %s`; do echo -ne $$f\" \"; done)" % (rootOutputResult, rootOutputAsterisk))
-      lines_makefile.append("\trm $(shell for f in `ls %s`; do echo -ne $$f\" \"; done)" % rootOutputAsterisk)
     lines_makefile.append("")
 
   def addToMakefile_prep_dcard(self, lines_makefile):
@@ -268,7 +268,7 @@ class analyzeConfig:
     lines_makefile.append("")
     lines_makefile.append("prepareDatacards_targets: %s" % " ".join(self.datacardFiles.values()))
     lines_makefile.append("")
-    lines_makefile.append("all: prepareDatacards_targets %s" % "selEventTree_hadd" if self.rootOutputAux else "")
+    lines_makefile.append("all: prepareDatacards_targets %s" % ("selEventTree_hadd" if self.rootOutputAux else ""))
     lines_makefile.append("")
 
   def addToMakefile_clean(self, lines_makefile):
@@ -278,6 +278,8 @@ class analyzeConfig:
     lines_makefile.append("clean:")
     for fileToClean in self.filesToClean:
       lines_makefile.append("\trm -f %s" % fileToClean)
+    for rootOutputResult in self.rootOutputAux.keys():
+      lines_makefile.append("\trm -f %s" % rootOutputResult)
     lines_makefile.append("")
 
   def createMakefile(self, lines_makefile):
