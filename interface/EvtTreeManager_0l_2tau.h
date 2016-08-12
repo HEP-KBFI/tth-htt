@@ -23,8 +23,8 @@ class EvtTreeManager_0l_2tau
   /// book and fill histograms
   void bookTree(TFileDirectory& dir);
   void fillTree(int nJet, int nBJetLoose, int nBJetMedium, float mindr_tau1_jet, float mindr_tau2_jet, float avg_dr_jet, 
-		float ptmiss, float mT_tau1, float mT_tau2, float htmiss, float tau1_mva, float tau2_mva, 
-		float tau1_pt, float tau2_pt, float dr_taus, float mTauTauVis, float mTauTau);
+		float ptmiss, float mT_tau1, float mT_tau2, float htmiss, float tau1_mva, float tau2_mva, float tau1_pt, 
+		float tau2_pt, float tau1_eta, float tau2_eta, float dr_taus, float mTauTauVis, float mTauTau);
   void bookHistograms(TFileDirectory& dir){};
 
  private:
@@ -44,6 +44,8 @@ class EvtTreeManager_0l_2tau
   float tau2_mva_;
   float tau1_pt_;
   float tau2_pt_;
+  float tau1_eta_; 
+  float tau2_eta_;
   float dr_taus_;
   float mTauTauVis_;
   float mTauTau_;

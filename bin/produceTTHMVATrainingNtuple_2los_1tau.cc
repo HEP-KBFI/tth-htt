@@ -319,10 +319,6 @@ int main(int argc, char* argv[])
   RecoHadTauCollectionCleaner hadTauCleaner(0.3);
   RecoHadTauCollectionSelectorTight hadTauSelector;
   hadTauSelector.set(hadTauSelection_string);
-  edm::FileInPath tauIdMVArun2dR03DB_wpFilePath = edm::FileInPath("tthAnalysis/HiggsToTauTau/data/wpDiscriminationByIsolationMVARun2v1_DBdR03oldDMwLT.root");
-  TFile* tauIdMVArun2dR03DB_wpFile = new TFile(tauIdMVArun2dR03DB_wpFilePath.fullPath().c_str());
-  TGraph* DBdR03oldDMwLTEff95 = (TGraph*)tauIdMVArun2dR03DB_wpFile->Get("DBdR03oldDMwLTEff95");
-  TFormula* mvaOutput_normalization_DBdR03oldDMwLT = (TFormula*)tauIdMVArun2dR03DB_wpFile->Get("mvaOutput_normalization_DBdR03oldDMwLT");  
 
   RecoJetReader* jetReader = new RecoJetReader("nJet", "Jet");
   jetReader->setJetPt_central_or_shift(jetPt_option);
@@ -659,22 +655,7 @@ int main(int argc, char* argv[])
     std::vector<RecoHadTau> hadTaus = hadTauReader->read();
     std::vector<const RecoHadTau*> hadTau_ptrs = convert_to_ptrs(hadTaus);
     std::vector<const RecoHadTau*> cleanedHadTaus = hadTauCleaner(hadTau_ptrs, selMuons, selElectrons);
-    std::vector<const RecoHadTau*> tightHadTaus;
-    if(hadTauSelection_string == "dR03mvaVVLoose"){
-      std::vector<const RecoHadTau*> tightHadTausVVLoose = hadTauSelector(cleanedHadTaus);
-      tightHadTaus.clear();
-      for(size_t it = 0; it < tightHadTausVVLoose.size(); it++){
-	if(mvaOutput_normalization_DBdR03oldDMwLT->Eval(tightHadTausVVLoose[it]->raw_mva_dR03_) > DBdR03oldDMwLTEff95->Eval(tightHadTausVVLoose[it]->pt_))
-	  {
-	    tightHadTaus.push_back(tightHadTausVVLoose[it]);
-	  }
-      }
-      std::sort(tightHadTaus.begin(), tightHadTaus.end(), isHigherPt);
-    }
-    else{
-      tightHadTaus = hadTauSelector(cleanedHadTaus);
-    }
-    std::vector<const RecoHadTau*> selHadTaus = tightHadTaus;
+    std::vector<const RecoHadTau*> selHadTaus = hadTauSelector(cleanedHadTaus);
     
 //--- build collections of jets and select subset of jets passing b-tagging criteria
     std::vector<RecoJet> jets = jetReader->read();
@@ -1140,11 +1121,20 @@ int main(int argc, char* argv[])
     float mT_lep2 = comp_MT_met_lep1(*selLepton_sublead, met_pt, met_phi);
     float avg_dr_jet = comp_avg_dr_jet(selJets);
     float dr_leps = deltaR(selLepton_lead->p4_, selLepton_sublead->p4_);
-    selEvtTreeManager.fillTree(selLepton_lead->pt_, TMath::Max(TMath::Abs(selLepton_lead->eta_), TMath::Abs(selLepton_sublead->eta_)),
-			       selLepton_lead->mvaRawTTH_, selLepton_sublead->mvaRawTTH_,
-			       selJets.size(), selBJets_loose.size(), selBJets_medium.size(), mindr_lep1_jet, mindr_lep2_jet, 
-			       mindr_tau_jet, avg_dr_jet, float(met_p4.pt()), mT_lep1, mT_lep2, float(mht_p4.pt()), 
-			       float(selHadTau_lead->raw_mva_dR03_), float(selHadTau_lead->pt_), dr_leps, float(mTauTauVis_presel));
+    float dr_lep_tau_os = 99., dr_lep_tau_ss = 99.;
+    if(selLepton_lead->charge_*selHadTau_lead->charge_ < 0 ){
+      dr_lep_tau_os = deltaR(selLepton_lead->p4_, selHadTau_lead->p4_);
+      dr_lep_tau_ss = deltaR(selLepton_sublead->p4_, selHadTau_lead->p4_);
+    }
+    else{
+      dr_lep_tau_os = deltaR(selLepton_sublead->p4_, selHadTau_lead->p4_); 
+      dr_lep_tau_ss = deltaR(selLepton_lead->p4_, selHadTau_lead->p4_); 
+    }
+    selEvtTreeManager.fillTree(selLepton_lead->pt_, selLepton_sublead->pt_, selLepton_lead->eta_, selLepton_sublead->eta_,
+			       selLepton_lead->mvaRawTTH_, selLepton_sublead->mvaRawTTH_, selJets.size(), selBJets_loose.size(), 
+			       selBJets_medium.size(), mindr_lep1_jet, mindr_lep2_jet, mindr_tau_jet, avg_dr_jet, float(met_p4.pt()), 
+			       mT_lep1, mT_lep2, float(mht_p4.pt()), selHadTau_lead->raw_mva_dR03_, selHadTau_lead->pt_, selHadTau_lead->eta_,
+			       dr_leps, dr_lep_tau_os, dr_lep_tau_ss, float(mTauTauVis_presel));
 
     (*selEventsFile) << run << ":" << lumi << ":" << event << std::endl;
 

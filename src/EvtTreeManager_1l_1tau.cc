@@ -31,13 +31,15 @@ void EvtTreeManager_1l_1tau::bookTree(TFileDirectory& dir)
   EventTree_->Branch("htmiss", &htmiss_, "htmiss/F"); 
   EventTree_->Branch("tau_mva", &tau_mva_, "tau_mva/F"); 
   EventTree_->Branch("tau_pt", &tau_pt_, "tau_pt/F");
+  EventTree_->Branch("tau_eta", &tau_eta_, "tau_eta/F");
+  EventTree_->Branch("dr_tau_lep", &dr_tau_lep_, "dr_tau_lep/F");
   EventTree_->Branch("mTauTauVis", &mTauTauVis_, "mTauTauVis/F");
   EventTree_->Branch("mTauTau", &mTauTau_, "mTauTau/F"); 
 }
 
 void EvtTreeManager_1l_1tau::fillTree(float lep_pt, float lep_eta, float lep_tth_mva, int nJet, int nBJetLoose, int nBJetMedium, float mindr_lep_jet,  
 				      float mindr_tau_jet, float avg_dr_jet, float ptmiss, float mT_lep, float htmiss, float tau_mva, float tau_pt,  
-				      float mTauTauVis, float mTauTau)
+				      float tau_eta, float dr_tau_lep, float mTauTauVis, float mTauTau)
 {
   lep_pt_ = lep_pt;
   lep_eta_ = lep_eta;
@@ -53,6 +55,8 @@ void EvtTreeManager_1l_1tau::fillTree(float lep_pt, float lep_eta, float lep_tth
   htmiss_ = htmiss;
   tau_mva_ = tau_mva;
   tau_pt_ = tau_pt;
+  tau_eta_ = tau_eta;
+  dr_tau_lep_ = dr_tau_lep;
   mTauTauVis_ = mTauTauVis;
   mTauTau_ = mTauTau;
 

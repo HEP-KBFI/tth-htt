@@ -982,9 +982,10 @@ int main(int argc, char* argv[])
     float mindr_lep_jet  = TMath::Min(10., comp_mindr_lep1_jet(*selLepton, selJets)); 
     float mT_lep = comp_MT_met_lep1(*selLepton, met_pt, met_phi);
     float avg_dr_jet = comp_avg_dr_jet(selJets);
+    float dr_tau_lep = deltaR(selHadTau->p4_, selLepton->p4_);
     selEvtTreeManager.fillTree(selLepton->pt_, selLepton->eta_, selLepton->mvaRawTTH_, selJets.size(), selBJets_loose.size(), 
 			       selBJets_medium.size(), mindr_lep_jet, mindr_tau_jet, avg_dr_jet, float(met_p4.pt()), mT_lep, 
-                               float(mht_p4.pt()), selHadTau->raw_mva_dR03_, selHadTau->pt_, mTauTauVis, mTauTau);
+                               mht_p4.pt(), selHadTau->raw_mva_dR03_, selHadTau->pt_, selHadTau->eta_, dr_tau_lep, mTauTauVis, mTauTau);
 
     (*selEventsFile) << run << ":" << lumi << ":" << event << std::endl;
 

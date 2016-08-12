@@ -357,6 +357,7 @@ int main(int argc, char* argv[])
   RecoHadTauCollectionSelectorLoose preselHadTauSelector;
   preselHadTauSelector.set_min_antiElectron(1);
   preselHadTauSelector.set_min_antiMuon(1);
+  if(hadTauSelection_part2 == "dR03mvaVVLoose")preselHadTauSelector.set(hadTauSelection_part2);
   RecoHadTauCollectionSelectorFakeable fakeableHadTauSelector_lead(0);
   fakeableHadTauSelector_lead.set_min_antiElectron(1);
   fakeableHadTauSelector_lead.set_min_antiMuon(1);
@@ -371,14 +372,10 @@ int main(int argc, char* argv[])
   if ( hadTauSelection_part2 != "" ) tightHadTauSelector_sublead.set(hadTauSelection_part2);
   tightHadTauSelector_sublead.set_min_antiElectron(2);
   tightHadTauSelector_sublead.set_min_antiMuon(1);
-  RecoHadTauCollectionSelectorTight tightHadTauSelector;
-  if ( hadTauSelection_part2 != "" ) tightHadTauSelector.set(hadTauSelection_part2);
-  tightHadTauSelector.set_min_antiElectron(1); 
-  tightHadTauSelector.set_min_antiMuon(1);
-  edm::FileInPath tauIdMVArun2dR03DB_wpFilePath = edm::FileInPath("tthAnalysis/HiggsToTauTau/data/wpDiscriminationByIsolationMVARun2v1_DBdR03oldDMwLT.root");
-  TFile* tauIdMVArun2dR03DB_wpFile = new TFile(tauIdMVArun2dR03DB_wpFilePath.fullPath().c_str());
-  TGraph* DBdR03oldDMwLTEff95 = (TGraph*)tauIdMVArun2dR03DB_wpFile->Get("DBdR03oldDMwLTEff95");
-  TFormula* mvaOutput_normalization_DBdR03oldDMwLT = (TFormula*)tauIdMVArun2dR03DB_wpFile->Get("mvaOutput_normalization_DBdR03oldDMwLT");
+  //edm::FileInPath tauIdMVArun2dR03DB_wpFilePath = edm::FileInPath("tthAnalysis/HiggsToTauTau/data/wpDiscriminationByIsolationMVARun2v1_DBdR03oldDMwLT.root");
+  //TFile* tauIdMVArun2dR03DB_wpFile = new TFile(tauIdMVArun2dR03DB_wpFilePath.fullPath().c_str());
+  //TGraph* DBdR03oldDMwLTEff95 = (TGraph*)tauIdMVArun2dR03DB_wpFile->Get("DBdR03oldDMwLTEff95");
+  //TFormula* mvaOutput_normalization_DBdR03oldDMwLT = (TFormula*)tauIdMVArun2dR03DB_wpFile->Get("mvaOutput_normalization_DBdR03oldDMwLT");
 
   RecoJetReader* jetReader = new RecoJetReader("nJet", "Jet");
   jetReader->setJetPt_central_or_shift(jetPt_option);
@@ -611,7 +608,6 @@ int main(int argc, char* argv[])
     std::vector<const RecoHadTau*> fakeableHadTaus;
     fakeableHadTaus.insert(fakeableHadTaus.end(), fakeableHadTaus_lead.begin(), fakeableHadTaus_lead.end());
     fakeableHadTaus.insert(fakeableHadTaus.end(), fakeableHadTaus_sublead.begin(), fakeableHadTaus_sublead.end());
-    std::vector<const RecoHadTau*> tightHadTausVVLoose = tightHadTauSelector(preselHadTaus);
     std::vector<const RecoHadTau*> tightHadTaus_lead = tightHadTauSelector_lead(preselHadTaus);
     std::vector<const RecoHadTau*> tightHadTaus_sublead = hadTauCleaner(tightHadTauSelector_sublead(preselHadTaus), tightHadTaus_lead);
     assert(tightHadTaus_lead.size() <= 1 && tightHadTaus_sublead.size() <= 1);
@@ -634,24 +630,9 @@ int main(int argc, char* argv[])
       selHadTaus_sublead = fakeableHadTaus_sublead;
       selHadTaus = fakeableHadTaus;
     } else if ( hadTauSelection == kTight ) {
-      if(hadTauSelection_part2 == "dR03mvaVVLoose"){
-        tightHadTaus.clear();
-        for(size_t it = 0; it < tightHadTausVVLoose.size(); it++){
-          if(mvaOutput_normalization_DBdR03oldDMwLT->Eval(tightHadTausVVLoose[it]->raw_mva_dR03_) > DBdR03oldDMwLTEff95->Eval(tightHadTausVVLoose[it]->pt_))
-            {
-              tightHadTaus.push_back(tightHadTausVVLoose[it]);
-            }
-        }
-	std::sort(tightHadTaus.begin(), tightHadTaus.end(), isHigherPt);
-        if(tightHadTaus.size() > 0)selHadTaus_lead.push_back(tightHadTaus[0]); 
-        if(tightHadTaus.size() > 1)selHadTaus_sublead.push_back(tightHadTaus[1]); 
-        selHadTaus = tightHadTaus;
-      }
-      else{
-	selHadTaus_lead = tightHadTaus_lead;
-	selHadTaus_sublead = tightHadTaus_sublead;
-	selHadTaus = tightHadTaus;
-      }
+      selHadTaus_lead = tightHadTaus_lead;
+      selHadTaus_sublead = tightHadTaus_sublead;
+      selHadTaus = tightHadTaus;
     } else assert(0);
 
 //--- build collections of jets and select subset of jets passing b-tagging criteria
@@ -951,10 +932,20 @@ int main(int argc, char* argv[])
     float mT_lep = comp_MT_met_lep1(*selLepton, met_pt, met_phi);
     float avg_dr_jet = comp_avg_dr_jet(selJets);
     float dr_taus = deltaR(selHadTau_lead->p4_, selHadTau_sublead->p4_);
+    float dr_lep_tau_os = 99., dr_lep_tau_ss = 99.;
+    if(selLepton->charge_*selHadTau_lead->charge_ < 0 ){
+      dr_lep_tau_os = deltaR(selLepton->p4_, selHadTau_lead->p4_);
+      dr_lep_tau_ss = deltaR(selLepton->p4_, selHadTau_sublead->p4_);
+    }
+    else{
+      dr_lep_tau_os = deltaR(selLepton->p4_, selHadTau_sublead->p4_); 
+      dr_lep_tau_ss = deltaR(selLepton->p4_, selHadTau_lead->p4_); 
+    }
     selEvtTreeManager.fillTree(selLepton->pt_, selLepton->eta_, selLepton->mvaRawTTH_, selJets.size(), selBJets_loose.size(), 
-			       selBJets_medium.size(), mindr_lep_jet, mindr_tau1_jet, mindr_tau2_jet, avg_dr_jet, float(met_p4.pt()), mT_lep, 
-			       float(mht_p4.pt()), float(selHadTau_lead->raw_mva_dR03_), float(selHadTau_sublead->raw_mva_dR03_), 
-			       float(selHadTau_lead->pt_), float(selHadTau_sublead->pt_), dr_taus, float(mTauTauVis));
+			       selBJets_medium.size(), mindr_lep_jet, mindr_tau1_jet, mindr_tau2_jet, avg_dr_jet, met_p4.pt(), mT_lep, 
+			       mht_p4.pt(), selHadTau_lead->raw_mva_dR03_, selHadTau_sublead->raw_mva_dR03_, selHadTau_lead->pt_, 
+			       selHadTau_sublead->pt_, selHadTau_lead->eta_, selHadTau_sublead->eta_, dr_taus, dr_lep_tau_os,
+			       dr_lep_tau_ss, mTauTauVis);
 
     (*selEventsFile) << run << ":" << lumi << ":" << event;
 
