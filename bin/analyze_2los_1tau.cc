@@ -366,11 +366,12 @@ int main(int argc, char* argv[])
 
   std::string mvaFileName_2los_1tau_ttbar = "tthAnalysis/HiggsToTauTau/data/2los_1tau_ttbar_BDTG.weights.xml";
   std::vector<std::string> mvaInputVariables_2los_1tau_ttbar;
-  mvaInputVariables_2los_1tau_ttbar.push_back("lep_pt_max");
-  mvaInputVariables_2los_1tau_ttbar.push_back("lep_eta_max");
-  mvaInputVariables_2los_1tau_ttbar.push_back("nJet");
-  mvaInputVariables_2los_1tau_ttbar.push_back("nBJetLoose");
-  mvaInputVariables_2los_1tau_ttbar.push_back("nBJetMedium");
+  mvaInputVariables_2los_1tau_ttbar.push_back("lep1_pt");
+  mvaInputVariables_2los_1tau_ttbar.push_back("lep1_eta");
+  mvaInputVariables_2los_1tau_ttbar.push_back("lep2_pt");
+  mvaInputVariables_2los_1tau_ttbar.push_back("lep2_eta");
+  mvaInputVariables_2los_1tau_ttbar.push_back("lep1_tth_mva");
+  mvaInputVariables_2los_1tau_ttbar.push_back("lep2_tth_mva");
   mvaInputVariables_2los_1tau_ttbar.push_back("mindr_lep1_jet");
   mvaInputVariables_2los_1tau_ttbar.push_back("mindr_lep2_jet");
   mvaInputVariables_2los_1tau_ttbar.push_back("mindr_tau_jet");
@@ -379,11 +380,16 @@ int main(int argc, char* argv[])
   mvaInputVariables_2los_1tau_ttbar.push_back("mT_lep1");
   mvaInputVariables_2los_1tau_ttbar.push_back("mT_lep2");
   mvaInputVariables_2los_1tau_ttbar.push_back("htmiss");
-  mvaInputVariables_2los_1tau_ttbar.push_back("tau_mva");
-  mvaInputVariables_2los_1tau_ttbar.push_back("tau_pt");
   mvaInputVariables_2los_1tau_ttbar.push_back("dr_leps");
+  //mvaInputVariables_2los_1tau_ttbar.push_back("nJet");
+  //mvaInputVariables_2los_1tau_ttbar.push_back("nBJetLoose");
+  //mvaInputVariables_2los_1tau_ttbar.push_back("nBJetMedium");
+  mvaInputVariables_2los_1tau_ttbar.push_back("tau_pt");
+  mvaInputVariables_2los_1tau_ttbar.push_back("tau_eta");
+  mvaInputVariables_2los_1tau_ttbar.push_back("dr_lep_tau_os");
+  mvaInputVariables_2los_1tau_ttbar.push_back("dr_lep_tau_ss");
   mvaInputVariables_2los_1tau_ttbar.push_back("mTauTauVis");
-  TMVAInterface mva_2los_1tau_ttbar(mvaFileName_2los_1tau_ttbar, mvaInputVariables_2los_1tau_ttbar, {});
+  TMVAInterface mva_2los_1tau_ttbar(mvaFileName_2los_1tau_ttbar, mvaInputVariables_2los_1tau_ttbar, { "nJet", "nBJetLoose", "nBJetMedium", "tau_mva" });
 
   std::map<std::string, double> mvaInputs_2los_1tau;    
   
@@ -826,8 +832,14 @@ int main(int argc, char* argv[])
     }
 
     const RecoLepton* preselLepton_OS = 0;
-    if      ( preselLepton_lead->charge_*selHadTau->charge_    < 0. ) preselLepton_OS = preselLepton_lead;
-    else if ( preselLepton_sublead->charge_*selHadTau->charge_ < 0. ) preselLepton_OS = preselLepton_sublead;
+    const RecoLepton* preselLepton_SS = 0;
+    if ( preselLepton_lead->charge_*selHadTau->charge_ < 0. ) {
+      preselLepton_OS = preselLepton_lead;
+      preselLepton_SS = preselLepton_sublead;
+    } else if ( preselLepton_sublead->charge_*selHadTau->charge_ < 0. ) {
+      preselLepton_OS = preselLepton_sublead;
+      preselLepton_SS = preselLepton_lead;
+    }
     double mTauTauVis_presel = ( preselLepton_OS ) ? (preselLepton_OS->p4_ + selHadTau->p4_).mass() : -1.;
 
 //--- compute output of BDTs used to discriminate ttH vs. ttV and ttH vs. ttbar 
@@ -858,11 +870,12 @@ int main(int argc, char* argv[])
     else                                                                  mvaDiscr_2lss = 1.;    
 
 //--- compute output of BDTs used to discriminate ttH vs. ttbar trained by Arun for 2los_1tau category
-    mvaInputs_2los_1tau["lep_pt_max"]     = preselLepton_lead->pt_;
-    mvaInputs_2los_1tau["lep_eta_max"]    = TMath::Max(preselLepton_lead->absEta_, preselLepton_sublead->absEta_);
-    mvaInputs_2los_1tau["nJet"]           = selJets.size();
-    mvaInputs_2los_1tau["nBJetLoose"]     = selBJets_loose.size();
-    mvaInputs_2los_1tau["nBJetMedium"]    = selBJets_medium.size();
+    mvaInputs_2los_1tau["lep1_pt"]        = preselLepton_lead->pt_;
+    mvaInputs_2los_1tau["lep1_eta"]       = preselLepton_lead->eta_;
+    mvaInputs_2los_1tau["lep2_pt"]        = preselLepton_sublead->pt_;
+    mvaInputs_2los_1tau["lep2_eta"]       = preselLepton_sublead->eta_;
+    mvaInputs_2los_1tau["lep1_tth_mva"]   = preselLepton_lead->mvaRawTTH_;
+    mvaInputs_2los_1tau["lep2_tth_mva"]   = preselLepton_sublead->mvaRawTTH_;
     mvaInputs_2los_1tau["mindr_lep1_jet"] = TMath::Min(10., comp_mindr_lep1_jet(*preselLepton_lead, selJets));
     mvaInputs_2los_1tau["mindr_lep2_jet"] = TMath::Min(10., comp_mindr_lep2_jet(*preselLepton_sublead, selJets));
     mvaInputs_2los_1tau["mindr_tau_jet"]  = TMath::Min(10., comp_mindr_hadTau1_jet(*selHadTau, selJets));
@@ -871,9 +884,14 @@ int main(int argc, char* argv[])
     mvaInputs_2los_1tau["mT_lep1"]        = comp_MT_met_lep1(*preselLepton_lead, met_pt, met_phi);
     mvaInputs_2los_1tau["mT_lep2"]        = comp_MT_met_lep2(*preselLepton_sublead, met_pt, met_phi);
     mvaInputs_2los_1tau["htmiss"]         = mht_p4.pt();
-    mvaInputs_2los_1tau["tau_mva"]        = selHadTau->raw_mva_dR03_;
-    mvaInputs_2los_1tau["tau_pt"]         = selHadTau->pt_;
     mvaInputs_2los_1tau["dr_leps"]        = deltaR(preselLepton_lead->p4_, preselLepton_sublead->p4_);
+    //mvaInputs_2los_1tau["nJet"]           = selJets.size();
+    //mvaInputs_2los_1tau["nBJetLoose"]     = selBJets_loose.size();
+    //mvaInputs_2los_1tau["nBJetMedium"]    = selBJets_medium.size();
+    mvaInputs_2los_1tau["tau_pt"]         = selHadTau->pt_;
+    mvaInputs_2los_1tau["tau_eta"]        = selHadTau->eta_;
+    mvaInputs_2los_1tau["dr_lep_tau_os"]  = ( preselLepton_OS ) ? deltaR(preselLepton_OS->p4_, selHadTau->p4_) : 10.;
+    mvaInputs_2los_1tau["dr_lep_tau_ss"]  = ( preselLepton_SS ) ? deltaR(preselLepton_SS->p4_, selHadTau->p4_) : 10.;
     mvaInputs_2los_1tau["mTauTauVis"]     = mTauTauVis_presel;
 
     checkInputs(mvaInputs_2los_1tau, run, lumi, event);

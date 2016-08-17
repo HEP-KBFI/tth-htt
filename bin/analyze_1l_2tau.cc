@@ -401,10 +401,12 @@ int main(int argc, char* argv[])
 //--- initialize BDTs used to discriminate ttH vs. ttbar trained by Arun for 1l_2tau category
   std::string mvaFileName_1l_2tau_ttbar = "tthAnalysis/HiggsToTauTau/data/1l_2tau_ttbar_BDTG.weights.xml";
   std::vector<std::string> mvaInputVariables_1l_2tau_ttbar;
-  mvaInputVariables_1l_2tau_ttbar.push_back("lep_pt_max");
-  mvaInputVariables_1l_2tau_ttbar.push_back("nJet");
-  mvaInputVariables_1l_2tau_ttbar.push_back("nBJetLoose");
-  mvaInputVariables_1l_2tau_ttbar.push_back("nBJetMedium");
+  mvaInputVariables_1l_2tau_ttbar.push_back("lep_pt");
+  mvaInputVariables_1l_2tau_ttbar.push_back("lep_eta");
+  mvaInputVariables_1l_2tau_ttbar.push_back("lep_tth_mva");
+  //mvaInputVariables_1l_2tau_ttbar.push_back("nJet");
+  //mvaInputVariables_1l_2tau_ttbar.push_back("nBJetLoose");
+  //mvaInputVariables_1l_2tau_ttbar.push_back("nBJetMedium");
   mvaInputVariables_1l_2tau_ttbar.push_back("mindr_lep_jet");
   mvaInputVariables_1l_2tau_ttbar.push_back("mindr_tau1_jet");
   mvaInputVariables_1l_2tau_ttbar.push_back("mindr_tau2_jet");
@@ -412,13 +414,15 @@ int main(int argc, char* argv[])
   mvaInputVariables_1l_2tau_ttbar.push_back("ptmiss");
   mvaInputVariables_1l_2tau_ttbar.push_back("mT_lep");
   mvaInputVariables_1l_2tau_ttbar.push_back("htmiss");
-  mvaInputVariables_1l_2tau_ttbar.push_back("tau1_mva");
-  mvaInputVariables_1l_2tau_ttbar.push_back("tau2_mva");
   mvaInputVariables_1l_2tau_ttbar.push_back("tau1_pt");
   mvaInputVariables_1l_2tau_ttbar.push_back("tau2_pt");
+  mvaInputVariables_1l_2tau_ttbar.push_back("tau1_eta");
+  mvaInputVariables_1l_2tau_ttbar.push_back("tau2_eta");
+  mvaInputVariables_1l_2tau_ttbar.push_back("dr_lep_tau_os");
+  mvaInputVariables_1l_2tau_ttbar.push_back("dr_lep_tau_ss");
   mvaInputVariables_1l_2tau_ttbar.push_back("dr_taus");
   mvaInputVariables_1l_2tau_ttbar.push_back("mTauTauVis");
-  TMVAInterface mva_1l_2tau_ttbar(mvaFileName_1l_2tau_ttbar, mvaInputVariables_1l_2tau_ttbar, {});
+  TMVAInterface mva_1l_2tau_ttbar(mvaFileName_1l_2tau_ttbar, mvaInputVariables_1l_2tau_ttbar, { "nJet", "nBJetLoose", "nBJetMedium", "tau1_mva", "tau2_mva" });
 
   std::map<std::string, double> mvaInputs;
 
@@ -882,11 +886,23 @@ int main(int argc, char* argv[])
       }
     }
 
+    const RecoHadTau* selHadTau_OS = 0;
+    const RecoHadTau* selHadTau_SS = 0;
+    if ( selLepton->charge_*selHadTau_lead->charge_ < 0. ) {
+      selHadTau_OS = selHadTau_lead;
+      selHadTau_SS = selHadTau_sublead;
+    } else if ( selLepton->charge_*selHadTau_lead->charge_ < 0. ) {
+      selHadTau_OS = selHadTau_sublead;
+      selHadTau_SS = selHadTau_lead;
+    }
+
 //--- compute output of BDTs used to discriminate ttH vs. ttbar trained by Arun for 1l_2tau category
-    mvaInputs["lep_pt_max"]     = selLepton->pt_;
-    mvaInputs["nJet"]           = selJets.size();
-    mvaInputs["nBJetLoose"]     = selBJets_loose.size();
-    mvaInputs["nBJetMedium"]    = selBJets_medium.size();
+    mvaInputs["lep_pt"]         = selLepton->pt_;
+    mvaInputs["lep_eta"]        = selLepton->eta_;
+    mvaInputs["lep_tth_mva"]    = selLepton->mvaRawTTH_;
+    //mvaInputs["nJet"]           = selJets.size();
+    //mvaInputs["nBJetLoose"]     = selBJets_loose.size();
+    //mvaInputs["nBJetMedium"]    = selBJets_medium.size();
     mvaInputs["mindr_lep_jet"]  = TMath::Min(10., comp_mindr_lep1_jet(*selLepton, selJets));
     mvaInputs["mindr_tau1_jet"] = TMath::Min(10., comp_mindr_hadTau1_jet(*selHadTau_lead, selJets));
     mvaInputs["mindr_tau2_jet"] = TMath::Min(10., comp_mindr_hadTau2_jet(*selHadTau_sublead, selJets));
@@ -894,10 +910,12 @@ int main(int argc, char* argv[])
     mvaInputs["ptmiss"]         = met_pt;
     mvaInputs["mT_lep"]         = comp_MT_met_lep1(*selLepton, met_pt, met_phi);
     mvaInputs["htmiss"]         = mht_p4.pt();
-    mvaInputs["tau1_mva"]       = selHadTau_lead->raw_mva_dR03_;
-    mvaInputs["tau2_mva"]       = selHadTau_sublead->raw_mva_dR03_;
     mvaInputs["tau1_pt"]        = selHadTau_lead->pt_;
     mvaInputs["tau2_pt"]        = selHadTau_sublead->pt_;
+    mvaInputs["tau1_eta"]       = selHadTau_lead->eta_;
+    mvaInputs["tau2_eta"]       = selHadTau_sublead->eta_;
+    mvaInputs["dr_lep_tau_os"]  = ( selHadTau_OS ) ? deltaR(selLepton->p4_, selHadTau_OS->p4_) : 10.;
+    mvaInputs["dr_lep_tau_ss"]  = ( selHadTau_SS ) ? deltaR(selLepton->p4_, selHadTau_SS->p4_) : 10.;
     mvaInputs["dr_taus"]        = deltaR(selHadTau_lead->p4_, selHadTau_sublead->p4_);
     mvaInputs["mTauTauVis"]     = mTauTauVis;
 

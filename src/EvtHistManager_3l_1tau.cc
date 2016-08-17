@@ -17,6 +17,9 @@ void EvtHistManager_3l_1tau::bookHistograms(TFileDirectory& dir)
   histogram_numBJets_loose_ = book1D(dir, "numBJets_loose", "numBJets_loose", 10, -0.5, +9.5);
   histogram_numBJets_medium_ = book1D(dir, "numBJets_medium", "numBJets_medium", 10, -0.5, +9.5);
 
+  histogram_numBJets_loose_vs_numJets_ = book2D(dir, "numBJets_loose_vs_numJets", "numBJets_loose_vs_numJets", 8, -0.5, +7.5, 6, -0.5, +5.5);
+  histogram_numBJets_medium_vs_numJets_ = book2D(dir, "numBJets_medium_vs_numJets", "numBJets_medium_vs_numJets", 8, -0.5, +7.5, 6, -0.5, +5.5);
+
   histogram_mvaOutput_3l_ttV_ = book1D(dir, "mvaOutput_3l_ttV", "mvaOutput_3l_ttV", 40, -1., +1.);
   histogram_mvaOutput_3l_ttbar_  = book1D(dir, "mvaOutput_3l_ttbar", "mvaOutput_3l_ttbar", 40, -1., +1.);
   histogram_mvaDiscr_3l_  = book1D(dir, "mvaDiscr_3l", "mvaDiscr_3l", 3, 0.5, 3.5);
@@ -38,6 +41,9 @@ void EvtHistManager_3l_1tau::fillHistograms(int numElectrons, int numMuons, int 
   fillWithOverFlow(histogram_numJets_, numJets, evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_numBJets_loose_, numBJets_loose, evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_numBJets_medium_, numBJets_medium, evtWeight, evtWeightErr);
+
+  fillWithOverFlow2d(histogram_numBJets_loose_vs_numJets_, numJets, numBJets_loose, evtWeight, evtWeightErr);
+  fillWithOverFlow2d(histogram_numBJets_medium_vs_numJets_, numJets, numBJets_medium, evtWeight, evtWeightErr);
 
   fillWithOverFlow(histogram_mvaOutput_3l_ttV_, mvaOutput_3l_ttV, evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_mvaOutput_3l_ttbar_, mvaOutput_3l_ttbar, evtWeight, evtWeightErr);

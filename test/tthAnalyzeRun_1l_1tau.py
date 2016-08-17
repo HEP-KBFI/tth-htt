@@ -6,7 +6,7 @@ from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 
 LUMI = 2301. # 1/pb
 
-version = "2016Aug01_dR03mvaTight"
+version = "2016Aug15_dR03mvaTight"
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -48,7 +48,7 @@ if __name__ == '__main__':
     debug = False,
     running_method = "sbatch",
     num_parallel_jobs = 4,
-    histograms_to_fit = [ "EventCounter", "numJets", "mTauTauVis", "mTauTau" ])
+    histograms_to_fit = [ "EventCounter", "numJets", "mvaOutput_1l_1tau_ttbar", "mTauTauVis", "mTauTau" ])
 
   analysis.create()
 

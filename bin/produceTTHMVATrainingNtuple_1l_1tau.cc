@@ -764,6 +764,7 @@ int main(int argc, char* argv[])
     preselMEtHistManager.fillHistograms(met_p4, mht_p4, met_LD, evtWeight);
     preselEvtHistManager.fillHistograms(preselElectrons.size(), preselMuons.size(), selHadTaus.size(), 
       selJets.size(), selBJets_loose.size(), selBJets_medium.size(), 
+      -1.,
       mTauTauVis_presel, -1., evtWeight);
 
 //--- apply final event selection 
@@ -934,13 +935,15 @@ int main(int argc, char* argv[])
     selBJet_mediumHistManager.fillHistograms(selBJets_medium, evtWeight);
     selMEtHistManager.fillHistograms(met_p4, mht_p4, met_LD, evtWeight);
     selEvtHistManager.fillHistograms(selElectrons.size(), selMuons.size(), selHadTaus.size(), 
-      selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
+      selJets.size(), selBJets_loose.size(), selBJets_medium.size(), 
+      -1.,
       mTauTauVis, mTauTau, evtWeight);
     if ( isSignal ) {
       for ( const auto & kv: decayMode_idString ) {
         if ( std::fabs(genHiggsDecayMode - kv.second) < EPS ) {
           selEvtHistManager_decayMode[kv.first]->fillHistograms(selElectrons.size(), selMuons.size(), selHadTaus.size(), 
-            selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
+            selJets.size(), selBJets_loose.size(), selBJets_medium.size(), 
+            -1.,
             mTauTauVis, mTauTau, evtWeight);
           break;
         }
@@ -957,22 +960,26 @@ int main(int argc, char* argv[])
     if ( category == k1e_btight ) {
       selElectronHistManager_category["1e_1tau_btight"]->fillHistograms(selElectrons, evtWeight);
       selEvtHistManager_category["1e_1tau_btight"]->fillHistograms(preselElectrons.size(), preselMuons.size(), selHadTaus.size(), 
-        selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
+        selJets.size(), selBJets_loose.size(), selBJets_medium.size(), 
+        -1.,
         mTauTauVis, mTauTau, evtWeight);
     } else if ( category == k1e_bloose ) {
       selElectronHistManager_category["1e_1tau_bloose"]->fillHistograms(selElectrons, evtWeight);
       selEvtHistManager_category["1e_1tau_bloose"]->fillHistograms(preselElectrons.size(), preselMuons.size(), selHadTaus.size(), 
-        selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
+        selJets.size(), selBJets_loose.size(), selBJets_medium.size(), 
+        -1.,
         mTauTauVis, mTauTau, evtWeight);
     } else if ( category == k1mu_btight ) {
       selMuonHistManager_category["1mu_1tau_btight"]->fillHistograms(selMuons, evtWeight);
       selEvtHistManager_category["1mu_1tau_btight"]->fillHistograms(preselElectrons.size(), preselMuons.size(), selHadTaus.size(), 
-        selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
+        selJets.size(), selBJets_loose.size(), selBJets_medium.size(), 
+        -1.,
         mTauTauVis, mTauTau, evtWeight);
     } else if ( category == k1mu_bloose ) {
       selMuonHistManager_category["1mu_1tau_bloose"]->fillHistograms(selMuons, evtWeight);
       selEvtHistManager_category["1mu_1tau_bloose"]->fillHistograms(preselElectrons.size(), preselMuons.size(), selHadTaus.size(), 
-        selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
+        selJets.size(), selBJets_loose.size(), selBJets_medium.size(), 
+        -1.,
         mTauTauVis, mTauTau, evtWeight);
     } 
     

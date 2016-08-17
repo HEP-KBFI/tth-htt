@@ -9,40 +9,14 @@ process.fwliteInput = cms.PSet(
 )
 
 process.fwliteOutput = cms.PSet(
-    fileName = cms.string('prepareDatacards.root')
+    fileName = cms.string('addBackgrounds.root')
 )
 
-process.prepareDatacards = cms.PSet(
+process.addBackgrounds = cms.PSet(
 
-    processesToCopy = cms.vstring(
-        "data_obs",
-        "TTW",
-        "TTZ",
-        "WZ",
-        "Rares",
-        "fakes_data",
-        "flips_data"
-    ),
-
-    sf_signal = cms.double(1.),
-    signals = cms.vstring(
-        "ttH_hww",
-        "ttH_hzz",
-        "ttH_htt"
-    ),
-
-    categories = cms.VPSet(
-        cms.PSet(
-            input = cms.string("2lss_1tau_SS_Tight/sel/evt"),
-            output = cms.string("ttH_2lss_1tau")
-        )
-    ),
-
-    histogramToFit = cms.string("mvaDiscr_2lss"),
-    histogramToFit_rebin = cms.int32(1),
-
-    setBinsToZeroBelow = cms.double(-1.),
-
+    processes_input = cms.vstring(),
+    process_output = cms.string(""),
+    
     sysShifts = cms.vstring(
         "CMS_ttHl_btag_HFUp",
         "CMS_ttHl_btag_HFDown",

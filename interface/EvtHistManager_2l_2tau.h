@@ -32,6 +32,9 @@ class EvtHistManager_2l_2tau
   TH1* histogram_numBJets_loose_;
   TH1* histogram_numBJets_medium_;
 
+  TH2* histogram_numBJets_loose_vs_numJets_;  // CV: used to check loss in signal efficiency in case events with high jet and b-jet multiplicity are vetoed
+  TH2* histogram_numBJets_medium_vs_numJets_; //     to avoid overlap with ttH, H->bb analysis (alternative: ttH, H->bb analysis adds hadronic tau veto)
+
   TH1* histogram_mTauTauVis_;
 
   TH1* histogram_EventCounter_;
