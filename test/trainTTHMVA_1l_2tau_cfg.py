@@ -13,7 +13,7 @@ process.fwliteInput = cms.PSet(
 )
 
 process.fwliteInput.fileNames = cms.vstring(
-    '/home/arun/ttHAnalysis/2016Jul26V3_dR03mvaVLoose/histograms/histograms_harvested_stage1_1l_2tau.root'
+    '/home/arun/ttHAnalysis/2016Aug09_dR03mvaVVLoose/histograms/histograms_harvested_stage1_1l_2tau.root'
 )
 
 process.trainTTHMVA_1l_2tau = cms.PSet(
@@ -32,26 +32,37 @@ process.trainTTHMVA_1l_2tau = cms.PSet(
         "!H:!V:NTrees=500:BoostType=Grad:Shrinkage=0.30:UseBaggedBoost:GradBaggingFraction=0.5:SeparationType=GiniIndex:nCuts=500:PruneMethod=NoPruning:MaxDepth=3"
     ),
     inputVariables = cms.vstring(
-        'lep_pt_max/F',
-        'nJet/I',
-        'nBJetLoose/I',
-        'nBJetMedium/I',
+        'lep_pt/F',
+        'lep_eta/F',
+        'lep_tth_mva/F',
+        #'nJet/I',
+        #'nBJetLoose/I',
+        #'nBJetMedium/I',
+        'mindr_lep_jet/F',
         'mindr_tau1_jet/F',
         'mindr_tau2_jet/F',
         'avg_dr_jet/F',
         'ptmiss/F',
         'mT_lep/F',
         'htmiss/F',
-        'tau1_mva/F',
-        'tau2_mva/F',
+        #'tau1_mva/F',
+        #'tau2_mva/F',
         'tau1_pt/F',
         'tau2_pt/F',
+        'tau1_eta/F',
+        'tau2_eta/F',
+        'dr_lep_tau_os/F',
+        'dr_lep_tau_ss/F',
         'dr_taus/F',
         'mTauTauVis/F'
     ),
     spectatorVariables = cms.vstring(
-        
+        'nJet/I',
+        'nBJetLoose/I',
+        'nBJetMedium/I',
+        'tau1_mva/F',
+        'tau2_mva/F'
     ),
 
-    outputFileName = cms.string('/scratch/arun/mvaTraining/27July2016_BTag/trainTTHMVA_1l_2tau.root')
+    outputFileName = cms.string('/scratch/arun/mvaTraining/2016Aug10_dR03mvaVVLoose/trainTTHMVA_1l_2tau_woTauID_woNJet.root')
 )

@@ -141,14 +141,23 @@ class analyzeConfig_3l_1tau(analyzeConfig):
       triggers = sample_info["triggers"]
 
       for lepton_selection in self.lepton_selections:
+
+        key_dir = getKey(sample_name, lepton_selection)
+
         for central_or_shift in self.central_or_shifts:
+
+          if self.select_root_output:
+            rootOutputSingleFile = os.path.join(self.dirs[key_dir][DKEY_ROOT], "out_%s_%s_%s_%s.root" % \
+              (self.channel, process_name, lepton_selection, central_or_shift))
+            self.rootOutputAux[rootOutputSingleFile] = os.path.join(self.dirs[key_dir][DKEY_ROOT], "out_%s_%s_%s_%s_*.root" % \
+              (self.channel, process_name, lepton_selection, central_or_shift))
+
           for jobId in range(len(self.inputFileIds[sample_name])):
             if central_or_shift != "central" and not is_mc:
               continue
 
             inputFiles = generate_input_list(self.inputFileIds[sample_name][jobId], secondary_files, primary_store, secondary_store, self.debug)
-  
-            key_dir = getKey(sample_name, lepton_selection)
+
             key_file = getKey(sample_name, lepton_selection, central_or_shift, jobId)
 
             self.cfgFiles_analyze_modified[key_file] = os.path.join(self.dirs[key_dir][DKEY_CFGS], "analyze_%s_%s_%s_%s_%i_cfg.py" % \
@@ -181,6 +190,7 @@ class analyzeConfig_3l_1tau(analyzeConfig):
     self.addToMakefile_hadd_stage1(lines_makefile)
     self.addToMakefile_backgrounds_from_data(lines_makefile)
     self.addToMakefile_hadd_stage2(lines_makefile)
+    self.addToMakefile_outRoot(lines_makefile)
     self.addToMakefile_prep_dcard(lines_makefile)
     self.addToMakefile_clean(lines_makefile)
     self.createMakefile(lines_makefile)

@@ -144,6 +144,7 @@ class analyzeConfig:
     self.filesToClean = []
     self.rleOutputFiles = {}
     self.rootOutputFiles = {}
+    self.rootOutputAux = {}
 
   def createCfg_analyze(self, *args):
     raise ValueError("Function 'createCfg_analyze' not implemented in derrived class !!")      
@@ -228,7 +229,7 @@ class analyzeConfig:
       self.filesToClean.append(histogramFile)
 
   def addToMakefile_hadd_stage1(self, lines_makefile):
-    raise ValueError("Method 'addToMakefile_hadd_stage1' not implemented in derrived class !!")
+    raise ValueError("Method 'addToMakefile_hadd_stage1' not implemented in derived class !!")
   
   def addToMakefile_backgrounds_from_data(self, lines_makefile):
     """Adds the commands to Makefile that are necessary for adding the data-driven background estimates.
@@ -242,7 +243,18 @@ class analyzeConfig:
        so that the hadd stage2 file is simply a copy of the hadd stage1 file.
     """
     lines_makefile.append("%s: %s" % (self.histogramFile_hadd_stage2, self.histogramFile_hadd_stage1))
-    lines_makefile.append("\tln -s %s %s" % (self.histogramFile_hadd_stage1, self.histogramFile_hadd_stage2))
+    lines_makefile.append("\tln -sf %s %s" % (self.histogramFile_hadd_stage1, self.histogramFile_hadd_stage2))
+    lines_makefile.append("")
+
+  def addToMakefile_outRoot(self, lines_makefile):
+    """Adds the commands to Makefile that are necessary for building the final condensed *.root output file
+       containing a TTree of all selected event variables specific to a given channel.
+    """
+    if not self.rootOutputAux: return
+    lines_makefile.append("selEventTree_hadd: prepareDatacards_targets")
+    for rootOutputResult, rootOutputAsterisk in self.rootOutputAux.items():
+      lines_makefile.append("\trm -f %s" % rootOutputResult)
+      lines_makefile.append("\thadd %s $(shell for f in `ls %s`; do echo -ne $$f\" \"; done)" % (rootOutputResult, rootOutputAsterisk))
     lines_makefile.append("")
 
   def addToMakefile_prep_dcard(self, lines_makefile):
@@ -268,6 +280,8 @@ class analyzeConfig:
     lines_makefile.append("clean:")
     for fileToClean in self.filesToClean:
       lines_makefile.append("\trm -f %s" % fileToClean)
+    for rootOutputResult in self.rootOutputAux.keys():
+      lines_makefile.append("\trm -f %s" % rootOutputResult)
     lines_makefile.append("")
 
   def createMakefile(self, lines_makefile):
@@ -275,8 +289,9 @@ class analyzeConfig:
     """
     lines_makefile_with_header = []
     lines_makefile_with_header.append(".DEFAULT_GOAL := all")
+    lines_makefile_with_header.append("SHELL := /bin/bash")
     lines_makefile_with_header.append("")
-    lines_makefile_with_header.append("all: %s makePlots" % " ".join(self.datacardFiles.values()))
+    lines_makefile_with_header.append("all: %s %s makePlots" % (" ".join(self.datacardFiles.values()), "selEventTree_hadd" if self.rootOutputAux else ""))
     lines_makefile_with_header.append("")
     lines_makefile_with_header.extend(lines_makefile)
     createFile(self.makefile, lines_makefile_with_header)

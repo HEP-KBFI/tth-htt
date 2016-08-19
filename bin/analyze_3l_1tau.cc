@@ -262,7 +262,7 @@ EventObject_Out
                                 &phi,  Form("%s_phi/D", s.c_str()));
     branch_mass   = t -> Branch(Form("%s_mass", s.c_str()),
                                 &mass, Form("%s_mass/D", s.c_str()));
-    if(particleType == ParticleType_Out::kLepton)
+    if(particleType != ParticleType_Out::kJet)
       branch_charge = t -> Branch(Form("%s_charge", s.c_str()),
                                   &charge, Form("%s_charge/I", s.c_str()));
     if(particleType == ParticleType_Out::kHadronicTau)
@@ -291,6 +291,7 @@ EventObject_Out
   {
     setValues(static_cast<const GenParticle *>(p));
     decayMode = p -> decayMode_;
+    charge = p -> charge_;
   }
 };
 typedef struct EventObject_Out EO_O;

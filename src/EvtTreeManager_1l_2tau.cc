@@ -17,8 +17,8 @@ void EvtTreeManager_1l_2tau::bookTree(TFileDirectory& dir)
   //EventTree_ = dir.make<TTree>("evtTree", "evtTree"); 
   EventTree_ = new TTree("evtTree", "evtTree"); 
 
-  EventTree_->Branch("lep_pt_max", &lep_pt_max_, "lep_pt_max/F"); 
-  EventTree_->Branch("lep_eta_max", &lep_eta_max_, "lep_eta_max/F");
+  EventTree_->Branch("lep_pt", &lep_pt_, "lep_pt/F"); 
+  EventTree_->Branch("lep_eta", &lep_eta_, "lep_eta/F");
   EventTree_->Branch("lep_tth_mva", &lep_tth_mva_, "lep_tth_mva/F");
   EventTree_->Branch("nJet", &nJet_, "nJet/I");
   EventTree_->Branch("nBJetLoose", &nBJetLoose_, "nBJetLoose/I");
@@ -34,16 +34,21 @@ void EvtTreeManager_1l_2tau::bookTree(TFileDirectory& dir)
   EventTree_->Branch("tau2_mva", &tau2_mva_, "tau2_mva/F");
   EventTree_->Branch("tau1_pt", &tau1_pt_, "tau1_pt/F");
   EventTree_->Branch("tau2_pt", &tau2_pt_, "tau2_pt/F");
+  EventTree_->Branch("tau1_eta", &tau1_eta_, "tau1_eta/F"); 
+  EventTree_->Branch("tau2_eta", &tau2_eta_, "tau2_eta/F");
   EventTree_->Branch("dr_taus", &dr_taus_, "dr_taus/F");
+  EventTree_->Branch("dr_lep_tau_os", &dr_lep_tau_os_, "dr_lep_tau_os/F");
+  EventTree_->Branch("dr_lep_tau_ss", &dr_lep_tau_ss_, "dr_lep_tau_ss/F");
   EventTree_->Branch("mTauTauVis", &mTauTauVis_, "mTauTauVis/F");
 }
 
-void EvtTreeManager_1l_2tau::fillTree(float lep_pt_max, float lep_eta_max, float lep_tth_mva, int nJet, int nBJetLoose, int nBJetMedium, 
+void EvtTreeManager_1l_2tau::fillTree(float lep_pt, float lep_eta, float lep_tth_mva, int nJet, int nBJetLoose, int nBJetMedium, 
 				      float mindr_lep_jet, float mindr_tau1_jet, float mindr_tau2_jet, float avg_dr_jet, float ptmiss, float mT_lep, 
-				      float htmiss, float tau1_mva, float tau2_mva, float tau1_pt, float tau2_pt, float dr_taus, float mTauTauVis)
+				      float htmiss, float tau1_mva, float tau2_mva, float tau1_pt, float tau2_pt, float tau1_eta, float tau2_eta, 
+				      float dr_taus, float dr_lep_tau_os, float dr_lep_tau_ss, float mTauTauVis)
 {
-  lep_pt_max_ = lep_pt_max;
-  lep_eta_max_ = lep_eta_max;
+  lep_pt_ = lep_pt;
+  lep_eta_ = lep_eta;
   lep_tth_mva_ = lep_tth_mva;
   nJet_ = nJet;
   nBJetLoose_ = nBJetLoose;
@@ -59,7 +64,11 @@ void EvtTreeManager_1l_2tau::fillTree(float lep_pt_max, float lep_eta_max, float
   tau2_mva_ = tau2_mva;
   tau1_pt_ = tau1_pt;
   tau2_pt_ = tau2_pt;
+  tau1_eta_ = tau1_eta; 
+  tau2_eta_ = tau2_eta;
   dr_taus_ = dr_taus;
+  dr_lep_tau_os_ = dr_lep_tau_os;
+  dr_lep_tau_ss_ = dr_lep_tau_ss;
   mTauTauVis_ = mTauTauVis;
 
   EventTree_->Fill();
