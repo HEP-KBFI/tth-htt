@@ -55,14 +55,25 @@ namespace
     std::string label_;
   };
 
-  struct distributionEntryType
+  struct histogramEntryType
   {
-    distributionEntryType(const edm::ParameterSet& cfg)
-      : legendTextSize_(0.03),
-	legendPosX_(0.575),
-	legendPosY_(0.610),
-	legendSizeX_(0.355),
-	legendSizeY_(0.330)
+    histogramEntryType(const std::string& process, TH1* histogram)
+      : process_(process),
+	histogram_(histogram)
+    {}
+    ~histogramEntryType() {}
+    std::string process_;
+    TH1* histogram_;
+  };
+
+  struct plotEntryType
+  {
+    plotEntryType(const edm::ParameterSet& cfg)
+      : legendTextSize_(0.050),
+	legendPosX_(0.700),
+	legendPosY_(0.510),
+	legendSizeX_(0.230),
+	legendSizeY_(0.420)
     {
       histogramName_ = cfg.getParameter<std::string>("histogramName");
       outputFileName_ = ( cfg.exists("outputFileName") ) ?
@@ -91,7 +102,7 @@ namespace
 	}
       }      
     }
-    ~distributionEntryType() {}
+    ~plotEntryType() {}
     std::string histogramName_;
     std::string outputFileName_;
     double xMin_;
@@ -125,6 +136,16 @@ namespace
     } else throw cms::Exception("parseValue_and_Uncertainty") 
 	<< "Failed to parse string = '" << valueErr_string << "' !!\n";    
   }
+  TH1* getHistogram_wrapper(TDirectory* dir, const std::string& process, const std::string& histogramName, const std::string& central_or_shift, bool enableException)
+  {
+    std::string histogramName_full = TString(histogramName.data()).ReplaceAll("$PROCESS", process.data()).Data();
+    size_t idx = histogramName_full.find_last_of("/");
+    assert(idx < (histogramName_full.length() - 1));
+    std::string subdirName = std::string(histogramName_full, 0, idx);
+    std::string histogramName_wrt_subdir = std::string(histogramName_full, idx + 1);
+    TH1* histogram = getHistogram(dir, subdirName, histogramName_wrt_subdir, central_or_shift, enableException);
+    return histogram;
+  }
   void printHistogram(const TH1* histogram)
   {
     std::cout << "<printHistogram>:" << std::endl;
@@ -152,13 +173,12 @@ namespace
       edm::ParameterSet cfgNormalization = cfg.getParameter<edm::ParameterSet>("normalization");
       for ( vstring::const_iterator process = processes_.begin();
 	    process != processes_.end(); ++process ) {
-	edm::ParameterSet cfgNormalization_process = cfgNormalization.getParameter<edm::ParameterSet>(*process);
 	for ( std::vector<categoryEntryType*>::const_iterator category = categories.begin();
 	      category != categories.end(); ++category ) {
 	  normEntryType processEntry;
 	  processEntry.process_ = (*process);
 	  processEntry.category_ = ((*category)->name_);
-	  parseValue_and_Uncertainty(cfgNormalization_process.getParameter<std::string>(Form("category_%s", (*category)->name_.data())), processEntry.sf_, processEntry.sfErr_);
+	  parseValue_and_Uncertainty(cfgNormalization.getParameter<std::string>(*process), processEntry.sf_, processEntry.sfErr_);
 	  normalizationValues_and_Uncertainties_[*process][(*category)->name_] = processEntry;
 	}
       }
@@ -242,19 +262,19 @@ namespace
 	    process != processes_.end(); ++process ) {
 	std::cout << "process = " << (*process) << std::endl;
 
-	TH1* histogram_prefit = getHistogram(currentDir_, *process, currentHistogramName_, "central", true);
+	TH1* histogram_prefit = getHistogram_wrapper(currentDir_, *process, currentHistogramName_, "central", true);
 	histograms_prefit_[*process] = histogram_prefit;
 	//printHistogram(histograms_prefit_[*process]);
 	
 	for ( vstring::const_iterator sysShift = sysShifts_.begin();
 	      sysShift != sysShifts_.end(); ++sysShift ) {
 	  std::string sysShiftUp = Form("%sUp", sysShift->data());
-	  TH1* histogram_sysShiftUp = getHistogram(currentDir_, *process, currentHistogramName_, sysShiftUp, false);
+	  TH1* histogram_sysShiftUp = getHistogram_wrapper(currentDir_, *process, currentHistogramName_, sysShiftUp, false);
 	  if ( histogram_sysShiftUp ) {
 	    histograms_sysShifts_[*process][sysShiftUp] = histogram_sysShiftUp;
 	  }
 	  std::string sysShiftDown = Form("%sDown", sysShift->data());
-	  TH1* histogram_sysShiftDown = getHistogram(currentDir_, *process, currentHistogramName_, sysShiftDown, false);
+	  TH1* histogram_sysShiftDown = getHistogram_wrapper(currentDir_, *process, currentHistogramName_, sysShiftDown, false);
 	  if ( histogram_sysShiftDown ) {
 	    histograms_sysShifts_[*process][sysShiftDown] = histogram_sysShiftDown;
 	  }
@@ -398,7 +418,7 @@ namespace
 
   TH1* blindHistogram(TH1* histogram, const std::vector<pdouble>& keepBlinded)
   {
-    std::cout << "<blindHistogram>:" << std::endl;
+    //std::cout << "<blindHistogram>:" << std::endl;
     std::string blindedHistogramName = Form("%s_blinded", histogram->GetName());
     TH1* blindedHistogram = (TH1*)histogram->Clone(blindedHistogramName.data());
     if ( !blindedHistogram->GetSumw2N() ) blindedHistogram->Sumw2();
@@ -486,7 +506,7 @@ namespace
 
   void makePlot(double canvasSizeX, double canvasSizeY,
 		TH1* histogramData, TH1* histogramData_blinded,
-		std::vector<TH1*>& histogramsBackground, 	
+		std::vector<histogramEntryType*>& histogramsBackground, 	
 		TH1* histogramSignal,
 		TH1* histogramUncertainty,
 		double legendTextSize, double legendPosX, double legendPosY, double legendSizeX, double legendSizeY, 
@@ -527,39 +547,41 @@ namespace
     TH1* histogramFakes_density = 0;
     TH1* histogramFlips = 0;
     TH1* histogramFlips_density = 0;
-    for ( std::vector<TH1*>::iterator histogramBackground = histogramsBackground.begin();
-	  histogramBackground != histogramsBackground.end(); ++histogramBackground ) {
-      checkCompatibleBinning(*histogramBackground, histogramData);
-      TH1* histogramBackground_density = divideHistogramByBinWidth(*histogramBackground); 
-      std::string histogramName = (*histogramBackground)->GetName();
-      if ( histogramName.find("TTW") != std::string::npos ) {
-	histogramTTW = *histogramBackground;
+    for ( std::vector<histogramEntryType*>::iterator histogramBackground_entry = histogramsBackground.begin();
+	  histogramBackground_entry != histogramsBackground.end(); ++histogramBackground_entry ) {
+      TH1* histogramBackground = (*histogramBackground_entry)->histogram_;
+      const std::string& process = (*histogramBackground_entry)->process_;
+      checkCompatibleBinning(histogramBackground, histogramData);
+      TH1* histogramBackground_density = divideHistogramByBinWidth(histogramBackground); 
+      if ( process.find("TTW") != std::string::npos ) {
+	histogramTTW = histogramBackground;
 	histogramTTW_density = histogramBackground_density;
-      } else if ( histogramName.find("TTZ") != std::string::npos ) {
-	histogramTTZ = *histogramBackground;
+      } else if ( process.find("TTZ") != std::string::npos ) {
+	histogramTTZ = histogramBackground;
 	histogramTTZ_density = histogramBackground_density;
-      } else if ( histogramName.find("TT") != std::string::npos ) {
-	histogramTT = *histogramBackground;
+      } else if ( process.find("TT") != std::string::npos ) {
+	histogramTT = histogramBackground;
 	histogramTT_density = histogramBackground_density;
-      } else if ( histogramName.find("EWK") != std::string::npos ) {
-	histogramEWK = *histogramBackground;
+      } else if ( process.find("EWK") != std::string::npos ) {
+	histogramEWK = histogramBackground;
 	histogramEWK_density = histogramBackground_density;
-      } else if ( histogramName.find("Diboson") != std::string::npos ) { 
-	histogramDiboson = *histogramBackground;
+      } else if ( process.find("Diboson") != std::string::npos ) { 
+	histogramDiboson = histogramBackground;
 	histogramDiboson_density = histogramBackground_density;
-      } else if ( histogramName.find("WZ") != std::string::npos ) {
-	histogramWZ = *histogramBackground;
+      } else if ( process.find("WZ") != std::string::npos ) {
+	histogramWZ = histogramBackground;
 	histogramWZ_density = histogramBackground_density;
-      } else if ( histogramName.find("Rares") != std::string::npos ) {
-	histogramRares = *histogramBackground;
+      } else if ( process.find("Rares") != std::string::npos ) {
+	histogramRares = histogramBackground;
 	histogramRares_density = histogramBackground_density;
-      } else if ( histogramName.find("Fakes") != std::string::npos ) {
-	histogramFakes = *histogramBackground;
+      } else if ( process.find("Fakes") != std::string::npos || process.find("fakes") != std::string::npos ) {
+	histogramFakes = histogramBackground;
 	histogramFakes_density = histogramBackground_density;
-      } else if ( histogramName.find("Flips") != std::string::npos ) {
-	histogramFlips = *histogramBackground;
+      } else if ( process.find("Flips") != std::string::npos || process.find("flips") != std::string::npos ) {
+	histogramFlips = histogramBackground;
 	histogramFlips_density = histogramBackground_density;
       }
+      histogramsBackground_density.push_back(histogramBackground_density);
     }
 
     TH1* histogramSignal_density = 0;
@@ -651,7 +673,7 @@ namespace
 	yMin = 0.;
       }
     }
-    std::cout << "yMin = " << yMin << ", yMax = " << yMax << std::endl;
+    //std::cout << "yMin = " << yMin << ", yMax = " << yMax << std::endl;
 
     if ( histogramData_blinded_density ) {
       histogramData_blinded_density->SetTitle("");
@@ -666,65 +688,64 @@ namespace
       histogramData_blinded_density->Draw("ep");
     }
         
-    THStack* histogramStack_density = new THStack("stack", "");
-
+    std::vector<TH1*> histogramsForStack_density;
     if ( histogramSignal_density ) {
       histogramSignal_density->SetFillColor(628); // red
-      histogramStack_density->Add(histogramSignal_density);
+      histogramsForStack_density.push_back(histogramSignal_density);
       legend->AddEntry(histogramSignal_density, "ttH", "f");
     }
-
     if ( histogramTTW_density ) {
       histogramTTW_density->SetFillColor(823); // dark green
-      histogramStack_density->Add(histogramTTW_density);
+      histogramsForStack_density.push_back(histogramTTW_density);
       legend->AddEntry(histogramTTW_density, "ttW", "f");
     }
     if ( histogramTTZ_density ) {
       histogramTTZ_density->SetFillColor(822); // light green
-      histogramStack_density->Add(histogramTTZ_density);
+      histogramsForStack_density.push_back(histogramTTZ_density);
       legend->AddEntry(histogramTTZ_density, "ttZ", "f");
-    }
-    
+    }    
     if ( histogramTT_density ) {
       histogramTT_density->SetFillColor(16); // gray
-      histogramStack_density->Add(histogramTT_density);
+      histogramsForStack_density.push_back(histogramTT_density);
       legend->AddEntry(histogramTT_density, "tt+jets", "f");
     }
-
     if ( histogramEWK_density ) {
       histogramEWK_density->SetFillColor(610); // purple
-      histogramStack_density->Add(histogramEWK_density);
+      histogramsForStack_density.push_back(histogramEWK_density);
       legend->AddEntry(histogramEWK_density, "EWK", "f");
     } else if ( histogramDiboson_density ) {
       histogramDiboson_density->SetFillColor(610);
-      histogramStack_density->Add(histogramDiboson_density);
+      histogramsForStack_density.push_back(histogramDiboson_density);
       legend->AddEntry(histogramDiboson_density, "Diboson", "f");
     } else if ( histogramWZ_density ) {
       histogramWZ_density->SetFillColor(610);
-      histogramStack_density->Add(histogramWZ_density);
+      histogramsForStack_density.push_back(histogramWZ_density);
       legend->AddEntry(histogramWZ_density, "WZ", "f");
     }
-
     if ( histogramRares_density ) {
       histogramRares_density->SetFillColor(851); // light blue
-      histogramStack_density->Add(histogramRares_density);
-      legend->AddEntry(histogramRares_density, "WZ", "f");
+      histogramsForStack_density.push_back(histogramRares_density);
+      legend->AddEntry(histogramRares_density, "Rares", "f");
     }
-
     if ( histogramFakes_density ) {
       histogramFakes_density->SetFillColor(1);
       histogramFakes_density->SetFillStyle(3005); // stripes extending from top left to bottom right
-      histogramStack_density->Add(histogramFakes_density);
+      histogramsForStack_density.push_back(histogramFakes_density);
       legend->AddEntry(histogramFakes_density, "Fakes", "f");
     }
-
     if ( histogramFlips_density ) {
       histogramFlips_density->SetFillColor(1);
       histogramFlips_density->SetFillStyle(3006); // vertical stripes
-      histogramStack_density->Add(histogramFlips_density);
+      histogramsForStack_density.push_back(histogramFlips_density);
       legend->AddEntry(histogramFlips_density, "Flips", "f");
     }
 
+    // CV: add histograms to THStack in "reverse" order, so that ttH signal is drawn on top
+    THStack* histogramStack_density = new THStack("stack", "");
+    for ( std::vector<TH1*>::reverse_iterator histogram_density = histogramsForStack_density.rbegin(); 
+	  histogram_density != histogramsForStack_density.rend(); ++histogram_density ) {
+      histogramStack_density->Add(*histogram_density);
+    }
     if ( histogramData_blinded_density ) histogramStack_density->Draw("histsame");
     else histogramStack_density->Draw("hist");
     
@@ -815,7 +836,7 @@ namespace
 	double binContent = histogramRatio->GetBinContent(iBin);
 	if ( histogramData_blinded && histogramData_blinded->GetBinContent(iBin) >= 0. ) histogramRatio->SetBinContent(iBin, binContent - 1.0);
 	else histogramRatio->SetBinContent(iBin, -10.);
-	std::cout << " bin #" << iBin << " (x = " << histogramRatio->GetBinCenter(iBin) << "): ratio = " << histogramRatio->GetBinContent(iBin) << std::endl;
+	//std::cout << " bin #" << iBin << " (x = " << histogramRatio->GetBinCenter(iBin) << "): ratio = " << histogramRatio->GetBinContent(iBin) << std::endl;
       }
 
       histogramRatio->SetTitle("");
@@ -951,11 +972,17 @@ int main(int argc, char* argv[])
   vstring processesBackground = cfgMakePlots.getParameter<vstring>("processesBackground");
   std::string processSignal = cfgMakePlots.getParameter<std::string>("processSignal");
 
-  std::vector<distributionEntryType*> distributions;
+  std::vector<plotEntryType*> distributions;
   edm::VParameterSet cfgDistributions = cfgMakePlots.getParameter<edm::VParameterSet>("distributions");
   for ( edm::VParameterSet::const_iterator cfgDistribution = cfgDistributions.begin();
 	cfgDistribution != cfgDistributions.end(); ++cfgDistribution ) {
-    distributionEntryType* distribution = new distributionEntryType(*cfgDistribution);
+    std::string histogramName = cfgDistribution->getParameter<std::string>("histogramName");
+    size_t idx = histogramName.find_last_of("/");
+    std::string histogramName_wrt_subdir = ( idx < (histogramName.length() - 1) ) ?
+      std::string(histogramName, idx + 1) : histogramName;
+    edm::ParameterSet cfgDistribution_modified(*cfgDistribution);
+    cfgDistribution_modified.addParameter<std::string>("outputFileName", histogramName_wrt_subdir);
+    plotEntryType* distribution = new plotEntryType(cfgDistribution_modified);
     distributions.push_back(distribution);
   }
 
@@ -982,13 +1009,13 @@ int main(int argc, char* argv[])
     TDirectory* dir = getDirectory(inputFile, (*category)->name_, true);
     assert(dir);
 
-    for ( std::vector<distributionEntryType*>::iterator distribution = distributions.begin();
+    for ( std::vector<plotEntryType*>::iterator distribution = distributions.begin();
 	  distribution != distributions.end(); ++distribution ) {
 
       TH1* histogramData = 0;
       TH1* histogramData_blinded = 0;
       if ( processData != "" ) {
-	histogramData = getHistogram(dir, processData, (*distribution)->histogramName_, "central", true);
+	histogramData = getHistogram_wrapper(dir, processData, (*distribution)->histogramName_, "central", true);
 	if ( (*distribution)->keepBlinded_.size() >= 1 ) histogramData_blinded = blindHistogram(histogramData, (*distribution)->keepBlinded_);
 	else histogramData_blinded = histogramData; 
       }
@@ -998,11 +1025,11 @@ int main(int argc, char* argv[])
       histogramManager.setHistogram((*distribution)->histogramName_);
       histogramManager.update();
 
-      std::vector<TH1*> histogramsBackground;
+      std::vector<histogramEntryType*> histogramsBackground;
       for ( vstring::const_iterator processBackground = processesBackground.begin();
 	    processBackground != processesBackground.end(); ++processBackground ) {
 	TH1* histogramBackground = histogramManager.getHistogramPrefit(*processBackground, true);
-	histogramsBackground.push_back(histogramBackground);
+	histogramsBackground.push_back(new histogramEntryType(*processBackground, histogramBackground));
       }
       
       TH1* histogramSignal = histogramManager.getHistogramPrefit(processSignal, true);
@@ -1018,7 +1045,6 @@ int main(int argc, char* argv[])
 
       size_t idx = outputFileName.find(".");
       std::string outputFileName_plot(outputFileName, 0, idx);
-      outputFileName_plot.append(Form("_%s", (*category)->name_.data()));
       outputFileName_plot.append(Form("_%s", (*distribution)->outputFileName_.data()));
       if ( idx != std::string::npos ) outputFileName_plot.append(std::string(outputFileName, idx));
 	  
@@ -1029,7 +1055,7 @@ int main(int argc, char* argv[])
 	       histogramUncertainty,
 	       (*distribution)->legendTextSize_, (*distribution)->legendPosX_, (*distribution)->legendPosY_, (*distribution)->legendSizeX_, (*distribution)->legendSizeY_, 
 	       labelOnTop,
-	       extraLabels, 0.055, 0.185, 0.93 - 0.055*extraLabels.size(), extraLabelsSizeX, 0.055*extraLabels.size(),
+	       extraLabels, 0.055, 0.185, 0.915 - 0.055*extraLabels.size(), extraLabelsSizeX, 0.055*extraLabels.size(),
 	       (*distribution)->xMin_, (*distribution)->xMax_, (*distribution)->xAxisTitle_, (*distribution)->xAxisOffset_, 
 	       true, (*distribution)->yMin_, (*distribution)->yMax_, (*distribution)->yAxisTitle_, (*distribution)->yAxisOffset_, 
 	       outputFileName_plot);
@@ -1040,7 +1066,7 @@ int main(int argc, char* argv[])
 	       histogramUncertainty,
 	       (*distribution)->legendTextSize_, (*distribution)->legendPosX_, (*distribution)->legendPosY_, (*distribution)->legendSizeX_, (*distribution)->legendSizeY_, 
 	       labelOnTop,
-	       extraLabels, 0.055, 0.185, 0.93 - 0.055*extraLabels.size(), extraLabelsSizeX, 0.055*extraLabels.size(),
+	       extraLabels, 0.055, 0.185, 0.915 - 0.055*extraLabels.size(), extraLabelsSizeX, 0.055*extraLabels.size(),
 	       (*distribution)->xMin_, (*distribution)->xMax_, (*distribution)->xAxisTitle_, (*distribution)->xAxisOffset_, 
 	       false, (*distribution)->yMin_, (*distribution)->yMax_, (*distribution)->yAxisTitle_, (*distribution)->yAxisOffset_, 
 	       outputFileName_plot);
@@ -1055,7 +1081,7 @@ int main(int argc, char* argv[])
 	it != categories.end(); ++it ) {
     delete (*it);
   }
-  for ( std::vector<distributionEntryType*>::iterator it = distributions.begin();
+  for ( std::vector<plotEntryType*>::iterator it = distributions.begin();
 	it != distributions.end(); ++it ) {
     delete (*it);
   }

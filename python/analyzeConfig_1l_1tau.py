@@ -204,6 +204,7 @@ class analyzeConfig_1l_1tau(analyzeConfig):
     for histogramToFit in self.histograms_to_fit:
       self.createCfg_prep_dcard(histogramToFit)
 
+    logging.info("Creating Makefile")
     lines_makefile = []
     self.addToMakefile_analyze(lines_makefile)
     self.addToMakefile_hadd_stage1(lines_makefile)

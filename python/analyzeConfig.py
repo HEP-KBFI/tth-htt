@@ -2,14 +2,15 @@ import codecs, os
 
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd, generate_file_ids, generate_input_list
 
-DKEY_CFGS = "cfgs"        # dir for python configuration and batch script files for each job
-DKEY_HIST = "histograms"  # dir for histograms = output of the jobs
+DKEY_CFGS = "cfgs"        # dir for python configuration and batch script files for each analysis job
+DKEY_HIST = "histograms"  # dir for ROOT files containing histograms = output of the anaysis jobs
+DKEY_PLOT = "plots"       # dir for control plots (prefit)
 DKEY_LOGS = "logs"        # dir for log files (stdout/stderr of jobs)
 DKEY_DCRD = "datacards"   # dir for the datacard
 DKEY_RLES = "output_rle"  # dir for the selected run:lumi:event numbers
 DKEY_ROOT = "output_root" # dir for the selected events dumped into a root file
 
-DIRLIST = [DKEY_CFGS, DKEY_DCRD, DKEY_HIST, DKEY_LOGS, DKEY_RLES, DKEY_ROOT]
+DIRLIST = [ DKEY_CFGS, DKEY_DCRD, DKEY_HIST, DKEY_PLOT, DKEY_LOGS, DKEY_RLES, DKEY_ROOT ]
 
 def initDict(dictionary, keys):
   """Auxiliary function to initialize dictionary for access with multiple keys
@@ -97,7 +98,7 @@ class analyzeConfig:
   """
   def __init__(self, outputDir, executable_analyze, channel, central_or_shifts,
                max_files_per_job, use_lumi, lumi, debug, running_method, num_parallel_jobs, 
-               histograms_to_fit, executable_prep_dcard = "prepareDatacards"):
+               histograms_to_fit, executable_prep_dcard = "prepareDatacards", executable_make_plots = "makePlots"):
     self.outputDir = outputDir    
     self.executable_analyze = executable_analyze
     self.channel = channel    
@@ -120,6 +121,7 @@ class analyzeConfig:
     self.executable_prep_dcard = executable_prep_dcard
     self.prep_dcard_processesToCopy = [ "data_obs", "TT", "TTW", "TTZ", "EWK", "Rares" ]
     self.prep_dcard_signals = [ "ttH_hww", "ttH_hzz", "ttH_htt" ]
+    self.executable_make_plots = executable_make_plots
 
     self.workingDir = os.getcwd()
     create_if_not_exists(self.outputDir)
@@ -137,6 +139,8 @@ class analyzeConfig:
     self.cfgFile_prep_dcard_original = os.path.join(self.workingDir, "prepareDatacards_cfg.py")
     self.cfgFile_prep_dcard_modified = {}
     self.histogramDir_prep_dcard = None
+    self.cfgFile_make_plots_original = os.path.join(self.workingDir, "makePlots_cfg.py")
+    self.cfgFile_make_plots_modified = None
     self.filesToClean = []
     self.rleOutputFiles = {}
     self.rootOutputFiles = {}
@@ -148,11 +152,7 @@ class analyzeConfig:
     """Fills the template of python configuration file for datacard preparation
 
     Args:
-      histogramFile: name of the input ROOT file 
-      histogramDir: name of the directory in the ROOT file containing the histograms 
-      channel: name of the channel in the datacard
       histogramToFit: name of the histogram used for signal extraction
-      outputFile: name of the datacard file
     """
     self.datacardFiles[histogramToFit] = os.path.join(self.outputDir, DKEY_DCRD, "prepareDatacards_%s_%s.root" % (self.channel, histogramToFit))
     lines = []
@@ -167,7 +167,6 @@ class analyzeConfig:
     lines.append("    )")
     lines.append(")")
     lines.append("process.prepareDatacards.histogramToFit = cms.string('%s')" % histogramToFit)
-    
     self.cfgFile_prep_dcard_modified[histogramToFit] = os.path.join(self.outputDir, DKEY_CFGS, "prepareDatacards_%s_%s_cfg.py" % (self.channel, histogramToFit))
     create_cfg(self.cfgFile_prep_dcard_original, self.cfgFile_prep_dcard_modified[histogramToFit], lines)
 
@@ -254,7 +253,12 @@ class analyzeConfig:
       lines_makefile.append("\t%s %s" % (self.executable_prep_dcard, self.cfgFile_prep_dcard_modified[histogramToFit]))
       self.filesToClean.append(self.datacardFiles[histogramToFit])
     lines_makefile.append("")
-    lines_makefile.append("all: %s" % " ".join(self.datacardFiles.values()))
+
+  def addToMakefile_make_plots(self, lines_makefile):
+    """Adds the commands to Makefile that are necessary for building the datacards.
+    """
+    lines_makefile.append("makePlots: %s" % self.histogramFile_hadd_stage2)
+    lines_makefile.append("\t%s %s" % (self.executable_make_plots, self.cfgFile_make_plots_modified))
     lines_makefile.append("")
 
   def addToMakefile_clean(self, lines_makefile):
@@ -271,6 +275,8 @@ class analyzeConfig:
     """
     lines_makefile_with_header = []
     lines_makefile_with_header.append(".DEFAULT_GOAL := all")
+    lines_makefile_with_header.append("")
+    lines_makefile_with_header.append("all: %s makePlots" % " ".join(self.datacardFiles.values()))
     lines_makefile_with_header.append("")
     lines_makefile_with_header.extend(lines_makefile)
     createFile(self.makefile, lines_makefile_with_header)

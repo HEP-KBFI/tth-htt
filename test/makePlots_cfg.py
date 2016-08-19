@@ -10,7 +10,7 @@ process.fwliteInput = cms.PSet(
 
 process.makePlots = cms.PSet(
 
-    processData  = cms.string("data_obs"),
+    processData = cms.string("data_obs"),
     processesBackground = cms.vstring(
         "TTW",
         "TTZ",

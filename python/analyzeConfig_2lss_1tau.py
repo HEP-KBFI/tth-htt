@@ -42,10 +42,13 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
       for lepton_selection in self.lepton_selections:
         for lepton_charge_selection in self.lepton_charge_selections:
           key_dir = getKey(sample_name, lepton_selection, lepton_charge_selection)  
-          for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_DCRD ]:
+          for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS ]:
             initDict(self.dirs, [ key_dir, dir_type ])
             self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel,
               "_".join([ lepton_selection, lepton_charge_selection ]), process_name)
+    for dir_type in [ DKEY_DCRD, DKEY_PLOT ]:
+      initDict(self.dirs, [ dir_type ])
+      self.dirs[dir_type] = os.path.join(self.outputDir, dir_type, self.channel)
     ##print "self.dirs = ", self.dirs
 
     self.cfgFile_analyze_original = os.path.join(self.workingDir, "analyze_2lss_1tau_cfg.py")
@@ -109,6 +112,18 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
     lines.append("process.fwliteInput.fileNames = cms.vstring('%s')" % inputFile)
     lines.append("process.fwliteOutput.fileName = cms.string('%s')" % outputFile)
     create_cfg(self.cfgFile_addFlips_original, cfgFile_modified, lines)
+
+  def createCfg_makePlots(self):
+    """Fills the template of python configuration file for making control plots
+
+    Args:
+      histogramFile: name of the input ROOT file 
+    """
+    lines = []
+    lines.append("process.fwliteInput.fileNames = cms.vstring('%s')" % self.histogramFile_hadd_stage2)
+    lines.append("process.makePlots.outputFileName = cms.string('%s')" % os.path.join(self.outputDir, DKEY_PLOT, self.channel, "makePlots_%s.png" % self.channel))
+    self.cfgFile_make_plots_modified = os.path.join(self.outputDir, DKEY_CFGS, "makePlots_%s_cfg.py" % self.channel)
+    create_cfg(self.cfgFile_make_plots_original, self.cfgFile_make_plots_modified, lines)
 
   def addToMakefile_hadd_stage1(self, lines_makefile):
     inputFiles_hadd_stage1 = []
@@ -178,8 +193,11 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
     """
 
     for key in self.dirs.keys():
-      for dir_type in self.dirs[key].keys():
-        create_if_not_exists(self.dirs[key][dir_type])
+      if type(self.dirs[key]) == dict:
+        for dir_type in self.dirs[key].keys():
+          create_if_not_exists(self.dirs[key][dir_type])
+      else:
+        create_if_not_exists(self.dirs[key])
   
     self.inputFileIds = {}
     for sample_name, sample_info in self.samples.items():
@@ -236,12 +254,17 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
     for histogramToFit in self.histograms_to_fit:
       self.createCfg_prep_dcard(histogramToFit)
 
+    logging.info("Creating configuration files for executing 'makePlots'")
+    self.createCfg_makePlots()
+
+    logging.info("Creating Makefile")
     lines_makefile = []
     self.addToMakefile_analyze(lines_makefile)
     self.addToMakefile_hadd_stage1(lines_makefile)
     self.addToMakefile_backgrounds_from_data(lines_makefile)
     self.addToMakefile_hadd_stage2(lines_makefile)
     self.addToMakefile_prep_dcard(lines_makefile)
+    self.addToMakefile_make_plots(lines_makefile)
     self.addToMakefile_clean(lines_makefile)
     self.createMakefile(lines_makefile)
   
