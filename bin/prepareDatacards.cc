@@ -78,10 +78,7 @@ namespace
       if ( iBin == 0 || binCenter < setBinsToZeroBelow || iBin == (numBins + 1) ) {
 	histogram_output->SetBinContent(iBin, 0.);
 	histogram_output->SetBinError(iBin, 0.);
-      }
-      if ( rebin > 1 ) {
-	histogram_output->Rebin(rebin);
-      }
+      }      
     }
     
     //If systematic variation has zero events, but central >0
@@ -102,6 +99,10 @@ namespace
               }
             }
         }
+    }
+    
+    if ( rebin > 1 ) {
+	    histogram_output->Rebin(rebin);
     }    
   }
     

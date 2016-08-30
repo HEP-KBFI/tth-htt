@@ -219,7 +219,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
         for lepton_charge_selection in self.lepton_charge_selections:
           for central_or_shift in self.central_or_shifts:
             for jobId in range(len(self.inputFileIds[sample_name])):
-              if central_or_shift != "central" and not (lepton_selection == "Tight" and charge_selection == "SS"):
+              if central_or_shift != "central" and not (lepton_selection == "Tight" and lepton_charge_selection == "SS"):
                 continue
               if central_or_shift != "central" and not is_mc:
                 continue
