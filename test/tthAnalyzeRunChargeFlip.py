@@ -7,7 +7,7 @@ from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 
 #LUMI = 2301. # 1/pb
 LUMI = 2260. #?
-version = "histosCF_data_eleESER"
+version = "histosCF_pseudodata_eleESER"
 
 
 if __name__ == '__main__':
@@ -59,7 +59,7 @@ if __name__ == '__main__':
     running_method = "sbatch",
     num_parallel_jobs = 4,
     #sel_events_file = '',#os.path.join(os.environ["CMSSW_BASE"] , "src/tthAnalysis/HiggsToTauTau/data/eventlist_diff.txt"),
-    histograms_to_fit = [ "mll" ]
+    histograms_to_fit = [ "mass_ll" ]
     )
 
   analysis.create()
