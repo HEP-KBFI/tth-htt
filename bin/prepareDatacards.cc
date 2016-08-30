@@ -40,7 +40,7 @@ typedef std::vector<std::string> vstring;
 namespace
 {
   void copyHistogram(TDirectory* dir_input, const std::string& process, const std::string& histogramName_input, 
-		     const std::string& histogramName_output, double sf, double setBinsToZeroBelow, int rebin, const std::string& central_or_shift, bool enableException)
+		     const std::string& histogramName_output, double sf, double setBinsToZeroBelow, int rebin, const std::string& central_or_shift, bool enableException, bool setEmptySystematicFromCentral = true)
   {
 //    std::cout << "<copyHistogram>:" << std::endl;
 //    std::cout << " dir_input = " << dir_input->GetName() << std::endl;
@@ -83,6 +83,26 @@ namespace
 	histogram_output->Rebin(rebin);
       }
     }
+    
+    //If systematic variation has zero events, but central >0
+    if(setEmptySystematicFromCentral && !(central_or_shift == "" || central_or_shift == "central") && histogram_output->GetEntries() == 0){
+        TH1* histogram_central = dynamic_cast<TH1*>(dir_input->Get(histogramName_input.data()));
+        if (histogram_central->GetEntries() > 0){
+            for ( int iBin = 0; iBin <= (numBins + 1); ++iBin ) {
+              double binContent = 0.1*sf*histogram_central->GetBinContent(iBin);
+              histogram_output->SetBinContent(iBin, binContent);
+              double binError = sf*histogram_input->GetBinError(iBin);
+              binError = sqrt(binError*binError + binContent*binContent);
+              histogram_output->SetBinError(iBin, binError);
+              // CV: set underflow, overflow and all bins below given threshold (use 50 GeV for SVfit mass) to zero
+              double binCenter = histogram_input->GetBinCenter(iBin);
+              if ( iBin == 0 || binCenter < setBinsToZeroBelow || iBin == (numBins + 1) ) {
+	            histogram_output->SetBinContent(iBin, 0.);
+	            histogram_output->SetBinError(iBin, 0.);
+              }
+            }
+        }
+    }    
   }
     
   struct categoryType
