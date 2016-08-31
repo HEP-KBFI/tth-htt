@@ -844,11 +844,13 @@ int main(int argc, char* argv[])
     }
     if ( isMC ) {
       EvtHistManager_0l_3tau* selEvtHistManager_genMatch = 0;
-      if ( selHadTau_lead->genHadTau_ && selHadTau_sublead->genHadTau_ && selHadTau_third->genHadTau_ ) {
+      if ( selHadTau_lead->genHadTau_ && 
+	   selHadTau_sublead->genHadTau_ && 
+	   selHadTau_third->genHadTau_ ) {
 	selEvtHistManager_genMatch = selEvtHistManager_genHadTau;
-      } else if ( (selHadTau_lead->genHadTau_    || selHadTau_lead->genLepton_   ) && 
+      } else if ( (selHadTau_lead->genHadTau_ || selHadTau_lead->genLepton_ ) && 
 		  (selHadTau_sublead->genHadTau_ || selHadTau_sublead->genLepton_) && 
-		  (selHadTau_third->genHadTau_   || selHadTau_third->genLepton_  ) ) {
+		  (selHadTau_third->genHadTau_ || selHadTau_third->genLepton_ ) ) {
 	selEvtHistManager_genMatch = selEvtHistManager_genLepton;
       } else {
 	selEvtHistManager_genMatch = selEvtHistManager_genJet;

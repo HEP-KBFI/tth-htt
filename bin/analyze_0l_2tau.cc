@@ -883,15 +883,19 @@ int main(int argc, char* argv[])
     }
     if ( isMC ) {
       EvtHistManager_0l_2tau* selEvtHistManager_genMatch = 0;
-      if      ( selHadTau_lead->genHadTau_ && selHadTau_sublead->genHadTau_ ) selEvtHistManager_genMatch = selEvtHistManagers_genMatch["tt"];
-      else if ( selHadTau_lead->genHadTau_ && selHadTau_sublead->genLepton_ ) selEvtHistManager_genMatch = selEvtHistManagers_genMatch["tl"];
-      else if ( selHadTau_lead->genLepton_ && selHadTau_sublead->genHadTau_ ) selEvtHistManager_genMatch = selEvtHistManagers_genMatch["lt"];
-      else if ( selHadTau_lead->genHadTau_ && selHadTau_sublead->genJet_    ) selEvtHistManager_genMatch = selEvtHistManagers_genMatch["tj"];
-      else if ( selHadTau_lead->genJet_    && selHadTau_sublead->genHadTau_ ) selEvtHistManager_genMatch = selEvtHistManagers_genMatch["jt"];
-      else if ( selHadTau_lead->genLepton_ && selHadTau_sublead->genLepton_ ) selEvtHistManager_genMatch = selEvtHistManagers_genMatch["ll"];
-      else if ( selHadTau_lead->genLepton_ && selHadTau_sublead->genJet_    ) selEvtHistManager_genMatch = selEvtHistManagers_genMatch["lj"];
-      else if ( selHadTau_lead->genJet_    && selHadTau_sublead->genLepton_ ) selEvtHistManager_genMatch = selEvtHistManagers_genMatch["jl"];
-      else if ( selHadTau_lead->genJet_    && selHadTau_sublead->genJet_    ) selEvtHistManager_genMatch = selEvtHistManagers_genMatch["jj"];
+      if ( selHadTau_lead->genHadTau_ ) {
+	if      ( selHadTau_sublead->genHadTau_ ) selEvtHistManager_genMatch = selEvtHistManagers_genMatch["tt"];
+	else if ( selHadTau_sublead->genLepton_ ) selEvtHistManager_genMatch = selEvtHistManagers_genMatch["tl"];
+	else                                      selEvtHistManager_genMatch = selEvtHistManagers_genMatch["tj"];
+      } else if ( selHadTau_lead->genLepton_ ) {
+	if      ( selHadTau_sublead->genHadTau_ ) selEvtHistManager_genMatch = selEvtHistManagers_genMatch["lt"];
+	else if ( selHadTau_sublead->genLepton_ ) selEvtHistManager_genMatch = selEvtHistManagers_genMatch["ll"];
+	else                                      selEvtHistManager_genMatch = selEvtHistManagers_genMatch["lj"];
+      } else {
+	if      ( selHadTau_sublead->genHadTau_ ) selEvtHistManager_genMatch = selEvtHistManagers_genMatch["jt"];
+	else if ( selHadTau_sublead->genLepton_ ) selEvtHistManager_genMatch = selEvtHistManagers_genMatch["jl"];
+	else                                      selEvtHistManager_genMatch = selEvtHistManagers_genMatch["jj"];
+      }
       assert(selEvtHistManager_genMatch);
       selEvtHistManager_genMatch->fillHistograms(preselElectrons.size(), preselMuons.size(), selHadTaus.size(), 
         selJets.size(), selBJets_loose.size(), selBJets_medium.size(),

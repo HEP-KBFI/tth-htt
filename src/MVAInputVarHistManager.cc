@@ -12,6 +12,7 @@ MVAInputVarHistManager::MVAInputVarHistManager(const edm::ParameterSet& cfg)
   binningOptions_["avg_dr_jet"] = new binningOptionType("avg_dr_jet", 50, 0., 5.);
   binningOptions_["dr_lep_tau_os"] = new binningOptionType("dr_lep_tau_os", 50, 0., 5.);
   binningOptions_["dr_lep_tau_ss"] = new binningOptionType("dr_lep_tau_ss", 50, 0., 5.);
+  binningOptions_["dr_leps"] = new binningOptionType("dr_leps", 50, 0., 5.);
   binningOptions_["dr_tau_lep"] = new binningOptionType("dr_tau_lep", 50, 0., 5.);
   binningOptions_["dr_taus"] = new binningOptionType("dr_taus", 50, 0., 5.);
   binningOptions_["htmiss"] = new binningOptionType("htmiss", 40, 0., 200.);
