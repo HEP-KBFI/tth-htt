@@ -183,7 +183,7 @@ class analyzeConfig_charge_flip(analyzeConfig):
 	for ptEtaBin in ["BB_LL", "BB_ML", "BB_MM", "BB_HL", "BB_HM", "BB_HH", "EE_LL", "EE_ML", "EE_MM", "EE_HL", "EE_HM", "EE_HH", "BE_LL", "BE_ML", "EB_ML", "BE_MM", "BE_HL", "EB_HL", "BE_HM", "EB_HM", "BE_HH", "total"]:
 	    lines.append("    cms.PSet(")
 	    lines.append("        input = cms.string('%s/%s')," % (charge, ptEtaBin))
-	    lines.append("        output = cms.string('ttHCF_%s_%s_%s')" % (self.channel, charge, ptEtaBin))
+	    lines.append("        output = cms.string('ttH_%s_%s_%s')" % (self.channel, charge, ptEtaBin))
 	    lines.append("    ),")
     lines.append(")")
     lines.append("process.prepareDatacards.histogramToFit = cms.string('%s')" % histogramToFit)

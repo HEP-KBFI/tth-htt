@@ -40,7 +40,6 @@ process.prepareDatacards = cms.PSet(
             output = cms.string("SS/BB_LL")            
         )
     ),   
-    namedCategories = cms.bool(True),
 
     histogramToFit = cms.string("mass_ll"),
     histogramToFit_rebin = cms.int32(1),

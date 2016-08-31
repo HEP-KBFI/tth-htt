@@ -184,7 +184,6 @@ int main(int argc, char* argv[])
 	cfgCategory != cfg_categories.end(); ++cfgCategory ) {
     categories.push_back(categoryType(*cfgCategory));
   }
-  bool named_categories = cfg_prepareDatacards.getParameter<bool>("namedCategories");
   
   std::string histogramToFit = cfg_prepareDatacards.getParameter<std::string>("histogramToFit");
   int histogramToFit_rebin = cfg_prepareDatacards.getParameter<int>("histogramToFit_rebin");
@@ -251,12 +250,14 @@ int main(int argc, char* argv[])
 	    
 	    TFileDirectory* subdir_output = &fs;
 	    subdir_output->cd();
+	    //Make subdirectory if given
+	    if(category->output_.length() > 0){
+	        TDirectory* subsubdir_output = createSubdirectory_recursively(fs, category->output_);
+	        subsubdir_output->cd();
+        }
 	    double sf = ( isSignal ) ? sf_signal : 1.;
-	    std::string new_name = "";
-	    if(named_categories)
-	        new_name = category->input_;//.replace(2,1,"_");
 	    copyHistogram(
-	      subdir, subdir->GetName(), histogramToFit, new_name, 
+	      subdir, subdir->GetName(), histogramToFit, "", 
 	      sf, setBinsToZeroBelow, histogramToFit_rebin, *central_or_shift, (*central_or_shift) == "" || (*central_or_shift) == "central");	      
 	  }
 	}
