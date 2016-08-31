@@ -505,6 +505,23 @@ int main(int argc, char* argv[])
       selEvtHistManager_decayMode[*decayMode] = selEvtHistManager_ptr;
     }
   }
+  EvtHistManager_2lss_1tau* selEvtHistManager_genHadTau = 0;
+  EvtHistManager_2lss_1tau* selEvtHistManager_genLepton = 0;
+  EvtHistManager_2lss_1tau* selEvtHistManager_genJet = 0;
+  if ( isMC ) {
+    std::string process_and_genMatchedHadTau = process_string + "t";
+    selEvtHistManager_genHadTau = new EvtHistManager_2lss_1tau(makeHistManager_cfg(process_and_genMatchedHadTau, 
+      Form("2lss_1tau_%s/sel/evt", charge_and_leptonSelection.data()), central_or_shift));
+    selEvtHistManager_genHadTau->bookHistograms(fs);
+    std::string process_and_genMatchedLepton = process_string + "l";
+    selEvtHistManager_genLepton = new EvtHistManager_2lss_1tau(makeHistManager_cfg(process_and_genMatchedLepton, 
+      Form("2lss_1tau_%s/sel/evt", charge_and_leptonSelection.data()), central_or_shift));
+    selEvtHistManager_genLepton->bookHistograms(fs);
+    std::string process_and_genMatchedJet = process_string + "j";
+    selEvtHistManager_genJet = new EvtHistManager_2lss_1tau(makeHistManager_cfg(process_and_genMatchedJet, 
+      Form("2lss_1tau_%s/sel/evt", charge_and_leptonSelection.data()), central_or_shift));
+    selEvtHistManager_genJet->bookHistograms(fs);
+  }
   vstring categories_evt = { 
     "2epp_1tau_bloose", "2epp_1tau_btight", "2emm_1tau_bloose", "2emm_1tau_btight",
     "1e1mupp_1tau_bloose", "1e1mupp_1tau_btight", "1e1mumm_1tau_bloose", "1e1mumm_1tau_btight",
@@ -997,6 +1014,7 @@ int main(int argc, char* argv[])
       continue;
     }
     cutFlowTable.update(">= 1 sel tau (2)", evtWeight);
+    const RecoHadTau* selHadTau_lead = selHadTaus[0];
 
     bool failsLowMassVeto = false;
     for ( std::vector<const RecoLepton*>::const_iterator lepton1 = selLeptons.begin();
@@ -1172,6 +1190,17 @@ int main(int argc, char* argv[])
           break;
         }
       }
+    }
+    if ( isMC ) {
+      EvtHistManager_2lss_1tau* selEvtHistManager_genMatch = 0;
+      if      ( selHadTau_lead->genHadTau_                               ) selEvtHistManager_genMatch = selEvtHistManager_genHadTau;
+      else if ( selHadTau_lead->genHadTau_ || selHadTau_lead->genLepton_ ) selEvtHistManager_genMatch = selEvtHistManager_genLepton;
+      else                                                                 selEvtHistManager_genMatch = selEvtHistManager_genJet;
+      assert(selEvtHistManager_genMatch);
+      selEvtHistManager_genMatch->fillHistograms(selElectrons.size(), selMuons.size(), selHadTaus.size(), 
+        selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
+        mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, 
+	mTauTauVis1_presel, mTauTauVis2_presel, evtWeight);
     }
 
     bool isCharge_pp = selLepton_lead->pdgId_ < 0 && selLepton_sublead->pdgId_ < 0;

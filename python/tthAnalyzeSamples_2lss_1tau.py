@@ -190,8 +190,12 @@ samples["/ST_t-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1/RunII
   ("type", "mc"),
   ("sample_category", "background_data_estimate"),
   ("process_name_specific", "ST_t-channel_4f_leptonDecays"),
+  # CV: The two DBS samples:
+  #       /ST_t-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM
+  #       /ST_t-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12_ext1-v1/MINIAODSIM
+  #     cover the same process and phase-space. The nof_events are added accordingly.
   ("nof_files", 478),
-  ("nof_events", 19938230),
+  ("nof_events", 19938230+29206391),
   ("use_it", True),
   ("xsection", 70.69),
   ("triggers", [ "1e", "2e", "1mu", "2mu", "1e1mu" ]),
@@ -212,8 +216,12 @@ samples["/ST_t-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1/RunII
   ("type", "mc"),
   ("sample_category", "background_data_estimate"),
   ("process_name_specific", "ST_t-channel_4f_leptonDecays_ext1"),
+  # CV: The two DBS samples:
+  #       /ST_t-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM
+  #       /ST_t-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12_ext1-v1/MINIAODSIM
+  #     cover the same process and phase-space. The nof_events are added accordingly. 
   ("nof_files", 690),
-  ("nof_events", 29206391),
+  ("nof_events", 19938230+29206391),
   ("use_it", True),
   ("xsection", 70.69),
   ("triggers", [ "1e", "2e", "1mu", "2mu", "1e1mu" ]),
@@ -468,8 +476,12 @@ samples["/TTTT_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIIFall15MiniAODv2-PU25nsDa
   ("type", "mc"),
   ("sample_category", "Rares"),
   ("process_name_specific", "TTTT"),
+  # CV: The two DBS samples:
+  #       /TTTT_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM
+  #       /TTTT_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12_ext1-v1/MINIAODSIM
+  #     cover the same process and phase-space. The nof_events are added accordingly. 
   ("nof_files", 7),
-  ("nof_events", 250000),
+  ("nof_events", 250000+960521),
   ("use_it", True),
   ("xsection", 0.009103),
   ("triggers", [ "1e", "2e", "1mu", "2mu", "1e1mu" ]),
@@ -486,8 +498,12 @@ samples["/TTTT_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIIFall15MiniAODv2-PU25nsDa
   ("type", "mc"),
   ("sample_category", "Rares"),
   ("process_name_specific", "TTTT_ext1"),
+  # CV: The two DBS samples:
+  #       /TTTT_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM
+  #       /TTTT_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12_ext1-v1/MINIAODSIM
+  #     cover the same process and phase-space. The nof_events are added accordingly. 
   ("nof_files", 24),
-  ("nof_events", 960521),
+  ("nof_events", 250000+960521),
   ("use_it", True),
   ("xsection", 0.009103),
   ("triggers", [ "1e", "2e", "1mu", "2mu", "1e1mu" ]),

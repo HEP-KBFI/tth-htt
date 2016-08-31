@@ -517,6 +517,8 @@ namespace
 		bool useLogScale, double yMin, double yMax, const std::string& yAxisTitle, double yAxisOffset,
 		const std::string& outputFileName)
   {
+    std::cout << "<makePlot>:" << std::endl;
+
     TH1* histogramData_density = 0;
     if ( histogramData ) {
       histogramData_density = divideHistogramByBinWidth(histogramData);      
@@ -551,6 +553,8 @@ namespace
 	  histogramBackground_entry != histogramsBackground.end(); ++histogramBackground_entry ) {
       TH1* histogramBackground = (*histogramBackground_entry)->histogram_;
       const std::string& process = (*histogramBackground_entry)->process_;
+      std::cout << "process = " << process << ": histogramBackground = " << histogramBackground << std::endl;
+      printHistogram(histogramBackground);
       checkCompatibleBinning(histogramBackground, histogramData);
       TH1* histogramBackground_density = divideHistogramByBinWidth(histogramBackground); 
       if ( process.find("TTW") != std::string::npos ) {
@@ -583,6 +587,8 @@ namespace
       }
       histogramsBackground_density.push_back(histogramBackground_density);
     }
+    std::cout << "histogramTTW_density = " << histogramTTW_density << std::endl;
+    std::cout << "histogramTTZ_density = " << histogramTTZ_density << std::endl;
 
     TH1* histogramSignal_density = 0;
     if ( histogramSignal ) {
@@ -673,7 +679,7 @@ namespace
 	yMin = 0.;
       }
     }
-    //std::cout << "yMin = " << yMin << ", yMax = " << yMax << std::endl;
+    std::cout << "yMin = " << yMin << ", yMax = " << yMax << std::endl;
 
     if ( histogramData_blinded_density ) {
       histogramData_blinded_density->SetTitle("");
@@ -717,8 +723,9 @@ namespace
       histogramDiboson_density->SetFillColor(610);
       histogramsForStack_density.push_back(histogramDiboson_density);
       legend->AddEntry(histogramDiboson_density, "Diboson", "f");
-    } else if ( histogramWZ_density ) {
-      histogramWZ_density->SetFillColor(610);
+    } 
+    if ( histogramWZ_density ) {
+      histogramWZ_density->SetFillColor(634); // dark red
       histogramsForStack_density.push_back(histogramWZ_density);
       legend->AddEntry(histogramWZ_density, "WZ", "f");
     }
@@ -976,10 +983,20 @@ int main(int argc, char* argv[])
   edm::VParameterSet cfgDistributions = cfgMakePlots.getParameter<edm::VParameterSet>("distributions");
   for ( edm::VParameterSet::const_iterator cfgDistribution = cfgDistributions.begin();
 	cfgDistribution != cfgDistributions.end(); ++cfgDistribution ) {
-    std::string histogramName = cfgDistribution->getParameter<std::string>("histogramName");
-    size_t idx = histogramName.find_last_of("/");
-    std::string histogramName_wrt_subdir = ( idx < (histogramName.length() - 1) ) ?
-      std::string(histogramName, idx + 1) : histogramName;
+    TString histogramName = cfgDistribution->getParameter<std::string>("histogramName").data();
+    TObjArray* histogramName_parts = histogramName.Tokenize("/");
+    std::string histogramName_wrt_subdir;
+    if ( histogramName_parts->GetEntries() >= 2 ) {
+      TObjString* histogramName_part1 = dynamic_cast<TObjString*>(histogramName_parts->At(1));
+      assert(histogramName_part1);
+      histogramName_wrt_subdir.append(histogramName_part1->GetString().Data());
+    }
+    if ( histogramName_parts->GetEntries() >= 4 ) {
+      TObjString* histogramName_part2 = dynamic_cast<TObjString*>(histogramName_parts->At(3));
+      assert(histogramName_part2);
+      if ( histogramName_wrt_subdir.length() > 0 ) histogramName_wrt_subdir.append("_");
+      histogramName_wrt_subdir.append(histogramName_part2->GetString().Data());
+    }
     edm::ParameterSet cfgDistribution_modified(*cfgDistribution);
     cfgDistribution_modified.addParameter<std::string>("outputFileName", histogramName_wrt_subdir);
     plotEntryType* distribution = new plotEntryType(cfgDistribution_modified);

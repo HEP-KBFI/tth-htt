@@ -160,6 +160,9 @@ class analyzeConfig_2los_1tau(analyzeConfig):
     for histogramToFit in self.histograms_to_fit:
       self.createCfg_prep_dcard(histogramToFit)
 
+    logging.info("Creating configuration files for executing 'makePlots'")
+    self.createCfg_makePlots()
+
     logging.info("Creating Makefile")
     lines_makefile = []
     self.addToMakefile_analyze(lines_makefile)
@@ -167,6 +170,7 @@ class analyzeConfig_2los_1tau(analyzeConfig):
     self.addToMakefile_backgrounds_from_data(lines_makefile)
     self.addToMakefile_hadd_stage2(lines_makefile)
     self.addToMakefile_prep_dcard(lines_makefile)
+    self.addToMakefile_make_plots(lines_makefile)
     self.addToMakefile_clean(lines_makefile)
     self.createMakefile(lines_makefile)
   

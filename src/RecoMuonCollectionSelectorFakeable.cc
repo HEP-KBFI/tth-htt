@@ -19,7 +19,8 @@ RecoMuonSelectorFakeable::RecoMuonSelectorFakeable(int index, bool debug)
 
 bool RecoMuonSelectorFakeable::operator()(const RecoMuon& muon) const
 {
-  if ( muon.pt_ >= min_pt_ &&
+  double muonPt_corr = ( muon.jetPtRatio_ > 1.e-3 ) ? 0.85*muon.pt_/muon.jetPtRatio_ : muon.pt_;
+  if ( muonPt_corr >= min_pt_ &&
        muon.absEta_ <= max_absEta_ &&
        std::fabs(muon.dxy_) <= max_dxy_ &&
        std::fabs(muon.dz_) <= max_dz_ &&

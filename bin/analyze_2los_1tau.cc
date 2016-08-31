@@ -49,6 +49,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/HadTauHistManager.h" // HadTauHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/JetHistManager.h" // JetHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/MEtHistManager.h" // MEtHistManager
+#include "tthAnalysis/HiggsToTauTau/interface/MVAInputVarHistManager.h" // MVAInputVarHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/EvtHistManager_2los_1tau.h" // EvtHistManager_2los_1tau
 #include "tthAnalysis/HiggsToTauTau/interface/leptonTypes.h" // getLeptonType, kElectron, kMuon
 #include "tthAnalysis/HiggsToTauTau/interface/backgroundEstimation.h" // prob_chargeMisId
@@ -367,9 +368,9 @@ int main(int argc, char* argv[])
   std::string mvaFileName_2los_1tau_ttbar = "tthAnalysis/HiggsToTauTau/data/2los_1tau_ttbar_BDTG.weights.xml";
   std::vector<std::string> mvaInputVariables_2los_1tau_ttbar;
   mvaInputVariables_2los_1tau_ttbar.push_back("lep1_pt");
-  mvaInputVariables_2los_1tau_ttbar.push_back("lep1_eta");
+  mvaInputVariables_2los_1tau_ttbar.push_back("TMath::Abs(lep1_eta)");
   mvaInputVariables_2los_1tau_ttbar.push_back("lep2_pt");
-  mvaInputVariables_2los_1tau_ttbar.push_back("lep2_eta");
+  mvaInputVariables_2los_1tau_ttbar.push_back("TMath::Abs(lep2_eta)");
   mvaInputVariables_2los_1tau_ttbar.push_back("lep1_tth_mva");
   mvaInputVariables_2los_1tau_ttbar.push_back("lep2_tth_mva");
   mvaInputVariables_2los_1tau_ttbar.push_back("mindr_lep1_jet");
@@ -381,15 +382,15 @@ int main(int argc, char* argv[])
   mvaInputVariables_2los_1tau_ttbar.push_back("mT_lep2");
   mvaInputVariables_2los_1tau_ttbar.push_back("htmiss");
   mvaInputVariables_2los_1tau_ttbar.push_back("dr_leps");
-  //mvaInputVariables_2los_1tau_ttbar.push_back("nJet");
-  //mvaInputVariables_2los_1tau_ttbar.push_back("nBJetLoose");
-  //mvaInputVariables_2los_1tau_ttbar.push_back("nBJetMedium");
+  mvaInputVariables_2los_1tau_ttbar.push_back("nJet");
+  mvaInputVariables_2los_1tau_ttbar.push_back("nBJetLoose");
+  mvaInputVariables_2los_1tau_ttbar.push_back("nBJetMedium");
   mvaInputVariables_2los_1tau_ttbar.push_back("tau_pt");
-  mvaInputVariables_2los_1tau_ttbar.push_back("tau_eta");
+  mvaInputVariables_2los_1tau_ttbar.push_back("TMath::Abs(tau_eta)");
   mvaInputVariables_2los_1tau_ttbar.push_back("dr_lep_tau_os");
   mvaInputVariables_2los_1tau_ttbar.push_back("dr_lep_tau_ss");
   mvaInputVariables_2los_1tau_ttbar.push_back("mTauTauVis");
-  TMVAInterface mva_2los_1tau_ttbar(mvaFileName_2los_1tau_ttbar, mvaInputVariables_2los_1tau_ttbar, { "nJet", "nBJetLoose", "nBJetMedium", "tau_mva" });
+  TMVAInterface mva_2los_1tau_ttbar(mvaFileName_2los_1tau_ttbar, mvaInputVariables_2los_1tau_ttbar, { "tau_mva" });
 
   std::map<std::string, double> mvaInputs_2los_1tau;    
   
@@ -508,6 +509,10 @@ int main(int argc, char* argv[])
     Form("2los_1tau_%s/sel/met", leptonSelection_string.data()), central_or_shift));
   selMEtHistManager.bookHistograms(fs);
 
+  MVAInputVarHistManager selMVAInputVarHistManager(makeHistManager_cfg(process_string, 
+    Form("2los_1tau_%s/sel/mvaInputVariables", leptonSelection_string.data()), central_or_shift));
+  selMVAInputVarHistManager.bookHistograms(fs, mvaInputVariables_2los_1tau_ttbar);
+
   EvtHistManager_2los_1tau selEvtHistManager(makeHistManager_cfg(process_string, 
     Form("2los_1tau_%s/sel/evt", leptonSelection_string.data()), central_or_shift));
   selEvtHistManager.bookHistograms(fs);
@@ -529,6 +534,24 @@ int main(int argc, char* argv[])
       selEvtHistManager_decayMode[*decayMode] = selEvtHistManager_ptr;
     }
   }
+  EvtHistManager_2los_1tau* selEvtHistManager_genHadTau = 0;
+  EvtHistManager_2los_1tau* selEvtHistManager_genLepton = 0;
+  EvtHistManager_2los_1tau* selEvtHistManager_genJet = 0;
+  if ( isMC ) {
+    std::string process_and_genMatchedHadTau = process_string + "t";
+    selEvtHistManager_genHadTau = new EvtHistManager_2los_1tau(makeHistManager_cfg(process_and_genMatchedHadTau, 
+      Form("2los_1tau_%s/sel/evt", leptonSelection_string.data()), central_or_shift));
+    selEvtHistManager_genHadTau->bookHistograms(fs);
+    std::string process_and_genMatchedLepton = process_string + "l";
+    selEvtHistManager_genLepton = new EvtHistManager_2los_1tau(makeHistManager_cfg(process_and_genMatchedLepton, 
+      Form("2los_1tau_%s/sel/evt", leptonSelection_string.data()), central_or_shift));
+    selEvtHistManager_genLepton->bookHistograms(fs);
+    std::string process_and_genMatchedJet = process_string + "j";
+    selEvtHistManager_genJet = new EvtHistManager_2los_1tau(makeHistManager_cfg(process_and_genMatchedJet, 
+      Form("2los_1tau_%s/sel/evt", leptonSelection_string.data()), central_or_shift));
+    selEvtHistManager_genJet->bookHistograms(fs);
+  }
+
   vstring categories_evt = { 
     "2eos_1tau_bloose", "2eos_1tau_btight", 
     "1e1muos_1tau_bloose", "1e1muos_1tau_btight", 
@@ -870,29 +893,29 @@ int main(int argc, char* argv[])
     else                                                                  mvaDiscr_2lss = 1.;    
 
 //--- compute output of BDTs used to discriminate ttH vs. ttbar trained by Arun for 2los_1tau category
-    mvaInputs_2los_1tau["lep1_pt"]        = preselLepton_lead->pt_;
-    mvaInputs_2los_1tau["lep1_eta"]       = preselLepton_lead->eta_;
-    mvaInputs_2los_1tau["lep2_pt"]        = preselLepton_sublead->pt_;
-    mvaInputs_2los_1tau["lep2_eta"]       = preselLepton_sublead->eta_;
-    mvaInputs_2los_1tau["lep1_tth_mva"]   = preselLepton_lead->mvaRawTTH_;
-    mvaInputs_2los_1tau["lep2_tth_mva"]   = preselLepton_sublead->mvaRawTTH_;
-    mvaInputs_2los_1tau["mindr_lep1_jet"] = TMath::Min(10., comp_mindr_lep1_jet(*preselLepton_lead, selJets));
-    mvaInputs_2los_1tau["mindr_lep2_jet"] = TMath::Min(10., comp_mindr_lep2_jet(*preselLepton_sublead, selJets));
-    mvaInputs_2los_1tau["mindr_tau_jet"]  = TMath::Min(10., comp_mindr_hadTau1_jet(*selHadTau, selJets));
-    mvaInputs_2los_1tau["avg_dr_jet"]     = comp_avg_dr_jet(selJets);
-    mvaInputs_2los_1tau["ptmiss"]         = met_pt;
-    mvaInputs_2los_1tau["mT_lep1"]        = comp_MT_met_lep1(*preselLepton_lead, met_pt, met_phi);
-    mvaInputs_2los_1tau["mT_lep2"]        = comp_MT_met_lep2(*preselLepton_sublead, met_pt, met_phi);
-    mvaInputs_2los_1tau["htmiss"]         = mht_p4.pt();
-    mvaInputs_2los_1tau["dr_leps"]        = deltaR(preselLepton_lead->p4_, preselLepton_sublead->p4_);
-    //mvaInputs_2los_1tau["nJet"]           = selJets.size();
-    //mvaInputs_2los_1tau["nBJetLoose"]     = selBJets_loose.size();
-    //mvaInputs_2los_1tau["nBJetMedium"]    = selBJets_medium.size();
-    mvaInputs_2los_1tau["tau_pt"]         = selHadTau->pt_;
-    mvaInputs_2los_1tau["tau_eta"]        = selHadTau->eta_;
-    mvaInputs_2los_1tau["dr_lep_tau_os"]  = ( preselLepton_OS ) ? deltaR(preselLepton_OS->p4_, selHadTau->p4_) : 10.;
-    mvaInputs_2los_1tau["dr_lep_tau_ss"]  = ( preselLepton_SS ) ? deltaR(preselLepton_SS->p4_, selHadTau->p4_) : 10.;
-    mvaInputs_2los_1tau["mTauTauVis"]     = mTauTauVis_presel;
+    mvaInputs_2los_1tau["lep1_pt"]              = preselLepton_lead->pt_;
+    mvaInputs_2los_1tau["TMath::Abs(lep1_eta)"] = preselLepton_lead->absEta_;
+    mvaInputs_2los_1tau["lep2_pt"]              = preselLepton_sublead->pt_;
+    mvaInputs_2los_1tau["TMath::Abs(lep2_eta)"] = preselLepton_sublead->absEta_;
+    mvaInputs_2los_1tau["lep1_tth_mva"]         = preselLepton_lead->mvaRawTTH_;
+    mvaInputs_2los_1tau["lep2_tth_mva"]         = preselLepton_sublead->mvaRawTTH_;
+    mvaInputs_2los_1tau["mindr_lep1_jet"]       = TMath::Min(10., comp_mindr_lep1_jet(*preselLepton_lead, selJets));
+    mvaInputs_2los_1tau["mindr_lep2_jet"]       = TMath::Min(10., comp_mindr_lep2_jet(*preselLepton_sublead, selJets));
+    mvaInputs_2los_1tau["mindr_tau_jet"]        = TMath::Min(10., comp_mindr_hadTau1_jet(*selHadTau, selJets));
+    mvaInputs_2los_1tau["avg_dr_jet"]           = comp_avg_dr_jet(selJets);
+    mvaInputs_2los_1tau["ptmiss"]               = met_pt;
+    mvaInputs_2los_1tau["mT_lep1"]              = comp_MT_met_lep1(*preselLepton_lead, met_pt, met_phi);
+    mvaInputs_2los_1tau["mT_lep2"]              = comp_MT_met_lep2(*preselLepton_sublead, met_pt, met_phi);
+    mvaInputs_2los_1tau["htmiss"]               = mht_p4.pt();
+    mvaInputs_2los_1tau["dr_leps"]              = deltaR(preselLepton_lead->p4_, preselLepton_sublead->p4_);
+    mvaInputs_2los_1tau["nJet"]                 = selJets.size();
+    mvaInputs_2los_1tau["nBJetLoose"]           = selBJets_loose.size();
+    mvaInputs_2los_1tau["nBJetMedium"]          = selBJets_medium.size();
+    mvaInputs_2los_1tau["tau_pt"]               = selHadTau->pt_;
+    mvaInputs_2los_1tau["TMath::Abs(tau_eta)"]  = selHadTau->absEta_;
+    mvaInputs_2los_1tau["dr_lep_tau_os"]        = ( preselLepton_OS ) ? deltaR(preselLepton_OS->p4_, selHadTau->p4_) : 10.;
+    mvaInputs_2los_1tau["dr_lep_tau_ss"]        = ( preselLepton_SS ) ? deltaR(preselLepton_SS->p4_, selHadTau->p4_) : 10.;
+    mvaInputs_2los_1tau["mTauTauVis"]           = mTauTauVis_presel;
 
     checkInputs(mvaInputs_2los_1tau, run, lumi, event);
    
@@ -982,6 +1005,7 @@ int main(int argc, char* argv[])
       continue;
     }
     cutFlowTable.update(">= 1 sel tau (2)", evtWeight);    
+    const RecoHadTau* selHadTau_lead = selHadTaus[0];
 
     bool failsLowMassVeto = false;
     for ( std::vector<const RecoLepton*>::const_iterator lepton1 = selLeptons.begin();
@@ -1092,6 +1116,7 @@ int main(int argc, char* argv[])
     selBJet_looseHistManager_sublead.fillHistograms(selBJets_loose, evtWeight);
     selBJet_mediumHistManager.fillHistograms(selBJets_medium, evtWeight);
     selMEtHistManager.fillHistograms(met_p4, mht_p4, met_LD, evtWeight);
+    selMVAInputVarHistManager.fillHistograms(mvaInputs_2los_1tau, evtWeight);
     selEvtHistManager.fillHistograms(selElectrons.size(), selMuons.size(), selHadTaus.size(), 
       selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
       mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, mvaOutput_2los_1tau_ttbar, 
@@ -1106,6 +1131,17 @@ int main(int argc, char* argv[])
           break;
         }
       }
+    }
+    if ( isMC ) {
+      EvtHistManager_2los_1tau* selEvtHistManager_genMatch = 0;
+      if      ( selHadTau_lead->genHadTau_                               ) selEvtHistManager_genMatch = selEvtHistManager_genHadTau;
+      else if ( selHadTau_lead->genHadTau_ || selHadTau_lead->genLepton_ ) selEvtHistManager_genMatch = selEvtHistManager_genLepton;
+      else                                                                 selEvtHistManager_genMatch = selEvtHistManager_genJet;
+      assert(selEvtHistManager_genMatch);
+      selEvtHistManager_genMatch->fillHistograms(selElectrons.size(), selMuons.size(), selHadTaus.size(), 
+        selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
+        mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, mvaOutput_2los_1tau_ttbar, 
+        mTauTauVis_presel, evtWeight);
     }
 
     int category = -1;
