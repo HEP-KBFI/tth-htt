@@ -7,7 +7,7 @@ from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 
 #LUMI = 2301. # 1/pb
 LUMI = 2260. #?
-version = "histosCF_pseudodata_eleESER2"
+version = "histosCF_data_eleESER2"
 
 
 if __name__ == '__main__':
@@ -54,7 +54,6 @@ if __name__ == '__main__':
     ],
     max_files_per_job = 40,
     use_lumi = True, lumi = LUMI,
-    use_data = False,
     debug = False,
     running_method = "sbatch",
     num_parallel_jobs = 4,

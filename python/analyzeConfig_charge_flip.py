@@ -10,21 +10,20 @@ class analyzeConfig_charge_flip(analyzeConfig):
   Sets up a folder structure by defining full path names; no directory creation is delegated here.
   
   Args specific to analyzeConfig_charge_flip:
-    #use_data = False, TODO
-    
+  #
+      
   See $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/python/analyzeConfig.py
   for documentation of further Args.
   
   """
   def __init__(self, outputDir, executable_analyze, lepton_selections, central_or_shifts,
-               max_files_per_job, use_lumi, lumi, use_data, debug, running_method, num_parallel_jobs, 
+               max_files_per_job, use_lumi, lumi, debug, running_method, num_parallel_jobs, 
                histograms_to_fit = [], executable_prep_dcard="prepareDatacard"):
     analyzeConfig.__init__(self, outputDir, executable_analyze, "charge_flip", central_or_shifts,
       max_files_per_job, use_lumi, lumi, debug, running_method, num_parallel_jobs, 
       histograms_to_fit)
 
     self.lepton_selections = lepton_selections
-    self.use_data = use_data
     self.samples = tthAnalyzeSamples_chargeflip.samples
     
     #self.hadTau_selection = hadTau_selection
@@ -43,19 +42,19 @@ class analyzeConfig_charge_flip(analyzeConfig):
 
     self.cfgFile_analyze_original = os.path.join(self.workingDir, "analyze_charge_flip_cfg.py")
     #self.histogramDir_prep_dcard = "charge_flip_SS_Tight"
-    self.cfgFile_prep_dcard_original = os.path.join(self.workingDir, "prepareDatacardsChargeFlip_cfg.py")
+    self.cfgFile_prep_dcard_original = os.path.join(self.workingDir, "prepareDatacards_cfg.py")
     #self.executable_prep_dcard = executable_prep_dcard
-    self.prep_dcard_processesToCopy = ["data_obs", "DY", "WJets", "TTbar", "Singletop", "Diboson"]
+    self.prep_dcard_processesToCopy = ["data_obs", "DY", "DY_fake", "WJets", "TTbar", "Singletop", "Diboson"]
     self.prep_dcard_signals = [ "DY" ]
 
   def createCfg_analyze(self, inputFiles, outputFile, sample_category, triggers, lepton_selection, 
-                        is_mc, use_data, central_or_shift, lumi_scale, cfgFile_modified):
+                        is_mc, central_or_shift, lumi_scale, cfgFile_modified):
     """Create python configuration file for the analyze_charge_flip executable (analysis code)
 
     Args:
       inputFiles: list of input files (Ntuples)
       outputFile: output file of the job -- a ROOT file containing histogram
-      process: either `TT`, `TTW`, `TTZ`, `EWK`, `Rares`, `data_obs`, `ttH_hww`, `ttH_hzz` or `ttH_htt`
+      process: 
       is_mc: flag indicating whether job runs on MC (True) or data (False)
       lumi_scale: event weight (= xsection * luminosity / number of events)
       central_or_shift: either 'central' or one of the systematic uncertainties defined in $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/bin/analyze_charge_flip.cc
@@ -71,7 +70,6 @@ class analyzeConfig_charge_flip(analyzeConfig):
     #lines.append("process.analyze_charge_flip.use_triggers_1e1mu = cms.bool(%s)" % ("1e1mu" in triggers))
     lines.append("process.analyze_charge_flip.leptonSelection = cms.string('%s')" % lepton_selection)
     lines.append("process.analyze_charge_flip.isMC = cms.bool(%s)" % is_mc)
-    lines.append("process.analyze_charge_flip.useData = cms.bool(%s)" % use_data)
     lines.append("process.analyze_charge_flip.central_or_shift = cms.string('%s')" % central_or_shift)
     lines.append("process.analyze_charge_flip.lumiScale = cms.double(%f)" % lumi_scale)
     create_cfg(self.cfgFile_analyze_original, cfgFile_modified, lines)
@@ -187,6 +185,14 @@ class analyzeConfig_charge_flip(analyzeConfig):
 	    lines.append("    ),")
     lines.append(")")
     lines.append("process.prepareDatacards.histogramToFit = cms.string('%s')" % histogramToFit)
+    lines.append("""process.prepareDatacards.sysShifts = cms.vstring(
+            "CMS_ttHl_electronESBarrelUp",
+        	"CMS_ttHl_electronESBarrelDown",
+        	"CMS_ttHl_electronESEndcapUp",
+	        "CMS_ttHl_electronESEndcapDown",
+	        "CMS_ttHl_electronERUp",
+	        "CMS_ttHl_electronERDown") """
+    )
     
     self.cfgFile_prep_dcard_modified[histogramToFit] = os.path.join(self.outputDir, DKEY_CFGS, "prepareDatacards_%s_%s_cfg.py" % (self.channel, histogramToFit))
     create_cfg(self.cfgFile_prep_dcard_original, self.cfgFile_prep_dcard_modified[histogramToFit], lines)
@@ -204,11 +210,9 @@ class analyzeConfig_charge_flip(analyzeConfig):
     for sample_name, sample_info in self.samples.items():
       if not sample_info["use_it"] or sample_info["sample_category"] in [ "additional_signal_overlap", "background_data_estimate" ]:
         continue
-      if sample_info["sample_category"] == "data_obs" and self.use_data == False: #Running on pseudodata
-        continue
-
+      
       process_name = sample_info["process_name_specific"]
-
+      
       logging.info("Creating configuration files to run '%s' for sample %s" % (self.executable_analyze, process_name))  
 
       ( secondary_files, primary_store, secondary_store ) = self.initializeInputFileIds(sample_name, sample_info)
@@ -240,7 +244,7 @@ class analyzeConfig_charge_flip(analyzeConfig):
               
             self.createCfg_analyze(inputFiles, self.histogramFiles[key_file], sample_category, triggers,
               lepton_selection, 
-              is_mc, self.use_data, central_or_shift, lumi_scale, self.cfgFiles_analyze_modified[key_file])
+              is_mc, central_or_shift, lumi_scale, self.cfgFiles_analyze_modified[key_file])
                 
     if self.is_sbatch:
       logging.info("Creating script for submitting '%s' jobs to batch system" % self.executable_analyze)

@@ -133,7 +133,6 @@ int main(int argc, char* argv[])
     << "Invalid Configuration parameter 'leptonSelection' = " << leptonSelection_string << " !!\n";
 
   bool isMC = cfg_analyze.getParameter<bool>("isMC");
-  bool useData = cfg_analyze.getParameter<bool>("useData");
   std::string central_or_shift = cfg_analyze.getParameter<std::string>("central_or_shift");
   std::string central_or_shift_label = central_or_shift == "central" ? "" : "_"+central_or_shift;
   std::string central_or_shift_label_st = central_or_shift == "central" ? "" : central_or_shift+"_";
@@ -318,9 +317,6 @@ int main(int argc, char* argv[])
             histos_2gen[which->data()][*category][process_string]->Sumw2();
           }
       }      
-      if (!useData && central_or_shift == "central"){
-        histos[which->data()][*category]["data_obs"] = subDir2.make<TH1D>( Form("%smass_ll", central_or_shift_label_st.data()), "m_{ll}", 60,  60., 120. );
-      }
     }
   }
   vstring categories_charge_gen = {
@@ -730,10 +726,6 @@ int main(int argc, char* argv[])
       histos[charge_cat][category.data()][process_string]->Fill(mass_ll, evtWeight);
       histos[charge_cat]["total"][process_string]->Fill(mass_ll, evtWeight);
     }     
-    if (!useData && central_or_shift == "central"){
-      histos[charge_cat][category.data()]["data_obs"]->Fill(mass_ll, evtWeight);
-      histos[charge_cat]["total"]["data_obs"]->Fill(mass_ll, evtWeight);      
-    }
 
     if (isMC && central_or_shift == "central" && std::strncmp(process_string.data(), "DY", 2) == 0)
     {
@@ -806,16 +798,6 @@ int main(int argc, char* argv[])
     else if (isCharge_OS)
       preselElectronHistManagerOS.fillHistograms(preselElectrons, evtWeight);
 
-    if (!useData && central_or_shift == "central"){
-      for ( vstring::const_iterator which = categories_charge.begin(); 	which != categories_charge.end(); ++which ) {
-        for ( vstring::const_iterator category = categories_etapt.begin(); 	category != categories_etapt.end(); ++category ) {
-          for (int b = 0; b <= histos[which->data()][*category]["data_obs"]->GetNbinsX(); b++)
-          {
-            histos[which->data()][*category]["data_obs"]->SetBinError(b, sqrt(histos[which->data()][*category]["data_obs"]->GetBinContent(b)));
-          }
-        }
-      }
-    }
     (*selEventsFile) << run << ":" << lumi << ":" << event << std::endl;
 
     ++selectedEntries;
