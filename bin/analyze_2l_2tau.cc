@@ -457,10 +457,10 @@ int main(int argc, char* argv[])
     Form("2l_2tau_%s/sel/hadTaus", charge_and_hadTauSelection.data()), central_or_shift));
   selHadTauHistManager.bookHistograms(fs);
   HadTauHistManager selHadTauHistManager_lead(makeHistManager_cfg(process_string, 
-    Form("2l_2tau_%s/sel/leadHadTau", charge_and_hadTauSelection.data()), central_or_shift, 0));
+    Form("2l_2tau_%s/sel/leadHadTau", charge_and_hadTauSelection.data()), central_or_shift)); // CV: no idx=0 parameter required, as selHadTau_lead is filled separately
   selHadTauHistManager_lead.bookHistograms(fs);
   HadTauHistManager selHadTauHistManager_sublead(makeHistManager_cfg(process_string, 
-    Form("2l_2tau_%s/sel/subleadHadTau", charge_and_hadTauSelection.data()), central_or_shift, 1));
+    Form("2l_2tau_%s/sel/subleadHadTau", charge_and_hadTauSelection.data()), central_or_shift)); // CV: no idx=0 parameter required, as selHadTau_sublead is filled separately
   selHadTauHistManager_sublead.bookHistograms(fs);
   edm::ParameterSet cfg_selHadTauFakeRateHistManager = makeHistManager_cfg(process_string, 
     Form("2l_2tau_%s/sel/hadTauFakeRates", charge_and_hadTauSelection.data()), central_or_shift);
@@ -515,6 +515,18 @@ int main(int argc, char* argv[])
         Form("2l_2tau_%s/sel/evt", charge_and_hadTauSelection.data()), central_or_shift));
       selEvtHistManager_ptr->bookHistograms(fs);
       selEvtHistManager_decayMode[*decayMode] = selEvtHistManager_ptr;
+    }
+  }
+  std::map<std::string, EvtHistManager_2l_2tau*> selEvtHistManagers_genMatch; // key = { "tt", "tl", "lt", "tj", "jt", "ll", "lj", "jl", "jj" }
+  vstring genMatchOptions = { "tt", "tl", "lt", "tj", "jt", "ll", "lj", "jl", "jj" };
+  if ( isMC ) {
+    for ( vstring::const_iterator genMatchOption = genMatchOptions.begin();
+	  genMatchOption != genMatchOptions.end(); ++genMatchOption ) {
+      std::string process_and_genMatch = process_string + (*genMatchOption);
+      EvtHistManager_2l_2tau* selEvtHistManager_ptr = new EvtHistManager_2l_2tau(makeHistManager_cfg(process_and_genMatch, 
+        Form("2l_2tau_%s/sel/evt", charge_and_hadTauSelection.data()), central_or_shift));
+      selEvtHistManager_ptr->bookHistograms(fs);
+      selEvtHistManagers_genMatch[*genMatchOption] = selEvtHistManager_ptr;
     }
   }
 
@@ -1047,6 +1059,26 @@ int main(int argc, char* argv[])
           break;
         }
       }
+    }
+    if ( isMC ) {
+      EvtHistManager_2l_2tau* selEvtHistManager_genMatch = 0;
+      if ( selHadTau_lead->genHadTau_ ) {
+	if      ( selHadTau_sublead->genHadTau_ ) selEvtHistManager_genMatch = selEvtHistManagers_genMatch["tt"];
+	else if ( selHadTau_sublead->genLepton_ ) selEvtHistManager_genMatch = selEvtHistManagers_genMatch["tl"];
+	else                                      selEvtHistManager_genMatch = selEvtHistManagers_genMatch["tj"];
+      } else if ( selHadTau_lead->genLepton_ ) {
+	if      ( selHadTau_sublead->genHadTau_ ) selEvtHistManager_genMatch = selEvtHistManagers_genMatch["lt"];
+	else if ( selHadTau_sublead->genLepton_ ) selEvtHistManager_genMatch = selEvtHistManagers_genMatch["ll"];
+	else                                      selEvtHistManager_genMatch = selEvtHistManagers_genMatch["lj"];
+      } else {
+	if      ( selHadTau_sublead->genHadTau_ ) selEvtHistManager_genMatch = selEvtHistManagers_genMatch["jt"];
+	else if ( selHadTau_sublead->genLepton_ ) selEvtHistManager_genMatch = selEvtHistManagers_genMatch["jl"];
+	else                                      selEvtHistManager_genMatch = selEvtHistManagers_genMatch["jj"];
+      }
+      assert(selEvtHistManager_genMatch);
+      selEvtHistManager_genMatch->fillHistograms(preselElectrons.size(), preselMuons.size(), selHadTaus.size(), 
+        selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
+	mTauTauVis, evtWeight);
     }
 
     (*selEventsFile) << run << ":" << lumi << ":" << event;

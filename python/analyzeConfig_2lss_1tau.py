@@ -59,6 +59,8 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
     self.cfgFile_addFlips_original = os.path.join(self.workingDir, "addBackgroundLeptonFlips_cfg.py")
     self.cfgFile_addFlips_modified = os.path.join(self.outputDir, DKEY_CFGS, "addBackgroundLeptonFlips_%s_cfg.py" % self.channel)
     self.histogramDir_prep_dcard = "2lss_1tau_SS_Tight"
+    self.cfgFile_make_plots_original = os.path.join(self.workingDir, "makePlots_2lss_1tau_cfg.py")
+    self.make_plots_backgrounds = [ "TTW", "TTZ", "WZ", "Rares", "fakes_data", "flips_data" ]
 
   def createCfg_analyze(self, inputFiles, outputFile, sample_category, triggers, lepton_selection, lepton_charge_selection, hadTau_selection,
                         is_mc, central_or_shift, lumi_scale, cfgFile_modified):
@@ -112,18 +114,6 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
     lines.append("process.fwliteInput.fileNames = cms.vstring('%s')" % inputFile)
     lines.append("process.fwliteOutput.fileName = cms.string('%s')" % outputFile)
     create_cfg(self.cfgFile_addFlips_original, cfgFile_modified, lines)
-
-  def createCfg_makePlots(self):
-    """Fills the template of python configuration file for making control plots
-
-    Args:
-      histogramFile: name of the input ROOT file 
-    """
-    lines = []
-    lines.append("process.fwliteInput.fileNames = cms.vstring('%s')" % self.histogramFile_hadd_stage2)
-    lines.append("process.makePlots.outputFileName = cms.string('%s')" % os.path.join(self.outputDir, DKEY_PLOT, self.channel, "makePlots_%s.png" % self.channel))
-    self.cfgFile_make_plots_modified = os.path.join(self.outputDir, DKEY_CFGS, "makePlots_%s_cfg.py" % self.channel)
-    create_cfg(self.cfgFile_make_plots_original, self.cfgFile_make_plots_modified, lines)
 
   def addToMakefile_hadd_stage1(self, lines_makefile):
     inputFiles_hadd_stage1 = []

@@ -513,6 +513,23 @@ int main(int argc, char* argv[])
       selEvtHistManager_decayMode[*decayMode] = selEvtHistManager_ptr;
     }
   }
+  EvtHistManager_0l_3tau* selEvtHistManager_genHadTau = 0;
+  EvtHistManager_0l_3tau* selEvtHistManager_genLepton = 0;
+  EvtHistManager_0l_3tau* selEvtHistManager_genJet = 0;
+  if ( isMC ) {
+    std::string process_and_genMatchedHadTau = process_string + "t";
+    selEvtHistManager_genHadTau = new EvtHistManager_0l_3tau(makeHistManager_cfg(process_and_genMatchedHadTau, 
+      Form("0l_3tau_%s/sel/evt", hadTauSelection_part1.data()), central_or_shift));
+    selEvtHistManager_genHadTau->bookHistograms(fs);
+    std::string process_and_genMatchedLepton = process_string + "l";
+    selEvtHistManager_genLepton = new EvtHistManager_0l_3tau(makeHistManager_cfg(process_and_genMatchedLepton, 
+      Form("0l_3tau_%s/sel/evt", hadTauSelection_part1.data()), central_or_shift));
+    selEvtHistManager_genLepton->bookHistograms(fs);
+    std::string process_and_genMatchedJet = process_string + "j";
+    selEvtHistManager_genJet = new EvtHistManager_0l_3tau(makeHistManager_cfg(process_and_genMatchedJet, 
+      Form("0l_3tau_%s/sel/evt", hadTauSelection_part1.data()), central_or_shift));
+    selEvtHistManager_genJet->bookHistograms(fs);
+  }
   vstring categories_evt = { 
     "0l_3tau_bloose", "0l_3tau_btight"
   };
@@ -824,6 +841,24 @@ int main(int argc, char* argv[])
           break;
         }
       }
+    }
+    if ( isMC ) {
+      EvtHistManager_0l_3tau* selEvtHistManager_genMatch = 0;
+      if ( selHadTau_lead->genHadTau_ && 
+	   selHadTau_sublead->genHadTau_ && 
+	   selHadTau_third->genHadTau_ ) {
+	selEvtHistManager_genMatch = selEvtHistManager_genHadTau;
+      } else if ( (selHadTau_lead->genHadTau_ || selHadTau_lead->genLepton_ ) && 
+		  (selHadTau_sublead->genHadTau_ || selHadTau_sublead->genLepton_) && 
+		  (selHadTau_third->genHadTau_ || selHadTau_third->genLepton_ ) ) {
+	selEvtHistManager_genMatch = selEvtHistManager_genLepton;
+      } else {
+	selEvtHistManager_genMatch = selEvtHistManager_genJet;
+      }
+      assert(selEvtHistManager_genMatch);
+      selEvtHistManager_genMatch->fillHistograms(preselElectrons.size(), preselMuons.size(), selHadTaus.size(), 
+        selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
+	mTauTauVis1, mTauTauVis2, evtWeight);
     }
 
     int category = -1;

@@ -139,6 +139,8 @@ class analyzeConfig:
     self.cfgFile_prep_dcard_original = os.path.join(self.workingDir, "prepareDatacards_cfg.py")
     self.cfgFile_prep_dcard_modified = {}
     self.histogramDir_prep_dcard = None
+    self.make_plots_backgrounds = [ "TT", "TTW", "TTZ", "EWK", "Rares" ]
+    self.make_plots_signal = "signal" 
     self.cfgFile_make_plots_original = os.path.join(self.workingDir, "makePlots_cfg.py")
     self.cfgFile_make_plots_modified = None
     self.filesToClean = []
@@ -170,6 +172,26 @@ class analyzeConfig:
     lines.append("process.prepareDatacards.histogramToFit = cms.string('%s')" % histogramToFit)
     self.cfgFile_prep_dcard_modified[histogramToFit] = os.path.join(self.outputDir, DKEY_CFGS, "prepareDatacards_%s_%s_cfg.py" % (self.channel, histogramToFit))
     create_cfg(self.cfgFile_prep_dcard_original, self.cfgFile_prep_dcard_modified[histogramToFit], lines)
+
+  def createCfg_makePlots(self):
+    """Fills the template of python configuration file for making control plots
+
+    Args:
+      histogramFile: name of the input ROOT file 
+    """
+    lines = []
+    lines.append("process.fwliteInput.fileNames = cms.vstring('%s')" % self.histogramFile_hadd_stage2)
+    lines.append("process.makePlots.outputFileName = cms.string('%s')" % os.path.join(self.outputDir, DKEY_PLOT, self.channel, "makePlots_%s.png" % self.channel))
+    lines.append("process.makePlots.processesBackground = cms.vstring(%s)" % self.make_plots_backgrounds)
+    lines.append("process.makePlots.processSignal = cms.string('%s')" % self.make_plots_signal)
+    lines.append("process.makePlots.categories = cms.VPSet(")
+    lines.append("  cms.PSet(")
+    lines.append("    name = cms.string('%s')," % self.histogramDir_prep_dcard)
+    lines.append("    label = cms.string('%s')" % self.channel)
+    lines.append("  )")
+    lines.append(")")
+    self.cfgFile_make_plots_modified = os.path.join(self.outputDir, DKEY_CFGS, "makePlots_%s_cfg.py" % self.channel)
+    create_cfg(self.cfgFile_make_plots_original, self.cfgFile_make_plots_modified, lines)
 
   def initializeInputFileIds(self, sample_name, sample_info):
     """Retrieves the number of input ROOT files (Ntuples) corresponding to a given sample

@@ -12,12 +12,11 @@ process.makePlots = cms.PSet(
 
     processData = cms.string("data_obs"),
     processesBackground = cms.vstring(
+        "TT",
         "TTW",
         "TTZ",
-        "WZ",
-        "Rares",
-        "fakes_data",
-        "flips_data"
+        "EWK",
+        "Rares"
     ),
     processSignal = cms.string("signal"),
 
@@ -39,8 +38,6 @@ process.makePlots = cms.PSet(
             xMin = cms.double(10.),
             xMax = cms.double(200.),
             xAxisTitle = cms.string("e p_{T} [GeV]"),
-            yMin = cms.double(1.e-2),
-            yMax = cms.double(1.e+2),
             yAxisTitle = cms.string("dN/dp_{T} [1/GeV]")
         ),
         cms.PSet(
@@ -75,8 +72,6 @@ process.makePlots = cms.PSet(
             xMin = cms.double(10.),
             xMax = cms.double(200.),
             xAxisTitle = cms.string("#mu p_{T} [GeV]"),
-            yMin = cms.double(1.e-2),
-            yMax = cms.double(1.e+2),
             yAxisTitle = cms.string("dN/dp_{T} [1/GeV]")
         ),
         cms.PSet(
@@ -96,6 +91,11 @@ process.makePlots = cms.PSet(
             yAxisTitle = cms.string("N")
         ),
         cms.PSet(
+            histogramName = cms.string("sel/evt/$PROCESS/numLeptons"),
+            xAxisTitle = cms.string("lepton Multiplicity"),
+            yAxisTitle = cms.string("N")
+        ),
+        cms.PSet(
             histogramName = cms.string("sel/evt/$PROCESS/numHadTaus"),
             xAxisTitle = cms.string("#tau_{h} Multiplicity"),
             yAxisTitle = cms.string("N")
@@ -105,8 +105,6 @@ process.makePlots = cms.PSet(
             xMin = cms.double(20.),
             xMax = cms.double(200.),
             xAxisTitle = cms.string("#tau_{h} p_{T} [GeV]"),
-            yMin = cms.double(1.e-2),
-            yMax = cms.double(1.e+2),
             yAxisTitle = cms.string("dN/dp_{T} [1/GeV]")
         ),
         cms.PSet(
@@ -135,8 +133,6 @@ process.makePlots = cms.PSet(
             xMin = cms.double(20.),
             xMax = cms.double(200.),
             xAxisTitle = cms.string("jet p_{T} [GeV]"),
-            yMin = cms.double(1.e-2),
-            yMax = cms.double(1.e+2),
             yAxisTitle = cms.string("dN/dp_{T} [1/GeV]")
         ),
         cms.PSet(
@@ -159,8 +155,6 @@ process.makePlots = cms.PSet(
             xMin = cms.double(20.),
             xMax = cms.double(200.),
             xAxisTitle = cms.string("b-jet (loose) p_{T} [GeV]"),
-            yMin = cms.double(1.e-2),
-            yMax = cms.double(1.e+2),
             yAxisTitle = cms.string("dN/dp_{T} [1/GeV]")
         ),
         cms.PSet(
@@ -183,8 +177,6 @@ process.makePlots = cms.PSet(
             xMin = cms.double(20.),
             xMax = cms.double(200.),
             xAxisTitle = cms.string("b-jet (medium) p_{T} [GeV]"),
-            yMin = cms.double(1.e-2),
-            yMax = cms.double(1.e+2),
             yAxisTitle = cms.string("dN/dp_{T} [1/GeV]")
         ),
         cms.PSet(
@@ -217,12 +209,11 @@ process.makePlots = cms.PSet(
     nuisanceParameters = cms.PSet(
         normalization = cms.PSet(
             signal = cms.string("1.0 +/- 0.20"),
+            TT = cms.string("1.0 +/- 0.20"),
             TTW = cms.string("1.0 +/- 0.20"),
             TTZ = cms.string("1.0 +/- 0.20"),
-            WZ = cms.string("1.0 +/- 0.20"),
-            Rares = cms.string("1.0 +/- 0.20"),
-            fakes_data = cms.string("1.0 +/- 0.20"),
-            flips_data = cms.string("1.0 +/- 0.20")
+            EWK = cms.string("1.0 +/- 0.20"),
+            Rares = cms.string("1.0 +/- 0.20")
         ),
         shape = cms.PSet(
             CMS_ttHl_btag_HF = cms.string("0.00 +/- 1.00"),
