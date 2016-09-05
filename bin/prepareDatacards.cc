@@ -82,7 +82,7 @@ namespace
     }
     
     //If systematic variation has zero events, but central >0
-    if(setEmptySystematicFromCentral && !(central_or_shift == "" || central_or_shift == "central") && histogram_output->GetEntries() == 0){
+    if(setEmptySystematicFromCentral && !(central_or_shift == "" || central_or_shift == "central") && histogram_input->GetEntries() == 0){
         TH1* histogram_central = dynamic_cast<TH1*>(dir_input->Get(histogramName_input.data()));
         if (histogram_central->GetEntries() > 0){
             for ( int iBin = 0; iBin <= (numBins + 1); ++iBin ) {
