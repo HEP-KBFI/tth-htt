@@ -142,7 +142,7 @@ class analyzeConfig:
     self.make_plots_backgrounds = [ "TT", "TTW", "TTZ", "EWK", "Rares" ]
     self.make_plots_signal = "signal" 
     self.cfgFile_make_plots_original = os.path.join(self.workingDir, "makePlots_cfg.py")
-    self.cfgFile_make_plots_modified = None
+    self.cfgFiles_make_plots_modified = []
     self.filesToClean = []
     self.rleOutputFiles = {}
     self.rootOutputFiles = {}
@@ -151,47 +151,66 @@ class analyzeConfig:
   def createCfg_analyze(self, *args):
     raise ValueError("Function 'createCfg_analyze' not implemented in derrived class !!")      
 
-  def createCfg_prep_dcard(self, histogramToFit):
+  def createCfg_prep_dcard(self, histogramToFit, histogramDir = None, label = None):
     """Fills the template of python configuration file for datacard preparation
 
     Args:
       histogramToFit: name of the histogram used for signal extraction
     """
-    self.datacardFiles[histogramToFit] = os.path.join(self.outputDir, DKEY_DCRD, "prepareDatacards_%s_%s.root" % (self.channel, histogramToFit))
+    datacardFile = os.path.join(self.outputDir, DKEY_DCRD, "prepareDatacards_%s_%s.root" % (self.channel, histogramToFit))
+    category_output = self.channel
+    cfgFile_modified = os.path.join(self.outputDir, DKEY_CFGS, "prepareDatacards_%s_%s_cfg.py" % (self.channel, histogramToFit))
+    key = histogramToFit
+    if not histogramDir:
+        histogramDir = self.histogramDir_prep_dcard
+        if label:
+            datacardFile = datacardFile.replace(channel, "%s_%s" % (channel, label))
+            category_output += "_%s" % label
+            cfgFile_modified = cfgFile_modified.replace("_cfg.py", "_%s_cfg.py" % label)
+            key = getKey(histogramToFit, label)
     lines = []
     lines.append("process.fwliteInput.fileNames = cms.vstring('%s')" % self.histogramFile_hadd_stage2)
-    lines.append("process.fwliteOutput.fileName = cms.string('%s')" % self.datacardFiles[histogramToFit])
+    lines.append("process.fwliteOutput.fileName = cms.string('%s')" % datacardFile)
     lines.append("process.prepareDatacards.processesToCopy = cms.vstring(%s)" % self.prep_dcard_processesToCopy)
     lines.append("process.prepareDatacards.signals = cms.vstring(%s)" % self.prep_dcard_signals)
     lines.append("process.prepareDatacards.categories = cms.VPSet(")
     lines.append("    cms.PSet(")
     lines.append("        input = cms.string('%s/sel/evt')," % self.histogramDir_prep_dcard)
-    lines.append("        output = cms.string('ttH_%s')" % self.channel)
+    lines.append("        output = cms.string('ttH_%s')" % category_output)
     lines.append("    )")
     lines.append(")")
     lines.append("process.prepareDatacards.histogramToFit = cms.string('%s')" % histogramToFit)
-    self.cfgFile_prep_dcard_modified[histogramToFit] = os.path.join(self.outputDir, DKEY_CFGS, "prepareDatacards_%s_%s_cfg.py" % (self.channel, histogramToFit))
-    create_cfg(self.cfgFile_prep_dcard_original, self.cfgFile_prep_dcard_modified[histogramToFit], lines)
+    create_cfg(self.cfgFile_prep_dcard_original, cfgFile_modified, lines)
+    self.datacardFiles[key] = datacardFile
+    self.cfgFile_prep_dcard_modified[key] = cfgFile_modified
 
-  def createCfg_makePlots(self):
+  def createCfg_makePlots(self, histogramDir = None, label = None):
     """Fills the template of python configuration file for making control plots
 
     Args:
       histogramFile: name of the input ROOT file 
     """
+    outputFileName = os.path.join(self.outputDir, DKEY_PLOT, self.channel, "makePlots_%s.png" % self.channel)
+    category_label = self.channel
+    cfgFile_modified = os.path.join(self.outputDir, DKEY_CFGS, "makePlots_%s_cfg.py" % self.channel)
+    if not histogramDir:
+        histogramDir = self.histogramDir_prep_dcard
+        if label:
+            category_label += " (%s)" % label
+            cfgFile_modified = cfgFile_modified.replace("_cfg.py", "_%s_cfg.py" % label)
     lines = []
     lines.append("process.fwliteInput.fileNames = cms.vstring('%s')" % self.histogramFile_hadd_stage2)
-    lines.append("process.makePlots.outputFileName = cms.string('%s')" % os.path.join(self.outputDir, DKEY_PLOT, self.channel, "makePlots_%s.png" % self.channel))
+    lines.append("process.makePlots.outputFileName = cms.string('%s')" % outputFileName)
     lines.append("process.makePlots.processesBackground = cms.vstring(%s)" % self.make_plots_backgrounds)
     lines.append("process.makePlots.processSignal = cms.string('%s')" % self.make_plots_signal)
     lines.append("process.makePlots.categories = cms.VPSet(")
     lines.append("  cms.PSet(")
-    lines.append("    name = cms.string('%s')," % self.histogramDir_prep_dcard)
-    lines.append("    label = cms.string('%s')" % self.channel)
+    lines.append("    name = cms.string('%s')," % histogramDir)
+    lines.append("    label = cms.string('%s')" % category_label)
     lines.append("  )")
     lines.append(")")
-    self.cfgFile_make_plots_modified = os.path.join(self.outputDir, DKEY_CFGS, "makePlots_%s_cfg.py" % self.channel)
-    create_cfg(self.cfgFile_make_plots_original, self.cfgFile_make_plots_modified, lines)
+    create_cfg(self.cfgFile_make_plots_original, self.cfgFile_modified, lines)
+    self.cfgFiles_make_plots_modified.append(cfgFile_modified)
 
   def initializeInputFileIds(self, sample_name, sample_info):
     """Retrieves the number of input ROOT files (Ntuples) corresponding to a given sample
@@ -282,18 +301,19 @@ class analyzeConfig:
   def addToMakefile_prep_dcard(self, lines_makefile):
     """Adds the commands to Makefile that are necessary for building the datacards.
     """
-    for histogramToFit in self.histograms_to_fit:
-      lines_makefile.append("%s: %s" % (self.datacardFiles[histogramToFit], self.histogramFile_hadd_stage2))
-      lines_makefile.append("\t%s %s" % (self.executable_prep_dcard, self.cfgFile_prep_dcard_modified[histogramToFit]))
-      self.filesToClean.append(self.datacardFiles[histogramToFit])
+    for key in self.datacardFiles.keys():
+      lines_makefile.append("%s: %s" % (self.datacardFiles[key], self.histogramFile_hadd_stage2))
+      lines_makefile.append("\t%s %s" % (self.executable_prep_dcard, self.cfgFile_prep_dcard_modified[key]))
+      self.filesToClean.append(self.datacardFiles[key])
     lines_makefile.append("")
 
   def addToMakefile_make_plots(self, lines_makefile):
     """Adds the commands to Makefile that are necessary for building the datacards.
     """
-    lines_makefile.append("makePlots: %s" % self.histogramFile_hadd_stage2)
-    lines_makefile.append("\t%s %s" % (self.executable_make_plots, self.cfgFile_make_plots_modified))
-    lines_makefile.append("")
+    for idxJob, cfgFile_modified in enumerate(self.cfgFiles_make_plots_modified):
+      lines_makefile.append("makePlots%i: %s" % (idxJob, self.histogramFile_hadd_stage2))
+      lines_makefile.append("\t%s %s" % (self.executable_make_plots, cfgFile_modified))
+      lines_makefile.append("")
 
   def addToMakefile_clean(self, lines_makefile):
     """Adds the commands to Makefile that are necessary for removing all ROOT files from previous execution of analysis workfow.
@@ -309,11 +329,17 @@ class analyzeConfig:
   def createMakefile(self, lines_makefile):
     """Creates Makefile that runs the complete analysis workfow.
     """
+    targets = []
+    targets.extend(self.datacardFiles.values())
+    if self.rootOutputAux:
+      targets.append("selEventTree_hadd")
+    for idxJob in range(len(self.cfgFiles_make_plots_modified)):
+      targets.append("makePlots%i" % idxJob)
     lines_makefile_with_header = []
     lines_makefile_with_header.append(".DEFAULT_GOAL := all")
     lines_makefile_with_header.append("SHELL := /bin/bash")
     lines_makefile_with_header.append("")
-    lines_makefile_with_header.append("all: %s %s makePlots" % (" ".join(self.datacardFiles.values()), "selEventTree_hadd" if self.rootOutputAux else ""))
+    lines_makefile_with_header.append("all: %s" % " ".join(targets))
     lines_makefile_with_header.append("")
     lines_makefile_with_header.extend(lines_makefile)
     createFile(self.makefile, lines_makefile_with_header)

@@ -51,7 +51,7 @@ process.comp_jetToTauFakeRate = cms.PSet(
 
     isMC = cms.bool(False),
 
-    histogramsToFit = cms.vstring("jets/pt"),
+    histogramsToFit = cms.vstring("hadTaus/pt"),
 
     fitFunction = cms.string("[0] + [1]*x"),
     xMin = cms.double(0.),

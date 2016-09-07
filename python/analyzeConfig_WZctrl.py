@@ -27,8 +27,7 @@ class analyzeConfig_WZctrl(analyzeConfig):
         continue
       process_name = sample_info["process_name_specific"]
       key_dir = getKey(sample_name)  
-      for dir_type in DIRLIST:
-        if (not select_rle_output and dir_type == DKEY_RLES): continue
+      for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_DCRD ]:
         initDict(self.dirs, [ key_dir, dir_type ])
         self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel,
           process_name)

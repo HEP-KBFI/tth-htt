@@ -12,10 +12,10 @@ process.fwliteInput = cms.PSet(
 )
 
 process.fwliteOutput = cms.PSet(
-    fileName = cms.string('analyze_charge_flip.root')
+    fileName = cms.string('analyze_ttZctrl.root')
 )
 
-process.analyze_charge_flip = cms.PSet(
+process.analyze_ttZctrl = cms.PSet(
     treeName = cms.string('tree'),
 
     process = cms.string('ttH'),
@@ -25,27 +25,17 @@ process.analyze_charge_flip = cms.PSet(
     triggers_2e = cms.vstring("HLT_BIT_HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v"),
     use_triggers_2e = cms.bool(True),
     triggers_1mu = cms.vstring("HLT_BIT_HLT_IsoMu20_v", "HLT_BIT_HLT_IsoTkMu20_v"),
-    use_triggers_1mu = cms.bool(False),
+    use_triggers_1mu = cms.bool(True),
     triggers_2mu = cms.vstring("HLT_BIT_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v", "HLT_BIT_HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v"),
-    use_triggers_2mu = cms.bool(False),
+    use_triggers_2mu = cms.bool(True),
     triggers_1e1mu = cms.vstring("HLT_BIT_HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v", "HLT_BIT_HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v"),
-    use_triggers_1e1mu = cms.bool(False),
+    use_triggers_1e1mu = cms.bool(True),
 
-    apply_offline_e_trigger_cuts_1e = cms.bool(False),
+    apply_offline_e_trigger_cuts_1e = cms.bool(True),
     apply_offline_e_trigger_cuts_2e = cms.bool(False),
     apply_offline_e_trigger_cuts_1mu = cms.bool(False),
     apply_offline_e_trigger_cuts_2mu = cms.bool(False),
     apply_offline_e_trigger_cuts_1e1mu = cms.bool(False),
-    
-    leptonSelection = cms.string('Tight'),
-    
-    hadTauSelection = cms.string('dR03mvaTight'),
-    
-    leptonFakeRateLooseToTightWeight = cms.PSet(
-        inputFileName = cms.string("tthAnalysis/HiggsToTauTau/data/FR_data_ttH_mva.root"),
-        histogramName_e = cms.string("FR_mva075_el_data_comb"),
-        histogramName_mu = cms.string("FR_mva075_mu_data_comb")
-    ),
     
     isMC = cms.bool(False),
     central_or_shift = cms.string('central'),

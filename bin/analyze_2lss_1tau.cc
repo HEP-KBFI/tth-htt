@@ -51,6 +51,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/MEtHistManager.h" // MEtHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/EvtHistManager_2lss_1tau.h" // EvtHistManager_2lss_1tau
 #include "tthAnalysis/HiggsToTauTau/interface/leptonTypes.h" // getLeptonType, kElectron, kMuon
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // isHigherPt, isMatched
 #include "tthAnalysis/HiggsToTauTau/interface/backgroundEstimation.h" // prob_chargeMisId
 #include "tthAnalysis/HiggsToTauTau/interface/hltPath.h" // hltPath, create_hltPaths, hltPaths_setBranchAddresses, hltPaths_isTriggered, hltPaths_delete
 #include "tthAnalysis/HiggsToTauTau/interface/data_to_MC_corrections.h"
@@ -73,36 +74,6 @@
 
 typedef math::PtEtaPhiMLorentzVector LV;
 typedef std::vector<std::string> vstring;
-
-//--- declare constants
-const double z_mass   = 91.1876;
-const double z_window = 10.;
-const double met_coef =  0.00397;
-const double mht_coef =  0.00265;
-
-/**
- * @brief Auxiliary function used for sorting leptons by decreasing pT
- * @param Given pair of leptons
- * @return True, if first lepton has higher pT; false if second lepton has higher pT
- */
-bool isHigherPt(const GenParticle* particle1, const GenParticle* particle2)
-{
-  return (particle1->pt_ > particle2->pt_);
-}
-
-/**
- * @brief Auxiliary function for checking if leptons passing fake-able lepton selection pass tight lepton identification criteria also
- */
-template <typename Tfakeable, typename Ttight>
-bool isMatched(const Tfakeable& fakeableLepton, const std::vector<Ttight*>& tightLeptons, double dRmax = 1.e-2)
-{
-  for ( typename std::vector<const Ttight*>::const_iterator tightLepton = tightLeptons.begin();
-        tightLepton != tightLeptons.end(); ++tightLepton ) {
-    double dR = deltaR(fakeableLepton.eta_, fakeableLepton.phi_, (*tightLepton)->eta_, (*tightLepton)->phi_);
-    if ( dR < dRmax ) return true; // found match
-  }
-  return false; // no match found
-}
  
 /**
  * @brief Produce datacard and control plots for 2lss_1tau categories.

@@ -1,10 +1,10 @@
 import logging
 
 from tthAnalysis.HiggsToTauTau.analyzeConfig import *
-import tthAnalyzeSamples_ttZctrl
+import tthAnalyzeSamples_Zctrl
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists
 
-class analyzeConfig_ttZctrl(analyzeConfig):
+class analyzeConfig_Zctrl(analyzeConfig):
   """Configuration metadata needed to run analysis in a single go.
 
   Sets up a folder structure by defining full path names; no directory creation is delegated here.
@@ -16,11 +16,11 @@ class analyzeConfig_ttZctrl(analyzeConfig):
   def __init__(self, outputDir, executable_analyze, central_or_shifts,
                max_files_per_job, use_lumi, lumi, debug, running_method, num_parallel_jobs, 
                histograms_to_fit, select_rle_output = False, executable_prep_dcard="prepareDatacard"):
-    analyzeConfig.__init__(self, outputDir, executable_analyze, "ttZctrl", central_or_shifts,
+    analyzeConfig.__init__(self, outputDir, executable_analyze, "Zctrl", central_or_shifts,
       max_files_per_job, use_lumi, lumi, debug, running_method, num_parallel_jobs, 
       histograms_to_fit)
 
-    self.samples = tthAnalyzeSamples_ttZctrl.samples
+    self.samples = tthAnalyzeSamples_Zctrl.samples
 
     for sample_name, sample_info in self.samples.items():
       if not sample_info["use_it"] or sample_info["sample_category"] in [ "additional_signal_overlap", "background_data_estimate" ]:
@@ -33,10 +33,10 @@ class analyzeConfig_ttZctrl(analyzeConfig):
           process_name)
     ##print "self.dirs = ", self.dirs
 
-    self.cfgFile_analyze_original = os.path.join(self.workingDir, "analyze_ttZctrl_cfg.py")
-    self.histogramDir_prep_dcard = "ttZctrl"
+    self.cfgFile_analyze_original = os.path.join(self.workingDir, "analyze_Zctrl_cfg.py")
+    self.histogramDir_prep_dcard = "Zctrl"
     self.prep_dcard_processesToCopy = [ "data_obs", "TT", "TTW", "EWK", "Rares", "ttH_hww", "ttH_hzz", "ttH_htt" ]
-    self.prep_dcard_signals = [ "TTZ" ]
+    self.prep_dcard_signals = [ "DYJets" ]
     self.make_plots_backgrounds = [ "TTZ", "TTW", "EWK", "Rares", "TT" ]
     self.make_plots_signal = "signal"
     self.select_rle_output = select_rle_output
@@ -56,16 +56,16 @@ class analyzeConfig_ttZctrl(analyzeConfig):
     lines = []
     lines.append("process.fwliteInput.fileNames = cms.vstring(%s)" % inputFiles)
     lines.append("process.fwliteOutput.fileName = cms.string('%s')" % outputFile)
-    lines.append("process.analyze_ttZctrl.process = cms.string('%s')" % sample_category)
-    lines.append("process.analyze_ttZctrl.use_triggers_1e = cms.bool(%s)" % ("1e" in triggers))
-    lines.append("process.analyze_ttZctrl.use_triggers_2e = cms.bool(%s)" % ("2e" in triggers))
-    lines.append("process.analyze_ttZctrl.use_triggers_1mu = cms.bool(%s)" % ("1mu" in triggers))
-    lines.append("process.analyze_ttZctrl.use_triggers_2mu = cms.bool(%s)" % ("2mu" in triggers))
-    lines.append("process.analyze_ttZctrl.use_triggers_1e1mu = cms.bool(%s)" % ("1e1mu" in triggers))
-    lines.append("process.analyze_ttZctrl.isMC = cms.bool(%s)" % is_mc)
-    lines.append("process.analyze_ttZctrl.central_or_shift = cms.string('%s')" % central_or_shift)
-    lines.append("process.analyze_ttZctrl.lumiScale = cms.double(%f)" % lumi_scale)
-    lines.append("process.analyze_ttZctrl.selEventsFileName_output = cms.string('%s')" % rle_output_file)
+    lines.append("process.analyze_Zctrl.process = cms.string('%s')" % sample_category)
+    lines.append("process.analyze_Zctrl.use_triggers_1e = cms.bool(%s)" % ("1e" in triggers))
+    lines.append("process.analyze_Zctrl.use_triggers_2e = cms.bool(%s)" % ("2e" in triggers))
+    lines.append("process.analyze_Zctrl.use_triggers_1mu = cms.bool(%s)" % ("1mu" in triggers))
+    lines.append("process.analyze_Zctrl.use_triggers_2mu = cms.bool(%s)" % ("2mu" in triggers))
+    lines.append("process.analyze_Zctrl.use_triggers_1e1mu = cms.bool(%s)" % ("1e1mu" in triggers))
+    lines.append("process.analyze_Zctrl.isMC = cms.bool(%s)" % is_mc)
+    lines.append("process.analyze_Zctrl.central_or_shift = cms.string('%s')" % central_or_shift)
+    lines.append("process.analyze_Zctrl.lumiScale = cms.double(%f)" % lumi_scale)
+    lines.append("process.analyze_Zctrl.selEventsFileName_output = cms.string('%s')" % rle_output_file)
     create_cfg(self.cfgFile_analyze_original, cfgFile_modified, lines)
 
   def createCfg_makePlots(self):
@@ -89,11 +89,6 @@ class analyzeConfig_ttZctrl(analyzeConfig):
     lines.append("  histogramName = cms.string('sel/evt/$PROCESS/mLL'),")
     lines.append("  xAxisTitle = cms.string('m_{ll} [GeV]'),")
     lines.append("  yAxisTitle = cms.string('dN/dm_{ll} [1/GeV]')")
-    lines.append("))")
-    lines.append("process.makePlots.distributions.append(cms.PSet(")
-    lines.append("  histogramName = cms.string('sel/evt/$PROCESS/mT'),")
-    lines.append("  xAxisTitle = cms.string('m_{T} [GeV]'),")
-    lines.append("  yAxisTitle = cms.string('dN/dm_{T} [1/GeV]')")
     lines.append("))")
     self.cfgFile_make_plots_modified = os.path.join(self.outputDir, DKEY_CFGS, "makePlots_%s_cfg.py" % self.channel)
     create_cfg(self.cfgFile_make_plots_original, self.cfgFile_make_plots_modified, lines)

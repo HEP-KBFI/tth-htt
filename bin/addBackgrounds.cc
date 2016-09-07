@@ -86,6 +86,8 @@ int main(int argc, char* argv[])
   edm::ParameterSet cfg = edm::readPSetsFrom(argv[1])->getParameter<edm::ParameterSet>("process");
 
   edm::ParameterSet cfgAddBackgrounds = cfg.getParameter<edm::ParameterSet>("addBackgrounds");
+
+  vstring categories = cfgAddBackgrounds.getParameter<vstring>("categories");
   
   vstring processes_input = cfgAddBackgrounds.getParameter<vstring>("processes_input");
   std::string process_output = cfgAddBackgrounds.getParameter<std::string>("process_output");
@@ -101,8 +103,8 @@ int main(int argc, char* argv[])
 
   fwlite::OutputFiles outputFile(cfg);
   fwlite::TFileService fs = fwlite::TFileService(outputFile.file().data());
-  
-  vstring categories = getSubdirectoryNames(inputFile);
+
+  if ( categories.size() == 0 ) categories = getSubdirectoryNames(inputFile);
 
   for ( vstring::const_iterator category = categories.begin();
 	category != categories.end(); ++category ) {

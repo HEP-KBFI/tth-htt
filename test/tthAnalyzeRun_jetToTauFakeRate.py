@@ -6,7 +6,7 @@ from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 
 LUMI = 2301. # 1/pb
 
-version = "2016Aug24"
+version = "2016Sep04"
 
 if __name__ == '__main__':
   logging.basicConfig(

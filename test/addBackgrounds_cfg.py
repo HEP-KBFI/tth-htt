@@ -14,6 +14,8 @@ process.fwliteOutput = cms.PSet(
 
 process.addBackgrounds = cms.PSet(
 
+    categories = cms.vstring(),
+    
     processes_input = cms.vstring(),
     process_output = cms.string(""),
     
