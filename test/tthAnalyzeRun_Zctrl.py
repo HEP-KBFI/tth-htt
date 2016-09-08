@@ -14,7 +14,7 @@ if __name__ == '__main__':
     level = logging.INFO,
     format = '%(asctime)s - %(levelname)s: %(message)s')
 
-  analysis = analyzeConfig_ttZctrl(
+  analysis = analyzeConfig_Zctrl(
     outputDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", version),
     executable_analyze = "analyze_Zctrl",
     central_or_shifts = [ 

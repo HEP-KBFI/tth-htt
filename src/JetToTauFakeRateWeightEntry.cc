@@ -29,26 +29,27 @@ namespace
 
 JetToTauFakeRateWeightEntry::JetToTauFakeRateWeightEntry(
   double absEtaMin, double absEtaMax, const std::string& hadTauSelection,
-  TFile* inputFile, const std::string& graphName, bool applyGraph, const std::string& fitFunctionName, bool applyFitFunction, int central_or_shift)
+  TFile* inputFile, const edm::ParameterSet& cfg, int central_or_shift)
   : absEtaMin_(absEtaMin),
     absEtaMax_(absEtaMax),
     hadTauSelection_(hadTauSelection),
     graph_(0),
-    applyGraph_(applyGraph),
-    fitFunction_(0),
-    applyFitFunction_(applyFitFunction)
+    fitFunction_(0)
 {
   std::string etaBin = getEtaBin(absEtaMin_, absEtaMax_);
-  graph_ = loadGraph(inputFile, graphName, etaBin, hadTauSelection_);
-  std::string fitFunctionName_full;
-  if      ( central_or_shift == kFRt_central   ) fitFunctionName_full = fitFunctionName;
-  else if ( central_or_shift == kFRt_normUp    ) fitFunctionName_full = Form("%s_par0Up", fitFunctionName.data());
-  else if ( central_or_shift == kFRt_normDown  ) fitFunctionName_full = Form("%s_par0Down", fitFunctionName.data());
-  else if ( central_or_shift == kFRt_shapeUp   ) fitFunctionName_full = Form("%s_par1Up", fitFunctionName.data());
-  else if ( central_or_shift == kFRt_shapeDown ) fitFunctionName_full = Form("%s_par1Down", fitFunctionName.data());
+  graphName_ = cfg.getParameter<std::string>("graphName");
+  graph_ = loadGraph(inputFile, graphName_, etaBin, hadTauSelection_);
+  applyGraph_ = cfg.getParameter<bool>("applyGraph");
+  std::string fitFunctionName = cfg.getParameter<std::string>("fitFunctionName");
+  if      ( central_or_shift == kFRt_central   ) fitFunctionName_ = fitFunctionName;
+  else if ( central_or_shift == kFRt_normUp    ) fitFunctionName_ = Form("%s_par0Up", fitFunctionName.data());
+  else if ( central_or_shift == kFRt_normDown  ) fitFunctionName_ = Form("%s_par0Down", fitFunctionName.data());
+  else if ( central_or_shift == kFRt_shapeUp   ) fitFunctionName_ = Form("%s_par1Up", fitFunctionName.data());
+  else if ( central_or_shift == kFRt_shapeDown ) fitFunctionName_ = Form("%s_par1Down", fitFunctionName.data());
   else throw cms::Exception("JetToTauFakeRateWeightEntry")
 	 << "Invalid Configuration parameter 'central_or_shift' = " << central_or_shift << " !!\n";
-  fitFunction_ = loadFitFunction(inputFile, fitFunctionName_full, etaBin, hadTauSelection_);
+  fitFunction_ = loadFitFunction(inputFile, fitFunctionName_, etaBin, hadTauSelection_);
+  applyFitFunction_ = cfg.getParameter<bool>("applyFitFunction");
 }
 
 JetToTauFakeRateWeightEntry::~JetToTauFakeRateWeightEntry()

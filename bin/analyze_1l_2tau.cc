@@ -58,7 +58,6 @@
 #include "tthAnalysis/HiggsToTauTau/interface/backgroundEstimation.h" // prob_chargeMisId
 #include "tthAnalysis/HiggsToTauTau/interface/hltPath.h" // hltPath, create_hltPaths, hltPaths_setBranchAddresses, hltPaths_isTriggered, hltPaths_delete
 #include "tthAnalysis/HiggsToTauTau/interface/data_to_MC_corrections.h"
-#include "tthAnalysis/HiggsToTauTau/interface/particleIDlooseToTightWeightEntryType.h" // particleIDlooseToTightWeightEntryType
 #include "tthAnalysis/HiggsToTauTau/interface/cutFlowTable.h" // cutFlowTableType
 
 #include <boost/range/algorithm/copy.hpp> // boost::copy()
@@ -1014,6 +1013,8 @@ int main(int argc, char* argv[])
   cutFlowTable.print(std::cout);
   std::cout << std::endl;
 
+  delete jetToTauFakeRateInterface;
+  
   delete run_lumi_eventSelector;
 
   delete selEventsFile;

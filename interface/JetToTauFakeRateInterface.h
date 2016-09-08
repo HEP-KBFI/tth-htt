@@ -17,11 +17,16 @@ class JetToTauFakeRateInterface
 
   double getWeight_lead(double hadTauPt_lead, double hadTauAbsEta_lead) const;
   double getWeight_sublead(double hadTauPt_sublead, double hadTauAbsEta_sublead) const;
+  double getWeight_third(double hadTauPt_third, double hadTauAbsEta_third) const;
   
  private:
   TFile* inputFile_;
   std::vector<JetToTauFakeRateWeightEntry*> jetToTauFakeRateWeights_lead_;
+  bool isInitialized_lead_;
   std::vector<JetToTauFakeRateWeightEntry*> jetToTauFakeRateWeights_sublead_;
+  bool isInitialized_sublead_;
+  std::vector<JetToTauFakeRateWeightEntry*> jetToTauFakeRateWeights_third_;
+  bool isInitialized_third_;
 };
 
 #endif

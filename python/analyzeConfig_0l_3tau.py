@@ -37,9 +37,17 @@ class analyzeConfig_0l_3tau(analyzeConfig):
 
     self.hadTau_selections = hadTau_selections
     self.hadTau_frWeights = [ "enabled", "disabled" ]
-    ##self.hadTau_genMatches = [ "lepton", "hadTau", "jet", "all" ]
-    self.hadTau_genMatches = [ "all" ]
+    self.hadTau_genMatches = [
+      "ttt",
+      "ttl", "tlt", "ltt", "ttj", "tjt", "jtt",
+      "tll", "ltl", "llt", "tlj", "tjl", "ltj", "jtl", "ljt", "jlt", "tjj", "jtj", "jjt",
+      "lll", "llj", "ljl", "jll", "ljj", "jlj", "jjl", "jjj" ]
+    ##self.hadTau_genMatches = [ "all" ]
+    self.apply_hadTauGenMatching = True
 
+    self.executable_addBackgrounds = executable_addBackgrounds
+    self.executable_addFakes = executable_addBackgroundJetToTauFakes
+    
     for sample_name, sample_info in self.samples.items():
       if not sample_info["use_it"] or sample_info["sample_category"] in [ "additional_signal_overlap", "background_data_estimate" ]:
         continue
@@ -57,9 +65,23 @@ class analyzeConfig_0l_3tau(analyzeConfig):
     ##print "self.dirs = ", self.dirs
 
     self.cfgFile_analyze_original = os.path.join(self.workingDir, "analyze_0l_3tau_cfg.py")
+    self.cfgFile_addBackgrounds_original = os.path.join(self.workingDir, "addBackgrounds_cfg.py")
+    self.cfgFile_addBackgrounds_modified = {}
+    self.histogramFile_addBackgrounds = {}
+    self.histogramDir_addBackgrounds = {}    
+    self.process_output_addBackgrounds = {}            
+    self.histogramFile_hadd_stage1_5 = os.path.join(self.outputDir, DKEY_HIST, "histograms_harvested_stage1_5_%s.root" % self.channel)
+    self.cfgFile_addFakes_original = os.path.join(self.workingDir, "addBackgroundJetToTauFakes_cfg.py")
+    self.cfgFile_addFakes_modified = {}
+    self.histogramFile_addFakes = {}
+    self.prep_dcard_processesToCopy = [ "data_obs" ] + self.nonfake_backgrounds + [ "fakes_data" ]
     self.histogramDir_prep_dcard = "0l_3tau_Tight"
-
-  def createCfg_analyze(self, inputFiles, outputFile, sample_category, triggers, hadTau_selection, hadTau_genMatch, hadTau_frWeight,
+    self.make_plots_backgrounds = self.nonfake_backgrounds + [ "fakes_data" ]
+    self.cfgFile_make_plots_mcClosure_original = os.path.join(self.workingDir, "makePlots_mcClosure_cfg.py")
+    self.cfgFiles_make_plots_mcClosure_modified = []
+    
+  def createCfg_analyze(self, inputFiles, outputFile, sample_category, triggers,
+                        hadTau_selection, hadTau_genMatch,apply_hadTauGenMatching, hadTau_frWeight,
                         is_mc, central_or_shift, lumi_scale, cfgFile_modified):
     """Create python configuration file for the analyze_0l_3tau executable (analysis code)
 
@@ -77,15 +99,88 @@ class analyzeConfig_0l_3tau(analyzeConfig):
     lines.append("process.analyze_0l_3tau.process = cms.string('%s')" % sample_category)
     lines.append("process.analyze_0l_3tau.hadTauSelection = cms.string('%s')" % hadTau_selection)
     lines.append("process.analyze_0l_3tau.hadTauGenMatch = cms.string('%s')" % hadTau_genMatch)
+    lines.append("process.analyze_0l_3tau.apply_hadTauGenMatching = cms.bool(%s)" % apply_hadTauGenMatching)
     if hadTau_frWeight == "enabled":
       lines.append("process.analyze_0l_3tau.applyJetToTauFakeRateWeight = cms.bool(True)")
     elif hadTau_frWeight != "disabled":
-      raise ValueError("Invalid parameter 'hadTau_frWeight' = %s !!" % hadTau_frWeight) 
+      raise ValueError("Invalid parameter 'hadTau_frWeight' = %s !!" % hadTau_frWeight)
+    if hadTau_selection.find("mcClosure") != -1:
+      lines.append("process.analyze_0l_3tau.jetToTauFakeRateWeight.applyFitFunction_lead = cms.bool(False)")
+      lines.append("process.analyze_0l_3tau.jetToTauFakeRateWeight.applyFitFunction_sublead = cms.bool(False)")
+      lines.append("process.analyze_0l_3tau.jetToTauFakeRateWeight.applyFitFunction_third = cms.bool(False)")
     lines.append("process.analyze_0l_3tau.isMC = cms.bool(%s)" % is_mc)
     lines.append("process.analyze_0l_3tau.central_or_shift = cms.string('%s')" % central_or_shift)
     lines.append("process.analyze_0l_3tau.lumiScale = cms.double(%f)" % lumi_scale)
     create_cfg(self.cfgFile_analyze_original, cfgFile_modified, lines)
 
+  def createCfg_addBackgrounds(self, inputFile, outputFile, cfgFile_modified, categories, processes_input, process_output):
+    """Create python configuration file for the addBackgroundLeptonFakes executable (data-driven estimation of 'Fakes' backgrounds)
+
+    Args:
+      inputFiles: input file (the ROOT file produced by hadd_stage1)
+      outputFile: output file of the job
+    """  
+    lines = []
+    lines.append("process.fwliteInput.fileNames = cms.vstring('%s')" % inputFile)
+    lines.append("process.fwliteOutput.fileName = cms.string('%s')" % outputFile)
+    lines.append("process.addBackgrounds.categories = cms.vstring(%s)" % categories)
+    lines.append("process.addBackgrounds.processes_input = cms.vstring(%s)" % processes_input)
+    lines.append("process.addBackgrounds.process_output = cms.string('%s')" % process_output)
+    create_cfg(self.cfgFile_addBackgrounds_original, cfgFile_modified, lines)
+    
+  def createCfg_addFakes(self, inputFile, outputFile, cfgFile_modified, category_signal, category_sideband):
+    """Create python configuration file for the addBackgroundLeptonFakes executable (data-driven estimation of 'Fakes' backgrounds)
+
+    Args:
+      inputFiles: input file (the ROOT file produced by hadd_stage1)
+      outputFile: output file of the job
+    """  
+    lines = []
+    lines.append("process.fwliteInput.fileNames = cms.vstring('%s')" % inputFile)
+    lines.append("process.fwliteOutput.fileName = cms.string('%s')" % outputFile)
+    lines.append("process.addBackgroundLeptonFakes.categories = cms.VPSet(")
+    lines.append("    cms.PSet(")
+    lines.append("        signal = cms.string('%s')," % category_signal) 
+    lines.append("        sideband = cms.string('%s')" % category_sideband)
+    lines.append("    )")
+    lines.append(")")
+    lines.append("process.addBackgroundLeptonFakes.processesToSubtract = cms.vstring(%s)" % self.nonfake_backgrounds)
+    create_cfg(self.cfgFile_addFakes_original, cfgFile_modified, lines)
+
+  def createCfg_makePlots_mcClosure(self):
+    """Fills the template of python configuration file for making control plots
+
+    Args:
+      histogramFile: name of the input ROOT file 
+    """
+    lines = []
+    lines.append("process.fwliteInput.fileNames = cms.vstring('%s')" % self.histogramFile_hadd_stage2)
+    lines.append("process.makePlots_mcClosure.outputFileName = cms.string('%s')" % os.path.join(self.outputDir, DKEY_PLOT, self.channel, "makePlots_mcClosure_%s.png" % self.channel))
+    lines.append("process.makePlots_mcClosure.processesBackground = cms.vstring(%s)" % self.make_plots_backgrounds)
+    lines.append("process.makePlots_mcClosure.processSignal = cms.string('%s')" % self.make_plots_signal)
+    lines.append("process.makePlots_mcClosure.categories = cms.VPSet(")
+    lines.append("  cms.PSet(")
+    lines.append("    signal = cms.string('%s')," % self.histogramDir_prep_dcard)
+    lines.append("    sideband = cms.string('%s')," % self.histogramDir_prep_dcard.replace("Tight", "Fakeable"))
+    lines.append("    label = cms.string('%s')" % self.channel)
+    lines.append("  )")
+    lines.append(")")
+    lines.append("process.makePlots_mcClosure.distributions = cms.VPSet(")
+    lines.append("  cms.PSet(")
+    lines.append("    histogramName = cms.string('sel/evt/$PROCESS/numJets'),")
+    lines.append("    xAxisTitle = cms.string('jet Multiplicity'),")
+    lines.append("    yAxisTitle = cms.string('N')")
+    lines.append("  ),")
+    lines.append("  cms.PSet(")
+    lines.append("    histogramName = cms.string('sel/evt/$PROCESS/mTauTauVis'),")
+    lines.append("    xAxisTitle = cms.string('m_{#tau#tau}^{vis} [GeV]'),")
+    lines.append("    yAxisTitle = cms.string('dN/dm_{#tau#tau}^{vis} [1/GeV]')")
+    lines.append("  )")
+    lines.append(")")
+    cfgFile_modified = os.path.join(self.outputDir, DKEY_CFGS, "makePlots_mcClosure_%s_cfg.py" % self.channel)
+    create_cfg(self.cfgFile_make_plots_original, self.cfgFile_modified, lines)
+    self.cfgFiles_make_plots_mcClosure_modified.append(cfgFile_modified)
+    
   def addToMakefile_hadd_stage1(self, lines_makefile):
     inputFiles_hadd_stage1 = []
     for sample_name, sample_info in self.samples.items():
@@ -126,6 +221,46 @@ class analyzeConfig_0l_3tau(analyzeConfig):
     lines_makefile.append("")
     self.filesToClean.append(self.histogramFile_hadd_stage1)
 
+  def addToMakefile_addBackgrounds(self, lines_makefile):
+    for key in self.histogramFile_addBackgrounds.keys():
+      key = getKey(process, hadTau_charge_selection) 
+      lines_makefile.append("%s: %s" % (self.histogramFile_addBackgrounds[key], self.histogramFile_hadd_stage1))
+      lines_makefile.append("\t%s %s" % (self.executable_addBackgrounds, self.cfgFile_addBackgrounds[key]))
+      lines_makefile.append("")
+      self.filesToClean.append(self.histogramFile_addBackgrounds[key])
+
+  def addToMakefile_hadd_stage1_5(self, lines_makefile):
+    """Adds the commands to Makefile that are necessary for building the final histogram file.
+       Default implementation is a dummy and assumes that 'addToMakefile_backgrounds_from_data' method does not actually add any histograms,
+       so that the hadd stage2 file is simply a copy of the hadd stage1 file.
+    """
+    inputFiles_hadd_stage1_5 = [ self.histogramFile_hadd_stage1 ]
+    for key in self.histogramFile_addBackgrounds.keys():
+      inputFiles_hadd_stage1_5.append(self.histogramFile_addBackgrounds[key])
+    lines_makefile.append("%s: %s" % (self.histogramFile_hadd_stage1_5, " ".join(inputFiles_hadd_stage1_5)))
+    lines_makefile.append("\t%s %s %s" % ("hadd", self.histogramFile_hadd_stage1_5, " ".join(inputFiles_hadd_stage1_5)))
+    lines_makefile.append("")
+    
+  def addToMakefile_addFakes(self, lines_makefile):
+    for key in self.histogramFile_addFakes.keys():
+      lines_makefile.append("%s: %s" % (self.histogramFile_addFakes[key], self.histogramFile_hadd_stage1_5))
+      lines_makefile.append("\t%s %s" % (self.executable_addFakes, self.cfgFile_addFakes_modified[key]))
+      lines_makefile.append("")
+      self.filesToClean.append(self.histogramFile_addFakes[key])
+
+  def addToMakefile_backgrounds_from_data(self, lines_makefile):
+    self.addToMakefile_addBackgrounds(lines_makefile)
+    self.addToMakefile_hadd_stage1_5(lines_makefile)
+    self.addToMakefile_addFakes(lines_makefile)
+
+  def addToMakefile_make_plots_mcClosure(self, lines_makefile):
+    """Adds the commands to Makefile that are necessary for making control plots of the jet->tau fake background estimation procedure.
+    """
+    for idxJob, cfgFile_modified in enumerate(self.cfgFiles_make_plots_mcClosure_modified):
+      lines_makefile.append("makePlots_mcClosure%i: %s" % (idxJob, self.histogramFile_hadd_stage2))
+      lines_makefile.append("\t%s %s" % (self.executable_make_plots, cfgFile_modified))
+      lines_makefile.append("")
+          
   def create(self):
     """Creates all necessary config files and runs the complete analysis workfow -- either locally or on the batch system
     """
@@ -184,13 +319,68 @@ class analyzeConfig_0l_3tau(analyzeConfig):
                 self.logFiles_analyze[key_file] = os.path.join(self.dirs[key_dir][DKEY_LOGS], "analyze_%s_%s_%s_%s_%s_%i.log" % \
                   (self.channel, process_name, hadTau_selection_and_frWeight, hadTau_genMatch, central_or_shift, jobId))
                 
-                self.createCfg_analyze(inputFiles, self.histogramFiles[key_file], sample_category, triggers, hadTau_selection, hadTau_genMatch, hadTau_frWeight,
+                self.createCfg_analyze(inputFiles, self.histogramFiles[key_file], sample_category, triggers,
+                  hadTau_selection, hadTau_genMatch, self.apply_hadTauGenMatching, hadTau_frWeight,
                   is_mc, central_or_shift, lumi_scale, self.cfgFiles_analyze_modified[key_file])
                 
     if self.is_sbatch:
       logging.info("Creating script for submitting '%s' jobs to batch system" % self.executable_analyze)
       self.createScript_sbatch()
 
+    logging.info("Creating configuration files for executing 'addBackgrounds'")
+    genMatches_nonfakes = [ "ttt", "ttl", "tlt", "ltt", "tll", "ltl", "llt", "lll" ]
+    genMatches_fakes = [ "ttj", "tjt", "jtt", "tlj", "tjl", "ltj", "jtl", "ljt", "jlt", "tjj", "jtj", "jjt", "llj", "ljl", "jll", "ljj", "jlj", "jjl", "jjj" ]
+    for process_name in self.nonfake_backgrounds:
+      for hadTau_selection in self.hadTau_selections:
+        hadTau_selection = hadTau_selection.replace("|", "_")   
+        key = getKey(process_name, hadTau_selection)
+        self.histogramFile_addBackgrounds[key] = os.path.join(self.outputDir, DKEY_HIST, "addBackgrounds_%s_%s_%s.root" % \
+          (self.channel, process_name, hadTau_selection))        
+        self.cfgFile_addBackgrounds_modified[key] = os.path.join(self.outputDir, DKEY_CFGS, "addBackgrounds_%s_%s_%s_cfg.py" % \
+          (self.channel, process_name, hadTau_selection))
+        hadTau_selection_part1 = hadTau_selection
+        if hadTau_selection_part1.find("_") != -1:
+          hadTau_selection_part1 = hadTau_selection_part1[:hadTau_selection_part1.find("_")]
+        histogramDir = "0l_3tau_%s" % hadTau_selection_part1
+        processes_input = [ "%s%s" % (process_name, genMatch) for genMatch in genMatches_nonfakes ]
+        self.process_output_addBackgrounds[key] = process_name
+        self.createCfg_addBackgrounds(self.histogramFile_hadd_stage1, self.histogramFile_addBackgrounds[key], self.cfgFile_addBackgrounds_modified[key],
+          [ histogramDir ], processes_input, self.process_output_addBackgrounds[key])
+    key = "fakes_mc_weighted"
+    self.histogramFile_addBackgrounds[key] = os.path.join(self.outputDir, DKEY_HIST, "addBackgrounds_%s_fakes_mc_weighted.root" % self.channel)
+    self.cfgFile_addBackgrounds_modified[key] = os.path.join(self.outputDir, DKEY_CFGS, "addBackgrounds_%s_fakes_mc_weighted_cfg.py" % self.channel)
+    histogramDir = "0l_3tau_Fakeable_mcClosure" 
+    processes_input = [ "%s%s" % (process_name, genMatch) for genMatch in genMatches_fakes ]
+    self.process_output_addBackgrounds[key] = "fakes_mc_weighted"
+    self.createCfg_addBackgrounds(self.histogramFile_hadd_stage1, self.histogramFile_addBackgrounds[key], self.cfgFile_addBackgrounds_modified[key],
+      [ histogramDir ], processes_input, self.process_output_addBackgrounds[key])
+
+    key = "fakes_mc"
+    self.histogramFile_addBackgrounds[key] = os.path.join(self.outputDir, DKEY_HIST, "addBackgrounds_%s_fakes_mc.root" % self.channel)
+    self.cfgFile_addBackgrounds_modified[key] = os.path.join(self.outputDir, DKEY_CFGS, "addBackgrounds_%s_fakes_mc_cfg.py" % self.channel)
+    histogramDir = "0l_3tau_Tight" 
+    processes_input = [ "%s%s" % (process_name, genMatch) for genMatch in genMatches_fakes ]
+    self.process_output_addBackgrounds[key] = "fakes_mc"
+    self.createCfg_addBackgrounds(self.histogramFile_hadd_stage1, self.histogramFile_addBackgrounds[key], self.cfgFile_addBackgrounds_modified[key],
+      [ histogramDir ], processes_input, self.process_output_addBackgrounds[key])
+        
+    logging.info("Creating configuration files for executing 'addBackgroundFakes'")
+    self.histogramFile_addFakes[key] = os.path.join(self.outputDir, DKEY_HIST, "addBackgroundJetToTauFakes_%s.root" % self.channel)
+    self.cfgFile_addFakes_modified[key] = os.path.join(self.outputDir, DKEY_CFGS, "addBackgroundJetToTauFakes_%s_cfg.py" % self.channel)
+    category_signal = "0l_3tau_Tight" 
+    category_sideband = "0l_3tau_Fakeable" 
+    self.createCfg_addFakes(self.histogramFile_hadd_stage1_5, self.histogramFile_addFakes[key], self.cfgFile_addFakes_modified[key],
+      category_signal, category_sideband)  
+
+    logging.info("Creating configuration files for executing 'prepareDatacards'")
+    for histogramToFit in self.histograms_to_fit:
+      self.createCfg_prep_dcard(histogramToFit)
+
+    logging.info("Creating configuration files for executing 'makePlots'")
+    self.createCfg_makePlots()
+    if "Fakeable_mcClosure" in self.hadTau_selections:
+      self.createCfg_make_plots_mcClosure()  
+      
     logging.info("Creating configuration files for executing 'prepareDatacards'")
     for histogramToFit in self.histograms_to_fit:
       self.createCfg_prep_dcard(histogramToFit)
@@ -206,6 +396,7 @@ class analyzeConfig_0l_3tau(analyzeConfig):
     self.addToMakefile_hadd_stage2(lines_makefile)
     self.addToMakefile_prep_dcard(lines_makefile)
     self.addToMakefile_make_plots(lines_makefile)
+    self.addToMakefile_make_plots_mcClosure(lines_makefile)
     self.addToMakefile_clean(lines_makefile)
     self.createMakefile(lines_makefile)
   

@@ -6,7 +6,7 @@ from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 
 LUMI = 2301. # 1/pb
 
-version = "2016Aug29_dR03mvaTight"
+version = "2016AugSep07_dR03mvaTight"
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -17,8 +17,8 @@ if __name__ == '__main__':
   analysis = analyzeConfig_0l_3tau(
     outputDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", version),
     executable_analyze = "analyze_0l_3tau",
-    ##hadTau_selections = [ "Tight", "Fakeable" ],
-    hadTau_selections = [ "Tight|dR03mvaTight" ],
+    hadTau_selections = [ "Tight", "Fakeable", "Fakeable_mcClosure" ],
+    ##hadTau_selections = [ "Tight|dR03mvaTight" ],
     central_or_shifts = [ 
       "central",
 ##       "CMS_ttHl_btag_HFUp", 
@@ -40,13 +40,19 @@ if __name__ == '__main__':
 ##       "CMS_ttHl_JESUp",
 ##       "CMS_ttHl_JESDown",
 ##       "CMS_ttHl_tauESUp",
-##       "CMS_ttHl_tauESDown"  
+##       "CMS_ttHl_tauESDown"
+       "CMS_ttHl_FRt_normUp",
+       "CMS_ttHl_FRt_normDown",
+       "CMS_ttHl_FRt_shapeUp",
+       "CMS_ttHl_FRt_shapeDown" 
     ],
     max_files_per_job = 30,
     use_lumi = True, lumi = LUMI,
     debug = False,
     running_method = "sbatch",
     num_parallel_jobs = 4,
+    executable_addBackgrounds = "addBackgrounds",
+    executable_addBackgroundJetToTauFakes = "addBackgroundLeptonFakes", # CV: use common executable for estimating jet->lepton and jet->tau_h fake background
     histograms_to_fit = [ "EventCounter", "numJets", "mTauTauVis" ])
 
   analysis.create()

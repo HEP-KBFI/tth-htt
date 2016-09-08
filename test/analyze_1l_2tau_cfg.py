@@ -30,21 +30,26 @@ process.analyze_1l_2tau = cms.PSet(
     hadTauGenMatch = cms.string('all'),
     apply_hadTauGenMatching = cms.bool(False),
 
-    hadTauEtaBins_lead = cms.vdouble(-1., 1.2, 1.7, 9.9),
-    hadTauEtaBins_sublead = cms.vdouble(-1., 1.2, 1.7, 9.9),
+    hadTauEtaBins_lead = cms.vdouble(-1., 1.479, 9.9),
+    hadTauEtaBins_sublead = cms.vdouble(-1., 1.479, 9.9),
 
     applyJetToTauFakeRateWeight = cms.bool(False),
     jetToTauFakeRateWeight = cms.PSet(
         inputFileName = cms.string("tthAnalysis/HiggsToTauTau/data/FR_tau.root"),
-        absEtaBins = cms.vdouble(-1., 1.479, 9.9),
-        graphName_lead = cms.string("jetToTauFakeRate/$hadTauSelection/$etaBin/jetToTauFakeRate_mc_hadTaus_pt"),
-        applyGraph_lead = cms.bool(True),
-        fitFunctionName_lead = cms.string("jetToTauFakeRate/$hadTauSelection/$etaBin/fitFunction_data_div_mc_hadTaus_pt"),
-        applyFitFunction_lead = cms.bool(True),
-        graphName_sublead = cms.string("jetToTauFakeRate/$hadTauSelection/$etaBin/jetToTauFakeRate_mc_hadTaus_pt"),
-        applyGraph_sublead = cms.bool(True),
-        fitFunctionName_sublead = cms.string("jetToTauFakeRate/$hadTauSelection/$etaBin/fitFunction_data_div_mc_hadTaus_pt"),
-        applyFitFunction_sublead = cms.bool(True),
+        lead = cms.PSet(
+            absEtaBins = cms.vdouble(-1., 1.479, 9.9),
+            graphName = cms.string("jetToTauFakeRate/$hadTauSelection/$etaBin/jetToTauFakeRate_mc_hadTaus_pt"),
+            applyGraph = cms.bool(True),
+            fitFunctionName = cms.string("jetToTauFakeRate/$hadTauSelection/$etaBin/fitFunction_data_div_mc_hadTaus_pt"),
+            applyFitFunction = cms.bool(True)
+        ),
+        sublead = cms.PSet(
+            absEtaBins = cms.vdouble(-1., 1.479, 9.9),
+            graphName = cms.string("jetToTauFakeRate/$hadTauSelection/$etaBin/jetToTauFakeRate_mc_hadTaus_pt"),
+            applyGraph = cms.bool(True),
+            fitFunctionName = cms.string("jetToTauFakeRate/$hadTauSelection/$etaBin/fitFunction_data_div_mc_hadTaus_pt"),
+            applyFitFunction = cms.bool(True)
+        )
     ),
     
     isMC = cms.bool(False),

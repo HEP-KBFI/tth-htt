@@ -169,6 +169,23 @@ class analyzeConfig_1l_2tau(analyzeConfig):
     lines.append("    label = cms.string('%s')" % self.channel)
     lines.append("  )")
     lines.append(")")
+    lines.append("process.makePlots_mcClosure.distributions = cms.VPSet(")
+    lines.append("  cms.PSet(")
+    lines.append("    histogramName = cms.string('sel/evt/$PROCESS/numJets'),")
+    lines.append("    xAxisTitle = cms.string('jet Multiplicity'),")
+    lines.append("    yAxisTitle = cms.string('N')")
+    lines.append("  ),")
+    lines.append("  cms.PSet(")
+    lines.append("    histogramName = cms.string('sel/evt/$PROCESS/mvaOutput_1l_2tau_ttbar'),")
+    lines.append("    xAxisTitle = cms.string('MVA'),")
+    lines.append("    yAxisTitle = cms.string('dN/dMVA')")
+    lines.append("  ),")
+    lines.append("  cms.PSet(")
+    lines.append("    histogramName = cms.string('sel/evt/$PROCESS/mTauTauVis'),")
+    lines.append("    xAxisTitle = cms.string('m_{#tau#tau}^{vis} [GeV]'),")
+    lines.append("    yAxisTitle = cms.string('dN/dm_{#tau#tau}^{vis} [1/GeV]')")
+    lines.append("  )")
+    lines.append(")")
     cfgFile_modified = os.path.join(self.outputDir, DKEY_CFGS, "makePlots_mcClosure_%s_cfg.py" % self.channel)
     create_cfg(self.cfgFile_make_plots_original, self.cfgFile_modified, lines)
     self.cfgFiles_make_plots_mcClosure_modified.append(cfgFile_modified)
@@ -243,11 +260,11 @@ class analyzeConfig_1l_2tau(analyzeConfig):
     self.addToMakefile_hadd_stage1_5(lines_makefile)
     self.addToMakefile_addFakes(lines_makefile)
 
-  def addToMakefile_make_plots(self, lines_makefile):
-    """Adds the commands to Makefile that are necessary for building the datacards.
+  def addToMakefile_make_plots_mcClosure(self, lines_makefile):
+    """Adds the commands to Makefile that are necessary for making control plots of the jet->tau fake background estimation procedure.
     """
     for idxJob, cfgFile_modified in enumerate(self.cfgFiles_make_plots_mcClosure_modified):
-      lines_makefile.append("makePlots%i: %s" % (idxJob, self.histogramFile_hadd_stage2))
+      lines_makefile.append("makePlots_mcClosure%i: %s" % (idxJob, self.histogramFile_hadd_stage2))
       lines_makefile.append("\t%s %s" % (self.executable_make_plots, cfgFile_modified))
       lines_makefile.append("")
     
@@ -336,7 +353,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
         (self.channel, hadTau_charge_selection))
       self.cfgFile_addBackgrounds_modified[key] = os.path.join(self.outputDir, DKEY_CFGS, "addBackgrounds_%s_%s_fakes_mc_weighted_cfg.py" % \
         (self.channel, hadTau_charge_selection))
-      histogramDir = "1l_2tau_%s_Fakeable" % hadTau_charge_selection
+      histogramDir = "1l_2tau_%s_Fakeable_mcClosure" % hadTau_charge_selection
       processes_input = [ "%s%s" % (process_name, genMatch) for genMatch in [ "tj", "jt", "ll", "lj", "jl", "jj" ] ]
       self.process_output_addBackgrounds[key] = "fakes_mc_weighted"
       self.createCfg_addBackgrounds(self.histogramFile_hadd_stage1, self.histogramFile_addBackgrounds[key], self.cfgFile_addBackgrounds_modified[key],
@@ -374,7 +391,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
     self.createCfg_makePlots()
     if "SS" in self.hadTau_charge_selections:
       self.createCfg_makePlots(self.histogramDir_prep_dcard_SS, "SS")
-    if "Fakeable" in self.hadTau_selections:
+    if "Fakeable_mcClosure" in self.hadTau_selections:
       self.createCfg_make_plots_mcClosure()  
       
     logging.info("Creating Makefile")
