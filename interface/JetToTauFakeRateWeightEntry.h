@@ -9,7 +9,7 @@
 
 #include <string>
 
-enum { kFRt_central, kFRt_normUp, kFRt_normDown, kFRt_shapeUp, kFRt_shapeDown };
+enum { kFRjt_central, kFRjt_normUp, kFRjt_normDown, kFRjt_shapeUp, kFRjt_shapeDown };
 
 struct JetToTauFakeRateWeightEntry
 {

@@ -1,5 +1,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/data_to_MC_corrections.h"
 
+#include "FWCore/Utilities/interface/Exception.h" // cms::Exception
+
 #include "tthAnalysis/HiggsToTauTau/interface/lutAuxFunctions.h"
 #include "tthAnalysis/HiggsToTauTau/interface/leptonTypes.h"
 
@@ -339,3 +341,61 @@ double sf_leptonID_and_Iso_tight(int numLeptons,
 }
 //-------------------------------------------------------------------------------
 
+//-------------------------------------------------------------------------------
+//CV: data/MC scale-factors for e->tau and mu->tau fake-rates taken from https://twiki.cern.ch/twiki/bin/viewauth/CMS/TauIDRecommendation13TeV
+
+double sf_eToTauFakeRate_2016(double hadTau_pt, double hadTau_absEta, int hadTauSelection_antiElectron, int central_or_shift)
+{
+  double sf = 1.;
+  double sfErr = 0.;
+  if ( hadTauSelection_antiElectron == 1 ) { // vLoose
+    if   ( hadTau_absEta < 1.479 ) { sf = 1.02; sfErr = 0.05; }
+    else                           { sf = 1.11; sfErr = 0.05; }
+  } else if ( hadTauSelection_antiElectron == 2 ) { // Loose
+    if   ( hadTau_absEta < 1.479 ) { sf = 1.14; sfErr = 0.04; }
+    else                           { sf = 1.09; sfErr = 0.05; }
+  } else if ( hadTauSelection_antiElectron == 3 ) { // Medium
+    if   ( hadTau_absEta < 1.479 ) { sf = 1.50; sfErr = 0.13; }
+    else                           { sf = 1.06; sfErr = 0.18; }
+  } else if ( hadTauSelection_antiElectron == 4 ) { // Tight
+    if   ( hadTau_absEta < 1.479 ) { sf = 1.80; sfErr = 0.23; }
+    else                           { sf = 1.30; sfErr = 0.42; }
+  } else if ( hadTauSelection_antiElectron == 5 ) { // vTight
+    if   ( hadTau_absEta < 1.479 ) { sf = 1.89; sfErr = 0.35; }
+    else                           { sf = 1.69; sfErr = 0.68; }
+  } else throw cms::Exception("sf_eToTauFakeRate") 
+    << "Invalid parameter 'hadTauSelection_antiElectron' = " << hadTauSelection_antiElectron << " !!\n";
+  if      ( central_or_shift == kFRet_shiftUp   ) sf += sfErr;
+  else if ( central_or_shift == kFRet_shiftDown ) sf -= sfErr;
+  else if ( central_or_shift != kFRet_central   ) throw cms::Exception("sf_eToTauFakeRate") 
+    << "Invalid parameter 'central_or_shift' = " << central_or_shift << " !!\n";
+  if ( sf < 0. ) sf = 0.; // CV: require e->tau fake-rates to be positive
+  return sf;
+}
+
+double sf_muToTauFakeRate_2016(double hadTau_pt, double hadTau_absEta, int hadTauSelection_antiMuon, int central_or_shift)
+{
+  double sf = 1.;
+  double sfErr = 0.;
+  if ( hadTauSelection_antiMuon == 1 ) { // Loose
+    if      ( hadTau_absEta < 0.4 ) { sf = 1.15; sfErr = 0.05; }
+    else if ( hadTau_absEta < 0.8 ) { sf = 1.15; sfErr = 0.05; }
+    else if ( hadTau_absEta < 1.2 ) { sf = 1.18; sfErr = 0.05; }
+    else if ( hadTau_absEta < 1.7 ) { sf = 1.20; sfErr = 0.20; }
+    else if ( hadTau_absEta < 2.3 ) { sf = 1.30; sfErr = 0.30; }
+  } else if ( hadTauSelection_antiMuon == 2 ) { // Tight
+    if      ( hadTau_absEta < 0.4 ) { sf = 1.50; sfErr = 0.10; }
+    else if ( hadTau_absEta < 0.8 ) { sf = 1.40; sfErr = 0.10; }
+    else if ( hadTau_absEta < 1.2 ) { sf = 1.21; sfErr = 0.06; }
+    else if ( hadTau_absEta < 1.7 ) { sf = 2.60; sfErr = 0.90; }
+    else if ( hadTau_absEta < 2.3 ) { sf = 2.10; sfErr = 0.90; }
+  } else throw cms::Exception("sf_muToTauFakeRate") 
+    << "Invalid parameter 'hadTauSelection_antiMuon' = " << hadTauSelection_antiMuon << " !!\n";
+  if      ( central_or_shift == kFRet_shiftUp   ) sf += sfErr;
+  else if ( central_or_shift == kFRet_shiftDown ) sf -= sfErr;
+  else if ( central_or_shift != kFRet_central   ) throw cms::Exception("sf_muToTauFakeRate") 
+    << "Invalid parameter 'central_or_shift' = " << central_or_shift << " !!\n";
+  if ( sf < 0. ) sf = 0.; // CV: require mu->tau fake-rates to be positive
+  return sf;
+}
+//-------------------------------------------------------------------------------

@@ -12,7 +12,7 @@
 class JetToTauFakeRateInterface
 {
  public:
-  JetToTauFakeRateInterface(const edm::ParameterSet& cfg, int central_or_shift = kFRt_central);
+  JetToTauFakeRateInterface(const edm::ParameterSet& cfg, int central_or_shift = kFRjt_central);
   ~JetToTauFakeRateInterface();
 
   double getWeight_lead(double hadTauPt_lead, double hadTauAbsEta_lead) const;
