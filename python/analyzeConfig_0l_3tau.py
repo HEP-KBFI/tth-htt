@@ -28,7 +28,7 @@ class analyzeConfig_0l_3tau(analyzeConfig):
   """
   def __init__(self, outputDir, executable_analyze, hadTau_selections, central_or_shifts,
                max_files_per_job, use_lumi, lumi, debug, running_method, num_parallel_jobs, 
-               histograms_to_fit, executable_prep_dcard="prepareDatacard"):
+               executable_addBackgrounds, executable_addBackgroundJetToTauFakes, histograms_to_fit, executable_prep_dcard="prepareDatacard"):
     analyzeConfig.__init__(self, outputDir, executable_analyze, "0l_3tau", central_or_shifts,
       max_files_per_job, use_lumi, lumi, debug, running_method, num_parallel_jobs, 
       histograms_to_fit)
@@ -85,7 +85,7 @@ class analyzeConfig_0l_3tau(analyzeConfig):
     self.cfgFiles_make_plots_mcClosure_modified = []
     
   def createCfg_analyze(self, inputFiles, outputFile, sample_category, triggers,
-                        hadTau_selection, hadTau_genMatch,apply_hadTauGenMatching, hadTau_frWeight,
+                        hadTau_selection, hadTau_genMatch, apply_hadTauGenMatching, hadTau_frWeight,
                         is_mc, central_or_shift, lumi_scale, cfgFile_modified):
     """Create python configuration file for the analyze_0l_3tau executable (analysis code)
 
@@ -291,21 +291,15 @@ class analyzeConfig_0l_3tau(analyzeConfig):
 
       for hadTau_selection in self.hadTau_selections:
         for hadTau_frWeight in [ "enabled", "disabled" ]:
-          if hadTau_frWeight == "enabled" and hadTau_selection != "Fakeable":
+          if hadTau_frWeight == "enabled" and hadTau_selection not in { "Fakeable", "Fakeable_mcClosure" }:
             continue
           hadTau_selection_and_frWeight = get_hadTau_selection_and_frWeight(hadTau_selection, hadTau_frWeight)
           for hadTau_genMatch in self.hadTau_genMatches:
             for central_or_shift in self.central_or_shifts:
               for jobId in range(len(self.inputFileIds[sample_name])):
-                if sample_category not in [ "TT", "EWK" ] and hadTau_genMatch != "all":
+                if hadTau_genMatch != "all" and not is_mc:
                   continue
-                sample_category_and_genMatch = sample_category
-                if hadTau_genMatch == "lepton":
-                  sample_category_and_genMatch += "l"  
-                elif hadTau_genMatch == "hadTau":
-                  sample_category_and_genMatch += "t"
-                elif hadTau_genMatch == "jet":
-                  sample_category_and_genMatch += "j"
+                sample_category_and_genMatch = sample_category + hadTau_genMatch
                 if central_or_shift != "central" and not hadTau_selection == "Tight":
                   continue
                 if central_or_shift != "central" and not is_mc:
@@ -383,13 +377,6 @@ class analyzeConfig_0l_3tau(analyzeConfig):
     if "Fakeable_mcClosure" in self.hadTau_selections:
       self.createCfg_make_plots_mcClosure()  
       
-    logging.info("Creating configuration files for executing 'prepareDatacards'")
-    for histogramToFit in self.histograms_to_fit:
-      self.createCfg_prep_dcard(histogramToFit)
-
-    logging.info("Creating configuration files for executing 'makePlots'")
-    self.createCfg_makePlots()
-
     logging.info("Creating Makefile")
     lines_makefile = []
     self.addToMakefile_analyze(lines_makefile)

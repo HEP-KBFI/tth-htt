@@ -51,7 +51,7 @@ process.analyze_1l_2tau = cms.PSet(
             applyFitFunction = cms.bool(True)
         )
     ),
-    
+        
     isMC = cms.bool(False),
     central_or_shift = cms.string('central'),
     lumiScale = cms.double(1.),

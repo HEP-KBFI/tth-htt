@@ -39,8 +39,25 @@ process.analyze_2los_1tau = cms.PSet(
     
     leptonSelection = cms.string('Tight'),
 
-    hadTauSelection = cms.string('dR03mvaTight'),
-    
+    hadTauSelection = cms.string('Tight'),
+    hadTauGenMatch = cms.string('all'),
+    apply_hadTauGenMatching = cms.bool(False),
+
+    hadTauEtaBins_lead = cms.vdouble(-1., 1.479, 9.9),
+    hadTauEtaBins_sublead = cms.vdouble(-1., 1.479, 9.9),
+
+    applyJetToTauFakeRateWeight = cms.bool(False),
+    jetToTauFakeRateWeight = cms.PSet(
+        inputFileName = cms.string("tthAnalysis/HiggsToTauTau/data/FR_tau.root"),
+        lead = cms.PSet(
+            absEtaBins = cms.vdouble(-1., 1.479, 9.9),
+            graphName = cms.string("jetToTauFakeRate/$hadTauSelection/$etaBin/jetToTauFakeRate_mc_hadTaus_pt"),
+            applyGraph = cms.bool(True),
+            fitFunctionName = cms.string("jetToTauFakeRate/$hadTauSelection/$etaBin/fitFunction_data_div_mc_hadTaus_pt"),
+            applyFitFunction = cms.bool(True)
+        )
+    ),
+        
     isMC = cms.bool(False),
     central_or_shift = cms.string('central'),
     lumiScale = cms.double(1.),

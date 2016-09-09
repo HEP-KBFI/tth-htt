@@ -138,6 +138,7 @@ int main(int argc, char* argv[])
     << "Invalid Configuration parameter 'hadTauSelection' = " << hadTauSelection_string << " !!\n";
   std::string hadTauSelection_part2 = ( hadTauSelection_parts->GetEntries() == 2 ) ? (dynamic_cast<TObjString*>(hadTauSelection_parts->At(1)))->GetString().Data() : "";
   delete hadTauSelection_parts;
+  
   std::string hadTauGenMatchSelection_string = cfg_analyze.getParameter<std::string>("hadTauGenMatch");
   std::vector<hadTauGenMatchEntry> hadTauGenMatch_definitions = getHadTauGenMatch_definitions_3tau();
   int hadTauGenMatchSelection = getHadTauGenMatch_int(hadTauGenMatch_definitions, hadTauGenMatchSelection_string);
@@ -692,7 +693,7 @@ int main(int argc, char* argv[])
     const hadTauGenMatchEntry& hadTauGenMatch = getHadTauGenMatch(hadTauGenMatch_definitions, selHadTau_lead, selHadTau_sublead, selHadTau_third);
     assert(!(hadTauGenMatch.idx_ == kGen_Undefined3 || hadTauGenMatch.idx_ == kGen_All3));
 
-    if ( hadTauGenMatchSelection != kGen_All1 ) {
+    if ( hadTauGenMatchSelection != kGen_All3 ) {
       if ( hadTauGenMatch.idx_ != hadTauGenMatchSelection ) continue;
       cutFlowTable.update("tau gen match", evtWeight);
     }

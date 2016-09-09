@@ -17,7 +17,7 @@ if __name__ == '__main__':
   analysis = analyzeConfig_0l_3tau(
     outputDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", version),
     executable_analyze = "analyze_0l_3tau",
-    hadTau_selections = [ "Tight", "Fakeable", "Fakeable_mcClosure" ],
+    hadTau_selections = [ "Tight|dR03mvaTight", "Fakeable", "Fakeable_mcClosure" ],
     ##hadTau_selections = [ "Tight|dR03mvaTight" ],
     central_or_shifts = [ 
       "central",

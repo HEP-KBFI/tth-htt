@@ -41,9 +41,19 @@ class analyzeConfig_2l_2tau(analyzeConfig):
     self.hadTau_selections = hadTau_selections
     self.hadTau_charge_selections = hadTau_charge_selections
     self.hadTau_frWeights = [ "enabled", "disabled" ]
-    self.hadTau_genMatches = [ "tt", "tl", "lt", "tj", "jt", "ll", "lj", "jl", "jj" ]
+    self.hadTau_genMatches = [ "2t0e0m0j", "1t1e0m0j", "1t0e1m0j", "1t0e0m1j", "0t2e0m0j", "0t1e1m0j", "0t1e0m1j", "0t0e2m0j", "0t0e1m1j", "0t0e0m2j" ]
+    self.hadTau_genMatches_nonfakes = []
+    self.hadTau_genMatches_fakes = []
+    for  hadTau_genMatch in hadTau_genMatches:
+      if hadTau_genMatch.endswidth("0j"):
+        self.hadTau_genMatches_nonfakes.append(hadTau_genMatch)
+      else:
+        self.hadTau_genMatches_fakes.append(hadTau_genMatch)
     ##self.hadTau_genMatches = [ "all" ]
     self.apply_hadTauGenMatching = True
+
+    self.executable_addBackgrounds = executable_addBackgrounds
+    self.executable_addFakes = executable_addBackgroundJetToTauFakes
     
     for sample_name, sample_info in self.samples.items():
       if not sample_info["use_it"] or sample_info["sample_category"] in [ "additional_signal_overlap", "background_data_estimate" ]:
@@ -298,26 +308,20 @@ class analyzeConfig_2l_2tau(analyzeConfig):
       for lepton_charge_selection in self.lepton_charge_selections:
         for hadTau_selection in self.hadTau_selections:
           for hadTau_frWeight in [ "enabled", "disabled" ]:
-            if hadTau_frWeight == "enabled" and hadTau_selection != "Fakeable":
+            if hadTau_frWeight == "enabled" and hadTau_selection not in { "Fakeable", "Fakeable_mcClosure" }:
               continue
             hadTau_selection_and_frWeight = get_hadTau_selection_and_frWeight(hadTau_selection, hadTau_frWeight)
             for hadTau_genMatch in self.hadTau_genMatches:
               for hadTau_charge_selection in self.hadTau_charge_selections:
-	        for central_or_shift in self.central_or_shifts:
+                for central_or_shift in self.central_or_shifts:
                   for jobId in range(len(self.inputFileIds[sample_name])):
-                    if sample_category not in [ "TT", "EWK" ] and hadTau_genMatch != "all":
+                    if hadTau_genMatch != "all" and not is_mc:
                       continue
-                    sample_category_and_genMatch = sample_category
-                    if hadTau_genMatch == "lepton":
-                      sample_category_and_genMatch += "l"  
-                    elif hadTau_genMatch == "hadTau":
-                      sample_category_and_genMatch += "t"
-                    elif hadTau_genMatch == "jet":
-                      sample_category_and_genMatch += "j"
-	            if central_or_shift != "central" and not (hadTau_selection == "Tight" and hadTau_charge_selection == "OS"):
-	              continue
+                    sample_category_and_genMatch = sample_category + hadTau_genMatch
+                    if central_or_shift != "central" and not (hadTau_selection == "Tight" and hadTau_charge_selection == "OS"):
+	                  continue
                     if central_or_shift != "central" and not is_mc:
-	              continue
+	                  continue
 
                     inputFiles = generate_input_list(self.inputFileIds[sample_name][jobId], secondary_files, primary_store, secondary_store, self.debug)
   
@@ -330,7 +334,7 @@ class analyzeConfig_2l_2tau(analyzeConfig):
                       (process_name, lepton_charge_selection, hadTau_selection_and_frWeight, hadTau_genMatch, hadTau_charge_selection, central_or_shift, jobId))
                     self.logFiles_analyze[key_file] = os.path.join(self.dirs[key_dir][DKEY_LOGS], "analyze_%s_%s_%s_%s_%s_%s_%s_%i.log" % \
                       (self.channel, process_name, lepton_charge_selection, hadTau_selection_and_frWeight, hadTau_genMatch, hadTau_charge_selection, central_or_shift, jobId))
-                
+
                     self.createCfg_analyze(inputFiles, self.histogramFiles[key_file], sample_category, triggers,
                       lepton_charge_selection, hadTau_selection, hadTau_genMatch, self.apply_hadTauGenMatching, hadTau_frWeight, hadTau_charge_selection,
                       is_mc, central_or_shift, lumi_scale, self.cfgFiles_analyze_modified[key_file])
@@ -353,7 +357,7 @@ class analyzeConfig_2l_2tau(analyzeConfig):
           if hadTau_selection_part1.find("_") != -1:
             hadTau_selection_part1 = hadTau_selection_part1[:hadTau_selection_part1.find("_")]
           histogramDir = "2l_2tau_lepOS_tau%s_%s" % (hadTau_charge_selection, hadTau_selection_part1)
-          processes_input = [ "%s%s" % (process_name, genMatch) for genMatch in [ "tt", "lt", "tl" ] ]
+          processes_input = [ "%s%s" % (process_name, genMatch) for genMatch in self.genMatches_nonfakes ]
           self.process_output_addBackgrounds[key] = process_name
           self.createCfg_addBackgrounds(self.histogramFile_hadd_stage1, self.histogramFile_addBackgrounds[key], self.cfgFile_addBackgrounds_modified[key],
             [ histogramDir ], processes_input, self.process_output_addBackgrounds[key])
@@ -364,7 +368,7 @@ class analyzeConfig_2l_2tau(analyzeConfig):
       self.cfgFile_addBackgrounds_modified[key] = os.path.join(self.outputDir, DKEY_CFGS, "addBackgrounds_%s_%s_fakes_mc_weighted_cfg.py" % \
         (self.channel, hadTau_charge_selection))
       histogramDir = "2l_2tau_lepOS_tau%s_Fakeable_mcClosure" % hadTau_charge_selection
-      processes_input = [ "%s%s" % (process_name, genMatch) for genMatch in [ "tj", "jt", "ll", "lj", "jl", "jj" ] ]
+      processes_input = [ "%s%s" % (process_name, genMatch) for genMatch in self.genMatches_fakes ]
       self.process_output_addBackgrounds[key] = "fakes_mc_weighted"
       self.createCfg_addBackgrounds(self.histogramFile_hadd_stage1, self.histogramFile_addBackgrounds[key], self.cfgFile_addBackgrounds_modified[key],
         [ histogramDir ], processes_input, self.process_output_addBackgrounds[key])
@@ -375,7 +379,7 @@ class analyzeConfig_2l_2tau(analyzeConfig):
       self.cfgFile_addBackgrounds_modified[key] = os.path.join(self.outputDir, DKEY_CFGS, "addBackgrounds_%s_%s_fakes_mc_cfg.py" % \
         (self.channel, hadTau_charge_selection))
       histogramDir = "2l_2tau_lepOS_tau%s_Tight" % hadTau_charge_selection
-      processes_input = [ "%s%s" % (process_name, genMatch) for genMatch in [ "tj", "jt", "ll", "lj", "jl", "jj" ] ]
+      processes_input = [ "%s%s" % (process_name, genMatch) for genMatch in self.genMatches_fakes ]
       self.process_output_addBackgrounds[key] = "fakes_mc"
       self.createCfg_addBackgrounds(self.histogramFile_hadd_stage1, self.histogramFile_addBackgrounds[key], self.cfgFile_addBackgrounds_modified[key],
         [ histogramDir ], processes_input, self.process_output_addBackgrounds[key])

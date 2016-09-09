@@ -39,7 +39,14 @@ class analyzeConfig_1l_2tau(analyzeConfig):
     self.hadTau_selections = hadTau_selections
     self.hadTau_charge_selections = hadTau_charge_selections
     self.hadTau_frWeights = [ "enabled", "disabled" ]
-    self.hadTau_genMatches = [ "tt", "tl", "lt", "tj", "jt", "ll", "lj", "jl", "jj" ]
+    self.hadTau_genMatches = [ "2t0e0m0j", "1t1e0m0j", "1t0e1m0j", "1t0e0m1j", "0t2e0m0j", "0t1e1m0j", "0t1e0m1j", "0t0e2m0j", "0t0e1m1j", "0t0e0m2j" ]
+    self.hadTau_genMatches_nonfakes = []
+    self.hadTau_genMatches_fakes = []
+    for  hadTau_genMatch in hadTau_genMatches:
+      if hadTau_genMatch.endswidth("0j"):
+        self.hadTau_genMatches_nonfakes.append(hadTau_genMatch)
+      else:
+        self.hadTau_genMatches_fakes.append(hadTau_genMatch)
     ##self.hadTau_genMatches = [ "all" ]
     self.apply_hadTauGenMatching = True
 
@@ -294,7 +301,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
 
       for hadTau_selection in self.hadTau_selections:
         for hadTau_frWeight in [ "enabled", "disabled" ]:
-          if hadTau_frWeight == "enabled" and hadTau_selection != "Fakeable":
+          if hadTau_frWeight == "enabled" and hadTau_selection not in { "Fakeable", "Fakeable_mcClosure" }:
             continue
           hadTau_selection_and_frWeight = get_hadTau_selection_and_frWeight(hadTau_selection, hadTau_frWeight)
           for hadTau_genMatch in self.hadTau_genMatches:
@@ -343,7 +350,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
           if hadTau_selection_part1.find("_") != -1:
             hadTau_selection_part1 = hadTau_selection_part1[:hadTau_selection_part1.find("_")]
           histogramDir = "1l_2tau_%s_%s" % (hadTau_charge_selection, hadTau_selection_part1)
-          processes_input = [ "%s%s" % (process_name, genMatch) for genMatch in [ "tt", "lt", "tl" ] ]
+          processes_input = [ "%s%s" % (process_name, genMatch) for genMatch in self.genMatches_nonfakes ]
           self.process_output_addBackgrounds[key] = process_name
           self.createCfg_addBackgrounds(self.histogramFile_hadd_stage1, self.histogramFile_addBackgrounds[key], self.cfgFile_addBackgrounds_modified[key],
             [ histogramDir ], processes_input, self.process_output_addBackgrounds[key])
@@ -354,7 +361,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
       self.cfgFile_addBackgrounds_modified[key] = os.path.join(self.outputDir, DKEY_CFGS, "addBackgrounds_%s_%s_fakes_mc_weighted_cfg.py" % \
         (self.channel, hadTau_charge_selection))
       histogramDir = "1l_2tau_%s_Fakeable_mcClosure" % hadTau_charge_selection
-      processes_input = [ "%s%s" % (process_name, genMatch) for genMatch in [ "tj", "jt", "ll", "lj", "jl", "jj" ] ]
+      processes_input = [ "%s%s" % (process_name, genMatch) for genMatch in self.genMatches_fakes ]
       self.process_output_addBackgrounds[key] = "fakes_mc_weighted"
       self.createCfg_addBackgrounds(self.histogramFile_hadd_stage1, self.histogramFile_addBackgrounds[key], self.cfgFile_addBackgrounds_modified[key],
         [ histogramDir ], processes_input, self.process_output_addBackgrounds[key])
@@ -365,7 +372,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
       self.cfgFile_addBackgrounds_modified[key] = os.path.join(self.outputDir, DKEY_CFGS, "addBackgrounds_%s_%s_fakes_mc_cfg.py" % \
         (self.channel, hadTau_charge_selection))
       histogramDir = "1l_2tau_%s_Tight" % hadTau_charge_selection
-      processes_input = [ "%s%s" % (process_name, genMatch) for genMatch in [ "tj", "jt", "ll", "lj", "jl", "jj" ] ]
+      processes_input = [ "%s%s" % (process_name, genMatch) for genMatch in self.genMatches_fakes ]
       self.process_output_addBackgrounds[key] = "fakes_mc"
       self.createCfg_addBackgrounds(self.histogramFile_hadd_stage1, self.histogramFile_addBackgrounds[key], self.cfgFile_addBackgrounds_modified[key],
         [ histogramDir ], processes_input, self.process_output_addBackgrounds[key])
