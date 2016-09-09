@@ -69,7 +69,9 @@ process.analyze_3l_1tau = cms.PSet(
     isMC = cms.bool(False),
     central_or_shift = cms.string('central'),
     lumiScale = cms.double(1.),
-    
+
+    fillGenEvtHistograms = cms.bool(True),
+        
     selEventsFileName_input = cms.string(''),
     selEventsFileName_output = cms.string(''),
     selEventsTFileName = cms.string('')

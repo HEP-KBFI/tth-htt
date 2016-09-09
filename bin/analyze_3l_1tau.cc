@@ -53,6 +53,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/JetHistManager.h" // JetHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/MEtHistManager.h" // MEtHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/EvtHistManager_3l_1tau.h" // EvtHistManager_3l_1tau
+#include "tthAnalysis/HiggsToTauTau/interface/GenEvtHistManager.h" // GenEvtHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/leptonTypes.h" // getLeptonType, kElectron, kMuon
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // isHigherPt, isMatched
 #include "tthAnalysis/HiggsToTauTau/interface/hadTauGenMatchingAuxFunctions.h" // getHadTauGenMatch_definitions_3tau, getHadTauGenMatch
@@ -451,6 +452,8 @@ int main(int argc, char* argv[])
     run_lumi_eventSelector = new RunLumiEventSelector(cfgRunLumiEventSelector);
   }
 
+  bool fillGenEvtHistograms = cfg_analyze.getParameter<bool>("fillGenEvtHistograms");
+  
   std::string selEventsFileName_output = cfg_analyze.getParameter<std::string>("selEventsFileName_output");
 
   std::string selEventsTFileName = cfg_analyze.getParameter<std::string>("selEventsTFileName");
@@ -627,7 +630,7 @@ int main(int argc, char* argv[])
   std::ostream* selEventsFile = new std::ofstream(selEventsFileName_output.data(), std::ios::out);
 
 //--- declare histograms
-  std::string charge_and_lepton_and_hadTauSelection = Form("%s_lep%s_tau%s", chargeSelection_string.data(), leptonSelection_string.data(), hadTauSelection_part1.data());
+  std::string charge_and_lepton_and_hadTauSelection = Form("%s_lep%s_tau%s", chargeSelection_string.data(), leptonSelection_string.data(), hadTauSelection_part1.data());  
   ElectronHistManager preselElectronHistManager(makeHistManager_cfg(process_string, 
     Form("3l_1tau_%s/presel/electrons", charge_and_lepton_and_hadTauSelection.data()), central_or_shift));
   preselElectronHistManager.bookHistograms(fs);
@@ -725,6 +728,13 @@ int main(int argc, char* argv[])
       selEvtHistManagers_genMatch[hadTauGenMatch_definition->idx_] = selEvtHistManager_ptr;
     }
   }
+
+  GenEvtHistManager genEvtHistManager_beforeCuts(makeHistManager_cfg(process_string, 
+    Form("3l_1tau_%s/unbiased/genEvt", charge_and_lepton_and_hadTauSelection.data()), central_or_shift));
+  genEvtHistManager_beforeCuts.bookHistograms(fs);
+  GenEvtHistManager genEvtHistManager_afterCuts(makeHistManager_cfg(process_string, 
+    Form("3l_1tau_%s/sel/genEvt", charge_and_lepton_and_hadTauSelection.data()), central_or_shift));
+  genEvtHistManager_afterCuts.bookHistograms(fs);
   
   int numEntries = inputTree->GetEntries();
   int analyzedEntries = 0;
@@ -742,6 +752,28 @@ int main(int argc, char* argv[])
     if ( run_lumi_eventSelector && !(*run_lumi_eventSelector)(run, lumi, event) ) continue;
     cutFlowTable.update("run:ls:event selection");
 
+//--- build collections of generator level particles (before any cuts are applied, to check distributions in unbiased event samples)
+    std::vector<GenLepton> genLeptons;
+    std::vector<GenLepton> genElectrons;
+    std::vector<GenLepton> genMuons;
+    std::vector<GenHadTau> genHadTaus;
+    std::vector<GenJet> genJets;
+    if ( isMC && fillGenEvtHistograms ) {
+      genLeptons = genLeptonReader->read();
+      for ( std::vector<GenLepton>::const_iterator genLepton = genLeptons.begin();
+    	    genLepton != genLeptons.end(); ++genLepton ) {
+	int abs_pdgId = std::abs(genLepton->pdgId_);
+	if      ( abs_pdgId == 11 ) genElectrons.push_back(*genLepton);
+	else if ( abs_pdgId == 13 ) genMuons.push_back(*genLepton);
+      }
+      genHadTaus = genHadTauReader->read();
+      genJets = genJetReader->read();
+    }
+
+    if ( isMC ) {
+      genEvtHistManager_beforeCuts.fillHistograms(genElectrons, genMuons, genHadTaus, genJets);
+    }
+    
     bool isTriggered_1e = hltPaths_isTriggered(triggers_1e);
     bool isTriggered_2e = hltPaths_isTriggered(triggers_2e);
     bool isTriggered_1mu = hltPaths_isTriggered(triggers_1mu);
@@ -876,19 +908,14 @@ int main(int argc, char* argv[])
     std::vector<const RecoJet*> selBJets_loose = jetSelectorBtagLoose(cleanedJets);
     std::vector<const RecoJet*> selBJets_medium = jetSelectorBtagMedium(cleanedJets);
 
-//--- build collections of generator level particles
-    std::vector<GenLepton> genLeptons;
-    std::vector<GenLepton> genElectrons;
-    std::vector<GenLepton> genMuons;
-    std::vector<GenHadTau> genHadTaus;
-    std::vector<GenJet> genJets;
-    if ( isMC ) {
+//--- build collections of generator level particles (after some cuts are applied, to safe computing time)
+    if ( isMC && !fillGenEvtHistograms ) {
       genLeptons = genLeptonReader->read();
       for ( std::vector<GenLepton>::const_iterator genLepton = genLeptons.begin();
-	    genLepton != genLeptons.end(); ++genLepton ) {
-	int abs_pdgId = std::abs(genLepton->pdgId_);
-	if      ( abs_pdgId == 11 ) genElectrons.push_back(*genLepton);
-	else if ( abs_pdgId == 13 ) genMuons.push_back(*genLepton);
+    	    genLepton != genLeptons.end(); ++genLepton ) {
+    	int abs_pdgId = std::abs(genLepton->pdgId_);
+    	if      ( abs_pdgId == 11 ) genElectrons.push_back(*genLepton);
+    	else if ( abs_pdgId == 13 ) genMuons.push_back(*genLepton);
       }
       genHadTaus = genHadTauReader->read();
       genJets = genJetReader->read();
@@ -1402,6 +1429,10 @@ int main(int argc, char* argv[])
         mTauTauVis1_presel, mTauTauVis2_presel, evtWeight);
     }
 
+    if ( isMC ) {
+      genEvtHistManager_afterCuts.fillHistograms(genElectrons, genMuons, genHadTaus, genJets);
+    }
+    
     if ( writeSelEventsFile ) {
       // KE: unique merge loose and medium B-jets, and hadronic jets
       std::sort(selBJets_medium.begin(), selBJets_medium.end(), isHigherPt);
