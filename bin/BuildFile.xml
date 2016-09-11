@@ -359,3 +359,14 @@
   <use   name="roottmva"/>
   <use   name="boost"/>
 </bin>
+<bin file="write_csv.cc" name="write_csv2">
+  <use   name="FWCore/FWLite"/>
+  <use   name="FWCore/ParameterSet"/>
+  <use   name="FWCore/PythonParameterSet"/>
+  <use   name="FWCore/Utilities"/>
+  <use   name="PhysicsTools/FWLite"/>
+  <use   name="tthAnalysis/HiggsToTauTau"/>
+  <use   name="root"/>
+  <use   name="roottmva"/>
+</bin>
+
