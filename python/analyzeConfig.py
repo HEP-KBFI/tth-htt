@@ -209,7 +209,7 @@ class analyzeConfig:
     lines.append("    label = cms.string('%s')" % category_label)
     lines.append("  )")
     lines.append(")")
-    create_cfg(self.cfgFile_make_plots_original, self.cfgFile_modified, lines)
+    create_cfg(self.cfgFile_make_plots_original, cfgFile_modified, lines)
     self.cfgFiles_make_plots_modified.append(cfgFile_modified)
 
   def initializeInputFileIds(self, sample_name, sample_info):

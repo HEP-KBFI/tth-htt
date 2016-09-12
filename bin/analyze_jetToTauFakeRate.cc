@@ -44,7 +44,6 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelector.h" // RecoJetCollectionSelector
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelectorBtag.h" // RecoJetCollectionSelectorBtagLoose, RecoJetCollectionSelectorBtagMedium
 #include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionSelector.h" // RecoElectronSelectorTight, RecoMuonSelectorTight, RecoHadTauSelectorLoose, RecoHadTauSelectorTight
-#include "tthAnalysis/HiggsToTauTau/interface/RunLumiEventSelector.h" // RunLumiEventSelector
 #include "tthAnalysis/HiggsToTauTau/interface/ElectronHistManager.h" // ElectronHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/MuonHistManager.h" // MuonHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/HadTauHistManager.h" // HadTauHistManager
@@ -330,18 +329,6 @@ int main(int argc, char* argv[])
 	<< "Invalid Configuration parameter 'central_or_shift' = " << central_or_shift << " !!\n";
   }
 
-  std::string selEventsFileName_input = cfg_analyze.getParameter<std::string>("selEventsFileName_input");
-  std::cout << "selEventsFileName_input = " << selEventsFileName_input << std::endl;
-  RunLumiEventSelector* run_lumi_eventSelector = 0;
-  if ( selEventsFileName_input != "" ) {
-    edm::ParameterSet cfgRunLumiEventSelector;
-    cfgRunLumiEventSelector.addParameter<std::string>("inputFileName", selEventsFileName_input);
-    cfgRunLumiEventSelector.addParameter<std::string>("separator", ":");
-    run_lumi_eventSelector = new RunLumiEventSelector(cfgRunLumiEventSelector);
-  }
-
-  std::string selEventsFileName_output = cfg_analyze.getParameter<std::string>("selEventsFileName_output");
-
   fwlite::InputSource inputFiles(cfg); 
   int maxEvents = inputFiles.maxEvents();
   std::cout << " maxEvents = " << maxEvents << std::endl;
@@ -440,9 +427,6 @@ int main(int argc, char* argv[])
     genJetReader->setBranchAddresses(inputTree);
   }
 
-//--- open output file containing run:lumi:event numbers of events passing final event selection criteria
-  std::ostream* selEventsFile = new std::ofstream(selEventsFileName_output.data(), std::ios::out);
-
   ElectronHistManager selElectronHistManager(makeHistManager_cfg(process_string, 
     Form("jetToTauFakeRate_%s/electrons", chargeSelection_string.data()), central_or_shift));
   selElectronHistManager.bookHistograms(fs);
@@ -532,8 +516,6 @@ int main(int argc, char* argv[])
     
     inputTree->GetEntry(idxEntry);
 
-    if ( run_lumi_eventSelector && !(*run_lumi_eventSelector)(run, lumi, event) ) continue;
-
     bool isTriggered_1e = hltPaths_isTriggered(triggers_1e);
     bool isTriggered_1mu = hltPaths_isTriggered(triggers_1mu);
     bool isTriggered_1e1mu = hltPaths_isTriggered(triggers_1e1mu);
@@ -542,12 +524,6 @@ int main(int argc, char* argv[])
     bool selTrigger_1mu = use_triggers_1mu && isTriggered_1mu;
     bool selTrigger_1e1mu = use_triggers_1e1mu && isTriggered_1e1mu;
     if ( !(selTrigger_1e || selTrigger_1mu || selTrigger_1e1mu) ) {
-      if ( run_lumi_eventSelector ) {
-	std::cout << "event FAILS trigger selection." << std::endl; 
-	std::cout << " (selTrigger_1e = " << selTrigger_1e 
-		  << ", selTrigger_1mu = " << selTrigger_1mu 
-		  << ", selTrigger_1e1mu = " << selTrigger_1e1mu << ")" << std::endl;
-      }
       continue;
     }
     
@@ -556,20 +532,9 @@ int main(int argc, char* argv[])
 // CV: this logic is necessary to avoid that the same event is selected multiple times when processing different primary datasets
     if ( !isMC ) {
       if ( selTrigger_1e && (isTriggered_1mu || isTriggered_1e1mu) ) {
-	if ( run_lumi_eventSelector ) {
-	  std::cout << "event FAILS trigger selection." << std::endl; 
-	  std::cout << " (selTrigger_1e = " << selTrigger_1e 
-		    << ", isTriggered_1mu = " << isTriggered_1mu 
-		    << ", isTriggered_1e1mu = " << isTriggered_1e1mu << ")" << std::endl;
-	}
 	continue; 
       }
       if ( selTrigger_1mu && isTriggered_1e1mu ) {
-	if ( run_lumi_eventSelector ) {
-	  std::cout << "event FAILS trigger selection." << std::endl; 
-	  std::cout << " (selTrigger_1mu = " << selTrigger_1mu 
-		    << ", isTriggered_1e1mu = " << isTriggered_1e1mu << ")" << std::endl;
-	}
 	continue; 
       }
     }
@@ -674,14 +639,6 @@ int main(int argc, char* argv[])
     std::sort(preselLeptons.begin(), preselLeptons.end(), isHigherPt);
     // require exactly two leptons passing loose preselection criteria to avoid overlap with 3l category
     if ( !(preselLeptons.size() == 2) ) {
-      if ( run_lumi_eventSelector ) {
-	std::cout << "event FAILS preselLeptons selection." << std::endl;
-	std::cout << " (#preselLeptons = " << preselLeptons.size() << ")" << std::endl;
-	for ( size_t idxPreselLepton = 0; idxPreselLepton < preselLeptons.size(); ++idxPreselLepton ) {
-	  std::cout << "preselLepton #" << idxPreselLepton << ":" << std::endl;
-	  std::cout << (*preselLeptons[idxPreselLepton]);
-	}
-      }
       continue;
     }
     cutFlowTable.update("2 presel leptons");
@@ -692,30 +649,12 @@ int main(int argc, char* argv[])
 
     // require that trigger paths match event category (with event category based on preselLeptons);
     if ( preselElectrons.size() == 2 && !selTrigger_1e  ) {
-      if ( run_lumi_eventSelector ) {
-	std::cout << "event FAILS trigger selection for given preselLepton multiplicity." << std::endl; 
-	std::cout << " (#preselElectrons = " << preselElectrons.size() 
-		  << ", selTrigger_1e = " << selTrigger_1e << ")" << std::endl;
-      }
       continue;
     }
     if ( preselMuons.size() == 2 && !selTrigger_1mu ) {
-      if ( run_lumi_eventSelector ) {
-	std::cout << "event FAILS trigger selection for given preselLepton multiplicity." << std::endl; 
-	std::cout << " (#preselMuons = " << preselMuons.size() 
-		  << ", selTrigger_1mu = " << selTrigger_1mu << ")" << std::endl;
-      }
       continue;
     }
     if ( preselElectrons.size() == 1 && preselMuons.size() == 1 && !(selTrigger_1e || selTrigger_1mu || selTrigger_1e1mu) ) {
-      if ( run_lumi_eventSelector ) {
-	std::cout << "event FAILS trigger selection for given preselLepton multiplicity." << std::endl; 
-	std::cout << " (#preselElectrons = " << preselElectrons.size() 
-		  << ", #preselMuons = " << preselMuons.size() 
-		  << ", selTrigger_1e = " << selTrigger_1e 
-		  << ", selTrigger_1mu = " << selTrigger_1mu
-		  << ", selTrigger_1e1mu = " << selTrigger_1e1mu << ")" << std::endl;
-      }
       continue;
     }
     cutFlowTable.update("presel lepton trigger match");
@@ -769,14 +708,6 @@ int main(int argc, char* argv[])
     std::sort(selLeptons.begin(), selLeptons.end(), isHigherPt);
     // require exactly two leptons passing tight selection criteria of final event selection 
     if ( !(selLeptons.size() == 2) ) {
-      if ( run_lumi_eventSelector ) {
-	std::cout << "event FAILS selLeptons selection." << std::endl;
-	std::cout << " (#selLeptons = " << selLeptons.size() << ")" << std::endl;
-	for ( size_t idxSelLepton = 0; idxSelLepton < selLeptons.size(); ++idxSelLepton ) {
-	  std::cout << "selLepton #" << idxSelLepton << ":" << std::endl;
-	  std::cout << (*selLeptons[idxSelLepton]);
-	}
-      }
       continue;
     }
     cutFlowTable.update("2 sel leptons", evtWeight);
@@ -785,63 +716,22 @@ int main(int argc, char* argv[])
 
     // require exactly one electron and one muon passing tight selection criteria
     if ( !(selElectrons.size() == 1 && selMuons.size() == 1) ) {
-      if ( run_lumi_eventSelector ) {
-	std::cout << "event FAILS selElectrons+selMuons selection." << std::endl;
-	std::cout << " (#selElectrons = " << selElectrons.size() << ")" << std::endl;
-	for ( size_t idxSelElectron = 0; idxSelElectron < selElectrons.size(); ++idxSelElectron ) {
-	  std::cout << "selElectron #" << idxSelElectron << ":" << std::endl;
-	  std::cout << (*selElectrons[idxSelElectron]);
-	}
-	std::cout << " (#selMuon = " << selMuons.size() << ")" << std::endl;
-	for ( size_t idxSelMuon = 0; idxSelMuon < selMuons.size(); ++idxSelMuon ) {
-	  std::cout << "selMuon #" << idxSelMuon << ":" << std::endl;
-	  std::cout << (*selMuons[idxSelMuon]);
-	}
-      }
       continue;
     }
     cutFlowTable.update("1 sel electron && 1 sel muon", evtWeight);
 
     // require that trigger paths match event category (with event category based on selLeptons);
     if ( selElectrons.size() == 1 && selMuons.size() == 1 && !(selTrigger_1e  || selTrigger_1mu || selTrigger_1e1mu) ) {
-      if ( run_lumi_eventSelector ) {
-	std::cout << "event FAILS trigger selection for given selLepton multiplicity." << std::endl; 
-	std::cout << " (#selElectrons = " << selElectrons.size() 
-		  << ", #selMuons = " << selMuons.size() 
-		  << ", selTrigger_1e = " << selTrigger_1e 
-		  << ", selTrigger_1mu = " << selTrigger_1mu 
-		  << ", selTrigger_1e1mu = " << selTrigger_1e1mu << ")" << std::endl;
-      }
       continue;
     }
     cutFlowTable.update("sel lepton trigger match", evtWeight);
 
     // apply requirement on jets (incl. b-tagged jets) 
     if ( !(selJets.size() >= 2) ) {
-      if ( run_lumi_eventSelector ) {
-	std::cout << "event FAILS selJets selection." << std::endl;
-	std::cout << " (#selJets = " << selJets.size() << ")" << std::endl;
-	for ( size_t idxSelJet = 0; idxSelJet < selJets.size(); ++idxSelJet ) {
-	  std::cout << "selJet #" << idxSelJet << ":" << std::endl;
-	  std::cout << (*selJets[idxSelJet]);
-	}
-      }
       continue;
     }
     cutFlowTable.update(">= 2 jets", evtWeight);
     if ( !(selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) ) {
-      if ( run_lumi_eventSelector ) {
-	std::cout << "event FAILS selBJets selection." << std::endl;
-	std::cout << " (#selBJets_loose = " << selBJets_loose.size() << ", #selBJets_medium = " << selBJets_medium.size() << ")" << std::endl;
-	for ( size_t idxSelBJet_loose = 0; idxSelBJet_loose < selBJets_loose.size(); ++idxSelBJet_loose ) {
-	  std::cout << "selJet #" << idxSelBJet_loose << ":" << std::endl;
-	  std::cout << (*selJets[idxSelBJet_loose]);
-	}
-	for ( size_t idxSelBJet_medium = 0; idxSelBJet_medium < selBJets_medium.size(); ++idxSelBJet_medium ) {
-	  std::cout << "selJet #" << idxSelBJet_medium << ":" << std::endl;
-	  std::cout << (*selJets[idxSelBJet_medium]);
-	}
-      }
       continue;
     }
     cutFlowTable.update(">= 2 loose b-jets || 1 medium b-jet (2)", evtWeight);
@@ -857,9 +747,6 @@ int main(int argc, char* argv[])
       }
     }
     if ( failsLowMassVeto ) {
-      if ( run_lumi_eventSelector ) {
-	std::cout << "event FAILS low mass lepton pair veto." << std::endl;
-      }
       continue;
     }
     cutFlowTable.update("m(ll) > 12 GeV", evtWeight);
@@ -867,11 +754,6 @@ int main(int argc, char* argv[])
     double minPt_lead = 20.;
     double minPt_sublead = selLepton_sublead->is_electron() ? 15. : 10.;
     if ( !(selLepton_lead->pt_ > minPt_lead && selLepton_sublead->pt_ > minPt_sublead) ) {
-      if ( run_lumi_eventSelector ) {
-	std::cout << "event FAILS lepton pT selection." << std::endl;
-	std::cout << " (leading selLepton pT = " << selLepton_lead->pt_ << ", minPt_lead = " << minPt_lead
-		  << ", subleading selLepton pT = " << selLepton_sublead->pt_ << ", minPt_sublead = " << minPt_sublead << ")" << std::endl;
-      }
       continue;
     }
     cutFlowTable.update("lead lepton pT > 20 GeV && sublead lepton pT > 15(e)/10(mu) GeV", evtWeight);
@@ -879,29 +761,15 @@ int main(int argc, char* argv[])
     bool isCharge_SS = selLepton_lead->charge_*selLepton_sublead->charge_ > 0;
     bool isCharge_OS = selLepton_lead->charge_*selLepton_sublead->charge_ < 0;
     if ( chargeSelection == kOS && isCharge_SS ) {
-      if ( run_lumi_eventSelector ) {
-	std::cout << "event FAILS lepton charge selection." << std::endl;
-	std::cout << " (leading selLepton charge = " << selLepton_lead->charge_ 
-		  << ", subleading selLepton charge = " << selLepton_sublead->charge_ << ", chargeSelection = OS)" << std::endl;
-      }
       continue;
     }
     if ( chargeSelection == kSS && isCharge_OS ) {
-      if ( run_lumi_eventSelector ) {
-	std::cout << "event FAILS lepton charge selection." << std::endl;
-	std::cout << " (leading selLepton charge = " << selLepton_lead->charge_ 
-		  << ", subleading selLepton charge = " << selLepton_sublead->charge_ << ", chargeSelection = SS)" << std::endl;
-      }
       continue;
     }
     cutFlowTable.update(Form("lepton-pair %s charge", chargeSelection_string.data()), evtWeight);
 
     if ( selLepton_lead->is_electron() && selLepton_sublead->is_electron() ) {
       if ( met_LD < 0.2 ) {
-	if ( run_lumi_eventSelector ) {
-	  std::cout << "event FAILS MET LD selection." << std::endl;
-	  std::cout << " (LD = " << met_LD << ")" << std::endl;
-	}
 	continue;
       }
     }
@@ -965,8 +833,6 @@ int main(int argc, char* argv[])
       }
     }
 
-    (*selEventsFile) << run << ":" << lumi << ":" << event;
-
     ++selectedEntries;
     selectedEntries_weighted += evtWeight;
   }
@@ -974,10 +840,6 @@ int main(int argc, char* argv[])
   std::cout << "num. Entries = " << numEntries << std::endl;
   std::cout << " analyzed = " << analyzedEntries << std::endl;
   std::cout << " selected = " << selectedEntries << " (weighted = " << selectedEntries_weighted << ")" << std::endl;
-
-  delete run_lumi_eventSelector;
-
-  delete selEventsFile;
 
   delete muonReader;
   delete electronReader;

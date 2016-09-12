@@ -33,8 +33,8 @@ class analyzeConfig_3l_1tau(analyzeConfig):
     self.hadTau_genMatches = [ "1t0e0m0j", "0t1e0m0j", "0t0e1m0j", "0t0e0m1j" ]
     self.hadTau_genMatches_nonfakes = []
     self.hadTau_genMatches_fakes = []
-    for  hadTau_genMatch in hadTau_genMatches:
-      if hadTau_genMatch.endswidth("0j"):
+    for  hadTau_genMatch in self.hadTau_genMatches:
+      if hadTau_genMatch.endswith("0j"):
         self.hadTau_genMatches_nonfakes.append(hadTau_genMatch)
       else:
         self.hadTau_genMatches_fakes.append(hadTau_genMatch)
@@ -51,14 +51,17 @@ class analyzeConfig_3l_1tau(analyzeConfig):
         continue
       process_name = sample_info["process_name_specific"]
       for lepton_selection in self.lepton_selections:
-        for charge_selection in self.charge_selections:
-          key_dir = getKey(sample_name, lepton_selection, charge_selection)  
-          for dir_type in DIRLIST:
-            if (not select_rle_output and dir_type == DKEY_RLES) or \
-               (not select_root_output and dir_type == DKEY_ROOT): continue
-            initDict(self.dirs, [ key_dir, dir_type ])
-            self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel,
-              "_".join([ lepton_selection, charge_selection ]), process_name)
+        for hadTau_selection in self.hadTau_selections:
+          for hadTau_frWeight in self.hadTau_frWeights:
+            if hadTau_frWeight == "enabled" and hadTau_selection not in { "Fakeable", "Fakeable_mcClosure" }:
+              continue
+            hadTau_selection_and_frWeight = get_hadTau_selection_and_frWeight(hadTau_selection, hadTau_frWeight)
+            for charge_selection in self.charge_selections:
+              key_dir = getKey(sample_name, lepton_selection, hadTau_selection, hadTau_frWeight, charge_selection)  
+              for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_DCRD ]:
+                initDict(self.dirs, [ key_dir, dir_type ])
+                self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel,
+                  "_".join([ lepton_selection, hadTau_selection_and_frWeight, charge_selection ]), process_name)
     ##print "self.dirs = ", self.dirs
 
     self.cfgFile_analyze_original = os.path.join(self.workingDir, "analyze_3l_1tau_cfg.py")
@@ -191,7 +194,7 @@ class analyzeConfig_3l_1tau(analyzeConfig):
     lines.append("  )")
     lines.append(")")
     cfgFile_modified = os.path.join(self.outputDir, DKEY_CFGS, "makePlots_mcClosure_%s_cfg.py" % self.channel)
-    create_cfg(self.cfgFile_make_plots_original, self.cfgFile_modified, lines)
+    create_cfg(self.cfgFile_make_plots_original, cfgFile_modified, lines)
     self.cfgFiles_make_plots_mcClosure_modified.append(cfgFile_modified)
     
   def addToMakefile_hadd_stage1(self, lines_makefile):
@@ -234,9 +237,8 @@ class analyzeConfig_3l_1tau(analyzeConfig):
 
   def addToMakefile_addBackgrounds(self, lines_makefile):
     for key in self.histogramFile_addBackgrounds.keys():
-      key = getKey(process, hadTau_charge_selection) 
       lines_makefile.append("%s: %s" % (self.histogramFile_addBackgrounds[key], self.histogramFile_hadd_stage1))
-      lines_makefile.append("\t%s %s" % (self.executable_addBackgrounds, self.cfgFile_addBackgrounds[key]))
+      lines_makefile.append("\t%s %s" % (self.executable_addBackgrounds, self.cfgFile_addBackgrounds_modified[key]))
       lines_makefile.append("")
       self.filesToClean.append(self.histogramFile_addBackgrounds[key])
 
@@ -355,7 +357,7 @@ class analyzeConfig_3l_1tau(analyzeConfig):
             if hadTau_selection_part1.find("_") != -1:
               hadTau_selection_part1 = hadTau_selection_part1[:hadTau_selection_part1.find("_")]
             histogramDir = "3l_1tau_%s_lep%s_tau%s" % (charge_selection, lepton_selection, hadTau_selection_part1)
-            processes_input = [ "%s%s" % (process_name, genMatch) for genMatch in self.genMatches_nonfakes ]
+            processes_input = [ "%s%s" % (process_name, genMatch) for genMatch in self.hadTau_genMatches_nonfakes ]
             self.process_output_addBackgrounds[key] = process_name
             self.createCfg_addBackgrounds(self.histogramFile_hadd_stage1, self.histogramFile_addBackgrounds[key], self.cfgFile_addBackgrounds_modified[key],
               [ histogramDir ], processes_input, self.process_output_addBackgrounds[key])
@@ -366,7 +368,7 @@ class analyzeConfig_3l_1tau(analyzeConfig):
       self.cfgFile_addBackgrounds_modified[key] = os.path.join(self.outputDir, DKEY_CFGS, "addBackgrounds_%s_%s_fakes_mc_weighted_cfg.py" % \
         (self.channel, hadTau_charge_selection))
       histogramDir = "3l_1tau_%s_lepTight_tauFakeable_mcClosure" % charge_selection
-      processes_input = [ "%s%s" % (process_name, genMatch) for genMatch in self.genMatches_fakes ]
+      processes_input = [ "%s%s" % (process_name, genMatch) for genMatch in self.hadTau_genMatches_fakes ]
       self.process_output_addBackgrounds[key] = "fakes_mc_weighted"
       self.createCfg_addBackgrounds(self.histogramFile_hadd_stage1, self.histogramFile_addBackgrounds[key], self.cfgFile_addBackgrounds_modified[key],
         [ histogramDir ], processes_input, self.process_output_addBackgrounds[key])
@@ -377,7 +379,7 @@ class analyzeConfig_3l_1tau(analyzeConfig):
       self.cfgFile_addBackgrounds_modified[key] = os.path.join(self.outputDir, DKEY_CFGS, "addBackgrounds_%s_%s_fakes_mc_cfg.py" % \
         (self.channel, hadTau_charge_selection))
       histogramDir = "3l_1tau_%s_lepTight_tauTight" % charge_selection
-      processes_input = [ "%s%s" % (process_name, genMatch) for genMatch in self.genMatches_fakes ]
+      processes_input = [ "%s%s" % (process_name, genMatch) for genMatch in self.hadTau_genMatches_fakes ]
       self.process_output_addBackgrounds[key] = "fakes_mc"
       self.createCfg_addBackgrounds(self.histogramFile_hadd_stage1, self.histogramFile_addBackgrounds[key], self.cfgFile_addBackgrounds_modified[key],
         [ histogramDir ], processes_input, self.process_output_addBackgrounds[key])
@@ -404,7 +406,7 @@ class analyzeConfig_3l_1tau(analyzeConfig):
     if "SS" in self.charge_selections:
       self.createCfg_makePlots(self.histogramDir_prep_dcard_SS, "SS")
     if "Fakeable_mcClosure" in self.hadTau_selections:
-      self.createCfg_make_plots_mcClosure()       
+      self.createCfg_makePlots_mcClosure()       
 
     logging.info("Creating Makefile")
     lines_makefile = []

@@ -112,8 +112,8 @@ std::vector<EigenVector_and_Value> compEigenVectors_and_Values(const TMatrixD& c
     std::cout << "vec1:" << std::endl;
     vec1.Print();
     TVectorD vec2 = eigenValue*eigenVector;
-    std::cout << "vec2:" << std::endl;
-    vec2.Print();
+    //std::cout << "vec2:" << std::endl;
+    //vec2.Print();
     // CV: check that EigenVector is indeed an EigenVector,
     //     i.e. that we interpreted the ordering of columns and rows of the eigenVectors matrix correctly
     for ( int iComponent = 0; iComponent < dimension; ++iComponent ) {   
@@ -510,10 +510,10 @@ std::pair<TH1*, TH1*> getHistogramsLoose_and_Tight(
   }
       
   std::cout << "computing sum(histograms) in loose region" << std::endl;
-  std::string histogramNameJetToTauFakeRate_loose = Form("jetToTauFakeRate_%s_%s_loose", hadTauSelection.data(), histogramName.data());
+  std::string histogramNameJetToTauFakeRate_loose = Form("jetToTauFakeRate_%s_%s_%s_%s_loose", processData_or_mc.data(), hadTauSelection.data(), etaBin.data(), histogramName.data());
   TH1* histogramJetToTauFakeRate_loose = subtractHistograms(histogramNameJetToTauFakeRate_loose.data(), histogramData_or_mc_loose, histogramsToSubtract_loose);  
   std::cout << "computing sum(histograms) in tight region" << std::endl;
-  std::string histogramNameJetToTauFakeRate_tight = Form("jetToTauFakeRate_%s_%s_tight", hadTauSelection.data(), histogramName.data());
+  std::string histogramNameJetToTauFakeRate_tight = Form("jetToTauFakeRate_%s_%s_%s_%s_tight", processData_or_mc.data(), hadTauSelection.data(), etaBin.data(), histogramName.data());
   TH1* histogramJetToTauFakeRate_tight = subtractHistograms(histogramNameJetToTauFakeRate_tight.data(), histogramData_or_mc_tight, histogramsToSubtract_tight);  
 
   return std::pair<TH1*, TH1*>(histogramJetToTauFakeRate_loose, histogramJetToTauFakeRate_tight);
@@ -806,13 +806,15 @@ int main(int argc, char* argv[])
 	std::string graphName_data_div_mc_jetToTauFakeRate = Form("jetToTauFakeRate_data_div_mc_%s", TString(histogramToFit->data()).ReplaceAll("/", "_").Data());
 	TGraphAsymmErrors* graph_data_div_mc_jetToTauFakeRate = compRatioGraph(graphName_data_div_mc_jetToTauFakeRate, graph_data_jetToTauFakeRate, graph_mc_jetToTauFakeRate);
 
+	graph_data_div_mc_jetToTauFakeRate->Write();
+
 	std::string controlPlotFileName_suffix = Form("_%s_%s_%s.png", hadTauSelection->data(), etaBin.data(), histogramToFit->data());
 	controlPlotFileName_suffix = TString(controlPlotFileName_suffix.data()).ReplaceAll("/", "_").Data();
 	std::string controlPlotFileName = TString(outputFile.file().data()).ReplaceAll(".root", controlPlotFileName_suffix.data()).Data();
 	makeControlPlot(graph_data_jetToTauFakeRate, "Data",
 			graph_mc_jetToTauFakeRate, "MC",
 			graph_data_div_mc_jetToTauFakeRate, 
-			xMin, xMax, "p_{T} [GeV]", true, 1.e-4, 1.e-1, controlPlotFileName);
+			xMin, xMax, "p_{T} [GeV]", true, 1.e-2, 1.e0, controlPlotFileName);
 
 	std::string fitFunctionName = Form("fitFunction_data_div_mc_%s", TString(histogramToFit->data()).ReplaceAll("/", "_").Data());
 	double x0 = 0.5*(histogram_data_loose->GetMean() + histogram_mc_loose->GetMean());
