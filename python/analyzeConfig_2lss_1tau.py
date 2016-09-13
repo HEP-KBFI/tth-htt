@@ -30,7 +30,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
     self.lepton_selections = lepton_selections
     self.lepton_charge_selections = lepton_charge_selections
 
-    self.hadTau_selection = hadTau_selection
+    self.hadTau_selections = hadTau_selections
 
     self.executable_addFakes = executable_addFakes
     self.executable_addFlips = executable_addFlips

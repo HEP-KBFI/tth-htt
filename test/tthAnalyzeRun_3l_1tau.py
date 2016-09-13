@@ -19,7 +19,7 @@ if __name__ == '__main__':
     executable_analyze = "analyze_3l_1tau",
     ##lepton_selections = [ "Tight", "Fakeable" ],
     lepton_selections = [ "Tight" ],
-    hadTau_selection = "dR03mvaTight",
+    hadTau_selections = [ "Tight|dR03mvaTight", "Fakeable", "Fakeable_mcClosure" ],
     charge_selections = [ "OS", "SS" ],
     central_or_shifts = [ 
       "central",

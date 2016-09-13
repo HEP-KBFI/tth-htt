@@ -26,7 +26,7 @@ class analyzeConfig_3l_1tau(analyzeConfig):
   for documentation of further Args.
 
   """
-  def __init__(self, outputDir, executable_analyze, lepton_selections, hadTau_selection, charge_selections, central_or_shifts,
+  def __init__(self, outputDir, executable_analyze, lepton_selections, hadTau_selections, charge_selections, central_or_shifts,
                max_files_per_job, use_lumi, lumi, debug, running_method, num_parallel_jobs, 
                executable_addBackgrounds, executable_addBackgroundJetToTauFakes, histograms_to_fit, select_rle_output = False, executable_prep_dcard="prepareDatacard",
                select_root_output = False):
@@ -73,6 +73,8 @@ class analyzeConfig_3l_1tau(analyzeConfig):
                 self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel,
                   "_".join([ lepton_selection, hadTau_selection_and_frWeight, charge_selection ]), process_name)
     ##print "self.dirs = ", self.dirs
+
+    self.nonfake_backgrounds = [ "TT", "TTW", "TTZ", "EWK", "Rares" ]
 
     self.cfgFile_analyze_original = os.path.join(self.workingDir, "analyze_3l_1tau_cfg.py")
     self.cfgFile_addBackgrounds_original = os.path.join(self.workingDir, "addBackgrounds_cfg.py")
@@ -376,22 +378,22 @@ class analyzeConfig_3l_1tau(analyzeConfig):
             self.createCfg_addBackgrounds(self.histogramFile_hadd_stage1, self.histogramFile_addBackgrounds[key], self.cfgFile_addBackgrounds_modified[key],
               [ histogramDir ], processes_input, self.process_output_addBackgrounds[key])
     for charge_selection in self.charge_selections:
-      key = getKey("fakes_mc_weighted", hadTau_charge_selection) 
+      key = getKey("fakes_mc_weighted", charge_selection) 
       self.histogramFile_addBackgrounds[key] = os.path.join(self.outputDir, DKEY_HIST, "addBackgrounds_%s_%s_fakes_mc_weighted.root" % \
-        (self.channel, hadTau_charge_selection))
+        (self.channel, charge_selection))
       self.cfgFile_addBackgrounds_modified[key] = os.path.join(self.outputDir, DKEY_CFGS, "addBackgrounds_%s_%s_fakes_mc_weighted_cfg.py" % \
-        (self.channel, hadTau_charge_selection))
+        (self.channel, charge_selection))
       histogramDir = "3l_1tau_%s_lepTight_tauFakeable_mcClosure" % charge_selection
       processes_input = [ "%s%s" % (process_name, genMatch) for genMatch in self.hadTau_genMatches_fakes ]
       self.process_output_addBackgrounds[key] = "fakes_mc_weighted"
       self.createCfg_addBackgrounds(self.histogramFile_hadd_stage1, self.histogramFile_addBackgrounds[key], self.cfgFile_addBackgrounds_modified[key],
         [ histogramDir ], processes_input, self.process_output_addBackgrounds[key])
 
-      key = getKey("fakes_mc", hadTau_charge_selection) 
+      key = getKey("fakes_mc", charge_selection) 
       self.histogramFile_addBackgrounds[key] = os.path.join(self.outputDir, DKEY_HIST, "addBackgrounds_%s_%s_fakes_mc.root" % \
         (self.channel, charge_selection))
       self.cfgFile_addBackgrounds_modified[key] = os.path.join(self.outputDir, DKEY_CFGS, "addBackgrounds_%s_%s_fakes_mc_cfg.py" % \
-        (self.channel, hadTau_charge_selection))
+        (self.channel, charge_selection))
       histogramDir = "3l_1tau_%s_lepTight_tauTight" % charge_selection
       processes_input = [ "%s%s" % (process_name, genMatch) for genMatch in self.hadTau_genMatches_fakes ]
       self.process_output_addBackgrounds[key] = "fakes_mc"
