@@ -25,6 +25,7 @@ void GenEvtHistManager::bookHistograms(TFileDirectory& dir)
   histogram_numGenHadTaus_withinAcc_ = book1D(dir, "numGenHadTaus_withinAcc", "numGenHadTaus_withinAcc", 7, -0.5, +6.5);
   histogram_numGenLeptonsAndHadTaus_withinAcc_ = book1D(dir, "numGenLeptonsAndHadTaus_withinAcc", "numGenLeptonsAndHadTaus_withinAcc", 7, -0.5, +6.5);
   histogram_numGenJets_withinAcc_ = book1D(dir, "numGenJets_withinAcc", "numGenJets_withinAcc", 20, -0.5, +19.5);
+  histogram_numGenLeptonsAndHadTausAndJets_withinAcc_ = book1D(dir, "numGenLeptonsAndHadTausAndJets_withinAcc", "numGenLeptonsAndHadTausAndJets_withinAcc", 20, -0.5, +19.5);
 
   histogram_EventCounter_ = book1D(dir, "EventCounter", "EventCounter", 1, -0.5, +0.5);
 }
@@ -48,6 +49,7 @@ void GenEvtHistManager::fillHistograms(const std::vector<GenLepton>& genElectron
 {
   int numGenElectrons_withinAcc = countGenParticles_withinAcc(genElectrons, minGenElectronPt_, maxGenElectronAbsEta_);
   int numGenMuons_withinAcc = countGenParticles_withinAcc(genMuons, minGenMuonPt_, maxGenMuonAbsEta_);
+  int numGenLeptons_withinAcc = numGenElectrons_withinAcc + numGenMuons_withinAcc;
   int numGenHadTaus_withinAcc = countGenParticles_withinAcc(genHadTaus, minGenHadTauPt_, maxGenHadTauAbsEta_);
   int numGenJets_withinAcc = countGenParticles_withinAcc(genJets, minGenJetPt_, maxGenJetAbsEta_);
   
@@ -55,10 +57,11 @@ void GenEvtHistManager::fillHistograms(const std::vector<GenLepton>& genElectron
 
   fillWithOverFlow(histogram_numGenElectrons_withinAcc_, numGenElectrons_withinAcc, evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_numGenMuons_withinAcc_, numGenMuons_withinAcc, evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_numGenLeptons_withinAcc_, numGenElectrons_withinAcc + numGenMuons_withinAcc, evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_numGenLeptons_withinAcc_, numGenLeptons_withinAcc, evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_numGenHadTaus_withinAcc_, numGenHadTaus_withinAcc, evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_numGenLeptonsAndHadTaus_withinAcc_, numGenElectrons_withinAcc + numGenMuons_withinAcc + numGenHadTaus_withinAcc, evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_numGenLeptonsAndHadTaus_withinAcc_, numGenLeptons_withinAcc + numGenHadTaus_withinAcc, evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_numGenJets_withinAcc_, numGenJets_withinAcc, evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_numGenLeptonsAndHadTausAndJets_withinAcc_, numGenLeptons_withinAcc + numGenHadTaus_withinAcc + numGenJets_withinAcc, evtWeight, evtWeightErr);
   
   fillWithOverFlow(histogram_EventCounter_, 0., evtWeight, evtWeightErr);
 }

@@ -43,6 +43,7 @@ class GenEvtHistManager
   TH1* histogram_numGenHadTaus_withinAcc_;
   TH1* histogram_numGenLeptonsAndHadTaus_withinAcc_;
   TH1* histogram_numGenJets_withinAcc_;
+  TH1* histogram_numGenLeptonsAndHadTausAndJets_withinAcc_;
   
   TH1* histogram_EventCounter_;
 

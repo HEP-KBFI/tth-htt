@@ -4,6 +4,16 @@ from tthAnalysis.HiggsToTauTau.analyzeConfig import *
 import tthAnalyzeSamples_3l_1tau
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists
 
+def get_hadTau_selection_and_frWeight(hadTau_selection, hadTau_frWeight):
+  hadTau_selection_and_frWeight = hadTau_selection
+  if hadTau_selection in { "Fakeable", "Fakeable_mcClosure" }:
+    if hadTau_frWeight == "enabled":
+      hadTau_selection_and_frWeight += "_wFakeRateWeights"
+    elif hadTau_frWeight == "disabled":
+      hadTau_selection_and_frWeight += "_woFakeRateWeights"
+  hadTau_selection_and_frWeight = hadTau_selection_and_frWeight.replace("|", "_")    
+  return hadTau_selection_and_frWeight
+
 class analyzeConfig_3l_1tau(analyzeConfig):
   """Configuration metadata needed to run analysis in a single go.
 
@@ -196,7 +206,7 @@ class analyzeConfig_3l_1tau(analyzeConfig):
     cfgFile_modified = os.path.join(self.outputDir, DKEY_CFGS, "makePlots_mcClosure_%s_cfg.py" % self.channel)
     create_cfg(self.cfgFile_make_plots_original, cfgFile_modified, lines)
     self.cfgFiles_make_plots_mcClosure_modified.append(cfgFile_modified)
-    
+
   def addToMakefile_hadd_stage1(self, lines_makefile):
     inputFiles_hadd_stage1 = []
     for sample_name, sample_info in self.samples.items():
@@ -206,21 +216,25 @@ class analyzeConfig_3l_1tau(analyzeConfig):
       inputFiles_sample = []
       for lepton_selection in self.lepton_selections:
         for charge_selection in self.charge_selections:
-          for central_or_shift in self.central_or_shifts:
-            inputFiles_jobIds = []                  
-            for jobId in range(len(self.inputFileIds[sample_name])):
-              key_file = getKey(sample_name, lepton_selection, charge_selection, central_or_shift, jobId)
-              if key_file in self.histogramFiles.keys():
-                inputFiles_jobIds.append(self.histogramFiles[key_file])
-            if len(inputFiles_jobIds) > 0:
-              haddFile_jobIds = self.histogramFile_hadd_stage1.replace(".root", "_%s_%s_%s_%s.root" % \
-                (process_name, lepton_selection, charge_selection, central_or_shift))
-              lines_makefile.append("%s: %s" % (haddFile_jobIds, " ".join(inputFiles_jobIds)))
-              lines_makefile.append("\t%s %s" % ("rm -f", haddFile_jobIds))
-              lines_makefile.append("\t%s %s %s" % ("hadd", haddFile_jobIds, " ".join(inputFiles_jobIds)))
-              lines_makefile.append("")
-              inputFiles_sample.append(haddFile_jobIds)
-              self.filesToClean.append(haddFile_jobIds)
+          for hadTau_selection in self.hadTau_selections:
+            for hadTau_frWeight in [ "enabled", "disabled" ]:
+              hadTau_selection_and_frWeight = get_hadTau_selection_and_frWeight(hadTau_selection, hadTau_frWeight)
+              for hadTau_genMatch in self.hadTau_genMatches:
+                for central_or_shift in self.central_or_shifts:
+                  inputFiles_jobIds = []
+                  for jobId in range(len(self.inputFileIds[sample_name])):
+                    key_file = getKey(sample_name, lepton_selection, charge_selection, hadTau_selection, hadTau_frWeight, hadTau_genMatch, central_or_shift, jobId)
+                    if key_file in self.histogramFiles.keys():
+                      inputFiles_jobIds.append(self.histogramFiles[key_file])
+                  if len(inputFiles_jobIds) > 0:
+                    haddFile_jobIds = self.histogramFile_hadd_stage1.replace(".root", "_%s_%s_%s_%s_%s.root" % \
+                      (process_name, lepton_selection, charge_selection, hadTau_selection_and_frWeight, hadTau_genMatch, central_or_shift))
+                    lines_makefile.append("%s: %s" % (haddFile_jobIds, " ".join(inputFiles_jobIds)))
+                    lines_makefile.append("\t%s %s" % ("rm -f", haddFile_jobIds))
+                    lines_makefile.append("\t%s %s %s" % ("hadd", haddFile_jobIds, " ".join(inputFiles_jobIds)))
+                    lines_makefile.append("")
+                    inputFiles_sample.append(haddFile_jobIds)
+                    self.filesToClean.append(haddFile_jobIds)
       if len(inputFiles_sample) > 0:
         haddFile_sample = self.histogramFile_hadd_stage1.replace(".root", "_%s.root" % process_name)
         lines_makefile.append("%s: %s" % (haddFile_sample, " ".join(inputFiles_sample)))
@@ -231,10 +245,10 @@ class analyzeConfig_3l_1tau(analyzeConfig):
         self.filesToClean.append(haddFile_sample)
     lines_makefile.append("%s: %s" % (self.histogramFile_hadd_stage1, " ".join(inputFiles_hadd_stage1)))
     lines_makefile.append("\t%s %s" % ("rm -f", self.histogramFile_hadd_stage1))
-    lines_makefile.append("\t%s %s %s" % ("hadd", self.histogramFile_hadd_stage1, " ".join(inputFiles_hadd_stage1)))
+    lines_makefile.append("\t%s %s %s" % ("hadd", self.histogramFile_hadd_stage1, " ".join(inputFiles_hadd_stage1)))    
     lines_makefile.append("")
-    self.filesToClean.append(self.histogramFile_hadd_stage1)
-
+    self.filesToClean.append(self.histogramFile_hadd_stage1) 
+    
   def addToMakefile_addBackgrounds(self, lines_makefile):
     for key in self.histogramFile_addBackgrounds.keys():
       lines_makefile.append("%s: %s" % (self.histogramFile_addBackgrounds[key], self.histogramFile_hadd_stage1))

@@ -6,7 +6,7 @@ from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists
 
 def get_hadTau_selection_and_frWeight(hadTau_selection, hadTau_frWeight):
   hadTau_selection_and_frWeight = hadTau_selection
-  if hadTau_selection == "Fakeable":
+  if hadTau_selection in { "Fakeable", "Fakeable_mcClosure" }:
     if hadTau_frWeight == "enabled":
       hadTau_selection_and_frWeight += "_wFakeRateWeights"
     elif hadTau_frWeight == "disabled":
