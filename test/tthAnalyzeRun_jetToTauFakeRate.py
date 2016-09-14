@@ -1,12 +1,25 @@
 import os, logging, sys, getpass
 
-import tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_jetToTauFakeRate
+import tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_jetToTauFakeRate_2015
+#import tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_jetToTauFakeRate_2016
 from tthAnalysis.HiggsToTauTau.analyzeConfig_jetToTauFakeRate import analyzeConfig_jetToTauFakeRate
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 
-LUMI = 2301. # 1/pb
+ERA = "2015"
+#ERA = "2016"
 
-version = "2016Sep04"
+samples = None
+LUMI = None
+if ERA == "2015":
+  samples = samples_2015
+  LUMI = 2301. # 1/pb
+elif ERA == "2016":
+  samples = samples_2016
+  LUMI = "XXXXX" # 1/pb
+else:
+  raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
+
+version = "2016Sep14"
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -17,6 +30,7 @@ if __name__ == '__main__':
   analysis = analyzeConfig_jetToTauFakeRate(
     outputDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", version),
     executable_analyze = "analyze_jetToTauFakeRate",
+    samples = samples,
     charge_selections = [ "OS" ],
     jet_minPt = 20.,
     jet_maxPt = 1.e+6,
@@ -59,7 +73,7 @@ if __name__ == '__main__':
 ##       "CMS_ttHl_tauESDown"  
     ],
     max_files_per_job = 30,
-    use_lumi = True, lumi = LUMI,
+    era = ERA, use_lumi = True, lumi = LUMI,
     debug = False,
     running_method = "sbatch",
     num_parallel_jobs = 4,

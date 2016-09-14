@@ -12,7 +12,7 @@
 class RecoMuonSelectorTight
 {
  public:
-  RecoMuonSelectorTight(int index = -1, bool debug = false);
+  RecoMuonSelectorTight(int era, int index = -1, bool debug = false);
   ~RecoMuonSelectorTight() {}
 
   // enable/disable tight charge cut
@@ -26,6 +26,7 @@ class RecoMuonSelectorTight
   bool operator()(const RecoMuon& muon) const;
 
  protected: 
+  int era_;
   int index_;
   bool debug_;
 
@@ -45,9 +46,9 @@ class RecoMuonSelectorTight
 class RecoMuonCollectionSelectorTight
 {
  public:
-  RecoMuonCollectionSelectorTight(int index = -1, bool debug = false)
+  RecoMuonCollectionSelectorTight(int era, int index = -1, bool debug = false)
     : selIndex_(index)
-    , selector_(index, debug)
+    , selector_(era, index, debug)
   {}
   ~RecoMuonCollectionSelectorTight() {}
 

@@ -1,9 +1,13 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorTight.h" // RecoElectronSelectorTight
 
-#include <cmath> // fabs
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2015, kEra_2016
 
-RecoElectronSelectorTight::RecoElectronSelectorTight(int index, bool debug)
-  : apply_offline_e_trigger_cuts_(true)
+#include <cmath> // fabs
+#include <assert.h> // assert
+
+RecoElectronSelectorTight::RecoElectronSelectorTight(int era, int index, bool debug)
+  : era_(era)
+  , apply_offline_e_trigger_cuts_(true)
   , debug_(debug)
   , min_pt_(10.) // 15 GeV for 2lss channel, 10 GeV for 3l channel (cf. Table 13 of AN-2015/321)
   , max_absEta_(2.5)
@@ -20,12 +24,14 @@ RecoElectronSelectorTight::RecoElectronSelectorTight(int index, bool debug)
   , max_deltaPhi_trig_({ 0.04, 0.04, 0.07 })  
   , min_OoEminusOoP_trig_(-0.05)   
   , max_OoEminusOoP_trig_({ 0.010, 0.010, 0.005 })      
-  , max_jetBtagCSV_(0.89)  
   , apply_tightCharge_(true)
   , apply_conversionVeto_(true)  
   , max_nLostHits_(0)
   , min_mvaTTH_(0.75)  
 {
+  if      ( era_ == kEra_2015 ) max_jetBtagCSV_ = 0.89;
+  else if ( era_ == kEra_2016 ) max_jetBtagCSV_ = 0.80;
+  else assert(0);
   assert(min_mvaRawPOG_.size() == 3);
   assert(binning_absEta_.size() == 2);
   assert(max_sigmaEtaEta_trig_.size() == 3);

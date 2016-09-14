@@ -12,7 +12,7 @@
 class RecoMuonSelectorFakeable
 {
  public:
-  RecoMuonSelectorFakeable(int index = -1, bool debug = false);
+  RecoMuonSelectorFakeable(int era, int index = -1, bool debug = false);
   ~RecoMuonSelectorFakeable() {}
 
   /**
@@ -22,6 +22,8 @@ class RecoMuonSelectorFakeable
   bool operator()(const RecoMuon& muon) const;
 
  protected: 
+  int era_;
+
   Double_t min_pt_;         ///< lower cut threshold on pT
   Double_t max_absEta_;     ///< upper cut threshold on absolute value of eta
   Double_t max_dxy_;        ///< upper cut threshold on d_{xy}, distance in the transverse plane w.r.t PV
@@ -41,7 +43,35 @@ class RecoMuonSelectorFakeable
   bool apply_tightCharge_;  ///< apply (True) or do not apply (False) tight charge cut
 };
 
-typedef ParticleCollectionSelector<RecoMuon, RecoMuonSelectorFakeable> RecoMuonCollectionSelectorFakeable;
+class RecoMuonCollectionSelectorFakeable
+{
+ public:
+  RecoMuonCollectionSelectorFakeable(int era, int index = -1, bool debug = false)
+    : selIndex_(index)
+    , selector_(era, index, debug)
+  {}
+  ~RecoMuonCollectionSelectorFakeable() {}
+
+  std::vector<const RecoMuon*> operator()(const std::vector<const RecoMuon*>& muons) const
+  {
+    std::vector<const RecoMuon*> selMuons;
+    int idx = 0;
+    for ( typename std::vector<const RecoMuon*>::const_iterator muon = muons.begin();
+	  muon != muons.end(); ++muon ) {
+      if ( selector_(**muon) ) {
+	if ( idx == selIndex_ || selIndex_ == -1 ) {
+	  selMuons.push_back(*muon);
+	}
+	++idx;
+      }
+    }
+    return selMuons;
+  }
+  
+ protected: 
+  int selIndex_;
+  RecoMuonSelectorFakeable selector_;
+};
 
 #endif // tthAnalysis_HiggsToTauTau_RecoMuonCollectionSelectorFakeable_h
 

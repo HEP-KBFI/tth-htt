@@ -11,7 +11,7 @@
 class RecoElectronSelectorTight
 {
  public:
-  RecoElectronSelectorTight(int index = -1, bool debug = false);
+  RecoElectronSelectorTight(int era, int index = -1, bool debug = false);
   ~RecoElectronSelectorTight() {}
 
   /**
@@ -37,6 +37,7 @@ class RecoElectronSelectorTight
   bool operator()(const RecoElectron& electron) const;
 
  protected: 
+  int era_;
   bool apply_offline_e_trigger_cuts_;
   bool debug_;
 
@@ -69,9 +70,9 @@ class RecoElectronSelectorTight
 class RecoElectronCollectionSelectorTight
 {
  public:
-  RecoElectronCollectionSelectorTight(int index = -1, bool debug = false)
+  RecoElectronCollectionSelectorTight(int era, int index = -1, bool debug = false)
     : selIndex_(index)
-    , selector_(index, debug)
+    , selector_(era, index, debug)
   {}
   ~RecoElectronCollectionSelectorTight() {}
 

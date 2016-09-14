@@ -1,7 +1,6 @@
 import logging
 
 from tthAnalysis.HiggsToTauTau.analyzeConfig import *
-import tthAnalyzeSamples_0l_2tau
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists
 
 def get_hadTau_selection_and_frWeight(hadTau_selection, hadTau_frWeight):
@@ -27,14 +26,14 @@ class analyzeConfig_0l_2tau(analyzeConfig):
   for documentation of further Args.
   
   """
-  def __init__(self, outputDir, executable_analyze, hadTau_selections, hadTau_charge_selections, central_or_shifts,
-               max_files_per_job, use_lumi, lumi, debug, running_method, num_parallel_jobs, 
+  def __init__(self, outputDir, executable_analyze, samples, hadTau_selections, hadTau_charge_selections, central_or_shifts,
+               max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs, 
                executable_addBackgrounds, executable_addBackgroundJetToTauFakes, histograms_to_fit, executable_prep_dcard="prepareDatacard"):
     analyzeConfig.__init__(self, outputDir, executable_analyze, "0l_2tau", central_or_shifts,
-      max_files_per_job, use_lumi, lumi, debug, running_method, num_parallel_jobs, 
+      max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs, 
       histograms_to_fit)
 
-    self.samples = tthAnalyzeSamples_0l_2tau.samples
+    self.samples = samples
 
     self.hadTau_selections = hadTau_selections
     self.hadTau_charge_selections = hadTau_charge_selections
@@ -89,9 +88,9 @@ class analyzeConfig_0l_2tau(analyzeConfig):
     self.cfgFile_make_plots_mcClosure_original = os.path.join(self.workingDir, "makePlots_mcClosure_cfg.py")
     self.cfgFiles_make_plots_mcClosure_modified = []
     
-  def createCfg_analyze(self, inputFiles, outputFile, sample_category, triggers,
+  def createCfg_analyze(self, inputFiles, outputFile, sample_category, era, triggers,
                         hadTau_selection, hadTau_genMatch, apply_hadTauGenMatching, hadTau_frWeight, hadTau_charge_selection,
-                        is_mc, central_or_shift, lumi_scale, cfgFile_modified):
+                        is_mc, central_or_shift, lumi_scale, apply_trigger_bits, cfgFile_modified):
     """Create python configuration file for the analyze_0l_2tau executable (analysis code)
 
     Args:
@@ -105,7 +104,8 @@ class analyzeConfig_0l_2tau(analyzeConfig):
     lines = []
     lines.append("process.fwliteInput.fileNames = cms.vstring(%s)" % inputFiles)
     lines.append("process.fwliteOutput.fileName = cms.string('%s')" % outputFile)
-    lines.append("process.analyze_0l_2tau.process = cms.string('%s')" % sample_category)    
+    lines.append("process.analyze_0l_2tau.process = cms.string('%s')" % sample_category)
+    lines.append("process.analyze_0l_2tau.era = cms.string('%s')" % era)
     lines.append("process.analyze_0l_2tau.hadTauChargeSelection = cms.string('%s')" % hadTau_charge_selection)
     lines.append("process.analyze_0l_2tau.hadTauSelection = cms.string('%s')" % hadTau_selection)
     lines.append("process.analyze_0l_2tau.hadTauGenMatch = cms.string('%s')" % hadTau_genMatch)
@@ -120,6 +120,7 @@ class analyzeConfig_0l_2tau(analyzeConfig):
     lines.append("process.analyze_0l_2tau.isMC = cms.bool(%s)" % is_mc)
     lines.append("process.analyze_0l_2tau.central_or_shift = cms.string('%s')" % central_or_shift)
     lines.append("process.analyze_0l_2tau.lumiScale = cms.double(%f)" % lumi_scale)
+    lines.append("process.analyze_0l_2tau.apply_trigger_bits = cms.bool(%s)" % apply_trigger_bits)
     create_cfg(self.cfgFile_analyze_original, cfgFile_modified, lines)
 
   def createCfg_addBackgrounds(self, inputFile, outputFile, cfgFile_modified, categories, processes_input, process_output):
@@ -303,6 +304,7 @@ class analyzeConfig_0l_2tau(analyzeConfig):
       lumi_scale = 1. if not (self.use_lumi and is_mc) else sample_info["xsection"] * self.lumi / sample_info["nof_events"]
       sample_category = sample_info["sample_category"]
       triggers = sample_info["triggers"]
+      apply_trigger_bits = (is_mc and (self.era == "2015" or (self.era == "2016" and sample_info["reHLT"]))) or not is_mc
 
       for hadTau_selection in self.hadTau_selections:
         for hadTau_frWeight in [ "enabled", "disabled" ]:
@@ -333,9 +335,9 @@ class analyzeConfig_0l_2tau(analyzeConfig):
                   self.logFiles_analyze[key_file] = os.path.join(self.dirs[key_dir][DKEY_LOGS], "analyze_%s_%s_%s_%s_%s_%s_%i.log" % \
                     (self.channel, process_name, hadTau_selection_and_frWeight, hadTau_genMatch, hadTau_charge_selection, central_or_shift, jobId))
                 
-                  self.createCfg_analyze(inputFiles, self.histogramFiles[key_file], sample_category, triggers,
+                  self.createCfg_analyze(inputFiles, self.histogramFiles[key_file], sample_category, self.era, triggers,
                     hadTau_selection, hadTau_genMatch, self.apply_hadTauGenMatching, hadTau_frWeight, hadTau_charge_selection,
-                    is_mc, central_or_shift, lumi_scale, self.cfgFiles_analyze_modified[key_file])
+                    is_mc, central_or_shift, lumi_scale, apply_trigger_bits, self.cfgFiles_analyze_modified[key_file])
                 
     if self.is_sbatch:
       logging.info("Creating script for submitting '%s' jobs to batch system" % self.executable_analyze)

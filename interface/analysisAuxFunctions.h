@@ -13,6 +13,9 @@ const double z_window = 10.;
 const double met_coef =  0.00397;
 const double mht_coef =  0.00265;
 
+//--- declare data-taking periods
+enum { kEra_2015, kEra_2016 };
+
 /**
  * @brief Auxiliary function used for sorting leptons by decreasing pT
  * @param Given pair of leptons

@@ -1,7 +1,6 @@
 import logging
 
 from tthAnalysis.HiggsToTauTau.analyzeConfig import *
-import tthAnalyzeSamples_3l_1tau
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists
 
 def get_hadTau_selection_and_frWeight(hadTau_selection, hadTau_frWeight):
@@ -26,15 +25,15 @@ class analyzeConfig_3l_1tau(analyzeConfig):
   for documentation of further Args.
 
   """
-  def __init__(self, outputDir, executable_analyze, lepton_selections, hadTau_selections, charge_selections, central_or_shifts,
-               max_files_per_job, use_lumi, lumi, debug, running_method, num_parallel_jobs, 
+  def __init__(self, outputDir, executable_analyze, samples, lepton_selections, hadTau_selections, charge_selections, central_or_shifts,
+               max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs, 
                executable_addBackgrounds, executable_addBackgroundJetToTauFakes, histograms_to_fit, select_rle_output = False, executable_prep_dcard="prepareDatacard",
                select_root_output = False):
     analyzeConfig.__init__(self, outputDir, executable_analyze, "3l_1tau", central_or_shifts,
-      max_files_per_job, use_lumi, lumi, debug, running_method, num_parallel_jobs, 
+      max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs, 
       histograms_to_fit)
 
-    self.samples = tthAnalyzeSamples_3l_1tau.samples
+    self.samples = samples
 
     self.lepton_selections = lepton_selections
 
@@ -96,9 +95,9 @@ class analyzeConfig_3l_1tau(analyzeConfig):
     self.select_rle_output = select_rle_output
     self.select_root_output = select_root_output
 
-  def createCfg_analyze(self, inputFiles, outputFile, sample_category, triggers, lepton_selection,
-                        hadTau_selection, hadTau_genMatch, apply_hadTauGenMatching, hadTau_frWeight, charge_selection,
-                        is_mc, central_or_shift, lumi_scale, cfgFile_modified, rle_output_file, root_output_file):
+  def createCfg_analyze(self, inputFiles, outputFile, sample_category, era, triggers,
+                        lepton_selection, hadTau_selection, hadTau_genMatch, apply_hadTauGenMatching, hadTau_frWeight, charge_selection,
+                        is_mc, central_or_shift, lumi_scale, apply_trigger_bits, cfgFile_modified, rle_output_file, root_output_file):
     """Create python configuration file for the analyze_3l_1tau executable (analysis code)
 
     Args:
@@ -113,6 +112,7 @@ class analyzeConfig_3l_1tau(analyzeConfig):
     lines.append("process.fwliteInput.fileNames = cms.vstring(%s)" % inputFiles)
     lines.append("process.fwliteOutput.fileName = cms.string('%s')" % outputFile)
     lines.append("process.analyze_3l_1tau.process = cms.string('%s')" % sample_category)
+    lines.append("process.analyze_3l_1tau.era = cms.string('%s')" % era)
     lines.append("process.analyze_3l_1tau.use_triggers_1e = cms.bool(%s)" % ("1e" in triggers))
     lines.append("process.analyze_3l_1tau.use_triggers_2e = cms.bool(%s)" % ("2e" in triggers))
     lines.append("process.analyze_3l_1tau.use_triggers_1mu = cms.bool(%s)" % ("1mu" in triggers))
@@ -132,6 +132,7 @@ class analyzeConfig_3l_1tau(analyzeConfig):
     lines.append("process.analyze_3l_1tau.isMC = cms.bool(%s)" % is_mc)
     lines.append("process.analyze_3l_1tau.central_or_shift = cms.string('%s')" % central_or_shift)
     lines.append("process.analyze_3l_1tau.lumiScale = cms.double(%f)" % lumi_scale)
+    lines.append("process.analyze_3l_1tau.apply_trigger_bits = cms.bool(%s)" % apply_trigger_bits)
     lines.append("process.analyze_3l_1tau.selEventsFileName_output = cms.string('%s')" % rle_output_file)
     lines.append("process.analyze_3l_1tau.selEventsTFileName = cms.string('%s')" % root_output_file)
     create_cfg(self.cfgFile_analyze_original, cfgFile_modified, lines)
@@ -313,6 +314,7 @@ class analyzeConfig_3l_1tau(analyzeConfig):
       lumi_scale = 1. if not (self.use_lumi and is_mc) else sample_info["xsection"] * self.lumi / sample_info["nof_events"]
       sample_category = sample_info["sample_category"]
       triggers = sample_info["triggers"]
+      apply_trigger_bits = (is_mc and (self.era == "2015" or (self.era == "2016" and sample_info["reHLT"]))) or not is_mc
 
       for lepton_selection in self.lepton_selections:
         for hadTau_selection in self.hadTau_selections:
@@ -349,9 +351,9 @@ class analyzeConfig_3l_1tau(analyzeConfig):
                   self.rootOutputFiles[key_file] = os.path.join(self.dirs[key_dir][DKEY_ROOT], "out_%s_%s_%s_%s_%s_%s_%s_%s_%i.root" % \
                     (self.channel, process_name, lepton_selection, hadTau_selection, hadTau_frWeight, hadTau_genMatch, charge_selection, central_or_shift, jobId)) if self.select_root_output else ""
                     
-                  self.createCfg_analyze(inputFiles, self.histogramFiles[key_file], sample_category, triggers,
+                  self.createCfg_analyze(inputFiles, self.histogramFiles[key_file], sample_category, self.era, triggers,
                     lepton_selection, hadTau_selection, hadTau_genMatch, self.apply_hadTauGenMatching, hadTau_frWeight, charge_selection,
-                    is_mc, central_or_shift, lumi_scale, self.cfgFiles_analyze_modified[key_file],
+                    is_mc, central_or_shift, lumi_scale, apply_trigger_bits, self.cfgFiles_analyze_modified[key_file],
                     self.rleOutputFiles[key_file], self.rootOutputFiles[key_file])
 
     if self.is_sbatch:

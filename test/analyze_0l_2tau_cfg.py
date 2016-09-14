@@ -20,6 +20,8 @@ process.analyze_0l_2tau = cms.PSet(
 
     process = cms.string('ttH'),
 
+    era = cms.string('2015'),
+
     triggers = cms.vstring(""),
     applyTriggers = cms.bool(False),
         
@@ -53,6 +55,7 @@ process.analyze_0l_2tau = cms.PSet(
     isMC = cms.bool(False),
     central_or_shift = cms.string('central'),
     lumiScale = cms.double(1.),
+    apply_trigger_bits = cms.bool(True),
     
     selEventsFileName_input = cms.string(''),
     selEventsFileName_output = cms.string('')

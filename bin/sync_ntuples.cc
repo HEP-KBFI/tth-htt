@@ -56,6 +56,7 @@
 //#include "tthAnalysis/HiggsToTauTau/interface/MEtHistManager.h" // MEtHistManager
 //#include "tthAnalysis/HiggsToTauTau/interface/EvtHistManager_2lss_1tau.h" // EvtHistManager_2lss_1tau
 //#include "tthAnalysis/HiggsToTauTau/interface/leptonTypes.h" // getLeptonType, kElectron, kMuon
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // isHigherPt, isMatched
 //#include "tthAnalysis/HiggsToTauTau/interface/backgroundEstimation.h" // prob_chargeMisId
 //#include "tthAnalysis/HiggsToTauTau/interface/hltPath.h" // hltPath, create_hltPaths, hltPaths_setBranchAddresses, hltPaths_isTriggered, hltPaths_delete
 //#include "tthAnalysis/HiggsToTauTau/interface/data_to_MC_corrections.h"
@@ -73,23 +74,7 @@
 typedef math::PtEtaPhiMLorentzVector LV;
 typedef std::vector<std::string> vstring;
 
-//--- declare constants
-//const double z_mass   = 91.1876;
-//const double z_window = 10.;
-const double met_coef =  0.00397;
-const double mht_coef =  0.00265;
-
 //enum { k2epp_btight, k2epp_bloose, k2emm_btight, k2emm_bloose, k1e1mupp_btight, k1e1mupp_bloose, k1e1mumm_btight, k1e1mumm_bloose, k2mupp_btight, k2mupp_bloose, k2mumm_btight, k2mumm_bloose };
-
-/**
- * @brief Auxiliary function used for sorting leptons by decreasing pT
- * @param Given pair of leptons
- * @return True, if first lepton has higher pT; false if second lepton has higher pT
- */
-bool isHigherPt(const GenParticle* particle1, const GenParticle* particle2)
-{
-  return (particle1->pt_ > particle2->pt_);
-}
 
 /**
  * @brief Produce datacard and control plots for 2lss_1tau categories.
@@ -121,6 +106,9 @@ int main(int argc, char* argv[])
   const std::string outputTreeName = cfg_analyze.getParameter<std::string>("outputTreeName");
 
 //  std::string process_string = cfg_analyze.getParameter<std::string>("process");
+
+//--- declare data-taking period
+  int era = kEra_2015;
 
 //  vstring triggerNames_1e = cfg_analyze.getParameter<vstring>("triggers_1e");
 //  std::vector<hltPath*> triggers_1e = create_hltPaths(triggerNames_1e);
@@ -248,11 +236,11 @@ int main(int argc, char* argv[])
   inputTree->SetBranchAddress(MET_PHI_KEY, &met_phi);
 
 //--- declare particle collections
-  RecoMuonReader* muonReader = new RecoMuonReader("nselLeptons", "selLeptons");
+  RecoMuonReader* muonReader = new RecoMuonReader(era, "nselLeptons", "selLeptons");
   muonReader->setBranchAddresses(inputTree);
 //  RecoMuonCollectionGenMatcher muonGenMatcher;
   RecoMuonCollectionSelectorLoose preselMuonSelector;
-  RecoMuonCollectionSelectorFakeable fakeableMuonSelector;
+  RecoMuonCollectionSelectorFakeable fakeableMuonSelector(era);
   RecoMuonCollectionSelectorCutBased cutBasedSelector;
   RecoMuonCollectionSelectorMVABased mvaBasedSelector;
 
@@ -261,7 +249,7 @@ int main(int argc, char* argv[])
 //  RecoElectronCollectionGenMatcher electronGenMatcher;
   RecoElectronCollectionCleaner electronCleaner(0.05); // KE: 0.3 -> 0.05
   RecoElectronCollectionSelectorLoose preselElectronSelector;
-  RecoElectronCollectionSelectorFakeable fakeableElectronSelector;
+  RecoElectronCollectionSelectorFakeable fakeableElectronSelector(era);
   RecoElectronCollectionSelectorCutBased cutBasedElectronSelector;
   RecoElectronCollectionSelectorMVABased mvaBasedElectronSelector;
 

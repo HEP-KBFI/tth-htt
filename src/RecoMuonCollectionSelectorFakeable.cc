@@ -1,9 +1,12 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorFakeable.h" // RecoMuonSelectorFakeable
 
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2015, kEra_2016
+
 #include <cmath> // fabs
 
-RecoMuonSelectorFakeable::RecoMuonSelectorFakeable(int index, bool debug)
-  : min_pt_(10.)
+RecoMuonSelectorFakeable::RecoMuonSelectorFakeable(int era, int index, bool debug)
+  : era_(era)
+  , min_pt_(10.)
   , max_absEta_(2.4)
   , max_dxy_(0.05)
   , max_dz_(0.1)
@@ -12,10 +15,13 @@ RecoMuonSelectorFakeable::RecoMuonSelectorFakeable(int index, bool debug)
   , apply_looseIdPOG_(true)
   , binning_mvaTTH_({ 0.75 })
   , min_jetPtRatio_({ 0.30, -1.e+3 })   
-  , max_jetBtagCSV_({ 0.605, 0.89 })  
   , apply_mediumIdPOG_(false)
   , apply_tightCharge_(false)
-{}
+{
+  if      ( era_ == kEra_2015 ) max_jetBtagCSV_ = { 0.605, 0.89 };
+  else if ( era_ == kEra_2016 ) max_jetBtagCSV_ = { 0.460, 0.80 };
+  else assert(0);
+}
 
 bool RecoMuonSelectorFakeable::operator()(const RecoMuon& muon) const
 {

@@ -241,7 +241,7 @@ int main(int argc, char* argv[])
 	if      ( branch_format[branchName] == kFixed      ) writeFloat(line, value, branch_precision[branchName], isLast);
 	else if ( branch_format[branchName] == kScientific ) writeFloat_scientific(line, value, isLast);
 	else assert(0);
-      } else if ( branch->type_ == branchEntryType::Double ) {
+      } else if ( branch->type_ == branchEntryType::kDouble ) {
 	double value = branch->getValue_double();
 	if      ( branch_format[branchName] == kFixed      ) writeDouble(line, value, branch_precision[branchName], isLast);
 	else if ( branch_format[branchName] == kScientific ) writeDouble_scientific(line, value, isLast);

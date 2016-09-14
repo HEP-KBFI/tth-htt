@@ -20,6 +20,8 @@ process.analyze_WZctrl = cms.PSet(
 
     process = cms.string('ttH'),
 
+    era = cms.string('2015'),
+
     triggers_1e = cms.vstring("HLT_BIT_HLT_Ele23_WPLoose_Gsf_v"),
     use_triggers_1e = cms.bool(True),
     triggers_2e = cms.vstring("HLT_BIT_HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v"),
@@ -40,6 +42,7 @@ process.analyze_WZctrl = cms.PSet(
     isMC = cms.bool(False),
     central_or_shift = cms.string('central'),
     lumiScale = cms.double(1.),
+    apply_trigger_bits = cms.bool(True),
     
     selEventsFileName_input = cms.string(''),
     selEventsFileName_output = cms.string('')

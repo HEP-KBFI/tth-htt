@@ -2,13 +2,16 @@
 
 #include "FWCore/Utilities/interface/Exception.h"
 
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2015, kEra_2016
+
 #include <TString.h> // Form
 
 std::map<std::string, int> RecoMuonReader::numInstances_;
 std::map<std::string, RecoMuonReader*> RecoMuonReader::instances_;
 
-RecoMuonReader::RecoMuonReader()
-  : branchName_num_("nselLeptons")
+RecoMuonReader::RecoMuonReader(int era)
+  : era_(era)
+  , branchName_num_("nselLeptons")
   , branchName_obj_("selLeptons")
   , leptonReader_(0)
   , looseIdPOG_(0)
@@ -23,8 +26,9 @@ RecoMuonReader::RecoMuonReader()
   setBranchNames();
 }
 
-RecoMuonReader::RecoMuonReader(const std::string& branchName_num, const std::string& branchName_obj)
-  : branchName_num_(branchName_num)
+RecoMuonReader::RecoMuonReader(int era, const std::string& branchName_num, const std::string& branchName_obj)
+  : era_(era)
+  , branchName_num_(branchName_num)
   , branchName_obj_(branchName_obj)
   , leptonReader_(0)
   , looseIdPOG_(0)
@@ -60,7 +64,11 @@ void RecoMuonReader::setBranchNames()
 {
   if ( numInstances_[branchName_obj_] == 0 ) {
     branchName_looseIdPOG_ = Form("%s_%s", branchName_obj_.data(), "looseIdPOG");
-    branchName_mediumIdPOG_ = Form("%s_%s", branchName_obj_.data(), "mediumMuonId");
+    // CV: for 2016 data, switch to short term Muon POG recommendation for ICHEP,
+    //     given at https://twiki.cern.ch/twiki/bin/view/CMS/SWGuideMuonIdRun2#Short_Term_Medium_Muon_Definitio
+    if      ( era_ == kEra_2015 ) branchName_mediumIdPOG_ = Form("%s_%s", branchName_obj_.data(), "mediumMuonId");
+    else if ( era_ == kEra_2016 ) branchName_mediumIdPOG_ = Form("%s_%s", branchName_obj_.data(), "mediumIdPOG_ICHEP2016");
+    else assert(0);
 #ifdef DPT_DIV_PT
     branchName_dpt_div_pt_ = Form("%s_%s", branchName_obj_.data(), "dpt_div_pt");
 #endif

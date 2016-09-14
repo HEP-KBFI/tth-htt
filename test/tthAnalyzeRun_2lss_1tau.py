@@ -1,12 +1,25 @@
 import os, logging, sys, getpass
 
-import tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2lss_1tau
+import tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2lss_1tau_2015
+#import tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2lss_1tau_2016
 from tthAnalysis.HiggsToTauTau.analyzeConfig_2lss_1tau import analyzeConfig_2lss_1tau
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 
-LUMI = 2301. # 1/pb
+ERA = "2015"
+#ERA = "2016"
 
-version = "2016Sep07_dR03mvaTight"
+samples = None
+LUMI = None
+if ERA == "2015":
+  samples = samples_2015
+  LUMI = 2301. # 1/pb
+elif ERA == "2016":
+  samples = samples_2016
+  LUMI = "XXXXX" # 1/pb
+else:
+  raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
+
+version = "2016Sep14_dR03mvaTight"
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -15,12 +28,13 @@ if __name__ == '__main__':
     format = '%(asctime)s - %(levelname)s: %(message)s')
 
   analysis = analyzeConfig_2lss_1tau(
-    outputDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", version),
+    outputDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", ERA, version),
     executable_analyze = "analyze_2lss_1tau",
+    samples = samples,
     lepton_selections = [ "Tight", "Fakeable" ],
     lepton_charge_selections = [ "OS", "SS" ],
     ##hadTau_selection = "dR05isoLoose",
-    hadTau_selection = "dR03mvaTight",
+    hadTau_selections = [ "Tight|dR03mvaTight", "Fakeable", "Fakeable_mcClosure" ],
     central_or_shifts = [ 
       "central",
 ##       "CMS_ttHl_btag_HFUp", 
@@ -45,7 +59,7 @@ if __name__ == '__main__':
 ##       "CMS_ttHl_tauESDown"  
     ],
     max_files_per_job = 30,
-    use_lumi = True, lumi = LUMI,
+    era = ERA, use_lumi = True, lumi = LUMI,
     debug = False,
     running_method = "sbatch",
     num_parallel_jobs = 4,
