@@ -53,7 +53,7 @@ struct branchEntryType
   }
   void copyInputToOutputValue();
   std::string name_;
-  enum { kInt, kFloat, kChar };
+  enum { kInt, kFloat, kDouble, kChar };
   int type_;
   std::string name_and_type_;
   int idxColumn_;
