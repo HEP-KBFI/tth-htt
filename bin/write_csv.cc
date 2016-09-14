@@ -44,7 +44,7 @@ namespace
     if ( !isLast ) outputStream << ",";
   }
   
-  void writeFloat(std::ostream& outputStream, Double_t value, int precision, bool isLast)
+  void writeFloat(std::ostream& outputStream, Float_t value, int precision, bool isLast)
   {
     std::ostringstream value_string_tmp;
     value_string_tmp << std::setprecision(precision);
@@ -62,7 +62,35 @@ namespace
     if ( !isLast ) outputStream << ",";
   }
   
-  void writeFloat_scientific(std::ostream& outputStream, Double_t value, bool isLast)
+  void writeFloat_scientific(std::ostream& outputStream, Float_t value, bool isLast)
+  {
+    std::ostringstream value_string;    
+    value_string << std::setprecision(3);
+    value_string << std::scientific;
+    value_string << value;
+    outputStream << value_string.str();
+    if ( !isLast ) outputStream << ",";
+  }
+
+  void writeDouble(std::ostream& outputStream, Double_t value, int precision, bool isLast)
+  {
+    std::ostringstream value_string_tmp;
+    value_string_tmp << std::setprecision(precision);
+    value_string_tmp << std::fixed;
+    value_string_tmp << value;
+    std::string value_string = value_string_tmp.str();
+    for ( int iDigit = 0; iDigit < (precision - 1); ++iDigit ) {
+      if ( value_string[value_string.length() - 1] == '0' ) {
+	value_string = std::string(value_string, 0, value_string.length() - 1);
+      } else {
+	break;
+      }
+    }
+    outputStream << value_string;
+    if ( !isLast ) outputStream << ",";
+  }
+  
+  void writeDouble_scientific(std::ostream& outputStream, Double_t value, bool isLast)
   {
     std::ostringstream value_string;    
     value_string << std::setprecision(3);
@@ -160,14 +188,14 @@ int main(int argc, char* argv[])
     std::cout << "adding branch = " << (*branchName_to_write) << std::endl;
     if ( contains(name_and_type, "/I") ) {
       addBranch(branches, *branchName_to_write, branchEntryType::kInt, idxColumn);
-    } else if ( contains(name_and_type, "/D") ) {
+    } else if ( contains(name_and_type, "/F") ) {
       addBranch(branches, *branchName_to_write, branchEntryType::kFloat, idxColumn);
-      int format = kFixed;
-      if ( contains(*branchName_to_write, "svFit") && contains(*branchName_to_write, "Lmax") ) format = kScientific;
-      branch_format[*branchName_to_write] = format;
-      int precision = 3;
-      if ( (*branchName_to_write) == "Weight" or (*branchName_to_write) == "OrigWeight" ) precision = 14;
-      branch_precision[*branchName_to_write] = precision;
+      branch_format[*branchName_to_write] = kScientific;
+      branch_precision[*branchName_to_write] = 6;
+    } else if ( contains(name_and_type, "/D") ) {
+      addBranch(branches, *branchName_to_write, branchEntryType::kDouble, idxColumn);
+      branch_format[*branchName_to_write] = kScientific;
+      branch_precision[*branchName_to_write] = 6;      
     } else if ( contains(name_and_type, "/C") ) {
       addBranch(branches, *branchName_to_write, branchEntryType::kChar, idxColumn);
     } else throw cms::Exception("write_csv") 
@@ -209,9 +237,14 @@ int main(int argc, char* argv[])
       if ( branch->type_ == branchEntryType::kInt ) {
 	writeInt(line, branch->getValue_int(), isLast);
       } else if ( branch->type_ == branchEntryType::kFloat ) {
-	double value = branch->getValue_float();
+	float value = branch->getValue_float();
 	if      ( branch_format[branchName] == kFixed      ) writeFloat(line, value, branch_precision[branchName], isLast);
 	else if ( branch_format[branchName] == kScientific ) writeFloat_scientific(line, value, isLast);
+	else assert(0);
+      } else if ( branch->type_ == branchEntryType::Double ) {
+	double value = branch->getValue_double();
+	if      ( branch_format[branchName] == kFixed      ) writeDouble(line, value, branch_precision[branchName], isLast);
+	else if ( branch_format[branchName] == kScientific ) writeDouble_scientific(line, value, isLast);
 	else assert(0);
       } else if ( branch->type_ == branchEntryType::kChar ) {
 	writeChar(line, branch->getValue_char(), isLast);

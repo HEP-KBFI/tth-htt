@@ -19,9 +19,13 @@ struct branchEntryType
   { 
     return inputValue_int_; 
   }
-  Double_t getValue_float() const 
+  Float_t getValue_float() const 
   { 
     return inputValue_float_; 
+  }
+  Double_t getValue_double() const 
+  { 
+    return inputValue_double_; 
   }
   Char_t getValue_char() const 
   { 
@@ -32,10 +36,15 @@ struct branchEntryType
     inputValue_int_ = value; 
     outputValue_int_ = value; 
   }
-  void setValue_float(Double_t value) 
+  void setValue_float(Float_t value) 
   { 
     inputValue_float_ = value;
     outputValue_float_ = value;
+  }
+  void setValue_double(Double_t value) 
+  { 
+    inputValue_double_ = value;
+    outputValue_double_ = value;
   }
   void setValue_char(Char_t value) 
   { 
@@ -49,10 +58,12 @@ struct branchEntryType
   std::string name_and_type_;
   int idxColumn_;
   Int_t inputValue_int_;
-  Double_t inputValue_float_;
+  Float_t inputValue_float_;
+  Double_t inputValue_double_;
   Char_t inputValue_char_;
   Int_t outputValue_int_;
-  Double_t outputValue_float_;
+  Float_t outputValue_float_;
+  Double_t outputValue_double_;
   Char_t outputValue_char_;
 };
 
