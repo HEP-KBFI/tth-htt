@@ -32,7 +32,7 @@ if __name__ == '__main__':
     executable_analyze = "analyze_1l_1tau",
     samples = samples,
     charge_selections = [ "OS", "SS" ],
-    hadTau_selections = [ "Tight|dR03mvaTight", "Fakeable", "Fakeable_mcClosure" ],
+    hadTau_selections = [ "Tight|dR03mvaTight", "Fakeable|dR03mvaTight", "Fakeable_mcClosure|dR03mvaTight" ],
     ##hadTau_selections = [ "Tight|dR03mvaTight" ],
     central_or_shifts = [ 
       "central",

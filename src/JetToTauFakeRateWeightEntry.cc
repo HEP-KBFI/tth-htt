@@ -8,7 +8,7 @@ namespace
 {
   TGraphAsymmErrors* loadGraph(TFile* inputFile, const std::string& graphName, const std::string& etaBin, const std::string& hadTauSelection)
   {
-    std::string graphName_etaBin = TString(graphName.data()).ReplaceAll("$particleEtaBin", etaBin.data()).ReplaceAll("$hadTauSelection", hadTauSelection.data()).Data();
+    std::string graphName_etaBin = TString(graphName.data()).ReplaceAll("$etaBin", etaBin.data()).ReplaceAll("$hadTauSelection", hadTauSelection.data()).Data();
     TGraphAsymmErrors* graph = dynamic_cast<TGraphAsymmErrors*>(inputFile->Get(graphName_etaBin.data()));
     if ( !graph ) throw cms::Exception("JetToTauFakeRateWeightEntry") 
       << "Failed to load graph = " << graphName_etaBin << " from file = " << inputFile->GetName() << " !!\n";

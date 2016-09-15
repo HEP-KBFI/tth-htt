@@ -33,7 +33,8 @@ if __name__ == '__main__':
     samples = samples,
     ##lepton_selections = [ "Tight", "Fakeable" ],
     lepton_selections = [ "Tight" ],
-    hadTau_selections = [ "Tight|dR03mvaTight", "Fakeable", "Fakeable_mcClosure" ],
+    hadTau_selections = [ "Tight|dR03mvaTight", "Fakeable|dR03mvaTight", "Fakeable_mcClosure|dR03mvaTight" ],
+    ##hadTau_selections = [ "Tight|dR03mvaTight" ],
     charge_selections = [ "OS", "SS" ],
     central_or_shifts = [ 
       "central",

@@ -153,7 +153,16 @@ int main(int argc, char* argv[])
   else throw cms::Exception("analyze_2lss_1tau") 
     << "Invalid Configuration parameter 'leptonSelection' = " << leptonSelection_string << " !!\n";
 
-  std::string hadTauSelection_string = cfg_analyze.getParameter<std::string>("hadTauSelection");
+  TString hadTauSelection_string = cfg_analyze.getParameter<std::string>("hadTauSelection").data();
+  TObjArray* hadTauSelection_parts = hadTauSelection_string.Tokenize("|");
+  assert(hadTauSelection_parts->GetEntries() >= 1);
+  std::string hadTauSelection_part1 = (dynamic_cast<TObjString*>(hadTauSelection_parts->At(0)))->GetString().Data();
+  //int hadTauSelection = -1;
+  //if ( hadTauSelection_part1 == "Tight" ) hadTauSelection = kTight;
+  //else throw cms::Exception("analyze_2lss_1tau") 
+  //  << "Invalid Configuration parameter 'hadTauSelection' = " << hadTauSelection_string << " !!\n";
+  std::string hadTauSelection_part2 = ( hadTauSelection_parts->GetEntries() == 2 ) ? (dynamic_cast<TObjString*>(hadTauSelection_parts->At(1)))->GetString().Data() : "";
+  delete hadTauSelection_parts;
 
   std::vector<TFile*> inputFilesToClose;
 
@@ -299,7 +308,7 @@ int main(int argc, char* argv[])
   RecoHadTauCollectionGenMatcher hadTauGenMatcher;
   RecoHadTauCollectionCleaner hadTauCleaner(0.3);
   RecoHadTauCollectionSelectorTight hadTauSelector;
-  hadTauSelector.set(hadTauSelection_string);
+  if ( hadTauSelection_part2 != "" ) hadTauSelector.set(hadTauSelection_part2);
   
   RecoJetReader* jetReader = new RecoJetReader("nJet", "Jet");
   jetReader->setJetPt_central_or_shift(jetPt_option);

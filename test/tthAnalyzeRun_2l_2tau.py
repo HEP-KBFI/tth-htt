@@ -32,7 +32,7 @@ if __name__ == '__main__':
     executable_analyze = "analyze_2l_2tau",
     samples = samples,
     lepton_charge_selections = [ "OS" ],
-    hadTau_selections = [ "Tight|dR03mvaTight", "Fakeable", "Fakeable_mcClosure" ],
+    hadTau_selections = [ "Tight|dR03mvaTight", "Fakeable|dR03mvaTight", "Fakeable_mcClosure|dR03mvaTight" ],
     ##hadTau_selections = [ "Tight|dR03mvaTight" ],
     hadTau_charge_selections = [ "OS", "SS" ],
     central_or_shifts = [ 
