@@ -4,6 +4,8 @@ HADOOP_SH       = "hadoop_cmds.sh"
 XRDCP_SH        = "xrdcp_cmds_%d.sh"
 XRDCP_SUBMIT_SH = "xrdcp_submit.sh"
 NOHUP_OUT       = "nohup_%d.out"
+MAKEFILE        = "Makefile"
+LOGFILE         = "job_%s.log"
 
 '''
 Script that generates scripts for copying Ntuples (or any root files) from remote site
@@ -167,6 +169,8 @@ def generate_cmds(source, output_dir, hdfs_path, nof_splits):
   cmd_file = os.path.join(output_dir, XRDCP_SUBMIT_SH)
   nohup_files = os.path.join(output_dir, NOHUP_OUT)
   hadoop_file = os.path.join(output_dir, HADOOP_SH)
+  make_file = os.path.join(output_dir, MAKEFILE)
+  log_files = os.path.join(output_dir, LOGFILE)
 
   # Split the copy commands into `nof_splits' pieces and write them
   cmds_split = split(cmds, nof_splits)
@@ -196,6 +200,19 @@ def generate_cmds(source, output_dir, hdfs_path, nof_splits):
   for bash_file in (cmd_file, hadoop_file):
     st = os.stat(bash_file)
     os.chmod(bash_file, st.st_mode | stat.S_IEXEC)
+
+  # Create the Makefile as well
+  with codecs.open(make_file, 'w', 'utf-8') as f:
+    hadoop_log = log_files % "hadoop"
+    hadoop_job = "jobh"
+    copy_job = "job%d"
+    job_list = " ".join(map(lambda x: copy_job % x, range(nof_splits)) + [hadoop_job])
+    f.write(".PHONY: %s\n\n" % job_list)
+    f.write("all: %s\n\n" % job_list)
+    f.write("%s:\n\t%s > %s 2>&1\n\n" % (hadoop_job, hadoop_file, hadoop_log))
+    for i in range(nof_splits):
+      f.write("%s: %s\n" % ((copy_job % i), hadoop_job))
+      f.write("\t%s > %s 2>&1\n\n" % (cmd_files % i, log_files % str(i)))
 
   print("There are %d copies per nohup job; %d in total" %
         (len(cmds_split[0]), len(cmds)))
@@ -230,4 +247,6 @@ if __name__ == '__main__':
 
   print("All done!")
   print("Please run:\t%s\n" % os.path.join(output_dir, XRDCP_SUBMIT_SH))
-  print("While it's running, please do not exit your shell session!!!")
+  print("Or:        \tmake -f %s -j %d\n" %
+        (os.path.join(output_dir, MAKEFILE), nof_splits))
+  print("If you run the first command, please do not exit your shell session!!!")
