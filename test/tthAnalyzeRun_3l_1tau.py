@@ -28,12 +28,13 @@ if __name__ == '__main__':
     format = '%(asctime)s - %(levelname)s: %(message)s')
 
   analysis = analyzeConfig_3l_1tau(
-    outputDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", version),
+    outputDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", ERA, version),
     executable_analyze = "analyze_3l_1tau",
     samples = samples,
     ##lepton_selections = [ "Tight", "Fakeable" ],
     lepton_selections = [ "Tight" ],
-    hadTau_selections = [ "Tight|dR03mvaTight", "Fakeable", "Fakeable_mcClosure" ],
+    hadTau_selections = [ "Tight|dR03mvaTight", "Fakeable|dR03mvaTight", "Fakeable_mcClosure|dR03mvaTight" ],
+    ##hadTau_selections = [ "Tight|dR03mvaTight" ],
     charge_selections = [ "OS", "SS" ],
     central_or_shifts = [ 
       "central",
@@ -66,7 +67,7 @@ if __name__ == '__main__':
 ##       "CMS_ttHl_FRmt_shiftUp",
 ##       "CMS_ttHl_FRmt_shiftDown"
     ],
-    max_files_per_job = 30,
+    max_files_per_job = 10,
     era = ERA, use_lumi = True, lumi = LUMI,
     debug = False,
     running_method = "sbatch",

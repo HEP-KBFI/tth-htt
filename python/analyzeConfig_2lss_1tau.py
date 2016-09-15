@@ -29,7 +29,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
     self.lepton_selections = lepton_selections
     self.lepton_charge_selections = lepton_charge_selections
 
-    self.hadTau_selections = hadTau_selections
+    self.hadTau_selection = hadTau_selection
 
     self.executable_addFakes = executable_addFakes
     self.executable_addFlips = executable_addFlips
@@ -40,6 +40,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
       process_name = sample_info["process_name_specific"]
       for lepton_selection in self.lepton_selections:
         for lepton_charge_selection in self.lepton_charge_selections:
+          
           key_dir = getKey(sample_name, lepton_selection, lepton_charge_selection)  
           for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS ]:
             initDict(self.dirs, [ key_dir, dir_type ])

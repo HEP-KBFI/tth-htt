@@ -5,7 +5,7 @@ from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists
 
 def get_hadTau_selection_and_frWeight(hadTau_selection, hadTau_frWeight):
   hadTau_selection_and_frWeight = hadTau_selection
-  if hadTau_selection in { "Fakeable", "Fakeable_mcClosure" }:
+  if hadTau_selection.startswith("Fakeable"):
     if hadTau_frWeight == "enabled":
       hadTau_selection_and_frWeight += "_wFakeRateWeights"
     elif hadTau_frWeight == "disabled":
@@ -62,7 +62,7 @@ class analyzeConfig_3l_1tau(analyzeConfig):
       for lepton_selection in self.lepton_selections:
         for hadTau_selection in self.hadTau_selections:
           for hadTau_frWeight in self.hadTau_frWeights:
-            if hadTau_frWeight == "enabled" and hadTau_selection not in { "Fakeable", "Fakeable_mcClosure" }:
+            if hadTau_frWeight == "enabled" and not hadTau_selection.startswith("Fakeable"):
               continue
             hadTau_selection_and_frWeight = get_hadTau_selection_and_frWeight(hadTau_selection, hadTau_frWeight)
             for charge_selection in self.charge_selections:
@@ -70,7 +70,7 @@ class analyzeConfig_3l_1tau(analyzeConfig):
               for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_DCRD ]:
                 initDict(self.dirs, [ key_dir, dir_type ])
                 self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel,
-                  "_".join([ lepton_selection, hadTau_selection_and_frWeight, charge_selection ]), process_name)
+                  "_".join([ "lep" + lepton_selection, "tau" + hadTau_selection_and_frWeight, charge_selection ]), process_name)
     ##print "self.dirs = ", self.dirs
 
     self.nonfake_backgrounds = [ "TT", "TTW", "TTZ", "EWK", "Rares" ]
@@ -226,11 +226,11 @@ class analyzeConfig_3l_1tau(analyzeConfig):
                 for central_or_shift in self.central_or_shifts:
                   inputFiles_jobIds = []
                   for jobId in range(len(self.inputFileIds[sample_name])):
-                    key_file = getKey(sample_name, lepton_selection, charge_selection, hadTau_selection, hadTau_frWeight, hadTau_genMatch, central_or_shift, jobId)
+                    key_file = getKey(sample_name, lepton_selection, hadTau_selection, hadTau_frWeight, hadTau_genMatch, charge_selection, central_or_shift, jobId)
                     if key_file in self.histogramFiles.keys():
                       inputFiles_jobIds.append(self.histogramFiles[key_file])
                   if len(inputFiles_jobIds) > 0:
-                    haddFile_jobIds = self.histogramFile_hadd_stage1.replace(".root", "_%s_%s_%s_%s_%s.root" % \
+                    haddFile_jobIds = self.histogramFile_hadd_stage1.replace(".root", "_%s_%s_%s_%s_%s_%s.root" % \
                       (process_name, lepton_selection, charge_selection, hadTau_selection_and_frWeight, hadTau_genMatch, central_or_shift))
                     lines_makefile.append("%s: %s" % (haddFile_jobIds, " ".join(inputFiles_jobIds)))
                     lines_makefile.append("\t%s %s" % ("rm -f", haddFile_jobIds))
@@ -319,7 +319,7 @@ class analyzeConfig_3l_1tau(analyzeConfig):
       for lepton_selection in self.lepton_selections:
         for hadTau_selection in self.hadTau_selections:
           for hadTau_frWeight in [ "enabled", "disabled" ]:
-            if hadTau_frWeight == "enabled" and hadTau_selection not in { "Fakeable", "Fakeable_mcClosure" }:
+            if hadTau_frWeight == "enabled" and not hadTau_selection.startswith("Fakeable"):
               continue
             hadTau_selection_and_frWeight = get_hadTau_selection_and_frWeight(hadTau_selection, hadTau_frWeight)
             for hadTau_genMatch in self.hadTau_genMatches:
@@ -329,7 +329,7 @@ class analyzeConfig_3l_1tau(analyzeConfig):
                     if hadTau_genMatch != "all" and not is_mc:
                       continue
                     sample_category_and_genMatch = sample_category + hadTau_genMatch
-                    if central_or_shift != "central" and not (hadTau_selection == "Tight" and charge_selection == "OS"):
+                    if central_or_shift != "central" and not (hadTau_selection.startswith("Tight") and charge_selection == "OS"):
                       continue
                     if central_or_shift != "central" and not is_mc:
                       continue
@@ -339,22 +339,22 @@ class analyzeConfig_3l_1tau(analyzeConfig):
                     key_dir = getKey(sample_name, lepton_selection, hadTau_selection, hadTau_frWeight, charge_selection)
                     key_file = getKey(sample_name, lepton_selection, hadTau_selection, hadTau_frWeight, hadTau_genMatch, charge_selection, central_or_shift, jobId)
 
-                  self.cfgFiles_analyze_modified[key_file] = os.path.join(self.dirs[key_dir][DKEY_CFGS], "analyze_%s_%s_%s_%s_%s_%s_%s_%i_cfg.py" % \
-                    (self.channel, process_name, lepton_selection, hadTau_selection_and_frWeight, hadTau_genMatch, charge_selection, central_or_shift, jobId))
-                  self.histogramFiles[key_file] = os.path.join(self.dirs[key_dir][DKEY_HIST], "%s_%s_%s_%s_%s_%s_%i.root" % \
-                    (process_name, lepton_selection, hadTau_selection_and_frWeight, hadTau_genMatch, charge_selection, central_or_shift, jobId))
-                  self.logFiles_analyze[key_file] = os.path.join(self.dirs[key_dir][DKEY_LOGS], "analyze_%s_%s_%s_%s_%s_%s_%s_%i.log" % \
-                    (self.channel, process_name, lepton_selection, hadTau_selection_and_frWeight, hadTau_genMatch, charge_selection, central_or_shift, jobId))
+                    self.cfgFiles_analyze_modified[key_file] = os.path.join(self.dirs[key_dir][DKEY_CFGS], "analyze_%s_%s_%s_%s_%s_%s_%s_%i_cfg.py" % \
+                      (self.channel, process_name, lepton_selection, hadTau_selection_and_frWeight, hadTau_genMatch, charge_selection, central_or_shift, jobId))
+                    self.histogramFiles[key_file] = os.path.join(self.dirs[key_dir][DKEY_HIST], "%s_%s_%s_%s_%s_%s_%i.root" % \
+                      (process_name, lepton_selection, hadTau_selection_and_frWeight, hadTau_genMatch, charge_selection, central_or_shift, jobId))
+                    self.logFiles_analyze[key_file] = os.path.join(self.dirs[key_dir][DKEY_LOGS], "analyze_%s_%s_%s_%s_%s_%s_%s_%i.log" % \
+                      (self.channel, process_name, lepton_selection, hadTau_selection_and_frWeight, hadTau_genMatch, charge_selection, central_or_shift, jobId))
 
-                  self.rleOutputFiles[key_file] = os.path.join(self.dirs[key_dir][DKEY_RLES], "rle_%s_%s_%s_%s_%s_%s_%s_%s_%i.txt" % \
-                    (self.channel, process_name, lepton_selection, hadTau_selection, hadTau_frWeight, hadTau_genMatch, charge_selection, central_or_shift, jobId)) if self.select_rle_output else ""
-                  self.rootOutputFiles[key_file] = os.path.join(self.dirs[key_dir][DKEY_ROOT], "out_%s_%s_%s_%s_%s_%s_%s_%s_%i.root" % \
-                    (self.channel, process_name, lepton_selection, hadTau_selection, hadTau_frWeight, hadTau_genMatch, charge_selection, central_or_shift, jobId)) if self.select_root_output else ""
+                    self.rleOutputFiles[key_file] = os.path.join(self.dirs[key_dir][DKEY_RLES], "rle_%s_%s_%s_%s_%s_%s_%s_%s_%i.txt" % \
+                      (self.channel, process_name, lepton_selection, hadTau_selection, hadTau_frWeight, hadTau_genMatch, charge_selection, central_or_shift, jobId)) if self.select_rle_output else ""
+                    self.rootOutputFiles[key_file] = os.path.join(self.dirs[key_dir][DKEY_ROOT], "out_%s_%s_%s_%s_%s_%s_%s_%s_%i.root" % \
+                      (self.channel, process_name, lepton_selection, hadTau_selection, hadTau_frWeight, hadTau_genMatch, charge_selection, central_or_shift, jobId)) if self.select_root_output else ""
                     
-                  self.createCfg_analyze(inputFiles, self.histogramFiles[key_file], sample_category, self.era, triggers,
-                    lepton_selection, hadTau_selection, hadTau_genMatch, self.apply_hadTauGenMatching, hadTau_frWeight, charge_selection,
-                    is_mc, central_or_shift, lumi_scale, apply_trigger_bits, self.cfgFiles_analyze_modified[key_file],
-                    self.rleOutputFiles[key_file], self.rootOutputFiles[key_file])
+                    self.createCfg_analyze(inputFiles, self.histogramFiles[key_file], sample_category, self.era, triggers,
+                      lepton_selection, hadTau_selection, hadTau_genMatch, self.apply_hadTauGenMatching, hadTau_frWeight, charge_selection,
+                      is_mc, central_or_shift, lumi_scale, apply_trigger_bits, self.cfgFiles_analyze_modified[key_file],
+                      self.rleOutputFiles[key_file], self.rootOutputFiles[key_file])
 
     if self.is_sbatch:
       logging.info("Creating script for submitting '%s' jobs to batch system" % self.executable_analyze)

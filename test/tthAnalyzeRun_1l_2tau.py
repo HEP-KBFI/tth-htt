@@ -1,7 +1,7 @@
 import os, logging, sys, getpass
 
 from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_1l_2tau_2015 import samples_2015
-#import tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_1l_2tau_2016
+#from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_1l_2tau_2016 import samples_2016
 from tthAnalysis.HiggsToTauTau.analyzeConfig_1l_2tau import analyzeConfig_1l_2tau
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 
@@ -28,10 +28,10 @@ if __name__ == '__main__':
     format = '%(asctime)s - %(levelname)s: %(message)s')
 
   analysis = analyzeConfig_1l_2tau(
-    outputDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", version),
+    outputDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", ERA, version),
     executable_analyze = "analyze_1l_2tau",
     samples = samples,
-    hadTau_selections = [ "Tight|dR03mvaTight", "Fakeable", "Fakeable_mcClosure" ],
+    hadTau_selections = [ "Tight|dR03mvaTight", "Fakeable|dR03mvaTight", "Fakeable_mcClosure|dR03mvaTight" ],
     ##hadTau_selections = [ "Tight|dR03mvaTight" ],
     hadTau_charge_selections = [ "OS", "SS" ],
     central_or_shifts = [ 
@@ -65,7 +65,7 @@ if __name__ == '__main__':
 ##       "CMS_ttHl_FRmt_shiftUp",
 ##       "CMS_ttHl_FRmt_shiftDown"
     ],
-    max_files_per_job = 30,
+    max_files_per_job = 10,
     era = ERA, use_lumi = True, lumi = LUMI,
     debug = False,
     running_method = "sbatch",

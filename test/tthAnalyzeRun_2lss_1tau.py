@@ -33,8 +33,8 @@ if __name__ == '__main__':
     samples = samples,
     lepton_selections = [ "Tight", "Fakeable" ],
     lepton_charge_selections = [ "OS", "SS" ],
-    ##hadTau_selection = "dR05isoLoose",
-    hadTau_selections = [ "Tight|dR03mvaTight", "Fakeable", "Fakeable_mcClosure" ],
+    hadTau_selection = "Tight|dR03mvaTight",
+    ##hadTau_selection = "dR05isoLoose",    
     central_or_shifts = [ 
       "central",
 ##       "CMS_ttHl_btag_HFUp", 
@@ -58,7 +58,7 @@ if __name__ == '__main__':
 ##       "CMS_ttHl_tauESUp",
 ##       "CMS_ttHl_tauESDown"  
     ],
-    max_files_per_job = 30,
+    max_files_per_job = 10,
     era = ERA, use_lumi = True, lumi = LUMI,
     debug = False,
     running_method = "sbatch",

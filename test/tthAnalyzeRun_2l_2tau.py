@@ -28,11 +28,11 @@ if __name__ == '__main__':
     format = '%(asctime)s - %(levelname)s: %(message)s')
 
   analysis = analyzeConfig_2l_2tau(
-    outputDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", version),
+    outputDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", ERA, version),
     executable_analyze = "analyze_2l_2tau",
     samples = samples,
     lepton_charge_selections = [ "OS" ],
-    hadTau_selections = [ "Tight|dR03mvaTight", "Fakeable", "Fakeable_mcClosure" ],
+    hadTau_selections = [ "Tight|dR03mvaTight", "Fakeable|dR03mvaTight", "Fakeable_mcClosure|dR03mvaTight" ],
     ##hadTau_selections = [ "Tight|dR03mvaTight" ],
     hadTau_charge_selections = [ "OS", "SS" ],
     central_or_shifts = [ 

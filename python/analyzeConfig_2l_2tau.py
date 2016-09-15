@@ -5,7 +5,7 @@ from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists
 
 def get_hadTau_selection_and_frWeight(hadTau_selection, hadTau_frWeight):
   hadTau_selection_and_frWeight = hadTau_selection
-  if hadTau_selection in { "Fakeable", "Fakeable_mcClosure" }:
+  if hadTau_selection.startswith("Fakeable"):
     if hadTau_frWeight == "enabled":
       hadTau_selection_and_frWeight += "_wFakeRateWeights"
     elif hadTau_frWeight == "disabled":
@@ -61,7 +61,7 @@ class analyzeConfig_2l_2tau(analyzeConfig):
       for lepton_charge_selection in self.lepton_charge_selections:
         for hadTau_selection in self.hadTau_selections:
           for hadTau_frWeight in self.hadTau_frWeights:
-            if hadTau_frWeight == "enabled" and hadTau_selection != "Fakeable":
+            if hadTau_frWeight == "enabled" and not hadTau_selection.startswith("Fakeable"):
               continue
             hadTau_selection_and_frWeight = get_hadTau_selection_and_frWeight(hadTau_selection, hadTau_frWeight)
             for hadTau_charge_selection in self.hadTau_charge_selections:
@@ -309,7 +309,7 @@ class analyzeConfig_2l_2tau(analyzeConfig):
       for lepton_charge_selection in self.lepton_charge_selections:
         for hadTau_selection in self.hadTau_selections:
           for hadTau_frWeight in [ "enabled", "disabled" ]:
-            if hadTau_frWeight == "enabled" and hadTau_selection not in { "Fakeable", "Fakeable_mcClosure" }:
+            if hadTau_frWeight == "enabled" and not hadTau_selection.startswith("Fakeable"):
               continue
             hadTau_selection_and_frWeight = get_hadTau_selection_and_frWeight(hadTau_selection, hadTau_frWeight)
             for hadTau_genMatch in self.hadTau_genMatches:
@@ -319,7 +319,7 @@ class analyzeConfig_2l_2tau(analyzeConfig):
                     if hadTau_genMatch != "all" and not is_mc:
                       continue
                     sample_category_and_genMatch = sample_category + hadTau_genMatch
-                    if central_or_shift != "central" and not (hadTau_selection == "Tight" and hadTau_charge_selection == "OS"):
+                    if central_or_shift != "central" and not (hadTau_selection.startswith("Tight") and hadTau_charge_selection == "OS"):
 	                  continue
                     if central_or_shift != "central" and not is_mc:
 	                  continue

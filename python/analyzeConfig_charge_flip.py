@@ -16,14 +16,15 @@ class analyzeConfig_charge_flip(analyzeConfig):
   for documentation of further Args.
   
   """
-  def __init__(self, outputDir, executable_analyze, lepton_selections, central_or_shifts,
-               max_files_per_job, use_lumi, lumi, use_data, debug, running_method, num_parallel_jobs, 
+  def __init__(self, outputDir, executable_analyze, samples, lepton_selections, central_or_shifts,
+               max_files_per_job, era, use_lumi, lumi, use_data, debug, running_method, num_parallel_jobs, 
                histograms_to_fit = [], executable_prep_dcard="prepareDatacardCF"):
     analyzeConfig.__init__(self, outputDir, executable_analyze, "charge_flip", central_or_shifts,
-      max_files_per_job, use_lumi, lumi, debug, running_method, num_parallel_jobs, 
+      max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs, 
       histograms_to_fit)
 
-    self.samples = tthAnalyzeSamples_chargeflip.samples
+    self.samples = samples
+    
     self.prep_dcard_processesToCopy = ["data_obs", "DY", "WJets", "TTbar", "Singletop", "Diboson"]
 
     self.lepton_selections = lepton_selections
@@ -46,8 +47,8 @@ class analyzeConfig_charge_flip(analyzeConfig):
     self.cfgFile_analyze_original = os.path.join(self.workingDir, "analyze_charge_flip_cfg.py")
     #self.histogramDir_prep_dcard = "charge_flip_SS_Tight"
 
-  def createCfg_analyze(self, inputFiles, outputFile, sample_category, triggers, lepton_selection, 
-                        is_mc, use_data, central_or_shift, lumi_scale, cfgFile_modified):
+  def createCfg_analyze(self, inputFiles, outputFile, sample_category, era, triggers, lepton_selection, 
+                        is_mc, use_data, central_or_shift, lumi_scale, apply_trigger_bits, cfgFile_modified):
     """Create python configuration file for the analyze_charge_flip executable (analysis code)
 
     Args:
@@ -62,16 +63,15 @@ class analyzeConfig_charge_flip(analyzeConfig):
     lines.append("process.fwliteInput.fileNames = cms.vstring(%s)" % inputFiles)
     lines.append("process.fwliteOutput.fileName = cms.string('%s')" % outputFile)
     lines.append("process.analyze_charge_flip.process = cms.string('%s')" % sample_category)
+    lines.append("process.analyze_1l_2tau.era = cms.string('%s')" % era)
     lines.append("process.analyze_charge_flip.use_triggers_1e = cms.bool(%s)" % ("1e" in triggers))
     lines.append("process.analyze_charge_flip.use_triggers_2e = cms.bool(%s)" % ("2e" in triggers))
-    #lines.append("process.analyze_charge_flip.use_triggers_1mu = cms.bool(%s)" % ("1mu" in triggers))
-    #lines.append("process.analyze_charge_flip.use_triggers_2mu = cms.bool(%s)" % ("2mu" in triggers))
-    #lines.append("process.analyze_charge_flip.use_triggers_1e1mu = cms.bool(%s)" % ("1e1mu" in triggers))
     lines.append("process.analyze_charge_flip.leptonSelection = cms.string('%s')" % lepton_selection)
     lines.append("process.analyze_charge_flip.isMC = cms.bool(%s)" % is_mc)
     lines.append("process.analyze_charge_flip.useData = cms.bool(%s)" % use_data)
     lines.append("process.analyze_charge_flip.central_or_shift = cms.string('%s')" % central_or_shift)
     lines.append("process.analyze_charge_flip.lumiScale = cms.double(%f)" % lumi_scale)
+    lines.append("process.analyze_charge_flip.apply_trigger_bits = cms.bool(%s)" % apply_trigger_bits)
     create_cfg(self.cfgFile_analyze_original, cfgFile_modified, lines)
 
   def addToMakefile_hadd_stage1(self, lines_makefile):
@@ -172,6 +172,7 @@ class analyzeConfig_charge_flip(analyzeConfig):
       lumi_scale = 1. if not (self.use_lumi and is_mc) else sample_info["xsection"] * self.lumi / sample_info["nof_events"]
       sample_category = sample_info["sample_category"]
       triggers = sample_info["triggers"]
+      apply_trigger_bits = (is_mc and (self.era == "2015" or (self.era == "2016" and sample_info["reHLT"]))) or not is_mc
 
       for lepton_selection in self.lepton_selections:
         for central_or_shift in self.central_or_shifts:
@@ -193,9 +194,9 @@ class analyzeConfig_charge_flip(analyzeConfig):
             self.logFiles_analyze[key_file] = os.path.join(self.dirs[key_dir][DKEY_LOGS], "analyze_%s_%s_%s_%s_%i.log" % \
               (self.channel, process_name, lepton_selection, central_or_shift, jobId))
               
-            self.createCfg_analyze(inputFiles, self.histogramFiles[key_file], sample_category, triggers,
+            self.createCfg_analyze(inputFiles, self.histogramFiles[key_file], sample_category, self.era, triggers,
               lepton_selection, 
-              is_mc, self.use_data, central_or_shift, lumi_scale, self.cfgFiles_analyze_modified[key_file])
+              is_mc, self.use_data, central_or_shift, lumi_scale, apply_trigger_bits, self.cfgFiles_analyze_modified[key_file])
                 
     if self.is_sbatch:
       logging.info("Creating script for submitting '%s' jobs to batch system" % self.executable_analyze)
