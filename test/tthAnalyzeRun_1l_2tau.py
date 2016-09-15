@@ -1,7 +1,7 @@
 import os, logging, sys, getpass
 
 from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_1l_2tau_2015 import samples_2015
-#import tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_1l_2tau_2016
+#from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_1l_2tau_2016 import samples_2016
 from tthAnalysis.HiggsToTauTau.analyzeConfig_1l_2tau import analyzeConfig_1l_2tau
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 
@@ -65,7 +65,7 @@ if __name__ == '__main__':
 ##       "CMS_ttHl_FRmt_shiftUp",
 ##       "CMS_ttHl_FRmt_shiftDown"
     ],
-    max_files_per_job = 30,
+    max_files_per_job = 10,
     era = ERA, use_lumi = True, lumi = LUMI,
     debug = False,
     running_method = "sbatch",

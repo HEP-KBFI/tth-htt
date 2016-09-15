@@ -70,7 +70,7 @@ class analyzeConfig_3l_1tau(analyzeConfig):
               for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_DCRD ]:
                 initDict(self.dirs, [ key_dir, dir_type ])
                 self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel,
-                  "_".join([ lepton_selection, hadTau_selection_and_frWeight, charge_selection ]), process_name)
+                  "_".join([ "lep" + lepton_selection, "tau" + hadTau_selection_and_frWeight, charge_selection ]), process_name)
     ##print "self.dirs = ", self.dirs
 
     self.nonfake_backgrounds = [ "TT", "TTW", "TTZ", "EWK", "Rares" ]
@@ -226,11 +226,11 @@ class analyzeConfig_3l_1tau(analyzeConfig):
                 for central_or_shift in self.central_or_shifts:
                   inputFiles_jobIds = []
                   for jobId in range(len(self.inputFileIds[sample_name])):
-                    key_file = getKey(sample_name, lepton_selection, charge_selection, hadTau_selection, hadTau_frWeight, hadTau_genMatch, central_or_shift, jobId)
+                    key_file = getKey(sample_name, lepton_selection, hadTau_selection, hadTau_frWeight, hadTau_genMatch, charge_selection, central_or_shift, jobId)
                     if key_file in self.histogramFiles.keys():
                       inputFiles_jobIds.append(self.histogramFiles[key_file])
                   if len(inputFiles_jobIds) > 0:
-                    haddFile_jobIds = self.histogramFile_hadd_stage1.replace(".root", "_%s_%s_%s_%s_%s.root" % \
+                    haddFile_jobIds = self.histogramFile_hadd_stage1.replace(".root", "_%s_%s_%s_%s_%s_%s.root" % \
                       (process_name, lepton_selection, charge_selection, hadTau_selection_and_frWeight, hadTau_genMatch, central_or_shift))
                     lines_makefile.append("%s: %s" % (haddFile_jobIds, " ".join(inputFiles_jobIds)))
                     lines_makefile.append("\t%s %s" % ("rm -f", haddFile_jobIds))

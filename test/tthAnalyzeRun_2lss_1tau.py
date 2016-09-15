@@ -58,7 +58,7 @@ if __name__ == '__main__':
 ##       "CMS_ttHl_tauESUp",
 ##       "CMS_ttHl_tauESDown"  
     ],
-    max_files_per_job = 30,
+    max_files_per_job = 10,
     era = ERA, use_lumi = True, lumi = LUMI,
     debug = False,
     running_method = "sbatch",
