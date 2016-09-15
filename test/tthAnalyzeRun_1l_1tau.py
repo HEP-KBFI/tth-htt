@@ -28,7 +28,7 @@ if __name__ == '__main__':
     format = '%(asctime)s - %(levelname)s: %(message)s')
 
   analysis = analyzeConfig_1l_1tau(
-    outputDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", version),
+    outputDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", ERA, version),
     executable_analyze = "analyze_1l_1tau",
     samples = samples,
     charge_selections = [ "OS", "SS" ],

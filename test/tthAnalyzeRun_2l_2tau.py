@@ -28,7 +28,7 @@ if __name__ == '__main__':
     format = '%(asctime)s - %(levelname)s: %(message)s')
 
   analysis = analyzeConfig_2l_2tau(
-    outputDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", version),
+    outputDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", ERA, version),
     executable_analyze = "analyze_2l_2tau",
     samples = samples,
     lepton_charge_selections = [ "OS" ],
