@@ -8,8 +8,7 @@
 
 #include <ostream> // ostream
 
-class RecoHadTau
-  : public GenParticle
+class RecoHadTau : public GenParticle
 {
  public:
   RecoHadTau() = default;

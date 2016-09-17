@@ -51,7 +51,7 @@ double sf_electronID_and_Iso_loose(double electron_pt, double electron_eta)
     TH1::AddDirectory(true);
   }
   assert(lut_id_loose);
-  double sf_id_loose = get_sf_from_TH2(lut_id_loose, electron_pt, electron_eta);
+  double sf_id_loose = getSF_from_TH2(lut_id_loose, electron_pt, electron_eta);
   
   // electron isolation efficiency: AN-2015/321, Fig. 10 top right
   static TH2* lut_iso = 0;
@@ -65,7 +65,7 @@ double sf_electronID_and_Iso_loose(double electron_pt, double electron_eta)
     TH1::AddDirectory(true);
   }
   assert(lut_iso);
-  double sf_iso = get_sf_from_TH2(lut_iso, electron_pt, electron_eta);
+  double sf_iso = getSF_from_TH2(lut_iso, electron_pt, electron_eta);
 
   double sf = sf_id_loose*sf_iso;
   return sf;
@@ -85,7 +85,7 @@ double sf_electronID_and_Iso_tight_to_loose(double electron_pt, double electron_
     TH1::AddDirectory(true);
   }
   assert(lut_convVeto);
-  double sf_convVeto = get_sf_from_TH2(lut_convVeto, electron_pt, electron_eta);
+  double sf_convVeto = getSF_from_TH2(lut_convVeto, electron_pt, electron_eta);
 
   // efficiency for electron to pass tight identification criteria: AN-2015/321, Fig. 12 top left (barrel) and center (endcap)
   double sf_id_tight = 1.;
@@ -101,7 +101,7 @@ double sf_electronID_and_Iso_tight_to_loose(double electron_pt, double electron_
       TH1::AddDirectory(true);
     }
     assert(lut_id_tight_barrel);
-    sf_id_tight = get_sf_from_TH1(lut_id_tight_barrel, electron_pt);
+    sf_id_tight = getSF_from_TH1(lut_id_tight_barrel, electron_pt);
   } else {
     static TH1* lut_id_tight_endcap = 0;
     if ( !lut_id_tight_endcap ) {
@@ -114,19 +114,19 @@ double sf_electronID_and_Iso_tight_to_loose(double electron_pt, double electron_
       TH1::AddDirectory(true);
     }
     assert(lut_id_tight_endcap);
-    sf_id_tight = get_sf_from_TH1(lut_id_tight_endcap, electron_pt);
+    sf_id_tight = getSF_from_TH1(lut_id_tight_endcap, electron_pt);
   }
 
   double sf = sf_convVeto*sf_id_tight;
   return sf;
 }
 
-double sf_electronID_and_Iso_tight(double electron_pt, double electron_eta)
-{
-  double sf_loose = sf_electronID_and_Iso_loose(electron_pt, electron_eta);
-  double sf_tight_to_loose = sf_electronID_and_Iso_tight_to_loose(electron_pt, electron_eta);
-  return sf_loose*sf_tight_to_loose;
-}
+//double sf_electronID_and_Iso_tight(double electron_pt, double electron_eta)
+//{
+//  double sf_loose = sf_electronID_and_Iso_loose(electron_pt, electron_eta);
+//  double sf_tight_to_loose = sf_electronID_and_Iso_tight_to_loose(electron_pt, electron_eta);
+//  return sf_loose*sf_tight_to_loose;
+//}
 //-------------------------------------------------------------------------------
 
 //-------------------------------------------------------------------------------
@@ -144,7 +144,7 @@ double sf_muonID_and_Iso_loose(double muon_pt, double muon_eta)
     TH1::AddDirectory(true);
   }
   assert(lut_id_loose);
-  double sf_id_loose = get_sf_from_TH2(lut_id_loose, muon_pt, muon_eta);
+  double sf_id_loose = getSF_from_TH2(lut_id_loose, muon_pt, muon_eta);
 
   // muon isolation efficiency: AN-2015/321, Fig. 11 top left (barrel) and center (endcap)
   double sf_iso = 1.;
@@ -160,7 +160,7 @@ double sf_muonID_and_Iso_loose(double muon_pt, double muon_eta)
       TH1::AddDirectory(true);
     }
     assert(lut_iso_barrel);
-    sf_iso = get_sf_from_TH1(lut_iso_barrel, muon_pt);
+    sf_iso = getSF_from_TH1(lut_iso_barrel, muon_pt);
   } else {
     static TH1* lut_iso_endcap = 0;
     if ( !lut_iso_endcap ) {
@@ -173,7 +173,7 @@ double sf_muonID_and_Iso_loose(double muon_pt, double muon_eta)
       TH1::AddDirectory(true);
     }
     assert(lut_iso_endcap);
-    sf_iso = get_sf_from_TH1(lut_iso_endcap, muon_pt);
+    sf_iso = getSF_from_TH1(lut_iso_endcap, muon_pt);
   }
   
   // efficiency for muon to pass transverse impact parameter cut: AN-2015/321, Fig. 11 top right
@@ -188,7 +188,7 @@ double sf_muonID_and_Iso_loose(double muon_pt, double muon_eta)
     TH1::AddDirectory(true);
   }
   assert(lut_ip);
-  double sf_ip = get_sf_from_TH1(lut_ip, muon_eta);
+  double sf_ip = getSF_from_TH1(lut_ip, muon_eta);
   
   double sf = sf_id_loose*sf_iso*sf_ip;
   return sf;
@@ -210,7 +210,7 @@ double sf_muonID_and_Iso_tight_to_loose(double muon_pt, double muon_eta)
       TH1::AddDirectory(true);
     }
     assert(lut_id_tight_barrel);
-    sf_id_tight = get_sf_from_TH1(lut_id_tight_barrel, muon_pt);
+    sf_id_tight = getSF_from_TH1(lut_id_tight_barrel, muon_pt);
   } else {
     static TH1* lut_id_tight_endcap = 0;
     if ( !lut_id_tight_endcap ) {
@@ -223,19 +223,19 @@ double sf_muonID_and_Iso_tight_to_loose(double muon_pt, double muon_eta)
       TH1::AddDirectory(true);
     }
     assert(lut_id_tight_endcap);
-    sf_id_tight = get_sf_from_TH1(lut_id_tight_endcap, muon_pt);
+    sf_id_tight = getSF_from_TH1(lut_id_tight_endcap, muon_pt);
   }
 
   double sf = sf_id_tight;
   return sf;
 }
 
-double sf_muonID_and_Iso_tight(double muon_pt, double muon_eta)
-{
-  double sf_loose = sf_muonID_and_Iso_loose(muon_pt, muon_eta);
-  double sf_tight_to_loose = sf_muonID_and_Iso_tight_to_loose(muon_pt, muon_eta);
-  return sf_loose*sf_tight_to_loose;
-}
+//double sf_muonID_and_Iso_tight(double muon_pt, double muon_eta)
+//{
+//  double sf_loose = sf_muonID_and_Iso_loose(muon_pt, muon_eta);
+//  double sf_tight_to_loose = sf_muonID_and_Iso_tight_to_loose(muon_pt, muon_eta);
+//  return sf_loose*sf_tight_to_loose;
+//}
 //-------------------------------------------------------------------------------
 
 //-------------------------------------------------------------------------------
