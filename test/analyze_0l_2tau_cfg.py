@@ -35,7 +35,7 @@ process.analyze_0l_2tau = cms.PSet(
 
     applyJetToTauFakeRateWeight = cms.bool(False),
     jetToTauFakeRateWeight = cms.PSet(
-        inputFileName = cms.string("tthAnalysis/HiggsToTauTau/data/FR_tau.root"),
+        inputFileName = cms.string("tthAnalysis/HiggsToTauTau/data/FR_tau_2015.root"),
         lead = cms.PSet(
             absEtaBins = cms.vdouble(-1., 1.479, 9.9),
             graphName = cms.string("jetToTauFakeRate/$hadTauSelection/$etaBin/jetToTauFakeRate_mc_hadTaus_pt"),

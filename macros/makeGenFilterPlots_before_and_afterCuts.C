@@ -75,13 +75,14 @@ void showHistograms(double canvasSizeX, double canvasSizeY,
   canvas->SetBorderSize(2);
   canvas->SetLeftMargin(0.12);
   canvas->SetBottomMargin(0.12);
+  canvas->SetLogy(useLogScale);
 
   //int colors[6] = { kBlack, kGreen - 6, kBlue - 7,  kMagenta - 7, kCyan - 6, kRed - 6 };
   int colors[6] = { kBlack, kRed, kBlue - 7,  kMagenta - 7, kCyan - 6, kRed - 6 };
-  int markerStyles[6] = { 24, 25, 20, 21, 22, 23 };
-  int markerSizes[6] = { 1, 1, 1, 1, 1, 1 };
+  int markerStyles[6] = { 20, 21, 24, 25, 22, 23 };
+  int markerSizes[6] = { 2, 2, 2, 2, 2, 2 };
 
-  TLegend* legend = new TLegend(legendX0, legendY0, legendX0 + 0.61, legendY0 + 0.21, "", "brNDC"); 
+  TLegend* legend = new TLegend(legendX0, legendY0, legendX0 + 0.28, legendY0 + 0.17, "", "brNDC"); 
   legend->SetBorderSize(0);
   legend->SetFillColor(0);
 
@@ -100,10 +101,12 @@ void showHistograms(double canvasSizeX, double canvasSizeY,
   TAxis* xAxis = histogram1->GetXaxis();
   xAxis->SetTitle(xAxisTitle.data());
   xAxis->SetTitleOffset(xAxisOffset);
+  xAxis->SetTitleSize(0.050);
 
   TAxis* yAxis = histogram1->GetYaxis();
   yAxis->SetTitle(yAxisTitle.data());
   yAxis->SetTitleOffset(yAxisOffset);
+  yAxis->SetTitleSize(0.050);
 
   if ( histogram2 ) {
     histogram2->SetLineColor(colors[1]);
@@ -200,14 +203,14 @@ void makeGenFilterPlots_before_and_afterCuts()
   channels.push_back("3l_1tau");
 
   std::map<std::string, std::string> inputFilePaths; // key = channel
-  inputFilePaths["0l_2tau"] = "/home/veelken/ttHAnalysis/2016Sep07_dR03mvaTight/histograms/";
-  inputFilePaths["1l_1tau"] = "/home/veelken/ttHAnalysis/2016Sep07_dR03mvaTight/histograms/";
-  inputFilePaths["1l_2tau"] = "/home/veelken/ttHAnalysis/2016Sep07_dR03mvaTight/histograms/";
-  inputFilePaths["0l_3tau"] = "/home/veelken/ttHAnalysis/2016Sep07_dR03mvaMedium/histograms/";
-  inputFilePaths["2lss_1tau"] = "/home/veelken/ttHAnalysis/2016Sep07_dR03mvaLoose/histograms/";
-  inputFilePaths["2los_1tau"] = "/home/veelken/ttHAnalysis/2016Sep07_dR03mvaVVTight/histograms/";
-  inputFilePaths["2l_2tau"] = "/home/veelken/ttHAnalysis/2016Sep07_dR03mvaMedium/histograms/";
-  inputFilePaths["3l_1tau"] = "/home/veelken/ttHAnalysis/2016Sep07_dR03mvaLoose/histograms/";
+  inputFilePaths["0l_2tau"] = "/home/veelken/ttHAnalysis/2015/2016Sep14_dR03mvaTight/histograms/";
+  inputFilePaths["1l_1tau"] = "/home/veelken/ttHAnalysis/2015/2016Sep14_dR03mvaTight/histograms/";
+  inputFilePaths["1l_2tau"] = "/home/veelken/ttHAnalysis/2015/2016Sep14_dR03mvaTight/histograms/";
+  inputFilePaths["0l_3tau"] = "/home/veelken/ttHAnalysis/2015/2016Sep14_dR03mvaMedium/histograms/";
+  inputFilePaths["2lss_1tau"] = "/home/veelken/ttHAnalysis/2015/2016Sep14_dR03mvaLoose/histograms/";
+  inputFilePaths["2los_1tau"] = "/home/veelken/ttHAnalysis/2015/2016Sep14_dR03mvaVVTight/histograms/";
+  inputFilePaths["2l_2tau"] = "/home/veelken/ttHAnalysis/2015/2016Sep14_dR03mvaMedium/histograms/";
+  inputFilePaths["3l_1tau"] = "/home/veelken/ttHAnalysis/2015/2016Sep14_dR03mvaLoose/histograms/";
   
   std::map<std::string, std::string> inputFileNames; // key = channel
   inputFileNames["0l_2tau"] = "histograms_harvested_stage1_0l_2tau_$PROCESS.root";
@@ -227,7 +230,7 @@ void makeGenFilterPlots_before_and_afterCuts()
   directoryNames["2lss_1tau"] = "2lss_1tau_SS_Tight/$SELECTION/genEvt/$PROCESS_CATEGORY/";
   directoryNames["2los_1tau"] = "2los_1tau_Tight/$SELECTION/genEvt/$PROCESS_CATEGORY/";
   directoryNames["2l_2tau"] = "2l_2tau_lepOS_tauOS_Tight/$SELECTION/genEvt/$PROCESS_CATEGORY/";
-  directoryNames["3l_1tau"] = "3l_1tau_OS_Tight/$SELECTION/genEvt/$PROCESS_CATEGORY/";
+  directoryNames["3l_1tau"] = "3l_1tau_OS_lepTight_tauTight/$SELECTION/genEvt/$PROCESS_CATEGORY/";
 
   std::map<std::string, vstring> histogramNames; // key = channel
   histogramNames["0l_2tau"].push_back("numGenLeptons_withinAcc");
@@ -323,24 +326,28 @@ void makeGenFilterPlots_before_and_afterCuts()
 	histogramName_beforeCuts = histogramName_beforeCuts.ReplaceAll("$SELECTION", "unbiased");
 	TH1* histogram_beforeCuts = loadHistogram(inputFile, histogramName_beforeCuts.Data());
 	double integral_beforeCuts = compIntegral(histogram_beforeCuts);
-	histogram_beforeCuts->Scale(1./integral_beforeCuts);
+	if ( integral_beforeCuts > 0. ) histogram_beforeCuts->Scale(1./integral_beforeCuts);
+	//std::cout << "histogram_beforeCuts = " << histogram_beforeCuts << ": integral = " << histogram_beforeCuts->Integral() << std::endl;
 
 	TString histogramName_afterCuts = histogramName_full;
 	histogramName_afterCuts = histogramName_afterCuts.ReplaceAll("$SELECTION", "sel");
 	TH1* histogram_afterCuts = loadHistogram(inputFile, histogramName_afterCuts.Data());
-	histogram_afterCuts->Scale(1./integral_beforeCuts);
+	//histogram_afterCuts->Scale(1./integral_beforeCuts);
+	double integral_afterCuts = compIntegral(histogram_afterCuts);
+	if ( integral_afterCuts > 0. ) histogram_afterCuts->Scale(1./integral_afterCuts);
+	//std::cout << "histogram_afterCuts = " << histogram_afterCuts << ": integral = " << histogram_afterCuts->Integral() << std::endl;
 
-	std::string outputFileName = Form("makeGenFilterPlots_before_and_afterCuts_%s_%s_%s.png", channel->data(), process->data(), histogramName->data());
-	showHistograms(800, 900,
+	std::string outputFileName = Form("plots/makeGenFilterPlots_before_and_afterCuts_%s_%s_%s.png", channel->data(), process->data(), histogramName->data());
+	showHistograms(1200, 900,
 		       histogram_beforeCuts, "before Cuts",
 		       histogram_afterCuts, "after Cuts",
 		       NULL, "", 
 		       NULL, "", 		       
 		       NULL, "", 
 		       NULL, "", 
-		       xAxisTitles[*histogramName], 1.10,
-		       true, 1.e-4, 1.e0, yAxisTitles[*histogramName], 1.20,
-		       0.54, 0.72,
+		       xAxisTitles[*histogramName], 1.05,
+		       true, 1.e-5, 3.e0, yAxisTitles[*histogramName], 1.10,
+		       0.61, 0.72,
 		       outputFileName.data());	
       }
 
