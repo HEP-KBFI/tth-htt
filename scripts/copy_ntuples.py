@@ -207,12 +207,13 @@ def generate_cmds(source, output_dir, hdfs_path, nof_splits):
     hadoop_job = "jobh"
     copy_job = "job%d"
     job_list = " ".join(map(lambda x: copy_job % x, range(nof_splits)) + [hadoop_job])
+    f.write("SHELL :=/bin/bash\n\n")
     f.write(".PHONY: %s\n\n" % job_list)
     f.write("all: %s\n\n" % job_list)
     f.write("%s:\n\t%s > %s 2>&1\n\n" % (hadoop_job, hadoop_file, hadoop_log))
     for i in range(nof_splits):
       f.write("%s: %s\n" % ((copy_job % i), hadoop_job))
-      f.write("\t%s > %s 2>&1\n\n" % (cmd_files % i, log_files % str(i)))
+      f.write("\tsource %s > %s 2>&1\n\n" % (cmd_files % i, log_files % str(i)))
 
   print("There are %d copies per nohup job; %d in total" %
         (len(cmds_split[0]), len(cmds)))

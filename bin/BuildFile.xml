@@ -369,4 +369,8 @@
   <use   name="root"/>
   <use   name="roottmva"/>
 </bin>
-
+<bin file="check_broken.cc" name="check_broken">
+  <use name="root" />
+  <use name="boost_filesystem" />
+  <use name="boost_program_options" />
+</bin>
