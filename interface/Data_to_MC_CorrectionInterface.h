@@ -98,8 +98,8 @@ class Data_to_MC_CorrectionInterface
 
   int era_;
   std::string hadTauSelection_;
-  int hadTauSelection_antiElectron_;
-  int hadTauSelection_antiMuon_;
+  int hadTauSelection_antiElectron_[3];
+  int hadTauSelection_antiMuon_[3];
   int eToTauFakeRate_option_;
   int muToTauFakeRate_option_;
 

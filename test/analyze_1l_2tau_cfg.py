@@ -59,7 +59,7 @@ process.analyze_1l_2tau = cms.PSet(
     lumiScale = cms.double(1.),
     apply_trigger_bits = cms.bool(True),
 
-    fillGenEvtHistograms = cms.bool(True),
+    fillGenEvtHistograms = cms.bool(False),
     
     selEventsFileName_input = cms.string(''),
     selEventsFileName_output = cms.string('')

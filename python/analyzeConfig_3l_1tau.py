@@ -39,7 +39,7 @@ class analyzeConfig_3l_1tau(analyzeConfig):
 
     self.hadTau_selections = hadTau_selections
     self.hadTau_frWeights = [ "enabled", "disabled" ]
-    self.hadTau_genMatches = [ "1t0e0m0j", "0t1e0m0j", "0t0e1m0j", "0t0e0m1j" ]
+    self.hadTau_genMatches = [ "all", "1t0e0m0j", "0t1e0m0j", "0t0e1m0j", "0t0e0m1j" ]
     self.hadTau_genMatches_nonfakes = []
     self.hadTau_genMatches_fakes = []
     for  hadTau_genMatch in self.hadTau_genMatches:
@@ -328,11 +328,19 @@ class analyzeConfig_3l_1tau(analyzeConfig):
                   for jobId in range(len(self.inputFileIds[sample_name])):
                     if hadTau_genMatch != "all" and not is_mc:
                       continue
-                    sample_category_and_genMatch = sample_category + hadTau_genMatch
-                    if central_or_shift != "central" and not (hadTau_selection.startswith("Tight") and charge_selection == "OS"):
+                    if hadTau_genMatch == "all" and is_mc:
+                      continue
+                    if central_or_shift != "central" and not (lepton_selection == "Tight" and hadTau_selection.startswith("Tight") and charge_selection == "OS"):
                       continue
                     if central_or_shift != "central" and not is_mc:
                       continue
+                    if central_or_shift.startswith("CMS_ttHl_thu_shape_ttH") and sample_category != "signal":
+	              continue
+                    if central_or_shift.startswith("CMS_ttHl_thu_shape_ttW") and sample_category != "TTW":
+                      continue
+                    if central_or_shift.startswith("CMS_ttHl_thu_shape_ttZ") and sample_category != "TTZ":
+                      continue
+                    sample_category_and_genMatch = sample_category + hadTau_genMatch
 
                     inputFiles = generate_input_list(self.inputFileIds[sample_name][jobId], secondary_files, primary_store, secondary_store, self.debug)
 

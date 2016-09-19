@@ -32,6 +32,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/GenLeptonReader.h" // GenLeptonReader
 #include "tthAnalysis/HiggsToTauTau/interface/GenHadTauReader.h" // GenHadTauReader
 #include "tthAnalysis/HiggsToTauTau/interface/GenJetReader.h" // GenJetReader
+#include "tthAnalysis/HiggsToTauTau/interface/LHEInfoReader.h" // LHEInfoReader
 #include "tthAnalysis/HiggsToTauTau/interface/convert_to_ptrs.h" // convert_to_ptrs
 #include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionCleaner.h" // RecoElectronCollectionCleaner, RecoMuonCollectionCleaner, RecoHadTauCollectionCleaner, RecoJetCollectionCleaner
 #include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionGenMatcher.h" // RecoElectronCollectionGenMatcher, RecoMuonCollectionGenMatcher, RecoHadTauCollectionGenMatcher, RecoJetCollectionGenMatcher
@@ -54,11 +55,12 @@
 #include "tthAnalysis/HiggsToTauTau/interface/MEtHistManager.h" // MEtHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/EvtHistManager_3l_1tau.h" // EvtHistManager_3l_1tau
 #include "tthAnalysis/HiggsToTauTau/interface/GenEvtHistManager.h" // GenEvtHistManager
+#include "tthAnalysis/HiggsToTauTau/interface/LHEInfoHistManager.h" // LHEInfoHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/leptonTypes.h" // getLeptonType, kElectron, kMuon
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // isHigherPt, isMatched
 #include "tthAnalysis/HiggsToTauTau/interface/hadTauGenMatchingAuxFunctions.h" // getHadTauGenMatch_definitions_3tau, getHadTauGenMatch
 #include "tthAnalysis/HiggsToTauTau/interface/hltPath.h" // hltPath, create_hltPaths, hltPaths_setBranchAddresses, hltPaths_isTriggered, hltPaths_delete
-#include "tthAnalysis/HiggsToTauTau/interface/Data_to_MC_CorrectionInterface.h"
+#include "tthAnalysis/HiggsToTauTau/interface/Data_to_MC_CorrectionInterface.h" // Data_to_MC_CorrectionInterface.h
 #include "tthAnalysis/HiggsToTauTau/interface/lutAuxFunctions.h" // loadTH2, get_sf_from_TH2
 #include "tthAnalysis/HiggsToTauTau/interface/cutFlowTable.h" // cutFlowTableType
 
@@ -82,6 +84,14 @@ typedef std::vector<std::string> vstring;
 
 const int hadTauSelection_antiElectron = 1; // vLoose
 const int hadTauSelection_antiMuon = 1; // Loose 
+
+int getHadTau_genPdgId(const RecoHadTau* hadTau)
+{
+  int hadTau_genPdgId = -1;
+  if      ( hadTau->genHadTau_ ) hadTau_genPdgId = 15;
+  else if ( hadTau->genLepton_ ) hadTau_genPdgId = std::abs(hadTau->genLepton_->pdgId_);
+  return hadTau_genPdgId;
+}
 
 /**
  * @brief Auxiliary function used for sorting jets by decreasing btagging CSV value
@@ -398,6 +408,7 @@ int main(int argc, char* argv[])
   int jetPt_option = RecoJetReader::kJetPt_central;
   int hadTauPt_option = RecoHadTauReader::kHadTauPt_central;
   int jetToTauFakeRate_option = kFRjt_central;
+  int lheScale_option = kLHE_scale_central;
   if ( isMC && central_or_shift != "central" ) {
     TString central_or_shift_tstring = central_or_shift.data();
     std::string shiftUp_or_Down = "";
@@ -427,6 +438,12 @@ int main(int argc, char* argv[])
       else if ( central_or_shift_tstring.EndsWith("normDown")  ) jetToTauFakeRate_option = kFRjt_normDown;
       else if ( central_or_shift_tstring.EndsWith("shapeUp")   ) jetToTauFakeRate_option = kFRjt_shapeUp;
       else if ( central_or_shift_tstring.EndsWith("shapeDown") ) jetToTauFakeRate_option = kFRjt_shapeDown;
+      else assert(0);
+    } else if ( central_or_shift_tstring.BeginsWith("CMS_ttHl_thu_shape") ) {
+      if      ( central_or_shift_tstring.EndsWith("x1Down") ) lheScale_option = kLHE_scale_xDown;
+      else if ( central_or_shift_tstring.EndsWith("x1Up")   ) lheScale_option = kLHE_scale_xUp;
+      else if ( central_or_shift_tstring.EndsWith("y1Down") ) lheScale_option = kLHE_scale_yDown;
+      else if ( central_or_shift_tstring.EndsWith("y1Up")   ) lheScale_option = kLHE_scale_yUp;
       else assert(0);
     } else if ( !(central_or_shift_tstring.BeginsWith("CMS_ttHl_FRet") || 
 		  central_or_shift_tstring.BeginsWith("CMS_ttHl_FRmt")) ) {
@@ -599,6 +616,7 @@ int main(int argc, char* argv[])
   GenLeptonReader* genLeptonReader = 0;
   GenHadTauReader* genHadTauReader = 0;
   GenJetReader* genJetReader = 0;
+  LHEInfoReader* lheInfoReader = 0;
   if ( isMC ) {
     genLeptonReader = new GenLeptonReader("nGenLep", "GenLep");
     genLeptonReader->setBranchAddresses(inputTree);
@@ -606,6 +624,8 @@ int main(int argc, char* argv[])
     genHadTauReader->setBranchAddresses(inputTree);
     genJetReader = new GenJetReader("nGenJet", "GenJet");
     genJetReader->setBranchAddresses(inputTree);
+    lheInfoReader = new LHEInfoReader();
+    lheInfoReader->setBranchAddresses(inputTree);
   }
 
 //--- initialize BDTs used to discriminate ttH vs. ttV and ttH vs. ttbar 
@@ -737,13 +757,21 @@ int main(int argc, char* argv[])
     }
   }
 
-  GenEvtHistManager genEvtHistManager_beforeCuts(makeHistManager_cfg(process_string, 
-    Form("3l_1tau_%s/unbiased/genEvt", charge_and_lepton_and_hadTauSelection.data()), central_or_shift));
-  genEvtHistManager_beforeCuts.bookHistograms(fs);
-  GenEvtHistManager genEvtHistManager_afterCuts(makeHistManager_cfg(process_string, 
-    Form("3l_1tau_%s/sel/genEvt", charge_and_lepton_and_hadTauSelection.data()), central_or_shift));
-  genEvtHistManager_afterCuts.bookHistograms(fs);
-  
+  GenEvtHistManager* genEvtHistManager_beforeCuts = 0;
+  GenEvtHistManager* genEvtHistManager_afterCuts = 0;
+  LHEInfoHistManager* lheInfoHistManager = 0;
+  if ( isMC ) {
+    genEvtHistManager_beforeCuts = new GenEvtHistManager(makeHistManager_cfg(process_string, 
+      Form("3l_1tau_%s/unbiased/genEvt", charge_and_lepton_and_hadTauSelection.data()), central_or_shift));
+    genEvtHistManager_beforeCuts->bookHistograms(fs);
+    genEvtHistManager_afterCuts = new GenEvtHistManager(makeHistManager_cfg(process_string, 
+      Form("3l_1tau_%s/sel/genEvt", charge_and_lepton_and_hadTauSelection.data()), central_or_shift));
+    genEvtHistManager_afterCuts->bookHistograms(fs);
+    lheInfoHistManager = new LHEInfoHistManager(makeHistManager_cfg(process_string, 
+      Form("3l_1tau_%s/sel/lheInfo", charge_and_lepton_and_hadTauSelection.data()), central_or_shift));
+    lheInfoHistManager->bookHistograms(fs);
+  }
+
   int numEntries = inputTree->GetEntries();
   int analyzedEntries = 0;
   int selectedEntries = 0;
@@ -779,7 +807,7 @@ int main(int argc, char* argv[])
     }
 
     if ( isMC ) {
-      genEvtHistManager_beforeCuts.fillHistograms(genElectrons, genMuons, genHadTaus, genJets);
+      genEvtHistManager_beforeCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genJets);
     }
     
     bool isTriggered_1e = hltPaths_isTriggered(triggers_1e) || (isMC && !apply_trigger_bits);
@@ -1041,6 +1069,10 @@ int main(int argc, char* argv[])
     }
     double met_LD = met_coef*met_p4.pt() + mht_coef*mht_p4.pt();    
 
+    if ( isMC ) {
+      lheInfoReader->read();
+    }
+
 //--- compute event-level weight for data/MC correction of b-tagging efficiency and mistag rate
 //   (using the method "Event reweighting using scale factors calculated with a tag and probe method", 
 //    described on the BTV POG twiki https://twiki.cern.ch/twiki/bin/view/CMS/BTagShapeCalibration )
@@ -1048,6 +1080,12 @@ int main(int argc, char* argv[])
     if ( isMC ) {
       evtWeight *= lumiScale;
       evtWeight *= pileupWeight;      
+      if ( lheScale_option != kLHE_scale_central ) {	
+	if      ( lheScale_option == kLHE_scale_xDown ) evtWeight *= lheInfoReader->getWeight_scale_xDown();
+	else if ( lheScale_option == kLHE_scale_xUp   ) evtWeight *= lheInfoReader->getWeight_scale_xUp();
+	else if ( lheScale_option == kLHE_scale_yDown ) evtWeight *= lheInfoReader->getWeight_scale_yDown();
+	else if ( lheScale_option == kLHE_scale_yUp   ) evtWeight *= lheInfoReader->getWeight_scale_yUp();
+      }
       for ( std::vector<const RecoJet*>::const_iterator jet = selJets.begin();
 	    jet != selJets.end(); ++jet ) {
 	evtWeight *= (*jet)->BtagWeight_;
@@ -1072,9 +1110,7 @@ int main(int argc, char* argv[])
 
 //--- apply data/MC corrections for hadronic tau identification efficiency 
 //    and for e->tau and mu->tau misidentification rates
-      int selHadTau_genPdgId = -1;
-      if      ( selHadTau->genHadTau_ ) selHadTau_genPdgId = 15;
-      else if ( selHadTau->genLepton_ ) selHadTau_genPdgId = std::abs(selHadTau->genLepton_->pdgId_);
+      int selHadTau_genPdgId = getHadTau_genPdgId(selHadTau);
       dataToMCcorrectionInterface->setHadTaus(selHadTau_genPdgId, selHadTau->pt_, selHadTau->eta_);
       evtWeight *= dataToMCcorrectionInterface->getSF_hadTauID_and_Iso();
       evtWeight *= dataToMCcorrectionInterface->getSF_eToTauFakeRate();
@@ -1435,7 +1471,8 @@ int main(int argc, char* argv[])
     }
 
     if ( isMC ) {
-      genEvtHistManager_afterCuts.fillHistograms(genElectrons, genMuons, genHadTaus, genJets);
+      genEvtHistManager_afterCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genJets);
+      lheInfoHistManager->fillHistograms(*lheInfoReader, evtWeight);
     }
     
     if ( writeSelEventsFile ) {
@@ -1494,9 +1531,8 @@ int main(int argc, char* argv[])
   cutFlowTable.print(std::cout);
   std::cout << std::endl;
 
-  if(writeSelEventsFile)
-  {
-    selEventsTFile -> Write();
+  if ( writeSelEventsFile ) {
+    selEventsTFile->Write();
     delete selEventsTFile;
   }
 
@@ -1515,6 +1551,11 @@ int main(int argc, char* argv[])
   delete genLeptonReader;
   delete genHadTauReader;
   delete genJetReader;
+  delete lheInfoReader;
+
+  delete genEvtHistManager_beforeCuts;
+  delete genEvtHistManager_afterCuts;
+  delete lheInfoHistManager;
 
   hltPaths_delete(triggers_1e);
   hltPaths_delete(triggers_2e);

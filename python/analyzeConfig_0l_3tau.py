@@ -36,7 +36,8 @@ class analyzeConfig_0l_3tau(analyzeConfig):
 
     self.hadTau_selections = hadTau_selections
     self.hadTau_frWeights = [ "enabled", "disabled" ]
-    self.hadTau_genMatches = [ "3t0e0m0j", "2t1e0m0j", "2t0e1m0j", "2t0e0m1j", "1t2e0m0j", "1t1e1m0j", "1t1e0m1j", "1t0e2m0j", "1t0e1m1j", "1t0e0m2j",
+    self.hadTau_genMatches = [ "all",
+                               "3t0e0m0j", "2t1e0m0j", "2t0e1m0j", "2t0e0m1j", "1t2e0m0j", "1t1e1m0j", "1t1e0m1j", "1t0e2m0j", "1t0e1m1j", "1t0e0m2j",
                                "0t3e0m0j", "0t2e1m0j", "0t2e0m1j", "0t1e2m0j", "0t1e1m1j", "0t1e0m2j", "0t0e3m0j", "0t0e2m1j", "0t0e1m2j", "0t0e0m3j" ]
     self.hadTau_genMatches_nonfakes = []
     self.hadTau_genMatches_fakes = []
@@ -288,7 +289,7 @@ class analyzeConfig_0l_3tau(analyzeConfig):
       lumi_scale = 1. if not (self.use_lumi and is_mc) else sample_info["xsection"] * self.lumi / sample_info["nof_events"]
       sample_category = sample_info["sample_category"]
       triggers = sample_info["triggers"]
-      apply_trigger_bits = (is_mc and (self.era == "2015" or (self.era == "2016" and sample_info["reHLT"]))) or not is_mc
+      apply_trigger_bits = (is_mc and self.era == "2016" and sample_info["reHLT"]) or not is_mc
 
       for hadTau_selection in self.hadTau_selections:
         for hadTau_frWeight in [ "enabled", "disabled" ]:
@@ -300,11 +301,19 @@ class analyzeConfig_0l_3tau(analyzeConfig):
               for jobId in range(len(self.inputFileIds[sample_name])):
                 if hadTau_genMatch != "all" and not is_mc:
                   continue
-                sample_category_and_genMatch = sample_category + hadTau_genMatch
+                if hadTau_genMatch == "all" and is_mc:
+                  continue
                 if central_or_shift != "central" and not hadTau_selection.startswith("Tight"):
                   continue
                 if central_or_shift != "central" and not is_mc:
                   continue
+                if central_or_shift.startswith("CMS_ttHl_thu_shape_ttH") and sample_category != "signal":
+                  continue
+                if central_or_shift.startswith("CMS_ttHl_thu_shape_ttW") and sample_category != "TTW":
+                  continue
+                if central_or_shift.startswith("CMS_ttHl_thu_shape_ttZ") and sample_category != "TTZ":
+                  continue
+                sample_category_and_genMatch = sample_category + hadTau_genMatch
 
                 inputFiles = generate_input_list(self.inputFileIds[sample_name][jobId], secondary_files, primary_store, secondary_store, self.debug)
 

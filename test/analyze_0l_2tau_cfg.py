@@ -23,7 +23,6 @@ process.analyze_0l_2tau = cms.PSet(
     era = cms.string('2015'),
 
     triggers = cms.vstring(""),
-    applyTriggers = cms.bool(False),
         
     hadTauChargeSelection = cms.string('OS'),
     hadTauSelection = cms.string('Tight'),
@@ -56,6 +55,8 @@ process.analyze_0l_2tau = cms.PSet(
     central_or_shift = cms.string('central'),
     lumiScale = cms.double(1.),
     apply_trigger_bits = cms.bool(True),
+
+    fillGenEvtHistograms = cms.bool(False),
     
     selEventsFileName_input = cms.string(''),
     selEventsFileName_output = cms.string('')

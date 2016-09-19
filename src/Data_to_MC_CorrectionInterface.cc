@@ -11,6 +11,33 @@
 #include <algorithm> // std::sort()
 #include <assert.h> // assert
 
+namespace
+{
+  std::string getEtaBinLabel(double etaMin, double etaMax)
+  {
+    TString etaBinLabel_tstring;
+    if ( etaMin != -1. && etaMax != -1. ) {
+      etaBinLabel_tstring = Form("%1.4gto%1.4g", etaMin, etaMax);
+    } else if ( etaMin != -1. ) {
+      etaBinLabel_tstring = Form("Gt%1.4g", etaMin);
+    } else if ( etaMax != -1. ) {
+      etaBinLabel_tstring = Form("Lt%1.4g", etaMax);
+    } else assert(0);
+    std::string etaBinLabel = etaBinLabel_tstring.ReplaceAll(".", "p").Data();
+    return etaBinLabel;
+  }
+
+  std::string getHadTauIdxLabel(int idx)
+  {
+    std::string hadTauIdxLabel;
+    if      ( idx == 0 ) hadTauIdxLabel = "_lead";
+    else if ( idx == 1 ) hadTauIdxLabel = "_sublead";
+    else if ( idx == 2 ) hadTauIdxLabel = "_third";
+    else assert(0);
+    return hadTauIdxLabel;
+  }
+}
+
 Data_to_MC_CorrectionInterface::Data_to_MC_CorrectionInterface(const edm::ParameterSet& cfg)
   : effTrigger_ee_(0)
   , effTrigger_em_(0)
@@ -40,8 +67,22 @@ Data_to_MC_CorrectionInterface::Data_to_MC_CorrectionInterface(const edm::Parame
     << "Invalid Configuration parameter 'era' = " << era_string << " !!\n";
 
   hadTauSelection_ = cfg.getParameter<std::string>("hadTauSelection");
-  hadTauSelection_antiElectron_ = cfg.getParameter<int>("hadTauSelection_antiElectron");
-  hadTauSelection_antiMuon_ = cfg.getParameter<int>("hadTauSelection_antiMuon");
+  for ( int idxHadTau = 0; idxHadTau < 3; ++idxHadTau ) {
+    hadTauSelection_antiElectron_[idxHadTau] = -1;
+    if ( cfg.exists("hadTauSelection_antiElectron") ) {
+      hadTauSelection_antiElectron_[idxHadTau] = cfg.getParameter<int>("hadTauSelection_antiElectron");
+    } else {
+      std::string cfgParName = "hadTauSelection_antiElectron" + getHadTauIdxLabel(idxHadTau);
+      if ( cfg.exists(cfgParName) ) hadTauSelection_antiElectron_[idxHadTau] = cfg.getParameter<int>(cfgParName);
+    }
+    hadTauSelection_antiMuon_[idxHadTau] = -1;
+    if ( cfg.exists("hadTauSelection_antiMuon") ) {
+      hadTauSelection_antiMuon_[idxHadTau] = cfg.getParameter<int>("hadTauSelection_antiMuon");
+    } else {
+      std::string cfgParName = "hadTauSelection_antiMuon" + getHadTauIdxLabel(idxHadTau);
+      if ( cfg.exists(cfgParName) ) hadTauSelection_antiMuon_[idxHadTau] = cfg.getParameter<int>(cfgParName);
+    }
+  }
 
   std::string central_or_shift = cfg.getParameter<std::string>("central_or_shift");
   if ( central_or_shift != "central" ) {
@@ -86,41 +127,34 @@ Data_to_MC_CorrectionInterface::Data_to_MC_CorrectionInterface(const edm::Parame
       inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2015/lepMVAEffSF_m_2lss.root", "sf",
       lut::kXptYabsEta, -1., 80.));
 
-    sfTrigger_1e_.push_back(new lutWrapperData_to_MC(
-      new lutWrapperTGraph(
-        inputFiles_, "tthAnalysis/HiggsToTauTau/data/triggerSF/2015/Electron_SingleEle_eff.root", "ZMassEtaLt1p48_Data",
-        lut::kXptYabsEta, -1., -1., -1., 1.48),
-      new lutWrapperTGraph(
-        inputFiles_, "tthAnalysis/HiggsToTauTau/data/triggerSF/2015/Electron_SingleEle_eff.root", "ZMassEtaLt1p48_MC",
-        lut::kXptYabsEta, -1., -1., -1., 1.48)));
-    sfTrigger_1e_.push_back(new lutWrapperData_to_MC(
-      new lutWrapperTGraph(
-        inputFiles_, "tthAnalysis/HiggsToTauTau/data/triggerSF/2015/Electron_SingleEle_eff.root", "ZMassEtaGt1p48_Data",
-        lut::kXptYabsEta, -1., -1., 1.48, -1.),
-      new lutWrapperTGraph(
-        inputFiles_, "tthAnalysis/HiggsToTauTau/data/triggerSF/2015/Electron_SingleEle_eff.root", "ZMassEtaGt1p48_MC",
-        lut::kXptYabsEta, -1., -1., 1.48, -1.)));
-    sfTrigger_1m_.push_back(new lutWrapperData_to_MC(
-      new lutWrapperTGraph(
-        inputFiles_, "tthAnalysis/HiggsToTauTau/data/triggerSF/2015/Muon_SingleMu_eff.root", "ZMassEtaLt0p9_Data",
-        lut::kXptYabsEta, -1., -1., -1., 0.9),
-      new lutWrapperTGraph(
-        inputFiles_, "tthAnalysis/HiggsToTauTau/data/triggerSF/2015/Muon_SingleMu_eff.root", "ZMassEtaLt0p9_MC",
-        lut::kXptYabsEta, -1., -1., -1., 0.9)));
-    sfTrigger_1m_.push_back(new lutWrapperData_to_MC(
-      new lutWrapperTGraph(
-        inputFiles_, "tthAnalysis/HiggsToTauTau/data/triggerSF/2015/Muon_SingleMu_eff.root", "ZMassEta0p9to1p2_Data",
-        lut::kXptYabsEta, -1., -1., 0.9, 1.2),
-      new lutWrapperTGraph(
-        inputFiles_, "tthAnalysis/HiggsToTauTau/data/triggerSF/2015/Muon_SingleMu_eff.root", "ZMassEta0p9to1p2_MC",
-        lut::kXptYabsEta, -1., -1., 0.9, 1.2)));
-    sfTrigger_1m_.push_back(new lutWrapperData_to_MC(
-      new lutWrapperTGraph(
-        inputFiles_, "tthAnalysis/HiggsToTauTau/data/triggerSF/2015/Muon_SingleMu_eff.root", "ZMassEtaGt1p2_Data",
-        lut::kXptYabsEta, -1., -1., 1.2, -1.),
-      new lutWrapperTGraph(
-        inputFiles_, "tthAnalysis/HiggsToTauTau/data/triggerSF/2015/Muon_SingleMu_eff.root", "ZMassEtaGt1p2_MC",
-        lut::kXptYabsEta, -1., -1., 1.2, -1.)));
+    std::vector<double> etaBinEdges_e = { -1., 1.48, -1. };
+    int numEtaBins_e = etaBinEdges_e.size() - 1;
+    for ( int idxEtaBin = 0; idxEtaBin < numEtaBins_e; ++idxEtaBin ) {
+      double etaMin = etaBinEdges_e[idxEtaBin];
+      double etaMax = etaBinEdges_e[idxEtaBin + 1];  
+      std::string etaBinLabel = getEtaBinLabel(etaMin, etaMax);
+      sfTrigger_1e_.push_back(new lutWrapperData_to_MC(
+        new lutWrapperTGraph(
+          inputFiles_, "tthAnalysis/HiggsToTauTau/data/triggerSF/2015/Electron_SingleEle_eff.root", Form("ZMassEta%s_Data", etaBinLabel.data()),
+          lut::kXptYabsEta, -1., -1., etaMin, etaMax),
+        new lutWrapperTGraph(
+          inputFiles_, "tthAnalysis/HiggsToTauTau/data/triggerSF/2015/Electron_SingleEle_eff.root", Form("ZMassEta%s_MC", etaBinLabel.data()),
+          lut::kXptYabsEta, -1., -1., etaMin, etaMax)));
+    }  
+    std::vector<double> etaBinEdges_m = { -1., 0.9, 1.2, -1. };
+    int numEtaBins_m = etaBinEdges_m.size() - 1;
+    for ( int idxEtaBin = 0; idxEtaBin < numEtaBins_m; ++idxEtaBin ) {
+      double etaMin = etaBinEdges_m[idxEtaBin];
+      double etaMax = etaBinEdges_m[idxEtaBin + 1];
+      std::string etaBinLabel = getEtaBinLabel(etaMin, etaMax);
+      sfTrigger_1m_.push_back(new lutWrapperData_to_MC(
+        new lutWrapperTGraph(
+          inputFiles_, "tthAnalysis/HiggsToTauTau/data/triggerSF/2015/Muon_SingleMu_eff.root", Form("ZMassEta%s_Data", etaBinLabel.data()),
+          lut::kXptYabsEta, -1., -1., etaMin, etaMax),
+        new lutWrapperTGraph(
+          inputFiles_, "tthAnalysis/HiggsToTauTau/data/triggerSF/2015/Muon_SingleMu_eff.root", Form("ZMassEta%s_MC", etaBinLabel.data()),
+          lut::kXptYabsEta, -1., -1., etaMin, etaMax)));
+    }
   } else if ( era_ == kEra_2016 ) {
     sfElectronID_and_Iso_loose_.push_back(new lutWrapperTH2(
       inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2016/el_scaleFactors_20160724.root", "GsfElectronToFOID2D",
@@ -172,27 +206,26 @@ Data_to_MC_CorrectionInterface::Data_to_MC_CorrectionInterface(const edm::Parame
     effTrigger_3l_ = new lutWrapperTH2(
       inputFiles_, "tthAnalysis/HiggsToTauTau/data/triggerSF/2016RunBCD/trig_eff_map_v4.root", "__3l2DPt_effic",
       lut::kXpt); // X=pt1, Y=pt2
-    effTrigger_1e_.push_back(new lutWrapperTGraph(
-      inputFiles_, "tthAnalysis/HiggsToTauTau/data/triggerSF/2016RunBCD/Electron_Ele25eta2p1WPTight_eff.root", "ZMassEtaLt1p48_Data",
-      lut::kXptYabsEta, -1., -1., -1., 1.48)); 
-    effTrigger_1e_.push_back(new lutWrapperTGraph(
-      inputFiles_, "tthAnalysis/HiggsToTauTau/data/triggerSF/2016RunBCD/Electron_Ele25eta2p1WPTight_eff.root", "ZMassEta1p48to2p1_Data",
-      lut::kXptYabsEta, -1., -1., 1.48, 2.1));
-    effTrigger_1e_.push_back(new lutWrapperTGraph(
-      inputFiles_, "tthAnalysis/HiggsToTauTau/data/triggerSF/2016RunBCD/Electron_Ele25eta2p1WPTight_eff.root", "ZMassEtaGt2p1_Data",
-      lut::kXptYabsEta, -1., -1., 2.1, -1));
-    effTrigger_1m_.push_back(new lutWrapperTGraph(
-      inputFiles_, "tthAnalysis/HiggsToTauTau/data/triggerSF/2016RunBCD/Muon_IsoMu22_OR_TkIsoMu22_eff.root", "ZMassEtaLt0p9_Data",
-      lut::kXptYabsEta, -1., -1., -1., 0.9)); 
-    effTrigger_1m_.push_back(new lutWrapperTGraph(
-      inputFiles_, "tthAnalysis/HiggsToTauTau/data/triggerSF/2016RunBCD/Muon_IsoMu22_OR_TkIsoMu22_eff.root", "ZMassEta0p9to1p2_Data",
-      lut::kXptYabsEta, -1., -1., 0.9, 1.2));
-    effTrigger_1m_.push_back(new lutWrapperTGraph(
-      inputFiles_, "tthAnalysis/HiggsToTauTau/data/triggerSF/2016RunBCD/Muon_IsoMu22_OR_TkIsoMu22_eff.root", "ZMassEta1p2to2p1_Data",
-      lut::kXptYabsEta, -1., -1., 1.2, 2.1)); 
-    effTrigger_1m_.push_back(new lutWrapperTGraph(
-      inputFiles_, "tthAnalysis/HiggsToTauTau/data/triggerSF/2016RunBCD/Muon_IsoMu22_OR_TkIsoMu22_eff.root", "ZMassEtaGt2p1_Data",
-      lut::kXptYabsEta, -1., -1., 2.1, -1.));
+    std::vector<double> etaBinEdges_e = { -1., 1.48, 2.1, -1. }; 
+    int numEtaBins_e = etaBinEdges_e.size() - 1;
+    for ( int idxEtaBin = 0; idxEtaBin < numEtaBins_e; ++idxEtaBin ) {
+      double etaMin = etaBinEdges_e[idxEtaBin];
+      double etaMax = etaBinEdges_e[idxEtaBin + 1];
+      std::string etaBinLabel = getEtaBinLabel(etaMin, etaMax);
+      effTrigger_1e_.push_back(new lutWrapperTGraph(
+        inputFiles_, "tthAnalysis/HiggsToTauTau/data/triggerSF/2016RunBCD/Electron_Ele25eta2p1WPTight_eff.root", Form("ZMassEta%s_Data", etaBinLabel.data()),
+        lut::kXptYabsEta, -1., -1., etaMin, etaMax)); 
+    }
+    std::vector<double> etaBinEdges_m = { -1., 0.9, 1.2, 2.1, -1. };
+    int numEtaBins_m = etaBinEdges_m.size() - 1;
+    for ( int idxEtaBin = 0; idxEtaBin < numEtaBins_m; ++idxEtaBin ) {
+      double etaMin = etaBinEdges_m[idxEtaBin];
+      double etaMax = etaBinEdges_m[idxEtaBin + 1];
+      std::string etaBinLabel = getEtaBinLabel(etaMin, etaMax);
+      effTrigger_1m_.push_back(new lutWrapperTGraph(
+        inputFiles_, "tthAnalysis/HiggsToTauTau/data/triggerSF/2016RunBCD/Muon_IsoMu22_OR_TkIsoMu22_eff.root", Form("ZMassEta%s_Data", etaBinLabel.data()),
+        lut::kXptYabsEta, -1., -1., etaMin, etaMax)); 
+    }
   } else assert(0);
 }
  
@@ -588,7 +621,7 @@ double Data_to_MC_CorrectionInterface::getSF_eToTauFakeRate() const
       double absEta = std::fabs(hadTau_eta_[idxHadTau]);
       // CV: e->tau misidentification rate has not yet been measured in 2016 data,
       //     use data/MC corrections measured in 2015 data for both data-taking periods
-      sf *= getSF_eToTauFakeRate_2015(pt, absEta, hadTauSelection_antiElectron_, eToTauFakeRate_option_);
+      sf *= getSF_eToTauFakeRate_2015(pt, absEta, hadTauSelection_antiElectron_[idxHadTau], eToTauFakeRate_option_);
     }
   }
   //std::cout << "<Data_to_MC_CorrectionInterface::getSF_eToTauFakeRate>: sf = " << sf << std::endl;
@@ -604,7 +637,7 @@ double Data_to_MC_CorrectionInterface::getSF_muToTauFakeRate() const
       double absEta = std::fabs(hadTau_eta_[idxHadTau]);
       // CV: no mu->tau misidentification rate measurement available for 2015 data,
       //     use data/MC corrections measured in 2016 data for both data-taking periods
-      sf *= getSF_muToTauFakeRate_2016(pt, absEta, hadTauSelection_antiMuon_, muToTauFakeRate_option_);
+      sf *= getSF_muToTauFakeRate_2016(pt, absEta, hadTauSelection_antiMuon_[idxHadTau], muToTauFakeRate_option_);
     }
   }
   //std::cout << "<Data_to_MC_CorrectionInterface::getSF_muToTauFakeRate>: sf = " << sf << std::endl;
