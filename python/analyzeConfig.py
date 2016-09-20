@@ -10,6 +10,8 @@ DKEY_DCRD = "datacards"   # dir for the datacard
 DKEY_RLES = "output_rle"  # dir for the selected run:lumi:event numbers
 DKEY_ROOT = "output_root" # dir for the selected events dumped into a root file
 
+executable_rm = 'rm'
+
 DIRLIST = [ DKEY_CFGS, DKEY_DCRD, DKEY_HIST, DKEY_PLOT, DKEY_LOGS, DKEY_RLES, DKEY_ROOT ]
 
 def initDict(dictionary, keys):
@@ -149,6 +151,14 @@ class analyzeConfig:
     self.rootOutputFiles = {}
     self.rootOutputAux = {}
 
+    self.cvmfs_error_log = {}
+
+  def __del__(self):
+    for hostname, times in self.cvmfs_error_log.items():
+      print "Problem with cvmfs access: host = %s (%i jobs)" % (hostname, len(times))
+      for time in times:
+        print time
+
   def createCfg_analyze(self, *args):
     raise ValueError("Function 'createCfg_analyze' not implemented in derrived class !!")      
 
@@ -195,10 +205,10 @@ class analyzeConfig:
     category_label = self.channel
     cfgFile_modified = os.path.join(self.outputDir, DKEY_CFGS, "makePlots_%s_cfg.py" % self.channel)
     if not histogramDir:
-        histogramDir = self.histogramDir_prep_dcard
-        if label:
-            category_label += " (%s)" % label
-            cfgFile_modified = cfgFile_modified.replace("_cfg.py", "_%s_cfg.py" % label)
+      histogramDir = self.histogramDir_prep_dcard
+      if label:
+        category_label += " (%s)" % label
+        cfgFile_modified = cfgFile_modified.replace("_cfg.py", "_%s_cfg.py" % label)
     lines = []
     lines.append("process.fwliteInput.fileNames = cms.vstring('%s')" % self.histogramFile_hadd_stage2)
     lines.append("process.makePlots.outputFileName = cms.string('%s')" % outputFileName)
@@ -244,12 +254,44 @@ class analyzeConfig:
     lines_sbatch.append("m = sbatchManager()")
     lines_sbatch.append("m.setWorkingDir('%s')" % self.workingDir)
     for key_file, cfgFile in self.cfgFiles_analyze_modified.items():
-      histogramFile = self.histogramFiles[key_file]
-      logFile = self.logFiles_analyze[key_file]
-      if os.path.exists(histogramFile):
-        print "output file %s already exists" % histogramFile
-        continue
-      lines_sbatch.append("m.submitJob('%s', '%s', '%s', True, '%s')" % (self.executable_analyze, cfgFile, logFile, histogramFile))
+      histogramFileName = self.histogramFiles[key_file]
+      if os.path.exists(histogramFileName):
+        histogramFileSize = os.stat(histogramFileName).st_size
+        print "output file %s already exists, size = %i" % (histogramFileName, histogramFileSize)
+        if histogramFileSize > 20000:
+          print "--> skipping job"
+          continue
+        else:
+          print "--> deleting output file and resubmitting job"
+          command = "%s %s" % (executable_rm, histogramFileName)
+          run_cmd(command)
+      logFileName = self.logFiles_analyze[key_file]
+      logFile = open(logFileName)
+      is_time = False
+      time = None
+      is_hostname = False
+      hostname = None
+      is_cvmfs_error = False
+      for line in logFile:
+        if line.find("time") != -1:
+          is_time = True
+          continue
+        if is_time:
+          time = line.strip()
+          is_time = False
+        if line.find("'hostname'") != -1:
+          is_hostname = True
+          continue
+        if is_hostname:
+          hostname = line.strip()
+          is_hostname = False
+        if line.find("Transport endpoint is not connected") != -1:
+          is_cvmfs_error = True          
+      logFile.close()
+      if is_cvmfs_error:
+        print "Problem with cvmfs access: host = %s (time = %s)" % (hostname, time)
+        self.cvmfs_error_log[hostname].append(time)
+      lines_sbatch.append("m.submitJob('%s', '%s', '%s', True, '%s')" % (self.executable_analyze, cfgFile, logFileName, histogramFileName))
     lines_sbatch.append("m.waitForJobs()")
     createFile(self.sbatchFile_analyze, lines_sbatch)
 

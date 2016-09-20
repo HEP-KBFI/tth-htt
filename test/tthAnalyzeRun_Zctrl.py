@@ -19,7 +19,7 @@ elif ERA == "2016":
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "2016Sep14"
+version = "2016Sep20"
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -51,8 +51,18 @@ if __name__ == '__main__':
 ##       "CMS_ttHl_btag_cErr2Down",
 ##       "CMS_ttHl_JESUp",
 ##       "CMS_ttHl_JESDown",
-##       "CMS_ttHl_tauESUp",
-##       "CMS_ttHl_tauESDown"  
+##       "CMS_ttHl_thu_shape_ttH_x1Up",  
+##       "CMS_ttHl_thu_shape_ttH_x1Down",
+##       "CMS_ttHl_thu_shape_ttH_y1Up",   
+##       "CMS_ttHl_thu_shape_ttH_y1Down",
+##       "CMS_ttHl_thu_shape_ttW_x1Up",
+##       "CMS_ttHl_thu_shape_ttW_x1Down",
+##       "CMS_ttHl_thu_shape_ttW_y1Up",
+##       "CMS_ttHl_thu_shape_ttW_y1Down",
+##       "CMS_ttHl_thu_shape_ttZ_x1Up",
+##       "CMS_ttHl_thu_shape_ttZ_x1Down",
+##       "CMS_ttHl_thu_shape_ttZ_y1Up",
+##       "CMS_ttHl_thu_shape_ttZ_y1Down" 
     ],
     max_files_per_job = 30,
     era = ERA, use_lumi = True, lumi = LUMI,

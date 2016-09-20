@@ -168,7 +168,13 @@ class analyzeConfig_WZctrl(analyzeConfig):
         for jobId in range(len(self.inputFileIds[sample_name])):
           if central_or_shift != "central" and not is_mc:
             continue
-
+          if central_or_shift.startswith("CMS_ttHl_thu_shape_ttH") and sample_category != "signal":
+            continue
+          if central_or_shift.startswith("CMS_ttHl_thu_shape_ttW") and sample_category != "TTW":
+            continue
+          if central_or_shift.startswith("CMS_ttHl_thu_shape_ttZ") and sample_category != "TTZ":
+            continue
+          
           inputFiles = generate_input_list(self.inputFileIds[sample_name][jobId], secondary_files, primary_store, secondary_store, self.debug)
 
           key_file = getKey(sample_name, central_or_shift, jobId)

@@ -261,6 +261,11 @@ Data_to_MC_CorrectionInterface::~Data_to_MC_CorrectionInterface()
   clearCollection(effTrigger_1m_);
 }
 
+void Data_to_MC_CorrectionInterface::setHadTauSelection(const std::string& hadTauSelection)
+{
+  hadTauSelection_ = hadTauSelection;
+}
+
 void Data_to_MC_CorrectionInterface::setLeptons(int lepton1_type, double lepton1_pt, double lepton1_eta,
 						int lepton2_type, double lepton2_pt, double lepton2_eta, 
 						int lepton3_type, double lepton3_pt, double lepton3_eta)
