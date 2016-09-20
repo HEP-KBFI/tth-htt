@@ -5,7 +5,8 @@
 #include <assert.h> // assert
 
 LHEInfoHistManager::LHEInfoHistManager(const edm::ParameterSet& cfg)
-  : HistManagerBase(cfg)
+  : HistManagerBase(cfg),
+    histogram_pdfWeights_(0)
 {}
 
 void LHEInfoHistManager::bookHistograms(TFileDirectory& dir)

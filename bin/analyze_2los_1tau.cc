@@ -927,6 +927,10 @@ int main(int argc, char* argv[])
     }
     double met_LD = met_coef*met_p4.pt() + mht_coef*mht_p4.pt();    
 
+    if ( isMC ) {
+      lheInfoReader->read();
+    }
+
 //--- compute event-level weight for data/MC correction of b-tagging efficiency and mistag rate
 //   (using the method "Event reweighting using scale factors calculated with a tag and probe method", 
 //    described on the BTV POG twiki https://twiki.cern.ch/twiki/bin/view/CMS/BTagShapeCalibration )

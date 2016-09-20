@@ -7,6 +7,10 @@ echo "current time:"
 date
 echo "executing 'hostname':"
 hostname
+echo "executing 'pwd':"
+pwd
+echo "executing 'env':"
+env
 echo "initializing CMSSW run-time environment"
 source /cvmfs/cms.cern.ch/cmsset_default.sh 
 cd {{ working_dir }}
@@ -24,7 +28,8 @@ class sbatchManager:
   def __init__(self):
     self.workingDir = None
     self.logFileDir = None
-    self.queue = "short"
+    ##self.queue = "short"
+    self.queue = "long"
     self.command_submit = "sbatch"
     self.command_poll = "squeue"
     self.poll_interval = 30

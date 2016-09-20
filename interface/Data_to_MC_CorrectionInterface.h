@@ -18,6 +18,11 @@ class Data_to_MC_CorrectionInterface
   ~Data_to_MC_CorrectionInterface();
 
   //-----------------------------------------------------------------------------
+  // overwrite configuration parameters (needed by analyze_jetToTauFakeRate.cc)
+  void setHadTauSelection(const std::string& hadTauSelection);
+  //-----------------------------------------------------------------------------
+
+  //-----------------------------------------------------------------------------
   // set lepton type, pT and eta
   // (to be called once per event, before calling any of the getSF.. functions)
   void setLeptons(int lepton1_type, double lepton1_pt, double lepton1_eta,
