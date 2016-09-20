@@ -226,19 +226,23 @@ class analyzeConfig:
   def initializeInputFileIds(self, sample_name, sample_info):
     """Retrieves the number of input ROOT files (Ntuples) corresponding to a given sample
        and fills the number into the dictionary 'self.inputFileIds', with the name of the sample as key
+
+       TODO: add blacklist to the secondary storage as well
     """
     nof_inputFiles = sample_info["nof_files"]
     store_dirs = sample_info["local_paths"]
     assert(len(store_dirs) <= 2), "There is more than one secondary dir!"
     primary_store, secondary_store = "", ""
-    secondary_files = []
+    secondary_files, blacklist = [], []
     for store_dir in store_dirs:
       if store_dir["selection"] == "*":
         primary_store = store_dir["path"]
+        if "blacklist" in store_dir:
+          blacklist = store_dir["blacklist"]
       else:
         secondary_store = store_dir["path"]
         secondary_files = map(lambda x: int(x), store_dir["selection"].split(","))
-    self.inputFileIds[sample_name] = generate_file_ids(nof_inputFiles, self.max_files_per_job)
+    self.inputFileIds[sample_name] = generate_file_ids(nof_inputFiles, self.max_files_per_job, blacklist)
     return ( secondary_files, primary_store, secondary_store )
 
   def createScript_sbatch(self):

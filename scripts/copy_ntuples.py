@@ -69,7 +69,7 @@ def get_root_files(domain, loc):
     dir_name = dir_list.pop()
     print(">> %s" % dir_name)
     out = call_xrdfs(domain, dir_name)
-    
+
     for entry in out.split('\n'):
       split_entry = entry.split()
       if len(split_entry) == 0: continue # Might be an empty line
@@ -143,8 +143,7 @@ def generate_cmds(source, output_dir, hdfs_path, nof_splits):
   no recursive option for `hadoop fs -mkdir', thus we have to mimic the recursive creation
   ourselves.
   '''
-  cmds = []
-  hadoop_paths = [hdfs_path]
+  cmds, hadoop_paths = [], []
   print("Generate copy and hadoop commands")
 
   for subdir in source["subdirs"]:
@@ -155,14 +154,7 @@ def generate_cmds(source, output_dir, hdfs_path, nof_splits):
           line = line.rstrip('\n')
           dir_candidate = os.path.dirname(line.split(source["parent"])[1])
           hdfs_dir = os.path.join(hdfs_path, dir_candidate)
-          hdfs_parents = []
-          hdfs_parent = hdfs_dir
-          while hdfs_parent not in hadoop_paths:
-            print(">> %s" % hdfs_parent)
-            hdfs_parents.append(str(hdfs_parent))
-            hdfs_parent = os.path.dirname(hdfs_parent)
-          hadoop_paths.extend(list(reversed(hdfs_parents)))
-
+          if hdfs_dir not in hadoop_paths: hadoop_paths.append(hdfs_dir)
           cmds.append(" ".join(["xrdcp", line, hdfs_dir]))
 
   cmd_files = os.path.join(output_dir, XRDCP_SH)
@@ -194,7 +186,7 @@ def generate_cmds(source, output_dir, hdfs_path, nof_splits):
   with codecs.open(hadoop_file, 'w', 'utf-8') as f:
     f.write("#!/bin/bash\n")
     for hadoop_path in hadoop_paths:
-      f.write("hadoop fs -mkdir %s\n" % hadoop_path)
+      f.write("hadoop fs -mkdir -p %s\n" % hadoop_path)
 
   # Apply chmod +x to the bash files
   for bash_file in (cmd_file, hadoop_file):

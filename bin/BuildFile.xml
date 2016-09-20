@@ -373,4 +373,5 @@
   <use name="root" />
   <use name="boost_filesystem" />
   <use name="boost_program_options" />
+  <use name="boost_regex" />
 </bin>

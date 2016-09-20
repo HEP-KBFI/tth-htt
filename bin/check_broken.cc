@@ -4,12 +4,19 @@
 #include <vector> // std::vector<>
 #include <map> // std::map<,>
 #include <exception> // std::exception
+#include <stdexcept> // std::runtime_error
 #include <chrono> // std::chrono::
 #include <iomanip> // std::setprecision()
 #include <fstream> // std::ofstream
+#include <algorithm> // std::sort(), std::set_difference(), std::copy()
+#include <set> // std::set<>
+#include <iterator> // std::inserter(), std::ostream_iterator<>
 
 #include <boost/filesystem.hpp> // boost::filesystem::
 #include <boost/program_options.hpp> // boost::program_options::
+#include <boost/regex.hpp> // boost::regex::
+#include <boost/lexical_cast.hpp> // boost::lexical_cast<>()
+#include <boost/iterator/counting_iterator.hpp> // boost::counting_iterator<>
 
 #include <TFile.h> // TFile
 #include <TTree.h> // TTree
@@ -40,7 +47,7 @@
      -L/cvmfs/cms.cern.ch/slc6_amd64_gcc493/external/boost/1.57.0-kpegke/lib \
      -L/cvmfs/cms.cern.ch/slc6_amd64_gcc493/cms/cmssw/CMSSW_7_6_3/external/slc6_amd64_gcc493/lib \
      -L/cvmfs/cms.cern.ch/slc6_amd64_gcc493/lcg/root/6.02.12-kpegke4/lib \
-     -lboost_system -lboost_filesystem -lboost_program_options \
+     -lboost_system -lboost_filesystem -lboost_program_options -lboost_regex \
      -llzma -lCore -lRIO -lThread \
      -Wl,-rpath=/cvmfs/cms.cern.ch/slc6_amd64_gcc493/external/boost/1.57.0-kpegke/lib \
      -Wl,-rpath=/cvmfs/cms.cern.ch/slc6_amd64_gcc493/cms/cmssw/CMSSW_7_6_3/external/slc6_amd64_gcc493/lib \
@@ -208,6 +215,9 @@ main(int argc,
     std::cout << "Output directory: " << output_dir_path.string() << '\n';
   std::cout << LINE;
 
+//--- set up the regex
+  const boost::regex re("\\d+");
+
 //--- start the clock
   const std::chrono::high_resolution_clock::time_point start_t =
       std::chrono::high_resolution_clock::now();
@@ -227,10 +237,12 @@ main(int argc,
 //--- loop over the list of immediate subdirectories recursively
   std::vstring zombie_files, zerofs_files, improper_files;
   std::map<std::string, unsigned long long> event_counter;
+  std::map<std::string, std::vector<unsigned>> present_counter;
   unsigned file_counter = 0;
   for(const boost::filesystem::path & dir_path: immediate_subdirs)
   {
     const std::string dir = dir_path.string();
+    const std::string sample_name = dir_path.filename().string();
     unsigned long long nof_total_events = 0;
     if(verbose) std::cout << ">> Looping over: " << dir << "\n";
     for(const boost::filesystem::directory_entry & it: recursive_directory_range(dir))
@@ -243,7 +255,16 @@ main(int argc,
       {
         if(verbose) std::cout << "Checking: " << file_str << '\n';
         ++file_counter;
-//--- read the file size first
+//--- parse the tree number
+        const std::string file_filename = file.filename().string();
+        boost::sregex_iterator it(file_filename.begin(), file_filename.end(), re);
+        decltype(it) end;
+        std::vstring matches;
+        for(; it != end; ++it) matches.push_back(it -> str());
+        if(matches.size() != 1) throw std::runtime_error("Something's wrong");
+        const unsigned tree_nr = boost::lexical_cast<unsigned>(matches[0]);
+        present_counter[sample_name].push_back(tree_nr);
+//--- read the file size before checking the zombiness
         const boost::uintmax_t file_size = boost::filesystem::file_size(file);
         if(! file_size)
         {
@@ -252,12 +273,11 @@ main(int argc,
           continue;
         }
         const long int nof_events = check_broken(file_str, tree_str);
-        if     (nof_events > 0)              nof_total_events += nof_events;
+        if     (nof_events > 0)                nof_total_events += nof_events;
         else if(nof_events == ZOMBIE_FILE_C)   zombie_files.push_back(file_str);
         else if(nof_events == IMPROPER_FILE_C) improper_files.push_back(file_str);
       } // is root file
     } // recursive loop
-    const std::string sample_name = dir_path.filename().string();
     event_counter[sample_name] = nof_total_events;
   } // immediate subdirectory loop
   if(verbose) std::cout << LINE;
@@ -285,6 +305,38 @@ main(int argc,
       std::cout << improper << '\n';
     std::cout << LINE;
   }
+//--- do some cross-checks with the tree numbers
+//--- for example, if a given sample has files: tree_1.root, tree_2.root, ..., tree_N.root
+//--- we expect no missing tree files between numbers 1 and N
+//--- from what follows we check for ,,missing'' root files that proves to be useful
+//--- in blacklisting missing entries in the python configuration file
+  std::map<std::string, unsigned> file_counter_map;
+  for(auto & kv: present_counter)
+  {
+    const std::string sample_name = kv.first;
+    std::vector<unsigned> & nrs = kv.second;
+    std::sort(nrs.begin(), nrs.end());
+    const unsigned nof_files = nrs.size();
+    if(nof_files)
+    {
+      const unsigned N = std::max(nof_files, nrs[nof_files - 1]);
+      file_counter_map[sample_name] = N;
+      std::set<unsigned> N_diff_set;
+      std::set<unsigned> nrs_set(nrs.begin(), nrs.end());
+      std::set_difference(
+        boost::counting_iterator<unsigned>(1), boost::counting_iterator<unsigned>(N),
+        nrs_set.begin(), nrs_set.end(), std::inserter(N_diff_set, N_diff_set.end())
+      );
+      if(N_diff_set.size())
+      {
+        const std::vector<unsigned> N_diff(N_diff_set.begin(), N_diff_set.end());
+        std::cout << "MISSING NUMBERS FOR SAMPLE '" << sample_name << "': ";
+        std::ostream_iterator<unsigned> out_it(std::cout, ", ");
+        std::copy(N_diff.begin(), N_diff.end() - 1, out_it);
+        std::cout << N_diff[N_diff.size() - 1] << '\n';
+      }
+    } // if there are any root files
+  } // present_counter
   std::cout << "Total event counts:\n";
   for(const auto & kv: event_counter)
     std::cout << kv.first << ": " << kv.second << '\n';
@@ -294,6 +346,9 @@ main(int argc,
   std::cout << "\tNumber of files w/ 0 file size: " << zerofs_files.size() << '\n';
   std::cout << "\tNumber of files that hadn't '" << tree_str << "' "
             << "as their TTree: " << improper_files.size() << '\n';
+  std::cout << "Total file counts:\n";
+  for(const auto & kv: file_counter_map)
+    std::cout << kv.first << "; " << kv.second << '\n';
 
 //--- optional: dump the results to files
   if(! output_dir_str.empty())
