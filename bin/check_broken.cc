@@ -8,7 +8,8 @@
 #include <chrono> // std::chrono::
 #include <iomanip> // std::setprecision()
 #include <fstream> // std::ofstream
-#include <algorithm> // std::sort(), std::set_difference(), std::copy()
+#include <algorithm> // std::sort(), std::set_difference(), std::copy(), ...
+  // ... std::accumulate()
 #include <set> // std::set<>
 #include <iterator> // std::inserter(), std::ostream_iterator<>
 
@@ -113,8 +114,8 @@ struct recursive_directory_range
  * @brief Checks whether a given root file is broken or not
  * @param path Full path to an actual root file
  * @param tree TTree name
- * @return IMPROPER_FILE if the file doesn't have TTree called 'tree',
- *         ZOMBIE_FILE   if the file is broken,
+ * @return IMPROPER_FILE_C if the file doesn't have TTree called 'tree',
+ *         ZOMBIE_FILE_C   if the file is broken,
  *         otherwise the number of events in that file
  */
 long int
@@ -135,6 +136,20 @@ check_broken(const std::string & path,
   }
   f.Close();
   return ret_val;
+}
+
+/**
+ * @brief Not-so-elegant check to see whether a given path is
+ *        a subpath of some (presumably) parent folder
+ * @param test_path   The path to check
+ * @param parent_path The parent folder
+ * @return
+ */
+bool
+is_subdir(const boost::filesystem::path & test_path,
+          const boost::filesystem::path & parent_path)
+{
+  return test_path.string().find(parent_path.string()) != std::string::npos;
 }
 
 int
@@ -226,11 +241,17 @@ main(int argc,
   const boost::filesystem::path target_path(target_str);
   boost::filesystem::directory_iterator target_it(target_path);
   std::vector<boost::filesystem::path> immediate_subdirs;
+  std::map<boost::filesystem::path, std::vector<boost::filesystem::path>>
+    immediate_subsubdirs;
   for(const boost::filesystem::path & p: target_it)
     if(boost::filesystem::is_directory(p))
     {
       immediate_subdirs.push_back(p);
       if(verbose) std::cout << "Found sample directory: " << p.string() << '\n';
+      boost::filesystem::directory_iterator sub_it(p);
+      for(const boost::filesystem::path & sub_p: sub_it)
+        if(boost::filesystem::is_directory(sub_p))
+          immediate_subsubdirs[p].push_back(sub_p);
     }
   if(verbose) std::cout << LINE;
 
@@ -238,7 +259,7 @@ main(int argc,
   std::vstring zombie_files, zerofs_files, improper_files;
   std::map<std::string, unsigned long long> event_counter;
   std::map<std::string, std::vector<unsigned>> present_counter;
-  unsigned file_counter = 0;
+
   for(const boost::filesystem::path & dir_path: immediate_subdirs)
   {
     const std::string dir = dir_path.string();
@@ -253,8 +274,21 @@ main(int argc,
       if(boost::filesystem::is_regular_file(file) &&
          boost::filesystem::extension(file) == ".root")
       {
+        const std::string sample_name_actual = [&]
+        {
+//--- a given ,,immediate'' subdirectory might include multiple directories for which
+//--- we have to count the number of files separately
+//--- so basically we decide in which subdirectory a given file belongs to
+          const auto & immediate_subsubdir_list = immediate_subsubdirs[dir];
+          if(immediate_subsubdir_list.size() == 1)
+            return sample_name;
+          for(const auto & subsubdir: immediate_subsubdir_list)
+            if(is_subdir(file, subsubdir))
+              return subsubdir.filename().string();
+          // we should never reach here
+          throw std::runtime_error("Something's seriously wrong here");
+        }();
         if(verbose) std::cout << "Checking: " << file_str << '\n';
-        ++file_counter;
 //--- parse the tree number
         const std::string file_filename = file.filename().string();
         boost::sregex_iterator it(file_filename.begin(), file_filename.end(), re);
@@ -263,7 +297,7 @@ main(int argc,
         for(; it != end; ++it) matches.push_back(it -> str());
         if(matches.size() != 1) throw std::runtime_error("Something's wrong");
         const unsigned tree_nr = boost::lexical_cast<unsigned>(matches[0]);
-        present_counter[sample_name].push_back(tree_nr);
+        present_counter[sample_name_actual].push_back(tree_nr);
 //--- read the file size before checking the zombiness
         const boost::uintmax_t file_size = boost::filesystem::file_size(file);
         if(! file_size)
@@ -340,6 +374,14 @@ main(int argc,
   std::cout << "Total event counts:\n";
   for(const auto & kv: event_counter)
     std::cout << kv.first << ": " << kv.second << '\n';
+  const unsigned file_counter = std::accumulate(
+    present_counter.begin(), present_counter.end(), 0,
+    [&](unsigned lhs,
+        typename decltype(present_counter)::value_type rhs)
+    {
+      return lhs + rhs.second.size();
+    }
+  );
   std::cout << "Final statistics:\n";
   std::cout << "\tTotal number of files: " << file_counter << '\n';
   std::cout << "\tNumber of broken files: " << zombie_files.size() << '\n';
@@ -348,7 +390,7 @@ main(int argc,
             << "as their TTree: " << improper_files.size() << '\n';
   std::cout << "Total file counts:\n";
   for(const auto & kv: file_counter_map)
-    std::cout << kv.first << "; " << kv.second << '\n';
+    std::cout << kv.first << ": " << kv.second << '\n';
 
 //--- optional: dump the results to files
   if(! output_dir_str.empty())
