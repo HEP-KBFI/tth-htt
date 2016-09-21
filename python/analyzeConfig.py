@@ -135,6 +135,7 @@ class analyzeConfig:
     self.cfgFiles_analyze_modified = {}
     self.logFiles_analyze = {}
     self.sbatchFile_analyze = os.path.join(self.outputDir, "sbatch_analyze_%s.py" % self.channel)
+    self.ntupleFiles = {} 
     self.histogramFiles = {}    
     self.histogramFile_hadd_stage1 = os.path.join(self.outputDir, DKEY_HIST, "histograms_harvested_stage1_%s.root" % self.channel)
     self.histogramFile_hadd_stage2 = os.path.join(self.outputDir, DKEY_HIST, "histograms_harvested_stage2_%s.root" % self.channel)    
@@ -254,6 +255,7 @@ class analyzeConfig:
     lines_sbatch.append("m = sbatchManager()")
     lines_sbatch.append("m.setWorkingDir('%s')" % self.workingDir)
     for key_file, cfgFile in self.cfgFiles_analyze_modified.items():
+      inputFileNames = self.ntupleFiles[key_file]
       histogramFileName = self.histogramFiles[key_file]
       if os.path.exists(histogramFileName):
         histogramFileSize = os.stat(histogramFileName).st_size
@@ -266,32 +268,35 @@ class analyzeConfig:
           command = "%s %s" % (executable_rm, histogramFileName)
           run_cmd(command)
       logFileName = self.logFiles_analyze[key_file]
-      logFile = open(logFileName)
-      is_time = False
-      time = None
-      is_hostname = False
-      hostname = None
-      is_cvmfs_error = False
-      for line in logFile:
-        if line.find("time") != -1:
-          is_time = True
-          continue
-        if is_time:
-          time = line.strip()
-          is_time = False
-        if line.find("'hostname'") != -1:
-          is_hostname = True
-          continue
-        if is_hostname:
-          hostname = line.strip()
-          is_hostname = False
-        if line.find("Transport endpoint is not connected") != -1:
-          is_cvmfs_error = True          
-      logFile.close()
-      if is_cvmfs_error:
-        print "Problem with cvmfs access: host = %s (time = %s)" % (hostname, time)
-        self.cvmfs_error_log[hostname].append(time)
-      lines_sbatch.append("m.submitJob('%s', '%s', '%s', True, '%s')" % (self.executable_analyze, cfgFile, logFileName, histogramFileName))
+      if os.path.exists(logFileName):
+        logFile = open(logFileName)
+        is_time = False
+        time = None
+        is_hostname = False
+        hostname = None
+        is_cvmfs_error = False
+        for line in logFile:
+          if line.find("time") != -1:
+            is_time = True
+            continue
+          if is_time:
+            time = line.strip()
+            is_time = False
+          if line.find("'hostname'") != -1:
+            is_hostname = True
+            continue
+          if is_hostname:
+            hostname = line.strip()
+            is_hostname = False
+          if line.find("Transport endpoint is not connected") != -1:
+            is_cvmfs_error = True          
+        logFile.close()
+        if is_cvmfs_error:
+          print "Problem with cvmfs access: host = %s (time = %s)" % (hostname, time)
+          self.cvmfs_error_log[hostname].append(time)
+      lines_sbatch.append("m.submitJob(%s, '%s', '%s', '%s', %s, '%s', True)" % \
+        (inputFileNames, self.executable_analyze, cfgFile,
+         os.path.dirname(histogramFileName), [ os.path.basename(histogramFileName) ], logFileName))
     lines_sbatch.append("m.waitForJobs()")
     createFile(self.sbatchFile_analyze, lines_sbatch)
 

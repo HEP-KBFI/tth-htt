@@ -109,8 +109,8 @@ class analyzeConfig_3l_1tau(analyzeConfig):
       central_or_shift: either 'central' or one of the systematic uncertainties defined in $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/bin/analyze_3l_1tau.cc
     """  
     lines = []
-    lines.append("process.fwliteInput.fileNames = cms.vstring(%s)" % inputFiles)
-    lines.append("process.fwliteOutput.fileName = cms.string('%s')" % outputFile)
+    lines.append("process.fwliteInput.fileNames = cms.vstring(%s)" % [ os.path.basename(inputFile) for inputFile in inputFiles ])
+    lines.append("process.fwliteOutput.fileName = cms.string('%s')" % os.path.basename(outputFile))
     lines.append("process.analyze_3l_1tau.process = cms.string('%s')" % sample_category)
     lines.append("process.analyze_3l_1tau.era = cms.string('%s')" % era)
     lines.append("process.analyze_3l_1tau.use_triggers_1e = cms.bool(%s)" % ("1e" in triggers))
@@ -342,24 +342,22 @@ class analyzeConfig_3l_1tau(analyzeConfig):
                       continue
                     sample_category_and_genMatch = sample_category + hadTau_genMatch
 
-                    inputFiles = generate_input_list(self.inputFileIds[sample_name][jobId], secondary_files, primary_store, secondary_store, self.debug)
-
                     key_dir = getKey(sample_name, lepton_selection, hadTau_selection, hadTau_frWeight, charge_selection)
                     key_file = getKey(sample_name, lepton_selection, hadTau_selection, hadTau_frWeight, hadTau_genMatch, charge_selection, central_or_shift, jobId)
 
+                    self.ntupleFiles[key_file] = generate_input_list(self.inputFileIds[sample_name][jobId], secondary_files, primary_store, secondary_store, self.debug)
                     self.cfgFiles_analyze_modified[key_file] = os.path.join(self.dirs[key_dir][DKEY_CFGS], "analyze_%s_%s_%s_%s_%s_%s_%s_%i_cfg.py" % \
                       (self.channel, process_name, lepton_selection, hadTau_selection_and_frWeight, hadTau_genMatch, charge_selection, central_or_shift, jobId))
                     self.histogramFiles[key_file] = os.path.join(self.dirs[key_dir][DKEY_HIST], "%s_%s_%s_%s_%s_%s_%i.root" % \
                       (process_name, lepton_selection, hadTau_selection_and_frWeight, hadTau_genMatch, charge_selection, central_or_shift, jobId))
                     self.logFiles_analyze[key_file] = os.path.join(self.dirs[key_dir][DKEY_LOGS], "analyze_%s_%s_%s_%s_%s_%s_%s_%i.log" % \
                       (self.channel, process_name, lepton_selection, hadTau_selection_and_frWeight, hadTau_genMatch, charge_selection, central_or_shift, jobId))
-
                     self.rleOutputFiles[key_file] = os.path.join(self.dirs[key_dir][DKEY_RLES], "rle_%s_%s_%s_%s_%s_%s_%s_%s_%i.txt" % \
                       (self.channel, process_name, lepton_selection, hadTau_selection, hadTau_frWeight, hadTau_genMatch, charge_selection, central_or_shift, jobId)) if self.select_rle_output else ""
                     self.rootOutputFiles[key_file] = os.path.join(self.dirs[key_dir][DKEY_ROOT], "out_%s_%s_%s_%s_%s_%s_%s_%s_%i.root" % \
                       (self.channel, process_name, lepton_selection, hadTau_selection, hadTau_frWeight, hadTau_genMatch, charge_selection, central_or_shift, jobId)) if self.select_root_output else ""
                     
-                    self.createCfg_analyze(inputFiles, self.histogramFiles[key_file], sample_category, self.era, triggers,
+                    self.createCfg_analyze(self.ntupleFiles[key_file], self.histogramFiles[key_file], sample_category, self.era, triggers,
                       lepton_selection, hadTau_selection, hadTau_genMatch, self.apply_hadTauGenMatching, hadTau_frWeight, charge_selection,
                       is_mc, central_or_shift, lumi_scale, apply_trigger_bits, self.cfgFiles_analyze_modified[key_file],
                       self.rleOutputFiles[key_file], self.rootOutputFiles[key_file])

@@ -1,25 +1,59 @@
 import codecs, getpass, jinja2, logging, os, time
+from datetime import date
 
-from tthAnalysis.HiggsToTauTau.jobTools import run_cmd
+from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd
 
 job_template = """#!/bin/bash
-echo "current time:"
+echo "job start time:"
 date
-echo "executing 'hostname':"
+echo "hostname:"
 hostname
-echo "executing 'pwd':"
-pwd
-echo "executing 'env':"
-env
+SCRATCH_DIR="{{ scratch_dir }}/${SLURM_JOBID}"
+echo "creating scratch directory = '${SCRATCH_DIR}'"
+mkdir -p ${SCRATCH_DIR}
+echo "copying input files"
+INPUT_FILES="{{ inputFiles }}"
+for INPUT_FILE in $INPUT_FILES
+do
+  cp $INPUT_FILE ${SCRATCH_DIR}
+  if [ ! -f ${SCRATCH_DIR}/${INPUT_FILE##*/} ];
+  then
+    echo "Failed to copy ${INPUT_FILE} to scratch directory !!"
+    exit 1
+  fi
+done
 echo "initializing CMSSW run-time environment"
 source /cvmfs/cms.cern.ch/cmsset_default.sh 
 cd {{ working_dir }}
 cmsenv
-cd -
+cd ${SCRATCH_DIR}
+mkdir -p tthAnalysis/HiggsToTauTau/data
+cp -r $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/data/* ${SCRATCH_DIR}/tthAnalysis/HiggsToTauTau/data
 echo "executing 'pwd'"
 pwd
+CMSSW_SEARCH_PATH=${SCRATCH_DIR}
 {{ exec_name }} {{ cfg_file }}
+echo "copying output files"
+OUTPUT_FILES="{{ outputFiles }}"
+EXIT_CODE=0
+for OUTPUT_FILE in $OUTPUT_FILES
+do
+  OUTPUT_FILE_SIZE=$(stat -c '%s' $OUTPUT_FILE)
+  if [ $OUTPUT_FILE_SIZE -ge 1000 ]; then
+    cp $OUTPUT_FILE {{ outputDir }}
+  else
+    rm $OUTPUT_FILE
+    EXIT_CODE=1
+  fi
+done
+echo "deleting scratch directory"
+rm -r ${SCRATCH_DIR}
+echo "job end time:"
+date
+exit ${EXIT_CODE}
 """
+
+command_create_scratchDir = '/scratch/mkscratch'
 
 class sbatchManager:
   """
@@ -28,8 +62,8 @@ class sbatchManager:
   def __init__(self):
     self.workingDir = None
     self.logFileDir = None
-    ##self.queue = "short"
-    self.queue = "long"
+    self.queue = "short"
+    ##self.queue = "long"
     self.command_submit = "sbatch"
     self.command_poll = "squeue"
     self.poll_interval = 30
@@ -45,26 +79,30 @@ class sbatchManager:
     """  
     self.logFileDir = logFileDir
 
-  def submitJob(self, executable, cfgFile, logFile=None, skipIfOutputFileExists=False, outputFile=None):
+  def submitJob(self, inputFiles, executable, cfgFile, outputFilePath, outputFiles, logFile=None, skipIfOutputFileExists=False):
     """Waits for all sbatch jobs submitted by this instance of sbatchManager to finish processing
-    """  
-    if skipIfOutputFileExists and os.path.exists(outputFile):
-      return
+    """    
+    if skipIfOutputFileExists:
+      for outputFile in outputFiles:
+        if os.path.exists(os.path.join(outputFilePath, outputFile)):
+          print "output file = '%s' exists --> skipping !!" % os.path.join(outputFilePath, outputFile)
+          return
     if not self.workingDir:
       raise ValueError("Please call 'setWorkingDir' before calling 'submitJob' !!")
+    scratchDir = "/scratch/%s" % getpass.getuser()
+    if not os.path.exists(scratchDir):
+      print "Directory '%s' does not yet exist, creating it !!" % scratchDir
+      run_cmd(command_create_scratchDir)
+    scratchDir = os.path.join(scratchDir, "tthAnalysis" + "_" + date.today().isoformat())  
+    create_if_not_exists(scratchDir)
     scriptFile = cfgFile.replace(".py", ".sh")
     scriptFile = scriptFile.replace("_cfg", "")
-    script = jinja2.Template(job_template).render(working_dir = self.workingDir, exec_name = executable, cfg_file = cfgFile)
-    if outputFile:
-      script += "\n" 
-      script += "file=%s\n" % outputFile
-      script += "filesize=$(stat -c '%s' $file)\n"
-      script += "if [ $filesize -ge 1000 ]; then\n"
-      script += "  return 0\n"
-      script += "else\n"
-      script += "  rm %s\n" % outputFile
-      script += "  return 1\n"
-      script += "fi\n"
+    script = jinja2.Template(job_template).render(
+      working_dir = self.workingDir,
+      scratch_dir = scratchDir,
+      exec_name = executable, cfg_file = cfgFile,
+      inputFiles = " ".join(inputFiles), outputDir = outputFilePath, outputFiles = " ".join(outputFiles))
+    print "writing sbatch script file = '%s'" % scriptFile
     with codecs.open(scriptFile, "w", "utf-8") as f: f.write(script)
     if not logFile:
       if not self.logFileDir:
