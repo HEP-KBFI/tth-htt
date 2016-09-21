@@ -8,16 +8,17 @@
 #include <chrono> // std::chrono::
 #include <iomanip> // std::setprecision()
 #include <fstream> // std::ofstream
-#include <algorithm> // std::sort(), std::set_difference(), std::copy(), ...
-  // ... std::accumulate()
+#include <algorithm> // std::set_difference(), std::accumulate(), std::any_of()
 #include <set> // std::set<>
-#include <iterator> // std::inserter(), std::ostream_iterator<>
+#include <iterator> // std::inserter()
 
 #include <boost/filesystem.hpp> // boost::filesystem::
 #include <boost/program_options.hpp> // boost::program_options::
 #include <boost/regex.hpp> // boost::regex::
 #include <boost/lexical_cast.hpp> // boost::lexical_cast<>()
 #include <boost/iterator/counting_iterator.hpp> // boost::counting_iterator<>
+#include <boost/algorithm/string/join.hpp> // boost::algorithm::join()
+#include <boost/xpressive/xpressive.hpp> // boost::xpressive::
 
 #include <TFile.h> // TFile
 #include <TTree.h> // TTree
@@ -31,6 +32,7 @@
 #define IMPROPER_FILE_P boost::filesystem::path("improper_files.txt")
 #define ZOMBIE_FILE_P   boost::filesystem::path("broken_files.txt")
 #define ZEROFS_FILE_P   boost::filesystem::path("zerofs_files.txt")
+#define PYTHON_FILE_P   boost::filesystem::path("samples.py")
 
 #define LINE std::string(80, '*') + '\n'
 
@@ -62,16 +64,35 @@
     -p [ --path ] arg           full path to the directory to scan
     -t [ --tree ] arg (=tree)   expected TTree name
     -o [ --output ] [=arg(=./)] dump the results to given directory
+    -z [ --zerofs ]             save the list of files with zero file size to a
+                                file
+    -i [ --improper ]           save the list of files that don't contain correct
+                                TTree
+    -P [ --python ]             generate rudimentary python configuration file
     -v [ --verbose ]            log every file and folder
 
  * Example usage:
 
-   check_broken -p /hdfs/local/karl/FinalNtuples -t tree --output=/home/karl/sandbox -o -v
+   check_broken -p /hdfs/local/karl/FinalNtuples -t tree --output=/home/karl/sandbox -P -z -v
  */
 
 namespace std
 {
   using vstring = std::vector<std::string>;
+  using vunsigned = std::vector<unsigned>;
+
+  template<typename T>
+  std::set<T>
+  operator-(const std::set<T> & lhs,
+            const std::set<T> & rhs)
+  {
+    std::set<T> s;
+    std::set_difference(
+      lhs.begin(), lhs.end(), rhs.begin(), rhs.end(),
+      std::inserter(s, s.end())
+    );
+    return s;
+  }
 }
 
 /**
@@ -138,18 +159,179 @@ check_broken(const std::string & path,
   return ret_val;
 }
 
-/**
- * @brief Not-so-elegant check to see whether a given path is
- *        a subpath of some (presumably) parent folder
- * @param test_path   The path to check
- * @param parent_path The parent folder
- * @return
- */
-bool
-is_subdir(const boost::filesystem::path & test_path,
-          const boost::filesystem::path & parent_path)
+unsigned
+get_nr_str(const std::string & str)
 {
-  return test_path.string().find(parent_path.string()) != std::string::npos;
+//--- set up the regex
+  static const boost::regex re("\\d+");
+  boost::sregex_iterator it(str.begin(), str.end(), re);
+  decltype(it) end;
+  std::vstring matches;
+  for(; it != end; ++it)
+    matches.push_back(it -> str());
+  if(matches.size() != 1)
+    throw std::runtime_error("Something's wrong");
+  return boost::lexical_cast<unsigned>(matches[0]);
+}
+
+struct Sample
+{
+  enum class Info
+  {
+    kPresent   = 0,
+    kZombie    = 1,
+    kZerofs    = 2,
+    kImproper  = 3
+  };
+
+  Sample() = default;
+  Sample(boost::filesystem::path path)
+    : path(path)
+    , name(path.filename().string())
+    , pathStr(path.string())
+    , max_nr(0)
+    , nof_events(0)
+  {}
+  Sample(boost::filesystem::path path,
+         boost::filesystem::path parent)
+    : path(path)
+    , parent(parent)
+    , name(path.filename().string())
+    , pathStr(path.string())
+    , parentStr(parent.string())
+    , max_nr(0)
+    , nof_events(0)
+  {}
+
+  /**
+   * @brief Checks whether there are any missing files
+   *
+   * Essentially does some cross-checks with the tree numbers;
+   * for example, if a given sample has files: tree_1.root, tree_2.root, ..., tree_N.root
+   * we expect no missing tree files between numbers 1 and N
+   * From what follows, we check for ,,missing'' root files that proves to be useful
+   * in blacklisting missing entries in the python configuration file
+   */
+  void
+  check_completion()
+  {
+    auto present_set        = get_set(present);
+    const auto zombie_set   = get_set(zombies);
+    const auto zerofs_set   = get_set(zerofs);
+    const auto improper_set = get_set(improper);
+    if(present_set.size())
+    {
+//--- subtract faulty files from present_set
+      for(const auto & s: { zombie_set, zerofs_set, improper_set })
+        present_set = present_set - s;
+
+      max_nr = *present_set.rbegin();
+      std::set<unsigned> blacklist_set;
+      std::set_difference(
+        boost::counting_iterator<unsigned>(1),
+        boost::counting_iterator<unsigned>(max_nr),
+        present_set.begin(), present_set.end(),
+        std::inserter(blacklist_set, blacklist_set.end())
+      );
+      const std::vunsigned blacklist_u(blacklist_set.begin(), blacklist_set.end());
+      std::transform(blacklist_u.begin(), blacklist_u.end(), std::back_inserter(blacklist),
+                     [](unsigned x) -> std::string { return std::to_string(x); });
+    }
+  }
+
+  /**
+   * @brief Converts full path strings 'a/b/c/tree_N.root' into number set { N }
+   * @param v String vector of full paths
+   * @return Number set
+   */
+  std::set<unsigned>
+  get_set(const std::vstring & v)
+  {
+    std::vunsigned v_unsigned;
+    std::transform(
+      v.begin(), v.end(), std::back_inserter(v_unsigned),
+      [](const std::string & str) -> unsigned
+      {
+        return get_nr_str(boost::filesystem::path(str).filename().string());
+      }
+    );
+    return std::set<unsigned>(v_unsigned.begin(), v_unsigned.end());
+  }
+
+  /**
+   * @brief Creates an OrderedDict (OD) entry in Python configuration file
+   * @return The entry as a string
+   */
+  std::string
+  get_cfg() const
+  {
+    const std::map<std::string, std::string> env = {
+      { "sample_name",  name                                    },
+      { "max_nr",       std::to_string(max_nr)                  },
+      { "nof_events",   std::to_string(nof_events)              },
+      { "super_parent", fileSuperParent                         },
+      { "blacklist",    boost::algorithm::join(blacklist, ", ") }
+    };
+    auto fmt_fun = [&env](const boost::xpressive::smatch & what) -> const std::string &
+    {
+      return env.at(what[1].str());
+    };
+    const std::string input =
+      "samples[\"$(sample_name)\"] = OD([\n"
+      "  (\"type\",                  \"mc\"),\n"
+      "  (\"sample_category\",       \"\"),\n"
+      "  (\"process_name_specific\", \"\"),\n"
+      "  (\"nof_files\",             $(max_nr)),\n"
+      "  (\"nof_events\",            $(nof_events)),\n"
+      "  (\"use_it\",                True),\n"
+      "  (\"xsection\",              0.),\n"
+      "  (\"triggers\",              [ \"1e\", \"2e\", \"1mu\", \"2mu\", \"1e1mu\" ]),\n"
+      "  (\"local_paths\",\n"
+      "    [\n"
+      "      OD([\n"
+      "        (\"path\",      \"$(super_parent)\"),\n"
+      "        (\"selection\", \"*\"),\n"
+      "        (\"blacklist\", [$(blacklist)]),\n"
+      "      ]),\n"
+      "    ]\n"
+      "  ),\n"
+      "])\n"
+    ;
+    const boost::xpressive::sregex envar =
+      "$(" >> (boost::xpressive::s1 = +boost::xpressive::_w) >> ')';
+    const std::string output = boost::xpressive::regex_replace(input, envar, fmt_fun);
+    return output;
+  }
+
+  boost::filesystem::path path;
+  boost::filesystem::path parent;
+
+  std::string name;
+  std::string pathStr;
+  std::string parentStr;
+  std::string fileSuperParent; ///< NB!! Its only a string not a vector
+
+  std::vstring zombies, zerofs, improper, present, blacklist;
+
+  unsigned max_nr;
+  unsigned long long nof_events;
+};
+
+std::vstring
+operator|(const std::vector<Sample> & samples,
+          Sample::Info key)
+{
+  std::vstring result;
+  for(const Sample & sample: samples)
+    if     (key == Sample::Info::kPresent)
+      result.insert(result.end(), sample.present.begin(),   sample.present.end());
+    else if(key == Sample::Info::kZombie)
+      result.insert(result.end(), sample.zombies.begin(),   sample.zombies.end());
+    else if(key == Sample::Info::kZerofs)
+      result.insert(result.end(), sample.zerofs.begin(),    sample.zerofs.end());
+    else if(key == Sample::Info::kImproper)
+      result.insert(result.end(), sample.improper.begin(),  sample.improper.end());
+  return result;
 }
 
 int
@@ -161,7 +343,7 @@ main(int argc,
 
 //--- parse command line arguments
   std::string target_str, tree_str, output_dir_str;
-  bool save_zerofs, save_improper, verbose;
+  bool save_zerofs, save_improper, save_python, verbose;
 
   try
   {
@@ -173,12 +355,14 @@ main(int argc,
       ("tree,t",     boost::program_options::value<std::string>(&tree_str) -> default_value("tree"),
                      "expected TTree name")
       ("output,o",   boost::program_options::value<std::string>(&output_dir_str) -> default_value("")
-                                                                                -> implicit_value("./"),
+                                                                                 -> implicit_value("./"),
                      "dump the results to given directory")
       ("zerofs,z",   boost::program_options::bool_switch(&save_zerofs) -> default_value(false),
                      "save the list of files with zero file size to a file")
       ("improper,i", boost::program_options::bool_switch(&save_improper) -> default_value(false),
                      "save the list of files that don't contain correct TTree")
+      ("python,P",   boost::program_options::bool_switch(&save_python) -> default_value(false),
+                     "generate rudimentary python configuration file")
       ("verbose,v",  boost::program_options::bool_switch(&verbose) -> default_value(false),
                      "log every file and folder")
     ;
@@ -221,8 +405,15 @@ main(int argc,
     std::cerr << "No such directory: '" << output_dir_str << "'\n";
     return EXIT_FAILURE;
   }
+  if((save_zerofs || save_improper || save_python) && output_dir_path.empty())
+  {
+    std::cerr << "Output directory not specified\n";
+    return EXIT_FAILURE;
+  }
 
 //--- quick printout of the chosen options
+  std::cout << "Command entered: "
+            << boost::algorithm::join(std::vstring(argv, argv + argc), " ") << '\n';
   std::cout << "Directory to analyze: " << target_str << '\n'
             << "TTree name: "           << tree_str << '\n'
             << "Verbose printout: "     << std::boolalpha << verbose << '\n';
@@ -230,43 +421,36 @@ main(int argc,
     std::cout << "Output directory: " << output_dir_path.string() << '\n';
   std::cout << LINE;
 
-//--- set up the regex
-  const boost::regex re("\\d+");
-
 //--- start the clock
   const std::chrono::high_resolution_clock::time_point start_t =
-      std::chrono::high_resolution_clock::now();
+    std::chrono::high_resolution_clock::now();
 
 //--- create a list of immediate subdirectories of a given directory
+  std::vector<Sample> samples;
   const boost::filesystem::path target_path(target_str);
   boost::filesystem::directory_iterator target_it(target_path);
-  std::vector<boost::filesystem::path> immediate_subdirs;
-  std::map<boost::filesystem::path, std::vector<boost::filesystem::path>>
-    immediate_subsubdirs;
   for(const boost::filesystem::path & p: target_it)
     if(boost::filesystem::is_directory(p))
     {
-      immediate_subdirs.push_back(p);
       if(verbose) std::cout << "Found sample directory: " << p.string() << '\n';
+      std::vector<boost::filesystem::path> immediate_subsubdirs;
       boost::filesystem::directory_iterator sub_it(p);
       for(const boost::filesystem::path & sub_p: sub_it)
         if(boost::filesystem::is_directory(sub_p))
-          immediate_subsubdirs[p].push_back(sub_p);
+          immediate_subsubdirs.push_back(sub_p);
+      if(immediate_subsubdirs.size() == 1)
+        samples.push_back({p});
+      else
+        for(const boost::filesystem::path & sub_p: immediate_subsubdirs)
+          samples.push_back({sub_p, p});
     }
   if(verbose) std::cout << LINE;
 
 //--- loop over the list of immediate subdirectories recursively
-  std::vstring zombie_files, zerofs_files, improper_files;
-  std::map<std::string, unsigned long long> event_counter;
-  std::map<std::string, std::vector<unsigned>> present_counter;
-
-  for(const boost::filesystem::path & dir_path: immediate_subdirs)
+  for(Sample & sample: samples)
   {
-    const std::string dir = dir_path.string();
-    const std::string sample_name = dir_path.filename().string();
-    unsigned long long nof_total_events = 0;
-    if(verbose) std::cout << ">> Looping over: " << dir << "\n";
-    for(const boost::filesystem::directory_entry & it: recursive_directory_range(dir))
+    if(verbose) std::cout << ">> Looping over: " << sample.pathStr << "\n";
+    for(const boost::filesystem::directory_entry & it: recursive_directory_range(sample.path))
     {
       const boost::filesystem::path file = it.path();
       const std::string file_str = file.string();
@@ -274,151 +458,133 @@ main(int argc,
       if(boost::filesystem::is_regular_file(file) &&
          boost::filesystem::extension(file) == ".root")
       {
-        const std::string sample_name_actual = [&]
-        {
-//--- a given ,,immediate'' subdirectory might include multiple directories for which
-//--- we have to count the number of files separately
-//--- so basically we decide in which subdirectory a given file belongs to
-          const auto & immediate_subsubdir_list = immediate_subsubdirs[dir];
-          if(immediate_subsubdir_list.size() == 1)
-            return sample_name;
-          for(const auto & subsubdir: immediate_subsubdir_list)
-            if(is_subdir(file, subsubdir))
-              return subsubdir.filename().string();
-          // we should never reach here
-          throw std::runtime_error("Something's seriously wrong here");
-        }();
         if(verbose) std::cout << "Checking: " << file_str << '\n';
 //--- parse the tree number
-        const std::string file_filename = file.filename().string();
-        boost::sregex_iterator it(file_filename.begin(), file_filename.end(), re);
-        decltype(it) end;
-        std::vstring matches;
-        for(; it != end; ++it) matches.push_back(it -> str());
-        if(matches.size() != 1) throw std::runtime_error("Something's wrong");
-        const unsigned tree_nr = boost::lexical_cast<unsigned>(matches[0]);
-        present_counter[sample_name_actual].push_back(tree_nr);
+        sample.present.push_back(file_str);
 //--- read the file size before checking the zombiness
         const boost::uintmax_t file_size = boost::filesystem::file_size(file);
         if(! file_size)
         {
-          zerofs_files.push_back(file_str);
+          sample.zerofs.push_back(file_str);
 //--- don't even bother checking whether the file is zombie or not
           continue;
         }
         const long int nof_events = check_broken(file_str, tree_str);
-        if     (nof_events > 0)                nof_total_events += nof_events;
-        else if(nof_events == ZOMBIE_FILE_C)   zombie_files.push_back(file_str);
-        else if(nof_events == IMPROPER_FILE_C) improper_files.push_back(file_str);
+        if     (nof_events > 0)                sample.nof_events += nof_events;
+        else if(nof_events == ZOMBIE_FILE_C)   sample.zombies.push_back(file_str);
+        else if(nof_events == IMPROPER_FILE_C) sample.improper.push_back(file_str);
+//--- if the valid root file has path ../<grid job id>/000X/tree_i.root, then in order
+//--- to build the Python configuration file is to gather the paths to <grid job id>
+        if(sample.fileSuperParent.empty())
+          sample.fileSuperParent = file.parent_path().parent_path().string();
       } // is root file
     } // recursive loop
-    event_counter[sample_name] = nof_total_events;
   } // immediate subdirectory loop
   if(verbose) std::cout << LINE;
 
-//--- print the results; save them to a file?
-  if(zombie_files.size())
-  {
-    std::cout << "List of broken files:\n";
-    for(const std::string & zombie: zombie_files)
-      std::cout << zombie << '\n';
-    std::cout << LINE;
-  }
-  if(zerofs_files.size())
-  {
-    std::cout << "List of files with zero size:\n";
-    for(const std::string & zerofs: zerofs_files)
-      std::cout << zerofs << '\n';
-    std::cout << LINE;
-  }
-  if(improper_files.size())
-  {
-    std::cout << "List of files which didn't have '" << tree_str << "' "
-              << "as immediate key in the root file:\n";
-    for(const std::string & improper: improper_files)
-      std::cout << improper << '\n';
-    std::cout << LINE;
-  }
-//--- do some cross-checks with the tree numbers
-//--- for example, if a given sample has files: tree_1.root, tree_2.root, ..., tree_N.root
-//--- we expect no missing tree files between numbers 1 and N
-//--- from what follows we check for ,,missing'' root files that proves to be useful
-//--- in blacklisting missing entries in the python configuration file
-  std::map<std::string, unsigned> file_counter_map;
-  for(auto & kv: present_counter)
-  {
-    const std::string sample_name = kv.first;
-    std::vector<unsigned> & nrs = kv.second;
-    std::sort(nrs.begin(), nrs.end());
-    const unsigned nof_files = nrs.size();
-    if(nof_files)
-    {
-      const unsigned N = std::max(nof_files, nrs[nof_files - 1]);
-      file_counter_map[sample_name] = N;
-      std::set<unsigned> N_diff_set;
-      std::set<unsigned> nrs_set(nrs.begin(), nrs.end());
-      std::set_difference(
-        boost::counting_iterator<unsigned>(1), boost::counting_iterator<unsigned>(N),
-        nrs_set.begin(), nrs_set.end(), std::inserter(N_diff_set, N_diff_set.end())
-      );
-      if(N_diff_set.size())
-      {
-        const std::vector<unsigned> N_diff(N_diff_set.begin(), N_diff_set.end());
-        std::cout << "MISSING NUMBERS FOR SAMPLE '" << sample_name << "': ";
-        std::ostream_iterator<unsigned> out_it(std::cout, ", ");
-        std::copy(N_diff.begin(), N_diff.end() - 1, out_it);
-        std::cout << N_diff[N_diff.size() - 1] << '\n';
-      }
-    } // if there are any root files
-  } // present_counter
-  std::cout << "Total event counts:\n";
-  for(const auto & kv: event_counter)
-    std::cout << kv.first << ": " << kv.second << '\n';
-  const unsigned file_counter = std::accumulate(
-    present_counter.begin(), present_counter.end(), 0,
-    [&](unsigned lhs,
-        typename decltype(present_counter)::value_type rhs)
-    {
-      return lhs + rhs.second.size();
-    }
-  );
-  std::cout << "Final statistics:\n";
-  std::cout << "\tTotal number of files: " << file_counter << '\n';
-  std::cout << "\tNumber of broken files: " << zombie_files.size() << '\n';
-  std::cout << "\tNumber of files w/ 0 file size: " << zerofs_files.size() << '\n';
-  std::cout << "\tNumber of files that hadn't '" << tree_str << "' "
-            << "as their TTree: " << improper_files.size() << '\n';
-  std::cout << "Total file counts:\n";
-  for(const auto & kv: file_counter_map)
-    std::cout << kv.first << ": " << kv.second << '\n';
+//--- post-process
+  for(Sample & sample: samples)
+    sample.check_completion();
+  const auto present   = samples | Sample::Info::kPresent;
+  const auto zombies   = samples | Sample::Info::kZombie;
+  const auto zerofs    = samples | Sample::Info::kZerofs;
+  const auto improper  = samples | Sample::Info::kImproper;
 
-//--- optional: dump the results to files
-  if(! output_dir_str.empty())
+//--- print the results; save them to a file?
+  if(zombies.size())
   {
-    if(zombie_files.size())
+    const std::string zombie_str = boost::algorithm::join(zombies, "\n");
+    std::cout << "List of broken files:\n" << zombie_str << '\n';
+
+    if(! output_dir_str.empty())
     {
       const std::string zombie_path = (output_dir_path / ZOMBIE_FILE_P).string();
-      std::ofstream zombie_outfile(zombie_path);
-      for(const std::string & zombie: zombie_files)
-        zombie_outfile << zombie << '\n';
-      std::cout << "Wrote file: '" << zombie_path << "'\n";
+      std::ofstream out(zombie_path);
+      out << zombie_str << '\n';
+      std::cout << "Wrote file '" << zombie_path << "'\n";
     }
-    if(save_improper && improper_files.size())
-    {
-      const std::string improper_path = (output_dir_path / IMPROPER_FILE_P).string();
-      std::ofstream improper_outfile(improper_path);
-      for(const std::string & improper: improper_files)
-        improper_outfile << improper << '\n';
-      std::cout << "Wrote file: '" << improper_path << "'\n";
-    }
-    if(save_zerofs && zerofs_files.size())
+    std::cout << LINE;
+  }
+  if(zerofs.size())
+  {
+    const std::string zerofs_str = boost::algorithm::join(zerofs, "\n");
+    std::cout << "List of files with zero size:\n" << zerofs_str << '\n';
+
+    if(! output_dir_str.empty() && save_zerofs)
     {
       const std::string zerofs_path = (output_dir_path / ZEROFS_FILE_P).string();
-      std::ofstream zerofs_outfile(zerofs_path);
-      for(const std::string & zerofs: zerofs_files)
-        zerofs_outfile << zerofs << '\n';
-      std::cout << "Wrote file: '" << zerofs_path << "'\n";
+      std::ofstream out(zerofs_path);
+      out << zerofs_str << '\n';
+      std::cout << "Wrote file '" << zerofs_path << "'\n";
     }
+    std::cout << LINE;
+  }
+  if(improper.size())
+  {
+    const std::string improper_str = boost::algorithm::join(improper, "\n");
+    std::cout << "List of files which didn't have '" << tree_str << "' "
+              << "as immediate key in the root file:\n" << improper_str << '\n';
+
+    if(! output_dir_str.empty() && save_improper)
+    {
+      const std::string improper_path = (output_dir_path / IMPROPER_FILE_P).string();
+      std::ofstream out(improper_path);
+      out << improper_str << '\n';
+      std::cout << "Wrote file '" << improper_path << "'\n";
+    }
+    std::cout << LINE;
+  }
+  if(std::any_of(samples.begin(), samples.end(),
+                 [](const Sample & sample) { return sample.blacklist.size() > 0; }))
+  {
+    std::cout << "Missing numbers (to be blacklisted):\n";
+    for(const Sample & sample: samples)
+    {
+      if(! sample.blacklist.size()) continue;
+      std::cout << "\t* " << sample.name << ": "
+                << boost::algorithm::join(sample.blacklist, ", ") << '\n';
+    } // samples
+    std::cout << LINE;
+  } // any blacklist
+
+//--- sum the event counts in the samples that have common ,,parent''
+  std::map<std::string, unsigned long long> event_sums;
+  for(const Sample & sample: samples)
+    if(! sample.parentStr.empty())
+    {
+      if(! event_sums.count(sample.parentStr))
+        event_sums[sample.parentStr] = sample.nof_events;
+      else
+        event_sums[sample.parentStr] += sample.nof_events;
+    }
+  std::cout << "Total event counts:\n";
+  for(Sample & sample: samples)
+  {
+    if(! sample.parentStr.empty())
+      sample.nof_events = event_sums[sample.parentStr];
+    std::cout << "\t* " << sample.name << ": "
+                        << sample.nof_events << '\n';
+  }
+
+  std::cout << "Final statistics:\n";
+  std::cout << "\tTotal number of files present:  " << present.size() << '\n';
+  std::cout << "\tNumber of broken files:         " << zombies.size() << '\n';
+  std::cout << "\tNumber of files w/ 0 file size: " << zerofs.size()  << '\n';
+  std::cout << "\tNumber of files that hadn't '" << tree_str << "' "
+            << "as their TTree: " << improper.size() << '\n';
+  std::cout << "Total file counts:\n";
+  for(const Sample & sample: samples)
+    std::cout << "\t* " << sample.name << ": "
+                        << sample.present.size() << '\n';
+
+//--- generate basic python dictionaries out of the results
+  if(! output_dir_str.empty() && save_python)
+  {
+    std::ofstream out((output_dir_path / PYTHON_FILE_P).string());
+    out << "from collections import OrderedDict as OD\n\n"
+        << "samples = OD()\n\n";
+    for(const Sample & sample: samples)
+      out << sample.get_cfg();
   }
 
 //--- stop the clock
