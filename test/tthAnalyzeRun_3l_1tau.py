@@ -61,7 +61,7 @@ if __name__ == '__main__':
       "CMS_ttHl_FRjt_normUp",
       "CMS_ttHl_FRjt_normDown",
       "CMS_ttHl_FRjt_shapeUp",
-      "CMS_ttHl_FRjt_shapeDown"
+      "CMS_ttHl_FRjt_shapeDown",
       "CMS_ttHl_FRet_shiftUp",
       "CMS_ttHl_FRet_shiftDown",
       "CMS_ttHl_FRmt_shiftUp",

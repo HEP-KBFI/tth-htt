@@ -944,17 +944,17 @@ int main(int argc, char* argv[])
       }
     } 
 
-    const RecoLepton* preselLepton1_SS = 0;
-    const RecoLepton* preselLepton2_SS = 0;
-    if ( preselLepton_lead->charge_*selHadTau->charge_ > 0. ) {
-      preselLepton1_SS = preselLepton_lead;
+    const RecoLepton* preselLepton1_OS = 0;
+    const RecoLepton* preselLepton2_OS = 0;
+    if ( preselLepton_lead->charge_*selHadTau->charge_ < 0. ) {
+      preselLepton1_OS = preselLepton_lead;
     } 
-    if ( preselLepton_sublead->charge_*selHadTau->charge_ > 0. ) {
-      if ( !preselLepton1_SS ) preselLepton1_SS = preselLepton_sublead;
-      else preselLepton2_SS = preselLepton_sublead;
+    if ( preselLepton_sublead->charge_*selHadTau->charge_ < 0. ) {
+      if ( !preselLepton1_OS ) preselLepton1_OS = preselLepton_sublead;
+      else preselLepton2_OS = preselLepton_sublead;
     }
-    double mTauTauVis1_presel = ( preselLepton1_SS ) ? (preselLepton1_SS->p4_ + selHadTau->p4_).mass() : -1.;
-    double mTauTauVis2_presel = ( preselLepton2_SS ) ? (preselLepton2_SS->p4_ + selHadTau->p4_).mass() : -1.;
+    double mTauTauVis1_presel = ( preselLepton1_OS ) ? (preselLepton1_OS->p4_ + selHadTau->p4_).mass() : -1.;
+    double mTauTauVis2_presel = ( preselLepton2_OS ) ? (preselLepton2_OS->p4_ + selHadTau->p4_).mass() : -1.;
 
 //--- compute output of BDTs used to discriminate ttH vs. ttV and ttH vs. ttbar 
 //    in 2lss_1tau category of ttH multilepton analysis 

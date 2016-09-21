@@ -325,11 +325,10 @@ class analyzeConfig_1l_2tau(analyzeConfig):
                     continue
                   sample_category_and_genMatch = sample_category + hadTau_genMatch
 
-                  inputFiles = generate_input_list(self.inputFileIds[sample_name][jobId], secondary_files, primary_store, secondary_store, self.debug)
-
                   key_dir = getKey(sample_name, hadTau_selection, hadTau_frWeight, hadTau_charge_selection)
                   key_file = getKey(sample_name, hadTau_selection, hadTau_frWeight, hadTau_genMatch, hadTau_charge_selection, central_or_shift, jobId)
 
+                  self.ntupleFiles[key_file] = generate_input_list(self.inputFileIds[sample_name][jobId], secondary_files, primary_store, secondary_store, self.debug)
                   self.cfgFiles_analyze_modified[key_file] = os.path.join(self.dirs[key_dir][DKEY_CFGS], "analyze_%s_%s_%s_%s_%s_%s_%i_cfg.py" % \
                     (self.channel, process_name, hadTau_selection_and_frWeight, hadTau_genMatch, hadTau_charge_selection, central_or_shift, jobId))
                   self.histogramFiles[key_file] = os.path.join(self.dirs[key_dir][DKEY_HIST], "%s_%s_%s_%s_%s_%i.root" % \
@@ -337,7 +336,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
                   self.logFiles_analyze[key_file] = os.path.join(self.dirs[key_dir][DKEY_LOGS], "analyze_%s_%s_%s_%s_%s_%s_%i.log" % \
                     (self.channel, process_name, hadTau_selection_and_frWeight, hadTau_genMatch, hadTau_charge_selection, central_or_shift, jobId))
                 
-                  self.createCfg_analyze(inputFiles, self.histogramFiles[key_file], sample_category, self.era, triggers,
+                  self.createCfg_analyze(self.ntupleFiles[key_file], self.histogramFiles[key_file], sample_category, self.era, triggers,
                     hadTau_selection, hadTau_genMatch, self.apply_hadTauGenMatching, hadTau_frWeight, hadTau_charge_selection,
                     is_mc, central_or_shift, lumi_scale, apply_trigger_bits, self.cfgFiles_analyze_modified[key_file])
                 
