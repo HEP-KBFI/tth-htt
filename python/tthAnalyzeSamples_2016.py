@@ -182,7 +182,7 @@ samples_2016["/TTJets_SingleLeptFromTbar_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/
       OD([
         ("path", "/hdfs/local/lucia/VHBBHeppyV24bis/TTJets_SingleLeptFromTbar_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/VHBB_HEPPY_V24bis_TTJets_SingleLeptFromTbar_TuneCUETP8M1_13TeV-madgraphMLM-Py8__spr16MAv2-puspr16_80r2as_2016_MAv2_v0-v1/160911_223528/0000/"),
         ("selection", "*"),
-        ("blacklist", [XXXX])
+        ("blacklist", [])
       ]),
     ]
   )
