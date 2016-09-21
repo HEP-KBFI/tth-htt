@@ -31,7 +31,6 @@ mkdir -p tthAnalysis/HiggsToTauTau/data
 cp -r $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/data/* ${SCRATCH_DIR}/tthAnalysis/HiggsToTauTau/data
 echo "executing 'pwd'"
 pwd
-CMSSW_SEARCH_PATH=${SCRATCH_DIR}
 {{ exec_name }} {{ cfg_file }}
 echo "copying output files"
 OUTPUT_FILES="{{ outputFiles }}"
