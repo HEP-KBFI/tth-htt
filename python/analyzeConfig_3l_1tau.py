@@ -114,10 +114,15 @@ class analyzeConfig_3l_1tau(analyzeConfig):
     lines.append("process.fwliteOutput.fileName = cms.string('%s')" % os.path.basename(outputFile))
     lines.append("process.analyze_3l_1tau.process = cms.string('%s')" % sample_category)
     lines.append("process.analyze_3l_1tau.era = cms.string('%s')" % era)
+    lines.append("process.analyze_3l_1tau.triggers_1e = cms.vstring(%s)" % self.triggers_1e)
     lines.append("process.analyze_3l_1tau.use_triggers_1e = cms.bool(%s)" % ("1e" in triggers))
+    lines.append("process.analyze_3l_1tau.triggers_2e = cms.vstring(%s)" % self.triggers_2e)
     lines.append("process.analyze_3l_1tau.use_triggers_2e = cms.bool(%s)" % ("2e" in triggers))
+    lines.append("process.analyze_3l_1tau.triggers_1mu = cms.vstring(%s)" % self.triggers_1mu)
     lines.append("process.analyze_3l_1tau.use_triggers_1mu = cms.bool(%s)" % ("1mu" in triggers))
+    lines.append("process.analyze_3l_1tau.triggers_2mu = cms.vstring(%s)" % self.triggers_2mu)
     lines.append("process.analyze_3l_1tau.use_triggers_2mu = cms.bool(%s)" % ("2mu" in triggers))
+    lines.append("process.analyze_3l_1tau.triggers_1e1mu = cms.vstring(%s)" % self.triggers_1e1mu)
     lines.append("process.analyze_3l_1tau.use_triggers_1e1mu = cms.bool(%s)" % ("1e1mu" in triggers))
     lines.append("process.analyze_3l_1tau.leptonSelection = cms.string('%s')" % lepton_selection)
     lines.append("process.analyze_3l_1tau.hadTauSelection = cms.string('%s')" % hadTau_selection)
@@ -312,7 +317,7 @@ class analyzeConfig_3l_1tau(analyzeConfig):
       ( secondary_files, primary_store, secondary_store ) = self.initializeInputFileIds(sample_name, sample_info)
 
       is_mc = (sample_info["type"] == "mc")
-      lumi_scale = 1. if not (self.use_lumi and is_mc) else sample_info["xsection"] * self.lumi / sample_info["nof_events"]
+      lumi_scale = 1. if not (self.use_lumi and is_mc) else (sample_info["xsection"]*self.lumi/sample_info["nof_events"])
       sample_category = sample_info["sample_category"]
       triggers = sample_info["triggers"]
       apply_trigger_bits = (is_mc and (self.era == "2015" or (self.era == "2016" and sample_info["reHLT"]))) or not is_mc

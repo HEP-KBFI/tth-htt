@@ -16,8 +16,8 @@
 class RecoHadTauReader
 {
  public:
-  RecoHadTauReader();
-  RecoHadTauReader(const std::string& branchName_num, const std::string& branchName_obj); 
+  RecoHadTauReader(int era);
+  RecoHadTauReader(int era, const std::string& branchName_num, const std::string& branchName_obj); 
   ~RecoHadTauReader();
 
   enum { kHadTauPt_central, kHadTauPt_shiftUp, kHadTauPt_shiftDown };
@@ -51,6 +51,7 @@ class RecoHadTauReader
    */
   void setBranchNames();
 
+  int era_;
   const int max_nHadTaus_;
   std::string branchName_num_;
   std::string branchName_obj_;

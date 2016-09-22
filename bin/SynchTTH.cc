@@ -683,10 +683,10 @@ main(int argc,
   muonReader->setBranchAddresses(&chain);
   RecoMuonCollectionSelectorLoose preselMuonSelector;
   RecoMuonCollectionSelectorTight tightMuonSelector(era);
-  RecoHadTauReader* hadTauReader = new RecoHadTauReader("nTauGood", "TauGood");
+  RecoHadTauReader* hadTauReader = new RecoHadTauReader(era, "nTauGood", "TauGood");
   hadTauReader->setBranchAddresses(&chain);
   RecoHadTauCollectionSelectorTight hadTauSelector;
-  RecoJetReader* jetReader = new RecoJetReader("nJet", "Jet");
+  RecoJetReader* jetReader = new RecoJetReader(era, "nJet", "Jet");
   jetReader->setBranchName_BtagWeight(jet_btagWeight_branch);
   jetReader->setBranchAddresses(&chain);
   RecoJetCollectionSelector jetSelector;
