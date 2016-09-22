@@ -53,8 +53,9 @@ class analyzeConfig_Zctrl(analyzeConfig):
       central_or_shift: either 'central' or one of the systematic uncertainties defined in $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/bin/analyze_ttZctrl.cc
     """  
     lines = []
+    ##lines.append("process.fwliteInput.fileNames = cms.vstring(%s)" % [ os.path.basename(inputFile) for inputFile in inputFiles ])
     lines.append("process.fwliteInput.fileNames = cms.vstring(%s)" % inputFiles)
-    lines.append("process.fwliteOutput.fileName = cms.string('%s')" % outputFile)
+    lines.append("process.fwliteOutput.fileName = cms.string('%s')" % os.path.basename(outputFile))
     lines.append("process.analyze_Zctrl.process = cms.string('%s')" % sample_category)
     lines.append("process.analyze_Zctrl.era = cms.string('%s')" % era)
     lines.append("process.analyze_Zctrl.use_triggers_1e = cms.bool(%s)" % ("1e" in triggers))
