@@ -8,30 +8,43 @@ echo "job start time:"
 date
 echo "hostname:"
 hostname
+echo "current directory:"
+pwd
 SCRATCH_DIR="{{ scratch_dir }}/${SLURM_JOBID}"
 echo "creating scratch directory = '${SCRATCH_DIR}'"
 mkdir -p ${SCRATCH_DIR}
-echo "copying input files"
-INPUT_FILES="{{ inputFiles }}"
-for INPUT_FILE in $INPUT_FILES
-do
-  cp $INPUT_FILE ${SCRATCH_DIR}
-  if [ ! -f ${SCRATCH_DIR}/${INPUT_FILE##*/} ];
-  then
-    echo "Failed to copy ${INPUT_FILE} to scratch directory !!"
-    exit 1
-  fi
-done
+echo "it is now:"
+date
+##echo "copying Ntuple input files"
+##INPUT_FILES="{{ inputFiles }}"
+##for INPUT_FILE in $INPUT_FILES
+##do
+##  cp $INPUT_FILE ${SCRATCH_DIR}
+##  if [ ! -f ${SCRATCH_DIR}/${INPUT_FILE##*/} ];
+##  then
+##    echo "Failed to copy ${INPUT_FILE} to scratch directory !!"
+##    exit 1
+##  fi
+##done
+##echo "it is now:"
+##date
 echo "initializing CMSSW run-time environment"
 source /cvmfs/cms.cern.ch/cmsset_default.sh 
 cd {{ working_dir }}
 cmsenv
 cd ${SCRATCH_DIR}
+echo "it is now:"
+date
+echo "copying content of 'tthAnalysis/HiggsToTauTau/data' directory"
 mkdir -p tthAnalysis/HiggsToTauTau/data
 cp -r $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/data/* ${SCRATCH_DIR}/tthAnalysis/HiggsToTauTau/data
-echo "executing 'pwd'"
-pwd
+echo "it is now:"
+date
+echo "executing '{{ exec_name }}'"
+CMSSW_SEARCH_PATH=${SCRATCH_DIR}
 {{ exec_name }} {{ cfg_file }}
+echo "it is now:"
+date
 echo "copying output files"
 OUTPUT_FILES="{{ outputFiles }}"
 EXIT_CODE=0
@@ -45,6 +58,8 @@ do
     EXIT_CODE=1
   fi
 done
+echo "it is now:"
+date
 echo "deleting scratch directory"
 rm -r ${SCRATCH_DIR}
 echo "job end time:"

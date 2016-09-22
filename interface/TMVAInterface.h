@@ -13,7 +13,7 @@
 class TMVAInterface
 {
  public:
-  TMVAInterface(const std::string& mvaFileName, const std::vector<std::string>& mvaInputVariables, const std::vector<std::string>& spectators);
+  TMVAInterface(const std::string& mvaFileName, const std::vector<std::string>& mvaInputVariables, const std::vector<std::string>& spectators = {});
   ~TMVAInterface();
 
   /**

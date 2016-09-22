@@ -53,14 +53,20 @@ class analyzeConfig_WZctrl(analyzeConfig):
       central_or_shift: either 'central' or one of the systematic uncertainties defined in $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/bin/analyze_WZctrl.cc
     """  
     lines = []
+    ##lines.append("process.fwliteInput.fileNames = cms.vstring(%s)" % [ os.path.basename(inputFile) for inputFile in inputFiles ])
     lines.append("process.fwliteInput.fileNames = cms.vstring(%s)" % inputFiles)
-    lines.append("process.fwliteOutput.fileName = cms.string('%s')" % outputFile)
+    lines.append("process.fwliteOutput.fileName = cms.string('%s')" % os.path.basename(outputFile))
     lines.append("process.analyze_WZctrl.process = cms.string('%s')" % sample_category)
     lines.append("process.analyze_WZctrl.era = cms.string('%s')" % era)
+    lines.append("process.analyze_WZctrl.triggers_1e = cms.vstring(%s)" % self.triggers_1e)
     lines.append("process.analyze_WZctrl.use_triggers_1e = cms.bool(%s)" % ("1e" in triggers))
+    lines.append("process.analyze_WZctrl.triggers_2e = cms.vstring(%s)" % self.triggers_2e)
     lines.append("process.analyze_WZctrl.use_triggers_2e = cms.bool(%s)" % ("2e" in triggers))
+    lines.append("process.analyze_WZctrl.triggers_1mu = cms.vstring(%s)" % self.triggers_1mu)
     lines.append("process.analyze_WZctrl.use_triggers_1mu = cms.bool(%s)" % ("1mu" in triggers))
+    lines.append("process.analyze_WZctrl.triggers_2mu = cms.vstring(%s)" % self.triggers_2mu)
     lines.append("process.analyze_WZctrl.use_triggers_2mu = cms.bool(%s)" % ("2mu" in triggers))
+    lines.append("process.analyze_WZctrl.triggers_1e1mu = cms.vstring(%s)" % self.triggers_1e1mu)
     lines.append("process.analyze_WZctrl.use_triggers_1e1mu = cms.bool(%s)" % ("1e1mu" in triggers))
     lines.append("process.analyze_WZctrl.isMC = cms.bool(%s)" % is_mc)
     lines.append("process.analyze_WZctrl.central_or_shift = cms.string('%s')" % central_or_shift)

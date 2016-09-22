@@ -4,15 +4,18 @@
 
 #include "FWCore/ParameterSet/interface/FileInPath.h" // edm::FileInPath
 
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2015, kEra_2016
+
 #include <TString.h> // Form
 
 std::map<std::string, int> RecoHadTauReader::numInstances_;
 std::map<std::string, RecoHadTauReader*> RecoHadTauReader::instances_;
 
-RecoHadTauReader::RecoHadTauReader()
+RecoHadTauReader::RecoHadTauReader(int era)
   : tauIdMVArun2dR03DB_wpFile_(0)
   , DBdR03oldDMwLTEff95_(0)
   , mvaOutput_normalization_DBdR03oldDMwLT_(0)
+  , era_(era)
   , max_nHadTaus_(32)
   , branchName_num_("nTauGood")
   , branchName_obj_("TauGood")
@@ -42,10 +45,11 @@ RecoHadTauReader::RecoHadTauReader()
   readDBdR03oldDMwLTEff95();
 }
 
-RecoHadTauReader::RecoHadTauReader(const std::string& branchName_num, const std::string& branchName_obj)
+RecoHadTauReader::RecoHadTauReader(int era, const std::string& branchName_num, const std::string& branchName_obj)
   : tauIdMVArun2dR03DB_wpFile_(0)
   , DBdR03oldDMwLTEff95_(0)
   , mvaOutput_normalization_DBdR03oldDMwLT_(0)
+  , era_(era)
   , max_nHadTaus_(32)
   , branchName_num_(branchName_num)
   , branchName_obj_(branchName_obj)
@@ -109,7 +113,7 @@ RecoHadTauReader::~RecoHadTauReader()
     delete[] gInstance->hadTau_idMVA_dR05_;
     delete[] gInstance->hadTau_rawMVA_dR05_;
     delete[] gInstance->hadTau_idCombIso_dR03_;
-    //delete[] gInstance->hadTau_rawCombIso_dR03_;
+    delete[] gInstance->hadTau_rawCombIso_dR03_;
     delete[] gInstance->hadTau_idCombIso_dR05_;
     delete[] gInstance->hadTau_rawCombIso_dR05_;
     delete[] gInstance->hadTau_idAgainstElec_;
@@ -167,6 +171,22 @@ void RecoHadTauReader::setBranchNames()
   ++numInstances_[branchName_obj_];
 }
 
+namespace
+{
+  void setValue_int(Int_t* array, int n, Int_t value = 0)
+  {
+    for ( int idx = 0; idx < n; ++idx ) {
+      array[idx] = value;
+    }
+  }
+  void setValue_float(Float_t* array, int n, Float_t value = 0.)
+  {
+    for ( int idx = 0; idx < n; ++idx ) {
+      array[idx] = value;
+    }
+  }
+}
+
 void RecoHadTauReader::setBranchAddresses(TTree* tree)
 {
   if ( instances_[branchName_obj_] == this ) {
@@ -200,9 +220,13 @@ void RecoHadTauReader::setBranchAddresses(TTree* tree)
     hadTau_rawMVA_dR05_ = new Float_t[max_nHadTaus_];
     tree->SetBranchAddress(branchName_rawMVA_dR05_.data(), hadTau_rawMVA_dR05_); 
     hadTau_idCombIso_dR03_ = new Int_t[max_nHadTaus_];
-    tree->SetBranchAddress(branchName_idCombIso_dR03_.data(), hadTau_idCombIso_dR03_); 
-    //hadTau_rawCombIso_dR03_ = new Float_t[max_nHadTaus_]; // KE: unused allocated memory (check the next comment)
-    //tree->SetBranchAddress(branchName_rawCombIso_dR03_.data(), hadTau_rawCombIso_dR03_); // CV: branch does not exist in VHbb Ntuples yet
+    if ( era_ == kEra_2015 ) { // CV: branch does not exist in VHbb Ntuples v24 produced by Andrea for 2016 data
+      tree->SetBranchAddress(branchName_idCombIso_dR03_.data(), hadTau_idCombIso_dR03_); 
+    } else {
+      setValue_int(hadTau_idCombIso_dR03_, max_nHadTaus_, -1);
+    }    
+    hadTau_rawCombIso_dR03_ = new Float_t[max_nHadTaus_]; 
+    setValue_float(hadTau_rawCombIso_dR03_, max_nHadTaus_, -1.); // CV: branch does not exist in VHbb Ntuples yet
     hadTau_idCombIso_dR05_ = new Int_t[max_nHadTaus_];
     tree->SetBranchAddress(branchName_idCombIso_dR05_.data(), hadTau_idCombIso_dR05_); 
     hadTau_rawCombIso_dR05_ = new Float_t[max_nHadTaus_];
@@ -260,7 +284,7 @@ std::vector<RecoHadTau> RecoHadTauReader::read() const
       gInstance->hadTau_idMVA_dR05_[idxHadTau],
       gInstance->hadTau_rawMVA_dR05_[idxHadTau],	
       gInstance->hadTau_idCombIso_dR03_[idxHadTau],
-      0, // gInstance->hadTau_rawCombIso_dR03_[idxHadTau], // KE: still unused branch
+      gInstance->hadTau_rawCombIso_dR03_[idxHadTau],
       gInstance->hadTau_idCombIso_dR05_[idxHadTau],
       gInstance->hadTau_rawCombIso_dR05_[idxHadTau],	
       gInstance->hadTau_idAgainstElec_[idxHadTau],

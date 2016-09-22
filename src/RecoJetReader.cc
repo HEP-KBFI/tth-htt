@@ -2,13 +2,16 @@
 
 #include "FWCore/Utilities/interface/Exception.h"
 
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2015, kEra_2016
+
 #include <TString.h> // Form
 
 std::map<std::string, int> RecoJetReader::numInstances_;
 std::map<std::string, RecoJetReader*> RecoJetReader::instances_;
 
-RecoJetReader::RecoJetReader()
-  : max_nJets_(32)
+RecoJetReader::RecoJetReader(int era)
+  : era_(era)
+  , max_nJets_(32)
   , branchName_num_("nJet")
   , branchName_obj_("Jet")
   , jetPt_option_(RecoJetReader::kJetPt_central)
@@ -25,8 +28,9 @@ RecoJetReader::RecoJetReader()
   setBranchNames();
 }
 
-RecoJetReader::RecoJetReader(const std::string& branchName_num, const std::string& branchName_obj)
-  : max_nJets_(32)
+RecoJetReader::RecoJetReader(int era, const std::string& branchName_num, const std::string& branchName_obj)
+  : era_(era)
+  , max_nJets_(32)
   , branchName_num_(branchName_num)
   , branchName_obj_(branchName_obj)
   , jetPt_option_(RecoJetReader::kJetPt_central)
@@ -74,7 +78,9 @@ void RecoJetReader::setBranchNames()
     branchName_corr_JECUp_ = Form("%s_%s_%s", branchName_obj_.data(), "corr", "JECUp");
     branchName_corr_JECDown_ = Form("%s_%s_%s", branchName_obj_.data(), "corr", "JECDown");
     branchName_BtagCSV_ = Form("%s_%s", branchName_obj_.data(), "btagCSV");
-    branchName_BtagWeight_ = Form("%s_%s", branchName_obj_.data(), "bTagWeight");
+    if      ( era_ == kEra_2015 ) branchName_BtagWeight_ = Form("%s_%s", branchName_obj_.data(), "bTagWeight");
+    else if ( era_ == kEra_2016 ) branchName_BtagWeight_ = Form("%s_%s", branchName_obj_.data(), "bTagWeightCSV");
+    else assert(0);
     instances_[branchName_obj_] = this;
   } else {
     if ( branchName_num_ != instances_[branchName_obj_]->branchName_num_ ) {
