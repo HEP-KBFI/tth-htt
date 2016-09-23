@@ -16,7 +16,8 @@ process.makePlots = cms.PSet(
         "TTW",
         "TTZ",
         "EWK",
-        "Rares"
+        "Rares",
+        "fakes_data"
     ),
     processSignal = cms.string("signal"),
 
@@ -213,7 +214,8 @@ process.makePlots = cms.PSet(
             TTW = cms.string("1.0 +/- 0.20"),
             TTZ = cms.string("1.0 +/- 0.20"),
             EWK = cms.string("1.0 +/- 0.20"),
-            Rares = cms.string("1.0 +/- 0.20")
+            Rares = cms.string("1.0 +/- 0.20"),
+            fakes_data = cms.string("1.0 +/- 0.20")
         ),
         shape = cms.PSet(
             CMS_ttHl_btag_HF = cms.string("0.00 +/- 1.00"),
