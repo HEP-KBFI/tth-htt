@@ -374,6 +374,8 @@ int main(int argc, char* argv[])
     throw cms::Exception("analyze_3l_1tau") 
       << "Invalid combination of Configuration parameters 'hadTauGenMatch' = " << hadTauGenMatchSelection_string << ", 'apply_hadTauGenMatching' = " << apply_hadTauGenMatching << " !!\n";
   }
+  std::string process_and_genMatch = process_string;
+  if ( hadTauGenMatchSelection_string != "all" && apply_hadTauGenMatching ) process_and_genMatch += hadTauGenMatchSelection_string;
 
   enum { kOS, kSS };
   std::string chargeSelection_string = cfg_analyze.getParameter<std::string>("chargeSelection");
@@ -658,71 +660,71 @@ int main(int argc, char* argv[])
 
 //--- declare histograms
   std::string charge_and_lepton_and_hadTauSelection = Form("%s_lep%s_tau%s", chargeSelection_string.data(), leptonSelection_string.data(), hadTauSelection_part1.data());  
-  ElectronHistManager preselElectronHistManager(makeHistManager_cfg(process_string, 
+  ElectronHistManager preselElectronHistManager(makeHistManager_cfg(process_and_genMatch, 
     Form("3l_1tau_%s/presel/electrons", charge_and_lepton_and_hadTauSelection.data()), central_or_shift));
   preselElectronHistManager.bookHistograms(fs);
-  MuonHistManager preselMuonHistManager(makeHistManager_cfg(process_string, 
+  MuonHistManager preselMuonHistManager(makeHistManager_cfg(process_and_genMatch, 
     Form("3l_1tau_%s/presel/muons", charge_and_lepton_and_hadTauSelection.data()), central_or_shift));
   preselMuonHistManager.bookHistograms(fs);
-  HadTauHistManager preselHadTauHistManager(makeHistManager_cfg(process_string, 
+  HadTauHistManager preselHadTauHistManager(makeHistManager_cfg(process_and_genMatch, 
     Form("3l_1tau_%s/presel/hadTaus", charge_and_lepton_and_hadTauSelection.data()), central_or_shift));
   preselHadTauHistManager.bookHistograms(fs);
-  JetHistManager preselJetHistManager(makeHistManager_cfg(process_string, 
+  JetHistManager preselJetHistManager(makeHistManager_cfg(process_and_genMatch, 
     Form("3l_1tau_%s/presel/jets", charge_and_lepton_and_hadTauSelection.data()), central_or_shift));
   preselJetHistManager.bookHistograms(fs);
-  JetHistManager preselBJet_looseHistManager(makeHistManager_cfg(process_string, 
+  JetHistManager preselBJet_looseHistManager(makeHistManager_cfg(process_and_genMatch, 
     Form("3l_1tau_%s/presel/BJets_loose", charge_and_lepton_and_hadTauSelection.data()), central_or_shift));
   preselBJet_looseHistManager.bookHistograms(fs);
-  JetHistManager preselBJet_mediumHistManager(makeHistManager_cfg(process_string, 
+  JetHistManager preselBJet_mediumHistManager(makeHistManager_cfg(process_and_genMatch, 
     Form("3l_1tau_%s/presel/BJets_medium", charge_and_lepton_and_hadTauSelection.data()), central_or_shift));
   preselBJet_mediumHistManager.bookHistograms(fs);
-  MEtHistManager preselMEtHistManager(makeHistManager_cfg(process_string, 
+  MEtHistManager preselMEtHistManager(makeHistManager_cfg(process_and_genMatch, 
     Form("3l_1tau_%s/presel/met", charge_and_lepton_and_hadTauSelection.data()), central_or_shift));
   preselMEtHistManager.bookHistograms(fs);
-  EvtHistManager_3l_1tau preselEvtHistManager(makeHistManager_cfg(process_string, 
+  EvtHistManager_3l_1tau preselEvtHistManager(makeHistManager_cfg(process_and_genMatch, 
     Form("3l_1tau_%s/presel/evt", charge_and_lepton_and_hadTauSelection.data()), central_or_shift));
   preselEvtHistManager.bookHistograms(fs);
 
-  ElectronHistManager selElectronHistManager(makeHistManager_cfg(process_string, 
+  ElectronHistManager selElectronHistManager(makeHistManager_cfg(process_and_genMatch, 
     Form("3l_1tau_%s/sel/electrons", charge_and_lepton_and_hadTauSelection.data()), central_or_shift));
   selElectronHistManager.bookHistograms(fs);
 
-  MuonHistManager selMuonHistManager(makeHistManager_cfg(process_string, 
+  MuonHistManager selMuonHistManager(makeHistManager_cfg(process_and_genMatch, 
     Form("3l_1tau_%s/sel/muons", charge_and_lepton_and_hadTauSelection.data()), central_or_shift));
   selMuonHistManager.bookHistograms(fs);
 
-  HadTauHistManager selHadTauHistManager(makeHistManager_cfg(process_string, 
+  HadTauHistManager selHadTauHistManager(makeHistManager_cfg(process_and_genMatch, 
     Form("3l_1tau_%s/sel/hadTaus", charge_and_lepton_and_hadTauSelection.data()), central_or_shift));
   selHadTauHistManager.bookHistograms(fs);
 
-  JetHistManager selJetHistManager(makeHistManager_cfg(process_string, 
+  JetHistManager selJetHistManager(makeHistManager_cfg(process_and_genMatch, 
     Form("3l_1tau_%s/sel/jets", charge_and_lepton_and_hadTauSelection.data()), central_or_shift));
   selJetHistManager.bookHistograms(fs);
-  JetHistManager selJetHistManager_lead(makeHistManager_cfg(process_string, 
+  JetHistManager selJetHistManager_lead(makeHistManager_cfg(process_and_genMatch, 
     Form("3l_1tau_%s/sel/leadJet", charge_and_lepton_and_hadTauSelection.data()), central_or_shift, 0));
   selJetHistManager_lead.bookHistograms(fs);
-  JetHistManager selJetHistManager_sublead(makeHistManager_cfg(process_string, 
+  JetHistManager selJetHistManager_sublead(makeHistManager_cfg(process_and_genMatch, 
     Form("3l_1tau_%s/sel/subleadJet", charge_and_lepton_and_hadTauSelection.data()), central_or_shift, 1));
   selJetHistManager_sublead.bookHistograms(fs);
 
-  JetHistManager selBJet_looseHistManager(makeHistManager_cfg(process_string, 
+  JetHistManager selBJet_looseHistManager(makeHistManager_cfg(process_and_genMatch, 
     Form("3l_1tau_%s/sel/BJets_loose", charge_and_lepton_and_hadTauSelection.data()), central_or_shift));
   selBJet_looseHistManager.bookHistograms(fs);
-  JetHistManager selBJet_looseHistManager_lead(makeHistManager_cfg(process_string, 
+  JetHistManager selBJet_looseHistManager_lead(makeHistManager_cfg(process_and_genMatch, 
     Form("3l_1tau_%s/sel/leadBJet_loose", charge_and_lepton_and_hadTauSelection.data()), central_or_shift, 0));
   selBJet_looseHistManager_lead.bookHistograms(fs);
-  JetHistManager selBJet_looseHistManager_sublead(makeHistManager_cfg(process_string, 
+  JetHistManager selBJet_looseHistManager_sublead(makeHistManager_cfg(process_and_genMatch, 
     Form("3l_1tau_%s/sel/subleadBJet_loose", charge_and_lepton_and_hadTauSelection.data()), central_or_shift, 1));
   selBJet_looseHistManager_sublead.bookHistograms(fs);
-  JetHistManager selBJet_mediumHistManager(makeHistManager_cfg(process_string, 
+  JetHistManager selBJet_mediumHistManager(makeHistManager_cfg(process_and_genMatch, 
     Form("3l_1tau_%s/sel/BJets_medium", charge_and_lepton_and_hadTauSelection.data()), central_or_shift));
   selBJet_mediumHistManager.bookHistograms(fs);
 
-  MEtHistManager selMEtHistManager(makeHistManager_cfg(process_string, 
+  MEtHistManager selMEtHistManager(makeHistManager_cfg(process_and_genMatch, 
     Form("3l_1tau_%s/sel/met", charge_and_lepton_and_hadTauSelection.data()), central_or_shift));
   selMEtHistManager.bookHistograms(fs);
 
-  EvtHistManager_3l_1tau selEvtHistManager(makeHistManager_cfg(process_string, 
+  EvtHistManager_3l_1tau selEvtHistManager(makeHistManager_cfg(process_and_genMatch, 
     Form("3l_1tau_%s/sel/evt", charge_and_lepton_and_hadTauSelection.data()), central_or_shift));
   selEvtHistManager.bookHistograms(fs);
   std::map<std::string, EvtHistManager_3l_1tau*> selEvtHistManager_decayMode; // key = decay mode
@@ -760,13 +762,13 @@ int main(int argc, char* argv[])
   GenEvtHistManager* genEvtHistManager_afterCuts = 0;
   LHEInfoHistManager* lheInfoHistManager = 0;
   if ( isMC ) {
-    genEvtHistManager_beforeCuts = new GenEvtHistManager(makeHistManager_cfg(process_string, 
+    genEvtHistManager_beforeCuts = new GenEvtHistManager(makeHistManager_cfg(process_and_genMatch, 
       Form("3l_1tau_%s/unbiased/genEvt", charge_and_lepton_and_hadTauSelection.data()), central_or_shift));
     genEvtHistManager_beforeCuts->bookHistograms(fs);
-    genEvtHistManager_afterCuts = new GenEvtHistManager(makeHistManager_cfg(process_string, 
+    genEvtHistManager_afterCuts = new GenEvtHistManager(makeHistManager_cfg(process_and_genMatch, 
       Form("3l_1tau_%s/sel/genEvt", charge_and_lepton_and_hadTauSelection.data()), central_or_shift));
     genEvtHistManager_afterCuts->bookHistograms(fs);
-    lheInfoHistManager = new LHEInfoHistManager(makeHistManager_cfg(process_string, 
+    lheInfoHistManager = new LHEInfoHistManager(makeHistManager_cfg(process_and_genMatch, 
       Form("3l_1tau_%s/sel/lheInfo", charge_and_lepton_and_hadTauSelection.data()), central_or_shift));
     lheInfoHistManager->bookHistograms(fs);
   }

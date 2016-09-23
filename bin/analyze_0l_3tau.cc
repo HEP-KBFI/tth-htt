@@ -164,6 +164,8 @@ int main(int argc, char* argv[])
     throw cms::Exception("analyze_0l_3tau") 
       << "Invalid combination of Configuration parameters 'hadTauGenMatch' = " << hadTauGenMatchSelection_string << ", 'apply_hadTauGenMatching' = " << apply_hadTauGenMatching << " !!\n";
   }
+  std::string process_and_genMatch = process_string;
+  if ( hadTauGenMatchSelection_string != "all" && apply_hadTauGenMatching ) process_and_genMatch += hadTauGenMatchSelection_string;
 
   vdouble hadTauEtaBins_lead = cfg_analyze.getParameter<vdouble>("hadTauEtaBins_lead"); // CV: eta bins in which jet->tau fake-rates are determined
   vdouble hadTauEtaBins_sublead = cfg_analyze.getParameter<vdouble>("hadTauEtaBins_sublead");
@@ -386,44 +388,44 @@ int main(int argc, char* argv[])
   std::ostream* selEventsFile = new std::ofstream(selEventsFileName_output.data(), std::ios::out);
 
 //--- declare histograms
-  HadTauHistManager preselHadTauHistManager(makeHistManager_cfg(process_string, 
+  HadTauHistManager preselHadTauHistManager(makeHistManager_cfg(process_and_genMatch, 
     Form("0l_3tau_%s/presel/hadTaus", hadTauSelection_part1.data()), central_or_shift));
   preselHadTauHistManager.bookHistograms(fs);
-  HadTauHistManager preselHadTauHistManager_lead(makeHistManager_cfg(process_string, 
+  HadTauHistManager preselHadTauHistManager_lead(makeHistManager_cfg(process_and_genMatch, 
     Form("0l_3tau_%s/presel/leadHadTau", hadTauSelection_part1.data()), central_or_shift));
   preselHadTauHistManager_lead.bookHistograms(fs);
-  HadTauHistManager preselHadTauHistManager_sublead(makeHistManager_cfg(process_string, 
+  HadTauHistManager preselHadTauHistManager_sublead(makeHistManager_cfg(process_and_genMatch, 
     Form("0l_3tau_%s/presel/subleadHadTau", hadTauSelection_part1.data()), central_or_shift));
   preselHadTauHistManager_sublead.bookHistograms(fs);
-  HadTauHistManager preselHadTauHistManager_third(makeHistManager_cfg(process_string, 
+  HadTauHistManager preselHadTauHistManager_third(makeHistManager_cfg(process_and_genMatch, 
     Form("0l_3tau_%s/presel/thirdHadTau", hadTauSelection_part1.data()), central_or_shift));
   preselHadTauHistManager_third.bookHistograms(fs);
-  JetHistManager preselJetHistManager(makeHistManager_cfg(process_string, 
+  JetHistManager preselJetHistManager(makeHistManager_cfg(process_and_genMatch, 
     Form("0l_3tau_%s/presel/jets", hadTauSelection_part1.data()), central_or_shift));
   preselJetHistManager.bookHistograms(fs);
-  JetHistManager preselBJet_looseHistManager(makeHistManager_cfg(process_string, 
+  JetHistManager preselBJet_looseHistManager(makeHistManager_cfg(process_and_genMatch, 
     Form("0l_3tau_%s/presel/BJets_loose", hadTauSelection_part1.data()), central_or_shift));
   preselBJet_looseHistManager.bookHistograms(fs);
-  JetHistManager preselBJet_mediumHistManager(makeHistManager_cfg(process_string, 
+  JetHistManager preselBJet_mediumHistManager(makeHistManager_cfg(process_and_genMatch, 
     Form("0l_3tau_%s/presel/BJets_medium", hadTauSelection_part1.data()), central_or_shift));
   preselBJet_mediumHistManager.bookHistograms(fs);
-  MEtHistManager preselMEtHistManager(makeHistManager_cfg(process_string, 
+  MEtHistManager preselMEtHistManager(makeHistManager_cfg(process_and_genMatch, 
     Form("0l_3tau_%s/presel/met", hadTauSelection_part1.data()), central_or_shift));
   preselMEtHistManager.bookHistograms(fs);
-  EvtHistManager_0l_3tau preselEvtHistManager(makeHistManager_cfg(process_string, 
+  EvtHistManager_0l_3tau preselEvtHistManager(makeHistManager_cfg(process_and_genMatch, 
     Form("0l_3tau_%s/presel/evt", hadTauSelection_part1.data()), central_or_shift));
   preselEvtHistManager.bookHistograms(fs);
 
-  HadTauHistManager selHadTauHistManager(makeHistManager_cfg(process_string, 
+  HadTauHistManager selHadTauHistManager(makeHistManager_cfg(process_and_genMatch, 
     Form("0l_3tau_%s/sel/hadTaus", hadTauSelection_part1.data()), central_or_shift));
   selHadTauHistManager.bookHistograms(fs);
-  HadTauHistManager selHadTauHistManager_lead(makeHistManager_cfg(process_string, 
+  HadTauHistManager selHadTauHistManager_lead(makeHistManager_cfg(process_and_genMatch, 
     Form("0l_3tau_%s/sel/leadHadTau", hadTauSelection_part1.data()), central_or_shift, 0));
   selHadTauHistManager_lead.bookHistograms(fs);
-  HadTauHistManager selHadTauHistManager_sublead(makeHistManager_cfg(process_string, 
+  HadTauHistManager selHadTauHistManager_sublead(makeHistManager_cfg(process_and_genMatch, 
     Form("0l_3tau_%s/sel/subleadHadTau", hadTauSelection_part1.data()), central_or_shift, 1));
   selHadTauHistManager_sublead.bookHistograms(fs);
-  HadTauHistManager selHadTauHistManager_third(makeHistManager_cfg(process_string, 
+  HadTauHistManager selHadTauHistManager_third(makeHistManager_cfg(process_and_genMatch, 
     Form("0l_3tau_%s/sel/thirdHadTau", hadTauSelection_part1.data()), central_or_shift, 1));
   selHadTauHistManager_third.bookHistograms(fs);
   vstring categories_tau = {
@@ -434,54 +436,54 @@ int main(int argc, char* argv[])
   std::map<std::string, HadTauHistManager*> selHadTauHistManager_third_category; // key = category
   for ( vstring::const_iterator category = categories_tau.begin();
 	category != categories_tau.end(); ++category ) {
-    HadTauHistManager* selHadTauHistManager_lead = new HadTauHistManager(makeHistManager_cfg(process_string, 
+    HadTauHistManager* selHadTauHistManager_lead = new HadTauHistManager(makeHistManager_cfg(process_and_genMatch, 
       Form("%s_%s/sel/leadHadTau", category->data(), hadTauSelection_part1.data()), central_or_shift));
     selHadTauHistManager_lead->bookHistograms(fs);
     selHadTauHistManager_lead_category[*category] = selHadTauHistManager_lead;
-    HadTauHistManager* selHadTauHistManager_sublead = new HadTauHistManager(makeHistManager_cfg(process_string, 
+    HadTauHistManager* selHadTauHistManager_sublead = new HadTauHistManager(makeHistManager_cfg(process_and_genMatch, 
       Form("%s_%s/sel/subleadHadTau", category->data(), hadTauSelection_part1.data()), central_or_shift));
     selHadTauHistManager_sublead->bookHistograms(fs);
     selHadTauHistManager_sublead_category[*category] = selHadTauHistManager_sublead;
-    HadTauHistManager* selHadTauHistManager_third = new HadTauHistManager(makeHistManager_cfg(process_string, 
+    HadTauHistManager* selHadTauHistManager_third = new HadTauHistManager(makeHistManager_cfg(process_and_genMatch, 
       Form("%s_%s/sel/thirdHadTau", category->data(), hadTauSelection_part1.data()), central_or_shift));
     selHadTauHistManager_third->bookHistograms(fs);
     selHadTauHistManager_third_category[*category] = selHadTauHistManager_third;
   }
-  edm::ParameterSet cfg_selHadTauFakeRateHistManager = makeHistManager_cfg(process_string, 
+  edm::ParameterSet cfg_selHadTauFakeRateHistManager = makeHistManager_cfg(process_and_genMatch, 
     Form("0l_3tau_%s/sel/hadTauFakeRates", hadTauSelection_part1.data()), central_or_shift);
   cfg_selHadTauFakeRateHistManager.addParameter<vdouble>("etaBins_lead", hadTauEtaBins_lead);
   cfg_selHadTauFakeRateHistManager.addParameter<vdouble>("etaBins_sublead", hadTauEtaBins_sublead);
   HadTauFakeRateHistManager selHadTauFakeRateHistManager(cfg_selHadTauFakeRateHistManager);
   selHadTauFakeRateHistManager.bookHistograms(fs);
 
-  JetHistManager selJetHistManager(makeHistManager_cfg(process_string, 
+  JetHistManager selJetHistManager(makeHistManager_cfg(process_and_genMatch, 
     Form("0l_3tau_%s/sel/jets", hadTauSelection_part1.data()), central_or_shift));
   selJetHistManager.bookHistograms(fs);
-  JetHistManager selJetHistManager_lead(makeHistManager_cfg(process_string, 
+  JetHistManager selJetHistManager_lead(makeHistManager_cfg(process_and_genMatch, 
     Form("0l_3tau_%s/sel/leadJet", hadTauSelection_part1.data()), central_or_shift, 0));
   selJetHistManager_lead.bookHistograms(fs);
-  JetHistManager selJetHistManager_sublead(makeHistManager_cfg(process_string, 
+  JetHistManager selJetHistManager_sublead(makeHistManager_cfg(process_and_genMatch, 
     Form("0l_3tau_%s/sel/subleadJet", hadTauSelection_part1.data()), central_or_shift, 1));
   selJetHistManager_sublead.bookHistograms(fs);
 
-  JetHistManager selBJet_looseHistManager(makeHistManager_cfg(process_string, 
+  JetHistManager selBJet_looseHistManager(makeHistManager_cfg(process_and_genMatch, 
     Form("0l_3tau_%s/sel/BJets_loose", hadTauSelection_part1.data()), central_or_shift));
   selBJet_looseHistManager.bookHistograms(fs);
-  JetHistManager selBJet_looseHistManager_lead(makeHistManager_cfg(process_string, 
+  JetHistManager selBJet_looseHistManager_lead(makeHistManager_cfg(process_and_genMatch, 
     Form("0l_3tau_%s/sel/leadBJet_loose", hadTauSelection_part1.data()), central_or_shift, 0));
   selBJet_looseHistManager_lead.bookHistograms(fs);
-  JetHistManager selBJet_looseHistManager_sublead(makeHistManager_cfg(process_string, 
+  JetHistManager selBJet_looseHistManager_sublead(makeHistManager_cfg(process_and_genMatch, 
     Form("0l_3tau_%s/sel/subleadBJet_loose", hadTauSelection_part1.data()), central_or_shift, 1));
   selBJet_looseHistManager_sublead.bookHistograms(fs);
-  JetHistManager selBJet_mediumHistManager(makeHistManager_cfg(process_string, 
+  JetHistManager selBJet_mediumHistManager(makeHistManager_cfg(process_and_genMatch, 
     Form("0l_3tau_%s/sel/BJets_medium", hadTauSelection_part1.data()), central_or_shift));
   selBJet_mediumHistManager.bookHistograms(fs);
 
-  MEtHistManager selMEtHistManager(makeHistManager_cfg(process_string, 
+  MEtHistManager selMEtHistManager(makeHistManager_cfg(process_and_genMatch, 
     Form("0l_3tau_%s/sel/met", hadTauSelection_part1.data()), central_or_shift));
   selMEtHistManager.bookHistograms(fs);
 
-  EvtHistManager_0l_3tau selEvtHistManager(makeHistManager_cfg(process_string, 
+  EvtHistManager_0l_3tau selEvtHistManager(makeHistManager_cfg(process_and_genMatch, 
     Form("0l_3tau_%s/sel/evt", hadTauSelection_part1.data()), central_or_shift));
   selEvtHistManager.bookHistograms(fs);
   std::map<std::string, EvtHistManager_0l_3tau*> selEvtHistManager_decayMode; // key = decay mode
@@ -520,7 +522,7 @@ int main(int argc, char* argv[])
   std::map<std::string, EvtHistManager_0l_3tau*> selEvtHistManager_category; // key = category
   for ( vstring::const_iterator category = categories_evt.begin();
 	category != categories_evt.end(); ++category ) {
-    EvtHistManager_0l_3tau* selEvtHistManager = new EvtHistManager_0l_3tau(makeHistManager_cfg(process_string, 
+    EvtHistManager_0l_3tau* selEvtHistManager = new EvtHistManager_0l_3tau(makeHistManager_cfg(process_and_genMatch, 
       Form("%s_%s/sel/evt", category->data(), hadTauSelection_part1.data()), central_or_shift));
     selEvtHistManager->bookHistograms(fs);
     selEvtHistManager_category[*category] = selEvtHistManager;
@@ -530,13 +532,13 @@ int main(int argc, char* argv[])
   GenEvtHistManager* genEvtHistManager_afterCuts = 0;
   LHEInfoHistManager* lheInfoHistManager = 0;
   if ( isMC ) {
-    genEvtHistManager_beforeCuts = new GenEvtHistManager(makeHistManager_cfg(process_string, 
+    genEvtHistManager_beforeCuts = new GenEvtHistManager(makeHistManager_cfg(process_and_genMatch, 
       Form("0l_3tau_%s/unbiased/genEvt", hadTauSelection_part1.data()), central_or_shift));
     genEvtHistManager_beforeCuts->bookHistograms(fs);
-    genEvtHistManager_afterCuts = new GenEvtHistManager(makeHistManager_cfg(process_string, 
+    genEvtHistManager_afterCuts = new GenEvtHistManager(makeHistManager_cfg(process_and_genMatch, 
       Form("0l_3tau_%s/sel/genEvt", hadTauSelection_part1.data()), central_or_shift));
     genEvtHistManager_afterCuts->bookHistograms(fs);
-    lheInfoHistManager = new LHEInfoHistManager(makeHistManager_cfg(process_string, 
+    lheInfoHistManager = new LHEInfoHistManager(makeHistManager_cfg(process_and_genMatch, 
       Form("0l_3tau_%s/sel/lheInfo", hadTauSelection_part1.data()), central_or_shift));
     lheInfoHistManager->bookHistograms(fs);
   }

@@ -39,14 +39,16 @@ class analyzeConfig_0l_3tau(analyzeConfig):
     self.hadTau_genMatches = [ "all",
                                "3t0e0m0j", "2t1e0m0j", "2t0e1m0j", "2t0e0m1j", "1t2e0m0j", "1t1e1m0j", "1t1e0m1j", "1t0e2m0j", "1t0e1m1j", "1t0e0m2j",
                                "0t3e0m0j", "0t2e1m0j", "0t2e0m1j", "0t1e2m0j", "0t1e1m1j", "0t1e0m2j", "0t0e3m0j", "0t0e2m1j", "0t0e1m2j", "0t0e0m3j" ]
+    ##self.hadTau_genMatches = [ "all" ]
     self.hadTau_genMatches_nonfakes = []
     self.hadTau_genMatches_fakes = []
     for  hadTau_genMatch in self.hadTau_genMatches:
+      if hadTau_genMatch == "all" and len(self.hadTau_genMatches) > 1:
+        continue
       if hadTau_genMatch.endswith("0j"):
         self.hadTau_genMatches_nonfakes.append(hadTau_genMatch)
       else:
-        self.hadTau_genMatches_fakes.append(hadTau_genMatch)
-    ##self.hadTau_genMatches = [ "all" ]
+        self.hadTau_genMatches_fakes.append(hadTau_genMatch)    
     self.apply_hadTauGenMatching = True
 
     self.executable_addBackgrounds = executable_addBackgrounds
@@ -259,6 +261,15 @@ class analyzeConfig_0l_3tau(analyzeConfig):
     self.addToMakefile_hadd_stage1_5(lines_makefile)
     self.addToMakefile_addFakes(lines_makefile)
 
+  def addToMakefile_hadd_stage2(self, lines_makefile):
+    """Adds the commands to Makefile that are necessary for building the final histogram file.
+    """
+    lines_makefile.append("%s: %s" % (self.histogramFile_hadd_stage2, " ".join([ self.histogramFile_hadd_stage1 ] + self.histogramFile_addFakes.values())))
+    lines_makefile.append("\t%s %s" % ("rm -f", self.histogramFile_hadd_stage2))
+    lines_makefile.append("\t%s %s %s" % ("hadd", self.histogramFile_hadd_stage2, " ".join([ self.histogramFile_hadd_stage1 ] + self.histogramFile_addFakes.values())))
+    lines_makefile.append("")
+    self.filesToClean.append(self.histogramFile_hadd_stage2)
+
   def addToMakefile_make_plots_mcClosure(self, lines_makefile):
     """Adds the commands to Makefile that are necessary for making control plots of the jet->tau fake background estimation procedure.
     """
@@ -356,7 +367,10 @@ class analyzeConfig_0l_3tau(analyzeConfig):
     self.histogramFile_addBackgrounds[key] = os.path.join(self.outputDir, DKEY_HIST, "addBackgrounds_%s_fakes_mc_weighted.root" % self.channel)
     self.cfgFile_addBackgrounds_modified[key] = os.path.join(self.outputDir, DKEY_CFGS, "addBackgrounds_%s_fakes_mc_weighted_cfg.py" % self.channel)
     histogramDir = "0l_3tau_Fakeable_mcClosure" 
-    processes_input = [ "%s%s" % (process_name, genMatch) for genMatch in self.hadTau_genMatches_fakes ]
+    processes_input = []
+    for process_name in self.nonfake_backgrounds:
+      for genMatch in self.hadTau_genMatches_fakes:
+        processes_input.append("%s%s" % (process_name, genMatch))
     self.process_output_addBackgrounds[key] = "fakes_mc_weighted"
     self.createCfg_addBackgrounds(self.histogramFile_hadd_stage1, self.histogramFile_addBackgrounds[key], self.cfgFile_addBackgrounds_modified[key],
       [ histogramDir ], processes_input, self.process_output_addBackgrounds[key])
@@ -365,7 +379,10 @@ class analyzeConfig_0l_3tau(analyzeConfig):
     self.histogramFile_addBackgrounds[key] = os.path.join(self.outputDir, DKEY_HIST, "addBackgrounds_%s_fakes_mc.root" % self.channel)
     self.cfgFile_addBackgrounds_modified[key] = os.path.join(self.outputDir, DKEY_CFGS, "addBackgrounds_%s_fakes_mc_cfg.py" % self.channel)
     histogramDir = "0l_3tau_Tight" 
-    processes_input = [ "%s%s" % (process_name, genMatch) for genMatch in self.hadTau_genMatches_fakes ]
+    processes_input = []
+    for process_name in self.nonfake_backgrounds:
+      for genMatch in self.hadTau_genMatches_fakes:
+        processes_input.append("%s%s" % (process_name, genMatch))
     self.process_output_addBackgrounds[key] = "fakes_mc"
     self.createCfg_addBackgrounds(self.histogramFile_hadd_stage1, self.histogramFile_addBackgrounds[key], self.cfgFile_addBackgrounds_modified[key],
       [ histogramDir ], processes_input, self.process_output_addBackgrounds[key])
