@@ -167,7 +167,7 @@ Data_to_MC_CorrectionInterface::Data_to_MC_CorrectionInterface(const edm::Parame
        lut::kXptYabsEta));
     sfElectronID_and_Iso_loose_.push_back(new lutWrapperTH2(
       inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2016/el_scaleFactors_gsf.root", "EGamma_SF2D",
-       lut::kXptYabsEta));
+       lut::kXetaYpt));
     sfElectronID_and_Iso_tight_to_loose_woTightCharge_.push_back(new lutWrapperTH2(
       inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2016/lepMVAEffSF_e_3l.root", "sf",
       lut::kXptYabsEta));
@@ -194,18 +194,18 @@ Data_to_MC_CorrectionInterface::Data_to_MC_CorrectionInterface(const edm::Parame
       inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2016/lepMVAEffSF_m_2lss.root", "sf",
       lut::kXptYabsEta));
 
-    effTrigger_ee_ = new lutWrapperTH2(
+    effTrigger_ee_ = new lutWrapperTH2Poly(
       inputFiles_, "tthAnalysis/HiggsToTauTau/data/triggerSF/2016RunBCD/trig_eff_map_v4.root", "SSee2DPt__effic",
-      lut::kXpt); // X=pt1, Y=pt2
-    effTrigger_em_ = new lutWrapperTH2(
+      lut::kXptYpt); // X=pt1, Y=pt2
+    effTrigger_em_ = new lutWrapperTH2Poly(
       inputFiles_, "tthAnalysis/HiggsToTauTau/data/triggerSF/2016RunBCD/trig_eff_map_v4.root", "SSeu2DPt_effic",
-      lut::kXpt); // X=pt1, Y=pt2
-    effTrigger_mm_ = new lutWrapperTH2(
+      lut::kXptYpt); // X=pt1, Y=pt2
+    effTrigger_mm_ = new lutWrapperTH2Poly(
       inputFiles_, "tthAnalysis/HiggsToTauTau/data/triggerSF/2016RunBCD/trig_eff_map_v4.root", "SSuu2DPt_effic",
-      lut::kXpt); // X=pt1, Y=pt2
-    effTrigger_3l_ = new lutWrapperTH2(
+      lut::kXptYpt); // X=pt1, Y=pt2
+    effTrigger_3l_ = new lutWrapperTH2Poly(
       inputFiles_, "tthAnalysis/HiggsToTauTau/data/triggerSF/2016RunBCD/trig_eff_map_v4.root", "__3l2DPt_effic",
-      lut::kXpt); // X=pt1, Y=pt2
+      lut::kXptYpt); // X=pt1, Y=pt2
     std::vector<double> etaBinEdges_e = { -1., 1.48, 2.1, -1. }; 
     int numEtaBins_e = etaBinEdges_e.size() - 1;
     for ( int idxEtaBin = 0; idxEtaBin < numEtaBins_e; ++idxEtaBin ) {
@@ -552,7 +552,7 @@ double Data_to_MC_CorrectionInterface::getSF_hadTauID_and_Iso() const
   for ( int idxHadTau = 0; idxHadTau < numHadTaus_; ++idxHadTau ) {
     if ( hadTau_genPdgId_[idxHadTau] == 15 ) {
       if      ( era_ == kEra_2015 ) sf *= getSF_hadTauID_and_Iso_2015();
-      else if ( era_ == kEra_2015 ) sf *= getSF_hadTauID_and_Iso_2016();
+      else if ( era_ == kEra_2016 ) sf *= getSF_hadTauID_and_Iso_2016();
       else assert(0);
     }
   }

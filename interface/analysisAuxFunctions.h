@@ -16,6 +16,13 @@ const double mht_coef =  0.00265;
 //--- declare data-taking periods
 enum { kEra_2015, kEra_2016 };
 
+//--- declare systematic uncertainties on data/MC corrections for b-tagging efficiency and mistag rates
+enum { kBtag_central, 
+       kBtag_hfUp, kBtag_hfDown, kBtag_hfStats1Up, kBtag_hfStats1Down, kBtag_hfStats2Up, kBtag_hfStats2Down,
+       kBtag_lfUp, kBtag_lfDown, kBtag_lfStats1Up, kBtag_lfStats1Down, kBtag_lfStats2Up, kBtag_lfStats2Down,
+       kBtag_cErr1Up, kBtag_cErr1Down, kBtag_cErr2Up, kBtag_cErr2Down, 
+       kBtag_jesUp, kBtag_jesDown };
+
 /**
  * @brief Auxiliary function used for sorting leptons by decreasing pT
  * @param Given pair of leptons
@@ -36,5 +43,11 @@ bool isMatched(const Tfakeable& fakeableLepton, const std::vector<Ttight*>& tigh
   }
   return false; // no match found
 }
+
+/**
+ * @brief Return branchName to read weights that need to be applied, per jet, to MC events in order to correct for data/MC differences in b-tagging efficiency and mistag rates
+ */
+std::string getBranchName_bTagWeight(int era, const std::string& central_or_shift);
+std::string getBranchName_bTagWeight(int era, int central_or_shift);
 
 #endif

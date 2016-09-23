@@ -79,7 +79,7 @@ void RecoJetReader::setBranchNames()
     branchName_corr_JECDown_ = Form("%s_%s_%s", branchName_obj_.data(), "corr", "JECDown");
     branchName_BtagCSV_ = Form("%s_%s", branchName_obj_.data(), "btagCSV");
     if      ( era_ == kEra_2015 ) branchName_BtagWeight_ = Form("%s_%s", branchName_obj_.data(), "bTagWeight");
-    else if ( era_ == kEra_2016 ) branchName_BtagWeight_ = Form("%s_%s", branchName_obj_.data(), "bTagWeightCSV");
+    else if ( era_ == kEra_2016 ) branchName_BtagWeight_ = Form("%s_%s", branchName_obj_.data(), "btagWeightCSV");
     else assert(0);
     instances_[branchName_obj_] = this;
   } else {

@@ -10,6 +10,8 @@
 
 using namespace lut;
 
+const double epsilon = 1.e-3;
+
 /**
  * @brief Open ROOT file the name of which is given as function argument
  * @param fileName: name of ROOT file
@@ -35,9 +37,10 @@ TH1* loadTH1(TFile* inputFile, const std::string& histogramName)
   if ( !histogram ) 
     throw cms::Exception("loadTH1") 
       << " Failed to load TH1 = " << histogramName.data() << " from file = " << inputFile->GetName() << " !!\n";
-  std::string histogramName_cloned = Form("%s_cloned", histogram->GetName());
-  TH1* histogram_cloned = (TH1*)histogram->Clone(histogramName_cloned.data());
-  return histogram_cloned;
+  //std::string histogramName_cloned = Form("%s_cloned", histogram->GetName());
+  //TH1* histogram_cloned = (TH1*)histogram->Clone(histogramName_cloned.data());
+  //return histogram_cloned;
+  return histogram;
 }
 /**
  * @brief Load two-dimensional histogram (TH2) from ROOT file 
@@ -50,9 +53,10 @@ TH2* loadTH2(TFile* inputFile, const std::string& histogramName)
   if ( !histogram ) 
     throw cms::Exception("loadTH2") 
       << " Failed to load TH2 = " << histogramName.data() << " from file = " << inputFile->GetName() << " !!\n";
-  std::string histogramName_cloned = Form("%s_cloned", histogram->GetName());
-  TH2* histogram_cloned = (TH2*)histogram->Clone(histogramName_cloned.data());
-  return histogram_cloned;
+  //std::string histogramName_cloned = Form("%s_cloned", histogram->GetName());
+  //TH2* histogram_cloned = (TH2*)histogram->Clone(histogramName_cloned.data());
+  //return histogram_cloned;
+  return histogram;
 }
 /**
  * @brief Load graph (TGraph) from ROOT file 
@@ -65,9 +69,10 @@ TGraph* loadTGraph(TFile* inputFile, const std::string& graphName)
   if ( !graph ) 
     throw cms::Exception("loadTGraph") 
       << " Failed to load TGraph = " << graphName.data() << " from file = " << inputFile->GetName() << " !!\n";
-  std::string graphName_cloned = Form("%s_cloned", graph->GetName());
-  TGraph* graph_cloned = (TGraph*)graph->Clone(graphName_cloned.data());
-  return graph_cloned;
+  //std::string graphName_cloned = Form("%s_cloned", graph->GetName());
+  //TGraph* graph_cloned = (TGraph*)graph->Clone(graphName_cloned.data());
+  //return graph_cloned;
+  return graph;
 }
 
 /**
@@ -103,6 +108,22 @@ double getSF_from_TH2(TH2* lut, double x, double y)
   if ( idxBin_y <  1         ) idxBin_y = 1;
   if ( idxBin_y >= numBins_y ) idxBin_y = numBins_y;
   double sf = lut->GetBinContent(idxBin_x, idxBin_y);
+  return sf;
+}
+double getSF_from_TH2Poly(TH2* lut, double x, double y)
+{
+  TAxis* xAxis = lut->GetXaxis();
+  double xMin = xAxis->GetXmin();
+  double xMax = xAxis->GetXmax();
+  if ( x < (xMin + epsilon) ) x = xMin + epsilon;
+  if ( x > (xMax - epsilon) ) x = xMax - epsilon;
+  TAxis* yAxis = lut->GetYaxis();
+  double yMin = yAxis->GetXmin();
+  double yMax = yAxis->GetXmax();
+  if ( y < (yMin + epsilon) ) y = yMin + epsilon;
+  if ( y > (yMax - epsilon) ) y = yMax - epsilon;
+  int idxBin = lut->FindBin(x, y);
+  double sf = lut->GetBinContent(idxBin);
   return sf;
 }
 /**
@@ -142,15 +163,15 @@ lutWrapperBase::lutWrapperBase(std::map<std::string, TFile*>& inputFiles, const 
   , yMin_(yMin)
   , yMax_(yMax)
 {
-  if      ( lutType == kXpt        || lutType == kXptYeta    || lutType == kXptYabsEta ) lutTypeX_ = kPt;
-  else if ( lutType == kXeta       || lutType == kXetaYpt                              ) lutTypeX_ = kEta;
-  else if ( lutType == kXabsEta    || lutType == kXabsEtaYpt                           ) lutTypeX_ = kAbsEta;
+  if      ( lutType == kXpt        || lutType == kXptYpt     || lutType == kXptYeta    || lutType == kXptYabsEta ) lutTypeX_ = kPt;
+  else if ( lutType == kXeta       || lutType == kXetaYpt                                                        ) lutTypeX_ = kEta;
+  else if ( lutType == kXabsEta    || lutType == kXabsEtaYpt                                                     ) lutTypeX_ = kAbsEta;
   else assert(0);
   if ( xMin_ != -1. && xMax_ != -1. ) assert(xMax_ > xMin_);
-  if      ( lutType == kXpt        || lutType == kXeta       || lutType == kXabsEta    ) lutTypeY_ = kUndefined;
-  else if ( lutType == kXetaYpt    || lutType == kXabsEtaYpt                           ) lutTypeY_ = kPt;
-  else if ( lutType == kXptYeta                                                        ) lutTypeY_ = kEta;
-  else if ( lutType == kXptYabsEta                                                     ) lutTypeY_ = kAbsEta;
+  if      ( lutType == kXpt        || lutType == kXeta       || lutType == kXabsEta                              ) lutTypeY_ = kUndefined;
+  else if ( lutType == kXptYpt     || lutType == kXetaYpt    || lutType == kXabsEtaYpt                           ) lutTypeY_ = kPt;
+  else if ( lutType == kXptYeta                                                                                  ) lutTypeY_ = kEta;
+  else if ( lutType == kXptYabsEta                                                                               ) lutTypeY_ = kAbsEta;
   else assert(0);
   if ( lutTypeY_ == kUndefined ) {
     yMin_ = -1.;
@@ -216,6 +237,26 @@ double lutWrapperTH2::getSF_private(double x, double y)
   if ( yMin_ != -1. && y < yMin_ ) y = yMin_;
   if ( yMax_ != -1. && y > yMax_ ) y = yMax_;
   double sf = getSF_from_TH2(lut_, x, y);
+  return sf;
+}
+//-------------------------------------------------------------------------------
+
+
+//-------------------------------------------------------------------------------
+lutWrapperTH2Poly::lutWrapperTH2Poly(std::map<std::string, TFile*>& inputFiles, const std::string& inputFileName, const std::string& lutName, int lutType, 
+				     double xMin, double xMax, double yMin, double yMax)
+  : lutWrapperBase(inputFiles, inputFileName, lutName, lutType, xMin, xMax, yMin, yMax)
+{
+  lut_ = loadTH2(inputFile_, lutName_);
+}
+
+double lutWrapperTH2Poly::getSF_private(double x, double y)
+{
+  if ( xMin_ != -1. && x < xMin_ ) x = xMin_;
+  if ( xMax_ != -1. && x > xMax_ ) x = xMax_;
+  if ( yMin_ != -1. && y < yMin_ ) y = yMin_;
+  if ( yMax_ != -1. && y > yMax_ ) y = yMax_;
+  double sf = getSF_from_TH2Poly(lut_, x, y);
   return sf;
 }
 //-------------------------------------------------------------------------------
