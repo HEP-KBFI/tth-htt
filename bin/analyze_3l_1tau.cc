@@ -66,21 +66,26 @@
 
 #include <boost/range/algorithm/copy.hpp> // boost::copy()
 #include <boost/range/adaptor/map.hpp> // boost::adaptors::map_keys
+#include <boost/math/special_functions/sign.hpp> // boost::math::sign()
 
 #include <iostream> // std::cerr, std::fixed
 #include <iomanip> // std::setprecision(), std::setw()
 #include <string> // std::string
 #include <vector> // std::vector<>
 #include <cstdlib> // EXIT_SUCCESS, EXIT_FAILURE
-#include <algorithm> // std::sort(), std::find()
+#include <algorithm> // std::sort(), std::find(), std::copy_if()
 #include <fstream> // std::ofstream
 #include <assert.h> // assert
 #include <array> // std::array<>
+#include <tuple> // std::tuple<>, std::get<>(), std::make_tuple()
 
 #define EPS 1E-2
 
 typedef math::PtEtaPhiMLorentzVector LV;
 typedef std::vector<std::string> vstring;
+
+typedef GenLepton GenParticleExt;
+typedef GenLeptonReader GenParticleReader;
 
 const int hadTauSelection_antiElectron = 1; // vLoose
 const int hadTauSelection_antiMuon = 1; // Loose 
@@ -116,21 +121,30 @@ EventSpecifics_Out
   ULong64_t evt;
   Double_t met_pt;
   Double_t met_phi;
+  Double_t met_covXX;
+  Double_t met_covXY;
+  Double_t met_covYY;
 
   TBranch * branch_run = 0;
   TBranch * branch_lumi = 0;
   TBranch * branch_evt = 0;
   TBranch * branch_met_pt = 0;
   TBranch * branch_met_phi = 0;
+  TBranch * branch_met_covXX = 0;
+  TBranch * branch_met_covXY = 0;
+  TBranch * branch_met_covYY = 0;
 
   void
   setBranches(TTree * t)
   {
-    branch_run     = t -> Branch("run",     &run,     "run/i");
-    branch_lumi    = t -> Branch("lumi",    &lumi,    "lumi/i");
-    branch_evt     = t -> Branch("evt",     &evt,     "evt/l");
-    branch_met_pt  = t -> Branch("met_pt",  &met_pt,  "met_pt/D");
-    branch_met_phi = t -> Branch("met_phi", &met_phi, "met_phi/D");
+    branch_run       = t -> Branch("run",       &run,       "run/i");
+    branch_lumi      = t -> Branch("lumi",      &lumi,      "lumi/i");
+    branch_evt       = t -> Branch("evt",       &evt,       "evt/l");
+    branch_met_pt    = t -> Branch("met_pt",    &met_pt,    "met_pt/D");
+    branch_met_phi   = t -> Branch("met_phi",   &met_phi,   "met_phi/D");
+    branch_met_covXX = t -> Branch("met_covXX", &met_covXX, "met_covXX/D");
+    branch_met_covXY = t -> Branch("met_covXY", &met_covXY, "met_covXY/D");
+    branch_met_covYY = t -> Branch("met_covYY", &met_covYY, "met_covY/D");
   }
 };
 
@@ -221,7 +235,7 @@ EventMVAIO_Out
 struct
 EventObject_Out
 {
-  enum ParticleType_Out { kLepton, kJet, kHadronicTau };
+  enum ParticleType_Out { kLepton, kJet, kHadronicTau, kAny };
 
   Double_t pt;
   Double_t eta;
@@ -240,7 +254,7 @@ EventObject_Out
   void
   setBranches(TTree * t,
               const std::string & s,
-              ParticleType_Out particleType)
+              ParticleType_Out particleType = ParticleType_Out::kAny)
   {
     branch_pt     = t -> Branch(Form("%s_pt", s.c_str()),
                                 &pt,   Form("%s_pt/D", s.c_str()));
@@ -250,7 +264,8 @@ EventObject_Out
                                 &phi,  Form("%s_phi/D", s.c_str()));
     branch_mass   = t -> Branch(Form("%s_mass", s.c_str()),
                                 &mass, Form("%s_mass/D", s.c_str()));
-    if(particleType != ParticleType_Out::kJet)
+//    if(particleType == ParticleType_Out::kLepton ||
+//       particleType == ParticleType_Out::kHadronicTau)
       branch_charge = t -> Branch(Form("%s_charge", s.c_str()),
                                   &charge, Form("%s_charge/I", s.c_str()));
     if(particleType == ParticleType_Out::kHadronicTau)
@@ -268,10 +283,22 @@ EventObject_Out
   }
 
   void
+  setValues(const GenParticle & p)
+  {
+    setValues(static_cast<const GenParticle *>(&p));
+  }
+
+  void
   setValues(const GenLepton * p)
   {
     setValues(static_cast<const GenParticle *>(p));
     charge = p -> charge_;
+  }
+
+  void
+  setValues(const GenLepton & p)
+  {
+    setValues(static_cast<const GenLepton *>(&p));
   }
 
   void
@@ -280,6 +307,25 @@ EventObject_Out
     setValues(static_cast<const GenParticle *>(p));
     decayMode = p -> decayMode_;
     charge = p -> charge_;
+  }
+
+  void
+  setValues(const RecoHadTau & p)
+  {
+    setValues(static_cast<const RecoHadTau *>(&p));
+  }
+
+  void
+  setValues(const GenHadTau * p)
+  {
+    setValues(static_cast<const GenParticle *>(p));
+    charge = p -> charge_;
+  }
+
+  void
+  setValues(const GenHadTau & p)
+  {
+    setValues(static_cast<const GenHadTau *>(&p));
   }
 };
 typedef struct EventObject_Out EO_O;
@@ -512,26 +558,53 @@ int main(int argc, char* argv[])
   inputTree->LoadTree(0);
 
 //--- create output root file from selected events if needed
+  const double diTauMass = isSignal ? 125.7 : 91.1876;
   TFile * selEventsTFile = 0;
   TTree * selEventsTTree = 0;
   EventSpecifics_Out eventSpecificsOut;
-  std::array<EventObject_Out, 3> leptonsOut {{  EO_O(), EO_O(), EO_O() }};
-  std::array<EventObject_Out, 2> jetsOut {{ EO_O(), EO_O() }};
-  EventObject_Out htauOut;
+  std::array<EventObject_Out, 3> leptonsOut      {{  EO_O(), EO_O(), EO_O() }};
+  std::array<EventObject_Out, 2> jetsOut             {{ EO_O(), EO_O() }};
+  std::array<EventObject_Out, 2> genTauOut           {{ EO_O(), EO_O() }};
+  std::array<EventObject_Out, 2> genLepFromTopOut    {{ EO_O(), EO_O() }};
+  std::array<EventObject_Out, 2> genBQuarkFromTopOut {{ EO_O(), EO_O() }};
+  std::array<EventObject_Out, 2> genNuFromTopOut     {{ EO_O(), EO_O() }};
+  EventObject_Out htauOut, genHtauOut, genLeptFromTauOut, genNuLepFromTauOut,
+                  genNuFromHTauOut, genNuFromLTauOut;
   EventMVAIO_Out MVAOut;
 
   if ( writeSelEventsFile ) {
     selEventsTFile = new TFile(selEventsTFileName.c_str(), "recreate");
     selEventsTTree = new TTree("tree", "Selected events created for MEM");
     eventSpecificsOut.setBranches(selEventsTTree);
-    for(std::size_t i = 0; i < leptonsOut.size(); ++i)
+    for(std::size_t i = 0; i < 3; ++i)
       leptonsOut[i].setBranches(selEventsTTree,
                                 std::string(TString::Format("lepton%lu", i + 1)),
                                 EventObject_Out::ParticleType_Out::kLepton);
-    for(std::size_t i = 0; i < jetsOut.size(); ++i)
+    for(std::size_t i = 0; i < 2; ++i)
+    {
       jetsOut[i].setBranches(selEventsTTree,
                              std::string(TString::Format("jet%lu", i + 1)),
                              EventObject_Out::ParticleType_Out::kJet);
+      if(isMC && era == kEra_2016)
+      {
+        genTauOut[i].setBranches(selEventsTTree,
+                                 std::string(TString::Format("genTau%lu", i + 1)));
+        genLepFromTopOut[i].setBranches(selEventsTTree,
+                                        std::string(TString::Format("genLeptFromTop%lu", i + 1)));
+        genBQuarkFromTopOut[i].setBranches(selEventsTTree,
+                                           std::string(TString::Format("genBQuarkFromTop%lu", i + 1)));
+        genNuFromTopOut[i].setBranches(selEventsTTree,
+                                       std::string(TString::Format("genNuFromTop%lu", i + 1)));
+      }
+    }
+    if(isMC && era == kEra_2016)
+    {
+      genHtauOut.setBranches(selEventsTTree, "genHtau");
+      genLeptFromTauOut.setBranches(selEventsTTree, "genLeptFromTau");
+      genNuLepFromTauOut.setBranches(selEventsTTree, "genNuLepFromTau");
+      genNuFromHTauOut.setBranches(selEventsTTree, "genNuFromHTau");
+      genNuFromLTauOut.setBranches(selEventsTTree, "genNuFromLTau");
+    }
     htauOut.setBranches(selEventsTTree, "htau1", EventObject_Out::ParticleType_Out::kHadronicTau);
     MVAOut.setBranches(selEventsTTree);
   }
@@ -569,6 +642,15 @@ int main(int argc, char* argv[])
   inputTree->SetBranchAddress(MET_ETA_KEY, &met_eta);
   MET_PHI_TYPE met_phi;
   inputTree->SetBranchAddress(MET_PHI_KEY, &met_phi);
+  MET_COVXX_TYPE met_covXX;
+  MET_COVXY_TYPE met_covXY;
+  MET_COVYY_TYPE met_covYY;
+  if(era == kEra_2016)
+  {
+    inputTree->SetBranchAddress(MET_COVXX_KEY, &met_covXX);
+    inputTree->SetBranchAddress(MET_COVXY_KEY, &met_covXY);
+    inputTree->SetBranchAddress(MET_COVYY_KEY, &met_covYY);
+  }
 
 //--- declare particle collections
   RecoMuonReader* muonReader = new RecoMuonReader(era, "nselLeptons", "selLeptons");
@@ -617,6 +699,12 @@ int main(int argc, char* argv[])
   GenLeptonReader* genLeptonReader = 0;
   GenHadTauReader* genHadTauReader = 0;
   GenJetReader* genJetReader = 0;
+  GenParticleReader * genNuFromTauReader     = 0;
+  GenParticleReader * genTauReader           = 0;
+  GenParticleReader * genLepFromTopReader    = 0;
+  GenParticleReader * genBQuarkFromTopReader = 0;
+  GenParticleReader * genNuFromTopReader     = 0;
+  GenParticleReader * genLepFromTauReader    = 0;
   LHEInfoReader* lheInfoReader = 0;
   if ( isMC ) {
     genLeptonReader = new GenLeptonReader("nGenLep", "GenLep");
@@ -627,6 +715,23 @@ int main(int argc, char* argv[])
     genJetReader->setBranchAddresses(inputTree);
     lheInfoReader = new LHEInfoReader();
     lheInfoReader->setBranchAddresses(inputTree);
+
+    if(writeSelEventsFile && era == kEra_2016)
+    {
+      genNuFromTauReader     = new GenParticleReader("nGenNuFromTau",     "GenNuFromTau");
+      genTauReader           = new GenParticleReader("nGenTaus",          "GenTaus");
+      genLepFromTopReader    = new GenParticleReader("nGenLepFromTop",    "GenLepFromTop");
+      genBQuarkFromTopReader = new GenParticleReader("nGenBQuarkFromTop", "GenBQuarkFromTop");
+      genNuFromTopReader     = new GenParticleReader("nGenNuFromTop",     "GenNuFromTop");
+      genLepFromTauReader    = new GenParticleReader("nGenLepFromTau",    "GenLepFromTau");
+
+      genNuFromTauReader     -> setBranchAddresses(inputTree);
+      genTauReader           -> setBranchAddresses(inputTree);
+      genLepFromTopReader    -> setBranchAddresses(inputTree);
+      genBQuarkFromTopReader -> setBranchAddresses(inputTree);
+      genNuFromTopReader     -> setBranchAddresses(inputTree);
+      genLepFromTauReader    -> setBranchAddresses(inputTree);
+    }
   }
 
 //--- initialize BDTs used to discriminate ttH vs. ttV and ttH vs. ttbar 
@@ -805,6 +910,23 @@ int main(int argc, char* argv[])
       }
       genHadTaus = genHadTauReader->read();
       genJets = genJetReader->read();
+    }
+
+    std::vector<GenParticleExt> genNuFromTau;
+    std::vector<GenParticleExt> genTau;
+    std::vector<GenParticleExt> genLepFromTop;
+    std::vector<GenParticleExt> genBQuarkFromTop;
+    std::vector<GenParticleExt> genNuFromTop;
+    std::vector<GenParticleExt> genLepFromTau;
+    if(isMC && writeSelEventsFile && era == kEra_2016)
+    {
+      genHadTaus       = genHadTauReader        -> read();
+      genNuFromTau     = genNuFromTauReader     -> read();
+      genTau           = genTauReader           -> read();
+      genLepFromTop    = genLepFromTopReader    -> read();
+      genBQuarkFromTop = genBQuarkFromTopReader -> read();
+      genNuFromTop     = genNuFromTopReader     -> read();
+      genLepFromTau    = genLepFromTauReader    -> read();
     }
 
     if ( isMC ) {
@@ -1475,8 +1597,15 @@ int main(int argc, char* argv[])
       genEvtHistManager_afterCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genJets);
       lheInfoHistManager->fillHistograms(*lheInfoReader, evtWeight);
     }
+
+    (*selEventsFile) << run << ":" << lumi << ":" << event << std::endl;
+
+    ++selectedEntries;
+    selectedEntries_weighted += evtWeight;
     
     if ( writeSelEventsFile ) {
+      std::cout << run << ":" << lumi << ":" << event << '\n';
+
       // KE: unique merge loose and medium B-jets, and hadronic jets
       std::sort(selBJets_medium.begin(), selBJets_medium.end(), isHigherPt);
       std::sort(selBJets_loose.begin(), selBJets_loose.end(), isHigherPt);
@@ -1496,27 +1625,585 @@ int main(int argc, char* argv[])
         assert(0);
       }
 
+      // KE: perform generator-level matching
+      // enable only if era is 2016
+      // if there are multiple candidates then pick the first one?
+
+      // step 0:
+      // - check if all generator level particles are there
+      if(genBQuarkFromTop.size() < 2)
+      {
+        std::cerr << "No two gen lvl b quarks in the first place\n";
+        continue;
+      }
+      if(! genLepFromTau.size())
+      {
+        std::cerr << "No gen lvl leptons from tau to begin with\n";
+        continue;
+      }
+      if(! genHadTaus.size())
+      {
+        std::cerr << "No generator lvl hadronic taus to begin with\n";
+        continue;
+      }
+      if(genNuFromTau.size() < 3)
+      {
+        std::cerr << "Not enough gen lvl neutrinos from tau to begin with\n";
+        continue;
+      }
+      if(genTau.size() < 2)
+      {
+        std::cerr << "Not enough gen lvl taus\n";
+        continue;
+      }
+      if(genLepFromTop.size() < 2)
+      {
+        std::cerr << "Not enough gen lvl leptons coming from top decay\n";
+        continue;
+      }
+      if(genNuFromTop.size() < 2)
+      {
+        std::cerr << "Not enough gen lvl neutrinos from top to begin with\n";
+        continue;
+      }
+
+      // step 1:
+      // - find b+/b- in gen lvl b quarks
+      // - find corresponding dR match from the recos
+      const double dR = 0.5;
+      std::vector<GenParticleExt> genBQuarkFromTopPos, genBQuarkFromTopNeg;
+      // copy all the gen lvl b quarks over
+      std::copy(genBQuarkFromTop.begin(), genBQuarkFromTop.end(), std::back_inserter(genBQuarkFromTopPos));
+      std::copy(genBQuarkFromTop.begin(), genBQuarkFromTop.end(), std::back_inserter(genBQuarkFromTopNeg));
+      // select only b-quarks and anti-b quarks
+      genBQuarkFromTopPos.erase(
+        std::remove_if(genBQuarkFromTopPos.begin(), genBQuarkFromTopPos.end(),
+                       [](const GenParticleExt & q) -> bool
+                       {
+                         return ! (q.pdgId_ > 0);
+                       }), genBQuarkFromTopPos.end()
+      );
+      if(! genBQuarkFromTopPos.size())
+      {
+        std::cout << "No gen lvl b quarks\n";
+        continue;
+      }
+      genBQuarkFromTopNeg.erase(
+        std::remove_if(genBQuarkFromTopNeg.begin(), genBQuarkFromTopNeg.end(),
+                       [](const GenParticleExt & q) -> bool
+                       {
+                         return ! (q.pdgId_ < 0);
+                       }), genBQuarkFromTopNeg.end()
+      );
+      if(! genBQuarkFromTopNeg.size())
+      {
+        std::cout << "No gen lvl anti-b quarks\n";
+        continue;
+      }
+      // do generator level matching
+      genBQuarkFromTopPos.erase(
+        std::remove_if(genBQuarkFromTopPos.begin(), genBQuarkFromTopPos.end(),
+                       [&selBJetsMerged, dR](const GenParticleExt & q) -> bool
+                       {
+                         for(const auto & b: selBJetsMerged)
+                          if(q.is_overlap(*b, dR))
+                            return false;
+                         return true;
+                       }), genBQuarkFromTopPos.end()
+      );
+      if(! genBQuarkFromTopPos.size())
+      {
+        std::cout << "No gen lvl b quarks that match selected b-jets\n";
+        continue;
+      }
+      else if(genBQuarkFromTopPos.size() > 1)
+        std::cerr << "Warning: multiple b-quark candidates\n";
+
+      genBQuarkFromTopNeg.erase(
+        std::remove_if(genBQuarkFromTopNeg.begin(), genBQuarkFromTopNeg.end(),
+                       [&selBJetsMerged, dR](const GenParticleExt & q) -> bool
+                       {
+                         for(const auto & b: selBJetsMerged)
+                          if(q.is_overlap(*b, dR))
+                            return false;
+                         return true;
+                       }), genBQuarkFromTopNeg.end()
+       );
+      if(! genBQuarkFromTopNeg.size())
+      {
+        std::cerr << "No gen lvl anti-b quarks that match selected b-jets\n";
+        continue;
+      }
+      else if(genBQuarkFromTopNeg.size() > 1)
+        std::cout << "Warning: there are multiple anti-b quark candidates\n";
+
+      // step 2.1:
+      // - obtain gen lvl hadronic tau
+      genHadTaus.erase(
+        std::remove_if(genHadTaus.begin(), genHadTaus.end(),
+                       [&selHadTau, dR](const GenHadTau & hadTau) -> bool
+                       {
+                         if(selHadTau -> is_overlap(hadTau, dR) &&
+                            selHadTau -> charge_ == hadTau.charge_)
+                           return false;
+                         return true;
+                       }), genHadTaus.end()
+      );
+      if(genHadTaus.size() != 1)
+      {
+        std::cerr << "Number of generator lvl hadronic taus matching w/ selected htaus not equal to 1\n";
+        continue;
+      }
+
+      // step 2.2:
+      // - determine the hadronic tau charge -> complementary lepton has the opposite charge
+      const int hadTauCharge = genHadTaus[0].charge_;
+      const int complLepCharge = -hadTauCharge;
+      const int nuLepFromTauSign = static_cast<int>(-16 * boost::math::sign(complLepCharge));
+
+      // step 3:
+      // - loop over leptons coming from tau decay, collect the ones with complementary sign
+      // - dR match these leptons against selected gen lvl leptons (hopefully we're left w/ only 1)
+      //   and check if there is a corresponding lepton neutrino
+
+      std::vector<GenParticleExt> genLepFromTauCandidates;
+      std::copy(genLepFromTau.begin(), genLepFromTau.end(), std::back_inserter(genLepFromTauCandidates));
+      // select only the leptons which have complementary charge
+      genLepFromTauCandidates.erase(
+        std::remove_if(genLepFromTauCandidates.begin(), genLepFromTauCandidates.end(),
+                       [complLepCharge](const GenParticleExt & lep) -> bool
+                       {
+                         return lep.charge_ != complLepCharge;
+                       }), genLepFromTauCandidates.end()
+      );
+      if(! genLepFromTauCandidates.size())
+      {
+        std::cerr << "No gen lvl leptons from tau with correct charge (" << complLepCharge << ")\n";
+        continue;
+      }
+      // do dR matching against selected leptons
+      genLepFromTauCandidates.erase(
+        std::remove_if(genLepFromTauCandidates.begin(), genLepFromTauCandidates.end(),
+                       [&selLeptons, dR](const GenParticleExt & lep) -> bool
+                       {
+                         for(const auto & selLep: selLeptons)
+                           if(lep.is_overlap(*selLep, dR))
+                             return false;
+                         return true;
+                       }), genLepFromTauCandidates.end()
+      );
+      if(! genLepFromTauCandidates.size())
+      {
+        std::cerr << "No gen lvl leptons from tau that match w/ selected leptons\n";
+        continue;
+      }
+
+      // check the leptons against neutrinos coming from tau
+      genLepFromTauCandidates.erase(
+        std::remove_if(genLepFromTauCandidates.begin(), genLepFromTauCandidates.end(),
+                       [&genNuFromTau](const GenParticleExt & lep) -> bool
+                       {
+                         for(const GenParticleExt & nu: genNuFromTau)
+                           if(nu.pdgId_ * lep.pdgId_ < 0                   && // lepton & anti-nu or anti-lepton & nu
+                              (std::abs(lep.pdgId_) + 1) == std::abs(nu.pdgId_))
+                             return false;
+                         return true;
+                       }), genLepFromTauCandidates.end()
+      );
+      if(! genLepFromTauCandidates.size())
+      {
+        std::cerr << "No gen lvl leptons from tau that have corresponding nu from tau\n";
+        continue;
+      }
+
+      // step 4:
+      // - find corresponding neutrino to complementary lepton (should have opposite signs)
+      std::vector<GenParticleExt> genNuLepFromTauCandidates;
+      std::copy(genNuFromTau.begin(), genNuFromTau.end(), std::back_inserter(genNuLepFromTauCandidates));
+      // select only those which have correct flavor
+      genNuLepFromTauCandidates.erase(
+        std::remove_if(genNuLepFromTauCandidates.begin(), genNuLepFromTauCandidates.end(),
+                       [&genLepFromTauCandidates](const GenParticleExt & nu) -> bool
+                       {
+                         for(const GenParticleExt & lep: genLepFromTauCandidates)
+                           if(lep.pdgId_ * nu.pdgId_ < 0 &&
+                              (std::abs(lep.pdgId_) + 1) == std::abs(nu.pdgId_))
+                             return false;
+                         return true;
+                       }), genNuLepFromTauCandidates.end()
+      );
+      if(! genNuLepFromTauCandidates.size()) // expect 1
+      {
+        std::cerr << "No gen lvl lepton neutrino candidates w/ correct flavor coming from tau decay\n";
+        continue;
+      }
+
+      // step 5.1:
+      // - find tau neutrinos by pdgId (leptonic branch: same sign as complementary lepton)
+      std::vector<GenParticleExt> genNuTauFromLepBranch;
+      std::copy(genNuFromTau.begin(), genNuFromTau.end(), std::back_inserter(genNuTauFromLepBranch));
+      genNuTauFromLepBranch.erase(
+        std::remove_if(genNuTauFromLepBranch.begin(), genNuTauFromLepBranch.end(),
+                       [nuLepFromTauSign](const GenParticleExt & nu) -> bool
+                       {
+                         return nu.pdgId_!= nuLepFromTauSign;
+                       }), genNuTauFromLepBranch.end()
+      );
+      if(! genNuTauFromLepBranch.size())
+      {
+        std::cerr << "No gen lvl tau neutrino candidates coming from tau decay\n";
+        continue;
+      }
+      else if(genNuTauFromLepBranch.size() > 1)
+        std::cout << "Warning: multiple candidates for tau neutrino\n";
+
+
+      // step 5.2:
+      std::vector<GenParticleExt> genNuTauFromHadronicBranch;
+      std::copy(genNuFromTau.begin(), genNuFromTau.end(), std::back_inserter(genNuTauFromHadronicBranch));
+      genNuTauFromHadronicBranch.erase(
+        std::remove_if(genNuTauFromHadronicBranch.begin(), genNuTauFromHadronicBranch.end(),
+                       [nuLepFromTauSign](const GenParticleExt & nu) -> bool
+                       {
+                         return nu.pdgId_ == nuLepFromTauSign;
+                       }), genNuTauFromHadronicBranch.end()
+      );
+      if(! genNuTauFromHadronicBranch.size())
+      {
+        std::cerr << "No gen lvl tau neutrino candidates w/ opposite flavor coming from leptonic tau decay\n";
+        continue;
+      }
+      else if(genNuTauFromHadronicBranch.size() > 1)
+        std::cout << "Warning: multiple candidates for tau neutrino w/ opposite flavor\n";
+
+      // step 6:
+      // - find oppositely charged tau pairs the mass of which sums up to diTauMass
+      std::vector<std::pair<GenParticleExt, GenParticleExt>> genTauPair;
+      for(unsigned oIdx = 0; oIdx < genTau.size(); ++oIdx)
+        for(unsigned iIdx = oIdx + 1; iIdx < genTau.size(); ++iIdx)
+        {
+          // Let's construct the 4-momenta for both
+          // pt, eta, phi, m
+          const GenParticleExt & oTau = genTau[oIdx];
+          const GenParticleExt & iTau = genTau[iIdx];
+          if(oTau.charge_ * iTau.charge_ > 0 ||
+             std::fabs((oTau.p4_ + iTau.p4_).mass() - diTauMass) > 10.) // let's use large, 10 GeV mass window
+            continue;
+          if(oTau.charge_ > 0) // so that the 1st tau in the pair is positively charged
+            genTauPair.push_back({oTau, iTau});
+          else
+            genTauPair.push_back({iTau, oTau});
+        }
+      if(! genTauPair.size()) // expect 1
+      {
+        std::cerr << "No proper oppositely charged gen lvl tau pair w/ mass " << diTauMass << " GeV\n";
+        continue;
+      }
+      else if(genTauPair.size() > 1)
+        std::cout << "Warning: multiple candidates for tau pair\n";
+
+      // step 7:
+      // - find leptons coming from top decay
+      std::vector<GenParticleExt> genLepFromTopPos, genLepFromTopNeg;
+      std::copy(genLepFromTop.begin(), genLepFromTop.end(), std::back_inserter(genLepFromTopPos));
+      genLepFromTopPos.erase(
+        std::remove_if(genLepFromTopPos.begin(), genLepFromTopPos.end(),
+                       [](const GenParticleExt & lep) -> bool
+                       {
+                         return ! (lep.charge_ > 0);
+                       }), genLepFromTopPos.end()
+      );
+      if(! genLepFromTopPos.size())
+      {
+        std::cerr << "No gen lvl leptons from top having positive sign\n";
+        continue;
+      }
+      genLepFromTopPos.erase(
+        std::remove_if(genLepFromTopPos.begin(), genLepFromTopPos.end(),
+                       [&selLeptons, dR](const GenParticleExt & lep) -> bool
+                       {
+                         for(const auto & selLep: selLeptons)
+                           if(lep.is_overlap(*selLep, dR) &&
+                              lep.pdgId_ == selLep -> pdgId_)
+                             return false;
+                         return true;
+                       }), genLepFromTopPos.end()
+      );
+      if(! genLepFromTopPos.size())
+      {
+        std::cerr << "No positive gen lvl leptons from top matching w/ selected leptons\n";
+        continue;
+      }
+      genLepFromTopPos.erase(
+        std::remove_if(genLepFromTopPos.begin(), genLepFromTopPos.end(),
+                       [&genNuFromTop](const GenParticleExt & lep) -> bool
+                       {
+                         for(const GenParticleExt & nu: genNuFromTop)
+                           if((std::abs(lep.pdgId_) + 1) == std::abs(nu.pdgId_) &&
+                              lep.pdgId_ * nu.pdgId_ < 0)
+                             return false;
+                         return true;
+                       }), genLepFromTopPos.end()
+      );
+      if(! genLepFromTopPos.size())
+      {
+        std::cerr << "No positive gen lvl leptons from top having corresponding neutrino\n";
+        continue;
+      }
+      else if(genLepFromTopPos.size() > 1)
+        std::cout << "Warning: multiple positive lepton candidates coming from top decay\n";
+
+      std::copy(genLepFromTop.begin(), genLepFromTop.end(), std::back_inserter(genLepFromTopNeg));
+      genLepFromTopNeg.erase(
+        std::remove_if(genLepFromTopNeg.begin(), genLepFromTopNeg.end(),
+                       [](const GenParticleExt & lep) -> bool
+                       {
+                         return ! (lep.charge_ < 0);
+                       }), genLepFromTopNeg.end()
+      );
+      if(! genLepFromTopNeg.size())
+      {
+        std::cerr << "No gen lvl leptons from top having positive sign\n";
+        continue;
+      }
+      genLepFromTopNeg.erase(
+        std::remove_if(genLepFromTopNeg.begin(), genLepFromTopNeg.end(),
+                       [&selLeptons, dR](const GenParticleExt & lep) -> bool
+                       {
+                         for(const auto & selLep: selLeptons)
+                           if(lep.is_overlap(*selLep, dR) &&
+                              lep.pdgId_ == selLep -> pdgId_)
+                             return false;
+                         return true;
+                       }), genLepFromTopNeg.end()
+      );
+      if(! genLepFromTopNeg.size())
+      {
+        std::cerr << "No positive gen lvl leptons from top matching w/ selected leptons\n";
+        continue;
+      }
+      genLepFromTopNeg.erase(
+        std::remove_if(genLepFromTopNeg.begin(), genLepFromTopNeg.end(),
+                       [&genNuFromTop](const GenParticleExt & lep) -> bool
+                       {
+                         for(const GenParticleExt & nu: genNuFromTop)
+                           if((std::abs(lep.pdgId_) + 1) == std::abs(nu.pdgId_) &&
+                              lep.pdgId_ * nu.pdgId_ < 0)
+                             return false;
+                         return true;
+                       }), genLepFromTopNeg.end()
+      );
+      if(! genLepFromTopNeg.size())
+      {
+        std::cerr << "No positive gen lvl leptons from top having corresponding neutrino\n";
+        continue;
+      }
+      else if(genLepFromTopNeg.size() > 1)
+        std::cout << "Warning: multiple negative lepton candidates coming from anti-top decay\n";
+
+      // step 8:
+      // - find corresponding neutrinos to the leptons coming from top decay
+      std::vector<GenParticleExt> genNuFromTopPos, genNuFromTopNeg;
+      std::copy(genNuFromTop.begin(), genNuFromTop.end(), std::back_inserter(genNuFromTopPos));
+      genNuFromTopPos.erase(
+        std::remove_if(genNuFromTopPos.begin(), genNuFromTopPos.end(),
+                       [&genLepFromTopPos](const GenParticleExt & nu) -> bool
+                       {
+                         for(const GenParticleExt & lep: genLepFromTopPos)
+                           if(nu.pdgId_ * lep.pdgId_ < 0 &&
+                              (std::abs(lep.pdgId_) + 1) == std::abs(nu.pdgId_) &&
+                               std::abs(nu.pdgId_) != 16)
+                             return false;
+                         return true;
+                       }), genNuFromTopPos.end()
+      );
+      if(! genNuFromTopPos.size()) // expect 1
+      {
+        std::cerr << "No proper neutrino coming from top decay\n";
+        continue;
+      }
+      else if(genNuFromTopPos.size() > 1)
+        std::cout << "Warning: multiple neutrino candidates coming from top decay\n";
+
+      std::copy(genNuFromTop.begin(), genNuFromTop.end(), std::back_inserter(genNuFromTopNeg));
+      genNuFromTopNeg.erase(
+        std::remove_if(genNuFromTopNeg.begin(), genNuFromTopNeg.end(),
+                       [&genLepFromTopNeg](const GenParticleExt & nu) -> bool
+                       {
+                         for(const GenParticleExt & lep: genLepFromTopNeg)
+                           if(nu.pdgId_ * lep.pdgId_ < 0 &&
+                              (std::abs(lep.pdgId_) + 1) == std::abs(nu.pdgId_) &&
+                               std::abs(nu.pdgId_) != 16)
+                             return false;
+                         return true;
+                       }), genNuFromTopNeg.end()
+      );
+      if(! genNuFromTopNeg.size()) // expect 1
+      {
+        std::cerr << "No proper anti-neutrino coming from top decay\n";
+        continue;
+      }
+      else if(genNuFromTopNeg.size() > 1)
+        std::cout << "Warning: multiple neutrino candidates coming from anti-top decay\n";
+
+      // step 9:
+      // - try to reconstruct W from lepton and neutrino (top decay branch)
+      // step 9.1:
+      // - positive top (i.e. anti-top) branch (anti-lepton (positively charged) + neutrino)
+      const double massW = 80.385;
+      const double gammaW = 3 * 2.085;
+      std::vector<std::pair<GenParticleExt, GenParticleExt>> topWdecayProductsPos;
+      for(const GenParticleExt & l: genLepFromTopPos)
+        for(const GenParticleExt & nu: genNuFromTopPos)
+        {
+          const double massW_qnu = (l.p4_ + nu.p4_).mass();
+          std::cout << "W mass (top branch)      = " << massW_qnu << '\n';
+          if(std::fabs(massW - massW_qnu) < gammaW)
+            topWdecayProductsPos.push_back({l, nu});
+        }
+      if(! topWdecayProductsPos.size())
+      {
+        std::cerr << "Not possible to reconstruct W from l & nu in anti-top branch\n";
+        continue;
+      }
+      else if(topWdecayProductsPos.size() > 1)
+        std::cout << "Warning: still too many l & nu candidates in anti-top branch\n";
+
+      // step 9.2:
+      // - negative top (i.e. top) branch (lepton (negatively charged) + anti-neutrino)
+      std::vector<std::pair<GenParticleExt, GenParticleExt>> topWdecayProductsNeg;
+      for(const GenParticleExt & l: genLepFromTopNeg)
+        for(const GenParticleExt & nu: genNuFromTopNeg)
+        {
+          const double massW_qnu = (l.p4_ + nu.p4_).mass();
+          std::cout << "W mass (anti-top branch) = " << massW_qnu << '\n';
+          if(std::fabs(massW - massW_qnu) < gammaW)
+            topWdecayProductsNeg.push_back({l, nu});
+        }
+      if(! topWdecayProductsNeg.size())
+      {
+        std::cerr << "Not possible to reconstruct W from l & nu in top branch\n";
+        continue;
+      }
+      else if(topWdecayProductsNeg.size() > 1)
+        std::cout << "Warning: still too many l & nu candidates in top branch\n";
+
+      // step 10:
+      // - try to reconstruct top mass
+      const double massTop = 173.21;
+      const double gammaTop = 3 * 2.0;
+      std::vector<std::tuple<GenParticleExt, GenParticleExt, GenParticleExt>>
+        topBranchNeg, topBranchPos;
+      for(const GenParticleExt & q: genBQuarkFromTopNeg)
+        for(const auto & lnu: topWdecayProductsNeg)
+        {
+          const double massTop_qlnu = (lnu.first.p4_ + lnu.second.p4_ + q.p4_).mass();
+          std::cout << "anti-top mass = " << massTop_qlnu << '\n';
+          if(std::fabs(massTop_qlnu - massTop) < gammaTop)
+            topBranchNeg.push_back(std::make_tuple(q, lnu.first, lnu.second));
+        }
+      if(! topBranchNeg.size())
+      {
+        std::cerr << "Could not construct top mass\n";
+        continue;
+      }
+      else if(topBranchNeg.size() > 1)
+        std::cout << "Warning: multiple top branch candidates\n";
+      for(const GenParticleExt & q: genBQuarkFromTopPos)
+        for(const auto & lnu: topWdecayProductsPos)
+        {
+          const double massTop_qlnu = (lnu.first.p4_ + lnu.second.p4_ + q.p4_).mass();
+          std::cout << "top mass      = " << massTop_qlnu << '\n';
+          if(std::fabs(massTop_qlnu - massTop) < gammaTop)
+            topBranchPos.push_back(std::make_tuple(q, lnu.first, lnu.second));
+        }
+      if(! topBranchPos.size())
+      {
+        std::cout << "Could not construct anti-top mass\n";
+        continue;
+      }
+      else if(topBranchPos.size() > 1)
+        std::cout << "Warning: multiple anti-top branch candidates\n";
+
+      // step 11:
+      // - reconstruct taus individually
+      const double gammaTau = 1.5; // it's a huge window, though
+      std::vector<std::tuple<GenHadTau, GenParticleExt, GenParticleExt>>
+        hadronicBranch;
+      std::vector<std::tuple<GenParticleExt, GenParticleExt, GenParticleExt, GenParticleExt>>
+        leptonicBranch;
+      for(const auto & htauPair: genTauPair)
+      {
+        const GenParticleExt & tau2htau   = hadTauCharge > 0 ? htauPair.first : htauPair.second;
+        const GenParticleExt & tau2lepton = hadTauCharge < 0 ? htauPair.first : htauPair.second;
+        for(const GenParticleExt & nu: genNuTauFromHadronicBranch)
+            if(std::fabs((nu.p4_ + genHadTaus[0].p4_).mass() - tau2htau.mass_) < gammaTau)
+              hadronicBranch.push_back(std::make_tuple(genHadTaus[0], nu, tau2htau));
+        for(const GenParticleExt & nut: genNuTauFromLepBranch)
+          for(const GenParticleExt & nul: genNuLepFromTauCandidates)
+            for(const GenParticleExt & lep: genLepFromTauCandidates)
+              if(std::fabs((nut.p4_ + nul.p4_ + lep.p4_).mass() - tau2lepton.mass_) < gammaTau)
+                leptonicBranch.push_back(std::make_tuple(lep, nul, nut, tau2lepton));
+      }
+      if(! hadronicBranch.size())
+      {
+        std::cerr << "Could not construct tau mass which decays hadronically\n";
+        continue;
+      }
+      else if(hadronicBranch.size() > 1)
+        std::cout << "Warning: multiple tau branch candidates which decay hadronically\n";
+      if(! leptonicBranch.size())
+      {
+        std::cerr << "Could not construct tau mass which decays leptonically\n";
+        continue;
+      }
+      else if(leptonicBranch.size() > 1)
+        std::cout << "Warning: multiple tau branch candidates which decay leptonically\n";
+
+      // step 12:
+      // - select 0th tau decay branch as the branch which has the tau charge positive
+      genTauPair.clear();
+      const GenParticleExt & genHtau = std::get<2>(hadronicBranch[0]);
+      const GenParticleExt & genLtau = std::get<3>(leptonicBranch[0]);
+      if(genHtau.charge_ > 0) genTauPair.push_back({ genHtau, genLtau });
+      else                    genTauPair.push_back({ genLtau, genHtau });
+
       eventSpecificsOut.run  = run;
       eventSpecificsOut.lumi = lumi;
       eventSpecificsOut.evt  = event;
 
       eventSpecificsOut.met_pt  = met_pt;
       eventSpecificsOut.met_phi = met_phi;
+      eventSpecificsOut.met_covXX = met_covXX;
+      eventSpecificsOut.met_covXY = met_covXY;
+      eventSpecificsOut.met_covYY = met_covYY;
 
       for(std::size_t i = 0; i < 3; ++i)
         leptonsOut[i].setValues(selLeptons[i]);
       for(std::size_t i = 0; i < 2; ++i)
         jetsOut[i].setValues(selBJetsMerged[i]);
+      if(era == kEra_2016)
+      {
+        std::cout << "Finally reached here\n";
+        genTauOut[0].setValues(genTauPair[0].first);
+        genTauOut[1].setValues(genTauPair[0].second);
+        genBQuarkFromTopOut[0].setValues(std::get<0>(topBranchPos[0]));
+        genLepFromTopOut[0].setValues   (std::get<1>(topBranchPos[0]));
+        genNuFromTopOut[0].setValues    (std::get<2>(topBranchPos[0]));
+        genBQuarkFromTopOut[1].setValues(std::get<0>(topBranchNeg[0]));
+        genLepFromTopOut[1].setValues   (std::get<1>(topBranchNeg[0]));
+        genNuFromTopOut[1].setValues    (std::get<2>(topBranchNeg[0]));
+        genHtauOut.setValues      (std::get<0>(hadronicBranch[0]));
+        genNuFromHTauOut.setValues(std::get<1>(hadronicBranch[0]));
+        genLeptFromTauOut.setValues (std::get<0>(leptonicBranch[0]));
+        genNuLepFromTauOut.setValues(std::get<1>(leptonicBranch[0]));
+        genNuFromLTauOut.setValues  (std::get<2>(leptonicBranch[0]));
+      }
       htauOut.setValues(selHadTau);
       MVAOut.setValues(mvaInputs, mvaOutput_3l_ttV, mvaOutput_3l_ttbar);
 
       selEventsTTree -> Fill();
     }
-
-    (*selEventsFile) << run << ":" << lumi << ":" << event << std::endl;
-
-    ++selectedEntries;
-    selectedEntries_weighted += evtWeight;
   }
 
   std::cout << "num. Entries = " << numEntries << std::endl;
