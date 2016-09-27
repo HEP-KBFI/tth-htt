@@ -39,14 +39,16 @@ class analyzeConfig_2los_1tau(analyzeConfig):
     self.hadTau_selections = hadTau_selections
     self.hadTau_frWeights = [ "enabled", "disabled" ]
     self.hadTau_genMatches = [ "all", "1t0e0m0j", "0t1e0m0j", "0t0e1m0j", "0t0e0m1j" ]
+    ##self.hadTau_genMatches = [ "all" ]
     self.hadTau_genMatches_nonfakes = []
     self.hadTau_genMatches_fakes = []
     for  hadTau_genMatch in self.hadTau_genMatches:
+      if hadTau_genMatch == "all" and len(self.hadTau_genMatches) > 1:
+        continue
       if hadTau_genMatch.endswith("0j"):
         self.hadTau_genMatches_nonfakes.append(hadTau_genMatch)
       else:
-        self.hadTau_genMatches_fakes.append(hadTau_genMatch)
-    ##self.hadTau_genMatches = [ "all" ]
+        self.hadTau_genMatches_fakes.append(hadTau_genMatch)    
     self.apply_hadTauGenMatching = True
 
     self.executable_addBackgrounds = executable_addBackgrounds
@@ -109,14 +111,20 @@ class analyzeConfig_2los_1tau(analyzeConfig):
       central_or_shift: either 'central' or one of the systematic uncertainties defined in $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/bin/analyze_2lss_1tau.cc
     """  
     lines = []
+    ##lines.append("process.fwliteInput.fileNames = cms.vstring(%s)" % [ os.path.basename(inputFile) for inputFile in inputFiles ])
     lines.append("process.fwliteInput.fileNames = cms.vstring(%s)" % inputFiles)
-    lines.append("process.fwliteOutput.fileName = cms.string('%s')" % outputFile)
+    lines.append("process.fwliteOutput.fileName = cms.string('%s')" % os.path.basename(outputFile))
     lines.append("process.analyze_2los_1tau.process = cms.string('%s')" % sample_category)
     lines.append("process.analyze_2los_1tau.era = cms.string('%s')" % era)
+    lines.append("process.analyze_2los_1tau.triggers_1e = cms.vstring(%s)" % self.triggers_1e)
     lines.append("process.analyze_2los_1tau.use_triggers_1e = cms.bool(%s)" % ("1e" in triggers))
+    lines.append("process.analyze_2los_1tau.triggers_2e = cms.vstring(%s)" % self.triggers_2e)
     lines.append("process.analyze_2los_1tau.use_triggers_2e = cms.bool(%s)" % ("2e" in triggers))
+    lines.append("process.analyze_2los_1tau.triggers_1mu = cms.vstring(%s)" % self.triggers_1mu)
     lines.append("process.analyze_2los_1tau.use_triggers_1mu = cms.bool(%s)" % ("1mu" in triggers))
+    lines.append("process.analyze_2los_1tau.triggers_2mu = cms.vstring(%s)" % self.triggers_2mu)
     lines.append("process.analyze_2los_1tau.use_triggers_2mu = cms.bool(%s)" % ("2mu" in triggers))
+    lines.append("process.analyze_2los_1tau.triggers_1e1mu = cms.vstring(%s)" % self.triggers_1e1mu)
     lines.append("process.analyze_2los_1tau.use_triggers_1e1mu = cms.bool(%s)" % ("1e1mu" in triggers))
     lines.append("process.analyze_2los_1tau.leptonSelection = cms.string('%s')" % lepton_selection)
     lines.append("process.analyze_2los_1tau.hadTauSelection = cms.string('%s')" % hadTau_selection)
@@ -283,6 +291,15 @@ class analyzeConfig_2los_1tau(analyzeConfig):
     self.addToMakefile_hadd_stage1_5(lines_makefile)
     self.addToMakefile_addFakes(lines_makefile)
 
+  def addToMakefile_hadd_stage2(self, lines_makefile):
+    """Adds the commands to Makefile that are necessary for building the final histogram file.
+    """
+    lines_makefile.append("%s: %s" % (self.histogramFile_hadd_stage2, " ".join([ self.histogramFile_hadd_stage1 ] + self.histogramFile_addFakes.values())))
+    lines_makefile.append("\t%s %s" % ("rm -f", self.histogramFile_hadd_stage2))
+    lines_makefile.append("\t%s %s %s" % ("hadd", self.histogramFile_hadd_stage2, " ".join([ self.histogramFile_hadd_stage1 ] + self.histogramFile_addFakes.values())))
+    lines_makefile.append("")
+    self.filesToClean.append(self.histogramFile_hadd_stage2)
+
   def addToMakefile_make_plots_mcClosure(self, lines_makefile):
     """Adds the commands to Makefile that are necessary for making control plots of the jet->tau fake background estimation procedure.
     """
@@ -380,7 +397,10 @@ class analyzeConfig_2los_1tau(analyzeConfig):
     self.histogramFile_addBackgrounds[key] = os.path.join(self.outputDir, DKEY_HIST, "addBackgrounds_%s_fakes_mc_weighted.root" % self.channel)
     self.cfgFile_addBackgrounds_modified[key] = os.path.join(self.outputDir, DKEY_CFGS, "addBackgrounds_%s_fakes_mc_weighted_cfg.py" % self.channel)
     histogramDir = "2los_1tau_lepTight_tauFakeable_mcClosure" 
-    processes_input = [ "%s%s" % (process_name, genMatch) for genMatch in self.hadTau_genMatches_fakes ]
+    processes_input = []
+    for process_name in self.nonfake_backgrounds:
+      for genMatch in self.hadTau_genMatches_fakes:
+        processes_input.append("%s%s" % (process_name, genMatch))
     self.process_output_addBackgrounds[key] = "fakes_mc_weighted"
     self.createCfg_addBackgrounds(self.histogramFile_hadd_stage1, self.histogramFile_addBackgrounds[key], self.cfgFile_addBackgrounds_modified[key],
       [ histogramDir ], processes_input, self.process_output_addBackgrounds[key])
@@ -389,12 +409,16 @@ class analyzeConfig_2los_1tau(analyzeConfig):
     self.histogramFile_addBackgrounds[key] = os.path.join(self.outputDir, DKEY_HIST, "addBackgrounds_%s_fakes_mc.root" % self.channel)
     self.cfgFile_addBackgrounds_modified[key] = os.path.join(self.outputDir, DKEY_CFGS, "addBackgrounds_%s_fakes_mc_cfg.py" % self.channel)
     histogramDir = "2los_1tau_lepTight_tauTight" 
-    processes_input = [ "%s%s" % (process_name, genMatch) for genMatch in self.hadTau_genMatches_fakes ]
+    processes_input = []
+    for process_name in self.nonfake_backgrounds:
+      for genMatch in self.hadTau_genMatches_fakes:
+        processes_input.append("%s%s" % (process_name, genMatch))
     self.process_output_addBackgrounds[key] = "fakes_mc"
     self.createCfg_addBackgrounds(self.histogramFile_hadd_stage1, self.histogramFile_addBackgrounds[key], self.cfgFile_addBackgrounds_modified[key],
       [ histogramDir ], processes_input, self.process_output_addBackgrounds[key])
         
     logging.info("Creating configuration files for executing 'addBackgroundFakes'")
+    key = "fakes_data"
     self.histogramFile_addFakes[key] = os.path.join(self.outputDir, DKEY_HIST, "addBackgroundJetToTauFakes_%s.root" % self.channel)
     self.cfgFile_addFakes_modified[key] = os.path.join(self.outputDir, DKEY_CFGS, "addBackgroundJetToTauFakes_%s_cfg.py" % self.channel)
     category_signal = "2los_1tau_lepTight_tauTight" 

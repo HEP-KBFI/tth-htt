@@ -1,7 +1,7 @@
 import os, logging, sys, getpass
 
 from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_ttZctrl_2015 import samples_2015
-#from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_ttZctrl_2016 import samples_2016
+from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_ttZctrl_2016 import samples_2016
 from tthAnalysis.HiggsToTauTau.analyzeConfig_ttZctrl import analyzeConfig_ttZctrl
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 
@@ -12,10 +12,10 @@ samples = None
 LUMI = None
 if ERA == "2015":
   samples = samples_2015
-  LUMI = 2301. # 1/pb
+  LUMI =  2.3e+3 # 1/pb
 elif ERA == "2016":
   samples = samples_2016
-  LUMI = "XXXXX" # 1/pb
+  LUMI = 12.9e+3 # 1/pb
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 

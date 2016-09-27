@@ -152,6 +152,23 @@ class analyzeConfig:
     self.rootOutputFiles = {}
     self.rootOutputAux = {}
 
+    if era == '2015':
+      self.triggers_1e    = [ 'HLT_BIT_HLT_Ele23_WPLoose_Gsf_v' ]
+      self.triggers_2e    = [ 'HLT_BIT_HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v' ]
+      self.triggers_1mu   = [ 'HLT_BIT_HLT_IsoMu20_v', 'HLT_BIT_HLT_IsoTkMu20_v' ]
+      self.triggers_2mu   = [ 'HLT_BIT_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v', 'HLT_BIT_HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v' ]
+      self.triggers_1e1mu = [ 'HLT_BIT_HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v', 'HLT_BIT_HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v' ]
+    elif era == '2016':
+      ##self.triggers_1e    = [ 'HLT_BIT_HLT_Ele25_WPTight_Gsf_v', 'HLT_BIT_HLT_Ele27_WPTight_Gsf_v' ]
+      # CV: HLT_Ele25_WPTight_Gsf_v* was prescaled during part of 2016 Runs B-D, but HLT_BIT_HLT_Ele27_WPTight_Gsf_v* is missing in VHbb Ntuples v24
+      self.triggers_1e    = [ 'HLT_BIT_HLT_Ele25_WPTight_Gsf_v' ] 
+      self.triggers_2e    = [ 'HLT_BIT_HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v' ]
+      self.triggers_1mu   = [ 'HLT_BIT_HLT_IsoMu22_v', 'HLT_BIT_HLT_IsoTkMu22_v' ]
+      self.triggers_2mu   = [ 'HLT_BIT_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v', 'HLT_BIT_HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v' ]
+      self.triggers_1e1mu = [ 'HLT_BIT_HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v', 'HLT_BIT_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v' ]
+    else:
+      raise ValueError("Invalid parameter 'era' = %s !!" % era)
+
     self.cvmfs_error_log = {}
 
   def __del__(self):

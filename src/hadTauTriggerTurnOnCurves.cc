@@ -52,8 +52,10 @@ double integralCrystalBall(double m, double m0, double sigma, double alpha, doub
  * @brief Trigger efficiency turn-on curve for HLT_DoubleMediumIsoPFTau35_Trk1_eta2p1_Reg trigger measured by Riccardo for 2016 data
  * @param pT and eta of both reconstructed hadronic tau candidates
  * @return efficiency for passing trigger,
-    cf. slide 6 of https://indico.cern.ch/event/544712/contributions/2213574/attachments/1295299/1930984/htt_tau_trigger_17_6_2016.pdf
-   (parameters of Crystal Ball function taken for Tight WP of MVA-based tau ID trained with dR=0.5 isolation cone)
+    cf. slide 6 of https://indico.cern.ch/event/544712/contributions/2213574/attachments/1295299/1930984/htt_tau_trigger_17_6_2016.pdf ,
+    with fit parameters updated to ICHEP dataset, as given in https://github.com/rmanzoni/triggerSF/tree/diTauICHEP2016/di-tau
+
+    NB.: parameters of Crystal Ball function taken for Tight WP of MVA-based tau ID trained with dR=0.5 isolation cone
  */
 
 double effHLT_DoubleMediumIsoPFTau35_Trk1_eta2p1_Reg(double tau1Pt, double tau1Eta, double tau2Pt, double tau2Eta) 
@@ -65,10 +67,10 @@ double effHLT_DoubleMediumIsoPFTau35_Trk1_eta2p1_Reg(double tau1Pt, double tau1E
   if ( m2 <  20. ) m2 =  20.; // CV: restrict m to Pt-range actually fitted
   if ( m2 > 170. ) m2 = 170.;
   
-  const double m0 = 3.76157e+1;
-  const double sigma = 4.76127e0;
-  const double alpha = 3.62497e0;
-  const double n = 3.51839e0;
-  const double norm = 9.83701e-1;
+  const double m0 = 3.82100e+1;
+  const double sigma = 5.25414e0;
+  const double alpha = 6.83654e0;
+  const double n = 1.53650e0;
+  const double norm = 1.00000e0;
   return TMath::Max(0., integralCrystalBall(m1, m0, sigma, alpha, n, norm))*TMath::Max(0., integralCrystalBall(m2, m0, sigma, alpha, n, norm)); 
 }

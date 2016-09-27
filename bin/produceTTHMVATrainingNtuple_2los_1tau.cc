@@ -290,7 +290,7 @@ int main(int argc, char* argv[])
   RecoElectronCollectionSelectorTight tightElectronSelector(era, -1, run_lumi_eventSelector != 0);
   tightElectronSelector.disable_tightCharge_cut();
 
-  RecoHadTauReader* hadTauReader = new RecoHadTauReader("nTauGood", "TauGood");
+  RecoHadTauReader* hadTauReader = new RecoHadTauReader(era, "nTauGood", "TauGood");
   hadTauReader->setHadTauPt_central_or_shift(hadTauPt_option);
   hadTauReader->setBranchAddresses(inputTree);
   RecoHadTauCollectionGenMatcher hadTauGenMatcher;
@@ -298,7 +298,7 @@ int main(int argc, char* argv[])
   RecoHadTauCollectionSelectorTight hadTauSelector;
   hadTauSelector.set(hadTauSelection_string);
 
-  RecoJetReader* jetReader = new RecoJetReader("nJet", "Jet");
+  RecoJetReader* jetReader = new RecoJetReader(era, "nJet", "Jet");
   jetReader->setJetPt_central_or_shift(jetPt_option);
   jetReader->setBranchName_BtagWeight(jet_btagWeight_branch);
   jetReader->setBranchAddresses(inputTree);

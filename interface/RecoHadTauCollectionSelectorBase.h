@@ -19,6 +19,9 @@ class RecoHadTauSelectorBase
   void set_min_pt(double min_pt) { min_pt_ = min_pt; }
   void set_max_absEta(double max_absEta) { max_absEta_ = max_absEta; }
 
+  double get_min_pt() const { return min_pt_; }
+  double get_max_absEta() const { return max_absEta_; }
+
   void set_min_id_mva_dR03(int min_id_mva_dR03) { min_id_mva_dR03_ = min_id_mva_dR03; }
   void set_min_raw_mva_dR03(double min_raw_mva_dR03) { min_raw_mva_dR03_ = min_raw_mva_dR03; }
   void set_min_id_mva_dR05(int min_id_mva_dR05) { min_id_mva_dR05_ = min_id_mva_dR05; }
@@ -55,6 +58,16 @@ class RecoHadTauSelectorBase
     }
     cut_ = cut_;
   }
+
+  int get_min_id_mva_dR03() const { return min_id_mva_dR03_; }
+  double get_min_raw_mva_dR03() const { return min_raw_mva_dR03_; }
+  int get_min_id_mva_dR05() const { return min_id_mva_dR05_; }
+  double get_min_raw_mva_dR05() const { return min_raw_mva_dR05_; }
+  
+  int get_min_id_cut_dR03() const { return min_id_cut_dR03_; }
+  double get_max_raw_cut_dR03() const { return max_raw_cut_dR03_; }
+  int get_min_id_cut_dR05() const { return min_id_cut_dR05_; }
+  double get_max_raw_cut_dR05() const { return max_raw_cut_dR05_; }
 
   void set_min_antiElectron(int min_antiElectron) { min_antiElectron_ = min_antiElectron; }
   void set_min_antiMuon(int min_antiMuon) { min_antiMuon_ = min_antiMuon; }

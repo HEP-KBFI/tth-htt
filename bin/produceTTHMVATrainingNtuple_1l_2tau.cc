@@ -336,7 +336,7 @@ int main(int argc, char* argv[])
   RecoElectronCollectionSelectorTight tightElectronSelector(era);
   tightElectronSelector.disable_tightCharge_cut();
 
-  RecoHadTauReader* hadTauReader = new RecoHadTauReader("nTauGood", "TauGood");
+  RecoHadTauReader* hadTauReader = new RecoHadTauReader(era, "nTauGood", "TauGood");
   hadTauReader->setHadTauPt_central_or_shift(hadTauPt_option);
   hadTauReader->setBranchAddresses(inputTree);
   RecoHadTauCollectionGenMatcher hadTauGenMatcher;
@@ -364,7 +364,7 @@ int main(int argc, char* argv[])
   //TGraph* DBdR03oldDMwLTEff95 = (TGraph*)tauIdMVArun2dR03DB_wpFile->Get("DBdR03oldDMwLTEff95");
   //TFormula* mvaOutput_normalization_DBdR03oldDMwLT = (TFormula*)tauIdMVArun2dR03DB_wpFile->Get("mvaOutput_normalization_DBdR03oldDMwLT");
 
-  RecoJetReader* jetReader = new RecoJetReader("nJet", "Jet");
+  RecoJetReader* jetReader = new RecoJetReader(era, "nJet", "Jet");
   jetReader->setJetPt_central_or_shift(jetPt_option);
   jetReader->setBranchName_BtagWeight(jet_btagWeight_branch);
   jetReader->setBranchAddresses(inputTree);
@@ -744,7 +744,7 @@ int main(int argc, char* argv[])
     selBJet_mediumHistManager.fillHistograms(selBJets_medium, evtWeight);
     preselMEtHistManager.fillHistograms(met_p4, mht_p4, met_LD, evtWeight);
     preselEvtHistManager.fillHistograms(preselElectrons.size(), preselMuons.size(), selHadTaus.size(), 
-					selJets.size(), selBJets_loose.size(), selBJets_medium.size(), 0.,
+					selJets.size(), selBJets_loose.size(), selBJets_medium.size(), 0., 0.,
 					mTauTauVis_presel, evtWeight);
 
 //--- apply final event selection 
@@ -862,13 +862,13 @@ int main(int argc, char* argv[])
     selBJet_mediumHistManager.fillHistograms(selBJets_medium, evtWeight);
     selMEtHistManager.fillHistograms(met_p4, mht_p4, met_LD, evtWeight);
     selEvtHistManager.fillHistograms(preselElectrons.size(), preselMuons.size(), selHadTaus.size(), 
-				     selJets.size(), selBJets_loose.size(), selBJets_medium.size(), 0.,
+				     selJets.size(), selBJets_loose.size(), selBJets_medium.size(), 0., 0.,
 				     mTauTauVis, evtWeight);
     if ( isSignal ) {
       for ( const auto & kv: decayMode_idString ) {
         if ( std::fabs(genHiggsDecayMode - kv.second) < EPS ) {
           selEvtHistManager_decayMode[kv.first]->fillHistograms(preselElectrons.size(), preselMuons.size(), selHadTaus.size(), 
-								selJets.size(), selBJets_loose.size(), selBJets_medium.size(), 0.,
+								selJets.size(), selBJets_loose.size(), selBJets_medium.size(), 0., 0.,
 								mTauTauVis, evtWeight);
           break;
         }
@@ -887,28 +887,28 @@ int main(int argc, char* argv[])
       selHadTauHistManager_lead_category["1e_2tau_btight"]->fillHistograms(selHadTaus_lead, evtWeight);
       selHadTauHistManager_sublead_category["1e_2tau_btight"]->fillHistograms(selHadTaus_sublead, evtWeight);
       selEvtHistManager_category["1e_2tau_btight"]->fillHistograms(preselElectrons.size(), preselMuons.size(), selHadTaus.size(), 
-								   selJets.size(), selBJets_loose.size(), selBJets_medium.size(), 0.,
+								   selJets.size(), selBJets_loose.size(), selBJets_medium.size(), 0., 0.,
 								   mTauTauVis, evtWeight);
     } else if ( category == k1e_bloose ) {
       selElectronHistManager_category["1e_2tau_bloose"]->fillHistograms(selElectrons, evtWeight);
       selHadTauHistManager_lead_category["1e_2tau_bloose"]->fillHistograms(selHadTaus_lead, evtWeight);
       selHadTauHistManager_sublead_category["1e_2tau_bloose"]->fillHistograms(selHadTaus_sublead, evtWeight);
       selEvtHistManager_category["1e_2tau_bloose"]->fillHistograms(preselElectrons.size(), preselMuons.size(), selHadTaus.size(), 
-								   selJets.size(), selBJets_loose.size(), selBJets_medium.size(), 0., 
+								   selJets.size(), selBJets_loose.size(), selBJets_medium.size(), 0., 0.,  
 								   mTauTauVis, evtWeight);
     } else if ( category == k1mu_btight ) {
       selMuonHistManager_category["1mu_2tau_btight"]->fillHistograms(selMuons, evtWeight);
       selHadTauHistManager_lead_category["1mu_2tau_btight"]->fillHistograms(selHadTaus_lead, evtWeight);
       selHadTauHistManager_sublead_category["1mu_2tau_btight"]->fillHistograms(selHadTaus_sublead, evtWeight);
       selEvtHistManager_category["1mu_2tau_btight"]->fillHistograms(preselElectrons.size(), preselMuons.size(), selHadTaus.size(), 
-								    selJets.size(), selBJets_loose.size(), selBJets_medium.size(), 0., 
+								    selJets.size(), selBJets_loose.size(), selBJets_medium.size(), 0., 0.,  
 								    mTauTauVis, evtWeight);
     } else if ( category == k1mu_bloose ) {
       selMuonHistManager_category["1mu_2tau_btight"]->fillHistograms(selMuons, evtWeight);
       selHadTauHistManager_lead_category["1mu_2tau_btight"]->fillHistograms(selHadTaus_lead, evtWeight);
       selHadTauHistManager_sublead_category["1mu_2tau_btight"]->fillHistograms(selHadTaus_sublead, evtWeight);
       selEvtHistManager_category["1mu_2tau_btight"]->fillHistograms(preselElectrons.size(), preselMuons.size(), selHadTaus.size(), 
-								    selJets.size(), selBJets_loose.size(), selBJets_medium.size(), 0., 
+								    selJets.size(), selBJets_loose.size(), selBJets_medium.size(), 0., 0., 
 								    mTauTauVis, evtWeight);
     } 
 

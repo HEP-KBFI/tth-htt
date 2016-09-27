@@ -48,7 +48,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/GenEvtHistManager.h" // GenEvtHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/LHEInfoHistManager.h" // LHEInfoHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/leptonTypes.h" // getLeptonType, kElectron, kMuon
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // isHigherPt, isMatched
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // getBranchName_bTagWeight, isHigherPt, isMatched
 #include "tthAnalysis/HiggsToTauTau/interface/hltPath.h" // hltPath, create_hltPaths, hltPaths_setBranchAddresses, hltPaths_isTriggered, hltPaths_delete
 #include "tthAnalysis/HiggsToTauTau/interface/Data_to_MC_CorrectionInterface.h" // Data_to_MC_CorrectionInterface.h
 
@@ -125,7 +125,12 @@ int main(int argc, char* argv[])
   double lumiScale = ( process_string != "data_obs" ) ? cfg_analyze.getParameter<double>("lumiScale") : 1.;
   bool apply_trigger_bits = cfg_analyze.getParameter<bool>("apply_trigger_bits"); 
 
-  std::string jet_btagWeight_branch = ( isMC ) ? "Jet_bTagWeight" : "";
+  std::string jet_btagWeight_branch;
+  if ( isMC ) {
+    if      ( era == kEra_2015 ) jet_btagWeight_branch = "Jet_bTagWeight";
+    else if ( era == kEra_2016 ) jet_btagWeight_branch = "Jet_btagWeightCSV";
+    else assert(0);
+  }
 
   int jetPt_option = RecoJetReader::kJetPt_central;
   int lheScale_option = kLHE_scale_central;
@@ -136,16 +141,10 @@ int main(int argc, char* argv[])
     else if ( central_or_shift_tstring.EndsWith("Down") ) shiftUp_or_Down = "Down";
     else throw cms::Exception("analyze_charge_flip")
       << "Invalid Configuration parameter 'central_or_shift' = " << central_or_shift << " !!\n";
-    if      ( central_or_shift_tstring.BeginsWith("CMS_ttHl_btag_HF")       ) jet_btagWeight_branch = "Jet_bTagWeight_HF" + shiftUp_or_Down;
-    else if ( central_or_shift_tstring.BeginsWith("CMS_ttHl_btag_HFStats1") ) jet_btagWeight_branch = "Jet_bTagWeight_HFStats1" + shiftUp_or_Down;
-    else if ( central_or_shift_tstring.BeginsWith("CMS_ttHl_btag_HFStats2") ) jet_btagWeight_branch = "Jet_bTagWeight_HFStats2" + shiftUp_or_Down;
-    else if ( central_or_shift_tstring.BeginsWith("CMS_ttHl_btag_LF")       ) jet_btagWeight_branch = "Jet_bTagWeight_LF" + shiftUp_or_Down;
-    else if ( central_or_shift_tstring.BeginsWith("CMS_ttHl_btag_LFStats1") ) jet_btagWeight_branch = "Jet_bTagWeight_LFStats1" + shiftUp_or_Down;
-    else if ( central_or_shift_tstring.BeginsWith("CMS_ttHl_btag_LFStats2") ) jet_btagWeight_branch = "Jet_bTagWeight_LFStats2" + shiftUp_or_Down;
-    else if ( central_or_shift_tstring.BeginsWith("CMS_ttHl_btag_cErr1")    ) jet_btagWeight_branch = "Jet_bTagWeight_cErr1" + shiftUp_or_Down;
-    else if ( central_or_shift_tstring.BeginsWith("CMS_ttHl_btag_cErr2")    ) jet_btagWeight_branch = "Jet_bTagWeight_cErr2" + shiftUp_or_Down;
-    else if ( central_or_shift_tstring.BeginsWith("CMS_ttHl_JES") ) {
-      jet_btagWeight_branch = "Jet_bTagWeight_JES" + shiftUp_or_Down;
+    if ( central_or_shift_tstring.BeginsWith("CMS_ttHl_btag") ) {
+      jet_btagWeight_branch = getBranchName_bTagWeight(era, central_or_shift);
+    } else if ( central_or_shift_tstring.BeginsWith("CMS_ttHl_JES") ) {
+      jet_btagWeight_branch = getBranchName_bTagWeight(era, central_or_shift);
       if      ( shiftUp_or_Down == "Up"   ) jetPt_option = RecoJetReader::kJetPt_jecUp;
       else if ( shiftUp_or_Down == "Down" ) jetPt_option = RecoJetReader::kJetPt_jecDown;
       else assert(0);
@@ -238,7 +237,7 @@ int main(int argc, char* argv[])
   RecoElectronCollectionSelectorFakeable fakeableElectronSelector(era);
   RecoElectronCollectionSelectorTight tightElectronSelector(era);
 
-  RecoHadTauReader* hadTauReader = new RecoHadTauReader("nTauGood", "TauGood");
+  RecoHadTauReader* hadTauReader = new RecoHadTauReader(era, "nTauGood", "TauGood");
   hadTauReader->setHadTauPt_central_or_shift(RecoHadTauReader::kHadTauPt_central);
   hadTauReader->setBranchAddresses(inputTree);
   RecoHadTauCollectionGenMatcher hadTauGenMatcher;
@@ -246,7 +245,7 @@ int main(int argc, char* argv[])
   RecoHadTauCollectionSelectorTight hadTauSelector;
   hadTauSelector.set(hadTauSelection);
 
-  RecoJetReader* jetReader = new RecoJetReader("nJet", "Jet");
+  RecoJetReader* jetReader = new RecoJetReader(era, "nJet", "Jet");
   jetReader->setJetPt_central_or_shift(jetPt_option);
   jetReader->setBranchName_BtagWeight(jet_btagWeight_branch);
   jetReader->setBranchAddresses(inputTree);
