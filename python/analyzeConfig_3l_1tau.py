@@ -69,7 +69,7 @@ class analyzeConfig_3l_1tau(analyzeConfig):
             hadTau_selection_and_frWeight = get_hadTau_selection_and_frWeight(hadTau_selection, hadTau_frWeight)
             for charge_selection in self.charge_selections:
               key_dir = getKey(sample_name, lepton_selection, hadTau_selection, hadTau_frWeight, charge_selection)  
-              for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_DCRD ]:
+              for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_DCRD, DKEY_ROOT, DKEY_RLES ]:
                 initDict(self.dirs, [ key_dir, dir_type ])
                 self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel,
                   "_".join([ "lep" + lepton_selection, "tau" + hadTau_selection_and_frWeight, charge_selection ]), process_name)
