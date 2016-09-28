@@ -5,8 +5,8 @@ from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_3l_1tau_2016 import samples_201
 from tthAnalysis.HiggsToTauTau.analyzeConfig_3l_1tau import analyzeConfig_3l_1tau
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 
-#ERA = "2015"
-ERA = "2016"
+ERA = "2015"
+#ERA = "2016"
 
 samples = None
 LUMI = None
@@ -19,7 +19,7 @@ elif ERA == "2016":
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "2016Sep21_dR03mvaTight"
+version = "2016Sep23_dR03mvaTight"
 
 if __name__ == '__main__':
   logging.basicConfig(

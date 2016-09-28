@@ -160,7 +160,7 @@ int main(int argc, char* argv[])
   std::cout << " outputFileName = " << outputFileName << std::endl;
   std::ofstream* outputFile = new std::ofstream(outputFileName.data());
 
-  std::string inputTreeName = "HiggsBosonMachineLearningChallenge";
+  std::string inputTreeName = treeName;
   TChain* inputTree = new TChain(inputTreeName.data());
   for ( std::vector<std::string>::const_iterator inputFileName = inputFiles.files().begin();
 	inputFileName != inputFiles.files().end(); ++inputFileName ) {

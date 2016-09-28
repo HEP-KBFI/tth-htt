@@ -13,7 +13,7 @@
 
 namespace lut
 {
-  enum { kXpt, kXeta, kXabsEta, kXptYeta, kXptYabsEta, kXetaYpt, kXabsEtaYpt };
+  enum { kXpt, kXeta, kXabsEta, kXptYpt, kXptYeta, kXptYabsEta, kXetaYpt, kXabsEtaYpt };
 }
 
 // define auxiliary functions
@@ -26,6 +26,7 @@ TGraph* loadTGraph(TFile* inputFile, const std::string& graphName);
 
 double getSF_from_TH1(TH1* lut, double x);
 double getSF_from_TH2(TH2* lut, double x, double y);
+double getSF_from_TH2Poly(TH2* lut, double x, double y);
 double getSF_from_TGraph(TGraph* lut, double x);
 
 class lutWrapperBase
@@ -66,6 +67,15 @@ class lutWrapperTH2 : public lutWrapperBase
  public:
   lutWrapperTH2(std::map<std::string, TFile*>& inputFiles, const std::string& inputFileName, const std::string& lutName, int lutType, 
 		double xMin = -1., double xMax = -1., double yMin = -1., double yMax = -1.);
+ private:
+  double getSF_private(double x, double y);
+  TH2* lut_;
+};
+class lutWrapperTH2Poly : public lutWrapperBase
+{
+ public:
+  lutWrapperTH2Poly(std::map<std::string, TFile*>& inputFiles, const std::string& inputFileName, const std::string& lutName, int lutType, 
+		    double xMin = -1., double xMax = -1., double yMin = -1., double yMax = -1.);
  private:
   double getSF_private(double x, double y);
   TH2* lut_;

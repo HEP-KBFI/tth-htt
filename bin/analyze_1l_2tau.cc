@@ -57,7 +57,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/GenEvtHistManager.h" // GenEvtHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/LHEInfoHistManager.h" // LHEInfoHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/leptonTypes.h" // getLeptonType, kElectron, kMuon
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // isHigherPt, isMatched
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // getBranchName_bTagWeight, isHigherPt, isMatched
 #include "tthAnalysis/HiggsToTauTau/interface/hadTauGenMatchingAuxFunctions.h" // getHadTauGenMatch_definitions_3tau, getHadTauGenMatch_string, getHadTauGenMatch_int
 #include "tthAnalysis/HiggsToTauTau/interface/hltPath.h" // hltPath, create_hltPaths, hltPaths_setBranchAddresses, hltPaths_isTriggered, hltPaths_delete
 #include "tthAnalysis/HiggsToTauTau/interface/Data_to_MC_CorrectionInterface.h" // Data_to_MC_CorrectionInterface.h
@@ -178,7 +178,9 @@ int main(int argc, char* argv[])
     throw cms::Exception("analyze_1l_2tau") 
       << "Invalid combination of Configuration parameters 'hadTauGenMatch' = " << hadTauGenMatchSelection_string << ", 'apply_hadTauGenMatching' = " << apply_hadTauGenMatching << " !!\n";
   }
-    
+  std::string process_and_genMatch = process_string;
+  if ( hadTauGenMatchSelection_string != "all" && apply_hadTauGenMatching ) process_and_genMatch += hadTauGenMatchSelection_string;
+
   vdouble hadTauEtaBins_lead = cfg_analyze.getParameter<vdouble>("hadTauEtaBins_lead"); // CV: eta bins in which jet->tau fake-rates are determined
   vdouble hadTauEtaBins_sublead = cfg_analyze.getParameter<vdouble>("hadTauEtaBins_sublead");
 
@@ -187,7 +189,12 @@ int main(int argc, char* argv[])
   double lumiScale = ( process_string != "data_obs" ) ? cfg_analyze.getParameter<double>("lumiScale") : 1.;
   bool apply_trigger_bits = cfg_analyze.getParameter<bool>("apply_trigger_bits"); 
 
-  std::string jet_btagWeight_branch = ( isMC ) ? "Jet_bTagWeight" : "";
+  std::string jet_btagWeight_branch;
+  if ( isMC ) {
+    if      ( era == kEra_2015 ) jet_btagWeight_branch = "Jet_bTagWeight";
+    else if ( era == kEra_2016 ) jet_btagWeight_branch = "Jet_btagWeightCSV";
+    else assert(0);
+  }
 
   int jetPt_option = RecoJetReader::kJetPt_central;
   int hadTauPt_option = RecoHadTauReader::kHadTauPt_central;
@@ -200,16 +207,10 @@ int main(int argc, char* argv[])
     else if ( central_or_shift_tstring.EndsWith("Down") ) shiftUp_or_Down = "Down";
     else throw cms::Exception("analyze_1l_2tau")
       << "Invalid Configuration parameter 'central_or_shift' = " << central_or_shift << " !!\n";
-    if      ( central_or_shift_tstring.BeginsWith("CMS_ttHl_btag_HF")       ) jet_btagWeight_branch = "Jet_bTagWeightHF" + shiftUp_or_Down;
-    else if ( central_or_shift_tstring.BeginsWith("CMS_ttHl_btag_HFStats1") ) jet_btagWeight_branch = "Jet_bTagWeightHFStats1" + shiftUp_or_Down;
-    else if ( central_or_shift_tstring.BeginsWith("CMS_ttHl_btag_HFStats2") ) jet_btagWeight_branch = "Jet_bTagWeightHFStats2" + shiftUp_or_Down;
-    else if ( central_or_shift_tstring.BeginsWith("CMS_ttHl_btag_LF")       ) jet_btagWeight_branch = "Jet_bTagWeightLF" + shiftUp_or_Down;
-    else if ( central_or_shift_tstring.BeginsWith("CMS_ttHl_btag_LFStats1") ) jet_btagWeight_branch = "Jet_bTagWeightLFStats1" + shiftUp_or_Down;
-    else if ( central_or_shift_tstring.BeginsWith("CMS_ttHl_btag_LFStats2") ) jet_btagWeight_branch = "Jet_bTagWeightLFStats2" + shiftUp_or_Down;
-    else if ( central_or_shift_tstring.BeginsWith("CMS_ttHl_btag_cErr1")    ) jet_btagWeight_branch = "Jet_bTagWeightcErr1" + shiftUp_or_Down;
-    else if ( central_or_shift_tstring.BeginsWith("CMS_ttHl_btag_cErr2")    ) jet_btagWeight_branch = "Jet_bTagWeightcErr2" + shiftUp_or_Down;
-    else if ( central_or_shift_tstring.BeginsWith("CMS_ttHl_JES") ) {
-      jet_btagWeight_branch = "Jet_bTagWeightJES" + shiftUp_or_Down;
+    if ( central_or_shift_tstring.BeginsWith("CMS_ttHl_btag") ) {
+      jet_btagWeight_branch = getBranchName_bTagWeight(era, central_or_shift);
+    } else if ( central_or_shift_tstring.BeginsWith("CMS_ttHl_JES") ) {
+      jet_btagWeight_branch = getBranchName_bTagWeight(era, central_or_shift);
       if      ( shiftUp_or_Down == "Up"   ) jetPt_option = RecoJetReader::kJetPt_jecUp;
       else if ( shiftUp_or_Down == "Down" ) jetPt_option = RecoJetReader::kJetPt_jecDown;
       else assert(0);
@@ -434,38 +435,38 @@ int main(int argc, char* argv[])
 
 //--- declare histograms
   std::string charge_and_hadTauSelection = Form("%s_%s", hadTauChargeSelection_string.data(), hadTauSelection_part1.data());
-  ElectronHistManager preselElectronHistManager(makeHistManager_cfg(process_string, 
+  ElectronHistManager preselElectronHistManager(makeHistManager_cfg(process_and_genMatch,
     Form("1l_2tau_%s/presel/electrons", charge_and_hadTauSelection.data()), central_or_shift));
   preselElectronHistManager.bookHistograms(fs);
-  MuonHistManager preselMuonHistManager(makeHistManager_cfg(process_string, 
+  MuonHistManager preselMuonHistManager(makeHistManager_cfg(process_and_genMatch, 
     Form("1l_2tau_%s/presel/muons", charge_and_hadTauSelection.data()), central_or_shift));
   preselMuonHistManager.bookHistograms(fs);
-  HadTauHistManager preselHadTauHistManager(makeHistManager_cfg(process_string, 
+  HadTauHistManager preselHadTauHistManager(makeHistManager_cfg(process_and_genMatch, 
     Form("1l_2tau_%s/presel/hadTaus", charge_and_hadTauSelection.data()), central_or_shift));
   preselHadTauHistManager.bookHistograms(fs);
-  HadTauHistManager preselHadTauHistManager_lead(makeHistManager_cfg(process_string, 
+  HadTauHistManager preselHadTauHistManager_lead(makeHistManager_cfg(process_and_genMatch, 
     Form("1l_2tau_%s/presel/leadHadTau", charge_and_hadTauSelection.data()), central_or_shift));
   preselHadTauHistManager_lead.bookHistograms(fs);
-  HadTauHistManager preselHadTauHistManager_sublead(makeHistManager_cfg(process_string, 
+  HadTauHistManager preselHadTauHistManager_sublead(makeHistManager_cfg(process_and_genMatch, 
     Form("1l_2tau_%s/presel/subleadHadTau", charge_and_hadTauSelection.data()), central_or_shift));
   preselHadTauHistManager_sublead.bookHistograms(fs);
-  JetHistManager preselJetHistManager(makeHistManager_cfg(process_string, 
+  JetHistManager preselJetHistManager(makeHistManager_cfg(process_and_genMatch, 
     Form("1l_2tau_%s/presel/jets", charge_and_hadTauSelection.data()), central_or_shift));
   preselJetHistManager.bookHistograms(fs);
-  JetHistManager preselBJet_looseHistManager(makeHistManager_cfg(process_string, 
+  JetHistManager preselBJet_looseHistManager(makeHistManager_cfg(process_and_genMatch, 
     Form("1l_2tau_%s/presel/BJets_loose", charge_and_hadTauSelection.data()), central_or_shift));
   preselBJet_looseHistManager.bookHistograms(fs);
-  JetHistManager preselBJet_mediumHistManager(makeHistManager_cfg(process_string, 
+  JetHistManager preselBJet_mediumHistManager(makeHistManager_cfg(process_and_genMatch, 
     Form("1l_2tau_%s/presel/BJets_medium", charge_and_hadTauSelection.data()), central_or_shift));
   preselBJet_mediumHistManager.bookHistograms(fs);
-  MEtHistManager preselMEtHistManager(makeHistManager_cfg(process_string, 
+  MEtHistManager preselMEtHistManager(makeHistManager_cfg(process_and_genMatch, 
     Form("1l_2tau_%s/presel/met", charge_and_hadTauSelection.data()), central_or_shift));
   preselMEtHistManager.bookHistograms(fs);
-  EvtHistManager_1l_2tau preselEvtHistManager(makeHistManager_cfg(process_string, 
+  EvtHistManager_1l_2tau preselEvtHistManager(makeHistManager_cfg(process_and_genMatch, 
     Form("1l_2tau_%s/presel/evt", charge_and_hadTauSelection.data()), central_or_shift));
   preselEvtHistManager.bookHistograms(fs);
 
-  ElectronHistManager selElectronHistManager(makeHistManager_cfg(process_string, 
+  ElectronHistManager selElectronHistManager(makeHistManager_cfg(process_and_genMatch, 
     Form("1l_2tau_%s/sel/electrons", charge_and_hadTauSelection.data()), central_or_shift));
   selElectronHistManager.bookHistograms(fs);
   vstring categories_e = { 
@@ -474,13 +475,13 @@ int main(int argc, char* argv[])
   std::map<std::string, ElectronHistManager*> selElectronHistManager_category; // key = category
   for ( vstring::const_iterator category = categories_e.begin();
 	category != categories_e.end(); ++category ) {
-    ElectronHistManager* selElectronHistManager = new ElectronHistManager(makeHistManager_cfg(process_string, 
+    ElectronHistManager* selElectronHistManager = new ElectronHistManager(makeHistManager_cfg(process_and_genMatch, 
       Form("%s_%s/sel/electron", category->data(), charge_and_hadTauSelection.data()), central_or_shift));
     selElectronHistManager->bookHistograms(fs);
     selElectronHistManager_category[*category] = selElectronHistManager;
   }
 
-  MuonHistManager selMuonHistManager(makeHistManager_cfg(process_string, 
+  MuonHistManager selMuonHistManager(makeHistManager_cfg(process_and_genMatch, 
     Form("1l_2tau_%s/sel/muons", charge_and_hadTauSelection.data()), central_or_shift));
   selMuonHistManager.bookHistograms(fs);
   vstring categories_mu = { 
@@ -489,19 +490,19 @@ int main(int argc, char* argv[])
   std::map<std::string, MuonHistManager*> selMuonHistManager_category; // key = category
   for ( vstring::const_iterator category = categories_mu.begin();
 	category != categories_mu.end(); ++category ) {
-    MuonHistManager* selMuonHistManager = new MuonHistManager(makeHistManager_cfg(process_string, 
+    MuonHistManager* selMuonHistManager = new MuonHistManager(makeHistManager_cfg(process_and_genMatch, 
       Form("%s_%s/sel/muon", category->data(), charge_and_hadTauSelection.data()), central_or_shift));
     selMuonHistManager->bookHistograms(fs);
     selMuonHistManager_category[*category] = selMuonHistManager;
   }
 
-  HadTauHistManager selHadTauHistManager(makeHistManager_cfg(process_string, 
+  HadTauHistManager selHadTauHistManager(makeHistManager_cfg(process_and_genMatch, 
     Form("1l_2tau_%s/sel/hadTaus", charge_and_hadTauSelection.data()), central_or_shift));
   selHadTauHistManager.bookHistograms(fs);
-  HadTauHistManager selHadTauHistManager_lead(makeHistManager_cfg(process_string, 
+  HadTauHistManager selHadTauHistManager_lead(makeHistManager_cfg(process_and_genMatch, 
     Form("1l_2tau_%s/sel/leadHadTau", charge_and_hadTauSelection.data()), central_or_shift));
   selHadTauHistManager_lead.bookHistograms(fs);
-  HadTauHistManager selHadTauHistManager_sublead(makeHistManager_cfg(process_string, 
+  HadTauHistManager selHadTauHistManager_sublead(makeHistManager_cfg(process_and_genMatch, 
     Form("1l_2tau_%s/sel/subleadHadTau", charge_and_hadTauSelection.data()), central_or_shift));
   selHadTauHistManager_sublead.bookHistograms(fs);
   vstring categories_tau = {
@@ -512,54 +513,54 @@ int main(int argc, char* argv[])
   std::map<std::string, HadTauHistManager*> selHadTauHistManager_sublead_category; // key = category
   for ( vstring::const_iterator category = categories_tau.begin();
 	category != categories_tau.end(); ++category ) {
-    HadTauHistManager* selHadTauHistManager_lead = new HadTauHistManager(makeHistManager_cfg(process_string, 
+    HadTauHistManager* selHadTauHistManager_lead = new HadTauHistManager(makeHistManager_cfg(process_and_genMatch, 
       Form("%s_%s/sel/leadHadTau", category->data(), charge_and_hadTauSelection.data()), central_or_shift));
     selHadTauHistManager_lead->bookHistograms(fs);
     selHadTauHistManager_lead_category[*category] = selHadTauHistManager_lead;
-    HadTauHistManager* selHadTauHistManager_sublead = new HadTauHistManager(makeHistManager_cfg(process_string, 
+    HadTauHistManager* selHadTauHistManager_sublead = new HadTauHistManager(makeHistManager_cfg(process_and_genMatch, 
       Form("%s_%s/sel/subleadHadTau", category->data(), charge_and_hadTauSelection.data()), central_or_shift));
     selHadTauHistManager_sublead->bookHistograms(fs);
     selHadTauHistManager_sublead_category[*category] = selHadTauHistManager_sublead;
   }
-  edm::ParameterSet cfg_selHadTauFakeRateHistManager = makeHistManager_cfg(process_string, 
+  edm::ParameterSet cfg_selHadTauFakeRateHistManager = makeHistManager_cfg(process_and_genMatch, 
     Form("1l_2tau_%s/sel/hadTauFakeRates", charge_and_hadTauSelection.data()), central_or_shift);
   cfg_selHadTauFakeRateHistManager.addParameter<vdouble>("etaBins_lead", hadTauEtaBins_lead);
   cfg_selHadTauFakeRateHistManager.addParameter<vdouble>("etaBins_sublead", hadTauEtaBins_sublead);
   HadTauFakeRateHistManager selHadTauFakeRateHistManager(cfg_selHadTauFakeRateHistManager);
   selHadTauFakeRateHistManager.bookHistograms(fs);
 
-  JetHistManager selJetHistManager(makeHistManager_cfg(process_string, 
+  JetHistManager selJetHistManager(makeHistManager_cfg(process_and_genMatch, 
     Form("1l_2tau_%s/sel/jets", charge_and_hadTauSelection.data()), central_or_shift));
   selJetHistManager.bookHistograms(fs);
-  JetHistManager selJetHistManager_lead(makeHistManager_cfg(process_string, 
+  JetHistManager selJetHistManager_lead(makeHistManager_cfg(process_and_genMatch, 
     Form("1l_2tau_%s/sel/leadJet", charge_and_hadTauSelection.data()), central_or_shift, 0));
   selJetHistManager_lead.bookHistograms(fs);
-  JetHistManager selJetHistManager_sublead(makeHistManager_cfg(process_string, 
+  JetHistManager selJetHistManager_sublead(makeHistManager_cfg(process_and_genMatch, 
     Form("1l_2tau_%s/sel/subleadJet", charge_and_hadTauSelection.data()), central_or_shift, 1));
   selJetHistManager_sublead.bookHistograms(fs);
 
-  JetHistManager selBJet_looseHistManager(makeHistManager_cfg(process_string, 
+  JetHistManager selBJet_looseHistManager(makeHistManager_cfg(process_and_genMatch, 
     Form("1l_2tau_%s/sel/BJets_loose", charge_and_hadTauSelection.data()), central_or_shift));
   selBJet_looseHistManager.bookHistograms(fs);
-  JetHistManager selBJet_looseHistManager_lead(makeHistManager_cfg(process_string, 
+  JetHistManager selBJet_looseHistManager_lead(makeHistManager_cfg(process_and_genMatch, 
     Form("1l_2tau_%s/sel/leadBJet_loose", charge_and_hadTauSelection.data()), central_or_shift, 0));
   selBJet_looseHistManager_lead.bookHistograms(fs);
-  JetHistManager selBJet_looseHistManager_sublead(makeHistManager_cfg(process_string, 
+  JetHistManager selBJet_looseHistManager_sublead(makeHistManager_cfg(process_and_genMatch, 
     Form("1l_2tau_%s/sel/subleadBJet_loose", charge_and_hadTauSelection.data()), central_or_shift, 1));
   selBJet_looseHistManager_sublead.bookHistograms(fs);
-  JetHistManager selBJet_mediumHistManager(makeHistManager_cfg(process_string, 
+  JetHistManager selBJet_mediumHistManager(makeHistManager_cfg(process_and_genMatch, 
     Form("1l_2tau_%s/sel/BJets_medium", charge_and_hadTauSelection.data()), central_or_shift));
   selBJet_mediumHistManager.bookHistograms(fs);
 
-  MEtHistManager selMEtHistManager(makeHistManager_cfg(process_string, 
+  MEtHistManager selMEtHistManager(makeHistManager_cfg(process_and_genMatch, 
     Form("1l_2tau_%s/sel/met", charge_and_hadTauSelection.data()), central_or_shift));
   selMEtHistManager.bookHistograms(fs);
 
-  MVAInputVarHistManager selMVAInputVarHistManager(makeHistManager_cfg(process_string, 
+  MVAInputVarHistManager selMVAInputVarHistManager(makeHistManager_cfg(process_and_genMatch, 
     Form("1l_2tau_%s/sel/mvaInputVariables", charge_and_hadTauSelection.data()), central_or_shift));
   selMVAInputVarHistManager.bookHistograms(fs, mvaInputVariables_1l_2tau_ttbar_TMVA);
 
-  EvtHistManager_1l_2tau selEvtHistManager(makeHistManager_cfg(process_string, 
+  EvtHistManager_1l_2tau selEvtHistManager(makeHistManager_cfg(process_and_genMatch, 
     Form("1l_2tau_%s/sel/evt", charge_and_hadTauSelection.data()), central_or_shift));
   selEvtHistManager.bookHistograms(fs);
   std::map<std::string, EvtHistManager_1l_2tau*> selEvtHistManager_decayMode; // key = decay mode
@@ -599,7 +600,7 @@ int main(int argc, char* argv[])
   std::map<std::string, EvtHistManager_1l_2tau*> selEvtHistManager_category; // key = category
   for ( vstring::const_iterator category = categories_evt.begin();
 	category != categories_evt.end(); ++category ) {
-    EvtHistManager_1l_2tau* selEvtHistManager = new EvtHistManager_1l_2tau(makeHistManager_cfg(process_string, 
+    EvtHistManager_1l_2tau* selEvtHistManager = new EvtHistManager_1l_2tau(makeHistManager_cfg(process_and_genMatch, 
       Form("%s_%s/sel/evt", category->data(), charge_and_hadTauSelection.data()), central_or_shift));
     selEvtHistManager->bookHistograms(fs);
     selEvtHistManager_category[*category] = selEvtHistManager;
@@ -609,13 +610,13 @@ int main(int argc, char* argv[])
   GenEvtHistManager* genEvtHistManager_afterCuts = 0;
   LHEInfoHistManager* lheInfoHistManager = 0;
   if ( isMC ) {
-    genEvtHistManager_beforeCuts = new GenEvtHistManager(makeHistManager_cfg(process_string, 
+    genEvtHistManager_beforeCuts = new GenEvtHistManager(makeHistManager_cfg(process_and_genMatch, 
       Form("1l_2tau_%s/unbiased/genEvt", charge_and_hadTauSelection.data()), central_or_shift));
     genEvtHistManager_beforeCuts->bookHistograms(fs);
-    genEvtHistManager_afterCuts = new GenEvtHistManager(makeHistManager_cfg(process_string, 
+    genEvtHistManager_afterCuts = new GenEvtHistManager(makeHistManager_cfg(process_and_genMatch, 
       Form("1l_2tau_%s/sel/genEvt", charge_and_hadTauSelection.data()), central_or_shift));
     genEvtHistManager_afterCuts->bookHistograms(fs);
-     lheInfoHistManager = new LHEInfoHistManager(makeHistManager_cfg(process_string, 
+     lheInfoHistManager = new LHEInfoHistManager(makeHistManager_cfg(process_and_genMatch, 
       Form("1l_2tau_%s/sel/lheInfo", charge_and_hadTauSelection.data()), central_or_shift));
     lheInfoHistManager->bookHistograms(fs);
   }

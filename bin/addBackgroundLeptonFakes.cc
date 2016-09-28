@@ -128,20 +128,22 @@ int main(int argc, char* argv[])
       TDirectory* subdir_sideband_level1 = dynamic_cast<TDirectory*>(dir_sideband->Get((*subdir_signal_level1)->GetName()));
       if ( !subdir_sideband_level1 ) throw cms::Exception("addBackgroundLeptonFakes")  
         << "Failed to find subdirectory = " << (*subdir_signal_level1)->GetName() << " within directory = " << dir_sideband->GetName() << " !!\n";
-
+      
       std::vector<TDirectory*> subdirs_signal_level2 = getSubdirectories(*subdir_signal_level1);
       for ( std::vector<TDirectory*>::iterator subdir_signal_level2 = subdirs_signal_level2.begin();
 	  subdir_signal_level2 != subdirs_signal_level2.end(); ++subdir_signal_level2 ) {
 
         TDirectory* subdir_sideband_level2 = dynamic_cast<TDirectory*>(subdir_sideband_level1->Get((*subdir_signal_level2)->GetName()));
-        if ( !subdir_sideband_level2 ) throw cms::Exception("addBackgroundLeptonFakes")  
-          << "Failed to find subdirectory = " << (*subdir_signal_level2)->GetName() << " within directory = " << subdir_sideband_level1->GetName() << " !!\n";
+	if ( !subdir_sideband_level2 ) throw cms::Exception("addBackgroundLeptonFakes")  
+	  << "Failed to find subdirectory = " << (*subdir_signal_level2)->GetName() << " within directory = " << subdir_sideband_level1->GetName() << " !!\n";
 
 	std::cout << " processing directory = " << Form("%s/%s", (*subdir_signal_level1)->GetName(), (*subdir_signal_level2)->GetName()) << std::endl;
 
         TDirectory* dirData = dynamic_cast<TDirectory*>((*subdir_signal_level2)->Get(processData.data()));
-        if ( !dirData ) throw cms::Exception("addBackgroundLeptonFakes")  
-          << "Failed to find subdirectory = " << processData << " within directory = " << subdir_sideband_level2->GetName() << " !!\n";
+        if ( !dirData ) {
+	  std::cout << "Failed to find subdirectory = " << processData << " within directory = " << subdir_sideband_level2->GetName() << " --> skipping !!";
+	  continue;
+	}
         std::set<std::string> histograms;
         TList* list = dirData->GetListOfKeys();
         TIter next(list);

@@ -19,7 +19,7 @@ elif ERA == "2016":
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "2016Sep21_dR03mvaTight"
+version = "2016Sep23_dR03mvaTight"
 
 if __name__ == '__main__':
   logging.basicConfig(
