@@ -371,8 +371,8 @@ class analyzeConfig_3l_1tau(analyzeConfig):
                       (self.channel, process_name, lepton_selection, hadTau_selection_and_frWeight, hadTau_genMatch, charge_selection, central_or_shift, jobId))
                     self.rleOutputFiles[key_file] = os.path.join(self.dirs[key_dir][DKEY_RLES], "rle_%s_%s_%s_%s_%s_%s_%s_%s_%i.txt" % \
                       (self.channel, process_name, lepton_selection, hadTau_selection, hadTau_frWeight, hadTau_genMatch, charge_selection, central_or_shift, jobId)) if self.select_rle_output else ""
-                    self.rootOutputFiles[key_file] = os.path.join(self.dirs[key_dir][DKEY_ROOT], "out_%s_%s_%s_%s_%s_%s_%s_%s_%i.root" % \
-                      (self.channel, process_name, lepton_selection, hadTau_selection, hadTau_frWeight, hadTau_genMatch, charge_selection, central_or_shift, jobId)) if self.select_root_output else ""
+                    self.rootOutputFiles[key_file] = os.path.join(self.dirs[key_dir][DKEY_ROOT], "out_%s_%s_%s_%s_%s_%s_%s_%i.root" % \
+                      (self.channel, process_name, lepton_selection, hadTau_selection_and_frWeight, hadTau_genMatch, charge_selection, central_or_shift, jobId)) if self.select_root_output else ""
                     
                     self.createCfg_analyze(self.ntupleFiles[key_file], self.histogramFiles[key_file], sample_category, self.era, triggers,
                       lepton_selection, hadTau_selection, hadTau_genMatch, self.apply_hadTauGenMatching, hadTau_frWeight, charge_selection,
