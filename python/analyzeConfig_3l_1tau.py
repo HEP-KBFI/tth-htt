@@ -69,10 +69,13 @@ class analyzeConfig_3l_1tau(analyzeConfig):
             hadTau_selection_and_frWeight = get_hadTau_selection_and_frWeight(hadTau_selection, hadTau_frWeight)
             for charge_selection in self.charge_selections:
               key_dir = getKey(sample_name, lepton_selection, hadTau_selection, hadTau_frWeight, charge_selection)  
-              for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_DCRD ]:
+              for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS ]:
                 initDict(self.dirs, [ key_dir, dir_type ])
                 self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel,
                   "_".join([ "lep" + lepton_selection, "tau" + hadTau_selection_and_frWeight, charge_selection ]), process_name)
+    for dir_type in [ DKEY_DCRD, DKEY_PLOT ]:
+      initDict(self.dirs, [ dir_type ])
+      self.dirs[dir_type] = os.path.join(self.outputDir, dir_type, self.channel)
     ##print "self.dirs = ", self.dirs
 
     self.nonfake_backgrounds = [ "TT", "TTW", "TTZ", "EWK", "Rares" ]
@@ -276,6 +279,7 @@ class analyzeConfig_3l_1tau(analyzeConfig):
     for key in self.histogramFile_addBackgrounds.keys():
       inputFiles_hadd_stage1_5.append(self.histogramFile_addBackgrounds[key])
     lines_makefile.append("%s: %s" % (self.histogramFile_hadd_stage1_5, " ".join(inputFiles_hadd_stage1_5)))
+    lines_makefile.append("\t%s %s" % ("rm -f", self.histogramFile_hadd_stage1_5))
     lines_makefile.append("\t%s %s %s" % ("hadd", self.histogramFile_hadd_stage1_5, " ".join(inputFiles_hadd_stage1_5)))
     lines_makefile.append("")
     
@@ -294,9 +298,9 @@ class analyzeConfig_3l_1tau(analyzeConfig):
   def addToMakefile_hadd_stage2(self, lines_makefile):
     """Adds the commands to Makefile that are necessary for building the final histogram file.
     """
-    lines_makefile.append("%s: %s" % (self.histogramFile_hadd_stage2, " ".join([ self.histogramFile_hadd_stage1 ] + self.histogramFile_addFakes.values())))
+    lines_makefile.append("%s: %s" % (self.histogramFile_hadd_stage2, " ".join([ self.histogramFile_hadd_stage1_5 ] + self.histogramFile_addFakes.values())))
     lines_makefile.append("\t%s %s" % ("rm -f", self.histogramFile_hadd_stage2))
-    lines_makefile.append("\t%s %s %s" % ("hadd", self.histogramFile_hadd_stage2, " ".join([ self.histogramFile_hadd_stage1 ] + self.histogramFile_addFakes.values())))
+    lines_makefile.append("\t%s %s %s" % ("hadd", self.histogramFile_hadd_stage2, " ".join([ self.histogramFile_hadd_stage1_5 ] + self.histogramFile_addFakes.values())))
     lines_makefile.append("")
     self.filesToClean.append(self.histogramFile_hadd_stage2)
 
@@ -313,8 +317,11 @@ class analyzeConfig_3l_1tau(analyzeConfig):
     """
 
     for key in self.dirs.keys():
-      for dir_type in self.dirs[key].keys():
-        create_if_not_exists(self.dirs[key][dir_type])
+      if type(self.dirs[key]) == dict:
+        for dir_type in self.dirs[key].keys():
+          create_if_not_exists(self.dirs[key][dir_type])
+      else:
+        create_if_not_exists(self.dirs[key])
 
     self.inputFileIds = {}
     for sample_name, sample_info in self.samples.items():
@@ -383,8 +390,11 @@ class analyzeConfig_3l_1tau(analyzeConfig):
       logging.info("Creating script for submitting '%s' jobs to batch system" % self.executable_analyze)
       self.createScript_sbatch()
 
-    logging.info("Creating configuration files for executing 'addBackgrounds'")  
-    for process_name in self.nonfake_backgrounds:
+    logging.info("Creating configuration files for executing 'addBackgrounds'")
+    process_names = []
+    process_names.extend(self.nonfake_backgrounds)
+    process_names.extend([ "signal", "ttH_htt", "ttH_hww", "ttH_hzz" ])
+    for process_name in process_names:
       for lepton_selection in self.lepton_selections:
         for hadTau_selection in self.hadTau_selections:
           hadTau_selection = hadTau_selection.replace("|", "_")   

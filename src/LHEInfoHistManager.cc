@@ -12,7 +12,7 @@ LHEInfoHistManager::LHEInfoHistManager(const edm::ParameterSet& cfg)
 void LHEInfoHistManager::bookHistograms(TFileDirectory& dir)
 {
   histogram_scaleWeights_ = book1D(dir, "scaleWeights", "scaleWeights", 4, -0.5, +3.5);
-  //histogram_pdfWeights_ = book1D(dir, "pdfWeights", "pdfWeights", 103, -0.5, +102.5);
+  histogram_pdfWeights_ = book1D(dir, "pdfWeights", "pdfWeights", 103, -0.5, +102.5);
   dir_ = &dir;
 
   histogram_EventCounter_ = book1D(dir, "EventCounter", "EventCounter", 1, -0.5, +0.5);
@@ -20,12 +20,6 @@ void LHEInfoHistManager::bookHistograms(TFileDirectory& dir)
 
 void LHEInfoHistManager::fillHistograms(const LHEInfoReader& lheInfoReader, double evtWeight)
 {
-  if ( !histogram_pdfWeights_ ) {
-    int numBins = lheInfoReader.getNumWeights_pdf();
-    assert(numBins >= 1);
-    histogram_pdfWeights_ = book1D(*dir_, "pdfWeights", "pdfWeights", numBins, -0.5, numBins - 0.5);
-  }
-  
   double evtWeightErr = 0.;
 
   const int numWeights_scale = 4;

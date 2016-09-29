@@ -224,9 +224,10 @@ class analyzeConfig:
     cfgFile_modified = os.path.join(self.outputDir, DKEY_CFGS, "makePlots_%s_cfg.py" % self.channel)
     if not histogramDir:
       histogramDir = self.histogramDir_prep_dcard
-      if label:
-        category_label += " (%s)" % label
-        cfgFile_modified = cfgFile_modified.replace("_cfg.py", "_%s_cfg.py" % label)
+    if label:
+      outputFileName = outputFileName.replace(".png", "_%s.png" % label)
+      category_label += " (%s)" % label      
+      cfgFile_modified = cfgFile_modified.replace("_cfg.py", "_%s_cfg.py" % label)
     lines = []
     lines.append("process.fwliteInput.fileNames = cms.vstring('%s')" % self.histogramFile_hadd_stage2)
     lines.append("process.makePlots.outputFileName = cms.string('%s')" % outputFileName)
