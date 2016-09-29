@@ -14,6 +14,9 @@
 #define MET_ETA_TYPE           Float_t
 #define MET_PHI_TYPE           Float_t
 #define MET_MASS_TYPE          Float_t
+#define MET_COVXX_TYPE         Float_t
+#define MET_COVXY_TYPE         Float_t
+#define MET_COVYY_TYPE         Float_t
 
 ///////////////////////////////////////////////////////
 
@@ -28,5 +31,8 @@
 #define MET_ETA_KEY           "met_eta"
 #define MET_PHI_KEY           "met_phi"
 #define MET_MASS_KEY          "met_mass"
+#define MET_COVXX_KEY         "met_covXX"
+#define MET_COVXY_KEY         "met_covXY"
+#define MET_COVYY_KEY         "met_covYY"
 
 #endif // tthAnalysis_HiggsToTauTau_KeyTypes_h

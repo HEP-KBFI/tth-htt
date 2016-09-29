@@ -40,8 +40,8 @@ def call_xrdfs(domain, loc):
   Note that the path `loc' must be a directory, not a file.
 
   A line of the example output:
-  xrdfs t3se01.psi.ch ls -l -u /store/user/perrozzi/VHBBHeppyV23
-  dr-x 2016-07-17 00:21:28         512 root://192.33.123.24:1094//store/user/perrozzi/VHBBHeppyV23/WWTo4Q_13TeV-powheg
+  xrdfs t3se01.psi.ch ls -l -u /store/user/perrozzi/VHBBHeppyV24
+  dr-x 2016-07-17 00:21:28         512 root://192.33.123.24:1094//store/user/perrozzi/VHBBHeppyV24/WWTo4Q_13TeV-powheg
   '''
   process = subprocess.Popen(
     ['xrdfs', domain, 'ls', '-l', '-u', loc],
@@ -145,7 +145,7 @@ def generate_cmds(source, output_dir, hdfs_path, nof_splits):
   '''
   cmds, hadoop_paths = [], []
   print("Generate copy and hadoop commands")
-
+ 
   for subdir in source["subdirs"]:
     txtfile = os.path.join(output_dir, subdir)
     if os.path.exists(txtfile):
@@ -153,7 +153,8 @@ def generate_cmds(source, output_dir, hdfs_path, nof_splits):
         for line in f:
           line = line.rstrip('\n')
           dir_candidate = os.path.dirname(line.split(source["parent"])[1])
-          hdfs_dir = os.path.join(hdfs_path, dir_candidate)
+          hdfs_dir = hdfs_path+dir_candidate #LIKE THIS IT DOES NOT WORK!!! crap... [os.path.join(hdfs_path, dir_candidate)]
+          print hdfs_dir
           if hdfs_dir not in hadoop_paths: hadoop_paths.append(hdfs_dir)
           cmds.append(" ".join(["xrdcp", line, hdfs_dir]))
 
@@ -213,23 +214,53 @@ def generate_cmds(source, output_dir, hdfs_path, nof_splits):
 if __name__ == '__main__':
   sources = [
     {"domain"  : "t3se01.psi.ch",
-     "parent"  : "/store/user/perrozzi/VHBBHeppyV23",
-     "subdirs" : []
+     "parent"  : "/store/user/perrozzi/VHBBHeppyV24bis",
+     "subdirs" : [#"ST_tW_top_5f_NoFullyHadronicDecays_13TeV-powheg_TuneCUETP8M1",
+   #"TTJets_SingleLeptFromTbar_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
+   #"THW_Hincl_13TeV-madgraph-pythia8_TuneCUETP8M1",
+   #"TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8",
+   #"TTZToLLNuNu_M-10_TuneCUETP8M1_13TeV-amcatnlo-pythia8",
+   #"WZZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8",
+   #"ttHToNonbb_M125_13TeV_powheg_pythia8",
+   #"DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8",
+   #"WZTo3LNu_TuneCUETP8M1_13TeV-powheg-pythia8",
+   #"WWTo2L2Nu_13TeV-powheg",
+   #"ZZTo4L_13TeV-amcatnloFXFX-pythia8",
+   #"WGToLNuG_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
+   #"TGJets_TuneCUETP8M1_13TeV_amcatnlo_madspin_pythia8",
+   #"TTGJets_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8",
+   #"WpWpJJ_EWK-QCD_TuneCUETP8M1_13TeV-madgraph-pythia8",
+   #"WW_DoubleScattering_13TeV-pythia8",
+   #"tZq_ll_4f_13TeV-amcatnlo-pythia8_TuneCUETP8M1",
+   #"TTTT_TuneCUETP8M1_13TeV-amcatnlo-pythia8",
+   #"GluGluHToZZTo4L_M125_13TeV_powheg2_JHUgenV6_pythia8",
+   "ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix" 
+   #"TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
+   #"TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
+   #"ZGTo2LG_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8"
+]
     },
-    {"domain"  : "stormgf1.pi.infn.it",
-     "parent"  : "/store/user/cvernier/VHBBHeppyV23/",
-     "subdirs" : [
-       "ttH_M125_13TeV_powheg_pythia8", "ttHToNonbb_M125_13TeV_powheg_pythia8",
-       "SingleMuon", "DoubleMuon"
-       ]
-     }
+    #xrdfs stormgf1.pi.infn.it ls -l -u /store/user/arizzi/VHBBHeppyV24
+    #{"domain"  : "stormgf1.pi.infn.it",
+     #"parent"  : "/store/user/arizzi/VHBBHeppyV24",
+     #"subdirs" : [#"SingleElectron","SingleMuon","MuonEG",
+     #"DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
+     #"ST_t-channel_top_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia8_TuneCUETP8M1", 
+     #"ST_t-channel_antitop_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia8_TuneCUETP8M1",
+     #"ST_tW_antitop_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1",
+     #"ST_tW_top_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1",
+     #"TT_TuneCUETP8M1_13TeV-powheg-pythia8"
+     #"Tau"
+     #"ST_s-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1"
+     #]
+     #}
   ]
-  output_dir = "/home/karl/sandbox/filelist"
+  output_dir = "/home/lucia/sandbox/filelist"
   if not os.path.exists(output_dir) or not os.path.isdir(output_dir):
     os.makedirs(output_dir)
 
   # NB! no slash at the end of hdfs_path!!!
-  hdfs_path = '/hdfs/local/karl/VHBBHeppyV23'
+  hdfs_path = '/hdfs/local/lucia/VHBBHeppyV24bis'
   nof_splits = 30
 
   for i in range(len(sources)):
