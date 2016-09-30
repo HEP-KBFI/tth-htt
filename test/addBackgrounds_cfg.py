@@ -14,6 +14,8 @@ process.fwliteOutput = cms.PSet(
 
 process.addBackgrounds = cms.PSet(
 
+    categories = cms.vstring(),
+    
     processes_input = cms.vstring(),
     process_output = cms.string(""),
     
@@ -35,6 +37,12 @@ process.addBackgrounds = cms.PSet(
         "CMS_ttHl_btag_cErr2Up",
         "CMS_ttHl_btag_cErr2Down",
         "CMS_ttHl_JESUp",
-        "CMS_ttHl_JESDown"
+        "CMS_ttHl_JESDown",
+        "CMS_ttHl_tauESUp",
+        "CMS_ttHl_tauESDown"
+        "CMS_ttHl_FRt_normUp",
+        "CMS_ttHl_FRt_normDown",
+        "CMS_ttHl_FRt_shapeUp",
+        "CMS_ttHl_FRt_shapeDown"
     )
 )

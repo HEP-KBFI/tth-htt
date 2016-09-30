@@ -1,12 +1,25 @@
 import os, logging, sys, getpass
 
-import tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_3l_1tau
+from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_3l_1tau_2015 import samples_2015
+from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_3l_1tau_2016 import samples_2016
 from tthAnalysis.HiggsToTauTau.analyzeConfig_3l_1tau import analyzeConfig_3l_1tau
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 
-LUMI = 2301. # 1/pb
+ERA = "2015"
+#ERA = "2016"
 
-version = "2016Aug29_dR03mvaTight"
+samples = None
+LUMI = None
+if ERA == "2015":
+  samples = samples_2015
+  LUMI =  2.3e+3 # 1/pb
+elif ERA == "2016":
+  samples = samples_2016
+  LUMI = 12.9e+3 # 1/pb
+else:
+  raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
+
+version = "2016Sep23_dR03mvaTight"
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -15,11 +28,13 @@ if __name__ == '__main__':
     format = '%(asctime)s - %(levelname)s: %(message)s')
 
   analysis = analyzeConfig_3l_1tau(
-    outputDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", version),
+    outputDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", ERA, version),
     executable_analyze = "analyze_3l_1tau",
+    samples = samples,
     ##lepton_selections = [ "Tight", "Fakeable" ],
     lepton_selections = [ "Tight" ],
-    hadTau_selection = "dR03mvaTight",
+    hadTau_selections = [ "Tight|dR03mvaTight", "Fakeable|dR03mvaTight", "Fakeable_mcClosure|dR03mvaTight" ],
+    ##hadTau_selections = [ "Tight|dR03mvaTight" ],
     charge_selections = [ "OS", "SS" ],
     central_or_shifts = [ 
       "central",
@@ -42,13 +57,35 @@ if __name__ == '__main__':
 ##       "CMS_ttHl_JESUp",
 ##       "CMS_ttHl_JESDown",
 ##       "CMS_ttHl_tauESUp",
-##       "CMS_ttHl_tauESDown"  
+##       "CMS_ttHl_tauESDown",
+##       "CMS_ttHl_FRjt_normUp",
+##       "CMS_ttHl_FRjt_normDown",
+##       "CMS_ttHl_FRjt_shapeUp",
+##       "CMS_ttHl_FRjt_shapeDown",
+##       "CMS_ttHl_FRet_shiftUp",
+##       "CMS_ttHl_FRet_shiftDown",
+##       "CMS_ttHl_FRmt_shiftUp",
+##       "CMS_ttHl_FRmt_shiftDown",
+##       "CMS_ttHl_thu_shape_ttH_x1Up",  
+##       "CMS_ttHl_thu_shape_ttH_x1Down",
+##       "CMS_ttHl_thu_shape_ttH_y1Up",   
+##       "CMS_ttHl_thu_shape_ttH_y1Down",
+##       "CMS_ttHl_thu_shape_ttW_x1Up",
+##       "CMS_ttHl_thu_shape_ttW_x1Down",
+##       "CMS_ttHl_thu_shape_ttW_y1Up",
+##       "CMS_ttHl_thu_shape_ttW_y1Down",
+##       "CMS_ttHl_thu_shape_ttZ_x1Up",
+##       "CMS_ttHl_thu_shape_ttZ_x1Down",
+##       "CMS_ttHl_thu_shape_ttZ_y1Up",
+##       "CMS_ttHl_thu_shape_ttZ_y1Down" 
     ],
-    max_files_per_job = 30,
-    use_lumi = True, lumi = LUMI,
+    max_files_per_job = 20,
+    era = ERA, use_lumi = True, lumi = LUMI,
     debug = False,
     running_method = "sbatch",
     num_parallel_jobs = 4,
+    executable_addBackgrounds = "addBackgrounds",
+    executable_addBackgroundJetToTauFakes = "addBackgroundLeptonFakes", # CV: use common executable for estimating jet->lepton and jet->tau_h fake background
     histograms_to_fit = [ "EventCounter", "numJets", "mvaDiscr_3l", "mTauTauVis" ],
     select_rle_output = False,
     select_root_output = False)

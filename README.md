@@ -12,8 +12,8 @@ Set up your CMSSW working environment, do `scram b -j8` in `$CMSSW_BASE/src`.
 
 One needs to install `ClassicSVfit` and its dependency `SVfitTF` in order to compile the whole project; do
 ```bash
-git clone git@github.com:veelken/ClassicSVfit.git $CMSSW_BASE/src/TauAnalysis/ClassicSVfit
-git clone git@github.com:veelken/ClassicSVfit.git $CMSSW_BASE/src/TauAnalysis/SVfitTF
+git clone https://github.com/veelken/ClassicSVfit TauAnalysis/ClassicSVfit
+git clone https://github.com/veelken/SVfitTF TauAnalysis/SVfitTF
 ```
 and compile the project..
 

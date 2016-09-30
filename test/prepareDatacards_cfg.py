@@ -61,6 +61,18 @@ process.prepareDatacards = cms.PSet(
         "CMS_ttHl_btag_cErr2Up",
         "CMS_ttHl_btag_cErr2Down",
         "CMS_ttHl_JESUp",
-        "CMS_ttHl_JESDown"
+        "CMS_ttHl_JESDown",
+        "CMS_ttHl_thu_shape_ttH_x1Up",
+        "CMS_ttHl_thu_shape_ttH_x1Down",
+        "CMS_ttHl_thu_shape_ttH_y1Up",
+        "CMS_ttHl_thu_shape_ttH_y1Down",
+        "CMS_ttHl_thu_shape_ttW_x1Up",
+        "CMS_ttHl_thu_shape_ttW_x1Down",
+        "CMS_ttHl_thu_shape_ttW_y1Up",
+        "CMS_ttHl_thu_shape_ttW_y1Down",
+        "CMS_ttHl_thu_shape_ttZ_x1Up",
+        "CMS_ttHl_thu_shape_ttZ_x1Down",
+        "CMS_ttHl_thu_shape_ttZ_y1Up",
+        "CMS_ttHl_thu_shape_ttZ_y1Down"
     )
 )

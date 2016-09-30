@@ -1,5 +1,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/data_to_MC_corrections.h"
 
+#include "FWCore/Utilities/interface/Exception.h" // cms::Exception
+
 #include "tthAnalysis/HiggsToTauTau/interface/lutAuxFunctions.h"
 #include "tthAnalysis/HiggsToTauTau/interface/leptonTypes.h"
 
@@ -49,7 +51,7 @@ double sf_electronID_and_Iso_loose(double electron_pt, double electron_eta)
     TH1::AddDirectory(true);
   }
   assert(lut_id_loose);
-  double sf_id_loose = get_sf_from_TH2(lut_id_loose, electron_pt, electron_eta);
+  double sf_id_loose = getSF_from_TH2(lut_id_loose, electron_pt, electron_eta);
   
   // electron isolation efficiency: AN-2015/321, Fig. 10 top right
   static TH2* lut_iso = 0;
@@ -63,7 +65,7 @@ double sf_electronID_and_Iso_loose(double electron_pt, double electron_eta)
     TH1::AddDirectory(true);
   }
   assert(lut_iso);
-  double sf_iso = get_sf_from_TH2(lut_iso, electron_pt, electron_eta);
+  double sf_iso = getSF_from_TH2(lut_iso, electron_pt, electron_eta);
 
   double sf = sf_id_loose*sf_iso;
   return sf;
@@ -83,7 +85,7 @@ double sf_electronID_and_Iso_tight_to_loose(double electron_pt, double electron_
     TH1::AddDirectory(true);
   }
   assert(lut_convVeto);
-  double sf_convVeto = get_sf_from_TH2(lut_convVeto, electron_pt, electron_eta);
+  double sf_convVeto = getSF_from_TH2(lut_convVeto, electron_pt, electron_eta);
 
   // efficiency for electron to pass tight identification criteria: AN-2015/321, Fig. 12 top left (barrel) and center (endcap)
   double sf_id_tight = 1.;
@@ -99,7 +101,7 @@ double sf_electronID_and_Iso_tight_to_loose(double electron_pt, double electron_
       TH1::AddDirectory(true);
     }
     assert(lut_id_tight_barrel);
-    sf_id_tight = get_sf_from_TH1(lut_id_tight_barrel, electron_pt);
+    sf_id_tight = getSF_from_TH1(lut_id_tight_barrel, electron_pt);
   } else {
     static TH1* lut_id_tight_endcap = 0;
     if ( !lut_id_tight_endcap ) {
@@ -112,19 +114,19 @@ double sf_electronID_and_Iso_tight_to_loose(double electron_pt, double electron_
       TH1::AddDirectory(true);
     }
     assert(lut_id_tight_endcap);
-    sf_id_tight = get_sf_from_TH1(lut_id_tight_endcap, electron_pt);
+    sf_id_tight = getSF_from_TH1(lut_id_tight_endcap, electron_pt);
   }
 
   double sf = sf_convVeto*sf_id_tight;
   return sf;
 }
 
-double sf_electronID_and_Iso_tight(double electron_pt, double electron_eta)
-{
-  double sf_loose = sf_electronID_and_Iso_loose(electron_pt, electron_eta);
-  double sf_tight_to_loose = sf_electronID_and_Iso_tight_to_loose(electron_pt, electron_eta);
-  return sf_loose*sf_tight_to_loose;
-}
+//double sf_electronID_and_Iso_tight(double electron_pt, double electron_eta)
+//{
+//  double sf_loose = sf_electronID_and_Iso_loose(electron_pt, electron_eta);
+//  double sf_tight_to_loose = sf_electronID_and_Iso_tight_to_loose(electron_pt, electron_eta);
+//  return sf_loose*sf_tight_to_loose;
+//}
 //-------------------------------------------------------------------------------
 
 //-------------------------------------------------------------------------------
@@ -142,7 +144,7 @@ double sf_muonID_and_Iso_loose(double muon_pt, double muon_eta)
     TH1::AddDirectory(true);
   }
   assert(lut_id_loose);
-  double sf_id_loose = get_sf_from_TH2(lut_id_loose, muon_pt, muon_eta);
+  double sf_id_loose = getSF_from_TH2(lut_id_loose, muon_pt, muon_eta);
 
   // muon isolation efficiency: AN-2015/321, Fig. 11 top left (barrel) and center (endcap)
   double sf_iso = 1.;
@@ -158,7 +160,7 @@ double sf_muonID_and_Iso_loose(double muon_pt, double muon_eta)
       TH1::AddDirectory(true);
     }
     assert(lut_iso_barrel);
-    sf_iso = get_sf_from_TH1(lut_iso_barrel, muon_pt);
+    sf_iso = getSF_from_TH1(lut_iso_barrel, muon_pt);
   } else {
     static TH1* lut_iso_endcap = 0;
     if ( !lut_iso_endcap ) {
@@ -171,7 +173,7 @@ double sf_muonID_and_Iso_loose(double muon_pt, double muon_eta)
       TH1::AddDirectory(true);
     }
     assert(lut_iso_endcap);
-    sf_iso = get_sf_from_TH1(lut_iso_endcap, muon_pt);
+    sf_iso = getSF_from_TH1(lut_iso_endcap, muon_pt);
   }
   
   // efficiency for muon to pass transverse impact parameter cut: AN-2015/321, Fig. 11 top right
@@ -186,7 +188,7 @@ double sf_muonID_and_Iso_loose(double muon_pt, double muon_eta)
     TH1::AddDirectory(true);
   }
   assert(lut_ip);
-  double sf_ip = get_sf_from_TH1(lut_ip, muon_eta);
+  double sf_ip = getSF_from_TH1(lut_ip, muon_eta);
   
   double sf = sf_id_loose*sf_iso*sf_ip;
   return sf;
@@ -208,7 +210,7 @@ double sf_muonID_and_Iso_tight_to_loose(double muon_pt, double muon_eta)
       TH1::AddDirectory(true);
     }
     assert(lut_id_tight_barrel);
-    sf_id_tight = get_sf_from_TH1(lut_id_tight_barrel, muon_pt);
+    sf_id_tight = getSF_from_TH1(lut_id_tight_barrel, muon_pt);
   } else {
     static TH1* lut_id_tight_endcap = 0;
     if ( !lut_id_tight_endcap ) {
@@ -221,19 +223,19 @@ double sf_muonID_and_Iso_tight_to_loose(double muon_pt, double muon_eta)
       TH1::AddDirectory(true);
     }
     assert(lut_id_tight_endcap);
-    sf_id_tight = get_sf_from_TH1(lut_id_tight_endcap, muon_pt);
+    sf_id_tight = getSF_from_TH1(lut_id_tight_endcap, muon_pt);
   }
 
   double sf = sf_id_tight;
   return sf;
 }
 
-double sf_muonID_and_Iso_tight(double muon_pt, double muon_eta)
-{
-  double sf_loose = sf_muonID_and_Iso_loose(muon_pt, muon_eta);
-  double sf_tight_to_loose = sf_muonID_and_Iso_tight_to_loose(muon_pt, muon_eta);
-  return sf_loose*sf_tight_to_loose;
-}
+//double sf_muonID_and_Iso_tight(double muon_pt, double muon_eta)
+//{
+//  double sf_loose = sf_muonID_and_Iso_loose(muon_pt, muon_eta);
+//  double sf_tight_to_loose = sf_muonID_and_Iso_tight_to_loose(muon_pt, muon_eta);
+//  return sf_loose*sf_tight_to_loose;
+//}
 //-------------------------------------------------------------------------------
 
 //-------------------------------------------------------------------------------
@@ -339,3 +341,61 @@ double sf_leptonID_and_Iso_tight(int numLeptons,
 }
 //-------------------------------------------------------------------------------
 
+//-------------------------------------------------------------------------------
+//CV: data/MC scale-factors for e->tau and mu->tau fake-rates taken from https://twiki.cern.ch/twiki/bin/viewauth/CMS/TauIDRecommendation13TeV
+
+double sf_eToTauFakeRate_2016(double hadTau_pt, double hadTau_absEta, int hadTauSelection_antiElectron, int central_or_shift)
+{
+  double sf = 1.;
+  double sfErr = 0.;
+  if ( hadTauSelection_antiElectron == 1 ) { // vLoose
+    if   ( hadTau_absEta < 1.479 ) { sf = 1.02; sfErr = 0.05; }
+    else                           { sf = 1.11; sfErr = 0.05; }
+  } else if ( hadTauSelection_antiElectron == 2 ) { // Loose
+    if   ( hadTau_absEta < 1.479 ) { sf = 1.14; sfErr = 0.04; }
+    else                           { sf = 1.09; sfErr = 0.05; }
+  } else if ( hadTauSelection_antiElectron == 3 ) { // Medium
+    if   ( hadTau_absEta < 1.479 ) { sf = 1.50; sfErr = 0.13; }
+    else                           { sf = 1.06; sfErr = 0.18; }
+  } else if ( hadTauSelection_antiElectron == 4 ) { // Tight
+    if   ( hadTau_absEta < 1.479 ) { sf = 1.80; sfErr = 0.23; }
+    else                           { sf = 1.30; sfErr = 0.42; }
+  } else if ( hadTauSelection_antiElectron == 5 ) { // vTight
+    if   ( hadTau_absEta < 1.479 ) { sf = 1.89; sfErr = 0.35; }
+    else                           { sf = 1.69; sfErr = 0.68; }
+  } else throw cms::Exception("sf_eToTauFakeRate") 
+    << "Invalid parameter 'hadTauSelection_antiElectron' = " << hadTauSelection_antiElectron << " !!\n";
+  if      ( central_or_shift == kFRet_shiftUp   ) sf += sfErr;
+  else if ( central_or_shift == kFRet_shiftDown ) sf -= sfErr;
+  else if ( central_or_shift != kFRet_central   ) throw cms::Exception("sf_eToTauFakeRate") 
+    << "Invalid parameter 'central_or_shift' = " << central_or_shift << " !!\n";
+  if ( sf < 0. ) sf = 0.; // CV: require e->tau fake-rates to be positive
+  return sf;
+}
+
+double sf_muToTauFakeRate_2016(double hadTau_pt, double hadTau_absEta, int hadTauSelection_antiMuon, int central_or_shift)
+{
+  double sf = 1.;
+  double sfErr = 0.;
+  if ( hadTauSelection_antiMuon == 1 ) { // Loose
+    if      ( hadTau_absEta < 0.4 ) { sf = 1.15; sfErr = 0.05; }
+    else if ( hadTau_absEta < 0.8 ) { sf = 1.15; sfErr = 0.05; }
+    else if ( hadTau_absEta < 1.2 ) { sf = 1.18; sfErr = 0.05; }
+    else if ( hadTau_absEta < 1.7 ) { sf = 1.20; sfErr = 0.20; }
+    else if ( hadTau_absEta < 2.3 ) { sf = 1.30; sfErr = 0.30; }
+  } else if ( hadTauSelection_antiMuon == 2 ) { // Tight
+    if      ( hadTau_absEta < 0.4 ) { sf = 1.50; sfErr = 0.10; }
+    else if ( hadTau_absEta < 0.8 ) { sf = 1.40; sfErr = 0.10; }
+    else if ( hadTau_absEta < 1.2 ) { sf = 1.21; sfErr = 0.06; }
+    else if ( hadTau_absEta < 1.7 ) { sf = 2.60; sfErr = 0.90; }
+    else if ( hadTau_absEta < 2.3 ) { sf = 2.10; sfErr = 0.90; }
+  } else throw cms::Exception("sf_muToTauFakeRate") 
+    << "Invalid parameter 'hadTauSelection_antiMuon' = " << hadTauSelection_antiMuon << " !!\n";
+  if      ( central_or_shift == kFRet_shiftUp   ) sf += sfErr;
+  else if ( central_or_shift == kFRet_shiftDown ) sf -= sfErr;
+  else if ( central_or_shift != kFRet_central   ) throw cms::Exception("sf_muToTauFakeRate") 
+    << "Invalid parameter 'central_or_shift' = " << central_or_shift << " !!\n";
+  if ( sf < 0. ) sf = 0.; // CV: require mu->tau fake-rates to be positive
+  return sf;
+}
+//-------------------------------------------------------------------------------

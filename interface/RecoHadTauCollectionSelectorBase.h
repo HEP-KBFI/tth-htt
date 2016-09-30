@@ -19,6 +19,9 @@ class RecoHadTauSelectorBase
   void set_min_pt(double min_pt) { min_pt_ = min_pt; }
   void set_max_absEta(double max_absEta) { max_absEta_ = max_absEta; }
 
+  double get_min_pt() const { return min_pt_; }
+  double get_max_absEta() const { return max_absEta_; }
+
   void set_min_id_mva_dR03(int min_id_mva_dR03) { min_id_mva_dR03_ = min_id_mva_dR03; }
   void set_min_raw_mva_dR03(double min_raw_mva_dR03) { min_raw_mva_dR03_ = min_raw_mva_dR03; }
   void set_min_id_mva_dR05(int min_id_mva_dR05) { min_id_mva_dR05_ = min_id_mva_dR05; }
@@ -32,9 +35,13 @@ class RecoHadTauSelectorBase
   void set(const std::string& cut)
   {    
     set_min_id_mva_dR03(-1000);
+    set_min_raw_mva_dR03(-1.e+6);
     set_min_id_mva_dR05(-1000);
+    set_min_raw_mva_dR05(-1.e+6);
     set_min_id_cut_dR03(-1000);
+    set_max_raw_cut_dR03(1.e+6);
     set_min_id_cut_dR05(-1000);
+    set_max_raw_cut_dR05(1.e+6);
     if      ( cut == "dR05isoLoose"   ) set_min_id_cut_dR05(1);
     else if ( cut == "dR05isoMedium"  ) set_min_id_cut_dR05(2);
     else if ( cut == "dR05isoTight"   ) set_min_id_cut_dR05(3);
@@ -49,10 +56,26 @@ class RecoHadTauSelectorBase
       std::cerr << "Invalid Configuration parameter 'cut' = " << cut << " !!" << std::endl;
       assert(0);
     }
+    cut_ = cut_;
   }
+
+  int get_min_id_mva_dR03() const { return min_id_mva_dR03_; }
+  double get_min_raw_mva_dR03() const { return min_raw_mva_dR03_; }
+  int get_min_id_mva_dR05() const { return min_id_mva_dR05_; }
+  double get_min_raw_mva_dR05() const { return min_raw_mva_dR05_; }
+  
+  int get_min_id_cut_dR03() const { return min_id_cut_dR03_; }
+  double get_max_raw_cut_dR03() const { return max_raw_cut_dR03_; }
+  int get_min_id_cut_dR05() const { return min_id_cut_dR05_; }
+  double get_max_raw_cut_dR05() const { return max_raw_cut_dR05_; }
 
   void set_min_antiElectron(int min_antiElectron) { min_antiElectron_ = min_antiElectron; }
   void set_min_antiMuon(int min_antiMuon) { min_antiMuon_ = min_antiMuon; }
+
+  const std::string& get() const { return cut_; };
+
+  int get_min_antiElectron() const { return min_antiElectron_; }
+  int get_min_antiMuon() const { return min_antiMuon_; }
 
   /**
    * @brief Check if hadronic tau given as function argument passes nominal selection criteria defined in Section 3.5 of AN-2015/321
@@ -76,6 +99,7 @@ class RecoHadTauSelectorBase
   Double_t max_raw_cut_dR05_;  ///< upper cut threshold on raw isolation pT-sum of cut-based tau id computed with dR=0.5 isolation cone
   Int_t min_antiElectron_;     ///< lower cut threshold on discriminator against electrons
   Int_t min_antiMuon_;         ///< lower cut threshold on discriminator against muons
+  std::string cut_;    
 };
 
 template<typename T>

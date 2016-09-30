@@ -201,6 +201,18 @@
   <use   name="root"/>
   <use   name="roottmva"/>
 </bin>
+<bin file="makePlots_mcClosure.cc" name="makePlots_mcClosure">
+  <use   name="FWCore/FWLite"/>
+  <use   name="FWCore/ParameterSet"/>
+  <use   name="FWCore/PythonParameterSet"/>
+  <use   name="FWCore/Utilities"/>
+  <use   name="DataFormats/Candidate"/>
+  <use   name="DataFormats/Math"/>
+  <use   name="PhysicsTools/FWLite"/>
+  <use   name="tthAnalysis/HiggsToTauTau"/>
+  <use   name="root"/>
+  <use   name="roottmva"/>
+</bin>
 <bin file="sync_ntuples.cc" name="sync_ntuples">
   <!--  <Flags CppDefines="DEBUG=1"/> -->
   <use   name="FWCore/FWLite"/>
@@ -295,6 +307,20 @@
   <use   name="roottmva"/>    
   <use   name="boost"/> 
 </bin>
+<bin file="produceTTHMVATrainingNtuple_2lss_1tau.cc" name="produceTTHMVATrainingNtuple_2lss_1tau">    
+  <use   name="FWCore/FWLite"/>     
+  <use   name="FWCore/ParameterSet"/>     
+  <use   name="FWCore/PythonParameterSet"/>     
+  <use   name="FWCore/Utilities"/>     
+  <use   name="DataFormats/FWLite"/>     
+  <use   name="DataFormats/Math"/>     
+  <use   name="PhysicsTools/FWLite"/>     
+  <use   name="tthAnalysis/HiggsToTauTau"/>     
+  <use   name="TauAnalysis/ClassicSVfit"/>    
+  <use   name="root"/>     
+  <use   name="roottmva"/>     
+  <use   name="boost"/>  
+</bin>
 <bin file="analyze_WZctrl.cc" name="analyze_WZctrl">
   <use   name="FWCore/FWLite"/>
   <use   name="FWCore/ParameterSet"/>
@@ -333,4 +359,33 @@
   <use   name="root"/>
   <use   name="roottmva"/>
   <use   name="boost"/>
+</bin>
+<bin file="analyze_Zctrl.cc" name="analyze_Zctrl">
+  <use   name="FWCore/FWLite"/>
+  <use   name="FWCore/ParameterSet"/>
+  <use   name="FWCore/PythonParameterSet"/>
+  <use   name="FWCore/Utilities"/>
+  <use   name="DataFormats/FWLite"/>
+  <use   name="DataFormats/Math"/>
+  <use   name="PhysicsTools/FWLite"/>
+  <use   name="tthAnalysis/HiggsToTauTau"/>
+  <use   name="root"/>
+  <use   name="roottmva"/>
+  <use   name="boost"/>
+</bin>
+<bin file="write_csv.cc" name="write_csv2">
+  <use   name="FWCore/FWLite"/>
+  <use   name="FWCore/ParameterSet"/>
+  <use   name="FWCore/PythonParameterSet"/>
+  <use   name="FWCore/Utilities"/>
+  <use   name="PhysicsTools/FWLite"/>
+  <use   name="tthAnalysis/HiggsToTauTau"/>
+  <use   name="root"/>
+  <use   name="roottmva"/>
+</bin>
+<bin file="check_broken.cc" name="check_broken">
+  <use name="root" />
+  <use name="boost_filesystem" />
+  <use name="boost_program_options" />
+  <use name="boost_regex" />
 </bin>

@@ -1,7 +1,6 @@
 import logging
 
 from tthAnalysis.HiggsToTauTau.analyzeConfig import *
-import tthAnalyzeSamples_2lss_1tau
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists
 
 class analyzeConfig_2lss_1tau(analyzeConfig):
@@ -17,14 +16,14 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
   for documentation of further Args.
   
   """
-  def __init__(self, outputDir, executable_analyze, lepton_selections, lepton_charge_selections, hadTau_selection, central_or_shifts,
-               max_files_per_job, use_lumi, lumi, debug, running_method, num_parallel_jobs, 
+  def __init__(self, outputDir, executable_analyze, samples, lepton_selections, lepton_charge_selections, hadTau_selection, central_or_shifts,
+               max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs, 
                executable_addFakes, executable_addFlips, histograms_to_fit, executable_prep_dcard="prepareDatacard"):
     analyzeConfig.__init__(self, outputDir, executable_analyze, "2lss_1tau", central_or_shifts,
-      max_files_per_job, use_lumi, lumi, debug, running_method, num_parallel_jobs, 
+      max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs, 
       histograms_to_fit)
 
-    self.samples = tthAnalyzeSamples_2lss_1tau.samples
+    self.samples = samples
     self.prep_dcard_processesToCopy = [ "data_obs", "TTW", "TTZ", "WZ", "Rares", "fakes_data", "flips_data" ]
 
     self.lepton_selections = lepton_selections
@@ -41,6 +40,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
       process_name = sample_info["process_name_specific"]
       for lepton_selection in self.lepton_selections:
         for lepton_charge_selection in self.lepton_charge_selections:
+          
           key_dir = getKey(sample_name, lepton_selection, lepton_charge_selection)  
           for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS ]:
             initDict(self.dirs, [ key_dir, dir_type ])
@@ -62,8 +62,9 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
     self.cfgFile_make_plots_original = os.path.join(self.workingDir, "makePlots_2lss_1tau_cfg.py")
     self.make_plots_backgrounds = [ "TTW", "TTZ", "WZ", "Rares", "fakes_data", "flips_data" ]
 
-  def createCfg_analyze(self, inputFiles, outputFile, sample_category, triggers, lepton_selection, lepton_charge_selection, hadTau_selection,
-                        is_mc, central_or_shift, lumi_scale, cfgFile_modified):
+  def createCfg_analyze(self, inputFiles, outputFile, sample_category, era, triggers,
+                        lepton_selection, lepton_charge_selection, hadTau_selection,
+                        is_mc, central_or_shift, lumi_scale, apply_trigger_bits, cfgFile_modified):
     """Create python configuration file for the analyze_2lss_1tau executable (analysis code)
 
     Args:
@@ -75,13 +76,20 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
       central_or_shift: either 'central' or one of the systematic uncertainties defined in $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/bin/analyze_2lss_1tau.cc
     """  
     lines = []
+    ##lines.append("process.fwliteInput.fileNames = cms.vstring(%s)" % [ os.path.basename(inputFile) for inputFile in inputFiles ])
     lines.append("process.fwliteInput.fileNames = cms.vstring(%s)" % inputFiles)
-    lines.append("process.fwliteOutput.fileName = cms.string('%s')" % outputFile)
+    lines.append("process.fwliteOutput.fileName = cms.string('%s')" % os.path.basename(outputFile))
     lines.append("process.analyze_2lss_1tau.process = cms.string('%s')" % sample_category)
+    lines.append("process.analyze_2lss_1tau.era = cms.string('%s')" % era)
+    lines.append("process.analyze_2lss_1tau.triggers_1e = cms.vstring(%s)" % self.triggers_1e)
     lines.append("process.analyze_2lss_1tau.use_triggers_1e = cms.bool(%s)" % ("1e" in triggers))
+    lines.append("process.analyze_2lss_1tau.triggers_2e = cms.vstring(%s)" % self.triggers_2e)
     lines.append("process.analyze_2lss_1tau.use_triggers_2e = cms.bool(%s)" % ("2e" in triggers))
+    lines.append("process.analyze_2lss_1tau.triggers_1mu = cms.vstring(%s)" % self.triggers_1mu)
     lines.append("process.analyze_2lss_1tau.use_triggers_1mu = cms.bool(%s)" % ("1mu" in triggers))
+    lines.append("process.analyze_2lss_1tau.triggers_2mu = cms.vstring(%s)" % self.triggers_2mu)
     lines.append("process.analyze_2lss_1tau.use_triggers_2mu = cms.bool(%s)" % ("2mu" in triggers))
+    lines.append("process.analyze_2lss_1tau.triggers_1e1mu = cms.vstring(%s)" % self.triggers_1e1mu)
     lines.append("process.analyze_2lss_1tau.use_triggers_1e1mu = cms.bool(%s)" % ("1e1mu" in triggers))
     lines.append("process.analyze_2lss_1tau.leptonSelection = cms.string('%s')" % lepton_selection)
     lines.append("process.analyze_2lss_1tau.leptonChargeSelection = cms.string('%s')" % lepton_charge_selection)
@@ -89,6 +97,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
     lines.append("process.analyze_2lss_1tau.isMC = cms.bool(%s)" % is_mc)
     lines.append("process.analyze_2lss_1tau.central_or_shift = cms.string('%s')" % central_or_shift)
     lines.append("process.analyze_2lss_1tau.lumiScale = cms.double(%f)" % lumi_scale)
+    lines.append("process.analyze_2lss_1tau.apply_trigger_bits = cms.bool(%s)" % apply_trigger_bits)
     create_cfg(self.cfgFile_analyze_original, cfgFile_modified, lines)
 
   def createCfg_addFakes(self, inputFile, outputFile, cfgFile_modified):
@@ -204,21 +213,27 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
       lumi_scale = 1. if not (self.use_lumi and is_mc) else sample_info["xsection"] * self.lumi / sample_info["nof_events"]
       sample_category = sample_info["sample_category"]
       triggers = sample_info["triggers"]
+      apply_trigger_bits = (is_mc and (self.era == "2015" or (self.era == "2016" and sample_info["reHLT"]))) or not is_mc
 
       for lepton_selection in self.lepton_selections:
         for lepton_charge_selection in self.lepton_charge_selections:
           for central_or_shift in self.central_or_shifts:
             for jobId in range(len(self.inputFileIds[sample_name])):
-              if central_or_shift != "central" and not (lepton_selection == "Tight" and lepton_charge_selection == "SS"):
+              if central_or_shift != "central" and not (lepton_selection == "Tight" and charge_selection == "SS"):
                 continue
               if central_or_shift != "central" and not is_mc:
                 continue
-
-              inputFiles = generate_input_list(self.inputFileIds[sample_name][jobId], secondary_files, primary_store, secondary_store, self.debug)
+              if central_or_shift.startswith("CMS_ttHl_thu_shape_ttH") and sample_category != "signal":
+                continue
+              if central_or_shift.startswith("CMS_ttHl_thu_shape_ttW") and sample_category != "TTW":
+                continue
+              if central_or_shift.startswith("CMS_ttHl_thu_shape_ttZ") and sample_category != "TTZ":
+                continue
   
               key_dir = getKey(sample_name, lepton_selection, lepton_charge_selection)
               key_file = getKey(sample_name, lepton_selection, lepton_charge_selection, central_or_shift, jobId)
 
+              self.ntupleFiles[key_file] = generate_input_list(self.inputFileIds[sample_name][jobId], secondary_files, primary_store, secondary_store, self.debug)
               self.cfgFiles_analyze_modified[key_file] = os.path.join(self.dirs[key_dir][DKEY_CFGS], "analyze_%s_%s_%s_%s_%s_%i_cfg.py" % \
                 (self.channel, process_name, lepton_selection, lepton_charge_selection, central_or_shift, jobId))
               self.histogramFiles[key_file] = os.path.join(self.dirs[key_dir][DKEY_HIST], "%s_%s_%s_%s_%i.root" % \
@@ -226,9 +241,9 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
               self.logFiles_analyze[key_file] = os.path.join(self.dirs[key_dir][DKEY_LOGS], "analyze_%s_%s_%s_%s_%s_%i.log" % \
                 (self.channel, process_name, lepton_selection, lepton_charge_selection, central_or_shift, jobId))
                 
-              self.createCfg_analyze(inputFiles, self.histogramFiles[key_file], sample_category, triggers,
+              self.createCfg_analyze(self.ntupleFiles[key_file], self.histogramFiles[key_file], sample_category, self.era, triggers,
                 lepton_selection, lepton_charge_selection, self.hadTau_selection,
-                is_mc, central_or_shift, lumi_scale, self.cfgFiles_analyze_modified[key_file])
+                is_mc, central_or_shift, lumi_scale, apply_trigger_bits, self.cfgFiles_analyze_modified[key_file])
                 
     if self.is_sbatch:
       logging.info("Creating script for submitting '%s' jobs to batch system" % self.executable_analyze)

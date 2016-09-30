@@ -1,7 +1,6 @@
 import logging
 
 from tthAnalysis.HiggsToTauTau.analyzeConfig import *
-import tthAnalyzeSamples_jetToTauFakeRate
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists
 
 class analyzeConfig_jetToTauFakeRate(analyzeConfig):
@@ -17,15 +16,15 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
   for documentation of further Args.
   
   """
-  def __init__(self, outputDir, executable_analyze, charge_selections,
+  def __init__(self, outputDir, executable_analyze, samples, charge_selections,
                jet_minPt, jet_maxPt, jet_minAbsEta, jet_maxAbsEta, hadTau_selections, absEtaBins, ptBins, central_or_shifts,
-               max_files_per_job, use_lumi, lumi, debug, running_method, num_parallel_jobs,
+               max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,
                executable_comp_jetToTauFakeRate):
     analyzeConfig.__init__(self, outputDir, executable_analyze, "jetToTauFakeRate", central_or_shifts,
-      max_files_per_job, use_lumi, lumi, debug, running_method, num_parallel_jobs,
+      max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,
       [])
 
-    self.samples = tthAnalyzeSamples_jetToTauFakeRate.samples
+    self.samples = samples
 
     self.charge_selections = charge_selections
 
@@ -60,9 +59,9 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
     self.histogramDir_numerator = {}
     self.histogramDir_denominator = {}
     
-  def createCfg_analyze(self, inputFiles, outputFile, sample_category, triggers, charge_selection,
+  def createCfg_analyze(self, inputFiles, outputFile, sample_category, era, triggers, charge_selection,
                         jet_minPt, jet_maxPt, jet_minAbsEta, jet_maxAbsEta, hadTau_selections, absEtaBins,
-                        is_mc, central_or_shift, lumi_scale, cfgFile_modified):
+                        is_mc, central_or_shift, lumi_scale, apply_trigger_bits, cfgFile_modified):
     """Create python configuration file for the analyze_jetToTauFakeRate executable (analysis code)
 
     Args:
@@ -74,14 +73,18 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
       central_or_shift: either 'central' or one of the systematic uncertainties defined in $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/bin/analyze_jetToTauFakeRate.cc
     """  
     lines = []
+    ##lines.append("process.fwliteInput.fileNames = cms.vstring(%s)" % [ os.path.basename(inputFile) for inputFile in inputFiles ])
     lines.append("process.fwliteInput.fileNames = cms.vstring(%s)" % inputFiles)
-    lines.append("process.fwliteOutput.fileName = cms.string('%s')" % outputFile)
+    lines.append("process.fwliteOutput.fileName = cms.string('%s')" % os.path.basename(outputFile))
     lines.append("process.analyze_jetToTauFakeRate.process = cms.string('%s')" % sample_category)
+    lines.append("process.analyze_jetToTauFakeRate.era = cms.string('%s')" % era)
+    lines.append("process.analyze_jetToTauFakeRate.triggers_1e = cms.vstring(%s)" % self.triggers_1e)
     lines.append("process.analyze_jetToTauFakeRate.use_triggers_1e = cms.bool(%s)" % ("1e" in triggers))
+    lines.append("process.analyze_jetToTauFakeRate.triggers_1mu = cms.vstring(%s)" % self.triggers_1mu)
     lines.append("process.analyze_jetToTauFakeRate.use_triggers_1mu = cms.bool(%s)" % ("1mu" in triggers))
+    lines.append("process.analyze_jetToTauFakeRate.triggers_1e1mu = cms.vstring(%s)" % self.triggers_1e1mu)
     lines.append("process.analyze_jetToTauFakeRate.use_triggers_1e1mu = cms.bool(%s)" % ("1e1mu" in triggers))
     lines.append("process.analyze_jetToTauFakeRate.chargeSelection = cms.string('%s')" % charge_selection)
-    
     lines.append("process.analyze_jetToTauFakeRate.jet_minPt = cms.double('%f')" % jet_minPt)
     lines.append("process.analyze_jetToTauFakeRate.jet_maxPt = cms.double('%f')" % jet_maxPt)
     lines.append("process.analyze_jetToTauFakeRate.jet_minAbsEta = cms.double('%f')" % jet_minAbsEta)
@@ -94,6 +97,7 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
     lines.append("process.analyze_jetToTauFakeRate.isMC = cms.bool(%s)" % is_mc)
     lines.append("process.analyze_jetToTauFakeRate.central_or_shift = cms.string('%s')" % central_or_shift)
     lines.append("process.analyze_jetToTauFakeRate.lumiScale = cms.double(%f)" % lumi_scale)
+    lines.append("process.analyze_jetToTauFakeRate.apply_trigger_bits = cms.bool(%s)" % apply_trigger_bits)
     create_cfg(self.cfgFile_analyze_original, cfgFile_modified, lines)
 
   def createCfg_comp_jetToTauFakeRate(self, inputFile, outputFile, looseRegion, tightRegion, absEtaBins, ptBins, cfgFile_modified):
@@ -207,18 +211,24 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
       lumi_scale = 1. if not (self.use_lumi and is_mc) else sample_info["xsection"] * self.lumi / sample_info["nof_events"]
       sample_category = sample_info["sample_category"]
       triggers = sample_info["triggers"]
+      apply_trigger_bits = (is_mc and (self.era == "2015" or (self.era == "2016" and sample_info["reHLT"]))) or not is_mc
 
       for charge_selection in self.charge_selections:
         for central_or_shift in self.central_or_shifts:
           for jobId in range(len(self.inputFileIds[sample_name])):
             if central_or_shift != "central" and not is_mc:
               continue
+            if central_or_shift.startswith("CMS_ttHl_thu_shape_ttH") and sample_category != "signal":
+              continue
+            if central_or_shift.startswith("CMS_ttHl_thu_shape_ttW") and sample_category != "TTW":
+              continue
+            if central_or_shift.startswith("CMS_ttHl_thu_shape_ttZ") and sample_category != "TTZ":
+              continue
 
-            inputFiles = generate_input_list(self.inputFileIds[sample_name][jobId], secondary_files, primary_store, secondary_store, self.debug)
-            
             key_dir = getKey(sample_name, charge_selection)
             key_file = getKey(sample_name, charge_selection, central_or_shift, jobId)
 
+            self.ntupleFiles[key_file] = generate_input_list(self.inputFileIds[sample_name][jobId], secondary_files, primary_store, secondary_store, self.debug)
             self.cfgFiles_analyze_modified[key_file] = os.path.join(self.dirs[key_dir][DKEY_CFGS], "analyze_%s_%s_%s_%s_%i_cfg.py" % \
               (self.channel, process_name, charge_selection, central_or_shift, jobId))
             self.histogramFiles[key_file] = os.path.join(self.dirs[key_dir][DKEY_HIST], "%s_%s_%s_%i.root" % \
@@ -226,9 +236,9 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
             self.logFiles_analyze[key_file] = os.path.join(self.dirs[key_dir][DKEY_LOGS], "analyze_%s_%s_%s_%s_%i.log" % \
               (self.channel, process_name, charge_selection, central_or_shift, jobId))
                 
-            self.createCfg_analyze(inputFiles, self.histogramFiles[key_file], sample_category, triggers, charge_selection,
-              self.jet_minPt, self.jet_maxPt, self.jet_minAbsEta, self.jet_maxAbsEta, self.hadTau_selections, self.absEtaBins,
-              is_mc, central_or_shift, lumi_scale, self.cfgFiles_analyze_modified[key_file])
+            self.createCfg_analyze(self.ntupleFiles[key_file], self.histogramFiles[key_file], sample_category, self.era, triggers,
+              charge_selection, self.jet_minPt, self.jet_maxPt, self.jet_minAbsEta, self.jet_maxAbsEta, self.hadTau_selections, self.absEtaBins,
+              is_mc, central_or_shift, lumi_scale, apply_trigger_bits, self.cfgFiles_analyze_modified[key_file])
                 
     if self.is_sbatch:
       logging.info("Creating script for submitting '%s' jobs to batch system" % self.executable_analyze)

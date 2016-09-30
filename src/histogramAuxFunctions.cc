@@ -381,7 +381,7 @@ TArrayD getBinning(const TH1* histogram)
 TH1* getRebinnedHistogram1d(const TH1* histoOriginal, 
 			    unsigned numBins_rebinned, const TArrayD& binEdges_rebinned)
 {
-  std::string histoRebinnedName = std::string(histoOriginal->GetName()).append("rebinned");
+  std::string histoRebinnedName = std::string(histoOriginal->GetName()).append("_rebinned");
   TH1* histoRebinned = new TH1D(
     histoRebinnedName.data(), histoOriginal->GetTitle(), 
     binEdges_rebinned.GetSize() - 1, binEdges_rebinned.GetArray());
@@ -407,7 +407,7 @@ TH2* getRebinnedHistogram2d(const TH1* histoOriginal,
 			    unsigned numBinsX_rebinned, const TArrayD& binEdgesX_rebinned,
 			    unsigned numBinsY_rebinned, const TArrayD& binEdgesY_rebinned)
 {
-  std::string histoRebinnedName = std::string(histoOriginal->GetName()).append("rebinned");
+  std::string histoRebinnedName = std::string(histoOriginal->GetName()).append("_rebinned");
   TH2D* histoRebinned = new TH2D(
     histoRebinnedName.data(), histoOriginal->GetTitle(), 
     binEdgesX_rebinned.GetSize() - 1, binEdgesX_rebinned.GetArray(), 

@@ -10,6 +10,8 @@ DKEY_DCRD = "datacards"   # dir for the datacard
 DKEY_RLES = "output_rle"  # dir for the selected run:lumi:event numbers
 DKEY_ROOT = "output_root" # dir for the selected events dumped into a root file
 
+executable_rm = 'rm'
+
 DIRLIST = [ DKEY_CFGS, DKEY_DCRD, DKEY_HIST, DKEY_PLOT, DKEY_LOGS, DKEY_RLES, DKEY_ROOT ]
 
 def initDict(dictionary, keys):
@@ -97,13 +99,14 @@ class analyzeConfig:
     histogramDir_prep_dcard: directory in final histogram file that is used for building datacard
   """
   def __init__(self, outputDir, executable_analyze, channel, central_or_shifts,
-               max_files_per_job, use_lumi, lumi, debug, running_method, num_parallel_jobs, 
+               max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs, 
                histograms_to_fit, executable_prep_dcard = "prepareDatacards", executable_make_plots = "makePlots"):
     self.outputDir = outputDir    
     self.executable_analyze = executable_analyze
     self.channel = channel    
     self.central_or_shifts = central_or_shifts
     self.max_files_per_job = max_files_per_job
+    self.era = era
     self.use_lumi = use_lumi
     self.lumi = lumi
     self.debug = debug
@@ -132,6 +135,7 @@ class analyzeConfig:
     self.cfgFiles_analyze_modified = {}
     self.logFiles_analyze = {}
     self.sbatchFile_analyze = os.path.join(self.outputDir, "sbatch_analyze_%s.py" % self.channel)
+    self.ntupleFiles = {} 
     self.histogramFiles = {}    
     self.histogramFile_hadd_stage1 = os.path.join(self.outputDir, DKEY_HIST, "histograms_harvested_stage1_%s.root" % self.channel)
     self.histogramFile_hadd_stage2 = os.path.join(self.outputDir, DKEY_HIST, "histograms_harvested_stage2_%s.root" % self.channel)    
@@ -142,73 +146,121 @@ class analyzeConfig:
     self.make_plots_backgrounds = [ "TT", "TTW", "TTZ", "EWK", "Rares" ]
     self.make_plots_signal = "signal" 
     self.cfgFile_make_plots_original = os.path.join(self.workingDir, "makePlots_cfg.py")
-    self.cfgFile_make_plots_modified = None
+    self.cfgFiles_make_plots_modified = []
     self.filesToClean = []
     self.rleOutputFiles = {}
     self.rootOutputFiles = {}
     self.rootOutputAux = {}
 
+    if era == '2015':
+      self.triggers_1e    = [ 'HLT_BIT_HLT_Ele23_WPLoose_Gsf_v' ]
+      self.triggers_2e    = [ 'HLT_BIT_HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v' ]
+      self.triggers_1mu   = [ 'HLT_BIT_HLT_IsoMu20_v', 'HLT_BIT_HLT_IsoTkMu20_v' ]
+      self.triggers_2mu   = [ 'HLT_BIT_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v', 'HLT_BIT_HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v' ]
+      self.triggers_1e1mu = [ 'HLT_BIT_HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v', 'HLT_BIT_HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v' ]
+    elif era == '2016':
+      # CV: HLT_Ele25_WPTight_Gsf_v* was prescaled during part of 2016 Runs B-D, so use HLT_Ele27_eta2p1_WPLoose_Gsf_v in addition
+      self.triggers_1e    = [ 'HLT_BIT_HLT_Ele25_WPTight_Gsf_v', 'HLT_Ele27_eta2p1_WPLoose_Gsf_v' ] 
+      self.triggers_2e    = [ 'HLT_BIT_HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v' ]
+      self.triggers_1mu   = [ 'HLT_BIT_HLT_IsoMu22_v', 'HLT_BIT_HLT_IsoTkMu22_v' ]
+      self.triggers_2mu   = [ 'HLT_BIT_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v', 'HLT_BIT_HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v' ]
+      self.triggers_1e1mu = [ 'HLT_BIT_HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v', 'HLT_BIT_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v' ]
+    else:
+      raise ValueError("Invalid parameter 'era' = %s !!" % era)
+
+    self.cvmfs_error_log = {}
+
+  def __del__(self):
+    for hostname, times in self.cvmfs_error_log.items():
+      print "Problem with cvmfs access: host = %s (%i jobs)" % (hostname, len(times))
+      for time in times:
+        print time
+
   def createCfg_analyze(self, *args):
     raise ValueError("Function 'createCfg_analyze' not implemented in derrived class !!")      
 
-  def createCfg_prep_dcard(self, histogramToFit):
+  def createCfg_prep_dcard(self, histogramToFit, histogramDir = None, label = None):
     """Fills the template of python configuration file for datacard preparation
 
     Args:
       histogramToFit: name of the histogram used for signal extraction
     """
-    self.datacardFiles[histogramToFit] = os.path.join(self.outputDir, DKEY_DCRD, "prepareDatacards_%s_%s.root" % (self.channel, histogramToFit))
+    datacardFile = os.path.join(self.outputDir, DKEY_DCRD, "prepareDatacards_%s_%s.root" % (self.channel, histogramToFit))
+    category_output = self.channel
+    cfgFile_modified = os.path.join(self.outputDir, DKEY_CFGS, "prepareDatacards_%s_%s_cfg.py" % (self.channel, histogramToFit))
+    key = histogramToFit
+    if not histogramDir:
+        histogramDir = self.histogramDir_prep_dcard
+        if label:
+            datacardFile = datacardFile.replace(channel, "%s_%s" % (channel, label))
+            category_output += "_%s" % label
+            cfgFile_modified = cfgFile_modified.replace("_cfg.py", "_%s_cfg.py" % label)
+            key = getKey(histogramToFit, label)
     lines = []
     lines.append("process.fwliteInput.fileNames = cms.vstring('%s')" % self.histogramFile_hadd_stage2)
-    lines.append("process.fwliteOutput.fileName = cms.string('%s')" % self.datacardFiles[histogramToFit])
+    lines.append("process.fwliteOutput.fileName = cms.string('%s')" % datacardFile)
     lines.append("process.prepareDatacards.processesToCopy = cms.vstring(%s)" % self.prep_dcard_processesToCopy)
     lines.append("process.prepareDatacards.signals = cms.vstring(%s)" % self.prep_dcard_signals)
     lines.append("process.prepareDatacards.categories = cms.VPSet(")
     lines.append("    cms.PSet(")
     lines.append("        input = cms.string('%s/sel/evt')," % self.histogramDir_prep_dcard)
-    lines.append("        output = cms.string('ttH_%s')" % self.channel)
+    lines.append("        output = cms.string('ttH_%s')" % category_output)
     lines.append("    )")
     lines.append(")")
     lines.append("process.prepareDatacards.histogramToFit = cms.string('%s')" % histogramToFit)
-    self.cfgFile_prep_dcard_modified[histogramToFit] = os.path.join(self.outputDir, DKEY_CFGS, "prepareDatacards_%s_%s_cfg.py" % (self.channel, histogramToFit))
-    create_cfg(self.cfgFile_prep_dcard_original, self.cfgFile_prep_dcard_modified[histogramToFit], lines)
+    create_cfg(self.cfgFile_prep_dcard_original, cfgFile_modified, lines)
+    self.datacardFiles[key] = datacardFile
+    self.cfgFile_prep_dcard_modified[key] = cfgFile_modified
 
-  def createCfg_makePlots(self):
+  def createCfg_makePlots(self, histogramDir = None, label = None):
     """Fills the template of python configuration file for making control plots
 
     Args:
       histogramFile: name of the input ROOT file 
     """
+    outputFileName = os.path.join(self.outputDir, DKEY_PLOT, self.channel, "makePlots_%s.png" % self.channel)
+    category_label = self.channel
+    cfgFile_modified = os.path.join(self.outputDir, DKEY_CFGS, "makePlots_%s_cfg.py" % self.channel)
+    if not histogramDir:
+      histogramDir = self.histogramDir_prep_dcard
+    if label:
+      outputFileName = outputFileName.replace(".png", "_%s.png" % label)
+      category_label += " (%s)" % label      
+      cfgFile_modified = cfgFile_modified.replace("_cfg.py", "_%s_cfg.py" % label)
     lines = []
     lines.append("process.fwliteInput.fileNames = cms.vstring('%s')" % self.histogramFile_hadd_stage2)
-    lines.append("process.makePlots.outputFileName = cms.string('%s')" % os.path.join(self.outputDir, DKEY_PLOT, self.channel, "makePlots_%s.png" % self.channel))
+    lines.append("process.makePlots.outputFileName = cms.string('%s')" % outputFileName)
     lines.append("process.makePlots.processesBackground = cms.vstring(%s)" % self.make_plots_backgrounds)
     lines.append("process.makePlots.processSignal = cms.string('%s')" % self.make_plots_signal)
     lines.append("process.makePlots.categories = cms.VPSet(")
     lines.append("  cms.PSet(")
-    lines.append("    name = cms.string('%s')," % self.histogramDir_prep_dcard)
-    lines.append("    label = cms.string('%s')" % self.channel)
+    lines.append("    name = cms.string('%s')," % histogramDir)
+    lines.append("    label = cms.string('%s')" % category_label)
     lines.append("  )")
     lines.append(")")
-    self.cfgFile_make_plots_modified = os.path.join(self.outputDir, DKEY_CFGS, "makePlots_%s_cfg.py" % self.channel)
-    create_cfg(self.cfgFile_make_plots_original, self.cfgFile_make_plots_modified, lines)
+    create_cfg(self.cfgFile_make_plots_original, cfgFile_modified, lines)
+    self.cfgFiles_make_plots_modified.append(cfgFile_modified)
 
   def initializeInputFileIds(self, sample_name, sample_info):
     """Retrieves the number of input ROOT files (Ntuples) corresponding to a given sample
        and fills the number into the dictionary 'self.inputFileIds', with the name of the sample as key
+
+       TODO: add blacklist to the secondary storage as well
     """
     nof_inputFiles = sample_info["nof_files"]
     store_dirs = sample_info["local_paths"]
     assert(len(store_dirs) <= 2), "There is more than one secondary dir!"
     primary_store, secondary_store = "", ""
-    secondary_files = []
+    secondary_files, blacklist = [], []
     for store_dir in store_dirs:
       if store_dir["selection"] == "*":
         primary_store = store_dir["path"]
+        if "blacklist" in store_dir:
+          blacklist = store_dir["blacklist"]
       else:
         secondary_store = store_dir["path"]
         secondary_files = map(lambda x: int(x), store_dir["selection"].split(","))
-    self.inputFileIds[sample_name] = generate_file_ids(nof_inputFiles, self.max_files_per_job)
+    self.inputFileIds[sample_name] = generate_file_ids(nof_inputFiles, self.max_files_per_job, blacklist)
     return ( secondary_files, primary_store, secondary_store )
 
   def createScript_sbatch(self):
@@ -220,12 +272,48 @@ class analyzeConfig:
     lines_sbatch.append("m = sbatchManager()")
     lines_sbatch.append("m.setWorkingDir('%s')" % self.workingDir)
     for key_file, cfgFile in self.cfgFiles_analyze_modified.items():
-      histogramFile = self.histogramFiles[key_file]
-      logFile = self.logFiles_analyze[key_file]
-      if os.path.exists(histogramFile):
-        print "output file %s already exists" % histogramFile
-        continue
-      lines_sbatch.append("m.submitJob('%s', '%s', '%s', True, '%s')" % (self.executable_analyze, cfgFile, logFile, histogramFile))
+      inputFileNames = self.ntupleFiles[key_file]
+      histogramFileName = self.histogramFiles[key_file]
+      if os.path.exists(histogramFileName):
+        histogramFileSize = os.stat(histogramFileName).st_size
+        print "output file %s already exists, size = %i" % (histogramFileName, histogramFileSize)
+        if histogramFileSize > 20000:
+          print "--> skipping job"
+          continue
+        else:
+          print "--> deleting output file and resubmitting job"
+          command = "%s %s" % (executable_rm, histogramFileName)
+          run_cmd(command)
+      logFileName = self.logFiles_analyze[key_file]
+      if os.path.exists(logFileName):
+        logFile = open(logFileName)
+        is_time = False
+        time = None
+        is_hostname = False
+        hostname = None
+        is_cvmfs_error = False
+        for line in logFile:
+          if line.find("time") != -1:
+            is_time = True
+            continue
+          if is_time:
+            time = line.strip()
+            is_time = False
+          if line.find("'hostname'") != -1:
+            is_hostname = True
+            continue
+          if is_hostname:
+            hostname = line.strip()
+            is_hostname = False
+          if line.find("Transport endpoint is not connected") != -1:
+            is_cvmfs_error = True          
+        logFile.close()
+        if is_cvmfs_error:
+          print "Problem with cvmfs access: host = %s (time = %s)" % (hostname, time)
+          self.cvmfs_error_log[hostname].append(time)
+      lines_sbatch.append("m.submitJob(%s, '%s', '%s', '%s', %s, '%s', True)" % \
+        (inputFileNames, self.executable_analyze, cfgFile,
+         os.path.dirname(histogramFileName), [ os.path.basename(histogramFileName) ], logFileName))
     lines_sbatch.append("m.waitForJobs()")
     createFile(self.sbatchFile_analyze, lines_sbatch)
 
@@ -282,18 +370,19 @@ class analyzeConfig:
   def addToMakefile_prep_dcard(self, lines_makefile):
     """Adds the commands to Makefile that are necessary for building the datacards.
     """
-    for histogramToFit in self.histograms_to_fit:
-      lines_makefile.append("%s: %s" % (self.datacardFiles[histogramToFit], self.histogramFile_hadd_stage2))
-      lines_makefile.append("\t%s %s" % (self.executable_prep_dcard, self.cfgFile_prep_dcard_modified[histogramToFit]))
-      self.filesToClean.append(self.datacardFiles[histogramToFit])
+    for key in self.datacardFiles.keys():
+      lines_makefile.append("%s: %s" % (self.datacardFiles[key], self.histogramFile_hadd_stage2))
+      lines_makefile.append("\t%s %s" % (self.executable_prep_dcard, self.cfgFile_prep_dcard_modified[key]))
+      self.filesToClean.append(self.datacardFiles[key])
     lines_makefile.append("")
 
   def addToMakefile_make_plots(self, lines_makefile):
     """Adds the commands to Makefile that are necessary for building the datacards.
     """
-    lines_makefile.append("makePlots: %s" % self.histogramFile_hadd_stage2)
-    lines_makefile.append("\t%s %s" % (self.executable_make_plots, self.cfgFile_make_plots_modified))
-    lines_makefile.append("")
+    for idxJob, cfgFile_modified in enumerate(self.cfgFiles_make_plots_modified):
+      lines_makefile.append("makePlots%i: %s" % (idxJob, self.histogramFile_hadd_stage2))
+      lines_makefile.append("\t%s %s" % (self.executable_make_plots, cfgFile_modified))
+      lines_makefile.append("")
 
   def addToMakefile_clean(self, lines_makefile):
     """Adds the commands to Makefile that are necessary for removing all ROOT files from previous execution of analysis workfow.
@@ -309,11 +398,17 @@ class analyzeConfig:
   def createMakefile(self, lines_makefile):
     """Creates Makefile that runs the complete analysis workfow.
     """
+    targets = []
+    targets.extend(self.datacardFiles.values())
+    if self.rootOutputAux:
+      targets.append("selEventTree_hadd")
+    for idxJob in range(len(self.cfgFiles_make_plots_modified)):
+      targets.append("makePlots%i" % idxJob)
     lines_makefile_with_header = []
     lines_makefile_with_header.append(".DEFAULT_GOAL := all")
     lines_makefile_with_header.append("SHELL := /bin/bash")
     lines_makefile_with_header.append("")
-    lines_makefile_with_header.append("all: %s %s makePlots" % (" ".join(self.datacardFiles.values()), "selEventTree_hadd" if self.rootOutputAux else ""))
+    lines_makefile_with_header.append("all: %s" % " ".join(targets))
     lines_makefile_with_header.append("")
     lines_makefile_with_header.extend(lines_makefile)
     createFile(self.makefile, lines_makefile_with_header)

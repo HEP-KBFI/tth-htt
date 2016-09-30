@@ -2,8 +2,9 @@
 
 #include <cmath> // fabs
 
-RecoJetSelectorBtag::RecoJetSelectorBtag(int index, bool debug)
-  : min_pt_(25.)
+RecoJetSelectorBtag::RecoJetSelectorBtag(int era, int index, bool debug)
+  : era_(era)
+  , min_pt_(25.)
   , max_absEta_(2.4)
   , min_BtagCSV_(-1.e+3)  
 {}

@@ -16,7 +16,8 @@ process.makePlots = cms.PSet(
         "TTW",
         "TTZ",
         "EWK",
-        "Rares"
+        "Rares",
+        "fakes_data"
     ),
     processSignal = cms.string("signal"),
 
@@ -88,11 +89,6 @@ process.makePlots = cms.PSet(
             histogramName = cms.string("sel/muons/$PROCESS/abs_genPdgId"),
             xAxisTitle = cms.string("#mu gen. Match"),
             xAxisOffset = cms.double(1.45),
-            yAxisTitle = cms.string("N")
-        ),
-        cms.PSet(
-            histogramName = cms.string("sel/evt/$PROCESS/numLeptons"),
-            xAxisTitle = cms.string("lepton Multiplicity"),
             yAxisTitle = cms.string("N")
         ),
         cms.PSet(
@@ -213,7 +209,8 @@ process.makePlots = cms.PSet(
             TTW = cms.string("1.0 +/- 0.20"),
             TTZ = cms.string("1.0 +/- 0.20"),
             EWK = cms.string("1.0 +/- 0.20"),
-            Rares = cms.string("1.0 +/- 0.20")
+            Rares = cms.string("1.0 +/- 0.20"),
+            fakes_data = cms.string("1.0 +/- 0.20")
         ),
         shape = cms.PSet(
             CMS_ttHl_btag_HF = cms.string("0.00 +/- 1.00"),

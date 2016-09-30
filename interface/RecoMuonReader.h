@@ -14,8 +14,8 @@
 class RecoMuonReader
 {
  public:
-  RecoMuonReader();
-  RecoMuonReader(const std::string& branchName_num, const std::string& branchName_obj); 
+  RecoMuonReader(int era);
+  RecoMuonReader(int era, const std::string& branchName_num, const std::string& branchName_obj); 
   ~RecoMuonReader();
 
   /**
@@ -35,6 +35,7 @@ class RecoMuonReader
    */
   void setBranchNames();
 
+  int era_;
   std::string branchName_num_;
   std::string branchName_obj_;
 

@@ -1,12 +1,25 @@
 import os, logging, sys, getpass
 
-import tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_jetToTauFakeRate
+from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_jetToTauFakeRate_2015 import samples_2015
+from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_jetToTauFakeRate_2016 import samples_2016
 from tthAnalysis.HiggsToTauTau.analyzeConfig_jetToTauFakeRate import analyzeConfig_jetToTauFakeRate
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 
-LUMI = 2301. # 1/pb
+ERA = "2015"
+#ERA = "2016"
 
-version = "2016Aug24"
+samples = None
+LUMI = None
+if ERA == "2015":
+  samples = samples_2015
+  LUMI =  2.3e+3 # 1/pb
+elif ERA == "2016":
+  samples = samples_2016
+  LUMI = 12.9e+3 # 1/pb
+else:
+  raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
+
+version = "2016Sep20"
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -17,6 +30,7 @@ if __name__ == '__main__':
   analysis = analyzeConfig_jetToTauFakeRate(
     outputDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", version),
     executable_analyze = "analyze_jetToTauFakeRate",
+    samples = samples,
     charge_selections = [ "OS" ],
     jet_minPt = 20.,
     jet_maxPt = 1.e+6,
@@ -56,10 +70,27 @@ if __name__ == '__main__':
 ##       "CMS_ttHl_JESUp",
 ##       "CMS_ttHl_JESDown",
 ##       "CMS_ttHl_tauESUp",
-##       "CMS_ttHl_tauESDown"  
+##       "CMS_ttHl_tauESDown",
+##       "CMS_ttHl_FRet_shiftUp",
+##       "CMS_ttHl_FRet_shiftDown",
+##       "CMS_ttHl_FRmt_shiftUp",
+##       "CMS_ttHl_FRmt_shiftDown",
+##       "CMS_ttHl_thu_shape_ttH_x1Up",  
+##       "CMS_ttHl_thu_shape_ttH_x1Down",
+##       "CMS_ttHl_thu_shape_ttH_y1Up",   
+##       "CMS_ttHl_thu_shape_ttH_y1Down",
+##       "CMS_ttHl_thu_shape_ttW_x1Up",
+##       "CMS_ttHl_thu_shape_ttW_x1Down",
+##       "CMS_ttHl_thu_shape_ttW_y1Up",
+##       "CMS_ttHl_thu_shape_ttW_y1Down",
+##       "CMS_ttHl_thu_shape_ttZ_x1Up",
+##       "CMS_ttHl_thu_shape_ttZ_x1Down",
+##       "CMS_ttHl_thu_shape_ttZ_y1Up",
+##       "CMS_ttHl_thu_shape_ttZ_y1Down"  
+      
     ],
     max_files_per_job = 30,
-    use_lumi = True, lumi = LUMI,
+    era = ERA, use_lumi = True, lumi = LUMI,
     debug = False,
     running_method = "sbatch",
     num_parallel_jobs = 4,

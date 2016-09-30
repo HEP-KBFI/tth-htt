@@ -1,9 +1,12 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorTight.h" // RecoMuonSelectorTight
 
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2015, kEra_2016
+
 #include <cmath> // fabs
 
-RecoMuonSelectorTight::RecoMuonSelectorTight(int index, bool debug)
-  : debug_(debug)
+RecoMuonSelectorTight::RecoMuonSelectorTight(int era, int index, bool debug)
+  : era_(era)
+  , debug_(debug)
   , min_pt_(10.) // 15 GeV for 2lss channel, 10 GeV for 3l channel (cf. Table 13 of AN-2015/321)
   , max_absEta_(2.4)
   , max_dxy_(0.05)
@@ -11,11 +14,14 @@ RecoMuonSelectorTight::RecoMuonSelectorTight(int index, bool debug)
   , max_relIso_(0.4)
   , max_sip3d_(8.)
   , apply_looseIdPOG_(true)
-  , max_jetBtagCSV_(0.89)  
   , apply_mediumIdPOG_(true)
   , apply_tightCharge_(true)
   , min_mvaTTH_(0.75)
-{}
+{
+  if      ( era_ == kEra_2015 ) max_jetBtagCSV_ = 0.89;
+  else if ( era_ == kEra_2016 ) max_jetBtagCSV_ = 0.80;
+  else assert(0);
+}
 
 bool RecoMuonSelectorTight::operator()(const RecoMuon& muon) const
 {

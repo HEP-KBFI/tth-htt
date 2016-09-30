@@ -53,6 +53,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelectorTight.h" // RecoHadTauCollectionSelectorTight
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelector.h" // RecoJetCollectionSelector
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelectorBtag.h" // RecoJetCollectionSelectorBtagLoose, RecoJetCollectionSelectorBtagMedium
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2015, kEra_2016
 
 typedef math::PtEtaPhiMLorentzVector LV;
 
@@ -663,11 +664,8 @@ main(int argc,
              << "\n";
   }
 
-//--- declare the constants
-  const double z_mass = 91.1876;
-  const double z_th = 10;
-  const double met_coef = 0.00397;
-  const double mht_coef = 0.00265;
+//--- declare data-taking period
+  int era = kEra_2015;
 
 //--- declare the variables
   RUN_TYPE run;
@@ -680,20 +678,20 @@ main(int argc,
   RecoElectronReader* electronReader = new RecoElectronReader("nselLeptons", "selLeptons");
   electronReader->setBranchAddresses(&chain);
   RecoElectronCollectionSelectorLoose preselElectronSelector;
-  RecoElectronCollectionSelectorTight tightElectronSelector;
-  RecoMuonReader* muonReader = new RecoMuonReader("nselLeptons", "selLeptons");
+  RecoElectronCollectionSelectorTight tightElectronSelector(era);
+  RecoMuonReader* muonReader = new RecoMuonReader(era, "nselLeptons", "selLeptons");
   muonReader->setBranchAddresses(&chain);
   RecoMuonCollectionSelectorLoose preselMuonSelector;
-  RecoMuonCollectionSelectorTight tightMuonSelector;
-  RecoHadTauReader* hadTauReader = new RecoHadTauReader("nTauGood", "TauGood");
+  RecoMuonCollectionSelectorTight tightMuonSelector(era);
+  RecoHadTauReader* hadTauReader = new RecoHadTauReader(era, "nTauGood", "TauGood");
   hadTauReader->setBranchAddresses(&chain);
   RecoHadTauCollectionSelectorTight hadTauSelector;
-  RecoJetReader* jetReader = new RecoJetReader("nJet", "Jet");
+  RecoJetReader* jetReader = new RecoJetReader(era, "nJet", "Jet");
   jetReader->setBranchName_BtagWeight(jet_btagWeight_branch);
   jetReader->setBranchAddresses(&chain);
   RecoJetCollectionSelector jetSelector;
-  RecoJetCollectionSelectorBtagLoose jetSelectorBtagLoose;
-  RecoJetCollectionSelectorBtagMedium jetSelectorBtagMedium;
+  RecoJetCollectionSelectorBtagLoose jetSelectorBtagLoose(era);
+  RecoJetCollectionSelectorBtagMedium jetSelectorBtagMedium(era);
 
   MET_PT_TYPE met_pt;
   chain.SetBranchAddress(MET_PT_KEY, &met_pt);
@@ -1042,7 +1040,7 @@ main(int argc,
       ++counter[ch::_2l_1tau][cuts::ht_l1l2_met_100];
 
 //-------------------------------------------------------------------- Z VETO
-      if ( std::fabs((lepton1->p4_ + lepton2->p4_).mass() - z_mass) <= z_th ) continue;
+      if ( std::fabs((lepton1->p4_ + lepton2->p4_).mass() - z_mass) <= z_window ) continue;
 
       ++counter[channel][cuts::zveto];
       ++counter[ch::_2l_1tau][cuts::zveto];
@@ -1139,7 +1137,7 @@ main(int argc,
         for ( unsigned k = 0; k < j && proceed; ++k )
           if ( selLeptons[j]->pdgId_ == -selLeptons[k]->pdgId_ &&
              std::fabs((selLeptons[j]->p4_ +
-                        selLeptons[k]->p4_).mass() - z_mass) <= z_th )
+                        selLeptons[k]->p4_).mass() - z_mass) <= z_window )
               proceed = false;
       if ( !proceed ) continue;
 
@@ -1176,7 +1174,7 @@ main(int argc,
         for ( unsigned k = 0; k < j && proceed; ++k )
           if ( selLeptons[j]->pdgId_ == -selLeptons[k]->pdgId_ &&
              std::fabs((selLeptons[j]->p4_ +
-                        selLeptons[k]->p4_).mass() - z_mass) <= z_th)
+                        selLeptons[k]->p4_).mass() - z_mass) <= z_window)
               proceed = false;
       if ( !proceed ) continue;
 

@@ -11,7 +11,7 @@
 class RecoElectronSelectorFakeable
 {
  public:
-  RecoElectronSelectorFakeable(int index = -1, bool debug = false);
+  RecoElectronSelectorFakeable(int era, int index = -1, bool debug = false);
   ~RecoElectronSelectorFakeable() {}
 
   // enable/disable cuts on electron ID variables to mimic electron ID cuts applied by single electron trigger 
@@ -25,6 +25,7 @@ class RecoElectronSelectorFakeable
   bool operator()(const RecoElectron& electron) const;
 
  protected: 
+  int era_;
   bool apply_offline_e_trigger_cuts_;
 
   Double_t min_pt_;                   ///< lower cut threshold on pT
@@ -60,9 +61,9 @@ class RecoElectronSelectorFakeable
 class RecoElectronCollectionSelectorFakeable
 {
  public:
-  RecoElectronCollectionSelectorFakeable(int index = -1, bool debug = false)
+  RecoElectronCollectionSelectorFakeable(int era, int index = -1, bool debug = false)
     : selIndex_(index)
-    , selector_(index, debug)
+    , selector_(era, index, debug)
   {}
   ~RecoElectronCollectionSelectorFakeable() {}
 

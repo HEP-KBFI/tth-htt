@@ -1,7 +1,6 @@
 import logging
 
 from tthAnalysis.HiggsToTauTau.analyzeConfig import *
-import tthAnalyzeSamples_WZctrl
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists
 
 class analyzeConfig_WZctrl(analyzeConfig):
@@ -13,22 +12,21 @@ class analyzeConfig_WZctrl(analyzeConfig):
   for documentation of Args.
 
   """
-  def __init__(self, outputDir, executable_analyze, central_or_shifts,
-               max_files_per_job, use_lumi, lumi, debug, running_method, num_parallel_jobs, 
+  def __init__(self, outputDir, executable_analyze, samples, central_or_shifts,
+               max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs, 
                histograms_to_fit, select_rle_output = False, executable_prep_dcard="prepareDatacard"):
     analyzeConfig.__init__(self, outputDir, executable_analyze, "WZctrl", central_or_shifts,
-      max_files_per_job, use_lumi, lumi, debug, running_method, num_parallel_jobs, 
+      max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs, 
       histograms_to_fit)
 
-    self.samples = tthAnalyzeSamples_WZctrl.samples
+    self.samples = samples
 
     for sample_name, sample_info in self.samples.items():
       if not sample_info["use_it"] or sample_info["sample_category"] in [ "additional_signal_overlap", "background_data_estimate" ]:
         continue
       process_name = sample_info["process_name_specific"]
       key_dir = getKey(sample_name)  
-      for dir_type in DIRLIST:
-        if (not select_rle_output and dir_type == DKEY_RLES): continue
+      for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_DCRD ]:
         initDict(self.dirs, [ key_dir, dir_type ])
         self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel,
           process_name)
@@ -42,8 +40,8 @@ class analyzeConfig_WZctrl(analyzeConfig):
     self.make_plots_signals = [ "signal" ]
     self.select_rle_output = select_rle_output
     
-  def createCfg_analyze(self, inputFiles, outputFile, sample_category, triggers, 
-                        is_mc, central_or_shift, lumi_scale, cfgFile_modified, rle_output_file):
+  def createCfg_analyze(self, inputFiles, outputFile, sample_category, era, triggers, 
+                        is_mc, central_or_shift, lumi_scale, apply_trigger_bits, cfgFile_modified, rle_output_file):
     """Create python configuration file for the analyze_WZctrl executable (analysis code)
 
     Args:
@@ -55,17 +53,25 @@ class analyzeConfig_WZctrl(analyzeConfig):
       central_or_shift: either 'central' or one of the systematic uncertainties defined in $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/bin/analyze_WZctrl.cc
     """  
     lines = []
+    ##lines.append("process.fwliteInput.fileNames = cms.vstring(%s)" % [ os.path.basename(inputFile) for inputFile in inputFiles ])
     lines.append("process.fwliteInput.fileNames = cms.vstring(%s)" % inputFiles)
-    lines.append("process.fwliteOutput.fileName = cms.string('%s')" % outputFile)
+    lines.append("process.fwliteOutput.fileName = cms.string('%s')" % os.path.basename(outputFile))
     lines.append("process.analyze_WZctrl.process = cms.string('%s')" % sample_category)
+    lines.append("process.analyze_WZctrl.era = cms.string('%s')" % era)
+    lines.append("process.analyze_WZctrl.triggers_1e = cms.vstring(%s)" % self.triggers_1e)
     lines.append("process.analyze_WZctrl.use_triggers_1e = cms.bool(%s)" % ("1e" in triggers))
+    lines.append("process.analyze_WZctrl.triggers_2e = cms.vstring(%s)" % self.triggers_2e)
     lines.append("process.analyze_WZctrl.use_triggers_2e = cms.bool(%s)" % ("2e" in triggers))
+    lines.append("process.analyze_WZctrl.triggers_1mu = cms.vstring(%s)" % self.triggers_1mu)
     lines.append("process.analyze_WZctrl.use_triggers_1mu = cms.bool(%s)" % ("1mu" in triggers))
+    lines.append("process.analyze_WZctrl.triggers_2mu = cms.vstring(%s)" % self.triggers_2mu)
     lines.append("process.analyze_WZctrl.use_triggers_2mu = cms.bool(%s)" % ("2mu" in triggers))
+    lines.append("process.analyze_WZctrl.triggers_1e1mu = cms.vstring(%s)" % self.triggers_1e1mu)
     lines.append("process.analyze_WZctrl.use_triggers_1e1mu = cms.bool(%s)" % ("1e1mu" in triggers))
     lines.append("process.analyze_WZctrl.isMC = cms.bool(%s)" % is_mc)
     lines.append("process.analyze_WZctrl.central_or_shift = cms.string('%s')" % central_or_shift)
     lines.append("process.analyze_WZctrl.lumiScale = cms.double(%f)" % lumi_scale)
+    lines.append("process.analyze_WZctrl.apply_trigger_bits = cms.bool(%s)" % apply_trigger_bits)
     lines.append("process.analyze_WZctrl.selEventsFileName_output = cms.string('%s')" % rle_output_file)
     create_cfg(self.cfgFile_analyze_original, cfgFile_modified, lines)
 
@@ -159,6 +165,7 @@ class analyzeConfig_WZctrl(analyzeConfig):
       lumi_scale = 1. if not (self.use_lumi and is_mc) else sample_info["xsection"] * self.lumi / sample_info["nof_events"]
       sample_category = sample_info["sample_category"]
       triggers = sample_info["triggers"]
+      apply_trigger_bits = (is_mc and (self.era == "2015" or (self.era == "2016" and sample_info["reHLT"]))) or not is_mc
 
       key_dir = getKey(sample_name)
 
@@ -167,11 +174,16 @@ class analyzeConfig_WZctrl(analyzeConfig):
         for jobId in range(len(self.inputFileIds[sample_name])):
           if central_or_shift != "central" and not is_mc:
             continue
-
-          inputFiles = generate_input_list(self.inputFileIds[sample_name][jobId], secondary_files, primary_store, secondary_store, self.debug)
-
+          if central_or_shift.startswith("CMS_ttHl_thu_shape_ttH") and sample_category != "signal":
+            continue
+          if central_or_shift.startswith("CMS_ttHl_thu_shape_ttW") and sample_category != "TTW":
+            continue
+          if central_or_shift.startswith("CMS_ttHl_thu_shape_ttZ") and sample_category != "TTZ":
+            continue
+          
           key_file = getKey(sample_name, central_or_shift, jobId)
 
+          self.ntupleFiles[key_file] = generate_input_list(self.inputFileIds[sample_name][jobId], secondary_files, primary_store, secondary_store, self.debug)
           self.cfgFiles_analyze_modified[key_file] = os.path.join(self.dirs[key_dir][DKEY_CFGS], "analyze_%s_%s_%s_%i_cfg.py" % \
             (self.channel, process_name, central_or_shift, jobId))
           self.histogramFiles[key_file] = os.path.join(self.dirs[key_dir][DKEY_HIST], "%s_%s_%i.root" % \
@@ -181,8 +193,8 @@ class analyzeConfig_WZctrl(analyzeConfig):
           self.rleOutputFiles[key_file] = os.path.join(self.dirs[key_dir][DKEY_RLES], "rle_%s_%s_%s_%i.txt" % \
             (self.channel, process_name, central_or_shift, jobId)) if self.select_rle_output else ""
 
-          self.createCfg_analyze(inputFiles, self.histogramFiles[key_file], sample_category, triggers,
-            is_mc, central_or_shift, lumi_scale, self.cfgFiles_analyze_modified[key_file],
+          self.createCfg_analyze(self.ntupleFiles[key_file], self.histogramFiles[key_file], sample_category, self.era, triggers,
+            is_mc, central_or_shift, lumi_scale, apply_trigger_bits, self.cfgFiles_analyze_modified[key_file],
             self.rleOutputFiles[key_file])
 
     if self.is_sbatch:

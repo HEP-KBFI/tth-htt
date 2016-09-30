@@ -20,6 +20,8 @@ process.analyze_charge_flip = cms.PSet(
 
     process = cms.string('ttH'),
 
+    era = cms.string('2015'),
+
     triggers_1e = cms.vstring("HLT_BIT_HLT_Ele23_WPLoose_Gsf_v"),
     use_triggers_1e = cms.bool(True),
     triggers_2e = cms.vstring("HLT_BIT_HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v"),
@@ -30,8 +32,7 @@ process.analyze_charge_flip = cms.PSet(
     use_triggers_2mu = cms.bool(False),
     triggers_1e1mu = cms.vstring("HLT_BIT_HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v", "HLT_BIT_HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v"),
     use_triggers_1e1mu = cms.bool(False),
- 
-    #TODO: check treatment
+
     apply_offline_e_trigger_cuts_1e = cms.bool(False),
     apply_offline_e_trigger_cuts_2e = cms.bool(False),
     apply_offline_e_trigger_cuts_1mu = cms.bool(False),
@@ -51,6 +52,9 @@ process.analyze_charge_flip = cms.PSet(
     isMC = cms.bool(False),
     central_or_shift = cms.string('central'),
     lumiScale = cms.double(1.),
+    apply_trigger_bits = cms.bool(True),
+
+    fillGenEvtHistograms = cms.bool(False),
     
     selEventsFileName_input = cms.string(''),
     selEventsFileName_output = cms.string('')

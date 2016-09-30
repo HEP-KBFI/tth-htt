@@ -38,7 +38,7 @@ process.comp_jetToTauFakeRate = cms.PSet(
         "dR05isoLoose",
         "dR05isoMedium",
         "dR05isoTight",
-        "dR03mvaVLoose",
+        #"dR03mvaVLoose", # CV: vLoose discriminator applied in denominator, so cannot be used in numerator
         "dR03mvaLoose",
         "dR03mvaMedium",
         "dR03mvaTight",
@@ -51,7 +51,7 @@ process.comp_jetToTauFakeRate = cms.PSet(
 
     isMC = cms.bool(False),
 
-    histogramsToFit = cms.vstring("jets/pt"),
+    histogramsToFit = cms.vstring("hadTaus/pt"),
 
     fitFunction = cms.string("[0] + [1]*x"),
     xMin = cms.double(0.),

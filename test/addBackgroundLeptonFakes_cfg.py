@@ -22,62 +22,62 @@ process.addBackgroundLeptonFakes = cms.PSet(
     categories = cms.VPSet(
         cms.PSet(
             signal = cms.string("2lss_1tau_SS_Tight"),
-	    sideband = cms.string("2lss_1tau_SS_Fakeable")
+            sideband = cms.string("2lss_1tau_SS_Fakeable")
         ),
         cms.PSet(
             signal = cms.string("2epp_1tau_bloose_SS_Tight"),
-	    sideband = cms.string("2epp_1tau_bloose_SS_Fakeable")
+            sideband = cms.string("2epp_1tau_bloose_SS_Fakeable")
         ),        
         cms.PSet(
             signal = cms.string("2epp_1tau_btight_SS_Tight"),
-	    sideband = cms.string("2epp_1tau_btight_SS_Fakeable")
+            sideband = cms.string("2epp_1tau_btight_SS_Fakeable")
         ),        
         cms.PSet(
             signal = cms.string("2emm_1tau_bloose_SS_Tight"),
-	    sideband = cms.string("2emm_1tau_bloose_SS_Fakeable")
+            sideband = cms.string("2emm_1tau_bloose_SS_Fakeable")
         ),        
         cms.PSet(
             signal = cms.string("2emm_1tau_btight_SS_Tight"),
-	    sideband = cms.string("2emm_1tau_btight_SS_Fakeable")
+            sideband = cms.string("2emm_1tau_btight_SS_Fakeable")
         ),        
         cms.PSet(
             signal = cms.string("1e1mupp_1tau_bloose_SS_Tight"),
-	    sideband = cms.string("1e1mupp_1tau_bloose_SS_Fakeable")
+            sideband = cms.string("1e1mupp_1tau_bloose_SS_Fakeable")
         ),        
         cms.PSet(
             signal = cms.string("1e1mupp_1tau_btight_SS_Tight"),
-	    sideband = cms.string("1e1mupp_1tau_btight_SS_Fakeable")
+            sideband = cms.string("1e1mupp_1tau_btight_SS_Fakeable")
         ),        
         cms.PSet(
             signal = cms.string("1e1mumm_1tau_bloose_SS_Tight"),
-	    sideband = cms.string("1e1mumm_1tau_bloose_SS_Fakeable")
+            sideband = cms.string("1e1mumm_1tau_bloose_SS_Fakeable")
         ),        
         cms.PSet(
             signal = cms.string("1e1mumm_1tau_btight_SS_Tight"),
-	    sideband = cms.string("1e1mumm_1tau_btight_SS_Fakeable")
+            sideband = cms.string("1e1mumm_1tau_btight_SS_Fakeable")
         ),        
-	cms.PSet(
+	    cms.PSet(
             signal = cms.string("2mupp_1tau_bloose_SS_Tight"),
-	    sideband = cms.string("2mupp_1tau_bloose_SS_Fakeable")
+            sideband = cms.string("2mupp_1tau_bloose_SS_Fakeable")
         ),        
         cms.PSet(
             signal = cms.string("2mupp_1tau_btight_SS_Tight"),
-	    sideband = cms.string("2mupp_1tau_btight_SS_Fakeable")
+            sideband = cms.string("2mupp_1tau_btight_SS_Fakeable")
         ),        
         cms.PSet(
             signal = cms.string("2mumm_1tau_bloose_SS_Tight"),
-	    sideband = cms.string("2mumm_1tau_bloose_SS_Fakeable")
+            sideband = cms.string("2mumm_1tau_bloose_SS_Fakeable")
         ),        
         cms.PSet(
             signal = cms.string("2mumm_1tau_btight_SS_Tight"),
-	    sideband = cms.string("2mumm_1tau_btight_SS_Fakeable")
+            sideband = cms.string("2mumm_1tau_btight_SS_Fakeable")
         )
     ),
 
     processData = cms.string("data_obs"),
     processLeptonFakes = cms.string("fakes_data"),
     processesToSubtract = cms.vstring(
-	"TTW",
+        "TTW",
         "TTZ",
         "WZ",
         "Rares"

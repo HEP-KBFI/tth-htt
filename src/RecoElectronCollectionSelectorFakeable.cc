@@ -1,9 +1,13 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorFakeable.h" // RecoElectronSelectorFakeable
 
-#include <cmath> // fabs
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2015, kEra_2016
 
-RecoElectronSelectorFakeable::RecoElectronSelectorFakeable(int index, bool debug)
-  : apply_offline_e_trigger_cuts_(true)
+#include <cmath> // fabs
+#include <assert.h> // assert
+
+RecoElectronSelectorFakeable::RecoElectronSelectorFakeable(int era, int index, bool debug)
+  : era_(era)
+  , apply_offline_e_trigger_cuts_(true)
   , min_pt_(10.)
   , max_absEta_(2.5)
   , max_dxy_(0.05)
@@ -21,11 +25,13 @@ RecoElectronSelectorFakeable::RecoElectronSelectorFakeable(int index, bool debug
   , max_OoEminusOoP_trig_({ 0.010, 0.010, 0.005 })    
   , binning_mvaTTH_({ 0.75 })
   , min_jetPtRatio_({ 0.30, -1.e+3 })   
-  , max_jetBtagCSV_({ 0.605, 0.89 })  
   , apply_tightCharge_(false)
   , apply_conversionVeto_(false)   
   , max_nLostHits_(0)
 {
+  if      ( era_ == kEra_2015 ) max_jetBtagCSV_ = { 0.605, 0.89 };
+  else if ( era_ == kEra_2016 ) max_jetBtagCSV_ = { 0.460, 0.80 };
+  else assert(0);
   assert(min_mvaRawPOG_.size() == 3);
   assert(binning_absEta_.size() == 2);
   assert(max_sigmaEtaEta_trig_.size() == 3);

@@ -9,9 +9,9 @@ HadTauFakeRateHistManager::HadTauFakeRateHistManager(const edm::ParameterSet& cf
   : HistManagerBase(cfg)
 {
   etaBins_lead_ = cfg.getParameter<vdouble>("etaBins_lead");
-  numEtaBins_lead_ = etaBins_lead_.size();
+  numEtaBins_lead_ = etaBins_lead_.size() - 1;
   etaBins_sublead_ = cfg.getParameter<vdouble>("etaBins_sublead");
-  numEtaBins_sublead_ = etaBins_sublead_.size();
+  numEtaBins_sublead_ = etaBins_sublead_.size() - 1;
 }
 
 namespace
@@ -20,18 +20,18 @@ namespace
   {
     std::string etaBin_label = "";
     if ( etaMin_lead > 0. && etaMax_lead < 5. ) {
-      etaBin_label.append(Form("eta%1.1fto%1.1f", etaMin_lead, etaMax_lead));
+      etaBin_label.append(Form("hadTau1Eta%1.1fto%1.1f", etaMin_lead, etaMax_lead));
     } else if ( etaMin_lead > 0. ) {
-      etaBin_label.append(Form("etaGt%1.1f", etaMin_lead));
+      etaBin_label.append(Form("hadTau1EtaGt%1.1f", etaMin_lead));
     } else if ( etaMax_lead < 5. ) {
-      etaBin_label.append(Form("etaLt%1.1f", etaMax_lead));
+      etaBin_label.append(Form("hadTau1EtaLt%1.1f", etaMax_lead));
     }
     if ( etaMin_sublead > 0. && etaMax_sublead < 5. ) {
-      etaBin_label.append(Form("eta%1.1fto%1.1f", etaMin_sublead, etaMax_sublead));
-    } else if ( etaMin_lead > 0. ) {
-      etaBin_label.append(Form("etaGt%1.1f", etaMin_sublead));
-    } else if ( etaMax_lead < 5. ) {
-      etaBin_label.append(Form("etaLt%1.1f", etaMax_sublead));
+      etaBin_label.append(Form("hadTau2Eta%1.1fto%1.1f", etaMin_sublead, etaMax_sublead));
+    } else if ( etaMin_sublead > 0. ) {
+      etaBin_label.append(Form("hadTau2EtaGt%1.1f", etaMin_sublead));
+    } else if ( etaMax_sublead < 5. ) {
+      etaBin_label.append(Form("hadTau2EtaLt%1.1f", etaMax_sublead));
     }
     etaBin_label = TString(etaBin_label).ReplaceAll(".", "").Data();
     return etaBin_label;
