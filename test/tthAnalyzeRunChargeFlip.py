@@ -7,7 +7,7 @@ from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 
 #LUMI = 2301. # 1/pb
 LUMI = 2260. #?
-version = "histosCF_data_eleESER2"
+version = "histosCF_data_eleESER_mva_0_6_notrig"
 
 
 if __name__ == '__main__':
@@ -17,7 +17,7 @@ if __name__ == '__main__':
       format = '%(asctime)s - %(levelname)s: %(message)s')
 
   analysis = analyzeConfig_charge_flip(
-    outputDir = os.path.join("/home", getpass.getuser(), "tth", version),
+    outputDir = os.path.join("/home", getpass.getuser(), "tth", "histograms", version),
     executable_analyze = "analyze_charge_flip",
     lepton_selections = [ "Tight"],
     #hadTau_selection = "dR03mvaTight",
