@@ -498,7 +498,9 @@ int main(int argc, char* argv[])
   if ( isSignal ) {
     for ( vstring::const_iterator decayMode = decayModes_evt.begin();
           decayMode != decayModes_evt.end(); ++decayMode) {
-      EvtHistManager_0l_3tau* selEvtHistManager_ptr = new EvtHistManager_0l_3tau(makeHistManager_cfg(decayMode->data(),
+      std::string decayMode_and_genMatch = *decayMode;
+      if ( hadTauGenMatchSelection_string != "all" && apply_hadTauGenMatching ) decayMode_and_genMatch += hadTauGenMatchSelection_string;
+      EvtHistManager_0l_3tau* selEvtHistManager_ptr = new EvtHistManager_0l_3tau(makeHistManager_cfg(decayMode_and_genMatch,
         Form("0l_3tau_%s/sel/evt", hadTauSelection_part1.data()), central_or_shift));
       selEvtHistManager_ptr->bookHistograms(fs);
       selEvtHistManager_decayMode[*decayMode] = selEvtHistManager_ptr;

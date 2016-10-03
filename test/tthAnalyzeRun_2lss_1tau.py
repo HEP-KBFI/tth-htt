@@ -19,7 +19,7 @@ elif ERA == "2016":
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "2016Sep23_dR03mvaTight"
+version = "2016Sep30_dR03mvaTight"
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -85,7 +85,7 @@ if __name__ == '__main__':
     num_parallel_jobs = 4,
     executable_addFakes = "addBackgroundLeptonFakes",
     executable_addFlips = "addBackgroundLeptonFlips", 
-    histograms_to_fit = [ "EventCounter", "numJets", "mvaDiscr_2lss", "mTauTauVis" ])
+    histograms_to_fit = [ "EventCounter", "numJets", "mvaDiscr_2lss", "mvaOutput_2lss_1tau_ttbar_TMVA", "mvaOutput_2lss_1tau_ttbar_sklearn", "mTauTauVis" ])
 
   analysis.create()
 

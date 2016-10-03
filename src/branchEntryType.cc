@@ -1,61 +1,36 @@
 #include "tthAnalysis/HiggsToTauTau/interface/branchEntryType.h"
 
-#include "FWCore/Utilities/interface/Exception.h"
-
-#include <iostream>
-#include <assert.h>
-
-branchEntryType::branchEntryType(const std::string& name, int type, int idxColumn)
-  : name_(name),
-    type_(type),
-    idxColumn_(idxColumn),
-    inputValue_int_(-1),
-    inputValue_float_(-999.0),
-    inputValue_double_(-999.0),
-    inputValue_char_(' '),
-    outputValue_int_(-1),
-    outputValue_float_(-999.0),
-    outputValue_double_(-999.0),
-    outputValue_char_(' ')
+branchEntryBaseType* addBranch(std::vector<branchEntryBaseType*>& branches, const std::string& outputBranchName, const std::string& inputBranchName_and_Type, int idx)
 {
-  if      ( type_ == kInt    ) name_and_type_ = Form("%s/I", name_.data());
-  else if ( type_ == kFloat  ) name_and_type_ = Form("%s/F", name_.data());
-  else if ( type_ == kDouble ) name_and_type_ = Form("%s/D", name_.data());
-  else if ( type_ == kChar   ) name_and_type_ = Form("%s/C", name_.data());
-  else throw cms::Exception("branchEntryType") 
-    << "Invalid type = " << type_ << " !!\n";
-}
-
-void branchEntryType::setInputTree(TTree* inputTree)
-{
-  if      ( type_ == kInt    ) inputTree->SetBranchAddress(name_.data(), &inputValue_int_);
-  else if ( type_ == kFloat  ) inputTree->SetBranchAddress(name_.data(), &inputValue_float_);
-  else if ( type_ == kDouble ) inputTree->SetBranchAddress(name_.data(), &inputValue_double_);
-  else if ( type_ == kChar   ) inputTree->SetBranchAddress(name_.data(), &inputValue_char_);
-  else assert(0);
-}
-
-void branchEntryType::setOutputTree(TTree* outputTree)
-{
-  if      ( type_ == kInt    ) outputTree->Branch(name_.data(), &outputValue_int_, name_and_type_.data());
-  else if ( type_ == kFloat  ) outputTree->Branch(name_.data(), &outputValue_float_, name_and_type_.data());
-  else if ( type_ == kDouble ) outputTree->Branch(name_.data(), &outputValue_double_, name_and_type_.data());
-  else if ( type_ == kChar   ) outputTree->Branch(name_.data(), &outputValue_char_, name_and_type_.data());
-  else assert(0);
-}
-
-void branchEntryType::copyInputToOutputValue()
-{
-  outputValue_int_ = inputValue_int_;
-  outputValue_float_ = inputValue_float_;
-  outputValue_double_ = inputValue_double_;
-  outputValue_char_ = inputValue_char_;
-}
-
-branchEntryType* addBranch(std::vector<branchEntryType*>& branches, const std::string& branchName, int type, int idxColumn)
-{
-  branchEntryType* branch = new branchEntryType(branchName, type, idxColumn);
+  size_t idx1 = inputBranchName_and_Type.find_last_of("/");
+  std::string inputBranchName = "";
+  std::string inputBranchType = "";
+  std::string outputBranchType = "";
+  if ( idx1 != std::string::npos ) {
+    size_t idx2 = inputBranchName_and_Type.find_last_of("->");
+    if ( idx2 > idx1 && idx2 != std::string::npos ) {
+      inputBranchName = std::string(inputBranchName_and_Type, 0, idx1);
+      inputBranchType = std::string(inputBranchName_and_Type, idx1 + 1, (idx2 - 2) - idx1);
+      outputBranchType = std::string(inputBranchName_and_Type, idx2 + 1);
+    } else {
+      inputBranchName = std::string(inputBranchName_and_Type, 0, idx1);
+      inputBranchType = std::string(inputBranchName_and_Type, idx1 + 1);
+      outputBranchType = inputBranchType;
+    }
+  }
+  branchEntryBaseType* branch = 0;
+  if      ( inputBranchType == "F"       && outputBranchType == "F" ) branch = new branchEntryTypeFD(inputBranchName, inputBranchType, outputBranchName, outputBranchType, idx);
+  else if ( inputBranchType == "F"       && outputBranchType == "D" ) branch = new branchEntryTypeFD(inputBranchName, inputBranchType, outputBranchName, outputBranchType, idx);
+  else if ( inputBranchType == "F"       && outputBranchType == "I" ) branch = new branchEntryTypeFI(inputBranchName, inputBranchType, outputBranchName, outputBranchType, idx);
+  else if ( inputBranchType == "D"       && outputBranchType == "F" ) branch = new branchEntryTypeFD(inputBranchName, inputBranchType, outputBranchName, outputBranchType, idx);
+  else if ( inputBranchType == "D"       && outputBranchType == "D" ) branch = new branchEntryTypeFD(inputBranchName, inputBranchType, outputBranchName, outputBranchType, idx);
+  else if ( inputBranchType == "D"       && outputBranchType == "I" ) branch = new branchEntryTypeFI(inputBranchName, inputBranchType, outputBranchName, outputBranchType, idx);
+  else if ( inputBranchType == "I"       && outputBranchType == "I" ) branch = new branchEntryTypeII(inputBranchName, inputBranchType, outputBranchName, outputBranchType, idx);
+  else if ( inputBranchType == "l"       && outputBranchType == "l" ) branch = new branchEntryTypeULUL(inputBranchName, inputBranchType, outputBranchName, outputBranchType, idx);
+  else if ( inputBranchType == "Formula" && outputBranchType == "F" ) branch = new branchEntryFormulaTypeF(inputBranchName, outputBranchName, outputBranchType, idx);
+  else if ( inputBranchType == "Formula" && outputBranchType == "D" ) branch = new branchEntryFormulaTypeD(inputBranchName, outputBranchName, outputBranchType, idx);
+  else throw cms::Exception("addBranch") 
+    << "Invalid branch declaration = '" << inputBranchName_and_Type << "' for branch = '" << outputBranchName << "' !!\n";
   branches.push_back(branch);
   return branch;
 }
-

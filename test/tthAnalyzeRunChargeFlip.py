@@ -28,7 +28,7 @@ if __name__ == '__main__':
       format = '%(asctime)s - %(levelname)s: %(message)s')
 
   analysis = analyzeConfig_charge_flip(
-    outputDir = os.path.join("/home", getpass.getuser(), "tth", version),
+    outputDir = os.path.join("/home", getpass.getuser(), "tth", "histograms", version),
     executable_analyze = "analyze_charge_flip",
     samples = samples,
     lepton_selections = [ "Tight"],

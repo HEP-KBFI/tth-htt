@@ -19,8 +19,12 @@ process.write_csv = cms.PSet(
 
     treeName = cms.string("tree"),
 
-    branches_to_write = cms.vstring(
+    branches_to_write = cms.PSet(
         # CV: list of branches in input Ntuple that will be written to CSV output file
+        #     in the format 
+        #       columnName = cms.string('expression'),
+        #     where expression that can be any string understood by the TTreeFormula class of ROOT
         #...
+        
     )
 )

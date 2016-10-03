@@ -92,11 +92,6 @@ process.makePlots = cms.PSet(
             yAxisTitle = cms.string("N")
         ),
         cms.PSet(
-            histogramName = cms.string("sel/evt/$PROCESS/numLeptons"),
-            xAxisTitle = cms.string("lepton Multiplicity"),
-            yAxisTitle = cms.string("N")
-        ),
-        cms.PSet(
             histogramName = cms.string("sel/evt/$PROCESS/numHadTaus"),
             xAxisTitle = cms.string("#tau_{h} Multiplicity"),
             yAxisTitle = cms.string("N")

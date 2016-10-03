@@ -127,8 +127,16 @@ int main(int argc, char* argv[])
 	std::string the_process_input = processes_input.front();
 
         TDirectory* dir_input = dynamic_cast<TDirectory*>((*subdir_level2)->Get(the_process_input.data()));
-        if ( !dir_input ) throw cms::Exception("addBackgrounds")  
-          << "Failed to find subdirectory = " << the_process_input << " within directory = " << (*subdir_level2)->GetName() << " !!\n";
+        if ( !dir_input ) {
+          if ( the_process_input.find("ttH_htt") != std::string::npos ||
+               the_process_input.find("ttH_hww") != std::string::npos ||
+               the_process_input.find("ttH_hzz") != std::string::npos ) {
+            continue;
+          } else {
+            throw cms::Exception("addBackgrounds")  
+              << "Failed to find subdirectory = " << the_process_input << " within directory = " << (*subdir_level2)->GetName() << " !!\n";
+          }
+        }
         std::set<std::string> histograms;
         TList* list = dir_input->GetListOfKeys();
         TIter next(list);
@@ -163,8 +171,8 @@ int main(int argc, char* argv[])
 	    for ( vstring::const_iterator process_input = processes_input.begin();
 		  process_input != processes_input.end(); ++process_input ) {
               bool enableException = ( (*central_or_shift) == "" || (*central_or_shift) == "central" ) ? true : false;
-	      TH1* histogram_input = getHistogram(dir, *process_input, *histogram, *central_or_shift, enableException);
-              if ( !histogram_input ) histogram_input = getHistogram(dir, *process_input, *histogram, "", true);
+	      TH1* histogram_input = getHistogram(*subdir_level2, *process_input, *histogram, *central_or_shift, enableException);
+              if ( !histogram_input ) histogram_input = getHistogram(*subdir_level2, *process_input, *histogram, "", true);
 	      histograms_input.push_back(histogram_input);
 	    }
 

@@ -65,10 +65,13 @@ class analyzeConfig_1l_2tau(analyzeConfig):
           hadTau_selection_and_frWeight = get_hadTau_selection_and_frWeight(hadTau_selection, hadTau_frWeight)
           for hadTau_charge_selection in self.hadTau_charge_selections:
             key_dir = getKey(sample_name, hadTau_selection, hadTau_frWeight, hadTau_charge_selection)  
-            for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_DCRD ]:
+            for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS ]:
               initDict(self.dirs, [ key_dir, dir_type ])
               self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel,
-                "_".join([ hadTau_selection_and_frWeight, hadTau_charge_selection ]), process_name)            
+                "_".join([ hadTau_selection_and_frWeight, hadTau_charge_selection ]), process_name)
+    for dir_type in [ DKEY_DCRD, DKEY_PLOT ]:
+      initDict(self.dirs, [ dir_type ])
+      self.dirs[dir_type] = os.path.join(self.outputDir, dir_type, self.channel)          
     ##print "self.dirs = ", self.dirs
 
     self.nonfake_backgrounds = [ "TT", "TTW", "TTZ", "EWK", "Rares" ]
@@ -255,6 +258,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
     for key in self.histogramFile_addBackgrounds.keys():
       inputFiles_hadd_stage1_5.append(self.histogramFile_addBackgrounds[key])
     lines_makefile.append("%s: %s" % (self.histogramFile_hadd_stage1_5, " ".join(inputFiles_hadd_stage1_5)))
+    lines_makefile.append("\t%s %s" % ("rm -f", self.histogramFile_hadd_stage1_5))
     lines_makefile.append("\t%s %s %s" % ("hadd", self.histogramFile_hadd_stage1_5, " ".join(inputFiles_hadd_stage1_5)))
     lines_makefile.append("")
     
@@ -273,9 +277,9 @@ class analyzeConfig_1l_2tau(analyzeConfig):
   def addToMakefile_hadd_stage2(self, lines_makefile):
     """Adds the commands to Makefile that are necessary for building the final histogram file.
     """
-    lines_makefile.append("%s: %s" % (self.histogramFile_hadd_stage2, " ".join([ self.histogramFile_hadd_stage1 ] + self.histogramFile_addFakes.values())))
+    lines_makefile.append("%s: %s" % (self.histogramFile_hadd_stage2, " ".join([ self.histogramFile_hadd_stage1_5 ] + self.histogramFile_addFakes.values())))
     lines_makefile.append("\t%s %s" % ("rm -f", self.histogramFile_hadd_stage2))
-    lines_makefile.append("\t%s %s %s" % ("hadd", self.histogramFile_hadd_stage2, " ".join([ self.histogramFile_hadd_stage1 ] + self.histogramFile_addFakes.values())))
+    lines_makefile.append("\t%s %s %s" % ("hadd", self.histogramFile_hadd_stage2, " ".join([ self.histogramFile_hadd_stage1_5 ] + self.histogramFile_addFakes.values())))
     lines_makefile.append("")
     self.filesToClean.append(self.histogramFile_hadd_stage2)
 
@@ -292,8 +296,11 @@ class analyzeConfig_1l_2tau(analyzeConfig):
     """
 
     for key in self.dirs.keys():
-      for dir_type in self.dirs[key].keys():
-        create_if_not_exists(self.dirs[key][dir_type])
+      if type(self.dirs[key]) == dict:
+        for dir_type in self.dirs[key].keys():
+          create_if_not_exists(self.dirs[key][dir_type])
+      else:
+        create_if_not_exists(self.dirs[key])
   
     self.inputFileIds = {}
     for sample_name, sample_info in self.samples.items():
@@ -357,7 +364,10 @@ class analyzeConfig_1l_2tau(analyzeConfig):
       self.createScript_sbatch()
 
     logging.info("Creating configuration files for executing 'addBackgrounds'")  
-    for process_name in self.nonfake_backgrounds:
+    process_names = []
+    process_names.extend(self.nonfake_backgrounds)
+    process_names.extend([ "signal", "ttH_htt", "ttH_hww", "ttH_hzz" ])
+    for process_name in process_names:
       for hadTau_selection in self.hadTau_selections:
         hadTau_selection = hadTau_selection.replace("|", "_")   
         for hadTau_charge_selection in self.hadTau_charge_selections:
@@ -374,6 +384,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
           self.process_output_addBackgrounds[key] = process_name
           self.createCfg_addBackgrounds(self.histogramFile_hadd_stage1, self.histogramFile_addBackgrounds[key], self.cfgFile_addBackgrounds_modified[key],
             [ histogramDir ], processes_input, self.process_output_addBackgrounds[key])
+    print "self.nonfake_backgrounds = ",  self.nonfake_backgrounds
     for hadTau_charge_selection in self.hadTau_charge_selections:
       key = getKey("fakes_mc_weighted", hadTau_charge_selection) 
       self.histogramFile_addBackgrounds[key] = os.path.join(self.outputDir, DKEY_HIST, "addBackgrounds_%s_%s_fakes_mc_weighted.root" % \
