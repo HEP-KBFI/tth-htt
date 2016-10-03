@@ -1,4 +1,7 @@
 from ROOT import TFile, TDirectory
+import ROOT
+import numpy as np
+import math
 
 samples = ["data_obs",
 	    "DY",
@@ -55,7 +58,12 @@ def create_pseudodata(infile, outfile_data, outfile_pseudodata):
                   histo.Write()
                   cd_pseudo.cd() 
                   histo.Write()
-            data_histo.SetName("x_data_obs")
+            data_histo.SetNameTitle("x_data_obs", "x_data_obs")
+            for b in range(1, data_histo.GetNbinsX()+1):
+                data_histo.SetBinContent(b, np.random.poisson(data_histo.GetBinContent(b)))
+                data_histo.Sumw2(ROOT.kFALSE)
+                print data_histo.GetBinContent(b), data_histo.GetBinError(b)
+                #data_histo.SetBinError(b, max(1, math.sqrt(data_histo.GetBinContent(b))))
             data_histo.Write()            
     f.Close()
     fout.Close()
@@ -63,7 +71,7 @@ def create_pseudodata(infile, outfile_data, outfile_pseudodata):
             
 
 if __name__ == "__main__":
-  indir = "/home/andres/tth/histograms/histosCF_data_eleESER2/datacards/"
+  indir = "/home/andres/tth/histograms/histosCF_data_eleESER_mva_0_6_notrig/datacards/"
   infile = "prepareDatacards_charge_flip_mass_ll.root"
   datafile = "prepareDatacards_data_charge_flip_mass_ll.root"
   pseudodatafile = "prepareDatacards_pseudodata_charge_flip_mass_ll.root"
