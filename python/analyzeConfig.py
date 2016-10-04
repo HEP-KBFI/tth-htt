@@ -300,7 +300,7 @@ class analyzeConfig:
           if is_time:
             time = line.strip()
             is_time = False
-          if line.find("'hostname'") != -1:
+          if line.find("hostname") != -1:
             is_hostname = True
             continue
           if is_hostname:
@@ -310,7 +310,10 @@ class analyzeConfig:
             is_cvmfs_error = True          
         logFile.close()
         if is_cvmfs_error:
-          print "Problem with cvmfs access: host = %s (time = %s)" % (hostname, time)
+          print "Problem with cvmfs access reported in log file = '%s':" % logFileName
+          print " host = '%s': time = %s" % (hostname, time)
+          if not hostname in self.cvmfs_error_log.keys():
+            self.cvmfs_error_log[hostname] = []
           self.cvmfs_error_log[hostname].append(time)
       lines_sbatch.append("m.submitJob(%s, '%s', '%s', '%s', %s, '%s', True)" % \
         (inputFileNames, self.executable_analyze, cfgFile,

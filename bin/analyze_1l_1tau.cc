@@ -131,6 +131,8 @@ int main(int argc, char* argv[])
   std::string process_string = cfg_analyze.getParameter<std::string>("process");
   bool isSignal = ( process_string == "signal" ) ? true : false;
 
+  std::string histogramDir = cfg_analyze.getParameter<std::string>("histogramDir");
+
   std::string era_string = cfg_analyze.getParameter<std::string>("era");
   int era = -1;
   if      ( era_string == "2015" ) era = kEra_2015;
@@ -405,34 +407,33 @@ int main(int argc, char* argv[])
   std::ostream* selEventsFile = new std::ofstream(selEventsFileName_output.data(), std::ios::out);
 
 //--- declare histograms
-  std::string charge_and_hadTauSelection = Form("%s_%s", chargeSelection_string.data(), hadTauSelection_part1.data());
   ElectronHistManager preselElectronHistManager(makeHistManager_cfg(process_and_genMatch,
-    Form("1l_1tau_%s/presel/electrons", charge_and_hadTauSelection.data()), central_or_shift));
+    Form("%s/presel/electrons", histogramDir.data()), central_or_shift));
   preselElectronHistManager.bookHistograms(fs);
   MuonHistManager preselMuonHistManager(makeHistManager_cfg(process_and_genMatch, 
-    Form("1l_1tau_%s/presel/muons", charge_and_hadTauSelection.data()), central_or_shift));
+    Form("%s/presel/muons", histogramDir.data()), central_or_shift));
   preselMuonHistManager.bookHistograms(fs);
   HadTauHistManager preselHadTauHistManager(makeHistManager_cfg(process_and_genMatch, 
-    Form("1l_1tau_%s/presel/hadTaus", charge_and_hadTauSelection.data()), central_or_shift));
+    Form("%s/presel/hadTaus", histogramDir.data()), central_or_shift));
   preselHadTauHistManager.bookHistograms(fs);
   JetHistManager preselJetHistManager(makeHistManager_cfg(process_and_genMatch, 
-    Form("1l_1tau_%s/presel/jets", charge_and_hadTauSelection.data()), central_or_shift));
+    Form("%s/presel/jets", histogramDir.data()), central_or_shift));
   preselJetHistManager.bookHistograms(fs);
   JetHistManager preselBJet_looseHistManager(makeHistManager_cfg(process_and_genMatch, 
-    Form("1l_1tau_%s/presel/BJets_loose", charge_and_hadTauSelection.data()), central_or_shift));
+    Form("%s/presel/BJets_loose", histogramDir.data()), central_or_shift));
   preselBJet_looseHistManager.bookHistograms(fs);
   JetHistManager preselBJet_mediumHistManager(makeHistManager_cfg(process_and_genMatch, 
-    Form("1l_1tau_%s/presel/BJets_medium", charge_and_hadTauSelection.data()), central_or_shift));
+    Form("%s/presel/BJets_medium", histogramDir.data()), central_or_shift));
   preselBJet_mediumHistManager.bookHistograms(fs);
   MEtHistManager preselMEtHistManager(makeHistManager_cfg(process_and_genMatch, 
-    Form("1l_1tau_%s/presel/met", charge_and_hadTauSelection.data()), central_or_shift));
+    Form("%s/presel/met", histogramDir.data()), central_or_shift));
   preselMEtHistManager.bookHistograms(fs);
   EvtHistManager_1l_1tau preselEvtHistManager(makeHistManager_cfg(process_and_genMatch, 
-    Form("1l_1tau_%s/presel/evt", charge_and_hadTauSelection.data()), central_or_shift));
+    Form("%s/presel/evt", histogramDir.data()), central_or_shift));
   preselEvtHistManager.bookHistograms(fs);
 
   ElectronHistManager selElectronHistManager(makeHistManager_cfg(process_and_genMatch, 
-    Form("1l_1tau_%s/sel/electrons", charge_and_hadTauSelection.data()), central_or_shift));
+    Form("%s/sel/electrons", histogramDir.data()), central_or_shift));
   selElectronHistManager.bookHistograms(fs);
   vstring categories_e = { 
     "1e_1tau_bloose", "1e_1tau_btight"
@@ -440,14 +441,16 @@ int main(int argc, char* argv[])
   std::map<std::string, ElectronHistManager*> selElectronHistManager_category; // key = category
   for ( vstring::const_iterator category = categories_e.begin();
         category != categories_e.end(); ++category ) {
+    TString histogramDir_category = histogramDir.data();
+    histogramDir_category.ReplaceAll("1l_1tau", category->data());
     ElectronHistManager* selElectronHistManager = new ElectronHistManager(makeHistManager_cfg(process_and_genMatch, 
-      Form("%s_%s/sel/electron", category->data(), charge_and_hadTauSelection.data()), central_or_shift));
+      Form("%s/sel/electron", category->data(), histogramDir_category.Data()), central_or_shift));
     selElectronHistManager->bookHistograms(fs);
     selElectronHistManager_category[*category] = selElectronHistManager;
   }
 
   MuonHistManager selMuonHistManager(makeHistManager_cfg(process_and_genMatch, 
-    Form("1l_1tau_%s/sel/muons", charge_and_hadTauSelection.data()), central_or_shift));
+    Form("%s/sel/muons", histogramDir.data()), central_or_shift));
   selMuonHistManager.bookHistograms(fs);
   vstring categories_mu = { 
     "1mu_1tau_bloose", "1mu_1tau_btight"
@@ -455,49 +458,51 @@ int main(int argc, char* argv[])
   std::map<std::string, MuonHistManager*> selMuonHistManager_category; // key = category
   for ( vstring::const_iterator category = categories_mu.begin();
         category != categories_mu.end(); ++category ) {
+    TString histogramDir_category = histogramDir.data();
+    histogramDir_category.ReplaceAll("1l_1tau", category->data());
     MuonHistManager* selMuonHistManager = new MuonHistManager(makeHistManager_cfg(process_and_genMatch, 
-      Form("%s_%s/sel/muon", category->data(), charge_and_hadTauSelection.data()), central_or_shift));
+      Form("%s/sel/muon", category->data(), histogramDir_category.Data()), central_or_shift));
     selMuonHistManager->bookHistograms(fs);
     selMuonHistManager_category[*category] = selMuonHistManager;
   }
   
   HadTauHistManager selHadTauHistManager(makeHistManager_cfg(process_and_genMatch, 
-    Form("1l_1tau_%s/sel/hadTaus", charge_and_hadTauSelection.data()), central_or_shift));
+    Form("%s/sel/hadTaus", histogramDir.data()), central_or_shift));
   selHadTauHistManager.bookHistograms(fs);
 
   JetHistManager selJetHistManager(makeHistManager_cfg(process_and_genMatch, 
-    Form("1l_1tau_%s/sel/jets", charge_and_hadTauSelection.data()), central_or_shift));
+    Form("%s/sel/jets", histogramDir.data()), central_or_shift));
   selJetHistManager.bookHistograms(fs);
   JetHistManager selJetHistManager_lead(makeHistManager_cfg(process_and_genMatch, 
-    Form("1l_1tau_%s/sel/leadJet", charge_and_hadTauSelection.data()), central_or_shift, 0));
+    Form("%s/sel/leadJet", histogramDir.data()), central_or_shift, 0));
   selJetHistManager_lead.bookHistograms(fs);
   JetHistManager selJetHistManager_sublead(makeHistManager_cfg(process_and_genMatch, 
-    Form("1l_1tau_%s/sel/subleadJet", charge_and_hadTauSelection.data()), central_or_shift, 1));
+    Form("%s/sel/subleadJet", histogramDir.data()), central_or_shift, 1));
   selJetHistManager_sublead.bookHistograms(fs);
 
   JetHistManager selBJet_looseHistManager(makeHistManager_cfg(process_and_genMatch, 
-    Form("1l_1tau_%s/sel/BJets_loose", charge_and_hadTauSelection.data()), central_or_shift));
+    Form("%s/sel/BJets_loose", histogramDir.data()), central_or_shift));
   selBJet_looseHistManager.bookHistograms(fs);
   JetHistManager selBJet_looseHistManager_lead(makeHistManager_cfg(process_and_genMatch, 
-    Form("1l_1tau_%s/sel/leadBJet_loose", charge_and_hadTauSelection.data()), central_or_shift, 0));
+    Form("%s/sel/leadBJet_loose", histogramDir.data()), central_or_shift, 0));
   selBJet_looseHistManager_lead.bookHistograms(fs);
   JetHistManager selBJet_looseHistManager_sublead(makeHistManager_cfg(process_and_genMatch, 
-    Form("1l_1tau_%s/sel/subleadBJet_loose", charge_and_hadTauSelection.data()), central_or_shift, 1));
+    Form("%s/sel/subleadBJet_loose", histogramDir.data()), central_or_shift, 1));
   selBJet_looseHistManager_sublead.bookHistograms(fs);
   JetHistManager selBJet_mediumHistManager(makeHistManager_cfg(process_and_genMatch, 
-    Form("1l_1tau_%s/sel/BJets_medium", charge_and_hadTauSelection.data()), central_or_shift));
+    Form("%s/sel/BJets_medium", histogramDir.data()), central_or_shift));
   selBJet_mediumHistManager.bookHistograms(fs);
 
   MEtHistManager selMEtHistManager(makeHistManager_cfg(process_and_genMatch, 
-    Form("1l_1tau_%s/sel/met", charge_and_hadTauSelection.data()), central_or_shift));
+    Form("%s/sel/met", histogramDir.data()), central_or_shift));
   selMEtHistManager.bookHistograms(fs);
 
   MVAInputVarHistManager selMVAInputVarHistManager(makeHistManager_cfg(process_and_genMatch, 
-    Form("1l_1tau_%s/sel/mvaInputVariables", charge_and_hadTauSelection.data()), central_or_shift));
+    Form("%s/sel/mvaInputVariables", histogramDir.data()), central_or_shift));
   selMVAInputVarHistManager.bookHistograms(fs, mvaInputVariables_1l_1tau_ttbar);
 
   EvtHistManager_1l_1tau selEvtHistManager(makeHistManager_cfg(process_and_genMatch, 
-    Form("1l_1tau_%s/sel/evt", charge_and_hadTauSelection.data()), central_or_shift));
+    Form("%s/sel/evt", histogramDir.data()), central_or_shift));
   selEvtHistManager.bookHistograms(fs);
   std::map<std::string, EvtHistManager_1l_1tau*> selEvtHistManager_decayMode; // key = decay mode
   const std::map<std::string, GENHIGGSDECAYMODE_TYPE> decayMode_idString = {
@@ -514,7 +519,7 @@ int main(int argc, char* argv[])
       std::string decayMode_and_genMatch = *decayMode;
       if ( hadTauGenMatchSelection_string != "all" && apply_hadTauGenMatching ) decayMode_and_genMatch += hadTauGenMatchSelection_string;
       EvtHistManager_1l_1tau* selEvtHistManager_ptr = new EvtHistManager_1l_1tau(makeHistManager_cfg(decayMode_and_genMatch,
-        Form("1l_1tau_%s/sel/evt", charge_and_hadTauSelection.data()), central_or_shift));
+        Form("%s/sel/evt", histogramDir.data()), central_or_shift));
       selEvtHistManager_ptr->bookHistograms(fs);
       selEvtHistManager_decayMode[*decayMode] = selEvtHistManager_ptr;
     }
@@ -526,7 +531,7 @@ int main(int argc, char* argv[])
       if ( hadTauGenMatch_definition->idx_ == kGen_All1 || hadTauGenMatch_definition->idx_ == kGen_Undefined1 ) continue;
       std::string process_and_genMatch = process_string + hadTauGenMatch_definition->name_;
       EvtHistManager_1l_1tau* selEvtHistManager_ptr = new EvtHistManager_1l_1tau(makeHistManager_cfg(process_and_genMatch, 
-        Form("1l_1tau_%s/sel/evt", charge_and_hadTauSelection.data()), central_or_shift));
+        Form("%s/sel/evt", histogramDir.data()), central_or_shift));
       selEvtHistManager_ptr->bookHistograms(fs);
       selEvtHistManagers_genMatch[hadTauGenMatch_definition->idx_] = selEvtHistManager_ptr;
     }
@@ -538,8 +543,10 @@ int main(int argc, char* argv[])
   std::map<std::string, EvtHistManager_1l_1tau*> selEvtHistManager_category; // key = category
   for ( vstring::const_iterator category = categories_evt.begin();
         category != categories_evt.end(); ++category ) {
+    TString histogramDir_category = histogramDir.data();
+    histogramDir_category.ReplaceAll("1l_1tau", category->data());
     EvtHistManager_1l_1tau* selEvtHistManager = new EvtHistManager_1l_1tau(makeHistManager_cfg(process_and_genMatch, 
-      Form("%s_%s/sel/evt", category->data(), charge_and_hadTauSelection.data()), central_or_shift));
+      Form("%s/sel/evt", category->data(), histogramDir_category.Data()), central_or_shift));
     selEvtHistManager->bookHistograms(fs);
     selEvtHistManager_category[*category] = selEvtHistManager;
   }
@@ -549,13 +556,13 @@ int main(int argc, char* argv[])
   LHEInfoHistManager* lheInfoHistManager = 0;
   if ( isMC ) {
     genEvtHistManager_beforeCuts = new GenEvtHistManager(makeHistManager_cfg(process_and_genMatch, 
-      Form("1l_1tau_%s/unbiased/genEvt", charge_and_hadTauSelection.data()), central_or_shift));
+      Form("%s/unbiased/genEvt", histogramDir.data()), central_or_shift));
     genEvtHistManager_beforeCuts->bookHistograms(fs);
     genEvtHistManager_afterCuts = new GenEvtHistManager(makeHistManager_cfg(process_and_genMatch, 
-      Form("1l_1tau_%s/sel/genEvt", charge_and_hadTauSelection.data()), central_or_shift));
+      Form("%s/sel/genEvt", histogramDir.data()), central_or_shift));
     genEvtHistManager_afterCuts->bookHistograms(fs);
      lheInfoHistManager = new LHEInfoHistManager(makeHistManager_cfg(process_and_genMatch, 
-      Form("1l_1tau_%s/sel/lheInfo", charge_and_hadTauSelection.data()), central_or_shift));
+      Form("%s/sel/lheInfo", histogramDir.data()), central_or_shift));
     lheInfoHistManager->bookHistograms(fs);
   }
 
