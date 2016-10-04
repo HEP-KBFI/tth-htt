@@ -1064,8 +1064,8 @@ int main(int argc, char* argv[])
     preselElectronHistManager.fillHistograms(preselElectrons, evtWeight);
     preselHadTauHistManager.fillHistograms(selHadTaus, evtWeight);
     preselJetHistManager.fillHistograms(selJets, evtWeight);
-    selBJet_looseHistManager.fillHistograms(selBJets_loose, evtWeight);
-    selBJet_mediumHistManager.fillHistograms(selBJets_medium, evtWeight);
+    preselBJet_looseHistManager.fillHistograms(selBJets_loose, evtWeight);
+    preselBJet_mediumHistManager.fillHistograms(selBJets_medium, evtWeight);
     preselMEtHistManager.fillHistograms(met_p4, mht_p4, met_LD, evtWeight);
     preselEvtHistManager.fillHistograms(preselElectrons.size(), preselMuons.size(), selHadTaus.size(), 
       selJets.size(), selBJets_loose.size(), selBJets_medium.size(),

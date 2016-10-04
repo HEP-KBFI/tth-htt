@@ -19,7 +19,7 @@ elif ERA == "2016":
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "2016Sep20"
+version = "2016Oct04"
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -28,7 +28,7 @@ if __name__ == '__main__':
     format = '%(asctime)s - %(levelname)s: %(message)s')
 
   analysis = analyzeConfig_jetToTauFakeRate(
-    outputDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", version),
+    outputDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", ERA, version),
     executable_analyze = "analyze_jetToTauFakeRate",
     samples = samples,
     charge_selections = [ "OS" ],
@@ -89,7 +89,7 @@ if __name__ == '__main__':
 ##       "CMS_ttHl_thu_shape_ttZ_y1Down"  
       
     ],
-    max_files_per_job = 30,
+    max_files_per_job = 20,
     era = ERA, use_lumi = True, lumi = LUMI,
     debug = False,
     running_method = "sbatch",

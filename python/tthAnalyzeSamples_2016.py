@@ -1,6 +1,6 @@
 from collections import OrderedDict as OD
 
-samples = OD()
+samples_2016 = OD()
 
 samples_2016["/DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"] = OD([
   ("type",                  "mc"),
