@@ -112,6 +112,7 @@ class analyzeConfig_0l_2tau(analyzeConfig):
     lines.append("process.fwliteOutput.fileName = cms.string('%s')" % os.path.basename(outputFile))
     lines.append("process.analyze_0l_2tau.process = cms.string('%s')" % sample_category)
     lines.append("process.analyze_0l_2tau.era = cms.string('%s')" % era)
+    lines.append("process.analyze_0l_2tau.triggers = cms.vstring(%s)" % self.triggers_2tau)
     lines.append("process.analyze_0l_2tau.hadTauChargeSelection = cms.string('%s')" % hadTau_charge_selection)
     lines.append("process.analyze_0l_2tau.hadTauSelection = cms.string('%s')" % hadTau_selection)
     lines.append("process.analyze_0l_2tau.hadTauGenMatch = cms.string('%s')" % hadTau_genMatch)

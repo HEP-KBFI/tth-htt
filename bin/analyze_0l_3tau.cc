@@ -140,7 +140,7 @@ int main(int argc, char* argv[])
     << "Invalid Configuration parameter 'era' = " << era_string << " !!\n";
 
   vstring triggerNames = cfg_analyze.getParameter<vstring>("triggers");
-  //std::vector<hltPath*> triggers = create_hltPaths(triggerNames);
+  std::vector<hltPath*> triggers = create_hltPaths(triggerNames);
 
   enum { kLoose, kFakeable, kTight };
   TString hadTauSelection_string = cfg_analyze.getParameter<std::string>("hadTauSelection").data();
@@ -296,7 +296,7 @@ int main(int argc, char* argv[])
     inputTree->SetBranchAddress(GENHIGGSDECAYMODE_KEY, &genHiggsDecayMode);
   }
 
-  //hltPaths_setBranchAddresses(inputTree, triggers);
+  hltPaths_setBranchAddresses(inputTree, triggers);
 
   PUWEIGHT_TYPE pileupWeight;
   if ( isMC ) {
@@ -584,8 +584,8 @@ int main(int argc, char* argv[])
     }
 
     if ( apply_trigger_bits ) {
-      //bool isTriggered = hltPaths_isTriggered(triggers);
-      //if ( !isTriggered ) continue;
+      bool isTriggered = hltPaths_isTriggered(triggers);
+      if ( !isTriggered ) continue;
       cutFlowTable.update("trigger");
     }
 
