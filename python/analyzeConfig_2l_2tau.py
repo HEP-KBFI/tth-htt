@@ -13,6 +13,18 @@ def get_hadTau_selection_and_frWeight(hadTau_selection, hadTau_frWeight):
   hadTau_selection_and_frWeight = hadTau_selection_and_frWeight.replace("|", "_")
   return hadTau_selection_and_frWeight
 
+def getHistogramDir(lepton_charge_selection, hadTau_selection, hadTau_frWeight, hadTau_charge_selection):
+  hadTau_selection_part1 = hadTau_selection
+  if hadTau_selection_part1.find("_") != -1:
+    hadTau_selection_part1 = hadTau_selection_part1[:hadTau_selection_part1.find("_")]
+  histogramDir = "2l_2tau_lep%s_tau%s_%s" % (lepton_charge_selection, hadTau_charge_selection, hadTau_selection_part1)
+  if hadTau_selection_part1.find("Fakeable") != -1:
+    if hadTau_frWeight == "enabled":
+      histogramDir += "_wFakeRateWeights"
+    elif hadTau_frWeight == "disabled":
+      histogramDir += "_woFakeRateWeights"
+  return histogramDir
+
 class analyzeConfig_2l_2tau(analyzeConfig):
   """Configuration metadata needed to run analysis in a single go.
   
@@ -114,6 +126,8 @@ class analyzeConfig_2l_2tau(analyzeConfig):
     lines.append("process.fwliteInput.fileNames = cms.vstring(%s)" % inputFiles)
     lines.append("process.fwliteOutput.fileName = cms.string('%s')" % os.path.basename(outputFile))
     lines.append("process.analyze_2l_2tau.process = cms.string('%s')" % sample_category)
+    histogramDir = getHistogramDir(lepton_charge_selection, hadTau_selection, hadTau_frWeight, hadTau_charge_selection)
+    lines.append("process.analyze_2l_2tau.histogramDir = cms.string('%s')" % histogramDir)
     lines.append("process.analyze_2l_2tau.era = cms.string('%s')" % era)
     lines.append("process.analyze_2l_2tau.triggers_1e = cms.vstring(%s)" % self.triggers_1e)
     lines.append("process.analyze_2l_2tau.use_triggers_1e = cms.bool(%s)" % ("1e" in triggers))
@@ -132,7 +146,9 @@ class analyzeConfig_2l_2tau(analyzeConfig):
     lines.append("process.analyze_2l_2tau.apply_hadTauGenMatching = cms.bool(%s)" % apply_hadTauGenMatching)
     if hadTau_frWeight == "enabled":
       lines.append("process.analyze_2l_2tau.applyJetToTauFakeRateWeight = cms.bool(True)")
-    elif hadTau_frWeight != "disabled":
+    elif hadTau_frWeight == "disabled":
+      lines.append("process.analyze_2l_2tau.applyJetToTauFakeRateWeight = cms.bool(False)")
+    else:
       raise ValueError("Invalid parameter 'hadTau_frWeight' = %s !!" % hadTau_frWeight)
     if hadTau_selection.find("mcClosure") != -1:
       lines.append("process.analyze_1l_2tau.jetToTauFakeRateWeight.applyFitFunction_lead = cms.bool(False)")
@@ -191,7 +207,7 @@ class analyzeConfig_2l_2tau(analyzeConfig):
     lines.append("process.makePlots_mcClosure.categories = cms.VPSet(")
     lines.append("  cms.PSet(")
     lines.append("    signal = cms.string('%s')," % self.histogramDir_prep_dcard)
-    lines.append("    sideband = cms.string('%s')," % self.histogramDir_prep_dcard.replace("Tight", "Fakeable"))
+    lines.append("    sideband = cms.string('%s')," % self.histogramDir_prep_dcard.replace("Tight", "Fakeable_wFakeRateWeights"))
     lines.append("    label = cms.string('%s')" % self.channel)
     lines.append("  )")
     lines.append(")")
@@ -348,6 +364,8 @@ class analyzeConfig_2l_2tau(analyzeConfig):
                       continue
                     if central_or_shift != "central" and not is_mc:
                       continue
+                    if hadTau_selection == "Fakeable_mcClosure" and not hadTau_frWeight == "enabled":
+                      continue
                     if central_or_shift.startswith("CMS_ttHl_thu_shape_ttH") and sample_category != "signal":
                       continue
                     if central_or_shift.startswith("CMS_ttHl_thu_shape_ttW") and sample_category != "TTW":
@@ -375,55 +393,54 @@ class analyzeConfig_2l_2tau(analyzeConfig):
       logging.info("Creating script for submitting '%s' jobs to batch system" % self.executable_analyze)
       self.createScript_sbatch()
 
-    logging.info("Creating configuration files for executing 'addBackgrounds'")
+    logging.info("Creating configuration files for executing 'addBackgrounds'")  
     process_names = []
     process_names.extend(self.nonfake_backgrounds)
     process_names.extend([ "signal", "ttH_htt", "ttH_hww", "ttH_hzz" ])
+    # sum non-fake contributions for each MC sample separately
+    # input processes: TT2t0e0m0j, TT1t1e0m0j, TT1t0e1m0j", TT0t2e0m0j, TT0t1e1m0j, TT0t0e2m0j; TTW2t0e0m0j,...
+    # output processes: TT; ...
     for process_name in process_names:
+      for lepton_charge_selection in self.lepton_charge_selections:
+        for hadTau_selection in self.hadTau_selections:
+          for hadTau_frWeight in self.hadTau_frWeights:
+            if hadTau_frWeight == "enabled" and not hadTau_selection.startswith("Fakeable"):
+              continue
+            hadTau_selection_and_frWeight = get_hadTau_selection_and_frWeight(hadTau_selection, hadTau_frWeight)
+            for hadTau_charge_selection in self.hadTau_charge_selections:
+              key = getKey(process_name, hadTau_selection, hadTau_frWeight, hadTau_charge_selection)
+              self.histogramFile_addBackgrounds[key] = os.path.join(self.outputDir, DKEY_HIST, "addBackgrounds_%s_%s_%s_%s_%s.root" % \
+                (self.channel, process_name, lepton_charge_selection, hadTau_selection_and_frWeight, hadTau_charge_selection))        
+              self.cfgFile_addBackgrounds_modified[key] = os.path.join(self.outputDir, DKEY_CFGS, "addBackgrounds_%s_%s_%s_%s_%s_cfg.py" % \
+                (self.channel, process_name, lepton_charge_selection, hadTau_selection_and_frWeight, hadTau_charge_selection))
+              histogramDir = getHistogramDir(lepton_charge_selection, hadTau_selection, hadTau_frWeight, hadTau_charge_selection)
+              processes_input = [ "%s%s" % (process_name, genMatch) for genMatch in self.hadTau_genMatches_nonfakes ]
+              self.process_output_addBackgrounds[key] = process_name
+              self.createCfg_addBackgrounds(self.histogramFile_hadd_stage1, self.histogramFile_addBackgrounds[key], self.cfgFile_addBackgrounds_modified[key],
+              [ histogramDir ], processes_input, self.process_output_addBackgrounds[key])
+    # sum fake contributions for the total of all MC sample
+    # input processes: TT1t0e0m1j, TT0t1e0m1j, TT0t0e1m1j, TT0t0e0m2j; TTW1t0e0m1j,...
+    # output process: fakes_mc
+    for lepton_charge_selection in self.lepton_charge_selections:
       for hadTau_selection in self.hadTau_selections:
-        hadTau_selection = hadTau_selection.replace("|", "_")   
-        for hadTau_charge_selection in self.hadTau_charge_selections:
-          key = getKey(process_name, hadTau_selection, hadTau_charge_selection)
-          self.histogramFile_addBackgrounds[key] = os.path.join(self.outputDir, DKEY_HIST, "addBackgrounds_%s_%s_%s_%s.root" % \
-            (self.channel, process_name, hadTau_selection, hadTau_charge_selection))        
-          self.cfgFile_addBackgrounds_modified[key] = os.path.join(self.outputDir, DKEY_CFGS, "addBackgrounds_%s_%s_%s_%s_cfg.py" % \
-            (self.channel, process_name, hadTau_selection, hadTau_charge_selection))
-          hadTau_selection_part1 = hadTau_selection
-          if hadTau_selection_part1.find("_") != -1:
-            hadTau_selection_part1 = hadTau_selection_part1[:hadTau_selection_part1.find("_")]
-          histogramDir = "2l_2tau_lepOS_tau%s_%s" % (hadTau_charge_selection, hadTau_selection_part1)
-          processes_input = [ "%s%s" % (process_name, genMatch) for genMatch in self.hadTau_genMatches_nonfakes ]
-          self.process_output_addBackgrounds[key] = process_name
-          self.createCfg_addBackgrounds(self.histogramFile_hadd_stage1, self.histogramFile_addBackgrounds[key], self.cfgFile_addBackgrounds_modified[key],
-            [ histogramDir ], processes_input, self.process_output_addBackgrounds[key])
-    for hadTau_charge_selection in self.hadTau_charge_selections:
-      key = getKey("fakes_mc_weighted", hadTau_charge_selection) 
-      self.histogramFile_addBackgrounds[key] = os.path.join(self.outputDir, DKEY_HIST, "addBackgrounds_%s_%s_fakes_mc_weighted.root" % \
-        (self.channel, hadTau_charge_selection))
-      self.cfgFile_addBackgrounds_modified[key] = os.path.join(self.outputDir, DKEY_CFGS, "addBackgrounds_%s_%s_fakes_mc_weighted_cfg.py" % \
-        (self.channel, hadTau_charge_selection))
-      histogramDir = "2l_2tau_lepOS_tau%s_Fakeable_mcClosure" % hadTau_charge_selection
-      processes_input = []
-      for process_name in self.nonfake_backgrounds:
-        for genMatch in self.hadTau_genMatches_fakes:
-          processes_input.append("%s%s" % (process_name, genMatch))
-      self.process_output_addBackgrounds[key] = "fakes_mc_weighted"
-      self.createCfg_addBackgrounds(self.histogramFile_hadd_stage1, self.histogramFile_addBackgrounds[key], self.cfgFile_addBackgrounds_modified[key],
-        [ histogramDir ], processes_input, self.process_output_addBackgrounds[key])
-
-      key = getKey("fakes_mc", hadTau_charge_selection) 
-      self.histogramFile_addBackgrounds[key] = os.path.join(self.outputDir, DKEY_HIST, "addBackgrounds_%s_%s_fakes_mc.root" % \
-        (self.channel, hadTau_charge_selection))
-      self.cfgFile_addBackgrounds_modified[key] = os.path.join(self.outputDir, DKEY_CFGS, "addBackgrounds_%s_%s_fakes_mc_cfg.py" % \
-        (self.channel, hadTau_charge_selection))
-      histogramDir = "2l_2tau_lepOS_tau%s_Tight" % hadTau_charge_selection
-      processes_input = []
-      for process_name in self.nonfake_backgrounds:
-        for genMatch in self.hadTau_genMatches_fakes:
-          processes_input.append("%s%s" % (process_name, genMatch))
-      self.process_output_addBackgrounds[key] = "fakes_mc"
-      self.createCfg_addBackgrounds(self.histogramFile_hadd_stage1, self.histogramFile_addBackgrounds[key], self.cfgFile_addBackgrounds_modified[key],
-        [ histogramDir ], processes_input, self.process_output_addBackgrounds[key])
+        for hadTau_frWeight in self.hadTau_frWeights:
+          if hadTau_frWeight == "enabled" and not hadTau_selection.startswith("Fakeable"):
+            continue
+          hadTau_selection_and_frWeight = get_hadTau_selection_and_frWeight(hadTau_selection, hadTau_frWeight)
+          for hadTau_charge_selection in self.hadTau_charge_selections:
+            key = getKey(lepton_charge_selection, hadTau_selection, hadTau_frWeight, hadTau_charge_selection)
+            self.histogramFile_addBackgrounds[key] = os.path.join(self.outputDir, DKEY_HIST, "addBackgrounds_%s_fakes_mc_%s_%s_%s.root" % \
+              (self.channel, lepton_charge_selection, hadTau_selection_and_frWeight, hadTau_charge_selection))
+            self.cfgFile_addBackgrounds_modified[key] = os.path.join(self.outputDir, DKEY_CFGS, "addBackgrounds_%s_fakes_mc_%s_%s_%s_cfg.py" % \
+              (self.channel, lepton_charge_selection, hadTau_selection_and_frWeight, hadTau_charge_selection))
+            histogramDir = getHistogramDir(lepton_charge_selection, hadTau_selection, hadTau_frWeight, hadTau_charge_selection)
+            processes_input = []
+            for process_name in self.nonfake_backgrounds:
+              for genMatch in self.hadTau_genMatches_fakes:
+                processes_input.append("%s%s" % (process_name, genMatch))
+            self.process_output_addBackgrounds[key] = "fakes_mc"
+            self.createCfg_addBackgrounds(self.histogramFile_hadd_stage1, self.histogramFile_addBackgrounds[key], self.cfgFile_addBackgrounds_modified[key],
+              [ histogramDir ], processes_input, self.process_output_addBackgrounds[key])    
         
     logging.info("Creating configuration files for executing 'addBackgroundFakes'")
     for hadTau_charge_selection in self.hadTau_charge_selections:
@@ -433,7 +450,7 @@ class analyzeConfig_2l_2tau(analyzeConfig):
       self.cfgFile_addFakes_modified[key] = os.path.join(self.outputDir, DKEY_CFGS, "addBackgroundJetToTauFakes_%s_%s_cfg.py" % \
         (self.channel, hadTau_charge_selection))
       category_signal = "2l_2tau_lepOS_tau%s_Tight" % hadTau_charge_selection
-      category_sideband = "2l_2tau_lepOS_tau%s_Fakeable" % hadTau_charge_selection
+      category_sideband = "2l_2tau_lepOS_tau%s_Fakeable_wFakeRateWeights" % hadTau_charge_selection
       self.createCfg_addFakes(self.histogramFile_hadd_stage1_5, self.histogramFile_addFakes[key], self.cfgFile_addFakes_modified[key],
         category_signal, category_sideband)  
       

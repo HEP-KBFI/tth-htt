@@ -24,7 +24,7 @@ def getHistogramDir(hadTau_selection, hadTau_frWeight, hadTau_charge_selection):
     elif hadTau_frWeight == "disabled":
       histogramDir += "_woFakeRateWeights"
   return histogramDir
-
+  
 class analyzeConfig_1l_2tau(analyzeConfig):
   """Configuration metadata needed to run analysis in a single go.
   
@@ -415,10 +415,10 @@ class analyzeConfig_1l_2tau(analyzeConfig):
         hadTau_selection_and_frWeight = get_hadTau_selection_and_frWeight(hadTau_selection, hadTau_frWeight)
         for hadTau_charge_selection in self.hadTau_charge_selections:
           key = getKey(hadTau_selection, hadTau_frWeight, hadTau_charge_selection)
-          self.histogramFile_addBackgrounds[key] = os.path.join(self.outputDir, DKEY_HIST, "addBackgrounds_%s_%s_fakes_mc.root" % \
-            (self.channel, hadTau_charge_selection_and_frWeight))
-          self.cfgFile_addBackgrounds_modified[key] = os.path.join(self.outputDir, DKEY_CFGS, "addBackgrounds_%s_%s_fakes_mc_cfg.py" % \
-            (self.channel, hadTau_charge_selection))
+          self.histogramFile_addBackgrounds[key] = os.path.join(self.outputDir, DKEY_HIST, "addBackgrounds_%s_fakes_mc_%s_%s.root" % \
+            (self.channel, hadTau_selection_and_frWeight, hadTau_charge_selection))
+          self.cfgFile_addBackgrounds_modified[key] = os.path.join(self.outputDir, DKEY_CFGS, "addBackgrounds_%s_fakes_mc_%s_%s_cfg.py" % \
+            (self.channel, hadTau_selection_and_frWeight, hadTau_charge_selection))
           histogramDir = getHistogramDir(hadTau_selection, hadTau_frWeight, hadTau_charge_selection)
           processes_input = []
           for process_name in self.nonfake_backgrounds:

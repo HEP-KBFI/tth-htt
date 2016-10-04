@@ -476,8 +476,10 @@ int main(int argc, char* argv[])
   std::map<std::string, ElectronHistManager*> selElectronHistManager_category; // key = category
   for ( vstring::const_iterator category = categories_e.begin();
 	category != categories_e.end(); ++category ) {
+    TString histogramDir_category = histogramDir.data();
+    histogramDir_category.ReplaceAll("1l_2tau", category->data());
     ElectronHistManager* selElectronHistManager = new ElectronHistManager(makeHistManager_cfg(process_and_genMatch, 
-      Form("%s_%s/sel/electron", category->data(), histogramDir.data()), central_or_shift));
+      Form("%s/sel/electron", category->data(), histogramDir_category.Data()), central_or_shift));
     selElectronHistManager->bookHistograms(fs);
     selElectronHistManager_category[*category] = selElectronHistManager;
   }
@@ -491,8 +493,10 @@ int main(int argc, char* argv[])
   std::map<std::string, MuonHistManager*> selMuonHistManager_category; // key = category
   for ( vstring::const_iterator category = categories_mu.begin();
 	category != categories_mu.end(); ++category ) {
+    TString histogramDir_category = histogramDir.data();
+    histogramDir_category.ReplaceAll("1l_2tau", category->data());
     MuonHistManager* selMuonHistManager = new MuonHistManager(makeHistManager_cfg(process_and_genMatch, 
-      Form("%s_%s/sel/muon", category->data(), histogramDir.data()), central_or_shift));
+      Form("%s/sel/muon", category->data(), histogramDir_category.Data()), central_or_shift));
     selMuonHistManager->bookHistograms(fs);
     selMuonHistManager_category[*category] = selMuonHistManager;
   }
@@ -514,12 +518,14 @@ int main(int argc, char* argv[])
   std::map<std::string, HadTauHistManager*> selHadTauHistManager_sublead_category; // key = category
   for ( vstring::const_iterator category = categories_tau.begin();
 	category != categories_tau.end(); ++category ) {
+    TString histogramDir_category = histogramDir.data();
+    histogramDir_category.ReplaceAll("1l_2tau", category->data());
     HadTauHistManager* selHadTauHistManager_lead = new HadTauHistManager(makeHistManager_cfg(process_and_genMatch, 
-      Form("%s_%s/sel/leadHadTau", category->data(), histogramDir.data()), central_or_shift));
+      Form("%s/sel/leadHadTau", category->data(), histogramDir_category.Data()), central_or_shift));
     selHadTauHistManager_lead->bookHistograms(fs);
     selHadTauHistManager_lead_category[*category] = selHadTauHistManager_lead;
     HadTauHistManager* selHadTauHistManager_sublead = new HadTauHistManager(makeHistManager_cfg(process_and_genMatch, 
-      Form("%s_%s/sel/subleadHadTau", category->data(), histogramDir.data()), central_or_shift));
+      Form("%s/sel/subleadHadTau", category->data(), histogramDir_category.Data()), central_or_shift));
     selHadTauHistManager_sublead->bookHistograms(fs);
     selHadTauHistManager_sublead_category[*category] = selHadTauHistManager_sublead;
   }
@@ -606,7 +612,7 @@ int main(int argc, char* argv[])
     TString histogramDir_category = histogramDir.data();
     histogramDir_category.ReplaceAll("1l_2tau", category->data());
     EvtHistManager_1l_2tau* selEvtHistManager = new EvtHistManager_1l_2tau(makeHistManager_cfg(process_and_genMatch, 
-      Form("%s_%s/sel/evt", category->data(), histogramDir_category.Data()), central_or_shift));
+      Form("%s/sel/evt", category->data(), histogramDir_category.Data()), central_or_shift));
     selEvtHistManager->bookHistograms(fs);
     selEvtHistManager_category[*category] = selEvtHistManager;
   }
