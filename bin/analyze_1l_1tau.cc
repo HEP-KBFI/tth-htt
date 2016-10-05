@@ -444,7 +444,7 @@ int main(int argc, char* argv[])
     TString histogramDir_category = histogramDir.data();
     histogramDir_category.ReplaceAll("1l_1tau", category->data());
     ElectronHistManager* selElectronHistManager = new ElectronHistManager(makeHistManager_cfg(process_and_genMatch, 
-      Form("%s/sel/electron", category->data(), histogramDir_category.Data()), central_or_shift));
+      Form("%s_%s/sel/electron", category->data(), histogramDir_category.Data()), central_or_shift));
     selElectronHistManager->bookHistograms(fs);
     selElectronHistManager_category[*category] = selElectronHistManager;
   }
@@ -461,7 +461,7 @@ int main(int argc, char* argv[])
     TString histogramDir_category = histogramDir.data();
     histogramDir_category.ReplaceAll("1l_1tau", category->data());
     MuonHistManager* selMuonHistManager = new MuonHistManager(makeHistManager_cfg(process_and_genMatch, 
-      Form("%s/sel/muon", category->data(), histogramDir_category.Data()), central_or_shift));
+      Form("%s_%s/sel/muon", category->data(), histogramDir_category.Data()), central_or_shift));
     selMuonHistManager->bookHistograms(fs);
     selMuonHistManager_category[*category] = selMuonHistManager;
   }
@@ -546,7 +546,7 @@ int main(int argc, char* argv[])
     TString histogramDir_category = histogramDir.data();
     histogramDir_category.ReplaceAll("1l_1tau", category->data());
     EvtHistManager_1l_1tau* selEvtHistManager = new EvtHistManager_1l_1tau(makeHistManager_cfg(process_and_genMatch, 
-      Form("%s/sel/evt", category->data(), histogramDir_category.Data()), central_or_shift));
+      Form("%s_%s/sel/evt", category->data(), histogramDir_category.Data()), central_or_shift));
     selEvtHistManager->bookHistograms(fs);
     selEvtHistManager_category[*category] = selEvtHistManager;
   }

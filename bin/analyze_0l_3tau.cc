@@ -531,7 +531,7 @@ int main(int argc, char* argv[])
     TString histogramDir_category = histogramDir.data();
     histogramDir_category.ReplaceAll("0l_3tau", category->data());
     EvtHistManager_0l_3tau* selEvtHistManager = new EvtHistManager_0l_3tau(makeHistManager_cfg(process_and_genMatch, 
-      Form("%s/sel/evt", category->data(), histogramDir_category.Data()), central_or_shift));
+      Form("%s_%s/sel/evt", category->data(), histogramDir_category.Data()), central_or_shift));
     selEvtHistManager->bookHistograms(fs);
     selEvtHistManager_category[*category] = selEvtHistManager;
   }
