@@ -149,6 +149,18 @@ class analyzeConfig_3l_1tau(analyzeConfig):
     lines.append("process.analyze_3l_1tau.apply_hadTauGenMatching = cms.bool(%s)" % apply_hadTauGenMatching)
     if hadTau_frWeight == "enabled":
       lines.append("process.analyze_3l_1tau.applyJetToTauFakeRateWeight = cms.bool(True)")
+      if era == "2015":
+        lines.append("process.analyze_3l_1tau.jetToTauFakeRateWeight.inputFileName = cms.string('tthAnalysis/HiggsToTauTau/data/FR_tau_2015.root')")
+        # CV: use data/MC corrections determined for dR03mvaLoose discriminator,
+        #     as the event statistics in 2015 data is too low to determine data/MC corrections for tighter working-points
+        graphName = "jetToTauFakeRate/dR03mvaLoose/$etaBin/jetToTauFakeRate_mc_hadTaus_pt"
+        fitFunctionName = "jetToTauFakeRate/dR03mvaLoose/$etaBin/fitFunction_data_div_mc_hadTaus_pt"
+        lines.append("process.analyze_3l_1tau.jetToTauFakeRateWeight.lead.graphName = cms.string('%s'" % graphName)
+        lines.append("process.analyze_3l_1tau.jetToTauFakeRateWeight.lead.fitFunctionName = cms.string('%s'" % fitFunctionName)
+      elif era == "2016":
+        lines.append("process.analyze_3l_1tau.jetToTauFakeRateWeight.inputFileName = cms.string('tthAnalysis/HiggsToTauTau/data/FR_tau_2016.root')")
+      else:
+        raise ValueError("Invalid parameter 'era' = %s !!" % era)
     elif hadTau_frWeight != "disabled":
       raise ValueError("Invalid parameter 'hadTau_frWeight' = %s !!" % hadTau_frWeight)
     if hadTau_selection.find("mcClosure") != -1:
