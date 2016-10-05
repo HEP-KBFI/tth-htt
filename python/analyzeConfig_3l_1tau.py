@@ -131,7 +131,7 @@ class analyzeConfig_3l_1tau(analyzeConfig):
     lines.append("process.fwliteOutput.fileName = cms.string('%s')" % os.path.basename(outputFile))
     lines.append("process.analyze_3l_1tau.process = cms.string('%s')" % sample_category)
     histogramDir = getHistogramDir(lepton_selection, hadTau_selection, hadTau_frWeight, charge_selection)
-    lines.append("process.analyze_1l_2tau.histogramDir = cms.string('%s')" % histogramDir)
+    lines.append("process.analyze_3l_1tau.histogramDir = cms.string('%s')" % histogramDir)
     lines.append("process.analyze_3l_1tau.era = cms.string('%s')" % era)
     lines.append("process.analyze_3l_1tau.triggers_1e = cms.vstring(%s)" % self.triggers_1e)
     lines.append("process.analyze_3l_1tau.use_triggers_1e = cms.bool(%s)" % ("1e" in triggers))
