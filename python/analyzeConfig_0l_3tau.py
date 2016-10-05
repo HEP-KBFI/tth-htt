@@ -122,6 +122,7 @@ class analyzeConfig_0l_3tau(analyzeConfig):
     histogramDir = getHistogramDir(hadTau_selection, hadTau_frWeight)
     lines.append("process.analyze_0l_3tau.histogramDir = cms.string('%s')" % histogramDir)
     lines.append("process.analyze_0l_3tau.era = cms.string('%s')" % era)
+    lines.append("process.analyze_0l_3tau.triggers = cms.vstring(%s)" % self.triggers_2tau)
     lines.append("process.analyze_0l_3tau.hadTauSelection = cms.string('%s')" % hadTau_selection)
     lines.append("process.analyze_0l_3tau.hadTauGenMatch = cms.string('%s')" % hadTau_genMatch)
     lines.append("process.analyze_0l_3tau.apply_hadTauGenMatching = cms.bool(%s)" % apply_hadTauGenMatching)
