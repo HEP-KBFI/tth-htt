@@ -37,6 +37,7 @@ process.prepareDatacards = cms.PSet(
             output = cms.string("ttH_2lss_1tau")
         )
     ),
+    makeSubDir = cms.bool(False),
 
     histogramToFit = cms.string("mvaDiscr_2lss"),
     histogramToFit_rebin = cms.int32(1),
