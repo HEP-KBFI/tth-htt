@@ -13,6 +13,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTau.h"
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h"
 #include "tthAnalysis/HiggsToTauTau/interface/TypeTraits.h"
+#include "tthAnalysis/HiggsToTauTau/interface/hltPath.h" // hltPath
 
 enum FloatVariableType { PFMET, PFMETphi, MHT, metLD };
 
@@ -24,6 +25,7 @@ public:
   ~SyncNtupleManager();
 
   void initializeBranches();
+  void initializeHLTBranches(const std::vector<std::vector<hltPath *>> & hltPaths);
   void readRunLumiEvent(UInt_t run,
                         UInt_t lumi,
                         ULong64_t event);
@@ -39,10 +41,12 @@ public:
   void read(std::vector<const RecoJet *> & jets);
   void read(Float_t value,
             FloatVariableType type);
+  void read(const std::vector<std::vector<hltPath *>> & hltPaths);
   void fill();
   void write();
 private:
   void reset(bool is_initializing);
+  std::string hltMangle(const std::string & hltBranchName) const;
 
   TFile * outputFile;
   TTree * outputTree;
@@ -153,6 +157,8 @@ private:
   Float_t PFMETphi;
   Float_t MHT;
   Float_t metLD;
+
+  std::map<std::string, Int_t> hltMap;
 
   Float_t lep0_conept; // missing
   Float_t lep1_conePt; // missing

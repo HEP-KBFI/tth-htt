@@ -935,7 +935,7 @@ int main(int argc, char* argv[])
     preselMEtHistManager.fillHistograms(met_p4, mht_p4, met_LD, evtWeight);
     preselEvtHistManager.fillHistograms(preselElectrons.size(), preselMuons.size(), selHadTaus.size(), 
       selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
-      mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, 
+      mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, -1., -1.,
       mTauTauVis1_presel, mTauTauVis2_presel, evtWeight);
 
 //--- apply final event selection 
@@ -1193,14 +1193,14 @@ int main(int argc, char* argv[])
     selMEtHistManager.fillHistograms(met_p4, mht_p4, met_LD, evtWeight);
     selEvtHistManager.fillHistograms(selElectrons.size(), selMuons.size(), selHadTaus.size(), 
       selJets.size(), selBJets_loose.size(), selBJets_medium.size(), 
-      mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, 
+      mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, -1., -1.,
       mTauTauVis1_presel, mTauTauVis2_presel, evtWeight);
     if ( isSignal ) {
       for ( const auto & kv: decayMode_idString ) {
         if ( std::fabs(genHiggsDecayMode - kv.second) < EPS ) {
           selEvtHistManager_decayMode[kv.first]->fillHistograms(selElectrons.size(), selMuons.size(), selHadTaus.size(), 
             selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
-            mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, 
+            mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, -1., -1.,
             mTauTauVis1_presel, mTauTauVis2_presel, evtWeight);
           break;
         }
@@ -1214,7 +1214,7 @@ int main(int argc, char* argv[])
       assert(selEvtHistManager_genMatch);
       selEvtHistManager_genMatch->fillHistograms(selElectrons.size(), selMuons.size(), selHadTaus.size(), 
         selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
-        mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, 
+        mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, -1., -1., 
 	mTauTauVis1_presel, mTauTauVis2_presel, evtWeight);
     }
 
@@ -1243,7 +1243,7 @@ int main(int argc, char* argv[])
       selElectronHistManager_category["2epp_1tau_btight"]["subleadElectron"]->fillHistograms(selElectrons, evtWeight_pp);
       selEvtHistManager_category["2epp_1tau_btight"]->fillHistograms(selElectrons.size(), selMuons.size(), selHadTaus.size(), 
         selJets.size(), selBJets_loose.size(), selBJets_medium.size(), 
-        mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, 
+        mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, -1., -1., 
         mTauTauVis1_presel, mTauTauVis2_presel, evtWeight_pp);
     } 
     if ( isCategory_2epp_bloose ) {
@@ -1251,7 +1251,7 @@ int main(int argc, char* argv[])
       selElectronHistManager_category["2epp_1tau_bloose"]["subleadElectron"]->fillHistograms(selElectrons, evtWeight_pp);
       selEvtHistManager_category["2epp_1tau_bloose"]->fillHistograms(selElectrons.size(), selMuons.size(), selHadTaus.size(), 
         selJets.size(), selBJets_loose.size(), selBJets_medium.size(), 
-        mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, 
+        mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, -1., -1., 
         mTauTauVis1_presel, mTauTauVis2_presel, evtWeight_pp);
     } 
     if ( isCategory_2emm_btight ) {
@@ -1259,7 +1259,7 @@ int main(int argc, char* argv[])
       selElectronHistManager_category["2emm_1tau_btight"]["subleadElectron"]->fillHistograms(selElectrons, evtWeight_mm);
       selEvtHistManager_category["2emm_1tau_btight"]->fillHistograms(selElectrons.size(), selMuons.size(), selHadTaus.size(), 
         selJets.size(), selBJets_loose.size(), selBJets_medium.size(), 
-        mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, 
+        mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, -1., -1., 
         mTauTauVis1_presel, mTauTauVis2_presel, evtWeight_mm);
     } 
     if ( isCategory_2emm_bloose ) {
@@ -1267,7 +1267,7 @@ int main(int argc, char* argv[])
       selElectronHistManager_category["2emm_1tau_bloose"]["subleadElectron"]->fillHistograms(selElectrons, evtWeight_mm);
       selEvtHistManager_category["2emm_1tau_bloose"]->fillHistograms(selElectrons.size(), selMuons.size(), selHadTaus.size(), 
         selJets.size(), selBJets_loose.size(), selBJets_medium.size(), 
-        mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, 
+        mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, -1., -1., 
         mTauTauVis1_presel, mTauTauVis2_presel, evtWeight_mm);
     } 
     if ( isCategory_1e1mupp_btight ) {
@@ -1275,7 +1275,7 @@ int main(int argc, char* argv[])
       selMuonHistManager_category["1e1mupp_1tau_btight"]["muon"]->fillHistograms(selMuons, evtWeight_pp);
       selEvtHistManager_category["1e1mupp_1tau_btight"]->fillHistograms(selElectrons.size(), selMuons.size(), selHadTaus.size(), 
         selJets.size(), selBJets_loose.size(), selBJets_medium.size(), 
-        mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, 
+        mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, -1., -1., 
         mTauTauVis1_presel, mTauTauVis2_presel, evtWeight_pp);
     } 
     if ( isCategory_1e1mupp_bloose ) {
@@ -1283,7 +1283,7 @@ int main(int argc, char* argv[])
       selMuonHistManager_category["1e1mupp_1tau_bloose"]["muon"]->fillHistograms(selMuons, evtWeight_pp);
       selEvtHistManager_category["1e1mupp_1tau_bloose"]->fillHistograms(selElectrons.size(), selMuons.size(), selHadTaus.size(), 
         selJets.size(), selBJets_loose.size(), selBJets_medium.size(), 
-        mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, 
+        mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, -1., -1., 
         mTauTauVis1_presel, mTauTauVis2_presel, evtWeight_pp);
     } 
     if ( isCategory_1e1mumm_btight ) {
@@ -1291,7 +1291,7 @@ int main(int argc, char* argv[])
       selMuonHistManager_category["1e1mumm_1tau_btight"]["muon"]->fillHistograms(selMuons, evtWeight_mm);
       selEvtHistManager_category["1e1mumm_1tau_btight"]->fillHistograms(selElectrons.size(), selMuons.size(), selHadTaus.size(), 
 	selJets.size(), selBJets_loose.size(), selBJets_medium.size(), 
-        mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, 
+        mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, -1., -1., 
         mTauTauVis1_presel, mTauTauVis2_presel, evtWeight_mm);
     } 
     if ( isCategory_1e1mumm_bloose ) {
@@ -1299,7 +1299,7 @@ int main(int argc, char* argv[])
       selMuonHistManager_category["1e1mumm_1tau_bloose"]["muon"]->fillHistograms(selMuons, evtWeight_mm);
       selEvtHistManager_category["1e1mumm_1tau_bloose"]->fillHistograms(selElectrons.size(), selMuons.size(), selHadTaus.size(), 
         selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
-        mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, 
+        mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, -1., -1., 
         mTauTauVis1_presel, mTauTauVis2_presel, evtWeight_mm);
     } 
     if ( isCategory_2mupp_btight ) {
@@ -1307,7 +1307,7 @@ int main(int argc, char* argv[])
       selMuonHistManager_category["2mupp_1tau_btight"]["subleadMuon"]->fillHistograms(selMuons, evtWeight_pp);
       selEvtHistManager_category["2mupp_1tau_btight"]->fillHistograms(selElectrons.size(), selMuons.size(), selHadTaus.size(),
         selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
-        mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, 
+        mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, -1., -1., 
         mTauTauVis1_presel, mTauTauVis2_presel, evtWeight_pp);
     } 
     if ( isCategory_2mupp_bloose ) {
@@ -1315,7 +1315,7 @@ int main(int argc, char* argv[])
       selMuonHistManager_category["2mupp_1tau_bloose"]["subleadMuon"]->fillHistograms(selMuons, evtWeight_pp);
       selEvtHistManager_category["2mupp_1tau_bloose"]->fillHistograms(selElectrons.size(), selMuons.size(), selHadTaus.size(), 
         selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
-        mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, 
+        mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, -1., -1., 
         mTauTauVis1_presel, mTauTauVis2_presel, evtWeight_pp);
     } 
     if ( isCategory_2mumm_btight ) {
@@ -1323,7 +1323,7 @@ int main(int argc, char* argv[])
       selMuonHistManager_category["2mumm_1tau_btight"]["subleadMuon"]->fillHistograms(selMuons, evtWeight_mm);
       selEvtHistManager_category["2mumm_1tau_btight"]->fillHistograms(selElectrons.size(), selMuons.size(), selHadTaus.size(), 
         selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
-        mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, 
+        mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, -1., -1., 
         mTauTauVis1_presel, mTauTauVis2_presel, evtWeight_mm);
     } 
     if ( isCategory_2mumm_bloose ) {
@@ -1331,7 +1331,7 @@ int main(int argc, char* argv[])
       selMuonHistManager_category["2mumm_1tau_bloose"]["subleadMuon"]->fillHistograms(selMuons, evtWeight_mm);
       selEvtHistManager_category["2mumm_1tau_bloose"]->fillHistograms(selElectrons.size(), selMuons.size(), selHadTaus.size(), 
         selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
-        mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, 
+        mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, -1., -1., 
         mTauTauVis1_presel, mTauTauVis2_presel, evtWeight_mm);
     } 
 

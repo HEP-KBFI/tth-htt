@@ -1,12 +1,12 @@
 import os, logging, sys, getpass
 
 from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2lss_1tau_2015 import samples_2015
-import tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2lss_1tau_2016
+from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2lss_1tau_2016 import samples_2016
 from tthAnalysis.HiggsToTauTau.analyzeConfig_2lss_1tau import analyzeConfig_2lss_1tau
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 
-ERA = "2015"
-#ERA = "2016"
+#ERA = "2015"
+ERA = "2016"
 
 samples = None
 LUMI = None
@@ -15,11 +15,12 @@ if ERA == "2015":
   LUMI =  2.3e+3 # 1/pb
 elif ERA == "2016":
   samples = samples_2016
-  LUMI = 12.9e+3 # 1/pb
+  ##LUMI = 12.9e+3 # 1/pb
+  LUMI =  2.3e+3 # 1/pb, for comparison of event yields with 2015 datacards
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "2016Sep23_dR03mvaTight"
+version = "2016Sep30_dR03mvaTight"
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -85,7 +86,7 @@ if __name__ == '__main__':
     num_parallel_jobs = 4,
     executable_addFakes = "addBackgroundLeptonFakes",
     executable_addFlips = "addBackgroundLeptonFlips", 
-    histograms_to_fit = [ "EventCounter", "numJets", "mvaDiscr_2lss", "mTauTauVis" ])
+    histograms_to_fit = [ "EventCounter", "numJets", "mvaDiscr_2lss", "mvaOutput_2lss_1tau_ttbar_TMVA", "mvaOutput_2lss_1tau_ttbar_sklearn", "mTauTauVis" ])
 
   analysis.create()
 

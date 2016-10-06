@@ -13,7 +13,7 @@
 class RecoJetSelectorBtag
 {
  public:
-  RecoJetSelectorBtag(int era, int index = -1, bool debug = false);
+  RecoJetSelectorBtag(int era, int index, bool debug);
   ~RecoJetSelectorBtag() {}
 
   /**
@@ -33,8 +33,8 @@ class RecoJetSelectorBtagLoose
   : public RecoJetSelectorBtag
 {
  public:
-  RecoJetSelectorBtagLoose(int index = -1, bool debug = false)
-    : RecoJetSelectorBtag(index, debug) 
+  RecoJetSelectorBtagLoose(int era, int index = -1, bool debug = false)
+    : RecoJetSelectorBtag(era, index, debug) 
   {
     if      ( era_ == kEra_2015 ) min_BtagCSV_ = 0.460; // CSV loose WP, cf. https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation76X#Supported_Algorithms_and_Operati
     else if ( era_ == kEra_2016 ) min_BtagCSV_ = 0.460; // CSV loose WP, cf. https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation80X#Supported_Algorithms_and_Operati
@@ -49,7 +49,7 @@ class RecoJetSelectorBtagMedium
 {
  public:
   RecoJetSelectorBtagMedium(int era, int index = -1, bool debug = false)
-    : RecoJetSelectorBtag(index, debug)
+    : RecoJetSelectorBtag(era, index, debug)
   {
     if      ( era_ == kEra_2015 ) min_BtagCSV_ = 0.800; // CSV medium WP, cf. https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation76X#Supported_Algorithms_and_Operati
     else if ( era_ == kEra_2016 ) min_BtagCSV_ = 0.800; // CSV medium WP, cf. https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation80X#Supported_Algorithms_and_Operati

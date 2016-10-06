@@ -675,7 +675,7 @@ TGraphAsymmErrors* compRatioGraph(const std::string& ratioGraphName, const TGrap
     if ( y_denominator ) yErr2Down_ratio += square(yErrUp_denominator/y_numerator);
     double yErrDown_ratio = TMath::Sqrt(yErr2Down_ratio)*y_ratio;
 
-    graphRatio->SetPoint(iPoint, x_ratio, y_ratio - 1.);
+    graphRatio->SetPoint(iPoint, x_ratio, y_ratio);
     graphRatio->SetPointError(iPoint, xErrDown_ratio, xErrUp_ratio, yErrDown_ratio, yErrUp_ratio);
   }
   

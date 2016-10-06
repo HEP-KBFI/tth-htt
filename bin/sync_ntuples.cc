@@ -58,7 +58,7 @@
 //#include "tthAnalysis/HiggsToTauTau/interface/leptonTypes.h" // getLeptonType, kElectron, kMuon
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // isHigherPt, isMatched
 //#include "tthAnalysis/HiggsToTauTau/interface/backgroundEstimation.h" // prob_chargeMisId
-//#include "tthAnalysis/HiggsToTauTau/interface/hltPath.h" // hltPath, create_hltPaths, hltPaths_setBranchAddresses, hltPaths_isTriggered, hltPaths_delete
+#include "tthAnalysis/HiggsToTauTau/interface/hltPath.h" // hltPath, create_hltPaths, hltPaths_setBranchAddresses, hltPaths_isTriggered, hltPaths_delete
 //#include "tthAnalysis/HiggsToTauTau/interface/data_to_MC_corrections.h"
 #include "tthAnalysis/HiggsToTauTau/interface/SyncNtupleManager.h" // SyncNtupleManager
 
@@ -104,26 +104,34 @@ int main(int argc, char* argv[])
 
   std::string treeName = cfg_analyze.getParameter<std::string>("treeName");
   const std::string outputTreeName = cfg_analyze.getParameter<std::string>("outputTreeName");
+  const std::string era_string = cfg_analyze.getParameter<std::string>("era");
 
 //  std::string process_string = cfg_analyze.getParameter<std::string>("process");
 
 //--- declare data-taking period
-  int era = kEra_2015;
+  const int era = [&era_string]() -> int
+  {
+    if     (era_string == "2015") return kEra_2015;
+    else if(era_string == "2016") return kEra_2016;
+    else
+      throw cms::Exception("sync_ntuples")
+        << "Invalid configuration parameter 'era' = " << era_string << '\n';
+  }();
 
-//  vstring triggerNames_1e = cfg_analyze.getParameter<vstring>("triggers_1e");
-//  std::vector<hltPath*> triggers_1e = create_hltPaths(triggerNames_1e);
+  vstring triggerNames_1e = cfg_analyze.getParameter<vstring>("triggers_1e");
+  std::vector<hltPath*> triggers_1e = create_hltPaths(triggerNames_1e);
 //  bool use_triggers_1e = cfg_analyze.getParameter<bool>("use_triggers_1e");
-//  vstring triggerNames_2e = cfg_analyze.getParameter<vstring>("triggers_2e");
-//  std::vector<hltPath*> triggers_2e = create_hltPaths(triggerNames_2e);
+  vstring triggerNames_2e = cfg_analyze.getParameter<vstring>("triggers_2e");
+  std::vector<hltPath*> triggers_2e = create_hltPaths(triggerNames_2e);
 //  bool use_triggers_2e = cfg_analyze.getParameter<bool>("use_triggers_2e");
-//  vstring triggerNames_1mu = cfg_analyze.getParameter<vstring>("triggers_1mu");
-//  std::vector<hltPath*> triggers_1mu = create_hltPaths(triggerNames_1mu);
+  vstring triggerNames_1mu = cfg_analyze.getParameter<vstring>("triggers_1mu");
+  std::vector<hltPath*> triggers_1mu = create_hltPaths(triggerNames_1mu);
 //  bool use_triggers_1mu = cfg_analyze.getParameter<bool>("use_triggers_1mu");
-//  vstring triggerNames_2mu = cfg_analyze.getParameter<vstring>("triggers_2mu");
-//  std::vector<hltPath*> triggers_2mu = create_hltPaths(triggerNames_2mu);
+  vstring triggerNames_2mu = cfg_analyze.getParameter<vstring>("triggers_2mu");
+  std::vector<hltPath*> triggers_2mu = create_hltPaths(triggerNames_2mu);
 //  bool use_triggers_2mu = cfg_analyze.getParameter<bool>("use_triggers_2mu");
-//  vstring triggerNames_1e1mu = cfg_analyze.getParameter<vstring>("triggers_1e1mu");
-//  std::vector<hltPath*> triggers_1e1mu = create_hltPaths(triggerNames_1e1mu);
+  vstring triggerNames_1e1mu = cfg_analyze.getParameter<vstring>("triggers_1e1mu");
+  std::vector<hltPath*> triggers_1e1mu = create_hltPaths(triggerNames_1e1mu);
 //  bool use_triggers_1e1mu = cfg_analyze.getParameter<bool>("use_triggers_1e1mu");
 
 //  enum { kOS, kSS };
@@ -222,11 +230,11 @@ int main(int argc, char* argv[])
   EVT_TYPE event;
   inputTree->SetBranchAddress(EVT_KEY, &event);
 
-//  hltPaths_setBranchAddresses(inputTree, triggers_1e);
-//  hltPaths_setBranchAddresses(inputTree, triggers_2e);
-//  hltPaths_setBranchAddresses(inputTree, triggers_1mu);
-//  hltPaths_setBranchAddresses(inputTree, triggers_2mu);
-//  hltPaths_setBranchAddresses(inputTree, triggers_1e1mu);
+  hltPaths_setBranchAddresses(inputTree, triggers_1e);
+  hltPaths_setBranchAddresses(inputTree, triggers_2e);
+  hltPaths_setBranchAddresses(inputTree, triggers_1mu);
+  hltPaths_setBranchAddresses(inputTree, triggers_2mu);
+  hltPaths_setBranchAddresses(inputTree, triggers_1e1mu);
 
   MET_PT_TYPE met_pt;
   inputTree->SetBranchAddress(MET_PT_KEY, &met_pt);
@@ -443,6 +451,7 @@ int main(int argc, char* argv[])
 
   SyncNtupleManager snm(outputFileName, outputTreeName);
   snm.initializeBranches();
+  snm.initializeHLTBranches({triggers_1e, triggers_1mu, triggers_2e, triggers_2mu, triggers_1e1mu});
 
   int numEntries = inputTree->GetEntries();
   int analyzedEntries = 0;
@@ -588,6 +597,7 @@ int main(int argc, char* argv[])
     snm.read(met_phi, FloatVariableType::PFMETphi);
     snm.read(mht_p4.pt(), FloatVariableType::MHT);
     snm.read(met_LD, FloatVariableType::metLD);
+    snm.read({triggers_1e, triggers_1mu, triggers_2e, triggers_2mu, triggers_1e1mu});
 
 //--- compute event-level weight for data/MC correction of b-tagging efficiency and mistag rate
 //   (using the method "Event reweighting using scale factors calculated with a tag and probe method", 
@@ -840,11 +850,11 @@ int main(int argc, char* argv[])
 //  delete genHadTauReader;
 //  delete genJetReader;
 
-//  hltPaths_delete(triggers_1e);
-//  hltPaths_delete(triggers_2e);
-//  hltPaths_delete(triggers_1mu);
-//  hltPaths_delete(triggers_2mu);
-//  hltPaths_delete(triggers_1e1mu);
+  hltPaths_delete(triggers_1e);
+  hltPaths_delete(triggers_2e);
+  hltPaths_delete(triggers_1mu);
+  hltPaths_delete(triggers_2mu);
+  hltPaths_delete(triggers_1e1mu);
 
   clock.Show("analyze_2lss_1tau");
 

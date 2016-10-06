@@ -131,6 +131,8 @@ int main(int argc, char* argv[])
   std::string process_string = cfg_analyze.getParameter<std::string>("process");
   bool isSignal = ( process_string == "signal" ) ? true : false;
 
+  std::string histogramDir = cfg_analyze.getParameter<std::string>("histogramDir");
+
   std::string era_string = cfg_analyze.getParameter<std::string>("era");
   int era = -1;
   if      ( era_string == "2015" ) era = kEra_2015;
@@ -139,7 +141,7 @@ int main(int argc, char* argv[])
     << "Invalid Configuration parameter 'era' = " << era_string << " !!\n";
 
   vstring triggerNames = cfg_analyze.getParameter<vstring>("triggers");
-  //std::vector<hltPath*> triggers = create_hltPaths(triggerNames);
+  std::vector<hltPath*> triggers = create_hltPaths(triggerNames);
 
   enum { kOS, kSS };
   std::string hadTauChargeSelection_string = cfg_analyze.getParameter<std::string>("hadTauChargeSelection");
@@ -301,7 +303,7 @@ int main(int argc, char* argv[])
     inputTree->SetBranchAddress(GENHIGGSDECAYMODE_KEY, &genHiggsDecayMode);
   }
 
-  //hltPaths_setBranchAddresses(inputTree, triggers);
+  hltPaths_setBranchAddresses(inputTree, triggers);
 
   PUWEIGHT_TYPE pileupWeight;
   if ( isMC ) {
@@ -408,40 +410,39 @@ int main(int argc, char* argv[])
   std::ostream* selEventsFile = new std::ofstream(selEventsFileName_output.data(), std::ios::out);
 
 //--- declare histograms
-  std::string charge_and_hadTauSelection = Form("%s_%s", hadTauChargeSelection_string.data(), hadTauSelection_part1.data());
   HadTauHistManager preselHadTauHistManager(makeHistManager_cfg(process_and_genMatch, 
-    Form("0l_2tau_%s/presel/hadTaus", charge_and_hadTauSelection.data()), central_or_shift));
+    Form("%s/presel/hadTaus", histogramDir.data()), central_or_shift));
   preselHadTauHistManager.bookHistograms(fs);
   HadTauHistManager preselHadTauHistManager_lead(makeHistManager_cfg(process_and_genMatch, 
-    Form("0l_2tau_%s/presel/leadHadTau", charge_and_hadTauSelection.data()), central_or_shift));
+    Form("%s/presel/leadHadTau", histogramDir.data()), central_or_shift));
   preselHadTauHistManager_lead.bookHistograms(fs);
   HadTauHistManager preselHadTauHistManager_sublead(makeHistManager_cfg(process_and_genMatch, 
-    Form("0l_2tau_%s/presel/subleadHadTau", charge_and_hadTauSelection.data()), central_or_shift));
+    Form("%s/presel/subleadHadTau", histogramDir.data()), central_or_shift));
   preselHadTauHistManager_sublead.bookHistograms(fs);
   JetHistManager preselJetHistManager(makeHistManager_cfg(process_and_genMatch, 
-    Form("0l_2tau_%s/presel/jets", charge_and_hadTauSelection.data()), central_or_shift));
+    Form("%s/presel/jets", histogramDir.data()), central_or_shift));
   preselJetHistManager.bookHistograms(fs);
   JetHistManager preselBJet_looseHistManager(makeHistManager_cfg(process_and_genMatch, 
-    Form("0l_2tau_%s/presel/BJets_loose", charge_and_hadTauSelection.data()), central_or_shift));
+    Form("%s/presel/BJets_loose", histogramDir.data()), central_or_shift));
   preselBJet_looseHistManager.bookHistograms(fs);
   JetHistManager preselBJet_mediumHistManager(makeHistManager_cfg(process_and_genMatch, 
-    Form("0l_2tau_%s/presel/BJets_medium", charge_and_hadTauSelection.data()), central_or_shift));
+    Form("%s/presel/BJets_medium", histogramDir.data()), central_or_shift));
   preselBJet_mediumHistManager.bookHistograms(fs);
   MEtHistManager preselMEtHistManager(makeHistManager_cfg(process_and_genMatch, 
-    Form("0l_2tau_%s/presel/met", charge_and_hadTauSelection.data()), central_or_shift));
+    Form("%s/presel/met", histogramDir.data()), central_or_shift));
   preselMEtHistManager.bookHistograms(fs);
   EvtHistManager_0l_2tau preselEvtHistManager(makeHistManager_cfg(process_and_genMatch, 
-    Form("0l_2tau_%s/presel/evt", charge_and_hadTauSelection.data()), central_or_shift));
+    Form("%s/presel/evt", histogramDir.data()), central_or_shift));
   preselEvtHistManager.bookHistograms(fs);
 
   HadTauHistManager selHadTauHistManager(makeHistManager_cfg(process_and_genMatch, 
-    Form("0l_2tau_%s/sel/hadTaus", charge_and_hadTauSelection.data()), central_or_shift));
+    Form("%s/sel/hadTaus", histogramDir.data()), central_or_shift));
   selHadTauHistManager.bookHistograms(fs);
   HadTauHistManager selHadTauHistManager_lead(makeHistManager_cfg(process_and_genMatch, 
-    Form("0l_2tau_%s/sel/leadHadTau", charge_and_hadTauSelection.data()), central_or_shift, 0));
+    Form("%s/sel/leadHadTau", histogramDir.data()), central_or_shift, 0));
   selHadTauHistManager_lead.bookHistograms(fs);
   HadTauHistManager selHadTauHistManager_sublead(makeHistManager_cfg(process_and_genMatch, 
-    Form("0l_2tau_%s/sel/subleadHadTau", charge_and_hadTauSelection.data()), central_or_shift, 1));
+    Form("%s/sel/subleadHadTau", histogramDir.data()), central_or_shift, 1));
   selHadTauHistManager_sublead.bookHistograms(fs);
   vstring categories_tau = {
     "0l_2tau_bloose", "0l_2tau_btight"
@@ -450,55 +451,57 @@ int main(int argc, char* argv[])
   std::map<std::string, HadTauHistManager*> selHadTauHistManager_sublead_category; // key = category
   for ( vstring::const_iterator category = categories_tau.begin();
 	category != categories_tau.end(); ++category ) {
+    TString histogramDir_category = histogramDir.data();
+    histogramDir_category.ReplaceAll("0l_2tau", category->data());
     HadTauHistManager* selHadTauHistManager_lead = new HadTauHistManager(makeHistManager_cfg(process_and_genMatch, 
-      Form("%s_%s/sel/leadHadTau", category->data(), charge_and_hadTauSelection.data()), central_or_shift));
+      Form("%s_%s/sel/leadHadTau", category->data(), histogramDir_category.Data()), central_or_shift));
     selHadTauHistManager_lead->bookHistograms(fs);
     selHadTauHistManager_lead_category[*category] = selHadTauHistManager_lead;
     HadTauHistManager* selHadTauHistManager_sublead = new HadTauHistManager(makeHistManager_cfg(process_and_genMatch, 
-      Form("%s_%s/sel/subleadHadTau", category->data(), charge_and_hadTauSelection.data()), central_or_shift));
+      Form("%s_%s/sel/subleadHadTau", category->data(), histogramDir_category.Data()), central_or_shift));
     selHadTauHistManager_sublead->bookHistograms(fs);
     selHadTauHistManager_sublead_category[*category] = selHadTauHistManager_sublead;
   }
   edm::ParameterSet cfg_selHadTauFakeRateHistManager = makeHistManager_cfg(process_and_genMatch, 
-    Form("0l_2tau_%s/sel/hadTauFakeRates", charge_and_hadTauSelection.data()), central_or_shift);
+    Form("%s/sel/hadTauFakeRates", histogramDir.data()), central_or_shift);
   cfg_selHadTauFakeRateHistManager.addParameter<vdouble>("etaBins_lead", hadTauEtaBins_lead);
   cfg_selHadTauFakeRateHistManager.addParameter<vdouble>("etaBins_sublead", hadTauEtaBins_sublead);
   HadTauFakeRateHistManager selHadTauFakeRateHistManager(cfg_selHadTauFakeRateHistManager);
   selHadTauFakeRateHistManager.bookHistograms(fs);
 
   JetHistManager selJetHistManager(makeHistManager_cfg(process_and_genMatch, 
-    Form("0l_2tau_%s/sel/jets", charge_and_hadTauSelection.data()), central_or_shift));
+    Form("%s/sel/jets", histogramDir.data()), central_or_shift));
   selJetHistManager.bookHistograms(fs);
   JetHistManager selJetHistManager_lead(makeHistManager_cfg(process_and_genMatch, 
-    Form("0l_2tau_%s/sel/leadJet", charge_and_hadTauSelection.data()), central_or_shift, 0));
+    Form("%s/sel/leadJet", histogramDir.data()), central_or_shift, 0));
   selJetHistManager_lead.bookHistograms(fs);
   JetHistManager selJetHistManager_sublead(makeHistManager_cfg(process_and_genMatch, 
-    Form("0l_2tau_%s/sel/subleadJet", charge_and_hadTauSelection.data()), central_or_shift, 1));
+    Form("%s/sel/subleadJet", histogramDir.data()), central_or_shift, 1));
   selJetHistManager_sublead.bookHistograms(fs);
 
   JetHistManager selBJet_looseHistManager(makeHistManager_cfg(process_and_genMatch, 
-    Form("0l_2tau_%s/sel/BJets_loose", charge_and_hadTauSelection.data()), central_or_shift));
+    Form("%s/sel/BJets_loose", histogramDir.data()), central_or_shift));
   selBJet_looseHistManager.bookHistograms(fs);
   JetHistManager selBJet_looseHistManager_lead(makeHistManager_cfg(process_and_genMatch, 
-    Form("0l_2tau_%s/sel/leadBJet_loose", charge_and_hadTauSelection.data()), central_or_shift, 0));
+    Form("%s/sel/leadBJet_loose", histogramDir.data()), central_or_shift, 0));
   selBJet_looseHistManager_lead.bookHistograms(fs);
   JetHistManager selBJet_looseHistManager_sublead(makeHistManager_cfg(process_and_genMatch, 
-    Form("0l_2tau_%s/sel/subleadBJet_loose", charge_and_hadTauSelection.data()), central_or_shift, 1));
+    Form("%s/sel/subleadBJet_loose", histogramDir.data()), central_or_shift, 1));
   selBJet_looseHistManager_sublead.bookHistograms(fs);
   JetHistManager selBJet_mediumHistManager(makeHistManager_cfg(process_and_genMatch, 
-    Form("0l_2tau_%s/sel/BJets_medium", charge_and_hadTauSelection.data()), central_or_shift));
+    Form("%s/sel/BJets_medium", histogramDir.data()), central_or_shift));
   selBJet_mediumHistManager.bookHistograms(fs);
 
   MEtHistManager selMEtHistManager(makeHistManager_cfg(process_and_genMatch, 
-    Form("0l_2tau_%s/sel/met", charge_and_hadTauSelection.data()), central_or_shift));
+    Form("%s/sel/met", histogramDir.data()), central_or_shift));
   selMEtHistManager.bookHistograms(fs);
 
   MVAInputVarHistManager selMVAInputVarHistManager(makeHistManager_cfg(process_and_genMatch, 
-    Form("0l_2tau_%s/sel/mvaInputVariables", charge_and_hadTauSelection.data()), central_or_shift));
+    Form("%s/sel/mvaInputVariables", histogramDir.data()), central_or_shift));
   selMVAInputVarHistManager.bookHistograms(fs, mvaInputVariables_0l_2tau_ttbar);
 
   EvtHistManager_0l_2tau selEvtHistManager(makeHistManager_cfg(process_and_genMatch, 
-    Form("0l_2tau_%s/sel/evt", charge_and_hadTauSelection.data()), central_or_shift));
+    Form("%s/sel/evt", histogramDir.data()), central_or_shift));
   selEvtHistManager.bookHistograms(fs);
   std::map<std::string, EvtHistManager_0l_2tau*> selEvtHistManager_decayMode; // key = decay mode
   const std::map<std::string, GENHIGGSDECAYMODE_TYPE> decayMode_idString = {
@@ -515,7 +518,7 @@ int main(int argc, char* argv[])
       std::string decayMode_and_genMatch = *decayMode;
       if ( hadTauGenMatchSelection_string != "all" && apply_hadTauGenMatching ) decayMode_and_genMatch += hadTauGenMatchSelection_string;
       EvtHistManager_0l_2tau* selEvtHistManager_ptr = new EvtHistManager_0l_2tau(makeHistManager_cfg(decayMode_and_genMatch,
-        Form("0l_2tau_%s/sel/evt", charge_and_hadTauSelection.data()), central_or_shift));
+        Form("%s/sel/evt", histogramDir.data()), central_or_shift));
       selEvtHistManager_ptr->bookHistograms(fs);
       selEvtHistManager_decayMode[*decayMode] = selEvtHistManager_ptr;
     }
@@ -527,7 +530,7 @@ int main(int argc, char* argv[])
       if ( hadTauGenMatch_definition->idx_ == kGen_All2 || hadTauGenMatch_definition->idx_ == kGen_Undefined2 ) continue;
       std::string process_and_genMatch = process_string + hadTauGenMatch_definition->name_;
       EvtHistManager_0l_2tau* selEvtHistManager_ptr = new EvtHistManager_0l_2tau(makeHistManager_cfg(process_and_genMatch, 
-        Form("0l_2tau_%s/sel/evt", charge_and_hadTauSelection.data()), central_or_shift));
+        Form("%s/sel/evt", histogramDir.data()), central_or_shift));
       selEvtHistManager_ptr->bookHistograms(fs);
       selEvtHistManagers_genMatch[hadTauGenMatch_definition->idx_] = selEvtHistManager_ptr;
     }
@@ -538,8 +541,10 @@ int main(int argc, char* argv[])
   std::map<std::string, EvtHistManager_0l_2tau*> selEvtHistManager_category; // key = category
   for ( vstring::const_iterator category = categories_evt.begin();
 	category != categories_evt.end(); ++category ) {
+    TString histogramDir_category = histogramDir.data();
+    histogramDir_category.ReplaceAll("0l_2tau", category->data());
     EvtHistManager_0l_2tau* selEvtHistManager = new EvtHistManager_0l_2tau(makeHistManager_cfg(process_and_genMatch, 
-      Form("%s_%s/sel/evt", category->data(), charge_and_hadTauSelection.data()), central_or_shift));
+      Form("%s_%s/sel/evt", category->data(), histogramDir_category.Data()), central_or_shift));
     selEvtHistManager->bookHistograms(fs);
     selEvtHistManager_category[*category] = selEvtHistManager;
   }
@@ -549,13 +554,13 @@ int main(int argc, char* argv[])
   LHEInfoHistManager* lheInfoHistManager = 0;
   if ( isMC ) {
     genEvtHistManager_beforeCuts = new GenEvtHistManager(makeHistManager_cfg(process_and_genMatch, 
-      Form("0l_2tau_%s/unbiased/genEvt", charge_and_hadTauSelection.data()), central_or_shift));
+      Form("%s/unbiased/genEvt", histogramDir.data()), central_or_shift));
     genEvtHistManager_beforeCuts->bookHistograms(fs);
     genEvtHistManager_afterCuts = new GenEvtHistManager(makeHistManager_cfg(process_and_genMatch, 
-      Form("0l_2tau_%s/sel/genEvt", charge_and_hadTauSelection.data()), central_or_shift));
+      Form("%s/sel/genEvt", histogramDir.data()), central_or_shift));
     genEvtHistManager_afterCuts->bookHistograms(fs);
     lheInfoHistManager = new LHEInfoHistManager(makeHistManager_cfg(process_and_genMatch, 
-      Form("0l_2tau_%s/sel/lheInfo", charge_and_hadTauSelection.data()), central_or_shift));
+      Form("%s/sel/lheInfo", histogramDir.data()), central_or_shift));
     lheInfoHistManager->bookHistograms(fs);
   }
 
@@ -598,8 +603,8 @@ int main(int argc, char* argv[])
     }
 
     if ( apply_trigger_bits ) {
-      //bool isTriggered = hltPaths_isTriggered(triggers);
-      //if ( !isTriggered ) continue;
+      bool isTriggered = hltPaths_isTriggered(triggers);
+      if ( !isTriggered ) continue;
       cutFlowTable.update("trigger");
     }
 
@@ -747,8 +752,8 @@ int main(int argc, char* argv[])
     preselHadTauHistManager_lead.fillHistograms(preselHadTaus, evtWeight);
     preselHadTauHistManager_sublead.fillHistograms(preselHadTaus, evtWeight);
     preselJetHistManager.fillHistograms(selJets, evtWeight);
-    selBJet_looseHistManager.fillHistograms(selBJets_loose, evtWeight);
-    selBJet_mediumHistManager.fillHistograms(selBJets_medium, evtWeight);
+    preselBJet_looseHistManager.fillHistograms(selBJets_loose, evtWeight);
+    preselBJet_mediumHistManager.fillHistograms(selBJets_medium, evtWeight);
     preselMEtHistManager.fillHistograms(met_p4, mht_p4, met_LD, evtWeight);
     preselEvtHistManager.fillHistograms(preselElectrons.size(), preselMuons.size(), selHadTaus.size(), 
       selJets.size(), selBJets_loose.size(), selBJets_medium.size(),

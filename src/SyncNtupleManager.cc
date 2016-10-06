@@ -3,7 +3,11 @@
 #include <algorithm> // std::min()
 #include <type_traits> // std::remove_pointer<>
 
+#include <boost/algorithm/string/predicate.hpp> // boost::starts_with()
+
 #include <TString.h> // Form()
+
+#include <FWCore/Utilities/interface/Exception.h> // cms::Exception
 
 
 SyncNtupleManager::SyncNtupleManager(const std::string & outputFileName,
@@ -250,6 +254,17 @@ SyncNtupleManager::initializeBranches()
 }
 
 void
+SyncNtupleManager::initializeHLTBranches(const std::vector<std::vector<hltPath *>> & hltPaths)
+{
+  for(const auto & hltVector: hltPaths)
+    for(const auto & hlt: hltVector)
+      hltMap[hlt -> branchName_] = -1;
+  for(auto & kv: hltMap)
+    outputTree -> Branch(hltMangle(kv.first).c_str(), &(hltMap[kv.first]),
+                         Form("%s/%s", hltMangle(kv.first).c_str(), Traits<decltype(kv.second)>::TYPE_NAME));
+}
+
+void
 SyncNtupleManager::readRunLumiEvent(UInt_t run_,
                                     UInt_t lumi_,
                                     ULong64_t event_)
@@ -450,6 +465,14 @@ SyncNtupleManager::read(Float_t value,
 }
 
 void
+SyncNtupleManager::read(const std::vector<std::vector<hltPath *>> & hltPaths)
+{
+  for(const auto & hltVector: hltPaths)
+    for(const auto & hlt: hltVector)
+      hltMap[hlt -> branchName_] = hlt -> value_;
+}
+
+void
 SyncNtupleManager::reset(bool is_initializing)
 {
   nEvent = 0;
@@ -577,6 +600,18 @@ SyncNtupleManager::reset(bool is_initializing)
   avg_dr_jet = placeholder_value;
   MVA_2lss_ttV = placeholder_value;
   MVA_2lss_ttbar = placeholder_value;
+
+  for(auto & kv: hltMap)
+    hltMap[kv.first] = -1;
+}
+
+std::string
+SyncNtupleManager::hltMangle(const std::string & hltBranchName) const
+{
+  if(! boost::starts_with(hltBranchName, "HLT_BIT_HLT"))
+    throw cms::Exception("sync_ntuple") << "Invalid HLT branch name: "
+                                        << hltBranchName;
+  return hltBranchName.substr(8);
 }
 
 void

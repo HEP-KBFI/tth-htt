@@ -540,13 +540,13 @@ int main(int argc, char* argv[])
   LHEInfoHistManager* lheInfoHistManager = 0;
   if ( isMC ) {
     genEvtHistManager_beforeCuts = new GenEvtHistManager(makeHistManager_cfg(process_string, 
-      Form("jetToTauFakeRate%s/unbiased/genEvt", chargeSelection_string.data()), central_or_shift));
+      Form("jetToTauFakeRate_%s/unbiased/genEvt", chargeSelection_string.data()), central_or_shift));
     genEvtHistManager_beforeCuts->bookHistograms(fs);
     genEvtHistManager_afterCuts = new GenEvtHistManager(makeHistManager_cfg(process_string, 
-      Form("jetToTauFakeRate%s/sel/genEvt", chargeSelection_string.data()), central_or_shift));
+      Form("jetToTauFakeRate_%s/sel/genEvt", chargeSelection_string.data()), central_or_shift));
     genEvtHistManager_afterCuts->bookHistograms(fs);
     lheInfoHistManager = new LHEInfoHistManager(makeHistManager_cfg(process_string, 
-      Form("jetToTauFakeRate%s/sel/lheInfo", chargeSelection_string.data()), central_or_shift));
+      Form("jetToTauFakeRate_%s/sel/lheInfo", chargeSelection_string.data()), central_or_shift));
     lheInfoHistManager->bookHistograms(fs);
   }
 
