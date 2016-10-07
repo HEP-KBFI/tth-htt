@@ -202,6 +202,7 @@ class analyzeConfig:
     lines.append("process.fwliteOutput.fileName = cms.string('%s')" % datacardFile)
     lines.append("process.prepareDatacards.processesToCopy = cms.vstring(%s)" % self.prep_dcard_processesToCopy)
     lines.append("process.prepareDatacards.signals = cms.vstring(%s)" % self.prep_dcard_signals)
+    lines.append("process.prepareDatacards.makeSubDir = cms.bool(False)")
     lines.append("process.prepareDatacards.categories = cms.VPSet(")
     lines.append("    cms.PSet(")
     lines.append("        input = cms.string('%s/sel/evt')," % self.histogramDir_prep_dcard)
