@@ -3,6 +3,7 @@
 
 #include <string> // std::string
 #include <vector> // std::vector<>
+#include <map> // std::map<,>
 
 #include <TFile.h> // TFile
 #include <TTree.h> // TTree
@@ -15,7 +16,8 @@
 #include "tthAnalysis/HiggsToTauTau/interface/TypeTraits.h"
 #include "tthAnalysis/HiggsToTauTau/interface/hltPath.h" // hltPath
 
-enum FloatVariableType { PFMET, PFMETphi, MHT, metLD };
+enum FloatVariableType { PFMET, PFMETphi, MHT, metLD, mvaOutput_ttV, mvaOutput_ttbar,
+                         mu0_conept, mu1_conept, ele0_conept, ele1_conept             };
 
 class SyncNtupleManager
 {
@@ -39,6 +41,7 @@ public:
             std::vector<const RecoElectron *> & mvabased_electrons);
   void read(std::vector<const RecoHadTau *> & hadtaus);
   void read(std::vector<const RecoJet *> & jets);
+  void read(const std::map<std::string, Double_t> & mvaInputs);
   void read(Float_t value,
             FloatVariableType type);
   void read(const std::vector<std::vector<hltPath *>> & hltPaths);
@@ -50,7 +53,7 @@ private:
 
   TFile * outputFile;
   TTree * outputTree;
-  const Int_t placeholder_value;
+  static const Int_t placeholder_value;
 
   const Int_t nof_mus;
   const Int_t nof_eles;
@@ -160,14 +163,18 @@ private:
 
   std::map<std::string, Int_t> hltMap;
 
-  Float_t lep0_conept; // missing
-  Float_t lep1_conePt; // missing
-  Float_t mindr_lep0_jet; // missing
-  Float_t mindr_lep1_jet; // missing
-  Float_t MT_met_lep0; // missing
-  Float_t avg_dr_jet; // missing
-  Float_t MVA_2lss_ttV; // missing
-  Float_t MVA_2lss_ttbar; // missing
+  Float_t lep0_conept;
+  Float_t lep1_conept;
+  Float_t mu0_conept_;
+  Float_t mu1_conept_;
+  Float_t ele0_conept_;
+  Float_t ele1_conept_;
+  Float_t mindr_lep0_jet;
+  Float_t mindr_lep1_jet;
+  Float_t MT_met_lep0;
+  Float_t avg_dr_jet;
+  Float_t MVA_2lss_ttV;
+  Float_t MVA_2lss_ttbar;
 };
 
 #endif // SYNCNTUPLEMANAGER_H

@@ -9,11 +9,11 @@
 
 #include <FWCore/Utilities/interface/Exception.h> // cms::Exception
 
+const Int_t SyncNtupleManager::placeholder_value = -9999;
 
 SyncNtupleManager::SyncNtupleManager(const std::string & outputFileName,
                                      const std::string & outputTreeName)
-  : placeholder_value(-9999)
-  , nof_mus(2)
+  : nof_mus(2)
   , nof_eles(2)
   , nof_taus(2)
   , nof_jets(4)
@@ -239,7 +239,11 @@ SyncNtupleManager::initializeBranches()
     outputTree -> Branch("metLD", &(metLD), Form("metLD/%s", Traits<decltype(metLD)>::TYPE_NAME));
 
     outputTree -> Branch("lep0_conept", &(lep0_conept), Form("lep0_conept/%s", Traits<decltype(lep0_conept)>::TYPE_NAME));
-    outputTree -> Branch("lep1_conePt", &(lep1_conePt), Form("lep1_conePt/%s", Traits<decltype(lep1_conePt)>::TYPE_NAME));
+    outputTree -> Branch("lep1_conept", &(lep1_conept), Form("lep1_conept/%s", Traits<decltype(lep1_conept)>::TYPE_NAME));
+    outputTree -> Branch("mu0_conept", &(mu0_conept_), Form("mu0_conept/%s", Traits<decltype(mu0_conept_)>::TYPE_NAME));
+    outputTree -> Branch("mu1_conept", &(mu1_conept_), Form("mu1_conept/%s", Traits<decltype(mu1_conept_)>::TYPE_NAME));
+    outputTree -> Branch("ele0_conept", &(ele0_conept_), Form("ele0_conept/%s", Traits<decltype(ele0_conept_)>::TYPE_NAME));
+    outputTree -> Branch("ele1_conept", &(ele1_conept_), Form("ele1_conept/%s", Traits<decltype(ele1_conept_)>::TYPE_NAME));
     outputTree -> Branch("mindr_lep0_jet", &(mindr_lep0_jet), Form("mindr_lep0_jet/%s", Traits<decltype(mindr_lep0_jet)>::TYPE_NAME));
     outputTree -> Branch("mindr_lep1_jet", &(mindr_lep1_jet), Form("mindr_lep1_jet/%s", Traits<decltype(mindr_lep1_jet)>::TYPE_NAME));
     outputTree -> Branch("MT_met_lep0", &(MT_met_lep0), Form("MT_met_lep0/%s", Traits<decltype(MT_met_lep0)>::TYPE_NAME));
@@ -455,13 +459,30 @@ SyncNtupleManager::read(std::vector<const RecoJet *> & jets)
 }
 
 void
+SyncNtupleManager::read(const std::map<std::string, Double_t> & mvaInputs)
+{
+  if(mvaInputs.find("LepGood_conePt[iF_Recl[0]]") != mvaInputs.end()) lep0_conept    = static_cast<decltype(lep0_conept)>   (mvaInputs.at("LepGood_conePt[iF_Recl[0]]"));
+  if(mvaInputs.find("LepGood_conePt[iF_Recl[1]]") != mvaInputs.end()) lep1_conept    = static_cast<decltype(lep1_conept)>   (mvaInputs.at("LepGood_conePt[iF_Recl[1]]"));
+  if(mvaInputs.find("mindr_lep1_jet")             != mvaInputs.end()) mindr_lep0_jet = static_cast<decltype(mindr_lep0_jet)>(mvaInputs.at("mindr_lep1_jet"));
+  if(mvaInputs.find("mindr_lep2_jet")             != mvaInputs.end()) mindr_lep1_jet = static_cast<decltype(mindr_lep1_jet)>(mvaInputs.at("mindr_lep2_jet"));
+  if(mvaInputs.find("MT_met_lep1")                != mvaInputs.end()) MT_met_lep0    = static_cast<decltype(MT_met_lep0)>   (mvaInputs.at("MT_met_lep1"));
+  if(mvaInputs.find("avg_dr_jet")                 != mvaInputs.end()) avg_dr_jet     = static_cast<decltype(avg_dr_jet)>    (mvaInputs.at("avg_dr_jet"));
+}
+
+void
 SyncNtupleManager::read(Float_t value,
                         FloatVariableType type)
 {
-  if     (type == FloatVariableType::PFMET)    PFMET = value;
-  else if(type == FloatVariableType::PFMETphi) PFMETphi = value;
-  else if(type == FloatVariableType::MHT)      MHT = value;
-  else if(type == FloatVariableType::metLD)    metLD = value;
+  if     (type == FloatVariableType::PFMET)           PFMET          = value;
+  else if(type == FloatVariableType::PFMETphi)        PFMETphi       = value;
+  else if(type == FloatVariableType::MHT)             MHT            = value;
+  else if(type == FloatVariableType::metLD)           metLD          = value;
+  else if(type == FloatVariableType::mvaOutput_ttV)   MVA_2lss_ttV   = value;
+  else if(type == FloatVariableType::mvaOutput_ttbar) MVA_2lss_ttbar = value;
+  else if(type == FloatVariableType::mu0_conept)      mu0_conept_    = value;
+  else if(type == FloatVariableType::mu1_conept)      mu1_conept_    = value;
+  else if(type == FloatVariableType::ele0_conept)     ele0_conept_   = value;
+  else if(type == FloatVariableType::ele1_conept)     ele1_conept_   = value;
 }
 
 void
@@ -593,7 +614,11 @@ SyncNtupleManager::reset(bool is_initializing)
   metLD = placeholder_value;
 
   lep0_conept = placeholder_value;
-  lep1_conePt = placeholder_value;
+  lep1_conept = placeholder_value;
+  mu0_conept_ = placeholder_value;
+  mu1_conept_ = placeholder_value;
+  ele0_conept_ = placeholder_value;
+  ele1_conept_ = placeholder_value;
   mindr_lep0_jet = placeholder_value;
   mindr_lep1_jet = placeholder_value;
   MT_met_lep0 = placeholder_value;
