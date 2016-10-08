@@ -16,8 +16,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/TypeTraits.h"
 #include "tthAnalysis/HiggsToTauTau/interface/hltPath.h" // hltPath
 
-enum FloatVariableType { PFMET, PFMETphi, MHT, metLD, mvaOutput_ttV, mvaOutput_ttbar,
-                         mu0_conept, mu1_conept, ele0_conept, ele1_conept             };
+enum FloatVariableType { PFMET, PFMETphi, MHT, metLD, mvaOutput_ttV, mvaOutput_ttbar };
 
 class SyncNtupleManager
 {
@@ -85,6 +84,7 @@ private:
   Float_t * mu_dz;
   Float_t * mu_segmentCompatibility;
   Float_t * mu_leptonMVA;
+  Float_t * mu_conept;
   Int_t * mu_mediumID;
 #ifdef DPT_DIV_PT
   Float_t * mu_dpt_div_pt;
@@ -114,6 +114,7 @@ private:
   Float_t * ele_dz;
   Float_t * ele_ntMVAeleID;
   Float_t * ele_leptonMVA;
+  Float_t * ele_conept;
   Int_t * ele_isChargeConsistent;
   Int_t * ele_passesConversionVeto;
   Int_t * ele_nMissingHits;
@@ -148,6 +149,7 @@ private:
   Int_t * tau_againstElectronLooseMVA6;
   Int_t * tau_againstElectronMediumMVA6;
   Int_t * tau_againstElectronTightMVA6;
+  Int_t * tau_againstElectronVTightMVA6;
 
   Int_t n_presel_jet;
   Float_t * jet_pt;
@@ -165,14 +167,11 @@ private:
 
   Float_t lep0_conept;
   Float_t lep1_conept;
-  Float_t mu0_conept_;
-  Float_t mu1_conept_;
-  Float_t ele0_conept_;
-  Float_t ele1_conept_;
   Float_t mindr_lep0_jet;
   Float_t mindr_lep1_jet;
   Float_t MT_met_lep0;
   Float_t avg_dr_jet;
+  Float_t n_jet25_recl;
   Float_t MVA_2lss_ttV;
   Float_t MVA_2lss_ttbar;
 };

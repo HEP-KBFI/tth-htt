@@ -328,21 +328,11 @@ int main(int argc, char* argv[])
       mvaInputs["MT_met_lep1"]                = comp_MT_met_lep1(*preselLepton_lead, met_pt, met_phi);
       mvaInputs["LepGood_conePt[iF_Recl[0]]"] = comp_lep1_conePt(*preselLepton_lead);
       mvaInputs["mindr_lep1_jet"]             = comp_mindr_lep1_jet(*preselLepton_lead, selJets);
-      switch (getLeptonType(preselLepton_lead -> pdgId_))
-      {
-        case kMuon:     snm.read(mvaInputs.at("LepGood_conePt[iF_Recl[0]]"), FloatVariableType::mu0_conept);  break;
-        case kElectron: snm.read(mvaInputs.at("LepGood_conePt[iF_Recl[0]]"), FloatVariableType::ele0_conept); break;
-      }
     }
     if(preselLepton_sublead)
     {
       mvaInputs["LepGood_conePt[iF_Recl[1]]"] = comp_lep2_conePt(*preselLepton_sublead);
       mvaInputs["mindr_lep2_jet"]             = comp_mindr_lep2_jet(*preselLepton_sublead, selJets);
-      switch (getLeptonType(preselLepton_sublead -> pdgId_))
-      {
-        case kMuon:     snm.read(mvaInputs.at("LepGood_conePt[iF_Recl[1]]"), FloatVariableType::mu1_conept);  break;
-        case kElectron: snm.read(mvaInputs.at("LepGood_conePt[iF_Recl[1]]"), FloatVariableType::ele1_conept); break;
-      }
     }
     mvaInputs["nJet25_Recl"]     = comp_n_jet25_recl(selJets);
     mvaInputs["avg_dr_jet"]      = comp_avg_dr_jet(selJets);
@@ -366,7 +356,8 @@ int main(int argc, char* argv[])
     ++selectedEntries;
   }
   snm.write();
-  std::cout << "num. Entries = " << numEntries << "\n analyzed = " << analyzedEntries << '\n';
+  std::cout << "num. Entries = " << numEntries << "\n analyzed = " << analyzedEntries << '\n'
+            << "Wrote file = " << outputFileName << '\n';
 
   delete run_lumi_eventSelector;
   delete selEventsFile;
