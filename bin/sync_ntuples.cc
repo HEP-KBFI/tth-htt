@@ -82,6 +82,7 @@ int main(int argc, char* argv[])
   const std::string treeName = cfg_analyze.getParameter<std::string>("treeName");
   const std::string outputTreeName = cfg_analyze.getParameter<std::string>("outputTreeName");
   const std::string era_string = cfg_analyze.getParameter<std::string>("era");
+  const bool debug = cfg_analyze.getParameter<bool>("debug");
 
 //--- declare data-taking period
   const int era = [&era_string, &argv]() -> int
@@ -177,7 +178,7 @@ int main(int argc, char* argv[])
   RecoElectronReader* electronReader = new RecoElectronReader("nselLeptons", "selLeptons");
   electronReader->setBranchAddresses(inputTree);
   RecoElectronCollectionCleaner electronCleaner(0.05); // KE: 0.3 -> 0.05
-  RecoElectronCollectionSelectorLoose preselElectronSelector;
+  RecoElectronCollectionSelectorLoose preselElectronSelector(-1, debug);
   RecoElectronCollectionSelectorFakeable fakeableElectronSelector(era);
   RecoElectronCollectionSelectorCutBased cutBasedElectronSelector;
   RecoElectronCollectionSelectorMVABased mvaBasedElectronSelector;

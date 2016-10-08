@@ -7,9 +7,9 @@ process = cms.PSet()
 process.fwliteInput = cms.PSet(
 #    fileNames = cms.vstring('/home/karl/VHbbNtuples_7_6_x3/CMSSW_7_6_3/src/VHbbAnalysis/Heppy/test/Loop_1/tree.root'),
 #    fileNames = cms.vstring('/home/karl/VHbbNtuples_7_6_x3/CMSSW_7_6_3/src/VHbbAnalysis/Heppy/test/Loop_2/tree.root'),
-    fileNames = cms.vstring('/hdfs/local/lucia/VHBBHeppyV24bis/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/VHBB_HEPPY_V24bis_ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_Py8_mWCutfix__spr16MAv2-puspr16_HLT_80r2as_v14_ext1-v1/160911_223711/0000/tree_1.root'),
+    fileNames = cms.vstring('/hdfs/local/karl/syncNtuples/RunIISpring16MiniAODv2/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/00CD6E0F-003B-E611-9817-002590DE6E8A.root'),
     maxEvents = cms.int32(-1),
-    outputEvery = cms.uint32(100000)
+    outputEvery = cms.uint32(10000)
 )
 
 process.fwliteOutput = cms.PSet(
@@ -39,5 +39,7 @@ process.syncNtuple = cms.PSet(
     triggers_1e1mu = cms.vstring('HLT_BIT_HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v', 'HLT_BIT_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v'),
 
     selEventsFileName_input = cms.string(''),
-    selEventsFileName_output = cms.string('')
+    selEventsFileName_output = cms.string(''),
+
+    debug = cms.bool(False) # set it to True if you select only few events
 )
