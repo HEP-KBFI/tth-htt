@@ -177,7 +177,7 @@ int main(int argc, char* argv[])
 
   RecoElectronReader* electronReader = new RecoElectronReader("nselLeptons", "selLeptons");
   electronReader->setBranchAddresses(inputTree);
-  RecoElectronCollectionCleaner electronCleaner(0.05); // KE: 0.3 -> 0.05
+  RecoElectronCollectionCleaner electronCleaner(0.3); // KE: 0.05 -> 0.3
   RecoElectronCollectionSelectorLoose preselElectronSelector(-1, debug);
   RecoElectronCollectionSelectorFakeable fakeableElectronSelector(era);
   RecoElectronCollectionSelectorCutBased cutBasedElectronSelector;
@@ -185,14 +185,14 @@ int main(int argc, char* argv[])
 
   RecoHadTauReader* hadTauReader = new RecoHadTauReader(era, "nTauGood", "TauGood");
   hadTauReader->setBranchAddresses(inputTree);
-  RecoHadTauCollectionCleaner hadTauCleaner(0.4); // KE: 0.3 -> 0.4
+  RecoHadTauCollectionCleaner hadTauCleaner(0.3); // KE: 0.4 -> 0.3
   RecoHadTauCollectionSelectorLoose hadTauSelector; // KE: Tight -> Loose
   
   RecoJetReader* jetReader = new RecoJetReader(era, "nJet", "Jet");
   jetReader->setJetPt_central_or_shift(jetPt_option);
   jetReader->setBranchName_BtagWeight("");
   jetReader->setBranchAddresses(inputTree);
-  RecoJetCollectionCleaner jetCleaner(0.4); // KE: 0.5 -> 0.4
+  RecoJetCollectionCleaner jetCleaner(0.5); // KE: 0.4 -> 0.5
   RecoJetCollectionSelector jetSelector;  
 
 //--- initialize BDTs used to discriminate ttH vs. ttV and ttH vs. ttbar 
