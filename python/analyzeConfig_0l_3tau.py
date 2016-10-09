@@ -134,12 +134,12 @@ class analyzeConfig_0l_3tau(analyzeConfig):
         #     as the event statistics in 2015 data is too low to determine data/MC corrections for tighter working-points
         graphName = "jetToTauFakeRate/dR03mvaLoose/$etaBin/jetToTauFakeRate_mc_hadTaus_pt"
         fitFunctionName = "jetToTauFakeRate/dR03mvaLoose/$etaBin/fitFunction_data_div_mc_hadTaus_pt"
-        lines.append("process.analyze_0l_3tau.jetToTauFakeRateWeight.lead.graphName = cms.string('%s'" % graphName)
-        lines.append("process.analyze_0l_3tau.jetToTauFakeRateWeight.lead.fitFunctionName = cms.string('%s'" % fitFunctionName)
-        lines.append("process.analyze_0l_3tau.jetToTauFakeRateWeight.sublead.graphName = cms.string('%s'" % graphName)
-        lines.append("process.analyze_0l_3tau.jetToTauFakeRateWeight.sublead.fitFunctionName = cms.string('%s'" % fitFunctionName)
-        lines.append("process.analyze_0l_3tau.jetToTauFakeRateWeight.third.graphName = cms.string('%s'" % graphName)
-        lines.append("process.analyze_0l_3tau.jetToTauFakeRateWeight.third.fitFunctionName = cms.string('%s'" % fitFunctionName)
+        lines.append("process.analyze_0l_3tau.jetToTauFakeRateWeight.lead.graphName = cms.string('%s')" % graphName)
+        lines.append("process.analyze_0l_3tau.jetToTauFakeRateWeight.lead.fitFunctionName = cms.string('%s')" % fitFunctionName)
+        lines.append("process.analyze_0l_3tau.jetToTauFakeRateWeight.sublead.graphName = cms.string('%s')" % graphName)
+        lines.append("process.analyze_0l_3tau.jetToTauFakeRateWeight.sublead.fitFunctionName = cms.string('%s')" % fitFunctionName)
+        lines.append("process.analyze_0l_3tau.jetToTauFakeRateWeight.third.graphName = cms.string('%s')" % graphName)
+        lines.append("process.analyze_0l_3tau.jetToTauFakeRateWeight.third.fitFunctionName = cms.string('%s')" % fitFunctionName)
       elif era == "2016":
         lines.append("process.analyze_0l_3tau.jetToTauFakeRateWeight.inputFileName = cms.string('tthAnalysis/HiggsToTauTau/data/FR_tau_2016.root')")
       else:
