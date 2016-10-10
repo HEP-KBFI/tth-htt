@@ -1,6 +1,6 @@
 from collections import OrderedDict as OD
 
-samples = OD()
+samples_2016 = OD()
 
 samples_2016["/DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"] = OD([
   ("type",                  "mc"),
@@ -66,15 +66,14 @@ samples_2016["/GluGluHToZZTo4L_M125_13TeV_powheg2_JHUgenV6_pythia8/RunIISpring16
   ),
 ])
 samples_2016["/MuonEG/Run2016B-PromptReco-v2/MINIAOD"] = OD([
-  ("type",                  "mc"),
+  ("type",                  "data"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "MuonEG_Run2016B_v2"),
   ("nof_files",             2014),
   ("nof_events",            139552456),
   ("nof_dbs_events",        32648217),
   ("use_it",                True),
-  ("xsection",              1.000000),
-  ("triggers",              [ "1e", "2e", "1mu", "2mu", "1e1mu" ]),
+  ("triggers",              [ "1e1mu" ]),
   ("reHLT",                 False),
   ("local_paths",
     [
@@ -87,15 +86,14 @@ samples_2016["/MuonEG/Run2016B-PromptReco-v2/MINIAOD"] = OD([
   ),
 ])
 samples_2016["/MuonEG/Run2016C-PromptReco-v2/MINIAOD"] = OD([
-  ("type",                  "mc"),
+  ("type",                  "data"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "MuonEG_Run2016C"),
   ("nof_files",             696),
   ("nof_events",            139552456),
   ("nof_dbs_events",        15416170),
   ("use_it",                True),
-  ("xsection",              1.000000),
-  ("triggers",              [ "1e", "2e", "1mu", "2mu", "1e1mu" ]),
+  ("triggers",              [ "1e1mu" ]),
   ("reHLT",                 False),
   ("local_paths",
     [
@@ -108,15 +106,14 @@ samples_2016["/MuonEG/Run2016C-PromptReco-v2/MINIAOD"] = OD([
   ),
 ])
 samples_2016["/MuonEG/Run2016D-PromptReco-v2/MINIAOD"] = OD([
-  ("type",                  "mc"),
+  ("type",                  "data"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "MuonEG_Run2016D"),
   ("nof_files",             1024),
   ("nof_events",            139552456),
   ("nof_dbs_events",        23482352),
   ("use_it",                True),
-  ("xsection",              1.000000),
-  ("triggers",              [ "1e", "2e", "1mu", "2mu", "1e1mu" ]),
+  ("triggers",              [ "1e1mu" ]),
   ("reHLT",                 False),
   ("local_paths",
     [
@@ -129,15 +126,14 @@ samples_2016["/MuonEG/Run2016D-PromptReco-v2/MINIAOD"] = OD([
   ),
 ])
 samples_2016["/MuonEG/Run2016E-PromptReco-v2/MINIAOD"] = OD([
-  ("type",                  "mc"),
+  ("type",                  "data"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "MuonEG_Run2016E"),
   ("nof_files",             909),
   ("nof_events",            139552456),
   ("nof_dbs_events",        22519319),
   ("use_it",                True),
-  ("xsection",              1.000000),
-  ("triggers",              [ "1e", "2e", "1mu", "2mu", "1e1mu" ]),
+  ("triggers",              [ "1e1mu" ]),
   ("reHLT",                 False),
   ("local_paths",
     [
@@ -150,15 +146,14 @@ samples_2016["/MuonEG/Run2016E-PromptReco-v2/MINIAOD"] = OD([
   ),
 ])
 samples_2016["/MuonEG/Run2016F-PromptReco-v1/MINIAOD"] = OD([
-  ("type",                  "mc"),
+  ("type",                  "data"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "MuonEG_Run2016F"),
   ("nof_files",             966),
   ("nof_events",            139552456),
   ("nof_dbs_events",        15932356),
   ("use_it",                True),
-  ("xsection",              1.000000),
-  ("triggers",              [ "1e", "2e", "1mu", "2mu", "1e1mu" ]),
+  ("triggers",              [ "1e1mu" ]),
   ("reHLT",                 False),
   ("local_paths",
     [
@@ -171,15 +166,14 @@ samples_2016["/MuonEG/Run2016F-PromptReco-v1/MINIAOD"] = OD([
   ),
 ])
 samples_2016["/MuonEG/Run2016G-PromptReco-v1/MINIAOD"] = OD([
-  ("type",                  "mc"),
+  ("type",                  "data"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "MuonEG_Run2016G"),
   ("nof_files",             2137),
   ("nof_events",            139552456),
   ("nof_dbs_events",        33854830),
   ("use_it",                True),
-  ("xsection",              1.000000),
-  ("triggers",              [ "1e", "2e", "1mu", "2mu", "1e1mu" ]),
+  ("triggers",              [ "1e1mu" ]),
   ("reHLT",                 False),
   ("local_paths",
     [
@@ -296,37 +290,36 @@ samples_2016["/ST_tW_top_5f_NoFullyHadronicDecays_13TeV-powheg_TuneCUETP8M1/RunI
     ]
   ),
 ])
-samples_2016[""] = OD([
-  ("type",                  "mc"),
-  ("sample_category",       ""),
-  ("process_name_specific", ""),
-  ("nof_files",             25),
-  ("nof_events",            998400),
-  ("nof_dbs_events",        0),
-  ("use_it",                True),
-  ("xsection",              0.000000),
-  ("triggers",              [ "1e", "2e", "1mu", "2mu", "1e1mu" ]),
-  ("reHLT",                 False),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/local/lucia/VHBBHeppyV24bis/ST_tW_top_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1/VHBB_HEPPY_V24_ST_tW_top_5f_inclusiveDecays_13TeV-powheg-Py8_TuneCUETP8M1__spr16MAv2-puspr16_80r2as_2016_MAv2_v0-v2/160909_063526"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-])
+## samples_2016[""] = OD([
+##   ("type",                  "mc"),
+##   ("sample_category",       ""),
+##   ("process_name_specific", ""),
+##   ("nof_files",             25),
+##   ("nof_events",            998400),
+##   ("nof_dbs_events",        0),
+##   ("use_it",                True),
+##   ("xsection",              0.000000),
+##   ("triggers",              [ "1e", "2e", "1mu", "2mu", "1e1mu" ]),
+##   ("reHLT",                 False),
+##   ("local_paths",
+##     [
+##       OD([
+##         ("path",      "/hdfs/local/lucia/VHBBHeppyV24bis/ST_tW_top_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1/VHBB_HEPPY_V24_ST_tW_top_5f_inclusiveDecays_13TeV-powheg-Py8_TuneCUETP8M1__spr16MAv2-puspr16_80r2as_2016_MAv2_v0-v2/160909_063526"),
+##         ("selection", "*"),
+##         ("blacklist", []),
+##       ]),
+##     ]
+##   ),
+## ])
 samples_2016["/SingleElectron/Run2016B-PromptReco-v2/MINIAOD"] = OD([
-  ("type",                  "mc"),
+  ("type",                  "data"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "SingleElectron_Run2016B_v2"),
   ("nof_files",             3209),
   ("nof_events",            814959742),
   ("nof_dbs_events",        246175191),
   ("use_it",                True),
-  ("xsection",              1.000000),
-  ("triggers",              [ "1e", "2e", "1mu", "2mu", "1e1mu" ]),
+  ("triggers",              [ "1e" ]),
   ("reHLT",                 False),
   ("local_paths",
     [
@@ -339,15 +332,14 @@ samples_2016["/SingleElectron/Run2016B-PromptReco-v2/MINIAOD"] = OD([
   ),
 ])
 samples_2016["/SingleElectron/Run2016C-PromptReco-v2/MINIAOD"] = OD([
-  ("type",                  "mc"),
+  ("type",                  "data"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "SingleElectron_Run2016C"),
   ("nof_files",             1029),
   ("nof_events",            814959742),
   ("nof_dbs_events",        97292079),
   ("use_it",                True),
-  ("xsection",              1.000000),
-  ("triggers",              [ "1e", "2e", "1mu", "2mu", "1e1mu" ]),
+  ("triggers",              [ "1e" ]),
   ("reHLT",                 False),
   ("local_paths",
     [
@@ -360,15 +352,14 @@ samples_2016["/SingleElectron/Run2016C-PromptReco-v2/MINIAOD"] = OD([
   ),
 ])
 samples_2016["/SingleElectron/Run2016D-PromptReco-v2/MINIAOD"] = OD([
-  ("type",                  "mc"),
+  ("type",                  "data"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "SingleElectron_Run2016D"),
   ("nof_files",             1545),
   ("nof_events",            814959742),
   ("nof_dbs_events",        148167727),
   ("use_it",                True),
-  ("xsection",              1.000000),
-  ("triggers",              [ "1e", "2e", "1mu", "2mu", "1e1mu" ]),
+  ("triggers",              [ "1e" ]),
   ("reHLT",                 False),
   ("local_paths",
     [
@@ -381,15 +372,14 @@ samples_2016["/SingleElectron/Run2016D-PromptReco-v2/MINIAOD"] = OD([
   ),
 ])
 samples_2016["/SingleElectron/Run2016E-PromptReco-v2/MINIAOD"] = OD([
-  ("type",                  "mc"),
+  ("type",                  "data"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "SingleElectron_Run2016E"),
   ("nof_files",             1372),
   ("nof_events",            814959742),
   ("nof_dbs_events",        117321545),
   ("use_it",                True),
-  ("xsection",              1.000000),
-  ("triggers",              [ "1e", "2e", "1mu", "2mu", "1e1mu" ]),
+  ("triggers",              [ "1e" ]),
   ("reHLT",                 False),
   ("local_paths",
     [
@@ -402,15 +392,14 @@ samples_2016["/SingleElectron/Run2016E-PromptReco-v2/MINIAOD"] = OD([
   ),
 ])
 samples_2016["/SingleElectron/Run2016F-PromptReco-v1/MINIAOD"] = OD([
-  ("type",                  "mc"),
+  ("type",                  "data"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "SingleElectron_Run2016F"),
   ("nof_files",             984),
   ("nof_events",            814959742),
   ("nof_dbs_events",        70402684),
   ("use_it",                True),
-  ("xsection",              1.000000),
-  ("triggers",              [ "1e", "2e", "1mu", "2mu", "1e1mu" ]),
+  ("triggers",              [ "1e" ]),
   ("reHLT",                 False),
   ("local_paths",
     [
@@ -423,15 +412,14 @@ samples_2016["/SingleElectron/Run2016F-PromptReco-v1/MINIAOD"] = OD([
   ),
 ])
 samples_2016["/SingleElectron/Run2016G-PromptReco-v1/MINIAOD"] = OD([
-  ("type",                  "mc"),
+  ("type",                  "data"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "SingleElectron_Run2016G"),
   ("nof_files",             2076),
   ("nof_events",            814959742),
   ("nof_dbs_events",        153364066),
   ("use_it",                True),
-  ("xsection",              1.000000),
-  ("triggers",              [ "1e", "2e", "1mu", "2mu", "1e1mu" ]),
+  ("triggers",              [ "1e" ]),
   ("reHLT",                 False),
   ("local_paths",
     [
@@ -444,15 +432,14 @@ samples_2016["/SingleElectron/Run2016G-PromptReco-v1/MINIAOD"] = OD([
   ),
 ])
 samples_2016["/SingleMuon/Run2016B-PromptReco-v2/MINIAOD"] = OD([
-  ("type",                  "mc"),
+  ("type",                  "data"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "SingleMuon_Run2016B_v2"),
   ("nof_files",             3023),
   ("nof_events",            618050946),
   ("nof_dbs_events",        158188719),
   ("use_it",                True),
-  ("xsection",              1.000000),
-  ("triggers",              [ "1e", "2e", "1mu", "2mu", "1e1mu" ]),
+  ("triggers",              [ "1mu" ]),
   ("reHLT",                 False),
   ("local_paths",
     [
@@ -465,15 +452,14 @@ samples_2016["/SingleMuon/Run2016B-PromptReco-v2/MINIAOD"] = OD([
   ),
 ])
 samples_2016["/SingleMuon/Run2016C-PromptReco-v2/MINIAOD"] = OD([
-  ("type",                  "mc"),
+  ("type",                  "data"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "SingleMuon_Run2016C"),
   ("nof_files",             1044),
   ("nof_events",            618050946),
   ("nof_dbs_events",        68492270),
   ("use_it",                True),
-  ("xsection",              1.000000),
-  ("triggers",              [ "1e", "2e", "1mu", "2mu", "1e1mu" ]),
+  ("triggers",              [ "1mu" ]),
   ("reHLT",                 False),
   ("local_paths",
     [
@@ -486,15 +472,14 @@ samples_2016["/SingleMuon/Run2016C-PromptReco-v2/MINIAOD"] = OD([
   ),
 ])
 samples_2016["/SingleMuon/Run2016D-PromptReco-v2/MINIAOD"] = OD([
-  ("type",                  "mc"),
+  ("type",                  "data"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "SingleMuon_Run2016D"),
   ("nof_files",             1535),
   ("nof_events",            618050946),
   ("nof_dbs_events",        98175265),
   ("use_it",                True),
-  ("xsection",              1.000000),
-  ("triggers",              [ "1e", "2e", "1mu", "2mu", "1e1mu" ]),
+  ("triggers",              [ "1mu" ]),
   ("reHLT",                 False),
   ("local_paths",
     [
@@ -507,15 +492,14 @@ samples_2016["/SingleMuon/Run2016D-PromptReco-v2/MINIAOD"] = OD([
   ),
 ])
 samples_2016["/SingleMuon/Run2016E-PromptReco-v2/MINIAOD"] = OD([
-  ("type",                  "mc"),
+  ("type",                  "data"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "SingleMuon_Run2016E"),
   ("nof_files",             1363),
   ("nof_events",            618050946),
   ("nof_dbs_events",        90986344),
   ("use_it",                True),
-  ("xsection",              1.000000),
-  ("triggers",              [ "1e", "2e", "1mu", "2mu", "1e1mu" ]),
+  ("triggers",              [ "1mu" ]),
   ("reHLT",                 False),
   ("local_paths",
     [
@@ -528,15 +512,14 @@ samples_2016["/SingleMuon/Run2016E-PromptReco-v2/MINIAOD"] = OD([
   ),
 ])
 samples_2016["/SingleMuon/Run2016F-PromptReco-v1/MINIAOD"] = OD([
-  ("type",                  "mc"),
+  ("type",                  "data"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "SingleMuon_Run2016F"),
   ("nof_files",             966),
   ("nof_events",            618050946),
   ("nof_dbs_events",        65235075),
   ("use_it",                True),
-  ("xsection",              1.000000),
-  ("triggers",              [ "1e", "2e", "1mu", "2mu", "1e1mu" ]),
+  ("triggers",              [ "1mu" ]),
   ("reHLT",                 False),
   ("local_paths",
     [
@@ -549,15 +532,14 @@ samples_2016["/SingleMuon/Run2016F-PromptReco-v1/MINIAOD"] = OD([
   ),
 ])
 samples_2016["/SingleMuon/Run2016G-PromptReco-v1/MINIAOD"] = OD([
-  ("type",                  "mc"),
+  ("type",                  "data"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "SingleMuon_Run2016G"),
   ("nof_files",             2159),
   ("nof_events",            618050946),
   ("nof_dbs_events",        152881545),
   ("use_it",                True),
-  ("xsection",              1.000000),
-  ("triggers",              [ "1e", "2e", "1mu", "2mu", "1e1mu" ]),
+  ("triggers",              [ "1mu" ]),
   ("reHLT",                 False),
   ("local_paths",
     [
@@ -864,15 +846,14 @@ samples_2016["/TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16MiniAODv1-PUSpr
   ),
 ])
 samples_2016["/Tau/Run2016B-PromptReco-v2/MINIAOD"] = OD([
-  ("type",                  "mc"),
+  ("type",                  "data"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "Tau_Run2016B_v2"),
   ("nof_files",             3203),
   ("nof_events",            130731886),
   ("nof_dbs_events",        71901374),
   ("use_it",                True),
-  ("xsection",              1.000000),
-  ("triggers",              [ "1e", "2e", "1mu", "2mu", "1e1mu" ]),
+  ("triggers",              [ "2tau" ]),
   ("reHLT",                 False),
   ("local_paths",
     [
@@ -885,15 +866,14 @@ samples_2016["/Tau/Run2016B-PromptReco-v2/MINIAOD"] = OD([
   ),
 ])
 samples_2016["/Tau/Run2016D-PromptReco-v2/MINIAOD"] = OD([
-  ("type",                  "mc"),
+  ("type",                  "data"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "Tau_Run2016D"),
   ("nof_files",             1552),
   ("nof_events",            130731886),
   ("nof_dbs_events",        61113729),
   ("use_it",                True),
-  ("xsection",              1.000000),
-  ("triggers",              [ "1e", "2e", "1mu", "2mu", "1e1mu" ]),
+  ("triggers",              [ "2tau" ]),
   ("reHLT",                 False),
   ("local_paths",
     [

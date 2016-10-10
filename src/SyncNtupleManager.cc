@@ -1,15 +1,20 @@
 #include "tthAnalysis/HiggsToTauTau/interface/SyncNtupleManager.h"
+#include "tthAnalysis/HiggsToTauTau/interface/mvaInputVariables.h" // comp_lep*_conePt()
 
 #include <algorithm> // std::min()
 #include <type_traits> // std::remove_pointer<>
 
+#include <boost/algorithm/string/predicate.hpp> // boost::starts_with()
+
 #include <TString.h> // Form()
 
+#include <FWCore/Utilities/interface/Exception.h> // cms::Exception
+
+const Int_t SyncNtupleManager::placeholder_value = -9999;
 
 SyncNtupleManager::SyncNtupleManager(const std::string & outputFileName,
                                      const std::string & outputTreeName)
-  : placeholder_value(-9999)
-  , nof_mus(2)
+  : nof_mus(2)
   , nof_eles(2)
   , nof_taus(2)
   , nof_jets(4)
@@ -29,30 +34,31 @@ SyncNtupleManager::~SyncNtupleManager()
 void
 SyncNtupleManager::initializeBranches()
 {
-  mu_pt = new std::remove_pointer<decltype(mu_pt)>::type[nof_eles];
-  mu_eta = new std::remove_pointer<decltype(mu_eta)>::type[nof_eles];
-  mu_phi = new std::remove_pointer<decltype(mu_phi)>::type[nof_eles];
-  mu_E = new std::remove_pointer<decltype(mu_E)>::type[nof_eles];
-  mu_charge = new std::remove_pointer<decltype(mu_charge)>::type[nof_eles];
-  mu_miniRelIso = new std::remove_pointer<decltype(mu_miniRelIso)>::type[nof_eles];
-  mu_miniIsoCharged = new std::remove_pointer<decltype(mu_miniIsoCharged)>::type[nof_eles];
-  mu_miniIsoNeutral = new std::remove_pointer<decltype(mu_miniIsoNeutral)>::type[nof_eles];
-  mu_jetNDauChargedMVASel = new std::remove_pointer<decltype(mu_jetNDauChargedMVASel)>::type[nof_eles];
-  mu_jetPtRel = new std::remove_pointer<decltype(mu_jetPtRel)>::type[nof_eles];
-  mu_jetPtRatio = new std::remove_pointer<decltype(mu_jetPtRatio)>::type[nof_eles];
-  mu_jetCSV = new std::remove_pointer<decltype(mu_jetCSV)>::type[nof_eles];
-  mu_sip3D = new std::remove_pointer<decltype(mu_sip3D)>::type[nof_eles];
-  mu_dxy = new std::remove_pointer<decltype(mu_dxy)>::type[nof_eles];
-  mu_dz = new std::remove_pointer<decltype(mu_dz)>::type[nof_eles];
-  mu_segmentCompatibility = new std::remove_pointer<decltype(mu_segmentCompatibility)>::type[nof_eles];
-  mu_leptonMVA = new std::remove_pointer<decltype(mu_leptonMVA)>::type[nof_eles];
-  mu_mediumID = new std::remove_pointer<decltype(mu_mediumID)>::type[nof_eles];
+  mu_pt = new std::remove_pointer<decltype(mu_pt)>::type[nof_mus];
+  mu_eta = new std::remove_pointer<decltype(mu_eta)>::type[nof_mus];
+  mu_phi = new std::remove_pointer<decltype(mu_phi)>::type[nof_mus];
+  mu_E = new std::remove_pointer<decltype(mu_E)>::type[nof_mus];
+  mu_charge = new std::remove_pointer<decltype(mu_charge)>::type[nof_mus];
+  mu_miniRelIso = new std::remove_pointer<decltype(mu_miniRelIso)>::type[nof_mus];
+  mu_miniIsoCharged = new std::remove_pointer<decltype(mu_miniIsoCharged)>::type[nof_mus];
+  mu_miniIsoNeutral = new std::remove_pointer<decltype(mu_miniIsoNeutral)>::type[nof_mus];
+  mu_jetNDauChargedMVASel = new std::remove_pointer<decltype(mu_jetNDauChargedMVASel)>::type[nof_mus];
+  mu_jetPtRel = new std::remove_pointer<decltype(mu_jetPtRel)>::type[nof_mus];
+  mu_jetPtRatio = new std::remove_pointer<decltype(mu_jetPtRatio)>::type[nof_mus];
+  mu_jetCSV = new std::remove_pointer<decltype(mu_jetCSV)>::type[nof_mus];
+  mu_sip3D = new std::remove_pointer<decltype(mu_sip3D)>::type[nof_mus];
+  mu_dxy = new std::remove_pointer<decltype(mu_dxy)>::type[nof_mus];
+  mu_dz = new std::remove_pointer<decltype(mu_dz)>::type[nof_mus];
+  mu_segmentCompatibility = new std::remove_pointer<decltype(mu_segmentCompatibility)>::type[nof_mus];
+  mu_leptonMVA = new std::remove_pointer<decltype(mu_leptonMVA)>::type[nof_mus];
+  mu_conept = new std::remove_pointer<decltype(mu_conept)>::type[nof_mus];
+  mu_mediumID = new std::remove_pointer<decltype(mu_mediumID)>::type[nof_mus];
 #ifdef DPT_DIV_PT
-  mu_dpt_div_pt = new std::remove_pointer<decltype(mu_dpt_div_pt)>::type[nof_eles];
+  mu_dpt_div_pt = new std::remove_pointer<decltype(mu_dpt_div_pt)>::type[nof_mus];
 #endif
-  mu_isfakeablesel = new std::remove_pointer<decltype(mu_isfakeablesel)>::type[nof_eles];
-  mu_iscutsel = new std::remove_pointer<decltype(mu_iscutsel)>::type[nof_eles];
-  mu_ismvasel = new std::remove_pointer<decltype(mu_ismvasel)>::type[nof_eles];
+  mu_isfakeablesel = new std::remove_pointer<decltype(mu_isfakeablesel)>::type[nof_mus];
+  mu_iscutsel = new std::remove_pointer<decltype(mu_iscutsel)>::type[nof_mus];
+  mu_ismvasel = new std::remove_pointer<decltype(mu_ismvasel)>::type[nof_mus];
 
   ele_pt = new std::remove_pointer<decltype(ele_pt)>::type[nof_eles];
   ele_eta = new std::remove_pointer<decltype(ele_eta)>::type[nof_eles];
@@ -71,6 +77,7 @@ SyncNtupleManager::initializeBranches()
   ele_dz = new std::remove_pointer<decltype(ele_dz)>::type[nof_eles];
   ele_ntMVAeleID = new std::remove_pointer<decltype(ele_ntMVAeleID)>::type[nof_eles];
   ele_leptonMVA = new std::remove_pointer<decltype(ele_leptonMVA)>::type[nof_eles];
+  ele_conept = new std::remove_pointer<decltype(ele_conept)>::type[nof_eles];
   ele_isChargeConsistent = new std::remove_pointer<decltype(ele_isChargeConsistent)>::type[nof_eles];
   ele_passesConversionVeto = new std::remove_pointer<decltype(ele_passesConversionVeto)>::type[nof_eles];
   ele_nMissingHits = new std::remove_pointer<decltype(ele_nMissingHits)>::type[nof_eles];
@@ -104,6 +111,7 @@ SyncNtupleManager::initializeBranches()
   tau_againstElectronLooseMVA6 = new std::remove_pointer<decltype(tau_againstElectronLooseMVA6)>::type[nof_eles];
   tau_againstElectronMediumMVA6 = new std::remove_pointer<decltype(tau_againstElectronMediumMVA6)>::type[nof_eles];
   tau_againstElectronTightMVA6 = new std::remove_pointer<decltype(tau_againstElectronTightMVA6)>::type[nof_eles];
+  tau_againstElectronVTightMVA6 = new std::remove_pointer<decltype(tau_againstElectronVTightMVA6)>::type[nof_eles];
 
   jet_pt = new std::remove_pointer<decltype(jet_pt)>::type[nof_eles];
   jet_eta = new std::remove_pointer<decltype(jet_eta)>::type[nof_eles];
@@ -154,6 +162,7 @@ SyncNtupleManager::initializeBranches()
       outputTree -> Branch(Form("%s%d_%s", mstr, i, "dz"), &(mu_dz[i]), Form("%s%d_%s/%s", mstr, i, "dz", Traits<decltype(mu_dz)>::TYPE_NAME));
       outputTree -> Branch(Form("%s%d_%s", mstr, i, "segmentCompatibility"), &(mu_segmentCompatibility[i]), Form("%s%d_%s/%s", mstr, i, "segmentCompatibility", Traits<decltype(mu_segmentCompatibility)>::TYPE_NAME));
       outputTree -> Branch(Form("%s%d_%s", mstr, i, "leptonMVA"), &(mu_leptonMVA[i]), Form("%s%d_%s/%s", mstr, i, "leptonMVA", Traits<decltype(mu_leptonMVA)>::TYPE_NAME));
+      outputTree -> Branch(Form("%s%d_%s", mstr, i, "conept"), &(mu_conept[i]), Form("%s%d_%s/%s", mstr, i, "conept", Traits<decltype(mu_conept)>::TYPE_NAME));
       outputTree -> Branch(Form("%s%d_%s", mstr, i, "mediumID"), &(mu_mediumID[i]), Form("%s%d_%s/%s", mstr, i, "mediumID", Traits<decltype(mu_mediumID)>::TYPE_NAME));
 #ifdef DPT_DIV_PT
       outputTree -> Branch(Form("%s%d_%s", mstr, i, "dpt_div_pt"), &(mu_dpt_div_pt[i]), Form("%s%d_%s/%s", mstr, i, "dpt_div_pt", Traits<decltype(mu_dpt_div_pt)>::TYPE_NAME));
@@ -182,6 +191,7 @@ SyncNtupleManager::initializeBranches()
       outputTree -> Branch(Form("%s%d_%s", estr, i, "dz"), &(ele_dz[i]), Form("%s%d_%s/%s", estr, i, "dz", Traits<decltype(ele_dz)>::TYPE_NAME));
       outputTree -> Branch(Form("%s%d_%s", estr, i, "ntMVAeleID"), &(ele_ntMVAeleID[i]), Form("%s%d_%s/%s", estr, i, "ntMVAeleID", Traits<decltype(ele_ntMVAeleID)>::TYPE_NAME));
       outputTree -> Branch(Form("%s%d_%s", estr, i, "leptonMVA"), &(ele_leptonMVA[i]), Form("%s%d_%s/%s", estr, i, "leptonMVA", Traits<decltype(ele_leptonMVA)>::TYPE_NAME));
+      outputTree -> Branch(Form("%s%d_%s", estr, i, "conept"), &(ele_conept[i]), Form("%s%d_%s/%s", estr, i, "conept", Traits<decltype(ele_conept)>::TYPE_NAME));
       outputTree -> Branch(Form("%s%d_%s", estr, i, "isChargeConsistent"), &(ele_isChargeConsistent[i]), Form("%s%d_%s/%s", estr, i, "isChargeConsistent", Traits<decltype(ele_isChargeConsistent)>::TYPE_NAME));
       outputTree -> Branch(Form("%s%d_%s", estr, i, "passesConversionVeto"), &(ele_passesConversionVeto[i]), Form("%s%d_%s/%s", estr, i, "passesConversionVeto", Traits<decltype(ele_passesConversionVeto)>::TYPE_NAME));
       outputTree -> Branch(Form("%s%d_%s", estr, i, "nMissingHits"), &(ele_nMissingHits[i]), Form("%s%d_%s/%s", estr, i, "nMissingHits", Traits<decltype(ele_nMissingHits)>::TYPE_NAME));
@@ -218,6 +228,7 @@ SyncNtupleManager::initializeBranches()
       outputTree -> Branch(Form("%s%d_%s", tstr, i, "againstElectronLooseMVA6"), &(tau_againstElectronLooseMVA6[i]), Form("%s%d_%s/%s", tstr, i, "againstElectronLooseMVA6", Traits<decltype(tau_againstElectronLooseMVA6)>::TYPE_NAME));
       outputTree -> Branch(Form("%s%d_%s", tstr, i, "againstElectronMediumMVA6"), &(tau_againstElectronMediumMVA6[i]), Form("%s%d_%s/%s", tstr, i, "againstElectronMediumMVA6", Traits<decltype(tau_againstElectronMediumMVA6)>::TYPE_NAME));
       outputTree -> Branch(Form("%s%d_%s", tstr, i, "againstElectronTightMVA6"), &(tau_againstElectronTightMVA6[i]), Form("%s%d_%s/%s", tstr, i, "againstElectronTightMVA6", Traits<decltype(tau_againstElectronTightMVA6)>::TYPE_NAME));
+      outputTree -> Branch(Form("%s%d_%s", tstr, i, "againstElectronVTightMVA6"), &(tau_againstElectronVTightMVA6[i]), Form("%s%d_%s/%s", tstr, i, "againstElectronVTightMVA6", Traits<decltype(tau_againstElectronVTightMVA6)>::TYPE_NAME));
     }
 
     for(Int_t i = 0; i < nof_jets; ++i)
@@ -235,11 +246,12 @@ SyncNtupleManager::initializeBranches()
     outputTree -> Branch("metLD", &(metLD), Form("metLD/%s", Traits<decltype(metLD)>::TYPE_NAME));
 
     outputTree -> Branch("lep0_conept", &(lep0_conept), Form("lep0_conept/%s", Traits<decltype(lep0_conept)>::TYPE_NAME));
-    outputTree -> Branch("lep1_conePt", &(lep1_conePt), Form("lep1_conePt/%s", Traits<decltype(lep1_conePt)>::TYPE_NAME));
+    outputTree -> Branch("lep1_conept", &(lep1_conept), Form("lep1_conept/%s", Traits<decltype(lep1_conept)>::TYPE_NAME));
     outputTree -> Branch("mindr_lep0_jet", &(mindr_lep0_jet), Form("mindr_lep0_jet/%s", Traits<decltype(mindr_lep0_jet)>::TYPE_NAME));
     outputTree -> Branch("mindr_lep1_jet", &(mindr_lep1_jet), Form("mindr_lep1_jet/%s", Traits<decltype(mindr_lep1_jet)>::TYPE_NAME));
     outputTree -> Branch("MT_met_lep0", &(MT_met_lep0), Form("MT_met_lep0/%s", Traits<decltype(MT_met_lep0)>::TYPE_NAME));
     outputTree -> Branch("avg_dr_jet", &(avg_dr_jet), Form("avg_dr_jet/%s", Traits<decltype(avg_dr_jet)>::TYPE_NAME));
+    outputTree -> Branch("n_jet25_recl", &(n_jet25_recl), Form("n_jet25_recl/%s", Traits<decltype(n_jet25_recl)>::TYPE_NAME));
     outputTree -> Branch("MVA_2lss_ttV", &(MVA_2lss_ttV), Form("MVA_2lss_ttV/%s", Traits<decltype(MVA_2lss_ttV)>::TYPE_NAME));
     outputTree -> Branch("MVA_2lss_ttbar", &(MVA_2lss_ttbar), Form("MVA_2lss_ttbar/%s", Traits<decltype(MVA_2lss_ttbar)>::TYPE_NAME));
 
@@ -247,6 +259,17 @@ SyncNtupleManager::initializeBranches()
   }
   else
     std::cerr << "SyncNtuple:WARNING:Should initialize the instance only once!\n";
+}
+
+void
+SyncNtupleManager::initializeHLTBranches(const std::vector<std::vector<hltPath *>> & hltPaths)
+{
+  for(const auto & hltVector: hltPaths)
+    for(const auto & hlt: hltVector)
+      hltMap[hlt -> branchName_] = -1;
+  for(auto & kv: hltMap)
+    outputTree -> Branch(hltMangle(kv.first).c_str(), &(hltMap[kv.first]),
+                         Form("%s/%s", hltMangle(kv.first).c_str(), Traits<decltype(kv.second)>::TYPE_NAME));
 }
 
 void
@@ -290,6 +313,7 @@ SyncNtupleManager::read(std::vector<const RecoMuon *> & muons,
     mu_dz[i] = muon -> dz_;
     mu_segmentCompatibility[i] = muon -> segmentCompatibility_;
     mu_leptonMVA[i] = muon -> mvaRawTTH_;
+    mu_conept[i] = comp_lep1_conePt(*muon);
     mu_mediumID[i] = muon -> passesMediumIdPOG_;
 #ifdef DPT_DIV_PT
     mu_dpt_div_pt[i] = muon -> dpt_div_pt_;
@@ -349,6 +373,7 @@ SyncNtupleManager::read(std::vector<const RecoElectron *> & electrons,
     ele_dz[i] = electron -> dz_;
     ele_ntMVAeleID[i] = electron -> mvaRawPOG_;
     ele_leptonMVA[i] = electron -> mvaRawTTH_;
+    ele_conept[i] = comp_lep1_conePt(*electron);
     ele_isChargeConsistent[i] = electron -> tightCharge_ == 2 ? 1 : 0;
     ele_passesConversionVeto[i] = electron -> passesConversionVeto_;
     ele_nMissingHits[i] = electron -> nLostHits_;
@@ -420,6 +445,7 @@ SyncNtupleManager::read(std::vector<const RecoHadTau *> & hadtaus)
     tau_againstElectronLooseMVA6[i] = idAntiErun2 >= 2 ? 1 : 0;
     tau_againstElectronMediumMVA6[i] = idAntiErun2 >= 3 ? 1 : 0;
     tau_againstElectronTightMVA6[i] = idAntiErun2 >= 4 ? 1 : 0;
+    tau_againstElectronVTightMVA6[i] = idAntiErun2 >= 5 ? 1 : 0;
   }
 }
 
@@ -440,13 +466,35 @@ SyncNtupleManager::read(std::vector<const RecoJet *> & jets)
 }
 
 void
+SyncNtupleManager::read(const std::map<std::string, Double_t> & mvaInputs)
+{
+  if(mvaInputs.find("LepGood_conePt[iF_Recl[0]]") != mvaInputs.end()) lep0_conept    = static_cast<decltype(lep0_conept)>   (mvaInputs.at("LepGood_conePt[iF_Recl[0]]"));
+  if(mvaInputs.find("LepGood_conePt[iF_Recl[1]]") != mvaInputs.end()) lep1_conept    = static_cast<decltype(lep1_conept)>   (mvaInputs.at("LepGood_conePt[iF_Recl[1]]"));
+  if(mvaInputs.find("mindr_lep1_jet")             != mvaInputs.end()) mindr_lep0_jet = static_cast<decltype(mindr_lep0_jet)>(mvaInputs.at("mindr_lep1_jet"));
+  if(mvaInputs.find("mindr_lep2_jet")             != mvaInputs.end()) mindr_lep1_jet = static_cast<decltype(mindr_lep1_jet)>(mvaInputs.at("mindr_lep2_jet"));
+  if(mvaInputs.find("MT_met_lep1")                != mvaInputs.end()) MT_met_lep0    = static_cast<decltype(MT_met_lep0)>   (mvaInputs.at("MT_met_lep1"));
+  if(mvaInputs.find("avg_dr_jet")                 != mvaInputs.end()) avg_dr_jet     = static_cast<decltype(avg_dr_jet)>    (mvaInputs.at("avg_dr_jet"));
+  if(mvaInputs.find("nJet25_Recl")                != mvaInputs.end()) n_jet25_recl   = static_cast<decltype(n_jet25_recl)>  (mvaInputs.at("nJet25_Recl"));
+}
+
+void
 SyncNtupleManager::read(Float_t value,
                         FloatVariableType type)
 {
-  if     (type == FloatVariableType::PFMET)    PFMET = value;
-  else if(type == FloatVariableType::PFMETphi) PFMETphi = value;
-  else if(type == FloatVariableType::MHT)      MHT = value;
-  else if(type == FloatVariableType::metLD)    metLD = value;
+  if     (type == FloatVariableType::PFMET)           PFMET          = value;
+  else if(type == FloatVariableType::PFMETphi)        PFMETphi       = value;
+  else if(type == FloatVariableType::MHT)             MHT            = value;
+  else if(type == FloatVariableType::metLD)           metLD          = value;
+  else if(type == FloatVariableType::mvaOutput_ttV)   MVA_2lss_ttV   = value;
+  else if(type == FloatVariableType::mvaOutput_ttbar) MVA_2lss_ttbar = value;
+}
+
+void
+SyncNtupleManager::read(const std::vector<std::vector<hltPath *>> & hltPaths)
+{
+  for(const auto & hltVector: hltPaths)
+    for(const auto & hlt: hltVector)
+      hltMap[hlt -> branchName_] = hlt -> value_;
 }
 
 void
@@ -476,6 +524,7 @@ SyncNtupleManager::reset(bool is_initializing)
     mu_dz[i] = placeholder_value;
     mu_segmentCompatibility[i] = placeholder_value;
     mu_leptonMVA[i] = placeholder_value;
+    mu_conept[i] = placeholder_value;
     mu_mediumID[i] = placeholder_value;
 #ifdef DPT_DIV_PT
     mu_dpt_div_pt[i] = placeholder_value;
@@ -509,6 +558,7 @@ SyncNtupleManager::reset(bool is_initializing)
     ele_dz[i] = placeholder_value;
     ele_ntMVAeleID[i] = placeholder_value;
     ele_leptonMVA[i] = placeholder_value;
+    ele_conept[i] = placeholder_value;
     ele_isChargeConsistent[i] = placeholder_value;
     ele_passesConversionVeto[i] = placeholder_value;
     ele_nMissingHits[i] = placeholder_value;
@@ -550,6 +600,7 @@ SyncNtupleManager::reset(bool is_initializing)
     tau_againstElectronLooseMVA6[i] = placeholder_value;
     tau_againstElectronMediumMVA6[i] = placeholder_value;
     tau_againstElectronTightMVA6[i] = placeholder_value;
+    tau_againstElectronVTightMVA6[i] = placeholder_value;
   }
   n_presel_tau = placeholder_value;
 
@@ -570,13 +621,26 @@ SyncNtupleManager::reset(bool is_initializing)
   metLD = placeholder_value;
 
   lep0_conept = placeholder_value;
-  lep1_conePt = placeholder_value;
+  lep1_conept = placeholder_value;
   mindr_lep0_jet = placeholder_value;
   mindr_lep1_jet = placeholder_value;
   MT_met_lep0 = placeholder_value;
   avg_dr_jet = placeholder_value;
+  n_jet25_recl = placeholder_value;
   MVA_2lss_ttV = placeholder_value;
   MVA_2lss_ttbar = placeholder_value;
+
+  for(auto & kv: hltMap)
+    hltMap[kv.first] = -1;
+}
+
+std::string
+SyncNtupleManager::hltMangle(const std::string & hltBranchName) const
+{
+  if(! boost::starts_with(hltBranchName, "HLT_BIT_HLT"))
+    throw cms::Exception("sync_ntuple") << "Invalid HLT branch name: "
+                                        << hltBranchName;
+  return hltBranchName.substr(8);
 }
 
 void
