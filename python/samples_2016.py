@@ -156,46 +156,6 @@ samples_2016["/DoubleEG/Run2016G-PromptReco-v1/MINIAOD"] = OD([
     ]
   ),
 ])
-samples_2016[""] = OD([
-  ("type",                  "mc"),
-  ("sample_category",       ""),
-  ("process_name_specific", ""),
-  ("nof_files",             1458),
-  ("nof_events",            53457957),
-  ("use_it",                True),
-  ("xsection",              0.000000),
-  ("triggers",              [ "1e", "2e", "1mu", "2mu", "1e1mu" ]),
-  ("reHLT",                 False),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/local/lucia/VHBBHeppyV24bis/DoubleMuon/VHBB_HEPPY_V24_DoubleMuon__Run2016D-PromptReco-v2/161006_213542"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-])
-samples_2016[""] = OD([
-  ("type",                  "mc"),
-  ("sample_category",       ""),
-  ("process_name_specific", ""),
-  ("nof_files",             905),
-  ("nof_events",            53457957),
-  ("use_it",                True),
-  ("xsection",              0.000000),
-  ("triggers",              [ "1e", "2e", "1mu", "2mu", "1e1mu" ]),
-  ("reHLT",                 False),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/local/lucia/VHBBHeppyV24bis/DoubleMuon/VHBB_HEPPY_V24_DoubleMuon__Run2016F-PromptReco-v1/161006_213651"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-])
 samples_2016["/GluGluHToZZTo4L_M125_13TeV_powheg2_JHUgenV6_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM"] = OD([
   ("type",                  "mc"),
   ("sample_category",       "additional_signal_overlap"),
