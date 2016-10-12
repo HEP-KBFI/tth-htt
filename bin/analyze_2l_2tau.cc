@@ -49,7 +49,6 @@
 #include "tthAnalysis/HiggsToTauTau/interface/ElectronHistManager.h" // ElectronHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/MuonHistManager.h" // MuonHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/HadTauHistManager.h" // HadTauHistManager
-#include "tthAnalysis/HiggsToTauTau/interface/HadTauFakeRateHistManager.h" // HadTauFakeRateHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/JetHistManager.h" // JetHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/MEtHistManager.h" // MEtHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/EvtHistManager_2l_2tau.h" // EvtHistManager_2l_2tau
@@ -190,10 +189,10 @@ int main(int argc, char* argv[])
   std::string hadTauSelection_part2 = ( hadTauSelection_parts->GetEntries() == 2 ) ? (dynamic_cast<TObjString*>(hadTauSelection_parts->At(1)))->GetString().Data() : "";
   delete hadTauSelection_parts;
 
-  std::string hadTauGenMatchSelection_string = cfg_analyze.getParameter<std::string>("hadTauGenMatch");
-  std::vector<hadTauGenMatchEntry> hadTauGenMatch_definitions = getHadTauGenMatch_definitions_2tau();
-  int hadTauGenMatchSelection = getHadTauGenMatch_int(hadTauGenMatch_definitions, hadTauGenMatchSelection_string);
   bool apply_hadTauGenMatching = cfg_analyze.getParameter<bool>("apply_hadTauGenMatching");
+  std::vector<hadTauGenMatchEntry> hadTauGenMatch_definitions = getHadTauGenMatch_definitions_2tau(apply_hadTauGenMatching);
+  std::string hadTauGenMatchSelection_string = cfg_analyze.getParameter<std::string>("hadTauGenMatch");
+  int hadTauGenMatchSelection = getHadTauGenMatch_int(hadTauGenMatch_definitions, hadTauGenMatchSelection_string);
   if ( hadTauGenMatchSelection_string != "all" && !apply_hadTauGenMatching ) {
     throw cms::Exception("analyze_2l_2tau") 
       << "Invalid combination of Configuration parameters 'hadTauGenMatch' = " << hadTauGenMatchSelection_string << ", 'apply_hadTauGenMatching' = " << apply_hadTauGenMatching << " !!\n";
@@ -387,7 +386,7 @@ int main(int argc, char* argv[])
   GenJetReader* genJetReader = 0;
   LHEInfoReader* lheInfoReader = 0;
   if ( isMC ) {
-    genLeptonReader = new GenLeptonReader("nGenLep", "GenLep");
+    genLeptonReader = new GenLeptonReader("nGenLep", "GenLep", "nGenLepFromTau", "GenLepFromTau");
     genLeptonReader->setBranchAddresses(inputTree);
     genHadTauReader = new GenHadTauReader("nGenHadTaus", "GenHadTaus");
     genHadTauReader->setBranchAddresses(inputTree);
@@ -449,12 +448,6 @@ int main(int argc, char* argv[])
   HadTauHistManager selHadTauHistManager_sublead(makeHistManager_cfg(process_and_genMatch, 
     Form("%s/sel/subleadHadTau", histogramDir.data()), central_or_shift)); // CV: no idx=0 parameter required, as selHadTau_sublead is filled separately
   selHadTauHistManager_sublead.bookHistograms(fs);
-  edm::ParameterSet cfg_selHadTauFakeRateHistManager = makeHistManager_cfg(process_and_genMatch, 
-    Form("%s/sel/hadTauFakeRates", histogramDir.data()), central_or_shift);
-  cfg_selHadTauFakeRateHistManager.addParameter<vdouble>("etaBins_lead", hadTauEtaBins_lead);
-  cfg_selHadTauFakeRateHistManager.addParameter<vdouble>("etaBins_sublead", hadTauEtaBins_sublead);
-  HadTauFakeRateHistManager selHadTauFakeRateHistManager(cfg_selHadTauFakeRateHistManager);
-  selHadTauFakeRateHistManager.bookHistograms(fs);
 
   JetHistManager selJetHistManager(makeHistManager_cfg(process_and_genMatch, 
     Form("%s/sel/jets", histogramDir.data()), central_or_shift));
@@ -510,7 +503,7 @@ int main(int argc, char* argv[])
   if ( isMC && !apply_hadTauGenMatching ) {
     for ( std::vector<hadTauGenMatchEntry>::const_iterator hadTauGenMatch_definition = hadTauGenMatch_definitions.begin();
 	hadTauGenMatch_definition != hadTauGenMatch_definitions.end(); ++hadTauGenMatch_definition ) {
-      if ( hadTauGenMatch_definition->idx_ == kGen_All2 || hadTauGenMatch_definition->idx_ == kGen_Undefined2 ) continue;
+      if ( hadTauGenMatch_definition->idx_ == kGen_HadTauAll2 || hadTauGenMatch_definition->idx_ == kGen_HadTauUndefined2 ) continue;
       std::string process_and_genMatch = process_string + hadTauGenMatch_definition->name_;
       EvtHistManager_2l_2tau* selEvtHistManager_ptr = new EvtHistManager_2l_2tau(makeHistManager_cfg(process_and_genMatch, 
         Form("%s/sel/evt", histogramDir.data()), central_or_shift));
@@ -907,9 +900,9 @@ int main(int argc, char* argv[])
     const RecoHadTau* selHadTau_sublead = selHadTaus[1];
 
     const hadTauGenMatchEntry& hadTauGenMatch = getHadTauGenMatch(hadTauGenMatch_definitions, selHadTau_lead, selHadTau_sublead);
-    assert(!(hadTauGenMatch.idx_ == kGen_Undefined2 || hadTauGenMatch.idx_ == kGen_All2));
+    assert(!(hadTauGenMatch.idx_ == kGen_HadTauUndefined2 || hadTauGenMatch.idx_ == kGen_HadTauAll2));
 
-    if ( hadTauGenMatchSelection != kGen_All2 ) {
+    if ( hadTauGenMatchSelection != kGen_HadTauAll2 ) {
       if ( hadTauGenMatch.idx_ != hadTauGenMatchSelection ) continue;
       cutFlowTable.update("tau gen match", evtWeight);
     }
@@ -1073,7 +1066,6 @@ int main(int argc, char* argv[])
     selHadTauHistManager_lead.fillHistograms({ selHadTau_lead }, evtWeight);
     selHadTauHistManager_sublead.fillHistograms({ selHadTau_sublead }, evtWeight);
     selHadTauHistManager.fillHistograms(selHadTaus, evtWeight);
-    selHadTauFakeRateHistManager.fillHistograms(selHadTau_lead, selHadTau_sublead, evtWeight);
     selJetHistManager.fillHistograms(selJets, evtWeight);
     selJetHistManager_lead.fillHistograms(selJets, evtWeight);
     selJetHistManager_sublead.fillHistograms(selJets, evtWeight);

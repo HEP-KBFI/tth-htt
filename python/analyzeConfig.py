@@ -167,7 +167,7 @@ class analyzeConfig:
       self.triggers_1e1mu = [ 'HLT_BIT_HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v', 'HLT_BIT_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v' ]
       self.triggers_2tau  = [ 'HLT_BIT_HLT_DoubleMediumIsoPFTau35_Trk1_eta2p1_Reg_v*' ]
     else:
-      raise ValueError("Invalid parameter 'era' = %s !!" % era)
+      raise ValueError("Invalid Configuration parameter 'era' = %s !!" % era)
 
     self.cvmfs_error_log = {}
 

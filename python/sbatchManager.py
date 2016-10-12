@@ -76,8 +76,8 @@ class sbatchManager:
   def __init__(self):
     self.workingDir = None
     self.logFileDir = None
-    self.queue = "short"
-    ##self.queue = "long"
+    ##self.queue = "short"
+    self.queue = "long"
     self.command_submit = "sbatch"
     self.command_poll = "squeue"
     self.poll_interval = 30
