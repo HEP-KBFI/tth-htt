@@ -37,7 +37,7 @@ echo "it is now:"
 date
 echo "copying content of 'tthAnalysis/HiggsToTauTau/data' directory"
 mkdir -p tthAnalysis/HiggsToTauTau/data
-cp -r $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/data/* ${SCRATCH_DIR}/tthAnalysis/HiggsToTauTau/data
+cp -rL $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/data/* ${SCRATCH_DIR}/tthAnalysis/HiggsToTauTau/data
 echo "it is now:"
 date
 echo "executing '{{ exec_name }}'"

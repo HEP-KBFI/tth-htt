@@ -36,6 +36,8 @@ class RecoElectronSelectorLoose
   bool apply_tightCharge_;            ///< apply (True) or do not apply (False) tight charge cut
   bool apply_conversionVeto_;         ///< apply (True) or do not apply (False) conversion veto
   Int_t max_nLostHits_;               ///< upper cut threshold on lost hits in the innermost layer of the tracker (electrons with lost_hits equal to cut threshold pass)
+//-------------------------------------------------------------------------------
+  bool debug_;                        ///< enable printout for debugging purposes
 };
 
 typedef ParticleCollectionSelector<RecoElectron, RecoElectronSelectorLoose> RecoElectronCollectionSelectorLoose;

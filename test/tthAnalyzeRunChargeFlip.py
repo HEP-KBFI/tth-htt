@@ -19,7 +19,7 @@ elif ERA == "2016":
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "histosCF_data_eleESER"
+version = "histosCF_data_newconf"
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -66,12 +66,11 @@ if __name__ == '__main__':
     ],
     max_files_per_job = 40,
     era = ERA, use_lumi = True, lumi = LUMI,
-    use_data = True,
     debug = False,
     running_method = "sbatch",
     num_parallel_jobs = 4,
     #sel_events_file = '',#os.path.join(os.environ["CMSSW_BASE"] , "src/tthAnalysis/HiggsToTauTau/data/eventlist_diff.txt"),
-    histograms_to_fit = [ "mll" ])
+    histograms_to_fit = [ "mass_ll" ])
 
   analysis.create()
 

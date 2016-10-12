@@ -1,4 +1,4 @@
-import logging
+import logging, re
 
 from tthAnalysis.HiggsToTauTau.analyzeConfig import *
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists
@@ -84,7 +84,7 @@ class analyzeConfig_3l_1tau(analyzeConfig):
     
     self.executable_addBackgrounds = executable_addBackgrounds
     self.executable_addFakes = executable_addBackgroundJetToTauFakes
-    
+
     for sample_name, sample_info in self.samples.items():
       if not sample_info["use_it"] or sample_info["sample_category"] in [ "additional_signal_overlap", "background_data_estimate" ]:
         continue
@@ -290,6 +290,10 @@ class analyzeConfig_3l_1tau(analyzeConfig):
                 lines_makefile.append("\t%s %s" % ("rm -f", haddFile_jobIds))
                 lines_makefile.append("\t%s %s %s" % ("hadd", haddFile_jobIds, " ".join(inputFiles_jobIds)))
                 lines_makefile.append("")
+                if self.select_root_output:
+                  key_file_woJobId = getKey(sample_name, lepton_and_hadTau_selection, lepton_and_hadTau_frWeight, charge_selection, central_or_shift)
+                  if key_file_woJobId in self.rootOutputAux:
+                    self.rootOutputAux[key_file_woJobId].append(haddFile_jobIds)
                 inputFiles_sample.append(haddFile_jobIds)
                 self.filesToClean.append(haddFile_jobIds)
       if len(inputFiles_sample) > 0:
@@ -423,6 +427,16 @@ class analyzeConfig_3l_1tau(analyzeConfig):
                 self.rootOutputFiles[key_file] = os.path.join(self.dirs[key_dir][DKEY_ROOT], "out_%s_%s_%s_%s_%s_%i.root" % \
                   (self.channel, process_name, lepton_and_hadTau_selection_and_frWeight, charge_selection, central_or_shift, jobId)) if self.select_root_output else ""
 
+                if self.select_root_output:
+                  self.rootOutputFiles[key_file] = os.path.join(self.dirs[key_dir][DKEY_ROOT], "out_%s_%s_%s_%s_%s_%i.root" % \
+                    (self.channel, process_name, lepton_and_hadTau_selection_and_frWeight, charge_selection, central_or_shift, jobId))
+                  key_file_woJobId = getKey(sample_name, lepton_and_hadTau_selection_and_frWeight, charge_selection, central_or_shift)
+                  if key_file_woJobId not in self.rootOutputAux:
+                    self.rootOutputAux[key_file_woJobId] = [ re.sub('_\d+\.root', '.root', self.rootOutputFiles[key_file]),
+                                                             re.sub('\d+\.root', '*.root', self.rootOutputFiles[key_file]) ]
+                  else:
+                    self.rootOutputFiles[key_file] = ""
+
                 applyFakeRateWeights = self.applyFakeRateWeights
                 if lepton_and_hadTau_frWeight == "disabled":
                   applyFakeRateWeights = "disabled"    
@@ -528,7 +542,7 @@ class analyzeConfig_3l_1tau(analyzeConfig):
     self.addToMakefile_outRoot(lines_makefile)
     self.addToMakefile_prep_dcard(lines_makefile)
     self.addToMakefile_make_plots(lines_makefile)
-    self.addToMakefile_make_plots_mcClosure(lines_makefile)   
+    self.addToMakefile_make_plots_mcClosure(lines_makefile)
     self.addToMakefile_clean(lines_makefile)
     self.createMakefile(lines_makefile)
 

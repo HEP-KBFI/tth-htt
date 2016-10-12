@@ -165,8 +165,8 @@ class analyzeConfig_2l_2tau(analyzeConfig):
     else:
       raise ValueError("Invalid parameter 'hadTau_frWeight' = %s !!" % hadTau_frWeight)
     if hadTau_selection.find("mcClosure") != -1:
-      lines.append("process.analyze_1l_2tau.jetToTauFakeRateWeight.applyFitFunction_lead = cms.bool(False)")
-      lines.append("process.analyze_1l_2tau.jetToTauFakeRateWeight.applyFitFunction_sublead = cms.bool(False)")
+      lines.append("process.analyze_2l_2tau.jetToTauFakeRateWeight.applyFitFunction_lead = cms.bool(False)")
+      lines.append("process.analyze_2l_2tau.jetToTauFakeRateWeight.applyFitFunction_sublead = cms.bool(False)")
     lines.append("process.analyze_2l_2tau.isMC = cms.bool(%s)" % is_mc)
     lines.append("process.analyze_2l_2tau.central_or_shift = cms.string('%s')" % central_or_shift)
     lines.append("process.analyze_2l_2tau.lumiScale = cms.double(%f)" % lumi_scale)

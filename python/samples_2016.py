@@ -1,8 +1,8 @@
 from collections import OrderedDict as OD
 
-samples = OD()
+samples_2016 = OD()
 
-samples["/DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"] = OD([
+samples_2016["/DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"] = OD([
   ("type",                  "mc"),
   ("sample_category",       "EWK"),
   ("process_name_specific", "DYJetsToLL_M-10to50"),
@@ -22,14 +22,14 @@ samples["/DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISprin
     ]
   ),
 ])
-samples["/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14_ext1-v1/MINIAODSIM"] = OD([
+samples_2016["/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14_ext1-v1/MINIAODSIM"] = OD([
   ("type",                  "mc"),
   ("sample_category",       "EWK"),
   ("process_name_specific", "DYJetsToLL_M-50"),
   ("nof_files",             657),
   ("nof_events",            91350867),
   ("use_it",                True),
-  ("xsection",              6025.200000),
+  ("xsection",              5765.400000),
   ("triggers",              [ "1e", "2e", "1mu", "2mu", "1e1mu" ]),
   ("reHLT",                 False),
   ("local_paths",
@@ -42,7 +42,121 @@ samples["/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16Mi
     ]
   ),
 ])
-samples["/GluGluHToZZTo4L_M125_13TeV_powheg2_JHUgenV6_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM"] = OD([
+samples_2016["/DoubleEG/Run2016B-PromptReco-v2/MINIAOD"] = OD([
+  ("type",                  "data"),
+  ("sample_category",       "data_obs"),
+  ("process_name_specific", "DoubleEG_Run2016B_v2"),
+  ("nof_files",             2614),
+  ("nof_events",            334564291),
+  ("use_it",                True),
+  ("triggers",              [ "2e" ]),
+  ("reHLT",                 False),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/local/lucia/VHBBHeppyV24bis/DoubleEG/VHBB_HEPPY_D24_DoubleEG__Run2016B-PromptReco-v2/161006_213052"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+])
+samples_2016["/DoubleEG/Run2016C-PromptReco-v2/MINIAOD"] = OD([
+  ("type",                  "data"),
+  ("sample_category",       "data_obs"),
+  ("process_name_specific", "DoubleEG_Run2016C"),
+  ("nof_files",             869),
+  ("nof_events",            334564291),
+  ("use_it",                True),
+  ("triggers",              [ "2e" ]),
+  ("reHLT",                 False),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/local/lucia/VHBBHeppyV24bis/DoubleEG/VHBB_HEPPY_D24_DoubleEG__Run2016C-PromptReco-v2/161006_213126"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+])
+samples_2016["/DoubleEG/Run2016D-PromptReco-v2/MINIAOD"] = OD([
+  ("type",                  "data"),
+  ("sample_category",       "data_obs"),
+  ("process_name_specific", "DoubleEG_Run2016D"),
+  ("nof_files",             1458),
+  ("nof_events",            334564291),
+  ("use_it",                True),
+  ("triggers",              [ "2e" ]),
+  ("reHLT",                 False),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/local/lucia/VHBBHeppyV24bis/DoubleEG/VHBB_HEPPY_D24_DoubleEG__Run2016D-PromptReco-v2/161006_213202"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+])
+samples_2016["/DoubleEG/Run2016E-PromptReco-v2/MINIAOD"] = OD([
+  ("type",                  "data"),
+  ("sample_category",       "data_obs"),
+  ("process_name_specific", "DoubleEG_Run2016E"),
+  ("nof_files",             1239),
+  ("nof_events",            334564291),
+  ("use_it",                False),
+  ("triggers",              [ "2e" ]),
+  ("reHLT",                 False),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/local/lucia/VHBBHeppyV24bis/DoubleEG/VHBB_HEPPY_D24_DoubleEG__Run2016E-PromptReco-v2/161006_213202"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+])
+samples_2016["/DoubleEG/Run2016F-PromptReco-v1/MINIAOD"] = OD([
+  ("type",                  "data"),
+  ("sample_category",       "data_obs"),
+  ("process_name_specific", "DoubleEG_Run2016F"),
+  ("nof_files",             904),
+  ("nof_events",            334564291),
+  ("use_it",                False),
+  ("triggers",              [ "2e" ]),
+  ("reHLT",                 False),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/local/lucia/VHBBHeppyV24bis/DoubleEG/VHBB_HEPPY_D24_DoubleEG__Run2016F-PromptReco-v1/161006_213309"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+])
+samples_2016["/DoubleEG/Run2016G-PromptReco-v1/MINIAOD"] = OD([
+  ("type",                  "data"),
+  ("sample_category",       "data_obs"),
+  ("process_name_specific", "DoubleEG_Run2016G"),
+  ("nof_files",             550),
+  ("nof_events",            334564291),
+  ("use_it",                False),
+  ("triggers",              [ "2e" ]),
+  ("reHLT",                 False),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/local/lucia/VHBBHeppyV24bis/DoubleEG/VHBB_HEPPY_D24_DoubleEG__Run2016G-PromptReco-v1/161006_213345"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+])
+samples_2016["/GluGluHToZZTo4L_M125_13TeV_powheg2_JHUgenV6_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM"] = OD([
   ("type",                  "mc"),
   ("sample_category",       "additional_signal_overlap"),
   ("process_name_specific", "GluGluHToZZTo4L"),
@@ -62,15 +176,14 @@ samples["/GluGluHToZZTo4L_M125_13TeV_powheg2_JHUgenV6_pythia8/RunIISpring16MiniA
     ]
   ),
 ])
-samples["/MuonEG/Run2016B-PromptReco-v2/MINIAOD"] = OD([
-  ("type",                  "mc"),
+samples_2016["/MuonEG/Run2016B-PromptReco-v2/MINIAOD"] = OD([
+  ("type",                  "data"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "MuonEG_Run2016B_v2"),
   ("nof_files",             2014),
   ("nof_events",            139552456),
   ("use_it",                True),
-  ("xsection",              1.000000),
-  ("triggers",              [ "1e", "2e", "1mu", "2mu", "1e1mu" ]),
+  ("triggers",              [ "1e1mu" ]),
   ("reHLT",                 False),
   ("local_paths",
     [
@@ -82,15 +195,14 @@ samples["/MuonEG/Run2016B-PromptReco-v2/MINIAOD"] = OD([
     ]
   ),
 ])
-samples["/MuonEG/Run2016C-PromptReco-v2/MINIAOD"] = OD([
-  ("type",                  "mc"),
+samples_2016["/MuonEG/Run2016C-PromptReco-v2/MINIAOD"] = OD([
+  ("type",                  "data"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "MuonEG_Run2016C"),
   ("nof_files",             696),
   ("nof_events",            139552456),
   ("use_it",                True),
-  ("xsection",              1.000000),
-  ("triggers",              [ "1e", "2e", "1mu", "2mu", "1e1mu" ]),
+  ("triggers",              [ "1e1mu" ]),
   ("reHLT",                 False),
   ("local_paths",
     [
@@ -102,15 +214,14 @@ samples["/MuonEG/Run2016C-PromptReco-v2/MINIAOD"] = OD([
     ]
   ),
 ])
-samples["/MuonEG/Run2016D-PromptReco-v2/MINIAOD"] = OD([
-  ("type",                  "mc"),
+samples_2016["/MuonEG/Run2016D-PromptReco-v2/MINIAOD"] = OD([
+  ("type",                  "data"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "MuonEG_Run2016D"),
   ("nof_files",             1024),
   ("nof_events",            139552456),
   ("use_it",                True),
-  ("xsection",              1.000000),
-  ("triggers",              [ "1e", "2e", "1mu", "2mu", "1e1mu" ]),
+  ("triggers",              [ "1e1mu" ]),
   ("reHLT",                 False),
   ("local_paths",
     [
@@ -122,15 +233,14 @@ samples["/MuonEG/Run2016D-PromptReco-v2/MINIAOD"] = OD([
     ]
   ),
 ])
-samples["/MuonEG/Run2016E-PromptReco-v2/MINIAOD"] = OD([
-  ("type",                  "mc"),
+samples_2016["/MuonEG/Run2016E-PromptReco-v2/MINIAOD"] = OD([
+  ("type",                  "data"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "MuonEG_Run2016E"),
   ("nof_files",             909),
   ("nof_events",            139552456),
-  ("use_it",                True),
-  ("xsection",              1.000000),
-  ("triggers",              [ "1e", "2e", "1mu", "2mu", "1e1mu" ]),
+  ("use_it",                False),
+  ("triggers",              [ "1e1mu" ]),
   ("reHLT",                 False),
   ("local_paths",
     [
@@ -142,15 +252,14 @@ samples["/MuonEG/Run2016E-PromptReco-v2/MINIAOD"] = OD([
     ]
   ),
 ])
-samples["/MuonEG/Run2016F-PromptReco-v1/MINIAOD"] = OD([
-  ("type",                  "mc"),
+samples_2016["/MuonEG/Run2016F-PromptReco-v1/MINIAOD"] = OD([
+  ("type",                  "data"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "MuonEG_Run2016F"),
   ("nof_files",             966),
   ("nof_events",            139552456),
-  ("use_it",                True),
-  ("xsection",              1.000000),
-  ("triggers",              [ "1e", "2e", "1mu", "2mu", "1e1mu" ]),
+  ("use_it",                False),
+  ("triggers",              [ "1e1mu" ]),
   ("reHLT",                 False),
   ("local_paths",
     [
@@ -162,15 +271,14 @@ samples["/MuonEG/Run2016F-PromptReco-v1/MINIAOD"] = OD([
     ]
   ),
 ])
-samples["/MuonEG/Run2016G-PromptReco-v1/MINIAOD"] = OD([
-  ("type",                  "mc"),
+samples_2016["/MuonEG/Run2016G-PromptReco-v1/MINIAOD"] = OD([
+  ("type",                  "data"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "MuonEG_Run2016G"),
   ("nof_files",             2137),
   ("nof_events",            139552456),
-  ("use_it",                True),
-  ("xsection",              1.000000),
-  ("triggers",              [ "1e", "2e", "1mu", "2mu", "1e1mu" ]),
+  ("use_it",                False),
+  ("triggers",              [ "1e1mu" ]),
   ("reHLT",                 False),
   ("local_paths",
     [
@@ -182,7 +290,7 @@ samples["/MuonEG/Run2016G-PromptReco-v1/MINIAOD"] = OD([
     ]
   ),
 ])
-samples["/ST_s-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"] = OD([
+samples_2016["/ST_s-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"] = OD([
   ("type",                  "mc"),
   ("sample_category",       "TT"),
   ("process_name_specific", "ST_s-channel_4f_leptonDecays"),
@@ -202,7 +310,7 @@ samples["/ST_s-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1/RunII
     ]
   ),
 ])
-samples["/ST_t-channel_antitop_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia8_TuneCUETP8M1/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"] = OD([
+samples_2016["/ST_t-channel_antitop_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia8_TuneCUETP8M1/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"] = OD([
   ("type",                  "mc"),
   ("sample_category",       "TT"),
   ("process_name_specific", "ST_t-channel_antitop_4f_inclusiveDecays"),
@@ -222,7 +330,7 @@ samples["/ST_t-channel_antitop_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia8
     ]
   ),
 ])
-samples["/ST_t-channel_top_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia8_TuneCUETP8M1/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"] = OD([
+samples_2016["/ST_t-channel_top_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia8_TuneCUETP8M1/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"] = OD([
   ("type",                  "mc"),
   ("sample_category",       "TT"),
   ("process_name_specific", "ST_t-channel_top_4f_inclusiveDecays"),
@@ -242,7 +350,7 @@ samples["/ST_t-channel_top_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia8_Tun
     ]
   ),
 ])
-samples["/ST_tW_antitop_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"] = OD([
+samples_2016["/ST_tW_antitop_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"] = OD([
   ("type",                  "mc"),
   ("sample_category",       "TT"),
   ("process_name_specific", "ST_tW_antitop_5f_inclusiveDecays"),
@@ -262,7 +370,7 @@ samples["/ST_tW_antitop_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1/Run
     ]
   ),
 ])
-samples["/ST_tW_top_5f_NoFullyHadronicDecays_13TeV-powheg_TuneCUETP8M1/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"] = OD([
+samples_2016["/ST_tW_top_5f_NoFullyHadronicDecays_13TeV-powheg_TuneCUETP8M1/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"] = OD([
   ("type",                  "mc"),
   ("sample_category",       "TT"),
   ("process_name_specific", "ST_tW_top_5f_NoFullyHadronicDecays"),
@@ -282,15 +390,34 @@ samples["/ST_tW_top_5f_NoFullyHadronicDecays_13TeV-powheg_TuneCUETP8M1/RunIISpri
     ]
   ),
 ])
-samples["/SingleElectron/Run2016B-PromptReco-v2/MINIAOD"] = OD([
+samples_2016["/ST_tW_top_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v2/MINIAODSIM"] = OD([
   ("type",                  "mc"),
+  ("sample_category",       "TT"),
+  ("process_name_specific", "ST_tW_top_5f_inclusiveDecays"),
+  ("nof_files",             25),
+  ("nof_events",            998400),
+  ("use_it",                True),
+  ("xsection",              35.600000),
+  ("triggers",              [ "1e", "2e", "1mu", "2mu", "1e1mu" ]),
+  ("reHLT",                 False),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/local/lucia/VHBBHeppyV24bis/ST_tW_top_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1/VHBB_HEPPY_V24_ST_tW_top_5f_inclusiveDecays_13TeV-powheg-Py8_TuneCUETP8M1__spr16MAv2-puspr16_80r2as_2016_MAv2_v0-v2/160909_063526"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+])
+samples_2016["/SingleElectron/Run2016B-PromptReco-v2/MINIAOD"] = OD([
+  ("type",                  "data"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "SingleElectron_Run2016B_v2"),
   ("nof_files",             3209),
   ("nof_events",            814959742),
   ("use_it",                True),
-  ("xsection",              1.000000),
-  ("triggers",              [ "1e", "2e", "1mu", "2mu", "1e1mu" ]),
+  ("triggers",              [ "1e" ]),
   ("reHLT",                 False),
   ("local_paths",
     [
@@ -302,15 +429,14 @@ samples["/SingleElectron/Run2016B-PromptReco-v2/MINIAOD"] = OD([
     ]
   ),
 ])
-samples["/SingleElectron/Run2016C-PromptReco-v2/MINIAOD"] = OD([
-  ("type",                  "mc"),
+samples_2016["/SingleElectron/Run2016C-PromptReco-v2/MINIAOD"] = OD([
+  ("type",                  "data"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "SingleElectron_Run2016C"),
   ("nof_files",             1029),
   ("nof_events",            814959742),
   ("use_it",                True),
-  ("xsection",              1.000000),
-  ("triggers",              [ "1e", "2e", "1mu", "2mu", "1e1mu" ]),
+  ("triggers",              [ "1e" ]),
   ("reHLT",                 False),
   ("local_paths",
     [
@@ -322,15 +448,14 @@ samples["/SingleElectron/Run2016C-PromptReco-v2/MINIAOD"] = OD([
     ]
   ),
 ])
-samples["/SingleElectron/Run2016D-PromptReco-v2/MINIAOD"] = OD([
-  ("type",                  "mc"),
+samples_2016["/SingleElectron/Run2016D-PromptReco-v2/MINIAOD"] = OD([
+  ("type",                  "data"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "SingleElectron_Run2016D"),
   ("nof_files",             1545),
   ("nof_events",            814959742),
   ("use_it",                True),
-  ("xsection",              1.000000),
-  ("triggers",              [ "1e", "2e", "1mu", "2mu", "1e1mu" ]),
+  ("triggers",              [ "1e" ]),
   ("reHLT",                 False),
   ("local_paths",
     [
@@ -342,15 +467,14 @@ samples["/SingleElectron/Run2016D-PromptReco-v2/MINIAOD"] = OD([
     ]
   ),
 ])
-samples["/SingleElectron/Run2016E-PromptReco-v2/MINIAOD"] = OD([
-  ("type",                  "mc"),
+samples_2016["/SingleElectron/Run2016E-PromptReco-v2/MINIAOD"] = OD([
+  ("type",                  "data"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "SingleElectron_Run2016E"),
   ("nof_files",             1372),
   ("nof_events",            814959742),
-  ("use_it",                True),
-  ("xsection",              1.000000),
-  ("triggers",              [ "1e", "2e", "1mu", "2mu", "1e1mu" ]),
+  ("use_it",                False),
+  ("triggers",              [ "1e" ]),
   ("reHLT",                 False),
   ("local_paths",
     [
@@ -362,15 +486,14 @@ samples["/SingleElectron/Run2016E-PromptReco-v2/MINIAOD"] = OD([
     ]
   ),
 ])
-samples["/SingleElectron/Run2016F-PromptReco-v1/MINIAOD"] = OD([
-  ("type",                  "mc"),
+samples_2016["/SingleElectron/Run2016F-PromptReco-v1/MINIAOD"] = OD([
+  ("type",                  "data"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "SingleElectron_Run2016F"),
   ("nof_files",             984),
   ("nof_events",            814959742),
-  ("use_it",                True),
-  ("xsection",              1.000000),
-  ("triggers",              [ "1e", "2e", "1mu", "2mu", "1e1mu" ]),
+  ("use_it",                False),
+  ("triggers",              [ "1e" ]),
   ("reHLT",                 False),
   ("local_paths",
     [
@@ -382,15 +505,14 @@ samples["/SingleElectron/Run2016F-PromptReco-v1/MINIAOD"] = OD([
     ]
   ),
 ])
-samples["/SingleElectron/Run2016G-PromptReco-v1/MINIAOD"] = OD([
-  ("type",                  "mc"),
+samples_2016["/SingleElectron/Run2016G-PromptReco-v1/MINIAOD"] = OD([
+  ("type",                  "data"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "SingleElectron_Run2016G"),
   ("nof_files",             2076),
   ("nof_events",            814959742),
-  ("use_it",                True),
-  ("xsection",              1.000000),
-  ("triggers",              [ "1e", "2e", "1mu", "2mu", "1e1mu" ]),
+  ("use_it",                False),
+  ("triggers",              [ "1e" ]),
   ("reHLT",                 False),
   ("local_paths",
     [
@@ -402,15 +524,14 @@ samples["/SingleElectron/Run2016G-PromptReco-v1/MINIAOD"] = OD([
     ]
   ),
 ])
-samples["/SingleMuon/Run2016B-PromptReco-v2/MINIAOD"] = OD([
-  ("type",                  "mc"),
+samples_2016["/SingleMuon/Run2016B-PromptReco-v2/MINIAOD"] = OD([
+  ("type",                  "data"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "SingleMuon_Run2016B_v2"),
   ("nof_files",             3023),
   ("nof_events",            618050946),
   ("use_it",                True),
-  ("xsection",              1.000000),
-  ("triggers",              [ "1e", "2e", "1mu", "2mu", "1e1mu" ]),
+  ("triggers",              [ "1mu" ]),
   ("reHLT",                 False),
   ("local_paths",
     [
@@ -422,15 +543,14 @@ samples["/SingleMuon/Run2016B-PromptReco-v2/MINIAOD"] = OD([
     ]
   ),
 ])
-samples["/SingleMuon/Run2016C-PromptReco-v2/MINIAOD"] = OD([
-  ("type",                  "mc"),
+samples_2016["/SingleMuon/Run2016C-PromptReco-v2/MINIAOD"] = OD([
+  ("type",                  "data"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "SingleMuon_Run2016C"),
   ("nof_files",             1044),
   ("nof_events",            618050946),
   ("use_it",                True),
-  ("xsection",              1.000000),
-  ("triggers",              [ "1e", "2e", "1mu", "2mu", "1e1mu" ]),
+  ("triggers",              [ "1mu" ]),
   ("reHLT",                 False),
   ("local_paths",
     [
@@ -442,15 +562,14 @@ samples["/SingleMuon/Run2016C-PromptReco-v2/MINIAOD"] = OD([
     ]
   ),
 ])
-samples["/SingleMuon/Run2016D-PromptReco-v2/MINIAOD"] = OD([
-  ("type",                  "mc"),
+samples_2016["/SingleMuon/Run2016D-PromptReco-v2/MINIAOD"] = OD([
+  ("type",                  "data"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "SingleMuon_Run2016D"),
   ("nof_files",             1535),
   ("nof_events",            618050946),
   ("use_it",                True),
-  ("xsection",              1.000000),
-  ("triggers",              [ "1e", "2e", "1mu", "2mu", "1e1mu" ]),
+  ("triggers",              [ "1mu" ]),
   ("reHLT",                 False),
   ("local_paths",
     [
@@ -462,15 +581,14 @@ samples["/SingleMuon/Run2016D-PromptReco-v2/MINIAOD"] = OD([
     ]
   ),
 ])
-samples["/SingleMuon/Run2016E-PromptReco-v2/MINIAOD"] = OD([
-  ("type",                  "mc"),
+samples_2016["/SingleMuon/Run2016E-PromptReco-v2/MINIAOD"] = OD([
+  ("type",                  "data"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "SingleMuon_Run2016E"),
   ("nof_files",             1363),
   ("nof_events",            618050946),
-  ("use_it",                True),
-  ("xsection",              1.000000),
-  ("triggers",              [ "1e", "2e", "1mu", "2mu", "1e1mu" ]),
+  ("use_it",                False),
+  ("triggers",              [ "1mu" ]),
   ("reHLT",                 False),
   ("local_paths",
     [
@@ -482,15 +600,14 @@ samples["/SingleMuon/Run2016E-PromptReco-v2/MINIAOD"] = OD([
     ]
   ),
 ])
-samples["/SingleMuon/Run2016F-PromptReco-v1/MINIAOD"] = OD([
-  ("type",                  "mc"),
+samples_2016["/SingleMuon/Run2016F-PromptReco-v1/MINIAOD"] = OD([
+  ("type",                  "data"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "SingleMuon_Run2016F"),
   ("nof_files",             966),
   ("nof_events",            618050946),
-  ("use_it",                True),
-  ("xsection",              1.000000),
-  ("triggers",              [ "1e", "2e", "1mu", "2mu", "1e1mu" ]),
+  ("use_it",                False),
+  ("triggers",              [ "1mu" ]),
   ("reHLT",                 False),
   ("local_paths",
     [
@@ -502,15 +619,14 @@ samples["/SingleMuon/Run2016F-PromptReco-v1/MINIAOD"] = OD([
     ]
   ),
 ])
-samples["/SingleMuon/Run2016G-PromptReco-v1/MINIAOD"] = OD([
-  ("type",                  "mc"),
+samples_2016["/SingleMuon/Run2016G-PromptReco-v1/MINIAOD"] = OD([
+  ("type",                  "data"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "SingleMuon_Run2016G"),
   ("nof_files",             2159),
   ("nof_events",            618050946),
-  ("use_it",                True),
-  ("xsection",              1.000000),
-  ("triggers",              [ "1e", "2e", "1mu", "2mu", "1e1mu" ]),
+  ("use_it",                False),
+  ("triggers",              [ "1mu" ]),
   ("reHLT",                 False),
   ("local_paths",
     [
@@ -522,7 +638,7 @@ samples["/SingleMuon/Run2016G-PromptReco-v1/MINIAOD"] = OD([
     ]
   ),
 ])
-samples["/TGJets_TuneCUETP8M1_13TeV_amcatnlo_madspin_pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0_ext1-v1/MINIAODSIM"] = OD([
+samples_2016["/TGJets_TuneCUETP8M1_13TeV_amcatnlo_madspin_pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0_ext1-v1/MINIAODSIM"] = OD([
   ("type",                  "mc"),
   ("sample_category",       "Rares"),
   ("process_name_specific", "TGJets_ext1"),
@@ -542,7 +658,7 @@ samples["/TGJets_TuneCUETP8M1_13TeV_amcatnlo_madspin_pythia8/RunIISpring16MiniAO
     ]
   ),
 ])
-samples["/THW_Hincl_13TeV-madgraph-pythia8_TuneCUETP8M1/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM"] = OD([
+samples_2016["/THW_Hincl_13TeV-madgraph-pythia8_TuneCUETP8M1/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM"] = OD([
   ("type",                  "mc"),
   ("sample_category",       "additional_signal_overlap"),
   ("process_name_specific", "THW_Hincl"),
@@ -562,7 +678,7 @@ samples["/THW_Hincl_13TeV-madgraph-pythia8_TuneCUETP8M1/RunIISpring16MiniAODv2-P
     ]
   ),
 ])
-samples["/TTGJets_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"] = OD([
+samples_2016["/TTGJets_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"] = OD([
   ("type",                  "mc"),
   ("sample_category",       "Rares"),
   ("process_name_specific", "TTGJets"),
@@ -582,7 +698,7 @@ samples["/TTGJets_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/RunIISpring16M
     ]
   ),
 ])
-samples["/TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v4/MINIAODSIM"] = OD([
+samples_2016["/TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v4/MINIAODSIM"] = OD([
   ("type",                  "mc"),
   ("sample_category",       "TT"),
   ("process_name_specific", "TTJets_DiLept"),
@@ -602,7 +718,7 @@ samples["/TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16Mini
     ]
   ),
 ])
-samples["/TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0_ext1-v1/MINIAODSIM"] = OD([
+samples_2016["/TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0_ext1-v1/MINIAODSIM"] = OD([
   ("type",                  "mc"),
   ("sample_category",       "TT"),
   ("process_name_specific", "TTJets_DiLept_ext1"),
@@ -622,7 +738,7 @@ samples["/TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16Mini
     ]
   ),
 ])
-samples["/TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"] = OD([
+samples_2016["/TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"] = OD([
   ("type",                  "mc"),
   ("sample_category",       "TT"),
   ("process_name_specific", "TTJets_SingleLeptFromT"),
@@ -642,7 +758,7 @@ samples["/TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpr
     ]
   ),
 ])
-samples["/TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0_ext1-v1/MINIAODSIM"] = OD([
+samples_2016["/TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0_ext1-v1/MINIAODSIM"] = OD([
   ("type",                  "mc"),
   ("sample_category",       "TT"),
   ("process_name_specific", "TTJets_SingleLeptFromT_ext1"),
@@ -662,7 +778,7 @@ samples["/TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpr
     ]
   ),
 ])
-samples["/TTJets_SingleLeptFromTbar_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"] = OD([
+samples_2016["/TTJets_SingleLeptFromTbar_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"] = OD([
   ("type",                  "mc"),
   ("sample_category",       "TT"),
   ("process_name_specific", "TTJets_SingleLeptFromTbar"),
@@ -682,7 +798,7 @@ samples["/TTJets_SingleLeptFromTbar_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunII
     ]
   ),
 ])
-samples["/TTJets_SingleLeptFromTbar_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0_ext1-v1/MINIAODSIM"] = OD([
+samples_2016["/TTJets_SingleLeptFromTbar_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0_ext1-v1/MINIAODSIM"] = OD([
   ("type",                  "mc"),
   ("sample_category",       "TT"),
   ("process_name_specific", "TTJets_SingleLeptFromTbar_ext1"),
@@ -702,7 +818,7 @@ samples["/TTJets_SingleLeptFromTbar_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunII
     ]
   ),
 ])
-samples["/TTTT_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0_ext1-v1/MINIAODSIM"] = OD([
+samples_2016["/TTTT_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0_ext1-v1/MINIAODSIM"] = OD([
   ("type",                  "mc"),
   ("sample_category",       "Rares"),
   ("process_name_specific", "TTTT"),
@@ -722,12 +838,52 @@ samples["/TTTT_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISpring16MiniAODv2-PUSpri
     ]
   ),
 ])
-samples["/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"] = OD([
+samples_2016["/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/RunIISpring16MiniAODv2-premix_withHLT_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM"] = OD([
   ("type",                  "mc"),
   ("sample_category",       "TTW"),
-  ("process_name_specific", "TTWJetsToLNu"),
+  ("process_name_specific", "TTWJetsToLNu_v14-v1"),
+  ("nof_files",             6),
+  ("nof_events",            2657194),
+  ("use_it",                True),
+  ("xsection",              0.204300),
+  ("triggers",              [ "1e", "2e", "1mu", "2mu", "1e1mu" ]),
+  ("reHLT",                 False),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/local/lucia/VHBBHeppyV24bis/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/VHBB_HEPPY_V24bis_TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-Py8__spr16MAv2-premix_withHLT_80r2as_v14-v1/161005_140021"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+])
+samples_2016["/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/RunIISpring16MiniAODv2-premix_withHLT_80X_mcRun2_asymptotic_v14_ext1-v1/MINIAODSIM"] = OD([
+  ("type",                  "mc"),
+  ("sample_category",       "TTW"),
+  ("process_name_specific", "TTWJetsToLNu_v14_ext1-v1"),
+  ("nof_files",             46),
+  ("nof_events",            2657194),
+  ("use_it",                True),
+  ("xsection",              0.204300),
+  ("triggers",              [ "1e", "2e", "1mu", "2mu", "1e1mu" ]),
+  ("reHLT",                 False),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/local/lucia/VHBBHeppyV24bis/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/VHBB_HEPPY_V24bis_TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-Py8__spr16MAv2-premix_withHLT_80r2as_v14_ext1-v1/161005_140103"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+])
+samples_2016["/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"] = OD([
+  ("type",                  "mc"),
+  ("sample_category",       "TTW"),
+  ("process_name_specific", "TTWJetsToLNu_v0-v1"),
   ("nof_files",             4),
-  ("nof_events",            252673),
+  ("nof_events",            2657194),
   ("use_it",                True),
   ("xsection",              0.204300),
   ("triggers",              [ "1e", "2e", "1mu", "2mu", "1e1mu" ]),
@@ -742,7 +898,7 @@ samples["/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/RunIISpri
     ]
   ),
 ])
-samples["/TTZToLLNuNu_M-10_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISpring16MiniAODv2-premix_withHLT_80X_mcRun2_asymptotic_v14_ext1-v1/MINIAODSIM"] = OD([
+samples_2016["/TTZToLLNuNu_M-10_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISpring16MiniAODv2-premix_withHLT_80X_mcRun2_asymptotic_v14_ext1-v1/MINIAODSIM"] = OD([
   ("type",                  "mc"),
   ("sample_category",       "TTZ"),
   ("process_name_specific", "TTZToLLNuNu_M-10_ext1"),
@@ -762,7 +918,7 @@ samples["/TTZToLLNuNu_M-10_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISpring16Mini
     ]
   ),
 ])
-samples["/TTZToLLNuNu_M-10_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"] = OD([
+samples_2016["/TTZToLLNuNu_M-10_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"] = OD([
   ("type",                  "mc"),
   ("sample_category",       "TTZ"),
   ("process_name_specific", "TTZToLLNuNu_M-10"),
@@ -782,14 +938,14 @@ samples["/TTZToLLNuNu_M-10_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISpring16Mini
     ]
   ),
 ])
-samples["/TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16MiniAODv1-PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext3-v1/MINIAODSIM"] = OD([
+samples_2016["/TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16MiniAODv1-PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext3-v1/MINIAODSIM"] = OD([
   ("type",                  "mc"),
   ("sample_category",       "TT"),
   ("process_name_specific", "TT_ext3"),
   ("nof_files",             2124),
   ("nof_events",            92882726),
   ("use_it",                True),
-  ("xsection",              831.76),
+  ("xsection",              831.760000),
   ("triggers",              [ "1e", "2e", "1mu", "2mu", "1e1mu" ]),
   ("reHLT",                 False),
   ("local_paths",
@@ -802,15 +958,14 @@ samples["/TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16MiniAODv1-PUSpring16
     ]
   ),
 ])
-samples["/Tau/Run2016B-PromptReco-v2/MINIAOD"] = OD([
-  ("type",                  "mc"),
+samples_2016["/Tau/Run2016B-PromptReco-v2/MINIAOD"] = OD([
+  ("type",                  "data"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "Tau_Run2016B_v2"),
   ("nof_files",             3203),
-  ("nof_events",            130731886),
+  ("nof_events",            351688465),
   ("use_it",                True),
-  ("xsection",              1.000000),
-  ("triggers",              [ "1e", "2e", "1mu", "2mu", "1e1mu" ]),
+  ("triggers",              [ "2tau" ]),
   ("reHLT",                 False),
   ("local_paths",
     [
@@ -822,15 +977,33 @@ samples["/Tau/Run2016B-PromptReco-v2/MINIAOD"] = OD([
     ]
   ),
 ])
-samples["/Tau/Run2016D-PromptReco-v2/MINIAOD"] = OD([
-  ("type",                  "mc"),
+samples_2016["/Tau/Run2016C-PromptReco-v2/MINIAOD"] = OD([
+  ("type",                  "data"),
+  ("sample_category",       "data_obs"),
+  ("process_name_specific", "Tau_Run2016C"),
+  ("nof_files",             730),
+  ("nof_events",            351688465),
+  ("use_it",                True),
+  ("triggers",              [ "2tau" ]),
+  ("reHLT",                 False),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/local/lucia/VHBBHeppyV24bis/Tau/VHBB_HEPPY_V24_Tau__Run2016C-PromptReco-v2/160929_132944"),
+        ("selection", "*"),
+        ("blacklist", [121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 145, 146, 147, 148, 149, 150, 151, 153, 154, 156, 158, 159, 167, 169, 423, 505, 509]),
+      ]),
+    ]
+  ),
+])
+samples_2016["/Tau/Run2016D-PromptReco-v2/MINIAOD"] = OD([
+  ("type",                  "data"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "Tau_Run2016D"),
   ("nof_files",             1552),
-  ("nof_events",            130731886),
+  ("nof_events",            351688465),
   ("use_it",                True),
-  ("xsection",              1.000000),
-  ("triggers",              [ "1e", "2e", "1mu", "2mu", "1e1mu" ]),
+  ("triggers",              [ "2tau" ]),
   ("reHLT",                 False),
   ("local_paths",
     [
@@ -842,7 +1015,64 @@ samples["/Tau/Run2016D-PromptReco-v2/MINIAOD"] = OD([
     ]
   ),
 ])
-samples["/WGToLNuG_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"] = OD([
+samples_2016["/Tau/Run2016E-PromptReco-v2/MINIAOD"] = OD([
+  ("type",                  "data"),
+  ("sample_category",       "data_obs"),
+  ("process_name_specific", "Tau_Run2016E"),
+  ("nof_files",             927),
+  ("nof_events",            351688465),
+  ("use_it",                False),
+  ("triggers",              [ "2tau" ]),
+  ("reHLT",                 False),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/local/lucia/VHBBHeppyV24bis/Tau/VHBB_HEPPY_V24_Tau__Run2016E-PromptReco-v2/160929_132633"),
+        ("selection", "*"),
+        ("blacklist", [388, 393]),
+      ]),
+    ]
+  ),
+])
+samples_2016["/Tau/Run2016F-PromptReco-v1/MINIAOD"] = OD([
+  ("type",                  "data"),
+  ("sample_category",       "data_obs"),
+  ("process_name_specific", "Tau_Run2016F"),
+  ("nof_files",             709),
+  ("nof_events",            351688465),
+  ("use_it",                False),
+  ("triggers",              [ "2tau" ]),
+  ("reHLT",                 False),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/local/lucia/VHBBHeppyV24bis/Tau/VHBB_HEPPY_V24_Tau__Run2016F-PromptReco-v1/160929_132742"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+])
+samples_2016["/Tau/Run2016G-PromptReco-v1/MINIAOD"] = OD([
+  ("type",                  "data"),
+  ("sample_category",       "data_obs"),
+  ("process_name_specific", "Tau_Run2016G"),
+  ("nof_files",             1645),
+  ("nof_events",            351688465),
+  ("use_it",                False),
+  ("triggers",              [ "2tau" ]),
+  ("reHLT",                 False),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/local/lucia/VHBBHeppyV24bis/Tau/VHBB_HEPPY_V24_Tau__Run2016G-PromptReco-v1/160929_132821"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+])
+samples_2016["/WGToLNuG_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"] = OD([
   ("type",                  "mc"),
   ("sample_category",       "Rares"),
   ("process_name_specific", "WGToLNuG"),
@@ -862,7 +1092,27 @@ samples["/WGToLNuG_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2
     ]
   ),
 ])
-samples["/WWTo2L2Nu_13TeV-powheg/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"] = OD([
+samples_2016["/WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14_ext1-v1/MINIAODSIM"] = OD([
+  ("type",                  "mc"),
+  ("sample_category",       "EWK"),
+  ("process_name_specific", "WJetsToLNu"),
+  ("nof_files",             306),
+  ("nof_events",            47502020),
+  ("use_it",                True),
+  ("xsection",              61526.700000),
+  ("triggers",              [ "1e", "2e", "1mu", "2mu", "1e1mu" ]),
+  ("reHLT",                 False),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/local/lucia/VHBBHeppyV24bis/WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/VHBB_HEPPY_V24_WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-Py8__spr16MAv2-puspr16_HLT_80r2as_v14_ext1-v1/160909_070745"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+])
+samples_2016["/WWTo2L2Nu_13TeV-powheg/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"] = OD([
   ("type",                  "mc"),
   ("sample_category",       "EWK"),
   ("process_name_specific", "WWTo2L2Nu"),
@@ -882,7 +1132,7 @@ samples["/WWTo2L2Nu_13TeV-powheg/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_as
     ]
   ),
 ])
-samples["/WW_DoubleScattering_13TeV-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"] = OD([
+samples_2016["/WW_DoubleScattering_13TeV-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"] = OD([
   ("type",                  "mc"),
   ("sample_category",       "Rares"),
   ("process_name_specific", "WW_DoubleScattering"),
@@ -902,7 +1152,7 @@ samples["/WW_DoubleScattering_13TeV-pythia8/RunIISpring16MiniAODv2-PUSpring16_80
     ]
   ),
 ])
-samples["/WZTo3LNu_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"] = OD([
+samples_2016["/WZTo3LNu_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"] = OD([
   ("type",                  "mc"),
   ("sample_category",       "EWK"),
   ("process_name_specific", "WZTo3LNu"),
@@ -922,7 +1172,7 @@ samples["/WZTo3LNu_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16MiniAODv2-PUSp
     ]
   ),
 ])
-samples["/WZZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"] = OD([
+samples_2016["/WZZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"] = OD([
   ("type",                  "mc"),
   ("sample_category",       "Rares"),
   ("process_name_specific", "WZZ"),
@@ -942,7 +1192,7 @@ samples["/WZZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISpring16MiniAODv2-PUSprin
     ]
   ),
 ])
-samples["/WpWpJJ_EWK-QCD_TuneCUETP8M1_13TeV-madgraph-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v2/MINIAODSIM"] = OD([
+samples_2016["/WpWpJJ_EWK-QCD_TuneCUETP8M1_13TeV-madgraph-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v2/MINIAODSIM"] = OD([
   ("type",                  "mc"),
   ("sample_category",       "Rares"),
   ("process_name_specific", "WpWpJJ_EWK-QCD"),
@@ -962,7 +1212,7 @@ samples["/WpWpJJ_EWK-QCD_TuneCUETP8M1_13TeV-madgraph-pythia8/RunIISpring16MiniAO
     ]
   ),
 ])
-samples["/ZGTo2LG_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"] = OD([
+samples_2016["/ZGTo2LG_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"] = OD([
   ("type",                  "mc"),
   ("sample_category",       "Rares"),
   ("process_name_specific", "ZGTo2LG"),
@@ -982,7 +1232,7 @@ samples["/ZGTo2LG_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring16MiniAODv2
     ]
   ),
 ])
-samples["/ZGTo2LG_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0_ext1-v1/MINIAODSIM"] = OD([
+samples_2016["/ZGTo2LG_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0_ext1-v1/MINIAODSIM"] = OD([
   ("type",                  "mc"),
   ("sample_category",       "Rares"),
   ("process_name_specific", "ZGTo2LG_ext1"),
@@ -1002,7 +1252,7 @@ samples["/ZGTo2LG_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring16MiniAODv2
     ]
   ),
 ])
-samples["/ZZTo4L_13TeV-amcatnloFXFX-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM"] = OD([
+samples_2016["/ZZTo4L_13TeV-amcatnloFXFX-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM"] = OD([
   ("type",                  "mc"),
   ("sample_category",       "EWK"),
   ("process_name_specific", "ZZTo4L"),
@@ -1022,7 +1272,7 @@ samples["/ZZTo4L_13TeV-amcatnloFXFX-pythia8/RunIISpring16MiniAODv2-PUSpring16RAW
     ]
   ),
 ])
-samples["/tZq_ll_4f_13TeV-amcatnlo-pythia8_TuneCUETP8M1/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"] = OD([
+samples_2016["/tZq_ll_4f_13TeV-amcatnlo-pythia8_TuneCUETP8M1/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"] = OD([
   ("type",                  "mc"),
   ("sample_category",       "Rares"),
   ("process_name_specific", "tZq_ll_4f"),
@@ -1042,7 +1292,7 @@ samples["/tZq_ll_4f_13TeV-amcatnlo-pythia8_TuneCUETP8M1/RunIISpring16MiniAODv2-P
     ]
   ),
 ])
-samples["/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14_ext1-v1/MINIAODSIM"] = OD([
+samples_2016["/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14_ext1-v1/MINIAODSIM"] = OD([
   ("type",                  "mc"),
   ("sample_category",       "signal"),
   ("process_name_specific", "ttHJetToNonbb_M125"),
@@ -1062,7 +1312,7 @@ samples["/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/RunIISp
     ]
   ),
 ])
-samples["/ttHToNonbb_M125_13TeV_powheg_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM"] = OD([
+samples_2016["/ttHToNonbb_M125_13TeV_powheg_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM"] = OD([
   ("type",                  "mc"),
   ("sample_category",       "signal"),
   ("process_name_specific", "ttHToNonbb_M125"),
