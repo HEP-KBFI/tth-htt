@@ -2,7 +2,7 @@
 #define tthAnalysis_HiggsToTauTau_RecoMuonCollectionSelectorFakeable_h
 
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuon.h" // RecoMuon
-#include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionSelector.h" // ParticleCollectionSelector
+#include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionSelectorWEra.h" // ParticleCollectionSelectorWEra
 
 #include <Rtypes.h> // Int_t, Double_t
 
@@ -43,35 +43,7 @@ class RecoMuonSelectorFakeable
   bool apply_tightCharge_;  ///< apply (True) or do not apply (False) tight charge cut
 };
 
-class RecoMuonCollectionSelectorFakeable
-{
- public:
-  RecoMuonCollectionSelectorFakeable(int era, int index = -1, bool debug = false)
-    : selIndex_(index)
-    , selector_(era, index, debug)
-  {}
-  ~RecoMuonCollectionSelectorFakeable() {}
-
-  std::vector<const RecoMuon*> operator()(const std::vector<const RecoMuon*>& muons) const
-  {
-    std::vector<const RecoMuon*> selMuons;
-    int idx = 0;
-    for ( typename std::vector<const RecoMuon*>::const_iterator muon = muons.begin();
-	  muon != muons.end(); ++muon ) {
-      if ( selector_(**muon) ) {
-	if ( idx == selIndex_ || selIndex_ == -1 ) {
-	  selMuons.push_back(*muon);
-	}
-	++idx;
-      }
-    }
-    return selMuons;
-  }
-  
- protected: 
-  int selIndex_;
-  RecoMuonSelectorFakeable selector_;
-};
+typedef ParticleCollectionSelectorWEra<RecoMuon, RecoMuonSelectorFakeable> RecoMuonCollectionSelectorFakeable;
 
 #endif // tthAnalysis_HiggsToTauTau_RecoMuonCollectionSelectorFakeable_h
 

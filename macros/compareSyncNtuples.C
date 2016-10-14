@@ -101,8 +101,8 @@ NtupleMetaData
 const std::string base_dir = "/home/" + _whoami() + "/sandbox/sync_ntuples/";
 const std::string inputbase_dir = "/hdfs/local/karl/syncNtuples/comparison/";
 const std::map<std::string, std::map<std::string, NtupleMetaData>> ntupleMetadataMap = {
-  { "tth", { { "llr",     { inputbase_dir + "llr",     "syncNtuple_ttH_80X.root",               "", "syncTree", "LLR",     "n_presel_jet >= 2" } },
-             { "tallinn", { inputbase_dir + "tallinn", "ttHJetToNonbb_M125_13TeV_sync_v0.root", "", "tree",     "Tallinn", "n_presel_jet >= 2" } } } }
+  { "tth", { { "llr",     { inputbase_dir + "llr",     "syncNtuple_ttH_80X.root",               "", "syncTree", "LLR",     "" } },
+             { "tallinn", { inputbase_dir + "tallinn", "ttHJetToNonbb_M125_13TeV_sync_v0.root", "", "tree",     "Tallinn", "" } } } }
 };
 
 //-------------------------------------------------------------------------------
@@ -673,7 +673,7 @@ void compareSyncNtuples(const std::string & ref_str,
   branchesToCompare.push_back(new branchEntryType("tau1_pt", "F", "n_presel_tau >= 2", 100, 0., 250.));
   branchesToCompare.push_back(new branchEntryType("tau1_eta", "F", "n_presel_tau >= 2", 100, -3., +3.));
   branchesToCompare.push_back(new branchEntryType("tau1_phi", "F", "n_presel_tau >= 2", 36, -TMath::Pi(), +TMath::Pi()));
-  branchesToCompare.push_back(new branchEntryType("tau1_E", "F", "n_presel_tau >= 2", 100, 0., 250.));			      
+  branchesToCompare.push_back(new branchEntryType("tau1_E", "F", "n_presel_tau >= 2", 100, 0., 250.));
   branchesToCompare.push_back(new branchEntryType("jet0_CSV", "F", "n_presel_jet >= 1", 100, -1.5, +1.5));
   branchesToCompare.push_back(new branchEntryType("jet0_pt", "F", "n_presel_jet >= 1", 100, 0., 250.));
   branchesToCompare.push_back(new branchEntryType("jet0_eta", "F", "n_presel_jet >= 1", 100, -5.5, +5.5));
