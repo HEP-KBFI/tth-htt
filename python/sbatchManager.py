@@ -77,7 +77,7 @@ class sbatchManager:
     self.workingDir = None
     self.logFileDir = None
     ##self.queue = "short"
-    self.queue = "long"
+    self.queue = os.environ.get('SBATCH_PRIORITY') or "long"
     self.command_submit = "sbatch"
     self.command_poll = "squeue"
     self.poll_interval = 30
