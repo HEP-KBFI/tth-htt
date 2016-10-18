@@ -50,4 +50,18 @@ bool isMatched(const Tfakeable& fakeableLepton, const std::vector<Ttight*>& tigh
 std::string getBranchName_bTagWeight(int era, const std::string& central_or_shift);
 std::string getBranchName_bTagWeight(int era, int central_or_shift);
 
+/**
+ * @brief Return first N objects from collection given as function argument. In case the input collection contains fewer than N objects, the whole input collection is returned
+ */
+template <typename T>
+std::vector<T> pickFirstNobjects(const std::vector<T>& objects_input, size_t N)
+{
+  std::vector<T> objects_output;
+  size_t N_input = objects_input.size();
+  for ( size_t idx = 0; idx < std::min(N_input, N); ++idx ) {
+    objects_output.push_back(objects_input[idx]);
+  }
+  return objects_output;
+}
+
 #endif

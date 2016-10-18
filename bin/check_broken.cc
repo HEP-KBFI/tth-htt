@@ -32,7 +32,7 @@
 #define IMPROPER_FILE_P boost::filesystem::path("improper_files.txt")
 #define ZOMBIE_FILE_P   boost::filesystem::path("broken_files.txt")
 #define ZEROFS_FILE_P   boost::filesystem::path("zerofs_files.txt")
-#define PYTHON_FILE_P   boost::filesystem::path("samples_2016.py")
+#define PYTHON_FILE_P   boost::filesystem::path("tthAnalyzeSamples_2016.py")
 
 #define LINE std::string(80, '*') + '\n'
 
@@ -289,31 +289,64 @@ struct Sample
     {
       return env.at(what[1].str());
     };
-    const std::string input =
-      "samples[\"$(sample_dbs_name)\"] = OD([\n"
-      "  (\"type\",                  \"mc\"),\n"
-      "  (\"sample_category\",       \"$(category)\"),\n"       //LUCIA
-      "  (\"process_name_specific\", \"$(process_name)\"),\n"   //LUCIA
-      "  (\"nof_files\",             $(max_nr)),\n"
-      "  (\"nof_events\",            $(nof_events)),\n"
-      "  (\"nof_dbs_events\",        $(nof_dbs_events)),\n"
-      "  (\"use_it\",                True),\n"
-      "  (\"xsection\",              $(x_sec)),\n"
-      "  (\"triggers\",              [ \"1e\", \"2e\", \"1mu\", \"2mu\", \"1e1mu\" ]),\n"
-      "  (\"reHLT\",                 False),\n"
-      "  (\"local_paths\",\n"
-      "    [\n"
-      "      OD([\n"
-      "        (\"path\",      \"$(super_parent)\"),\n"
-      "        (\"selection\", \"*\"),\n"
-      "        (\"blacklist\", [$(blacklist)]),\n"
-      "      ]),\n"
-      "    ]\n"
-      "  ),\n"
-      "])\n"
-    ;
+    
+    std::string input = "";
+    if(category.find("data_obs")!=std::string::npos){
+	    input = input + "samples_2016[\"$(sample_dbs_name)\"] = OD([\n"  
+		    "  (\"type\",                  \"data\"),\n"
+		    "  (\"sample_category\",       \"$(category)\"),\n"       
+		    "  (\"process_name_specific\", \"$(process_name)\"),\n"   
+		    "  (\"nof_files\",             $(max_nr)),\n"
+		    "  (\"nof_events\",            $(nof_events)),\n";
+		    //"  (\"nof_dbs_events\",        $(nof_dbs_events)),\n";
+		    if(process_name.find("2016E")!=std::string::npos || process_name.find("2016F")!=std::string::npos || process_name.find("2016G")!=std::string::npos) 
+			    input = input + "  (\"use_it\",                False),\n";
+		    else 
+			    input = input + "  (\"use_it\",                True),\n";
+	    if(process_name.find("SingleElec")!=std::string::npos) input = input + "  (\"triggers\",              [ \"1e\" ]),\n";
+	    if(process_name.find("SingleMuon")!=std::string::npos) input = input + "  (\"triggers\",              [ \"1mu\" ]),\n";
+	    if(process_name.find("DoubleEG")!=std::string::npos  ) input = input + "  (\"triggers\",              [ \"2e\" ]),\n";
+	    if(process_name.find("DoubleMuon")!=std::string::npos) input = input + "  (\"triggers\",              [ \"2mu\" ]),\n";
+	    if(process_name.find("MuonEG")!=std::string::npos    ) input = input + "  (\"triggers\",              [ \"1e1mu\" ]),\n";
+	    if(process_name.find("Tau")!=std::string::npos       ) input = input + "  (\"triggers\",              [ \"2tau\" ]),\n";
+	    input = input +	  
+		    "  (\"reHLT\",                 False),\n"
+		    "  (\"local_paths\",\n"
+		    "    [\n"
+		    "      OD([\n"
+		    "        (\"path\",      \"$(super_parent)\"),\n"
+		    "        (\"selection\", \"*\"),\n"
+		    "        (\"blacklist\", [$(blacklist)]),\n"
+		    "      ]),\n"
+		    "    ]\n"
+		    "  ),\n"
+		    "])\n";
+    }else{
+	    input = input +  "samples_2016[\"$(sample_dbs_name)\"] = OD([\n"
+		    "  (\"type\",                  \"mc\"),\n"
+		    "  (\"sample_category\",       \"$(category)\"),\n"       
+		    "  (\"process_name_specific\", \"$(process_name)\"),\n"   
+		    "  (\"nof_files\",             $(max_nr)),\n"
+		    "  (\"nof_events\",            $(nof_events)),\n"
+		    //"  (\"nof_dbs_events\",        $(nof_dbs_events)),\n"
+		    "  (\"use_it\",                True),\n"
+		    "  (\"xsection\",              $(x_sec)),\n"
+		    "  (\"triggers\",              [ \"1e\", \"2e\", \"1mu\", \"2mu\", \"1e1mu\" ]),\n"
+		    "  (\"reHLT\",                 False),\n"
+		    "  (\"local_paths\",\n"
+		    "    [\n"
+		    "      OD([\n"
+		    "        (\"path\",      \"$(super_parent)\"),\n"
+		    "        (\"selection\", \"*\"),\n"
+		    "        (\"blacklist\", [$(blacklist)]),\n"
+		    "      ]),\n"
+		    "    ]\n"
+		    "  ),\n"
+		    "])\n";
+    }
+
     const boost::xpressive::sregex envar =
-      "$(" >> (boost::xpressive::s1 = +boost::xpressive::_w) >> ')';
+	    "$(" >> (boost::xpressive::s1 = +boost::xpressive::_w) >> ')';
     const std::string output = boost::xpressive::regex_replace(input, envar, fmt_fun);
     return output;
   }
@@ -371,11 +404,13 @@ sample_name["DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8"]="/DYJetsTo
 sample_name["DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8"]="/DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM";
 sample_name["WZTo3LNu_TuneCUETP8M1_13TeV-powheg-pythia8"]="/WZTo3LNu_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM";
 sample_name["WWTo2L2Nu_13TeV-powheg"]="/WWTo2L2Nu_13TeV-powheg/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM";
+sample_name["WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8"]="/WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14_ext1-v1/MINIAODSIM";
 sample_name["ZZTo4L_13TeV-amcatnloFXFX-pythia8"]="/ZZTo4L_13TeV-amcatnloFXFX-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM";
 sample_name["ST_s-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1"]="/ST_s-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM";
 sample_name["ST_t-channel_antitop_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia8_TuneCUETP8M1"]="/ST_t-channel_antitop_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia8_TuneCUETP8M1/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM";
 sample_name["ST_t-channel_top_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia8_TuneCUETP8M1"]="/ST_t-channel_top_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia8_TuneCUETP8M1/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM";
 sample_name["ST_tW_antitop_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1"]="/ST_tW_antitop_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM";
+sample_name["ST_tW_top_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1"]="/ST_tW_top_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v2/MINIAODSIM";
 sample_name["ST_tW_top_5f_NoFullyHadronicDecays_13TeV-powheg_TuneCUETP8M1"]="/ST_tW_top_5f_NoFullyHadronicDecays_13TeV-powheg_TuneCUETP8M1/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM";
 sample_name["VHBB_HEPPY_V24bis_TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-Py8__spr16MAv2-puspr16_80r2as_2016_MAv2_v0-v4"]="/TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v4/MINIAODSIM";
 sample_name["VHBB_HEPPY_V24bis_TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-Py8__spr16MAv2-puspr16_80r2as_2016_MAv2_v0_ext1-v1"]="/TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0_ext1-v1/MINIAODSIM";
@@ -384,7 +419,9 @@ sample_name["VHBB_HEPPY_V24bis_TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgrap
 sample_name["VHBB_HEPPY_V24bis_TTJets_SingleLeptFromTbar_TuneCUETP8M1_13TeV-madgraphMLM-Py8__spr16MAv2-puspr16_80r2as_2016_MAv2_v0-v1"]="/TTJets_SingleLeptFromTbar_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM";
 sample_name["VHBB_HEPPY_V24bis_TTJets_SingleLeptFromTbar_TuneCUETP8M1_13TeV-madgraphMLM-Py8__spr16MAv2-puspr16_80r2as_2016_MAv2_v0_ext1-v1"]="/TTJets_SingleLeptFromTbar_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0_ext1-v1/MINIAODSIM";
 sample_name["TT_TuneCUETP8M1_13TeV-powheg-pythia8"]="/TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16MiniAODv1-PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext3-v1/MINIAODSIM";
-sample_name["TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8"]="/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM";
+sample_name["VHBB_HEPPY_V24bis_TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-Py8__spr16MAv2-puspr16_80r2as_2016_MAv2_v0-v1"]="/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM";
+sample_name["VHBB_HEPPY_V24bis_TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-Py8__spr16MAv2-premix_withHLT_80r2as_v14-v1"]="/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/RunIISpring16MiniAODv2-premix_withHLT_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM";
+sample_name["VHBB_HEPPY_V24bis_TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-Py8__spr16MAv2-premix_withHLT_80r2as_v14_ext1-v1"]="/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/RunIISpring16MiniAODv2-premix_withHLT_80X_mcRun2_asymptotic_v14_ext1-v1/MINIAODSIM";
 sample_name["VHBB_HEPPY_V24bis_TTZToLLNuNu_M-10_TuneCUETP8M1_13TeV-amcatnlo-Py8__spr16MAv2-puspr16_80r2as_2016_MAv2_v0-v1"]="/TTZToLLNuNu_M-10_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM";
 sample_name["VHBB_HEPPY_V24bis_TTZToLLNuNu_M-10_TuneCUETP8M1_13TeV-amcatnlo-Py8__spr16MAv2-premix_withHLT_80r2as_v14_ext1-v1"]="/TTZToLLNuNu_M-10_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISpring16MiniAODv2-premix_withHLT_80X_mcRun2_asymptotic_v14_ext1-v1/MINIAODSIM";
 sample_name["WZZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8"]="/WZZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM";
@@ -397,6 +434,18 @@ sample_name["WpWpJJ_EWK-QCD_TuneCUETP8M1_13TeV-madgraph-pythia8"]="/WpWpJJ_EWK-Q
 sample_name["WW_DoubleScattering_13TeV-pythia8"]="/WW_DoubleScattering_13TeV-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM";
 sample_name["tZq_ll_4f_13TeV-amcatnlo-pythia8_TuneCUETP8M1"]="/tZq_ll_4f_13TeV-amcatnlo-pythia8_TuneCUETP8M1/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM";
 sample_name["TTTT_TuneCUETP8M1_13TeV-amcatnlo-pythia8"]="/TTTT_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0_ext1-v1/MINIAODSIM";
+sample_name["VHBB_HEPPY_D24_DoubleEG__Run2016B-PromptReco-v2"]="/DoubleEG/Run2016B-PromptReco-v2/MINIAOD";
+sample_name["VHBB_HEPPY_D24_DoubleEG__Run2016C-PromptReco-v2"]="/DoubleEG/Run2016C-PromptReco-v2/MINIAOD";
+sample_name["VHBB_HEPPY_D24_DoubleEG__Run2016D-PromptReco-v2"]="/DoubleEG/Run2016D-PromptReco-v2/MINIAOD";
+sample_name["VHBB_HEPPY_D24_DoubleEG__Run2016E-PromptReco-v2"]="/DoubleEG/Run2016E-PromptReco-v2/MINIAOD";
+sample_name["VHBB_HEPPY_D24_DoubleEG__Run2016F-PromptReco-v1"]="/DoubleEG/Run2016F-PromptReco-v1/MINIAOD";
+sample_name["VHBB_HEPPY_D24_DoubleEG__Run2016G-PromptReco-v1"]="/DoubleEG/Run2016G-PromptReco-v1/MINIAOD";
+sample_name["VHBB_HEPPY_V24_DoubleMuon__Run2016B-PromptReco-v2"]="/DoubleMuon/Run2016B-PromptReco-v2/MINIAOD";
+sample_name["VHBB_HEPPY_V24_DoubleMuon__Run2016C-PromptReco-v2"]="/DoubleMuon/Run2016C-PromptReco-v2/MINIAOD";
+sample_name["VHBB_HEPPY_V24_DoubleMuon__Run2016D-PromptReco-v2"]="/DoubleMuon/Run2016D-PromptReco-v2/MINIAOD";
+sample_name["VHBB_HEPPY_V24_DoubleMuon__Run2016E-PromptReco-v2"]="/DoubleMuon/Run2016E-PromptReco-v2/MINIAOD";
+sample_name["VHBB_HEPPY_V24_DoubleMuon__Run2016F-PromptReco-v1"]="/DoubleMuon/Run2016F-PromptReco-v1/MINIAOD";
+sample_name["VHBB_HEPPY_V24_DoubleMuon__Run2016G-PromptReco-v1"]="/DoubleMuon/Run2016G-PromptReco-v1/MINIAOD";
 sample_name["VHBB_HEPPY_V24_MuonEG__Run2016B-PromptReco-v2"]="/MuonEG/Run2016B-PromptReco-v2/MINIAOD";
 sample_name["VHBB_HEPPY_V24_MuonEG__Run2016C-PromptReco-v2"]="/MuonEG/Run2016C-PromptReco-v2/MINIAOD";
 sample_name["VHBB_HEPPY_V24_MuonEG__Run2016D-PromptReco-v2"]="/MuonEG/Run2016D-PromptReco-v2/MINIAOD";
@@ -416,7 +465,11 @@ sample_name["VHBB_HEPPY_V24_SingleMuon__Run2016E-PromptReco-v2"]="/SingleMuon/Ru
 sample_name["VHBB_HEPPY_V24_SingleMuon__Run2016F-PromptReco-v1"]="/SingleMuon/Run2016F-PromptReco-v1/MINIAOD";
 sample_name["VHBB_HEPPY_V24_SingleMuon__Run2016G-PromptReco-v1"]="/SingleMuon/Run2016G-PromptReco-v1/MINIAOD";
 sample_name["VHBB_HEPPY_V24_Tau__Run2016B-PromptReco-v2"]="/Tau/Run2016B-PromptReco-v2/MINIAOD";
+sample_name["VHBB_HEPPY_V24_Tau__Run2016C-PromptReco-v2"]="/Tau/Run2016C-PromptReco-v2/MINIAOD";
 sample_name["VHBB_HEPPY_V24_Tau__Run2016D-PromptReco-v2"]="/Tau/Run2016D-PromptReco-v2/MINIAOD";
+sample_name["VHBB_HEPPY_V24_Tau__Run2016E-PromptReco-v2"]="/Tau/Run2016E-PromptReco-v2/MINIAOD";
+sample_name["VHBB_HEPPY_V24_Tau__Run2016F-PromptReco-v1"]="/Tau/Run2016F-PromptReco-v1/MINIAOD";
+sample_name["VHBB_HEPPY_V24_Tau__Run2016G-PromptReco-v1"]="/Tau/Run2016G-PromptReco-v1/MINIAOD";
 
 std::map<std::string, std::string> sample_category; // key = sample
 sample_category["/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14_ext1-v1/MINIAODSIM"]="signal";
@@ -427,11 +480,13 @@ sample_category["/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISp
 sample_category["/DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"]="EWK";
 sample_category["/WZTo3LNu_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"]="EWK";
 sample_category["/WWTo2L2Nu_13TeV-powheg/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"]="EWK";
+sample_category["/WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14_ext1-v1/MINIAODSIM"]="EWK";
 sample_category["/ZZTo4L_13TeV-amcatnloFXFX-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM"]="EWK";
 sample_category["/ST_s-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"]="TT";
 sample_category["/ST_t-channel_antitop_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia8_TuneCUETP8M1/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"]="TT";
 sample_category["/ST_t-channel_top_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia8_TuneCUETP8M1/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"]="TT";
 sample_category["/ST_tW_antitop_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"]="TT";
+sample_category["/ST_tW_top_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v2/MINIAODSIM"]="TT";
 sample_category["/ST_tW_top_5f_NoFullyHadronicDecays_13TeV-powheg_TuneCUETP8M1/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"]="TT";
 sample_category["/TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v4/MINIAODSIM"]="TT";
 sample_category["/TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0_ext1-v1/MINIAODSIM"]="TT";
@@ -441,6 +496,8 @@ sample_category["/TTJets_SingleLeptFromTbar_TuneCUETP8M1_13TeV-madgraphMLM-pythi
 sample_category["/TTJets_SingleLeptFromTbar_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0_ext1-v1/MINIAODSIM"]="TT";
 sample_category["/TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16MiniAODv1-PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext3-v1/MINIAODSIM"]="TT";
 sample_category["/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"]="TTW";
+sample_category["/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/RunIISpring16MiniAODv2-premix_withHLT_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM"]="TTW";
+sample_category["/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/RunIISpring16MiniAODv2-premix_withHLT_80X_mcRun2_asymptotic_v14_ext1-v1/MINIAODSIM"]="TTW";
 sample_category["/TTZToLLNuNu_M-10_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"]="TTZ";
 sample_category["/TTZToLLNuNu_M-10_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISpring16MiniAODv2-premix_withHLT_80X_mcRun2_asymptotic_v14_ext1-v1/MINIAODSIM"]="TTZ";
 sample_category["/WZZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"]="Rares";
@@ -453,6 +510,18 @@ sample_category["/WpWpJJ_EWK-QCD_TuneCUETP8M1_13TeV-madgraph-pythia8/RunIISpring
 sample_category["/WW_DoubleScattering_13TeV-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"]="Rares";
 sample_category["/tZq_ll_4f_13TeV-amcatnlo-pythia8_TuneCUETP8M1/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"]="Rares";
 sample_category["/TTTT_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0_ext1-v1/MINIAODSIM"]="Rares";
+sample_category["/DoubleEG/Run2016B-PromptReco-v2/MINIAOD"]="data_obs";
+sample_category["/DoubleEG/Run2016C-PromptReco-v2/MINIAOD"]="data_obs";
+sample_category["/DoubleEG/Run2016D-PromptReco-v2/MINIAOD"]="data_obs";
+sample_category["/DoubleEG/Run2016E-PromptReco-v2/MINIAOD"]="data_obs";
+sample_category["/DoubleEG/Run2016F-PromptReco-v1/MINIAOD"]="data_obs";
+sample_category["/DoubleEG/Run2016G-PromptReco-v1/MINIAOD"]="data_obs";
+sample_category["/DoubleMuon/Run2016B-PromptReco-v2/MINIAOD"]="data_obs";
+sample_category["/DoubleMuon/Run2016C-PromptReco-v2/MINIAOD"]="data_obs";
+sample_category["/DoubleMuon/Run2016D-PromptReco-v2/MINIAOD"]="data_obs";
+sample_category["/DoubleMuon/Run2016E-PromptReco-v2/MINIAOD"]="data_obs";
+sample_category["/DoubleMuon/Run2016F-PromptReco-v1/MINIAOD"]="data_obs";
+sample_category["/DoubleMuon/Run2016G-PromptReco-v1/MINIAOD"]="data_obs";
 sample_category["/MuonEG/Run2016B-PromptReco-v2/MINIAOD"]="data_obs";
 sample_category["/MuonEG/Run2016C-PromptReco-v2/MINIAOD"]="data_obs";
 sample_category["/MuonEG/Run2016D-PromptReco-v2/MINIAOD"]="data_obs";
@@ -472,7 +541,11 @@ sample_category["/SingleMuon/Run2016E-PromptReco-v2/MINIAOD"]="data_obs";
 sample_category["/SingleMuon/Run2016F-PromptReco-v1/MINIAOD"]="data_obs";
 sample_category["/SingleMuon/Run2016G-PromptReco-v1/MINIAOD"]="data_obs";
 sample_category["/Tau/Run2016B-PromptReco-v2/MINIAOD"]="data_obs";
+sample_category["/Tau/Run2016C-PromptReco-v2/MINIAOD"]="data_obs";
 sample_category["/Tau/Run2016D-PromptReco-v2/MINIAOD"]="data_obs";
+sample_category["/Tau/Run2016E-PromptReco-v2/MINIAOD"]="data_obs";
+sample_category["/Tau/Run2016F-PromptReco-v1/MINIAOD"]="data_obs";
+sample_category["/Tau/Run2016G-PromptReco-v1/MINIAOD"]="data_obs";
 
 std::map<std::string, std::string> process_name; // key = sample
 process_name["/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14_ext1-v1/MINIAODSIM"]="ttHJetToNonbb_M125";
@@ -483,11 +556,13 @@ process_name["/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISprin
 process_name["/DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"]="DYJetsToLL_M-10to50";
 process_name["/WZTo3LNu_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"]="WZTo3LNu";
 process_name["/WWTo2L2Nu_13TeV-powheg/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"]="WWTo2L2Nu";
+process_name["/WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14_ext1-v1/MINIAODSIM"]="WJetsToLNu";
 process_name["/ZZTo4L_13TeV-amcatnloFXFX-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM"]="ZZTo4L";
 process_name["/ST_s-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"]="ST_s-channel_4f_leptonDecays";
 process_name["/ST_t-channel_antitop_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia8_TuneCUETP8M1/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"]="ST_t-channel_antitop_4f_inclusiveDecays";
 process_name["/ST_t-channel_top_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia8_TuneCUETP8M1/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"]="ST_t-channel_top_4f_inclusiveDecays";
 process_name["/ST_tW_antitop_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"]="ST_tW_antitop_5f_inclusiveDecays";
+process_name["/ST_tW_top_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v2/MINIAODSIM"]="ST_tW_top_5f_inclusiveDecays";
 process_name["/ST_tW_top_5f_NoFullyHadronicDecays_13TeV-powheg_TuneCUETP8M1/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"]="ST_tW_top_5f_NoFullyHadronicDecays";
 process_name["/TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v4/MINIAODSIM"]="TTJets_DiLept";
 process_name["/TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0_ext1-v1/MINIAODSIM"]="TTJets_DiLept_ext1";
@@ -496,7 +571,9 @@ process_name["/TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/Run
 process_name["/TTJets_SingleLeptFromTbar_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"]="TTJets_SingleLeptFromTbar";
 process_name["/TTJets_SingleLeptFromTbar_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0_ext1-v1/MINIAODSIM"]="TTJets_SingleLeptFromTbar_ext1";
 process_name["/TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16MiniAODv1-PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext3-v1/MINIAODSIM"]="TT_ext3";
-process_name["/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"]="TTWJetsToLNu";
+process_name["/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"]="TTWJetsToLNu_v0-v1";
+process_name["/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/RunIISpring16MiniAODv2-premix_withHLT_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM"]="TTWJetsToLNu_v14-v1";
+process_name["/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/RunIISpring16MiniAODv2-premix_withHLT_80X_mcRun2_asymptotic_v14_ext1-v1/MINIAODSIM"]="TTWJetsToLNu_v14_ext1-v1";
 process_name["/TTZToLLNuNu_M-10_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"]="TTZToLLNuNu_M-10";
 process_name["/TTZToLLNuNu_M-10_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISpring16MiniAODv2-premix_withHLT_80X_mcRun2_asymptotic_v14_ext1-v1/MINIAODSIM"]="TTZToLLNuNu_M-10_ext1";
 process_name["/WZZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"]="WZZ";
@@ -509,6 +586,18 @@ process_name["/WpWpJJ_EWK-QCD_TuneCUETP8M1_13TeV-madgraph-pythia8/RunIISpring16M
 process_name["/WW_DoubleScattering_13TeV-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"]="WW_DoubleScattering";
 process_name["/tZq_ll_4f_13TeV-amcatnlo-pythia8_TuneCUETP8M1/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"]="tZq_ll_4f";
 process_name["/TTTT_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0_ext1-v1/MINIAODSIM"]="TTTT";
+process_name["/DoubleEG/Run2016B-PromptReco-v2/MINIAOD"]="DoubleEG_Run2016B_v2";
+process_name["/DoubleEG/Run2016C-PromptReco-v2/MINIAOD"]="DoubleEG_Run2016C";
+process_name["/DoubleEG/Run2016D-PromptReco-v2/MINIAOD"]="DoubleEG_Run2016D";
+process_name["/DoubleEG/Run2016E-PromptReco-v2/MINIAOD"]="DoubleEG_Run2016E";
+process_name["/DoubleEG/Run2016F-PromptReco-v1/MINIAOD"]="DoubleEG_Run2016F";
+process_name["/DoubleEG/Run2016G-PromptReco-v1/MINIAOD"]="DoubleEG_Run2016G";
+process_name["/DoubleMuon/Run2016B-PromptReco-v2/MINIAOD"]="DoubleMuon_Run2016B_v2";
+process_name["/DoubleMuon/Run2016C-PromptReco-v2/MINIAOD"]="DoubleMuon_Run2016C";
+process_name["/DoubleMuon/Run2016D-PromptReco-v2/MINIAOD"]="DoubleMuon_Run2016D";
+process_name["/DoubleMuon/Run2016E-PromptReco-v2/MINIAOD"]="DoubleMuon_Run2016E";
+process_name["/DoubleMuon/Run2016F-PromptReco-v1/MINIAOD"]="DoubleMuon_Run2016F";
+process_name["/DoubleMuon/Run2016G-PromptReco-v1/MINIAOD"]="DoubleMuon_Run2016G";
 process_name["/MuonEG/Run2016B-PromptReco-v2/MINIAOD"]="MuonEG_Run2016B_v2";
 process_name["/MuonEG/Run2016C-PromptReco-v2/MINIAOD"]="MuonEG_Run2016C";
 process_name["/MuonEG/Run2016D-PromptReco-v2/MINIAOD"]="MuonEG_Run2016D";
@@ -528,22 +617,28 @@ process_name["/SingleMuon/Run2016E-PromptReco-v2/MINIAOD"]="SingleMuon_Run2016E"
 process_name["/SingleMuon/Run2016F-PromptReco-v1/MINIAOD"]="SingleMuon_Run2016F";
 process_name["/SingleMuon/Run2016G-PromptReco-v1/MINIAOD"]="SingleMuon_Run2016G";
 process_name["/Tau/Run2016B-PromptReco-v2/MINIAOD"]="Tau_Run2016B_v2";
+process_name["/Tau/Run2016C-PromptReco-v2/MINIAOD"]="Tau_Run2016C";
 process_name["/Tau/Run2016D-PromptReco-v2/MINIAOD"]="Tau_Run2016D";
+process_name["/Tau/Run2016E-PromptReco-v2/MINIAOD"]="Tau_Run2016E";
+process_name["/Tau/Run2016F-PromptReco-v1/MINIAOD"]="Tau_Run2016F";
+process_name["/Tau/Run2016G-PromptReco-v1/MINIAOD"]="Tau_Run2016G";
 
 std::map<std::string, double> xsection; // key = sample
 xsection["/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14_ext1-v1/MINIAODSIM"]=0.2151;
 xsection["/ttHToNonbb_M125_13TeV_powheg_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM"]=0.2151;
 xsection["/THW_Hincl_13TeV-madgraph-pythia8_TuneCUETP8M1/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM"]=0.01561;
 xsection["/GluGluHToZZTo4L_M125_13TeV_powheg2_JHUgenV6_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM"]=0.0119;
-xsection["/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14_ext1-v1/MINIAODSIM"]=6025.2;
+xsection["/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14_ext1-v1/MINIAODSIM"]=5765.4;
 xsection["/DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"]=18610.;
 xsection["/WZTo3LNu_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"]=4.102;
 xsection["/WWTo2L2Nu_13TeV-powheg/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"]=10.481;
+xsection["/WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14_ext1-v1/MINIAODSIM"]=61526.7;
 xsection["/ZZTo4L_13TeV-amcatnloFXFX-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM"]=1.256;
 xsection["/ST_s-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"]=3.75;
 xsection["/ST_t-channel_antitop_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia8_TuneCUETP8M1/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"]=70.69;
 xsection["/ST_t-channel_top_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia8_TuneCUETP8M1/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"]=70.69;
 xsection["/ST_tW_antitop_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"]=35.6;
+xsection["/ST_tW_top_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v2/MINIAODSIM"]=35.6;
 xsection["/ST_tW_top_5f_NoFullyHadronicDecays_13TeV-powheg_TuneCUETP8M1/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"]=35.6;
 xsection["/TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v4/MINIAODSIM"]=87.3;
 xsection["/TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0_ext1-v1/MINIAODSIM"]=87.3;
@@ -553,6 +648,8 @@ xsection["/TTJets_SingleLeptFromTbar_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunI
 xsection["/TTJets_SingleLeptFromTbar_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0_ext1-v1/MINIAODSIM"]=182.;
 xsection["/TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16MiniAODv1-PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext3-v1/MINIAODSIM"]=831.76;
 xsection["/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"]=0.2043;
+xsection["/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/RunIISpring16MiniAODv2-premix_withHLT_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM"]=0.2043;
+xsection["/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/RunIISpring16MiniAODv2-premix_withHLT_80X_mcRun2_asymptotic_v14_ext1-v1/MINIAODSIM"]=0.2043;
 xsection["/TTZToLLNuNu_M-10_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"]=0.2529;
 xsection["/TTZToLLNuNu_M-10_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISpring16MiniAODv2-premix_withHLT_80X_mcRun2_asymptotic_v14_ext1-v1/MINIAODSIM"]=0.2529;
 xsection["/WZZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"]=0.05565;
@@ -565,6 +662,18 @@ xsection["/WpWpJJ_EWK-QCD_TuneCUETP8M1_13TeV-madgraph-pythia8/RunIISpring16MiniA
 xsection["/WW_DoubleScattering_13TeV-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"]=1.64;
 xsection["/tZq_ll_4f_13TeV-amcatnlo-pythia8_TuneCUETP8M1/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"]=0.0758;
 xsection["/TTTT_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0_ext1-v1/MINIAODSIM"]=0.009103;
+xsection["/DoubleEG/Run2016B-PromptReco-v2/MINIAOD"]=1;
+xsection["/DoubleEG/Run2016C-PromptReco-v2/MINIAOD"]=1;
+xsection["/DoubleEG/Run2016D-PromptReco-v2/MINIAOD"]=1;
+xsection["/DoubleEG/Run2016E-PromptReco-v2/MINIAOD"]=1;
+xsection["/DoubleEG/Run2016F-PromptReco-v1/MINIAOD"]=1;
+xsection["/DoubleEG/Run2016G-PromptReco-v1/MINIAOD"]=1;
+xsection["/DoubleMuon/Run2016B-PromptReco-v2/MINIAOD"]=1;
+xsection["/DoubleMuon/Run2016C-PromptReco-v2/MINIAOD"]=1;
+xsection["/DoubleMuon/Run2016D-PromptReco-v2/MINIAOD"]=1;
+xsection["/DoubleMuon/Run2016E-PromptReco-v2/MINIAOD"]=1;
+xsection["/DoubleMuon/Run2016F-PromptReco-v1/MINIAOD"]=1;
+xsection["/DoubleMuon/Run2016G-PromptReco-v1/MINIAOD"]=1;
 xsection["/MuonEG/Run2016B-PromptReco-v2/MINIAOD"]=1;
 xsection["/MuonEG/Run2016C-PromptReco-v2/MINIAOD"]=1;
 xsection["/MuonEG/Run2016D-PromptReco-v2/MINIAOD"]=1;
@@ -584,7 +693,10 @@ xsection["/SingleMuon/Run2016E-PromptReco-v2/MINIAOD"]=1;
 xsection["/SingleMuon/Run2016F-PromptReco-v1/MINIAOD"]=1;
 xsection["/SingleMuon/Run2016G-PromptReco-v1/MINIAOD"]=1;
 xsection["/Tau/Run2016B-PromptReco-v2/MINIAOD"]=1;
+xsection["/Tau/Run2016C-PromptReco-v2/MINIAOD"]=1;
 xsection["/Tau/Run2016D-PromptReco-v2/MINIAOD"]=1;
+xsection["/Tau/Run2016E-PromptReco-v2/MINIAOD"]=1;
+xsection["/Tau/Run2016F-PromptReco-v2/MINIAOD"]=1;
 
 std::map<std::string, long int> dbsevents; // key = sample
 dbsevents["/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14_ext1-v1/MINIAODSIM"]=9992683;
@@ -595,11 +707,13 @@ dbsevents["/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16
 dbsevents["/DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"]=30915886;
 dbsevents["/WZTo3LNu_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"]=2000000;
 dbsevents["/WWTo2L2Nu_13TeV-powheg/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"]=1996600;
+dbsevents["/WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14_ext1-v1/MINIAODSIM"]=47502020;
 dbsevents["/ZZTo4L_13TeV-amcatnloFXFX-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM"]=10348531;
 dbsevents["/ST_s-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"]=1000000;
 dbsevents["/ST_t-channel_antitop_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia8_TuneCUETP8M1/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"]=19825855;
 dbsevents["/ST_t-channel_top_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia8_TuneCUETP8M1/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"]=32808300;
 dbsevents["/ST_tW_antitop_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"]=985000;
+dbsevents["/ST_tW_top_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v2/MINIAODSIM"]=998400;
 dbsevents["/ST_tW_top_5f_NoFullyHadronicDecays_13TeV-powheg_TuneCUETP8M1/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"]=5405726;
 dbsevents["/TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v4/MINIAODSIM"]=6058236;
 dbsevents["/TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0_ext1-v1/MINIAODSIM"]=24623997;
@@ -609,6 +723,8 @@ dbsevents["/TTJets_SingleLeptFromTbar_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/Run
 dbsevents["/TTJets_SingleLeptFromTbar_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0_ext1-v1/MINIAODSIM"]=48546872;
 dbsevents["/TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16MiniAODv1-PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext3-v1/MINIAODSIM"]=33364899;//not known;
 dbsevents["/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"]=252673;
+dbsevents["/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/RunIISpring16MiniAODv2-premix_withHLT_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM"]=252673;
+dbsevents["/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/RunIISpring16MiniAODv2-premix_withHLT_80X_mcRun2_asymptotic_v14_ext1-v1/MINIAODSIM"]=2151848;
 dbsevents["/TTZToLLNuNu_M-10_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"]=398600;
 dbsevents["/TTZToLLNuNu_M-10_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISpring16MiniAODv2-premix_withHLT_80X_mcRun2_asymptotic_v14_ext1-v1/MINIAODSIM"]=1981476;
 dbsevents["/WZZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"]=249800;
@@ -640,7 +756,11 @@ dbsevents["/SingleMuon/Run2016E-PromptReco-v2/MINIAOD"]=90986344;
 dbsevents["/SingleMuon/Run2016F-PromptReco-v1/MINIAOD"]=65235075;
 dbsevents["/SingleMuon/Run2016G-PromptReco-v1/MINIAOD"]=152881545;
 dbsevents["/Tau/Run2016B-PromptReco-v2/MINIAOD"]=71901374;
+dbsevents["/Tau/Run2016C-PromptReco-v2/MINIAOD"]=56546350;
 dbsevents["/Tau/Run2016D-PromptReco-v2/MINIAOD"]=61113729;
+dbsevents["/Tau/Run2016E-PromptReco-v2/MINIAOD"]=58349490;
+dbsevents["/Tau/Run2016F-PromptReco-v1/MINIAOD"]=40550286;
+dbsevents["/Tau/Run2016G-PromptReco-v1/MINIAOD"]=80015847;
 
 //--- parse command line arguments
   std::string target_str, histo_str, output_dir_str;
@@ -750,7 +870,7 @@ dbsevents["/Tau/Run2016D-PromptReco-v2/MINIAOD"]=61113729;
   for(Sample & sample: samples)
   {
 
-    //if(sample.name.find("ttHToNonbb")==std::string::npos) continue;
+    //if(sample.name.find("SingleMuon")==std::string::npos) continue;
     if(verbose) std::cout << ">> Looping over: " << sample.pathStr << "\n";
     for(const boost::filesystem::directory_entry & it: recursive_directory_range(sample.path))
     {
@@ -761,10 +881,10 @@ dbsevents["/Tau/Run2016D-PromptReco-v2/MINIAOD"]=61113729;
          boost::filesystem::extension(file) == ".root")
       {
 
-        sample.dbs_name      = sample_name[sample.name];
-        sample.category      = sample_category[sample.dbs_name];
-        sample.process_name  = process_name[sample.dbs_name];
-        sample.x_sec         = xsection[sample.dbs_name];
+        sample.dbs_name          = sample_name[sample.name];
+        sample.category          = sample_category[sample.dbs_name];
+        sample.process_name      = process_name[sample.dbs_name];
+        sample.x_sec             = xsection[sample.dbs_name];
         sample.nof_dbs_events    = dbsevents[sample.dbs_name];
 
         //if(verbose) std::cout << "Sample name: " << sample.dbs_name << '\n';
@@ -789,6 +909,7 @@ dbsevents["/Tau/Run2016D-PromptReco-v2/MINIAOD"]=61113729;
 //--- to build the Python configuration file is to gather the paths to <grid job id>
         if(sample.fileSuperParent.empty())
           sample.fileSuperParent = file.parent_path().parent_path().string();
+
       } // is root file
     } // recursive loop
   } // immediate subdirectory loop
@@ -897,7 +1018,7 @@ dbsevents["/Tau/Run2016D-PromptReco-v2/MINIAOD"]=61113729;
   {
     std::ofstream out((output_dir_path / PYTHON_FILE_P).string());
     out << "from collections import OrderedDict as OD\n\n"
-        << "samples = OD()\n\n";
+        << "samples_2016 = OD()\n\n";
     for(const Sample & sample: samples)
       out << sample.get_cfg();
   }

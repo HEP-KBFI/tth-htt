@@ -701,7 +701,7 @@ main(int argc,
   chain.SetBranchAddress(MET_PHI_KEY, &met_phi);
   LV met_p4(met_pt, met_eta, met_phi, 0.);
 
-  GenLeptonReader* genLeptonReader = new GenLeptonReader("nGenLep", "GenLep");
+  GenLeptonReader* genLeptonReader = new GenLeptonReader("nGenLep", "GenLep", "nGenLepFromTau", "GenLepFromTau");
   genLeptonReader->setBranchAddresses(&chain);
   GenHadTauReader* genHadTauReader = new GenHadTauReader("nGenHadTaus", "GenHadTaus");
   genHadTauReader->setBranchAddresses(&chain);

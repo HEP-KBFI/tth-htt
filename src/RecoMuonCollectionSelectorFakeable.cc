@@ -36,7 +36,7 @@ bool RecoMuonSelectorFakeable::operator()(const RecoMuon& muon) const
        (muon.passesMediumIdPOG_ || !apply_mediumIdPOG_) &&
        (muon.tightCharge_ >= 2 || !apply_tightCharge_) ) {
     int idxBin = -1;
-    if   ( muon.mvaRawTTH_ >= binning_mvaTTH_[0] ) idxBin = 0;
+    if   ( muon.mvaRawTTH_ <= binning_mvaTTH_[0] ) idxBin = 0;
     else                                           idxBin = 1;
     assert(idxBin >= 0 && idxBin <= 1);
     if ( muon.jetPtRatio_ >= min_jetPtRatio_[idxBin] &&

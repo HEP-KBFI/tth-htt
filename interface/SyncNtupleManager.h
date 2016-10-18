@@ -3,6 +3,7 @@
 
 #include <string> // std::string
 #include <vector> // std::vector<>
+#include <map> // std::map<,>
 
 #include <TFile.h> // TFile
 #include <TTree.h> // TTree
@@ -13,8 +14,9 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTau.h"
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h"
 #include "tthAnalysis/HiggsToTauTau/interface/TypeTraits.h"
+#include "tthAnalysis/HiggsToTauTau/interface/hltPath.h" // hltPath
 
-enum FloatVariableType { PFMET, PFMETphi, MHT, metLD };
+enum FloatVariableType { PFMET, PFMETphi, MHT, metLD, mvaOutput_ttV, mvaOutput_ttbar };
 
 class SyncNtupleManager
 {
@@ -24,6 +26,7 @@ public:
   ~SyncNtupleManager();
 
   void initializeBranches();
+  void initializeHLTBranches(const std::vector<std::vector<hltPath *>> & hltPaths);
   void readRunLumiEvent(UInt_t run,
                         UInt_t lumi,
                         ULong64_t event);
@@ -37,16 +40,19 @@ public:
             std::vector<const RecoElectron *> & mvabased_electrons);
   void read(std::vector<const RecoHadTau *> & hadtaus);
   void read(std::vector<const RecoJet *> & jets);
+  void read(const std::map<std::string, Double_t> & mvaInputs);
   void read(Float_t value,
             FloatVariableType type);
+  void read(const std::vector<std::vector<hltPath *>> & hltPaths);
   void fill();
   void write();
 private:
   void reset(bool is_initializing);
+  std::string hltMangle(const std::string & hltBranchName) const;
 
   TFile * outputFile;
   TTree * outputTree;
-  const Int_t placeholder_value;
+  static const Int_t placeholder_value;
 
   const Int_t nof_mus;
   const Int_t nof_eles;
@@ -78,6 +84,7 @@ private:
   Float_t * mu_dz;
   Float_t * mu_segmentCompatibility;
   Float_t * mu_leptonMVA;
+  Float_t * mu_conept;
   Int_t * mu_mediumID;
 #ifdef DPT_DIV_PT
   Float_t * mu_dpt_div_pt;
@@ -107,6 +114,7 @@ private:
   Float_t * ele_dz;
   Float_t * ele_ntMVAeleID;
   Float_t * ele_leptonMVA;
+  Float_t * ele_conept;
   Int_t * ele_isChargeConsistent;
   Int_t * ele_passesConversionVeto;
   Int_t * ele_nMissingHits;
@@ -141,6 +149,7 @@ private:
   Int_t * tau_againstElectronLooseMVA6;
   Int_t * tau_againstElectronMediumMVA6;
   Int_t * tau_againstElectronTightMVA6;
+  Int_t * tau_againstElectronVTightMVA6;
 
   Int_t n_presel_jet;
   Float_t * jet_pt;
@@ -154,14 +163,17 @@ private:
   Float_t MHT;
   Float_t metLD;
 
-  Float_t lep0_conept; // missing
-  Float_t lep1_conePt; // missing
-  Float_t mindr_lep0_jet; // missing
-  Float_t mindr_lep1_jet; // missing
-  Float_t MT_met_lep0; // missing
-  Float_t avg_dr_jet; // missing
-  Float_t MVA_2lss_ttV; // missing
-  Float_t MVA_2lss_ttbar; // missing
+  std::map<std::string, Int_t> hltMap;
+
+  Float_t lep0_conept;
+  Float_t lep1_conept;
+  Float_t mindr_lep0_jet;
+  Float_t mindr_lep1_jet;
+  Float_t MT_met_lep0;
+  Float_t avg_dr_jet;
+  Float_t n_jet25_recl;
+  Float_t MVA_2lss_ttV;
+  Float_t MVA_2lss_ttbar;
 };
 
 #endif // SYNCNTUPLEMANAGER_H

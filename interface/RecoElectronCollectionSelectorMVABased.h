@@ -2,7 +2,7 @@
 #define RECOELECTRONCOLLECTIONSELECTORMVABASED_H
 
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectron.h" // RecoElectron
-#include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionSelector.h" // ParticleCollectionSelector
+#include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionSelectorWEra.h" // ParticleCollectionSelectorWEra
 
 #include <Rtypes.h> // Int_t, Double_t
 
@@ -11,7 +11,7 @@
 class RecoElectronSelectorMVABased
 {
  public:
-  RecoElectronSelectorMVABased(int index = -1, bool debug = false);
+  RecoElectronSelectorMVABased(int era, int index = -1, bool debug = false);
   ~RecoElectronSelectorMVABased() {}
 
   /**
@@ -22,6 +22,8 @@ class RecoElectronSelectorMVABased
   bool operator()(const RecoElectron& electron) const;
 
  protected:
+  int era_;
+
   Double_t min_pt_;                   ///< lower cut threshold on pT
 //--- define cuts that dependent on eta
 //    format: central region (|eta| < 0.8) / transition region (0.8 < |eta| < 1.479) / forward region (|eta| > 1.479)
@@ -42,6 +44,6 @@ class RecoElectronSelectorMVABased
   Int_t max_nLostHits_;               ///< upper cut threshold on lost hits in the innermost layer of the tracker (electrons with lost_hits equal to cut threshold pass)
 };
 
-typedef ParticleCollectionSelector<RecoElectron, RecoElectronSelectorMVABased> RecoElectronCollectionSelectorMVABased;
+typedef ParticleCollectionSelectorWEra<RecoElectron, RecoElectronSelectorMVABased> RecoElectronCollectionSelectorMVABased;
 
 #endif // RECOELECTRONCOLLECTIONSELECTORMVABASED_H

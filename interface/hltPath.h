@@ -24,7 +24,7 @@ struct hltPath
   Int_t value_;
 };
 
-std::vector<hltPath*> create_hltPaths(std::vector<std::string>& branchNames);
+std::vector<hltPath*> create_hltPaths(const std::vector<std::string>& branchNames);
 void hltPaths_setBranchAddresses(TTree* tree, const std::vector<hltPath*>& hltPaths);
 bool hltPaths_isTriggered(const std::vector<hltPath*>& hltPaths);
 void hltPaths_delete(const std::vector<hltPath*>& hltPaths);

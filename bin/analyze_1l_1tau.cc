@@ -172,10 +172,10 @@ int main(int argc, char* argv[])
   std::string hadTauSelection_part2 = ( hadTauSelection_parts->GetEntries() == 2 ) ? (dynamic_cast<TObjString*>(hadTauSelection_parts->At(1)))->GetString().Data() : "";
   delete hadTauSelection_parts;
 
-  std::string hadTauGenMatchSelection_string = cfg_analyze.getParameter<std::string>("hadTauGenMatch");
-  std::vector<hadTauGenMatchEntry> hadTauGenMatch_definitions = getHadTauGenMatch_definitions_1tau();
-  int hadTauGenMatchSelection = getHadTauGenMatch_int(hadTauGenMatch_definitions, hadTauGenMatchSelection_string);
   bool apply_hadTauGenMatching = cfg_analyze.getParameter<bool>("apply_hadTauGenMatching");
+  std::vector<hadTauGenMatchEntry> hadTauGenMatch_definitions = getHadTauGenMatch_definitions_1tau(apply_hadTauGenMatching);
+  std::string hadTauGenMatchSelection_string = cfg_analyze.getParameter<std::string>("hadTauGenMatch");
+  int hadTauGenMatchSelection = getHadTauGenMatch_int(hadTauGenMatch_definitions, hadTauGenMatchSelection_string);
   if ( hadTauGenMatchSelection_string != "all" && !apply_hadTauGenMatching ) {
     throw cms::Exception("analyze_1l_1tau") 
       << "Invalid combination of Configuration parameters 'hadTauGenMatch' = " << hadTauGenMatchSelection_string << ", 'apply_hadTauGenMatching' = " << apply_hadTauGenMatching << " !!\n";
@@ -369,7 +369,7 @@ int main(int argc, char* argv[])
   GenJetReader* genJetReader = 0;
   LHEInfoReader* lheInfoReader = 0;
   if ( isMC ) {
-    genLeptonReader = new GenLeptonReader("nGenLep", "GenLep");
+    genLeptonReader = new GenLeptonReader("nGenLep", "GenLep", "nGenLepFromTau", "GenLepFromTau");
     genLeptonReader->setBranchAddresses(inputTree);
     genHadTauReader = new GenHadTauReader("nGenHadTaus", "GenHadTaus");
     genHadTauReader->setBranchAddresses(inputTree);
@@ -528,7 +528,7 @@ int main(int argc, char* argv[])
   if ( isMC && !apply_hadTauGenMatching ) {
     for ( std::vector<hadTauGenMatchEntry>::const_iterator hadTauGenMatch_definition = hadTauGenMatch_definitions.begin();
 	hadTauGenMatch_definition != hadTauGenMatch_definitions.end(); ++hadTauGenMatch_definition ) {
-      if ( hadTauGenMatch_definition->idx_ == kGen_All1 || hadTauGenMatch_definition->idx_ == kGen_Undefined1 ) continue;
+      if ( hadTauGenMatch_definition->idx_ == kGen_HadTauAll1 || hadTauGenMatch_definition->idx_ == kGen_HadTauUndefined1 ) continue;
       std::string process_and_genMatch = process_string + hadTauGenMatch_definition->name_;
       EvtHistManager_1l_1tau* selEvtHistManager_ptr = new EvtHistManager_1l_1tau(makeHistManager_cfg(process_and_genMatch, 
         Form("%s/sel/evt", histogramDir.data()), central_or_shift));
@@ -917,9 +917,9 @@ int main(int argc, char* argv[])
     const RecoHadTau* selHadTau = selHadTaus[0];
 
     const hadTauGenMatchEntry& hadTauGenMatch = getHadTauGenMatch(hadTauGenMatch_definitions, selHadTau);
-    assert(!(hadTauGenMatch.idx_ == kGen_Undefined1 || hadTauGenMatch.idx_ == kGen_All1));
+    assert(!(hadTauGenMatch.idx_ == kGen_HadTauUndefined1 || hadTauGenMatch.idx_ == kGen_HadTauAll1));
 
-    if ( hadTauGenMatchSelection != kGen_All1 ) {
+    if ( hadTauGenMatchSelection != kGen_HadTauAll1 ) {
       if ( hadTauGenMatch.idx_ != hadTauGenMatchSelection ) continue;
       cutFlowTable.update("tau gen match", evtWeight);
     }

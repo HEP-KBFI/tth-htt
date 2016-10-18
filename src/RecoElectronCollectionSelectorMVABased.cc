@@ -1,7 +1,12 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorMVABased.h" // RecoElectronSelectorMVABased
 
-RecoElectronSelectorMVABased::RecoElectronSelectorMVABased(int index, bool debug)
-  : min_pt_(15.)
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2015, kEra_2016
+
+#include <FWCore/Utilities/interface/Exception.h> // cms::Exception
+
+RecoElectronSelectorMVABased::RecoElectronSelectorMVABased(int era, int index, bool debug)
+  : era_(era)
+  , min_pt_(15.)
   , binning_absEta_({ 0.8, 1.479 })
   , min_pt_trig_(30.)
   , max_sigmaEtaEta_trig_({ 0.011, 0.011, 0.030 })
@@ -11,11 +16,25 @@ RecoElectronSelectorMVABased::RecoElectronSelectorMVABased(int index, bool debug
   , min_OoEminusOoP_trig_(-0.05)
   , max_OoEminusOoP_trig_({ 0.010, 0.010, 0.005 })
   , min_mvaTTH_(0.75)
-  , max_jetBtagCSV_(0.89)
-  , apply_tightCharge_(true)
-  , apply_conversionVeto_(true)
-  , max_nLostHits_(0)
 {
+  switch(era_)
+  {
+    case kEra_2015:
+      max_nLostHits_ = 0;
+      max_jetBtagCSV_ = 0.89;
+      apply_tightCharge_ = true;
+      apply_conversionVeto_ = true;
+      break;
+    case kEra_2016:
+      max_nLostHits_ = 1;
+      max_jetBtagCSV_ = 0.80;
+      apply_tightCharge_ = false;
+      apply_conversionVeto_ = false;
+      break;
+    default:
+      throw cms::Exception("RecoElectronSelectorMVABased") << "Invalid era = " << era_;
+  }
+
   assert(binning_absEta_.size() == 2);
   assert(max_sigmaEtaEta_trig_.size() == 3);
   assert(max_HoE_trig_.size() == 3);

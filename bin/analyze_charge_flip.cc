@@ -119,9 +119,9 @@ int main(int argc, char* argv[])
     << "Invalid Configuration parameter 'leptonSelection' = " << leptonSelection_string << " !!\n";
 
   bool isMC = cfg_analyze.getParameter<bool>("isMC");
-  bool useData = cfg_analyze.getParameter<bool>("useData");
   std::string central_or_shift = cfg_analyze.getParameter<std::string>("central_or_shift");
   std::string central_or_shift_label = central_or_shift == "central" ? "" : "_"+central_or_shift;
+  std::string central_or_shift_label_st = central_or_shift == "central" ? "" : central_or_shift+"_";
   double lumiScale = ( process_string != "data_obs" ) ? cfg_analyze.getParameter<double>("lumiScale") : 1.;
   bool apply_trigger_bits = cfg_analyze.getParameter<bool>("apply_trigger_bits"); 
 
@@ -260,7 +260,7 @@ int main(int argc, char* argv[])
   GenJetReader* genJetReader = 0;
   LHEInfoReader* lheInfoReader = 0;
   if ( isMC ) {
-    genLeptonReader = new GenLeptonReader("nGenLep", "GenLep");
+    genLeptonReader = new GenLeptonReader("nGenLep", "GenLep", "nGenLepFromTau", "GenLepFromTau");
     genLeptonReader->setBranchAddresses(inputTree);
     genHadTauReader = new GenHadTauReader("nGenHadTaus", "GenHadTaus");
     genHadTauReader->setBranchAddresses(inputTree);
@@ -299,22 +299,21 @@ int main(int argc, char* argv[])
     TFileDirectory subD = subD1.mkdir(which->data());
 
     for ( vstring::const_iterator category = categories_etapt.begin(); 	category != categories_etapt.end(); ++category ) {
-      TFileDirectory subDir2 = subDir.mkdir(category->data());
+      TFileDirectory subDir1_5 = subDir.mkdir(category->data());
+      TFileDirectory subDir2 = subDir1_5.mkdir(process_string.data());
       TFileDirectory subD2 = subD.mkdir(category->data());
       
-      histos[which->data()][*category][process_string] = subDir2.make<TH1D>( Form("%s%s", process_string.data(), central_or_shift_label.data()), "m_{ll}", 60,  60., 120. );
+      histos[which->data()][*category][process_string] = subDir2.make<TH1D>( Form("%smass_ll", central_or_shift_label_st.data()), "m_{ll}", 60,  60., 120. );
       histos[which->data()][*category][process_string]->Sumw2();
       if (std::strncmp(process_string.data(), "DY", 2) == 0 && !central_or_shift_tstring.BeginsWith("CMS_ttHl_electronER")){
-          histos[which->data()][*category]["DY_fake"] = subDir2.make<TH1D>( Form("%s%s", "DY_fake", central_or_shift_label.data()) , "m_{ll}", 60,  60., 120. );
+          TFileDirectory subDirFake = subDir1_5.mkdir("DY_fake");
+          histos[which->data()][*category]["DY_fake"] = subDirFake.make<TH1D>( Form("%smass_ll", central_or_shift_label_st.data()) , "m_{ll}", 60,  60., 120. );
           histos[which->data()][*category]["DY_fake"]->Sumw2();
           if (central_or_shift == "central") {
-            histos_2gen[which->data()][*category][process_string] = subD2.make<TH1D>( process_string.data(), "m_{ll}", 60,  60., 120. );
+            histos_2gen[which->data()][*category][process_string] = subD2.make<TH1D>( Form("%smass_ll", central_or_shift_label_st.data()), "m_{ll}", 60,  60., 120. );
             histos_2gen[which->data()][*category][process_string]->Sumw2();
           }
       }      
-      if (!useData && central_or_shift == "central"){
-        histos[which->data()][*category]["data_obs"] = subDir2.make<TH1D>( Form("data_obs"), "m_{ll}", 60,  60., 120. );
-      }
     }
   }
   vstring categories_charge_gen = {
@@ -635,15 +634,7 @@ int main(int argc, char* argv[])
 
     Double_t etaL0 = std::fabs(selLepton_lead->eta_);
     Double_t etaL1 = std::fabs(selLepton_sublead->eta_);
-    if (etaL0 < 1.479 && etaL1 < 1.479) stEta = "BB";
-    else if (etaL0 >= 1.479 && etaL1 >= 1.479) stEta = "EE";
-    else if (etaL0 < etaL1) stEta = "BE";
-    else
-    {
-      if (std::strncmp(stLeadPt.data(), stSubPt.data(), 1) == 0) stEta = "BE";       //Symmetric case
-      else stEta = "EB";
-    }
-
+    
     double pt0, pt1;
     //std::cout << "Before " << selLepton_lead->pt_ << ", " << selLepton_sublead->pt_ << "   " << central_or_shift << std::endl;
     pt0 = selLepton_lead->pt_;
@@ -674,6 +665,7 @@ int main(int argc, char* argv[])
       etaL1 = etaL0;
       etaL0 = temp;
     }
+    
     double minPt_lead = 20.;
     double minPt_sublead = selLepton_sublead->is_electron() ? 15. : 10.;
     if ( !(pt0 > minPt_lead && pt1 > minPt_sublead) ) {
@@ -720,6 +712,16 @@ int main(int argc, char* argv[])
     else if (pt1 > 50) stSubPt = "H";
     //else assert(0);
 
+    if (etaL0 < 1.479 && etaL1 < 1.479) stEta = "BB";
+    else if (etaL0 >= 1.479 && etaL1 >= 1.479) stEta = "EE";
+    else if (etaL0 < etaL1) stEta = "BE";
+    else
+    {
+      if (std::strncmp(stLeadPt.data(), stSubPt.data(), 1) == 0) stEta = "BE";       //Symmetric case
+      else stEta = "EB";
+    }
+    //std::cout << stEta << " "<< stLeadPt  <<" " << stSubPt << " " << pt0 << " " << pt1 << " " << etaL0 << " " << etaL1 << std::endl;
+  
     std::string category = Form("%s_%s%s", stEta.data(), stLeadPt.data(), stSubPt.data());
 
     std::string charge_cat = ( isCharge_SS ) ? "SS" : "OS";
@@ -749,11 +751,7 @@ int main(int argc, char* argv[])
     else {//Otherwise
       histos[charge_cat][category.data()][process_string]->Fill(mass_ll, evtWeight);
       histos[charge_cat]["total"][process_string]->Fill(mass_ll, evtWeight);
-    }     
-    if (!useData && central_or_shift == "central"){
-      histos[charge_cat][category.data()]["data_obs"]->Fill(mass_ll, evtWeight);
-      histos[charge_cat]["total"]["data_obs"]->Fill(mass_ll, evtWeight);      
-    }
+    }    
 
     if (isMC && central_or_shift == "central" && std::strncmp(process_string.data(), "DY", 2) == 0)
     {
@@ -825,17 +823,6 @@ int main(int argc, char* argv[])
       preselElectronHistManagerSS.fillHistograms(preselElectrons, evtWeight);
     else if (isCharge_OS)
       preselElectronHistManagerOS.fillHistograms(preselElectrons, evtWeight);
-
-    if (!useData && central_or_shift == "central"){
-      for ( vstring::const_iterator which = categories_charge.begin(); 	which != categories_charge.end(); ++which ) {
-        for ( vstring::const_iterator category = categories_etapt.begin(); 	category != categories_etapt.end(); ++category ) {
-          for (int b = 0; b <= histos[which->data()][*category]["data_obs"]->GetNbinsX(); b++)
-          {
-            histos[which->data()][*category]["data_obs"]->SetBinError(b, sqrt(histos[which->data()][*category]["data_obs"]->GetBinContent(b)));
-          }
-        }
-      }
-    }
 
     if ( isMC ) {
       genEvtHistManager_afterCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genJets);

@@ -20,23 +20,29 @@ process.analyze_1l_2tau = cms.PSet(
 
     process = cms.string('ttH'),
 
+    histogramDir = cms.string('1l_2tau_OS_Tight'),
+
     era = cms.string('2015'),
 
     triggers_1e = cms.vstring("HLT_BIT_HLT_Ele23_WPLoose_Gsf_v"),
     use_triggers_1e = cms.bool(True),
     triggers_1mu = cms.vstring("HLT_BIT_HLT_IsoMu20_v", "HLT_BIT_HLT_IsoTkMu20_v"),
     use_triggers_1mu = cms.bool(True),
+
+    leptonSelection = cms.string('Tight'),
+    apply_leptonGenMatching = cms.bool(False),
         
+    hadTauSelection = cms.string('Tight|dR03mvaTight'),
     hadTauChargeSelection = cms.string('OS'),
-    hadTauSelection = cms.string('Tight'),
-    hadTauGenMatch = cms.string('all'),
     apply_hadTauGenMatching = cms.bool(False),
 
-    hadTauEtaBins_lead = cms.vdouble(-1., 1.479, 9.9),
-    hadTauEtaBins_sublead = cms.vdouble(-1., 1.479, 9.9),
-
-    applyJetToTauFakeRateWeight = cms.bool(False),
-    jetToTauFakeRateWeight = cms.PSet(
+    applyFakeRateWeights = cms.string("disabled"), # either "disabled", "3L" or "2tau"
+    leptonFakeRateWeight = cms.PSet(
+        inputFileName = cms.string("tthAnalysis/HiggsToTauTau/data/FR_lep_ttH_mva_2015_data.root"),
+        histogramName_e = cms.string("FR_mva075_el_data_comb"),
+        histogramName_mu = cms.string("FR_mva075_mu_data_comb")
+    ),
+    hadTauFakeRateWeight = cms.PSet(
         inputFileName = cms.string("tthAnalysis/HiggsToTauTau/data/FR_tau_2015.root"),
         lead = cms.PSet(
             absEtaBins = cms.vdouble(-1., 1.479, 9.9),

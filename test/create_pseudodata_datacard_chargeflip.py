@@ -71,7 +71,8 @@ def create_pseudodata(infile, outfile_data, outfile_pseudodata):
             
 
 if __name__ == "__main__":
-  indir = "/home/andres/tth/histograms/histosCF_data_eleESER_mva_0_6_notrig/datacards/"
+  np.random.seed(123)
+  indir = "/home/andres/tth/histograms/histosCF_data_newconf/datacards/"
   infile = "prepareDatacards_charge_flip_mass_ll.root"
   datafile = "prepareDatacards_data_charge_flip_mass_ll.root"
   pseudodatafile = "prepareDatacards_pseudodata_charge_flip_mass_ll.root"

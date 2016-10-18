@@ -1,4 +1,4 @@
-import codecs, os
+import codecs, os, logging
 
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd, generate_file_ids, generate_input_list
 
@@ -167,7 +167,7 @@ class analyzeConfig:
       self.triggers_1e1mu = [ 'HLT_BIT_HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v', 'HLT_BIT_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v' ]
       self.triggers_2tau  = [ 'HLT_BIT_HLT_DoubleMediumIsoPFTau35_Trk1_eta2p1_Reg_v*' ]
     else:
-      raise ValueError("Invalid parameter 'era' = %s !!" % era)
+      raise ValueError("Invalid Configuration parameter 'era' = %s !!" % era)
 
     self.cvmfs_error_log = {}
 
@@ -202,6 +202,7 @@ class analyzeConfig:
     lines.append("process.fwliteOutput.fileName = cms.string('%s')" % datacardFile)
     lines.append("process.prepareDatacards.processesToCopy = cms.vstring(%s)" % self.prep_dcard_processesToCopy)
     lines.append("process.prepareDatacards.signals = cms.vstring(%s)" % self.prep_dcard_signals)
+    lines.append("process.prepareDatacards.makeSubDir = cms.bool(False)")
     lines.append("process.prepareDatacards.categories = cms.VPSet(")
     lines.append("    cms.PSet(")
     lines.append("        input = cms.string('%s/sel/evt')," % self.histogramDir_prep_dcard)
@@ -365,10 +366,10 @@ class analyzeConfig:
        containing a TTree of all selected event variables specific to a given channel.
     """
     if not self.rootOutputAux: return
-    lines_makefile.append("selEventTree_hadd: prepareDatacards_targets")
-    for rootOutputResult, rootOutputAsterisk in self.rootOutputAux.items():
-      lines_makefile.append("\trm -f %s" % rootOutputResult)
-      lines_makefile.append("\thadd %s $(shell for f in `ls %s`; do echo -ne $$f\" \"; done)" % (rootOutputResult, rootOutputAsterisk))
+    lines_makefile.append("selEventTree_hadd: %s\n" % ' '.join(map(lambda x: x[0], self.rootOutputAux.values())))
+    for rootOutput in self.rootOutputAux.values():
+      lines_makefile.append("%s: %s" % (rootOutput[0], rootOutput[2]))
+      lines_makefile.append("\thadd -f %s $(shell for f in `ls %s`; do echo -ne $$f\" \"; done)\n" % (rootOutput[0], rootOutput[1]))
     lines_makefile.append("")
 
   def addToMakefile_prep_dcard(self, lines_makefile):
@@ -395,8 +396,9 @@ class analyzeConfig:
     lines_makefile.append("clean:")
     for fileToClean in self.filesToClean:
       lines_makefile.append("\trm -f %s" % fileToClean)
-    for rootOutputResult in self.rootOutputAux.keys():
-      lines_makefile.append("\trm -f %s" % rootOutputResult)
+    for rootOutput in self.rootOutputAux.values():
+      lines_makefile.append("\trm -f %s" % rootOutput[0])
+      lines_makefile.append("\t$(shell for f in `ls %s`; do rm -f $$f; done)" % rootOutput[1])
     lines_makefile.append("")
 
   def createMakefile(self, lines_makefile):
@@ -416,6 +418,7 @@ class analyzeConfig:
     lines_makefile_with_header.append("")
     lines_makefile_with_header.extend(lines_makefile)
     createFile(self.makefile, lines_makefile_with_header)
+    logging.info("Run it with:\tmake -f %s -j %i " % (self.makefile, self.num_parallel_jobs))
 
   def create(self):
     """Creates all config files necessary for runing the complete analysis workfow.

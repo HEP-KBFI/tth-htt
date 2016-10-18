@@ -5,8 +5,8 @@ from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2lss_1tau_2016 import samples_2
 from tthAnalysis.HiggsToTauTau.analyzeConfig_2lss_1tau import analyzeConfig_2lss_1tau
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 
-#ERA = "2015"
-ERA = "2016"
+ERA = "2015"
+#ERA = "2016"
 
 samples = None
 LUMI = None
@@ -19,7 +19,7 @@ elif ERA == "2016":
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "2016Oct05_dR03mvaTight"
+version = "2016Oct11_dR03mvaTight_2lepton"
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -31,10 +31,9 @@ if __name__ == '__main__':
     outputDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", ERA, version),
     executable_analyze = "analyze_2lss_1tau",
     samples = samples,
-    lepton_selections = [ "Tight", "Fakeable" ],
     lepton_charge_selections = [ "OS", "SS" ],
-    hadTau_selection = "Tight|dR03mvaTight",
-    ##hadTau_selection = "dR05isoLoose",    
+    hadTau_selection = "dR03mvaTight",
+    applyFakeRateWeights = "2lepton",
     central_or_shifts = [ 
       "central",
 ##       "CMS_ttHl_btag_HFUp", 
@@ -83,6 +82,7 @@ if __name__ == '__main__':
     debug = False,
     running_method = "sbatch",
     num_parallel_jobs = 4,
+    executable_addBackgrounds = "addBackgrounds",
     executable_addFakes = "addBackgroundLeptonFakes",
     executable_addFlips = "addBackgroundLeptonFlips", 
     histograms_to_fit = [ "EventCounter", "numJets", "mvaDiscr_2lss", "mvaOutput_2lss_1tau_ttbar_TMVA", "mvaOutput_2lss_1tau_ttbar_sklearn", "mTauTauVis" ])

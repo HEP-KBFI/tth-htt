@@ -152,10 +152,10 @@ class analyzeConfig_2l_2tau(analyzeConfig):
         #     as the event statistics in 2015 data is too low to determine data/MC corrections for tighter working-points
         graphName = "jetToTauFakeRate/dR03mvaLoose/$etaBin/jetToTauFakeRate_mc_hadTaus_pt"
         fitFunctionName = "jetToTauFakeRate/dR03mvaLoose/$etaBin/fitFunction_data_div_mc_hadTaus_pt"
-        lines.append("process.analyze_2l_2tau.jetToTauFakeRateWeight.lead.graphName = cms.string('%s'" % graphName)
-        lines.append("process.analyze_2l_2tau.jetToTauFakeRateWeight.lead.fitFunctionName = cms.string('%s'" % fitFunctionName)
-        lines.append("process.analyze_2l_2tau.jetToTauFakeRateWeight.sublead.graphName = cms.string('%s'" % graphName)
-        lines.append("process.analyze_2l_2tau.jetToTauFakeRateWeight.sublead.fitFunctionName = cms.string('%s'" % fitFunctionName)
+        lines.append("process.analyze_2l_2tau.jetToTauFakeRateWeight.lead.graphName = cms.string('%s')" % graphName)
+        lines.append("process.analyze_2l_2tau.jetToTauFakeRateWeight.lead.fitFunctionName = cms.string('%s')" % fitFunctionName)
+        lines.append("process.analyze_2l_2tau.jetToTauFakeRateWeight.sublead.graphName = cms.string('%s')" % graphName)
+        lines.append("process.analyze_2l_2tau.jetToTauFakeRateWeight.sublead.fitFunctionName = cms.string('%s')" % fitFunctionName)
       elif era == "2016":
         lines.append("process.analyze_2l_2tau.jetToTauFakeRateWeight.inputFileName = cms.string('tthAnalysis/HiggsToTauTau/data/FR_tau_2016.root')")
       else:
@@ -165,8 +165,8 @@ class analyzeConfig_2l_2tau(analyzeConfig):
     else:
       raise ValueError("Invalid parameter 'hadTau_frWeight' = %s !!" % hadTau_frWeight)
     if hadTau_selection.find("mcClosure") != -1:
-      lines.append("process.analyze_1l_2tau.jetToTauFakeRateWeight.applyFitFunction_lead = cms.bool(False)")
-      lines.append("process.analyze_1l_2tau.jetToTauFakeRateWeight.applyFitFunction_sublead = cms.bool(False)")
+      lines.append("process.analyze_2l_2tau.jetToTauFakeRateWeight.applyFitFunction_lead = cms.bool(False)")
+      lines.append("process.analyze_2l_2tau.jetToTauFakeRateWeight.applyFitFunction_sublead = cms.bool(False)")
     lines.append("process.analyze_2l_2tau.isMC = cms.bool(%s)" % is_mc)
     lines.append("process.analyze_2l_2tau.central_or_shift = cms.string('%s')" % central_or_shift)
     lines.append("process.analyze_2l_2tau.lumiScale = cms.double(%f)" % lumi_scale)

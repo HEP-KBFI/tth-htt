@@ -14,7 +14,8 @@ class GenLeptonReader
 {
  public:
   GenLeptonReader();
-  GenLeptonReader(const std::string& branchName_num, const std::string& branchName_obj); 
+  GenLeptonReader(const std::string& branchName_nPromptLeptons, const std::string& branchName_promptLeptons,
+		  const std::string& branchName_nLeptonsFromTau, const std::string& branchName_leptonsFromTau); 
   ~GenLeptonReader();
 
   /**
@@ -24,7 +25,7 @@ class GenLeptonReader
 
   /**
    * @brief Read branches from tree and use information to fill collection of GenLepton objects
-   * @return Collection of GenLepton objects
+   * @return Collection of GenLepton objects 
    */
   std::vector<GenLepton> read() const;
   
@@ -34,22 +35,41 @@ class GenLeptonReader
    */
   void setBranchNames();
 
-  const int max_nLeptons_;
-  std::string branchName_num_;
-  std::string branchName_obj_;
+  // electrons and muons from W and Z boson decays
+  const int max_nPromptLeptons_;
+  std::string branchName_nPromptLeptons_; 
+  std::string branchName_promptLeptons_;
+  
+  // electrons and muons from tau decays
+  const int max_nLeptonsFromTau_;
+  std::string branchName_nLeptonsFromTau_;
+  std::string branchName_leptonsFromTau_;
 
-  std::string branchName_pt_;
-  std::string branchName_eta_;
-  std::string branchName_phi_;
-  std::string branchName_mass_;
-  std::string branchName_pdgId_;
+  std::string branchName_promptLepton_pt_;
+  std::string branchName_promptLepton_eta_;
+  std::string branchName_promptLepton_phi_;
+  std::string branchName_promptLepton_mass_;
+  std::string branchName_promptLepton_pdgId_;
 
-  Int_t nLeptons_;
-  Float_t* lepton_pt_;
-  Float_t* lepton_eta_;
-  Float_t* lepton_phi_;
-  Float_t* lepton_mass_;
-  Int_t* lepton_pdgId_;
+  Int_t nPromptLeptons_;
+  Float_t* promptLepton_pt_;
+  Float_t* promptLepton_eta_;
+  Float_t* promptLepton_phi_;
+  Float_t* promptLepton_mass_;
+  Int_t* promptLepton_pdgId_;
+
+  std::string branchName_leptonFromTau_pt_;
+  std::string branchName_leptonFromTau_eta_;
+  std::string branchName_leptonFromTau_phi_;
+  std::string branchName_leptonFromTau_mass_;
+  std::string branchName_leptonFromTau_pdgId_;
+
+  Int_t nLeptonsFromTau_;
+  Float_t* leptonFromTau_pt_;
+  Float_t* leptonFromTau_eta_;
+  Float_t* leptonFromTau_phi_;
+  Float_t* leptonFromTau_mass_;
+  Int_t* leptonFromTau_pdgId_;
 
   // CV: make sure that only one GenLeptonReader instance exists for a given branchName,
   //     as ROOT cannot handle multiple TTree::SetBranchAddress calls for the same branch.

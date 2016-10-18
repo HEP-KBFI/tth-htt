@@ -1,6 +1,6 @@
 #include "tthAnalysis/HiggsToTauTau/interface/hltPath.h"
 
-std::vector<hltPath*> create_hltPaths(std::vector<std::string>& branchNames)
+std::vector<hltPath*> create_hltPaths(const std::vector<std::string>& branchNames)
 {
   std::vector<hltPath*> hltPaths;
   for ( std::vector<std::string>::const_iterator branchName = branchNames.begin();

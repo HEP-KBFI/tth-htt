@@ -45,7 +45,6 @@
 #include "tthAnalysis/HiggsToTauTau/interface/ElectronHistManager.h" // ElectronHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/MuonHistManager.h" // MuonHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/HadTauHistManager.h" // HadTauHistManager
-#include "tthAnalysis/HiggsToTauTau/interface/HadTauFakeRateHistManager.h" // HadTauFakeRateHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/JetHistManager.h" // JetHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/MEtHistManager.h" // MEtHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/EvtHistManager_0l_2tau.h" // EvtHistManager_0l_2tau
@@ -447,7 +446,7 @@ int main(int argc, char* argv[])
   GenHadTauReader* genHadTauReader = 0;
   GenJetReader* genJetReader = 0;
   if ( isMC ) {
-    genLeptonReader = new GenLeptonReader("nGenLep", "GenLep");
+    genLeptonReader = new GenLeptonReader("nGenLep", "GenLep", "nGenLepFromTau", "GenLepFromTau");
     genLeptonReader->setBranchAddresses(inputTree);
     genHadTauReader = new GenHadTauReader("nGenHadTaus", "GenHadTaus");
     genHadTauReader->setBranchAddresses(inputTree);
@@ -510,12 +509,6 @@ int main(int argc, char* argv[])
     selHadTauHistManager_sublead->bookHistograms(fs);
     selHadTauHistManager_sublead_category[*category] = selHadTauHistManager_sublead;
   }
-  edm::ParameterSet cfg_selHadTauFakeRateHistManager = makeHistManager_cfg(process_string, 
-    Form("0l_2tau_%s/sel/hadTauFakeRates", charge_and_hadTauSelection.data()), central_or_shift);
-  cfg_selHadTauFakeRateHistManager.addParameter<vdouble>("etaBins_lead", hadTauEtaBins_lead);
-  cfg_selHadTauFakeRateHistManager.addParameter<vdouble>("etaBins_sublead", hadTauEtaBins_sublead);
-  HadTauFakeRateHistManager selHadTauFakeRateHistManager(cfg_selHadTauFakeRateHistManager);
-  selHadTauFakeRateHistManager.bookHistograms(fs);
 
   JetHistManager selJetHistManager(makeHistManager_cfg(process_string, 
     Form("0l_2tau_%s/sel/jets", charge_and_hadTauSelection.data()), central_or_shift));
@@ -864,7 +857,6 @@ int main(int argc, char* argv[])
     selHadTauHistManager_sublead.fillHistograms(selHadTaus_sublead, evtWeight);
     selHadTauHistManager.fillHistograms(selHadTaus_lead, evtWeight);
     selHadTauHistManager.fillHistograms(selHadTaus_sublead, evtWeight);
-    selHadTauFakeRateHistManager.fillHistograms(selHadTau_lead, selHadTau_sublead, evtWeight);
     selJetHistManager.fillHistograms(selJets, evtWeight);
     selJetHistManager_lead.fillHistograms(selJets, evtWeight);
     selJetHistManager_sublead.fillHistograms(selJets, evtWeight);

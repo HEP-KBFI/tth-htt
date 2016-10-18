@@ -2,14 +2,14 @@
 #define RECOMUONCOLLECTIONSELECTORMVABASED_H
 
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuon.h" // RecoMuon
-#include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionSelector.h" // ParticleCollectionSelector
+#include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionSelectorWEra.h" // ParticleCollectionSelectorWEra
 
 #include <Rtypes.h> // Double_t
 
 class RecoMuonSelectorMVABased
 {
  public:
-  RecoMuonSelectorMVABased(int index = -1, bool debug = false);
+  RecoMuonSelectorMVABased(int era, int index = -1, bool debug = false);
   ~RecoMuonSelectorMVABased() {}
 
   /**
@@ -21,6 +21,8 @@ class RecoMuonSelectorMVABased
   bool operator()(const RecoMuon& muon) const;
 
  protected:
+  int era_;
+
   Double_t min_pt_;         ///< lower cut threshold on pT
   Double_t min_mvaTTH_;     ///< lower cut threshold on lepton MVA of ttH multilepton analysis
   Double_t max_jetBtagCSV_; ///< upper cut threshold on CSV b-tagging discriminator value of nearby jet
@@ -28,6 +30,6 @@ class RecoMuonSelectorMVABased
   bool apply_tightCharge_;  ///< apply (True) or do not apply (False) tight charge cut (2 if ptError/pt < 0.20, 0 otherwise)
 };
 
-typedef ParticleCollectionSelector<RecoMuon, RecoMuonSelectorMVABased> RecoMuonCollectionSelectorMVABased;
+typedef ParticleCollectionSelectorWEra<RecoMuon, RecoMuonSelectorMVABased> RecoMuonCollectionSelectorMVABased;
 
 #endif // RECOMUONCOLLECTIONSELECTORMVABASED_H
