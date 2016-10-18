@@ -771,34 +771,20 @@ int main(int argc, char* argv[])
     std::vector<const RecoHadTau*> fakeableHadTaus_sublead = hadTauCleaner(fakeableHadTauSelector_sublead(preselHadTaus), fakeableHadTaus_lead);
     assert(fakeableHadTaus_lead.size() <= 1 && fakeableHadTaus_sublead.size() <= 1);
     std::vector<const RecoHadTau*> fakeableHadTaus;
-    fakeableHadTaus.insert(fakeableHadTaus.end(), fakeableHadTaus_lead.begin(), fakeableHadTaus_lead.end());
-    fakeableHadTaus.insert(fakeableHadTaus.end(), fakeableHadTaus_sublead.begin(), fakeableHadTaus_sublead.end());
+    if ( fakeableHadTaus_lead.size()    >= 1 ) fakeableHadTaus.push_back(fakeableHadTaus_lead[0]);
+    if ( fakeableHadTaus_sublead.size() >= 1 ) fakeableHadTaus.push_back(fakeableHadTaus_sublead[0]);
     std::vector<const RecoHadTau*> tightHadTaus_lead = tightHadTauSelector_lead(preselHadTaus);
     std::vector<const RecoHadTau*> tightHadTaus_sublead = hadTauCleaner(tightHadTauSelector_sublead(preselHadTaus), tightHadTaus_lead);
     assert(tightHadTaus_lead.size() <= 1 && tightHadTaus_sublead.size() <= 1);
     std::vector<const RecoHadTau*> tightHadTaus;
-    tightHadTaus.insert(tightHadTaus.end(), tightHadTaus_lead.begin(), tightHadTaus_lead.end());
-    tightHadTaus.insert(tightHadTaus.end(), tightHadTaus_sublead.begin(), tightHadTaus_sublead.end());
-    std::vector<const RecoHadTau*> selHadTaus_lead;
-    std::vector<const RecoHadTau*> selHadTaus_sublead;
+    if ( tightHadTaus_lead.size()    >= 1 ) tightHadTaus.push_back(tightHadTaus_lead[0]);
+    if ( tightHadTaus_sublead.size() >= 1 ) tightHadTaus.push_back(tightHadTaus_sublead[0]);
     std::vector<const RecoHadTau*> selHadTaus;
-    if ( hadTauSelection == kLoose ) {
-      std::vector<const RecoHadTau*> preselHadTaus_lead;
-      if ( preselHadTaus.size() >= 1 ) preselHadTaus_lead.push_back(preselHadTaus[0]);
-      selHadTaus_lead = preselHadTaus_lead;
-      std::vector<const RecoHadTau*> preselHadTaus_sublead;
-      if ( preselHadTaus.size() >= 2 ) preselHadTaus_sublead.push_back(preselHadTaus[1]);
-      selHadTaus_sublead = preselHadTaus_sublead;
-      selHadTaus = preselHadTaus;
-    } else if ( hadTauSelection == kFakeable ) {
-      selHadTaus_lead = fakeableHadTaus_lead;
-      selHadTaus_sublead = fakeableHadTaus_sublead;
-      selHadTaus = fakeableHadTaus;
-    } else if ( hadTauSelection == kTight ) {
-      selHadTaus_lead = tightHadTaus_lead;
-      selHadTaus_sublead = tightHadTaus_sublead;
-      selHadTaus = tightHadTaus;
-    } else assert(0);
+    if      ( hadTauSelection == kLoose    ) selHadTaus = preselHadTaus;
+    else if ( hadTauSelection == kFakeable ) selHadTaus = fakeableHadTaus;
+    else if ( hadTauSelection == kTight    ) selHadTaus = tightHadTaus;
+    else assert(0);
+    selHadTaus = pickFirstNobjects(selHadTaus, 2);
 
 //--- build collections of jets and select subset of jets passing b-tagging criteria
     std::vector<RecoJet> jets = jetReader->read();
@@ -974,10 +960,10 @@ int main(int argc, char* argv[])
     cutFlowTable.update("sel lepton trigger match", evtWeight);
 
     // require presence of exactly two hadronic taus passing tight selection criteria of final event selection
-    if ( !(selHadTaus_lead.size() >= 1 && selHadTaus_sublead.size() >= 1) ) continue;
+    if ( !(selHadTaus.size() >= 2) ) continue;
     cutFlowTable.update(">= 2 sel taus", evtWeight);
-    const RecoHadTau* selHadTau_lead = selHadTaus_lead[0];
-    const RecoHadTau* selHadTau_sublead = selHadTaus_sublead[0];
+    const RecoHadTau* selHadTau_lead = selHadTaus[0];
+    const RecoHadTau* selHadTau_sublead = selHadTaus[1];
     const hadTauGenMatchEntry& selHadTau_genMatch = getHadTauGenMatch(hadTauGenMatch_definitions, selHadTau_lead, selHadTau_sublead);
     int idxSelHadTau_genMatch = selHadTau_genMatch.idx_;
     assert(idxSelHadTau_genMatch != kGen_HadTauUndefined2);

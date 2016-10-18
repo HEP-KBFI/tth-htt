@@ -907,6 +907,7 @@ int main(int argc, char* argv[])
     //  std::cout << "selHadTau #" << idxSelHadTau << ":" << std::endl;
     //  std::cout << (*selHadTaus[idxSelHadTau]);
     //}
+    selHadTaus = pickFirstNobjects(selHadTaus, 1);
     
 //--- build collections of jets and select subset of jets passing b-tagging criteria
     std::vector<RecoJet> jets = jetReader->read();
@@ -919,6 +920,7 @@ int main(int argc, char* argv[])
     //  }
     //}
     std::vector<const RecoJet*> cleanedJets = jetCleaner(jet_ptrs, selMuons, selElectrons, selHadTaus);
+    //std::vector<const RecoJet*> cleanedJets = jetCleaner(jet_ptrs, fakeableMuons, fakeableElectrons, selHadTaus);
     std::vector<const RecoJet*> selJets = jetSelector(cleanedJets);
     std::vector<const RecoJet*> selBJets_loose = jetSelectorBtagLoose(cleanedJets);
     std::vector<const RecoJet*> selBJets_medium = jetSelectorBtagMedium(cleanedJets);

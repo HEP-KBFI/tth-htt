@@ -99,11 +99,12 @@ NtupleMetaData
 /* *************************** EDIT THIS ***************************************/
 
 const std::string base_dir = "/home/" + _whoami() + "/sandbox/sync_ntuples/";
-//const std::string inputbase_dir = "/hdfs/local/karl/syncNtuples/comparison/";
-const std::string inputbase_dir = "/home/karl/cms/root_files/sync_ntuples/";
+const std::string inputbase_dir = "/hdfs/local/karl/syncNtuples/comparison/";
 const std::map<std::string, std::map<std::string, NtupleMetaData>> ntupleMetadataMap = {
   { "tth", { { "llr",     { inputbase_dir + "llr",     "syncNtuple_ttH_80X.root",               "", "syncTree", "LLR",     "" } },
-             { "tallinn", { inputbase_dir + "tallinn", "ttHJetToNonbb_M125_13TeV_sync_v0.root", "", "tree",     "Tallinn", "" } } } }
+             { "tallinn", { inputbase_dir + "tallinn", "ttHJetToNonbb_M125_13TeV_sync_v0.root", "", "tree",     "Tallinn", "" } },
+             { "cornell", { inputbase_dir + "cornell", "syncNtuple.root",                       "", "syncTree", "Cornell", "" } },
+             { "nd",      { inputbase_dir + "nd",      "sync_ntuple.root",                      "", "syncTree", "ND",      "" } } } }
 };
 
 //-------------------------------------------------------------------------------
@@ -749,5 +750,14 @@ void compareSyncNtuples(const std::string & ref_str,
 
   delete inputFile_ref;
   delete inputFile_test;
+}
+
+void compareSyncNtuples()
+{
+  const std::string test_str = "tallinn";
+  const std::string sample_str = "tth";
+  for(const auto & kv: ntupleMetadataMap.at(sample_str))
+    if(test_str != kv.first)
+      compareSyncNtuples(kv.first, test_str, sample_str);
 }
 
