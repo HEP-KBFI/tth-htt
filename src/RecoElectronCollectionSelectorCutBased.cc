@@ -1,15 +1,20 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorCutBased.h" // RecoElectronSelectorCutBased
 
-RecoElectronSelectorCutBased::RecoElectronSelectorCutBased(int index, bool debug)
+RecoElectronSelectorCutBased::RecoElectronSelectorCutBased(int era, int index, bool debug)
   : min_pt_(15.)
   , max_relIso_(0.1)
   , max_sip3d_(4.)
-  , min_mvaRawPOG_({ 0.87, 0.60, 0.17 })
+  , min_mvaRawPOG_({ -0.7, -0.83, -0.92 }) /* min_mvaRawPOG_({ 0.87, 0.60, 0.17 }) */
   , binning_absEta_({ 0.8, 1.479 })
   , apply_tightCharge_(true)
   , apply_conversionVeto_(true)
   , max_nLostHits_(0)
 {
+  /*
+  if      ( era_ == kEra_2015 ) max_jetBtagCSV_ = 0.89;
+  else if ( era_ == kEra_2016 ) max_jetBtagCSV_ = 0.80;
+  else assert(0);
+   */
   assert(min_mvaRawPOG_.size() == 3);
   assert(binning_absEta_.size() == 2);
 }

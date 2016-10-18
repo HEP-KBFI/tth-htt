@@ -51,6 +51,9 @@ std::ostream& operator<<(std::ostream& stream, const RecoHadTau& hadTau)
 	 << " phi = " << hadTau.phi_ << "," 
 	 << " mass = " << hadTau.mass_ << "," 
 	 << " charge = " << hadTau.charge_ << std::endl; 
+  stream << " decayModeFinding = " << hadTau.decayModeFinding_ << "," 
+	 << " id_mva_dR03 = " << hadTau.id_mva_dR03_ << " (raw = " << hadTau.raw_mva_dR03_ << ")," 
+	 << " antiElectron = " << hadTau.antiElectron_ << ", antiMuon = " << hadTau.antiMuon_  << std::endl;
   return stream;
 }
 

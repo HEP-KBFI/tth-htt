@@ -170,30 +170,30 @@ int main(int argc, char* argv[])
 //--- declare particle collections
   RecoMuonReader* muonReader = new RecoMuonReader(era, "nselLeptons", "selLeptons");
   muonReader->setBranchAddresses(inputTree);
-  RecoMuonCollectionSelectorLoose preselMuonSelector;
+  RecoMuonCollectionSelectorLoose preselMuonSelector(era);
   RecoMuonCollectionSelectorFakeable fakeableMuonSelector(era);
-  RecoMuonCollectionSelectorCutBased cutBasedSelector;
-  RecoMuonCollectionSelectorMVABased mvaBasedSelector;
+  RecoMuonCollectionSelectorCutBased cutBasedSelector(era);
+  RecoMuonCollectionSelectorMVABased mvaBasedSelector(era);
 
-  RecoElectronReader* electronReader = new RecoElectronReader("nselLeptons", "selLeptons");
+  RecoElectronReader* electronReader = new RecoElectronReader(era, "nselLeptons", "selLeptons");
   electronReader->setBranchAddresses(inputTree);
   RecoElectronCollectionCleaner electronCleaner(0.3); // KE: 0.05 -> 0.3
-  RecoElectronCollectionSelectorLoose preselElectronSelector(-1, debug);
+  RecoElectronCollectionSelectorLoose preselElectronSelector(era, -1, debug);
   RecoElectronCollectionSelectorFakeable fakeableElectronSelector(era);
-  RecoElectronCollectionSelectorCutBased cutBasedElectronSelector;
-  RecoElectronCollectionSelectorMVABased mvaBasedElectronSelector;
+  RecoElectronCollectionSelectorCutBased cutBasedElectronSelector(era);
+  RecoElectronCollectionSelectorMVABased mvaBasedElectronSelector(era);
 
   RecoHadTauReader* hadTauReader = new RecoHadTauReader(era, "nTauGood", "TauGood");
   hadTauReader->setBranchAddresses(inputTree);
   RecoHadTauCollectionCleaner hadTauCleaner(0.3); // KE: 0.4 -> 0.3
-  RecoHadTauCollectionSelectorLoose hadTauSelector; // KE: Tight -> Loose
+  RecoHadTauCollectionSelectorLoose hadTauSelector(era); // KE: Tight -> Loose
   
   RecoJetReader* jetReader = new RecoJetReader(era, "nJet", "Jet");
   jetReader->setJetPt_central_or_shift(jetPt_option);
   jetReader->setBranchName_BtagWeight("");
   jetReader->setBranchAddresses(inputTree);
-  RecoJetCollectionCleaner jetCleaner(0.5); // KE: 0.4 -> 0.5
-  RecoJetCollectionSelector jetSelector;  
+  RecoJetCollectionCleaner jetCleaner(0.4); 
+  RecoJetCollectionSelector jetSelector(era);  
 
 //--- initialize BDTs used to discriminate ttH vs. ttV and ttH vs. ttbar 
 //    in 2lss_1tau category of ttH multilepton analysis

@@ -675,21 +675,21 @@ main(int argc,
   EVT_TYPE evt;
   chain.SetBranchAddress(EVT_KEY, &evt);
   
-  RecoElectronReader* electronReader = new RecoElectronReader("nselLeptons", "selLeptons");
+  RecoElectronReader* electronReader = new RecoElectronReader(era, "nselLeptons", "selLeptons");
   electronReader->setBranchAddresses(&chain);
-  RecoElectronCollectionSelectorLoose preselElectronSelector;
+  RecoElectronCollectionSelectorLoose preselElectronSelector(era);
   RecoElectronCollectionSelectorTight tightElectronSelector(era);
   RecoMuonReader* muonReader = new RecoMuonReader(era, "nselLeptons", "selLeptons");
   muonReader->setBranchAddresses(&chain);
-  RecoMuonCollectionSelectorLoose preselMuonSelector;
+  RecoMuonCollectionSelectorLoose preselMuonSelector(era);
   RecoMuonCollectionSelectorTight tightMuonSelector(era);
   RecoHadTauReader* hadTauReader = new RecoHadTauReader(era, "nTauGood", "TauGood");
   hadTauReader->setBranchAddresses(&chain);
-  RecoHadTauCollectionSelectorTight hadTauSelector;
+  RecoHadTauCollectionSelectorTight hadTauSelector(era);
   RecoJetReader* jetReader = new RecoJetReader(era, "nJet", "Jet");
   jetReader->setBranchName_BtagWeight(jet_btagWeight_branch);
   jetReader->setBranchAddresses(&chain);
-  RecoJetCollectionSelector jetSelector;
+  RecoJetCollectionSelector jetSelector(era);
   RecoJetCollectionSelectorBtagLoose jetSelectorBtagLoose(era);
   RecoJetCollectionSelectorBtagMedium jetSelectorBtagMedium(era);
 

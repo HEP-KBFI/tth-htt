@@ -252,10 +252,10 @@ int main(int argc, char* argv[])
 	    subdir_output->cd();
 	    //Make subdirectory if given
 	    bool makeSubDir = cfg_prepareDatacards.getParameter<bool>("makeSubDir");
-	    if(makeSubDir == true && category->output_.length() > 0){
-	        TDirectory* subsubdir_output = createSubdirectory_recursively(fs, category->output_);
-	        subsubdir_output->cd();
-        }
+	    if ( makeSubDir == true && category->output_.length() > 0 ){
+	      TDirectory* subsubdir_output = createSubdirectory_recursively(fs, category->output_);
+	      subsubdir_output->cd();
+	    }
 	    double sf = ( isSignal ) ? sf_signal : 1.;
 	    copyHistogram(
 	      subdir, subdir->GetName(), histogramToFit, "", 

@@ -12,7 +12,7 @@
 class RecoMuonSelectorLoose
 {
  public:
-  RecoMuonSelectorLoose(int index = -1, bool debug = false);
+  RecoMuonSelectorLoose(int era, int index = -1, bool debug = false);
   ~RecoMuonSelectorLoose() {}
 
   /**

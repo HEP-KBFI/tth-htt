@@ -14,8 +14,8 @@
 class RecoElectronReader
 {
  public:
-  RecoElectronReader();
-  RecoElectronReader(const std::string& branchName_num, const std::string& branchName_obj); 
+  RecoElectronReader(int era);
+  RecoElectronReader(int era, const std::string& branchName_num, const std::string& branchName_obj); 
   ~RecoElectronReader();
 
   /**

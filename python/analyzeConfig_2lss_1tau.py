@@ -117,7 +117,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
     self.histogramFile_addFlips = os.path.join(self.outputDir, DKEY_HIST, "addBackgroundLeptonFlips_%s.root" % self.channel)
     self.cfgFile_addFlips_original = os.path.join(self.workingDir, "addBackgroundLeptonFlips_cfg.py")
     self.cfgFile_addFlips_modified = os.path.join(self.outputDir, DKEY_CFGS, "addBackgroundLeptonFlips_%s_cfg.py" % self.channel)
-    self.prep_dcard_processesToCopy = [ "data_obs", "TTW", "TTZ", "WZ", "Rares", "fakes_data", "flips_data" ]
+    self.prep_dcard_processesToCopy = [ "data_obs", "TTW", "TTZ", "WZ", "Rares", "fakes_data", "fakes_mc", "flips_data" ]
     self.histogramDir_prep_dcard = "2lss_1tau_SS_Tight"
     self.histogramDir_prep_dcard_OS = "2lss_2tau_OS_Tight"
     self.cfgFile_make_plots_original = os.path.join(self.workingDir, "makePlots_2lss_1tau_cfg.py")
@@ -162,10 +162,10 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
     lines.append("process.analyze_2lss_1tau.triggers_1e1mu = cms.vstring(%s)" % self.triggers_1e1mu)
     lines.append("process.analyze_2lss_1tau.use_triggers_1e1mu = cms.bool(%s)" % ("1e1mu" in triggers))
     lines.append("process.analyze_2lss_1tau.leptonSelection = cms.string('%s')" % lepton_selection)
-    lines.append("process.analyze_2lss_1tau.apply_leptonGenMatching = cms.bool(%s)" % apply_leptonGenMatching)
+    lines.append("process.analyze_2lss_1tau.apply_leptonGenMatching = cms.bool(%s)" % (apply_leptonGenMatching and is_mc))
     lines.append("process.analyze_2lss_1tau.leptonChargeSelection = cms.string('%s')" % lepton_charge_selection)
     lines.append("process.analyze_2lss_1tau.hadTauSelection = cms.string('%s')" % hadTau_selection)
-    lines.append("process.analyze_2lss_1tau.apply_hadTauGenMatching = cms.bool(%s)" % apply_hadTauGenMatching)    
+    lines.append("process.analyze_2lss_1tau.apply_hadTauGenMatching = cms.bool(%s)" % (apply_hadTauGenMatching and is_mc))
     lines.append("process.analyze_2lss_1tau.applyFakeRateWeights = cms.string('%s')" % applyFakeRateWeights)
     if hadTau_selection.find("Fakeable") != -1 and applyFakeRateWeights in [ "3L", "2tau" ]:
       fitFunctionName = None
@@ -181,10 +181,9 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
       else:
         raise ValueError("Invalid parameter 'era' = %s !!" % era)
       lines.append("process.analyze_2lss_1tau.hadTauFakeRateWeight.lead.fitFunctionName = cms.string('%s')" % fitFunctionName)
-      lines.append("process.analyze_2lss_1tau.hadTauFakeRateWeight.sublead.fitFunctionName = cms.string('%s')" % fitFunctionName)
     if hadTau_selection.find("mcClosure") != -1:
-      lines.append("process.analyze_1l_2tau.hadTauFakeRateWeight.applyFitFunction_lead = cms.bool(False)")
-      lines.append("process.analyze_1l_2tau.hadTauFakeRateWeight.applyFitFunction_sublead = cms.bool(False)")
+      lines.append("process.analyze_2lss_1tau.hadTauFakeRateWeight.applyFitFunction_lead = cms.bool(False)")
+      lines.append("process.analyze_2lss_1tau.hadTauFakeRateWeight.applyFitFunction_sublead = cms.bool(False)")
     lines.append("process.analyze_2lss_1tau.isMC = cms.bool(%s)" % is_mc)
     lines.append("process.analyze_2lss_1tau.central_or_shift = cms.string('%s')" % central_or_shift)
     lines.append("process.analyze_2lss_1tau.lumiScale = cms.double(%f)" % lumi_scale)
@@ -512,7 +511,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
         category_signal, category_sideband)
 
     logging.info("Creating configuration files for executing 'addBackgroundLeptonFlips'")
-    self.createCfg_addFlips(self.histogramFile_hadd_stage1, self.histogramFile_addFlips, self.cfgFile_addFlips_modified)
+    self.createCfg_addFlips(self.histogramFile_hadd_stage1_5, self.histogramFile_addFlips, self.cfgFile_addFlips_modified)
 
     logging.info("Creating configuration files for executing 'prepareDatacards'")
     for histogramToFit in self.histograms_to_fit:

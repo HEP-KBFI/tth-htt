@@ -59,6 +59,8 @@ process.analyze_1l_2tau = cms.PSet(
             applyFitFunction = cms.bool(True)
         )
     ),
+
+    use_HIP_mitigation_bTag = cms.bool(False),
         
     isMC = cms.bool(False),
     central_or_shift = cms.string('central'),

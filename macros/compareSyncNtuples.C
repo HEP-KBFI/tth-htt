@@ -101,8 +101,8 @@ NtupleMetaData
 const std::string base_dir = "/home/" + _whoami() + "/sandbox/sync_ntuples/";
 const std::string inputbase_dir = "/hdfs/local/karl/syncNtuples/comparison/";
 const std::map<std::string, std::map<std::string, NtupleMetaData>> ntupleMetadataMap = {
-  { "tth", { { "llr",     { inputbase_dir + "llr",     "syncNtuple_ttH_80X.root",               "", "syncTree", "LLR",     "n_presel_jet >= 2" } },
-             { "tallinn", { inputbase_dir + "tallinn", "ttHJetToNonbb_M125_13TeV_sync_v0.root", "", "tree",     "Tallinn", "n_presel_jet >= 2" } } } }
+  { "tth", { { "llr",     { inputbase_dir + "llr",     "syncNtuple_ttH_80X.root",               "", "syncTree", "LLR",     "ele0_ismvasel" } },
+             { "tallinn", { inputbase_dir + "tallinn", "ttHJetToNonbb_M125_13TeV_sync_v0.root", "", "tree",     "Tallinn", "!ele0_ismvasel" } } } }
 };
 
 //-------------------------------------------------------------------------------

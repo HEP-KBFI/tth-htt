@@ -33,11 +33,11 @@ process.analyze_charge_flip = cms.PSet(
     triggers_1e1mu = cms.vstring("HLT_BIT_HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v", "HLT_BIT_HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v"),
     use_triggers_1e1mu = cms.bool(False),
 
-    apply_offline_e_trigger_cuts_1e = cms.bool(False),
-    apply_offline_e_trigger_cuts_2e = cms.bool(False),
-    apply_offline_e_trigger_cuts_1mu = cms.bool(False),
-    apply_offline_e_trigger_cuts_2mu = cms.bool(False),
-    apply_offline_e_trigger_cuts_1e1mu = cms.bool(False),
+    apply_offline_e_trigger_cuts_1e = cms.bool(True),
+    apply_offline_e_trigger_cuts_2e = cms.bool(True),
+    apply_offline_e_trigger_cuts_1mu = cms.bool(True),
+    apply_offline_e_trigger_cuts_2mu = cms.bool(True),
+    apply_offline_e_trigger_cuts_1e1mu = cms.bool(True),
     
     leptonSelection = cms.string('Tight'),
     

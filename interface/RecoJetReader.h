@@ -3,6 +3,8 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h" // RecoJet
 
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2015, kEra_2016
+
 #include <Rtypes.h> // Int_t, Float_t
 #include <TTree.h> // TTree
 
@@ -19,6 +21,21 @@ class RecoJetReader
 
   enum { kJetPt_central, kJetPt_jecUp, kJetPt_jecDown };
   void setJetPt_central_or_shift(int jetPt_option) { jetPt_option_ = jetPt_option; }
+
+  void enable_HIP_mitigation() { 
+    std::cout << "<RecoJetReader::enable_HIP_mitigation>:" << std::endl; 
+    if ( era_ == kEra_2016 ) {
+      branchName_BtagCSV_ = Form("%s_%s", branchName_obj_.data(), "btagCSV"); // CV: CSV algorithm with HIP mitigation
+    }
+    use_HIP_mitigation_ = true; 
+  }
+  void disable_HIP_mitigation() { 
+    std::cout << "<RecoJetReader::disable_HIP_mitigation>:" << std::endl; 
+    if ( era_ == kEra_2016 ) {
+      branchName_BtagCSV_ = Form("%s_%s", branchName_obj_.data(), "btagNoHipMitigation"); // CV: CSV algorithm without HIP mitigation
+    }
+    use_HIP_mitigation_ = false; 
+  }
 
   void setBranchName_BtagWeight(const std::string& branchName_BtagWeight) { branchName_BtagWeight_ = branchName_BtagWeight; }
 
@@ -40,6 +57,7 @@ class RecoJetReader
   void setBranchNames();
 
   int era_;
+  bool use_HIP_mitigation_;
   const int max_nJets_;
   std::string branchName_num_;
   std::string branchName_obj_;

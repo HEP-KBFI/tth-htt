@@ -34,8 +34,8 @@ process.analyze_2l_2tau = cms.PSet(
     use_triggers_1e1mu = cms.bool(True),
 
     apply_offline_e_trigger_cuts_1e = cms.bool(True),
-    apply_offline_e_trigger_cuts_2e = cms.bool(False),
-    apply_offline_e_trigger_cuts_1e1mu = cms.bool(False),
+    apply_offline_e_trigger_cuts_2e = cms.bool(True),
+    apply_offline_e_trigger_cuts_1e1mu = cms.bool(True),
         
     leptonChargeSelection = cms.string('OS'),
     

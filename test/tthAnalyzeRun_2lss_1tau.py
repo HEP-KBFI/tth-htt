@@ -19,7 +19,8 @@ elif ERA == "2016":
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "2016Oct11_dR03mvaTight_2lepton"
+##version = "2016Oct13_dR03mvaMedium_2lepton"
+version = "2016Oct14_dR03mvaMedium_3L"
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -32,8 +33,9 @@ if __name__ == '__main__':
     executable_analyze = "analyze_2lss_1tau",
     samples = samples,
     lepton_charge_selections = [ "OS", "SS" ],
-    hadTau_selection = "dR03mvaTight",
-    applyFakeRateWeights = "2lepton",
+    hadTau_selection = "dR03mvaMedium",
+    ##applyFakeRateWeights = "2lepton",
+    applyFakeRateWeights = "3L",
     central_or_shifts = [ 
       "central",
 ##       "CMS_ttHl_btag_HFUp", 

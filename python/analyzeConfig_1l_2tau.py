@@ -155,10 +155,10 @@ class analyzeConfig_1l_2tau(analyzeConfig):
     lines.append("process.analyze_1l_2tau.triggers_1mu = cms.vstring(%s)" % self.triggers_1mu)
     lines.append("process.analyze_1l_2tau.use_triggers_1mu = cms.bool(%s)" % ("1mu" in triggers))
     lines.append("process.analyze_1l_2tau.leptonSelection = cms.string('%s')" % lepton_selection)
-    lines.append("process.analyze_1l_2tau.apply_leptonGenMatching = cms.bool(%s)" % apply_leptonGenMatching)
+    lines.append("process.analyze_1l_2tau.apply_leptonGenMatching = cms.bool(%s)" % (apply_leptonGenMatching and is_mc))
     lines.append("process.analyze_1l_2tau.hadTauSelection = cms.string('%s')" % hadTau_selection)
     lines.append("process.analyze_1l_2tau.hadTauChargeSelection = cms.string('%s')" % hadTau_charge_selection)
-    lines.append("process.analyze_1l_2tau.apply_hadTauGenMatching = cms.bool(%s)" % apply_hadTauGenMatching)    
+    lines.append("process.analyze_1l_2tau.apply_hadTauGenMatching = cms.bool(%s)" % (apply_hadTauGenMatching and is_mc))
     lines.append("process.analyze_1l_2tau.applyFakeRateWeights = cms.string('%s')" % applyFakeRateWeights)
     if hadTau_selection.find("Fakeable") != -1 and applyFakeRateWeights in [ "3L", "2tau" ]:
       fitFunctionName = None

@@ -11,7 +11,7 @@
 class RecoElectronSelectorMVABased
 {
  public:
-  RecoElectronSelectorMVABased(int index = -1, bool debug = false);
+  RecoElectronSelectorMVABased(int era, int index = -1, bool debug = false);
   ~RecoElectronSelectorMVABased() {}
 
   /**

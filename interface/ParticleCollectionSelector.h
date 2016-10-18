@@ -5,9 +5,9 @@ template <typename Tobj, typename Tsel>
 class ParticleCollectionSelector
 {
  public:
-  ParticleCollectionSelector(int index = -1, bool debug = false) 
+  ParticleCollectionSelector(int era, int index = -1, bool debug = false) 
     : selIndex_(index)
-    , selector_(index, debug)
+    , selector_(era, index, debug)
   {}
   ~ParticleCollectionSelector() {}
 

@@ -2,8 +2,8 @@
 
 #include <cmath> // fabs
 
-RecoHadTauSelectorTight::RecoHadTauSelectorTight(int index, bool debug)
-  : RecoHadTauSelectorBase(index, debug)
+RecoHadTauSelectorTight::RecoHadTauSelectorTight(int era, int index, bool debug)
+  : RecoHadTauSelectorBase(era, index, debug)
 { 
   min_pt_ = 20.;
   max_absEta_ = 2.3;

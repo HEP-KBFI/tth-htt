@@ -12,7 +12,7 @@
 class RecoJetSelector
 {
  public:
-  RecoJetSelector(int index = -1, bool debug = false);
+  RecoJetSelector(int era, int index = -1, bool debug = false);
   ~RecoJetSelector() {}
 
   /**
