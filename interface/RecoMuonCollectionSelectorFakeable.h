@@ -43,35 +43,7 @@ class RecoMuonSelectorFakeable
   bool apply_tightCharge_;  ///< apply (True) or do not apply (False) tight charge cut
 };
 
-class RecoMuonCollectionSelectorFakeable
-{
- public:
-  RecoMuonCollectionSelectorFakeable(int era, int index = -1, bool debug = false)
-    : selIndex_(index)
-    , selector_(era, index, debug)
-  {}
-  ~RecoMuonCollectionSelectorFakeable() {}
-
-  std::vector<const RecoMuon*> operator()(const std::vector<const RecoMuon*>& muons) const
-  {
-    std::vector<const RecoMuon*> selMuons;
-    int idx = 0;
-    for ( typename std::vector<const RecoMuon*>::const_iterator muon = muons.begin();
-	  muon != muons.end(); ++muon ) {
-      if ( selector_(**muon) ) {
-	if ( idx == selIndex_ || selIndex_ == -1 ) {
-	  selMuons.push_back(*muon);
-	}
-	++idx;
-      }
-    }
-    return selMuons;
-  }
-  
- protected: 
-  int selIndex_;
-  RecoMuonSelectorFakeable selector_;
-};
+typedef ParticleCollectionSelector<RecoMuon, RecoMuonSelectorFakeable> RecoMuonCollectionSelectorFakeable;
 
 #endif // tthAnalysis_HiggsToTauTau_RecoMuonCollectionSelectorFakeable_h
 

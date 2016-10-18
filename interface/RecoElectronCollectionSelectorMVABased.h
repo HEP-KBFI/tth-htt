@@ -22,6 +22,8 @@ class RecoElectronSelectorMVABased
   bool operator()(const RecoElectron& electron) const;
 
  protected:
+  int era_;
+
   Double_t min_pt_;                   ///< lower cut threshold on pT
 //--- define cuts that dependent on eta
 //    format: central region (|eta| < 0.8) / transition region (0.8 < |eta| < 1.479) / forward region (|eta| > 1.479)

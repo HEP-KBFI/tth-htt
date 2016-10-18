@@ -156,6 +156,120 @@ samples_2016["/DoubleEG/Run2016G-PromptReco-v1/MINIAOD"] = OD([
     ]
   ),
 ])
+samples_2016["/DoubleMuon/Run2016B-PromptReco-v2/MINIAOD"] = OD([
+  ("type",                  "data"),
+  ("sample_category",       "data_obs"),
+  ("process_name_specific", "DoubleMuon_Run2016B_v2"),
+  ("nof_files",             2606),
+  ("nof_events",            196349977),
+  ("use_it",                True),
+  ("triggers",              [ "2mu" ]),
+  ("reHLT",                 False),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/local/lucia/VHBBHeppyV24bis/DoubleMuon/VHBB_HEPPY_V24_DoubleMuon__Run2016B-PromptReco-v2/161006_213429"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+])
+samples_2016["/DoubleMuon/Run2016C-PromptReco-v2/MINIAOD"] = OD([
+  ("type",                  "data"),
+  ("sample_category",       "data_obs"),
+  ("process_name_specific", "DoubleMuon_Run2016C"),
+  ("nof_files",             869),
+  ("nof_events",            196349977),
+  ("use_it",                True),
+  ("triggers",              [ "2mu" ]),
+  ("reHLT",                 False),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/local/lucia/VHBBHeppyV24bis/DoubleMuon/VHBB_HEPPY_V24_DoubleMuon__Run2016C-PromptReco-v2/161011_101655"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+])
+samples_2016["/DoubleMuon/Run2016D-PromptReco-v2/MINIAOD"] = OD([
+  ("type",                  "data"),
+  ("sample_category",       "data_obs"),
+  ("process_name_specific", "DoubleMuon_Run2016D"),
+  ("nof_files",             1458),
+  ("nof_events",            196349977),
+  ("use_it",                True),
+  ("triggers",              [ "2mu" ]),
+  ("reHLT",                 False),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/local/lucia/VHBBHeppyV24bis/DoubleMuon/VHBB_HEPPY_V24_DoubleMuon__Run2016D-PromptReco-v2/161006_213542"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+])
+samples_2016["/DoubleMuon/Run2016E-PromptReco-v2/MINIAOD"] = OD([
+  ("type",                  "data"),
+  ("sample_category",       "data_obs"),
+  ("process_name_specific", "DoubleMuon_Run2016E"),
+  ("nof_files",             1240),
+  ("nof_events",            196349977),
+  ("use_it",                False),
+  ("triggers",              [ "2mu" ]),
+  ("reHLT",                 False),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/local/lucia/VHBBHeppyV24bis/DoubleMuon/VHBB_HEPPY_V24_DoubleMuon__Run2016E-PromptReco-v2/161006_213619"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+])
+samples_2016["/DoubleMuon/Run2016F-PromptReco-v1/MINIAOD"] = OD([
+  ("type",                  "data"),
+  ("sample_category",       "data_obs"),
+  ("process_name_specific", "DoubleMuon_Run2016F"),
+  ("nof_files",             905),
+  ("nof_events",            196349977),
+  ("use_it",                False),
+  ("triggers",              [ "2mu" ]),
+  ("reHLT",                 False),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/local/lucia/VHBBHeppyV24bis/DoubleMuon/VHBB_HEPPY_V24_DoubleMuon__Run2016F-PromptReco-v1/161006_213651"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+])
+samples_2016["/DoubleMuon/Run2016G-PromptReco-v1/MINIAOD"] = OD([
+  ("type",                  "data"),
+  ("sample_category",       "data_obs"),
+  ("process_name_specific", "DoubleMuon_Run2016G"),
+  ("nof_files",             550),
+  ("nof_events",            196349977),
+  ("use_it",                False),
+  ("triggers",              [ "2mu" ]),
+  ("reHLT",                 False),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/local/lucia/VHBBHeppyV24bis/DoubleMuon/VHBB_HEPPY_V24_DoubleMuon__Run2016G-PromptReco-v1/161010_081713"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+])
 samples_2016["/GluGluHToZZTo4L_M125_13TeV_powheg2_JHUgenV6_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM"] = OD([
   ("type",                  "mc"),
   ("sample_category",       "additional_signal_overlap"),

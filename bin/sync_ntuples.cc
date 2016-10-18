@@ -172,27 +172,28 @@ int main(int argc, char* argv[])
   muonReader->setBranchAddresses(inputTree);
   RecoMuonCollectionSelectorLoose preselMuonSelector(era);
   RecoMuonCollectionSelectorFakeable fakeableMuonSelector(era);
-  RecoMuonCollectionSelectorCutBased cutBasedSelector(era);
+  RecoMuonCollectionSelectorCutBased cutBasedSelector(era); // KE: not needed in 2016 sync, but keep it
   RecoMuonCollectionSelectorMVABased mvaBasedSelector(era);
 
   RecoElectronReader* electronReader = new RecoElectronReader(era, "nselLeptons", "selLeptons");
   electronReader->setBranchAddresses(inputTree);
-  RecoElectronCollectionCleaner electronCleaner(0.3); // KE: 0.05 -> 0.3
+  RecoElectronCollectionCleaner electronCleaner(0.05); // NB! in analysis we have 0.3
   RecoElectronCollectionSelectorLoose preselElectronSelector(era, -1, debug);
   RecoElectronCollectionSelectorFakeable fakeableElectronSelector(era);
-  RecoElectronCollectionSelectorCutBased cutBasedElectronSelector(era);
+  RecoElectronCollectionSelectorCutBased cutBasedElectronSelector(era); // KE: not needed in 2016 sync, but keep it
   RecoElectronCollectionSelectorMVABased mvaBasedElectronSelector(era);
 
   RecoHadTauReader* hadTauReader = new RecoHadTauReader(era, "nTauGood", "TauGood");
   hadTauReader->setBranchAddresses(inputTree);
-  RecoHadTauCollectionCleaner hadTauCleaner(0.3); // KE: 0.4 -> 0.3
+  RecoHadTauCollectionCleaner hadTauCleaner(0.4); // NB! in analysis we have 0.3
   RecoHadTauCollectionSelectorLoose hadTauSelector(era); // KE: Tight -> Loose
-  
+  hadTauSelector.set("dR03mvaLoose");
+
   RecoJetReader* jetReader = new RecoJetReader(era, "nJet", "Jet");
   jetReader->setJetPt_central_or_shift(jetPt_option);
   jetReader->setBranchName_BtagWeight("");
   jetReader->setBranchAddresses(inputTree);
-  RecoJetCollectionCleaner jetCleaner(0.4); 
+  RecoJetCollectionCleaner jetCleaner(0.4); // NB! in analysis we *had* 0.5
   RecoJetCollectionSelector jetSelector(era);  
 
 //--- initialize BDTs used to discriminate ttH vs. ttV and ttH vs. ttbar 
@@ -298,14 +299,35 @@ int main(int argc, char* argv[])
     std::sort(selJets.begin(), selJets.end(), isHigherPt);
     snm.read(selJets);
 
-//--- apply preselection
-    std::vector<const RecoLepton*> preselLeptons;    
+//--- collect preselected leptons
+    std::vector<const RecoLepton *> preselLeptons;
     preselLeptons.reserve(preselElectrons.size() + preselMuons.size());
     preselLeptons.insert(preselLeptons.end(), preselElectrons.begin(), preselElectrons.end());
     preselLeptons.insert(preselLeptons.end(), preselMuons.begin(), preselMuons.end());
     std::sort(preselLeptons.begin(), preselLeptons.end(), isHigherPt);
-    const RecoLepton * const preselLepton_lead    = preselLeptons.size() > 0 ? preselLeptons[0] : 0;
-    const RecoLepton * const preselLepton_sublead = preselLeptons.size() > 1 ? preselLeptons[1] : 0;
+
+//--- collect fakeable leptons
+    std::vector<const RecoLepton *> fakeableLeptons;
+    fakeableLeptons.reserve(fakeableElectrons.size() + fakeableMuons.size());
+    fakeableLeptons.insert(fakeableLeptons.end(), fakeableElectrons.begin(), fakeableElectrons.end());
+    fakeableLeptons.insert(fakeableLeptons.end(), fakeableMuons.begin(),     fakeableMuons.end());
+    std::sort(fakeableLeptons.begin(), fakeableLeptons.end(), isHigherPt);
+    const RecoLepton * const lepton_lead = [&]()
+    {
+      if(era == kEra_2015 && preselLeptons.size() > 0)
+        return preselLeptons[0];
+      if(era == kEra_2016 && fakeableLeptons.size() > 0)
+        return fakeableLeptons[0];
+      return static_cast<const RecoLepton * const>(0);
+    }();
+    const RecoLepton * const lepton_sublead = [&]()
+    {
+      if(era == kEra_2015 && preselLeptons.size() > 1)
+        return preselLeptons[1];
+      if(era == kEra_2016 && fakeableLeptons.size() > 1)
+        return fakeableLeptons[1];
+      return static_cast<const RecoLepton * const>(0);
+    }();
 
 //--- compute MHT and linear MET discriminant (met_LD)
     LV mht_p4(0,0,0,0);
@@ -323,25 +345,25 @@ int main(int argc, char* argv[])
 
 //--- compute output of BDTs used to discriminate ttH vs. ttV and ttH vs. ttbar 
 //    in 2lss_1tau category of ttH multilepton analysis 
-    if(preselLepton_lead)
+    if(lepton_lead)
     {
-      mvaInputs["MT_met_lep1"]                = comp_MT_met_lep1(*preselLepton_lead, met_pt, met_phi);
-      mvaInputs["LepGood_conePt[iF_Recl[0]]"] = comp_lep1_conePt(*preselLepton_lead);
-      mvaInputs["mindr_lep1_jet"]             = comp_mindr_lep1_jet(*preselLepton_lead, selJets);
+      mvaInputs["MT_met_lep1"]                = comp_MT_met_lep1(*lepton_lead, met_pt, met_phi);
+      mvaInputs["LepGood_conePt[iF_Recl[0]]"] = comp_lep1_conePt(*lepton_lead);
+      mvaInputs["mindr_lep1_jet"]             = comp_mindr_lep1_jet(*lepton_lead, selJets);
     }
-    if(preselLepton_sublead)
+    if(lepton_sublead)
     {
-      mvaInputs["LepGood_conePt[iF_Recl[1]]"] = comp_lep2_conePt(*preselLepton_sublead);
-      mvaInputs["mindr_lep2_jet"]             = comp_mindr_lep2_jet(*preselLepton_sublead, selJets);
+      mvaInputs["LepGood_conePt[iF_Recl[1]]"] = comp_lep2_conePt(*lepton_sublead);
+      mvaInputs["mindr_lep2_jet"]             = comp_mindr_lep2_jet(*lepton_sublead, selJets);
     }
     mvaInputs["nJet25_Recl"]     = comp_n_jet25_recl(selJets);
     mvaInputs["avg_dr_jet"]      = comp_avg_dr_jet(selJets);
     mvaInputs["min(met_pt,400)"] = std::min(met_pt, static_cast<Float_t>(400.));
 
-    if(preselLepton_lead && preselLepton_sublead)
+    if(lepton_lead && lepton_sublead)
     {
       mvaInputs["max(abs(LepGood_eta[iF_Recl[0]]),abs(LepGood_eta[iF_Recl[1]]))"] =
-        std::max(std::fabs(preselLepton_lead->eta_), std::fabs(preselLepton_sublead->eta_));
+        std::max(std::fabs(lepton_lead->eta_), std::fabs(lepton_sublead->eta_));
       if(selJets.size() > 1)
       {
         snm.read(mva_2lss_ttV(mvaInputs),   FloatVariableType::mvaOutput_ttV);

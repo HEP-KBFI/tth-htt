@@ -21,6 +21,8 @@ class RecoMuonSelectorMVABased
   bool operator()(const RecoMuon& muon) const;
 
  protected:
+  int era_;
+
   Double_t min_pt_;         ///< lower cut threshold on pT
   Double_t min_mvaTTH_;     ///< lower cut threshold on lepton MVA of ttH multilepton analysis
   Double_t max_jetBtagCSV_; ///< upper cut threshold on CSV b-tagging discriminator value of nearby jet

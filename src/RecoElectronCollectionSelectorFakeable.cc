@@ -2,6 +2,8 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2015, kEra_2016
 
+#include <FWCore/Utilities/interface/Exception.h> // cms::Exception
+
 #include <cmath> // fabs
 #include <assert.h> // assert
 
@@ -24,14 +26,23 @@ RecoElectronSelectorFakeable::RecoElectronSelectorFakeable(int era, int index, b
   , min_OoEminusOoP_trig_(-0.05)   
   , max_OoEminusOoP_trig_({ 0.010, 0.010, 0.005 })    
   , binning_mvaTTH_({ 0.75 })
-  , min_jetPtRatio_({ 0.30, -1.e+3 })   
+  , min_jetPtRatio_({ 0.30, -1.e+3 })
   , apply_tightCharge_(false)
   , apply_conversionVeto_(false)   
-  , max_nLostHits_(0)
 {
-  if      ( era_ == kEra_2015 ) max_jetBtagCSV_ = { 0.605, 0.89 };
-  else if ( era_ == kEra_2016 ) max_jetBtagCSV_ = { 0.460, 0.80 };
-  else assert(0);
+  switch(era_)
+  {
+    case kEra_2015:
+      max_jetBtagCSV_ = { 0.605, 0.89 };
+      max_nLostHits_ = 0;
+      break;
+    case kEra_2016:
+      max_jetBtagCSV_ = { 0.460, 0.80 };
+      max_nLostHits_ = 1; // inherited from loose selection
+      break;
+    default:
+      throw cms::Exception("RecoElectronSelectorFakeable") << "Invalid era = " << era_;
+  }
   assert(min_mvaRawPOG_.size() == 3);
   assert(binning_absEta_.size() == 2);
   assert(max_sigmaEtaEta_trig_.size() == 3);
@@ -63,7 +74,7 @@ bool RecoElectronSelectorFakeable::operator()(const RecoElectron& electron) cons
     assert(idxBin_absEta >= 0 && idxBin_absEta <= 2);
     if ( electron.mvaRawPOG_ >= min_mvaRawPOG_[idxBin_absEta] ) {
       int idxBin_mvaTTH = -1;
-      if   ( electron.mvaRawTTH_ >= binning_mvaTTH_[0] ) idxBin_mvaTTH = 0;
+      if   ( electron.mvaRawTTH_ <= binning_mvaTTH_[0] ) idxBin_mvaTTH = 0;
       else                                               idxBin_mvaTTH = 1;
       assert(idxBin_mvaTTH >= 0 && idxBin_mvaTTH <= 1);
       if ( electron.jetPtRatio_ >= min_jetPtRatio_[idxBin_mvaTTH] &&
@@ -73,7 +84,8 @@ bool RecoElectronSelectorFakeable::operator()(const RecoElectron& electron) cons
 		  electron.HoE_ <= max_HoE_trig_[idxBin_absEta] &&
 		  electron.deltaEta_ <= max_deltaEta_trig_[idxBin_absEta] &&
 		  electron.deltaPhi_ <= max_deltaPhi_trig_[idxBin_absEta] &&
-		  electron.OoEminusOoP_ >= min_OoEminusOoP_trig_ && electron.OoEminusOoP_ <= max_OoEminusOoP_trig_[idxBin_absEta] ) return true;
+		  electron.OoEminusOoP_ >= min_OoEminusOoP_trig_ &&
+		  electron.OoEminusOoP_ <= max_OoEminusOoP_trig_[idxBin_absEta] ) return true;
       }
     }
   }
