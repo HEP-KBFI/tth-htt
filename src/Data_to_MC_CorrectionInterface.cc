@@ -537,12 +537,16 @@ namespace
 {
   double getSF_hadTauID_and_Iso_2015()
   {
+    // CV: take data/MC correction to be equal to unity, following Tau POG recommendation for 2015 data,
+    //     cf. https://twiki.cern.ch/twiki/bin/viewauth/CMS/TauIDRecommendation13TeV
     return 1.; 
   }
 
   double getSF_hadTauID_and_Iso_2016()
   {
-    return 0.83; 
+    // CV: updated data/MC correction to latest Tag & Probe measurement performed by Cecile in Z->tautau events,
+    //     cf. https://indico.cern.ch/event/571700/contributions/2313440/attachments/1343312/2023903/tauID_2609.pdf
+    return 0.95; 
   }
 }
 

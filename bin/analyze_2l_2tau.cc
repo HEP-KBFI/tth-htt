@@ -666,6 +666,7 @@ int main(int argc, char* argv[])
     else if ( hadTauSelection == kFakeable ) selHadTaus = fakeableHadTaus;
     else if ( hadTauSelection == kTight    ) selHadTaus = tightHadTaus;
     else assert(0);
+    selHadTaus = pickFirstNobjects(selHadTaus, 2);
 
 //--- build collections of jets and select subset of jets passing b-tagging criteria
     std::vector<RecoJet> jets = jetReader->read();
