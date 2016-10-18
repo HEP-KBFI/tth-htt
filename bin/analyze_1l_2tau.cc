@@ -958,8 +958,8 @@ int main(int argc, char* argv[])
     // require presence of exactly two hadronic taus passing tight selection criteria of final event selection
     if ( !(selHadTaus.size() >= 2) ) continue;
     cutFlowTable.update(">= 2 sel taus", evtWeight);
-    const RecoHadTau* selHadTau_lead = selHadTaus_lead[0];
-    const RecoHadTau* selHadTau_sublead = selHadTaus_sublead[0];
+    const RecoHadTau* selHadTau_lead = selHadTaus[0];
+    const RecoHadTau* selHadTau_sublead = selHadTaus[1];
     const hadTauGenMatchEntry& selHadTau_genMatch = getHadTauGenMatch(hadTauGenMatch_definitions, selHadTau_lead, selHadTau_sublead);
     int idxSelHadTau_genMatch = selHadTau_genMatch.idx_;
     assert(idxSelHadTau_genMatch != kGen_HadTauUndefined2);
