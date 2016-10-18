@@ -2,7 +2,7 @@
 #define RECOMUONCOLLECTIONSELECTORMVABASED_H
 
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuon.h" // RecoMuon
-#include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionSelectorWEra.h" // ParticleCollectionSelectorWEra
+#include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionSelector.h" // ParticleCollectionSelector
 
 #include <Rtypes.h> // Double_t
 
@@ -30,6 +30,6 @@ class RecoMuonSelectorMVABased
   bool apply_tightCharge_;  ///< apply (True) or do not apply (False) tight charge cut (2 if ptError/pt < 0.20, 0 otherwise)
 };
 
-typedef ParticleCollectionSelectorWEra<RecoMuon, RecoMuonSelectorMVABased> RecoMuonCollectionSelectorMVABased;
+typedef ParticleCollectionSelector<RecoMuon, RecoMuonSelectorMVABased> RecoMuonCollectionSelectorMVABased;
 
 #endif // RECOMUONCOLLECTIONSELECTORMVABASED_H

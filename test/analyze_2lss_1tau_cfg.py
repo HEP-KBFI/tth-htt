@@ -36,10 +36,10 @@ process.analyze_2lss_1tau = cms.PSet(
     use_triggers_1e1mu = cms.bool(True),
 
     apply_offline_e_trigger_cuts_1e = cms.bool(True),
-    apply_offline_e_trigger_cuts_2e = cms.bool(False),
-    apply_offline_e_trigger_cuts_1mu = cms.bool(False),
-    apply_offline_e_trigger_cuts_2mu = cms.bool(False),
-    apply_offline_e_trigger_cuts_1e1mu = cms.bool(False),
+    apply_offline_e_trigger_cuts_2e = cms.bool(True),
+    apply_offline_e_trigger_cuts_1mu = cms.bool(True),
+    apply_offline_e_trigger_cuts_2mu = cms.bool(True),
+    apply_offline_e_trigger_cuts_1e1mu = cms.bool(True),
     
     leptonSelection = cms.string('Tight'),
     apply_leptonGenMatching = cms.bool(False),
@@ -64,7 +64,11 @@ process.analyze_2lss_1tau = cms.PSet(
             applyFitFunction = cms.bool(True)
         )
     ),
-    
+
+    use_HIP_mitigation_bTag = cms.bool(False),
+
+    apply_lepton_and_hadTauCharge_cut = cms.bool(False),
+        
     isMC = cms.bool(False),
     central_or_shift = cms.string('central'),
     lumiScale = cms.double(1.),

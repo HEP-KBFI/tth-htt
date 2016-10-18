@@ -20,7 +20,7 @@ elif ERA == "2016":
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "2016Oct11_dR03mvaTight_2tau"
+version = "2016Oct14_dR03mvaTight_3L"
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -34,8 +34,8 @@ if __name__ == '__main__':
     samples = samples,
     hadTau_selection = "dR03mvaTight",
     hadTau_charge_selections = [ "OS", "SS" ],
-    applyFakeRateWeights = "2tau",
-    ##applyFakeRateWeights = "3L",
+    ##applyFakeRateWeights = "2tau",
+    applyFakeRateWeights = "3L",
     central_or_shifts = [ 
       "central",
 ##      "CMS_ttHl_btag_HFUp", 

@@ -2,7 +2,7 @@
 #define tthAnalysis_HiggsToTauTau_RecoMuonCollectionSelectorFakeable_h
 
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuon.h" // RecoMuon
-#include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionSelectorWEra.h" // ParticleCollectionSelectorWEra
+#include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionSelector.h" // ParticleCollectionSelector
 
 #include <Rtypes.h> // Int_t, Double_t
 
@@ -43,7 +43,7 @@ class RecoMuonSelectorFakeable
   bool apply_tightCharge_;  ///< apply (True) or do not apply (False) tight charge cut
 };
 
-typedef ParticleCollectionSelectorWEra<RecoMuon, RecoMuonSelectorFakeable> RecoMuonCollectionSelectorFakeable;
+typedef ParticleCollectionSelector<RecoMuon, RecoMuonSelectorFakeable> RecoMuonCollectionSelectorFakeable;
 
 #endif // tthAnalysis_HiggsToTauTau_RecoMuonCollectionSelectorFakeable_h
 

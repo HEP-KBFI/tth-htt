@@ -13,7 +13,7 @@
 class RecoHadTauSelectorBase
 {
  public:
-  RecoHadTauSelectorBase(int index = -1, bool debug = false);
+  RecoHadTauSelectorBase(int era, int index = -1, bool debug = false);
   ~RecoHadTauSelectorBase() {}
 
   void set_min_pt(double min_pt) { min_pt_ = min_pt; }
@@ -85,6 +85,7 @@ class RecoHadTauSelectorBase
 
   friend class RecoHadTauCollectionSelectorBase;
  protected: 
+  bool debug_;
   Double_t min_pt_;            ///< lower cut threshold on pT
   Double_t max_absEta_;        ///< upper cut threshold on absolute value of eta
   Double_t max_dz_;            ///< upper cut threshold on d_{z}, distance on the z axis w.r.t PV
@@ -106,9 +107,9 @@ template<typename T>
 class RecoHadTauCollectionSelector
 {
  public:
-  RecoHadTauCollectionSelector(int index = -1, bool debug = false)
+  RecoHadTauCollectionSelector(int era, int index = -1, bool debug = false)
     : selIndex_(index)
-    , selector_(index, debug)
+    , selector_(era, index, debug)
   {}
   ~RecoHadTauCollectionSelector() {}
 

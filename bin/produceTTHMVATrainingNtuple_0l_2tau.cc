@@ -395,38 +395,38 @@ int main(int argc, char* argv[])
   RecoMuonReader* muonReader = new RecoMuonReader(era, "nselLeptons", "selLeptons");
   muonReader->setBranchAddresses(inputTree);
   RecoMuonCollectionGenMatcher muonGenMatcher;
-  RecoMuonCollectionSelectorLoose preselMuonSelector;
+  RecoMuonCollectionSelectorLoose preselMuonSelector(era);
 
-  RecoElectronReader* electronReader = new RecoElectronReader("nselLeptons", "selLeptons");
+  RecoElectronReader* electronReader = new RecoElectronReader(era, "nselLeptons", "selLeptons");
   electronReader->setBranchAddresses(inputTree);
   RecoElectronCollectionGenMatcher electronGenMatcher;
   RecoElectronCollectionCleaner electronCleaner(0.3);
-  RecoElectronCollectionSelectorLoose preselElectronSelector;
+  RecoElectronCollectionSelectorLoose preselElectronSelector(era);
 
   RecoHadTauReader* hadTauReader = new RecoHadTauReader(era, "nTauGood", "TauGood");
   hadTauReader->setHadTauPt_central_or_shift(hadTauPt_option);
   hadTauReader->setBranchAddresses(inputTree);
   RecoHadTauCollectionGenMatcher hadTauGenMatcher;
   RecoHadTauCollectionCleaner hadTauCleaner(0.3);
-  RecoHadTauCollectionSelectorLoose preselHadTauSelector;
+  RecoHadTauCollectionSelectorLoose preselHadTauSelector(era);
   preselHadTauSelector.set_min_pt(40.);
   preselHadTauSelector.set_min_antiElectron(1);
   preselHadTauSelector.set_min_antiMuon(1);
   if ( hadTauSelection_part2 == "dR03mvaVVLoose" ) preselHadTauSelector.set(hadTauSelection_part2); 
-  RecoHadTauCollectionSelectorFakeable fakeableHadTauSelector_lead(0);
+  RecoHadTauCollectionSelectorFakeable fakeableHadTauSelector_lead(era, 0);
   fakeableHadTauSelector_lead.set_min_pt(40.);
   fakeableHadTauSelector_lead.set_min_antiElectron(1);
   fakeableHadTauSelector_lead.set_min_antiMuon(1);
-  RecoHadTauCollectionSelectorFakeable fakeableHadTauSelector_sublead(1);
+  RecoHadTauCollectionSelectorFakeable fakeableHadTauSelector_sublead(era, 1);
   fakeableHadTauSelector_sublead.set_min_pt(40.);
   fakeableHadTauSelector_sublead.set_min_antiElectron(2);
   fakeableHadTauSelector_sublead.set_min_antiMuon(1);
-  RecoHadTauCollectionSelectorTight tightHadTauSelector_lead(0);
+  RecoHadTauCollectionSelectorTight tightHadTauSelector_lead(era, 0);
   if ( hadTauSelection_part2 != "" ) tightHadTauSelector_lead.set(hadTauSelection_part2);
   tightHadTauSelector_lead.set_min_pt(40.);
   tightHadTauSelector_lead.set_min_antiElectron(1);
   tightHadTauSelector_lead.set_min_antiMuon(1);
-  RecoHadTauCollectionSelectorTight tightHadTauSelector_sublead(1);
+  RecoHadTauCollectionSelectorTight tightHadTauSelector_sublead(era, 1);
   if ( hadTauSelection_part2 != "" ) tightHadTauSelector_sublead.set(hadTauSelection_part2);
   tightHadTauSelector_sublead.set_min_pt(40.);
   tightHadTauSelector_sublead.set_min_antiElectron(2);
@@ -437,8 +437,8 @@ int main(int argc, char* argv[])
   jetReader->setBranchName_BtagWeight(jet_btagWeight_branch);
   jetReader->setBranchAddresses(inputTree);
   RecoJetCollectionGenMatcher jetGenMatcher;
-  RecoJetCollectionCleaner jetCleaner(0.5);
-  RecoJetCollectionSelector jetSelector;  
+  RecoJetCollectionCleaner jetCleaner(0.4);
+  RecoJetCollectionSelector jetSelector(era);  
   RecoJetCollectionSelectorBtagLoose jetSelectorBtagLoose(era);
   RecoJetCollectionSelectorBtagMedium jetSelectorBtagMedium(era);
 

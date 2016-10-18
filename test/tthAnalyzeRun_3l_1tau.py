@@ -19,7 +19,7 @@ elif ERA == "2016":
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "2016Oct11_dR03mvaLoose_1tau"
+version = "2016Oct14_dR03mvaLoose_4L"
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -32,7 +32,8 @@ if __name__ == '__main__':
     executable_analyze = "analyze_3l_1tau",
     samples = samples,
     hadTau_selection = "dR03mvaLoose",
-    applyFakeRateWeights = "1tau",
+    ##applyFakeRateWeights = "1tau",
+    applyFakeRateWeights = "4L",
     charge_selections = [ "OS", "SS" ],
     central_or_shifts = [ 
       "central",

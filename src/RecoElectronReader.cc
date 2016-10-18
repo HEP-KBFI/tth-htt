@@ -7,7 +7,7 @@
 std::map<std::string, int> RecoElectronReader::numInstances_;
 std::map<std::string, RecoElectronReader*> RecoElectronReader::instances_;
 
-RecoElectronReader::RecoElectronReader()
+RecoElectronReader::RecoElectronReader(int era)
   : branchName_num_("nselLeptons")
   , branchName_obj_("selLeptons")
   , leptonReader_(0)
@@ -25,7 +25,7 @@ RecoElectronReader::RecoElectronReader()
   setBranchNames();
 }
 
-RecoElectronReader::RecoElectronReader(const std::string& branchName_num, const std::string& branchName_obj)
+RecoElectronReader::RecoElectronReader(int era, const std::string& branchName_num, const std::string& branchName_obj)
   : branchName_num_(branchName_num)
   , branchName_obj_(branchName_obj)
   , leptonReader_(0)

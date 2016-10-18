@@ -15,8 +15,9 @@ def get_lepton_and_hadTau_selection_and_frWeight(lepton_and_hadTau_selection, le
 
 def getHistogramDir(lepton_selection, hadTau_selection, hadTau_frWeight, charge_selection):
   hadTau_selection_part1 = hadTau_selection
-  if hadTau_selection_part1.find("_") != -1:
-    hadTau_selection_part1 = hadTau_selection_part1[:hadTau_selection_part1.find("_")]
+  for separator in [ "|" ]:
+    if hadTau_selection_part1.find(separator) != -1:
+      hadTau_selection_part1 = hadTau_selection_part1[:hadTau_selection_part1.find(separator)]
   histogramDir = "3l_1tau_%s_lep%s_tau%s" % (charge_selection, lepton_selection, hadTau_selection_part1)
   if hadTau_selection_part1.find("Fakeable") != -1:
     if hadTau_frWeight == "enabled":
@@ -117,7 +118,7 @@ class analyzeConfig_3l_1tau(analyzeConfig):
     self.cfgFile_addFakes_original = os.path.join(self.workingDir, "addBackgroundJetToTauFakes_cfg.py")
     self.cfgFile_addFakes_modified = {}
     self.histogramFile_addFakes = {}
-    self.prep_dcard_processesToCopy = [ "data_obs" ] + self.nonfake_backgrounds + [ "fakes_data" ]
+    self.prep_dcard_processesToCopy = [ "data_obs" ] + self.nonfake_backgrounds + [ "fakes_data", "fakes_mc" ]
     self.histogramDir_prep_dcard = "3l_1tau_OS_lepTight_tauTight"
     self.histogramDir_prep_dcard_SS = "3l_1tau_SS_lepTight_tauTight"
     self.make_plots_backgrounds = self.nonfake_backgrounds + [ "fakes_data" ]
@@ -164,9 +165,9 @@ class analyzeConfig_3l_1tau(analyzeConfig):
     lines.append("process.analyze_3l_1tau.triggers_1e1mu = cms.vstring(%s)" % self.triggers_1e1mu)
     lines.append("process.analyze_3l_1tau.use_triggers_1e1mu = cms.bool(%s)" % ("1e1mu" in triggers))
     lines.append("process.analyze_3l_1tau.leptonSelection = cms.string('%s')" % lepton_selection)
-    lines.append("process.analyze_3l_1tau.apply_leptonGenMatching = cms.bool(%s)" % apply_leptonGenMatching)
+    lines.append("process.analyze_3l_1tau.apply_leptonGenMatching = cms.bool(%s)" % (apply_leptonGenMatching and is_mc))
     lines.append("process.analyze_3l_1tau.hadTauSelection = cms.string('%s')" % hadTau_selection)
-    lines.append("process.analyze_3l_1tau.apply_hadTauGenMatching = cms.bool(%s)" % apply_hadTauGenMatching)
+    lines.append("process.analyze_3l_1tau.apply_hadTauGenMatching = cms.bool(%s)" % (apply_hadTauGenMatching and is_mc))
     lines.append("process.analyze_3l_1tau.applyFakeRateWeights = cms.string('%s')" % applyFakeRateWeights)
     if hadTau_selection.find("Fakeable") != -1 and applyFakeRateWeights in [ "4L", "1tau" ]:
       fitFunctionName = None

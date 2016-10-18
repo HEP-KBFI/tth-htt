@@ -132,12 +132,15 @@ int main(int argc, char* argv[])
                the_process_input.find("ttH_hww") != std::string::npos ||
                the_process_input.find("ttH_hzz") != std::string::npos ) {
             continue;
-          } else {
-            //throw cms::Exception("addBackgrounds")  
-            //  << "Failed to find subdirectory = " << the_process_input << " within directory = " << (*subdir_level2)->GetName() << " !!\n";
-	    std::cerr << "Failed to find subdirectory = " << the_process_input << " within directory = " << (*subdir_level2)->GetName() << " --> skipping !!" << std::endl;
+          } 
+	  if ( std::string((*subdir_level2)->GetName()).find("genEvt")  != std::string::npos ||
+	       std::string((*subdir_level2)->GetName()).find("lheInfo") != std::string::npos ) {
 	    continue;
-          }
+	  }
+	  throw cms::Exception("addBackgrounds") 
+	    << "Failed to find subdirectory = " << the_process_input << " within directory = " << (*subdir_level2)->GetName() << " !!\n";
+	  //std::cerr << "Failed to find subdirectory = " << the_process_input << " within directory = " << (*subdir_level2)->GetName() << " --> skipping !!" << std::endl;
+	  //continue;
         }
         std::set<std::string> histograms;
         TList* list = dir_input->GetListOfKeys();

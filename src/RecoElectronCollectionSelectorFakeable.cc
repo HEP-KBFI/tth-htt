@@ -64,7 +64,7 @@ bool RecoElectronSelectorFakeable::operator()(const RecoElectron& electron) cons
        std::fabs(electron.dz_) <= max_dz_ &&
        electron.relIso_ <= max_relIso_ &&
        electron.sip3d_ <= max_sip3d_ &&
-       electron.nLostHits_ <= max_nLostHits_ &&
+       electron.nLostHits_ <= max_nLostHits_ && 
        (electron.tightCharge_ >= 2 || !apply_tightCharge_) && 
        (electron.passesConversionVeto_ || !apply_conversionVeto_) ) {
     int idxBin_absEta = -1;

@@ -170,23 +170,23 @@ int main(int argc, char* argv[])
 //--- declare particle collections
   RecoMuonReader* muonReader = new RecoMuonReader(era, "nselLeptons", "selLeptons");
   muonReader->setBranchAddresses(inputTree);
-  RecoMuonCollectionSelectorLoose preselMuonSelector;
+  RecoMuonCollectionSelectorLoose preselMuonSelector(era);
   RecoMuonCollectionSelectorFakeable fakeableMuonSelector(era);
-  RecoMuonCollectionSelectorCutBased cutBasedSelector; // KE: not needed in 2016 sync, but keep it
+  RecoMuonCollectionSelectorCutBased cutBasedSelector(era); // KE: not needed in 2016 sync, but keep it
   RecoMuonCollectionSelectorMVABased mvaBasedSelector(era);
 
-  RecoElectronReader* electronReader = new RecoElectronReader("nselLeptons", "selLeptons");
+  RecoElectronReader* electronReader = new RecoElectronReader(era, "nselLeptons", "selLeptons");
   electronReader->setBranchAddresses(inputTree);
   RecoElectronCollectionCleaner electronCleaner(0.05); // NB! in analysis we have 0.3
-  RecoElectronCollectionSelectorLoose preselElectronSelector(-1, debug);
+  RecoElectronCollectionSelectorLoose preselElectronSelector(era, -1, debug);
   RecoElectronCollectionSelectorFakeable fakeableElectronSelector(era);
-  RecoElectronCollectionSelectorCutBased cutBasedElectronSelector; // KE: not needed in 2016 sync, but keep it
+  RecoElectronCollectionSelectorCutBased cutBasedElectronSelector(era); // KE: not needed in 2016 sync, but keep it
   RecoElectronCollectionSelectorMVABased mvaBasedElectronSelector(era);
 
   RecoHadTauReader* hadTauReader = new RecoHadTauReader(era, "nTauGood", "TauGood");
   hadTauReader->setBranchAddresses(inputTree);
   RecoHadTauCollectionCleaner hadTauCleaner(0.4); // NB! in analysis we have 0.3
-  RecoHadTauCollectionSelectorLoose hadTauSelector;
+  RecoHadTauCollectionSelectorLoose hadTauSelector(era); // KE: Tight -> Loose
   hadTauSelector.set("dR03mvaLoose");
 
   RecoJetReader* jetReader = new RecoJetReader(era, "nJet", "Jet");
@@ -194,7 +194,7 @@ int main(int argc, char* argv[])
   jetReader->setBranchName_BtagWeight("");
   jetReader->setBranchAddresses(inputTree);
   RecoJetCollectionCleaner jetCleaner(0.4); // NB! in analysis we *had* 0.5
-  RecoJetCollectionSelector jetSelector;  
+  RecoJetCollectionSelector jetSelector(era);  
 
 //--- initialize BDTs used to discriminate ttH vs. ttV and ttH vs. ttbar 
 //    in 2lss_1tau category of ttH multilepton analysis

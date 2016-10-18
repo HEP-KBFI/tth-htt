@@ -24,9 +24,10 @@ class RecoJetSelectorBtag
 
  protected: 
   int era_;
+  bool debug_;
   Double_t min_pt_;      ///< lower cut threshold on pT
   Double_t max_absEta_;  ///< upper cut threshold on absolute value of eta
-  Double_t min_BtagCSV_; ///< lower cut threshold on CSV b-tagging discriminator value
+  Double_t min_BtagCSV_; ///< lower cut threshold on CSV b-tagging discriminator value    
 };
 
 class RecoJetSelectorBtagLoose 

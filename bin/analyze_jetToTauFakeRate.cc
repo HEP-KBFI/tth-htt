@@ -88,9 +88,10 @@ int getHadTau_genPdgId(const RecoHadTau* hadTau)
 struct denominatorHistManagers
 {
   denominatorHistManagers(
-    const std::string& process, bool isMC, const std::string& chargeSelection, 
+    const std::string& process, int era, bool isMC, const std::string& chargeSelection, 
     double minAbsEta, double maxAbsEta, const std::string& central_or_shift)
     : process_(process),
+      era_(era),
       isMC_(isMC),
       chargeSelection_(chargeSelection),
       minAbsEta_(minAbsEta),
@@ -108,7 +109,7 @@ struct denominatorHistManagers
   {
     std::string etaBin = getEtaBin(minAbsEta_, maxAbsEta_);
     subdir_ = Form("jetToTauFakeRate_%s/denominator/%s", chargeSelection_.data(), etaBin.data());
-    fakeableHadTauSelector_ = new RecoHadTauSelectorFakeable();
+    fakeableHadTauSelector_ = new RecoHadTauSelectorFakeable(era_);
   }
   ~denominatorHistManagers()
   {
@@ -181,6 +182,7 @@ struct denominatorHistManagers
     }
   }			
   std::string process_;
+  int era_;
   bool isMC_;
   std::string chargeSelection_;
   double minAbsEta_;
@@ -204,15 +206,15 @@ struct denominatorHistManagers
 struct numeratorSelector_and_HistManagers : public denominatorHistManagers
 {
   numeratorSelector_and_HistManagers(
-    const std::string& process, bool isMC, const std::string& chargeSelection, 
+    const std::string& process, int era, bool isMC, const std::string& chargeSelection, 
     const std::string& hadTauSelection, double minAbsEta, double maxAbsEta, const std::string& central_or_shift)
-    : denominatorHistManagers(process, isMC, chargeSelection, minAbsEta, maxAbsEta, central_or_shift),
+    : denominatorHistManagers(process, era, isMC, chargeSelection, minAbsEta, maxAbsEta, central_or_shift),
       hadTauSelection_(hadTauSelection),
       tightHadTauSelector_(0)
   {
     std::string etaBin = getEtaBin(minAbsEta_, maxAbsEta_);    
     subdir_ = Form("jetToTauFakeRate_%s/numerator/%s/%s", chargeSelection_.data(), hadTauSelection_.data(), etaBin.data());
-    tightHadTauSelector_ = new RecoHadTauSelectorTight();
+    tightHadTauSelector_ = new RecoHadTauSelectorTight(era_);
     tightHadTauSelector_->set(hadTauSelection);
   }
   ~numeratorSelector_and_HistManagers()
@@ -413,14 +415,14 @@ int main(int argc, char* argv[])
   RecoMuonReader* muonReader = new RecoMuonReader(era, "nselLeptons", "selLeptons");
   muonReader->setBranchAddresses(inputTree);
   RecoMuonCollectionGenMatcher muonGenMatcher;
-  RecoMuonCollectionSelectorLoose preselMuonSelector;
+  RecoMuonCollectionSelectorLoose preselMuonSelector(era);
   RecoMuonCollectionSelectorTight tightMuonSelector(era);
 
-  RecoElectronReader* electronReader = new RecoElectronReader("nselLeptons", "selLeptons");
+  RecoElectronReader* electronReader = new RecoElectronReader(era, "nselLeptons", "selLeptons");
   electronReader->setBranchAddresses(inputTree);
   RecoElectronCollectionGenMatcher electronGenMatcher;
   RecoElectronCollectionCleaner electronCleaner(0.3);
-  RecoElectronCollectionSelectorLoose preselElectronSelector;
+  RecoElectronCollectionSelectorLoose preselElectronSelector(era);
   RecoElectronCollectionSelectorTight tightElectronSelector(era);
 
   RecoHadTauReader* hadTauReader = new RecoHadTauReader(era, "nTauGood", "TauGood");
@@ -428,19 +430,19 @@ int main(int argc, char* argv[])
   hadTauReader->setBranchAddresses(inputTree);
   RecoHadTauCollectionGenMatcher hadTauGenMatcher;
   RecoHadTauCollectionCleaner hadTauCleaner(0.3);
-  RecoHadTauCollectionSelectorLoose preselHadTauSelector;
+  RecoHadTauCollectionSelectorLoose preselHadTauSelector(era);
   preselHadTauSelector.set_min_id_cut_dR05(-1000);
   preselHadTauSelector.set_max_raw_cut_dR05(1.e+6);
-  RecoHadTauCollectionSelectorFakeable fakeableHadTauSelector;
-  RecoHadTauCollectionSelectorTight tightHadTauSelector;
+  RecoHadTauCollectionSelectorFakeable fakeableHadTauSelector(era);
+  RecoHadTauCollectionSelectorTight tightHadTauSelector(era);
 
   RecoJetReader* jetReader = new RecoJetReader(era, "nJet", "Jet");
   jetReader->setJetPt_central_or_shift(jetPt_option);
   jetReader->setBranchName_BtagWeight(jet_btagWeight_branch);
   jetReader->setBranchAddresses(inputTree);
   RecoJetCollectionGenMatcher jetGenMatcher;
-  RecoJetCollectionCleaner jetCleaner(0.5);
-  RecoJetCollectionSelector jetSelector;  
+  RecoJetCollectionCleaner jetCleaner(0.4);
+  RecoJetCollectionSelector jetSelector(era);  
   RecoJetCollectionSelectorBtagLoose jetSelectorBtagLoose(era);
   RecoJetCollectionSelectorBtagMedium jetSelectorBtagMedium(era);
 
@@ -501,14 +503,14 @@ int main(int argc, char* argv[])
     double maxAbsEta = absEtaBins[idxEtaBin + 1];
 
     denominatorHistManagers* denominator = new denominatorHistManagers(
-      process_string, isMC, chargeSelection_string, minAbsEta, maxAbsEta, central_or_shift);
+      process_string, era, isMC, chargeSelection_string, minAbsEta, maxAbsEta, central_or_shift);
     denominator->bookHistograms(fs);
     denominators.push_back(denominator);
 
     for ( vstring::const_iterator hadTauSelection = hadTauSelections.begin();
 	  hadTauSelection != hadTauSelections.end(); ++hadTauSelection ) {
       numeratorSelector_and_HistManagers* numerator = new numeratorSelector_and_HistManagers(
-        process_string, isMC, chargeSelection_string, *hadTauSelection, minAbsEta, maxAbsEta, central_or_shift);
+        process_string, era, isMC, chargeSelection_string, *hadTauSelection, minAbsEta, maxAbsEta, central_or_shift);
       numerator->bookHistograms(fs);
       numerators.push_back(numerator);
     }

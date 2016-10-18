@@ -33,10 +33,10 @@ std::vector<leptonGenMatchEntry> getLeptonGenMatch_definitions_3lepton(bool appl
 {
   std::vector<leptonGenMatchEntry> leptonGenMatch_definitions;
   if ( apply_leptonGenMatching ) {
-    leptonGenMatch_definitions.push_back(leptonGenMatchEntry("2l0j", kGen_3l0j, 3, 0));
-    leptonGenMatch_definitions.push_back(leptonGenMatchEntry("1l1j", kGen_2l1j, 2, 1));
-    leptonGenMatch_definitions.push_back(leptonGenMatchEntry("0l2j", kGen_1l2j, 1, 2));
-    leptonGenMatch_definitions.push_back(leptonGenMatchEntry("0l2j", kGen_0l3j, 0, 3));
+    leptonGenMatch_definitions.push_back(leptonGenMatchEntry("3l0j", kGen_3l0j, 3, 0));
+    leptonGenMatch_definitions.push_back(leptonGenMatchEntry("2l1j", kGen_2l1j, 2, 1));
+    leptonGenMatch_definitions.push_back(leptonGenMatchEntry("1l2j", kGen_1l2j, 1, 2));
+    leptonGenMatch_definitions.push_back(leptonGenMatchEntry("0l3j", kGen_0l3j, 0, 3));
   } else {
     leptonGenMatch_definitions.push_back(leptonGenMatchEntry("all", kGen_LeptonAll3, -1, -1));
   }
