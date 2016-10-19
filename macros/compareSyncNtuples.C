@@ -707,8 +707,8 @@ void compareSyncNtuples(const std::string & ref_str,
 //  branchesToCompare.push_back(new branchEntryType("n_jet25_recl", "F", "", 100, 0., 50.));
   branchesToCompare.push_back(new branchEntryType("MT_met_lep0", "F", "", 100, 0., 500.));
   branchesToCompare.push_back(new branchEntryType("avg_dr_jet", "F", "", 100, 0., 6.));
-  branchesToCompare.push_back(new branchEntryType("MVA_2lss_ttV", "F", "", 100, -1., 1.));
-  branchesToCompare.push_back(new branchEntryType("MVA_2lss_ttbar", "F", "", 100, -1., 1.));
+  branchesToCompare.push_back(new branchEntryType("MVA_2lss_ttV", "F", "(n_fakeablesel_mu + n_fakeablesel_ele) >= 2", 100, -1., 1.));
+  branchesToCompare.push_back(new branchEntryType("MVA_2lss_ttbar", "F", "(n_fakeablesel_mu + n_fakeablesel_ele) >= 2", 100, -1., 1.));
 
   for ( std::vector<branchEntryType*>::const_iterator branch = branchesToCompare.begin();
         branch != branchesToCompare.end(); ++branch ) {
