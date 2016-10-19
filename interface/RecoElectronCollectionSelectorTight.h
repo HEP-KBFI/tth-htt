@@ -22,10 +22,6 @@ class RecoElectronSelectorTight
   void enable_offline_e_trigger_cuts()  { apply_offline_e_trigger_cuts_ = true; }
   void disable_offline_e_trigger_cuts() { apply_offline_e_trigger_cuts_ = false; }
 
-  // enable/disable tight charge cut
-  void enable_tightCharge_cut() { apply_tightCharge_ = true; }
-  void disable_tightCharge_cut() { apply_tightCharge_ = false; }
-
   // enable/disable photon conversion veto
   void enable_conversionVeto() { apply_conversionVeto_ = true; }
   void disable_conversionVeto() { apply_conversionVeto_ = false; }
@@ -78,10 +74,6 @@ class RecoElectronCollectionSelectorTight
   // enable/disable cuts on electron ID variables to mimic electron ID cuts applied by single electron trigger 
   void enable_offline_e_trigger_cuts() { selector_.enable_offline_e_trigger_cuts(); }
   void disable_offline_e_trigger_cuts() { selector_.disable_offline_e_trigger_cuts(); }
-
-  // enable/disable tight charge cut
-  void enable_tightCharge_cut() { selector_.enable_tightCharge_cut(); }
-  void disable_tightCharge_cut() { selector_.disable_tightCharge_cut(); }
 
   // enable/disable photon conversion veto
   void enable_conversionVeto() { selector_.enable_conversionVeto(); }
