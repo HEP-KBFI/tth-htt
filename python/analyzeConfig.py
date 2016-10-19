@@ -214,7 +214,7 @@ class analyzeConfig:
     self.datacardFiles[key] = datacardFile
     self.cfgFile_prep_dcard_modified[key] = cfgFile_modified
 
-  def createCfg_makePlots(self, histogramDir = None, label = None):
+  def createCfg_makePlots(self, histogramDir = None, label = None, make_plots_backgrounds = None):
     """Fills the template of python configuration file for making control plots
 
     Args:
@@ -232,7 +232,9 @@ class analyzeConfig:
     lines = []
     lines.append("process.fwliteInput.fileNames = cms.vstring('%s')" % self.histogramFile_hadd_stage2)
     lines.append("process.makePlots.outputFileName = cms.string('%s')" % outputFileName)
-    lines.append("process.makePlots.processesBackground = cms.vstring(%s)" % self.make_plots_backgrounds)
+    if not make_plots_backgrounds:
+      make_plots_backgrounds = self.make_plots_backgrounds    
+    lines.append("process.makePlots.processesBackground = cms.vstring(%s)" % make_plots_backgrounds)
     lines.append("process.makePlots.processSignal = cms.string('%s')" % self.make_plots_signal)
     lines.append("process.makePlots.categories = cms.VPSet(")
     lines.append("  cms.PSet(")

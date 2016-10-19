@@ -53,7 +53,6 @@ class RecoElectronSelectorFakeable
   vDouble_t min_jetPtRatio_;          ///< lower cut on ratio of lepton pT to pT of nearby jet
   vDouble_t max_jetBtagCSV_;          ///< upper cut threshold on CSV b-tagging discriminator value of nearby jet
 //-------------------------------------------------------------------------------
-  bool apply_tightCharge_;            ///< apply (True) or do not apply (False) tight charge cut
   bool apply_conversionVeto_;         ///< apply (True) or do not apply (False) conversion veto
   Int_t max_nLostHits_;               ///< upper cut threshold on lost hits in the innermost layer of the tracker (electrons with lost_hits equal to cut threshold pass) 
 };

@@ -517,7 +517,9 @@ class analyzeConfig_3l_1tau(analyzeConfig):
       self.cfgFile_addFakes_modified[key] = os.path.join(self.outputDir, DKEY_CFGS, "addBackgroundFakes_%s_%s_cfg.py" % \
         (self.channel, charge_selection))
       category_signal = "3l_1tau_%s_lepTight_tauTight" % charge_selection
-      category_sideband = "3l_1tau_%s_lepTight_tauFakeable_wFakeRateWeights" % charge_selection
+      category_sideband = "3l_1tau_%s_lepFakeable_tauFakeable_wFakeRateWeights" % charge_selection
+      if self.applyFakeRateWeights == "1tau":
+        category_sideband = "3l_1tau_%s_lepTight_tauFakeable_wFakeRateWeights" % charge_selection        
       self.createCfg_addFakes(self.histogramFile_hadd_stage1_5, self.histogramFile_addFakes[key], self.cfgFile_addFakes_modified[key],
         category_signal, category_sideband)  
 

@@ -16,7 +16,6 @@ RecoMuonSelectorFakeable::RecoMuonSelectorFakeable(int era, int index, bool debu
   , binning_mvaTTH_({ 0.75 })
   , min_jetPtRatio_({ 0.30, -1.e+3 })   
   , apply_mediumIdPOG_(false)
-  , apply_tightCharge_(false)
 {
   if      ( era_ == kEra_2015 ) max_jetBtagCSV_ = { 0.605, 0.89 };
   else if ( era_ == kEra_2016 ) max_jetBtagCSV_ = { 0.460, 0.80 };
@@ -33,8 +32,7 @@ bool RecoMuonSelectorFakeable::operator()(const RecoMuon& muon) const
        muon.relIso_ <= max_relIso_ &&
        muon.sip3d_ <= max_sip3d_ &&
        (muon.passesLooseIdPOG_ || !apply_looseIdPOG_) && 
-       (muon.passesMediumIdPOG_ || !apply_mediumIdPOG_) &&
-       (muon.tightCharge_ >= 2 || !apply_tightCharge_) ) {
+       (muon.passesMediumIdPOG_ || !apply_mediumIdPOG_) ) {
     int idxBin = -1;
     if   ( muon.mvaRawTTH_ <= binning_mvaTTH_[0] ) idxBin = 0;
     else                                           idxBin = 1;

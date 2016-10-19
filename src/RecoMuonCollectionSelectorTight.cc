@@ -15,7 +15,6 @@ RecoMuonSelectorTight::RecoMuonSelectorTight(int era, int index, bool debug)
   , max_sip3d_(8.)
   , apply_looseIdPOG_(true)
   , apply_mediumIdPOG_(true)
-  , apply_tightCharge_(true)
   , min_mvaTTH_(0.75)
 {
   if      ( era_ == kEra_2015 ) max_jetBtagCSV_ = 0.89;
@@ -63,10 +62,6 @@ bool RecoMuonSelectorTight::operator()(const RecoMuon& muon) const
   }
   if ( apply_mediumIdPOG_ && !muon.passesMediumIdPOG_ ) {
     if ( debug_ ) std::cout << "FAILS mediumIdPOG cut." << std::endl;
-    return false;
-  }
-  if ( apply_tightCharge_ && muon.tightCharge_ < 2 ) {
-    if ( debug_ ) std::cout << "FAILS tightCharge cut." << std::endl;
     return false;
   }
   if ( muon.mvaRawTTH_ < min_mvaTTH_ ) {

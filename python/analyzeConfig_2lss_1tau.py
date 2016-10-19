@@ -119,7 +119,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
     self.cfgFile_addFlips_modified = os.path.join(self.outputDir, DKEY_CFGS, "addBackgroundLeptonFlips_%s_cfg.py" % self.channel)
     self.prep_dcard_processesToCopy = [ "data_obs", "TTW", "TTZ", "WZ", "Rares", "fakes_data", "fakes_mc", "flips_data" ]
     self.histogramDir_prep_dcard = "2lss_1tau_SS_Tight"
-    self.histogramDir_prep_dcard_OS = "2lss_2tau_OS_Tight"
+    self.histogramDir_prep_dcard_OS = "2lss_1tau_OS_Tight"
     self.cfgFile_make_plots_original = os.path.join(self.workingDir, "makePlots_2lss_1tau_cfg.py")
     self.make_plots_backgrounds = [ "TTW", "TTZ", "WZ", "Rares", "fakes_data", "flips_data" ]
     self.cfgFile_make_plots_mcClosure_original = os.path.join(self.workingDir, "makePlots_mcClosure_cfg.py")
@@ -520,7 +520,10 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
     logging.info("Creating configuration files for executing 'makePlots'")
     self.createCfg_makePlots()
     if "OS" in self.lepton_charge_selections:
-      self.createCfg_makePlots(self.histogramDir_prep_dcard_OS, "OS")
+      make_plots_backgrounds = self.make_plots_backgrounds
+      if "flips_data" in make_plots_backgrounds:
+        make_plots_backgrounds.remove("flips_data")
+      self.createCfg_makePlots(self.histogramDir_prep_dcard_OS, "OS", make_plots_backgrounds)
     if "Fakeable_mcClosure" in self.lepton_and_hadTau_selections:
       self.createCfg_makePlots_mcClosure()
 

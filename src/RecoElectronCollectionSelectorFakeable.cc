@@ -27,22 +27,12 @@ RecoElectronSelectorFakeable::RecoElectronSelectorFakeable(int era, int index, b
   , max_OoEminusOoP_trig_({ 0.010, 0.010, 0.005 })    
   , binning_mvaTTH_({ 0.75 })
   , min_jetPtRatio_({ 0.30, -1.e+3 })
-  , apply_tightCharge_(false)
   , apply_conversionVeto_(false)   
+  , max_nLostHits_(0)
 {
-  switch(era_)
-  {
-    case kEra_2015:
-      max_jetBtagCSV_ = { 0.605, 0.89 };
-      max_nLostHits_ = 0;
-      break;
-    case kEra_2016:
-      max_jetBtagCSV_ = { 0.460, 0.80 };
-      max_nLostHits_ = 1; // inherited from loose selection
-      break;
-    default:
-      throw cms::Exception("RecoElectronSelectorFakeable") << "Invalid era = " << era_;
-  }
+  if      ( era_ == kEra_2015 ) max_jetBtagCSV_ = { 0.605, 0.89 };
+  else if ( era_ == kEra_2016 ) max_jetBtagCSV_ = { 0.460, 0.80 };
+  else assert(0);
   assert(min_mvaRawPOG_.size() == 3);
   assert(binning_absEta_.size() == 2);
   assert(max_sigmaEtaEta_trig_.size() == 3);
@@ -65,7 +55,6 @@ bool RecoElectronSelectorFakeable::operator()(const RecoElectron& electron) cons
        electron.relIso_ <= max_relIso_ &&
        electron.sip3d_ <= max_sip3d_ &&
        electron.nLostHits_ <= max_nLostHits_ && 
-       (electron.tightCharge_ >= 2 || !apply_tightCharge_) && 
        (electron.passesConversionVeto_ || !apply_conversionVeto_) ) {
     int idxBin_absEta = -1;
     if      ( electron.absEta_ <= binning_absEta_[0] ) idxBin_absEta = 0;

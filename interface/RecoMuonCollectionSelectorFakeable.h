@@ -40,7 +40,6 @@ class RecoMuonSelectorFakeable
   vDouble_t max_jetBtagCSV_;          ///< upper cut threshold on CSV b-tagging discriminator value of nearby jet
 //-------------------------------------------------------------------------------
   bool apply_mediumIdPOG_;  ///< apply (True) or do not apply (False) medium PFMuon id selection
-  bool apply_tightCharge_;  ///< apply (True) or do not apply (False) tight charge cut
 };
 
 typedef ParticleCollectionSelector<RecoMuon, RecoMuonSelectorFakeable> RecoMuonCollectionSelectorFakeable;

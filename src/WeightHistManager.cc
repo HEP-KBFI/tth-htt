@@ -9,7 +9,7 @@
 WeightHistManager::WeightHistManager(const edm::ParameterSet& cfg)
   : HistManagerBase(cfg)
 {
-  binningOptions_["data_to_MC_correction"] = new binningOptionType("data_to_MC_correction", 100, 0., 1.);
+  binningOptions_["data_to_MC_correction"] = new binningOptionType("data_to_MC_correction", 200, 0., 2.);
   binningOptions_["fakeRate"] = new binningOptionType("fakeRate", 200,-1., +1.);
 }
 

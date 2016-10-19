@@ -19,7 +19,7 @@ elif ERA == "2016":
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "2016Oct14_dR03mvaLoose_4L"
+version = "2016Oct14_dR03mvaMedium_4L"
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -31,7 +31,7 @@ if __name__ == '__main__':
     outputDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", ERA, version),
     executable_analyze = "analyze_3l_1tau",
     samples = samples,
-    hadTau_selection = "dR03mvaLoose",
+    hadTau_selection = "dR03mvaMedium",
     ##applyFakeRateWeights = "1tau",
     applyFakeRateWeights = "4L",
     charge_selections = [ "OS", "SS" ],

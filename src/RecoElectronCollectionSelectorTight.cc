@@ -24,7 +24,6 @@ RecoElectronSelectorTight::RecoElectronSelectorTight(int era, int index, bool de
   , max_deltaPhi_trig_({ 0.04, 0.04, 0.07 })  
   , min_OoEminusOoP_trig_(-0.05)   
   , max_OoEminusOoP_trig_({ 0.010, 0.010, 0.005 })      
-  , apply_tightCharge_(true)
   , apply_conversionVeto_(true)  
   , max_nLostHits_(0)
   , min_mvaTTH_(0.75)  
@@ -77,10 +76,6 @@ bool RecoElectronSelectorTight::operator()(const RecoElectron& electron) const
   }
   if ( electron.nLostHits_ > max_nLostHits_ ) {
     if ( debug_ ) std::cout << "FAILS nLostHits cut." << std::endl;
-    return false;
-  }
-  if ( apply_tightCharge_ && electron.tightCharge_ < 2 ) {
-    if ( debug_ ) std::cout << "FAILS tightCharge cut." << std::endl;
     return false;
   }
   if ( apply_conversionVeto_ && !electron.passesConversionVeto_ ) {

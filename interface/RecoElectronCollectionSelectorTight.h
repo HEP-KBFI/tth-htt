@@ -61,7 +61,6 @@ class RecoElectronSelectorTight
   vDouble_t max_OoEminusOoP_trig_;    ///< upper cut threshold on difference between calorimeter energy and track momentum (1/E - 1/P)
 //-------------------------------------------------------------------------------
   Double_t max_jetBtagCSV_;           ///< upper cut threshold on CSV b-tagging discriminator value of nearby jet
-  bool apply_tightCharge_;            ///< apply (True) or do not apply (False) tight charge cut
   bool apply_conversionVeto_;         ///< apply (True) or do not apply (False) conversion veto
   Int_t max_nLostHits_;               ///< upper cut threshold on lost hits in the innermost layer of the tracker (electrons with lost_hits equal to cut threshold pass) 
   Double_t min_mvaTTH_;               ///< lower cut threshold on lepton MVA of ttH multilepton analysis

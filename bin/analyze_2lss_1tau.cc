@@ -1386,6 +1386,28 @@ int main(int argc, char* argv[])
     }
     cutFlowTable.update("lead lepton pT > 20 GeV && sublead lepton pT > 15(e)/10(mu) GeV", evtWeight);
 
+    bool failsTightChargeCut = false;
+    for ( std::vector<const RecoLepton*>::const_iterator lepton = selLeptons.begin();
+	  lepton != selLeptons.end(); ++lepton ) {
+      if ( (*lepton)->is_electron() ) {
+	const RecoElectron* electron = dynamic_cast<const RecoElectron*>(*lepton);
+	assert(electron);
+	if ( electron->tightCharge_ < 2 ) failsTightChargeCut = true;
+      }
+      if ( (*lepton)->is_muon() ) {
+	const RecoMuon* muon = dynamic_cast<const RecoMuon*>(*lepton);
+	assert(muon);
+	if ( muon->tightCharge_ < 2 ) failsTightChargeCut = true;
+      }
+    }
+    if ( failsTightChargeCut ) {
+      if ( run_lumi_eventSelector ) {
+	std::cout << "event FAILS tight lepton charge requirement." << std::endl;
+      }
+      continue;
+    }
+    cutFlowTable.update("tight lepton charge", evtWeight);
+
     bool isCharge_SS = selLepton_lead->charge_*selLepton_sublead->charge_ > 0;
     bool isCharge_OS = selLepton_lead->charge_*selLepton_sublead->charge_ < 0;
     if ( leptonChargeSelection == kOS && isCharge_SS ) {
@@ -1449,27 +1471,7 @@ int main(int argc, char* argv[])
       }
     }
     cutFlowTable.update("met LD > 0.2", evtWeight);
-/*
-    //---------------------------------------------------------------------------
-    // CV: photon conversion veto proposed by Thomas Strebler (use code only for testing !!)
-    bool failsConversionVeto = false;
-    for ( std::vector<const RecoLepton*>::const_iterator lepton = selLeptons.begin();
-	  lepton != selLeptons.end(); ++lepton ) {
-      if ( (*lepton)->is_electron() ) {
-	const RecoElectron* electron = dynamic_cast<const RecoElectron*>(*lepton);
-	assert(electron);
-	if ( electron->nLostHits_ > 0 || !electron->passesConversionVeto_ ) failsConversionVeto = true;
-      }
-    }
-    if ( failsConversionVeto ) {
-      if ( run_lumi_eventSelector ) {
-	std::cout << "event FAILS photon conversion veto." << std::endl;
-      }
-      continue;
-    }
-    cutFlowTable.update("photon conversion veto", evtWeight);
-    //---------------------------------------------------------------------------
- */ 
+
     if ( leptonSelection != kTight || hadTauSelection != kTight ) {
       if ( (tightMuons.size() + tightElectrons.size()) >= 2 && tightHadTaus.size() >= 1 ) { 
 	if ( run_lumi_eventSelector ) {
