@@ -149,6 +149,7 @@ std::vector<RecoMuon>RecoMuonReader::read() const
         gLeptonReader->dxy_[idxLepton],
         gLeptonReader->dz_[idxLepton],
         gLeptonReader->relIso_[idxLepton],
+        gLeptonReader->chargedHadRelIso03_[idxLepton],
         gLeptonReader->miniIsoCharged_[idxLepton],
         gLeptonReader->miniIsoNeutral_[idxLepton],
         gLeptonReader->sip3d_[idxLepton],

@@ -8,6 +8,7 @@ RecoMuon::RecoMuon(Double_t pt,
                    Double_t dxy,
                    Double_t dz,
                    Double_t relIso,
+                   Double_t chargedHadRelIso03,
                    Double_t miniIsoCharged,
                    Double_t miniIsoNeutral,
                    Double_t sip3d,
@@ -32,6 +33,7 @@ RecoMuon::RecoMuon(Double_t pt,
                dxy,
                dz,
                relIso,
+               chargedHadRelIso03,
                miniIsoCharged,
                miniIsoNeutral,
                sip3d,
@@ -59,6 +61,7 @@ std::ostream& operator<<(std::ostream& stream, const RecoMuon& muon)
   stream << " dxy = " << muon.dxy_ << ", dz = " << muon.dz_ << ", sip3d = " <<
     muon.sip3d_ << std::endl;
   stream << " relIso = " << muon.relIso_ << std::endl;
+  stream << " chargedHadRelIso03 = " << muon.chargedHadRelIso03_ << std::endl;
   stream << " passesLooseIdPOG = " << muon.passesLooseIdPOG_ <<
     ", passesMediumIdPOG = " << muon.passesMediumIdPOG_ << std::endl;
   stream << " tightCharge = " << muon.tightCharge_ << std::endl;

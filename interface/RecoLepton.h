@@ -21,6 +21,7 @@ public:
 	     Double_t dxy,
 	     Double_t dz,
 	     Double_t relIso,
+         Double_t chargedHadRelIso03,
 	     Double_t miniIsoCharged,
 	     Double_t miniIsoNeutral,
 	     Double_t sip3d,
@@ -46,10 +47,11 @@ public:
   virtual bool
   is_muon() const { return false; }
 
-//--- common observables for electrons and muons
+  //--- common observables for electrons and muons
   Double_t dxy_;                        ///< d_{xy}, distance in the transverse plane w.r.t PV
   Double_t dz_;                         ///< d_{z}, distance on the z axis w.r.t PV
   Double_t relIso_;                     ///< relative isolation
+  Double_t chargedHadRelIso03_;
   Double_t miniIsoCharged_;             ///< absolute charged isolation
   Double_t miniIsoNeutral_;             ///< absolute neutral isolation (PU corrected)
   Double_t sip3d_;                      ///< significance of IP
@@ -61,7 +63,7 @@ public:
   Int_t tightCharge_;                   ///< Flag indicating if lepton passes (>= 2) or fails (< 2) tight charge requirement
   Int_t charge_;                        ///< lepton charge
 
-//--- matching to generator level particles
+  //--- matching to generator level particles
   const GenLepton* genLepton_;
   const GenHadTau* genHadTau_;
   const GenJet* genJet_;
@@ -70,4 +72,3 @@ public:
 std::ostream& operator<<(std::ostream& stream, const RecoLepton& lepton);
 
 #endif // tthAnalysis_HiggsToTauTau_RecoLepton_h
-
