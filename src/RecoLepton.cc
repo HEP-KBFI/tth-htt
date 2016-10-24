@@ -41,6 +41,7 @@ RecoLepton::RecoLepton(Double_t pt,
   , genJet_(0)
 {}
 
+
 std::ostream& operator<<(std::ostream& stream, const RecoLepton& lepton)
 {
   stream << " pT = " << lepton.pt_ << ","
