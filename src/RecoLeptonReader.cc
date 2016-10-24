@@ -162,7 +162,7 @@ void RecoLeptonReader::setBranchAddresses(TTree *tree)
     tree->SetBranchAddress(branchName_relIso_.data(),               relIso_);
 
     chargedHadRelIso03_ = new Float_t[max_nLeptons_];
-    tree->SetBranchAddress(chargedHadRelIso03_.data(),              chargedHadRelIso03_);
+    tree->SetBranchAddress(branchName_chargedHadRelIso03_.data(),   chargedHadRelIso03_);
 
     miniIsoCharged_ = new Float_t[max_nLeptons_];
     tree->SetBranchAddress(branchName_miniIsoCharged_.data(),       miniIsoCharged_);
