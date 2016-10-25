@@ -292,7 +292,7 @@ class analyzeConfig_3l_1tau(analyzeConfig):
                 lines_makefile.append("\t%s %s %s" % ("hadd", haddFile_jobIds, " ".join(inputFiles_jobIds)))
                 lines_makefile.append("")
                 if self.select_root_output:
-                  key_file_woJobId = getKey(sample_name, lepton_and_hadTau_selection, lepton_and_hadTau_frWeight, charge_selection, central_or_shift)
+                  key_file_woJobId = getKey(sample_name, lepton_and_hadTau_selection_and_frWeight, charge_selection, central_or_shift)
                   if key_file_woJobId in self.rootOutputAux:
                     self.rootOutputAux[key_file_woJobId].append(haddFile_jobIds)
                 inputFiles_sample.append(haddFile_jobIds)
