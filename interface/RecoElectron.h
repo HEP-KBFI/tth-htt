@@ -18,6 +18,7 @@ class RecoElectron
 	       Double_t dxy,
 	       Double_t dz,
 	       Double_t relIso,
+           Double_t chargedHadRelIso03,
 	       Double_t miniIsoCharged,
 	       Double_t miniIsoNeutral,
 	       Double_t sip3d,
@@ -42,7 +43,7 @@ class RecoElectron
    * @return True if it is an electron; false otherwise
    */
   bool
-  is_electron() const { return true; } 
+  is_electron() const { return true; }
 
   /**
    * @brief Checks whether a given lepton is a muon by its PDG id
@@ -52,7 +53,7 @@ class RecoElectron
   is_muon() const { return false; }
 
 //--- observables specific to electrons
-  Double_t mvaRawPOG_;         ///< raw output value of EGamma POG electron id MVA 
+  Double_t mvaRawPOG_;         ///< raw output value of EGamma POG electron id MVA
   Double_t sigmaEtaEta_;       ///< second shower moment in eta-direction
   Double_t HoE_;               ///< ratio of energy deposits in hadronic/electromagnetic section of calorimeter
   Double_t deltaEta_;          ///< difference in eta between impact position of track and electron cluster
@@ -65,4 +66,3 @@ class RecoElectron
 std::ostream& operator<<(std::ostream& stream, const RecoElectron& electron);
 
 #endif // tthAnalysis_HiggsToTauTau_RecoElectron_h
-

@@ -25,6 +25,7 @@ public:
            Double_t dxy,
            Double_t dz,
            Double_t relIso,
+           Double_t chargedHadRelIso03,
            Double_t miniIsoCharged,
            Double_t miniIsoNeutral,
            Double_t sip3d,
@@ -68,4 +69,3 @@ public:
 std::ostream& operator<<(std::ostream& stream, const RecoMuon& muon);
 
 #endif // tthAnalysis_HiggsToTauTau_RecoMuon_h
-
