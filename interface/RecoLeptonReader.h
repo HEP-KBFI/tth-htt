@@ -14,7 +14,7 @@ class RecoLeptonReader
 {
  public:
   RecoLeptonReader();
-  RecoLeptonReader(const std::string& branchName_num, const std::string& branchName_obj); 
+  RecoLeptonReader(const std::string& branchName_num, const std::string& branchName_obj);
   ~RecoLeptonReader();
 
   /**
@@ -25,7 +25,7 @@ class RecoLeptonReader
   friend class RecoElectronReader;
   friend class RecoMuonReader;
 
- protected: 
+ protected:
  /**
    * @brief Initialize names of branches to be read from tree
    */
@@ -43,6 +43,7 @@ class RecoLeptonReader
   std::string branchName_dxy_;
   std::string branchName_dz_;
   std::string branchName_relIso_;
+  std::string branchName_chargedHadRelIso03_;
   std::string branchName_miniIsoCharged_;
   std::string branchName_miniIsoNeutral_;
   std::string branchName_sip3d_;
@@ -63,6 +64,7 @@ class RecoLeptonReader
   Float_t* dxy_;
   Float_t* dz_;
   Float_t* relIso_;
+  Float_t* chargedHadRelIso03_;
   Float_t* miniIsoCharged_;
   Float_t* miniIsoNeutral_;
   Float_t* sip3d_;
@@ -81,4 +83,3 @@ class RecoLeptonReader
 };
 
 #endif // tthAnalysis_HiggsToTauTau_RecoLeptonReader_h
-

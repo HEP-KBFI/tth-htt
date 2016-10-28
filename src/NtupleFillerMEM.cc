@@ -233,6 +233,10 @@ NtupleFillerMEM::add(const std::vector<GenHadTau> & genHadTaus,
   if(! selHadTau_)
     return 1;
 
+  // step 0:
+  // - keep only first 2 elements which we used to fill the Ntuples
+  selBJetsMerged_.resize(2);
+
   // step 1:
   // - find b+/b- in gen lvl b quarks
   // - find corresponding dR match from the recos
@@ -269,7 +273,7 @@ NtupleFillerMEM::add(const std::vector<GenHadTau> & genHadTaus,
     std::remove_if(genBQuarkFromTopPos.begin(), genBQuarkFromTopPos.end(),
                    [this, dR](const GenParticleExt & q) -> bool
                    {
-                     for(const auto & b: selBJetsMerged_)
+                     for(const RecoJet * & b: selBJetsMerged_)
                       if(q.is_overlap(*b, dR))
                         return false;
                      return true;
@@ -287,7 +291,7 @@ NtupleFillerMEM::add(const std::vector<GenHadTau> & genHadTaus,
     std::remove_if(genBQuarkFromTopNeg.begin(), genBQuarkFromTopNeg.end(),
                    [this, dR](const GenParticleExt & q) -> bool
                    {
-                     for(const auto & b: selBJetsMerged_)
+                     for(const RecoJet * & b: selBJetsMerged_)
                       if(q.is_overlap(*b, dR))
                         return false;
                      return true;
@@ -300,6 +304,18 @@ NtupleFillerMEM::add(const std::vector<GenHadTau> & genHadTaus,
   }
   else if(genBQuarkFromTopNeg.size() > 1)
     std::cout << " << Warning: there are multiple anti-b quark candidates\n";
+
+  // step 1.2:
+  // - make sure that both b-quarks are covered by selected jets
+  for(const GenParticleExt & pos: genBQuarkFromTopPos)
+    for(const GenParticleExt & neg: genBQuarkFromTopNeg)
+      for(const RecoJet * & b: selBJetsMerged_)
+        if(b -> is_overlap(pos, dR) && b -> is_overlap(neg, dR))
+        {
+          std::cout << "Warning: the same jet overlapped with both b and anti-b quarks"
+                    << " => skipping the event altogether\n";
+          return 1;
+        }
 
   // step 2.1:
   // - obtain gen lvl hadronic tau
