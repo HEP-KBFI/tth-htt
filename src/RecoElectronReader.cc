@@ -5,7 +5,7 @@
 #include <TString.h> // Form
 
 std::map<std::string, int> RecoElectronReader::numInstances_;
-std::map<std::string, RecoElectronReader*> RecoElectronReader::instances_;
+std::map<std::string, RecoElectronReader *> RecoElectronReader::instances_;
 
 RecoElectronReader::RecoElectronReader(int era)
   : branchName_num_("nselLeptons")
@@ -49,8 +49,9 @@ RecoElectronReader::~RecoElectronReader()
   leptonReader_ = 0;
   --numInstances_[branchName_obj_];
   assert(numInstances_[branchName_obj_] >= 0);
-  if ( numInstances_[branchName_obj_] == 0 ) {
-    RecoElectronReader* gInstance = instances_[branchName_obj_];
+
+  if (numInstances_[branchName_obj_] == 0) {
+    RecoElectronReader *gInstance = instances_[branchName_obj_];
     assert(gInstance);
     delete[] gInstance->mvaRawPOG_;
     delete[] gInstance->sigmaEtaEta_;
@@ -66,67 +67,74 @@ RecoElectronReader::~RecoElectronReader()
 
 void RecoElectronReader::setBranchNames()
 {
-  if ( numInstances_[branchName_obj_] == 0 ) {
-    branchName_mvaRawPOG_ = Form("%s_%s", branchName_obj_.data(), "eleMVArawSpring15NonTrig");
-    branchName_sigmaEtaEta_ = Form("%s_%s", branchName_obj_.data(), "eleSieie");
-    branchName_HoE_ = Form("%s_%s", branchName_obj_.data(), "eleHoE");
-    branchName_deltaEta_ = Form("%s_%s", branchName_obj_.data(), "eleDEta");
-    branchName_deltaPhi_ = Form("%s_%s", branchName_obj_.data(), "eleDPhi");
-    branchName_OoEminusOoP_ = Form("%s_%s", branchName_obj_.data(), "eleooEmooP");
-    branchName_lostHits_ = Form("%s_%s", branchName_obj_.data(), "lostHits");
-    branchName_conversionVeto_ = Form("%s_%s", branchName_obj_.data(), "convVeto");
+  if (numInstances_[branchName_obj_] == 0) {
+    branchName_mvaRawPOG_       = Form("%s_%s", branchName_obj_.data(), "eleMVArawSpring15NonTrig");
+    branchName_sigmaEtaEta_     = Form("%s_%s", branchName_obj_.data(), "eleSieie");
+    branchName_HoE_             = Form("%s_%s", branchName_obj_.data(), "eleHoE");
+    branchName_deltaEta_        = Form("%s_%s", branchName_obj_.data(), "eleDEta");
+    branchName_deltaPhi_        = Form("%s_%s", branchName_obj_.data(), "eleDPhi");
+    branchName_OoEminusOoP_     = Form("%s_%s", branchName_obj_.data(), "eleooEmooP");
+    branchName_lostHits_        = Form("%s_%s", branchName_obj_.data(), "lostHits");
+    branchName_conversionVeto_  = Form("%s_%s", branchName_obj_.data(), "convVeto");
     instances_[branchName_obj_] = this;
   } else {
-    if ( branchName_num_ != instances_[branchName_obj_]->branchName_num_ ) {
-      throw cms::Exception("RecoElectronReader") 
-	<< "Association between configuration parameters 'branchName_num' and 'branchName_obj' must be unique:"
-	<< " present association 'branchName_num' = " << branchName_num_ << " with 'branchName_obj' = " << branchName_obj_ 
-	<< " does not match previous association 'branchName_num' = " << instances_[branchName_obj_]->branchName_num_ << " with 'branchName_obj' = " << instances_[branchName_obj_]->branchName_obj_ << " !!\n";
+    if (branchName_num_ != instances_[branchName_obj_]->branchName_num_) {
+      throw cms::Exception("RecoElectronReader")
+            << "Association between configuration parameters 'branchName_num' and 'branchName_obj' must be unique:"
+            << " present association 'branchName_num' = " << branchName_num_ << " with 'branchName_obj' = " <<
+      branchName_obj_
+            << " does not match previous association 'branchName_num' = " <<
+      instances_[branchName_obj_]->branchName_num_ << " with 'branchName_obj' = " <<
+      instances_[branchName_obj_]->branchName_obj_ << " !!\n";
     }
   }
   ++numInstances_[branchName_obj_];
 }
 
-void RecoElectronReader::setBranchAddresses(TTree* tree)
+void RecoElectronReader::setBranchAddresses(TTree *tree)
 {
-  if ( instances_[branchName_obj_] == this ) {
+  if (instances_[branchName_obj_] == this) {
     leptonReader_->setBranchAddresses(tree);
     int max_nLeptons = leptonReader_->max_nLeptons_;
     mvaRawPOG_ = new Float_t[max_nLeptons];
-    tree->SetBranchAddress(branchName_mvaRawPOG_.data(), mvaRawPOG_);
+    tree->SetBranchAddress(branchName_mvaRawPOG_.data(),      mvaRawPOG_);
     sigmaEtaEta_ = new Float_t[max_nLeptons];
-    tree->SetBranchAddress(branchName_sigmaEtaEta_.data(), sigmaEtaEta_);
+    tree->SetBranchAddress(branchName_sigmaEtaEta_.data(),    sigmaEtaEta_);
     HoE_ = new Float_t[max_nLeptons];
-    tree->SetBranchAddress(branchName_HoE_.data(), HoE_);
+    tree->SetBranchAddress(branchName_HoE_.data(),            HoE_);
     deltaEta_ = new Float_t[max_nLeptons];
-    tree->SetBranchAddress(branchName_deltaEta_.data(), deltaEta_);
+    tree->SetBranchAddress(branchName_deltaEta_.data(),       deltaEta_);
     deltaPhi_ = new Float_t[max_nLeptons];
-    tree->SetBranchAddress(branchName_deltaPhi_.data(), deltaPhi_);
+    tree->SetBranchAddress(branchName_deltaPhi_.data(),       deltaPhi_);
     OoEminusOoP_ = new Float_t[max_nLeptons];
-    tree->SetBranchAddress(branchName_OoEminusOoP_.data(), OoEminusOoP_);
+    tree->SetBranchAddress(branchName_OoEminusOoP_.data(),    OoEminusOoP_);
     lostHits_ = new Int_t[max_nLeptons];
-    tree->SetBranchAddress(branchName_lostHits_.data(), lostHits_);
+    tree->SetBranchAddress(branchName_lostHits_.data(),       lostHits_);
     conversionVeto_ = new Int_t[max_nLeptons];
     tree->SetBranchAddress(branchName_conversionVeto_.data(), conversionVeto_);
   }
 }
 
-std::vector<RecoElectron> RecoElectronReader::read() const
+std::vector<RecoElectron>RecoElectronReader::read() const
 {
-  RecoLeptonReader* gLeptonReader = leptonReader_->instances_[branchName_obj_];
+  RecoLeptonReader *gLeptonReader = leptonReader_->instances_[branchName_obj_];
+
   assert(gLeptonReader);
-  RecoElectronReader* gElectronReader = instances_[branchName_obj_];
+  RecoElectronReader *gElectronReader = instances_[branchName_obj_];
   assert(gElectronReader);
   std::vector<RecoElectron> electrons;
   Int_t nLeptons = gLeptonReader->nLeptons_;
-  if ( nLeptons > leptonReader_->max_nLeptons_ ) {
-    throw cms::Exception("RecoElectronReader") 
-      << "Number of leptons stored in Ntuple = " << nLeptons << ", exceeds max_nLeptons = " << leptonReader_->max_nLeptons_ << " !!\n";
+
+  if (nLeptons > leptonReader_->max_nLeptons_) {
+    throw cms::Exception("RecoElectronReader")
+          << "Number of leptons stored in Ntuple = " << nLeptons << ", exceeds max_nLeptons = " <<
+    leptonReader_->max_nLeptons_ << " !!\n";
   }
   electrons.reserve(nLeptons);
-  for ( Int_t idxLepton = 0; idxLepton < nLeptons; ++idxLepton ) {
-    if ( std::abs(gLeptonReader->pdgId_[idxLepton]) == 11 ) {
-      electrons.push_back(RecoElectron({ 
+
+  for (Int_t idxLepton = 0; idxLepton < nLeptons; ++idxLepton) {
+    if (std::abs(gLeptonReader->pdgId_[idxLepton]) == 11) {
+      electrons.push_back(RecoElectron({
         gLeptonReader->pt_[idxLepton],
         gLeptonReader->eta_[idxLepton],
         gLeptonReader->phi_[idxLepton],
@@ -135,6 +143,7 @@ std::vector<RecoElectron> RecoElectronReader::read() const
         gLeptonReader->dxy_[idxLepton],
         gLeptonReader->dz_[idxLepton],
         gLeptonReader->relIso_[idxLepton],
+        gLeptonReader->chargedHadRelIso03_[idxLepton],
         gLeptonReader->miniIsoCharged_[idxLepton],
         gLeptonReader->miniIsoNeutral_[idxLepton],
         gLeptonReader->sip3d_[idxLepton],
@@ -152,7 +161,8 @@ std::vector<RecoElectron> RecoElectronReader::read() const
         gElectronReader->deltaPhi_[idxLepton],
         gElectronReader->OoEminusOoP_[idxLepton],
         gElectronReader->lostHits_[idxLepton],
-	gElectronReader->conversionVeto_[idxLepton] }));
+        gElectronReader->conversionVeto_[idxLepton]
+      }));
     }
   }
   return electrons;
