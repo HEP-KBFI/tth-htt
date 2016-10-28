@@ -5,8 +5,8 @@ from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_1l_2tau_2016 import samples_201
 from tthAnalysis.HiggsToTauTau.analyzeConfig_1l_2tau import analyzeConfig_1l_2tau
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 
-ERA = "2015"
-#ERA = "2016"
+#ERA = "2015"
+ERA = "2016"
 
 samples = None
 LUMI = None
@@ -15,12 +15,11 @@ if ERA == "2015":
   LUMI =  2.3e+3 # 1/pb
 elif ERA == "2016":
   samples = samples_2016
-  ##LUMI = 12.9e+3 # 1/pb
-  LUMI =  2.3e+3 # 1/pb, for comparison of event yields with 2015 datacards
+  LUMI = 12.9e+3 # 1/pb
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "2016Oct14_dR03mvaTight_3L"
+version = "2016Oct19"
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -34,7 +33,6 @@ if __name__ == '__main__':
     samples = samples,
     hadTau_selection = "dR03mvaTight",
     hadTau_charge_selections = [ "OS", "SS" ],
-    ##applyFakeRateWeights = "2tau",
     applyFakeRateWeights = "3L",
     central_or_shifts = [ 
       "central",

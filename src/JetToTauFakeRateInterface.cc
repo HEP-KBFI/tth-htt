@@ -37,7 +37,7 @@ JetToTauFakeRateInterface::JetToTauFakeRateInterface(const edm::ParameterSet& cf
     isInitialized_third_(false)
 {
   std::string inputFileName = cfg.getParameter<std::string>("inputFileName");
-  inputFile_ = openFile(edm::FileInPath(inputFileName));
+  inputFile_ = openFile(LocalFileInPath(inputFileName));
 
   std::string hadTauSelection = cfg.getParameter<std::string>("hadTauSelection");
 

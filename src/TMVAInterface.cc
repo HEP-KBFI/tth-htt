@@ -1,7 +1,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/TMVAInterface.h" 
 
 #include "FWCore/Utilities/interface/Exception.h"
-#include "FWCore/ParameterSet/interface/FileInPath.h"
+#include "tthAnalysis/HiggsToTauTau/interface/LocalFileInPath.h"
 
 #include "TMVA/Factory.h"
 #include "TMVA/Tools.h"
@@ -9,7 +9,7 @@
 TMVAInterface::TMVAInterface(const std::string& mvaFileName, const std::vector<std::string>& mvaInputVariables, const std::vector<std::string>& spectators)
   : mva_(0)
 {
-  edm::FileInPath mvaFileName_fip(mvaFileName);
+  LocalFileInPath mvaFileName_fip(mvaFileName);
   std::string mvaFileName_full = mvaFileName_fip.fullPath();
   TMVA::Tools::Instance();
   mva_ = new TMVA::Reader("!V:!Silent");

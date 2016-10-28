@@ -102,7 +102,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
       self.dirs[dir_type] = os.path.join(self.outputDir, dir_type, self.channel)
     ##print "self.dirs = ", self.dirs
 
-    self.nonfake_backgrounds = [ "TT", "TTW", "TTZ", "EWK", "WZ", "Rares" ]
+    self.nonfake_backgrounds = [ "TT", "TTW", "TTZ", "WZ", "Rares" ]
 
     self.cfgFile_analyze_original = os.path.join(self.workingDir, "analyze_2lss_1tau_cfg.py")
     self.cfgFile_addBackgrounds_original = os.path.join(self.workingDir, "addBackgrounds_cfg.py")
@@ -111,7 +111,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
     self.histogramDir_addBackgrounds = {}    
     self.process_output_addBackgrounds = {}            
     self.histogramFile_hadd_stage1_5 = os.path.join(self.outputDir, DKEY_HIST, "histograms_harvested_stage1_5_%s.root" % self.channel)
-    self.cfgFile_addFakes_original = os.path.join(self.workingDir, "addBackgroundJetToTauFakes_cfg.py")
+    self.cfgFile_addFakes_original = os.path.join(self.workingDir, "addBackgroundLeptonFakes_cfg.py")
     self.cfgFile_addFakes_modified = {}
     self.histogramFile_addFakes = {}
     self.histogramFile_addFlips = os.path.join(self.outputDir, DKEY_HIST, "addBackgroundLeptonFlips_%s.root" % self.channel)
@@ -133,7 +133,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
     Args:
       inputFiles: list of input files (Ntuples)
       outputFile: output file of the job -- a ROOT file containing histogram
-      process: either `TT`, `TTW`, `TTZ`, `EWK`, `Rares`, `data_obs`, `ttH_hww`, `ttH_hzz` or `ttH_htt`
+      process: either `TTW`, `TTZ`, `Rares`, `data_obs`, `ttH_hww`, `ttH_hzz` or `ttH_htt`
       is_mc: flag indicating whether job runs on MC (True) or data (False)
       lumi_scale: event weight (= xsection * luminosity / number of events)
       central_or_shift: either 'central' or one of the systematic uncertainties defined in $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/bin/analyze_2lss_1tau.cc

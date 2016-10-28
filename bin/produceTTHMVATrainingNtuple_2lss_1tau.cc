@@ -1,7 +1,7 @@
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h" // edm::ParameterSet
 #include "FWCore/PythonParameterSet/interface/MakeParameterSets.h" // edm::readPSetsFrom()
-#include "FWCore/ParameterSet/interface/FileInPath.h" // edm::FileInPath
+#include "tthAnalysis/HiggsToTauTau/interface/LocalFileInPath.h" // LocalFileInPath
 #include "FWCore/Utilities/interface/Exception.h" // cms::Exception
 #include "PhysicsTools/FWLite/interface/TFileService.h" // fwlite::TFileService
 #include "DataFormats/FWLite/interface/InputSource.h" // fwlite::InputSource
@@ -175,7 +175,7 @@ int main(int argc, char* argv[])
     std::string inputFileName = cfg_leptonFakeRate.getParameter<std::string>("inputFileName");
     std::string histogramName_e = cfg_leptonFakeRate.getParameter<std::string>("histogramName_e");
     std::string histogramName_mu = cfg_leptonFakeRate.getParameter<std::string>("histogramName_mu");
-    TFile* inputFile = openFile(edm::FileInPath(inputFileName));
+    TFile* inputFile = openFile(LocalFileInPath(inputFileName));
     lutFakeRate_e = loadTH2(inputFile, histogramName_e);
     lutFakeRate_mu = loadTH2(inputFile, histogramName_mu);
     inputFilesToClose.push_back(inputFile);

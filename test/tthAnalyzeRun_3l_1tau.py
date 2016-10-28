@@ -5,8 +5,8 @@ from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_3l_1tau_2016 import samples_201
 from tthAnalysis.HiggsToTauTau.analyzeConfig_3l_1tau import analyzeConfig_3l_1tau
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 
-ERA = "2015"
-#ERA = "2016"
+#ERA = "2015"
+ERA = "2016"
 
 samples = None
 LUMI = None
@@ -19,7 +19,7 @@ elif ERA == "2016":
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "2016Oct14_dR03mvaMedium_4L"
+version = "2016Oct19"
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -32,7 +32,6 @@ if __name__ == '__main__':
     executable_analyze = "analyze_3l_1tau",
     samples = samples,
     hadTau_selection = "dR03mvaMedium",
-    ##applyFakeRateWeights = "1tau",
     applyFakeRateWeights = "4L",
     charge_selections = [ "OS", "SS" ],
     central_or_shifts = [ 

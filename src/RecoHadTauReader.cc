@@ -2,7 +2,7 @@
 
 #include "FWCore/Utilities/interface/Exception.h"
 
-#include "FWCore/ParameterSet/interface/FileInPath.h" // edm::FileInPath
+#include "tthAnalysis/HiggsToTauTau/interface/LocalFileInPath.h" // LocalFileInPath
 
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2015, kEra_2016
 
@@ -129,7 +129,7 @@ void RecoHadTauReader::readDBdR03oldDMwLTEff95()
   RecoHadTauReader* gInstance = instances_.begin()->second;
   assert(gInstance);
   if ( !gInstance->tauIdMVArun2dR03DB_wpFile_ ) {
-    edm::FileInPath tauIdMVArun2dR03DB_wpFilePath = edm::FileInPath("tthAnalysis/HiggsToTauTau/data/wpDiscriminationByIsolationMVARun2v1_DBdR03oldDMwLT.root");
+    LocalFileInPath tauIdMVArun2dR03DB_wpFilePath = LocalFileInPath("tthAnalysis/HiggsToTauTau/data/wpDiscriminationByIsolationMVARun2v1_DBdR03oldDMwLT.root");
     gInstance->tauIdMVArun2dR03DB_wpFile_ = new TFile(tauIdMVArun2dR03DB_wpFilePath.fullPath().c_str());
   }
   DBdR03oldDMwLTEff95_ = dynamic_cast<TGraph*>(gInstance->tauIdMVArun2dR03DB_wpFile_->Get("DBdR03oldDMwLTEff95"));
