@@ -17,7 +17,7 @@ const double epsilon = 1.e-3;
  * @param fileName: name of ROOT file
  * @return pointer to TFile object
  */
-TFile* openFile(const edm::FileInPath& fileName)
+TFile* openFile(const LocalFileInPath& fileName)
 {
   if ( fileName.fullPath() == "" ) 
     throw cms::Exception("openFile") 
@@ -181,7 +181,7 @@ lutWrapperBase::lutWrapperBase(std::map<std::string, TFile*>& inputFiles, const 
   if ( inputFiles.find(inputFileName) != inputFiles.end() ) {
     inputFile_ = inputFiles[inputFileName];
   } else {
-    inputFile_ = openFile(edm::FileInPath(inputFileName_));
+    inputFile_ = openFile(LocalFileInPath(inputFileName_));
     inputFiles[inputFileName] = inputFile_;
   }
 }

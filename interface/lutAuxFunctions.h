@@ -1,7 +1,7 @@
 #ifndef tthAnalysis_HiggsToTauTau_lutAuxFunctions_h
 #define tthAnalysis_HiggsToTauTau_lutAuxFunctions_h
 
-#include "FWCore/ParameterSet/interface/FileInPath.h" // edm::FileInPath
+#include "tthAnalysis/HiggsToTauTau/interface/LocalFileInPath.h" // LocalFileInPath
 
 #include <TFile.h> // TFile
 #include <TH1.h> // TH1
@@ -17,7 +17,7 @@ namespace lut
 }
 
 // define auxiliary functions
-TFile* openFile(const edm::FileInPath& fileName);
+TFile* openFile(const LocalFileInPath& fileName);
 
 TH1* loadTH1(TFile* inputFile, const std::string& histogramName);
 TH2* loadTH2(TFile* inputFile, const std::string& histogramName);

@@ -5,8 +5,8 @@ from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2lss_1tau_2016 import samples_2
 from tthAnalysis.HiggsToTauTau.analyzeConfig_2lss_1tau import analyzeConfig_2lss_1tau
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 
-ERA = "2015"
-#ERA = "2016"
+#ERA = "2015"
+ERA = "2016"
 
 samples = None
 LUMI = None
@@ -19,8 +19,8 @@ elif ERA == "2016":
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-##version = "2016Oct13_dR03mvaMedium_2lepton"
-version = "2016Oct14_dR03mvaMedium_3L"
+##version = "2016Oct19"
+version = "2016Oct19_2lepton"
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -34,8 +34,8 @@ if __name__ == '__main__':
     samples = samples,
     lepton_charge_selections = [ "OS", "SS" ],
     hadTau_selection = "dR03mvaMedium",
-    ##applyFakeRateWeights = "2lepton",
-    applyFakeRateWeights = "3L",
+    ##applyFakeRateWeights = "3L",
+    applyFakeRateWeights = "2lepton",
     central_or_shifts = [ 
       "central",
 ##       "CMS_ttHl_btag_HFUp", 
