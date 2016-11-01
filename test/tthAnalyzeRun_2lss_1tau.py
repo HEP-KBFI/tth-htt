@@ -19,8 +19,8 @@ elif ERA == "2016":
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-##version = "2016Oct19"
-version = "2016Oct19_2lepton"
+version = "2016Oct31"
+##version = "2016Oct28_2lepton"
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -34,8 +34,8 @@ if __name__ == '__main__':
     samples = samples,
     lepton_charge_selections = [ "OS", "SS" ],
     hadTau_selection = "dR03mvaMedium",
-    ##applyFakeRateWeights = "3L",
-    applyFakeRateWeights = "2lepton",
+    applyFakeRateWeights = "3L",
+    ##applyFakeRateWeights = "2lepton",
     central_or_shifts = [ 
       "central",
 ##       "CMS_ttHl_btag_HFUp", 
@@ -87,7 +87,8 @@ if __name__ == '__main__':
     executable_addBackgrounds = "addBackgrounds",
     executable_addFakes = "addBackgroundLeptonFakes",
     executable_addFlips = "addBackgroundLeptonFlips", 
-    histograms_to_fit = [ "EventCounter", "numJets", "mvaDiscr_2lss", "mvaOutput_2lss_1tau_ttbar_TMVA", "mvaOutput_2lss_1tau_ttbar_sklearn", "mTauTauVis" ])
+    histograms_to_fit = [ "EventCounter", "numJets", "mvaDiscr_2lss", "mvaOutput_2lss_1tau_ttbar_TMVA", "mvaOutput_2lss_1tau_ttbar_sklearn", "mTauTauVis", "memOutput_LR" ],
+    select_rle_output = True)
 
   analysis.create()
 

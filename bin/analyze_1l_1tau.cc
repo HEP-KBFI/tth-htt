@@ -13,6 +13,7 @@
 #include <TTree.h> // TTree
 #include <TBenchmark.h> // TBenchmark
 #include <TString.h> // TString, Form
+#include <TMatrixD.h> // TMatrixD
 
 #include "tthAnalysis/HiggsToTauTau/interface/RecoLepton.h" // RecoLepton
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h" // RecoJet

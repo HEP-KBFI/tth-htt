@@ -38,8 +38,8 @@ process.comp_jetToTauFakeRate = cms.PSet(
         "dR05isoLoose",
         "dR05isoMedium",
         "dR05isoTight",
-        #"dR03mvaVLoose", # CV: vLoose discriminator applied in denominator, so cannot be used in numerator
-        "dR03mvaLoose",
+        #"dR03mvaVLoose", # CV: Loose discriminator applied in denominator; cannot use looser discriminator in numerator
+        #"dR03mvaLoose", # CV: Loose discriminator applied in denominator, so cannot be used in numerator
         "dR03mvaMedium",
         "dR03mvaTight",
         "dR03mvaVTight",

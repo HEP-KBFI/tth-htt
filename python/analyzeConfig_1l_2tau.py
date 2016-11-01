@@ -41,7 +41,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
   """
   def __init__(self, outputDir, executable_analyze, samples, hadTau_selection, hadTau_charge_selections, applyFakeRateWeights, central_or_shifts,
                max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs, 
-               executable_addBackgrounds, executable_addBackgroundJetToTauFakes, histograms_to_fit, executable_prep_dcard="prepareDatacard"):
+               executable_addBackgrounds, executable_addBackgroundJetToTauFakes, histograms_to_fit, select_rle_output = False, executable_prep_dcard="prepareDatacard"):
     analyzeConfig.__init__(self, outputDir, executable_analyze, "1l_2tau", central_or_shifts,
       max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs, 
       histograms_to_fit)
@@ -96,7 +96,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
           lepton_and_hadTau_selection_and_frWeight = get_lepton_and_hadTau_selection_and_frWeight(lepton_and_hadTau_selection, lepton_and_hadTau_frWeight)
           for hadTau_charge_selection in self.hadTau_charge_selections:
             key_dir = getKey(sample_name, lepton_and_hadTau_selection, lepton_and_hadTau_frWeight, hadTau_charge_selection)  
-            for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS ]:
+            for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_RLES ]:
               initDict(self.dirs, [ key_dir, dir_type ])
               self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel,
                 "_".join([ lepton_and_hadTau_selection_and_frWeight, hadTau_charge_selection ]), process_name)
@@ -124,9 +124,11 @@ class analyzeConfig_1l_2tau(analyzeConfig):
     self.cfgFile_make_plots_mcClosure_original = os.path.join(self.workingDir, "makePlots_mcClosure_cfg.py")
     self.cfgFiles_make_plots_mcClosure_modified = []
 
+    self.select_rle_output = select_rle_output
+
   def createCfg_analyze(self, inputFiles, outputFile, sample_category, era, triggers,
                         lepton_selection, apply_leptonGenMatching, hadTau_selection, apply_hadTauGenMatching, hadTau_charge_selection,
-                        applyFakeRateWeights, is_mc, central_or_shift, lumi_scale, apply_trigger_bits, cfgFile_modified):
+                        applyFakeRateWeights, is_mc, central_or_shift, lumi_scale, apply_trigger_bits, cfgFile_modified, rle_output_file):
     """Create python configuration file for the analyze_1l_2tau executable (analysis code)
 
     Args:
@@ -169,8 +171,8 @@ class analyzeConfig_1l_2tau(analyzeConfig):
         fitFunctionName = "jetToTauFakeRate/dR03mvaLoose/$etaBin/fitFunction_data_div_mc_hadTaus_pt"        
       elif era == "2016":
         lines.append("process.analyze_1l_2tau.hadTauFakeRateWeight.inputFileName = cms.string('tthAnalysis/HiggsToTauTau/data/FR_tau_2016.root')")
-        # CV: use data/MC corrections determined for dR03mvaLoose discriminator also for 2016 data
-        fitFunctionName = "jetToTauFakeRate/dR03mvaLoose/$etaBin/fitFunction_data_div_mc_hadTaus_pt"   
+        # CV: use data/MC corrections determined for dR03mvaMedium discriminator for 2016 data
+        fitFunctionName = "jetToTauFakeRate/dR03mvaMedium/$etaBin/fitFunction_data_div_mc_hadTaus_pt"   
       else:
         raise ValueError("Invalid parameter 'era' = %s !!" % era)
       lines.append("process.analyze_1l_2tau.hadTauFakeRateWeight.lead.fitFunctionName = cms.string('%s')" % fitFunctionName)
@@ -182,6 +184,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
     lines.append("process.analyze_1l_2tau.central_or_shift = cms.string('%s')" % central_or_shift)
     lines.append("process.analyze_1l_2tau.lumiScale = cms.double(%f)" % lumi_scale)
     lines.append("process.analyze_1l_2tau.apply_trigger_bits = cms.bool(%s)" % apply_trigger_bits)
+    lines.append("process.analyze_1l_2tau.selEventsFileName_output = cms.string('%s')" % rle_output_file)
     create_cfg(self.cfgFile_analyze_original, cfgFile_modified, lines)
 
   def createCfg_addBackgrounds(self, inputFile, outputFile, cfgFile_modified, categories, processes_input, process_output):
@@ -406,13 +409,16 @@ class analyzeConfig_1l_2tau(analyzeConfig):
                   (process_name, lepton_and_hadTau_selection_and_frWeight, hadTau_charge_selection, central_or_shift, jobId))
                 self.logFiles_analyze[key_file] = os.path.join(self.dirs[key_dir][DKEY_LOGS], "analyze_%s_%s_%s_%s_%s_%i.log" % \
                   (self.channel, process_name, lepton_and_hadTau_selection_and_frWeight, hadTau_charge_selection, central_or_shift, jobId))
+                self.rleOutputFiles[key_file] = os.path.join(self.dirs[key_dir][DKEY_RLES], "rle_%s_%s_%s_%s_%s_%i.txt" % \
+                  (self.channel, process_name, lepton_and_hadTau_selection_and_frWeight, hadTau_charge_selection, central_or_shift, jobId)) if self.select_rle_output else ""
 
                 applyFakeRateWeights = self.applyFakeRateWeights
                 if lepton_and_hadTau_frWeight == "disabled":
                   applyFakeRateWeights = "disabled"
                 self.createCfg_analyze(self.ntupleFiles[key_file], self.histogramFiles[key_file], sample_category, self.era, triggers,
                   lepton_selection, self.apply_leptonGenMatching, hadTau_selection, self.apply_hadTauGenMatching, hadTau_charge_selection,
-                  applyFakeRateWeights, is_mc, central_or_shift, lumi_scale, apply_trigger_bits, self.cfgFiles_analyze_modified[key_file])
+                  applyFakeRateWeights, is_mc, central_or_shift, lumi_scale, apply_trigger_bits, self.cfgFiles_analyze_modified[key_file],
+                  self.rleOutputFiles[key_file])
                 
     if self.is_sbatch:
       logging.info("Creating script for submitting '%s' jobs to batch system" % self.executable_analyze)

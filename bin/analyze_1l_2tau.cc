@@ -301,6 +301,7 @@ int main(int argc, char* argv[])
   }
   
   std::string selEventsFileName_output = cfg_analyze.getParameter<std::string>("selEventsFileName_output");
+  std::cout << "selEventsFileName_output = " << selEventsFileName_output << std::endl;
 
   fwlite::InputSource inputFiles(cfg); 
   int maxEvents = inputFiles.maxEvents();
@@ -465,7 +466,7 @@ int main(int argc, char* argv[])
   std::map<std::string, double> mvaInputs_sklearn;
   
 //--- open output file containing run:lumi:event numbers of events passing final event selection criteria
-  std::ostream* selEventsFile = new std::ofstream(selEventsFileName_output.data(), std::ios::out);
+  std::ostream* selEventsFile = ( selEventsFileName_output != "" ) ? new std::ofstream(selEventsFileName_output.data(), std::ios::out) : 0;
 
 //--- declare histograms
   struct preselHistManagerType
@@ -1172,7 +1173,9 @@ int main(int argc, char* argv[])
       lheInfoHistManager->fillHistograms(*lheInfoReader, evtWeight);
     }
 
-    (*selEventsFile) << run << ":" << lumi << ":" << event;
+    if ( selEventsFile ) {
+      (*selEventsFile) << run << ":" << lumi << ":" << event << std::endl;
+    }
 
     ++selectedEntries;
     selectedEntries_weighted += evtWeight;

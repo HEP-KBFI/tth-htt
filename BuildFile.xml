@@ -2,6 +2,7 @@
 <use   name="FWCore/Utilities"/>
 <use   name="CommonTools/Utils"/>
 <use   name="DataFormats/Math"/>
+<use   name="ttH_Htautau_MEM_Analysis/MEMAlgo"/>
 <use   name="root"/>
 <use   name="roottmva"/>
 <Flags CXXFLAGS="-O3 -fPIC" />

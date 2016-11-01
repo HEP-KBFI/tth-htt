@@ -5,8 +5,8 @@ from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_jetToTauFakeRate_2016 import sa
 from tthAnalysis.HiggsToTauTau.analyzeConfig_jetToTauFakeRate import analyzeConfig_jetToTauFakeRate
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 
-ERA = "2015"
-#ERA = "2016"
+#ERA = "2015"
+ERA = "2016"
 
 samples = None
 LUMI = None
@@ -19,7 +19,7 @@ elif ERA == "2016":
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "2016Oct05"
+version = "2016Oct28"
 
 if __name__ == '__main__':
   logging.basicConfig(

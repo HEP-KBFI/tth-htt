@@ -178,8 +178,8 @@ class analyzeConfig_3l_1tau(analyzeConfig):
         fitFunctionName = "jetToTauFakeRate/dR03mvaLoose/$etaBin/fitFunction_data_div_mc_hadTaus_pt"        
       elif era == "2016":
         lines.append("process.analyze_3l_1tau.hadTauFakeRateWeight.inputFileName = cms.string('tthAnalysis/HiggsToTauTau/data/FR_tau_2016.root')")
-        # CV: use data/MC corrections determined for dR03mvaLoose discriminator also for 2016 data
-        fitFunctionName = "jetToTauFakeRate/dR03mvaLoose/$etaBin/fitFunction_data_div_mc_hadTaus_pt"   
+        # CV: use data/MC corrections determined for dR03mvaMedium discriminator for 2016 data
+        fitFunctionName = "jetToTauFakeRate/dR03mvaMedium/$etaBin/fitFunction_data_div_mc_hadTaus_pt"   
       else:
         raise ValueError("Invalid parameter 'era' = %s !!" % era)
       lines.append("process.analyze_3l_1tau.hadTauFakeRateWeight.lead.fitFunctionName = cms.string('%s')" % fitFunctionName)
@@ -423,7 +423,7 @@ class analyzeConfig_3l_1tau(analyzeConfig):
                   (process_name, lepton_and_hadTau_selection_and_frWeight, charge_selection, central_or_shift, jobId))
                 self.logFiles_analyze[key_file] = os.path.join(self.dirs[key_dir][DKEY_LOGS], "analyze_%s_%s_%s_%s_%s_%i.log" % \
                   (self.channel, process_name, lepton_and_hadTau_selection_and_frWeight, charge_selection, central_or_shift, jobId))
-                self.rleOutputFiles[key_file] = os.path.join(self.dirs[key_dir][DKEY_RLES], "rle_%s_%s_%s_%s_%s_%s_%i.txt" % \
+                self.rleOutputFiles[key_file] = os.path.join(self.dirs[key_dir][DKEY_RLES], "rle_%s_%s_%s_%s_%s_%i.txt" % \
                   (self.channel, process_name, lepton_and_hadTau_selection_and_frWeight, charge_selection, central_or_shift, jobId)) if self.select_rle_output else ""
                 self.rootOutputFiles[key_file] = os.path.join(self.dirs[key_dir][DKEY_ROOT], "out_%s_%s_%s_%s_%s_%i.root" % \
                   (self.channel, process_name, lepton_and_hadTau_selection_and_frWeight, charge_selection, central_or_shift, jobId)) if self.select_root_output else ""

@@ -534,18 +534,18 @@ void compFakeRate(double nPass, double nPassErr, double nFail, double nFailErr, 
     histogram_pass_tmp->SetBinError(1, TMath::Sqrt(nPass_int));
     Int_t nFail_int = TMath::Nint(sf*nFail);
     if ( nFail_int < 0 ) nFail_int = 0;
-    TH1* histogram_fail_tmp = new TH1D("histogram_fail_tmp", "histogram_fail_tmp", 1, -0.5, +0.5);
-    histogram_fail_tmp->SetBinContent(1, nFail_int);
-    histogram_fail_tmp->SetBinError(1, TMath::Sqrt(nFail_int));
-    TGraphAsymmErrors* graph_pass_div_fail_tmp = new TGraphAsymmErrors(1);
-    graph_pass_div_fail_tmp->Divide(histogram_pass_tmp, histogram_fail_tmp, "pois");
+    TH1* histogram_pass_plus_fail_tmp = new TH1D("histogram_pass_plus_fail_tmp", "histogram_pass_plus_fail_tmp", 1, -0.5, +0.5);
+    histogram_pass_plus_fail_tmp->SetBinContent(1, nPass_int + nFail_int);
+    histogram_pass_plus_fail_tmp->SetBinError(1, TMath::Sqrt(nPass_int + nFail_int));
+    TGraphAsymmErrors* graph_pass_div_pass_plus_fail_tmp = new TGraphAsymmErrors(1);
+    graph_pass_div_pass_plus_fail_tmp->Divide(histogram_pass_tmp, histogram_pass_plus_fail_tmp, "cp");
     double dummy;
-    graph_pass_div_fail_tmp->GetPoint(0, dummy, avFakeRate);
-    avFakeRateErrUp   = graph_pass_div_fail_tmp->GetErrorYhigh(0);
-    avFakeRateErrDown = graph_pass_div_fail_tmp->GetErrorYlow(0);
+    graph_pass_div_pass_plus_fail_tmp->GetPoint(0, dummy, avFakeRate);
+    avFakeRateErrUp = graph_pass_div_pass_plus_fail_tmp->GetErrorYhigh(0);
+    avFakeRateErrDown = graph_pass_div_pass_plus_fail_tmp->GetErrorYlow(0);
     delete histogram_pass_tmp;
-    delete histogram_fail_tmp;
-    delete graph_pass_div_fail_tmp;
+    delete histogram_pass_plus_fail_tmp;
+    delete graph_pass_div_pass_plus_fail_tmp;
     errorFlag = false;
     std::cout << "nPass = " << nPass << " +/- " << nPassErr << " (int = " << nPass_int << "), nFail = " << nFail << " +/- " << nFailErr << " (int = " << nFail_int << ")"
 	      << " --> avFakeRate = " << avFakeRate << " + " << avFakeRateErrUp << " - " << avFakeRateErrDown << std::endl;
@@ -769,6 +769,8 @@ int main(int argc, char* argv[])
     
     for ( vstring::const_iterator hadTauSelection = hadTauSelections.begin();
 	  hadTauSelection != hadTauSelections.end(); ++hadTauSelection ) {
+      std::cout << "processing hadTauSelection = " << (*hadTauSelection) << std::endl;
+
       TDirectory* outputDir = createSubdirectory_recursively(fs, Form("jetToTauFakeRate/%s/%s", hadTauSelection->data(), etaBin.data()));
       outputDir->cd();
 

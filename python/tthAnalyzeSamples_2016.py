@@ -831,7 +831,7 @@ samples_2016["/TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16MiniAODv1-PUSpr
   ("nof_files",             2124),
   ("nof_events",            92882726),
   ("nof_dbs_events",        33364899),
-  ("use_it",                True),
+  ("use_it",                False),
   ("xsection",              831.760000),
   ("triggers",              [ "1e", "2e", "1mu", "2mu", "1e1mu" ]),
   ("reHLT",                 False),
@@ -1130,7 +1130,7 @@ samples_2016["/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/Ru
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/lucia/VHBBHeppyV24bis/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/VHBB_HEPPY_V24bis_ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_Py8_mWCutfix__spr16MAv2-puspr16_HLT_80r2as_v14_ext1-v1/160911_223711"),
+        ("path", "/hdfs/local/lucia/VHBBHeppyV24bis/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/VHBB_HEPPY_V24bis_ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_Py8_mWCutfix__spr16MAv2-puspr16_HLT_80r2as_v14_ext1-v1/160911_223711"),
         ("selection", "*"),
         ("blacklist", [10, 11, 14, 16, 20, 22, 23, 26, 29, 30, 31, 33, 34, 38, 39, 43, 44, 45, 51, 54, 57, 62, 63, 64, 66, 67, 68, 70, 71, 72, 73, 75, 76, 77, 79, 80, 81, 89, 98, 99]),
       ]),
@@ -1144,7 +1144,7 @@ samples_2016["/ttHToNonbb_M125_13TeV_powheg_pythia8/RunIISpring16MiniAODv2-PUSpr
   ("nof_files",             43),
   ("nof_events",            3199629),
   ("nof_dbs_events",        3860872),
-  ("use_it",                True),
+  ("use_it",                False),
   ("xsection",              0.215100),
   ("triggers",              [ "1e", "2e", "1mu", "2mu", "1e1mu" ]),
   ("reHLT",                 False),
