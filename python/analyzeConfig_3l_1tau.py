@@ -425,8 +425,6 @@ class analyzeConfig_3l_1tau(analyzeConfig):
                   (self.channel, process_name, lepton_and_hadTau_selection_and_frWeight, charge_selection, central_or_shift, jobId))
                 self.rleOutputFiles[key_file] = os.path.join(self.dirs[key_dir][DKEY_RLES], "rle_%s_%s_%s_%s_%s_%i.txt" % \
                   (self.channel, process_name, lepton_and_hadTau_selection_and_frWeight, charge_selection, central_or_shift, jobId)) if self.select_rle_output else ""
-                self.rootOutputFiles[key_file] = os.path.join(self.dirs[key_dir][DKEY_ROOT], "out_%s_%s_%s_%s_%s_%i.root" % \
-                  (self.channel, process_name, lepton_and_hadTau_selection_and_frWeight, charge_selection, central_or_shift, jobId)) if self.select_root_output else ""
 
                 if self.select_root_output:
                   self.rootOutputFiles[key_file] = os.path.join(self.dirs[key_dir][DKEY_ROOT], "out_%s_%s_%s_%s_%s_%i.root" % \
@@ -435,8 +433,8 @@ class analyzeConfig_3l_1tau(analyzeConfig):
                   if key_file_woJobId not in self.rootOutputAux:
                     self.rootOutputAux[key_file_woJobId] = [ re.sub('_\d+\.root', '.root', self.rootOutputFiles[key_file]),
                                                              re.sub('\d+\.root', '*.root', self.rootOutputFiles[key_file]) ]
-                  else:
-                    self.rootOutputFiles[key_file] = ""
+                else:
+                  self.rootOutputFiles[key_file] = ""
 
                 applyFakeRateWeights = self.applyFakeRateWeights
                 if lepton_and_hadTau_frWeight == "disabled":
