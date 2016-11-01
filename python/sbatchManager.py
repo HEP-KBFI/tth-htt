@@ -29,7 +29,7 @@ date
 ##echo "it is now:"
 ##date
 echo "initializing CMSSW run-time environment"
-source /cvmfs/cms.cern.ch/cmsset_default.sh 
+source /cvmfs/cms.cern.ch/cmsset_default.sh
 cd {{ working_dir }}
 cmsenv
 cd ${SCRATCH_DIR}
@@ -87,17 +87,17 @@ class sbatchManager:
 
   def setWorkingDir(self, workingDir):
     """Set path to CMSSW area in which jobs are executed
-    """  
+    """
     self.workingDir = workingDir
 
   def setLogFileDir(self, logFileDir):
     """Set path to directory in which log files are to be stored (matters only if 'logFile' parameter is not given when calling 'submitJob' method)
-    """  
+    """
     self.logFileDir = logFileDir
 
   def submitJob(self, inputFiles, executable, cfgFile, outputFilePath, outputFiles, logFile=None, skipIfOutputFileExists=False):
     """Waits for all sbatch jobs submitted by this instance of sbatchManager to finish processing
-    """    
+    """
     if skipIfOutputFileExists:
       for outputFile in outputFiles:
         if os.path.exists(os.path.join(outputFilePath, outputFile)):
@@ -109,22 +109,29 @@ class sbatchManager:
     if not os.path.exists(scratchDir):
       print "Directory '%s' does not yet exist, creating it !!" % scratchDir
       run_cmd(command_create_scratchDir)
-    scratchDir = os.path.join(scratchDir, "tthAnalysis" + "_" + date.today().isoformat())  
+    scratchDir = os.path.join(scratchDir, "tthAnalysis" + "_" + date.today().isoformat())
     create_if_not_exists(scratchDir)
     scriptFile = cfgFile.replace(".py", ".sh")
     scriptFile = scriptFile.replace("_cfg", "")
     script = jinja2.Template(job_template).render(
       working_dir = self.workingDir,
       scratch_dir = scratchDir,
-      exec_name = executable, cfg_file = cfgFile,
-      inputFiles = " ".join(inputFiles), outputDir = outputFilePath, outputFiles = " ".join(outputFiles))
+      exec_name = executable,
+      cfg_file = cfgFile,
+      inputFiles = " ".join(inputFiles),
+      outputDir = outputFilePath,
+      outputFiles = " ".join(outputFiles)
+      )
     print "writing sbatch script file = '%s'" % scriptFile
     with codecs.open(scriptFile, "w", "utf-8") as f: f.write(script)
     if not logFile:
       if not self.logFileDir:
         raise ValueError("Please call 'setLogFileDir' before calling 'submitJob' !!")
       logFile = os.path.join(self.logFileDir, os.path.basename(scriptFile).replace(".sh", ".log"))
-    command = "%s --partition=%s --output=%s %s" % (self.command_submit, self.queue, logFile, scriptFile)
+
+    # command = "%s --partition=%s --output=%s %s" % (self.command_submit, self.queue, logFile, scriptFile)
+    command = "%s --partition=%s %s" % (self.command_submit, self.queue, scriptFile)
+
     ##print "<submitJob>: command = %s" % command
     retVal = run_cmd(command).split()[-1]
     jobId = retVal.split()[-1]
@@ -133,7 +140,7 @@ class sbatchManager:
 
   def waitForJobs(self):
     """Waits for all sbatch jobs submitted by this instance of sbatchManager to finish processing
-    """    
+    """
     numJobs = len(self.jobIds)
     ##print "<waitForJobs>: numJobs = %i" % numJobs
     if numJobs > 0:
@@ -143,7 +150,7 @@ class sbatchManager:
         num_poll_groups = num_poll_groups + 1
       whoami = getpass.getuser()
       while True:
-        numJobs_left = 0      
+        numJobs_left = 0
         for idx_poll_group in range(num_poll_groups):
           idx_first = idx_poll_group*jobIds_per_poll_group
           idx_last = min((idx_poll_group + 1)*jobIds_per_poll_group, numJobs)
