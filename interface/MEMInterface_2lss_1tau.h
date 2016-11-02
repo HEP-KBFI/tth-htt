@@ -30,10 +30,9 @@ class MEMInterface_2lss_1tau
       : errorFlag_(0)
       , type_(-1)
       , weight_ttH_(-1.)
-      , weight_ttZ1_(-1.)
-      , weight_ttZ2_(-1.)
-      , weight_tt1_(-1.)
-      , weight_tt2_(-1.)
+      , weight_ttZ_(-1.)
+      , weight_ttZ_Zll_(-1.)
+      , weight_tt_(-1.)
       , LR_(-1.)
     {}
     ~MEMOutput() {}
@@ -43,20 +42,18 @@ class MEMInterface_2lss_1tau
       stream << " type = " << type_ << std::endl;
       stream << " weights:" << std::endl;
       stream << "  ttH = " << weight_ttH_ << std::endl;
-      stream << "  ttZ(1) = " << weight_ttZ1_ << std::endl;
-      stream << "  ttZ(2) = " << weight_ttZ2_ << std::endl;
-      stream << "  tt(1) = " << weight_tt1_ << std::endl;
-      stream << "  tt(2) = " << weight_tt2_ << std::endl;
+      stream << "  ttZ = " << weight_ttZ_ << std::endl;
+      stream << "  ttZ(Z->ll) = " << weight_ttZ_Zll_ << std::endl;
+      stream << "  tt = " << weight_tt_ << std::endl;
       stream << " LR = " << LR_ << std::endl;
       stream << " errorFlag = " << errorFlag_ << std::endl;
     }
     int errorFlag_;
     int type_; // either 0 (fully reconstructed W->jj decay) or 1 (one jet from W->jj decay not reconstructed)
     double weight_ttH_;
-    double weight_ttZ1_; // Z->tautau->lep + tauh
-    double weight_ttZ2_; // Z->ll
-    double weight_tt1_;  // "tt DL, fake lep. from tlep"
-    double weight_tt2_;  // "tt DL, fake lep. from tau"
+    double weight_ttZ_; // ttZ, Z->tautau->lep+tauh
+    double weight_ttZ_Zll_; // ttZ, Z->ll
+    double weight_tt_; // tt+jets (dilepton)
     double LR_;
   };
   MEMOutput
