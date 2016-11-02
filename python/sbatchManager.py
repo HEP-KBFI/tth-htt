@@ -98,19 +98,26 @@ class sbatchManager:
   def submitJob(self, inputFiles, executable, cfgFile, outputFilePath, outputFiles, logFile=None, skipIfOutputFileExists=False):
     """Waits for all sbatch jobs submitted by this instance of sbatchManager to finish processing
     """
+
+    # if any of the output files exists, returns (Margus: BUG? Because only that file should be skipped, not all?)
     if skipIfOutputFileExists:
       for outputFile in outputFiles:
         if os.path.exists(os.path.join(outputFilePath, outputFile)):
           print "output file = '%s' exists --> skipping !!" % os.path.join(outputFilePath, outputFile)
           return
+
     if not self.workingDir:
       raise ValueError("Please call 'setWorkingDir' before calling 'submitJob' !!")
+
+    # create scratch dir
     scratchDir = "/scratch/%s" % getpass.getuser()
     if not os.path.exists(scratchDir):
       print "Directory '%s' does not yet exist, creating it !!" % scratchDir
       run_cmd(command_create_scratchDir)
     scratchDir = os.path.join(scratchDir, "tthAnalysis" + "_" + date.today().isoformat())
     create_if_not_exists(scratchDir)
+
+    # create script for executing jobs
     scriptFile = cfgFile.replace(".py", ".sh")
     scriptFile = scriptFile.replace("_cfg", "")
     script = jinja2.Template(job_template).render(
@@ -124,18 +131,19 @@ class sbatchManager:
       )
     print "writing sbatch script file = '%s'" % scriptFile
     with codecs.open(scriptFile, "w", "utf-8") as f: f.write(script)
+
+    # raise if logfile missing (Margus: BUG? Validation should be before doing anything... creating script etc in this method?)
     if not logFile:
       if not self.logFileDir:
         raise ValueError("Please call 'setLogFileDir' before calling 'submitJob' !!")
       logFile = os.path.join(self.logFileDir, os.path.basename(scriptFile).replace(".sh", ".log"))
 
+    # run synchrous command that starts the job
     command = "%s --partition=%s --output=%s %s" % (self.command_submit, self.queue, logFile, scriptFile)
-    # command = "%s --partition=%s %s" % (self.command_submit, self.queue, scriptFile)
-
-    ##print "<submitJob>: command = %s" % command
+    # print "<submitJob>: command = %s" % command
     retVal = run_cmd(command).split()[-1]
     jobId = retVal.split()[-1]
-    ##print " jobId = %s" % jobId
+    # print " jobId = %s" % jobId
     self.jobIds.append(jobId)
 
   def waitForJobs(self):

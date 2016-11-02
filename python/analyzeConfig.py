@@ -65,12 +65,12 @@ def createFile(fileName, lines):
   f = open(fileName, "w")
   f.write(content)
   f.close()
-  
+
 class analyzeConfig:
   """Configuration metadata needed to run analysis in a single go.
-  
+
   Sets up a folder structure by defining full path names; no directory creation is delegated here.
-  
+
   Args:
     outputDir: The root output dir -- all configuration, log and output files are stored in its subdirectories
     executable_analyze: Name of the executable that runs the analysis; possible values are `analyze_2lss_1tau`, `analyze_2los_1tau`, `analyze_1l_2tau`,...
@@ -82,16 +82,16 @@ class analyzeConfig:
     poll_interval: the interval of checking whether all sbatch jobs are completed (matters only if `running_method` is set to `sbatch`)
     histograms_to_fit: what histograms are filtered in datacard preparation
     executable_prep_dcard: executable name for preparing the datacards
-  
+
   Other:
     is_sbatch: boolean that is True if the `running_method` is set to `sbatch`; False otherwise
     is_makefile: boolean that is True if the `running_method` is set to `Makefile`; False otherwise
     channel: name of the channel in the datacard
-    workindgDir: path to 'tthAnalysis/HiggsToTauTau/test' directory in CMSSW area  
+    workindgDir: path to 'tthAnalysis/HiggsToTauTau/test' directory in CMSSW area
     dirs: list of subdirectories under `subdir` -- jobs, cfgs, histograms, logs, datacards
     makefile: full path to the Makefile
     histogram_files: the histogram files produced by 'analyze_1l_2tau' jobs
-    histogram_files_exists: flags indicating if histogram files already exist from a previous execution of 'tthAnalyzeRun_1l_2tau.py', so that 'analyze_1l_2tau' jobs do not have to be submitted again	
+    histogram_files_exists: flags indicating if histogram files already exist from a previous execution of 'tthAnalyzeRun_1l_2tau.py', so that 'analyze_1l_2tau' jobs do not have to be submitted again
     histogram_file_hadd_stage1: the histogram file obtained by hadding the output of all jobs
     histogram_file_hadd_stage2: the final histogram file with data-driven background estimates added
     datacardFile: the datacard -- final output file of this execution flow
@@ -99,11 +99,11 @@ class analyzeConfig:
     histogramDir_prep_dcard: directory in final histogram file that is used for building datacard
   """
   def __init__(self, outputDir, executable_analyze, channel, central_or_shifts,
-               max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs, 
+               max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,
                histograms_to_fit, executable_prep_dcard = "prepareDatacards", executable_make_plots = "makePlots"):
-    self.outputDir = outputDir    
+    self.outputDir = outputDir
     self.executable_analyze = executable_analyze
-    self.channel = channel    
+    self.channel = channel
     self.central_or_shifts = central_or_shifts
     self.max_files_per_job = max_files_per_job
     self.era = era
@@ -113,7 +113,7 @@ class analyzeConfig:
     assert(running_method.lower() in [ "sbatch", "makefile" ]), "Invalid running method: %s" % running_method
     self.running_method = running_method
     self.is_sbatch = False
-    self.is_makefile = False    
+    self.is_makefile = False
     if self.running_method.lower() == "sbatch":
       self.is_sbatch = True
     else:
@@ -135,16 +135,16 @@ class analyzeConfig:
     self.cfgFiles_analyze_modified = {}
     self.logFiles_analyze = {}
     self.sbatchFile_analyze = os.path.join(self.outputDir, "sbatch_analyze_%s.py" % self.channel)
-    self.ntupleFiles = {} 
-    self.histogramFiles = {}    
+    self.ntupleFiles = {}
+    self.histogramFiles = {}
     self.histogramFile_hadd_stage1 = os.path.join(self.outputDir, DKEY_HIST, "histograms_harvested_stage1_%s.root" % self.channel)
-    self.histogramFile_hadd_stage2 = os.path.join(self.outputDir, DKEY_HIST, "histograms_harvested_stage2_%s.root" % self.channel)    
+    self.histogramFile_hadd_stage2 = os.path.join(self.outputDir, DKEY_HIST, "histograms_harvested_stage2_%s.root" % self.channel)
     self.datacardFiles = {}
     self.cfgFile_prep_dcard_original = os.path.join(self.workingDir, "prepareDatacards_cfg.py")
     self.cfgFile_prep_dcard_modified = {}
     self.histogramDir_prep_dcard = None
     self.make_plots_backgrounds = [ "TT", "TTW", "TTZ", "EWK", "Rares" ]
-    self.make_plots_signal = "signal" 
+    self.make_plots_signal = "signal"
     self.cfgFile_make_plots_original = os.path.join(self.workingDir, "makePlots_cfg.py")
     self.cfgFiles_make_plots_modified = []
     self.filesToClean = []
@@ -160,7 +160,7 @@ class analyzeConfig:
       self.triggers_1e1mu = [ 'HLT_BIT_HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v', 'HLT_BIT_HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v' ]
     elif era == '2016':
       # CV: HLT_Ele25_WPTight_Gsf_v* was prescaled during part of 2016 Runs B-D, so use HLT_Ele27_eta2p1_WPLoose_Gsf_v in addition
-      self.triggers_1e    = [ 'HLT_BIT_HLT_Ele25_WPTight_Gsf_v', 'HLT_BIT_HLT_Ele27_eta2p1_WPLoose_Gsf_v' ] 
+      self.triggers_1e    = [ 'HLT_BIT_HLT_Ele25_WPTight_Gsf_v', 'HLT_BIT_HLT_Ele27_eta2p1_WPLoose_Gsf_v' ]
       self.triggers_2e    = [ 'HLT_BIT_HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v' ]
       self.triggers_1mu   = [ 'HLT_BIT_HLT_IsoMu22_v', 'HLT_BIT_HLT_IsoTkMu22_v' ]
       self.triggers_2mu   = [ 'HLT_BIT_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v', 'HLT_BIT_HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v' ]
@@ -178,7 +178,7 @@ class analyzeConfig:
         print time
 
   def createCfg_analyze(self, *args):
-    raise ValueError("Function 'createCfg_analyze' not implemented in derrived class !!")      
+    raise ValueError("Function 'createCfg_analyze' not implemented in derrived class !!")
 
   def createCfg_prep_dcard(self, histogramToFit, histogramDir = None, label = None):
     """Fills the template of python configuration file for datacard preparation
@@ -218,7 +218,7 @@ class analyzeConfig:
     """Fills the template of python configuration file for making control plots
 
     Args:
-      histogramFile: name of the input ROOT file 
+      histogramFile: name of the input ROOT file
     """
     outputFileName = os.path.join(self.outputDir, DKEY_PLOT, self.channel, "makePlots_%s.png" % self.channel)
     category_label = self.channel
@@ -227,13 +227,13 @@ class analyzeConfig:
       histogramDir = self.histogramDir_prep_dcard
     if label:
       outputFileName = outputFileName.replace(".png", "_%s.png" % label)
-      category_label += " (%s)" % label      
+      category_label += " (%s)" % label
       cfgFile_modified = cfgFile_modified.replace("_cfg.py", "_%s_cfg.py" % label)
     lines = []
     lines.append("process.fwliteInput.fileNames = cms.vstring('%s')" % self.histogramFile_hadd_stage2)
     lines.append("process.makePlots.outputFileName = cms.string('%s')" % outputFileName)
     if not make_plots_backgrounds:
-      make_plots_backgrounds = self.make_plots_backgrounds    
+      make_plots_backgrounds = self.make_plots_backgrounds
     lines.append("process.makePlots.processesBackground = cms.vstring(%s)" % make_plots_backgrounds)
     lines.append("process.makePlots.processSignal = cms.string('%s')" % self.make_plots_signal)
     lines.append("process.makePlots.categories = cms.VPSet(")
@@ -266,6 +266,7 @@ class analyzeConfig:
         secondary_files = map(lambda x: int(x), store_dir["selection"].split(","))
     self.inputFileIds[sample_name] = generate_file_ids(nof_inputFiles, self.max_files_per_job, blacklist)
     return ( secondary_files, primary_store, secondary_store )
+
 
   def createScript_sbatch(self):
     """Creates the python script necessary to submit the analysis jobs to the batch system
@@ -310,7 +311,7 @@ class analyzeConfig:
             hostname = line.strip()
             is_hostname = False
           if line.find("Transport endpoint is not connected") != -1:
-            is_cvmfs_error = True          
+            is_cvmfs_error = True
         logFile.close()
         if is_cvmfs_error:
           print "Problem with cvmfs access reported in log file = '%s':" % logFileName
@@ -347,7 +348,7 @@ class analyzeConfig:
 
   def addToMakefile_hadd_stage1(self, lines_makefile):
     raise ValueError("Method 'addToMakefile_hadd_stage1' not implemented in derived class !!")
-  
+
   def addToMakefile_backgrounds_from_data(self, lines_makefile):
     """Adds the commands to Makefile that are necessary for adding the data-driven background estimates.
        Default implementation is a dummy and does not actually add any histograms.
