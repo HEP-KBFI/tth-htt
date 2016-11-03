@@ -1,12 +1,24 @@
 #include "tthAnalysis/HiggsToTauTau/interface/NtupleFillerMEM.h"
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // isHigherPt()
 
+#define ENABLE_DR_CUTS 0
+
+#define N_GENHADTAU_IDX     0
+#define N_GENBQUARK_IDX     1
+#define N_GENLEPFROMTAU_IDX 2
+#define N_GENNUFROMTAU_IDX  3
+#define N_GENTAU_IDX        4
+#define N_GENLEPFROMTOP_IDX 5
+#define N_GENNUFROMTOP      6
+
 NtupleFillerMEM::NtupleFillerMEM()
   : file_(0)
   , tree_(0)
   , use2016_(false)
   , met_f_(false)
   , selHadTau_(0)
+  , errCode_(NTUPLE_ERR_OK)
+  , warnCode_(NTUPLE_WARN_OK)
 {}
 
 NtupleFillerMEM::~NtupleFillerMEM()
@@ -30,6 +42,9 @@ NtupleFillerMEM::setFileName(const std::string & fileName)
   /* basics */
   rle_f_.initBranches(tree_);
   met_f_.initBranches(tree_);
+
+  genHiggsDecayMode_.setBranchName("genHiggsDecayMode");
+  genHiggsDecayMode_.initBranch(tree_);
 
   /* reconstructed */
   for(std::size_t i = 0; i < 3; ++i)
@@ -81,6 +96,23 @@ NtupleFillerMEM::setFileName(const std::string & fileName)
     genNuFromHTau_f_.initBranches(tree_);
     genNuFromLTau_f_.initBranches(tree_);
   }
+  genMultiplicity_f_[N_GENHADTAU_IDX    ].setBranchName("nGenHadTau");
+  genMultiplicity_f_[N_GENBQUARK_IDX    ].setBranchName("nGenBQuarkFromTop");
+  genMultiplicity_f_[N_GENLEPFROMTAU_IDX].setBranchName("nGenLepFromTau");
+  genMultiplicity_f_[N_GENNUFROMTAU_IDX ].setBranchName("nGenNuFromTau");
+  genMultiplicity_f_[N_GENTAU_IDX       ].setBranchName("nGenTau");
+  genMultiplicity_f_[N_GENLEPFROMTOP_IDX].setBranchName("nGenLepFromTop");
+  genMultiplicity_f_[N_GENNUFROMTOP     ].setBranchName("nGenNuFromTop");
+  for(auto & filler: genMultiplicity_f_)
+    filler.initBranch(tree_);
+
+  /* logging */
+  errCode_f_.setBranchName("errCode");
+  warnCode_f_.setBranchName("warnCode");
+  errCode_f_.setValuePtr(&errCode_);
+  warnCode_f_.setValuePtr(&warnCode_);
+  errCode_f_.initBranch(tree_);
+  warnCode_f_.initBranch(tree_);
 }
 
 void
@@ -89,21 +121,25 @@ NtupleFillerMEM::setDiTauMass(double diTauMass)
   diTauMass_ = diTauMass;
 }
 
-int
+void
+NtupleFillerMEM::add(double genHiggsDecayMode)
+{
+  genHiggsDecayMode_.setValue(genHiggsDecayMode);
+}
+
+void
 NtupleFillerMEM::add(const RLEUnit & rleUnit)
 {
   rle_f_.setValues(rleUnit);
-  return 0;
 }
 
-int
+void
 NtupleFillerMEM::add(const METUnit<double> & metUnit)
 {
   met_f_.setValues(metUnit);
-  return 0;
 }
 
-int
+void
 NtupleFillerMEM::add(const std::map<std::string, double> mva,
                      double ttV,
                      double ttbar)
@@ -111,10 +147,9 @@ NtupleFillerMEM::add(const std::map<std::string, double> mva,
   mva_f_.setValues(mva);
   ttV_f_.setValue(ttV);
   ttbar_f_.setValue(ttbar);
-  return 0;
 }
 
-int
+void
 NtupleFillerMEM::add(const std::vector<const RecoJet*> & selBJets_loose,
                      const std::vector<const RecoJet*> & selBJets_medium,
                      const std::vector<const RecoJet*> & selJets)
@@ -140,43 +175,34 @@ NtupleFillerMEM::add(const std::vector<const RecoJet*> & selBJets_loose,
   selBJetsMerged_ = selBJetsMerged;
 
   if(selBJetsMerged_.size() > 1)
-  {
     for(std::size_t i = 0; i < 2; ++i)
       jets_f_[i].setValues(*selBJetsMerged_[i]);
-    return 0;
-  }
-  std::cerr << " << Error: merged b-jets contains less than two jets\n";
-  return 1;
+  else
+    errCode_ |= NTUPLE_ERR_LESS_THAN_2_JETS;
 }
 
-int
+void
 NtupleFillerMEM::add(const std::vector<const RecoLepton*> & selLeptons)
 {
   selLeptons_ = selLeptons;
   if(selLeptons_.size() > 2)
-  {
     for(std::size_t i = 0; i < 3; ++i)
       leptons_f_[i].setValues(*selLeptons_[i]);
-    return 0;
-  }
-  std::cerr << " << Error: less than three selected leptons\n";
-  return 1;
+  else
+    errCode_ |= NTUPLE_ERR_LESS_THAN_3_LEPTONS;
 }
 
-int
+void
 NtupleFillerMEM::add(const RecoHadTau * selHadTau)
 {
   selHadTau_ = selHadTau;
   if(selHadTau_)
-  {
     hTau_f_.setValues(*selHadTau_);
-    return 0;
-  }
-  std::cerr << " << Error: empty selected hadronic tau\n";
-  return 1;
+  else
+    errCode_ |= NTUPLE_ERR_NO_HAD_TAU;
 }
 
-int
+void
 NtupleFillerMEM::add(const std::vector<GenHadTau> & genHadTaus,
                      const std::vector<GenLepton> & genBQuarkFromTop,
                      const std::vector<GenLepton> & genLepFromTau,
@@ -188,50 +214,66 @@ NtupleFillerMEM::add(const std::vector<GenHadTau> & genHadTaus,
   // perform generator-level matching
   // enable only if era is 2016
   // if there are multiple candidates then pick the first one?
+  genMultiplicity_f_[N_GENHADTAU_IDX    ].setValue(genHadTaus.size());
+  genMultiplicity_f_[N_GENBQUARK_IDX    ].setValue(genBQuarkFromTop.size());
+  genMultiplicity_f_[N_GENLEPFROMTAU_IDX].setValue(genLepFromTau.size());
+  genMultiplicity_f_[N_GENNUFROMTAU_IDX ].setValue(genNuFromTau.size());
+  genMultiplicity_f_[N_GENTAU_IDX       ].setValue(genTau.size());
+  genMultiplicity_f_[N_GENLEPFROMTOP_IDX].setValue(genLepFromTop.size());
+  genMultiplicity_f_[N_GENNUFROMTOP     ].setValue(genNuFromTop.size());
 
   // step 0:
   // - check if all generator level particles are there
   if(genBQuarkFromTop.size() < 2)
   {
-    std::cerr << " << No two gen lvl b quarks in the first place\n";
-    return 1;
+    errCode_ |= NTUPLE_ERR_LESS_THAN_2_GEN_BQUARKS;
+    return;
   }
   if(! genLepFromTau.size())
   {
-    std::cerr << " << No gen lvl leptons from tau to begin with\n";
-    return 1;
+    errCode_ |= NTUPLE_ERR_NO_GEN_LEPT_FROM_TAU;
+    return;
   }
   if(! genHadTaus.size())
   {
-    std::cerr << " << No generator lvl hadronic taus to begin with\n";
-    return 1;
+    errCode_ |= NTUPLE_ERR_NO_GEN_HAD_TAU;
+    return;
   }
   if(genNuFromTau.size() < 3)
   {
-    std::cerr << " << Not enough gen lvl neutrinos from tau to begin with\n";
-    return 1;
+    errCode_ |= NTUPLE_ERR_LESS_THAN_3_GEN_NUS_FROM_TAU;
+    return;
   }
   if(genTau.size() < 2)
   {
-    std::cerr << " << Not enough gen lvl taus\n";
-    return 1;
+    errCode_ |= NTUPLE_ERR_LESS_THAN_2_GEN_TAUS;
+    return;
   }
   if(genLepFromTop.size() < 2)
   {
-    std::cerr << " << Not enough gen lvl leptons coming from top decay\n";
-    return 1;
+    errCode_ |= NTUPLE_ERR_LESS_THAN_2_GEN_LEP_FROM_TOP;
+    return;
   }
   if(genNuFromTop.size() < 2)
   {
-    std::cerr << " << Not enough gen lvl neutrinos from top to begin with\n";
-    return 1;
+    errCode_ |= NTUPLE_ERR_LESS_THAN_2_GEN_NU_FROM_TOP;
+    return;
   }
   if(selBJetsMerged_.size() < 2)
-    return 1;
+  {
+    errCode_ |= NTUPLE_ERR_LESS_THAN_2_JETS;
+    return;
+  }
   if(selLeptons_.size() < 3)
-    return 1;
+  {
+    errCode_ |= NTUPLE_ERR_LESS_THAN_3_LEPTONS;
+    return;
+  }
   if(! selHadTau_)
-    return 1;
+  {
+    errCode_ |= NTUPLE_ERR_NO_HAD_TAU;
+    return;
+  }
 
   // step 0:
   // - keep only first 2 elements which we used to fill the Ntuples
@@ -251,11 +293,6 @@ NtupleFillerMEM::add(const std::vector<GenHadTau> & genHadTaus,
                      return ! (q.pdgId_ > 0);
                    }), genBQuarkFromTopPos.end()
   );
-  if(! genBQuarkFromTopPos.size())
-  {
-    std::cout << " << No gen lvl b quarks\n";
-    return 1;
-  }
   genBQuarkFromTopNeg.erase(
     std::remove_if(genBQuarkFromTopNeg.begin(), genBQuarkFromTopNeg.end(),
                    [](const GenParticleExt & q) -> bool
@@ -263,10 +300,16 @@ NtupleFillerMEM::add(const std::vector<GenHadTau> & genHadTaus,
                      return ! (q.pdgId_ < 0);
                    }), genBQuarkFromTopNeg.end()
   );
+#if ENABLE_DR_CUTS
+  if(! genBQuarkFromTopPos.size())
+  {
+    errCode_ |= NTUPLE_ERR_NO_GEN_POS_BQUARK_BEFORE_DR;
+    return;
+  }
   if(! genBQuarkFromTopNeg.size())
   {
-    std::cout << " << No gen lvl anti-b quarks\n";
-    return 1;
+    errCode_ |= NTUPLE_ERR_NO_GEN_NEG_BQUARK_BEFORE_DR;
+    return;
   }
   // do generator level matching
   genBQuarkFromTopPos.erase(
@@ -279,14 +322,6 @@ NtupleFillerMEM::add(const std::vector<GenHadTau> & genHadTaus,
                      return true;
                    }), genBQuarkFromTopPos.end()
   );
-  if(! genBQuarkFromTopPos.size())
-  {
-    std::cout << " << No gen lvl b quarks that match selected b-jets\n";
-    return 1;
-  }
-  else if(genBQuarkFromTopPos.size() > 1)
-    std::cerr << " << Warning: multiple b-quark candidates\n";
-
   genBQuarkFromTopNeg.erase(
     std::remove_if(genBQuarkFromTopNeg.begin(), genBQuarkFromTopNeg.end(),
                    [this, dR](const GenParticleExt & q) -> bool
@@ -297,14 +332,28 @@ NtupleFillerMEM::add(const std::vector<GenHadTau> & genHadTaus,
                      return true;
                    }), genBQuarkFromTopNeg.end()
    );
+#endif
+  if(! genBQuarkFromTopPos.size())
+  {
+    errCode_ |= NTUPLE_ERR_NO_GEN_POS_BQUARKS;
+    return;
+  }
+  else if(genBQuarkFromTopPos.size() > 1)
+  {
+    errCode_ |= NTUPLE_ERR_MORE_THAN_1_GEN_POS_BQUARKS;
+    return;
+  }
   if(! genBQuarkFromTopNeg.size())
   {
-    std::cerr << " << No gen lvl anti-b quarks that match selected b-jets\n";
-    return 1;
+    errCode_ |= NTUPLE_ERR_NO_GEN_POS_BQUARKS;
+    return;
   }
   else if(genBQuarkFromTopNeg.size() > 1)
-    std::cout << " << Warning: there are multiple anti-b quark candidates\n";
-
+  {
+    errCode_ |= NTUPLE_ERR_MORE_THAN_1_GEN_NEG_BQUARKS;
+    return;
+  }
+#if ENABLE_DR_CUTS
   // step 1.2:
   // - make sure that both b-quarks are covered by selected jets
   for(const GenParticleExt & pos: genBQuarkFromTopPos)
@@ -312,10 +361,10 @@ NtupleFillerMEM::add(const std::vector<GenHadTau> & genHadTaus,
       for(const RecoJet * & b: selBJetsMerged_)
         if(b -> is_overlap(pos, dR) && b -> is_overlap(neg, dR))
         {
-          std::cout << "Warning: the same jet overlapped with both b and anti-b quarks"
-                    << " => skipping the event altogether\n";
-          return 1;
+          errCode_ |= NTUPLE_ERR_SAME_JET_OVERLAP;
+          return;
         }
+#endif
 
   // step 2.1:
   // - obtain gen lvl hadronic tau
@@ -324,16 +373,20 @@ NtupleFillerMEM::add(const std::vector<GenHadTau> & genHadTaus,
     std::remove_if(genHadTaus_.begin(), genHadTaus_.end(),
                    [this, dR](const GenHadTau & hadTau) -> bool
                    {
-                     if(selHadTau_ -> is_overlap(hadTau, dR) &&
-                        selHadTau_ -> charge_ == hadTau.charge_)
+                     if(
+#if ENABLE_DR_CUTS
+                        selHadTau_ -> is_overlap(hadTau, dR) &&
+#endif
+                        selHadTau_ -> charge_ == hadTau.charge_
+                     )
                        return false;
                      return true;
                    }), genHadTaus_.end()
   );
-  if(genHadTaus_.size() != 1)
+  if(! genHadTaus_.size())
   {
-    std::cerr << " << Number of generator lvl hadronic taus matching w/ selected htaus not equal to 1\n";
-    return 1;
+    errCode_ |= NTUPLE_ERR_NO_MATCHING_GEN_HAD_TAU;
+    return;
   }
 
   // step 2.2:
@@ -357,10 +410,11 @@ NtupleFillerMEM::add(const std::vector<GenHadTau> & genHadTaus,
   );
   if(! genLepFromTauCandidates.size())
   {
-    std::cerr << " << No gen lvl leptons from tau with correct charge (" << complLepCharge << ")\n";
-    return 1;
+    errCode_ |= NTUPLE_ERR_NO_GEN_LEPTONS_FROM_TAU_CORRECT_CHARGE;
+    return;
   }
   // do dR matching against selected leptons
+#if ENABLE_DR_CUTS
   genLepFromTauCandidates.erase(
     std::remove_if(genLepFromTauCandidates.begin(), genLepFromTauCandidates.end(),
                    [this, dR](const GenParticleExt & lep) -> bool
@@ -373,9 +427,10 @@ NtupleFillerMEM::add(const std::vector<GenHadTau> & genHadTaus,
   );
   if(! genLepFromTauCandidates.size())
   {
-    std::cerr << " << No gen lvl leptons from tau that match w/ selected leptons\n";
-    return 1;
+    errCode_ |= NTUPLE_ERR_NO_GEN_LEPTONS_FROM_TAU_DR;
+    return;
   }
+#endif
 
   // check the leptons against neutrinos coming from tau
   genLepFromTauCandidates.erase(
@@ -391,8 +446,8 @@ NtupleFillerMEM::add(const std::vector<GenHadTau> & genHadTaus,
   );
   if(! genLepFromTauCandidates.size())
   {
-    std::cerr << " << No gen lvl leptons from tau that have corresponding nu from tau\n";
-    return 1;
+    errCode_ |= NTUPLE_ERR_NO_GEN_LEPTONS_FROM_TAU_CORRESPONDING_NU;
+    return;
   }
 
   // step 4:
@@ -412,8 +467,8 @@ NtupleFillerMEM::add(const std::vector<GenHadTau> & genHadTaus,
   );
   if(! genNuLepFromTauCandidates.size()) // expect 1
   {
-    std::cerr << " << No gen lvl lepton neutrino candidates w/ correct flavor coming from tau decay\n";
-    return 1;
+    errCode_ |= NTUPLE_ERR_NO_GEN_LEPT_NUS_FROM_TAU_CORRECT_FLAVOR;
+    return;
   }
 
   // step 5.1:
@@ -428,11 +483,11 @@ NtupleFillerMEM::add(const std::vector<GenHadTau> & genHadTaus,
   );
   if(! genNuTauFromLepBranch.size())
   {
-    std::cerr << " << No gen lvl tau neutrino candidates coming from tau decay\n";
-    return 1;
+    errCode_ |= NTUPLE_ERR_NO_GEN_TAU_NUS_FROM_TAU;
+    return;
   }
   else if(genNuTauFromLepBranch.size() > 1)
-    std::cout << " << Warning: multiple candidates for tau neutrino\n";
+    warnCode_ |= NTUPLE_WARN_MULTIPLE_TAU_NUS;
 
 
   // step 5.2:
@@ -446,11 +501,11 @@ NtupleFillerMEM::add(const std::vector<GenHadTau> & genHadTaus,
   );
   if(! genNuTauFromHadronicBranch.size())
   {
-    std::cerr << " << No gen lvl tau neutrino candidates w/ opposite flavor coming from leptonic tau decay\n";
-    return 1;
+    errCode_ |= NTUPLE_ERR_NO_GEN_TAU_NUS_FROM_TAU_OPPOSITE_FLAVOR;
+    return;
   }
   else if(genNuTauFromHadronicBranch.size() > 1)
-    std::cout << " << Warning: multiple candidates for tau neutrino w/ opposite flavor\n";
+    warnCode_ |= NTUPLE_WARN_MULTIPLE_TAU_NUS_OPPOSITE_FLAVOR;
 
   // step 6:
   // - find oppositely charged tau pairs the mass of which sums up to diTauMass
@@ -464,7 +519,7 @@ NtupleFillerMEM::add(const std::vector<GenHadTau> & genHadTaus,
       const GenParticleExt & iTau = genTau[iIdx];
       if(oTau.charge_ * iTau.charge_ > 0 ||
          std::fabs((oTau.p4_ + iTau.p4_).mass() - diTauMass_) > 10.) // let's use large, 10 GeV mass window
-        return 1;
+        continue;
       if(oTau.charge_ > 0) // so that the 1st tau in the pair is positively charged
         genTauPair.push_back({oTau, iTau});
       else
@@ -472,11 +527,11 @@ NtupleFillerMEM::add(const std::vector<GenHadTau> & genHadTaus,
     }
   if(! genTauPair.size()) // expect 1
   {
-    std::cerr << " << No proper oppositely charged gen lvl tau pair w/ mass " << diTauMass_ << " GeV\n";
-    return 1;
+    errCode_ |= NTUPLE_ERR_NO_GEN_TAU_PAIRS;
+    return;
   }
   else if(genTauPair.size() > 1)
-    std::cout << " << Warning: multiple candidates for tau pair\n";
+    warnCode_ |= NTUPLE_ERR_MORE_THAN_ONE_GEN_TAU_PAIR;
 
   // step 7:
   // - find leptons coming from top decay
@@ -490,9 +545,10 @@ NtupleFillerMEM::add(const std::vector<GenHadTau> & genHadTaus,
   );
   if(! genLepFromTopPos.size())
   {
-    std::cerr << " << No gen lvl leptons from top having positive sign\n";
-    return 1;
+    errCode_ |= NTUPLE_ERR_NO_GEN_POS_LEPT_FROM_TOP;
+    return;
   }
+#if ENABLE_DR_CUTS
   genLepFromTopPos.erase(
     std::remove_if(genLepFromTopPos.begin(), genLepFromTopPos.end(),
                    [this, dR](const GenParticleExt & lep) -> bool
@@ -506,9 +562,10 @@ NtupleFillerMEM::add(const std::vector<GenHadTau> & genHadTaus,
   );
   if(! genLepFromTopPos.size())
   {
-    std::cerr << " << No positive gen lvl leptons from top matching w/ selected leptons\n";
-    return 1;
+    errCode_ |= NTUPLE_ERR_GEN_POS_LEPT_FROM_TOP_DR;
+    return;
   }
+#endif
   genLepFromTopPos.erase(
     std::remove_if(genLepFromTopPos.begin(), genLepFromTopPos.end(),
                    [&genNuFromTop](const GenParticleExt & lep) -> bool
@@ -522,11 +579,11 @@ NtupleFillerMEM::add(const std::vector<GenHadTau> & genHadTaus,
   );
   if(! genLepFromTopPos.size())
   {
-    std::cerr << " << No positive gen lvl leptons from top having corresponding neutrino\n";
-    return 1;
+    errCode_ |= NTUPLE_ERR_NO_GEN_POS_LEPT_FROM_TOP_W_MATCHING_NU;
+    return;
   }
   else if(genLepFromTopPos.size() > 1)
-    std::cout << " << Warning: multiple positive lepton candidates coming from top decay\n";
+    warnCode_ |= NTUPLE_WARN_MULTIPLE_GEN_POS_LEPT_FROM_TOP_W_MATCHING_NU;
 
   std::vector<GenLepton> genLepFromTopNeg(genLepFromTop.begin(), genLepFromTop.end());
   genLepFromTopNeg.erase(
@@ -538,9 +595,10 @@ NtupleFillerMEM::add(const std::vector<GenHadTau> & genHadTaus,
   );
   if(! genLepFromTopNeg.size())
   {
-    std::cerr << " << No gen lvl leptons from top having positive sign\n";
-    return 1;
+    errCode_ |= NTUPLE_ERR_NO_GEN_NEG_LEPT_FROM_TOP;
+    return;
   }
+#if ENABLE_DR_CUTS
   genLepFromTopNeg.erase(
     std::remove_if(genLepFromTopNeg.begin(), genLepFromTopNeg.end(),
                    [this, dR](const GenParticleExt & lep) -> bool
@@ -554,9 +612,10 @@ NtupleFillerMEM::add(const std::vector<GenHadTau> & genHadTaus,
   );
   if(! genLepFromTopNeg.size())
   {
-    std::cerr << " << No positive gen lvl leptons from top matching w/ selected leptons\n";
-    return 1;
+    errCode_ |= NTUPLE_ERR_GEN_NEG_LEPT_FROM_TOP_DR;
+    return;
   }
+#endif
   genLepFromTopNeg.erase(
     std::remove_if(genLepFromTopNeg.begin(), genLepFromTopNeg.end(),
                    [&genNuFromTop](const GenParticleExt & lep) -> bool
@@ -570,11 +629,11 @@ NtupleFillerMEM::add(const std::vector<GenHadTau> & genHadTaus,
   );
   if(! genLepFromTopNeg.size())
   {
-    std::cerr << " << No positive gen lvl leptons from top having corresponding neutrino\n";
-    return 1;
+    errCode_ |= NTUPLE_ERR_NO_GEN_NEG_LEPT_FROM_TOP_W_MATCHING_NU;
+    return;
   }
   else if(genLepFromTopNeg.size() > 1)
-    std::cout << " << Warning: multiple negative lepton candidates coming from anti-top decay\n";
+    warnCode_ |= NTUPLE_WARN_MULTIPLE_GEN_NEG_LEPT_FROM_TOP_W_MATCHING_NU;
 
   // step 8:
   // - find corresponding neutrinos to the leptons coming from top decay
@@ -593,11 +652,11 @@ NtupleFillerMEM::add(const std::vector<GenHadTau> & genHadTaus,
   );
   if(! genNuFromTopPos.size()) // expect 1
   {
-    std::cerr << " << No proper neutrino coming from top decay\n";
-    return 1;
+    errCode_ |= NTUPLE_ERR_NO_GEN_NU_FROM_POS_TOP;
+    return;
   }
   else if(genNuFromTopPos.size() > 1)
-    std::cout << " << Warning: multiple neutrino candidates coming from top decay\n";
+    warnCode_ |= NTUPLE_WARN_MULTIPLE_GEN_NU_FROM_POS_TOP;
 
   std::vector<GenParticleExt> genNuFromTopNeg(genNuFromTop.begin(), genNuFromTop.end());
   genNuFromTopNeg.erase(
@@ -614,11 +673,11 @@ NtupleFillerMEM::add(const std::vector<GenHadTau> & genHadTaus,
   );
   if(! genNuFromTopNeg.size()) // expect 1
   {
-    std::cerr << " << No proper anti-neutrino coming from top decay\n";
-    return 1;
+    errCode_ |= NTUPLE_ERR_NO_GEN_NU_FROM_NEG_TOP;
+    return;
   }
   else if(genNuFromTopNeg.size() > 1)
-    std::cout << " << Warning: multiple neutrino candidates coming from anti-top decay\n";
+    warnCode_ |= NTUPLE_WARN_MULTIPLE_GEN_NU_FROM_NEG_TOP;
 
   // step 9:
   // - try to reconstruct W from lepton and neutrino (top decay branch)
@@ -629,38 +688,30 @@ NtupleFillerMEM::add(const std::vector<GenHadTau> & genHadTaus,
   std::vector<std::pair<GenParticleExt, GenParticleExt>> topWdecayProductsPos;
   for(const GenParticleExt & l: genLepFromTopPos)
     for(const GenParticleExt & nu: genNuFromTopPos)
-    {
-      const double massW_qnu = (l.p4_ + nu.p4_).mass();
-      std::cout << " << W mass (top branch)      = " << massW_qnu << '\n';
-      if(std::fabs(massW - massW_qnu) < gammaW)
+      if(std::fabs(massW - (l.p4_ + nu.p4_).mass()) < gammaW)
         topWdecayProductsPos.push_back({l, nu});
-    }
   if(! topWdecayProductsPos.size())
   {
-    std::cerr << " << Not possible to reconstruct W from l & nu in top branch\n";
-    return 1;
+    errCode_ |= NTUPLE_ERR_NOT_POSSIBLE_POS_W_RECONSTRUCTION;
+    return;
   }
   else if(topWdecayProductsPos.size() > 1)
-    std::cout << " << Warning: still too many l & nu candidates in top branch\n";
+    warnCode_ |= NTUPLE_WARN_MULTIPLE_POS_W_CANDIDATES;
 
   // step 9.2:
   // - negative top (i.e. top) branch (lepton (negatively charged) + anti-neutrino)
   std::vector<std::pair<GenParticleExt, GenParticleExt>> topWdecayProductsNeg;
   for(const GenParticleExt & l: genLepFromTopNeg)
     for(const GenParticleExt & nu: genNuFromTopNeg)
-    {
-      const double massW_qnu = (l.p4_ + nu.p4_).mass();
-      std::cout << " << W mass (anti-top branch) = " << massW_qnu << '\n';
-      if(std::fabs(massW - massW_qnu) < gammaW)
+      if(std::fabs(massW - (l.p4_ + nu.p4_).mass()) < gammaW)
         topWdecayProductsNeg.push_back({l, nu});
-    }
   if(! topWdecayProductsNeg.size())
   {
-    std::cerr << " << Not possible to reconstruct W from l & nu in anti-top branch\n";
-    return 1;
+    errCode_ |= NTUPLE_ERR_NOT_POSSIBLE_NEG_W_RECONSTRUCTION;
+    return;
   }
   else if(topWdecayProductsNeg.size() > 1)
-    std::cout << " << Warning: still too many l & nu candidates in anti-top branch\n";
+    warnCode_ |= NTUPLE_WARN_MULTIPLE_NEG_W_CANDIDATES;
 
   // step 10:
   // - try to reconstruct top mass
@@ -670,34 +721,26 @@ NtupleFillerMEM::add(const std::vector<GenHadTau> & genHadTaus,
     topBranchNeg, topBranchPos;
   for(const GenParticleExt & q: genBQuarkFromTopNeg)
     for(const auto & lnu: topWdecayProductsNeg)
-    {
-      const double massTop_qlnu = (lnu.first.p4_ + lnu.second.p4_ + q.p4_).mass();
-      std::cout << " << anti-top mass = " << massTop_qlnu << '\n';
-      if(std::fabs(massTop_qlnu - massTop) < gammaTop)
+      if(std::fabs((lnu.first.p4_ + lnu.second.p4_ + q.p4_).mass() - massTop) < gammaTop)
         topBranchNeg.push_back(std::make_tuple(q, lnu.first, lnu.second));
-    }
   if(! topBranchNeg.size())
   {
-    std::cerr << " << Could not construct anti-top mass\n";
-    return 1;
+    errCode_ |= NTUPLE_ERR_NOT_POSSIBLE_NEG_TOP_RECONSTRUCTION;
+    return;
   }
   else if(topBranchNeg.size() > 1)
-    std::cout << " << Warning: multiple anti-top branch candidates\n";
+    warnCode_ |= NTUPLE_WARN_MULTIPLE_NEG_TOP_CANDIDATES;
   for(const GenParticleExt & q: genBQuarkFromTopPos)
     for(const auto & lnu: topWdecayProductsPos)
-    {
-      const double massTop_qlnu = (lnu.first.p4_ + lnu.second.p4_ + q.p4_).mass();
-      std::cout << " << top mass      = " << massTop_qlnu << '\n';
-      if(std::fabs(massTop_qlnu - massTop) < gammaTop)
+      if(std::fabs((lnu.first.p4_ + lnu.second.p4_ + q.p4_).mass() - massTop) < gammaTop)
         topBranchPos.push_back(std::make_tuple(q, lnu.first, lnu.second));
-    }
   if(! topBranchPos.size())
   {
-    std::cout << " << Could not construct top mass\n";
-    return 1;
+      errCode_ |= NTUPLE_ERR_NOT_POSSIBLE_POS_TOP_RECONSTRUCTION;
+      return;
   }
   else if(topBranchPos.size() > 1)
-    std::cout << " << Warning: multiple top branch candidates\n";
+    warnCode_ |= NTUPLE_WARN_MULTIPLE_POS_TOP_CANDIDATES;
 
   // step 11:
   // - reconstruct taus individually
@@ -721,18 +764,18 @@ NtupleFillerMEM::add(const std::vector<GenHadTau> & genHadTaus,
   }
   if(! hadronicBranch.size())
   {
-    std::cerr << " << Could not construct tau mass which decays hadronically\n";
-    return 1;
+    errCode_ |= NTUPLE_ERR_HADRONICALLY_DECAYING_TAU_RECONSTRUCTION;
+    return;
   }
   else if(hadronicBranch.size() > 1)
-    std::cout << " << Warning: multiple tau branch candidates which decay hadronically\n";
+    warnCode_ |= NTUPLE_WARN_MULTIPLE_TAU_BRANCHES_DECAY_HADRONICALLY;
   if(! leptonicBranch.size())
   {
-    std::cerr << " << Could not construct tau mass which decays leptonically\n";
-    return 1;
+    errCode_ |= NTUPLE_ERR_LEPTONICALLY_DECAYING_TAU_RECONSTRUCTION;
+    return;
   }
   else if(leptonicBranch.size() > 1)
-    std::cout << " << Warning: multiple tau branch candidates which decay leptonically\n";
+    warnCode_ |= NTUPLE_WARN_MULTIPLE_TAU_BRANCHES_DECAY_LEPTONICALLY;
 
   // step 12:
   // - select 0th tau decay branch as the branch which has the tau charge positive
@@ -756,18 +799,18 @@ NtupleFillerMEM::add(const std::vector<GenHadTau> & genHadTaus,
   genLepFromTau_f_.setValues   (std::get<0>(leptonicBranch[0]));
   genNuLepFromTau_f_.setValues (std::get<1>(leptonicBranch[0]));
   genNuFromLTau_f_.setValues   (std::get<2>(leptonicBranch[0]));
-
-  return 0;
 }
 
 void
-NtupleFillerMEM::fill()
+NtupleFillerMEM::fill(bool force)
 {
-  tree_ -> Fill();
-
+  if(! errCode_ || force)
+    tree_ -> Fill();
   selLeptons_.clear();
   selBJetsMerged_.clear();
   selHadTau_ = 0;
+  errCode_ = NTUPLE_ERR_OK;
+  warnCode_ = NTUPLE_WARN_OK;
 }
 
 void

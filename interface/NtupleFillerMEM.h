@@ -14,6 +14,63 @@
 #include <array> // std::array<>
 #include <algorithm> // std::sort(), std::find(), std::remove_if()
 
+#define NTUPLE_ERR_OK                                       0ull
+#define NTUPLE_ERR_LESS_THAN_2_JETS                         1ull << 0
+#define NTUPLE_ERR_LESS_THAN_3_LEPTONS                      1ull << 1
+#define NTUPLE_ERR_NO_HAD_TAU                               1ull << 2
+#define NTUPLE_ERR_LESS_THAN_2_GEN_BQUARKS                  1ull << 3
+#define NTUPLE_ERR_NO_GEN_LEPT_FROM_TAU                     1ull << 4
+#define NTUPLE_ERR_NO_GEN_HAD_TAU                           1ull << 5
+#define NTUPLE_ERR_LESS_THAN_3_GEN_NUS_FROM_TAU             1ull << 6
+#define NTUPLE_ERR_LESS_THAN_2_GEN_TAUS                     1ull << 7
+#define NTUPLE_ERR_LESS_THAN_2_GEN_LEP_FROM_TOP             1ull << 8
+#define NTUPLE_ERR_LESS_THAN_2_GEN_NU_FROM_TOP              1ull << 9
+#define NTUPLE_ERR_NO_GEN_POS_BQUARKS                       1ull << 10
+#define NTUPLE_ERR_MORE_THAN_1_GEN_POS_BQUARKS              1ull << 11
+#define NTUPLE_ERR_NO_GEN_NEG_BQUARKS                       1ull << 12
+#define NTUPLE_ERR_MORE_THAN_1_GEN_NEG_BQUARKS              1ull << 13
+#define NTUPLE_ERR_NO_MATCHING_GEN_HAD_TAU                  1ull << 14
+#define NTUPLE_ERR_NO_GEN_LEPTONS_FROM_TAU_CORRECT_CHARGE   1ull << 15
+#define NTUPLE_ERR_NO_GEN_LEPTONS_FROM_TAU_CORRESPONDING_NU 1ull << 16
+#define NTUPLE_ERR_NO_GEN_LEPT_NUS_FROM_TAU_CORRECT_FLAVOR  1ull << 17
+#define NTUPLE_ERR_NO_GEN_TAU_NUS_FROM_TAU                  1ull << 18
+#define NTUPLE_ERR_NO_GEN_TAU_NUS_FROM_TAU_OPPOSITE_FLAVOR  1ull << 19
+#define NTUPLE_ERR_NO_GEN_TAU_PAIRS                         1ull << 20
+#define NTUPLE_ERR_NO_GEN_POS_LEPT_FROM_TOP                 1ull << 21
+#define NTUPLE_ERR_NO_GEN_POS_LEPT_FROM_TOP_W_MATCHING_NU   1ull << 22
+#define NTUPLE_ERR_NO_GEN_NEG_LEPT_FROM_TOP                 1ull << 23
+#define NTUPLE_ERR_NO_GEN_NEG_LEPT_FROM_TOP_W_MATCHING_NU   1ull << 24
+#define NTUPLE_ERR_NO_GEN_NU_FROM_POS_TOP                   1ull << 25
+#define NTUPLE_ERR_NO_GEN_NU_FROM_NEG_TOP                   1ull << 26
+#define NTUPLE_ERR_NOT_POSSIBLE_POS_W_RECONSTRUCTION        1ull << 27
+#define NTUPLE_ERR_NOT_POSSIBLE_NEG_W_RECONSTRUCTION        1ull << 28
+#define NTUPLE_ERR_NOT_POSSIBLE_POS_TOP_RECONSTRUCTION      1ull << 29
+#define NTUPLE_ERR_NOT_POSSIBLE_NEG_TOP_RECONSTRUCTION      1ull << 30
+#define NTUPLE_ERR_HADRONICALLY_DECAYING_TAU_RECONSTRUCTION 1ull << 31
+#define NTUPLE_ERR_LEPTONICALLY_DECAYING_TAU_RECONSTRUCTION 1ull << 32
+
+#define NTUPLE_ERR_NO_GEN_POS_BQUARK_BEFORE_DR              1ull << 33
+#define NTUPLE_ERR_NO_GEN_NEG_BQUARK_BEFORE_DR              1ull << 34
+#define NTUPLE_ERR_SAME_JET_OVERLAP                         1ull << 35
+#define NTUPLE_ERR_NO_GEN_LEPTONS_FROM_TAU_DR               1ull << 36
+#define NTUPLE_ERR_MORE_THAN_ONE_GEN_TAU_PAIR               1ull << 37
+#define NTUPLE_ERR_GEN_POS_LEPT_FROM_TOP_DR                 1ull << 38
+#define NTUPLE_ERR_GEN_NEG_LEPT_FROM_TOP_DR                 1ull << 39
+
+#define NTUPLE_WARN_OK                                           0ull
+#define NTUPLE_WARN_MULTIPLE_TAU_NUS                             1ull << 0
+#define NTUPLE_WARN_MULTIPLE_TAU_NUS_OPPOSITE_FLAVOR             1ull << 1
+#define NTUPLE_WARN_MULTIPLE_GEN_POS_LEPT_FROM_TOP_W_MATCHING_NU 1ull << 2
+#define NTUPLE_WARN_MULTIPLE_GEN_NEG_LEPT_FROM_TOP_W_MATCHING_NU 1ull << 3
+#define NTUPLE_WARN_MULTIPLE_GEN_NU_FROM_POS_TOP                 1ull << 4
+#define NTUPLE_WARN_MULTIPLE_GEN_NU_FROM_NEG_TOP                 1ull << 5
+#define NTUPLE_WARN_MULTIPLE_POS_W_CANDIDATES                    1ull << 6
+#define NTUPLE_WARN_MULTIPLE_NEG_W_CANDIDATES                    1ull << 7
+#define NTUPLE_WARN_MULTIPLE_POS_TOP_CANDIDATES                  1ull << 8
+#define NTUPLE_WARN_MULTIPLE_NEG_TOP_CANDIDATES                  1ull << 9
+#define NTUPLE_WARN_MULTIPLE_TAU_BRANCHES_DECAY_HADRONICALLY     1ull << 10
+#define NTUPLE_WARN_MULTIPLE_TAU_BRANCHES_DECAY_LEPTONICALLY     1ull << 11
+
 typedef GenLepton GenParticleExt;
 
 template <typename FloatType>
@@ -69,19 +126,24 @@ struct NtupleFillerMEM // only for 3l1tau analysis
   setDiTauMass(double diTauMass);
 
   /**
+   * @brief Updates Higgs decay mode at generator level
+   * @param genHiggsDecayMode The decay mode
+   */
+  void
+  add(double genHiggsDecayMode);
+
+  /**
    * @brief Updates the run-lumi-event related branches to new values
    * @param rleUnit The struct holding run-lumi-event numbers
-   * @return 0
    */
-  int
+  void
   add(const RLEUnit & rleUnit);
 
   /**
    * @brief Updates the MET related branches to new values
    * @param metUnit
-   * @return
    */
-  int
+  void
   add(const METUnit<double> & metUnit);
 
   /**
@@ -89,9 +151,8 @@ struct NtupleFillerMEM // only for 3l1tau analysis
    * @param mva   The map containing MVA input values (string-double map)
    * @param ttV   MVA output value
    * @param ttbar Another MVA output value
-   * @return
    */
-  int
+  void
   add(const std::map<std::string, double> mva,
       double ttV,
       double ttbar);
@@ -101,7 +162,6 @@ struct NtupleFillerMEM // only for 3l1tau analysis
    * @param selBJets_loose  Selected loose b-jets
    * @param selBJets_medium Selected medium b-jets
    * @param selJets Selected hadronic jets
-   * @return 0 if there are at least 2 unique jets, 1 otherwize
    *
    * Note that the function tries to sort the medium, loose and hadronic jets by their CSV,
    * which is followed by unique merge of medium, loose and hadronic jets. The reason why
@@ -111,7 +171,7 @@ struct NtupleFillerMEM // only for 3l1tau analysis
    * unique set of jets. It's fortunately easy since we just need to compare pointer values
    * and nothing else.
    */
-  int
+  void
   add(const std::vector<const RecoJet*> & selBJets_loose,
       const std::vector<const RecoJet*> & selBJets_medium,
       const std::vector<const RecoJet*> & selJets);
@@ -119,17 +179,15 @@ struct NtupleFillerMEM // only for 3l1tau analysis
   /**
    * @brief Updates the selected reco lepton branches to new values
    * @param selLeptons Selected leptons
-   * @return 0 if there are at least 3 selected leptons, 1 otherwise
    */
-  int
+  void
   add(const std::vector<const RecoLepton*> & selLeptons);
 
   /**
    * @brief Updates the selected reco hadronic tau branches to new values
    * @param selHadTau Selected hadronic tau
-   * @return 0 if the hadronic tau pointer is non-null, 1 otherwise
    */
-  int
+  void
   add(const RecoHadTau * selHadTau);
 
   /**
@@ -141,9 +199,8 @@ struct NtupleFillerMEM // only for 3l1tau analysis
    * @param genTau           Generator level taus
    * @param genLepFromTop    Generator level leptons from top
    * @param genNuFromTop     Generator level neutrinos from top
-   * @return 0 if the underlying event (ttH/Z) could be constructed, 1 otherwise
    */
-  int
+  void
   add(const std::vector<GenHadTau> & genHadTaus,
       const std::vector<GenLepton> & genBQuarkFromTop,
       const std::vector<GenLepton> & genLepFromTau,
@@ -155,9 +212,10 @@ struct NtupleFillerMEM // only for 3l1tau analysis
   /**
    * @brief Fills the tree (ofc if it's initialized) and clears whatever
    *        vectors have been saved during add() functions
+   * @param force If true, fills anyways
    */
   void
-  fill();
+  fill(bool force = false);
 
   /**
    * @brief Closes the file and sets related pointers to zero
@@ -209,6 +267,10 @@ protected:
   GenNuFiller<double>     genNuLepFromTau_f_,
                           genNuFromHTau_f_,
                           genNuFromLTau_f_;
+  BasicFiller<double> genHiggsDecayMode_; // use only if signal sample
+
+  /* multiplicity counter of generator level objects */
+  std::array<BasicFiller<unsigned int>, 7> genMultiplicity_f_;
 
 private:
 
@@ -226,6 +288,9 @@ private:
   std::vector<const RecoJet*> selBJetsMerged_;
   std::vector<const RecoLepton*> selLeptons_;
   const RecoHadTau * selHadTau_;
+
+  unsigned long long errCode_, warnCode_;
+  BasicFiller<unsigned long long> errCode_f_, warnCode_f_;
 };
 
 #endif // NTUPLEFILLERMEM_H

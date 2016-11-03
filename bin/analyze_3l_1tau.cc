@@ -1378,25 +1378,23 @@ struct preselHistManagerType
     selectedEntries_weighted += evtWeight;
     
     if ( writeSelEventsFile ) {
-      std::cout << run << ":" << lumi << ":" << event << '\n';
-
       const RLEUnit rleUnit{ run, lumi, event };
       const METUnit<double> metUnit{
         met_pt, met_phi, met_covXX, met_covXY, met_covYY, era == kEra_2016
       };
 
-      int err = 0;
-      err |= mem.add(rleUnit);
-      err |= mem.add(metUnit);
-      err |= mem.add(mvaInputs, mvaOutput_3l_ttV, mvaOutput_3l_ttbar);
-      err |= mem.add(selBJets_loose, selBJets_medium, selJets);
-      err |= mem.add(selHadTau);
-      err |= mem.add(selLeptons);
+      mem.add(rleUnit);
+      mem.add(metUnit);
+      mem.add(mvaInputs, mvaOutput_3l_ttV, mvaOutput_3l_ttbar);
+      mem.add(selBJets_loose, selBJets_medium, selJets);
+      mem.add(selHadTau);
+      mem.add(selLeptons);
       if(isMC && era == kEra_2016)
-        err |= mem.add(genHadTaus, genBQuarkFromTop, genLepFromTau,
-                       genNuFromTau, genTau, genLepFromTop, genNuFromTop);
-      if(! err)
-        mem.fill();
+        mem.add(genHadTaus, genBQuarkFromTop, genLepFromTau,
+                genNuFromTau, genTau, genLepFromTop, genNuFromTop);
+      if(isSignal && isMC)
+        mem.add(genHiggsDecayMode);
+      mem.fill(true);
     }
   }
 
