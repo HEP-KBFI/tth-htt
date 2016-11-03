@@ -127,7 +127,7 @@ MEMInterface_2lss_1tau::operator()(
   std::vector<const RecoJet*> selJets_untagged;
   for ( std::vector<const RecoJet*>::const_iterator selJet = selJets.begin();
 	selJet != selJets.end(); ++selJet ) {
-    if ( (*selJet) == selBJet1 || (*selJet) == selBJet2 || (*selJet) == selJet1_w || (*selJet) == selJet2_w ) continue;
+    if ( (*selJet) == selBJet1 || (*selJet) == selBJet2 ) continue;
     selJets_untagged.push_back(*selJet);
   }  
   const int maxNumJets_untagged = 10;
@@ -166,51 +166,40 @@ MEMInterface_2lss_1tau::operator()(
     return result;
   }
 
-  NodeScheduler* scheduler = new ThreadScheduler();
-  scheduler->initNodeScheduler(config_, 0);
-  scheduler->runNodeScheduler(inputs, 1);
+  ThreadScheduler scheduler;
+  scheduler.initNodeScheduler(config_, 0);
+  scheduler.runNodeScheduler(inputs, 1);
 
   result.type_ = inputs[0].integration_type_;
-  result.weight_ttH_ = 0.;
-  result.weight_ttZ1_ = 0.;
-  result.weight_ttZ2_ = 0.;
-  result.weight_tt1_ = 0.;
-  result.weight_tt2_ = 0.;
-  const int numPermutations = 4;
-  for ( int idxPermutation = 0; idxPermutation < numPermutations; ++idxPermutation ) {
-    result.weight_ttH_ += inputs[0].integralttH_[idxPermutation];
-    result.weight_ttZ1_ += inputs[0].integralttZ_[idxPermutation];
-    result.weight_ttZ2_ += inputs[0].integralttZ_Zll_[idxPermutation];
-    result.weight_tt1_ += inputs[0].integralttbar_DL_fakelep_tlep_[idxPermutation];
-    result.weight_tt2_ += inputs[0].integralttbar_DL_fakelep_ttau_[idxPermutation]; 
-  }
-  double k_ttZ1 = 0.;
-  double k_ttZ2 = 0.;
+  result.weight_ttH_ = inputs[0].weight_ttH_;
+  result.weight_ttZ_ = inputs[0].weight_ttZ_;
+  result.weight_ttZ_Zll_ = inputs[0].weight_ttZ_Zll_;
+  result.weight_tt_ = inputs[0].weight_ttbar_DL_fakelep_;
+  double k_ttZ = 0.;
+  double k_ttZ_Zll = 0.;
   double k_tt = 0.;
   switch ( inputs[0].integration_type_ ) {
   case 0 :
-    k_ttZ1 = 5.e-2;
-    k_ttZ2 = 1.e-1;
+    k_ttZ = 5.e-2;
+    k_ttZ_Zll = 1.e-1;
     k_tt = 1.e-17;
     break;
   case 1 :
-    k_ttZ1 = 5.e-2;
-    k_ttZ2 = 1.;
+    k_ttZ = 5.e-2;
+    k_ttZ_Zll = 1.;
     k_tt = 1.e-14;
     break;
   default:
     assert(0);
   }
   double numerator = result.weight_ttH_;
-  double denominator = result.weight_ttH_ + k_ttZ1*result.weight_ttZ1_ + k_ttZ2*result.weight_ttZ2_ + k_tt*(result.weight_tt1_ + result.weight_tt2_);
+  double denominator = result.weight_ttH_ + k_ttZ*result.weight_ttZ_ + k_ttZ_Zll*result.weight_ttZ_Zll_ + k_tt*result.weight_tt_;
   if ( denominator > 0. ) {
     result.LR_ = numerator/denominator;
   } else {
     result.errorFlag_ = 1;
     result.LR_ = -1.;
   }
-
-  delete scheduler;
 
   return result;
 }

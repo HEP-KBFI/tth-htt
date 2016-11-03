@@ -52,10 +52,9 @@ class EvtHistManager_2lss_1tau
   TH1* histogram_memOutput_errorFlag_;
   TH1* histogram_memOutput_type_;
   TH1* histogram_memOutput_logWeight_ttH_;
-  TH1* histogram_memOutput_logWeight_ttZ1_;
-  TH1* histogram_memOutput_logWeight_ttZ2_;
-  TH1* histogram_memOutput_logWeight_tt1_;
-  TH1* histogram_memOutput_logWeight_tt2_;
+  TH1* histogram_memOutput_logWeight_ttZ_;
+  TH1* histogram_memOutput_logWeight_ttZ_Zll_;
+  TH1* histogram_memOutput_logWeight_tt_;
   TH1* histogram_memOutput_LR_;
 
   TH1* histogram_EventCounter_;
