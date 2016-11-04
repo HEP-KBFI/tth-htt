@@ -138,7 +138,7 @@ class sbatchManager:
         raise ValueError("Please call 'setLogFileDir' before calling 'submitJob' !!")
       logFile = os.path.join(self.logFileDir, os.path.basename(scriptFile).replace(".sh", ".log"))
 
-    # run synchrous command that starts the job
+    # run asynchrous command that starts the job and registres job id
     command = "%s --partition=%s --output=%s %s" % (self.command_submit, self.queue, logFile, scriptFile)
     # print "<submitJob>: command = %s" % command
     retVal = run_cmd(command).split()[-1]
