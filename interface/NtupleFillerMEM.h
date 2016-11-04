@@ -49,8 +49,8 @@
 #define NTUPLE_ERR_HADRONICALLY_DECAYING_TAU_RECONSTRUCTION 1ull << 31
 #define NTUPLE_ERR_LEPTONICALLY_DECAYING_TAU_RECONSTRUCTION 1ull << 32
 
-#define NTUPLE_ERR_NO_GEN_POS_BQUARK_BEFORE_DR              1ull << 33
-#define NTUPLE_ERR_NO_GEN_NEG_BQUARK_BEFORE_DR              1ull << 34
+#define NTUPLE_ERR_NO_GEN_POS_BQUARKS_DR                    1ull << 33
+#define NTUPLE_ERR_NO_GEN_NEG_BQUARKS_DR                    1ull << 34
 #define NTUPLE_ERR_SAME_JET_OVERLAP                         1ull << 35
 #define NTUPLE_ERR_NO_GEN_LEPTONS_FROM_TAU_DR               1ull << 36
 #define NTUPLE_ERR_MORE_THAN_ONE_GEN_TAU_PAIR               1ull << 37

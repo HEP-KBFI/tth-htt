@@ -300,17 +300,17 @@ NtupleFillerMEM::add(const std::vector<GenHadTau> & genHadTaus,
                      return ! (q.pdgId_ < 0);
                    }), genBQuarkFromTopNeg.end()
   );
-#if ENABLE_DR_CUTS
   if(! genBQuarkFromTopPos.size())
   {
-    errCode_ |= NTUPLE_ERR_NO_GEN_POS_BQUARK_BEFORE_DR;
+    errCode_ |= NTUPLE_ERR_NO_GEN_POS_BQUARKS;
     return;
   }
   if(! genBQuarkFromTopNeg.size())
   {
-    errCode_ |= NTUPLE_ERR_NO_GEN_NEG_BQUARK_BEFORE_DR;
+    errCode_ |= NTUPLE_ERR_NO_GEN_NEG_BQUARKS;
     return;
   }
+#if ENABLE_DR_CUTS
   // do generator level matching
   genBQuarkFromTopPos.erase(
     std::remove_if(genBQuarkFromTopPos.begin(), genBQuarkFromTopPos.end(),
@@ -332,23 +332,23 @@ NtupleFillerMEM::add(const std::vector<GenHadTau> & genHadTaus,
                      return true;
                    }), genBQuarkFromTopNeg.end()
    );
-#endif
   if(! genBQuarkFromTopPos.size())
   {
-    errCode_ |= NTUPLE_ERR_NO_GEN_POS_BQUARKS;
-    return;
-  }
-  else if(genBQuarkFromTopPos.size() > 1)
-  {
-    errCode_ |= NTUPLE_ERR_MORE_THAN_1_GEN_POS_BQUARKS;
+    errCode_ |= NTUPLE_ERR_NO_GEN_POS_BQUARKS_DR;
     return;
   }
   if(! genBQuarkFromTopNeg.size())
   {
-    errCode_ |= NTUPLE_ERR_NO_GEN_POS_BQUARKS;
+    errCode_ |= NTUPLE_ERR_NO_GEN_NEG_BQUARKS_DR;
     return;
   }
-  else if(genBQuarkFromTopNeg.size() > 1)
+#endif
+  if(genBQuarkFromTopPos.size() > 1)
+  {
+    errCode_ |= NTUPLE_ERR_MORE_THAN_1_GEN_POS_BQUARKS;
+    return;
+  }
+  if(genBQuarkFromTopNeg.size() > 1)
   {
     errCode_ |= NTUPLE_ERR_MORE_THAN_1_GEN_NEG_BQUARKS;
     return;
