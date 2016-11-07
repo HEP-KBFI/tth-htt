@@ -520,7 +520,7 @@ samples_no_njet_cut_2016["/ttHToNonbb_M125_13TeV_powheg_pythia8/RunIISpring16Min
   ),
 ])
 
-samples_2016["/SingleMuon/Run2016B-PromptReco-v2/MINIAOD"] = OD([
+samples_no_njet_cut_2016["/SingleMuon/Run2016B-PromptReco-v2/MINIAOD"] = OD([
   ("type",                  "data"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "SingleMuon_Run2016B_v2"),
@@ -539,7 +539,7 @@ samples_2016["/SingleMuon/Run2016B-PromptReco-v2/MINIAOD"] = OD([
     ]
   ),
 ])
-samples_2016["/SingleMuon/Run2016C-PromptReco-v2/MINIAOD"] = OD([
+samples_no_njet_cut_2016["/SingleMuon/Run2016C-PromptReco-v2/MINIAOD"] = OD([
   ("type",                  "data"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "SingleMuon_Run2016C"),
@@ -558,7 +558,7 @@ samples_2016["/SingleMuon/Run2016C-PromptReco-v2/MINIAOD"] = OD([
     ]
   ),
 ])
-samples_2016["/SingleMuon/Run2016D-PromptReco-v2/MINIAOD"] = OD([
+samples_no_njet_cut_2016["/SingleMuon/Run2016D-PromptReco-v2/MINIAOD"] = OD([
   ("type",                  "data"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "SingleMuon_Run2016D"),
