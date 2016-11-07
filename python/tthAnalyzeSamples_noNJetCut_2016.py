@@ -519,3 +519,61 @@ samples_no_njet_cut_2016["/ttHToNonbb_M125_13TeV_powheg_pythia8/RunIISpring16Min
     ]
   ),
 ])
+
+samples_2016["/SingleMuon/Run2016B-PromptReco-v2/MINIAOD"] = OD([
+  ("type",                  "data"),
+  ("sample_category",       "data_obs"),
+  ("process_name_specific", "SingleMuon_Run2016B_v2"),
+  ("nof_files",             9724),
+  ("nof_events",            324823071),
+  ("use_it",                True),
+  ("triggers",              [ "1mu" ]),
+  ("reHLT",                 False),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/cms/store/user/atiko/VHBBHeppyD24_v4/SingleMuon/VHBB_HEPPY_D24_SingleMuon__Run2016B-PromptReco-v2/161028_144131"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+])
+samples_2016["/SingleMuon/Run2016C-PromptReco-v2/MINIAOD"] = OD([
+  ("type",                  "data"),
+  ("sample_category",       "data_obs"),
+  ("process_name_specific", "SingleMuon_Run2016C"),
+  ("nof_files",             8497),
+  ("nof_events",            324823071),
+  ("use_it",                True),
+  ("triggers",              [ "1mu" ]),
+  ("reHLT",                 False),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/cms/store/user/atiko/VHBBHeppyD24_v4/SingleMuon/VHBB_HEPPY_D24_SingleMuon__Run2016C-PromptReco-v2/161028_142953"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+])
+samples_2016["/SingleMuon/Run2016D-PromptReco-v2/MINIAOD"] = OD([
+  ("type",                  "data"),
+  ("sample_category",       "data_obs"),
+  ("process_name_specific", "SingleMuon_Run2016D"),
+  ("nof_files",             9248),
+  ("nof_events",            324823071),
+  ("use_it",                True),
+  ("triggers",              [ "1mu" ]),
+  ("reHLT",                 False),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/cms/store/user/atiko/VHBBHeppyD24_v4/SingleMuon/VHBB_HEPPY_D24_SingleMuon__Run2016D-PromptReco-v2/161028_143637"),
+        ("selection", "*"),
+        ("blacklist", [971, 1367, 7322]),
+      ]),
+    ]
+  ),
+])
