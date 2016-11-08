@@ -5,6 +5,10 @@ from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd
 
 job_template = """#!/bin/bash
 
+main() {
+    run_wrapped_executable > {{ wrapperLogFile }}
+}
+
 run_wrapped_executable() {
     export SCRATCH_DIR="{{ scratch_dir }}/${SLURM_JOBID}"
     export EXECUTABLE_LOG_FILE="{{ executableLogFile }}"
@@ -76,7 +80,7 @@ run_wrapped_executable() {
     return ${EXIT_CODE}
 }
 
-run_wrapped_executable > {{ wrapperLogFile }}
+main()
 
 """
 
