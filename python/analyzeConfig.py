@@ -101,6 +101,13 @@ class analyzeConfig:
   def __init__(self, outputDir, executable_analyze, channel, central_or_shifts,
                max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,
                histograms_to_fit, executable_prep_dcard = "prepareDatacards", executable_make_plots = "makePlots"):
+
+    scratchDir = os.environ.get('SCRATCH_DIR')
+    if not scratchDir:
+        raise Exception('Scratch dir not specified. Must have ENV variable SCRATCH_DIR.')
+    self.scratchDir = scratchDir
+    self.temporaryOutputDir = scratchDir + outputDir
+
     self.outputDir = outputDir
     self.executable_analyze = executable_analyze
     self.channel = channel
@@ -128,10 +135,10 @@ class analyzeConfig:
 
     self.workingDir = os.getcwd()
     print "Working directory is: " + self.workingDir
-    
+
     create_if_not_exists(self.outputDir)
-    self.stdout_file = codecs.open(os.path.join(self.outputDir, "stdout_%s.log" % self.channel), 'w', 'utf-8')
-    self.stderr_file = codecs.open(os.path.join(self.outputDir, "stderr_%s.log" % self.channel), 'w', 'utf-8')
+    self.stdout_file = codecs.open(os.path.join(self.temporaryOutputDir, "stdout_%s.log" % self.channel), 'w', 'utf-8')
+    self.stderr_file = codecs.open(os.path.join(self.temporaryOutputDir, "stderr_%s.log" % self.channel), 'w', 'utf-8')
     self.dirs = {}
     self.samples = {}
     self.cfgFiles_analyze_modified = {}
@@ -291,6 +298,11 @@ class analyzeConfig:
           print "--> deleting output file and resubmitting job"
           command = "%s %s" % (executable_rm, histogramFileName)
           run_cmd(command)
+
+      print "key_file: " + key_file
+      print "self.logFiles_analyze[key_file]: " + self.logFiles_analyze[key_file]
+      print " os.path.exists(logFileName): " + os.path.exists(logFileName)
+
       logFileName = self.logFiles_analyze[key_file]
       if os.path.exists(logFileName):
         logFile = open(logFileName)
@@ -321,9 +333,16 @@ class analyzeConfig:
           if not hostname in self.cvmfs_error_log.keys():
             self.cvmfs_error_log[hostname] = []
           self.cvmfs_error_log[hostname].append(time)
-      lines_sbatch.append("m.submitJob(%s, '%s', '%s', '%s', %s, '%s', True)" % \
-        (inputFileNames, self.executable_analyze, cfgFile,
-         os.path.dirname(histogramFileName), [ os.path.basename(histogramFileName) ], logFileName))
+      lines_sbatch.append(
+        "m.submitJob(%s, '%s', '%s', '%s', %s, '%s', True)" % (
+            inputFileNames,
+            self.executable_analyze,
+            cfgFile,
+            os.path.dirname(histogramFileName),
+            [ os.path.basename(histogramFileName) ],
+            logFileName
+            )
+        )
     lines_sbatch.append("m.waitForJobs()")
     createFile(self.sbatchFile_analyze, lines_sbatch)
 

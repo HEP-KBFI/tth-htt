@@ -4,17 +4,19 @@ from datetime import date
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd
 
 job_template = """#!/bin/bash
-echo "job start time:"
-date
-echo "hostname:"
-hostname
-echo "current directory:"
-pwd
-SCRATCH_DIR="{{ scratch_dir }}/${SLURM_JOBID}"
-echo "creating scratch directory = '${SCRATCH_DIR}'"
+
+echo "Time is: `date`"
+echo "Hostname: `hostname`"
+echo "Current directory: `pwd`"
+
+export SCRATCH_DIR="{{ scratch_dir }}/${SLURM_JOBID}"
+echo "Create scratch directory: '${SCRATCH_DIR}'"
 mkdir -p ${SCRATCH_DIR}
-echo "it is now:"
-date
+
+export TEMPORARY_OUTPUT_DIR="${SCRATCH_DIR}/{{ outputDir }}/"
+echo "Create temporary output directory: '${TEMPORARY_OUTPUT_DIR}'"
+mkdir -p ${TEMPORARY_OUTPUT_DIR}
+
 ##echo "copying Ntuple input files"
 ##INPUT_FILES="{{ inputFiles }}"
 ##for INPUT_FILE in $INPUT_FILES
@@ -26,27 +28,31 @@ date
 ##    exit 1
 ##  fi
 ##done
-##echo "it is now:"
+##echo "Time is:"
 ##date
-echo "initializing CMSSW run-time environment"
+
+echo "Initialize CMSSW run-time environment"
 source /cvmfs/cms.cern.ch/cmsset_default.sh
 cd {{ working_dir }}
 cmsenv
 cd ${SCRATCH_DIR}
-echo "it is now:"
-date
-echo "copying content of 'tthAnalysis/HiggsToTauTau/data' directory"
+
+echo "Time is: `date`"
+
+echo "Copying contents of 'tthAnalysis/HiggsToTauTau/data' directory to Scratch"
 mkdir -p tthAnalysis/HiggsToTauTau/data
 cp -rL $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/data/* ${SCRATCH_DIR}/tthAnalysis/HiggsToTauTau/data
-echo "it is now:"
-date
-echo "executing '{{ exec_name }}'"
+
+echo "Time is: `date`"
+
+echo "Execute: '{{ exec_name }}'"
 CMSSW_SEARCH_PATH=${SCRATCH_DIR}
 {{ exec_name }} {{ cfg_file }}
-echo "it is now:"
-date
-echo "copying output files"
+
+echo "Time is: `date`"
+
 OUTPUT_FILES="{{ outputFiles }}"
+echo "Copying output files: {{ outputFiles }}"
 EXIT_CODE=0
 for OUTPUT_FILE in $OUTPUT_FILES
 do
@@ -58,12 +64,20 @@ do
     EXIT_CODE=1
   fi
 done
-echo "it is now:"
-date
-echo "deleting scratch directory"
+
+echo "Time is: `date`"
+
+echo "Contents of temporary output dir"
+ls -laR ${TEMPORARY_OUTPUT_DIR}
+
+echo "Copy from temporary output dir to output dir"
+cp -a ${TEMPORARY_OUTPUT_DIR}/* {{ outputDir }}/
+
+echo "Delete Scratch directory"
 rm -r ${SCRATCH_DIR}
-echo "job end time:"
-date
+
+echo "End time is: `date`"
+
 exit ${EXIT_CODE}
 """
 
