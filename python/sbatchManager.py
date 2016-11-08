@@ -5,12 +5,7 @@ from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd
 
 job_template = """#!/bin/bash
 
-# Wrapper of the wrapper
-
-echo "`
-
-    # Wrapper of the executable
-
+run_wrapped_executable() {
     export SCRATCH_DIR="{{ scratch_dir }}/${SLURM_JOBID}"
     export EXECUTABLE_LOG_FILE="{{ executableLogFile }}"
     export EXECUTABLE_LOG_DIR="`dirname $EXECUTABLE_LOG_FILE`"
@@ -30,20 +25,6 @@ echo "`
 
     echo "Create final log directory: '${EXECUTABLE_LOG_DIR}'"
     mkdir -p $EXECUTABLE_LOG_DIR
-
-    ##echo "copying Ntuple input files"
-    ##INPUT_FILES="{{ inputFiles }}"
-    ##for INPUT_FILE in $INPUT_FILES
-    ##do
-    ##  cp $INPUT_FILE ${SCRATCH_DIR}
-    ##  if [ ! -f ${SCRATCH_DIR}/${INPUT_FILE##*/} ];
-    ##  then
-    ##    echo "Failed to copy ${INPUT_FILE} to scratch directory !!"
-    ##    exit 1
-    ##  fi
-    ##done
-    ##echo "Time is:"
-    ##date
 
     echo "Initialize CMSSW run-time environment"
     source /cvmfs/cms.cern.ch/cmsset_default.sh
@@ -96,12 +77,10 @@ echo "`
 
     echo "End time is: `date`"
 
-    exit ${EXIT_CODE}
+    return ${EXIT_CODE}
+}
 
-    # - Wrapper of the executable ends here
-`" > {{ wrapperLogFile }}
-
-# - Wrapper of the wrapper ends here
+run_wrapped_executable > {{ wrapperLogFile }}
 
 """
 
