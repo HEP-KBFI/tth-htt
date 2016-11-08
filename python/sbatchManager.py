@@ -57,6 +57,7 @@ run_wrapped_executable() {
     do
       OUTPUT_FILE_SIZE=$(stat -c '%s' $OUTPUT_FILE)
       if [ $OUTPUT_FILE_SIZE -ge 1000 ]; then
+        echo "cp $OUTPUT_FILE {{ outputDir }}"
         cp $OUTPUT_FILE {{ outputDir }}
       else
         rm $OUTPUT_FILE
