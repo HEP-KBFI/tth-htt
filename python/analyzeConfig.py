@@ -293,11 +293,12 @@ class analyzeConfig:
           command = "%s %s" % (executable_rm, histogramFileName)
           run_cmd(command)
 
+      logFileName = self.logFiles_analyze[key_file]
+
       print "key_file: " + key_file
       print "self.logFiles_analyze[key_file]: " + self.logFiles_analyze[key_file]
       print " os.path.exists(logFileName): " + os.path.exists(logFileName)
 
-      logFileName = self.logFiles_analyze[key_file]
       if os.path.exists(logFileName):
         logFile = open(logFileName)
         is_time = False
