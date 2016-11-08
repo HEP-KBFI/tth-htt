@@ -154,7 +154,7 @@ class sbatchManager:
 
     # start command and register it's ID, so it is possible to get status later
     command = "%s --partition=%s --output=%s %s" % (self.command_submit, self.queue, logFile, scriptFile)
-    # print "<submitJob>: command = %s" % command
+    print "<submitJob>: command = %s" % command
     retVal = run_cmd(command).split()[-1]
     jobId = retVal.split()[-1]
     # print " jobId = %s" % jobId

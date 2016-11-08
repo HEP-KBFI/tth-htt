@@ -102,12 +102,6 @@ class analyzeConfig:
                max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,
                histograms_to_fit, executable_prep_dcard = "prepareDatacards", executable_make_plots = "makePlots"):
 
-    scratchDir = os.environ.get('SCRATCH_DIR')
-    if not scratchDir:
-        raise Exception('Scratch dir not specified. Must have ENV variable SCRATCH_DIR.')
-    self.scratchDir = scratchDir
-    self.temporaryOutputDir = scratchDir + outputDir
-
     self.outputDir = outputDir
     self.executable_analyze = executable_analyze
     self.channel = channel
@@ -137,8 +131,8 @@ class analyzeConfig:
     print "Working directory is: " + self.workingDir
 
     create_if_not_exists(self.outputDir)
-    self.stdout_file = codecs.open(os.path.join(self.temporaryOutputDir, "stdout_%s.log" % self.channel), 'w', 'utf-8')
-    self.stderr_file = codecs.open(os.path.join(self.temporaryOutputDir, "stderr_%s.log" % self.channel), 'w', 'utf-8')
+    self.stdout_file = codecs.open(os.path.join(self.outputDir, "stdout_%s.log" % self.channel), 'w', 'utf-8')
+    self.stderr_file = codecs.open(os.path.join(self.outputDir, "stderr_%s.log" % self.channel), 'w', 'utf-8')
     self.dirs = {}
     self.samples = {}
     self.cfgFiles_analyze_modified = {}
