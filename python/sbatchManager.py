@@ -17,16 +17,16 @@ run_wrapped_executable() {
     echo "Hostname: `hostname`"
     echo "Current directory: `pwd`"
 
-    echo "Create scratch directory: '${SCRATCH_DIR}'"
-    mkdir -p ${SCRATCH_DIR}
+    echo "Create scratch directory: mkdir -p $SCRATCH_DIR"
+    mkdir -p $SCRATCH_DIR
 
-    echo "Create temporary log directory: '${EXECUTABLE_LOG_FILE}'"
+    echo "Create temporary log directory: mkdir -p $TEMPORARY_EXECUTABLE_LOG_DIR"
     mkdir -p $TEMPORARY_EXECUTABLE_LOG_DIR
 
-    echo "Create final log directory: '${EXECUTABLE_LOG_DIR}'"
+    echo "Create final log directory: mkdir -p $EXECUTABLE_LOG_DIR"
     mkdir -p $EXECUTABLE_LOG_DIR
 
-    echo "Initialize CMSSW run-time environment"
+    echo "Initialize CMSSW run-time environment: source /cvmfs/cms.cern.ch/cmsset_default.sh"
     source /cvmfs/cms.cern.ch/cmsset_default.sh
     cd {{ working_dir }}
     cmsenv
@@ -40,10 +40,8 @@ run_wrapped_executable() {
 
     echo "Time is: `date`"
 
-    echo "Execute: '{{ exec_name }}'"
     CMSSW_SEARCH_PATH=${SCRATCH_DIR}
-    echo "Execute command:"
-    echo "{{ exec_name }} {{ cfg_file }} > $TEMPORARY_EXECUTABLE_LOG_FILE"
+    echo "Execute command: {{ exec_name }} {{ cfg_file }} > $TEMPORARY_EXECUTABLE_LOG_FILE"
     {{ exec_name }} {{ cfg_file }} > $TEMPORARY_EXECUTABLE_LOG_FILE
 
     echo "Time is: `date`"
@@ -67,12 +65,10 @@ run_wrapped_executable() {
     echo "Contents of temporary log dir:"
     ls -laR $TEMPORARY_EXECUTABLE_LOG_DIR
 
-    echo "Copy from temporary output dir to output dir: "
-    echo "cp -a $TEMPORARY_EXECUTABLE_LOG_DIR/* $EXECUTABLE_LOG_DIR/"
+    echo "Copy from temporary output dir to output dir: cp -a $TEMPORARY_EXECUTABLE_LOG_DIR/* $EXECUTABLE_LOG_DIR/"
     cp -a $TEMPORARY_EXECUTABLE_LOG_DIR/* $EXECUTABLE_LOG_DIR/
 
-    echo "Delete Scratch directory"
-    echo "rm -r $SCRATCH_DIR"
+    echo "Delete Scratch directory: rm -r $SCRATCH_DIR"
     rm -r $SCRATCH_DIR
 
     echo "End time is: `date`"
