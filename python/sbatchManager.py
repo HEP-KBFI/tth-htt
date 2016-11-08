@@ -6,16 +6,16 @@ from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd
 job_template = """#!/bin/bash
 
 main() {
-    run_wrapped_executable > {{ wrapperLogFile }}
+    run_wrapped_executable > {{ wrapperLogFile }} 2>&1
 }
 
 run_wrapped_executable() {
     export SCRATCH_DIR="{{ scratch_dir }}/${SLURM_JOBID}"
-    export EXECUTABLE_LOG_FILE="{{ executableLogFile }}"
-    export EXECUTABLE_LOG_DIR="`dirname $EXECUTABLE_LOG_FILE`"
-    export EXECUTABLE_LOG_FILE_NAME="`basename $EXECUTABLE_LOG_FILE`"
-    export TEMPORARY_EXECUTABLE_LOG_DIR="$SCRATCH_DIR/$EXECUTABLE_LOG_DIR/"
-    export TEMPORARY_EXECUTABLE_LOG_FILE="$TEMPORARY_EXECUTABLE_LOG_DIR/$EXECUTABLE_LOG_FILE_NAME"
+    EXECUTABLE_LOG_FILE="{{ executableLogFile }}"
+    EXECUTABLE_LOG_DIR="`dirname $EXECUTABLE_LOG_FILE`"
+    EXECUTABLE_LOG_FILE_NAME="`basename $EXECUTABLE_LOG_FILE`"
+    TEMPORARY_EXECUTABLE_LOG_DIR="$SCRATCH_DIR/$EXECUTABLE_LOG_DIR/"
+    TEMPORARY_EXECUTABLE_LOG_FILE="$TEMPORARY_EXECUTABLE_LOG_DIR/$EXECUTABLE_LOG_FILE_NAME"
 
     echo "Time is: `date`"
     echo "Hostname: `hostname`"
@@ -34,17 +34,17 @@ run_wrapped_executable() {
     source /cvmfs/cms.cern.ch/cmsset_default.sh
     cd {{ working_dir }}
     cmsenv
-    cd ${SCRATCH_DIR}
+    cd $SCRATCH_DIR
 
     echo "Time is: `date`"
 
-    echo "Copying contents of 'tthAnalysis/HiggsToTauTau/data' directory to Scratch"
+    echo "Copying contents of 'tthAnalysis/HiggsToTauTau/data' directory to Scratch: cp -rL $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/data/* $SCRATCH_DIR/tthAnalysis/HiggsToTauTau/data"
     mkdir -p tthAnalysis/HiggsToTauTau/data
-    cp -rL $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/data/* ${SCRATCH_DIR}/tthAnalysis/HiggsToTauTau/data
+    cp -rL $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/data/* $SCRATCH_DIR/tthAnalysis/HiggsToTauTau/data
 
     echo "Time is: `date`"
 
-    CMSSW_SEARCH_PATH=${SCRATCH_DIR}
+    CMSSW_SEARCH_PATH=$SCRATCH_DIR
     echo "Execute command: {{ exec_name }} {{ cfg_file }} > $TEMPORARY_EXECUTABLE_LOG_FILE"
     {{ exec_name }} {{ cfg_file }} > $TEMPORARY_EXECUTABLE_LOG_FILE
 
