@@ -13,9 +13,15 @@ export SCRATCH_DIR="{{ scratch_dir }}/${SLURM_JOBID}"
 echo "Create scratch directory: '${SCRATCH_DIR}'"
 mkdir -p ${SCRATCH_DIR}
 
-export TEMPORARY_OUTPUT_DIR="${SCRATCH_DIR}/{{ outputDir }}/"
-echo "Create temporary output directory: '${TEMPORARY_OUTPUT_DIR}'"
-mkdir -p ${TEMPORARY_OUTPUT_DIR}
+export LOG_FILE="{{ logFile }}"
+export LOG_DIR="${ dirname {{ logFile }} }"
+export LOG_FILE_NAME="${ basename {{ logFile }} }"
+export TEMPORARY_LOG_DIR="${ SCRATCH_DIR }/${ LOG_DIR }/"
+export TEMPORARY_LOG_FILE="${ TEMPORARY_LOG_DIR }/{ LOG_FILE_NAME }"
+echo "Create temporary log directory: '${ TEMPORARY_LOG_DIR }'"
+echo "Create final log directory: '${ LOG_DIR }'"
+mkdir -p ${ TEMPORARY_LOG_DIR }
+mkdir -p ${ LOG_DIR }
 
 ##echo "copying Ntuple input files"
 ##INPUT_FILES="{{ inputFiles }}"
@@ -47,7 +53,10 @@ echo "Time is: `date`"
 
 echo "Execute: '{{ exec_name }}'"
 CMSSW_SEARCH_PATH=${SCRATCH_DIR}
-{{ exec_name }} {{ cfg_file }}
+export EXECUTE_COMMAND="{{ exec_name }} {{ cfg_file }} > ${ TEMPORARY_LOG_FILE }"
+echo "Execute command:"
+echo ${ EXECUTE_COMMAND }
+{{ exec_name }} {{ cfg_file }} > ${ TEMPORARY_LOG_FILE }
 
 echo "Time is: `date`"
 
@@ -67,14 +76,16 @@ done
 
 echo "Time is: `date`"
 
-echo "Contents of temporary output dir"
-ls -laR ${TEMPORARY_OUTPUT_DIR}
+echo "Contents of temporary log dir:"
+ls -laR ${ TEMPORARY_LOG_DIR }
 
-echo "Copy from temporary output dir to output dir"
-cp -a ${TEMPORARY_OUTPUT_DIR}/* {{ outputDir }}/
+echo "Copy from temporary output dir to output dir: "
+echo "cp -a ${ TEMPORARY_LOG_DIR }/* { LOG_DIR }/"
+cp -a ${ TEMPORARY_LOG_DIR }/* { LOG_DIR }/
 
 echo "Delete Scratch directory"
-rm -r ${SCRATCH_DIR}
+echo "rm -r ${ SCRATCH_DIR }"
+rm -r ${ SCRATCH_DIR }
 
 echo "End time is: `date`"
 
@@ -113,6 +124,13 @@ class sbatchManager:
     """Waits for all sbatch jobs submitted by this instance of sbatchManager to finish processing
     """
 
+    # raise if logfile missing
+    if not logFile:
+      if not self.logFileDir:
+        raise ValueError("Please call 'setLogFileDir' before calling 'submitJob' !!")
+      logFile = os.path.join(self.logFileDir, os.path.basename(scriptFile).replace(".sh", ".log"))
+
+
     # if any of the output files exists, returns (Margus: BUG? Because only that file should be skipped, not all?)
     if skipIfOutputFileExists:
       for outputFile in outputFiles:
@@ -141,19 +159,15 @@ class sbatchManager:
       cfg_file = cfgFile,
       inputFiles = " ".join(inputFiles),
       outputDir = outputFilePath,
-      outputFiles = " ".join(outputFiles)
+      outputFiles = " ".join(outputFiles),
+      logFile = logFile
       )
     print "writing sbatch script file = '%s'" % scriptFile
     with codecs.open(scriptFile, "w", "utf-8") as f: f.write(script)
 
-    # raise if logfile missing (Margus: BUG? Validation should be before doing anything... creating script etc in this method?)
-    if not logFile:
-      if not self.logFileDir:
-        raise ValueError("Please call 'setLogFileDir' before calling 'submitJob' !!")
-      logFile = os.path.join(self.logFileDir, os.path.basename(scriptFile).replace(".sh", ".log"))
-
     # start command and register it's ID, so it is possible to get status later
-    command = "%s --partition=%s --output=%s %s" % (self.command_submit, self.queue, logFile, scriptFile)
+    # command = "%s --partition=%s --output=%s %s" % (self.command_submit, self.queue, logFile, scriptFile)
+    command = "%s --partition=%s %s" % (self.command_submit, self.queue, scriptFile)
     print "<submitJob>: command = %s" % command
     retVal = run_cmd(command).split()[-1]
     jobId = retVal.split()[-1]

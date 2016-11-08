@@ -307,18 +307,10 @@ class analyzeConfig:
         hostname = None
         is_cvmfs_error = False
         for line in logFile:
-          if line.find("time") != -1:
-            is_time = True
-            continue
-          if is_time:
-            time = line.strip()
-            is_time = False
-          if line.find("hostname") != -1:
-            is_hostname = True
-            continue
-          if is_hostname:
-            hostname = line.strip()
-            is_hostname = False
+          if line.find("Time") != -1:
+            time = line.split(':')[1].strip()
+          if line.find("Hostname") != -1:
+            hostname = line.split(':')[1].strip()
           if line.find("Transport endpoint is not connected") != -1:
             is_cvmfs_error = True
         logFile.close()
