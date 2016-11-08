@@ -80,7 +80,7 @@ run_wrapped_executable() {
     return ${EXIT_CODE}
 }
 
-main()
+main
 
 """
 
