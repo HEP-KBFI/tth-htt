@@ -127,6 +127,8 @@ class analyzeConfig:
     self.executable_make_plots = executable_make_plots
 
     self.workingDir = os.getcwd()
+    print "Working directory is: " + self.workingDir
+    
     create_if_not_exists(self.outputDir)
     self.stdout_file = codecs.open(os.path.join(self.outputDir, "stdout_%s.log" % self.channel), 'w', 'utf-8')
     self.stderr_file = codecs.open(os.path.join(self.outputDir, "stderr_%s.log" % self.channel), 'w', 'utf-8')
