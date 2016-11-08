@@ -297,7 +297,7 @@ class analyzeConfig:
 
       print "key_file: " + key_file
       print "self.logFiles_analyze[key_file]: " + self.logFiles_analyze[key_file]
-      print " os.path.exists(logFileName): " + os.path.exists(logFileName)
+      print " os.path.exists(logFileName): " + str(os.path.exists(logFileName))
 
       if os.path.exists(logFileName):
         logFile = open(logFileName)
