@@ -10,7 +10,7 @@ main() {
 }
 
 run_wrapped_executable() {
-    export SCRATCH_DIR="{{ scratch_dir }}/${SLURM_JOBID}"
+    export SCRATCH_DIR="{{ scratch_dir }}/$SLURM_JOBID"
     EXECUTABLE_LOG_FILE="{{ executableLogFile }}"
     EXECUTABLE_LOG_DIR="`dirname $EXECUTABLE_LOG_FILE`"
     EXECUTABLE_LOG_FILE_NAME="`basename $EXECUTABLE_LOG_FILE`"
@@ -78,7 +78,7 @@ run_wrapped_executable() {
 
     echo "End time is: `date`"
 
-    return ${EXIT_CODE}
+    return $EXIT_CODE
 }
 
 main
