@@ -14,14 +14,14 @@ echo "Create scratch directory: '${SCRATCH_DIR}'"
 mkdir -p ${SCRATCH_DIR}
 
 export LOG_FILE="{{ logFile }}"
-export LOG_DIR="${ dirname {{ logFile }} }"
-export LOG_FILE_NAME="${ basename {{ logFile }} }"
-export TEMPORARY_LOG_DIR="${ SCRATCH_DIR }/${ LOG_DIR }/"
-export TEMPORARY_LOG_FILE="${ TEMPORARY_LOG_DIR }/{ LOG_FILE_NAME }"
-echo "Create temporary log directory: '${ TEMPORARY_LOG_DIR }'"
-echo "Create final log directory: '${ LOG_DIR }'"
-mkdir -p ${ TEMPORARY_LOG_DIR }
-mkdir -p ${ LOG_DIR }
+export LOG_DIR="`dirname $LOG_FILE`"
+export LOG_FILE_NAME="`basename $LOG_FILE`"
+export TEMPORARY_LOG_DIR="$SCRATCH_DIR/$LOG_DIR/"
+export TEMPORARY_LOG_FILE="$TEMPORARY_LOG_DIR/$LOG_FILE_NAME"
+echo "Create temporary log directory: '$TEMPORARY_LOG_DIR'"
+echo "Create final log directory: '$LOG_DIR'"
+mkdir -p $TEMPORARY_LOG_DIR
+mkdir -p $LOG_DIR
 
 ##echo "copying Ntuple input files"
 ##INPUT_FILES="{{ inputFiles }}"
@@ -53,10 +53,9 @@ echo "Time is: `date`"
 
 echo "Execute: '{{ exec_name }}'"
 CMSSW_SEARCH_PATH=${SCRATCH_DIR}
-export EXECUTE_COMMAND="{{ exec_name }} {{ cfg_file }} > ${ TEMPORARY_LOG_FILE }"
 echo "Execute command:"
-echo ${ EXECUTE_COMMAND }
-{{ exec_name }} {{ cfg_file }} > ${ TEMPORARY_LOG_FILE }
+echo "{{ exec_name }} {{ cfg_file }} > TEMPORARY_LOG_FILE"
+{{ exec_name }} {{ cfg_file }} > $TEMPORARY_LOG_FILE
 
 echo "Time is: `date`"
 
