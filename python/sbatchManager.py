@@ -5,90 +5,104 @@ from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd
 
 job_template = """#!/bin/bash
 
-echo "Time is: `date`"
-echo "Hostname: `hostname`"
-echo "Current directory: `pwd`"
+# Wrapper of the wrapper
 
-export SCRATCH_DIR="{{ scratch_dir }}/${SLURM_JOBID}"
-echo "Create scratch directory: '${SCRATCH_DIR}'"
-mkdir -p ${SCRATCH_DIR}
+echo "`
 
-export LOG_FILE="{{ logFile }}"
-export LOG_DIR="`dirname $LOG_FILE`"
-export LOG_FILE_NAME="`basename $LOG_FILE`"
-export TEMPORARY_LOG_DIR="$SCRATCH_DIR/$LOG_DIR/"
-export TEMPORARY_LOG_FILE="$TEMPORARY_LOG_DIR/$LOG_FILE_NAME"
-echo "Create temporary log directory: '$TEMPORARY_LOG_DIR'"
-echo "Create final log directory: '$LOG_DIR'"
-mkdir -p $TEMPORARY_LOG_DIR
-mkdir -p $LOG_DIR
+    # Wrapper of the executable
 
-##echo "copying Ntuple input files"
-##INPUT_FILES="{{ inputFiles }}"
-##for INPUT_FILE in $INPUT_FILES
-##do
-##  cp $INPUT_FILE ${SCRATCH_DIR}
-##  if [ ! -f ${SCRATCH_DIR}/${INPUT_FILE##*/} ];
-##  then
-##    echo "Failed to copy ${INPUT_FILE} to scratch directory !!"
-##    exit 1
-##  fi
-##done
-##echo "Time is:"
-##date
+    export SCRATCH_DIR="{{ scratch_dir }}/${SLURM_JOBID}"
+    export EXECUTABLE_LOG_FILE="{{ executableLogFile }}"
+    export EXECUTABLE_LOG_DIR="`dirname $EXECUTABLE_LOG_FILE`"
+    export EXECUTABLE_LOG_FILE_NAME="`basename $EXECUTABLE_LOG_FILE`"
+    export TEMPORARY_EXECUTABLE_LOG_DIR="$SCRATCH_DIR/$EXECUTABLE_LOG_DIR/"
+    export TEMPORARY_EXECUTABLE_LOG_FILE="$TEMPORARY_EXECUTABLE_LOG_DIR/$EXECUTABLE_LOG_FILE_NAME"
 
-echo "Initialize CMSSW run-time environment"
-source /cvmfs/cms.cern.ch/cmsset_default.sh
-cd {{ working_dir }}
-cmsenv
-cd ${SCRATCH_DIR}
+    echo "Time is: `date`"
+    echo "Hostname: `hostname`"
+    echo "Current directory: `pwd`"
 
-echo "Time is: `date`"
+    echo "Create scratch directory: '${SCRATCH_DIR}'"
+    mkdir -p ${SCRATCH_DIR}
 
-echo "Copying contents of 'tthAnalysis/HiggsToTauTau/data' directory to Scratch"
-mkdir -p tthAnalysis/HiggsToTauTau/data
-cp -rL $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/data/* ${SCRATCH_DIR}/tthAnalysis/HiggsToTauTau/data
+    echo "Create temporary log directory: '${EXECUTABLE_LOG_FILE}'"
+    mkdir -p $TEMPORARY_EXECUTABLE_LOG_DIR
 
-echo "Time is: `date`"
+    echo "Create final log directory: '${EXECUTABLE_LOG_DIR}'"
+    mkdir -p $EXECUTABLE_LOG_DIR
 
-echo "Execute: '{{ exec_name }}'"
-CMSSW_SEARCH_PATH=${SCRATCH_DIR}
-echo "Execute command:"
-echo "{{ exec_name }} {{ cfg_file }} > TEMPORARY_LOG_FILE"
-{{ exec_name }} {{ cfg_file }} > $TEMPORARY_LOG_FILE
+    ##echo "copying Ntuple input files"
+    ##INPUT_FILES="{{ inputFiles }}"
+    ##for INPUT_FILE in $INPUT_FILES
+    ##do
+    ##  cp $INPUT_FILE ${SCRATCH_DIR}
+    ##  if [ ! -f ${SCRATCH_DIR}/${INPUT_FILE##*/} ];
+    ##  then
+    ##    echo "Failed to copy ${INPUT_FILE} to scratch directory !!"
+    ##    exit 1
+    ##  fi
+    ##done
+    ##echo "Time is:"
+    ##date
 
-echo "Time is: `date`"
+    echo "Initialize CMSSW run-time environment"
+    source /cvmfs/cms.cern.ch/cmsset_default.sh
+    cd {{ working_dir }}
+    cmsenv
+    cd ${SCRATCH_DIR}
 
-OUTPUT_FILES="{{ outputFiles }}"
-echo "Copying output files: {{ outputFiles }}"
-EXIT_CODE=0
-for OUTPUT_FILE in $OUTPUT_FILES
-do
-  OUTPUT_FILE_SIZE=$(stat -c '%s' $OUTPUT_FILE)
-  if [ $OUTPUT_FILE_SIZE -ge 1000 ]; then
-    cp $OUTPUT_FILE {{ outputDir }}
-  else
-    rm $OUTPUT_FILE
-    EXIT_CODE=1
-  fi
-done
+    echo "Time is: `date`"
 
-echo "Time is: `date`"
+    echo "Copying contents of 'tthAnalysis/HiggsToTauTau/data' directory to Scratch"
+    mkdir -p tthAnalysis/HiggsToTauTau/data
+    cp -rL $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/data/* ${SCRATCH_DIR}/tthAnalysis/HiggsToTauTau/data
 
-echo "Contents of temporary log dir:"
-ls -laR ${ TEMPORARY_LOG_DIR }
+    echo "Time is: `date`"
 
-echo "Copy from temporary output dir to output dir: "
-echo "cp -a ${ TEMPORARY_LOG_DIR }/* { LOG_DIR }/"
-cp -a ${ TEMPORARY_LOG_DIR }/* { LOG_DIR }/
+    echo "Execute: '{{ exec_name }}'"
+    CMSSW_SEARCH_PATH=${SCRATCH_DIR}
+    echo "Execute command:"
+    echo "{{ exec_name }} {{ cfg_file }} > $TEMPORARY_EXECUTABLE_LOG_FILE"
+    {{ exec_name }} {{ cfg_file }} > $TEMPORARY_EXECUTABLE_LOG_FILE
 
-echo "Delete Scratch directory"
-echo "rm -r ${ SCRATCH_DIR }"
-rm -r ${ SCRATCH_DIR }
+    echo "Time is: `date`"
 
-echo "End time is: `date`"
+    OUTPUT_FILES="{{ outputFiles }}"
+    echo "Copying output files: {{ outputFiles }}"
+    EXIT_CODE=0
+    for OUTPUT_FILE in $OUTPUT_FILES
+    do
+      OUTPUT_FILE_SIZE=$(stat -c '%s' $OUTPUT_FILE)
+      if [ $OUTPUT_FILE_SIZE -ge 1000 ]; then
+        cp $OUTPUT_FILE {{ outputDir }}
+      else
+        rm $OUTPUT_FILE
+        EXIT_CODE=1
+      fi
+    done
 
-exit ${EXIT_CODE}
+    echo "Time is: `date`"
+
+    echo "Contents of temporary log dir:"
+    ls -laR $TEMPORARY_EXECUTABLE_LOG_DIR
+
+    echo "Copy from temporary output dir to output dir: "
+    echo "cp -a $TEMPORARY_EXECUTABLE_LOG_DIR/* $EXECUTABLE_LOG_DIR/"
+    cp -a $TEMPORARY_EXECUTABLE_LOG_DIR/* $EXECUTABLE_LOG_DIR/
+
+    echo "Delete Scratch directory"
+    echo "rm -r $SCRATCH_DIR"
+    rm -r $SCRATCH_DIR
+
+    echo "End time is: `date`"
+
+    exit ${EXIT_CODE}
+
+    # - Wrapper of the executable ends here
+`" > {{ wrapperLogFile }}
+
+# - Wrapper of the wrapper ends here
+
 """
 
 command_create_scratchDir = '/scratch/mkscratch'
@@ -159,7 +173,8 @@ class sbatchManager:
       inputFiles = " ".join(inputFiles),
       outputDir = outputFilePath,
       outputFiles = " ".join(outputFiles),
-      logFile = logFile
+      wrapperLogFile = logFile.replace('.log', '_wrapper.log'),
+      executableLogFile = logFile.replace('.log', '_executable.log')
       )
     print "writing sbatch script file = '%s'" % scriptFile
     with codecs.open(scriptFile, "w", "utf-8") as f: f.write(script)
