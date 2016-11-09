@@ -579,7 +579,7 @@ samples_no_njet_cut_2016["/SingleMuon/Run2016D-PromptReco-v2/MINIAOD"] = OD([
 ])
 
 
-samples_2016["/TTW/spring16DR80v6aMiniAODv1/FASTSIM"] = OD([
+samples_no_njet_cut_2016["/TTW/spring16DR80v6aMiniAODv1/FASTSIM"] = OD([
   ("type",                  "mc"),
   ("sample_category",       "TTW"),
   ("process_name_specific", "TTW_Fastsim"),
