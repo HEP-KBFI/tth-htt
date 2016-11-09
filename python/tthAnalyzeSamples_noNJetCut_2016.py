@@ -579,14 +579,13 @@ samples_no_njet_cut_2016["/SingleMuon/Run2016D-PromptReco-v2/MINIAOD"] = OD([
 ])
 
 
-samples_no_njet_cut_2016["/TTW/spring16DR80v6aMiniAODv1/FASTSIM"] = OD([
+samples_2016["/TTW/spring16DR80v6aMiniAODv1/FASTSIM"] = OD([
   ("type",                  "mc"),
   ("sample_category",       "TTW"),
-  ("process_name_specific", "TTW_fastsim"),
+  ("process_name_specific", "TTW_Fastsim"),
   ("nof_files",             162),
   ("nof_events",            8362991),
-  ("use_it",                True),
-  ("use_it",                True),
+  ("use_it",                False),
   ("xsection",              0.204300),
   ("triggers",              [ "1e", "2e", "1mu", "2mu", "1e1mu" ]),
   ("reHLT",                 False),
