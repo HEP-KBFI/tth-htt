@@ -299,11 +299,14 @@ struct Sample
 		    "  (\"nof_files\",             $(max_nr)),\n"
 		    "  (\"nof_events\",            $(nof_events)),\n";
 		    //"  (\"nof_dbs_events\",        $(nof_dbs_events)),\n";
-		    if(process_name.find("2016E")!=std::string::npos || process_name.find("2016F")!=std::string::npos || process_name.find("2016G")!=std::string::npos) 
-			    input = input + "  (\"use_it\",                False),\n";
-		    else 
+		    if(process_name.find("2016E")!=std::string::npos || process_name.find("2016F")!=std::string::npos || process_name.find("2016G")!=std::string::npos ||
+		        process_name.find("ST_tW_top_5f_NoFullyHadronicDecays")!=std::string::npos || 
+		        process_name.find("TT_ext3")!=std::string::npos ||
+		        process_name.find("ttHToNonbb_M125")!=std::string::npos) 
+			    input = input + "  (\"use_it\",                False),\n";			   
+		    else
 			    input = input + "  (\"use_it\",                True),\n";
-	    if(process_name.find("SingleElec")!=std::string::npos) input = input + "  (\"triggers\",              [ \"1e\" ]),\n";
+			if(process_name.find("SingleElec")!=std::string::npos) input = input + "  (\"triggers\",              [ \"1e\" ]),\n";
 	    if(process_name.find("SingleMuon")!=std::string::npos) input = input + "  (\"triggers\",              [ \"1mu\" ]),\n";
 	    if(process_name.find("DoubleEG")!=std::string::npos  ) input = input + "  (\"triggers\",              [ \"2e\" ]),\n";
 	    if(process_name.find("DoubleMuon")!=std::string::npos) input = input + "  (\"triggers\",              [ \"2mu\" ]),\n";
@@ -327,10 +330,16 @@ struct Sample
 		    "  (\"sample_category\",       \"$(category)\"),\n"       
 		    "  (\"process_name_specific\", \"$(process_name)\"),\n"   
 		    "  (\"nof_files\",             $(max_nr)),\n"
-		    "  (\"nof_events\",            $(nof_events)),\n"
+		    "  (\"nof_events\",            $(nof_events)),\n";
 		    //"  (\"nof_dbs_events\",        $(nof_dbs_events)),\n"
-		    "  (\"use_it\",                True),\n"
-		    "  (\"xsection\",              $(x_sec)),\n"
+		  if(process_name.find("ST_tW_top_5f_NoFullyHadronicDecays")!=std::string::npos || 
+		        process_name.find("TT_ext3")!=std::string::npos ||
+		        process_name.find("ttHToNonbb_M125")!=std::string::npos) 
+			    input = input + "  (\"use_it\",                False),\n";
+		  else
+			    input = input + "  (\"use_it\",                True),\n";
+		  //  "  (\"use_it\",                True),\n"
+		  input =input + "  (\"xsection\",              $(x_sec)),\n"
 		    "  (\"triggers\",              [ \"1e\", \"2e\", \"1mu\", \"2mu\", \"1e1mu\" ]),\n"
 		    "  (\"reHLT\",                 False),\n"
 		    "  (\"local_paths\",\n"

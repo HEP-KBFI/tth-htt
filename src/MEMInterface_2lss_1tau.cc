@@ -166,9 +166,9 @@ MEMInterface_2lss_1tau::operator()(
     return result;
   }
 
-  NodeScheduler* scheduler = new ThreadScheduler();
-  scheduler->initNodeScheduler(config_, 0);
-  scheduler->runNodeScheduler(inputs, 1);
+  ThreadScheduler scheduler;
+  scheduler.initNodeScheduler(config_, 0);
+  scheduler.runNodeScheduler(inputs, 1);
 
   result.type_ = inputs[0].integration_type_;
   result.weight_ttH_ = inputs[0].weight_ttH_;
@@ -200,8 +200,6 @@ MEMInterface_2lss_1tau::operator()(
     result.errorFlag_ = 1;
     result.LR_ = -1.;
   }
-
-  delete scheduler;
 
   return result;
 }
