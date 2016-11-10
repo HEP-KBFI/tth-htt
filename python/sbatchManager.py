@@ -55,8 +55,8 @@ run_wrapped_executable() {
     echo "Time is: `date`"
 
     CMSSW_SEARCH_PATH=$SCRATCH_DIR
-    echo "Execute command: { FAILURE_WRAPPER } \"{{ exec_name }} {{ cfg_file }} > $TEMPORARY_EXECUTABLE_LOG_FILE\""
-    { FAILURE_WRAPPER } "{{ exec_name }} {{ cfg_file }} > $TEMPORARY_EXECUTABLE_LOG_FILE"
+    echo "Execute command: {{ FAILURE_WRAPPER }} \"{{ exec_name }} {{ cfg_file }} > $TEMPORARY_EXECUTABLE_LOG_FILE\""
+    {{ FAILURE_WRAPPER }} "{{ exec_name }} {{ cfg_file }} > $TEMPORARY_EXECUTABLE_LOG_FILE"
 
     echo "Time is: `date`"
 
@@ -93,7 +93,7 @@ run_wrapped_executable() {
 
 main
 
-""".format(FAILURE_WRAPPER = FAILURE_WRAPPER)
+"""
 
 command_create_scratchDir = '/scratch/mkscratch'
 project_d
@@ -165,7 +165,8 @@ class sbatchManager:
       outputDir = outputFilePath,
       outputFiles = " ".join(outputFiles),
       wrapperLogFile = logFile.replace('.log', '_wrapper.log'),
-      executableLogFile = logFile.replace('.log', '_executable.log')
+      executableLogFile = logFile.replace('.log', '_executable.log'),
+      FAILURE_WRAPPER = FAILURE_WRAPPER
       )
     print "writing sbatch script file = '%s'" % scriptFile
     with codecs.open(scriptFile, "w", "utf-8") as f: f.write(script)
