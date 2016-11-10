@@ -8,7 +8,7 @@ from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd
 
 CURRENT_FILE = os.path.abspath(__file__)
 PROJECT_DIRECTORY = os.path.abspath(os.path.join(CURRENT_FILE, os.pardir))
-FAILURE_WRAPPER = '/home/margusp/VHbbNtuples_7_6_x/CMSSW_7_6_3/src/tthAnalysis/HiggsToTauTau/scripts' # PROJECT_DIRECTORY + '/scripts/failure-wrapper.sh'
+FAILURE_WRAPPER = '/home/margusp/VHbbNtuples_7_6_x/CMSSW_7_6_3/src/tthAnalysis/HiggsToTauTau/scripts/failure-wrapper.sh' # PROJECT_DIRECTORY + '/scripts/failure-wrapper.sh'
 
 
 # Template for wrapper that is ran on cluster node
