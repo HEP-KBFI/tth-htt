@@ -96,7 +96,6 @@ main
 """
 
 command_create_scratchDir = '/scratch/mkscratch'
-project_d
 
 class sbatchManager:
   """
