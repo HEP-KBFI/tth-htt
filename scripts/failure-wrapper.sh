@@ -1,54 +1,69 @@
 #!/bin/bash
 
-# Author: Lauri L
+# Authors: Lauri L, Margus P
 # Resubmits sbatch job if /cvmfs/cms.cern.ch/cmsset_default.sh  missing (no access to network drive)
 
 #SBATCH -o /home/lauri/tmp/slurm-%j.out        # STDOUT
 #
 
-args=$1
-wrapper="/opt/software/wrapper"
-basedir="/scratch"
 
-job_user=${SLURM_JOB_USER}
-job_id=${SLURM_JOB_ID}
-job_host=${HOSTNAME}
-job_part=${SBATCH_PARTITION}
+# Set failure-wrapper absolute path
 
-job_dir=${basedir}/${job_user}/${job_id}
+CURRENT_DIR=pwd
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+FAILURE_WRAPPER="$SCRIPT_DIR/failure-wrapper.sh"
+cd $CURRENT_DIR
 
-prepare_env(){
-  mkdir -p ${job_dir}
-  cd ${job_dir}
-  pwd
+
+# Set scratch dir
+
+SCRATCH_DIR="/scratch"
+CURRENT_USER=${SLURM_CURRENT_USER}
+CURRENT_CURRENT_JOB_ID=${SLURM_CURRENT_JOB_ID}
+JOB_DIR="/scratch/$CURRENT_USER/$CURRENT_JOB_ID-failure-wrapper"
+
+
+# Check if network drive is mounted, then execute argument command
+# else mark cluster node a miserable failure, good for nothing and throw it out
+
+main() {
+
+    TRY_COUNT=$((TRY_COUNT+1))
+    add_log "Started (Try $RESUBMIT_NUMBER)"
+
+    if [[ -f /cvmfs/cms.cern.ch/cmsset_default.sh ]]; then
+        add_log "Network drive mounted, started running"
+        prepare_env
+        add_log "Will run command: $1"
+        . $1
+        add_log "Ended"
+    else
+        add_log "Network drive not mounted, marking cluster node invalid: sudo scontrol update nodename=$HOSTNAME state=drain reason=Testing"
+        sudo scontrol update nodename=$HOSTNAME state=drain reason=Testing
+
+        if [[ ${TRY_COUNT} -lt 3 ]]; then
+            echo "Will resubmit job to other node: TRY_COUNT=$TRY_COUNT sbatch $FAILURE_WRAPPER $1"
+            TRY_COUNT=$TRY_COUNT sbatch $FAILURE_WRAPPER $1
+        else
+            echo "Maximum tries reached, will not try to resubmit any more. GL & HF"
+        fi
+    fi
 }
 
-clean(){
-  rm -rvf ${job_dir}
-  echo $(date)
+prepare_env() {
+    mkdir -p "$JOB_DIR"
+    cd "$JOB_DIR"
+    pwd
 }
 
-add_log(){
-  lstatus=$1
-  echo "### ${lstatus}:$(date):${job_id}:${job_user}:${job_host}:${job_part} ###"
+clean() {
+    rm -rvf "$JOB_DIR"
+    date
 }
 
-#scontrol update NodeName=$HOSTNAME State=drain Reason="Testing"
-if [[ -f /cvmfs/cms.cern.ch/cmsset_default.sh ]]; then
-  add_log START
-  prepare_env
-  . $args
-  add_log STOP
-else
-  echo $LSUB
-  add_log DRAIN-NODE
-  sudo scontrol update nodename=$HOSTNAME state=drain reason=Testing
-  add_log TRY-REPOST
-  if [[ ${LSUB} -lt 2 ]]; then
-    LSUB=$((LSUB+1))
-    LSUB=${LSUB} sbatch ${wrapper} ${args}
-    add_log START-REPOST
-    exit
-  fi
-  add_log STOP-REPORT-${LSUB}
-fi
+add_log() {
+    MESSAGE=$1
+    echo "$MESSAGE:`date`:$CURRENT_JOB_ID:$CURRENT_USER:$HOSTNAME:$SBATCH_PARTITION"
+}
+
+main

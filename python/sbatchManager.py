@@ -3,6 +3,15 @@ from datetime import date
 
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd
 
+
+# Assumes that project dir is available on cluster node (example /home is shared)
+
+PROJECT_DIRECTORY = os.path.abspath(os.path.join(yourpath, os.pardir))
+FAILURE_WRAPPER = PROJECT_DIRECTORY + '/scripts/failure-wrapper.sh'
+
+
+# Template for wrapper that is ran on cluster node
+
 job_template = """#!/bin/bash
 
 main() {
@@ -45,8 +54,8 @@ run_wrapped_executable() {
     echo "Time is: `date`"
 
     CMSSW_SEARCH_PATH=$SCRATCH_DIR
-    echo "Execute command: {{ exec_name }} {{ cfg_file }} > $TEMPORARY_EXECUTABLE_LOG_FILE"
-    {{ exec_name }} {{ cfg_file }} > $TEMPORARY_EXECUTABLE_LOG_FILE
+    echo "Execute command: { FAILURE_WRAPPER } \"{{ exec_name }} {{ cfg_file }} > $TEMPORARY_EXECUTABLE_LOG_FILE\""
+    { FAILURE_WRAPPER } "{{ exec_name }} {{ cfg_file }} > $TEMPORARY_EXECUTABLE_LOG_FILE"
 
     echo "Time is: `date`"
 
@@ -83,9 +92,10 @@ run_wrapped_executable() {
 
 main
 
-"""
+""".format(FAILURE_WRAPPER = FAILURE_WRAPPER)
 
 command_create_scratchDir = '/scratch/mkscratch'
+project_d
 
 class sbatchManager:
   """
