@@ -6,7 +6,8 @@ from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd
 
 # Assumes that project dir is available on cluster node (example /home is shared)
 
-PROJECT_DIRECTORY = os.path.abspath(os.path.join(yourpath, os.pardir))
+CURRENT_FILE = os.path.abspath(__file__)
+PROJECT_DIRECTORY = os.path.abspath(os.path.join(CURRENT_FILE, os.pardir))
 FAILURE_WRAPPER = PROJECT_DIRECTORY + '/scripts/failure-wrapper.sh'
 
 
