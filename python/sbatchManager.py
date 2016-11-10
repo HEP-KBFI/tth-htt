@@ -8,8 +8,30 @@ from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd
 
 job_template = """#!/bin/bash
 
+RUNNING_COMMAND={{ RUNNING_COMMAND }}
+
 main() {
-    run_wrapped_executable > {{ wrapperLogFile }} 2>&1
+    run_failure_wrapped_executable > {{ wrapperLogFile }} 2>&1
+}
+
+run_failure_wrapped_executable() {
+    TRY_COUNT=$((TRY_COUNT+1))
+    echo "Started (Try $TRY_COUNT)"
+
+    if [[ -f /cvmfs/cms.cern.ch/cmsset_default.sh-xxx ]]; then
+        echo "Network drive mounted, started running on $HOSTNAME"
+        run_wrapped_executable
+    else
+        echo "Unable to use node $HOSTNAME, will mark node offline: sudo scontrol update nodename=$HOSTNAME state=drain reason=Testing"
+        sudo scontrol update nodename=$HOSTNAME state=drain reason=Testing
+
+        if [[ ${TRY_COUNT} -lt 3 ]]; then
+            echo "Will resubmit job to other node: TRY_COUNT=$TRY_COUNT sbatch $FAILURE_WRAPPER $1"
+            TRY_COUNT=$TRY_COUNT $RUNNING_COMMAND
+        else
+            echo "Maximum tries reached, will not try to resubmit any more. GL & HF"
+        fi
+    fi
 }
 
 run_wrapped_executable() {
@@ -148,6 +170,8 @@ class sbatchManager:
     # create script for executing jobs
     scriptFile = cfgFile.replace(".py", ".sh")
     scriptFile = scriptFile.replace("_cfg", "")
+    command = "%s --partition=%s %s" % (self.command_submit, self.queue, scriptFile)
+
     script = jinja2.Template(job_template).render(
       working_dir = self.workingDir,
       scratch_dir = scratchDir,
@@ -157,14 +181,12 @@ class sbatchManager:
       outputDir = outputFilePath,
       outputFiles = " ".join(outputFiles),
       wrapperLogFile = logFile.replace('.log', '_wrapper.log'),
-      executableLogFile = logFile.replace('.log', '_executable.log')
+      executableLogFile = logFile.replace('.log', '_executable.log'),
+      RUNNING_COMMAND = command
       )
     print "writing sbatch script file = '%s'" % scriptFile
     with codecs.open(scriptFile, "w", "utf-8") as f: f.write(script)
 
-    # start command and register it's ID, so it is possible to get status later
-    # command = "%s --partition=%s --output=%s %s" % (self.command_submit, self.queue, logFile, scriptFile)
-    command = "%s --partition=%s %s" % (self.command_submit, self.queue, scriptFile)
     print "<submitJob>: command = %s" % command
     retVal = run_cmd(command).split()[-1]
     jobId = retVal.split()[-1]
