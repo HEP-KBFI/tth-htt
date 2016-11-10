@@ -321,8 +321,8 @@ int main(int argc, char* argv[])
 
   TFileDirectory subDir_fails = fs.mkdir( Form("failed_cuts") );
   TH1I* fail_counter = subDir_fails.make<TH1I>( process_string.data(), "Rejected events", 10,  0, 10 );
-  const char *rejcs[10] = {"Trigger", "Trig_2e1e", "2e", "0mu", "2e_trig", "2e_sel", "2e_sel_trig", "0mu_sel", "pT_el", "m_ll"};
-  for (int i=1;i<=10;i++) fail_counter->GetXaxis()->SetBinLabel(i,rejcs[i-1]); 
+  const char *rejcs[11] = {"Trigger", "Trig_2e1e", "2e", "0mu", "2e_trig", "2e_sel", "2e_sel_trig", "0mu_sel", "pT_el", "tight_charge", "m_ll"};
+  for (int i=1;i<=11;i++) fail_counter->GetXaxis()->SetBinLabel(i,rejcs[i-1]); 
 
 
   /*vstring categories_etapt_gen = {  //B-barrel, E-endcap, L-low pT (10 <= pT < 25), M-med pT (25 <= pT < 50), H-high pT (pT > 50)
@@ -675,7 +675,33 @@ int main(int argc, char* argv[])
       }
       fail_counter->Fill("pT_el", 1);
       continue;
-    }  
+    }
+    
+    
+    bool failsTightChargeCut = false;
+    for ( std::vector<const RecoLepton*>::const_iterator lepton = selLeptons.begin();
+	    lepton != selLeptons.end(); ++lepton ) {
+      if ( (*lepton)->is_electron() ) {
+	      const RecoElectron* electron = dynamic_cast<const RecoElectron*>(*lepton);
+	      assert(electron);
+  	    if ( electron->tightCharge_ < 2 ) failsTightChargeCut = true;
+      }
+      if ( (*lepton)->is_muon() ) {
+	      const RecoMuon* muon = dynamic_cast<const RecoMuon*>(*lepton);
+	      assert(muon);
+	      if ( muon->tightCharge_ < 2 ) failsTightChargeCut = true;
+      }
+    }
+    if ( failsTightChargeCut ) {
+      if ( run_lumi_eventSelector ) {
+      	std::cout << "event FAILS tight lepton charge requirement." << std::endl;
+      }
+      continue;
+    }
+    //cutFlowTable.update("tight lepton charge", evtWeight);
+    fail_counter->Fill("tight_charge", 1);
+    
+      
     bool isCharge_SS = selLepton_lead->charge_*selLepton_sublead->charge_ > 0;
     bool isCharge_OS = selLepton_lead->charge_*selLepton_sublead->charge_ < 0;
 

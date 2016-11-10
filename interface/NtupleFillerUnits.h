@@ -17,7 +17,7 @@
 #include <map> // std::map<,>
 #include <iostream> // std::cerr
 
-#define PLACEHOLDER -99
+#define PLACEHOLDER -9999
 
 /**
   * @file Provides a bunch of structs (,,units'') which can be used

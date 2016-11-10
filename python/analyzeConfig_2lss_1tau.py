@@ -102,8 +102,54 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
       self.dirs[dir_type] = os.path.join(self.outputDir, dir_type, self.channel)
     ##print "self.dirs = ", self.dirs
 
-    self.nonfake_backgrounds = [ "TT", "TTW", "TTZ", "WZ", "Rares" ]
-
+    if self.applyFakeRateWeights == "3L":
+      self.nonfake_backgrounds = [ "TT", "TTW", "TTZ", "EWK", "Rares" ]
+      self.prep_dcard_processesToCopy = [ "data_obs", "TT", "TTW", "TTZ", "EWK", "Rares", "fakes_data", "fakes_mc", "flips_data" ]
+      self.make_plots_backgrounds = [ "TT", "TTW", "TTZ", "EWK", "Rares", "fakes_data", "flips_data" ]
+    elif applyFakeRateWeights == "2lepton":
+      if era == '2015':
+        for sample_name in [
+          "/TTJets_SingleLeptFromTbar_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v2/MINIAODSIM",
+          "/TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM",
+          "/TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM",
+          "/DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM",
+          "/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM",
+          "/WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM",
+          "/ST_tW_top_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM",
+          "/ST_tW_antitop_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM",
+          "/ST_t-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM",
+          "/ST_t-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12_ext1-v1/MINIAODSIM",
+          "/ST_s-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v2/MINIAODSIM",
+          "/WWTo2L2Nu_13TeV-powheg/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM",
+          "/ZZTo4L_13TeV_powheg_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM" ]:
+          self.samples[sample_name]["sample_category"] = "background_data_estimate"
+        self.samples["/WZTo3LNu_TuneCUETP8M1_13TeV-powheg-pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM"]["sample_category"] = "WZ"
+      elif era == '2016':
+        for sample_name in [ 
+          '/TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM',
+          '/TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0_ext1-v1/MINIAODSIM',
+          '/TTJets_SingleLeptFromTbar_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM',
+          '/TTJets_SingleLeptFromTbar_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0_ext1-v1/MINIAODSIM',
+          '/TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v4/MINIAODSIM',
+          '/TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0_ext1-v1/MINIAODSIM',
+          '/DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM',
+          '/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14_ext1-v1/MINIAODSIM',
+          '/WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14_ext1-v1/MINIAODSIM',
+          '/ST_tW_antitop_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM',
+          '/ST_tW_top_5f_NoFullyHadronicDecays_13TeV-powheg_TuneCUETP8M1/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM',
+          '/ST_t-channel_antitop_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia8_TuneCUETP8M1/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM',
+          '/ST_t-channel_top_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia8_TuneCUETP8M1/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM',
+          '/ST_s-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM',
+          '/WWTo2L2Nu_13TeV-powheg/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM',
+          '/ZZTo4L_13TeV-amcatnloFXFX-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM' ]:
+          self.samples[sample_name]["sample_category"] = "background_data_estimate"
+        self.samples["/WZTo3LNu_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"]["sample_category"] = "WZ"
+      else:
+        raise ValueError("Invalid Configuration parameter 'era' = %s !!" % era)
+      self.nonfake_backgrounds = [ "TTW", "TTZ", "WZ", "Rares" ]
+      self.prep_dcard_processesToCopy = [ "data_obs", "TTW", "TTZ", "WZ", "Rares", "fakes_data", "fakes_mc", "flips_data" ]
+      self.make_plots_backgrounds = [ "TTW", "TTZ", "WZ", "Rares", "fakes_data", "flips_data" ]
+      
     self.cfgFile_analyze_original = os.path.join(self.workingDir, "analyze_2lss_1tau_cfg.py")
     self.cfgFile_addBackgrounds_original = os.path.join(self.workingDir, "addBackgrounds_cfg.py")
     self.cfgFile_addBackgrounds_modified = {}
@@ -117,11 +163,9 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
     self.histogramFile_addFlips = os.path.join(self.outputDir, DKEY_HIST, "addBackgroundLeptonFlips_%s.root" % self.channel)
     self.cfgFile_addFlips_original = os.path.join(self.workingDir, "addBackgroundLeptonFlips_cfg.py")
     self.cfgFile_addFlips_modified = os.path.join(self.outputDir, DKEY_CFGS, "addBackgroundLeptonFlips_%s_cfg.py" % self.channel)
-    self.prep_dcard_processesToCopy = [ "data_obs", "TTW", "TTZ", "WZ", "Rares", "fakes_data", "fakes_mc", "flips_data" ]
     self.histogramDir_prep_dcard = "2lss_1tau_SS_Tight"
     self.histogramDir_prep_dcard_OS = "2lss_1tau_OS_Tight"
     self.cfgFile_make_plots_original = os.path.join(self.workingDir, "makePlots_2lss_1tau_cfg.py")
-    self.make_plots_backgrounds = [ "TTW", "TTZ", "WZ", "Rares", "fakes_data", "flips_data" ]
     self.cfgFile_make_plots_mcClosure_original = os.path.join(self.workingDir, "makePlots_mcClosure_cfg.py")
     self.cfgFiles_make_plots_mcClosure_modified = []
 
@@ -224,6 +268,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
     lines.append("        sideband = cms.string('%s')" % category_sideband)
     lines.append("    )")
     lines.append(")")
+    lines.append("process.addBackgroundLeptonFakes.processesToSubtract = cms.vstring(%s)" % self.nonfake_backgrounds)
     create_cfg(self.cfgFile_addFakes_original, cfgFile_modified, lines)
 
   def createCfg_addFlips(self, inputFile, outputFile, cfgFile_modified):
@@ -236,6 +281,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
     lines = []
     lines.append("process.fwliteInput.fileNames = cms.vstring('%s')" % inputFile)
     lines.append("process.fwliteOutput.fileName = cms.string('%s')" % outputFile)
+    lines.append("process.addBackgroundLeptonFlips.processesToSubtract = cms.vstring(%s)" % self.nonfake_backgrounds)
     create_cfg(self.cfgFile_addFlips_original, cfgFile_modified, lines)
 
   def createCfg_makePlots_mcClosure(self):
@@ -504,12 +550,12 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
           self.createCfg_addBackgrounds(self.histogramFile_hadd_stage1, self.histogramFile_addBackgrounds[key], self.cfgFile_addBackgrounds_modified[key],
             [ histogramDir ], processes_input, self.process_output_addBackgrounds[key])
         
-    logging.info("Creating configuration files for executing 'addBackgroundFakes'")
+    logging.info("Creating configuration files for executing 'addBackgroundLeptonFakes'")
     for lepton_charge_selection in self.lepton_charge_selections:
       key = getKey("fakes_data", lepton_charge_selection) 
-      self.histogramFile_addFakes[key] = os.path.join(self.outputDir, DKEY_HIST, "addBackgroundFakes_%s_%s.root" % \
+      self.histogramFile_addFakes[key] = os.path.join(self.outputDir, DKEY_HIST, "addBackgroundLeptonFakes_%s_%s.root" % \
         (self.channel, lepton_charge_selection))
-      self.cfgFile_addFakes_modified[key] = os.path.join(self.outputDir, DKEY_CFGS, "addBackgroundFakes_%s_%s_cfg.py" % \
+      self.cfgFile_addFakes_modified[key] = os.path.join(self.outputDir, DKEY_CFGS, "addBackgroundLeptonFakes_%s_%s_cfg.py" % \
         (self.channel, lepton_charge_selection))
       category_signal = "2lss_1tau_%s_Tight" % lepton_charge_selection
       category_sideband = "2lss_1tau_%s_Fakeable_wFakeRateWeights" % lepton_charge_selection
