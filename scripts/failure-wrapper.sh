@@ -3,9 +3,6 @@
 # Authors: Lauri L, Margus P
 # Resubmits sbatch job if /cvmfs/cms.cern.ch/cmsset_default.sh  missing (no access to network drive)
 
-#SBATCH -o /home/lauri/tmp/slurm-%j.out        # STDOUT
-#
-
 
 # Set failure-wrapper absolute path
 
