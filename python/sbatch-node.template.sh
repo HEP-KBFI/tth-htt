@@ -19,7 +19,7 @@ run_failure_wrapped_executable() {
     TRY_COUNT=$[TRY_COUNT+1]
     echo "Started (Try $TRY_COUNT)"
 
-    if [[ -f /cvmfs/cms.cern.ch/cmsset_default.sh-xxx ]]; then
+    if [[ -f /cvmfs/cms.cern.ch/cmsset_default.sh ]]; then
         echo "Network drive mounted, started running on $HOSTNAME"
         run_wrapped_executable
     else
