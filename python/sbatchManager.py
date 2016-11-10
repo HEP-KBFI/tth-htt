@@ -25,7 +25,7 @@ run_failure_wrapped_executable() {
         echo "Unable to use node $HOSTNAME, will mark node offline: sudo scontrol update nodename=$HOSTNAME state=drain reason=Testing"
         sudo scontrol update nodename=$HOSTNAME state=drain reason=Testing
 
-        if [[ ${TRY_COUNT} -lt 3 ]]; then
+        if [[ $TRY_COUNT -lt 3 ]]; then
             echo "Will resubmit job to other node: TRY_COUNT=$TRY_COUNT sbatch $FAILURE_WRAPPER $1"
             TRY_COUNT=$TRY_COUNT $RUNNING_COMMAND
         else
