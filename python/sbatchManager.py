@@ -4,13 +4,6 @@ from datetime import date
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd
 
 
-# Assumes that project dir is available on cluster node (example /home is shared)
-
-CURRENT_FILE = os.path.abspath(__file__)
-PROJECT_DIRECTORY = os.path.abspath(os.path.join(CURRENT_FILE, os.pardir))
-FAILURE_WRAPPER = '/home/margusp/VHbbNtuples_7_6_x/CMSSW_7_6_3/src/tthAnalysis/HiggsToTauTau/scripts/failure-wrapper.sh' # PROJECT_DIRECTORY + '/scripts/failure-wrapper.sh'
-
-
 # Template for wrapper that is ran on cluster node
 
 job_template = """#!/bin/bash
@@ -55,8 +48,8 @@ run_wrapped_executable() {
     echo "Time is: `date`"
 
     CMSSW_SEARCH_PATH=$SCRATCH_DIR
-    echo "Execute command: {{ FAILURE_WRAPPER }} \"{{ exec_name }} {{ cfg_file }} > $TEMPORARY_EXECUTABLE_LOG_FILE\""
-    {{ FAILURE_WRAPPER }} "{{ exec_name }} {{ cfg_file }} > $TEMPORARY_EXECUTABLE_LOG_FILE"
+    echo "Execute command: {{ exec_name }} {{ cfg_file }} > $TEMPORARY_EXECUTABLE_LOG_FILE"
+    {{ exec_name }} {{ cfg_file }} > $TEMPORARY_EXECUTABLE_LOG_FILE
 
     echo "Time is: `date`"
 
@@ -164,8 +157,7 @@ class sbatchManager:
       outputDir = outputFilePath,
       outputFiles = " ".join(outputFiles),
       wrapperLogFile = logFile.replace('.log', '_wrapper.log'),
-      executableLogFile = logFile.replace('.log', '_executable.log'),
-      FAILURE_WRAPPER = FAILURE_WRAPPER
+      executableLogFile = logFile.replace('.log', '_executable.log')
       )
     print "writing sbatch script file = '%s'" % scriptFile
     with codecs.open(scriptFile, "w", "utf-8") as f: f.write(script)
