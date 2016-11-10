@@ -28,7 +28,7 @@ main() {
     TRY_COUNT=$((TRY_COUNT+1))
     add_log "Started (Try $RESUBMIT_NUMBER)"
 
-    if [[ -f /cvmfs/cms.cern.ch/cmsset_default.sh ]]; then
+    if [[ -f /cvmfs/cms.cern.ch/cmsset_default.sh-xxx ]]; then
         add_log "Network drive mounted, started running"
         prepare_env
         add_log "Will run command: $1"
