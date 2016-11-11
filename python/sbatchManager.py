@@ -49,7 +49,7 @@ class sbatchManager:
     if not logFile:
       if not self.logFileDir:
         raise ValueError("Please call 'setLogFileDir' before calling 'submitJob' !!")
-      logFile = os.path.join(self.logFileDir, os.path.basename(scriptFile).replace(".sh", ".log"))
+      logFile = os.path.join(self.logFileDir, os.path.basename(script_file).replace(".sh", ".log"))
 
 
     # if any of the output files exists, returns (Margus: BUG? Because only that file should be skipped, not all?)
@@ -71,9 +71,13 @@ class sbatchManager:
     create_if_not_exists(scratchDir)
 
     # create script for executing jobs
-    scriptFile = cfgFile.replace(".py", ".sh")
-    scriptFile = scriptFile.replace("_cfg", "")
-    command = "%s --partition=%s %s" % (self.command_submit, self.queue, scriptFile)
+    script_file = cfgFile.replace(".py", ".sh")
+    script_file = script_file.replace("_cfg", "")
+
+    wrapper_log_file = logFile.replace('.log', '_wrapper.log')
+    executable_log_file = logFile.replace('.log', '_executable.log')
+
+    command = "%s --partition=%s --output=/dev/null %s" % (self.command_submit, self.queue, script_file)
 
     script = jinja2.Template(job_template).render(
       working_dir = self.workingDir,
@@ -83,12 +87,12 @@ class sbatchManager:
       inputFiles = " ".join(inputFiles),
       outputDir = outputFilePath,
       outputFiles = " ".join(outputFiles),
-      wrapperLogFile = logFile.replace('.log', '_wrapper.log'),
-      executableLogFile = logFile.replace('.log', '_executable.log'),
+      wrapper_log_file = wrapper_log_file,
+      executable_log_file = executable_log_file,
       RUNNING_COMMAND = command
       )
-    print "writing sbatch script file = '%s'" % scriptFile
-    with codecs.open(scriptFile, "w", "utf-8") as f: f.write(script)
+    print "writing sbatch script file = '%s'" % script_file
+    with codecs.open(script_file, "w", "utf-8") as f: f.write(script)
 
     print "<submitJob>: command = %s" % command
     retVal = run_cmd(command).split()[-1]

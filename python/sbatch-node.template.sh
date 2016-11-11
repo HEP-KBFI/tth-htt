@@ -9,7 +9,7 @@ RUNNING_COMMAND="{{ RUNNING_COMMAND }}"
 # Runs executable, wrapped into failure wrapper + wrapped into node scratchdir
 
 main() {
-    run_failure_wrapped_executable >> "{{ wrapperLogFile }}" 2>&1
+    run_failure_wrapped_executable >> "{{ wrapper_log_file }}" 2>&1
 }
 
 
@@ -40,7 +40,7 @@ run_failure_wrapped_executable() {
 
 run_wrapped_executable() {
     export SCRATCH_DIR="{{ scratch_dir }}/$SLURM_JOBID"
-    EXECUTABLE_LOG_FILE="{{ executableLogFile }}"
+    EXECUTABLE_LOG_FILE="{{ executable_log_file }}"
     EXECUTABLE_LOG_DIR="`dirname $EXECUTABLE_LOG_FILE`"
     EXECUTABLE_LOG_FILE_NAME="`basename $EXECUTABLE_LOG_FILE`"
     TEMPORARY_EXECUTABLE_LOG_DIR="$SCRATCH_DIR/$EXECUTABLE_LOG_DIR/"
