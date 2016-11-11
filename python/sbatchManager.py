@@ -3,87 +3,15 @@ from datetime import date
 
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd
 
-job_template = """#!/bin/bash
 
-main() {
-    run_wrapped_executable > {{ wrapperLogFile }} 2>&1
-}
+# Template for wrapper that is ran on cluster node
 
-run_wrapped_executable() {
-    export SCRATCH_DIR="{{ scratch_dir }}/$SLURM_JOBID"
-    EXECUTABLE_LOG_FILE="{{ executableLogFile }}"
-    EXECUTABLE_LOG_DIR="`dirname $EXECUTABLE_LOG_FILE`"
-    EXECUTABLE_LOG_FILE_NAME="`basename $EXECUTABLE_LOG_FILE`"
-    TEMPORARY_EXECUTABLE_LOG_DIR="$SCRATCH_DIR/$EXECUTABLE_LOG_DIR/"
-    TEMPORARY_EXECUTABLE_LOG_FILE="$TEMPORARY_EXECUTABLE_LOG_DIR/$EXECUTABLE_LOG_FILE_NAME"
+current_dir = os.path.dirname(os.path.realpath(__file__))
+job_template_file = current_dir + "/sbatch-node.template.sh"
+job_template = open(job_template_file, 'r').read()
 
-    echo "Time is: `date`"
-    echo "Hostname: `hostname`"
-    echo "Current directory: `pwd`"
 
-    echo "Create scratch directory: mkdir -p $SCRATCH_DIR"
-    mkdir -p $SCRATCH_DIR
-
-    echo "Create temporary log directory: mkdir -p $TEMPORARY_EXECUTABLE_LOG_DIR"
-    mkdir -p $TEMPORARY_EXECUTABLE_LOG_DIR
-
-    echo "Create final log directory: mkdir -p $EXECUTABLE_LOG_DIR"
-    mkdir -p $EXECUTABLE_LOG_DIR
-
-    echo "Initialize CMSSW run-time environment: source /cvmfs/cms.cern.ch/cmsset_default.sh"
-    source /cvmfs/cms.cern.ch/cmsset_default.sh
-    cd {{ working_dir }}
-    cmsenv
-    cd $SCRATCH_DIR
-
-    echo "Time is: `date`"
-
-    echo "Copying contents of 'tthAnalysis/HiggsToTauTau/data' directory to Scratch: cp -rL $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/data/* $SCRATCH_DIR/tthAnalysis/HiggsToTauTau/data"
-    mkdir -p tthAnalysis/HiggsToTauTau/data
-    cp -rL $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/data/* $SCRATCH_DIR/tthAnalysis/HiggsToTauTau/data
-
-    echo "Time is: `date`"
-
-    CMSSW_SEARCH_PATH=$SCRATCH_DIR
-    echo "Execute command: {{ exec_name }} {{ cfg_file }} > $TEMPORARY_EXECUTABLE_LOG_FILE"
-    {{ exec_name }} {{ cfg_file }} > $TEMPORARY_EXECUTABLE_LOG_FILE
-
-    echo "Time is: `date`"
-
-    OUTPUT_FILES="{{ outputFiles }}"
-    echo "Copying output files: {{ outputFiles }}"
-    EXIT_CODE=0
-    for OUTPUT_FILE in $OUTPUT_FILES
-    do
-      OUTPUT_FILE_SIZE=$(stat -c '%s' $OUTPUT_FILE)
-      if [ $OUTPUT_FILE_SIZE -ge 1000 ]; then
-        echo "cp $OUTPUT_FILE {{ outputDir }}"
-        cp $OUTPUT_FILE {{ outputDir }}
-      else
-        rm $OUTPUT_FILE
-        EXIT_CODE=1
-      fi
-    done
-
-    echo "Time is: `date`"
-
-    echo "Contents of temporary log dir:"
-    ls -laR $TEMPORARY_EXECUTABLE_LOG_DIR
-
-    echo "Copy from temporary output dir to output dir: cp -a $TEMPORARY_EXECUTABLE_LOG_DIR/* $EXECUTABLE_LOG_DIR/"
-    cp -a $TEMPORARY_EXECUTABLE_LOG_DIR/* $EXECUTABLE_LOG_DIR/
-
-    echo "Delete Scratch directory: rm -r $SCRATCH_DIR"
-    rm -r $SCRATCH_DIR
-
-    echo "End time is: `date`"
-
-    return $EXIT_CODE
-}
-
-main
-
-"""
+# Define SbatchManager
 
 command_create_scratchDir = '/scratch/mkscratch'
 
@@ -145,6 +73,8 @@ class sbatchManager:
     # create script for executing jobs
     scriptFile = cfgFile.replace(".py", ".sh")
     scriptFile = scriptFile.replace("_cfg", "")
+    command = "%s --partition=%s %s" % (self.command_submit, self.queue, scriptFile)
+
     script = jinja2.Template(job_template).render(
       working_dir = self.workingDir,
       scratch_dir = scratchDir,
@@ -154,14 +84,12 @@ class sbatchManager:
       outputDir = outputFilePath,
       outputFiles = " ".join(outputFiles),
       wrapperLogFile = logFile.replace('.log', '_wrapper.log'),
-      executableLogFile = logFile.replace('.log', '_executable.log')
+      executableLogFile = logFile.replace('.log', '_executable.log'),
+      RUNNING_COMMAND = command
       )
     print "writing sbatch script file = '%s'" % scriptFile
     with codecs.open(scriptFile, "w", "utf-8") as f: f.write(script)
 
-    # start command and register it's ID, so it is possible to get status later
-    # command = "%s --partition=%s --output=%s %s" % (self.command_submit, self.queue, logFile, scriptFile)
-    command = "%s --partition=%s %s" % (self.command_submit, self.queue, scriptFile)
     print "<submitJob>: command = %s" % command
     retVal = run_cmd(command).split()[-1]
     jobId = retVal.split()[-1]
