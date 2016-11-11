@@ -77,7 +77,7 @@ class sbatchManager:
     wrapper_log_file = logFile.replace('.log', '_wrapper.log')
     executable_log_file = logFile.replace('.log', '_executable.log')
 
-    command = "%s --partition=%s --output=/dev/null %s" % (self.command_submit, self.queue, script_file)
+    command = "%s --partition=%s --output=%s %s" % (self.command_submit, self.queue, wrapper_log_file, script_file)
 
     script = jinja2.Template(job_template).render(
       working_dir = self.workingDir,
