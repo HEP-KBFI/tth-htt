@@ -96,7 +96,7 @@ run_wrapped_executable() {
 
     echo "Time is: `date`"
 
-    echo "Contents of temporary log dir:"
+    echo "Contents of temporary log dir: ls -laR $TEMPORARY_EXECUTABLE_LOG_DIR"
     ls -laR $TEMPORARY_EXECUTABLE_LOG_DIR
 
     echo "Copy from temporary output dir to output dir: cp -a $TEMPORARY_EXECUTABLE_LOG_DIR/* $EXECUTABLE_LOG_DIR/"
