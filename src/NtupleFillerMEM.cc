@@ -553,10 +553,12 @@ NtupleFillerMEM::add(const std::vector<GenHadTau> & genHadTaus,
   const std::vector<const RecoJet *> selBJetsMerged_rest(selBJetsMerged_.begin() + 2, selBJetsMerged_.end());
   selBJetsMerged_.resize(2);
   for(const RecoJet * const jet: selBJetsMerged_)
+  {
     if(jet -> is_overlap(b, 0.5))
       bJetCandidates.push_back(jet);
-    else if(jet -> is_overlap(bbar, 0.5))
+    if(jet -> is_overlap(bbar, 0.5))
       bbarJetCandidates.push_back(jet);
+  }
   std::sort(
     bJetCandidates.begin(), bJetCandidates.end(),
     [&b](const RecoJet * const lhs,
