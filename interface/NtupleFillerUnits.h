@@ -16,6 +16,7 @@
 #include <string> // std::string
 #include <map> // std::map<,>
 #include <iostream> // std::cerr
+#include <sstream> // std::stringstream
 
 #define PLACEHOLDER -9999
 
@@ -43,6 +44,14 @@ struct RLEUnit
     , lumi_(lumi)
     , evt_(evt)
   {}
+
+  std::string
+  get_str() const
+  {
+    std::stringstream ss;
+    ss << run_ << ':' << lumi_ << ':' << evt_;
+    return ss.str();
+  }
 
   RUN_TYPE  run_;
   LUMI_TYPE lumi_;
