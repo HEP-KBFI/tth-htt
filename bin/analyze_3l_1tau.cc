@@ -1405,7 +1405,7 @@ struct preselHistManagerType
         mem.add(genHadTaus, genBQuarkFromTop, genLepFromTau,
                 genNuFromTau, genTau, genLepFromTop, genNuFromTop,
                 genTop, genVbosons);
-      mem.fill(true);
+      mem.fill(false);
     }
   }
 

@@ -671,7 +671,7 @@ NtupleFillerMEM::add(const std::vector<GenHadTau> & genHadTaus,
 void
 NtupleFillerMEM::fill(bool force)
 {
-  if(! errCode_ || force)
+  if(errCode_ == 0 || force)
     tree_ -> Fill();
   selLeptons_.clear();
   selBJetsMerged_.clear();
