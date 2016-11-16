@@ -27,7 +27,7 @@ RecoElectronSelectorFakeable::RecoElectronSelectorFakeable(int era, int index, b
   , max_OoEminusOoP_trig_({ 0.010, 0.010, 0.005 })    
   , binning_mvaTTH_({ 0.75 })
   , min_jetPtRatio_({ 0.30, -1.e+3 })
-  , apply_conversionVeto_(false)   
+  , apply_conversionVeto_(true)   
   , max_nLostHits_(0)
 {
   if      ( era_ == kEra_2015 ) max_jetBtagCSV_ = { 0.605, 0.89 };
