@@ -973,14 +973,14 @@ int main(int argc, char* argv[])
     double mTauTauVis = (selHadTau_lead->p4_ + selHadTau_sublead->p4_).mass();
 
     // apply requirement on jets (incl. b-tagged jets) and hadronic taus on level of final event selection
-    if ( !(selJets.size() >= 4) ) continue;
-    cutFlowTable.update(">= 4 jets", evtWeight);
+    if ( !(selJets.size() >= 3) ) continue;
+    cutFlowTable.update(">= 3 jets", evtWeight);
     if ( !(selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) ) continue;
     cutFlowTable.update(">= 2 loose b-jets || 1 medium b-jet (2)", evtWeight);
  
     double minPt = selLepton->is_electron() ? 30. : 25.;
     if ( !(selLepton->pt_ > minPt) ) continue;
-    cutFlowTable.update("sel lepton pT > 20 GeV", evtWeight);
+    cutFlowTable.update("sel lepton pT > 30(e)/25(mu) GeV", evtWeight);
 
     bool isCharge_SS = selHadTau_lead->charge_*selHadTau_sublead->charge_ > 0;
     bool isCharge_OS = selHadTau_lead->charge_*selHadTau_sublead->charge_ < 0;
