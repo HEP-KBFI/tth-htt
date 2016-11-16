@@ -195,7 +195,7 @@ class analyzeConfig_3l_1tau(analyzeConfig):
     create_cfg(self.cfgFile_analyze_original, cfgFile_modified, lines)
 
   def createCfg_addBackgrounds(self, inputFile, outputFile, cfgFile_modified, categories, processes_input, process_output):
-    """Create python configuration file for the addBackgroundLeptonFakes executable (data-driven estimation of 'Fakes' backgrounds)
+    """Create python configuration file for the addBackgrounds executable (sum either all "fake" or all "non-fake" contributions)
 
     Args:
       inputFiles: input file (the ROOT file produced by hadd_stage1)
@@ -225,7 +225,9 @@ class analyzeConfig_3l_1tau(analyzeConfig):
     lines.append("        sideband = cms.string('%s')" % category_sideband)
     lines.append("    )")
     lines.append(")")
-    lines.append("process.addBackgroundLeptonFakes.processesToSubtract = cms.vstring(%s)" % self.nonfake_backgrounds)
+    processesToSubtract = self.nonfake_backgrounds
+    processesToSubtract.append("fakes_signal")
+    lines.append("process.addBackgroundLeptonFakes.processesToSubtract = cms.vstring(%s)" % processesToSubtract)
     create_cfg(self.cfgFile_addFakes_original, cfgFile_modified, lines)
 
   def createCfg_makePlots_mcClosure(self):
@@ -417,6 +419,9 @@ class analyzeConfig_3l_1tau(analyzeConfig):
                 key_file = getKey(sample_name, lepton_and_hadTau_selection, lepton_and_hadTau_frWeight, charge_selection, central_or_shift, jobId)
 
                 self.ntupleFiles[key_file] = generate_input_list(self.inputFileIds[sample_name][jobId], secondary_files, primary_store, secondary_store, self.debug)
+                if len(self.ntupleFiles[key_file]) == 0:
+                  print "Warning: ntupleFiles['%s'] = %s --> skipping job !!" % (key_file, self.ntupleFiles[key_file])
+                  continue
                 self.cfgFiles_analyze_modified[key_file] = os.path.join(self.dirs[key_dir][DKEY_CFGS], "analyze_%s_%s_%s_%s_%s_%i_cfg.py" % \
                   (self.channel, process_name, lepton_and_hadTau_selection_and_frWeight, charge_selection, central_or_shift, jobId))
                 self.histogramFiles[key_file] = os.path.join(self.dirs[key_dir][DKEY_HIST], "%s_%s_%s_%s_%i.root" % \
@@ -453,7 +458,7 @@ class analyzeConfig_3l_1tau(analyzeConfig):
     process_names.extend(self.nonfake_backgrounds)
     process_names.extend([ "signal", "ttH_htt", "ttH_hww", "ttH_hzz" ])
     # sum non-fake contributions for each MC sample separately
-    # input processes: TT2t0e0m0j, TT1t1e0m0j, TT1t0e1m0j", TT0t2e0m0j, TT0t1e1m0j, TT0t0e2m0j; TTW2t0e0m0j,...
+    # input processes: TT3l0j; TTW3l0j,...
     # output processes: TT; ...
     for process_name in process_names:
       for lepton_and_hadTau_selection in self.lepton_and_hadTau_selections:
@@ -475,7 +480,36 @@ class analyzeConfig_3l_1tau(analyzeConfig):
             hadTau_selection = lepton_and_hadTau_selection
             histogramDir = getHistogramDir(lepton_selection, hadTau_selection, lepton_and_hadTau_frWeight, charge_selection)
             processes_input = [ "%s%s" % (process_name, genMatch) for genMatch in self.lepton_and_hadTau_genMatches_nonfakes ]
+            # CV: treat fakes in ttH signal events as "signal", not as "background"
+            if process_name in [ "signal", "ttH_htt", "ttH_hww", "ttH_hzz" ]:
+              processes_input.extend([ "%s%s" % (process_name, genMatch) for genMatch in self.lepton_and_hadTau_genMatches_fakes ])
             self.process_output_addBackgrounds[key] = process_name
+            self.createCfg_addBackgrounds(self.histogramFile_hadd_stage1, self.histogramFile_addBackgrounds[key], self.cfgFile_addBackgrounds_modified[key],
+              [ histogramDir ], processes_input, self.process_output_addBackgrounds[key])
+    # sum fake contributions for each MC sample separately
+    # input processes: TT2l1j, TT1l2j, TT0l3j; TTW2l1j,...
+    # output processes: fakes_TT; ...
+    for process_name in process_names:
+      for lepton_and_hadTau_selection in self.lepton_and_hadTau_selections:
+        for lepton_and_hadTau_frWeight in self.lepton_and_hadTau_frWeights:
+          if lepton_and_hadTau_frWeight == "enabled" and not lepton_and_hadTau_selection.startswith("Fakeable"):
+            continue
+          if lepton_and_hadTau_selection == "Fakeable_mcClosure" and not lepton_and_hadTau_frWeight == "enabled":
+            continue
+          lepton_and_hadTau_selection_and_frWeight = get_lepton_and_hadTau_selection_and_frWeight(lepton_and_hadTau_selection, lepton_and_hadTau_frWeight)
+          for charge_selection in self.charge_selections:
+            key = getKey("fakes_%s" % process_name, lepton_and_hadTau_selection, lepton_and_hadTau_frWeight, charge_selection)
+            self.histogramFile_addBackgrounds[key] = os.path.join(self.outputDir, DKEY_HIST, "addBackgrounds_%s_fakes_%s_%s_%s.root" % \
+              (self.channel, process_name, lepton_and_hadTau_selection_and_frWeight, charge_selection))        
+            self.cfgFile_addBackgrounds_modified[key] = os.path.join(self.outputDir, DKEY_CFGS, "addBackgrounds_%s_fakes_%s_%s_%s_cfg.py" % \
+              (self.channel, process_name, lepton_and_hadTau_selection_and_frWeight, charge_selection))
+            lepton_selection = lepton_and_hadTau_selection
+            if self.applyFakeRateWeights == "1tau":
+              lepton_selection = "Tight"
+            hadTau_selection = lepton_and_hadTau_selection
+            histogramDir = getHistogramDir(lepton_selection, hadTau_selection, lepton_and_hadTau_frWeight, charge_selection)
+            processes_input = [ "%s%s" % (process_name, genMatch) for genMatch in self.lepton_and_hadTau_genMatches_fakes ]
+            self.process_output_addBackgrounds[key] = "fakes_%s" % process_name
             self.createCfg_addBackgrounds(self.histogramFile_hadd_stage1, self.histogramFile_addBackgrounds[key], self.cfgFile_addBackgrounds_modified[key],
               [ histogramDir ], processes_input, self.process_output_addBackgrounds[key])
     # sum fake contributions for the total of all MC sample
