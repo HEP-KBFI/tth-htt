@@ -15,61 +15,53 @@
 #include <algorithm> // std::sort(), std::find(), std::remove_if()
 
 #define NTUPLE_ERR_OK                                       0ull
-#define NTUPLE_ERR_LESS_THAN_2_JETS                         1ull << 0
-#define NTUPLE_ERR_LESS_THAN_3_LEPTONS                      1ull << 1
-#define NTUPLE_ERR_NO_HAD_TAU                               1ull << 2
-#define NTUPLE_ERR_LESS_THAN_2_GEN_BQUARKS                  1ull << 3
-#define NTUPLE_ERR_NO_GEN_LEPT_FROM_TAU                     1ull << 4
-#define NTUPLE_ERR_NO_GEN_HAD_TAU                           1ull << 5
-#define NTUPLE_ERR_LESS_THAN_3_GEN_NUS_FROM_TAU             1ull << 6
-#define NTUPLE_ERR_LESS_THAN_2_GEN_TAUS                     1ull << 7
-#define NTUPLE_ERR_LESS_THAN_2_GEN_LEP_FROM_TOP             1ull << 8
-#define NTUPLE_ERR_LESS_THAN_2_GEN_NU_FROM_TOP              1ull << 9
-#define NTUPLE_ERR_NO_GEN_POS_BQUARKS                       1ull << 10
-#define NTUPLE_ERR_MORE_THAN_1_GEN_POS_BQUARKS              1ull << 11
-#define NTUPLE_ERR_NO_GEN_NEG_BQUARKS                       1ull << 12
-#define NTUPLE_ERR_MORE_THAN_1_GEN_NEG_BQUARKS              1ull << 13
-#define NTUPLE_ERR_NO_MATCHING_GEN_HAD_TAU                  1ull << 14
-#define NTUPLE_ERR_NO_GEN_LEPTONS_FROM_TAU_CORRECT_CHARGE   1ull << 15
-#define NTUPLE_ERR_NO_GEN_LEPTONS_FROM_TAU_CORRESPONDING_NU 1ull << 16
-#define NTUPLE_ERR_NO_GEN_LEPT_NUS_FROM_TAU_CORRECT_FLAVOR  1ull << 17
-#define NTUPLE_ERR_NO_GEN_TAU_NUS_FROM_TAU                  1ull << 18
-#define NTUPLE_ERR_NO_GEN_TAU_NUS_FROM_TAU_OPPOSITE_FLAVOR  1ull << 19
-#define NTUPLE_ERR_NO_GEN_TAU_PAIRS                         1ull << 20
-#define NTUPLE_ERR_NO_GEN_POS_LEPT_FROM_TOP                 1ull << 21
-#define NTUPLE_ERR_NO_GEN_POS_LEPT_FROM_TOP_W_MATCHING_NU   1ull << 22
-#define NTUPLE_ERR_NO_GEN_NEG_LEPT_FROM_TOP                 1ull << 23
-#define NTUPLE_ERR_NO_GEN_NEG_LEPT_FROM_TOP_W_MATCHING_NU   1ull << 24
-#define NTUPLE_ERR_NO_GEN_NU_FROM_POS_TOP                   1ull << 25
-#define NTUPLE_ERR_NO_GEN_NU_FROM_NEG_TOP                   1ull << 26
-#define NTUPLE_ERR_NOT_POSSIBLE_POS_W_RECONSTRUCTION        1ull << 27
-#define NTUPLE_ERR_NOT_POSSIBLE_NEG_W_RECONSTRUCTION        1ull << 28
-#define NTUPLE_ERR_NOT_POSSIBLE_POS_TOP_RECONSTRUCTION      1ull << 29
-#define NTUPLE_ERR_NOT_POSSIBLE_NEG_TOP_RECONSTRUCTION      1ull << 30
-#define NTUPLE_ERR_HADRONICALLY_DECAYING_TAU_RECONSTRUCTION 1ull << 31
-#define NTUPLE_ERR_LEPTONICALLY_DECAYING_TAU_RECONSTRUCTION 1ull << 32
+#define NTUPLE_ERR_HIGGS_DECAY_MODE                         1ull << 0
+#define NTUPLE_ERR_NO_2_JETS                                1ull << 1
+#define NTUPLE_ERR_NO_3_LEPTONS                             1ull << 2
+#define NTUPLE_ERR_NO_HAD_TAU                               1ull << 3
+#define NTUPLE_ERR_SAME_SIGN_TOPS                           1ull << 4
+#define NTUPLE_ERR_SAME_SIGN_WS                             1ull << 5
+#define NTUPLE_ERR_SAME_FLAVOR_BQUARKS                      1ull << 6
+#define NTUPLE_ERR_SAME_SIGN_TAUS                           1ull << 7
+#define NTUPLE_ERR_SAME_SIGN_LEPS_FROM_TOP                  1ull << 8
+#define NTUPLE_ERR_SAME_FLAVOR_NUS_FROM_TOP                 1ull << 9
+#define NTUPLE_ERR_NO_2_GEN_TOPS                            1ull << 10
+#define NTUPLE_ERR_NO_2_GEN_BQUARKS                         1ull << 11
+#define NUTPLE_ERR_NO_2_GEN_WBOSONS                         1ull << 12
+#define NTUPLE_ERR_NO_2_GEN_TAUS                            1ull << 13
+#define NTUPLE_ERR_NO_2_GEN_NU_FROM_TOP                     1ull << 14
+#define NTUPLE_ERR_NO_2_GEN_LEP_FROM_TOP                    1ull << 15
+#define NTUPLE_ERR_NO_GEN_HAD_TAU                           1ull << 16
+#define NTUPLE_ERR_NO_SINGLE_GEN_LEPT_FROM_TAU              1ull << 17
+#define NTUPLE_ERR_NO_3_GEN_NUS_FROM_TAU                    1ull << 18
+#define NUTPLE_ERR_NO_GEN_NU_LEP_FROM_TAU                   1ull << 19
+#define NUTPLE_ERR_NO_GEN_NU_LEP_FROM_LTAU                  1ull << 20
+#define NUTPLE_ERR_NO_GEN_NU_LEP_FROM_HTAU                  1ull << 21
+#define NTUPLE_ERR_NO_SINGLE_HADRONIC_TAU                   1ull << 22
+#define NTUPLE_ERR_LTAU_MASS_OFF                            1ull << 23
+#define NTUPLE_ERR_HTAU_MASS_OFF                            1ull << 24
+#define NTUPLE_ERR_DITAU_MASS_OFF                           1ull << 25
+#define NTUPLE_ERR_WPOS_MASS_NOT_RECONSTRUCTED              1ull << 26
+#define NTUPLE_ERR_WNEG_MASS_NOT_RECONSTRUCTED              1ull << 27
+#define NTUPLE_ERR_T_MASS_OFF                               1ull << 28
+#define NTUPLE_ERR_TBAR_MASS_OFF                            1ull << 29
+#define NTUPLE_ERR_HAD_TAU_MISMATCH                         1ull << 30
+#define NTUPLE_ERR_LEP_FROM_TAU_MISMATCH                    1ull << 31
+#define NTUPLE_ERR_LEP_FROM_T_MISMATCH                      1ull << 32
+#define NTUPLE_ERR_LEP_FROM_TBAR_MISMATCH                   1ull << 33
+#define NTUPLE_ERR_SAME_LEPTON_MULTIPLE_CANDIDATE           1ull << 34
+#define NUTPLE_ERR_B_MISMATCH                               1ull << 35
+#define NUTPLE_ERR_BBAR_MISMATCH                            1ull << 36
+#define NTUPLE_ERR_SAME_B_BBAR_CANDIDATES                   1ull << 37
 
-#define NTUPLE_ERR_NO_GEN_POS_BQUARKS_DR                    1ull << 33
-#define NTUPLE_ERR_NO_GEN_NEG_BQUARKS_DR                    1ull << 34
-#define NTUPLE_ERR_SAME_JET_OVERLAP                         1ull << 35
-#define NTUPLE_ERR_NO_GEN_LEPTONS_FROM_TAU_DR               1ull << 36
-#define NTUPLE_ERR_MORE_THAN_ONE_GEN_TAU_PAIR               1ull << 37
-#define NTUPLE_ERR_GEN_POS_LEPT_FROM_TOP_DR                 1ull << 38
-#define NTUPLE_ERR_GEN_NEG_LEPT_FROM_TOP_DR                 1ull << 39
-
-#define NTUPLE_WARN_OK                                           0ull
-#define NTUPLE_WARN_MULTIPLE_TAU_NUS                             1ull << 0
-#define NTUPLE_WARN_MULTIPLE_TAU_NUS_OPPOSITE_FLAVOR             1ull << 1
-#define NTUPLE_WARN_MULTIPLE_GEN_POS_LEPT_FROM_TOP_W_MATCHING_NU 1ull << 2
-#define NTUPLE_WARN_MULTIPLE_GEN_NEG_LEPT_FROM_TOP_W_MATCHING_NU 1ull << 3
-#define NTUPLE_WARN_MULTIPLE_GEN_NU_FROM_POS_TOP                 1ull << 4
-#define NTUPLE_WARN_MULTIPLE_GEN_NU_FROM_NEG_TOP                 1ull << 5
-#define NTUPLE_WARN_MULTIPLE_POS_W_CANDIDATES                    1ull << 6
-#define NTUPLE_WARN_MULTIPLE_NEG_W_CANDIDATES                    1ull << 7
-#define NTUPLE_WARN_MULTIPLE_POS_TOP_CANDIDATES                  1ull << 8
-#define NTUPLE_WARN_MULTIPLE_NEG_TOP_CANDIDATES                  1ull << 9
-#define NTUPLE_WARN_MULTIPLE_TAU_BRANCHES_DECAY_HADRONICALLY     1ull << 10
-#define NTUPLE_WARN_MULTIPLE_TAU_BRANCHES_DECAY_LEPTONICALLY     1ull << 11
+#define NTUPLE_WARN_OK                                0ull
+#define NTUPLE_WARN_MULTIPLE_LEP_FROM_TAU_CANDIDATES  1ull << 0
+#define NTUPLE_WARN_MULTIPLE_LEP_FROM_T_CANDIDATES    1ull << 1
+#define NTUPLE_WARN_MULTIPLE_LEP_FROM_TBAR_CANDIDATES 1ull << 2
+#define NTUPLE_WARN_MULTIPLE_B_CANDIDATES             1ull << 3
+#define NTUPLE_WARN_MULTIPLE_BBAR_CANDIDATES          1ull << 4
+#define NTUPLE_WARN_B_MATCH_OUTSIDE_2_SELJETS         1ull << 5
+#define NTUPLE_WARN_BBAR_MATCH_OUTSIDE_2_SELJETS      1ull << 6
 
 typedef GenLepton GenParticleExt;
 
@@ -207,7 +199,9 @@ struct NtupleFillerMEM // only for 3l1tau analysis
       const std::vector<GenLepton> & genNuFromTau,
       const std::vector<GenLepton> & genTau,
       const std::vector<GenLepton> & genLepFromTop,
-      const std::vector<GenLepton> & genNuFromTop);
+      const std::vector<GenLepton> & genNuFromTop,
+      const std::vector<GenLepton> & genTop,
+      const std::vector<GenLepton> & genVbosons);
 
   /**
    * @brief Fills the tree (ofc if it's initialized) and clears whatever
@@ -244,6 +238,7 @@ protected:
   };
 
   /* basics */
+  RLEUnit rle_;
   RLEFiller rle_f_;
   METFiller<double> met_f_;
 
@@ -270,7 +265,7 @@ protected:
   BasicFiller<double> genHiggsDecayMode_; // use only if signal sample
 
   /* multiplicity counter of generator level objects */
-  std::array<BasicFiller<unsigned int>, 7> genMultiplicity_f_;
+  std::array<BasicFiller<unsigned int>, 9> genMultiplicity_f_;
 
 private:
 

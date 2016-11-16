@@ -33,6 +33,7 @@
 #define ZOMBIE_FILE_P   boost::filesystem::path("broken_files.txt")
 #define ZEROFS_FILE_P   boost::filesystem::path("zerofs_files.txt")
 #define PYTHON_FILE_P   boost::filesystem::path("tthAnalyzeSamples_2016.py")
+#define PYTHON_FILE_PNJ boost::filesystem::path("tthAnalyzeSamples_noNJetCut_2016.py")
 
 #define LINE std::string(80, '*') + '\n'
 
@@ -70,6 +71,7 @@
                                 TTree
     -P [ --python ]             generate rudimentary python configuration file
     -v [ --verbose ]            log every file and folder
+    -n [ --no_njets_cut ]       cut on number of jets >= 2 was not applied
 
  * Example usage:
 
@@ -271,7 +273,7 @@ struct Sample
    */
 
   std::string
-  get_cfg() const 
+  get_cfg(bool no_njets_cut = false) const 
   {
     const std::map<std::string, std::string> env = {
       { "sample_name",     name                                    },
@@ -292,17 +294,18 @@ struct Sample
     
     std::string input = "";
     if(category.find("data_obs")!=std::string::npos){
-	    input = input + "samples_2016[\"$(sample_dbs_name)\"] = OD([\n"  
+      if(no_njets_cut == false)
+  	    input = input + "samples_2016[\"$(sample_dbs_name)\"] = OD([\n";
+  	  else
+  	    input = input + "samples_no_njet_cut_2016[\"$(sample_dbs_name)\"] = OD([\n";
+  	  input = input +
 		    "  (\"type\",                  \"data\"),\n"
 		    "  (\"sample_category\",       \"$(category)\"),\n"       
 		    "  (\"process_name_specific\", \"$(process_name)\"),\n"   
 		    "  (\"nof_files\",             $(max_nr)),\n"
 		    "  (\"nof_events\",            $(nof_events)),\n";
 		    //"  (\"nof_dbs_events\",        $(nof_dbs_events)),\n";
-		    if(process_name.find("2016E")!=std::string::npos || process_name.find("2016F")!=std::string::npos || process_name.find("2016G")!=std::string::npos ||
-		        process_name.find("ST_tW_top_5f_NoFullyHadronicDecays")!=std::string::npos || 
-		        process_name.find("TT_ext3")!=std::string::npos ||
-		        process_name.find("ttHToNonbb_M125")!=std::string::npos) 
+		    if(process_name.find("2016E")!=std::string::npos || process_name.find("2016F")!=std::string::npos || process_name.find("2016G")!=std::string::npos) 
 			    input = input + "  (\"use_it\",                False),\n";			   
 		    else
 			    input = input + "  (\"use_it\",                True),\n";
@@ -325,7 +328,11 @@ struct Sample
 		    "  ),\n"
 		    "])\n";
     }else{
-	    input = input +  "samples_2016[\"$(sample_dbs_name)\"] = OD([\n"
+	    if(no_njets_cut == false)
+  	    input = input + "samples_2016[\"$(sample_dbs_name)\"] = OD([\n";
+  	  else
+  	    input = input + "samples_no_njet_cut_2016[\"$(sample_dbs_name)\"] = OD([\n";
+  	  input = input +
 		    "  (\"type\",                  \"mc\"),\n"
 		    "  (\"sample_category\",       \"$(category)\"),\n"       
 		    "  (\"process_name_specific\", \"$(process_name)\"),\n"   
@@ -333,8 +340,10 @@ struct Sample
 		    "  (\"nof_events\",            $(nof_events)),\n";
 		    //"  (\"nof_dbs_events\",        $(nof_dbs_events)),\n"
 		  if(process_name.find("ST_tW_top_5f_NoFullyHadronicDecays")!=std::string::npos || 
-		        process_name.find("TT_ext3")!=std::string::npos ||
-		        process_name.find("ttHToNonbb_M125")!=std::string::npos) 
+		        process_name.find("TT_ext3") != std::string::npos ||
+		        process_name.find("TT_ext4") != std::string::npos ||
+		        process_name.find("ttHToNonbb_M125") != std::string::npos ||
+		        process_name.find("Fastsim") != std::string::npos) 
 			    input = input + "  (\"use_it\",                False),\n";
 		  else
 			    input = input + "  (\"use_it\",                True),\n";
@@ -479,6 +488,8 @@ sample_name["VHBB_HEPPY_V24_Tau__Run2016D-PromptReco-v2"]="/Tau/Run2016D-PromptR
 sample_name["VHBB_HEPPY_V24_Tau__Run2016E-PromptReco-v2"]="/Tau/Run2016E-PromptReco-v2/MINIAOD";
 sample_name["VHBB_HEPPY_V24_Tau__Run2016F-PromptReco-v1"]="/Tau/Run2016F-PromptReco-v1/MINIAOD";
 sample_name["VHBB_HEPPY_V24_Tau__Run2016G-PromptReco-v1"]="/Tau/Run2016G-PromptReco-v1/MINIAOD";
+sample_name["TTW_FastSim"]="/TTW/spring16DR80v6aMiniAODv1/FASTSIM";
+sample_name["TT_TuneCUETP8M1_13TeV-powheg-pythia8_ext4"]="/TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16MiniAODv1-PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext4-v1/MINIAODSIM";
 
 std::map<std::string, std::string> sample_category; // key = sample
 sample_category["/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14_ext1-v1/MINIAODSIM"]="signal";
@@ -555,6 +566,9 @@ sample_category["/Tau/Run2016D-PromptReco-v2/MINIAOD"]="data_obs";
 sample_category["/Tau/Run2016E-PromptReco-v2/MINIAOD"]="data_obs";
 sample_category["/Tau/Run2016F-PromptReco-v1/MINIAOD"]="data_obs";
 sample_category["/Tau/Run2016G-PromptReco-v1/MINIAOD"]="data_obs";
+sample_category["/TTW/spring16DR80v6aMiniAODv1/FASTSIM"]="TTW";
+sample_category["/TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16MiniAODv1-PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext4-v1/MINIAODSIM"]="TT";
+
 
 std::map<std::string, std::string> process_name; // key = sample
 process_name["/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14_ext1-v1/MINIAODSIM"]="ttHJetToNonbb_M125";
@@ -631,6 +645,8 @@ process_name["/Tau/Run2016D-PromptReco-v2/MINIAOD"]="Tau_Run2016D";
 process_name["/Tau/Run2016E-PromptReco-v2/MINIAOD"]="Tau_Run2016E";
 process_name["/Tau/Run2016F-PromptReco-v1/MINIAOD"]="Tau_Run2016F";
 process_name["/Tau/Run2016G-PromptReco-v1/MINIAOD"]="Tau_Run2016G";
+process_name["/TTW/spring16DR80v6aMiniAODv1/FASTSIM"]="TTW_Fastsim";
+process_name["/TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16MiniAODv1-PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext4-v1/MINIAODSIM"]="TT_ext4";
 
 std::map<std::string, double> xsection; // key = sample
 xsection["/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14_ext1-v1/MINIAODSIM"]=0.2151;
@@ -706,6 +722,8 @@ xsection["/Tau/Run2016C-PromptReco-v2/MINIAOD"]=1;
 xsection["/Tau/Run2016D-PromptReco-v2/MINIAOD"]=1;
 xsection["/Tau/Run2016E-PromptReco-v2/MINIAOD"]=1;
 xsection["/Tau/Run2016F-PromptReco-v2/MINIAOD"]=1;
+xsection["/TTW/spring16DR80v6aMiniAODv1/FASTSIM"]=0.2043;
+xsection["/TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16MiniAODv1-PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext4-v1/MINIAODSIM"]=831.76;
 
 std::map<std::string, long int> dbsevents; // key = sample
 dbsevents["/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14_ext1-v1/MINIAODSIM"]=9992683;
@@ -770,10 +788,12 @@ dbsevents["/Tau/Run2016D-PromptReco-v2/MINIAOD"]=61113729;
 dbsevents["/Tau/Run2016E-PromptReco-v2/MINIAOD"]=58349490;
 dbsevents["/Tau/Run2016F-PromptReco-v1/MINIAOD"]=40550286;
 dbsevents["/Tau/Run2016G-PromptReco-v1/MINIAOD"]=80015847;
+dbsevents["/TTW/spring16DR80v6aMiniAODv1/FASTSIM"]=8362991;
+dbsevents["/TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16MiniAODv1-PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext4-v1/MINIAODSIM"]=182424800;
 
 //--- parse command line arguments
   std::string target_str, histo_str, output_dir_str;
-  bool save_zerofs, save_improper, save_python, verbose;
+  bool save_zerofs, save_improper, save_python, verbose, no_njets_cut;
   try
   {
     boost::program_options::options_description desc("Allowed options");
@@ -794,6 +814,8 @@ dbsevents["/Tau/Run2016G-PromptReco-v1/MINIAOD"]=80015847;
                      "generate rudimentary python configuration file")
       ("verbose,v",  boost::program_options::bool_switch(&verbose) -> default_value(false),
                      "log every file and folder")
+      ("no_njet_cut,n",  boost::program_options::bool_switch(&no_njets_cut) -> default_value(false),
+                     "NJets cut was applied")
     ;
     boost::program_options::variables_map vm;
     boost::program_options::store(
@@ -889,7 +911,7 @@ dbsevents["/Tau/Run2016G-PromptReco-v1/MINIAOD"]=80015847;
       if(boost::filesystem::is_regular_file(file) &&
          boost::filesystem::extension(file) == ".root")
       {
-
+        
         sample.dbs_name          = sample_name[sample.name];
         sample.category          = sample_category[sample.dbs_name];
         sample.process_name      = process_name[sample.dbs_name];
@@ -1025,11 +1047,18 @@ dbsevents["/Tau/Run2016G-PromptReco-v1/MINIAOD"]=80015847;
 //--- generate basic python dictionaries out of the results
   if(! output_dir_str.empty() && save_python)
   {
-    std::ofstream out((output_dir_path / PYTHON_FILE_P).string());
-    out << "from collections import OrderedDict as OD\n\n"
+    boost::filesystem::path filename = PYTHON_FILE_P;
+    if(no_njets_cut == true)
+      filename = PYTHON_FILE_PNJ;
+    std::ofstream out((output_dir_path / filename).string());
+    if (no_njets_cut == false)
+      out << "from collections import OrderedDict as OD\n\n"
         << "samples_2016 = OD()\n\n";
+    else
+      out << "from collections import OrderedDict as OD\n\n"
+        << "samples_no_njet_cut_2016 = OD()\n\n";
     for(const Sample & sample: samples)
-      out << sample.get_cfg();
+      out << sample.get_cfg(no_njets_cut);
   }
 
 //--- stop the clock

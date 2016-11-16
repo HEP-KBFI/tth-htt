@@ -12,3 +12,12 @@ GenLepton::GenLepton(Double_t pt,
 {
   charge_ = -pdgId/std::abs(pdgId);
 }
+
+std::ostream &
+operator<<(std::ostream & os,
+           const GenLepton & o)
+{
+  operator<<(os, static_cast<GenParticle>(o));
+  os << "; charge = " << o.charge_;
+  return os;
+}

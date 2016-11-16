@@ -342,7 +342,7 @@ int main(int argc, char* argv[])
   NtupleFillerMEM mem;
   if ( writeSelEventsFile ) {
     mem.use2016(era == kEra_2016);
-    mem.setDiTauMass(isSignal ? 125.7 : 91.1876);
+    mem.setDiTauMass(isSignal ? 125. : 91.188);
     mem.setFileName(selEventsTFileName);
   }
 
@@ -441,6 +441,8 @@ int main(int argc, char* argv[])
   GenParticleReader* genBQuarkFromTopReader = 0;
   GenParticleReader* genNuFromTopReader = 0;
   GenParticleReader* genLepFromTauReader = 0;
+  GenParticleReader* genTopReader = 0;
+  GenParticleReader* genVbosonsReader = 0;
   LHEInfoReader* lheInfoReader = 0;
   if ( isMC ) {
     genLeptonReader = new GenLeptonReader("nGenLep", "GenLep", "nGenLepFromTau", "GenLepFromTau");
@@ -465,6 +467,10 @@ int main(int argc, char* argv[])
       genNuFromTopReader->setBranchAddresses(inputTree);
       genLepFromTauReader = new GenParticleReader("nGenLepFromTau", "GenLepFromTau");
       genLepFromTauReader->setBranchAddresses(inputTree);
+      genTopReader = new GenParticleReader("nGenTop", "GenTop");
+      genTopReader->setBranchAddresses(inputTree);
+      genVbosonsReader = new GenParticleReader("nGenVbosons", "GenVbosons");
+      genVbosonsReader->setBranchAddresses(inputTree);
     }
   }
 
@@ -687,6 +693,8 @@ struct preselHistManagerType
     std::vector<GenParticleExt> genBQuarkFromTop;
     std::vector<GenParticleExt> genNuFromTop;
     std::vector<GenParticleExt> genLepFromTau;
+    std::vector<GenParticleExt> genTop;
+    std::vector<GenParticleExt> genVbosons;
     if ( isMC && writeSelEventsFile && era == kEra_2016 ) {
       genHadTaus = genHadTauReader->read();
       genNuFromTau = genNuFromTauReader->read();
@@ -695,6 +703,8 @@ struct preselHistManagerType
       genBQuarkFromTop = genBQuarkFromTopReader->read();
       genNuFromTop = genNuFromTopReader->read();
       genLepFromTau = genLepFromTauReader->read();
+      genTop = genTopReader->read();
+      genVbosons = genVbosonsReader->read();
     }
 
     if ( isMC ) {
@@ -1392,12 +1402,13 @@ struct preselHistManagerType
       mem.add(selBJets_loose, selBJets_medium, selJets);
       mem.add(selHadTau);
       mem.add(selLeptons);
-      if(isMC && era == kEra_2016)
-        mem.add(genHadTaus, genBQuarkFromTop, genLepFromTau,
-                genNuFromTau, genTau, genLepFromTop, genNuFromTop);
       if(isSignal && isMC)
         mem.add(genHiggsDecayMode);
-      mem.fill(true);
+      if(isMC && era == kEra_2016)
+        mem.add(genHadTaus, genBQuarkFromTop, genLepFromTau,
+                genNuFromTau, genTau, genLepFromTop, genNuFromTop,
+                genTop, genVbosons);
+      mem.fill(false);
     }
   }
 
