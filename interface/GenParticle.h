@@ -13,6 +13,7 @@ public:
               Double_t eta,
               Double_t phi,
               Double_t mass);
+  GenParticle(const math::PtEtaPhiMLorentzVector & p4);
 
   Double_t pt_;   ///< pT of the particle
   Double_t eta_;  ///< eta of the particle

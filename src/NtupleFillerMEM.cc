@@ -169,9 +169,12 @@ NtupleFillerMEM::add(const std::vector<const RecoJet*> & selBJets_loose,
   std::vector<const RecoJet *> selJets_(selJets.begin(), selJets.end());
 
   // unique merge loose and medium B-jets, and hadronic jets
-  std::sort(selBJets_medium_.begin(), selBJets_medium_.end(), isHigherPt);
-  std::sort(selBJets_loose_.begin(), selBJets_loose_.end(), isHigherPt);
-  std::sort(selJets_.begin(), selJets_.end(), isHigherCSV); // optional: sort by pT
+  // update: it turns out that sorting all jets by their CSV score is the most efficient;
+  //         thus, using only selJets should do the trick, but let's keep the jets separated
+  //         just as a reminder
+  std::sort(selBJets_medium_.begin(), selBJets_medium_.end(), isHigherCSV);
+  std::sort(selBJets_loose_.begin(), selBJets_loose_.end(), isHigherCSV);
+  std::sort(selJets_.begin(), selJets_.end(), isHigherCSV);
   std::vector<const RecoJet *> selBJetsMerged(selBJets_medium_);
   auto unique_push_back = [&selBJetsMerged](const std::vector<const RecoJet *> & v) -> void
   {
@@ -343,10 +346,16 @@ NtupleFillerMEM::add(const std::vector<GenHadTau> & genHadTaus,
 
   const GenLepton & t    = genTop[0].pdgId_ > 0 ? genTop[0] : genTop[1];
   const GenLepton & tbar = genTop[0].pdgId_ < 0 ? genTop[0] : genTop[1];
-  const GenLepton & b    = genBQuarkFromTop[0].pdgId_ > 0 ? genBQuarkFromTop[0] : genBQuarkFromTop[1];
-  const GenLepton & bbar = genBQuarkFromTop[0].pdgId_ < 0 ? genBQuarkFromTop[0] : genBQuarkFromTop[1];
   const GenLepton & Wpos = genWbosons[0].get().pdgId_ > 0 ? genWbosons[0] : genWbosons[1];
   const GenLepton & Wneg = genWbosons[0].get().pdgId_ < 0 ? genWbosons[0] : genWbosons[1];
+  // replace b/bbar with (t - Wpos)/(tbar - Wneg) to account for soft radiation from b/bbar-quarks
+#if 0
+  const GenLepton & b    = genBQuarkFromTop[0].pdgId_ > 0 ? genBQuarkFromTop[0] : genBQuarkFromTop[1];
+  const GenLepton & bbar = genBQuarkFromTop[0].pdgId_ < 0 ? genBQuarkFromTop[0] : genBQuarkFromTop[1];
+#else
+  const GenLepton b    = GenLepton(t.p4_    - Wpos.p4_,  5);
+  const GenLepton bbar = GenLepton(tbar.p4_ - Wneg.p4_, -5);
+#endif
   const GenLepton & Wpos_lep = genLepFromTop[0].pdgId_ < 0 ? genLepFromTop[0] : genLepFromTop[1];
   const GenLepton & Wneg_lep = genLepFromTop[0].pdgId_ > 0 ? genLepFromTop[0] : genLepFromTop[1];
   const GenLepton & Wpos_nu  = genNuFromTop[0].pdgId_ > 0 ? genNuFromTop[0] : genNuFromTop[1];
@@ -627,6 +636,7 @@ NtupleFillerMEM::add(const std::vector<GenHadTau> & genHadTaus,
     errCode_ |= NUTPLE_ERR_BBAR_MISMATCH;
     return;
   }
+
   if(bJetCandidates.size() > 1)
     warnCode_ |= NTUPLE_WARN_MULTIPLE_B_CANDIDATES;
   if(bbarJetCandidates.size() > 1)
