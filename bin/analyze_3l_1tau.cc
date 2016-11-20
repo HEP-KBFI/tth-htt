@@ -342,7 +342,7 @@ int main(int argc, char* argv[])
   NtupleFillerMEM mem;
   if ( writeSelEventsFile ) {
     mem.use2016(era == kEra_2016);
-    mem.setDiTauMass(isSignal ? 125. : 91.188);
+    mem.isSignal(isSignal);
     mem.setFileName(selEventsTFileName);
   }
 
