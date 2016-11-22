@@ -721,6 +721,8 @@ int main(int argc, char* argv[])
       math::PtEtaPhiMLorentzVector(pt0, preselElectrons[0]->eta_, preselElectrons[0]->phi_, preselElectrons[0]->mass_) +
       math::PtEtaPhiMLorentzVector(pt1, preselElectrons[1]->eta_, preselElectrons[1]->phi_, preselElectrons[1]->mass_);
     Double_t mass_ll = p4.M();
+    //Adjust central value
+    mass_ll *= 1.01;
     if (mass_ll < 60 || mass_ll > 120) {
       if ( run_lumi_eventSelector ) {
 	      std::cout << "event FAILS dilepton mass selection." << std::endl;
@@ -759,11 +761,14 @@ int main(int argc, char* argv[])
             math::PtEtaPhiMLorentzVector(gp0->pt_, gp0->eta_, gp0->phi_, gp0->mass_) +
             math::PtEtaPhiMLorentzVector(gp1->pt_, gp1->eta_, gp1->phi_, gp1->mass_);
         Double_t mass_ll_gen = p4_gen.M();
-        //std::cout << "Before: " << mass_ll << std::endl;
-        if (central_or_shift == "CMS_ttHl_electronERDown")   
-          mass_ll = mass_ll - 0.2 * (mass_ll - mass_ll_gen);
+        
+        //Adjust central value to better match data shape
+        if (central_or_shift == "central" || central_or_shift == "")
+          mass_ll = mass_ll + 0.15 * (mass_ll - mass_ll_gen);
+        else if (central_or_shift == "CMS_ttHl_electronERDown")   
+          mass_ll = mass_ll - 0.05 * (mass_ll - mass_ll_gen);
         else if (central_or_shift == "CMS_ttHl_electronERUp")
-          mass_ll = mass_ll + 0.2 * (mass_ll - mass_ll_gen);
+          mass_ll = mass_ll + 0.35 * (mass_ll - mass_ll_gen);
         //std::cout << "After:  " << mass_ll << std::endl;
         histos[charge_cat][category.data()]["DY"]->Fill(mass_ll, evtWeight);
         histos[charge_cat]["total"]["DY"]->Fill(mass_ll, evtWeight);
@@ -854,6 +859,7 @@ int main(int argc, char* argv[])
       lheInfoHistManager->fillHistograms(*lheInfoReader, evtWeight);
     }
 
+    (*selEventsFile) << run << ":" << lumi << ":" << event << std::endl;
     (*selEventsFile) << run << ":" << lumi << ":" << event << std::endl;
 
     ++selectedEntries;
