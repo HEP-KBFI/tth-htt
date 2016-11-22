@@ -115,7 +115,7 @@ struct NtupleFillerMEM // only for 3l1tau analysis
    * @param diTauMass The di-tau mass
    */
   void
-  setDiTauMass(double diTauMass);
+  isSignal(bool isSignal_b);
 
   /**
    * @brief Updates Higgs decay mode at generator level
@@ -223,7 +223,7 @@ protected:
   TTree * tree_;
 
   bool use2016_;
-  double diTauMass_;
+  bool isSignal_b_;
 
   const std::map<std::string, std::string> mvaMap_ = {
     { "max(abs(LepGood_eta[iF_Recl[0]]),abs(LepGood_eta[iF_Recl[1]]))", "max2LeptonEta"  },
@@ -279,6 +279,25 @@ private:
   static bool
   isHigherCSV(const RecoJet * jet1,
               const RecoJet * jet2);
+
+  /**
+   * @brief Recalculates b-quark's mass and energy from top and b-quark mass requirements
+   * @param b     Original b-quark, the direction of which is kept the same
+   * @param W     The W boson (not changed)
+   * @param pdgId PDG id of the b-quark
+   * @return A new b-quark
+   *
+   * This method is needed b/c soft activity in the top decays spoils 4-momentum conservation
+   * due to the way generator level particles are stored in the Ntuples (only immediate daughters
+   * are stored). The workaround is to redefine b quark's 3-momentum and mass so that
+   *  1) it always has the PDG value for its mass;
+   *  2) if by adding b and W, the resulting top also has the PDG value for its mass;
+   *  3) while b's direction remains untouched.
+   */
+  static GenLepton
+  getB(const GenLepton & b,
+       const GenLepton & W,
+       Int_t pdgId);
 
   std::vector<const RecoJet*> selBJetsMerged_;
   std::vector<const RecoLepton*> selLeptons_;

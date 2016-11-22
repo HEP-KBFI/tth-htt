@@ -490,6 +490,10 @@ sample_name["VHBB_HEPPY_V24_Tau__Run2016F-PromptReco-v1"]="/Tau/Run2016F-PromptR
 sample_name["VHBB_HEPPY_V24_Tau__Run2016G-PromptReco-v1"]="/Tau/Run2016G-PromptReco-v1/MINIAOD";
 sample_name["TTW_FastSim"]="/TTW/spring16DR80v6aMiniAODv1/FASTSIM";
 sample_name["TT_TuneCUETP8M1_13TeV-powheg-pythia8_ext4"]="/TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16MiniAODv1-PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext4-v1/MINIAODSIM";
+sample_name["TTTo2L2Nu"]="/TTTo2L2Nu_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/matze-fast_ttjets_dl_MiniAOD_6b57d231e28e4ebd8065fc7621fa1f5b-v1/USER";
+sample_name["TTToSemiLepton"]="/TTToSemilepton_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/matze-fast_ttjets_sl_MiniAOD_6b57d231e28e4ebd8065fc7621fa1f5b-v1/USER";
+sample_name["ttHToNonbb"]="/ttHToNonbb_M125_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/matze-fast_ttH_MiniAOD_6b57d231e28e4ebd8065fc7621fa1f5b-v1/USER";
+
 
 std::map<std::string, std::string> sample_category; // key = sample
 sample_category["/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14_ext1-v1/MINIAODSIM"]="signal";
@@ -568,6 +572,9 @@ sample_category["/Tau/Run2016F-PromptReco-v1/MINIAOD"]="data_obs";
 sample_category["/Tau/Run2016G-PromptReco-v1/MINIAOD"]="data_obs";
 sample_category["/TTW/spring16DR80v6aMiniAODv1/FASTSIM"]="TTW";
 sample_category["/TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16MiniAODv1-PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext4-v1/MINIAODSIM"]="TT";
+sample_category["/TTTo2L2Nu_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/matze-fast_ttjets_dl_MiniAOD_6b57d231e28e4ebd8065fc7621fa1f5b-v1/USER"]="TT";
+sample_category["/TTToSemilepton_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/matze-fast_ttjets_sl_MiniAOD_6b57d231e28e4ebd8065fc7621fa1f5b-v1/USER"]="TT";
+sample_category["/ttHToNonbb_M125_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/matze-fast_ttH_MiniAOD_6b57d231e28e4ebd8065fc7621fa1f5b-v1/USER"]="signal";
 
 
 std::map<std::string, std::string> process_name; // key = sample
@@ -647,6 +654,10 @@ process_name["/Tau/Run2016F-PromptReco-v1/MINIAOD"]="Tau_Run2016F";
 process_name["/Tau/Run2016G-PromptReco-v1/MINIAOD"]="Tau_Run2016G";
 process_name["/TTW/spring16DR80v6aMiniAODv1/FASTSIM"]="TTW_Fastsim";
 process_name["/TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16MiniAODv1-PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext4-v1/MINIAODSIM"]="TT_ext4";
+process_name["/TTTo2L2Nu_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/matze-fast_ttjets_dl_MiniAOD_6b57d231e28e4ebd8065fc7621fa1f5b-v1/USER"] = "TT_dilept_fastsim_validation";
+process_name["/TTToSemilepton_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/matze-fast_ttjets_sl_MiniAOD_6b57d231e28e4ebd8065fc7621fa1f5b-v1/USER"] = "TT_semilept_fastsim_validation";
+process_name["/ttHToNonbb_M125_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/matze-fast_ttH_MiniAOD_6b57d231e28e4ebd8065fc7621fa1f5b-v1/USER"] = "ttHToNonbb_fastsim_validation";
+
 
 std::map<std::string, double> xsection; // key = sample
 xsection["/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14_ext1-v1/MINIAODSIM"]=0.2151;
@@ -724,6 +735,9 @@ xsection["/Tau/Run2016E-PromptReco-v2/MINIAOD"]=1;
 xsection["/Tau/Run2016F-PromptReco-v2/MINIAOD"]=1;
 xsection["/TTW/spring16DR80v6aMiniAODv1/FASTSIM"]=0.2043;
 xsection["/TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16MiniAODv1-PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext4-v1/MINIAODSIM"]=831.76;
+xsection["/TTTo2L2Nu_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/matze-fast_ttjets_dl_MiniAOD_6b57d231e28e4ebd8065fc7621fa1f5b-v1/USER"]=87.3;
+xsection["/TTToSemilepton_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/matze-fast_ttjets_sl_MiniAOD_6b57d231e28e4ebd8065fc7621fa1f5b-v1/USER"]=245;
+xsection["/ttHToNonbb_M125_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/matze-fast_ttH_MiniAOD_6b57d231e28e4ebd8065fc7621fa1f5b-v1/USER"]=0.2151;
 
 std::map<std::string, long int> dbsevents; // key = sample
 dbsevents["/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14_ext1-v1/MINIAODSIM"]=9992683;
@@ -790,6 +804,9 @@ dbsevents["/Tau/Run2016F-PromptReco-v1/MINIAOD"]=40550286;
 dbsevents["/Tau/Run2016G-PromptReco-v1/MINIAOD"]=80015847;
 dbsevents["/TTW/spring16DR80v6aMiniAODv1/FASTSIM"]=8362991;
 dbsevents["/TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16MiniAODv1-PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext4-v1/MINIAODSIM"]=182424800;
+dbsevents["/TTTo2L2Nu_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/matze-fast_ttjets_dl_MiniAOD_6b57d231e28e4ebd8065fc7621fa1f5b-v1/USER"]=1000000;
+dbsevents["/TTToSemilepton_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/matze-fast_ttjets_sl_MiniAOD_6b57d231e28e4ebd8065fc7621fa1f5b-v1/USER"]=1000000;
+dbsevents["/ttHToNonbb_M125_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/matze-fast_ttH_MiniAOD_6b57d231e28e4ebd8065fc7621fa1f5b-v1/USER"]=994998;
 
 //--- parse command line arguments
   std::string target_str, histo_str, output_dir_str;
@@ -952,10 +969,13 @@ dbsevents["/TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16MiniAODv1-PUSpring
   for(Sample & sample: samples)
     sample.check_completion();
   const auto present   = samples | Sample::Info::kPresent;
+  std::cout << "a" << std::endl;
   const auto zombies   = samples | Sample::Info::kZombie;
+  std::cout << "b" << std::endl;
   const auto zerofs    = samples | Sample::Info::kZerofs;
+  std::cout << "c" << std::endl;
   const auto improper  = samples | Sample::Info::kImproper;
-
+  std::cout << "x" << std::endl;
   std::cout << "print the results; save them to a file? "<< std::endl;
 //--- print the results; save them to a file?
   if(zombies.size())

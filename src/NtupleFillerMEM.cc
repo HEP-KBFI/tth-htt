@@ -15,6 +15,17 @@ typedef math::PtEtaPhiMLorentzVector LV;
 #define N_GENTOP            7
 #define N_GENVBOSONS        8
 
+#define TAU_MASS    1.777000e+00
+#define TAU_WIDTH   1.000000e-02 // deliberately larger
+#define HIGGS_MASS  1.250000e+02
+#define HIGGS_WIDTH 6.382339e-03
+#define Z_MASS      9.118800e+01
+#define Z_WIDTH     2.441404e+00
+#define TOP_MASS    1.743000e+02
+#define TOP_WIDTH   1.491500e+00
+#define B_MASS      4.700000e+00
+#define B_WIDTH     5.000000e-02 // custom
+
 NtupleFillerMEM::NtupleFillerMEM()
   : file_(0)
   , tree_(0)
@@ -122,9 +133,9 @@ NtupleFillerMEM::setFileName(const std::string & fileName)
 }
 
 void
-NtupleFillerMEM::setDiTauMass(double diTauMass)
+NtupleFillerMEM::isSignal(bool isSignal_b)
 {
-  diTauMass_ = diTauMass;
+  isSignal_b_ = isSignal_b;
 }
 
 void
@@ -169,9 +180,12 @@ NtupleFillerMEM::add(const std::vector<const RecoJet*> & selBJets_loose,
   std::vector<const RecoJet *> selJets_(selJets.begin(), selJets.end());
 
   // unique merge loose and medium B-jets, and hadronic jets
-  std::sort(selBJets_medium_.begin(), selBJets_medium_.end(), isHigherPt);
-  std::sort(selBJets_loose_.begin(), selBJets_loose_.end(), isHigherPt);
-  std::sort(selJets_.begin(), selJets_.end(), isHigherCSV); // optional: sort by pT
+  // update: it turns out that sorting all jets by their CSV score is the most efficient;
+  //         thus, using only selJets should do the trick, but let's keep the jets separated
+  //         just as a reminder
+  std::sort(selBJets_medium_.begin(), selBJets_medium_.end(), isHigherCSV);
+  std::sort(selBJets_loose_.begin(), selBJets_loose_.end(), isHigherCSV);
+  std::sort(selJets_.begin(), selJets_.end(), isHigherCSV);
   std::vector<const RecoJet *> selBJetsMerged(selBJets_medium_);
   auto unique_push_back = [&selBJetsMerged](const std::vector<const RecoJet *> & v) -> void
   {
@@ -341,12 +355,14 @@ NtupleFillerMEM::add(const std::vector<GenHadTau> & genHadTaus,
     return;
   }
 
-  const GenLepton & t    = genTop[0].pdgId_ > 0 ? genTop[0] : genTop[1];
-  const GenLepton & tbar = genTop[0].pdgId_ < 0 ? genTop[0] : genTop[1];
-  const GenLepton & b    = genBQuarkFromTop[0].pdgId_ > 0 ? genBQuarkFromTop[0] : genBQuarkFromTop[1];
-  const GenLepton & bbar = genBQuarkFromTop[0].pdgId_ < 0 ? genBQuarkFromTop[0] : genBQuarkFromTop[1];
+  const GenLepton & t    __attribute__((unused)) = genTop[0].pdgId_ > 0 ? genTop[0] : genTop[1];
+  const GenLepton & tbar __attribute__((unused)) = genTop[0].pdgId_ < 0 ? genTop[0] : genTop[1];
   const GenLepton & Wpos = genWbosons[0].get().pdgId_ > 0 ? genWbosons[0] : genWbosons[1];
   const GenLepton & Wneg = genWbosons[0].get().pdgId_ < 0 ? genWbosons[0] : genWbosons[1];
+  const GenLepton & b_    = genBQuarkFromTop[0].pdgId_ > 0 ? genBQuarkFromTop[0] : genBQuarkFromTop[1];
+  const GenLepton & bbar_ = genBQuarkFromTop[0].pdgId_ < 0 ? genBQuarkFromTop[0] : genBQuarkFromTop[1];
+  const GenLepton b    = getB(b_, Wpos, b_.pdgId_);
+  const GenLepton bbar = getB(bbar_, Wneg, bbar_.pdgId_);
   const GenLepton & Wpos_lep = genLepFromTop[0].pdgId_ < 0 ? genLepFromTop[0] : genLepFromTop[1];
   const GenLepton & Wneg_lep = genLepFromTop[0].pdgId_ > 0 ? genLepFromTop[0] : genLepFromTop[1];
   const GenLepton & Wpos_nu  = genNuFromTop[0].pdgId_ > 0 ? genNuFromTop[0] : genNuFromTop[1];
@@ -354,7 +370,7 @@ NtupleFillerMEM::add(const std::vector<GenHadTau> & genHadTaus,
   const GenLepton & lepFromTau = genLepFromTau[0];
   const GenLepton & tauPos = genTau[0].pdgId_ < 0 ? genTau[0] : genTau[1];
   const GenLepton & tauNeg = genTau[0].pdgId_ > 0 ? genTau[0] : genTau[1];
-  const GenLepton & tauL = lepFromTau.pdgId_ > 0 ? tauNeg : tauPos;
+  const GenLepton & tauL __attribute__((unused)) = lepFromTau.pdgId_ > 0 ? tauNeg : tauPos;
   const GenLepton & tauH = lepFromTau.pdgId_ < 0 ? tauNeg : tauPos;
 
   std::vector<std::reference_wrapper<const GenLepton>> nuLepFromTau_candidates,
@@ -391,7 +407,7 @@ NtupleFillerMEM::add(const std::vector<GenHadTau> & genHadTaus,
   std::vector<std::reference_wrapper<const GenHadTau>> htau_candidates;
   for(const GenHadTau & htau_candidate: genHadTaus)
     if(std::fabs((htau_candidate.p4_ + nuTauFromHTau.p4_).mass() - tauH.mass_) < 1e-2 &&
-       htau_candidate.charge_ == tauH.charge_) // not sure if this works
+       htau_candidate.charge_ == tauH.charge_)
       htau_candidates.push_back(std::cref(htau_candidate));
   if(htau_candidates.size() != 1)
   {
@@ -404,17 +420,19 @@ NtupleFillerMEM::add(const std::vector<GenHadTau> & genHadTaus,
   const LV reco_lTau = nuLepFromTau.p4_ + nuTauFromLTau.p4_ + lepFromTau.p4_;
   const LV reco_hTau = htau.p4_ + nuTauFromHTau.p4_;
   const LV reco_hz = reco_lTau + reco_hTau;
-  if(std::fabs(reco_lTau.mass() - tauL.mass_) > 1e-2)
+  if(std::fabs(reco_lTau.mass() - TAU_MASS) > TAU_WIDTH)
   {
     errCode_ |= NTUPLE_ERR_LTAU_MASS_OFF;
     return;
   }
-  if(std::fabs(reco_hTau.mass() - tauH.mass_) > 1e-2)
+  if(std::fabs(reco_hTau.mass() - TAU_MASS) > TAU_WIDTH)
   {
     errCode_ |= NTUPLE_ERR_HTAU_MASS_OFF;
     return;
   }
-  if(std::fabs(reco_hz.mass() - diTauMass_) > 2.)
+  const double diTauMass  = isSignal_b_ ? HIGGS_MASS : Z_MASS;
+  const double diTauWidth = 3 * (isSignal_b_ ? HIGGS_WIDTH : Z_WIDTH); // 3 sigma window
+  if(std::fabs(reco_hz.mass() - diTauMass) > diTauWidth)
   {
     errCode_ |= NTUPLE_ERR_DITAU_MASS_OFF;
     return;
@@ -437,12 +455,12 @@ NtupleFillerMEM::add(const std::vector<GenHadTau> & genHadTaus,
   // step 3 -- exclude the event if there's a soft activity due to b quarks
   const LV reco_t    = reco_Wpos + b.p4_;
   const LV reco_tbar = reco_Wneg + bbar.p4_;
-  if(std::fabs(reco_t.mass() - t.mass_) > 4)
+  if(std::fabs(reco_t.mass() - TOP_MASS) > 3 * TOP_WIDTH)
   {
     errCode_ |= NTUPLE_ERR_T_MASS_OFF;
     return;
   }
-  if(std::fabs(reco_tbar.mass() - tbar.mass_) > 4)
+  if(std::fabs(reco_tbar.mass() - TOP_MASS) > 3 * TOP_WIDTH)
   {
     errCode_ |= NTUPLE_ERR_TBAR_MASS_OFF;
     return;
@@ -627,6 +645,7 @@ NtupleFillerMEM::add(const std::vector<GenHadTau> & genHadTaus,
     errCode_ |= NUTPLE_ERR_BBAR_MISMATCH;
     return;
   }
+
   if(bJetCandidates.size() > 1)
     warnCode_ |= NTUPLE_WARN_MULTIPLE_B_CANDIDATES;
   if(bbarJetCandidates.size() > 1)
@@ -690,6 +709,44 @@ NtupleFillerMEM::close()
     file_ = 0;
     tree_ = 0;
   }
+}
+
+GenLepton
+NtupleFillerMEM::getB(const GenLepton & b,
+                      const GenLepton & W,
+                      Int_t pdgId)
+{
+  const double eW = W.p4_.E();
+  const double cosThetaWb = b.p4_.Vect().Unit().Dot(W.p4_.Vect().Unit());
+  const double alpha = (TOP_MASS * TOP_MASS - B_MASS * B_MASS - W.mass_ * W.mass_) / 2.;
+
+  const double A = alpha / eW / B_MASS;
+  const double B = W.p4_.Beta() * cosThetaWb;
+  const double A2 = A * A;
+  const double B2 = B * B;
+  const double Babs = std::fabs(B);
+  const double disc = A2 + B2 - 1.;
+  const double sep = disc - A2 * B2;
+
+  const double sol1 = (A + Babs * std::sqrt(disc)) / (1. - B2) * B_MASS;
+  const double sol2 = (A - Babs * std::sqrt(disc)) / (1. - B2) * B_MASS;
+
+  const double en = [&]() -> double
+  {
+    if(B > 0. && sep < 0.) // never happens
+      return std::fabs(b.p4_.E() - sol1) < std::fabs(b.p4_.E() - sol2) ? sol1 : sol2;
+    if(B > 0. && sep >= 0.)
+      return sol1;
+    if(B <= 0. && sep > 0.)
+      return sol2;
+    assert(0);
+  }();
+
+  const double sol = std::sqrt(en * en - B_MASS * B_MASS);
+  const double pt = sol / std::cosh(b.eta_);
+
+  const GenLepton result(pt, b.eta_, b.phi_, B_MASS, pdgId);
+  return result;
 }
 
 bool

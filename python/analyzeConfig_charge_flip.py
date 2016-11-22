@@ -15,7 +15,7 @@ class analyzeConfig_charge_flip(analyzeConfig):
   """
   def __init__(self, outputDir, executable_analyze, samples, lepton_selections, central_or_shifts,
                max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs, 
-               histograms_to_fit = [], executable_prep_dcard="prepareDatacard"):
+               histograms_to_fit = [], select_rle_output = False, executable_prep_dcard="prepareDatacard"):
     analyzeConfig.__init__(self, outputDir, executable_analyze, "charge_flip", central_or_shifts,
       max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs, 
       histograms_to_fit)
@@ -35,7 +35,7 @@ class analyzeConfig_charge_flip(analyzeConfig):
       process_name = sample_info["process_name_specific"]
       for lepton_selection in self.lepton_selections:
           key_dir = getKey(sample_name, lepton_selection)  
-          for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_DCRD ]:
+          for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_DCRD, DKEY_RLES  ]:
             initDict(self.dirs, [ key_dir, dir_type ])
             self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel,
               "_".join([ lepton_selection ]), process_name)
@@ -44,9 +44,10 @@ class analyzeConfig_charge_flip(analyzeConfig):
     self.cfgFile_analyze_original = os.path.join(self.workingDir, "analyze_charge_flip_cfg.py")
     self.cfgFile_prep_dcard_original = os.path.join(self.workingDir, "prepareDatacards_cfg.py")
     #self.histogramDir_prep_dcard = "charge_flip_SS_Tight"
+    self.select_rle_output = select_rle_output
 
   def createCfg_analyze(self, inputFiles, outputFile, sample_category, era, triggers, lepton_selection, 
-                        is_mc, central_or_shift, lumi_scale, apply_trigger_bits, cfgFile_modified):
+                        is_mc, central_or_shift, lumi_scale, apply_trigger_bits, cfgFile_modified, rle_output_file):
     """Create python configuration file for the analyze_charge_flip executable (analysis code)
 
     Args:
@@ -72,6 +73,7 @@ class analyzeConfig_charge_flip(analyzeConfig):
     lines.append("process.analyze_charge_flip.central_or_shift = cms.string('%s')" % central_or_shift)
     lines.append("process.analyze_charge_flip.lumiScale = cms.double(%f)" % lumi_scale)
     lines.append("process.analyze_charge_flip.apply_trigger_bits = cms.bool(%s)" % apply_trigger_bits)
+    lines.append("process.analyze_charge_flip.selEventsFileName_output = cms.string('%s')" % rle_output_file)
     create_cfg(self.cfgFile_analyze_original, cfgFile_modified, lines)
 
   def addToMakefile_hadd_stage1(self, lines_makefile):
@@ -259,10 +261,11 @@ class analyzeConfig_charge_flip(analyzeConfig):
               (process_name, lepton_selection, central_or_shift, jobId))
             self.logFiles_analyze[key_file] = os.path.join(self.dirs[key_dir][DKEY_LOGS], "analyze_%s_%s_%s_%s_%i.log" % \
               (self.channel, process_name, lepton_selection, central_or_shift, jobId))
-              
+            self.rleOutputFiles[key_file] = os.path.join(self.dirs[key_dir][DKEY_RLES], "rle_%s_%s_%s_%s_%i.txt" % \
+              (self.channel, process_name, lepton_selection, central_or_shift, jobId)) if self.select_rle_output else ""  
             self.createCfg_analyze(self.ntupleFiles[key_file], self.histogramFiles[key_file], sample_category, self.era, triggers,
               lepton_selection, 
-              is_mc, central_or_shift, lumi_scale, apply_trigger_bits, self.cfgFiles_analyze_modified[key_file])
+              is_mc, central_or_shift, lumi_scale, apply_trigger_bits, self.cfgFiles_analyze_modified[key_file], self.rleOutputFiles[key_file])
                 
     if self.is_sbatch:
       logging.info("Creating script for submitting '%s' jobs to batch system" % self.executable_analyze)

@@ -13,6 +13,8 @@ class GenLepton
             Double_t phi,
             Double_t mass,
             Int_t pdgId);
+  GenLepton(const math::PtEtaPhiMLorentzVector & p4,
+            Int_t pdgId);
 
   friend std::ostream &
   operator<<(std::ostream & os,

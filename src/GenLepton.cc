@@ -9,9 +9,15 @@ GenLepton::GenLepton(Double_t pt,
                      Int_t pdgId)
   : GenParticle(pt, eta, phi, mass)
   , pdgId_(pdgId)
-{
-  charge_ = -pdgId/std::abs(pdgId);
-}
+  , charge_(-pdgId_ / std::abs(pdgId_))
+{ }
+
+GenLepton::GenLepton(const math::PtEtaPhiMLorentzVector & p4,
+                     Int_t pdgId)
+  : GenParticle(p4)
+  , pdgId_(pdgId)
+  , charge_(-pdgId_ / std::abs(pdgId_))
+{ }
 
 std::ostream &
 operator<<(std::ostream & os,
