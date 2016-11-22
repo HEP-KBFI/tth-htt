@@ -1,12 +1,12 @@
 import os, logging, sys, getpass
 
-from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_chargeflip_2015 import samples_2015
-#from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_chargeflip_2016 import samples_2016
+#from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_chargeflip_2015 import samples_2015
+from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_chargeflip_2016 import samples_2016
 from tthAnalysis.HiggsToTauTau.analyzeConfig_charge_flip import analyzeConfig_charge_flip
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 
-ERA = "2015"
-#ERA = "2016"
+#ERA = "2015"
+ERA = "2016"
 
 samples = None
 LUMI = None
@@ -15,11 +15,11 @@ if ERA == "2015":
   LUMI = 2260. # 1/pb
 elif ERA == "2016":
   samples = samples_2016
-  LUMI = "XXXXX" # 1/pb
+  LUMI = 12.9e+3 # 1/pb
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "histosCF_data_newconf"
+version = "histosCF_testStrange"
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -70,7 +70,9 @@ if __name__ == '__main__':
     running_method = "sbatch",
     num_parallel_jobs = 4,
     #sel_events_file = '',#os.path.join(os.environ["CMSSW_BASE"] , "src/tthAnalysis/HiggsToTauTau/data/eventlist_diff.txt"),
-    histograms_to_fit = [ "mass_ll" ])
+    histograms_to_fit = [ "mass_ll" ],
+    select_rle_output = False
+    )
 
   analysis.create()
 
