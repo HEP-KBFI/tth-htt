@@ -10,10 +10,18 @@ GenParticle::GenParticle(Double_t pt,
   , eta_(eta)
   , phi_(phi)
   , mass_(mass)
-{
-  absEta_ = std::fabs(eta_);
-  p4_ = math::PtEtaPhiMLorentzVector(pt_, eta_, phi_, mass_);
-}
+  , absEta_(std::fabs(eta_))
+  , p4_{pt_, eta_, phi_, mass_}
+{ }
+
+GenParticle::GenParticle(const math::PtEtaPhiMLorentzVector & p4)
+  : pt_(p4.pt())
+  , eta_(p4.eta())
+  , phi_(p4.phi())
+  , mass_(p4.mass())
+  , absEta_(std::fabs(eta_))
+  , p4_(p4)
+{ }
 
 bool
 GenParticle::rel_pT_diff(const GenParticle & other,
