@@ -3,6 +3,7 @@
 
 #include <Rtypes.h> // Int_t, Long64_t, Double_t
 #include "DataFormats/Math/interface/LorentzVector.h" // math::PtEtaPhiMLorentzVector
+#include "DataFormats/Math/interface/deltaR.h" // deltaR()
 
 class GenParticle
 {
@@ -12,6 +13,7 @@ public:
               Double_t eta,
               Double_t phi,
               Double_t mass);
+  GenParticle(const math::PtEtaPhiMLorentzVector & p4);
 
   Double_t pt_;   ///< pT of the particle
   Double_t eta_;  ///< eta of the particle
@@ -22,13 +24,20 @@ public:
 
   math::PtEtaPhiMLorentzVector p4_; ///< 4-momentum constructed from the pT, eta, phi and mass
 
+  friend std::ostream &
+  operator<<(std::ostream & os,
+             const GenParticle & o);
+
   /**
    * @brief Calculates dR between our and the other particle.
    * @param other  The other lepton.
    * @return dR = sqrt((eta_1 - eta_2)^2 + (phi_1 - phi_2)^2)
    */
   inline double
-  dR(const GenParticle & other) const;
+  dR(const GenParticle & other) const
+  {
+    return deltaR(eta_, phi_, other.eta_, other.phi_);
+  }
 
   /**
    * @brief Calculates relative pT difference between our and the other particle.

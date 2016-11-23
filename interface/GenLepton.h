@@ -13,6 +13,12 @@ class GenLepton
             Double_t phi,
             Double_t mass,
             Int_t pdgId);
+  GenLepton(const math::PtEtaPhiMLorentzVector & p4,
+            Int_t pdgId);
+
+  friend std::ostream &
+  operator<<(std::ostream & os,
+             const GenLepton & o);
 
   Int_t pdgId_;  ///< PDG id of the lepton (signed)
   Int_t charge_; ///< charge of lepton (either +1 or -1, depending on pdgId)

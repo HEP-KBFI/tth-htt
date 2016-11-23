@@ -600,3 +600,24 @@ samples_no_njet_cut_2016["/TTW/spring16DR80v6aMiniAODv1/FASTSIM"] = OD([
   ),
 ])
 
+samples_no_njet_cut_2016["/TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16MiniAODv1-PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext4-v1/MINIAODSIM"] = OD([
+  ("type",                  "mc"),
+  ("sample_category",       "TT"),
+  ("process_name_specific", "TT_ext4"),
+  ("nof_files",             9602),
+  ("nof_events",            182424800),
+  ("use_it",                False),
+  ("xsection",              831.760000),
+  ("triggers",              [ "1e", "2e", "1mu", "2mu", "1e1mu" ]),
+  ("reHLT",                 False),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/cms/store/user/atiko/VHBBHeppyD24_v5/TT_TuneCUETP8M1_13TeV-powheg-pythia8/VHBB_HEPPY_D24_TT_TuneCUETP8M1_13TeV-powheg-Py8__spr16MiniAODv1-puspr16_80r2as_2016_v3_ext4-v1/161107_100027"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+])
+
