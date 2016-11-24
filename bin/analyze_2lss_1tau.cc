@@ -56,6 +56,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/MEtHistManager.h" // MEtHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/MVAInputVarHistManager.h" // MVAInputVarHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/EvtHistManager_2lss_1tau.h" // EvtHistManager_2lss_1tau
+#include "tthAnalysis/HiggsToTauTau/interface/CutFlowTableHistManager_2lss_1tau.h" // CutFlowTableHistManager_2lss_1tau
 #include "tthAnalysis/HiggsToTauTau/interface/WeightHistManager.h" // WeightHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/GenEvtHistManager.h" // GenEvtHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/LHEInfoHistManager.h" // LHEInfoHistManager
@@ -445,7 +446,7 @@ int main(int argc, char* argv[])
     genJetReader = new GenJetReader("nGenJet", "GenJet");
     genJetReader->setBranchAddresses(inputTree);
     lheInfoReader = new LHEInfoReader();
-    lheInfoReader->setBranchAddresses(inputTree);
+    lheInfoReader->setBranchAddresses(inputTree);    
   }
 
 //--- initialize BDTs used to discriminate ttH vs. ttV and ttH vs. ttbar 
@@ -734,12 +735,15 @@ int main(int argc, char* argv[])
       Form("%s/sel/lheInfo", histogramDir.data()), central_or_shift));
     lheInfoHistManager->bookHistograms(fs);
   }
-  
+
   int numEntries = inputTree->GetEntries();
   int analyzedEntries = 0;
   int selectedEntries = 0;
   double selectedEntries_weighted = 0.;
   cutFlowTableType cutFlowTable;
+  CutFlowTableHistManager_2lss_1tau* cutFlowHistManager = new CutFlowTableHistManager_2lss_1tau(makeHistManager_cfg(process_string, 
+    Form("%s/sel/cutFlow", histogramDir.data()), central_or_shift));
+  cutFlowHistManager->bookHistograms(fs);
   for ( int idxEntry = 0; idxEntry < numEntries && (maxEvents == -1 || idxEntry < maxEvents); ++idxEntry ) {
     if ( idxEntry > 0 && (idxEntry % reportEvery) == 0 ) {
       std::cout << "processing Entry " << idxEntry << " (" << selectedEntries << " Entries selected)" << std::endl;
@@ -750,6 +754,7 @@ int main(int argc, char* argv[])
 
     if ( run_lumi_eventSelector && !(*run_lumi_eventSelector)(run, lumi, event) ) continue;
     cutFlowTable.update("run:ls:event selection");
+    cutFlowHistManager->fillHistograms("run:ls:event selection");
 
 //--- build collections of generator level particles (before any cuts are applied, to check distributions in unbiased event samples)
     std::vector<GenLepton> genLeptons;
@@ -840,6 +845,7 @@ int main(int argc, char* argv[])
       }
     }
     cutFlowTable.update("trigger");
+    cutFlowHistManager->fillHistograms("trigger");
 
     if ( (selTrigger_2mu   && !apply_offline_e_trigger_cuts_2mu)   ||
 	 (selTrigger_1mu   && !apply_offline_e_trigger_cuts_1mu)   ||
@@ -983,6 +989,7 @@ int main(int argc, char* argv[])
       continue;
     }
     cutFlowTable.update(">= 2 presel leptons");
+    cutFlowHistManager->fillHistograms(">= 2 presel leptons");
     const RecoLepton* preselLepton_lead = preselLeptons[0];
     int preselLepton_lead_type = getLeptonType(preselLepton_lead->pdgId_);
     const RecoLepton* preselLepton_sublead = preselLeptons[1];
@@ -1020,6 +1027,7 @@ int main(int argc, char* argv[])
       continue;
     }    
     cutFlowTable.update("presel lepton trigger match");
+    cutFlowHistManager->fillHistograms("presel lepton trigger match");
 
     // apply requirement on jets (incl. b-tagged jets) and hadronic taus on preselection level
     if ( !(selJets.size() >= 2) ) {
@@ -1034,6 +1042,7 @@ int main(int argc, char* argv[])
       continue;
     }
     cutFlowTable.update(">= 2 jets");
+    cutFlowHistManager->fillHistograms(">= 2 jets");
     if ( !(selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS selBJets selection (1)." << std::endl;
@@ -1056,6 +1065,7 @@ int main(int argc, char* argv[])
       continue;
     }
     cutFlowTable.update(">= 2 loose b-jets || 1 medium b-jet (1)");
+    cutFlowHistManager->fillHistograms(">= 2 loose b-jets || 1 medium b-jet (1)");
     if ( !(selHadTaus.size() >= 1) ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS selHadTaus selection." << std::endl;
@@ -1068,6 +1078,7 @@ int main(int argc, char* argv[])
       continue;
     }
     cutFlowTable.update(">= 1 sel tau (1)");
+    cutFlowHistManager->fillHistograms(">= 1 sel tau (1)");
     const RecoHadTau* selHadTau = selHadTaus[0];
     const hadTauGenMatchEntry& selHadTau_genMatch = getHadTauGenMatch(hadTauGenMatch_definitions, selHadTau);
     int idxSelHadTau_genMatch = selHadTau_genMatch.idx_;
@@ -1214,6 +1225,7 @@ int main(int argc, char* argv[])
       continue;
     }
     cutFlowTable.update(">= 2 sel leptons", evtWeight);
+    cutFlowHistManager->fillHistograms(">= 2 sel leptons", evtWeight);
     const RecoLepton* selLepton_lead = selLeptons[0];
     const RecoLepton* selLepton_sublead = selLeptons[1];
     const leptonGenMatchEntry& selLepton_genMatch = getLeptonGenMatch(leptonGenMatch_definitions, selLepton_lead, selLepton_sublead);
@@ -1237,6 +1249,7 @@ int main(int argc, char* argv[])
       continue;
     }
     cutFlowTable.update("<= 2 tight leptons", evtWeight);
+    cutFlowHistManager->fillHistograms("<= 2 tight leptons", evtWeight);
 
     // require that trigger paths match event category (with event category based on selLeptons);
     if ( selElectrons.size() == 2 && !(selTrigger_1e  || selTrigger_2e) ) {
@@ -1269,6 +1282,7 @@ int main(int argc, char* argv[])
       continue;
     }
     cutFlowTable.update("sel lepton trigger match", evtWeight);
+    cutFlowHistManager->fillHistograms("sel lepton trigger match", evtWeight);
 
     // apply requirement on jets (incl. b-tagged jets) and hadronic taus on level of final event selection
     if ( !(selJets.size() >= 3) ) {
@@ -1283,6 +1297,7 @@ int main(int argc, char* argv[])
       continue;
     }
     cutFlowTable.update(">= 3 jets", evtWeight);
+    cutFlowHistManager->fillHistograms(">= 3 jets", evtWeight);
     if ( !(selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS selBJets selection (2)." << std::endl;
@@ -1305,6 +1320,7 @@ int main(int argc, char* argv[])
       continue;
     }
     cutFlowTable.update(">= 2 loose b-jets || 1 medium b-jet (2)", evtWeight);
+    cutFlowHistManager->fillHistograms(">= 2 loose b-jets || 1 medium b-jet (2)", evtWeight);
     if ( !(selHadTaus.size() >= 1) ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS selHadTaus selection." << std::endl;
@@ -1313,6 +1329,7 @@ int main(int argc, char* argv[])
       continue;
     }
     cutFlowTable.update(">= 1 sel tau (2)", evtWeight);
+    cutFlowHistManager->fillHistograms(">= 1 sel tau (2)", evtWeight);
 
     bool failsLowMassVeto = false;
     for ( std::vector<const RecoLepton*>::const_iterator lepton1 = selLeptons.begin();
@@ -1331,6 +1348,7 @@ int main(int argc, char* argv[])
       continue;
     }
     cutFlowTable.update("m(ll) > 12 GeV", evtWeight);
+    cutFlowHistManager->fillHistograms("m(ll) > 12 GeV", evtWeight);
 
     double minPt_lead = -1.;
     if      ( era == kEra_2015 ) minPt_lead = 20.;
@@ -1346,6 +1364,7 @@ int main(int argc, char* argv[])
       continue;
     }
     cutFlowTable.update("lead lepton pT > 25 GeV && sublead lepton pT > 15(e)/10(mu) GeV", evtWeight);
+    cutFlowHistManager->fillHistograms("lead lepton pT > 25 GeV && sublead lepton pT > 15(e)/10(mu) GeV", evtWeight);
 
     bool failsTightChargeCut = false;
     for ( std::vector<const RecoLepton*>::const_iterator lepton = selLeptons.begin();
@@ -1368,6 +1387,7 @@ int main(int argc, char* argv[])
       continue;
     }
     cutFlowTable.update("tight lepton charge", evtWeight);
+    cutFlowHistManager->fillHistograms("tight lepton charge", evtWeight);
 
     bool isCharge_SS = selLepton_lead->charge_*selLepton_sublead->charge_ > 0;
     bool isCharge_OS = selLepton_lead->charge_*selLepton_sublead->charge_ < 0;
@@ -1388,6 +1408,7 @@ int main(int argc, char* argv[])
       continue;
     }
     cutFlowTable.update(Form("lepton-pair %s charge", leptonChargeSelection_string.data()), evtWeight);
+    cutFlowHistManager->fillHistograms("lepton-pair OS/SS charge", evtWeight);
 
     if ( apply_lepton_and_hadTauCharge_cut ) {
       if ( std::abs(selLepton_lead->charge_ + selLepton_sublead->charge_ + selHadTau->charge_) != 1 ) {
@@ -1400,6 +1421,7 @@ int main(int argc, char* argv[])
 	continue;
       }
       cutFlowTable.update("lepton+tau charge");
+      cutFlowHistManager->fillHistograms("lepton+tau charge");
     }
 
     bool failsZbosonMassVeto = false;
@@ -1421,6 +1443,7 @@ int main(int argc, char* argv[])
       continue;
     }
     cutFlowTable.update("Z-boson mass veto", evtWeight);
+    cutFlowHistManager->fillHistograms("Z-boson mass veto", evtWeight);
 
     if ( selLepton_lead->is_electron() && selLepton_sublead->is_electron() ) {
       if ( met_LD < 0.2 ) {
@@ -1432,6 +1455,7 @@ int main(int argc, char* argv[])
       }
     }
     cutFlowTable.update("met LD > 0.2", evtWeight);
+    cutFlowHistManager->fillHistograms("met LD > 0.2", evtWeight);
 
     if ( leptonSelection != kTight || hadTauSelection != kTight ) {
       if ( (tightMuons.size() + tightElectrons.size()) >= 2 && tightHadTaus.size() >= 1 ) { 
@@ -1442,6 +1466,7 @@ int main(int argc, char* argv[])
 	continue; // CV: avoid overlap with signal region
       }
       cutFlowTable.update("signal region veto", evtWeight);
+      cutFlowHistManager->fillHistograms("signal region veto", evtWeight);
     }
 
 //--- apply data/MC corrections for efficiencies of leptons passing the loose identification and isolation criteria
