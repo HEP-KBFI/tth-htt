@@ -329,7 +329,7 @@ class analyzeConfig:
         """
         sbatch_lines = self.generate_sbatch_analyze_lines()
         sbatch_lines = sbatch_lines + ["\n"]
-        sbatch_lines = sbatch_lines + self.generate_sbatch_concat_histograms_jobs_lines()
+        sbatch_lines = sbatch_lines + self.generate_sbatch_concat_histograms_lines()
 
         createFile(self.sbatchFile_analyze, sbatch_lines)
 
@@ -407,10 +407,10 @@ class analyzeConfig:
             log_file_name
         )
 
-    def generate_sbatch_concat_histograms(self):
+    def generate_sbatch_concat_histograms_lines(self):
         histogram_file_names = self.get_histogram_file_names()
 
-        sbatch_lines = self.generate_sbatch_concat_histograms_jobs(
+        sbatch_lines = self.generate_sbatch_concat_histograms_jobs_lines(
             histogram_file_names=histogram_file_names,
             final_output_file=self.outputDir + "/histograms/result.root"
         )
