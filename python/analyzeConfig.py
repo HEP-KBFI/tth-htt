@@ -420,7 +420,7 @@ class analyzeConfig:
     def generate_sbatch_concat_histograms_jobs_lines(
         self,
         histogram_file_names=None,
-        maximum_histograms_in_batch=10,
+        maximum_histograms_in_batch=2,
         level=0,
         final_output_file=None
     ):
