@@ -469,7 +469,8 @@ class analyzeConfig:
                 level=level + 1
             )
             jobs_lines = jobs_lines + job_lines
-        else
+
+        else:
 
             # This is the last aggregation
 
@@ -482,9 +483,9 @@ class analyzeConfig:
         return jobs_lines
 
     def generate_sbatch_concat_histogram_job_lines(self,
-        histogram_file_names=None,
-        output_file=None
-    ):
+                                                   histogram_file_names=None,
+                                                   output_file=None
+                                                   ):
 
         return ["# %s: %s" % (output_file, histogram_file_names)]
 
