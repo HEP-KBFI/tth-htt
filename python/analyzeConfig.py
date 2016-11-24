@@ -330,7 +330,7 @@ class analyzeConfig:
         sbatch_lines = self.generate_sbatch_analyze_lines(
         ) + ["\n"] + self.generate_sbatch_concat_histograms()
 
-        createFile(self.sbatchFile_analyze, lines_sbatch)
+        createFile(self.sbatchFile_analyze, sbatch_lines)
 
     def generate_sbatch_analyze_lines(self):
         lines_sbatch = []
