@@ -451,7 +451,7 @@ class analyzeConfig:
 
             job_lines = self.generate_sbatch_concat_histogram_job_lines(
                 histogram_file_names=histogram_file_names[start_pos:end_pos],
-                output_file=final_output_file
+                output_file=output_file
             )
             jobs_lines = jobs_lines + job_lines
 
