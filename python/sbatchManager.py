@@ -16,6 +16,11 @@ job_template_file = current_dir + "/sbatch-node.template.sh"
 job_template = open(job_template_file, 'r').read()
 
 
+submit_job_version2_template_file = current_dir + \
+    "/sbatch-node.submit_job_version2_template.sh"
+submit_job_version2_template = open(
+    submit_job_version2_template_file, 'r').read()
+
 # Define SbatchManager
 
 command_create_scratchDir = '/scratch/mkscratch'
@@ -112,6 +117,59 @@ class sbatchManager:
         jobId = retVal.split()[-1]
         # print " jobId = %s" % jobId
         self.jobIds.append(jobId)
+
+    def submit_job_version2(
+        self,
+        task_name=None,
+        command=None,
+        output_dir=None
+    ):
+
+        if not self.workingDir:
+            raise ValueError(
+                "Please call 'setWorkingDir' before calling 'submitJob' !!")
+
+        # Create scratch dir
+
+        scratch_dir = "/scratch/%s" % getpass.getuser()
+        if not os.path.exists(scratch_dir):
+            print "Directory '%s' does not yet exist, creating it !!" % scratchDir
+            run_cmd(command_create_scratchDir)
+        scratch_dir = os.path.join(
+            scratchDir, "tthAnalysis" + "_" + date.today().isoformat())
+        create_if_not_exists(scratch_dir)
+
+        # Create script for executing jobs
+
+        script_file_path = output_dir + "/cfgs/" + task_name + ".sh"
+        wrapper_log_file = output_dir + "/logs/" + task_name + "_wrapper.log"
+        executable_log_file = output_dir + "/logs/" + task_name + "_executable.log"
+
+        sbatch_command = "sbatch --partition=%s --output=%s %s" % (
+            command,
+            self.queue,
+            wrapper_log_file,
+            script_file
+        )
+
+        script = jinja2.Template(submit_job_version2_template).render(
+            command=command,
+            working_dir=self.workingDir,
+            scratch_dir=scratch_dir,
+            wrapper_log_file=wrapper_log_file,
+            executable_log_file=executable_log_file,
+            sbatch_command=sbatch_command
+        )
+        print "writing sbatch script file = '%s'" % script_file_path
+        with codecs.open(script_file, "w", "utf-8") as f:
+            f.write(script)
+
+        # Run command
+
+        print "Added job: command = %s" % command
+        ret_val = run_cmd(command).split()[-1]
+        job_id = ret_val.split()[-1]
+        self.jobIds.append(job_id)
 
     def waitForJobs(self):
         """Waits for all sbatch jobs submitted by this instance of sbatchManager to finish processing

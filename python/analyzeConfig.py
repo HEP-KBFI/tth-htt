@@ -484,10 +484,11 @@ class analyzeConfig:
 
         return jobs_lines
 
-    def generate_sbatch_concat_histogram_job_lines(self,
-                                                   histogram_file_names=None,
-                                                   output_file=None
-                                                   ):
+    def generate_sbatch_concat_histogram_job_lines(
+        self,
+        histogram_file_names=None,
+        output_file=None
+    ):
 
         # Log some info
 
@@ -496,9 +497,23 @@ class analyzeConfig:
             output_file
         ))
 
-        #  Return row
+        #  Return lines
 
-        return ["# %s: %s" % (output_file, histogram_file_names)]
+        template = """
+m.submit_job_version2(
+    task_name = 'create_{output_file}',
+    command = 'hadd {output_file} {histogram_file_names_spaced}',
+    output_dir = {output_dir}
+)
+        """
+
+        line = template.format(
+            histogram_file_names_spaced=" ".join(histogram_file_names)
+            output_file=output_file,
+            output_dir=self.outputDir
+        )
+
+        return [line]
 
     def get_histogram_file_names(self):
         histogram_file_names = []
