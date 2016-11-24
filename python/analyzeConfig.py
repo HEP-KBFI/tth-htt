@@ -480,7 +480,7 @@ class analyzeConfig:
                 histogram_file_names=output_files,
                 output_file=final_output_file
             )
-            jobs_lines = jobs_lines + job_line
+            jobs_lines = jobs_lines + job_lines
 
         return jobs_lines
 
