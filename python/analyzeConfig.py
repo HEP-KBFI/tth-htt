@@ -407,7 +407,7 @@ class analyzeConfig:
         )
 
     def generate_sbatch_concat_histograms(self):
-        histogram_file_names = get_histogram_file_names()
+        histogram_file_names = self.get_histogram_file_names()
         sbatch_lines = []
 
         for histogram_file_name in histogram_file_names:
