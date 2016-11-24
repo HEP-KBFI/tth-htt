@@ -430,7 +430,7 @@ class analyzeConfig:
         logging.info("#generate_sbatch_concat_histograms_jobs_lines(%s, %s, %s, %s)" % (
             histogram_file_names,
             maximum_histograms_in_batch,
-            level,
+            level = 0,
             final_output_file
         ))
 
@@ -454,6 +454,8 @@ class analyzeConfig:
                 output_file=output_file
             )
             jobs_lines = jobs_lines + job_lines
+
+            current_job_id = current_job_id + 1
 
         jobs_lines = jobs_lines + ["m.waitForJobs()"]
 
