@@ -327,8 +327,9 @@ class analyzeConfig:
     def createScript_sbatch(self):
         """Creates the python script necessary to submit the analysis jobs to the batch system
         """
-        sbatch_lines = self.generate_sbatch_analyze_lines(
-        ) + ["\n"] + self.generate_sbatch_concat_histograms()
+        sbatch_lines = self.generate_sbatch_analyze_lines()
+        sbatch_lines = sbatch_lines + ["\n"]
+        sbatch_lines = sbatch_lines + self.generate_sbatch_concat_histograms_jobs_lines()
 
         createFile(self.sbatchFile_analyze, sbatch_lines)
 
@@ -408,12 +409,84 @@ class analyzeConfig:
 
     def generate_sbatch_concat_histograms(self):
         histogram_file_names = self.get_histogram_file_names()
-        sbatch_lines = []
 
-        for histogram_file_name in histogram_file_names:
-            sbatch_lines.append("# " + histogram_file_name + "\n")
+        sbatch_lines = self.generate_sbatch_concat_histograms_jobs(
+            histogram_file_names=histogram_file_names,
+            final_output_file=self.outputDir + "/histograms/result.root"
+        )
 
         return sbatch_lines
+
+    def generate_sbatch_concat_histograms_jobs_lines(
+        self,
+        histogram_file_names=None,
+        maximum_histograms_in_batch=10,
+        level=0,
+        final_output_file=None
+    ):
+
+        # Log some info
+
+        logging.info("#generate_sbatch_concat_histograms_jobs_lines(%s, %s, %s, %s)" % (
+            histogram_file_names,
+            maximum_histograms_in_batch,
+            level,
+            final_output_file
+        ))
+
+        # Create jobs for output files
+
+        output_files = []
+        jobs_lines = []
+        current_job_id = 0
+
+        while current_job_id * maximum_histograms_in_batch < len(histogram_file_names):
+            start_pos = current_job_id * maximum_histograms_in_batch
+            end_pos = start_pos + maximum_histograms_in_batch
+            output_file = final_output_file.replace(
+                ".root",
+                "_%s-%s.root" % (level, current_job_id)
+            )
+            output_files.append(output_file)
+
+            job_lines = self.generate_sbatch_concat_histogram_job_lines(
+                histogram_file_names=histogram_file_names[start_pos:end_pos],
+                output_file=final_output_file
+            )
+            jobs_lines = jobs_lines + job_lines
+
+        jobs_lines = jobs_lines + ["m.waitForJobs()"]
+
+        # Aggregate output files
+
+        if len(output_files) > maximum_histograms_in_batch:
+
+            # Recursive call to method self
+
+            job_lines = self.generate_sbatch_concat_histogram_jobs_lines(
+                histogram_file_names=output_files,
+                output_file=final_output_file,
+                level=level + 1
+            )
+            jobs_lines = jobs_lines + job_lines
+        else
+
+            # This is the last aggregation
+
+            job_lines = self.generate_sbatch_concat_histogram_job_lines(
+                histogram_file_names=output_files,
+                output_file=final_output_file
+            )
+            jobs_lines = jobs_lines + job_line
+
+        return jobs_lines
+
+    def generate_sbatch_concat_histogram_job_lines(self,
+        histogram_file_names=None,
+        output_file=None
+    ):
+
+        return ["# %s: %s" % (output_file, histogram_file_names)]
 
     def get_histogram_file_names(self):
         histogram_file_names = []
