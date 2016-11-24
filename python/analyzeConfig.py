@@ -487,6 +487,15 @@ class analyzeConfig:
                                                    output_file=None
                                                    ):
 
+        # Log some info
+
+        logging.info("#generate_sbatch_concat_histogram_job_lines(%s, %s)" % (
+            histogram_file_names,
+            output_file
+        ))
+
+        #  Return row
+
         return ["# %s: %s" % (output_file, histogram_file_names)]
 
     def get_histogram_file_names(self):
