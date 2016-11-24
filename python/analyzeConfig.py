@@ -328,7 +328,7 @@ class analyzeConfig:
         """Creates the python script necessary to submit the analysis jobs to the batch system
         """
         sbatch_lines = self.generate_sbatch_analyze_lines(
-        ) + ["\n"] + self.generate_sbatch_concat_histgrams()
+        ) + ["\n"] + self.generate_sbatch_concat_histograms()
 
         createFile(self.sbatchFile_analyze, lines_sbatch)
 
