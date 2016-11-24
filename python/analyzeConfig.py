@@ -343,7 +343,7 @@ class analyzeConfig:
         for key_file, cfg_file in self.cfgFiles_analyze_modified.items():
             input_file_names = self.ntupleFiles[key_file]
             histogram_file_name = self.histogramFiles[key_file]
-            sbatch_line = generate_sbatch_analyze_line(
+            sbatch_line = self.generate_sbatch_analyze_line(
                 input_file_names=input_file_names,
                 histogram_file_name=histogram_file_name,
                 cfg_file=cfg_file,
