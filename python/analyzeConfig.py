@@ -327,10 +327,10 @@ class analyzeConfig:
     def createScript_sbatch(self):
         """Creates the python script necessary to submit the analysis jobs to the batch system
         """
-        sbatch_lines =
-            generate_sbatch_analyze_lines()
-            + ["\n"]
-            + generate_sbatch_concat_histgrams()
+        sbatch_lines = "" +
+            generate_sbatch_analyze_lines() +
+            ["\n"] +
+            generate_sbatch_concat_histgrams()
 
         createFile(self.sbatchFile_analyze, lines_sbatch)
 
@@ -436,7 +436,8 @@ class analyzeConfig:
                 "python", self.sbatchFile_analyze))
             lines_makefile.append("")
         for key_file, histogram_file in self.histogramFiles.items():
-            cfg_file_analyze_modified = self.cfgFiles_analyze_modified[key_file]
+            cfg_file_analyze_modified = self.cfgFiles_analyze_modified[
+                key_file]
             if self.is_makefile:
                 lines_makefile.append("%s:" % histogram_file)
                 cfg_file = self.cfgFiles[key_file]
