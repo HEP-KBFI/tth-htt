@@ -430,7 +430,7 @@ class analyzeConfig:
         logging.info("#generate_sbatch_concat_histograms_jobs_lines(%s, %s, %s, %s)" % (
             histogram_file_names,
             maximum_histograms_in_batch,
-            level = 0,
+            level,
             final_output_file
         ))
 
