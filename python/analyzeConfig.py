@@ -436,18 +436,18 @@ class analyzeConfig:
 
         # Create jobs for output files
 
-        output_files = []
+        output_histograms = []
         jobs_lines = []
         current_job_id = 0
 
-        while current_job_id * maximum_histograms_in_batch < len(histogram_file_names):
+        while current_job_id * maximum_histograms_in_batch < len(input_histograms):
             start_pos = current_job_id * maximum_histograms_in_batch
             end_pos = start_pos + maximum_histograms_in_batch
-            output_file = final_output_histogram.replace(
+            output_histogram = final_output_histogram.replace(
                 ".root",
                 "_%s-%s.root" % (level, current_job_id)
             )
-            output_files.append(output_file)
+            output_histograms.append(output_histogram)
 
             job_lines = self.generate_sbatch_concat_histogram_job_lines(
                 input_histograms=input_histograms[start_pos:end_pos],
@@ -466,7 +466,7 @@ class analyzeConfig:
             # Recursive call to method self
 
             job_lines = self.generate_sbatch_concat_histograms_jobs_lines(
-                histogram_file_names=output_files,
+                input_histograms=output_files,
                 final_output_histogram=final_output_histogram,
                 level=level + 1
             )
@@ -493,7 +493,7 @@ class analyzeConfig:
         # Log some info
 
         logging.info("#generate_sbatch_concat_histogram_job_lines(%s, %s)" % (
-            histogram_file_names,
+            input_histograms,
             output_histogram
         ))
 
