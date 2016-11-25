@@ -412,7 +412,7 @@ class analyzeConfig:
 
         sbatch_lines = self.generate_sbatch_concat_histograms_jobs_lines(
             histogram_file_names=histogram_file_names,
-            final_output_file=self.outputDir + "/histograms/result.root"
+            final_output_histogram_file=self.outputDir + "/histograms/result.root"
         )
 
         return sbatch_lines
@@ -422,7 +422,7 @@ class analyzeConfig:
         histogram_file_names=None,
         maximum_histograms_in_batch=2,
         level=0,
-        final_output_file=None
+        final_output_histogram_file=None
     ):
 
         # Log some info
@@ -431,7 +431,7 @@ class analyzeConfig:
             histogram_file_names,
             maximum_histograms_in_batch,
             level,
-            final_output_file
+            final_output_histogram_file
         ))
 
         # Create jobs for output files
@@ -443,7 +443,7 @@ class analyzeConfig:
         while current_job_id * maximum_histograms_in_batch < len(histogram_file_names):
             start_pos = current_job_id * maximum_histograms_in_batch
             end_pos = start_pos + maximum_histograms_in_batch
-            output_file = final_output_file.replace(
+            output_file = final_output_histogram_file.replace(
                 ".root",
                 "_%s-%s.root" % (level, current_job_id)
             )
@@ -467,7 +467,7 @@ class analyzeConfig:
 
             job_lines = self.generate_sbatch_concat_histograms_jobs_lines(
                 histogram_file_names=output_files,
-                final_output_file=final_output_file,
+                final_output_histogram_file=final_output_histogram_file,
                 level=level + 1
             )
             jobs_lines = jobs_lines + job_lines
@@ -478,7 +478,7 @@ class analyzeConfig:
 
             job_lines = self.generate_sbatch_concat_histogram_job_lines(
                 histogram_file_names=output_files,
-                output_file=final_output_file
+                output_histogram_file=final_output_histogram_file
             )
             jobs_lines = jobs_lines + job_lines
 
@@ -486,30 +486,77 @@ class analyzeConfig:
 
     def generate_sbatch_concat_histogram_job_lines(
         self,
-        histogram_file_names=None,
-        output_file=None
+        input_histograms=None,
+        output_histogram=None
     ):
 
         # Log some info
 
         logging.info("#generate_sbatch_concat_histogram_job_lines(%s, %s)" % (
             histogram_file_names,
-            output_file
+            output_histogram_file
         ))
 
         #  Return lines
 
         template = """
 m.submit_job_version2(
-    task_name = 'create_{output_file}',
-    command = 'hadd {output_file} {histogram_file_names_spaced}',
-    output_dir = {output_dir}
+    task_name = '{task_name}',
+    command = '''
+
+
+        # Create scratch dir for output root
+
+        export SCRATCHED_OUTPUT_HISTOGRAM="$SCRATCH_DIR/{output_histogram}"
+        echo "Create scratch dir for output root: mkdir -p \"\`dirname '$SCRATCHED_OUTPUT_HISTOGRAM'\`\""
+        mkdir -p "`dirname '$SCRATCHED_OUTPUT_HISTOGRAM'`"
+
+
+        # Create scratched histograms
+
+        export SCRATCHED_INPUT_HISTOGRAMS=""
+        export INPUT_HISTOGRAMS="{input_histograms}"
+        echo "Create scratched histograms for: $INPUT_HISTOGRAMS"
+
+        for INPUT_HISTOGRAM in $INPUT_HISTOGRAMS; do
+
+            SCRATCHED_INPUT_HISTOGRAM="$SCRATCH_DIR/$INPUT_HISTOGRAM"
+
+            echo "Create parent dir: mkdir -p \"\`dirname '$SCRATCHED_INPUT_HISTOGRAM'\`\""
+            mkdir -p "`dirname '$SCRATCHED_INPUT_HISTOGRAM'`"
+
+            echo "Copy histogram to scratch: cp "$INPUT_HISTOGRAM" "$SCRATCHED_INPUT_HISTOGRAM""
+            cp "$INPUT_HISTOGRAM" "$SCRATCHED_INPUT_HISTOGRAM"
+
+            export SCRATCHED_INPUT_HISTOGRAMS="$SCRATCHED_INPUT_HISTOGRAMS $SCRATCHED_INPUT_HISTOGRAM"
+
+
+        # hadd
+
+        echo "Create a new histogram: hadd $SCRATCHED_OUTPUT_HISTOGRAM $SCRATCHED_INPUT_HISTOGRAMS"
+        hadd $SCRATCHED_OUTPUT_HISTOGRAM $SCRATCHED_INPUT_HISTOGRAMS
+
+
+        # Store result in correct place
+
+        echo "Make a directory for result root: mkdir -p \"\`dirname '$OUTPUT_HISTOGRAM\`\""
+        mkdir -p "`dirname '$OUTPUT_HISTOGRAM'`"
+
+        echo "Copy result from scratch to /home: cp $SCRATCHED_OUTPUT_HISTOGRAM {output_histogram}"
+        cp $SCRATCHED_OUTPUT_HISTOGRAM {output_histogram}
+
+
+        # Cleanup will be automatic
+
+        echo "Cleanup will be automatic"
+    ''',
+    output_dir = '{output_dir}'
 )
         """
 
         line = template.format(
-            histogram_file_names_spaced=" ".join(histogram_file_names)
-            output_file=output_file,
+            input_histogram_files=" ".join(input_histogram_files)
+            output_histogram_file=output_file,
             output_dir=self.outputDir
         )
 

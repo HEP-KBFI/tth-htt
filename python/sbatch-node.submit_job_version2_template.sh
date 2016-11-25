@@ -1,3 +1,4 @@
+
 #!/bin/bash
 
 
@@ -28,6 +29,11 @@ run_failure_wrapped_executable() {
             echo "Maximum tries reached, will not try to resubmit any more. GL & HF"
         fi
     fi
+}
+
+
+run_the_command() {
+  {{ command }}
 }
 
 
@@ -70,7 +76,7 @@ run_wrapped_executable() {
 
     CMSSW_SEARCH_PATH=$SCRATCH_DIR
     echo "Execute command: {{ command }} > $TEMPORARY_EXECUTABLE_LOG_FILE"
-    {{ command }} > $TEMPORARY_EXECUTABLE_LOG_FILE
+    run_the_command > $TEMPORARY_EXECUTABLE_LOG_FILE
 
     echo "Time is: `date`"
 

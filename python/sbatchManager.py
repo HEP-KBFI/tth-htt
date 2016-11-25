@@ -146,7 +146,6 @@ class sbatchManager:
         executable_log_file = output_dir + "/logs/" + task_name + "_executable.log"
 
         sbatch_command = "sbatch --partition=%s --output=%s %s" % (
-            command,
             self.queue,
             wrapper_log_file,
             script_file
