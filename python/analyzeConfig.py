@@ -408,10 +408,10 @@ class analyzeConfig:
         )
 
     def generate_sbatch_concat_histograms_lines(self):
-        histogram_file_names = self.get_histogram_file_names()
+        input_histograms = self.get_input_histograms()
 
         sbatch_lines = self.generate_sbatch_concat_histograms_jobs_lines(
-            histogram_file_names=histogram_file_names,
+            input_histograms=input_histograms,
             final_output_histogram=self.outputDir + "/histograms/result.root"
         )
 
@@ -562,15 +562,14 @@ m.submit_job_version2(
 
         return [line]
 
-    def get_histogram_file_names(self):
-        histogram_file_names = []
+    def get_input_histograms(self):
+        input_histograms = []
 
         for key_file, cfg_file in self.cfgFiles_analyze_modified.items():
-            input_file_names = self.ntupleFiles[key_file]
-            histogram_file_name = self.histogramFiles[key_file]
-            histogram_file_names.append(histogram_file_name)
+            input_histogram = self.histogramFiles[key_file]
+            input_histograms.append(histogram_file_name)
 
-        return histogram_file_names
+        return input_histograms
 
     def addToMakefile_analyze(self, lines_makefile):
         """Adds the commands to Makefile that are necessary for running the analysis code on the Ntuple and filling the histograms
