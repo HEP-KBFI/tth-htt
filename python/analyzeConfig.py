@@ -555,6 +555,7 @@ m.submit_job_version2(
         """
 
         line = template.format(
+            task_name=output_histogram.split('/')[-1],
             input_histograms=" ".join(input_histograms),
             output_histogram=output_histogram,
             output_dir=self.outputDir
