@@ -477,7 +477,7 @@ class analyzeConfig:
             # This is the last aggregation
 
             job_lines = self.generate_sbatch_concat_histogram_job_lines(
-                input_histograms=output_histogram,
+                input_histograms=output_histograms,
                 output_histogram=final_output_histogram
             )
             jobs_lines = jobs_lines + job_lines
