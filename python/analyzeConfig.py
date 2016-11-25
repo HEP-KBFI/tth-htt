@@ -419,7 +419,7 @@ class analyzeConfig:
 
     def generate_sbatch_concat_histograms_jobs_lines(
         self,
-        histogram_file_names=None,
+        input_histograms=None,
         maximum_histograms_in_batch=2,
         level=0,
         final_output_histogram=None
@@ -428,7 +428,7 @@ class analyzeConfig:
         # Log some info
 
         logging.info("#generate_sbatch_concat_histograms_jobs_lines(%s, %s, %s, %s)" % (
-            histogram_file_names,
+            input_histograms,
             maximum_histograms_in_batch,
             level,
             final_output_histogram
@@ -450,7 +450,7 @@ class analyzeConfig:
             output_files.append(output_file)
 
             job_lines = self.generate_sbatch_concat_histogram_job_lines(
-                histogram_file_names=histogram_file_names[start_pos:end_pos],
+                input_histograms=input_histograms[start_pos:end_pos],
                 output_file=output_file
             )
             jobs_lines = jobs_lines + job_lines
