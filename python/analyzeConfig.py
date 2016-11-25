@@ -567,7 +567,7 @@ m.submit_job_version2(
 
         for key_file, cfg_file in self.cfgFiles_analyze_modified.items():
             input_histogram = self.histogramFiles[key_file]
-            input_histograms.append(histogram_file_name)
+            input_histograms.append(input_histogram)
 
         return input_histograms
 
