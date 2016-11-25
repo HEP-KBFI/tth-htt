@@ -451,7 +451,7 @@ class analyzeConfig:
 
             job_lines = self.generate_sbatch_concat_histogram_job_lines(
                 input_histograms=input_histograms[start_pos:end_pos],
-                output_file=output_file
+                output_histogram=output_histogram
             )
             jobs_lines = jobs_lines + job_lines
 
@@ -461,12 +461,12 @@ class analyzeConfig:
 
         # Aggregate output files
 
-        if len(output_files) > maximum_histograms_in_batch:
+        if len(output_histograms) > maximum_histograms_in_batch:
 
             # Recursive call to method self
 
             job_lines = self.generate_sbatch_concat_histograms_jobs_lines(
-                input_histograms=output_files,
+                input_histograms=output_histograms,
                 final_output_histogram=final_output_histogram,
                 level=level + 1
             )
@@ -477,7 +477,7 @@ class analyzeConfig:
             # This is the last aggregation
 
             job_lines = self.generate_sbatch_concat_histogram_job_lines(
-                histogram_file_names=output_files,
+                input_histograms=output_files,
                 output_histogram=final_output_histogram
             )
             jobs_lines = jobs_lines + job_lines
