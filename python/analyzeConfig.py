@@ -412,7 +412,7 @@ class analyzeConfig:
 
         sbatch_lines = self.generate_sbatch_concat_histograms_jobs_lines(
             histogram_file_names=histogram_file_names,
-            final_output_histogram_file=self.outputDir + "/histograms/result.root"
+            final_output_histogram=self.outputDir + "/histograms/result.root"
         )
 
         return sbatch_lines
@@ -422,7 +422,7 @@ class analyzeConfig:
         histogram_file_names=None,
         maximum_histograms_in_batch=2,
         level=0,
-        final_output_histogram_file=None
+        final_output_histogram=None
     ):
 
         # Log some info
@@ -431,7 +431,7 @@ class analyzeConfig:
             histogram_file_names,
             maximum_histograms_in_batch,
             level,
-            final_output_histogram_file
+            final_output_histogram
         ))
 
         # Create jobs for output files
@@ -443,7 +443,7 @@ class analyzeConfig:
         while current_job_id * maximum_histograms_in_batch < len(histogram_file_names):
             start_pos = current_job_id * maximum_histograms_in_batch
             end_pos = start_pos + maximum_histograms_in_batch
-            output_file = final_output_histogram_file.replace(
+            output_file = final_output_histogram.replace(
                 ".root",
                 "_%s-%s.root" % (level, current_job_id)
             )
@@ -467,7 +467,7 @@ class analyzeConfig:
 
             job_lines = self.generate_sbatch_concat_histograms_jobs_lines(
                 histogram_file_names=output_files,
-                final_output_histogram_file=final_output_histogram_file,
+                final_output_histogram=final_output_histogram,
                 level=level + 1
             )
             jobs_lines = jobs_lines + job_lines
@@ -478,7 +478,7 @@ class analyzeConfig:
 
             job_lines = self.generate_sbatch_concat_histogram_job_lines(
                 histogram_file_names=output_files,
-                output_histogram_file=final_output_histogram_file
+                output_histogram=final_output_histogram
             )
             jobs_lines = jobs_lines + job_lines
 
@@ -494,7 +494,7 @@ class analyzeConfig:
 
         logging.info("#generate_sbatch_concat_histogram_job_lines(%s, %s)" % (
             histogram_file_names,
-            output_histogram_file
+            output_histogram
         ))
 
         #  Return lines
@@ -555,8 +555,8 @@ m.submit_job_version2(
         """
 
         line = template.format(
-            input_histogram_files=" ".join(input_histogram_files)
-            output_histogram_file=output_file,
+            input_histograms=" ".join(input_histograms)
+            output_histogram=output_histogram,
             output_dir=self.outputDir
         )
 
