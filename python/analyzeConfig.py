@@ -504,7 +504,6 @@ m.submit_job_version2(
     task_name = '{task_name}',
     command = '''
 
-
         # Create scratch dir for output root
 
         export SCRATCHED_OUTPUT_HISTOGRAM="$SCRATCH_DIR/{output_histogram}"
@@ -529,7 +528,7 @@ m.submit_job_version2(
             cp "$INPUT_HISTOGRAM" "$SCRATCHED_INPUT_HISTOGRAM"
 
             export SCRATCHED_INPUT_HISTOGRAMS="$SCRATCHED_INPUT_HISTOGRAMS $SCRATCHED_INPUT_HISTOGRAM"
-
+        done
 
         # hadd
 
