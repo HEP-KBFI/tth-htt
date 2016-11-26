@@ -1,6 +1,7 @@
 import subprocess
 from tthAnalysis.HiggsToTauTau.sbatchManager import sbatchManager
 import time
+from tthAnalysis.HiggsToTauTau.jobTools import run_cmd
 
 def run_test():
 
@@ -33,7 +34,7 @@ def run_test():
         print("Result from file was: %s" % result)
 
         if result == 'Worked':
-            subprocess.call("rm -rf /home/margusp/tmp/creating_result/*")
+            run_cmd("rm -rf /home/margusp/tmp/execute_command_on_cluster_node_spec/*")
             return True
 
     return False
