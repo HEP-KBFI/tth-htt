@@ -1,7 +1,7 @@
 import subprocess
-from tthAnalysis.HiggsToTauTau.sbatchManager import sbatchManager
 import time
 from tthAnalysis.HiggsToTauTau.jobTools import run_cmd
+from tthAnalysis.HiggsToTauTau.sbatchManager import sbatchManager
 
 def run_test():
 
