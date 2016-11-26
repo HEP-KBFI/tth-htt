@@ -33,19 +33,16 @@ def run_test():
     with file('/home/margusp/tmp/execute_command_on_cluster_node_spec/result.txt') as f:
         result = f.read().strip()
 
-        print("Result from file was: %s" % result)
-
         if result == 'Worked':
+            print('Execute on cluster node passed.')
             return True
+
+    print("$TEST_DIR/result.txt did not contain result.txt with 'Worked'.")
+    print('Execute on cluster node failed.')
 
     return False
 
 
 # Run test and print result
 
-test_was_successful = run_test()
-
-if test_was_successful:
-    print('Execute on cluster node passed.')
-else:
-    print('Execute on cluster node failed.')
+run_test()
