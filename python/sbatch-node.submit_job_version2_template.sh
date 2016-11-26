@@ -100,3 +100,6 @@ run_wrapped_executable() {
 # Calls main method
 
 main
+
+
+# End of file
