@@ -114,11 +114,13 @@ class sbatchManager:
             f.write(script)
 
         print "<submitJob>: command = %s" % command
-        retVal = run_cmd(command).split()[-1]
-        print "retVal: %s" % retVal
-        jobId = retVal.split()[-1]
+        run_cmd_output = run_cmd(command)
+        print "run_cmd_output: %s" % run_cmd_output
+        ret_val = run_cmd_output.split()[-1]
+        print "ret_val: %s" % ret_val
+        job_id = ret_val.split()[-1]
         # print " jobId = %s" % jobId
-        self.jobIds.append(jobId)
+        self.jobIds.append(job_id)
 
     def submit_job_version2(
         self,
