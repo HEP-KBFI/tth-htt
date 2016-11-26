@@ -32,7 +32,7 @@ def run_test():
     if result == 'Worked':
         subprocess.call("rm -rf /home/margusp/tmp/creating_result/*")
         return True
-        
+
     return False
 
 
@@ -40,7 +40,7 @@ def run_test():
 
 test_was_successful = run_test()
 
-if test_was_successful():
+if test_was_successful:
     print('Execute on cluster node passed.')
 else:
     print('Execute on cluster node failed.')
