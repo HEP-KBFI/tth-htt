@@ -30,6 +30,8 @@ def run_test():
     with file('/home/margusp/tmp/execute_command_on_cluster_node_spec/result.txt') as f:
         result = f.read()
 
+        print("Result from file was: %s" % result)
+
         if result == 'Worked':
             subprocess.call("rm -rf /home/margusp/tmp/creating_result/*")
             return True
