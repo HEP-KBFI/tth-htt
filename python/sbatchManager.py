@@ -136,7 +136,9 @@ class sbatchManager:
             print "Directory '%s' does not yet exist, creating it !!" % scratchDir
             run_cmd(command_create_scratchDir)
         scratch_dir = os.path.join(
-            scratchDir, "tthAnalysis" + "_" + date.today().isoformat())
+            scratch_dir,
+            "tthAnalysis" + "_" + date.today().isoformat()
+        )
         create_if_not_exists(scratch_dir)
 
         # Create script for executing jobs
