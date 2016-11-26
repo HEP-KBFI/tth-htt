@@ -126,10 +126,10 @@ class sbatchManager:
         output_dir=None
     ):
 
-    '''
-        This method is similar to submitJob, but has less required parameters.
-        Supports multiple lines of Bash commands instead of fixed oneliner.
-    '''
+        '''
+            This method is similar to submitJob, but has less required parameters.
+            Supports multiple lines of Bash commands instead of fixed oneliner.
+        '''
 
         if not self.workingDir:
             raise ValueError(
