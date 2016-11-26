@@ -96,6 +96,6 @@ def run_cmd(command, do_not_log = False, stdout_file = None, stderr_file = None)
   if stderr_file:
     stderr_file.write(stderr)
 
-  print "jobTools#run_cmd("%s") returned: %s" % (command, stdout)
+  print "jobTools#run_cmd('%s') returned: %s" % (command, stdout)
 
   return stdout
