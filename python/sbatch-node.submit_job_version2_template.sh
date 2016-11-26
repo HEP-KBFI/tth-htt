@@ -5,7 +5,7 @@
 # Runs executable, wrapped into failure wrapper + wrapped into node scratchdir
 
 main() {
-    run_failure_wrapped_executable >> "{{ wrapper_log_file }}" 2>&1
+    run_failure_wrapped_executable >> "{wrapper_log_file}" 2>&1
 }
 
 
@@ -24,7 +24,7 @@ run_failure_wrapped_executable() {
 
         if [[ $TRY_COUNT -lt 3 ]]; then
             echo "Will resubmit job to other node: TRY_COUNT=$TRY_COUNT {{sbatch_command}}"
-            TRY_COUNT=$TRY_COUNT {{sbatch_command}}
+            TRY_COUNT=$TRY_COUNT {sbatch_command}
         else
             echo "Maximum tries reached, will not try to resubmit any more. GL & HF"
         fi
@@ -33,15 +33,15 @@ run_failure_wrapped_executable() {
 
 
 run_the_command() {
-  {{ command }}
+  {command}
 }
 
 
 # Creates scratch dir on cluster node and runs executable
 
 run_wrapped_executable() {
-    export SCRATCH_DIR="{{ scratch_dir }}/$SLURM_JOBID"
-    EXECUTABLE_LOG_FILE="{{ executable_log_file }}"
+    export SCRATCH_DIR="{scratch_dir}/$SLURM_JOBID"
+    EXECUTABLE_LOG_FILE="{executable_log_file}"
     EXECUTABLE_LOG_DIR="`dirname $EXECUTABLE_LOG_FILE`"
     EXECUTABLE_LOG_FILE_NAME="`basename $EXECUTABLE_LOG_FILE`"
     TEMPORARY_EXECUTABLE_LOG_DIR="$SCRATCH_DIR/$EXECUTABLE_LOG_DIR/"
@@ -62,7 +62,7 @@ run_wrapped_executable() {
 
     echo "Initialize CMSSW run-time environment: source /cvmfs/cms.cern.ch/cmsset_default.sh"
     source /cvmfs/cms.cern.ch/cmsset_default.sh
-    cd {{ working_dir }}
+    cd {working_dir}
     cmsenv
     cd $SCRATCH_DIR
 
@@ -75,7 +75,7 @@ run_wrapped_executable() {
     echo "Time is: `date`"
 
     CMSSW_SEARCH_PATH=$SCRATCH_DIR
-    echo "Execute command: {{ command }} > $TEMPORARY_EXECUTABLE_LOG_FILE"
+    echo "Execute command output will be redirected to $TEMPORARY_EXECUTABLE_LOG_FILE"
     run_the_command > $TEMPORARY_EXECUTABLE_LOG_FILE
 
     echo "Time is: `date`"
