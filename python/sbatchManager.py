@@ -147,7 +147,8 @@ class sbatchManager:
         run_cmd("mkdir -p '%s'" % (output_dir + "/cfgs/"))
         run_cmd("mkdir -p '%s'" % (output_dir + "/logs/"))
 
-        sbatch_command = "sbatch --partition=%s --output=%s %s" % (
+        sbatch_command = "%s --partition=%s --output=%s %s" % (
+            self.command_submit, # "sbatch"
             self.queue,
             wrapper_log_file,
             script_file
