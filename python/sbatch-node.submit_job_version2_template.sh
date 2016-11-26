@@ -1,6 +1,5 @@
-
 #!/bin/bash
-
+# version 0.1
 
 # Runs executable, wrapped into failure wrapper + wrapped into node scratchdir
 
