@@ -115,6 +115,7 @@ class sbatchManager:
 
         print "<submitJob>: command = %s" % command
         retVal = run_cmd(command).split()[-1]
+        print "retVal: %s" % retVal
         jobId = retVal.split()[-1]
         # print " jobId = %s" % jobId
         self.jobIds.append(jobId)
