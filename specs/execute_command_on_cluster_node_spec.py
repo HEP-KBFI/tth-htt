@@ -40,5 +40,5 @@ test_was_successful = run_test()
 
 if test_was_successful():
     print('Execute on cluster node passed.')
-else
+else:
     print('Execute on cluster node failed.')
