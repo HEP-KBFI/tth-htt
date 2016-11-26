@@ -153,7 +153,7 @@ class sbatchManager:
             script_file
         )
 
-        script = submit_job_version2_template.format(
+        script = jinja2.Template(job_template).render(
             command=command,
             working_dir=self.workingDir,
             scratch_dir=scratch_dir,
