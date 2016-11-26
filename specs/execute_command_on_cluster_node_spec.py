@@ -7,6 +7,8 @@ def run_test():
 
     # Prepare
 
+    run_cmd("rm -rf /home/margusp/tmp/execute_command_on_cluster_node_spec/*")
+
     m = sbatchManager()
     m.setWorkingDir('/home/margusp/VHbbNtuples_7_6_x/CMSSW_7_6_3/src/analysis2mu1b1j/analysis2mu1b1j/test')
 
@@ -34,7 +36,6 @@ def run_test():
         print("Result from file was: %s" % result)
 
         if result == 'Worked':
-            run_cmd("rm -rf /home/margusp/tmp/execute_command_on_cluster_node_spec/*")
             return True
 
     return False
