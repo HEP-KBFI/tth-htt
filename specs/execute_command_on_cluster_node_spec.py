@@ -26,7 +26,7 @@ def run_test():
     )
 
     m.waitForJobs()
-    time.sleep(2)
+    time.sleep(2) # TODO fix this (at wait for jobs does not work, because job id is registered)
 
     # Check the result
 
