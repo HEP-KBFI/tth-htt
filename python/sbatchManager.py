@@ -79,13 +79,7 @@ class sbatchManager:
                 "Please call 'setWorkingDir' before calling 'submitJob' !!")
 
         # create scratch dir
-        scratchDir = "/scratch/%s" % getpass.getuser()
-        if not os.path.exists(scratchDir):
-            print "Directory '%s' does not yet exist, creating it !!" % scratchDir
-            run_cmd(command_create_scratchDir)
-        scratchDir = os.path.join(
-            scratchDir, "tthAnalysis" + "_" + date.today().isoformat())
-        create_if_not_exists(scratchDir)
+        self.create_scratch_dir_if_missing
 
         # create script for executing jobs
         script_file = cfgFile.replace(".py", ".sh")
@@ -130,17 +124,9 @@ class sbatchManager:
             raise ValueError(
                 "Please call 'setWorkingDir' before calling 'submitJob' !!")
 
-        # Create scratch dir
+        # Create scratch dir if missing
 
-        scratch_dir = "/scratch/%s" % getpass.getuser()
-        if not os.path.exists(scratch_dir):
-            print "Directory '%s' does not yet exist, creating it !!" % scratchDir
-            run_cmd(command_create_scratchDir)
-        scratch_dir = os.path.join(
-            scratch_dir,
-            "tthAnalysis" + "_" + date.today().isoformat()
-        )
-        create_if_not_exists(scratch_dir)
+        self.create_scratch_dir_if_missing
 
 
         # Create script for executing jobs
@@ -179,6 +165,17 @@ class sbatchManager:
         return False
         job_id = ret_val.split()[-1]
         self.jobIds.append(job_id)
+
+    def create_scratch_dir_if_missing(self):
+        scratch_dir = "/scratch/%s" % getpass.getuser()
+        if not os.path.exists(scratch_dir):
+            print "Directory '%s' does not yet exist, creating it !!" % scratchDir
+            run_cmd(command_create_scratchDir)
+        scratch_dir = os.path.join(
+            scratch_dir,
+            "tthAnalysis" + "_" + date.today().isoformat()
+        )
+        create_if_not_exists(scratch_dir)
 
     def waitForJobs(self):
         """Waits for all sbatch jobs submitted by this instance of sbatchManager to finish processing
