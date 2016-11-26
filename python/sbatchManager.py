@@ -4,6 +4,7 @@ import jinja2
 import logging
 import os
 import time
+import subprocess
 from datetime import date
 
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd
@@ -146,6 +147,9 @@ class sbatchManager:
         script_file = output_dir + "/cfgs/" + task_name + ".sh"
         wrapper_log_file = output_dir + "/logs/" + task_name + "_wrapper.log"
         executable_log_file = output_dir + "/logs/" + task_name + "_executable.log"
+
+        subprocess.call("mkdir - p '%s'" % (output_dir + "/cfgs/"))
+        subprocess.call("mkdir - p '%s'" % (output_dir + "/logs/"))
 
         sbatch_command = "sbatch --partition=%s --output=%s %s" % (
             self.queue,
