@@ -79,7 +79,13 @@ class sbatchManager:
                 "Please call 'setWorkingDir' before calling 'submitJob' !!")
 
         # create scratch dir
-        self.create_scratch_dir_if_missing
+        scratchDir = "/scratch/%s" % getpass.getuser()
+        if not os.path.exists(scratchDir):
+            print "Directory '%s' does not yet exist, creating it !!" % scratchDir
+            run_cmd(command_create_scratchDir)
+        scratchDir = os.path.join(
+            scratchDir, "tthAnalysis" + "_" + date.today().isoformat())
+        create_if_not_exists(scratchDir)
 
         # create script for executing jobs
         script_file = cfgFile.replace(".py", ".sh")
@@ -120,14 +126,16 @@ class sbatchManager:
         output_dir=None
     ):
 
+    '''
+        This method is similar to submitJob, but has less required parameters.
+        Supports multiple lines of Bash commands instead of fixed oneliner.
+    '''
+
         if not self.workingDir:
             raise ValueError(
                 "Please call 'setWorkingDir' before calling 'submitJob' !!")
 
-        # Create scratch dir if missing
-
-        self.create_scratch_dir_if_missing
-
+        self.create_scratch_dir_if_missing()
 
         # Create script for executing jobs
 
@@ -169,7 +177,7 @@ class sbatchManager:
     def create_scratch_dir_if_missing(self):
         scratch_dir = "/scratch/%s" % getpass.getuser()
         if not os.path.exists(scratch_dir):
-            print "Directory '%s' does not yet exist, creating it !!" % scratchDir
+            print "Directory '%s' does not yet exist, creating it !!" % scratch_dir
             run_cmd(command_create_scratchDir)
         scratch_dir = os.path.join(
             scratch_dir,
