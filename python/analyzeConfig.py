@@ -538,7 +538,7 @@ m.submit_job_version2(
 
         # Store result in correct place
 
-        echo "Make a directory for result root: mkdir -p \"\`dirname '$OUTPUT_HISTOGRAM\`\""
+        echo "Make a directory for result root: mkdir -p \"\`dirname '$OUTPUT_HISTOGRAM'`\""
         mkdir -p "`dirname '$OUTPUT_HISTOGRAM'`"
 
         echo "Copy result from scratch to /home: cp $SCRATCHED_OUTPUT_HISTOGRAM {output_histogram}"
