@@ -142,6 +142,7 @@ class sbatchManager:
         )
         create_if_not_exists(scratch_dir)
 
+
         # Create script for executing jobs
 
         script_file = output_dir + "/cfgs/" + task_name + ".sh"
@@ -169,10 +170,13 @@ class sbatchManager:
         with codecs.open(script_file, "w", "utf-8") as f:
             f.write(script)
 
+
         # Run command
 
-        print "Added job: command = %s" % command
-        ret_val = run_cmd(command).split()[-1]
+        print("Running command: %s" % command)
+        command_result = run_cmd(command)
+        print("Result: %s" % command_result)
+        return False
         job_id = ret_val.split()[-1]
         self.jobIds.append(job_id)
 
