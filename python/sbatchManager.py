@@ -135,7 +135,7 @@ class sbatchManager:
             raise ValueError(
                 "Please call 'setWorkingDir' before calling 'submitJob' !!")
 
-        self.create_scratch_dir_if_missing()
+        scratch_dir = self.get_scratch_dir()
 
         # Create script for executing jobs
 
@@ -174,7 +174,7 @@ class sbatchManager:
         job_id = ret_val.split()[-1]
         self.jobIds.append(job_id)
 
-    def create_scratch_dir_if_missing(self):
+    def get_scratch_dir(self):
         scratch_dir = "/scratch/%s" % getpass.getuser()
         if not os.path.exists(scratch_dir):
             print "Directory '%s' does not yet exist, creating it !!" % scratch_dir
@@ -184,6 +184,7 @@ class sbatchManager:
             "tthAnalysis" + "_" + date.today().isoformat()
         )
         create_if_not_exists(scratch_dir)
+        return scratch_dir
 
     def waitForJobs(self):
         """Waits for all sbatch jobs submitted by this instance of sbatchManager to finish processing
