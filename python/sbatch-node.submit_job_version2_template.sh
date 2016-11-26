@@ -1,5 +1,6 @@
 #!/bin/bash
-# version 0.1
+# File:     sbatch-node.submit_job_version2.sh
+# Version:  0.1
 
 # Runs executable, wrapped into failure wrapper + wrapped into node scratchdir
 
