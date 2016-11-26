@@ -14,10 +14,11 @@ def run_test():
     m.submit_job_version2(
         task_name = 'creating_result_0-0.root',
         command = '''
-            mkdir -p /home/margusp/tmp/creating_result
-            echo "Worked" > /home/margusp/tmp/creating_result/result.txt
+            export TEST_DIR=/home/margusp/tmp/execute_command_on_cluster_node_spec/
+            mkdir -p $TEST_DIR
+            echo "Worked" > $TEST_DIR/result.txt
         ''',
-        output_dir = '/home/margusp/tmp/creating_result'
+        output_dir = '/home/margusp/tmp/execute_command_on_cluster_node_spec/'
     )
 
     m.waitForJobs()
@@ -25,13 +26,14 @@ def run_test():
 
     # Check the result
 
-    with file('/home/margusp/tmp/creating_result/result.txt') as f:
+    with file('/home/margusp/tmp/execute_command_on_cluster_node_spec/result.txt') as f:
         result = f.read()
+
     if result == 'Worked':
         subprocess.call("rm -rf /home/margusp/tmp/creating_result/*")
         return True
-    else:
-        return False
+        
+    return False
 
 
 # Run test and print result

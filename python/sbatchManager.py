@@ -143,7 +143,7 @@ class sbatchManager:
 
         # Create script for executing jobs
 
-        script_file_path = output_dir + "/cfgs/" + task_name + ".sh"
+        script_file = output_dir + "/cfgs/" + task_name + ".sh"
         wrapper_log_file = output_dir + "/logs/" + task_name + "_wrapper.log"
         executable_log_file = output_dir + "/logs/" + task_name + "_executable.log"
 
@@ -161,7 +161,7 @@ class sbatchManager:
             executable_log_file=executable_log_file,
             sbatch_command=sbatch_command
         )
-        print "writing sbatch script file = '%s'" % script_file_path
+        print "writing sbatch script file = '%s'" % script_file
         with codecs.open(script_file, "w", "utf-8") as f:
             f.write(script)
 
