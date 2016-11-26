@@ -28,7 +28,7 @@ def run_test():
     # Check the result
 
     with file('/home/margusp/tmp/execute_command_on_cluster_node_spec/result.txt') as f:
-        result = f.read()
+        result = f.read().strip()
 
         print("Result from file was: %s" % result)
 
