@@ -148,8 +148,8 @@ class sbatchManager:
         wrapper_log_file = output_dir + "/logs/" + task_name + "_wrapper.log"
         executable_log_file = output_dir + "/logs/" + task_name + "_executable.log"
 
-        subprocess.call("mkdir -p '%s'" % (output_dir + "/cfgs/"))
-        subprocess.call("mkdir -p '%s'" % (output_dir + "/logs/"))
+        run_cmd("mkdir -p '%s'" % (output_dir + "/cfgs/"))
+        run_cmd("mkdir -p '%s'" % (output_dir + "/logs/"))
 
         sbatch_command = "sbatch --partition=%s --output=%s %s" % (
             self.queue,
