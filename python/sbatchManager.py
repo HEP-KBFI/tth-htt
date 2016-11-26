@@ -171,11 +171,8 @@ class sbatchManager:
 
         # Run command
 
-        print("Running command: %s" % command)
-        command_result = run_cmd(command)
-        print("Result: %s" % command_result)
-        return False
-        job_id = ret_val.split()[-1]
+        sbatch_command_result = run_cmd(sbatch_command)
+        job_id = sbatch_command_result.split()[-1]
         self.jobIds.append(job_id)
 
     def get_scratch_dir(self):
