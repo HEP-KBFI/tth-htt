@@ -16,7 +16,7 @@ def run_test():
     # Run task
 
     m.submit_job_version2(
-        task_name = 'creating_result_0-0.root',
+        task_name = 'creating_result.txt',
         command = '''
             export TEST_DIR=/home/margusp/tmp/execute_command_on_cluster_node_spec/
             mkdir -p $TEST_DIR
