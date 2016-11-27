@@ -67,7 +67,9 @@ NtupleFillerMEM::setFileName(const std::string & fileName)
     leptons_f_[i].setBranchName(Form("lepton%lu", i + 1));
     leptons_f_[i].initBranches(tree_);
   }
-  for(std::size_t i = 0; i < 2; ++i)
+  njet_f_.setBranchName("njets");
+  njet_f_.initBranch(tree_);
+  for(std::size_t i = 0; i < NOF_RECO_JETS; ++i)
   {
     jets_f_[i].setBranchName(Form("jets%lu", i + 1));
     jets_f_[i].initBranches(tree_);
@@ -199,8 +201,12 @@ NtupleFillerMEM::add(const std::vector<const RecoJet*> & selBJets_loose,
 
   if(selBJetsMerged_.size() > 1)
   {
-    for(std::size_t i = 0; i < 2; ++i)
+    const int nRecoJets = std::min(NOF_RECO_JETS, static_cast<int>(selBJetsMerged_.size()));
+    njet_f_.setValue(nRecoJets);
+    for(int i = 0; i < nRecoJets; ++i)
       jets_f_[i].setValues(*selBJetsMerged_[i]);
+    for(int i = nRecoJets; i < NOF_RECO_JETS; ++i)
+      jets_f_[i].setValues({0., 0., 0., 0.});
   }
   else
     errCode_ |= NTUPLE_ERR_NO_2_JETS;
@@ -568,8 +574,14 @@ NtupleFillerMEM::add(const std::vector<GenHadTau> & genHadTaus,
   // only dR match possible
   std::vector<const RecoJet *> bJetCandidates,
                                bbarJetCandidates;
-  const std::vector<const RecoJet *> selBJetsMerged_rest(selBJetsMerged_.begin() + 2, selBJetsMerged_.end());
-  selBJetsMerged_.resize(2);
+  std::vector<const RecoJet *> selBJetsMerged_rest;
+  if(selBJetsMerged_.size() > NOF_RECO_JETS)
+  {
+    std::copy(
+      selBJetsMerged_.begin() + NOF_RECO_JETS, selBJetsMerged_.end(), std::back_inserter(selBJetsMerged_rest)
+    );
+    selBJetsMerged_.resize(NOF_RECO_JETS);
+  }
   for(const RecoJet * const jet: selBJetsMerged_)
   {
     if(jet -> is_overlap(b, 0.5))

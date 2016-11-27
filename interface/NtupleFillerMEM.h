@@ -14,6 +14,8 @@
 #include <array> // std::array<>
 #include <algorithm> // std::sort(), std::find(), std::remove_if()
 
+#define NOF_RECO_JETS 4
+
 #define NTUPLE_ERR_OK                                       0ull
 #define NTUPLE_ERR_HIGGS_DECAY_MODE                         1ull << 0
 #define NTUPLE_ERR_NO_2_JETS                                1ull << 1
@@ -249,7 +251,8 @@ protected:
 
   /* reconstructed */
   std::array<RecoLeptonFiller<double>, 3> leptons_f_;
-  std::array<RecoJetFiller<double>, 2> jets_f_;
+  BasicFiller<int> njet_f_;
+  std::array<RecoJetFiller<double>, NOF_RECO_JETS> jets_f_;
   RecoHadTauFiller<double> hTau_f_;
 
   /* generator level, enabled only if use2016_ is true */
