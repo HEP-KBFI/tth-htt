@@ -521,12 +521,13 @@ m.submit_job_version2(
         for INPUT_HISTOGRAM in $INPUT_HISTOGRAMS; do
 
             SCRATCHED_INPUT_HISTOGRAM="$SCRATCH_DIR/$INPUT_HISTOGRAM"
+            SCRATCHED_INPUT_HISTOGRAM_DIRECTORY="`dirname '$SCRATCHED_INPUT_HISTOGRAM'`"
 
-            echo "Create parent dir: mkdir -p \`dirname '$SCRATCHED_INPUT_HISTOGRAM'\`"
-            mkdir -p "`dirname '$SCRATCHED_INPUT_HISTOGRAM'`"
+            echo "Create parent dir: mkdir -p $SCRATCHED_INPUT_HISTOGRAM_DIRECTORY"
+            mkdir -p $SCRATCHED_INPUT_HISTOGRAM_DIRECTORY
 
-            echo "Copy histogram to scratch: cp "$INPUT_HISTOGRAM" "$SCRATCHED_INPUT_HISTOGRAM""
-            cp "$INPUT_HISTOGRAM" "$SCRATCHED_INPUT_HISTOGRAM"
+            echo "Copy histogram to scratch: cp -a $INPUT_HISTOGRAM $SCRATCHED_INPUT_HISTOGRAM_DIRECTORY"
+            cp "$INPUT_HISTOGRAM" "$SCRATCHED_INPUT_HISTOGRAM_DIRECTORY"
 
             export SCRATCHED_INPUT_HISTOGRAMS="$SCRATCHED_INPUT_HISTOGRAMS $SCRATCHED_INPUT_HISTOGRAM"
         done
@@ -539,11 +540,12 @@ m.submit_job_version2(
 
         # Store result in correct place
 
-        echo "Make a directory for result root: mkdir -p \`dirname '$OUTPUT_HISTOGRAM'\`"
-        mkdir -p "`dirname '$OUTPUT_HISTOGRAM'`"
+        OUTPUT_HISTOGRAM_DIRECTORY="`dirname '$OUTPUT_HISTOGRAM'`"
+        echo "Make a directory for result root: mkdir -p $OUTPUT_HISTOGRAM_DIRECTORY"
+        mkdir -p $OUTPUT_HISTOGRAM_DIRECTORY
 
-        echo "Copy result from scratch to /home: cp $SCRATCHED_OUTPUT_HISTOGRAM $OUTPUT_HISTOGRAM"
-        cp $SCRATCHED_OUTPUT_HISTOGRAM $OUTPUT_HISTOGRAM
+        echo "Copy result from scratch to /home: cp $SCRATCHED_OUTPUT_HISTOGRAM $OUTPUT_HISTOGRAM_DIRECTORY"
+        cp $SCRATCHED_OUTPUT_HISTOGRAM $OUTPUT_HISTOGRAM_DIRECTORY
 
 
         # Cleanup will be automatic
