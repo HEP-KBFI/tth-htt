@@ -208,6 +208,7 @@ int main(int argc, char* argv[])
   bool isMC = cfg_analyze.getParameter<bool>("isMC"); 
   std::string central_or_shift = cfg_analyze.getParameter<std::string>("central_or_shift");
   double lumiScale = ( process_string != "data_obs" ) ? cfg_analyze.getParameter<double>("lumiScale") : 1.;
+  bool apply_genWeight = cfg_analyze.getParameter<bool>("apply_genWeight"); 
   bool apply_trigger_bits = cfg_analyze.getParameter<bool>("apply_trigger_bits"); 
 
   std::string jet_btagWeight_branch;
@@ -346,8 +347,10 @@ int main(int argc, char* argv[])
   hltPaths_setBranchAddresses(inputTree, triggers_1e);
   hltPaths_setBranchAddresses(inputTree, triggers_1mu);
 
-  PUWEIGHT_TYPE pileupWeight;
+  GENWEIGHT_TYPE genWeight = 1.;
+  PUWEIGHT_TYPE pileupWeight = 1.;
   if ( isMC ) {
+    inputTree->SetBranchAddress(GENWEIGHT_KEY, &genWeight);
     inputTree->SetBranchAddress(PUWEIGHT_KEY, &pileupWeight);
   }
 
@@ -677,7 +680,7 @@ int main(int argc, char* argv[])
       }      
       selHistManager->weights_ = new WeightHistManager(makeHistManager_cfg(process_and_genMatch, 
         Form("%s/sel/weights", histogramDir.data()), central_or_shift));
-      selHistManager->weights_->bookHistograms(fs, { "data_to_MC_correction", "fakeRate" });
+      selHistManager->weights_->bookHistograms(fs, { "genWeight", "pileupWeight", "data_to_MC_correction", "fakeRate" });
       selHistManagers[idxLepton][idxHadTau] = selHistManager;
     }
   }
@@ -715,7 +718,7 @@ int main(int argc, char* argv[])
 
     if ( run_lumi_eventSelector && !(*run_lumi_eventSelector)(run, lumi, event) ) continue;
     cutFlowTable.update("run:ls:event selection");
-    cutFlowHistManager->fillHistograms("run:ls:event selection");
+    cutFlowHistManager->fillHistograms("run:ls:event selection", lumiScale);
 
 //--- build collections of generator level particles (before any cuts are applied, to check distributions in unbiased event samples)
     std::vector<GenLepton> genLeptons;
@@ -743,7 +746,7 @@ int main(int argc, char* argv[])
     bool isTriggered_1mu = use_triggers_1mu && (hltPaths_isTriggered(triggers_1mu) || (isMC && !apply_trigger_bits));
     if ( !(isTriggered_1e || isTriggered_1mu) ) continue;
     cutFlowTable.update("trigger");
-    cutFlowHistManager->fillHistograms("trigger");
+    cutFlowHistManager->fillHistograms("trigger", lumiScale);
 
 //--- build collections of electrons, muons and hadronic taus;
 //    resolve overlaps in order of priority: muon, electron,
@@ -843,7 +846,7 @@ int main(int argc, char* argv[])
     // require exactly one lepton passing loose preselection criteria
     if ( !(preselLeptons.size() == 1) ) continue;
     cutFlowTable.update("1 presel lepton");
-    cutFlowHistManager->fillHistograms("1 presel lepton");
+    cutFlowHistManager->fillHistograms("1 presel lepton", lumiScale);
     const RecoLepton* preselLepton = preselLeptons[0];
     int preselLepton_type = getLeptonType(preselLepton->pdgId_);
     const leptonGenMatchEntry& preselLepton_genMatch = getLeptonGenMatch(leptonGenMatch_definitions, preselLepton);
@@ -854,7 +857,7 @@ int main(int argc, char* argv[])
     if ( preselElectrons.size() == 1 && !isTriggered_1e  ) continue;
     if ( preselMuons.size()     == 1 && !isTriggered_1mu ) continue;
     cutFlowTable.update("presel lepton trigger match");
-    cutFlowHistManager->fillHistograms("presel lepton trigger match");
+    cutFlowHistManager->fillHistograms("presel lepton trigger match", lumiScale);
 
     // require presence of at least two hadronic taus passing loose preselection criteria
     // (do not veto events with more than two loosely selected hadronic tau candidates,
@@ -862,7 +865,7 @@ int main(int argc, char* argv[])
     std::sort(preselHadTaus.begin(), preselHadTaus.end(), isHigherPt);
     if ( !(preselHadTaus.size() >= 2) ) continue;
     cutFlowTable.update(">= 2 presel taus");
-    cutFlowHistManager->fillHistograms(">= 2 presel taus");
+    cutFlowHistManager->fillHistograms(">= 2 presel taus", lumiScale);
     const RecoHadTau* preselHadTau_lead = preselHadTaus[0];
     const RecoHadTau* preselHadTau_sublead = preselHadTaus[1];
     const hadTauGenMatchEntry& preselHadTau_genMatch = getHadTauGenMatch(hadTauGenMatch_definitions, preselHadTau_lead, preselHadTau_sublead);
@@ -874,10 +877,10 @@ int main(int argc, char* argv[])
     // apply requirement on jets (incl. b-tagged jets) on preselection level
     if ( !(selJets.size() >= 2) ) continue;
     cutFlowTable.update(">= 2 jets");
-    cutFlowHistManager->fillHistograms(">= 2 jets");
+    cutFlowHistManager->fillHistograms(">= 2 jets", lumiScale);
     if ( !(selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) ) continue;
     cutFlowTable.update(">= 2 loose b-jets || 1 medium b-jet (1)");
-    cutFlowHistManager->fillHistograms(">= 2 loose b-jets || 1 medium b-jet (1)");
+    cutFlowHistManager->fillHistograms(">= 2 loose b-jets || 1 medium b-jet (1)", lumiScale);
 
 //--- compute MHT and linear MET discriminant (met_LD)
     LV met_p4(met_pt, met_eta, met_phi, 0.);
@@ -906,6 +909,7 @@ int main(int argc, char* argv[])
     double evtWeight = 1.;
     if ( isMC ) {
       evtWeight *= lumiScale;
+      if ( apply_genWeight ) evtWeight *= genWeight;
       evtWeight *= pileupWeight;
       if ( lheScale_option != kLHE_scale_central ) {	
 	if      ( lheScale_option == kLHE_scale_xDown ) evtWeight *= lheInfoReader->getWeight_scale_xDown();
@@ -1015,7 +1019,7 @@ int main(int argc, char* argv[])
       }
       continue;
     }
-    cutFlowTable.update("lepton+tau charge");
+    cutFlowTable.update("lepton+tau charge", evtWeight);
     cutFlowHistManager->fillHistograms("lepton+tau charge", evtWeight);
 
     if ( leptonSelection != kTight || hadTauSelection != kTight ) {
@@ -1163,6 +1167,8 @@ int main(int argc, char* argv[])
         }
       }
     }
+    selHistManager->weights_->fillHistograms("genWeight", genWeight);
+    selHistManager->weights_->fillHistograms("pileupWeight", pileupWeight);
     selHistManager->weights_->fillHistograms("data_to_MC_correction", weight_data_to_MC_correction_loose*weight_data_to_MC_correction_tight);
     selHistManager->weights_->fillHistograms("fakeRate", weight_fakeRate);
 
