@@ -506,9 +506,14 @@ m.submit_job_version2(
 
         # Create scratch dir for output root
 
+        echo "export SCRATCHED_OUTPUT_HISTOGRAM=\"$SCRATCH_DIR/{output_histogram}\""
         export SCRATCHED_OUTPUT_HISTOGRAM="$SCRATCH_DIR/{output_histogram}"
-        echo "Create scratch dir for output root: mkdir -p \"\`dirname '$SCRATCHED_OUTPUT_HISTOGRAM'\`\""
-        mkdir -p "`dirname '$SCRATCHED_OUTPUT_HISTOGRAM'`"
+
+        echo "export SCRATCHED_OUTPUT_HISTOGRAM_DIRECTORY=\"`dirname $SCRATCHED_OUTPUT_HISTOGRAM`\""
+        export SCRATCHED_OUTPUT_HISTOGRAM_DIRECTORY="`dirname $SCRATCHED_OUTPUT_HISTOGRAM`"
+
+        echo "Create scratch dir for output root: mkdir -p $SCRATCHED_OUTPUT_HISTOGRAM_DIRECTORY"
+        mkdir -p $SCRATCHED_OUTPUT_HISTOGRAM_DIRECTORY
 
 
         # Create scratched histograms
