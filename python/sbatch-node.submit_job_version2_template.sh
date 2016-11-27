@@ -76,7 +76,7 @@ run_wrapped_executable() {
 
     CMSSW_SEARCH_PATH=$SCRATCH_DIR
     echo "Execute command output will be redirected to $TEMPORARY_EXECUTABLE_LOG_FILE"
-    run_the_command > $TEMPORARY_EXECUTABLE_LOG_FILE
+    run_the_command > $TEMPORARY_EXECUTABLE_LOG_FILE 2>&1
 
     echo "Time is: `date`"
 
