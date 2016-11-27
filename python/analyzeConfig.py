@@ -546,7 +546,7 @@ m.submit_job_version2(
 
         # Store result in correct place
 
-        OUTPUT_HISTOGRAM_DIRECTORY="`dirname '$OUTPUT_HISTOGRAM'`"
+        OUTPUT_HISTOGRAM_DIRECTORY="`dirname $OUTPUT_HISTOGRAM`"
         echo "Make a directory for result root: mkdir -p $OUTPUT_HISTOGRAM_DIRECTORY"
         mkdir -p $OUTPUT_HISTOGRAM_DIRECTORY
 
