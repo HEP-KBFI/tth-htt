@@ -130,7 +130,7 @@ class analyzeConfig_3l_1tau(analyzeConfig):
 
   def createCfg_analyze(self, inputFiles, outputFile, sample_category, era, triggers,
                         lepton_selection, apply_leptonGenMatching, hadTau_selection, apply_hadTauGenMatching, charge_selection,
-                        applyFakeRateWeights, is_mc, central_or_shift, lumi_scale, apply_trigger_bits, cfgFile_modified, rle_output_file, root_output_file):
+                        applyFakeRateWeights, is_mc, central_or_shift, lumi_scale, apply_genWeight, apply_trigger_bits, cfgFile_modified, rle_output_file, root_output_file):
     """Create python configuration file for the analyze_3l_1tau executable (analysis code)
 
     Args:
@@ -189,6 +189,7 @@ class analyzeConfig_3l_1tau(analyzeConfig):
     lines.append("process.analyze_3l_1tau.isMC = cms.bool(%s)" % is_mc)
     lines.append("process.analyze_3l_1tau.central_or_shift = cms.string('%s')" % central_or_shift)
     lines.append("process.analyze_3l_1tau.lumiScale = cms.double(%f)" % lumi_scale)
+    lines.append("process.analyze_3l_1tau.apply_genWeight = cms.bool(%s)" % apply_genWeight)
     lines.append("process.analyze_3l_1tau.apply_trigger_bits = cms.bool(%s)" % apply_trigger_bits)
     lines.append("process.analyze_3l_1tau.selEventsFileName_output = cms.string('%s')" % rle_output_file)
     lines.append("process.analyze_3l_1tau.selEventsTFileName = cms.string('%s')" % root_output_file)
@@ -386,6 +387,7 @@ class analyzeConfig_3l_1tau(analyzeConfig):
 
       is_mc = (sample_info["type"] == "mc")
       lumi_scale = 1. if not (self.use_lumi and is_mc) else (sample_info["xsection"]*self.lumi/sample_info["nof_events"])
+      apply_genWeight = sample_info["apply_genWeight"] if (is_mc and "apply_genWeight" in sample_info.keys()) else False
       sample_category = sample_info["sample_category"]
       triggers = sample_info["triggers"]
       apply_trigger_bits = (is_mc and (self.era == "2015" or (self.era == "2016" and sample_info["reHLT"]))) or not is_mc
@@ -446,7 +448,7 @@ class analyzeConfig_3l_1tau(analyzeConfig):
                   applyFakeRateWeights = "disabled"    
                 self.createCfg_analyze(self.ntupleFiles[key_file], self.histogramFiles[key_file], sample_category, self.era, triggers,
                   lepton_selection, self.apply_leptonGenMatching, hadTau_selection, self.apply_hadTauGenMatching, charge_selection,
-                  applyFakeRateWeights, is_mc, central_or_shift, lumi_scale, apply_trigger_bits, self.cfgFiles_analyze_modified[key_file],
+                  applyFakeRateWeights, is_mc, central_or_shift, lumi_scale, apply_genWeight, apply_trigger_bits, self.cfgFiles_analyze_modified[key_file],
                   self.rleOutputFiles[key_file], self.rootOutputFiles[key_file])
 
     if self.is_sbatch:

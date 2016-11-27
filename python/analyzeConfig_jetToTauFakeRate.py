@@ -61,7 +61,7 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
     
   def createCfg_analyze(self, inputFiles, outputFile, sample_category, era, triggers, charge_selection,
                         jet_minPt, jet_maxPt, jet_minAbsEta, jet_maxAbsEta, hadTau_selections, absEtaBins,
-                        is_mc, central_or_shift, lumi_scale, apply_trigger_bits, cfgFile_modified):
+                        is_mc, central_or_shift, lumi_scale, apply_genWeight, apply_trigger_bits, cfgFile_modified):
     """Create python configuration file for the analyze_jetToTauFakeRate executable (analysis code)
 
     Args:
@@ -97,6 +97,7 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
     lines.append("process.analyze_jetToTauFakeRate.isMC = cms.bool(%s)" % is_mc)
     lines.append("process.analyze_jetToTauFakeRate.central_or_shift = cms.string('%s')" % central_or_shift)
     lines.append("process.analyze_jetToTauFakeRate.lumiScale = cms.double(%f)" % lumi_scale)
+    lines.append("process.analyze_jetToTauFakeRate.apply_genWeight = cms.bool(%s)" % apply_genWeight)
     lines.append("process.analyze_jetToTauFakeRate.apply_trigger_bits = cms.bool(%s)" % apply_trigger_bits)
     create_cfg(self.cfgFile_analyze_original, cfgFile_modified, lines)
 
@@ -208,6 +209,7 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
 
       is_mc = (sample_info["type"] == "mc")
       lumi_scale = 1. if not (self.use_lumi and is_mc) else sample_info["xsection"] * self.lumi / sample_info["nof_events"]
+      apply_genWeight = sample_info["apply_genWeight"] if (is_mc and "apply_genWeight" in sample_info.keys()) else False
       sample_category = sample_info["sample_category"]
       triggers = sample_info["triggers"]
       apply_trigger_bits = (is_mc and (self.era == "2015" or (self.era == "2016" and sample_info["reHLT"]))) or not is_mc
@@ -237,7 +239,7 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
                 
             self.createCfg_analyze(self.ntupleFiles[key_file], self.histogramFiles[key_file], sample_category, self.era, triggers,
               charge_selection, self.jet_minPt, self.jet_maxPt, self.jet_minAbsEta, self.jet_maxAbsEta, self.hadTau_selections, self.absEtaBins,
-              is_mc, central_or_shift, lumi_scale, apply_trigger_bits, self.cfgFiles_analyze_modified[key_file])
+              is_mc, central_or_shift, lumi_scale, apply_genWeight, apply_trigger_bits, self.cfgFiles_analyze_modified[key_file])
                 
     if self.is_sbatch:
       logging.info("Creating script for submitting '%s' jobs to batch system" % self.executable_analyze)
