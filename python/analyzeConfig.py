@@ -521,7 +521,7 @@ m.submit_job_version2(
 
             SCRATCHED_INPUT_HISTOGRAM="$SCRATCH_DIR/$INPUT_HISTOGRAM"
 
-            echo "Create parent dir: mkdir -p \"\`dirname '$SCRATCHED_INPUT_HISTOGRAM'\`\""
+            echo "Create parent dir: mkdir -p \`dirname '$SCRATCHED_INPUT_HISTOGRAM'\`"
             mkdir -p "`dirname '$SCRATCHED_INPUT_HISTOGRAM'`"
 
             echo "Copy histogram to scratch: cp "$INPUT_HISTOGRAM" "$SCRATCHED_INPUT_HISTOGRAM""
