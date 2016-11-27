@@ -420,9 +420,9 @@ class analyzeConfig:
     def generate_sbatch_concat_histograms_jobs_lines(
         self,
         input_histograms=None,
-        maximum_histograms_in_batch=2,
-        level=0,
-        final_output_histogram=None
+        final_output_histogram=None,
+        maximum_histograms_in_batch=10,
+        level=0 
     ):
 
         # Log some info
@@ -515,6 +515,7 @@ m.submit_job_version2(
 
         export SCRATCHED_INPUT_HISTOGRAMS=""
         export INPUT_HISTOGRAMS="{input_histograms}"
+        export OUTPUT_HISTOGRAM="{output_histogram}"
         echo "Create scratched histograms for: $INPUT_HISTOGRAMS"
 
         for INPUT_HISTOGRAM in $INPUT_HISTOGRAMS; do
@@ -541,8 +542,8 @@ m.submit_job_version2(
         echo "Make a directory for result root: mkdir -p \"\`dirname '$OUTPUT_HISTOGRAM'`\""
         mkdir -p "`dirname '$OUTPUT_HISTOGRAM'`"
 
-        echo "Copy result from scratch to /home: cp $SCRATCHED_OUTPUT_HISTOGRAM {output_histogram}"
-        cp $SCRATCHED_OUTPUT_HISTOGRAM {output_histogram}
+        echo "Copy result from scratch to /home: cp $SCRATCHED_OUTPUT_HISTOGRAM $OUTPUT_HISTOGRAM"
+        cp $SCRATCHED_OUTPUT_HISTOGRAM $OUTPUT_HISTOGRAM
 
 
         # Cleanup will be automatic
