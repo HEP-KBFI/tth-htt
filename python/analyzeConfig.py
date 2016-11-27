@@ -422,7 +422,7 @@ class analyzeConfig:
         input_histograms=None,
         final_output_histogram=None,
         maximum_histograms_in_batch=10,
-        level=0 
+        level=0
     ):
 
         # Log some info
@@ -539,7 +539,7 @@ m.submit_job_version2(
 
         # Store result in correct place
 
-        echo "Make a directory for result root: mkdir -p \"\`dirname '$OUTPUT_HISTOGRAM'`\""
+        echo "Make a directory for result root: mkdir -p \`dirname '$OUTPUT_HISTOGRAM'\`"
         mkdir -p "`dirname '$OUTPUT_HISTOGRAM'`"
 
         echo "Copy result from scratch to /home: cp $SCRATCHED_OUTPUT_HISTOGRAM $OUTPUT_HISTOGRAM"
