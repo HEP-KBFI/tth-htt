@@ -9,6 +9,7 @@
 #define GENHIGGSDECAYMODE_TYPE Float_t
 
 #define PUWEIGHT_TYPE          Float_t
+#define GENWEIGHT_TYPE         Float_t
 
 #define MET_PT_TYPE            Float_t
 #define MET_ETA_TYPE           Float_t
@@ -25,6 +26,7 @@
 #define EVT_KEY               "evt"
 #define GENHIGGSDECAYMODE_KEY "genHiggsDecayMode"
 
+#define GENWEIGHT_KEY         "genWeight"
 #define PUWEIGHT_KEY          "puWeight"
 
 #define MET_PT_KEY            "met_pt"
