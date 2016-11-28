@@ -54,7 +54,7 @@ class sbatchManager:
         """
         self.logFileDir = logFileDir
 
-    def hadd_on_cluster_node(input_histograms=None, output_histogram=None):
+    def hadd_on_cluster_node(self, input_histograms=[], output_histogram=None):
 
         bash_command_template = '''
 
