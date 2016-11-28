@@ -15,16 +15,18 @@ typedef math::PtEtaPhiMLorentzVector LV;
 #define N_GENTOP            7
 #define N_GENVBOSONS        8
 
-#define TAU_MASS    1.777000e+00
-#define TAU_WIDTH   1.000000e-02 // deliberately larger
-#define HIGGS_MASS  1.250000e+02
-#define HIGGS_WIDTH 6.382339e-03
-#define Z_MASS      9.118800e+01
-#define Z_WIDTH     2.441404e+00
-#define TOP_MASS    1.743000e+02
-#define TOP_WIDTH   1.491500e+00
-#define B_MASS      4.700000e+00
-#define B_WIDTH     5.000000e-02 // custom
+#define TAU_MASS    1.77700000e+00
+#define TAU_WIDTH   1.00000000e-02 // deliberately larger
+#define HIGGS_MASS  1.25000000e+02
+#define HIGGS_WIDTH 6.38233900e-03
+#define Z_MASS      9.11880000e+01
+#define Z_WIDTH     2.44140400e+00
+#define TOP_MASS    1.74300000e+02
+#define TOP_WIDTH   1.49150000e+00
+#define B_MASS      4.70000000e+00
+#define B_WIDTH     5.00000000e-02 // custom
+#define W_MASS      8.02673592e+01
+#define W_WIDTH     2.04760000e+00
 
 NtupleFillerMEM::NtupleFillerMEM()
   : file_(0)
@@ -95,10 +97,16 @@ NtupleFillerMEM::setFileName(const std::string & fileName)
       genBQuark_f_[i].setBranchName(Form("genBQuarkFromTop%lu", i + 1));
       genNuFromTop_f_[i].setBranchName(Form("genNuFromTop%lu", i + 1));
 
+      genW_f_[i].setBranchName(Form("genW%lu", i + 1));
+      genT_f_[i].setBranchName(Form("genTop%lu", i + 1));
+
       genTaus_f_[i].initBranches(tree_);
       genLepFromTop_f_[i].initBranches(tree_);
       genBQuark_f_[i].initBranches(tree_);
       genNuFromTop_f_[i].initBranches(tree_);
+
+      genW_f_[i].initBranches(tree_);
+      genT_f_[i].initBranches(tree_);
     }
 
     genHtau_f_.setBranchName("genHtau");
@@ -107,11 +115,15 @@ NtupleFillerMEM::setFileName(const std::string & fileName)
     genNuFromHTau_f_.setBranchName("genNuFromHtau");
     genNuFromLTau_f_.setBranchName("genNuFromLtau");
 
+    genHZ_f_.setBranchName("genHorZ");
+
     genHtau_f_.initBranches(tree_);
     genLepFromTau_f_.initBranches(tree_);
     genNuLepFromTau_f_.initBranches(tree_);
     genNuFromHTau_f_.initBranches(tree_);
     genNuFromLTau_f_.initBranches(tree_);
+
+    genHZ_f_.initBranches(tree_);
   }
   genMultiplicity_f_[N_GENHADTAU_IDX    ].setBranchName("nGenHadTau");
   genMultiplicity_f_[N_GENBQUARK_IDX    ].setBranchName("nGenBQuarkFromTop");
@@ -361,18 +373,27 @@ NtupleFillerMEM::add(const std::vector<GenHadTau> & genHadTaus,
     return;
   }
 
-  const GenLepton & t    __attribute__((unused)) = genTop[0].pdgId_ > 0 ? genTop[0] : genTop[1];
-  const GenLepton & tbar __attribute__((unused)) = genTop[0].pdgId_ < 0 ? genTop[0] : genTop[1];
-  const GenLepton & Wpos = genWbosons[0].get().pdgId_ > 0 ? genWbosons[0] : genWbosons[1];
-  const GenLepton & Wneg = genWbosons[0].get().pdgId_ < 0 ? genWbosons[0] : genWbosons[1];
+//--- particles that end with underscore are ,,less correct'' than the ones w/o the underscore
+  const GenLepton & t_    __attribute__((unused)) = genTop[0].pdgId_ > 0 ? genTop[0] : genTop[1];
+  const GenLepton & tbar_ __attribute__((unused)) = genTop[0].pdgId_ < 0 ? genTop[0] : genTop[1];
+
+  const GenLepton & Wpos_lep = genLepFromTop[0].pdgId_ < 0 ? genLepFromTop[0] : genLepFromTop[1];
+  const GenLepton & Wneg_lep = genLepFromTop[0].pdgId_ > 0 ? genLepFromTop[0] : genLepFromTop[1];
+  const GenLepton & Wpos_nu_ = genNuFromTop[0].pdgId_ > 0 ? genNuFromTop[0] : genNuFromTop[1];
+  const GenLepton & Wneg_nu_ = genNuFromTop[0].pdgId_ < 0 ? genNuFromTop[0] : genNuFromTop[1];
+
+  const GenLepton Wpos_nu = getNu(Wpos_lep, Wpos_nu_, W_MASS, Wpos_nu_.pdgId_);
+  const GenLepton Wneg_nu = getNu(Wneg_lep, Wneg_nu_, W_MASS, Wneg_nu_.pdgId_);
+
+  const GenLepton & Wpos_ = genWbosons[0].get().pdgId_ > 0 ? genWbosons[0] : genWbosons[1];
+  const GenLepton & Wneg_ = genWbosons[0].get().pdgId_ < 0 ? genWbosons[0] : genWbosons[1];
+  const GenLepton Wpos = GenLepton((Wpos_nu.p4_ + Wpos_lep.p4_), Wpos_.pdgId_);
+  const GenLepton Wneg = GenLepton((Wneg_nu.p4_ + Wneg_lep.p4_), Wneg_.pdgId_);
   const GenLepton & b_    = genBQuarkFromTop[0].pdgId_ > 0 ? genBQuarkFromTop[0] : genBQuarkFromTop[1];
   const GenLepton & bbar_ = genBQuarkFromTop[0].pdgId_ < 0 ? genBQuarkFromTop[0] : genBQuarkFromTop[1];
   const GenLepton b    = getB(b_, Wpos, b_.pdgId_);
   const GenLepton bbar = getB(bbar_, Wneg, bbar_.pdgId_);
-  const GenLepton & Wpos_lep = genLepFromTop[0].pdgId_ < 0 ? genLepFromTop[0] : genLepFromTop[1];
-  const GenLepton & Wneg_lep = genLepFromTop[0].pdgId_ > 0 ? genLepFromTop[0] : genLepFromTop[1];
-  const GenLepton & Wpos_nu  = genNuFromTop[0].pdgId_ > 0 ? genNuFromTop[0] : genNuFromTop[1];
-  const GenLepton & Wneg_nu  = genNuFromTop[0].pdgId_ < 0 ? genNuFromTop[0] : genNuFromTop[1];
+
   const GenLepton & lepFromTau = genLepFromTau[0];
   const GenLepton & tauPos = genTau[0].pdgId_ < 0 ? genTau[0] : genTau[1];
   const GenLepton & tauNeg = genTau[0].pdgId_ > 0 ? genTau[0] : genTau[1];
@@ -425,7 +446,7 @@ NtupleFillerMEM::add(const std::vector<GenHadTau> & genHadTaus,
   // step 1 -- exclude the event if taus from Higgs emitted soft particles
   const LV reco_lTau = nuLepFromTau.p4_ + nuTauFromLTau.p4_ + lepFromTau.p4_;
   const LV reco_hTau = htau.p4_ + nuTauFromHTau.p4_;
-  const LV reco_hz = reco_lTau + reco_hTau;
+  const GenLepton reco_hz = GenLepton((reco_lTau + reco_hTau), 25);
   if(std::fabs(reco_lTau.mass() - TAU_MASS) > TAU_WIDTH)
   {
     errCode_ |= NTUPLE_ERR_LTAU_MASS_OFF;
@@ -438,35 +459,39 @@ NtupleFillerMEM::add(const std::vector<GenHadTau> & genHadTaus,
   }
   const double diTauMass  = isSignal_b_ ? HIGGS_MASS : Z_MASS;
   const double diTauWidth = 3 * (isSignal_b_ ? HIGGS_WIDTH : Z_WIDTH); // 3 sigma window
-  if(std::fabs(reco_hz.mass() - diTauMass) > diTauWidth)
+  if(std::fabs(reco_hz.mass_ - diTauMass) > diTauWidth)
   {
     errCode_ |= NTUPLE_ERR_DITAU_MASS_OFF;
     return;
   }
 
   // step 2 -- exclude the event if W masses don't match (shouldn't happen, though)
-  const LV reco_Wpos = Wpos_lep.p4_ + Wpos_nu.p4_;
-  const LV reco_Wneg = Wneg_lep.p4_ + Wneg_nu.p4_;
-  if(std::fabs(reco_Wpos.mass() - Wpos.mass_) > 1e-2)
+  // use the the W and nu from Ntuples b/c we don't want include events in which the lepton
+  // comes from a W
+  const LV reco_Wpos_ = Wpos_lep.p4_ + Wpos_nu_.p4_;
+  const LV reco_Wneg_ = Wneg_lep.p4_ + Wneg_nu_.p4_;
+  if(std::fabs(reco_Wpos_.mass() - Wpos_.mass_) > 1e-2)
   {
     errCode_ |= NTUPLE_ERR_WPOS_MASS_NOT_RECONSTRUCTED;
     return;
   }
-  if(std::fabs(reco_Wneg.mass() - Wneg.mass_) > 1e-2)
+  if(std::fabs(reco_Wneg_.mass() - Wneg_.mass_) > 1e-2)
   {
     errCode_ |= NTUPLE_ERR_WNEG_MASS_NOT_RECONSTRUCTED;
     return;
   }
 
   // step 3 -- exclude the event if there's a soft activity due to b quarks
-  const LV reco_t    = reco_Wpos + b.p4_;
-  const LV reco_tbar = reco_Wneg + bbar.p4_;
-  if(std::fabs(reco_t.mass() - TOP_MASS) > 3 * TOP_WIDTH)
+  // use the new W, b/c by construction the resulting particle must have top mass
+  // this check should never fail
+  const GenLepton t    = GenLepton((Wpos.p4_ + b.p4_), t_.pdgId_);
+  const GenLepton tbar = GenLepton((Wneg.p4_ + bbar.p4_), tbar_.pdgId_);
+  if(std::fabs(t.mass_ - TOP_MASS) > 3 * TOP_WIDTH)
   {
     errCode_ |= NTUPLE_ERR_T_MASS_OFF;
     return;
   }
-  if(std::fabs(reco_tbar.mass() - TOP_MASS) > 3 * TOP_WIDTH)
+  if(std::fabs(tbar.mass_ - TOP_MASS) > 3 * TOP_WIDTH)
   {
     errCode_ |= NTUPLE_ERR_TBAR_MASS_OFF;
     return;
@@ -697,6 +722,13 @@ NtupleFillerMEM::add(const std::vector<GenHadTau> & genHadTaus,
   genLepFromTau_f_.setValues   (lepFromTau);
   genNuLepFromTau_f_.setValues (nuLepFromTau);
   genNuFromLTau_f_.setValues   (nuTauFromLTau);
+
+//--- not used, but fill anyways (for visual)
+  genW_f_[0].setValues         (Wpos);
+  genW_f_[1].setValues         (Wneg);
+  genT_f_[0].setValues         (t);
+  genT_f_[1].setValues         (tbar);
+  genHZ_f_.setValues           (reco_hz);
 }
 
 void
@@ -758,6 +790,25 @@ NtupleFillerMEM::getB(const GenLepton & b,
   const double pt = sol / std::cosh(b.eta_);
 
   const GenLepton result(pt, b.eta_, b.phi_, B_MASS, pdgId);
+  return result;
+}
+
+GenLepton
+NtupleFillerMEM::getNu(const GenLepton & l,
+                       const GenLepton & nu,
+                       double momMass,
+                       Int_t pdgId)
+{
+  const double El = l.p4_.E();
+  const double ml = l.mass_;
+  const double pl = l.p4_.P();
+  const double cosThetaLnu = nu.p4_.Vect().Unit().Dot(l.p4_.Vect().Unit());
+  assert(El > pl * cosThetaLnu);
+  const double Enu =
+    (momMass * momMass - ml * ml) / (2 * (El - pl * cosThetaLnu))
+  ;
+  const double pt = Enu / std::cosh(nu.eta_);
+  const GenLepton result(pt, nu.eta_, nu.phi_, 0., pdgId);
   return result;
 }
 
