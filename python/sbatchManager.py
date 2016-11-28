@@ -54,6 +54,76 @@ class sbatchManager:
         """
         self.logFileDir = logFileDir
 
+    def hadd_on_cluster_node(input_histograms=None, output_histogram=None):
+
+        bash_command_template = '''
+
+            # Create scratch dir for output root
+
+            export SCRATCHED_OUTPUT_HISTOGRAM="$SCRATCH_DIR/{output_histogram}"
+            export SCRATCHED_OUTPUT_HISTOGRAM_DIRECTORY="`dirname $SCRATCHED_OUTPUT_HISTOGRAM`"
+            echo "SCRATCHED_OUTPUT_HISTOGRAM: $SCRATCHED_OUTPUT_HISTOGRAM"
+            echo "SCRATCHED_OUTPUT_HISTOGRAM_DIRECTORY: $SCRATCHED_OUTPUT_HISTOGRAM_DIRECTORY"
+
+            echo "Create scratch dir for output root: mkdir -p $SCRATCHED_OUTPUT_HISTOGRAM_DIRECTORY"
+            mkdir -p $SCRATCHED_OUTPUT_HISTOGRAM_DIRECTORY
+
+
+            # Create scratched histograms
+
+            export SCRATCHED_INPUT_HISTOGRAMS=""
+            export INPUT_HISTOGRAMS="{input_histograms}"
+            export OUTPUT_HISTOGRAM="{output_histogram}"
+            echo "Create scratched histograms for: $INPUT_HISTOGRAMS"
+
+            for INPUT_HISTOGRAM in $INPUT_HISTOGRAMS; do
+
+                SCRATCHED_INPUT_HISTOGRAM="$SCRATCH_DIR/$INPUT_HISTOGRAM"
+                SCRATCHED_INPUT_HISTOGRAM_DIRECTORY="`dirname $SCRATCHED_INPUT_HISTOGRAM`"
+                echo "SCRATCHED_INPUT_HISTOGRAM: $SCRATCHED_INPUT_HISTOGRAM"
+                echo "SCRATCHED_INPUT_HISTOGRAM_DIRECTORY: $SCRATCHED_INPUT_HISTOGRAM"
+
+                echo "Create parent dir: mkdir -p $SCRATCHED_INPUT_HISTOGRAM_DIRECTORY"
+                mkdir -p $SCRATCHED_INPUT_HISTOGRAM_DIRECTORY
+
+                echo "Copy histogram to scratch: cp -a $INPUT_HISTOGRAM $SCRATCHED_INPUT_HISTOGRAM_DIRECTORY"
+                cp "$INPUT_HISTOGRAM" "$SCRATCHED_INPUT_HISTOGRAM_DIRECTORY"
+
+                export SCRATCHED_INPUT_HISTOGRAMS="$SCRATCHED_INPUT_HISTOGRAMS $SCRATCHED_INPUT_HISTOGRAM"
+            done
+
+            # hadd
+
+            echo "Create a new histogram: hadd $SCRATCHED_OUTPUT_HISTOGRAM $SCRATCHED_INPUT_HISTOGRAMS"
+            hadd $SCRATCHED_OUTPUT_HISTOGRAM $SCRATCHED_INPUT_HISTOGRAMS
+
+
+            # Store result in correct place
+
+            OUTPUT_HISTOGRAM_DIRECTORY="`dirname $OUTPUT_HISTOGRAM`"
+            echo "Make a directory for result root: mkdir -p $OUTPUT_HISTOGRAM_DIRECTORY"
+            mkdir -p $OUTPUT_HISTOGRAM_DIRECTORY
+
+            echo "Copy result from scratch to /home: cp $SCRATCHED_OUTPUT_HISTOGRAM $OUTPUT_HISTOGRAM_DIRECTORY"
+            cp $SCRATCHED_OUTPUT_HISTOGRAM $OUTPUT_HISTOGRAM_DIRECTORY
+
+
+            # Cleanup will be automatic
+
+            echo "Cleanup will be automatic"
+        '''
+
+        bash_command = bash_command_template.format(
+            input_histograms = " ".join(input_histograms),
+            output_histogram = output_histogram
+        )
+
+        m.submit_job_version2(
+            task_name = 'create_%s' % output_histogram,
+            command = bash_command,
+            output_dir = self.outputDir
+        )
+
     def submitJob(self, inputFiles, executable, cfgFile, outputFilePath, outputFiles, logFile=None, skipIfOutputFileExists=False):
         """Waits for all sbatch jobs submitted by this instance of sbatchManager to finish processing
         """

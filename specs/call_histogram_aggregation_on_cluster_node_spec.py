@@ -7,20 +7,21 @@ def run_test():
 
     # Prepare
 
+    run_cmd("rm -rf /home/margusp/tmp/call_histogram_aggregation_on_cluster_node")
+    run_cmd("mkdir -p /home/margusp/tmp/call_histogram_aggregation_on_cluster_node/")
+
 
     # Add histograms and run task
 
     m = sbatchManager()
     m.setWorkingDir('/home/margusp/VHbbNtuples_7_6_x/CMSSW_7_6_3/src/analysis2mu1b1j/analysis2mu1b1j/test')
 
-    m.submit_job_version2(
-        task_name = 'call_histogram_aggregation_on_cluster_node', # BUG: Task name can't include space
-        command = '''
-            export TEST_DIR=/home/margusp/tmp/execute_command_on_cluster_node_spec/
-            mkdir -p $TEST_DIR
-            echo "Worked" > $TEST_DIR/result.txt
-        ''',
-        output_dir = '/home/margusp/tmp/execute_command_on_cluster_node_spec/'
+    m.hadd_on_cluster_node(
+        input_histograms=[
+            '/home/margusp/VHbbNtuples_7_6_x/CMSSW_7_6_3/src/tthAnalysis/HiggsToTauTau/specs/fixtures/histogram_1.root',
+            '/home/margusp/VHbbNtuples_7_6_x/CMSSW_7_6_3/src/tthAnalysis/HiggsToTauTau/specs/fixtures/histogram_2.root'
+        ],
+        output_histogram='/home/margusp/tmp/call_histogram_aggregation_on_cluster_node/result.root'
     )
 
     m.waitForJobs()
@@ -28,7 +29,18 @@ def run_test():
 
     # Check result
 
+    root_result_file = Path('/home/margusp/tmp/call_histogram_aggregation_on_cluster_node/result.root')
+    result_successful = root_result_file.is_file()
+
+
     # Output result
+
+    if result_successful:
+        print('HADD on cluster node worked')
+    else:
+        print('HADD on cluster node failed')
+
+    return result_successful
 
 
 run_test()
