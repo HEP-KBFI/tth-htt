@@ -54,7 +54,12 @@ class sbatchManager:
         """
         self.logFileDir = logFileDir
 
-    def hadd_on_cluster_node(self, input_histograms=[], output_histogram=None):
+    def hadd_on_cluster_node(
+        self,
+        input_histograms=None,
+        output_histogram=None,
+        output_dir=None
+        ):
 
         bash_command_template = '''
 
@@ -121,7 +126,7 @@ class sbatchManager:
         self.submit_job_version2(
             task_name = 'create_%s' % output_histogram,
             command = bash_command,
-            output_dir = self.outputDir
+            output_dir = output_dir
         )
 
     def submitJob(self, inputFiles, executable, cfgFile, outputFilePath, outputFiles, logFile=None, skipIfOutputFileExists=False):

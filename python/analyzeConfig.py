@@ -502,11 +502,13 @@ class analyzeConfig:
         line = """
 m.hadd_on_cluster_node(
     input_histograms = {input_histograms},
-    output_histogram = '{output_histogram}'
+    output_histogram = '{output_histogram}',
+    output_dir = '{output_dir}'
 )
         """.format(
             input_histograms = input_histograms,
-            output_histogram = output_histogram
+            output_histogram = output_histogram,
+            output_dir = self.outputDir
         )
 
         return [line]
