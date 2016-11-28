@@ -500,7 +500,7 @@ class analyzeConfig:
         #  Return lines
 
         line = """
-    m.hadd_on_cluster_node(
+m.hadd_on_cluster_node(
     input_histograms = {input_histograms},
     output_histogram = '{output_histogram}'
 )
