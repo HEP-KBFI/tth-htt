@@ -3,6 +3,7 @@ import time
 from tthAnalysis.HiggsToTauTau.jobTools import run_cmd
 from tthAnalysis.HiggsToTauTau.sbatchManager import sbatchManager
 
+
 def run_test():
 
     # Prepare
@@ -16,7 +17,7 @@ def run_test():
     # Run task
 
     m.submit_job_version2(
-        task_name = 'creating_result.txt',
+        task_name = 'creating_result.txt', # BUG: Task name can't include space
         command = '''
             export TEST_DIR=/home/margusp/tmp/execute_command_on_cluster_node_spec/
             mkdir -p $TEST_DIR
