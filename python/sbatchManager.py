@@ -118,7 +118,7 @@ class sbatchManager:
             output_histogram = output_histogram
         )
 
-        m.submit_job_version2(
+        self.submit_job_version2(
             task_name = 'create_%s' % output_histogram,
             command = bash_command,
             output_dir = self.outputDir
