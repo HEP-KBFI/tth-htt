@@ -1,5 +1,6 @@
 import subprocess
 import time
+import os
 from tthAnalysis.HiggsToTauTau.jobTools import run_cmd
 from tthAnalysis.HiggsToTauTau.sbatchManager import sbatchManager
 
@@ -30,8 +31,8 @@ def run_test():
 
     # Check result
 
-    root_result_file = Path('/home/margusp/tmp/call_histogram_aggregation_on_cluster_node/result.root')
-    result_successful = root_result_file.is_file()
+    root_result_file = '/home/margusp/tmp/call_histogram_aggregation_on_cluster_node/result.root'
+    result_successful = os.path.isfile(root_result_file)
 
 
     # Output result
