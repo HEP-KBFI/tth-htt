@@ -9,7 +9,7 @@ class SpecRunner:
             self.run_spec(spec)
 
     def run_spec(self, spec):
-        result = spec.run()
+        result = spec()
         if result:
             self.successful.append(spec)
         else:
