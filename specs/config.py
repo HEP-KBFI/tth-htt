@@ -1,4 +1,5 @@
+from tthAnalysis.HiggsToTauTau.jobTools import run_cmd
 
 config = {
-    'user': 'margusp'
+    'user': run_cmd('whoami').strip()
 }
