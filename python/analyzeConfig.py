@@ -481,6 +481,7 @@ class analyzeConfig:
                 output_histogram=final_output_histogram
             )
             jobs_lines = jobs_lines + job_lines
+            jobs_lines = jobs_lines + ["m.waitForJobs()"]
 
         return jobs_lines
 
