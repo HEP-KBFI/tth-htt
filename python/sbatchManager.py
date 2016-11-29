@@ -128,8 +128,10 @@ class sbatchManager:
             output_histogram = output_histogram
         )
 
+        task_name = 'create_%s' % output_histogram.replace('/', '_').replace(' ', '_')
+
         self.submit_job_version2(
-            task_name = 'create_%s' % output_histogram,
+            task_name = task_name,
             command = bash_command,
             output_dir = output_dir
         )
