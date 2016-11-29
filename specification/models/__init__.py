@@ -1,1 +1,1 @@
-import SpecRunner from SpecRunner
+from SpecRunner import SpecRunner 
