@@ -1082,7 +1082,7 @@ struct preselHistManagerType
     selLeptons.insert(selLeptons.end(), selMuons.begin(), selMuons.end());
     std::sort(selLeptons.begin(), selLeptons.end(), isHigherPt);
     // require exactly two leptons passing tight selection criteria of final event selection 
-    if ( !(selLeptons.size() == 3) ) {
+    if ( !(selLeptons.size() >= 3) ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS selLeptons selection." << std::endl;
 	std::cout << " (#selLeptons = " << selLeptons.size() << ")" << std::endl;
@@ -1093,8 +1093,8 @@ struct preselHistManagerType
       }
       continue;
     }
-    cutFlowTable.update("3 sel leptons", evtWeight);
-    cutFlowHistManager->fillHistograms("3 sel leptons", evtWeight);
+    cutFlowTable.update(">= 3 sel leptons", evtWeight);
+    cutFlowHistManager->fillHistograms(">= 3 sel leptons", evtWeight);
     const RecoLepton* selLepton_lead = selLeptons[0];
     const RecoLepton* selLepton_sublead = selLeptons[1];
     const RecoLepton* selLepton_third = selLeptons[2];

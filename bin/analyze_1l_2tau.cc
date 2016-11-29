@@ -844,9 +844,9 @@ int main(int argc, char* argv[])
     preselLeptons.insert(preselLeptons.end(), preselMuons.begin(), preselMuons.end());
     std::sort(preselLeptons.begin(), preselLeptons.end(), isHigherPt);
     // require exactly one lepton passing loose preselection criteria
-    if ( !(preselLeptons.size() == 1) ) continue;
-    cutFlowTable.update("1 presel lepton");
-    cutFlowHistManager->fillHistograms("1 presel lepton", lumiScale);
+    if ( !(preselLeptons.size() >= 1) ) continue;
+    cutFlowTable.update(">= 1 presel lepton");
+    cutFlowHistManager->fillHistograms(">= 1 presel lepton", lumiScale);
     const RecoLepton* preselLepton = preselLeptons[0];
     int preselLepton_type = getLeptonType(preselLepton->pdgId_);
     const leptonGenMatchEntry& preselLepton_genMatch = getLeptonGenMatch(leptonGenMatch_definitions, preselLepton);

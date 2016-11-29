@@ -73,6 +73,11 @@ typedef math::PtEtaPhiMLorentzVector LV;
 typedef std::vector<std::string> vstring;
 typedef std::vector<double> vdouble;
 
+//const int hadTauSelection_antiElectron = 1; // vLoose
+//const int hadTauSelection_antiMuon = 1; // Loose
+const int hadTauSelection_antiElectron = -1; // not applied
+const int hadTauSelection_antiMuon = -1; // not applied
+
 int getHadTau_genPdgId(const RecoHadTau* hadTau)
 {
   int hadTau_genPdgId = -1;
@@ -109,6 +114,8 @@ struct denominatorHistManagers
     std::string etaBin = getEtaBin(minAbsEta_, maxAbsEta_);
     subdir_ = Form("jetToTauFakeRate_%s/denominator/%s", chargeSelection_.data(), etaBin.data());
     fakeableHadTauSelector_ = new RecoHadTauSelectorFakeable(era_);
+    fakeableHadTauSelector_->set_min_antiElectron(hadTauSelection_antiElectron);
+    fakeableHadTauSelector_->set_min_antiMuon(hadTauSelection_antiMuon);
   }
   ~denominatorHistManagers()
   {
@@ -215,6 +222,8 @@ struct numeratorSelector_and_HistManagers : public denominatorHistManagers
     subdir_ = Form("jetToTauFakeRate_%s/numerator/%s/%s", chargeSelection_.data(), hadTauSelection_.data(), etaBin.data());
     tightHadTauSelector_ = new RecoHadTauSelectorTight(era_);
     tightHadTauSelector_->set(hadTauSelection);
+    tightHadTauSelector_->set_min_antiElectron(hadTauSelection_antiElectron);
+    tightHadTauSelector_->set_min_antiMuon(hadTauSelection_antiMuon);
   }
   ~numeratorSelector_and_HistManagers()
   {
@@ -435,8 +444,14 @@ int main(int argc, char* argv[])
   RecoHadTauCollectionSelectorLoose preselHadTauSelector(era);
   preselHadTauSelector.set_min_id_cut_dR05(-1000);
   preselHadTauSelector.set_max_raw_cut_dR05(1.e+6);
+  preselHadTauSelector.set_min_antiElectron(hadTauSelection_antiElectron);
+  preselHadTauSelector.set_min_antiMuon(hadTauSelection_antiMuon);
   RecoHadTauCollectionSelectorFakeable fakeableHadTauSelector(era);
+  fakeableHadTauSelector.set_min_antiElectron(hadTauSelection_antiElectron);
+  fakeableHadTauSelector.set_min_antiMuon(hadTauSelection_antiMuon);
   RecoHadTauCollectionSelectorTight tightHadTauSelector(era);
+  tightHadTauSelector.set_min_antiElectron(hadTauSelection_antiElectron);
+  tightHadTauSelector.set_min_antiMuon(hadTauSelection_antiMuon);
 
   RecoJetReader* jetReader = new RecoJetReader(era, "nJet", "Jet");
   jetReader->setJetPt_central_or_shift(jetPt_option);
@@ -835,12 +850,15 @@ int main(int argc, char* argv[])
     }
     cutFlowTable.update("m(ll) > 12 GeV", evtWeight);
 
-    double minPt_lead = 20.;
+    double minPt_lead = -1.;
+    if      ( era == kEra_2015 ) minPt_lead = 20.;
+    else if ( era == kEra_2016 ) minPt_lead = 25.; // CV: increase minimum lepton pT cut to 25 GeV to keep-up with higher trigger thresholds in 2016 data
+    else assert(0);
     double minPt_sublead = selLepton_sublead->is_electron() ? 15. : 10.;
     if ( !(selLepton_lead->pt_ > minPt_lead && selLepton_sublead->pt_ > minPt_sublead) ) {
       continue;
     }
-    cutFlowTable.update("lead lepton pT > 20 GeV && sublead lepton pT > 15(e)/10(mu) GeV", evtWeight);
+    cutFlowTable.update("lead lepton pT > 25 GeV && sublead lepton pT > 15(e)/10(mu) GeV", evtWeight);
 
     bool isCharge_SS = selLepton_lead->charge_*selLepton_sublead->charge_ > 0;
     bool isCharge_OS = selLepton_lead->charge_*selLepton_sublead->charge_ < 0;

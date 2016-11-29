@@ -141,7 +141,7 @@ int main(int argc, char* argv[])
 
         TDirectory* dirData = dynamic_cast<TDirectory*>((*subdir_signal_level2)->Get(processData.data()));
         if ( !dirData ) {
-	  std::cout << "Failed to find subdirectory = " << processData << " within directory = " << subdir_sideband_level2->GetName() << " --> skipping !!";
+	  std::cout << "Failed to find subdirectory = " << processData << " within directory = " << subdir_sideband_level2->GetName() << " --> skipping !!\n";
 	  continue;
 	}
         std::set<std::string> histograms;
@@ -160,6 +160,7 @@ int main(int argc, char* argv[])
 	    }
 	  }
 	  if ( histogramName.Contains("CMS_") ) continue;
+	  if ( histogramName.Contains("cutFlow") ) continue;
 	  if ( histograms.find(histogramName.Data()) == histograms.end() ) {
 	    std::cout << "adding histogram = " << histogramName.Data() << std::endl;
 	    histograms.insert(histogramName.Data());

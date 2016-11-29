@@ -1594,14 +1594,13 @@ int main(int argc, char* argv[])
 
     double mvaOutput_2lss_1tau_ttbar_sklearn = mva_2lss_1tau_ttbar_sklearn(mvaInputs_sklearn);
     
-    //MEMInterface_2lss_1tau memInterface_2lss_1tau("ttH_Htautau_MEM_Analysis/MEM/small.py");
-    //MEMInterface_2lss_1tau::MEMOutput memOutput_2lss_1tau = memInterface_2lss_1tau(
-    //  selLepton_lead, selLepton_sublead, selHadTau,
-    //  met_p4.px(), met_p4.py(), metCov,
-    //  selJets);
-    //memOutput_2lss_1tau.print(std::cout);
-    MEMInterface_2lss_1tau::MEMOutput memOutput_2lss_1tau; // CV: ONLY FOR TESTING !!!
-
+    MEMInterface_2lss_1tau memInterface_2lss_1tau("ttH_Htautau_MEM_Analysis/MEM/small.py");
+    MEMInterface_2lss_1tau::MEMOutput memOutput_2lss_1tau = memInterface_2lss_1tau(
+      selLepton_lead, selLepton_sublead, selHadTau,
+      met_p4.px(), met_p4.py(), metCov,
+      selJets);
+    memOutput_2lss_1tau.print(std::cout);
+    
 //--- fill histograms with events passing final selection 
     selHistManagerType* selHistManager = selHistManagers[idxSelLepton_genMatch][idxSelHadTau_genMatch];
     assert(selHistManager != 0);
