@@ -1,6 +1,6 @@
 
-from call_histogram_aggregation_on_cluster_node import call_histogram_aggregation_on_cluster_node
-from execute_command_on_cluster_node_spec import execute_command_on_cluster_node_spec
+from specs.call_histogram_aggregation_on_cluster_node import call_histogram_aggregation_on_cluster_node
+from specs.execute_command_on_cluster_node_spec import execute_command_on_cluster_node_spec
 from models import *
 
 
