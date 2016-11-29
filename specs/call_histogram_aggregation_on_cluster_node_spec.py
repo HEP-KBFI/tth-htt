@@ -21,7 +21,8 @@ def run_test():
             '/home/margusp/VHbbNtuples_7_6_x/CMSSW_7_6_3/src/tthAnalysis/HiggsToTauTau/specs/fixtures/histogram_1.root',
             '/home/margusp/VHbbNtuples_7_6_x/CMSSW_7_6_3/src/tthAnalysis/HiggsToTauTau/specs/fixtures/histogram_2.root'
         ],
-        output_histogram='/home/margusp/tmp/call_histogram_aggregation_on_cluster_node/result.root'
+        output_histogram='/home/margusp/tmp/call_histogram_aggregation_on_cluster_node/result.root',
+        output_dir='/home/margusp/tmp/call_histogram_aggregation_on_cluster_node/'
     )
 
     m.waitForJobs()
