@@ -3,6 +3,7 @@ import time
 from tthAnalysis.HiggsToTauTau.jobTools import run_cmd
 from tthAnalysis.HiggsToTauTau.sbatchManager import sbatchManager
 
+from config import config
 
 def execute_command_on_cluster_node_spec():
 
