@@ -61,6 +61,11 @@ class sbatchManager:
         output_dir=None
         ):
 
+        print("SBatchManager#hadd_on_cluster_node(input_histograms=%s, output_histogram=%s, output_dir=%s)" % (input_histograms, output_histogram, output_dir))
+
+        if not (input_histograms and output_histogram and output_dir):
+            raise ValueError('SBatchManager#hadd_on_cluster_node: All parameters not defined.')
+
         bash_command_template = '''
 
             # Create scratch dir for output root
@@ -208,6 +213,8 @@ class sbatchManager:
             This method is similar to submitJob, but has less required parameters.
             Supports multiple lines of Bash commands instead of fixed oneliner.
         '''
+
+        print("SBatchManager#hadd_on_cluster_node(task_name=%s, command=%s, output_dir=%s)" % (task_name, command, command))
 
         if not self.workingDir:
             raise ValueError(
