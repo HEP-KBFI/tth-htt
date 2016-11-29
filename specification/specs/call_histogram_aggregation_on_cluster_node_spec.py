@@ -6,7 +6,7 @@ from tthAnalysis.HiggsToTauTau.sbatchManager import sbatchManager
 
 from config import config
 
-def run_test():
+def call_histogram_aggregation_on_cluster_node_spec():
 
     # Prepare
 
@@ -45,6 +45,3 @@ def run_test():
         print('HADD on cluster node failed')
 
     return result_successful
-
-
-run_test()

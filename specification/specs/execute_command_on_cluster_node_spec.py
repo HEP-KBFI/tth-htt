@@ -4,7 +4,7 @@ from tthAnalysis.HiggsToTauTau.jobTools import run_cmd
 from tthAnalysis.HiggsToTauTau.sbatchManager import sbatchManager
 
 
-def run_test():
+def execute_command_on_cluster_node_spec():
 
     # Prepare
 
@@ -41,8 +41,3 @@ def run_test():
     print('Execute on cluster node failed.')
 
     return False
-
-
-# Run test and print result
-
-run_test()
