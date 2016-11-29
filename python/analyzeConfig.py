@@ -412,7 +412,7 @@ class analyzeConfig:
 
         sbatch_lines = self.generate_sbatch_concat_histograms_jobs_lines(
             input_histograms=input_histograms,
-            final_output_histogram=self.outputDir + "/histograms/result.root"
+            final_output_histogram=self.histogramFile_hadd_stage1 # self.outputDir + "/histograms/result.root"
         )
 
         return sbatch_lines
