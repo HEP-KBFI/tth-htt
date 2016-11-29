@@ -11,11 +11,11 @@ def execute_command_on_cluster_node_spec():
 
     run_cmd("rm -rf /home/%(user)s/tmp/execute_command_on_cluster_node_spec/*" % config)
 
-    m = sbatchManager()
-    m.setWorkingDir('/home/%(user)s/VHbbNtuples_7_6_x/CMSSW_7_6_3/src/analysis2mu1b1j/analysis2mu1b1j/test' % config)
-
 
     # Run task
+
+    m = sbatchManager()
+    m.setWorkingDir('/home/%(user)s/VHbbNtuples_7_6_x/CMSSW_7_6_3/src/analysis2mu1b1j/analysis2mu1b1j/test' % config)
 
     m.submit_job_version2(
         task_name = 'creating_result.txt', # BUG: Task name can't include space
