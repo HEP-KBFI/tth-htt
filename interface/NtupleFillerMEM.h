@@ -14,6 +14,8 @@
 #include <array> // std::array<>
 #include <algorithm> // std::sort(), std::find(), std::remove_if()
 
+#define NOF_RECO_JETS 4
+
 #define NTUPLE_ERR_OK                                       0ull
 #define NTUPLE_ERR_HIGGS_DECAY_MODE                         1ull << 0
 #define NTUPLE_ERR_NO_2_JETS                                1ull << 1
@@ -249,16 +251,20 @@ protected:
 
   /* reconstructed */
   std::array<RecoLeptonFiller<double>, 3> leptons_f_;
-  std::array<RecoJetFiller<double>, 2> jets_f_;
+  BasicFiller<int> njet_f_;
+  std::array<RecoJetFiller<double>, NOF_RECO_JETS> jets_f_;
   RecoHadTauFiller<double> hTau_f_;
 
   /* generator level, enabled only if use2016_ is true */
   std::array<GenTauFiller<double>, 2>    genTaus_f_;
-  std::array<GenLeptonFiller<double>, 2> genLepFromTop_f_;
+  std::array<GenLeptonFiller<double>, 2> genLepFromTop_f_,
+                                         genW_f_,
+                                         genT_f_;
   std::array<GenJetFiller<double>, 2>    genBQuark_f_;
   std::array<GenNuFiller<double>, 2>     genNuFromTop_f_;
   GenHadTauFiller<double> genHtau_f_;
-  GenLeptonFiller<double> genLepFromTau_f_;
+  GenLeptonFiller<double> genLepFromTau_f_,
+                          genHZ_f_;
   GenNuFiller<double>     genNuLepFromTau_f_,
                           genNuFromHTau_f_,
                           genNuFromLTau_f_;
@@ -298,6 +304,20 @@ private:
   getB(const GenLepton & b,
        const GenLepton & W,
        Int_t pdgId);
+
+  /**
+   * @brief Recalculates neutrino's 4-momentum from its older self and complementary lepton
+   * @param l       The complementary lepton
+   * @param nu      The old neutrino
+   * @param momMass Desired mass of the mother particle
+   * @param pdgId   The PDG id of the resulting neutrino
+   * @return The new neutrino
+   */
+  static GenLepton
+  getNu(const GenLepton & l,
+        const GenLepton & nu,
+        double momMass,
+        Int_t pdgId);
 
   std::vector<const RecoJet*> selBJetsMerged_;
   std::vector<const RecoLepton*> selLeptons_;

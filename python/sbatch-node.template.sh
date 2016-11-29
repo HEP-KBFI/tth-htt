@@ -74,8 +74,8 @@ run_wrapped_executable() {
     echo "Time is: `date`"
 
     CMSSW_SEARCH_PATH=$SCRATCH_DIR
-    echo "Execute command: {{ exec_name }} {{ cfg_file }} > $TEMPORARY_EXECUTABLE_LOG_FILE"
-    {{ exec_name }} {{ cfg_file }} > $TEMPORARY_EXECUTABLE_LOG_FILE
+    echo "Execute command: {{ exec_name }} {{ cfg_file }} &> $TEMPORARY_EXECUTABLE_LOG_FILE"
+    {{ exec_name }} {{ cfg_file }} &> $TEMPORARY_EXECUTABLE_LOG_FILE
 
     echo "Time is: `date`"
 

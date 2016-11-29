@@ -856,17 +856,17 @@ struct preselHistManagerType
     std::vector<const RecoJet*> selBJets_medium = jetSelectorBtagMedium(cleanedJets);
 
 //--- build collections of generator level particles (after some cuts are applied, to safe computing time)
-    if ( isMC && !fillGenEvtHistograms ) {
-      genLeptons = genLeptonReader->read();
-      for ( std::vector<GenLepton>::const_iterator genLepton = genLeptons.begin();
-    	    genLepton != genLeptons.end(); ++genLepton ) {
-    	int abs_pdgId = std::abs(genLepton->pdgId_);
-    	if      ( abs_pdgId == 11 ) genElectrons.push_back(*genLepton);
-    	else if ( abs_pdgId == 13 ) genMuons.push_back(*genLepton);
-      }
-      genHadTaus = genHadTauReader->read();
-      genJets = genJetReader->read();
-    }
+//    if ( isMC && !fillGenEvtHistograms ) {
+//      genLeptons = genLeptonReader->read();
+//      for ( std::vector<GenLepton>::const_iterator genLepton = genLeptons.begin();
+//    	    genLepton != genLeptons.end(); ++genLepton ) {
+//    	int abs_pdgId = std::abs(genLepton->pdgId_);
+//    	if      ( abs_pdgId == 11 ) genElectrons.push_back(*genLepton);
+//    	else if ( abs_pdgId == 13 ) genMuons.push_back(*genLepton);
+//      }
+//      genHadTaus = genHadTauReader->read();
+//      genJets = genJetReader->read();
+//    }
 
 //--- match reconstructed to generator level particles
     if ( isMC ) {
