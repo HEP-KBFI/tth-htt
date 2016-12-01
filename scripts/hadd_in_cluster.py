@@ -25,10 +25,9 @@ def main():
     m = sbatchManager()
     m.setWorkingDir('/tmp/') # Why SBatch manager even needs to know this?
 
-    m.hadd_on_cluster_node(
+    m.hadd_in_cluster(
         input_histograms=input_histograms,
-        output_histogram=output_histogram,
-        output_dir="/".join(output_histogram.split("/")[0:-1]) # Output to same directory as histogram itself goes (less hassel)
+        output_histogram=output_histogram
     )
 
     m.waitForJobs()
