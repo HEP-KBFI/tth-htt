@@ -24,7 +24,7 @@ def call_histogram_aggregation_on_cluster_node_spec():
             '/home/%(user)s/VHbbNtuples_7_6_x/CMSSW_7_6_3/src/tthAnalysis/HiggsToTauTau/specification/fixtures/histogram_1.root' % config,
             '/home/%(user)s/VHbbNtuples_7_6_x/CMSSW_7_6_3/src/tthAnalysis/HiggsToTauTau/specification/fixtures/histogram_2.root' % config
         ],
-        output_histogram='/home/%(user)s/tmp/call_histogram_aggregation_on_cluster_node/result.root' % config
+        final_output_histogram='/home/%(user)s/tmp/call_histogram_aggregation_on_cluster_node/result.root' % config
     )
 
     m.waitForJobs()

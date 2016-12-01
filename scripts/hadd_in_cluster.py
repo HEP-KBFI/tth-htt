@@ -27,7 +27,7 @@ def main():
 
     m.hadd_in_cluster(
         input_histograms=input_histograms,
-        output_histogram=output_histogram
+        final_output_histogram=output_histogram
     )
 
     m.waitForJobs()
