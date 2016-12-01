@@ -16,7 +16,7 @@ typedef math::PtEtaPhiMLorentzVector LV;
 #define N_GENVBOSONS        8
 
 #define TAU_MASS    1.77700000e+00
-#define TAU_WIDTH   1.00000000e-02 // deliberately larger
+#define TAU_WIDTH   1.00000000e-03 // deliberately larger
 #define HIGGS_MASS  1.25000000e+02
 #define HIGGS_WIDTH 6.38233900e-03
 #define Z_MASS      9.11880000e+01
