@@ -72,7 +72,7 @@ class ClusterHistogramAggregator:
             self.aggregate(
                 input_histograms=output_histograms,
                 final_output_histogram=final_output_histogram,
-                maximum_histograms_in_batch=maximum_histograms_in_batch
+                maximum_histograms_in_batch=maximum_histograms_in_batch,
                 level=level + 1
             )
 
