@@ -9,7 +9,7 @@ def main():
     output_histogram_file = sys.argv(1)
     input_histograms_list_file = sys.argv(2)
 
-    if (!(output_histogram_file && input_histograms_list_file)):
+    if (not (output_histogram_file and input_histograms_list_file)):
         print("Usage: hadd_in_cluster.py /full/path/ouput_histogram.root /full/path/input_histograms_list.txt")
         return False
 
