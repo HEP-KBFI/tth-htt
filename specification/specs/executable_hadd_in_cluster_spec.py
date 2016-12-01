@@ -12,7 +12,7 @@ def executable_hadd_in_cluster_spec():
 
     run_cmd("rm -rf /home/%(user)s/tmp/executable_hadd_in_cluster_spec/*" % config)
     run_cmd("mkdir -p /home/%(user)s/tmp/executable_hadd_in_cluster_spec/" % config)
-    fixtures_dir = '/home/%(user)s/VHbbNtuples_7_6_x/CMSSW_7_6_3/src/tthAnalysis/HiggsToTauTau/specs/fixtures/' % config
+    fixtures_dir = '/home/%(user)s/VHbbNtuples_7_6_x/CMSSW_7_6_3/src/tthAnalysis/HiggsToTauTau/specification/fixtures/' % config
     run_cmd("""echo "%(fixtures_dir)s/histogram_1.root\n%(fixtures_dir)s/histogram_2.root\n" > /home/%(user)s/tmp/executable_hadd_in_cluster_spec/input_histograms_list.txt""" % { 'fixtures_dir': fixtures_dir, 'user': config['user'] })
 
 
