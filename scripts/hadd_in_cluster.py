@@ -6,8 +6,8 @@ from tthAnalysis.HiggsToTauTau.jobTools import run_cmd
 from tthAnalysis.HiggsToTauTau.sbatchManager import sbatchManager
 
 def main():
-    output_histogram_file = sys.argv(1)
-    input_histograms_list_file = sys.argv(2)
+    output_histogram_file = sys.argv[1]
+    input_histograms_list_file = sys.argv[2]
 
     if (not (output_histogram_file and input_histograms_list_file)):
         print("Usage: hadd_in_cluster.py /full/path/ouput_histogram.root /full/path/input_histograms_list.txt")
