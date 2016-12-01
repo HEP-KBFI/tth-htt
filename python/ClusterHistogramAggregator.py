@@ -57,7 +57,6 @@ class ClusterHistogramAggregator:
                 input_histograms=input_histograms[start_pos:end_pos],
                 output_histogram=output_histogram
             )
-            jobs_lines = jobs_lines + job_lines
 
             current_job_id = current_job_id + 1
 
