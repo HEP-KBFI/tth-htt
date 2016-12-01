@@ -423,7 +423,7 @@ class analyzeConfig:
 
         template_vars = {
             'working_dir': self.workingDir,
-            'input_histograms': self.input_histograms,
+            'input_histograms': input_histograms,
             'final_output_histogram': self.histogram_file_hadd_stage1
         }
 
