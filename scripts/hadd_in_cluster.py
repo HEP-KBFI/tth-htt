@@ -28,7 +28,7 @@ def main():
     m.hadd_on_cluster_node(
         input_histograms=input_histograms,
         output_histogram=output_histogram,
-        output_dir=output_histogram.split("/")[0:-1].join("/") # Output to same directory as histogram itself goes (less hassel)
+        output_dir="/".join(output_histogram.split("/")[0:-1]) # Output to same directory as histogram itself goes (less hassel)
     )
 
     m.waitForJobs()
