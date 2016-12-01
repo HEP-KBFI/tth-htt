@@ -427,7 +427,7 @@ class analyzeConfig:
             'final_output_histogram': self.histogram_file_hadd_stage1
         }
 
-        lines_sbatch = ["""
+        sbatch_code = """
 from tthAnalysis.HiggsToTauTau.sbatchManager import sbatchManager
 m = sbatchManager()
 m.setWorkingDir('%(working_dir)s')
@@ -436,7 +436,8 @@ m.hadd_in_cluster(
     final_output_histogram=%(final_output_histogram)s
 )
 """ % template_vars
-        ]
+
+        return [sbatch_code]
 
 
     def get_input_histograms_from_stage1_analyze(self):
