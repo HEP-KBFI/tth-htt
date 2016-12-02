@@ -433,7 +433,7 @@ m = sbatchManager()
 m.setWorkingDir('%(working_dir)s')
 m.hadd_in_cluster(
     input_histograms=%(input_histograms)s,
-    final_output_histogram=%(final_output_histogram)s
+    final_output_histogram='%(final_output_histogram)s'
 )
 """ % template_vars
 
