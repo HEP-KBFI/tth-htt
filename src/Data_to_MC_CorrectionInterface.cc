@@ -544,9 +544,9 @@ namespace
 
   double getSF_hadTauID_and_Iso_2016()
   {
-    // CV: updated data/MC correction to latest Tag & Probe measurement performed by Cecile in Z->tautau events,
-    //     cf. https://indico.cern.ch/event/571700/contributions/2313440/attachments/1343312/2023903/tauID_2609.pdf
-    return 0.95; 
+    // CV: take data/MC correction to be equal to 0.90, following Tau POG recommendation for 2016 data,
+    //     cf. https://twiki.cern.ch/twiki/bin/viewauth/CMS/TauIDRecommendation13TeV
+    return 0.90; 
   }
 }
 
