@@ -327,21 +327,20 @@ class analyzeConfig:
     def createScript_sbatch(self):
         """Creates the python script necessary to submit the analysis jobs to the batch system
         """
-
         sbatch_analyze_lines = self.generate_sbatch_analyze_lines()
-        sbatch_analyze_file = self.sbatchFile_analyze.replace('.py', '_analyze.py')
+        sbatch_analyze_file = self.sbatchFile_analyze
         createFile(sbatch_analyze_file, sbatch_analyze_lines)
 
-        sbatch_histogram_stage1_lines = self.generate_sbatch_concat_histograms_lines()
+    def create_hadd_stage1_python_file(self):
+        sbatch_histogram_stage1_lines = self.generate_sbatch_concat_histograms_lines(
+            input_histograms=self.get_input_histograms_from_stage1_analyze(),
+            final_output_histogram=self.histogram_file_hadd_stage1
+        )
         sbatch_histogram_stage1_file = self.sbatchFile_analyze.replace('.py', '_histograms_stage1.py')
         createFile(sbatch_histogram_stage1_file, sbatch_histogram_stage1_lines)
 
-        sbatch_lines = [
-            "import %s\n" % sbatch_analyze_file.split('/')[-1].replace('.py', ''),
-            "import %s\n" % sbatch_histogram_stage1_file.split('/')[-1].replace('.py', '')
-        ]
+        return sbatch_histogram_stage1_file
 
-        createFile(self.sbatchFile_analyze, sbatch_lines)
 
     def generate_sbatch_analyze_lines(self):
         lines_sbatch = []
@@ -418,13 +417,15 @@ class analyzeConfig:
         )
 
 
-    def generate_sbatch_concat_histograms_lines(self):
-        input_histograms = self.get_input_histograms_from_stage1_analyze()
-
+    def generate_sbatch_concat_histograms_lines(
+        self,
+        input_histograms=None,
+        final_output_histogram=None
+    ):
         template_vars = {
             'working_dir': self.workingDir,
             'input_histograms': input_histograms,
-            'final_output_histogram': self.histogram_file_hadd_stage1
+            'final_output_histogram': final_output_histogram
         }
 
         sbatch_code = """
