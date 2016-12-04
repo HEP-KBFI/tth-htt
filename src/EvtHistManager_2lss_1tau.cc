@@ -36,6 +36,8 @@ void EvtHistManager_2lss_1tau::bookHistograms(TFileDirectory& dir)
   histogram_memOutput_logWeight_ttZ_Zll_ =book1D(dir, "memOutput_logWeight_ttZ_Zll", "memOutput_logWeight_ttZ_Zll", 100, -20., +20.);
   histogram_memOutput_logWeight_tt_ = book1D(dir, "memOutput_logWeight_tt", "memOutput_logWeight_tt", 100, -20., +20.);
   histogram_memOutput_LR_ = book1D(dir, "memOutput_LR", "memOutput_LR", 40, 0., 1.);
+  histogram_mem_logCPUTime_ = book1D(dir, "mem_logCPUTime", "mem_logCPUTime", 400, -20., +20.);
+  histogram_mem_logRealTime_ = book1D(dir, "mem_logRealTime", "mem_logRealTime", 400, -20., +20.);
 
   histogram_EventCounter_ = book1D(dir, "EventCounter", "EventCounter", 1, -0.5, +0.5);
 }
@@ -88,6 +90,8 @@ void EvtHistManager_2lss_1tau::fillHistograms(int numElectrons, int numMuons, in
       fillWithOverFlow(histogram_memOutput_logWeight_ttZ_Zll_, getLogWeight(memOutput_2lss_1tau->weight_ttZ_Zll_), evtWeight, evtWeightErr);
       fillWithOverFlow(histogram_memOutput_logWeight_tt_, getLogWeight(memOutput_2lss_1tau->weight_tt_), evtWeight, evtWeightErr);
       fillWithOverFlow(histogram_memOutput_LR_, memOutput_2lss_1tau->LR_, evtWeight, evtWeightErr);
+      fillWithOverFlow(histogram_mem_logCPUTime_, TMath::Log(TMath::Max(1.e-21, memOutput_2lss_1tau->cpuTime_)), evtWeight, evtWeightErr);
+      fillWithOverFlow(histogram_mem_logRealTime_, TMath::Log(TMath::Max(1.e-21, memOutput_2lss_1tau->realTime_)), evtWeight, evtWeightErr);
     }
   }
 

@@ -8,6 +8,7 @@
 #include "ttH_Htautau_MEM_Analysis/MEMAlgo/interface/RunConfig.h" // RunConfig
 
 #include <TMatrixD.h> // TMatrixD
+#include <TBenchmark.h> // TBenchmark
 
 #include <vector>
 #include <string>
@@ -34,6 +35,8 @@ class MEMInterface_2lss_1tau
       , weight_ttZ_Zll_(-1.)
       , weight_tt_(-1.)
       , LR_(-1.)
+      , cpuTime_(-1.)
+      , realTime_(-1.)
     {}
     ~MEMOutput() {}
     void print(std::ostream& stream)
@@ -47,6 +50,8 @@ class MEMInterface_2lss_1tau
       stream << "  tt = " << weight_tt_ << std::endl;
       stream << " LR = " << LR_ << std::endl;
       stream << " errorFlag = " << errorFlag_ << std::endl;
+      stream << " cpuTime = " << cpuTime_ << std::endl;
+      stream << " realTime = " << realTime_ << std::endl;
     }
     int errorFlag_;
     int type_; // either 0 (fully reconstructed W->jj decay) or 1 (one jet from W->jj decay not reconstructed)
@@ -55,6 +60,8 @@ class MEMInterface_2lss_1tau
     double weight_ttZ_Zll_; // ttZ, Z->ll
     double weight_tt_; // tt+jets (dilepton)
     double LR_;
+    double cpuTime_;
+    double realTime_;
   };
   MEMOutput
   operator()(const RecoLepton* selLepton_lead, const RecoLepton* selLepton_sublead, const RecoHadTau* selHadTau, 
@@ -63,6 +70,8 @@ class MEMInterface_2lss_1tau
 
  private:
   RunConfig* config_;
+
+  TBenchmark* clock_;
 };
 
 #endif // MEMInterface_2lss_1tau_h

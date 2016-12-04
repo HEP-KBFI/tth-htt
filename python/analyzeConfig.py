@@ -332,10 +332,10 @@ class analyzeConfig:
         sbatch_analyze_file = self.sbatchFile_analyze
         createFile(sbatch_analyze_file, sbatch_analyze_lines)
 
-    def create_hadd_stage1_python_file(self):
+    def create_hadd_stage1_python_file(self, inputFiles, outputFile):
         sbatch_histogram_stage1_lines = self.generate_sbatch_concat_histograms_lines(
-            input_histograms=self.get_input_histograms_from_stage1_analyze(),
-            final_output_histogram=self.histogram_file_hadd_stage1
+            input_histograms=inputFiles,
+            _output_histogram=self.histogram_file_hadd_stage1
         )
         sbatch_histogram_stage1_file = self.sbatchFile_analyze.replace('.py', '_histograms_stage1.py')
         createFile(sbatch_histogram_stage1_file, sbatch_histogram_stage1_lines)
@@ -424,13 +424,13 @@ class analyzeConfig:
 
     def generate_sbatch_concat_histograms_lines(
         self,
-        input_histograms=None,
-        final_output_histogram=None
+        inputFiles=None,
+        outputFile=None
     ):
         template_vars = {
             'working_dir': self.workingDir,
-            'input_histograms': input_histograms,
-            'final_output_histogram': final_output_histogram
+            'inputFiles': inputFiles,
+            'outputFile': outputFile
         }
 
         sbatch_code = """
@@ -438,22 +438,13 @@ from tthAnalysis.HiggsToTauTau.sbatchManager import sbatchManager
 m = sbatchManager()
 m.setWorkingDir('%(working_dir)s')
 m.hadd_in_cluster(
-    input_histograms=%(input_histograms)s,
-    final_output_histogram='%(final_output_histogram)s'
+    inputFiles=%(inputFiles)s,
+    outputFile='%(outputFile)s'
 )
 """ % template_vars
 
         return [sbatch_code]
 
-
-    def get_input_histograms_from_stage1_analyze(self):
-        input_histograms = []
-
-        for key_file, cfg_file in self.cfgFiles_analyze_modified.items():
-            input_histogram = self.histogramFiles[key_file]
-            input_histograms.append(input_histogram)
-
-        return input_histograms
 
     def addToMakefile_analyze(self, lines_makefile):
         """Adds the commands to Makefile that are necessary for running the analysis code on the Ntuple and filling the histograms

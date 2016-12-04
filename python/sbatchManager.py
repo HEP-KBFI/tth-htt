@@ -56,13 +56,13 @@ class sbatchManager:
 
     def hadd_in_cluster(
         self,
-        input_histograms=None,
-        final_output_histogram=None,
+        inputFiles=None,
+        outputFiles=None,
         maximum_histograms_in_batch=20
     ):
         cluster_histogram_aggregator = ClusterHistogramAggregator(
-            input_histograms=input_histograms,
-            final_output_histogram=final_output_histogram,
+            input_histograms=inputFiles,
+            final_output_histogram=outputFile,
             maximum_histograms_in_batch=maximum_histograms_in_batch,
             sbatch_manager=self
         )

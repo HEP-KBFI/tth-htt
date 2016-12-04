@@ -10,6 +10,7 @@
 
 MEMInterface_2lss_1tau::MEMInterface_2lss_1tau(const std::string& configFileName)
   : config_(0)
+  , clock_(0)
 {
   std::cout << "<MEMInterface_2lss_1tau>:" << std::endl;
   
@@ -22,11 +23,15 @@ MEMInterface_2lss_1tau::MEMInterface_2lss_1tau(const std::string& configFileName
   std::cout << "configFileName = " << configFileName_tmp << std::endl;
 
   config_ = new RunConfig(configFileName_tmp.data());
+
+  clock_ = new TBenchmark();
 }
 
 MEMInterface_2lss_1tau::~MEMInterface_2lss_1tau()
 {
   delete config_;
+
+  delete clock_;
 }
 
 namespace
@@ -166,9 +171,15 @@ MEMInterface_2lss_1tau::operator()(
     return result;
   }
 
+  clock_->Reset();
+  clock_->Start("<MEMInterface_2lss_1tau::operator()>");
+
   ThreadScheduler scheduler;
   scheduler.initNodeScheduler(config_, 0);
   scheduler.runNodeScheduler(inputs, 1);
+
+  clock_->Stop("<MEMInterface_2lss_1tau::operator()>");
+  clock_->Show("<MEMInterface_2lss_1tau::operator()>");
 
   result.type_ = inputs[0].integration_type_;
   result.weight_ttH_ = inputs[0].weight_ttH_;
@@ -200,6 +211,8 @@ MEMInterface_2lss_1tau::operator()(
     result.errorFlag_ = 1;
     result.LR_ = -1.;
   }
+  result.cpuTime_ = clock_->GetCpuTime("<MEMInterface_2lss_1tau::operator()>");
+  result.realTime_ = clock_->GetRealTime("<MEMInterface_2lss_1tau::operator()>");
 
   return result;
 }

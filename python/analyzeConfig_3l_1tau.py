@@ -272,47 +272,16 @@ class analyzeConfig_3l_1tau(analyzeConfig):
 
   def addToMakefile_hadd_stage1(self, lines_makefile):
     inputFiles_hadd_stage1 = []
-    for sample_name, sample_info in self.samples.items():
-      if not sample_name in self.inputFileIds.keys():
-        continue
-      process_name = sample_info["process_name_specific"]
-      inputFiles_sample = []
-      for lepton_and_hadTau_selection in self.lepton_and_hadTau_selections:
-        for lepton_and_hadTau_frWeight in self.lepton_and_hadTau_frWeights:
-          lepton_and_hadTau_selection_and_frWeight = get_lepton_and_hadTau_selection_and_frWeight(lepton_and_hadTau_selection, lepton_and_hadTau_frWeight)
-          for charge_selection in self.charge_selections:
-            for central_or_shift in self.central_or_shifts:
-              inputFiles_jobIds = []
-              for jobId in range(len(self.inputFileIds[sample_name])):
-                key_file = getKey(sample_name, lepton_and_hadTau_selection, lepton_and_hadTau_frWeight, charge_selection, central_or_shift, jobId)
-                if key_file in self.histogramFiles.keys():
-                  inputFiles_jobIds.append(self.histogramFiles[key_file])
-              if len(inputFiles_jobIds) > 0:
-                haddFile_jobIds = self.histogramFile_hadd_stage1.replace(".root", "_%s_%s_%s_%s.root" % \
-                  (process_name, lepton_and_hadTau_selection_and_frWeight, charge_selection, central_or_shift))
-                lines_makefile.append("%s: %s" % (haddFile_jobIds, " ".join(inputFiles_jobIds)))
-                lines_makefile.append("\t%s %s" % ("rm -f", haddFile_jobIds))
-                lines_makefile.append("\t%s %s %s" % ("hadd", haddFile_jobIds, " ".join(inputFiles_jobIds)))
-                lines_makefile.append("")
-                if self.select_root_output:
-                  key_file_woJobId = getKey(sample_name, lepton_and_hadTau_selection_and_frWeight, charge_selection, central_or_shift)
-                  if key_file_woJobId in self.rootOutputAux:
-                    self.rootOutputAux[key_file_woJobId].append(haddFile_jobIds)
-                inputFiles_sample.append(haddFile_jobIds)
-                self.filesToClean.append(haddFile_jobIds)
-      if len(inputFiles_sample) > 0:
-        haddFile_sample = self.histogramFile_hadd_stage1.replace(".root", "_%s.root" % process_name)
-        lines_makefile.append("%s: %s" % (haddFile_sample, " ".join(inputFiles_sample)))
-        lines_makefile.append("\t%s %s" % ("rm -f", haddFile_sample))
-        lines_makefile.append("\t%s %s %s" % ("hadd", haddFile_sample, " ".join(inputFiles_sample)))
-        lines_makefile.append("")
-        inputFiles_hadd_stage1.append(haddFile_sample)
-        self.filesToClean.append(haddFile_sample)
+    for key in self.histogramFiles.keys():
+      inputFiles_hadd_stage1.append(self.histogramFiles[key])
+
+    script_hadd_stage1 = self.create_hadd_stage1_python_file(self, inputFiles_hadd_stage1, self.histogramFile_hadd_stage1)
+
     lines_makefile.append("%s: %s" % (self.histogramFile_hadd_stage1, " ".join(inputFiles_hadd_stage1)))
     lines_makefile.append("\t%s %s" % ("rm -f", self.histogramFile_hadd_stage1))
-    lines_makefile.append("\t%s %s %s" % ("hadd", self.histogramFile_hadd_stage1, " ".join(inputFiles_hadd_stage1)))    
+    lines_makefile.append("\t%s %s" % ("python", script_hadd_stage1))
     lines_makefile.append("")
-    self.filesToClean.append(self.histogramFile_hadd_stage1) 
+    self.filesToClean.append(self.histogramFile_hadd_stage1)
     
   def addToMakefile_addBackgrounds(self, lines_makefile):
     for key in self.histogramFile_addBackgrounds.keys():
@@ -329,10 +298,14 @@ class analyzeConfig_3l_1tau(analyzeConfig):
     inputFiles_hadd_stage1_5 = [ self.histogramFile_hadd_stage1 ]
     for key in self.histogramFile_addBackgrounds.keys():
       inputFiles_hadd_stage1_5.append(self.histogramFile_addBackgrounds[key])
+
+    script_hadd_stage1_5 = self.create_hadd_stage1_python_file(self, inputFiles_hadd_stage1_5, self.histogramFile_hadd_stage1_5)
+
     lines_makefile.append("%s: %s" % (self.histogramFile_hadd_stage1_5, " ".join(inputFiles_hadd_stage1_5)))
     lines_makefile.append("\t%s %s" % ("rm -f", self.histogramFile_hadd_stage1_5))
-    lines_makefile.append("\t%s %s %s" % ("hadd", self.histogramFile_hadd_stage1_5, " ".join(inputFiles_hadd_stage1_5)))
+    lines_makefile.append("\t%s %s" % ("python", script_hadd_stage1_5))
     lines_makefile.append("")
+    self.filesToClean.append(self.histogramFile_hadd_stage1_5)
     
   def addToMakefile_addFakes(self, lines_makefile):
     for key in self.histogramFile_addFakes.keys():
@@ -350,8 +323,12 @@ class analyzeConfig_3l_1tau(analyzeConfig):
     """Adds the commands to Makefile that are necessary for building the final histogram file.
     """
     lines_makefile.append("%s: %s" % (self.histogramFile_hadd_stage2, " ".join([ self.histogramFile_hadd_stage1_5 ] + self.histogramFile_addFakes.values())))
+
+    script_hadd_stage2 = self.create_hadd_stage1_python_file(self, inputFiles_hadd_stage2, self.histogramFile_hadd_stage2)
+
+    lines_makefile.append("%s: %s" % (self.histogramFile_hadd_stage2, " ".join(inputFiles_hadd_stage2)))
     lines_makefile.append("\t%s %s" % ("rm -f", self.histogramFile_hadd_stage2))
-    lines_makefile.append("\t%s %s %s" % ("hadd", self.histogramFile_hadd_stage2, " ".join([ self.histogramFile_hadd_stage1_5 ] + self.histogramFile_addFakes.values())))
+    lines_makefile.append("\t%s %s" % ("python", script_hadd_stage2))
     lines_makefile.append("")
     self.filesToClean.append(self.histogramFile_hadd_stage2)
 
