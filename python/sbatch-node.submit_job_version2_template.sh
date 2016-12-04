@@ -1,15 +1,11 @@
 #!/bin/bash
-
-
-# This value is provided by sbatchManager.py that creates sbatch scripts based this template
-
-RUNNING_COMMAND="{{ RUNNING_COMMAND }}"
-
+# File:     sbatch-node.submit_job_version2.sh
+# Version:  0.1
 
 # Runs executable, wrapped into failure wrapper + wrapped into node scratchdir
 
 main() {
-    run_failure_wrapped_executable >> "{{ wrapper_log_file }}" 2>&1
+    run_failure_wrapped_executable >> "{{wrapper_log_file}}" 2>&1
 }
 
 
@@ -27,8 +23,8 @@ run_failure_wrapped_executable() {
         sudo scontrol update nodename=$HOSTNAME state=drain reason=Testing
 
         if [[ $TRY_COUNT -lt 3 ]]; then
-            echo "Will resubmit job to other node: TRY_COUNT=$TRY_COUNT $RUNNING_COMMAND"
-            TRY_COUNT=$TRY_COUNT $RUNNING_COMMAND
+            echo "Will resubmit job to other node: TRY_COUNT=$TRY_COUNT {{sbatch_command}}"
+            TRY_COUNT=$TRY_COUNT {{sbatch_command}}
         else
             echo "Maximum tries reached, will not try to resubmit any more. GL & HF"
         fi
@@ -36,11 +32,16 @@ run_failure_wrapped_executable() {
 }
 
 
+run_the_command() {
+  {{command}}
+}
+
+
 # Creates scratch dir on cluster node and runs executable
 
 run_wrapped_executable() {
-    export SCRATCH_DIR="{{ scratch_dir }}/$SLURM_JOBID"
-    EXECUTABLE_LOG_FILE="{{ executable_log_file }}"
+    export SCRATCH_DIR="{{scratch_dir}}/$SLURM_JOBID"
+    EXECUTABLE_LOG_FILE="{{executable_log_file}}"
     EXECUTABLE_LOG_DIR="`dirname $EXECUTABLE_LOG_FILE`"
     EXECUTABLE_LOG_FILE_NAME="`basename $EXECUTABLE_LOG_FILE`"
     TEMPORARY_EXECUTABLE_LOG_DIR="$SCRATCH_DIR/$EXECUTABLE_LOG_DIR/"
@@ -61,7 +62,7 @@ run_wrapped_executable() {
 
     echo "Initialize CMSSW run-time environment: source /cvmfs/cms.cern.ch/cmsset_default.sh"
     source /cvmfs/cms.cern.ch/cmsset_default.sh
-    cd {{ working_dir }}
+    cd {{working_dir}}
     cmsenv
     cd $SCRATCH_DIR
 
@@ -74,25 +75,10 @@ run_wrapped_executable() {
     echo "Time is: `date`"
 
     CMSSW_SEARCH_PATH=$SCRATCH_DIR
-    echo "Execute command: {{ exec_name }} {{ cfg_file }} &> $TEMPORARY_EXECUTABLE_LOG_FILE"
-    {{ exec_name }} {{ cfg_file }} &> $TEMPORARY_EXECUTABLE_LOG_FILE
+    echo "Execute command output will be redirected to $TEMPORARY_EXECUTABLE_LOG_FILE"
+    run_the_command > $TEMPORARY_EXECUTABLE_LOG_FILE 2>&1
 
     echo "Time is: `date`"
-
-    OUTPUT_FILES="{{ outputFiles }}"
-    echo "Copying output files: {{ outputFiles }}"
-    EXIT_CODE=0
-    for OUTPUT_FILE in $OUTPUT_FILES
-    do
-      OUTPUT_FILE_SIZE=$(stat -c '%s' $OUTPUT_FILE)
-      if [ $OUTPUT_FILE_SIZE -ge 1000 ]; then
-        echo "cp $OUTPUT_FILE {{ outputDir }}"
-        cp $OUTPUT_FILE {{ outputDir }}
-      else
-        rm $OUTPUT_FILE
-        EXIT_CODE=1
-      fi
-    done
 
     echo "Time is: `date`"
 
@@ -114,3 +100,6 @@ run_wrapped_executable() {
 # Calls main method
 
 main
+
+
+# End of file
