@@ -107,6 +107,7 @@ class analyzeConfig:
     self.channel = channel
     self.central_or_shifts = central_or_shifts
     self.max_files_per_job = max_files_per_job
+    self.max_num_jobs = 10000
     self.era = era
     self.use_lumi = use_lumi
     self.lumi = lumi
@@ -279,6 +280,7 @@ class analyzeConfig:
     lines_sbatch.append("")
     lines_sbatch.append("m = sbatchManager()")
     lines_sbatch.append("m.setWorkingDir('%s')" % self.workingDir)
+    num_jobs = 0
     for key_file, cfgFile in self.cfgFiles_analyze_modified.items():
       inputFileNames = self.ntupleFiles[key_file]
       histogramFileName = self.histogramFiles[key_file]
@@ -316,16 +318,20 @@ class analyzeConfig:
           if not hostname in self.cvmfs_error_log.keys():
             self.cvmfs_error_log[hostname] = []
           self.cvmfs_error_log[hostname].append(time)
-      lines_sbatch.append(
-        "m.submitJob(%s, '%s', '%s', '%s', %s, '%s', True)" % (
-            inputFileNames,
-            self.executable_analyze,
-            cfgFile,
-            os.path.dirname(histogramFileName),
-            [ os.path.basename(histogramFileName) ],
-            logFileName
-            )
-        )
+      if num_jobs <= self.max_num_jobs:
+        lines_sbatch.append(
+          "m.submitJob(%s, '%s', '%s', '%s', %s, '%s', True)" % (
+              inputFileNames,
+              self.executable_analyze,
+              cfgFile,
+              os.path.dirname(histogramFileName),
+              [ os.path.basename(histogramFileName) ],
+              logFileName
+              )
+          )
+      num_jobs = num_jobs + 1
+    if num_jobs > self.max_num_jobs:
+      print "Warning: number of jobs = %i exceeds limit of %i --> skipping submission of %i jobs !!" % (num_jobs, self.max_num_jobs, num_jobs - self.max_num_jobs)
     lines_sbatch.append("m.waitForJobs()")
     createFile(self.sbatchFile_analyze, lines_sbatch)
 
