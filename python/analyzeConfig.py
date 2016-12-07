@@ -333,14 +333,28 @@ class analyzeConfig:
         createFile(sbatch_analyze_file, sbatch_analyze_lines)
 
     def create_hadd_stage1_python_file(self):
-        sbatch_histogram_stage1_lines = self.generate_sbatch_concat_histograms_lines(
+        stage1_python_file = self.create_hadd_python_file(
             input_histograms=self.get_input_histograms_from_stage1_analyze(),
             final_output_histogram=self.histogram_file_hadd_stage1
+            stage_name='stage_1'
         )
-        sbatch_histogram_stage1_file = self.sbatchFile_analyze.replace('.py', '_histograms_stage1.py')
-        createFile(sbatch_histogram_stage1_file, sbatch_histogram_stage1_lines)
 
-        return sbatch_histogram_stage1_file
+        return stage1_python_file
+
+    def create_hadd_python_file(
+        self,
+        input_histograms=None,
+        final_output_histogram=None,
+        stage_name=None
+    ):
+        sbatch_histogram_lines = self.generate_sbatch_concat_histograms_lines(
+            input_histograms=input_histograms,
+            final_output_histogram=final_output_histogram
+        )
+        sbatch_histogram_file = self.sbatchFile_analyze.replace('.py', ('_histograms_%s.py' % stage_name))
+        createFile(sbatch_histogram_file, sbatch_histogram_lines)
+
+        return sbatch_histogram_file
 
 
     def generate_sbatch_analyze_lines(self):
