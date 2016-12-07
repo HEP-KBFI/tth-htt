@@ -335,7 +335,7 @@ class analyzeConfig:
     def create_hadd_stage1_python_file(self):
         stage1_python_file = self.create_hadd_python_file(
             input_histograms=self.get_input_histograms_from_stage1_analyze(),
-            final_output_histogram=self.histogram_file_hadd_stage1
+            final_output_histogram=self.histogram_file_hadd_stage1,
             stage_name='stage_1'
         )
 
