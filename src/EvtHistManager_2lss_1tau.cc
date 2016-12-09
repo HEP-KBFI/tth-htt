@@ -90,8 +90,8 @@ void EvtHistManager_2lss_1tau::fillHistograms(int numElectrons, int numMuons, in
       fillWithOverFlow(histogram_memOutput_logWeight_ttZ_Zll_, getLogWeight(memOutput_2lss_1tau->weight_ttZ_Zll_), evtWeight, evtWeightErr);
       fillWithOverFlow(histogram_memOutput_logWeight_tt_, getLogWeight(memOutput_2lss_1tau->weight_tt_), evtWeight, evtWeightErr);
       fillWithOverFlow(histogram_memOutput_LR_, memOutput_2lss_1tau->LR_, evtWeight, evtWeightErr);
-      fillWithOverFlow(histogram_mem_logCPUTime_, TMath::Log(TMath::Max(1.e-21, memOutput_2lss_1tau->cpuTime_)), evtWeight, evtWeightErr);
-      fillWithOverFlow(histogram_mem_logRealTime_, TMath::Log(TMath::Max(1.e-21, memOutput_2lss_1tau->realTime_)), evtWeight, evtWeightErr);
+      fillWithOverFlow(histogram_mem_logCPUTime_, TMath::Log(TMath::Max((Float_t)1.e-21, memOutput_2lss_1tau->cpuTime_)), evtWeight, evtWeightErr);
+      fillWithOverFlow(histogram_mem_logRealTime_, TMath::Log(TMath::Max((Float_t)1.e-21, memOutput_2lss_1tau->realTime_)), evtWeight, evtWeightErr);
     }
   }
 

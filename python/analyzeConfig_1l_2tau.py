@@ -268,7 +268,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
     for key in self.histogramFiles.keys():
       inputFiles_hadd_stage1.append(self.histogramFiles[key])
 
-    script_hadd_stage1 = self.create_hadd_stage1_python_file(inputFiles_hadd_stage1, self.histogramFile_hadd_stage1)
+    script_hadd_stage1 = self.create_hadd_python_file(inputFiles_hadd_stage1, self.histogramFile_hadd_stage1, "stage1")
 
     lines_makefile.append("%s: %s" % (self.histogramFile_hadd_stage1, " ".join(inputFiles_hadd_stage1)))
     lines_makefile.append("\t%s %s" % ("rm -f", self.histogramFile_hadd_stage1))
@@ -292,7 +292,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
     for key in self.histogramFile_addBackgrounds.keys():
       inputFiles_hadd_stage1_5.append(self.histogramFile_addBackgrounds[key])
 
-    script_hadd_stage1_5 = self.create_hadd_stage1_python_file(inputFiles_hadd_stage1_5, self.histogramFile_hadd_stage1_5)
+    script_hadd_stage1_5 = self.create_hadd_python_file(inputFiles_hadd_stage1_5, self.histogramFile_hadd_stage1_5, "stage1_5")
 
     lines_makefile.append("%s: %s" % (self.histogramFile_hadd_stage1_5, " ".join(inputFiles_hadd_stage1_5)))
     lines_makefile.append("\t%s %s" % ("rm -f", self.histogramFile_hadd_stage1_5))
@@ -317,7 +317,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
     """
     inputFiles_hadd_stage2 = [ self.histogramFile_hadd_stage1_5 ] + self.histogramFile_addFakes.values()
     
-    script_hadd_stage2 = self.create_hadd_stage1_python_file(inputFiles_hadd_stage2, self.histogramFile_hadd_stage2)
+    script_hadd_stage2 = self.create_hadd_python_file(inputFiles_hadd_stage2, self.histogramFile_hadd_stage2, "stage2")
 
     lines_makefile.append("%s: %s" % (self.histogramFile_hadd_stage2, " ".join(inputFiles_hadd_stage2)))
     lines_makefile.append("\t%s %s" % ("rm -f", self.histogramFile_hadd_stage2))

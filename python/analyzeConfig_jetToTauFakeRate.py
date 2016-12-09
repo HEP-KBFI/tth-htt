@@ -133,7 +133,7 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
     for key in self.histogramFiles.keys():
       inputFiles_hadd_stage1.append(self.histogramFiles[key])
 
-    script_hadd_stage1 = self.create_hadd_stage1_python_file(self, inputFiles_hadd_stage1, self.histogramFile_hadd_stage1)
+    script_hadd_stage1 = self.create_hadd_python_file(self, inputFiles_hadd_stage1, self.histogramFile_hadd_stage1, "stage1")
 
     lines_makefile.append("%s: %s" % (self.histogramFile_hadd_stage1, " ".join(inputFiles_hadd_stage1)))
     lines_makefile.append("\t%s %s" % ("rm -f", self.histogramFile_hadd_stage1))
@@ -156,7 +156,7 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
       inputFiles_hadd_stage2.append(self.histogramFile_comp_jetToTauFakeRate[charge_selection])
     print "inputFiles_hadd_stage2 = ", inputFiles_hadd_stage2
 
-    script_hadd_stage2 = self.create_hadd_stage1_python_file(self, inputFiles_hadd_stage2, self.histogramFile_hadd_stage2)
+    script_hadd_stage2 = self.create_hadd_python_file(self, inputFiles_hadd_stage2, self.histogramFile_hadd_stage2, "stage2")
 
     lines_makefile.append("%s: %s" % (self.histogramFile_hadd_stage2, " ".join(inputFiles_hadd_stage2)))
     lines_makefile.append("\t%s %s" % ("rm -f", self.histogramFile_hadd_stage2))
