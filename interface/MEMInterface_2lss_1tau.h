@@ -4,6 +4,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoLepton.h" // RecoLepton
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTau.h" // RecoHadTau
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h" // RecoJet
+#include "tthAnalysis/HiggsToTauTau/interface/MEMOutput_2lss_1tau.h" // MEMOutput_2lss_1tau
 
 #include "ttH_Htautau_MEM_Analysis/MEMAlgo/interface/RunConfig.h" // RunConfig
 
@@ -25,45 +26,8 @@ class MEMInterface_2lss_1tau
    * @return object with         MVA output
    */
 
-  struct MEMOutput
-  {
-    MEMOutput()
-      : errorFlag_(0)
-      , type_(-1)
-      , weight_ttH_(-1.)
-      , weight_ttZ_(-1.)
-      , weight_ttZ_Zll_(-1.)
-      , weight_tt_(-1.)
-      , LR_(-1.)
-      , cpuTime_(-1.)
-      , realTime_(-1.)
-    {}
-    ~MEMOutput() {}
-    void print(std::ostream& stream)
-    {
-      stream << "<MEMOutput (2lss_1tau)>:" << std::endl;
-      stream << " type = " << type_ << std::endl;
-      stream << " weights:" << std::endl;
-      stream << "  ttH = " << weight_ttH_ << std::endl;
-      stream << "  ttZ = " << weight_ttZ_ << std::endl;
-      stream << "  ttZ(Z->ll) = " << weight_ttZ_Zll_ << std::endl;
-      stream << "  tt = " << weight_tt_ << std::endl;
-      stream << " LR = " << LR_ << std::endl;
-      stream << " errorFlag = " << errorFlag_ << std::endl;
-      stream << " cpuTime = " << cpuTime_ << std::endl;
-      stream << " realTime = " << realTime_ << std::endl;
-    }
-    int errorFlag_;
-    int type_; // either 0 (fully reconstructed W->jj decay) or 1 (one jet from W->jj decay not reconstructed)
-    double weight_ttH_;
-    double weight_ttZ_; // ttZ, Z->tautau->lep+tauh
-    double weight_ttZ_Zll_; // ttZ, Z->ll
-    double weight_tt_; // tt+jets (dilepton)
-    double LR_;
-    double cpuTime_;
-    double realTime_;
-  };
-  MEMOutput
+  
+  MEMOutput_2lss_1tau
   operator()(const RecoLepton* selLepton_lead, const RecoLepton* selLepton_sublead, const RecoHadTau* selHadTau, 
 	     double metPx, double metPy, const TMatrixD& metCov,
 	     const std::vector<const RecoJet*>& selJets);

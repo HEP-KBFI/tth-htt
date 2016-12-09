@@ -807,6 +807,7 @@ struct preselHistManagerType
     std::vector<const RecoMuon*> cleanedMuons = muon_ptrs; // CV: no cleaning needed for muons, as they have the highest priority in the overlap removal
     std::vector<const RecoMuon*> preselMuons = preselMuonSelector(cleanedMuons);
     std::vector<const RecoMuon*> fakeableMuons = fakeableMuonSelector(preselMuons);
+    set_cone_pT(fakeableMuons, era);
     std::vector<const RecoMuon*> tightMuons = tightMuonSelector(preselMuons);
     std::vector<const RecoMuon*> selMuons;
     if      ( leptonSelection == kLoose    ) selMuons = preselMuons;
@@ -823,6 +824,7 @@ struct preselHistManagerType
     std::vector<const RecoElectron*> cleanedElectrons = electronCleaner(electron_ptrs, selMuons);
     std::vector<const RecoElectron*> preselElectrons = preselElectronSelector(cleanedElectrons);
     std::vector<const RecoElectron*> fakeableElectrons = fakeableElectronSelector(preselElectrons);
+    set_cone_pT(fakeableElectrons, era);
     std::vector<const RecoElectron*> tightElectrons = tightElectronSelector(preselElectrons);
     std::vector<const RecoElectron*> selElectrons;
     if      ( leptonSelection == kLoose    ) selElectrons = preselElectrons;
@@ -1431,12 +1433,16 @@ struct preselHistManagerType
       mem.add(selBJets_loose, selBJets_medium, selJets);
       mem.add(selHadTau);
       mem.add(selLeptons);
-      if(isSignal && isMC)
-        mem.add(genHiggsDecayMode);
-      if(isMC && era == kEra_2016)
-        mem.add(genHadTaus, genBQuarkFromTop, genLepFromTau,
-                genNuFromTau, genTau, genLepFromTop, genNuFromTop,
-                genTop, genVbosons);
+      if ( isMC ) {
+	if ( isSignal ) {
+	  mem.add(genHiggsDecayMode);
+	}
+	if ( era == kEra_2016 ) {
+	  mem.add(genHadTaus, genBQuarkFromTop, genLepFromTau,
+		  genNuFromTau, genTau, genLepFromTop, genNuFromTop,
+		  genTop, genVbosons);
+	}
+      }
       mem.fill(false);
     }
   }
@@ -1470,6 +1476,7 @@ struct preselHistManagerType
   delete genEvtHistManager_beforeCuts;
   delete genEvtHistManager_afterCuts;
   delete lheInfoHistManager;
+  delete cutFlowHistManager;
 
   hltPaths_delete(triggers_1e);
   hltPaths_delete(triggers_2e);

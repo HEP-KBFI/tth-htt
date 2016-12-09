@@ -3,7 +3,7 @@
 
 #include "FWCore/Utilities/interface/Exception.h"
 
-#include <Rtypes.h> // Float_t, Double_t, Int_t, ULong64_t, Char_t
+#include <Rtypes.h> // Float_t, Double_t, Int_t, UInt_t, ULong64_t, Char_t
 #include <TTree.h>
 #include <TTreeFormula.h>
 #include <TString.h>
@@ -13,6 +13,7 @@
 #include <vector>
 #include <iostream>
 #include <iomanip>
+#include <assert.h> // assert
 
 struct branchEntryBaseType
 {
@@ -23,13 +24,15 @@ struct branchEntryBaseType
       outputBranchName_(outputBranchName),
       outputBranchType_string_(outputBranchType)
   {
-    std::cout << " copying branch " << inputBranchName << " (type = " << inputBranchType << ") --> " << outputBranchName << " (type = " << outputBranchType << ")" << std::endl;
+    assert(inputBranchName_ != "");
     if      ( inputBranchType == "F" ) inputBranchType_ = kF;
     else if ( inputBranchType == "D" ) inputBranchType_ = kD;
     else if ( inputBranchType == "I" ) inputBranchType_ = kI;
+    else if ( inputBranchType == "i" ) inputBranchType_ = kUI;
     else if ( inputBranchType == "l" ) inputBranchType_ = kUL;
     else throw cms::Exception("branchEntryBaseType") 
       << "Invalid branch type = '" << inputBranchType << "' for branch = '" << inputBranchName << "' !!\n";
+    assert(outputBranchName_ != "");
     if ( outputBranchType == "F" ) {
       outputBranchType_ = kF;
       outputBranchFormat_ = kScientific;
@@ -40,6 +43,8 @@ struct branchEntryBaseType
       outputBranchPrecision_ = 6;
     } else if ( outputBranchType == "I" ) {
       outputBranchType_ = kI;
+    } else if ( outputBranchType == "i" ) {
+      outputBranchType_ = kUI;
     } else if ( outputBranchType == "l" ) {
       outputBranchType_ = kUL;
     } else throw cms::Exception("branchEntryBaseType") 
@@ -50,12 +55,12 @@ struct branchEntryBaseType
   virtual void setOutputTree(TTree*) = 0;
   virtual void update() {}
   virtual void copyBranch() = 0;
-  virtual Float_t getValue_float() = 0;
-  virtual Double_t getValue_double() = 0;
-  virtual Int_t getValue_int() = 0;
+  virtual Float_t getValue_float(int idxElement = 0) const = 0;
+  virtual Double_t getValue_double(int idxElement = 0) const = 0;
+  virtual Int_t getValue_int(int idxElement = 0) const = 0;
   std::string inputBranchName_;
   std::string inputBranchType_string_;
-  enum { kF, kD, kI, kUL };
+  enum { kF, kD, kI, kUI, kUL };
   int inputBranchType_;
   int idxColumn_;
   std::string outputBranchName_;
@@ -91,15 +96,15 @@ struct branchEntryType : branchEntryBaseType
       outputValue_ = inputValue_;
     }
   }
-  Float_t getValue_float()
+  Float_t getValue_float(int idxElement = 0) const
   {
     return outputValue_;
   }
-  Double_t getValue_double()
+  Double_t getValue_double(int idxElement = 0) const
   {
     return outputValue_;
   }
-  Int_t getValue_int()
+  Int_t getValue_int(int idxElement = 0) const
   {
     return TMath::Nint(outputValue_);
   }
@@ -113,6 +118,7 @@ typedef branchEntryType<Double_t,    Float_t> branchEntryTypeDF;
 typedef branchEntryType<Double_t,   Double_t> branchEntryTypeDD;
 typedef branchEntryType<Double_t,      Int_t> branchEntryTypeDI;
 typedef branchEntryType<Int_t,         Int_t> branchEntryTypeII;
+typedef branchEntryType<UInt_t,       UInt_t> branchEntryTypeUIUI;
 typedef branchEntryType<ULong64_t, ULong64_t> branchEntryTypeULUL;
 
 template <typename T>
@@ -149,15 +155,15 @@ struct branchEntryFormulaType : branchEntryBaseType
       outputValue_ = inputValue;
     }
   }
-  Float_t getValue_float()
+  Float_t getValue_float(int idxElement = 0) const
   {
     return outputValue_;
   }
-  Double_t getValue_double()
+  Double_t getValue_double(int idxElement = 0) const
   {
     return outputValue_;
   }
-  Int_t getValue_int()
+  Int_t getValue_int(int idxElement = 0) const
   {
     return TMath::Nint(outputValue_);
   }
@@ -167,6 +173,79 @@ struct branchEntryFormulaType : branchEntryBaseType
 };
 typedef branchEntryFormulaType<Float_t>  branchEntryFormulaTypeF;
 typedef branchEntryFormulaType<Double_t> branchEntryFormulaTypeD;
+
+template <typename T1, typename T2>
+struct branchEntryVType : branchEntryBaseType
+{
+  branchEntryVType(const branchEntryBaseType* branch_nElements, int max_nElements,
+		   const std::string& inputBranchName, const std::string& inputBranchType, const std::string& outputBranchName, const std::string& outputBranchType, int idx = -1)
+    : branchEntryBaseType(inputBranchName, inputBranchType, outputBranchName, outputBranchType, idx)
+    , branch_nElements_(branch_nElements)
+    , max_nElements_(max_nElements)
+  {
+    assert(branch_nElements_);
+    assert(max_nElements_ >= 1);
+    inputValues_ = new T1[max_nElements_];
+    outputValues_ = new T2[max_nElements_];
+  }
+  ~branchEntryVType() 
+  {
+    delete[] inputValues_;    
+    delete[] outputValues_;
+  }
+  void setInputTree(TTree* inputTree)
+  {
+    inputTree->SetBranchAddress(inputBranchName_.data(), inputValues_);
+  }
+  void setOutputTree(TTree* outputTree)
+  {
+    outputTree->Branch(outputBranchName_.data(), outputValues_, 
+      Form("%s[%s]/%s", outputBranchName_.data(), branch_nElements_->outputBranchName_.data(), outputBranchType_string_.data()));
+  }
+  void copyBranch()
+  {
+    assert(branch_nElements_);
+    // CV: branches of "simple" type need to be copied before branches of "vector" type,
+    //     to ensure that the branches containing the number of elements in the vectors are initialized before the vectors get copied
+    (const_cast<branchEntryBaseType*>(branch_nElements_))->copyBranch();
+    int numElements = branch_nElements_->getValue_int();
+    assert(numElements <= max_nElements_);
+    for ( int idxElement = 0; idxElement < numElements; ++idxElement ) {
+      if ( inputBranchType_ == kF && outputBranchType_ == kI ) {
+	outputValues_[idxElement] = TMath::Nint((Float_t)inputValues_[idxElement]);
+      } else if ( inputBranchType_ == kD && outputBranchType_ == kI ) {
+	outputValues_[idxElement] = TMath::Nint((Double_t)inputValues_[idxElement]);
+      } else {
+	outputValues_[idxElement] = inputValues_[idxElement];
+      }
+    }
+  }
+  Float_t getValue_float(int idxElement = 0) const
+  {
+    int numElements = branch_nElements_->getValue_int();
+    assert(idxElement < numElements);
+    return outputValues_[idxElement];
+  }
+  Double_t getValue_double(int idxElement = 0) const
+  {
+    int numElements = branch_nElements_->getValue_int();
+    assert(idxElement < numElements);
+    return outputValues_[idxElement];
+  }
+  Int_t getValue_int(int idxElement = 0) const
+  {
+    int numElements = branch_nElements_->getValue_int();
+    assert(idxElement < numElements);
+    return TMath::Nint(outputValues_[idxElement]);
+  }
+  const branchEntryBaseType* branch_nElements_;
+  int max_nElements_;
+  T1* inputValues_;
+  T2* outputValues_;
+};
+typedef branchEntryVType<Float_t,   Float_t> branchEntryTypeVFVF;
+typedef branchEntryVType<Double_t, Double_t> branchEntryTypeVDVD;
+typedef branchEntryVType<Int_t,       Int_t> branchEntryTypeVIVI;
 
 branchEntryBaseType* addBranch(std::vector<branchEntryBaseType*>&, const std::string&, const std::string&, int = -1);
 

@@ -7,7 +7,7 @@
 
 class GenParticle
 {
-public:
+ public:
   GenParticle() = default;
   GenParticle(Double_t pt,
               Double_t eta,

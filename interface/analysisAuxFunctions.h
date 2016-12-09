@@ -4,6 +4,13 @@
 #include "DataFormats/Math/interface/deltaR.h" // deltaR
 
 #include "tthAnalysis/HiggsToTauTau/interface/GenParticle.h" // GenParticle
+#include "tthAnalysis/HiggsToTauTau/interface/RecoLepton.h" // RecoLepton
+#include "tthAnalysis/HiggsToTauTau/interface/RecoElectron.h" // RecoElectron
+#include "tthAnalysis/HiggsToTauTau/interface/RecoMuon.h" // RecoMuon
+#include "tthAnalysis/HiggsToTauTau/interface/RecoHadTau.h" // RecoHadTau
+#include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h" // RecoJet
+#include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorTight.h" // RecoElectronSelectorTight
+#include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorTight.h" // RecoMuonSelectorTight
 
 #include <vector>
 
@@ -63,5 +70,27 @@ std::vector<T> pickFirstNobjects(const std::vector<T>& objects_input, size_t N)
   }
   return objects_output;
 }
+
+/**
+ * @brief Compute MHT
+ */
+math::PtEtaPhiMLorentzVector compMHT(const std::vector<const RecoLepton*>& leptons, const std::vector<const RecoHadTau*>& hadTaus, const std::vector<const RecoJet*>& jets);
+
+/**
+ * @brief Compute linear discriminator based on MET and MHT
+ */
+double compMEt_LD(const math::PtEtaPhiMLorentzVector& met_p4, const math::PtEtaPhiMLorentzVector& mht_p4);
+
+/**
+ * @brief Set "cone pT" for leptons that pass the "fakeable" lepton selection, but fail the "tight" lepton selection, 
+ *        as described in lines 304-306 of AN-2016/211
+ */
+void set_cone_pT(std::vector<const RecoElectron*>& fakeableElectrons, int era);
+void set_cone_pT(std::vector<const RecoMuon*>& fakeableMuons, int era);
+
+/**
+ * @brief Build collection of selected leptons by merging collections of selected electrons and selected muons
+ */
+std::vector<const RecoLepton*> mergeLeptonCollections(const std::vector<const RecoElectron*>& electrons, const std::vector<const RecoMuon*>& muons);
 
 #endif

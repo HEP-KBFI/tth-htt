@@ -24,20 +24,16 @@ class RecoJetReader
 
   void enable_HIP_mitigation() { 
     std::cout << "<RecoJetReader::enable_HIP_mitigation>:" << std::endl; 
-    if ( era_ == kEra_2016 ) {
-      branchName_BtagCSV_ = Form("%s_%s", branchName_obj_.data(), "btagCSV"); // CV: CSV algorithm with HIP mitigation
-    }
     use_HIP_mitigation_ = true; 
   }
   void disable_HIP_mitigation() { 
     std::cout << "<RecoJetReader::disable_HIP_mitigation>:" << std::endl; 
-    if ( era_ == kEra_2016 ) {
-      branchName_BtagCSV_ = Form("%s_%s", branchName_obj_.data(), "btagNoHipMitigation"); // CV: CSV algorithm without HIP mitigation
-    }
     use_HIP_mitigation_ = false; 
   }
 
   void setBranchName_BtagWeight(const std::string& branchName_BtagWeight) { branchName_BtagWeight_ = branchName_BtagWeight; }
+
+  void read_BtagWeight_systematics(bool flag) { read_BtagWeight_systematics_ = flag; }
 
   /**
    * @brief Call tree->SetBranchAddress for all RecoJet branches
@@ -69,10 +65,15 @@ class RecoJetReader
   std::string branchName_corr_;
   std::string branchName_corr_JECUp_;
   std::string branchName_corr_JECDown_;
-  std::string branchName_BtagCSV_;
+  std::string branchName_BtagCSVwHipMitigation_;
+  std::string branchName_BtagCSVwoHipMitigation_;
   std::string branchName_BtagWeight_;
 
+  std::map<int, std::string> branchNames_BtagWeight_systematics_;
+
   int jetPt_option_;
+
+  bool read_BtagWeight_systematics_; 
 
   Int_t nJets_;
   Float_t* jet_pt_;
@@ -82,8 +83,11 @@ class RecoJetReader
   Float_t* jet_corr_;
   Float_t* jet_corr_JECUp_;
   Float_t* jet_corr_JECDown_;
-  Float_t* jet_BtagCSV_;
+  Float_t* jet_BtagCSVwHipMitigation_;
+  Float_t* jet_BtagCSVwoHipMitigation_;
   Float_t* jet_BtagWeight_;
+
+  std::map<int, Float_t*> jet_BtagWeights_systematics_; // CV: needed by RecoJetWriter
 
   // CV: make sure that only one RecoJetReader instance exists for a given branchName,
   //     as ROOT cannot handle multiple TTree::SetBranchAddress calls for the same branch.

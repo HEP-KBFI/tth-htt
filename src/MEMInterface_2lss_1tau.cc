@@ -42,13 +42,13 @@ namespace
   }
 }
 
-MEMInterface_2lss_1tau::MEMOutput
+MEMOutput_2lss_1tau
 MEMInterface_2lss_1tau::operator()(
   const RecoLepton* selLepton_lead, const RecoLepton* selLepton_sublead, const RecoHadTau* selHadTau, 
   double metPx, double metPy, const TMatrixD& metCov,
   const std::vector<const RecoJet*>& selJets)
 {
-  MEMOutput result;
+  MEMOutput_2lss_1tau result;
 
   if ( !(selJets.size() >= 3) ) {
     std::cerr << "Warning in <MEMInterface_2lss_1tau::operator()>: Failed to find three jets !!" << std::endl;
@@ -181,6 +181,12 @@ MEMInterface_2lss_1tau::operator()(
   clock_->Stop("<MEMInterface_2lss_1tau::operator()>");
   clock_->Show("<MEMInterface_2lss_1tau::operator()>");
 
+  result.leadLepton_eta_ = selLepton_lead->pt_;
+  result.leadLepton_phi_ = selLepton_lead->eta_;
+  result.subleadLepton_eta_ = selLepton_sublead->pt_;
+  result.subleadLepton_phi_ = selLepton_sublead->eta_;
+  result.hadTau_eta_ = selHadTau->pt_;
+  result.hadTau_phi_ = selHadTau->eta_;
   result.type_ = inputs[0].integration_type_;
   result.weight_ttH_ = inputs[0].weight_ttH_;
   result.weight_ttZ_ = inputs[0].weight_ttZ_;

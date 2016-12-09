@@ -103,8 +103,8 @@ class analyzeConfig:
       makefile: full path to the Makefile
       histogram_files: the histogram files produced by 'analyze_1l_2tau' jobs
       histogram_files_exists: flags indicating if histogram files already exist from a previous execution of 'tthAnalyzeRun_1l_2tau.py', so that 'analyze_1l_2tau' jobs do not have to be submitted again
-      histogram_file_hadd_stage1: the histogram file obtained by hadding the output of all jobs
-      histogram_file_hadd_stage2: the final histogram file with data-driven background estimates added
+      histogramFile_hadd_stage1: the histogram file obtained by hadding the output of all jobs
+      histogramFile_hadd_stage2: the final histogram file with data-driven background estimates added
       datacardFile: the datacard -- final output file of this execution flow
       cfg_file_prep_dcard: python configuration file for datacard preparation executable
       histogramDir_prep_dcard: directory in final histogram file that is used for building datacard
@@ -159,9 +159,9 @@ class analyzeConfig:
             self.outputDir, "sbatch_analyze_%s.py" % self.channel)
         self.ntupleFiles = {}
         self.histogramFiles = {}
-        self.histogram_file_hadd_stage1 = os.path.join(
+        self.histogramFile_hadd_stage1 = os.path.join(
             self.outputDir, DKEY_HIST, "histograms_harvested_stage1_%s.root" % self.channel)
-        self.histogram_file_hadd_stage2 = os.path.join(
+        self.histogramFile_hadd_stage2 = os.path.join(
             self.outputDir, DKEY_HIST, "histograms_harvested_stage2_%s.root" % self.channel)
         self.datacardFiles = {}
         self.cfgFile_prep_dcard_original = os.path.join(
@@ -242,7 +242,7 @@ class analyzeConfig:
                 key = getKey(histogramToFit, label)
         lines = []
         lines.append("process.fwliteInput.fileNames = cms.vstring('%s')" %
-                     self.histogram_file_hadd_stage2)
+                     self.histogramFile_hadd_stage2)
         lines.append(
             "process.fwliteOutput.fileName = cms.string('%s')" % datacardFile)
         lines.append("process.prepareDatacards.processesToCopy = cms.vstring(%s)" %
@@ -283,7 +283,7 @@ class analyzeConfig:
                 "_cfg.py", "_%s_cfg.py" % label)
         lines = []
         lines.append("process.fwliteInput.fileNames = cms.vstring('%s')" %
-                     self.histogram_file_hadd_stage2)
+                     self.histogramFile_hadd_stage2)
         lines.append(
             "process.makePlots.outputFileName = cms.string('%s')" % outputFileName)
         if not make_plots_backgrounds:
@@ -334,8 +334,8 @@ class analyzeConfig:
 
     def create_hadd_stage1_python_file(self, inputFiles, outputFile):
         sbatch_histogram_stage1_lines = self.generate_sbatch_concat_histograms_lines(
-            input_histograms=inputFiles,
-            _output_histogram=self.histogram_file_hadd_stage1
+            inputFiles = inputFiles,
+            outputFile = self.histogramFile_hadd_stage1
         )
         sbatch_histogram_stage1_file = self.sbatchFile_analyze.replace('.py', '_histograms_stage1.py')
         createFile(sbatch_histogram_stage1_file, sbatch_histogram_stage1_lines)
@@ -351,6 +351,7 @@ class analyzeConfig:
         lines_sbatch.append("m = sbatchManager()")
         lines_sbatch.append("m.setWorkingDir('%s')" % self.workingDir)
 
+        num_jobs = 0
         for key_file, cfg_file in self.cfgFiles_analyze_modified.items():
             input_file_names = self.ntupleFiles[key_file]
             histogram_file_name = self.histogramFiles[key_file]
@@ -486,9 +487,9 @@ m.hadd_in_cluster(
            so that the hadd stage2 file is simply a copy of the hadd stage1 file.
         """
         lines_makefile.append("%s: %s" % (
-            self.histogram_file_hadd_stage2, self.histogram_file_hadd_stage1))
+            self.histogramFile_hadd_stage2, self.histogramFile_hadd_stage1))
         lines_makefile.append(
-            "\tln -sf %s %s" % (self.histogram_file_hadd_stage1, self.histogram_file_hadd_stage2))
+            "\tln -sf %s %s" % (self.histogramFile_hadd_stage1, self.histogramFile_hadd_stage2))
         lines_makefile.append("")
 
     def addToMakefile_outRoot(self, lines_makefile):
@@ -510,7 +511,7 @@ m.hadd_in_cluster(
         """
         for key in self.datacardFiles.keys():
             lines_makefile.append("%s: %s" % (
-                self.datacardFiles[key], self.histogram_file_hadd_stage2))
+                self.datacardFiles[key], self.histogramFile_hadd_stage2))
             lines_makefile.append("\t%s %s" % (
                 self.executable_prep_dcard, self.cfgFile_prep_dcard_modified[key]))
             self.filesToClean.append(self.datacardFiles[key])
@@ -521,7 +522,7 @@ m.hadd_in_cluster(
         """
         for idxJob, cfg_file_modified in enumerate(self.cfgFiles_make_plots_modified):
             lines_makefile.append("makePlots%i: %s" % (
-                idxJob, self.histogram_file_hadd_stage2))
+                idxJob, self.histogramFile_hadd_stage2))
             lines_makefile.append("\t%s %s" % (
                 self.executable_make_plots, cfg_file_modified))
             lines_makefile.append("")

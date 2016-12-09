@@ -6,6 +6,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/GenHadTau.h" // GenHadTau
 #include "tthAnalysis/HiggsToTauTau/interface/GenJet.h" // GenJet
 
+#include <map>
 #include <ostream>
 
 class RecoJet
@@ -20,7 +21,7 @@ public:
 	  Double_t corr,
 	  Double_t corr_JECUp,
 	  Double_t corr_JECDown,
-          Double_t BtagCSV,
+	  Double_t BtagCSV,          
 	  Double_t BtagWeight,
           Int_t idx);
 
@@ -30,6 +31,13 @@ public:
   Double_t BtagCSV_;      ///< CSV b-tagging discriminator value
   Double_t BtagWeight_;   ///< weight for data/MC correction of b-tagging efficiency and mistag rate
   Int_t idx_;             ///< index of jet in the ntuple
+
+  //---------------------------------------------------------
+  // CV: needed by RecoJetWriter
+  Double_t BtagCSVwHipMitigation_;  
+  Double_t BtagCSVwoHipMitigation_; 
+  std::map<int, Double_t> BtagWeight_systematics_; 
+  //---------------------------------------------------------
 
 //--- matching to generator level particles
   const GenLepton* genLepton_;

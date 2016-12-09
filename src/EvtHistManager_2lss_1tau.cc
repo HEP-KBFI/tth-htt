@@ -52,7 +52,7 @@ void EvtHistManager_2lss_1tau::fillHistograms(int numElectrons, int numMuons, in
 					      double mvaOutput_2lss_ttV, double mvaOutput_2lss_ttbar, double mvaDiscr_2lss, 
 					      double mvaOutput_2lss_1tau_ttbar_TMVA, double mvaOutput_2lss_1tau_ttbar_sklearn, 
 					      double mTauTauVis1, double mTauTauVis2, 
-					      const MEMInterface_2lss_1tau::MEMOutput* memOutput_2lss_1tau, double evtWeight)
+					      const MEMOutput_2lss_1tau* memOutput_2lss_1tau, double evtWeight)
 {
   double evtWeightErr = 0.;
 

@@ -2,6 +2,8 @@
 
 #include "FWCore/Utilities/interface/Exception.h"
 
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kBtag_hfUp,..., kBtag_jesDown
+
 #include <TString.h> // Form
 
 std::map<std::string, int> RecoJetReader::numInstances_;
@@ -14,6 +16,7 @@ RecoJetReader::RecoJetReader(int era)
   , branchName_num_("nJet")
   , branchName_obj_("Jet")
   , jetPt_option_(RecoJetReader::kJetPt_central)
+  , read_BtagWeight_systematics_(false)
   , jet_pt_(0)
   , jet_eta_(0)
   , jet_phi_(0)
@@ -21,7 +24,8 @@ RecoJetReader::RecoJetReader(int era)
   , jet_corr_(0)
   , jet_corr_JECUp_(0)
   , jet_corr_JECDown_(0) 
-  , jet_BtagCSV_(0)
+  , jet_BtagCSVwHipMitigation_(0)
+  , jet_BtagCSVwoHipMitigation_(0)
   , jet_BtagWeight_(0)
 {
   setBranchNames();
@@ -34,6 +38,7 @@ RecoJetReader::RecoJetReader(int era, const std::string& branchName_num, const s
   , branchName_num_(branchName_num)
   , branchName_obj_(branchName_obj)
   , jetPt_option_(RecoJetReader::kJetPt_central)
+  , read_BtagWeight_systematics_(false)
   , jet_pt_(0)
   , jet_eta_(0)
   , jet_phi_(0)
@@ -41,7 +46,8 @@ RecoJetReader::RecoJetReader(int era, const std::string& branchName_num, const s
   , jet_corr_(0)
   , jet_corr_JECUp_(0)
   , jet_corr_JECDown_(0) 
-  , jet_BtagCSV_(0)
+  , jet_BtagCSVwHipMitigation_(0)
+  , jet_BtagCSVwoHipMitigation_(0)
   , jet_BtagWeight_(0)
 {
   setBranchNames();
@@ -61,8 +67,13 @@ RecoJetReader::~RecoJetReader()
     delete[] gInstance->jet_corr_;
     delete[] gInstance->jet_corr_JECUp_;
     delete[] gInstance->jet_corr_JECDown_;
-    delete[] gInstance->jet_BtagCSV_;
+    delete[] gInstance->jet_BtagCSVwHipMitigation_;
+    delete[] gInstance->jet_BtagCSVwoHipMitigation_;
     delete[] gInstance->jet_BtagWeight_;
+    for ( std::map<int, Float_t*>::iterator it = gInstance->jet_BtagWeights_systematics_.begin();
+	  it != gInstance->jet_BtagWeights_systematics_.end(); ++it ) {
+      delete[] it->second;
+    }
     instances_[branchName_obj_] = 0;
   }
 }
@@ -78,13 +89,18 @@ void RecoJetReader::setBranchNames()
     branchName_corr_JECUp_ = Form("%s_%s_%s", branchName_obj_.data(), "corr", "JECUp");
     branchName_corr_JECDown_ = Form("%s_%s_%s", branchName_obj_.data(), "corr", "JECDown");
     if ( era_ == kEra_2015 ) {
-      branchName_BtagCSV_ = Form("%s_%s", branchName_obj_.data(), "btagCSV");
+      branchName_BtagCSVwHipMitigation_ = "";
+      branchName_BtagCSVwoHipMitigation_ = Form("%s_%s", branchName_obj_.data(), "btagCSV");
       branchName_BtagWeight_ = Form("%s_%s", branchName_obj_.data(), "bTagWeight");
     } else if ( era_ == kEra_2016 ) {
-      if ( use_HIP_mitigation_ ) branchName_BtagCSV_ = Form("%s_%s", branchName_obj_.data(), "btagCSV"); // CV: CSV algorithm with HIP mitigation
-      else branchName_BtagCSV_ = Form("%s_%s", branchName_obj_.data(), "btagNoHipMitigation"); // CV: CSV algorithm without HIP mitigation
+      branchName_BtagCSVwHipMitigation_ = Form("%s_%s", branchName_obj_.data(), "btagCSV");              // CV: CSV algorithm with HIP mitigation
+      branchName_BtagCSVwoHipMitigation_ = Form("%s_%s", branchName_obj_.data(), "btagNoHipMitigation"); // CV: CSV algorithm without HIP mitigation
       branchName_BtagWeight_ = Form("%s_%s", branchName_obj_.data(), "btagWeightCSV");
     } else assert(0);
+    for ( int idxShift = kBtag_hfUp; idxShift <= kBtag_jesDown; ++idxShift ) {
+      std::string branchName_BtagWeight = TString(getBranchName_bTagWeight(era_, idxShift)).ReplaceAll("Jet_", Form("%s_", branchName_obj_.data())).Data();
+      branchNames_BtagWeight_systematics_[idxShift] = branchName_BtagWeight;
+    }
     instances_[branchName_obj_] = this;
   } else {
     if ( branchName_num_ != instances_[branchName_obj_]->branchName_num_ ) {
@@ -125,13 +141,29 @@ void RecoJetReader::setBranchAddresses(TTree* tree)
     tree->SetBranchAddress(branchName_corr_JECUp_.data(), jet_corr_JECUp_); 
     jet_corr_JECDown_ = new Float_t[max_nJets_];
     tree->SetBranchAddress(branchName_corr_JECDown_.data(), jet_corr_JECDown_);     
-    jet_BtagCSV_ = new Float_t[max_nJets_];
-    tree->SetBranchAddress(branchName_BtagCSV_.data(), jet_BtagCSV_); 
+    jet_BtagCSVwHipMitigation_ = new Float_t[max_nJets_];
+    if ( branchName_BtagCSVwHipMitigation_ != "" ) {
+      tree->SetBranchAddress(branchName_BtagCSVwHipMitigation_.data(), jet_BtagCSVwHipMitigation_); 
+    } else {
+      initializeArray(jet_BtagCSVwHipMitigation_, max_nJets_, 1.);
+    }
+    jet_BtagCSVwoHipMitigation_ = new Float_t[max_nJets_];
+    if ( branchName_BtagCSVwoHipMitigation_ != "" ) {
+      tree->SetBranchAddress(branchName_BtagCSVwoHipMitigation_.data(), jet_BtagCSVwoHipMitigation_); 
+    } else {
+      initializeArray(jet_BtagCSVwoHipMitigation_, max_nJets_, 1.);
+    }
     jet_BtagWeight_ = new Float_t[max_nJets_];
     if ( branchName_BtagWeight_ != "" ) {
       tree->SetBranchAddress(branchName_BtagWeight_.data(), jet_BtagWeight_); 
     } else {
       initializeArray(jet_BtagWeight_, max_nJets_, 1.);
+    }
+    if ( read_BtagWeight_systematics_ ) {
+      for ( int idxShift = kBtag_hfUp; idxShift <= kBtag_jesDown; ++idxShift ) {
+	jet_BtagWeights_systematics_[idxShift] = new Float_t[max_nJets_];
+	tree->SetBranchAddress(branchNames_BtagWeight_systematics_[idxShift].data(), jet_BtagWeights_systematics_[idxShift]);
+      }
     }
   }
 }
@@ -161,9 +193,20 @@ std::vector<RecoJet> RecoJetReader::read() const
       gInstance->jet_corr_[idxJet],
       gInstance->jet_corr_JECUp_[idxJet],
       gInstance->jet_corr_JECDown_[idxJet],
-      gInstance->jet_BtagCSV_[idxJet],
+      ( use_HIP_mitigation_ ) ? gInstance->jet_BtagCSVwHipMitigation_[idxJet] : gInstance->jet_BtagCSVwoHipMitigation_[idxJet],
       gInstance->jet_BtagWeight_[idxJet],	
       idxJet ));
+    RecoJet& jet = jets.back();
+    jet.BtagCSVwHipMitigation_ = gInstance->jet_BtagCSVwHipMitigation_[idxJet];
+    jet.BtagCSVwoHipMitigation_ = gInstance->jet_BtagCSVwoHipMitigation_[idxJet];
+    if ( read_BtagWeight_systematics_ ) {
+      for ( int idxShift = kBtag_hfUp; idxShift <= kBtag_jesDown; ++idxShift ) {
+	std::map<int, Float_t*>::const_iterator jet_BtagWeight_systematics_iter = jet_BtagWeights_systematics_.find(idxShift);
+	if ( jet_BtagWeight_systematics_iter != jet_BtagWeights_systematics_.end() ) {
+	  jet.BtagWeight_systematics_[idxShift] = jet_BtagWeight_systematics_iter->second[idxJet];
+	}
+      }
+    }
   }
   return jets;
 }

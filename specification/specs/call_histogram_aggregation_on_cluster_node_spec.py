@@ -20,11 +20,11 @@ def call_histogram_aggregation_on_cluster_node_spec():
     m.setWorkingDir('/home/%(user)s/VHbbNtuples_7_6_x/CMSSW_7_6_3/src/analysis2mu1b1j/analysis2mu1b1j/test' % config)
 
     m.hadd_in_cluster(
-        input_histograms=[
+        inputFiles=[
             '/home/%(user)s/VHbbNtuples_7_6_x/CMSSW_7_6_3/src/tthAnalysis/HiggsToTauTau/specification/fixtures/histogram_1.root' % config,
             '/home/%(user)s/VHbbNtuples_7_6_x/CMSSW_7_6_3/src/tthAnalysis/HiggsToTauTau/specification/fixtures/histogram_2.root' % config
         ],
-        final_output_histogram='/home/%(user)s/tmp/call_histogram_aggregation_on_cluster_node/result.root' % config
+        outputFile='/home/%(user)s/tmp/call_histogram_aggregation_on_cluster_node/result.root' % config
     )
 
     m.waitForJobs()
