@@ -31,7 +31,7 @@ process.produceNtuple_2lss_1tau = cms.PSet(
     minNumBJets_loose = cms.int32(0),
     minNumBJets_medium = cms.int32(0),
 
-    selEventsFileName_input = cms.string('/home/veelken/VHbbNtuples_8_0_x/CMSSW_8_0_19/src/tthAnalysis/HiggsToTauTau/test/selEvents_analyze_2lss_1tau_diff.txt'),
+    selEventsFileName_input = cms.string(''),
 
     outputCommands = cms.vstring(
         "drop *",

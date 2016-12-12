@@ -44,7 +44,7 @@ def generate_file_ids(nof_files, max_files_per_job, blacklist = []):
   """Subsets file ids
 
     Given N total number of input files, the function splits them into sublists, each
-    containing up to M files (maximum number of input files). The function only workds with
+    containing up to M files (maximum number of input files). The function only works with
     indexes, not full paths, though.
 
   Args:

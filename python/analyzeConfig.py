@@ -2,7 +2,11 @@ import codecs
 import os
 import logging
 
-from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd, generate_file_ids, generate_input_list
+from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd, generate_file_ids
+from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg, createFile
+from tthAnalysis.HiggsToTauTau.analysisTools import createMakefile as tools_createMakefile
+from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch as tools_createScript_sbatch
+from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch_hadd as tools_createScript_sbatch_hadd
 
 # dir for python configuration and batch script files for each analysis job
 DKEY_CFGS = "cfgs"
@@ -16,66 +20,7 @@ DKEY_ROOT = "output_root"  # dir for the selected events dumped into a root file
 
 executable_rm = 'rm'
 
-DIRLIST = [DKEY_CFGS, DKEY_DCRD, DKEY_HIST,
-           DKEY_PLOT, DKEY_LOGS, DKEY_RLES, DKEY_ROOT]
-
-
-def initDict(dictionary, keys):
-    """Auxiliary function to initialize dictionary for access with multiple keys
-    """
-    dictionary_at_keylevel = dictionary
-    numKeys = len(keys)
-    for idxKey in range(numKeys - 1):
-        key = keys[idxKey]
-        if key not in dictionary_at_keylevel.keys():
-            dictionary_at_keylevel[key] = {}
-        dictionary_at_keylevel = dictionary_at_keylevel[key]
-
-
-def append_to_key(key, part):
-    new_key = key
-    if len(new_key) > 0:
-        new_key += "_"
-    new_key += str(part)
-    return new_key
-
-
-def getKey(*args):
-    key = ""
-    for part in args:
-        key = append_to_key(key, part)
-    return key
-
-
-def create_cfg(cfg_file_original, cfg_file_modified, lines):
-    """Auxiliary function to clone config file.
-       The lines given as argument are added to the end of the cloned file,
-       overwriting some of the configuration parameters defined in the original file.
-    """
-    f_original = open(cfg_file_original, "r")
-    cfg_original = f_original.read()
-    f_original.close()
-    cfg_modified = cfg_original
-    cfg_modified += "\n"
-    for line in lines:
-        cfg_modified += "%s\n" % line
-    cfg_modified += "\n"
-    f_modified = open(cfg_file_modified, "w")
-    f_modified.write(cfg_modified)
-    f_modified.close()
-
-
-def createFile(fileName, lines):
-    # print "<createFile>:"
-    # print " lines = ", lines
-    content = ""
-    for line in lines:
-        content += "%s\n" % line
-    content += "\n"
-    f = open(fileName, "w")
-    f.write(content)
-    f.close()
-
+DIRLIST = [ DKEY_CFGS, DKEY_DCRD, DKEY_HIST, DKEY_PLOT, DKEY_LOGS, DKEY_RLES, DKEY_ROOT ]
 
 class analyzeConfig:
     """Configuration metadata needed to run analysis in a single go.
@@ -119,7 +64,7 @@ class analyzeConfig:
         self.channel = channel
         self.central_or_shifts = central_or_shifts
         self.max_files_per_job = max_files_per_job
-        self.max_num_jobs = 10000
+        self.max_num_jobs = 20000
         self.era = era
         self.use_lumi = use_lumi
         self.lumi = lumi
@@ -159,8 +104,13 @@ class analyzeConfig:
             self.outputDir, "sbatch_analyze_%s.py" % self.channel)
         self.ntupleFiles = {}
         self.histogramFiles = {}
+        self.inputFiles_hadd_stage1 = []
         self.histogramFile_hadd_stage1 = os.path.join(
             self.outputDir, DKEY_HIST, "histograms_harvested_stage1_%s.root" % self.channel)
+        self.inputFiles_hadd_stage1_5 = []
+        self.histogramFile_hadd_stage1_5 = os.path.join(
+            self.outputDir, DKEY_HIST, "histograms_harvested_stage1_5_%s.root" % self.channel)
+        self.inputFiles_hadd_stage2 = []
         self.histogramFile_hadd_stage2 = os.path.join(
             self.outputDir, DKEY_HIST, "histograms_harvested_stage2_%s.root" % self.channel)
         self.datacardFiles = {}
@@ -307,6 +257,8 @@ class analyzeConfig:
 
            TODO: add blacklist to the secondary storage as well
         """
+        print "Warning: Function <initializeInputFileIds> is deprecated and should not be used anymore !!"
+        print " Please have a look at 'analyzeConfig_2lss_1tau.py' to see how to migrate your python scripts to the new syntax."
         nof_inputFiles = sample_info["nof_files"]
         store_dirs = sample_info["local_paths"]
         assert(len(store_dirs) <= 2), "There is more than one secondary dir!"
@@ -323,128 +275,27 @@ class analyzeConfig:
                                       "selection"].split(","))
         self.inputFileIds[sample_name] = generate_file_ids(
             nof_inputFiles, self.max_files_per_job, blacklist)
-        return (secondary_files, primary_store, secondary_store)
+        return (secondary_files, primary_store, secondary_store)    
 
     def createScript_sbatch(self):
         """Creates the python script necessary to submit the analysis jobs to the batch system
         """
-        sbatch_analyze_lines = self.generate_sbatch_analyze_lines()
-        sbatch_analyze_file = self.sbatchFile_analyze
-        createFile(sbatch_analyze_file, sbatch_analyze_lines)
-
-    def create_hadd_python_file(self, inputFiles, outputFile, stage_name):
-        sbatch_histogram_hadd_lines = self.generate_sbatch_concat_histograms_lines(
-            inputFiles = inputFiles,
-            outputFile = self.histogramFile_hadd_stage1
-        )
-        sbatch_hadd_file = self.sbatchFile_analyze.replace('.py', '_histograms_%s.py' % stage_name)
-        createFile(sbatch_histogram_file, sbatch_histogram_hadd_lines)
-
-        return sbatch_histogram_file
-
-    def generate_sbatch_analyze_lines(self):
-        lines_sbatch = []
-        lines_sbatch.append(
-            "from tthAnalysis.HiggsToTauTau.sbatchManager import sbatchManager")
-        lines_sbatch.append("")
-        lines_sbatch.append("m = sbatchManager()")
-        lines_sbatch.append("m.setWorkingDir('%s')" % self.workingDir)
-
-        num_jobs = 0
-        for key_file, cfg_file in self.cfgFiles_analyze_modified.items():
-            input_file_names = self.ntupleFiles[key_file]
-            histogram_file_name = self.histogramFiles[key_file]
-            if num_jobs <= self.max_num_jobs:
-                sbatch_line = self.generate_sbatch_analyze_line(
-                    input_file_names=input_file_names,
-                    histogram_file_name=histogram_file_name,
-                    cfg_file=cfg_file,
-                    key_file=key_file
-                )
-                if sbatch_line:
-                    lines_sbatch.append(sbatch_line)
-            num_jobs = num_jobs + 1
-        if num_jobs > self.max_num_jobs:
-            print "Warning: number of jobs = %i exceeds limit of %i --> skipping submission of %i jobs !!" % (num_jobs, self.max_num_jobs, num_jobs - self.max_num_jobs)
-
-        lines_sbatch.append("m.waitForJobs()")
-        return lines_sbatch
-
-    def generate_sbatch_analyze_line(
-        self,
-        input_file_names=None,
-        histogram_file_name=None,
-        cfg_file=None,
-        key_file=None
-    ):
-        if os.path.exists(histogram_file_name):
-            histogram_file_size = os.stat(histogram_file_name).st_size
-            print "output file %s already exists, size = %i" % (histogram_file_name, histogram_file_size)
-            if histogram_file_size > 20000:
-                print "--> skipping job because it has size creater than 20000"
-                return None
-            else:
-                print "--> deleting output file and resubmitting job because it has size smaller 20000"
-                command = "%s %s" % (executable_rm, histogram_file_name)
-                run_cmd(command)
-
-        log_file_name = self.logFiles_analyze[key_file]
-
-        if os.path.exists(log_file_name):
-            log_file = open(log_file_name)
-            is_time = False
-            time = None
-            is_hostname = False
-            hostname = None
-            is_cvmfs_error = False
-            for line in log_file:
-                if line.find("Time") != -1:
-                    time = line.split(':')[1].strip()
-                if line.find("Hostname") != -1:
-                    hostname = line.split(':')[1].strip()
-                if line.find("Transport endpoint is not connected") != -1:
-                    is_cvmfs_error = True
-            log_file.close()
-            if is_cvmfs_error:
-                print "Problem with cvmfs access reported in log file = '%s':" % log_file_name
-                print " host = '%s': time = %s" % (hostname, time)
-                if not hostname in self.cvmfs_error_log.keys():
-                    self.cvmfs_error_log[hostname] = []
-                self.cvmfs_error_log[hostname].append(time)
-
-        return "m.submitJob(%s, '%s', '%s', '%s', %s, '%s', True)" % (
-            input_file_names,
-            self.executable_analyze,
-            cfg_file,
-            os.path.dirname(histogram_file_name),
-            [os.path.basename(histogram_file_name)],
-            log_file_name
+        tools_createScript_sbatch(
+            sbatch_script_file_name = self.sbatchFile_analyze,
+            executable = self.executable_analyze,
+            cfg_file_names = self.cfgFiles_analyze_modified,
+            input_file_names = self.ntupleFiles,
+            output_file_names = self.histogramFiles,
+            log_file_names = self.logFiles_analyze,
+            working_dir = self.workingDir,
+            max_num_jobs = self.max_num_jobs,
+            cvmfs_error_log = self.cvmfs_error_log
         )
 
-
-    def generate_sbatch_concat_histograms_lines(
-        self,
-        inputFiles=None,
-        outputFile=None
-    ):
-        template_vars = {
-            'working_dir': self.workingDir,
-            'inputFiles': inputFiles,
-            'outputFile': outputFile
-        }
-
-        sbatch_code = """
-from tthAnalysis.HiggsToTauTau.sbatchManager import sbatchManager
-m = sbatchManager()
-m.setWorkingDir('%(working_dir)s')
-m.hadd_in_cluster(
-    inputFiles=%(inputFiles)s,
-    outputFile='%(outputFile)s'
-)
-""" % template_vars
-
-        return [sbatch_code]
-
+    def create_hadd_python_file(self, inputFiles, outputFile, hadd_stage_name):
+        sbatch_hadd_file = os.path.join(
+          self.outputDir, "sbatch_hadd_%s_%s.py" % (self.channel, hadd_stage_name))
+        tools_createScript_sbatch_hadd(sbatch_hadd_file, inputFiles, outputFile, hadd_stage_name, self.workingDir)
 
     def addToMakefile_analyze(self, lines_makefile):
         """Adds the commands to Makefile that are necessary for running the analysis code on the Ntuple and filling the histograms
@@ -471,8 +322,30 @@ m.hadd_in_cluster(
             self.filesToClean.append(histogram_file)
 
     def addToMakefile_hadd_stage1(self, lines_makefile):
-        raise ValueError(
-            "Method 'addToMakefile_hadd_stage1' not implemented in derived class !!")
+        script_hadd_stage1 = self.create_hadd_python_file(self.inputFiles_hadd_stage1, self.histogramFile_hadd_stage1, "stage1")
+        lines_makefile.append("%s: %s" % (self.histogramFile_hadd_stage1, " ".join(self.inputFiles_hadd_stage1)))
+        lines_makefile.append("\t%s %s" % ("rm -f", self.histogramFile_hadd_stage1))
+        lines_makefile.append("\t%s %s" % ("python", script_hadd_stage1))
+        lines_makefile.append("")
+        self.filesToClean.append(self.histogramFile_hadd_stage1)
+
+    def addToMakefile_addBackgrounds(self, lines_makefile):
+        for key in self.histogramFile_addBackgrounds.keys():
+            lines_makefile.append("%s: %s" % (self.histogramFile_addBackgrounds[key], self.histogramFile_hadd_stage1))
+            lines_makefile.append("\t%s %s" % (self.executable_addBackgrounds, self.cfgFile_addBackgrounds_modified[key]))
+            lines_makefile.append("")
+            self.filesToClean.append(self.histogramFile_addBackgrounds[key])
+
+    def addToMakefile_hadd_stage1_5(self, lines_makefile):
+        """Adds the commands to Makefile that are necessary for building the intermediate histogram file
+           that is used as input for data-driven background estimation.
+        """
+        script_hadd_stage1_5 = self.create_hadd_python_file(self.inputFiles_hadd_stage1_5, self.histogramFile_hadd_stage1_5, "stage1_5")
+        lines_makefile.append("%s: %s" % (self.histogramFile_hadd_stage1_5, " ".join(self.inputFiles_hadd_stage1_5)))
+        lines_makefile.append("\t%s %s" % ("rm -f", self.histogramFile_hadd_stage1_5))
+        lines_makefile.append("\t%s %s" % ("python", script_hadd_stage1_5))
+        lines_makefile.append("")
+        self.filesToClean.append(self.histogramFile_hadd_stage1_5)
 
     def addToMakefile_backgrounds_from_data(self, lines_makefile):
         """Adds the commands to Makefile that are necessary for adding the data-driven background estimates.
@@ -482,14 +355,13 @@ m.hadd_in_cluster(
 
     def addToMakefile_hadd_stage2(self, lines_makefile):
         """Adds the commands to Makefile that are necessary for building the final histogram file.
-           Default implementation is a dummy and assumes that 'addToMakefile_backgrounds_from_data' method does not actually add any histograms,
-           so that the hadd stage2 file is simply a copy of the hadd stage1 file.
         """
-        lines_makefile.append("%s: %s" % (
-            self.histogramFile_hadd_stage2, self.histogramFile_hadd_stage1))
-        lines_makefile.append(
-            "\tln -sf %s %s" % (self.histogramFile_hadd_stage1, self.histogramFile_hadd_stage2))
+        script_hadd_stage2 = self.create_hadd_python_file(self.inputFiles_hadd_stage2, self.histogramFile_hadd_stage2, "stage2")
+        lines_makefile.append("%s: %s" % (self.histogramFile_hadd_stage2, " ".join(self.inputFiles_hadd_stage2)))
+        lines_makefile.append("\t%s %s" % ("rm -f", self.histogramFile_hadd_stage2))
+        lines_makefile.append("\t%s %s" % ("python", script_hadd_stage2))
         lines_makefile.append("")
+        self.filesToClean.append(self.histogramFile_hadd_stage2)
 
     def addToMakefile_outRoot(self, lines_makefile):
         """Adds the commands to Makefile that are necessary for building the final condensed *.root output file
@@ -526,38 +398,20 @@ m.hadd_in_cluster(
                 self.executable_make_plots, cfg_file_modified))
             lines_makefile.append("")
 
-    def addToMakefile_clean(self, lines_makefile):
-        """Adds the commands to Makefile that are necessary for removing all ROOT files from previous execution of analysis workfow.
-        """
-        lines_makefile.append(".PHONY: clean")
-        lines_makefile.append("clean:")
-        for fileToClean in self.filesToClean:
-            lines_makefile.append("\trm -f %s" % fileToClean)
-        for rootOutput in self.rootOutputAux.values():
-            lines_makefile.append("\trm -f %s" % rootOutput[0])
-            lines_makefile.append(
-                "\t$(shell for f in `ls %s`; do rm -f $$f; done)" % rootOutput[1])
-        lines_makefile.append("")
-
     def createMakefile(self, lines_makefile):
         """Creates Makefile that runs the complete analysis workfow.
-        """
+        """        
         targets = []
         targets.extend(self.datacardFiles.values())
         if self.rootOutputAux:
             targets.append("selEventTree_hadd")
         for idxJob in range(len(self.cfgFiles_make_plots_modified)):
             targets.append("makePlots%i" % idxJob)
-        lines_makefile_with_header = []
-        lines_makefile_with_header.append(".DEFAULT_GOAL := all")
-        lines_makefile_with_header.append("SHELL := /bin/bash")
-        lines_makefile_with_header.append("")
-        lines_makefile_with_header.append("all: %s" % " ".join(targets))
-        lines_makefile_with_header.append("")
-        lines_makefile_with_header.extend(lines_makefile)
-        createFile(self.makefile, lines_makefile_with_header)
+        for rootOutput in self.rootOutputAux.values():
+            self.filesToClean.append(rootOutput[0])
+        tools_createMakefile(self.makefile, targets, lines_makefile, self.filesToClean)
         logging.info("Run it with:\tmake -f %s -j %i " %
-                     (self.makefile, self.num_parallel_jobs))
+            (self.makefile, self.num_parallel_jobs))
 
     def create(self):
         """Creates all config files necessary for runing the complete analysis workfow.
@@ -569,4 +423,4 @@ m.hadd_in_cluster(
         """Runs the complete analysis workfow -- either locally or on the batch system.
         """
         run_cmd("make -f %s -j %i " % (self.makefile, self.num_parallel_jobs),
-                False, self.stdout_file, self.stderr_file)
+            False, self.stdout_file, self.stderr_file)

@@ -113,16 +113,16 @@ class sbatchManager:
             self.command_submit, self.queue, wrapper_log_file, script_file)
 
         script = jinja2.Template(job_template).render(
-            working_dir=self.workingDir,
-            scratch_dir=scratchDir,
-            exec_name=executable,
-            cfg_file=cfgFile,
-            inputFiles=" ".join(inputFiles),
-            outputDir=outputFilePath,
-            outputFiles=" ".join(outputFiles),
-            wrapper_log_file=wrapper_log_file,
-            executable_log_file=executable_log_file,
-            RUNNING_COMMAND=command
+            working_dir = self.workingDir,
+            scratch_dir = scratchDir,
+            exec_name = executable,
+            cfg_file = cfgFile,
+            inputFiles = " ".join(inputFiles),
+            outputDir = outputFilePath,
+            outputFiles = " ".join(outputFiles),
+            wrapper_log_file = wrapper_log_file,
+            executable_log_file = executable_log_file,
+            RUNNING_COMMAND = command
         )
         print "writing sbatch script file = '%s'" % script_file
         with codecs.open(script_file, "w", "utf-8") as f:

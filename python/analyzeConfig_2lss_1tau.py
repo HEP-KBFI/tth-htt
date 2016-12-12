@@ -2,6 +2,7 @@ import logging
 
 from tthAnalysis.HiggsToTauTau.analyzeConfig import *
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists
+from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg, createFile, generateInputFileList
 
 def get_lepton_and_hadTau_selection_and_frWeight(lepton_and_hadTau_selection, lepton_and_hadTau_frWeight):
   lepton_and_hadTau_selection_and_frWeight = lepton_and_hadTau_selection
@@ -328,42 +329,12 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
     create_cfg(self.cfgFile_make_plots_original, cfgFile_modified, lines)
     self.cfgFiles_make_plots_mcClosure_modified.append(cfgFile_modified)
 
-  def addToMakefile_hadd_stage1(self, lines_makefile):
-    inputFiles_hadd_stage1 = []
-    for key in self.histogramFiles.keys():
-      inputFiles_hadd_stage1.append(self.histogramFiles[key])
-
-    script_hadd_stage1 = self.create_hadd_python_file(inputFiles_hadd_stage1, self.histogramFile_hadd_stage1, "stage1")
-
-    lines_makefile.append("%s: %s" % (self.histogramFile_hadd_stage1, " ".join(inputFiles_hadd_stage1)))
-    lines_makefile.append("\t%s %s" % ("rm -f", self.histogramFile_hadd_stage1))
-    lines_makefile.append("\t%s %s" % ("python", script_hadd_stage1))
-    lines_makefile.append("")
-    self.filesToClean.append(self.histogramFile_hadd_stage1)
-
   def addToMakefile_addBackgrounds(self, lines_makefile):
     for key in self.histogramFile_addBackgrounds.keys():
       lines_makefile.append("%s: %s" % (self.histogramFile_addBackgrounds[key], self.histogramFile_hadd_stage1))
       lines_makefile.append("\t%s %s" % (self.executable_addBackgrounds, self.cfgFile_addBackgrounds_modified[key]))
       lines_makefile.append("")
       self.filesToClean.append(self.histogramFile_addBackgrounds[key])
-
-  def addToMakefile_hadd_stage1_5(self, lines_makefile):
-    """Adds the commands to Makefile that are necessary for building the final histogram file.
-       Default implementation is a dummy and assumes that 'addToMakefile_backgrounds_from_data' method does not actually add any histograms,
-       so that the hadd stage2 file is simply a copy of the hadd stage1 file.
-    """
-    inputFiles_hadd_stage1_5 = [ self.histogramFile_hadd_stage1 ]
-    for key in self.histogramFile_addBackgrounds.keys():
-      inputFiles_hadd_stage1_5.append(self.histogramFile_addBackgrounds[key])
-
-    script_hadd_stage1_5 = self.create_hadd_python_file(inputFiles_hadd_stage1_5, self.histogramFile_hadd_stage1_5, "stage1_5")
-
-    lines_makefile.append("%s: %s" % (self.histogramFile_hadd_stage1_5, " ".join(inputFiles_hadd_stage1_5)))
-    lines_makefile.append("\t%s %s" % ("rm -f", self.histogramFile_hadd_stage1_5))
-    lines_makefile.append("\t%s %s" % ("python", script_hadd_stage1_5))
-    lines_makefile.append("")
-    self.filesToClean.append(self.histogramFile_hadd_stage1_5)
 
   def addToMakefile_addFakes(self, lines_makefile):
     for key in self.histogramFile_addFakes.keys():
@@ -380,22 +351,12 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
 
   def addToMakefile_backgrounds_from_data(self, lines_makefile):
     self.addToMakefile_addBackgrounds(lines_makefile)
+    self.inputFiles_hadd_stage1_5 = [ self.histogramFile_hadd_stage1 ]
+    for key in self.histogramFile_addBackgrounds.keys():
+      self.inputFiles_hadd_stage1_5.append(self.histogramFile_addBackgrounds[key])
     self.addToMakefile_hadd_stage1_5(lines_makefile)
     self.addToMakefile_addFakes(lines_makefile)
     self.addToMakefile_addFlips(lines_makefile)
-
-  def addToMakefile_hadd_stage2(self, lines_makefile):
-    """Adds the commands to Makefile that are necessary for building the final histogram file.
-    """
-    inputFiles_hadd_stage2 = [ self.histogramFile_hadd_stage1_5 ] + self.histogramFile_addFakes.values() + [ self.histogramFile_addFlips ]
-
-    script_hadd_stage2 = self.create_hadd_python_file(inputFiles_hadd_stage2, self.histogramFile_hadd_stage2, "stage2")
-
-    lines_makefile.append("%s: %s" % (self.histogramFile_hadd_stage2, " ".join(inputFiles_hadd_stage2)))
-    lines_makefile.append("\t%s %s" % ("rm -f", self.histogramFile_hadd_stage2))
-    lines_makefile.append("\t%s %s" % ("python", script_hadd_stage2))
-    lines_makefile.append("")
-    self.filesToClean.append(self.histogramFile_hadd_stage2)
 
   def addToMakefile_make_plots_mcClosure(self, lines_makefile):
     """Adds the commands to Makefile that are necessary for making control plots of the jet->tau fake background estimation procedure.
@@ -416,7 +377,6 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
       else:
         create_if_not_exists(self.dirs[key])
   
-    self.inputFileIds = {}
     for sample_name, sample_info in self.samples.items():
       if not sample_info["use_it"] or sample_info["sample_category"] in [ "additional_signal_overlap", "background_data_estimate" ]:
         continue
@@ -444,19 +404,12 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
           if lepton_and_hadTau_selection == "Fakeable_mcClosure" and not lepton_and_hadTau_frWeight == "enabled":
             continue
           lepton_and_hadTau_selection_and_frWeight = get_lepton_and_hadTau_selection_and_frWeight(lepton_and_hadTau_selection, lepton_and_hadTau_frWeight)
-
-          # CV: reduce number of events processed per job in background control regions,
-          #     as number of selected events is higher in control regions compared to signal region,
-          #     which increases computing time requirements for MEM integrations
-          max_files_per_job_bak = self.max_files_per_job
-          if lepton_and_hadTau_selection.find("Fakeable") != -1:
-            self.max_files_per_job = self.max_files_per_job / 10
-          ( secondary_files, primary_store, secondary_store ) = self.initializeInputFileIds(sample_name, sample_info)
-          self.max_files_per_job = max_files_per_job_bak
           
           for lepton_charge_selection in self.lepton_charge_selections:
             for central_or_shift in self.central_or_shifts:
-              for jobId in range(len(self.inputFileIds[sample_name])):
+
+              inputFileList = generateInputFileList(sample_name, sample_info, self.max_files_per_job, self.debug)
+              for jobId in inputFileList.keys():
                 if central_or_shift != "central" and not (lepton_and_hadTau_selection.startswith("Tight") and lepton_charge_selection == "SS"):
                   continue
                 if central_or_shift != "central" and not is_mc:
@@ -471,7 +424,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
                 key_dir = getKey(sample_name, lepton_and_hadTau_selection, lepton_and_hadTau_frWeight, lepton_charge_selection)
                 key_file = getKey(sample_name, lepton_and_hadTau_selection, lepton_and_hadTau_frWeight, lepton_charge_selection, central_or_shift, jobId)
 
-                self.ntupleFiles[key_file] = generate_input_list(self.inputFileIds[sample_name][jobId], secondary_files, primary_store, secondary_store, self.debug)
+                self.ntupleFiles[key_file] = inputFileList[jobId]
                 if len(self.ntupleFiles[key_file]) == 0:
                   print "Warning: ntupleFiles['%s'] = %s --> skipping job !!" % (key_file, self.ntupleFiles[key_file])
                   continue
@@ -495,6 +448,9 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
     if self.is_sbatch:
       logging.info("Creating script for submitting '%s' jobs to batch system" % self.executable_analyze)
       self.createScript_sbatch()
+
+    for key in self.histogramFiles.keys():
+      self.inputFiles_hadd_stage1.append(self.histogramFiles[key])
 
     logging.info("Creating configuration files for executing 'addBackgrounds'")  
     process_names = []
@@ -601,6 +557,8 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
     if "Fakeable_mcClosure" in self.lepton_and_hadTau_selections:
       self.createCfg_makePlots_mcClosure()
 
+    self.inputFiles_hadd_stage2 = [ self.histogramFile_hadd_stage1_5 ] + self.histogramFile_addFakes.values() + [ self.histogramFile_addFlips ]
+    
     logging.info("Creating Makefile")
     lines_makefile = []
     self.addToMakefile_analyze(lines_makefile)
@@ -609,8 +567,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
     self.addToMakefile_hadd_stage2(lines_makefile)
     self.addToMakefile_prep_dcard(lines_makefile)
     self.addToMakefile_make_plots(lines_makefile)
-    self.addToMakefile_make_plots_mcClosure(lines_makefile)  
-    self.addToMakefile_clean(lines_makefile)
+    self.addToMakefile_make_plots_mcClosure(lines_makefile)
     self.createMakefile(lines_makefile)
   
     logging.info("Done")
