@@ -83,7 +83,7 @@ class prodNtupleConfig_2lss_1tau:
         """Create python configuration file for the produceNtuple_2lss_1tau executable (Ntuple production code)
 
         Args:
-          inputFile: list of input files (Ntuples)
+          inputFiles: list of input files (Ntuples)
           outputFile: output file of the job -- a ROOT file containing histogram
         """  
         lines = []
@@ -119,8 +119,8 @@ class prodNtupleConfig_2lss_1tau:
             cfg_file_prodNtuple_modified = self.cfgFiles_prodNtuple_modified[key_file]
             if self.is_makefile:
                 lines_makefile.append("%s:" % output_file)
-                cfg_file = self.cfgFiles[key_file]
-                log_file = self.logFiles[key_file]
+                cfg_file = cfg_file_prodNtuple_modified
+                log_file = self.logFiles_prodNtuple[key_file]
                 lines_makefile.append("\t%s %s &> %s" % (
                     self.executable_prodNtuple, cfg_file, log_file))
                 lines_makefile.append("")
