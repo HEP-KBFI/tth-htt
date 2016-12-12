@@ -80,8 +80,16 @@ def initializeInputFileIds(sample_name, sample_info, max_files_per_job):
 def generateInputFileList(sample_name, sample_info, max_files_per_job, debug = False):
     ( inputFileIds, secondary_files, primary_store, secondary_store ) = initializeInputFileIds(sample_name, sample_info, max_files_per_job)
     inputFileList = {}
-    for jobId in range(len(inputFileIds)):
-        inputFileList[jobId + 1] = generate_input_list(inputFileIds[jobId], secondary_files, primary_store, secondary_store, debug)
+    if max_files_per_job > 1:
+        for jobId in range(len(inputFileIds)):
+            inputFileList[jobId + 1] = generate_input_list(inputFileIds[jobId], secondary_files, primary_store, secondary_store, debug)
+    elif max_files_per_job == 1:
+        for jobId_it in range(len(inputFileIds)):
+            jobId = inputFileIds[jobId_it]
+            inputFileList[jobId[0]] = generate_input_list(jobId, secondary_files, primary_store, secondary_store, debug)
+    print inputFileList.keys()
+    print inputFileIds
+    print '----------------------------'
     return inputFileList
 
 def createMakefile(makefileName, targets, lines_makefile, filesToClean = None):
