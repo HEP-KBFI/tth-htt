@@ -115,7 +115,7 @@ class prodNtupleConfig_2lss_1tau:
             lines_makefile.append("\t%s %s" % (
                 "python", self.sbatchFile_prodNtuple))
             lines_makefile.append("")
-        for key_file, input_file in self.outputFiles.items():
+        for key_file, output_file in self.outputFiles.items():
             cfg_file_prodNtuple_modified = self.cfgFiles_prodNtuple_modified[key_file]
             if self.is_makefile:
                 lines_makefile.append("%s:" % output_file)
@@ -190,7 +190,7 @@ class prodNtupleConfig_2lss_1tau:
         logging.info("Creating Makefile")
         lines_makefile = []
         self.addToMakefile_prodNtuple(lines_makefile)
-        self.addToMakefile_clean(lines_makefile)
+        #self.addToMakefile_clean(lines_makefile)
         self.createMakefile(lines_makefile)
   
         logging.info("Done")
