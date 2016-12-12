@@ -54,14 +54,14 @@ def generate_file_ids(nof_files, max_files_per_job, blacklist = []):
   Returns:
     File ids split into sublists of length `max_files_per_job`
   """
-  file_limits = range(1, nof_files, max_files_per_job)
+
+  file_limits = range(1, nof_files + 1, 1)
+  file_limits = list(sorted(list(set(file_limits) - set(blacklist))))
+  print file_limits
   if max_files_per_job > 1:
-    file_limits.append(nof_files + 1)
-    job_ids = [[x for x in range(file_limits[i], file_limits[i + 1]) if x not in blacklist] \
-               for i in range(len(file_limits) - 1)]
+    job_ids = [file_limits[i: i + max_files_per_job] for i in range(0, len(file_limits), max_files_per_job)]
   elif max_files_per_job == 1:
-    file_limits.append(nof_files)
-    job_ids = [[x] for x in file_limits if x not in blacklist]
+    job_ids = [[x] for x in file_limits]
   else:
     print("Invalid max_files_per_job=%d; must be a positive number" % max_files_per_job)
     assert(0)

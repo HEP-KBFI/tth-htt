@@ -87,9 +87,6 @@ def generateInputFileList(sample_name, sample_info, max_files_per_job, debug = F
         for jobId_it in range(len(inputFileIds)):
             jobId = inputFileIds[jobId_it]
             inputFileList[jobId[0]] = generate_input_list(jobId, secondary_files, primary_store, secondary_store, debug)
-    print inputFileList.keys()
-    print inputFileIds
-    print '----------------------------'
     return inputFileList
 
 def createMakefile(makefileName, targets, lines_makefile, filesToClean = None):
