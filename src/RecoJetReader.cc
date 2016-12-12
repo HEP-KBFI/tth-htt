@@ -178,32 +178,34 @@ std::vector<RecoJet> RecoJetReader::read() const
     throw cms::Exception("RecoJetReader") 
       << "Number of jets stored in Ntuple = " << nJets << ", exceeds max_nJets = " << max_nJets_ << " !!\n";
   }
-  jets.reserve(nJets);
-  for ( Int_t idxJet = 0; idxJet < nJets; ++idxJet ) {
-    Float_t jet_pt = -1.;
-    if      ( jetPt_option_ == kJetPt_central ) jet_pt = gInstance->jet_pt_[idxJet];
-    else if ( jetPt_option_ == kJetPt_jecUp   ) jet_pt = gInstance->jet_pt_[idxJet]*gInstance->jet_corr_JECUp_[idxJet]/gInstance->jet_corr_[idxJet];
-    else if ( jetPt_option_ == kJetPt_jecDown ) jet_pt = gInstance->jet_pt_[idxJet]*gInstance->jet_corr_JECDown_[idxJet]/gInstance->jet_corr_[idxJet];    
-    else assert(0);
-    jets.push_back(RecoJet(
-      jet_pt,      
-      gInstance->jet_eta_[idxJet],
-      gInstance->jet_phi_[idxJet],
-      gInstance->jet_mass_[idxJet],
-      gInstance->jet_corr_[idxJet],
-      gInstance->jet_corr_JECUp_[idxJet],
-      gInstance->jet_corr_JECDown_[idxJet],
-      ( use_HIP_mitigation_ ) ? gInstance->jet_BtagCSVwHipMitigation_[idxJet] : gInstance->jet_BtagCSVwoHipMitigation_[idxJet],
-      gInstance->jet_BtagWeight_[idxJet],	
-      idxJet ));
-    RecoJet& jet = jets.back();
-    jet.BtagCSVwHipMitigation_ = gInstance->jet_BtagCSVwHipMitigation_[idxJet];
-    jet.BtagCSVwoHipMitigation_ = gInstance->jet_BtagCSVwoHipMitigation_[idxJet];
-    if ( read_BtagWeight_systematics_ ) {
-      for ( int idxShift = kBtag_hfUp; idxShift <= kBtag_jesDown; ++idxShift ) {
-	std::map<int, Float_t*>::const_iterator jet_BtagWeight_systematics_iter = jet_BtagWeights_systematics_.find(idxShift);
-	if ( jet_BtagWeight_systematics_iter != jet_BtagWeights_systematics_.end() ) {
-	  jet.BtagWeight_systematics_[idxShift] = jet_BtagWeight_systematics_iter->second[idxJet];
+  if ( nJets > 0 ) {
+    jets.reserve(nJets);
+    for ( Int_t idxJet = 0; idxJet < nJets; ++idxJet ) {
+      Float_t jet_pt = -1.;
+      if      ( jetPt_option_ == kJetPt_central ) jet_pt = gInstance->jet_pt_[idxJet];
+      else if ( jetPt_option_ == kJetPt_jecUp   ) jet_pt = gInstance->jet_pt_[idxJet]*gInstance->jet_corr_JECUp_[idxJet]/gInstance->jet_corr_[idxJet];
+      else if ( jetPt_option_ == kJetPt_jecDown ) jet_pt = gInstance->jet_pt_[idxJet]*gInstance->jet_corr_JECDown_[idxJet]/gInstance->jet_corr_[idxJet];    
+      else assert(0);
+      jets.push_back(RecoJet(
+        jet_pt,      
+	gInstance->jet_eta_[idxJet],
+	gInstance->jet_phi_[idxJet],
+	gInstance->jet_mass_[idxJet],
+	gInstance->jet_corr_[idxJet],
+	gInstance->jet_corr_JECUp_[idxJet],
+	gInstance->jet_corr_JECDown_[idxJet],
+	( use_HIP_mitigation_ ) ? gInstance->jet_BtagCSVwHipMitigation_[idxJet] : gInstance->jet_BtagCSVwoHipMitigation_[idxJet],
+	gInstance->jet_BtagWeight_[idxJet],	
+	idxJet ));
+      RecoJet& jet = jets.back();
+      jet.BtagCSVwHipMitigation_ = gInstance->jet_BtagCSVwHipMitigation_[idxJet];
+      jet.BtagCSVwoHipMitigation_ = gInstance->jet_BtagCSVwoHipMitigation_[idxJet];
+      if ( read_BtagWeight_systematics_ ) {
+	for ( int idxShift = kBtag_hfUp; idxShift <= kBtag_jesDown; ++idxShift ) {
+	  std::map<int, Float_t*>::const_iterator jet_BtagWeight_systematics_iter = jet_BtagWeights_systematics_.find(idxShift);
+	  if ( jet_BtagWeight_systematics_iter != jet_BtagWeights_systematics_.end() ) {
+	    jet.BtagWeight_systematics_[idxShift] = jet_BtagWeight_systematics_iter->second[idxJet];
+	  }
 	}
       }
     }

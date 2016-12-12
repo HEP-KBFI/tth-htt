@@ -1,7 +1,10 @@
 #include "tthAnalysis/HiggsToTauTau/interface/MEMOutput_2lss_1tau.h" // MEMOutput_2lss_1tau
 
 MEMOutput_2lss_1tau::MEMOutput_2lss_1tau()
-  : leadLepton_eta_(0.)
+  : run_(0)
+  , lumi_(0)
+  , evt_(0)
+  , leadLepton_eta_(0.)
   , leadLepton_phi_(0.)
   , subleadLepton_eta_(0.)
   , subleadLepton_phi_(0.)
@@ -15,10 +18,14 @@ MEMOutput_2lss_1tau::MEMOutput_2lss_1tau()
   , LR_(-1.)
   , cpuTime_(-1.)
   , realTime_(-1.)
+  , isValid_(0)
   , errorFlag_(0)
 {}
 
-MEMOutput_2lss_1tau::MEMOutput_2lss_1tau(Float_t leadLepton_eta,
+MEMOutput_2lss_1tau::MEMOutput_2lss_1tau(RUN_TYPE run,
+					 LUMI_TYPE lumi,
+					 EVT_TYPE evt,
+					 Float_t leadLepton_eta,
 					 Float_t leadLepton_phi,
 					 Float_t subleadLepton_eta,
 					 Float_t subleadLepton_phi,
@@ -32,8 +39,12 @@ MEMOutput_2lss_1tau::MEMOutput_2lss_1tau(Float_t leadLepton_eta,
 					 Float_t LR,
 					 Float_t cpuTime,
 					 Float_t realTime,
+					 Int_t isValid,
 					 Int_t errorFlag)
-  : leadLepton_eta_(leadLepton_eta)
+  : run_(run)
+  , lumi_(lumi)
+  , evt_(evt)
+  , leadLepton_eta_(leadLepton_eta)
   , leadLepton_phi_(leadLepton_phi)
   , subleadLepton_eta_(subleadLepton_eta)
   , subleadLepton_phi_(subleadLepton_phi)
@@ -47,12 +58,14 @@ MEMOutput_2lss_1tau::MEMOutput_2lss_1tau(Float_t leadLepton_eta,
   , LR_(LR)
   , cpuTime_(cpuTime)
   , realTime_(realTime)
+  , isValid_(isValid)
   , errorFlag_(errorFlag)
 {}
 
 void MEMOutput_2lss_1tau::print(std::ostream& stream)
 {
   stream << "<MEMOutput (2lss_1tau)>:" << std::endl;
+  stream << " run: " << run_ << ", lumi = " << lumi_ << ", event = " << evt_ << std::endl;
   stream << " leading lepton: eta = " << leadLepton_eta_ << ", phi = " << leadLepton_phi_ << std::endl;
   stream << " subleading lepton: eta = " << subleadLepton_eta_ << ", phi = " << subleadLepton_phi_ << std::endl;
   stream << " hadTau: eta = " << hadTau_eta_ << ", phi = " << hadTau_phi_ << std::endl;
@@ -63,6 +76,7 @@ void MEMOutput_2lss_1tau::print(std::ostream& stream)
   stream << "  ttZ(Z->ll) = " << weight_ttZ_Zll_ << std::endl;
   stream << "  tt = " << weight_tt_ << std::endl;
   stream << " LR = " << LR_ << std::endl;
+  stream << " isValid = " << isValid_ << std::endl;
   stream << " errorFlag = " << errorFlag_ << std::endl;
   stream << " cpuTime = " << cpuTime_ << std::endl;
   stream << " realTime = " << realTime_ << std::endl;

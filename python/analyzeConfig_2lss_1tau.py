@@ -273,7 +273,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
     lines.append("    )")
     lines.append(")")
     processesToSubtract = self.nonfake_backgrounds
-    processesToSubtract.append("fakes_signal")
+    ##processesToSubtract.append("fakes_signal")
     lines.append("process.addBackgroundLeptonFakes.processesToSubtract = cms.vstring(%s)" % processesToSubtract)
     create_cfg(self.cfgFile_addFakes_original, cfgFile_modified, lines)
 
@@ -476,8 +476,8 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
             histogramDir = getHistogramDir(lepton_and_hadTau_selection, lepton_and_hadTau_frWeight, lepton_charge_selection)
             processes_input = [ "%s%s" % (process_name, genMatch) for genMatch in self.lepton_and_hadTau_genMatches_nonfakes ]
             # CV: treat fakes in ttH signal events as "signal", not as "background"
-            if process_name in [ "signal", "ttH_htt", "ttH_hww", "ttH_hzz" ]:
-              processes_input.extend([ "%s%s" % (process_name, genMatch) for genMatch in self.lepton_and_hadTau_genMatches_fakes ])
+            ##if process_name in [ "signal", "ttH_htt", "ttH_hww", "ttH_hzz" ]:
+            ##  processes_input.extend([ "%s%s" % (process_name, genMatch) for genMatch in self.lepton_and_hadTau_genMatches_fakes ])
             self.process_output_addBackgrounds[key] = process_name
             self.createCfg_addBackgrounds(self.histogramFile_hadd_stage1, self.histogramFile_addBackgrounds[key], self.cfgFile_addBackgrounds_modified[key],
               [ histogramDir ], processes_input, self.process_output_addBackgrounds[key])

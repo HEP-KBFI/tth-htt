@@ -35,6 +35,9 @@ class MEMOutputWriter_2lss_1tau
   std::string branchName_num_;
   std::string branchName_obj_;
 
+  std::string branchName_run_;
+  std::string branchName_lumi_;
+  std::string branchName_evt_;
   std::string branchName_leadLepton_eta_;
   std::string branchName_leadLepton_phi_;
   std::string branchName_subleadLepton_eta_;
@@ -49,9 +52,13 @@ class MEMOutputWriter_2lss_1tau
   std::string branchName_LR_;
   std::string branchName_cpuTime_;
   std::string branchName_realTime_;
+  std::string branchName_isValid_;
   std::string branchName_errorFlag_;
 
   Int_t nMEMOutputs_;
+  RUN_TYPE* run_;
+  LUMI_TYPE* lumi_;
+  EVT_TYPE* evt_;
   Float_t* leadLepton_eta_;
   Float_t* leadLepton_phi_;
   Float_t* subleadLepton_eta_;
@@ -66,6 +73,7 @@ class MEMOutputWriter_2lss_1tau
   Float_t* LR_;
   Float_t* cpuTime_;
   Float_t* realTime_;
+  Int_t* isValid_;
   Int_t* errorFlag_;
 };
 

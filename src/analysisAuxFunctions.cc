@@ -133,10 +133,13 @@ void set_cone_pT(std::vector<const RecoMuon*>& fakeableMuons, int era)
 
 std::vector<const RecoLepton*> mergeLeptonCollections(const std::vector<const RecoElectron*>& electrons, const std::vector<const RecoMuon*>& muons)
 { 
-  std::vector<const RecoLepton*> leptons;    
-  leptons.reserve(electrons.size() + muons.size());
-  leptons.insert(leptons.end(), electrons.begin(), electrons.end());
-  leptons.insert(leptons.end(), muons.begin(), muons.end());
-  std::sort(leptons.begin(), leptons.end(), isHigherPt);
+  std::vector<const RecoLepton*> leptons;  
+  size_t nLeptons = electrons.size() + muons.size();
+  if ( nLeptons > 0 ) {
+    leptons.reserve(nLeptons);
+    leptons.insert(leptons.end(), electrons.begin(), electrons.end());
+    leptons.insert(leptons.end(), muons.begin(), muons.end());
+    std::sort(leptons.begin(), leptons.end(), isHigherPt);
+  }
   return leptons;
 }

@@ -96,14 +96,16 @@ std::vector<GenHadTau> GenHadTauReader::read() const
     throw cms::Exception("GenHadTauReader") 
       << "Number of hadronic taus stored in Ntuple = " << nHadTaus << ", exceeds max_nHadTaus = " << max_nHadTaus_ << " !!\n";
   }
-  hadTaus.reserve(nHadTaus);
-  for ( Int_t idxHadTau = 0; idxHadTau < nHadTaus; ++idxHadTau ) {
-    hadTaus.push_back(GenHadTau({ 
-      gInstance->hadTau_pt_[idxHadTau],
-      gInstance->hadTau_eta_[idxHadTau],
-      gInstance->hadTau_phi_[idxHadTau],
-      gInstance->hadTau_mass_[idxHadTau],
-      static_cast<Int_t>(gInstance->hadTau_charge_[idxHadTau]) }));
+  if ( nHadTaus > 0 ) {
+    hadTaus.reserve(nHadTaus);
+    for ( Int_t idxHadTau = 0; idxHadTau < nHadTaus; ++idxHadTau ) {
+      hadTaus.push_back(GenHadTau({ 
+        gInstance->hadTau_pt_[idxHadTau],
+        gInstance->hadTau_eta_[idxHadTau],
+        gInstance->hadTau_phi_[idxHadTau],
+        gInstance->hadTau_mass_[idxHadTau],
+        static_cast<Int_t>(gInstance->hadTau_charge_[idxHadTau]) }));
+    }
   }
   return hadTaus;
 }

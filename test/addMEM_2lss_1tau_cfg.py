@@ -7,10 +7,8 @@ process = cms.PSet()
 process.fwliteInput = cms.PSet(
     fileNames = cms.vstring('/home/veelken/VHbbNtuples_8_0_x/CMSSW_8_0_19/src/tthAnalysis/HiggsToTauTau/test/produceNtuple_2lss_1tau.root'),
     skipEvents = cms.uint32(0),
-    ##maxEvents = cms.int32(-1),
-    maxEvents = cms.int32(100),
-    ##outputEvery = cms.uint32(1000)
-    outputEvery = cms.uint32(1)
+    maxEvents = cms.int32(-1),
+    outputEvery = cms.uint32(1000)
 )
 
 process.fwliteOutput = cms.PSet(
@@ -33,6 +31,8 @@ process.addMEM_2lss_1tau = cms.PSet(
     branchName_hadTaus = cms.string('HadTau'),
     branchName_jets = cms.string('Jet'),
     branchName_met = cms.string('met'), 
+
+    copy_all_branches = cms.bool(True),
     
     selEventsFileName_input = cms.string(''),
     selEventsFileName_output = cms.string('')

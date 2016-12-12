@@ -80,7 +80,9 @@ process.analyze_2lss_1tau = cms.PSet(
     branchName_muons = cms.string('selLeptons'),
     branchName_hadTaus = cms.string('TauGood'),
     branchName_jets = cms.string('Jet'),
-    branchName_met = cms.string('met'), 
+    branchName_met = cms.string('met'),
+    ##branchName_memOutput = cms.string('memObjects_2lss_1tau'),
+    branchName_memOutput = cms.string(''),
     
     selEventsFileName_input = cms.string(''),
     selEventsFileName_output = cms.string('selEvents_analyze_2lss_1tau.txt')

@@ -120,37 +120,38 @@ std::vector<RecoMuon> RecoMuonReader::read() const
     throw cms::Exception("RecoMuonReader")
       << "Number of leptons stored in Ntuple = " << nLeptons << ", exceeds max_nLeptons = " << leptonReader_->max_nLeptons_ << " !!\n";
   }
-  muons.reserve(nLeptons);
-
-  for ( Int_t idxLepton = 0; idxLepton < nLeptons; ++idxLepton ) {
-    if ( std::abs(gLeptonReader->pdgId_[idxLepton]) == 13 ) {
-      muons.push_back(RecoMuon({
-        gLeptonReader->pt_[idxLepton],
-        gLeptonReader->eta_[idxLepton],
-        gLeptonReader->phi_[idxLepton],
-        gLeptonReader->mass_[idxLepton],
-        gLeptonReader->pdgId_[idxLepton],
-        gLeptonReader->dxy_[idxLepton],
-        gLeptonReader->dz_[idxLepton],
-        gLeptonReader->relIso_[idxLepton],
-        gLeptonReader->chargedHadRelIso03_[idxLepton],
-        gLeptonReader->miniIsoCharged_[idxLepton],
-        gLeptonReader->miniIsoNeutral_[idxLepton],
-        gLeptonReader->sip3d_[idxLepton],
-        gLeptonReader->mvaRawTTH_[idxLepton],
-        gLeptonReader->jetNDauChargedMVASel_[idxLepton],
-        gLeptonReader->jetPtRel_[idxLepton],
-        gLeptonReader->jetPtRatio_[idxLepton],
-        gLeptonReader->jetBtagCSV_[idxLepton],
-        gLeptonReader->tightCharge_[idxLepton],
-        gLeptonReader->charge_[idxLepton],
-        gMuonReader->looseIdPOG_[idxLepton],
-        gMuonReader->mediumIdPOG_[idxLepton],
+  if ( nLeptons > 0 ) {
+    muons.reserve(nLeptons);
+    for ( Int_t idxLepton = 0; idxLepton < nLeptons; ++idxLepton ) {
+      if ( std::abs(gLeptonReader->pdgId_[idxLepton]) == 13 ) {
+        muons.push_back(RecoMuon({
+          gLeptonReader->pt_[idxLepton],
+          gLeptonReader->eta_[idxLepton],
+          gLeptonReader->phi_[idxLepton],
+          gLeptonReader->mass_[idxLepton],
+          gLeptonReader->pdgId_[idxLepton],
+          gLeptonReader->dxy_[idxLepton],
+          gLeptonReader->dz_[idxLepton],
+          gLeptonReader->relIso_[idxLepton],
+          gLeptonReader->chargedHadRelIso03_[idxLepton],
+          gLeptonReader->miniIsoCharged_[idxLepton],
+          gLeptonReader->miniIsoNeutral_[idxLepton],
+          gLeptonReader->sip3d_[idxLepton],
+          gLeptonReader->mvaRawTTH_[idxLepton],
+          gLeptonReader->jetNDauChargedMVASel_[idxLepton],
+          gLeptonReader->jetPtRel_[idxLepton],
+          gLeptonReader->jetPtRatio_[idxLepton],
+          gLeptonReader->jetBtagCSV_[idxLepton],
+          gLeptonReader->tightCharge_[idxLepton],
+          gLeptonReader->charge_[idxLepton],
+          gMuonReader->looseIdPOG_[idxLepton],
+          gMuonReader->mediumIdPOG_[idxLepton],
 #ifdef DPT_DIV_PT
-        gMuonReader->dpt_div_pt_[idxLepton],
+          gMuonReader->dpt_div_pt_[idxLepton],
 #endif // ifdef DPT_DIV_PT
-        gMuonReader->segmentCompatibility_[idxLepton]
-      }));
+          gMuonReader->segmentCompatibility_[idxLepton]
+        }));
+      }
     }
   }
   return muons;

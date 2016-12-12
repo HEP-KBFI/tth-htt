@@ -51,6 +51,7 @@ class EvtHistManager_2lss_1tau
 
   TH1* histogram_mTauTauVis_;
 
+  TH1* histogram_memOutput_isValid_;
   TH1* histogram_memOutput_errorFlag_;
   TH1* histogram_memOutput_type_;
   TH1* histogram_memOutput_logWeight_ttH_;

@@ -13,6 +13,9 @@ MEMOutputReader_2lss_1tau::MEMOutputReader_2lss_1tau(const std::string& branchNa
   : max_nMEMOutputs_(100)
   , branchName_num_(branchName_num)
   , branchName_obj_(branchName_obj)
+  , run_(0)
+  , lumi_(0)
+  , evt_(0)
   , leadLepton_eta_(0)
   , leadLepton_phi_(0)
   , subleadLepton_eta_(0)
@@ -27,6 +30,7 @@ MEMOutputReader_2lss_1tau::MEMOutputReader_2lss_1tau(const std::string& branchNa
   , LR_(0)
   , cpuTime_(0)
   , realTime_(0)
+  , isValid_(0)
   , errorFlag_(0)
 {
   setBranchNames();
@@ -39,6 +43,9 @@ MEMOutputReader_2lss_1tau::~MEMOutputReader_2lss_1tau()
   if ( numInstances_[branchName_obj_] == 0 ) {
     MEMOutputReader_2lss_1tau* gInstance = instances_[branchName_obj_];
     assert(gInstance);
+    delete[] gInstance->run_;
+    delete[] gInstance->lumi_;
+    delete[] gInstance->evt_;
     delete[] gInstance->leadLepton_eta_;
     delete[] gInstance->leadLepton_phi_;
     delete[] gInstance->subleadLepton_eta_;
@@ -53,6 +60,7 @@ MEMOutputReader_2lss_1tau::~MEMOutputReader_2lss_1tau()
     delete[] gInstance->LR_;
     delete[] gInstance->cpuTime_;
     delete[] gInstance->realTime_;
+    delete[] gInstance->isValid_;
     delete[] gInstance->errorFlag_;
     instances_[branchName_obj_] = 0;
   }
@@ -61,6 +69,9 @@ MEMOutputReader_2lss_1tau::~MEMOutputReader_2lss_1tau()
 void MEMOutputReader_2lss_1tau::setBranchNames()
 {
   if ( numInstances_[branchName_obj_] == 0 ) {
+    branchName_run_ = Form("%s_%s", branchName_obj_.data(), "run");
+    branchName_lumi_ = Form("%s_%s", branchName_obj_.data(), "lumi");
+    branchName_evt_ = Form("%s_%s", branchName_obj_.data(), "evt");
     branchName_leadLepton_eta_ = Form("%s_%s", branchName_obj_.data(), "leadLepton_eta");
     branchName_leadLepton_phi_ = Form("%s_%s", branchName_obj_.data(), "leadLepton_phi");
     branchName_subleadLepton_eta_ = Form("%s_%s", branchName_obj_.data(), "subleadLepton_eta");
@@ -75,6 +86,7 @@ void MEMOutputReader_2lss_1tau::setBranchNames()
     branchName_LR_ = Form("%s_%s", branchName_obj_.data(), "LR");
     branchName_cpuTime_ = Form("%s_%s", branchName_obj_.data(), "cpuTime");
     branchName_realTime_ = Form("%s_%s", branchName_obj_.data(), "realTime");
+    branchName_isValid_ = Form("%s_%s", branchName_obj_.data(), "isValid");
     branchName_errorFlag_ = Form("%s_%s", branchName_obj_.data(), "errorFlag");
     instances_[branchName_obj_] = this;
   } else {
@@ -88,10 +100,18 @@ void MEMOutputReader_2lss_1tau::setBranchNames()
   ++numInstances_[branchName_obj_];
 }
 
+
+
 void MEMOutputReader_2lss_1tau::setBranchAddresses(TTree* tree)
 {
   if ( instances_[branchName_obj_] == this ) {
     tree->SetBranchAddress(branchName_num_.data(), &nMEMOutputs_);   
+    run_ = new RUN_TYPE[max_nMEMOutputs_];
+    tree->SetBranchAddress(branchName_run_.data(), run_); 
+    lumi_ = new LUMI_TYPE[max_nMEMOutputs_];
+    tree->SetBranchAddress(branchName_lumi_.data(), lumi_); 
+    evt_ = new EVT_TYPE[max_nMEMOutputs_];
+    tree->SetBranchAddress(branchName_evt_.data(), evt_); 
     leadLepton_eta_ = new Float_t[max_nMEMOutputs_];
     tree->SetBranchAddress(branchName_leadLepton_eta_.data(), leadLepton_eta_); 
     leadLepton_phi_ = new Float_t[max_nMEMOutputs_];
@@ -122,6 +142,8 @@ void MEMOutputReader_2lss_1tau::setBranchAddresses(TTree* tree)
     tree->SetBranchAddress(branchName_realTime_.data(), realTime_); 
     errorFlag_ = new Int_t[max_nMEMOutputs_];
     tree->SetBranchAddress(branchName_errorFlag_.data(), errorFlag_); 
+    isValid_ = new Int_t[max_nMEMOutputs_];
+    tree->SetBranchAddress(branchName_isValid_.data(), isValid_); 
   }
 }
 
@@ -135,24 +157,30 @@ std::vector<MEMOutput_2lss_1tau> MEMOutputReader_2lss_1tau::read() const
     throw cms::Exception("MEMOutputReader_2lss_1tau") 
       << "Number of MEMOutputs stored in Ntuple = " << nMEMOutputs << ", exceeds max_nMEMOutputs = " << max_nMEMOutputs_ << " !!\n";
   }
-  memOutputs.reserve(nMEMOutputs);
-  for ( Int_t idxMEMOutput = 0; idxMEMOutput < nMEMOutputs; ++idxMEMOutput ) {
-    memOutputs.push_back(MEMOutput_2lss_1tau({
-      gInstance->leadLepton_eta_[idxMEMOutput],
-      gInstance->leadLepton_phi_[idxMEMOutput],
-      gInstance->subleadLepton_eta_[idxMEMOutput],
-      gInstance->subleadLepton_phi_[idxMEMOutput],
-      gInstance->hadTau_eta_[idxMEMOutput],
-      gInstance->hadTau_phi_[idxMEMOutput],
-      gInstance->type_[idxMEMOutput],
-      gInstance->weight_ttH_[idxMEMOutput],
-      gInstance->weight_ttZ_[idxMEMOutput],
-      gInstance->weight_ttZ_Zll_[idxMEMOutput],
-      gInstance->weight_tt_[idxMEMOutput],
-      gInstance->LR_[idxMEMOutput],
-      gInstance->cpuTime_[idxMEMOutput],
-      gInstance->realTime_[idxMEMOutput],
-      gInstance->errorFlag_[idxMEMOutput] }));
+  if ( nMEMOutputs > 0 ) {
+    memOutputs.reserve(nMEMOutputs);
+    for ( Int_t idxMEMOutput = 0; idxMEMOutput < nMEMOutputs; ++idxMEMOutput ) {
+      memOutputs.push_back(MEMOutput_2lss_1tau(
+	gInstance->run_[idxMEMOutput],
+	gInstance->lumi_[idxMEMOutput],
+	gInstance->evt_[idxMEMOutput],			     
+        gInstance->leadLepton_eta_[idxMEMOutput],
+        gInstance->leadLepton_phi_[idxMEMOutput],
+        gInstance->subleadLepton_eta_[idxMEMOutput],
+        gInstance->subleadLepton_phi_[idxMEMOutput],
+        gInstance->hadTau_eta_[idxMEMOutput],
+        gInstance->hadTau_phi_[idxMEMOutput],
+        gInstance->type_[idxMEMOutput],
+        gInstance->weight_ttH_[idxMEMOutput],
+        gInstance->weight_ttZ_[idxMEMOutput],
+        gInstance->weight_ttZ_Zll_[idxMEMOutput],
+        gInstance->weight_tt_[idxMEMOutput],
+        gInstance->LR_[idxMEMOutput],
+        gInstance->cpuTime_[idxMEMOutput],
+        gInstance->realTime_[idxMEMOutput],
+        gInstance->isValid_[idxMEMOutput],	
+        gInstance->errorFlag_[idxMEMOutput] ));
+    }
   }
   return memOutputs;
 }

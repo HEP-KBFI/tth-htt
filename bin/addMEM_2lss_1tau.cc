@@ -40,6 +40,11 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelectorBtag.h" // RecoJetCollectionSelectorBtagLoose, RecoJetCollectionSelectorBtagMedium
 #include "tthAnalysis/HiggsToTauTau/interface/MEMInterface_2lss_1tau.h" // MEMInterface_2lss_1tau
 #include "tthAnalysis/HiggsToTauTau/interface/MEMOutputWriter_2lss_1tau.h" // MEMOutputWriter_2lss_1tau
+#include "tthAnalysis/HiggsToTauTau/interface/RecoElectronWriter.h" // RecoElectronWriter
+#include "tthAnalysis/HiggsToTauTau/interface/RecoMuonWriter.h" // RecoMuonWriter
+#include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauWriter.h" // RecoHadTauWriter
+#include "tthAnalysis/HiggsToTauTau/interface/RecoJetWriter.h" // RecoJetWriter
+#include "tthAnalysis/HiggsToTauTau/interface/RecoMEtWriter.h" // RecoMEtWriter
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // isHigherPt
 #include "tthAnalysis/HiggsToTauTau/interface/RunLumiEventSelector.h" // RunLumiEventSelector
 #include "tthAnalysis/HiggsToTauTau/interface/cutFlowTable.h" // cutFlowTableType
@@ -123,6 +128,8 @@ int main(int argc, char* argv[])
   std::string branchName_jets = cfg_addMEM.getParameter<std::string>("branchName_jets");
   std::string branchName_met = cfg_addMEM.getParameter<std::string>("branchName_met");
 
+  bool copy_all_branches = cfg_addMEM.getParameter<bool>("copy_all_branches");
+
   std::string selEventsFileName_input = cfg_addMEM.getParameter<std::string>("selEventsFileName_input");
   std::cout << "selEventsFileName_input = " << selEventsFileName_input << std::endl;
   RunLumiEventSelector* run_lumi_eventSelector = 0;
@@ -170,8 +177,8 @@ int main(int argc, char* argv[])
   EVT_TYPE event;
   inputTree->SetBranchAddress(EVT_KEY, &event);
 
-  Int_t requestMEM_2lss_1tau;
-  inputTree->SetBranchAddress("requestMEM_2lss_1tau", &requestMEM_2lss_1tau);
+  Int_t maxPermutations_addMEM_2lss_1tau;
+  inputTree->SetBranchAddress("maxPermutations_addMEM_2lss_1tau", &maxPermutations_addMEM_2lss_1tau);
 
 //--- declare particle collections
   RecoMuonReader* muonReader = new RecoMuonReader(era, Form("n%s", branchName_muons.data()), branchName_muons);
@@ -227,6 +234,52 @@ int main(int argc, char* argv[])
   }
   TTree* outputTree = new TTree(outputTreeName.data(), outputTreeName.data());
 
+  RecoMuonWriter* muonWriter = 0;
+  RecoElectronWriter* electronWriter = 0;
+  RecoHadTauWriter* hadTauWriter = 0;
+  RecoJetWriter* jetWriter = 0;
+  RecoMEtWriter* metWriter = 0;
+
+  std::map<std::string, branchEntryBaseType*> branchesToKeep;
+  if ( copy_all_branches ) {
+    outputTree->Branch("run", &run, "run/i");
+    outputTree->Branch("lumi", &lumi, "lumi/i");
+    outputTree->Branch("evt", &event, "evt/l");
+
+    muonWriter = new RecoMuonWriter(era, Form("n%s", branchName_muons.data()), branchName_muons);
+    muonWriter->setBranches(outputTree);
+    electronWriter = new RecoElectronWriter(era, Form("n%s", branchName_electrons.data()), branchName_electrons);
+    electronWriter->setBranches(outputTree);
+    hadTauWriter = new RecoHadTauWriter(era, Form("n%s", branchName_hadTaus.data()), branchName_hadTaus);
+    hadTauWriter->setBranches(outputTree);
+    jetWriter = new RecoJetWriter(era, Form("n%s", branchName_jets.data()), branchName_jets);
+    jetWriter->setBranches(outputTree);
+    metWriter = new RecoMEtWriter(era, branchName_met);
+    metWriter->setBranches(outputTree);
+ 
+    vstring outputCommands_string;
+    outputCommands_string.push_back("keep *");
+    outputCommands_string.push_back("drop run");
+    outputCommands_string.push_back("drop lumi");
+    outputCommands_string.push_back("drop evt");
+    outputCommands_string.push_back(Form("drop *%s*", branchName_muons.data()));
+    outputCommands_string.push_back(Form("drop *%s*", branchName_electrons.data()));
+    outputCommands_string.push_back(Form("drop *%s*", branchName_hadTaus.data()));
+    outputCommands_string.push_back(Form("drop *%s*", branchName_jets.data()));
+    outputCommands_string.push_back(Form("drop *%s*", branchName_met.data()));
+    outputCommands_string.push_back("drop maxPermutations_addMEM_2lss_1tau");
+    outputCommands_string.push_back("keep *metPuppi*");
+    outputCommands_string.push_back("keep HLT_BIT_HLT_*");
+    outputCommands_string.push_back("keep *l1*");
+    outputCommands_string.push_back("keep *Gen*");
+    std::vector<outputCommandEntry> outputCommands = getOutputCommands(outputCommands_string);
+    std::map<std::string, bool> isBranchToKeep = getBranchesToKeep(inputTree, outputCommands);
+    copyBranches_singleType(inputTree, outputTree, isBranchToKeep, branchesToKeep);
+    copyBranches_vectorType(inputTree, outputTree, isBranchToKeep, branchesToKeep);
+
+    outputTree->Branch("maxPermutations_addMEM_2lss_1tau", &maxPermutations_addMEM_2lss_1tau, "maxPermutations_addMEM_2lss_1tau/I");
+  }
+
   std::string branchName_memOutput = "memObjects_2lss_1tau";
   MEMOutputWriter_2lss_1tau* memWriter = new MEMOutputWriter_2lss_1tau(Form("n%s", branchName_memOutput.data()), branchName_memOutput);
   memWriter->setBranches(outputTree);
@@ -276,7 +329,7 @@ int main(int argc, char* argv[])
     std::vector<RecoHadTau> hadTaus = hadTauReader->read();
     std::vector<const RecoHadTau*> hadTau_ptrs = convert_to_ptrs(hadTaus);
     std::vector<const RecoHadTau*> cleanedHadTaus = hadTauCleaner(hadTau_ptrs, preselMuons, preselElectrons);
-    std::vector<const RecoHadTau*> preselHadTaus = preselHadTauSelector(hadTau_ptrs);
+    std::vector<const RecoHadTau*> preselHadTaus = preselHadTauSelector(cleanedHadTaus);
     std::vector<const RecoHadTau*> fakeableHadTaus = fakeableHadTauSelector(cleanedHadTaus);
     std::vector<const RecoHadTau*> selHadTaus;
     if      ( hadTauSelection == kLoose    ) selHadTaus = preselHadTaus;
@@ -292,7 +345,8 @@ int main(int argc, char* argv[])
 
 //--- compute MEM values
     std::vector<MEMOutput_2lss_1tau> memOutputs_2lss_1tau;
-    if ( requestMEM_2lss_1tau ) {
+    if ( maxPermutations_addMEM_2lss_1tau != 1 ) {
+      int idxPermutation = 0;
       std::vector<const RecoLepton*> selLeptons = mergeLeptonCollections(selElectrons, selMuons);
       for ( std::vector<const RecoLepton*>::const_iterator selLepton_lead = selLeptons.begin();
 	    selLepton_lead != selLeptons.end(); ++selLepton_lead ) {
@@ -300,25 +354,70 @@ int main(int argc, char* argv[])
 	      selLepton_sublead != selLeptons.end(); ++selLepton_sublead ) {
 	  for ( std::vector<const RecoHadTau*>::const_iterator selHadTau = selHadTaus.begin();
 		selHadTau != selHadTaus.end(); ++selHadTau ) {
-            std::vector<const RecoLepton*> selLeptons_forCleaning;
-            selLeptons_forCleaning.push_back(*selLepton_lead);
-            selLeptons_forCleaning.push_back(*selLepton_sublead);
-            std::vector<const RecoHadTau*> selHadTaus_forCleaning;
-            selHadTaus_forCleaning.push_back(*selHadTau);
-	    std::vector<const RecoJet*> selJets_cleaned = jetCleaner(jet_ptrs, selLeptons_forCleaning, selHadTaus_forCleaning);
-	    MEMInterface_2lss_1tau memInterface_2lss_1tau("ttH_Htautau_MEM_Analysis/MEM/small.py");
-	    MEMOutput_2lss_1tau memOutput_2lss_1tau = memInterface_2lss_1tau(
-	      *selLepton_lead, *selLepton_sublead, *selHadTau,
-	      met.p4_.px(), met.p4_.py(), met.cov_,
-	      selJets_cleaned);
-	    memOutput_2lss_1tau.print(std::cout);
-	    memOutputs_2lss_1tau.push_back(memOutput_2lss_1tau);
+	    if ( idxPermutation < maxPermutations_addMEM_2lss_1tau ) {
+	      std::vector<const RecoLepton*> selLeptons_forCleaning;
+	      selLeptons_forCleaning.push_back(*selLepton_lead);
+	      selLeptons_forCleaning.push_back(*selLepton_sublead);
+	      std::vector<const RecoHadTau*> selHadTaus_forCleaning;
+	      selHadTaus_forCleaning.push_back(*selHadTau);
+	      std::vector<const RecoJet*> selJets_cleaned = jetCleaner(selJets, selLeptons_forCleaning, selHadTaus_forCleaning);
+	      if ( selJets_cleaned.size() >= 3 ) {
+		std::cout << "MEM inputs:" << std::endl; 
+		std::cout << " leading lepton: pT = " << (*selLepton_lead)->pt_ << ", eta = " << (*selLepton_lead)->eta_ << "," 
+			  << " phi = " << (*selLepton_lead)->phi_ << ", pdgId = " << (*selLepton_lead)->pdgId_ << std::endl;
+		std::cout << " subleading lepton: pT = " << (*selLepton_sublead)->pt_ << ", eta = " << (*selLepton_sublead)->eta_ << "," 
+			  << " phi = " << (*selLepton_sublead)->phi_ << ", pdgId = " << (*selLepton_sublead)->pdgId_ << std::endl;
+		std::cout << " hadTau: pT = " << (*selHadTau)->pt_ << ", eta = " << (*selHadTau)->eta_ << "," 
+			  << " phi = " << (*selHadTau)->phi_ << ", decayMode = " << (*selHadTau)->decayMode_ << ", mass = " << (*selHadTau)->mass_ << std::endl;
+		std::cout << " MET: pT = " << met.pt_ << ", phi = " << met.phi_ << std::endl;
+		std::cout << " MET cov:" << std::endl;
+		met.cov_.Print();
+		int idxJet = 0;
+		for ( std::vector<const RecoJet*>::const_iterator selJet = selJets_cleaned.begin();
+		      selJet != selJets_cleaned.end(); ++selJet ) {
+		  std::cout << " jet #" << idxJet << ": pT = " << (*selJet)->pt_ << ", eta = " << (*selJet)->eta_ << "," 
+			    << " phi = " << (*selJet)->phi_ << ", mass = " << (*selJet)->mass_ << ", CSV = " << (*selJet)->BtagCSV_ << std::endl;
+		  ++idxJet;
+		}
+		MEMOutput_2lss_1tau memOutput_2lss_1tau;
+/*
+		MEMInterface_2lss_1tau memInterface_2lss_1tau("ttH_Htautau_MEM_Analysis/MEM/small.py");
+		MEMOutput_2lss_1tau memOutput_2lss_1tau = memInterface_2lss_1tau(
+	          *selLepton_lead, *selLepton_sublead, *selHadTau,
+		  met.p4_.px(), met.p4_.py(), met.cov_,
+		  selJets_cleaned);
+ */
+		memOutput_2lss_1tau.run_ = run;
+		memOutput_2lss_1tau.lumi_ = lumi;
+		memOutput_2lss_1tau.evt_ = event;
+		memOutput_2lss_1tau.print(std::cout);
+		memOutputs_2lss_1tau.push_back(memOutput_2lss_1tau);
+		++idxPermutation;
+	      }
+	    } else {
+	      std::cout << "Warning in run = " << run << ", lumi = " << lumi << ", event = " << event << ":" << std::endl; 
+	      std::cout << "Number of permutations exceeds 'maxPermutations_addMEM_2lss_1tau' = " << maxPermutations_addMEM_2lss_1tau 
+			<< " --> skipping MEM computation after " << maxPermutations_addMEM_2lss_1tau << " permutations !!\n";
+	    }
 	  }
 	}
       }
     }
     
     memWriter->write(memOutputs_2lss_1tau);
+
+    if ( copy_all_branches ) {
+      muonWriter->write(preselMuons);
+      electronWriter->write(preselElectrons);
+      hadTauWriter->write(preselHadTaus);
+      jetWriter->write(jet_ptrs);
+      metWriter->write(met);
+
+      for ( std::map<std::string, branchEntryBaseType*>::const_iterator branchEntry = branchesToKeep.begin();
+	    branchEntry != branchesToKeep.end(); ++branchEntry ) {
+	branchEntry->second->copyBranch();
+      }
+    }
 
     outputTree->Fill();
 

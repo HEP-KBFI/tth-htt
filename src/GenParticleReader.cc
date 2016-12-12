@@ -83,14 +83,16 @@ std::vector<GenLepton> GenParticleReader::read() const
     throw cms::Exception("GenParticleReader") 
       << "Number of particles stored in Ntuple = " << nParticles << ", exceeds max_nParticles = " << max_nParticles_ << " !!\n";
   }
-  particles.reserve(nParticles);
-  for ( Int_t idxParticle = 0; idxParticle < nParticles; ++idxParticle ) {
-    particles.push_back(GenLepton({ 
-      gInstance->particle_pt_[idxParticle],
-      gInstance->particle_eta_[idxParticle],
-      gInstance->particle_phi_[idxParticle],
-      gInstance->particle_mass_[idxParticle],
-      gInstance->particle_pdgId_[idxParticle] }));
+  if ( nParticles > 0 ) {
+    particles.reserve(nParticles);
+    for ( Int_t idxParticle = 0; idxParticle < nParticles; ++idxParticle ) {
+      particles.push_back(GenLepton({ 
+        gInstance->particle_pt_[idxParticle],
+        gInstance->particle_eta_[idxParticle],
+        gInstance->particle_phi_[idxParticle],
+        gInstance->particle_mass_[idxParticle],
+        gInstance->particle_pdgId_[idxParticle] }));
+    }
   }
   return particles;
 }

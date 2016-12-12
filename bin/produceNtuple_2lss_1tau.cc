@@ -271,10 +271,13 @@ int main(int argc, char* argv[])
   }
 
   std::cout << "adding branches:" << std::endl;
-  // CV: request MEM computation for this event
-  Int_t requestMEM_2lss_1tau = -1;
-  std::cout << " requestMEM_2lss_1tau (type = I)" << std::endl;
-  outputTree->Branch("requestMEM_2lss_1tau", &requestMEM_2lss_1tau, "requestMEM_2lss_1tau/I");
+  // CV: request MEM computation for this event 
+  //    (value stored in 'maxPermutations_addMEM_2lss_1tau' branch specifies maximum number of permutations for which the MEM computation is run;
+  //     in case the actual number of permutations exceeds the value stored in the branch, addMEM_2lss_1tau.cc will print a warning
+  //     and skip the remaining permutations, in order not to exceed the computing time limits.)
+  Int_t maxPermutations_addMEM_2lss_1tau = 0;
+  std::cout << " maxPermutations_addMEM_2lss_1tau (type = I)" << std::endl;
+  outputTree->Branch("maxPermutations_addMEM_2lss_1tau", &maxPermutations_addMEM_2lss_1tau, "maxPermutations_addMEM_2lss_1tau/I");
 
   int numEntries = inputTree->GetEntries();
   int analyzedEntries = 0;
@@ -324,7 +327,7 @@ int main(int argc, char* argv[])
     std::vector<RecoHadTau> hadTaus = hadTauReader->read();
     std::vector<const RecoHadTau*> hadTau_ptrs = convert_to_ptrs(hadTaus);
     std::vector<const RecoHadTau*> cleanedHadTaus = hadTauCleaner(hadTau_ptrs, preselMuons, preselElectrons);
-    std::vector<const RecoHadTau*> preselHadTaus = preselHadTauSelector(hadTau_ptrs);
+    std::vector<const RecoHadTau*> preselHadTaus = preselHadTauSelector(cleanedHadTaus);
     std::vector<const RecoHadTau*> fakeableHadTaus = fakeableHadTauSelector(cleanedHadTaus);
     std::vector<const RecoHadTau*> selHadTaus;
     if      ( hadTauSelection == kLoose    ) selHadTaus = preselHadTaus;
@@ -466,7 +469,12 @@ int main(int argc, char* argv[])
 	}
       }
     }
-    requestMEM_2lss_1tau = (selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) && passesMEt_LD && !failsZbosonMassVeto;
+    bool passesPreselection = (selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) && passesMEt_LD && !failsZbosonMassVeto;
+    if ( passesPreselection && fakeableLeptons.size() >= 2 && fakeableHadTaus.size() >= 1 ) {
+      maxPermutations_addMEM_2lss_1tau = TMath::Nint(0.5*fakeableLeptons.size()*(fakeableLeptons.size() - 1)*fakeableHadTaus.size());
+    } else {
+      maxPermutations_addMEM_2lss_1tau = -1;
+    }
     
     muonWriter->write(preselMuons);
     electronWriter->write(preselElectrons);

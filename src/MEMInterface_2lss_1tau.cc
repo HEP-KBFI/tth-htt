@@ -212,6 +212,7 @@ MEMInterface_2lss_1tau::operator()(
   double numerator = result.weight_ttH_;
   double denominator = result.weight_ttH_ + k_ttZ*result.weight_ttZ_ + k_ttZ_Zll*result.weight_ttZ_Zll_ + k_tt*result.weight_tt_;
   if ( denominator > 0. ) {
+    result.isValid_ = 1;
     result.LR_ = numerator/denominator;
   } else {
     result.errorFlag_ = 1;

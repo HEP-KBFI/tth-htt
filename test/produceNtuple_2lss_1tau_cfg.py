@@ -11,7 +11,7 @@ process.fwliteInput = cms.PSet(
 )
 
 process.fwliteOutput = cms.PSet(
-    fileName = cms.string('produceNtuple_2lss_1tau_diff.root')
+    fileName = cms.string('produceNtuple_2lss_1tau.root')
 )
 
 process.produceNtuple_2lss_1tau = cms.PSet(

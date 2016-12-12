@@ -31,7 +31,7 @@ class prodNtupleConfig_2lss_1tau:
         self.executable_prodNtuple = executable_prodNtuple
         self.channel = "2lss_1tau"
         self.max_files_per_job = 1
-        self.max_num_jobs = 20000
+        self.max_num_jobs = 40000
         self.samples = samples
         self.era = era
         self.debug = debug
@@ -195,3 +195,8 @@ class prodNtupleConfig_2lss_1tau:
   
         logging.info("Done")
 
+    def run(self):
+        """Runs all Ntuple production jobs -- either locally or on the batch system.
+        """
+        run_cmd("make -f %s -j %i " % (self.makefile, self.num_parallel_jobs),
+            False, self.stdout_file, self.stderr_file)

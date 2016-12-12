@@ -29,6 +29,7 @@ void EvtHistManager_2lss_1tau::bookHistograms(TFileDirectory& dir)
 
   histogram_mTauTauVis_ = book1D(dir, "mTauTauVis", "mTauTauVis", 40, 0., 200.);
 
+  histogram_memOutput_isValid_ = book1D(dir, "memOutput_isValid", "memOutput_isValid", 3, -1.5, +1.5);
   histogram_memOutput_errorFlag_ = book1D(dir, "memOutput_errorFlag", "memOutput_errorFlag", 2, -0.5, +1.5);
   histogram_memOutput_type_ = book1D(dir, "memOutput_type", "memOutput_type", 4, -1.5, +2.5);
   histogram_memOutput_logWeight_ttH_ = book1D(dir, "memOutput_logWeight_ttH", "memOutput_logWeight_ttH", 100, -20., +20.);
@@ -82,17 +83,22 @@ void EvtHistManager_2lss_1tau::fillHistograms(int numElectrons, int numMuons, in
   }
 
   if ( memOutput_2lss_1tau ) {
-    fillWithOverFlow(histogram_memOutput_errorFlag_, memOutput_2lss_1tau->errorFlag_, evtWeight, evtWeightErr);
-    if ( memOutput_2lss_1tau->errorFlag_ == 0 ) {
-      fillWithOverFlow(histogram_memOutput_type_, memOutput_2lss_1tau->type_, evtWeight, evtWeightErr);
-      fillWithOverFlow(histogram_memOutput_logWeight_ttH_, getLogWeight(memOutput_2lss_1tau->weight_ttH_), evtWeight, evtWeightErr);
-      fillWithOverFlow(histogram_memOutput_logWeight_ttZ_, getLogWeight(memOutput_2lss_1tau->weight_ttZ_), evtWeight, evtWeightErr);
-      fillWithOverFlow(histogram_memOutput_logWeight_ttZ_Zll_, getLogWeight(memOutput_2lss_1tau->weight_ttZ_Zll_), evtWeight, evtWeightErr);
-      fillWithOverFlow(histogram_memOutput_logWeight_tt_, getLogWeight(memOutput_2lss_1tau->weight_tt_), evtWeight, evtWeightErr);
-      fillWithOverFlow(histogram_memOutput_LR_, memOutput_2lss_1tau->LR_, evtWeight, evtWeightErr);
-      fillWithOverFlow(histogram_mem_logCPUTime_, TMath::Log(TMath::Max((Float_t)1.e-21, memOutput_2lss_1tau->cpuTime_)), evtWeight, evtWeightErr);
-      fillWithOverFlow(histogram_mem_logRealTime_, TMath::Log(TMath::Max((Float_t)1.e-21, memOutput_2lss_1tau->realTime_)), evtWeight, evtWeightErr);
+    fillWithOverFlow(histogram_memOutput_isValid_, memOutput_2lss_1tau->isValid_, evtWeight, evtWeightErr);
+    if ( memOutput_2lss_1tau->isValid_ ) {
+      fillWithOverFlow(histogram_memOutput_errorFlag_, memOutput_2lss_1tau->errorFlag_, evtWeight, evtWeightErr);
+      if ( memOutput_2lss_1tau->errorFlag_ == 0 ) {
+	fillWithOverFlow(histogram_memOutput_type_, memOutput_2lss_1tau->type_, evtWeight, evtWeightErr);
+	fillWithOverFlow(histogram_memOutput_logWeight_ttH_, getLogWeight(memOutput_2lss_1tau->weight_ttH_), evtWeight, evtWeightErr);
+	fillWithOverFlow(histogram_memOutput_logWeight_ttZ_, getLogWeight(memOutput_2lss_1tau->weight_ttZ_), evtWeight, evtWeightErr);
+	fillWithOverFlow(histogram_memOutput_logWeight_ttZ_Zll_, getLogWeight(memOutput_2lss_1tau->weight_ttZ_Zll_), evtWeight, evtWeightErr);
+	fillWithOverFlow(histogram_memOutput_logWeight_tt_, getLogWeight(memOutput_2lss_1tau->weight_tt_), evtWeight, evtWeightErr);
+	fillWithOverFlow(histogram_memOutput_LR_, memOutput_2lss_1tau->LR_, evtWeight, evtWeightErr);
+	fillWithOverFlow(histogram_mem_logCPUTime_, TMath::Log(TMath::Max((Float_t)1.e-21, memOutput_2lss_1tau->cpuTime_)), evtWeight, evtWeightErr);
+	fillWithOverFlow(histogram_mem_logRealTime_, TMath::Log(TMath::Max((Float_t)1.e-21, memOutput_2lss_1tau->realTime_)), evtWeight, evtWeightErr);
+      }
     }
+  } else {
+    fillWithOverFlow(histogram_memOutput_isValid_, -1, evtWeight, evtWeightErr);
   }
 
   fillWithOverFlow(histogram_EventCounter_, 0., evtWeight, evtWeightErr);

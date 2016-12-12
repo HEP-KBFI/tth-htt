@@ -125,39 +125,40 @@ std::vector<RecoElectron> RecoElectronReader::read() const
     throw cms::Exception("RecoElectronReader")
       << "Number of leptons stored in Ntuple = " << nLeptons << ", exceeds max_nLeptons = " << leptonReader_->max_nLeptons_ << " !!\n";
   }
-  electrons.reserve(nLeptons);
-
-  for ( Int_t idxLepton = 0; idxLepton < nLeptons; ++idxLepton ) {
-    if ( std::abs(gLeptonReader->pdgId_[idxLepton]) == 11 ) {
-      electrons.push_back(RecoElectron({
-        gLeptonReader->pt_[idxLepton],
-        gLeptonReader->eta_[idxLepton],
-        gLeptonReader->phi_[idxLepton],
-        gLeptonReader->mass_[idxLepton],
-        gLeptonReader->pdgId_[idxLepton],
-        gLeptonReader->dxy_[idxLepton],
-        gLeptonReader->dz_[idxLepton],
-        gLeptonReader->relIso_[idxLepton],
-        gLeptonReader->chargedHadRelIso03_[idxLepton],
-        gLeptonReader->miniIsoCharged_[idxLepton],
-        gLeptonReader->miniIsoNeutral_[idxLepton],
-        gLeptonReader->sip3d_[idxLepton],
-        gLeptonReader->mvaRawTTH_[idxLepton],
-        gLeptonReader->jetNDauChargedMVASel_[idxLepton],
-        gLeptonReader->jetPtRel_[idxLepton],
-        gLeptonReader->jetPtRatio_[idxLepton],
-        gLeptonReader->jetBtagCSV_[idxLepton],
-        gLeptonReader->tightCharge_[idxLepton],
-        gLeptonReader->charge_[idxLepton],
-        gElectronReader->mvaRawPOG_[idxLepton],
-        gElectronReader->sigmaEtaEta_[idxLepton],
-        gElectronReader->HoE_[idxLepton],
-        gElectronReader->deltaEta_[idxLepton],
-        gElectronReader->deltaPhi_[idxLepton],
-        gElectronReader->OoEminusOoP_[idxLepton],
-        gElectronReader->lostHits_[idxLepton],
-        gElectronReader->conversionVeto_[idxLepton]
-      }));
+  if ( nLeptons > 0 ) {
+    electrons.reserve(nLeptons);
+    for ( Int_t idxLepton = 0; idxLepton < nLeptons; ++idxLepton ) {
+      if ( std::abs(gLeptonReader->pdgId_[idxLepton]) == 11 ) {
+        electrons.push_back(RecoElectron({
+          gLeptonReader->pt_[idxLepton],
+          gLeptonReader->eta_[idxLepton],
+          gLeptonReader->phi_[idxLepton],
+          gLeptonReader->mass_[idxLepton],
+          gLeptonReader->pdgId_[idxLepton],
+          gLeptonReader->dxy_[idxLepton],
+          gLeptonReader->dz_[idxLepton],
+          gLeptonReader->relIso_[idxLepton],
+          gLeptonReader->chargedHadRelIso03_[idxLepton],
+          gLeptonReader->miniIsoCharged_[idxLepton],
+          gLeptonReader->miniIsoNeutral_[idxLepton],
+          gLeptonReader->sip3d_[idxLepton],
+          gLeptonReader->mvaRawTTH_[idxLepton],
+          gLeptonReader->jetNDauChargedMVASel_[idxLepton],
+          gLeptonReader->jetPtRel_[idxLepton],
+          gLeptonReader->jetPtRatio_[idxLepton],
+          gLeptonReader->jetBtagCSV_[idxLepton],
+          gLeptonReader->tightCharge_[idxLepton],
+          gLeptonReader->charge_[idxLepton],
+          gElectronReader->mvaRawPOG_[idxLepton],
+          gElectronReader->sigmaEtaEta_[idxLepton],
+          gElectronReader->HoE_[idxLepton],
+          gElectronReader->deltaEta_[idxLepton],
+          gElectronReader->deltaPhi_[idxLepton],
+          gElectronReader->OoEminusOoP_[idxLepton],
+          gElectronReader->lostHits_[idxLepton],
+          gElectronReader->conversionVeto_[idxLepton]
+        }));
+      }
     }
   }
   return electrons;

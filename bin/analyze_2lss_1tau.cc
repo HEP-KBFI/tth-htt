@@ -22,6 +22,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/GenJet.h" // GenJet
 #include "tthAnalysis/HiggsToTauTau/interface/GenHadTau.h" // GenHadTau
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMEt.h" // RecoMEt
+#include "tthAnalysis/HiggsToTauTau/interface/MEMOutput_2lss_1tau.h" // MEMOutput_2lss_1tau
 #include "tthAnalysis/HiggsToTauTau/interface/TMVAInterface.h" // TMVAInterface
 #include "tthAnalysis/HiggsToTauTau/interface/mvaInputVariables.h" // auxiliary functions for computing input variables of the MVA used for signal extraction in the 2lss_1tau category 
 #include "tthAnalysis/HiggsToTauTau/interface/LeptonFakeRateInterface.h" // LeptonFakeRateInterface
@@ -32,6 +33,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauReader.h" // RecoHadTauReader
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetReader.h" // RecoJetReader
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMEtReader.h" // RecoMEtReader
+#include "tthAnalysis/HiggsToTauTau/interface/MEMOutputReader_2lss_1tau.h" // MEMOutputReader_2lss_1tau
 #include "tthAnalysis/HiggsToTauTau/interface/GenLeptonReader.h" // GenLeptonReader
 #include "tthAnalysis/HiggsToTauTau/interface/GenHadTauReader.h" // GenHadTauReader
 #include "tthAnalysis/HiggsToTauTau/interface/GenJetReader.h" // GenJetReader
@@ -319,6 +321,7 @@ int main(int argc, char* argv[])
   std::string branchName_hadTaus = cfg_analyze.getParameter<std::string>("branchName_hadTaus");
   std::string branchName_jets = cfg_analyze.getParameter<std::string>("branchName_jets");
   std::string branchName_met = cfg_analyze.getParameter<std::string>("branchName_met");
+  std::string branchName_memOutput = cfg_analyze.getParameter<std::string>("branchName_memOutput");
 
   std::string selEventsFileName_input = cfg_analyze.getParameter<std::string>("selEventsFileName_input");
   std::cout << "selEventsFileName_input = " << selEventsFileName_input << std::endl;
@@ -431,6 +434,13 @@ int main(int argc, char* argv[])
 //--- declare missing transverse energy
   RecoMEtReader* metReader = new RecoMEtReader(era, branchName_met);
   metReader->setBranchAddresses(inputTree);  
+
+//--- declare likelihoods for signal/background hypotheses, obtained by matrix element method
+  MEMOutputReader_2lss_1tau* memReader = 0;
+  if ( branchName_memOutput != "" ) {
+    memReader = new MEMOutputReader_2lss_1tau(Form("n%s", branchName_memOutput.data()), branchName_memOutput);
+    memReader->setBranchAddresses(inputTree); 
+  }
 
 //--- declare generator level information
   GenLeptonReader* genLeptonReader = 0;
@@ -907,7 +917,7 @@ int main(int argc, char* argv[])
     std::vector<RecoHadTau> hadTaus = hadTauReader->read();
     std::vector<const RecoHadTau*> hadTau_ptrs = convert_to_ptrs(hadTaus);
     std::vector<const RecoHadTau*> cleanedHadTaus = hadTauCleaner(hadTau_ptrs, preselMuons, preselElectrons);
-    std::vector<const RecoHadTau*> preselHadTaus = preselHadTauSelector(hadTau_ptrs);
+    std::vector<const RecoHadTau*> preselHadTaus = preselHadTauSelector(cleanedHadTaus);
     std::vector<const RecoHadTau*> fakeableHadTaus = fakeableHadTauSelector(cleanedHadTaus);
     std::vector<const RecoHadTau*> tightHadTaus = tightHadTauSelector(cleanedHadTaus);
     std::vector<const RecoHadTau*> selHadTaus;
@@ -1582,15 +1592,21 @@ int main(int argc, char* argv[])
 
     double mvaOutput_2lss_1tau_ttbar_sklearn = mva_2lss_1tau_ttbar_sklearn(mvaInputs_sklearn);
     
-/*
-    MEMInterface_2lss_1tau memInterface_2lss_1tau("ttH_Htautau_MEM_Analysis/MEM/small.py");
-    MEMInterface_2lss_1tau::MEMOutput memOutput_2lss_1tau = memInterface_2lss_1tau(
-      selLepton_lead, selLepton_sublead, selHadTau,
-      met.p4_.px(), met.p4_.py(), met.cov_,
-      selJets);
-    memOutput_2lss_1tau.print(std::cout);
- */    
-    MEMOutput_2lss_1tau memOutput_2lss_1tau;
+    const MEMOutput_2lss_1tau* memOutput_2lss_1tau_matched = 0;
+    if ( memReader ) {
+      std::vector<MEMOutput_2lss_1tau> memOutputs_2lss_1tau = memReader->read();
+      for ( std::vector<MEMOutput_2lss_1tau>::const_iterator memOutput_2lss_1tau = memOutputs_2lss_1tau.begin();
+	    memOutput_2lss_1tau != memOutputs_2lss_1tau.end(); ++memOutput_2lss_1tau ) {
+	double selLepton_lead_dR = deltaR(selLepton_lead->eta_, selLepton_lead->phi_, memOutput_2lss_1tau->leadLepton_eta_, memOutput_2lss_1tau->leadLepton_phi_);
+	if ( selLepton_lead_dR > 1.e-2 ) continue;
+	double selLepton_sublead_dR = deltaR(selLepton_sublead->eta_, selLepton_sublead->phi_, memOutput_2lss_1tau->subleadLepton_eta_, memOutput_2lss_1tau->subleadLepton_phi_);
+	if ( selLepton_sublead_dR > 1.e-2 ) continue;
+	double selHadTau_dR = deltaR(selHadTau->eta_, selHadTau->phi_, memOutput_2lss_1tau->hadTau_eta_, memOutput_2lss_1tau->hadTau_phi_);
+	if ( selHadTau_dR > 1.e-2 ) continue;
+	memOutput_2lss_1tau_matched = &(*memOutput_2lss_1tau);
+	break;
+      }
+    }
 
 //--- fill histograms with events passing final selection 
     selHistManagerType* selHistManager = selHistManagers[idxSelLepton_genMatch][idxSelHadTau_genMatch];
@@ -1611,7 +1627,7 @@ int main(int argc, char* argv[])
       selJets.size(), selBJets_loose.size(), selBJets_medium.size(), 
       mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, mvaOutput_2lss_1tau_ttbar_TMVA, mvaOutput_2lss_1tau_ttbar_sklearn, 
       mTauTauVis1_sel, mTauTauVis2_sel, 
-      &memOutput_2lss_1tau, evtWeight);
+      memOutput_2lss_1tau_matched, evtWeight);
     if ( isSignal ) {
       for ( const auto & kv: decayMode_idString ) {
         if ( std::fabs(genHiggsDecayMode - kv.second) < EPS ) {
@@ -1620,7 +1636,7 @@ int main(int argc, char* argv[])
             selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
             mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, mvaOutput_2lss_1tau_ttbar_TMVA, mvaOutput_2lss_1tau_ttbar_sklearn, 
             mTauTauVis1_sel, mTauTauVis2_sel, 
-	    &memOutput_2lss_1tau, evtWeight);
+	    memOutput_2lss_1tau_matched, evtWeight);
           break;
         }
       }
@@ -1683,7 +1699,7 @@ int main(int argc, char* argv[])
 	selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
 	mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, mvaOutput_2lss_1tau_ttbar_TMVA, mvaOutput_2lss_1tau_ttbar_sklearn, 
 	mTauTauVis1_sel, mTauTauVis2_sel, 
-	&memOutput_2lss_1tau, evtWeight);
+	memOutput_2lss_1tau_matched, evtWeight);
     } 
 
     if ( isMC ) {
