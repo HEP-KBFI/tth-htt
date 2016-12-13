@@ -33,6 +33,16 @@ process.addMEM_2lss_1tau = cms.PSet(
     branchName_met = cms.string('met'), 
 
     copy_all_branches = cms.bool(True),
+
+    copy_histograms = cms.vstring(
+        "Count",
+        "CountFullWeighted",
+        "CountWeighted",
+        "CountPosWeight",
+        "CountNegWeight",
+        "CountWeightedLHEWeightScale",
+        "CountWeightedLHEWeightPdf",
+    ),
     
     selEventsFileName_input = cms.string(''),
     selEventsFileName_output = cms.string('')

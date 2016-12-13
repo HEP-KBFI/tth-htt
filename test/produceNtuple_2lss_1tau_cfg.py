@@ -30,7 +30,7 @@ process.produceNtuple_2lss_1tau = cms.PSet(
     use_HIP_mitigation_bTag = cms.bool(False),
     minNumBJets_loose = cms.int32(0),
     minNumBJets_medium = cms.int32(0),
-
+    
     selEventsFileName_input = cms.string(''),
 
     outputCommands = cms.vstring(
@@ -78,5 +78,15 @@ process.produceNtuple_2lss_1tau = cms.PSet(
         "keep genHiggsDecayMode",
         "keep genTTH*",
         "drop *Recovered*",
+    ),
+
+    copy_histograms = cms.vstring(
+        "Count",
+        "CountFullWeighted",
+        "CountWeighted",
+        "CountPosWeight",
+        "CountNegWeight",
+        "CountWeightedLHEWeightScale",
+        "CountWeightedLHEWeightPdf",
     )
 )

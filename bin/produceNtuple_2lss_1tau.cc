@@ -141,6 +141,8 @@ int main(int argc, char* argv[])
   vstring outputCommands_string = cfg_produceNtuple.getParameter<vstring>("outputCommands");
   std::vector<outputCommandEntry> outputCommands = getOutputCommands(outputCommands_string);
 
+  vstring copy_histograms = cfg_produceNtuple.getParameter<vstring>("copy_histograms");
+
   fwlite::InputSource inputFiles(cfg); 
   int maxEvents = inputFiles.maxEvents();
   std::cout << " maxEvents = " << maxEvents << std::endl;
@@ -519,6 +521,40 @@ int main(int argc, char* argv[])
   delete hadTauWriter;
   delete jetWriter;
   delete metWriter;
+
+//--- copy histograms keeping track of number of processed events from input files to output file
+  std::cout << "copying histograms:" << std::endl;
+  delete inputTree;
+  std::map<std::string, TH1*> histograms;
+  for ( std::vector<std::string>::const_iterator inputFileName = inputFiles.files().begin();
+	inputFileName != inputFiles.files().end(); ++inputFileName ) {
+    TFile* inputFile = new TFile(inputFileName->data());
+    if ( !inputFile ) 
+      throw cms::Exception("produceNtuple_2lss_1tau") 
+	<< "Failed to open input File = '" << (*inputFileName) << "' !!\n";
+    
+    for ( vstring::const_iterator histogramName = copy_histograms.begin();
+	  histogramName != copy_histograms.end(); ++histogramName ) {
+      if ( inputFiles.files().size() > 1 ) {
+	std::cout << " " << (*histogramName) << " from input File = '" << (*inputFileName) << "'" << std::endl;
+      } else { 
+	std::cout << " " << (*histogramName) << std::endl;
+      }
+      TH1* histogram_input = dynamic_cast<TH1*>(inputFile->Get(histogramName->data()));
+      if ( !histogram_input ) continue;
+
+      TH1* histogram_output = histograms[*histogramName];
+      if ( histogram_output ) {
+	histogram_output->Add(histogram_input);
+      } else {
+	if      ( dynamic_cast<TH1F*>(histogram_input) ) histogram_output = fs.make<TH1F>(*(dynamic_cast<TH1F*>(histogram_input)));
+	else if ( dynamic_cast<TH1D*>(histogram_input) ) histogram_output = fs.make<TH1D>(*(dynamic_cast<TH1D*>(histogram_input)));
+	assert(histogram_output);
+	histograms[*histogramName] = histogram_output;
+      }
+    }
+    delete inputFile;
+  }
 												
   //delete cutFlowHistManager;											
 
