@@ -29,7 +29,7 @@ if __name__ == '__main__':
 
   ntupleProduction = prodNtupleConfig_2lss_1tau(
     outputDir = os.path.join("/home", getpass.getuser(), "ttHNtupleProduction", ERA, version),
-    executable_prodNtuple = "prodNtuple_2lss_1tau",
+    executable_prodNtuple = "produceNtuple_2lss_1tau",
     samples = samples,
     era = ERA,
     debug = False,
