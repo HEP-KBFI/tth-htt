@@ -194,6 +194,7 @@ struct Sample
     : path(path)
     , name(path.filename().string())
     , pathStr(path.string())
+    , gen_weight(false)
     , x_sec(0)
     , max_nr(0)
     , nof_events(0)
@@ -205,6 +206,7 @@ struct Sample
     , name(path.filename().string())
     , pathStr(path.string())
     , parentStr(parent.string())
+    , gen_weight(false)
     , x_sec(0)
     , max_nr(0)
     , nof_events(0)
@@ -281,6 +283,7 @@ struct Sample
       { "category",        category                                }, 
       { "process_name",    process_name                            }, 
       { "x_sec",           std::to_string(x_sec)                   },
+      { "g_weight",        gen_weight ? "True" : "False"           },
       { "max_nr",          std::to_string(max_nr)                  },
       { "nof_events",      std::to_string(nof_events)              },
       { "nof_dbs_events",  std::to_string(nof_dbs_events)          },
@@ -349,6 +352,7 @@ struct Sample
 			    input = input + "  (\"use_it\",                True),\n";
 		  //  "  (\"use_it\",                True),\n"
 		  input =input + "  (\"xsection\",              $(x_sec)),\n"
+		    "  (\"genWeight\",             $(g_weight)),\n"
 		    "  (\"triggers\",              [ \"1e\", \"2e\", \"1mu\", \"2mu\", \"1e1mu\" ]),\n"
 		    "  (\"reHLT\",                 False),\n"
 		    "  (\"local_paths\",\n"
@@ -382,6 +386,7 @@ struct Sample
 
   std::vstring zombies, zerofs, improper, present, blacklist;
 
+  bool gen_weight;
   double    x_sec;
   unsigned max_nr;
   unsigned long long nof_events;
@@ -808,6 +813,25 @@ dbsevents["/TTTo2L2Nu_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/matze-fast_t
 dbsevents["/TTToSemilepton_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/matze-fast_ttjets_sl_MiniAOD_6b57d231e28e4ebd8065fc7621fa1f5b-v1/USER"]=1000000;
 dbsevents["/ttHToNonbb_M125_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/matze-fast_ttH_MiniAOD_6b57d231e28e4ebd8065fc7621fa1f5b-v1/USER"]=994998;
 
+std::map<std::string, bool> genweights; // key = sample
+genweights["/DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"]=true;
+genweights["/ST_s-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"] = true;
+genweights["/TGJets_TuneCUETP8M1_13TeV_amcatnlo_madspin_pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0_ext1-v1/MINIAODSIM"] = true;
+genweights["/TTGJets_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"] = true;
+genweights["/TTTT_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0_ext1-v1/MINIAODSIM"] = true;
+genweights["/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/RunIISpring16MiniAODv2-premix_withHLT_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM"] = true;
+genweights["/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/RunIISpring16MiniAODv2-premix_withHLT_80X_mcRun2_asymptotic_v14_ext1-v1/MINIAODSIM"] = true;
+genweights["/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"] = true;
+genweights["/TTZToLLNuNu_M-10_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISpring16MiniAODv2-premix_withHLT_80X_mcRun2_asymptotic_v14_ext1-v1/MINIAODSIM"] = true;
+genweights["/TTZToLLNuNu_M-10_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"] = true;
+genweights["/WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14_ext1-v1/MINIAODSIM"] = true;
+genweights["/WZZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"] = true;
+genweights["/ZGTo2LG_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"] = true;
+genweights["/ZGTo2LG_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0_ext1-v1/MINIAODSIM"] = true;
+genweights["/ZZTo4L_13TeV-amcatnloFXFX-pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM"] = true;
+genweights["/tZq_ll_4f_13TeV-amcatnlo-pythia8_TuneCUETP8M1/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"] = true;
+genweights["/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14_ext1-v1/MINIAODSIM"] = true;
+
 //--- parse command line arguments
   std::string target_str, histo_str, output_dir_str;
   bool save_zerofs, save_improper, save_python, verbose, no_njets_cut;
@@ -818,7 +842,7 @@ dbsevents["/ttHToNonbb_M125_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/matze-
       ("help,h",     "produce help message")
       ("path,p",     boost::program_options::value<std::string>(&target_str) -> required(),
                      "full path to the directory to scan")
-      ("histo,h",     boost::program_options::value<std::string>(&histo_str) -> default_value("Count"),
+      ("histo,H",     boost::program_options::value<std::string>(&histo_str) -> default_value("Count"),
                      "expected TH1F name")
       ("output,o",   boost::program_options::value<std::string>(&output_dir_str) -> default_value("")
                                                                                  -> implicit_value("./"),
@@ -934,6 +958,8 @@ dbsevents["/ttHToNonbb_M125_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/matze-
         sample.process_name      = process_name[sample.dbs_name];
         sample.x_sec             = xsection[sample.dbs_name];
         sample.nof_dbs_events    = dbsevents[sample.dbs_name];
+        if(genweights.count(sample.dbs_name))
+          sample.gen_weight = genweights[sample.dbs_name];
 
         //if(verbose) std::cout << "Sample name: " << sample.dbs_name << '\n';
         //if(verbose) std::cout << "Sample category: " << sample.category << '\n';
