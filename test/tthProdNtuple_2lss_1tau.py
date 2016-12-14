@@ -21,6 +21,17 @@ else:
 
 version = "2016Dec13"
 
+#--------------------------------------------------------------------------------   
+# CV: run Ntuple production jobs also for high statistics background samples
+#     not used in the analysis, but used for BDT training by Arun
+for sample_name, sample_info in samples_2016.items():
+  if sample_name in [
+      "/TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16MiniAODv1-PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext3-v1/MINIAODSIM",
+      "/TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16MiniAODv1-PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext4-v1/MINIAODSIM",
+      "/TTW/spring16DR80v6aMiniAODv1/FASTSIM" ]:
+    sample_info["use_it"] = True
+#--------------------------------------------------------------------------------    
+
 if __name__ == '__main__':
   logging.basicConfig(
     stream = sys.stdout,
