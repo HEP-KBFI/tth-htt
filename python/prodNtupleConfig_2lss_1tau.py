@@ -31,7 +31,7 @@ class prodNtupleConfig_2lss_1tau:
         self.executable_prodNtuple = executable_prodNtuple
         self.channel = "2lss_1tau"
         self.max_files_per_job = 1
-        self.max_num_jobs = 40000
+        self.max_num_jobs = 100000
         self.samples = samples
         self.era = era
         self.debug = debug
