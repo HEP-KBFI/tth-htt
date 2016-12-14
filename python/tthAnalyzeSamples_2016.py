@@ -1020,6 +1020,26 @@ samples_2016["/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/RunI
     ]
   ),
 ])
+samples_2016["/TTW/spring16DR80v6aMiniAODv1/FASTSIM"] = OD([
+  ("type",                  "mc"),
+  ("sample_category",       "TTW"),
+  ("process_name_specific", "TTW_Fastsim"),
+  ("nof_files",             162),
+  ("nof_events",            8362991),
+  ("use_it",                False),
+  ("xsection",              0.204300),
+  ("triggers",              [ "1e", "2e", "1mu", "2mu", "1e1mu" ]),
+  ("reHLT",                 False),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/local/andres/tth/TTW_FastSim"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+])
 samples_2016["/TTZToLLNuNu_M-10_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISpring16MiniAODv2-premix_withHLT_80X_mcRun2_asymptotic_v14_ext1-v1/MINIAODSIM"] = OD([
   ("type",                  "mc"),
   ("sample_category",       "TTZ"),
@@ -1067,7 +1087,7 @@ samples_2016["/TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16MiniAODv1-PUSpr
   ("sample_category",       "TT"),
   ("process_name_specific", "TT_ext3"),
   ("nof_files",             2124),
-  ("nof_events",            92882726),
+  ("nof_events",            275307526),
   ("use_it",                False),
   ("xsection",              831.760000),
   ("triggers",              [ "1e", "2e", "1mu", "2mu", "1e1mu" ]),
@@ -1078,6 +1098,26 @@ samples_2016["/TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16MiniAODv1-PUSpr
         ("path",      "/hdfs/local/lucia/VHBBHeppyV24bis/TT_TuneCUETP8M1_13TeV-powheg-pythia8/VHBB_HEPPY_V24_TT_TuneCUETP8M1_13TeV-powheg-Py8__spr16MAv2-puspr16_HLT_80r2as_v14_ext3-v1/160909_063406"),
         ("selection", "*"),
         ("blacklist", [600]),
+      ]),
+    ]
+  ),
+])
+samples_2016["/TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16MiniAODv1-PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext4-v1/MINIAODSIM"] = OD([
+  ("type",                  "mc"),
+  ("sample_category",       "TT"),
+  ("process_name_specific", "TT_ext4"),
+  ("nof_files",             9602),
+  ("nof_events",            275307526),
+  ("use_it",                False),
+  ("xsection",              831.760000),
+  ("triggers",              [ "1e", "2e", "1mu", "2mu", "1e1mu" ]),
+  ("reHLT",                 False),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/cms/store/user/atiko/VHBBHeppyD24_v5/TT_TuneCUETP8M1_13TeV-powheg-pythia8/VHBB_HEPPY_D24_TT_TuneCUETP8M1_13TeV-powheg-Py8__spr16MiniAODv1-puspr16_80r2as_2016_v3_ext4-v1/161107_100027"),
+        ("selection", "*"),
+        ("blacklist", []),
       ]),
     ]
   ),
