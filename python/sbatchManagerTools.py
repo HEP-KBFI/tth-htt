@@ -125,4 +125,4 @@ m.hadd_in_cluster(
 )
 """ % template_vars
 
-    return sbatch_code
+    return sbatch_code.splitlines()
