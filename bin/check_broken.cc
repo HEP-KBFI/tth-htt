@@ -308,7 +308,9 @@ struct Sample
 		    "  (\"nof_files\",             $(max_nr)),\n"
 		    "  (\"nof_events\",            $(nof_events)),\n";
 		    //"  (\"nof_dbs_events\",        $(nof_dbs_events)),\n";
-		    if(process_name.find("2016E")!=std::string::npos || process_name.find("2016F")!=std::string::npos || process_name.find("2016G")!=std::string::npos) 
+		    if(process_name.find("2016E")!=std::string::npos ||
+		       process_name.find("2016F")!=std::string::npos ||
+		       process_name.find("2016G")!=std::string::npos)
 			    input = input + "  (\"use_it\",                False),\n";			   
 		    else
 			    input = input + "  (\"use_it\",                True),\n";
@@ -494,6 +496,8 @@ sample_name["VHBB_HEPPY_V24_Tau__Run2016E-PromptReco-v2"]="/Tau/Run2016E-PromptR
 sample_name["VHBB_HEPPY_V24_Tau__Run2016F-PromptReco-v1"]="/Tau/Run2016F-PromptReco-v1/MINIAOD";
 sample_name["VHBB_HEPPY_V24_Tau__Run2016G-PromptReco-v1"]="/Tau/Run2016G-PromptReco-v1/MINIAOD";
 sample_name["TTW_FastSim"]="/TTW/spring16DR80v6aMiniAODv1/FASTSIM";
+sample_name["VHBB_HEPPY_D24_TT_TuneCUETP8M1_13TeV-powheg-Py8__spr16MiniAODv1-puspr16_80r2as_2016_v3_ext4-v1"]="/TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16MiniAODv1-PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext4-v1/MINIAODSIM";
+sample_name["VHBB_HEPPY_V24_TT_TuneCUETP8M1_13TeV-powheg-Py8__spr16MAv2-puspr16_HLT_80r2as_v14_ext3-v1"]="/TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16MiniAODv1-PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext3-v1/MINIAODSIM";
 sample_name["TT_TuneCUETP8M1_13TeV-powheg-pythia8_ext4"]="/TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16MiniAODv1-PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext4-v1/MINIAODSIM";
 sample_name["TTTo2L2Nu"]="/TTTo2L2Nu_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/matze-fast_ttjets_dl_MiniAOD_6b57d231e28e4ebd8065fc7621fa1f5b-v1/USER";
 sample_name["TTToSemiLepton"]="/TTToSemilepton_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/matze-fast_ttjets_sl_MiniAOD_6b57d231e28e4ebd8065fc7621fa1f5b-v1/USER";
@@ -1103,6 +1107,11 @@ genweights["/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/RunI
     else
       out << "from collections import OrderedDict as OD\n\n"
         << "samples_no_njet_cut_2016 = OD()\n\n";
+
+    out << "# file generated with command:\n# "
+        << boost::algorithm::join(std::vector<std::string>(argv, argv + argc), " ")
+        << "\n\n";
+
     for(const Sample & sample: samples)
       out << sample.get_cfg(no_njets_cut);
   }
