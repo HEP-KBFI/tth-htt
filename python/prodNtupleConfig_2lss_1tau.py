@@ -3,7 +3,7 @@ import os
 from tthAnalysis.HiggsToTauTau.prodNtupleConfig import *
 from tthAnalysis.HiggsToTauTau.analysisTools import create_cfg
 
-class prodNtupleConfig_2lss_1tau:
+class prodNtupleConfig_2lss_1tau(prodNtupleConfig):
     """Configuration metadata needed to run Ntuple production for 2lss_1tau channel.
 
     Args:
