@@ -6,8 +6,8 @@ import subprocess, argparse, os, sys, logging, imp, re
 Example usage:
 
 ./scripts/copy_prod_ntuples.py \
-  -p /home/veelken/ttHNtupleProduction/2016/2016Dec11/ntuples/2lss_1tau/ \
-  -d /hdfs/local/karl/ttHNtupleProduction/2016/2016Dec11/ntuples/2lss_1tau/ \
+  -p /home/veelken/ttHNtupleProduction/2016/2016Dec13/ntuples/2lss_1tau/ \
+  -d /hdfs/local/karl/ttHNtupleProduction/2016/2016Dec13/ntuples/2lss_1tau/ \
   -n samples_2016 \
   -D python/tthAnalyzeSamples_2016.py \
   -v
@@ -143,10 +143,13 @@ if __name__ == '__main__':
     sample_key = sample_name.split('/')[1] # (the sample name starts with a '/')
     sample_orig_path = sample_info['local_paths'][0]['path']
     sample_orig_path_split = sample_orig_path.split('/')
-    assert(sample_key in sample_orig_path_split), "Sample: %s" % sample_orig_path
+    if 'TTW_FastSim' not in sample_orig_path_split:
+      assert(sample_key in sample_orig_path_split), "Sample: %s" % sample_orig_path
+    else:
+      logging.error("You have to copy TTW_FastSim manually!")
 
     # now we can build a new path from these pieces
-    sample_orig_path_split_by_key = os.path.join(sample_key, ''.join(sample_orig_path.split(sample_key)[1:])[1:])
+    sample_orig_path_split_by_key = sample_orig_path[len(sample_orig_path.split(sample_key)[0]):]
     new_base_path = os.path.join(dest_path, sample_orig_path_split_by_key)
     logging.debug("Created a new base path for sample {sample_name}: {base_path}".format(
       sample_name = process_name, base_path = new_base_path,
