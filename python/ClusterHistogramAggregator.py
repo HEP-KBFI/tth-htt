@@ -85,6 +85,11 @@ class ClusterHistogramAggregator:
             )
             self.sbatch_manager.waitForJobs()
 
+        # Delete output files produced by "intermediate" levels
+
+        for output_histogram in output_histograms:
+            os.remove(output_histogram)
+
         return True
 
     def hadd_on_cluster_node(
