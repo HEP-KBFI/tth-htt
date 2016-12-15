@@ -1342,7 +1342,8 @@ int main(int argc, char* argv[])
 	  lepton1 != fakeableLeptons.end(); ++lepton1 ) {
       for ( std::vector<const RecoLepton*>::const_iterator lepton2 = lepton1 + 1;
 	    lepton2 != fakeableLeptons.end(); ++lepton2 ) {
-	if ( ((*lepton1)->p4_ + (*lepton2)->p4_).mass() < 12. ) {
+	double mass = ((*lepton1)->p4_ + (*lepton2)->p4_).mass();
+	if ( mass < 12. ) {
 	  failsLowMassVeto = true;
 	}
       }
@@ -1435,7 +1436,8 @@ int main(int argc, char* argv[])
 	  lepton1 != fakeableLeptons.end(); ++lepton1 ) {
       for ( std::vector<const RecoLepton*>::const_iterator lepton2 = lepton1 + 1;
 	    lepton2 != fakeableLeptons.end(); ++lepton2 ) {
-	if ( (*lepton1)->is_electron() && (*lepton2)->is_electron() && std::fabs(((*lepton1)->p4_ + (*lepton2)->p4_).mass() - z_mass) < z_window ) {
+	double mass = ((*lepton1)->p4_ + (*lepton2)->p4_).mass();
+	if ( (*lepton1)->is_electron() && (*lepton2)->is_electron() && std::fabs(mass - z_mass) < z_window ) {
 	  failsZbosonMassVeto = true;
 	}
       }

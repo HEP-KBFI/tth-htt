@@ -45,7 +45,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // isHigherPt
 #include "tthAnalysis/HiggsToTauTau/interface/RunLumiEventSelector.h" // RunLumiEventSelector
 #include "tthAnalysis/HiggsToTauTau/interface/cutFlowTable.h" // cutFlowTableType
-#include "tthAnalysis/HiggsToTauTau/interface/CutFlowTableHistManager_2lss_1tau.h" // CutFlowTableHistManager_2lss_1tau
+#include "tthAnalysis/HiggsToTauTau/interface/CutFlowTableHistManager_3l_1tau.h" // CutFlowTableHistManager_3l_1tau
 #include "tthAnalysis/HiggsToTauTau/interface/histogramAuxFunctions.h" // createSubdirectory_recursively
 #include "tthAnalysis/HiggsToTauTau/interface/branchEntryType.h"
 #include "tthAnalysis/HiggsToTauTau/interface/branchEntryTypeAuxFunctions.h"
@@ -81,20 +81,20 @@ int main(int argc, char* argv[])
     return EXIT_SUCCESS;
   }
 
-  std::cout << "<produceNtuple_2lss_1tau>:" << std::endl;
+  std::cout << "<produceNtuple_3l_1tau>:" << std::endl;
 
 //--- keep track of time it takes the macro to execute
   TBenchmark clock;
-  clock.Start("produceNtuple_2lss_1tau");
+  clock.Start("produceNtuple_3l_1tau");
 
 //--- read python configuration parameters
   if ( !edm::readPSetsFrom(argv[1])->existsAs<edm::ParameterSet>("process") ) 
-    throw cms::Exception("produceNtuple_2lss_1tau") 
+    throw cms::Exception("produceNtuple_3l_1tau") 
       << "No ParameterSet 'process' found in configuration file = " << argv[1] << " !!\n";
 
   edm::ParameterSet cfg = edm::readPSetsFrom(argv[1])->getParameter<edm::ParameterSet>("process");
 
-  edm::ParameterSet cfg_produceNtuple = cfg.getParameter<edm::ParameterSet>("produceNtuple_2lss_1tau");
+  edm::ParameterSet cfg_produceNtuple = cfg.getParameter<edm::ParameterSet>("produceNtuple_3l_1tau");
 
   std::string treeName = cfg_produceNtuple.getParameter<std::string>("treeName");
 
@@ -102,14 +102,14 @@ int main(int argc, char* argv[])
   int era = -1;
   if      ( era_string == "2015" ) era = kEra_2015;
   else if ( era_string == "2016" ) era = kEra_2016;
-  else throw cms::Exception("produceNtuple_2lss_1tau") 
+  else throw cms::Exception("produceNtuple_3l_1tau") 
     << "Invalid Configuration parameter 'era' = " << era_string << " !!\n";
 
   std::string leptonSelection_string = cfg_produceNtuple.getParameter<std::string>("leptonSelection").data();
   int leptonSelection = -1;
   if      ( leptonSelection_string == "Loose"    ) leptonSelection = kLoose;
   else if ( leptonSelection_string == "Fakeable" ) leptonSelection = kFakeable;
-  else throw cms::Exception("produceNtuple_2lss_1tau") 
+  else throw cms::Exception("produceNtuple_3l_1tau") 
     << "Invalid Configuration parameter 'leptonSelection' = " << leptonSelection_string << " !!\n";
   int minNumLeptons = cfg_produceNtuple.getParameter<int>("minNumLeptons");
 
@@ -117,7 +117,7 @@ int main(int argc, char* argv[])
   int hadTauSelection = -1;
   if      ( hadTauSelection_string == "Loose"    ) hadTauSelection = kLoose;
   else if ( hadTauSelection_string == "Fakeable" ) hadTauSelection = kFakeable;
-  else throw cms::Exception("produceNtuple_2lss_1tau") 
+  else throw cms::Exception("produceNtuple_3l_1tau") 
     << "Invalid Configuration parameter 'hadTauSelection' = " << hadTauSelection_string << " !!\n";
   int minNumHadTaus = cfg_produceNtuple.getParameter<int>("minNumHadTaus");
 
@@ -159,7 +159,7 @@ int main(int argc, char* argv[])
   }
   
   if ( !(inputTree->GetListOfFiles()->GetEntries() >= 1) ) {
-    throw cms::Exception("produceNtuple_2lss_1tau") 
+    throw cms::Exception("produceNtuple_3l_1tau") 
       << "Failed to identify input Tree !!\n";
   }
   
@@ -196,7 +196,7 @@ int main(int argc, char* argv[])
   RecoHadTauCollectionSelectorLoose preselHadTauSelector(era);
   RecoHadTauCollectionSelectorFakeable fakeableHadTauSelector(era);
   // CV: lower thresholds on hadronic taus by 2 GeV 
-  //     with respect to thresholds applied on analysis level (in analyze_2lss_1tau.cc)
+  //     with respect to thresholds applied on analysis level (in analyze_3l_1tau.cc)
   preselHadTauSelector.set_min_pt(18.); 
   fakeableHadTauSelector.set_min_pt(18.);
   
@@ -274,18 +274,18 @@ int main(int argc, char* argv[])
 
   std::cout << "adding branches:" << std::endl;
   // CV: request MEM computation for this event 
-  //    (value stored in 'maxPermutations_addMEM_2lss_1tau' branch specifies maximum number of permutations for which the MEM computation is run;
-  //     in case the actual number of permutations exceeds the value stored in the branch, addMEM_2lss_1tau.cc will print a warning
+  //    (value stored in 'maxPermutations_addMEM_3l_1tau' branch specifies maximum number of permutations for which the MEM computation is run;
+  //     in case the actual number of permutations exceeds the value stored in the branch, addMEM_3l_1tau.cc will print a warning
   //     and skip the remaining permutations, in order not to exceed the computing time limits.)
-  Int_t maxPermutations_addMEM_2lss_1tau = 0;
-  std::cout << " maxPermutations_addMEM_2lss_1tau (type = I)" << std::endl;
-  outputTree->Branch("maxPermutations_addMEM_2lss_1tau", &maxPermutations_addMEM_2lss_1tau, "maxPermutations_addMEM_2lss_1tau/I");
+  Int_t maxPermutations_addMEM_3l_1tau = 0;
+  std::cout << " maxPermutations_addMEM_3l_1tau (type = I)" << std::endl;
+  outputTree->Branch("maxPermutations_addMEM_3l_1tau", &maxPermutations_addMEM_3l_1tau, "maxPermutations_addMEM_3l_1tau/I");
 
   int numEntries = inputTree->GetEntries();
   int analyzedEntries = 0;
   int selectedEntries = 0;
   cutFlowTableType cutFlowTable;
-  //CutFlowTableHistManager_2lss_1tau* cutFlowHistManager = new CutFlowTableHistManager_2lss_1tau(makeHistManager_cfg("produceNtuple_2lss_1tau",
+  //CutFlowTableHistManager_3l_1tau* cutFlowHistManager = new CutFlowTableHistManager_3l_1tau(makeHistManager_cfg("produceNtuple_3l_1tau",
   //  "cutFlow", "central"));
   //cutFlowHistManager->bookHistograms(fs);
   for ( int idxEntry = 0; idxEntry < numEntries && (maxEvents == -1 || idxEntry < maxEvents); ++idxEntry ) {
@@ -383,7 +383,7 @@ int main(int argc, char* argv[])
     const RecoLepton* selLepton_lead = selLeptons[0];
     const RecoLepton* selLepton_sublead = selLeptons[1];
     // CV: lower thresholds on leading and subleading lepton by 2 GeV 
-    //     with respect to thresholds applied on analysis level (in analyze_2lss_1tau.cc)
+    //     with respect to thresholds applied on analysis level (in analyze_3l_1tau.cc)
     double minPt_lead = -1.;
     if      ( era == kEra_2015 ) minPt_lead = 18.; 
     else if ( era == kEra_2016 ) minPt_lead = 23.;
@@ -455,28 +455,24 @@ int main(int argc, char* argv[])
 
 //--- check if MEM needs to be computed for this event
     std::vector<const RecoLepton*> fakeableLeptons = mergeLeptonCollections(fakeableElectrons, fakeableMuons);
-    bool passesMEt_LD = false;
-    LV mht_p4 = compMHT(fakeableLeptons, fakeableHadTaus, selJets);
-    double met_LD = compMEt_LD(met.p4_, mht_p4);
-    if ( fakeableMuons.size() >= 1 || met_LD >= 0.2 ) {
-      passesMEt_LD = true;
-    }
     bool failsZbosonMassVeto = false;
     for ( std::vector<const RecoLepton*>::const_iterator lepton1 = fakeableLeptons.begin();
 	  lepton1 != fakeableLeptons.end(); ++lepton1 ) {
       for ( std::vector<const RecoLepton*>::const_iterator lepton2 = lepton1 + 1;
 	    lepton2 != fakeableLeptons.end(); ++lepton2 ) {
-	double mass = ((*lepton1)->p4_ + (*lepton2)->p4_).mass();
-	if ( (*lepton1)->is_electron() && (*lepton2)->is_electron() && std::fabs(mass - z_mass) < z_window ) {
-	  failsZbosonMassVeto = true;
+	if ( (*lepton1)->pdgId_ == -(*lepton2)->pdgId_ ) { // pair of same flavor leptons of opposite charge
+	  double mass = ((*lepton1)->p4_ + (*lepton2)->p4_).mass();
+	  if ( std::fabs(mass - z_mass) < z_window ) {
+	    failsZbosonMassVeto = true;
+	  }
 	}
       }
     }
-    bool passesPreselection = (selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) && passesMEt_LD && !failsZbosonMassVeto;
-    if ( passesPreselection && fakeableLeptons.size() >= 2 && fakeableHadTaus.size() >= 1 ) {
-      maxPermutations_addMEM_2lss_1tau = TMath::Nint((1./2)*fakeableLeptons.size()*(fakeableLeptons.size() - 1)*fakeableHadTaus.size());
+    bool passesPreselection = (selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) && !failsZbosonMassVeto;
+    if ( passesPreselection && fakeableLeptons.size() >= 3 && fakeableHadTaus.size() >= 1 ) {
+      maxPermutations_addMEM_3l_1tau = TMath::Nint((1./6)*fakeableLeptons.size()*(fakeableLeptons.size() - 1)*(fakeableLeptons.size() - 2)*fakeableHadTaus.size());
     } else {
-      maxPermutations_addMEM_2lss_1tau = -1;
+      maxPermutations_addMEM_3l_1tau = -1;
     }
     
     muonWriter->write(preselMuons);
@@ -531,7 +527,7 @@ int main(int argc, char* argv[])
 	inputFileName != inputFiles.files().end(); ++inputFileName ) {
     TFile* inputFile = new TFile(inputFileName->data());
     if ( !inputFile ) 
-      throw cms::Exception("produceNtuple_2lss_1tau") 
+      throw cms::Exception("produceNtuple_3l_1tau") 
 	<< "Failed to open input File = '" << (*inputFileName) << "' !!\n";
     
     for ( vstring::const_iterator histogramName = copy_histograms.begin();
@@ -559,7 +555,7 @@ int main(int argc, char* argv[])
 												
   //delete cutFlowHistManager;											
 
-  clock.Show("produceNtuple_2lss_1tau");
+  clock.Show("produceNtuple_3l_1tau");
 
   return EXIT_SUCCESS;
 }
