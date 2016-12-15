@@ -293,9 +293,9 @@ class analyzeConfig:
         )
 
     def create_hadd_python_file(self, inputFiles, outputFile, hadd_stage_name):
-        sbatch_hadd_file = os.path.join(
-          self.outputDir, "sbatch_hadd_%s_%s.py" % (self.channel, hadd_stage_name))
+        sbatch_hadd_file = os.path.join(self.outputDir, "sbatch_hadd_%s_%s.py" % (self.channel, hadd_stage_name))
         tools_createScript_sbatch_hadd(sbatch_hadd_file, inputFiles, outputFile, hadd_stage_name, self.workingDir)
+        return sbatch_hadd_file
 
     def addToMakefile_analyze(self, lines_makefile):
         """Adds the commands to Makefile that are necessary for running the analysis code on the Ntuple and filling the histograms
