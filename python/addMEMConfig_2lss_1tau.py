@@ -169,7 +169,7 @@ class addMEMConfig_2lss_1tau:
             sbatch_hadd_file = os.path.join(
                 self.outputDir, DKEY_HADD, "sbatch_hadd_%s_%s_%d.py" % (self.channel, 'cat', hadd_fileset_id)
             )
-            tools_createScript_sbatch_hadd(sbatch_hadd_file, hadd_in_files, hadd_out, 'cat', self.workingDir)
+            tools_createScript_sbatch_hadd(sbatch_hadd_file, hadd_in_files, hadd_out, 'cat', self.workingDir, False)
 
             lines_makefile.append("%s: %s" % (hadd_out, " ".join(hadd_in_files)))
             lines_makefile.append("\t%s %s" % ("rm -f", hadd_out))

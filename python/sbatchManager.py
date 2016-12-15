@@ -58,13 +58,15 @@ class sbatchManager:
         self,
         inputFiles=None,
         outputFile=None,
-        maximum_histograms_in_batch=20
+        maximum_histograms_in_batch=20,
+        waitForJobs=True
     ):
         cluster_histogram_aggregator = ClusterHistogramAggregator(
             input_histograms=inputFiles,
             final_output_histogram=outputFile,
             maximum_histograms_in_batch=maximum_histograms_in_batch,
-            sbatch_manager=self
+            waitForJobs = waitForJobs,
+            sbatch_manager=self,
         )
 
         cluster_histogram_aggregator.create_output_histogram()

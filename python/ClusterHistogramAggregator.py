@@ -1,3 +1,4 @@
+import os
 
 class ClusterHistogramAggregator:
 
@@ -6,12 +7,14 @@ class ClusterHistogramAggregator:
         input_histograms=None,
         final_output_histogram=None,
         maximum_histograms_in_batch=20,
+        waitForJobs = True,
         sbatch_manager=None
     ):
         self.input_histograms = input_histograms
         self.final_output_histogram = final_output_histogram
         self.sbatch_manager = sbatch_manager
         self.maximum_histograms_in_batch = maximum_histograms_in_batch
+        self.waitForJobs = waitForJobs
 
     def create_output_histogram(
         self
@@ -83,7 +86,9 @@ class ClusterHistogramAggregator:
                 input_histograms=output_histograms,
                 output_histogram=final_output_histogram
             )
-            self.sbatch_manager.waitForJobs()
+
+            if self.waitForJobs:
+                self.sbatch_manager.waitForJobs()
 
         # Delete output files produced by "intermediate" levels
 
