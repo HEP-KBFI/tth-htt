@@ -92,8 +92,8 @@ class ClusterHistogramAggregator:
 
         # Delete output files produced by "intermediate" levels
 
-        for output_histogram in output_histograms:
-            os.remove(output_histogram)
+        # for output_histogram in output_histograms:
+        #    os.remove(output_histogram)
 
         return True
 

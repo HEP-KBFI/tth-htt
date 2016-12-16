@@ -62,27 +62,35 @@ if __name__ == '__main__':
     level  = logging.INFO,
     format = '%(asctime)s - %(levelname)s: %(message)s'
   )
+  class SmartFormatter(argparse.HelpFormatter):
+    def _split_lines(self, text, width):
+      if text.startswith('R|'):
+        return text[2:].splitlines()
+      return argparse.HelpFormatter._split_lines(self, text, width)
 
-  parser = argparse.ArgumentParser()
+  parser = argparse.ArgumentParser(formatter_class = lambda prog: SmartFormatter(prog, max_help_position = 35))
   parser.add_argument('-p', '--path', dest = 'path', metavar = 'path', required = True, type = str,
-                      help = 'Top level path containing Ntuples to be copied from')
+                      help = 'R|Top level path containing Ntuples to be copied from')
   parser.add_argument('-d', '--destination', dest = 'destination', metavar = 'path', required = True, type = str,
-                      help = 'Path to which the Ntuples will be copied')
+                      help = 'R|Path to which the Ntuples will be copied')
   parser.add_argument('-D', '--dictionary', dest = 'dictionary', metavar = 'file', required = True, type = str,
-                      help = 'Path to the reference dictionary supporting the source Ntuples')
+                      help = 'R|Path to the reference dictionary supporting the source Ntuples')
   parser.add_argument('-n', '--dict_name', dest = 'dict_name', metavar = 'NAME', required = True, type = str,
-                      help = 'Name of the dictionary (specified by -D), e.g. samples_2016')
-  parser.add_argument('-P', '--pythonize', dest = 'pythonize', action = 'store_true', default = False,
-                      help = 'Create Python dictionary for the new set of Ntuples (w/ prepended paths) NOT IMPLEMENTED')
+                      help = 'R|Name of the dictionary (specified by -D), e.g. samples_2016')
+  parser.add_argument('-t', '--test', dest = 'test', action = 'store_true', default = False,
+                      help = 'R|Test copying (doesn\'t actually copy) by printing out cp commands')
+  parser.add_argument('-f', '--force', dest = 'force', action = 'store_true', default = False,
+                      help = 'R|Force copying, regardless of missing file errors')
   parser.add_argument('-v', '--verbose', dest = 'verbose', action = 'store_true', default = False,
-                      help = 'Enable verbose printout')
+                      help = 'R|Enable verbose printout')
   args = parser.parse_args()
 
   source_path = args.path
   dest_path   = args.destination
   dict_path   = args.dictionary
   dict_name   = args.dict_name
-  pythonize   = args.pythonize
+  test_cp     = args.test
+  force       = args.force
   verbose     = args.verbose
 
   if verbose:
@@ -101,7 +109,7 @@ if __name__ == '__main__':
 
   copy_dict = []
 
-  p = re.compile('\d+')
+  p = re.compile('_(\d+?).root')
   for sample_name, sample_info in samples.iteritems():
     process_name = sample_info['process_name_specific']
     expected_path = os.path.join(source_path, process_name)
@@ -111,10 +119,13 @@ if __name__ == '__main__':
     logging.debug("Checking the files stored in {process_path}".format(process_path = expected_path))
 
     file_nrs = []
-    file_list = os.listdir(expected_path)
-    for f in file_list:
+    file_list = []
+    for f in os.listdir(expected_path):
       # we're interested in the last number which corresponds to exactly one VHbb Ntuple
-      file_nrs.append(int(p.findall(f)[-1]))
+      m = p.search(f)
+      if m:
+        file_nrs.append(int(m.group(1)))
+        file_list.append(f)
     file_nrs_set = set(file_nrs)
 
     #NB!!! we expect only one local_path entry with selection '*'
@@ -134,7 +145,7 @@ if __name__ == '__main__':
         nof_excess = len(excess), sample_name = process_name,
       ))
       has_errors = True
-    if has_errors:
+    if has_errors and not (test_cp or force):
       continue
 
     # we assume that the first part of the sample key is always contained in the original Ntuple base path
@@ -156,8 +167,9 @@ if __name__ == '__main__':
     ))
 
     # let's create the source <-> target arguments needed by copy_from_local
-    for f in file_list:
-      nr = int(p.findall(f)[-1])
+    for i in range(len(file_list)):
+      f = file_list[i]
+      nr = file_nrs[i]
       immediate_parent = "000" + str(nr / 1000)
       new_filename = "tree_%d.root" % nr
       new_fullpath = os.path.join(new_base_path, immediate_parent, new_filename)
@@ -166,6 +178,11 @@ if __name__ == '__main__':
         'target_path' : new_fullpath,
       })
 
-  # do a printout
   for entry in copy_dict:
-    copy_from_local(entry['source_path'], entry['target_path'], verbose)
+    if not test_cp:
+      copy_from_local(entry['source_path'], entry['target_path'], verbose)
+    else:
+      print('cp {source_file} {dest_file}'.format(
+        source_file = entry['source_path'],
+        dest_file   = entry['target_path'],
+      ))
