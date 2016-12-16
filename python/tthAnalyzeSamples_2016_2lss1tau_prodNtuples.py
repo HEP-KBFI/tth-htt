@@ -3,7 +3,7 @@ from collections import OrderedDict as OD
 samples_2016 = OD()
 
 # file generated with command:
-# check_broken -p /hdfs/local/karl/ttHNtupleProduction/2016/2016Dec13/ntuples/2lss_1tau -P -v -o
+# check_broken -p /hdfs/local/karl/ttHNtupleProduction/2016/2016Dec16/ntuples/2lss_1tau -P -v -o
 
 samples_2016["/DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM"] = OD([
   ("type",                  "mc"),
@@ -19,7 +19,7 @@ samples_2016["/DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunII
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec13/ntuples/2lss_1tau/DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/VHBB_HEPPY_V24bis_DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-amcatnloFXFX-Py8__spr16MAv2-puspr16_80r2as_2016_MAv2_v0-v1/160911_223234"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec16/ntuples/2lss_1tau/DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/VHBB_HEPPY_V24bis_DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-amcatnloFXFX-Py8__spr16MAv2-puspr16_80r2as_2016_MAv2_v0-v1/160911_223234"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -40,7 +40,7 @@ samples_2016["/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISprin
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec13/ntuples/2lss_1tau/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/VHBB_HEPPY_V24_DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-Py8__spr16MAv2-puspr16_HLT_80r2as_v14_ext1-v1/160909_070517"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec16/ntuples/2lss_1tau/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/VHBB_HEPPY_V24_DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-Py8__spr16MAv2-puspr16_HLT_80r2as_v14_ext1-v1/160909_070517"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -59,7 +59,7 @@ samples_2016["/DoubleEG/Run2016B-PromptReco-v2/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec13/ntuples/2lss_1tau/DoubleEG/VHBB_HEPPY_D24_DoubleEG__Run2016B-PromptReco-v2/161006_213052"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec16/ntuples/2lss_1tau/DoubleEG/VHBB_HEPPY_D24_DoubleEG__Run2016B-PromptReco-v2/161006_213052"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -78,7 +78,7 @@ samples_2016["/DoubleEG/Run2016C-PromptReco-v2/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec13/ntuples/2lss_1tau/DoubleEG/VHBB_HEPPY_D24_DoubleEG__Run2016C-PromptReco-v2/161006_213126"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec16/ntuples/2lss_1tau/DoubleEG/VHBB_HEPPY_D24_DoubleEG__Run2016C-PromptReco-v2/161006_213126"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -97,7 +97,7 @@ samples_2016["/DoubleEG/Run2016D-PromptReco-v2/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec13/ntuples/2lss_1tau/DoubleEG/VHBB_HEPPY_D24_DoubleEG__Run2016D-PromptReco-v2/161006_213202"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec16/ntuples/2lss_1tau/DoubleEG/VHBB_HEPPY_D24_DoubleEG__Run2016D-PromptReco-v2/161006_213202"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -116,7 +116,7 @@ samples_2016["/DoubleMuon/Run2016B-PromptReco-v2/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec13/ntuples/2lss_1tau/DoubleMuon/VHBB_HEPPY_V24_DoubleMuon__Run2016B-PromptReco-v2/161006_213429"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec16/ntuples/2lss_1tau/DoubleMuon/VHBB_HEPPY_V24_DoubleMuon__Run2016B-PromptReco-v2/161006_213429"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -135,7 +135,7 @@ samples_2016["/DoubleMuon/Run2016C-PromptReco-v2/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec13/ntuples/2lss_1tau/DoubleMuon/VHBB_HEPPY_V24_DoubleMuon__Run2016C-PromptReco-v2/161011_101655"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec16/ntuples/2lss_1tau/DoubleMuon/VHBB_HEPPY_V24_DoubleMuon__Run2016C-PromptReco-v2/161011_101655"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -154,7 +154,7 @@ samples_2016["/DoubleMuon/Run2016D-PromptReco-v2/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec13/ntuples/2lss_1tau/DoubleMuon/VHBB_HEPPY_V24_DoubleMuon__Run2016D-PromptReco-v2/161006_213542"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec16/ntuples/2lss_1tau/DoubleMuon/VHBB_HEPPY_V24_DoubleMuon__Run2016D-PromptReco-v2/161006_213542"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -173,7 +173,7 @@ samples_2016["/MuonEG/Run2016B-PromptReco-v2/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec13/ntuples/2lss_1tau/MuonEG/VHBB_HEPPY_V24_MuonEG__Run2016B-PromptReco-v2/160920_122430"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec16/ntuples/2lss_1tau/MuonEG/VHBB_HEPPY_V24_MuonEG__Run2016B-PromptReco-v2/160920_122430"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -192,7 +192,7 @@ samples_2016["/MuonEG/Run2016C-PromptReco-v2/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec13/ntuples/2lss_1tau/MuonEG/VHBB_HEPPY_V24_MuonEG__Run2016C-PromptReco-v2/160920_122508"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec16/ntuples/2lss_1tau/MuonEG/VHBB_HEPPY_V24_MuonEG__Run2016C-PromptReco-v2/160920_122508"),
         ("selection", "*"),
         ("blacklist", [556]),
       ]),
@@ -211,7 +211,7 @@ samples_2016["/MuonEG/Run2016D-PromptReco-v2/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec13/ntuples/2lss_1tau/MuonEG/VHBB_HEPPY_V24_MuonEG__Run2016D-PromptReco-v2/160920_122552"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec16/ntuples/2lss_1tau/MuonEG/VHBB_HEPPY_V24_MuonEG__Run2016D-PromptReco-v2/160920_122552"),
         ("selection", "*"),
         ("blacklist", [16, 17, 18, 22, 423, 628, 789, 927]),
       ]),
@@ -232,7 +232,7 @@ samples_2016["/ST_s-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1/
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec13/ntuples/2lss_1tau/ST_s-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1/VHBB_HEPPY_V24_ST_s-channel_4f_leptonDecays_13TeV-amcatnlo-Py8_TuneCUETP8M1__spr16MAv2-puspr16_80r2as_2016_MAv2_v0-v1/160909_063446"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec16/ntuples/2lss_1tau/ST_s-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1/VHBB_HEPPY_V24_ST_s-channel_4f_leptonDecays_13TeV-amcatnlo-Py8_TuneCUETP8M1__spr16MAv2-puspr16_80r2as_2016_MAv2_v0-v1/160909_063446"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -253,7 +253,7 @@ samples_2016["/ST_t-channel_antitop_4f_inclusiveDecays_13TeV-powhegV2-madspin-py
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec13/ntuples/2lss_1tau/ST_t-channel_antitop_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia8_TuneCUETP8M1/VHBB_HEPPY_V24_ST_t-channel_antitop_4f_inclusiveDecays_13TeV-powhegV2-madspin-Py8_TuneCUETP8M1__spr16MAv2-puspr16_80r2as_2016_MAv2_v0-v1/160909_063650"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec16/ntuples/2lss_1tau/ST_t-channel_antitop_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia8_TuneCUETP8M1/VHBB_HEPPY_V24_ST_t-channel_antitop_4f_inclusiveDecays_13TeV-powhegV2-madspin-Py8_TuneCUETP8M1__spr16MAv2-puspr16_80r2as_2016_MAv2_v0-v1/160909_063650"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -274,7 +274,7 @@ samples_2016["/ST_t-channel_top_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec13/ntuples/2lss_1tau/ST_t-channel_top_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia8_TuneCUETP8M1/VHBB_HEPPY_V24_ST_t-channel_top_4f_inclusiveDecays_13TeV-powhegV2-madspin-Py8_TuneCUETP8M1__spr16MAv2-puspr16_80r2as_2016_MAv2_v0-v1/160909_070435"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec16/ntuples/2lss_1tau/ST_t-channel_top_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia8_TuneCUETP8M1/VHBB_HEPPY_V24_ST_t-channel_top_4f_inclusiveDecays_13TeV-powhegV2-madspin-Py8_TuneCUETP8M1__spr16MAv2-puspr16_80r2as_2016_MAv2_v0-v1/160909_070435"),
         ("selection", "*"),
         ("blacklist", [159, 246]),
       ]),
@@ -295,7 +295,7 @@ samples_2016["/ST_tW_antitop_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec13/ntuples/2lss_1tau/ST_tW_antitop_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1/VHBB_HEPPY_V24_ST_tW_antitop_5f_inclusiveDecays_13TeV-powheg-Py8_TuneCUETP8M1__spr16MAv2-puspr16_80r2as_2016_MAv2_v0-v1/160909_063328"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec16/ntuples/2lss_1tau/ST_tW_antitop_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1/VHBB_HEPPY_V24_ST_tW_antitop_5f_inclusiveDecays_13TeV-powheg-Py8_TuneCUETP8M1__spr16MAv2-puspr16_80r2as_2016_MAv2_v0-v1/160909_063328"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -316,7 +316,7 @@ samples_2016["/ST_tW_top_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1/Ru
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec13/ntuples/2lss_1tau/ST_tW_top_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1/VHBB_HEPPY_V24_ST_tW_top_5f_inclusiveDecays_13TeV-powheg-Py8_TuneCUETP8M1__spr16MAv2-puspr16_80r2as_2016_MAv2_v0-v2/160909_063526"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec16/ntuples/2lss_1tau/ST_tW_top_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1/VHBB_HEPPY_V24_ST_tW_top_5f_inclusiveDecays_13TeV-powheg-Py8_TuneCUETP8M1__spr16MAv2-puspr16_80r2as_2016_MAv2_v0-v2/160909_063526"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -335,7 +335,7 @@ samples_2016["/SingleElectron/Run2016B-PromptReco-v2/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec13/ntuples/2lss_1tau/SingleElectron/VHBB_HEPPY_V24_SingleElectron__Run2016B-PromptReco-v2/160910_204523"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec16/ntuples/2lss_1tau/SingleElectron/VHBB_HEPPY_V24_SingleElectron__Run2016B-PromptReco-v2/160910_204523"),
         ("selection", "*"),
         ("blacklist", [819]),
       ]),
@@ -354,7 +354,7 @@ samples_2016["/SingleElectron/Run2016C-PromptReco-v2/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec13/ntuples/2lss_1tau/SingleElectron/VHBB_HEPPY_V24_SingleElectron__Run2016C-PromptReco-v2/160910_204634"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec16/ntuples/2lss_1tau/SingleElectron/VHBB_HEPPY_V24_SingleElectron__Run2016C-PromptReco-v2/160910_204634"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -373,7 +373,7 @@ samples_2016["/SingleElectron/Run2016D-PromptReco-v2/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec13/ntuples/2lss_1tau/SingleElectron/VHBB_HEPPY_V24_SingleElectron__Run2016D-PromptReco-v2/160910_204714"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec16/ntuples/2lss_1tau/SingleElectron/VHBB_HEPPY_V24_SingleElectron__Run2016D-PromptReco-v2/160910_204714"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -392,7 +392,7 @@ samples_2016["/SingleMuon/Run2016B-PromptReco-v2/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec13/ntuples/2lss_1tau/SingleMuon/VHBB_HEPPY_V24_SingleMuon__Run2016B-PromptReco-v2/160910_205020"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec16/ntuples/2lss_1tau/SingleMuon/VHBB_HEPPY_V24_SingleMuon__Run2016B-PromptReco-v2/160910_205020"),
         ("selection", "*"),
         ("blacklist", [2173]),
       ]),
@@ -411,7 +411,7 @@ samples_2016["/SingleMuon/Run2016C-PromptReco-v2/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec13/ntuples/2lss_1tau/SingleMuon/VHBB_HEPPY_V24_SingleMuon__Run2016C-PromptReco-v2/160910_205128"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec16/ntuples/2lss_1tau/SingleMuon/VHBB_HEPPY_V24_SingleMuon__Run2016C-PromptReco-v2/160910_205128"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -430,7 +430,7 @@ samples_2016["/SingleMuon/Run2016D-PromptReco-v2/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec13/ntuples/2lss_1tau/SingleMuon/VHBB_HEPPY_V24_SingleMuon__Run2016D-PromptReco-v2/160910_205212"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec16/ntuples/2lss_1tau/SingleMuon/VHBB_HEPPY_V24_SingleMuon__Run2016D-PromptReco-v2/160910_205212"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -451,7 +451,7 @@ samples_2016["/TGJets_TuneCUETP8M1_13TeV_amcatnlo_madspin_pythia8/RunIISpring16M
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec13/ntuples/2lss_1tau/TGJets_TuneCUETP8M1_13TeV_amcatnlo_madspin_pythia8/VHBB_HEPPY_V24bis_TGJets_TuneCUETP8M1_13TeV_amcatnlo_madspin_Py8__spr16MAv2-puspr16_80r2as_2016_MAv2_v0_ext1-v1/160911_224639"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec16/ntuples/2lss_1tau/TGJets_TuneCUETP8M1_13TeV_amcatnlo_madspin_pythia8/VHBB_HEPPY_V24bis_TGJets_TuneCUETP8M1_13TeV_amcatnlo_madspin_Py8__spr16MAv2-puspr16_80r2as_2016_MAv2_v0_ext1-v1/160911_224639"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -472,7 +472,7 @@ samples_2016["/TTGJets_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/RunIISpri
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec13/ntuples/2lss_1tau/TTGJets_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/VHBB_HEPPY_V24bis_TTGJets_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-Py8__spr16MAv2-puspr16_80r2as_2016_MAv2_v0-v1/160911_223929"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec16/ntuples/2lss_1tau/TTGJets_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/VHBB_HEPPY_V24bis_TTGJets_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-Py8__spr16MAv2-puspr16_80r2as_2016_MAv2_v0-v1/160911_223929"),
         ("selection", "*"),
         ("blacklist", [1, 6, 14, 25, 39, 52]),
       ]),
@@ -493,7 +493,7 @@ samples_2016["/TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring1
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec13/ntuples/2lss_1tau/TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/VHBB_HEPPY_V24bis_TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-Py8__spr16MAv2-puspr16_80r2as_2016_MAv2_v0-v4/160911_223748"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec16/ntuples/2lss_1tau/TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/VHBB_HEPPY_V24bis_TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-Py8__spr16MAv2-puspr16_80r2as_2016_MAv2_v0-v4/160911_223748"),
         ("selection", "*"),
         ("blacklist", [47, 59]),
       ]),
@@ -514,7 +514,7 @@ samples_2016["/TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring1
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec13/ntuples/2lss_1tau/TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/VHBB_HEPPY_V24bis_TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-Py8__spr16MAv2-puspr16_80r2as_2016_MAv2_v0_ext1-v1/160911_223310"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec16/ntuples/2lss_1tau/TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/VHBB_HEPPY_V24bis_TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-Py8__spr16MAv2-puspr16_80r2as_2016_MAv2_v0_ext1-v1/160911_223310"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -535,7 +535,7 @@ samples_2016["/TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/Run
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec13/ntuples/2lss_1tau/TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/VHBB_HEPPY_V24bis_TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-Py8__spr16MAv2-puspr16_80r2as_2016_MAv2_v0-v1/160911_223601"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec16/ntuples/2lss_1tau/TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/VHBB_HEPPY_V24bis_TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-Py8__spr16MAv2-puspr16_80r2as_2016_MAv2_v0-v1/160911_223601"),
         ("selection", "*"),
         ("blacklist", [33]),
       ]),
@@ -556,7 +556,7 @@ samples_2016["/TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/Run
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec13/ntuples/2lss_1tau/TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/VHBB_HEPPY_V24bis_TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-Py8__spr16MAv2-puspr16_80r2as_2016_MAv2_v0_ext1-v1/160911_223200"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec16/ntuples/2lss_1tau/TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/VHBB_HEPPY_V24bis_TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-Py8__spr16MAv2-puspr16_80r2as_2016_MAv2_v0_ext1-v1/160911_223200"),
         ("selection", "*"),
         ("blacklist", [1, 3, 5, 6, 7, 8, 11, 13, 14, 15, 16, 17, 18, 19, 20, 22, 23, 24, 25, 26, 28, 29, 30, 31, 32, 33, 34, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 57, 58, 59, 61, 62, 64, 65, 66, 67, 68, 70, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 90, 92, 93, 94, 95, 96, 97, 98, 99, 101, 102, 106, 107, 108, 109, 110, 112, 113, 114, 116, 117, 118, 119, 121, 123, 124, 125, 126, 127, 128, 129, 130, 132, 136, 137, 138, 139, 140, 141, 142, 143, 145, 146, 147, 148, 149, 150, 152, 153, 154, 156, 157, 158, 159, 160, 161, 162, 164, 167, 168, 169, 170, 172, 173, 176, 177, 178, 179, 180, 182, 183, 188, 189, 190, 191, 192, 194, 196, 197, 199, 200, 201, 202, 204, 205, 206, 207, 208, 212, 213, 215, 217, 218, 219, 220, 221, 222, 223, 227]),
       ]),
@@ -577,7 +577,7 @@ samples_2016["/TTJets_SingleLeptFromTbar_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec13/ntuples/2lss_1tau/TTJets_SingleLeptFromTbar_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/VHBB_HEPPY_V24bis_TTJets_SingleLeptFromTbar_TuneCUETP8M1_13TeV-madgraphMLM-Py8__spr16MAv2-puspr16_80r2as_2016_MAv2_v0-v1/160911_223528"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec16/ntuples/2lss_1tau/TTJets_SingleLeptFromTbar_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/VHBB_HEPPY_V24bis_TTJets_SingleLeptFromTbar_TuneCUETP8M1_13TeV-madgraphMLM-Py8__spr16MAv2-puspr16_80r2as_2016_MAv2_v0-v1/160911_223528"),
         ("selection", "*"),
         ("blacklist", [49, 54]),
       ]),
@@ -598,7 +598,7 @@ samples_2016["/TTJets_SingleLeptFromTbar_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec13/ntuples/2lss_1tau/TTJets_SingleLeptFromTbar_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/VHBB_HEPPY_V24bis_TTJets_SingleLeptFromTbar_TuneCUETP8M1_13TeV-madgraphMLM-Py8__spr16MAv2-puspr16_80r2as_2016_MAv2_v0_ext1-v1/160911_223125"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec16/ntuples/2lss_1tau/TTJets_SingleLeptFromTbar_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/VHBB_HEPPY_V24bis_TTJets_SingleLeptFromTbar_TuneCUETP8M1_13TeV-madgraphMLM-Py8__spr16MAv2-puspr16_80r2as_2016_MAv2_v0_ext1-v1/160911_223125"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -619,7 +619,7 @@ samples_2016["/TTTT_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISpring16MiniAODv2-P
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec13/ntuples/2lss_1tau/TTTT_TuneCUETP8M1_13TeV-amcatnlo-pythia8/VHBB_HEPPY_V24bis_TTTT_TuneCUETP8M1_13TeV-amcatnlo-Py8__spr16MAv2-puspr16_80r2as_2016_MAv2_v0_ext1-v1/160911_224827"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec16/ntuples/2lss_1tau/TTTT_TuneCUETP8M1_13TeV-amcatnlo-pythia8/VHBB_HEPPY_V24bis_TTTT_TuneCUETP8M1_13TeV-amcatnlo-Py8__spr16MAv2-puspr16_80r2as_2016_MAv2_v0_ext1-v1/160911_224827"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -640,7 +640,7 @@ samples_2016["/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/RunI
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec13/ntuples/2lss_1tau/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/VHBB_HEPPY_V24bis_TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-Py8__spr16MAv2-premix_withHLT_80r2as_v14-v1/161005_140021"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec16/ntuples/2lss_1tau/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/VHBB_HEPPY_V24bis_TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-Py8__spr16MAv2-premix_withHLT_80r2as_v14-v1/161005_140021"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -661,7 +661,7 @@ samples_2016["/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/RunI
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec13/ntuples/2lss_1tau/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/VHBB_HEPPY_V24bis_TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-Py8__spr16MAv2-premix_withHLT_80r2as_v14_ext1-v1/161005_140103"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec16/ntuples/2lss_1tau/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/VHBB_HEPPY_V24bis_TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-Py8__spr16MAv2-premix_withHLT_80r2as_v14_ext1-v1/161005_140103"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -682,7 +682,7 @@ samples_2016["/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/RunI
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec13/ntuples/2lss_1tau/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/VHBB_HEPPY_V24bis_TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-Py8__spr16MAv2-puspr16_80r2as_2016_MAv2_v0-v1/160911_225800"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec16/ntuples/2lss_1tau/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/VHBB_HEPPY_V24bis_TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-Py8__spr16MAv2-puspr16_80r2as_2016_MAv2_v0-v1/160911_225800"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -703,7 +703,7 @@ samples_2016["/TTW/spring16DR80v6aMiniAODv1/FASTSIM"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec13/ntuples/2lss_1tau/TTW_FastSim/TTW_FastSim/0"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec16/ntuples/2lss_1tau/TTW_FastSim"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -724,7 +724,7 @@ samples_2016["/TTZToLLNuNu_M-10_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISpring1
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec13/ntuples/2lss_1tau/TTZToLLNuNu_M-10_TuneCUETP8M1_13TeV-amcatnlo-pythia8/VHBB_HEPPY_V24bis_TTZToLLNuNu_M-10_TuneCUETP8M1_13TeV-amcatnlo-Py8__spr16MAv2-premix_withHLT_80r2as_v14_ext1-v1/160911_224606"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec16/ntuples/2lss_1tau/TTZToLLNuNu_M-10_TuneCUETP8M1_13TeV-amcatnlo-pythia8/VHBB_HEPPY_V24bis_TTZToLLNuNu_M-10_TuneCUETP8M1_13TeV-amcatnlo-Py8__spr16MAv2-premix_withHLT_80r2as_v14_ext1-v1/160911_224606"),
         ("selection", "*"),
         ("blacklist", [16]),
       ]),
@@ -745,7 +745,7 @@ samples_2016["/TTZToLLNuNu_M-10_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISpring1
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec13/ntuples/2lss_1tau/TTZToLLNuNu_M-10_TuneCUETP8M1_13TeV-amcatnlo-pythia8/VHBB_HEPPY_V24bis_TTZToLLNuNu_M-10_TuneCUETP8M1_13TeV-amcatnlo-Py8__spr16MAv2-puspr16_80r2as_2016_MAv2_v0-v1/160911_225425"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec16/ntuples/2lss_1tau/TTZToLLNuNu_M-10_TuneCUETP8M1_13TeV-amcatnlo-pythia8/VHBB_HEPPY_V24bis_TTZToLLNuNu_M-10_TuneCUETP8M1_13TeV-amcatnlo-Py8__spr16MAv2-puspr16_80r2as_2016_MAv2_v0-v1/160911_225425"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -766,7 +766,7 @@ samples_2016["/TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16MiniAODv1-PUSpr
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec13/ntuples/2lss_1tau/TT_TuneCUETP8M1_13TeV-powheg-pythia8/VHBB_HEPPY_D24_TT_TuneCUETP8M1_13TeV-powheg-Py8__spr16MiniAODv1-puspr16_80r2as_2016_v3_ext4-v1/161107_100027"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec16/ntuples/2lss_1tau/TT_TuneCUETP8M1_13TeV-powheg-pythia8/VHBB_HEPPY_D24_TT_TuneCUETP8M1_13TeV-powheg-Py8__spr16MiniAODv1-puspr16_80r2as_2016_v3_ext4-v1/161107_100027"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -787,7 +787,7 @@ samples_2016["/TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16MiniAODv1-PUSpr
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec13/ntuples/2lss_1tau/TT_TuneCUETP8M1_13TeV-powheg-pythia8/VHBB_HEPPY_V24_TT_TuneCUETP8M1_13TeV-powheg-Py8__spr16MAv2-puspr16_HLT_80r2as_v14_ext3-v1/160909_063406"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec16/ntuples/2lss_1tau/TT_TuneCUETP8M1_13TeV-powheg-pythia8/VHBB_HEPPY_V24_TT_TuneCUETP8M1_13TeV-powheg-Py8__spr16MAv2-puspr16_HLT_80r2as_v14_ext3-v1/160909_063406"),
         ("selection", "*"),
         ("blacklist", [600]),
       ]),
@@ -808,7 +808,7 @@ samples_2016["/WGToLNuG_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16Mini
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec13/ntuples/2lss_1tau/WGToLNuG_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/VHBB_HEPPY_V24bis_WGToLNuG_TuneCUETP8M1_13TeV-madgraphMLM-Py8__spr16MAv2-puspr16_80r2as_2016_MAv2_v0-v1/160911_223823"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec16/ntuples/2lss_1tau/WGToLNuG_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/VHBB_HEPPY_V24bis_WGToLNuG_TuneCUETP8M1_13TeV-madgraphMLM-Py8__spr16MAv2-puspr16_80r2as_2016_MAv2_v0-v1/160911_223823"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -829,7 +829,7 @@ samples_2016["/WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring16M
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec13/ntuples/2lss_1tau/WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/VHBB_HEPPY_V24_WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-Py8__spr16MAv2-puspr16_HLT_80r2as_v14_ext1-v1/160909_070745"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec16/ntuples/2lss_1tau/WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/VHBB_HEPPY_V24_WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-Py8__spr16MAv2-puspr16_HLT_80r2as_v14_ext1-v1/160909_070745"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -850,7 +850,7 @@ samples_2016["/WWTo2L2Nu_13TeV-powheg/RunIISpring16MiniAODv2-PUSpring16_80X_mcRu
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec13/ntuples/2lss_1tau/WWTo2L2Nu_13TeV-powheg/VHBB_HEPPY_V24bis___spr16MAv2-puspr16_80r2as_2016_MAv2_v0-v1/160911_224455"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec16/ntuples/2lss_1tau/WWTo2L2Nu_13TeV-powheg/VHBB_HEPPY_V24bis_WWTo2L2Nu_13TeV-powheg__spr16MAv2-puspr16_80r2as_2016_MAv2_v0-v1/160911_224455"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -871,7 +871,7 @@ samples_2016["/WW_DoubleScattering_13TeV-pythia8/RunIISpring16MiniAODv2-PUSpring
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec13/ntuples/2lss_1tau/WW_DoubleScattering_13TeV-pythia8/VHBB_HEPPY_V24bis_WW_DoubleScattering_13TeV-Py8__spr16MAv2-puspr16_80r2as_2016_MAv2_v0-v1/160911_225013"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec16/ntuples/2lss_1tau/WW_DoubleScattering_13TeV-pythia8/VHBB_HEPPY_V24bis_WW_DoubleScattering_13TeV-Py8__spr16MAv2-puspr16_80r2as_2016_MAv2_v0-v1/160911_225013"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -892,7 +892,7 @@ samples_2016["/WZTo3LNu_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16MiniAODv2
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec13/ntuples/2lss_1tau/WZTo3LNu_TuneCUETP8M1_13TeV-powheg-pythia8/VHBB_HEPPY_V24bis_WZTo3LNu_TuneCUETP8M1_13TeV-powheg-Py8__spr16MAv2-puspr16_80r2as_2016_MAv2_v0-v1/160911_224418"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec16/ntuples/2lss_1tau/WZTo3LNu_TuneCUETP8M1_13TeV-powheg-pythia8/VHBB_HEPPY_V24bis_WZTo3LNu_TuneCUETP8M1_13TeV-powheg-Py8__spr16MAv2-puspr16_80r2as_2016_MAv2_v0-v1/160911_224418"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -913,7 +913,7 @@ samples_2016["/WZZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISpring16MiniAODv2-PU
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec13/ntuples/2lss_1tau/WZZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8/VHBB_HEPPY_V24bis_WZZ_TuneCUETP8M1_13TeV-amcatnlo-Py8__spr16MAv2-puspr16_80r2as_2016_MAv2_v0-v1/160911_225836"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec16/ntuples/2lss_1tau/WZZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8/VHBB_HEPPY_V24bis_WZZ_TuneCUETP8M1_13TeV-amcatnlo-Py8__spr16MAv2-puspr16_80r2as_2016_MAv2_v0-v1/160911_225836"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -934,7 +934,7 @@ samples_2016["/WpWpJJ_EWK-QCD_TuneCUETP8M1_13TeV-madgraph-pythia8/RunIISpring16M
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec13/ntuples/2lss_1tau/WpWpJJ_EWK-QCD_TuneCUETP8M1_13TeV-madgraph-pythia8/VHBB_HEPPY_V24bis_WpWpJJ_EWK-QCD_TuneCUETP8M1_13TeV-madgraph-Py8__spr16MAv2-puspr16_80r2as_2016_MAv2_v0-v2/160911_225910"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec16/ntuples/2lss_1tau/WpWpJJ_EWK-QCD_TuneCUETP8M1_13TeV-madgraph-pythia8/VHBB_HEPPY_V24bis_WpWpJJ_EWK-QCD_TuneCUETP8M1_13TeV-madgraph-Py8__spr16MAv2-puspr16_80r2as_2016_MAv2_v0-v2/160911_225910"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -955,7 +955,7 @@ samples_2016["/ZGTo2LG_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring16Mini
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec13/ntuples/2lss_1tau/ZGTo2LG_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/VHBB_HEPPY_V24bis_ZGTo2LG_TuneCUETP8M1_13TeV-amcatnloFXFX-Py8__spr16MAv2-puspr16_80r2as_2016_MAv2_v0-v1/160911_224112"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec16/ntuples/2lss_1tau/ZGTo2LG_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/VHBB_HEPPY_V24bis_ZGTo2LG_TuneCUETP8M1_13TeV-amcatnloFXFX-Py8__spr16MAv2-puspr16_80r2as_2016_MAv2_v0-v1/160911_224112"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -976,7 +976,7 @@ samples_2016["/ZGTo2LG_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring16Mini
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec13/ntuples/2lss_1tau/ZGTo2LG_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/VHBB_HEPPY_V24bis_ZGTo2LG_TuneCUETP8M1_13TeV-amcatnloFXFX-Py8__spr16MAv2-puspr16_80r2as_2016_MAv2_v0_ext1-v1/160911_223418"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec16/ntuples/2lss_1tau/ZGTo2LG_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/VHBB_HEPPY_V24bis_ZGTo2LG_TuneCUETP8M1_13TeV-amcatnloFXFX-Py8__spr16MAv2-puspr16_80r2as_2016_MAv2_v0_ext1-v1/160911_223418"),
         ("selection", "*"),
         ("blacklist", [25, 27, 28, 47, 48, 55, 56, 63, 64, 74, 75, 77, 78, 79, 80]),
       ]),
@@ -997,7 +997,7 @@ samples_2016["/ZZTo4L_13TeV-amcatnloFXFX-pythia8/RunIISpring16MiniAODv2-PUSpring
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec13/ntuples/2lss_1tau/ZZTo4L_13TeV-amcatnloFXFX-pythia8/VHBB_HEPPY_V24bis_ZZTo4L_13TeV-amcatnloFXFX-Py8__spr16MAv2-puspr16_HLT_80r2as_v14-v1/160911_223636"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec16/ntuples/2lss_1tau/ZZTo4L_13TeV-amcatnloFXFX-pythia8/VHBB_HEPPY_V24bis_ZZTo4L_13TeV-amcatnloFXFX-Py8__spr16MAv2-puspr16_HLT_80r2as_v14-v1/160911_223636"),
         ("selection", "*"),
         ("blacklist", [11, 12, 14, 16, 24, 25, 29, 31, 35]),
       ]),
@@ -1018,7 +1018,7 @@ samples_2016["/tZq_ll_4f_13TeV-amcatnlo-pythia8_TuneCUETP8M1/RunIISpring16MiniAO
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec13/ntuples/2lss_1tau/tZq_ll_4f_13TeV-amcatnlo-pythia8_TuneCUETP8M1/VHBB_HEPPY_V24bis_tZq_ll_4f_13TeV-amcatnlo-Py8_TuneCUETP8M1__spr16MAv2-puspr16_80r2as_2016_MAv2_v0-v1/160911_224340"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec16/ntuples/2lss_1tau/tZq_ll_4f_13TeV-amcatnlo-pythia8_TuneCUETP8M1/VHBB_HEPPY_V24bis_tZq_ll_4f_13TeV-amcatnlo-Py8_TuneCUETP8M1__spr16MAv2-puspr16_80r2as_2016_MAv2_v0-v1/160911_224340"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -1039,7 +1039,7 @@ samples_2016["/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/Ru
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec13/ntuples/2lss_1tau/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/VHBB_HEPPY_V24bis_ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_Py8_mWCutfix__spr16MAv2-puspr16_HLT_80r2as_v14_ext1-v1/160911_223711"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2016Dec16/ntuples/2lss_1tau/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/VHBB_HEPPY_V24bis_ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_Py8_mWCutfix__spr16MAv2-puspr16_HLT_80r2as_v14_ext1-v1/160911_223711"),
         ("selection", "*"),
         ("blacklist", [10, 11, 14, 16, 20, 22, 23, 26, 29, 30, 31, 33, 34, 38, 39, 43, 44, 45, 51, 54, 57, 62, 63, 64, 66, 67, 68, 70, 71, 72, 73, 75, 76, 77, 79, 80, 81, 89, 98, 99]),
       ]),
