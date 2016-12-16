@@ -2,6 +2,7 @@ import logging, re
 
 from tthAnalysis.HiggsToTauTau.analyzeConfig import *
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists
+from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg, createFile, generateInputFileList
 
 def get_lepton_and_hadTau_selection_and_frWeight(lepton_and_hadTau_selection, lepton_and_hadTau_frWeight):
   lepton_and_hadTau_selection_and_frWeight = lepton_and_hadTau_selection
@@ -363,8 +364,6 @@ class analyzeConfig_3l_1tau(analyzeConfig):
 
       logging.info("Creating configuration files to run '%s' for sample %s" % (self.executable_analyze, process_name))  
 
-      ( secondary_files, primary_store, secondary_store ) = self.initializeInputFileIds(sample_name, sample_info)
-
       is_mc = (sample_info["type"] == "mc")
       lumi_scale = 1. if not (self.use_lumi and is_mc) else (sample_info["xsection"]*self.lumi/sample_info["nof_events"])
       apply_genWeight = sample_info["apply_genWeight"] if (is_mc and "apply_genWeight" in sample_info.keys()) else False
@@ -385,7 +384,9 @@ class analyzeConfig_3l_1tau(analyzeConfig):
           lepton_and_hadTau_selection_and_frWeight = get_lepton_and_hadTau_selection_and_frWeight(lepton_and_hadTau_selection, lepton_and_hadTau_frWeight)
           for charge_selection in self.charge_selections:
             for central_or_shift in self.central_or_shifts:
-              for jobId in range(len(self.inputFileIds[sample_name])):
+
+              inputFileList = generateInputFileList(sample_name, sample_info, self.max_files_per_job, self.debug)
+              for jobId in inputFileList.keys():
                 if central_or_shift != "central" and not (lepton_and_hadTau_selection.startswith("Tight") and charge_selection == "OS"):
                   continue
                 if central_or_shift != "central" and not is_mc:
@@ -400,7 +401,7 @@ class analyzeConfig_3l_1tau(analyzeConfig):
                 key_dir = getKey(sample_name, lepton_and_hadTau_selection, lepton_and_hadTau_frWeight, charge_selection)
                 key_file = getKey(sample_name, lepton_and_hadTau_selection, lepton_and_hadTau_frWeight, charge_selection, central_or_shift, jobId)
 
-                self.ntupleFiles[key_file] = generate_input_list(self.inputFileIds[sample_name][jobId], secondary_files, primary_store, secondary_store, self.debug)
+                self.ntupleFiles[key_file] = inputFileList[jobId]
                 if len(self.ntupleFiles[key_file]) == 0:
                   print "Warning: ntupleFiles['%s'] = %s --> skipping job !!" % (key_file, self.ntupleFiles[key_file])
                   continue
@@ -560,7 +561,6 @@ class analyzeConfig_3l_1tau(analyzeConfig):
     self.addToMakefile_prep_dcard(lines_makefile)
     self.addToMakefile_make_plots(lines_makefile)
     self.addToMakefile_make_plots_mcClosure(lines_makefile)
-    self.addToMakefile_clean(lines_makefile)
     self.createMakefile(lines_makefile)
 
     logging.info("Done")

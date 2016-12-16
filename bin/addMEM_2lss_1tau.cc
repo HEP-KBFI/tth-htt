@@ -392,7 +392,7 @@ int main(int argc, char* argv[])
 		MEMInterface_2lss_1tau memInterface_2lss_1tau("ttH_Htautau_MEM_Analysis/MEM/small.py");
 		MEMOutput_2lss_1tau memOutput_2lss_1tau = memInterface_2lss_1tau(
 	          *selLepton_lead, *selLepton_sublead, *selHadTau,
-		  met.p4_.px(), met.p4_.py(), met.cov_,
+		  met,
 		  selJets_cleaned);
 		memOutput_2lss_1tau.run_ = run;
 		memOutput_2lss_1tau.lumi_ = lumi;

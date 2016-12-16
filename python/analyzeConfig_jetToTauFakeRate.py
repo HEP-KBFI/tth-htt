@@ -2,6 +2,7 @@ import logging
 
 from tthAnalysis.HiggsToTauTau.analyzeConfig import *
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists
+from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg, createFile, generateInputFileList
 
 class analyzeConfig_jetToTauFakeRate(analyzeConfig):
   """Configuration metadata needed to run analysis in a single go.
@@ -184,8 +185,6 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
 
       logging.info("Creating configuration files to run '%s' for sample %s" % (self.executable_analyze, process_name))  
 
-      ( secondary_files, primary_store, secondary_store ) = self.initializeInputFileIds(sample_name, sample_info)
-
       is_mc = (sample_info["type"] == "mc")
       lumi_scale = 1. if not (self.use_lumi and is_mc) else sample_info["xsection"] * self.lumi / sample_info["nof_events"]
       apply_genWeight = sample_info["apply_genWeight"] if (is_mc and "apply_genWeight" in sample_info.keys()) else False
@@ -195,7 +194,9 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
 
       for charge_selection in self.charge_selections:
         for central_or_shift in self.central_or_shifts:
-          for jobId in range(len(self.inputFileIds[sample_name])):
+
+          inputFileList = generateInputFileList(sample_name, sample_info, self.max_files_per_job, self.debug)
+          for jobId in inputFileList.keys():
             if central_or_shift != "central" and not is_mc:
               continue
             if central_or_shift.startswith("CMS_ttHl_thu_shape_ttH") and sample_category != "signal":
@@ -208,7 +209,7 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
             key_dir = getKey(sample_name, charge_selection)
             key_file = getKey(sample_name, charge_selection, central_or_shift, jobId)
 
-            self.ntupleFiles[key_file] = generate_input_list(self.inputFileIds[sample_name][jobId], secondary_files, primary_store, secondary_store, self.debug)
+            self.ntupleFiles[key_file] = inputFileList[jobId]
             self.cfgFiles_analyze_modified[key_file] = os.path.join(self.dirs[key_dir][DKEY_CFGS], "analyze_%s_%s_%s_%s_%i_cfg.py" % \
               (self.channel, process_name, charge_selection, central_or_shift, jobId))
             self.histogramFiles[key_file] = os.path.join(self.dirs[key_dir][DKEY_HIST], "%s_%s_%s_%i.root" % \
@@ -241,7 +242,6 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
     self.addToMakefile_hadd_stage1(lines_makefile)
     self.addToMakefile_comp_jetToTauFakeRate(lines_makefile)
     self.addToMakefile_hadd_stage2(lines_makefile)
-    self.addToMakefile_clean(lines_makefile)
     self.createMakefile(lines_makefile)
   
     logging.info("Done")

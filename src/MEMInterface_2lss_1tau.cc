@@ -45,7 +45,7 @@ namespace
 MEMOutput_2lss_1tau
 MEMInterface_2lss_1tau::operator()(
   const RecoLepton* selLepton_lead, const RecoLepton* selLepton_sublead, const RecoHadTau* selHadTau, 
-  double metPx, double metPy, const TMatrixD& metCov,
+  const RecoMEt& met,
   const std::vector<const RecoJet*>& selJets)
 {
   MEMOutput_2lss_1tau result;
@@ -152,12 +152,12 @@ MEMInterface_2lss_1tau::operator()(
     }
   }
 
-  inputs[0].evRecoMET4P_[0] = metPx;
-  inputs[0].evRecoMET4P_[1] = metPy;
+  inputs[0].evRecoMET4P_[0] = met.p4_.px();
+  inputs[0].evRecoMET4P_[1] = met.p4_.py();
   inputs[0].evRecoMET4P_[2] = 0.;
-  inputs[0].evRecoMET4P_[3] = TMath::Sqrt(metPx*metPx + metPy*metPy);
+  inputs[0].evRecoMET4P_[3] = met.p4_.pt();
 
-  TMatrixD metCov_inverse = metCov;
+  TMatrixD metCov_inverse = met.cov_;
   double det = metCov_inverse.Determinant();
   if ( det != 0 ) { 
     metCov_inverse.Invert(); 
