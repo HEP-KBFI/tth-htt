@@ -289,13 +289,16 @@ int main(int argc, char* argv[])
   //  "cutFlow", "central"));
   //cutFlowHistManager->bookHistograms(fs);
   for ( int idxEntry = 0; idxEntry < numEntries && (maxEvents == -1 || idxEntry < maxEvents); ++idxEntry ) {
+
+    inputTree->GetEntry(idxEntry);
+
     if ( idxEntry > 0 && (idxEntry % reportEvery) == 0 ) {
-      std::cout << "processing Entry " << idxEntry << " (" << selectedEntries << " Entries selected)" << std::endl;
+      std::cout << "processing Entry " << idxEntry << ":"
+		<< " run = " << run << ", lumi = " << lumi << ", event = " << event
+		<< " (" << selectedEntries << " Entries selected)" << std::endl;
     }
     ++analyzedEntries;
     
-    inputTree->GetEntry(idxEntry);
-
     cutFlowTable.update("read from file");
     //cutFlowHistManager->fillHistograms("read from file");
 
@@ -469,8 +472,8 @@ int main(int argc, char* argv[])
       }
     }
     bool passesPreselection = (selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) && !failsZbosonMassVeto;
-    if ( passesPreselection && fakeableLeptons.size() >= 3 && fakeableHadTaus.size() >= 1 ) {
-      maxPermutations_addMEM_3l_1tau = TMath::Nint((1./6)*fakeableLeptons.size()*(fakeableLeptons.size() - 1)*(fakeableLeptons.size() - 2)*fakeableHadTaus.size());
+    if ( passesPreselection && selLeptons.size() >= 3 && selHadTaus.size() >= 1 ) {
+      maxPermutations_addMEM_3l_1tau = TMath::Nint((1./6)*selLeptons.size()*(selLeptons.size() - 1)*(selLeptons.size() - 2)*selHadTaus.size());
     } else {
       maxPermutations_addMEM_3l_1tau = -1;
     }

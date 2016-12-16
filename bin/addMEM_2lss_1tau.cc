@@ -292,13 +292,16 @@ int main(int argc, char* argv[])
   int selectedEntries = 0;
   cutFlowTableType cutFlowTable;
   for ( int idxEntry = skipEvents; idxEntry < numEntries && (maxEvents == -1 || idxEntry < (skipEvents + maxEvents)); ++idxEntry ) {
+
+    inputTree->GetEntry(idxEntry);
+
     if ( idxEntry > 0 && (idxEntry % reportEvery) == 0 ) {
-      std::cout << "processing Entry " << idxEntry << " (" << selectedEntries << " Entries selected)" << std::endl;
+      std::cout << "processing Entry " << idxEntry << ":"
+		<< " run = " << run << ", lumi = " << lumi << ", event = " << event
+		<< " (" << selectedEntries << " Entries selected)" << std::endl;
     }
     ++analyzedEntries;
     
-    inputTree->GetEntry(idxEntry);
-
     cutFlowTable.update("read from file");
 
     if ( run_lumi_eventSelector && !(*run_lumi_eventSelector)(run, lumi, event) ) continue;
@@ -347,8 +350,8 @@ int main(int argc, char* argv[])
 
 //--- compute MEM values
     std::vector<MEMOutput_2lss_1tau> memOutputs_2lss_1tau;
-    if ( maxPermutations_addMEM_2lss_1tau != 1 ) {
-      int idxPermutation = 0;
+    if ( maxPermutations_addMEM_2lss_1tau >= 1 ) {
+      int idxPermutation = -1;
       std::vector<const RecoLepton*> selLeptons = mergeLeptonCollections(selElectrons, selMuons);
       for ( std::vector<const RecoLepton*>::const_iterator selLepton_lead = selLeptons.begin();
 	    selLepton_lead != selLeptons.end(); ++selLepton_lead ) {
@@ -356,18 +359,22 @@ int main(int argc, char* argv[])
 	      selLepton_sublead != selLeptons.end(); ++selLepton_sublead ) {
 	  for ( std::vector<const RecoHadTau*>::const_iterator selHadTau = selHadTaus.begin();
 		selHadTau != selHadTaus.end(); ++selHadTau ) {
-	    if ( idxPermutation < maxPermutations_addMEM_2lss_1tau ) {
-	      std::vector<const RecoLepton*> selLeptons_forCleaning;
-	      selLeptons_forCleaning.push_back(*selLepton_lead);
-	      selLeptons_forCleaning.push_back(*selLepton_sublead);
-	      std::vector<const RecoHadTau*> selHadTaus_forCleaning;
-	      selHadTaus_forCleaning.push_back(*selHadTau);
-	      std::vector<const RecoJet*> selJets_cleaned = jetCleaner(selJets, selLeptons_forCleaning, selHadTaus_forCleaning);
-	      if ( selJets_cleaned.size() >= 3 ) {
-		std::cout << "MEM inputs:" << std::endl; 
+	    std::vector<const RecoLepton*> selLeptons_forCleaning;
+	    selLeptons_forCleaning.push_back(*selLepton_lead);
+	    selLeptons_forCleaning.push_back(*selLepton_sublead);
+	    std::vector<const RecoHadTau*> selHadTaus_forCleaning;
+	    selHadTaus_forCleaning.push_back(*selHadTau);
+	    std::vector<const RecoJet*> selJets_cleaned = jetCleaner(selJets, selLeptons_forCleaning, selHadTaus_forCleaning);
+	    if ( selJets_cleaned.size() >= 3 ) {
+	      ++idxPermutation;
+	      if ( idxPermutation < maxPermutations_addMEM_2lss_1tau ) {
+		std::cout << "computing MEM for run = " << run << ", lumi = " << lumi << ", event = " << event 
+			  << " (idxPermutation = " << idxPermutation << "):" << std::endl;
+		std::cout << "inputs:" << std::endl; 
 		std::cout << " leading lepton: pT = " << (*selLepton_lead)->pt_ << ", eta = " << (*selLepton_lead)->eta_ << "," 
 			  << " phi = " << (*selLepton_lead)->phi_ << ", pdgId = " << (*selLepton_lead)->pdgId_ << std::endl;
-		std::cout << " subleading lepton: pT = " << (*selLepton_sublead)->pt_ << ", eta = " << (*selLepton_sublead)->eta_ << "," 
+		std::cout << " subleading lepton: pT = " << (*selLepton_sublead)->pt_ << ", eta = " << (*selLepton_sublead)->eta_ 
+			  << "," 
 			  << " phi = " << (*selLepton_sublead)->phi_ << ", pdgId = " << (*selLepton_sublead)->pdgId_ << std::endl;
 		std::cout << " hadTau: pT = " << (*selHadTau)->pt_ << ", eta = " << (*selHadTau)->eta_ << "," 
 			  << " phi = " << (*selHadTau)->phi_ << ", decayMode = " << (*selHadTau)->decayMode_ << ", mass = " << (*selHadTau)->mass_ << std::endl;
@@ -381,6 +388,7 @@ int main(int argc, char* argv[])
 			    << " phi = " << (*selJet)->phi_ << ", mass = " << (*selJet)->mass_ << ", CSV = " << (*selJet)->BtagCSV_ << std::endl;
 		  ++idxJet;
 		}
+		//MEMOutput_2lss_1tau memOutput_2lss_1tau;
 		MEMInterface_2lss_1tau memInterface_2lss_1tau("ttH_Htautau_MEM_Analysis/MEM/small.py");
 		MEMOutput_2lss_1tau memOutput_2lss_1tau = memInterface_2lss_1tau(
 	          *selLepton_lead, *selLepton_sublead, *selHadTau,
@@ -389,14 +397,14 @@ int main(int argc, char* argv[])
 		memOutput_2lss_1tau.run_ = run;
 		memOutput_2lss_1tau.lumi_ = lumi;
 		memOutput_2lss_1tau.evt_ = event;
+		std::cout << "output:" << std::endl; 
 		memOutput_2lss_1tau.print(std::cout);
 		memOutputs_2lss_1tau.push_back(memOutput_2lss_1tau);
-		++idxPermutation;
+	      } else if ( idxPermutation == maxPermutations_addMEM_2lss_1tau ) { // CV: print warning only once per event
+	        std::cout << "Warning in run = " << run << ", lumi = " << lumi << ", event = " << event << ":" << std::endl; 
+	        std::cout << "Number of permutations exceeds 'maxPermutations_addMEM_2lss_1tau' = " << maxPermutations_addMEM_2lss_1tau 
+	                  << " --> skipping MEM computation after " << maxPermutations_addMEM_2lss_1tau << " permutations !!\n";
 	      }
-	    } else {
-	      std::cout << "Warning in run = " << run << ", lumi = " << lumi << ", event = " << event << ":" << std::endl; 
-	      std::cout << "Number of permutations exceeds 'maxPermutations_addMEM_2lss_1tau' = " << maxPermutations_addMEM_2lss_1tau 
-			<< " --> skipping MEM computation after " << maxPermutations_addMEM_2lss_1tau << " permutations !!\n";
 	    }
 	  }
 	}

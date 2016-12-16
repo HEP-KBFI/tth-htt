@@ -19,7 +19,7 @@ elif ERA == "2016":
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "2016Dec13"
+version = "2016Dec16"
 
 #--------------------------------------------------------------------------------   
 # CV: run Ntuple production jobs also for high statistics background samples
