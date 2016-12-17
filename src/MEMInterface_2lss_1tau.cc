@@ -181,12 +181,12 @@ MEMInterface_2lss_1tau::operator()(
   clock_->Stop("<MEMInterface_2lss_1tau::operator()>");
   clock_->Show("<MEMInterface_2lss_1tau::operator()>");
 
-  result.leadLepton_eta_ = selLepton_lead->pt_;
-  result.leadLepton_phi_ = selLepton_lead->eta_;
-  result.subleadLepton_eta_ = selLepton_sublead->pt_;
-  result.subleadLepton_phi_ = selLepton_sublead->eta_;
-  result.hadTau_eta_ = selHadTau->pt_;
-  result.hadTau_phi_ = selHadTau->eta_;
+  result.leadLepton_eta_ = selLepton_lead->eta_;
+  result.leadLepton_phi_ = selLepton_lead->phi_;
+  result.subleadLepton_eta_ = selLepton_sublead->eta_;
+  result.subleadLepton_phi_ = selLepton_sublead->phi_;
+  result.hadTau_eta_ = selHadTau->eta_;
+  result.hadTau_phi_ = selHadTau->phi_;
   result.type_ = inputs[0].integration_type_;
   result.weight_ttH_ = inputs[0].weight_ttH_;
   result.weight_ttZ_ = inputs[0].weight_ttZ_;
