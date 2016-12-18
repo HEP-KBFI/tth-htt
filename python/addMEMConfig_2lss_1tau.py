@@ -334,7 +334,7 @@ class addMEMConfig_2lss_1tau:
                 # associate the output file with the fileset_id
                 fileset_id = memEvtRangeDict[jobId]['fileset_id']
                 hadd_output = os.path.join(
-                    self.dirs[key_dir][DKEY_FINAL_NTUPLES], process_name, '%s_%i.root' % ('tree', fileset_id)
+                    self.dirs[key_dir][DKEY_FINAL_NTUPLES], '%s_%i.root' % ('tree', fileset_id)
                 )
                 if hadd_output not in self.hadd_records:
                     self.hadd_records[hadd_output] = {}
