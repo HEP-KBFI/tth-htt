@@ -111,13 +111,13 @@ class addMEMConfig_2lss_1tau:
         lines = []
         skipEvents = startRange
         maxEvents = endRange - startRange
-        copyHistograms = "True" if skipEvents == 0 else "False"
         lines.append("process.fwliteInput.fileNames = cms.vstring(%s)" % inputFiles)
         lines.append("process.fwliteInput.skipEvents = cms.uint32(%s)" % skipEvents)
         lines.append("process.fwliteInput.maxEvents = cms.int32(%s)" % maxEvents)
         lines.append("process.fwliteOutput.fileName = cms.string('%s')" % os.path.basename(outputFile))
         lines.append("process.addMEM_2lss_1tau.era = cms.string('%s')" % era)
-        lines.append("process.addMEM_2lss_1tau.copyHistograms = cms.bool(%s)" % copyHistograms)
+        if skipEvents > 0:
+            lines.append("process.addMEM_2lss_1tau.copy_histograms = cms.vstring()")
 
         create_cfg(self.cfgFile_addMEM_original, cfgFile_modified, lines)
 
