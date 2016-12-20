@@ -22,21 +22,21 @@ MEMInterface_3l_1tau::operator()(const RecoLepton * selLepton_lead,
 {
   std::vector<MeasuredJet> jets;
   for(const RecoJet * const & j: selJets)
-    jets.push_back({ getLorentzVector(j -> p4_) });
+    jets.push_back({ getLorentzVector(j -> p4()) });
   const MeasuredLepton leadingLepton(
-    getLorentzVector(selLepton_lead -> p4_), selLepton_lead -> charge_
+    getLorentzVector(selLepton_lead -> p4()), selLepton_lead -> charge()
   );
   const MeasuredLepton subLeadingLepton(
-    getLorentzVector(selLepton_sublead -> p4_), selLepton_sublead -> charge_
+    getLorentzVector(selLepton_sublead -> p4()), selLepton_sublead -> charge()
   );
   const MeasuredLepton thirdLepton(
-    getLorentzVector(selLepton_third -> p4_), selLepton_third -> charge_
+    getLorentzVector(selLepton_third -> p4()), selLepton_third -> charge()
   );
   const MeasuredHadronicTau tau(
-    getLorentzVector(selHadTau -> p4_), selHadTau -> charge_, selHadTau -> decayMode_
+    getLorentzVector(selHadTau -> p4()), selHadTau -> charge(), selHadTau -> decayMode()
   );
   const MeasuredMET m_met(
-    met.pt_, met.phi_, met.covXX_, met.covXY_, met.covYY_
+    met.pt(), met.phi(), met.covXX(), met.covXY(), met.covYY()
   );
 
   if(mem_)
