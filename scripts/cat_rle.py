@@ -73,6 +73,10 @@ if __name__ == '__main__':
         else:
           rles[sample_name] = rles_arr
 
+  logging.debug("Selecting only unique RLE numbers")
+  for sample_name in rles:
+    rles[sample_name] = list(set(rles[sample_name]))
+
   logging.info("Result:")
   max_key_len = max(map(len, rles.keys()))
   padding = lambda x: ' ' * (max_key_len - len(x))
