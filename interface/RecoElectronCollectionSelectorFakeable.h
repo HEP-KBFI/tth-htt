@@ -2,6 +2,7 @@
 #define tthAnalysis_HiggsToTauTau_RecoElectronCollectionSelectorFakeable_h
 
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectron.h" // RecoElectron
+#include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorTight.h" // RecoElectronSelectorTight
 
 #include <Rtypes.h> // Int_t, Double_t
 
@@ -11,8 +12,8 @@
 class RecoElectronSelectorFakeable
 {
  public:
-  RecoElectronSelectorFakeable(int era, int index = -1, bool debug = false);
-  ~RecoElectronSelectorFakeable() {}
+  RecoElectronSelectorFakeable(int era, bool set_selection_flags = true, int index = -1, bool debug = false);
+  ~RecoElectronSelectorFakeable();
 
   // enable/disable cuts on electron ID variables to mimic electron ID cuts applied by single electron trigger 
   void enable_offline_e_trigger_cuts()  { apply_offline_e_trigger_cuts_ = true; }
@@ -26,7 +27,10 @@ class RecoElectronSelectorFakeable
 
  protected: 
   int era_;
+  bool set_selection_flags_;
   bool apply_offline_e_trigger_cuts_;
+
+  RecoElectronSelectorTight* tightElectronSelector_;
 
   Double_t min_pt_;                   ///< lower cut threshold on pT
   Double_t max_absEta_;               ///< upper cut threshold on absolute value of eta

@@ -24,64 +24,65 @@ bool RecoHadTauSelectorBase::operator()(const RecoHadTau& hadTau) const
 {
   if ( debug_ ) {
     std::cout << "<RecoHadTauSelectorBase::operator()>:" << std::endl;
-    std::cout << " hadTau: pT = " << hadTau.pt_ << ", eta = " << hadTau.eta_ << ", phi = " << hadTau.phi_ << ", charge = " << hadTau.charge_ << std::endl;
+    std::cout << " hadTau: pT = " << hadTau.pt() << ", eta = " << hadTau.eta() << ", phi = " << hadTau.phi() << ", charge = " << hadTau.charge() << std::endl;
   }
-  if ( hadTau.pt_ < min_pt_ ) {
+  if ( hadTau.pt() < min_pt_ ) {
     if ( debug_ ) std::cout << "FAILS pT cut." << std::endl;
     return false;
   }
-  if ( hadTau.absEta_ > max_absEta_ ) {
+  if ( hadTau.absEta() > max_absEta_ ) {
     if ( debug_ ) std::cout << "FAILS eta cut." << std::endl;
     return false;
   }
-  if ( std::fabs(hadTau.dz_) > max_dz_ ) {
+  if ( std::fabs(hadTau.dz()) > max_dz_ ) {
     if ( debug_ ) std::cout << "FAILS dz cut." << std::endl;
     return false;
   }
-  if ( hadTau.decayModeFinding_ < min_decayModeFinding_ ) {
+  if ( hadTau.decayModeFinding() < min_decayModeFinding_ ) {
     if ( debug_ ) std::cout << "FAILS decayModeFinding cut." << std::endl;
     return false;
   }
-  if ( hadTau.id_mva_dR03_ < min_id_mva_dR03_ ) {
+  if ( hadTau.id_mva_dR03() < min_id_mva_dR03_ ) {
     if ( debug_ ) std::cout << "FAILS id_mva_dR03 cut." << std::endl;
     return false;
   }
-  if ( hadTau.raw_mva_dR03_ < min_raw_mva_dR03_ ) {
+  if ( hadTau.raw_mva_dR03() < min_raw_mva_dR03_ ) {
     if ( debug_ ) std::cout << "FAILS raw_mva_dR03 cut." << std::endl;
     return false;
   }
-  if ( hadTau.id_mva_dR05_ < min_id_mva_dR05_ ) {
+  if ( hadTau.id_mva_dR05() < min_id_mva_dR05_ ) {
     if ( debug_ ) std::cout << "FAILS id_mva_dR05 cut." << std::endl;
     return false;
   }
-  if ( hadTau.raw_mva_dR05_ < min_raw_mva_dR05_ ) {
+  if ( hadTau.raw_mva_dR05() < min_raw_mva_dR05_ ) {
     if ( debug_ ) std::cout << "FAILS raw_mva_dR05 cut." << std::endl;
     return false;
   }
-  if ( hadTau.id_cut_dR03_ < min_id_cut_dR03_ ) {
+  if ( hadTau.id_cut_dR03() < min_id_cut_dR03_ ) {
     if ( debug_ ) std::cout << "FAILS id_cut_dR03 cut." << std::endl;
     return false;
   }
-  if ( hadTau.raw_cut_dR03_ > max_raw_cut_dR03_ ) {
+  if ( hadTau.raw_cut_dR03() > max_raw_cut_dR03_ ) {
     if ( debug_ ) std::cout << "FAILS raw_cut_dR03 cut." << std::endl;
     return false;
   }
-  if ( hadTau.id_cut_dR05_ < min_id_cut_dR05_ ) {
+  if ( hadTau.id_cut_dR05() < min_id_cut_dR05_ ) {
     if ( debug_ ) std::cout << "FAILS id_cut_dR05 cut." << std::endl;
     return false;
   }
-  if ( hadTau.raw_cut_dR05_ > max_raw_cut_dR05_ ) {
+  if ( hadTau.raw_cut_dR05() > max_raw_cut_dR05_ ) {
     if ( debug_ ) std::cout << "FAILS raw_cut_dR05 cut." << std::endl;
     return false;
   }
-  if ( hadTau.antiElectron_ < min_antiElectron_ ) {
+  if ( hadTau.antiElectron() < min_antiElectron_ ) {
     if ( debug_ ) std::cout << "FAILS antiElectron cut." << std::endl;
     return false;
   }
-  if ( hadTau.antiMuon_ < min_antiMuon_ ) {
+  if ( hadTau.antiMuon() < min_antiMuon_ ) {
     if ( debug_ ) std::cout << "FAILS antiMuon cut." << std::endl;
     return false;
   }
   // hadTau passes all cuts
+  if ( set_selection_flags_ ) set_selection_flags(hadTau);
   return true;
 }

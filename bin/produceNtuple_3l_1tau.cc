@@ -65,8 +65,6 @@
 typedef math::PtEtaPhiMLorentzVector LV;
 typedef std::vector<std::string> vstring;
  
-enum { kLoose, kFakeable };
-
 /**
  * @brief Produce Ntuple containing preselected events,
  *        drop branches not needed for ttH, H->tautau analysis,
@@ -312,7 +310,6 @@ int main(int argc, char* argv[])
     std::vector<const RecoMuon*> cleanedMuons = muon_ptrs; // CV: no cleaning needed for muons, as they have the highest priority in the overlap removal
     std::vector<const RecoMuon*> preselMuons = preselMuonSelector(cleanedMuons);
     std::vector<const RecoMuon*> fakeableMuons = fakeableMuonSelector(preselMuons);
-    set_cone_pT(fakeableMuons, era);
     std::vector<const RecoMuon*> selMuons;
     if      ( leptonSelection == kLoose    ) selMuons = preselMuons;
     else if ( leptonSelection == kFakeable ) selMuons = fakeableMuons;
@@ -323,7 +320,6 @@ int main(int argc, char* argv[])
     std::vector<const RecoElectron*> cleanedElectrons = electronCleaner(electron_ptrs, fakeableMuons);
     std::vector<const RecoElectron*> preselElectrons = preselElectronSelector(cleanedElectrons);
     std::vector<const RecoElectron*> fakeableElectrons = fakeableElectronSelector(preselElectrons);
-    set_cone_pT(fakeableElectrons, era);
     std::vector<const RecoElectron*> selElectrons;
     if      ( leptonSelection == kLoose    ) selElectrons = preselElectrons;
     else if ( leptonSelection == kFakeable ) selElectrons = fakeableElectrons;
@@ -346,10 +342,10 @@ int main(int argc, char* argv[])
     std::vector<const RecoJet*> selJets;
     for ( std::vector<const RecoJet*>::const_iterator cleanedJet = cleanedJets.begin();
 	  cleanedJet != cleanedJets.end(); ++cleanedJet ) {
-      double cleanedJet_pt = (*cleanedJet)->pt_;
-      double cleanedJet_pt_JECUp = cleanedJet_pt*((*cleanedJet)->corr_JECUp_/(*cleanedJet)->corr_);
-      double cleanedJet_pt_JECDown = cleanedJet_pt*((*cleanedJet)->corr_JECDown_/(*cleanedJet)->corr_);
-      double cleanedJet_absEta = (*cleanedJet)->absEta_;
+      double cleanedJet_pt = (*cleanedJet)->pt();
+      double cleanedJet_pt_JECUp = cleanedJet_pt*((*cleanedJet)->corr_JECUp()/(*cleanedJet)->corr());
+      double cleanedJet_pt_JECDown = cleanedJet_pt*((*cleanedJet)->corr_JECDown()/(*cleanedJet)->corr());
+      double cleanedJet_absEta = (*cleanedJet)->absEta();
       double min_pT = jetSelector.get_min_pt();
       double max_absEta = jetSelector.get_max_absEta();
       if ( (cleanedJet_pt >= min_pT || cleanedJet_pt_JECUp >= min_pT || cleanedJet_pt_JECDown >= min_pT ) && cleanedJet_absEta < max_absEta ) {
@@ -392,11 +388,11 @@ int main(int argc, char* argv[])
     else if ( era == kEra_2016 ) minPt_lead = 23.;
     else assert(0);
     double minPt_sublead = selLepton_sublead->is_electron() ? 13. : 8.;
-    if ( !(selLepton_lead->pt_ > minPt_lead && selLepton_sublead->pt_ > minPt_sublead) ) {
+    if ( !(selLepton_lead->pt() > minPt_lead && selLepton_sublead->pt() > minPt_sublead) ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS lepton pT selection." << std::endl;
-	std::cout << " (leading selLepton pT = " << selLepton_lead->pt_ << ", minPt_lead = " << minPt_lead
-		  << ", subleading selLepton pT = " << selLepton_sublead->pt_ << ", minPt_sublead = " << minPt_sublead << ")" << std::endl;
+	std::cout << " (leading selLepton pT = " << selLepton_lead->pt() << ", minPt_lead = " << minPt_lead
+		  << ", subleading selLepton pT = " << selLepton_sublead->pt() << ", minPt_sublead = " << minPt_sublead << ")" << std::endl;
       }
       continue;
     }
@@ -463,8 +459,8 @@ int main(int argc, char* argv[])
 	  lepton1 != fakeableLeptons.end(); ++lepton1 ) {
       for ( std::vector<const RecoLepton*>::const_iterator lepton2 = lepton1 + 1;
 	    lepton2 != fakeableLeptons.end(); ++lepton2 ) {
-	if ( (*lepton1)->pdgId_ == -(*lepton2)->pdgId_ ) { // pair of same flavor leptons of opposite charge
-	  double mass = ((*lepton1)->p4_ + (*lepton2)->p4_).mass();
+	if ( (*lepton1)->pdgId() == -(*lepton2)->pdgId() ) { // pair of same flavor leptons of opposite charge
+	  double mass = ((*lepton1)->p4() + (*lepton2)->p4()).mass();
 	  if ( std::fabs(mass - z_mass) < z_window ) {
 	    failsZbosonMassVeto = true;
 	  }

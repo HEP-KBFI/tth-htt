@@ -44,13 +44,11 @@ RecoMEt::RecoMEt(const math::PtEtaPhiMLorentzVector & p4, const TMatrixD& cov)
   , cov_(cov)
 {}
 
-std::ostream &
-operator<<(std::ostream & os,
-           const RecoMEt & o)
+std::ostream& operator<<(std::ostream& stream, const RecoMEt& met)
 {
-  os << "pt = " << o.pt_ << "; "
-     << "phi = " << o.phi_ << std::endl;
-  os << "cov:" << std::endl;
-  o.cov_.Print();
-  return os;
+  stream << " pT = " << met.pt() << ","
+	 << " phi = " << met.phi() << std::endl;
+  stream << "cov:" << std::endl;
+  met.cov().Print();
+  return stream;
 }

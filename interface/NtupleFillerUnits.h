@@ -136,15 +136,17 @@ struct BasicFiller
   }
 
   void
-  setValuePtr(NumberType * varPtr)
+  setValuePtr(const NumberType * varPtr)
   {
-    varPtr_ = varPtr;
+    var_ = (*varPtr);
+    varPtr_ = &var_;
   }
 
   void
-  setValuePtr(NumberType & var)
+  setValuePtr(NumberType var)
   {
-    varPtr_ = &var;
+    var_ = var;
+    varPtr_ = &var_;
   }
 
   int
@@ -331,10 +333,10 @@ struct GenParticleFiller
   {
     if(particle_)
     {
-      pt_.setValuePtr(particle_ -> pt_);
-      eta_.setValuePtr(particle_ -> eta_);
-      phi_.setValuePtr(particle_ -> phi_);
-      mass_.setValuePtr(particle_ -> mass_);
+      pt_.setValuePtr(particle_ -> pt());
+      eta_.setValuePtr(particle_ -> eta());
+      phi_.setValuePtr(particle_ -> phi());
+      mass_.setValuePtr(particle_ -> mass());
     }
 
     int err = 0;
@@ -348,10 +350,10 @@ struct GenParticleFiller
   void
   setValues(const GenParticle & particle)
   {
-    pt_.setValue(particle.pt_);
-    eta_.setValue(particle.eta_);
-    phi_.setValue(particle.phi_);
-    mass_.setValue(particle.mass_);
+    pt_.setValue(particle.pt());
+    eta_.setValue(particle.eta());
+    phi_.setValue(particle.phi());
+    mass_.setValue(particle.mass());
   }
 
   void
@@ -406,8 +408,8 @@ struct GenLeptonFiller
   {
     if(lepton_)
     {
-      charge_.setValuePtr(lepton_ -> charge_);
-      pdgId_.setValuePtr(lepton_ -> pdgId_);
+      charge_.setValuePtr(lepton_ -> charge());
+      pdgId_.setValuePtr(lepton_ -> pdgId());
     }
 
     int err = GenParticleFiller<FloatType>::initBranches(tree);
@@ -420,8 +422,8 @@ struct GenLeptonFiller
   setValues(const GenLepton & lepton)
   {
     GenParticleFiller<FloatType>::setValues(static_cast<const GenParticle &>(lepton));
-    charge_.setValue(lepton.charge_);
-    pdgId_.setValue(lepton.pdgId_);
+    charge_.setValue(lepton.charge());
+    pdgId_.setValue(lepton.pdgId());
   }
 
   void
@@ -474,8 +476,8 @@ struct RecoHadTauFiller
   {
     if(hadTau_)
     {
-      charge_.setValuePtr(hadTau_ -> charge_);
-      decayMode_.setValuePtr(hadTau_ -> decayMode_);
+      charge_.setValuePtr(hadTau_ -> charge());
+      decayMode_.setValuePtr(hadTau_ -> decayMode());
     }
 
     int err = GenParticleFiller<FloatType>::initBranches(tree);
@@ -488,8 +490,8 @@ struct RecoHadTauFiller
   setValues(const RecoHadTau & hadTau)
   {
     GenParticleFiller<FloatType>::setValues(static_cast<const GenParticle &>(hadTau));
-    charge_.setValue(hadTau.charge_);
-    decayMode_.setValue(hadTau.decayMode_);
+    charge_.setValue(hadTau.charge());
+    decayMode_.setValue(hadTau.decayMode());
   }
 
   void
@@ -539,7 +541,7 @@ struct GenHadTauFiller
   initBranches(TTree * tree)
   {
     if(genHadTau_)
-      charge_.setValuePtr(genHadTau_ -> charge_);
+      charge_.setValuePtr(genHadTau_ -> charge());
 
     int err = GenParticleFiller<FloatType>::initBranches(tree);
     err |= (charge_.initBranch(tree) << 4);
@@ -550,7 +552,7 @@ struct GenHadTauFiller
   setValues(const GenHadTau & genHadTau)
   {
     GenParticleFiller<FloatType>::setValues(static_cast<const GenParticle &>(genHadTau));
-    charge_.setValue(genHadTau.charge_);
+    charge_.setValue(genHadTau.charge());
   }
 
   void

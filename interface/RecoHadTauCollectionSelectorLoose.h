@@ -16,6 +16,9 @@ class RecoHadTauSelectorLoose : public RecoHadTauSelectorBase
   ~RecoHadTauSelectorLoose() {}
 
   friend class RecoHadTauCollectionSelector<RecoHadTauSelectorLoose>;
+
+ protected:
+  void set_selection_flags(const RecoHadTau& hadTau) const { hadTau.set_isLoose(); }
 };
 
 typedef RecoHadTauCollectionSelector<RecoHadTauSelectorLoose> RecoHadTauCollectionSelectorLoose;

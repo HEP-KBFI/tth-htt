@@ -96,13 +96,13 @@ void RecoElectronWriter::write(const std::vector<const RecoElectron*>& leptons)
   for ( Int_t idxLepton = 0; idxLepton < nLeptons; ++idxLepton ) {
     const RecoElectron* lepton = leptons[idxLepton];
     assert(lepton);
-    mvaRawPOG_[idxLepton] = lepton->mvaRawPOG_; 
-    sigmaEtaEta_[idxLepton] = lepton->sigmaEtaEta_;
-    HoE_[idxLepton] = lepton->HoE_;
-    deltaEta_[idxLepton] = lepton->deltaEta_;
-    deltaPhi_[idxLepton] = lepton->deltaPhi_;
-    OoEminusOoP_[idxLepton] = lepton->OoEminusOoP_;
-    lostHits_[idxLepton] = lepton->nLostHits_; 
-    conversionVeto_[idxLepton] = lepton->passesConversionVeto_;
+    mvaRawPOG_[idxLepton] = lepton->mvaRawPOG(); 
+    sigmaEtaEta_[idxLepton] = lepton->sigmaEtaEta();
+    HoE_[idxLepton] = lepton->HoE();
+    deltaEta_[idxLepton] = lepton->deltaEta();
+    deltaPhi_[idxLepton] = lepton->deltaPhi();
+    OoEminusOoP_[idxLepton] = lepton->OoEminusOoP();
+    lostHits_[idxLepton] = lepton->nLostHits(); 
+    conversionVeto_[idxLepton] = lepton->passesConversionVeto();
   }
 }

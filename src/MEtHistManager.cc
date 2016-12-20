@@ -20,16 +20,16 @@ void MEtHistManager::bookHistograms(TFileDirectory& dir)
   histogram_met_LD_ = book1D(dir, "met_LD", "met_LD", 40, 0., 2.);
 }
 
-void MEtHistManager::fillHistograms(const LV& met_p4, const LV& mht_p4, double met_LD, double evtWeight)
+void MEtHistManager::fillHistograms(const RecoMEt& met, const Particle::LorentzVector& mht_p4, double met_LD, double evtWeight)
 {
   double evtWeightErr = 0.;
 
-  fillWithOverFlow(histogram_met_pt_, met_p4.pt(), evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_met_phi_, met_p4.phi(), evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_met_pt_, met.pt(), evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_met_phi_, met.phi(), evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_mht_pt_, mht_p4.pt(), evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_mht_phi_, mht_p4.phi(), evtWeight, evtWeightErr);
 
-  fillWithOverFlow2d(histogram_mhtPt_vs_metPt_, met_p4.pt(), mht_p4.pt(), evtWeight, evtWeightErr);
+  fillWithOverFlow2d(histogram_mhtPt_vs_metPt_, met.pt(), mht_p4.pt(), evtWeight, evtWeightErr);
 
   fillWithOverFlow(histogram_met_LD_, met_LD, evtWeight, evtWeightErr);
 }

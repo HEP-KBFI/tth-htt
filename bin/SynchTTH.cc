@@ -163,11 +163,11 @@ get_all_files(const std::string & dir,
  */
 //bool isHigherPt(const GenParticle& particle1, const GenParticle& particle2)
 //{
-//  return (particle1.pt_ > particle2.pt_);
+//  return (particle1.pt() > particle2.pt());
 //}
 bool isHigherPt_ptr(const GenParticle* particle1, const GenParticle* particle2)
 {
-  return (particle1->pt_ > particle2->pt_);
+  return (particle1->pt() > particle2->pt());
 }
 
 
@@ -580,20 +580,20 @@ main(int argc,
     for(auto & lepton: leptons)
     {
       bool any_overlap = false;
-      std::string pdg_id_key = pdg_id_keys.at(std::abs(lepton->pdgId_));
+      std::string pdg_id_key = pdg_id_keys.at(std::abs(lepton->pdgId()));
 
       for(auto & gen_lepton: gen_leptons)
-        if(lepton->is_overlap(gen_lepton, 0.3))
+        if(deltaR(lepton->p4(), gen_lepton.p4()) < 0.3)
         {
           if(check_pdg_id)
           {
-            if(lepton->pdgId_ == gen_lepton.pdgId_)
+            if(lepton->pdgId() == gen_lepton.pdgId())
             {
               pdg_id_plots[match_type::same][channel].fill(pdg_id_key, evtWeight, 1);
               any_overlap = true;
               break;
             }
-            else if(lepton->pdgId_ == -gen_lepton.pdgId_)
+            else if(lepton->pdgId() == -gen_lepton.pdgId())
             {
               pdg_id_plots[match_type::flipped][channel].fill(pdg_id_key, evtWeight, 1);
               any_overlap = true;
@@ -602,7 +602,7 @@ main(int argc,
           }
           else
           {
-            if(std::abs(lepton->pdgId_) == std::abs(gen_lepton.pdgId_))
+            if(std::abs(lepton->pdgId()) == std::abs(gen_lepton.pdgId()))
             {
               pdg_id_plots[match_type::gen_match][channel].fill(pdg_id_key, evtWeight, 1);
               any_overlap = true;
@@ -613,7 +613,7 @@ main(int argc,
 
       if(any_overlap) continue;
       for(auto & gen_jet: gen_jets)
-        if(lepton->is_overlap(gen_jet, 0.3))
+        if(deltaR(lepton->p4(), gen_jet.p4()) < 0.3)
         {
           pdg_id_plots[match_type::due_jets][channel].fill(pdg_id_key, evtWeight, 1);
           any_overlap = true;
@@ -629,10 +629,10 @@ main(int argc,
       for(auto & tau: *taus)
       {
         bool any_overlap = false;
-	int tau_pdgId = -15*tau->charge_;
+	int tau_pdgId = -15*tau->charge();
         std::string pdg_id_key = pdg_id_keys.at(std::abs(tau_pdgId));
         for(auto & gen_tau: *gen_taus)
-          if(tau->is_overlap(gen_tau, 0.3))
+          if(deltaR(tau->p4(), gen_tau.p4()) < 0.3)
           {
             pdg_id_plots[match_type::gen_match][channel].fill(pdg_id_key, evtWeight, 1);
             any_overlap = true;
@@ -641,7 +641,7 @@ main(int argc,
 
         if(any_overlap) continue;
         for(auto & gen_jet: gen_jets)
-          if(tau->is_overlap(gen_jet, 0.3))
+          if(deltaR(tau->p4(), gen_jet.p4()) < 0.3)
           {
             pdg_id_plots[match_type::due_jets][channel].fill(pdg_id_key, evtWeight, 1);
             any_overlap = true;
@@ -786,7 +786,7 @@ main(int argc,
 //    described on the BTV POG twiki https://twiki.cern.ch/twiki/bin/view/CMS/BTagShapeCalibration )
     double evtWeight = 1.;
     for ( auto & jet: selJets )
-      evtWeight *= jet->BtagWeight_;
+      evtWeight *= jet->BtagWeight();
 
 //--- create the generator level jet collection
     std::vector<GenJet> genJets = genJetReader->read();
@@ -881,15 +881,15 @@ main(int argc,
     bool proceed = true; // this guy is used throughout the analysis
     for(unsigned j = 0; j < nSelLeptons && proceed; ++j)
       for(unsigned k = 0; k < j && proceed; ++k)
-        if((selLeptons[j]->p4_ + selLeptons[k]->p4_).mass() < 12.0)
+        if((selLeptons[j]->p4() + selLeptons[k]->p4()).mass() < 12.0)
           proceed = false;
     if(! proceed) continue;
 
     increment_all(cuts::min_dilep_mass);
 
 //-------------------------------------------------------- LEPTON PT > 20, 10
-    if(! (selLeptons[0]->pt_ > 20. &&           // leading lepton
-          selLeptons[1]->pt_ > 10.) ) continue; // subleading lepton
+    if(! (selLeptons[0]->pt() > 20. &&           // leading lepton
+          selLeptons[1]->pt() > 10.) ) continue; // subleading lepton
 
     increment_all(cuts::pT2010);
 
@@ -1003,7 +1003,7 @@ main(int argc,
       ++counter[ch::_2l_1tau][cuts::tight_mva];
 
 //----------------------------------------------------------------- SAME SIGN
-      if ( !(lepton1->pdgId_ * lepton2->pdgId_) > 0 ) continue;
+      if ( !(lepton1->pdgId() * lepton2->pdgId()) > 0 ) continue;
 
       ++counter[channel][cuts::ss];
       ++counter[ch::_2l_1tau][cuts::ss];
@@ -1018,8 +1018,8 @@ main(int argc,
 //--- calculate MHT
       LV mht_vec(0,0,0,0);
       for ( auto & jet: selJets )
-        mht_vec += jet->p4_;
-      mht_vec += lepton1->p4_ + lepton2->p4_;
+        mht_vec += jet->p4();
+      mht_vec += lepton1->p4() + lepton2->p4();
       const Double_t mht_pt = mht_vec.pt();
       const Double_t met_ld = met_coef * met_pt + mht_coef * mht_pt;
       if ( !(met_ld >= 0.2) ) continue;
@@ -1028,32 +1028,32 @@ main(int argc,
       ++counter[ch::_2l_1tau][cuts::met_ld_02];
 
 //-------------------------------------------------------- LEPTON PT > 20, 20
-      if ( !(lepton1->pt_ >= 20. && lepton2->pt_ >= 20.) ) continue;
+      if ( !(lepton1->pt() >= 20. && lepton2->pt() >= 20.) ) continue;
 
       ++counter[channel][cuts::pT2020];
       ++counter[ch::_2l_1tau][cuts::pT2020];
 
 //----------------------------------------- SCALAR SUM(L0, L1, MET) > 100 GeV
-      if ( !(lepton1->pt_ + lepton2->pt_ + met_pt >= 100) ) continue;
+      if ( !(lepton1->pt() + lepton2->pt() + met_pt >= 100) ) continue;
 
       ++counter[channel][cuts::ht_l1l2_met_100];
       ++counter[ch::_2l_1tau][cuts::ht_l1l2_met_100];
 
 //-------------------------------------------------------------------- Z VETO
-      if ( std::fabs((lepton1->p4_ + lepton2->p4_).mass() - z_mass) <= z_window ) continue;
+      if ( std::fabs((lepton1->p4() + lepton2->p4()).mass() - z_mass) <= z_window ) continue;
 
       ++counter[channel][cuts::zveto];
       ++counter[ch::_2l_1tau][cuts::zveto];
 
 //-------------------------------------------------------------- TIGHT CHARGE
-      if ( !(lepton1->tightCharge_ >= 2 && lepton2->tightCharge_ >= 2) ) continue;
+      if ( !(lepton1->tightCharge() >= 2 && lepton2->tightCharge() >= 2) ) continue;
 
       ++counter[channel][cuts::charge_quality];
       ++counter[ch::_2l_1tau][cuts::charge_quality];
 
 //--- compute output of BDTs used to discriminate ttH vs. ttV and ttH vs. ttbar 
 //    in 2lss_1tau category of ttH multilepton analysis 
-      mvaInputs["max(abs(LepGood_eta[iF_Recl[0]]),abs(LepGood_eta[iF_Recl[1]]))"] = std::max(std::fabs(lepton1->eta_), std::fabs(lepton2->eta_));
+      mvaInputs["max(abs(LepGood_eta[iF_Recl[0]]),abs(LepGood_eta[iF_Recl[1]]))"] = std::max(std::fabs(lepton1->eta()), std::fabs(lepton2->eta()));
       mvaInputs["MT_met_lep1"]                = comp_MT_met_lep1(*lepton1, met_pt, met_phi);
       mvaInputs["nJet25_Recl"]                = comp_n_jet25_recl(selJets);
       mvaInputs["mindr_lep1_jet"]             = comp_mindr_lep1_jet(*lepton1, selJets);
@@ -1092,17 +1092,17 @@ main(int argc,
 //------------------------------------------------ PLOT OF KINEMATIC VARIABLES
       {
         Double_t min_dR_l2j = 1000;
-        Double_t ht = lepton1->pt_ + lepton2->pt_;
-        LV ht_vec = lepton1->p4_ + lepton2->p4_;
+        Double_t ht = lepton1->pt() + lepton2->pt();
+        LV ht_vec = lepton1->p4() + lepton2->p4();
         for ( auto & jet: selJets )
         {
-          const Double_t dR = deltaR(lepton2->eta_, lepton2->phi_, jet->eta_, jet->phi_);
+          const Double_t dR = deltaR(lepton2->eta(), lepton2->phi(), jet->eta(), jet->phi());
           if ( dR < min_dR_l2j ) min_dR_l2j = dR;
-          ht += jet->pt_;
-          ht_vec += jet->p4_;
+          ht += jet->pt();
+          ht_vec += jet->p4();
         }
-        const Double_t pt_trailing = lepton2->pt_;
-        const Double_t eta_trailing = std::fabs(lepton2->eta_);
+        const Double_t pt_trailing = lepton2->pt();
+        const Double_t eta_trailing = std::fabs(lepton2->eta());
         const Double_t mt_metl1 = comp_MT_met_lep1(*lepton1, met_pt, met_phi);
         const Double_t mht = std::fabs(ht_vec.pt());
         hm[channel][cp::final].fill(evtWeight,
@@ -1123,9 +1123,9 @@ main(int argc,
 //--- calculate MHT
         LV mht_vec(0,0,0,0);
         for ( auto & jet: selJets )
-          mht_vec += jet->p4_;
+          mht_vec += jet->p4();
         for ( auto & lepton: selLeptons )
-          mht_vec += lepton->p4_;
+          mht_vec += lepton->p4();
         const Double_t mht_pt = mht_vec.pt();
         const Double_t met_ld = met_coef * met_pt + mht_coef * mht_pt;
         if ( !(met_ld >= 0.2) ) continue;
@@ -1135,9 +1135,9 @@ main(int argc,
 //---------------------------------------------------------------- SFOS ZVETO
       for ( unsigned j = 0; j < 3 && proceed; ++j )
         for ( unsigned k = 0; k < j && proceed; ++k )
-          if ( selLeptons[j]->pdgId_ == -selLeptons[k]->pdgId_ &&
-             std::fabs((selLeptons[j]->p4_ +
-                        selLeptons[k]->p4_).mass() - z_mass) <= z_window )
+          if ( selLeptons[j]->pdgId() == -selLeptons[k]->pdgId() &&
+             std::fabs((selLeptons[j]->p4() +
+                        selLeptons[k]->p4()).mass() - z_mass) <= z_window )
               proceed = false;
       if ( !proceed ) continue;
 
@@ -1161,7 +1161,7 @@ main(int argc,
           0,
           [](Int_t lhs, const RecoLepton * rhs)
           {
-            const Int_t charge = ( rhs->pdgId_ > 0 ) ? 1 : -1;
+            const Int_t charge = ( rhs->pdgId() > 0 ) ? 1 : -1;
             return lhs + charge;
           }
         );
@@ -1172,9 +1172,9 @@ main(int argc,
 //---------------------------------------------------------------- SFOS ZVETO
       for ( unsigned j = 0; j < 4 && proceed; ++j )
         for ( unsigned k = 0; k < j && proceed; ++k )
-          if ( selLeptons[j]->pdgId_ == -selLeptons[k]->pdgId_ &&
-             std::fabs((selLeptons[j]->p4_ +
-                        selLeptons[k]->p4_).mass() - z_mass) <= z_window)
+          if ( selLeptons[j]->pdgId() == -selLeptons[k]->pdgId() &&
+             std::fabs((selLeptons[j]->p4() +
+                        selLeptons[k]->p4()).mass() - z_mass) <= z_window)
               proceed = false;
       if ( !proceed ) continue;
 

@@ -14,6 +14,13 @@ class GenHadTau
 	    Double_t mass, 
 	    Int_t charge);
 
+  /**
+   * @brief Funtions to access data-members
+   * @return Values of data-members
+   */
+  Int_t charge() const { return charge_; } 
+
+ protected:
   Int_t charge_; ///< charge of hadronic tau (either +1 or -1)
 };
 

@@ -5,8 +5,9 @@
 #include <cmath> // fabs
 #include <assert.h> // assert
 
-RecoElectronSelectorTight::RecoElectronSelectorTight(int era, int index, bool debug)
+RecoElectronSelectorTight::RecoElectronSelectorTight(int era, bool set_selection_flags, int index, bool debug)
   : era_(era)
+  , set_selection_flags_(set_selection_flags)
   , apply_offline_e_trigger_cuts_(true)
   , debug_(debug)
   , min_pt_(10.) // 15 GeV for 2lss channel, 10 GeV for 3l channel (cf. Table 13 of AN-2015/321)
@@ -44,80 +45,81 @@ bool RecoElectronSelectorTight::operator()(const RecoElectron& electron) const
 {
   if ( debug_ ) {
     std::cout << "<RecoElectronSelectorTight::operator()>:" << std::endl;
-    std::cout << " electron: pT = " << electron.pt_ << ", eta = " << electron.eta_ << ", phi = " << electron.phi_ << ", charge = " << electron.charge_ << std::endl;
+    std::cout << " electron: pT = " << electron.pt() << ", eta = " << electron.eta() << ", phi = " << electron.phi() << ", charge = " << electron.charge() << std::endl;
   }
-  if ( electron.pt_ < min_pt_ ) {
+  if ( electron.pt() < min_pt_ ) {
     if ( debug_ ) std::cout << "FAILS pT cut." << std::endl;
     return false;
   }
-  if ( electron.absEta_ > max_absEta_ ) {
+  if ( electron.absEta() > max_absEta_ ) {
     if ( debug_ ) std::cout << "FAILS eta cut." << std::endl;
     return false;
   }
-  if ( std::fabs(electron.dxy_) > max_dxy_ ) {
+  if ( std::fabs(electron.dxy()) > max_dxy_ ) {
     if ( debug_ ) std::cout << "FAILS dxy cut." << std::endl;
     return false;
   }
-  if ( std::fabs(electron.dz_) > max_dz_ ) {
+  if ( std::fabs(electron.dz()) > max_dz_ ) {
     if ( debug_ ) std::cout << "FAILS dz cut." << std::endl;
     return false;
   }
-  if ( electron.relIso_ > max_relIso_ ) {
+  if ( electron.relIso() > max_relIso_ ) {
     if ( debug_ ) std::cout << "FAILS relIso cut." << std::endl;
     return false;
   }
-  if ( electron.sip3d_ > max_sip3d_ ) {
+  if ( electron.sip3d() > max_sip3d_ ) {
     if ( debug_ ) std::cout << "FAILS sip3d cut." << std::endl;
     return false;
   }
-  if ( electron.jetBtagCSV_ > max_jetBtagCSV_ ) {
+  if ( electron.jetBtagCSV() > max_jetBtagCSV_ ) {
     if ( debug_ ) std::cout << "FAILS jetBtagCSV cut." << std::endl;
     return false;
   }
-  if ( electron.nLostHits_ > max_nLostHits_ ) {
+  if ( electron.nLostHits() > max_nLostHits_ ) {
     if ( debug_ ) std::cout << "FAILS nLostHits cut." << std::endl;
     return false;
   }
-  if ( apply_conversionVeto_ && !electron.passesConversionVeto_ ) {
+  if ( apply_conversionVeto_ && !electron.passesConversionVeto() ) {
     if ( debug_ ) std::cout << "FAILS conversion veto." << std::endl;
     return false;
   }
-  if ( electron.mvaRawTTH_ < min_mvaTTH_ ) {
+  if ( electron.mvaRawTTH() < min_mvaTTH_ ) {
     if ( debug_ ) std::cout << "FAILS mvaTTH cut." << std::endl;
     return false;
   }
   int idxBin = -1;
-  if      ( electron.absEta_ <= binning_absEta_[0] ) idxBin = 0;
-  else if ( electron.absEta_ <= binning_absEta_[1] ) idxBin = 1;
-  else                                               idxBin = 2;
+  if      ( electron.absEta() <= binning_absEta_[0] ) idxBin = 0;
+  else if ( electron.absEta() <= binning_absEta_[1] ) idxBin = 1;
+  else                                                idxBin = 2;
   assert(idxBin >= 0 && idxBin <= 2);
-  if ( electron.mvaRawPOG_ < min_mvaRawPOG_[idxBin] ) {
+  if ( electron.mvaRawPOG() < min_mvaRawPOG_[idxBin] ) {
     if ( debug_ ) std::cout << "FAILS mvaPOG cut." << std::endl;
     return false;
   }
   // extra cuts for electrons passing pT threshold of single electron trigger, as explained in section 3.3.4 of AN-2015/321
-  if ( apply_offline_e_trigger_cuts_ && electron.pt_ >= min_pt_trig_ ) { 
-    if ( electron.sigmaEtaEta_ > max_sigmaEtaEta_trig_[idxBin] ) {
+  if ( apply_offline_e_trigger_cuts_ && electron.pt() >= min_pt_trig_ ) { 
+    if ( electron.sigmaEtaEta() > max_sigmaEtaEta_trig_[idxBin] ) {
       if ( debug_ ) std::cout << "FAILS sigmaEtaEta cut." << std::endl;
       return false;
     }
-    if ( electron.HoE_ > max_HoE_trig_[idxBin] ) {
+    if ( electron.HoE() > max_HoE_trig_[idxBin] ) {
       if ( debug_ ) std::cout << "FAILS HoE cut." << std::endl;
       return false;
     }
-    if ( electron.deltaEta_ > max_deltaEta_trig_[idxBin] ) {
+    if ( electron.deltaEta() > max_deltaEta_trig_[idxBin] ) {
       if ( debug_ ) std::cout << "FAILS deltaEta cut." << std::endl;
       return false;
     }
-    if ( electron.deltaPhi_ > max_deltaPhi_trig_[idxBin] ) {
+    if ( electron.deltaPhi() > max_deltaPhi_trig_[idxBin] ) {
       if ( debug_ ) std::cout << "FAILS deltaPhi cut." << std::endl;
       return false;
     }
-    if ( !(electron.OoEminusOoP_ >= min_OoEminusOoP_trig_ && electron.OoEminusOoP_ <= max_OoEminusOoP_trig_[idxBin]) ) {
+    if ( !(electron.OoEminusOoP() >= min_OoEminusOoP_trig_ && electron.OoEminusOoP() <= max_OoEminusOoP_trig_[idxBin]) ) {
       if ( debug_ ) std::cout << "FAILS OoEminusOoP cut." << std::endl;
       return false;
     }
   }
   // electron passes all cuts
+  if ( set_selection_flags_ ) electron.set_isTight();
   return true;
 }

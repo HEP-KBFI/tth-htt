@@ -4,8 +4,9 @@
 
 #include <cmath> // fabs
 
-RecoMuonSelectorTight::RecoMuonSelectorTight(int era, int index, bool debug)
+RecoMuonSelectorTight::RecoMuonSelectorTight(int era, bool set_selection_flags, int index, bool debug)
   : era_(era)
+  , set_selection_flags_(set_selection_flags)
   , debug_(debug)
   , min_pt_(10.) // 15 GeV for 2lss channel, 10 GeV for 3l channel (cf. Table 13 of AN-2015/321)
   , max_absEta_(2.4)
@@ -26,48 +27,49 @@ bool RecoMuonSelectorTight::operator()(const RecoMuon& muon) const
 {
   if ( debug_ ) {
     std::cout << "<RecoMuonSelectorTight::operator()>:" << std::endl;
-    std::cout << " muon: pT = " << muon.pt_ << ", eta = " << muon.eta_ << ", phi = " << muon.phi_ << ", charge = " << muon.charge_ << std::endl;
+    std::cout << " muon: pT = " << muon.pt() << ", eta = " << muon.eta() << ", phi = " << muon.phi() << ", charge = " << muon.charge() << std::endl;
   }
-  if ( muon.pt_ < min_pt_ ) {
+  if ( muon.pt() < min_pt_ ) {
     if ( debug_ ) std::cout << "FAILS pT cut." << std::endl;
     return false;
   }
-  if ( muon.absEta_ > max_absEta_ ) {
+  if ( muon.absEta() > max_absEta_ ) {
     if ( debug_ ) std::cout << "FAILS eta cut." << std::endl;
     return false;
   }
-  if ( std::fabs(muon.dxy_) > max_dxy_ ) {
+  if ( std::fabs(muon.dxy()) > max_dxy_ ) {
     if ( debug_ ) std::cout << "FAILS dxy cut." << std::endl;
     return false;
   }
-  if ( std::fabs(muon.dz_) > max_dz_ ) {
+  if ( std::fabs(muon.dz()) > max_dz_ ) {
     if ( debug_ ) std::cout << "FAILS dz cut." << std::endl;
     return false;
   }
-  if ( muon.relIso_ > max_relIso_ ) {
+  if ( muon.relIso() > max_relIso_ ) {
     if ( debug_ ) std::cout << "FAILS relIso cut." << std::endl;
     return false;
   }
-  if ( muon.sip3d_ > max_sip3d_ ) {
+  if ( muon.sip3d() > max_sip3d_ ) {
     if ( debug_ ) std::cout << "FAILS sip3d cut." << std::endl;
     return false;
   }
-  if ( apply_looseIdPOG_ && !muon.passesLooseIdPOG_ ) {
+  if ( apply_looseIdPOG_ && !muon.passesLooseIdPOG() ) {
     if ( debug_ ) std::cout << "FAILS looseIdPOG cut." << std::endl;
     return false;
   }
-  if ( muon.jetBtagCSV_ > max_jetBtagCSV_ ) {
+  if ( muon.jetBtagCSV() > max_jetBtagCSV_ ) {
     if ( debug_ ) std::cout << "FAILS jetBtagCSV cut." << std::endl;
     return false;
   }
-  if ( apply_mediumIdPOG_ && !muon.passesMediumIdPOG_ ) {
+  if ( apply_mediumIdPOG_ && !muon.passesMediumIdPOG() ) {
     if ( debug_ ) std::cout << "FAILS mediumIdPOG cut." << std::endl;
     return false;
   }
-  if ( muon.mvaRawTTH_ < min_mvaTTH_ ) {
+  if ( muon.mvaRawTTH() < min_mvaTTH_ ) {
     if ( debug_ ) std::cout << "FAILS mvaTTH cut." << std::endl;
     return false;
   }
   // muon passes all cuts
+  if ( set_selection_flags_ ) muon.set_isTight();
   return true;
 }

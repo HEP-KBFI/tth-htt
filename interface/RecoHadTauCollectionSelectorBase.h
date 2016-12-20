@@ -14,7 +14,7 @@ class RecoHadTauSelectorBase
 {
  public:
   RecoHadTauSelectorBase(int era, int index = -1, bool debug = false);
-  ~RecoHadTauSelectorBase() {}
+  virtual ~RecoHadTauSelectorBase() {}
 
   void set_min_pt(double min_pt) { min_pt_ = min_pt; }
   void set_max_absEta(double max_absEta) { max_absEta_ = max_absEta; }
@@ -85,7 +85,10 @@ class RecoHadTauSelectorBase
 
   friend class RecoHadTauCollectionSelectorBase;
  protected: 
+  virtual void set_selection_flags(const RecoHadTau& hadTau) const = 0;
+
   bool debug_;
+  bool set_selection_flags_;
   Double_t min_pt_;            ///< lower cut threshold on pT
   Double_t max_absEta_;        ///< upper cut threshold on absolute value of eta
   Double_t max_dz_;            ///< upper cut threshold on d_{z}, distance on the z axis w.r.t PV

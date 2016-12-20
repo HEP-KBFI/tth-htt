@@ -42,36 +42,36 @@ void ElectronHistManager::fillHistograms(const RecoElectron& electron, double ev
 {
   double evtWeightErr = 0.;
  
-  fillWithOverFlow(histogram_pt_, electron.pt_, evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_eta_, electron.eta_, evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_phi_, electron.phi_, evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_charge_, electron.charge_, evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_pt_, electron.pt(), evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_eta_, electron.eta(), evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_phi_, electron.phi(), evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_charge_, electron.charge(), evtWeight, evtWeightErr);
     
-  fillWithOverFlow(histogram_dxy_, electron.dxy_, evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_dz_, electron.dz_, evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_relIso_, electron.relIso_, evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_sip3d_, electron.sip3d_, evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_mvaRawTTH_, electron.mvaRawTTH_, evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_jetPtRatio_, electron.jetPtRatio_, evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_jetBtagCSV_, electron.jetBtagCSV_, evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_tightCharge_, electron.tightCharge_, evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_mvaRawPOG_, electron.mvaRawPOG_, evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_sigmaEtaEta_, electron.sigmaEtaEta_, evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_HoE_, electron.HoE_, evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_deltaEta_, electron.deltaEta_, evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_deltaPhi_, electron.deltaPhi_, evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_OoEminusOoP_, electron.OoEminusOoP_, evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_nLostHits_, electron.nLostHits_, evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_passesConversionVeto_, electron.passesConversionVeto_, evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_dxy_, electron.dxy(), evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_dz_, electron.dz(), evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_relIso_, electron.relIso(), evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_sip3d_, electron.sip3d(), evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_mvaRawTTH_, electron.mvaRawTTH(), evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_jetPtRatio_, electron.jetPtRatio(), evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_jetBtagCSV_, electron.jetBtagCSV(), evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_tightCharge_, electron.tightCharge(), evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_mvaRawPOG_, electron.mvaRawPOG(), evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_sigmaEtaEta_, electron.sigmaEtaEta(), evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_HoE_, electron.HoE(), evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_deltaEta_, electron.deltaEta(), evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_deltaPhi_, electron.deltaPhi(), evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_OoEminusOoP_, electron.OoEminusOoP(), evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_nLostHits_, electron.nLostHits(), evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_passesConversionVeto_, electron.passesConversionVeto(), evtWeight, evtWeightErr);
   
   int abs_genPdgId = 0;
-  if      ( electron.genLepton_ ) abs_genPdgId = std::abs(electron.genLepton_->pdgId_); // generator level match to electron or muon
-  else if ( electron.genHadTau_ ) abs_genPdgId = 15;                                    // generator level match to hadronic tau decay 
-  else if ( electron.genJet_    ) abs_genPdgId = 21;                                    // generator level match to jet; fill histogram with pdgId of gluon
-  else                            abs_genPdgId = 0;                                     // no match to any generator level particle (reconstructed electron most likely due to pileup)
+  if      ( electron.genLepton() ) abs_genPdgId = std::abs(electron.genLepton()->pdgId()); // generator level match to electron or muon
+  else if ( electron.genHadTau() ) abs_genPdgId = 15; // generator level match to hadronic tau decay 
+  else if ( electron.genJet()    ) abs_genPdgId = 21; // generator level match to jet; fill histogram with pdgId of gluon
+  else                             abs_genPdgId = 0;  // no match to any generator level particle (reconstructed electron most likely due to pileup)
   fillWithOverFlow(histogram_abs_genPdgId_, abs_genPdgId, evtWeight, evtWeightErr);
   if ( abs_genPdgId == 11 ) {
-    fillWithOverFlow(histogram_gen_times_recCharge_, electron.charge_*electron.genLepton_->charge_, evtWeight, evtWeightErr);
+    fillWithOverFlow(histogram_gen_times_recCharge_, electron.charge()*electron.genLepton()->charge(), evtWeight, evtWeightErr);
   }
 }
 

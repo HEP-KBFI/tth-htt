@@ -5,7 +5,7 @@
 
 bool isHigherPt(const GenParticle* particle1, const GenParticle* particle2)
 {
-  return (particle1->pt_ > particle2->pt_);
+  return (particle1->pt() > particle2->pt());
 }
 
 std::string getBranchName_bTagWeight(int era, const std::string& central_or_shift)
@@ -81,54 +81,36 @@ std::string getBranchName_bTagWeight(int era, int central_or_shift)
   return branchName_bTagWeight->second;
 }
 
-math::PtEtaPhiMLorentzVector compMHT(const std::vector<const RecoLepton*>& leptons, const std::vector<const RecoHadTau*>& hadTaus, const std::vector<const RecoJet*>& jets)
+int getHadTau_genPdgId(const RecoHadTau* hadTau)
+{
+  int hadTau_genPdgId = -1;
+  if      ( hadTau->genHadTau() ) hadTau_genPdgId = 15;
+  else if ( hadTau->genLepton() ) hadTau_genPdgId = std::abs(hadTau->genLepton()->pdgId());
+  return hadTau_genPdgId;
+}
+
+Particle::LorentzVector compMHT(const std::vector<const RecoLepton*>& leptons, const std::vector<const RecoHadTau*>& hadTaus, const std::vector<const RecoJet*>& jets)
 {
   math::PtEtaPhiMLorentzVector mht_p4(0,0,0,0);
   for ( std::vector<const RecoLepton*>::const_iterator lepton = leptons.begin();
 	lepton != leptons.end(); ++lepton ) {
-    mht_p4 += (*lepton)->p4_;
+    mht_p4 += (*lepton)->p4();
   }
   for ( std::vector<const RecoHadTau*>::const_iterator hadTau = hadTaus.begin();
 	hadTau != hadTaus.end(); ++hadTau ) {
-    mht_p4 += (*hadTau)->p4_;
+    mht_p4 += (*hadTau)->p4();
   }
   for ( std::vector<const RecoJet*>::const_iterator jet = jets.begin();
 	jet != jets.end(); ++jet ) {
-    mht_p4 += (*jet)->p4_;
+    mht_p4 += (*jet)->p4();
   }
   return mht_p4;
 }
 
-double compMEt_LD(const math::PtEtaPhiMLorentzVector& met_p4, const math::PtEtaPhiMLorentzVector& mht_p4)
+double compMEt_LD(const Particle::LorentzVector& met_p4, const Particle::LorentzVector& mht_p4)
 {
   double met_LD = met_coef*met_p4.pt() + mht_coef*mht_p4.pt(); 
   return met_LD;
-}
-
-void set_cone_pT(std::vector<const RecoElectron*>& fakeableElectrons, int era)
-{
-  RecoElectronSelectorTight tightElectronSelector(era);
-  for ( std::vector<const RecoElectron*>::iterator fakeableElectron = fakeableElectrons.begin();
-	fakeableElectron != fakeableElectrons.end(); ++fakeableElectron ) {
-    if ( !tightElectronSelector(**fakeableElectron) ) {
-      RecoElectron* fakeableElectron_nonconst = const_cast<RecoElectron*>(*fakeableElectron);
-      double cone_pT = ( (*fakeableElectron)->jetPtRatio_ > 1.e-3 ) ? 0.85*(*fakeableElectron)->pt_/(*fakeableElectron)->jetPtRatio_ : (*fakeableElectron)->pt_;
-      fakeableElectron_nonconst->pt_ = cone_pT;
-    }
-  }
-}
-
-void set_cone_pT(std::vector<const RecoMuon*>& fakeableMuons, int era)
-{
-  RecoMuonSelectorTight tightMuonSelector(era);
-  for ( typename std::vector<const RecoMuon*>::iterator fakeableMuon = fakeableMuons.begin();
-	fakeableMuon != fakeableMuons.end(); ++fakeableMuon ) {
-    if ( !tightMuonSelector(**fakeableMuon) ) {
-      RecoMuon* fakeableMuon_nonconst = const_cast<RecoMuon*>(*fakeableMuon);
-      double cone_pT = ( (*fakeableMuon)->jetPtRatio_ > 1.e-3 ) ? 0.85*(*fakeableMuon)->pt_/(*fakeableMuon)->jetPtRatio_ : (*fakeableMuon)->pt_;
-      fakeableMuon_nonconst->pt_ = cone_pT;
-    }
-  }
 }
 
 std::vector<const RecoLepton*> mergeLeptonCollections(const std::vector<const RecoElectron*>& electrons, const std::vector<const RecoMuon*>& muons)

@@ -77,8 +77,8 @@ namespace
   
   void countLeptonGenMatches(const RecoLepton* lepton, int& numGenMatchedLeptons, int& numGenMatchedJets)
   {
-    if   ( lepton->genLepton_ ) ++numGenMatchedLeptons;
-    else                        ++numGenMatchedJets;
+    if   ( lepton->genLepton() ) ++numGenMatchedLeptons;
+    else                         ++numGenMatchedJets;
   }
 
   bool matches(int nSel, int nMatches)

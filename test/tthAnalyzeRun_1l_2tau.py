@@ -29,7 +29,7 @@ if __name__ == '__main__':
 
   analysis = analyzeConfig_1l_2tau(
     outputDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", ERA, version),
-    executable_analyze = "analyze_1l_2tau",
+    executable_analyze = "analyze_1l_2tau", cfgFile_analyze_original = "analyze_1l_2tau_cfg.py",
     samples = samples,
     hadTau_selection = "dR03mvaTight",
     hadTau_charge_selections = [ "OS", "SS" ],
