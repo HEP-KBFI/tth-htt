@@ -344,9 +344,13 @@ class addMEMConfig_2lss_1tau:
                 #self.filesToClean.append(self.outputFiles[key_file])
 
             # let's sum the number of integration per sample
+            nofEntriesMap = {}
+            for v in memEvtRangeDict.values():
+                if v['fileset_id'] not in nofEntriesMap:
+                    nofEntriesMap[v['fileset_id']] = v['nof_entries']
             statistics[process_name] = {
                 'nof_int'         : sum([entry['nof_int'] for entry in memEvtRangeDict.values()]),
-                'nof_entries'     : sum([entry['nof_entries'] for entry in memEvtRangeDict.values()]),
+                'nof_entries'     : sum(nofEntriesMap.values()),
                 'nof_jobs'        : len(memEvtRangeDict),
                 'nof_events_pass' : sum([entry['nof_events_pass'] for entry in memEvtRangeDict.values()]),
                 'nof_int_pass'    : sum([entry['nof_int_pass'] for entry in memEvtRangeDict.values()]),
