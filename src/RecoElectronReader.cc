@@ -90,7 +90,7 @@ void RecoElectronReader::setBranchNames()
 
 void RecoElectronReader::setBranchAddresses(TTree *tree)
 {
-  if (instances_[branchName_obj_] == this) {
+  if ( instances_[branchName_obj_] == this ) {
     leptonReader_->setBranchAddresses(tree);
     int max_nLeptons = leptonReader_->max_nLeptons_;
     mvaRawPOG_ = new Float_t[max_nLeptons];

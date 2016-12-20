@@ -40,7 +40,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
   for documentation of further Args.
   
   """
-  def __init__(self, outputDir, executable_analyze, samples, hadTau_selection, hadTau_charge_selections, applyFakeRateWeights, central_or_shifts,
+  def __init__(self, outputDir, executable_analyze, cfgFile_analyze_original, samples, hadTau_selection, hadTau_charge_selections, applyFakeRateWeights, central_or_shifts,
                max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs, 
                executable_addBackgrounds, executable_addBackgroundJetToTauFakes, histograms_to_fit, select_rle_output = False, executable_prep_dcard="prepareDatacard"):
     analyzeConfig.__init__(self, outputDir, executable_analyze, "1l_2tau", central_or_shifts,
@@ -108,7 +108,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
 
     self.nonfake_backgrounds = [ "TT", "TTW", "TTZ", "EWK", "Rares" ]
     
-    self.cfgFile_analyze_original = os.path.join(self.workingDir, "analyze_1l_2tau_cfg.py")
+    self.cfgFile_analyze_original = os.path.join(self.workingDir, cfgFile_analyze_original)
     self.cfgFile_addBackgrounds_original = os.path.join(self.workingDir, "addBackgrounds_cfg.py")
     self.cfgFile_addBackgrounds_modified = {}
     self.histogramFile_addBackgrounds = {}

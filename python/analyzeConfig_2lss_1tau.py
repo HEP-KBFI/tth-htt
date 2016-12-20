@@ -36,7 +36,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
   for documentation of further Args.
   
   """
-  def __init__(self, outputDir, executable_analyze, samples, lepton_charge_selections, hadTau_selection, applyFakeRateWeights, central_or_shifts,
+  def __init__(self, outputDir, executable_analyze, cfgFile_analyze_original, samples, lepton_charge_selections, hadTau_selection, applyFakeRateWeights, central_or_shifts,
                max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs, 
                executable_addBackgrounds, executable_addFakes, executable_addFlips, histograms_to_fit, select_rle_output = False, executable_prep_dcard="prepareDatacard"):
     analyzeConfig.__init__(self, outputDir, executable_analyze, "2lss_1tau", central_or_shifts,
@@ -153,7 +153,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
     else:
       raise ValueError("Invalid Configuration parameter 'applyFakeRateWeights' = %s !!" % applyFakeRateWeights)
       
-    self.cfgFile_analyze_original = os.path.join(self.workingDir, "analyze_2lss_1tau_cfg.py")
+    self.cfgFile_analyze_original = os.path.join(self.workingDir, cfgFile_analyze_original)
     self.cfgFile_addBackgrounds_original = os.path.join(self.workingDir, "addBackgrounds_cfg.py")
     self.cfgFile_addBackgrounds_modified = {}
     self.histogramFile_addBackgrounds = {}

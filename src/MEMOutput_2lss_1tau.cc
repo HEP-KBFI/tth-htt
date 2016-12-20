@@ -62,22 +62,23 @@ MEMOutput_2lss_1tau::MEMOutput_2lss_1tau(RUN_TYPE run,
   , errorFlag_(errorFlag)
 {}
 
-void MEMOutput_2lss_1tau::print(std::ostream& stream)
+std::ostream& operator<<(std::ostream& stream, const MEMOutput_2lss_1tau& memOutput)
 {
   stream << "<MEMOutput (2lss_1tau)>:" << std::endl;
-  stream << " run: " << run_ << ", lumi = " << lumi_ << ", event = " << evt_ << std::endl;
-  stream << " leading lepton: eta = " << leadLepton_eta_ << ", phi = " << leadLepton_phi_ << std::endl;
-  stream << " subleading lepton: eta = " << subleadLepton_eta_ << ", phi = " << subleadLepton_phi_ << std::endl;
-  stream << " hadTau: eta = " << hadTau_eta_ << ", phi = " << hadTau_phi_ << std::endl;
-  stream << " type = " << type_ << std::endl;
+  stream << " run: " << memOutput.run() << ", lumi = " << memOutput.lumi() << ", event = " << memOutput.evt() << std::endl;
+  stream << " leading lepton: eta = " << memOutput.leadLepton_eta() << ", phi = " << memOutput.leadLepton_phi() << std::endl;
+  stream << " subleading lepton: eta = " << memOutput.subleadLepton_eta() << ", phi = " << memOutput.subleadLepton_phi() << std::endl;
+  stream << " hadTau: eta = " << memOutput.hadTau_eta() << ", phi = " << memOutput.hadTau_phi() << std::endl;
+  stream << " type = " << memOutput.type() << std::endl;
   stream << " weights:" << std::endl;
-  stream << "  ttH = " << weight_ttH_ << std::endl;
-  stream << "  ttZ = " << weight_ttZ_ << std::endl;
-  stream << "  ttZ(Z->ll) = " << weight_ttZ_Zll_ << std::endl;
-  stream << "  tt = " << weight_tt_ << std::endl;
-  stream << " LR = " << LR_ << std::endl;
-  stream << " isValid = " << isValid_ << std::endl;
-  stream << " errorFlag = " << errorFlag_ << std::endl;
-  stream << " cpuTime = " << cpuTime_ << std::endl;
-  stream << " realTime = " << realTime_ << std::endl;
+  stream << "  ttH = " << memOutput.weight_ttH() << std::endl;
+  stream << "  ttZ = " << memOutput.weight_ttZ() << std::endl;
+  stream << "  ttZ(Z->ll) = " << memOutput.weight_ttZ_Zll() << std::endl;
+  stream << "  tt = " << memOutput.weight_tt() << std::endl;
+  stream << " LR = " << memOutput.LR() << std::endl;
+  stream << " isValid = " << memOutput.isValid() << std::endl;
+  stream << " errorFlag = " << memOutput.errorFlag() << std::endl;
+  stream << " cpuTime = " << memOutput.cpuTime() << std::endl;
+  stream << " realTime = " << memOutput.realTime() << std::endl;
+  return stream;
 }

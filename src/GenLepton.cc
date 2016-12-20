@@ -19,11 +19,12 @@ GenLepton::GenLepton(const math::PtEtaPhiMLorentzVector & p4,
   , charge_(-pdgId_ / std::abs(pdgId_))
 { }
 
-std::ostream &
-operator<<(std::ostream & os,
-           const GenLepton & o)
+std::ostream& operator<<(std::ostream& stream, const GenLepton& lepton)
 {
-  operator<<(os, static_cast<GenParticle>(o));
-  os << "; charge = " << o.charge_;
-  return os;
+  stream << " pT = " << lepton.pt() << ","
+         << " eta = " << lepton.eta() << ","
+         << " phi = " << lepton.phi() << ","
+         << " charge = " << lepton.charge() << std::endl;
+  return stream;
 }
+

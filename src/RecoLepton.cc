@@ -36,23 +36,28 @@ RecoLepton::RecoLepton(Double_t pt,
   , jetBtagCSV_(jetBtagCSV)
   , tightCharge_(tightCharge)
   , charge_(charge)
+  , cone_pt_(0.)
   , genLepton_(0)
   , genHadTau_(0)
   , genJet_(0)
-{}
-
+  , isLoose_(false)
+  , isFakeable_(false)
+  , isTight_(false)
+{
+  double cone_pt = ( jetPtRatio_ > 1.e-3 ) ? 0.85*pt_/jetPtRatio_ : pt_;
+  set_cone_pt(cone_pt);
+}
 
 std::ostream& operator<<(std::ostream& stream, const RecoLepton& lepton)
 {
-  stream << " pT = " << lepton.pt_ << ","
-         << " eta = " << lepton.eta_ << ","
-         << " phi = " << lepton.phi_ << ","
-         << " pdgId = " << lepton.pdgId_ << std::endl;
-  stream << " dxy = " << lepton.dxy_ << ", dz = " << lepton.dz_ << ", sip3d = " <<
-    lepton.sip3d_ << std::endl;
-  stream << " relIso = " << lepton.relIso_ << std::endl;
-  stream << " chargedHadRelIso03 = " << lepton.chargedHadRelIso03_ << std::endl;
-  stream << " tightCharge = " << lepton.tightCharge_ << std::endl;
-  stream << " mvaRawTTH = " << lepton.mvaRawTTH_ << std::endl;
+  stream << " pT = " << lepton.pt() << ","
+         << " eta = " << lepton.eta() << ","
+         << " phi = " << lepton.phi() << ","
+         << " pdgId = " << lepton.pdgId() << std::endl;
+  stream << " dxy = " << lepton.dxy() << ", dz = " << lepton.dz() << ", sip3d = " << lepton.sip3d() << std::endl;
+  stream << " relIso = " << lepton.relIso() << std::endl;
+  stream << " chargedHadRelIso03 = " << lepton.chargedHadRelIso03() << std::endl;
+  stream << " tightCharge = " << lepton.tightCharge() << std::endl;
+  stream << " mvaRawTTH = " << lepton.mvaRawTTH() << std::endl;
   return stream;
 }

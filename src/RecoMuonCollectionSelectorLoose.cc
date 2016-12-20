@@ -2,8 +2,9 @@
 
 #include <cmath> // fabs
 
-RecoMuonSelectorLoose::RecoMuonSelectorLoose(int era, int index, bool debug)
-  : min_pt_(5.)
+RecoMuonSelectorLoose::RecoMuonSelectorLoose(int era, bool set_selection_flags, int index, bool debug)
+  : set_selection_flags_(set_selection_flags)
+  , min_pt_(5.)
   , max_absEta_(2.4)
   , max_dxy_(0.05)
   , max_dz_(0.1)
@@ -16,14 +17,15 @@ RecoMuonSelectorLoose::RecoMuonSelectorLoose(int era, int index, bool debug)
 
 bool RecoMuonSelectorLoose::operator()(const RecoMuon& muon) const
 {
-  if ( muon.pt_ >= min_pt_ &&
-       muon.absEta_ <= max_absEta_ &&
-       std::fabs(muon.dxy_) <= max_dxy_ &&
-       std::fabs(muon.dz_) <= max_dz_ &&
-       muon.relIso_ <= max_relIso_ &&
-       muon.sip3d_ <= max_sip3d_ &&
-       (muon.passesLooseIdPOG_ || !apply_looseIdPOG_) && 
-       (muon.passesMediumIdPOG_ || !apply_mediumIdPOG_) ) {
+  if ( muon.pt() >= min_pt_ &&
+       muon.absEta() <= max_absEta_ &&
+       std::fabs(muon.dxy()) <= max_dxy_ &&
+       std::fabs(muon.dz()) <= max_dz_ &&
+       muon.relIso() <= max_relIso_ &&
+       muon.sip3d() <= max_sip3d_ &&
+       (muon.passesLooseIdPOG() || !apply_looseIdPOG_) && 
+       (muon.passesMediumIdPOG() || !apply_mediumIdPOG_) ) {
+    if ( set_selection_flags_ ) muon.set_isLoose();
     return true;
   }
   return false;

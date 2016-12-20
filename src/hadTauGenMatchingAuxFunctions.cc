@@ -104,10 +104,10 @@ namespace
   
   void countHadTauGenMatches(const RecoHadTau* hadTau, int& numGenMatchedHadTaus, int& numGenMatchedElectrons, int& numGenMatchedMuons, int& numGenMatchedJets)
   {
-    if      ( hadTau->genHadTau_                                               ) ++numGenMatchedHadTaus;
-    else if ( hadTau->genLepton_ && std::abs(hadTau->genLepton_->pdgId_) == 11 ) ++numGenMatchedElectrons;
-    else if ( hadTau->genLepton_ && std::abs(hadTau->genLepton_->pdgId_) == 13 ) ++numGenMatchedMuons;
-    else                                                                         ++numGenMatchedJets;
+    if      ( hadTau->genHadTau()                                                 ) ++numGenMatchedHadTaus;
+    else if ( hadTau->genLepton() && std::abs(hadTau->genLepton()->pdgId()) == 11 ) ++numGenMatchedElectrons;
+    else if ( hadTau->genLepton() && std::abs(hadTau->genLepton()->pdgId()) == 13 ) ++numGenMatchedMuons;
+    else                                                                            ++numGenMatchedJets;
   }
   
   bool matches(int nSel, int nMatches)

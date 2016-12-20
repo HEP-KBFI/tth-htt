@@ -18,6 +18,9 @@ class RecoHadTauSelectorTight : public RecoHadTauSelectorBase
   ~RecoHadTauSelectorTight() {}
 
   friend class RecoHadTauCollectionSelector<RecoHadTauSelectorTight>;
+  
+ protected:
+  void set_selection_flags(const RecoHadTau& hadTau) const { hadTau.set_isTight(); }
 };
 
 typedef RecoHadTauCollectionSelector<RecoHadTauSelectorTight> RecoHadTauCollectionSelectorTight;

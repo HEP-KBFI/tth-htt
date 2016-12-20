@@ -7,9 +7,11 @@
 #include <cmath> // fabs
 #include <assert.h> // assert
 
-RecoElectronSelectorFakeable::RecoElectronSelectorFakeable(int era, int index, bool debug)
+RecoElectronSelectorFakeable::RecoElectronSelectorFakeable(int era, bool set_selection_flags, int index, bool debug)
   : era_(era)
+  , set_selection_flags_(set_selection_flags)
   , apply_offline_e_trigger_cuts_(true)
+  , tightElectronSelector_(0)
   , min_pt_(10.)
   , max_absEta_(2.5)
   , max_dxy_(0.05)
@@ -43,37 +45,50 @@ RecoElectronSelectorFakeable::RecoElectronSelectorFakeable(int era, int index, b
   assert(binning_mvaTTH_.size() == 1);
   assert(min_jetPtRatio_.size() == 2);
   assert(max_jetBtagCSV_.size() == 2);
+  tightElectronSelector_ = new RecoElectronSelectorTight(era_, false, index, debug);
+}
+
+RecoElectronSelectorFakeable::~RecoElectronSelectorFakeable()
+{
+  delete tightElectronSelector_;
 }
 
 bool RecoElectronSelectorFakeable::operator()(const RecoElectron& electron) const
 {
-  if ( electron.pt_ >= min_pt_ &&
-       electron.absEta_ <= max_absEta_ &&
-       std::fabs(electron.dxy_) <= max_dxy_ &&
-       std::fabs(electron.dz_) <= max_dz_ &&
-       electron.relIso_ <= max_relIso_ &&
-       electron.sip3d_ <= max_sip3d_ &&
-       electron.nLostHits_ <= max_nLostHits_ && 
-       (electron.passesConversionVeto_ || !apply_conversionVeto_) ) {
+  bool isTight = (*tightElectronSelector_)(electron);
+  double pt = ( isTight ) ? electron.pt() : electron.cone_pt();
+  if ( pt >= min_pt_ &&
+       electron.absEta() <= max_absEta_ &&
+       std::fabs(electron.dxy()) <= max_dxy_ &&
+       std::fabs(electron.dz()) <= max_dz_ &&
+       electron.relIso() <= max_relIso_ &&
+       electron.sip3d() <= max_sip3d_ &&
+       electron.nLostHits() <= max_nLostHits_ && 
+       (electron.passesConversionVeto() || !apply_conversionVeto_) ) {
     int idxBin_absEta = -1;
-    if      ( electron.absEta_ <= binning_absEta_[0] ) idxBin_absEta = 0;
-    else if ( electron.absEta_ <= binning_absEta_[1] ) idxBin_absEta = 1;
-    else                                               idxBin_absEta = 2;
+    if      ( electron.absEta() <= binning_absEta_[0] ) idxBin_absEta = 0;
+    else if ( electron.absEta() <= binning_absEta_[1] ) idxBin_absEta = 1;
+    else                                                idxBin_absEta = 2;
     assert(idxBin_absEta >= 0 && idxBin_absEta <= 2);
-    if ( electron.mvaRawPOG_ >= min_mvaRawPOG_[idxBin_absEta] ) {
+    if ( electron.mvaRawPOG() >= min_mvaRawPOG_[idxBin_absEta] ) {
       int idxBin_mvaTTH = -1;
-      if   ( electron.mvaRawTTH_ <= binning_mvaTTH_[0] ) idxBin_mvaTTH = 0;
-      else                                               idxBin_mvaTTH = 1;
+      if   ( electron.mvaRawTTH() <= binning_mvaTTH_[0] ) idxBin_mvaTTH = 0;
+      else                                                idxBin_mvaTTH = 1;
       assert(idxBin_mvaTTH >= 0 && idxBin_mvaTTH <= 1);
-      if ( electron.jetPtRatio_ >= min_jetPtRatio_[idxBin_mvaTTH] &&
-	   electron.jetBtagCSV_ <= max_jetBtagCSV_[idxBin_mvaTTH] ) {
-	if ( electron.pt_ <= min_pt_trig_ || !apply_offline_e_trigger_cuts_ ) return true;
-	else if ( electron.sigmaEtaEta_ <= max_sigmaEtaEta_trig_[idxBin_absEta] &&
-		  electron.HoE_ <= max_HoE_trig_[idxBin_absEta] &&
-		  electron.deltaEta_ <= max_deltaEta_trig_[idxBin_absEta] &&
-		  electron.deltaPhi_ <= max_deltaPhi_trig_[idxBin_absEta] &&
-		  electron.OoEminusOoP_ >= min_OoEminusOoP_trig_ &&
-		  electron.OoEminusOoP_ <= max_OoEminusOoP_trig_[idxBin_absEta] ) return true;
+      if ( electron.jetPtRatio() >= min_jetPtRatio_[idxBin_mvaTTH] &&
+	   electron.jetBtagCSV() <= max_jetBtagCSV_[idxBin_mvaTTH] ) {
+	if ( pt <= min_pt_trig_ || !apply_offline_e_trigger_cuts_ ) {
+	  if ( set_selection_flags_ ) electron.set_isFakeable();
+	  return true;
+	} else if ( electron.sigmaEtaEta() <= max_sigmaEtaEta_trig_[idxBin_absEta] &&
+		    electron.HoE() <= max_HoE_trig_[idxBin_absEta] &&
+		    electron.deltaEta() <= max_deltaEta_trig_[idxBin_absEta] &&
+		    electron.deltaPhi() <= max_deltaPhi_trig_[idxBin_absEta] &&
+		    electron.OoEminusOoP() >= min_OoEminusOoP_trig_ &&
+		    electron.OoEminusOoP() <= max_OoEminusOoP_trig_[idxBin_absEta] ) {
+	  if ( set_selection_flags_ ) electron.set_isFakeable();
+	  return true;
+	}
       }
     }
   }

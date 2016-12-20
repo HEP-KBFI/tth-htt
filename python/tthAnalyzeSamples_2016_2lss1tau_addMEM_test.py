@@ -10,7 +10,7 @@ samples_2016["/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/Ru
   ("sample_category",       "signal"),
   ("process_name_specific", "ttHJetToNonbb_M125"),
   ("nof_files",             9),
-  ("nof_events",            52967720),
+  ("nof_events",            6228310),
   ("use_it",                True),
   ("xsection",              0.215100),
   ("genWeight",             True),

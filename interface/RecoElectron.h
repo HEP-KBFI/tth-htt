@@ -39,6 +39,19 @@ class RecoElectron
 	       Int_t passesConversionVeto);
 
   /**
+   * @brief Funtions to access data-members
+   * @return Values of data-members
+   */
+  Double_t mvaRawPOG() const { return mvaRawPOG_; }
+  Double_t sigmaEtaEta() const { return sigmaEtaEta_; }
+  Double_t HoE() const { return HoE_; }
+  Double_t deltaEta() const { return deltaEta_; }
+  Double_t deltaPhi() const { return deltaPhi_; }
+  Double_t OoEminusOoP() const { return OoEminusOoP_; }
+  Int_t nLostHits() const { return nLostHits_; }
+  Int_t passesConversionVeto() const { return passesConversionVeto_; }
+
+  /**
    * @brief Checks whether a given lepton is an electron by its PDG id
    * @return True if it is an electron; false otherwise
    */

@@ -44,9 +44,9 @@ void RecoMEtWriter::setBranches(TTree* tree)
 
 void RecoMEtWriter::write(const RecoMEt& met) 
 {
-  met_pt_ = met.pt_;
-  met_phi_ = met.phi_;
-  met_covXX_ = met.covXX_;
-  met_covXY_ = met.covXY_;
-  met_covYY_ = met.covYY_;
+  met_pt_ = met.pt();
+  met_phi_ = met.phi();
+  met_covXX_ = met.covXX();
+  met_covXY_ = met.covXY();
+  met_covYY_ = met.covYY();
 }

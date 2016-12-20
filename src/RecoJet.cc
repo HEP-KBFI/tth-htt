@@ -26,10 +26,10 @@ RecoJet::RecoJet(Double_t pt,
 
 std::ostream& operator<<(std::ostream& stream, const RecoJet& jet)
 {
-  stream << " pT = " << jet.pt_ << ","
-	 << " eta = " << jet.eta_ << "," 
-	 << " phi = " << jet.phi_ << "," 
-	 << " mass = " << jet.mass_ << "," 
-	 << " CSV = " << jet.BtagCSV_ << std::endl; 
+  stream << " pT = " << jet.pt() << ","
+	 << " eta = " << jet.eta() << "," 
+	 << " phi = " << jet.phi() << "," 
+	 << " mass = " << jet.mass() << "," 
+	 << " CSV = " << jet.BtagCSV() << std::endl; 
   return stream;
 }

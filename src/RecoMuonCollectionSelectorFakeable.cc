@@ -4,8 +4,10 @@
 
 #include <cmath> // fabs
 
-RecoMuonSelectorFakeable::RecoMuonSelectorFakeable(int era, int index, bool debug)
+RecoMuonSelectorFakeable::RecoMuonSelectorFakeable(int era, bool set_selection_flags, int index, bool debug)
   : era_(era)
+  , set_selection_flags_(set_selection_flags)
+  , tightMuonSelector_(0)
   , min_pt_(10.)
   , max_absEta_(2.4)
   , max_dxy_(0.05)
@@ -20,24 +22,35 @@ RecoMuonSelectorFakeable::RecoMuonSelectorFakeable(int era, int index, bool debu
   if      ( era_ == kEra_2015 ) max_jetBtagCSV_ = { 0.605, 0.89 };
   else if ( era_ == kEra_2016 ) max_jetBtagCSV_ = { 0.460, 0.80 };
   else assert(0);
+  tightMuonSelector_ = new RecoMuonSelectorTight(era_, false, index, debug);
+}
+
+RecoMuonSelectorFakeable::~RecoMuonSelectorFakeable()
+{
+  delete tightMuonSelector_;
 }
 
 bool RecoMuonSelectorFakeable::operator()(const RecoMuon& muon) const
 {
-  if ( muon.pt_ >= min_pt_ &&
-       muon.absEta_ <= max_absEta_ &&
-       std::fabs(muon.dxy_) <= max_dxy_ &&
-       std::fabs(muon.dz_) <= max_dz_ &&
-       muon.relIso_ <= max_relIso_ &&
-       muon.sip3d_ <= max_sip3d_ &&
-       (muon.passesLooseIdPOG_ || !apply_looseIdPOG_) && 
-       (muon.passesMediumIdPOG_ || !apply_mediumIdPOG_) ) {
+  bool isTight = (*tightMuonSelector_)(muon);
+  double pt = ( isTight ) ? muon.pt() : muon.cone_pt();
+  if ( pt >= min_pt_ &&
+       muon.absEta() <= max_absEta_ &&
+       std::fabs(muon.dxy()) <= max_dxy_ &&
+       std::fabs(muon.dz()) <= max_dz_ &&
+       muon.relIso() <= max_relIso_ &&
+       muon.sip3d() <= max_sip3d_ &&
+       (muon.passesLooseIdPOG() || !apply_looseIdPOG_) && 
+       (muon.passesMediumIdPOG() || !apply_mediumIdPOG_) ) {
     int idxBin = -1;
-    if   ( muon.mvaRawTTH_ <= binning_mvaTTH_[0] ) idxBin = 0;
-    else                                           idxBin = 1;
+    if   ( muon.mvaRawTTH() <= binning_mvaTTH_[0] ) idxBin = 0;
+    else                                            idxBin = 1;
     assert(idxBin >= 0 && idxBin <= 1);
-    if ( muon.jetPtRatio_ >= min_jetPtRatio_[idxBin] &&
-	 muon.jetBtagCSV_ <= max_jetBtagCSV_[idxBin] ) return true;
+    if ( muon.jetPtRatio() >= min_jetPtRatio_[idxBin] &&
+	 muon.jetBtagCSV() <= max_jetBtagCSV_[idxBin] ) {
+      if ( set_selection_flags_ ) muon.set_isFakeable();
+      return true;
+    }
   }
   return false;
 }

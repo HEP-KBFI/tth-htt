@@ -11,7 +11,7 @@
 class RecoElectronSelectorLoose
 {
  public:
-  RecoElectronSelectorLoose(int era, int index = -1, bool debug = false);
+  RecoElectronSelectorLoose(int era, bool set_selection_flags = true, int index = -1, bool debug = false);
   ~RecoElectronSelectorLoose() {}
 
   /**
@@ -21,6 +21,9 @@ class RecoElectronSelectorLoose
   bool operator()(const RecoElectron& electron) const;
 
  protected: 
+  bool set_selection_flags_;
+  bool debug_;                        ///< enable printout for debugging purposes
+
   Double_t min_pt_;                   ///< lower cut threshold on pT
   Double_t max_absEta_;               ///< upper cut threshold on absolute value of eta
   Double_t max_dxy_;                  ///< upper cut threshold on d_{xy}, distance in the transverse plane w.r.t PV
@@ -37,7 +40,6 @@ class RecoElectronSelectorLoose
   bool apply_conversionVeto_;         ///< apply (True) or do not apply (False) conversion veto
   Int_t max_nLostHits_;               ///< upper cut threshold on lost hits in the innermost layer of the tracker (electrons with lost_hits equal to cut threshold pass)
 //-------------------------------------------------------------------------------
-  bool debug_;                        ///< enable printout for debugging purposes
 };
 
 typedef ParticleCollectionSelector<RecoElectron, RecoElectronSelectorLoose> RecoElectronCollectionSelectorLoose;

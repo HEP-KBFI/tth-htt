@@ -22,19 +22,19 @@ RecoElectronSelectorCutBased::RecoElectronSelectorCutBased(int era, int index, b
 bool
 RecoElectronSelectorCutBased::operator()(const RecoElectron& electron) const
 {
-  if(electron.pt_ >= min_pt_ &&
-     electron.relIso_ <= max_relIso_ &&
-     electron.sip3d_ <= max_sip3d_ &&
-     electron.nLostHits_ <= max_nLostHits_ &&
-     (electron.tightCharge_ >= 2 || !apply_tightCharge_) &&
-     (electron.passesConversionVeto_ || !apply_conversionVeto_))
+  if(electron.pt() >= min_pt_ &&
+     electron.relIso() <= max_relIso_ &&
+     electron.sip3d() <= max_sip3d_ &&
+     electron.nLostHits() <= max_nLostHits_ &&
+     (electron.tightCharge() >= 2 || !apply_tightCharge_) &&
+     (electron.passesConversionVeto() || !apply_conversionVeto_))
   {
     int idxBin = -1;
-    if      (electron.absEta_ <= binning_absEta_[0]) idxBin = 0;
-    else if (electron.absEta_ <= binning_absEta_[1]) idxBin = 1;
-    else                                             idxBin = 2;
+    if      (electron.absEta() <= binning_absEta_[0]) idxBin = 0;
+    else if (electron.absEta() <= binning_absEta_[1]) idxBin = 1;
+    else                                              idxBin = 2;
     assert(idxBin >= 0 && idxBin <= 2);
-    if (electron.mvaRawPOG_ >= min_mvaRawPOG_[idxBin]) return true;
+    if (electron.mvaRawPOG() >= min_mvaRawPOG_[idxBin]) return true;
   }
   return false;
 }

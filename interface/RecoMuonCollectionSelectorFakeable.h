@@ -2,6 +2,7 @@
 #define tthAnalysis_HiggsToTauTau_RecoMuonCollectionSelectorFakeable_h
 
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuon.h" // RecoMuon
+#include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorTight.h" // RecoMuonSelectorTight
 #include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionSelector.h" // ParticleCollectionSelector
 
 #include <Rtypes.h> // Int_t, Double_t
@@ -12,8 +13,8 @@
 class RecoMuonSelectorFakeable
 {
  public:
-  RecoMuonSelectorFakeable(int era, int index = -1, bool debug = false);
-  ~RecoMuonSelectorFakeable() {}
+  RecoMuonSelectorFakeable(int era, bool set_selection_flags = true, int index = -1, bool debug = false);
+  ~RecoMuonSelectorFakeable();
 
   /**
    * @brief Check if muon given as function argument passes "fakeable" muon selection, defined in Table 12 of AN-2015/321
@@ -23,6 +24,9 @@ class RecoMuonSelectorFakeable
 
  protected: 
   int era_;
+  bool set_selection_flags_;
+
+  RecoMuonSelectorTight* tightMuonSelector_;
 
   Double_t min_pt_;         ///< lower cut threshold on pT
   Double_t max_absEta_;     ///< upper cut threshold on absolute value of eta

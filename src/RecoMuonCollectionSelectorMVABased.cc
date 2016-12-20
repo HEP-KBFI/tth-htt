@@ -29,11 +29,11 @@ RecoMuonSelectorMVABased::RecoMuonSelectorMVABased(int era, int index, bool debu
 bool
 RecoMuonSelectorMVABased::operator()(const RecoMuon& muon) const
 {
-  if(muon.pt_ >= min_pt_ &&
-     muon.mvaRawTTH_ >= min_mvaTTH_ &&
-     muon.jetBtagCSV_ <= max_jetBtagCSV_ &&
-     (muon.passesMediumIdPOG_ || !apply_mediumIdPOG_) &&
-     (muon.tightCharge_ >= 2 || !apply_tightCharge_)) {
+  if(muon.pt() >= min_pt_ &&
+     muon.mvaRawTTH() >= min_mvaTTH_ &&
+     muon.jetBtagCSV() <= max_jetBtagCSV_ &&
+     (muon.passesMediumIdPOG() || !apply_mediumIdPOG_) &&
+     (muon.tightCharge() >= 2 || !apply_tightCharge_)) {
     return true;
   }
   return false;

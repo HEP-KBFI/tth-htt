@@ -125,16 +125,16 @@ void RecoJetWriter::write(const std::vector<const RecoJet*>& jets)
   for ( Int_t idxJet = 0; idxJet < nJets_; ++idxJet ) {
     const RecoJet* jet = jets[idxJet];
     assert(jet);
-    jet_pt_[idxJet] = jet->pt_;
-    jet_eta_[idxJet] = jet->eta_;
-    jet_phi_[idxJet] = jet->phi_;
-    jet_mass_[idxJet] = jet->mass_;
-    jet_corr_[idxJet] = jet->corr_;
-    jet_corr_JECUp_[idxJet] = jet->corr_JECUp_;
-    jet_corr_JECDown_[idxJet] = jet->corr_JECDown_;
+    jet_pt_[idxJet] = jet->pt();
+    jet_eta_[idxJet] = jet->eta();
+    jet_phi_[idxJet] = jet->phi();
+    jet_mass_[idxJet] = jet->mass();
+    jet_corr_[idxJet] = jet->corr();
+    jet_corr_JECUp_[idxJet] = jet->corr_JECUp();
+    jet_corr_JECDown_[idxJet] = jet->corr_JECDown();
     jet_BtagCSVwHipMitigation_[idxJet] = jet->BtagCSVwHipMitigation_;
     jet_BtagCSVwoHipMitigation_[idxJet] = jet->BtagCSVwoHipMitigation_;
-    jet_BtagWeight_[idxJet] = jet->BtagWeight_;
+    jet_BtagWeight_[idxJet] = jet->BtagWeight();
     for ( int idxShift = kBtag_hfUp; idxShift <= kBtag_jesDown; ++idxShift ) {
       std::map<int, Double_t>::const_iterator jet_BtagWeight_systematics_iter = jet->BtagWeight_systematics_.find(idxShift);
       if ( jet_BtagWeight_systematics_iter != jet->BtagWeight_systematics_.end() ) {
