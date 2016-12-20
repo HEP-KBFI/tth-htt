@@ -32,9 +32,10 @@ if __name__ == '__main__':
   if args.verbose:
     logging.getLogger().setLevel(logging.DEBUG)
 
-  analysis_path = os.path.join(
-    '/home', args.user, 'ttHAnalysis', str(args.era), args.version, 'output_rle', args.channel
+  path_pattern = os.path.join(
+    '/home', '%s', 'ttHAnalysis', str(args.era), args.version, '%s', args.channel
   )
+  analysis_path = path_pattern % (args.user, 'output_rle')
   logging.debug("Checking if path '{directory_name}' is there".format(directory_name = analysis_path))
   if not os.path.exists(analysis_path):
     logging.error("No such directory: '{directory_name}'".format(directory_name = analysis_path))
@@ -86,7 +87,32 @@ if __name__ == '__main__':
       nof_rles    = len(rles[sample_name])
     ) % padding(sample_name))
   print("Total: %s{nof_rles}".format(nof_rles = sum(map(len, rles.values()))) % padding("Total"))
-  logging.info("Done")
 
-  #TODO: SAVE THE RLE NUMBERS TO DISK
-  #TODO: FIGURE OUT HOW TO USE THESE FILES IN ADDMEM CFG FILE THAT CREATES MEM JOBS
+  save_path = path_pattern % (args.user, 'rles')
+  logging.info("Checking if parent of '{directory_name}' is writable by the user".format(
+    directory_name = save_path
+  ))
+  if not os.access(os.path.dirname(save_path), os.W_OK):
+    new_dirname = path_pattern % (getpass.getuser(), 'rles')
+    logging.info("Directory '{fail_dirname}' is not writable, switching over to '{new_dirname}'".format(
+      fail_dirname = save_path,
+      new_dirname = new_dirname
+    ))
+    save_path = new_dirname
+
+  if not os.path.isdir(save_path):
+    logging.info("Path '{save_path}' is not a directory, trying to create one".format(save_path = save_path))
+    try:
+      os.makedirs(save_path)
+    except IOError:
+      logging.error("Couldn't create '{save_path}', aborting".format(save_path = save_path))
+      sys.exit(1)
+
+  for sample_name in rles:
+    rle_sample_file = os.path.join(save_path, '{base_name}.txt'.format(base_name = sample_name))
+    logging.debug("Writing file '{rle_sample_file}'".format(rle_sample_file = rle_sample_file))
+    with open(rle_sample_file, 'w') as f:
+      for event in rles[sample_name]:
+        f.write('{line}\n'.format(line = event))
+
+  logging.debug("Done!")

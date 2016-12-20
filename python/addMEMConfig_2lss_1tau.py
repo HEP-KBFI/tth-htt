@@ -134,7 +134,6 @@ class addMEMConfig_2lss_1tau:
             working_dir = self.workingDir,
             max_num_jobs = self.max_mem_integrations,
             cvmfs_error_log = self.cvmfs_error_log,
-#            waitForJobs = True,
         )
 
     def addToMakefile_addMEM(self, lines_makefile):
@@ -390,7 +389,7 @@ class addMEMConfig_2lss_1tau:
             return True
 
     def run(self):
-        """Runs all Ntuple production jobs -- either locally or on the batch system.
+        """Runs all Ntuple addMEM jobs -- either locally or on the batch system.
         """
         run_cmd("make -f %s -j %i " % (self.makefile, self.num_parallel_jobs),
                 False, self.stdout_file, self.stderr_file)
