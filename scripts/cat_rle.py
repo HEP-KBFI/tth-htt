@@ -1,5 +1,11 @@
 import logging, sys, argparse, os, getpass, re
 
+'''Example usage:
+
+python scripts/cat_rle.py -e 2016 -c 2lss_1tau -v 2016Dec11 -u veelken -V
+
+'''
+
 if __name__ == '__main__':
   logging.basicConfig(
     stream = sys.stdout,
