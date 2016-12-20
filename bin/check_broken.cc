@@ -995,18 +995,13 @@ genweights["/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/RunI
 
 //--- post-process
 
-  std::cout << "in the post process phase "<< std::endl;
+  std::cout << "Post-processing ...\n";
   for(Sample & sample: samples)
     sample.check_completion();
   const auto present   = samples | Sample::Info::kPresent;
-  std::cout << "a" << std::endl;
   const auto zombies   = samples | Sample::Info::kZombie;
-  std::cout << "b" << std::endl;
   const auto zerofs    = samples | Sample::Info::kZerofs;
-  std::cout << "c" << std::endl;
   const auto improper  = samples | Sample::Info::kImproper;
-  std::cout << "x" << std::endl;
-  std::cout << "print the results; save them to a file? "<< std::endl;
 //--- print the results; save them to a file?
   if(zombies.size())
   {

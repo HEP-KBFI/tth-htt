@@ -111,13 +111,13 @@ class addMEMConfig_2lss_1tau:
         lines = []
         skipEvents = startRange
         maxEvents = endRange - startRange
-        copyHistograms = "True" if skipEvents == 0 else "False"
         lines.append("process.fwliteInput.fileNames = cms.vstring(%s)" % inputFiles)
         lines.append("process.fwliteInput.skipEvents = cms.uint32(%s)" % skipEvents)
         lines.append("process.fwliteInput.maxEvents = cms.int32(%s)" % maxEvents)
         lines.append("process.fwliteOutput.fileName = cms.string('%s')" % os.path.basename(outputFile))
         lines.append("process.addMEM_2lss_1tau.era = cms.string('%s')" % era)
-        lines.append("process.addMEM_2lss_1tau.copyHistograms = cms.bool(%s)" % copyHistograms)
+        if skipEvents > 0:
+            lines.append("process.addMEM_2lss_1tau.copy_histograms = cms.vstring()")
 
         create_cfg(self.cfgFile_addMEM_original, cfgFile_modified, lines)
 
@@ -334,7 +334,7 @@ class addMEMConfig_2lss_1tau:
                 # associate the output file with the fileset_id
                 fileset_id = memEvtRangeDict[jobId]['fileset_id']
                 hadd_output = os.path.join(
-                    self.dirs[key_dir][DKEY_FINAL_NTUPLES], process_name, '%s_%i.root' % ('tree', fileset_id)
+                    self.dirs[key_dir][DKEY_FINAL_NTUPLES], '%s_%i.root' % ('tree', fileset_id)
                 )
                 if hadd_output not in self.hadd_records:
                     self.hadd_records[hadd_output] = {}
@@ -344,9 +344,13 @@ class addMEMConfig_2lss_1tau:
                 #self.filesToClean.append(self.outputFiles[key_file])
 
             # let's sum the number of integration per sample
+            nofEntriesMap = {}
+            for v in memEvtRangeDict.values():
+                if v['fileset_id'] not in nofEntriesMap:
+                    nofEntriesMap[v['fileset_id']] = v['nof_entries']
             statistics[process_name] = {
                 'nof_int'         : sum([entry['nof_int'] for entry in memEvtRangeDict.values()]),
-                'nof_entries'     : sum([entry['nof_entries'] for entry in memEvtRangeDict.values()]),
+                'nof_entries'     : sum(nofEntriesMap.values()),
                 'nof_jobs'        : len(memEvtRangeDict),
                 'nof_events_pass' : sum([entry['nof_events_pass'] for entry in memEvtRangeDict.values()]),
                 'nof_int_pass'    : sum([entry['nof_int_pass'] for entry in memEvtRangeDict.values()]),
