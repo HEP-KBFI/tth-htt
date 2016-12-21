@@ -50,7 +50,7 @@ RecoLepton::RecoLepton(Double_t pt,
 
 std::ostream& operator<<(std::ostream& stream, const RecoLepton& lepton)
 {
-  stream << " pT = " << lepton.pt() << ","
+  stream << " pT = " << lepton.lepton_pt() << " (cone_pT = " << lepton.cone_pt() << ") ,"
          << " eta = " << lepton.eta() << ","
          << " phi = " << lepton.phi() << ","
          << " pdgId = " << lepton.pdgId() << std::endl;

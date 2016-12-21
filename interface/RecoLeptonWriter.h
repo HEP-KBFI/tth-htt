@@ -30,7 +30,7 @@ class RecoLeptonWriter
     for ( Int_t idxLepton = 0; idxLepton < nLeptons_; ++idxLepton ) {
       const T* lepton = leptons[idxLepton];
       assert(lepton);
-      pt_[idxLepton] = lepton->pt();
+      pt_[idxLepton] = lepton->lepton_pt();
       eta_[idxLepton] = lepton->eta();
       phi_[idxLepton] = lepton->phi();
       mass_[idxLepton] = lepton->mass();

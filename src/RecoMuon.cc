@@ -54,7 +54,7 @@ RecoMuon::RecoMuon(Double_t pt,
 
 std::ostream& operator<<(std::ostream& stream, const RecoMuon& muon)
 {
-  stream << " pT = " << muon.pt() << ","
+  stream << " pT = " << muon.lepton_pt() << " (cone_pT = " << muon.cone_pt() << ") ,"
          << " eta = " << muon.eta() << ","
          << " phi = " << muon.phi() << ","
          << " pdgId = " << muon.pdgId() << std::endl;

@@ -67,7 +67,10 @@
 
 typedef math::PtEtaPhiMLorentzVector LV;
 typedef std::vector<std::string> vstring;
- 
+
+bool skipAddMEM = false;
+//bool skipAddMEM = true;
+
 /**
  * @brief Compute MEM for events passing preselection in 2lss_1tau channel of ttH, H->tautau analysis
  */
@@ -383,12 +386,21 @@ int main(int argc, char* argv[])
 			    << " phi = " << (*selJet)->phi() << ", mass = " << (*selJet)->mass() << ", CSV = " << (*selJet)->BtagCSV() << std::endl;
 		  ++idxJet;
 		}
-		//MEMOutput_2lss_1tau memOutput_2lss_1tau;
-		MEMInterface_2lss_1tau memInterface_2lss_1tau("ttH_Htautau_MEM_Analysis/MEM/small.py");
-		MEMOutput_2lss_1tau memOutput_2lss_1tau = memInterface_2lss_1tau(
-	          *selLepton_lead, *selLepton_sublead, *selHadTau,
-		  met,
-		  selJets_cleaned);
+		MEMOutput_2lss_1tau memOutput_2lss_1tau;
+		if ( skipAddMEM ) {
+		  memOutput_2lss_1tau.set_leadLepton_eta((*selLepton_lead)->eta());
+		  memOutput_2lss_1tau.set_leadLepton_phi((*selLepton_lead)->phi());
+		  memOutput_2lss_1tau.set_subleadLepton_eta((*selLepton_sublead)->eta());
+		  memOutput_2lss_1tau.set_subleadLepton_phi((*selLepton_sublead)->phi());
+		  memOutput_2lss_1tau.set_hadTau_eta((*selHadTau)->eta());
+		  memOutput_2lss_1tau.set_hadTau_phi((*selHadTau)->phi());
+		} else {
+		  MEMInterface_2lss_1tau memInterface_2lss_1tau("ttH_Htautau_MEM_Analysis/MEM/small.py");
+		  memOutput_2lss_1tau = memInterface_2lss_1tau(
+	            *selLepton_lead, *selLepton_sublead, *selHadTau,
+		    met,
+		    selJets_cleaned);
+		}
 		memOutput_2lss_1tau.set_run(run);
 		memOutput_2lss_1tau.set_lumi(lumi);
 		memOutput_2lss_1tau.set_evt(event);

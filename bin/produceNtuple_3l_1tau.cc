@@ -307,6 +307,15 @@ int main(int argc, char* argv[])
     if ( run_lumi_eventSelector && !(*run_lumi_eventSelector)(run, lumi, event) ) continue;
     cutFlowTable.update("run:ls:event selection");
 
+    if ( run_lumi_eventSelector ) {
+      std::cout << "processing Entry " << idxEntry << ":"
+		<< " run = " << run << ", lumi = " << lumi << ", event = " << event << std::endl;
+      if ( inputTree->GetFile() ) std::cout << "input File = " << inputTree->GetFile()->GetName() << std::endl;
+    }
+
+    bool passesAddMEM = run_lumi_eventSelector_addMEM && (*run_lumi_eventSelector_addMEM)(run, lumi, event);
+    //std::cout << "passesAddMEM = " << passesAddMEM << std::endl;
+
 //--- build collections of electrons, muons and hadronic taus;
 //    resolve overlaps in order of priority: muon, electron,
     std::vector<RecoMuon> muons = muonReader->read();
@@ -363,7 +372,7 @@ int main(int argc, char* argv[])
 
 //--- apply preselection    
     std::vector<const RecoLepton*> selLeptons = mergeLeptonCollections(selElectrons, selMuons);
-    if ( !((int)selLeptons.size() >= minNumLeptons) ) {
+    if ( !((int)selLeptons.size() >= minNumLeptons) && !passesAddMEM ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS selLeptons selection." << std::endl;
 	std::vector<const RecoLepton*> preselLeptons = mergeLeptonCollections(preselElectrons, preselMuons);
@@ -392,7 +401,7 @@ int main(int argc, char* argv[])
     else if ( era == kEra_2016 ) minPt_lead = 23.;
     else assert(0);
     double minPt_sublead = selLepton_sublead->is_electron() ? 13. : 8.;
-    if ( !(selLepton_lead->pt() > minPt_lead && selLepton_sublead->pt() > minPt_sublead) ) {
+    if ( !(selLepton_lead->pt() > minPt_lead && selLepton_sublead->pt() > minPt_sublead) && !passesAddMEM ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS lepton pT selection." << std::endl;
 	std::cout << " (leading selLepton pT = " << selLepton_lead->pt() << ", minPt_lead = " << minPt_lead
@@ -403,7 +412,7 @@ int main(int argc, char* argv[])
     cutFlowTable.update("lead lepton pT > 23 GeV && sublead lepton pT > 13(e)/8(mu) GeV");
     //cutFlowHistManager->fillHistograms("lead lepton pT > 23 GeV && sublead lepton pT > 13(e)/8(mu) GeV");
 
-    if ( !((int)selHadTaus.size() >= minNumHadTaus) ) {
+    if ( !((int)selHadTaus.size() >= minNumHadTaus) && !passesAddMEM ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS selHadTaus selection." << std::endl;
 	std::cout << " (#selHadTaus = " << selHadTaus.size() << ")" << std::endl;
@@ -419,7 +428,7 @@ int main(int argc, char* argv[])
     //cutFlowHistManager->fillHistograms(Form(">= %i sel hadTau", minNumHadTaus));
 
     // apply requirement on jets 
-    if ( !((int)selJets.size() >= minNumJets) ) {
+    if ( !((int)selJets.size() >= minNumJets) && !passesAddMEM ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS selJets selection." << std::endl;
 	std::cout << " (#selJets = " << selJets.size() << ")" << std::endl;
@@ -432,7 +441,7 @@ int main(int argc, char* argv[])
     }
     cutFlowTable.update(Form(">= %i jets", minNumJets));
     //cutFlowHistManager->fillHistograms(Form(">= %i jets", minNumJets));
-    if ( !((int)selBJets_loose.size() >= minNumBJets_loose || (int)selBJets_medium.size() >= minNumBJets_medium) ) {
+    if ( !((int)selBJets_loose.size() >= minNumBJets_loose || (int)selBJets_medium.size() >= minNumBJets_medium) && !passesAddMEM ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS selBJets selection." << std::endl;
 	std::cout << " (#selJets = " << selJets.size() << ")" << std::endl;
@@ -463,17 +472,22 @@ int main(int argc, char* argv[])
 	  lepton1 != fakeableLeptons.end(); ++lepton1 ) {
       for ( std::vector<const RecoLepton*>::const_iterator lepton2 = lepton1 + 1;
 	    lepton2 != fakeableLeptons.end(); ++lepton2 ) {
+	//std::cout << "lepton1: pT = " << (*lepton1)->pt() << ", eta = " << (*lepton1)->eta() << ", phi = " << (*lepton1)->phi() << ", pdgId = " << (*lepton1)->pdgId() << std::endl;
+	//std::cout << "lepton2: pT = " << (*lepton2)->pt() << ", eta = " << (*lepton2)->eta() << ", phi = " << (*lepton2)->phi() << ", pdgId = " << (*lepton2)->pdgId() << std::endl;
 	if ( (*lepton1)->pdgId() == -(*lepton2)->pdgId() ) { // pair of same flavor leptons of opposite charge
 	  double mass = ((*lepton1)->p4() + (*lepton2)->p4()).mass();
+	  //std::cout << "mass = " << mass << std::endl;
 	  if ( std::fabs(mass - z_mass) < z_window ) {
+	    //std::cout << "--> setting failsZbosonMassVeto = true !!" << std::endl;
 	    failsZbosonMassVeto = true;
 	  }
 	}
       }
     }
-    bool passesPreselection = ( run_lumi_eventSelector_addMEM ) ? 
-      (*run_lumi_eventSelector_addMEM)(run, lumi, event) : (selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) && !failsZbosonMassVeto;
-    if ( passesPreselection && selLeptons.size() >= 3 && selHadTaus.size() >= 1 ) {
+    //std::cout << "selBJets_loose.size() = " << selBJets_loose.size() << ", selBJets_medium.size() = " << selBJets_medium.size() << "," 
+    //	        << " failsZbosonMassVeto = " << failsZbosonMassVeto << std::endl;
+    bool passesPreselection = (selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) && !failsZbosonMassVeto;
+    if ( (passesPreselection || passesAddMEM) && selLeptons.size() >= 3 && selHadTaus.size() >= 1 ) {
       maxPermutations_addMEM_3l_1tau = TMath::Nint((1./6)*selLeptons.size()*(selLeptons.size() - 1)*(selLeptons.size() - 2)*selHadTaus.size());
     } else {
       maxPermutations_addMEM_3l_1tau = -1;

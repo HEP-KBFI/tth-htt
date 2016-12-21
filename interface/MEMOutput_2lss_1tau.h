@@ -37,6 +37,13 @@ class MEMOutput_2lss_1tau
   void set_lumi(LUMI_TYPE lumi) { lumi_ = lumi; }
   void set_evt(EVT_TYPE evt) { evt_ = evt; }
 
+  void set_leadLepton_eta(Float_t leadLepton_eta) { leadLepton_eta_ = leadLepton_eta; }
+  void set_leadLepton_phi(Float_t leadLepton_phi) { leadLepton_phi_ = leadLepton_phi; }
+  void set_subleadLepton_eta(Float_t subleadLepton_eta) { subleadLepton_eta_ = subleadLepton_eta; }
+  void set_subleadLepton_phi(Float_t subleadLepton_phi) { subleadLepton_phi_ = subleadLepton_phi; }
+  void set_hadTau_eta(Float_t hadTau_eta) { hadTau_eta_ = hadTau_eta; }
+  void set_hadTau_phi(Float_t hadTau_phi) { hadTau_phi_ = hadTau_phi; }
+
   /**
    * @brief Funtions to access data-members
    * @return Values of data-members

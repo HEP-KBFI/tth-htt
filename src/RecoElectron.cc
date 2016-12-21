@@ -58,7 +58,7 @@ RecoElectron::RecoElectron(Double_t pt,
 
 std::ostream& operator<<(std::ostream& stream, const RecoElectron& electron)
 {
-  stream << " pT = " << electron.pt() << ","
+  stream << " pT = " << electron.lepton_pt() << " (cone_pT = " << electron.cone_pt() << ") ,"
          << " eta = " << electron.eta() << ","
          << " phi = " << electron.phi() << ","
          << " charge = " << electron.charge() << std::endl;
