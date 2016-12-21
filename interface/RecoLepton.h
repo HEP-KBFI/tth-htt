@@ -75,6 +75,9 @@ class RecoLepton
    * @brief Funtions to access data-members
    * @return Values of data-members
    */
+  Double_t lepton_pt() const { return pt_; }
+  const Particle::LorentzVector& lepton_p4() const { return p4_; }
+
   virtual Double_t pt() const
   {
     if ( isFakeable_ && !isTight_ ) return cone_pt_;
