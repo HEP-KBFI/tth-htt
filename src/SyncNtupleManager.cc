@@ -254,7 +254,16 @@ SyncNtupleManager::initializeBranches()
     outputTree -> Branch("n_jet25_recl", &(n_jet25_recl), Form("n_jet25_recl/%s", Traits<decltype(n_jet25_recl)>::TYPE_NAME));
     outputTree -> Branch("MVA_2lss_ttV", &(MVA_2lss_ttV), Form("MVA_2lss_ttV/%s", Traits<decltype(MVA_2lss_ttV)>::TYPE_NAME));
     outputTree -> Branch("MVA_2lss_ttbar", &(MVA_2lss_ttbar), Form("MVA_2lss_ttbar/%s", Traits<decltype(MVA_2lss_ttbar)>::TYPE_NAME));
-
+    
+    outputTree -> Branch("MC_weight", &(MC_weight), Form("MC_weight/%s", Traits<decltype(MC_weight)>::TYPE_NAME));
+    outputTree -> Branch("FR_weight", &(FR_weight), Form("FR_weight/%s", Traits<decltype(FR_weight)>::TYPE_NAME));
+    outputTree -> Branch("triggerSF_weight", &(triggerSF_weight), Form("triggerSF_weight/%s", Traits<decltype(triggerSF_weight)>::TYPE_NAME));
+    outputTree -> Branch("leptonSF_weight", &(leptonSF_weight), Form("leptonSF_weight/%s", Traits<decltype(leptonSF_weight)>::TYPE_NAME));
+    outputTree -> Branch("bTagSF_weight", &(bTagSF_weight), Form("bTagSF_weight/%s", Traits<decltype(bTagSF_weight)>::TYPE_NAME));
+    outputTree -> Branch("PU_weight", &(PU_weight), Form("PU_weight/%s", Traits<decltype(PU_weight)>::TYPE_NAME));
+    outputTree -> Branch("hadTauSF_weight", &(hadTauSF_weight), Form("hadTauSF_weight/%s", Traits<decltype(hadTauSF_weight)>::TYPE_NAME));
+    outputTree -> Branch("genWeight", &(genWeight), Form("genWeight/%s", Traits<decltype(genWeight)>::TYPE_NAME));
+    
     reset(true);
   }
   else
@@ -487,6 +496,14 @@ SyncNtupleManager::read(Float_t value,
   else if(type == FloatVariableType::metLD)           metLD          = value;
   else if(type == FloatVariableType::mvaOutput_ttV)   MVA_2lss_ttV   = value;
   else if(type == FloatVariableType::mvaOutput_ttbar) MVA_2lss_ttbar = value;
+  else if(type == FloatVariableType::MC_weight)        MC_weight         = value;
+  else if(type == FloatVariableType::FR_weight)        FR_weight         = value;
+  else if(type == FloatVariableType::triggerSF_weight) triggerSF_weight  = value;
+  else if(type == FloatVariableType::leptonSF_weight)  leptonSF_weight   = value;
+  else if(type == FloatVariableType::bTagSF_weight)    bTagSF_weight     = value;
+  else if(type == FloatVariableType::PU_weight)        PU_weight         = value;
+  else if(type == FloatVariableType::hadTauSF_weight)  hadTauSF_weight   = value;
+  else if(type == FloatVariableType::genWeight)  genWeight   = value;
 }
 
 void
@@ -630,6 +647,15 @@ SyncNtupleManager::reset(bool is_initializing)
   MVA_2lss_ttV = placeholder_value;
   MVA_2lss_ttbar = placeholder_value;
 
+  MC_weight         = placeholder_value;
+  FR_weight         = placeholder_value;
+  triggerSF_weight  = placeholder_value;
+  leptonSF_weight   = placeholder_value;
+  bTagSF_weight     = placeholder_value;
+  PU_weight         = placeholder_value;
+  hadTauSF_weight   = placeholder_value;
+  genWeight         = placeholder_value;
+
   for(auto & kv: hltMap)
     hltMap[kv.first] = -1;
 }
@@ -656,3 +682,4 @@ SyncNtupleManager::write()
   outputFile -> cd();
   outputTree -> Write();
 }
+
