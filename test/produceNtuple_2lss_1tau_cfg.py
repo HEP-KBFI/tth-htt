@@ -33,6 +33,8 @@ process.produceNtuple_2lss_1tau = cms.PSet(
     
     selEventsFileName_input = cms.string(''),
 
+    selEventsFileName_addMEM = cms.string(''),
+
     outputCommands = cms.vstring(
         "drop *",
         ##"keep run",
