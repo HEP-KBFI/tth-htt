@@ -34,7 +34,7 @@ if __name__ == '__main__':
     running_method           = "sbatch",
     max_files_per_job        = 1, # so that we'd have 1-1 correspondence b/w input and output files
     mem_integrations_per_job = 50,
-    max_mem_integrations     = 20000,
+    max_mem_integrations     = 20000, # use -1 if you don't want to limit the nof MEM integrations
     num_parallel_jobs        = 4)
 
   goodToGo = addMEMProduction.create()

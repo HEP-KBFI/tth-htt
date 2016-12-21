@@ -430,7 +430,7 @@ class addMEMConfig_2lss_1tau:
           )
         )
 
-        if total_nof_integrations_sum > self.max_mem_integrations:
+        if self.max_mem_integrations > 0 and total_nof_integrations_sum > self.max_mem_integrations:
             logging.error("Will not start the jobs (max nof integrations exceeded)!")
             return False
         else:
