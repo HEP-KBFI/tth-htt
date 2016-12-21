@@ -15,13 +15,13 @@ for sample_name, sample_info in samples.items():
     sample_info["use_it"] = True
 #--------------------------------------------------------------------------------
 
-version = "2016Dec12"
+version = "2016Dec11"
 ERA     = "2016"
 
 if __name__ == '__main__':
   logging.basicConfig(
     stream = sys.stdout,
-    level = logging.INFO,
+    level  = logging.DEBUG,
     format = '%(asctime)s - %(levelname)s: %(message)s')
 
   addMEMProduction = addMEMConfig_2lss_1tau(
@@ -30,12 +30,17 @@ if __name__ == '__main__':
     executable_addMEM        = "addMEM_2lss_1tau",
     samples                  = samples,
     era                      = ERA,
+    version                  = version,
     debug                    = False,
     running_method           = "sbatch",
-    max_files_per_job        = 1,
+    max_files_per_job        = 5,
     mem_integrations_per_job = 50,
     max_mem_integrations     = 20000,
+    rle_directory            = 'default', # *
     num_parallel_jobs        = 4)
+
+  # * if rle_directory is set to 'default', then it looks files in /home/$USER/ttHAnalysis/era/version/rles/channel
+  #   set it to '', if no RLE selection is needed
 
   goodToGo = addMEMProduction.create()
 

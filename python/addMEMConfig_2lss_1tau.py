@@ -3,6 +3,8 @@ import os
 import logging
 import ROOT
 import array
+import sys
+import getpass
 
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd
 from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg, generateInputFileList
@@ -31,8 +33,8 @@ class addMEMConfig_2lss_1tau:
                            (does not limit number of MEM jobs running in parallel on batch system)
 
     """
-    def __init__(self, treeName, outputDir, executable_addMEM, samples, era, debug, running_method,
-                 max_files_per_job, mem_integrations_per_job, max_mem_integrations, num_parallel_jobs):
+    def __init__(self, treeName, outputDir, executable_addMEM, samples, era, version, debug, running_method,
+                 max_files_per_job, mem_integrations_per_job, max_mem_integrations, rle_directory, num_parallel_jobs):
 
         self.treeName = treeName
         self.outputDir = outputDir
@@ -41,8 +43,10 @@ class addMEMConfig_2lss_1tau:
         self.mem_integrations_per_job = mem_integrations_per_job
         self.max_files_per_job = max_files_per_job
         self.max_mem_integrations = max_mem_integrations
+        self.rle_directory = rle_directory
         self.samples = samples
         self.era = era
+        self.version = version
         self.debug = debug
         assert(running_method.lower() in [
           "sbatch", "makefile"]), "Invalid running method: %s" % running_method
@@ -59,6 +63,15 @@ class addMEMConfig_2lss_1tau:
 
         self.workingDir = os.getcwd()
         print "Working directory is: " + self.workingDir
+
+        if self.rle_directory == 'default':
+            self.rle_directory = os.path.join(
+              '/home', getpass.getuser(), 'ttHAnalysis', self.era, self.version, 'rles', '2lss_1tau'
+            )
+        elif self.rle_directory:
+            if not os.path.isdir(self.rle_directory):
+                logging.error("No such directory: '{directory_name}'".format(directory_name = self.rle_directory))
+                sys.exit(1)
 
         create_if_not_exists(self.outputDir)
         self.stdout_file = codecs.open(os.path.join(
@@ -88,7 +101,7 @@ class addMEMConfig_2lss_1tau:
 
         self.cvmfs_error_log = {}
 
-    def createCfg_addMEM(self, inputFiles, startRange, endRange, outputFile, era, cfgFile_modified):
+    def createCfg_addMEM(self, inputFiles, startRange, endRange, outputFile, era, cfgFile_modified, rle_filename):
         """Create python configuration file for the addMEM_2lss_1tau executable (MEM code)
 
         Args:
@@ -118,6 +131,8 @@ class addMEMConfig_2lss_1tau:
         lines.append("process.addMEM_2lss_1tau.era = cms.string('%s')" % era)
         if skipEvents > 0:
             lines.append("process.addMEM_2lss_1tau.copy_histograms = cms.vstring()")
+        if rle_filename:
+            lines.append("process.addMEM_2lss_1tau.selEventsFileName_input = cms.string('%s')" % rle_filename)
 
         create_cfg(self.cfgFile_addMEM_original, cfgFile_modified, lines)
 
@@ -134,7 +149,6 @@ class addMEMConfig_2lss_1tau:
             working_dir = self.workingDir,
             max_num_jobs = self.max_mem_integrations,
             cvmfs_error_log = self.cvmfs_error_log,
-#            waitForJobs = True,
         )
 
     def addToMakefile_addMEM(self, lines_makefile):
@@ -185,7 +199,7 @@ class addMEMConfig_2lss_1tau:
         logging.info("Run it with:\tmake -f %s -j %i " %
             (self.makefile, self.num_parallel_jobs))
 
-    def memJobList(self, inputFileList):
+    def memJobList(self, inputFileList, rle_dict):
         '''
         Args:
           inputFileList:{ int, array of strings }; i.e. fileset* ID and the list of files
@@ -218,18 +232,48 @@ class addMEMConfig_2lss_1tau:
             nof_events_pass = []
             nof_int_pass_counter = 0
             nof_int_pass = []
+            nof_zero_integrations = 0
+            nof_events_zero = []
+            nof_neg_integrations = 0
+            nof_events_neg = []
 
+            run = array.array('i', [0])
+            lumi = array.array('i', [0])
+            evt = array.array('i', [0])
             maxPermutations_addMEM_2lss_1tau_a = array.array('i', [0])
             ch.SetBranchAddress("maxPermutations_addMEM_2lss_1tau", maxPermutations_addMEM_2lss_1tau_a)
+            ch.SetBranchAddress('run',  run)
+            ch.SetBranchAddress('lumi', lumi)
+            ch.SetBranchAddress('evt',  evt)
 
             for i in range(nof_entries):
                 ch.GetEntry(i)
+
+                rle_str = ''
+                if self.rle_directory:
+                    run_nr = run[0]
+                    lumi_nr = lumi[0]
+                    evt_nr = evt[0]
+                    rle_str = ':'.join(map(str, [run_nr, lumi_nr, evt_nr]))
+                    if not (run_nr in rle_dict and lumi_nr in rle_dict[run_nr] and evt_nr in rle_dict[run_nr][lumi_nr]):
+                        continue
+                    else:
+                        rle_dict[run_nr][lumi_nr][evt_nr] = 0
+
                 nof_integrations = maxPermutations_addMEM_2lss_1tau_a[0]
+                nof_integrations_orig = nof_integrations
+
                 if nof_integrations < 0:
                     nof_integrations = 0
                 if nof_integrations >= 1:
                     nof_events_pass_counter += 1
                     nof_int_pass_counter += nof_integrations
+
+                if nof_integrations_orig == 0:
+                    nof_zero_integrations += 1
+                elif nof_integrations_orig < 0:
+                    nof_neg_integrations += 1
+
                 if nof_integrations > self.mem_integrations_per_job:
                     raise ValueError("Too many nof_integrations = %d in file(s) %s at %d:%d:%d" %
                                      (nof_integrations, ', '.join(inputFileSet), ch.run, ch.lumi, ch.evt))
@@ -244,12 +288,16 @@ class addMEMConfig_2lss_1tau:
 
                     nof_events_pass.append(nof_events_pass_counter)
                     nof_int_pass.append(nof_int_pass_counter)
+                    nof_events_zero.append(nof_zero_integrations)
+                    nof_events_neg.append(nof_neg_integrations)
                     nof_events_pass_counter = 0
                     nof_int_pass_counter = 0
+                    nof_zero_integrations = 0
+                    nof_neg_integrations = 0
                 counter += nof_integrations
                 current_pos += 1
 
-            if counter <= self.mem_integrations_per_job:
+            if counter <= self.mem_integrations_per_job and counter > 0:
                 if evt_ranges:
                     evt_ranges.append([evt_ranges[-1][1], int(nof_entries)])
                 else:
@@ -257,8 +305,9 @@ class addMEMConfig_2lss_1tau:
                 counter_arr.append(counter)
                 nof_events_pass.append(nof_events_pass_counter)
                 nof_int_pass.append(nof_int_pass_counter)
+                nof_events_zero.append(nof_zero_integrations)
+                nof_events_neg.append(nof_neg_integrations)
 
-            # we now have all event ranges per one file, let's add them to the dictionary
             for i in range(len(evt_ranges)):
                 jobId += 1
                 memJobDict[jobId] = dict({
@@ -266,8 +315,44 @@ class addMEMConfig_2lss_1tau:
                     'nof_int'         : counter_arr[i],
                     'nof_int_pass'    : nof_int_pass[i],
                     'nof_events_pass' : nof_events_pass[i],
+                    'nof_zero'        : nof_events_zero[i],
+                    'nof_neg'         : nof_events_neg[i],
                 }, **memJobDict_common)
-        return memJobDict
+                # we now have all event ranges per one file, let's add them to the dictionary
+
+        sum_rle = 0
+        for run_nr, lumi_evt_nr in rle_dict.iteritems():
+            for lumi_nr, evt_nr in lumi_evt_nr.iteritems():
+                for evt_nr_k, evt_nr_v in evt_nr.iteritems():
+                    sum_rle += evt_nr_v
+                    if evt_nr_v == 1:
+                        logging.debug("RLE selected, but root files not containing event %s" % \
+                                      ':'.join(map(str, [run_nr, lumi_nr, evt_nr_k])))
+        return memJobDict, sum_rle
+
+    def createRLEDict(self, sample_name):
+        if self.rle_directory:
+            rle_filename = os.path.join(self.rle_directory, "{base_name}.txt".format(base_name = sample_name))
+            if not os.path.exists(rle_filename):
+                raise ValueError("No such file: {rle_filename}".format(rle_filename = rle_filename))
+            rle_dict = {}
+            with open(rle_filename, 'r') as f:
+                logging.debug("Opened file {filename}".format(filename = rle_filename))
+                for line in f:
+                    line = line.rstrip('\n')
+                    if line == '':
+                        continue
+                    run, lumi, evt = line.split(':')
+                    run = int(run)
+                    lumi = int(lumi)
+                    evt = int(evt)
+                    if run not in rle_dict:
+                        rle_dict[run] = {}
+                    if lumi not in rle_dict[run]:
+                        rle_dict[run][lumi] = {}
+                    rle_dict[run][lumi][evt] = 1
+            return rle_dict, rle_filename
+        return {}, ''
 
     def create(self):
         """Creates all necessary config files and runs the MEM -- either locally or on the batch system
@@ -281,6 +366,12 @@ class addMEMConfig_2lss_1tau:
             else:
                 create_if_not_exists(self.dirs[key])
 
+        # read the file in, sample-by-sample
+        # build the dictionary recursively
+        # add rle file also to generated cfg files
+        # print integrations per job as well!
+        # consider more than 1 file per jobs -- the jobs are splitted by MEM integration anyways
+
         for sample_name, sample_info in self.samples.items():
             if not sample_info["use_it"] or sample_info["sample_category"] in [ "additional_signal_overlap", "background_data_estimate" ]:
                 continue
@@ -290,6 +381,9 @@ class addMEMConfig_2lss_1tau:
                 continue
 
             process_name = sample_info["process_name_specific"]
+
+            logging.debug("Gathering RLE numbers for {process_name}".format(process_name = process_name))
+            rle_dict, rle_filename = self.createRLEDict(process_name)
 
             logging.info("Creating configuration files to run '%s' for sample %s" % (self.executable_addMEM, process_name))
 
@@ -301,7 +395,7 @@ class addMEMConfig_2lss_1tau:
             # so what we are going to do is to open each set of files in inputFileList, read the variable
             # requestMEM_2lss_1tau and try to gather the event ranges such that each event range
             # performs up to mem_integrations_per_job integrations per job
-            memEvtRangeDict = self.memJobList(inputFileList)
+            memEvtRangeDict, sum_rle = self.memJobList(inputFileList, rle_dict)
 
             for jobId in memEvtRangeDict.keys():
 
@@ -314,8 +408,7 @@ class addMEMConfig_2lss_1tau:
                 assert(self.inputFiles[key_file] > 0), "More than one input file: %s ?? !!" % \
                                                        ', '.join(self.inputFiles[key_file])
 
-                #TODO: is this assertion really needed? in principle, no ...
-                assert(len(self.inputFiles[key_file]) == 1), "There is more than one input file!"
+                #assert(len(self.inputFiles[key_file]) == 1), "There is more than one input file!"
                 self.cfgFiles_addMEM_modified[key_file] = os.path.join(self.dirs[key_dir][DKEY_CFGS], "addMEM_%s_%s_%i_cfg.py" % \
                                                                        (self.channel, process_name, jobId))
                 self.outputFiles[key_file] = os.path.join(self.dirs[key_dir][DKEY_NTUPLES], "%s_%i.root" % \
@@ -329,12 +422,15 @@ class addMEMConfig_2lss_1tau:
                     self.outputFiles[key_file],
                     self.era,
                     self.cfgFiles_addMEM_modified[key_file],
+                    rle_filename,
                 )
 
                 # associate the output file with the fileset_id
+                #UDPATE: ONE OUTPUT FILE PER SAMPLE!
                 fileset_id = memEvtRangeDict[jobId]['fileset_id']
                 hadd_output = os.path.join(
-                    self.dirs[key_dir][DKEY_FINAL_NTUPLES], '%s_%i.root' % ('tree', fileset_id)
+                    #self.dirs[key_dir][DKEY_FINAL_NTUPLES], '%s_%i.root' % ('tree', fileset_id) # UDPATE: REMOVED
+                    self.dirs[key_dir][DKEY_FINAL_NTUPLES], "tree.root" # UDPATE: ADDED
                 )
                 if hadd_output not in self.hadd_records:
                     self.hadd_records[hadd_output] = {}
@@ -347,13 +443,18 @@ class addMEMConfig_2lss_1tau:
             nofEntriesMap = {}
             for v in memEvtRangeDict.values():
                 if v['fileset_id'] not in nofEntriesMap:
-                    nofEntriesMap[v['fileset_id']] = v['nof_entries']
+                    nofEntriesMap[v['fileset_id']] = {
+                        'nof_entries' : v['nof_entries'],
+                    }
             statistics[process_name] = {
                 'nof_int'         : sum([entry['nof_int'] for entry in memEvtRangeDict.values()]),
-                'nof_entries'     : sum(nofEntriesMap.values()),
+                'nof_entries'     : sum([entry['nof_entries'] for entry in nofEntriesMap.values()]),
+                'nof_missing'     : sum_rle,
                 'nof_jobs'        : len(memEvtRangeDict),
                 'nof_events_pass' : sum([entry['nof_events_pass'] for entry in memEvtRangeDict.values()]),
                 'nof_int_pass'    : sum([entry['nof_int_pass'] for entry in memEvtRangeDict.values()]),
+                'nof_zero'        : sum([entry['nof_zero'] for entry in memEvtRangeDict.values()]),
+                'nof_neg'         : sum([entry['nof_neg'] for entry in memEvtRangeDict.values()])
             }
 
         if self.is_sbatch:
@@ -369,18 +470,23 @@ class addMEMConfig_2lss_1tau:
         ws_len = max([len(kk) + 1 for kk in statistics.keys()])
         total_nof_integrations_sum = sum(x['nof_int'] for x in statistics.values())
         total_nof_entires          = sum(x['nof_entries'] for x in statistics.values())
+        total_nof_missing          = sum(x['nof_missing'] for x in statistics.values())
+        total_nof_neg              = sum(x['nof_neg'] for x in statistics.values())
         total_nof_integrations_avg = float(total_nof_integrations_sum) / total_nof_entires
         total_nof_jobs             = sum(x['nof_jobs'] for x in statistics.values())
         total_nof_pass             = sum(x['nof_events_pass'] for x in statistics.values())
         total_nof_int_pass_avg     = float(sum(x['nof_int_pass'] for x in statistics.values())) / total_nof_pass
+        total_nof_int_per_job      = float(total_nof_integrations_sum) / total_nof_jobs
+        total_nof_zero_int         = sum(x['nof_zero'] for x in statistics.values())
         for k, v in statistics.iteritems():
-            print('%s%s: %d (%d entries; %d jobs; %.2f int/evt; %d (%.2f%%) evt pass; %.2f int/evt pass)' %
+            print('%s%s: %d (%d entries; %d jobs; %.2f int/evt; %d (%.2f%%) evt pass; %.2f int/evt pass; %d evt 0int; %d evt neg int)' %
                   (k, ' ' * (ws_len - len(k)), v['nof_int'], v['nof_entries'], v['nof_jobs'],
                    float(v['nof_int']) / v['nof_entries'], v['nof_events_pass'],
-                   (100 * float(v['nof_events_pass']) / v['nof_entries']), float(v['nof_int_pass']) / v['nof_events_pass']))
-        print('%s%s: %d (%d entries; %d jobs; %.2f int/evt; %d evt pass; %.2f int/evt pass)' %
+                   (100 * float(v['nof_events_pass']) / v['nof_entries']), float(v['nof_int_pass']) / v['nof_events_pass'],
+                   v['nof_zero'], v['nof_neg']))
+        print('%s%s: %d (%d entries; %d jobs; %.2f int/evt; %d evt pass; %.2f int/evt pass; %.2f int/job pass; %d missing; %d evt 0int; %d evt neg int)' %
               ('total', ' ' * (ws_len - len('total')), total_nof_integrations_sum, total_nof_entires, total_nof_jobs,
-               total_nof_integrations_avg, total_nof_pass, total_nof_int_pass_avg))
+               total_nof_integrations_avg, total_nof_pass, total_nof_int_pass_avg, total_nof_int_per_job, total_nof_missing, total_nof_zero_int, total_nof_neg))
 
         if total_nof_integrations_sum > self.max_mem_integrations:
             logging.error("Will not start the jobs (max nof integrations exceeded)!")
@@ -390,7 +496,7 @@ class addMEMConfig_2lss_1tau:
             return True
 
     def run(self):
-        """Runs all Ntuple production jobs -- either locally or on the batch system.
+        """Runs all Ntuple addMEM jobs -- either locally or on the batch system.
         """
         run_cmd("make -f %s -j %i " % (self.makefile, self.num_parallel_jobs),
                 False, self.stdout_file, self.stderr_file)
