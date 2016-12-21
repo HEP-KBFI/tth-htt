@@ -52,6 +52,10 @@ if __name__ == '__main__':
   rles = {}
   logging.debug("Sweeping over the directories ...")
   for analysis_type in os.listdir(analysis_path):
+    if analysis_type not in [ 'Fakeable_wFakeRateWeights_SS', 'Tight_OS', 'Tight_SS' ]:
+      logging.debug("Skipping subdirectory '{analysis_type}'".format(analysis_type = analysis_type))
+      continue
+
     logging.debug("Processing subdirectory '{analysis_type}'".format(analysis_type = analysis_type))
     analysis_path_w_type = os.path.join(analysis_path, analysis_type)
 
