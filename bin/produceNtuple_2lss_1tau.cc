@@ -130,10 +130,14 @@ int main(int argc, char* argv[])
   std::cout << "selEventsFileName_input = " << selEventsFileName_input << std::endl;
   RunLumiEventSelector* run_lumi_eventSelector = 0;
   if ( selEventsFileName_input != "" ) {
-    edm::ParameterSet cfgRunLumiEventSelector;
-    cfgRunLumiEventSelector.addParameter<std::string>("inputFileName", selEventsFileName_input);
-    cfgRunLumiEventSelector.addParameter<std::string>("separator", ":");
-    run_lumi_eventSelector = new RunLumiEventSelector(cfgRunLumiEventSelector);
+    run_lumi_eventSelector = makeRunLumiEventSelector(selEventsFileName_input);
+  }
+
+  std::string selEventsFileName_addMEM = cfg_produceNtuple.getParameter<std::string>("selEventsFileName_addMEM");
+  std::cout << "selEventsFileName_addMEM = " << selEventsFileName_addMEM << std::endl;
+  RunLumiEventSelector* run_lumi_eventSelector_addMEM = 0;
+  if ( selEventsFileName_addMEM != "" ) {
+    run_lumi_eventSelector = makeRunLumiEventSelector(selEventsFileName_addMEM);
   }
 
   vstring outputCommands_string = cfg_produceNtuple.getParameter<vstring>("outputCommands");
@@ -473,8 +477,10 @@ int main(int argc, char* argv[])
 	}
       }
     }
-    std::cout << "selBJets_loose.size() = " << selBJets_loose.size() << ", selBJets_medium.size() = " << selBJets_medium.size() << ", failsZbosonMassVeto = " << failsZbosonMassVeto << std::endl;
-    bool passesPreselection = (selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) && !failsZbosonMassVeto;
+    std::cout << "selBJets_loose.size() = " << selBJets_loose.size() << ", selBJets_medium.size() = " << selBJets_medium.size() << "," 
+	      << " failsZbosonMassVeto = " << failsZbosonMassVeto << std::endl;
+    bool passesPreselection = ( run_lumi_eventSelector_addMEM ) ? 
+      (*run_lumi_eventSelector_addMEM)(run, lumi, event) : (selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) && !failsZbosonMassVeto;
     if ( passesPreselection && selLeptons.size() >= 2 && selHadTaus.size() >= 1 ) {
       maxPermutations_addMEM_2lss_1tau = TMath::Nint((1./2)*selLeptons.size()*(selLeptons.size() - 1)*selHadTaus.size());
     } else {
