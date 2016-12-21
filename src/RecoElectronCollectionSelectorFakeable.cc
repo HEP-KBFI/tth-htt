@@ -55,8 +55,11 @@ RecoElectronSelectorFakeable::~RecoElectronSelectorFakeable()
 
 bool RecoElectronSelectorFakeable::operator()(const RecoElectron& electron) const
 {
+  //std::cout << "<RecoElectronSelectorFakeable::operator()>:" << std::endl;
+  //std::cout << electron;
   bool isTight = (*tightElectronSelector_)(electron);
   double pt = ( isTight ) ? electron.pt() : electron.cone_pt();
+  //std::cout << "isTight = " << isTight << ": pT = " << pt << std::endl;
   if ( pt >= min_pt_ &&
        electron.absEta() <= max_absEta_ &&
        std::fabs(electron.dxy()) <= max_dxy_ &&
@@ -78,7 +81,10 @@ bool RecoElectronSelectorFakeable::operator()(const RecoElectron& electron) cons
       if ( electron.jetPtRatio() >= min_jetPtRatio_[idxBin_mvaTTH] &&
 	   electron.jetBtagCSV() <= max_jetBtagCSV_[idxBin_mvaTTH] ) {
 	if ( pt <= min_pt_trig_ || !apply_offline_e_trigger_cuts_ ) {
-	  if ( set_selection_flags_ ) electron.set_isFakeable();
+	  if ( set_selection_flags_ ) {
+	    electron.set_isFakeable();
+	    if ( isTight ) electron.set_isTight();
+	  }
 	  return true;
 	} else if ( electron.sigmaEtaEta() <= max_sigmaEtaEta_trig_[idxBin_absEta] &&
 		    electron.HoE() <= max_HoE_trig_[idxBin_absEta] &&
@@ -86,7 +92,10 @@ bool RecoElectronSelectorFakeable::operator()(const RecoElectron& electron) cons
 		    electron.deltaPhi() <= max_deltaPhi_trig_[idxBin_absEta] &&
 		    electron.OoEminusOoP() >= min_OoEminusOoP_trig_ &&
 		    electron.OoEminusOoP() <= max_OoEminusOoP_trig_[idxBin_absEta] ) {
-	  if ( set_selection_flags_ ) electron.set_isFakeable();
+	  if ( set_selection_flags_ ) {
+	    electron.set_isFakeable();
+	    if ( isTight ) electron.set_isTight();
+	  }
 	  return true;
 	}
       }

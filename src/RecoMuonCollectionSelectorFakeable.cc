@@ -32,8 +32,11 @@ RecoMuonSelectorFakeable::~RecoMuonSelectorFakeable()
 
 bool RecoMuonSelectorFakeable::operator()(const RecoMuon& muon) const
 {
+  //std::cout << "<RecoMuonSelectorFakeable::operator()>:" << std::endl;
+  //std::cout << muon;
   bool isTight = (*tightMuonSelector_)(muon);
   double pt = ( isTight ) ? muon.pt() : muon.cone_pt();
+  //std::cout << "isTight = " << isTight << ": pT = " << pt << std::endl;
   if ( pt >= min_pt_ &&
        muon.absEta() <= max_absEta_ &&
        std::fabs(muon.dxy()) <= max_dxy_ &&
@@ -48,7 +51,10 @@ bool RecoMuonSelectorFakeable::operator()(const RecoMuon& muon) const
     assert(idxBin >= 0 && idxBin <= 1);
     if ( muon.jetPtRatio() >= min_jetPtRatio_[idxBin] &&
 	 muon.jetBtagCSV() <= max_jetBtagCSV_[idxBin] ) {
-      if ( set_selection_flags_ ) muon.set_isFakeable();
+      if ( set_selection_flags_ ) {
+	muon.set_isFakeable();
+	if ( isTight ) muon.set_isTight();
+      }
       return true;
     }
   }
