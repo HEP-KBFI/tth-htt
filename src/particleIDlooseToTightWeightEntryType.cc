@@ -78,7 +78,7 @@ particleIDlooseToTightWeightEntryType::particleIDlooseToTightWeightEntryType(
   const std::string& particleType, double particle1EtaMin, double particle1EtaMax, 
   const std::string& fitFunctionNormName, 
   const std::string& graphShapeName_particle1, const std::string& fitFunctionShapeName_particle1_central, const std::string& fitFunctionShapeName_particle1_shift, 
-  bool applyFitFunction_or_graph_tau1, double fitFunctionShapePower_particle1)
+  int applyFitFunction_or_graph_tau1, double fitFunctionShapePower_particle1)
   : particle1EtaMin_(particle1EtaMin),
     particle1EtaMax_(particle1EtaMax),
     particle2EtaMin_(-1.),
@@ -97,7 +97,7 @@ particleIDlooseToTightWeightEntryType::particleIDlooseToTightWeightEntryType(
     fitFunctionShapeCorr_particle2_central_(0),
     fitFunctionShapeCorr_particle2_shift_(0),
     shapeCorrPow_particle2_(0.),
-    applyFitFunction_or_graph_tau2_(false)
+    applyFitFunction_or_graph_tau2_(kNotApplied)
 {
   std::string particleEtaBin_label = getParticleEtaLabel(particleType, particle1EtaMin_, particle1EtaMax_, particle2EtaMin_, particle2EtaMax_);
 
@@ -121,9 +121,9 @@ particleIDlooseToTightWeightEntryType::particleIDlooseToTightWeightEntryType(
   const std::string& particleType, double particle1EtaMin, double particle1EtaMax, double particle2EtaMin, double particle2EtaMax,
   const std::string& fitFunctionNormName, 
   const std::string& graphShapeName_particle1, const std::string& fitFunctionShapeName_particle1_central, const std::string& fitFunctionShapeName_particle1_shift, 
-  bool applyFitFunction_or_graph_tau1, double fitFunctionShapePower_particle1, 
+  int applyFitFunction_or_graph_tau1, double fitFunctionShapePower_particle1, 
   const std::string& graphShapeName_particle2, const std::string& fitFunctionShapeName_particle2_central, const std::string& fitFunctionShapeName_particle2_shift, 
-  bool applyFitFunction_or_graph_tau2, double fitFunctionShapePower_particle2)
+  int applyFitFunction_or_graph_tau2, double fitFunctionShapePower_particle2)
   : particle1EtaMin_(particle1EtaMin),
     particle1EtaMax_(particle1EtaMax),
     particle2EtaMin_(particle2EtaMin),
