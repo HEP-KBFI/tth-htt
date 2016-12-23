@@ -44,14 +44,14 @@ struct particleIDlooseToTightWeightEntryType
   TF1* fitFunctionShapeCorr_particle1_central_;
   TF1* fitFunctionShapeCorr_particle1_shift_;
   double shapeCorrPow_particle1_;
-  bool applyFitFunction_or_graph_tau1_; 
+  int applyFitFunction_or_graph_tau1_; 
   TGraphAsymmErrors* graphShapeCorr_particle2_;
   TGraphAsymmErrors* graphShapeCorrErrUp_particle2_;
   TGraphAsymmErrors* graphShapeCorrErrDown_particle2_;
   TF1* fitFunctionShapeCorr_particle2_central_;
   TF1* fitFunctionShapeCorr_particle2_shift_;
   double shapeCorrPow_particle2_;
-  bool applyFitFunction_or_graph_tau2_; 
+  int applyFitFunction_or_graph_tau2_; 
 };
 
 #endif
