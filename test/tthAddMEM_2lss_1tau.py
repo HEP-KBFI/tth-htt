@@ -15,7 +15,7 @@ for sample_name, sample_info in samples.items():
     sample_info["use_it"] = True
 #--------------------------------------------------------------------------------
 
-version = "2016Dec21"
+version = "2016Dec23_dR03mvaVVLoose"
 ERA     = "2016"
 
 if __name__ == '__main__':
