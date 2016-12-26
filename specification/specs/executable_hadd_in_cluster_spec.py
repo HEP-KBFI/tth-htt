@@ -10,20 +10,19 @@ def executable_hadd_in_cluster_spec():
 
     # Prepare
 
-    run_cmd("rm -rf /home/%(user)s/tmp/executable_hadd_in_cluster_spec/*" % config)
-    run_cmd("mkdir -p /home/%(user)s/tmp/executable_hadd_in_cluster_spec/" % config)
-    fixtures_dir = '/home/%(user)s/VHbbNtuples_7_6_x/CMSSW_7_6_3/src/tthAnalysis/HiggsToTauTau/specification/fixtures/' % config
-    run_cmd("""echo "%(fixtures_dir)s/histogram_1.root\n%(fixtures_dir)s/histogram_2.root\n" > /home/%(user)s/tmp/executable_hadd_in_cluster_spec/input_histograms_list.txt""" % { 'fixtures_dir': fixtures_dir, 'user': config['user'] })
+    run_cmd("rm -rf %(temp_dir)s/executable_hadd_in_cluster_spec/*" % config)
+    run_cmd("mkdir -p %(temp_dir)s/executable_hadd_in_cluster_spec/" % config)
+    run_cmd("""echo "%(fixtures_dir)s/histogram_1.root\n%(fixtures_dir)s/histogram_2.root\n" > %(temp_dir)s/executable_hadd_in_cluster_spec/input_histograms_list.txt""" % config)
 
 
     # Run task
 
-    run_cmd('python /home/%(user)s/VHbbNtuples_7_6_x/CMSSW_7_6_3/src/tthAnalysis/HiggsToTauTau/scripts/hadd_in_cluster.py /home/%(user)s/tmp/executable_hadd_in_cluster_spec/output_histogram.root /home/%(user)s/tmp/executable_hadd_in_cluster_spec/input_histograms_list.txt' % config)
+    run_cmd('python %(cmssw_base)s/src/tthAnalysis/HiggsToTauTau/scripts/hadd_in_cluster.py %(temp_dir)s/executable_hadd_in_cluster_spec/output_histogram.root %(temp_dir)s/executable_hadd_in_cluster_spec/input_histograms_list.txt' % config)
 
 
     # Check the result
 
-    root_result_file = '/home/%(user)s/tmp/executable_hadd_in_cluster_spec/output_histogram.root' % config
+    root_result_file = '%(temp_dir)s/executable_hadd_in_cluster_spec/output_histogram.root' % config
     result_successful = os.path.isfile(root_result_file)
 
 
