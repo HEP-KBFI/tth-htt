@@ -35,10 +35,10 @@ def execute_command_on_cluster_node_spec():
         result = f.read().strip()
 
         if result == 'Worked':
-            print('Execute on cluster node passed.')
+            print('PASSED: Execute on cluster node passed.')
             return True
 
     print("$TEST_DIR/ did not contain result.txt with content 'Worked'.")
-    print('Execute on cluster node failed.')
+    print('FAILED: Execute on cluster node failed.')
 
     return False

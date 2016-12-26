@@ -39,8 +39,8 @@ def call_histogram_aggregation_on_cluster_node_spec():
     # Output result
 
     if result_successful:
-        print('HADD on cluster node worked')
+        print('PASSED: HADD on cluster node worked')
     else:
-        print('HADD on cluster node failed')
+        print('FAILED: HADD on cluster node failed')
 
     return result_successful
