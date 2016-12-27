@@ -48,7 +48,7 @@ As a result he might write a file:
 
 ```python
 # specs/add_two_numbers_spec.py
-import add_two_numbers from
+import add_two_numbers from add_two_numbers_spec
 
 def main():
   add_two_numbers_spec()
@@ -63,7 +63,7 @@ def add_two_numbers_spec():
 def add_two_negative_numbers_spec():
   result = add_two_numbers(-1, -2)
 
-  if result != 3:
+  if result != -3:
     print "Failed test add_two_negative_numbers_spec"
 
 main()
@@ -71,7 +71,7 @@ main()
 ```
 
 Note that these tests did:
-  * helped to think what would be a good name
+  * helped to think what would be a good name for method (and files and packages)
   * what are important input parameters
   * what should be the return value
   * document what is going on
