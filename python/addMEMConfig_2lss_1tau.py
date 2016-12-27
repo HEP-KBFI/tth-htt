@@ -135,7 +135,7 @@ class addMEMConfig_2lss_1tau:
             output_file_names = self.outputFiles,
             log_file_names = self.logFiles_addMEM,
             working_dir = self.workingDir,
-            max_num_jobs = self.max_mem_integrations,
+            max_num_jobs = 100000,
             cvmfs_error_log = self.cvmfs_error_log,
         )
 
