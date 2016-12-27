@@ -1,4 +1,11 @@
+import os
 from tthAnalysis.HiggsToTauTau.jobTools import run_cmd
+
+
+# set tests to fastest priority queue
+
+print('Setting SBATCH_PRIORITY = "prio" so that tests would run quicker. ;)')
+os.environ['SBATCH_PRIORITY'] = 'prio'
 
 
 # initialize properties
