@@ -6,7 +6,7 @@ from tthAnalysis.HiggsToTauTau.sbatchManager import sbatchManager
 
 from config import config
 
-def call_histogram_aggregation_on_cluster_node_spec():
+def call_histogram_aggregation_on_cluster_node_with_invalid_input_spec():
 
     # Prepare
 
