@@ -151,11 +151,11 @@ class ClusterHistogramAggregator:
 
             # Check that input histograms are valid
 
-            $CMSSW_BASE/src/analysis2mu1b1j/analysis2mu1b1j/scripts/check_that_histograms_are_valid.py $SCRATCHED_INPUT_HISTOGRAMS
+            $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/scripts/check_that_histograms_are_valid.py $SCRATCHED_INPUT_HISTOGRAMS
             check_that_histograms_are_valid_exit_status=$?
 
             if [[ $check_that_histograms_are_valid_exit_status != 0 ]]; then
-              echo 'Some of the input histograms are not valid. Will stop execution.'
+              echo 'ERROR Some of the input histograms are not valid. Will stop execution.'
               exit 1
             fi
 
@@ -168,11 +168,11 @@ class ClusterHistogramAggregator:
 
             # Check that input histograms are equal to output histogram
 
-            $CMSSW_BASE/src/analysis2mu1b1j/analysis2mu1b1j/scripts/check_that_histograms_are_equal.py $SCRATCHED_OUTPUT_HISTOGRAM $SCRATCHED_INPUT_HISTOGRAMS
+            $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/scripts/check_that_histograms_are_equal.py $SCRATCHED_OUTPUT_HISTOGRAM $SCRATCHED_INPUT_HISTOGRAMS
             check_that_histograms_are_equal_exit_status=$?
 
             if [[ $check_that_histograms_are_equal_exit_status != 0 ]]; then
-              echo 'Input histograms do not equal output histogram. Will stop execution.'
+              echo 'ERROR Input histograms do not equal output histogram. Will stop execution.'
               exit 1
             fi
 
