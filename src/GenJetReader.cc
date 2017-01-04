@@ -90,13 +90,15 @@ std::vector<GenJet> GenJetReader::read() const
     throw cms::Exception("GenJetReader") 
       << "Number of jets stored in Ntuple = " << nJets << ", exceeds max_nJets = " << max_nJets_ << " !!\n";
   }
-  jets.reserve(nJets);
-  for ( Int_t idxJet = 0; idxJet < nJets; ++idxJet ) {
-    jets.push_back(GenJet({ 
-      gInstance->jet_pt_[idxJet],
-      gInstance->jet_eta_[idxJet],
-      gInstance->jet_phi_[idxJet],
-      gInstance->jet_mass_[idxJet]}));
+  if ( nJets > 0 ) {
+    jets.reserve(nJets);
+    for ( Int_t idxJet = 0; idxJet < nJets; ++idxJet ) {
+      jets.push_back(GenJet({ 
+        gInstance->jet_pt_[idxJet],
+        gInstance->jet_eta_[idxJet],
+        gInstance->jet_phi_[idxJet],
+        gInstance->jet_mass_[idxJet]}));
+    }
   }
   return jets;
 }

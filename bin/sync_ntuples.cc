@@ -446,9 +446,9 @@ int main(int argc, char* argv[])
     }
 //--- compute MHT and linear MET discriminant (met_LD)
     LV mht_p4(0,0,0,0);
-    for(const RecoJet * & jet: selJets)             mht_p4 += jet -> p4_;
-    for(const RecoLepton * & lepton: preselLeptons) mht_p4 += lepton -> p4_;
-    for(const RecoHadTau * & hadTau: selHadTaus)    mht_p4 += hadTau -> p4_;
+    for(const RecoJet * & jet: selJets)             mht_p4 += jet -> p4();
+    for(const RecoLepton * & lepton: preselLeptons) mht_p4 += lepton -> p4();
+    for(const RecoHadTau * & hadTau: selHadTaus)    mht_p4 += hadTau -> p4();
     const LV met_p4(met_pt, met_eta, met_phi, 0.);
     const Double_t met_LD = met_coef*met_p4.pt() + mht_coef*mht_p4.pt();
 
@@ -477,7 +477,7 @@ int main(int argc, char* argv[])
     if(lepton_lead && lepton_sublead)
     {
       mvaInputs["max(abs(LepGood_eta[iF_Recl[0]]),abs(LepGood_eta[iF_Recl[1]]))"] =
-        std::max(std::fabs(lepton_lead->eta_), std::fabs(lepton_sublead->eta_));
+        std::max(std::fabs(lepton_lead->eta()), std::fabs(lepton_sublead->eta()));
       if(selJets.size() > 1)
       {
         snm.read(mva_2lss_ttV(mvaInputs),   FloatVariableType::mvaOutput_ttV);

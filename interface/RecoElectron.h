@@ -18,7 +18,7 @@ class RecoElectron
 	       Double_t dxy,
 	       Double_t dz,
 	       Double_t relIso,
-           Double_t chargedHadRelIso03,
+	       Double_t chargedHadRelIso03,
 	       Double_t miniIsoCharged,
 	       Double_t miniIsoNeutral,
 	       Double_t sip3d,
@@ -37,6 +37,19 @@ class RecoElectron
 	       Double_t OoEminusOoP,
 	       Int_t nLostHits,
 	       Int_t passesConversionVeto);
+
+  /**
+   * @brief Funtions to access data-members
+   * @return Values of data-members
+   */
+  Double_t mvaRawPOG() const { return mvaRawPOG_; }
+  Double_t sigmaEtaEta() const { return sigmaEtaEta_; }
+  Double_t HoE() const { return HoE_; }
+  Double_t deltaEta() const { return deltaEta_; }
+  Double_t deltaPhi() const { return deltaPhi_; }
+  Double_t OoEminusOoP() const { return OoEminusOoP_; }
+  Int_t nLostHits() const { return nLostHits_; }
+  Int_t passesConversionVeto() const { return passesConversionVeto_; }
 
   /**
    * @brief Checks whether a given lepton is an electron by its PDG id

@@ -44,11 +44,11 @@ class GenParticleReader
   std::string branchName_pdgId_;
 
   Int_t nParticles_;
-  Float_t* lepton_pt_;
-  Float_t* lepton_eta_;
-  Float_t* lepton_phi_;
-  Float_t* lepton_mass_;
-  Int_t* lepton_pdgId_;
+  Float_t* particle_pt_;
+  Float_t* particle_eta_;
+  Float_t* particle_phi_;
+  Float_t* particle_mass_;
+  Int_t* particle_pdgId_;
 
   // CV: make sure that only one GenParticleReader instance exists for a given branchName,
   //     as ROOT cannot handle multiple TTree::SetBranchAddress calls for the same branch.

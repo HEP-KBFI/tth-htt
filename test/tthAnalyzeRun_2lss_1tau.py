@@ -19,7 +19,12 @@ elif ERA == "2016":
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "2016Nov27"
+version = "DEBUG"
+
+for sample_name, sample_info in samples_2016.items():
+  if not sample_name in [
+      "/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14_ext1-v1/MINIAODSIM" ]:
+    sample_info["use_it"] = False
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -29,7 +34,7 @@ if __name__ == '__main__':
 
   analysis = analyzeConfig_2lss_1tau(
     outputDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", ERA, version),
-    executable_analyze = "analyze_2lss_1tau",
+    executable_analyze = "analyze_2lss_1tau", cfgFile_analyze_original = "analyze_2lss_1tau_cfg.py",
     samples = samples,
     lepton_charge_selections = [ "OS", "SS" ],
     hadTau_selection = "dR03mvaMedium",
@@ -78,7 +83,8 @@ if __name__ == '__main__':
 ##       "CMS_ttHl_thu_shape_ttZ_y1Up",
 ##       "CMS_ttHl_thu_shape_ttZ_y1Down"           
     ],
-    max_files_per_job = 20,
+    ##max_files_per_job = 20,
+    max_files_per_job = 1000,
     era = ERA, use_lumi = True, lumi = LUMI,
     debug = False,
     running_method = "sbatch",

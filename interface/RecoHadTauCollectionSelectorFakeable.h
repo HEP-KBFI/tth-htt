@@ -16,6 +16,9 @@ class RecoHadTauSelectorFakeable : public RecoHadTauSelectorBase
   ~RecoHadTauSelectorFakeable() {}
 
   friend class RecoHadTauCollectionSelector<RecoHadTauSelectorFakeable>;
+ 
+ protected:
+  void set_selection_flags(const RecoHadTau& hadTau) const { hadTau.set_isFakeable(); }
 };
 
 typedef RecoHadTauCollectionSelector<RecoHadTauSelectorFakeable> RecoHadTauCollectionSelectorFakeable;

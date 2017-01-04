@@ -3,6 +3,7 @@ import logging
 from tthAnalysis.HiggsToTauTau.analyzeConfig import *
 import tthAnalyzeSamples_chargeflip
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists
+from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg, createFile, generateInputFileList
 
 class analyzeConfig_charge_flip(analyzeConfig):
   """Configuration metadata needed to run analysis in a single go.
@@ -229,8 +230,6 @@ class analyzeConfig_charge_flip(analyzeConfig):
 
       logging.info("Creating configuration files to run '%s' for sample %s" % (self.executable_analyze, process_name))  
 
-      ( secondary_files, primary_store, secondary_store ) = self.initializeInputFileIds(sample_name, sample_info)
-
       is_mc = (sample_info["type"] == "mc")
       lumi_scale = 1. if not (self.use_lumi and is_mc) else sample_info["xsection"] * self.lumi / sample_info["nof_events"]
       sample_category = sample_info["sample_category"]
@@ -239,7 +238,9 @@ class analyzeConfig_charge_flip(analyzeConfig):
 
       for lepton_selection in self.lepton_selections:
         for central_or_shift in self.central_or_shifts:
-          for jobId in range(len(self.inputFileIds[sample_name])):
+
+          inputFileList = generateInputFileList(sample_name, sample_info, self.max_files_per_job, self.debug)
+          for jobId in inputFileList.keys():
             if central_or_shift != "central" and not (lepton_selection == "Tight"):
               continue
             if central_or_shift != "central" and not is_mc:
@@ -254,7 +255,7 @@ class analyzeConfig_charge_flip(analyzeConfig):
             key_dir = getKey(sample_name, lepton_selection)
             key_file = getKey(sample_name, lepton_selection, central_or_shift, jobId)
 
-            self.ntupleFiles[key_file] = generate_input_list(self.inputFileIds[sample_name][jobId], secondary_files, primary_store, secondary_store, self.debug)
+            self.ntupleFiles[key_file] = inputFileList[jobId]
             self.cfgFiles_analyze_modified[key_file] = os.path.join(self.dirs[key_dir][DKEY_CFGS], "analyze_%s_%s_%s_%s_%i_cfg.py" % \
               (self.channel, process_name, lepton_selection, central_or_shift, jobId))
             self.histogramFiles[key_file] = os.path.join(self.dirs[key_dir][DKEY_HIST], "%s_%s_%s_%i.root" % \
@@ -287,7 +288,6 @@ class analyzeConfig_charge_flip(analyzeConfig):
     self.addToMakefile_backgrounds_from_data(lines_makefile)
     self.addToMakefile_hadd_stage2(lines_makefile)
     self.addToMakefile_prep_dcard(lines_makefile)
-    self.addToMakefile_clean(lines_makefile)
     self.createMakefile(lines_makefile)
   
     logging.info("Done")

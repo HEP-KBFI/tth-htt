@@ -8,5 +8,4 @@ log.txt
 *.files
 *.includes
 *.creator.user.3.2-pre1
-__init__.py
-
+.idea/

@@ -64,6 +64,7 @@
 #define NTUPLE_WARN_MULTIPLE_BBAR_CANDIDATES          1ull << 4
 #define NTUPLE_WARN_B_MATCH_OUTSIDE_2_SELJETS         1ull << 5
 #define NTUPLE_WARN_BBAR_MATCH_OUTSIDE_2_SELJETS      1ull << 6
+#define NTUPLE_WARN_HTAUTAU_RESCALING_FAILURE         1ull << 7
 
 typedef GenLepton GenParticleExt;
 
@@ -257,11 +258,14 @@ protected:
 
   /* generator level, enabled only if use2016_ is true */
   std::array<GenTauFiller<double>, 2>    genTaus_f_;
-  std::array<GenLeptonFiller<double>, 2> genLepFromTop_f_;
+  std::array<GenLeptonFiller<double>, 2> genLepFromTop_f_,
+                                         genW_f_,
+                                         genT_f_;
   std::array<GenJetFiller<double>, 2>    genBQuark_f_;
   std::array<GenNuFiller<double>, 2>     genNuFromTop_f_;
   GenHadTauFiller<double> genHtau_f_;
-  GenLeptonFiller<double> genLepFromTau_f_;
+  GenLeptonFiller<double> genLepFromTau_f_,
+                          genHZ_f_;
   GenNuFiller<double>     genNuLepFromTau_f_,
                           genNuFromHTau_f_,
                           genNuFromLTau_f_;
@@ -301,6 +305,44 @@ private:
   getB(const GenLepton & b,
        const GenLepton & W,
        Int_t pdgId);
+
+  /**
+   * @brief Recalculates neutrino's 4-momentum from its older self and complementary lepton
+   * @param l       The complementary lepton
+   * @param nu      The old neutrino
+   * @param momMass Desired mass of the mother particle
+   * @param pdgId   The PDG id of the resulting neutrino
+   * @return The new neutrino
+   */
+  static GenLepton
+  getNu(const GenLepton & l,
+        const GenLepton & nu,
+        double momMass,
+        Int_t pdgId);
+
+  /**
+   * @brief Recalculates neutrino energies/momenta coming from leptonic tau decay
+   *        The recalulcation puts the tau and the Higgs/Z to their mass shells
+   *        If the recalculations is not possible, then this probably means that
+   *        energy rescaling of the neutrinos is not sufficient -- angles must
+   *        change as well. But this is a problem for another time.
+   * @param tau1    The tau decaying leptonically
+   * @param l       The lepton coming from the tau
+   * @param nu1     The first neutrino
+   * @param nu2     The second neutrino
+   * @param momMass Mass of the parent of the tau
+   * @return The new neutrinos if the calculation succeeded
+   *         Original neutrino pair if the energy rescaling was not possible
+   *
+   * Note that if the energy rescaling was not possible, then
+   * corresponding warning code is saved.
+   */
+  std::array<GenLepton, 2>
+  getNuNu(const GenLepton & tau1,
+          const GenLepton & l,
+          const GenLepton & nu1,
+          const GenLepton & nu2,
+          double momMass);
 
   std::vector<const RecoJet*> selBJetsMerged_;
   std::vector<const RecoLepton*> selLeptons_;

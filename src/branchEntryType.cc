@@ -26,6 +26,7 @@ branchEntryBaseType* addBranch(std::vector<branchEntryBaseType*>& branches, cons
   else if ( inputBranchType == "D"       && outputBranchType == "D" ) branch = new branchEntryTypeFD(inputBranchName, inputBranchType, outputBranchName, outputBranchType, idx);
   else if ( inputBranchType == "D"       && outputBranchType == "I" ) branch = new branchEntryTypeFI(inputBranchName, inputBranchType, outputBranchName, outputBranchType, idx);
   else if ( inputBranchType == "I"       && outputBranchType == "I" ) branch = new branchEntryTypeII(inputBranchName, inputBranchType, outputBranchName, outputBranchType, idx);
+  else if ( inputBranchType == "i"       && outputBranchType == "i" ) branch = new branchEntryTypeUIUI(inputBranchName, inputBranchType, outputBranchName, outputBranchType, idx);
   else if ( inputBranchType == "l"       && outputBranchType == "l" ) branch = new branchEntryTypeULUL(inputBranchName, inputBranchType, outputBranchName, outputBranchType, idx);
   else if ( inputBranchType == "Formula" && outputBranchType == "F" ) branch = new branchEntryFormulaTypeF(inputBranchName, outputBranchName, outputBranchType, idx);
   else if ( inputBranchType == "Formula" && outputBranchType == "D" ) branch = new branchEntryFormulaTypeD(inputBranchName, outputBranchName, outputBranchType, idx);

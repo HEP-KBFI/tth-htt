@@ -44,6 +44,17 @@ public:
            Float_t segmentCompatibility);
 
   /**
+   * @brief Funtions to access data-members
+   * @return Values of data-members
+   */
+  Int_t passesLooseIdPOG() const { return passesLooseIdPOG_; }
+  Int_t passesMediumIdPOG() const { return passesMediumIdPOG_; }
+#ifdef DPT_DIV_PT
+  Float_t dpt_div_pt() const { return dpt_div_pt_; }
+#endif
+  Float_t segmentCompatibility() const { return segmentCompatibility_; }
+
+  /**
    * @brief Checks whether a given lepton is an electron by its PDG id
    * @return True if it is an electron; false otherwise
    */

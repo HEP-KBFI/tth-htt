@@ -59,8 +59,6 @@ run_wrapped_executable() {
     echo "Create final log directory: mkdir -p $EXECUTABLE_LOG_DIR"
     mkdir -p $EXECUTABLE_LOG_DIR
 
-    echo "Initialize CMSSW run-time environment: source /cvmfs/cms.cern.ch/cmsset_default.sh"
-    source /cvmfs/cms.cern.ch/cmsset_default.sh
     cd {{ working_dir }}
     cmsenv
     cd $SCRATCH_DIR
@@ -96,7 +94,7 @@ run_wrapped_executable() {
 
     echo "Time is: `date`"
 
-    echo "Contents of temporary log dir:"
+    echo "Contents of temporary log dir: ls -laR $TEMPORARY_EXECUTABLE_LOG_DIR"
     ls -laR $TEMPORARY_EXECUTABLE_LOG_DIR
 
     echo "Copy from temporary output dir to output dir: cp -a $TEMPORARY_EXECUTABLE_LOG_DIR/* $EXECUTABLE_LOG_DIR/"

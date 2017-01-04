@@ -68,6 +68,12 @@ process.analyze_1l_2tau = cms.PSet(
     apply_trigger_bits = cms.bool(True),
 
     fillGenEvtHistograms = cms.bool(False),
+
+    branchName_electrons = cms.string('selLeptons'),
+    branchName_muons = cms.string('selLeptons'),
+    branchName_hadTaus = cms.string('TauGood'),
+    branchName_jets = cms.string('Jet'),
+    branchName_met = cms.string('met'),
     
     selEventsFileName_input = cms.string(''),
     selEventsFileName_output = cms.string('')

@@ -160,6 +160,7 @@ int main(int argc, char* argv[])
 	    }
 	  }
 	  if ( histogramName.Contains("CMS_") ) continue;
+	  if ( histogramName.Contains("cutFlow") ) continue;
 	  if ( histograms.find(histogramName.Data()) == histograms.end() ) {
 	    std::cout << "adding histogram = " << histogramName.Data() << std::endl;
 	    histograms.insert(histogramName.Data());

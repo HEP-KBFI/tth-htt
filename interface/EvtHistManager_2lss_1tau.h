@@ -27,7 +27,9 @@ class EvtHistManager_2lss_1tau
 		      double mvaOutput_2lss_ttV, double mvaOutput_2lss_ttbar, double mvaDiscr_2lss, 
 		      double mvaOutput_2lss_1tau_ttbar_TMVA, double mvaOutput_2lss_1tau_ttbar_sklearn, 
 		      double mTauTauVis1, double mTauTauVis2, 
-		      const MEMInterface_2lss_1tau::MEMOutput* memOutput_2lss_1tau, double evtWeight);
+		      const MEMOutput_2lss_1tau* memOutput_2lss_1tau, double evtWeight);
+  
+  const TH1* getHistogram_EventCounter() const { return histogram_EventCounter_; }
 
  private:
   TH1* histogram_numElectrons_;
@@ -49,6 +51,7 @@ class EvtHistManager_2lss_1tau
 
   TH1* histogram_mTauTauVis_;
 
+  TH1* histogram_memOutput_isValid_;
   TH1* histogram_memOutput_errorFlag_;
   TH1* histogram_memOutput_type_;
   TH1* histogram_memOutput_logWeight_ttH_;
@@ -56,6 +59,8 @@ class EvtHistManager_2lss_1tau
   TH1* histogram_memOutput_logWeight_ttZ_Zll_;
   TH1* histogram_memOutput_logWeight_tt_;
   TH1* histogram_memOutput_LR_;
+  TH1* histogram_mem_logCPUTime_;
+  TH1* histogram_mem_logRealTime_;
 
   TH1* histogram_EventCounter_;
 

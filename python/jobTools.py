@@ -44,7 +44,7 @@ def generate_file_ids(nof_files, max_files_per_job, blacklist = []):
   """Subsets file ids
 
     Given N total number of input files, the function splits them into sublists, each
-    containing up to M files (maximum number of input files). The function only workds with
+    containing up to M files (maximum number of input files). The function only works with
     indexes, not full paths, though.
 
   Args:
@@ -54,10 +54,16 @@ def generate_file_ids(nof_files, max_files_per_job, blacklist = []):
   Returns:
     File ids split into sublists of length `max_files_per_job`
   """
-  file_limits = range(1, nof_files, max_files_per_job)
-  file_limits.append(nof_files + 1)
-  job_ids = [[x for x in range(file_limits[i], file_limits[i + 1]) if x not in blacklist] \
-             for i in range(len(file_limits) - 1)]
+
+  file_limits = range(1, nof_files + 1, 1)
+  file_limits = list(sorted(list(set(file_limits) - set(blacklist))))
+  if max_files_per_job > 1:
+    job_ids = [file_limits[i: i + max_files_per_job] for i in range(0, len(file_limits), max_files_per_job)]
+  elif max_files_per_job == 1:
+    job_ids = [[x] for x in file_limits]
+  else:
+    print("Invalid max_files_per_job=%d; must be a positive number" % max_files_per_job)
+    assert(0)
   return job_ids
 
 def generate_input_list(job_ids, secondary_files, primary_store, secondary_store, debug = False):
@@ -95,5 +101,7 @@ def run_cmd(command, do_not_log = False, stdout_file = None, stderr_file = None)
     stdout_file.write(stdout)
   if stderr_file:
     stderr_file.write(stderr)
-  return stdout
 
+  print "jobTools#run_cmd('%s') returned: %s" % (command, stdout)
+
+  return stdout

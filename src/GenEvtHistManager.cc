@@ -38,7 +38,7 @@ namespace
     int numParticles_withinAcc = 0; 
     for ( typename std::vector<T>::const_iterator genParticle = genParticles.begin();
   	  genParticle != genParticles.end(); ++genParticle ) {
-      if ( genParticle->pt_ > minPt && genParticle->absEta_ < maxAbsEta ) ++numParticles_withinAcc;
+      if ( genParticle->pt() > minPt && genParticle->absEta() < maxAbsEta ) ++numParticles_withinAcc;
     }
     return numParticles_withinAcc;
   }

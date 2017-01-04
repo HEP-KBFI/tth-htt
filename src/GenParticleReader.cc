@@ -11,11 +11,11 @@ GenParticleReader::GenParticleReader(const std::string& branchName_num, const st
   : max_nParticles_(32)
   , branchName_num_(branchName_num)
   , branchName_obj_(branchName_obj)
-  , lepton_pt_(0)
-  , lepton_eta_(0)
-  , lepton_phi_(0)
-  , lepton_mass_(0)
-  , lepton_pdgId_(0)
+  , particle_pt_(0)
+  , particle_eta_(0)
+  , particle_phi_(0)
+  , particle_mass_(0)
+  , particle_pdgId_(0)
 {
   setBranchNames();
 }
@@ -27,11 +27,11 @@ GenParticleReader::~GenParticleReader()
   if ( numInstances_[branchName_obj_] == 0 ) {
     GenParticleReader* gInstance = instances_[branchName_obj_];
     assert(gInstance);
-    delete[] gInstance->lepton_pt_;
-    delete[] gInstance->lepton_eta_;
-    delete[] gInstance->lepton_phi_;
-    delete[] gInstance->lepton_mass_;
-    delete[] gInstance->lepton_pdgId_;
+    delete[] gInstance->particle_pt_;
+    delete[] gInstance->particle_eta_;
+    delete[] gInstance->particle_phi_;
+    delete[] gInstance->particle_mass_;
+    delete[] gInstance->particle_pdgId_;
     instances_[branchName_obj_] = 0;
   }
 }
@@ -60,16 +60,16 @@ void GenParticleReader::setBranchAddresses(TTree* tree)
 {
   if ( instances_[branchName_obj_] == this ) {
     tree->SetBranchAddress(branchName_num_.data(), &nParticles_);   
-    lepton_pt_ = new Float_t[max_nParticles_];
-    tree->SetBranchAddress(branchName_pt_.data(), lepton_pt_); 
-    lepton_eta_ = new Float_t[max_nParticles_];
-    tree->SetBranchAddress(branchName_eta_.data(), lepton_eta_); 
-    lepton_phi_ = new Float_t[max_nParticles_];
-    tree->SetBranchAddress(branchName_phi_.data(), lepton_phi_); 
-    lepton_mass_ = new Float_t[max_nParticles_];
-    tree->SetBranchAddress(branchName_mass_.data(), lepton_mass_); 
-    lepton_pdgId_ = new Int_t[max_nParticles_];
-    tree->SetBranchAddress(branchName_pdgId_.data(), lepton_pdgId_); 
+    particle_pt_ = new Float_t[max_nParticles_];
+    tree->SetBranchAddress(branchName_pt_.data(), particle_pt_); 
+    particle_eta_ = new Float_t[max_nParticles_];
+    tree->SetBranchAddress(branchName_eta_.data(), particle_eta_); 
+    particle_phi_ = new Float_t[max_nParticles_];
+    tree->SetBranchAddress(branchName_phi_.data(), particle_phi_); 
+    particle_mass_ = new Float_t[max_nParticles_];
+    tree->SetBranchAddress(branchName_mass_.data(), particle_mass_); 
+    particle_pdgId_ = new Int_t[max_nParticles_];
+    tree->SetBranchAddress(branchName_pdgId_.data(), particle_pdgId_); 
   }
 }
 
@@ -83,14 +83,16 @@ std::vector<GenLepton> GenParticleReader::read() const
     throw cms::Exception("GenParticleReader") 
       << "Number of particles stored in Ntuple = " << nParticles << ", exceeds max_nParticles = " << max_nParticles_ << " !!\n";
   }
-  particles.reserve(nParticles);
-  for ( Int_t idxParticle = 0; idxParticle < nParticles; ++idxParticle ) {
-    particles.push_back(GenLepton({ 
-      gInstance->lepton_pt_[idxParticle],
-      gInstance->lepton_eta_[idxParticle],
-      gInstance->lepton_phi_[idxParticle],
-      gInstance->lepton_mass_[idxParticle],
-      gInstance->lepton_pdgId_[idxParticle] }));
+  if ( nParticles > 0 ) {
+    particles.reserve(nParticles);
+    for ( Int_t idxParticle = 0; idxParticle < nParticles; ++idxParticle ) {
+      particles.push_back(GenLepton({ 
+        gInstance->particle_pt_[idxParticle],
+        gInstance->particle_eta_[idxParticle],
+        gInstance->particle_phi_[idxParticle],
+        gInstance->particle_mass_[idxParticle],
+        gInstance->particle_pdgId_[idxParticle] }));
+    }
   }
   return particles;
 }

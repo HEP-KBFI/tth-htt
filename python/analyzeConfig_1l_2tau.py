@@ -2,6 +2,7 @@ import logging
 
 from tthAnalysis.HiggsToTauTau.analyzeConfig import *
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists
+from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg, createFile, generateInputFileList
 
 def get_lepton_and_hadTau_selection_and_frWeight(lepton_and_hadTau_selection, lepton_and_hadTau_frWeight):
   lepton_and_hadTau_selection_and_frWeight = lepton_and_hadTau_selection
@@ -39,7 +40,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
   for documentation of further Args.
   
   """
-  def __init__(self, outputDir, executable_analyze, samples, hadTau_selection, hadTau_charge_selections, applyFakeRateWeights, central_or_shifts,
+  def __init__(self, outputDir, executable_analyze, cfgFile_analyze_original, samples, hadTau_selection, hadTau_charge_selections, applyFakeRateWeights, central_or_shifts,
                max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs, 
                executable_addBackgrounds, executable_addBackgroundJetToTauFakes, histograms_to_fit, select_rle_output = False, executable_prep_dcard="prepareDatacard"):
     analyzeConfig.__init__(self, outputDir, executable_analyze, "1l_2tau", central_or_shifts,
@@ -107,7 +108,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
 
     self.nonfake_backgrounds = [ "TT", "TTW", "TTZ", "EWK", "Rares" ]
     
-    self.cfgFile_analyze_original = os.path.join(self.workingDir, "analyze_1l_2tau_cfg.py")
+    self.cfgFile_analyze_original = os.path.join(self.workingDir, cfgFile_analyze_original)
     self.cfgFile_addBackgrounds_original = os.path.join(self.workingDir, "addBackgrounds_cfg.py")
     self.cfgFile_addBackgrounds_modified = {}
     self.histogramFile_addBackgrounds = {}
@@ -220,7 +221,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
     lines.append("    )")
     lines.append(")")
     processesToSubtract = self.nonfake_backgrounds
-    processesToSubtract.append("fakes_signal")
+    ##processesToSubtract.append("fakes_signal")
     lines.append("process.addBackgroundLeptonFakes.processesToSubtract = cms.vstring(%s)" % processesToSubtract)
     create_cfg(self.cfgFile_addFakes_original, cfgFile_modified, lines)
 
@@ -265,40 +266,16 @@ class analyzeConfig_1l_2tau(analyzeConfig):
         
   def addToMakefile_hadd_stage1(self, lines_makefile):
     inputFiles_hadd_stage1 = []
-    for sample_name, sample_info in self.samples.items():
-      if not sample_name in self.inputFileIds.keys():
-        continue
-      process_name = sample_info["process_name_specific"]
-      inputFiles_sample = []
-      for lepton_and_hadTau_selection in self.lepton_and_hadTau_selections:
-        for lepton_and_hadTau_frWeight in self.lepton_and_hadTau_frWeights:
-          lepton_and_hadTau_selection_and_frWeight = get_lepton_and_hadTau_selection_and_frWeight(lepton_and_hadTau_selection, lepton_and_hadTau_frWeight)
-          for hadTau_charge_selection in self.hadTau_charge_selections:
-            for central_or_shift in self.central_or_shifts:
-              inputFiles_jobIds = []
-              for jobId in range(len(self.inputFileIds[sample_name])):
-                key_file = getKey(sample_name, lepton_and_hadTau_selection, lepton_and_hadTau_frWeight, hadTau_charge_selection, central_or_shift, jobId)
-                if key_file in self.histogramFiles.keys():
-                  inputFiles_jobIds.append(self.histogramFiles[key_file])
-              if len(inputFiles_jobIds) > 0:
-                haddFile_jobIds = self.histogramFile_hadd_stage1.replace(".root", "_%s_%s_%s_%s.root" % \
-                  (process_name, lepton_and_hadTau_selection_and_frWeight, hadTau_charge_selection, central_or_shift))
-                lines_makefile.append("%s: %s" % (haddFile_jobIds, " ".join(inputFiles_jobIds)))
-                lines_makefile.append("\t%s %s" % ("rm -f", haddFile_jobIds))
-                lines_makefile.append("\t%s %s %s" % ("hadd", haddFile_jobIds, " ".join(inputFiles_jobIds)))
-                lines_makefile.append("")
-                inputFiles_sample.append(haddFile_jobIds)
-      if len(inputFiles_sample) > 0:
-        haddFile_sample = self.histogramFile_hadd_stage1.replace(".root", "_%s.root" % process_name)
-        lines_makefile.append("%s: %s" % (haddFile_sample, " ".join(inputFiles_sample)))
-        lines_makefile.append("\t%s %s" % ("rm -f", haddFile_sample))
-        lines_makefile.append("\t%s %s %s" % ("hadd", haddFile_sample, " ".join(inputFiles_sample)))
-        lines_makefile.append("")
-        inputFiles_hadd_stage1.append(haddFile_sample)
+    for key in self.histogramFiles.keys():
+      inputFiles_hadd_stage1.append(self.histogramFiles[key])
+
+    script_hadd_stage1 = self.create_hadd_python_file(inputFiles_hadd_stage1, self.histogramFile_hadd_stage1, "stage1")
+
     lines_makefile.append("%s: %s" % (self.histogramFile_hadd_stage1, " ".join(inputFiles_hadd_stage1)))
     lines_makefile.append("\t%s %s" % ("rm -f", self.histogramFile_hadd_stage1))
-    lines_makefile.append("\t%s %s %s" % ("hadd", self.histogramFile_hadd_stage1, " ".join(inputFiles_hadd_stage1)))
+    lines_makefile.append("\t%s %s" % ("python", script_hadd_stage1))
     lines_makefile.append("")
+    self.filesToClean.append(self.histogramFile_hadd_stage1)
 
   def addToMakefile_addBackgrounds(self, lines_makefile):
     for key in self.histogramFile_addBackgrounds.keys():
@@ -315,10 +292,14 @@ class analyzeConfig_1l_2tau(analyzeConfig):
     inputFiles_hadd_stage1_5 = [ self.histogramFile_hadd_stage1 ]
     for key in self.histogramFile_addBackgrounds.keys():
       inputFiles_hadd_stage1_5.append(self.histogramFile_addBackgrounds[key])
+
+    script_hadd_stage1_5 = self.create_hadd_python_file(inputFiles_hadd_stage1_5, self.histogramFile_hadd_stage1_5, "stage1_5")
+
     lines_makefile.append("%s: %s" % (self.histogramFile_hadd_stage1_5, " ".join(inputFiles_hadd_stage1_5)))
     lines_makefile.append("\t%s %s" % ("rm -f", self.histogramFile_hadd_stage1_5))
-    lines_makefile.append("\t%s %s %s" % ("hadd", self.histogramFile_hadd_stage1_5, " ".join(inputFiles_hadd_stage1_5)))
+    lines_makefile.append("\t%s %s" % ("python", script_hadd_stage1_5))
     lines_makefile.append("")
+    self.filesToClean.append(self.histogramFile_hadd_stage1_5)
     
   def addToMakefile_addFakes(self, lines_makefile):
     for key in self.histogramFile_addFakes.keys():
@@ -335,9 +316,13 @@ class analyzeConfig_1l_2tau(analyzeConfig):
   def addToMakefile_hadd_stage2(self, lines_makefile):
     """Adds the commands to Makefile that are necessary for building the final histogram file.
     """
-    lines_makefile.append("%s: %s" % (self.histogramFile_hadd_stage2, " ".join([ self.histogramFile_hadd_stage1_5 ] + self.histogramFile_addFakes.values())))
+    inputFiles_hadd_stage2 = [ self.histogramFile_hadd_stage1_5 ] + self.histogramFile_addFakes.values()
+    
+    script_hadd_stage2 = self.create_hadd_python_file(inputFiles_hadd_stage2, self.histogramFile_hadd_stage2, "stage2")
+
+    lines_makefile.append("%s: %s" % (self.histogramFile_hadd_stage2, " ".join(inputFiles_hadd_stage2)))
     lines_makefile.append("\t%s %s" % ("rm -f", self.histogramFile_hadd_stage2))
-    lines_makefile.append("\t%s %s %s" % ("hadd", self.histogramFile_hadd_stage2, " ".join([ self.histogramFile_hadd_stage1_5 ] + self.histogramFile_addFakes.values())))
+    lines_makefile.append("\t%s %s" % ("python", script_hadd_stage2))
     lines_makefile.append("")
     self.filesToClean.append(self.histogramFile_hadd_stage2)
 
@@ -369,8 +354,6 @@ class analyzeConfig_1l_2tau(analyzeConfig):
 
       logging.info("Creating configuration files to run '%s' for sample %s" % (self.executable_analyze, process_name))  
 
-      ( secondary_files, primary_store, secondary_store ) = self.initializeInputFileIds(sample_name, sample_info)
-
       is_mc = (sample_info["type"] == "mc")
       lumi_scale = 1. if not (self.use_lumi and is_mc) else sample_info["xsection"] * self.lumi / sample_info["nof_events"]
       apply_genWeight = sample_info["apply_genWeight"] if (is_mc and "apply_genWeight" in sample_info.keys()) else False
@@ -391,7 +374,9 @@ class analyzeConfig_1l_2tau(analyzeConfig):
           lepton_and_hadTau_selection_and_frWeight = get_lepton_and_hadTau_selection_and_frWeight(lepton_and_hadTau_selection, lepton_and_hadTau_frWeight)
           for hadTau_charge_selection in self.hadTau_charge_selections:
             for central_or_shift in self.central_or_shifts:
-              for jobId in range(len(self.inputFileIds[sample_name])):
+
+              inputFileList = generateInputFileList(sample_name, sample_info, self.max_files_per_job, self.debug)
+              for jobId in inputFileList.keys():
                 if central_or_shift != "central" and not (lepton_and_hadTau_selection.startswith("Tight") and hadTau_charge_selection == "OS"):
                   continue
                 if central_or_shift != "central" and not is_mc:
@@ -406,7 +391,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
                 key_dir = getKey(sample_name, lepton_and_hadTau_selection, lepton_and_hadTau_frWeight, hadTau_charge_selection)
                 key_file = getKey(sample_name, lepton_and_hadTau_selection, lepton_and_hadTau_frWeight, hadTau_charge_selection, central_or_shift, jobId)
 
-                self.ntupleFiles[key_file] = generate_input_list(self.inputFileIds[sample_name][jobId], secondary_files, primary_store, secondary_store, self.debug)
+                self.ntupleFiles[key_file] = inputFileList[jobId]
                 if len(self.ntupleFiles[key_file]) == 0:
                   print "Warning: ntupleFiles['%s'] = %s --> skipping job !!" % (key_file, self.ntupleFiles[key_file])
                   continue
@@ -455,8 +440,8 @@ class analyzeConfig_1l_2tau(analyzeConfig):
             histogramDir = getHistogramDir(lepton_and_hadTau_selection, lepton_and_hadTau_frWeight, hadTau_charge_selection)
             processes_input = [ "%s%s" % (process_name, genMatch) for genMatch in self.lepton_and_hadTau_genMatches_nonfakes ]
             # CV: treat fakes in ttH signal events as "signal", not as "background"
-            if process_name in [ "signal", "ttH_htt", "ttH_hww", "ttH_hzz" ]:
-              processes_input.extend([ "%s%s" % (process_name, genMatch) for genMatch in self.lepton_and_hadTau_genMatches_fakes ])
+            ##if process_name in [ "signal", "ttH_htt", "ttH_hww", "ttH_hzz" ]:
+            ##  processes_input.extend([ "%s%s" % (process_name, genMatch) for genMatch in self.lepton_and_hadTau_genMatches_fakes ])
             self.process_output_addBackgrounds[key] = process_name
             self.createCfg_addBackgrounds(self.histogramFile_hadd_stage1, self.histogramFile_addBackgrounds[key], self.cfgFile_addBackgrounds_modified[key],
               [ histogramDir ], processes_input, self.process_output_addBackgrounds[key])
@@ -541,7 +526,6 @@ class analyzeConfig_1l_2tau(analyzeConfig):
     self.addToMakefile_prep_dcard(lines_makefile)
     self.addToMakefile_make_plots(lines_makefile)
     self.addToMakefile_make_plots_mcClosure(lines_makefile)   
-    self.addToMakefile_clean(lines_makefile)
     self.createMakefile(lines_makefile)
   
     logging.info("Done")

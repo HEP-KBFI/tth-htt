@@ -248,47 +248,49 @@ std::vector<RecoHadTau> RecoHadTauReader::read() const
     throw cms::Exception("RecoHadTauReader") 
       << "Number of hadronic taus stored in Ntuple = " << nHadTaus << ", exceeds max_nHadTaus = " << max_nHadTaus_ << " !!\n";
   }
-  hadTaus.reserve(nHadTaus);
-  for ( Int_t idxHadTau = 0; idxHadTau < nHadTaus; ++idxHadTau ) {
-    Float_t hadTau_pt = -1.;
-    if      ( hadTauPt_option_ == kHadTauPt_central   ) hadTau_pt = 1.00*gInstance->hadTau_pt_[idxHadTau];
-    else if ( hadTauPt_option_ == kHadTauPt_shiftUp   ) hadTau_pt = 1.03*gInstance->hadTau_pt_[idxHadTau];
-    else if ( hadTauPt_option_ == kHadTauPt_shiftDown ) hadTau_pt = 0.97*gInstance->hadTau_pt_[idxHadTau];
-    else assert(0);
-    // compute "VVLose" (95% signal efficiency) working point for tau ID MVA trained for dR=0.3 isolation cone,
-    // used to enhance background event statistics for training of event-level MVAs that separate ttH signal from backgrounds
-    Int_t hadTau_idMVA_dR03 = hadTau_idMVA_dR03_[idxHadTau];
-    if ( hadTau_idMVA_dR03 >= 1 ) {
-      hadTau_idMVA_dR03 += 1;
-    } else {
-      assert(DBdR03oldDMwLTEff95_ && mvaOutput_normalization_DBdR03oldDMwLT_);
-      if ( mvaOutput_normalization_DBdR03oldDMwLT_->Eval(gInstance->hadTau_rawMVA_dR03_[idxHadTau]) > DBdR03oldDMwLTEff95_->Eval(gInstance->hadTau_pt_[idxHadTau]) ) {
-	hadTau_idMVA_dR03 = 1;
+  if ( nHadTaus > 0 ) {
+    hadTaus.reserve(nHadTaus);
+    for ( Int_t idxHadTau = 0; idxHadTau < nHadTaus; ++idxHadTau ) {
+      Float_t hadTau_pt = -1.;
+      if      ( hadTauPt_option_ == kHadTauPt_central   ) hadTau_pt = 1.00*gInstance->hadTau_pt_[idxHadTau];
+      else if ( hadTauPt_option_ == kHadTauPt_shiftUp   ) hadTau_pt = 1.03*gInstance->hadTau_pt_[idxHadTau];
+      else if ( hadTauPt_option_ == kHadTauPt_shiftDown ) hadTau_pt = 0.97*gInstance->hadTau_pt_[idxHadTau];
+      else assert(0);
+      // compute "VVLose" (95% signal efficiency) working point for tau ID MVA trained for dR=0.3 isolation cone,
+      // used to enhance background event statistics for training of event-level MVAs that separate ttH signal from backgrounds
+      Int_t hadTau_idMVA_dR03 = hadTau_idMVA_dR03_[idxHadTau];
+      if ( hadTau_idMVA_dR03 >= 1 ) {
+        hadTau_idMVA_dR03 += 1;
       } else {
-	hadTau_idMVA_dR03 = 0;
+        assert(DBdR03oldDMwLTEff95_ && mvaOutput_normalization_DBdR03oldDMwLT_);
+        if ( mvaOutput_normalization_DBdR03oldDMwLT_->Eval(gInstance->hadTau_rawMVA_dR03_[idxHadTau]) > DBdR03oldDMwLTEff95_->Eval(gInstance->hadTau_pt_[idxHadTau]) ) {
+ 	  hadTau_idMVA_dR03 = 1;
+        } else { 
+	  hadTau_idMVA_dR03 = 0;
+	}
       }
+      hadTaus.push_back(RecoHadTau(
+        hadTau_pt,
+        gInstance->hadTau_eta_[idxHadTau],
+	gInstance->hadTau_phi_[idxHadTau],
+	gInstance->hadTau_mass_[idxHadTau],
+	gInstance->hadTau_charge_[idxHadTau],
+	gInstance->hadTau_dxy_[idxHadTau],
+	gInstance->hadTau_dz_[idxHadTau],
+	gInstance->hadTau_decayMode_[idxHadTau],
+	gInstance->hadTau_idDecayMode_[idxHadTau],
+	gInstance->hadTau_idDecayModeNewDMs_[idxHadTau],
+	hadTau_idMVA_dR03,
+	gInstance->hadTau_rawMVA_dR03_[idxHadTau],
+	gInstance->hadTau_idMVA_dR05_[idxHadTau],
+	gInstance->hadTau_rawMVA_dR05_[idxHadTau],	
+	gInstance->hadTau_idCombIso_dR03_[idxHadTau],
+	gInstance->hadTau_rawCombIso_dR03_[idxHadTau],
+	gInstance->hadTau_idCombIso_dR05_[idxHadTau],
+	gInstance->hadTau_rawCombIso_dR05_[idxHadTau],	
+	gInstance->hadTau_idAgainstElec_[idxHadTau],
+	gInstance->hadTau_idAgainstMu_[idxHadTau] ));
     }
-    hadTaus.push_back(RecoHadTau(
-      hadTau_pt,
-      gInstance->hadTau_eta_[idxHadTau],
-      gInstance->hadTau_phi_[idxHadTau],
-      gInstance->hadTau_mass_[idxHadTau],
-      gInstance->hadTau_charge_[idxHadTau],
-      gInstance->hadTau_dxy_[idxHadTau],
-      gInstance->hadTau_dz_[idxHadTau],
-      gInstance->hadTau_decayMode_[idxHadTau],
-      gInstance->hadTau_idDecayMode_[idxHadTau],
-      gInstance->hadTau_idDecayModeNewDMs_[idxHadTau],
-      hadTau_idMVA_dR03,
-      gInstance->hadTau_rawMVA_dR03_[idxHadTau],
-      gInstance->hadTau_idMVA_dR05_[idxHadTau],
-      gInstance->hadTau_rawMVA_dR05_[idxHadTau],	
-      gInstance->hadTau_idCombIso_dR03_[idxHadTau],
-      gInstance->hadTau_rawCombIso_dR03_[idxHadTau],
-      gInstance->hadTau_idCombIso_dR05_[idxHadTau],
-      gInstance->hadTau_rawCombIso_dR05_[idxHadTau],	
-      gInstance->hadTau_idAgainstElec_[idxHadTau],
-      gInstance->hadTau_idAgainstMu_[idxHadTau] ));
   }
   return hadTaus;
 }

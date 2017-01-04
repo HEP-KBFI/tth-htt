@@ -25,6 +25,8 @@ class EvtHistManager_3l_1tau
 		      double mvaOutput_3l_ttV, double mvaOutput_3l_ttbar, double mvaDiscr_3l, 
 		      double mTauTauVis1, double mTauTauVis2, double evtWeight);
 
+  const TH1* getHistogram_EventCounter() const { return histogram_EventCounter_; }
+
  private:
   TH1* histogram_numElectrons_;
   TH1* histogram_numMuons_;

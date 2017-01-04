@@ -5,16 +5,38 @@
 #include "DataFormats/Math/interface/LorentzVector.h" // math::PtEtaPhiMLorentzVector
 #include "DataFormats/Math/interface/deltaR.h" // deltaR()
 
+namespace Particle
+{
+  typedef math::PtEtaPhiMLorentzVector LorentzVector;
+};
+
 class GenParticle
 {
-public:
+ public:
   GenParticle() = default;
   GenParticle(Double_t pt,
               Double_t eta,
               Double_t phi,
               Double_t mass);
-  GenParticle(const math::PtEtaPhiMLorentzVector & p4);
+  GenParticle(const Particle::LorentzVector & p4);
 
+  /**
+   * @brief Funtions to access data-members
+   * @return Values of data-members
+   * 
+   * NOTE: get_pt and get_p4 functions needs to be virtual, so that they can be overwritten 
+   *       to implement cone_pT logic for fakeable && !tight leptons in RecoLepton class
+   */
+  virtual Double_t pt() const { return pt_; } 
+  Double_t eta() const { return eta_; } 
+  Double_t phi() const { return phi_; } 
+  Double_t mass() const { return mass_; } 
+  
+  Double_t absEta() const { return absEta_; }
+
+  virtual const Particle::LorentzVector& p4() const { return p4_; }
+
+ protected:
   Double_t pt_;   ///< pT of the particle
   Double_t eta_;  ///< eta of the particle
   Double_t phi_;  ///< phi of the particle
@@ -22,42 +44,9 @@ public:
 
   Double_t absEta_; ///< |eta| of the particle
 
-  math::PtEtaPhiMLorentzVector p4_; ///< 4-momentum constructed from the pT, eta, phi and mass
-
-  friend std::ostream &
-  operator<<(std::ostream & os,
-             const GenParticle & o);
-
-  /**
-   * @brief Calculates dR between our and the other particle.
-   * @param other  The other lepton.
-   * @return dR = sqrt((eta_1 - eta_2)^2 + (phi_1 - phi_2)^2)
-   */
-  inline double
-  dR(const GenParticle & other) const
-  {
-    return deltaR(eta_, phi_, other.eta_, other.phi_);
-  }
-
-  /**
-   * @brief Calculates relative pT difference between our and the other particle.
-   * @param other     The other particle
-   * @param tolerance Tolerance, below which the the pT of the particles are though as similar
-   * @return          True, if their relative difference is below the tolerance; false otherwise
-   */
-  bool
-  rel_pT_diff(const GenParticle & other,
-              double tolerance) const;
-
-  /**
-   * @brief Checks if a given particle is in the same cone as our particle.
-   * @param other  The given particle.
-   * @param dR_min Max size of the particle cone (think of it as a threshold).
-   * @return True, if there is an overlap (= is in the cone); false otherwise.
-   */
-  bool
-  is_overlap(const GenParticle & other,
-             double dR_min) const;
+  Particle::LorentzVector p4_; ///< 4-momentum constructed from the pT, eta, phi and mass
 };
+
+std::ostream& operator<<(std::ostream& stream, const GenParticle& particle);
 
 #endif // tthAnalysis_HiggsToTauTau_GenParticle_h

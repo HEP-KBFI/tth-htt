@@ -34,26 +34,26 @@ void HadTauHistManager::fillHistograms(const RecoHadTau& hadTau, double evtWeigh
 {
   double evtWeightErr = 0.;
 
-  fillWithOverFlow(histogram_pt_, hadTau.pt_, evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_eta_, hadTau.eta_, evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_phi_, hadTau.phi_, evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_mass_, hadTau.mass_, evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_charge_, hadTau.charge_, evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_pt_, hadTau.pt(), evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_eta_, hadTau.eta(), evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_phi_, hadTau.phi(), evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_mass_, hadTau.mass(), evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_charge_, hadTau.charge(), evtWeight, evtWeightErr);
   
-  fillWithOverFlow(histogram_dz_, hadTau.dz_, evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_decayModeFinding_, hadTau.decayModeFinding_, evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_id_mva_dR03_, hadTau.id_mva_dR03_, evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_id_mva_dR05_, hadTau.id_mva_dR05_, evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_id_cut_dR03_, hadTau.id_cut_dR03_, evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_id_cut_dR05_, hadTau.id_cut_dR05_, evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_antiElectron_, hadTau.antiElectron_, evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_antiMuon_, hadTau.antiMuon_, evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_dz_, hadTau.dz(), evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_decayModeFinding_, hadTau.decayModeFinding(), evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_id_mva_dR03_, hadTau.id_mva_dR03(), evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_id_mva_dR05_, hadTau.id_mva_dR05(), evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_id_cut_dR03_, hadTau.id_cut_dR03(), evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_id_cut_dR05_, hadTau.id_cut_dR05(), evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_antiElectron_, hadTau.antiElectron(), evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_antiMuon_, hadTau.antiMuon(), evtWeight, evtWeightErr);
   
   int abs_genPdgId = 0;
-  if      ( hadTau.genHadTau_ ) abs_genPdgId = 15;                                  // generator level match to hadronic tau decay 
-  else if ( hadTau.genLepton_ ) abs_genPdgId = std::abs(hadTau.genLepton_->pdgId_); // generator level match to electron or muon
-  else if ( hadTau.genJet_    ) abs_genPdgId = 21;                                  // generator level match to jet; fill histogram with pdgId of gluon
-  else                          abs_genPdgId = 0;                                   // no match to any generator level particle (reconstructed tauh most likely due to pileup)
+  if      ( hadTau.genHadTau() ) abs_genPdgId = 15; // generator level match to hadronic tau decay 
+  else if ( hadTau.genLepton() ) abs_genPdgId = std::abs(hadTau.genLepton()->pdgId()); // generator level match to electron or muon
+  else if ( hadTau.genJet()    ) abs_genPdgId = 21; // generator level match to jet; fill histogram with pdgId of gluon
+  else                           abs_genPdgId = 0;  // no match to any generator level particle (reconstructed tauh most likely due to pileup)
   fillWithOverFlow(histogram_abs_genPdgId_, abs_genPdgId, evtWeight, evtWeightErr);
 }
 

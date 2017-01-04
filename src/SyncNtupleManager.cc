@@ -305,27 +305,27 @@ SyncNtupleManager::read(std::vector<const RecoMuon *> & muons,
   for(Int_t i = 0; i < nof_iterations; ++i)
   {
     const RecoMuon * const muon = muons[i];
-    mu_pt[i] = muon -> pt_;
-    mu_eta[i] = muon -> eta_;
-    mu_phi[i] = muon -> phi_;
-    mu_E[i] = (muon -> p4_).E();
-    mu_charge[i] = muon -> charge_;
-    mu_miniRelIso[i] = muon -> relIso_;
-    mu_miniIsoCharged[i] = muon -> miniIsoCharged_;
-    mu_miniIsoNeutral[i] = muon -> miniIsoNeutral_;
-    mu_jetNDauChargedMVASel[i] = muon -> jetNDauChargedMVASel_;
-    mu_jetPtRel[i] = muon -> jetPtRel_;
-    mu_jetPtRatio[i] = muon -> jetPtRatio_;
-    mu_jetCSV[i] = muon -> jetBtagCSV_;
-    mu_sip3D[i] = muon -> sip3d_;
-    mu_dxy[i] = muon -> dxy_;
-    mu_dz[i] = muon -> dz_;
-    mu_segmentCompatibility[i] = muon -> segmentCompatibility_;
-    mu_leptonMVA[i] = muon -> mvaRawTTH_;
+    mu_pt[i] = muon -> pt();
+    mu_eta[i] = muon -> eta();
+    mu_phi[i] = muon -> phi();
+    mu_E[i] = (muon -> p4()).E();
+    mu_charge[i] = muon -> charge();
+    mu_miniRelIso[i] = muon -> relIso();
+    mu_miniIsoCharged[i] = muon -> miniIsoCharged();
+    mu_miniIsoNeutral[i] = muon -> miniIsoNeutral();
+    mu_jetNDauChargedMVASel[i] = muon -> jetNDauChargedMVASel();
+    mu_jetPtRel[i] = muon -> jetPtRel();
+    mu_jetPtRatio[i] = muon -> jetPtRatio();
+    mu_jetCSV[i] = muon -> jetBtagCSV();
+    mu_sip3D[i] = muon -> sip3d();
+    mu_dxy[i] = muon -> dxy();
+    mu_dz[i] = muon -> dz();
+    mu_segmentCompatibility[i] = muon -> segmentCompatibility();
+    mu_leptonMVA[i] = muon -> mvaRawTTH();
     mu_conept[i] = comp_lep1_conePt(*muon);
-    mu_mediumID[i] = muon -> passesMediumIdPOG_;
+    mu_mediumID[i] = muon -> passesMediumIdPOG();
 #ifdef DPT_DIV_PT
-    mu_dpt_div_pt[i] = muon -> dpt_div_pt_;
+    mu_dpt_div_pt[i] = muon -> dpt_div_pt();
 #endif
     mu_isfakeablesel[i] = 0;
     for(const auto & fakeable_muon: fakeable_muons)
@@ -365,27 +365,27 @@ SyncNtupleManager::read(std::vector<const RecoElectron *> & electrons,
   for(Int_t i = 0; i < nof_iterations; ++i)
   {
     const RecoElectron * const electron = electrons[i];
-    ele_pt[i] = electron -> pt_;
-    ele_eta[i] = electron -> eta_;
-    ele_phi[i] = electron -> phi_;
-    ele_E[i] = (electron -> p4_).E();
-    ele_charge[i] = electron -> charge_;
-    ele_miniRelIso[i] = electron -> relIso_;
-    ele_miniIsoCharged[i] = electron -> miniIsoCharged_;
-    ele_miniIsoNeutral[i] = electron -> miniIsoNeutral_;
-    ele_jetNDauChargedMVASel[i] = electron -> jetNDauChargedMVASel_;
-    ele_jetPtRel[i] = electron -> jetPtRel_;
-    ele_jetPtRatio[i] = electron -> jetPtRatio_;
-    ele_jetCSV[i] = electron -> jetBtagCSV_;
-    ele_sip3D[i] = electron -> sip3d_;
-    ele_dxy[i] = electron -> dxy_;
-    ele_dz[i] = electron -> dz_;
-    ele_ntMVAeleID[i] = electron -> mvaRawPOG_;
-    ele_leptonMVA[i] = electron -> mvaRawTTH_;
+    ele_pt[i] = electron -> pt();
+    ele_eta[i] = electron -> eta();
+    ele_phi[i] = electron -> phi();
+    ele_E[i] = (electron -> p4()).E();
+    ele_charge[i] = electron -> charge();
+    ele_miniRelIso[i] = electron -> relIso();
+    ele_miniIsoCharged[i] = electron -> miniIsoCharged();
+    ele_miniIsoNeutral[i] = electron -> miniIsoNeutral();
+    ele_jetNDauChargedMVASel[i] = electron -> jetNDauChargedMVASel();
+    ele_jetPtRel[i] = electron -> jetPtRel();
+    ele_jetPtRatio[i] = electron -> jetPtRatio();
+    ele_jetCSV[i] = electron -> jetBtagCSV();
+    ele_sip3D[i] = electron -> sip3d();
+    ele_dxy[i] = electron -> dxy();
+    ele_dz[i] = electron -> dz();
+    ele_ntMVAeleID[i] = electron -> mvaRawPOG();
+    ele_leptonMVA[i] = electron -> mvaRawTTH();
     ele_conept[i] = comp_lep1_conePt(*electron);
-    ele_isChargeConsistent[i] = electron -> tightCharge_ == 2 ? 1 : 0;
-    ele_passesConversionVeto[i] = electron -> passesConversionVeto_;
-    ele_nMissingHits[i] = electron -> nLostHits_;
+    ele_isChargeConsistent[i] = electron -> tightCharge() == 2 ? 1 : 0;
+    ele_passesConversionVeto[i] = electron -> passesConversionVeto();
+    ele_nMissingHits[i] = electron -> nLostHits();
     ele_isfakeablesel[i] = 0;
     for(const auto & fakeable_electron: fakeable_electrons)
       if(electron == fakeable_electron)
@@ -418,38 +418,38 @@ SyncNtupleManager::read(std::vector<const RecoHadTau *> & hadtaus)
   for(Int_t i = 0; i < nof_iterations; ++i)
   {
     const RecoHadTau * const hadtau = hadtaus[i];
-    tau_pt[i] = hadtau -> pt_;
-    tau_eta[i] = hadtau -> eta_;
-    tau_phi[i] = hadtau -> phi_;
-    tau_E[i] = (hadtau -> p4_).E();
-    tau_charge[i] = hadtau -> charge_;
-    tau_dxy[i] = hadtau -> dxy_;
-    tau_dz[i] = hadtau -> dz_;
-    tau_decayModeFindingOldDMs[i] = hadtau -> decayModeFinding_;
-    tau_decayModeFindingNewDMs[i] = hadtau -> decayModeFindingNew_;
-    tau_byCombinedIsolationDeltaBetaCorr3Hits[i] = hadtau -> raw_cut_dR05_;
+    tau_pt[i] = hadtau -> pt();
+    tau_eta[i] = hadtau -> eta();
+    tau_phi[i] = hadtau -> phi();
+    tau_E[i] = (hadtau -> p4()).E();
+    tau_charge[i] = hadtau -> charge();
+    tau_dxy[i] = hadtau -> dxy();
+    tau_dz[i] = hadtau -> dz();
+    tau_decayModeFindingOldDMs[i] = hadtau -> decayModeFinding();
+    tau_decayModeFindingNewDMs[i] = hadtau -> decayModeFindingNew();
+    tau_byCombinedIsolationDeltaBetaCorr3Hits[i] = hadtau -> raw_cut_dR05();
 
-    const Int_t idCI3hit = hadtau -> id_cut_dR05_;
+    const Int_t idCI3hit = hadtau -> id_cut_dR05();
     tau_byLooseCombinedIsolationDeltaBetaCorr3Hits[i] = idCI3hit >= 1 ? 1 : 0;
     tau_byMediumCombinedIsolationDeltaBetaCorr3Hits[i] = idCI3hit >= 2 ? 1 : 0;
     tau_byTightCombinedIsolationDeltaBetaCorr3Hits[i] = idCI3hit >= 3 ? 1 : 0;
 
-    const Int_t idCI3hitdR03 = hadtau -> id_cut_dR03_;
+    const Int_t idCI3hitdR03 = hadtau -> id_cut_dR03();
     tau_byLooseCombinedIsolationDeltaBetaCorr3HitsdR03[i] = idCI3hitdR03 >= 1 ? 1 : 0;
     tau_byMediumCombinedIsolationDeltaBetaCorr3HitsdR03[i] = idCI3hitdR03 >= 2 ? 1 : 0;
     tau_byTightCombinedIsolationDeltaBetaCorr3HitsdR03[i] = idCI3hitdR03 >= 3 ? 1 : 0;
 
-    const Int_t idMVArun2dR03 = hadtau -> id_mva_dR03_;
+    const Int_t idMVArun2dR03 = hadtau -> id_mva_dR03();
     tau_byLooseIsolationMVArun2v1DBdR03oldDMwLT[i] = idMVArun2dR03 >= 3 ? 1 : 0;
     tau_byMediumIsolationMVArun2v1DBdR03oldDMwLT[i] = idMVArun2dR03 >= 4 ? 1 : 0;
     tau_byTightIsolationMVArun2v1DBdR03oldDMwLT[i] = idMVArun2dR03 >= 5 ? 1 : 0;
     tau_byVTightIsolationMVArun2v1DBdR03oldDMwLT[i] = idMVArun2dR03 >= 6 ? 1 : 0;
 
-    const Int_t idAntiMu = hadtau -> antiMuon_;
+    const Int_t idAntiMu = hadtau -> antiMuon();
     tau_againstMuonLoose3[i] = idAntiMu >= 1 ? 1 : 0;
     tau_againstMuonTight3[i] = idAntiMu >= 2 ? 1 : 0;
 
-    const Int_t idAntiErun2 = hadtau -> antiElectron_;
+    const Int_t idAntiErun2 = hadtau -> antiElectron();
     tau_againstElectronVLooseMVA6[i] = idAntiErun2 >= 1 ? 1 : 0;
     tau_againstElectronLooseMVA6[i] = idAntiErun2 >= 2 ? 1 : 0;
     tau_againstElectronMediumMVA6[i] = idAntiErun2 >= 3 ? 1 : 0;
@@ -466,11 +466,11 @@ SyncNtupleManager::read(std::vector<const RecoJet *> & jets)
   for(Int_t i = 0; i < nof_iterations; ++i)
   {
     const RecoJet * const jet = jets[i];
-    jet_pt[i] = jet -> pt_;
-    jet_eta[i] = jet -> eta_;
-    jet_phi[i] = jet -> phi_;
-    jet_E[i] = (jet -> p4_).E();
-    jet_CSV[i] = jet -> BtagCSV_;
+    jet_pt[i] = jet -> pt();
+    jet_eta[i] = jet -> eta();
+    jet_phi[i] = jet -> phi();
+    jet_E[i] = (jet -> p4()).E();
+    jet_CSV[i] = jet -> BtagCSV();
   }
 }
 
