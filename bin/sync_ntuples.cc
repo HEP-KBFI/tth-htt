@@ -104,6 +104,15 @@ int main(int argc, char* argv[])
       throw cms::Exception(argv[0])
         << "Invalid configuration parameter 'era' = " << era_string << '\n';
   }();
+  
+  std::string leptonSelection_string = cfg_analyze.getParameter<std::string>("leptonSelection").data();
+  int leptonSelection = -1;
+  if      ( leptonSelection_string == "Loose"                                                      ) leptonSelection = kLoose;
+  else if ( leptonSelection_string == "Fakeable" || leptonSelection_string == "Fakeable_mcClosure" ) leptonSelection = kFakeable;
+  else if ( leptonSelection_string == "Tight"                                                      ) leptonSelection = kTight;
+  else throw cms::Exception("sync_ntuples") 
+    << "Invalid Configuration parameter 'leptonSelection' = " << leptonSelection_string << " !!\n";
+
   const int jetPt_option = RecoJetReader::kJetPt_central;
 
   const vstring triggerNames_1e = cfg_analyze.getParameter<vstring>("triggers_1e");
@@ -251,7 +260,7 @@ int main(int argc, char* argv[])
   cfg_dataToMCcorrectionInterface.addParameter<int>("hadTauSelection_antiMuon", hadTauSelection_antiMuon);
   cfg_dataToMCcorrectionInterface.addParameter<std::string>("central_or_shift", central_or_shift);
   Data_to_MC_CorrectionInterface* dataToMCcorrectionInterface = new Data_to_MC_CorrectionInterface(cfg_dataToMCcorrectionInterface);
-
+  
   int applyFakeRateWeights = kFR_3L;
   
   LeptonFakeRateInterface* leptonFakeRateInterface = 0;
@@ -421,6 +430,13 @@ int main(int argc, char* argv[])
       return static_cast<const RecoLepton * const>(0);
     }();
 
+    int lepton_lead_type = getLeptonType(lepton_lead->pdgId_);
+    int lepton_sublead_type = getLeptonType(lepton_sublead->pdgId_);
+
+    dataToMCcorrectionInterface->setLeptons(
+        lepton_lead_type, lepton_lead->pt_, lepton_lead->eta_, 
+    	  lepton_sublead_type, lepton_sublead->pt_, lepton_sublead->eta_);
+  
     double weight_btag = 1.;
     if( isMC){
       for ( std::vector<const RecoJet*>::const_iterator jet = selJets.begin();
@@ -537,6 +553,17 @@ int main(int argc, char* argv[])
 
     double triggerSF_weight = dataToMCcorrectionInterface->getWeight_leptonTriggerEff();
     double leptonSF_weight = dataToMCcorrectionInterface->getSF_leptonID_and_Iso_loose();
+    
+    //--- apply data/MC corrections for efficiencies of leptons passing the loose identification and isolation criteria
+    //    to also pass the tight identification and isolation criteria
+    if ( isMC ) {
+      if ( leptonSelection == kFakeable ) {
+	        leptonSF_weight *= dataToMCcorrectionInterface->getSF_leptonID_and_Iso_fakeable_to_loose();
+      } else if ( leptonSelection == kTight ) {
+          leptonSF_weight *= dataToMCcorrectionInterface->getSF_leptonID_and_Iso_tight_to_loose_wTightCharge();
+      }
+    }
+    
     double hadTauSF_weight = dataToMCcorrectionInterface->getSF_hadTauID_and_Iso();
     double MC_weight = pileupWeight * triggerSF_weight * leptonSF_weight * weight_btag * hadTauSF_weight * genWeight;
     
