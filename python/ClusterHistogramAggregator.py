@@ -151,7 +151,7 @@ class ClusterHistogramAggregator:
 
             # Check that input histograms are valid
 
-            $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/scripts/check_that_histograms_are_valid.py $SCRATCHED_INPUT_HISTOGRAMS
+            python $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/scripts/check_that_histograms_are_valid.py $SCRATCHED_INPUT_HISTOGRAMS
             check_that_histograms_are_valid_exit_status=$?
 
             if [[ $check_that_histograms_are_valid_exit_status != 0 ]]; then
@@ -168,7 +168,7 @@ class ClusterHistogramAggregator:
 
             # Check that input histograms are equal to output histogram
 
-            $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/scripts/check_that_histograms_are_equal.py $SCRATCHED_OUTPUT_HISTOGRAM $SCRATCHED_INPUT_HISTOGRAMS
+            python $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/scripts/check_that_histograms_are_equal.py $SCRATCHED_OUTPUT_HISTOGRAM $SCRATCHED_INPUT_HISTOGRAMS
             check_that_histograms_are_equal_exit_status=$?
 
             if [[ $check_that_histograms_are_equal_exit_status != 0 ]]; then
