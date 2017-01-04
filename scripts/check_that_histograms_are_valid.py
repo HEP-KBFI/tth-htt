@@ -6,6 +6,8 @@ from tthAnalysis.HiggsToTauTau.jobTools import run_cmd
 import ROOT
 import sys
 
+sys.exit(1)
+
 def main():
     input_histograms = sys.argv[1:len(sys.argv)]
 
