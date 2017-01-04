@@ -44,8 +44,17 @@ def call_histogram_aggregation_on_cluster_node_with_invalid_input_spec():
     # Output result
 
     if result_unsuccessful:
-        print('PASSED: HADD on cluster node with invalid input was interrupted as expected')
+        error_reasons = ""
+
+        if root_file_exists:
+            error_reasons = 'Root file should not exist'
+
+        if log_does_not_contain_error:
+            error_reasons = error_reasons + ' and log file does not contain error'
+
+        print('FAILED: HADD on cluster node failed silently and this is bad: ' + error_reasons)
+
     else:
-        print('FAILED: HADD on cluster node failed silently and this is bad')
+        print('PASSED: HADD on cluster node with invalid input was interrupted as expected')
 
     return result_unsuccessful
