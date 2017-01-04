@@ -78,16 +78,19 @@ class RecoLepton
   Double_t lepton_pt() const { return pt_; }
   const Particle::LorentzVector& lepton_p4() const { return p4_; }
 
+  // CV: use original lepton pT instead of mixing lepron pT and cone_pT, as discussed on slide 2 of 
+  //     https://indico.cern.ch/event/597028/contributions/2413742/attachments/1391684/2120220/16.12.22_ttH_Htautau_-_Review_of_systematics.pdf
   virtual Double_t pt() const
   {
-    if ( isFakeable_ && !isTight_ ) return cone_pt_;
-    else return pt_;
+    //if ( isFakeable_ && !isTight_ ) return cone_pt_;
+    //else return pt_;
+    return pt_;
   }
-
   virtual const Particle::LorentzVector& p4() const
   {
-    if ( isFakeable_ && !isTight_ ) return cone_p4_;
-    else return p4_;
+    //if ( isFakeable_ && !isTight_ ) return cone_p4_;
+    //else return p4_;
+    return p4_;
   }
 
   Double_t dxy() const { return dxy_; }

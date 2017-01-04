@@ -19,12 +19,19 @@ elif ERA == "2016":
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "DEBUG"
+version = "2016Dec23_dR03mvaVVLoose"
 
+#--------------------------------------------------------------------------------   
+# CV: run Ntuple production jobs also for high statistics background samples
+#     not used in the analysis, but used for BDT training by Arun
 for sample_name, sample_info in samples_2016.items():
-  if not sample_name in [
-      "/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14_ext1-v1/MINIAODSIM" ]:
-    sample_info["use_it"] = False
+  if sample_name in [
+      "/TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16MiniAODv1-PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext3-v1/MINIAODSIM",
+      "/TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16MiniAODv1-PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext4-v1/MINIAODSIM",
+      "/TTW/spring16DR80v6aMiniAODv1/FASTSIM" ]:
+    sample_info["sample_category"] = "dummy"
+    sample_info["use_it"] = True
+#--------------------------------------------------------------------------------    
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -37,9 +44,12 @@ if __name__ == '__main__':
     executable_analyze = "analyze_2lss_1tau", cfgFile_analyze_original = "analyze_2lss_1tau_cfg.py",
     samples = samples,
     lepton_charge_selections = [ "OS", "SS" ],
-    hadTau_selection = "dR03mvaMedium",
-    applyFakeRateWeights = "3L",
-    ##applyFakeRateWeights = "2lepton",
+    ##hadTau_selection = "dR03mvaMedium",
+    hadTau_selection = "dR03mvaVVLoose",
+    # CV: apply "fake" background estimation to leptons only and not to hadronic taus, as discussed on slide 10 of
+    #     https://indico.cern.ch/event/597028/contributions/2413742/attachments/1391684/2120220/16.12.22_ttH_Htautau_-_Review_of_systematics.pdf
+    ##applyFakeRateWeights = "3L",
+    applyFakeRateWeights = "2lepton",
     central_or_shifts = [ 
       "central",
 ##       "CMS_ttHl_btag_HFUp", 
@@ -58,10 +68,10 @@ if __name__ == '__main__':
 ##       "CMS_ttHl_btag_cErr1Down",
 ##       "CMS_ttHl_btag_cErr2Up",
 ##       "CMS_ttHl_btag_cErr2Down",
-##       "CMS_ttHl_JESUp",
-##       "CMS_ttHl_JESDown",
-##       "CMS_ttHl_tauESUp",
-##       "CMS_ttHl_tauESDown",
+      "CMS_ttHl_JESUp",
+      "CMS_ttHl_JESDown",
+      "CMS_ttHl_tauESUp",
+      "CMS_ttHl_tauESDown",
 ##       "CMS_ttHl_FRjt_normUp",
 ##       "CMS_ttHl_FRjt_normDown",
 ##       "CMS_ttHl_FRjt_shapeUp",
@@ -83,8 +93,7 @@ if __name__ == '__main__':
 ##       "CMS_ttHl_thu_shape_ttZ_y1Up",
 ##       "CMS_ttHl_thu_shape_ttZ_y1Down"           
     ],
-    ##max_files_per_job = 20,
-    max_files_per_job = 1000,
+    max_files_per_job = 20,
     era = ERA, use_lumi = True, lumi = LUMI,
     debug = False,
     running_method = "sbatch",

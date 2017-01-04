@@ -19,7 +19,7 @@ elif ERA == "2016":
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "2016Dec21" # must be the same version as in test/tthAnalyzeRun_2lss_1tau.py !
+version = "2016Dec23_dR03mvaVVLoose" # must be the same version as in test/tthAnalyzeRun_2lss_1tau.py !
 
 #--------------------------------------------------------------------------------   
 # CV: run Ntuple production jobs also for high statistics background samples

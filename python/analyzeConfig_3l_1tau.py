@@ -71,6 +71,14 @@ class analyzeConfig_3l_1tau(analyzeConfig):
             self.lepton_and_hadTau_genMatches_nonfakes.append(lepton_and_hadTau_genMatch)
           else:
             self.lepton_and_hadTau_genMatches_fakes.append(lepton_and_hadTau_genMatch)
+    elif applyFakeRateWeights == "3lepton":
+      self.apply_leptonGenMatching = True
+      self.apply_hadTauGenMatching = False
+      for lepton_genMatch in self.lepton_genMatches:
+        if lepton_genMatch.endswith("0j"):
+          self.lepton_and_hadTau_genMatches_nonfakes.append(lepton_genMatch)
+        else:
+          self.lepton_and_hadTau_genMatches_fakes.append(lepton_genMatch)        
     elif applyFakeRateWeights == "1tau":
       self.apply_leptonGenMatching = False
       self.apply_hadTauGenMatching = True

@@ -92,7 +92,7 @@
 typedef math::PtEtaPhiMLorentzVector LV;
 typedef std::vector<std::string> vstring;
 
-enum { kFR_disabled, kFR_4L, kFR_1tau };
+enum { kFR_disabled, kFR_3lepton, kFR_4L, kFR_1tau };
 
 const std::map<std::string, GENHIGGSDECAYMODE_TYPE> decayMode_idString = {
   { "ttH_hww", static_cast<GENHIGGSDECAYMODE_TYPE>(24) },
@@ -271,13 +271,14 @@ int main(int argc, char* argv[])
   std::string applyFakeRateWeights_string = cfg_analyze.getParameter<std::string>("applyFakeRateWeights");
   int applyFakeRateWeights = -1;
   if      ( applyFakeRateWeights_string == "disabled" ) applyFakeRateWeights = kFR_disabled;
+  else if ( applyFakeRateWeights_string == "3lepton"  ) applyFakeRateWeights = kFR_3lepton;
   else if ( applyFakeRateWeights_string == "4L"       ) applyFakeRateWeights = kFR_4L;
   else if ( applyFakeRateWeights_string == "1tau"     ) applyFakeRateWeights = kFR_1tau;
   else throw cms::Exception("analyze_3l_1tau") 
     << "Invalid Configuration parameter 'applyFakeRateWeights' = " << applyFakeRateWeights_string << " !!\n";
   
   LeptonFakeRateInterface* leptonFakeRateInterface = 0;
-  if ( applyFakeRateWeights == kFR_4L ) {
+  if ( applyFakeRateWeights == kFR_4L || applyFakeRateWeights == kFR_3lepton) {
     edm::ParameterSet cfg_leptonFakeRateWeight = cfg_analyze.getParameter<edm::ParameterSet>("leptonFakeRateWeight");
     leptonFakeRateInterface = new LeptonFakeRateInterface(cfg_leptonFakeRateWeight);
   }
@@ -398,9 +399,11 @@ int main(int argc, char* argv[])
   RecoHadTauCollectionGenMatcher hadTauGenMatcher;
   RecoHadTauCollectionCleaner hadTauCleaner(0.3);
   RecoHadTauCollectionSelectorLoose preselHadTauSelector(era);
+  if ( hadTauSelection_part2 == "dR03mvaVLoose" || hadTauSelection_part2 == "dR03mvaVVLoose" ) preselHadTauSelector.set(hadTauSelection_part2);
   preselHadTauSelector.set_min_antiElectron(hadTauSelection_antiElectron);
   preselHadTauSelector.set_min_antiMuon(hadTauSelection_antiMuon);
   RecoHadTauCollectionSelectorFakeable fakeableHadTauSelector(era);
+  if ( hadTauSelection_part2 == "dR03mvaVLoose" || hadTauSelection_part2 == "dR03mvaVVLoose" ) fakeableHadTauSelector.set(hadTauSelection_part2);
   fakeableHadTauSelector.set_min_antiElectron(hadTauSelection_antiElectron);
   fakeableHadTauSelector.set_min_antiMuon(hadTauSelection_antiMuon);
   RecoHadTauCollectionSelectorTight tightHadTauSelector(era);
@@ -649,6 +652,8 @@ struct preselHistManagerType
   int analyzedEntries = 0;
   int selectedEntries = 0;
   double selectedEntries_weighted = 0.;
+  TH1* histogram_analyzedEntries = fs.make<TH1D>("analyzedEntries", "analyzedEntries", 1, -0.5, +0.5);
+  TH1* histogram_selectedEntries = fs.make<TH1D>("selectedEntries", "selectedEntries", 1, -0.5, +0.5);
   cutFlowTableType cutFlowTable;
   CutFlowTableHistManager_3l_1tau* cutFlowHistManager = new CutFlowTableHistManager_3l_1tau(makeHistManager_cfg(process_string, 
     Form("%s/sel/cutFlow", histogramDir.data()), central_or_shift));
@@ -658,7 +663,8 @@ struct preselHistManagerType
       std::cout << "processing Entry " << idxEntry << " (" << selectedEntries << " Entries selected)" << std::endl;
     }
     ++analyzedEntries;
-    
+    histogram_analyzedEntries->Fill(0.);
+
     inputTree->GetEntry(idxEntry);
 
     if ( run_lumi_eventSelector && !(*run_lumi_eventSelector)(run, lumi, event) ) continue;
@@ -896,11 +902,8 @@ struct preselHistManagerType
     cutFlowTable.update(">= 3 presel leptons");
     cutFlowHistManager->fillHistograms(">= 3 presel leptons", lumiScale);
     const RecoLepton* preselLepton_lead = preselLeptons[0];
-    int preselLepton_lead_type = getLeptonType(preselLepton_lead->pdgId());
     const RecoLepton* preselLepton_sublead = preselLeptons[1];
-    int preselLepton_sublead_type = getLeptonType(preselLepton_sublead->pdgId());
     const RecoLepton* preselLepton_third = preselLeptons[2];
-    int preselLepton_third_type = getLeptonType(preselLepton_third->pdgId());
     const leptonGenMatchEntry& preselLepton_genMatch = getLeptonGenMatch(leptonGenMatch_definitions, preselLepton_lead, preselLepton_sublead, preselLepton_third);
     int idxPreselLepton_genMatch = preselLepton_genMatch.idx_;
     assert(idxPreselLepton_genMatch != kGen_LeptonUndefined3);
@@ -968,6 +971,68 @@ struct preselHistManagerType
     Particle::LorentzVector mht_p4 = compMHT(fakeableLeptons, selHadTaus, selJets);
     double met_LD = compMEt_LD(met.p4(), mht_p4);
 
+    const RecoLepton* preselLepton1_OS = 0;
+    const RecoLepton* preselLepton2_OS = 0;
+    if ( preselLepton_lead->charge()*selHadTau->charge() < 0. ) {
+      preselLepton1_OS = preselLepton_lead;
+    } 
+    if ( preselLepton_sublead->charge()*selHadTau->charge() < 0. ) {
+      if ( !preselLepton1_OS ) preselLepton1_OS = preselLepton_sublead;
+      else preselLepton2_OS = preselLepton_sublead;
+    }
+    if ( preselLepton_third->charge()*selHadTau->charge() < 0. ) {
+      if ( !preselLepton1_OS ) preselLepton1_OS = preselLepton_third;
+      else if ( !preselLepton2_OS ) preselLepton2_OS = preselLepton_third;
+    }
+    double mTauTauVis1_presel = ( preselLepton1_OS ) ? (preselLepton1_OS->p4() + selHadTau->p4()).mass() : -1.;
+    double mTauTauVis2_presel = ( preselLepton2_OS ) ? (preselLepton2_OS->p4() + selHadTau->p4()).mass() : -1.;
+     
+//--- fill histograms with events passing preselection
+    preselHistManagerType* preselHistManager = preselHistManagers[idxPreselLepton_genMatch][idxSelHadTau_genMatch];
+    assert(preselHistManager != 0);
+    preselHistManager->electrons_->fillHistograms(preselElectrons, 1.);
+    preselHistManager->muons_->fillHistograms(preselMuons, 1.);
+    preselHistManager->hadTaus_->fillHistograms(selHadTaus, 1.);
+    preselHistManager->jets_->fillHistograms(selJets, 1.);
+    preselHistManager->BJets_loose_->fillHistograms(selBJets_loose, 1.);
+    preselHistManager->BJets_medium_->fillHistograms(selBJets_medium, 1.);
+    preselHistManager->met_->fillHistograms(met, mht_p4, met_LD, 1.);
+    preselHistManager->evt_->fillHistograms(
+      preselElectrons.size(), preselMuons.size(), selHadTaus.size(), 
+      selJets.size(), selBJets_loose.size(), selBJets_medium.size(), 
+      -1., -1., -1., 
+      mTauTauVis1_presel, mTauTauVis2_presel, 1.);
+
+//--- apply final event selection 
+    std::vector<const RecoLepton*> selLeptons;    
+    selLeptons.reserve(selElectrons.size() + selMuons.size());
+    selLeptons.insert(selLeptons.end(), selElectrons.begin(), selElectrons.end());
+    selLeptons.insert(selLeptons.end(), selMuons.begin(), selMuons.end());
+    std::sort(selLeptons.begin(), selLeptons.end(), isHigherPt);
+    // require exactly two leptons passing tight selection criteria of final event selection 
+    if ( !(selLeptons.size() >= 3) ) {
+      if ( run_lumi_eventSelector ) {
+	std::cout << "event FAILS selLeptons selection." << std::endl;
+	std::cout << " (#selLeptons = " << selLeptons.size() << ")" << std::endl;
+	for ( size_t idxSelLepton = 0; idxSelLepton < selLeptons.size(); ++idxSelLepton ) {
+	  std::cout << "selLepton #" << idxSelLepton << ":" << std::endl;
+	  std::cout << (*selLeptons[idxSelLepton]);
+	}
+      }
+      continue;
+    }
+    cutFlowTable.update(">= 3 sel leptons", 1.);
+    cutFlowHistManager->fillHistograms(">= 3 sel leptons", 1.);
+    const RecoLepton* selLepton_lead = selLeptons[0];
+    int selLepton_lead_type = getLeptonType(selLepton_lead->pdgId());
+    const RecoLepton* selLepton_sublead = selLeptons[1];
+    int selLepton_sublead_type = getLeptonType(selLepton_sublead->pdgId());
+    const RecoLepton* selLepton_third = selLeptons[2];
+    int selLepton_third_type = getLeptonType(selLepton_third->pdgId());
+    const leptonGenMatchEntry& selLepton_genMatch = getLeptonGenMatch(leptonGenMatch_definitions, selLepton_lead, selLepton_sublead, selLepton_third);
+    int idxSelLepton_genMatch = selLepton_genMatch.idx_;
+    assert(idxSelLepton_genMatch != kGen_LeptonUndefined3);
+
     if ( isMC ) {
       lheInfoReader->read();
     }
@@ -995,9 +1060,9 @@ struct preselHistManagerType
     double weight_data_to_MC_correction_loose = 1.;
     if ( isMC ) {
       dataToMCcorrectionInterface->setLeptons(
-        preselLepton_lead_type, preselLepton_lead->pt(), preselLepton_lead->eta(), 
-	preselLepton_sublead_type, preselLepton_sublead->pt(), preselLepton_sublead->eta(),
-        preselLepton_third_type, preselLepton_third->pt(), preselLepton_third->eta());
+        selLepton_lead_type, selLepton_lead->pt(), selLepton_lead->eta(), 
+	selLepton_sublead_type, selLepton_sublead->pt(), selLepton_sublead->eta(),
+        selLepton_third_type, selLepton_third->pt(), selLepton_third->eta());
 
 //--- apply trigger efficiency turn-on curves to Spring16 non-reHLT MC
       if ( !apply_trigger_bits ) {
@@ -1019,65 +1084,6 @@ struct preselHistManagerType
 
       evtWeight *= weight_data_to_MC_correction_loose;
     }
-
-    const RecoLepton* preselLepton1_OS = 0;
-    const RecoLepton* preselLepton2_OS = 0;
-    if ( preselLepton_lead->charge()*selHadTau->charge() < 0. ) {
-      preselLepton1_OS = preselLepton_lead;
-    } 
-    if ( preselLepton_sublead->charge()*selHadTau->charge() < 0. ) {
-      if ( !preselLepton1_OS ) preselLepton1_OS = preselLepton_sublead;
-      else preselLepton2_OS = preselLepton_sublead;
-    }
-    if ( preselLepton_third->charge()*selHadTau->charge() < 0. ) {
-      if ( !preselLepton1_OS ) preselLepton1_OS = preselLepton_third;
-      else if ( !preselLepton2_OS ) preselLepton2_OS = preselLepton_third;
-    }
-    double mTauTauVis1_presel = ( preselLepton1_OS ) ? (preselLepton1_OS->p4() + selHadTau->p4()).mass() : -1.;
-    double mTauTauVis2_presel = ( preselLepton2_OS ) ? (preselLepton2_OS->p4() + selHadTau->p4()).mass() : -1.;
-     
-//--- fill histograms with events passing preselection
-    preselHistManagerType* preselHistManager = preselHistManagers[idxPreselLepton_genMatch][idxSelHadTau_genMatch];
-    assert(preselHistManager != 0);
-    preselHistManager->electrons_->fillHistograms(preselElectrons, evtWeight);
-    preselHistManager->muons_->fillHistograms(preselMuons, evtWeight);
-    preselHistManager->hadTaus_->fillHistograms(selHadTaus, evtWeight);
-    preselHistManager->jets_->fillHistograms(selJets, evtWeight);
-    preselHistManager->BJets_loose_->fillHistograms(selBJets_loose, evtWeight);
-    preselHistManager->BJets_medium_->fillHistograms(selBJets_medium, evtWeight);
-    preselHistManager->met_->fillHistograms(met, mht_p4, met_LD, evtWeight);
-    preselHistManager->evt_->fillHistograms(
-      preselElectrons.size(), preselMuons.size(), selHadTaus.size(), 
-      selJets.size(), selBJets_loose.size(), selBJets_medium.size(), 
-      -1., -1., -1., 
-      mTauTauVis1_presel, mTauTauVis2_presel, evtWeight);
-
-//--- apply final event selection 
-    std::vector<const RecoLepton*> selLeptons;    
-    selLeptons.reserve(selElectrons.size() + selMuons.size());
-    selLeptons.insert(selLeptons.end(), selElectrons.begin(), selElectrons.end());
-    selLeptons.insert(selLeptons.end(), selMuons.begin(), selMuons.end());
-    std::sort(selLeptons.begin(), selLeptons.end(), isHigherPt);
-    // require exactly two leptons passing tight selection criteria of final event selection 
-    if ( !(selLeptons.size() >= 3) ) {
-      if ( run_lumi_eventSelector ) {
-	std::cout << "event FAILS selLeptons selection." << std::endl;
-	std::cout << " (#selLeptons = " << selLeptons.size() << ")" << std::endl;
-	for ( size_t idxSelLepton = 0; idxSelLepton < selLeptons.size(); ++idxSelLepton ) {
-	  std::cout << "selLepton #" << idxSelLepton << ":" << std::endl;
-	  std::cout << (*selLeptons[idxSelLepton]);
-	}
-      }
-      continue;
-    }
-    cutFlowTable.update(">= 3 sel leptons", evtWeight);
-    cutFlowHistManager->fillHistograms(">= 3 sel leptons", evtWeight);
-    const RecoLepton* selLepton_lead = selLeptons[0];
-    const RecoLepton* selLepton_sublead = selLeptons[1];
-    const RecoLepton* selLepton_third = selLeptons[2];
-    const leptonGenMatchEntry& selLepton_genMatch = getLeptonGenMatch(leptonGenMatch_definitions, selLepton_lead, selLepton_sublead, selLepton_third);
-    int idxSelLepton_genMatch = selLepton_genMatch.idx_;
-    assert(idxSelLepton_genMatch != kGen_LeptonUndefined3);
 
     // require that trigger paths match event category (with event category based on selLeptons);
     if ( (selElectrons.size() == 3 &&                         !(selTrigger_1e || selTrigger_2e                                                        ) ) ||
@@ -1294,6 +1300,27 @@ struct preselHistManagerType
 	prob_fake_lepton_third, passesTight_lepton_third, 
 	prob_fake_hadTau, passesTight_hadTau);
       evtWeight *= weight_fakeRate;
+    } else if ( applyFakeRateWeights == kFR_3lepton ) {
+      double prob_fake_lepton_lead = 1.;
+      if      ( std::abs(selLepton_lead->pdgId()) == 11 ) prob_fake_lepton_lead = leptonFakeRateInterface->getWeight_e(selLepton_lead->pt(), selLepton_lead->absEta());
+      else if ( std::abs(selLepton_lead->pdgId()) == 13 ) prob_fake_lepton_lead = leptonFakeRateInterface->getWeight_mu(selLepton_lead->pt(), selLepton_lead->absEta());
+      else assert(0);
+      bool passesTight_lepton_lead = isMatched(*selLepton_lead, tightElectrons) || isMatched(*selLepton_lead, tightMuons);
+      double prob_fake_lepton_sublead = 1.;
+      if      ( std::abs(selLepton_sublead->pdgId()) == 11 ) prob_fake_lepton_sublead = leptonFakeRateInterface->getWeight_e(selLepton_sublead->pt(), selLepton_sublead->absEta());
+      else if ( std::abs(selLepton_sublead->pdgId()) == 13 ) prob_fake_lepton_sublead = leptonFakeRateInterface->getWeight_mu(selLepton_sublead->pt(), selLepton_sublead->absEta());
+      else assert(0);
+      bool passesTight_lepton_sublead = isMatched(*selLepton_sublead, tightElectrons) || isMatched(*selLepton_sublead, tightMuons);
+      double prob_fake_lepton_third = 1.;
+      if      ( std::abs(selLepton_third->pdgId()) == 11 ) prob_fake_lepton_third = leptonFakeRateInterface->getWeight_e(selLepton_third->pt(), selLepton_third->absEta());
+      else if ( std::abs(selLepton_third->pdgId()) == 13 ) prob_fake_lepton_third = leptonFakeRateInterface->getWeight_mu(selLepton_third->pt(), selLepton_third->absEta());
+      else assert(0);
+      bool passesTight_lepton_third = isMatched(*selLepton_third, tightElectrons) || isMatched(*selLepton_third, tightMuons);
+      weight_fakeRate = getWeight_3L(
+        prob_fake_lepton_lead, passesTight_lepton_lead, 
+	prob_fake_lepton_sublead, passesTight_lepton_sublead, 
+	prob_fake_lepton_third, passesTight_lepton_third);
+      evtWeight *= weight_fakeRate;
     } else if ( applyFakeRateWeights == kFR_1tau) {
       double prob_fake_hadTau = jetToTauFakeRateInterface->getWeight_lead(selHadTau->pt(), selHadTau->absEta());
       weight_fakeRate = prob_fake_hadTau;
@@ -1396,6 +1423,7 @@ struct preselHistManagerType
 
     ++selectedEntries;
     selectedEntries_weighted += evtWeight;
+    histogram_selectedEntries->Fill(0.);
     
     if ( writeSelEventsFile ) {
       const RLEUnit rleUnit{ run, lumi, event };
