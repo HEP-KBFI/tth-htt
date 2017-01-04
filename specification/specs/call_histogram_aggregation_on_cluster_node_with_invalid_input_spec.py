@@ -33,7 +33,11 @@ def call_histogram_aggregation_on_cluster_node_with_invalid_input_spec():
     # Check result
 
     root_result_file = '%(temp_dir)s/call_histogram_aggregation_on_cluster_node_with_invalid_input/result.root' % config
-    result_unsuccessful = not os.path.isfile(root_result_file)
+    root_file_exists = os.path.isfile(root_result_file)
+
+    log_does_not_contain_error = grepped_error == ''
+
+    result_unsuccessful = root_file_exists or log_does_not_contain_error
 
 
     # Output result
