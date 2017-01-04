@@ -33,12 +33,12 @@ def call_histogram_aggregation_on_cluster_node_with_invalid_input_spec():
     # Check result
 
     root_result_file = '%(temp_dir)s/call_histogram_aggregation_on_cluster_node_with_invalid_input/result.root' % config
-    root_file_exists = os.path.isfile(root_result_file)
+    root_file_does_not_exist = not os.path.isfile(root_result_file)
 
     grepped_error = run_cmd('cat %(temp_dir)s/call_histogram_aggregation_on_cluster_node_with_invalid_input/logs/create__home_%(user)s_tmp__call_histogram_aggregation_on_cluster_node_with_invalid_input_result.root_executable.log | grep "ERROR: root input file is broken"' % config)
-    log_does_not_contain_error = grepped_error == ''
+    log_does_contain_error = not (grepped_error == '')
 
-    result_successful = root_file_exists or log_does_not_contain_error
+    result_successful = root_file_does_not_exist and log_does_contain_error
 
 
     # Output result
@@ -48,10 +48,10 @@ def call_histogram_aggregation_on_cluster_node_with_invalid_input_spec():
     else:
         error_reasons = ""
 
-        if root_file_exists:
+        if not root_file_does_not_exist:
             error_reasons = 'root file should not exist; '
 
-        if log_does_not_contain_error:
+        if not log_does_contain_error:
             error_reasons = error_reasons + 'log file does not contain error; '
 
         print('FAILED: HADD on cluster node failed silently and this is bad: ' + error_reasons)
