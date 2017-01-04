@@ -156,7 +156,7 @@ class ClusterHistogramAggregator:
 
             if [[ $check_that_histograms_are_valid_exit_status != 0 ]]; then
               echo 'ERROR Some of the input histograms are not valid. Will stop execution.'
-              exit 1
+              return 1
             fi
 
 
@@ -173,7 +173,7 @@ class ClusterHistogramAggregator:
 
             if [[ $check_that_histograms_are_equal_exit_status != 0 ]]; then
               echo 'ERROR Input histograms do not equal output histogram. Will stop execution.'
-              exit 1
+              return 1
             fi
 
 
