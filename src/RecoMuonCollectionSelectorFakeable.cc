@@ -36,7 +36,7 @@ bool RecoMuonSelectorFakeable::operator()(const RecoMuon& muon) const
   //std::cout << muon;
   bool isTight = (*tightMuonSelector_)(muon);
   //double pt = ( isTight ) ? muon.pt() : muon.cone_pt();
-  // CV: use original lepton pT instead of mixing lepron pT and cone_pT, as discussed on slide 2 of 
+  // CV: use original lepton pT instead of mixing lepton pT and cone_pT, as discussed on slide 2 of 
   //     https://indico.cern.ch/event/597028/contributions/2413742/attachments/1391684/2120220/16.12.22_ttH_Htautau_-_Review_of_systematics.pdf
   double pt = muon.pt();
   //std::cout << "isTight = " << isTight << ": pT = " << pt << std::endl;  
