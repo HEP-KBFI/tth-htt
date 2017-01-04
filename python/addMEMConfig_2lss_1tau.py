@@ -135,7 +135,7 @@ class addMEMConfig_2lss_1tau:
             output_file_names = self.outputFiles,
             log_file_names = self.logFiles_addMEM,
             working_dir = self.workingDir,
-            max_num_jobs = self.max_mem_integrations,
+            max_num_jobs = 100000,
             cvmfs_error_log = self.cvmfs_error_log,
         )
 
@@ -215,7 +215,7 @@ class addMEMConfig_2lss_1tau:
             current_pos = 0
             evt_ranges = []
 
-            counter. counter_arr = 0, []
+            counter, counter_arr = 0, []
             nof_events_pass_counter, nof_events_pass = 0, []
             nof_int_pass_counter,    nof_int_pass    = 0, []
             nof_zero_integrations,   nof_events_zero = 0, []
