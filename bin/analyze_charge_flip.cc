@@ -722,7 +722,7 @@ int main(int argc, char* argv[])
       math::PtEtaPhiMLorentzVector(pt1, preselElectrons[1]->eta_, preselElectrons[1]->phi_, preselElectrons[1]->mass_);
     Double_t mass_ll = p4.M();
     //Adjust central value
-    mass_ll *= 1.01;
+    mass_ll *= 1.02;
     if (mass_ll < 60 || mass_ll > 120) {
       if ( run_lumi_eventSelector ) {
 	      std::cout << "event FAILS dilepton mass selection." << std::endl;
@@ -764,11 +764,11 @@ int main(int argc, char* argv[])
         
         //Adjust central value to better match data shape
         if (central_or_shift == "central" || central_or_shift == "")
-          mass_ll = mass_ll + 0.15 * (mass_ll - mass_ll_gen);
+          mass_ll = mass_ll + 0.25 * (mass_ll - mass_ll_gen);
         else if (central_or_shift == "CMS_ttHl_electronERDown")   
-          mass_ll = mass_ll - 0.05 * (mass_ll - mass_ll_gen);
+          mass_ll = mass_ll - 0.25 * (mass_ll - mass_ll_gen);
         else if (central_or_shift == "CMS_ttHl_electronERUp")
-          mass_ll = mass_ll + 0.35 * (mass_ll - mass_ll_gen);
+          mass_ll = mass_ll + 0.25 * (mass_ll - mass_ll_gen);
         //std::cout << "After:  " << mass_ll << std::endl;
         histos[charge_cat][category.data()]["DY"]->Fill(mass_ll, evtWeight);
         histos[charge_cat]["total"]["DY"]->Fill(mass_ll, evtWeight);
