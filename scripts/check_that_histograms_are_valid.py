@@ -14,7 +14,7 @@ def main():
     for input_histogram in input_histograms:
         root_tfile = ROOT.TFile(input_histogram, "read")
 
-        if True: # root_tfile.IsZombie():
+        if root_tfile.IsZombie(): # THIS IS NOT WORKING :(
             print('ERROR: root input file is broken: %s' % input_histogram)
             sys.exit(1)
 
