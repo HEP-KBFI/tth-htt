@@ -23,6 +23,8 @@ def check_that_histograms_are_valid_spec():
 
     result = run_cmd(command_with_arguments)
 
+    # Check result
+
     if result.find('All input files are ok.') == -1:
         print('Result must contain string "All input files are ok."')
         return False

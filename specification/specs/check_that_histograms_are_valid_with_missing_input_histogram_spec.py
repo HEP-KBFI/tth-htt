@@ -26,6 +26,8 @@ def check_that_histograms_are_valid_with_missing_input_histogram_spec():
 
     result = run_cmd(command_with_arguments)
 
+    # Check result
+
     if result.find('ERROR: root input file is missing: %s' % missing_histogram) == -1:
         print('Ouput must contain error information what file was missing')
         return False
