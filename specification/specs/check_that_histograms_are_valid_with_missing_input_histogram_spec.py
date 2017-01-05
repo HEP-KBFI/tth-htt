@@ -6,13 +6,13 @@ from tthAnalysis.HiggsToTauTau.sbatchManager import sbatchManager
 
 from config import config
 
-def check_that_histograms_are_valid_spec():
+def check_that_histograms_are_valid_with_missing_input_histogram_spec():
 
     # Prepare
 
     valid_histograms = [
         "%(fixtures_dir)s/histogram_1.root" % config,
-        "%(fixtures_dir)s/histogram_2.root" % config
+        "%(fixtures_dir)s/histogram_5.root" % config
     ]
 
     # Run task
@@ -23,4 +23,5 @@ def check_that_histograms_are_valid_spec():
 
     result = run_cmd(command_with_arguments)
 
+    print(result)
     return True
