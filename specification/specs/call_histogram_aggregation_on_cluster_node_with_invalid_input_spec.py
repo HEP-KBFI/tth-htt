@@ -35,7 +35,7 @@ def call_histogram_aggregation_on_cluster_node_with_invalid_input_spec():
     root_result_file = '%(temp_dir)s/call_histogram_aggregation_on_cluster_node_with_invalid_input/result.root' % config
     root_file_does_not_exist = not os.path.isfile(root_result_file)
 
-    grepped_error = run_cmd('cat %(temp_dir)s/call_histogram_aggregation_on_cluster_node_with_invalid_input/logs/create__home_%(user)s_tmp__call_histogram_aggregation_on_cluster_node_with_invalid_input_result.root_executable.log | grep "ERROR: root input file is broken"' % config)
+    grepped_error = run_cmd('cat %(temp_dir)s/call_histogram_aggregation_on_cluster_node_with_invalid_input/logs/create__home_%(user)s_tmp__call_histogram_aggregation_on_cluster_node_with_invalid_input_result.root_executable.log | grep "ERROR Some of the input histograms are not valid. Will stop execution."' % config)
     log_does_contain_error = not (grepped_error == '')
 
     result_successful = root_file_does_not_exist and log_does_contain_error
