@@ -12,7 +12,7 @@ def check_that_histograms_are_valid_spec():
 
     valid_histograms = [
         "%(fixtures_dir)s/histogram_1.root" % config,
-        "%(fixtures_dir)s/histogram_2.root" % config
+        "%(fixtures_dir)s/histogram_5.root" % config
     ]
 
     # Run task
