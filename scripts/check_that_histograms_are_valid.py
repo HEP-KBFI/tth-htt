@@ -27,7 +27,9 @@ def main():
             print('ERROR: root input file is broken: %s' % input_histogram)
             sys.exit(1)
 
-        print('All input files are ok.')
-        sys.exit(0)
+        print('File is ok: %s' % input_histogram )
+
+    print('All input files are ok.')
+    sys.exit(0)
 
 main()
