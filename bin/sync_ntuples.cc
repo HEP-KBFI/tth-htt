@@ -60,11 +60,9 @@ typedef math::PtEtaPhiMLorentzVector LV;
 typedef std::vector<std::string> vstring;
 
 enum { kFR_disabled, kFR_2lepton, kFR_3L };
-enum { kLoose, kFakeable, kTight };
 
 const int hadTauSelection_antiElectron = -1; // not applied
 const int hadTauSelection_antiMuon = -1; // not applied
-
 
 /**
  * @brief Produce datacard and control plots for 2lss_1tau categories.
@@ -430,18 +428,18 @@ int main(int argc, char* argv[])
       return static_cast<const RecoLepton * const>(0);
     }();
 
-    int lepton_lead_type = getLeptonType(lepton_lead->pdgId_);
-    int lepton_sublead_type = getLeptonType(lepton_sublead->pdgId_);
+    int lepton_lead_type = getLeptonType(lepton_lead->pdgId());
+    int lepton_sublead_type = getLeptonType(lepton_sublead->pdgId());
 
     dataToMCcorrectionInterface->setLeptons(
-        lepton_lead_type, lepton_lead->pt_, lepton_lead->eta_, 
-    	  lepton_sublead_type, lepton_sublead->pt_, lepton_sublead->eta_);
+	  lepton_lead_type, lepton_lead->pt(), lepton_lead->eta(), 
+    	  lepton_sublead_type, lepton_sublead->pt(), lepton_sublead->eta());
   
     double weight_btag = 1.;
     if( isMC){
       for ( std::vector<const RecoJet*>::const_iterator jet = selJets.begin();
 	          jet != selJets.end(); ++jet ) {
-	      weight_btag *= (*jet)->BtagWeight_;
+	      weight_btag *= (*jet)->BtagWeight();
       }
     }
 //--- compute MHT and linear MET discriminant (met_LD)
@@ -493,16 +491,16 @@ int main(int argc, char* argv[])
     /*double evtWeight_pp = evtWeight;
     double evtWeight_mm = evtWeight;
     if ( leptonChargeSelection == kOS ) {
-      double prob_chargeMisId_lead = prob_chargeMisId(getLeptonType(preselLepton_lead->pdgId_), preselLepton_lead->pt_, preselLepton_lead->eta_);
-      double prob_chargeMisId_sublead = prob_chargeMisId(getLeptonType(preselLepton_sublead->pdgId_), preselLepton_sublead->pt_, preselLepton_sublead->eta_);
+      double prob_chargeMisId_lead = prob_chargeMisId(getLeptonType(preselLepton_lead->pdgId()), preselLepton_lead->pt(), preselLepton_lead->eta());
+      double prob_chargeMisId_sublead = prob_chargeMisId(getLeptonType(preselLepton_sublead->pdgId()), preselLepton_sublead->pt(), preselLepton_sublead->eta());
 
       evtWeight *= ( prob_chargeMisId_lead + prob_chargeMisId_sublead);
 
-      if ( preselLepton_lead->charge_ < 0 && preselLepton_sublead->charge_ > 0 ) {
+      if ( preselLepton_lead->charge() < 0 && preselLepton_sublead->charge() > 0 ) {
 	evtWeight_pp *= prob_chargeMisId_lead;
 	evtWeight_mm *= prob_chargeMisId_sublead;
       }
-      if ( preselLepton_lead->charge_ > 0 && preselLepton_sublead->charge_ < 0 ) {
+      if ( preselLepton_lead->charge() > 0 && preselLepton_sublead->charge() < 0 ) {
 	evtWeight_pp *= prob_chargeMisId_sublead;
 	evtWeight_mm *= prob_chargeMisId_lead;
       }
@@ -524,22 +522,22 @@ int main(int argc, char* argv[])
     double weight_fakeRate = 1.;
     if ( applyFakeRateWeights == kFR_3L and selLeptons.size() > 1) {
       double prob_fake_lepton_lead = 1.;
-      if      ( std::abs(selLepton_lead->pdgId_) == 11 ) prob_fake_lepton_lead = leptonFakeRateInterface->getWeight_e(selLepton_lead->pt_, selLepton_lead->absEta_);
-      else if ( std::abs(selLepton_lead->pdgId_) == 13 ) prob_fake_lepton_lead = leptonFakeRateInterface->getWeight_mu(selLepton_lead->pt_, selLepton_lead->absEta_);
+      if      ( std::abs(selLepton_lead->pdgId()) == 11 ) prob_fake_lepton_lead = leptonFakeRateInterface->getWeight_e(selLepton_lead->pt(), selLepton_lead->absEta());
+      else if ( std::abs(selLepton_lead->pdgId()) == 13 ) prob_fake_lepton_lead = leptonFakeRateInterface->getWeight_mu(selLepton_lead->pt(), selLepton_lead->absEta());
       else if (selLeptons.size() == 0) prob_fake_lepton_lead = 1.;
       else assert(0);
       bool passesTight_lepton_lead = isMatched(*selLepton_lead, tightElectrons) || isMatched(*selLepton_lead, tightMuons);
       double prob_fake_lepton_sublead = 1.;
-      std::cout << selLepton_sublead->pdgId_ << " " << selLeptons.size() << std::endl;
-      if      ( std::abs(selLepton_sublead->pdgId_) == 11 ) prob_fake_lepton_sublead = leptonFakeRateInterface->getWeight_e(selLepton_sublead->pt_, selLepton_sublead->absEta_);
-      else if ( std::abs(selLepton_sublead->pdgId_) == 13 ) prob_fake_lepton_sublead = leptonFakeRateInterface->getWeight_mu(selLepton_sublead->pt_, selLepton_sublead->absEta_);
+      std::cout << selLepton_sublead->pdgId() << " " << selLeptons.size() << std::endl;
+      if      ( std::abs(selLepton_sublead->pdgId()) == 11 ) prob_fake_lepton_sublead = leptonFakeRateInterface->getWeight_e(selLepton_sublead->pt(), selLepton_sublead->absEta());
+      else if ( std::abs(selLepton_sublead->pdgId()) == 13 ) prob_fake_lepton_sublead = leptonFakeRateInterface->getWeight_mu(selLepton_sublead->pt(), selLepton_sublead->absEta());
       else if (selLeptons.size() == 1) prob_fake_lepton_sublead = 1.;
       else assert(0);
       
       bool passesTight_lepton_sublead = isMatched(*selLepton_sublead, tightElectrons) || isMatched(*selLepton_sublead, tightMuons);
       if(selHadTaus.size() > 0){
         const RecoHadTau* selHadTau = selHadTaus[0];
-        double prob_fake_hadTau = jetToTauFakeRateInterface->getWeight_lead(selHadTau->pt_, selHadTau->absEta_);
+        double prob_fake_hadTau = jetToTauFakeRateInterface->getWeight_lead(selHadTau->pt(), selHadTau->absEta());
         bool passesTight_hadTau = isMatched(*selHadTau, tightHadTaus);
         weight_fakeRate = getWeight_3L(
           prob_fake_lepton_lead, passesTight_lepton_lead, 
