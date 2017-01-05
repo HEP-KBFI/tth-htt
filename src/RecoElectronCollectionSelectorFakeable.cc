@@ -58,8 +58,11 @@ bool RecoElectronSelectorFakeable::operator()(const RecoElectron& electron) cons
   //std::cout << "<RecoElectronSelectorFakeable::operator()>:" << std::endl;
   //std::cout << electron;
   bool isTight = (*tightElectronSelector_)(electron);
-  double pt = ( isTight ) ? electron.pt() : electron.cone_pt();
-  //std::cout << "isTight = " << isTight << ": pT = " << pt << std::endl;
+  //double pt = ( isTight ) ? electron.pt() : electron.cone_pt();
+  // CV: use original lepton pT instead of mixing lepton pT and cone_pT, as discussed on slide 2 of 
+  //     https://indico.cern.ch/event/597028/contributions/2413742/attachments/1391684/2120220/16.12.22_ttH_Htautau_-_Review_of_systematics.pdf
+  double pt = electron.pt();
+  //std::cout << "isTight = " << isTight << ": pT = " << pt << std::endl;  
   if ( pt >= min_pt_ &&
        electron.absEta() <= max_absEta_ &&
        std::fabs(electron.dxy()) <= max_dxy_ &&

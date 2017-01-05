@@ -32,7 +32,10 @@ if __name__ == '__main__':
     executable_analyze = "analyze_3l_1tau", cfgFile_analyze_original = "analyze_3l_1tau_cfg.py",
     samples = samples,
     hadTau_selection = "dR03mvaMedium",
-    applyFakeRateWeights = "4L",
+    # CV: apply "fake" background estimation to leptons only and not to hadronic taus, as discussed on slide 10 of
+    #     https://indico.cern.ch/event/597028/contributions/2413742/attachments/1391684/2120220/16.12.22_ttH_Htautau_-_Review_of_systematics.pdf
+    #applyFakeRateWeights = "4L",
+    applyFakeRateWeights = "3lepton",
     charge_selections = [ "OS", "SS" ],
     central_or_shifts = [ 
       "central",

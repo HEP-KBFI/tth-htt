@@ -395,7 +395,7 @@ int main(int argc, char* argv[])
 		  memOutput_2lss_1tau.set_hadTau_eta((*selHadTau)->eta());
 		  memOutput_2lss_1tau.set_hadTau_phi((*selHadTau)->phi());
 		} else {
-		  MEMInterface_2lss_1tau memInterface_2lss_1tau("ttH_Htautau_MEM_Analysis/MEM/small.py");
+		  MEMInterface_2lss_1tau memInterface_2lss_1tau("ttH_Htautau_MEM_Analysis/MEM/small_lowpoints_122016.py");
 		  memOutput_2lss_1tau = memInterface_2lss_1tau(
 	            *selLepton_lead, *selLepton_sublead, *selHadTau,
 		    met,
