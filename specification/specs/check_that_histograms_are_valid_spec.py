@@ -22,6 +22,7 @@ def check_that_histograms_are_valid_spec():
     command_with_arguments = command + " " + command_arguments
 
     result = run_cmd(command_with_arguments)
+    result_code = run_cmd('echo $?')
 
-    print(result)
+    print(result_code)
     return True
