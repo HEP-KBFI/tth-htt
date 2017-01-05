@@ -6,7 +6,7 @@ from tthAnalysis.HiggsToTauTau.sbatchManager import sbatchManager
 
 from config import config
 
-def check_that_histograms_are_equal_with_unequal_data_spec():
+def check_that_histograms_are_equal_with_unequal_data():
 
     # Prepare
 
