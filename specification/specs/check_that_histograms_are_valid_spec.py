@@ -23,4 +23,12 @@ def check_that_histograms_are_valid_spec():
 
     result = run_cmd(command_with_arguments)
 
+    if result.find('All input files are ok.') == -1:
+        print('Result must contain string "All input files are ok."')
+        return False
+
+    if result.find('EXIT_STATUS_WAS: 0') == -1:
+        print('Exit status was not 0')
+        return False
+
     return True
