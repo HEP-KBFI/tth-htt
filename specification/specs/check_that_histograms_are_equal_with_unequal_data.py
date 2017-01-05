@@ -6,11 +6,11 @@ from tthAnalysis.HiggsToTauTau.sbatchManager import sbatchManager
 
 from config import config
 
-def check_that_histograms_are_equal_spec():
+def check_that_histograms_are_equal_with_unequal_data_spec():
 
     # Prepare
 
-    output_histogram = "%(fixtures_dir)s/hadd_of_histogram_1_and_2.root" % config
+    output_histogram = "%(fixtures_dir)s/hadd_of_histogram_1_and_broken.root" % config
 
     input_histograms = [
         "%(fixtures_dir)s/histogram_1.root" % config,
@@ -27,12 +27,12 @@ def check_that_histograms_are_equal_spec():
 
     # Check result
 
-    if result.find('Output histogram event count is same as input histograms event counts sum') == -1:
-        print('Result must contain string "Output histogram event count is same as input histograms event counts sum"')
+    if result.find('ERROR: count(output_histogram.events) != count(input_histograms.events)') == -1:
+        print('Result must contain string "ERROR: count(output_histogram.events) != count(input_histograms.events)"')
         return False
 
-    if result.find('EXIT_STATUS_WAS: 0') == -1:
-        print('Exit status was not 0')
+    if result.find('EXIT_STATUS_WAS: 1') == -1:
+        print('Exit status was not 1')
         return False
 
     return True
