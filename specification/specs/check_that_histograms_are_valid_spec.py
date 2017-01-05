@@ -19,10 +19,9 @@ def check_that_histograms_are_valid_spec():
 
     command = 'python %(cmssw_base)s/src/tthAnalysis/HiggsToTauTau/scripts/check_that_histograms_are_valid.py' % config
     command_arguments = " ".join(valid_histograms)
-    command_with_arguments = command + " " + command_arguments
+    command_with_arguments = command + " " + command_arguments + "; echo RETURN_CODE $?;"
 
     result = run_cmd(command_with_arguments)
-    result_code = run_cmd('echo $?')
 
-    print(result_code)
+    print(result)
     return True
