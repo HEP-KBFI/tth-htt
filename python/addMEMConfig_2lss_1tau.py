@@ -8,7 +8,8 @@ class addMEMConfig_2lss_1tau(addMEMConfig):
   def __init__(self, treeName, outputDir, executable_addMEM, samples, era, debug, running_method,
                max_files_per_job, mem_integrations_per_job, max_mem_integrations, num_parallel_jobs):
     addMEMConfig.__init__(self, treeName, outputDir, executable_addMEM, samples, era, debug, running_method,
-                          max_files_per_job, mem_integrations_per_job, max_mem_integrations, num_parallel_jobs)
+                          max_files_per_job, mem_integrations_per_job, max_mem_integrations, num_parallel_jobs,
+                          "2lss_1tau", "maxPermutations_addMEM_2lss_1tau")
 
     self.cfgFile_addMEM_original = os.path.join(self.workingDir, "addMEM_2lss_1tau_cfg.py")
 

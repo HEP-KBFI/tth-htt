@@ -21,7 +21,7 @@ DKEY_HADD          = "hadd_cfg"
 executable_rm = 'rm'
 
 class addMEMConfig:
-    """Configuration metadata needed to run MEM for 2lss_1tau channel.
+    """Configuration metadata needed to run MEM for any channel.
 
     Args:
         outputDir: The root output dir -- all configuration, log and output files are stored in its subdirectories
@@ -34,18 +34,20 @@ class addMEMConfig:
 
     """
     def __init__(self, treeName, outputDir, executable_addMEM, samples, era, debug, running_method,
-                 max_files_per_job, mem_integrations_per_job, max_mem_integrations, num_parallel_jobs):
+                 max_files_per_job, mem_integrations_per_job, max_mem_integrations, num_parallel_jobs,
+                 channel, maxPermutations_addMEM):
 
         self.treeName = treeName
         self.outputDir = outputDir
         self.executable_addMEM = executable_addMEM
-        self.channel = "2lss_1tau"
         self.mem_integrations_per_job = mem_integrations_per_job
         self.max_files_per_job = max_files_per_job
         self.max_mem_integrations = max_mem_integrations
         self.samples = samples
         self.era = era
         self.debug = debug
+        self.channel = channel
+        self.maxPermutations_addMEM = maxPermutations_addMEM
         assert(running_method.lower() in [
           "sbatch", "makefile"]), "Invalid running method: %s" % running_method
         self.running_method = running_method
@@ -190,13 +192,13 @@ class addMEMConfig:
             nof_int_pass_counter,    nof_int_pass    = 0, []
             nof_zero_integrations,   nof_events_zero = 0, []
 
-            maxPermutations_addMEM_2lss_1tau_a = array.array('i', [0])
-            ch.SetBranchAddress("maxPermutations_addMEM_2lss_1tau", maxPermutations_addMEM_2lss_1tau_a)
+            maxPermutations_addMEM = array.array('i', [0])
+            ch.SetBranchAddress(self.maxPermutations_addMEM, maxPermutations_addMEM)
 
             for i in range(nof_entries):
                 ch.GetEntry(i)
 
-                nof_integrations = maxPermutations_addMEM_2lss_1tau_a[0]
+                nof_integrations = maxPermutations_addMEM[0]
                 if nof_integrations < 0:
                     nof_integrations = 0
 
@@ -288,7 +290,7 @@ class addMEMConfig:
             # each job performs mem_integrations_per_job MEM integrations
 
             # so what we are going to do is to open each set of files in inputFileList, read the variable
-            # requestMEM_2lss_1tau and try to gather the event ranges such that each event range
+            # requestMEM_*l_*tau and try to gather the event ranges such that each event range
             # performs up to mem_integrations_per_job integrations per job
             memEvtRangeDict = self.memJobList(inputFileList)
 
