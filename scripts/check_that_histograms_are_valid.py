@@ -17,7 +17,7 @@ def main():
             print('ERROR: root input file is missing: %s' % input_histogram)
             sys.exit(1)
 
-        if os.path.getsize(path) < 5:
+        if os.path.getsize(input_histogram) < 5:
             print('ERROR: root input file is too small: %s' % input_histogram)
             sys.exit(1)
 
