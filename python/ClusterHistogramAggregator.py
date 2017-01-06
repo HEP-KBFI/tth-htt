@@ -148,10 +148,33 @@ class ClusterHistogramAggregator:
                 export SCRATCHED_INPUT_HISTOGRAMS="$SCRATCHED_INPUT_HISTOGRAMS $SCRATCHED_INPUT_HISTOGRAM"
             done
 
-            # hadd
+
+            # Check that input histograms are valid
+
+            python $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/scripts/check_that_histograms_are_valid.py $SCRATCHED_INPUT_HISTOGRAMS
+            check_that_histograms_are_valid_exit_status=$?
+
+            if [[ $check_that_histograms_are_valid_exit_status != 0 ]]; then
+              echo 'ERROR Some of the input histograms are not valid. Will stop execution.'
+              return 1
+            fi
+
+
+            # Hadd
 
             echo "Create a new histogram: hadd $SCRATCHED_OUTPUT_HISTOGRAM $SCRATCHED_INPUT_HISTOGRAMS"
             hadd $SCRATCHED_OUTPUT_HISTOGRAM $SCRATCHED_INPUT_HISTOGRAMS
+
+
+            # Check that input histograms are equal to output histogram
+
+            python $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/scripts/check_that_histograms_are_equal.py $SCRATCHED_OUTPUT_HISTOGRAM $SCRATCHED_INPUT_HISTOGRAMS
+            check_that_histograms_are_equal_exit_status=$?
+
+            if [[ $check_that_histograms_are_equal_exit_status != 0 ]]; then
+              echo 'ERROR Input histograms do not equal output histogram. Will stop execution.'
+              return 1
+            fi
 
 
             # Store result in correct place
