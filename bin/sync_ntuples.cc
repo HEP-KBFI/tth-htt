@@ -338,7 +338,7 @@ int main(int argc, char* argv[])
   int selectedEntries = 0;
 
   for ( int idxEntry = 0; idxEntry < numEntries && (maxEvents == -1 || idxEntry < maxEvents); ++idxEntry ) {
-    if ( idxEntry > 0 && (idxEntry % reportEvery) == 0 ) {
+    if ( idxEntry > 0 && (idxEntry % reportEvery) == 0) {
       std::cout << "processing Entry " << idxEntry << " (" << selectedEntries << " Entries selected)\n";
     }
     ++analyzedEntries;    
@@ -411,6 +411,7 @@ int main(int argc, char* argv[])
     fakeableLeptons.insert(fakeableLeptons.end(), fakeableElectrons.begin(), fakeableElectrons.end());
     fakeableLeptons.insert(fakeableLeptons.end(), fakeableMuons.begin(),     fakeableMuons.end());
     std::sort(fakeableLeptons.begin(), fakeableLeptons.end(), isHigherPt);
+    
     const RecoLepton * const lepton_lead = [&]()
     {
       if(era == kEra_2015 && preselLeptons.size() > 0)
@@ -427,14 +428,32 @@ int main(int argc, char* argv[])
         return fakeableLeptons[1];
       return static_cast<const RecoLepton * const>(0);
     }();
-
-    int lepton_lead_type = getLeptonType(lepton_lead->pdgId());
-    int lepton_sublead_type = getLeptonType(lepton_sublead->pdgId());
+    
+    int lepton_lead_type = -1;
+    double lepton_lead_pt = 0.;
+    double lepton_lead_eta = 0.; 
+        
+    if(lepton_lead != 0){
+      lepton_lead_type = getLeptonType(lepton_lead->pdgId());
+      lepton_lead_pt = lepton_lead->pt();;
+      lepton_lead_eta = lepton_lead->eta(); 
+    }
+    
+    int lepton_sublead_type = -1;
+    double lepton_sublead_pt = 0.;
+    double lepton_sublead_eta = 0.; 
+    
+    if (lepton_sublead != 0){
+      lepton_sublead_type = getLeptonType(lepton_sublead->pdgId());
+      lepton_sublead_pt = lepton_sublead->pt();
+      lepton_sublead_eta = lepton_sublead->eta();
+    }
 
     dataToMCcorrectionInterface->setLeptons(
-	  lepton_lead_type, lepton_lead->pt(), lepton_lead->eta(), 
-    	  lepton_sublead_type, lepton_sublead->pt(), lepton_sublead->eta());
-  
+	      lepton_lead_type, lepton_lead_pt, lepton_lead_eta, 
+    	  lepton_sublead_type, lepton_sublead_pt, lepton_sublead_eta
+    );
+    
     double weight_btag = 1.;
     if( isMC){
       for ( std::vector<const RecoJet*>::const_iterator jet = selJets.begin();
@@ -518,7 +537,6 @@ int main(int argc, char* argv[])
       if (selLeptons.size() > 1)
         selLepton_sublead = selLeptons[1];
     }
-    
     double weight_fakeRate = 1.;
     if ( applyFakeRateWeights == kFR_3L and selLeptons.size() > 1) {
       double prob_fake_lepton_lead = 1.;
@@ -528,7 +546,7 @@ int main(int argc, char* argv[])
       else assert(0);
       bool passesTight_lepton_lead = isMatched(*selLepton_lead, tightElectrons) || isMatched(*selLepton_lead, tightMuons);
       double prob_fake_lepton_sublead = 1.;
-      std::cout << selLepton_sublead->pdgId() << " " << selLeptons.size() << std::endl;
+      
       if      ( std::abs(selLepton_sublead->pdgId()) == 11 ) prob_fake_lepton_sublead = leptonFakeRateInterface->getWeight_e(selLepton_sublead->pt(), selLepton_sublead->absEta());
       else if ( std::abs(selLepton_sublead->pdgId()) == 13 ) prob_fake_lepton_sublead = leptonFakeRateInterface->getWeight_mu(selLepton_sublead->pt(), selLepton_sublead->absEta());
       else if (selLeptons.size() == 1) prob_fake_lepton_sublead = 1.;
@@ -544,6 +562,7 @@ int main(int argc, char* argv[])
           prob_fake_lepton_sublead, passesTight_lepton_sublead, 
           prob_fake_hadTau, passesTight_hadTau);
       }
+      
       /*evtWeight *= weight_fakeRate;
       evtWeight_pp *= weight_fakeRate;
       evtWeight_mm *= weight_fakeRate;*/
@@ -551,7 +570,6 @@ int main(int argc, char* argv[])
 
     double triggerSF_weight = dataToMCcorrectionInterface->getWeight_leptonTriggerEff();
     double leptonSF_weight = dataToMCcorrectionInterface->getSF_leptonID_and_Iso_loose();
-    
     //--- apply data/MC corrections for efficiencies of leptons passing the loose identification and isolation criteria
     //    to also pass the tight identification and isolation criteria
     if ( isMC ) {
@@ -561,23 +579,21 @@ int main(int argc, char* argv[])
           leptonSF_weight *= dataToMCcorrectionInterface->getSF_leptonID_and_Iso_tight_to_loose_wTightCharge();
       }
     }
-    
     double hadTauSF_weight = dataToMCcorrectionInterface->getSF_hadTauID_and_Iso();
     double MC_weight = pileupWeight * triggerSF_weight * leptonSF_weight * weight_btag * hadTauSF_weight * genWeight;
     
-    snm.read(MC_weight,   FloatVariableType::MC_weight);
+    snm.read(genWeight,   FloatVariableType::MC_weight);
     snm.read(weight_fakeRate,   FloatVariableType::FR_weight);
     snm.read(triggerSF_weight,   FloatVariableType::triggerSF_weight);
     snm.read(leptonSF_weight,   FloatVariableType::leptonSF_weight);
     snm.read(weight_btag,   FloatVariableType::bTagSF_weight);
     snm.read(pileupWeight,   FloatVariableType::PU_weight);
     snm.read(hadTauSF_weight,   FloatVariableType::hadTauSF_weight);
-    snm.read(genWeight,   FloatVariableType::genWeight);
+    //snm.read(genWeight,   FloatVariableType::genWeight);
     snm.fill();
     
-    
     (*selEventsFile) << run << ':' << lumi << ':' << event << '\n';
-    ++selectedEntries;
+    ++selectedEntries;    
   }
   snm.write();
   std::cout << "num. Entries = " << numEntries << "\n analyzed = " << analyzedEntries << '\n'
