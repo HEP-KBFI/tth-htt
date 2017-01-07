@@ -20,6 +20,8 @@
 #include "tthAnalysis/HiggsToTauTau/interface/GenLepton.h" // GenLepton
 #include "tthAnalysis/HiggsToTauTau/interface/GenJet.h" // GenJet
 #include "tthAnalysis/HiggsToTauTau/interface/GenHadTau.h" // GenHadTau
+#include "tthAnalysis/HiggsToTauTau/interface/RecoMEt.h" // RecoMEt
+#include "tthAnalysis/HiggsToTauTau/interface/MEMOutput_3l_1tau.h" // MEMOutput_3l_1tau
 #include "tthAnalysis/HiggsToTauTau/interface/TMVAInterface.h" // TMVAInterface
 #include "tthAnalysis/HiggsToTauTau/interface/mvaInputVariables.h" // auxiliary functions for computing input variables of the MVA used for signal extraction in the 3l_1tau category
 #include "tthAnalysis/HiggsToTauTau/interface/LeptonFakeRateInterface.h" // LeptonFakeRateInterface
@@ -30,6 +32,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauReader.h" // RecoHadTauReader
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetReader.h" // RecoJetReader
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMEtReader.h" // RecoMEtReader
+#include "tthAnalysis/HiggsToTauTau/interface/MEMOutputReader_3l_1tau.h" // MEMOutputReader_3l_1tau
 #include "tthAnalysis/HiggsToTauTau/interface/GenLeptonReader.h" // GenLeptonReader
 #include "tthAnalysis/HiggsToTauTau/interface/GenParticleReader.h" // GenParticleReader
 #include "tthAnalysis/HiggsToTauTau/interface/GenHadTauReader.h" // GenHadTauReader
@@ -426,6 +429,13 @@ int main(int argc, char* argv[])
 //--- declare missing transverse energy
   RecoMEtReader* metReader = new RecoMEtReader(era, branchName_met);
   metReader->setBranchAddresses(inputTree);  
+
+//--- declare likelihoods for signal/background hypotheses, obtained by matrix element method
+  MEMOutputReader_3l_1tau* memReader = 0;
+  if ( branchName_memOutput != "" ) {
+    memReader = new MEMOutputReader_3l_1tau(Form("n%s", branchName_memOutput.data()), branchName_memOutput);
+    memReader->setBranchAddresses(inputTree); 
+  }
 
   GenLeptonReader* genLeptonReader = 0;
   GenHadTauReader* genHadTauReader = 0;
@@ -1001,7 +1011,8 @@ struct preselHistManagerType
       preselElectrons.size(), preselMuons.size(), selHadTaus.size(), 
       selJets.size(), selBJets_loose.size(), selBJets_medium.size(), 
       -1., -1., -1., 
-      mTauTauVis1_presel, mTauTauVis2_presel, 1.);
+      mTauTauVis1_presel, mTauTauVis2_presel, 
+      0, 1.);
 
 //--- apply final event selection 
     std::vector<const RecoLepton*> selLeptons;    
@@ -1376,6 +1387,35 @@ struct preselHistManagerType
     else if ( mvaOutput_3l_ttbar <= +0.3 && mvaOutput_3l_ttV <= -0.1 ) mvaDiscr_3l = 1.;
     else                                                               mvaDiscr_3l = 2.;
 
+    const MEMOutput_3l_1tau* memOutput_3l_1tau_matched = 0;
+    if ( memReader ) {
+      std::vector<MEMOutput_3l_1tau> memOutputs_3l_1tau = memReader->read();
+      for ( std::vector<MEMOutput_3l_1tau>::const_iterator memOutput_3l_1tau = memOutputs_3l_1tau.begin();
+	    memOutput_3l_1tau != memOutputs_3l_1tau.end(); ++memOutput_3l_1tau ) {
+	double selLepton_lead_dR = deltaR(selLepton_lead->eta(), selLepton_lead->phi(), memOutput_3l_1tau->leadLepton_eta(), memOutput_3l_1tau->leadLepton_phi());
+	if ( selLepton_lead_dR > 1.e-2 ) continue;
+	double selLepton_sublead_dR = deltaR(selLepton_sublead->eta(), selLepton_sublead->phi(), memOutput_3l_1tau->subleadLepton_eta(), memOutput_3l_1tau->subleadLepton_phi());
+	if ( selLepton_sublead_dR > 1.e-2 ) continue;
+	double selLepton_third_dR = deltaR(selLepton_third->eta(), selLepton_third->phi(), memOutput_3l_1tau->thirdLepton_eta(), memOutput_3l_1tau->thirdLepton_phi());
+	if ( selLepton_third_dR > 1.e-2 ) continue;
+	double selHadTau_dR = deltaR(selHadTau->eta(), selHadTau->phi(), memOutput_3l_1tau->hadTau_eta(), memOutput_3l_1tau->hadTau_phi());
+	if ( selHadTau_dR > 1.e-2 ) continue;
+	memOutput_3l_1tau_matched = &(*memOutput_3l_1tau);
+	break;
+      }
+      if ( !memOutput_3l_1tau_matched ) {
+	std::cout << "Warning in run = " << run << ", lumi = " << lumi << ", event = " << event << ":" << std::endl; 
+	std::cout << "No MEMOutput_3l_1tau object found for:" << std::endl;
+	std::cout << " selLepton_lead: pT = " << selLepton_lead->pt() << ", eta = " << selLepton_lead->eta() << ", phi = " << selLepton_lead->phi() << "," 
+		  << " pdgId = " << selLepton_lead->pdgId() << std::endl;
+	std::cout << " selLepton_sublead: pT = " << selLepton_sublead->pt() << ", eta = " << selLepton_sublead->eta() << ", phi = " << selLepton_sublead->phi() << "," 
+		  << " pdgId = " << selLepton_sublead->pdgId() << std::endl;
+	std::cout << " selLepton_third: pT = " << selLepton_third->pt() << ", eta = " << selLepton_third->eta() << ", phi = " << selLepton_third->phi() << "," 
+		  << " pdgId = " << selLepton_third->pdgId() << std::endl;
+	std::cout << " selHadTau: pT = " << selHadTau->pt() << ", eta = " << selHadTau->eta() << ", phi = " << selHadTau->phi() << std::endl;
+      }
+    }
+
 //--- fill histograms with events passing final selection 
     selHistManagerType* selHistManager = selHistManagers[idxSelLepton_genMatch][idxSelHadTau_genMatch];
     assert(selHistManager != 0);
@@ -1394,7 +1434,8 @@ struct preselHistManagerType
       selElectrons.size(), selMuons.size(), selHadTaus.size(), 
       selJets.size(), selBJets_loose.size(), selBJets_medium.size(), 
       mvaOutput_3l_ttV, mvaOutput_3l_ttbar, mvaDiscr_3l, 
-      mTauTauVis1_sel, mTauTauVis2_sel, evtWeight);
+      mTauTauVis1_sel, mTauTauVis2_sel, 
+      memOutput_3l_1tau_matched, evtWeight);
     if ( isSignal ) {
       for ( const auto & kv: decayMode_idString ) {
         if ( std::fabs(genHiggsDecayMode - kv.second) < EPS ) {
@@ -1402,7 +1443,8 @@ struct preselHistManagerType
             selElectrons.size(), selMuons.size(), selHadTaus.size(), 
             selJets.size(), selBJets_loose.size(), selBJets_medium.size(), 
             mvaOutput_3l_ttV, mvaOutput_3l_ttbar, mvaDiscr_3l, 
-            mTauTauVis1_sel, mTauTauVis2_sel, evtWeight);
+            mTauTauVis1_sel, mTauTauVis2_sel, 
+	    memOutput_3l_1tau_matched, evtWeight);
           break;
         }
       }
@@ -1493,6 +1535,7 @@ struct preselHistManagerType
   delete hadTauReader;
   delete jetReader;
   delete metReader;
+  delete memReader;
   delete genLeptonReader;
   delete genHadTauReader;
   delete genJetReader;

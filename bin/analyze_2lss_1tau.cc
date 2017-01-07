@@ -1418,6 +1418,11 @@ int main(int argc, char* argv[])
 	}
 	continue;
       }
+      // CV: There is a combinatorial factor 2 involved when estimating the charge "flip" background using OS events.
+      //     In case of SS events, half the events pass the charge(leadLepton + subleadLepton + hadTau) == +/- 1 cut,
+      //     while all OS events pass this cut.
+      //     The combinatorial factor is taken into acount by assigning a weight of 0.5 to OS events.
+      if ( leptonChargeSelection == kOS ) evtWeight *= 0.5;
       cutFlowTable.update("lepton+tau charge", evtWeight);
       cutFlowHistManager->fillHistograms("lepton+tau charge", evtWeight);
     }
@@ -1599,13 +1604,10 @@ int main(int argc, char* argv[])
       for ( std::vector<MEMOutput_2lss_1tau>::const_iterator memOutput_2lss_1tau = memOutputs_2lss_1tau.begin();
 	    memOutput_2lss_1tau != memOutputs_2lss_1tau.end(); ++memOutput_2lss_1tau ) {
 	double selLepton_lead_dR = deltaR(selLepton_lead->eta(), selLepton_lead->phi(), memOutput_2lss_1tau->leadLepton_eta(), memOutput_2lss_1tau->leadLepton_phi());
-	//std::cout << "selLepton_lead_dR = " << selLepton_lead_dR << std::endl;
 	if ( selLepton_lead_dR > 1.e-2 ) continue;
 	double selLepton_sublead_dR = deltaR(selLepton_sublead->eta(), selLepton_sublead->phi(), memOutput_2lss_1tau->subleadLepton_eta(), memOutput_2lss_1tau->subleadLepton_phi());
-	//std::cout << "selLepton_sublead_dR = " << selLepton_sublead_dR << std::endl;
 	if ( selLepton_sublead_dR > 1.e-2 ) continue;
 	double selHadTau_dR = deltaR(selHadTau->eta(), selHadTau->phi(), memOutput_2lss_1tau->hadTau_eta(), memOutput_2lss_1tau->hadTau_phi());
-	//std::cout << "selHadTau_dR = " << selHadTau_dR << std::endl;
 	if ( selHadTau_dR > 1.e-2 ) continue;
 	memOutput_2lss_1tau_matched = &(*memOutput_2lss_1tau);
 	break;
@@ -1771,6 +1773,7 @@ int main(int argc, char* argv[])
   delete hadTauReader;
   delete jetReader;
   delete metReader;
+  delete memReader;
   delete genLeptonReader;
   delete genHadTauReader;
   delete genJetReader;

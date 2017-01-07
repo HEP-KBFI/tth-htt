@@ -20,7 +20,7 @@ class prodNtupleConfig:
     
     Args:
         outputDir: The root output dir -- all configuration, log and output files are stored in its subdirectories
-        executable_prodNtuple: Name of the executable that runs the Ntuple production; expected value is `prodNtuple_2lss_1tau`
+        executable_prodNtuple: Name of the executable that runs the Ntuple production
         debug: if True, checks each input root file (Ntuple) before creating the python configuration files
         running_method: either `sbatch` (uses SLURM) or `Makefile`
         num_parallel_jobs: number of jobs that can be run in parallel on local machine (does not limit number of Ntuple production jobs running in parallel on batch system)
@@ -57,7 +57,7 @@ class prodNtupleConfig:
         self.version       = version
         if self.rle_directory == 'default':
             self.rle_directory = os.path.join(
-                '/home', getpass.getuser(), 'ttHAnalysis', self.era, self.version, 'rles', '2lss_1tau'
+                '/home', getpass.getuser(), 'ttHAnalysis', self.era, self.version, 'rles', self.channel
             )
         elif self.rle_directory:
             if not os.path.isdir(self.rle_directory):

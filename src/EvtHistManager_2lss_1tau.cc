@@ -1,6 +1,6 @@
 #include "tthAnalysis/HiggsToTauTau/interface/EvtHistManager_2lss_1tau.h"
 
-#include "tthAnalysis/HiggsToTauTau/interface/histogramAuxFunctions.h"
+#include "tthAnalysis/HiggsToTauTau/interface/histogramAuxFunctions.h" // fillWithOverFlow, fillWithOverFlow2d, getLogWeight
 
 #include <TMath.h>
 
@@ -41,12 +41,6 @@ void EvtHistManager_2lss_1tau::bookHistograms(TFileDirectory& dir)
   histogram_mem_logRealTime_ = book1D(dir, "mem_logRealTime", "mem_logRealTime", 400, -20., +20.);
 
   histogram_EventCounter_ = book1D(dir, "EventCounter", "EventCounter", 1, -0.5, +0.5);
-}
-
-double getLogWeight(double weight)
-{
-  if ( weight > 0. ) return TMath::Log(weight);
-  else return -1.e+6;
 }
 
 void EvtHistManager_2lss_1tau::fillHistograms(int numElectrons, int numMuons, int numHadTaus, int numJets, int numBJets_loose, int numBJets_medium,

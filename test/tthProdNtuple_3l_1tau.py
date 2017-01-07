@@ -19,7 +19,7 @@ elif ERA == "2016":
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "2016Dec21"
+version = "2017Jan06"
 
 #--------------------------------------------------------------------------------   
 # CV: run Ntuple production jobs also for high statistics background samples
@@ -45,8 +45,12 @@ if __name__ == '__main__':
     era = ERA,
     debug = False,
     running_method = "sbatch",
+    rle_directory = 'default', # [*]
+    version = version,
     num_parallel_jobs = 4)
-
+  # [*] if rle_directory is set to 'default', then it looks files in /home/$USER/ttHAnalysis/era/version/rles/channel
+  #     set it to '', if no RLE selection is needed
+  
   ntupleProduction.create()
 
   run_ntupleProduction = query_yes_no("Start jobs ?")
