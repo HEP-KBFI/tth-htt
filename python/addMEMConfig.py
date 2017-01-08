@@ -374,16 +374,26 @@ class addMEMConfig:
         total_nof_integrations_avg = float(total_nof_integrations_sum) / total_nof_entires
         total_nof_int_per_job = float(total_nof_integrations_sum) / total_nof_jobs
         for k, v in statistics.iteritems():
+            if v['nof_entries'] == 0:
+                int_per_event = 0.
+                evt_pass = 0.
+            else:
+                int_per_event = float(v['nof_int']) / v['nof_entries']
+                evt_pass = (100 * float(v['nof_events_pass']) / v['nof_entries'])
+            if v['nof_events_pass'] == 0:
+                nof_int_pass = 0.
+            else:
+                nof_int_pass = float(v['nof_int_pass']) / v['nof_events_pass']
             print('%s%s: %d (%d entries; %d jobs; %.2f int/evt; %d (%.2f%%) evt pass; %.2f int/evt pass; %d evt 0int)' %
               (k,
                ' ' * (ws_len - len(k)),
                v['nof_int'],
                v['nof_entries'],
                v['nof_jobs'],
-               float(v['nof_int']) / v['nof_entries'],
+               int_per_event,
                v['nof_events_pass'],
-               (100 * float(v['nof_events_pass']) / v['nof_entries']),
-               float(v['nof_int_pass']) / v['nof_events_pass'],
+               evt_pass,
+               nof_int_pass,
                v['nof_zero'],
               )
             )
