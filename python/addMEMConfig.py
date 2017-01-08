@@ -183,7 +183,19 @@ class addMEMConfig:
                 ch.AddFile(fn)
 
             nof_entries = ch.GetEntries()
+
             memJobDict_common['nof_entries'] = nof_entries
+            if nof_entries == 0:
+                jobId += 1
+                memJobDict[jobId] = dict({
+                    'event_range': [0, 0],
+                    'nof_int': 0,
+                    'nof_int_pass': 0,
+                    'nof_events_pass': 0,
+                    'nof_zero': 0,
+                }, **memJobDict_common)
+                continue
+
             current_pos = 0
             evt_ranges = []
 
