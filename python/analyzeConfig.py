@@ -373,7 +373,7 @@ class analyzeConfig:
         lines_makefile.append("selEventTree_hadd: %s\n" % ' '.join(
             map(lambda x: x[0], self.rootOutputAux.values())))
         for rootOutput in self.rootOutputAux.values():
-            lines_makefile.append("%s: %s" % (rootOutput[0], rootOutput[2]))
+            lines_makefile.append("%s: %s" % (rootOutput[0], self.histogramFile_hadd_stage1))
             lines_makefile.append(
                 "\thadd -f %s $(shell for f in `ls %s`; do echo -ne $$f\" \"; done)\n" % (rootOutput[0], rootOutput[1]))
         lines_makefile.append("")
