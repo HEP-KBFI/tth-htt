@@ -197,8 +197,9 @@ class ClusterHistogramAggregator:
             output_histogram=output_histogram
         )
 
-        task_name = 'create_%s' % output_histogram.replace(
-            '/', '_').replace(' ', '_')
+        ##task_name = 'create_%s' % output_histogram.replace(
+        ##    '/', '_').replace(' ', '_')
+        task_name = 'create_%s' % output_histogram[output_histogram.rfind('/') + 1:]
 
         self.sbatch_manager.submit_job_version2(
             task_name=task_name,

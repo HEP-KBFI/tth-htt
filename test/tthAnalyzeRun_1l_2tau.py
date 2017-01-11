@@ -19,7 +19,7 @@ elif ERA == "2016":
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "2016Dec11"
+version = "2017Jan09"
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -29,7 +29,7 @@ if __name__ == '__main__':
 
   analysis = analyzeConfig_1l_2tau(
     outputDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", ERA, version),
-    executable_analyze = "analyze_1l_2tau", cfgFile_analyze_original = "analyze_1l_2tau_cfg.py",
+    executable_analyze = "analyze_1l_2tau", cfgFile_analyze = "analyze_1l_2tau_cfg.py",
     samples = samples,
     hadTau_selection = "dR03mvaTight",
     hadTau_charge_selections = [ "OS", "SS" ],
@@ -81,7 +81,7 @@ if __name__ == '__main__':
     era = ERA, use_lumi = True, lumi = LUMI,
     debug = False,
     running_method = "sbatch",
-    num_parallel_jobs = 4,
+    num_parallel_jobs = 8,
     executable_addBackgrounds = "addBackgrounds",
     executable_addBackgroundJetToTauFakes = "addBackgroundLeptonFakes", # CV: use common executable for estimating jet->lepton and jet->tau_h fake background
     histograms_to_fit = [ "EventCounter", "numJets", "mvaOutput_1l_2tau_ttbar_TMVA", "mvaOutput_1l_2tau_ttbar_sklearn", "mTauTauVis" ],

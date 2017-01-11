@@ -31,6 +31,8 @@ class EvtHistManager_3l_1tau
   const TH1* getHistogram_EventCounter() const { return histogram_EventCounter_; }
 
  private:
+  int era_;
+
   TH1* histogram_numElectrons_;
   TH1* histogram_numMuons_;
   TH1* histogram_numHadTaus_;

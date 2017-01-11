@@ -1,12 +1,20 @@
 #include "tthAnalysis/HiggsToTauTau/interface/EvtHistManager_2lss_1tau.h"
 
 #include "tthAnalysis/HiggsToTauTau/interface/histogramAuxFunctions.h" // fillWithOverFlow, fillWithOverFlow2d, getLogWeight
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2015, kEra_2016
 
 #include <TMath.h>
 
 EvtHistManager_2lss_1tau::EvtHistManager_2lss_1tau(const edm::ParameterSet& cfg)
   : HistManagerBase(cfg)
-{}
+{
+  std::string era_string = cfg.getParameter<std::string>("era");
+  era_ = -1;
+  if      ( era_string == "2015" ) era_ = kEra_2015;
+  else if ( era_string == "2016" ) era_ = kEra_2016;
+  else throw cms::Exception("EvtHistManager_2lss_1tau") 
+    << "Invalid Configuration parameter 'era' = " << era_string << " !!\n";
+}
 
 void EvtHistManager_2lss_1tau::bookHistograms(TFileDirectory& dir)
 {
@@ -22,12 +30,14 @@ void EvtHistManager_2lss_1tau::bookHistograms(TFileDirectory& dir)
 
   histogram_mvaOutput_2lss_ttV_ = book1D(dir, "mvaOutput_2lss_ttV", "mvaOutput_2lss_ttV", 40, -1., +1.);
   histogram_mvaOutput_2lss_ttbar_ = book1D(dir, "mvaOutput_2lss_ttbar", "mvaOutput_2lss_ttbar", 40, -1., +1.);
-  histogram_mvaDiscr_2lss_ = book1D(dir, "mvaDiscr_2lss", "mvaDiscr_2lss", 6, 0.5, 6.5);
+  if      ( era_ == kEra_2015 ) histogram_mvaDiscr_2lss_ = book1D(dir, "mvaDiscr_2lss", "mvaDiscr_2lss", 6, 0.5, 6.5);
+  else if ( era_ == kEra_2016 ) histogram_mvaDiscr_2lss_ = book1D(dir, "mvaDiscr_2lss", "mvaDiscr_2lss", 7, 0.5, 7.5);
+  else assert(0);
 
   histogram_mvaOutput_2lss_1tau_ttbar_TMVA_ = book1D(dir, "mvaOutput_2lss_1tau_ttbar_TMVA", "mvaOutput_2lss_1tau_ttbar_TMVA", 20, -1., +1.);
   histogram_mvaOutput_2lss_1tau_ttbar_sklearn_ = book1D(dir, "mvaOutput_2lss_1tau_ttbar_sklearn", "mvaOutput_2lss_1tau_ttbar_sklearn", 20, -1., +1.);
 
-  histogram_mTauTauVis_ = book1D(dir, "mTauTauVis", "mTauTauVis", 40, 0., 200.);
+  histogram_mTauTauVis_ = book1D(dir, "mTauTauVis", "mTauTauVis", 20, 0., 200.);
 
   histogram_memOutput_isValid_ = book1D(dir, "memOutput_isValid", "memOutput_isValid", 3, -1.5, +1.5);
   histogram_memOutput_errorFlag_ = book1D(dir, "memOutput_errorFlag", "memOutput_errorFlag", 2, -0.5, +1.5);

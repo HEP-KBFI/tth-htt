@@ -48,5 +48,6 @@ class HistManagerBase
 };
 
 edm::ParameterSet makeHistManager_cfg(const std::string& process, const std::string& category, const std::string& central_or_shift, int idx = -1);
+edm::ParameterSet makeHistManager_cfg(const std::string& process, const std::string& category, const std::string& era, const std::string& central_or_shift, int idx = -1);
 
 #endif // tthAnalysis_HiggsToTauTau_HistManagerBase_h
