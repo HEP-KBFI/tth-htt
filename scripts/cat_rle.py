@@ -49,10 +49,15 @@ if __name__ == '__main__':
 
   rle_pattern = re.compile('\d+:\d+:\d+')
 
+  valid_analysis_types = {
+    '2lss_1tau' : [ 'Fakeable_wFakeRateWeights_SS', 'Tight_OS', 'Tight_SS', ],
+    '3l_1tau'   : [ 'Fakeable_wFakeRateWeights_OS', 'Tight_OS', ],
+  }
+
   rles = {}
   logging.debug("Sweeping over the directories ...")
   for analysis_type in os.listdir(analysis_path):
-    if analysis_type not in [ 'Fakeable_wFakeRateWeights_SS', 'Tight_OS', 'Tight_SS' ]:
+    if analysis_type not in valid_analysis_types[args.channel]:
       logging.debug("Skipping subdirectory '{analysis_type}'".format(analysis_type = analysis_type))
       continue
 
