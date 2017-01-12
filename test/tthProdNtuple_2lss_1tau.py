@@ -41,6 +41,7 @@ if __name__ == '__main__':
   ntupleProduction = prodNtupleConfig_2lss_1tau(
     outputDir = os.path.join("/home", getpass.getuser(), "ttHNtupleProduction", ERA, version),
     executable_prodNtuple = "produceNtuple_2lss_1tau",
+    cfgFile_prodNtuple = "produceNtuple_2lss_1tau_cfg.py",
     samples = samples,
     era = ERA,
     debug = False,

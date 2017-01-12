@@ -112,11 +112,16 @@ int main(int argc, char* argv[])
   int minNumLeptons = cfg_produceNtuple.getParameter<int>("minNumLeptons");
 
   TString hadTauSelection_string = cfg_produceNtuple.getParameter<std::string>("hadTauSelection").data();
+  TObjArray* hadTauSelection_parts = hadTauSelection_string.Tokenize("|");
+  assert(hadTauSelection_parts->GetEntries() >= 1);
+  std::string hadTauSelection_part1 = (dynamic_cast<TObjString*>(hadTauSelection_parts->At(0)))->GetString().Data();
   int hadTauSelection = -1;
-  if      ( hadTauSelection_string == "Loose"    ) hadTauSelection = kLoose;
-  else if ( hadTauSelection_string == "Fakeable" ) hadTauSelection = kFakeable;
+  if      ( hadTauSelection_part1 == "Loose"    ) hadTauSelection = kLoose;
+  else if ( hadTauSelection_part1 == "Fakeable" ) hadTauSelection = kFakeable;
   else throw cms::Exception("produceNtuple_2lss_1tau") 
     << "Invalid Configuration parameter 'hadTauSelection' = " << hadTauSelection_string << " !!\n";
+  std::string hadTauSelection_part2 = ( hadTauSelection_parts->GetEntries() == 2 ) ? (dynamic_cast<TObjString*>(hadTauSelection_parts->At(1)))->GetString().Data() : "";
+  delete hadTauSelection_parts;
   int minNumHadTaus = cfg_produceNtuple.getParameter<int>("minNumHadTaus");
 
   int minNumJets = cfg_produceNtuple.getParameter<int>("minNumJets");
@@ -196,7 +201,9 @@ int main(int argc, char* argv[])
   hadTauReader->setBranchAddresses(inputTree);
   RecoHadTauCollectionCleaner hadTauCleaner(0.3);
   RecoHadTauCollectionSelectorLoose preselHadTauSelector(era);
+if ( hadTauSelection_part2 == "dR03mvaVLoose" || hadTauSelection_part2 == "dR03mvaVVLoose" ) preselHadTauSelector.set(hadTauSelection_part2);
   RecoHadTauCollectionSelectorFakeable fakeableHadTauSelector(era);
+  if ( hadTauSelection_part2 == "dR03mvaVLoose" || hadTauSelection_part2 == "dR03mvaVVLoose" ) fakeableHadTauSelector.set(hadTauSelection_part2);
   // CV: lower thresholds on hadronic taus by 2 GeV 
   //     with respect to thresholds applied on analysis level (in analyze_2lss_1tau.cc)
   preselHadTauSelector.set_min_pt(18.); 

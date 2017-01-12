@@ -106,4 +106,31 @@ void set_selection_flags(std::vector<const T*>& leptons, int selection)
  */
 std::vector<const RecoLepton*> mergeLeptonCollections(const std::vector<const RecoElectron*>& electrons, const std::vector<const RecoMuon*>& muons);
 
+/**
+ * @brief Print values of pT, eta, phi as well as ID and isolation variables for electrons and muons (for debugging purposes)
+ */
+void printLeptonCollection(const std::string& collection_name, const std::vector<const RecoLepton*>& leptons);
+
+/**
+ * @brief Print values of pT, eta, phi as well as of tau ID/isolation variables for hadronic taus (for debugging purposes)
+ */
+void printHadTauCollection(const std::string& collection_name, const std::vector<const RecoHadTau*>& hadTaus);
+
+/**
+ * @brief Print values of pT, eta, phi as well as the b-tagging discriminator values for jets (for debugging purposes)
+ */
+void printJetCollection(const std::string& collection_name, const std::vector<const RecoJet*>& jets);
+
+/**
+ * @brief Compute sign of value given as function parameter
+ * @return +1 if val > 0, 0 if val = 0, -1 of val < 0
+ */
+template <typename T> 
+int sgn(T val) 
+{
+  if      ( val > 0 ) return +1;
+  else if ( val < 0 ) return -1;
+  else                return  0;
+}
+
 #endif

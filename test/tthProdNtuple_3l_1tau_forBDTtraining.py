@@ -19,7 +19,7 @@ elif ERA == "2016":
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "2017Jan06"
+version = "2017Jan12_forBDTtraining" # must be the same version as in test/tthAnalyzeRun_3l_1tau.py !
 
 #--------------------------------------------------------------------------------   
 # CV: run Ntuple production jobs also for high statistics background samples
@@ -28,8 +28,13 @@ for sample_name, sample_info in samples_2016.items():
   if sample_name in [
       "/TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16MiniAODv1-PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext3-v1/MINIAODSIM",
       "/TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16MiniAODv1-PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext4-v1/MINIAODSIM",
-      "/TTW/spring16DR80v6aMiniAODv1/FASTSIM" ]:
+      "/TTW/spring16DR80v6aMiniAODv1/FASTSIM",
+      "/TTZToLLNuNu_M-10_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISpring16MiniAODv2-premix_withHLT_80X_mcRun2_asymptotic_v14_ext1-v1/MINIAODSIM",
+      "/WZTo3LNu_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM",
+      "/ttHToNonbb_M125_13TeV_powheg_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM" ]:
     sample_info["use_it"] = True
+  else:
+    sample_info["use_it"] = False
 #--------------------------------------------------------------------------------    
 
 if __name__ == '__main__':
@@ -41,7 +46,7 @@ if __name__ == '__main__':
   ntupleProduction = prodNtupleConfig_3l_1tau(
     outputDir = os.path.join("/home", getpass.getuser(), "ttHNtupleProduction", ERA, version),
     executable_prodNtuple = "produceNtuple_3l_1tau",
-    cfgFile_prodNtuple = "produceNtuple_3l_1tau_cfg.py",
+    cfgFile_prodNtuple = "produceNtuple_3l_1tau_forBDTtraining_cfg.py",
     samples = samples,
     era = ERA,
     debug = False,

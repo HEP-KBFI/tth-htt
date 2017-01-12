@@ -64,9 +64,9 @@ class RecoElectronSelectorFakeable
 class RecoElectronCollectionSelectorFakeable
 {
  public:
-  RecoElectronCollectionSelectorFakeable(int era, int index = -1, bool debug = false)
+  RecoElectronCollectionSelectorFakeable(int era, bool set_selection_flags = true, int index = -1, bool debug = false)
     : selIndex_(index)
-    , selector_(era, index, debug)
+    , selector_(era, set_selection_flags, index, debug)
   {}
   ~RecoElectronCollectionSelectorFakeable() {}
 

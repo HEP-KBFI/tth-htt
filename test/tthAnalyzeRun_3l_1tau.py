@@ -19,7 +19,7 @@ elif ERA == "2016":
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "2017Jan09"
+version = "2017Jan11"
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -31,9 +31,7 @@ if __name__ == '__main__':
     outputDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", ERA, version),
     executable_analyze = "analyze_3l_1tau", cfgFile_analyze = "analyze_3l_1tau_cfg.py",
     samples = samples,
-    # CV: use 'dR03mvaMedium' for regular analysis, 'dR03mvaVVLoose' for producing rle files for Ntuple production
     hadTau_selection = "dR03mvaMedium",
-    ##hadTau_selection = "dR03mvaVVLoose",
     # CV: apply "fake" background estimation to leptons only and not to hadronic taus, as discussed on slide 10 of
     #     https://indico.cern.ch/event/597028/contributions/2413742/attachments/1391684/2120220/16.12.22_ttH_Htautau_-_Review_of_systematics.pdf
     #applyFakeRateWeights = "4L",

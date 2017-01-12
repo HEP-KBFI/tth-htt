@@ -46,7 +46,35 @@ class RecoMuonSelectorFakeable
   bool apply_mediumIdPOG_;  ///< apply (True) or do not apply (False) medium PFMuon id selection
 };
 
-typedef ParticleCollectionSelector<RecoMuon, RecoMuonSelectorFakeable> RecoMuonCollectionSelectorFakeable;
+class RecoMuonCollectionSelectorFakeable
+{
+ public:
+  RecoMuonCollectionSelectorFakeable(int era, bool set_selection_flags = true, int index = -1, bool debug = false)
+    : selIndex_(index)
+    , selector_(era, set_selection_flags, index, debug)
+  {}
+  ~RecoMuonCollectionSelectorFakeable() {}
+
+  std::vector<const RecoMuon*> operator()(const std::vector<const RecoMuon*>& muons) const
+  {
+    std::vector<const RecoMuon*> selMuons;
+    int idx = 0;
+    for ( typename std::vector<const RecoMuon*>::const_iterator muon = muons.begin();
+	  muon != muons.end(); ++muon ) {
+      if ( selector_(**muon) ) {
+	if ( idx == selIndex_ || selIndex_ == -1 ) {
+	  selMuons.push_back(*muon);
+	}
+	++idx;
+      }
+    }
+    return selMuons;
+  }
+  
+ protected: 
+  int selIndex_;
+  RecoMuonSelectorFakeable selector_;
+};
 
 #endif // tthAnalysis_HiggsToTauTau_RecoMuonCollectionSelectorFakeable_h
 
