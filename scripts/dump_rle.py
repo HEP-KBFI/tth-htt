@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import logging, argparse, os, sys, re, ROOT, array
+import logging, argparse, os, sys, ROOT, array
 from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016 import samples_2016 as samples
 
 if __name__ == '__main__':
