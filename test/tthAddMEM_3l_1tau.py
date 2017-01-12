@@ -15,8 +15,8 @@ for sample_name, sample_info in samples.items():
     sample_info["use_it"] = True
 #--------------------------------------------------------------------------------
 
-version = "2017Jan05_dR03mvaVVLoose"
-ERA     = "2017"
+version = "2017Jan07_dR03mvaVVLoose"
+ERA     = "2016"
 
 if __name__ == '__main__':
   logging.basicConfig(

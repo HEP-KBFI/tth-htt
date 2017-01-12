@@ -23,8 +23,8 @@ class MEMOutputReader_2lss_1tau
   void setBranchAddresses(TTree* tree);
 
   /**
-   * @brief Read branches from tree and use information to fill collection of GenParticle objects
-   * @return Collection of GenLepton objects (GenParticles with additional data-members for charge and pdgId)
+   * @brief Read branches from tree and use information to fill collection of MEMOutput_2lss_1tau objects
+   * @return Collection of MEMOutput_2lss_1tau objects
    */
   std::vector<MEMOutput_2lss_1tau> read() const;
   
@@ -79,7 +79,7 @@ class MEMOutputReader_2lss_1tau
   Int_t* isValid_;
   Int_t* errorFlag_;
 
-  // CV: make sure that only one GenParticleReader instance exists for a given branchName,
+  // CV: make sure that only one MEMOutputReader_2lss_1tau instance exists for a given branchName,
   //     as ROOT cannot handle multiple TTree::SetBranchAddress calls for the same branch.
   static std::map<std::string, int> numInstances_;
   static std::map<std::string, MEMOutputReader_2lss_1tau*> instances_;

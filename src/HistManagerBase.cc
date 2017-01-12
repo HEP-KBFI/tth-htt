@@ -94,3 +94,18 @@ edm::ParameterSet makeHistManager_cfg(const std::string& process, const std::str
   cfg.addParameter<int>("idx", idx);
   return cfg;
 }
+
+edm::ParameterSet makeHistManager_cfg(const std::string& process, const std::string& category, const std::string& era, const std::string& central_or_shift, int idx)
+{
+  //std::cout << "<makeHistManager_cfg>:" << std::endl;
+  //std::cout << " process = " << process << std::endl;
+  //std::cout << " category = " << category << std::endl;
+  //std::cout << " era = " << era << std::endl;
+  //std::cout << " central_or_shift = " << central_or_shift << std::endl;
+  //std::cout << " idx = " << idx << std::endl;
+  edm::ParameterSet cfg = makeHistManager_cfg(process, category, central_or_shift, idx);
+  cfg.addParameter<std::string>("era", era);
+  return cfg;
+}
+
+

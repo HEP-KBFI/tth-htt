@@ -8,7 +8,7 @@ process.fwliteInput = cms.PSet(
     fileNames = cms.vstring(),
 )
 
-process.makePlots = cms.PSet(
+process.makePlots_mcClosure = cms.PSet(
 
     process_signal = cms.string("fakes_mc"),
     process_sideband = cms.string("fakes_mc"),

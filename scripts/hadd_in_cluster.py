@@ -26,8 +26,8 @@ def main():
     m.setWorkingDir('/tmp/') # Why SBatch manager even needs to know this?
 
     m.hadd_in_cluster(
-        input_histograms=input_histograms,
-        final_output_histogram=output_histogram
+        inputFiles=input_histograms,
+        outputFile=output_histogram
     )
 
     m.waitForJobs()

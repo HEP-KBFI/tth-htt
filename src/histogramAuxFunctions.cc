@@ -72,6 +72,16 @@ void fillWithOverFlow2d(TH2* histogram, double x, double y, double evtWeight, do
 //-------------------------------------------------------------------------------
 //
 
+double getLogWeight(double weight)
+{
+  if ( weight > 0. ) return TMath::Log(weight);
+  else return -1.e+6;
+}
+
+//
+//-------------------------------------------------------------------------------
+//
+
 void checkCompatibleBinning(const TH1* histogram1, const TH1* histogram2)
 {
   if ( histogram1 && histogram2 ) {

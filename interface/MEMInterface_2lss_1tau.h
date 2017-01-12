@@ -9,7 +9,6 @@
 
 #include "ttH_Htautau_MEM_Analysis/MEMAlgo/interface/RunConfig.h" // RunConfig
 
-#include <TMatrixD.h> // TMatrixD
 #include <TBenchmark.h> // TBenchmark
 
 #include <vector>

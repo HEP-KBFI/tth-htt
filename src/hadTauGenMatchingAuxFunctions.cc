@@ -148,3 +148,18 @@ const hadTauGenMatchEntry& getHadTauGenMatch(const std::vector<hadTauGenMatchEnt
   if ( hadTau_third   ) countHadTauGenMatches(hadTau_sublead, numGenMatchedHadTaus, numGenMatchedElectrons, numGenMatchedMuons, numGenMatchedJets);
   return getHadTauGenMatch(hadTauGenMatch_definitions, numGenMatchedHadTaus, numGenMatchedElectrons, numGenMatchedMuons, numGenMatchedJets);
 }
+
+std::ostream& operator<<(std::ostream& stream, const hadTauGenMatchEntry& hadTauGenMatch_definition)\
+{
+  stream << " hadTauGenMatch #" << hadTauGenMatch_definition.idx_ << ": " << hadTauGenMatch_definition.name_ << std::endl;
+  return stream;
+}
+
+std::ostream& operator<<(std::ostream& stream, const std::vector<hadTauGenMatchEntry>& hadTauGenMatch_definitions)
+{
+  for ( std::vector<hadTauGenMatchEntry>::const_iterator hadTauGenMatch_definition = hadTauGenMatch_definitions.begin();
+	hadTauGenMatch_definition != hadTauGenMatch_definitions.end(); ++hadTauGenMatch_definition ) {
+    stream << (*hadTauGenMatch_definition);
+  }
+  return stream;
+}

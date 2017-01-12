@@ -45,12 +45,11 @@ if __name__ == '__main__':
     era = ERA,
     debug = False,
     running_method = "sbatch",
-    rle_directory = 'default', # *
+    rle_directory = 'default', # [*]
     version = version,
     num_parallel_jobs = 4)
-
-  # * if rle_directory is set to 'default', then it looks files in /home/$USER/ttHAnalysis/era/version/rles/channel
-  #   set it to '', if no RLE selection is needed
+  # [*] if rle_directory is set to 'default', then it looks files in /home/$USER/ttHAnalysis/era/version/rles/channel
+  #     set it to '', if no RLE selection is needed
 
   ntupleProduction.create()
 

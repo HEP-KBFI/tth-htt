@@ -12,6 +12,8 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/HistManagerBase.h" // HistManagerBase
 
+#include "tthAnalysis/HiggsToTauTau/interface/MEMInterface_3l_1tau.h" // MEMOutput_3l_1tau
+
 class EvtHistManager_3l_1tau
   : public HistManagerBase
 {
@@ -23,11 +25,14 @@ class EvtHistManager_3l_1tau
   void bookHistograms(TFileDirectory& dir);
   void fillHistograms(int numElectrons, int numMuons, int numHadTaus, int numJets, int numBJets_loose, int numBJets_medium, 
 		      double mvaOutput_3l_ttV, double mvaOutput_3l_ttbar, double mvaDiscr_3l, 
-		      double mTauTauVis1, double mTauTauVis2, double evtWeight);
+		      double mTauTauVis1, double mTauTauVis2, 
+		      const MEMOutput_3l_1tau* memOutput_3l_1tau, double evtWeight);
 
   const TH1* getHistogram_EventCounter() const { return histogram_EventCounter_; }
 
  private:
+  int era_;
+
   TH1* histogram_numElectrons_;
   TH1* histogram_numMuons_;
   TH1* histogram_numHadTaus_;
@@ -43,6 +48,16 @@ class EvtHistManager_3l_1tau
   TH1* histogram_mvaDiscr_3l_;
 
   TH1* histogram_mTauTauVis_;
+
+  TH1* histogram_memOutput_isValid_;
+  TH1* histogram_memOutput_errorFlag_;
+  TH1* histogram_memOutput_type_;
+  TH1* histogram_memOutput_logWeight_ttH_;
+  TH1* histogram_memOutput_logWeight_ttZ_;
+  TH1* histogram_memOutput_logWeight_ttH_hww_;
+  TH1* histogram_memOutput_LR_;
+  TH1* histogram_mem_logCPUTime_;
+  TH1* histogram_mem_logRealTime_;
 
   TH1* histogram_EventCounter_;
 
