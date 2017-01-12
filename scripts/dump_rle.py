@@ -51,7 +51,8 @@ if __name__ == '__main__':
     ))
 
     output_dir_parent = os.path.join(output_dir, sample_name)
-    os.makedirs(output_dir_parent)
+    if not os.path.isdir(output_dir_parent):
+      os.makedirs(output_dir_parent)
 
     for sample_subdir_basename in os.listdir(sample_path):
       sample_subdir = os.path.join(sample_path, sample_subdir_basename)
@@ -64,6 +65,10 @@ if __name__ == '__main__':
 
         rootfile_idx = idx(rootfile_basename)
         outfile_idx = os.path.join(output_dir_parent, "{i}.txt".format(i = rootfile_idx))
+        if os.path.isfile(outfile_idx):
+          logging.warning("Whoops, file already exists; skipping that")
+          continue
+
         with open(outfile_idx, 'w') as f:
 
           ch_root = ROOT.TChain("tree")
@@ -78,10 +83,12 @@ if __name__ == '__main__':
           ch_root.SetBranchAddress("evt",  evt_a)
 
           nof_entries = ch_root.GetEntries()
+          rle_i_arr = []
           for i in range(nof_entries):
             ch_root.GetEntry(i)
-            rle_i = ':'.join(map(str, [run_a[0], lumi_a[0], evt_a[0]]))
-            f.write("{rle_line}\n".format(rle_line = rle_i))
+            rle_i_arr.append(':'.join(map(str, [run_a[0], lumi_a[0], evt_a[0]])))
+
+          f.write("{rle_lines}\n".format(rle_lines = '\n'.join(rle_i_arr)))
 
         logging.debug("Wrote {nof_bytes} kB to {filename}".format(
           nof_bytes = os.path.getsize(outfile_idx) / 1000,
