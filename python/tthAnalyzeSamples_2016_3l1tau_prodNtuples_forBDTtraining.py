@@ -26,14 +26,14 @@ samples_2016["/TTW/spring16DR80v6aMiniAODv1/FASTSIM"] = OD([
     ]
   ),
 ])
-samples_2016[""] = OD([
+samples_2016["/TTZToLLNuNu_M-10_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISpring16MiniAODv2-premix_withHLT_80X_mcRun2_asymptotic_v14_ext1-v1/MINIAODSIM"] = OD([
   ("type",                  "mc"),
-  ("sample_category",       ""),
-  ("process_name_specific", ""),
+  ("sample_category",       "TTZ"),
+  ("process_name_specific", "TTZToLLNuNu_M-10_ext1"),
   ("nof_files",             24),
   ("nof_events",            832218),
   ("use_it",                True),
-  ("xsection",              0.000000),
+  ("xsection",              0.252900),
   ("genWeight",             False),
   ("triggers",              [ "1e", "2e", "1mu", "2mu", "1e1mu" ]),
   ("reHLT",                 False),
