@@ -29,6 +29,9 @@ process.analyze_1l_2tau = cms.PSet(
     triggers_1mu = cms.vstring("HLT_BIT_HLT_IsoMu20_v", "HLT_BIT_HLT_IsoTkMu20_v"),
     use_triggers_1mu = cms.bool(True),
 
+    apply_offline_e_trigger_cuts_1e = cms.bool(True),
+    apply_offline_e_trigger_cuts_1mu = cms.bool(True),
+
     leptonSelection = cms.string('Tight'),
     apply_leptonGenMatching = cms.bool(False),
         
@@ -38,12 +41,12 @@ process.analyze_1l_2tau = cms.PSet(
 
     applyFakeRateWeights = cms.string("disabled"), # either "disabled", "3L" or "2tau"
     leptonFakeRateWeight = cms.PSet(
-        inputFileName = cms.string("tthAnalysis/HiggsToTauTau/data/FR_lep_ttH_mva_2015_data.root"),
+        inputFileName = cms.string("tthAnalysis/HiggsToTauTau/data/FR_lep_ttH_mva_2016_data.root"),
         histogramName_e = cms.string("FR_mva075_el_data_comb"),
         histogramName_mu = cms.string("FR_mva075_mu_data_comb")
     ),
     hadTauFakeRateWeight = cms.PSet(
-        inputFileName = cms.string("tthAnalysis/HiggsToTauTau/data/FR_tau_2015.root"),
+        inputFileName = cms.string("tthAnalysis/HiggsToTauTau/data/FR_tau_2016.root"),
         lead = cms.PSet(
             absEtaBins = cms.vdouble(-1., 1.479, 9.9),
             graphName = cms.string("jetToTauFakeRate/$hadTauSelection/$etaBin/jetToTauFakeRate_mc_hadTaus_pt"),

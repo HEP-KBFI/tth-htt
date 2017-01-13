@@ -58,6 +58,7 @@ std::ostream& operator<<(std::ostream& stream, const RecoLepton& lepton)
   stream << " relIso = " << lepton.relIso() << std::endl;
   stream << " chargedHadRelIso03 = " << lepton.chargedHadRelIso03() << std::endl;
   stream << " tightCharge = " << lepton.tightCharge() << std::endl;
+  stream << " jetBtagCSV = " << lepton.jetBtagCSV() << std::endl;
   stream << " mvaRawTTH = " << lepton.mvaRawTTH() << std::endl;
   return stream;
 }

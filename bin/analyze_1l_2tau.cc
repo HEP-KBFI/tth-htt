@@ -159,6 +159,9 @@ int main(int argc, char* argv[])
   std::vector<hltPath*> triggers_1mu = create_hltPaths(triggerNames_1mu);
   bool use_triggers_1mu = cfg_analyze.getParameter<bool>("use_triggers_1mu");
 
+  bool apply_offline_e_trigger_cuts_1e = cfg_analyze.getParameter<bool>("apply_offline_e_trigger_cuts_1e");
+  bool apply_offline_e_trigger_cuts_1mu = cfg_analyze.getParameter<bool>("apply_offline_e_trigger_cuts_1mu");
+
   std::string leptonSelection_string = cfg_analyze.getParameter<std::string>("leptonSelection").data();
   int leptonSelection = -1;
   if      ( leptonSelection_string == "Loose"                                                      ) leptonSelection = kLoose;
@@ -206,6 +209,9 @@ int main(int argc, char* argv[])
   double lumiScale = ( process_string != "data_obs" ) ? cfg_analyze.getParameter<double>("lumiScale") : 1.;
   bool apply_genWeight = cfg_analyze.getParameter<bool>("apply_genWeight"); 
   bool apply_trigger_bits = cfg_analyze.getParameter<bool>("apply_trigger_bits"); 
+
+  bool isDEBUG = ( cfg_analyze.exists("isDEBUG") ) ? cfg_analyze.getParameter<bool>("isDEBUG") : false; 
+  if ( isDEBUG ) std::cout << "Warning: DEBUG mode enabled -> trigger selection will not be applied for data !!" << std::endl;
 
   std::string jet_btagWeight_branch;
   if ( isMC ) {
@@ -748,11 +754,44 @@ int main(int argc, char* argv[])
       genEvtHistManager_beforeCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genJets);
     }
     
-    bool isTriggered_1e = use_triggers_1e && (hltPaths_isTriggered(triggers_1e) || (isMC && !apply_trigger_bits));
-    bool isTriggered_1mu = use_triggers_1mu && (hltPaths_isTriggered(triggers_1mu) || (isMC && !apply_trigger_bits));
-    if ( !(isTriggered_1e || isTriggered_1mu) ) continue;
+    bool isTriggered_1e = hltPaths_isTriggered(triggers_1e) || (isMC && !apply_trigger_bits);
+    bool isTriggered_1mu = hltPaths_isTriggered(triggers_1mu) || (isMC && !apply_trigger_bits);
+
+    bool selTrigger_1e = use_triggers_1e && isTriggered_1e;
+    bool selTrigger_1mu = use_triggers_1mu && isTriggered_1mu;
+    if ( !(selTrigger_1e || selTrigger_1mu) ) {
+      if ( run_lumi_eventSelector ) {
+	std::cout << "event FAILS trigger selection." << std::endl; 
+	std::cout << " (selTrigger_1e = " << selTrigger_1e 
+		  << ", selTrigger_1mu = " << selTrigger_1mu << ")" << std::endl;
+      }
+      continue;
+    }
+    
+//--- rank triggers by priority and ignore triggers of lower priority if a trigger of higher priority has fired for given event;
+//    the ranking of the triggers is as follows: 1mu, 1e
+// CV: this logic is necessary to avoid that the same event is selected multiple times when processing different primary datasets
+    if ( !isMC && !isDEBUG ) {
+      if ( selTrigger_1e && isTriggered_1mu ) {
+	if ( run_lumi_eventSelector ) {
+	  std::cout << "event FAILS trigger selection." << std::endl; 
+	  std::cout << " (selTrigger_1e = " << selTrigger_1e 
+		    << ", isTriggered_1mu = " << isTriggered_1mu << ")" << std::endl;
+	}
+	continue; 
+      }
+    }
     cutFlowTable.update("trigger");
     cutFlowHistManager->fillHistograms("trigger", lumiScale);
+
+    if ( (selTrigger_1mu && !apply_offline_e_trigger_cuts_1mu) ||
+	 (selTrigger_1e  && !apply_offline_e_trigger_cuts_1e)  ) {
+      fakeableElectronSelector.disable_offline_e_trigger_cuts();
+      tightElectronSelector.disable_offline_e_trigger_cuts();
+    } else {
+      fakeableElectronSelector.enable_offline_e_trigger_cuts();
+      tightElectronSelector.enable_offline_e_trigger_cuts();
+    }
 
 //--- build collections of electrons, muons and hadronic taus;
 //    resolve overlaps in order of priority: muon, electron,
@@ -859,8 +898,17 @@ int main(int argc, char* argv[])
     assert(idxPreselLepton_genMatch != kGen_LeptonUndefined1);
 
     // require that trigger paths match event category (with event category based on preselLeptons)
-    if ( preselElectrons.size() == 1 && !isTriggered_1e  ) continue;
-    if ( preselMuons.size()     == 1 && !isTriggered_1mu ) continue;
+    if ( preselMuons.size() >= 1 && !isTriggered_1mu ) {
+      std::cout << "event FAILS trigger selection for given preselLepton multiplicity." << std::endl; 
+      std::cout << " (#preselMuons = " << preselMuons.size() 
+		<< ", selTrigger_1mu = " << selTrigger_1mu << ")" << std::endl;
+      continue;
+    } else if ( preselElectrons.size() >= 1 && !isTriggered_1e ) {
+      std::cout << "event FAILS trigger selection for given preselLepton multiplicity." << std::endl; 
+      std::cout << " (#preselElectrons = " << preselElectrons.size() 
+		<< ", selTrigger_1e = " << selTrigger_1e << ")" << std::endl;
+      continue;
+    }
     cutFlowTable.update("presel lepton trigger match");
     cutFlowHistManager->fillHistograms("presel lepton trigger match", lumiScale);
 
@@ -936,7 +984,7 @@ int main(int argc, char* argv[])
     double evtWeight = 1.;
     if ( isMC ) {
       evtWeight *= lumiScale;
-      if ( apply_genWeight ) evtWeight *= genWeight;
+      if ( apply_genWeight ) evtWeight *= sgn(genWeight);
       evtWeight *= pileupWeight;
       if ( lheScale_option != kLHE_scale_central ) {	
 	if      ( lheScale_option == kLHE_scale_xDown ) evtWeight *= lheInfoReader->getWeight_scale_xDown();
@@ -968,8 +1016,17 @@ int main(int argc, char* argv[])
     }    
 
     // require that trigger paths match event category (with event category based on selLeptons)
-    if ( selElectrons.size() == 1 && !isTriggered_1e  ) continue;
-    if ( selMuons.size()     == 1 && !isTriggered_1mu ) continue;
+    if ( selMuons.size() >= 1 && !isTriggered_1mu ) {
+      std::cout << "event FAILS trigger selection for given selLepton multiplicity." << std::endl; 
+      std::cout << " (#selMuons = " << selMuons.size() 
+		<< ", selTrigger_1mu = " << selTrigger_1mu << ")" << std::endl;
+      continue;
+    } else if ( selElectrons.size() >= 1 && !isTriggered_1e ) {
+      std::cout << "event FAILS trigger selection for given selLepton multiplicity." << std::endl; 
+      std::cout << " (#selElectrons = " << selElectrons.size() 
+		<< ", selTrigger_1e = " << selTrigger_1e << ")" << std::endl;
+      continue;
+    }
     cutFlowTable.update("sel lepton trigger match", evtWeight);
     cutFlowHistManager->fillHistograms("sel lepton trigger match", evtWeight);
 
@@ -1006,8 +1063,8 @@ int main(int argc, char* argv[])
     double weight_fakeRate = 1.;
     if ( applyFakeRateWeights == kFR_3L ) {
       double prob_fake_lepton = 1.;
-      if      ( std::abs(selLepton->pdgId()) == 11 ) prob_fake_lepton = leptonFakeRateInterface->getWeight_e(selLepton->pt(), selLepton->absEta());
-      else if ( std::abs(selLepton->pdgId()) == 13 ) prob_fake_lepton = leptonFakeRateInterface->getWeight_mu(selLepton->pt(), selLepton->absEta());
+      if      ( std::abs(selLepton->pdgId()) == 11 ) prob_fake_lepton = leptonFakeRateInterface->getWeight_e(selLepton->cone_pt(), selLepton->absEta());
+      else if ( std::abs(selLepton->pdgId()) == 13 ) prob_fake_lepton = leptonFakeRateInterface->getWeight_mu(selLepton->cone_pt(), selLepton->absEta());
       else assert(0);
       bool passesTight_lepton = isMatched(*selLepton, tightElectrons) || isMatched(*selLepton, tightMuons);
       double prob_fake_hadTau_lead = jetToTauFakeRateInterface->getWeight_lead(selHadTau_lead->pt(), selHadTau_lead->absEta());

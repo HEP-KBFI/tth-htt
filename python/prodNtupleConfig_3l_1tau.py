@@ -14,12 +14,12 @@ class prodNtupleConfig_3l_1tau(prodNtupleConfig):
         num_parallel_jobs: number of jobs that can be run in parallel on local machine (does not limit number of Ntuple production jobs running in parallel on batch system)
   
     """
-    def __init__(self, outputDir, executable_prodNtuple, samples,
+    def __init__(self, outputDir, executable_prodNtuple, cfgFile_prodNtuple, samples,
                  era, debug, running_method, rle_directory, version, num_parallel_jobs):
         prodNtupleConfig.__init__(self, outputDir, executable_prodNtuple, "3l_1tau", samples,
           era, debug, running_method, rle_directory, version, num_parallel_jobs)
 
-        self.cfgFile_prodNtuple_original = os.path.join(self.workingDir, "produceNtuple_3l_1tau_cfg.py")
+        self.cfgFile_prodNtuple_original = os.path.join(self.workingDir, cfgFile_prodNtuple)
        
     def createCfg_prodNtuple(self, inputFiles, outputFile, era, cfgFile_modified, rle_filename = ''):
         """Create python configuration file for the produceNtuple_3l_1tau executable (Ntuple production code)

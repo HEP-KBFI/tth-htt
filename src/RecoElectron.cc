@@ -64,11 +64,10 @@ std::ostream& operator<<(std::ostream& stream, const RecoElectron& electron)
          << " charge = " << electron.charge() << std::endl;
   stream << " dxy = " << electron.dxy() << ", dz = " << electron.dz() << ", sip3d = " << electron.sip3d() << std::endl;
   stream << " relIso = " << electron.relIso() << std::endl;
+  stream << " mvaPOG = " << electron.mvaRawPOG() << std::endl;
   stream << " tightCharge = " << electron.tightCharge() << std::endl;
-  stream << " nLostHits = " << electron.nLostHits() << ", passesConversionVeto = " << electron.passesConversionVeto() <<
-    std::endl;
-  stream << " sigmaEtaEta = " << electron.sigmaEtaEta() << ", deltaEta = " << electron.deltaEta() << ", deltaPhi = " <<
-    electron.deltaPhi() << std::endl;
+  stream << " nLostHits = " << electron.nLostHits() << ", passesConversionVeto = " << electron.passesConversionVeto() << std::endl;
+  stream << " sigmaEtaEta = " << electron.sigmaEtaEta() << ", deltaEta = " << electron.deltaEta() << ", deltaPhi = " << electron.deltaPhi() << std::endl;
   stream << " HoE = " << electron.HoE() << ", OoEminusOoP = " << electron.OoEminusOoP() << std::endl;
   stream << " jetBtagCSV = " << electron.jetBtagCSV() << std::endl;
   stream << " mvaRawTTH = " << electron.mvaRawTTH() << std::endl;

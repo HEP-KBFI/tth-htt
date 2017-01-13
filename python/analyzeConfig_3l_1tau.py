@@ -96,29 +96,8 @@ class analyzeConfig_3l_1tau(analyzeConfig):
     self.executable_addBackgrounds = executable_addBackgrounds
     self.executable_addFakes = executable_addBackgroundJetToTauFakes
 
-    for sample_name, sample_info in self.samples.items():
-      if not sample_info["use_it"] or sample_info["sample_category"] in [ "additional_signal_overlap", "background_data_estimate" ]:
-        continue
-      process_name = sample_info["process_name_specific"]
-      for lepton_and_hadTau_selection in self.lepton_and_hadTau_selections:
-        for lepton_and_hadTau_frWeight in self.lepton_and_hadTau_frWeights:
-          if lepton_and_hadTau_frWeight == "enabled" and not lepton_and_hadTau_selection.startswith("Fakeable"):
-            continue
-          lepton_and_hadTau_selection_and_frWeight = get_lepton_and_hadTau_selection_and_frWeight(lepton_and_hadTau_selection, lepton_and_hadTau_frWeight)
-          for charge_selection in self.charge_selections:
-            key_dir = getKey(process_name, lepton_and_hadTau_selection_and_frWeight, charge_selection)  
-            for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_ROOT, DKEY_RLES ]:
-              initDict(self.dirs, [ key_dir, dir_type ])
-              self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel,
-                "_".join([ lepton_and_hadTau_selection_and_frWeight, charge_selection ]), process_name)
-    for dir_type in [ DKEY_SCRIPTS, DKEY_DCRD, DKEY_PLOT ]:
-      initDict(self.dirs, [ dir_type ])
-      self.dirs[dir_type] = os.path.join(self.outputDir, dir_type, self.channel)
-    ##print "self.dirs = ", self.dirs
-
     self.nonfake_backgrounds = [ "TT", "TTW", "TTZ", "EWK", "Rares" ]
-
-    self.sbatchFile_analyze = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_analyze_%s.py" % self.channel)
+    
     self.cfgFile_analyze = os.path.join(self.workingDir, cfgFile_analyze)
     self.prep_dcard_processesToCopy = [ "data_obs" ] + self.nonfake_backgrounds + [ "fakes_data", "fakes_mc" ]
     self.histogramDir_prep_dcard = "3l_1tau_OS_lepTight_tauTight"
@@ -128,6 +107,16 @@ class analyzeConfig_3l_1tau(analyzeConfig):
 
     self.select_rle_output = select_rle_output
     self.select_root_output = select_root_output
+
+    self.isBDTtraining = False
+
+  def set_BDT_training(self):
+    """Run analysis with loose selection criteria for leptons and hadronic taus,
+       for the purpose of preparing event list files for BDT training.
+    """
+    self.lepton_and_hadTau_selections = [ "forBDTtraining" ]
+    self.lepton_and_hadTau_frWeights = [ "disabled" ]
+    self.isBDTtraining = True
 
   def createCfg_analyze(self, jobOptions):
     """Create python configuration file for the analyze_3l_1tau executable (analysis code)
@@ -235,6 +224,26 @@ class analyzeConfig_3l_1tau(analyzeConfig):
     """Creates all necessary config files and runs the complete analysis workfow -- either locally or on the batch system
     """
 
+    for sample_name, sample_info in self.samples.items():
+      if not sample_info["use_it"] or sample_info["sample_category"] in [ "additional_signal_overlap", "background_data_estimate" ]:
+        continue
+      process_name = sample_info["process_name_specific"]
+      for lepton_and_hadTau_selection in self.lepton_and_hadTau_selections:
+        for lepton_and_hadTau_frWeight in self.lepton_and_hadTau_frWeights:
+          if lepton_and_hadTau_frWeight == "enabled" and not lepton_and_hadTau_selection.startswith("Fakeable"):
+            continue
+          lepton_and_hadTau_selection_and_frWeight = get_lepton_and_hadTau_selection_and_frWeight(lepton_and_hadTau_selection, lepton_and_hadTau_frWeight)
+          for charge_selection in self.charge_selections:
+            key_dir = getKey(process_name, lepton_and_hadTau_selection_and_frWeight, charge_selection)  
+            for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_ROOT, DKEY_RLES ]:
+              initDict(self.dirs, [ key_dir, dir_type ])
+              self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel,
+                "_".join([ lepton_and_hadTau_selection_and_frWeight, charge_selection ]), process_name)
+    for dir_type in [ DKEY_SCRIPTS, DKEY_DCRD, DKEY_PLOT ]:
+      initDict(self.dirs, [ dir_type ])
+      self.dirs[dir_type] = os.path.join(self.outputDir, dir_type, self.channel)
+    ##print "self.dirs = ", self.dirs
+
     for key in self.dirs.keys():
       if type(self.dirs[key]) == dict:
         for dir_type in self.dirs[key].keys():
@@ -250,11 +259,15 @@ class analyzeConfig_3l_1tau(analyzeConfig):
       if self.applyFakeRateWeights == "3lepton":
         hadTau_selection = "Tight"
       hadTau_selection = "|".join([ hadTau_selection, self.hadTau_selection_part2 ])
+
+      if lepton_and_hadTau_selection == "forBDTtraining":
+        lepton_selection = "Loose"
+        hadTau_selection = "Tight|dR03mvaVVLoose"
       
       for lepton_and_hadTau_frWeight in self.lepton_and_hadTau_frWeights:
         if lepton_and_hadTau_frWeight == "enabled" and not lepton_and_hadTau_selection.startswith("Fakeable"):
           continue
-        if lepton_and_hadTau_frWeight == "disabled" and not lepton_and_hadTau_selection == "Tight":
+        if lepton_and_hadTau_frWeight == "disabled" and not lepton_and_hadTau_selection in [ "Tight", "forBDTtraining" ]:
           continue
         lepton_and_hadTau_selection_and_frWeight = get_lepton_and_hadTau_selection_and_frWeight(lepton_and_hadTau_selection, lepton_and_hadTau_frWeight)
 
@@ -322,7 +335,7 @@ class analyzeConfig_3l_1tau(analyzeConfig):
                   'is_mc' : is_mc,
                   'central_or_shift' : central_or_shift,
                   'lumi_scale' : 1. if not (self.use_lumi and is_mc) else sample_info["xsection"] * self.lumi / sample_info["nof_events"],
-                  'apply_genWeight' : sample_info["apply_genWeight"] if (is_mc and "apply_genWeight" in sample_info.keys()) else False,
+                  'apply_genWeight' : sample_info["genWeight"] if (is_mc and "genWeight" in sample_info.keys()) else False,
                   'apply_trigger_bits' : (is_mc and (self.era == "2015" or (self.era == "2016" and sample_info["reHLT"]))) or not is_mc
                 }
 
@@ -460,6 +473,18 @@ class analyzeConfig_3l_1tau(analyzeConfig):
           self.outputFile_hadd_stage2[key_hadd_stage2] = os.path.join(self.outputDir, DKEY_HIST, "histograms_harvested_stage2_%s_%s_%s.root" % \
             (self.channel, lepton_and_hadTau_selection_and_frWeight, charge_selection))
 
+    if self.isBDTtraining:
+      if self.is_sbatch:
+        logging.info("Creating script for submitting '%s' jobs to batch system" % self.executable_analyze)
+        self.sbatchFile_analyze = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_analyze_%s.py" % self.channel)
+        self.createScript_sbatch()        
+      logging.info("Creating Makefile")
+      lines_makefile = []
+      self.addToMakefile_analyze(lines_makefile)
+      self.createMakefile(lines_makefile)      
+      logging.info("Done")      
+      return
+
     logging.info("Creating configuration files to run 'addBackgroundFakes'")
     for charge_selection in self.charge_selections:
       key_addFakes_job = getKey("fakes_data", charge_selection)
@@ -551,6 +576,7 @@ class analyzeConfig_3l_1tau(analyzeConfig):
                 
     if self.is_sbatch:
       logging.info("Creating script for submitting '%s' jobs to batch system" % self.executable_analyze)
+      self.sbatchFile_analyze = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_analyze_%s.py" % self.channel)
       self.createScript_sbatch()
 
     logging.info("Creating Makefile")

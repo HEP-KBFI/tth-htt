@@ -125,3 +125,41 @@ std::vector<const RecoLepton*> mergeLeptonCollections(const std::vector<const Re
   }
   return leptons;
 }
+
+void printLeptonCollection(const std::string& collection_name, const std::vector<const RecoLepton*>& leptons)
+{
+  std::cout << " (#" << collection_name << " = " << leptons.size() << ")" << std::endl;
+  for ( size_t idxLepton = 0; idxLepton < leptons.size(); ++idxLepton ) {
+    std::cout << collection_name << "  #" << idxLepton << ":" << std::endl;
+    const RecoElectron* electron = dynamic_cast<const RecoElectron*>(leptons[idxLepton]);
+    if ( electron ) {
+      std::cout << (*electron);
+      continue;
+    }
+    const RecoMuon* muon = dynamic_cast<const RecoMuon*>(leptons[idxLepton]);
+    if ( muon ) {
+      std::cout << (*muon);
+      continue;
+    }
+    std::cout << (*leptons[idxLepton]);
+  }
+} 
+
+void printHadTauCollection(const std::string& collection_name, const std::vector<const RecoHadTau*>& hadTaus)
+{
+  std::cout << " (#" << collection_name << " = " << hadTaus.size() << ")" << std::endl;
+  for ( size_t idxHadTau = 0; idxHadTau < hadTaus.size(); ++idxHadTau ) {
+    std::cout << collection_name << "  #" << idxHadTau << ":" << std::endl;
+    std::cout << (*hadTaus[idxHadTau]);
+  }
+}
+
+void printJetCollection(const std::string& collection_name, const std::vector<const RecoJet*>& jets)
+{
+  std::cout << " (#" << collection_name << " = " << jets.size() << ")" << std::endl;
+  for ( size_t idxJet = 0; idxJet < jets.size(); ++idxJet ) {
+    std::cout << collection_name << "  #" << idxJet << ":" << std::endl;
+    std::cout << (*jets[idxJet]);
+  }
+}
+
