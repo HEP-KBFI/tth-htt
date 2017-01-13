@@ -246,4 +246,4 @@ class sbatchManager:
           'job_ids': ",".join(self.jobIds),
           'log_file': log_file
         }
-        ram_and_cpu_info = run_cmd('sacct --long --jobs=%(job_ids)s > %(log_file)s' % info_params)
+        ram_and_cpu_info = run_cmd('sacct --long --jobs=%(job_ids)s > %(log_file)s; cat %(log_file)s;' % info_params)

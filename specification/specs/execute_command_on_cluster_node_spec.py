@@ -50,8 +50,8 @@ def execute_command_on_cluster_node_spec():
     with file('%(temp_dir)s/execute_command_on_cluster_node_spec/cpu_and_ram_info.log' % config) as f:
         result = f.read().strip()
 
-        if result.find('YO') == -1:
-            print("$TEST_DIR/ did not contain cpu_and_ram_info.log with content 'YO'.")
+        if result.find('MaxVMSize') == -1:
+            print("$TEST_DIR/ did not contain cpu_and_ram_info.log with content 'MaxVMSize'.")
             print('FAILED: Execute on cluster node failed.')
             return False
 
