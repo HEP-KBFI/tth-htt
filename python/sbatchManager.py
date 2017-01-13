@@ -239,3 +239,11 @@ class sbatchManager:
                     break
                 logging.info(
                     "Waiting for sbatch to finish (%d jobs still left) ..." % numJobs_left)
+
+
+    def log_ram_and_cpu_usage_information(self, log_file = None):
+        info_params = {
+          'job_ids': ",".join(self.jobIds),
+          'log_file': log_file
+        }
+        ram_and_cpu_info = run_cmd('sacct --long --jobs=%(job_ids)s > %(log_file)s; cat %(log_file)s;' % info_params)
