@@ -116,7 +116,7 @@ samples_2016["/ttHToNonbb_M125_13TeV_powheg_pythia8/RunIISpring16MiniAODv2-PUSpr
   ("process_name_specific", "ttHToNonbb_M125"),
   ("nof_files",             43),
   ("nof_events",            3075610),
-  ("use_it",                False),
+  ("use_it",                True),
   ("xsection",              0.215100),
   ("genWeight",             False),
   ("triggers",              [ "1e", "2e", "1mu", "2mu", "1e1mu" ]),
