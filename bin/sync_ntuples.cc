@@ -53,6 +53,13 @@
 #include "tthAnalysis/HiggsToTauTau/interface/JetToTauFakeRateInterface.h" // JetToTauFakeRateInterface
 #include "tthAnalysis/HiggsToTauTau/interface/fakeBackgroundAuxFunctions.h" // getWeight_2L, getWeight_3L
 #include "tthAnalysis/HiggsToTauTau/interface/Data_to_MC_CorrectionInterface.h" // Data_to_MC_CorrectionInterface.h
+#include "tthAnalysis/HiggsToTauTau/interface/leptonGenMatchingAuxFunctions.h" // getLeptonGenMatch_definitions_1lepton, getLeptonGenMatch_string, getLeptonGenMatch_int
+#include "tthAnalysis/HiggsToTauTau/interface/hadTauGenMatchingAuxFunctions.h" // getHadTauGenMatch_definitions_1tau, getHadTauGenMatch_string, getHadTauGenMatch_int
+#include "tthAnalysis/HiggsToTauTau/interface/GenLeptonReader.h" // GenLeptonReader
+#include "tthAnalysis/HiggsToTauTau/interface/GenHadTauReader.h" // GenHadTauReader
+#include "tthAnalysis/HiggsToTauTau/interface/GenJetReader.h" // GenJetReader
+#include "tthAnalysis/HiggsToTauTau/interface/LHEInfoReader.h" // LHEInfoReader
+
 
 #include <iostream> // std::cout
 
@@ -112,6 +119,13 @@ int main(int argc, char* argv[])
     << "Invalid Configuration parameter 'leptonSelection' = " << leptonSelection_string << " !!\n";
 
   const int jetPt_option = RecoJetReader::kJetPt_central;
+  //int hadTauPt_option = RecoHadTauReader::kHadTauPt_central;
+  int jetToTauFakeRate_option = kFRjt_central;
+  //int lheScale_option = kLHE_scale_central;
+
+  double lumiScale = cfg_analyze.getParameter<double>("lumiScale");
+
+  
 
   const vstring triggerNames_1e = cfg_analyze.getParameter<vstring>("triggers_1e");
   const std::vector<hltPath*> triggers_1e = create_hltPaths(triggerNames_1e);
@@ -141,7 +155,9 @@ int main(int argc, char* argv[])
     << "Invalid Configuration parameter 'hadTauSelection' = " << hadTauSelection_string << " !!\n";*/
   std::string hadTauSelection_part2 = ( hadTauSelection_parts->GetEntries() == 2 ) ? (dynamic_cast<TObjString*>(hadTauSelection_parts->At(1)))->GetString().Data() : "";
   
-  
+  bool apply_hadTauGenMatching = cfg_analyze.getParameter<bool>("apply_hadTauGenMatching");
+  std::vector<hadTauGenMatchEntry> hadTauGenMatch_definitions = getHadTauGenMatch_definitions_1tau(apply_hadTauGenMatching);
+
   
 
   RunLumiEventSelector* run_lumi_eventSelector = 0;
@@ -203,6 +219,7 @@ int main(int argc, char* argv[])
 //--- declare particle collections
   RecoMuonReader* muonReader = new RecoMuonReader(era, "nselLeptons", "selLeptons");
   muonReader->setBranchAddresses(inputTree);
+  RecoMuonCollectionGenMatcher muonGenMatcher;
   RecoMuonCollectionSelectorLoose preselMuonSelector(era);
   RecoMuonCollectionSelectorFakeable fakeableMuonSelector(era);
   RecoMuonCollectionSelectorCutBased cutBasedSelector(era); // KE: not needed in 2016 sync, but keep it
@@ -211,6 +228,7 @@ int main(int argc, char* argv[])
 
   RecoElectronReader* electronReader = new RecoElectronReader(era, "nselLeptons", "selLeptons");
   electronReader->setBranchAddresses(inputTree);
+  RecoElectronCollectionGenMatcher electronGenMatcher;
   RecoElectronCollectionCleaner electronCleaner(0.05); // NB! in analysis we have 0.3
   RecoElectronCollectionSelectorLoose preselElectronSelector(era, -1, debug);
   RecoElectronCollectionSelectorFakeable fakeableElectronSelector(era);
@@ -220,27 +238,24 @@ int main(int argc, char* argv[])
 
   RecoHadTauReader* hadTauReader = new RecoHadTauReader(era, "nTauGood", "TauGood");
   hadTauReader->setBranchAddresses(inputTree);
+  RecoHadTauCollectionGenMatcher hadTauGenMatcher;
   RecoHadTauCollectionCleaner hadTauCleaner(0.4); // NB! in analysis we have 0.3
   RecoHadTauCollectionSelectorLoose hadTauSelector(era); // KE: Tight -> Loose
   hadTauSelector.set("dR03mvaLoose");
 
-
-  /*hadTauReader->setHadTauPt_central_or_shift(hadTauPt_option);
-  hadTauReader->setBranchAddresses(inputTree);
-  RecoHadTauCollectionGenMatcher hadTauGenMatcher;
-  RecoHadTauCollectionCleaner hadTauCleaner(0.3);
-  RecoHadTauCollectionSelectorLoose preselHadTauSelector(era);
+  /*if ( hadTauSelection_part2 == "dR03mvaVLoose" || hadTauSelection_part2 == "dR03mvaVVLoose" ) preselHadTauSelector.set(hadTauSelection_part2);
   preselHadTauSelector.set_min_antiElectron(hadTauSelection_antiElectron);
   preselHadTauSelector.set_min_antiMuon(hadTauSelection_antiMuon);
   RecoHadTauCollectionSelectorFakeable fakeableHadTauSelector(era);
-  fakeableHadTauSelector.set_min_antiElectron(hadTauSelection_antiElectron);
-  fakeableHadTauSelector.set_min_antiMuon(hadTauSelection_antiMuon);*/
+  if ( hadTauSelection_part2 == "dR03mvaVLoose" || hadTauSelection_part2 == "dR03mvaVVLoose" ) fakeableHadTauSelector.set(hadTauSelection_part2);*/
+  //fakeableHadTauSelector.set_min_antiElectron(hadTauSelection_antiElectron);
+  //fakeableHadTauSelector.set_min_antiMuon(hadTauSelection_antiMuon);
   RecoHadTauCollectionSelectorTight tightHadTauSelector(era);
   if ( hadTauSelection_part2 != "" ) tightHadTauSelector.set(hadTauSelection_part2);
   tightHadTauSelector.set_min_antiElectron(hadTauSelection_antiElectron);
   tightHadTauSelector.set_min_antiMuon(hadTauSelection_antiMuon);
-
-
+  
+  
   std::string jet_btagWeight_branch;
   bool isMC = true; //cfg_analyze.getParameter<bool>("isMC");
   if ( isMC ) {
@@ -267,7 +282,6 @@ int main(int argc, char* argv[])
     leptonFakeRateInterface = new LeptonFakeRateInterface(cfg_leptonFakeRateWeight);
   }
   
-  int jetToTauFakeRate_option = kFRjt_central;
   JetToTauFakeRateInterface* jetToTauFakeRateInterface = 0;
   if ( applyFakeRateWeights == kFR_3L ) {
     edm::ParameterSet cfg_hadTauFakeRateWeight = cfg_analyze.getParameter<edm::ParameterSet>("hadTauFakeRateWeight");
@@ -289,8 +303,26 @@ int main(int argc, char* argv[])
   jetReader->setJetPt_central_or_shift(jetPt_option);
   jetReader->setBranchName_BtagWeight(jet_btagWeight_branch);
   jetReader->setBranchAddresses(inputTree);
+  RecoJetCollectionGenMatcher jetGenMatcher;
   RecoJetCollectionCleaner jetCleaner(0.4); // NB! in analysis we *had* 0.5
   RecoJetCollectionSelector jetSelector(era);  
+
+//--- declare generator level information
+  GenLeptonReader* genLeptonReader = 0;
+  GenHadTauReader* genHadTauReader = 0;
+  GenJetReader* genJetReader = 0;
+  LHEInfoReader* lheInfoReader = 0;
+  if ( isMC ) {
+    genLeptonReader = new GenLeptonReader("nGenLep", "GenLep", "nGenLepFromTau", "GenLepFromTau");
+    genLeptonReader->setBranchAddresses(inputTree);
+    genHadTauReader = new GenHadTauReader("nGenHadTaus", "GenHadTaus");
+    genHadTauReader->setBranchAddresses(inputTree);
+    genJetReader = new GenJetReader("nGenJet", "GenJet");
+    genJetReader->setBranchAddresses(inputTree);
+    lheInfoReader = new LHEInfoReader();
+    lheInfoReader->setBranchAddresses(inputTree);    
+  }
+
 
 //--- initialize BDTs used to discriminate ttH vs. ttV and ttH vs. ttbar 
 //    in 2lss_1tau category of ttH multilepton analysis
@@ -347,6 +379,25 @@ int main(int argc, char* argv[])
     if ( run_lumi_eventSelector && !(*run_lumi_eventSelector)(run, lumi, event) ) continue;
     snm.readRunLumiEvent(run, lumi, event);
 
+//--- build collections of generator level particles (before any cuts are applied, to check distributions in unbiased event samples)
+    std::vector<GenLepton> genLeptons;
+    std::vector<GenLepton> genElectrons;
+    std::vector<GenLepton> genMuons;
+    std::vector<GenHadTau> genHadTaus;
+    std::vector<GenJet> genJets;
+    if ( true/*isMC*/ ) {
+      genLeptons = genLeptonReader->read();
+      for ( std::vector<GenLepton>::const_iterator genLepton = genLeptons.begin();
+    	    genLepton != genLeptons.end(); ++genLepton ) {
+	      int abs_pdgId = std::abs(genLepton->pdgId());
+	      if      ( abs_pdgId == 11 ) genElectrons.push_back(*genLepton);
+	      else if ( abs_pdgId == 13 ) genMuons.push_back(*genLepton);
+      }
+      genHadTaus = genHadTauReader->read();
+      genJets = genJetReader->read();
+    }
+
+
 //--- build collections of electrons, muons and hadronic taus;
 //    resolve overlaps in order of priority: muon, electron,
     std::vector<RecoMuon> muons = muonReader->read();
@@ -398,6 +449,25 @@ int main(int argc, char* argv[])
     std::sort(selJets.begin(), selJets.end(), isHigherPt);
     snm.read(selJets);
 
+
+    if ( true/*isMC*/ ) {
+      muonGenMatcher.addGenLeptonMatch(preselMuons, genLeptons, 0.2);
+      muonGenMatcher.addGenHadTauMatch(preselMuons, genHadTaus, 0.2);
+      muonGenMatcher.addGenJetMatch(preselMuons, genJets, 0.2);
+
+      electronGenMatcher.addGenLeptonMatch(preselElectrons, genLeptons, 0.2);
+      electronGenMatcher.addGenHadTauMatch(preselElectrons, genHadTaus, 0.2);
+      electronGenMatcher.addGenJetMatch(preselElectrons, genJets, 0.2);
+
+      hadTauGenMatcher.addGenLeptonMatch(selHadTaus, genLeptons, 0.2);
+      hadTauGenMatcher.addGenHadTauMatch(selHadTaus, genHadTaus, 0.2);
+      hadTauGenMatcher.addGenJetMatch(selHadTaus, genJets, 0.2);
+
+      jetGenMatcher.addGenLeptonMatch(selJets, genLeptons, 0.2);
+      jetGenMatcher.addGenHadTauMatch(selJets, genHadTaus, 0.2);
+      jetGenMatcher.addGenJetMatch(selJets, genJets, 0.2);
+    }
+
 //--- collect preselected leptons
     std::vector<const RecoLepton *> preselLeptons;
     preselLeptons.reserve(preselElectrons.size() + preselMuons.size());
@@ -428,6 +498,14 @@ int main(int argc, char* argv[])
         return fakeableLeptons[1];
       return static_cast<const RecoLepton * const>(0);
     }();
+    const RecoLepton * const lepton3 = [&]()
+    {
+      if(era == kEra_2015 && preselLeptons.size() > 2)
+        return preselLeptons[2];
+      if(era == kEra_2016 && fakeableLeptons.size() > 2)
+        return fakeableLeptons[2];
+      return static_cast<const RecoLepton * const>(0);
+    }();
     
     int lepton_lead_type = -1;
     double lepton_lead_pt = 0.;
@@ -448,10 +526,21 @@ int main(int argc, char* argv[])
       lepton_sublead_pt = lepton_sublead->pt();
       lepton_sublead_eta = lepton_sublead->eta();
     }
+    
+    int lepton3_type = -1;
+    double lepton3_pt = 0.;
+    double lepton3_eta = 0.;
+    
+    if (lepton3 != 0){
+      lepton3_type = getLeptonType(lepton3->pdgId());
+      lepton3_pt = lepton3->pt();
+      lepton3_eta = lepton3->eta();
+    }
 
     dataToMCcorrectionInterface->setLeptons(
 	      lepton_lead_type, lepton_lead_pt, lepton_lead_eta, 
-    	  lepton_sublead_type, lepton_sublead_pt, lepton_sublead_eta
+    	  lepton_sublead_type, lepton_sublead_pt, lepton_sublead_eta,
+    	  lepton3_type, lepton3_pt, lepton3_eta
     );
     
     double weight_btag = 1.;
@@ -459,8 +548,15 @@ int main(int argc, char* argv[])
       for ( std::vector<const RecoJet*>::const_iterator jet = selJets.begin();
 	          jet != selJets.end(); ++jet ) {
 	      weight_btag *= (*jet)->BtagWeight();
+	      //std::cout << "jet " << (*jet)->pt() << " " << (*jet)->eta()  << ", flavour " << (*jet)->genJet()->pdgId() << ", weight " << (*jet)->BtagWeight() << std::endl;
       }
     }
+    
+    if(selHadTaus.size() > 0){
+      dataToMCcorrectionInterface->setHadTaus(getHadTau_genPdgId(selHadTaus[0]), selHadTaus[0]->pt(), selHadTaus[0]->eta());
+    }
+    
+    
 //--- compute MHT and linear MET discriminant (met_LD)
     LV mht_p4(0,0,0,0);
     for(const RecoJet * & jet: selJets)             mht_p4 += jet -> p4();
@@ -538,6 +634,8 @@ int main(int argc, char* argv[])
         selLepton_sublead = selLeptons[1];
     }
     double weight_fakeRate = 1.;
+    //dataToMCcorrectionInterface->getSF_hadTauID_and_Iso();
+      
     if ( applyFakeRateWeights == kFR_3L and selLeptons.size() > 1) {
       double prob_fake_lepton_lead = 1.;
       if      ( std::abs(selLepton_lead->pdgId()) == 11 ) prob_fake_lepton_lead = leptonFakeRateInterface->getWeight_e(selLepton_lead->pt(), selLepton_lead->absEta());
@@ -566,20 +664,41 @@ int main(int argc, char* argv[])
       /*evtWeight *= weight_fakeRate;
       evtWeight_pp *= weight_fakeRate;
       evtWeight_mm *= weight_fakeRate;*/
-    } 
-
-    double triggerSF_weight = dataToMCcorrectionInterface->getWeight_leptonTriggerEff();
+    }
+    
+    
+    double triggerSF_weight = 1.;
+    if ( false /*!apply_trigger_bits*/ ) {
+	    triggerSF_weight *= dataToMCcorrectionInterface->getWeight_leptonTriggerEff();
+    }
+    triggerSF_weight *= dataToMCcorrectionInterface->getSF_leptonTriggerEff();
     double leptonSF_weight = dataToMCcorrectionInterface->getSF_leptonID_and_Iso_loose();
+    //std::cout << "lepton_ID_and_Iso_Loose" << dataToMCcorrectionInterface->getSF_leptonID_and_Iso_loose() << std::endl;
+    //leptonSF_weight *= dataToMCcorrectionInterface->getSF_eToTauFakeRate();
+    //std::cout << "etotauFR" << dataToMCcorrectionInterface->getSF_eToTauFakeRate() << std::endl;
+    //leptonSF_weight *= dataToMCcorrectionInterface->getSF_muToTauFakeRate();
+    //std::cout << "mutotauFR" << dataToMCcorrectionInterface->getSF_muToTauFakeRate() << std::endl;
+    //leptonSF_weight *= dataToMCcorrectionInterface->getSF_hadTauID_and_Iso();
+    //std::cout << "hadtauIDIso" << dataToMCcorrectionInterface->getSF_hadTauID_and_Iso() << std::endl;
+    //double hadTauSF_weight = dataToMCcorrectionInterface->getSF_hadTauID_and_Iso();
+
+    
     //--- apply data/MC corrections for efficiencies of leptons passing the loose identification and isolation criteria
     //    to also pass the tight identification and isolation criteria
     if ( isMC ) {
       if ( leptonSelection == kFakeable ) {
 	        leptonSF_weight *= dataToMCcorrectionInterface->getSF_leptonID_and_Iso_fakeable_to_loose();
+	        //std::cout << "fakeable_to_loose" << dataToMCcorrectionInterface->getSF_leptonID_and_Iso_fakeable_to_loose() << std::endl;
       } else if ( leptonSelection == kTight ) {
-          leptonSF_weight *= dataToMCcorrectionInterface->getSF_leptonID_and_Iso_tight_to_loose_wTightCharge();
+          if (lepton3 != 0 || lepton_sublead == 0 )
+            leptonSF_weight *= dataToMCcorrectionInterface->getSF_leptonID_and_Iso_tight_to_loose_woTightCharge();
+          else
+            leptonSF_weight *= dataToMCcorrectionInterface->getSF_leptonID_and_Iso_tight_to_loose_wTightCharge();
+          //std::cout << "fakeable_to_tight" << dataToMCcorrectionInterface->getSF_leptonID_and_Iso_tight_to_loose_wTightCharge() << std::endl;
       }
     }
-    double hadTauSF_weight = dataToMCcorrectionInterface->getSF_hadTauID_and_Iso();
+    
+    
     double MC_weight = pileupWeight * triggerSF_weight * leptonSF_weight * weight_btag * hadTauSF_weight * genWeight;
     
     snm.read(genWeight,   FloatVariableType::MC_weight);
@@ -589,6 +708,7 @@ int main(int argc, char* argv[])
     snm.read(weight_btag,   FloatVariableType::bTagSF_weight);
     snm.read(pileupWeight,   FloatVariableType::PU_weight);
     snm.read(hadTauSF_weight,   FloatVariableType::hadTauSF_weight);
+    snm.read(lumiScale,   FloatVariableType::lumiScale);
     //snm.read(genWeight,   FloatVariableType::genWeight);
     snm.fill();
     
