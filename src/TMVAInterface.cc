@@ -10,7 +10,7 @@ TMVAInterface::TMVAInterface(const std::string& mvaFileName, const std::vector<s
   : mva_(0)
 {
   LocalFileInPath mvaFileName_fip(mvaFileName);
-  std::string mvaFileName_full = mvaFileName_fip.fullPath();
+  mvaFileName_ = mvaFileName_fip.fullPath();
   TMVA::Tools::Instance();
   mva_ = new TMVA::Reader("!V:!Silent");
   for ( std::vector<std::string>::const_iterator mvaInputVariable = mvaInputVariables.begin();
@@ -22,7 +22,7 @@ TMVAInterface::TMVAInterface(const std::string& mvaFileName, const std::vector<s
 	spectator != spectators.end(); ++spectator ) {
     mva_->AddSpectator(*spectator, &spectators_[*spectator]);
   }
-  mva_->BookMVA("BDTG", mvaFileName_full);
+  mva_->BookMVA("BDTG", mvaFileName_);
 }
 
 TMVAInterface::~TMVAInterface()
@@ -33,11 +33,14 @@ TMVAInterface::~TMVAInterface()
 double
 TMVAInterface::operator()(const std::map<std::string, double>& mvaInputs) const
 {
+  //std::cout << "<TMVAInterface::operator()>:" << std::endl;
+  //std::cout << "mvaFileName = " << mvaFileName_ << std::endl;
   for ( std::map<std::string, Float_t>::iterator mvaInputVariable = mvaInputVariables_.begin();
 	mvaInputVariable != mvaInputVariables_.end(); ++mvaInputVariable ) {
     std::map<std::string, double>::const_iterator mvaInput = mvaInputs.find(mvaInputVariable->first);
     if ( mvaInput != mvaInputs.end() ) {
       mvaInputVariable->second = mvaInput->second;
+      //std::cout << " " << mvaInputVariable->first << " = " << mvaInputVariable->second << std::endl;
     } else {
       throw cms::Exception("TMVAInterface::operator()")
 	<< "Missing value for MVA input variable = " << mvaInputVariable->first << " !!\n";
@@ -45,6 +48,7 @@ TMVAInterface::operator()(const std::map<std::string, double>& mvaInputs) const
   }
 
   double mvaOutput = mva_->EvaluateMVA("BDTG");
+  //std::cout << "mvaOutput = " << mvaOutput << std::endl;
   return mvaOutput;
 }
 

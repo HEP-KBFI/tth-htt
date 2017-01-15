@@ -102,7 +102,8 @@ class analyzeConfig_3l_1tau(analyzeConfig):
     self.prep_dcard_processesToCopy = [ "data_obs" ] + self.nonfake_backgrounds + [ "fakes_data", "fakes_mc" ]
     self.histogramDir_prep_dcard = "3l_1tau_OS_lepTight_tauTight"
     self.histogramDir_prep_dcard_SS = "3l_1tau_SS_lepTight_tauTight"
-    self.make_plots_backgrounds = self.nonfake_backgrounds + [ "fakes_data" ]
+    ##self.make_plots_backgrounds = self.nonfake_backgrounds + [ "fakes_data" ]
+    self.make_plots_backgrounds = [ "TTW", "TTZ", "EWK", "Rares", "fakes_data" ]
     self.cfgFile_make_plots_mcClosure = os.path.join(self.workingDir, "makePlots_mcClosure_cfg.py")
 
     self.select_rle_output = select_rle_output

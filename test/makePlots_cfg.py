@@ -12,7 +12,7 @@ process.makePlots = cms.PSet(
 
     processData = cms.string("data_obs"),
     processesBackground = cms.vstring(
-        "TT",
+        ##"TT",
         "TTW",
         "TTZ",
         "EWK",
@@ -227,7 +227,7 @@ process.makePlots = cms.PSet(
     showUncertainty = cms.bool(False),
 
     labelOnTop = cms.string("CMS Preliminary; ttH, H #rightarrow #tau#tau; %1.1f fb^{-1} at #sqrt{s} = 13 TeV"),    
-    intLumiData = cms.double(2.3), # in units of fb^-1
+    intLumiData = cms.double(12.9), # in units of fb^-1
 
     outputFileName = cms.string("plots/makePlots.png")
 )

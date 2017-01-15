@@ -354,11 +354,6 @@ int main(int argc, char* argv[])
       << "Failed to identify input Tree !!\n";
   }
   
-  // CV: need to call TChain::LoadTree before processing first event 
-  //     in order to prevent ROOT causing a segmentation violation,
-  //     cf. http://root.cern.ch/phpBB3/viewtopic.php?t=10062
-  inputTree->LoadTree(0);
-
   std::cout << "input Tree contains " << inputTree->GetEntries() << " Entries in " << inputTree->GetListOfFiles()->GetEntries() << " files." << std::endl;
 
 //--- declare event-level variables
@@ -1510,8 +1505,15 @@ int main(int argc, char* argv[])
     
     check_mvaInputs(mvaInputs, run, lumi, event);
 
+    //for ( std::map<std::string, double>::const_iterator mvaInput = mvaInputs.begin();
+    //	    mvaInput != mvaInputs.end(); ++mvaInput ) {
+    //  std::cout << " " << mvaInput->first << " = " << mvaInput->second << std::endl;
+    //}
+
     double mvaOutput_2lss_ttV = mva_2lss_ttV(mvaInputs);
+    //std::cout << "mvaOutput_2lss_ttV = " << mvaOutput_2lss_ttV << std::endl;
     double mvaOutput_2lss_ttbar = mva_2lss_ttbar(mvaInputs);
+    //std::cout << "mvaOutput_2lss_ttbar = " << mvaOutput_2lss_ttbar << std::endl;
 
 //--- compute integer discriminant based on both BDT outputs,
 //    as defined in Table 16 () of AN-2015/321 (AN-2016/211) for analysis of 2015 (2016) data
@@ -1524,14 +1526,16 @@ int main(int argc, char* argv[])
       else if (                                mvaOutput_2lss_ttV >  -0.1 ) mvaDiscr_2lss = 2.;
       else                                                                  mvaDiscr_2lss = 1.;
     } else if ( era == kEra_2016 ) {
-      if      ( mvaOutput_2lss_ttbar > +0.3 && mvaOutput_2lss_ttV >  -0.1 ) mvaDiscr_2lss = 7.;
-      else if ( mvaOutput_2lss_ttbar > +0.3 && mvaOutput_2lss_ttV >  -0.1 ) mvaDiscr_2lss = 6.;
-      else if ( mvaOutput_2lss_ttbar > +0.3 && mvaOutput_2lss_ttV <= -0.1 ) mvaDiscr_2lss = 5.;
-      else if ( mvaOutput_2lss_ttbar > -0.2 && mvaOutput_2lss_ttV >  -0.1 ) mvaDiscr_2lss = 4.;
-      else if ( mvaOutput_2lss_ttbar > -0.2 && mvaOutput_2lss_ttV <= -0.1 ) mvaDiscr_2lss = 3.;
-      else if (                                mvaOutput_2lss_ttV >  -0.1 ) mvaDiscr_2lss = 2.;
+      if      ( mvaOutput_2lss_ttbar > +0.4 && mvaOutput_2lss_ttV >  +0.4 ) mvaDiscr_2lss = 7.;
+      else if ( mvaOutput_2lss_ttbar > +0.4 && mvaOutput_2lss_ttV >  +0.1 ) mvaDiscr_2lss = 6.;
+      else if ( mvaOutput_2lss_ttbar > +0.4 && mvaOutput_2lss_ttV <= +0.1 ) mvaDiscr_2lss = 5.;
+      else if ( mvaOutput_2lss_ttbar > +0.1 && mvaOutput_2lss_ttV >  +0.3 ) mvaDiscr_2lss = 4.;
+      else if ( mvaOutput_2lss_ttbar > +0.1 && mvaOutput_2lss_ttV <= +0.3 ) mvaDiscr_2lss = 3.;
+      else if ( mvaOutput_2lss_ttbar > -0.2                               ) mvaDiscr_2lss = 2.;
       else                                                                  mvaDiscr_2lss = 1.;
     } else assert(0);
+    //std::cout << "mvaDiscr_2lss = " << mvaDiscr_2lss << std::endl;
+    std::cout << std::endl;
 
 //--- compute output of BDTs used to discriminate ttH vs. ttbar trained by Arun for 2lss_1tau category
     mvaInputs_TMVA["lep1_pt"]              = selLepton_lead->pt();

@@ -89,7 +89,8 @@ class analyzeConfig_1l_2tau(analyzeConfig):
     
     self.nonfake_backgrounds = [ "TT", "TTW", "TTZ", "EWK", "Rares" ]
     self.prep_dcard_processesToCopy = [ "data_obs" ] + self.nonfake_backgrounds + [ "fakes_data", "fakes_mc" ]
-    self.make_plots_backgrounds = self.nonfake_backgrounds + [ "fakes_data" ]
+    ##self.make_plots_backgrounds = self.nonfake_backgrounds + [ "fakes_data" ]
+    self.make_plots_backgrounds = [ "TTW", "TTZ", "EWK", "Rares", "fakes_data" ]
     
     self.cfgFile_analyze = os.path.join(self.workingDir, cfgFile_analyze)    
     self.histogramDir_prep_dcard = "1l_2tau_OS_Tight"
@@ -400,7 +401,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
                     (self.channel, lepton_and_hadTau_selection_and_frWeight, hadTau_charge_selection))
 
             # add output files of hadd_stage1 for data to list of input files for hadd_stage1_5
-            if is_mc:
+            if not is_mc:
               key_hadd_stage1 = getKey(process_name, lepton_and_hadTau_selection_and_frWeight, hadTau_charge_selection)
               key_hadd_stage1_5 = getKey(lepton_and_hadTau_selection_and_frWeight, hadTau_charge_selection)
               self.inputFiles_hadd_stage1_5[key_hadd_stage1_5].append(self.outputFile_hadd_stage1[key_hadd_stage1])

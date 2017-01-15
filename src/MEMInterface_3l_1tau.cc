@@ -5,12 +5,14 @@
 MEMInterface_3l_1tau::MEMInterface_3l_1tau()
   : clock_(0)
 {
-  Logger::enableLogging(false);
+  Logger::enableLogging(true);
+  Logger::setLogLevel("info");
   std::cout << "<MEMInterface_3l_1tau>:\n";
 
   // (postponed the creation of the inteface object so that no internal messages printed in
   // the MEM code won't end up on the screen)
   mem_ = std::unique_ptr<MEMInterface_3l1tau>(new MEMInterface_3l1tau());
+  mem_ -> initialize();
 
   clock_ = new TBenchmark();
 }
