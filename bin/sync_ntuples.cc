@@ -699,8 +699,9 @@ int main(int argc, char* argv[])
     }
     
     
-    double MC_weight = pileupWeight * triggerSF_weight * leptonSF_weight * weight_btag * hadTauSF_weight * genWeight;
-    
+    //double hadTauSF_weight = dataToMCcorrectionInterface->getSF_hadTauID_and_Iso();
+    //double MC_weight = pileupWeight * triggerSF_weight * leptonSF_weight * weight_btag * hadTauSF_weight * genWeight;
+
     snm.read(genWeight,   FloatVariableType::MC_weight);
     snm.read(weight_fakeRate,   FloatVariableType::FR_weight);
     snm.read(triggerSF_weight,   FloatVariableType::triggerSF_weight);

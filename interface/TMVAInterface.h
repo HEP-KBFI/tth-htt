@@ -25,6 +25,8 @@ class TMVAInterface
   operator()(const std::map<std::string, double>& mvaInputs) const;
 
  private:
+  std::string mvaFileName_;
+
   TMVA::Reader* mva_;
 
   mutable std::map<std::string, Float_t> mvaInputVariables_; // key = MVA input variable name
