@@ -40,12 +40,16 @@ void EvtTreeManager_1l_2tau::bookTree(TFileDirectory& dir)
   EventTree_->Branch("dr_lep_tau_os", &dr_lep_tau_os_, "dr_lep_tau_os/F");
   EventTree_->Branch("dr_lep_tau_ss", &dr_lep_tau_ss_, "dr_lep_tau_ss/F");
   EventTree_->Branch("mTauTauVis", &mTauTauVis_, "mTauTauVis/F");
+  EventTree_->Branch("lumiScale", &lumiScale_, "lumiScale/F");
+  EventTree_->Branch("genWeight", &genWeight_, "genWeight/F");
+  EventTree_->Branch("evtWeight", &evtWeight_, "evtWeight/F");
 }
 
 void EvtTreeManager_1l_2tau::fillTree(float lep_pt, float lep_eta, float lep_tth_mva, int nJet, int nBJetLoose, int nBJetMedium, 
 				      float mindr_lep_jet, float mindr_tau1_jet, float mindr_tau2_jet, float avg_dr_jet, float ptmiss, float mT_lep, 
 				      float htmiss, float tau1_mva, float tau2_mva, float tau1_pt, float tau2_pt, float tau1_eta, float tau2_eta, 
-				      float dr_taus, float dr_lep_tau_os, float dr_lep_tau_ss, float mTauTauVis)
+				      float dr_taus, float dr_lep_tau_os, float dr_lep_tau_ss, float mTauTauVis, float lumiScale, float genWeight, 
+				      float evtWeight)
 {
   lep_pt_ = lep_pt;
   lep_eta_ = lep_eta;
@@ -70,6 +74,9 @@ void EvtTreeManager_1l_2tau::fillTree(float lep_pt, float lep_eta, float lep_tth
   dr_lep_tau_os_ = dr_lep_tau_os;
   dr_lep_tau_ss_ = dr_lep_tau_ss;
   mTauTauVis_ = mTauTauVis;
+  lumiScale_ = lumiScale;
+  genWeight_ = genWeight;
+  evtWeight_ = evtWeight;
 
   EventTree_->Fill();
 }

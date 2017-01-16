@@ -44,12 +44,23 @@ void EvtTreeManager_2lss_1tau::bookTree(TFileDirectory& dir)
   EventTree_->Branch("dr_lep2_tau", &dr_lep2_tau_, "dr_lep2_tau/F");
   EventTree_->Branch("mTauTauVis1", &mTauTauVis1_, "mTauTauVis1/F");
   EventTree_->Branch("mTauTauVis2", &mTauTauVis2_, "mTauTauVis2/F");
+  //EventTree_->Branch("memOutput_errorFlag", &memOutput_errorFlag_, "memOutput_errorFlag/F");
+  //EventTree_->Branch("memOutput_type", &memOutput_type_, "memOutput_type/F"); 
+  //EventTree_->Branch("memOutput_ttH", &memOutput_ttH_, "memOutput_ttH/F");
+  //EventTree_->Branch("memOutput_ttZ", &memOutput_ttZ_, "memOutput_ttZ/F");
+  //EventTree_->Branch("memOutput_ttZ_Zll", &memOutput_ttZ_Zll_, "memOutput_ttZ_Zll/F");
+  //EventTree_->Branch("memOutput_tt", &memOutput_tt_, "memOutput_tt/F");
+  //EventTree_->Branch("memOutput_LR", &memOutput_LR_, "memOutput_LR/F");
+  EventTree_->Branch("lumiScale", &lumiScale_, "lumiScale/F");
+  EventTree_->Branch("genWeight", &genWeight_, "genWeight/F");
+  EventTree_->Branch("evtWeight", &evtWeight_, "evtWeight/F");
 }
 
 void EvtTreeManager_2lss_1tau::fillTree(float lep1_pt, float lep2_pt, float lep1_conePt, float lep2_conePt, float lep1_eta, float lep2_eta, float lep1_tth_mva, 
 					float lep2_tth_mva, int nJet, int nBJetLoose, int nBJetMedium, float mindr_lep1_jet, float mindr_lep2_jet, float mindr_tau_jet,
-					float avg_dr_jet, float ptmiss, float mT_lep1, float mT_lep2, float htmiss, float tau_mva, float tau_pt, 
-					float tau_eta, float dr_leps, float dr_lep1_tau, float dr_lep2_tau, float mTauTauVis1, float mTauTauVis2)
+					float avg_dr_jet, float ptmiss, float mT_lep1, float mT_lep2, float htmiss, float tau_mva, float tau_pt, float tau_eta, 
+					float dr_leps, float dr_lep1_tau, float dr_lep2_tau, float mTauTauVis1, float mTauTauVis2, 
+					const MEMOutput_2lss_1tau* memOutput_2lss_1tau, float lumiScale, float genWeight, float evtWeight)
 {
   lep1_pt_ = lep1_pt;
   lep2_pt_ = lep2_pt;
@@ -78,6 +89,16 @@ void EvtTreeManager_2lss_1tau::fillTree(float lep1_pt, float lep2_pt, float lep1
   dr_lep2_tau_ = dr_lep2_tau;
   mTauTauVis1_ = mTauTauVis1;
   mTauTauVis2_ = mTauTauVis2;
+  //memOutput_errorFlag_ = memOutput_2lss_1tau->errorFlag_;
+  //memOutput_type_ = memOutput_2lss_1tau->type_;
+  //memOutput_ttH_ = memOutput_2lss_1tau->weight_ttH_;
+  //memOutput_ttZ_ = memOutput_2lss_1tau->weight_ttZ_;
+  //memOutput_ttZ_Zll_ = memOutput_2lss_1tau->weight_ttZ_Zll_;
+  //memOutput_tt_ = memOutput_2lss_1tau->weight_tt_;
+  //memOutput_LR_ = memOutput_2lss_1tau->LR_;
+  lumiScale_ = lumiScale;
+  genWeight_ = genWeight;
+  evtWeight_ = evtWeight;
 
   EventTree_->Fill();
 }
