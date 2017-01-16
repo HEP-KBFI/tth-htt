@@ -5,8 +5,7 @@
 MEMInterface_3l_1tau::MEMInterface_3l_1tau()
   : clock_(0)
 {
-  Logger::enableLogging(true);
-  Logger::setLogLevel("info");
+  Logger::enableLogging(false);
   std::cout << "<MEMInterface_3l_1tau>:\n";
 
   // (postponed the creation of the inteface object so that no internal messages printed in
