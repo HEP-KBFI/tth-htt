@@ -16,7 +16,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/TypeTraits.h"
 #include "tthAnalysis/HiggsToTauTau/interface/hltPath.h" // hltPath
 
-enum FloatVariableType { PFMET, PFMETphi, MHT, metLD, mvaOutput_ttV, mvaOutput_ttbar, MC_weight, FR_weight, triggerSF_weight, leptonSF_weight, bTagSF_weight, PU_weight, hadTauSF_weight, genWeight };
+enum FloatVariableType { PFMET, PFMETphi, MHT, metLD, mvaOutput_ttV, mvaOutput_ttbar, MC_weight, FR_weight, triggerSF_weight, leptonSF_weight, bTagSF_weight, PU_weight, hadTauSF_weight, genWeight, lumiScale };
 
 class SyncNtupleManager
 {
@@ -183,6 +183,7 @@ private:
   Float_t PU_weight;
   Float_t hadTauSF_weight;
   Float_t genWeight;
+  Float_t lumiScale;
 };
 
 #endif // SYNCNTUPLEMANAGER_H
