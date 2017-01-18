@@ -145,7 +145,8 @@ struct recursive_directory_range
  */
 double
 check_broken(const std::string & path,
-             const std::string & histo)
+             const std::string & histo,
+             const bool isData = false)
 {
   TFile f(path.c_str());
   double ret_val = ZOMBIE_FILE_C;
@@ -153,7 +154,11 @@ check_broken(const std::string & path,
   {
     if(f.GetListOfKeys() -> Contains(histo.c_str()))
     {
-      TH1 * h = dynamic_cast<TH1 *>(f.Get(histo.c_str()));
+      TH1 * h;
+      if(isData == true)
+        h = dynamic_cast<TH1 *>(f.Get("Count"));
+      else
+        h = dynamic_cast<TH1 *>(f.Get(histo.c_str()));
       ret_val = h -> Integral();
     }
     else
@@ -932,7 +937,6 @@ genweights["/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/RunI
   for(const boost::filesystem::path & p: target_it)
     if(boost::filesystem::is_directory(p))
     {
-      //if(p.string().find("DoubleEG")!=std::string::npos || p.string().find("Muon")!=std::string::npos || p.string().find("Electron")!=std::string::npos || p.string().find("Tau")!=std::string::npos) continue;
       if(verbose) std::cout << "Found sample directory: " << p.string() << '\n';      
       std::vector<boost::filesystem::path> immediate_subsubdirs;
       boost::filesystem::directory_iterator sub_it(p);
@@ -950,8 +954,6 @@ genweights["/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/RunI
 //--- loop over the list of immediate subdirectories recursively
   for(Sample & sample: samples)
   {
-
-    //if(sample.name.find("SingleMuon")==std::string::npos) continue;
     if(verbose) std::cout << ">> Looping over: " << sample.pathStr << "\n";
     for(const boost::filesystem::directory_entry & it: recursive_directory_range(sample.path))
     {
@@ -984,7 +986,9 @@ genweights["/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/RunI
 //--- don't even bother checking whether the file is zombie or not
           continue;
         }
-        const double nof_events = check_broken(file_str, histo_str); //tree_str);
+        bool isData = false;
+        if(sample.category.find("data_obs")!=std::string::npos) isData = true;
+        const double nof_events = check_broken(file_str, histo_str, isData); //tree_str);
         if     (nof_events > 0)                sample.nof_events += nof_events;
         else if(nof_events -0.5 < ZOMBIE_FILE_C)   sample.zombies.push_back(file_str);
         else if(nof_events -0.5 < IMPROPER_FILE_C) sample.improper.push_back(file_str);
