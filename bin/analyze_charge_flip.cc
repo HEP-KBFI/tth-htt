@@ -216,7 +216,10 @@ int main(int argc, char* argv[])
   hltPaths_setBranchAddresses(inputTree, triggers_2e);
 
   PUWEIGHT_TYPE pileupWeight;
+  GENWEIGHT_TYPE genWeight = 1.;
+  
   if ( isMC ) {
+    inputTree->SetBranchAddress(GENWEIGHT_KEY, &genWeight);
     inputTree->SetBranchAddress(PUWEIGHT_KEY, &pileupWeight);
   }
 
@@ -548,7 +551,8 @@ int main(int argc, char* argv[])
     double evtWeight = 1.;
     if ( isMC ) {
       evtWeight *= lumiScale;
-      evtWeight *= pileupWeight;      
+      evtWeight *= pileupWeight;
+      evtWeight *= sgn(genWeight);      
       if ( lheScale_option != kLHE_scale_central ) {	
 	if      ( lheScale_option == kLHE_scale_xDown ) evtWeight *= lheInfoReader->getWeight_scale_xDown();
 	else if ( lheScale_option == kLHE_scale_xUp   ) evtWeight *= lheInfoReader->getWeight_scale_xUp();
