@@ -16,7 +16,7 @@ if __name__ == '__main__':
         return text[2:].splitlines()
       return argparse.HelpFormatter._split_lines(self, text, width)
 
-  parser = argparse.ArgumentParser(formatter_class = lambda prog: SmartFormatter(prog, max_help_position = 35))
+  parser = argparse.ArgumentParser(formatter_class = lambda prog: SmartFormatter(prog, max_help_position = 40))
   parser.add_argument('-o', '--output', metavar = 'directory', required = False, type = str, default = '',
                       help = 'R|Directory where the list of RLE numbers will be saved')
   parser.add_argument('-f', '--force', dest = 'force', action = 'store_true', default = False,
