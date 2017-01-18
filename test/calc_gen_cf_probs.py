@@ -16,7 +16,7 @@ def calc_probs_hist(infile, processes):
         #all_count = histo_SS.GetBinContent(bin_pt, bin_eta)
         ratio = 100. * histo.GetBinContent(bin_pt, bin_eta)
         error = 100. * histo.GetBinError(bin_pt, bin_eta)
-        print "Div: Bin (%d, %d): ratio = %f +- %f" % (bin_eta, bin_pt, ratio, error)
+        print "Bin (%d, %d): ratio = %f +- %f" % (bin_eta, bin_pt, ratio, error)
     #for bin_eta in range(1, histo_OS.GetNbinsY()+1):
     #  for bin_pt in range(1, histo_OS.GetNbinsX()+1):
     #    os_count = histo_OS.GetBinContent(bin_pt, bin_eta)
@@ -45,14 +45,11 @@ def calc_probs(infile, processes):
 if __name__ == "__main__":
   #procs = ["additional_signal_overlap", "WZ", "TTW", "Rares", "TTZ", "signal", "DY"]
   procs = ["DY"]
-  for infile in ["/home/andres/tth/histosCF_pseudodata_oldDY_notrig_somesfs/histograms/charge_flip_Tight/allHistogramsCF.root",
-      "/home/andres/tth/histosCF_pseudodata_newDY_notrig/histograms/charge_flip_Tight/allHistogramsCF.root",
-      "/home/andres/tth/histosCF_pseudodata_newDY/histograms/charge_flip_Tight/allHistogramsCF.root",
-      "/home/andres/tth/histosCF_data_oldDY_notrig_somesfs/histograms/charge_flip_Tight/allHistogramsCF.root",
-      "/home/andres/tth/histosCF_data_newDY_notrig/histograms/charge_flip_Tight/allHistogramsCF.root",
-      "/home/andres/tth/histosCF_data_newDY/histograms/charge_flip_Tight/allHistogramsCF.root"]:
+  for infile in ["/home/andres/tth/histograms/histosCF_genWeight/histograms/histograms_harvested_stage2_charge_flip.root",
+      "/home/andres/tth/histograms/histosCF_mu2/histograms/histograms_harvested_stage2_charge_flip.root",
+      ]:
     print infile
     calc_probs(infile, procs)
-    calc_probs_hist(infile, procs)
+    #calc_probs_hist(infile, procs)
   
   
