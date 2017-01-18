@@ -134,24 +134,24 @@ void MEMOutputWriter_2lss_1tau::write(const std::vector<MEMOutput_2lss_1tau>& me
   }
   for ( Int_t idxMEMOutput = 0; idxMEMOutput < nMEMOutputs_; ++idxMEMOutput ) {
     const MEMOutput_2lss_1tau& memOutput = memOutputs[idxMEMOutput];
-    run_[idxMEMOutput] = memOutput.run_;
-    lumi_[idxMEMOutput] = memOutput.lumi_;
-    evt_[idxMEMOutput] = memOutput.evt_;
-    leadLepton_eta_[idxMEMOutput] = memOutput.leadLepton_eta_;
-    leadLepton_phi_[idxMEMOutput] = memOutput.leadLepton_phi_;
-    subleadLepton_eta_[idxMEMOutput] = memOutput.subleadLepton_eta_;
-    subleadLepton_phi_[idxMEMOutput] = memOutput.subleadLepton_phi_;
-    hadTau_eta_[idxMEMOutput] = memOutput.hadTau_eta_;
-    hadTau_phi_[idxMEMOutput] = memOutput.hadTau_phi_;
-    type_[idxMEMOutput] = memOutput.type_;
-    weight_ttH_[idxMEMOutput] = memOutput.weight_ttH_;
-    weight_ttZ_[idxMEMOutput] = memOutput.weight_ttZ_;
-    weight_ttZ_Zll_[idxMEMOutput] = memOutput.weight_ttZ_Zll_;
-    weight_tt_[idxMEMOutput] = memOutput.weight_tt_;
-    LR_[idxMEMOutput] = memOutput.LR_;
-    cpuTime_[idxMEMOutput] = memOutput.cpuTime_;
-    realTime_[idxMEMOutput] = memOutput.realTime_;
-    isValid_[idxMEMOutput] = memOutput.isValid_;
-    errorFlag_[idxMEMOutput] = memOutput.errorFlag_;
+    run_[idxMEMOutput] = memOutput.run();
+    lumi_[idxMEMOutput] = memOutput.lumi();
+    evt_[idxMEMOutput] = memOutput.evt();
+    leadLepton_eta_[idxMEMOutput] = memOutput.leadLepton_eta();
+    leadLepton_phi_[idxMEMOutput] = memOutput.leadLepton_phi();
+    subleadLepton_eta_[idxMEMOutput] = memOutput.subleadLepton_eta();
+    subleadLepton_phi_[idxMEMOutput] = memOutput.subleadLepton_phi();
+    hadTau_eta_[idxMEMOutput] = memOutput.hadTau_eta();
+    hadTau_phi_[idxMEMOutput] = memOutput.hadTau_phi();
+    type_[idxMEMOutput] = memOutput.type();
+    weight_ttH_[idxMEMOutput] = memOutput.weight_ttH();
+    weight_ttZ_[idxMEMOutput] = memOutput.weight_ttZ();
+    weight_ttZ_Zll_[idxMEMOutput] = memOutput.weight_ttZ_Zll();
+    weight_tt_[idxMEMOutput] = memOutput.weight_tt();
+    LR_[idxMEMOutput] = memOutput.LR();
+    cpuTime_[idxMEMOutput] = memOutput.cpuTime();
+    realTime_[idxMEMOutput] = memOutput.realTime();
+    isValid_[idxMEMOutput] = memOutput.isValid();
+    errorFlag_[idxMEMOutput] = memOutput.errorFlag();
   }
 }

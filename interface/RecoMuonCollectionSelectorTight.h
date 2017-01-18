@@ -12,7 +12,7 @@
 class RecoMuonSelectorTight
 {
  public:
-  RecoMuonSelectorTight(int era, int index = -1, bool debug = false);
+  RecoMuonSelectorTight(int era, bool set_selection_flags = true, int index = -1, bool debug = false);
   ~RecoMuonSelectorTight() {}
 
   /**
@@ -23,6 +23,7 @@ class RecoMuonSelectorTight
 
  protected: 
   int era_;
+  bool set_selection_flags_;
   int index_;
   bool debug_;
 

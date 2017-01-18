@@ -1,6 +1,8 @@
 import codecs
 import os
 import logging
+import sys
+import getpass
 
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd
 from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg, createFile, generateInputFileList
@@ -18,14 +20,14 @@ class prodNtupleConfig:
     
     Args:
         outputDir: The root output dir -- all configuration, log and output files are stored in its subdirectories
-        executable_prodNtuple: Name of the executable that runs the Ntuple production; expected value is `prodNtuple_2lss_1tau`
+        executable_prodNtuple: Name of the executable that runs the Ntuple production
         debug: if True, checks each input root file (Ntuple) before creating the python configuration files
         running_method: either `sbatch` (uses SLURM) or `Makefile`
         num_parallel_jobs: number of jobs that can be run in parallel on local machine (does not limit number of Ntuple production jobs running in parallel on batch system)
   
     """
     def __init__(self, outputDir, executable_prodNtuple, channel, samples,
-                 era, debug, running_method, num_parallel_jobs):
+                 era, debug, running_method, rle_directory, version, num_parallel_jobs):
 
         self.outputDir = outputDir
         self.executable_prodNtuple = executable_prodNtuple
@@ -50,6 +52,18 @@ class prodNtupleConfig:
 
         self.workingDir = os.getcwd()
         print "Working directory is: " + self.workingDir
+
+        self.rle_directory = rle_directory
+        self.version       = version
+        if self.rle_directory == 'default':
+            self.rle_directory = os.path.join(
+                '/home', getpass.getuser(), 'ttHAnalysis', self.era, self.version, 'rles', self.channel
+            )
+        elif self.rle_directory:
+            if not os.path.isdir(self.rle_directory):
+                logging.error(
+                    "No such directory: '{directory_name}'".format(directory_name=self.rle_directory))
+                sys.exit(1)
 
         create_if_not_exists(self.outputDir)
         self.stdout_file = codecs.open(os.path.join(
@@ -149,6 +163,14 @@ class prodNtupleConfig:
                 continue
 
             process_name = sample_info["process_name_specific"]
+            rle_filename = ''
+            if self.rle_directory:
+                rle_filename = os.path.join(self.rle_directory, "{base_name}.txt".format(base_name = process_name))
+                if not os.path.isfile(rle_filename):
+                    logging.error("No such RLE file: {rle_filename}; setting it to ''".format(rle_filename = rle_filename))
+                    rle_filename = ''
+                else:
+                    logging.info("Using RLE file {rle_filename}".format(rle_filename = rle_filename))
 
             logging.info("Creating configuration files to run '%s' for sample %s" % (self.executable_prodNtuple, process_name))  
     
@@ -171,7 +193,8 @@ class prodNtupleConfig:
                   (process_name, jobId))
                 self.logFiles_prodNtuple[key_file] = os.path.join(self.dirs[key_dir][DKEY_LOGS], "produceNtuple_%s_%s_%i.log" % \
                   (self.channel, process_name, jobId))
-                self.createCfg_prodNtuple(self.inputFiles[key_file], self.outputFiles[key_file], self.era, self.cfgFiles_prodNtuple_modified[key_file])
+                self.createCfg_prodNtuple(self.inputFiles[key_file], self.outputFiles[key_file], self.era,
+                                          self.cfgFiles_prodNtuple_modified[key_file], rle_filename)
                 
         if self.is_sbatch:
             logging.info("Creating script for submitting '%s' jobs to batch system" % self.executable_prodNtuple)

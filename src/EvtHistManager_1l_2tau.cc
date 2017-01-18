@@ -23,7 +23,7 @@ void EvtHistManager_1l_2tau::bookHistograms(TFileDirectory& dir)
   histogram_mvaOutput_1l_2tau_ttbar_TMVA_ = book1D(dir, "mvaOutput_1l_2tau_ttbar_TMVA", "mvaOutput_1l_2tau_ttbar_TMVA", 20, -1., +1.);
   histogram_mvaOutput_1l_2tau_ttbar_sklearn_ = book1D(dir, "mvaOutput_1l_2tau_ttbar_sklearn", "mvaOutput_1l_2tau_ttbar_sklearn", 20, -1., +1.);
 
-  histogram_mTauTauVis_ = book1D(dir, "mTauTauVis", "mTauTauVis", 40, 0., 200.);
+  histogram_mTauTauVis_ = book1D(dir, "mTauTauVis", "mTauTauVis", 20, 0., 200.);
 
   histogram_EventCounter_ = book1D(dir, "EventCounter", "EventCounter", 1, -0.5, +0.5);
 }

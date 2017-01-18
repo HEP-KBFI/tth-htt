@@ -51,7 +51,7 @@ class ParticleCollectionGenMatcher
       double dR_bestMatch = 1.e+3;
       for ( typename std::vector<Tgen>::const_iterator genParticle = genParticles.begin();
 	    genParticle != genParticles.end(); ++genParticle ) {
-	double dR = deltaR((*recParticle)->eta_, (*recParticle)->phi_, genParticle->eta_, genParticle->phi_);
+	double dR = deltaR((*recParticle)->eta(), (*recParticle)->phi(), genParticle->eta(), genParticle->phi());
 	if ( dR < dRmax && dR < dR_bestMatch ) {
 	  bestMatch = &(*genParticle);
 	  dR_bestMatch = dR;
@@ -68,7 +68,7 @@ class ParticleCollectionGenMatcher
   {
     void operator()(Trec& recParticle, const GenLepton* genLepton) const
     {
-      recParticle.genLepton_ = genLepton;
+      recParticle.set_genLepton(genLepton);
     }
   }; 
   GenLeptonLinker genLeptonLinker_;
@@ -77,7 +77,7 @@ class ParticleCollectionGenMatcher
   {
     void operator()(Trec& recParticle, const GenHadTau* genHadTau) const
     {
-      recParticle.genHadTau_ = genHadTau;
+      recParticle.set_genHadTau(genHadTau);
     }
   };
   GenHadTauLinker genHadTauLinker_;
@@ -86,7 +86,7 @@ class ParticleCollectionGenMatcher
   {
     void operator()(Trec& recParticle, const GenJet* genJet) const
     {
-      recParticle.genJet_ = genJet;    
+      recParticle.set_genJet(genJet);    
     }
   };
   GenJetLinker genJetLinker_;

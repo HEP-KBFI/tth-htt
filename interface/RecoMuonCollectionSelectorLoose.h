@@ -12,7 +12,7 @@
 class RecoMuonSelectorLoose
 {
  public:
-  RecoMuonSelectorLoose(int era, int index = -1, bool debug = false);
+  RecoMuonSelectorLoose(int era, bool set_selection_flags = true, int index = -1, bool debug = false);
   ~RecoMuonSelectorLoose() {}
 
   /**
@@ -22,6 +22,8 @@ class RecoMuonSelectorLoose
   bool operator()(const RecoMuon& muon) const;
 
  protected: 
+  bool set_selection_flags_;
+
   Double_t min_pt_;        ///< lower cut threshold on pT
   Double_t max_absEta_;    ///< upper cut threshold on absolute value of eta
   Double_t max_dxy_;       ///< upper cut threshold on d_{xy}, distance in the transverse plane w.r.t PV

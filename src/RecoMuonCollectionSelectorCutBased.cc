@@ -11,11 +11,11 @@ RecoMuonSelectorCutBased::RecoMuonSelectorCutBased(int era, int index, bool debu
 bool
 RecoMuonSelectorCutBased::operator()(const RecoMuon& muon) const
 {
-  if(muon.pt_ >= min_pt_ &&
-     muon.relIso_ <= max_relIso_ &&
-     muon.sip3d_ <= max_sip3d_ &&
-     (muon.passesMediumIdPOG_ || !apply_mediumIdPOG_) &&
-     (muon.tightCharge_ >= 2 || !apply_tightCharge_)) {
+  if(muon.pt() >= min_pt_ &&
+     muon.relIso() <= max_relIso_ &&
+     muon.sip3d() <= max_sip3d_ &&
+     (muon.passesMediumIdPOG() || !apply_mediumIdPOG_) &&
+     (muon.tightCharge() >= 2 || !apply_tightCharge_)) {
     return true;
   }
   return false;

@@ -9,8 +9,8 @@
  *
  */
 
-#include "DataFormats/Math/interface/LorentzVector.h" // math::PtEtaPhiMLorentzVector
-
+#include "tthAnalysis/HiggsToTauTau/interface/GenParticle.h" // Particle::LorentzVector
+#include "tthAnalysis/HiggsToTauTau/interface/RecoMEt.h" // RecoMEt
 #include "tthAnalysis/HiggsToTauTau/interface/HistManagerBase.h" // HistManagerBase
 
 class MEtHistManager
@@ -22,8 +22,7 @@ class MEtHistManager
 
   /// book and fill histograms
   void bookHistograms(TFileDirectory& dir);
-  typedef math::PtEtaPhiMLorentzVector LV;
-  void fillHistograms(const LV& met_p4, const LV& mht_p4, double met_LD, double evtWeight);
+  void fillHistograms(const RecoMEt& met, const Particle::LorentzVector& mht_p4, double met_LD, double evtWeight);
 
  private:
   TH1* histogram_met_pt_;

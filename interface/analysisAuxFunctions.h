@@ -3,7 +3,7 @@
 
 #include "DataFormats/Math/interface/deltaR.h" // deltaR
 
-#include "tthAnalysis/HiggsToTauTau/interface/GenParticle.h" // GenParticle
+#include "tthAnalysis/HiggsToTauTau/interface/GenParticle.h" // GenParticle, Candidate::LorentzVector
 #include "tthAnalysis/HiggsToTauTau/interface/RecoLepton.h" // RecoLepton
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectron.h" // RecoElectron
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuon.h" // RecoMuon
@@ -30,6 +30,9 @@ enum { kBtag_central,
        kBtag_cErr1Up, kBtag_cErr1Down, kBtag_cErr2Up, kBtag_cErr2Down, 
        kBtag_jesUp, kBtag_jesDown };
 
+//--- declare selection criteria for leptons and hadronic taus
+enum { kLoose, kFakeable, kTight };
+
 /**
  * @brief Auxiliary function used for sorting leptons by decreasing pT
  * @param Given pair of leptons
@@ -45,7 +48,7 @@ bool isMatched(const Tfakeable& fakeableLepton, const std::vector<Ttight*>& tigh
 {
   for ( typename std::vector<const Ttight*>::const_iterator tightLepton = tightLeptons.begin();
         tightLepton != tightLeptons.end(); ++tightLepton ) {
-    double dR = deltaR(fakeableLepton.eta_, fakeableLepton.phi_, (*tightLepton)->eta_, (*tightLepton)->phi_);
+    double dR = deltaR(fakeableLepton.eta(), fakeableLepton.phi(), (*tightLepton)->eta(), (*tightLepton)->phi());
     if ( dR < dRmax ) return true; // found match
   }
   return false; // no match found
@@ -71,6 +74,8 @@ std::vector<T> pickFirstNobjects(const std::vector<T>& objects_input, size_t N)
   return objects_output;
 }
 
+int getHadTau_genPdgId(const RecoHadTau* hadTau);
+
 /**
  * @brief Compute MHT
  */
@@ -79,18 +84,53 @@ math::PtEtaPhiMLorentzVector compMHT(const std::vector<const RecoLepton*>& lepto
 /**
  * @brief Compute linear discriminator based on MET and MHT
  */
-double compMEt_LD(const math::PtEtaPhiMLorentzVector& met_p4, const math::PtEtaPhiMLorentzVector& mht_p4);
+double compMEt_LD(const Particle::LorentzVector& met_p4, const Particle::LorentzVector& mht_p4);
 
 /**
- * @brief Set "cone pT" for leptons that pass the "fakeable" lepton selection, but fail the "tight" lepton selection, 
- *        as described in lines 304-306 of AN-2016/211
+ * @brief Set flags indicating whether or not lepton passes loose, fakeable and/or tight selection criteria
  */
-void set_cone_pT(std::vector<const RecoElectron*>& fakeableElectrons, int era);
-void set_cone_pT(std::vector<const RecoMuon*>& fakeableMuons, int era);
+template <typename T>
+void set_selection_flags(std::vector<const T*>& leptons, int selection)
+{
+  for ( typename std::vector<const T*>::iterator lepton = leptons.begin();
+	lepton != leptons.end(); ++lepton ) {
+    if      ( selection == kLoose    ) (*lepton)->set_isLoose();
+    else if ( selection == kFakeable ) (*lepton)->set_isFakeable();
+    else if ( selection == kTight    ) (*lepton)->set_isTight();
+    else assert(0);
+  }
+}
 
 /**
  * @brief Build collection of selected leptons by merging collections of selected electrons and selected muons
  */
 std::vector<const RecoLepton*> mergeLeptonCollections(const std::vector<const RecoElectron*>& electrons, const std::vector<const RecoMuon*>& muons);
+
+/**
+ * @brief Print values of pT, eta, phi as well as ID and isolation variables for electrons and muons (for debugging purposes)
+ */
+void printLeptonCollection(const std::string& collection_name, const std::vector<const RecoLepton*>& leptons);
+
+/**
+ * @brief Print values of pT, eta, phi as well as of tau ID/isolation variables for hadronic taus (for debugging purposes)
+ */
+void printHadTauCollection(const std::string& collection_name, const std::vector<const RecoHadTau*>& hadTaus);
+
+/**
+ * @brief Print values of pT, eta, phi as well as the b-tagging discriminator values for jets (for debugging purposes)
+ */
+void printJetCollection(const std::string& collection_name, const std::vector<const RecoJet*>& jets);
+
+/**
+ * @brief Compute sign of value given as function parameter
+ * @return +1 if val > 0, 0 if val = 0, -1 of val < 0
+ */
+template <typename T> 
+int sgn(T val) 
+{
+  if      ( val > 0 ) return +1;
+  else if ( val < 0 ) return -1;
+  else                return  0;
+}
 
 #endif

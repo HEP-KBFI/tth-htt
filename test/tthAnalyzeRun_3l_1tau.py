@@ -19,7 +19,7 @@ elif ERA == "2016":
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "2016Dec11"
+version = "2017Jan13"
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -29,10 +29,13 @@ if __name__ == '__main__':
 
   analysis = analyzeConfig_3l_1tau(
     outputDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", ERA, version),
-    executable_analyze = "analyze_3l_1tau",
+    executable_analyze = "analyze_3l_1tau", cfgFile_analyze = "analyze_3l_1tau_cfg.py",
     samples = samples,
     hadTau_selection = "dR03mvaMedium",
-    applyFakeRateWeights = "4L",
+    # CV: apply "fake" background estimation to leptons only and not to hadronic taus, as discussed on slide 10 of
+    #     https://indico.cern.ch/event/597028/contributions/2413742/attachments/1391684/2120220/16.12.22_ttH_Htautau_-_Review_of_systematics.pdf
+    #applyFakeRateWeights = "4L",
+    applyFakeRateWeights = "3lepton",
     charge_selections = [ "OS", "SS" ],
     central_or_shifts = [ 
       "central",
@@ -81,7 +84,7 @@ if __name__ == '__main__':
     era = ERA, use_lumi = True, lumi = LUMI,
     debug = False,
     running_method = "sbatch",
-    num_parallel_jobs = 4,
+    num_parallel_jobs = 8,
     executable_addBackgrounds = "addBackgrounds",
     executable_addBackgroundJetToTauFakes = "addBackgroundLeptonFakes", # CV: use common executable for estimating jet->lepton and jet->tau_h fake background
     histograms_to_fit = [ "EventCounter", "numJets", "mvaDiscr_3l", "mTauTauVis" ],

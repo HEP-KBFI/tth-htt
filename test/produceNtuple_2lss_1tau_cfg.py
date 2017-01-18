@@ -6,6 +6,7 @@ process = cms.PSet()
   
 process.fwliteInput = cms.PSet(
     fileNames = cms.vstring('/hdfs/local/lucia/VHBBHeppyV24bis/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/VHBB_HEPPY_V24bis_ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_Py8_mWCutfix__spr16MAv2-puspr16_HLT_80r2as_v14_ext1-v1/160911_223711/0000/tree_1.root'),
+    
     maxEvents = cms.int32(-1),
     outputEvery = cms.uint32(100000)
 )
@@ -32,6 +33,8 @@ process.produceNtuple_2lss_1tau = cms.PSet(
     minNumBJets_medium = cms.int32(0),
     
     selEventsFileName_input = cms.string(''),
+
+    selEventsFileName_addMEM = cms.string(''),
 
     outputCommands = cms.vstring(
         "drop *",
@@ -90,3 +93,4 @@ process.produceNtuple_2lss_1tau = cms.PSet(
         "CountWeightedLHEWeightPdf",
     )
 )
+

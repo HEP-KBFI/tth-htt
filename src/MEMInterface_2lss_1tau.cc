@@ -38,7 +38,7 @@ namespace
 {
   bool isHigherBtagCSV(const RecoJet* jet1, const RecoJet* jet2)
   {
-    return (jet1->BtagCSV_ > jet2->BtagCSV_);
+    return (jet1->BtagCSV() > jet2->BtagCSV());
   }
 }
 
@@ -58,36 +58,36 @@ MEMInterface_2lss_1tau::operator()(
 
   IntegrationMsg_t inputs[1];
   
-  inputs[0].evLep1_4P_[0] = selLepton_lead->p4_.px();
-  inputs[0].evLep1_4P_[1] = selLepton_lead->p4_.py();
-  inputs[0].evLep1_4P_[2] = selLepton_lead->p4_.pz();
-  inputs[0].evLep1_4P_[3] = selLepton_lead->p4_.energy();
-  inputs[0].lepton1_Type_ = selLepton_lead->pdgId_;
+  inputs[0].evLep1_4P_[0] = selLepton_lead->p4().px();
+  inputs[0].evLep1_4P_[1] = selLepton_lead->p4().py();
+  inputs[0].evLep1_4P_[2] = selLepton_lead->p4().pz();
+  inputs[0].evLep1_4P_[3] = selLepton_lead->p4().energy();
+  inputs[0].lepton1_Type_ = selLepton_lead->pdgId();
   
-  inputs[0].evLep2_4P_[0] = selLepton_sublead->p4_.px();
-  inputs[0].evLep2_4P_[1] = selLepton_sublead->p4_.py();
-  inputs[0].evLep2_4P_[2] = selLepton_sublead->p4_.pz();
-  inputs[0].evLep2_4P_[3] = selLepton_sublead->p4_.energy();
-  inputs[0].lepton2_Type_ = selLepton_sublead->pdgId_;
+  inputs[0].evLep2_4P_[0] = selLepton_sublead->p4().px();
+  inputs[0].evLep2_4P_[1] = selLepton_sublead->p4().py();
+  inputs[0].evLep2_4P_[2] = selLepton_sublead->p4().pz();
+  inputs[0].evLep2_4P_[3] = selLepton_sublead->p4().energy();
+  inputs[0].lepton2_Type_ = selLepton_sublead->pdgId();
 
-  inputs[0].evHadSys_Tau_4P_[0] = selHadTau->p4_.px();
-  inputs[0].evHadSys_Tau_4P_[1] = selHadTau->p4_.py();
-  inputs[0].evHadSys_Tau_4P_[2] = selHadTau->p4_.pz();
-  inputs[0].evHadSys_Tau_4P_[3] = selHadTau->p4_.energy();
-  inputs[0].HadtauDecayMode_ = selHadTau->decayMode_;
+  inputs[0].evHadSys_Tau_4P_[0] = selHadTau->p4().px();
+  inputs[0].evHadSys_Tau_4P_[1] = selHadTau->p4().py();
+  inputs[0].evHadSys_Tau_4P_[2] = selHadTau->p4().pz();
+  inputs[0].evHadSys_Tau_4P_[3] = selHadTau->p4().energy();
+  inputs[0].HadtauDecayMode_ = selHadTau->decayMode();
 
   std::vector<const RecoJet*> selJets_sortedByBtagCSV = selJets;
   std::sort(selJets_sortedByBtagCSV.begin(), selJets_sortedByBtagCSV.end(), isHigherBtagCSV);
   const RecoJet* selBJet1 = selJets_sortedByBtagCSV[0];
   const RecoJet* selBJet2 = selJets_sortedByBtagCSV[1];
-  inputs[0].evBJet1_4P_[0] = selBJet1->p4_.px();
-  inputs[0].evBJet1_4P_[1] = selBJet1->p4_.py();
-  inputs[0].evBJet1_4P_[2] = selBJet1->p4_.pz();
-  inputs[0].evBJet1_4P_[3] = selBJet1->p4_.energy();
-  inputs[0].evBJet2_4P_[0] = selBJet2->p4_.px();
-  inputs[0].evBJet2_4P_[1] = selBJet2->p4_.py();
-  inputs[0].evBJet2_4P_[2] = selBJet2->p4_.pz();
-  inputs[0].evBJet2_4P_[3] = selBJet2->p4_.energy();
+  inputs[0].evBJet1_4P_[0] = selBJet1->p4().px();
+  inputs[0].evBJet1_4P_[1] = selBJet1->p4().py();
+  inputs[0].evBJet1_4P_[2] = selBJet1->p4().pz();
+  inputs[0].evBJet1_4P_[3] = selBJet1->p4().energy();
+  inputs[0].evBJet2_4P_[0] = selBJet2->p4().px();
+  inputs[0].evBJet2_4P_[1] = selBJet2->p4().py();
+  inputs[0].evBJet2_4P_[2] = selBJet2->p4().pz();
+  inputs[0].evBJet2_4P_[3] = selBJet2->p4().energy();
   
   const RecoJet* selJet1_w = 0;
   const RecoJet* selJet2_w = 0;
@@ -99,7 +99,7 @@ MEMInterface_2lss_1tau::operator()(
     for ( std::vector<const RecoJet*>::const_iterator selJet2 = selJet1 + 1;
 	  selJet2 != selJets.end(); ++selJet2 ) {
       if ( (*selJet2) == selBJet1 || (*selJet2) == selBJet2 ) continue;
-      double mJetJet = ((*selJet1)->p4_ + (*selJet2)->p4_).mass();
+      double mJetJet = ((*selJet1)->p4() + (*selJet2)->p4()).mass();
       if ( !(mJetJet > 60. && mJetJet < 100.) ) continue;
       if ( TMath::Abs(mJetJet - mW) < TMath::Abs(mJetJet_w - mW) ) {
 	selJet1_w = (*selJet1);
@@ -109,14 +109,14 @@ MEMInterface_2lss_1tau::operator()(
   }
   if ( selJet1_w && selJet2_w ) {
     inputs[0].integration_type_ = 0;
-    inputs[0].evJet1_4P_[0] = selJet1_w->p4_.px();
-    inputs[0].evJet1_4P_[1] = selJet1_w->p4_.py();
-    inputs[0].evJet1_4P_[2] = selJet1_w->p4_.pz();
-    inputs[0].evJet1_4P_[3] = selJet1_w->p4_.energy();
-    inputs[0].evJet2_4P_[0] = selJet2_w->p4_.px();
-    inputs[0].evJet2_4P_[1] = selJet2_w->p4_.py();
-    inputs[0].evJet2_4P_[2] = selJet2_w->p4_.pz();
-    inputs[0].evJet2_4P_[3] = selJet2_w->p4_.energy();
+    inputs[0].evJet1_4P_[0] = selJet1_w->p4().px();
+    inputs[0].evJet1_4P_[1] = selJet1_w->p4().py();
+    inputs[0].evJet1_4P_[2] = selJet1_w->p4().pz();
+    inputs[0].evJet1_4P_[3] = selJet1_w->p4().energy();
+    inputs[0].evJet2_4P_[0] = selJet2_w->p4().px();
+    inputs[0].evJet2_4P_[1] = selJet2_w->p4().py();
+    inputs[0].evJet2_4P_[2] = selJet2_w->p4().pz();
+    inputs[0].evJet2_4P_[3] = selJet2_w->p4().energy();
   } else {
     inputs[0].integration_type_ = 1;
     inputs[0].evJet1_4P_[0] = 0.;
@@ -140,10 +140,10 @@ MEMInterface_2lss_1tau::operator()(
   for ( int idxJet = 0; idxJet < maxNumJets_untagged; ++idxJet ) {
     if ( idxJet < (int)selJets_untagged.size() ) {
       const RecoJet* selJet = selJets_untagged[idxJet];
-      inputs[0].evJets_4P_[idxJet][0] = selJet->p4_.px();
-      inputs[0].evJets_4P_[idxJet][1] = selJet->p4_.py();
-      inputs[0].evJets_4P_[idxJet][2] = selJet->p4_.pz();
-      inputs[0].evJets_4P_[idxJet][3] = selJet->p4_.energy();
+      inputs[0].evJets_4P_[idxJet][0] = selJet->p4().px();
+      inputs[0].evJets_4P_[idxJet][1] = selJet->p4().py();
+      inputs[0].evJets_4P_[idxJet][2] = selJet->p4().pz();
+      inputs[0].evJets_4P_[idxJet][3] = selJet->p4().energy();
     } else {
       inputs[0].evJets_4P_[idxJet][0] = 0.;
       inputs[0].evJets_4P_[idxJet][1] = 0.;
@@ -152,12 +152,12 @@ MEMInterface_2lss_1tau::operator()(
     }
   }
 
-  inputs[0].evRecoMET4P_[0] = met.p4_.px();
-  inputs[0].evRecoMET4P_[1] = met.p4_.py();
+  inputs[0].evRecoMET4P_[0] = met.p4().px();
+  inputs[0].evRecoMET4P_[1] = met.p4().py();
   inputs[0].evRecoMET4P_[2] = 0.;
-  inputs[0].evRecoMET4P_[3] = met.p4_.pt();
+  inputs[0].evRecoMET4P_[3] = met.p4().pt();
 
-  TMatrixD metCov_inverse = met.cov_;
+  TMatrixD metCov_inverse = met.cov();
   double det = metCov_inverse.Determinant();
   if ( det != 0 ) { 
     metCov_inverse.Invert(); 
@@ -181,12 +181,12 @@ MEMInterface_2lss_1tau::operator()(
   clock_->Stop("<MEMInterface_2lss_1tau::operator()>");
   clock_->Show("<MEMInterface_2lss_1tau::operator()>");
 
-  result.leadLepton_eta_ = selLepton_lead->eta_;
-  result.leadLepton_phi_ = selLepton_lead->phi_;
-  result.subleadLepton_eta_ = selLepton_sublead->eta_;
-  result.subleadLepton_phi_ = selLepton_sublead->phi_;
-  result.hadTau_eta_ = selHadTau->eta_;
-  result.hadTau_phi_ = selHadTau->phi_;
+  result.leadLepton_eta_ = selLepton_lead->eta();
+  result.leadLepton_phi_ = selLepton_lead->phi();
+  result.subleadLepton_eta_ = selLepton_sublead->eta();
+  result.subleadLepton_phi_ = selLepton_sublead->phi();
+  result.hadTau_eta_ = selHadTau->eta();
+  result.hadTau_phi_ = selHadTau->phi();
   result.type_ = inputs[0].integration_type_;
   result.weight_ttH_ = inputs[0].weight_ttH_;
   result.weight_ttZ_ = inputs[0].weight_ttZ_;

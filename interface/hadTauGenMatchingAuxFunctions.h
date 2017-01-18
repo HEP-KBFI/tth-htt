@@ -40,4 +40,7 @@ int getHadTauGenMatch_int(const std::vector<hadTauGenMatchEntry>& hadTauGenMatch
 const hadTauGenMatchEntry& getHadTauGenMatch(const std::vector<hadTauGenMatchEntry>& hadTauGenMatch_definitions,
 					     const RecoHadTau* hadTau_lead, const RecoHadTau* hadTau_sublead = 0, const RecoHadTau* hadTau_third = 0);
 
+std::ostream& operator<<(std::ostream& stream, const hadTauGenMatchEntry& hadTauGenMatch_definition);
+std::ostream& operator<<(std::ostream& stream, const std::vector<hadTauGenMatchEntry>& hadTauGenMatch_definitions);
+
 #endif // tthAnalysis_HiggsToTauTau_hadTauGenMatchingAuxFunctions_h

@@ -14,7 +14,7 @@ GenParticle::GenParticle(Double_t pt,
   , p4_{pt_, eta_, phi_, mass_}
 { }
 
-GenParticle::GenParticle(const math::PtEtaPhiMLorentzVector & p4)
+GenParticle::GenParticle(const Particle::LorentzVector & p4)
   : pt_(p4.pt())
   , eta_(p4.eta())
   , phi_(p4.phi())
@@ -23,29 +23,11 @@ GenParticle::GenParticle(const math::PtEtaPhiMLorentzVector & p4)
   , p4_(p4)
 { }
 
-bool
-GenParticle::rel_pT_diff(const GenParticle & other,
-                         double tolerance) const
+std::ostream& operator<<(std::ostream& stream, const GenParticle& particle)
 {
-  return pt_ > 0.                                    &&
-         other.pt_ > 0.                              &&
-         (std::fabs(pt_ - other.pt_) / pt_) < tolerance;
-}
-
-bool
-GenParticle::is_overlap(const GenParticle & other,
-                        double dR_min) const
-{
-  return dR(other) < dR_min;
-}
-
-std::ostream &
-operator<<(std::ostream & os,
-           const GenParticle & o)
-{
-  os << "pt = " << o.pt_ << "; "
-     << "eta = " << o.eta_ << "; "
-     << "phi = " << o.phi_ << "; "
-     << "mass = " << o.mass_;
-  return os;
+  stream << " pT = " << particle.pt() << ","
+         << " eta = " << particle.eta() << ","
+         << " phi = " << particle.phi() << ","
+         << " mass = " << particle.mass() << std::endl;
+  return stream;
 }

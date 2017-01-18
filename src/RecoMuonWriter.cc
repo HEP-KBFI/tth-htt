@@ -91,11 +91,11 @@ void RecoMuonWriter::write(const std::vector<const RecoMuon*>& leptons)
   for ( Int_t idxLepton = 0; idxLepton < nLeptons; ++idxLepton ) {
     const RecoMuon* lepton = leptons[idxLepton];
     assert(lepton);
-    looseIdPOG_[idxLepton] = lepton->passesLooseIdPOG_;
-    mediumIdPOG_[idxLepton] = lepton->passesMediumIdPOG_;
+    looseIdPOG_[idxLepton] = lepton->passesLooseIdPOG();
+    mediumIdPOG_[idxLepton] = lepton->passesMediumIdPOG();
 #ifdef DPT_DIV_PT
-    dpt_div_pt_[idxLepton] = lepton->dpt_div_pt_;
+    dpt_div_pt_[idxLepton] = lepton->dpt_div_pt();
 #endif
-    segmentCompatibility_[idxLepton] = lepton->segmentCompatibility_;
+    segmentCompatibility_[idxLepton] = lepton->segmentCompatibility();
   }
 }

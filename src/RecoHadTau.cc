@@ -42,18 +42,21 @@ RecoHadTau::RecoHadTau(Double_t pt,
   , genLepton_(0)
   , genHadTau_(0)
   , genJet_(0)
+  , isLoose_(false)
+  , isFakeable_(false)
+  , isTight_(false)
 {}
 
 std::ostream& operator<<(std::ostream& stream, const RecoHadTau& hadTau)
 {
-  stream << " pT = " << hadTau.pt_ << ","
-	 << " eta = " << hadTau.eta_ << "," 
-	 << " phi = " << hadTau.phi_ << "," 
-	 << " mass = " << hadTau.mass_ << "," 
-	 << " charge = " << hadTau.charge_ << std::endl; 
-  stream << " decayModeFinding = " << hadTau.decayModeFinding_ << "," 
-	 << " id_mva_dR03 = " << hadTau.id_mva_dR03_ << " (raw = " << hadTau.raw_mva_dR03_ << ")," 
-	 << " antiElectron = " << hadTau.antiElectron_ << ", antiMuon = " << hadTau.antiMuon_  << std::endl;
+  stream << " pT = " << hadTau.pt() << ","
+	 << " eta = " << hadTau.eta() << "," 
+	 << " phi = " << hadTau.phi() << "," 
+	 << " mass = " << hadTau.mass() << "," 
+	 << " charge = " << hadTau.charge() << std::endl; 
+  stream << " decayModeFinding = " << hadTau.decayModeFinding() << "," 
+	 << " id_mva_dR03 = " << hadTau.id_mva_dR03() << " (raw = " << hadTau.raw_mva_dR03() << ")," 
+	 << " antiElectron = " << hadTau.antiElectron() << ", antiMuon = " << hadTau.antiMuon()  << std::endl;
   return stream;
 }
 

@@ -54,18 +54,16 @@ RecoMuon::RecoMuon(Double_t pt,
 
 std::ostream& operator<<(std::ostream& stream, const RecoMuon& muon)
 {
-  stream << " pT = " << muon.pt_ << ","
-         << " eta = " << muon.eta_ << ","
-         << " phi = " << muon.phi_ << ","
-         << " pdgId = " << muon.pdgId_ << std::endl;
-  stream << " dxy = " << muon.dxy_ << ", dz = " << muon.dz_ << ", sip3d = " <<
-    muon.sip3d_ << std::endl;
-  stream << " relIso = " << muon.relIso_ << std::endl;
-  stream << " chargedHadRelIso03 = " << muon.chargedHadRelIso03_ << std::endl;
-  stream << " passesLooseIdPOG = " << muon.passesLooseIdPOG_ <<
-    ", passesMediumIdPOG = " << muon.passesMediumIdPOG_ << std::endl;
-  stream << " tightCharge = " << muon.tightCharge_ << std::endl;
-  stream << " jetBtagCSV = " << muon.jetBtagCSV_ << std::endl;
-  stream << " mvaRawTTH = " << muon.mvaRawTTH_ << std::endl;
+  stream << " pT = " << muon.lepton_pt() << " (cone_pT = " << muon.cone_pt() << ") ,"
+         << " eta = " << muon.eta() << ","
+         << " phi = " << muon.phi() << ","
+         << " pdgId = " << muon.pdgId() << std::endl;
+  stream << " dxy = " << muon.dxy() << ", dz = " << muon.dz() << ", sip3d = " << muon.sip3d() << std::endl;
+  stream << " relIso = " << muon.relIso() << std::endl;
+  stream << " chargedHadRelIso03 = " << muon.chargedHadRelIso03() << std::endl;
+  stream << " passesLooseIdPOG = " << muon.passesLooseIdPOG() << ", passesMediumIdPOG = " << muon.passesMediumIdPOG() << std::endl;
+  stream << " tightCharge = " << muon.tightCharge() << std::endl;
+  stream << " jetBtagCSV = " << muon.jetBtagCSV() << std::endl;
+  stream << " mvaRawTTH = " << muon.mvaRawTTH() << std::endl;
   return stream;
 }

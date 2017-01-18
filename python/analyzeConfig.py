@@ -13,14 +13,15 @@ DKEY_CFGS = "cfgs"
 # dir for ROOT files containing histograms = output of the anaysis jobs
 DKEY_HIST = "histograms"
 DKEY_PLOT = "plots"       # dir for control plots (prefit)
+DKEY_SCRIPTS = "scripts"  # dir for sbatchManagers scripts that submit analysis and hadd jobs to batch system
 DKEY_LOGS = "logs"        # dir for log files (stdout/stderr of jobs)
 DKEY_DCRD = "datacards"   # dir for the datacard
 DKEY_RLES = "output_rle"  # dir for the selected run:lumi:event numbers
-DKEY_ROOT = "output_root"  # dir for the selected events dumped into a root file
+DKEY_ROOT = "output_root" # dir for the selected events dumped into a root file
 
 executable_rm = 'rm'
 
-DIRLIST = [ DKEY_CFGS, DKEY_DCRD, DKEY_HIST, DKEY_PLOT, DKEY_LOGS, DKEY_RLES, DKEY_ROOT ]
+DIRLIST = [ DKEY_CFGS, DKEY_DCRD, DKEY_HIST, DKEY_PLOT, DKEY_SCRIPTS, DKEY_LOGS, DKEY_RLES, DKEY_ROOT ]
 
 class analyzeConfig:
     """Configuration metadata needed to run analysis in a single go.
@@ -372,7 +373,7 @@ class analyzeConfig:
         lines_makefile.append("selEventTree_hadd: %s\n" % ' '.join(
             map(lambda x: x[0], self.rootOutputAux.values())))
         for rootOutput in self.rootOutputAux.values():
-            lines_makefile.append("%s: %s" % (rootOutput[0], rootOutput[2]))
+            lines_makefile.append("%s: %s" % (rootOutput[0], self.histogramFile_hadd_stage1))
             lines_makefile.append(
                 "\thadd -f %s $(shell for f in `ls %s`; do echo -ne $$f\" \"; done)\n" % (rootOutput[0], rootOutput[1]))
         lines_makefile.append("")

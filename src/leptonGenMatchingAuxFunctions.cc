@@ -77,8 +77,8 @@ namespace
   
   void countLeptonGenMatches(const RecoLepton* lepton, int& numGenMatchedLeptons, int& numGenMatchedJets)
   {
-    if   ( lepton->genLepton_ ) ++numGenMatchedLeptons;
-    else                        ++numGenMatchedJets;
+    if   ( lepton->genLepton() ) ++numGenMatchedLeptons;
+    else                         ++numGenMatchedJets;
   }
 
   bool matches(int nSel, int nMatches)
@@ -114,4 +114,19 @@ const leptonGenMatchEntry& getLeptonGenMatch(const std::vector<leptonGenMatchEnt
   if ( lepton_sublead ) countLeptonGenMatches(lepton_sublead, numGenMatchedLeptons, numGenMatchedJets);
   if ( lepton_third   ) countLeptonGenMatches(lepton_sublead, numGenMatchedLeptons, numGenMatchedJets);
   return getLeptonGenMatch(leptonGenMatch_definitions, numGenMatchedLeptons, numGenMatchedJets);
+}
+
+std::ostream& operator<<(std::ostream& stream, const leptonGenMatchEntry& leptonGenMatch_definition)\
+{
+  stream << " leptonGenMatch #" << leptonGenMatch_definition.idx_ << ": " << leptonGenMatch_definition.name_ << std::endl;
+  return stream;
+}
+
+std::ostream& operator<<(std::ostream& stream, const std::vector<leptonGenMatchEntry>& leptonGenMatch_definitions)
+{
+  for ( std::vector<leptonGenMatchEntry>::const_iterator leptonGenMatch_definition = leptonGenMatch_definitions.begin();
+	leptonGenMatch_definition != leptonGenMatch_definitions.end(); ++leptonGenMatch_definition ) {
+    stream << (*leptonGenMatch_definition);
+  }
+  return stream;
 }

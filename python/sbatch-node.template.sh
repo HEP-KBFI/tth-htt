@@ -59,8 +59,6 @@ run_wrapped_executable() {
     echo "Create final log directory: mkdir -p $EXECUTABLE_LOG_DIR"
     mkdir -p $EXECUTABLE_LOG_DIR
 
-    echo "Initialize CMSSW run-time environment: source /cvmfs/cms.cern.ch/cmsset_default.sh"
-    source /cvmfs/cms.cern.ch/cmsset_default.sh
     cd {{ working_dir }}
     cmsenv
     cd $SCRATCH_DIR

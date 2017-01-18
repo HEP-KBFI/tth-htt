@@ -67,8 +67,9 @@
 
 typedef math::PtEtaPhiMLorentzVector LV;
 typedef std::vector<std::string> vstring;
- 
-enum { kLoose, kFakeable };
+
+bool skipAddMEM = false;
+//bool skipAddMEM = true;
 
 /**
  * @brief Compute MEM for events passing preselection in 2lss_1tau channel of ttH, H->tautau analysis
@@ -314,7 +315,6 @@ int main(int argc, char* argv[])
     std::vector<const RecoMuon*> cleanedMuons = muon_ptrs; // CV: no cleaning needed for muons, as they have the highest priority in the overlap removal
     std::vector<const RecoMuon*> preselMuons = preselMuonSelector(cleanedMuons);
     std::vector<const RecoMuon*> fakeableMuons = fakeableMuonSelector(preselMuons);
-    set_cone_pT(fakeableMuons, era);
     std::vector<const RecoMuon*> selMuons;
     if      ( leptonSelection == kLoose    ) selMuons = preselMuons;
     else if ( leptonSelection == kFakeable ) selMuons = fakeableMuons;
@@ -325,7 +325,6 @@ int main(int argc, char* argv[])
     std::vector<const RecoElectron*> cleanedElectrons = electronCleaner(electron_ptrs, fakeableMuons);
     std::vector<const RecoElectron*> preselElectrons = preselElectronSelector(cleanedElectrons);
     std::vector<const RecoElectron*> fakeableElectrons = fakeableElectronSelector(preselElectrons);
-    set_cone_pT(fakeableElectrons, era);
     std::vector<const RecoElectron*> selElectrons;
     if      ( leptonSelection == kLoose    ) selElectrons = preselElectrons;
     else if ( leptonSelection == kFakeable ) selElectrons = fakeableElectrons;
@@ -371,34 +370,42 @@ int main(int argc, char* argv[])
 		std::cout << "computing MEM for run = " << run << ", lumi = " << lumi << ", event = " << event 
 			  << " (idxPermutation = " << idxPermutation << "):" << std::endl;
 		std::cout << "inputs:" << std::endl; 
-		std::cout << " leading lepton: pT = " << (*selLepton_lead)->pt_ << ", eta = " << (*selLepton_lead)->eta_ << "," 
-			  << " phi = " << (*selLepton_lead)->phi_ << ", pdgId = " << (*selLepton_lead)->pdgId_ << std::endl;
-		std::cout << " subleading lepton: pT = " << (*selLepton_sublead)->pt_ << ", eta = " << (*selLepton_sublead)->eta_ 
-			  << "," 
-			  << " phi = " << (*selLepton_sublead)->phi_ << ", pdgId = " << (*selLepton_sublead)->pdgId_ << std::endl;
-		std::cout << " hadTau: pT = " << (*selHadTau)->pt_ << ", eta = " << (*selHadTau)->eta_ << "," 
-			  << " phi = " << (*selHadTau)->phi_ << ", decayMode = " << (*selHadTau)->decayMode_ << ", mass = " << (*selHadTau)->mass_ << std::endl;
-		std::cout << " MET: pT = " << met.pt_ << ", phi = " << met.phi_ << std::endl;
+		std::cout << " leading lepton: pT = " << (*selLepton_lead)->pt() << ", eta = " << (*selLepton_lead)->eta() << "," 
+			  << " phi = " << (*selLepton_lead)->phi() << ", pdgId = " << (*selLepton_lead)->pdgId() << std::endl;
+		std::cout << " subleading lepton: pT = " << (*selLepton_sublead)->pt() << ", eta = " << (*selLepton_sublead)->eta() << "," 
+			  << " phi = " << (*selLepton_sublead)->phi() << ", pdgId = " << (*selLepton_sublead)->pdgId() << std::endl;
+		std::cout << " hadTau: pT = " << (*selHadTau)->pt() << ", eta = " << (*selHadTau)->eta() << "," 
+			  << " phi = " << (*selHadTau)->phi() << ", decayMode = " << (*selHadTau)->decayMode() << ", mass = " << (*selHadTau)->mass() << std::endl;
+		std::cout << " MET: pT = " << met.pt() << ", phi = " << met.phi() << std::endl;
 		std::cout << " MET cov:" << std::endl;
-		met.cov_.Print();
+		met.cov().Print();
 		int idxJet = 0;
 		for ( std::vector<const RecoJet*>::const_iterator selJet = selJets_cleaned.begin();
 		      selJet != selJets_cleaned.end(); ++selJet ) {
-		  std::cout << " jet #" << idxJet << ": pT = " << (*selJet)->pt_ << ", eta = " << (*selJet)->eta_ << "," 
-			    << " phi = " << (*selJet)->phi_ << ", mass = " << (*selJet)->mass_ << ", CSV = " << (*selJet)->BtagCSV_ << std::endl;
+		  std::cout << " jet #" << idxJet << ": pT = " << (*selJet)->pt() << ", eta = " << (*selJet)->eta() << "," 
+			    << " phi = " << (*selJet)->phi() << ", mass = " << (*selJet)->mass() << ", CSV = " << (*selJet)->BtagCSV() << std::endl;
 		  ++idxJet;
 		}
-		//MEMOutput_2lss_1tau memOutput_2lss_1tau;
-		MEMInterface_2lss_1tau memInterface_2lss_1tau("ttH_Htautau_MEM_Analysis/MEM/small.py");
-		MEMOutput_2lss_1tau memOutput_2lss_1tau = memInterface_2lss_1tau(
-	          *selLepton_lead, *selLepton_sublead, *selHadTau,
-		  met,
-		  selJets_cleaned);
-		memOutput_2lss_1tau.run_ = run;
-		memOutput_2lss_1tau.lumi_ = lumi;
-		memOutput_2lss_1tau.evt_ = event;
+		MEMOutput_2lss_1tau memOutput_2lss_1tau;
+		if ( skipAddMEM ) {
+		  memOutput_2lss_1tau.set_leadLepton_eta((*selLepton_lead)->eta());
+		  memOutput_2lss_1tau.set_leadLepton_phi((*selLepton_lead)->phi());
+		  memOutput_2lss_1tau.set_subleadLepton_eta((*selLepton_sublead)->eta());
+		  memOutput_2lss_1tau.set_subleadLepton_phi((*selLepton_sublead)->phi());
+		  memOutput_2lss_1tau.set_hadTau_eta((*selHadTau)->eta());
+		  memOutput_2lss_1tau.set_hadTau_phi((*selHadTau)->phi());
+		} else {
+		  MEMInterface_2lss_1tau memInterface_2lss_1tau("ttH_Htautau_MEM_Analysis/MEM/small_lowpoints_122016.py");
+		  memOutput_2lss_1tau = memInterface_2lss_1tau(
+	            *selLepton_lead, *selLepton_sublead, *selHadTau,
+		    met,
+		    selJets_cleaned);
+		}
+		memOutput_2lss_1tau.set_run(run);
+		memOutput_2lss_1tau.set_lumi(lumi);
+		memOutput_2lss_1tau.set_evt(event);
 		std::cout << "output:" << std::endl; 
-		memOutput_2lss_1tau.print(std::cout);
+		std::cout << memOutput_2lss_1tau;
 		memOutputs_2lss_1tau.push_back(memOutput_2lss_1tau);
 	      } else if ( idxPermutation == maxPermutations_addMEM_2lss_1tau ) { // CV: print warning only once per event
 	        std::cout << "Warning in run = " << run << ", lumi = " << lumi << ", event = " << event << ":" << std::endl; 

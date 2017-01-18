@@ -175,3 +175,15 @@ bool RunLumiEventSelector::operator()(ULong_t run, ULong_t ls, ULong_t event) co
     return false;
   }
 }
+
+RunLumiEventSelector* makeRunLumiEventSelector(const std::string& inputFileName)
+{
+  RunLumiEventSelector* run_lumi_eventSelector = 0;
+  if ( inputFileName != "" ) {
+    edm::ParameterSet cfgRunLumiEventSelector;
+    cfgRunLumiEventSelector.addParameter<std::string>("inputFileName", inputFileName);
+    cfgRunLumiEventSelector.addParameter<std::string>("separator", ":");
+    run_lumi_eventSelector = new RunLumiEventSelector(cfgRunLumiEventSelector);
+  }
+  return run_lumi_eventSelector;
+}

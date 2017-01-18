@@ -57,10 +57,10 @@ void GenParticleWriter::write(const std::vector<GenLepton>& particles)
   nParticles_ = particles.size();
   for ( Int_t idxParticle = 0; idxParticle < nParticles_; ++idxParticle ) {
     const GenLepton& particle = particles[idxParticle];
-    particle_pt_[idxParticle] = particle.pt_;
-    particle_eta_[idxParticle] = particle.eta_;
-    particle_phi_[idxParticle] = particle.phi_;
-    particle_mass_[idxParticle] = particle.mass_;
-    particle_pdgId_[idxParticle] = particle.pdgId_;
+    particle_pt_[idxParticle] = particle.pt();
+    particle_eta_[idxParticle] = particle.eta();
+    particle_phi_[idxParticle] = particle.phi();
+    particle_mass_[idxParticle] = particle.mass();
+    particle_pdgId_[idxParticle] = particle.pdgId();
   }
 }

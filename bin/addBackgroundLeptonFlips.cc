@@ -113,35 +113,22 @@ int main(int argc, char* argv[])
   
   for ( std::vector<categoryEntryType*>::const_iterator category = categories.begin();
 	category != categories.end(); ++category ) {
-    	
-    TDirectory* dir_signal = getDirectory(inputFile, (*category)->signal_, true);
-    assert(dir_signal);
+    std::cout << "processing category: signal = " << (*category)->signal_ << ", sideband = " << (*category)->sideband_ << std::endl;
+    
     TDirectory* dir_sideband = getDirectory(inputFile, (*category)->sideband_, true);
     assert(dir_sideband); 	
 
-    std::cout << "processing category: signal = " << dir_signal->GetName() << ", sideband = " << dir_sideband->GetName() << std::endl;
+    std::vector<TDirectory*> subdirs_sideband_level1 = getSubdirectories(dir_sideband);
+    for ( std::vector<TDirectory*>::iterator subdir_sideband_level1 = subdirs_sideband_level1.begin();
+	  subdir_sideband_level1 != subdirs_sideband_level1.end(); ++subdir_sideband_level1 ) {
+      std::vector<TDirectory*> subdirs_sideband_level2 = getSubdirectories(*subdir_sideband_level1);
+      for ( std::vector<TDirectory*>::iterator subdir_sideband_level2 = subdirs_sideband_level2.begin();
+	    subdir_sideband_level2 != subdirs_sideband_level2.end(); ++subdir_sideband_level2 ) {
+	std::cout << " processing directory = " << Form("%s/%s", (*subdir_sideband_level1)->GetName(), (*subdir_sideband_level2)->GetName()) << std::endl;
 	
-    std::vector<TDirectory*> subdirs_signal_level1 = getSubdirectories(dir_signal);
-    for ( std::vector<TDirectory*>::iterator subdir_signal_level1 = subdirs_signal_level1.begin();
-	  subdir_signal_level1 != subdirs_signal_level1.end(); ++subdir_signal_level1 ) {
-
-      TDirectory* subdir_sideband_level1 = dynamic_cast<TDirectory*>(dir_sideband->Get((*subdir_signal_level1)->GetName()));
-      if ( !subdir_sideband_level1 ) throw cms::Exception("addBackgroundLeptonFlips")  
-        << "Failed to find subdirectory = " << (*subdir_signal_level1)->GetName() << " within directory = " << dir_sideband->GetName() << " !!\n";
-
-      std::vector<TDirectory*> subdirs_signal_level2 = getSubdirectories(*subdir_signal_level1);
-      for ( std::vector<TDirectory*>::iterator subdir_signal_level2 = subdirs_signal_level2.begin();
-	  subdir_signal_level2 != subdirs_signal_level2.end(); ++subdir_signal_level2 ) {
-
-        TDirectory* subdir_sideband_level2 = dynamic_cast<TDirectory*>(subdir_sideband_level1->Get((*subdir_signal_level2)->GetName()));
-        if ( !subdir_sideband_level2 ) throw cms::Exception("addBackgroundLeptonFlips")  
-	  << "Failed to find subdirectory = " << (*subdir_signal_level2)->GetName() << " within directory = " << subdir_sideband_level1->GetName() << " !!\n";
-
-	std::cout << " processing directory = " << Form("%s/%s", (*subdir_signal_level1)->GetName(), (*subdir_signal_level2)->GetName()) << std::endl;
-
-        TDirectory* dirData = dynamic_cast<TDirectory*>((*subdir_signal_level2)->Get(processData.data()));
+        TDirectory* dirData = dynamic_cast<TDirectory*>((*subdir_sideband_level2)->Get(processData.data()));
         if ( !dirData ) {
-	  std::cout << "Failed to find subdirectory = " << processData << " within directory = " << subdir_sideband_level2->GetName() << " --> skipping !!";
+	  std::cout << "Failed to find subdirectory = " << processData << " within directory = " << (*subdir_sideband_level2)->GetName() << " --> skipping !!";
 	  continue;
 	}
         std::set<std::string> histograms;
@@ -176,7 +163,7 @@ int main(int argc, char* argv[])
 	    int verbosity = ( histogram->find("EventCounter") != std::string::npos && ((*central_or_shift) == "" || (*central_or_shift) == "central") ) ? 1 : 0;
 
 	    std::string central_or_shiftData = "central";
-	    TH1* histogramData = getHistogram(subdir_sideband_level2, processData, *histogram, central_or_shiftData, true);
+	    TH1* histogramData = getHistogram(*subdir_sideband_level2, processData, *histogram, central_or_shiftData, true);
 	    if ( verbosity ) {
 	      std::cout << " integral(data_obs) = " << histogramData->Integral() << std::endl;
 	    }
@@ -184,15 +171,15 @@ int main(int argc, char* argv[])
 	    std::vector<TH1*> histogramsToSubtract;
 	    for ( vstring::const_iterator processToSubtract = processesToSubtract.begin();
 		  processToSubtract != processesToSubtract.end(); ++processToSubtract ) {
-	      TH1* histogramToSubtract = getHistogram(subdir_sideband_level2, *processToSubtract, *histogram, *central_or_shift, false);
-	      if ( !histogramToSubtract ) histogramToSubtract = getHistogram(subdir_sideband_level2, *processToSubtract, *histogram, "central", true);
+	      TH1* histogramToSubtract = getHistogram(*subdir_sideband_level2, *processToSubtract, *histogram, *central_or_shift, false);
+	      if ( !histogramToSubtract ) histogramToSubtract = getHistogram(*subdir_sideband_level2, *processToSubtract, *histogram, "central", true);
 	      if ( verbosity ) {
 		std::cout << " integral(" << (*processToSubtract) << ") = " << histogramToSubtract->Integral() << std::endl;
 	      }
 	      histogramsToSubtract.push_back(histogramToSubtract);
 	    }
 	    
-	    std::string subdirName_output = Form("%s/%s/%s/%s", (*category)->signal_.data(), (*subdir_signal_level1)->GetName(), (*subdir_signal_level2)->GetName(), processLeptonFlips.data());
+	    std::string subdirName_output = Form("%s/%s/%s/%s", (*category)->signal_.data(), (*subdir_sideband_level1)->GetName(), (*subdir_sideband_level2)->GetName(), processLeptonFlips.data());
 	    TDirectory* subdir_output = createSubdirectory_recursively(fs, subdirName_output);
 	    subdir_output->cd();
 

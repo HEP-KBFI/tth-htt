@@ -25,7 +25,7 @@ class ParticleCollectionCleaner
       bool isOverlap = false;
       for ( typename std::vector<const Toverlap*>::const_iterator overlap = overlaps.begin();
 	    overlap != overlaps.end(); ++overlap ) {
-	double dRoverlap = deltaR((*particle)->eta_, (*particle)->phi_, (*overlap)->eta_, (*overlap)->phi_);
+	double dRoverlap = deltaR((*particle)->eta(), (*particle)->phi(), (*overlap)->eta(), (*overlap)->phi());
 	if ( dRoverlap < dR_ ) {
 	  isOverlap = true;
 	  break;
@@ -46,7 +46,7 @@ class ParticleCollectionCleaner
       bool isOverlap = false;
       for ( typename std::vector<const Toverlap*>::const_iterator overlap = overlaps.begin();
 	    overlap != overlaps.end(); ++overlap ) {
-	double dRoverlap = deltaR((*particle)->eta_, (*particle)->phi_, (*overlap)->eta_, (*overlap)->phi_);
+	double dRoverlap = deltaR((*particle)->eta(), (*particle)->phi(), (*overlap)->eta(), (*overlap)->phi());
 	if ( dRoverlap < dR_ ) {
 	  isOverlap = true;
 	  break;

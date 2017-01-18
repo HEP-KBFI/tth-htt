@@ -143,18 +143,18 @@ struct recursive_directory_range
  *         ZOMBIE_FILE_C   if the file is broken,
  *         otherwise the number of events in that file
  */
-long int
+double
 check_broken(const std::string & path,
              const std::string & histo)
 {
   TFile f(path.c_str());
-  long int ret_val = ZOMBIE_FILE_C;
+  double ret_val = ZOMBIE_FILE_C;
   if(! f.IsZombie())
   {
     if(f.GetListOfKeys() -> Contains(histo.c_str()))
     {
-      TH1 * h = dynamic_cast<TH1 *>(f.Get("Count"));
-      ret_val = h -> GetEntries();
+      TH1 * h = dynamic_cast<TH1 *>(f.Get(histo.c_str()));
+      ret_val = h -> Integral();
     }
     else
       return IMPROPER_FILE_C;
@@ -348,16 +348,20 @@ struct Sample
 		        process_name.find("TT_ext3") != std::string::npos ||
 		        process_name.find("TT_ext4") != std::string::npos ||
 		        process_name.find("ttHToNonbb_M125") != std::string::npos ||
-		        process_name.find("Fastsim") != std::string::npos) 
+		        process_name.find("Fastsim") != std::string::npos ||
+		        (name.find("HLT") == std::string::npos && (name.find("TTZToLLNuNu") != std::string::npos || name.find("TTWJetsToLNu") != std::string::npos)	)	        
+		        ) 
 			    input = input + "  (\"use_it\",                False),\n";
 		  else
 			    input = input + "  (\"use_it\",                True),\n";
 		  //  "  (\"use_it\",                True),\n"
 		  input =input + "  (\"xsection\",              $(x_sec)),\n"
 		    "  (\"genWeight\",             $(g_weight)),\n"
-		    "  (\"triggers\",              [ \"1e\", \"2e\", \"1mu\", \"2mu\", \"1e1mu\" ]),\n"
-		    "  (\"reHLT\",                 False),\n"
-		    "  (\"local_paths\",\n"
+		    "  (\"triggers\",              [ \"1e\", \"2e\", \"1mu\", \"2mu\", \"1e1mu\" ]),\n";
+		  if(name.find("reHLT")!=std::string::npos ||
+		        name.find("premix_withHLT")!=std::string::npos)   input = input + "  (\"reHLT\",                 True),\n";
+	    else                                                            input = input + "  (\"reHLT\",                 False),\n";
+		  input = input + "  (\"local_paths\",\n"
 		    "    [\n"
 		    "      OD([\n"
 		    "        (\"path\",      \"$(super_parent)\"),\n"
@@ -846,7 +850,7 @@ genweights["/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/RunI
       ("help,h",     "produce help message")
       ("path,p",     boost::program_options::value<std::string>(&target_str) -> required(),
                      "full path to the directory to scan")
-      ("histo,H",     boost::program_options::value<std::string>(&histo_str) -> default_value("Count"),
+      ("histo,H",     boost::program_options::value<std::string>(&histo_str) -> default_value("CountWeighted"),
                      "expected TH1F name")
       ("output,o",   boost::program_options::value<std::string>(&output_dir_str) -> default_value("")
                                                                                  -> implicit_value("./"),
@@ -928,7 +932,8 @@ genweights["/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/RunI
   for(const boost::filesystem::path & p: target_it)
     if(boost::filesystem::is_directory(p))
     {
-      if(verbose) std::cout << "Found sample directory: " << p.string() << '\n';
+      //if(p.string().find("DoubleEG")!=std::string::npos || p.string().find("Muon")!=std::string::npos || p.string().find("Electron")!=std::string::npos || p.string().find("Tau")!=std::string::npos) continue;
+      if(verbose) std::cout << "Found sample directory: " << p.string() << '\n';      
       std::vector<boost::filesystem::path> immediate_subsubdirs;
       boost::filesystem::directory_iterator sub_it(p);
       for(const boost::filesystem::path & sub_p: sub_it)
@@ -979,10 +984,10 @@ genweights["/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/RunI
 //--- don't even bother checking whether the file is zombie or not
           continue;
         }
-        const long int nof_events = check_broken(file_str, histo_str); //tree_str);
+        const double nof_events = check_broken(file_str, histo_str); //tree_str);
         if     (nof_events > 0)                sample.nof_events += nof_events;
-        else if(nof_events == ZOMBIE_FILE_C)   sample.zombies.push_back(file_str);
-        else if(nof_events == IMPROPER_FILE_C) sample.improper.push_back(file_str);
+        else if(nof_events -0.5 < ZOMBIE_FILE_C)   sample.zombies.push_back(file_str);
+        else if(nof_events -0.5 < IMPROPER_FILE_C) sample.improper.push_back(file_str);
 //--- if the valid root file has path ../<grid job id>/000X/tree_i.root, then in order
 //--- to build the Python configuration file is to gather the paths to <grid job id>
         if(sample.fileSuperParent.empty())

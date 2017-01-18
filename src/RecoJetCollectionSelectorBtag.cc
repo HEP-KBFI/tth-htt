@@ -14,17 +14,17 @@ bool RecoJetSelectorBtag::operator()(const RecoJet& jet) const
 {
   if ( debug_ ) {
     std::cout << "<RecoJetSelectorBtag::operator()>:" << std::endl;
-    std::cout << " jet: pT = " << jet.pt_ << ", eta = " << jet.eta_ << ", phi = " << jet.phi_ << ", CSV = " << jet.BtagCSV_ << std::endl;
+    std::cout << " jet: pT = " << jet.pt() << ", eta = " << jet.eta() << ", phi = " << jet.phi() << ", CSV = " << jet.BtagCSV() << std::endl;
   }
-  if ( jet.pt_ < min_pt_ ) {
+  if ( jet.pt() < min_pt_ ) {
     if ( debug_ ) std::cout << "FAILS pT cut." << std::endl;
     return false;
   }
-  if ( jet.absEta_ > max_absEta_ ) {
+  if ( jet.absEta() > max_absEta_ ) {
     if ( debug_ ) std::cout << "FAILS eta cut." << std::endl;
     return false;
   }
-  if ( jet.BtagCSV_ < min_BtagCSV_ ) {
+  if ( jet.BtagCSV() < min_BtagCSV_ ) {
     if ( debug_ ) std::cout << "FAILS CSV cut (" << min_BtagCSV_ << ")." << std::endl;
     return false;
   }

@@ -65,8 +65,6 @@
 typedef math::PtEtaPhiMLorentzVector LV;
 typedef std::vector<std::string> vstring;
  
-enum { kLoose, kFakeable };
-
 /**
  * @brief Produce Ntuple containing preselected events,
  *        drop branches not needed for ttH, H->tautau analysis,
@@ -114,11 +112,16 @@ int main(int argc, char* argv[])
   int minNumLeptons = cfg_produceNtuple.getParameter<int>("minNumLeptons");
 
   TString hadTauSelection_string = cfg_produceNtuple.getParameter<std::string>("hadTauSelection").data();
+  TObjArray* hadTauSelection_parts = hadTauSelection_string.Tokenize("|");
+  assert(hadTauSelection_parts->GetEntries() >= 1);
+  std::string hadTauSelection_part1 = (dynamic_cast<TObjString*>(hadTauSelection_parts->At(0)))->GetString().Data();
   int hadTauSelection = -1;
-  if      ( hadTauSelection_string == "Loose"    ) hadTauSelection = kLoose;
-  else if ( hadTauSelection_string == "Fakeable" ) hadTauSelection = kFakeable;
+  if      ( hadTauSelection_part1 == "Loose"    ) hadTauSelection = kLoose;
+  else if ( hadTauSelection_part1 == "Fakeable" ) hadTauSelection = kFakeable;
   else throw cms::Exception("produceNtuple_2lss_1tau") 
     << "Invalid Configuration parameter 'hadTauSelection' = " << hadTauSelection_string << " !!\n";
+  std::string hadTauSelection_part2 = ( hadTauSelection_parts->GetEntries() == 2 ) ? (dynamic_cast<TObjString*>(hadTauSelection_parts->At(1)))->GetString().Data() : "";
+  delete hadTauSelection_parts;
   int minNumHadTaus = cfg_produceNtuple.getParameter<int>("minNumHadTaus");
 
   int minNumJets = cfg_produceNtuple.getParameter<int>("minNumJets");
@@ -132,10 +135,14 @@ int main(int argc, char* argv[])
   std::cout << "selEventsFileName_input = " << selEventsFileName_input << std::endl;
   RunLumiEventSelector* run_lumi_eventSelector = 0;
   if ( selEventsFileName_input != "" ) {
-    edm::ParameterSet cfgRunLumiEventSelector;
-    cfgRunLumiEventSelector.addParameter<std::string>("inputFileName", selEventsFileName_input);
-    cfgRunLumiEventSelector.addParameter<std::string>("separator", ":");
-    run_lumi_eventSelector = new RunLumiEventSelector(cfgRunLumiEventSelector);
+    run_lumi_eventSelector = makeRunLumiEventSelector(selEventsFileName_input);
+  }
+
+  std::string selEventsFileName_addMEM = cfg_produceNtuple.getParameter<std::string>("selEventsFileName_addMEM");
+  std::cout << "selEventsFileName_addMEM = " << selEventsFileName_addMEM << std::endl;
+  RunLumiEventSelector* run_lumi_eventSelector_addMEM = 0;
+  if ( selEventsFileName_addMEM != "" ) {
+    run_lumi_eventSelector = makeRunLumiEventSelector(selEventsFileName_addMEM);
   }
 
   vstring outputCommands_string = cfg_produceNtuple.getParameter<vstring>("outputCommands");
@@ -194,7 +201,9 @@ int main(int argc, char* argv[])
   hadTauReader->setBranchAddresses(inputTree);
   RecoHadTauCollectionCleaner hadTauCleaner(0.3);
   RecoHadTauCollectionSelectorLoose preselHadTauSelector(era);
+if ( hadTauSelection_part2 == "dR03mvaVLoose" || hadTauSelection_part2 == "dR03mvaVVLoose" ) preselHadTauSelector.set(hadTauSelection_part2);
   RecoHadTauCollectionSelectorFakeable fakeableHadTauSelector(era);
+  if ( hadTauSelection_part2 == "dR03mvaVLoose" || hadTauSelection_part2 == "dR03mvaVVLoose" ) fakeableHadTauSelector.set(hadTauSelection_part2);
   // CV: lower thresholds on hadronic taus by 2 GeV 
   //     with respect to thresholds applied on analysis level (in analyze_2lss_1tau.cc)
   preselHadTauSelector.set_min_pt(18.); 
@@ -203,8 +212,6 @@ int main(int argc, char* argv[])
   RecoJetReader* jetReader = new RecoJetReader(era, "nJet", "Jet");
   if ( use_HIP_mitigation_bTag ) jetReader->enable_HIP_mitigation();
   else jetReader->disable_HIP_mitigation();
-  // CV: apply jet pT cut on JEC upward shift, to make sure pT cut is loose enough
-  //     to allow systematic uncertainty on JEC to be estimated on analysis level 
   jetReader->setJetPt_central_or_shift(RecoJetReader::kJetPt_central); 
   jetReader->read_BtagWeight_systematics(true);
   jetReader->setBranchAddresses(inputTree);
@@ -305,6 +312,15 @@ int main(int argc, char* argv[])
     if ( run_lumi_eventSelector && !(*run_lumi_eventSelector)(run, lumi, event) ) continue;
     cutFlowTable.update("run:ls:event selection");
 
+    if ( run_lumi_eventSelector ) {
+      std::cout << "processing Entry " << idxEntry << ":"
+		<< " run = " << run << ", lumi = " << lumi << ", event = " << event << std::endl;
+      if ( inputTree->GetFile() ) std::cout << "input File = " << inputTree->GetFile()->GetName() << std::endl;
+    }
+
+    bool passesAddMEM = run_lumi_eventSelector_addMEM && (*run_lumi_eventSelector_addMEM)(run, lumi, event);
+    //std::cout << "passesAddMEM = " << passesAddMEM << std::endl;
+
 //--- build collections of electrons, muons and hadronic taus;
 //    resolve overlaps in order of priority: muon, electron,
     std::vector<RecoMuon> muons = muonReader->read();
@@ -312,7 +328,6 @@ int main(int argc, char* argv[])
     std::vector<const RecoMuon*> cleanedMuons = muon_ptrs; // CV: no cleaning needed for muons, as they have the highest priority in the overlap removal
     std::vector<const RecoMuon*> preselMuons = preselMuonSelector(cleanedMuons);
     std::vector<const RecoMuon*> fakeableMuons = fakeableMuonSelector(preselMuons);
-    set_cone_pT(fakeableMuons, era);
     std::vector<const RecoMuon*> selMuons;
     if      ( leptonSelection == kLoose    ) selMuons = preselMuons;
     else if ( leptonSelection == kFakeable ) selMuons = fakeableMuons;
@@ -323,7 +338,6 @@ int main(int argc, char* argv[])
     std::vector<const RecoElectron*> cleanedElectrons = electronCleaner(electron_ptrs, fakeableMuons);
     std::vector<const RecoElectron*> preselElectrons = preselElectronSelector(cleanedElectrons);
     std::vector<const RecoElectron*> fakeableElectrons = fakeableElectronSelector(preselElectrons);
-    set_cone_pT(fakeableElectrons, era);
     std::vector<const RecoElectron*> selElectrons;
     if      ( leptonSelection == kLoose    ) selElectrons = preselElectrons;
     else if ( leptonSelection == kFakeable ) selElectrons = fakeableElectrons;
@@ -346,10 +360,10 @@ int main(int argc, char* argv[])
     std::vector<const RecoJet*> selJets;
     for ( std::vector<const RecoJet*>::const_iterator cleanedJet = cleanedJets.begin();
 	  cleanedJet != cleanedJets.end(); ++cleanedJet ) {
-      double cleanedJet_pt = (*cleanedJet)->pt_;
-      double cleanedJet_pt_JECUp = cleanedJet_pt*((*cleanedJet)->corr_JECUp_/(*cleanedJet)->corr_);
-      double cleanedJet_pt_JECDown = cleanedJet_pt*((*cleanedJet)->corr_JECDown_/(*cleanedJet)->corr_);
-      double cleanedJet_absEta = (*cleanedJet)->absEta_;
+      double cleanedJet_pt = (*cleanedJet)->pt();
+      double cleanedJet_pt_JECUp = cleanedJet_pt*((*cleanedJet)->corr_JECUp()/(*cleanedJet)->corr());
+      double cleanedJet_pt_JECDown = cleanedJet_pt*((*cleanedJet)->corr_JECDown()/(*cleanedJet)->corr());
+      double cleanedJet_absEta = (*cleanedJet)->absEta();
       double min_pT = jetSelector.get_min_pt();
       double max_absEta = jetSelector.get_max_absEta();
       if ( (cleanedJet_pt >= min_pT || cleanedJet_pt_JECUp >= min_pT || cleanedJet_pt_JECDown >= min_pT ) && cleanedJet_absEta < max_absEta ) {
@@ -363,7 +377,7 @@ int main(int argc, char* argv[])
 
 //--- apply preselection    
     std::vector<const RecoLepton*> selLeptons = mergeLeptonCollections(selElectrons, selMuons);
-    if ( !((int)selLeptons.size() >= minNumLeptons) ) {
+    if ( !((int)selLeptons.size() >= minNumLeptons) && !passesAddMEM ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS selLeptons selection." << std::endl;
 	std::vector<const RecoLepton*> preselLeptons = mergeLeptonCollections(preselElectrons, preselMuons);
@@ -392,18 +406,18 @@ int main(int argc, char* argv[])
     else if ( era == kEra_2016 ) minPt_lead = 23.;
     else assert(0);
     double minPt_sublead = selLepton_sublead->is_electron() ? 13. : 8.;
-    if ( !(selLepton_lead->pt_ > minPt_lead && selLepton_sublead->pt_ > minPt_sublead) ) {
+    if ( !(selLepton_lead->pt() > minPt_lead && selLepton_sublead->pt() > minPt_sublead) && !passesAddMEM ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS lepton pT selection." << std::endl;
-	std::cout << " (leading selLepton pT = " << selLepton_lead->pt_ << ", minPt_lead = " << minPt_lead
-		  << ", subleading selLepton pT = " << selLepton_sublead->pt_ << ", minPt_sublead = " << minPt_sublead << ")" << std::endl;
+	std::cout << " (leading selLepton pT = " << selLepton_lead->pt() << ", minPt_lead = " << minPt_lead
+		  << ", subleading selLepton pT = " << selLepton_sublead->pt() << ", minPt_sublead = " << minPt_sublead << ")" << std::endl;
       }
       continue;
     }
     cutFlowTable.update("lead lepton pT > 23 GeV && sublead lepton pT > 13(e)/8(mu) GeV");
     //cutFlowHistManager->fillHistograms("lead lepton pT > 23 GeV && sublead lepton pT > 13(e)/8(mu) GeV");
 
-    if ( !((int)selHadTaus.size() >= minNumHadTaus) ) {
+    if ( !((int)selHadTaus.size() >= minNumHadTaus) && !passesAddMEM ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS selHadTaus selection." << std::endl;
 	std::cout << " (#selHadTaus = " << selHadTaus.size() << ")" << std::endl;
@@ -419,7 +433,7 @@ int main(int argc, char* argv[])
     //cutFlowHistManager->fillHistograms(Form(">= %i sel hadTau", minNumHadTaus));
 
     // apply requirement on jets 
-    if ( !((int)selJets.size() >= minNumJets) ) {
+    if ( !((int)selJets.size() >= minNumJets) && !passesAddMEM ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS selJets selection." << std::endl;
 	std::cout << " (#selJets = " << selJets.size() << ")" << std::endl;
@@ -432,7 +446,7 @@ int main(int argc, char* argv[])
     }
     cutFlowTable.update(Form(">= %i jets", minNumJets));
     //cutFlowHistManager->fillHistograms(Form(">= %i jets", minNumJets));
-    if ( !((int)selBJets_loose.size() >= minNumBJets_loose || (int)selBJets_medium.size() >= minNumBJets_medium) ) {
+    if ( !((int)selBJets_loose.size() >= minNumBJets_loose || (int)selBJets_medium.size() >= minNumBJets_medium) && !passesAddMEM ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS selBJets selection." << std::endl;
 	std::cout << " (#selJets = " << selJets.size() << ")" << std::endl;
@@ -458,25 +472,25 @@ int main(int argc, char* argv[])
 
 //--- check if MEM needs to be computed for this event
     std::vector<const RecoLepton*> fakeableLeptons = mergeLeptonCollections(fakeableElectrons, fakeableMuons);
-    bool passesMEt_LD = false;
-    LV mht_p4 = compMHT(fakeableLeptons, fakeableHadTaus, selJets);
-    double met_LD = compMEt_LD(met.p4_, mht_p4);
-    if ( fakeableMuons.size() >= 1 || met_LD >= 0.2 ) {
-      passesMEt_LD = true;
-    }
     bool failsZbosonMassVeto = false;
     for ( std::vector<const RecoLepton*>::const_iterator lepton1 = fakeableLeptons.begin();
 	  lepton1 != fakeableLeptons.end(); ++lepton1 ) {
       for ( std::vector<const RecoLepton*>::const_iterator lepton2 = lepton1 + 1;
 	    lepton2 != fakeableLeptons.end(); ++lepton2 ) {
-	double mass = ((*lepton1)->p4_ + (*lepton2)->p4_).mass();
+	//std::cout << "lepton1: pT = " << (*lepton1)->pt() << ", eta = " << (*lepton1)->eta() << ", phi = " << (*lepton1)->phi() << ", pdgId = " << (*lepton1)->pdgId() << std::endl;
+	//std::cout << "lepton2: pT = " << (*lepton2)->pt() << ", eta = " << (*lepton2)->eta() << ", phi = " << (*lepton2)->phi() << ", pdgId = " << (*lepton2)->pdgId() << std::endl;
+	double mass = ((*lepton1)->p4() + (*lepton2)->p4()).mass();
+	//std::cout << "mass = " << mass << std::endl;
 	if ( (*lepton1)->is_electron() && (*lepton2)->is_electron() && std::fabs(mass - z_mass) < z_window ) {
+	  //std::cout << "--> setting failsZbosonMassVeto = true !!" << std::endl;
 	  failsZbosonMassVeto = true;
 	}
       }
     }
-    bool passesPreselection = (selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) && passesMEt_LD && !failsZbosonMassVeto;
-    if ( passesPreselection && selLeptons.size() >= 2 && selHadTaus.size() >= 1 ) {
+    //std::cout << "selBJets_loose.size() = " << selBJets_loose.size() << ", selBJets_medium.size() = " << selBJets_medium.size() << "," 
+    //          << " failsZbosonMassVeto = " << failsZbosonMassVeto << std::endl;
+    bool passesPreselection = (selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) && !failsZbosonMassVeto;
+    if ( (passesPreselection || passesAddMEM) && selLeptons.size() >= 2 && selHadTaus.size() >= 1 ) {
       maxPermutations_addMEM_2lss_1tau = TMath::Nint((1./2)*selLeptons.size()*(selLeptons.size() - 1)*selHadTaus.size());
     } else {
       maxPermutations_addMEM_2lss_1tau = -1;

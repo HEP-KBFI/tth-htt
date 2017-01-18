@@ -14,14 +14,14 @@ class prodNtupleConfig_2lss_1tau(prodNtupleConfig):
         num_parallel_jobs: number of jobs that can be run in parallel on local machine (does not limit number of Ntuple production jobs running in parallel on batch system)
   
     """
-    def __init__(self, outputDir, executable_prodNtuple, samples,
-                 era, debug, running_method, num_parallel_jobs):
+    def __init__(self, outputDir, executable_prodNtuple, cfgFile_prodNtuple, samples,
+                 era, debug, running_method, rle_directory, version, num_parallel_jobs):
         prodNtupleConfig.__init__(self, outputDir, executable_prodNtuple, "2lss_1tau", samples,
-          era, debug, running_method, num_parallel_jobs)
+          era, debug, running_method, rle_directory, version, num_parallel_jobs)
 
-        self.cfgFile_prodNtuple_original = os.path.join(self.workingDir, "produceNtuple_2lss_1tau_cfg.py")
+        self.cfgFile_prodNtuple_original = os.path.join(self.workingDir, cfgFile_prodNtuple)
                
-    def createCfg_prodNtuple(self, inputFiles, outputFile, era, cfgFile_modified):
+    def createCfg_prodNtuple(self, inputFiles, outputFile, era, cfgFile_modified, rle_filename = ''):
         """Create python configuration file for the produceNtuple_2lss_1tau executable (Ntuple production code)
 
         Args:
@@ -32,5 +32,7 @@ class prodNtupleConfig_2lss_1tau(prodNtupleConfig):
         lines.append("process.fwliteInput.fileNames = cms.vstring(%s)" % inputFiles)
         lines.append("process.fwliteOutput.fileName = cms.string('%s')" % os.path.basename(outputFile))
         lines.append("process.produceNtuple_2lss_1tau.era = cms.string('%s')" % era)
+        if rle_filename:
+            lines.append("process.produceNtuple_2lss_1tau.selEventsFileName_addMEM = cms.string('%s')" % rle_filename)
         create_cfg(self.cfgFile_prodNtuple_original, cfgFile_modified, lines)
 

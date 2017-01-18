@@ -2,6 +2,7 @@
 #define tthAnalysis_HiggsToTauTau_RecoMuonCollectionSelectorFakeable_h
 
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuon.h" // RecoMuon
+#include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorTight.h" // RecoMuonSelectorTight
 #include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionSelector.h" // ParticleCollectionSelector
 
 #include <Rtypes.h> // Int_t, Double_t
@@ -12,8 +13,8 @@
 class RecoMuonSelectorFakeable
 {
  public:
-  RecoMuonSelectorFakeable(int era, int index = -1, bool debug = false);
-  ~RecoMuonSelectorFakeable() {}
+  RecoMuonSelectorFakeable(int era, bool set_selection_flags = true, int index = -1, bool debug = false);
+  ~RecoMuonSelectorFakeable();
 
   /**
    * @brief Check if muon given as function argument passes "fakeable" muon selection, defined in Table 12 of AN-2015/321
@@ -23,6 +24,9 @@ class RecoMuonSelectorFakeable
 
  protected: 
   int era_;
+  bool set_selection_flags_;
+
+  RecoMuonSelectorTight* tightMuonSelector_;
 
   Double_t min_pt_;         ///< lower cut threshold on pT
   Double_t max_absEta_;     ///< upper cut threshold on absolute value of eta
@@ -42,7 +46,35 @@ class RecoMuonSelectorFakeable
   bool apply_mediumIdPOG_;  ///< apply (True) or do not apply (False) medium PFMuon id selection
 };
 
-typedef ParticleCollectionSelector<RecoMuon, RecoMuonSelectorFakeable> RecoMuonCollectionSelectorFakeable;
+class RecoMuonCollectionSelectorFakeable
+{
+ public:
+  RecoMuonCollectionSelectorFakeable(int era, bool set_selection_flags = true, int index = -1, bool debug = false)
+    : selIndex_(index)
+    , selector_(era, set_selection_flags, index, debug)
+  {}
+  ~RecoMuonCollectionSelectorFakeable() {}
+
+  std::vector<const RecoMuon*> operator()(const std::vector<const RecoMuon*>& muons) const
+  {
+    std::vector<const RecoMuon*> selMuons;
+    int idx = 0;
+    for ( typename std::vector<const RecoMuon*>::const_iterator muon = muons.begin();
+	  muon != muons.end(); ++muon ) {
+      if ( selector_(**muon) ) {
+	if ( idx == selIndex_ || selIndex_ == -1 ) {
+	  selMuons.push_back(*muon);
+	}
+	++idx;
+      }
+    }
+    return selMuons;
+  }
+  
+ protected: 
+  int selIndex_;
+  RecoMuonSelectorFakeable selector_;
+};
 
 #endif // tthAnalysis_HiggsToTauTau_RecoMuonCollectionSelectorFakeable_h
 

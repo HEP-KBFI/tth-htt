@@ -9,8 +9,8 @@ RecoJetSelector::RecoJetSelector(int era, int index, bool debug)
 
 bool RecoJetSelector::operator()(const RecoJet& jet) const
 {
-  if ( jet.pt_ >= min_pt_ &&
-       jet.absEta_ <= max_absEta_ ) {
+  if ( jet.pt() >= min_pt_ &&
+       jet.absEta() <= max_absEta_ ) {
     return true;
   } 
   return false;

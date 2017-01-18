@@ -32,7 +32,10 @@ std::vector<leptonGenMatchEntry> getLeptonGenMatch_definitions_3lepton(bool appl
 std::string getLeptonGenMatch_string(const std::vector<leptonGenMatchEntry>& leptonGenMatch_definitions, int leptonGenMatch_int);
 int getLeptonGenMatch_int(const std::vector<leptonGenMatchEntry>& leptonGenMatch_definitions, const std::string& leptonGenMatch_string);
 
-const leptonGenMatchEntry& getLeptonGenMatch(const std::vector<leptonGenMatchEntry>& hadTauGenMatch_definitions,
+const leptonGenMatchEntry& getLeptonGenMatch(const std::vector<leptonGenMatchEntry>& leptonGenMatch_definitions,
 					     const RecoLepton* lepton_lead, const RecoLepton* lepton_sublead = 0, const RecoLepton* lepton_third = 0);
+
+std::ostream& operator<<(std::ostream& stream, const leptonGenMatchEntry& leptonGenMatch_definition);
+std::ostream& operator<<(std::ostream& stream, const std::vector<leptonGenMatchEntry>& leptonGenMatch_definitions);
 
 #endif // tthAnalysis_HiggsToTauTau_leptonGenMatchingAuxFunctions_h

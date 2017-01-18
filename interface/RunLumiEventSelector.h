@@ -53,4 +53,6 @@ class RunLumiEventSelector
   mutable long numEventsSelected_;
 };
 
+RunLumiEventSelector* makeRunLumiEventSelector(const std::string& inputFileName);
+
 #endif // tthAnalysis_HiggsToTauTau_RunLumiEventSelector_h

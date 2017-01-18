@@ -46,23 +46,23 @@ RecoElectronSelectorMVABased::RecoElectronSelectorMVABased(int era, int index, b
 bool
 RecoElectronSelectorMVABased::operator()(const RecoElectron& electron) const
 {
-  if ( electron.pt_ >= min_pt_ &&
-       electron.nLostHits_ <= max_nLostHits_ &&
-       electron.jetBtagCSV_ <= max_jetBtagCSV_ &&
-       electron.mvaRawTTH_ >= min_mvaTTH_ &&
-       (electron.tightCharge_ >= 2 || !apply_tightCharge_) &&
-       (electron.passesConversionVeto_ || !apply_conversionVeto_) ) {
+  if ( electron.pt() >= min_pt_ &&
+       electron.nLostHits() <= max_nLostHits_ &&
+       electron.jetBtagCSV() <= max_jetBtagCSV_ &&
+       electron.mvaRawTTH() >= min_mvaTTH_ &&
+       (electron.tightCharge() >= 2 || !apply_tightCharge_) &&
+       (electron.passesConversionVeto() || !apply_conversionVeto_) ) {
     int idxBin_absEta = -1;
-    if      ( electron.absEta_ <= binning_absEta_[0] ) idxBin_absEta = 0;
-    else if ( electron.absEta_ <= binning_absEta_[1] ) idxBin_absEta = 1;
-    else                                               idxBin_absEta = 2;
+    if      ( electron.absEta() <= binning_absEta_[0] ) idxBin_absEta = 0;
+    else if ( electron.absEta() <= binning_absEta_[1] ) idxBin_absEta = 1;
+    else                                                idxBin_absEta = 2;
     assert(idxBin_absEta >= 0 && idxBin_absEta <= 2);
-    if ( electron.pt_ <= min_pt_trig_ ) return true;
-    else if ( electron.sigmaEtaEta_ <= max_sigmaEtaEta_trig_[idxBin_absEta] &&
-              electron.HoE_ <= max_HoE_trig_[idxBin_absEta] &&
-              electron.deltaEta_ <= max_deltaEta_trig_[idxBin_absEta] &&
-              electron.deltaPhi_ <= max_deltaPhi_trig_[idxBin_absEta] &&
-              electron.OoEminusOoP_ >= min_OoEminusOoP_trig_ && electron.OoEminusOoP_ <= max_OoEminusOoP_trig_[idxBin_absEta] )
+    if ( electron.pt() <= min_pt_trig_ ) return true;
+    else if ( electron.sigmaEtaEta() <= max_sigmaEtaEta_trig_[idxBin_absEta] &&
+              electron.HoE() <= max_HoE_trig_[idxBin_absEta] &&
+              electron.deltaEta() <= max_deltaEta_trig_[idxBin_absEta] &&
+              electron.deltaPhi() <= max_deltaPhi_trig_[idxBin_absEta] &&
+              electron.OoEminusOoP() >= min_OoEminusOoP_trig_ && electron.OoEminusOoP() <= max_OoEminusOoP_trig_[idxBin_absEta] )
       return true;
   }
   return false;

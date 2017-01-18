@@ -165,27 +165,27 @@ void RecoHadTauWriter::write(const std::vector<const RecoHadTau*>& hadTaus)
   for ( Int_t idxHadTau = 0; idxHadTau < nHadTaus_; ++idxHadTau ) {
     const RecoHadTau* hadTau = hadTaus[idxHadTau];
     assert(hadTau);
-    hadTau_pt_[idxHadTau] = hadTau->pt_;
-    hadTau_eta_[idxHadTau] = hadTau->eta_;
-    hadTau_phi_[idxHadTau] = hadTau->phi_;
-    hadTau_mass_[idxHadTau] = hadTau->mass_;
-    hadTau_charge_[idxHadTau] = hadTau->charge_;
-    hadTau_dxy_[idxHadTau] = hadTau->dxy_;
-    hadTau_dz_[idxHadTau] = hadTau->dz_;
-    hadTau_decayMode_[idxHadTau] = hadTau->decayMode_;
-    hadTau_idDecayMode_[idxHadTau] = hadTau->decayModeFinding_;
-    hadTau_idDecayModeNewDMs_[idxHadTau] = hadTau->decayModeFindingNew_;
+    hadTau_pt_[idxHadTau] = hadTau->pt();
+    hadTau_eta_[idxHadTau] = hadTau->eta();
+    hadTau_phi_[idxHadTau] = hadTau->phi();
+    hadTau_mass_[idxHadTau] = hadTau->mass();
+    hadTau_charge_[idxHadTau] = hadTau->charge();
+    hadTau_dxy_[idxHadTau] = hadTau->dxy();
+    hadTau_dz_[idxHadTau] = hadTau->dz();
+    hadTau_decayMode_[idxHadTau] = hadTau->decayMode();
+    hadTau_idDecayMode_[idxHadTau] = hadTau->decayModeFinding();
+    hadTau_idDecayModeNewDMs_[idxHadTau] = hadTau->decayModeFindingNew();
     // "undo" insertion of "VVLose" (95% signal efficiency) working point for tau ID MVA trained for dR=0->3 isolation cone
     // and store discriminator information in the same format as in the VHbb Ntuples v24 produced by Andrea for 2016 data
-    hadTau_idMVA_dR03_[idxHadTau] = ( hadTau->id_mva_dR03_ >= 2 ) ? hadTau->id_mva_dR03_ - 1 : 0;
-    hadTau_rawMVA_dR03_[idxHadTau] = hadTau->raw_mva_dR03_;
-    hadTau_idMVA_dR05_[idxHadTau] = hadTau->id_mva_dR05_;
-    hadTau_rawMVA_dR05_[idxHadTau] = hadTau->raw_mva_dR05_;
-    hadTau_idCombIso_dR03_[idxHadTau] = hadTau->id_cut_dR03_;
-    hadTau_rawCombIso_dR03_[idxHadTau] = hadTau->raw_cut_dR03_;
-    hadTau_idCombIso_dR05_[idxHadTau] = hadTau->id_cut_dR05_;
-    hadTau_rawCombIso_dR05_[idxHadTau] = hadTau->raw_cut_dR05_;
-    hadTau_idAgainstElec_[idxHadTau] = hadTau->antiElectron_;
-    hadTau_idAgainstMu_[idxHadTau] = hadTau->antiMuon_;
+    hadTau_idMVA_dR03_[idxHadTau] = ( hadTau->id_mva_dR03() >= 2 ) ? hadTau->id_mva_dR03() - 1 : 0;
+    hadTau_rawMVA_dR03_[idxHadTau] = hadTau->raw_mva_dR03();
+    hadTau_idMVA_dR05_[idxHadTau] = hadTau->id_mva_dR05();
+    hadTau_rawMVA_dR05_[idxHadTau] = hadTau->raw_mva_dR05();
+    hadTau_idCombIso_dR03_[idxHadTau] = hadTau->id_cut_dR03();
+    hadTau_rawCombIso_dR03_[idxHadTau] = hadTau->raw_cut_dR03();
+    hadTau_idCombIso_dR05_[idxHadTau] = hadTau->id_cut_dR05();
+    hadTau_rawCombIso_dR05_[idxHadTau] = hadTau->raw_cut_dR05();
+    hadTau_idAgainstElec_[idxHadTau] = hadTau->antiElectron();
+    hadTau_idAgainstMu_[idxHadTau] = hadTau->antiMuon();
   }
 }

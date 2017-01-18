@@ -821,10 +821,10 @@ int main(int argc, char* argv[])
     if ( isMC && !fillGenEvtHistograms ) {
       genLeptons = genLeptonReader->read();
       for ( std::vector<GenLepton>::const_iterator genLepton = genLeptons.begin();
-    	    genLepton != genLeptons.end(); ++genLepton ) {
-    	int abs_pdgId = std::abs(genLepton->pdgId_);
-    	if      ( abs_pdgId == 11 ) genElectrons.push_back(*genLepton);
-    	else if ( abs_pdgId == 13 ) genMuons.push_back(*genLepton);
+	    genLepton != genLeptons.end(); ++genLepton ) {
+	int abs_pdgId = std::abs(genLepton->pdgId());
+	if      ( abs_pdgId == 11 ) genElectrons.push_back(*genLepton);
+	else if ( abs_pdgId == 13 ) genMuons.push_back(*genLepton);
       }
       genHadTaus = genHadTauReader->read();
       genJets = genJetReader->read();
@@ -899,15 +899,15 @@ int main(int argc, char* argv[])
     LV mht_p4(0,0,0,0);
     for ( std::vector<const RecoJet*>::const_iterator jet = selJets.begin();
 	  jet != selJets.end(); ++jet ) {
-      mht_p4 += (*jet)->p4_;
+      mht_p4 += (*jet)->p4();
     }
     for ( std::vector<const RecoLepton*>::const_iterator lepton = preselLeptons.begin();
 	  lepton != preselLeptons.end(); ++lepton ) {
-      mht_p4 += (*lepton)->p4_;
+      mht_p4 += (*lepton)->p4();
     }
     for ( std::vector<const RecoHadTau*>::const_iterator hadTau = selHadTaus.begin();
 	  hadTau != selHadTaus.end(); ++hadTau ) {
-      mht_p4 += (*hadTau)->p4_;
+      mht_p4 += (*hadTau)->p4();
     }
     double met_LD = met_coef*met.pt_ + mht_coef*mht_p4.pt();    
 
@@ -937,6 +937,7 @@ int main(int argc, char* argv[])
 
     double weight_data_to_MC_correction_loose = 1.;
     if ( isMC ) {
+
       dataToMCcorrectionInterface->setLeptons(preselLepton_type, preselLepton->pt_, preselLepton->eta_);
 
 //--- apply trigger efficiency turn-on curves to Spring16 non-reHLT MC
@@ -993,6 +994,7 @@ int main(int argc, char* argv[])
     // require presence of exactly two hadronic taus passing tight selection criteria of final event selection
     if ( !(selHadTaus.size() >= 2) ) continue;
     cutFlowTable.update(">= 2 sel taus", evtWeight);
+
     cutFlowHistManager->fillHistograms(">= 2 sel taus", evtWeight);
     const RecoHadTau* selHadTau_lead = selHadTaus[0];
     const RecoHadTau* selHadTau_sublead = selHadTaus[1];
@@ -1015,19 +1017,19 @@ int main(int argc, char* argv[])
     cutFlowTable.update("sel lepton pT > 30(e)/25(mu) GeV", evtWeight);
     cutFlowHistManager->fillHistograms("sel lepton pT > 30(e)/25(mu) GeV", evtWeight);
 
-    bool isCharge_SS = selHadTau_lead->charge_*selHadTau_sublead->charge_ > 0;
-    bool isCharge_OS = selHadTau_lead->charge_*selHadTau_sublead->charge_ < 0;
+    bool isCharge_SS = selHadTau_lead->charge()*selHadTau_sublead->charge() > 0;
+    bool isCharge_OS = selHadTau_lead->charge()*selHadTau_sublead->charge() < 0;
     if ( hadTauChargeSelection == kOS && isCharge_SS ) continue;
     if ( hadTauChargeSelection == kSS && isCharge_OS ) continue;
     cutFlowTable.update(Form("tau-pair %s charge", hadTauChargeSelection_string.data()), evtWeight);
     cutFlowHistManager->fillHistograms("tau-pair OS/SS charge", evtWeight);
 
-    if ( std::abs(selLepton->charge_ + selHadTau_lead->charge_+ selHadTau_sublead->charge_) != 1 ) {
+    if ( std::abs(selLepton->charge() + selHadTau_lead->charge()+ selHadTau_sublead->charge()) != 1 ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS lepton+tau charge selection." << std::endl;
-	std::cout << " (selLepton charge = " << selLepton->charge_ 
-		  << ", leading selHadTau charge = " << selHadTau_lead->charge_ 
-		  << ", subleading selHadTau charge = " << selHadTau_sublead->charge_ << ")" << std::endl;
+	std::cout << " (selLepton charge = " << selLepton->charge() 
+		  << ", leading selHadTau charge = " << selHadTau_lead->charge() 
+		  << ", subleading selHadTau charge = " << selHadTau_sublead->charge() << ")" << std::endl;
       }
       continue;
     }
@@ -1218,15 +1220,15 @@ int main(int argc, char* argv[])
     float mindr_lep_jet  = TMath::Min(10., comp_mindr_lep1_jet(*selLepton, selJets)); 
     float mT_lep = comp_MT_met_lep1(*selLepton, met.pt_, met.phi_);
     float avg_dr_jet = comp_avg_dr_jet(selJets);
-    float dr_taus = deltaR(selHadTau_lead->p4_, selHadTau_sublead->p4_);
+    float dr_taus = deltaR(selHadTau_lead->p4(), selHadTau_sublead->p4());
     float dr_lep_tau_os = 99., dr_lep_tau_ss = 99.;
-    if(selLepton->charge_*selHadTau_lead->charge_ < 0 ){
-      dr_lep_tau_os = deltaR(selLepton->p4_, selHadTau_lead->p4_);
-      dr_lep_tau_ss = deltaR(selLepton->p4_, selHadTau_sublead->p4_);
+    if(selLepton->charge()*selHadTau_lead->charge() < 0 ){
+      dr_lep_tau_os = deltaR(selLepton->p4(), selHadTau_lead->p4());
+      dr_lep_tau_ss = deltaR(selLepton->p4(), selHadTau_sublead->p4());
     }
     else{
-      dr_lep_tau_os = deltaR(selLepton->p4_, selHadTau_sublead->p4_); 
-      dr_lep_tau_ss = deltaR(selLepton->p4_, selHadTau_lead->p4_); 
+      dr_lep_tau_os = deltaR(selLepton->p4(), selHadTau_sublead->p4()); 
+      dr_lep_tau_ss = deltaR(selLepton->p4(), selHadTau_lead->p4()); 
     }
     selEvtTreeManager.fillTree(selLepton->pt_, selLepton->eta_, selLepton->mvaRawTTH_, selJets.size(), selBJets_loose.size(), 
                                selBJets_medium.size(), mindr_lep_jet, mindr_tau1_jet, mindr_tau2_jet, avg_dr_jet, met.pt_, mT_lep, 

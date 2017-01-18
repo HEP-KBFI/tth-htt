@@ -36,7 +36,8 @@ class sbatchManager:
     def __init__(self):
         self.workingDir = None
         self.logFileDir = None
-        self.queue = "low"  # maximum run-time of job = 2 days
+        ##self.queue = "low"  # low priority queue, maximum run-time of job = 2 days
+        self.queue = "main"  # standard priority queue, maximum run-time of job = 2 days
         if os.environ.get('SBATCH_PRIORITY'):
             self.queue = os.environ.get('SBATCH_PRIORITY')
         self.command_submit = "sbatch"
@@ -238,3 +239,11 @@ class sbatchManager:
                     break
                 logging.info(
                     "Waiting for sbatch to finish (%d jobs still left) ..." % numJobs_left)
+
+
+    def log_ram_and_cpu_usage_information(self, log_file = None):
+        info_params = {
+          'job_ids': ",".join(self.jobIds),
+          'log_file': log_file
+        }
+        ram_and_cpu_info = run_cmd('sacct --long --jobs=%(job_ids)s > %(log_file)s; cat %(log_file)s;' % info_params)

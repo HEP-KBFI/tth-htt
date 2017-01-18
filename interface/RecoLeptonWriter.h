@@ -30,25 +30,25 @@ class RecoLeptonWriter
     for ( Int_t idxLepton = 0; idxLepton < nLeptons_; ++idxLepton ) {
       const T* lepton = leptons[idxLepton];
       assert(lepton);
-      pt_[idxLepton] = lepton->pt_;
-      eta_[idxLepton] = lepton->eta_;
-      phi_[idxLepton] = lepton->phi_;
-      mass_[idxLepton] = lepton->mass_;
-      pdgId_[idxLepton] = lepton->pdgId_;
-      dxy_[idxLepton] = lepton->dxy_;
-      dz_[idxLepton] = lepton->dz_;
-      relIso_[idxLepton] = lepton->relIso_;
-      chargedHadRelIso03_[idxLepton] = lepton->chargedHadRelIso03_;
-      miniIsoCharged_[idxLepton] = lepton->miniIsoCharged_;
-      miniIsoNeutral_[idxLepton] = lepton->miniIsoNeutral_;
-      sip3d_[idxLepton] = lepton->sip3d_;
-      mvaRawTTH_[idxLepton] = lepton->mvaRawTTH_;
-      jetNDauChargedMVASel_[idxLepton] = lepton->jetNDauChargedMVASel_;
-      jetPtRel_[idxLepton] = lepton->jetPtRel_;
-      jetPtRatio_[idxLepton] = lepton->jetPtRatio_;
-      jetBtagCSV_[idxLepton] = lepton->jetBtagCSV_;
-      tightCharge_[idxLepton] = lepton->tightCharge_;
-      charge_[idxLepton] = lepton->charge_;
+      pt_[idxLepton] = lepton->lepton_pt();
+      eta_[idxLepton] = lepton->eta();
+      phi_[idxLepton] = lepton->phi();
+      mass_[idxLepton] = lepton->mass();
+      pdgId_[idxLepton] = lepton->pdgId();
+      dxy_[idxLepton] = lepton->dxy();
+      dz_[idxLepton] = lepton->dz();
+      relIso_[idxLepton] = lepton->relIso();
+      chargedHadRelIso03_[idxLepton] = lepton->chargedHadRelIso03();
+      miniIsoCharged_[idxLepton] = lepton->miniIsoCharged();
+      miniIsoNeutral_[idxLepton] = lepton->miniIsoNeutral();
+      sip3d_[idxLepton] = lepton->sip3d();
+      mvaRawTTH_[idxLepton] = lepton->mvaRawTTH();
+      jetNDauChargedMVASel_[idxLepton] = lepton->jetNDauChargedMVASel();
+      jetPtRel_[idxLepton] = lepton->jetPtRel();
+      jetPtRatio_[idxLepton] = lepton->jetPtRatio();
+      jetBtagCSV_[idxLepton] = lepton->jetBtagCSV();
+      tightCharge_[idxLepton] = lepton->tightCharge();
+      charge_[idxLepton] = lepton->charge();
     }
   }
 

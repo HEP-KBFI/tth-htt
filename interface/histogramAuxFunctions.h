@@ -16,6 +16,8 @@ void fillWithOverFlow(TH1*, double, double, double = 0.);
 void fill2d(TH2*, double, double, double, double = 0.);
 void fillWithOverFlow2d(TH2*, double, double, double, double = 0.);
 
+double getLogWeight(double weight);
+
 void checkCompatibleBinning(const TH1*, const TH1*);
 
 TH1* addHistograms(const std::string&, const TH1*, const TH1*, int = 0);
