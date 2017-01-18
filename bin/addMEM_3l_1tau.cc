@@ -348,6 +348,7 @@ int main(int argc, char* argv[])
     RecoMEt met = metReader->read();
 
 //--- compute MEM values
+    MEMInterface_3l_1tau memInterface_3l_1tau;
     std::vector<MEMOutput_3l_1tau> memOutputs_3l_1tau;
     if ( maxPermutations_addMEM_3l_1tau >= 1 ) {
       int idxPermutation = -1;
@@ -400,7 +401,6 @@ int main(int argc, char* argv[])
 		    memOutput_3l_1tau.set_hadTau_eta((*selHadTau)->eta());
 		    memOutput_3l_1tau.set_hadTau_phi((*selHadTau)->phi());
   		  } else {
-		    MEMInterface_3l_1tau memInterface_3l_1tau;
 		    memOutput_3l_1tau = memInterface_3l_1tau(
 	              *selLepton_lead, *selLepton_sublead, *selLepton_third, *selHadTau,
 		      met,

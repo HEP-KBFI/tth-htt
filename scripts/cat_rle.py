@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import logging, sys, argparse, os, getpass, re
 
 '''Example usage:

@@ -26,7 +26,7 @@ if __name__ == '__main__':
         return text[2:].splitlines()
       return argparse.HelpFormatter._split_lines(self, text, width)
 
-  parser = argparse.ArgumentParser(formatter_class = lambda prog: SmartFormatter(prog, max_help_position = 35))
+  parser = argparse.ArgumentParser(formatter_class = lambda prog: SmartFormatter(prog, max_help_position = 40))
   parser.add_argument('-s', '--sample-name', metavar = 'name', required = True, type = str,
                       help = 'R|Sample name')
   parser.add_argument('-f', '--file', metavar = 'file', required = True, type = str,
