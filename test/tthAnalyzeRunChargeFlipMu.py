@@ -1,9 +1,9 @@
 import os, logging, sys, getpass
 
-#from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_chargeflip_2015 import samples_2015
-from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_chargeflip_mu_2016 import samples_2016
 from tthAnalysis.HiggsToTauTau.analyzeConfig_charge_flip_mu import analyzeConfig_charge_flip_mu
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
+#from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_chargeflip_2015 import samples_2015
+from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_chargeflip_mu_2016 import samples_2016
 
 #ERA = "2015"
 ERA = "2016"
@@ -19,18 +19,18 @@ elif ERA == "2016":
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "histosCF_mu"
+version = "histosCF_mu_1bin"
 
 if __name__ == '__main__':
   logging.basicConfig(
       stream = sys.stdout,
       level = logging.INFO,
       format = '%(asctime)s - %(levelname)s: %(message)s')
-
+  
   analysis = analyzeConfig_charge_flip_mu(
     outputDir = os.path.join("/home", getpass.getuser(), "tth", "histograms", version),
-    executable_analyze = "analyze_charge_flip",
-    samples = samples,
+    executable_analyze = "analyze_charge_flip_mu",
+    samples = samples_2016,
     lepton_selections = [ "Tight"],
     #hadTau_selection = "dR03mvaTight",
     central_or_shifts = [ 

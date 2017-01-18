@@ -23,13 +23,13 @@ process.analyze_charge_flip = cms.PSet(
     era = cms.string('2015'),
 
     triggers_1e = cms.vstring("HLT_BIT_HLT_Ele23_WPLoose_Gsf_v"),
-    use_triggers_1e = cms.bool(True),
+    use_triggers_1e = cms.bool(False),
     triggers_2e = cms.vstring("HLT_BIT_HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v"),
-    use_triggers_2e = cms.bool(True),
+    use_triggers_2e = cms.bool(False),
     triggers_1mu = cms.vstring("HLT_BIT_HLT_IsoMu20_v", "HLT_BIT_HLT_IsoTkMu20_v"),
-    use_triggers_1mu = cms.bool(False),
+    use_triggers_1mu = cms.bool(True),
     triggers_2mu = cms.vstring("HLT_BIT_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v", "HLT_BIT_HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v"),
-    use_triggers_2mu = cms.bool(False),
+    use_triggers_2mu = cms.bool(True),
     triggers_1e1mu = cms.vstring("HLT_BIT_HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v", "HLT_BIT_HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v"),
     use_triggers_1e1mu = cms.bool(False),
 
