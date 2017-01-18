@@ -1144,7 +1144,7 @@ int main(int argc, char* argv[])
     mvaInputs_TMVA["mindr_tau2_jet"]       = TMath::Min(10., comp_mindr_hadTau2_jet(*selHadTau_sublead, selJets));
     mvaInputs_TMVA["avg_dr_jet"]           = comp_avg_dr_jet(selJets);
     mvaInputs_TMVA["ptmiss"]               = met.pt();
-    mvaInputs_TMVA["mT_lep"]               = comp_MT_met_lep1(*selLepton, met.pt(), met.phi());
+    mvaInputs_TMVA["mT_lep"]               = comp_MT_met_lep1(selLepton->p4(), met.pt(), met.phi());
     mvaInputs_TMVA["htmiss"]               = mht_p4.pt();
     mvaInputs_TMVA["tau1_pt"]              = selHadTau_lead->pt();
     mvaInputs_TMVA["tau2_pt"]              = selHadTau_sublead->pt();

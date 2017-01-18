@@ -15,17 +15,27 @@ namespace
   }
 }
 
-double comp_MT_met_lep1(const GenParticle& lepton, double met_pt, double met_phi)
+double comp_MT_met_lep1(const Particle::LorentzVector& leptonP4, double met_pt, double met_phi)
 {
   double met_px = met_pt*std::cos(met_phi);
   double met_py = met_pt*std::sin(met_phi);
-  double mT = std::sqrt(std::max(0., square(lepton.p4().Et() + met_pt) - (square(lepton.p4().px() + met_px) + square(lepton.p4().py() + met_py))));
+  double mT = std::sqrt(std::max(0., square(leptonP4.Et() + met_pt) - (square(leptonP4.px() + met_px) + square(leptonP4.py() + met_py))));
   return mT;
+}
+
+double comp_MT_met_lep1(const GenParticle& lepton, double met_pt, double met_phi)
+{
+  return comp_MT_met_lep1(lepton.p4(), met_pt, met_phi);
+}
+
+double comp_MT_met_lep2(const Particle::LorentzVector& leptonP4, double met_pt, double met_phi)
+{
+  return comp_MT_met_lep1(leptonP4, met_pt, met_phi);
 }
 
 double comp_MT_met_lep2(const GenParticle& lepton, double met_pt, double met_phi)
 {
-  return comp_MT_met_lep1(lepton, met_pt, met_phi);
+  return comp_MT_met_lep2(lepton.p4(), met_pt, met_phi);
 }
 
 double comp_MT_met_hadTau1(const GenParticle& hadTau, double met_pt, double met_phi)

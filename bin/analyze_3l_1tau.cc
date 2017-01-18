@@ -1349,7 +1349,7 @@ struct preselHistManagerType
 //--- compute output of BDTs used to discriminate ttH vs. ttV and ttH vs. ttbar 
 //    in 3l category of ttH multilepton analysis 
     mvaInputs["max(abs(LepGood_eta[iF_Recl[0]]),abs(LepGood_eta[iF_Recl[1]]))"] = std::max(std::fabs(selLepton_lead->eta()), std::fabs(selLepton_sublead->eta()));
-    mvaInputs["MT_met_lep1"]                = comp_MT_met_lep1(*selLepton_lead, met.pt(), met.phi());
+    mvaInputs["MT_met_lep1"]                = comp_MT_met_lep1(selLepton_lead->cone_p4(), met.pt(), met.phi());
     mvaInputs["nJet25_Recl"]                = comp_n_jet25_recl(selJets);
     mvaInputs["mindr_lep1_jet"]             = comp_mindr_lep1_jet(*selLepton_lead, selJets);
     mvaInputs["mindr_lep2_jet"]             = comp_mindr_lep2_jet(*selLepton_sublead, selJets);
