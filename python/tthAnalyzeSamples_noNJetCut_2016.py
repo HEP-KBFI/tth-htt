@@ -577,6 +577,69 @@ samples_no_njet_cut_2016["/SingleMuon/Run2016D-PromptReco-v2/MINIAOD"] = OD([
     ]
   ),
 ])
+samples_no_njet_cut_2016["/DoubleMuon/Run2016B-PromptReco-v2"] = OD([
+  ("type",                  "data"),
+  ("sample_category",       "data_obs"),
+  ("process_name_specific", "DoubleMuon_Run2016B"),
+  ("nof_files",             4804),
+  ("nof_events",            0),
+  ("use_it",                True),
+  ("xsection",              0.000000),
+  ("genWeight",             False),
+  ("triggers",              [ "2mu"]),
+  ("reHLT",                 False),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/cms/store/user/atiko/VHBBHeppyD24_v4/DoubleMuon/VHBB_HEPPY_D24_DoubleMuon__Run2016B-PromptReco-v2/161219_144903"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+])
+samples_no_njet_cut_2016["/DoubleMuon/Run2016C-PromptReco-v2"] = OD([
+  ("type",                  "data"),
+  ("sample_category",       "data_obs"),
+  ("process_name_specific", "DoubleMuon_Run2016C"),
+  ("nof_files",             1640),
+  ("nof_events",            0),
+  ("use_it",                True),
+  ("xsection",              0.000000),
+  ("genWeight",             False),
+  ("triggers",              [ "2mu" ]),
+  ("reHLT",                 False),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/cms/store/user/atiko/VHBBHeppyD24_v4/DoubleMuon/VHBB_HEPPY_D24_DoubleMuon__Run2016C-PromptReco-v2/161219_144945"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+])
+samples_no_njet_cut_2016["/DoubleMuon/Run2016D-PromptReco-v2"] = OD([
+  ("type",                  "data"),
+  ("sample_category",       "data_obs"),
+  ("process_name_specific", "DoubleMuon_Run2016D"),
+  ("nof_files",             1955),
+  ("nof_events",            0),
+  ("use_it",                True),
+  ("xsection",              0.000000),
+  ("genWeight",             False),
+  ("triggers",              [ "2mu"]),
+  ("reHLT",                 False),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/cms/store/user/atiko/VHBBHeppyD24_v4/DoubleMuon/VHBB_HEPPY_D24_DoubleMuon__Run2016D-PromptReco-v2/161219_145056"),
+        ("selection", "*"),
+        ("blacklist", [1517]),
+      ]),
+    ]
+  ),
+])
 
 
 
