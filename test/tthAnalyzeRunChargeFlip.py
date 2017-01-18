@@ -19,7 +19,7 @@ elif ERA == "2016":
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "histosCF_testStrange"
+version = "histosCF_genWeight"
 
 if __name__ == '__main__':
   logging.basicConfig(
