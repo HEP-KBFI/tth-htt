@@ -549,6 +549,8 @@ int main(int argc, char* argv[])
 	          jet != selJets.end(); ++jet ) {
 	      weight_btag *= (*jet)->BtagWeight();
 	      //std::cout << "jet " << (*jet)->pt() << " " << (*jet)->eta()  << ", flavour " << (*jet)->genJet()->pdgId() << ", weight " << (*jet)->BtagWeight() << std::endl;
+	      std::cout << "jet " << (*jet)->pt() << " " << (*jet)->eta()  << ", CSV " << (*jet)->BtagCSV() << ", weight " << (*jet)->BtagWeight() << std::endl;
+	      
       }
     }
     

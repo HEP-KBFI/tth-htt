@@ -263,6 +263,7 @@ SyncNtupleManager::initializeBranches()
     outputTree -> Branch("PU_weight", &(PU_weight), Form("PU_weight/%s", Traits<decltype(PU_weight)>::TYPE_NAME));
     outputTree -> Branch("hadTauSF_weight", &(hadTauSF_weight), Form("hadTauSF_weight/%s", Traits<decltype(hadTauSF_weight)>::TYPE_NAME));
     outputTree -> Branch("genWeight", &(genWeight), Form("genWeight/%s", Traits<decltype(genWeight)>::TYPE_NAME));
+    outputTree -> Branch("lumiScale", &(lumiScale), Form("lumiScale/%s", Traits<decltype(lumiScale)>::TYPE_NAME));
     
     reset(true);
   }
@@ -503,7 +504,8 @@ SyncNtupleManager::read(Float_t value,
   else if(type == FloatVariableType::bTagSF_weight)    bTagSF_weight     = value;
   else if(type == FloatVariableType::PU_weight)        PU_weight         = value;
   else if(type == FloatVariableType::hadTauSF_weight)  hadTauSF_weight   = value;
-  else if(type == FloatVariableType::genWeight)  genWeight   = value;
+  else if(type == FloatVariableType::genWeight)       genWeight      = value;
+  else if(type == FloatVariableType::lumiScale)       lumiScale      = value;
 }
 
 void
@@ -655,6 +657,7 @@ SyncNtupleManager::reset(bool is_initializing)
   PU_weight         = placeholder_value;
   hadTauSF_weight   = placeholder_value;
   genWeight         = placeholder_value;
+  lumiScale         = placeholder_value;
 
   for(auto & kv: hltMap)
     hltMap[kv.first] = -1;
@@ -682,4 +685,5 @@ SyncNtupleManager::write()
   outputFile -> cd();
   outputTree -> Write();
 }
+
 
