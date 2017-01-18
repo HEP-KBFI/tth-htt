@@ -1,7 +1,8 @@
 
-/** \executable prepareDatacards
+/** \executable addSystDatacards
  *
- * Prepare datacards for ttH, H->tautau analysis
+ * Add specific shape systematics to the datacard,
+ * e.g. CMS_ttHl_Clos_e_shapeUp/Down, CMS_ttHl_Clos_m_shapeUp/Down
  *
  * \author Christian Veelken, Tallinn
  *
