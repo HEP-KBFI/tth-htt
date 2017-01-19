@@ -330,14 +330,14 @@ int main(int argc, char* argv[])
     TFileDirectory subDir2 = subDir1_5.mkdir(process_string.data());
     TFileDirectory subD2 = subD.mkdir(category->data());
     
-    histos[which.data()][*category][process_string] = subDir2.make<TH1D>( Form("%smass_ll", central_or_shift_label_st.data()), "m_{ll}", 1,  10., 300. );
+    histos[which.data()][*category][process_string] = subDir2.make<TH1D>( Form("%smass_ll", central_or_shift_label_st.data()), "m_{ll}", 1,  60, 120. );
     histos[which.data()][*category][process_string]->Sumw2();
     if (std::strncmp(process_string.data(), "DY", 2) == 0){
         TFileDirectory subDirFake = subDir1_5.mkdir("DY_fake");
-        histos[which.data()][*category]["DY_fake"] = subDirFake.make<TH1D>( Form("%smass_ll", central_or_shift_label_st.data()) , "m_{ll}", 1,  10., 300. );
+        histos[which.data()][*category]["DY_fake"] = subDirFake.make<TH1D>( Form("%smass_ll", central_or_shift_label_st.data()) , "m_{ll}", 1,  60., 120. );
         histos[which.data()][*category]["DY_fake"]->Sumw2();
         if (central_or_shift == "central") {
-          histos_2gen[which.data()][*category][process_string] = subD2.make<TH1D>( Form("%smass_ll", central_or_shift_label_st.data()), "m_{ll}", 1,  10., 300. );
+          histos_2gen[which.data()][*category][process_string] = subD2.make<TH1D>( Form("%smass_ll", central_or_shift_label_st.data()), "m_{ll}", 1,  60., 120. );
           histos_2gen[which.data()][*category][process_string]->Sumw2();
         }
     }      
@@ -755,14 +755,7 @@ int main(int argc, char* argv[])
     Double_t mass_ll = p4.M();
     //Adjust central value
     //mass_ll *= 1.02;
-    if (mass_ll < 60 || mass_ll > 120) {
-      if ( run_lumi_eventSelector ) {
-	      std::cout << "event FAILS dilepton mass selection." << std::endl;
-	      std::cout << " (dilepton mass = " << mass_ll << ")" << std::endl;
-      }
-      if (central_or_shift == "central") fail_counter->Fill("m_ll", 1);
-      continue;
-    }
+    
     if (pt0 >= 10 && pt0 < 25) stLeadPt = "L";
     else if (pt0 >= 25 && pt0 < 50) stLeadPt = "M";
     else if (pt0 > 50) stLeadPt = "H";
@@ -784,6 +777,21 @@ int main(int argc, char* argv[])
     std::string category = Form("%s_%s%s", stEta.data(), stLeadPt.data(), stSubPt.data());
 
     std::string charge_cat = ( isCharge_SS ) ? "SS" : "OS";
+  
+    //Set all SS events that pass cuts to one bin and to pass selection
+    if (isCharge_SS)
+      mass_ll = 90.;
+    
+    if (mass_ll < 60 || mass_ll > 120) {
+      if ( run_lumi_eventSelector ) {
+	      std::cout << "event FAILS dilepton mass selection." << std::endl;
+	      std::cout << " (dilepton mass = " << mass_ll << ")" << std::endl;
+      }
+      if (central_or_shift == "central") fail_counter->Fill("m_ll", 1);
+      continue;
+    }
+    
+    
     if (std::strncmp(process_string.data(), "DY", 2) == 0){    //Split DY
       const GenLepton *gp0 = preselMuons[0]->genLepton();
       const GenLepton *gp1 = preselMuons[1]->genLepton();
