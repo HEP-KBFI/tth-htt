@@ -59,5 +59,6 @@ process.analyze_0l_2tau = cms.PSet(
     fillGenEvtHistograms = cms.bool(False),
     
     selEventsFileName_input = cms.string(''),
-    selEventsFileName_output = cms.string('')
+    selEventsFileName_output = cms.string(''),
+    selectBDT = cms.bool(False),
 )
