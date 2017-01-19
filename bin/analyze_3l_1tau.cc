@@ -74,7 +74,8 @@
 #include "tthAnalysis/HiggsToTauTau/interface/lutAuxFunctions.h" // loadTH2, get_sf_from_TH2
 #include "tthAnalysis/HiggsToTauTau/interface/cutFlowTable.h" // cutFlowTableType
 #include "tthAnalysis/HiggsToTauTau/interface/NtupleFillerUnits.h" // ...
-#include "tthAnalysis/HiggsToTauTau/interface/NtupleFillerMEM.h"
+#include "tthAnalysis/HiggsToTauTau/interface/NtupleFillerMEM.h" // NtupleFillerMEM
+#include "tthAnalysis/HiggsToTauTau/interface/NtupleFillerBDT.h" // NtupleFillerBDT
 
 #include <boost/range/algorithm/copy.hpp> // boost::copy()
 #include <boost/range/adaptor/map.hpp> // boost::adaptors::map_keys
@@ -510,6 +511,13 @@ int main(int argc, char* argv[])
 //--- open output file containing run:lumi:event numbers of events passing final event selection criteria
   std::ostream* selEventsFile = ( selEventsFileName_output != "" ) ? new std::ofstream(selEventsFileName_output.data(), std::ios::out) : 0;
 
+  const bool selectBDT = [&cfg_analyze]() -> bool
+  {
+    if(cfg_analyze.exists("selectBDT"))
+      return cfg_analyze.getParameter<bool>("selectBDT");
+    return false;
+  }();
+
 //--- declare histograms
 struct preselHistManagerType
   {
@@ -658,6 +666,27 @@ struct preselHistManagerType
     lheInfoHistManager = new LHEInfoHistManager(makeHistManager_cfg(process_string, 
       Form("%s/sel/lheInfo", histogramDir.data()), central_or_shift));
     lheInfoHistManager->bookHistograms(fs);
+  }
+
+  NtupleFillerBDT<float, int> * bdt_filler = nullptr;
+  typedef std::remove_pointer<decltype(bdt_filler)>::type::float_type float_type;
+  typedef std::remove_pointer<decltype(bdt_filler)>::type::int_type   int_type;
+  if(selectBDT)
+  {
+    bdt_filler = new std::remove_pointer<decltype(bdt_filler)>::type(
+      makeHistManager_cfg(process_string, Form("%s/sel/evtntuple", histogramDir.data()), central_or_shift)
+    );
+    bdt_filler -> register_variable<float_type>(
+      "lep1_pt", "lep1_conePt", "lep1_eta", "lep1_tth_mva", "mindr_lep1_jet", "mT_lep1", "dr_lep1_tau",
+      "lep2_pt", "lep2_conePt", "lep2_eta", "lep2_tth_mva", "mindr_lep2_jet", "mT_lep2", "dr_lep2_tau",
+      "lep3_pt", "lep3_conePt", "lep3_eta", "lep3_tth_mva", "mindr_lep3_jet", "mT_lep3", "dr_lep3_tau",
+      "mindr_tau_jet", "avg_dr_jet", "ptmiss",  "htmiss", "tau_mva", "tau_pt", "tau_eta", "dr_leps",
+      "mTauTauVis1", "mTauTauVis2", "lumiScale", "genWeight", "evtWeight"
+    );
+    bdt_filler -> register_variable<int_type>(
+      "nJet", "nBJetLoose", "nBJetMedium"
+    );
+    bdt_filler -> bookTree(fs);
   }
 
   int numEntries = inputTree->GetEntries();
@@ -1461,6 +1490,50 @@ struct preselHistManagerType
 
     if ( selEventsFile ) {
       (*selEventsFile) << run << ":" << lumi << ":" << event << std::endl;
+    }
+
+    if(bdt_filler)
+    {
+      bdt_filler -> operator()
+          ("lep1_pt",        selLepton_lead -> pt())
+          ("lep1_conePt",    comp_lep1_conePt(*selLepton_lead))
+          ("lep1_eta",       selLepton_lead -> eta())
+          ("lep1_tth_mva",   selLepton_lead -> mvaRawTTH())
+          ("mindr_lep1_jet", TMath::Min(10., comp_mindr_lep1_jet(*selLepton_lead, selJets)))
+          ("mT_lep1",        comp_MT_met_lep1(*selLepton_lead, met.pt(), met.phi()))
+          ("dr_lep1_tau",    deltaR(selLepton_lead -> p4(), selHadTau -> p4()))
+          ("lep2_pt",        selLepton_sublead -> pt())
+          ("lep2_conePt",    comp_lep1_conePt(*selLepton_sublead))
+          ("lep2_eta",       selLepton_sublead -> eta())
+          ("lep2_tth_mva",   selLepton_sublead -> mvaRawTTH())
+          ("mindr_lep2_jet", TMath::Min(10., comp_mindr_lep1_jet(*selLepton_sublead, selJets)))
+          ("mT_lep2",        comp_MT_met_lep1(*selLepton_sublead, met.pt(), met.phi()))
+          ("dr_lep2_tau",    deltaR(selLepton_sublead -> p4(), selHadTau -> p4()))
+          ("lep3_pt",        selLepton_third -> pt())
+          ("lep3_conePt",    comp_lep1_conePt(*selLepton_third))
+          ("lep3_eta",       selLepton_third -> eta())
+          ("lep3_tth_mva",   selLepton_third -> mvaRawTTH())
+          ("mindr_lep3_jet", TMath::Min(10., comp_mindr_lep1_jet(*selLepton_third, selJets)))
+          ("mT_lep3",        comp_MT_met_lep1(*selLepton_third, met.pt(), met.phi()))
+          ("dr_lep3_tau",    deltaR(selLepton_third -> p4(), selHadTau -> p4()))
+          ("mindr_tau_jet",  TMath::Min(10., comp_mindr_hadTau1_jet(*selHadTau, selJets)))
+          ("avg_dr_jet",     comp_avg_dr_jet(selJets))
+          ("ptmiss",         met.pt())
+          ("htmiss",         mht_p4.pt())
+          ("tau_mva",        selHadTau -> raw_mva_dR03())
+          ("tau_pt",         selHadTau -> pt())
+          ("tau_eta",        selHadTau -> eta())
+          ("dr_leps",        deltaR(selLepton_lead -> p4(), selLepton_sublead -> p4()))
+          ("mTauTauVis1",    mTauTauVis1_sel)
+          ("mTauTauVis2",    mTauTauVis2_sel)
+          ("lumiScale",      lumiScale)
+          ("genWeight",      genWeight)
+          ("evtWeight",      evtWeight)
+          ("nJet",           selJets.size())
+          ("nBJetLoose",     selBJets_loose.size())
+          ("nBJetMedium",    selBJets_medium.size())
+        .fill()
+      ;
     }
 
     ++selectedEntries;
