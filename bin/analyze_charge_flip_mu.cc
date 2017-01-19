@@ -670,21 +670,37 @@ int main(int argc, char* argv[])
     //std::cout << "Before " << selLepton_lead->pt() << ", " << selLepton_sublead->pt() << "   " << central_or_shift << std::endl;
     pt0 = selLepton_lead->pt();
     pt1 = selLepton_sublead->pt();
-    /*if (central_or_shift == "CMS_ttHl_electronESBarrelUp") {
-      if (etaL0 < 1.479) pt0 *= 1.01;
-      if (etaL1 < 1.479) pt1 *= 1.01;
+    if (central_or_shift == "CMS_ttHl_muonESBarrel1Up") {
+      if (etaL0 < 0.9) pt0 *= 1.02;
+      if (etaL1 < 0.9) pt1 *= 1.02;
     }
-    else if (central_or_shift == "CMS_ttHl_electronESBarrelDown"){
-      if (etaL0 < 1.479) pt0 *= 0.99;
-      if (etaL1 < 1.479) pt1 *= 0.99;
+    else if (central_or_shift == "CMS_ttHl_muonESBarrel1Down"){
+      if (etaL0 < 0.9) pt0 *= 0.98;
+      if (etaL1 < 0.9) pt1 *= 0.98;
     }
-    else if (central_or_shift == "CMS_ttHl_electronESEndcapUp") {
-      if (etaL0 >= 1.479) pt0 *= 1.025;
-      if (etaL1 >= 1.479) pt1 *= 1.025;
+    else if (central_or_shift == "CMS_ttHl_muonESBarrel2Up") {
+      if (etaL0 >= 0.9 && etaL0 < 1.2) pt0 *= 1.02;
+      if (etaL1 >= 0.9 && etaL1 < 1.2) pt1 *= 1.02;
     }
-    else if (central_or_shift == "CMS_ttHl_electronESEndcapDown") {
-      if (etaL0 >= 1.479) pt0 *= 0.975;
-      if (etaL1 >= 1.479) pt1 *= 0.975;
+    else if (central_or_shift == "CMS_ttHl_muonESBarrel2Down"){
+      if (etaL0 >= 0.9 && etaL0 < 1.2) pt0 *= 0.98;
+      if (etaL1 >= 0.9 && etaL1 < 1.2) pt1 *= 0.98;
+    }
+    else if (central_or_shift == "CMS_ttHl_muonESEndcap1Up") {
+      if (etaL0 >= 1.2 && etaL0 < 2.1) pt0 *= 1.02;
+      if (etaL1 >= 1.2 && etaL1 < 2.1) pt1 *= 1.02;
+    }
+    else if (central_or_shift == "CMS_ttHl_muonESEndcap1Down"){
+      if (etaL0 >= 1.2 && etaL0 < 2.1) pt0 *= 0.98;
+      if (etaL1 >= 1.2 && etaL1 < 2.1) pt1 *= 0.98;
+    }
+    else if (central_or_shift == "CMS_ttHl_muonESEndcap2Up") {
+      if (etaL0 >= 2.1) pt0 *= 1.02;
+      if (etaL1 >= 2.1) pt1 *= 1.02;
+    }
+    else if (central_or_shift == "CMS_ttHl_muonESEndcap2Down"){
+      if (etaL0 >= 2.1) pt0 *= 0.98;
+      if (etaL1 >= 2.1) pt1 *= 0.98;
     }
     //std::cout << "After: " << pt0 << ", " << pt1 << std::endl;
     
@@ -695,7 +711,7 @@ int main(int argc, char* argv[])
       temp = etaL1;
       etaL1 = etaL0;
       etaL0 = temp;
-    }*/
+    }
     
     double minPt_lead = 10.;
     double minPt_sublead = selLepton_sublead->is_electron() ? 15. : 10.;
@@ -803,11 +819,9 @@ int main(int argc, char* argv[])
         Double_t mass_ll_gen = p4_gen.M();
         
         //Adjust central value to better match data shape
-        if (central_or_shift == "central" || central_or_shift == "")
-          mass_ll = mass_ll + 0.25 * (mass_ll - mass_ll_gen);
-        else if (central_or_shift == "CMS_ttHl_electronERDown")   
+        if (central_or_shift == "CMS_ttHl_muonERDown")   
           mass_ll = mass_ll - 0.25 * (mass_ll - mass_ll_gen);
-        else if (central_or_shift == "CMS_ttHl_electronERUp")
+        else if (central_or_shift == "CMS_ttHl_muonERUp")
           mass_ll = mass_ll + 0.25 * (mass_ll - mass_ll_gen);
         //std::cout << "After:  " << mass_ll << std::endl;
         histos[charge_cat][category.data()]["DY"]->Fill(mass_ll, evtWeight);
