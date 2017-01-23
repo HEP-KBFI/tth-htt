@@ -43,13 +43,19 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelector.h" // RecoJetCollectionSelector
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelectorBtag.h" // RecoJetCollectionSelectorBtagLoose, RecoJetCollectionSelectorBtagMedium
 #include "tthAnalysis/HiggsToTauTau/interface/RunLumiEventSelector.h" // RunLumiEventSelector
-#include "tthAnalysis/HiggsToTauTau/interface/MuonHistManager.h" // ElectronHistManager
+#include "tthAnalysis/HiggsToTauTau/interface/MuonHistManager.h" // MuonHistManager
+#include "tthAnalysis/HiggsToTauTau/interface/HadTauHistManager.h" // HadTauHistManager
+#include "tthAnalysis/HiggsToTauTau/interface/JetHistManager.h" // JetHistManager
+#include "tthAnalysis/HiggsToTauTau/interface/MEtHistManager.h" // MEtHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/GenEvtHistManager.h" // GenEvtHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/LHEInfoHistManager.h" // LHEInfoHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/leptonTypes.h" // getLeptonType, kElectron, kMuon
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // getBranchName_bTagWeight, isHigherPt, isMatched
 #include "tthAnalysis/HiggsToTauTau/interface/hltPath.h" // hltPath, create_hltPaths, hltPaths_setBranchAddresses, hltPaths_isTriggered, hltPaths_delete
 #include "tthAnalysis/HiggsToTauTau/interface/Data_to_MC_CorrectionInterface.h" // Data_to_MC_CorrectionInterface.h
+#include "tthAnalysis/HiggsToTauTau/interface/leptonGenMatchingAuxFunctions.h" // getLeptonGenMatch_definitions_1lepton, getLeptonGenMatch_string, getLeptonGenMatch_int
+#include "tthAnalysis/HiggsToTauTau/interface/hadTauGenMatchingAuxFunctions.h" // getHadTauGenMatch_definitions_1tau, getHadTauGenMatch_string, getHadTauGenMatch_int
+#include "tthAnalysis/HiggsToTauTau/interface/RecoMEtReader.h" // RecoMEtReader
 
 #include <iostream> // std::cerr, std::fixed
 #include <cstring> // std::strncpm
@@ -101,6 +107,8 @@ int main(int argc, char* argv[])
   else throw cms::Exception("analyze_charge_flip_mu") 
     << "Invalid Configuration parameter 'era' = " << era_string << " !!\n";
 
+  std::string histogramDir = "charge_flip";
+
   vstring triggerNames_1mu = cfg_analyze.getParameter<vstring>("triggers_1mu");
   std::vector<hltPath*> triggers_1mu = create_hltPaths(triggerNames_1mu);
   bool use_triggers_1mu = true; //cfg_analyze.getParameter<bool>("use_triggers_1mu");
@@ -117,6 +125,17 @@ int main(int argc, char* argv[])
   else throw cms::Exception("analyze_charge_flip_mu")
     << "Invalid Configuration parameter 'leptonSelection' = " << leptonSelection_string << " !!\n";
 
+  bool apply_leptonGenMatching = true; //cfg_analyze.getParameter<bool>("apply_leptonGenMatching");
+  std::vector<leptonGenMatchEntry> leptonGenMatch_definitions = getLeptonGenMatch_definitions_2lepton(apply_leptonGenMatching);
+  std::cout << "leptonGenMatch_definitions:" << std::endl;
+  std::cout << leptonGenMatch_definitions;
+
+  bool apply_hadTauGenMatching = false;//cfg_analyze.getParameter<bool>("apply_hadTauGenMatching");
+  std::vector<hadTauGenMatchEntry> hadTauGenMatch_definitions = getHadTauGenMatch_definitions_1tau(apply_hadTauGenMatching);
+  std::cout << "hadTauGenMatch_definitions:" << std::endl;
+  std::cout << hadTauGenMatch_definitions;
+
+
   bool isMC = cfg_analyze.getParameter<bool>("isMC");
   std::string central_or_shift = cfg_analyze.getParameter<std::string>("central_or_shift");
   std::string central_or_shift_label = central_or_shift == "central" ? "" : "_"+central_or_shift;
@@ -132,7 +151,7 @@ int main(int argc, char* argv[])
   }
 
   int jetPt_option = RecoJetReader::kJetPt_central;
-  int lheScale_option = kLHE_scale_central;
+  //int lheScale_option = kLHE_scale_central;
   TString central_or_shift_tstring = central_or_shift.data();
   if ( isMC && central_or_shift != "central" ) {
     std::string shiftUp_or_Down = "";
@@ -147,13 +166,13 @@ int main(int argc, char* argv[])
       if      ( shiftUp_or_Down == "Up"   ) jetPt_option = RecoJetReader::kJetPt_jecUp;
       else if ( shiftUp_or_Down == "Down" ) jetPt_option = RecoJetReader::kJetPt_jecDown;
       else assert(0);
-    } else if ( central_or_shift_tstring.BeginsWith("CMS_ttHl_thu_shape") ) {
+    } /*else if ( central_or_shift_tstring.BeginsWith("CMS_ttHl_thu_shape") ) {
       if      ( central_or_shift_tstring.EndsWith("x1Down") ) lheScale_option = kLHE_scale_xDown;
       else if ( central_or_shift_tstring.EndsWith("x1Up")   ) lheScale_option = kLHE_scale_xUp;
       else if ( central_or_shift_tstring.EndsWith("y1Down") ) lheScale_option = kLHE_scale_yDown;
       else if ( central_or_shift_tstring.EndsWith("y1Up")   ) lheScale_option = kLHE_scale_yUp;
       else assert(0);
-    } else if (!central_or_shift_tstring.BeginsWith("CMS_ttHl_electronE")) throw cms::Exception("analyze_charge_flip_mu")
+    } */else if (!central_or_shift_tstring.BeginsWith("CMS_ttHl_muonE")) throw cms::Exception("analyze_charge_flip_mu")
 	<< "Invalid Configuration parameter 'central_or_shift' = " << central_or_shift << " !!\n";
   }
 
@@ -257,6 +276,10 @@ int main(int argc, char* argv[])
   RecoJetCollectionSelectorBtagLoose jetSelectorBtagLoose(era);
   RecoJetCollectionSelectorBtagMedium jetSelectorBtagMedium(era);
 
+  std::string branchName_met = "met";
+  RecoMEtReader* metReader = new RecoMEtReader(era, branchName_met);
+  metReader->setBranchAddresses(inputTree);
+
   GenLeptonReader* genLeptonReader = 0;
   GenHadTauReader* genHadTauReader = 0;
   GenJetReader* genJetReader = 0;
@@ -285,13 +308,80 @@ int main(int argc, char* argv[])
     Form("charge_flip_%s/presel/muons", charge_and_leptonSelectionOS.data()), central_or_shift.data()));
   preselMuonHistManagerOS.bookHistograms(fs);
 
+
+  struct selHistManagerType
+  {
+    MuonHistManager* muons_;
+    HadTauHistManager* hadTaus_;
+    JetHistManager* jets_;
+    JetHistManager* BJets_loose_;
+    JetHistManager* BJets_medium_;
+    MEtHistManager* met_;
+    //EvtHistManager_2lss_1tau* evt_;
+  };
+  //typedef std::map<int, selHistManagerType*> int_to_selHistManagerMap;
+  //std::map<int, int_to_selHistManagerMap> selHistManagers;
+  std::map<int, selHistManagerType*> selHistManagers;
+
+  if (central_or_shift == "central"){
+    for ( std::vector<leptonGenMatchEntry>::const_iterator leptonGenMatch_definition = leptonGenMatch_definitions.begin();
+	  leptonGenMatch_definition != leptonGenMatch_definitions.end(); ++leptonGenMatch_definition ) {
+      for ( std::vector<hadTauGenMatchEntry>::const_iterator hadTauGenMatch_definition = hadTauGenMatch_definitions.begin();
+	    hadTauGenMatch_definition != hadTauGenMatch_definitions.end(); ++hadTauGenMatch_definition ) {
+
+        std::string process_and_genMatch = process_string;
+        if ( apply_leptonGenMatching ) process_and_genMatch += leptonGenMatch_definition->name_;
+        if ( apply_leptonGenMatching && apply_hadTauGenMatching ) process_and_genMatch += "&";
+        if ( apply_hadTauGenMatching ) process_and_genMatch += hadTauGenMatch_definition->name_;
+
+        int idxLepton = leptonGenMatch_definition->idx_;
+        //int idxHadTau = hadTauGenMatch_definition->idx_;
+
+        selHistManagerType* selHistManager = new selHistManagerType();
+        //selHistManager->electrons_ = new ElectronHistManager(makeHistManager_cfg(process_and_genMatch, 
+        //  Form("%s/presel/electrons", histogramDir.data()), central_or_shift));
+        //selHistManager->electrons_->bookHistograms(fs);
+        selHistManager->muons_ = new MuonHistManager(makeHistManager_cfg(process_and_genMatch, 
+          Form("%s/sel/muons", histogramDir.data()), central_or_shift));
+        selHistManager->muons_->bookHistograms(fs);
+        selHistManager->hadTaus_ = new HadTauHistManager(makeHistManager_cfg(process_and_genMatch, 
+          Form("%s/sel/hadTaus", histogramDir.data()), central_or_shift));
+        selHistManager->hadTaus_->bookHistograms(fs);
+        selHistManager->jets_ = new JetHistManager(makeHistManager_cfg(process_and_genMatch, 
+          Form("%s/sel/jets", histogramDir.data()), central_or_shift));
+        selHistManager->jets_->bookHistograms(fs);
+        selHistManager->BJets_loose_ = new JetHistManager(makeHistManager_cfg(process_and_genMatch, 
+          Form("%s/sel/BJets_loose", histogramDir.data()), central_or_shift));
+        selHistManager->BJets_loose_->bookHistograms(fs);
+        selHistManager->BJets_medium_ = new JetHistManager(makeHistManager_cfg(process_and_genMatch, 
+          Form("%s/sel/BJets_medium", histogramDir.data()), central_or_shift));
+        selHistManager->BJets_medium_->bookHistograms(fs);
+        selHistManager->met_ = new MEtHistManager(makeHistManager_cfg(process_and_genMatch, 
+          Form("%s/sel/met", histogramDir.data()), central_or_shift));
+        selHistManager->met_->bookHistograms(fs);
+        /*selHistManager->evt_ = new EvtHistManager_2lss_1tau(makeHistManager_cfg(process_and_genMatch, 
+          Form("%s/presel/evt", histogramDir.data()), era_string, central_or_shift));
+        selHistManager->evt_->bookHistograms(fs);*/
+        selHistManagers[idxLepton] = selHistManager;
+
+      /*  	  std::string decayMode_and_genMatch = (*decayMode);
+	    if ( apply_leptonGenMatching ) decayMode_and_genMatch += leptonGenMatch_definition->name_;
+	    if ( apply_leptonGenMatching && apply_hadTauGenMatching ) decayMode_and_genMatch += "&";
+	    if ( apply_hadTauGenMatching ) decayMode_and_genMatch += hadTauGenMatch_definition->name_;
+      */
+      }
+    }
+  }
+
+
   vstring categories_etapt = {  //B-barrel, E-endcap, L-low pT (10 <= pT < 25), M-med pT (25 <= pT < 50), H-high pT (pT > 50)
     "BB_LL", "BB_ML", "BB_MM", "BB_HL", "BB_HM", "BB_HH", "EE_LL", "EE_ML", "EE_MM", "EE_HL", "EE_HM", "EE_HH", "BE_LL", "BE_ML", "EB_ML", "BE_MM", "BE_HL", "EB_HL", "BE_HM", "EB_HM", "BE_HH", "total"
   };
   vstring categories_charge = {
     "SS", "OS"
   };
-  std::map<std::string, std::map<std::string, std::map<std::string, TH1D*>>> histos;
+  std::map<std::string, std::map<std::string, std::map<std::string, std::map<std::string, TH1D*>>>> histos;
+  std::map<std::string, std::map<std::string, std::map<std::string, std::map<std::string, TH2D*>>>> histos_2D;
   std::map<std::string, std::map<std::string, std::map<std::string, TH1D*>>> histos_2gen;
   
   
@@ -306,12 +396,25 @@ int main(int argc, char* argv[])
     TFileDirectory subDir2 = subDir1_5.mkdir(process_string.data());
     TFileDirectory subD2 = subD.mkdir(category->data());
     
-    histos[which.data()][*category][process_string] = subDir2.make<TH1D>( Form("%smass_ll", central_or_shift_label_st.data()), "m_{ll}", 60,  60., 120. );
-    histos[which.data()][*category][process_string]->Sumw2();
+    histos[which.data()][*category][process_string]["mass_ll"] = subDir2.make<TH1D>( Form("%smass_ll", central_or_shift_label_st.data()), "m_{ll}", 60,  60., 120. );
+    histos[which.data()][*category][process_string]["delta_phi"] = subDir2.make<TH1D>( Form("%sdelta_phi", central_or_shift_label_st.data()), "delta_phi", 20,  -TMath::Pi(), TMath::Pi() );
+    histos[which.data()][*category][process_string]["mass_2"] = subDir2.make<TH1D>( Form("%smass_2", central_or_shift_label_st.data()), "m2_{ll}", 50,  10., 210. );
+    histos_2D[which.data()][*category][process_string]["mass_vs_dphi"] = subDir2.make<TH2D>( Form("%smass2_vs_delta_phi", central_or_shift_label_st.data()), "mass2_vs_deltaphi", 50,  10., 210., 20,  -TMath::Pi(), TMath::Pi() );
+    histos[which.data()][*category][process_string]["mass_ll"]->Sumw2();
+    histos[which.data()][*category][process_string]["delta_phi"]->Sumw2();
+    histos[which.data()][*category][process_string]["mass_2"]->Sumw2();
+    histos_2D[which.data()][*category][process_string]["mass_vs_dphi"]->Sumw2();
+    
     if (std::strncmp(process_string.data(), "DY", 2) == 0){
         TFileDirectory subDirFake = subDir1_5.mkdir("DY_fake");
-        histos[which.data()][*category]["DY_fake"] = subDirFake.make<TH1D>( Form("%smass_ll", central_or_shift_label_st.data()) , "m_{ll}", 60,  60., 120. );
-        histos[which.data()][*category]["DY_fake"]->Sumw2();
+        histos[which.data()][*category]["DY_fake"]["mass_ll"] = subDir2.make<TH1D>( Form("%smass_ll", central_or_shift_label_st.data()), "m_{ll}", 60,  60., 120. );
+        histos[which.data()][*category]["DY_fake"]["delta_phi"] = subDir2.make<TH1D>( Form("%sdelta_phi", central_or_shift_label_st.data()), "delta_phi", 20,  -TMath::Pi(), TMath::Pi() );
+        histos[which.data()][*category]["DY_fake"]["mass_2"] = subDir2.make<TH1D>( Form("%smass_2", central_or_shift_label_st.data()), "m2_{ll}", 50,  10., 210. );
+        histos_2D[which.data()][*category][process_string]["mass_vs_dphi"] = subDir2.make<TH2D>( Form("%smass2_vs_delta_phi", central_or_shift_label_st.data()), "mass2_vs_deltaphi", 50,  10., 210., 20,  -TMath::Pi(), TMath::Pi() );
+        histos[which.data()][*category]["DY_fake"]["mass_ll"]->Sumw2();
+        histos[which.data()][*category]["DY_fake"]["delta_phi"]->Sumw2();
+        histos[which.data()][*category]["DY_fake"]["mass_2"]->Sumw2();
+        histos_2D[which.data()][*category]["DY_fake"]["mass_vs_dphi"]->Sumw2();
         if (central_or_shift == "central") {
           histos_2gen[which.data()][*category][process_string] = subD2.make<TH1D>( Form("%smass_ll", central_or_shift_label_st.data()), "m_{ll}", 60,  60., 120. );
           histos_2gen[which.data()][*category][process_string]->Sumw2();
@@ -330,12 +433,27 @@ int main(int argc, char* argv[])
     TFileDirectory subDir2 = subDir1_5.mkdir(process_string.data());
     TFileDirectory subD2 = subD.mkdir(category->data());
     
-    histos[which.data()][*category][process_string] = subDir2.make<TH1D>( Form("%smass_ll", central_or_shift_label_st.data()), "m_{ll}", 1,  60, 120. );
-    histos[which.data()][*category][process_string]->Sumw2();
+    histos[which.data()][*category][process_string]["mass_ll"] = subDir2.make<TH1D>( Form("%smass_ll", central_or_shift_label_st.data()), "m_{ll}", 1,  60., 120. );
+    histos[which.data()][*category][process_string]["delta_phi"] = subDir2.make<TH1D>( Form("%sdelta_phi", central_or_shift_label_st.data()), "delta_phi", 20,  -TMath::Pi(), TMath::Pi() );
+    histos[which.data()][*category][process_string]["mass_2"] = subDir2.make<TH1D>( Form("%smass_2", central_or_shift_label_st.data()), "m2_{ll}", 50,  10., 210. );
+    histos_2D[which.data()][*category][process_string]["mass_vs_dphi"] = subDir2.make<TH2D>( Form("%smass2_vs_delta_phi", central_or_shift_label_st.data()), "mass2_vs_deltaphi", 50,  10., 210., 20,  -TMath::Pi(), TMath::Pi() );
+    histos[which.data()][*category][process_string]["mass_ll"]->Sumw2();
+    histos[which.data()][*category][process_string]["delta_phi"]->Sumw2();
+    histos[which.data()][*category][process_string]["mass_2"]->Sumw2();
+    histos_2D[which.data()][*category][process_string]["mass_vs_dphi"]->Sumw2();
+    
     if (std::strncmp(process_string.data(), "DY", 2) == 0){
         TFileDirectory subDirFake = subDir1_5.mkdir("DY_fake");
-        histos[which.data()][*category]["DY_fake"] = subDirFake.make<TH1D>( Form("%smass_ll", central_or_shift_label_st.data()) , "m_{ll}", 1,  60., 120. );
-        histos[which.data()][*category]["DY_fake"]->Sumw2();
+        
+        histos[which.data()][*category]["DY_fake"]["mass_ll"] = subDir2.make<TH1D>( Form("%smass_ll", central_or_shift_label_st.data()), "m_{ll}", 1,  60., 120. );
+        histos[which.data()][*category]["DY_fake"]["delta_phi"] = subDir2.make<TH1D>( Form("%sdelta_phi", central_or_shift_label_st.data()), "delta_phi", 20,  -TMath::Pi(), TMath::Pi() );
+        histos[which.data()][*category]["DY_fake"]["mass_2"] = subDir2.make<TH1D>( Form("%smass_2", central_or_shift_label_st.data()), "m2_{ll}", 50,  10., 210. );
+        histos_2D[which.data()][*category][process_string]["mass_vs_dphi"] = subDir2.make<TH2D>( Form("%smass2_vs_delta_phi", central_or_shift_label_st.data()), "mass2_vs_deltaphi", 50,  10., 210., 20,  -TMath::Pi(), TMath::Pi() );
+        histos[which.data()][*category]["DY_fake"]["mass_ll"]->Sumw2();
+        histos[which.data()][*category]["DY_fake"]["delta_phi"]->Sumw2();
+        histos[which.data()][*category]["DY_fake"]["mass_2"]->Sumw2();
+        histos_2D[which.data()][*category]["DY_fake"]["mass_vs_dphi"]->Sumw2();
+        
         if (central_or_shift == "central") {
           histos_2gen[which.data()][*category][process_string] = subD2.make<TH1D>( Form("%smass_ll", central_or_shift_label_st.data()), "m_{ll}", 1,  60., 120. );
           histos_2gen[which.data()][*category][process_string]->Sumw2();
@@ -520,6 +638,14 @@ int main(int argc, char* argv[])
       electronGenMatcher.addGenLeptonMatch(preselElectrons, genLeptons, 0.3);
       electronGenMatcher.addGenHadTauMatch(preselElectrons, genHadTaus, 0.3);
       electronGenMatcher.addGenJetMatch(preselElectrons, genJets, 0.5);
+      
+      hadTauGenMatcher.addGenLeptonMatch(selHadTaus, genLeptons, 0.2);
+      hadTauGenMatcher.addGenHadTauMatch(selHadTaus, genHadTaus, 0.2);
+      hadTauGenMatcher.addGenJetMatch(selHadTaus, genJets, 0.2);
+
+      jetGenMatcher.addGenLeptonMatch(selJets, genLeptons, 0.2);
+      jetGenMatcher.addGenHadTauMatch(selJets, genHadTaus, 0.2);
+      jetGenMatcher.addGenJetMatch(selJets, genJets, 0.2);
     }
 
 //--- apply preselection
@@ -544,6 +670,10 @@ int main(int argc, char* argv[])
     const RecoLepton* preselLepton_sublead = preselLeptons[1];
     int preselLepton_sublead_type = getLeptonType(preselLepton_sublead->pdgId());
     
+    const leptonGenMatchEntry& preselLepton_genMatch = getLeptonGenMatch(leptonGenMatch_definitions, preselLepton_lead, preselLepton_sublead);
+    int idxPreselLepton_genMatch = preselLepton_genMatch.idx_;
+    assert(idxPreselLepton_genMatch != kGen_LeptonUndefined2);
+    
     // require exactly zero preselected electrons
     if ( !(preselElectrons.size() == 0) ) {
       if ( run_lumi_eventSelector ) {
@@ -565,7 +695,20 @@ int main(int argc, char* argv[])
       if (central_or_shift == "central") fail_counter->Fill("2mu_trig", 1);
       continue;
     }
-
+    
+    /*if ( selHadTaus.size() >= 1 ) {
+    const RecoHadTau* selHadTau = selHadTaus[0];
+    const hadTauGenMatchEntry& selHadTau_genMatch = getHadTauGenMatch(hadTauGenMatch_definitions, selHadTau);
+    int idxSelHadTau_genMatch = selHadTau_genMatch.idx_;
+    assert(idxSelHadTau_genMatch != kGen_HadTauUndefined1);
+    }*/
+    
+    //--- compute MHT and linear MET discriminant (met_LD)
+    RecoMEt met = metReader->read();
+    std::vector<const RecoLepton*> fakeableLeptons = mergeLeptonCollections(fakeableElectrons, fakeableMuons);
+    Particle::LorentzVector mht_p4 = compMHT(fakeableLeptons, selHadTaus, selJets);
+    double met_LD = compMEt_LD(met.p4(), mht_p4);
+    
     if ( isMC ) {
       lheInfoReader->read();
     }
@@ -578,15 +721,9 @@ int main(int argc, char* argv[])
       evtWeight *= lumiScale;
       evtWeight *= pileupWeight;
       evtWeight *= sgn(genWeight);
-      if ( lheScale_option != kLHE_scale_central ) {	
-	if      ( lheScale_option == kLHE_scale_xDown ) evtWeight *= lheInfoReader->getWeight_scale_xDown();
-	else if ( lheScale_option == kLHE_scale_xUp   ) evtWeight *= lheInfoReader->getWeight_scale_xUp();
-	else if ( lheScale_option == kLHE_scale_yDown ) evtWeight *= lheInfoReader->getWeight_scale_yDown();
-	else if ( lheScale_option == kLHE_scale_yUp   ) evtWeight *= lheInfoReader->getWeight_scale_yUp();
-      }
       for ( std::vector<const RecoJet*>::const_iterator jet = selJets.begin();
 	    jet != selJets.end(); ++jet ) {
-	evtWeight *= (*jet)->BtagWeight();
+      	evtWeight *= (*jet)->BtagWeight();
       }
     }    
 
@@ -769,6 +906,13 @@ int main(int argc, char* argv[])
       math::PtEtaPhiMLorentzVector(pt0, preselMuons[0]->eta(), preselMuons[0]->phi(), preselMuons[0]->mass()) +
       math::PtEtaPhiMLorentzVector(pt1, preselMuons[1]->eta(), preselMuons[1]->phi(), preselMuons[1]->mass());
     Double_t mass_ll = p4.M();
+    
+    Double_t delta_phi = preselMuons[0]->phi() - preselMuons[1]->phi();
+    math::PtEtaPhiMLorentzVector p4_2 =
+      math::PtEtaPhiMLorentzVector(35., preselMuons[0]->eta(), preselMuons[0]->phi(), preselMuons[0]->mass()) +
+      math::PtEtaPhiMLorentzVector(35., preselMuons[1]->eta(), preselMuons[1]->phi(), preselMuons[1]->mass());
+    Double_t mass_2 = p4_2.M();
+    
     //Adjust central value
     //mass_ll *= 1.02;
     
@@ -820,21 +964,39 @@ int main(int argc, char* argv[])
         
         //Adjust central value to better match data shape
         if (central_or_shift == "CMS_ttHl_muonERDown")   
-          mass_ll = mass_ll - 0.25 * (mass_ll - mass_ll_gen);
+          mass_ll = mass_ll - 0.5 * (mass_ll - mass_ll_gen);
         else if (central_or_shift == "CMS_ttHl_muonERUp")
-          mass_ll = mass_ll + 0.25 * (mass_ll - mass_ll_gen);
+          mass_ll = mass_ll + 0.5 * (mass_ll - mass_ll_gen);
         //std::cout << "After:  " << mass_ll << std::endl;
-        histos[charge_cat][category.data()]["DY"]->Fill(mass_ll, evtWeight);
-        histos[charge_cat]["total"]["DY"]->Fill(mass_ll, evtWeight);
+        histos[charge_cat][category.data()]["DY"]["mass_ll"]->Fill(mass_ll, evtWeight);
+        histos[charge_cat]["total"]["DY"]["mass_ll"]->Fill(mass_ll, evtWeight);
+        histos[charge_cat][category.data()]["DY"]["delta_phi"]->Fill(delta_phi, evtWeight);
+        histos[charge_cat]["total"]["DY"]["delta_phi"]->Fill(delta_phi, evtWeight);
+        histos[charge_cat][category.data()]["DY"]["mass_2"]->Fill(mass_2, evtWeight);
+        histos[charge_cat]["total"]["DY"]["mass_2"]->Fill(mass_2, evtWeight);
+        histos_2D[charge_cat][category.data()]["DY"]["mass_vs_dphi"]->Fill(mass_2, delta_phi, evtWeight);
+        histos_2D[charge_cat]["total"]["DY"]["mass_vs_dphi"]->Fill(mass_2, delta_phi, evtWeight);        
       }
       else if (!central_or_shift_tstring.BeginsWith("CMS_ttHl_electronER")){
-        histos[charge_cat][category.data()]["DY_fake"]->Fill(mass_ll, evtWeight);
-        histos[charge_cat]["total"]["DY_fake"]->Fill(mass_ll, evtWeight);        
+        histos[charge_cat][category.data()]["DY_fake"]["mass_ll"]->Fill(mass_ll, evtWeight);
+        histos[charge_cat]["total"]["DY_fake"]["mass_ll"]->Fill(mass_ll, evtWeight);
+        histos[charge_cat][category.data()]["DY_fake"]["delta_phi"]->Fill(delta_phi, evtWeight);
+        histos[charge_cat]["total"]["DY_fake"]["delta_phi"]->Fill(delta_phi, evtWeight);
+        histos[charge_cat][category.data()]["DY_fake"]["mass_2"]->Fill(mass_2, evtWeight);
+        histos[charge_cat]["total"]["DY_fake"]["mass_2"]->Fill(mass_2, evtWeight);
+        histos_2D[charge_cat][category.data()]["DY_fake"]["mass_vs_dphi"]->Fill(mass_2, delta_phi, evtWeight);
+        histos_2D[charge_cat]["total"]["DY_fake"]["mass_vs_dphi"]->Fill(mass_2, delta_phi, evtWeight);        
       }
     }
     else {//Otherwise
-      histos[charge_cat][category.data()][process_string]->Fill(mass_ll, evtWeight);
-      histos[charge_cat]["total"][process_string]->Fill(mass_ll, evtWeight);
+      histos[charge_cat][category.data()][process_string]["mass_ll"]->Fill(mass_ll, evtWeight);
+      histos[charge_cat]["total"][process_string]["mass_ll"]->Fill(mass_ll, evtWeight);
+      histos[charge_cat][category.data()][process_string]["delta_phi"]->Fill(delta_phi, evtWeight);
+      histos[charge_cat]["total"][process_string]["delta_phi"]->Fill(delta_phi, evtWeight);
+      histos[charge_cat][category.data()][process_string]["mass_2"]->Fill(mass_2, evtWeight);
+      histos[charge_cat]["total"][process_string]["mass_2"]->Fill(mass_2, evtWeight);
+      histos_2D[charge_cat][category.data()][process_string]["mass_vs_dphi"]->Fill(mass_2, delta_phi, evtWeight);
+      histos_2D[charge_cat]["total"][process_string]["mass_vs_dphi"]->Fill(mass_2, delta_phi, evtWeight);
     }    
 
     if (isMC && central_or_shift == "central" && std::strncmp(process_string.data(), "DY", 2) == 0)
@@ -912,7 +1074,24 @@ int main(int argc, char* argv[])
       genEvtHistManager_afterCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genJets);
       lheInfoHistManager->fillHistograms(*lheInfoReader, evtWeight);
     }
-
+    
+    if(isCharge_SS == true && central_or_shift == "central"){
+      selHistManagerType* selHistManager = selHistManagers[idxPreselLepton_genMatch];
+      assert(selHistManager != 0);
+      //selHistManager->electrons_->fillHistograms(preselElectrons, 1.);
+      selHistManager->muons_->fillHistograms(selMuons, 1.);
+      selHistManager->hadTaus_->fillHistograms(selHadTaus, 1.);
+      selHistManager->jets_->fillHistograms(selJets, 1.);
+      selHistManager->BJets_loose_->fillHistograms(selBJets_loose, 1.);
+      selHistManager->BJets_medium_->fillHistograms(selBJets_medium, 1.);
+      selHistManager->met_->fillHistograms(met, mht_p4, met_LD, 1.);
+      /*selHistManager->evt_->fillHistograms(
+        selElectrons.size(), selMuons.size(), selHadTaus.size(), 
+        selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
+        -1., -1., -1., -1., -1., 
+        mTauTauVis1_presel, mTauTauVis2_presel, 
+        0, 1.);*/
+    }
     (*selEventsFile) << run << ":" << lumi << ":" << event << std::endl;
     (*selEventsFile) << run << ":" << lumi << ":" << event << std::endl;
 
