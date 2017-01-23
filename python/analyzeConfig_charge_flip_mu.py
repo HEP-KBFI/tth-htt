@@ -120,7 +120,7 @@ class analyzeConfig_charge_flip_mu(analyzeConfig_charge_flip):
        "CMS_ttHl_muonESBarrel1Up",
        "CMS_ttHl_muonESBarrel1Down",
        "CMS_ttHl_muonESBarrel2Up",
-       "CMS_ttHl_muonESBarrel2Down"
+       "CMS_ttHl_muonESBarrel2Down",
        "CMS_ttHl_muonESEndcap1Down",
        "CMS_ttHl_muonESEndcap1Up",
        "CMS_ttHl_muonESEndcap2Down",
