@@ -977,7 +977,7 @@ int main(int argc, char* argv[])
         histos_2D[charge_cat][category.data()]["DY"]["mass_vs_dphi"]->Fill(mass_2, delta_phi, evtWeight);
         histos_2D[charge_cat]["total"]["DY"]["mass_vs_dphi"]->Fill(mass_2, delta_phi, evtWeight);        
       }
-      else if (!central_or_shift_tstring.BeginsWith("CMS_ttHl_electronER")){
+      else if (!central_or_shift_tstring.BeginsWith("CMS_ttHl_muonER")){
         histos[charge_cat][category.data()]["DY_fake"]["mass_ll"]->Fill(mass_ll, evtWeight);
         histos[charge_cat]["total"]["DY_fake"]["mass_ll"]->Fill(mass_ll, evtWeight);
         histos[charge_cat][category.data()]["DY_fake"]["delta_phi"]->Fill(delta_phi, evtWeight);
@@ -1010,10 +1010,10 @@ int main(int argc, char* argv[])
         }
         #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
         gen_eff->FillWeighted(preselMuons[i]->charge() != gp->charge(), evtWeight, gp->pt(), std::fabs(gp->eta()));
-        //if (preselElectrons[i]->charge() == gp->charge())
-        //{
+        if (preselMuons[i]->charge() == gp->charge())
+        {
           histos_gen["ID"]->Fill(gp->pt(), std::fabs(gp->eta()), evtWeight);
-        //}
+        }
         if (preselMuons[i]->charge() != gp->charge())
         {
           histos_gen["MisID"]->Fill(gp->pt(), std::fabs(gp->eta()),evtWeight);
