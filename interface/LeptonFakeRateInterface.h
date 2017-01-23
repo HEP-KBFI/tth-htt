@@ -9,7 +9,9 @@
 
 #include <map>
 
-enum { kFRl_central };
+enum { kFRl_central, 
+       kFRe_shape_ptUp, kFRe_shape_ptDown, kFRe_shape_etaUp, kFRe_shape_etaDown, kFRe_shape_eta_barrelUp, kFRe_shape_eta_barrelDown,  
+       kFRm_shape_ptUp, kFRm_shape_ptDown, kFRm_shape_etaUp, kFRm_shape_etaDown };
 
 class LeptonFakeRateInterface
 {
@@ -21,6 +23,8 @@ class LeptonFakeRateInterface
   double getWeight_mu(double muonPt, double muonAbsEta) const;
   
  private:
+  int central_or_shift_;
+
   std::map<std::string, TFile*> inputFiles_;
   
   lutWrapperBase* lutFakeRate_e_;

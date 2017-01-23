@@ -79,5 +79,6 @@ process.analyze_1l_2tau = cms.PSet(
     branchName_met = cms.string('met'),
     
     selEventsFileName_input = cms.string(''),
-    selEventsFileName_output = cms.string('')
+    selEventsFileName_output = cms.string(''),
+    selectBDT = cms.bool(False),
 )

@@ -64,6 +64,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/Data_to_MC_CorrectionInterface.h" // Data_to_MC_CorrectionInterface.h
 #include "tthAnalysis/HiggsToTauTau/interface/hadTauTriggerTurnOnCurves.h" // effHLT_DoubleMediumIsoPFTau35_Trk1_eta2p1_Reg
 #include "tthAnalysis/HiggsToTauTau/interface/cutFlowTable.h" // cutFlowTableType
+#include "tthAnalysis/HiggsToTauTau/interface/NtupleFillerBDT.h" // NtupleFillerBDT
 
 #include "TauAnalysis/ClassicSVfit/interface/ClassicSVfit.h"
 #include "TauAnalysis/ClassicSVfit/interface/MeasuredTauLepton.h"
@@ -401,6 +402,13 @@ int main(int argc, char* argv[])
 //--- open output file containing run:lumi:event numbers of events passing final event selection criteria
   std::ostream* selEventsFile = new std::ofstream(selEventsFileName_output.data(), std::ios::out);
 
+  const bool selectBDT = [&cfg_analyze]() -> bool
+  {
+    if(cfg_analyze.exists("selectBDT"))
+      return cfg_analyze.getParameter<bool>("selectBDT");
+    return false;
+  }();
+
 //--- declare histograms
   HadTauHistManager preselHadTauHistManager(makeHistManager_cfg(process_and_genMatch, 
     Form("%s/presel/hadTaus", histogramDir.data()), central_or_shift));
@@ -548,6 +556,25 @@ int main(int argc, char* argv[])
     lheInfoHistManager = new LHEInfoHistManager(makeHistManager_cfg(process_and_genMatch, 
       Form("%s/sel/lheInfo", histogramDir.data()), central_or_shift));
     lheInfoHistManager->bookHistograms(fs);
+  }
+
+  NtupleFillerBDT<float, int> * bdt_filler = nullptr;
+  typedef std::remove_pointer<decltype(bdt_filler)>::type::float_type float_type;
+  typedef std::remove_pointer<decltype(bdt_filler)>::type::int_type   int_type;
+  if(selectBDT)
+  {
+    bdt_filler = new std::remove_pointer<decltype(bdt_filler)>::type(
+      makeHistManager_cfg(process_string, Form("%s/sel/evtntuple", histogramDir.data()), central_or_shift)
+    );
+    bdt_filler -> register_variable<float_type>(
+      "mindr_tau1_jet", "mindr_tau2_jet", "avg_dr_jet", "ptmiss", "mT_tau1", "mT_tau2",
+      "htmiss", "tau1_mva", "tau2_mva", "tau1_pt", "tau2_pt", "tau1_eta", "tau2_eta"
+      "dr_taus", "mTauTauVis", "mTauTau"
+    );
+    bdt_filler -> register_variable<int_type>(
+      "nJet", "nBJetLoose", "nBJetMedium"
+    );
+    bdt_filler -> bookTree(fs);
   }
 
   int numEntries = inputTree->GetEntries();
@@ -926,6 +953,32 @@ int main(int argc, char* argv[])
     }
 
     (*selEventsFile) << run << ":" << lumi << ":" << event;
+
+    if(bdt_filler)
+    {
+      bdt_filler -> operator()
+          ("mindr_tau1_jet", TMath::Min(10., comp_mindr_hadTau1_jet(*selHadTau_lead, selJets)))
+          ("mindr_tau2_jet", TMath::Min(10., comp_mindr_hadTau2_jet(*selHadTau_sublead, selJets)))
+          ("avg_dr_jet",     comp_avg_dr_jet(selJets))
+          ("ptmiss",         met.pt())
+          ("mT_tau1",        comp_MT_met_lep1(*selHadTau_lead, met.pt(), met.phi()))
+          ("mT_tau2",        comp_MT_met_lep1(*selHadTau_sublead, met.pt(), met.phi()))
+          ("htmiss",         mht_p4.pt())
+          ("tau1_mva",       selHadTau_lead -> raw_mva_dR03())
+          ("tau2_mva",       selHadTau_sublead -> raw_mva_dR03())
+          ("tau1_pt",        selHadTau_lead -> pt())
+          ("tau2_pt",        selHadTau_sublead -> pt())
+          ("tau1_eta",       selHadTau_lead -> eta())
+          ("tau2_eta",       selHadTau_sublead -> eta())
+          ("dr_taus",        deltaR(selHadTau_lead -> p4(), selHadTau_sublead -> p4()))
+          ("mTauTauVis",     mTauTauVis)
+          ("mTauTau",        mTauTau)
+          ("nJet",           selJets.size())
+          ("nBJetLoose",     selBJets_loose.size())
+          ("nBJetMedium",    selBJets_medium.size())
+        .fill()
+      ;
+    }
 
     ++selectedEntries;
     selectedEntries_weighted += evtWeight;

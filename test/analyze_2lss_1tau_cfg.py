@@ -85,5 +85,6 @@ process.analyze_2lss_1tau = cms.PSet(
     branchName_memOutput = cms.string(''),
     
     selEventsFileName_input = cms.string(''),
-    selEventsFileName_output = cms.string('selEvents_analyze_2lss_1tau.txt')
+    selEventsFileName_output = cms.string('selEvents_analyze_2lss_1tau.txt'),
+    selectBDT = cms.bool(False),
 )

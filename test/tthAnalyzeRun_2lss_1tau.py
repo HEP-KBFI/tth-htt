@@ -19,7 +19,7 @@ elif ERA == "2016":
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "2017Jan15"
+version = "2017Jan16"
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -57,6 +57,16 @@ if __name__ == '__main__':
 ##       "CMS_ttHl_btag_cErr2Down",
 ##       "CMS_ttHl_JESUp",
 ##       "CMS_ttHl_JESDown",
+      "CMS_ttHl_FRe_shape_ptUp",
+      "CMS_ttHl_FRe_shape_ptDown",
+      "CMS_ttHl_FRe_shape_etaUp",
+      "CMS_ttHl_FRe_shape_etaDown",
+      "CMS_ttHl_FRe_shape_eta_barrelUp",
+      "CMS_ttHl_FRe_shape_eta_barrelDown",
+      "CMS_ttHl_FRm_shape_ptUp",
+      "CMS_ttHl_FRm_shape_ptDown",
+      "CMS_ttHl_FRm_shape_etaUp",
+      "CMS_ttHl_FRm_shape_etaDown",
 ##       "CMS_ttHl_tauESUp",
 ##       "CMS_ttHl_tauESDown",
 ##       "CMS_ttHl_FRjt_normUp",

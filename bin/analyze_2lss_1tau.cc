@@ -74,6 +74,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/Data_to_MC_CorrectionInterface.h" // Data_to_MC_CorrectionInterface.h
 #include "tthAnalysis/HiggsToTauTau/interface/lutAuxFunctions.h" // loadTH2, getSF_from_TH2
 #include "tthAnalysis/HiggsToTauTau/interface/cutFlowTable.h" // cutFlowTableType
+#include "tthAnalysis/HiggsToTauTau/interface/NtupleFillerBDT.h" // NtupleFillerBDT
 
 #include <boost/range/algorithm/copy.hpp> // boost::copy()
 #include <boost/range/adaptor/map.hpp> // boost::adaptors::map_keys
@@ -243,6 +244,7 @@ int main(int argc, char* argv[])
   }
 
   int jetPt_option = RecoJetReader::kJetPt_central;
+  int jetToLeptonFakeRate_option = kFRl_central;
   int hadTauPt_option = RecoHadTauReader::kHadTauPt_central;
   int jetToTauFakeRate_option = kFRjt_central;
   int lheScale_option = kLHE_scale_central;
@@ -259,6 +261,19 @@ int main(int argc, char* argv[])
       jet_btagWeight_branch = getBranchName_bTagWeight(era, central_or_shift);
       if      ( shiftUp_or_Down == "Up"   ) jetPt_option = RecoJetReader::kJetPt_jecUp;
       else if ( shiftUp_or_Down == "Down" ) jetPt_option = RecoJetReader::kJetPt_jecDown;
+      else assert(0);
+    } else if ( central_or_shift_tstring.BeginsWith("CMS_ttHl_FRe_shape") ||
+		central_or_shift_tstring.BeginsWith("CMS_ttHl_FRm_shape") ) {
+      if      ( central_or_shift_tstring.EndsWith("e_shape_ptUp")           ) jetToLeptonFakeRate_option = kFRe_shape_ptUp;
+      else if ( central_or_shift_tstring.EndsWith("e_shape_ptDown")         ) jetToLeptonFakeRate_option = kFRe_shape_ptDown;
+      else if ( central_or_shift_tstring.EndsWith("e_shape_etaUp")          ) jetToLeptonFakeRate_option = kFRe_shape_etaUp;
+      else if ( central_or_shift_tstring.EndsWith("e_shape_etaDown")        ) jetToLeptonFakeRate_option = kFRe_shape_etaDown;
+      else if ( central_or_shift_tstring.EndsWith("e_shape_eta_barrelUp")   ) jetToLeptonFakeRate_option = kFRe_shape_eta_barrelUp;
+      else if ( central_or_shift_tstring.EndsWith("e_shape_eta_barrelDown") ) jetToLeptonFakeRate_option = kFRe_shape_eta_barrelDown;
+      else if ( central_or_shift_tstring.EndsWith("m_shape_ptUp")           ) jetToLeptonFakeRate_option = kFRm_shape_ptUp;
+      else if ( central_or_shift_tstring.EndsWith("m_shape_ptDown")         ) jetToLeptonFakeRate_option = kFRm_shape_ptDown;
+      else if ( central_or_shift_tstring.EndsWith("m_shape_etaUp")          ) jetToLeptonFakeRate_option = kFRm_shape_etaUp;
+      else if ( central_or_shift_tstring.EndsWith("m_shape_etaDown")        ) jetToLeptonFakeRate_option = kFRm_shape_etaDown;
       else assert(0);
     } else if ( central_or_shift_tstring.BeginsWith("CMS_ttHl_tauES") ) {
       if      ( shiftUp_or_Down == "Up"   ) hadTauPt_option = RecoHadTauReader::kHadTauPt_shiftUp;
@@ -303,7 +318,7 @@ int main(int argc, char* argv[])
   LeptonFakeRateInterface* leptonFakeRateInterface = 0;
   if ( applyFakeRateWeights == kFR_2lepton || applyFakeRateWeights == kFR_3L ) {
     edm::ParameterSet cfg_leptonFakeRateWeight = cfg_analyze.getParameter<edm::ParameterSet>("leptonFakeRateWeight");
-    leptonFakeRateInterface = new LeptonFakeRateInterface(cfg_leptonFakeRateWeight);
+    leptonFakeRateInterface = new LeptonFakeRateInterface(cfg_leptonFakeRateWeight, jetToLeptonFakeRate_option);
   }
 
   JetToTauFakeRateInterface* jetToTauFakeRateInterface = 0;
@@ -518,6 +533,13 @@ int main(int argc, char* argv[])
 //--- open output file containing run:lumi:event numbers of events passing final event selection criteria
   std::ostream* selEventsFile = ( selEventsFileName_output != "" ) ? new std::ofstream(selEventsFileName_output.data(), std::ios::out) : 0;
   std::cout << "selEventsFileName_output = " << selEventsFileName_output << std::endl;
+
+  const bool selectBDT = [&cfg_analyze]() -> bool
+  {
+    if(cfg_analyze.exists("selectBDT"))
+      return cfg_analyze.getParameter<bool>("selectBDT");
+    return false;
+  }();
 
 //--- declare histograms
   struct preselHistManagerType
@@ -739,6 +761,26 @@ int main(int argc, char* argv[])
     lheInfoHistManager = new LHEInfoHistManager(makeHistManager_cfg(process_string, 
       Form("%s/sel/lheInfo", histogramDir.data()), central_or_shift));
     lheInfoHistManager->bookHistograms(fs);
+  }
+
+  NtupleFillerBDT<float, int> * bdt_filler = nullptr;
+  typedef std::remove_pointer<decltype(bdt_filler)>::type::float_type float_type;
+  typedef std::remove_pointer<decltype(bdt_filler)>::type::int_type   int_type;
+  if(selectBDT)
+  {
+    bdt_filler = new std::remove_pointer<decltype(bdt_filler)>::type(
+      makeHistManager_cfg(process_string, Form("%s/sel/evtntuple", histogramDir.data()), central_or_shift)
+    );
+    bdt_filler -> register_variable<float_type>(
+      "lep1_pt", "lep1_conePt", "lep1_eta", "lep1_tth_mva", "mindr_lep1_jet", "mT_lep1", "dr_lep1_tau",
+      "lep2_pt", "lep1_conePt", "lep2_eta", "lep2_tth_mva", "mindr_lep2_jet", "mT_lep2", "dr_lep2_tau",
+      "mindr_tau_jet", "avg_dr_jet", "ptmiss",  "htmiss", "tau_mva", "tau_pt", "tau_eta",
+      "dr_leps", "mTauTauVis1", "mTauTauVis2", "lumiScale", "genWeight", "evtWeight"
+    );
+    bdt_filler -> register_variable<int_type>(
+      "nJet", "nBJetLoose", "nBJetMedium"
+    );
+    bdt_filler -> bookTree(fs);
   }
 
   int numEntries = inputTree->GetEntries();
@@ -1494,7 +1536,7 @@ int main(int argc, char* argv[])
 //--- compute output of BDTs used to discriminate ttH vs. ttV and ttH vs. ttbar 
 //    in 2lss_1tau category of ttH multilepton analysis 
     mvaInputs["max(abs(LepGood_eta[iF_Recl[0]]),abs(LepGood_eta[iF_Recl[1]]))"] = std::max(std::fabs(selLepton_lead->eta()), std::fabs(selLepton_sublead->eta()));
-    mvaInputs["MT_met_lep1"]                = comp_MT_met_lep1(*selLepton_lead, met.pt(), met.phi());
+    mvaInputs["MT_met_lep1"]                = comp_MT_met_lep1(selLepton_lead->cone_p4(), met.pt(), met.phi());
     mvaInputs["nJet25_Recl"]                = comp_n_jet25_recl(selJets);
     mvaInputs["mindr_lep1_jet"]             = comp_mindr_lep1_jet(*selLepton_lead, selJets);
     mvaInputs["mindr_lep2_jet"]             = comp_mindr_lep2_jet(*selLepton_sublead, selJets);
@@ -1505,11 +1547,13 @@ int main(int argc, char* argv[])
     
     check_mvaInputs(mvaInputs, run, lumi, event);
 
+    //std::cout << "met: pT = " << met.pt() << ", phi = " << met.phi() << " (pX = " << met.p4().px() << ", pY = " << met.p4().py() << ")" << std::endl;
+
     //for ( std::map<std::string, double>::const_iterator mvaInput = mvaInputs.begin();
     //	    mvaInput != mvaInputs.end(); ++mvaInput ) {
     //  std::cout << " " << mvaInput->first << " = " << mvaInput->second << std::endl;
     //}
-
+    
     double mvaOutput_2lss_ttV = mva_2lss_ttV(mvaInputs);
     //std::cout << "mvaOutput_2lss_ttV = " << mvaOutput_2lss_ttV << std::endl;
     double mvaOutput_2lss_ttbar = mva_2lss_ttbar(mvaInputs);
@@ -1535,7 +1579,7 @@ int main(int argc, char* argv[])
       else                                                                  mvaDiscr_2lss = 1.;
     } else assert(0);
     //std::cout << "mvaDiscr_2lss = " << mvaDiscr_2lss << std::endl;
-    std::cout << std::endl;
+    //std::cout << std::endl;
 
 //--- compute output of BDTs used to discriminate ttH vs. ttbar trained by Arun for 2lss_1tau category
     mvaInputs_TMVA["lep1_pt"]              = selLepton_lead->pt();
@@ -1547,8 +1591,8 @@ int main(int argc, char* argv[])
     mvaInputs_TMVA["mindr_tau_jet"]        = TMath::Min(10., comp_mindr_hadTau1_jet(*selHadTau, selJets));
     mvaInputs_TMVA["avg_dr_jet"]           = comp_avg_dr_jet(selJets);
     mvaInputs_TMVA["ptmiss"]               = met.pt();
-    mvaInputs_TMVA["mT_lep1"]              = comp_MT_met_lep1(*selLepton_lead, met.pt(), met.phi());
-    mvaInputs_TMVA["mT_lep2"]              = comp_MT_met_lep2(*selLepton_sublead, met.pt(), met.phi());
+    mvaInputs_TMVA["mT_lep1"]              = comp_MT_met_lep1(selLepton_lead->p4(), met.pt(), met.phi());
+    mvaInputs_TMVA["mT_lep2"]              = comp_MT_met_lep2(selLepton_sublead->p4(), met.pt(), met.phi());
     mvaInputs_TMVA["htmiss"]               = mht_p4.pt();
     mvaInputs_TMVA["dr_leps"]              = deltaR(selLepton_lead->p4(), selLepton_sublead->p4());
     mvaInputs_TMVA["nJet"]                 = selJets.size();
@@ -1691,6 +1735,40 @@ int main(int argc, char* argv[])
 
     if ( selEventsFile ) {
       (*selEventsFile) << run << ":" << lumi << ":" << event << std::endl;
+    }
+
+    if(bdt_filler)
+    {
+      bdt_filler -> operator()
+          ("lep1_pt",        selLepton_lead -> pt())
+          ("lep1_conePt",    comp_lep1_conePt(*selLepton_lead))
+          ("lep1_eta",       selLepton_lead -> eta())
+          ("lep1_tth_mva",   selLepton_lead -> mvaRawTTH())
+          ("mindr_lep1_jet", TMath::Min(10., comp_mindr_lep1_jet(*selLepton_lead, selJets)))
+          ("mT_lep1",        comp_MT_met_lep1(*selLepton_lead, met.pt(), met.phi()))
+          ("dr_lep1_tau",    deltaR(selLepton_lead -> p4(), selHadTau -> p4()))
+          ("lep2_pt",        selLepton_sublead -> pt())
+          ("lep2_conePt",    comp_lep1_conePt(*selLepton_sublead))
+          ("lep2_eta",       selLepton_sublead -> eta())
+          ("lep2_tth_mva",   selLepton_sublead -> mvaRawTTH())
+          ("mindr_lep2_jet", TMath::Min(10., comp_mindr_lep1_jet(*selLepton_sublead, selJets)))
+          ("mT_lep2",        comp_MT_met_lep1(*selLepton_sublead, met.pt(), met.phi()))
+          ("dr_lep2_tau",    deltaR(selLepton_sublead -> p4(), selHadTau -> p4()))
+          ("mindr_tau_jet",  TMath::Min(10., comp_mindr_hadTau1_jet(*selHadTau, selJets)))
+          ("avg_dr_jet",     comp_avg_dr_jet(selJets))
+          ("ptmiss",         met.pt())
+          ("htmiss",         mht_p4.pt())
+          ("tau_mva",        selHadTau -> raw_mva_dR03())
+          ("tau_pt",         selHadTau -> pt())
+          ("tau_eta",        selHadTau -> eta())
+          ("dr_leps",        deltaR(selLepton_lead -> p4(), selLepton_sublead -> p4()))
+          ("mTauTauVis1",    mTauTauVis1_sel)
+          ("mTauTauVis2",    mTauTauVis2_sel)
+          ("nJet",           selJets.size())
+          ("nBJetLoose",     selBJets_loose.size())
+          ("nBJetMedium",    selBJets_medium.size())
+        .fill()
+      ;
     }
 
     ++selectedEntries;

@@ -80,18 +80,8 @@ class RecoLepton
 
   // CV: use original lepton pT instead of mixing lepron pT and cone_pT, as discussed on slide 2 of 
   //     https://indico.cern.ch/event/597028/contributions/2413742/attachments/1391684/2120220/16.12.22_ttH_Htautau_-_Review_of_systematics.pdf
-  virtual Double_t pt() const
-  {
-    //if ( isFakeable_ && !isTight_ ) return cone_pt_;
-    //else return pt_;
-    return pt_;
-  }
-  virtual const Particle::LorentzVector& p4() const
-  {
-    //if ( isFakeable_ && !isTight_ ) return cone_p4_;
-    //else return p4_;
-    return p4_;
-  }
+  virtual Double_t pt() const { return pt_; }
+  virtual const Particle::LorentzVector& p4() const { return p4_; }
 
   Double_t dxy() const { return dxy_; }
   Double_t dz() const { return dz_; }
@@ -107,8 +97,16 @@ class RecoLepton
   Double_t jetBtagCSV() const { return jetBtagCSV_; }
   Int_t tightCharge() const { return tightCharge_; }
   Int_t charge() const { return charge_; }
-  Double_t cone_pt() const { return cone_pt_; }
-  const Particle::LorentzVector& cone_p4() const { return cone_p4_; }
+  Double_t cone_pt() const 
+  { 
+    if ( isFakeable_ && !isTight_ ) return cone_pt_;
+    else return pt_;
+  }
+  const Particle::LorentzVector& cone_p4() const 
+  { 
+    if ( isFakeable_ && !isTight_ ) return cone_p4_;
+    else return p4_;
+  }
   
   const GenLepton* genLepton() const { return genLepton_; }
   const GenHadTau* genHadTau() const { return genHadTau_; }

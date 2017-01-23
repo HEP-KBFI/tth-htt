@@ -38,10 +38,13 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
   """
   def __init__(self, outputDir, executable_analyze, cfgFile_analyze, samples, lepton_charge_selections, hadTau_selection, applyFakeRateWeights, central_or_shifts,
                max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs, 
-               executable_addBackgrounds, executable_addFakes, executable_addFlips, histograms_to_fit, select_rle_output = False, executable_prep_dcard="prepareDatacard"):
+               executable_addBackgrounds, executable_addFakes, executable_addFlips, histograms_to_fit, select_rle_output = False,
+               executable_prep_dcard = "prepareDatacard", executable_add_syst_dcard = "addSystDatacard"):
     analyzeConfig.__init__(self, outputDir, executable_analyze, "2lss_1tau", central_or_shifts,
       max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs, 
-      histograms_to_fit)
+      histograms_to_fit,
+      executable_prep_dcard = executable_prep_dcard,
+      executable_add_syst_dcard = executable_add_syst_dcard)
 
     self.samples = samples
 
@@ -73,19 +76,18 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
             self.lepton_and_hadTau_genMatches_fakes.append(lepton_and_hadTau_genMatch)          
     elif applyFakeRateWeights == "2lepton":
       self.apply_leptonGenMatching = True
-      self.apply_hadTauGenMatching = False
+      self.apply_hadTauGenMatching = True
       for lepton_genMatch in self.lepton_genMatches:
-        if lepton_genMatch.endswith("0j"):
-          self.lepton_and_hadTau_genMatches_nonfakes.append(lepton_genMatch)
-        else:
-          self.lepton_and_hadTau_genMatches_fakes.append(lepton_genMatch)          
-        if lepton_genMatch.endswith("0j"):
-          for hadTau_genMatch in self.hadTau_genMatches:
-            lepton_and_hadTau_genMatch = "&".join([ lepton_genMatch, hadTau_genMatch ])
+        for hadTau_genMatch in self.hadTau_genMatches:
+          lepton_and_hadTau_genMatch = "&".join([ lepton_genMatch, hadTau_genMatch ])
+          if lepton_genMatch.endswith("0j"):
+            self.lepton_and_hadTau_genMatches_nonfakes.append(lepton_and_hadTau_genMatch)
             if hadTau_genMatch.endswith("0j"):
               self.lepton_and_hadTau_genMatches_gentau.append(lepton_and_hadTau_genMatch)
             else:
               self.lepton_and_hadTau_genMatches_faketau.append(lepton_and_hadTau_genMatch)
+          else:
+            self.lepton_and_hadTau_genMatches_fakes.append(lepton_and_hadTau_genMatch)
     elif applyFakeRateWeights == "1tau":
       self.apply_leptonGenMatching = False
       self.apply_hadTauGenMatching = True
@@ -634,6 +636,18 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
       }                            
       self.createCfg_prep_dcard(self.jobOptions_prep_dcard[key_prep_dcard_job])
 
+      # add shape templates for 'CMS_ttHl_Clos_e' and 'CMS_ttHl_Clos_m' systematic uncertainties
+      if histogramToFit in [ "mvaDiscr_2lss" ]:
+        key_add_syst_dcard_job = getKey(histogramToFit)
+        self.jobOptions_add_syst_dcard[key_add_syst_dcard_job] = {
+          'inputFile' : self.jobOptions_prep_dcard[key_prep_dcard_job]['datacardFile'],
+          'cfgFile_modified' : os.path.join(self.outputDir, DKEY_CFGS, "addSystDatacards_%s_%s_cfg.py" % (self.channel, histogramToFit)),
+          'outputFile' : os.path.join(self.outputDir, DKEY_DCRD, "addSystDatacards_%s_%s.root" % (self.channel, histogramToFit)),
+          'category' : self.channel,
+          'histogramToFit' : histogramToFit
+        }
+        self.createCfg_add_syst_dcard(self.jobOptions_add_syst_dcard[key_add_syst_dcard_job])
+
     logging.info("Creating configuration files to run 'makePlots'")
     key_makePlots_job = getKey("SS")
     key_hadd_stage2 = getKey(get_lepton_and_hadTau_selection_and_frWeight("Tight", "disabled"), "SS")                            
@@ -686,6 +700,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
     self.addToMakefile_backgrounds_from_data(lines_makefile)
     self.addToMakefile_hadd_stage2(lines_makefile)
     self.addToMakefile_prep_dcard(lines_makefile)
+    self.addToMakefile_add_syst_dcard(lines_makefile)
     self.addToMakefile_make_plots(lines_makefile)
     self.createMakefile(lines_makefile)
   
