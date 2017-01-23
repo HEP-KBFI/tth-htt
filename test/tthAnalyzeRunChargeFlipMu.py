@@ -19,7 +19,7 @@ elif ERA == "2016":
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "histosCF_mu_1bin"
+version = "histosCF_mu_uncerts"
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -40,7 +40,7 @@ if __name__ == '__main__':
        "CMS_ttHl_muonESBarrel1Up",
        "CMS_ttHl_muonESBarrel1Down",
        "CMS_ttHl_muonESBarrel2Up",
-       "CMS_ttHl_muonESBarrel2Down"
+       "CMS_ttHl_muonESBarrel2Down",
        "CMS_ttHl_muonESEndcap1Down",
        "CMS_ttHl_muonESEndcap1Up",
        "CMS_ttHl_muonESEndcap2Down",
