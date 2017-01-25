@@ -1,6 +1,6 @@
 import os, logging, sys, getpass
 
-USE_BDT_TRAINING = True
+USE_BDT_TRAINING = False
 
 from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2lss_1tau_2015 import samples_2015
 if USE_BDT_TRAINING:
