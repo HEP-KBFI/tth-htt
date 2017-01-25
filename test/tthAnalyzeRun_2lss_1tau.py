@@ -107,7 +107,7 @@ if __name__ == '__main__':
     select_rle_output = True)
 
   if USE_BDT_TRAINING:
-    analysis.set_BDT_training()
+    analysis.set_BDT_training(changeBranchNames = False)
   analysis.create()
 
   run_analysis = query_yes_no("Start jobs ?")
