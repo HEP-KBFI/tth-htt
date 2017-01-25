@@ -263,7 +263,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
               for jobId in inputFileList.keys():
                 if central_or_shift != "central" and not (lepton_and_hadTau_selection.startswith("Tight") and hadTau_charge_selection == "OS"):
                   continue
-                if central_or_shift != "central" and not is_mc:
+                if (central_or_shift != "central" and central_or_shift.find("CMS_ttHl_FRe_shape") == -1 and central_or_shift.find("CMS_ttHl_FRm_shape") == -1) and not is_mc:
                   continue
                 if central_or_shift.startswith("CMS_ttHl_thu_shape_ttH") and sample_category != "signal":
                   continue

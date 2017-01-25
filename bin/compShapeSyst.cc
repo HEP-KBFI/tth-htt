@@ -186,8 +186,11 @@ int main(int argc, char* argv[])
 
 	TH1* histogram_diff = (TH1*)histogram_central->Clone("histogram_diff");
 	for ( int idxBin = 0; idxBin <= (numBins + 1); ++idxBin ) {
-	  histogram_diff->SetBinContent(idxBin, 0.);
-	  histogram_diff->SetBinError(idxBin, TMath::Sqrt(binErr2[idxBin]));
+	  double binContent = 0.;
+	  histogram_diff->SetBinContent(idxBin, binContent);
+	  double binError = TMath::Sqrt(binErr2[idxBin]);
+	  histogram_diff->SetBinError(idxBin, binError);
+	  std::cout << "bin #" << idxBin << ": diff = " << binContent << " +/- " << binError << std::endl;
 	}
 
 	TAxis* xAxis = histogram_central->GetXaxis();
@@ -199,8 +202,12 @@ int main(int argc, char* argv[])
 	TF1* fitFunction = new TF1("fitFunction", fitFunction_formula.data(), xMin, xMax);
 	histogram_diff->Fit(fitFunction);
 
+	double p1 = fitFunction->GetParameter(1);
 	double p1Err = fitFunction->GetParError(1);
+	std::cout << "p1 = " << p1 << " +/- " << p1Err << std::endl;
+	double p2 = fitFunction->GetParameter(2);
 	double p2Err = fitFunction->GetParError(2);
+	std::cout << "p2 = " << p2 << " +/- " << p2Err << std::endl;
 
 	TFileDirectory* dir_output = &fs;
 	dir_output->cd();
