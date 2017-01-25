@@ -115,13 +115,17 @@ class analyzeConfig_charge_flip_mu(analyzeConfig_charge_flip):
     lines.append(")")
     lines.append("process.prepareDatacards.histogramToFit = cms.string('%s')" % histogramToFit)
     lines.append("""process.prepareDatacards.sysShifts = cms.vstring(
-            "CMS_ttHl_electronESBarrelUp",
-        	"CMS_ttHl_electronESBarrelDown",
-        	"CMS_ttHl_electronESEndcapUp",
-	        "CMS_ttHl_electronESEndcapDown",
-	        "CMS_ttHl_electronERUp",
-	        "CMS_ttHl_electronERDown") """
-    )
+       "CMS_ttHl_muonERUp",
+       "CMS_ttHl_muonERDown",
+       "CMS_ttHl_muonESBarrel1Up",
+       "CMS_ttHl_muonESBarrel1Down",
+       "CMS_ttHl_muonESBarrel2Up",
+       "CMS_ttHl_muonESBarrel2Down",
+       "CMS_ttHl_muonESEndcap1Down",
+       "CMS_ttHl_muonESEndcap1Up",
+       "CMS_ttHl_muonESEndcap2Down",
+       "CMS_ttHl_muonESEndcap2Up"
+    )""")
     create_cfg(self.cfgFile_prep_dcard_original, cfgFile_modified, lines)
     self.datacardFiles[key] = datacardFile
     self.cfgFile_prep_dcard_modified[key] = cfgFile_modified

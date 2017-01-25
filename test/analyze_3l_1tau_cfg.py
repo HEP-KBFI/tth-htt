@@ -85,5 +85,6 @@ process.analyze_3l_1tau = cms.PSet(
         
     selEventsFileName_input = cms.string(''),
     selEventsFileName_output = cms.string('selEvents_analyze_3l_1tau.txt'),
-    selEventsTFileName = cms.string('')
+    selEventsTFileName = cms.string(''),
+    selectBDT = cms.bool(False),
 )

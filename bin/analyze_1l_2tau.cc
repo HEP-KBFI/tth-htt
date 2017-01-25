@@ -68,6 +68,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/hltPath.h" // hltPath, create_hltPaths, hltPaths_setBranchAddresses, hltPaths_isTriggered, hltPaths_delete
 #include "tthAnalysis/HiggsToTauTau/interface/Data_to_MC_CorrectionInterface.h" // Data_to_MC_CorrectionInterface.h
 #include "tthAnalysis/HiggsToTauTau/interface/cutFlowTable.h" // cutFlowTableType
+#include "tthAnalysis/HiggsToTauTau/interface/NtupleFillerBDT.h" // NtupleFillerBDT
 
 #include <boost/range/algorithm/copy.hpp> // boost::copy()
 #include <boost/range/adaptor/map.hpp> // boost::adaptors::map_keys
@@ -326,6 +327,13 @@ int main(int argc, char* argv[])
   
   std::string selEventsFileName_output = cfg_analyze.getParameter<std::string>("selEventsFileName_output");
   std::cout << "selEventsFileName_output = " << selEventsFileName_output << std::endl;
+
+  const bool selectBDT = [&cfg_analyze]() -> bool
+  {
+    if(cfg_analyze.exists("selectBDT"))
+      return cfg_analyze.getParameter<bool>("selectBDT");
+    return false;
+  }();
 
   fwlite::InputSource inputFiles(cfg); 
   int maxEvents = inputFiles.maxEvents();
@@ -716,6 +724,26 @@ int main(int argc, char* argv[])
      lheInfoHistManager = new LHEInfoHistManager(makeHistManager_cfg(process_string, 
       Form("%s/sel/lheInfo", histogramDir.data()), central_or_shift));
     lheInfoHistManager->bookHistograms(fs);
+  }
+
+  NtupleFillerBDT<float, int> * bdt_filler = nullptr;
+  typedef std::remove_pointer<decltype(bdt_filler)>::type::float_type float_type;
+  typedef std::remove_pointer<decltype(bdt_filler)>::type::int_type   int_type;
+  if(selectBDT)
+  {
+    bdt_filler = new std::remove_pointer<decltype(bdt_filler)>::type(
+      makeHistManager_cfg(process_string, Form("%s/sel/evtntuple", histogramDir.data()), central_or_shift)
+    );
+    bdt_filler -> register_variable<float_type>(
+      "lep_pt", "lep_eta", "lep_tth_mva", "mindr_lep_jet", "mindr_tau1_jet", "mindr_tau2_jet",
+      "avg_dr_jet", "ptmiss", "mT_lep", "htmiss", "tau1_mva", "tau2_mva", "tau1_pt", "tau2_pt",
+      "tau1_eta", "tau2_eta", "dr_taus", "dr_lep_tau_os", "dr_lep_tau_ss", "mTauTauVis",
+      "lumiScale", "genWeight", "evtWeight"
+    );
+    bdt_filler -> register_variable<int_type>(
+      "nJet", "nBJetLoose", "nBJetMedium"
+    );
+    bdt_filler -> bookTree(fs);
   }
   
   int numEntries = inputTree->GetEntries();
@@ -1264,6 +1292,39 @@ int main(int argc, char* argv[])
       (*selEventsFile) << run << ":" << lumi << ":" << event << std::endl;
     }
 
+    if(bdt_filler)
+    {
+      bdt_filler -> operator()
+          ("lep_pt",         selLepton -> pt())
+          ("lep_eta",        selLepton -> eta())
+          ("lep_tth_mva",    selLepton -> mvaRawTTH())
+          ("mindr_lep_jet",  TMath::Min(10., comp_mindr_lep1_jet(*selLepton, selJets)))
+          ("mindr_tau1_jet", TMath::Min(10., comp_mindr_hadTau1_jet(*selHadTau_lead, selJets)))
+          ("mindr_tau2_jet", TMath::Min(10., comp_mindr_hadTau2_jet(*selHadTau_sublead, selJets)))
+          ("avg_dr_jet",     comp_avg_dr_jet(selJets))
+          ("ptmiss",         met.pt())
+          ("mT_lep",         comp_MT_met_lep1(*selLepton, met.pt(), met.phi()))
+          ("htmiss",         mht_p4.pt())
+          ("tau1_mva",       selHadTau_lead -> raw_mva_dR03())
+          ("tau2_mva",       selHadTau_sublead -> raw_mva_dR03())
+          ("tau1_pt",        selHadTau_lead -> pt())
+          ("tau2_pt",        selHadTau_sublead -> pt())
+          ("tau1_eta",       selHadTau_lead -> eta())
+          ("tau2_eta",       selHadTau_sublead -> eta())
+          ("dr_taus",        deltaR(selHadTau_lead -> p4(), selHadTau_sublead -> p4()))
+          ("dr_lep_tau_os",  99.)
+          ("dr_lep_tau_ss",  99.)
+          ("mTauTauVis",     mTauTauVis)
+          ("lumiScale",      lumiScale)
+          ("genWeight",      genWeight)
+          ("evtWeight",      evtWeight)
+          ("nJet",           selJets.size())
+          ("nBJetLoose",     selBJets_loose.size())
+          ("nBJetMedium",    selBJets_medium.size())
+        .fill()
+      ;
+    }
+
     ++selectedEntries;
     selectedEntries_weighted += evtWeight;
     histogram_selectedEntries->Fill(0.);
@@ -1306,6 +1367,7 @@ int main(int argc, char* argv[])
   delete run_lumi_eventSelector;
 
   delete selEventsFile;
+  delete bdt_filler;
 
   delete muonReader;
   delete electronReader;

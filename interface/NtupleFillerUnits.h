@@ -575,8 +575,8 @@ protected:
   GenHadTau * genHadTau_;
 };
 
-template <typename FloatType,
-          typename = typename std::enable_if<std::is_floating_point<FloatType>::value>::type>
+template <typename NumberType,
+          typename = typename std::enable_if<std::is_arithmetic<NumberType>::value>::type>
 struct MapFiller
 {
   MapFiller() = default;
@@ -590,6 +590,13 @@ struct MapFiller
     branchNameMap_ = branchNameMap;
   }
 
+  void
+  setBranchNameMap(const std::vector<std::string> & branchNames)
+  {
+    for(const std::string & branchName: branchNames)
+      branchNameMap_[branchName] = branchName;
+  }
+
   int
   initBranches(TTree * tree)
   {
@@ -597,7 +604,7 @@ struct MapFiller
     int errShift = 0;
     for(const auto & kv: branchNameMap_)
     {
-      map_[kv.first] = BasicFiller<FloatType>(kv.second);
+      map_[kv.first] = BasicFiller<NumberType>(kv.second);
       err |= (map_[kv.first].initBranch(tree) << errShift);
       ++errShift;
       // if err is non-zero, should we delete the entry from the map?
@@ -606,7 +613,7 @@ struct MapFiller
   }
 
   void
-  setValues(const std::map<std::string, FloatType> & values)
+  setValues(const std::map<std::string, NumberType> & values)
   {
     for(const auto & kv: values)
       if(map_.count(kv.first))
@@ -615,7 +622,7 @@ struct MapFiller
         std::cerr << "No such key: " << kv.first << '\n';
   }
 
-  std::map<std::string, BasicFiller<FloatType>> map_;
+  std::map<std::string, BasicFiller<NumberType>> map_;
   std::map<std::string, std::string> branchNameMap_;
 };
 
