@@ -193,6 +193,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
     lines.append("process.analyze_2lss_1tau.apply_genWeight = cms.bool(%s)" % jobOptions['apply_genWeight'])
     lines.append("process.analyze_2lss_1tau.apply_trigger_bits = cms.bool(%s)" % jobOptions['apply_trigger_bits'])
     lines.append("process.analyze_2lss_1tau.selEventsFileName_output = cms.string('%s')" % jobOptions['rleOutputFile'])
+    lines.append("process.analyze_2lss_1tau.selectBDT = cms.bool(%s)" % str(jobOptions['selectBDT']))
     create_cfg(self.cfgFile_analyze, jobOptions['cfgFile_modified'], lines)
 
   def createCfg_addFlips(self, jobOptions):
@@ -376,7 +377,8 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
                   'central_or_shift' : central_or_shift,
                   'lumi_scale' : 1. if not (self.use_lumi and is_mc) else sample_info["xsection"] * self.lumi / sample_info["nof_events"],
                   'apply_genWeight' : sample_info["genWeight"] if (is_mc and "genWeight" in sample_info.keys()) else False,
-                  'apply_trigger_bits' : (is_mc and (self.era == "2015" or (self.era == "2016" and sample_info["reHLT"]))) or not is_mc
+                  'apply_trigger_bits' : (is_mc and (self.era == "2015" or (self.era == "2016" and sample_info["reHLT"]))) or not is_mc,
+                  'selectBDT' : self.isBDTtraining,
                 }
 
                 applyFakeRateWeights = self.applyFakeRateWeights

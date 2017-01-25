@@ -1,7 +1,12 @@
 import os, logging, sys, getpass
 
+USE_BDT_TRAINING = True
+
 from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2lss_1tau_2015 import samples_2015
-from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2lss_1tau_2016 import samples_2016
+if USE_BDT_TRAINING:
+  from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_2lss1tau_addMEM_forBDTtraining import samples_2016
+else:
+  from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2lss_1tau_2016 import samples_2016
 from tthAnalysis.HiggsToTauTau.analyzeConfig_2lss_1tau import analyzeConfig_2lss_1tau
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 
@@ -101,6 +106,8 @@ if __name__ == '__main__':
     histograms_to_fit = [ "EventCounter", "numJets", "mvaDiscr_2lss", "mvaOutput_2lss_1tau_ttbar_TMVA", "mvaOutput_2lss_1tau_ttbar_sklearn", "mTauTauVis", "memOutput_LR" ],
     select_rle_output = True)
 
+  if USE_BDT_TRAINING:
+    analysis.set_BDT_training()
   analysis.create()
 
   run_analysis = query_yes_no("Start jobs ?")
