@@ -401,14 +401,18 @@ int main(int argc, char* argv[])
     histos[which.data()][*category][process_string]["mass_ll"]->Sumw2();
     
     if (central_or_shift == "central") {
-      histos[which.data()][*category][process_string]["delta_phi"] = subDir2.make<TH1D>( Form("%sdelta_phi", central_or_shift_label_st.data()), "delta_phi", 20,  -TMath::Pi(), TMath::Pi() );
+      histos[which.data()][*category][process_string]["delta_phi"] = subDir2.make<TH1D>( Form("%sdelta_phi", central_or_shift_label_st.data()), "delta_phi", 40,  -TMath::Pi(), TMath::Pi() );
       histos[which.data()][*category][process_string]["mass_2"] = subDir2.make<TH1D>( Form("%smass_2", central_or_shift_label_st.data()), "m2_{ll}", 50,  10., 210. );
-      histos_2D[which.data()][*category][process_string]["mass_vs_dphi"] = subDir2.make<TH2D>( Form("%smass2_vs_delta_phi", central_or_shift_label_st.data()), "mass2_vs_deltaphi", 50,  10., 210., 20,  -TMath::Pi(), TMath::Pi() );
+      histos_2D[which.data()][*category][process_string]["mass_vs_dphi"] = subDir2.make<TH2D>( Form("%smass2_vs_delta_phi", central_or_shift_label_st.data()), "mass2_vs_deltaphi", 50,  10., 210., 40,  -TMath::Pi(), TMath::Pi() );
       histos_2D[which.data()][*category][process_string]["mass_vs_njets"] = subDir2.make<TH2D>( Form("%smass2_vs_njets", central_or_shift_label_st.data()), "mass2_vs_njets", 50,  10., 210., 5,  -0.5, 4.5 );
+      histos_2D[which.data()][*category][process_string]["deltaphi_vs_njets"] = subDir2.make<TH2D>( Form("%sdeltaphi_vs_njets", central_or_shift_label_st.data()), "deltaphi_vs_njets", 40,  -TMath::Pi(), TMath::Pi(), 5,  -0.5, 4.5 );
+      histos_2D[which.data()][*category][process_string]["deltaphi_vs_bjetsl"] = subDir2.make<TH2D>( Form("%sdeltaphi_vs_bjets_loose", central_or_shift_label_st.data()), "deltaphi_vs_bjets_loose", 40,  -TMath::Pi(), TMath::Pi(), 5,  -0.5, 4.5 );
       histos[which.data()][*category][process_string]["delta_phi"]->Sumw2();
       histos[which.data()][*category][process_string]["mass_2"]->Sumw2();
       histos_2D[which.data()][*category][process_string]["mass_vs_dphi"]->Sumw2();
       histos_2D[which.data()][*category][process_string]["mass_vs_njets"]->Sumw2();
+      histos_2D[which.data()][*category][process_string]["deltaphi_vs_njets"]->Sumw2();
+      histos_2D[which.data()][*category][process_string]["deltaphi_vs_bjetsl"]->Sumw2();
     
       histos[which.data()][*category][process_string]["nJets"] = subDir2.make<TH1D>( Form("%snJets", central_or_shift_label_st.data()), "n_j", 5,  -0.5, 4.5 );
       histos[which.data()][*category][process_string]["nBJetsLoose"] = subDir2.make<TH1D>( Form("%snBJetsLoose", central_or_shift_label_st.data()), "n_bjets_loos", 5,  -0.5, 4.5 );
@@ -428,14 +432,18 @@ int main(int argc, char* argv[])
           histos_2gen[which.data()][*category][process_string] = subD2.make<TH1D>( Form("%smass_ll", central_or_shift_label_st.data()), "m_{ll}", 60,  60., 120. );
           histos_2gen[which.data()][*category][process_string]->Sumw2();
           
-          histos[which.data()][*category]["DY_fake"]["delta_phi"] = subDirFake.make<TH1D>( Form("%sdelta_phi", central_or_shift_label_st.data()), "delta_phi", 20,  -TMath::Pi(), TMath::Pi() );
+          histos[which.data()][*category]["DY_fake"]["delta_phi"] = subDirFake.make<TH1D>( Form("%sdelta_phi", central_or_shift_label_st.data()), "delta_phi", 40,  -TMath::Pi(), TMath::Pi() );
           histos[which.data()][*category]["DY_fake"]["mass_2"] = subDirFake.make<TH1D>( Form("%smass_2", central_or_shift_label_st.data()), "m2_{ll}", 50,  10., 210. );
-          histos_2D[which.data()][*category]["DY_fake"]["mass_vs_dphi"] = subDirFake.make<TH2D>( Form("%smass2_vs_delta_phi", central_or_shift_label_st.data()), "mass2_vs_deltaphi", 50,  10., 210., 20,  -TMath::Pi(), TMath::Pi() );
+          histos_2D[which.data()][*category]["DY_fake"]["mass_vs_dphi"] = subDirFake.make<TH2D>( Form("%smass2_vs_delta_phi", central_or_shift_label_st.data()), "mass2_vs_deltaphi", 50,  10., 210., 40,  -TMath::Pi(), TMath::Pi() );
           histos_2D[which.data()][*category]["DY_fake"]["mass_vs_njets"] = subDirFake.make<TH2D>( Form("%smass2_vs_njets", central_or_shift_label_st.data()), "mass2_vs_njets", 50,  10., 210., 5,  -0.5, 4.5 );
+          histos_2D[which.data()][*category]["DY_fake"]["deltaphi_vs_njets"] = subDirFake.make<TH2D>( Form("%sdeltaphi_vs_njets", central_or_shift_label_st.data()), "deltaphi_vs_njets", 40,  -TMath::Pi(), TMath::Pi(), 5,  -0.5, 4.5 );
+          histos_2D[which.data()][*category]["DY_fake"]["deltaphi_vs_bjetsl"] = subDirFake.make<TH2D>( Form("%sdeltaphi_vs_bjets_loose", central_or_shift_label_st.data()), "deltaphi_vs_bjets_loose", 40,  -TMath::Pi(), TMath::Pi(), 5,  -0.5, 4.5 );
           histos[which.data()][*category]["DY_fake"]["delta_phi"]->Sumw2();
           histos[which.data()][*category]["DY_fake"]["mass_2"]->Sumw2();
           histos_2D[which.data()][*category]["DY_fake"]["mass_vs_dphi"]->Sumw2();
           histos_2D[which.data()][*category]["DY_fake"]["mass_vs_njets"]->Sumw2();
+          histos_2D[which.data()][*category]["DY_fake"]["deltaphi_vs_njets"]->Sumw2();
+          histos_2D[which.data()][*category]["DY_fake"]["deltaphi_vs_bjetsl"]->Sumw2();
         
           histos[which.data()][*category]["DY_fake"]["nJets"] = subDirFake.make<TH1D>( Form("%snJets", central_or_shift_label_st.data()), "n_j", 5,  -0.5, 4.5 );
           histos[which.data()][*category]["DY_fake"]["nBJetsLoose"] = subDirFake.make<TH1D>( Form("%snBJetsLoose", central_or_shift_label_st.data()), "n_bjets_loos", 5,  -0.5, 4.5 );
@@ -464,10 +472,12 @@ int main(int argc, char* argv[])
     histos[which.data()][*category][process_string]["mass_ll"]->Sumw2();
     
     if (central_or_shift == "central") {
-      histos[which.data()][*category][process_string]["delta_phi"] = subDir2.make<TH1D>( Form("%sdelta_phi", central_or_shift_label_st.data()), "delta_phi", 20,  -TMath::Pi(), TMath::Pi() );
+      histos[which.data()][*category][process_string]["delta_phi"] = subDir2.make<TH1D>( Form("%sdelta_phi", central_or_shift_label_st.data()), "delta_phi", 40,  -TMath::Pi(), TMath::Pi() );
       histos[which.data()][*category][process_string]["mass_2"] = subDir2.make<TH1D>( Form("%smass_2", central_or_shift_label_st.data()), "m2_{ll}", 50,  10., 210. );
-      histos_2D[which.data()][*category][process_string]["mass_vs_dphi"] = subDir2.make<TH2D>( Form("%smass2_vs_delta_phi", central_or_shift_label_st.data()), "mass2_vs_deltaphi", 50,  10., 210., 20,  -TMath::Pi(), TMath::Pi() );
+      histos_2D[which.data()][*category][process_string]["mass_vs_dphi"] = subDir2.make<TH2D>( Form("%smass2_vs_delta_phi", central_or_shift_label_st.data()), "mass2_vs_deltaphi", 50,  10., 210., 40,  -TMath::Pi(), TMath::Pi() );
       histos_2D[which.data()][*category][process_string]["mass_vs_njets"] = subDir2.make<TH2D>( Form("%smass2_vs_njets", central_or_shift_label_st.data()), "mass2_vs_njets", 50,  10., 210., 5,  -0.5, 4.5 );
+      histos_2D[which.data()][*category][process_string]["deltaphi_vs_njets"] = subDir2.make<TH2D>( Form("%sdeltaphi_vs_njets", central_or_shift_label_st.data()), "deltaphi_vs_njets", 40,  -TMath::Pi(), TMath::Pi(), 5,  -0.5, 4.5 );
+      histos_2D[which.data()][*category][process_string]["deltaphi_vs_bjetsl"] = subDir2.make<TH2D>( Form("%sdeltaphi_vs_bjets_loose", central_or_shift_label_st.data()), "deltaphi_vs_bjets_loose", 40,  -TMath::Pi(), TMath::Pi(), 5,  -0.5, 4.5 );
       histos[which.data()][*category][process_string]["nJets"] = subDir2.make<TH1D>( Form("%snJets", central_or_shift_label_st.data()), "n_j", 5,  -0.5, 4.5 );
       histos[which.data()][*category][process_string]["nBJetsLoose"] = subDir2.make<TH1D>( Form("%snBJetsLoose", central_or_shift_label_st.data()), "n_bjets_loos", 5,  -0.5, 4.5 );
       histos[which.data()][*category][process_string]["nBJetsMedium"] = subDir2.make<TH1D>( Form("%snBJetsMedium", central_or_shift_label_st.data()), "n_bjets_medium", 5,  -0.5, 4.5 );
@@ -476,6 +486,8 @@ int main(int argc, char* argv[])
       histos[which.data()][*category][process_string]["mass_2"]->Sumw2();
       histos_2D[which.data()][*category][process_string]["mass_vs_dphi"]->Sumw2();
       histos_2D[which.data()][*category][process_string]["mass_vs_njets"]->Sumw2();
+      histos_2D[which.data()][*category][process_string]["deltaphi_vs_njets"]->Sumw2();
+      histos_2D[which.data()][*category][process_string]["deltaphi_vs_bjetsl"]->Sumw2();
       histos[which.data()][*category][process_string]["nJets"]->Sumw2();
       histos[which.data()][*category][process_string]["nBJetsLoose"]->Sumw2();
       histos[which.data()][*category][process_string]["nBJetsMedium"]->Sumw2();
@@ -492,14 +504,18 @@ int main(int argc, char* argv[])
           histos_2gen[which.data()][*category][process_string] = subD2.make<TH1D>( Form("%smass_ll", central_or_shift_label_st.data()), "m_{ll}", 1,  60., 120. );
           histos_2gen[which.data()][*category][process_string]->Sumw2();
 
-          histos[which.data()][*category]["DY_fake"]["delta_phi"] = subDirFake.make<TH1D>( Form("%sdelta_phi", central_or_shift_label_st.data()), "delta_phi", 20,  -TMath::Pi(), TMath::Pi() );
+          histos[which.data()][*category]["DY_fake"]["delta_phi"] = subDirFake.make<TH1D>( Form("%sdelta_phi", central_or_shift_label_st.data()), "delta_phi", 40,  -TMath::Pi(), TMath::Pi() );
           histos[which.data()][*category]["DY_fake"]["mass_2"] = subDirFake.make<TH1D>( Form("%smass_2", central_or_shift_label_st.data()), "m2_{ll}", 50,  10., 210. );
-          histos_2D[which.data()][*category]["DY_fake"]["mass_vs_dphi"] = subDirFake.make<TH2D>( Form("%smass2_vs_delta_phi", central_or_shift_label_st.data()), "mass2_vs_deltaphi", 50,  10., 210., 20,  -TMath::Pi(), TMath::Pi() );
+          histos_2D[which.data()][*category]["DY_fake"]["mass_vs_dphi"] = subDirFake.make<TH2D>( Form("%smass2_vs_delta_phi", central_or_shift_label_st.data()), "mass2_vs_deltaphi", 50,  10., 210., 40,  -TMath::Pi(), TMath::Pi() );
           histos_2D[which.data()][*category]["DY_fake"]["mass_vs_njets"] = subDirFake.make<TH2D>( Form("%smass2_vs_njets", central_or_shift_label_st.data()), "mass2_vs_njets", 50,  10., 210., 5,  -0.5, 4.5 );
+          histos_2D[which.data()][*category]["DY_fake"]["deltaphi_vs_njets"] = subDirFake.make<TH2D>( Form("%sdeltaphi_vs_njets", central_or_shift_label_st.data()), "mass2_vs_njets", 40,  -TMath::Pi(), TMath::Pi(), 5,  -0.5, 4.5 );
+          histos_2D[which.data()][*category]["DY_fake"]["deltaphi_vs_bjetsl"] = subDirFake.make<TH2D>( Form("%sdeltaphi_vs_bjets_loose", central_or_shift_label_st.data()), "deltaphi_vs_bjets_loose", 40,  -TMath::Pi(), TMath::Pi(), 5,  -0.5, 4.5 );
           histos[which.data()][*category]["DY_fake"]["delta_phi"]->Sumw2();
           histos[which.data()][*category]["DY_fake"]["mass_2"]->Sumw2();
           histos_2D[which.data()][*category]["DY_fake"]["mass_vs_dphi"]->Sumw2();
           histos_2D[which.data()][*category]["DY_fake"]["mass_vs_njets"]->Sumw2();
+          histos_2D[which.data()][*category]["DY_fake"]["deltaphi_vs_njets"]->Sumw2();
+          histos_2D[which.data()][*category]["DY_fake"]["deltaphi_vs_bjetsl"]->Sumw2();
           histos[which.data()][*category]["DY_fake"]["nJets"] = subDirFake.make<TH1D>( Form("%snJets", central_or_shift_label_st.data()), "n_j", 5,  -0.5, 4.5 );
           histos[which.data()][*category]["DY_fake"]["nBJetsLoose"] = subDirFake.make<TH1D>( Form("%snBJetsLoose", central_or_shift_label_st.data()), "n_bjets_loos", 5,  -0.5, 4.5 );
           histos[which.data()][*category]["DY_fake"]["nBJetsMedium"] = subDirFake.make<TH1D>( Form("%snBJetsMedium", central_or_shift_label_st.data()), "n_bjets_medium", 5,  -0.5, 4.5 );
@@ -1039,7 +1055,11 @@ int main(int argc, char* argv[])
           histos_2D[charge_cat][category.data()]["DY"]["mass_vs_dphi"]->Fill(mass_2, delta_phi, evtWeight);
           histos_2D[charge_cat]["total"]["DY"]["mass_vs_dphi"]->Fill(mass_2, delta_phi, evtWeight);
           histos_2D[charge_cat][category.data()]["DY"]["mass_vs_njets"]->Fill(mass_2, nJets, evtWeight);
-          histos_2D[charge_cat]["total"]["DY"]["mass_vs_njets"]->Fill(mass_2, nJets, evtWeight);  
+          histos_2D[charge_cat]["total"]["DY"]["mass_vs_njets"]->Fill(mass_2, nJets, evtWeight);
+          histos_2D[charge_cat][category.data()]["DY"]["deltaphi_vs_njets"]->Fill(delta_phi, nJets, evtWeight);
+          histos_2D[charge_cat]["total"]["DY"]["deltaphi_vs_njets"]->Fill(delta_phi, nJets, evtWeight);  
+          histos_2D[charge_cat][category.data()]["DY"]["deltaphi_vs_bjetsl"]->Fill(delta_phi, nBJetsLoose, evtWeight);
+          histos_2D[charge_cat]["total"]["DY"]["deltaphi_vs_bjetsl"]->Fill(delta_phi, nBJetsLoose, evtWeight);  
           
           histos[charge_cat][category.data()]["DY"]["nJets"]->Fill(nJets, evtWeight);
           histos[charge_cat]["total"]["DY"]["nJets"]->Fill(nJets, evtWeight);
@@ -1063,6 +1083,10 @@ int main(int argc, char* argv[])
           histos_2D[charge_cat]["total"]["DY_fake"]["mass_vs_dphi"]->Fill(mass_2, delta_phi, evtWeight);
           histos_2D[charge_cat][category.data()]["DY_fake"]["mass_vs_njets"]->Fill(mass_2, nJets, evtWeight);
           histos_2D[charge_cat]["total"]["DY_fake"]["mass_vs_njets"]->Fill(mass_2, nJets, evtWeight); 
+          histos_2D[charge_cat][category.data()]["DY_fake"]["deltaphi_vs_njets"]->Fill(delta_phi, nJets, evtWeight);
+          histos_2D[charge_cat]["total"]["DY_fake"]["deltaphi_vs_njets"]->Fill(delta_phi, nJets, evtWeight); 
+          histos_2D[charge_cat][category.data()]["DY_fake"]["deltaphi_vs_bjetsl"]->Fill(delta_phi, nBJetsLoose, evtWeight);
+          histos_2D[charge_cat]["total"]["DY_fake"]["deltaphi_vs_bjetsl"]->Fill(delta_phi, nBJetsLoose, evtWeight); 
           histos[charge_cat][category.data()]["DY_fake"]["nJets"]->Fill(nJets, evtWeight);
           histos[charge_cat]["total"]["DY_fake"]["nJets"]->Fill(nJets, evtWeight);
           histos[charge_cat][category.data()]["DY_fake"]["nBJetsLoose"]->Fill(nBJetsLoose, evtWeight);
@@ -1085,7 +1109,11 @@ int main(int argc, char* argv[])
         histos_2D[charge_cat][category.data()][process_string]["mass_vs_dphi"]->Fill(mass_2, delta_phi, evtWeight);
         histos_2D[charge_cat]["total"][process_string]["mass_vs_dphi"]->Fill(mass_2, delta_phi, evtWeight);
         histos_2D[charge_cat][category.data()][process_string]["mass_vs_njets"]->Fill(mass_2, nJets, evtWeight);
-          histos_2D[charge_cat]["total"][process_string]["mass_vs_njets"]->Fill(mass_2, nJets, evtWeight); 
+        histos_2D[charge_cat]["total"][process_string]["mass_vs_njets"]->Fill(mass_2, nJets, evtWeight); 
+        histos_2D[charge_cat][category.data()][process_string]["deltaphi_vs_njets"]->Fill(delta_phi, nJets, evtWeight);
+        histos_2D[charge_cat]["total"][process_string]["deltaphi_vs_njets"]->Fill(delta_phi, nJets, evtWeight); 
+        histos_2D[charge_cat][category.data()][process_string]["deltaphi_vs_bjetsl"]->Fill(delta_phi, nBJetsLoose, evtWeight);
+        histos_2D[charge_cat]["total"][process_string]["deltaphi_vs_bjetsl"]->Fill(delta_phi, nBJetsLoose, evtWeight); 
         histos[charge_cat][category.data()][process_string]["nJets"]->Fill(nJets, evtWeight);
         histos[charge_cat]["total"][process_string]["nJets"]->Fill(nJets, evtWeight);
         histos[charge_cat][category.data()][process_string]["nBJetsLoose"]->Fill(nBJetsLoose, evtWeight);
