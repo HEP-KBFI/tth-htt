@@ -1,7 +1,12 @@
 import os, logging, sys, getpass
 
+USE_BDT_TRAINING = False
+
 from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_3l_1tau_2015 import samples_2015
-from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_3l_1tau_2016 import samples_2016
+if USE_BDT_TRAINING:
+  from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_3l1tau_addMEM_forBDTtraining import samples_2016
+else:
+  from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_3l_1tau_2016 import samples_2016
 from tthAnalysis.HiggsToTauTau.analyzeConfig_3l_1tau import analyzeConfig_3l_1tau
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 
@@ -19,7 +24,7 @@ elif ERA == "2016":
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "2017Jan13"
+version = "2017Jan16"
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -57,6 +62,16 @@ if __name__ == '__main__':
 ##       "CMS_ttHl_btag_cErr2Down",
 ##       "CMS_ttHl_JESUp",
 ##       "CMS_ttHl_JESDown",
+##       "CMS_ttHl_FRe_shape_ptUp",
+##       "CMS_ttHl_FRe_shape_ptDown",
+##       "CMS_ttHl_FRe_shape_etaUp",
+##       "CMS_ttHl_FRe_shape_etaDown",
+##       "CMS_ttHl_FRe_shape_eta_barrelUp",
+##       "CMS_ttHl_FRe_shape_eta_barrelDown",
+##       "CMS_ttHl_FRm_shape_ptUp",
+##       "CMS_ttHl_FRm_shape_ptDown",
+##       "CMS_ttHl_FRm_shape_etaUp",
+##       "CMS_ttHl_FRm_shape_etaDown",       
 ##       "CMS_ttHl_tauESUp",
 ##       "CMS_ttHl_tauESDown",
 ##       "CMS_ttHl_FRjt_normUp",
@@ -92,6 +107,8 @@ if __name__ == '__main__':
     select_root_output = False)
 
   analysis.create()
+  if USE_BDT_TRAINING:
+    analysis.set_BDT_training(changeBranchNames = False)
 
   run_analysis = query_yes_no("Start jobs ?")
   if run_analysis:

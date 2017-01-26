@@ -231,6 +231,7 @@ int main(int argc, char* argv[])
   }
 
   int jetPt_option = RecoJetReader::kJetPt_central;
+  int jetToLeptonFakeRate_option = kFRl_central;
   int hadTauPt_option = RecoHadTauReader::kHadTauPt_central;
   int jetToTauFakeRate_option = kFRjt_central;
   int lheScale_option = kLHE_scale_central;
@@ -247,6 +248,19 @@ int main(int argc, char* argv[])
       jet_btagWeight_branch = getBranchName_bTagWeight(era, central_or_shift);
       if      ( shiftUp_or_Down == "Up"   ) jetPt_option = RecoJetReader::kJetPt_jecUp;
       else if ( shiftUp_or_Down == "Down" ) jetPt_option = RecoJetReader::kJetPt_jecDown;
+      else assert(0);
+    } else if ( central_or_shift_tstring.BeginsWith("CMS_ttHl_FRe_shape") ||
+		central_or_shift_tstring.BeginsWith("CMS_ttHl_FRm_shape") ) {
+      if      ( central_or_shift_tstring.EndsWith("e_shape_ptUp")           ) jetToLeptonFakeRate_option = kFRe_shape_ptUp;
+      else if ( central_or_shift_tstring.EndsWith("e_shape_ptDown")         ) jetToLeptonFakeRate_option = kFRe_shape_ptDown;
+      else if ( central_or_shift_tstring.EndsWith("e_shape_etaUp")          ) jetToLeptonFakeRate_option = kFRe_shape_etaUp;
+      else if ( central_or_shift_tstring.EndsWith("e_shape_etaDown")        ) jetToLeptonFakeRate_option = kFRe_shape_etaDown;
+      else if ( central_or_shift_tstring.EndsWith("e_shape_eta_barrelUp")   ) jetToLeptonFakeRate_option = kFRe_shape_eta_barrelUp;
+      else if ( central_or_shift_tstring.EndsWith("e_shape_eta_barrelDown") ) jetToLeptonFakeRate_option = kFRe_shape_eta_barrelDown;
+      else if ( central_or_shift_tstring.EndsWith("m_shape_ptUp")           ) jetToLeptonFakeRate_option = kFRm_shape_ptUp;
+      else if ( central_or_shift_tstring.EndsWith("m_shape_ptDown")         ) jetToLeptonFakeRate_option = kFRm_shape_ptDown;
+      else if ( central_or_shift_tstring.EndsWith("m_shape_etaUp")          ) jetToLeptonFakeRate_option = kFRm_shape_etaUp;
+      else if ( central_or_shift_tstring.EndsWith("m_shape_etaDown")        ) jetToLeptonFakeRate_option = kFRm_shape_etaDown;
       else assert(0);
     } else if ( central_or_shift_tstring.BeginsWith("CMS_ttHl_tauES") ) {
       if      ( shiftUp_or_Down == "Up"   ) hadTauPt_option = RecoHadTauReader::kHadTauPt_shiftUp;
@@ -291,7 +305,7 @@ int main(int argc, char* argv[])
   LeptonFakeRateInterface* leptonFakeRateInterface = 0;
   if ( applyFakeRateWeights == kFR_4L || applyFakeRateWeights == kFR_3lepton) {
     edm::ParameterSet cfg_leptonFakeRateWeight = cfg_analyze.getParameter<edm::ParameterSet>("leptonFakeRateWeight");
-    leptonFakeRateInterface = new LeptonFakeRateInterface(cfg_leptonFakeRateWeight);
+    leptonFakeRateInterface = new LeptonFakeRateInterface(cfg_leptonFakeRateWeight, jetToLeptonFakeRate_option);
   }
 
   JetToTauFakeRateInterface* jetToTauFakeRateInterface = 0;

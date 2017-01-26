@@ -100,7 +100,12 @@ int main(int argc, char* argv[])
   vstring processesToSubtract = cfgAddBackgroundLeptonFakes.getParameter<vstring>("processesToSubtract");
 
   vstring central_or_shifts = cfgAddBackgroundLeptonFakes.getParameter<vstring>("sysShifts");
-  central_or_shifts.push_back(""); // CV: add central value
+  bool contains_central_value = false;
+  for ( vstring::const_iterator central_or_shift = central_or_shifts.begin();
+	central_or_shift != central_or_shifts.end(); ++central_or_shift ) {
+    if ( (*central_or_shift) == "" || (*central_or_shift) == "central" ) contains_central_value = true;
+  }
+  if ( !contains_central_value ) central_or_shifts.push_back(""); // CV: add central value
 
   fwlite::InputSource inputFiles(cfg); 
   if ( !(inputFiles.files().size() == 1) )

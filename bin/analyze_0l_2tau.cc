@@ -568,7 +568,7 @@ int main(int argc, char* argv[])
     );
     bdt_filler -> register_variable<float_type>(
       "mindr_tau1_jet", "mindr_tau2_jet", "avg_dr_jet", "ptmiss", "mT_tau1", "mT_tau2",
-      "htmiss", "tau1_mva", "tau2_mva", "tau1_pt", "tau2_pt", "tau1_eta", "tau2_eta"
+      "htmiss", "tau1_mva", "tau2_mva", "tau1_pt", "tau2_pt", "tau1_eta", "tau2_eta",
       "dr_taus", "mTauTauVis", "mTauTau"
     );
     bdt_filler -> register_variable<int_type>(

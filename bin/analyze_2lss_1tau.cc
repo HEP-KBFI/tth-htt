@@ -773,7 +773,7 @@ int main(int argc, char* argv[])
     );
     bdt_filler -> register_variable<float_type>(
       "lep1_pt", "lep1_conePt", "lep1_eta", "lep1_tth_mva", "mindr_lep1_jet", "mT_lep1", "dr_lep1_tau",
-      "lep2_pt", "lep1_conePt", "lep2_eta", "lep2_tth_mva", "mindr_lep2_jet", "mT_lep2", "dr_lep2_tau",
+      "lep2_pt", "lep2_conePt", "lep2_eta", "lep2_tth_mva", "mindr_lep2_jet", "mT_lep2", "dr_lep2_tau",
       "mindr_tau_jet", "avg_dr_jet", "ptmiss",  "htmiss", "tau_mva", "tau_pt", "tau_eta",
       "dr_leps", "mTauTauVis1", "mTauTauVis2", "lumiScale", "genWeight", "evtWeight"
     );
@@ -1764,6 +1764,9 @@ int main(int argc, char* argv[])
           ("dr_leps",        deltaR(selLepton_lead -> p4(), selLepton_sublead -> p4()))
           ("mTauTauVis1",    mTauTauVis1_sel)
           ("mTauTauVis2",    mTauTauVis2_sel)
+          ("lumiScale",      lumiScale)
+          ("genWeight",      genWeight)
+          ("evtWeight",      evtWeight)
           ("nJet",           selJets.size())
           ("nBJetLoose",     selBJets_loose.size())
           ("nBJetMedium",    selBJets_medium.size())

@@ -1,7 +1,12 @@
 import os, logging, sys, getpass
 
+USE_BDT_TRAINING = False
+
 from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2lss_1tau_2015 import samples_2015
-from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2lss_1tau_2016 import samples_2016
+if USE_BDT_TRAINING:
+  from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_2lss1tau_addMEM_forBDTtraining import samples_2016
+else:
+  from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2lss_1tau_2016 import samples_2016
 from tthAnalysis.HiggsToTauTau.analyzeConfig_2lss_1tau import analyzeConfig_2lss_1tau
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 
@@ -56,7 +61,7 @@ if __name__ == '__main__':
 ##       "CMS_ttHl_btag_cErr2Up",
 ##       "CMS_ttHl_btag_cErr2Down",
 ##       "CMS_ttHl_JESUp",
-##       "CMS_ttHl_JESDown",
+##       "CMS_ttHl_JESDown",      
       "CMS_ttHl_FRe_shape_ptUp",
       "CMS_ttHl_FRe_shape_ptDown",
       "CMS_ttHl_FRe_shape_etaUp",
@@ -66,7 +71,7 @@ if __name__ == '__main__':
       "CMS_ttHl_FRm_shape_ptUp",
       "CMS_ttHl_FRm_shape_ptDown",
       "CMS_ttHl_FRm_shape_etaUp",
-      "CMS_ttHl_FRm_shape_etaDown",
+      "CMS_ttHl_FRm_shape_etaDown",      
 ##       "CMS_ttHl_tauESUp",
 ##       "CMS_ttHl_tauESDown",
 ##       "CMS_ttHl_FRjt_normUp",
@@ -101,6 +106,8 @@ if __name__ == '__main__':
     histograms_to_fit = [ "EventCounter", "numJets", "mvaDiscr_2lss", "mvaOutput_2lss_1tau_ttbar_TMVA", "mvaOutput_2lss_1tau_ttbar_sklearn", "mTauTauVis", "memOutput_LR" ],
     select_rle_output = True)
 
+  if USE_BDT_TRAINING:
+    analysis.set_BDT_training(changeBranchNames = False)
   analysis.create()
 
   run_analysis = query_yes_no("Start jobs ?")

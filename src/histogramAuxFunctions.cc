@@ -304,9 +304,9 @@ TDirectory* getDirectory(TFile* inputFile, const std::string& dirName, bool enab
   if ( enableException && !dir ) {
     inputFile->ls();
     throw cms::Exception("getDirectory") 
-      << "Failed to find directory = " << dirName << " in file = " << inputFile->GetName() << " !!\n";
+      << "Failed to find directory = '" << dirName << "' in file = '" << inputFile->GetName() << "' !!\n";
   }
-  std::cout << "--> returning dir = " << dir << ": name = " << dir->GetName() << std::endl;    
+  std::cout << "--> returning dir = " << dir << ": name = '" << dir->GetName() << "'" << std::endl;    
   return dir;
 }
 
@@ -321,9 +321,9 @@ TDirectory* getSubdirectory(TDirectory* dir, const std::string& subdirName, bool
   if ( enableException && !subdir ) {
     dir->ls();
     throw cms::Exception("getSubdirectory") 
-      << "Failed to find subdirectory = " << subdirName << " in directory = " << dir << ": name = " << dir->GetName() << " !!\n";    
+      << "Failed to find subdirectory = '" << subdirName << "' in directory = " << dir << ": name = '" << dir->GetName() << "' !!\n";    
   }
-  std::cout << "--> returning subdir = " << subdir << ": name = " << subdir->GetName() << std::endl;    
+  std::cout << "--> returning subdir = " << subdir << ": name = '" << subdir->GetName() << "'" << std::endl;    
   return subdir;
 }
 
@@ -335,13 +335,17 @@ TH1* getHistogram(TDirectory* dir, const std::string& process, const std::string
   //std::cout << " histogramName = " << histogramName << std::endl;
   //std::cout << " central_or_shift = " << central_or_shift << std::endl;
   //std::cout << " enableException = " << enableException << std::endl;
-  std::string histogramName_full = Form("%s/%s", process.data(), histogramName.data());
-  if ( !(central_or_shift == "" || central_or_shift == "central") ) histogramName_full.append("_").append(central_or_shift);
+  std::string histogramName_full = Form("%s/", process.data());
+  if ( !(central_or_shift == "" || central_or_shift == "central") ) {
+    histogramName_full.append(Form("%s_%s", central_or_shift.data(), histogramName.data()));
+  } else {
+    histogramName_full.append(histogramName);
+  }
   TH1* histogram = dynamic_cast<TH1*>(dir->Get(histogramName_full.data()));
   if ( enableException && !histogram ) {
     dir->ls();
     throw cms::Exception("getHistogram") 
-      << "Failed to find histogram = " << histogramName_full << " in directory = " << dir << ": name = " << dir->GetName() << " !!\n";    
+      << "Failed to find histogram = '" << histogramName_full << "' in directory = " << dir << ": name = '" << dir->GetTitle() << "' !!\n";    
   }
   return histogram;
 }
