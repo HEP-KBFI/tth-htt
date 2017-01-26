@@ -1448,7 +1448,7 @@ if __name__ == '__main__':
     logging.info("You can track the progress in another shell session with the following command:\n"
                  "\ttail -F {logfile}".format(logfile = logfile_example))
     logging.info("Once the script has finished its jobs, run it with\n"
-                 "\tpython {cmd} -i {logfile} -o {output} -p tth -v".format(
+                 "\tpython {cmd} -i {logfile} -o {output} -p -v".format(
       cmd     = sys.argv[0],
       logfile = logfile_example,
       output  = os.path.join(os.path.dirname(args.output), '{sample_name}_parsed.log'.format(sample_name = args.generate))
