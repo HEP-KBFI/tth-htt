@@ -1768,7 +1768,7 @@ int main(int argc, char* argv[])
 
     if(bdt_filler)
     {
-      bdt_filler -> operator()
+      bdt_filler -> operator()({ run, lumi, event })
           ("lep1_pt",             selLepton_lead -> pt())
           ("lep1_conePt",         comp_lep1_conePt(*selLepton_lead))
           ("lep1_eta",            selLepton_lead -> eta())

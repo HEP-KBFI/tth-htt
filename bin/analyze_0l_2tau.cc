@@ -956,7 +956,7 @@ int main(int argc, char* argv[])
 
     if(bdt_filler)
     {
-      bdt_filler -> operator()
+      bdt_filler -> operator()({ run, lumi, event })
           ("mindr_tau1_jet", TMath::Min(10., comp_mindr_hadTau1_jet(*selHadTau_lead, selJets)))
           ("mindr_tau2_jet", TMath::Min(10., comp_mindr_hadTau2_jet(*selHadTau_sublead, selJets)))
           ("avg_dr_jet",     comp_avg_dr_jet(selJets))

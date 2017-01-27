@@ -1294,7 +1294,7 @@ int main(int argc, char* argv[])
 
     if(bdt_filler)
     {
-      bdt_filler -> operator()
+      bdt_filler -> operator()({ run, lumi, event })
           ("lep_pt",         selLepton -> pt())
           ("lep_eta",        selLepton -> eta())
           ("lep_tth_mva",    selLepton -> mvaRawTTH())

@@ -142,6 +142,7 @@ public:
       kv.second.initBranch(tree_);
     for(auto & kv: int_map_)
       kv.second.initBranch(tree_);
+    rle_.initBranches(tree_);
   }
 
   NtupleFillerBDT &
@@ -154,6 +155,13 @@ public:
       int_map_[key].setValue(value);
     else
       throw std::invalid_argument(std::string("No such key: ") + key);
+    return *this;
+  }
+
+  NtupleFillerBDT &
+  operator()(const RLEUnit & rleUnit)
+  {
+    rle_.setValues(rleUnit);
     return *this;
   }
 
@@ -220,6 +228,7 @@ private:
 
   std::map<std::string, BasicFillerWCounter<FloatType_class>> float_map_;
   std::map<std::string, BasicFillerWCounter<IntType_class>>   int_map_;
+  RLEFiller rle_;
 
   bool assert_only_once_;
   bool fill_assert_;

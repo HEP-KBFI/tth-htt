@@ -1366,7 +1366,7 @@ int main(int argc, char* argv[])
         dr_lep_tau_os = deltaR(selLepton_sublead -> p4(), selHadTau -> p4());
         dr_lep_tau_ss = deltaR(selLepton_lead -> p4(),    selHadTau -> p4());
       }
-      bdt_filler -> operator()
+      bdt_filler -> operator()({ run, lumi, event })
           ("lep1_pt",        selLepton_lead -> pt())
           ("lep1_eta",       selLepton_lead -> eta())
           ("lep1_tth_mva",   selLepton_lead -> mvaRawTTH())
