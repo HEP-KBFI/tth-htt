@@ -32,7 +32,7 @@ copy_map_keys(const std::map<KeyType, MappedType> & m,
   std::vector<KeyType> v;
   boost::push_back(
     v, m | boost::adaptors::map_keys | boost::adaptors::filtered(
-      [&condition](const KeyType & key) -> bool
+      [&condition,&m](const KeyType & key) -> bool
       {
         return condition(key);
       }
