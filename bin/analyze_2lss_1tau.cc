@@ -775,8 +775,9 @@ int main(int argc, char* argv[])
       "lep1_pt", "lep1_conePt", "lep1_eta", "lep1_tth_mva", "mindr_lep1_jet", "mT_lep1", "dr_lep1_tau",
       "lep2_pt", "lep2_conePt", "lep2_eta", "lep2_tth_mva", "mindr_lep2_jet", "mT_lep2", "dr_lep2_tau",
       "mindr_tau_jet", "avg_dr_jet", "ptmiss",  "htmiss", "tau_mva", "tau_pt", "tau_eta",
-      "dr_leps", "mTauTauVis1", "mTauTauVis2", "memOutput_errorFlag", "memOutput_type", "memOutput_ttH", 
-      "memOutput_ttZ", "memOutput_ttZ_Zll", "memOutput_tt", "memOutput_LR", "lumiScale", "genWeight", "evtWeight"
+      "dr_leps", "mTauTauVis1", "mTauTauVis2", "lumiScale", "genWeight", "evtWeight",
+      "memOutput_isValid", "memOutput_errorFlag", "memOutput_type", "memOutput_ttH", "memOutput_ttZ",
+      "memOutput_ttZ_Zll", "memOutput_tt", "memOutput_LR"
     );
     bdt_filler -> register_variable<int_type>(
       "nJet", "nBJetLoose", "nBJetMedium"
@@ -1629,37 +1630,62 @@ int main(int argc, char* argv[])
 
     double mvaOutput_2lss_1tau_ttbar_sklearn = mva_2lss_1tau_ttbar_sklearn(mvaInputs_sklearn);
     
-    const MEMOutput_2lss_1tau* memOutput_2lss_1tau_matched = 0;
-    if ( memReader ) {
-      std::vector<MEMOutput_2lss_1tau> memOutputs_2lss_1tau = memReader->read();
-      for ( std::vector<MEMOutput_2lss_1tau>::const_iterator memOutput_2lss_1tau = memOutputs_2lss_1tau.begin();
-	    memOutput_2lss_1tau != memOutputs_2lss_1tau.end(); ++memOutput_2lss_1tau ) {
-	double selLepton_lead_dR = deltaR(selLepton_lead->eta(), selLepton_lead->phi(), memOutput_2lss_1tau->leadLepton_eta(), memOutput_2lss_1tau->leadLepton_phi());
-	if ( selLepton_lead_dR > 1.e-2 ) continue;
-	double selLepton_sublead_dR = deltaR(selLepton_sublead->eta(), selLepton_sublead->phi(), memOutput_2lss_1tau->subleadLepton_eta(), memOutput_2lss_1tau->subleadLepton_phi());
-	if ( selLepton_sublead_dR > 1.e-2 ) continue;
-	double selHadTau_dR = deltaR(selHadTau->eta(), selHadTau->phi(), memOutput_2lss_1tau->hadTau_eta(), memOutput_2lss_1tau->hadTau_phi());
-	if ( selHadTau_dR > 1.e-2 ) continue;
-	memOutput_2lss_1tau_matched = &(*memOutput_2lss_1tau);
-	break;
+    MEMOutput_2lss_1tau memOutput_2lss_1tau_matched;
+    if(memReader)
+    {
+      const std::vector<MEMOutput_2lss_1tau> memOutputs_2lss_1tau = memReader -> read();
+      for(const MEMOutput_2lss_1tau & memOutput_2lss_1tau: memOutputs_2lss_1tau)
+      {
+        const double selLepton_lead_dR = deltaR(
+          selLepton_lead -> eta(),              selLepton_lead -> phi(),
+          memOutput_2lss_1tau.leadLepton_eta(), memOutput_2lss_1tau.leadLepton_phi()
+        );
+        if(selLepton_lead_dR > 1.e-2)
+          continue;
+        const double selLepton_sublead_dR = deltaR(
+          selLepton_sublead -> eta(), selLepton_sublead -> phi(),
+          memOutput_2lss_1tau.subleadLepton_eta(), memOutput_2lss_1tau.subleadLepton_phi()
+        );
+        if(selLepton_sublead_dR > 1.e-2)
+          continue;
+        const double selHadTau_dR = deltaR(
+          selHadTau -> eta(),               selHadTau -> phi(),
+          memOutput_2lss_1tau.hadTau_eta(), memOutput_2lss_1tau.hadTau_phi()
+        );
+        if(selHadTau_dR > 1.e-2)
+          continue;
+        memOutput_2lss_1tau_matched = memOutput_2lss_1tau;
+        break;
       }
-      if ( !memOutput_2lss_1tau_matched ) {
-	std::cout << "Warning in run = " << run << ", lumi = " << lumi << ", event = " << event << ":" << std::endl; 
-	std::cout << "No MEMOutput_2lss_1tau object found for:" << std::endl;
-	std::cout << " selLepton_lead: pT = " << selLepton_lead->pt() << ", eta = " << selLepton_lead->eta() << ", phi = " << selLepton_lead->phi() << "," 
-		  << " pdgId = " << selLepton_lead->pdgId() << std::endl;
-	std::cout << " selLepton_sublead: pT = " << selLepton_sublead->pt() << ", eta = " << selLepton_sublead->eta() << ", phi = " << selLepton_sublead->phi() << "," 
-		  << " pdgId = " << selLepton_sublead->pdgId() << std::endl;
-	std::cout << " selHadTau: pT = " << selHadTau->pt() << ", eta = " << selHadTau->eta() << ", phi = " << selHadTau->phi() << std::endl;
-	std::cout << "Number of MEM objects read: " << memOutputs_2lss_1tau.size() << '\n';
-	if(memOutputs_2lss_1tau.size())
-	{
-	  for(unsigned mem_idx = 0; mem_idx < memOutputs_2lss_1tau.size(); ++mem_idx)
-	  std::cout << "\t#" << mem_idx << " mem object;\n"
-		    << "\t\tlead lepton eta = " << memOutputs_2lss_1tau[mem_idx].leadLepton_eta() << "; phi = " << memOutputs_2lss_1tau[mem_idx].leadLepton_phi() << '\n'
-		    << "\t\tsublead lepton eta = " << memOutputs_2lss_1tau[mem_idx].subleadLepton_eta() << "; phi = " << memOutputs_2lss_1tau[mem_idx].subleadLepton_phi() << '\n'
-		    << "\t\thadronic tau eta = " << memOutputs_2lss_1tau[mem_idx].hadTau_eta() << "; phi = " << memOutputs_2lss_1tau[mem_idx].hadTau_phi() << '\n';
-	}
+      if(! memOutput_2lss_1tau_matched.is_initialized())
+      {
+        std::cout << "Warning in run = " << run << ", lumi = " << lumi << ", event = " << event << '\n'
+                  << "No MEMOutput_2lss_1tau object found for:\n"
+                  << "\tselLepton_lead: pT = " << selLepton_lead -> pt()
+                  << ", eta = "                << selLepton_lead -> eta()
+                  << ", phi = "                << selLepton_lead -> phi()
+                  << ", pdgId = "              << selLepton_lead -> pdgId() << '\n'
+                  << "\tselLepton_sublead: pT = " << selLepton_sublead -> pt()
+                  << ", eta = "                   << selLepton_sublead -> eta()
+                  << ", phi = "                   << selLepton_sublead -> phi()
+                  << ", pdgId = "                 << selLepton_sublead -> pdgId() << '\n'
+                  << "\tselHadTau: pT = " << selHadTau -> pt()
+                  << ", eta = "           << selHadTau -> eta()
+                  << ", phi = "           << selHadTau -> phi() << '\n'
+                  << "Number of MEM objects read: " << memOutputs_2lss_1tau.size() << '\n';
+        if(memOutputs_2lss_1tau.size())
+        {
+          for(unsigned mem_idx = 0; mem_idx < memOutputs_2lss_1tau.size(); ++mem_idx)
+            std::cout << "\t#" << mem_idx << " mem object;\n"
+                      << "\t\tlead lepton eta = " << memOutputs_2lss_1tau[mem_idx].leadLepton_eta()
+                      << "; phi = "               << memOutputs_2lss_1tau[mem_idx].leadLepton_phi() << '\n'
+                      << "\t\tsublead lepton eta = " << memOutputs_2lss_1tau[mem_idx].subleadLepton_eta()
+                      << "; phi = "                  << memOutputs_2lss_1tau[mem_idx].subleadLepton_phi() << '\n'
+                      << "\t\thadronic tau eta = " << memOutputs_2lss_1tau[mem_idx].hadTau_eta()
+                      << "; phi = "                << memOutputs_2lss_1tau[mem_idx].hadTau_phi() << '\n';
+        }
+        else
+          std::cout << "No MEM objects whatsoever\n";
       }
     }
 
@@ -1682,7 +1708,7 @@ int main(int argc, char* argv[])
       selJets.size(), selBJets_loose.size(), selBJets_medium.size(), 
       mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, mvaOutput_2lss_1tau_ttbar_TMVA, mvaOutput_2lss_1tau_ttbar_sklearn, 
       mTauTauVis1_sel, mTauTauVis2_sel, 
-      memOutput_2lss_1tau_matched, evtWeight);
+      memOutput_2lss_1tau_matched.is_initialized() ? &memOutput_2lss_1tau_matched : nullptr, evtWeight);
     if ( isSignal ) {
       for ( const auto & kv: decayMode_idString ) {
         if ( std::fabs(genHiggsDecayMode - kv.second) < EPS ) {
@@ -1691,7 +1717,7 @@ int main(int argc, char* argv[])
             selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
             mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, mvaOutput_2lss_1tau_ttbar_TMVA, mvaOutput_2lss_1tau_ttbar_sklearn, 
             mTauTauVis1_sel, mTauTauVis2_sel, 
-	    memOutput_2lss_1tau_matched, evtWeight);
+            memOutput_2lss_1tau_matched.is_initialized() ? &memOutput_2lss_1tau_matched : nullptr, evtWeight);
           break;
         }
       }
@@ -1710,7 +1736,7 @@ int main(int argc, char* argv[])
       "2mupp_1tau_bloose", "2mupp_1tau_btight", "2mumm_1tau_bloose", "2mumm_1tau_btight" 
     };
     for ( vstring::const_iterator category = categories_evt.begin();
-	  category != categories_evt.end(); ++category ) {
+          category != categories_evt.end(); ++category ) {
       bool isCategory_2epp_btight = selElectrons.size() == 2 && (isCharge_pp || leptonChargeSelection == kOS) && selBJets_medium.size() >= 1;
       bool isCategory_2epp_bloose = selElectrons.size() == 2 && (isCharge_pp || leptonChargeSelection == kOS);
       bool isCategory_2emm_btight = selElectrons.size() == 2 && (isCharge_mm || leptonChargeSelection == kOS) && selBJets_medium.size() >= 1;
@@ -1740,21 +1766,21 @@ int main(int argc, char* argv[])
       if ( (*category) == "2mumm_1tau_bloose"   && !isCategory_2mumm_bloose   ) continue;
 
       if ( selHistManager->electrons_in_categories_.find(*category) != selHistManager->electrons_in_categories_.end() ) {
-	selHistManager->electrons_in_categories_[*category]->fillHistograms(selElectrons, evtWeight);
-	selHistManager->leadElectron_in_categories_[*category]->fillHistograms(selElectrons, evtWeight);
-	selHistManager->subleadElectron_in_categories_[*category]->fillHistograms(selElectrons, evtWeight);
+        selHistManager->electrons_in_categories_[*category]->fillHistograms(selElectrons, evtWeight);
+        selHistManager->leadElectron_in_categories_[*category]->fillHistograms(selElectrons, evtWeight);
+        selHistManager->subleadElectron_in_categories_[*category]->fillHistograms(selElectrons, evtWeight);
       }
       if ( selHistManager->muons_in_categories_.find(*category) != selHistManager->muons_in_categories_.end() ) {
-	selHistManager->muons_in_categories_[*category]->fillHistograms(selMuons, evtWeight);
-	selHistManager->leadMuon_in_categories_[*category]->fillHistograms(selMuons, evtWeight);
-	selHistManager->subleadMuon_in_categories_[*category]->fillHistograms(selMuons, evtWeight);
+        selHistManager->muons_in_categories_[*category]->fillHistograms(selMuons, evtWeight);
+        selHistManager->leadMuon_in_categories_[*category]->fillHistograms(selMuons, evtWeight);
+        selHistManager->subleadMuon_in_categories_[*category]->fillHistograms(selMuons, evtWeight);
       }
       selHistManager->evt_in_categories_[*category]->fillHistograms(
         selElectrons.size(), selMuons.size(), selHadTaus.size(), 
-	selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
-	mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, mvaOutput_2lss_1tau_ttbar_TMVA, mvaOutput_2lss_1tau_ttbar_sklearn, 
-	mTauTauVis1_sel, mTauTauVis2_sel, 
-	memOutput_2lss_1tau_matched, evtWeight);
+        selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
+        mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, mvaOutput_2lss_1tau_ttbar_TMVA, mvaOutput_2lss_1tau_ttbar_sklearn,
+        mTauTauVis1_sel, mTauTauVis2_sel,
+        memOutput_2lss_1tau_matched.is_initialized() ? &memOutput_2lss_1tau_matched : nullptr, evtWeight);
     } 
 
     if ( isMC ) {
@@ -1793,13 +1819,14 @@ int main(int argc, char* argv[])
           ("dr_leps",             deltaR(selLepton_lead -> p4(), selLepton_sublead -> p4()))
           ("mTauTauVis1",         mTauTauVis1_sel)
           ("mTauTauVis2",         mTauTauVis2_sel)
-          ("memOutput_errorFlag", memOutput_2lss_1tau_matched != 0 ? memOutput_2lss_1tau_matched -> errorFlag()      : -100.)
-          ("memOutput_type",      memOutput_2lss_1tau_matched != 0 ? memOutput_2lss_1tau_matched -> type()           : -100.)
-          ("memOutput_ttH",       memOutput_2lss_1tau_matched != 0 ? memOutput_2lss_1tau_matched -> weight_ttH()     : -100.)
-          ("memOutput_ttZ",       memOutput_2lss_1tau_matched != 0 ? memOutput_2lss_1tau_matched -> weight_ttZ()     : -100.)
-          ("memOutput_ttZ_Zll",   memOutput_2lss_1tau_matched != 0 ? memOutput_2lss_1tau_matched -> weight_ttZ_Zll() : -100.)
-          ("memOutput_tt",        memOutput_2lss_1tau_matched != 0 ? memOutput_2lss_1tau_matched -> weight_tt()      : -100.)
-          ("memOutput_LR",        memOutput_2lss_1tau_matched != 0 ? memOutput_2lss_1tau_matched -> LR()             : -100.)
+          ("memOutput_isValid",   memOutput_2lss_1tau_matched.is_initialized() ? memOutput_2lss_1tau_matched.isValid()        : -100.)
+          ("memOutput_errorFlag", memOutput_2lss_1tau_matched.is_initialized() ? memOutput_2lss_1tau_matched.errorFlag()      : -100.)
+          ("memOutput_type",      memOutput_2lss_1tau_matched.is_initialized() ? memOutput_2lss_1tau_matched.type()           : -100.)
+          ("memOutput_ttH",       memOutput_2lss_1tau_matched.is_initialized() ? memOutput_2lss_1tau_matched.weight_ttH()     : -100.)
+          ("memOutput_ttZ",       memOutput_2lss_1tau_matched.is_initialized() ? memOutput_2lss_1tau_matched.weight_ttZ()     : -100.)
+          ("memOutput_ttZ_Zll",   memOutput_2lss_1tau_matched.is_initialized() ? memOutput_2lss_1tau_matched.weight_ttZ_Zll() : -100.)
+          ("memOutput_tt",        memOutput_2lss_1tau_matched.is_initialized() ? memOutput_2lss_1tau_matched.weight_tt()      : -100.)
+          ("memOutput_LR",        memOutput_2lss_1tau_matched.is_initialized() ? memOutput_2lss_1tau_matched.LR()             : -100.)
           ("lumiScale",           lumiScale)
           ("genWeight",           genWeight)
           ("evtWeight",           evtWeight)

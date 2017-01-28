@@ -44,6 +44,8 @@ class MEMOutput_2lss_1tau
   void set_hadTau_eta(Float_t hadTau_eta) { hadTau_eta_ = hadTau_eta; }
   void set_hadTau_phi(Float_t hadTau_phi) { hadTau_phi_ = hadTau_phi; }
 
+  bool is_initialized() { return run_ != 0 && lumi_ != 0 && evt_ != 0; }
+
   /**
    * @brief Funtions to access data-members
    * @return Values of data-members
