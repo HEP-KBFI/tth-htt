@@ -1005,13 +1005,7 @@ int main(int argc, char* argv[])
         }
       }
     }
-    std::vector<const RecoJet*> cleanedJets = [&]() -> decltype(cleanedJets) // KE: temporary hack?
-    {
-      if(! selectBDT)
-        return jetCleaner(jet_ptrs, fakeableMuons, fakeableElectrons, selHadTaus);
-      else
-        return jetCleaner(jet_ptrs, selMuons, selElectrons, selHadTaus);
-    }();
+    std::vector<const RecoJet*> cleanedJets = jetCleaner(jet_ptrs, fakeableMuons, fakeableElectrons, selHadTaus);
     std::vector<const RecoJet*> selJets = jetSelector(cleanedJets);
     std::vector<const RecoJet*> selBJets_loose = jetSelectorBtagLoose(cleanedJets);
     std::vector<const RecoJet*> selBJets_medium = jetSelectorBtagMedium(cleanedJets);
