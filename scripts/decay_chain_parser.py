@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+#TODO: implement H-> gammagamma decay properly
+
 '''Manual
 
 The script generates decay chains from MINIADO MC sample files and analyzes them if necessary.
@@ -286,10 +288,11 @@ class MultipleStream():
   def __init__(self, streams):
     # pass a list of output streams here, e.g. [sys.stdout, open('filename', 'w'),]
     self.streams = []
+    self.filestreams = []
     for stream in streams:
       if stream:
         if isinstance(stream, str):
-          self.streams.append(open(stream, 'w'))
+          self.filestreams.append(open(stream, 'w'))
         else:
           self.streams.append(stream)
 
@@ -297,12 +300,13 @@ class MultipleStream():
     return self
 
   def __exit__(self, exc_type, exc_val, exc_tb):
-    for stream in self.streams:
-      if isinstance(stream, file):
-        stream.close()
+    for stream in self.filestreams:
+      stream.close()
 
   def write(self, lines):
     for stream in self.streams:
+      stream.write(lines)
+    for stream in self.filestreams:
       stream.write(lines)
 
   def writeln(self, line):
@@ -503,6 +507,31 @@ def get_Wn_decay_mode(decay_chains, Wn_idx):
     Wn['q'] = 2
 
   return Wn
+
+def get_gamma_decay_mode(decay_chains, gamma_idx):
+  # initialize empty dict (so that all keys and values are present)
+  gamma = {
+    'l' : 0,
+    't' : [get_taup_decay_mode([], 0), get_taun_decay_mode([], 0)],
+  }
+  # let's consider only the case in which the photon decays into a lepton pair
+
+  # legacy from testing: if the input list of decay chains is empty, return empty dict
+  if not decay_chains:
+    return gamma
+
+  gamma_daughters = set(x[gamma_idx + 1] for x in filter(lambda x: len(x) > gamma_idx + 1, decay_chains))
+  if {'e+', 'e-'}.issubset(gamma_daughters) or {'mu+', 'mu-'}.issubset(gamma_daughters):
+    # photon decays into electron-positron or muon-antimuon pair
+    gamma['l'] = 2
+  elif {'tau+', 'tau-'}.issubset(gamma_daughters):
+    # photon decays into tau-antitau pair, which further decays
+    taup_chains = filter(lambda x: x[gamma_idx] == 'tau+', decay_chains)
+    taun_chains = filter(lambda x: x[gamma_idx] == 'tau+', decay_chains)
+    gamma['t'] = [ get_taup_decay_mode(taup_chains, gamma_idx + 1),
+                   get_taun_decay_mode(taun_chains, gamma_idx + 1) ]
+
+  return gamma
 
 def get_ZZ_decay_modes(decay_chains, ZZ_idx):
   # initialize empty dict (so that all keys and values are present)
@@ -735,10 +764,13 @@ def get_z_decay_mode(decay_chains, z0_idx):
 def get_h_decay_mode(decay_chains, h0_idx):
   # initialize empty dict (so that all keys and values are present)
   h0 = {
-    'tt' : [get_taup_decay_mode([], 0), get_taun_decay_mode([], 0)],
-    'WW' : [get_Wp_decay_mode([], 0),   get_Wn_decay_mode([], 0)],
-    'ZZ' : get_ZZ_decay_modes([], 0),
-    'mu' : 0,
+    'tt'         : [get_taup_decay_mode([], 0), get_taun_decay_mode([], 0)],
+    'WW'         : [get_Wp_decay_mode([], 0),   get_Wn_decay_mode([], 0)],
+    'ZZ'         : get_ZZ_decay_modes([], 0),
+    'mu'         : 0,
+    'g'          : 0,
+    'gammagamma' : [get_gamma_decay_mode([], 0), get_gamma_decay_mode([], 0)],
+    'qqbar'      : 0,
   }
 
   # legacy from testing: if the input list of decay chains is empty, return empty dict
@@ -773,8 +805,27 @@ def get_h_decay_mode(decay_chains, h0_idx):
     # H -> mu+ mu- spotted
     h0['mu'] = 2
 
+  elif {'gamma'}.issubset(h0_daughters):
+    # H -> gamma gamma
+    #NB! we only consider the case in which only one gamma decays further, the other is part of the final state
+    gammagamma = filter(lambda x: x[h0_idx + 1] == 'gamma', h0_br)
+    h0['gammagamma'] = [get_gamma_decay_mode(gammagamma, h0_idx + 1), get_gamma_decay_mode([], 0)]
+
+  elif {'c', 'cbar'}.issubset(h0_daughters):
+    # H -> c cbar
+    #NB! add more quark pair if you see an error that says there's unimplemented h decay mode
+    h0['qqbar'] = 2
+
+  elif { 'g' }.issubset(h0_daughters):
+    # now this is a weird one, b/c in SM interaction like H -> gg is not possible, but in our decay chains
+    # we do have such events (albeit very few)
+    h0['g'] = 1 # even though gluon from higgs may decay hadronically or leptonically,
+                # it's quite difficult to deduce the final stage b/c it can be literally anything, so we just
+                # mark that it exists and carry on;
+                # besides, the number of events in which higgs decays into a gluon is relatively small
+
   else:
-    raise ValueError("Unimplemented h0 decay mode?")
+    raise ValueError("Unimplemented h0 decay mode: {h0_daughters}".format(h0_daughters = ', '.join(h0_daughters)))
 
   return h0
 
@@ -952,6 +1003,27 @@ def get_WW_cat(entries, check_q = True):
     return "WW->%s" % ''.join(list(sorted(final_decay_products))), nof_l, nof_h, nof_q
   return '', 0, 0, 0
 
+def get_gamma_cat(entry, use_double_gamma):
+  # returns single photon decay label and multiplicity of visible particles
+
+  # use double instead of single gamma since at the time of writing I'm too lazy to implement gamma decay for the pair
+  prefix = "gammagamma" if use_double_gamma else "gamma"
+
+  first_tau  = get_tau_cat(entry['t'][0])
+  second_tau = get_tau_cat(entry['t'][1])
+
+  if entry['l']:
+    # gamma -> e+ e- or gamma -> mu+ mu-
+    return '%s->(l)(l)' % prefix, 2, 0, 0
+  elif first_tau[0] and second_tau[0]:
+    # gamma -> tau+ tau- -> ...
+    nof_l = first_tau[1]
+    nof_h = first_tau[2]
+    nof_q = first_tau[3]
+    return "%s->%s" % (prefix, ''.join([first_tau[0], second_tau[0]])), nof_l, nof_h, nof_q
+
+  return '', 0, 0, 0
+
 def get_ttbar_cat(entries):
   # find ttbar decay label and multiplicity of visible particles by treating it as WW decay
   ttbar = entries['ttbar']
@@ -1059,21 +1131,30 @@ def get_h0_cat(entries):
   # find h0 decay label and multiplicity of visible particles by treating it as a composition of WW, ZZ and tautau decay
   h0 = entries['h0']
 
-  WW_cat     = get_WW_cat(h0['WW'], check_q = True)
-  ZZ_cat     = get_ZZ_cat(h0['ZZ'])
-  tautau_cat = get_tautau_cat(h0['tt'])
+  WW_cat         = get_WW_cat(h0['WW'], check_q = True)
+  ZZ_cat         = get_ZZ_cat(h0['ZZ'])
+  tautau_cat     = get_tautau_cat(h0['tt'])
+  gammagamma_cat = get_gamma_cat(h0['gammagamma'][0], use_double_gamma = True)
 
   mumu_cat = '', 0, 0, 0
   if h0['mu']:
     mumu_cat = 'mumu', 2, 0, 0
 
-  for c in [WW_cat, ZZ_cat, tautau_cat, mumu_cat]:
+  g_cat = '', 0, 0, 0
+  if h0['g']:
+    g_cat = 'g', 0, 0, 0
+
+  q_cat = '', 0, 0, 0
+  if h0['qqbar']:
+    q_cat = 'qqbar', 0, 0, 2
+
+  for c in [WW_cat, ZZ_cat, tautau_cat, mumu_cat, g_cat, gammagamma_cat, q_cat]:
     if c[0]:
       # if we have a match, return immediately (a single h0 can only decay once :))
       return "H->%s" % c[0], c[1], c[2], c[3]
 
   # if we end up here then this means that the process initiatior aren't right
-  return '', 0, 0, 0
+  return 'H->UNRECOGNIZED', 0, 0, 0
 
 def aggregate_tth(evts, hz):
   # the function categorizes each event into different channels of tth/z process, given the output of stat_tthz()
@@ -1149,7 +1230,8 @@ def print_aggregate(agg, hypothesis, output_filename, nof_events_total):
       decmodes = ['tautau', 'WW']
       hz = 'H' if hypothesis == 'tth' else 'Z'
       if hypothesis == 'tth':
-        decmodes.extend(['ZZ', 'mumu']) # H -> ZZ or H -> mumu
+        # H -> ZZ, H -> mumu, H -> gamma gamma, H -> q qbar or H -> g g (whatever that means)
+        decmodes.extend(['ZZ', 'mumu', 'g', 'gammagamma', 'qqbar', 'UNRECOGNIZED'])
       else:
         decmodes.extend(['ll', 'qq']) # Z -> ll or Z -> qq
       counter_map_keys = decmodes + [ 'gg', 'gq', 'qq' ]
@@ -1191,6 +1273,14 @@ def print_aggregate(agg, hypothesis, output_filename, nof_events_total):
             counter_map['ZZ'] += nof_events
           elif evt_str.startswith('H->mumu'):
             counter_map['mumu'] += nof_events
+          elif evt_str.startswith('H->gammagamma'):
+            counter_map['gammagamma'] += nof_events
+          elif evt_str.startswith('H->qqbar'):
+            counter_map['qqbar'] += nof_events
+          elif evt_str.startswith('H->g'):
+            counter_map['g'] += nof_events
+          elif evt_str.startswith('H->UNRECOGNIZED'):
+            counter_map['UNRECOGNIZED'] += nof_events
           else:
             counter_map['tautau'] += nof_events
         else:
@@ -1234,7 +1324,7 @@ def print_aggregate(agg, hypothesis, output_filename, nof_events_total):
       for decmode in decmodes:
         ms.writeln("Number of %s->%s events: %d (%.2f%%)" % (
           hz,
-          decmode.ljust(6),
+          decmode.ljust(12),
           counter_map[decmode],
           100. * counter_map[decmode] / nof_events_total
         ))
