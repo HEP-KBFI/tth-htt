@@ -28,8 +28,6 @@ class addMEMConfig_2lss_1tau(addMEMConfig):
     - process.addMEM_2lss_1tau.branchName_hadTaus
     - process.addMEM_2lss_1tau.branchName_jets
     - process.addMEM_2lss_1tau.branchName_met
-    - process.addMEM_2lss_1tau.leptonSelection
-    - process.addMEM_2lss_1tau.hadTauSelection
     - process.addMEM_2lss_1tau.use_HIP_mitigation_bTag
     '''
 

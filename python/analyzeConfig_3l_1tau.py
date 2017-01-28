@@ -199,6 +199,7 @@ class analyzeConfig_3l_1tau(analyzeConfig):
       lines.append("process.analyze_3l_1tau.branchName_electrons = cms.string('Electron')")
       lines.append("process.analyze_3l_1tau.branchName_muons     = cms.string('Muon')")
       lines.append("process.analyze_3l_1tau.branchName_hadTaus   = cms.string('HadTau')")
+      lines.append("process.analyze_3l_1tau.branchName_memOutput = cms.string('memObjects_3l_1tau')")
     create_cfg(self.cfgFile_analyze, jobOptions['cfgFile_modified'], lines)
 
   def createCfg_makePlots_mcClosure(self, jobOptions):

@@ -200,6 +200,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
       lines.append("process.analyze_2lss_1tau.branchName_electrons = cms.string('Electron')")
       lines.append("process.analyze_2lss_1tau.branchName_muons     = cms.string('Muon')")
       lines.append("process.analyze_2lss_1tau.branchName_hadTaus   = cms.string('HadTau')")
+      lines.append("process.analyze_2lss_1tau.branchName_memOutput = cms.string('memObjects_2lss_1tau')")
     create_cfg(self.cfgFile_analyze, jobOptions['cfgFile_modified'], lines)
 
   def createCfg_addFlips(self, jobOptions):
