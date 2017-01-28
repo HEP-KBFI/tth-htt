@@ -56,7 +56,10 @@ if __name__ == '__main__':
 ##       "CMS_ttHl_btag_cErr2Up",
 ##       "CMS_ttHl_btag_cErr2Down",
 ##       "CMS_ttHl_JESUp",
-##       "CMS_ttHl_JESDown",      
+##       "CMS_ttHl_JESDown",
+      #------------------------------------------------------
+      # CV: enable the CMS_ttHl_FRe_shape and CMS_ttHl_FRm_shape only
+      #     if you plan to run compShapeSyst 1!
       "CMS_ttHl_FRe_shape_ptUp",
       "CMS_ttHl_FRe_shape_ptDown",
       "CMS_ttHl_FRe_shape_etaUp",
@@ -66,7 +69,8 @@ if __name__ == '__main__':
       "CMS_ttHl_FRm_shape_ptUp",
       "CMS_ttHl_FRm_shape_ptDown",
       "CMS_ttHl_FRm_shape_etaUp",
-      "CMS_ttHl_FRm_shape_etaDown",      
+      "CMS_ttHl_FRm_shape_etaDown",
+      #------------------------------------------------------
 ##       "CMS_ttHl_tauESUp",
 ##       "CMS_ttHl_tauESDown",
 ##       "CMS_ttHl_FRjt_normUp",

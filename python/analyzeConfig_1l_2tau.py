@@ -261,10 +261,11 @@ class analyzeConfig_1l_2tau(analyzeConfig):
 
               inputFileList = generateInputFileList(sample_name, sample_info, self.max_files_per_job, self.debug)
               for jobId in inputFileList.keys():
-                if central_or_shift != "central" and not (lepton_and_hadTau_selection.startswith("Tight") and hadTau_charge_selection == "OS"):
-                  continue
-                if (central_or_shift != "central" and central_or_shift.find("CMS_ttHl_FRe_shape") == -1 and central_or_shift.find("CMS_ttHl_FRm_shape") == -1) and not is_mc:
-                  continue
+                if central_or_shift != "central":
+                  isFR_shape_shift = central_or_shift.find("CMS_ttHl_FRe_shape") != -1 or central_or_shift.find("CMS_ttHl_FRm_shape") != -1
+                  if not ((lepton_and_hadTau_selection == "Fakeable" and hadTau_charge_selection == "OS" and isFR_shape_shift) or
+                          (lepton_and_hadTau_selection == "Tight"    and hadTau_charge_selection == "OS")):
+                    continue
                 if central_or_shift.startswith("CMS_ttHl_thu_shape_ttH") and sample_category != "signal":
                   continue
                 if central_or_shift.startswith("CMS_ttHl_thu_shape_ttW") and sample_category != "TTW":

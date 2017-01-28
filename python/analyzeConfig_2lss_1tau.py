@@ -39,7 +39,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
   def __init__(self, outputDir, executable_analyze, cfgFile_analyze, samples, lepton_charge_selections, hadTau_selection, applyFakeRateWeights, central_or_shifts,
                max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs, 
                executable_addBackgrounds, executable_addFakes, executable_addFlips, histograms_to_fit, select_rle_output = False,
-               executable_prep_dcard = "prepareDatacards", executable_add_syst_dcard = "addSystDatacard"):
+               executable_prep_dcard = "prepareDatacards", executable_add_syst_dcard = "addSystDatacards"):
     analyzeConfig.__init__(self, outputDir, executable_analyze, "2lss_1tau", central_or_shifts,
       max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs, 
       histograms_to_fit,
@@ -336,10 +336,11 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
 
               inputFileList = generateInputFileList(sample_name, sample_info, self.max_files_per_job, self.debug)
               for jobId in inputFileList.keys():
-                if central_or_shift != "central" and not (lepton_and_hadTau_selection.startswith("Tight") and lepton_charge_selection == "SS"):
-                  continue
-                if (central_or_shift != "central" and central_or_shift.find("CMS_ttHl_FRe_shape") == -1 and central_or_shift.find("CMS_ttHl_FRm_shape") == -1) and not is_mc:
-                  continue                
+                if central_or_shift != "central":
+                  isFR_shape_shift = central_or_shift.find("CMS_ttHl_FRe_shape") != -1 or central_or_shift.find("CMS_ttHl_FRm_shape") != -1
+                  if not ((lepton_and_hadTau_selection == "Fakeable" and lepton_charge_selection == "SS" and isFR_shape_shift) or
+                          (lepton_and_hadTau_selection == "Tight"    and lepton_charge_selection == "SS")):
+                    continue
                 if central_or_shift.startswith("CMS_ttHl_thu_shape_ttH") and sample_category != "signal":
                   continue
                 if central_or_shift.startswith("CMS_ttHl_thu_shape_ttW") and sample_category != "TTW":
@@ -643,7 +644,11 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
       }                            
       self.createCfg_prep_dcard(self.jobOptions_prep_dcard[key_prep_dcard_job])
 
-      # add shape templates for 'CMS_ttHl_Clos_e' and 'CMS_ttHl_Clos_m' systematic uncertainties
+      # add shape templates for the following systematic uncertainties:
+      #  - 'CMS_ttHl_Clos_e'
+      #  - 'CMS_ttHl_Clos_m'
+      #  - 'CMS_ttHl_FRe_shape_2lss_anticorr1', 'CMS_ttHl_FRe_shape_2lss_corr1'
+      #  - 'CMS_ttHl_FRm_shape_2lss_anticorr1', 'CMS_ttHl_FRm_shape_2lss_corr1'
       if histogramToFit in [ "mvaDiscr_2lss" ]:
         key_add_syst_dcard_job = getKey(histogramToFit)
         self.jobOptions_add_syst_dcard[key_add_syst_dcard_job] = {

@@ -166,9 +166,12 @@ int main(int argc, char* argv[])
 		central_or_shift != central_or_shifts.end(); ++central_or_shift ) {
 
 	    int verbosity = ( histogram->find("EventCounter") != std::string::npos && ((*central_or_shift) == "" || (*central_or_shift) == "central") ) ? 1 : 0;
+	    //int verbosity = ( histogram->find("EventCounter") != std::string::npos ) ? 1 : 0;
 
-	    std::string central_or_shiftData = "central";
-	    TH1* histogramData = getHistogram(*subdir_sideband_level2, processData, *histogram, central_or_shiftData, true);
+	    TH1* histogramData = getHistogram(*subdir_sideband_level2, processData, *histogram, *central_or_shift, false);
+	    if ( !histogramData ) {
+	      histogramData = getHistogram(*subdir_sideband_level2, processData, *histogram, "central", true);
+	    }
 	    if ( verbosity ) {
 	      std::cout << " integral(data_obs) = " << histogramData->Integral() << std::endl;
 	    }

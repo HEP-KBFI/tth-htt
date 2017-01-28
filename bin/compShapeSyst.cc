@@ -162,6 +162,7 @@ int main(int argc, char* argv[])
       for ( vstring::const_iterator process = compSystConfig->processes_.begin();
 	    process != compSystConfig->processes_.end(); ++process ) {
 	TH1* histogram_central = getHistogram(dir, *process, *histogramToFit, "", true);
+	//std::cout << "histogram_central (name = " << histogram_central->GetName() << ") = " << histogram_central << std::endl;
 
 	int numBins = histogram_central->GetNbinsX();
 	
@@ -169,18 +170,22 @@ int main(int argc, char* argv[])
 	for ( vstring::const_iterator shift = compSystConfig->shifts_.begin();
 	      shift != compSystConfig->shifts_.end(); ++shift ) {
 	  TH1* histogram_shift = getHistogram(dir, *process, *histogramToFit, *shift, true);
+	  //std::cout << "histogram_shift (name = " << histogram_shift->GetName() << ") = " << histogram_shift << std::endl;
 	  assert(histogram_shift->GetNbinsX() == numBins);
-	  histograms_shift[*shift] = histogram_central;
+	  histograms_shift[*shift] = histogram_shift;
 	}
 	
 	std::vector<double> binErr2(numBins + 2);
 	
 	for ( int idxBin = 0; idxBin <= (numBins + 1); ++idxBin ) {
 	  double binContent_central = histogram_central->GetBinContent(idxBin);
+	  //std::cout << "bin #" << idxBin << ":" << std::endl;
 	  for ( std::map<std::string, TH1*>::const_iterator histogram_shift = histograms_shift.begin();
 		histogram_shift != histograms_shift.end(); ++histogram_shift ) {
 	    double binContent_shift = histogram_shift->second->GetBinContent(idxBin);
-	    binErr2[idxBin] += square(binContent_central - binContent_shift);
+	    double diff = binContent_central - binContent_shift;
+	    //std::cout << " shift = " << histogram_shift->first << ": diff = " << diff << std::endl;
+	    binErr2[idxBin] += square(diff);
 	  }
 	}
 
@@ -189,6 +194,7 @@ int main(int argc, char* argv[])
 	  double binContent = 0.;
 	  histogram_diff->SetBinContent(idxBin, binContent);
 	  double binError = TMath::Sqrt(binErr2[idxBin]);
+	  if ( binError < 1.e-3 ) binError = 1.; // CV: avoid constraining fit with empty and low-statistics bins
 	  histogram_diff->SetBinError(idxBin, binError);
 	  std::cout << "bin #" << idxBin << ": diff = " << binContent << " +/- " << binError << std::endl;
 	}

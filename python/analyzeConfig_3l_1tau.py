@@ -42,12 +42,13 @@ class analyzeConfig_3l_1tau(analyzeConfig):
   def __init__(self, outputDir, executable_analyze, cfgFile_analyze, samples, hadTau_selection, applyFakeRateWeights, charge_selections, central_or_shifts,
                max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs, 
                executable_addBackgrounds, executable_addBackgroundJetToTauFakes, histograms_to_fit, select_rle_output = False,
-               executable_prep_dcard="prepareDatacards",
+               executable_prep_dcard="prepareDatacards", executable_add_syst_dcard = "addSystDatacards",
                select_root_output = False):
     analyzeConfig.__init__(self, outputDir, executable_analyze, "3l_1tau", central_or_shifts,
       max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs, 
       histograms_to_fit,
-      executable_prep_dcard = executable_prep_dcard)
+      executable_prep_dcard = executable_prep_dcard,
+      executable_add_syst_dcard = executable_add_syst_dcard)
 
     self.samples = samples
 
@@ -298,10 +299,11 @@ class analyzeConfig_3l_1tau(analyzeConfig):
 
               inputFileList = generateInputFileList(sample_name, sample_info, self.max_files_per_job, self.debug)
               for jobId in inputFileList.keys():
-                if central_or_shift != "central" and not (lepton_and_hadTau_selection.startswith("Tight") and charge_selection == "OS"):
-                  continue
-                if (central_or_shift != "central" and central_or_shift.find("CMS_ttHl_FRe_shape") == -1 and central_or_shift.find("CMS_ttHl_FRm_shape") == -1) and not is_mc:
-                  continue
+                if central_or_shift != "central":
+                  isFR_shape_shift = central_or_shift.find("CMS_ttHl_FRe_shape") != -1 or central_or_shift.find("CMS_ttHl_FRm_shape") != -1
+                  if not ((lepton_and_hadTau_selection == "Fakeable" and charge_selection == "OS" and isFR_shape_shift) or
+                          (lepton_and_hadTau_selection == "Tight"    and charge_selection == "OS")):
+                    continue
                 if central_or_shift.startswith("CMS_ttHl_thu_shape_ttH") and sample_category != "signal":
                   continue
                 if central_or_shift.startswith("CMS_ttHl_thu_shape_ttW") and sample_category != "TTW":
@@ -589,6 +591,23 @@ class analyzeConfig_3l_1tau(analyzeConfig):
         'label' : None
       }                            
       self.createCfg_prep_dcard(self.jobOptions_prep_dcard[key_prep_dcard_job])
+
+      # add shape templates for the following systematic uncertainties:
+      #  - 'CMS_ttHl_Clos_e'
+      #  - 'CMS_ttHl_Clos_m'
+      #  - 'CMS_ttHl_FRe_shape_2lss_anticorr1', 'CMS_ttHl_FRe_shape_2lss_corr1'
+      #  - 'CMS_ttHl_FRm_shape_2lss_anticorr1', 'CMS_ttHl_FRm_shape_2lss_corr1'
+      if histogramToFit in [ "mvaDiscr_3l" ]:
+        key_add_syst_dcard_job = getKey(histogramToFit)
+        self.jobOptions_add_syst_dcard[key_add_syst_dcard_job] = {
+          'inputFile' : self.jobOptions_prep_dcard[key_prep_dcard_job]['datacardFile'],
+          'cfgFile_modified' : os.path.join(self.outputDir, DKEY_CFGS, "addSystDatacards_%s_%s_cfg.py" % (self.channel, histogramToFit)),
+          'outputFile' : os.path.join(self.outputDir, DKEY_DCRD, "addSystDatacards_%s_%s.root" % (self.channel, histogramToFit)),
+          'category' : self.channel,
+          'histogramToFit' : histogramToFit
+        }
+        self.createCfg_add_syst_dcard(self.jobOptions_add_syst_dcard[key_add_syst_dcard_job])
+      
       if "SS" in self.charge_selections:
         key_prep_dcard_job = getKey(histogramToFit, "SS")
         key_hadd_stage2 = getKey(get_lepton_and_hadTau_selection_and_frWeight("Tight", "disabled"), "SS")                      
