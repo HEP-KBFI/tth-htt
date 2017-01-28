@@ -70,6 +70,8 @@ class MEMOutput_3l_1tau
   Int_t isValid() const { return isValid_; }
   Int_t errorFlag() const { return errorFlag_; }
 
+  bool is_initialized() { return run_ != 0 && lumi_ != 0 && evt_ != 0; }
+
   friend class MEMInterface_3l_1tau;
 
  protected:

@@ -1,6 +1,6 @@
 import os, logging, sys, getpass
 
-from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_2lss1tau_prodNtuples import samples_2016 as samples
+from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_2lss1tau_prodNtuples_forBDTtraining import samples_2016 as samples
 from tthAnalysis.HiggsToTauTau.addMEMConfig_2lss_1tau import addMEMConfig_2lss_1tau
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 
@@ -15,7 +15,7 @@ for sample_name, sample_info in samples.items():
     sample_info["use_it"] = True
 #--------------------------------------------------------------------------------
 
-version = "2016Dec23_dR03mvaVVLoose"
+version = "2017Jan26_dR03mvaVVLoose"
 ERA     = "2016"
 
 if __name__ == '__main__':
@@ -35,7 +35,9 @@ if __name__ == '__main__':
     max_files_per_job        = 1, # so that we'd have 1-1 correspondence b/w input and output files
     mem_integrations_per_job = 50,
     max_mem_integrations     = 20000, # use -1 if you don't want to limit the nof MEM integrations
-    num_parallel_jobs        = 4)
+    num_parallel_jobs        = 4,
+    leptonSelection          = "Loose",
+    hadTauSelection          = "Tight|dR03mvaVVLoose")
 
   goodToGo = addMEMProduction.create()
 

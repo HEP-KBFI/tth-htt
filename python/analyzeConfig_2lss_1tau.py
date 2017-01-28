@@ -120,15 +120,17 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
 
     self.select_rle_output = select_rle_output
 
-    self.isBDTtraining = False
+    self.isBDTtraining     = False
+    self.changeBranchNames = False
 
-  def set_BDT_training(self):
+  def set_BDT_training(self, changeBranchNames = False):
     """Run analysis with loose selection criteria for leptons and hadronic taus,
        for the purpose of preparing event list files for BDT training.
     """
     self.lepton_and_hadTau_selections = [ "forBDTtraining" ]
     self.lepton_and_hadTau_frWeights = [ "disabled" ]
     self.isBDTtraining = True
+    self.changeBranchNames = changeBranchNames
     
   def createCfg_analyze(self, jobOptions):
     """Create python configuration file for the analyze_2lss_1tau executable (analysis code)
@@ -193,6 +195,12 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
     lines.append("process.analyze_2lss_1tau.apply_genWeight = cms.bool(%s)" % jobOptions['apply_genWeight'])
     lines.append("process.analyze_2lss_1tau.apply_trigger_bits = cms.bool(%s)" % jobOptions['apply_trigger_bits'])
     lines.append("process.analyze_2lss_1tau.selEventsFileName_output = cms.string('%s')" % jobOptions['rleOutputFile'])
+    lines.append("process.analyze_2lss_1tau.selectBDT = cms.bool(%s)" % str(jobOptions['selectBDT']))
+    if jobOptions['selectBDT'] and jobOptions['changeBranchNames']:
+      lines.append("process.analyze_2lss_1tau.branchName_electrons = cms.string('Electron')")
+      lines.append("process.analyze_2lss_1tau.branchName_muons     = cms.string('Muon')")
+      lines.append("process.analyze_2lss_1tau.branchName_hadTaus   = cms.string('HadTau')")
+      lines.append("process.analyze_2lss_1tau.branchName_memOutput = cms.string('memObjects_2lss_1tau')")
     create_cfg(self.cfgFile_analyze, jobOptions['cfgFile_modified'], lines)
 
   def createCfg_addFlips(self, jobOptions):
@@ -377,7 +385,9 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
                   'central_or_shift' : central_or_shift,
                   'lumi_scale' : 1. if not (self.use_lumi and is_mc) else sample_info["xsection"] * self.lumi / sample_info["nof_events"],
                   'apply_genWeight' : sample_info["genWeight"] if (is_mc and "genWeight" in sample_info.keys()) else False,
-                  'apply_trigger_bits' : (is_mc and (self.era == "2015" or (self.era == "2016" and sample_info["reHLT"]))) or not is_mc
+                  'apply_trigger_bits' : (is_mc and (self.era == "2015" or (self.era == "2016" and sample_info["reHLT"]))) or not is_mc,
+                  'selectBDT' : self.isBDTtraining,
+                  'changeBranchNames' : self.changeBranchNames,
                 }
 
                 applyFakeRateWeights = self.applyFakeRateWeights

@@ -66,7 +66,7 @@ if __name__ == '__main__':
   parser = argparse.ArgumentParser(formatter_class = lambda prog: SmartFormatter(prog, max_help_position = 40))
   group = parser.add_mutually_exclusive_group()
   group.add_argument('-i', '--input', metavar = 'input', required = False, type = str, default = '',
-                     help = 'R|Path to ROOT file tje RLE numbers of which will be dumped')
+                     help = 'R|Path to ROOT file the RLE numbers of which will be dumped')
   group.add_argument('-s', '--sample', metavar = 'name', required = False, type = str, default = 'all',
                      help = 'R|Sample the RLE numbers of which will be dumped (default: all)')
   parser.add_argument('-o', '--output', metavar = 'path', required = False, type = str, default = '',
@@ -112,10 +112,13 @@ if __name__ == '__main__':
 
     idx = lambda x: int(x[x.rfind('_') + 1: x.rfind('.')])
 
-    sample_keys = [args.sample] if args.sample != 'all' else samples.keys()
-    for sample_key in sample_keys:
-      if sample_key not in samples:
-        raise ValueError("Unrecognized key: {sample_key}".format(sample_key = sample_key))
+    sample_keys = { v['process_name_specific'] : k for k, v in samples.iteritems() }
+    if args.sample:
+      if args.sample not in sample_keys:
+        raise ValueError("Unrecognized key: {sample_key}".format(sample_key = args.sample))
+      sample_keys = [sample_keys[args.sample]]
+    else:
+      sample_keys = sample_keys.values()
 
     for s_key in sample_keys:
       s_value = samples[s_key]

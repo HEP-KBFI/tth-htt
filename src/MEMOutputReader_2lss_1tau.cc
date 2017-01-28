@@ -161,9 +161,9 @@ std::vector<MEMOutput_2lss_1tau> MEMOutputReader_2lss_1tau::read() const
     memOutputs.reserve(nMEMOutputs);
     for ( Int_t idxMEMOutput = 0; idxMEMOutput < nMEMOutputs; ++idxMEMOutput ) {
       memOutputs.push_back(MEMOutput_2lss_1tau(
-	gInstance->run_[idxMEMOutput],
-	gInstance->lumi_[idxMEMOutput],
-	gInstance->evt_[idxMEMOutput],			     
+        gInstance->run_[idxMEMOutput],
+        gInstance->lumi_[idxMEMOutput],
+        gInstance->evt_[idxMEMOutput],
         gInstance->leadLepton_eta_[idxMEMOutput],
         gInstance->leadLepton_phi_[idxMEMOutput],
         gInstance->subleadLepton_eta_[idxMEMOutput],

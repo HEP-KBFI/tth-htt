@@ -373,6 +373,7 @@ if __name__ == '__main__':
         grep_sample_dir = grep_sample_dir,
         unexpected_file = split[0],
       ))
+      logging.error("The following command failed: {failed_command}".format(failed_command = grep_cmd_str))
       sys.exit(1)
 
     # there can be more than one entry number for each sample ROOT file; and a bunch of ROOT files per sample

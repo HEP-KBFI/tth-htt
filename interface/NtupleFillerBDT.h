@@ -6,11 +6,40 @@
 #include "tthAnalysis/HiggsToTauTau/interface/HistManagerBase.h" // HistManagerBase,
  // edm::ParameterSet, TFileDirectory
 
-#include <boost/range/adaptor/map.hpp> // boost::adaptors::map_keys
+#include <boost/range/adaptor/map.hpp> // boost::adaptors::map_keys, boost::adaptors::map_values
 #include <boost/range/algorithm/copy.hpp> // boost::copy()
+#include <boost/range/algorithm_ext/push_back.hpp> // boost::push_back()
+#include <boost/range/adaptor/filtered.hpp> // boost::adaptors::filtered()
+#include <boost/algorithm/string/join.hpp> // boost::algorithm::join()
 
 #include <typeinfo> // typeid()
 #include <algorithm> // std::set_intersection()
+#include <functional> // std::function<>
+
+/**
+ * @brief Copies map keys from a std::map<> based on some condition
+ * @param m         The map from which the keys are copied
+ * @param condition A functional, which takes map keys as an argument and returns a boolean
+ * @return vector of map keys
+ */
+template <typename KeyType,
+          typename MappedType,
+          typename Condition = std::function<bool(const KeyType &)>>
+std::vector<KeyType>
+copy_map_keys(const std::map<KeyType, MappedType> & m,
+              Condition condition)
+{
+  std::vector<KeyType> v;
+  boost::push_back(
+    v, m | boost::adaptors::map_keys | boost::adaptors::filtered(
+      [&condition,&m](const KeyType & key) -> bool
+      {
+        return condition(key);
+      }
+    )
+  );
+  return v;
+}
 
 template <typename FloatType_class,
           typename IntType_class>
@@ -113,6 +142,7 @@ public:
       kv.second.initBranch(tree_);
     for(auto & kv: int_map_)
       kv.second.initBranch(tree_);
+    rle_.initBranches(tree_);
   }
 
   NtupleFillerBDT &
@@ -128,13 +158,31 @@ public:
     return *this;
   }
 
+  NtupleFillerBDT &
+  operator()(const RLEUnit & rleUnit)
+  {
+    rle_.setValues(rleUnit);
+    return *this;
+  }
+
   void
   fill()
   {
     if(! fill_assert_)
     {
-      if(! assert_fill(float_map_) || ! assert_fill(int_map_))
-        throw std::invalid_argument("Not all values in the map have been filled!");
+      const std::vector<std::string> missing_float_keys = copy_map_keys(
+        float_map_, [this](const auto & key) { return ! float_map_.at(key).isFilled; }
+      );
+      const std::vector<std::string> missing_int_keys = copy_map_keys(
+        int_map_, [this](const auto & key) { return ! int_map_.at(key).isFilled; }
+      );
+      std::vector<std::string> missing_keys;
+      std::copy(missing_float_keys.begin(), missing_float_keys.end(), std::back_inserter(missing_keys));
+      std::copy(missing_int_keys.begin(),   missing_int_keys.end(),   std::back_inserter(missing_keys));
+      if(missing_keys.size())
+        throw std::invalid_argument(
+          "Not all values in the map have been filled: " + boost::algorithm::join(missing_keys, ", ")
+        );
       if(assert_only_once_)
         fill_assert_ = true;
     }
@@ -166,19 +214,6 @@ private:
 
   template <typename NumericType,
             typename = typename std::enable_if<std::is_arithmetic<NumericType>::value>::type>
-  static bool
-  assert_fill(const std::map<std::string, BasicFillerWCounter<NumericType>> & m)
-  {
-    return std::all_of(
-      std::begin(m), std::end(m), [](const auto & value) -> bool
-      {
-        return value.second.isFilled == true;
-      }
-    );
-  }
-
-  template <typename NumericType,
-            typename = typename std::enable_if<std::is_arithmetic<NumericType>::value>::type>
   void
   fill(std::map<std::string, BasicFillerWCounter<NumericType>> & lhs,
        const std::map<std::string, NumericType> & rhs)
@@ -193,6 +228,7 @@ private:
 
   std::map<std::string, BasicFillerWCounter<FloatType_class>> float_map_;
   std::map<std::string, BasicFillerWCounter<IntType_class>>   int_map_;
+  RLEFiller rle_;
 
   bool assert_only_once_;
   bool fill_assert_;

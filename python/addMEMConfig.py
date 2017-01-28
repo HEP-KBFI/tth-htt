@@ -35,7 +35,7 @@ class addMEMConfig:
     """
     def __init__(self, treeName, outputDir, executable_addMEM, samples, era, debug, running_method,
                  max_files_per_job, mem_integrations_per_job, max_mem_integrations, num_parallel_jobs,
-                 channel, maxPermutations_addMEM):
+                 leptonSelection, hadTauSelection, channel, maxPermutations_addMEM):
 
         self.treeName = treeName
         self.outputDir = outputDir
@@ -47,6 +47,8 @@ class addMEMConfig:
         self.era = era
         self.debug = debug
         self.channel = channel
+        self.leptonSelection = leptonSelection
+        self.hadTauSelection = hadTauSelection
         self.maxPermutations_addMEM = maxPermutations_addMEM
         assert(running_method.lower() in [
           "sbatch", "makefile"]), "Invalid running method: %s" % running_method
