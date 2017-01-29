@@ -8,6 +8,13 @@ bool isHigherPt(const GenParticle* particle1, const GenParticle* particle2)
   return (particle1->pt() > particle2->pt());
 }
 
+bool
+isHigherCSV(const RecoJet * jet1,
+            const RecoJet * jet2)
+{
+  return (jet1 -> BtagCSV()) > (jet2 -> BtagCSV());
+}
+
 std::string getBranchName_bTagWeight(int era, const std::string& central_or_shift)
 {
   int central_or_shift_int = kBtag_central;
