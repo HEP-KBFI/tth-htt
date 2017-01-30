@@ -42,10 +42,10 @@ JetToTauFakeRateWeightEntry::JetToTauFakeRateWeightEntry(
   applyGraph_ = cfg.getParameter<bool>("applyGraph");
   std::string fitFunctionName = cfg.getParameter<std::string>("fitFunctionName");
   if      ( central_or_shift == kFRjt_central   ) fitFunctionName_ = fitFunctionName;
-  else if ( central_or_shift == kFRjt_normUp    ) fitFunctionName_ = Form("%s_par0Up", fitFunctionName.data());
-  else if ( central_or_shift == kFRjt_normDown  ) fitFunctionName_ = Form("%s_par0Down", fitFunctionName.data());
-  else if ( central_or_shift == kFRjt_shapeUp   ) fitFunctionName_ = Form("%s_par1Up", fitFunctionName.data());
-  else if ( central_or_shift == kFRjt_shapeDown ) fitFunctionName_ = Form("%s_par1Down", fitFunctionName.data());
+  else if ( central_or_shift == kFRjt_normUp    ) fitFunctionName_ = Form("%s_par1Up", fitFunctionName.data());
+  else if ( central_or_shift == kFRjt_normDown  ) fitFunctionName_ = Form("%s_par1Down", fitFunctionName.data());
+  else if ( central_or_shift == kFRjt_shapeUp   ) fitFunctionName_ = Form("%s_par2Up", fitFunctionName.data());
+  else if ( central_or_shift == kFRjt_shapeDown ) fitFunctionName_ = Form("%s_par2Down", fitFunctionName.data());
   else throw cms::Exception("JetToTauFakeRateWeightEntry")
 	 << "Invalid Configuration parameter 'central_or_shift' = " << central_or_shift << " !!\n";
   fitFunction_ = loadFitFunction(inputFile, fitFunctionName_, etaBin, hadTauSelection_);
