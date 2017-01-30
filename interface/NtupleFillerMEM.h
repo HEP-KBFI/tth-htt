@@ -277,17 +277,6 @@ protected:
 private:
 
   /**
-   * @brief Auxiliary function for sorting a collection of RecoJet pointers
-   *        by their b-tagging CSV score
-   * @param jet1 The first jet
-   * @param jet2 The second jet
-   * @return True, if the 1st jet has higher CSV score
-   */
-  static bool
-  isHigherCSV(const RecoJet * jet1,
-              const RecoJet * jet2);
-
-  /**
    * @brief Recalculates b-quark's mass and energy from top and b-quark mass requirements
    * @param b     Original b-quark, the direction of which is kept the same
    * @param W     The W boson (not changed)

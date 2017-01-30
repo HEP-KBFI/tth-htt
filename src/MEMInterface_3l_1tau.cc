@@ -1,4 +1,5 @@
 #include "tthAnalysis/HiggsToTauTau/interface/MEMInterface_3l_1tau.h" // MEMInterface_3l_1tau
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // isHigherCSV()
 #include "tthAnalysis/tthMEM/interface/Logger.h" // Logger::
 #include "tthAnalysis/tthMEM/interface/tthMEMlvFunctions.h" // getLorentzVector()
 
@@ -29,9 +30,15 @@ MEMInterface_3l_1tau::operator()(const RecoLepton * selLepton_lead,
                                  const RecoMEt & met,
                                  const std::vector<const RecoJet *> & selJets)
 {
+  std::vector<const RecoJet *> selJets_copy = selJets;
+  std::sort(selJets_copy.begin(), selJets_copy.end(), isHigherCSV);
   std::vector<MeasuredJet> jets;
-  for(const RecoJet * const & j: selJets)
+  for(const RecoJet * const & j: selJets_copy)
+  {
     jets.push_back({ getLorentzVector(j -> p4()) });
+    if(jets.size() >= MAX_NOF_RECO_JETS)
+      break;
+  }
   const MeasuredLepton leadingLepton(
     getLorentzVector(selLepton_lead -> p4()), selLepton_lead -> charge()
   );
