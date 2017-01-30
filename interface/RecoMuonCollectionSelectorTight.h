@@ -12,7 +12,7 @@
 class RecoMuonSelectorTight
 {
  public:
-  RecoMuonSelectorTight(int era, bool set_selection_flags = true, int index = -1, bool debug = false);
+  explicit RecoMuonSelectorTight(int era, int index = -1, bool debug = false, bool set_selection_flags = true);
   ~RecoMuonSelectorTight() {}
 
   /**
@@ -42,7 +42,7 @@ class RecoMuonSelectorTight
 class RecoMuonCollectionSelectorTight
 {
  public:
-  RecoMuonCollectionSelectorTight(int era, int index = -1, bool debug = false)
+  explicit RecoMuonCollectionSelectorTight(int era, int index = -1, bool debug = false)
     : selIndex_(index)
     , selector_(era, index, debug)
   {}

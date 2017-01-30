@@ -13,7 +13,7 @@
 class RecoHadTauSelectorBase
 {
  public:
-  RecoHadTauSelectorBase(int era, int index = -1, bool debug = false);
+  explicit RecoHadTauSelectorBase(int era, int index = -1, bool debug = false);
   virtual ~RecoHadTauSelectorBase() {}
 
   void set_min_pt(double min_pt) { min_pt_ = min_pt; }
@@ -110,7 +110,7 @@ template<typename T>
 class RecoHadTauCollectionSelector
 {
  public:
-  RecoHadTauCollectionSelector(int era, int index = -1, bool debug = false)
+  explicit RecoHadTauCollectionSelector(int era, int index = -1, bool debug = false)
     : selIndex_(index)
     , selector_(era, index, debug)
   {}

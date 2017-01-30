@@ -5,7 +5,7 @@
 #include <cmath> // fabs
 #include <assert.h> // assert
 
-RecoElectronSelectorTight::RecoElectronSelectorTight(int era, bool set_selection_flags, int index, bool debug)
+RecoElectronSelectorTight::RecoElectronSelectorTight(int era, int index, bool debug, bool set_selection_flags)
   : era_(era)
   , set_selection_flags_(set_selection_flags)
   , apply_offline_e_trigger_cuts_(true)

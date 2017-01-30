@@ -2,7 +2,7 @@
 
 #include <cmath> // std::fabs()
 
-RecoElectronSelectorLoose::RecoElectronSelectorLoose(int era, bool set_selection_flags, int index, bool debug)
+RecoElectronSelectorLoose::RecoElectronSelectorLoose(int era, int index, bool debug, bool set_selection_flags)
   : set_selection_flags_(set_selection_flags)
   , debug_(debug)
   , min_pt_(7.)

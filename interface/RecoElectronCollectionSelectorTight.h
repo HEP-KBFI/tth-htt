@@ -11,7 +11,7 @@
 class RecoElectronSelectorTight
 {
  public:
-  RecoElectronSelectorTight(int era, bool set_selection_flags = true, int index = -1, bool debug = false);
+  RecoElectronSelectorTight(int era, int index = -1, bool debug = false, bool set_selection_flags = true);
   ~RecoElectronSelectorTight() {}
 
   /**
@@ -66,7 +66,7 @@ class RecoElectronSelectorTight
 class RecoElectronCollectionSelectorTight
 {
  public:
-  RecoElectronCollectionSelectorTight(int era, int index = -1, bool debug = false)
+  explicit RecoElectronCollectionSelectorTight(int era, int index = -1, bool debug = false)
     : selIndex_(index)
     , selector_(era, index, debug)
   {}

@@ -9,7 +9,7 @@
 class RecoMuonSelectorCutBased
 {
  public:
-  RecoMuonSelectorCutBased(int era, int index = -1, bool debug = false);
+  explicit RecoMuonSelectorCutBased(int era, int index = -1, bool debug = false);
   ~RecoMuonSelectorCutBased() {}
 
   /**

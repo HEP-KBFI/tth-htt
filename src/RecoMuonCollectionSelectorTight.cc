@@ -4,7 +4,7 @@
 
 #include <cmath> // fabs
 
-RecoMuonSelectorTight::RecoMuonSelectorTight(int era, bool set_selection_flags, int index, bool debug)
+RecoMuonSelectorTight::RecoMuonSelectorTight(int era, int index, bool debug, bool set_selection_flags)
   : era_(era)
   , set_selection_flags_(set_selection_flags)
   , debug_(debug)

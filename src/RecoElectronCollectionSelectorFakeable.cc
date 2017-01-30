@@ -7,7 +7,7 @@
 #include <cmath> // fabs
 #include <assert.h> // assert
 
-RecoElectronSelectorFakeable::RecoElectronSelectorFakeable(int era, bool set_selection_flags, int index, bool debug)
+RecoElectronSelectorFakeable::RecoElectronSelectorFakeable(int era, int index, bool debug, bool set_selection_flags)
   : era_(era)
   , set_selection_flags_(set_selection_flags)
   , apply_offline_e_trigger_cuts_(true)
@@ -45,7 +45,7 @@ RecoElectronSelectorFakeable::RecoElectronSelectorFakeable(int era, bool set_sel
   assert(binning_mvaTTH_.size() == 1);
   assert(min_jetPtRatio_.size() == 2);
   assert(max_jetBtagCSV_.size() == 2);
-  tightElectronSelector_ = new RecoElectronSelectorTight(era_, false, index, debug);
+  tightElectronSelector_ = new RecoElectronSelectorTight(era_, index, debug, false);
 }
 
 RecoElectronSelectorFakeable::~RecoElectronSelectorFakeable()

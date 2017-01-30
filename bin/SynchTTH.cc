@@ -1003,7 +1003,7 @@ main(int argc,
       ++counter[ch::_2l_1tau][cuts::tight_mva];
 
 //----------------------------------------------------------------- SAME SIGN
-      if ( !(lepton1->pdgId() * lepton2->pdgId()) > 0 ) continue;
+      if ( !(lepton1->pdgId() * lepton2->pdgId() > 0) ) continue;
 
       ++counter[channel][cuts::ss];
       ++counter[ch::_2l_1tau][cuts::ss];
