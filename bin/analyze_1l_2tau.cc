@@ -156,12 +156,20 @@ int main(int argc, char* argv[])
   vstring triggerNames_1e = cfg_analyze.getParameter<vstring>("triggers_1e");
   std::vector<hltPath*> triggers_1e = create_hltPaths(triggerNames_1e);
   bool use_triggers_1e = cfg_analyze.getParameter<bool>("use_triggers_1e");
+  vstring triggerNames_1e1tau = cfg_analyze.getParameter<vstring>("triggers_1e1tau");
+  std::vector<hltPath*> triggers_1e1tau = create_hltPaths(triggerNames_1e1tau);
+  bool use_triggers_1e1tau = cfg_analyze.getParameter<bool>("use_triggers_1e1tau");
   vstring triggerNames_1mu = cfg_analyze.getParameter<vstring>("triggers_1mu");
   std::vector<hltPath*> triggers_1mu = create_hltPaths(triggerNames_1mu);
   bool use_triggers_1mu = cfg_analyze.getParameter<bool>("use_triggers_1mu");
+  vstring triggerNames_1mu1tau = cfg_analyze.getParameter<vstring>("triggers_1mu1tau");
+  std::vector<hltPath*> triggers_1mu1tau = create_hltPaths(triggerNames_1mu1tau);
+  bool use_triggers_1mu1tau = cfg_analyze.getParameter<bool>("use_triggers_1mu1tau");
 
   bool apply_offline_e_trigger_cuts_1e = cfg_analyze.getParameter<bool>("apply_offline_e_trigger_cuts_1e");
+  bool apply_offline_e_trigger_cuts_1e1tau = cfg_analyze.getParameter<bool>("apply_offline_e_trigger_cuts_1e1tau");
   bool apply_offline_e_trigger_cuts_1mu = cfg_analyze.getParameter<bool>("apply_offline_e_trigger_cuts_1mu");
+  bool apply_offline_e_trigger_cuts_1mu1tau = cfg_analyze.getParameter<bool>("apply_offline_e_trigger_cuts_1mu1tau");
 
   std::string leptonSelection_string = cfg_analyze.getParameter<std::string>("leptonSelection").data();
   int leptonSelection = -1;
@@ -204,6 +212,8 @@ int main(int argc, char* argv[])
 
   bool use_HIP_mitigation_bTag = cfg_analyze.getParameter<bool>("use_HIP_mitigation_bTag"); 
   std::cout << "use_HIP_mitigation_bTag = " << use_HIP_mitigation_bTag << std::endl;
+  bool use_HIP_mitigation_mediumMuonId = cfg_analyze.getParameter<bool>("use_HIP_mitigation_mediumMuonId"); 
+  std::cout << "use_HIP_mitigation_mediumMuonId = " << use_HIP_mitigation_mediumMuonId << std::endl;
 
   bool isMC = cfg_analyze.getParameter<bool>("isMC"); 
   std::string central_or_shift = cfg_analyze.getParameter<std::string>("central_or_shift");
@@ -391,6 +401,8 @@ int main(int argc, char* argv[])
 
 //--- declare particle collections
   RecoMuonReader* muonReader = new RecoMuonReader(era, Form("n%s", branchName_muons.data()), branchName_muons);
+  if ( use_HIP_mitigation_mediumMuonId ) muonReader->enable_HIP_mitigation();
+  else muonReader->disable_HIP_mitigation();
   muonReader->setBranchAddresses(inputTree);
   RecoMuonCollectionGenMatcher muonGenMatcher;
   RecoMuonCollectionSelectorLoose preselMuonSelector(era);
@@ -802,15 +814,21 @@ int main(int argc, char* argv[])
     }
     
     bool isTriggered_1e = hltPaths_isTriggered(triggers_1e) || (isMC && !apply_trigger_bits);
+    bool isTriggered_1e1tau = hltPaths_isTriggered(triggers_1e1tau) || (isMC && !apply_trigger_bits);
     bool isTriggered_1mu = hltPaths_isTriggered(triggers_1mu) || (isMC && !apply_trigger_bits);
+    bool isTriggered_1mu1tau = hltPaths_isTriggered(triggers_1mu1tau) || (isMC && !apply_trigger_bits);
 
     bool selTrigger_1e = use_triggers_1e && isTriggered_1e;
+    bool selTrigger_1e1tau = use_triggers_1e1tau && isTriggered_1e1tau;
     bool selTrigger_1mu = use_triggers_1mu && isTriggered_1mu;
-    if ( !(selTrigger_1e || selTrigger_1mu) ) {
+    bool selTrigger_1mu1tau = use_triggers_1mu1tau && isTriggered_1mu1tau;
+    if ( !(selTrigger_1e || selTrigger_1e1tau || selTrigger_1mu|| selTrigger_1mu1tau) ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS trigger selection." << std::endl; 
 	std::cout << " (selTrigger_1e = " << selTrigger_1e 
-		  << ", selTrigger_1mu = " << selTrigger_1mu << ")" << std::endl;
+		  << ", selTrigger_1e1tau = " << selTrigger_1e1tau 
+		  << ", selTrigger_1mu = " << selTrigger_1mu 
+		  << ", selTrigger_1mu1tau = " << selTrigger_1mu1tau << ")" << std::endl;
       }
       continue;
     }
@@ -819,11 +837,28 @@ int main(int argc, char* argv[])
 //    the ranking of the triggers is as follows: 1mu, 1e
 // CV: this logic is necessary to avoid that the same event is selected multiple times when processing different primary datasets
     if ( !isMC && !isDEBUG ) {
-      if ( selTrigger_1e && isTriggered_1mu ) {
+      //bool isTriggered_SingleElectron = isTriggered_1e;
+      bool isTriggered_SingleMuon = isTriggered_1mu;
+      bool isTriggered_Tau = isTriggered_1e1tau || isTriggered_1mu1tau;
+
+      bool selTrigger_SingleElectron = selTrigger_1e;
+      bool selTrigger_SingleMuon = selTrigger_1mu;
+      //bool selTrigger_Tau = selTrigger_1e1tau || selTrigger_1mu1tau;
+      
+      if ( selTrigger_SingleMuon && isTriggered_Tau ) {
 	if ( run_lumi_eventSelector ) {
 	  std::cout << "event FAILS trigger selection." << std::endl; 
-	  std::cout << " (selTrigger_1e = " << selTrigger_1e 
-		    << ", isTriggered_1mu = " << isTriggered_1mu << ")" << std::endl;
+	  std::cout << " (selTrigger_SingleMuon = " << selTrigger_SingleMuon
+		    << ", isTriggered_Tau = " << isTriggered_Tau << ")" << std::endl;
+	}
+	continue; 
+      }
+      if ( selTrigger_SingleElectron && (isTriggered_SingleMuon || isTriggered_Tau) ) {
+	if ( run_lumi_eventSelector ) {
+	  std::cout << "event FAILS trigger selection." << std::endl; 
+	  std::cout << " (selTrigger_SingleElectron = " << selTrigger_SingleElectron
+		    << ", isTriggered_SingleMuon = " << isTriggered_SingleMuon
+		    << ", isTriggered_Tau = " << isTriggered_Tau << ")" << std::endl;
 	}
 	continue; 
       }
@@ -831,8 +866,10 @@ int main(int argc, char* argv[])
     cutFlowTable.update("trigger");
     cutFlowHistManager->fillHistograms("trigger", lumiScale);
 
-    if ( (selTrigger_1mu && !apply_offline_e_trigger_cuts_1mu) ||
-	 (selTrigger_1e  && !apply_offline_e_trigger_cuts_1e)  ) {
+    if ( (selTrigger_1mu     && !apply_offline_e_trigger_cuts_1mu)     ||
+	 (selTrigger_1mu1tau && !apply_offline_e_trigger_cuts_1mu1tau) ||
+	 (selTrigger_1e      && !apply_offline_e_trigger_cuts_1e)      ||
+	 (selTrigger_1e1tau  && !apply_offline_e_trigger_cuts_1e1tau)  ) {
       fakeableElectronSelector.disable_offline_e_trigger_cuts();
       tightElectronSelector.disable_offline_e_trigger_cuts();
     } else {
@@ -945,15 +982,21 @@ int main(int argc, char* argv[])
     assert(idxPreselLepton_genMatch != kGen_LeptonUndefined1);
 
     // require that trigger paths match event category (with event category based on preselLeptons)
-    if ( preselMuons.size() >= 1 && !isTriggered_1mu ) {
-      std::cout << "event FAILS trigger selection for given preselLepton multiplicity." << std::endl; 
-      std::cout << " (#preselMuons = " << preselMuons.size() 
-		<< ", selTrigger_1mu = " << selTrigger_1mu << ")" << std::endl;
+    if ( preselMuons.size() >= 1 && !(selTrigger_1mu || selTrigger_1mu1tau) ) {
+      if ( run_lumi_eventSelector ) {
+	std::cout << "event FAILS trigger selection for given preselLepton multiplicity." << std::endl; 
+	std::cout << " (#preselMuons = " << preselMuons.size() 
+		  << ", selTrigger_1mu = " << selTrigger_1mu 
+		  << ", selTrigger_1mu1tau = " << selTrigger_1mu1tau << ")" << std::endl;
+      }
       continue;
-    } else if ( preselElectrons.size() >= 1 && !isTriggered_1e ) {
-      std::cout << "event FAILS trigger selection for given preselLepton multiplicity." << std::endl; 
-      std::cout << " (#preselElectrons = " << preselElectrons.size() 
-		<< ", selTrigger_1e = " << selTrigger_1e << ")" << std::endl;
+    } else if ( preselElectrons.size() >= 1 && !(selTrigger_1e || selTrigger_1e1tau) ) {
+      if ( run_lumi_eventSelector ) {
+	std::cout << "event FAILS trigger selection for given preselLepton multiplicity." << std::endl; 
+	std::cout << " (#preselElectrons = " << preselElectrons.size() 
+		  << ", selTrigger_1e = " << selTrigger_1e 
+		  << ", selTrigger_1e1tau = " << selTrigger_1e1tau << ")" << std::endl;
+      }
       continue;
     }
     cutFlowTable.update("presel lepton trigger match");
@@ -1063,15 +1106,21 @@ int main(int argc, char* argv[])
     }    
 
     // require that trigger paths match event category (with event category based on selLeptons)
-    if ( selMuons.size() >= 1 && !isTriggered_1mu ) {
-      std::cout << "event FAILS trigger selection for given selLepton multiplicity." << std::endl; 
-      std::cout << " (#selMuons = " << selMuons.size() 
-		<< ", selTrigger_1mu = " << selTrigger_1mu << ")" << std::endl;
+    if ( selMuons.size() >= 1 && !(selTrigger_1mu || selTrigger_1mu1tau) ) {
+      if ( run_lumi_eventSelector ) {
+	std::cout << "event FAILS trigger selection for given selLepton multiplicity." << std::endl; 
+	std::cout << " (#selMuons = " << selMuons.size() 
+		  << ", selTrigger_1mu = " << selTrigger_1mu 
+		  << ", selTrigger_1mu1tau = " << selTrigger_1mu1tau << ")" << std::endl;
+      }
       continue;
-    } else if ( selElectrons.size() >= 1 && !isTriggered_1e ) {
-      std::cout << "event FAILS trigger selection for given selLepton multiplicity." << std::endl; 
-      std::cout << " (#selElectrons = " << selElectrons.size() 
-		<< ", selTrigger_1e = " << selTrigger_1e << ")" << std::endl;
+    } else if ( selElectrons.size() >= 1 && !(selTrigger_1e || selTrigger_1e1tau) ) {
+      if ( run_lumi_eventSelector ) {
+	std::cout << "event FAILS trigger selection for given selLepton multiplicity." << std::endl; 
+	std::cout << " (#selElectrons = " << selElectrons.size() 
+		  << ", selTrigger_1e = " << selTrigger_1e 
+		  << ", selTrigger_1e1tau = " << selTrigger_1e1tau << ")" << std::endl;
+      }
       continue;
     }
     cutFlowTable.update("sel lepton trigger match", evtWeight);

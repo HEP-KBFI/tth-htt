@@ -11,6 +11,7 @@ std::map<std::string, RecoMuonReader *> RecoMuonReader::instances_;
 
 RecoMuonReader::RecoMuonReader(int era)
   : era_(era)
+  , use_HIP_mitigation_(true)
   , branchName_num_("nselLeptons")
   , branchName_obj_("selLeptons")
   , leptonReader_(0)
@@ -30,6 +31,7 @@ RecoMuonReader::RecoMuonReader(int era,
                                const std::string& branchName_num,
                                const std::string& branchName_obj)
   : era_(era)
+  , use_HIP_mitigation_(true)
   , branchName_num_(branchName_num)
   , branchName_obj_(branchName_obj)
   , leptonReader_(0)
@@ -69,9 +71,12 @@ void RecoMuonReader::setBranchNames()
     branchName_looseIdPOG_ = Form("%s_%s", branchName_obj_.data(), "looseIdPOG");
     // CV: for 2016 data, switch to short term Muon POG recommendation for ICHEP,
     //     given at https://twiki.cern.ch/twiki/bin/view/CMS/SWGuideMuonIdRun2#Short_Term_Medium_Muon_Definitio
-    if      ( era_ == kEra_2015 ) branchName_mediumIdPOG_ = Form("%s_%s", branchName_obj_.data(), "mediumMuonId");
-    else if ( era_ == kEra_2016 ) branchName_mediumIdPOG_ = Form("%s_%s", branchName_obj_.data(), "mediumIdPOG_ICHEP2016");
-    else assert(0);
+    if ( era_ == kEra_2015 ) {
+      branchName_mediumIdPOG_ = Form("%s_%s", branchName_obj_.data(), "mediumMuonId");
+    } else if ( era_ == kEra_2016 ) {
+      if ( use_HIP_mitigation_ ) branchName_mediumIdPOG_ = Form("%s_%s", branchName_obj_.data(), "mediumIdPOG_ICHEP2016");
+      else branchName_mediumIdPOG_ = Form("%s_%s", branchName_obj_.data(), "mediumMuonId");
+    } else assert(0);
 #ifdef DPT_DIV_PT
     branchName_dpt_div_pt_ = Form("%s_%s", branchName_obj_.data(), "dpt_div_pt");
 #endif // ifdef DPT_DIV_PT

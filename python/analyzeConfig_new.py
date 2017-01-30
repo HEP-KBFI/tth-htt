@@ -130,15 +130,17 @@ class analyzeConfig:
         self.rootOutputAux = {}
 
         if era == '2015':
-            self.triggers_1e = [
-                'HLT_BIT_HLT_Ele23_WPLoose_Gsf_v'
+            self.triggers_3mu = [
+
             ]
-            self.triggers_2e = [
-                'HLT_BIT_HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v'
+            self.triggers_2mu1e = [
+
             ]
-            self.triggers_1mu = [
-                'HLT_BIT_HLT_IsoMu20_v',
-                'HLT_BIT_HLT_IsoTkMu20_v'
+            self.triggers_1mu2e = [
+
+            ]
+            self.triggers_3e = [
+
             ]
             self.triggers_2mu = [
                 'HLT_BIT_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v',
@@ -148,19 +150,31 @@ class analyzeConfig:
                 'HLT_BIT_HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v',
                 'HLT_BIT_HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v'
             ]
-        elif era == '2016':
-            # CV: HLT_Ele25_WPTight_Gsf_v* was prescaled during part of 2016
-            # Runs B-D, so use HLT_Ele27_eta2p1_WPLoose_Gsf_v in addition
-            self.triggers_1e = [
-                'HLT_BIT_HLT_Ele25_WPTight_Gsf_v',
-                'HLT_BIT_HLT_Ele27_eta2p1_WPLoose_Gsf_v'
-            ]
             self.triggers_2e = [
-                'HLT_BIT_HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v'
+                'HLT_BIT_HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v'
             ]
             self.triggers_1mu = [
-                'HLT_BIT_HLT_IsoMu22_v',
-                'HLT_BIT_HLT_IsoTkMu22_v'
+                'HLT_BIT_HLT_IsoMu20_v',
+                'HLT_BIT_HLT_IsoTkMu20_v'
+            ]
+            self.triggers_1e = [
+                'HLT_BIT_HLT_Ele23_WPLoose_Gsf_v'
+            ]
+            self.triggers_2tau = [
+
+            ]            
+        elif era == '2016':
+            self.triggers_3mu = [
+                'HLT_BIT_HLT_TripleMu_12_10_5_v',
+            ]
+            self.triggers_2mu1e = [
+                'HLT_BIT_HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v'
+            ]
+            self.triggers_1mu2e = [
+                'HLT_BIT_HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v'
+            ]
+            self.triggers_3e = [
+                'HLT_BIT_HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v'
             ]
             self.triggers_2mu = [
                 'HLT_BIT_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v',
@@ -170,8 +184,27 @@ class analyzeConfig:
                 'HLT_BIT_HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v',
                 'HLT_BIT_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v'
             ]
+            self.triggers_2e = [
+                'HLT_BIT_HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v'
+            ]
+            self.triggers_1mu = [
+                'HLT_BIT_HLT_IsoMu22_v',
+                'HLT_BIT_HLT_IsoTkMu22_v'
+            ]
+            self.triggers_1e = [
+                'HLT_BIT_HLT_Ele25_WPTight_Gsf_v',
+                'HLT_BIT_HLT_Ele27_eta2p1_WPLoose_Gsf_v',
+                'HLT_BIT_HLT_Ele27_eta2p1_WPTight_Gsf_v'
+            ]
+            self.triggers_1mu1tau = [
+                'HLT_BIT_HLT_IsoMu19_eta2p1_LooseIsoPFTau20_v'
+            ]
+            self.triggers_1e1tau = [
+                'HLT_BIT_HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau30_v'
+            ]
             self.triggers_2tau = [
-                'HLT_BIT_HLT_DoubleMediumIsoPFTau35_Trk1_eta2p1_Reg_v*'
+                'HLT_BIT_HLT_DoubleMediumIsoPFTau35_Trk1_eta2p1_Reg_v',
+                'HLT_BIT_HLT_DoubleMediumCombinedIsoPFTau35_Trk1_eta2p1_Reg_v'
             ]
         else:
             raise ValueError(

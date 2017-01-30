@@ -25,20 +25,34 @@ process.analyze_3l_1tau = cms.PSet(
 
     triggers_1e = cms.vstring('HLT_BIT_HLT_Ele25_WPTight_Gsf_v', 'HLT_BIT_HLT_Ele27_eta2p1_WPLoose_Gsf_v'),
     use_triggers_1e = cms.bool(True),
-    triggers_2e = cms.vstring('HLT_BIT_HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v'),
-    use_triggers_2e = cms.bool(True),
     triggers_1mu = cms.vstring('HLT_BIT_HLT_IsoMu22_v', 'HLT_BIT_HLT_IsoTkMu22_v'),
     use_triggers_1mu = cms.bool(True),
-    triggers_2mu = cms.vstring('HLT_BIT_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v', 'HLT_BIT_HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v'),
-    use_triggers_2mu = cms.bool(True),
+        
+    triggers_2e = cms.vstring('HLT_BIT_HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v'),
+    use_triggers_2e = cms.bool(True),
     triggers_1e1mu = cms.vstring('HLT_BIT_HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v', 'HLT_BIT_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v'),
     use_triggers_1e1mu = cms.bool(True),
-
+    triggers_2mu = cms.vstring('HLT_BIT_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v', 'HLT_BIT_HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v'),
+    use_triggers_2mu = cms.bool(True),
+        
+    triggers_3e = cms.vstring(),
+    use_triggers_3e = cms.bool(False),
+    triggers_2e1mu = cms.vstring(),
+    use_triggers_1e2mu = cms.bool(False),
+    triggers_1e2mu = cms.vstring(),
+    use_triggers_1e2mu = cms.bool(False),
+    triggers_3mu = cms.vstring(),
+    use_triggers_3mu = cms.bool(False),
+    
     apply_offline_e_trigger_cuts_1e = cms.bool(True),
-    apply_offline_e_trigger_cuts_2e = cms.bool(True),
     apply_offline_e_trigger_cuts_1mu = cms.bool(True),
-    apply_offline_e_trigger_cuts_2mu = cms.bool(True),
+    apply_offline_e_trigger_cuts_2e = cms.bool(True),
     apply_offline_e_trigger_cuts_1e1mu = cms.bool(True),
+    apply_offline_e_trigger_cuts_2mu = cms.bool(True),
+    apply_offline_e_trigger_cuts_3e = cms.bool(True),
+    apply_offline_e_trigger_cuts_2e1mu = cms.bool(True),
+    apply_offline_e_trigger_cuts_1e2mu = cms.bool(True),
+    apply_offline_e_trigger_cuts_3mu = cms.bool(True),
     
     leptonSelection = cms.string('Tight'),
     apply_leptonGenMatching = cms.bool(True),
@@ -66,6 +80,7 @@ process.analyze_3l_1tau = cms.PSet(
     ),
 
     use_HIP_mitigation_bTag = cms.bool(False),
+    use_HIP_mitigation_mediumMuonId = cms.bool(False),
             
     isMC = cms.bool(True),
     central_or_shift = cms.string('central'),

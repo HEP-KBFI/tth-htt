@@ -313,18 +313,24 @@ struct Sample
 		    "  (\"nof_files\",             $(max_nr)),\n"
 		    "  (\"nof_events\",            $(nof_events)),\n";
 		    //"  (\"nof_dbs_events\",        $(nof_dbs_events)),\n";
-		    if(process_name.find("2016E")!=std::string::npos ||
-		       process_name.find("2016F")!=std::string::npos ||
-		       process_name.find("2016G")!=std::string::npos)
-			    input = input + "  (\"use_it\",                False),\n";			   
-		    else
-			    input = input + "  (\"use_it\",                True),\n";
+		    if(process_name.find("2016B")!=std::string::npos ||
+		       process_name.find("2016C")!=std::string::npos ||
+		       process_name.find("2016D")!=std::string::npos ||
+		       process_name.find("2016E")!=std::string::npos ||
+		       process_name.find("2016F")!=std::string::npos){
+		      input = input + "  (\"use_HIP_mitigation_bTag\", True),\n";
+		      input = input + "  (\"use_HIP_mitigation_mediumMuonId\", True),\n";
+		    } else {
+		      input = input + "  (\"use_HIP_mitigation_bTag\", False),\n";
+		      input = input + "  (\"use_HIP_mitigation_mediumMuonId\", False),\n";
+		    }
+		    input = input + "  (\"use_it\",                True),\n";
 			if(process_name.find("SingleElec")!=std::string::npos) input = input + "  (\"triggers\",              [ \"1e\" ]),\n";
 	    if(process_name.find("SingleMuon")!=std::string::npos) input = input + "  (\"triggers\",              [ \"1mu\" ]),\n";
-	    if(process_name.find("DoubleEG")!=std::string::npos  ) input = input + "  (\"triggers\",              [ \"2e\" ]),\n";
-	    if(process_name.find("DoubleMuon")!=std::string::npos) input = input + "  (\"triggers\",              [ \"2mu\" ]),\n";
-	    if(process_name.find("MuonEG")!=std::string::npos    ) input = input + "  (\"triggers\",              [ \"1e1mu\" ]),\n";
-	    if(process_name.find("Tau")!=std::string::npos       ) input = input + "  (\"triggers\",              [ \"2tau\" ]),\n";
+	    if(process_name.find("DoubleEG")!=std::string::npos  ) input = input + "  (\"triggers\",              [ \"2e\", \"3e\" ]),\n";
+	    if(process_name.find("DoubleMuon")!=std::string::npos) input = input + "  (\"triggers\",              [ \"2mu\", \"3mu\" ]),\n";
+	    if(process_name.find("MuonEG")!=std::string::npos    ) input = input + "  (\"triggers\",              [ \"1e1mu\", \"2e1mu\", \"1e2mu\" ]),\n";
+	    if(process_name.find("Tau")!=std::string::npos       ) input = input + "  (\"triggers\",              [ \"1e1tau\", \"1mu1tau\", \"2tau\" ]),\n";
 	    input = input +	  
 		    "  (\"reHLT\",                 False),\n"
 		    "  (\"local_paths\",\n"
@@ -362,7 +368,7 @@ struct Sample
 		  //  "  (\"use_it\",                True),\n"
 		  input =input + "  (\"xsection\",              $(x_sec)),\n"
 		    "  (\"genWeight\",             $(g_weight)),\n"
-		    "  (\"triggers\",              [ \"1e\", \"2e\", \"1mu\", \"2mu\", \"1e1mu\" ]),\n";
+		    "  (\"triggers\",              [ \"1e\", \"1mu\", \"2e\", \"1e1mu\", \"2mu\", \"3e\", \"2e1mu\", \"1e2mu\", \"3mu\", \"1e1tau\", \"1mu1tau\", \"2tau\" ]),\n";
 		  if(name.find("reHLT")!=std::string::npos ||
 		        name.find("premix_withHLT")!=std::string::npos)   input = input + "  (\"reHLT\",                 True),\n";
 	    else                                                            input = input + "  (\"reHLT\",                 False),\n";

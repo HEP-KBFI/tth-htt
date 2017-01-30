@@ -18,6 +18,15 @@ class RecoMuonReader
   RecoMuonReader(int era, const std::string& branchName_num, const std::string& branchName_obj); 
   ~RecoMuonReader();
 
+  void enable_HIP_mitigation() { 
+    std::cout << "<RecoMuonReader::enable_HIP_mitigation>:" << std::endl; 
+    use_HIP_mitigation_ = true; 
+  }
+  void disable_HIP_mitigation() { 
+    std::cout << "<RecoMuonReader::disable_HIP_mitigation>:" << std::endl; 
+    use_HIP_mitigation_ = false; 
+  }
+
   /**
    * @brief Call tree->SetBranchAddress for all lepton branches specific to RecoMuons
    */
@@ -36,6 +45,7 @@ class RecoMuonReader
   void setBranchNames();
 
   int era_;
+  bool use_HIP_mitigation_;
   std::string branchName_num_;
   std::string branchName_obj_;
 

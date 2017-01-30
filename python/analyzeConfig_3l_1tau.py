@@ -158,14 +158,22 @@ class analyzeConfig_3l_1tau(analyzeConfig):
     lines.append("process.analyze_3l_1tau.era = cms.string('%s')" % self.era)
     lines.append("process.analyze_3l_1tau.triggers_1e = cms.vstring(%s)" % self.triggers_1e)
     lines.append("process.analyze_3l_1tau.use_triggers_1e = cms.bool(%s)" % ("1e" in jobOptions['triggers']))
-    lines.append("process.analyze_3l_1tau.triggers_2e = cms.vstring(%s)" % self.triggers_2e)
-    lines.append("process.analyze_3l_1tau.use_triggers_2e = cms.bool(%s)" % ("2e" in jobOptions['triggers']))
     lines.append("process.analyze_3l_1tau.triggers_1mu = cms.vstring(%s)" % self.triggers_1mu)
     lines.append("process.analyze_3l_1tau.use_triggers_1mu = cms.bool(%s)" % ("1mu" in jobOptions['triggers']))
-    lines.append("process.analyze_3l_1tau.triggers_2mu = cms.vstring(%s)" % self.triggers_2mu)
-    lines.append("process.analyze_3l_1tau.use_triggers_2mu = cms.bool(%s)" % ("2mu" in jobOptions['triggers']))
+    lines.append("process.analyze_3l_1tau.triggers_2e = cms.vstring(%s)" % self.triggers_2e)
+    lines.append("process.analyze_3l_1tau.use_triggers_2e = cms.bool(%s)" % ("2e" in jobOptions['triggers']))
     lines.append("process.analyze_3l_1tau.triggers_1e1mu = cms.vstring(%s)" % self.triggers_1e1mu)
     lines.append("process.analyze_3l_1tau.use_triggers_1e1mu = cms.bool(%s)" % ("1e1mu" in jobOptions['triggers']))
+    lines.append("process.analyze_3l_1tau.triggers_2mu = cms.vstring(%s)" % self.triggers_2mu)
+    lines.append("process.analyze_3l_1tau.use_triggers_2mu = cms.bool(%s)" % ("2mu" in jobOptions['triggers']))
+    lines.append("process.analyze_3l_1tau.triggers_3e = cms.vstring(%s)" % self.triggers_3e)
+    lines.append("process.analyze_3l_1tau.use_triggers_3e = cms.bool(%s)" % ("3e" in jobOptions['triggers']))
+    lines.append("process.analyze_3l_1tau.triggers_2e1mu = cms.vstring(%s)" % self.triggers_2e1mu)
+    lines.append("process.analyze_3l_1tau.use_triggers_2e1mu = cms.bool(%s)" % ("2e1mu" in jobOptions['triggers']))
+    lines.append("process.analyze_3l_1tau.triggers_1e2mu = cms.vstring(%s)" % self.triggers_1e2mu)
+    lines.append("process.analyze_3l_1tau.use_triggers_1e2mu = cms.bool(%s)" % ("1e2mu" in jobOptions['triggers']))    
+    lines.append("process.analyze_3l_1tau.triggers_3mu = cms.vstring(%s)" % self.triggers_3mu)
+    lines.append("process.analyze_3l_1tau.use_triggers_3mu = cms.bool(%s)" % ("3mu" in jobOptions['triggers']))
     lines.append("process.analyze_3l_1tau.leptonSelection = cms.string('%s')" % jobOptions['lepton_selection'])
     lines.append("process.analyze_3l_1tau.apply_leptonGenMatching = cms.bool(%s)" % (jobOptions['apply_leptonGenMatching'] and jobOptions['is_mc']))
     lines.append("process.analyze_3l_1tau.hadTauSelection = cms.string('%s')" % jobOptions['hadTau_selection'])
@@ -188,6 +196,8 @@ class analyzeConfig_3l_1tau(analyzeConfig):
     if jobOptions['hadTau_selection'].find("mcClosure") != -1:
       lines.append("process.analyze_3l_1tau.hadTauFakeRateWeight.applyFitFunction_lead = cms.bool(False)")
     lines.append("process.analyze_3l_1tau.chargeSelection = cms.string('%s')" % jobOptions['charge_selection'])
+    lines.append("process.analyze_3l_1tau.use_HIP_mitigation_bTag = cms.bool(%s)" % jobOptions['use_HIP_mitigation_bTag'])
+    lines.append("process.analyze_3l_1tau.use_HIP_mitigation_mediumMuonId = cms.bool(%s)" % jobOptions['use_HIP_mitigation_mediumMuonId'])
     lines.append("process.analyze_3l_1tau.isMC = cms.bool(%s)" % jobOptions['is_mc'])
     lines.append("process.analyze_3l_1tau.central_or_shift = cms.string('%s')" % jobOptions['central_or_shift'])
     lines.append("process.analyze_3l_1tau.lumiScale = cms.double(%f)" % jobOptions['lumi_scale'])
@@ -308,7 +318,14 @@ class analyzeConfig_3l_1tau(analyzeConfig):
               inputFileList = generateInputFileList(sample_name, sample_info, self.max_files_per_job, self.debug)
               for jobId in inputFileList.keys():
                 if central_or_shift != "central":
-                  isFR_shape_shift = central_or_shift.find("CMS_ttHl_FRe_shape") != -1 or central_or_shift.find("CMS_ttHl_FRm_shape") != -1
+                  isFR_shape_shift = False
+                  for FR_shape_shift in [
+                    "CMS_ttHl_FRe_shape",
+                    "CMS_ttHl_FRm_shape",
+                    "CMS_ttHl_FRjt_norm",
+                    "CMS_ttHl_FRjt_shape" ]:
+                    if central_or_shift.find(FR_shape_shift) != -1:
+                      isFR_shape_shift = True
                   if not ((lepton_and_hadTau_selection == "Fakeable" and charge_selection == "OS" and isFR_shape_shift) or
                           (lepton_and_hadTau_selection == "Tight"    and charge_selection == "OS")):
                     continue
@@ -353,6 +370,10 @@ class analyzeConfig_3l_1tau(analyzeConfig):
                   'apply_hadTauGenMatching' : self.apply_hadTauGenMatching,
                   'charge_selection' : charge_selection,
                   'applyFakeRateWeights' : self.applyFakeRateWeights if not (lepton_selection == "Tight" and hadTau_selection.find("Tight") != -1) else "disabled",
+                  ##'use_HIP_mitigation_bTag' : sample_info["use_HIP_mitigation_bTag"],
+                  ##'use_HIP_mitigation_mediumMuonId' : sample_info["use_HIP_mitigation_mediumMuonId"],
+                  'use_HIP_mitigation_bTag' : True,
+                  'use_HIP_mitigation_mediumMuonId' : True,
                   'is_mc' : is_mc,
                   'central_or_shift' : central_or_shift,
                   'lumi_scale' : 1. if not (self.use_lumi and is_mc) else sample_info["xsection"] * self.lumi / sample_info["nof_events"],

@@ -151,6 +151,8 @@ class analyzeConfig_1l_2tau(analyzeConfig):
     if jobOptions['hadTau_selection'].find("mcClosure") != -1:
       lines.append("process.analyze_1l_2tau.hadTauFakeRateWeight.applyFitFunction_lead = cms.bool(False)")
       lines.append("process.analyze_1l_2tau.hadTauFakeRateWeight.applyFitFunction_sublead = cms.bool(False)")
+    lines.append("process.analyze_1l_2tau.use_HIP_mitigation_bTag = cms.bool(%s)" % jobOptions['use_HIP_mitigation_bTag'])
+    lines.append("process.analyze_1l_2tau.use_HIP_mitigation_mediumMuonId = cms.bool(%s)" % jobOptions['use_HIP_mitigation_mediumMuonId'])  
     lines.append("process.analyze_1l_2tau.isMC = cms.bool(%s)" % jobOptions['is_mc'])
     lines.append("process.analyze_1l_2tau.central_or_shift = cms.string('%s')" % jobOptions['central_or_shift'])
     lines.append("process.analyze_1l_2tau.lumiScale = cms.double(%f)" % jobOptions['lumi_scale'])
@@ -262,7 +264,14 @@ class analyzeConfig_1l_2tau(analyzeConfig):
               inputFileList = generateInputFileList(sample_name, sample_info, self.max_files_per_job, self.debug)
               for jobId in inputFileList.keys():
                 if central_or_shift != "central":
-                  isFR_shape_shift = central_or_shift.find("CMS_ttHl_FRe_shape") != -1 or central_or_shift.find("CMS_ttHl_FRm_shape") != -1
+                  isFR_shape_shift = False
+                  for FR_shape_shift in [
+                    "CMS_ttHl_FRe_shape",
+                    "CMS_ttHl_FRm_shape",
+                    "CMS_ttHl_FRjt_norm",
+                    "CMS_ttHl_FRjt_shape" ]:
+                    if central_or_shift.find(FR_shape_shift) != -1:
+                      isFR_shape_shift = True
                   if not ((lepton_and_hadTau_selection == "Fakeable" and hadTau_charge_selection == "OS" and isFR_shape_shift) or
                           (lepton_and_hadTau_selection == "Tight"    and hadTau_charge_selection == "OS")):
                     continue
@@ -299,6 +308,10 @@ class analyzeConfig_1l_2tau(analyzeConfig):
                   'apply_hadTauGenMatching' : self.apply_hadTauGenMatching,
                   'hadTau_charge_selection' : hadTau_charge_selection,
                   'applyFakeRateWeights' : self.applyFakeRateWeights if not (lepton_selection == "Tight" and hadTau_selection.find("Tight") != -1) else "disabled",
+                  ##'use_HIP_mitigation_bTag' : sample_info["use_HIP_mitigation_bTag"],
+                  ##'use_HIP_mitigation_mediumMuonId' : sample_info["use_HIP_mitigation_mediumMuonId"],
+                  'use_HIP_mitigation_bTag' : True,
+                  'use_HIP_mitigation_mediumMuonId' : True,
                   'is_mc' : is_mc,
                   'central_or_shift' : central_or_shift,
                   'lumi_scale' : 1. if not (self.use_lumi and is_mc) else sample_info["xsection"] * self.lumi / sample_info["nof_events"],

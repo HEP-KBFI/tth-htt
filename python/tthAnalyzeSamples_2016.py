@@ -11,7 +11,7 @@ samples_2016["/DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunII
   ("use_it",                True),
   ("xsection",              18610.000000),
   ("genWeight",             True),
-  ("triggers",              [ "1e", "2e", "1mu", "2mu", "1e1mu" ]),
+  ("triggers",              [ "1e", "1mu", "2e", "1e1mu", "2mu", "3e", "2e1mu", "1e2mu", "3mu", "1e1tau", "1mu1tau", "2tau" ]),
   ("reHLT",                 False),
   ("local_paths",
     [

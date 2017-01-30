@@ -26,11 +26,17 @@ process.analyze_1l_2tau = cms.PSet(
 
     triggers_1e = cms.vstring("HLT_BIT_HLT_Ele23_WPLoose_Gsf_v"),
     use_triggers_1e = cms.bool(True),
+    triggers_1e1tau = cms.vstring(),
+    use_triggers_1e1tau = cms.bool(False),
     triggers_1mu = cms.vstring("HLT_BIT_HLT_IsoMu20_v", "HLT_BIT_HLT_IsoTkMu20_v"),
     use_triggers_1mu = cms.bool(True),
-
+    triggers_1mu1tau = cms.vstring(),
+    use_triggers_1mu1tau = cms.bool(False),
+    
     apply_offline_e_trigger_cuts_1e = cms.bool(True),
+    apply_offline_e_trigger_cuts_1e1tau = cms.bool(True),
     apply_offline_e_trigger_cuts_1mu = cms.bool(True),
+    apply_offline_e_trigger_cuts_1mu1tau = cms.bool(True),
 
     leptonSelection = cms.string('Tight'),
     apply_leptonGenMatching = cms.bool(False),
@@ -64,6 +70,7 @@ process.analyze_1l_2tau = cms.PSet(
     ),
 
     use_HIP_mitigation_bTag = cms.bool(False),
+    use_HIP_mitigation_mediumMuonId = cms.bool(False),
         
     isMC = cms.bool(False),
     central_or_shift = cms.string('central'),
