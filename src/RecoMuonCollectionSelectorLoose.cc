@@ -2,7 +2,7 @@
 
 #include <cmath> // fabs
 
-RecoMuonSelectorLoose::RecoMuonSelectorLoose(int era, bool set_selection_flags, int index, bool debug)
+RecoMuonSelectorLoose::RecoMuonSelectorLoose(int era, int index, bool debug, bool set_selection_flags)
   : set_selection_flags_(set_selection_flags)
   , min_pt_(5.)
   , max_absEta_(2.4)

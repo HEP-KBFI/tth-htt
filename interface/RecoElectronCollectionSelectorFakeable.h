@@ -12,7 +12,7 @@
 class RecoElectronSelectorFakeable
 {
  public:
-  RecoElectronSelectorFakeable(int era, bool set_selection_flags = true, int index = -1, bool debug = false);
+  explicit RecoElectronSelectorFakeable(int era, int index = -1, bool debug = false, bool set_selection_flags = true);
   ~RecoElectronSelectorFakeable();
 
   // enable/disable cuts on electron ID variables to mimic electron ID cuts applied by single electron trigger 
@@ -64,9 +64,9 @@ class RecoElectronSelectorFakeable
 class RecoElectronCollectionSelectorFakeable
 {
  public:
-  RecoElectronCollectionSelectorFakeable(int era, bool set_selection_flags = true, int index = -1, bool debug = false)
+  explicit RecoElectronCollectionSelectorFakeable(int era, int index = -1, bool debug = false, bool set_selection_flags = true)
     : selIndex_(index)
-    , selector_(era, set_selection_flags, index, debug)
+    , selector_(era, index, debug, set_selection_flags)
   {}
   ~RecoElectronCollectionSelectorFakeable() {}
 

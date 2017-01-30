@@ -11,7 +11,7 @@
 class RecoElectronSelectorCutBased
 {
  public:
-  RecoElectronSelectorCutBased(int era, int index = -1, bool debug = false);
+  explicit RecoElectronSelectorCutBased(int era, int index = -1, bool debug = false);
   ~RecoElectronSelectorCutBased() {}
 
   /**

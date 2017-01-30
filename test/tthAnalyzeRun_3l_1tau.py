@@ -24,7 +24,7 @@ elif ERA == "2016":
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "2017Jan16"
+version = "2017Jan26"
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -110,9 +110,9 @@ if __name__ == '__main__':
     select_rle_output = True,
     select_root_output = False)
 
-  analysis.create()
   if USE_BDT_TRAINING:
     analysis.set_BDT_training(changeBranchNames = False)
+  analysis.create()
 
   run_analysis = query_yes_no("Start jobs ?")
   if run_analysis:

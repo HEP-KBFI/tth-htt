@@ -1,5 +1,5 @@
 #include "tthAnalysis/HiggsToTauTau/interface/NtupleFillerMEM.h"
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // isHigherPt()
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // isHigherPt(), isHigherCSV()
 
 #include <functional> // std::reference_wrapper<>, std::cref()
 
@@ -883,11 +883,3 @@ NtupleFillerMEM::getNuNu(const GenLepton & tau1,
 
   return {{ nu1_new, nu2_new }};
 }
-
-bool
-NtupleFillerMEM::isHigherCSV(const RecoJet * jet1,
-                             const RecoJet * jet2)
-{
-  return (jet1 -> BtagCSV()) > (jet2 -> BtagCSV());
-}
-

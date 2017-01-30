@@ -11,7 +11,7 @@
 class RecoElectronSelectorLoose
 {
  public:
-  RecoElectronSelectorLoose(int era, bool set_selection_flags = true, int index = -1, bool debug = false);
+  explicit RecoElectronSelectorLoose(int era, int index = -1, bool debug = false, bool set_selection_flags = true);
   ~RecoElectronSelectorLoose() {}
 
   /**

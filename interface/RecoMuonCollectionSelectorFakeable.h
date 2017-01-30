@@ -13,7 +13,7 @@
 class RecoMuonSelectorFakeable
 {
  public:
-  RecoMuonSelectorFakeable(int era, bool set_selection_flags = true, int index = -1, bool debug = false);
+  explicit RecoMuonSelectorFakeable(int era, int index = -1, bool debug = false, bool set_selection_flags = true);
   ~RecoMuonSelectorFakeable();
 
   /**
@@ -49,9 +49,9 @@ class RecoMuonSelectorFakeable
 class RecoMuonCollectionSelectorFakeable
 {
  public:
-  RecoMuonCollectionSelectorFakeable(int era, bool set_selection_flags = true, int index = -1, bool debug = false)
+  explicit RecoMuonCollectionSelectorFakeable(int era, int index = -1, bool debug = false, bool set_selection_flags = true)
     : selIndex_(index)
-    , selector_(era, set_selection_flags, index, debug)
+    , selector_(era, index, debug, set_selection_flags)
   {}
   ~RecoMuonCollectionSelectorFakeable() {}
 

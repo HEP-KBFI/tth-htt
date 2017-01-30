@@ -12,7 +12,7 @@
 class RecoHadTauSelectorFakeable : public RecoHadTauSelectorBase
 {
  public:
-  RecoHadTauSelectorFakeable(int era, int index = -1, bool debug = false);
+  explicit RecoHadTauSelectorFakeable(int era, int index = -1, bool debug = false);
   ~RecoHadTauSelectorFakeable() {}
 
   friend class RecoHadTauCollectionSelector<RecoHadTauSelectorFakeable>;

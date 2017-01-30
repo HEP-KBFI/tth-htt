@@ -4,7 +4,7 @@
 
 #include <cmath> // fabs
 
-RecoMuonSelectorFakeable::RecoMuonSelectorFakeable(int era, bool set_selection_flags, int index, bool debug)
+RecoMuonSelectorFakeable::RecoMuonSelectorFakeable(int era, int index, bool debug, bool set_selection_flags)
   : era_(era)
   , set_selection_flags_(set_selection_flags)
   , tightMuonSelector_(0)
@@ -22,7 +22,7 @@ RecoMuonSelectorFakeable::RecoMuonSelectorFakeable(int era, bool set_selection_f
   if      ( era_ == kEra_2015 ) max_jetBtagCSV_ = { 0.605, 0.89 };
   else if ( era_ == kEra_2016 ) max_jetBtagCSV_ = { 0.460, 0.80 };
   else assert(0);
-  tightMuonSelector_ = new RecoMuonSelectorTight(era_, false, index, debug);
+  tightMuonSelector_ = new RecoMuonSelectorTight(era_, index, debug, false);
 }
 
 RecoMuonSelectorFakeable::~RecoMuonSelectorFakeable()
