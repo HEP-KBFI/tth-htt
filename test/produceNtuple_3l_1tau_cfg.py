@@ -22,7 +22,7 @@ process.produceNtuple_3l_1tau = cms.PSet(
     leptonSelection = cms.string('Fakeable'),
     minNumLeptons = cms.int32(2),
 
-    hadTauSelection = cms.string('Loose'),
+    hadTauSelection = cms.string('Tight|dR03mvaMedium'),
     minNumHadTaus = cms.int32(1),
 
     minNumJets = cms.int32(1),

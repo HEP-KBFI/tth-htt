@@ -628,22 +628,19 @@ void compareDatacards()
 
   TH1::AddDirectory(false);
 
-  std::string inputFilePath_ref = "/home/veelken/VHbbNtuples_7_6_x/CMSSW_7_6_3/src/tthAnalysis/HiggsToTauTau/macros/data/";
-  std::string inputFileName_ref = "ttH_2lss_1tau.root";
-  std::string category_ref = "ttH_2lss_1tau";
-  std::string legendEntry_ref = "HIG-15-008";
+  std::string inputFilePath_ref = "/home/veelken/ttHAnalysis/2016/2017Jan16/datacards/";
+  std::string inputFileName_ref = "prepareDatacards_2lss_1tau_mvaDiscr_2lss.root";
+  std::string legendEntry_ref = "Tallinn";
 
-  std::string inputFilePath_test = "/home/veelken/ttHAnalysis/2016Jun21/datacards/";
-  std::string inputFileName_test = "prepareDatacards.root";
-  std::string category_test = "tauTau_ttH_2lss_1tau";
-  std::string legendEntry_test = "Tallinn";
+  std::string inputFilePath_test = "/home/veelken/ttHAnalysis/2016/2017Jan30_addMEM/datacards/";
+  std::string inputFileName_test = "prepareDatacards_2lss_1tau_mvaDiscr_2lss.root";
+  std::string legendEntry_test = "Tallinn (addMEM)";
 
   std::string inputFilePath_test2 = "";
   std::string inputFileName_test2 = "";
-  std::string category_test2 = "";
   std::string legendEntry_test2 = "";
 
-  std::string outputFilePath = "/home/veelken/VHbbNtuples_7_6_x/CMSSW_7_6_3/src/tthAnalysis/HiggsToTauTau/macros/plots";
+  std::string outputFilePath = "/home/veelken/VHbbNtuples_8_0_x/CMSSW_8_0_19/src/tthAnalysis/HiggsToTauTau/macros/plots";
 
   std::vector<std::string> processes; 
   processes.push_back("data_obs");
@@ -652,11 +649,15 @@ void compareDatacards()
   processes.push_back("ttH_hzz");
   processes.push_back("TTW");
   processes.push_back("TTZ");
+  processes.push_back("EWK");
   processes.push_back("Rares");
   processes.push_back("fakes_data");
   processes.push_back("flips_data");
 
   std::vector<std::string> sysShifts;
+/*
+  sysShifts.push_back("CMS_ttHl_tauESUp");
+  sysShifts.push_back("CMS_ttHl_tauESDown");
   sysShifts.push_back("CMS_ttHl_JESUp");
   sysShifts.push_back("CMS_ttHl_JESDown");
   sysShifts.push_back("CMS_ttHl_FRe_shape_2lss_anticorr1Up");
@@ -695,6 +696,7 @@ void compareDatacards()
   sysShifts.push_back("CMS_ttHl_thu_shape_ttZ_x1Down");
   sysShifts.push_back("CMS_ttHl_thu_shape_ttZ_y1Up");
   sysShifts.push_back("CMS_ttHl_thu_shape_ttZ_y1Down");
+ */
   sysShifts.push_back(""); // central value
 
   for ( std::vector<std::string>::const_iterator process = processes.begin();
@@ -705,14 +707,14 @@ void compareDatacards()
 
       std::string histogramName_ref, histogramName_test, histogramName_test2, outputFileName;
       if ( !((*central_or_shift) == "" || (*central_or_shift) == "central") ) {
-	histogramName_ref = Form("%s/%s_%s", category_ref.data(), process->data(), central_or_shift->data());
-	histogramName_test = Form("%s/%s_%s", category_test.data(), process->data(), central_or_shift->data());
-	histogramName_test2 = Form("%s/%s_%s", category_test2.data(), process->data(), central_or_shift->data());
+	histogramName_ref = Form("x_%s_%s", process->data(), central_or_shift->data());
+	histogramName_test = Form("x_%s_%s", process->data(), central_or_shift->data());
+	histogramName_test2 = Form("x_%s_%s", process->data(), central_or_shift->data());
 	outputFileName = Form("compareDatacards_%s_%s.png", process->data(), central_or_shift->data());
       } else {
-	histogramName_ref = Form("%s/%s", category_ref.data(), process->data());
-	histogramName_test = Form("%s/%s", category_test.data(), process->data());
-	histogramName_test2 = Form("%s/%s", category_test2.data(), process->data());
+	histogramName_ref = Form("x_%s", process->data());
+	histogramName_test = Form("x_%s", process->data());
+	histogramName_test2 = Form("x_%s", process->data());
 	outputFileName = Form("compareDatacards_%s.png", process->data());
       }
       makePlot(inputFilePath_ref, inputFileName_ref, histogramName_ref, legendEntry_ref, 
@@ -721,12 +723,12 @@ void compareDatacards()
 	       //"", "", "", "",
 	       Form("%s/%s", outputFilePath.data(), outputFileName.data()));
       if ( !((*central_or_shift) == "" || (*central_or_shift) == "central") ) {
-	std::string histogramName_ref_shift = Form("%s/%s_%s", category_ref.data(), process->data(), central_or_shift->data());
-	std::string histogramName_ref_central = Form("%s/%s", category_ref.data(), process->data());
-	std::string histogramName_test_shift = Form("%s/%s_%s", category_test.data(), process->data(), central_or_shift->data());
-	std::string histogramName_test_central = Form("%s/%s", category_test.data(), process->data());;
-	std::string histogramName_test2_shift = Form("%s/%s_%s", category_test2.data(), process->data(), central_or_shift->data()); 
-	std::string histogramName_test2_central = Form("%s/%s", category_test2.data(), process->data()); 
+	std::string histogramName_ref_shift = Form("x_%s_%s", process->data(), central_or_shift->data());
+	std::string histogramName_ref_central = Form("x_%s", process->data());
+	std::string histogramName_test_shift = Form("x_%s_%s", process->data(), central_or_shift->data());
+	std::string histogramName_test_central = Form("x_%s", process->data());;
+	std::string histogramName_test2_shift = Form("x_%s_%s", process->data(), central_or_shift->data()); 
+	std::string histogramName_test2_central = Form("x_%s", process->data()); 
 	outputFileName = Form("compareDatacards_%s_%s_minus_central.png", process->data(), central_or_shift->data());
 	if ( central_or_shift->find("Up") != std::string::npos ) {
 	  makePlot_shift_minus_central(inputFilePath_ref, inputFileName_ref, histogramName_ref_shift, histogramName_ref_central, legendEntry_ref, 

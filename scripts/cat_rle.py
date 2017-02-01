@@ -52,10 +52,10 @@ if __name__ == '__main__':
   rle_pattern = re.compile('\d+:\d+:\d+')
 
   valid_analysis_types = {
-    ##'2lss_1tau' : [ 'Fakeable_wFakeRateWeights_SS', 'Tight_OS', 'Tight_SS', ],
-    '2lss_1tau' : [ 'forBDTtraining_SS' ],
-    ##'3l_1tau'   : [ 'Fakeable_wFakeRateWeights_OS', 'Tight_OS', ],
-    '3l_1tau'   : [ 'forBDTtraining_OS' ],
+    '2lss_1tau' : [ 'Fakeable_wFakeRateWeights_SS', 'Tight_OS', 'Tight_SS', ],
+    ##'2lss_1tau' : [ 'forBDTtraining_SS' ],
+    '3l_1tau'   : [ 'Fakeable_wFakeRateWeights_OS', 'Tight_OS', ],
+    ##'3l_1tau'   : [ 'forBDTtraining_OS' ],
   }
 
   rles = {}
