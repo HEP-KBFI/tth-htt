@@ -7,7 +7,7 @@ process = cms.PSet()
 process.fwliteInput = cms.PSet(
 #    fileNames = cms.vstring('/home/karl/VHbbNtuples_7_6_x3/CMSSW_7_6_3/src/VHbbAnalysis/Heppy/test/Loop_1/tree.root'),
 #    fileNames = cms.vstring('/home/karl/VHbbNtuples_7_6_x3/CMSSW_7_6_3/src/VHbbAnalysis/Heppy/test/Loop_2/tree.root'),
-    fileNames = cms.vstring('/home/andres/tth/sync/ttHJetToNonbb_M125_13TeV_sync_v1.root'),
+    fileNames = cms.vstring('/home/andres/tth/sync/ttHJetToNonbb_M125_13TeV_sync_summer_v0.root'),
     maxEvents = cms.int32(-1),
     outputEvery = cms.uint32(10000)
 )
@@ -15,7 +15,7 @@ process.fwliteInput = cms.PSet(
 process.fwliteOutput = cms.PSet(
 #    fileName = cms.string('/home/karl/sandbox/sync_ntuples/ttHJetToTT_M125_13TeV_ntuples_sync_v0.root')
 #    fileName = cms.string('/home/karl/sandbox/sync_ntuples/ttJet_13TeV_ntuples_sync_v0.root')
-    fileName = cms.string('/home/andres/tth/sync/sync_ntuple_v1_5.root')
+    fileName = cms.string('/home/andres/tth/sync/sync_ntuple_summer_v0.root')
 )
 
 process.syncNtuple = cms.PSet(
@@ -64,8 +64,10 @@ process.syncNtuple = cms.PSet(
     apply_trigger_bits = cms.bool(False),
     apply_hadTauGenMatching = cms.bool(False),
     #applyFakeRateWeights = cms.string('disabled')
-    isMC = cms.bool(True)
+    isMC = cms.bool(True),
     #apply_genWeight = cms.bool(True)
+    use_HIP_mitigation_bTag = cms.bool(True),
+    use_HIP_mitigation_mediumMuonId = cms.bool(False)
     
 
 )
