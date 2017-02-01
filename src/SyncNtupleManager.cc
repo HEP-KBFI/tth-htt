@@ -261,7 +261,7 @@ SyncNtupleManager::initializeBranches()
     outputTree -> Branch("leptonSF_weight", &(leptonSF_weight), Form("leptonSF_weight/%s", Traits<decltype(leptonSF_weight)>::TYPE_NAME));
     outputTree -> Branch("bTagSF_weight", &(bTagSF_weight), Form("bTagSF_weight/%s", Traits<decltype(bTagSF_weight)>::TYPE_NAME));
     outputTree -> Branch("PU_weight", &(PU_weight), Form("PU_weight/%s", Traits<decltype(PU_weight)>::TYPE_NAME));
-    outputTree -> Branch("hadTauSF_weight", &(hadTauSF_weight), Form("hadTauSF_weight/%s", Traits<decltype(hadTauSF_weight)>::TYPE_NAME));
+    outputTree -> Branch("tauSF_weight", &(hadTauSF_weight), Form("tauSF_weight/%s", Traits<decltype(hadTauSF_weight)>::TYPE_NAME));
     outputTree -> Branch("genWeight", &(genWeight), Form("genWeight/%s", Traits<decltype(genWeight)>::TYPE_NAME));
     outputTree -> Branch("lumiScale", &(lumiScale), Form("lumiScale/%s", Traits<decltype(lumiScale)>::TYPE_NAME));
     

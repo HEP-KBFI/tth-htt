@@ -158,7 +158,10 @@ int main(int argc, char* argv[])
   bool apply_hadTauGenMatching = cfg_analyze.getParameter<bool>("apply_hadTauGenMatching");
   std::vector<hadTauGenMatchEntry> hadTauGenMatch_definitions = getHadTauGenMatch_definitions_1tau(apply_hadTauGenMatching);
 
-  
+  bool use_HIP_mitigation_bTag = cfg_analyze.getParameter<bool>("use_HIP_mitigation_bTag"); 
+  std::cout << "use_HIP_mitigation_bTag = " << use_HIP_mitigation_bTag << std::endl;
+  bool use_HIP_mitigation_mediumMuonId = cfg_analyze.getParameter<bool>("use_HIP_mitigation_mediumMuonId"); 
+  std::cout << "use_HIP_mitigation_mediumMuonId = " << use_HIP_mitigation_mediumMuonId << std::endl;
 
   RunLumiEventSelector* run_lumi_eventSelector = 0;
   if ( selEventsFileName_input != "" ) {
@@ -218,6 +221,8 @@ int main(int argc, char* argv[])
 
 //--- declare particle collections
   RecoMuonReader* muonReader = new RecoMuonReader(era, "nselLeptons", "selLeptons");
+  if ( use_HIP_mitigation_mediumMuonId ) muonReader->enable_HIP_mitigation();
+  else muonReader->disable_HIP_mitigation();
   muonReader->setBranchAddresses(inputTree);
   RecoMuonCollectionGenMatcher muonGenMatcher;
   RecoMuonCollectionSelectorLoose preselMuonSelector(era);
@@ -300,6 +305,8 @@ int main(int argc, char* argv[])
   }
 
   RecoJetReader* jetReader = new RecoJetReader(era, "nJet", "Jet");
+  if ( use_HIP_mitigation_bTag ) jetReader->enable_HIP_mitigation();
+  else jetReader->disable_HIP_mitigation();
   jetReader->setJetPt_central_or_shift(jetPt_option);
   jetReader->setBranchName_BtagWeight(jet_btagWeight_branch);
   jetReader->setBranchAddresses(inputTree);
@@ -326,37 +333,63 @@ int main(int argc, char* argv[])
 
 //--- initialize BDTs used to discriminate ttH vs. ttV and ttH vs. ttbar 
 //    in 2lss_1tau category of ttH multilepton analysis
-  const std::string mvaFileName_2lss_ttV = "tthAnalysis/HiggsToTauTau/data/2lss_ttV_BDTG.weights.xml";
-  const std::vector<std::string> mvaInputVariables_2lss_ttV =
-  {
-    "max(abs(LepGood_eta[iF_Recl[0]]),abs(LepGood_eta[iF_Recl[1]]))",
-    "MT_met_lep1",
-    "nJet25_Recl",
-    "mindr_lep1_jet",
-    "mindr_lep2_jet",
-    "LepGood_conePt[iF_Recl[0]]",
-    "LepGood_conePt[iF_Recl[1]]"
-  };
-  const TMVAInterface mva_2lss_ttV(
-    mvaFileName_2lss_ttV, mvaInputVariables_2lss_ttV, { "iF_Recl[0]", "iF_Recl[1]", "iF_Recl[2]" }
-  );
+  std::string mvaFileName_2lss_ttV = "tthAnalysis/HiggsToTauTau/data/2lss_ttV_BDTG.weights.xml";
+  std::vector<std::string> mvaInputVariables_2lss_ttV;
+  mvaInputVariables_2lss_ttV.push_back("max(abs(LepGood_eta[iF_Recl[0]]),abs(LepGood_eta[iF_Recl[1]]))");
+  mvaInputVariables_2lss_ttV.push_back("MT_met_lep1");
+  mvaInputVariables_2lss_ttV.push_back("nJet25_Recl");
+  mvaInputVariables_2lss_ttV.push_back("mindr_lep1_jet");
+  mvaInputVariables_2lss_ttV.push_back("mindr_lep2_jet");
+  mvaInputVariables_2lss_ttV.push_back("LepGood_conePt[iF_Recl[0]]");
+  mvaInputVariables_2lss_ttV.push_back("LepGood_conePt[iF_Recl[1]]");
+  TMVAInterface mva_2lss_ttV(mvaFileName_2lss_ttV, mvaInputVariables_2lss_ttV, { "iF_Recl[0]", "iF_Recl[1]", "iF_Recl[2]" });
 
-  const std::string mvaFileName_2lss_ttbar = "tthAnalysis/HiggsToTauTau/data/2lss_ttbar_BDTG.weights.xml";
-  const std::vector<std::string> mvaInputVariables_2lss_ttbar =
-  {
-    "max(abs(LepGood_eta[iF_Recl[0]]),abs(LepGood_eta[iF_Recl[1]]))",
-    "nJet25_Recl",
-    "mindr_lep1_jet",
-    "mindr_lep2_jet",
-    "min(met_pt,400)",
-    "avg_dr_jet",
-    "MT_met_lep1"
-  };
-  const TMVAInterface mva_2lss_ttbar(
-    mvaFileName_2lss_ttbar, mvaInputVariables_2lss_ttbar, { "iF_Recl[0]", "iF_Recl[1]", "iF_Recl[2]" }
-  );
+  std::string mvaFileName_2lss_ttbar = "tthAnalysis/HiggsToTauTau/data/2lss_ttbar_BDTG.weights.xml";
+  std::vector<std::string> mvaInputVariables_2lss_ttbar;
+  mvaInputVariables_2lss_ttbar.push_back("max(abs(LepGood_eta[iF_Recl[0]]),abs(LepGood_eta[iF_Recl[1]]))");
+  mvaInputVariables_2lss_ttbar.push_back("nJet25_Recl");
+  mvaInputVariables_2lss_ttbar.push_back("mindr_lep1_jet");
+  mvaInputVariables_2lss_ttbar.push_back("mindr_lep2_jet");
+  mvaInputVariables_2lss_ttbar.push_back("min(met_pt,400)");
+  mvaInputVariables_2lss_ttbar.push_back("avg_dr_jet");
+  mvaInputVariables_2lss_ttbar.push_back("MT_met_lep1");
+  TMVAInterface mva_2lss_ttbar(mvaFileName_2lss_ttbar, mvaInputVariables_2lss_ttbar, { "iF_Recl[0]", "iF_Recl[1]", "iF_Recl[2]" });
 
   std::map<std::string, double> mvaInputs;
+
+  std::string mvaFileName_2lss_1tau_ttbar_TMVA = "tthAnalysis/HiggsToTauTau/data/2lss_1tau_ttbar_BDTG.weights.xml";
+  std::vector<std::string> mvaInputVariables_2lss_1tau_ttbar_TMVA;
+  mvaInputVariables_2lss_1tau_ttbar_TMVA.push_back("lep1_pt");
+  mvaInputVariables_2lss_1tau_ttbar_TMVA.push_back("TMath::Abs(lep1_eta)");
+  mvaInputVariables_2lss_1tau_ttbar_TMVA.push_back("lep2_pt");
+  mvaInputVariables_2lss_1tau_ttbar_TMVA.push_back("TMath::Abs(lep2_eta)");
+  mvaInputVariables_2lss_1tau_ttbar_TMVA.push_back("mindr_lep1_jet");
+  mvaInputVariables_2lss_1tau_ttbar_TMVA.push_back("mindr_lep2_jet");
+  mvaInputVariables_2lss_1tau_ttbar_TMVA.push_back("mindr_tau_jet");
+  mvaInputVariables_2lss_1tau_ttbar_TMVA.push_back("avg_dr_jet");
+  mvaInputVariables_2lss_1tau_ttbar_TMVA.push_back("ptmiss");
+  mvaInputVariables_2lss_1tau_ttbar_TMVA.push_back("mT_lep1");
+  mvaInputVariables_2lss_1tau_ttbar_TMVA.push_back("mT_lep2");
+  mvaInputVariables_2lss_1tau_ttbar_TMVA.push_back("htmiss");
+  mvaInputVariables_2lss_1tau_ttbar_TMVA.push_back("dr_leps");
+  mvaInputVariables_2lss_1tau_ttbar_TMVA.push_back("nJet");
+  mvaInputVariables_2lss_1tau_ttbar_TMVA.push_back("tau_pt");
+  mvaInputVariables_2lss_1tau_ttbar_TMVA.push_back("TMath::Abs(tau_eta)");
+  mvaInputVariables_2lss_1tau_ttbar_TMVA.push_back("dr_lep1_tau");
+  mvaInputVariables_2lss_1tau_ttbar_TMVA.push_back("dr_lep2_tau");
+  TMVAInterface mva_2lss_1tau_ttbar_TMVA(mvaFileName_2lss_1tau_ttbar_TMVA, mvaInputVariables_2lss_1tau_ttbar_TMVA, 
+    { "lep1_tth_mva", "lep2_tth_mva", "nBJetLoose", "nBJetMedium", "tau_mva" });
+
+  std::map<std::string, double> mvaInputs_TMVA;
+
+  std::string mvaFileName_2lss_1tau_ttbar_sklearn = "tthAnalysis/HiggsToTauTau/data/2lss_1tau_ttbar_sklearn.weights.xml";
+  std::vector<std::string> mvaInputVariables_2lss_1tau_ttbar_sklearn;
+  mvaInputVariables_2lss_1tau_ttbar_sklearn.push_back("avg_dr_jet");
+  mvaInputVariables_2lss_1tau_ttbar_sklearn.push_back("ptmiss");
+  mvaInputVariables_2lss_1tau_ttbar_sklearn.push_back("dr_leps");
+  mvaInputVariables_2lss_1tau_ttbar_sklearn.push_back("tau_pt");
+  TMVAInterface mva_2lss_1tau_ttbar_sklearn(mvaFileName_2lss_1tau_ttbar_sklearn, mvaInputVariables_2lss_1tau_ttbar_sklearn);
+  
 
 //--- open output file containing run:lumi:event numbers of events passing final event selection criteria
   std::ostream* selEventsFile = new std::ofstream(selEventsFileName_output.data(), std::ios::out);
@@ -701,10 +734,10 @@ int main(int argc, char* argv[])
     }
     
     
-    //double hadTauSF_weight = dataToMCcorrectionInterface->getSF_hadTauID_and_Iso();
+    double hadTauSF_weight = dataToMCcorrectionInterface->getSF_hadTauID_and_Iso();
     //double MC_weight = pileupWeight * triggerSF_weight * leptonSF_weight * weight_btag * hadTauSF_weight * genWeight;
 
-    snm.read(genWeight,   FloatVariableType::MC_weight);
+    snm.read(sgn(genWeight),   FloatVariableType::MC_weight);
     snm.read(weight_fakeRate,   FloatVariableType::FR_weight);
     snm.read(triggerSF_weight,   FloatVariableType::triggerSF_weight);
     snm.read(leptonSF_weight,   FloatVariableType::leptonSF_weight);
