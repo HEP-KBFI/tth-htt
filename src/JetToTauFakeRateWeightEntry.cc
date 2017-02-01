@@ -60,12 +60,16 @@ JetToTauFakeRateWeightEntry::~JetToTauFakeRateWeightEntry()
 
 double JetToTauFakeRateWeightEntry::getWeight(double pt) const
 {
+  //std::cout << "<JetToTauFakeRateWeightEntry::getWeight>:" << std::endl;
   double weight = 1.;
   if ( applyGraph_ ) {
+    //std::cout << " graph = " << graph_->GetName() << ": weight = " << graph_->Eval(pt) << std::endl;
     weight *= graph_->Eval(pt);
   }
   if ( applyFitFunction_ ) {
+    //std::cout << " fitFunction = " << fitFunction_->GetName() << ": weight = " << fitFunction_->Eval(pt) << std::endl;
     weight *= fitFunction_->Eval(pt);
   }
+  //std::cout << "returning weight = " << weight << std::endl;
   return weight;
 }

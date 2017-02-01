@@ -609,7 +609,7 @@ int main(int argc, char* argv[])
 //    in 2lss_1tau category of ttH multilepton analysis 
     if(lepton_lead)
     {
-      mvaInputs["MT_met_lep1"]                = comp_MT_met_lep1(*lepton_lead, met_pt, met_phi);
+      mvaInputs["MT_met_lep1"]                = comp_MT_met_lep1(lepton_lead->cone_p4(), met_pt, met_phi);
       mvaInputs["LepGood_conePt[iF_Recl[0]]"] = comp_lep1_conePt(*lepton_lead);
       mvaInputs["mindr_lep1_jet"]             = comp_mindr_lep1_jet(*lepton_lead, selJets);
     }
