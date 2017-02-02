@@ -10,7 +10,7 @@ import os, logging, sys, getpass
 mode = "VHbb"
 
 hadTau_selection = None
-if mode == "Vhbb":
+if mode == "VHbb":
   from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_3l_1tau_2015 import samples_2015
   from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_3l_1tau_2016 import samples_2016
   hadTau_selection = "dR03mvaMedium"
@@ -39,7 +39,7 @@ elif ERA == "2016":
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "2017Jan26"
+version = "2017Jan16"
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -124,8 +124,8 @@ if __name__ == '__main__':
     histograms_to_fit = [ "EventCounter", "numJets", "mvaDiscr_3l", "mTauTauVis" ],
     select_rle_output = True,
     select_root_output = False)
-
-  if USE_BDT_TRAINING:
+  
+  if mode == "forBDTtraining":
     analysis.set_BDT_training(changeBranchNames = False)
   analysis.create()
 

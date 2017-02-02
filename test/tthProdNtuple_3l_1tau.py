@@ -23,8 +23,8 @@ version = "2017Jan16"
 
 #--------------------------------------------------------------------------------
 # NOTE: you need to run
-#         'python scripts/cat_rle.py -e 2016 -c 2lss_1tau -v VERSION -u veelken -V'
-#       prior to executing 'python tthProdNtuple_2lss_1tau.py' !!
+#         'python scripts/cat_rle.py -e 2016 -c 3l_1tau -v VERSION -u veelken -V'
+#       prior to executing 'python tthProdNtuple_3l_1tau.py' !!
 #      (otherwise you will get error messages of the kind "Found 0 RLE numbers")
 #--------------------------------------------------------------------------------
 

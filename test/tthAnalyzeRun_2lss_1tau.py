@@ -10,7 +10,7 @@ import os, logging, sys, getpass
 mode = "VHbb"
 
 hadTau_selection = None
-if mode == "Vhbb":
+if mode == "VHbb":
   from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2lss_1tau_2015 import samples_2015
   from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2lss_1tau_2016 import samples_2016
   hadTau_selection = "dR03mvaMedium"
@@ -125,7 +125,7 @@ if __name__ == '__main__':
     histograms_to_fit = [ "EventCounter", "numJets", "mvaDiscr_2lss", "mvaOutput_2lss_1tau_ttbar_TMVA", "mvaOutput_2lss_1tau_ttbar_sklearn", "mTauTauVis", "memOutput_LR" ],
     select_rle_output = True)
 
-  if USE_BDT_TRAINING:
+  if mode == "forBDTtraining":
     analysis.set_BDT_training(changeBranchNames = False)
   analysis.create()
 

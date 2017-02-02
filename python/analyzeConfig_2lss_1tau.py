@@ -116,7 +116,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
     self.histogramDir_prep_dcard = "2lss_1tau_SS_Tight"
     self.histogramDir_prep_dcard_OS = "2lss_1tau_OS_Tight"
     self.cfgFile_make_plots = os.path.join(self.workingDir, "makePlots_2lss_1tau_cfg.py")    
-    self.cfgFile_make_plots_mcClosure = os.path.join(self.workingDir, "makePlots_mcClosure_cfg.py")
+    self.cfgFile_make_plots_mcClosure = os.path.join(self.workingDir, "makePlots_mcClosure_2lss_1tau_cfg.py")
 
     self.select_rle_output = select_rle_output
 
@@ -235,23 +235,6 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
     lines.append("    signal = cms.string('%s')," % self.histogramDir_prep_dcard)
     lines.append("    sideband = cms.string('%s')," % self.histogramDir_prep_dcard.replace("Tight", "Fakeable_mcClosure_wFakeRateWeights"))
     lines.append("    label = cms.string('%s')" % self.channel)
-    lines.append("  )")
-    lines.append(")")
-    lines.append("process.makePlots_mcClosure.distributions = cms.VPSet(")
-    lines.append("  cms.PSet(")
-    lines.append("    histogramName = cms.string('sel/evt/$PROCESS/numJets'),")
-    lines.append("    xAxisTitle = cms.string('jet Multiplicity'),")
-    lines.append("    yAxisTitle = cms.string('N')")
-    lines.append("  ),")
-    lines.append("  cms.PSet(")
-    lines.append("    histogramName = cms.string('sel/evt/$PROCESS/mvaDiscr_2lss'),")
-    lines.append("    xAxisTitle = cms.string('MVA'),")
-    lines.append("    yAxisTitle = cms.string('dN/dMVA')")
-    lines.append("  ),")
-    lines.append("  cms.PSet(")
-    lines.append("    histogramName = cms.string('sel/evt/$PROCESS/mTauTauVis'),")
-    lines.append("    xAxisTitle = cms.string('m_{#tau#tau}^{vis} [GeV]'),")
-    lines.append("    yAxisTitle = cms.string('dN/dm_{#tau#tau}^{vis} [1/GeV]')")
     lines.append("  )")
     lines.append(")")
     create_cfg(self.cfgFile_make_plots_mcClosure, jobOptions['cfgFile_modified'], lines)
