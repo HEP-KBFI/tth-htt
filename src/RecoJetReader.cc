@@ -27,6 +27,7 @@ RecoJetReader::RecoJetReader(int era)
   , jet_BtagCSVwHipMitigation_(0)
   , jet_BtagCSVwoHipMitigation_(0)
   , jet_BtagWeight_(0)
+  , jet_heppyFlavour_(0)
 {
   setBranchNames();
 }
@@ -49,6 +50,7 @@ RecoJetReader::RecoJetReader(int era, const std::string& branchName_num, const s
   , jet_BtagCSVwHipMitigation_(0)
   , jet_BtagCSVwoHipMitigation_(0)
   , jet_BtagWeight_(0)
+  , jet_heppyFlavour_(0)
 {
   setBranchNames();
 }
@@ -70,6 +72,7 @@ RecoJetReader::~RecoJetReader()
     delete[] gInstance->jet_BtagCSVwHipMitigation_;
     delete[] gInstance->jet_BtagCSVwoHipMitigation_;
     delete[] gInstance->jet_BtagWeight_;
+    delete[] gInstance->jet_heppyFlavour_;
     for ( std::map<int, Float_t*>::iterator it = gInstance->jet_BtagWeights_systematics_.begin();
 	  it != gInstance->jet_BtagWeights_systematics_.end(); ++it ) {
       delete[] it->second;
@@ -101,6 +104,7 @@ void RecoJetReader::setBranchNames()
       std::string branchName_BtagWeight = TString(getBranchName_bTagWeight(era_, idxShift)).ReplaceAll("Jet_", Form("%s_", branchName_obj_.data())).Data();
       branchNames_BtagWeight_systematics_[idxShift] = branchName_BtagWeight;
     }
+    branchName_heppyFlavour_ = Form("%s_%s", branchName_obj_.data(), "heppyFlavour");    
     instances_[branchName_obj_] = this;
   } else {
     if ( branchName_num_ != instances_[branchName_obj_]->branchName_num_ ) {
@@ -165,6 +169,8 @@ void RecoJetReader::setBranchAddresses(TTree* tree)
 	tree->SetBranchAddress(branchNames_BtagWeight_systematics_[idxShift].data(), jet_BtagWeights_systematics_[idxShift]);
       }
     }
+    jet_heppyFlavour_ = new Int_t[max_nJets_];
+    tree->SetBranchAddress(branchName_heppyFlavour_.data(), jet_heppyFlavour_); 
   }
 }
 
@@ -188,25 +194,26 @@ std::vector<RecoJet> RecoJetReader::read() const
       else assert(0);
       jets.push_back(RecoJet(
         jet_pt,      
-	gInstance->jet_eta_[idxJet],
-	gInstance->jet_phi_[idxJet],
-	gInstance->jet_mass_[idxJet],
-	gInstance->jet_corr_[idxJet],
-	gInstance->jet_corr_JECUp_[idxJet],
-	gInstance->jet_corr_JECDown_[idxJet],
-	( use_HIP_mitigation_ ) ? gInstance->jet_BtagCSVwHipMitigation_[idxJet] : gInstance->jet_BtagCSVwoHipMitigation_[idxJet],
-	gInstance->jet_BtagWeight_[idxJet],	
-	idxJet ));
+	      gInstance->jet_eta_[idxJet],
+	      gInstance->jet_phi_[idxJet],
+	      gInstance->jet_mass_[idxJet],
+	      gInstance->jet_corr_[idxJet],
+	      gInstance->jet_corr_JECUp_[idxJet],
+	      gInstance->jet_corr_JECDown_[idxJet],
+	      ( use_HIP_mitigation_ ) ? gInstance->jet_BtagCSVwHipMitigation_[idxJet] : gInstance->jet_BtagCSVwoHipMitigation_[idxJet],
+	      gInstance->jet_BtagWeight_[idxJet],	
+	      gInstance->jet_heppyFlavour_[idxJet],
+	      idxJet ));
       RecoJet& jet = jets.back();
       jet.BtagCSVwHipMitigation_ = gInstance->jet_BtagCSVwHipMitigation_[idxJet];
       jet.BtagCSVwoHipMitigation_ = gInstance->jet_BtagCSVwoHipMitigation_[idxJet];
       if ( read_BtagWeight_systematics_ ) {
-	for ( int idxShift = kBtag_hfUp; idxShift <= kBtag_jesDown; ++idxShift ) {
-	  std::map<int, Float_t*>::const_iterator jet_BtagWeight_systematics_iter = jet_BtagWeights_systematics_.find(idxShift);
-	  if ( jet_BtagWeight_systematics_iter != jet_BtagWeights_systematics_.end() ) {
-	    jet.BtagWeight_systematics_[idxShift] = jet_BtagWeight_systematics_iter->second[idxJet];
-	  }
-	}
+	      for ( int idxShift = kBtag_hfUp; idxShift <= kBtag_jesDown; ++idxShift ) {
+	        std::map<int, Float_t*>::const_iterator jet_BtagWeight_systematics_iter = jet_BtagWeights_systematics_.find(idxShift);
+	        if ( jet_BtagWeight_systematics_iter != jet_BtagWeights_systematics_.end() ) {
+	          jet.BtagWeight_systematics_[idxShift] = jet_BtagWeight_systematics_iter->second[idxJet];
+	        }
+	      }
       }
     }
   }

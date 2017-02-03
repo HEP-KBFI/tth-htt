@@ -24,6 +24,18 @@ public:
 	  Double_t BtagCSV,          
 	  Double_t BtagWeight,
           Int_t idx);
+          
+  RecoJet(Double_t pt,
+          Double_t eta,
+          Double_t phi,
+          Double_t mass,
+	  Double_t corr,
+	  Double_t corr_JECUp,
+	  Double_t corr_JECDown,
+	  Double_t BtagCSV,          
+	  Double_t BtagWeight,
+	  Int_t heppyFlavour,
+          Int_t idx);
 
   /**
    * @brief Set links to generator level particles (matched by dR)
@@ -41,6 +53,7 @@ public:
   Double_t corr_JECDown() const { return corr_JECDown_; }
   Double_t BtagCSV() const { return BtagCSV_; }
   Double_t BtagWeight() const { return BtagWeight_; }
+  Int_t heppyFlavour() const { return heppyFlavour_; }
   Int_t idx() const { return idx_; }
 
   const GenLepton* genLepton() const { return genLepton_; }
@@ -56,6 +69,7 @@ public:
   Double_t corr_JECDown_; ///< -1 sigma (downward shifted) jet energy correction
   Double_t BtagCSV_;      ///< CSV b-tagging discriminator value
   Double_t BtagWeight_;   ///< weight for data/MC correction of b-tagging efficiency and mistag rate
+  Int_t heppyFlavour_;    ///< Jet heppy flavour
   Int_t idx_;             ///< index of jet in the ntuple
 
   //---------------------------------------------------------

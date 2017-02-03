@@ -39,6 +39,12 @@ enum { kLoose, kFakeable, kTight };
  * @return True, if first lepton has higher pT; false if second lepton has higher pT
  */
 bool isHigherPt(const GenParticle* particle1, const GenParticle* particle2);
+
+/**
+ * @brief Auxiliary function used for sorting leptons by decreasing cone pT
+ * @param Given pair of leptons
+ * @return True, if first lepton has higher cone pT; false if second lepton has higher cone pT
+ */
 bool isHigherConePt(const RecoLepton* particle1, const RecoLepton* particle2);
 
 /**

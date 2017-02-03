@@ -157,6 +157,7 @@ private:
   Float_t * jet_phi;
   Float_t * jet_E;
   Float_t * jet_CSV;
+  Float_t * jet_heppyFlavour;
 
   Float_t PFMET;
   Float_t PFMETphi;
