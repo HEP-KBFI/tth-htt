@@ -1,12 +1,27 @@
 import os, logging, sys, getpass
 
-USE_BDT_TRAINING = False
+#--------------------------------------------------------------------------------
+# NOTE: set mode flag to
+#   'VHbb' : to run the analysis directly on the VHbb Ntuples (to e.g. produce the RLE files to run the tthProdNtuple and ttHAddMEM steps)
+#   'addMEM' : to run the analysis on the Ntuples with MEM variables added
+#   'forBDTtraining' : to run the analysis on the Ntuples with MEM variables added, and with a relaxed event selection, to increase the BDT training statistics
+#--------------------------------------------------------------------------------
 
-from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2lss_1tau_2015 import samples_2015
-if USE_BDT_TRAINING:
-  from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_2lss1tau_addMEM_forBDTtraining import samples_2016
-else:
+mode = "VHbb"
+
+hadTau_selection = None
+if mode == "VHbb":
+  from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2lss_1tau_2015 import samples_2015
   from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2lss_1tau_2016 import samples_2016
+  hadTau_selection = "dR03mvaMedium"
+elif mode == "addMEM":
+  from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_2lss1tau_addMEM import samples_2016
+  hadTau_selection = "dR03mvaMedium"
+elif mode == "forBDTtraining":
+  from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_2lss1tau_addMEM_forBDTtraining import samples_2016
+  hadTau_selection = "dR03mvaVVLoose"
+else:
+  raise ValueError("Invalid Configuration parameter 'mode' = %s !!" % mode)
 from tthAnalysis.HiggsToTauTau.analyzeConfig_2lss_1tau import analyzeConfig_2lss_1tau
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 
@@ -37,7 +52,7 @@ if __name__ == '__main__':
     executable_analyze = "analyze_2lss_1tau", cfgFile_analyze = "analyze_2lss_1tau_cfg.py",
     samples = samples,
     lepton_charge_selections = [ "OS", "SS" ],
-    hadTau_selection = "dR03mvaMedium",
+    hadTau_selection = hadTau_selection,
     # CV: apply "fake" background estimation to leptons only and not to hadronic taus, as discussed on slide 10 of
     #     https://indico.cern.ch/event/597028/contributions/2413742/attachments/1391684/2120220/16.12.22_ttH_Htautau_-_Review_of_systematics.pdf
     ##applyFakeRateWeights = "3L",
@@ -65,16 +80,16 @@ if __name__ == '__main__':
       #------------------------------------------------------
       # CV: enable the CMS_ttHl_FRe_shape and CMS_ttHl_FRm_shape only
       #     if you plan to run compShapeSyst 1!
-      "CMS_ttHl_FRe_shape_ptUp",
-      "CMS_ttHl_FRe_shape_ptDown",
-      "CMS_ttHl_FRe_shape_etaUp",
-      "CMS_ttHl_FRe_shape_etaDown",
-      "CMS_ttHl_FRe_shape_eta_barrelUp",
-      "CMS_ttHl_FRe_shape_eta_barrelDown",
-      "CMS_ttHl_FRm_shape_ptUp",
-      "CMS_ttHl_FRm_shape_ptDown",
-      "CMS_ttHl_FRm_shape_etaUp",
-      "CMS_ttHl_FRm_shape_etaDown",
+##       "CMS_ttHl_FRe_shape_ptUp",
+##       "CMS_ttHl_FRe_shape_ptDown",
+##       "CMS_ttHl_FRe_shape_etaUp",
+##       "CMS_ttHl_FRe_shape_etaDown",
+##       "CMS_ttHl_FRe_shape_eta_barrelUp",
+##       "CMS_ttHl_FRe_shape_eta_barrelDown",
+##       "CMS_ttHl_FRm_shape_ptUp",
+##       "CMS_ttHl_FRm_shape_ptDown",
+##       "CMS_ttHl_FRm_shape_etaUp",
+##       "CMS_ttHl_FRm_shape_etaDown",
       #------------------------------------------------------
 ##       "CMS_ttHl_tauESUp",
 ##       "CMS_ttHl_tauESDown",
@@ -110,7 +125,7 @@ if __name__ == '__main__':
     histograms_to_fit = [ "EventCounter", "numJets", "mvaDiscr_2lss", "mvaOutput_2lss_1tau_ttbar_TMVA", "mvaOutput_2lss_1tau_ttbar_sklearn", "mTauTauVis", "memOutput_LR" ],
     select_rle_output = True)
 
-  if USE_BDT_TRAINING:
+  if mode == "forBDTtraining":
     analysis.set_BDT_training(changeBranchNames = False)
   analysis.create()
 

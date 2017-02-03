@@ -22,7 +22,7 @@ process.addMEM_3l_1tau = cms.PSet(
 
     leptonSelection = cms.string('Fakeable'),
 
-    hadTauSelection = cms.string('Loose'),
+    hadTauSelection = cms.string('Tight|dR03mvaMedium'),
 
     use_HIP_mitigation_bTag = cms.bool(False),
 

@@ -19,18 +19,14 @@ elif ERA == "2016":
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "2017Jan06"
+version = "2017Jan16"
 
-#--------------------------------------------------------------------------------   
-# CV: run Ntuple production jobs also for high statistics background samples
-#     not used in the analysis, but used for BDT training by Arun
-for sample_name, sample_info in samples_2016.items():
-  if sample_name in [
-      "/TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16MiniAODv1-PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext3-v1/MINIAODSIM",
-      "/TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16MiniAODv1-PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext4-v1/MINIAODSIM",
-      "/TTW/spring16DR80v6aMiniAODv1/FASTSIM" ]:
-    sample_info["use_it"] = True
-#--------------------------------------------------------------------------------    
+#--------------------------------------------------------------------------------
+# NOTE: you need to run
+#         'python scripts/cat_rle.py -e 2016 -c 3l_1tau -v VERSION -u veelken -V'
+#       prior to executing 'python tthProdNtuple_3l_1tau.py' !!
+#      (otherwise you will get error messages of the kind "Found 0 RLE numbers")
+#--------------------------------------------------------------------------------
 
 if __name__ == '__main__':
   logging.basicConfig(

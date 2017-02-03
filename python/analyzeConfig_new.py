@@ -130,18 +130,10 @@ class analyzeConfig:
         self.rootOutputAux = {}
 
         if era == '2015':
-            self.triggers_3mu = [
-
-            ]
-            self.triggers_2mu1e = [
-
-            ]
-            self.triggers_1mu2e = [
-
-            ]
-            self.triggers_3e = [
-
-            ]
+            self.triggers_3mu = []
+            self.triggers_1e2mu = []
+            self.triggers_2e1mu = []
+            self.triggers_3e = []
             self.triggers_2mu = [
                 'HLT_BIT_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v',
                 'HLT_BIT_HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v'
@@ -160,17 +152,17 @@ class analyzeConfig:
             self.triggers_1e = [
                 'HLT_BIT_HLT_Ele23_WPLoose_Gsf_v'
             ]
-            self.triggers_2tau = [
-
-            ]            
+            self.triggers_1mu1tau = []
+            self.triggers_1e1tau = []
+            self.triggers_2tau = []            
         elif era == '2016':
             self.triggers_3mu = [
                 'HLT_BIT_HLT_TripleMu_12_10_5_v',
             ]
-            self.triggers_2mu1e = [
+            self.triggers_1e2mu = [
                 'HLT_BIT_HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v'
             ]
-            self.triggers_1mu2e = [
+            self.triggers_2e1mu = [
                 'HLT_BIT_HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v'
             ]
             self.triggers_3e = [
@@ -200,15 +192,14 @@ class analyzeConfig:
                 'HLT_BIT_HLT_IsoMu19_eta2p1_LooseIsoPFTau20_v'
             ]
             self.triggers_1e1tau = [
-                'HLT_BIT_HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau30_v'
-            ]
+               'HLT_BIT_HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau30_v'
+            ]           
             self.triggers_2tau = [
                 'HLT_BIT_HLT_DoubleMediumIsoPFTau35_Trk1_eta2p1_Reg_v',
                 'HLT_BIT_HLT_DoubleMediumCombinedIsoPFTau35_Trk1_eta2p1_Reg_v'
             ]
         else:
-            raise ValueError(
-                "Invalid Configuration parameter 'era' = %s !!" % era)
+            raise ValueError("Invalid Configuration parameter 'era' = %s !!" % era)
 
         self.cvmfs_error_log = {}
 

@@ -31,10 +31,13 @@
 #include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionCleaner.h" // RecoElectronCollectionCleaner, RecoMuonCollectionCleaner, RecoHadTauCollectionCleaner, RecoJetCollectionCleaner
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorLoose.h" // RecoElectronCollectionSelectorLoose
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorFakeable.h" // RecoElectronCollectionSelectorFakeable
+#include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorTight.h" // RecoElectronCollectionSelectorTight
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorLoose.h" // RecoMuonCollectionSelectorLoose
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorFakeable.h" // RecoMuonCollectionSelectorFakeable
+#include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorTight.h" // RecoMuonCollectionSelectorTight
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelectorLoose.h" // RecoHadTauCollectionSelectorLoose
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelectorFakeable.h" // RecoHadTauCollectionSelectorFakeable
+#include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelectorTight.h" // RecoHadTauCollectionSelectorTight
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelector.h" // RecoJetCollectionSelector
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelectorBtag.h" // RecoJetCollectionSelectorBtagLoose, RecoJetCollectionSelectorBtagMedium
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronWriter.h" // RecoElectronWriter
@@ -107,18 +110,20 @@ int main(int argc, char* argv[])
   int leptonSelection = -1;
   if      ( leptonSelection_string == "Loose"    ) leptonSelection = kLoose;
   else if ( leptonSelection_string == "Fakeable" ) leptonSelection = kFakeable;
+  else if ( leptonSelection_string == "Tight"    ) leptonSelection = kTight;
   else throw cms::Exception("produceNtuple_2lss_1tau") 
     << "Invalid Configuration parameter 'leptonSelection' = " << leptonSelection_string << " !!\n";
   int minNumLeptons = cfg_produceNtuple.getParameter<int>("minNumLeptons");
 
-  TString hadTauSelection_string = cfg_produceNtuple.getParameter<std::string>("hadTauSelection").data();
+   TString hadTauSelection_string = cfg_produceNtuple.getParameter<std::string>("hadTauSelection").data();
   TObjArray* hadTauSelection_parts = hadTauSelection_string.Tokenize("|");
   assert(hadTauSelection_parts->GetEntries() >= 1);
   std::string hadTauSelection_part1 = (dynamic_cast<TObjString*>(hadTauSelection_parts->At(0)))->GetString().Data();
   int hadTauSelection = -1;
   if      ( hadTauSelection_part1 == "Loose"    ) hadTauSelection = kLoose;
   else if ( hadTauSelection_part1 == "Fakeable" ) hadTauSelection = kFakeable;
-  else throw cms::Exception("produceNtuple_2lss_1tau") 
+  else if ( hadTauSelection_part1 == "Tight"    ) hadTauSelection = kTight;
+   else throw cms::Exception("produceNtuple_2lss_1tau") 
     << "Invalid Configuration parameter 'hadTauSelection' = " << hadTauSelection_string << " !!\n";
   std::string hadTauSelection_part2 = ( hadTauSelection_parts->GetEntries() == 2 ) ? (dynamic_cast<TObjString*>(hadTauSelection_parts->At(1)))->GetString().Data() : "";
   delete hadTauSelection_parts;
@@ -190,12 +195,14 @@ int main(int argc, char* argv[])
   muonReader->setBranchAddresses(inputTree);
   RecoMuonCollectionSelectorLoose preselMuonSelector(era);
   RecoMuonCollectionSelectorFakeable fakeableMuonSelector(era);
+  RecoMuonCollectionSelectorTight tightMuonSelector(era);
   
   RecoElectronReader* electronReader = new RecoElectronReader(era, "nselLeptons", "selLeptons");
   electronReader->setBranchAddresses(inputTree);
   RecoElectronCollectionCleaner electronCleaner(0.3);
   RecoElectronCollectionSelectorLoose preselElectronSelector(era);
   RecoElectronCollectionSelectorFakeable fakeableElectronSelector(era);
+  RecoElectronCollectionSelectorTight tightElectronSelector(era);
 
   RecoHadTauReader* hadTauReader = new RecoHadTauReader(era, "nTauGood", "TauGood");
   hadTauReader->setBranchAddresses(inputTree);
@@ -204,10 +211,13 @@ int main(int argc, char* argv[])
 if ( hadTauSelection_part2 == "dR03mvaVLoose" || hadTauSelection_part2 == "dR03mvaVVLoose" ) preselHadTauSelector.set(hadTauSelection_part2);
   RecoHadTauCollectionSelectorFakeable fakeableHadTauSelector(era);
   if ( hadTauSelection_part2 == "dR03mvaVLoose" || hadTauSelection_part2 == "dR03mvaVVLoose" ) fakeableHadTauSelector.set(hadTauSelection_part2);
+  RecoHadTauCollectionSelectorTight tightHadTauSelector(era);
+  if ( hadTauSelection_part2 != "" ) tightHadTauSelector.set(hadTauSelection_part2);
   // CV: lower thresholds on hadronic taus by 2 GeV 
   //     with respect to thresholds applied on analysis level (in analyze_2lss_1tau.cc)
   preselHadTauSelector.set_min_pt(18.); 
   fakeableHadTauSelector.set_min_pt(18.);
+  tightHadTauSelector.set_min_pt(18.);
   
   RecoJetReader* jetReader = new RecoJetReader(era, "nJet", "Jet");
   if ( use_HIP_mitigation_bTag ) jetReader->enable_HIP_mitigation();
@@ -328,9 +338,11 @@ if ( hadTauSelection_part2 == "dR03mvaVLoose" || hadTauSelection_part2 == "dR03m
     std::vector<const RecoMuon*> cleanedMuons = muon_ptrs; // CV: no cleaning needed for muons, as they have the highest priority in the overlap removal
     std::vector<const RecoMuon*> preselMuons = preselMuonSelector(cleanedMuons);
     std::vector<const RecoMuon*> fakeableMuons = fakeableMuonSelector(preselMuons);
+    std::vector<const RecoMuon*> tightMuons = tightMuonSelector(preselMuons);
     std::vector<const RecoMuon*> selMuons;
     if      ( leptonSelection == kLoose    ) selMuons = preselMuons;
     else if ( leptonSelection == kFakeable ) selMuons = fakeableMuons;
+    else if ( leptonSelection == kTight    ) selMuons = tightMuons;
     else assert(0);
 
     std::vector<RecoElectron> electrons = electronReader->read();
@@ -338,9 +350,11 @@ if ( hadTauSelection_part2 == "dR03mvaVLoose" || hadTauSelection_part2 == "dR03m
     std::vector<const RecoElectron*> cleanedElectrons = electronCleaner(electron_ptrs, fakeableMuons);
     std::vector<const RecoElectron*> preselElectrons = preselElectronSelector(cleanedElectrons);
     std::vector<const RecoElectron*> fakeableElectrons = fakeableElectronSelector(preselElectrons);
+    std::vector<const RecoElectron*> tightElectrons = tightElectronSelector(preselElectrons);
     std::vector<const RecoElectron*> selElectrons;
     if      ( leptonSelection == kLoose    ) selElectrons = preselElectrons;
     else if ( leptonSelection == kFakeable ) selElectrons = fakeableElectrons;
+    else if ( leptonSelection == kTight    ) selElectrons = tightElectrons;
     else assert(0);
 
     std::vector<RecoHadTau> hadTaus = hadTauReader->read();
@@ -348,9 +362,11 @@ if ( hadTauSelection_part2 == "dR03mvaVLoose" || hadTauSelection_part2 == "dR03m
     std::vector<const RecoHadTau*> cleanedHadTaus = hadTauCleaner(hadTau_ptrs, preselMuons, preselElectrons);
     std::vector<const RecoHadTau*> preselHadTaus = preselHadTauSelector(cleanedHadTaus);
     std::vector<const RecoHadTau*> fakeableHadTaus = fakeableHadTauSelector(cleanedHadTaus);
+    std::vector<const RecoHadTau*> tightHadTaus = tightHadTauSelector(cleanedHadTaus);
     std::vector<const RecoHadTau*> selHadTaus;
     if      ( hadTauSelection == kLoose    ) selHadTaus = preselHadTaus;
     else if ( hadTauSelection == kFakeable ) selHadTaus = fakeableHadTaus;
+    else if ( hadTauSelection == kTight    ) selHadTaus = tightHadTaus;
     else assert(0);
     
 //--- build collections of jets and select subset of jets passing b-tagging criteria
