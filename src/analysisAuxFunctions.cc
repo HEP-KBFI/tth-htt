@@ -8,7 +8,7 @@ bool isHigherPt(const GenParticle* particle1, const GenParticle* particle2)
   return (particle1->pt() > particle2->pt());
 }
 
-bool isHigherConePt(const GenParticle* particle1, const GenParticle* particle2)
+bool isHigherConePt(const RecoLepton* particle1, const RecoLepton* particle2)
 {
   return (particle1->cone_pt() > particle2->cone_pt());
 }
