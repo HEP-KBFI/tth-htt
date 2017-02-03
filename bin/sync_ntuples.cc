@@ -443,7 +443,7 @@ int main(int argc, char* argv[])
     std::vector<const RecoMuon*> mvaBasedMuons = mvaBasedSelector(preselMuons);
     std::vector<const RecoMuon*> tightMuons = tightMuonSelector(preselMuons);
     std::vector<const RecoMuon*> selMuons = preselMuons;
-    std::sort(preselMuons.begin(), preselMuons.end(), isHigherPt);
+    std::sort(preselMuons.begin(), preselMuons.end(), isHigherConePt);
     snm.read(preselMuons, fakeableMuons, cutBasedMuons, mvaBasedMuons);
 
     std::vector<RecoElectron> electrons = electronReader->read();
@@ -455,7 +455,7 @@ int main(int argc, char* argv[])
     std::vector<const RecoElectron*> mvaBasedElectrons = mvaBasedElectronSelector(preselElectrons);
     std::vector<const RecoElectron*> tightElectrons = tightElectronSelector(preselElectrons);
     std::vector<const RecoElectron*> selElectrons = preselElectrons;
-    std::sort(preselElectrons.begin(), preselElectrons.end(), isHigherPt);
+    std::sort(preselElectrons.begin(), preselElectrons.end(), isHigherConePt);
     snm.read(preselElectrons, fakeableElectrons, cutBasedElectrons, mvaBasedElectrons);
 
     std::vector<RecoHadTau> hadTaus = hadTauReader->read();
@@ -506,14 +506,14 @@ int main(int argc, char* argv[])
     preselLeptons.reserve(preselElectrons.size() + preselMuons.size());
     preselLeptons.insert(preselLeptons.end(), preselElectrons.begin(), preselElectrons.end());
     preselLeptons.insert(preselLeptons.end(), preselMuons.begin(), preselMuons.end());
-    std::sort(preselLeptons.begin(), preselLeptons.end(), isHigherPt);
+    std::sort(preselLeptons.begin(), preselLeptons.end(), isHigherConePt);
 
 //--- collect fakeable leptons
     std::vector<const RecoLepton *> fakeableLeptons;
     fakeableLeptons.reserve(fakeableElectrons.size() + fakeableMuons.size());
     fakeableLeptons.insert(fakeableLeptons.end(), fakeableElectrons.begin(), fakeableElectrons.end());
     fakeableLeptons.insert(fakeableLeptons.end(), fakeableMuons.begin(),     fakeableMuons.end());
-    std::sort(fakeableLeptons.begin(), fakeableLeptons.end(), isHigherPt);
+    std::sort(fakeableLeptons.begin(), fakeableLeptons.end(), isHigherConePt);
     
     const RecoLepton * const lepton_lead = [&]()
     {
@@ -582,7 +582,7 @@ int main(int argc, char* argv[])
 	          jet != selJets.end(); ++jet ) {
 	      weight_btag *= (*jet)->BtagWeight();
 	      //std::cout << "jet " << (*jet)->pt() << " " << (*jet)->eta()  << ", flavour " << (*jet)->genJet()->pdgId() << ", weight " << (*jet)->BtagWeight() << std::endl;
-	      std::cout << "jet " << (*jet)->pt() << " " << (*jet)->eta()  << ", CSV " << (*jet)->BtagCSV() << ", weight " << (*jet)->BtagWeight() << std::endl;
+	      std::cout << run << ':' << lumi << ':' << event << ", jet " << (*jet)->pt() << " " << (*jet)->eta()  << ", CSV " << (*jet)->BtagCSV() << ", flavour " << (*jet)->heppyFlavour() << ", weight " << (*jet)->BtagWeight() << ", leptons: " << lepton_lead_type << " "<< lepton_lead_pt << " " << lepton_lead_eta << " " << lepton_lead->mvaRawTTH() << " " << lepton_lead->isTight() << " " << lepton_lead->cone_pt() << " " << lepton_sublead_type<< " " << lepton_sublead_pt << " " << lepton_sublead_eta << " " << lepton_sublead->mvaRawTTH() << " " << lepton_sublead->isTight() << " " << lepton_sublead->cone_pt() << std::endl;
 	      
       }
     }
@@ -632,6 +632,7 @@ int main(int argc, char* argv[])
         snm.read(mva_2lss_ttbar(mvaInputs), FloatVariableType::mvaOutput_ttbar);
       }
     }
+    
     snm.read(mvaInputs);
     mvaInputs.clear();
     
@@ -660,7 +661,7 @@ int main(int argc, char* argv[])
     selLeptons.reserve(selElectrons.size() + selMuons.size());
     selLeptons.insert(selLeptons.end(), selElectrons.begin(), selElectrons.end());
     selLeptons.insert(selLeptons.end(), selMuons.begin(), selMuons.end());
-    std::sort(selLeptons.begin(), selLeptons.end(), isHigherPt);
+    std::sort(selLeptons.begin(), selLeptons.end(), isHigherConePt);
     const RecoLepton* selLepton_lead = nullptr;
     const RecoLepton* selLepton_sublead = nullptr;
     if (selLeptons.size() > 0){

@@ -41,6 +41,13 @@ enum { kLoose, kFakeable, kTight };
 bool isHigherPt(const GenParticle* particle1, const GenParticle* particle2);
 
 /**
+ * @brief Auxiliary function used for sorting leptons by decreasing cone pT
+ * @param Given pair of leptons
+ * @return True, if first lepton has higher cone pT; false if second lepton has higher cone pT
+ */
+bool isHigherConePt(const GenParticle* particle1, const GenParticle* particle2);
+
+/**
  * @brief Auxiliary function for sorting a collection of RecoJet pointers
  *        by their b-tagging CSV score
  * @param jet1 The first jet

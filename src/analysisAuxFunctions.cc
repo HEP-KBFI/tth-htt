@@ -8,6 +8,11 @@ bool isHigherPt(const GenParticle* particle1, const GenParticle* particle2)
   return (particle1->pt() > particle2->pt());
 }
 
+bool isHigherConePt(const GenParticle* particle1, const GenParticle* particle2)
+{
+  return (particle1->cone_pt() > particle2->cone_pt());
+}
+
 bool
 isHigherCSV(const RecoJet * jet1,
             const RecoJet * jet2)
