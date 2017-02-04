@@ -971,7 +971,7 @@ int main(int argc, char* argv[])
     preselLeptons.reserve(preselElectrons.size() + preselMuons.size());
     preselLeptons.insert(preselLeptons.end(), preselElectrons.begin(), preselElectrons.end());
     preselLeptons.insert(preselLeptons.end(), preselMuons.begin(), preselMuons.end());
-    std::sort(preselLeptons.begin(), preselLeptons.end(), isHigherPt);
+    std::sort(preselLeptons.begin(), preselLeptons.end(), isHigherConePt);
     // require exactly one lepton passing loose preselection criteria
     if ( !(preselLeptons.size() >= 1) ) continue;
     cutFlowTable.update(">= 1 presel lepton");

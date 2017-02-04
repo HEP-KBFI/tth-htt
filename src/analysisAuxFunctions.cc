@@ -13,9 +13,7 @@ bool isHigherConePt(const RecoLepton* particle1, const RecoLepton* particle2)
   return (particle1->cone_pt() > particle2->cone_pt());
 }
 
-bool
-isHigherCSV(const RecoJet * jet1,
-            const RecoJet * jet2)
+bool isHigherCSV(const RecoJet* jet1, const RecoJet* jet2)
 {
   return (jet1 -> BtagCSV()) > (jet2 -> BtagCSV());
 }

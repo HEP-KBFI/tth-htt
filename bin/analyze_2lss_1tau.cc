@@ -650,24 +650,6 @@ int main(int argc, char* argv[])
       selHistManager->subleadElectron_ = new ElectronHistManager(makeHistManager_cfg(process_and_genMatch, 
         Form("%s/sel/subleadElectron", histogramDir.data()), central_or_shift, 1));
       selHistManager->subleadElectron_->bookHistograms(fs);
-      vstring categories_e = { 
-        "2epp_1tau_bloose", "2epp_1tau_btight", "2emm_1tau_bloose", "2emm_1tau_btight", 
-	"1e1mupp_1tau_bloose", "1e1mupp_1tau_btight", "1e1mumm_1tau_bloose", "1e1mumm_1tau_btight" 
-      };
-      for ( vstring::const_iterator category = categories_e.begin();
-	    category != categories_e.end(); ++category ) {
-	TString histogramDir_category = histogramDir.data();
-	histogramDir_category.ReplaceAll("2lss_1tau", category->data());
-	selHistManager->electrons_in_categories_[*category] = new ElectronHistManager(makeHistManager_cfg(process_and_genMatch, 
-          Form("%s/sel/electrons", histogramDir_category.Data()), central_or_shift));	
-	selHistManager->electrons_in_categories_[*category]->bookHistograms(fs);
-	selHistManager->leadElectron_in_categories_[*category] = new ElectronHistManager(makeHistManager_cfg(process_and_genMatch, 
-	  Form("%s/sel/leadElectron", histogramDir_category.Data()), central_or_shift, 0));
-	selHistManager->leadElectron_in_categories_[*category]->bookHistograms(fs);
-	selHistManager->subleadElectron_in_categories_[*category] = new ElectronHistManager(makeHistManager_cfg(process_and_genMatch, 
-	  Form("%s/sel/subleadElectron", histogramDir_category.Data()), central_or_shift, 1));
-	selHistManager->subleadElectron_in_categories_[*category]->bookHistograms(fs);
-      }
       selHistManager->muons_ = new MuonHistManager(makeHistManager_cfg(process_and_genMatch, 
         Form("%s/sel/muons", histogramDir.data()), central_or_shift));
       selHistManager->muons_->bookHistograms(fs);
@@ -677,24 +659,6 @@ int main(int argc, char* argv[])
       selHistManager->subleadMuon_ = new MuonHistManager(makeHistManager_cfg(process_and_genMatch, 
         Form("%s/sel/subleadMuon", histogramDir.data()), central_or_shift, 1));
       selHistManager->subleadMuon_->bookHistograms(fs);
-      vstring categories_mu = { 
-	"1e1mupp_1tau_bloose", "1e1mupp_1tau_btight", "1e1mumm_1tau_bloose", "1e1mumm_1tau_btight",
-	"2mupp_1tau_bloose", "2mupp_1tau_btight", "2mumm_1tau_bloose", "2mumm_1tau_btight" 
-      };
-      for ( vstring::const_iterator category = categories_e.begin();
-	    category != categories_e.end(); ++category ) {
-	TString histogramDir_category = histogramDir.data();
-	histogramDir_category.ReplaceAll("2lss_1tau", category->data());
-	selHistManager->muons_in_categories_[*category] = new MuonHistManager(makeHistManager_cfg(process_and_genMatch, 
-          Form("%s/sel/muons", histogramDir_category.Data()), central_or_shift));	
-	selHistManager->muons_in_categories_[*category]->bookHistograms(fs);
-	selHistManager->leadMuon_in_categories_[*category] = new MuonHistManager(makeHistManager_cfg(process_and_genMatch, 
-	  Form("%s/sel/leadMuon", histogramDir_category.Data()), central_or_shift, 0));
-	selHistManager->leadMuon_in_categories_[*category]->bookHistograms(fs);
-	selHistManager->subleadMuon_in_categories_[*category] = new MuonHistManager(makeHistManager_cfg(process_and_genMatch, 
-	  Form("%s/sel/subleadMuon", histogramDir_category.Data()), central_or_shift, 1));
-	selHistManager->subleadMuon_in_categories_[*category]->bookHistograms(fs);
-      }
       selHistManager->hadTaus_ = new HadTauHistManager(makeHistManager_cfg(process_and_genMatch, 
         Form("%s/sel/hadTaus", histogramDir.data()), central_or_shift));
       selHistManager->hadTaus_->bookHistograms(fs);
@@ -741,19 +705,6 @@ int main(int argc, char* argv[])
             Form("%s/sel/evt", histogramDir.data()), era_string, central_or_shift));
 	  selHistManager->evt_in_decayModes_[*decayMode]->bookHistograms(fs);
 	}
-      }
-      vstring categories_evt = { 
-	"2epp_1tau_bloose", "2epp_1tau_btight", "2emm_1tau_bloose", "2emm_1tau_btight",
-	"1e1mupp_1tau_bloose", "1e1mupp_1tau_btight", "1e1mumm_1tau_bloose", "1e1mumm_1tau_btight",
-	"2mupp_1tau_bloose", "2mupp_1tau_btight", "2mumm_1tau_bloose", "2mumm_1tau_btight" 
-      };
-      for ( vstring::const_iterator category = categories_evt.begin();
-	    category != categories_evt.end(); ++category ) {
-	TString histogramDir_category = histogramDir.data();
-	histogramDir_category.ReplaceAll("2lss_1tau", category->data());
-	selHistManager->evt_in_categories_[*category] = new EvtHistManager_2lss_1tau(makeHistManager_cfg(process_and_genMatch, 
-          Form("%s/sel/evt", histogramDir_category.Data()), era_string, central_or_shift));
-	selHistManager->evt_in_categories_[*category]->bookHistograms(fs);
       }
       selHistManager->weights_ = new WeightHistManager(makeHistManager_cfg(process_and_genMatch, 
         Form("%s/sel/weights", histogramDir.data()), central_or_shift));
@@ -1061,7 +1012,7 @@ int main(int argc, char* argv[])
     preselLeptons.reserve(preselElectrons.size() + preselMuons.size());
     preselLeptons.insert(preselLeptons.end(), preselElectrons.begin(), preselElectrons.end());
     preselLeptons.insert(preselLeptons.end(), preselMuons.begin(), preselMuons.end());
-    std::sort(preselLeptons.begin(), preselLeptons.end(), isHigherPt);
+    std::sort(preselLeptons.begin(), preselLeptons.end(), isHigherConePt);
     // require exactly two leptons passing loose preselection criteria to avoid overlap with 3l category
     if ( !(preselLeptons.size() >= 2) ) {
       if ( run_lumi_eventSelector ) {
@@ -1465,22 +1416,19 @@ int main(int argc, char* argv[])
       }
       continue;
     }
-    double evtWeight_pp = evtWeight;
-    double evtWeight_mm = evtWeight;
     if ( leptonChargeSelection == kOS ) {
       double prob_chargeMisId_lead = prob_chargeMisId(getLeptonType(selLepton_lead->pdgId()), selLepton_lead->pt(), selLepton_lead->eta());
       double prob_chargeMisId_sublead = prob_chargeMisId(getLeptonType(selLepton_sublead->pdgId()), selLepton_sublead->pt(), selLepton_sublead->eta());
-      
-      evtWeight *= ( prob_chargeMisId_lead + prob_chargeMisId_sublead);
-      
-      if ( selLepton_lead->charge() < 0 && selLepton_sublead->charge() > 0 ) {
-	evtWeight_pp *= prob_chargeMisId_lead;
-	evtWeight_mm *= prob_chargeMisId_sublead;
-      }
-      if ( selLepton_lead->charge() > 0 && selLepton_sublead->charge() < 0 ) {
-	evtWeight_pp *= prob_chargeMisId_sublead;
-	evtWeight_mm *= prob_chargeMisId_lead;
-      }
+
+      if ( apply_lepton_and_hadTauCharge_cut ) {
+	// CV: apply charge misidentification probability to lepton of same charge as hadronic tau
+	//    (if the lepton of charge opposite to the charge of the hadronic tau "flips",
+	//     the event has sum of charges equal to three and fails "lepton+tau charge" cut)
+	if ( selLepton_lead->charge()*selHadTau->charge()    > 0 ) evtWeight *= prob_chargeMisId_lead;
+	if ( selLepton_sublead->charge()*selHadTau->charge() > 0 ) evtWeight *= prob_chargeMisId_sublead;
+      } else {
+	evtWeight *= ( prob_chargeMisId_lead + prob_chargeMisId_sublead);
+      }      
     } 
     cutFlowTable.update(Form("lepton-pair %s charge", leptonChargeSelection_string.data()), evtWeight);
     cutFlowHistManager->fillHistograms("lepton-pair OS/SS charge", evtWeight);
@@ -1495,11 +1443,6 @@ int main(int argc, char* argv[])
 	}
 	continue;
       }
-      // CV: There is a combinatorial factor 2 involved when estimating the charge "flip" background using OS events.
-      //     In case of SS events, half the events pass the charge(leadLepton + subleadLepton + hadTau) == +/- 1 cut,
-      //     while all OS events pass this cut.
-      //     The combinatorial factor is taken into acount by assigning a weight of 0.5 to OS events.
-      if ( leptonChargeSelection == kOS ) evtWeight *= 0.5;
       cutFlowTable.update("lepton+tau charge", evtWeight);
       cutFlowHistManager->fillHistograms("lepton+tau charge", evtWeight);
     }
@@ -1735,62 +1678,6 @@ int main(int argc, char* argv[])
     selHistManager->weights_->fillHistograms("data_to_MC_correction", weight_data_to_MC_correction_loose*weight_data_to_MC_correction_tight);
     selHistManager->weights_->fillHistograms("fakeRate", weight_fakeRate);
     
-    bool isCharge_pp = selLepton_lead->pdgId() < 0 && selLepton_sublead->pdgId() < 0;
-    bool isCharge_mm = selLepton_lead->pdgId() > 0 && selLepton_sublead->pdgId() > 0;
-
-    vstring categories_evt = { 
-      "2epp_1tau_bloose", "2epp_1tau_btight", "2emm_1tau_bloose", "2emm_1tau_btight",
-      "1e1mupp_1tau_bloose", "1e1mupp_1tau_btight", "1e1mumm_1tau_bloose", "1e1mumm_1tau_btight",
-      "2mupp_1tau_bloose", "2mupp_1tau_btight", "2mumm_1tau_bloose", "2mumm_1tau_btight" 
-    };
-    for ( vstring::const_iterator category = categories_evt.begin();
-          category != categories_evt.end(); ++category ) {
-      bool isCategory_2epp_btight = selElectrons.size() == 2 && (isCharge_pp || leptonChargeSelection == kOS) && selBJets_medium.size() >= 1;
-      bool isCategory_2epp_bloose = selElectrons.size() == 2 && (isCharge_pp || leptonChargeSelection == kOS);
-      bool isCategory_2emm_btight = selElectrons.size() == 2 && (isCharge_mm || leptonChargeSelection == kOS) && selBJets_medium.size() >= 1;
-      bool isCategory_2emm_bloose = selElectrons.size() == 2 && (isCharge_mm || leptonChargeSelection == kOS);
-      bool isCategory_1e1mupp_btight = selElectrons.size() == 1 && selMuons.size() == 1 && (isCharge_pp || leptonChargeSelection == kOS) && selBJets_medium.size() >= 1;
-      bool isCategory_1e1mupp_bloose = selElectrons.size() == 1 && selMuons.size() == 1 && (isCharge_pp || leptonChargeSelection == kOS);
-      bool isCategory_1e1mumm_btight = selElectrons.size() == 1 && selMuons.size() == 1 && (isCharge_mm || leptonChargeSelection == kOS) && selBJets_medium.size() >= 1;
-      bool isCategory_1e1mumm_bloose = selElectrons.size() == 1 && selMuons.size() == 1 && (isCharge_mm || leptonChargeSelection == kOS);
-      bool isCategory_2mupp_btight = selMuons.size() == 2 && (isCharge_pp || leptonChargeSelection == kOS) && selBJets_medium.size() >= 1;
-      bool isCategory_2mupp_bloose = selMuons.size() == 2 && (isCharge_pp || leptonChargeSelection == kOS);
-      bool isCategory_2mumm_btight = selMuons.size() == 2 && (isCharge_mm || leptonChargeSelection == kOS) && selBJets_medium.size() >= 1;
-      bool isCategory_2mumm_bloose = selMuons.size() == 2 && (isCharge_mm || leptonChargeSelection == kOS);
-
-      if ( (*category) == "2epp_1tau_btight"    && !isCategory_2epp_btight    ) continue;
-      if ( (*category) == "2epp_1tau_bloose"    && !isCategory_2epp_bloose    ) continue;
-      if ( (*category) == "2emm_1tau_btight"    && !isCategory_2emm_btight    ) continue;
-      if ( (*category) == "2emm_1tau_bloose"    && !isCategory_2emm_bloose    ) continue;
-      
-      if ( (*category) == "1e1mupp_1tau_btight" && !isCategory_1e1mupp_btight ) continue;
-      if ( (*category) == "1e1mupp_1tau_bloose" && !isCategory_1e1mupp_bloose ) continue;
-      if ( (*category) == "1e1mumm_1tau_btight" && !isCategory_1e1mumm_btight ) continue;
-      if ( (*category) == "1e1mumm_1tau_bloose" && !isCategory_1e1mumm_bloose ) continue;
-
-      if ( (*category) == "2mupp_1tau_btight"   && !isCategory_2mupp_btight   ) continue;
-      if ( (*category) == "2mupp_1tau_bloose"   && !isCategory_2mupp_bloose   ) continue;
-      if ( (*category) == "2mumm_1tau_btight"   && !isCategory_2mumm_btight   ) continue;
-      if ( (*category) == "2mumm_1tau_bloose"   && !isCategory_2mumm_bloose   ) continue;
-
-      if ( selHistManager->electrons_in_categories_.find(*category) != selHistManager->electrons_in_categories_.end() ) {
-        selHistManager->electrons_in_categories_[*category]->fillHistograms(selElectrons, evtWeight);
-        selHistManager->leadElectron_in_categories_[*category]->fillHistograms(selElectrons, evtWeight);
-        selHistManager->subleadElectron_in_categories_[*category]->fillHistograms(selElectrons, evtWeight);
-      }
-      if ( selHistManager->muons_in_categories_.find(*category) != selHistManager->muons_in_categories_.end() ) {
-        selHistManager->muons_in_categories_[*category]->fillHistograms(selMuons, evtWeight);
-        selHistManager->leadMuon_in_categories_[*category]->fillHistograms(selMuons, evtWeight);
-        selHistManager->subleadMuon_in_categories_[*category]->fillHistograms(selMuons, evtWeight);
-      }
-      selHistManager->evt_in_categories_[*category]->fillHistograms(
-        selElectrons.size(), selMuons.size(), selHadTaus.size(), 
-        selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
-        mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, mvaOutput_2lss_1tau_ttbar_TMVA, mvaOutput_2lss_1tau_ttbar_sklearn,
-        mTauTauVis1_sel, mTauTauVis2_sel,
-        memOutput_2lss_1tau_matched.is_initialized() ? &memOutput_2lss_1tau_matched : nullptr, evtWeight);
-    } 
-
     if ( isMC ) {
       genEvtHistManager_afterCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genJets);
       lheInfoHistManager->fillHistograms(*lheInfoReader, evtWeight);

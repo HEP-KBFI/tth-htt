@@ -54,9 +54,7 @@ bool isHigherConePt(const RecoLepton* particle1, const RecoLepton* particle2);
  * @param jet2 The second jet
  * @return True, if the 1st jet has higher CSV score
  */
-bool
-isHigherCSV(const RecoJet * jet1,
-            const RecoJet * jet2);
+bool isHigherCSV(const RecoJet * jet1, const RecoJet * jet2);
 
 /**
  * @brief Auxiliary function for checking if leptons passing fake-able lepton selection pass tight lepton identification criteria also
