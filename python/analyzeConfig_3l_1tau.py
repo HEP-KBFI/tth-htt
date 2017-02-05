@@ -309,9 +309,11 @@ class analyzeConfig_3l_1tau(analyzeConfig):
                     "CMS_ttHl_FRjt_norm",
                     "CMS_ttHl_FRjt_shape" ]:
                     if central_or_shift.find(FR_shape_shift) != -1:
-                      isFR_shape_shift = True
+                      isFR_shape_shift = True                      
                   if not ((lepton_and_hadTau_selection == "Fakeable" and charge_selection == "OS" and isFR_shape_shift) or
                           (lepton_and_hadTau_selection == "Tight"    and charge_selection == "OS")):
+                    continue
+                  if not is_mc and not isFR_shape_shift:
                     continue
                 if central_or_shift.startswith("CMS_ttHl_thu_shape_ttH") and sample_category != "signal":
                   continue
@@ -366,10 +368,6 @@ class analyzeConfig_3l_1tau(analyzeConfig):
                   'selectBDT': self.isBDTtraining,
                   'changeBranchNames': self.changeBranchNames,
                 }
-
-                applyFakeRateWeights = self.applyFakeRateWeights
-                if lepton_and_hadTau_frWeight == "disabled":
-                  applyFakeRateWeights = "disabled"
                 self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job])
 
                 # initialize input and output file names for hadd_stage1

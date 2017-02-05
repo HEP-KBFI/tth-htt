@@ -259,6 +259,8 @@ class analyzeConfig_1l_2tau(analyzeConfig):
                   if not ((lepton_and_hadTau_selection == "Fakeable" and hadTau_charge_selection == "OS" and isFR_shape_shift) or
                           (lepton_and_hadTau_selection == "Tight"    and hadTau_charge_selection == "OS")):
                     continue
+                  if not is_mc and not isFR_shape_shift:
+                    continue
                 if central_or_shift.startswith("CMS_ttHl_thu_shape_ttH") and sample_category != "signal":
                   continue
                 if central_or_shift.startswith("CMS_ttHl_thu_shape_ttW") and sample_category != "TTW":
@@ -302,10 +304,6 @@ class analyzeConfig_1l_2tau(analyzeConfig):
                   'apply_genWeight' : sample_info["genWeight"] if (is_mc and "genWeight" in sample_info.keys()) else False,
                   'apply_trigger_bits' : (is_mc and (self.era == "2015" or (self.era == "2016" and sample_info["reHLT"]))) or not is_mc
                 }
-
-                applyFakeRateWeights = self.applyFakeRateWeights
-                if lepton_and_hadTau_frWeight == "disabled":
-                  applyFakeRateWeights = "disabled"
                 self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job])
 
                 # initialize input and output file names for hadd_stage1

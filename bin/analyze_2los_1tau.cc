@@ -23,6 +23,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/GenJet.h" // GenJet
 #include "tthAnalysis/HiggsToTauTau/interface/GenHadTau.h" // GenHadTau
 #include "tthAnalysis/HiggsToTauTau/interface/TMVAInterface.h" // TMVAInterface
+#include "tthAnalysis/HiggsToTauTau/interface/mvaAuxFunctions.h" // check_mvaInputs, get_mvaInputVariables
 #include "tthAnalysis/HiggsToTauTau/interface/mvaInputVariables.h" // auxiliary functions for computing input variables of the MVA used for signal extraction in the 2lss_1tau category
 #include "tthAnalysis/HiggsToTauTau/interface/JetToTauFakeRateInterface.h" // JetToTauFakeRateInterface
 #include "tthAnalysis/HiggsToTauTau/interface/KeyTypes.h"
@@ -1013,7 +1014,7 @@ int main(int argc, char* argv[])
     mvaInputs_2lss["min(met_pt,400)"]            = std::min(met.pt(), (Double_t)400.);
     mvaInputs_2lss["avg_dr_jet"]                 = comp_avg_dr_jet(selJets);
 
-    checkInputs(mvaInputs_2lss, run, lumi, event);
+    check_mvaInputs(mvaInputs_2lss, run, lumi, event);
 
     double mvaOutput_2lss_ttV = mva_2lss_ttV(mvaInputs_2lss);
     double mvaOutput_2lss_ttbar = mva_2lss_ttbar(mvaInputs_2lss);
@@ -1053,7 +1054,7 @@ int main(int argc, char* argv[])
     mvaInputs_2los_1tau["dr_lep_tau_ss"]        = ( preselLepton_SS ) ? deltaR(preselLepton_SS->p4(), selHadTau->p4()) : 10.;
     mvaInputs_2los_1tau["mTauTauVis"]           = mTauTauVis_presel;
 
-    checkInputs(mvaInputs_2los_1tau, run, lumi, event);
+    check_mvaInputs(mvaInputs_2los_1tau, run, lumi, event);
    
     double mvaOutput_2los_1tau_ttbar = mva_2los_1tau_ttbar(mvaInputs_2los_1tau);
 

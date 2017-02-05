@@ -341,6 +341,8 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
                   if not ((lepton_and_hadTau_selection == "Fakeable" and lepton_charge_selection == "SS" and isFR_shape_shift) or
                           (lepton_and_hadTau_selection == "Tight"    and lepton_charge_selection == "SS")):
                     continue
+                  if not is_mc and not isFR_shape_shift:
+                    continue
                 if central_or_shift.startswith("CMS_ttHl_thu_shape_ttH") and sample_category != "signal":
                   continue
                 if central_or_shift.startswith("CMS_ttHl_thu_shape_ttW") and sample_category != "TTW":
@@ -385,10 +387,6 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
                   'selectBDT' : self.isBDTtraining,
                   'changeBranchNames' : self.changeBranchNames,
                 }
-
-                applyFakeRateWeights = self.applyFakeRateWeights
-                if lepton_and_hadTau_frWeight == "disabled":
-                  applyFakeRateWeights = "disabled"
                 self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job])
 
                 # initialize input and output file names for hadd_stage1

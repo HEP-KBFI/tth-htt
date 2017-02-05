@@ -7,7 +7,8 @@ import os, logging, sys, getpass
 #   'forBDTtraining' : to run the analysis on the Ntuples with MEM variables added, and with a relaxed event selection, to increase the BDT training statistics
 #--------------------------------------------------------------------------------
 
-mode = "VHbb"
+#mode = "VHbb"
+mode = "addMEM"
 
 hadTau_selection = None
 if mode == "VHbb":
@@ -15,7 +16,7 @@ if mode == "VHbb":
   from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2lss_1tau_2016 import samples_2016
   hadTau_selection = "dR03mvaMedium"
 elif mode == "addMEM":
-  from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_2lss1tau_addMEM import samples_2016
+  from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_2lss1tau_addMEM_v2 import samples_2016
   hadTau_selection = "dR03mvaMedium"
 elif mode == "forBDTtraining":
   from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_2lss1tau_addMEM_forBDTtraining import samples_2016
@@ -39,7 +40,7 @@ elif ERA == "2016":
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "2017Jan16"
+version = "2017Feb03"
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -122,7 +123,7 @@ if __name__ == '__main__':
     executable_addBackgrounds = "addBackgrounds",
     executable_addFakes = "addBackgroundLeptonFakes",
     executable_addFlips = "addBackgroundLeptonFlips", 
-    histograms_to_fit = [ "EventCounter", "numJets", "mvaDiscr_2lss", "mvaOutput_2lss_1tau_ttbar_TMVA", "mvaOutput_2lss_1tau_ttbar_sklearn", "mTauTauVis", "memOutput_LR" ],
+    histograms_to_fit = [ "EventCounter", "numJets", "mvaDiscr_2lss", "mvaOutput_2lss_1tau_ttV", "mvaOutput_2lss_1tau_ttbar", "mTauTauVis", "memOutput_LR" ],
     select_rle_output = True)
 
   if mode == "forBDTtraining":
