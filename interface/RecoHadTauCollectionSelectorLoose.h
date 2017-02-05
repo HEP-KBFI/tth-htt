@@ -12,7 +12,7 @@
 class RecoHadTauSelectorLoose : public RecoHadTauSelectorBase
 {
  public:
-  explicit RecoHadTauSelectorLoose(int era, int index = -1, bool debug = false);
+  explicit RecoHadTauSelectorLoose(int era, int index = -1, bool debug = false, bool set_selection_flags = true);
   ~RecoHadTauSelectorLoose() {}
 
   friend class RecoHadTauCollectionSelector<RecoHadTauSelectorLoose>;

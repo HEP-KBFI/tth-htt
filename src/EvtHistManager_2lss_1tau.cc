@@ -34,8 +34,8 @@ void EvtHistManager_2lss_1tau::bookHistograms(TFileDirectory& dir)
   else if ( era_ == kEra_2016 ) histogram_mvaDiscr_2lss_ = book1D(dir, "mvaDiscr_2lss", "mvaDiscr_2lss", 7, 0.5, 7.5);
   else assert(0);
 
-  histogram_mvaOutput_2lss_1tau_ttbar_TMVA_ = book1D(dir, "mvaOutput_2lss_1tau_ttbar_TMVA", "mvaOutput_2lss_1tau_ttbar_TMVA", 20, -1., +1.);
-  histogram_mvaOutput_2lss_1tau_ttbar_sklearn_ = book1D(dir, "mvaOutput_2lss_1tau_ttbar_sklearn", "mvaOutput_2lss_1tau_ttbar_sklearn", 20, -1., +1.);
+  histogram_mvaOutput_2lss_1tau_ttV_ = book1D(dir, "mvaOutput_2lss_1tau_ttV", "mvaOutput_2lss_1tau_ttV", 20, -1., +1.);
+  histogram_mvaOutput_2lss_1tau_ttbar_ = book1D(dir, "mvaOutput_2lss_1tau_ttbar", "mvaOutput_2lss_1tau_ttbar", 20, -1., +1.);
 
   histogram_mTauTauVis_ = book1D(dir, "mTauTauVis", "mTauTauVis", 20, 0., 200.);
 
@@ -57,7 +57,7 @@ void EvtHistManager_2lss_1tau::bookHistograms(TFileDirectory& dir)
 
 void EvtHistManager_2lss_1tau::fillHistograms(int numElectrons, int numMuons, int numHadTaus, int numJets, int numBJets_loose, int numBJets_medium,
 					      double mvaOutput_2lss_ttV, double mvaOutput_2lss_ttbar, double mvaDiscr_2lss, 
-					      double mvaOutput_2lss_1tau_ttbar_TMVA, double mvaOutput_2lss_1tau_ttbar_sklearn, 
+					      double mvaOutput_2lss_1tau_ttV, double mvaOutput_2lss_1tau_ttbar, 
 					      double mTauTauVis1, double mTauTauVis2, 
 					      const MEMOutput_2lss_1tau* memOutput_2lss_1tau, double evtWeight)
 {
@@ -77,8 +77,8 @@ void EvtHistManager_2lss_1tau::fillHistograms(int numElectrons, int numMuons, in
   fillWithOverFlow(histogram_mvaOutput_2lss_ttbar_, mvaOutput_2lss_ttbar, evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_mvaDiscr_2lss_, mvaDiscr_2lss, evtWeight, evtWeightErr);
 
-  fillWithOverFlow(histogram_mvaOutput_2lss_1tau_ttbar_TMVA_, mvaOutput_2lss_1tau_ttbar_TMVA, evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_mvaOutput_2lss_1tau_ttbar_sklearn_, mvaOutput_2lss_1tau_ttbar_sklearn, evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_mvaOutput_2lss_1tau_ttV_, mvaOutput_2lss_1tau_ttV, evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_mvaOutput_2lss_1tau_ttbar_, mvaOutput_2lss_1tau_ttbar, evtWeight, evtWeightErr);
 
   double mTauTauVisSF = ( mTauTauVis1 > 0. && mTauTauVis2 > 0. ) ? 0.5 : 1.;
   if ( mTauTauVis1 > 0. ) {

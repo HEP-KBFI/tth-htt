@@ -67,7 +67,7 @@ process.analyze_2lss_1tau = cms.PSet(
     use_HIP_mitigation_bTag = cms.bool(False),
     use_HIP_mitigation_mediumMuonId = cms.bool(False),
 
-    apply_lepton_and_hadTauCharge_cut = cms.bool(False),
+    apply_lepton_and_hadTauCharge_cut = cms.bool(True),
 
     isMC = cms.bool(True),
     central_or_shift = cms.string('central'),
