@@ -87,8 +87,8 @@ class RecoLepton
   Double_t dz() const { return dz_; }
   Double_t relIso() const { return relIso_; }
   Double_t chargedHadRelIso03() const { return chargedHadRelIso03_; }
-  Double_t miniIsoCharged() const { return miniIsoCharged_; }
-  Double_t miniIsoNeutral() const { return miniIsoNeutral_; }
+  Double_t miniIsoCharged() const { return miniIsoCharged_ / pt(); }
+  Double_t miniIsoNeutral() const { return miniIsoNeutral_ / pt(); }
   Double_t sip3d() const { return sip3d_; }
   Double_t mvaRawTTH() const { return mvaRawTTH_; }
   Double_t jetNDauChargedMVASel() const { return jetNDauChargedMVASel_; }
