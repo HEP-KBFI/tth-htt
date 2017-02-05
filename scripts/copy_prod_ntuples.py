@@ -77,6 +77,8 @@ if __name__ == '__main__':
                       help = 'R|Path to the reference dictionary supporting the source Ntuples')
   parser.add_argument('-n', '--dict_name', dest = 'dict_name', metavar = 'NAME', required = True, type = str,
                       help = 'R|Name of the dictionary (specified by -D), e.g. samples_2016')
+  parser.add_argument('-a', '--addmem', dest = 'addmem', action = 'store_true', default = False,
+                      help = 'R|Copy addMEM Ntuples instead')
   parser.add_argument('-t', '--test', dest = 'test', action = 'store_true', default = False,
                       help = 'R|Test copying (doesn\'t actually copy) by printing out cp commands')
   parser.add_argument('-f', '--force', dest = 'force', action = 'store_true', default = False,
@@ -90,6 +92,7 @@ if __name__ == '__main__':
   dict_path   = args.dictionary
   dict_name   = args.dict_name
   test_cp     = args.test
+  addmem      = args.addmem
   force       = args.force
   verbose     = args.verbose
 
@@ -120,12 +123,20 @@ if __name__ == '__main__':
 
     file_nrs = []
     file_list = []
-    for f in os.listdir(expected_path):
-      # we're interested in the last number which corresponds to exactly one VHbb Ntuple
-      m = p.search(f)
-      if m:
-        file_nrs.append(int(m.group(1)))
-        file_list.append(f)
+    if not addmem:
+      for f in os.listdir(expected_path):
+        # we're interested in the last number which corresponds to exactly one VHbb Ntuple
+        m = p.search(f)
+        if m:
+          file_nrs.append(int(m.group(1)))
+          file_list.append(f)
+    else:
+      fp = os.path.join(expected_path, 'tree.root')
+      if not os.path.exists(fp):
+        logging.warning("No such file: {filename}".format(filename = fp))
+        continue
+      file_list.append(fp)
+      file_nrs.append(1)
     file_nrs_set = set(file_nrs)
 
     #NB!!! we expect only one local_path entry with selection '*'
