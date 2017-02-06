@@ -2,8 +2,8 @@
 #define tthAnalysis_HiggsToTauTau_mvaInputVariables_h
 
 /**
-   * @brief Calculates input variables of the MVA used for signal extraction in the 2lss_1tau category (described in Section 5 of AN-2015/321)
-   */
+ * @brief Calculates input variables of the MVA used for signal extraction in the 2lss_1tau category (described in Section 5 of AN-2015/321)
+ */
 
 #include "tthAnalysis/HiggsToTauTau/interface/GenParticle.h" // GenParticle
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h" // RecoJet

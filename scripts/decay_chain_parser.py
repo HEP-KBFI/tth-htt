@@ -28,8 +28,7 @@ The workflow is split into the following four steps:
                a) test if voms proxy is up (via voms-proxy-info)
                b) request the number of MINIAOD files the sample has through the DAS script provided in the CLI arguments
                c) request the list of MINIAOD files (again, by using the same DAS script)
-               d) request the list of tiers in which the samples are stored
-               e) if it's possible to construct an URI for all sample files then the cmsRun
+               d) if it's possible to construct a URI sfor all sample files then the cmsRun
                   script will be generated and the script exits normally
              Note that the voms proxy must be valid for at least an hour; thus initialize the proxy beforehand with:
 
@@ -261,9 +260,9 @@ process.maxEvents = cms.untracked.PSet(
 )
 
 process.source = cms.Source("PoolSource",
-  fileNames = cms.untracked.vstring({% for f in file_list %}
+  fileNames = cms.untracked.vstring(*({% for f in file_list %}
     '{{ f }}',{% endfor %}
-  ),
+  )),
   eventsToProcess = cms.untracked.VEventRange(*({% for rle in rle_list %}
     '{{ rle }}',{% endfor %}
   ))
@@ -1386,20 +1385,6 @@ if __name__ == '__main__':
     logging.error("No such file {filename}".format(filename = args.input))
     sys.exit(1)
 
-  # there are only 2 known tiers the script can handle: T2_CH_CERN and T2_FR_IPHC
-  tiers = {
-    'T2_CH_CERN' : {
-      'url'      : 'eoscms.cern.ch//eos/cms/',
-      'priority' : 0,
-    },
-    'T2_FR_IPHC' : {
-      'url' : 'sbgse1.in2p3.fr:1094//cms/phedex/',
-      'priority': 1,
-    },
-  }
-  # sort the tiers so that the first the first match would have the highest priority (followed by alphabetical order)
-  tiers_sorted = sorted(tiers.items(), key = lambda x: x[1]['priority'])
-
   if args.generate:
     # create cmsRun job from python template
 
@@ -1492,34 +1477,9 @@ if __name__ == '__main__':
       ))
       sys.exit(1)
 
-    # let's request the tiers in which the files are stored
-    # if the available tiers and not included in our tier list, the script exits
-    logging.debug("Retrieving the list of tiers in which the files are stored on")
-    request_tier_list_cmd = "python {cli} --query='site file={file_name}' | grep '^T'".format(
-      cli = args.cli, file_name = file_list[0],
-    )
-    request_tier_list_stdout = run_cmd(request_tier_list_cmd)
-    tier_list = request_tier_list_stdout.split('\n')
-    if not (set(tier_list) & set(tiers.keys())):
-      logging.error("None of the available tiers didn't match with ours (our tiers: {our_tiers}): "
-                    "{available_tiers}".format(
-        our_tiers       = ', '.join(tiers.keys()),
-        available_tiers = ', '.join(tier_list),
-      ))
-      sys.exit(1)
-
-    # select the tier w/ the highest priority
-    tier_name = ''
-    for tier_entry in tiers_sorted:
-      if tier_entry[0] in tier_list:
-        tier_name = tier_entry[0]
-    assert(tier_name)
-    tier_url = tiers[tier_name]['url']
-    logging.debug("Selected tier: {tier_name}".format(tier_name = tier_name))
-
     # generate the cfg from template and save it
     logging.debug("Generating {output_filename} from the template".format(output_filename = args.output))
-    root_urls = map(lambda x: os.path.join("root://", tier_url, x[1:]), file_list)
+    root_urls = map(lambda x: os.path.join("root://cms-xrd-global.cern.ch//", x[1:]), file_list)
     with open(args.output, 'w') as f:
       f.write(jinja2.Template(printGenParticles_miniAOD_cfg).render(
         file_list = root_urls,

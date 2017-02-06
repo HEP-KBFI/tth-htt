@@ -2,8 +2,9 @@
 
 #include <cmath> // fabs
 
-RecoHadTauSelectorBase::RecoHadTauSelectorBase(int era, int index, bool debug)
-  : debug_(debug)
+RecoHadTauSelectorBase::RecoHadTauSelectorBase(int era, int index, bool debug, bool set_selection_flags)
+  : set_selection_flags_(set_selection_flags)
+  , debug_(debug)
   , min_pt_(20.)
   , max_absEta_(2.3)
   , max_dz_(0.2)

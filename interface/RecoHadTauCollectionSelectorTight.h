@@ -14,7 +14,7 @@
 class RecoHadTauSelectorTight : public RecoHadTauSelectorBase
 {
  public:
-  explicit RecoHadTauSelectorTight(int era, int index = -1, bool debug = false);
+  explicit RecoHadTauSelectorTight(int era, int index = -1, bool debug = false, bool set_selection_flags = true);
   ~RecoHadTauSelectorTight() {}
 
   friend class RecoHadTauCollectionSelector<RecoHadTauSelectorTight>;
