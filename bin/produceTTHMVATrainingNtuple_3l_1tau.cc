@@ -1074,7 +1074,7 @@ struct preselHistManagerType
     preselHistManager->evt_->fillHistograms(
       preselElectrons.size(), preselMuons.size(), selHadTaus.size(), 
       selJets.size(), selBJets_loose.size(), selBJets_medium.size(), 
-      -1., -1., -1., 
+      -1., -1., -1., -1., -1., 
       mTauTauVis1_presel, mTauTauVis2_presel, 0, evtWeight);
 
 //--- apply final event selection 

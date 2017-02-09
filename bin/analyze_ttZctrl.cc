@@ -141,7 +141,6 @@ double getEvtWeight(double lumiScale, double genWeight, bool apply_genWeight, do
 //    to also pass the tight identification and isolation criteria
   evtWeight *= dataToMCcorrectionInterface->getSF_leptonID_and_Iso_tight_to_loose_woTightCharge();
 
-
 //--- apply data/MC corrections for hadronic tau identification efficiency 
 //    and for e->tau and mu->tau misidentification rates
   if ( selHadTau ) {
@@ -530,12 +529,12 @@ int main(int argc, char* argv[])
   };
   std::map<int, selHistManagerType*> selHistManagers;
   enum { k2lepton, k3lepton, k2lepton_1tau };
-  for ( int idxEvtSel = k2lepton; idxEvtSel < k2lepton_1tau; ++idxEvtSel ) {
+  for ( int idxEvtSel = k2lepton; idxEvtSel <= k2lepton_1tau; ++idxEvtSel ) {
 
     std::string histogramDir = "ttZctrl";
-    if      ( idxEvtSel == k2lepton      ) histogramDir.append("2lepton");
-    else if ( idxEvtSel == k3lepton      ) histogramDir.append("3lepton");
-    else if ( idxEvtSel == k2lepton_1tau ) histogramDir.append("2lepton_1tau");
+    if      ( idxEvtSel == k2lepton      ) histogramDir.append("_2lepton");
+    else if ( idxEvtSel == k3lepton      ) histogramDir.append("_3lepton");
+    else if ( idxEvtSel == k2lepton_1tau ) histogramDir.append("_2lepton_1tau");
     else assert(0);
 
     selHistManagerType* selHistManager = new selHistManagerType();
@@ -931,11 +930,11 @@ int main(int argc, char* argv[])
     cutFlowTable.update("<= 3 tight leptons", evtWeight_2lepton);
 
     // require that trigger paths match event category (with event category based on selLeptons);
-    if ( !((                            selMuons.size() >= 2 && selTrigger_2mu  ) ||
-	   (selElectrons.size() >= 1 && selMuons.size() >= 1 && selTrigger_1e1mu) ||
-	   (selElectrons.size() >= 2 &&                         selTrigger_2e   ) ||
-	   (			        selMuons.size() >= 1 && selTrigger_1mu  ) ||
-	   (selElectrons.size() >= 1 &&                         selTrigger_1e   )) ) {  
+    if ( !((                            selMuons.size() >= 2 && isTriggered_2mu  ) ||
+	   (selElectrons.size() >= 1 && selMuons.size() >= 1 && isTriggered_1e1mu) ||
+	   (selElectrons.size() >= 2 &&                         isTriggered_2e   ) ||
+	   (			        selMuons.size() >= 1 && isTriggered_1mu  ) ||
+	   (selElectrons.size() >= 1 &&                         isTriggered_1e   )) ) {  
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS trigger selection for given selLepton multiplicity." << std::endl; 
 	std::cout << " (#selElectrons = " << selElectrons.size() 
@@ -965,16 +964,27 @@ int main(int argc, char* argv[])
     cutFlowTable.update(">= 2 jets (2)", evtWeight_2lepton);
     if ( !(selBJets_medium.size() >= 2) ) {
       if ( run_lumi_eventSelector ) {
-	std::cout << "event FAILS selBJets selection (2)." << std::endl;
-	std::cout << " (#selBJets_medium = " << selBJets_medium.size() << ")" << std::endl;
-	for ( size_t idxSelBJet_medium = 0; idxSelBJet_medium < selBJets_medium.size(); ++idxSelBJet_medium ) {
-	  std::cout << "selJet #" << idxSelBJet_medium << ":" << std::endl;
-	  std::cout << (*selJets[idxSelBJet_medium]);
-	}
+    	  std::cout << "event FAILS selBJets selection (2)." << std::endl;
+    	  std::cout << " (#selBJets_medium = " << selBJets_medium.size() << ")" << std::endl;
+    	  for ( size_t idxSelBJet_medium = 0; idxSelBJet_medium < selBJets_medium.size(); ++idxSelBJet_medium ) {
+    	    std::cout << "selJet #" << idxSelBJet_medium << ":" << std::endl;
+    	    std::cout << (*selJets[idxSelBJet_medium]);
+        }
       }
       continue;
     }
     cutFlowTable.update(">= 2 medium b-jets", evtWeight_2lepton);
+    // CV: relaxing the b-jet selection to >= 2 loose b-jets || 1 medium b-jet 
+    //     increases ttZ signal by a factor 3-4, but also increases the tt+jets (WZ) background by a factor 10 (30),
+    //     so better not to relax it
+    //if ( !(selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) ) {
+    //  if ( run_lumi_eventSelector ) {
+    //	  std::cout << "event FAILS selBJets selection (2)." << std::endl;
+    //	  std::cout << " (#selBJets_loose = " << selBJets_loose.size() << ", #selBJets_medium = " << selBJets_medium.size() << ")" << std::endl;
+    //  }
+    //  continue;
+    //}
+    cutFlowTable.update(">= 2 loose b-jets || 1 medium b-jet (2)");
 
     bool failsLowMassVeto = false;
     for ( std::vector<const RecoLepton*>::const_iterator lepton1 = selLeptons.begin();
@@ -1121,25 +1131,29 @@ int main(int argc, char* argv[])
     //std::cout << "mvaOutput_2lss_1tau_ttbar = " << mvaOutput_2lss_1tau_ttbar << std::endl;    
 
 //--- fill histograms with events passing final selection 
-    for ( int idxEvtSel = k2lepton; idxEvtSel < k2lepton_1tau; ++idxEvtSel ) {
+    for ( int idxEvtSel = k2lepton; idxEvtSel <= k2lepton_1tau; ++idxEvtSel ) {
 
       double evtWeight = 1.;
       if ( idxEvtSel == k2lepton ) {
 	evtWeight = evtWeight_2lepton;
       } else if ( idxEvtSel == k3lepton ) {
 	if ( !(selLeptons.size() == 3 && std::abs(sumLeptonCharge) == 1) ) continue;
-	evtWeight = getEvtWeight(
-           lumiScale, genWeight, apply_genWeight, pileupWeight,
-	   lheInfoReader, lheScale_option,
-	   dataToMCcorrectionInterface, apply_trigger_bits,
-	   selLepton_lead, selLepton_sublead, selLepton_third, 0, selJets);	
+	if ( isMC ) {
+	  evtWeight = getEvtWeight(
+            lumiScale, genWeight, apply_genWeight, pileupWeight,
+	    lheInfoReader, lheScale_option,
+	    dataToMCcorrectionInterface, apply_trigger_bits,
+	    selLepton_lead, selLepton_sublead, selLepton_third, 0, selJets);	
+	}
       } else if ( idxEvtSel == k2lepton_1tau ) {
 	if ( !(selLeptons.size() == 2 && selHadTau && std::abs(sumLeptonCharge + selHadTau->charge()) == 1) ) continue;
-	evtWeight = getEvtWeight(
-           lumiScale, genWeight, apply_genWeight, pileupWeight,
-	   lheInfoReader, lheScale_option,
-	   dataToMCcorrectionInterface, apply_trigger_bits,
-	   selLepton_lead, selLepton_sublead, 0, selHadTau, selJets);	
+	if ( isMC ) {
+	  evtWeight = getEvtWeight(
+            lumiScale, genWeight, apply_genWeight, pileupWeight,
+	    lheInfoReader, lheScale_option,
+	    dataToMCcorrectionInterface, apply_trigger_bits,
+	    selLepton_lead, selLepton_sublead, 0, selHadTau, selJets);	
+	}
       } else assert(0);
 
       selHistManagerType* selHistManager = selHistManagers[idxEvtSel];

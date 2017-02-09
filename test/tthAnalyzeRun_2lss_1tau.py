@@ -7,20 +7,24 @@ import os, logging, sys, getpass
 #   'forBDTtraining' : to run the analysis on the Ntuples with MEM variables added, and with a relaxed event selection, to increase the BDT training statistics
 #--------------------------------------------------------------------------------
 
-#mode = "VHbb"
-mode = "addMEM"
+mode = "VHbb"
+#mode = "addMEM"
 
 hadTau_selection = None
+changeBranchNames = None
 if mode == "VHbb":
   from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2lss_1tau_2015 import samples_2015
   from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2lss_1tau_2016 import samples_2016
   hadTau_selection = "dR03mvaMedium"
+  changeBranchNames = False
 elif mode == "addMEM":
   from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_2lss1tau_addMEM_v2 import samples_2016
   hadTau_selection = "dR03mvaMedium"
+  changeBranchNames = True
 elif mode == "forBDTtraining":
   from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_2lss1tau_addMEM_forBDTtraining import samples_2016
   hadTau_selection = "dR03mvaVVLoose"
+  changeBranchNames = True
 else:
   raise ValueError("Invalid Configuration parameter 'mode' = %s !!" % mode)
 from tthAnalysis.HiggsToTauTau.analyzeConfig_2lss_1tau import analyzeConfig_2lss_1tau
@@ -40,7 +44,7 @@ elif ERA == "2016":
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "2017Feb03"
+version = "2017Feb06_addMEM"
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -51,7 +55,7 @@ if __name__ == '__main__':
   analysis = analyzeConfig_2lss_1tau(
     outputDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", ERA, version),
     executable_analyze = "analyze_2lss_1tau", cfgFile_analyze = "analyze_2lss_1tau_cfg.py",
-    samples = samples,
+    samples = samples, changeBranchNames = changeBranchNames,
     lepton_charge_selections = [ "OS", "SS" ],
     hadTau_selection = hadTau_selection,
     # CV: apply "fake" background estimation to leptons only and not to hadronic taus, as discussed on slide 10 of
@@ -127,7 +131,7 @@ if __name__ == '__main__':
     select_rle_output = True)
 
   if mode == "forBDTtraining":
-    analysis.set_BDT_training(changeBranchNames = False)
+    analysis.set_BDT_training()
   analysis.create()
 
   run_analysis = query_yes_no("Start jobs ?")

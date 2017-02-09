@@ -16,7 +16,7 @@ class analyzeConfig_ttZctrl(analyzeConfig):
   def __init__(self, outputDir, executable_analyze, cfgFile_analyze, samples, hadTau_selection, central_or_shifts,
                max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs, 
                histograms_to_fit, select_rle_output = False,
-               executable_prep_dcard="prepareDatacard"):
+               executable_prep_dcard="prepareDatacards"):
     analyzeConfig.__init__(self, outputDir, executable_analyze, "ttZctrl", central_or_shifts,
       max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs, 
       histograms_to_fit,
@@ -26,8 +26,9 @@ class analyzeConfig_ttZctrl(analyzeConfig):
 
     self.hadTau_selection_part2 = hadTau_selection
 
-    self.prep_dcard_processesToCopy = [ "data_obs", "TT", "TTW", "TTZ", "EWK", "Rares", "fakes_data", "fakes_mc", "flips_data" ]
-    self.make_plots_backgrounds = [ "TT", "TTW", "TTZ", "EWK", "Rares" ]
+    self.prep_dcard_processesToCopy = [ "data_obs", "TT", "TTW", "TTZ", "EWK", "Rares" ]
+    self.make_plots_backgrounds = [ "TT", "TTW", "signal", "EWK", "Rares" ]
+    self.make_plots_signal = "TTZ"
 
     self.cfgFile_analyze = os.path.join(self.workingDir, cfgFile_analyze)
     self.histogramDir_prep_dcard = "ttZctrl"
@@ -63,6 +64,7 @@ class analyzeConfig_ttZctrl(analyzeConfig):
     lines.append("process.analyze_ttZctrl.use_triggers_2mu = cms.bool(%s)" % ("2mu" in jobOptions['triggers']))
     lines.append("process.analyze_ttZctrl.triggers_1e1mu = cms.vstring(%s)" % self.triggers_1e1mu)
     lines.append("process.analyze_ttZctrl.use_triggers_1e1mu = cms.bool(%s)" % ("1e1mu" in jobOptions['triggers']))
+    lines.append("process.analyze_ttZctrl.hadTauSelection = cms.string('Tight|%s')" % jobOptions['hadTau_selection'])
     lines.append("process.analyze_ttZctrl.use_HIP_mitigation_bTag = cms.bool(%s)" % jobOptions['use_HIP_mitigation_bTag'])
     lines.append("process.analyze_ttZctrl.use_HIP_mitigation_mediumMuonId = cms.bool(%s)" % jobOptions['use_HIP_mitigation_mediumMuonId'])
     lines.append("process.analyze_ttZctrl.isMC = cms.bool(%s)" % jobOptions['is_mc'])
@@ -159,13 +161,14 @@ class analyzeConfig_ttZctrl(analyzeConfig):
           self.outputFile_hadd_stage1[key_hadd_stage1] = os.path.join(self.outputDir, DKEY_HIST, "histograms_harvested_stage1_%s_%s.root" % \
             (self.channel, process_name))
     
-          # initialize input and output file names for hadd_stage2
-          key_hadd_stage2 = getKey("all")
-          if not key_hadd_stage2 in self.inputFiles_hadd_stage2.keys():
-            self.inputFiles_hadd_stage2[key_hadd_stage2] = []
-          self.inputFiles_hadd_stage2[key_hadd_stage2].append(self.outputFile_hadd_stage1[key_hadd_stage1])
-          self.outputFile_hadd_stage2[key_hadd_stage2] = os.path.join(self.outputDir, DKEY_HIST, "histograms_harvested_stage2_%s.root" % \
-            (self.channel))
+      # initialize input and output file names for hadd_stage2
+      key_hadd_stage1 = getKey(process_name)
+      key_hadd_stage2 = getKey("all")
+      if not key_hadd_stage2 in self.inputFiles_hadd_stage2.keys():
+        self.inputFiles_hadd_stage2[key_hadd_stage2] = []
+      self.inputFiles_hadd_stage2[key_hadd_stage2].append(self.outputFile_hadd_stage1[key_hadd_stage1])
+      self.outputFile_hadd_stage2[key_hadd_stage2] = os.path.join(self.outputDir, DKEY_HIST, "histograms_harvested_stage2_%s.root" % \
+        (self.channel))
 
     logging.info("Creating configuration files to run 'prepareDatacards'")
     for evtSelection in self.evtSelections:

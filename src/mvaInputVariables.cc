@@ -74,6 +74,11 @@ double comp_mindr_lep2_jet(const GenParticle& lepton, const std::vector<const Re
   return comp_mindr_lep1_jet(lepton, jets_cleaned);
 }
 
+double comp_mindr_lep3_jet(const GenParticle& lepton, const std::vector<const RecoJet*>& jets_cleaned)
+{
+  return comp_mindr_lep1_jet(lepton, jets_cleaned);
+}
+
 double comp_mindr_hadTau1_jet(const GenParticle& hadTau, const std::vector<const RecoJet*>& jets_cleaned)
 {
   return comp_mindr_lep1_jet(hadTau, jets_cleaned);
@@ -118,4 +123,22 @@ double comp_avg_dr_jet(const std::vector<const RecoJet*>& jets_cleaned)
   }
   double avg_dr_jet = ( n_jet_pairs > 0 ) ? dRsum/n_jet_pairs : 0.;
   return avg_dr_jet;
+}
+
+double compHT(const std::vector<const RecoLepton*>& leptons, const std::vector<const RecoHadTau*>& hadTaus, const std::vector<const RecoJet*>& jets_cleaned)
+{
+  double ht = 0.;
+  for ( std::vector<const RecoLepton*>::const_iterator lepton = leptons.begin();
+	lepton != leptons.end(); ++lepton ) {
+    ht += (*lepton)->pt();
+  }
+  for ( std::vector<const RecoHadTau*>::const_iterator hadTau = hadTaus.begin();
+	hadTau != hadTaus.end(); ++hadTau ) {
+    ht += (*hadTau)->pt();
+  }
+  for ( std::vector<const RecoJet*>::const_iterator jet = jets_cleaned.begin();
+	jet != jets_cleaned.end(); ++jet ) {
+    ht += (*jet)->pt();
+  }
+  return ht;
 }

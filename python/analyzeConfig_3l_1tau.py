@@ -39,7 +39,7 @@ class analyzeConfig_3l_1tau(analyzeConfig):
   for documentation of further Args.
 
   """
-  def __init__(self, outputDir, executable_analyze, cfgFile_analyze, samples, hadTau_selection, applyFakeRateWeights, charge_selections, central_or_shifts,
+  def __init__(self, outputDir, executable_analyze, cfgFile_analyze, samples, changeBranchNames, hadTau_selection, applyFakeRateWeights, charge_selections, central_or_shifts,
                max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs, 
                executable_addBackgrounds, executable_addBackgroundJetToTauFakes, histograms_to_fit, select_rle_output = False,
                executable_prep_dcard="prepareDatacards", executable_add_syst_dcard = "addSystDatacards",
@@ -51,6 +51,7 @@ class analyzeConfig_3l_1tau(analyzeConfig):
       executable_add_syst_dcard = executable_add_syst_dcard)
 
     self.samples = samples
+    self.changeBranchNames = changeBranchNames
 
     ##self.lepton_and_hadTau_selections = [ "Tight", "Fakeable", "Fakeable_mcClosure" ]
     self.lepton_and_hadTau_selections = [ "Tight", "Fakeable" ]
@@ -121,17 +122,15 @@ class analyzeConfig_3l_1tau(analyzeConfig):
     self.select_rle_output = select_rle_output
     self.select_root_output = select_root_output
 
-    self.isBDTtraining     = False
-    self.changeBranchNames = False
+    self.isBDTtraining = False
 
-  def set_BDT_training(self, changeBranchNames = False):
+  def set_BDT_training(self):
     """Run analysis with loose selection criteria for leptons and hadronic taus,
        for the purpose of preparing event list files for BDT training.
     """
     self.lepton_and_hadTau_selections = [ "forBDTtraining" ]
     self.lepton_and_hadTau_frWeights = [ "disabled" ]
     self.isBDTtraining = True
-    self.changeBranchNames = changeBranchNames
 
   def createCfg_analyze(self, jobOptions):
     """Create python configuration file for the analyze_3l_1tau executable (analysis code)
@@ -207,10 +206,10 @@ class analyzeConfig_3l_1tau(analyzeConfig):
     lines.append("process.analyze_3l_1tau.selEventsFileName_output = cms.string('%s')" % jobOptions['rleOutputFile'])
     lines.append("process.analyze_3l_1tau.selEventsTFileName = cms.string('%s')" % jobOptions['rootOutputFile'])
     lines.append("process.analyze_3l_1tau.selectBDT = cms.bool(%s)" % str(jobOptions['selectBDT']))
-    if jobOptions['selectBDT'] and jobOptions['changeBranchNames']:
+    if jobOptions['changeBranchNames']:
       lines.append("process.analyze_3l_1tau.branchName_electrons = cms.string('Electron')")
-      lines.append("process.analyze_3l_1tau.branchName_muons     = cms.string('Muon')")
-      lines.append("process.analyze_3l_1tau.branchName_hadTaus   = cms.string('HadTau')")
+      lines.append("process.analyze_3l_1tau.branchName_muons = cms.string('Muon')")
+      lines.append("process.analyze_3l_1tau.branchName_hadTaus = cms.string('HadTau')")
       lines.append("process.analyze_3l_1tau.branchName_memOutput = cms.string('memObjects_3l_1tau')")
     create_cfg(self.cfgFile_analyze, jobOptions['cfgFile_modified'], lines)
 

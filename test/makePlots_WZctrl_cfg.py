@@ -14,16 +14,17 @@ process.makePlots = cms.PSet(
     processesBackground = cms.vstring(
         "TT",
         "TTW",
+        "TTZ",
         "signal",
         "EWK",
         "Rares"
     ),
-    processSignal = cms.string("TTZ"),
+    processSignal = cms.string("WZ"),
 
     categories = cms.VPSet(
         cms.PSet(
-            name = cms.string("ttZctrl_2lepton"),
-            label = cms.string("t#bar{t}Z control region")
+            name = cms.string("WZctrl_2lepton"),
+            label = cms.string("WZ control region")
         )
     ),
 
@@ -292,6 +293,7 @@ process.makePlots = cms.PSet(
             TT = cms.string("1.0 +/- 0.20"),
             TTW = cms.string("1.0 +/- 0.20"),
             TTZ = cms.string("1.0 +/- 0.20"),
+            WZ = cms.string("1.0 +/- 0.20"),
             EWK = cms.string("1.0 +/- 0.20"),
             Rares = cms.string("1.0 +/- 0.20"),
             fakes_data = cms.string("1.0 +/- 0.20")

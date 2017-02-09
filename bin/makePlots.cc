@@ -114,6 +114,8 @@ namespace
     TH1* histogramTTW_density = 0;
     TH1* histogramTTZ = 0;
     TH1* histogramTTZ_density = 0;
+    TH1* histogramTTH = 0;
+    TH1* histogramTTH_density = 0;
     TH1* histogramTT = 0;
     TH1* histogramTT_density = 0;
     TH1* histogramWZ = 0;
@@ -142,6 +144,9 @@ namespace
       } else if ( process.find("TTZ") != std::string::npos ) {
 	histogramTTZ = histogramBackground;
 	histogramTTZ_density = histogramBackground_density;
+      } else if ( process.find("signal") != std::string::npos ) {
+	histogramTTH = histogramBackground;
+	histogramTTH_density = histogramBackground_density;
       } else if ( process.find("TT") != std::string::npos ) {
 	histogramTT = histogramBackground;
 	histogramTT_density = histogramBackground_density;
@@ -273,57 +278,100 @@ namespace
       histogramData_blinded_density->Draw("ep");
     }
         
+    const int color_ttW     = 823; // dark green
+    const int color_ttZ     = 822; // dark green
+    const int color_ttH     = 628; // red
+    const int color_ttjets  =  16; // gray
+    const int color_EWK     = 610; // purple
+    const int color_Diboson = 634; // dark red
+    const int color_WZ      = 634; // dark red
+    const int color_Rares   = 851; // light blue
+    const int color_Fakes   =   1; // black
+    const int color_Flips   =   1; // black
+    
+    const std::string legendEntry_ttW     = "t#bar{t}W";
+    const std::string legendEntry_ttZ     = "t#bar{t}Z";
+    const std::string legendEntry_ttH     = "t#bar{t}H";
+    const std::string legendEntry_ttjets  = "t#bar{t}+jets";
+    const std::string legendEntry_EWK     = "EWK";
+    const std::string legendEntry_Diboson = "Diboson";
+    const std::string legendEntry_WZ      = "WZ";
+    const std::string legendEntry_Rares   = "Rares";
+    const std::string legendEntry_Fakes   = "Fakes";
+    const std::string legendEntry_Flips   = "Flips";
+   
     std::vector<TH1*> histogramsForStack_density;
     if ( histogramSignal_density ) {
-      histogramSignal_density->SetFillColor(628); // red
+      std::string histogramNameSignal = histogramSignal->GetName();
+      int color = 10;
+      std::string legendEntry = "";
+      if ( !histogramTTH_density ) { // "signal" is ttH
+	color = color_ttH; 
+	legendEntry = legendEntry_ttH;
+      } else if ( !histogramTTZ_density ) { // "signal" is ttZ
+	color = color_ttZ; 
+	legendEntry = legendEntry_ttZ;
+      } else if ( !histogramTTW_density ) { // "signal" is ttW
+	color = color_ttW; 
+	legendEntry = legendEntry_ttW;
+      } else if ( !histogramWZ_density ) { // "signal" is WZ
+	color = color_WZ; 
+	legendEntry = legendEntry_WZ;
+      } else assert(0);
+      histogramSignal_density->SetFillColor(color); 
       histogramsForStack_density.push_back(histogramSignal_density);
-      legend->AddEntry(histogramSignal_density, "ttH", "f");
-    }
+      legend->AddEntry(histogramSignal_density, legendEntry.data(), "f");
+    }    
     if ( histogramTTW_density ) {
-      histogramTTW_density->SetFillColor(823); // dark green
+      histogramTTW_density->SetFillColor(color_ttW);
       histogramsForStack_density.push_back(histogramTTW_density);
-      legend->AddEntry(histogramTTW_density, "ttW", "f");
+      legend->AddEntry(histogramTTW_density, legendEntry_ttW.data(), "f");
     }
     if ( histogramTTZ_density ) {
-      histogramTTZ_density->SetFillColor(822); // light green
+      histogramTTZ_density->SetFillColor(color_ttZ);
       histogramsForStack_density.push_back(histogramTTZ_density);
-      legend->AddEntry(histogramTTZ_density, "ttZ", "f");
+      legend->AddEntry(histogramTTZ_density, legendEntry_ttZ.data(), "f");
     }    
+    if ( histogramTTH_density ) {
+      histogramTTH_density->SetFillColor(color_ttH); 
+      histogramsForStack_density.push_back(histogramTTH_density);
+      legend->AddEntry(histogramTTH_density, legendEntry_ttH.data(), "f");
+    } 
     if ( histogramTT_density ) {
-      histogramTT_density->SetFillColor(16); // gray
+      histogramTT_density->SetFillColor(color_ttjets);
       histogramsForStack_density.push_back(histogramTT_density);
-      legend->AddEntry(histogramTT_density, "tt+jets", "f");
+      legend->AddEntry(histogramTT_density, legendEntry_ttjets.data(), "f");
     }
     if ( histogramEWK_density ) {
-      histogramEWK_density->SetFillColor(610); // purple
+      histogramEWK_density->SetFillColor(color_EWK);
       histogramsForStack_density.push_back(histogramEWK_density);
-      legend->AddEntry(histogramEWK_density, "EWK", "f");
-    } else if ( histogramDiboson_density ) {
-      histogramDiboson_density->SetFillColor(610);
-      histogramsForStack_density.push_back(histogramDiboson_density);
-      legend->AddEntry(histogramDiboson_density, "Diboson", "f");
+      legend->AddEntry(histogramEWK_density, legendEntry_EWK.data(), "f");
     } 
-    if ( histogramWZ_density ) {
-      histogramWZ_density->SetFillColor(634); // dark red
+    if ( histogramDiboson_density ) {
+      histogramDiboson_density->SetFillColor(color_Diboson);
+      histogramsForStack_density.push_back(histogramDiboson_density);
+      legend->AddEntry(histogramDiboson_density, legendEntry_Diboson.data(), "f");
+    } else if ( histogramWZ_density ) {
+      histogramWZ_density->SetFillColor(color_WZ);
       histogramsForStack_density.push_back(histogramWZ_density);
-      legend->AddEntry(histogramWZ_density, "WZ", "f");
+      legend->AddEntry(histogramWZ_density, legendEntry_WZ.data(), "f");
     }
     if ( histogramRares_density ) {
-      histogramRares_density->SetFillColor(851); // light blue
+      histogramRares_density->SetFillColor(color_Rares);
       histogramsForStack_density.push_back(histogramRares_density);
-      legend->AddEntry(histogramRares_density, "Rares", "f");
+      legend->AddEntry(histogramRares_density, legendEntry_Rares.data(), "f");
     }
     if ( histogramFakes_density ) {
-      histogramFakes_density->SetFillColor(1);
+      histogramFakes_density->SetFillColor(color_Fakes);
       histogramFakes_density->SetFillStyle(3005); // stripes extending from top left to bottom right
       histogramsForStack_density.push_back(histogramFakes_density);
-      legend->AddEntry(histogramFakes_density, "Fakes", "f");
+      legend->AddEntry(histogramFakes_density, legendEntry_Fakes.data(), "f");
     }
     if ( histogramFlips_density ) {
-      histogramFlips_density->SetFillColor(1);
+      histogramFlips_density->SetFillColor(color_Flips);
       histogramFlips_density->SetFillStyle(3006); // vertical stripes
       histogramsForStack_density.push_back(histogramFlips_density);
-      legend->AddEntry(histogramFlips_density, "Flips", "f");
+      legend->AddEntry(histogramFlips_density, legendEntry_Flips.data(), "f");
     }
 
     // CV: add histograms to THStack in "reverse" order, so that ttH signal is drawn on top
@@ -342,9 +390,10 @@ namespace
 	if      ( histogramSignal_density  ) sumBinContents += histogramSignal_density->GetBinContent(iBin);
 	if      ( histogramTTW_density     ) sumBinContents += histogramTTW_density->GetBinContent(iBin);
 	if      ( histogramTTZ_density     ) sumBinContents += histogramTTZ_density->GetBinContent(iBin);
+	if      ( histogramTTH_density     ) sumBinContents += histogramTTH_density->GetBinContent(iBin);
 	if      ( histogramTT_density      ) sumBinContents += histogramTT_density->GetBinContent(iBin);
 	if      ( histogramEWK_density     ) sumBinContents += histogramEWK_density->GetBinContent(iBin);
-	else if ( histogramDiboson_density ) sumBinContents += histogramDiboson_density->GetBinContent(iBin);
+	if      ( histogramDiboson_density ) sumBinContents += histogramDiboson_density->GetBinContent(iBin);
 	else if ( histogramWZ_density      ) sumBinContents += histogramWZ_density->GetBinContent(iBin);
 	if      ( histogramRares_density   ) sumBinContents += histogramRares_density->GetBinContent(iBin);
 	if      ( histogramFakes_density   ) sumBinContents += histogramFakes_density->GetBinContent(iBin);
@@ -405,6 +454,7 @@ namespace
       if      ( histogramSignal  ) histogramSum->Add(histogramSignal);
       if      ( histogramTTW     ) histogramSum->Add(histogramTTW);
       if      ( histogramTTZ     ) histogramSum->Add(histogramTTZ);
+      if      ( histogramTTH     ) histogramSum->Add(histogramTTH);
       if      ( histogramTT      ) histogramSum->Add(histogramTT);
       if      ( histogramEWK     ) histogramSum->Add(histogramEWK);
       else if ( histogramDiboson ) histogramSum->Add(histogramDiboson);
@@ -499,6 +549,7 @@ namespace
     delete histogramSignal_density;
     delete histogramTTW_density;
     delete histogramTTZ_density;
+    delete histogramTTH_density;
     delete histogramTT_density;
     delete histogramWZ_density;
     delete histogramDiboson_density;

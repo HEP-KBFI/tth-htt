@@ -5,8 +5,8 @@ from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_WZctrl_2016 import samples_2016
 from tthAnalysis.HiggsToTauTau.analyzeConfig_WZctrl import analyzeConfig_WZctrl
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 
-ERA = "2015"
-#ERA = "2016"
+#ERA = "2015"
+ERA = "2016"
 
 samples = None
 LUMI = None
@@ -19,7 +19,7 @@ elif ERA == "2016":
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "2016Sep20"
+version = "2017Feb09"
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -28,9 +28,10 @@ if __name__ == '__main__':
     format = '%(asctime)s - %(levelname)s: %(message)s')
 
   analysis = analyzeConfig_WZctrl(
-    outputDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", version),
-    executable_analyze = "analyze_WZctrl",
+    outputDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", ERA, version),
+    executable_analyze = "analyze_WZctrl", cfgFile_analyze = "analyze_WZctrl_cfg.py",
     samples = samples,
+    hadTau_selection = "dR03mvaLoose",
     central_or_shifts = [ 
       "central",
 ##       "CMS_ttHl_btag_HFUp", 
@@ -64,13 +65,13 @@ if __name__ == '__main__':
 ##       "CMS_ttHl_thu_shape_ttZ_y1Up",
 ##       "CMS_ttHl_thu_shape_ttZ_y1Down" 
     ],
-    max_files_per_job = 30,
-    uera = ERA, se_lumi = True, lumi = LUMI,
+    max_files_per_job = 20,
+    era = ERA, use_lumi = True, lumi = LUMI,
     debug = False,
     running_method = "sbatch",
-    num_parallel_jobs = 4,
+    num_parallel_jobs = 8,
     histograms_to_fit = [ "EventCounter", "numJets", "mLL", "mT" ],
-    select_rle_output = False)
+    select_rle_output = True)
 
   analysis.create()
 

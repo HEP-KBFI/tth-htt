@@ -24,7 +24,7 @@ class EvtHistManager_3l_1tau
   /// book and fill histograms
   void bookHistograms(TFileDirectory& dir);
   void fillHistograms(int numElectrons, int numMuons, int numHadTaus, int numJets, int numBJets_loose, int numBJets_medium, 
-		      double mvaOutput_3l_ttV, double mvaOutput_3l_ttbar, double mvaDiscr_3l, 
+		      double mvaOutput_3l_ttV, double mvaOutput_3l_ttbar, double mvaDiscr_3l, double mvaOutput_3l_1tau_ttV, double mvaOutput_3l_1tau_ttbar, 
 		      double mTauTauVis1, double mTauTauVis2, 
 		      const MEMOutput_3l_1tau* memOutput_3l_1tau, double evtWeight);
 
@@ -46,6 +46,9 @@ class EvtHistManager_3l_1tau
   TH1* histogram_mvaOutput_3l_ttV_;
   TH1* histogram_mvaOutput_3l_ttbar_;
   TH1* histogram_mvaDiscr_3l_;
+
+  TH1* histogram_mvaOutput_3l_1tau_ttV_;
+  TH1* histogram_mvaOutput_3l_1tau_ttbar_;
 
   TH1* histogram_mTauTauVis_;
 

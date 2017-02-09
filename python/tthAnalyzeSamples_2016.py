@@ -1545,3 +1545,31 @@ samples_2016["/ttHToNonbb_M125_13TeV_powheg_pythia8/RunIISpring16MiniAODv2-PUSpr
     ]
   ),
 ])
+
+
+#--------------------------------------------------------------------------------
+# !!! ONLY FOR TESTING
+## samples_2016 = OD()
+## samples_2016["/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14_ext1-v1/MINIAODSIM"] = OD([
+##   ("type",                  "mc"),
+##   ("sample_category",       "signal"),
+##   ("process_name_specific", "ttHJetToNonbb_M125"),
+##   ("nof_files",             109),
+##   ("nof_events",            1779218),
+##   ("use_it",                True),
+##   ("xsection",              0.215100),
+##   ("genWeight",             True),
+##   ("triggers",              [ "1e", "2e", "1mu", "2mu", "1e1mu" ]),
+##   ("reHLT",                 True),
+##   ("local_paths",
+##     [
+##       OD([
+##         ("path",      "/hdfs/local/lucia/VHBBHeppyV24bis/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/VHBB_HEPPY_V24bis_ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_Py8_mWCutfix__spr16MAv2-puspr16_HLT_80r2as_v14_ext1-v1/160911_223711"),
+##         ("selection", "*"),
+##         ("blacklist", [10, 11, 14, 16, 20, 22, 23, 26, 29, 30, 31, 33, 34, 38, 39, 43, 44, 45, 51, 54, 57, 62, 63, 64, 66, 67, 68, 70, 71, 72, 73, 75, 76, 77, 79, 80, 81, 89, 98, 99]),
+##       ]),
+##     ]
+##   ),
+## ])
+#     FOR TESTING ONLY !!!
+#--------------------------------------------------------------------------------
