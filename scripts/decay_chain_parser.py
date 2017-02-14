@@ -983,10 +983,6 @@ def get_WW_cat(entries, check_q = True):
       # we have a leptonic W decay
       final_decay_products.append('(l)')
       nof_l += 1
-    elif check_q and entry['q']:
-      # we have a hadronic W decay
-      final_decay_products.append('(q)(q)')
-      nof_q += 2
     elif entry_tau[0]:
       # the W decays into a tau for which we fortunately have a label for
       final_decay_products.append('%s' % entry_tau[0])
@@ -994,6 +990,10 @@ def get_WW_cat(entries, check_q = True):
       nof_l += entry_tau[1]
       # a hadronic tau can only come from tau decay in W decay
       nof_h += entry_tau[2]
+    elif check_q and entry['q']:
+      # we have a hadronic W decay
+      final_decay_products.append('(q)(q)')
+      nof_q += 2
 
   if (nof_l + nof_h + nof_q) > 0:
     # keep a consistent label for the WW decay by alphabetically sorting individual label
