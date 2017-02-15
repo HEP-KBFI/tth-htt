@@ -724,28 +724,24 @@ int main(int argc, char* argv[])
 
 //--- apply preselection
     std::vector<const RecoLepton*> preselLeptons = mergeLeptonCollections(preselElectrons, preselMuons);
-    // require exactly two leptons passing loose preselection criteria to avoid overlap with 3l category
-    if ( !(preselLeptons.size() == 2) ) {
+    // require two leptons passing loose preselection criteria 
+    if ( !(preselLeptons.size() >= 2) ) {
       continue;
     }
-    cutFlowTable.update("2 presel leptons");
+    cutFlowTable.update(">= 2 presel leptons");
     const RecoLepton* preselLepton_lead = preselLeptons[0];
     int preselLepton_lead_type = getLeptonType(preselLepton_lead->pdgId());
     const RecoLepton* preselLepton_sublead = preselLeptons[1];
     int preselLepton_sublead_type = getLeptonType(preselLepton_sublead->pdgId());
 
-    // require that trigger paths match event category (with event category based on preselLeptons);
-    if ( preselElectrons.size() == 2 && !selTrigger_1e  ) {
+    // require that trigger paths match event category (with event category based on preselLeptons)
+    if ( !((preselElectrons.size() >= 2 &&                             selTrigger_1e                                       ) ||
+	   (preselElectrons.size() >= 1 && preselMuons.size() >= 1 && (selTrigger_1e1mu || selTrigger_1mu || selTrigger_1e)) ||
+	   (                               preselMuons.size() >= 2 &&  selTrigger_1mu                                      )) ) {
       continue;
-    }
-    if ( preselMuons.size() == 2 && !selTrigger_1mu ) {
-      continue;
-    }
-    if ( preselElectrons.size() == 1 && preselMuons.size() == 1 && !(selTrigger_1e || selTrigger_1mu || selTrigger_1e1mu) ) {
-      continue;
-    }
+    } 
     cutFlowTable.update("presel lepton trigger match");
-
+    
 //--- compute MHT and linear MET discriminant (met_LD)
     RecoMEt met = metReader->read();
     std::vector<const RecoLepton*> fakeableLeptons = mergeLeptonCollections(fakeableElectrons, fakeableMuons);
@@ -794,7 +790,7 @@ int main(int argc, char* argv[])
 
 //--- apply final event selection 
     std::vector<const RecoLepton*> selLeptons = mergeLeptonCollections(selElectrons, selMuons);
-    // require exactly two leptons passing tight selection criteria of final event selection 
+    // require exactly two leptons passing tight selection criteria to avoid overlap with 3l category
     if ( !(selLeptons.size() == 2) ) {
       continue;
     }
@@ -802,16 +798,12 @@ int main(int argc, char* argv[])
     const RecoLepton* selLepton_lead = selLeptons[0];
     const RecoLepton* selLepton_sublead = selLeptons[1];
 
-    // require exactly one electron and one muon passing tight selection criteria
-    if ( !(selElectrons.size() == 1 && selMuons.size() == 1) ) {
+    // require that trigger paths match event category (with event category based on selLeptons)
+    if ( !((selElectrons.size() >= 2 &&                          selTrigger_1e                                       ) ||
+	   (selElectrons.size() >= 1 && selMuons.size() >= 1 && (selTrigger_1e1mu || selTrigger_1mu || selTrigger_1e)) ||
+	   (                            selMuons.size() >= 2 &&  selTrigger_1mu                                      )) ) {
       continue;
-    }
-    cutFlowTable.update("1 sel electron && 1 sel muon", evtWeight);
-
-    // require that trigger paths match event category (with event category based on selLeptons);
-    if ( selElectrons.size() == 1 && selMuons.size() == 1 && !(selTrigger_1e  || selTrigger_1mu || selTrigger_1e1mu) ) {
-      continue;
-    }
+    } 
     cutFlowTable.update("sel lepton trigger match", evtWeight);
 
     // apply requirement on jets (incl. b-tagged jets) 

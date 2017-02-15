@@ -975,23 +975,17 @@ int main(int argc, char* argv[])
     assert(idxPreselLepton_genMatch != kGen_LeptonUndefined1);
 
     // require that trigger paths match event category (with event category based on preselLeptons)
-    if ( preselMuons.size() >= 1 && !(selTrigger_1mu || selTrigger_1mu1tau) ) {
-      if ( run_lumi_eventSelector ) {
-	std::cout << "event FAILS trigger selection for given preselLepton multiplicity." << std::endl; 
-	std::cout << " (#preselMuons = " << preselMuons.size() 
-		  << ", selTrigger_1mu = " << selTrigger_1mu 
-		  << ", selTrigger_1mu1tau = " << selTrigger_1mu1tau << ")" << std::endl;
-      }
-      continue;
-    } else if ( preselElectrons.size() >= 1 && !(selTrigger_1e || selTrigger_1e1tau) ) {
+    if ( !((preselElectrons.size() >= 1 && selTrigger_1e ) ||
+	   (preselMuons.size()     >= 1 && selTrigger_1mu)) ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS trigger selection for given preselLepton multiplicity." << std::endl; 
 	std::cout << " (#preselElectrons = " << preselElectrons.size() 
-		  << ", selTrigger_1e = " << selTrigger_1e 
-		  << ", selTrigger_1e1tau = " << selTrigger_1e1tau << ")" << std::endl;
+		  << ", #preselMuons = " << preselMuons.size() 
+		  << ", selTrigger_1mu = " << selTrigger_1mu 
+		  << ", selTrigger_1e = " << selTrigger_1e << ")" << std::endl;
       }
       continue;
-    }
+    } 
     cutFlowTable.update("presel lepton trigger match");
     cutFlowHistManager->fillHistograms("presel lepton trigger match", lumiScale);
 
@@ -1099,23 +1093,17 @@ int main(int argc, char* argv[])
     }    
 
     // require that trigger paths match event category (with event category based on selLeptons)
-    if ( selMuons.size() >= 1 && !(selTrigger_1mu || selTrigger_1mu1tau) ) {
+    if ( !((selElectrons.size() >= 1 && selTrigger_1e ) ||
+	   (selMuons.size()     >= 1 && selTrigger_1mu)) ) {
       if ( run_lumi_eventSelector ) {
-	std::cout << "event FAILS trigger selection for given selLepton multiplicity." << std::endl; 
-	std::cout << " (#selMuons = " << selMuons.size() 
-		  << ", selTrigger_1mu = " << selTrigger_1mu 
-		  << ", selTrigger_1mu1tau = " << selTrigger_1mu1tau << ")" << std::endl;
-      }
-      continue;
-    } else if ( selElectrons.size() >= 1 && !(selTrigger_1e || selTrigger_1e1tau) ) {
-      if ( run_lumi_eventSelector ) {
-	std::cout << "event FAILS trigger selection for given selLepton multiplicity." << std::endl; 
+	std::cout << "event FAILS trigger selection for given preselLepton multiplicity." << std::endl; 
 	std::cout << " (#selElectrons = " << selElectrons.size() 
-		  << ", selTrigger_1e = " << selTrigger_1e 
-		  << ", selTrigger_1e1tau = " << selTrigger_1e1tau << ")" << std::endl;
+		  << ", #selMuons = " << selMuons.size() 
+		  << ", selTrigger_1mu = " << selTrigger_1mu 
+		  << ", selTrigger_1e = " << selTrigger_1e << ")" << std::endl;
       }
       continue;
-    }
+    } 
     cutFlowTable.update("sel lepton trigger match", evtWeight);
     cutFlowHistManager->fillHistograms("sel lepton trigger match", evtWeight);
 
@@ -1214,7 +1202,7 @@ int main(int argc, char* argv[])
     cutFlowTable.update("lepton+tau charge", evtWeight);
     cutFlowHistManager->fillHistograms("lepton+tau charge", evtWeight);
 
-    if ( leptonSelection != kTight || hadTauSelection != kTight ) {
+    if ( leptonSelection == kFakeable || hadTauSelection == kFakeable ) {
       if ( (tightMuons.size() + tightElectrons.size()) >= 1 && tightHadTaus_lead.size() >= 1 && tightHadTaus_sublead.size() >= 1 ) continue; // CV: avoid overlap with signal region
       cutFlowTable.update("signal region veto", evtWeight);
       cutFlowHistManager->fillHistograms("signal region veto", evtWeight);

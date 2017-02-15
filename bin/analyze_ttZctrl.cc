@@ -808,34 +808,22 @@ int main(int argc, char* argv[])
     }
     cutFlowTable.update(">= 2 presel leptons");
 
-    // require that trigger paths match event category (with event category based on preselLeptons);
-    if ( preselMuons.size() >= 2 && !(selTrigger_1mu || selTrigger_2mu) ) {
-      if ( run_lumi_eventSelector ) {
-	std::cout << "event FAILS trigger selection for given preselLepton multiplicity." << std::endl; 
-	std::cout << " (#preselMuons = " << preselMuons.size() 
-		  << ", selTrigger_1mu = " << selTrigger_1mu 
-		  << ", selTrigger_2mu = " << selTrigger_2mu << ")" << std::endl;
-      }
-      continue;
-    } else if ( preselElectrons.size() >= 1 && preselMuons.size() >= 1 && !(selTrigger_1e || selTrigger_1mu || selTrigger_1e1mu) ) {
+    // require that trigger paths match event category (with event category based on preselLeptons)
+    if ( !((preselElectrons.size() >= 2 &&                            (selTrigger_2e    || selTrigger_1e                  )) ||
+	   (preselElectrons.size() >= 1 && preselMuons.size() >= 1 && (selTrigger_1e1mu || selTrigger_1mu || selTrigger_1e)) ||
+	   (                               preselMuons.size() >= 2 && (selTrigger_2mu   || selTrigger_1mu                 ))) ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS trigger selection for given preselLepton multiplicity." << std::endl; 
 	std::cout << " (#preselElectrons = " << preselElectrons.size() 
 		  << ", #preselMuons = " << preselMuons.size() 
-		  << ", selTrigger_1e = " << selTrigger_1e 
-		  << ", selTrigger_1mu = " << selTrigger_1mu
-		  << ", selTrigger_1e1mu = " << selTrigger_1e1mu << ")" << std::endl;
+		  << ", selTrigger_2mu = " << selTrigger_2mu 
+		  << ", selTrigger_1e1mu = " << selTrigger_1e1mu
+		  << ", selTrigger_2e = " << selTrigger_2e 
+		  << ", selTrigger_1mu = " << selTrigger_1mu 
+		  << ", selTrigger_1e = " << selTrigger_1e << ")" << std::endl;
       }
       continue;
-    } else if ( preselElectrons.size() >= 2 && !(selTrigger_1e || selTrigger_2e) ) {
-      if ( run_lumi_eventSelector ) {
-	std::cout << "event FAILS trigger selection for given preselLepton multiplicity." << std::endl; 
-	std::cout << " (#preselElectrons = " << preselElectrons.size() 
-		  << ", selTrigger_1e = " << selTrigger_1e 
-		  << ", selTrigger_2e = " << selTrigger_2e << ")" << std::endl;
-      }
-      continue;
-    }    
+    } 
     cutFlowTable.update("presel lepton trigger match");
 
     // apply requirement on jets (incl. b-tagged jets) on preselection level
@@ -929,12 +917,10 @@ int main(int argc, char* argv[])
     }
     cutFlowTable.update("<= 3 tight leptons", evtWeight_2lepton);
 
-    // require that trigger paths match event category (with event category based on selLeptons);
-    if ( !((                            selMuons.size() >= 2 && isTriggered_2mu  ) ||
-	   (selElectrons.size() >= 1 && selMuons.size() >= 1 && isTriggered_1e1mu) ||
-	   (selElectrons.size() >= 2 &&                         isTriggered_2e   ) ||
-	   (			        selMuons.size() >= 1 && isTriggered_1mu  ) ||
-	   (selElectrons.size() >= 1 &&                         isTriggered_1e   )) ) {  
+    // require that trigger paths match event category (with event category based on selLeptons)
+    if ( !((selElectrons.size() >= 2 &&                         (selTrigger_2e    || selTrigger_1e                  )) ||
+	   (selElectrons.size() >= 1 && selMuons.size() >= 1 && (selTrigger_1e1mu || selTrigger_1mu || selTrigger_1e)) ||
+	   (                            selMuons.size() >= 2 && (selTrigger_2mu   || selTrigger_1mu                 ))) ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS trigger selection for given selLepton multiplicity." << std::endl; 
 	std::cout << " (#selElectrons = " << selElectrons.size() 
@@ -946,7 +932,7 @@ int main(int argc, char* argv[])
 		  << ", selTrigger_1e = " << selTrigger_1e << ")" << std::endl;
       }
       continue;
-    }
+    } 
     cutFlowTable.update("sel lepton trigger match", evtWeight_2lepton);
       
     // apply requirement on jets (incl. b-tagged jets) on level of final event selection

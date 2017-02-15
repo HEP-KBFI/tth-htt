@@ -80,6 +80,7 @@ process.addBackgroundLeptonFakes = cms.PSet(
         "TTW",
         "TTZ",
         "WZ",
+        "EWK",
         "Rares"
     ),
 

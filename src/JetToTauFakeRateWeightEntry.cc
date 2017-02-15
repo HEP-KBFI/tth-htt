@@ -73,3 +73,15 @@ double JetToTauFakeRateWeightEntry::getWeight(double pt) const
   //std::cout << "returning weight = " << weight << std::endl;
   return weight;
 }
+
+double JetToTauFakeRateWeightEntry::getSF(double pt) const
+{
+  //std::cout << "<JetToTauFakeRateWeightEntry::getSF>:" << std::endl;
+  double sf = 1.;
+  if ( applyFitFunction_ ) {
+    //std::cout << " fitFunction = " << fitFunction_->GetName() << ": weight = " << fitFunction_->Eval(pt) << std::endl;
+    sf *= fitFunction_->Eval(pt);
+  }
+  //std::cout << "returning SF = " << sf << std::endl;
+  return sf;
+}

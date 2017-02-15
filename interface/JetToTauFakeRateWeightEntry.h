@@ -11,14 +11,24 @@
 
 enum { kFRjt_central, kFRjt_normUp, kFRjt_normDown, kFRjt_shapeUp, kFRjt_shapeDown };
 
-struct JetToTauFakeRateWeightEntry
+class JetToTauFakeRateWeightEntry
 {
+ public:
   JetToTauFakeRateWeightEntry(double absEtaMin, double absEtaMax, const std::string& hadTauSelection,
 			      TFile* inputFile, const edm::ParameterSet& cfg, int central_or_shift);
   ~JetToTauFakeRateWeightEntry();
 
+  // jet->tau fake-rates (product of fake-rates in MC, determined in bins of tau candidate pT and eta, and data/MC scale factors)
   double getWeight(double pt) const;
+
+  // jet->tau fake-rate scale factors (ratio of jet->tau fake-rates in data and MC simulation);
+  // to be applied to simulated events in case data-driven "fake" background estimation is applied to leptons only
+  double getSF(double pt) const;
     
+  double absEtaMin() const { return absEtaMin_; }
+  double absEtaMax() const { return absEtaMax_; }
+
+ private:
   double absEtaMin_;
   double absEtaMax_;
   std::string hadTauSelection_;

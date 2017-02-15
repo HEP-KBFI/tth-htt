@@ -43,7 +43,7 @@ elif ERA == "2016":
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "2017Feb09"
+version = "2017Feb10"
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -60,7 +60,7 @@ if __name__ == '__main__':
     #     https://indico.cern.ch/event/597028/contributions/2413742/attachments/1391684/2120220/16.12.22_ttH_Htautau_-_Review_of_systematics.pdf
     #applyFakeRateWeights = "4L",
     applyFakeRateWeights = "3lepton",
-    charge_selections = [ "OS", "SS" ],
+    chargeSumSelections = [ "OS", "SS" ],
     central_or_shifts = [ 
       "central",
 ##       "CMS_ttHl_btag_HFUp", 
@@ -125,7 +125,7 @@ if __name__ == '__main__':
     num_parallel_jobs = 8,
     executable_addBackgrounds = "addBackgrounds",
     executable_addBackgroundJetToTauFakes = "addBackgroundLeptonFakes", # CV: use common executable for estimating jet->lepton and jet->tau_h fake background
-    histograms_to_fit = [ "EventCounter", "numJets", "mvaDiscr_3l", "mTauTauVis" ],
+    histograms_to_fit = [ "EventCounter", "numJets", "mvaDiscr_3l", "mTauTauVis", "mvaDiscr_3l_1tau" ],
     select_rle_output = True,
     select_root_output = False)
   

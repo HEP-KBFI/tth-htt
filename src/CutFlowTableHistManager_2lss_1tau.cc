@@ -33,8 +33,8 @@ void CutFlowTableHistManager_2lss_1tau::bookHistograms(TFileDirectory& dir)
   xAxis->SetBinLabel(14, "m(ll) > 12 GeV");
   xAxis->SetBinLabel(15, "lead lepton pT > 25 GeV && sublead lepton pT > 15(e)/10(mu) GeV");
   xAxis->SetBinLabel(16, "tight lepton charge");
-  xAxis->SetBinLabel(17, "lepton-pair OS/SS charge");
-  xAxis->SetBinLabel(18, "lepton+tau charge");
+  xAxis->SetBinLabel(17, "sel lepton-pair OS/SS charge");
+  xAxis->SetBinLabel(18, "sel lepton+tau charge");
   xAxis->SetBinLabel(19, "Z-boson mass veto");
   xAxis->SetBinLabel(20, "met LD > 0.2");
   xAxis->SetBinLabel(21, "signal region veto");

@@ -224,12 +224,12 @@ int main(int argc, char* argv[])
   std::cout << hadTauGenMatch_definitions;
   
   enum { kOS, kSS };
-  std::string chargeSelection_string = cfg_analyze.getParameter<std::string>("chargeSelection");
-  int chargeSelection = -1;
-  if      ( chargeSelection_string == "OS" ) chargeSelection = kOS;
-  else if ( chargeSelection_string == "SS" ) chargeSelection = kSS;
+  std::string chargeSumSelection_string = cfg_analyze.getParameter<std::string>("chargeSumSelection");
+  int chargeSumSelection = -1;
+  if      ( chargeSumSelection_string == "OS" ) chargeSumSelection = kOS;
+  else if ( chargeSumSelection_string == "SS" ) chargeSumSelection = kSS;
   else throw cms::Exception("analyze_3l_1tau") 
-    << "Invalid Configuration parameter 'chargeSelection' = " << chargeSelection_string << " !!\n";
+    << "Invalid Configuration parameter 'chargeSumSelection' = " << chargeSumSelection_string << " !!\n";
 
   bool use_HIP_mitigation_bTag = cfg_analyze.getParameter<bool>("use_HIP_mitigation_bTag"); 
   std::cout << "use_HIP_mitigation_bTag = " << use_HIP_mitigation_bTag << std::endl;
@@ -241,6 +241,7 @@ int main(int argc, char* argv[])
   double lumiScale = ( process_string != "data_obs" ) ? cfg_analyze.getParameter<double>("lumiScale") : 1.;
   bool apply_genWeight = cfg_analyze.getParameter<bool>("apply_genWeight"); 
   bool apply_trigger_bits = cfg_analyze.getParameter<bool>("apply_trigger_bits"); 
+  bool apply_hadTauFakeRateSF = cfg_analyze.getParameter<bool>("apply_hadTauFakeRateSF");
 
   bool isDEBUG = ( cfg_analyze.exists("isDEBUG") ) ? cfg_analyze.getParameter<bool>("isDEBUG") : false; 
   if ( isDEBUG ) std::cout << "Warning: DEBUG mode enabled -> trigger selection will not be applied for data !!" << std::endl;
@@ -586,6 +587,10 @@ int main(int argc, char* argv[])
 
   std::vector<std::string> mvaInputVariables_3l_1tau = get_mvaInputVariables(mvaInputVariables_3l_1tau_ttV, mvaInputVariables_3l_1tau_ttbar);
   std::map<std::string, double> mvaInputs_3l_1tau;
+
+  std::string inputFileNam_mva_mapping_3l_1tau = "tthAnalysis/HiggsToTauTau/data/3l_1tau_BDT_mapping.root";
+  TFile* inputFile_mva_mapping_3l_1tau = openFile(LocalFileInPath(inputFileNam_mva_mapping_3l_1tau));
+  TH2* mva_mapping_3l_1tau = loadTH2(inputFile_mva_mapping_3l_1tau, "hBinning");
 
 //--- open output file containing run:lumi:event numbers of events passing final event selection criteria
   std::ostream* selEventsFile = ( selEventsFileName_output != "" ) ? new std::ofstream(selEventsFileName_output.data(), std::ios::out) : 0;
@@ -1065,11 +1070,11 @@ struct preselHistManagerType
     int idxPreselLepton_genMatch = preselLepton_genMatch.idx_;
     assert(idxPreselLepton_genMatch != kGen_LeptonUndefined3);
 
-    // require that trigger paths match event category (with event category based on preselLeptons);
-    if ( (preselElectrons.size() == 3 &&                            !(selTrigger_3e    || selTrigger_2e  || selTrigger_1e                                      )) ||
-	 (preselElectrons.size() == 2 && preselMuons.size() == 1 && !(selTrigger_2e1mu || selTrigger_2e  || selTrigger_1e1mu || selTrigger_1mu || selTrigger_1e)) ||
-	 (preselElectrons.size() == 1 && preselMuons.size() == 2 && !(selTrigger_1e2mu || selTrigger_2mu || selTrigger_1e1mu || selTrigger_1mu || selTrigger_1e)) ||
-	 (                               preselMuons.size() == 3 && !(selTrigger_3mu   || selTrigger_2mu || selTrigger_1mu                                     )) ) {
+    // require that trigger paths match event category (with event category based on preselLeptons)
+    if ( !((preselElectrons.size() >= 3 &&                            (selTrigger_3e    || selTrigger_2e  || selTrigger_1e                                      )) ||
+	   (preselElectrons.size() >= 2 && preselMuons.size() >= 1 && (selTrigger_2e1mu || selTrigger_2e  || selTrigger_1e1mu || selTrigger_1mu || selTrigger_1e)) ||
+	   (preselElectrons.size() >= 1 && preselMuons.size() >= 2 && (selTrigger_1e2mu || selTrigger_2mu || selTrigger_1e1mu || selTrigger_1mu || selTrigger_1e)) ||
+	   (                               preselMuons.size() >= 3 && (selTrigger_3mu   || selTrigger_2mu || selTrigger_1mu                                     ))) ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS trigger selection for given preselLepton multiplicity." << std::endl; 
 	std::cout << " (#preselElectrons = " << preselElectrons.size() 
@@ -1159,7 +1164,7 @@ struct preselHistManagerType
     preselHistManager->evt_->fillHistograms(
       preselElectrons.size(), preselMuons.size(), selHadTaus.size(), 
       selJets.size(), selBJets_loose.size(), selBJets_medium.size(), 
-      -1., -1., -1., -1., -1., 
+      -1., -1., -1., -1., -1., -1., 
       mTauTauVis1_presel, mTauTauVis2_presel, 
       0, 1.);
 
@@ -1316,15 +1321,21 @@ struct preselHistManagerType
       evtWeight *= weight_fakeRate;
     }
 
-    // require that trigger paths match event category (with event category based on selLeptons);
-    if ( (selElectrons.size() == 3 &&                         !(selTrigger_3e    || selTrigger_2e  || selTrigger_1e                                      )) ||
-	 (selElectrons.size() == 2 && selMuons.size() == 1 && !(selTrigger_2e1mu || selTrigger_2e  || selTrigger_1e1mu || selTrigger_1mu || selTrigger_1e)) ||
-	 (selElectrons.size() == 1 && selMuons.size() == 2 && !(selTrigger_1e2mu || selTrigger_2mu || selTrigger_1e1mu || selTrigger_1mu || selTrigger_1e)) ||
-	 (                            selMuons.size() == 3 && !(selTrigger_3mu   || selTrigger_2mu || selTrigger_1mu                                     )) ) {
+    // CV: apply data/MC ratio for jet->tau fake-rates in case data-driven "fake" background estimation is applied to leptons only
+    if ( isMC && apply_hadTauFakeRateSF && hadTauSelection == kTight && !(selHadTau->genHadTau() || selHadTau->genLepton()) ) {
+      double weight_data_to_MC_correction_tau = jetToTauFakeRateInterface->getSF_lead(selHadTau->pt(), selHadTau->absEta());
+      evtWeight *= weight_data_to_MC_correction_tau;
+    }
+
+    // require that trigger paths match event category (with event category based on selLeptons)
+   if ( !((selElectrons.size() >= 3 &&                         (selTrigger_3e    || selTrigger_2e  || selTrigger_1e                                      )) ||
+	  (selElectrons.size() >= 2 && selMuons.size() >= 1 && (selTrigger_2e1mu || selTrigger_2e  || selTrigger_1e1mu || selTrigger_1mu || selTrigger_1e)) ||
+	  (selElectrons.size() >= 1 && selMuons.size() >= 2 && (selTrigger_1e2mu || selTrigger_2mu || selTrigger_1e1mu || selTrigger_1mu || selTrigger_1e)) ||
+	  (                            selMuons.size() >= 3 && (selTrigger_3mu   || selTrigger_2mu || selTrigger_1mu                                     ))) ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS trigger selection for given preselLepton multiplicity." << std::endl; 
-	std::cout << " (#preselElectrons = " << preselElectrons.size() 
-		  << ", #preselMuons = " << preselMuons.size() 
+	std::cout << " (#selElectrons = " << selElectrons.size() 
+		  << ", #selMuons = " << selMuons.size() 
 		  << ", selTrigger_3mu = " << selTrigger_3mu 
 		  << ", selTrigger_1e2mu = " << selTrigger_1e2mu
 		  << ", selTrigger_2e1mu = " << selTrigger_2e1mu
@@ -1424,7 +1435,7 @@ struct preselHistManagerType
 
     bool isCharge_SS = sumLeptonCharge*selHadTau->charge() > 0;
     bool isCharge_OS = sumLeptonCharge*selHadTau->charge() < 0;
-    if ( (chargeSelection == kOS && isCharge_SS) || (chargeSelection == kSS && isCharge_OS) ) {
+    if ( (chargeSumSelection == kOS && isCharge_SS) || (chargeSumSelection == kSS && isCharge_OS) ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS lepton+tau charge selection." << std::endl;	
 	std::cout << " (leading selLepton charge = " << selLepton_lead->charge() 
@@ -1475,7 +1486,7 @@ struct preselHistManagerType
     cutFlowTable.update("met LD", evtWeight);
     cutFlowHistManager->fillHistograms("met LD", evtWeight);
 
-    if ( leptonSelection != kTight || hadTauSelection != kTight ) {
+    if ( leptonSelection == kFakeable || hadTauSelection == kFakeable ) {
       if ( (tightMuons.size() + tightElectrons.size()) >= 3 && tightHadTaus.size() >= 1 ) { 
 	if ( run_lumi_eventSelector ) {
 	  std::cout << "event FAILS tightElectrons+tightMuons selection." << std::endl;
@@ -1555,6 +1566,8 @@ struct preselHistManagerType
 
     double mvaOutput_3l_1tau_ttV = mva_3l_1tau_ttV(mvaInputs_3l_1tau);
     double mvaOutput_3l_1tau_ttbar = mva_3l_1tau_ttbar(mvaInputs_3l_1tau);
+
+    Double_t mvaDiscr_3l_1tau = getSF_from_TH2(mva_mapping_3l_1tau, mvaOutput_3l_1tau_ttbar, mvaOutput_3l_1tau_ttV) + 1.;
 
     MEMOutput_3l_1tau memOutput_3l_1tau_matched;
     if(memReader)
@@ -1645,7 +1658,7 @@ struct preselHistManagerType
     selHistManager->evt_->fillHistograms(
       selElectrons.size(), selMuons.size(), selHadTaus.size(), 
       selJets.size(), selBJets_loose.size(), selBJets_medium.size(), 
-      mvaOutput_3l_ttV, mvaOutput_3l_ttbar, mvaDiscr_3l, mvaOutput_3l_1tau_ttV, mvaOutput_3l_1tau_ttbar, 
+      mvaOutput_3l_ttV, mvaOutput_3l_ttbar, mvaDiscr_3l, mvaOutput_3l_1tau_ttV, mvaOutput_3l_1tau_ttbar, mvaDiscr_3l_1tau,  
       mTauTauVis1_sel, mTauTauVis2_sel, 
       memOutput_3l_1tau_matched.is_initialized() ? &memOutput_3l_1tau_matched : nullptr, evtWeight);
     if ( isSignal ) {
@@ -1654,7 +1667,7 @@ struct preselHistManagerType
           selHistManager->evt_in_decayModes_[kv.first]->fillHistograms(
             selElectrons.size(), selMuons.size(), selHadTaus.size(), 
             selJets.size(), selBJets_loose.size(), selBJets_medium.size(), 
-            mvaOutput_3l_ttV, mvaOutput_3l_ttbar, mvaDiscr_3l, mvaOutput_3l_1tau_ttV, mvaOutput_3l_1tau_ttbar, 
+            mvaOutput_3l_ttV, mvaOutput_3l_ttbar, mvaDiscr_3l, mvaOutput_3l_1tau_ttV, mvaOutput_3l_1tau_ttbar, mvaDiscr_3l_1tau, 
             mTauTauVis1_sel, mTauTauVis2_sel, 
             memOutput_3l_1tau_matched.is_initialized() ? &memOutput_3l_1tau_matched : nullptr, evtWeight);
           break;
@@ -1790,6 +1803,8 @@ struct preselHistManagerType
   
   delete run_lumi_eventSelector;
 
+  delete inputFile_mva_mapping_3l_1tau;
+  
   delete selEventsFile;
 
   delete muonReader;

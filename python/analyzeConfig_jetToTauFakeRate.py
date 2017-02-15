@@ -4,7 +4,7 @@ from tthAnalysis.HiggsToTauTau.analyzeConfig_new import *
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists
 from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg, createFile, generateInputFileList
 
-class analyzeConfig_jetToTauFakeRate(analyzeConfig_new):
+class analyzeConfig_jetToTauFakeRate(analyzeConfig):
   """Configuration metadata needed to run analysis in a single go.
   
   Sets up a folder structure by defining full path names; no directory creation is delegated here.
@@ -130,16 +130,22 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig_new):
         continue
       process_name = sample_info["process_name_specific"]
       for charge_selection in self.charge_selections:
-        key_dir = getKey(sample_name, charge_selection)  
-        for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_DCRD ]:
+        key_dir = getKey(process_name, charge_selection)
+        for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_RLES ]:
           initDict(self.dirs, [ key_dir, dir_type ])
           self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel,
             "_".join([ charge_selection ]), process_name)
+    for dir_type in [ DKEY_SCRIPTS, DKEY_DCRD, DKEY_PLOT ]:
+      initDict(self.dirs, [ dir_type ])
+      self.dirs[dir_type] = os.path.join(self.outputDir, dir_type, self.channel)
     ##print "self.dirs = ", self.dirs
 
     for key in self.dirs.keys():
-      for dir_type in self.dirs[key].keys():
-        create_if_not_exists(self.dirs[key][dir_type])
+      if type(self.dirs[key]) == dict:
+        for dir_type in self.dirs[key].keys():
+          create_if_not_exists(self.dirs[key][dir_type])
+      else:
+        create_if_not_exists(self.dirs[key])
   
     self.inputFileIds = {}
     for sample_name, sample_info in self.samples.items():
@@ -172,8 +178,8 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig_new):
               continue
 
             # build config files for executing analysis code
-            key_dir = getKey(sample_name, charge_selection)
-            key_analyze_job = getKey(sample_name, charge_selection, central_or_shift, jobId)
+            key_dir = getKey(process_name, charge_selection)
+            key_analyze_job = getKey(process_name, charge_selection, central_or_shift, jobId)
 
             ntupleFiles = inputFileList[jobId]
             if len(ntupleFiles) == 0:
@@ -189,31 +195,52 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig_new):
                 (self.channel, process_name, charge_selection, central_or_shift, jobId)),
               'sample_category' : sample_category,
               'triggers' : sample_info["triggers"],
-              'charge_selection' : lepton_charge_selection,
+              'charge_selection' : charge_selection,
               'jet_minPt' : self.jet_minPt,
               'jet_maxPt' : self.jet_maxPt,
               'jet_minAbsEta' : self.jet_minAbsEta,
               'jet_maxAbsEta' : self.jet_maxAbsEta,
               'hadTau_selections' : self.hadTau_selections,
               'absEtaBins' : self.absEtaBins,
-              'use_HIP_mitigation_bTag' : sample_info["use_HIP_mitigation_bTag"],
-              'use_HIP_mitigation_mediumMuonId' : sample_info["use_HIP_mitigation_mediumMuonId"],
+              ##'use_HIP_mitigation_bTag' : sample_info["use_HIP_mitigation_bTag"],
+              ##'use_HIP_mitigation_mediumMuonId' : sample_info["use_HIP_mitigation_mediumMuonId"],
+              'use_HIP_mitigation_bTag' : True,
+              'use_HIP_mitigation_mediumMuonId' : True,
               'is_mc' : is_mc,
               'central_or_shift' : central_or_shift,
               'lumi_scale' : 1. if not (self.use_lumi and is_mc) else sample_info["xsection"] * self.lumi / sample_info["nof_events"],
               'apply_genWeight' : sample_info["genWeight"] if (is_mc and "genWeight" in sample_info.keys()) else False,
               'apply_trigger_bits' : (is_mc and (self.era == "2015" or (self.era == "2016" and sample_info["reHLT"]))) or not is_mc,
             }
-                
+            self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job])
+
+            # initialize input and output file names for hadd_stage1
+            key_hadd_stage1 = getKey(process_name, charge_selection)
+            if not key_hadd_stage1 in self.inputFiles_hadd_stage1.keys():
+              self.inputFiles_hadd_stage1[key_hadd_stage1] = []
+            self.inputFiles_hadd_stage1[key_hadd_stage1].append(self.jobOptions_analyze[key_analyze_job]['histogramFile'])
+            self.outputFile_hadd_stage1[key_hadd_stage1] = os.path.join(self.outputDir, DKEY_HIST, "histograms_harvested_stage1_%s_%s_%s.root" % \
+              (self.channel, process_name, charge_selection))
+
+            # initialize input and output file names for hadd_stage2
+            key_hadd_stage2 = getKey(charge_selection)
+            if not key_hadd_stage2 in self.inputFiles_hadd_stage2.keys():
+              self.inputFiles_hadd_stage2[key_hadd_stage2] = []
+            self.inputFiles_hadd_stage2[key_hadd_stage2].append(self.outputFile_hadd_stage1[key_hadd_stage1])
+            self.outputFile_hadd_stage2[key_hadd_stage2] = os.path.join(self.outputDir, DKEY_HIST, "histograms_harvested_stage2_%s_%s.root" % \
+              (self.channel, charge_selection))
+
     if self.is_sbatch:
       logging.info("Creating script for submitting '%s' jobs to batch system" % self.executable_analyze)
-      self.createScript_sbatch()
+      self.sbatchFile_analyze = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_analyze_%s.py" % self.channel)
+      self.createScript_sbatch()    
 
     logging.info("Creating configuration files for executing 'comp_jetToTauFakeRate'")
     for charge_selection in self.charge_selections:
       key_comp_jetToTauFakeRate_job = getKey(charge_selection)
+      key_hadd_stage2 = getKey(charge_selection)
       self.jobOptions_comp_jetToTauFakeRate[key_comp_jetToTauFakeRate_job] = {
-        'inputFile' : self.histogramFile_hadd_stage1,
+        'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2],
         'cfgFile_modified' : os.path.join(
           self.outputDir, DKEY_CFGS, "comp_jetToTauFakeRate_%s_cfg.py" % charge_selection),
         'outputFile' : os.path.join(
@@ -224,12 +251,13 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig_new):
         'ptBins' : self.ptBins
       }
       self.createCfg_comp_jetToTauFakeRate(self.jobOptions_comp_jetToTauFakeRate[key_comp_jetToTauFakeRate_job])
+      self.targets.append(self.jobOptions_comp_jetToTauFakeRate[key_comp_jetToTauFakeRate_job]['outputFile'])
 
     lines_makefile = []
     self.addToMakefile_analyze(lines_makefile)
     self.addToMakefile_hadd_stage1(lines_makefile)
-    self.addToMakefile_comp_jetToTauFakeRate(lines_makefile)
     self.addToMakefile_hadd_stage2(lines_makefile)
+    self.addToMakefile_comp_jetToTauFakeRate(lines_makefile)
     self.createMakefile(lines_makefile)
   
     logging.info("Done")

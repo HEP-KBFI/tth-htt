@@ -279,13 +279,16 @@ void makeBinContentsPositive(TH1* histogram, int verbosity)
 
 void dumpHistogram(const TH1* histogram)
 {
+  std::cout << "<dumpHistogram>:" << std::endl;
+  std::cout << "histogram = " << histogram->GetName() << std::endl;
+  std::cout << "integral = " << histogram->Integral() << std::endl;
   const TAxis* xAxis = histogram->GetXaxis();
   int numBins = xAxis->GetNbins();
   for ( int idxBin = 1; idxBin <= numBins; ++idxBin ) {
     double binCenter = xAxis->GetBinCenter(idxBin);
     double binContent = histogram->GetBinContent(idxBin);
     double binError = histogram->GetBinError(idxBin); 
-    std::cout << "bin #" << idxBin << " (x = " << binCenter << "):" << binContent << " +/- " << binError << std::endl; 
+    std::cout << "bin #" << idxBin << " (x = " << binCenter << "): " << binContent << " +/- " << binError << std::endl; 
   }
 }
 

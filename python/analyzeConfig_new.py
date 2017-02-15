@@ -201,6 +201,8 @@ class analyzeConfig:
         else:
             raise ValueError("Invalid Configuration parameter 'era' = %s !!" % era)
 
+        self.targets = []
+
         self.cvmfs_error_log = {}
 
     def __del__(self):
@@ -439,19 +441,18 @@ class analyzeConfig:
 
     def createMakefile(self, lines_makefile):
         """Creates Makefile that runs the complete analysis workfow.
-        """        
-        targets = []
-        targets.extend([ jobOptions['datacardFile'] for jobOptions in self.jobOptions_prep_dcard.values() ])
-        targets.extend([ jobOptions['outputFile'] for jobOptions in self.jobOptions_add_syst_dcard.values() ])
+        """                
+        self.targets.extend([ jobOptions['datacardFile'] for jobOptions in self.jobOptions_prep_dcard.values() ])
+        self.targets.extend([ jobOptions['outputFile'] for jobOptions in self.jobOptions_add_syst_dcard.values() ])
         if self.rootOutputAux:
-            targets.append("selEventTree_hadd")
+            self.targets.append("selEventTree_hadd")
         for idxJob, jobOptions in enumerate(self.jobOptions_make_plots.values()):
-            targets.append("makePlots%i" % idxJob)
+            self.targets.append("makePlots%i" % idxJob)
         for rootOutput in self.rootOutputAux.values():
             self.filesToClean.append(rootOutput[0])
-        if len(targets) == 0:
-            targets.append("sbatch")
-        tools_createMakefile(self.makefile, targets, lines_makefile, self.filesToClean)
+        if len(self.targets) == 0:
+            self.targets.append("sbatch")
+        tools_createMakefile(self.makefile, self.targets, lines_makefile, self.filesToClean)
         logging.info("Run it with:\tmake -f %s -j %i " % (self.makefile, self.num_parallel_jobs))
 
     def initializeInputFileIds(self, sample_name, sample_info):

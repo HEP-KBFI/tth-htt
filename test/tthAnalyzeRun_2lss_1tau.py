@@ -44,7 +44,7 @@ elif ERA == "2016":
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "2017Feb06_addMEM"
+version = "2017Feb14"
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -62,6 +62,7 @@ if __name__ == '__main__':
     #     https://indico.cern.ch/event/597028/contributions/2413742/attachments/1391684/2120220/16.12.22_ttH_Htautau_-_Review_of_systematics.pdf
     ##applyFakeRateWeights = "3L",
     applyFakeRateWeights = "2lepton",
+    chargeSumSelections = [ "OS", "SS" ],
     central_or_shifts = [ 
       "central",
 ##       "CMS_ttHl_btag_HFUp", 
@@ -127,7 +128,7 @@ if __name__ == '__main__':
     executable_addBackgrounds = "addBackgrounds",
     executable_addFakes = "addBackgroundLeptonFakes",
     executable_addFlips = "addBackgroundLeptonFlips", 
-    histograms_to_fit = [ "EventCounter", "numJets", "mvaDiscr_2lss", "mvaOutput_2lss_1tau_ttV", "mvaOutput_2lss_1tau_ttbar", "mTauTauVis", "memOutput_LR" ],
+    histograms_to_fit = [ "EventCounter", "numJets", "mvaDiscr_2lss", "mvaDiscr_2lss_1tau", "mTauTauVis", "memOutput_LR" ],
     select_rle_output = True)
 
   if mode == "forBDTtraining":

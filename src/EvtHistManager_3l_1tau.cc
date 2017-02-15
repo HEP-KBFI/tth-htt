@@ -36,6 +36,7 @@ void EvtHistManager_3l_1tau::bookHistograms(TFileDirectory& dir)
 
   histogram_mvaOutput_3l_1tau_ttV_ = book1D(dir, "mvaOutput_3l_1tau_ttV", "mvaOutput_3l_1tau_ttV", 40, -1., +1.);
   histogram_mvaOutput_3l_1tau_ttbar_  = book1D(dir, "mvaOutput_3l_1tau_ttbar", "mvaOutput_3l_1tau_ttbar", 40, -1., +1.);
+  histogram_mvaDiscr_3l_1tau_  = book1D(dir, "mvaDiscr_3l_1tau", "mvaDiscr_3l_1tau", 5, 0.5, 5.5);
 
   histogram_mTauTauVis_ = book1D(dir, "mTauTauVis", "mTauTauVis", 20, 0., 200.);
 
@@ -52,7 +53,8 @@ void EvtHistManager_3l_1tau::bookHistograms(TFileDirectory& dir)
 }
 
 void EvtHistManager_3l_1tau::fillHistograms(int numElectrons, int numMuons, int numHadTaus, int numJets, int numBJets_loose, int numBJets_medium, 
-					    double mvaOutput_3l_ttV, double mvaOutput_3l_ttbar, double mvaDiscr_3l, double mvaOutput_3l_1tau_ttV, double mvaOutput_3l_1tau_ttbar, 
+					    double mvaOutput_3l_ttV, double mvaOutput_3l_ttbar, double mvaDiscr_3l, 
+					    double mvaOutput_3l_1tau_ttV, double mvaOutput_3l_1tau_ttbar, double mvaDiscr_3l_1tau, 
 					    double mTauTauVis1, double mTauTauVis2, 
 					    const MEMOutput_3l_1tau* memOutput_3l_1tau, double evtWeight)
 {
@@ -74,6 +76,7 @@ void EvtHistManager_3l_1tau::fillHistograms(int numElectrons, int numMuons, int 
 
   fillWithOverFlow(histogram_mvaOutput_3l_1tau_ttV_, mvaOutput_3l_1tau_ttV, evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_mvaOutput_3l_1tau_ttbar_, mvaOutput_3l_1tau_ttbar, evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_mvaDiscr_3l_1tau_, mvaDiscr_3l_1tau, evtWeight, evtWeightErr);
 
   double mTauTauVisSF = ( mTauTauVis1 > 0. && mTauTauVis2 > 0. ) ? 0.5 : 1.;
   if ( mTauTauVis1 > 0. ) {

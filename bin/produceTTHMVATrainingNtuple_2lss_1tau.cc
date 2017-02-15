@@ -1210,7 +1210,7 @@ int main(int argc, char* argv[])
     preselHistManager->evt_->fillHistograms(
 					    preselElectrons.size(), preselMuons.size(), selHadTaus.size(), 
 					    selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
-					    -1., -1., -1., -1., -1., 
+					    -1., -1., -1., -1., -1., -1., 
 					    mTauTauVis1_presel, mTauTauVis2_presel, 
 					    0, 1.);
 
@@ -1654,7 +1654,7 @@ int main(int argc, char* argv[])
     selHistManager->evt_->fillHistograms(
 	selElectrons.size(), selMuons.size(), selHadTaus.size(), 
 	selJets.size(), selBJets_loose.size(), selBJets_medium.size(), 
-	mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, mvaOutput_2lss_1tau_ttbar_TMVA, mvaOutput_2lss_1tau_ttbar_sklearn, 
+	mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, mvaOutput_2lss_1tau_ttbar_TMVA, mvaOutput_2lss_1tau_ttbar_sklearn, -1.,
 	mTauTauVis1_sel, mTauTauVis2_sel, 
 	memOutput_2lss_1tau_matched, evtWeight);
     if ( isSignal ) {
@@ -1663,7 +1663,7 @@ int main(int argc, char* argv[])
           selHistManager->evt_in_decayModes_[kv.first]->fillHistograms(
 		selElectrons.size(), selMuons.size(), selHadTaus.size(), 
 		selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
-		mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, mvaOutput_2lss_1tau_ttbar_TMVA, mvaOutput_2lss_1tau_ttbar_sklearn, 
+		mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, mvaOutput_2lss_1tau_ttbar_TMVA, mvaOutput_2lss_1tau_ttbar_sklearn, -1.,
 		mTauTauVis1_sel, mTauTauVis2_sel, 
 		memOutput_2lss_1tau_matched, evtWeight);
           break;
@@ -1726,7 +1726,7 @@ int main(int argc, char* argv[])
       selHistManager->evt_in_categories_[*category]->fillHistograms(
 	selElectrons.size(), selMuons.size(), selHadTaus.size(), 
 	selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
-	mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, mvaOutput_2lss_1tau_ttbar_TMVA, mvaOutput_2lss_1tau_ttbar_sklearn, 
+	mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, mvaOutput_2lss_1tau_ttbar_TMVA, mvaOutput_2lss_1tau_ttbar_sklearn, -1.,
 	mTauTauVis1_sel, mTauTauVis2_sel, 
 	memOutput_2lss_1tau_matched, evtWeight);
     }
