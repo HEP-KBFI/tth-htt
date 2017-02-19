@@ -412,8 +412,8 @@ for crabJob in crabJobs:
                 jobStatus_entry['Retries'] = Retries
             else:
                 foundEnd = True
-            print "jobId = %i: State = '%s', Retries = %i" % (jobId, State, Retries)
             if jobId and State and Retries is not None:
+                print "jobId = %i: State = '%s', Retries = %i" % (jobId, State, Retries)
                 if State in [ "finished" ] or force_resubmit:
                     checkOutputFiles(outputFileInfos, jobId, jobIds_force_resubmit)    
                 elif State in [ "failed", "transferring" ]:
