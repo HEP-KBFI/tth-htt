@@ -72,12 +72,12 @@
     -P [ --python ]             generate rudimentary python configuration file
     -v [ --verbose ]            log every file and folder
     -n [ --no_njets_cut ]       cut on number of jets >= 2 was not applied
+    -f [ --filter ]             only look at datasets containing specified string
 
  * Example usage:
 
    check_broken -p /hdfs/local/lucia/VHBBHeppyV24bis/ --histo Count --output=/home/lucia/sandbox -P -z -v
  */
-
 
 
 namespace std
@@ -509,47 +509,47 @@ main(int argc,
 
   Samples samples;
   //Data
-  samples.define("VHBB_HEPPY_V25tthtautau_DoubleEG__Run2016B-23Sep2016-v3",
+  samples.define("VHBB_HEPPY_V25tthtautau_v2_DoubleEG__Run2016B-23Sep2016-v3",
     "/DoubleEG/Run2016B-23Sep2016-v3/MINIAOD",
     "data_obs", "DoubleEG_Run2016B_v3", 1, 143073268, true, false);
-  samples.define("VHBB_HEPPY_V25tthtautau_DoubleEG__Run2016C-23Sep2016-v1",
+  samples.define("VHBB_HEPPY_V25tthtautau_v2_DoubleEG__Run2016C-23Sep2016-v1",
     "/DoubleEG/Run2016C-23Sep2016-v1/MINIAOD",
     "data_obs", "DoubleEG_Run2016C_v1", 1, 47677856, true, false);
-  samples.define("VHBB_HEPPY_V25tthtautau_DoubleEG__Run2016D-23Sep2016-v1",
+  samples.define("VHBB_HEPPY_V25tthtautau_v2_DoubleEG__Run2016D-23Sep2016-v1",
     "/DoubleEG/Run2016D-23Sep2016-v1/MINIAOD",
     "data_obs", "DoubleEG_Run2016D_v1", 1, 53324960, true, false);
-  samples.define("VHBB_HEPPY_V25tthtautau_DoubleEG__Run2016E-23Sep2016-v1",
+  samples.define("VHBB_HEPPY_V25tthtautau_v2_DoubleEG__Run2016E-23Sep2016-v1",
     "/DoubleEG/Run2016E-23Sep2016-v1/MINIAOD",
     "data_obs", "DoubleEG_Run2016E_v1", 1, 49877710, true, false);
-  samples.define("VHBB_HEPPY_V25tthtautau_DoubleEG__Run2016F-23Sep2016-v1",
+  samples.define("VHBB_HEPPY_V25tthtautau_v2_DoubleEG__Run2016F-23Sep2016-v1",
     "/DoubleEG/Run2016F-23Sep2016-v1/MINIAOD",
     "data_obs", "DoubleEG_Run2016F_v1", 1, 34577629, true, false);
-  samples.define("VHBB_HEPPY_V25tthtautau_DoubleEG__Run2016G-23Sep2016-v1",
+  samples.define("VHBB_HEPPY_V25tthtautau_v2_DoubleEG__Run2016G-23Sep2016-v1",
     "/DoubleEG/Run2016G-23Sep2016-v1/MINIAOD",
     "data_obs", "DoubleEG_Run2016G_v1", 1, 78797031, true, false);
-  samples.define("VHBB_HEPPY_V25tthtautau_DoubleEG__Run2016H-PromptReco-v2",
+  samples.define("VHBB_HEPPY_V25tthtautau_v2_DoubleEG__Run2016H-PromptReco-v2",
     "/DoubleEG/Run2016H-PromptReco-v2/MINIAOD",
     "data_obs", "DoubleEG_Run2016H_v2_promptReco", 1, 84344490, true, false);
-  samples.define("VHBB_HEPPY_V25tthtautau_DoubleEG__Run2016H-PromptReco-v3",
+  samples.define("VHBB_HEPPY_V25tthtautau_v2_DoubleEG__Run2016H-PromptReco-v3",
     "/DoubleEG/Run2016H-PromptReco-v3/MINIAOD",
     "data_obs", "DoubleEG_Run2016H_v3_promptReco", 1, 2460002, true, false);
   
-  samples.define("VHBB_HEPPY_V25tthtautau_DoubleMuon__Run2016B-23Sep2016-v3",
+  samples.define("VHBB_HEPPY_V25tthtautau_v2_DoubleMuon__Run2016B-23Sep2016-v3",
     "/DoubleMuon/Run2016B-23Sep2016-v3/MINIAOD",
     "data_obs", "DoubleMuon_Run2016B_v3", 1, 82535526, true, false);
-  samples.define("VHBB_HEPPY_V25tthtautau_DoubleMuon__Run2016C-23Sep2016-v1",
+  samples.define("VHBB_HEPPY_V25tthtautau_v2_DoubleMuon__Run2016C-23Sep2016-v1",
     "/DoubleMuon/Run2016C-23Sep2016-v1/MINIAOD",
     "data_obs", "DoubleMuon_Run2016C_v1", 1, 27934629, true, false);
-  samples.define("VHBB_HEPPY_V25tthtautau_DoubleMuon__Run2016D-23Sep2016-v1",
+  samples.define("VHBB_HEPPY_V25tthtautau_v2_DoubleMuon__Run2016D-23Sep2016-v1",
     "/DoubleMuon/Run2016D-23Sep2016-v1/MINIAOD",
     "data_obs", "DoubleMuon_Run2016D_v1", 1, 33861745, true, false);
-  samples.define("VHBB_HEPPY_V25tthtautau_DoubleMuon__Run2016E-23Sep2016-v1",
+  samples.define("VHBB_HEPPY_V25tthtautau_v2_DoubleMuon__Run2016E-23Sep2016-v1",
     "/DoubleMuon/Run2016E-23Sep2016-v1/MINIAOD",
     "data_obs", "DoubleMuon_Run2016E_v1", 1, 28246946, true, false);
-  samples.define("VHBB_HEPPY_V25tthtautau_DoubleMuon__Run2016F-23Sep2016-v1",
+  samples.define("VHBB_HEPPY_V25tthtautau_v2_DoubleMuon__Run2016F-23Sep2016-v1",
     "/DoubleMuon/Run2016F-23Sep2016-v1/MINIAOD",
     "data_obs", "DoubleMuon_Run2016F_v1", 1, 20329921, true, false);
-  samples.define("VHBB_HEPPY_V25tthtautau_DoubleMuon__Run2016G-23Sep2016-v1",
+  samples.define("VHBB_HEPPY_V25tthtautau_v2_DoubleMuon__Run2016G-23Sep2016-v1",
     "/DoubleMuon/Run2016G-23Sep2016-v1/MINIAOD",
     "data_obs", "DoubleMuon_Run2016G_v1", 1, 45235604, true, false);
   samples.define("VHBB_HEPPY_V25tthtautau_DoubleMuon__Run2016H-PromptReco-v2",
@@ -559,22 +559,22 @@ main(int argc,
     "/DoubleMuon/Run2016H-PromptReco-v3/MINIAOD",
     "data_obs", "DoubleMuon_Run2016H_v3_promptReco", 1, 1219733, true, false);
     
-  samples.define("VHBB_HEPPY_V25tthtautau_MuonEG__Run2016B-23Sep2016-v3",
+  samples.define("VHBB_HEPPY_V25tthtautau_v2_MuonEG__Run2016B-23Sep2016-v3",
     "/MuonEG/Run2016B-23Sep2016-v3/MINIAOD",
     "data_obs", "MuonEG_Run2016B_v3", 1, 32727796, true, false);
-  samples.define("VHBB_HEPPY_V25tthtautau_MuonEG__Run2016C-23Sep2016-v1",
+  samples.define("VHBB_HEPPY_V25tthtautau_v2_MuonEG__Run2016C-23Sep2016-v1",
     "/MuonEG/Run2016C-23Sep2016-v1/MINIAOD",
     "data_obs", "MuonEG_Run2016C_v1", 1, 15405678, true, false);
   samples.define("VHBB_HEPPY_V25tthtautau_MuonEG__Run2016D-23Sep2016-v1",
     "/MuonEG/Run2016D-23Sep2016-v1/MINIAOD",
     "data_obs", "MuonEG_Run2016D_v1", 1, 23482352, true, false);
-  samples.define("VHBB_HEPPY_V25tthtautau_MuonEG__Run2016E-23Sep2016-v1",
+  samples.define("VHBB_HEPPY_V25tthtautau_v2_MuonEG__Run2016E-23Sep2016-v1",
     "/MuonEG/Run2016E-23Sep2016-v1/MINIAOD",
     "data_obs", "MuonEG_Run2016E_v1", 1, 22519303, true, false);
-  samples.define("VHBB_HEPPY_V25tthtautau_MuonEG__Run2016F-23Sep2016-v1",
+  samples.define("VHBB_HEPPY_V25tthtautau_v2_MuonEG__Run2016F-23Sep2016-v1",
     "/MuonEG/Run2016F-23Sep2016-v1/MINIAOD",
     "data_obs", "MuonEG_Run2016F_v1", 1, 16002165, true, false);
-  samples.define("VHBB_HEPPY_V25tthtautau_MuonEG__Run2016G-23Sep2016-v1",
+  samples.define("VHBB_HEPPY_V25tthtautau_v2_MuonEG__Run2016G-23Sep2016-v1",
     "/MuonEG/Run2016G-23Sep2016-v1/MINIAOD",
     "data_obs", "MuonEG_Run2016G_v1", 1, 33854612, true, false);
   samples.define("VHBB_HEPPY_V25tthtautau_MuonEG__Run2016H-PromptReco-v2",
@@ -584,22 +584,22 @@ main(int argc,
     "/MuonEG/Run2016H-PromptReco-v3/MINIAOD",
     "data_obs", "MuonEG_Run2016H_v3_promptReco", 1, 770494, true, false);
     
-  samples.define("VHBB_HEPPY_V25tthtautau_SingleElectron__Run2016B-23Sep2016-v3",
+  samples.define("VHBB_HEPPY_V25tthtautau_v2_SingleElectron__Run2016B-23Sep2016-v3",
     "/SingleElectron/Run2016B-23Sep2016-v3/MINIAOD",
     "data_obs", "SingleElectron_Run2016B_v3", 1, 246440440, true, false);
-  samples.define("VHBB_HEPPY_V25tthtautau_SingleElectron__Run2016C-23Sep2016-v1",
+  samples.define("VHBB_HEPPY_V25tthtautau_v2_SingleElectron__Run2016C-23Sep2016-v1",
     "/SingleElectron/Run2016C-23Sep2016-v1/MINIAOD",
     "data_obs", "SingleElectron_Run2016C_v1", 1, 97259854, true, false);
-  samples.define("VHBB_HEPPY_V25tthtautau_SingleElectron__Run2016D-23Sep2016-v1",
+  samples.define("VHBB_HEPPY_V25tthtautau_v2_SingleElectron__Run2016D-23Sep2016-v1",
     "/SingleElectron/Run2016D-23Sep2016-v1/MINIAOD",
     "data_obs", "SingleElectron_Run2016D_v1", 1, 148167727, true, false);
-  samples.define("VHBB_HEPPY_V25tthtautau_SingleElectron__Run2016E-23Sep2016-v1",
+  samples.define("VHBB_HEPPY_V25tthtautau_v2_SingleElectron__Run2016E-23Sep2016-v1",
     "/SingleElectron/Run2016E-23Sep2016-v1/MINIAOD",
     "data_obs", "SingleElectron_Run2016E_v1", 1, 117321545, true, false);
-  samples.define("VHBB_HEPPY_V25tthtautau_SingleElectron__Run2016F-23Sep2016-v1",
+  samples.define("VHBB_HEPPY_V25tthtautau_v2_SingleElectron__Run2016F-23Sep2016-v1",
     "/SingleElectron/Run2016F-23Sep2016-v1/MINIAOD",
     "data_obs", "SingleElectron_Run2016F_v1", 1, 70593532, true, false);
-  samples.define("VHBB_HEPPY_V25tthtautau_SingleElectron__Run2016G-23Sep2016-v1",
+  samples.define("VHBB_HEPPY_V25tthtautau_v2_SingleElectron__Run2016G-23Sep2016-v1",
     "/SingleElectron/Run2016G-23Sep2016-v1/MINIAOD",
     "data_obs", "SingleElectron_Run2016G_v1", 1, 153363109, true, false);
   samples.define("VHBB_HEPPY_V25tthtautau_SingleElectron__Run2016H-PromptReco-v2",
@@ -609,22 +609,22 @@ main(int argc,
     "/SingleElectron/Run2016H-PromptReco-v3/MINIAOD",
     "data_obs", "SingleElectron_Run2016H_v3_promptReco", 1, 3191585, true, false);
       
-  samples.define("VHBB_HEPPY_V25tthtautau_SingleMuon__Run2016B-23Sep2016-v3",
+  samples.define("VHBB_HEPPY_V25tthtautau_v2_SingleMuon__Run2016B-23Sep2016-v3",
     "/SingleMuon/Run2016B-23Sep2016-v3/MINIAOD",
     "data_obs", "SingleMuon_Run2016B_v3", 1, 158145722, true, false);
-  samples.define("VHBB_HEPPY_V25tthtautau_SingleMuon__Run2016C-23Sep2016-v1",
+  samples.define("VHBB_HEPPY_V25tthtautau_v2_SingleMuon__Run2016C-23Sep2016-v1",
     "/SingleMuon/Run2016C-23Sep2016-v1/MINIAOD",
     "data_obs", "SingleMuon_Run2016C_v1", 1, 67441308, true, false);
-  samples.define("VHBB_HEPPY_V25tthtautau_SingleMuon__Run2016D-23Sep2016-v1",
+  samples.define("VHBB_HEPPY_V25tthtautau_v2_SingleMuon__Run2016D-23Sep2016-v1",
     "/SingleMuon/Run2016D-23Sep2016-v1/MINIAOD",
     "data_obs", "SingleMuon_Run2016D_v1", 1, 98017996, true, false);
-  samples.define("VHBB_HEPPY_V25tthtautau_SingleMuon__Run2016E-23Sep2016-v1",
+  samples.define("VHBB_HEPPY_V25tthtautau_v2_SingleMuon__Run2016E-23Sep2016-v1",
     "/SingleMuon/Run2016E-23Sep2016-v1/MINIAOD",
     "data_obs", "SingleMuon_Run2016E_v1", 1, 90984718, true, false);
   samples.define("VHBB_HEPPY_V25tthtautau_SingleMuon__Run2016F-23Sep2016-v1",
     "/SingleMuon/Run2016F-23Sep2016-v1/MINIAOD",
     "data_obs", "SingleMuon_Run2016F_v1", 1, 65489554, true, false);
-  samples.define("VHBB_HEPPY_V25tthtautau_SingleMuon__Run2016G-23Sep2016-v1",
+  samples.define("VHBB_HEPPY_V25tthtautau_v2_SingleMuon__Run2016G-23Sep2016-v1",
     "/SingleMuon/Run2016G-23Sep2016-v1/MINIAOD",
     "data_obs", "SingleMuon_Run2016G_v1", 1, 149916849, true, false);
   samples.define("VHBB_HEPPY_V25tthtautau_SingleMuon__Run2016H-PromptReco-v2",
@@ -649,7 +649,7 @@ main(int argc,
   samples.define("VHBB_HEPPY_V25tthtautau_HLT_Tau__Run2016F-23Sep2016-v1",
     "/Tau/Run2016F-23Sep2016-v1/MINIAOD",
     "data_obs", "Tau_Run2016F_v1", 1, 40549716, true, false);
-  samples.define("VHBB_HEPPY_V25tthtautau_Tau__Run2016G-23Sep2016-v1",
+  samples.define("VHBB_HEPPY_V25tthtautau_v2_Tau__Run2016G-23Sep2016-v1",
     "/Tau/Run2016G-23Sep2016-v1/MINIAOD",
     "data_obs", "Tau_Run2016G_v1", 1, 79578661, true, false);
   samples.define("VHBB_HEPPY_V25tthtautau_Tau__Run2016H-PromptReco-v2",
@@ -833,7 +833,7 @@ main(int argc,
     "EWK", "WZTo3LNu_fastsim", 4.102, 18814150, false);
   
   //--- parse command line arguments
-  std::string histo_str, output_dir_str;
+  std::string histo_str, output_dir_str, filter;
   std::vector<std::string> target_strs;
   bool save_zerofs, save_improper, save_python, verbose, data_only;
   try
@@ -858,6 +858,8 @@ main(int argc,
                      "log every file and folder")
       ("dataonly,d", boost::program_options::bool_switch(&data_only) -> default_value(false),
                      "only go through data directories")
+      ("filter,f",   boost::program_options::value<std::string>(&filter) -> default_value(""),
+                     "check only dataset containing specified string")
                      
     ;
     boost::program_options::variables_map vm;
@@ -931,7 +933,8 @@ main(int argc,
     for(const boost::filesystem::path & p: target_it){
       if(boost::filesystem::is_directory(p))
       {
-        //std::cout << "p " << p.string() << std::endl;
+        if(filter.length() > 0 && !boost::contains(p.string(), filter))
+          continue;
         if(data_only == true && (boost::ends_with(p.string(), "MC") || boost::ends_with(p.string(), "MC_fastsim")))
           continue;
         else if(boost::ends_with(p.string(), "MC") || boost::ends_with(p.string(), "MC_fastsim")) //MC got accidentally arranged one level below
@@ -942,6 +945,8 @@ main(int argc,
           {
             if(boost::filesystem::is_directory(p2))
             {
+              if(filter.length() > 0 && !boost::contains(p2.string(), filter))
+                continue;
               if(verbose) std::cout << "Found sample directory: " << p2.string() << std::endl;
               std::vector<boost::filesystem::path> immediate_subsubdirs;
               boost::filesystem::directory_iterator sub_it(p2);
@@ -1017,7 +1022,11 @@ main(int argc,
       } // is root file
     } // recursive loop
     if (sample->nof_events_unweighted > sample->nof_dbs_events)
-      throw std::runtime_error("Sample has more events than specified in DBS");
+    {
+      std::cout << sample->nof_events_unweighted << " > " << sample->nof_dbs_events << std::endl;
+      //throw std::runtime_error("Sample has more events than specified in DBS");
+      std::cout << "WARNING: Sample has more events than specified in DBS" << std::endl;
+    }
     else if(sample->nof_events_unweighted < sample->nof_dbs_events)
       std::cout << "WARNING: " << sample->name << " missing " << sample->nof_dbs_events - sample->nof_events_unweighted << " events." << std::endl;
     //else everything is fine - all events have been processed
@@ -1095,7 +1104,6 @@ main(int argc,
   std::map<std::string, unsigned long long> event_sums;
   for(const Sample* sample: samples.get_list())
   {
-    if(sample->category.find("data_obs")!=std::string::npos) continue;
     std::cout << "Events before adding: " << sample->nof_events << " " << sample->name << std::endl;
     if(! sample->parentStr.empty())
     {
@@ -1123,7 +1131,7 @@ main(int argc,
   std::cout << "Total event counts:\n";
   for(Sample* sample: samples.get_list())
   {
-    if(! sample->parentStr.empty())
+    if(! sample->parentStr.empty() && sample->category.find("data_obs")==std::string::npos) //don't add for data
       sample->nof_events = event_sums[sample->parentStr];
     std::cout << "\t* " << sample->name << ": "
                         << sample->nof_events << '\n';
