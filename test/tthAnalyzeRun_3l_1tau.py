@@ -10,16 +10,20 @@ import os, logging, sys, getpass
 mode = "VHbb"
 
 hadTau_selection = None
+changeBranchNames = None
 if mode == "VHbb":
   from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_3l_1tau_2015 import samples_2015
   from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_3l_1tau_2016 import samples_2016
   hadTau_selection = "dR03mvaMedium"
+  changeBranchNames = False
 elif mode == "addMEM":
   from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_3l1tau_addMEM import samples_2016
   hadTau_selection = "dR03mvaMedium"
+  changeBranchNames = True
 elif mode == "forBDTtraining":
   from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_3l1tau_addMEM_forBDTtraining import samples_2016
   hadTau_selection = "dR03mvaVVLoose"
+  changeBranchNames = True
 else:
   raise ValueError("Invalid Configuration parameter 'mode' = %s !!" % mode)
 from tthAnalysis.HiggsToTauTau.analyzeConfig_3l_1tau import analyzeConfig_3l_1tau
@@ -39,7 +43,7 @@ elif ERA == "2016":
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "2017Jan16"
+version = "2017Feb10"
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -50,13 +54,13 @@ if __name__ == '__main__':
   analysis = analyzeConfig_3l_1tau(
     outputDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", ERA, version),
     executable_analyze = "analyze_3l_1tau", cfgFile_analyze = "analyze_3l_1tau_cfg.py",
-    samples = samples,
+    samples = samples, changeBranchNames = changeBranchNames,
     hadTau_selection = hadTau_selection,
     # CV: apply "fake" background estimation to leptons only and not to hadronic taus, as discussed on slide 10 of
     #     https://indico.cern.ch/event/597028/contributions/2413742/attachments/1391684/2120220/16.12.22_ttH_Htautau_-_Review_of_systematics.pdf
     #applyFakeRateWeights = "4L",
     applyFakeRateWeights = "3lepton",
-    charge_selections = [ "OS", "SS" ],
+    chargeSumSelections = [ "OS", "SS" ],
     central_or_shifts = [ 
       "central",
 ##       "CMS_ttHl_btag_HFUp", 
@@ -121,12 +125,12 @@ if __name__ == '__main__':
     num_parallel_jobs = 8,
     executable_addBackgrounds = "addBackgrounds",
     executable_addBackgroundJetToTauFakes = "addBackgroundLeptonFakes", # CV: use common executable for estimating jet->lepton and jet->tau_h fake background
-    histograms_to_fit = [ "EventCounter", "numJets", "mvaDiscr_3l", "mTauTauVis" ],
+    histograms_to_fit = [ "EventCounter", "numJets", "mvaDiscr_3l", "mTauTauVis", "mvaDiscr_3l_1tau" ],
     select_rle_output = True,
     select_root_output = False)
   
   if mode == "forBDTtraining":
-    analysis.set_BDT_training(changeBranchNames = False)
+    analysis.set_BDT_training()
   analysis.create()
 
   run_analysis = query_yes_no("Start jobs ?")

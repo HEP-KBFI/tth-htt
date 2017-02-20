@@ -19,7 +19,7 @@ process.analyze_2lss_1tau = cms.PSet(
 
     process = cms.string('ttH'),
 
-    histogramDir = cms.string('2lss_1tau_SS_Tight'),
+    histogramDir = cms.string('2lss_1tau_lepSS_sumOS_Tight'),
 
     era = cms.string('2016'),
 
@@ -47,6 +47,8 @@ process.analyze_2lss_1tau = cms.PSet(
     hadTauSelection = cms.string('Tight|dR03mvaMedium'),
     apply_hadTauGenMatching = cms.bool(True),
 
+    chargeSumSelection = cms.string('OS'),
+
     applyFakeRateWeights = cms.string("disabled"), # either "disabled", "3L" or "2tau"
     leptonFakeRateWeight = cms.PSet(
         inputFileName = cms.string("tthAnalysis/HiggsToTauTau/data/FR_lep_ttH_mva_2016_data.root"),
@@ -63,7 +65,7 @@ process.analyze_2lss_1tau = cms.PSet(
             applyFitFunction = cms.bool(True)
         )
     ),
-
+    
     use_HIP_mitigation_bTag = cms.bool(False),
     use_HIP_mitigation_mediumMuonId = cms.bool(False),
 
@@ -74,6 +76,7 @@ process.analyze_2lss_1tau = cms.PSet(
     lumiScale = cms.double(1.),
     apply_genWeight = cms.bool(True),
     apply_trigger_bits = cms.bool(False),
+    apply_hadTauFakeRateSF = cms.bool(False),
 
     fillGenEvtHistograms = cms.bool(False),
 

@@ -1,9 +1,13 @@
 #include "tthAnalysis/HiggsToTauTau/interface/EvtHistManager_ttZctrl.h"
 
+#include "FWCore/Utilities/interface/Exception.h" // cms::Exception
+
 #include "tthAnalysis/HiggsToTauTau/interface/histogramAuxFunctions.h" // fillWithOverFlow, fillWithOverFlow2d, getLogWeight
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2015, kEra_2016
 
 #include <TMath.h>
+
+#include <assert.h> // assert
 
 EvtHistManager_ttZctrl::EvtHistManager_ttZctrl(const edm::ParameterSet& cfg)
   : HistManagerBase(cfg)

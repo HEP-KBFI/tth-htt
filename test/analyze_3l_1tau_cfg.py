@@ -60,7 +60,7 @@ process.analyze_3l_1tau = cms.PSet(
     hadTauSelection = cms.string('Tight|dR03mvaMedium'),
     apply_hadTauGenMatching = cms.bool(True),
 
-    chargeSelection = cms.string('OS'),
+    chargeSumSelection = cms.string('OS'),
 
     applyFakeRateWeights = cms.string("disabled"), # either "disabled", "4L" or "1tau"
     leptonFakeRateWeight = cms.PSet(
@@ -87,6 +87,7 @@ process.analyze_3l_1tau = cms.PSet(
     lumiScale = cms.double(1.),
     apply_genWeight = cms.bool(True),
     apply_trigger_bits = cms.bool(True),
+    apply_hadTauFakeRateSF = cms.bool(False),
 
     fillGenEvtHistograms = cms.bool(False),
 

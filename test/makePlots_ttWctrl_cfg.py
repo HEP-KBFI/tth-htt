@@ -13,17 +13,17 @@ process.makePlots = cms.PSet(
     processData = cms.string("data_obs"),
     processesBackground = cms.vstring(
         "TT",
-        "TTW",
+        "TTZ",
         "signal",
         "EWK",
         "Rares"
     ),
-    processSignal = cms.string("TTZ"),
+    processSignal = cms.string("TTW"),
 
     categories = cms.VPSet(
         cms.PSet(
-            name = cms.string("ttZctrl_2lepton"),
-            label = cms.string("t#bar{t}Z control region")
+            name = cms.string("ttWctrl_2lepton"),
+            label = cms.string("t#bar{t}W control region")
         )
     ),
 
@@ -200,14 +200,9 @@ process.makePlots = cms.PSet(
             yAxisTitle = cms.string("dN/dE_{T}^{miss} LD [1/GeV]")
         ),
         cms.PSet(
-            histogramName = cms.string("sel/evt/$PROCESS/mLL"),
-            xAxisTitle = cms.string("m_{ll} [GeV]"),
-            yAxisTitle = cms.string("dN/dm_{ll} [1/GeV]")
-        ),
-        cms.PSet(
-            histogramName = cms.string("sel/evt/$PROCESS/mT"),
-            xAxisTitle = cms.string("m_{T} [GeV]"),
-            yAxisTitle = cms.string("dN/dm_{T} [1/GeV]")
+            histogramName = cms.string("sel/evt/$PROCESS/sumLeptonPt"),
+            xAxisTitle = cms.string("#Sigma lepton p_{T} [GeV]"),
+            yAxisTitle = cms.string("dN/d#Sigma p_{T} [1/GeV]")
         ),
         cms.PSet(            
             histogramName = cms.string("sel/mvaInputs_2lss_1tau/$PROCESS/lep1_pt"),

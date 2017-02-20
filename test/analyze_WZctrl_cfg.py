@@ -38,13 +38,25 @@ process.analyze_WZctrl = cms.PSet(
     apply_offline_e_trigger_cuts_1mu = cms.bool(True),
     apply_offline_e_trigger_cuts_2mu = cms.bool(True),
     apply_offline_e_trigger_cuts_1e1mu = cms.bool(True),
+
+    hadTauSelection = cms.string('Tight|dR03mvaLoose'),
+
+    use_HIP_mitigation_bTag = cms.bool(False),
+    use_HIP_mitigation_mediumMuonId = cms.bool(False),
     
     isMC = cms.bool(False),
     central_or_shift = cms.string('central'),
     lumiScale = cms.double(1.),
+    apply_genWeight = cms.bool(True),
     apply_trigger_bits = cms.bool(True),
 
     fillGenEvtHistograms = cms.bool(False),
+
+    branchName_electrons = cms.string('selLeptons'),
+    branchName_muons = cms.string('selLeptons'),
+    branchName_hadTaus = cms.string('TauGood'),
+    branchName_jets = cms.string('Jet'),
+    branchName_met = cms.string('met'),
     
     selEventsFileName_input = cms.string(''),
     selEventsFileName_output = cms.string('')

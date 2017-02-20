@@ -20,8 +20,8 @@ void EvtHistManager_1l_2tau::bookHistograms(TFileDirectory& dir)
   histogram_numBJets_loose_vs_numJets_ = book2D(dir, "numBJets_loose_vs_numJets", "numBJets_loose_vs_numJets", 8, -0.5, +7.5, 6, -0.5, +5.5);
   histogram_numBJets_medium_vs_numJets_ = book2D(dir, "numBJets_medium_vs_numJets", "numBJets_medium_vs_numJets", 8, -0.5, +7.5, 6, -0.5, +5.5);
 
-  histogram_mvaOutput_1l_2tau_ttbar_TMVA_ = book1D(dir, "mvaOutput_1l_2tau_ttbar_TMVA", "mvaOutput_1l_2tau_ttbar_TMVA", 20, -1., +1.);
-  histogram_mvaOutput_1l_2tau_ttbar_sklearn_ = book1D(dir, "mvaOutput_1l_2tau_ttbar_sklearn", "mvaOutput_1l_2tau_ttbar_sklearn", 20, -1., +1.);
+  histogram_mvaOutput_1l_2tau_ttbar_Arun_ = book1D(dir, "mvaOutput_1l_2tau_ttbar_Arun", "mvaOutput_1l_2tau_ttbar_Arun", 20, -1., +1.);
+  histogram_mvaOutput_1l_2tau_ttbar_Matthias_ = book1D(dir, "mvaOutput_1l_2tau_ttbar_Matthias", "mvaOutput_1l_2tau_ttbar_Matthias", 20, -1., +1.);
 
   histogram_mTauTauVis_ = book1D(dir, "mTauTauVis", "mTauTauVis", 20, 0., 200.);
 
@@ -29,7 +29,7 @@ void EvtHistManager_1l_2tau::bookHistograms(TFileDirectory& dir)
 }
 
 void EvtHistManager_1l_2tau::fillHistograms(int numElectrons, int numMuons, int numHadTaus, int numJets, int numBJets_loose, int numBJets_medium,
-					    double mvaOutput_1l_2tau_ttbar_TMVA, double mvaOutput_1l_2tau_ttbar_sklearn, 
+					    double mvaOutput_1l_2tau_ttbar_Arun, double mvaOutput_1l_2tau_ttbar_Matthias, 
 					    double mTauTauVis, double evtWeight)
 {
   double evtWeightErr = 0.;
@@ -44,8 +44,8 @@ void EvtHistManager_1l_2tau::fillHistograms(int numElectrons, int numMuons, int 
   fillWithOverFlow2d(histogram_numBJets_loose_vs_numJets_, numJets, numBJets_loose, evtWeight, evtWeightErr);
   fillWithOverFlow2d(histogram_numBJets_medium_vs_numJets_, numJets, numBJets_medium, evtWeight, evtWeightErr);
 
-  fillWithOverFlow(histogram_mvaOutput_1l_2tau_ttbar_TMVA_, mvaOutput_1l_2tau_ttbar_TMVA, evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_mvaOutput_1l_2tau_ttbar_sklearn_, mvaOutput_1l_2tau_ttbar_sklearn, evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_mvaOutput_1l_2tau_ttbar_Arun_, mvaOutput_1l_2tau_ttbar_Arun, evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_mvaOutput_1l_2tau_ttbar_Matthias_, mvaOutput_1l_2tau_ttbar_Matthias, evtWeight, evtWeightErr);
 
   fillWithOverFlow(histogram_mTauTauVis_, mTauTauVis, evtWeight, evtWeightErr);
 

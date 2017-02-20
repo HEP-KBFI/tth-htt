@@ -483,13 +483,11 @@ std::pair<TH1*, TH1*> getHistogramsLoose_and_Tight(
 
   TH1* histogramData_or_mc_loose = getHistogram(inputSubdir_loose, processData_or_mc, histogramName, "central", true);
   assert(histogramData_or_mc_loose);
-  std::cout << " histogramData_or_mc_loose = " << histogramData_or_mc_loose << ":" 
-	    << " name = " << histogramData_or_mc_loose->GetName() << ", integral = " << histogramData_or_mc_loose->Integral() << std::endl;
+  std::cout << "histogramData_or_mc_loose = " << histogramData_or_mc_loose << ":" << std::endl;
   dumpHistogram(histogramData_or_mc_loose);
   TH1* histogramData_or_mc_tight = getHistogram(inputSubdir_tight, processData_or_mc, histogramName, "central", true);
   assert(histogramData_or_mc_tight);
-  std::cout << " histogramData_or_mc_tight = " << histogramData_or_mc_tight << ":" 
-	    << " name = " << histogramData_or_mc_tight->GetName() << ", integral = " << histogramData_or_mc_tight->Integral() << std::endl;
+  std::cout << "histogramData_or_mc_tight = " << histogramData_or_mc_tight << ":" << std::endl;
   dumpHistogram(histogramData_or_mc_tight);
   checkCompatibleBinning(histogramData_or_mc_loose, histogramData_or_mc_tight);
 
@@ -547,20 +545,21 @@ void compFakeRate(double nPass, double nPassErr, double nFail, double nFailErr, 
     delete histogram_pass_plus_fail_tmp;
     delete graph_pass_div_pass_plus_fail_tmp;
     errorFlag = false;
-    std::cout << "nPass = " << nPass << " +/- " << nPassErr << " (int = " << nPass_int << "), nFail = " << nFail << " +/- " << nFailErr << " (int = " << nFail_int << ")"
+    std::cout << " nPass = " << nPass << " +/- " << nPassErr << " (int = " << nPass_int << "), nFail = " << nFail << " +/- " << nFailErr << " (int = " << nFail_int << ")"
 	      << " --> avFakeRate = " << avFakeRate << " + " << avFakeRateErrUp << " - " << avFakeRateErrDown << std::endl;
   } else {
     avFakeRate        = 0.5;
     avFakeRateErrUp   = 0.5;
     avFakeRateErrDown = 0.5;
     errorFlag = true;
-    std::cout << "sumWeights = " << sumWeights << ", sumWeights2 = " << sumWeights2 
+    std::cout << " sumWeights = " << sumWeights << ", sumWeights2 = " << sumWeights2 
 	      << " --> avFakeRate = " << avFakeRate << " + " << avFakeRateErrUp << " - " << avFakeRateErrDown << std::endl;
   }
 }
 
 TGraphAsymmErrors* getGraph_jetToTauFakeRate(TH1* histogram_loose, TH1* histogram_tight, const std::string& graphName_jetToTauFakeRate)
 {
+  std::cout << "<getGraph_jetToTauFakeRate>:" << std::endl;
   assert(histogram_loose->GetNbinsX() == histogram_tight->GetNbinsX());
   int numBins = histogram_loose->GetNbinsX();
   std::vector<double> points_x;
@@ -582,9 +581,12 @@ TGraphAsymmErrors* getGraph_jetToTauFakeRate(TH1* histogram_loose, TH1* histogra
     
     double jetToTauFakeRate, jetToTauFakeRateErrUp, jetToTauFakeRateErrDown;
     bool errorFlag;
-    //std::cout << "bin #" << idxBin << "(x = " << histogram_loose->GetBinCenter(idxBin) << ")" << ":";	  
+    std::cout << "bin #" << idxBin << " (x = " << histogram_loose->GetBinCenter(idxBin) << ")" << ":";	  
     compFakeRate(nPass, nPassErr, nFail, nFailErr, jetToTauFakeRate, jetToTauFakeRateErrUp, jetToTauFakeRateErrDown, errorFlag);
-    if ( errorFlag ) continue;
+    if ( errorFlag ) {
+      std::cerr << "Warning: Cannot compute fake rate for nPass = " << nPass << " +/- " << nPassErr << ", nFail = " << nFail << " +/- " << nFailErr 
+		<< " --> setting jetToTauFakeRate = " << jetToTauFakeRate << " + " << jetToTauFakeRateErrUp << " - " << jetToTauFakeRateErrDown << " !!" << std::endl;
+    }
     double binCenter_loose = histogram_loose->GetBinCenter(idxBin);
     double binCenter_tight = histogram_tight->GetBinCenter(idxBin);
     assert(TMath::Abs(binCenter_loose - binCenter_tight) < 1.e-3*TMath::Abs(binCenter_loose + binCenter_tight));
@@ -783,9 +785,17 @@ int main(int argc, char* argv[])
           processData, processesToSubtract, 
 	  etaBin, *hadTauSelection, *histogramToFit);
 	TH1* histogram_data_loose = histogram_data_loose_and_tight.first;
+	std::cout << "histogram_data_loose:" << std::endl;
+	dumpHistogram(histogram_data_loose);
 	TH1* histogram_data_loose_rebinned = getRebinnedHistogram1d(histogram_data_loose, ptBins_array.GetSize() - 1, ptBins_array);
+	std::cout << "histogram_data_loose_rebinned:" << std::endl;
+	dumpHistogram(histogram_data_loose_rebinned);
 	TH1* histogram_data_tight = histogram_data_loose_and_tight.second;
+	std::cout << "histogram_data_tight:" << std::endl;
+	dumpHistogram(histogram_data_tight);
 	TH1* histogram_data_tight_rebinned = getRebinnedHistogram1d(histogram_data_tight, ptBins_array.GetSize() - 1, ptBins_array);
+	std::cout << "histogram_data_tight_rebinned:" << std::endl;
+	dumpHistogram(histogram_data_tight_rebinned);
 	std::string graphName_data_jetToTauFakeRate = Form("jetToTauFakeRate_data_%s", TString(histogramToFit->data()).ReplaceAll("/", "_").Data());
 	TGraphAsymmErrors* graph_data_jetToTauFakeRate = getGraph_jetToTauFakeRate(histogram_data_loose_rebinned, histogram_data_tight_rebinned, graphName_data_jetToTauFakeRate);
 
@@ -794,13 +804,26 @@ int main(int argc, char* argv[])
           processMC, {}, 
 	  etaBin, *hadTauSelection, *histogramToFit);
 	TH1* histogram_mc_loose = histogram_mc_loose_and_tight.first;
+	std::cout << "histogram_mc_loose:" << std::endl;
+	dumpHistogram(histogram_mc_loose);
 	TH1* histogram_mc_loose_rebinned = getRebinnedHistogram1d(histogram_mc_loose, ptBins_array.GetSize() - 1, ptBins_array);
+	std::cout << "histogram_mc_loose_rebinned:" << std::endl;
+	dumpHistogram(histogram_mc_loose_rebinned);
 	TH1* histogram_mc_tight = histogram_mc_loose_and_tight.second;
+	std::cout << "histogram_mc_tight:" << std::endl;
+	dumpHistogram(histogram_mc_tight);
 	TH1* histogram_mc_tight_rebinned = getRebinnedHistogram1d(histogram_mc_tight, ptBins_array.GetSize() - 1, ptBins_array);
+	std::cout << "histogram_mc_tight_rebinned:" << std::endl;
+	dumpHistogram(histogram_mc_tight_rebinned);
 	std::string graphName_mc_jetToTauFakeRate = Form("jetToTauFakeRate_mc_%s", TString(histogramToFit->data()).ReplaceAll("/", "_").Data());
 	TGraphAsymmErrors* graph_mc_jetToTauFakeRate = getGraph_jetToTauFakeRate(histogram_mc_loose_rebinned, histogram_mc_tight_rebinned, graphName_mc_jetToTauFakeRate);
 
-	assert(graph_mc_jetToTauFakeRate->GetN() == graph_data_jetToTauFakeRate->GetN());
+	if ( !(graph_mc_jetToTauFakeRate->GetN() == graph_data_jetToTauFakeRate->GetN()) ) {
+	  std::cout << "MC: graph = " << graph_mc_jetToTauFakeRate->GetName() << ", #points = " << graph_mc_jetToTauFakeRate->GetN() << std::endl;
+	  std::cout << "Data: graph = " << graph_data_jetToTauFakeRate->GetName() << ", #points = " << graph_data_jetToTauFakeRate->GetN() << std::endl;
+	  throw cms::Exception("comp_jetToTauFakeRate")
+	    << "Graphs for MC and data do not have same number of points !!\n";
+	}
 
 	graph_data_jetToTauFakeRate->Write();
 	graph_mc_jetToTauFakeRate->Write();

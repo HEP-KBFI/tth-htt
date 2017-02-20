@@ -19,7 +19,7 @@ elif ERA == "2016":
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "2017Jan16"
+version = "2017Feb10"
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -84,7 +84,7 @@ if __name__ == '__main__':
     num_parallel_jobs = 8,
     executable_addBackgrounds = "addBackgrounds",
     executable_addBackgroundJetToTauFakes = "addBackgroundLeptonFakes", # CV: use common executable for estimating jet->lepton and jet->tau_h fake background
-    histograms_to_fit = [ "EventCounter", "numJets", "mvaOutput_1l_2tau_ttbar_TMVA", "mvaOutput_1l_2tau_ttbar_sklearn", "mTauTauVis" ],
+    histograms_to_fit = [ "EventCounter", "numJets", "mvaOutput_1l_2tau_ttbar_Arun", "mvaOutput_1l_2tau_ttbar_Matthias", "mTauTauVis" ],
     select_rle_output = True)
 
   analysis.create()

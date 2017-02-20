@@ -4,6 +4,8 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/lutAuxFunctions.h" // openFile
 
+#include <assert.h> // assert
+
 typedef std::vector<double> vdouble;
 
 namespace
@@ -74,43 +76,79 @@ JetToTauFakeRateInterface::~JetToTauFakeRateInterface()
 
 double JetToTauFakeRateInterface::getWeight_lead(double hadTauPt_lead, double hadTauAbsEta_lead) const
 {
+  return getWeight_or_SF_lead(hadTauPt_lead, hadTauAbsEta_lead, kWeight);
+}
+
+double JetToTauFakeRateInterface::getWeight_sublead(double hadTauPt_sublead, double hadTauAbsEta_sublead) const
+{
+  return getWeight_or_SF_sublead(hadTauPt_sublead, hadTauAbsEta_sublead, kWeight);
+}
+
+double JetToTauFakeRateInterface::getWeight_third(double hadTauPt_third, double hadTauAbsEta_third) const
+{
+  return getWeight_or_SF_third(hadTauPt_third, hadTauAbsEta_third, kWeight);
+}
+
+double JetToTauFakeRateInterface::getSF_lead(double hadTauPt_lead, double hadTauAbsEta_lead) const
+{
+  return getWeight_or_SF_lead(hadTauPt_lead, hadTauAbsEta_lead, kSF);
+}
+
+double JetToTauFakeRateInterface::getSF_sublead(double hadTauPt_sublead, double hadTauAbsEta_sublead) const
+{
+  return getWeight_or_SF_sublead(hadTauPt_sublead, hadTauAbsEta_sublead, kSF);
+}
+
+double JetToTauFakeRateInterface::getSF_third(double hadTauPt_third, double hadTauAbsEta_third) const
+{
+  return getWeight_or_SF_third(hadTauPt_third, hadTauAbsEta_third, kSF);
+}
+
+double JetToTauFakeRateInterface::getWeight_or_SF_lead(double hadTauPt_lead, double hadTauAbsEta_lead, int mode) const
+{
   if ( !isInitialized_lead_ ) throw cms::Exception("JetToTauFakeRateInterface") 
     << "Jet->tau fake-rate weights for 'leading' tau requested, but not initialized !!\n"; 
   double weight = 1.;
   for ( std::vector<JetToTauFakeRateWeightEntry*>::const_iterator jetToTauFakeRateWeightEntry = jetToTauFakeRateWeights_lead_.begin();
 	jetToTauFakeRateWeightEntry != jetToTauFakeRateWeights_lead_.end(); ++jetToTauFakeRateWeightEntry ) {
-    if ( hadTauAbsEta_lead >= (*jetToTauFakeRateWeightEntry)->absEtaMin_ && hadTauAbsEta_lead < (*jetToTauFakeRateWeightEntry)->absEtaMax_ ) {
-      weight *= (*jetToTauFakeRateWeightEntry)->getWeight(hadTauPt_lead);
+    if ( hadTauAbsEta_lead >= (*jetToTauFakeRateWeightEntry)->absEtaMin() && hadTauAbsEta_lead < (*jetToTauFakeRateWeightEntry)->absEtaMax() ) {
+      if      ( mode == kWeight ) weight *= (*jetToTauFakeRateWeightEntry)->getWeight(hadTauPt_lead);
+      else if ( mode == kSF     ) weight *= (*jetToTauFakeRateWeightEntry)->getSF(hadTauPt_lead);
+      else assert(0);
       break;
     }
   }
   return weight;
 }
 
-double JetToTauFakeRateInterface::getWeight_sublead(double hadTauPt_sublead, double hadTauAbsEta_sublead) const
+double JetToTauFakeRateInterface::getWeight_or_SF_sublead(double hadTauPt_sublead, double hadTauAbsEta_sublead, int mode) const
 {
   if ( !isInitialized_sublead_ ) throw cms::Exception("JetToTauFakeRateInterface") 
     << "Jet->tau fake-rate weights for 'subleading' tau requested, but not initialized !!\n"; 
   double weight = 1.;
   for ( std::vector<JetToTauFakeRateWeightEntry*>::const_iterator jetToTauFakeRateWeightEntry = jetToTauFakeRateWeights_sublead_.begin();
 	jetToTauFakeRateWeightEntry != jetToTauFakeRateWeights_sublead_.end(); ++jetToTauFakeRateWeightEntry ) {
-    if ( hadTauAbsEta_sublead >= (*jetToTauFakeRateWeightEntry)->absEtaMin_ && hadTauAbsEta_sublead < (*jetToTauFakeRateWeightEntry)->absEtaMax_ ) {
-      weight *= (*jetToTauFakeRateWeightEntry)->getWeight(hadTauPt_sublead);
+    if ( hadTauAbsEta_sublead >= (*jetToTauFakeRateWeightEntry)->absEtaMin() && hadTauAbsEta_sublead < (*jetToTauFakeRateWeightEntry)->absEtaMax() ) {
+      if      ( mode == kWeight ) weight *= (*jetToTauFakeRateWeightEntry)->getWeight(hadTauPt_sublead);
+      else if ( mode == kSF     ) weight *= (*jetToTauFakeRateWeightEntry)->getSF(hadTauPt_sublead);
+      else assert(0);
       break;
     }
   }
   return weight;
 }
 
-double JetToTauFakeRateInterface::getWeight_third(double hadTauPt_third, double hadTauAbsEta_third) const
+double JetToTauFakeRateInterface::getWeight_or_SF_third(double hadTauPt_third, double hadTauAbsEta_third, int mode) const
 {
   if ( !isInitialized_third_ ) throw cms::Exception("JetToTauFakeRateInterface") 
     << "Jet->tau fake-rate weights for 'third' tau requested, but not initialized !!\n"; 
   double weight = 1.;
   for ( std::vector<JetToTauFakeRateWeightEntry*>::const_iterator jetToTauFakeRateWeightEntry = jetToTauFakeRateWeights_third_.begin();
 	jetToTauFakeRateWeightEntry != jetToTauFakeRateWeights_third_.end(); ++jetToTauFakeRateWeightEntry ) {
-    if ( hadTauAbsEta_third >= (*jetToTauFakeRateWeightEntry)->absEtaMin_ && hadTauAbsEta_third < (*jetToTauFakeRateWeightEntry)->absEtaMax_ ) {
-      weight *= (*jetToTauFakeRateWeightEntry)->getWeight(hadTauPt_third);
+    if ( hadTauAbsEta_third >= (*jetToTauFakeRateWeightEntry)->absEtaMin() && hadTauAbsEta_third < (*jetToTauFakeRateWeightEntry)->absEtaMax() ) {
+      if      ( mode == kWeight ) weight *= (*jetToTauFakeRateWeightEntry)->getWeight(hadTauPt_third);
+      else if ( mode == kSF     ) weight *= (*jetToTauFakeRateWeightEntry)->getSF(hadTauPt_third);
+      else assert(0);
       break;
     }
   }

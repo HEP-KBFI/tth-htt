@@ -21,8 +21,8 @@ process.addBackgroundLeptonFlips = cms.PSet(
 
     categories = cms.VPSet(
         cms.PSet(
-            signal = cms.string("2lss_1tau_SS_Tight"),
-	    sideband = cms.string("2lss_1tau_OS_Tight")
+            signal = cms.string("2lss_1tau_lepSS_sumOS_Tight"),
+	    sideband = cms.string("2lss_1tau_lepOS_sumOS_Tight")
         ),
         ##cms.PSet(
         ##    signal = cms.string("2epp_1tau_bloose_SS_Tight"),
@@ -80,6 +80,7 @@ process.addBackgroundLeptonFlips = cms.PSet(
         "TTW",
         "TTZ",
         "WZ",
+        "EWK",
         "Rares"
     ),
 

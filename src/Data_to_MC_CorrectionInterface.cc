@@ -157,16 +157,16 @@ Data_to_MC_CorrectionInterface::Data_to_MC_CorrectionInterface(const edm::Parame
     }
   } else if ( era_ == kEra_2016 ) {
     sfElectronID_and_Iso_loose_.push_back(new lutWrapperTH2(
-      inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2016/el_scaleFactors_20160724.root", "GsfElectronToFOID2D",
+      inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2016/el_scaleFactors_Moriond17.root", "GsfElectronToMVAVLooseFOIDEmuTightIP2D",
        lut::kXptYabsEta));
     sfElectronID_and_Iso_loose_.push_back(new lutWrapperTH2(
-      inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2016/el_scaleFactors_20160724.root", "MVAVLooseElectronToMini4",
+      inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2016/el_scaleFactors_Moriond17.root", "MVAVLooseElectronToMini4",
        lut::kXptYabsEta));
     sfElectronID_and_Iso_loose_.push_back(new lutWrapperTH2(
-      inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2016/el_scaleFactors_20160724.root", "MVAVLooseElectronToConvIHit1",
+      inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2016/el_scaleFactors_Moriond17.root", "MVAVLooseElectronToConvVetoIHit1",
        lut::kXptYabsEta));
     sfElectronID_and_Iso_loose_.push_back(new lutWrapperTH2(
-      inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2016/el_scaleFactors_gsf.root", "EGamma_SF2D",
+      inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2016/egammaEffi.txt_EGM2D.root", "EGamma_SF2D",
        lut::kXetaYpt));
     sfElectronID_and_Iso_tight_to_loose_woTightCharge_.push_back(new lutWrapperTH2(
       inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2016/lepMVAEffSF_e_3l.root", "sf",
@@ -176,13 +176,13 @@ Data_to_MC_CorrectionInterface::Data_to_MC_CorrectionInterface(const edm::Parame
       lut::kXptYabsEta));
 
     sfMuonID_and_Iso_loose_.push_back(new lutWrapperTGraph(
-      inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2016/mu_ttH_presel_barrel.root", "ratio",
-      lut::kXptYabsEta, -1., -1., -1., 1.2));
+      inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2016/TnP_NUM_LooseID_DENOM_generalTracks_VAR_map_pt_eta.root", "SF",
+      lut::kXptYabsEta));
     sfMuonID_and_Iso_loose_.push_back(new lutWrapperTGraph(
-      inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2016/mu_ttH_presel_endcap.root", "ratio",
-      lut::kXptYabsEta, -1., -1., 1.2, -1.));
+      inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2016/TnP_NUM_MiniIsoLoose_DENOM_LooseID_VAR_map_pt_eta.root", "SF",
+      lut::kXptYabsEta));
     sfMuonID_and_Iso_loose_.push_back(new lutWrapperTH2(
-      inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2016/MuonID_Z_RunBCD_prompt80X_7p65_looseID.root", "pt_abseta_ratio_MC_NUM_LooseID_DEN_genTracks_PAR_pt_spliteta_bin1",
+      inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2016/TnP_NUM_TightIP2D_DENOM_MediumID_VAR_map_pt_eta.root", "SF",
       lut::kXptYabsEta));
     sfMuonID_and_Iso_loose_.push_back(new lutWrapperTGraph(
       inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2016/ratios_HIP_trkEff.root", "ratio_eta",
@@ -439,11 +439,11 @@ namespace
     } else if ( numElectrons == 0 && numMuons == 1 ) {
       sf = 1.; // CV: trigger efficiency turn-on curve for single muon trigger in 2016 data actually taken from data, so no need for data/MC correction
     } else if ( numElectrons == 2 && numMuons == 0 ) {
-      sf = 1.02;
-    } else if ( numElectrons == 1 && numMuons == 1 ) {
-      sf = 1.02;
-    } else if ( numElectrons == 0 && numMuons == 2 ) {
       sf = 1.01;
+    } else if ( numElectrons == 1 && numMuons == 1 ) {
+      sf = 1.01;
+    } else if ( numElectrons == 0 && numMuons == 2 ) {
+      sf = 1.;
     } else {
       sf = 1.;
     }
@@ -544,9 +544,9 @@ namespace
 
   double getSF_hadTauID_and_Iso_2016()
   {
-    // CV: take data/MC correction to be equal to 0.90, following Tau POG recommendation for 2016 data,
+    // CV: take data/MC correction to be equal to unity, following Tau POG recommendation for 2016 data,
     //     cf. https://twiki.cern.ch/twiki/bin/viewauth/CMS/TauIDRecommendation13TeV
-    return 0.90; 
+    return 1.; 
   }
 }
 

@@ -47,12 +47,12 @@ process.makePlots.distributions.extend([
         yAxisTitle = cms.string('dN/d#eta')
     ),
     cms.PSet(
-        histogramName = cms.string('sel/evt/$PROCESS/mvaOutput_1l_2tau_ttbar_TMVA'),
+        histogramName = cms.string('sel/evt/$PROCESS/mvaOutput_1l_2tau_ttbar_Arun'),
         xAxisTitle = cms.string('MVA'),
         yAxisTitle = cms.string('dN/dMVA')
     ),
     cms.PSet(
-        histogramName = cms.string('sel/evt/$PROCESS/mvaOutput_1l_2tau_ttbar_sklearn'),
+        histogramName = cms.string('sel/evt/$PROCESS/mvaOutput_1l_2tau_ttbar_Matthias'),
         xAxisTitle = cms.string('MVA'),
         yAxisTitle = cms.string('dN/dMVA')
     ),

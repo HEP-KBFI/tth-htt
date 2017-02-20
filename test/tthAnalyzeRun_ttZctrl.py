@@ -19,7 +19,7 @@ elif ERA == "2016":
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "2017Feb05"
+version = "2017Feb10"
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -71,7 +71,7 @@ if __name__ == '__main__':
     running_method = "sbatch",
     num_parallel_jobs = 8,
     histograms_to_fit = [ "EventCounter", "numJets", "mLL", "mT" ],
-    select_rle_output = False)
+    select_rle_output = True)
 
   analysis.create()
 

@@ -7,20 +7,24 @@ import os, logging, sys, getpass
 #   'forBDTtraining' : to run the analysis on the Ntuples with MEM variables added, and with a relaxed event selection, to increase the BDT training statistics
 #--------------------------------------------------------------------------------
 
-#mode = "VHbb"
-mode = "addMEM"
+mode = "VHbb"
+#mode = "addMEM"
 
 hadTau_selection = None
+changeBranchNames = None
 if mode == "VHbb":
   from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2lss_1tau_2015 import samples_2015
   from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2lss_1tau_2016 import samples_2016
   hadTau_selection = "dR03mvaMedium"
+  changeBranchNames = False
 elif mode == "addMEM":
   from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_2lss1tau_addMEM_v2 import samples_2016
   hadTau_selection = "dR03mvaMedium"
+  changeBranchNames = True
 elif mode == "forBDTtraining":
   from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_2lss1tau_addMEM_forBDTtraining import samples_2016
   hadTau_selection = "dR03mvaVVLoose"
+  changeBranchNames = True
 else:
   raise ValueError("Invalid Configuration parameter 'mode' = %s !!" % mode)
 from tthAnalysis.HiggsToTauTau.analyzeConfig_2lss_1tau import analyzeConfig_2lss_1tau
@@ -40,7 +44,7 @@ elif ERA == "2016":
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "2017Feb03"
+version = "2017Feb14"
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -51,13 +55,14 @@ if __name__ == '__main__':
   analysis = analyzeConfig_2lss_1tau(
     outputDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", ERA, version),
     executable_analyze = "analyze_2lss_1tau", cfgFile_analyze = "analyze_2lss_1tau_cfg.py",
-    samples = samples,
+    samples = samples, changeBranchNames = changeBranchNames,
     lepton_charge_selections = [ "OS", "SS" ],
     hadTau_selection = hadTau_selection,
     # CV: apply "fake" background estimation to leptons only and not to hadronic taus, as discussed on slide 10 of
     #     https://indico.cern.ch/event/597028/contributions/2413742/attachments/1391684/2120220/16.12.22_ttH_Htautau_-_Review_of_systematics.pdf
     ##applyFakeRateWeights = "3L",
     applyFakeRateWeights = "2lepton",
+    chargeSumSelections = [ "OS", "SS" ],
     central_or_shifts = [ 
       "central",
 ##       "CMS_ttHl_btag_HFUp", 
@@ -123,11 +128,11 @@ if __name__ == '__main__':
     executable_addBackgrounds = "addBackgrounds",
     executable_addFakes = "addBackgroundLeptonFakes",
     executable_addFlips = "addBackgroundLeptonFlips", 
-    histograms_to_fit = [ "EventCounter", "numJets", "mvaDiscr_2lss", "mvaOutput_2lss_1tau_ttV", "mvaOutput_2lss_1tau_ttbar", "mTauTauVis", "memOutput_LR" ],
+    histograms_to_fit = [ "EventCounter", "numJets", "mvaDiscr_2lss", "mvaDiscr_2lss_1tau", "mTauTauVis", "memOutput_LR" ],
     select_rle_output = True)
 
   if mode == "forBDTtraining":
-    analysis.set_BDT_training(changeBranchNames = False)
+    analysis.set_BDT_training()
   analysis.create()
 
   run_analysis = query_yes_no("Start jobs ?")

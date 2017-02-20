@@ -19,7 +19,7 @@ elif ERA == "2016":
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "2016Nov27"
+version = "2017Feb15"
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -93,7 +93,7 @@ if __name__ == '__main__':
     era = ERA, use_lumi = True, lumi = LUMI,
     debug = False,
     running_method = "sbatch",
-    num_parallel_jobs = 4,
+    num_parallel_jobs = 8,
     executable_comp_jetToTauFakeRate = "comp_jetToTauFakeRate")
 
   analysis.create()

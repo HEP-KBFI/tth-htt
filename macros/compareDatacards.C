@@ -632,7 +632,7 @@ void compareDatacards()
   std::string inputFileName_ref = "prepareDatacards_2lss_1tau_mvaDiscr_2lss.root";
   std::string legendEntry_ref = "Tallinn";
 
-  std::string inputFilePath_test = "/home/veelken/ttHAnalysis/2016/2017Jan30_addMEM/datacards/";
+  std::string inputFilePath_test = "/home/veelken/ttHAnalysis/2016/2017Feb03/datacards/";
   std::string inputFileName_test = "prepareDatacards_2lss_1tau_mvaDiscr_2lss.root";
   std::string legendEntry_test = "Tallinn (addMEM)";
 
