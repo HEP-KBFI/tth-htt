@@ -175,10 +175,10 @@ Data_to_MC_CorrectionInterface::Data_to_MC_CorrectionInterface(const edm::Parame
       inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2016/lepMVAEffSF_e_2lss.root", "sf",
       lut::kXptYabsEta));
 
-    sfMuonID_and_Iso_loose_.push_back(new lutWrapperTGraph(
+    sfMuonID_and_Iso_loose_.push_back(new lutWrapperTH2(
       inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2016/TnP_NUM_LooseID_DENOM_generalTracks_VAR_map_pt_eta.root", "SF",
       lut::kXptYabsEta));
-    sfMuonID_and_Iso_loose_.push_back(new lutWrapperTGraph(
+    sfMuonID_and_Iso_loose_.push_back(new lutWrapperTH2(
       inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2016/TnP_NUM_MiniIsoLoose_DENOM_LooseID_VAR_map_pt_eta.root", "SF",
       lut::kXptYabsEta));
     sfMuonID_and_Iso_loose_.push_back(new lutWrapperTH2(
