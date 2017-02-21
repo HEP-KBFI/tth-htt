@@ -97,7 +97,7 @@ void RecoJetReader::setBranchNames()
       branchName_BtagWeight_ = Form("%s_%s", branchName_obj_.data(), "bTagWeight");
     } else if ( era_ == kEra_2016 ) {
       branchName_BtagCSVwHipMitigation_ = Form("%s_%s", branchName_obj_.data(), "btagCSV");              // CV: CSV algorithm with HIP mitigation
-      branchName_BtagCSVwoHipMitigation_ = Form("%s_%s", branchName_obj_.data(), "btagNoHipMitigation"); // CV: CSV algorithm without HIP mitigation
+      //branchName_BtagCSVwoHipMitigation_ = Form("%s_%s", branchName_obj_.data(), "btagNoHipMitigation"); // CV: CSV algorithm without HIP mitigation
       branchName_BtagWeight_ = Form("%s_%s", branchName_obj_.data(), "btagWeightCSV");
     } else assert(0);
     for ( int idxShift = kBtag_hfUp; idxShift <= kBtag_jesDown; ++idxShift ) {
