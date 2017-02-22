@@ -507,6 +507,8 @@ class analyzeConfig_3l_1tau(analyzeConfig):
             if not is_mc:
               key_hadd_stage1 = getKey(process_name, lepton_and_hadTau_selection_and_frWeight, chargeSumSelection)
               key_hadd_stage1_5 = getKey(lepton_and_hadTau_selection_and_frWeight, chargeSumSelection)
+              if not key_hadd_stage1_5 in self.inputFiles_hadd_stage1_5.keys():
+                self.inputFiles_hadd_stage1_5[key_hadd_stage1_5] = []
               self.inputFiles_hadd_stage1_5[key_hadd_stage1_5].append(self.outputFile_hadd_stage1[key_hadd_stage1])
 
           # sum fake contributions for the total of all MC sample
