@@ -1188,6 +1188,10 @@ int main(int argc, char* argv[])
     cutFlowTable.update("sel lepton pT > 25(e)/20(mu) GeV", evtWeight);
     cutFlowHistManager->fillHistograms("sel lepton pT > 25(e)/20(mu) GeV", evtWeight);
 
+    if ( !(selLepton->absEta() < 2.1) ) continue;
+    cutFlowTable.update("sel lepton abs(eta) < 2.1", evtWeight);
+    cutFlowHistManager->fillHistograms("sel lepton abs(eta) < 2.1", evtWeight);
+
     if ( !(selHadTau_lead->pt() > 30.) ) continue;
     cutFlowTable.update("sel hadTau pT > 30 GeV", evtWeight);
     cutFlowHistManager->fillHistograms("sel hadTau pT > 30 GeV", evtWeight);
