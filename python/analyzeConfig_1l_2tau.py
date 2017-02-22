@@ -126,8 +126,19 @@ class analyzeConfig_1l_2tau(analyzeConfig):
     lines.append("process.analyze_1l_2tau.era = cms.string('%s')" % self.era)
     lines.append("process.analyze_1l_2tau.triggers_1e = cms.vstring(%s)" % self.triggers_1e)
     lines.append("process.analyze_1l_2tau.use_triggers_1e = cms.bool(%s)" % ("1e" in jobOptions['triggers']))
+    #---------------------------------------------------------------------------------------------------------------
+    # CV: need work-around for MC, because we do not have all e+tau cross triggers stored in VHbb Ntuples V25
+    #    (only HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau30_v*)
+    if (jobOptions['is_mc'] == False and jobOptions['process_name_specific'].startswith("Tau_")):
+      lines.append("process.analyze_1l_2tau.triggers_1e1tau = cms.vstring(%s)" % self.triggers_1e1tau)
+    else:
+      lines.append("process.analyze_1l_2tau.triggers_1e1tau = cms.vstring(%s)" % [ 'HLT_BIT_HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau30_v', ])
+    #---------------------------------------------------------------------------------------------------------------
+    lines.append("process.analyze_1l_2tau.use_triggers_1e1tau = cms.bool(%s)" % ("1e1tau" in jobOptions['triggers']))
     lines.append("process.analyze_1l_2tau.triggers_1mu = cms.vstring(%s)" % self.triggers_1mu)
-    lines.append("process.analyze_1l_2tau.use_triggers_1mu = cms.bool(%s)" % ("1mu" in jobOptions['triggers']))
+    lines.append("process.analyze_1l_2tau.use_triggers_1mu = cms.bool(%s)" % ("1mu" in jobOptions['triggers']))    
+    lines.append("process.analyze_1l_2tau.triggers_1mu1tau = cms.vstring(%s)" % self.triggers_1mu1tau)
+    lines.append("process.analyze_1l_2tau.use_triggers_1mu1tau = cms.bool(%s)" % ("1mu1tau" in jobOptions['triggers']))
     lines.append("process.analyze_1l_2tau.leptonSelection = cms.string('%s')" % jobOptions['lepton_selection'])
     lines.append("process.analyze_1l_2tau.apply_leptonGenMatching = cms.bool(%s)" % (jobOptions['apply_leptonGenMatching'] and jobOptions['is_mc']))
     lines.append("process.analyze_1l_2tau.hadTauSelection = cms.string('%s')" % jobOptions['hadTau_selection'])
@@ -287,6 +298,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
                   'rleOutputFile' : os.path.join(self.dirs[key_dir][DKEY_RLES], "rle_%s_%s_%s_%s_%s_%i.txt" % \
                     (self.channel, process_name, lepton_and_hadTau_selection_and_frWeight, hadTau_charge_selection, central_or_shift, jobId)) if self.select_rle_output else "",
                   'sample_category' : sample_category,
+                  'process_name_specific' : sample_info["process_name_specific"],
                   'triggers' : sample_info["triggers"],
                   'lepton_selection' : lepton_selection,
                   'apply_leptonGenMatching' : self.apply_leptonGenMatching,                  

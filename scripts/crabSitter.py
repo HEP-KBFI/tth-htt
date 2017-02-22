@@ -68,8 +68,8 @@ executable_rm = 'rm'
 executable_crab = 'crab'
 executable_tar = 'tar'
 
-##force_resubmit = False
-force_resubmit = True
+force_resubmit = False
+##force_resubmit = True
 
 whitelist_when_force_resubmit = None # do not use whitelist
 ##whitelist_when_force_resubmit = [ 'T2_EE_Estonia' ] # run job on Tallinn T2

@@ -181,18 +181,24 @@ class analyzeConfig:
             ]
             self.triggers_1mu = [
                 'HLT_BIT_HLT_IsoMu22_v',
-                'HLT_BIT_HLT_IsoTkMu22_v'
+                'HLT_BIT_HLT_IsoTkMu22_v',
+                'HLT_BIT_HLT_IsoMu22_eta2p1_v',
+                'HLT_BIT_HLT_IsoTkMu22_eta2p1_v'
             ]
             self.triggers_1e = [
                 'HLT_BIT_HLT_Ele25_WPTight_Gsf_v',
+                'HLT_BIT_HLT_Ele25_eta2p1_WPTight_Gsf_v',
                 'HLT_BIT_HLT_Ele27_eta2p1_WPLoose_Gsf_v',
-                'HLT_BIT_HLT_Ele27_eta2p1_WPTight_Gsf_v'
+                'HLT_BIT_HLT_Ele27_eta2p1_WPTight_Gsf_v',
+                ##'HLT_BIT_HLT_Ele45_WPLoose_Gsf_L1JetTauSeeded_v'
             ]
             self.triggers_1mu1tau = [
-                'HLT_BIT_HLT_IsoMu19_eta2p1_LooseIsoPFTau20_v'
+                'HLT_BIT_HLT_IsoMu19_eta2p1_LooseIsoPFTau20_SingleL1_v'
             ]
             self.triggers_1e1tau = [
-               'HLT_BIT_HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau30_v'
+                'HLT_BIT_HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau20_SingleL1_v',
+                'HLT_BIT_HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau20_v',
+                'HLT_BIT_HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau30_v'
             ]           
             self.triggers_2tau = [
                 'HLT_BIT_HLT_DoubleMediumIsoPFTau35_Trk1_eta2p1_Reg_v',

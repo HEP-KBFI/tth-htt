@@ -126,35 +126,6 @@ Data_to_MC_CorrectionInterface::Data_to_MC_CorrectionInterface(const edm::Parame
     sfMuonID_and_Iso_tight_to_loose_wTightCharge_.push_back(new lutWrapperTH2(
       inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2015/lepMVAEffSF_m_2lss.root", "sf",
       lut::kXptYabsEta, -1., 80.));
-
-    std::vector<double> etaBinEdges_e = { -1., 1.48, -1. };
-    int numEtaBins_e = etaBinEdges_e.size() - 1;
-    for ( int idxEtaBin = 0; idxEtaBin < numEtaBins_e; ++idxEtaBin ) {
-      double etaMin = etaBinEdges_e[idxEtaBin];
-      double etaMax = etaBinEdges_e[idxEtaBin + 1];  
-      std::string etaBinLabel = getEtaBinLabel(etaMin, etaMax);
-      sfTrigger_1e_.push_back(new lutWrapperData_to_MC(
-        new lutWrapperTGraph(
-          inputFiles_, "tthAnalysis/HiggsToTauTau/data/triggerSF/2015/Electron_SingleEle_eff.root", Form("ZMassEta%s_Data", etaBinLabel.data()),
-          lut::kXptYabsEta, -1., -1., etaMin, etaMax),
-        new lutWrapperTGraph(
-          inputFiles_, "tthAnalysis/HiggsToTauTau/data/triggerSF/2015/Electron_SingleEle_eff.root", Form("ZMassEta%s_MC", etaBinLabel.data()),
-          lut::kXptYabsEta, -1., -1., etaMin, etaMax)));
-    }  
-    std::vector<double> etaBinEdges_m = { -1., 0.9, 1.2, -1. };
-    int numEtaBins_m = etaBinEdges_m.size() - 1;
-    for ( int idxEtaBin = 0; idxEtaBin < numEtaBins_m; ++idxEtaBin ) {
-      double etaMin = etaBinEdges_m[idxEtaBin];
-      double etaMax = etaBinEdges_m[idxEtaBin + 1];
-      std::string etaBinLabel = getEtaBinLabel(etaMin, etaMax);
-      sfTrigger_1m_.push_back(new lutWrapperData_to_MC(
-        new lutWrapperTGraph(
-          inputFiles_, "tthAnalysis/HiggsToTauTau/data/triggerSF/2015/Muon_SingleMu_eff.root", Form("ZMassEta%s_Data", etaBinLabel.data()),
-          lut::kXptYabsEta, -1., -1., etaMin, etaMax),
-        new lutWrapperTGraph(
-          inputFiles_, "tthAnalysis/HiggsToTauTau/data/triggerSF/2015/Muon_SingleMu_eff.root", Form("ZMassEta%s_MC", etaBinLabel.data()),
-          lut::kXptYabsEta, -1., -1., etaMin, etaMax)));
-    }
   } else if ( era_ == kEra_2016 ) {
     sfElectronID_and_Iso_loose_.push_back(new lutWrapperTH2(
       inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2016/el_scaleFactors_Moriond17.root", "GsfElectronToMVAVLooseFOIDEmuTightIP2D",
@@ -206,24 +177,32 @@ Data_to_MC_CorrectionInterface::Data_to_MC_CorrectionInterface(const edm::Parame
     effTrigger_3l_ = new lutWrapperTH2Poly(
       inputFiles_, "tthAnalysis/HiggsToTauTau/data/triggerSF/2016RunBCD/trig_eff_map_v4.root", "__3l2DPt_effic",
       lut::kXptYpt); // X=pt1, Y=pt2
-    std::vector<double> etaBinEdges_e = { -1., 1.48, 2.1, -1. }; 
-    int numEtaBins_e = etaBinEdges_e.size() - 1;
-    for ( int idxEtaBin = 0; idxEtaBin < numEtaBins_e; ++idxEtaBin ) {
-      double etaMin = etaBinEdges_e[idxEtaBin];
-      double etaMax = etaBinEdges_e[idxEtaBin + 1];
+
+    std::vector<double> etaBinEdges_1e = { -1., 1.48, 2.1 }; 
+    int numEtaBins_1e = etaBinEdges_1e.size() - 1;
+    for ( int idxEtaBin = 0; idxEtaBin < numEtaBins_1e; ++idxEtaBin ) {
+      double etaMin = etaBinEdges_1e[idxEtaBin];
+      double etaMax = etaBinEdges_1e[idxEtaBin + 1];
       std::string etaBinLabel = getEtaBinLabel(etaMin, etaMax);
-      effTrigger_1e_.push_back(new lutWrapperTGraph(
-        inputFiles_, "tthAnalysis/HiggsToTauTau/data/triggerSF/2016RunBCD/Electron_Ele25eta2p1WPTight_eff.root", Form("ZMassEta%s_Data", etaBinLabel.data()),
+      effTrigger_1e_data_.push_back(new lutWrapperTGraph(
+        inputFiles_, "tthAnalysis/HiggsToTauTau/data/triggerSF/2016/Electron_Ele25WPTight_eff.root", Form("ZMassEta%s_Data", etaBinLabel.data()),
+        lut::kXptYabsEta, -1., -1., etaMin, etaMax)); 
+      effTrigger_1e_mc_.push_back(new lutWrapperTGraph(
+        inputFiles_, "tthAnalysis/HiggsToTauTau/data/triggerSF/2016/Electron_Ele25WPTight_eff.root", Form("ZMassEta%s_MC", etaBinLabel.data()),
         lut::kXptYabsEta, -1., -1., etaMin, etaMax)); 
     }
-    std::vector<double> etaBinEdges_m = { -1., 0.9, 1.2, 2.1, -1. };
-    int numEtaBins_m = etaBinEdges_m.size() - 1;
-    for ( int idxEtaBin = 0; idxEtaBin < numEtaBins_m; ++idxEtaBin ) {
-      double etaMin = etaBinEdges_m[idxEtaBin];
-      double etaMax = etaBinEdges_m[idxEtaBin + 1];
+
+    std::vector<double> etaBinEdges_1m = { -1., 0.9, 1.2, 2.1 };
+    int numEtaBins_1m = etaBinEdges_1m.size() - 1;
+    for ( int idxEtaBin = 0; idxEtaBin < numEtaBins_1m; ++idxEtaBin ) {
+      double etaMin = etaBinEdges_1m[idxEtaBin];
+      double etaMax = etaBinEdges_1m[idxEtaBin + 1];
       std::string etaBinLabel = getEtaBinLabel(etaMin, etaMax);
-      effTrigger_1m_.push_back(new lutWrapperTGraph(
-        inputFiles_, "tthAnalysis/HiggsToTauTau/data/triggerSF/2016RunBCD/Muon_IsoMu22_OR_TkIsoMu22_eff.root", Form("ZMassEta%s_Data", etaBinLabel.data()),
+      effTrigger_1m_data_.push_back(new lutWrapperTGraph(
+        inputFiles_, "tthAnalysis/HiggsToTauTau/data/triggerSF/2016/Muon_Mu22OR_eta2p1_eff.root", Form("ZMassEta%s_Data", etaBinLabel.data()),
+        lut::kXptYabsEta, -1., -1., etaMin, etaMax)); 
+      effTrigger_1m_mc_.push_back(new lutWrapperTGraph(
+        inputFiles_, "tthAnalysis/HiggsToTauTau/data/triggerSF/2016/Muon_Mu22OR_eta2p1_eff.root", Form("ZMassEta%s_MC", etaBinLabel.data()),
         lut::kXptYabsEta, -1., -1., etaMin, etaMax)); 
     }
   } else assert(0);
@@ -257,8 +236,10 @@ Data_to_MC_CorrectionInterface::~Data_to_MC_CorrectionInterface()
   delete effTrigger_em_;
   delete effTrigger_mm_;
   delete effTrigger_3l_;
-  clearCollection(effTrigger_1e_);
-  clearCollection(effTrigger_1m_);
+  clearCollection(effTrigger_1e_data_);
+  clearCollection(effTrigger_1e_mc_);
+  clearCollection(effTrigger_1m_data_);
+  clearCollection(effTrigger_1m_mc_);
 }
 
 void Data_to_MC_CorrectionInterface::setHadTauSelection(const std::string& hadTauSelection)
@@ -365,17 +346,9 @@ double Data_to_MC_CorrectionInterface::getWeight_leptonTriggerEff() const
       else if ( numLeptons_   >= 3                   ) weight = effTrigger_3l_->getSF(pt1, pt2);
       else assert(0);
     } else if ( numElectrons_ == 1 && numMuons_ == 0 ) {
-      for ( std::vector<lutWrapperBase*>::const_iterator etaBin = effTrigger_1e_.begin();
-	    etaBin != effTrigger_1e_.end(); ++etaBin ) {
-	weight = (*etaBin)->getSF(electron_pt_[0], electron_eta_[0]);
-	if ( weight != 1. ) break;
-      }
+      weight = get_from_lut(effTrigger_1e_mc_, electron_pt_[0], electron_eta_[0]);
     } else if ( numElectrons_ == 0 && numMuons_ == 1 ) {
-      for ( std::vector<lutWrapperBase*>::const_iterator etaBin = effTrigger_1m_.begin();
-	    etaBin != effTrigger_1m_.end(); ++etaBin ) {
-	weight = (*etaBin)->getSF(muon_pt_[0], muon_eta_[0]);
-	if ( weight != 1. ) break;
-      }
+      weight = get_from_lut(effTrigger_1m_mc_, muon_pt_[0], muon_eta_[0]);
     }
   }
   //std::cout << "<Data_to_MC_CorrectionInterface::getWeight_leptonTriggerEff>: weight = " << weight << std::endl;
@@ -388,6 +361,13 @@ double Data_to_MC_CorrectionInterface::getWeight_leptonTriggerEff() const
 
 namespace
 {
+  double compSF(double eff_data, double eff_mc)
+  {
+    const double epsilon = 1.e-1;
+    double sf = eff_data/TMath::Max(epsilon, eff_mc);
+    return sf;
+  }
+
   /**
    * @brief Evaluate data/MC correction for electron and muon trigger efficiency in 2015 data (Table 10 in AN-2015/321)
    * @param type (either kElectron or kMuon), pT and eta of all leptons
@@ -397,21 +377,18 @@ namespace
 			    int lepton1_type, double lepton1_pt, double lepton1_eta, 
 			    int lepton2_type, double lepton2_pt, double lepton2_eta, 
 			    int lepton3_type, double lepton3_pt, double lepton3_eta,
-			    const std::vector<lutWrapperBase*>& sfTrigger_1e, const std::vector<lutWrapperBase*>& sfTrigger_1m)
+			    const std::vector<lutWrapperBase*>& effTrigger_1e_data, const std::vector<lutWrapperBase*>& effTrigger_1e_mc, 
+			    const std::vector<lutWrapperBase*>& effTrigger_1m_data, const std::vector<lutWrapperBase*>& effTrigger_1m_mc)
   {
     double sf = 1.;
     if ( numElectrons == 1 && numMuons == 0 ) {
-      for ( std::vector<lutWrapperBase*>::const_iterator etaBin = sfTrigger_1e.begin();
-	    etaBin != sfTrigger_1e.end(); ++etaBin ) {
-	sf = (*etaBin)->getSF(lepton1_pt, lepton1_eta);
-	if ( sf != 1. ) break;
-      }
+      double eff_data = get_from_lut(effTrigger_1e_data, lepton1_pt, lepton1_eta);
+      double eff_mc = get_from_lut(effTrigger_1e_mc, lepton1_pt, lepton1_eta);
+      sf = compSF(eff_data, eff_mc);
     } else if ( numElectrons == 0 && numMuons == 1 ) {
-      for ( std::vector<lutWrapperBase*>::const_iterator etaBin = sfTrigger_1m.begin();
-	    etaBin != sfTrigger_1m.end(); ++etaBin ) {
-	sf = (*etaBin)->getSF(lepton1_pt, lepton1_eta);
-	if ( sf != 1. ) break;
-      }
+      double eff_data = get_from_lut(effTrigger_1m_data, lepton1_pt, lepton1_eta);
+      double eff_mc = get_from_lut(effTrigger_1m_mc, lepton1_pt, lepton1_eta);
+      sf = compSF(eff_data, eff_mc);
     } else if ( numElectrons == 2 && numMuons == 0 ) {
       if ( std::max(lepton1_pt, lepton2_pt) > 40. ) sf = 0.99;
       else sf = 0.95;
@@ -431,13 +408,19 @@ namespace
   double sf_triggerEff_2016(int numElectrons, int numMuons,		     
 			    int lepton1_type, double lepton1_pt, double lepton1_eta, 
 			    int lepton2_type, double lepton2_pt, double lepton2_eta, 
-			    int lepton3_type, double lepton3_pt, double lepton3_eta)
+			    int lepton3_type, double lepton3_pt, double lepton3_eta,
+			    const std::vector<lutWrapperBase*>& effTrigger_1e_data, const std::vector<lutWrapperBase*>& effTrigger_1e_mc, 
+			    const std::vector<lutWrapperBase*>& effTrigger_1m_data, const std::vector<lutWrapperBase*>& effTrigger_1m_mc)
   {
     double sf = 1.;
     if ( numElectrons == 1 && numMuons == 0 ) {
-      sf = 1.; // CV: trigger efficiency turn-on curve for single electron trigger in 2016 data actually taken from data, so no need for data/MC correction
+      double eff_data = get_from_lut(effTrigger_1e_data, lepton1_pt, lepton1_eta);
+      double eff_mc = get_from_lut(effTrigger_1e_mc, lepton1_pt, lepton1_eta);
+      sf = compSF(eff_data, eff_mc);
     } else if ( numElectrons == 0 && numMuons == 1 ) {
-      sf = 1.; // CV: trigger efficiency turn-on curve for single muon trigger in 2016 data actually taken from data, so no need for data/MC correction
+      double eff_data = get_from_lut(effTrigger_1m_data, lepton1_pt, lepton1_eta);
+      double eff_mc = get_from_lut(effTrigger_1m_mc, lepton1_pt, lepton1_eta);
+      sf = compSF(eff_data, eff_mc);
     } else if ( numElectrons == 2 && numMuons == 0 ) {
       sf = 1.01;
     } else if ( numElectrons == 1 && numMuons == 1 ) {
@@ -460,13 +443,16 @@ double Data_to_MC_CorrectionInterface::getSF_leptonTriggerEff() const
       lepton_type_[0], lepton_pt_[0], lepton_eta_[0], 
       lepton_type_[1], lepton_pt_[1], lepton_eta_[1], 
       lepton_type_[2], lepton_pt_[2], lepton_eta_[2],
-      sfTrigger_1e_, sfTrigger_1m_);
+      effTrigger_1e_data_, effTrigger_1e_mc_, 
+      effTrigger_1m_data_, effTrigger_1m_mc_);
   } else if ( era_ == kEra_2016 ) {
     sf = sf_triggerEff_2016(
       numElectrons_, numMuons_,	
       lepton_type_[0], lepton_pt_[0], lepton_eta_[0], 
       lepton_type_[1], lepton_pt_[1], lepton_eta_[1], 
-      lepton_type_[2], lepton_pt_[2], lepton_eta_[2]);
+      lepton_type_[2], lepton_pt_[2], lepton_eta_[2],
+      effTrigger_1e_data_, effTrigger_1e_mc_, 
+      effTrigger_1m_data_, effTrigger_1m_mc_);
   } else assert(0);
   //std::cout << "<Data_to_MC_CorrectionInterface::getSF_leptonTriggerEff>: sf = " << sf << std::endl;
   return sf;
@@ -486,10 +472,7 @@ namespace
     for ( int idxLepton = 0; idxLepton < numLeptons; ++idxLepton ) {
       double pt = lepton_pt[idxLepton];
       double eta = lepton_eta[idxLepton];
-      for ( std::vector<lutWrapperBase*>::const_iterator correction = corrections.begin();
-	    correction != corrections.end(); ++correction ) {
-	sf *= (*correction)->getSF(pt, eta);
-      }
+      sf *= get_from_lut(corrections, pt, eta);
     }
     return sf;
   }
@@ -564,7 +547,8 @@ double Data_to_MC_CorrectionInterface::getSF_hadTauID_and_Iso() const
   return sf;
 }
 
-namespace{
+namespace
+{
   double getSF_eToTauFakeRate_2015(double hadTau_pt, double hadTau_absEta, int hadTauSelection_antiElectron, int central_or_shift)
   {
     double sf = 1.;

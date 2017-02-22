@@ -67,7 +67,8 @@
 #include "tthAnalysis/HiggsToTauTau/interface/hadTauGenMatchingAuxFunctions.h" // getHadTauGenMatch_definitions_1tau, getHadTauGenMatch_string, getHadTauGenMatch_int
 #include "tthAnalysis/HiggsToTauTau/interface/fakeBackgroundAuxFunctions.h" // getWeight_2L, getWeight_3L
 #include "tthAnalysis/HiggsToTauTau/interface/hltPath.h" // hltPath, create_hltPaths, hltPaths_setBranchAddresses, hltPaths_isTriggered, hltPaths_delete
-#include "tthAnalysis/HiggsToTauTau/interface/Data_to_MC_CorrectionInterface.h" // Data_to_MC_CorrectionInterface.h
+#include "tthAnalysis/HiggsToTauTau/interface/Data_to_MC_CorrectionInterface.h" // Data_to_MC_CorrectionInterface
+#include "tthAnalysis/HiggsToTauTau/interface/Data_to_MC_CorrectionInterface_1l_2tau_trigger.h" // Data_to_MC_CorrectionInterface_1l_2tau_trigger
 #include "tthAnalysis/HiggsToTauTau/interface/cutFlowTable.h" // cutFlowTableType
 #include "tthAnalysis/HiggsToTauTau/interface/NtupleFillerBDT.h" // NtupleFillerBDT
 
@@ -298,7 +299,7 @@ int main(int argc, char* argv[])
     }
   }
 
-  edm::ParameterSet cfg_dataToMCcorrectionInterface;
+  edm::ParameterSet cfg_dataToMCcorrectionInterface;  
   cfg_dataToMCcorrectionInterface.addParameter<std::string>("era", era_string);
   cfg_dataToMCcorrectionInterface.addParameter<std::string>("hadTauSelection", hadTauSelection_part2);
   cfg_dataToMCcorrectionInterface.addParameter<int>("hadTauSelection_antiElectron_lead", hadTauSelection_antiElectron_lead);
@@ -307,6 +308,7 @@ int main(int argc, char* argv[])
   cfg_dataToMCcorrectionInterface.addParameter<int>("hadTauSelection_antiMuon_sublead", hadTauSelection_antiMuon_sublead);
   cfg_dataToMCcorrectionInterface.addParameter<std::string>("central_or_shift", central_or_shift);
   Data_to_MC_CorrectionInterface* dataToMCcorrectionInterface = new Data_to_MC_CorrectionInterface(cfg_dataToMCcorrectionInterface);
+  Data_to_MC_CorrectionInterface_1l_2tau_trigger* dataToMCcorrectionInterface_1l_2tau_trigger = new Data_to_MC_CorrectionInterface_1l_2tau_trigger(cfg_dataToMCcorrectionInterface);
   
   std::string applyFakeRateWeights_string = cfg_analyze.getParameter<std::string>("applyFakeRateWeights");
   int applyFakeRateWeights = -1;
@@ -975,14 +977,16 @@ int main(int argc, char* argv[])
     assert(idxPreselLepton_genMatch != kGen_LeptonUndefined1);
 
     // require that trigger paths match event category (with event category based on preselLeptons)
-    if ( !((preselElectrons.size() >= 1 && selTrigger_1e ) ||
-	   (preselMuons.size()     >= 1 && selTrigger_1mu)) ) {
+    if ( !((preselElectrons.size() >= 1 && (selTrigger_1e  || selTrigger_1e1tau )) ||
+	   (preselMuons.size()     >= 1 && (selTrigger_1mu || selTrigger_1mu1tau))) ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS trigger selection for given preselLepton multiplicity." << std::endl; 
 	std::cout << " (#preselElectrons = " << preselElectrons.size() 
 		  << ", #preselMuons = " << preselMuons.size() 
 		  << ", selTrigger_1mu = " << selTrigger_1mu 
-		  << ", selTrigger_1e = " << selTrigger_1e << ")" << std::endl;
+		  << ", selTrigger_1mu1tau = " << selTrigger_1mu1tau 
+		  << ", selTrigger_1e = " << selTrigger_1e 
+		  << ", selTrigger_1e1tau = " << selTrigger_1e1tau << ")" << std::endl;
       }
       continue;
     } 
@@ -1075,32 +1079,17 @@ int main(int argc, char* argv[])
       }
     }
 
-    double weight_data_to_MC_correction_loose = 1.;
-    if ( isMC ) {
-      dataToMCcorrectionInterface->setLeptons(selLepton_type, selLepton->pt(), selLepton->eta());
-
-//--- apply trigger efficiency turn-on curves to Spring16 non-reHLT MC
-      if ( !apply_trigger_bits ) {
-	evtWeight *= dataToMCcorrectionInterface->getWeight_leptonTriggerEff();
-      }
-
-//--- apply data/MC corrections for trigger efficiency,
-//    and efficiencies for lepton to pass loose identification and isolation criteria      
-      weight_data_to_MC_correction_loose *= dataToMCcorrectionInterface->getSF_leptonTriggerEff();
-      weight_data_to_MC_correction_loose *= dataToMCcorrectionInterface->getSF_leptonID_and_Iso_loose();
-
-      evtWeight *= weight_data_to_MC_correction_loose;
-    }    
-
     // require that trigger paths match event category (with event category based on selLeptons)
-    if ( !((selElectrons.size() >= 1 && selTrigger_1e ) ||
-	   (selMuons.size()     >= 1 && selTrigger_1mu)) ) {
+    if ( !((selElectrons.size() >= 1 && (selTrigger_1e  || selTrigger_1e1tau )) ||
+	   (selMuons.size()     >= 1 && (selTrigger_1mu || selTrigger_1mu1tau))) ) {
       if ( run_lumi_eventSelector ) {
-	std::cout << "event FAILS trigger selection for given preselLepton multiplicity." << std::endl; 
+	std::cout << "event FAILS trigger selection for given selLepton multiplicity." << std::endl; 
 	std::cout << " (#selElectrons = " << selElectrons.size() 
 		  << ", #selMuons = " << selMuons.size() 
 		  << ", selTrigger_1mu = " << selTrigger_1mu 
-		  << ", selTrigger_1e = " << selTrigger_1e << ")" << std::endl;
+		  << ", selTrigger_1mu1tau = " << selTrigger_1mu1tau 
+		  << ", selTrigger_1e = " << selTrigger_1e 
+		  << ", selTrigger_1e1tau = " << selTrigger_1e1tau << ")" << std::endl;
       }
       continue;
     } 
@@ -1116,25 +1105,45 @@ int main(int argc, char* argv[])
     const hadTauGenMatchEntry& selHadTau_genMatch = getHadTauGenMatch(hadTauGenMatch_definitions, selHadTau_lead, selHadTau_sublead);
     int idxSelHadTau_genMatch = selHadTau_genMatch.idx_;
     assert(idxSelHadTau_genMatch != kGen_HadTauUndefined2);
-    
-    double weight_data_to_MC_correction_tight = 1.;
-    if ( isMC ) {
-//--- apply data/MC corrections for efficiencies of leptons passing the loose identification and isolation criteria
-//    to also pass the tight identification and isolation criteria
-      weight_data_to_MC_correction_tight *= dataToMCcorrectionInterface->getSF_leptonID_and_Iso_tight_to_loose_woTightCharge();
 
-//--- apply data/MC corrections for hadronic tau identification efficiency 
-//    and for e->tau and mu->tau misidentification rates
+    double weight_data_to_MC_correction = 1.;
+    if ( isMC ) {
       int selHadTau_lead_genPdgId = getHadTau_genPdgId(selHadTau_lead);
       int selHadTau_sublead_genPdgId = getHadTau_genPdgId(selHadTau_sublead);
+
+      dataToMCcorrectionInterface->setLeptons(selLepton_type, selLepton->pt(), selLepton->eta());
       dataToMCcorrectionInterface->setHadTaus(
         selHadTau_lead_genPdgId, selHadTau_lead->pt(), selHadTau_lead->eta(),
 	selHadTau_sublead_genPdgId, selHadTau_sublead->pt(), selHadTau_sublead->eta());
-      weight_data_to_MC_correction_tight *= dataToMCcorrectionInterface->getSF_hadTauID_and_Iso();
-      weight_data_to_MC_correction_tight *= dataToMCcorrectionInterface->getSF_eToTauFakeRate();
-      weight_data_to_MC_correction_tight *= dataToMCcorrectionInterface->getSF_muToTauFakeRate();
 
-      evtWeight *= weight_data_to_MC_correction_tight;
+      dataToMCcorrectionInterface_1l_2tau_trigger->setLeptons(selLepton_type, selLepton->pt(), selLepton->eta());
+      dataToMCcorrectionInterface_1l_2tau_trigger->setHadTaus(
+        selHadTau_lead_genPdgId, selHadTau_lead->pt(), selHadTau_lead->eta(), selHadTau_lead->decayMode(),
+	selHadTau_sublead_genPdgId, selHadTau_sublead->pt(), selHadTau_sublead->eta(), selHadTau_sublead->decayMode());
+      dataToMCcorrectionInterface_1l_2tau_trigger->setTriggerBits(isTriggered_1e, isTriggered_1e1tau, isTriggered_1mu, isTriggered_1mu1tau);
+
+//--- apply trigger efficiency turn-on curves to Spring16 non-reHLT MC
+      if ( !apply_trigger_bits ) {
+	evtWeight *= dataToMCcorrectionInterface_1l_2tau_trigger->getWeight_leptonTriggerEff();
+      }
+
+//--- apply data/MC corrections for trigger efficiency
+      weight_data_to_MC_correction *= dataToMCcorrectionInterface_1l_2tau_trigger->getSF_triggerEff();
+
+//--- apply data/MC corrections for efficiencies for lepton to pass loose identification and isolation criteria      
+      weight_data_to_MC_correction *= dataToMCcorrectionInterface->getSF_leptonID_and_Iso_loose();
+
+//--- apply data/MC corrections for efficiencies of leptons passing the loose identification and isolation criteria
+//    to also pass the tight identification and isolation criteria
+      weight_data_to_MC_correction *= dataToMCcorrectionInterface->getSF_leptonID_and_Iso_tight_to_loose_woTightCharge();
+
+//--- apply data/MC corrections for hadronic tau identification efficiency 
+//    and for e->tau and mu->tau misidentification rates     
+      weight_data_to_MC_correction *= dataToMCcorrectionInterface->getSF_hadTauID_and_Iso();
+      weight_data_to_MC_correction *= dataToMCcorrectionInterface->getSF_eToTauFakeRate();
+      weight_data_to_MC_correction *= dataToMCcorrectionInterface->getSF_muToTauFakeRate();
+
+      evtWeight *= weight_data_to_MC_correction;
     }       
     
     double weight_fakeRate = 1.;
@@ -1174,10 +1183,10 @@ int main(int argc, char* argv[])
     cutFlowTable.update(">= 2 loose b-jets || 1 medium b-jet (2)", evtWeight);
     cutFlowHistManager->fillHistograms(">= 2 loose b-jets || 1 medium b-jet (2)", evtWeight);
  
-    double minPt = selLepton->is_electron() ? 30. : 25.;
+    double minPt = selLepton->is_electron() ? 25. : 20.;
     if ( !(selLepton->pt() > minPt) ) continue;
-    cutFlowTable.update("sel lepton pT > 30(e)/25(mu) GeV", evtWeight);
-    cutFlowHistManager->fillHistograms("sel lepton pT > 30(e)/25(mu) GeV", evtWeight);
+    cutFlowTable.update("sel lepton pT > 25(e)/20(mu) GeV", evtWeight);
+    cutFlowHistManager->fillHistograms("sel lepton pT > 25(e)/20(mu) GeV", evtWeight);
 
     if ( !(selHadTau_lead->pt() > 30.) ) continue;
     cutFlowTable.update("sel hadTau pT > 30 GeV", evtWeight);
@@ -1283,7 +1292,7 @@ int main(int argc, char* argv[])
     }
     selHistManager->weights_->fillHistograms("genWeight", genWeight);
     selHistManager->weights_->fillHistograms("pileupWeight", pileupWeight);
-    selHistManager->weights_->fillHistograms("data_to_MC_correction", weight_data_to_MC_correction_loose*weight_data_to_MC_correction_tight);
+    selHistManager->weights_->fillHistograms("data_to_MC_correction", weight_data_to_MC_correction);
     selHistManager->weights_->fillHistograms("fakeRate", weight_fakeRate);
 
     std::string category;
@@ -1410,7 +1419,9 @@ int main(int argc, char* argv[])
   delete cutFlowHistManager;
 
   hltPaths_delete(triggers_1e);
+  hltPaths_delete(triggers_1e1tau);
   hltPaths_delete(triggers_1mu);
+  hltPaths_delete(triggers_1mu1tau);
 
   clock.Show("analyze_1l_2tau");
 
