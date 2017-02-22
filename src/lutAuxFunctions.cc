@@ -198,6 +198,16 @@ double lutWrapperBase::getSF(double pt, double eta)
   else if ( lutTypeY_ == kAbsEta ) y = std::fabs(eta);
   return getSF_private(x, y);
 }
+
+double get_from_lut(const vLutWrapperBase& corrections, double pt, double eta)
+{
+  double sf = 1.;
+  for ( vLutWrapperBase::const_iterator correction = corrections.begin();
+	correction != corrections.end(); ++correction ) {
+    sf *= (*correction)->getSF(pt, eta);
+  }
+  return sf;
+}
 //-------------------------------------------------------------------------------
 
 

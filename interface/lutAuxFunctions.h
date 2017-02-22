@@ -9,6 +9,7 @@
 #include <TGraph.h> // TH2
 
 #include <string>
+#include <vector>
 #include <map>
 
 namespace lut
@@ -51,6 +52,9 @@ class lutWrapperBase
  private:
   virtual double getSF_private(double x, double y) = 0;
 };
+
+typedef std::vector<lutWrapperBase*> vLutWrapperBase;
+double get_from_lut(const vLutWrapperBase& corrections, double pt, double eta);
 
 class lutWrapperTH1 : public lutWrapperBase
 {

@@ -33,7 +33,7 @@ class Data_to_MC_CorrectionInterface
 		  int hadTau2_genPdgId = -1, double hadTau2_pt = 0., double hadTau2_eta = 0.,
 		  int hadTau3_genPdgId = -1, double hadTau3_pt = 0., double hadTau3_eta = 0.);
   //-----------------------------------------------------------------------------
-
+  
   //-----------------------------------------------------------------------------
   // trigger efficiency turn-on curves for Spring16 non-reHLT MC
   double getWeight_leptonTriggerEff() const;
@@ -68,35 +68,31 @@ class Data_to_MC_CorrectionInterface
   // including the cut on the ttH multilepton MVA
 
   // loose muon selection (RecoMuonSelectorLoose)
-  std::vector<lutWrapperBase*> sfElectronID_and_Iso_loose_;
+  vLutWrapperBase sfElectronID_and_Iso_loose_;
   // tight muon selection used in all channels except 2lss_1tau (RecoMuonSelectorTight with tightCharge_cut disabled)
-  std::vector<lutWrapperBase*> sfElectronID_and_Iso_tight_to_loose_woTightCharge_;
+  vLutWrapperBase sfElectronID_and_Iso_tight_to_loose_woTightCharge_;
   // tight muon selection specific to 2lss_1tau channel (RecoMuonSelectorTight with tightCharge_cut enabled)
-  std::vector<lutWrapperBase*> sfElectronID_and_Iso_tight_to_loose_wTightCharge_; 
+  vLutWrapperBase sfElectronID_and_Iso_tight_to_loose_wTightCharge_; 
 
   // loose muon selection (RecoMuonSelectorLoose)
-  std::vector<lutWrapperBase*> sfMuonID_and_Iso_loose_; 
+  vLutWrapperBase sfMuonID_and_Iso_loose_; 
   // tight muon selection used in all channels except 2lss_1tau (RecoMuonSelectorTight with tightCharge_cut disabled)
-  std::vector<lutWrapperBase*> sfMuonID_and_Iso_tight_to_loose_woTightCharge_; 
+  vLutWrapperBase sfMuonID_and_Iso_tight_to_loose_woTightCharge_; 
   // tight muon selection specific to 2lss_1tau channel (RecoMuonSelectorTight with tightCharge_cut enabled)
-  std::vector<lutWrapperBase*> sfMuonID_and_Iso_tight_to_loose_wTightCharge_; 
+  vLutWrapperBase sfMuonID_and_Iso_tight_to_loose_wTightCharge_; 
   //-----------------------------------------------------------------------------
 
   //-----------------------------------------------------------------------------
-  // data/MC corrections for trigger efficiencies in 2015 data
-  
-  std::vector<lutWrapperBase*> sfTrigger_1e_;
-  std::vector<lutWrapperBase*> sfTrigger_1m_;
-  //-----------------------------------------------------------------------------
-
-  //-----------------------------------------------------------------------------
-  // trigger efficiency turn-on curves for Spring16 MC (non-reHLT)
+  // data/MC corrections for trigger efficiencies in 2016 data
   lutWrapperBase* effTrigger_ee_;
   lutWrapperBase* effTrigger_em_;
   lutWrapperBase* effTrigger_mm_;
   lutWrapperBase* effTrigger_3l_;
-  std::vector<lutWrapperBase*> effTrigger_1e_;
-  std::vector<lutWrapperBase*> effTrigger_1m_;
+
+  vLutWrapperBase effTrigger_1e_data_;
+  vLutWrapperBase effTrigger_1e_mc_;
+  vLutWrapperBase effTrigger_1m_data_;
+  vLutWrapperBase effTrigger_1m_mc_;
   //-----------------------------------------------------------------------------
 
   std::map<std::string, TFile*> inputFiles_;

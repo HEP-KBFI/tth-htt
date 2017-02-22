@@ -15,7 +15,7 @@ if ERA == "2015":
   LUMI =  2.3e+3 # 1/pb
 elif ERA == "2016":
   samples = samples_2016
-  LUMI = 12.9e+3 # 1/pb
+  LUMI = 35.9e+3 # 1/pb
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
