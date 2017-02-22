@@ -25,7 +25,7 @@ samples_2016["/DoubleEG/Run2016B-23Sep2016-v3/MINIAOD"] = OD([
   ("use_HIP_mitigation_mediumMuonId", True),
   ("use_it",                True),
   ("triggers",              [ "2e", "3e" ]),
-  ("reHLT",                 False),
+  ("reHLT",                 True),
   ("local_paths",
     [
       OD([
@@ -46,7 +46,7 @@ samples_2016["/DoubleEG/Run2016C-23Sep2016-v1/MINIAOD"] = OD([
   ("use_HIP_mitigation_mediumMuonId", True),
   ("use_it",                True),
   ("triggers",              [ "2e", "3e" ]),
-  ("reHLT",                 False),
+  ("reHLT",                 True),
   ("local_paths",
     [
       OD([
@@ -67,7 +67,7 @@ samples_2016["/DoubleEG/Run2016E-23Sep2016-v1/MINIAOD"] = OD([
   ("use_HIP_mitigation_mediumMuonId", True),
   ("use_it",                True),
   ("triggers",              [ "2e", "3e" ]),
-  ("reHLT",                 False),
+  ("reHLT",                 True),
   ("local_paths",
     [
       OD([
@@ -88,7 +88,7 @@ samples_2016["/DoubleEG/Run2016G-23Sep2016-v1/MINIAOD"] = OD([
   ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                True),
   ("triggers",              [ "2e", "3e" ]),
-  ("reHLT",                 False),
+  ("reHLT",                 True),
   ("local_paths",
     [
       OD([
@@ -109,7 +109,7 @@ samples_2016["/DoubleEG/Run2016H-PromptReco-v2/MINIAOD"] = OD([
   ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                True),
   ("triggers",              [ "2e", "3e" ]),
-  ("reHLT",                 False),
+  ("reHLT",                 True),
   ("local_paths",
     [
       OD([
@@ -130,7 +130,7 @@ samples_2016["/DoubleEG/Run2016H-PromptReco-v3/MINIAOD"] = OD([
   ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                True),
   ("triggers",              [ "2e", "3e" ]),
-  ("reHLT",                 False),
+  ("reHLT",                 True),
   ("local_paths",
     [
       OD([
@@ -151,7 +151,7 @@ samples_2016["/DoubleEG/Run2016D-23Sep2016-v1/MINIAOD"] = OD([
   ("use_HIP_mitigation_mediumMuonId", True),
   ("use_it",                True),
   ("triggers",              [ "2e", "3e" ]),
-  ("reHLT",                 False),
+  ("reHLT",                 True),
   ("local_paths",
     [
       OD([
@@ -172,7 +172,7 @@ samples_2016["/DoubleEG/Run2016F-23Sep2016-v1/MINIAOD"] = OD([
   ("use_HIP_mitigation_mediumMuonId", True),
   ("use_it",                True),
   ("triggers",              [ "2e", "3e" ]),
-  ("reHLT",                 False),
+  ("reHLT",                 True),
   ("local_paths",
     [
       OD([
@@ -201,7 +201,7 @@ samples_2016["/DoubleMuon/Run2016B-23Sep2016-v3/MINIAOD"] = OD([
   ("use_HIP_mitigation_mediumMuonId", True),
   ("use_it",                True),
   ("triggers",              [ "2mu", "3mu" ]),
-  ("reHLT",                 False),
+  ("reHLT",                 True),
   ("local_paths",
     [
       OD([
@@ -222,7 +222,7 @@ samples_2016["/DoubleMuon/Run2016E-23Sep2016-v1/MINIAOD"] = OD([
   ("use_HIP_mitigation_mediumMuonId", True),
   ("use_it",                True),
   ("triggers",              [ "2mu", "3mu" ]),
-  ("reHLT",                 False),
+  ("reHLT",                 True),
   ("local_paths",
     [
       OD([
@@ -243,7 +243,7 @@ samples_2016["/DoubleMuon/Run2016F-23Sep2016-v1/MINIAOD"] = OD([
   ("use_HIP_mitigation_mediumMuonId", True),
   ("use_it",                True),
   ("triggers",              [ "2mu", "3mu" ]),
-  ("reHLT",                 False),
+  ("reHLT",                 True),
   ("local_paths",
     [
       OD([
@@ -264,7 +264,7 @@ samples_2016["/DoubleMuon/Run2016H-PromptReco-v2/MINIAOD"] = OD([
   ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                True),
   ("triggers",              [ "2mu", "3mu" ]),
-  ("reHLT",                 False),
+  ("reHLT",                 True),
   ("local_paths",
     [
       OD([
@@ -285,7 +285,7 @@ samples_2016["/DoubleMuon/Run2016H-PromptReco-v3/MINIAOD"] = OD([
   ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                True),
   ("triggers",              [ "2mu", "3mu" ]),
-  ("reHLT",                 False),
+  ("reHLT",                 True),
   ("local_paths",
     [
       OD([
@@ -306,7 +306,7 @@ samples_2016["/DoubleMuon/Run2016C-23Sep2016-v1/MINIAOD"] = OD([
   ("use_HIP_mitigation_mediumMuonId", True),
   ("use_it",                True),
   ("triggers",              [ "2mu", "3mu" ]),
-  ("reHLT",                 False),
+  ("reHLT",                 True),
   ("local_paths",
     [
       OD([
@@ -327,7 +327,7 @@ samples_2016["/DoubleMuon/Run2016D-23Sep2016-v1/MINIAOD"] = OD([
   ("use_HIP_mitigation_mediumMuonId", True),
   ("use_it",                True),
   ("triggers",              [ "2mu", "3mu" ]),
-  ("reHLT",                 False),
+  ("reHLT",                 True),
   ("local_paths",
     [
       OD([
@@ -348,7 +348,7 @@ samples_2016["/DoubleMuon/Run2016G-23Sep2016-v1/MINIAOD"] = OD([
   ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                True),
   ("triggers",              [ "2mu", "3mu" ]),
-  ("reHLT",                 False),
+  ("reHLT",                 True),
   ("local_paths",
     [
       OD([
@@ -377,7 +377,7 @@ samples_2016["/MuonEG/Run2016D-23Sep2016-v1/MINIAOD"] = OD([
   ("use_HIP_mitigation_mediumMuonId", True),
   ("use_it",                True),
   ("triggers",              [ "1e1mu", "2e1mu", "1e2mu" ]),
-  ("reHLT",                 False),
+  ("reHLT",                 True),
   ("local_paths",
     [
       OD([
@@ -398,7 +398,7 @@ samples_2016["/MuonEG/Run2016H-PromptReco-v2/MINIAOD"] = OD([
   ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                True),
   ("triggers",              [ "1e1mu", "2e1mu", "1e2mu" ]),
-  ("reHLT",                 False),
+  ("reHLT",                 True),
   ("local_paths",
     [
       OD([
@@ -419,7 +419,7 @@ samples_2016["/MuonEG/Run2016H-PromptReco-v3/MINIAOD"] = OD([
   ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                True),
   ("triggers",              [ "1e1mu", "2e1mu", "1e2mu" ]),
-  ("reHLT",                 False),
+  ("reHLT",                 True),
   ("local_paths",
     [
       OD([
@@ -440,7 +440,7 @@ samples_2016["/MuonEG/Run2016B-23Sep2016-v3/MINIAOD"] = OD([
   ("use_HIP_mitigation_mediumMuonId", True),
   ("use_it",                True),
   ("triggers",              [ "1e1mu", "2e1mu", "1e2mu" ]),
-  ("reHLT",                 False),
+  ("reHLT",                 True),
   ("local_paths",
     [
       OD([
@@ -461,7 +461,7 @@ samples_2016["/MuonEG/Run2016C-23Sep2016-v1/MINIAOD"] = OD([
   ("use_HIP_mitigation_mediumMuonId", True),
   ("use_it",                True),
   ("triggers",              [ "1e1mu", "2e1mu", "1e2mu" ]),
-  ("reHLT",                 False),
+  ("reHLT",                 True),
   ("local_paths",
     [
       OD([
@@ -482,7 +482,7 @@ samples_2016["/MuonEG/Run2016E-23Sep2016-v1/MINIAOD"] = OD([
   ("use_HIP_mitigation_mediumMuonId", True),
   ("use_it",                True),
   ("triggers",              [ "1e1mu", "2e1mu", "1e2mu" ]),
-  ("reHLT",                 False),
+  ("reHLT",                 True),
   ("local_paths",
     [
       OD([
@@ -503,7 +503,7 @@ samples_2016["/MuonEG/Run2016F-23Sep2016-v1/MINIAOD"] = OD([
   ("use_HIP_mitigation_mediumMuonId", True),
   ("use_it",                True),
   ("triggers",              [ "1e1mu", "2e1mu", "1e2mu" ]),
-  ("reHLT",                 False),
+  ("reHLT",                 True),
   ("local_paths",
     [
       OD([
@@ -524,7 +524,7 @@ samples_2016["/MuonEG/Run2016G-23Sep2016-v1/MINIAOD"] = OD([
   ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                True),
   ("triggers",              [ "1e1mu", "2e1mu", "1e2mu" ]),
-  ("reHLT",                 False),
+  ("reHLT",                 True),
   ("local_paths",
     [
       OD([
@@ -553,7 +553,7 @@ samples_2016["/SingleElectron/Run2016B-23Sep2016-v3/MINIAOD"] = OD([
   ("use_HIP_mitigation_mediumMuonId", True),
   ("use_it",                True),
   ("triggers",              [ "1e" ]),
-  ("reHLT",                 False),
+  ("reHLT",                 True),
   ("local_paths",
     [
       OD([
@@ -574,7 +574,7 @@ samples_2016["/SingleElectron/Run2016C-23Sep2016-v1/MINIAOD"] = OD([
   ("use_HIP_mitigation_mediumMuonId", True),
   ("use_it",                True),
   ("triggers",              [ "1e" ]),
-  ("reHLT",                 False),
+  ("reHLT",                 True),
   ("local_paths",
     [
       OD([
@@ -595,7 +595,7 @@ samples_2016["/SingleElectron/Run2016D-23Sep2016-v1/MINIAOD"] = OD([
   ("use_HIP_mitigation_mediumMuonId", True),
   ("use_it",                True),
   ("triggers",              [ "1e" ]),
-  ("reHLT",                 False),
+  ("reHLT",                 True),
   ("local_paths",
     [
       OD([
@@ -616,7 +616,7 @@ samples_2016["/SingleElectron/Run2016E-23Sep2016-v1/MINIAOD"] = OD([
   ("use_HIP_mitigation_mediumMuonId", True),
   ("use_it",                True),
   ("triggers",              [ "1e" ]),
-  ("reHLT",                 False),
+  ("reHLT",                 True),
   ("local_paths",
     [
       OD([
@@ -637,7 +637,7 @@ samples_2016["/SingleElectron/Run2016F-23Sep2016-v1/MINIAOD"] = OD([
   ("use_HIP_mitigation_mediumMuonId", True),
   ("use_it",                True),
   ("triggers",              [ "1e" ]),
-  ("reHLT",                 False),
+  ("reHLT",                 True),
   ("local_paths",
     [
       OD([
@@ -658,7 +658,7 @@ samples_2016["/SingleElectron/Run2016H-PromptReco-v2/MINIAOD"] = OD([
   ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                True),
   ("triggers",              [ "1e" ]),
-  ("reHLT",                 False),
+  ("reHLT",                 True),
   ("local_paths",
     [
       OD([
@@ -679,7 +679,7 @@ samples_2016["/SingleElectron/Run2016H-PromptReco-v3/MINIAOD"] = OD([
   ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                True),
   ("triggers",              [ "1e" ]),
-  ("reHLT",                 False),
+  ("reHLT",                 True),
   ("local_paths",
     [
       OD([
@@ -700,7 +700,7 @@ samples_2016["/SingleElectron/Run2016G-23Sep2016-v1/MINIAOD"] = OD([
   ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                True),
   ("triggers",              [ "1e" ]),
-  ("reHLT",                 False),
+  ("reHLT",                 True),
   ("local_paths",
     [
       OD([
@@ -729,7 +729,7 @@ samples_2016["/SingleMuon/Run2016B-23Sep2016-v3/MINIAOD"] = OD([
   ("use_HIP_mitigation_mediumMuonId", True),
   ("use_it",                True),
   ("triggers",              [ "1mu" ]),
-  ("reHLT",                 False),
+  ("reHLT",                 True),
   ("local_paths",
     [
       OD([
@@ -750,7 +750,7 @@ samples_2016["/SingleMuon/Run2016C-23Sep2016-v1/MINIAOD"] = OD([
   ("use_HIP_mitigation_mediumMuonId", True),
   ("use_it",                True),
   ("triggers",              [ "1mu" ]),
-  ("reHLT",                 False),
+  ("reHLT",                 True),
   ("local_paths",
     [
       OD([
@@ -771,7 +771,7 @@ samples_2016["/SingleMuon/Run2016D-23Sep2016-v1/MINIAOD"] = OD([
   ("use_HIP_mitigation_mediumMuonId", True),
   ("use_it",                True),
   ("triggers",              [ "1mu" ]),
-  ("reHLT",                 False),
+  ("reHLT",                 True),
   ("local_paths",
     [
       OD([
@@ -792,7 +792,7 @@ samples_2016["/SingleMuon/Run2016E-23Sep2016-v1/MINIAOD"] = OD([
   ("use_HIP_mitigation_mediumMuonId", True),
   ("use_it",                True),
   ("triggers",              [ "1mu" ]),
-  ("reHLT",                 False),
+  ("reHLT",                 True),
   ("local_paths",
     [
       OD([
@@ -813,7 +813,7 @@ samples_2016["/SingleMuon/Run2016F-23Sep2016-v1/MINIAOD"] = OD([
   ("use_HIP_mitigation_mediumMuonId", True),
   ("use_it",                True),
   ("triggers",              [ "1mu" ]),
-  ("reHLT",                 False),
+  ("reHLT",                 True),
   ("local_paths",
     [
       OD([
@@ -834,7 +834,7 @@ samples_2016["/SingleMuon/Run2016H-PromptReco-v2/MINIAOD"] = OD([
   ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                True),
   ("triggers",              [ "1mu" ]),
-  ("reHLT",                 False),
+  ("reHLT",                 True),
   ("local_paths",
     [
       OD([
@@ -855,7 +855,7 @@ samples_2016["/SingleMuon/Run2016H-PromptReco-v3/MINIAOD"] = OD([
   ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                True),
   ("triggers",              [ "1mu" ]),
-  ("reHLT",                 False),
+  ("reHLT",                 True),
   ("local_paths",
     [
       OD([
@@ -876,7 +876,7 @@ samples_2016["/SingleMuon/Run2016G-23Sep2016-v1/MINIAOD"] = OD([
   ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                True),
   ("triggers",              [ "1mu" ]),
-  ("reHLT",                 False),
+  ("reHLT",                 True),
   ("local_paths",
     [
       OD([
@@ -905,7 +905,7 @@ samples_2016["/Tau/Run2016B-23Sep2016-v3/MINIAOD"] = OD([
   ("use_HIP_mitigation_mediumMuonId", True),
   ("use_it",                True),
   ("triggers",              [ "1e1tau", "1mu1tau", "2tau" ]),
-  ("reHLT",                 False),
+  ("reHLT",                 True),
   ("local_paths",
     [
       OD([
@@ -926,7 +926,7 @@ samples_2016["/Tau/Run2016C-23Sep2016-v1/MINIAOD"] = OD([
   ("use_HIP_mitigation_mediumMuonId", True),
   ("use_it",                True),
   ("triggers",              [ "1e1tau", "1mu1tau", "2tau" ]),
-  ("reHLT",                 False),
+  ("reHLT",                 True),
   ("local_paths",
     [
       OD([
@@ -947,7 +947,7 @@ samples_2016["/Tau/Run2016D-23Sep2016-v1/MINIAOD"] = OD([
   ("use_HIP_mitigation_mediumMuonId", True),
   ("use_it",                True),
   ("triggers",              [ "1e1tau", "1mu1tau", "2tau" ]),
-  ("reHLT",                 False),
+  ("reHLT",                 True),
   ("local_paths",
     [
       OD([
@@ -968,7 +968,7 @@ samples_2016["/Tau/Run2016E-23Sep2016-v1/MINIAOD"] = OD([
   ("use_HIP_mitigation_mediumMuonId", True),
   ("use_it",                True),
   ("triggers",              [ "1e1tau", "1mu1tau", "2tau" ]),
-  ("reHLT",                 False),
+  ("reHLT",                 True),
   ("local_paths",
     [
       OD([
@@ -989,7 +989,7 @@ samples_2016["/Tau/Run2016F-23Sep2016-v1/MINIAOD"] = OD([
   ("use_HIP_mitigation_mediumMuonId", True),
   ("use_it",                True),
   ("triggers",              [ "1e1tau", "1mu1tau", "2tau" ]),
-  ("reHLT",                 False),
+  ("reHLT",                 True),
   ("local_paths",
     [
       OD([
@@ -1010,7 +1010,7 @@ samples_2016["/Tau/Run2016G-23Sep2016-v1/MINIAOD"] = OD([
   ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                True),
   ("triggers",              [ "1e1tau", "1mu1tau", "2tau" ]),
-  ("reHLT",                 False),
+  ("reHLT",                 True),
   ("local_paths",
     [
       OD([
@@ -1031,7 +1031,7 @@ samples_2016["/Tau/Run2016H-PromptReco-v2/MINIAOD"] = OD([
   ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                True),
   ("triggers",              [ "1e1tau", "1mu1tau", "2tau" ]),
-  ("reHLT",                 False),
+  ("reHLT",                 True),
   ("local_paths",
     [
       OD([
@@ -1052,7 +1052,7 @@ samples_2016["/Tau/Run2016H-PromptReco-v3/MINIAOD"] = OD([
   ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                True),
   ("triggers",              [ "1e1tau", "1mu1tau", "2tau" ]),
-  ("reHLT",                 False),
+  ("reHLT",                 True),
   ("local_paths",
     [
       OD([
@@ -1077,7 +1077,7 @@ samples_2016["/Tau/Run2016B-23Sep2016-v3/MINIAOD"] = OD([
   ("use_HIP_mitigation_mediumMuonId", True),
   ("use_it",                True),
   ("triggers",              [ "1e1tau", "1mu1tau", "2tau" ]),
-  ("reHLT",                 False),
+  ("reHLT",                 True),
   ("local_paths",
     [
       OD([
@@ -1098,7 +1098,7 @@ samples_2016["/Tau/Run2016C-23Sep2016-v1/MINIAOD"] = OD([
   ("use_HIP_mitigation_mediumMuonId", True),
   ("use_it",                True),
   ("triggers",              [ "1e1tau", "1mu1tau", "2tau" ]),
-  ("reHLT",                 False),
+  ("reHLT",                 True),
   ("local_paths",
     [
       OD([
@@ -1119,7 +1119,7 @@ samples_2016["/Tau/Run2016D-23Sep2016-v1/MINIAOD"] = OD([
   ("use_HIP_mitigation_mediumMuonId", True),
   ("use_it",                True),
   ("triggers",              [ "1e1tau", "1mu1tau", "2tau" ]),
-  ("reHLT",                 False),
+  ("reHLT",                 True),
   ("local_paths",
     [
       OD([
@@ -1140,7 +1140,7 @@ samples_2016["/Tau/Run2016E-23Sep2016-v1/MINIAOD"] = OD([
   ("use_HIP_mitigation_mediumMuonId", True),
   ("use_it",                True),
   ("triggers",              [ "1e1tau", "1mu1tau", "2tau" ]),
-  ("reHLT",                 False),
+  ("reHLT",                 True),
   ("local_paths",
     [
       OD([
@@ -1161,7 +1161,7 @@ samples_2016["/Tau/Run2016F-23Sep2016-v1/MINIAOD"] = OD([
   ("use_HIP_mitigation_mediumMuonId", True),
   ("use_it",                True),
   ("triggers",              [ "1e1tau", "1mu1tau", "2tau" ]),
-  ("reHLT",                 False),
+  ("reHLT",                 True),
   ("local_paths",
     [
       OD([
@@ -1182,7 +1182,7 @@ samples_2016["/Tau/Run2016G-23Sep2016-v1/MINIAOD"] = OD([
   ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                True),
   ("triggers",              [ "1e1tau", "1mu1tau", "2tau" ]),
-  ("reHLT",                 False),
+  ("reHLT",                 True),
   ("local_paths",
     [
       OD([
@@ -1203,7 +1203,7 @@ samples_2016["/Tau/Run2016H-PromptReco-v2/MINIAOD"] = OD([
   ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                True),
   ("triggers",              [ "1e1tau", "1mu1tau", "2tau" ]),
-  ("reHLT",                 False),
+  ("reHLT",                 True),
   ("local_paths",
     [
       OD([
@@ -1224,7 +1224,7 @@ samples_2016["/Tau/Run2016H-PromptReco-v3/MINIAOD"] = OD([
   ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                True),
   ("triggers",              [ "1e1tau", "1mu1tau", "2tau" ]),
-  ("reHLT",                 False),
+  ("reHLT",                 True),
   ("local_paths",
     [
       OD([
