@@ -54,7 +54,7 @@ def generate_file_ids(nof_files, max_files_per_job, blacklist = []):
   Returns:
     File ids split into sublists of length `max_files_per_job`
   """
-
+  #print "<generate_file_ids>:"
   file_limits = range(1, nof_files + 1, 1)
   file_limits = list(sorted(list(set(file_limits) - set(blacklist))))
   if max_files_per_job > 1:
@@ -80,15 +80,20 @@ def generate_input_list(job_ids, secondary_files, primary_store, secondary_store
     secondary_store: full path to the second subdirectory
     debug: if True, checks whether each file is present in the file system
   """
+  #print "<generate_input_list>:"
   input_list = []
   for job in job_ids:
     actual_storedir = secondary_store if job in secondary_files else primary_store
-    input_file = os.path.join(actual_storedir, "tree_" + str(job) + ".root")
+    input_file = os.path.join(actual_storedir, "000" + str(job / 1000), "tree_" + str(job) + ".root")
+    #print "checking existence of input_file = '%s'" % input_file
     if not os.path.exists(input_file):
-      input_file = os.path.join(actual_storedir, "000" + str(job / 1000), "tree_" + str(job) + ".root")
-    if debug and not os.path.exists(input_file):
-      logging.error("File %s doesn't exists!" % input_file)
-      sys.exit(2)
+      input_file = os.path.join(actual_storedir, "tree_" + str(job) + ".root")
+    #print "checking existence of input_file = '%s'" % input_file
+    if not os.path.exists(input_file):
+      if debug:
+        logging.error("File %s doesn't exists!" % input_file)
+        sys.exit(2)
+      continue
     input_list.append(input_file)
   return input_list
 

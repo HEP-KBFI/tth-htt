@@ -98,6 +98,13 @@ class analyzeConfig_ttWctrl(analyzeConfig):
       else:
         create_if_not_exists(self.dirs[key])
 
+    inputFileLists = {}
+    for sample_name, sample_info in self.samples.items():
+      if not sample_info["use_it"] or sample_info["sample_category"] in [ "additional_signal_overlap", "background_data_estimate" ]:
+        continue
+      logging.info("Checking input files for sample %s" % sample_info["process_name_specific"])
+      inputFileLists[sample_name] = generateInputFileList(sample_name, sample_info, self.max_files_per_job, self.debug)
+
     for sample_name, sample_info in self.samples.items():
       if not sample_info["use_it"] or sample_info["sample_category"] in [ "additional_signal_overlap", "background_data_estimate" ]:
         continue
@@ -110,7 +117,7 @@ class analyzeConfig_ttWctrl(analyzeConfig):
 
       for central_or_shift in self.central_or_shifts:
 
-        inputFileList = generateInputFileList(sample_name, sample_info, self.max_files_per_job, self.debug)
+        inputFileList = inputFileLists[sample_name]
         for jobId in inputFileList.keys():
           if central_or_shift != "central" and not is_mc:
             continue

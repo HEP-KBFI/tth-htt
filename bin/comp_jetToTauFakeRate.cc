@@ -120,8 +120,8 @@ std::vector<EigenVector_and_Value> compEigenVectors_and_Values(const TMatrixD& c
       std::cout << "component #" << iComponent << ": vec1 = " << vec1(iComponent) << ", vec2 = " << vec2(iComponent) << std::endl;
       double diff = vec1(iComponent) - vec2(iComponent);
       double sum = TMath::Abs(TMath::Max(1.e-6, vec1(iComponent))) + TMath::Abs(TMath::Max(1.e-6, vec2(iComponent)));
-      std::cout << "assert(" << diff << " < " << 1.e-3*sum << ")" << std::endl;
-      assert(diff < 1.e-3*sum);
+      std::cout << "assert(" << diff << " < " << TMath::Max(1.e-6, 1.e-3*sum) << ")" << std::endl;
+      assert(diff < TMath::Max(1.e-6, 1.e-3*sum));
     }
     eigenVectors_and_Values.push_back(EigenVector_and_Value(eigenVector, eigenValue));
   }
@@ -540,7 +540,9 @@ void compFakeRate(double nPass, double nPassErr, double nFail, double nFailErr, 
     double dummy;
     graph_pass_div_pass_plus_fail_tmp->GetPoint(0, dummy, avFakeRate);
     avFakeRateErrUp = graph_pass_div_pass_plus_fail_tmp->GetErrorYhigh(0);
+    if ( avFakeRateErrUp < 2.e-2 ) avFakeRateErrUp = 2.e-2;
     avFakeRateErrDown = graph_pass_div_pass_plus_fail_tmp->GetErrorYlow(0);
+    if ( avFakeRateErrDown < 2.e-2 ) avFakeRateErrDown = 2.e-2;
     delete histogram_pass_tmp;
     delete histogram_pass_plus_fail_tmp;
     delete graph_pass_div_pass_plus_fail_tmp;

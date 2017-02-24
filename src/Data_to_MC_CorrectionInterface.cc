@@ -43,6 +43,7 @@ Data_to_MC_CorrectionInterface::Data_to_MC_CorrectionInterface(const edm::Parame
   , effTrigger_em_(0)
   , effTrigger_mm_(0)
   , effTrigger_3l_(0)
+  , hadTauSelection_(-1)
   , eToTauFakeRate_option_(kFRet_central)
   , muToTauFakeRate_option_(kFRmt_central)
   , numLeptons_(0)
@@ -66,7 +67,8 @@ Data_to_MC_CorrectionInterface::Data_to_MC_CorrectionInterface(const edm::Parame
   else throw cms::Exception("Data_to_MC_CorrectionInterface") 
     << "Invalid Configuration parameter 'era' = " << era_string << " !!\n";
 
-  hadTauSelection_ = cfg.getParameter<std::string>("hadTauSelection");
+  std::string hadTauSelection_string = cfg.getParameter<std::string>("hadTauSelection");
+  setHadTauSelection(hadTauSelection_string);
   for ( int idxHadTau = 0; idxHadTau < 3; ++idxHadTau ) {
     hadTauSelection_antiElectron_[idxHadTau] = -1;
     if ( cfg.exists("hadTauSelection_antiElectron") ) {
@@ -244,7 +246,15 @@ Data_to_MC_CorrectionInterface::~Data_to_MC_CorrectionInterface()
 
 void Data_to_MC_CorrectionInterface::setHadTauSelection(const std::string& hadTauSelection)
 {
-  hadTauSelection_ = hadTauSelection;
+  hadTauSelection_ = -1;
+  if      ( hadTauSelection == "dR03mvaVVLoose" ) hadTauSelection_ = 1;
+  else if ( hadTauSelection == "dR03mvaVLoose"  ) hadTauSelection_ = 2;
+  else if ( hadTauSelection == "dR03mvaLoose"   ) hadTauSelection_ = 3;
+  else if ( hadTauSelection == "dR03mvaMedium"  ) hadTauSelection_ = 4;
+  else if ( hadTauSelection == "dR03mvaTight"   ) hadTauSelection_ = 5;
+  else if ( hadTauSelection == "dR03mvaVTight"  ) hadTauSelection_ = 6;
+  else throw cms::Exception("Data_to_MC_CorrectionInterface") 
+    << "Invalid Configuration parameter 'hadTauSelection' = " << hadTauSelection << " !!\n";
 }
 
 void Data_to_MC_CorrectionInterface::setLeptons(int lepton1_type, double lepton1_pt, double lepton1_eta,
@@ -518,18 +528,21 @@ double Data_to_MC_CorrectionInterface::getSF_leptonID_and_Iso_tight_to_loose_wTi
 
 namespace
 {
-  double getSF_hadTauID_and_Iso_2015()
+  double getSF_hadTauID_and_Iso_2015(int hadTauSelection)
   {
     // CV: take data/MC correction to be equal to unity, following Tau POG recommendation for 2015 data,
     //     cf. https://twiki.cern.ch/twiki/bin/viewauth/CMS/TauIDRecommendation13TeV
     return 1.; 
   }
 
-  double getSF_hadTauID_and_Iso_2016()
+  double getSF_hadTauID_and_Iso_2016(int hadTauSelection)
   {
     // CV: take data/MC correction to be equal to unity, following Tau POG recommendation for 2016 data,
     //     cf. https://twiki.cern.ch/twiki/bin/viewauth/CMS/TauIDRecommendation13TeV
-    return 1.; 
+    double sf = 1.;
+    if      ( hadTauSelection <= 5 ) sf = 0.99;
+    else if ( hadTauSelection >= 6 ) sf = 0.91;
+    return sf; 
   }
 }
 
@@ -538,8 +551,8 @@ double Data_to_MC_CorrectionInterface::getSF_hadTauID_and_Iso() const
   double sf = 1.;
   for ( int idxHadTau = 0; idxHadTau < numHadTaus_; ++idxHadTau ) {
     if ( hadTau_genPdgId_[idxHadTau] == 15 ) {
-      if      ( era_ == kEra_2015 ) sf *= getSF_hadTauID_and_Iso_2015();
-      else if ( era_ == kEra_2016 ) sf *= getSF_hadTauID_and_Iso_2016();
+      if      ( era_ == kEra_2015 ) sf *= getSF_hadTauID_and_Iso_2015(hadTauSelection_);
+      else if ( era_ == kEra_2016 ) sf *= getSF_hadTauID_and_Iso_2016(hadTauSelection_);
       else assert(0);
     }
   }

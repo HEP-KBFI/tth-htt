@@ -98,7 +98,7 @@ class Data_to_MC_CorrectionInterface
   std::map<std::string, TFile*> inputFiles_;
 
   int era_;
-  std::string hadTauSelection_;
+  int hadTauSelection_; // 1: VVLoose, 2: VLoose, 3: Loose, 4: Medium, 5: Tight, 6: VTight
   int hadTauSelection_antiElectron_[3];
   int hadTauSelection_antiMuon_[3];
   int eToTauFakeRate_option_;

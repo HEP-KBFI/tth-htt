@@ -314,6 +314,13 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
       else:
         create_if_not_exists(self.dirs[key])
 
+    inputFileLists = {}
+    for sample_name, sample_info in self.samples.items():
+      if not sample_info["use_it"] or sample_info["sample_category"] in [ "additional_signal_overlap", "background_data_estimate" ]:
+        continue
+      logging.info("Checking input files for sample %s" % sample_info["process_name_specific"])
+      inputFileLists[sample_name] = generateInputFileList(sample_name, sample_info, self.max_files_per_job, self.debug)
+
     for lepton_and_hadTau_selection in self.lepton_and_hadTau_selections:
       lepton_selection = lepton_and_hadTau_selection
       hadTau_selection = lepton_and_hadTau_selection
@@ -347,7 +354,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
 
               for central_or_shift in self.central_or_shifts:
 
-                inputFileList = generateInputFileList(sample_name, sample_info, self.max_files_per_job, self.debug)
+                inputFileList = inputFileLists[sample_name]
                 for jobId in inputFileList.keys():
                   if central_or_shift != "central":
                     isFR_shape_shift = False
@@ -371,6 +378,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
                     continue
                   if central_or_shift.startswith("CMS_ttHl_thu_shape_ttZ") and sample_category != "TTZ":
                     continue
+                  ##print "processing sample %s: jobId = %i, central_or_shift = '%s'" % (process_name, jobId, central_or_shift)
 
                   # build config files for executing analysis code
                   key_dir = getKey(process_name, lepton_and_hadTau_selection_and_frWeight, lepton_charge_selection, chargeSumSelection)
@@ -406,7 +414,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
                     'is_mc' : is_mc,
                     'central_or_shift' : central_or_shift,
                     'lumi_scale' : 1. if not (self.use_lumi and is_mc) else sample_info["xsection"] * self.lumi / sample_info["nof_events"],
-                    'apply_genWeight' : sample_info["genWeight"] if (is_mc and "genWeight" in sample_info.keys()) else False,
+                    'apply_genWeight' : sample_info["genWeight"] if (is_mc and "genWeight" in sample_info) else False,
                     'apply_trigger_bits' : (is_mc and (self.era == "2015" or (self.era == "2016" and sample_info["reHLT"]))) or not is_mc,
                     'selectBDT' : self.isBDTtraining,
                     'changeBranchNames' : self.changeBranchNames,
@@ -415,7 +423,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
 
                   # initialize input and output file names for hadd_stage1
                   key_hadd_stage1 = getKey(process_name, lepton_and_hadTau_selection_and_frWeight, lepton_charge_selection, chargeSumSelection)
-                  if not key_hadd_stage1 in self.inputFiles_hadd_stage1.keys():
+                  if not key_hadd_stage1 in self.inputFiles_hadd_stage1:
                     self.inputFiles_hadd_stage1[key_hadd_stage1] = []
                   self.inputFiles_hadd_stage1[key_hadd_stage1].append(self.jobOptions_analyze[key_analyze_job]['histogramFile'])
                   self.outputFile_hadd_stage1[key_hadd_stage1] = os.path.join(self.outputDir, DKEY_HIST, "histograms_harvested_stage1_%s_%s_%s_lep%s_sum%s.root" % \
@@ -537,7 +545,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
                        
                       # initialize input and output file names for hadd_stage1_5
                       key_hadd_stage1_5 = getKey(lepton_and_hadTau_selection_and_frWeight, lepton_charge_selection, chargeSumSelection)
-                      if not key_hadd_stage1_5 in self.inputFiles_hadd_stage1_5.keys():
+                      if not key_hadd_stage1_5 in self.inputFiles_hadd_stage1_5:
                         self.inputFiles_hadd_stage1_5[key_hadd_stage1_5] = []
                       self.inputFiles_hadd_stage1_5[key_hadd_stage1_5].append(self.jobOptions_addBackgrounds[key_addBackgrounds_job]['outputFile'])
                       self.outputFile_hadd_stage1_5[key_hadd_stage1_5] = os.path.join(self.outputDir, DKEY_HIST, "histograms_harvested_stage1_5_%s_%s_lep%s_sum%s.root" % \
@@ -547,7 +555,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
               if not is_mc:
                 key_hadd_stage1 = getKey(process_name, lepton_and_hadTau_selection_and_frWeight, lepton_charge_selection, chargeSumSelection)
                 key_hadd_stage1_5 = getKey(lepton_and_hadTau_selection_and_frWeight, lepton_charge_selection, chargeSumSelection)
-                if not key_hadd_stage1_5 in self.inputFiles_hadd_stage1_5.keys():
+                if not key_hadd_stage1_5 in self.inputFiles_hadd_stage1_5:
                   self.inputFiles_hadd_stage1_5[key_hadd_stage1_5] = []
                 self.inputFiles_hadd_stage1_5[key_hadd_stage1_5].append(self.outputFile_hadd_stage1[key_hadd_stage1])
 
@@ -575,7 +583,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
 
             # initialize input and output file names for hadd_stage2
             key_hadd_stage2 = getKey(lepton_and_hadTau_selection_and_frWeight, lepton_charge_selection, chargeSumSelection)
-            if not key_hadd_stage2 in self.inputFiles_hadd_stage2.keys():
+            if not key_hadd_stage2 in self.inputFiles_hadd_stage2:
               self.inputFiles_hadd_stage2[key_hadd_stage2] = []
             if lepton_and_hadTau_selection == "Tight":
               self.inputFiles_hadd_stage2[key_hadd_stage2].append(self.jobOptions_addBackgrounds[key_addBackgrounds_job]['outputFile'])

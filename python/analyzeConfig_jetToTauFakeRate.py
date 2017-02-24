@@ -146,6 +146,13 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
           create_if_not_exists(self.dirs[key][dir_type])
       else:
         create_if_not_exists(self.dirs[key])
+
+    inputFileLists = {}
+    for sample_name, sample_info in self.samples.items():
+      if not sample_info["use_it"] or sample_info["sample_category"] in [ "additional_signal_overlap", "background_data_estimate" ]:
+        continue
+      logging.info("Checking input files for sample %s" % sample_info["process_name_specific"])
+      inputFileLists[sample_name] = generateInputFileList(sample_name, sample_info, self.max_files_per_job, self.debug)
   
     self.inputFileIds = {}
     for sample_name, sample_info in self.samples.items():
@@ -166,7 +173,7 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
       for charge_selection in self.charge_selections:
         for central_or_shift in self.central_or_shifts:
 
-          inputFileList = generateInputFileList(sample_name, sample_info, self.max_files_per_job, self.debug)
+          inputFileList = inputFileLists[sample_name]
           for jobId in inputFileList.keys():
             if central_or_shift != "central" and not is_mc:
               continue
@@ -222,13 +229,14 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
             self.outputFile_hadd_stage1[key_hadd_stage1] = os.path.join(self.outputDir, DKEY_HIST, "histograms_harvested_stage1_%s_%s_%s.root" % \
               (self.channel, process_name, charge_selection))
 
-            # initialize input and output file names for hadd_stage2
-            key_hadd_stage2 = getKey(charge_selection)
-            if not key_hadd_stage2 in self.inputFiles_hadd_stage2.keys():
-              self.inputFiles_hadd_stage2[key_hadd_stage2] = []
-            self.inputFiles_hadd_stage2[key_hadd_stage2].append(self.outputFile_hadd_stage1[key_hadd_stage1])
-            self.outputFile_hadd_stage2[key_hadd_stage2] = os.path.join(self.outputDir, DKEY_HIST, "histograms_harvested_stage2_%s_%s.root" % \
-              (self.channel, charge_selection))
+        # initialize input and output file names for hadd_stage2
+        key_hadd_stage1 = getKey(process_name, charge_selection)
+        key_hadd_stage2 = getKey(charge_selection)
+        if not key_hadd_stage2 in self.inputFiles_hadd_stage2.keys():
+          self.inputFiles_hadd_stage2[key_hadd_stage2] = []
+        self.inputFiles_hadd_stage2[key_hadd_stage2].append(self.outputFile_hadd_stage1[key_hadd_stage1])
+        self.outputFile_hadd_stage2[key_hadd_stage2] = os.path.join(self.outputDir, DKEY_HIST, "histograms_harvested_stage2_%s_%s.root" % \
+          (self.channel, charge_selection))
 
     if self.is_sbatch:
       logging.info("Creating script for submitting '%s' jobs to batch system" % self.executable_analyze)

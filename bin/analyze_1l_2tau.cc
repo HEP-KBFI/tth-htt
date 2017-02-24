@@ -723,7 +723,7 @@ int main(int argc, char* argv[])
       }      
       selHistManager->weights_ = new WeightHistManager(makeHistManager_cfg(process_and_genMatch, 
         Form("%s/sel/weights", histogramDir.data()), central_or_shift));
-      selHistManager->weights_->bookHistograms(fs, { "genWeight", "pileupWeight", "data_to_MC_correction", "fakeRate" });
+      selHistManager->weights_->bookHistograms(fs, { "genWeight", "pileupWeight", "data_to_MC_correction", "triggerWeight", "fakeRate" });
       selHistManagers[idxLepton][idxHadTau] = selHistManager;
     }
   }
@@ -1107,6 +1107,7 @@ int main(int argc, char* argv[])
     assert(idxSelHadTau_genMatch != kGen_HadTauUndefined2);
 
     double weight_data_to_MC_correction = 1.;
+    double triggerWeight = 1.;
     if ( isMC ) {
       int selHadTau_lead_genPdgId = getHadTau_genPdgId(selHadTau_lead);
       int selHadTau_sublead_genPdgId = getHadTau_genPdgId(selHadTau_sublead);
@@ -1124,11 +1125,14 @@ int main(int argc, char* argv[])
 
 //--- apply trigger efficiency turn-on curves to Spring16 non-reHLT MC
       if ( !apply_trigger_bits ) {
-	evtWeight *= dataToMCcorrectionInterface_1l_2tau_trigger->getWeight_leptonTriggerEff();
+	triggerWeight = dataToMCcorrectionInterface_1l_2tau_trigger->getWeight_leptonTriggerEff();
+	evtWeight *= triggerWeight;
       }
 
 //--- apply data/MC corrections for trigger efficiency
-      weight_data_to_MC_correction *= dataToMCcorrectionInterface_1l_2tau_trigger->getSF_triggerEff();
+      double sf_triggerEff = dataToMCcorrectionInterface_1l_2tau_trigger->getSF_triggerEff();
+      triggerWeight *= sf_triggerEff;
+      weight_data_to_MC_correction *= sf_triggerEff;
 
 //--- apply data/MC corrections for efficiencies for lepton to pass loose identification and isolation criteria      
       weight_data_to_MC_correction *= dataToMCcorrectionInterface->getSF_leptonID_and_Iso_loose();
@@ -1297,6 +1301,7 @@ int main(int argc, char* argv[])
     selHistManager->weights_->fillHistograms("genWeight", genWeight);
     selHistManager->weights_->fillHistograms("pileupWeight", pileupWeight);
     selHistManager->weights_->fillHistograms("data_to_MC_correction", weight_data_to_MC_correction);
+    selHistManager->weights_->fillHistograms("triggerWeight", triggerWeight);
     selHistManager->weights_->fillHistograms("fakeRate", weight_fakeRate);
 
     std::string category;
