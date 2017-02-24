@@ -44,7 +44,7 @@ elif ERA == "2016":
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "2017Feb22"
+version = "2017Feb24"
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -53,7 +53,8 @@ if __name__ == '__main__':
     format = '%(asctime)s - %(levelname)s: %(message)s')
 
   analysis = analyzeConfig_2lss_1tau(
-    outputDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", ERA, version),
+    ##outputDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", ERA, version),
+    outputDir = os.path.join("/hdfs/cms/store/user", getpass.getuser(), "ttHAnalysis", ERA, version),
     executable_analyze = "analyze_2lss_1tau", cfgFile_analyze = "analyze_2lss_1tau_cfg.py",
     samples = samples, changeBranchNames = changeBranchNames,
     lepton_charge_selections = [ "OS", "SS" ],

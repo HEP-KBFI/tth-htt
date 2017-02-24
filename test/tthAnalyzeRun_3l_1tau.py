@@ -52,7 +52,8 @@ if __name__ == '__main__':
     format = '%(asctime)s - %(levelname)s: %(message)s')
 
   analysis = analyzeConfig_3l_1tau(
-    outputDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", ERA, version),
+    ##outputDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", ERA, version),
+    outputDir = os.path.join("/hdfs/cms/store/user", getpass.getuser(), "ttHAnalysis", ERA, version),
     executable_analyze = "analyze_3l_1tau", cfgFile_analyze = "analyze_3l_1tau_cfg.py",
     samples = samples, changeBranchNames = changeBranchNames,
     hadTau_selection = hadTau_selection,

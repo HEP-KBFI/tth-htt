@@ -28,7 +28,8 @@ if __name__ == '__main__':
     format = '%(asctime)s - %(levelname)s: %(message)s')
 
   analysis = analyzeConfig_1l_2tau(
-    outputDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", ERA, version),
+    ##outputDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", ERA, version),
+    outputDir = os.path.join("/hdfs/cms/store/user", getpass.getuser(), "ttHAnalysis", ERA, version),
     executable_analyze = "analyze_1l_2tau", cfgFile_analyze = "analyze_1l_2tau_cfg.py",
     samples = samples,
     hadTau_selection = "dR03mvaTight",
