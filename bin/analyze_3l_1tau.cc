@@ -559,6 +559,8 @@ int main(int argc, char* argv[])
   std::vector<std::string> mvaInputVariables_3l = get_mvaInputVariables(mvaInputVariables_3l_ttV, mvaInputVariables_3l_ttbar);
   std::map<std::string, double> mvaInputs_3l;
 
+//--- initialize BDTs used to discriminate ttH vs. ttV and ttH vs. ttbar 
+//    trained by Arun for 3l_1tau category 
   std::string mvaFileName_3l_1tau_ttV = "tthAnalysis/HiggsToTauTau/data/3l_1tau_ttV_BDTG.weights.xml";
   std::vector<std::string> mvaInputVariables_3l_1tau_ttV;
   mvaInputVariables_3l_1tau_ttV.push_back("mindr_lep1_jet");

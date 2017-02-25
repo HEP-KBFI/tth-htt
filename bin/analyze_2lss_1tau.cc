@@ -508,6 +508,8 @@ int main(int argc, char* argv[])
   std::vector<std::string> mvaInputVariables_2lss = get_mvaInputVariables(mvaInputVariables_2lss_ttV, mvaInputVariables_2lss_ttbar);
   std::map<std::string, double> mvaInputs_2lss;
 
+//--- initialize BDTs used to discriminate ttH vs. ttV and ttH vs. ttbar 
+//    trained by Arun for 2lss_1tau category 
   std::string mvaFileName_2lss_1tau_ttV = "tthAnalysis/HiggsToTauTau/data/2lss_1tau_ttV_sklearn_10var.weights.xml";
   std::vector<std::string> mvaInputVariables_2lss_1tau_ttV;
   mvaInputVariables_2lss_1tau_ttV.push_back("mindr_lep1_jet");

@@ -448,6 +448,35 @@ int main(int argc, char* argv[])
   std::vector<std::string> mvaInputVariables_2lss = get_mvaInputVariables(mvaInputVariables_2lss_ttV, mvaInputVariables_2lss_ttbar);
   std::map<std::string, double> mvaInputs_2lss;
 
+//--- initialize BDTs used to discriminate ttH vs. ttV and ttH vs. ttbar 
+//    in 3l category of ttH multilepton analysis
+  std::string mvaFileName_3l_ttV = "tthAnalysis/HiggsToTauTau/data/3l_ttV_BDTG.weights.xml";
+  std::vector<std::string> mvaInputVariables_3l_ttV;
+  mvaInputVariables_3l_ttV.push_back("max(abs(LepGood_eta[iF_Recl[0]]),abs(LepGood_eta[iF_Recl[1]]))");
+  mvaInputVariables_3l_ttV.push_back("MT_met_lep1");
+  mvaInputVariables_3l_ttV.push_back("nJet25_Recl");
+  mvaInputVariables_3l_ttV.push_back("mindr_lep1_jet");
+  mvaInputVariables_3l_ttV.push_back("mindr_lep2_jet");
+  mvaInputVariables_3l_ttV.push_back("LepGood_conePt[iF_Recl[0]]");
+  mvaInputVariables_3l_ttV.push_back("LepGood_conePt[iF_Recl[2]]");
+  TMVAInterface mva_3l_ttV(mvaFileName_3l_ttV, mvaInputVariables_3l_ttV, { "iF_Recl[0]", "iF_Recl[1]", "iF_Recl[2]" });
+
+  std::string mvaFileName_3l_ttbar = "tthAnalysis/HiggsToTauTau/data/3l_ttbar_BDTG.weights.xml";
+  std::vector<std::string> mvaInputVariables_3l_ttbar;
+  mvaInputVariables_3l_ttbar.push_back("max(abs(LepGood_eta[iF_Recl[0]]),abs(LepGood_eta[iF_Recl[1]]))");
+  mvaInputVariables_3l_ttbar.push_back("MT_met_lep1");
+  mvaInputVariables_3l_ttbar.push_back("nJet25_Recl");
+  mvaInputVariables_3l_ttbar.push_back("mhtJet25_Recl");
+  mvaInputVariables_3l_ttbar.push_back("avg_dr_jet");
+  mvaInputVariables_3l_ttbar.push_back("mindr_lep1_jet");
+  mvaInputVariables_3l_ttbar.push_back("mindr_lep2_jet");
+  TMVAInterface mva_3l_ttbar(mvaFileName_3l_ttbar, mvaInputVariables_3l_ttbar, { "iF_Recl[0]", "iF_Recl[1]", "iF_Recl[2]" });
+
+  std::vector<std::string> mvaInputVariables_3l = get_mvaInputVariables(mvaInputVariables_3l_ttV, mvaInputVariables_3l_ttbar);
+  std::map<std::string, double> mvaInputs_3l;
+
+//--- initialize BDTs used to discriminate ttH vs. ttV and ttH vs. ttbar 
+//    trained by Arun for 2lss_1tau category 
   std::string mvaFileName_2lss_1tau_ttV = "tthAnalysis/HiggsToTauTau/data/2lss_1tau_ttV_sklearn_10var.weights.xml";
   std::vector<std::string> mvaInputVariables_2lss_1tau_ttV;
   mvaInputVariables_2lss_1tau_ttV.push_back("mindr_lep1_jet");
@@ -860,7 +889,7 @@ int main(int argc, char* argv[])
     preselMEtHistManager.fillHistograms(met, mht_p4, met_LD, 1.);
     preselEvtHistManager.fillHistograms(preselElectrons.size(), preselMuons.size(), selHadTaus.size(), 
       selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
-      -1., -1., -1., -1., -1.,
+      -1., -1., -1., -1., -1., -1., -1., -1.,
       -1., -1., 0., 1.);
   
 //--- apply final event selection 
@@ -1073,6 +1102,42 @@ int main(int argc, char* argv[])
       else                                                                  mvaDiscr_2lss = 1.;
     } else assert(0);
 
+//--- compute output of BDTs used to discriminate ttH vs. ttV and ttH vs. ttbar 
+//    in 3l category of ttH multilepton analysis 
+    double mvaOutput_3l_ttV = -1.;
+    double mvaOutput_3l_ttbar = -1.;
+    if ( selLepton_third ) {
+      mvaInputs_3l["max(abs(LepGood_eta[iF_Recl[0]]),abs(LepGood_eta[iF_Recl[1]]))"] = std::max(std::fabs(selLepton_lead->eta()), std::fabs(selLepton_sublead->eta()));
+      mvaInputs_3l["MT_met_lep1"]                = comp_MT_met_lep1(selLepton_lead->cone_p4(), met.pt(), met.phi());
+      mvaInputs_3l["nJet25_Recl"]                = comp_n_jet25_recl(selJets);
+      mvaInputs_3l["mindr_lep1_jet"]             = comp_mindr_lep1_jet(*selLepton_lead, selJets);
+      mvaInputs_3l["mindr_lep2_jet"]             = comp_mindr_lep2_jet(*selLepton_sublead, selJets);
+      mvaInputs_3l["LepGood_conePt[iF_Recl[0]]"] = comp_lep1_conePt(*selLepton_lead);
+      mvaInputs_3l["LepGood_conePt[iF_Recl[2]]"] = comp_lep3_conePt(*selLepton_third);
+      mvaInputs_3l["avg_dr_jet"]                 = comp_avg_dr_jet(selJets);
+      mvaInputs_3l["mhtJet25_Recl"]              = mht_p4.pt();
+      
+      check_mvaInputs(mvaInputs_3l, run, lumi, event);
+
+      mvaOutput_3l_ttV = mva_3l_ttV(mvaInputs_3l);
+      mvaOutput_3l_ttbar = mva_3l_ttbar(mvaInputs_3l);
+    }
+
+//--- compute integer discriminant based on both BDT outputs,
+//    as defined in Table 16 (10) of AN-2015/321 (AN-2016/211) for analysis of 2015 (2016) data
+    Double_t mvaDiscr_3l = -1;
+    if ( era == kEra_2015 ) {
+      if      ( mvaOutput_3l_ttbar >  +0.3 && mvaOutput_3l_ttV >  -0.1 ) mvaDiscr_3l = 3.;
+      else if ( mvaOutput_3l_ttbar <= +0.3 && mvaOutput_3l_ttV <= -0.1 ) mvaDiscr_3l = 1.;
+      else                                                               mvaDiscr_3l = 2.;
+    } else if ( era == kEra_2016 ) {
+      if      ( mvaOutput_3l_ttbar > +0.30 && mvaOutput_3l_ttV >  +0.25 ) mvaDiscr_3l = 5.;
+      else if ( mvaOutput_3l_ttbar > +0.30 && mvaOutput_3l_ttV <= +0.25 ) mvaDiscr_3l = 4.;
+      else if ( mvaOutput_3l_ttbar > -0.30 && mvaOutput_3l_ttV >  +0.25 ) mvaDiscr_3l = 3.;
+      else if ( mvaOutput_3l_ttbar > -0.30 && mvaOutput_3l_ttV <= +0.25 ) mvaDiscr_3l = 2.;
+      else                                                                mvaDiscr_3l = 1.;
+    } else assert(0);
+
 //--- compute output of BDTs used to discriminate ttH vs. ttV and ttH vs. ttbar trained by Arun for 2lss_1tau category
     mvaInputs_2lss_1tau["lep1_pt"]        = selLepton_lead->pt();
     mvaInputs_2lss_1tau["lep2_pt"]        = selLepton_sublead->pt();
@@ -1144,14 +1209,18 @@ int main(int argc, char* argv[])
       selHistManager->mvaInputVariables_2lss_1tau_->fillHistograms(mvaInputs_2lss_1tau, evtWeight);
       selHistManager->evt_->fillHistograms(selElectrons.size(), selMuons.size(), selHadTaus.size(), 
         selJets.size(), selBJets_loose.size(), selBJets_medium.size(), 
-        mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, mvaOutput_2lss_1tau_ttV, mvaOutput_2lss_1tau_ttbar, 
+        mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, 
+	mvaOutput_3l_ttV, mvaOutput_3l_ttbar, mvaDiscr_3l, 
+        mvaOutput_2lss_1tau_ttV, mvaOutput_2lss_1tau_ttbar, 
         mLL, mT, sumLeptonCharge, evtWeight);
       if ( isSignal ) {
         for ( const auto & kv: decayMode_idString ) {
           if ( std::fabs(genHiggsDecayMode - kv.second) < EPS ) {
             selHistManager->evt_in_decayModes_[kv.first]->fillHistograms(selElectrons.size(), selMuons.size(), selHadTaus.size(), 
               selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
-	      mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, mvaOutput_2lss_1tau_ttV, mvaOutput_2lss_1tau_ttbar, 								 
+	      mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, 
+              mvaOutput_3l_ttV, mvaOutput_3l_ttbar, mvaDiscr_3l, 
+              mvaOutput_2lss_1tau_ttV, mvaOutput_2lss_1tau_ttbar, 								 
               mLL, mT, sumLeptonCharge, evtWeight);
             break;
           }

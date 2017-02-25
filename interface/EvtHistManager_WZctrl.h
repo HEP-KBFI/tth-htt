@@ -22,7 +22,9 @@ class EvtHistManager_WZctrl
   /// book and fill histograms
   void bookHistograms(TFileDirectory& dir);
   void fillHistograms(int numElectrons, int numMuons, int numHadTaus, int numJets, int numBJets_loose, int numBJets_medium, 
-		      double mvaOutput_2lss_ttV, double mvaOutput_2lss_ttbar, double mvaDiscr_2lss, double mvaOutput_2lss_1tau_ttV, double mvaOutput_2lss_1tau_ttbar, 
+		      double mvaOutput_2lss_ttV, double mvaOutput_2lss_ttbar, double mvaDiscr_2lss, 
+		      double mvaOutput_3l_ttV, double mvaOutput_3l_ttbar, double mvaDiscr_3l,
+		      double mvaOutput_2lss_1tau_ttV, double mvaOutput_2lss_1tau_ttbar, 
 		      double mLL, double mT, int sumLeptonCharge, double evtWeight);
 
  private:
@@ -39,6 +41,10 @@ class EvtHistManager_WZctrl
   TH1* histogram_mvaOutput_2lss_ttV_;
   TH1* histogram_mvaOutput_2lss_ttbar_;
   TH1* histogram_mvaDiscr_2lss_;
+
+  TH1* histogram_mvaOutput_3l_ttV_;
+  TH1* histogram_mvaOutput_3l_ttbar_;
+  TH1* histogram_mvaDiscr_3l_;
 
   TH1* histogram_mvaOutput_2lss_1tau_ttV_;
   TH1* histogram_mvaOutput_2lss_1tau_ttbar_;

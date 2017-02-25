@@ -13,11 +13,11 @@ class analyzeConfig_WZctrl(analyzeConfig):
   for documentation of Args.
 
   """
-  def __init__(self, outputDir, executable_analyze, cfgFile_analyze, samples, hadTau_selection, central_or_shifts,
+  def __init__(self, configDir, outputDir, executable_analyze, cfgFile_analyze, samples, hadTau_selection, central_or_shifts,
                max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs, 
                histograms_to_fit, select_rle_output = False,
                executable_prep_dcard="prepareDatacards"):
-    analyzeConfig.__init__(self, outputDir, executable_analyze, "WZctrl", central_or_shifts,
+    analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "WZctrl", central_or_shifts,
       max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs, 
       histograms_to_fit,
       executable_prep_dcard = executable_prep_dcard)
@@ -85,10 +85,16 @@ class analyzeConfig_WZctrl(analyzeConfig):
       key_dir = getKey(process_name)
       for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_RLES ]:
         initDict(self.dirs, [ key_dir, dir_type ])
-        self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel, "", process_name)
-    for dir_type in [ DKEY_SCRIPTS, DKEY_DCRD, DKEY_PLOT ]:
+        if dir_type in [ DKEY_CFGS ]:
+          self.dirs[key_dir][dir_type] = os.path.join(self.configDir, dir_type, self.channel, "", process_name)
+        else:
+          self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel, "", process_name)
+    for dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_HIST, DKEY_DCRD, DKEY_PLOT ]:
       initDict(self.dirs, [ dir_type ])
-      self.dirs[dir_type] = os.path.join(self.outputDir, dir_type, self.channel)
+      if dir_type in [ DKEY_CFGS, DKEY_SCRIPTS ]:
+        self.dirs[dir_type] = os.path.join(self.configDir, dir_type, self.channel)
+      else:
+        self.dirs[dir_type] = os.path.join(self.outputDir, dir_type, self.channel)
     ##print "self.dirs = ", self.dirs
 
     for key in self.dirs.keys():
@@ -165,7 +171,7 @@ class analyzeConfig_WZctrl(analyzeConfig):
           if not key_hadd_stage1 in self.inputFiles_hadd_stage1.keys():
             self.inputFiles_hadd_stage1[key_hadd_stage1] = []
           self.inputFiles_hadd_stage1[key_hadd_stage1].append(self.jobOptions_analyze[key_analyze_job]['histogramFile'])
-          self.outputFile_hadd_stage1[key_hadd_stage1] = os.path.join(self.outputDir, DKEY_HIST, "histograms_harvested_stage1_%s_%s.root" % \
+          self.outputFile_hadd_stage1[key_hadd_stage1] = os.path.join(self.dirs[DKEY_HIST], "histograms_harvested_stage1_%s_%s.root" % \
             (self.channel, process_name))
     
       # initialize input and output file names for hadd_stage2
@@ -174,7 +180,7 @@ class analyzeConfig_WZctrl(analyzeConfig):
       if not key_hadd_stage2 in self.inputFiles_hadd_stage2.keys():
         self.inputFiles_hadd_stage2[key_hadd_stage2] = []
       self.inputFiles_hadd_stage2[key_hadd_stage2].append(self.outputFile_hadd_stage1[key_hadd_stage1])
-      self.outputFile_hadd_stage2[key_hadd_stage2] = os.path.join(self.outputDir, DKEY_HIST, "histograms_harvested_stage2_%s.root" % \
+      self.outputFile_hadd_stage2[key_hadd_stage2] = os.path.join(self.dirs[DKEY_HIST], "histograms_harvested_stage2_%s.root" % \
         (self.channel))
 
     logging.info("Creating configuration files to run 'prepareDatacards'")
@@ -184,8 +190,8 @@ class analyzeConfig_WZctrl(analyzeConfig):
         key_hadd_stage2 = getKey("all")                      
         self.jobOptions_prep_dcard[key_prep_dcard_job] = {
           'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2],
-          'cfgFile_modified' : os.path.join(self.outputDir, DKEY_CFGS, "prepareDatacards_%s_%s_%s_cfg.py" % (self.channel, evtSelection, histogramToFit)),
-          'datacardFile' : os.path.join(self.outputDir, DKEY_DCRD, "prepareDatacards_%s_%s_%s.root" % (self.channel, evtSelection, histogramToFit)),
+          'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "prepareDatacards_%s_%s_%s_cfg.py" % (self.channel, evtSelection, histogramToFit)),
+          'datacardFile' : os.path.join(self.dirs[DKEY_DCRD], "prepareDatacards_%s_%s_%s.root" % (self.channel, evtSelection, histogramToFit)),
           'histogramDir' : "_".join([ self.histogramDir_prep_dcard, evtSelection ]),
           'histogramToFit' : histogramToFit,
           'label' : None
@@ -199,8 +205,8 @@ class analyzeConfig_WZctrl(analyzeConfig):
       self.jobOptions_make_plots[key_makePlots_job] = {
         'executable' : self.executable_make_plots,
         'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2],
-        'cfgFile_modified' : os.path.join(self.outputDir, DKEY_CFGS, "makePlots_%s_%s_cfg.py" % (self.channel, evtSelection)),
-        'outputFile' : os.path.join(self.outputDir, DKEY_PLOT, self.channel, "makePlots_%s_%s.png" % (self.channel, evtSelection)),
+        'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "makePlots_%s_%s_cfg.py" % (self.channel, evtSelection)),
+        'outputFile' : os.path.join(self.dirs[DKEY_PLOT], self.channel, "makePlots_%s_%s.png" % (self.channel, evtSelection)),
         'histogramDir' : "_".join([ self.histogramDir_prep_dcard, evtSelection ]),
         'label' : evtSelection,
         'make_plots_backgrounds' : self.make_plots_backgrounds
