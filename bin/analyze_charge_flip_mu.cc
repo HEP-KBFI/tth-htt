@@ -1040,10 +1040,13 @@ int main(int argc, char* argv[])
         Double_t mass_ll_gen = p4_gen.M();
         
         //Adjust central value to better match data shape
-        if (central_or_shift == "CMS_ttHl_muonERDown")   
-          mass_ll = mass_ll - 0.5 * (mass_ll - mass_ll_gen);
-        else if (central_or_shift == "CMS_ttHl_muonERUp")
-          mass_ll = mass_ll + 0.5 * (mass_ll - mass_ll_gen);
+        if (isCharge_OS)
+        {
+          if (central_or_shift == "CMS_ttHl_muonERDown")   
+            mass_ll = mass_ll - 0.5 * (mass_ll - mass_ll_gen);
+          else if (central_or_shift == "CMS_ttHl_muonERUp")
+            mass_ll = mass_ll + 0.5 * (mass_ll - mass_ll_gen);
+        }
         //std::cout << "After:  " << mass_ll << std::endl;
         histos[charge_cat][category.data()]["DY"]["mass_ll"]->Fill(mass_ll, evtWeight);
         histos[charge_cat]["total"]["DY"]["mass_ll"]->Fill(mass_ll, evtWeight);
@@ -1201,7 +1204,7 @@ int main(int argc, char* argv[])
       lheInfoHistManager->fillHistograms(*lheInfoReader, evtWeight);
     }
     
-    if(isCharge_SS == true && central_or_shift == "central"){
+    if(isCharge_OS == true && central_or_shift == "central"){
       selHistManagerType* selHistManager = selHistManagers[idxPreselLepton_genMatch];
       assert(selHistManager != 0);
       //selHistManager->electrons_->fillHistograms(preselElectrons, 1.);
