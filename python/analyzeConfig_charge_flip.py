@@ -14,10 +14,10 @@ class analyzeConfig_charge_flip(analyzeConfig):
   for documentation of further Args.
   
   """
-  def __init__(self, outputDir, executable_analyze, samples, lepton_selections, central_or_shifts,
+  def __init__(self, configDir, outputDir, executable_analyze, samples, lepton_selections, central_or_shifts,
                max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs, 
                histograms_to_fit = [], select_rle_output = False, executable_prep_dcard="prepareDatacard"):
-    analyzeConfig.__init__(self, outputDir, executable_analyze, "charge_flip", central_or_shifts,
+    analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "charge_flip", central_or_shifts,
       max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs, 
       histograms_to_fit)
 
@@ -38,8 +38,12 @@ class analyzeConfig_charge_flip(analyzeConfig):
           key_dir = getKey(sample_name, lepton_selection)  
           for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_DCRD, DKEY_RLES  ]:
             initDict(self.dirs, [ key_dir, dir_type ])
-            self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel,
-              "_".join([ lepton_selection ]), process_name)
+            if dir_type in [ DKEY_CFGS ]:
+              self.dirs[key_dir][dir_type] = os.path.join(self.configDir, dir_type, self.channel,
+                "_".join([ lepton_selection ]), process_name)
+            else:
+              self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel,
+                "_".join([ lepton_selection ]), process_name)
     ##print "self.dirs = ", self.dirs
 
     self.cfgFile_analyze_original = os.path.join(self.workingDir, "analyze_charge_flip_cfg.py")
@@ -132,11 +136,18 @@ class analyzeConfig_charge_flip(analyzeConfig):
         key_dir = getKey(process_name, lepton_selection)
         for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_RLES ]:
           initDict(self.dirs, [ key_dir, dir_type ])
-          self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel,
-            "_".join([ lepton_selection ]), process_name)
-    for dir_type in [ DKEY_SCRIPTS, DKEY_DCRD, DKEY_PLOT ]:
+          if dir_type in [ DKEY_CFGS ]:
+            self.dirs[key_dir][dir_type] = os.path.join(self.configDir, dir_type, self.channel,
+              "_".join([ lepton_selection ]), process_name)
+          else:
+            self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel,
+              "_".join([ lepton_selection ]), process_name)
+    for dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_HIST, DKEY_DCRD, DKEY_PLOT ]:
       initDict(self.dirs, [ dir_type ])
-      self.dirs[dir_type] = os.path.join(self.outputDir, dir_type, self.channel)
+      if dir_type in [ DKEY_CFGS, DKEY_SCRIPTS ]:
+        self.dirs[dir_type] = os.path.join(self.configDir, dir_type, self.channel)
+      else:
+        self.dirs[dir_type] = os.path.join(self.outputDir, dir_type, self.channel)
     ##print "self.dirs = ", self.dirs
 
     for key in self.dirs.keys():
@@ -209,7 +220,7 @@ class analyzeConfig_charge_flip(analyzeConfig):
               if not key_hadd_stage1 in self.inputFiles_hadd_stage1.keys():
                 self.inputFiles_hadd_stage1[key_hadd_stage1] = []
               self.inputFiles_hadd_stage1[key_hadd_stage1].append(self.jobOptions_analyze[key_analyze_job]['histogramFile'])
-              self.outputFile_hadd_stage1[key_hadd_stage1] = os.path.join(self.outputDir, DKEY_HIST, "histograms_harvested_stage1_%s_%s_%s.root" % \
+              self.outputFile_hadd_stage1[key_hadd_stage1] = os.path.join(self.dirs[DKEY_HIST], "histograms_harvested_stage1_%s_%s_%s.root" % \
                   (self.channel, process_name, lepton_selection))
           print key_hadd_stage1, self.channel, process_name, lepton_selection, self.outputFile_hadd_stage1[key_hadd_stage1]
 
@@ -232,7 +243,7 @@ class analyzeConfig_charge_flip(analyzeConfig):
           #  self.inputFiles_hadd_stage2[key_hadd_stage2].append(self.jobOptions_addBackgrounds[key_addBackgrounds_job]['outputFile'])
           #key_hadd_stage1_5 = getKey(lepton_and_hadTau_selection_and_frWeight)
           self.inputFiles_hadd_stage2[key_hadd_stage2].append(self.outputFile_hadd_stage1[key_hadd_stage1])
-        self.outputFile_hadd_stage2[key_hadd_stage2] = os.path.join(self.outputDir, DKEY_HIST, "histograms_harvested_stage2_%s_%s.root" % \
+        self.outputFile_hadd_stage2[key_hadd_stage2] = os.path.join(self.dirs[DKEY_HIST], "histograms_harvested_stage2_%s_%s.root" % \
             (self.channel, lepton_selection))
 
     key_hadd_stage2 = getKey(lepton_selection)
@@ -252,8 +263,8 @@ class analyzeConfig_charge_flip(analyzeConfig):
       key_hadd_stage2 = getKey(lepton_selection)
       self.jobOptions_prep_dcard[key_prep_dcard_job] = {
         'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2],
-        'cfgFile_modified' : os.path.join(self.outputDir, DKEY_CFGS, "prepareDatacards_%s_%s_cfg.py" % (self.channel, histogramToFit)),
-        'datacardFile' : os.path.join(self.outputDir, DKEY_DCRD, "prepareDatacards_%s_%s.root" % (self.channel, histogramToFit)),
+        'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "prepareDatacards_%s_%s_cfg.py" % (self.channel, histogramToFit)),
+        'datacardFile' : os.path.join(self.dirs[DKEY_DCRD], "prepareDatacards_%s_%s.root" % (self.channel, histogramToFit)),
         'histogramDir' : self.histogramDir_prep_dcard,
         'histogramToFit' : histogramToFit,
         'label' : None

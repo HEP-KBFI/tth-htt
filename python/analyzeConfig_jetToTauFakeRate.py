@@ -17,11 +17,11 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
   for documentation of further Args.
   
   """
-  def __init__(self, outputDir, executable_analyze, samples, charge_selections,
+  def __init__(self, configDir, outputDir, executable_analyze, samples, charge_selections,
                jet_minPt, jet_maxPt, jet_minAbsEta, jet_maxAbsEta, hadTau_selections, absEtaBins, ptBins, central_or_shifts,
                max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,
                executable_comp_jetToTauFakeRate):
-    analyzeConfig.__init__(self, outputDir, executable_analyze, "jetToTauFakeRate", central_or_shifts,
+    analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "jetToTauFakeRate", central_or_shifts,
       max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs, 
       [])
 
@@ -133,11 +133,18 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
         key_dir = getKey(process_name, charge_selection)
         for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_RLES ]:
           initDict(self.dirs, [ key_dir, dir_type ])
-          self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel,
-            "_".join([ charge_selection ]), process_name)
-    for dir_type in [ DKEY_SCRIPTS, DKEY_DCRD, DKEY_PLOT ]:
+          if dir_type in [ DKEY_CFGS ]:
+            self.dirs[key_dir][dir_type] = os.path.join(self.configDir, dir_type, self.channel,
+              "_".join([ charge_selection ]), process_name)
+          else:
+            self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel,
+              "_".join([ charge_selection ]), process_name)
+    for dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_HIST, DKEY_DCRD, DKEY_PLOT ]:
       initDict(self.dirs, [ dir_type ])
-      self.dirs[dir_type] = os.path.join(self.outputDir, dir_type, self.channel)
+      if dir_type in [ DKEY_CFGS, DKEY_SCRIPTS ]:
+        self.dirs[dir_type] = os.path.join(self.configDir, dir_type, self.channel)
+      else:
+        self.dirs[dir_type] = os.path.join(self.outputDir, dir_type, self.channel)
     ##print "self.dirs = ", self.dirs
 
     for key in self.dirs.keys():
@@ -146,6 +153,13 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
           create_if_not_exists(self.dirs[key][dir_type])
       else:
         create_if_not_exists(self.dirs[key])
+
+    inputFileLists = {}
+    for sample_name, sample_info in self.samples.items():
+      if not sample_info["use_it"] or sample_info["sample_category"] in [ "additional_signal_overlap", "background_data_estimate" ]:
+        continue
+      logging.info("Checking input files for sample %s" % sample_info["process_name_specific"])
+      inputFileLists[sample_name] = generateInputFileList(sample_name, sample_info, self.max_files_per_job, self.debug)
   
     self.inputFileIds = {}
     for sample_name, sample_info in self.samples.items():
@@ -166,7 +180,7 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
       for charge_selection in self.charge_selections:
         for central_or_shift in self.central_or_shifts:
 
-          inputFileList = generateInputFileList(sample_name, sample_info, self.max_files_per_job, self.debug)
+          inputFileList = inputFileLists[sample_name]
           for jobId in inputFileList.keys():
             if central_or_shift != "central" and not is_mc:
               continue
@@ -219,16 +233,17 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
             if not key_hadd_stage1 in self.inputFiles_hadd_stage1.keys():
               self.inputFiles_hadd_stage1[key_hadd_stage1] = []
             self.inputFiles_hadd_stage1[key_hadd_stage1].append(self.jobOptions_analyze[key_analyze_job]['histogramFile'])
-            self.outputFile_hadd_stage1[key_hadd_stage1] = os.path.join(self.outputDir, DKEY_HIST, "histograms_harvested_stage1_%s_%s_%s.root" % \
+            self.outputFile_hadd_stage1[key_hadd_stage1] = os.path.join(self.dirs[DKEY_HIST], "histograms_harvested_stage1_%s_%s_%s.root" % \
               (self.channel, process_name, charge_selection))
 
-            # initialize input and output file names for hadd_stage2
-            key_hadd_stage2 = getKey(charge_selection)
-            if not key_hadd_stage2 in self.inputFiles_hadd_stage2.keys():
-              self.inputFiles_hadd_stage2[key_hadd_stage2] = []
-            self.inputFiles_hadd_stage2[key_hadd_stage2].append(self.outputFile_hadd_stage1[key_hadd_stage1])
-            self.outputFile_hadd_stage2[key_hadd_stage2] = os.path.join(self.outputDir, DKEY_HIST, "histograms_harvested_stage2_%s_%s.root" % \
-              (self.channel, charge_selection))
+        # initialize input and output file names for hadd_stage2
+        key_hadd_stage1 = getKey(process_name, charge_selection)
+        key_hadd_stage2 = getKey(charge_selection)
+        if not key_hadd_stage2 in self.inputFiles_hadd_stage2.keys():
+          self.inputFiles_hadd_stage2[key_hadd_stage2] = []
+        self.inputFiles_hadd_stage2[key_hadd_stage2].append(self.outputFile_hadd_stage1[key_hadd_stage1])
+        self.outputFile_hadd_stage2[key_hadd_stage2] = os.path.join(self.dirs[DKEY_HIST], "histograms_harvested_stage2_%s_%s.root" % \
+          (self.channel, charge_selection))
 
     if self.is_sbatch:
       logging.info("Creating script for submitting '%s' jobs to batch system" % self.executable_analyze)
@@ -242,9 +257,9 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
       self.jobOptions_comp_jetToTauFakeRate[key_comp_jetToTauFakeRate_job] = {
         'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2],
         'cfgFile_modified' : os.path.join(
-          self.outputDir, DKEY_CFGS, "comp_jetToTauFakeRate_%s_cfg.py" % charge_selection),
+          self.dirs[DKEY_CFGS], "comp_jetToTauFakeRate_%s_cfg.py" % charge_selection),
         'outputFile' : os.path.join(
-          self.outputDir, DKEY_HIST, "comp_jetToTauFakeRate_%s.root" % charge_selection),
+          self.dirs[DKEY_HIST], "comp_jetToTauFakeRate_%s.root" % charge_selection),
         'looseRegion' : "jetToTauFakeRate_%s/denominator/" % charge_selection,
         'tightRegion' : "jetToTauFakeRate_%s/numerator/" % charge_selection,
         'absEtaBins' : self.absEtaBins,

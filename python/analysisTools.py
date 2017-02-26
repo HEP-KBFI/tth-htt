@@ -60,6 +60,7 @@ def initializeInputFileIds(sample_name, sample_info, max_files_per_job):
        
        TODO: add blacklist to the secondary storage as well
     """
+    #print "<initializeInputFileIds>:"
     nof_inputFiles = sample_info["nof_files"]
     store_dirs = sample_info["local_paths"]
     assert(len(store_dirs) <= 2), "There is more than one secondary dir!"
@@ -78,6 +79,7 @@ def initializeInputFileIds(sample_name, sample_info, max_files_per_job):
     return ( inputFileIds, secondary_files, primary_store, secondary_store )
 
 def generateInputFileList(sample_name, sample_info, max_files_per_job, debug = False):
+    #print "<generateInputFileList>:"
     ( inputFileIds, secondary_files, primary_store, secondary_store ) = initializeInputFileIds(sample_name, sample_info, max_files_per_job)
     inputFileList = {}
     if max_files_per_job > 1:

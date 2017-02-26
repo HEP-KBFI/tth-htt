@@ -14,10 +14,10 @@ class analyzeConfig_charge_flip_mu(analyzeConfig_charge_flip):
   for documentation of further Args.
   
   """
-  def __init__(self, outputDir, executable_analyze, samples, lepton_selections, central_or_shifts,
+  def __init__(self, configDir, outputDir, executable_analyze, samples, lepton_selections, central_or_shifts,
                max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs, 
                histograms_to_fit = [], select_rle_output = False, executable_prep_dcard="prepareDatacard"):
-    analyzeConfig.__init__(self, outputDir, executable_analyze, "charge_flip", central_or_shifts,
+    analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "charge_flip", central_or_shifts,
       max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs, 
       histograms_to_fit)
 
@@ -38,8 +38,12 @@ class analyzeConfig_charge_flip_mu(analyzeConfig_charge_flip):
           key_dir = getKey(sample_name, lepton_selection)  
           for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_DCRD, DKEY_RLES  ]:
             initDict(self.dirs, [ key_dir, dir_type ])
-            self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel,
-              "_".join([ lepton_selection ]), process_name)
+            if dir_type in [ DKEY_CFGS ]:
+              self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel,
+                "_".join([ lepton_selection ]), process_name)
+            else:
+              self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel,
+                "_".join([ lepton_selection ]), process_name)
     ##print "self.dirs = ", self.dirs
 
     self.cfgFile_analyze_original = os.path.join(self.workingDir, "analyze_charge_flip_cfg.py")

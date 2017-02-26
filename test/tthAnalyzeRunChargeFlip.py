@@ -28,7 +28,9 @@ if __name__ == '__main__':
       format = '%(asctime)s - %(levelname)s: %(message)s')
 
   analysis = analyzeConfig_charge_flip(
-    outputDir = os.path.join("/scratch", getpass.getuser(), "tth", "CF", "histograms", version),
+    configDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", ERA, version),
+    outputDir = os.path.join("/hdfs/local/ttH_2tau", getpass.getuser(), "ttHAnalysis", ERA, version),
+    ##outputDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", ERA, version),
     executable_analyze = "analyze_charge_flip",
     samples = samples,
     lepton_selections = [ "Tight"],
@@ -64,7 +66,7 @@ if __name__ == '__main__':
        #"CMS_ttHl_electronESBarrelUp",
        #"CMS_ttHl_electronESBarrelDown"
     ],
-    max_files_per_job = 40,
+    max_files_per_job = 100,
     era = ERA, use_lumi = True, lumi = LUMI,
     debug = False,
     running_method = "sbatch",

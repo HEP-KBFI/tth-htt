@@ -56,7 +56,7 @@ class analyzeConfig:
          histogramDir_prep_dcard: directory in final histogram file that is used for building datacard
     """
 
-    def __init__(self, outputDir, executable_analyze, channel, central_or_shifts,
+    def __init__(self, configDir, outputDir, executable_analyze, channel, central_or_shifts,
                  max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,
                  histograms_to_fit,
                  executable_prep_dcard = "prepareDatacards",
@@ -64,6 +64,7 @@ class analyzeConfig:
                  executable_make_plots = "makePlots",
                  executable_make_plots_mcClosure = "makePlots_mcClosure"):
 
+        self.configDir = configDir
         self.outputDir = outputDir
         self.executable_analyze = executable_analyze
         self.channel = channel
@@ -83,7 +84,7 @@ class analyzeConfig:
         else:
             self.is_makefile = True
         self.makefile = os.path.join(
-            self.outputDir, "Makefile_%s" % self.channel)
+            self.configDir, "Makefile_%s" % self.channel)
         self.num_parallel_jobs = num_parallel_jobs
         self.histograms_to_fit = histograms_to_fit
         self.executable_prep_dcard = executable_prep_dcard        

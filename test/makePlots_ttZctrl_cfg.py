@@ -209,6 +209,16 @@ process.makePlots = cms.PSet(
             xAxisTitle = cms.string("m_{T} [GeV]"),
             yAxisTitle = cms.string("dN/dm_{T} [1/GeV]")
         ),
+        cms.PSet(
+            histogramName = cms.string("sel/evt/$PROCESS/mvaDiscr_2lss"),
+            xAxisTitle = cms.string("MVA"),
+            yAxisTitle = cms.string("dN/dMVA")
+        ),
+        cms.PSet(
+            histogramName = cms.string("sel/evt/$PROCESS/mvaDiscr_3l"),
+            xAxisTitle = cms.string("MVA"),
+            yAxisTitle = cms.string("dN/dMVA")
+        ),
         cms.PSet(            
             histogramName = cms.string("sel/mvaInputs_2lss_1tau/$PROCESS/lep1_pt"),
             xAxisTitle = cms.string("leading lepton p_{T} [GeV]"),

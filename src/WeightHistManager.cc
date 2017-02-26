@@ -12,6 +12,7 @@ WeightHistManager::WeightHistManager(const edm::ParameterSet& cfg)
   binningOptions_["genWeight"] = new binningOptionType("genWeight", 200, -10., +10.);
   binningOptions_["pileupWeight"] = new binningOptionType("pileupWeight", 200, 0., 2.);
   binningOptions_["data_to_MC_correction"] = new binningOptionType("data_to_MC_correction", 200, 0., 2.);
+  binningOptions_["triggerWeight"] = new binningOptionType("triggerWeight", 100, 0., 10.);
   binningOptions_["fakeRate"] = new binningOptionType("fakeRate", 200,-1., +1.);
 }
 

@@ -15,7 +15,7 @@ if ERA == "2015":
   LUMI = 2260. # 1/pb
 elif ERA == "2016":
   samples = samples_2016
-  LUMI = 12.9e+3 # 1/pb
+  LUMI = 35.9e+3 # 1/pb
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
@@ -28,7 +28,9 @@ if __name__ == '__main__':
       format = '%(asctime)s - %(levelname)s: %(message)s')
   
   analysis = analyzeConfig_charge_flip_mu(
-    outputDir = os.path.join("/home", getpass.getuser(), "tth", "histograms", version),
+    configDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", ERA, version),
+    outputDir = os.path.join("/hdfs/local/ttH_2tau", getpass.getuser(), "ttHAnalysis", ERA, version),
+    ##outputDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", ERA, version),
     executable_analyze = "analyze_charge_flip_mu",
     samples = samples_2016,
     lepton_selections = [ "Tight"],
@@ -46,7 +48,7 @@ if __name__ == '__main__':
        #"CMS_ttHl_muonESEndcap2Down",
        #"CMS_ttHl_muonESEndcap2Up"
     ],
-    max_files_per_job = 40,
+    max_files_per_job = 100,
     era = ERA, use_lumi = True, lumi = LUMI,
     debug = False,
     running_method = "sbatch",
