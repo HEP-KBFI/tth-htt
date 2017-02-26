@@ -13,7 +13,7 @@ samples_2016 = OD()
 #############
 
 # file generated with command:
-# check_broken -p /hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau/ /hdfs/cms/store/user/mario/VHBBHeppyV25tthtautau/ /hdfs/cms/store/user/rdewanje/VHBBHeppyV25tthtautau/ /hdfs/cms/store/user/veelken/VHBBHeppyV25tthtautau/ /hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau_v2 --histo CountWeighted --output=samples/DoubleEG/ -P -z -v -d -f DoubleEG
+# check_broken -p /hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau/ /hdfs/cms/store/user/mario/VHBBHeppyV25tthtautau/ /hdfs/cms/store/user/rdewanje/VHBBHeppyV25tthtautau/ /hdfs/cms/store/user/veelken/VHBBHeppyV25tthtautau/ /hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau_v2 /hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau_v3 --histo CountWeighted --output=samples/DoubleEG/ -P -z -v -d -f DoubleEG
 
 samples_2016["/DoubleEG/Run2016B-23Sep2016-v3/MINIAOD"] = OD([
   ("type",                  "data"),
@@ -40,8 +40,8 @@ samples_2016["/DoubleEG/Run2016C-23Sep2016-v1/MINIAOD"] = OD([
   ("type",                  "data"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "DoubleEG_Run2016C_v1"),
-  ("nof_files",             2682),
-  ("nof_events",            47642368),
+  ("nof_files",             626),
+  ("nof_events",            47677856),
   ("use_HIP_mitigation_bTag", True),
   ("use_HIP_mitigation_mediumMuonId", True),
   ("use_it",                True),
@@ -50,9 +50,9 @@ samples_2016["/DoubleEG/Run2016C-23Sep2016-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/veelken/VHBBHeppyV25tthtautau/DoubleEG/VHBB_HEPPY_V25tthtautau_DoubleEG__Run2016C-23Sep2016-v1/170207_141622"),
+        ("path",      "/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau_v2/DoubleEG/VHBB_HEPPY_V25tthtautau_v2_DoubleEG__Run2016C-23Sep2016-v1/170219_194332"),
         ("selection", "*"),
-        ("blacklist", [846, 2110]),
+        ("blacklist", []),
       ]),
     ]
   ),
@@ -62,7 +62,7 @@ samples_2016["/DoubleEG/Run2016E-23Sep2016-v1/MINIAOD"] = OD([
   ("sample_category",       "data_obs"),
   ("process_name_specific", "DoubleEG_Run2016E_v1"),
   ("nof_files",             906),
-  ("nof_events",            49754451),
+  ("nof_events",            49877710),
   ("use_HIP_mitigation_bTag", True),
   ("use_HIP_mitigation_mediumMuonId", True),
   ("use_it",                True),
@@ -73,7 +73,7 @@ samples_2016["/DoubleEG/Run2016E-23Sep2016-v1/MINIAOD"] = OD([
       OD([
         ("path",      "/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau_v2/DoubleEG/VHBB_HEPPY_V25tthtautau_v2_DoubleEG__Run2016E-23Sep2016-v1/170218_171718"),
         ("selection", "*"),
-        ("blacklist", [415, 826]),
+        ("blacklist", []),
       ]),
     ]
   ),
@@ -189,14 +189,14 @@ samples_2016["/DoubleEG/Run2016F-23Sep2016-v1/MINIAOD"] = OD([
 #############
 
 # file generated with command:
-# check_broken -p /hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau/ /hdfs/cms/store/user/mario/VHBBHeppyV25tthtautau/ /hdfs/cms/store/user/rdewanje/VHBBHeppyV25tthtautau/ /hdfs/cms/store/user/veelken/VHBBHeppyV25tthtautau/ /hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau_v2 --histo CountWeighted --output=samples/DoubleMuon/ -P -z -v -d -f DoubleMuon
+# check_broken -p /hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau/ /hdfs/cms/store/user/mario/VHBBHeppyV25tthtautau/ /hdfs/cms/store/user/rdewanje/VHBBHeppyV25tthtautau/ /hdfs/cms/store/user/veelken/VHBBHeppyV25tthtautau/ /hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau_v2 /hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau_v3 --histo CountWeighted --output=samples/DoubleMuon/ -P -z -v -d -f DoubleMuon
 
 samples_2016["/DoubleMuon/Run2016B-23Sep2016-v3/MINIAOD"] = OD([
   ("type",                  "data"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "DoubleMuon_Run2016B_v3"),
   ("nof_files",             1966),
-  ("nof_events",            82482018),
+  ("nof_events",            82535526),
   ("use_HIP_mitigation_bTag", True),
   ("use_HIP_mitigation_mediumMuonId", True),
   ("use_it",                True),
@@ -207,7 +207,7 @@ samples_2016["/DoubleMuon/Run2016B-23Sep2016-v3/MINIAOD"] = OD([
       OD([
         ("path",      "/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau_v2/DoubleMuon/VHBB_HEPPY_V25tthtautau_v2_DoubleMuon__Run2016B-23Sep2016-v3/170218_175649"),
         ("selection", "*"),
-        ("blacklist", [1754]),
+        ("blacklist", []),
       ]),
     ]
   ),
@@ -365,7 +365,7 @@ samples_2016["/DoubleMuon/Run2016G-23Sep2016-v1/MINIAOD"] = OD([
 #############
 
 # file generated with command:
-# check_broken -p /hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau/ /hdfs/cms/store/user/mario/VHBBHeppyV25tthtautau/ /hdfs/cms/store/user/rdewanje/VHBBHeppyV25tthtautau/ /hdfs/cms/store/user/veelken/VHBBHeppyV25tthtautau/ /hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau_v2 --histo CountWeighted --output=samples/MuonEG/ -P -z -v -d -f MuonEG
+# check_broken -p /hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau/ /hdfs/cms/store/user/mario/VHBBHeppyV25tthtautau/ /hdfs/cms/store/user/rdewanje/VHBBHeppyV25tthtautau/ /hdfs/cms/store/user/veelken/VHBBHeppyV25tthtautau/ /hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau_v2 /hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau_v3 --histo CountWeighted --output=samples/MuonEG/ -P -z -v -d -f MuonEG
 
 samples_2016["/MuonEG/Run2016D-23Sep2016-v1/MINIAOD"] = OD([
   ("type",                  "data"),
@@ -392,8 +392,8 @@ samples_2016["/MuonEG/Run2016H-PromptReco-v2/MINIAOD"] = OD([
   ("type",                  "data"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "MuonEG_Run2016H_v2_promptReco"),
-  ("nof_files",             8180),
-  ("nof_events",            27973219),
+  ("nof_files",             5726),
+  ("nof_events",            28705853),
   ("use_HIP_mitigation_bTag", False),
   ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                True),
@@ -402,9 +402,9 @@ samples_2016["/MuonEG/Run2016H-PromptReco-v2/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau/MuonEG/VHBB_HEPPY_V25tthtautau_MuonEG__Run2016H-PromptReco-v2/170215_143258"),
+        ("path",      "/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau_v3/MuonEG/VHBB_HEPPY_V25tthtautau_v3_MuonEG__Run2016H-PromptReco-v2/170221_150405"),
         ("selection", "*"),
-        ("blacklist", [937, 1020, 1021, 1022, 1031, 1033, 1034, 1037, 1039, 1040, 1044, 1045, 1047, 1048, 1049, 1052, 1054, 1057, 1058, 1059, 1060, 1061, 1062, 1065, 1066, 1073, 1077, 1079, 1080, 1081, 1118, 1120, 1122, 1123, 1127, 1128, 1135, 1136, 1138, 1141, 1142, 1151, 1152, 1156, 1160, 1164, 1167, 1174, 1178, 1185, 1187, 1188, 1191, 1193, 1197, 1202, 1205, 1207, 1209, 1210, 1217, 1219, 1222, 1223, 1226, 1227, 1228, 1230, 1232, 1238, 1242, 1245, 1249, 1253, 1254, 1255, 1260, 1262, 1263, 1264, 1267, 1268, 1269, 1270, 1271, 1272, 1273, 1274, 1276, 1278, 1279, 1280, 1281, 1282, 1283, 1284, 1289, 1299, 1300, 1301, 1305, 1306, 1307, 1308, 1316, 1321, 1322, 1324, 1325, 1326, 1329, 1330, 1331, 1338, 1339, 1340, 1342, 1344, 1346, 1347, 1348, 1349, 1350, 1352, 1353, 1354, 1355, 1356, 1357, 1358, 1360, 1362, 1363, 1364, 1365, 1367, 1369, 1370, 1375, 1377, 1384, 1385, 1386, 1387, 1388, 1389, 1390, 1391, 1392, 1393, 1394, 1396, 1398, 1399, 1400, 1401, 1404, 1406, 1407, 1409, 1411, 1412, 1414, 1415, 1419, 1425, 1426, 1428, 2222, 2818, 3430, 3949, 4005, 4157, 4306, 5912, 6093, 6154, 6675, 6810, 7375, 7631, 7791]),
+        ("blacklist", []),
       ]),
     ]
   ),
@@ -541,7 +541,7 @@ samples_2016["/MuonEG/Run2016G-23Sep2016-v1/MINIAOD"] = OD([
 #############
 
 # file generated with command:
-# check_broken -p /hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau/ /hdfs/cms/store/user/mario/VHBBHeppyV25tthtautau/ /hdfs/cms/store/user/rdewanje/VHBBHeppyV25tthtautau/ /hdfs/cms/store/user/veelken/VHBBHeppyV25tthtautau/ /hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau_v2 --histo CountWeighted --output=samples/SingleElectron/ -P -z -v -d -f SingleElectron
+# check_broken -p /hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau/ /hdfs/cms/store/user/mario/VHBBHeppyV25tthtautau/ /hdfs/cms/store/user/rdewanje/VHBBHeppyV25tthtautau/ /hdfs/cms/store/user/veelken/VHBBHeppyV25tthtautau/ /hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau_v2 /hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau_v3 --histo CountWeighted --output=samples/SingleElectron/ -P -z -v -d -f SingleElectron
 
 samples_2016["/SingleElectron/Run2016B-23Sep2016-v3/MINIAOD"] = OD([
   ("type",                  "data"),
@@ -568,8 +568,8 @@ samples_2016["/SingleElectron/Run2016C-23Sep2016-v1/MINIAOD"] = OD([
   ("type",                  "data"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "SingleElectron_Run2016C_v1"),
-  ("nof_files",             2682),
-  ("nof_events",            97227128),
+  ("nof_files",             1878),
+  ("nof_events",            97259854),
   ("use_HIP_mitigation_bTag", True),
   ("use_HIP_mitigation_mediumMuonId", True),
   ("use_it",                True),
@@ -578,9 +578,9 @@ samples_2016["/SingleElectron/Run2016C-23Sep2016-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/veelken/VHBBHeppyV25tthtautau/SingleElectron/VHBB_HEPPY_V25tthtautau_SingleElectron__Run2016C-23Sep2016-v1/170207_135748"),
+        ("path",      "/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau_v3/SingleElectron/VHBB_HEPPY_V25tthtautau_v3_SingleElectron__Run2016C-23Sep2016-v1/170220_170950"),
         ("selection", "*"),
-        ("blacklist", [1992]),
+        ("blacklist", []),
       ]),
     ]
   ),
@@ -589,8 +589,8 @@ samples_2016["/SingleElectron/Run2016D-23Sep2016-v1/MINIAOD"] = OD([
   ("type",                  "data"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "SingleElectron_Run2016D_v1"),
-  ("nof_files",             4320),
-  ("nof_events",            147620964),
+  ("nof_files",             3024),
+  ("nof_events",            148167727),
   ("use_HIP_mitigation_bTag", True),
   ("use_HIP_mitigation_mediumMuonId", True),
   ("use_it",                True),
@@ -599,9 +599,9 @@ samples_2016["/SingleElectron/Run2016D-23Sep2016-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/rdewanje/VHBBHeppyV25tthtautau/SingleElectron/VHBB_HEPPY_V25tthtautau_SingleElectron__Run2016D-23Sep2016-v1/170207_125742"),
+        ("path",      "/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau_v3/SingleElectron/VHBB_HEPPY_V25tthtautau_v3_SingleElectron__Run2016D-23Sep2016-v1/170220_171118"),
         ("selection", "*"),
-        ("blacklist", [158, 502, 515, 636, 704, 735, 900, 935, 1175, 1461, 1535, 2692, 3004, 3075, 4240]),
+        ("blacklist", []),
       ]),
     ]
   ),
@@ -610,8 +610,8 @@ samples_2016["/SingleElectron/Run2016E-23Sep2016-v1/MINIAOD"] = OD([
   ("type",                  "data"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "SingleElectron_Run2016E_v1"),
-  ("nof_files",             906),
-  ("nof_events",            116699068),
+  ("nof_files",             2716),
+  ("nof_events",            117321545),
   ("use_HIP_mitigation_bTag", True),
   ("use_HIP_mitigation_mediumMuonId", True),
   ("use_it",                True),
@@ -620,20 +620,19 @@ samples_2016["/SingleElectron/Run2016E-23Sep2016-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau_v2/SingleElectron/VHBB_HEPPY_V25tthtautau_v2_SingleElectron__Run2016E-23Sep2016-v1/170218_120651"),
+        ("path",      "/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau_v3/SingleElectron/VHBB_HEPPY_V25tthtautau_v3_SingleElectron__Run2016E-23Sep2016-v1/170220_171247"),
         ("selection", "*"),
-        ("blacklist", [517, 701, 765, 904]),
+        ("blacklist", []),
       ]),
     ]
   ),
 ])
-
 samples_2016["/SingleElectron/Run2016F-23Sep2016-v1/MINIAOD"] = OD([
   ("type",                  "data"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "SingleElectron_Run2016F_v1"),
-  ("nof_files",             1945),
-  ("nof_events",            70508002),
+  ("nof_files",             649),
+  ("nof_events",            70593532),
   ("use_HIP_mitigation_bTag", True),
   ("use_HIP_mitigation_mediumMuonId", True),
   ("use_it",                True),
@@ -642,9 +641,9 @@ samples_2016["/SingleElectron/Run2016F-23Sep2016-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau_v3/SingleElectron/VHBB_HEPPY_V25tthtautau_v3_SingleElectron__Run2016F-23Sep2016-v1/170221_173724"),
+        ("path",      "/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau_v2/SingleElectron/VHBB_HEPPY_V25tthtautau_v2_SingleElectron__Run2016F-23Sep2016-v1/170218_172629"),
         ("selection", "*"),
-        ("blacklist", [1765, 1875]),
+        ("blacklist", []),
       ]),
     ]
   ),
@@ -696,7 +695,7 @@ samples_2016["/SingleElectron/Run2016G-23Sep2016-v1/MINIAOD"] = OD([
   ("sample_category",       "data_obs"),
   ("process_name_specific", "SingleElectron_Run2016G_v1"),
   ("nof_files",             1544),
-  ("nof_events",            152985528),
+  ("nof_events",            153232788),
   ("use_HIP_mitigation_bTag", False),
   ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                True),
@@ -707,7 +706,7 @@ samples_2016["/SingleElectron/Run2016G-23Sep2016-v1/MINIAOD"] = OD([
       OD([
         ("path",      "/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau_v2/SingleElectron/VHBB_HEPPY_V25tthtautau_v2_SingleElectron__Run2016G-23Sep2016-v1/170217_150830"),
         ("selection", "*"),
-        ("blacklist", [451, 1312, 1322]),
+        ("blacklist", [1312]),
       ]),
     ]
   ),
@@ -718,14 +717,14 @@ samples_2016["/SingleElectron/Run2016G-23Sep2016-v1/MINIAOD"] = OD([
 #############
 
 # file generated with command:
-# check_broken -p /hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau/ /hdfs/cms/store/user/mario/VHBBHeppyV25tthtautau/ /hdfs/cms/store/user/rdewanje/VHBBHeppyV25tthtautau/ /hdfs/cms/store/user/veelken/VHBBHeppyV25tthtautau/ /hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau_v2 --histo CountWeighted --output=samples/SingleMuon/ -P -z -v -d -f SingleMuon
+# check_broken -p /hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau/ /hdfs/cms/store/user/mario/VHBBHeppyV25tthtautau/ /hdfs/cms/store/user/rdewanje/VHBBHeppyV25tthtautau/ /hdfs/cms/store/user/veelken/VHBBHeppyV25tthtautau/ /hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau_v2 /hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau_v3 --histo CountWeighted --output=samples/SingleMuon/ -P -z -v -d -f SingleMuon
 
 samples_2016["/SingleMuon/Run2016B-23Sep2016-v3/MINIAOD"] = OD([
   ("type",                  "data"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "SingleMuon_Run2016B_v3"),
-  ("nof_files",             1966),
-  ("nof_events",            157706786),
+  ("nof_files",             5897),
+  ("nof_events",            158106553),
   ("use_HIP_mitigation_bTag", True),
   ("use_HIP_mitigation_mediumMuonId", True),
   ("use_it",                True),
@@ -734,9 +733,9 @@ samples_2016["/SingleMuon/Run2016B-23Sep2016-v3/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau_v2/SingleMuon/VHBB_HEPPY_V25tthtautau_v2_SingleMuon__Run2016B-23Sep2016-v3/170218_175805"),
+        ("path",      "/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau_v3/SingleMuon/VHBB_HEPPY_V25tthtautau_v3_SingleMuon__Run2016B-23Sep2016-v3/170220_170831"),
         ("selection", "*"),
-        ("blacklist", [1418, 1502, 1732, 1821]),
+        ("blacklist", [5357]),
       ]),
     ]
   ),
@@ -745,8 +744,8 @@ samples_2016["/SingleMuon/Run2016C-23Sep2016-v1/MINIAOD"] = OD([
   ("type",                  "data"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "SingleMuon_Run2016C_v1"),
-  ("nof_files",             2659),
-  ("nof_events",            66803613),
+  ("nof_files",             1862),
+  ("nof_events",            67441308),
   ("use_HIP_mitigation_bTag", True),
   ("use_HIP_mitigation_mediumMuonId", True),
   ("use_it",                True),
@@ -755,9 +754,9 @@ samples_2016["/SingleMuon/Run2016C-23Sep2016-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/veelken/VHBBHeppyV25tthtautau/SingleMuon/VHBB_HEPPY_V25tthtautau_SingleMuon__Run2016C-23Sep2016-v1/170207_140442"),
+        ("path",      "/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau_v3/SingleMuon/VHBB_HEPPY_V25tthtautau_v3_SingleMuon__Run2016C-23Sep2016-v1/170221_173556"),
         ("selection", "*"),
-        ("blacklist", [64, 470, 755, 811, 1006, 1322, 1429, 1498, 1613, 1714, 1912, 1943, 1967, 1986, 2032, 2056, 2114, 2129, 2211, 2243, 2343, 2372, 2374, 2394, 2601]),
+        ("blacklist", []),
       ]),
     ]
   ),
@@ -787,8 +786,8 @@ samples_2016["/SingleMuon/Run2016E-23Sep2016-v1/MINIAOD"] = OD([
   ("type",                  "data"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "SingleMuon_Run2016E_v1"),
-  ("nof_files",             3839),
-  ("nof_events",            90393704),
+  ("nof_files",             2688),
+  ("nof_events",            90933521),
   ("use_HIP_mitigation_bTag", True),
   ("use_HIP_mitigation_mediumMuonId", True),
   ("use_it",                True),
@@ -797,9 +796,9 @@ samples_2016["/SingleMuon/Run2016E-23Sep2016-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/mario/VHBBHeppyV25tthtautau/SingleMuon/VHBB_HEPPY_V25tthtautau_SingleMuon__Run2016E-23Sep2016-v1/170208_123822"),
+        ("path",      "/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau_v3/SingleMuon/VHBB_HEPPY_V25tthtautau_v3_SingleMuon__Run2016E-23Sep2016-v1/170220_170712"),
         ("selection", "*"),
-        ("blacklist", [514, 688, 1072, 1127, 1144, 1151, 1185, 1251, 1297, 1337, 1499, 1676, 1831, 2065, 2247, 2270, 2312, 2595, 2756, 2822, 2898, 3161, 3173, 3660, 3669, 3703]),
+        ("blacklist", [2446]),
       ]),
     ]
   ),
@@ -808,8 +807,8 @@ samples_2016["/SingleMuon/Run2016F-23Sep2016-v1/MINIAOD"] = OD([
   ("type",                  "data"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "SingleMuon_Run2016F_v1"),
-  ("nof_files",             2744),
-  ("nof_events",            65456131),
+  ("nof_files",             641),
+  ("nof_events",            65489554),
   ("use_HIP_mitigation_bTag", True),
   ("use_HIP_mitigation_mediumMuonId", True),
   ("use_it",                True),
@@ -818,9 +817,9 @@ samples_2016["/SingleMuon/Run2016F-23Sep2016-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/rdewanje/VHBBHeppyV25tthtautau/SingleMuon/VHBB_HEPPY_V25tthtautau_SingleMuon__Run2016F-23Sep2016-v1/170207_130226"),
+        ("path",      "/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau_v2/SingleMuon/VHBB_HEPPY_V25tthtautau_v2_SingleMuon__Run2016F-23Sep2016-v1/170217_153044"),
         ("selection", "*"),
-        ("blacklist", [118, 584]),
+        ("blacklist", []),
       ]),
     ]
   ),
@@ -1178,7 +1177,7 @@ samples_2016["/Tau/Run2016G-23Sep2016-v1/MINIAOD"] = OD([
   ("sample_category",       "data_obs"),
   ("process_name_specific", "Tau_Run2016G_v1"),
   ("nof_files",             1552),
-  ("nof_events",            79440120),
+  ("nof_events",            79578661),
   ("use_HIP_mitigation_bTag", False),
   ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                True),
@@ -1189,7 +1188,7 @@ samples_2016["/Tau/Run2016G-23Sep2016-v1/MINIAOD"] = OD([
       OD([
         ("path",      "/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau_v2/Tau/VHBB_HEPPY_V25tthtautau_v2_Tau__Run2016G-23Sep2016-v1/170218_173036"),
         ("selection", "*"),
-        ("blacklist", [971, 1487]),
+        ("blacklist", []),
       ]),
     ]
   ),
