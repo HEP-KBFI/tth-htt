@@ -20,7 +20,7 @@ process.analyze_charge_flip = cms.PSet(
 
     process = cms.string('ttH'),
 
-    era = cms.string('2015'),
+    era = cms.string('2016'),
 
     triggers_1e = cms.vstring("HLT_BIT_HLT_Ele23_WPLoose_Gsf_v"),
     use_triggers_1e = cms.bool(False),
@@ -44,7 +44,7 @@ process.analyze_charge_flip = cms.PSet(
     hadTauSelection = cms.string('dR03mvaTight'),
     
     leptonFakeRateLooseToTightWeight = cms.PSet(
-        inputFileName = cms.string("tthAnalysis/HiggsToTauTau/data/FR_data_ttH_mva.root"),
+        inputFileName = cms.string("tthAnalysis/HiggsToTauTau/data/FR_lep_ttH_mva_2016_data"),
         histogramName_e = cms.string("FR_mva075_el_data_comb"),
         histogramName_mu = cms.string("FR_mva075_mu_data_comb")
     ),

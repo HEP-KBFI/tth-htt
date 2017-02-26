@@ -78,6 +78,10 @@ class analyzeConfig_charge_flip(analyzeConfig):
     lines.append("process.analyze_charge_flip.lumiScale = cms.double(%f)" % jobOptions["lumi_scale"])
     lines.append("process.analyze_charge_flip.apply_trigger_bits = cms.bool(%s)" % jobOptions["apply_trigger_bits"])
     lines.append("process.analyze_charge_flip.selEventsFileName_output = cms.string('%s')" % jobOptions["rleOutputFile"])
+    lines.append("process.analyze_charge_flip.use_HIP_mitigation_bTag = cms.bool(%s)" % jobOptions["use_HIP_mitigation_bTag"])
+    lines.append("process.analyze_charge_flip.use_HIP_mitigation_mediumMuonId = cms.bool(%s)" % jobOptions["use_HIP_mitigation_mediumMuonId"])
+    lines.append("process.analyze_charge_flip.applyFakeRateWeights = cms.string('%s')" % jobOptions["applyFakeRateWeights"])
+    
     create_cfg(self.cfgFile_analyze_original, jobOptions["cfgFile_modified"], lines)
     
 
@@ -147,8 +151,8 @@ class analyzeConfig_charge_flip(analyzeConfig):
           if not sample_info["use_it"] or sample_info["sample_category"] in [ "additional_signal_overlap", "background_data_estimate" ]:
             continue
           process_name = sample_info["process_name_specific"]
+          #if not ("DY" in process_name or "Muon" in process_name): continue
           logging.info("Creating configuration files to run '%s' for sample %s" % (self.executable_analyze, process_name))  
-          
           sample_category = sample_info["sample_category"]
           is_mc = (sample_info["type"] == "mc")
           is_signal = (sample_category == "signal")
@@ -185,6 +189,9 @@ class analyzeConfig_charge_flip(analyzeConfig):
                 #'apply_leptonGenMatching' : self.apply_leptonGenMatching,
                 #'apply_hadTauGenMatching' : self.apply_hadTauGenMatching,
                 #'applyFakeRateWeights' : self.applyFakeRateWeights if not (lepton_selection == "Tight" and hadTau_selection.find("Tight") != -1) else "disabled",
+                'applyFakeRateWeights' : "disabled",
+                'use_HIP_mitigation_bTag' : True,
+                'use_HIP_mitigation_mediumMuonId' : True,
                 'is_mc' : is_mc,
                 'central_or_shift' : central_or_shift,
                 'lumi_scale' : 1. if not (self.use_lumi and is_mc) else sample_info["xsection"] * self.lumi / sample_info["nof_events"],
