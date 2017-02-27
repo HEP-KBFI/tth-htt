@@ -720,7 +720,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
           'executable' : self.executable_make_plots,
           'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2],
           'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "makePlots_%s_sum%s_cfg.py" % (self.channel, chargeSumSelection)),
-          'outputFile' : os.path.join(self.dirs[DKEY_PLOT], self.channel, "makePlots_%s_sum%s.png" % (self.channel, chargeSumSelection)),
+          'outputFile' : os.path.join(self.dirs[DKEY_PLOT], "makePlots_%s_sum%s.png" % (self.channel, chargeSumSelection)),
           'histogramDir' : (self.histogramDir_prep_dcard % chargeSumSelection),
           'label' : None,
           'make_plots_backgrounds' : self.make_plots_backgrounds
@@ -736,7 +736,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
             'executable' : self.executable_make_plots,
             'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2],
             'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "makePlots_%s_lepOS_sum%s_cfg.py" % (self.channel, chargeSumSelection)),
-            'outputFile' : os.path.join(self.dirs[DKEY_PLOT], self.channel, "makePlots_%s_lepOS_sum%s.png" % (self.channel, chargeSumSelection)),                       
+            'outputFile' : os.path.join(self.dirs[DKEY_PLOT], "makePlots_%s_lepOS_sum%s.png" % (self.channel, chargeSumSelection)),                       
             'histogramDir' : (self.histogramDir_prep_dcard_OS % chargeSumSelection),
             'label' : "OS",
             'make_plots_backgrounds' : make_plots_backgrounds
@@ -749,7 +749,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
             'executable' : self.executable_make_plots_mcClosure,
             'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2],
             'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "makePlots_mcClosure_%s_sum%s_cfg.py" % (self.channel, chargeSumSelection)),
-            'outputFile' : os.path.join(self.dirs[DKEY_PLOT], self.channel, "makePlots_mcClosure_%s_sum%s.png" % (self.channel, chargeSumSelection)),
+            'outputFile' : os.path.join(self.dirs[DKEY_PLOT], "makePlots_mcClosure_%s_sum%s.png" % (self.channel, chargeSumSelection)),
             'histogramDir_signal' : (self.histogramDir_prep_dcard % jobOptions['chargeSumSelection']),
             'histogramDir_sideband' : (self.histogramDir_prep_dcard.replace("Tight", "Fakeable_mcClosure_wFakeRateWeights") % jobOptions['chargeSumSelection'])
           }

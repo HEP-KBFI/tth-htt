@@ -44,7 +44,7 @@ elif ERA == "2016":
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "2017Feb22"
+version = "2017Feb27"
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -54,8 +54,8 @@ if __name__ == '__main__':
 
   analysis = analyzeConfig_2lss_1tau(
     configDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", ERA, version),
-    ##outputDir = os.path.join("/hdfs/local/ttH_2tau", getpass.getuser(), "ttHAnalysis", ERA, version),
-    outputDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", ERA, version),
+    outputDir = os.path.join("/hdfs/local/ttH_2tau", getpass.getuser(), "ttHAnalysis", ERA, version),
+    ##outputDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", ERA, version),
     executable_analyze = "analyze_2lss_1tau", cfgFile_analyze = "analyze_2lss_1tau_cfg.py",
     samples = samples, changeBranchNames = changeBranchNames,
     lepton_charge_selections = [ "OS", "SS" ],
@@ -122,7 +122,8 @@ if __name__ == '__main__':
 ##       "CMS_ttHl_thu_shape_ttZ_y1Up",
 ##       "CMS_ttHl_thu_shape_ttZ_y1Down"           
     ],
-    max_files_per_job = 100,
+    ##max_files_per_job = 100,
+    max_files_per_job = 10000,
     era = ERA, use_lumi = True, lumi = LUMI,
     debug = False,
     running_method = "sbatch",

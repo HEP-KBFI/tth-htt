@@ -186,6 +186,11 @@ TH1* subtractHistograms(const std::string& newHistogramName, const TH1* histogra
   //int numBins = histogramBinning.GetSize() - 1;
   //TH1* newHistogram = new TH1D(newHistogramName.data(), newHistogramName.data(), numBins, histogramBinning.GetArray());
   for ( int iBin = 0; iBin <= (numBins + 1); ++iBin ) {
+    if ( verbosity ) {
+      std::cout << "bin #" << iBin << " (x =  " << newHistogram->GetBinCenter(iBin) << "):"
+		<< " minuend = " << histogramMinuend->GetBinContent(iBin) << " +/- " << histogramMinuend->GetBinError(iBin) << ","
+		<< " subtrahend = " << histogramSubtrahend->GetBinContent(iBin) << " +/- " << histogramSubtrahend->GetBinError(iBin) << std::endl;
+    }
     double newBinContent = histogramMinuend->GetBinContent(iBin) - histogramSubtrahend->GetBinContent(iBin);
     double newBinError2 = square(histogramMinuend->GetBinError(iBin)) + square(histogramSubtrahend->GetBinError(iBin));
     newHistogram->SetBinContent(iBin, newBinContent);
@@ -211,7 +216,7 @@ TH1* subtractHistograms(const std::string& newHistogramName, const TH1* histogra
     newHistogram = (TH1*)histogram->Clone(newHistogramName.data());
   } else {
     TH1* histogramSubtrahend = addHistograms("subtractHistogramsTMP", histogramsToSubtract);
-    newHistogram = subtractHistograms(newHistogramName, histogram, histogramSubtrahend);
+    newHistogram = subtractHistograms(newHistogramName, histogram, histogramSubtrahend, verbosity);
     delete histogramSubtrahend;
   }
   return newHistogram;

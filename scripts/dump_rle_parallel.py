@@ -124,7 +124,7 @@ def bake_job(sh_script_path, py_script_path, sh_args, py_args, logfile, submit_j
     logging.debug("Submitted the job")
     return int(submit_out.split()[-1])
 
-def dump_rle_parallel(output_dir, nof_files = 100, force = False, test = False, verbose = False, sample = ''):
+def dump_rle_parallel(output_dir, nof_files = 100, force = False, test = False, verbose = False, sample = '', tmp_dir = ''):
   '''Dumps RLE numbers ,,in parallel''
   Args:
     output_dir: string, Path to the directory where the RLE files will be stored
@@ -160,7 +160,7 @@ def dump_rle_parallel(output_dir, nof_files = 100, force = False, test = False, 
       ))
 
   # let's make a temporary directories
-  output_dir_tmp = os.path.join(output_dir, "tmp")
+  output_dir_tmp = os.path.join(output_dir, "tmp") if not tmp_dir else tmp_dir
   if not create_dir_if_not_exist(output_dir_tmp): sys.exit(1)
   output_dir_tmp_sh = os.path.join(output_dir_tmp, "sh")
   output_dir_tmp_py = os.path.join(output_dir_tmp, "py")
@@ -259,6 +259,8 @@ if __name__ == '__main__':
                       help = 'R|Number of root files to be processed')
   parser.add_argument('-s', '--sample-name', metavar = 'name', required = False, type = str, default = '',
                       help = 'R|Specific sample name (default: all samples)')
+  parser.add_argument('-T', '--tmp-dir', metavar = 'directory', required = False, type = str, default = '',
+                      help = 'R|Temporary directory where py and sh cfgs, and logs will be stored')
   parser.add_argument('-f', '--force', dest = 'force', action = 'store_true', default = False,
                       help = 'R|Force the creation of output directory if missing')
   parser.add_argument('-t', '--test', dest = 'test', action = 'store_true', default = False,
@@ -267,4 +269,4 @@ if __name__ == '__main__':
                       help = 'R|Enable verbose printout')
   args = parser.parse_args()
 
-  dump_rle_parallel(args.output_dir, args.nof_files, args.force, args.test, args.verbose, args.sample_name)
+  dump_rle_parallel(args.output_dir, args.nof_files, args.force, args.test, args.verbose, args.sample_name, args.tmp_dir)

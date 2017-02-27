@@ -19,21 +19,23 @@ class prodNtupleConfig:
     """Configuration metadata needed to run Ntuple production.
     
     Args:
-        outputDir: The root output dir -- all configuration, log and output files are stored in its subdirectories
+        configDir: The root config dir -- all configuration files are stored in its subdirectories
+        outputDir: The root output dir -- all log and output files are stored in its subdirectories
         executable_prodNtuple: Name of the executable that runs the Ntuple production
         debug: if True, checks each input root file (Ntuple) before creating the python configuration files
         running_method: either `sbatch` (uses SLURM) or `Makefile`
         num_parallel_jobs: number of jobs that can be run in parallel on local machine (does not limit number of Ntuple production jobs running in parallel on batch system)
   
     """
-    def __init__(self, outputDir, executable_prodNtuple, channel, samples,
+    def __init__(self, configDir, outputDir, executable_prodNtuple, channel, samples,
                  era, debug, running_method, rle_directory, version, num_parallel_jobs):
 
+        self.configDir = configDir
         self.outputDir = outputDir
         self.executable_prodNtuple = executable_prodNtuple
         self.channel = channel
         self.max_files_per_job = 1
-        self.max_num_jobs = 100000
+        self.max_num_jobs = 200000
         self.samples = samples
         self.era = era
         self.debug = debug
@@ -47,7 +49,7 @@ class prodNtupleConfig:
         else:
             self.is_makefile = True
         self.makefile = os.path.join(
-          self.outputDir, "Makefile_%s" % self.channel)
+          self.configDir, "Makefile_%s" % self.channel)
         self.num_parallel_jobs = num_parallel_jobs
 
         self.workingDir = os.getcwd()
@@ -57,6 +59,7 @@ class prodNtupleConfig:
         self.version       = version
         if self.rle_directory == 'default':
             self.rle_directory = os.path.join(
+                ##os.path.join("/hdfs/local/ttH_2tau", getpass.getuser(), "ttHNtupleProduction", ERA, version),
                 '/home', getpass.getuser(), 'ttHAnalysis', self.era, self.version, 'rles', self.channel
             )
         elif self.rle_directory:
@@ -65,6 +68,7 @@ class prodNtupleConfig:
                     "No such directory: '{directory_name}'".format(directory_name=self.rle_directory))
                 sys.exit(1)
 
+        create_if_not_exists(self.configDir)        
         create_if_not_exists(self.outputDir)
         self.stdout_file = codecs.open(os.path.join(
           self.outputDir, "stdout_%s.log" % self.channel), 'w', 'utf-8')
@@ -75,7 +79,7 @@ class prodNtupleConfig:
         self.cfgFiles_prodNtuple_modified = {}
         self.logFiles_prodNtuple = {}
         self.sbatchFile_prodNtuple = os.path.join(
-          self.outputDir, "sbatch_prodNtuple_%s.py" % self.channel)
+          self.configDir, "sbatch_prodNtuple_%s.py" % self.channel)
         self.inputFiles = {}
         self.outputFiles = {}
         self.filesToClean = []
@@ -87,7 +91,10 @@ class prodNtupleConfig:
             key_dir = getKey(sample_name)
             for dir_type in [ DKEY_CFGS, DKEY_NTUPLES, DKEY_LOGS ]:
                 initDict(self.dirs, [ key_dir, dir_type ])
-                self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel, process_name)
+                if dir_type in [ DKEY_CFGS ]:
+                    self.dirs[key_dir][dir_type] = os.path.join(self.configDir, dir_type, self.channel, process_name)
+                else:
+                    self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel, process_name)
         ##print "self.dirs = ", self.dirs
 
         self.cvmfs_error_log = {}

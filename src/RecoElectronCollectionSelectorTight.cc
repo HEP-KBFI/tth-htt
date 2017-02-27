@@ -29,8 +29,8 @@ RecoElectronSelectorTight::RecoElectronSelectorTight(int era, int index, bool de
   , max_nLostHits_(0)
   , min_mvaTTH_(0.75)  
 {
-  if      ( era_ == kEra_2015 ) max_jetBtagCSV_ = 0.89;
-  else if ( era_ == kEra_2016 ) max_jetBtagCSV_ = 0.80;
+  if      ( era_ == kEra_2015 ) max_jetBtagCSV_ = 0.8900;
+  else if ( era_ == kEra_2016 ) max_jetBtagCSV_ = 0.8484;
   else assert(0);
   assert(min_mvaRawPOG_.size() == 3);
   assert(binning_absEta_.size() == 2);

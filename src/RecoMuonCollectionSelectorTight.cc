@@ -18,8 +18,8 @@ RecoMuonSelectorTight::RecoMuonSelectorTight(int era, int index, bool debug, boo
   , apply_mediumIdPOG_(true)
   , min_mvaTTH_(0.75)
 {
-  if      ( era_ == kEra_2015 ) max_jetBtagCSV_ = 0.89;
-  else if ( era_ == kEra_2016 ) max_jetBtagCSV_ = 0.80;
+  if      ( era_ == kEra_2015 ) max_jetBtagCSV_ = 0.8900;
+  else if ( era_ == kEra_2016 ) max_jetBtagCSV_ = 0.8484;
   else assert(0);
 }
 

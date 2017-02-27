@@ -15,11 +15,11 @@ if ERA == "2015":
   LUMI =  2.3e+3 # 1/pb
 elif ERA == "2016":
   samples = samples_2016
-  LUMI = 12.9e+3 # 1/pb
+  LUMI = 35.9e+3 # 1/pb
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "2017Jan16" # must be the same version as in test/tthAnalyzeRun_2lss_1tau.py !
+version = "2017Feb22" # must be the same version as in test/tthAnalyzeRun_2lss_1tau.py !
 
 #--------------------------------------------------------------------------------
 # NOTE: you need to run
@@ -35,7 +35,9 @@ if __name__ == '__main__':
     format = '%(asctime)s - %(levelname)s: %(message)s')
 
   ntupleProduction = prodNtupleConfig_2lss_1tau(
-    outputDir = os.path.join("/home", getpass.getuser(), "ttHNtupleProduction", ERA, version),
+    configDir = os.path.join("/home", getpass.getuser(), "ttHNtupleProduction", ERA, version),
+    outputDir = os.path.join("/hdfs/local/ttH_2tau", getpass.getuser(), "ttHNtupleProduction", ERA, version),
+    ##outputDir = os.path.join("/home", getpass.getuser(), "ttHNtupleProduction", ERA, version),
     executable_prodNtuple = "produceNtuple_2lss_1tau",
     cfgFile_prodNtuple = "produceNtuple_2lss_1tau_cfg.py",
     samples = samples,
@@ -50,7 +52,8 @@ if __name__ == '__main__':
 
   ntupleProduction.create()
 
-  run_ntupleProduction = query_yes_no("Start jobs ?")
+  ##run_ntupleProduction = query_yes_no("Start jobs ?")
+  run_ntupleProduction = True
   if run_ntupleProduction:
     ntupleProduction.run()
   else:

@@ -368,16 +368,16 @@ double Data_to_MC_CorrectionInterface_1l_2tau_trigger::getSF_triggerEff() const
     // CV: data/MC corrections are agreed as discussed on HTT working mailing list 
     //    (email from Alexei Raspereza on February 22nd 2017)    
     if ( isTriggered_1l && isTriggered_1l1tau ) { // case 4: both single lepton trigger and lepton+tau cross trigger fire
-      double eff_data = eff_1l_data*eff_1l1tau_tauLegs_data;
-      double eff_mc = eff_1l_mc*eff_1l1tau_tauLegs_mc;
+      double eff_data = TMath::Min(eff_1l_data, eff_1l1tau_lepLeg_data)*eff_1l1tau_tauLegs_data;
+      double eff_mc = TMath::Min(eff_1l_mc, eff_1l1tau_lepLeg_mc)*eff_1l1tau_tauLegs_mc;
       sf = compSF(eff_data, eff_mc);
     } else if ( isTriggered_1l1tau ) {            // case 3: lepton+tau cross trigger fires, single lepton trigger doesn't fire
-      double eff_data = TMath::Max(1.e-2, eff_1l1tau_lepLeg_data - eff_1l_data)*eff_1l1tau_tauLegs_data;
-      double eff_mc = TMath::Max(1.e-2, eff_1l1tau_lepLeg_mc - eff_1l_mc)*eff_1l1tau_tauLegs_mc;
+      double eff_data = TMath::Max(1.e-2, (eff_1l1tau_lepLeg_data - eff_1l_data)*eff_1l1tau_tauLegs_data);
+      double eff_mc = TMath::Max(1.e-2, (eff_1l1tau_lepLeg_mc - eff_1l_mc)*eff_1l1tau_tauLegs_mc);
       sf = compSF(eff_data, eff_mc);
     } else if ( isTriggered_1l ) {                // case 2: single lepton trigger fires, lepton+tau cross trigger doesn't fire
-      double eff_data = eff_1l1tau_lepLeg_data*TMath::Max(1.e-2, 1. - eff_1l1tau_tauLegs_data);
-      double eff_mc = eff_1l1tau_lepLeg_mc*TMath::Max(1.e-2, 1. - eff_1l1tau_tauLegs_mc);
+      double eff_data = TMath::Max(1.e-2, eff_1l_data - eff_1l1tau_tauLegs_data*TMath::Min(eff_1l_data, eff_1l1tau_lepLeg_data));
+      double eff_mc = TMath::Max(1.e-2, eff_1l_mc - eff_1l1tau_tauLegs_mc*TMath::Min(eff_1l_mc, eff_1l1tau_lepLeg_mc));
       sf = compSF(eff_data, eff_mc);
     } else {                                      // case 1: neither single lepton trigger nor lepton+tau cross trigger fires (SF doesn't matter, as event does not pass event selection)
       sf = 0.;

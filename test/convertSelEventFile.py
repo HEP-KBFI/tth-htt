@@ -8,10 +8,19 @@ import os
 ##inputFileName = "/home/veelken/VHbbNtuples_8_0_x/CMSSW_8_0_19/src/tthAnalysis/HiggsToTauTau/test/selEvents_1l_2tau_LLR_syncNtuple_unformatted.txt"
 ##outputFileName = "/home/veelken/VHbbNtuples_8_0_x/CMSSW_8_0_19/src/tthAnalysis/HiggsToTauTau/test/selEvents_1l_2tau_LLR_syncNtuple.txt"
 
-inputFileName = "/home/veelken/VHbbNtuples_8_0_x/CMSSW_8_0_19/src/tthAnalysis/HiggsToTauTau/test/synchronization/Events_3l1tau_ttW_unformatted.txt"
-outputFileName = "/home/veelken/VHbbNtuples_8_0_x/CMSSW_8_0_19/src/tthAnalysis/HiggsToTauTau/test/synchronization/Events_3l1tau_ttW.txt"
+##inputFileName = "/home/veelken/VHbbNtuples_8_0_x/CMSSW_8_0_19/src/tthAnalysis/HiggsToTauTau/test/synchronization/Events_3l1tau_ttW_unformatted.txt"
+##outputFileName = "/home/veelken/VHbbNtuples_8_0_x/CMSSW_8_0_19/src/tthAnalysis/HiggsToTauTau/test/synchronization/Events_3l1tau_ttW.txt"
 ##inputFileName = "/home/veelken/VHbbNtuples_8_0_x/CMSSW_8_0_19/src/tthAnalysis/HiggsToTauTau/test/synchronization/Events_3l1tau_ttZ_unformatted.txt"
 ##outputFileName = "/home/veelken/VHbbNtuples_8_0_x/CMSSW_8_0_19/src/tthAnalysis/HiggsToTauTau/test/synchronization/Events_3l1tau_ttZ.txt"
+
+#inputFileName = "/home/veelken/VHbbNtuples_8_0_x/CMSSW_8_0_19/src/tthAnalysis/HiggsToTauTau/test/sync_2017Feb24/1l2tau_SR_unformatted.txt"
+#outputFileName = "/home/veelken/VHbbNtuples_8_0_x/CMSSW_8_0_19/src/tthAnalysis/HiggsToTauTau/test/sync_2017Feb24/1l2tau_SR.txt"
+#inputFileName = "/home/veelken/VHbbNtuples_8_0_x/CMSSW_8_0_19/src/tthAnalysis/HiggsToTauTau/test/sync_2017Feb24/2lss1tau_SR_unformatted.txt"
+#outputFileName = "/home/veelken/VHbbNtuples_8_0_x/CMSSW_8_0_19/src/tthAnalysis/HiggsToTauTau/test/sync_2017Feb24/2lss1tau_SR.txt"
+#inputFileName = "/home/veelken/VHbbNtuples_8_0_x/CMSSW_8_0_19/src/tthAnalysis/HiggsToTauTau/test/sync_2017Feb24/ttH_htt_2lss1tau_unformatted.txt"
+#outputFileName = "/home/veelken/VHbbNtuples_8_0_x/CMSSW_8_0_19/src/tthAnalysis/HiggsToTauTau/test/sync_2017Feb24/ttH_htt_2lss1tau.txt"
+inputFileName = "/home/veelken/VHbbNtuples_8_0_x/CMSSW_8_0_19/src/tthAnalysis/HiggsToTauTau/test/sync_2017Feb24/ttH_hww_2lss1tau_unformatted.txt"
+outputFileName = "/home/veelken/VHbbNtuples_8_0_x/CMSSW_8_0_19/src/tthAnalysis/HiggsToTauTau/test/sync_2017Feb24/ttH_hww_2lss1tau.txt"
 
 inputFile = open(inputFileName, "r")
 inputFile_content = inputFile.readlines()
@@ -24,7 +33,7 @@ for idxLine, inputFile_line in enumerate(inputFile_content):
         continue    
     print "inputFile_line =", inputFile_line
     items = inputFile_line.split("*")
-    if len(items) > 6:
+    if len(items) < 5 or len(items) > 6:
         continue
     print "items = ", items
     run = int(items[2])
