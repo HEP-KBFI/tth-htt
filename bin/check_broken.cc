@@ -367,7 +367,7 @@ struct Sample
 	    if(process_name.find("MuonEG")!=std::string::npos    ) input = input + "  (\"triggers\",              [ \"1e1mu\", \"2e1mu\", \"1e2mu\" ]),\n";
 	    if(process_name.find("Tau")!=std::string::npos       ) input = input + "  (\"triggers\",              [ \"1e1tau\", \"1mu1tau\", \"2tau\" ]),\n";
 	    input = input +	  
-		    "  (\"reHLT\",                 False),\n"
+		    "  (\"reHLT\",                 True),\n"
 		    "  (\"local_paths\",\n"
 		    "    [\n"
 		    "      OD([\n"
@@ -509,7 +509,7 @@ main(int argc,
 
   Samples samples;
   //Data
-  samples.define("VHBB_HEPPY_V25tthtautau_v2_DoubleEG__Run2016B-23Sep2016-v3",
+  samples.define("VHBB_HEPPY_V25tthtautau_DoubleEG__Run2016B-23Sep2016-v3_forceResubmit2",
     "/DoubleEG/Run2016B-23Sep2016-v3/MINIAOD",
     "data_obs", "DoubleEG_Run2016B_v3", 1, 143073268, true, false);
   samples.define("VHBB_HEPPY_V25tthtautau_v2_DoubleEG__Run2016C-23Sep2016-v1",
@@ -527,10 +527,10 @@ main(int argc,
   samples.define("VHBB_HEPPY_V25tthtautau_v2_DoubleEG__Run2016G-23Sep2016-v1",
     "/DoubleEG/Run2016G-23Sep2016-v1/MINIAOD",
     "data_obs", "DoubleEG_Run2016G_v1", 1, 78797031, true, false);
-  samples.define("VHBB_HEPPY_V25tthtautau_v2_DoubleEG__Run2016H-PromptReco-v2",
+  samples.define("VHBB_HEPPY_V25tthtautau_DoubleEG__Run2016H-PromptReco-v2",
     "/DoubleEG/Run2016H-PromptReco-v2/MINIAOD",
     "data_obs", "DoubleEG_Run2016H_v2_promptReco", 1, 84344490, true, false);
-  samples.define("VHBB_HEPPY_V25tthtautau_v2_DoubleEG__Run2016H-PromptReco-v3",
+  samples.define("VHBB_HEPPY_V25tthtautau_v3_DoubleEG__Run2016H-PromptReco-v3",
     "/DoubleEG/Run2016H-PromptReco-v3/MINIAOD",
     "data_obs", "DoubleEG_Run2016H_v3_promptReco", 1, 2460002, true, false);
   
@@ -555,7 +555,7 @@ main(int argc,
   samples.define("VHBB_HEPPY_V25tthtautau_DoubleMuon__Run2016H-PromptReco-v2",
     "/DoubleMuon/Run2016H-PromptReco-v2/MINIAOD",
     "data_obs", "DoubleMuon_Run2016H_v2_promptReco", 1, 48093751, true, false);
-  samples.define("VHBB_HEPPY_V25tthtautau_DoubleMuon__Run2016H-PromptReco-v3",
+  samples.define("VHBB_HEPPY_V25tthtautau_v3_DoubleMuon__Run2016H-PromptReco-v3",
     "/DoubleMuon/Run2016H-PromptReco-v3/MINIAOD",
     "data_obs", "DoubleMuon_Run2016H_v3_promptReco", 1, 1219733, true, false);
     
@@ -577,51 +577,51 @@ main(int argc,
   samples.define("VHBB_HEPPY_V25tthtautau_v2_MuonEG__Run2016G-23Sep2016-v1",
     "/MuonEG/Run2016G-23Sep2016-v1/MINIAOD",
     "data_obs", "MuonEG_Run2016G_v1", 1, 33854612, true, false);
-  samples.define("VHBB_HEPPY_V25tthtautau_MuonEG__Run2016H-PromptReco-v2",
+  samples.define("VHBB_HEPPY_V25tthtautau_v3_MuonEG__Run2016H-PromptReco-v2",
     "/MuonEG/Run2016H-PromptReco-v2/MINIAOD",
     "data_obs", "MuonEG_Run2016H_v2_promptReco", 1, 28705853, true, false);
   samples.define("VHBB_HEPPY_V25tthtautau_MuonEG__Run2016H-PromptReco-v3",
     "/MuonEG/Run2016H-PromptReco-v3/MINIAOD",
     "data_obs", "MuonEG_Run2016H_v3_promptReco", 1, 770494, true, false);
     
-  samples.define("VHBB_HEPPY_V25tthtautau_v2_SingleElectron__Run2016B-23Sep2016-v3",
+  samples.define("VHBB_HEPPY_V25tthtautau_v3_SingleElectron__Run2016B-23Sep2016-v3",
     "/SingleElectron/Run2016B-23Sep2016-v3/MINIAOD",
     "data_obs", "SingleElectron_Run2016B_v3", 1, 246440440, true, false);
-  samples.define("VHBB_HEPPY_V25tthtautau_v2_SingleElectron__Run2016C-23Sep2016-v1",
+  samples.define("VHBB_HEPPY_V25tthtautau_v3_SingleElectron__Run2016C-23Sep2016-v1",
     "/SingleElectron/Run2016C-23Sep2016-v1/MINIAOD",
     "data_obs", "SingleElectron_Run2016C_v1", 1, 97259854, true, false);
-  samples.define("VHBB_HEPPY_V25tthtautau_v2_SingleElectron__Run2016D-23Sep2016-v1",
+  samples.define("VHBB_HEPPY_V25tthtautau_v3_SingleElectron__Run2016D-23Sep2016-v1",
     "/SingleElectron/Run2016D-23Sep2016-v1/MINIAOD",
     "data_obs", "SingleElectron_Run2016D_v1", 1, 148167727, true, false);
-  samples.define("VHBB_HEPPY_V25tthtautau_v2_SingleElectron__Run2016E-23Sep2016-v1",
+  samples.define("VHBB_HEPPY_V25tthtautau_v3_SingleElectron__Run2016E-23Sep2016-v1",
     "/SingleElectron/Run2016E-23Sep2016-v1/MINIAOD",
     "data_obs", "SingleElectron_Run2016E_v1", 1, 117321545, true, false);
   samples.define("VHBB_HEPPY_V25tthtautau_v2_SingleElectron__Run2016F-23Sep2016-v1",
     "/SingleElectron/Run2016F-23Sep2016-v1/MINIAOD",
     "data_obs", "SingleElectron_Run2016F_v1", 1, 70593532, true, false);
-  samples.define("VHBB_HEPPY_V25tthtautau_v2_SingleElectron__Run2016G-23Sep2016-v1",
+  samples.define("VHBB_HEPPY_V25tthtautau_v3_SingleElectron__Run2016G-23Sep2016-v1",
     "/SingleElectron/Run2016G-23Sep2016-v1/MINIAOD",
     "data_obs", "SingleElectron_Run2016G_v1", 1, 153363109, true, false);
   samples.define("VHBB_HEPPY_V25tthtautau_SingleElectron__Run2016H-PromptReco-v2",
     "/SingleElectron/Run2016H-PromptReco-v2/MINIAOD",
     "data_obs", "SingleElectron_Run2016H_v2_promptReco", 1, 126863489, true, false);
-  samples.define("VHBB_HEPPY_V25tthtautau_SingleElectron__Run2016H-PromptReco-v3",
+  samples.define("VHBB_HEPPY_V25tthtautau_v3_SingleElectron__Run2016H-PromptReco-v3",
     "/SingleElectron/Run2016H-PromptReco-v3/MINIAOD",
     "data_obs", "SingleElectron_Run2016H_v3_promptReco", 1, 3191585, true, false);
       
-  samples.define("VHBB_HEPPY_V25tthtautau_v2_SingleMuon__Run2016B-23Sep2016-v3",
+  samples.define("VHBB_HEPPY_V25tthtautau_v3_SingleMuon__Run2016B-23Sep2016-v3",
     "/SingleMuon/Run2016B-23Sep2016-v3/MINIAOD",
     "data_obs", "SingleMuon_Run2016B_v3", 1, 158145722, true, false);
-  samples.define("VHBB_HEPPY_V25tthtautau_v2_SingleMuon__Run2016C-23Sep2016-v1",
+  samples.define("VHBB_HEPPY_V25tthtautau_v3_SingleMuon__Run2016C-23Sep2016-v1",
     "/SingleMuon/Run2016C-23Sep2016-v1/MINIAOD",
     "data_obs", "SingleMuon_Run2016C_v1", 1, 67441308, true, false);
   samples.define("VHBB_HEPPY_V25tthtautau_v2_SingleMuon__Run2016D-23Sep2016-v1",
     "/SingleMuon/Run2016D-23Sep2016-v1/MINIAOD",
     "data_obs", "SingleMuon_Run2016D_v1", 1, 98017996, true, false);
-  samples.define("VHBB_HEPPY_V25tthtautau_v2_SingleMuon__Run2016E-23Sep2016-v1",
+  samples.define("VHBB_HEPPY_V25tthtautau_v3_SingleMuon__Run2016E-23Sep2016-v1",
     "/SingleMuon/Run2016E-23Sep2016-v1/MINIAOD",
     "data_obs", "SingleMuon_Run2016E_v1", 1, 90984718, true, false);
-  samples.define("VHBB_HEPPY_V25tthtautau_SingleMuon__Run2016F-23Sep2016-v1",
+  samples.define("VHBB_HEPPY_V25tthtautau_v2_SingleMuon__Run2016F-23Sep2016-v1",
     "/SingleMuon/Run2016F-23Sep2016-v1/MINIAOD",
     "data_obs", "SingleMuon_Run2016F_v1", 1, 65489554, true, false);
   samples.define("VHBB_HEPPY_V25tthtautau_v2_SingleMuon__Run2016G-23Sep2016-v1",
@@ -652,7 +652,7 @@ main(int argc,
   samples.define("VHBB_HEPPY_V25tthtautau_v2_Tau__Run2016G-23Sep2016-v1",
     "/Tau/Run2016G-23Sep2016-v1/MINIAOD",
     "data_obs", "Tau_Run2016G_v1", 1, 79578661, true, false);
-  samples.define("VHBB_HEPPY_V25tthtautau_Tau__Run2016H-PromptReco-v2",
+  samples.define("VHBB_HEPPY_V25tthtautau_v3_Tau__Run2016H-PromptReco-v2",
     "/Tau/Run2016H-PromptReco-v2/MINIAOD",
     "data_obs", "Tau_Run2016H_v2_promptReco", 1, 76504267, true, false);
   samples.define("VHBB_HEPPY_V25tthtautau_Tau__Run2016H-PromptReco-v3",
@@ -660,12 +660,22 @@ main(int argc,
     "data_obs", "Tau_Run2016H_v3_promptReco", 1, 1898072, true, false);
 
   //MC
-  samples.define("VHBB_HEPPY_V25tthtautau_DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-amcatnloFXFX-Py8__RunIISummer16MAv2-PUMoriond17_80r2as_2016_TrancheIV_v6_ext1-v1",
+  /*samples.define("VHBB_HEPPY_V25tthtautau_DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-amcatnloFXFX-Py8__RunIISummer16MAv2-PUMoriond17_80r2as_2016_TrancheIV_v6_ext1-v1",
     "/DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM",
     "EWK", "DYJetsToLL_M-10to50", 18610, 40381391);
-  samples.define("VHBB_HEPPY_V25tthtautau_DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-Py8__RunIISummer16MAv2-PUMoriond17_HCALDebug_80r2as_2016_TrancheIV_v6-v1",
-    "/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv2-PUMoriond17_HCALDebug_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM",
-    "EWK", "DYJetsToLL_M-50", 6025.2, 28968252);
+  samples.define("VHBB_HEPPY_V25tthtautau_v3_DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-Py8__RunIISummer16MAv2-PUMoriond17_80r2as_2016_TrancheIV_v6_ext2-v1",
+    "/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext2-v1/MINIAODSIM",
+    "EWK", "DYJetsToLL_M-50", 6025.2, 122055388);*/
+  samples.define("VHBB_HEPPY_V25tthtautau_v3_DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-Py8__RunIISummer16MAv2-PUMoriond17_80r2as_2016_TrancheIV_v6-v1",
+    "/DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM",
+    "EWK", "DYJetsToLL_M-10to50", 18610, 35291566);
+  samples.define("VHBB_HEPPY_V25tthtautau_v3_DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-Py8__RunIISummer16MAv2-PUMoriond17_80r2as_2016_TrancheIV_v6_ext1-v2",
+    "/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v2/MINIAODSIM",
+    "EWK", "DYJetsToLL_M-50", 6025.2, 49144274);
+  samples.define("VHBB_HEPPY_V25tthtautau_v3_DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-Py8__RunIISummer16MAv2-PUMoriond17_80r2as_2016_TrancheIV_v6_ext2-v1",
+    "/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext2-v1/MINIAODSIM",
+    "EWK", "DYJetsToLL_M-50", 6025.2, 96658943);
+    
   samples.define("VHBB_HEPPY_V25tthtautau_GluGluHToZZTo4L_M125_13TeV_powheg2_JHUgenV6_Py8__RunIISummer16MAv2-PUMoriond17_80r2as_2016_TrancheIV_v6-v1",
     "/GluGluHToZZTo4L_M125_13TeV_powheg2_JHUgenV6_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM",
     "additional_signal_overlap", "GluGluHToZZTo4L", 0.0119, 999800);
@@ -767,7 +777,7 @@ main(int argc,
     "EWK", "WWTo2L2Nu", 10.481, 1999000);
   samples.define("VHBB_HEPPY_V25tthtautau_WWTo2L2Nu_DoubleScattering_13TeV-Py8__RunIISummer16MAv2-PUMoriond17_80r2as_2016_TrancheIV_v6-v1",
     "/WWTo2L2Nu_DoubleScattering_13TeV-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM",
-    "Rares", "WWTo2L2Nu_DoubleScattering", 1.64, 999367);
+    "Rares", "WWTo2L2Nu_DoubleScattering", 0.1729, 999367);
   samples.define("VHBB_HEPPY_V25tthtautau_WWW_4F_TuneCUETP8M1_13TeV-amcatnlo-Py8__RunIISummer16MAv2-PUMoriond17_80r2as_2016_TrancheIV_v6-v1",
     "/WWW_4F_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM",
     "Rares", "WWW_4F", 0.2086, 240000);
@@ -985,6 +995,9 @@ main(int argc,
       //std::cout << "path " << it.path() << std::endl;
       const std::string file_str = file.string();
       //std::cout << "file_str " << file_str << std::endl;
+      
+      if(boost::contains(file_str,"170217_153318")) continue; //One-time issue of 2 submissions as sibling directories
+      
 //--- if we're dealing with a valid root file
       if(boost::filesystem::is_regular_file(file) &&
          boost::filesystem::extension(file) == ".root")
