@@ -84,6 +84,18 @@ class analyzeConfig_1l_2tau(analyzeConfig):
     else:
       raise ValueError("Invalid Configuration parameter 'applyFakeRateWeights' = %s !!" % applyFakeRateWeights)
 
+    if era == '2016':
+      self.triggers_1mu = [
+        'HLT_BIT_HLT_IsoMu22_v',
+        'HLT_BIT_HLT_IsoTkMu22_v',
+        'HLT_BIT_HLT_IsoMu22_eta2p1_v',
+        'HLT_BIT_HLT_IsoTkMu22_eta2p1_v'
+      ]
+      self.triggers_1e = [
+        'HLT_BIT_HLT_Ele25_eta2p1_WPTight_Gsf_v',
+        ##'HLT_BIT_HLT_Ele45_WPLoose_Gsf_L1JetTauSeeded_v'
+      ]
+
     self.executable_addBackgrounds = executable_addBackgrounds
     self.executable_addFakes = executable_addBackgroundJetToTauFakes
     
@@ -521,7 +533,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
       'executable' : self.executable_make_plots,
       'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2],
       'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "makePlots_%s_cfg.py" % self.channel),
-      'outputFile' : os.path.join(self.dirs[DKEY_PLOT], self.channel, "makePlots_%s.png" % self.channel),
+      'outputFile' : os.path.join(self.dirs[DKEY_PLOT], "makePlots_%s.png" % self.channel),
       'histogramDir' : self.histogramDir_prep_dcard,
       'label' : None,
       'make_plots_backgrounds' : self.make_plots_backgrounds
@@ -534,7 +546,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
         'executable' : self.executable_make_plots,
         'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2],
         'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "makePlots_%s_SS_cfg.py" % self.channel),
-        'outputFile' : os.path.join(self.dirs[DKEY_PLOT], self.channel, "makePlots_%s_SS.png" % self.channel),                       
+        'outputFile' : os.path.join(self.dirs[DKEY_PLOT], "makePlots_%s_SS.png" % self.channel),                       
         'histogramDir' : self.histogramDir_prep_dcard_SS,
         'label' : "SS",
         'make_plots_backgrounds' : self.make_plots_backgrounds
@@ -547,7 +559,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
         'executable' : self.executable_make_plots_mcClosure,
         'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2],
         'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "makePlots_mcClosure_%s_cfg.py" % self.channel),
-        'outputFile' : os.path.join(self.dirs[DKEY_PLOT], self.channel, "makePlots_mcClosure_%s.png" % self.channel)
+        'outputFile' : os.path.join(self.dirs[DKEY_PLOT], "makePlots_mcClosure_%s.png" % self.channel)
       }
       self.createCfg_makePlots_mcClosure(self.jobOptions_make_plots[key_makePlots_job])
                 

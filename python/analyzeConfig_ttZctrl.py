@@ -206,7 +206,7 @@ class analyzeConfig_ttZctrl(analyzeConfig):
         'executable' : self.executable_make_plots,
         'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2],
         'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "makePlots_%s_%s_cfg.py" % (self.channel, evtSelection)),
-        'outputFile' : os.path.join(self.dirs[DKEY_PLOT], self.channel, "makePlots_%s_%s.png" % (self.channel, evtSelection)),
+        'outputFile' : os.path.join(self.dirs[DKEY_PLOT], "makePlots_%s_%s.png" % (self.channel, evtSelection)),
         'histogramDir' : "_".join([ self.histogramDir_prep_dcard, evtSelection ]),
         'label' : evtSelection,
         'make_plots_backgrounds' : self.make_plots_backgrounds

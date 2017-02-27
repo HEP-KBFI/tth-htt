@@ -32,8 +32,8 @@ RecoElectronSelectorFakeable::RecoElectronSelectorFakeable(int era, int index, b
   , apply_conversionVeto_(true)   
   , max_nLostHits_(0)
 {
-  if      ( era_ == kEra_2015 ) max_jetBtagCSV_ = { 0.605, 0.89 };
-  else if ( era_ == kEra_2016 ) max_jetBtagCSV_ = { 0.460, 0.80 };
+  if      ( era_ == kEra_2015 ) max_jetBtagCSV_ = { 0.6050, 0.8900 };
+  else if ( era_ == kEra_2016 ) max_jetBtagCSV_ = { 0.3000, 0.8484 };
   else assert(0);
   assert(min_mvaRawPOG_.size() == 3);
   assert(binning_absEta_.size() == 2);

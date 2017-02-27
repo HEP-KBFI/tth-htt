@@ -19,7 +19,7 @@ elif ERA == "2016":
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "2017Feb25"
+version = "2017Feb27"
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -29,8 +29,8 @@ if __name__ == '__main__':
 
   analysis = analyzeConfig_WZctrl(
     configDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", ERA, version),
-    outputDir = os.path.join("/hdfs/local/ttH_2tau", getpass.getuser(), "ttHAnalysis", ERA, version),
-    ##outputDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", ERA, version),
+    ##outputDir = os.path.join("/hdfs/local/ttH_2tau", getpass.getuser(), "ttHAnalysis", ERA, version),
+    outputDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", ERA, version),
     executable_analyze = "analyze_WZctrl", cfgFile_analyze = "analyze_WZctrl_cfg.py",
     samples = samples,
     hadTau_selection = "dR03mvaLoose",

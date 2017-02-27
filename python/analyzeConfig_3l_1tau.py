@@ -661,7 +661,7 @@ class analyzeConfig_3l_1tau(analyzeConfig):
       'executable' : self.executable_make_plots,
       'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2],
       'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "makePlots_%s_cfg.py" % self.channel),
-      'outputFile' : os.path.join(self.dirs[DKEY_PLOT], self.channel, "makePlots_%s.png" % self.channel),
+      'outputFile' : os.path.join(self.dirs[DKEY_PLOT], "makePlots_%s.png" % self.channel),
       'histogramDir' : self.histogramDir_prep_dcard,
       'label' : None,
       'make_plots_backgrounds' : self.make_plots_backgrounds
@@ -674,7 +674,7 @@ class analyzeConfig_3l_1tau(analyzeConfig):
         'executable' : self.executable_make_plots,
         'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2],
         'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "makePlots_%s_SS_cfg.py" % self.channel),
-        'outputFile' : os.path.join(self.dirs[DKEY_PLOT], self.channel, "makePlots_%s_SS.png" % self.channel),                       
+        'outputFile' : os.path.join(self.dirs[DKEY_PLOT], "makePlots_%s_SS.png" % self.channel),                       
         'histogramDir' : self.histogramDir_prep_dcard_SS,
         'label' : "SS",
         'make_plots_backgrounds' : self.make_plots_backgrounds
@@ -687,7 +687,7 @@ class analyzeConfig_3l_1tau(analyzeConfig):
         'executable' : self.executable_make_plots_mcClosure,
         'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2],
         'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "makePlots_mcClosure_%s_cfg.py" % self.channel),
-        'outputFile' : os.path.join(self.dirs[DKEY_PLOT], self.channel, "makePlots_mcClosure_%s.png" % self.channel)
+        'outputFile' : os.path.join(self.dirs[DKEY_PLOT], "makePlots_mcClosure_%s.png" % self.channel)
       }
       self.createCfg_makePlots_mcClosure(self.jobOptions_make_plots[key_makePlots_job])
                 

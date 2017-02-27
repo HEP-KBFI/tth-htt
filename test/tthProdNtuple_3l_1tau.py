@@ -35,7 +35,9 @@ if __name__ == '__main__':
     format = '%(asctime)s - %(levelname)s: %(message)s')
 
   ntupleProduction = prodNtupleConfig_3l_1tau(
-    outputDir = os.path.join("/home", getpass.getuser(), "ttHNtupleProduction", ERA, version),
+    configDir = os.path.join("/home", getpass.getuser(), "ttHNtupleProduction", ERA, version),
+    outputDir = os.path.join("/hdfs/local/ttH_2tau", getpass.getuser(), "ttHNtupleProduction", ERA, version),
+    ##outputDir = os.path.join("/home", getpass.getuser(), "ttHNtupleProduction", ERA, version),
     executable_prodNtuple = "produceNtuple_3l_1tau",
     cfgFile_prodNtuple = "produceNtuple_3l_1tau_cfg.py",
     samples = samples,

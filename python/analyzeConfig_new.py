@@ -29,7 +29,8 @@ class analyzeConfig:
        Sets up a folder structure by defining full path names; no directory creation is delegated here.
 
        Args:
-         outputDir: The root output dir -- all configuration, log and output files are stored in its subdirectories
+         configDir: The root config dir -- all configuration files are stored in its subdirectories
+         outputDir: The root output dir -- all log and output files are stored in its subdirectories  
          executable_analyze: Name of the executable that runs the analysis; possible values are `analyze_2lss_1tau`, `analyze_2los_1tau`, `analyze_1l_2tau`,...
          max_files_per_job: maximum number of input ROOT files (Ntuples) are allowed to chain together per job
          use_lumi: if True, use lumiSection aka event weight ( = xsection * luminosity / nof events), otherwise uses plain event count
@@ -97,6 +98,7 @@ class analyzeConfig:
         self.workingDir = os.getcwd()
         print "Working directory is: " + self.workingDir
 
+        create_if_not_exists(self.configDir)
         create_if_not_exists(self.outputDir)
         self.stdout_file = codecs.open(os.path.join(
             self.outputDir, "stdout_%s.log" % self.channel), 'w', 'utf-8')
@@ -184,13 +186,15 @@ class analyzeConfig:
                 'HLT_BIT_HLT_IsoMu22_v',
                 'HLT_BIT_HLT_IsoTkMu22_v',
                 'HLT_BIT_HLT_IsoMu22_eta2p1_v',
-                'HLT_BIT_HLT_IsoTkMu22_eta2p1_v'
+                'HLT_BIT_HLT_IsoTkMu22_eta2p1_v',
+                'HLT_BIT_HLT_IsoMu24_v',
+                'HLT_BIT_HLT_IsoTkMu24_v'
             ]
             self.triggers_1e = [
                 'HLT_BIT_HLT_Ele25_WPTight_Gsf_v',
+                'HLT_BIT_HLT_Ele27_WPTight_Gsf_v',
                 'HLT_BIT_HLT_Ele25_eta2p1_WPTight_Gsf_v',
                 'HLT_BIT_HLT_Ele27_eta2p1_WPLoose_Gsf_v',
-                'HLT_BIT_HLT_Ele27_eta2p1_WPTight_Gsf_v',
                 ##'HLT_BIT_HLT_Ele45_WPLoose_Gsf_L1JetTauSeeded_v'
             ]
             self.triggers_1mu1tau = [
