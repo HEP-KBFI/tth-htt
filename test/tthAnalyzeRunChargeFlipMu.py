@@ -19,7 +19,7 @@ elif ERA == "2016":
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "histosCF_mu_uncerts"
+version = "histosCF_mu_testPt"
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -37,16 +37,16 @@ if __name__ == '__main__':
     #hadTau_selection = "dR03mvaTight",
     central_or_shifts = [ 
       "central",
-       "CMS_ttHl_muonERUp",
-       "CMS_ttHl_muonERDown",
-       "CMS_ttHl_muonESBarrel1Up",
-       "CMS_ttHl_muonESBarrel1Down",
-       "CMS_ttHl_muonESBarrel2Up",
-       "CMS_ttHl_muonESBarrel2Down",
-       "CMS_ttHl_muonESEndcap1Down",
-       "CMS_ttHl_muonESEndcap1Up",
-       "CMS_ttHl_muonESEndcap2Down",
-       "CMS_ttHl_muonESEndcap2Up"
+       #"CMS_ttHl_muonERUp",
+       #"CMS_ttHl_muonERDown",
+       #"CMS_ttHl_muonESBarrel1Up",
+       #"CMS_ttHl_muonESBarrel1Down",
+       #"CMS_ttHl_muonESBarrel2Up",
+       #"CMS_ttHl_muonESBarrel2Down",
+       #"CMS_ttHl_muonESEndcap1Down",
+       #"CMS_ttHl_muonESEndcap1Up",
+       #"CMS_ttHl_muonESEndcap2Down",
+       #"CMS_ttHl_muonESEndcap2Up"
     ],
     max_files_per_job = 100,
     era = ERA, use_lumi = True, lumi = LUMI,
