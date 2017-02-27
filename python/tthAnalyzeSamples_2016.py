@@ -2231,23 +2231,23 @@ samples_2016["/ttHToNonbb_M125_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/mat
 #--------------------------------------------------------------------------------
 # !!! ONLY FOR TESTING
 ## samples_2016 = OD()
-## samples_2016["/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14_ext1-v1/MINIAODSIM"] = OD([
+## samples_2016["/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM"] = OD([
 ##   ("type",                  "mc"),
 ##   ("sample_category",       "signal"),
-##   ("process_name_specific", "ttHJetToNonbb_M125"),
-##   ("nof_files",             109),
-##   ("nof_events",            1779218),
+##   ("process_name_specific", "ttHJetToNonbb_M125_amcatnlo"),
+##   ("nof_files",             1018),
+##   ("nof_events",            2969555),
 ##   ("use_it",                True),
 ##   ("xsection",              0.215100),
 ##   ("genWeight",             True),
-##   ("triggers",              [ "1e", "2e", "1mu", "2mu", "1e1mu" ]),
+##   ("triggers",              [ "1e", "1mu", "2e", "1e1mu", "2mu", "3e", "2e1mu", "1e2mu", "3mu", "1e1tau", "1mu1tau", "2tau" ]),
 ##   ("reHLT",                 True),
 ##   ("local_paths",
 ##     [
 ##       OD([
-##         ("path",      "/hdfs/local/lucia/VHBBHeppyV24bis/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/VHBB_HEPPY_V24bis_ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_Py8_mWCutfix__spr16MAv2-puspr16_HLT_80r2as_v14_ext1-v1/160911_223711"),
+##         ("path",      "/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau/MC/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/VHBB_HEPPY_V25tthtautau_ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_Py8_mWCutfix__RunIISummer16MAv2-PUMoriond17_80r2as_2016_TrancheIV_v6_ext1-v1/170207_122849"),
 ##         ("selection", "*"),
-##         ("blacklist", [10, 11, 14, 16, 20, 22, 23, 26, 29, 30, 31, 33, 34, 38, 39, 43, 44, 45, 51, 54, 57, 62, 63, 64, 66, 67, 68, 70, 71, 72, 73, 75, 76, 77, 79, 80, 81, 89, 98, 99]),
+##         ("blacklist", [645, 835, 909, 986]),
 ##       ]),
 ##     ]
 ##   ),

@@ -20,7 +20,7 @@ RecoMuonSelectorFakeable::RecoMuonSelectorFakeable(int era, int index, bool debu
   , apply_mediumIdPOG_(false)
 {
   if      ( era_ == kEra_2015 ) max_jetBtagCSV_ = { 0.6050, 0.8900 };
-  else if ( era_ == kEra_2016 ) max_jetBtagCSV_ = { 0.3000, 0.8484 };
+  else if ( era_ == kEra_2016 ) max_jetBtagCSV_ = { 0.5426, 0.8484 };
   else assert(0);
   tightMuonSelector_ = new RecoMuonSelectorTight(era_, index, debug, false);
 }
