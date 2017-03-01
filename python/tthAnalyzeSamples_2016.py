@@ -3,9 +3,6 @@ from collections import OrderedDict as OD
 samples_2016 = OD()
 
 # file generated with command:
-# check_broken -p /hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau/MC/ /hdfs/cms/store/user/mario/VHBBHeppyV25tthtautau/MC/ /hdfs/cms/store/user/rdewanje/VHBBHeppyV25tthtautau/MC/ /hdfs/cms/store/user/veelken/VHBBHeppyV25tthtautau/MC/ /hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau_v2/MC --histo CountWeighted --output=. -P -z -v
-
-# file generated with command:
 # check_broken -p /hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau/MC_fastsim/ /hdfs/cms/store/user/mario/VHBBHeppyV25tthtautau/MC_fastsim/ /hdfs/cms/store/user/rdewanje/VHBBHeppyV25tthtautau/MC_fastsim/ /hdfs/cms/store/user/veelken/VHBBHeppyV25tthtautau/MC_fastsim/ --histo CountWeighted --output=. -P -z -v
 
 #############
@@ -547,8 +544,8 @@ samples_2016["/SingleElectron/Run2016B-23Sep2016-v3/MINIAOD"] = OD([
   ("type",                  "data"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "SingleElectron_Run2016B_v3"),
-  ("nof_files",             8546),
-  ("nof_events",            245263644),
+  ("nof_files",             5982),
+  ("nof_events",            246440440),
   ("use_HIP_mitigation_bTag", True),
   ("use_HIP_mitigation_mediumMuonId", True),
   ("use_it",                True),
@@ -557,9 +554,9 @@ samples_2016["/SingleElectron/Run2016B-23Sep2016-v3/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau/SingleElectron/VHBB_HEPPY_V25tthtautau_SingleElectron__Run2016B-23Sep2016-v3/170207_125603"),
+        ("path",      "/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau_v3/SingleElectron/VHBB_HEPPY_V25tthtautau_v3_SingleElectron__Run2016B-23Sep2016-v3/170220_170550"),
         ("selection", "*"),
-        ("blacklist", [2230, 2533, 2590, 3150, 3382, 3388, 3916, 4341, 4375, 4442, 4715, 4856, 5236, 5494, 5557, 5605, 5710, 5725, 5731, 5736, 5737, 5753, 5774, 5781, 5795, 5810, 5822, 5902, 5939, 5947, 5960, 5972, 6012, 6029, 6058]),
+        ("blacklist", []),
       ]),
     ]
   ),
@@ -1068,6 +1065,9 @@ samples_2016["/Tau/Run2016H-PromptReco-v3/MINIAOD"] = OD([
 #############
 # MC
 #############
+
+# file generated with command:
+# check_broken -p /hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau/MC/ /hdfs/cms/store/user/mario/VHBBHeppyV25tthtautau/MC/ /hdfs/cms/store/user/rdewanje/VHBBHeppyV25tthtautau/MC/ /hdfs/cms/store/user/veelken/VHBBHeppyV25tthtautau/MC/ /hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau_v2/MC /hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau_v3/MC --histo CountWeighted --output=. -P -z -v
 
 samples_2016["/ST_t-channel_antitop_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia8_TuneCUETP8M1/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"] = OD([
   ("type",                  "mc"),

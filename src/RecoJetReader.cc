@@ -211,7 +211,7 @@ std::vector<RecoJet> RecoJetReader::read() const
 	      gInstance->jet_corr_JECDown_[idxJet],
 	      ( use_HIP_mitigation_ ) ? gInstance->jet_BtagCSVwHipMitigation_[idxJet] : gInstance->jet_BtagCSVwoHipMitigation_[idxJet],
 	      gInstance->jet_BtagWeight_[idxJet],	
-	      gInstance->jet_heppyFlavour_[idxJet],
+	      //gInstance->jet_heppyFlavour_[idxJet],
 	      idxJet ));
       RecoJet& jet = jets.back();
       jet.BtagCSVwHipMitigation_ = gInstance->jet_BtagCSVwHipMitigation_[idxJet];
