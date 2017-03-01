@@ -338,7 +338,7 @@ def validate(output_dir, verbose = False):
               file_dict['missing'].append(file_dict_entry)
               continue
             nof_rle_events = raw_linecount(expected_rle_file)
-            if nof_rle_events == 1 and os.path.getsize(expected_rle_file):
+            if nof_rle_events == 1 and os.path.getsize(expected_rle_file) == 1:
               # the RLE file contains only a newline, hence no events
               nof_rle_events = 0
 
