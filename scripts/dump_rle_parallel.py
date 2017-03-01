@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import logging, argparse, os, sys, getpass, jinja2, subprocess, stat, re
+import logging, argparse, os, sys, getpass, jinja2, subprocess, stat, re, io, ROOT
 from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016 import samples_2016 as samples
 
 dumPy = """#!/usr/bin/env python
@@ -77,6 +77,27 @@ def create_dir_if_not_exist(d):
       logging.error("Could not create the directory")
       return False
   return True
+
+def raw_linecount(filename, buf_sz = 2**20):
+  '''Counts the number of lines in a file
+  Args:
+    filename: string, path to the file the number of newlines of which shall be counted
+    buf_sz:   int, the buffer size in bytes (i.e. how much data is processed at once);
+                   defaults to 1 MiB
+
+  Returns:
+    int, number of newline characters in the file
+
+  Credit to the author of this post: http://stackoverflow.com/a/27518377
+  '''
+  f = io.open(filename, 'rb')
+  lines = 0
+  read_f = f.raw.read
+  buf = read_f(buf_sz)
+  while buf:
+      lines += buf.count(b'\n')
+      buf    = read_f(buf_sz)
+  return lines
 
 def bake_job(sh_script_path, py_script_path, sh_args, py_args, logfile, submit_job = True):
   '''Bakes a sbatch job for us
@@ -239,6 +260,133 @@ def dump_rle_parallel(output_dir, nof_files = 100, force = False, test = False, 
   logging.debug("Done!")
   return map(int, sbatch_job_ids)
 
+def validate(output_dir, verbose = False):
+  '''Validates the job execution carried out by dump_rle_parallel()
+  Args:
+    output_dir: string, The directory where all RLE files are stored
+    verbose:    bool,   Enable verbose output
+
+  Returns:
+    None
+
+  The validation is quite basic: the program will loop over the subdirectories of output_dir,
+  matches them against the dictionary entries specified by sample variable and counts the number
+  of lines in each RLE file. If the number of files doesn't match to the number of entries in
+  the corresponding ROOT file, the user will be notified about such discrepancies.
+
+  In principle, the script could also print relevant commands to fix the issues (and dump them
+  to an easily executable file) but let's leave it for another time.
+  '''
+
+  if verbose:
+    logging.getLogger().setLevel(logging.DEBUG)
+
+  root_file_regex = re.compile('^tree_(\d+).root$')
+  file_dict = { k : [] for k in ['excess', 'missing', 'corrupted'] }
+
+  try:
+
+    for s_key, s_value in samples.iteritems():
+      sample_name = s_value['process_name_specific']
+      sample_dir = os.path.join(output_dir, sample_name)
+      if os.path.isdir(sample_dir):
+        logging.debug("Found sample directory {sample_dir}".format(sample_dir = sample_dir))
+
+        #NB! assume that there are no secondary paths in the dictionary (hence index 0!)
+        sample_path_dict = s_value['local_paths'][0]
+        sample_path      = sample_path_dict['path']
+        blacklist        = sample_path_dict['blacklist']
+        for sample_subdir in os.listdir(sample_path):
+          sample_subpath_idx = -1
+          try:
+            sample_subpath_idx = int(sample_subdir)
+          except ValueError:
+            continue
+          if sample_subpath_idx < 0:
+            raise ValueError("Internal error")
+          sample_subpath = os.path.join(sample_path, sample_subdir)
+          logging.debug("Processing sample subdirectory {sample_subpath}".format(sample_subpath = sample_subpath))
+
+          for sample_file in os.listdir(sample_subpath):
+            sample_file_fullpath = os.path.join(sample_subpath, sample_file)
+            if not sample_file.endswith('.root') or not os.path.isfile(sample_file_fullpath):
+              continue
+
+            root_file_regex_match = root_file_regex.search(sample_file)
+            if not root_file_regex_match:
+              continue
+
+            root_file_idx = sample_subpath_idx * 1000 + int(root_file_regex_match.group(1))
+            expected_rle_file_basename = '{root_file_idx}.txt'.format(root_file_idx = root_file_idx)
+            expected_rle_file          = os.path.join(sample_dir, expected_rle_file_basename)
+            file_dict_entry            = (expected_rle_file, sample_file_fullpath)
+            if root_file_idx in blacklist:
+              if os.path.isfile(expected_rle_file):
+                logging.warning('Found RLE file {rle_file} (corresponding to blacklisted {root_file}) '
+                                'which you ought to delete'.format(
+                  rle_file  = expected_rle_file,
+                  root_file = sample_file_fullpath,
+                ))
+              file_dict['excess'].append(file_dict_entry)
+              continue
+
+            if not os.path.isfile(expected_rle_file):
+              logging.warning('Missing RLE file {rle_file} (corresponding to {root_file})'.format(
+                rle_file  = expected_rle_file,
+                root_file = sample_file_fullpath,
+              ))
+              file_dict['missing'].append(file_dict_entry)
+              continue
+            nof_rle_events = raw_linecount(expected_rle_file)
+            if nof_rle_events == 1 and os.path.getsize(expected_rle_file):
+              # the RLE file contains only a newline, hence no events
+              nof_rle_events = 0
+
+            root_file = ROOT.TFile(sample_file_fullpath, 'read')
+            root_tree = root_file.Get('tree')
+            nof_entries = root_tree.GetEntries()
+
+            nof_events_diff = nof_rle_events - nof_entries
+            if nof_events_diff < 0:
+              logging.error('Missing {nof_events} events in {rle_filename} (corresponding to {sample_file}): '
+                            'expected {expected}, got {actual}'.format(
+                nof_events   = abs(nof_events_diff),
+                rle_filename = expected_rle_file,
+                sample_file  = sample_file_fullpath,
+                expected     = nof_entries,
+                actual       = nof_rle_events,
+              ))
+              file_dict['corrupted'].append(file_dict_entry)
+            elif nof_events_diff > 0:
+              logging.error('Got {nof_events} more event than expected in {rle_filename} (corresponding '
+                            'to {sample_file}): expected {expected}, got {actual}'.format(
+                nof_events   = nof_events_diff,
+                rle_filename = expected_rle_file,
+                sample_file  = sample_file_fullpath,
+                expected     = nof_entries,
+                actual       = nof_rle_events,
+              ))
+              file_dict['corrupted'].append(file_dict_entry)
+            else:
+              logging.debug('File {rle_filename} (corresponding to {sample_file}) looks OK'.format(
+                rle_filename = expected_rle_file,
+                sample_file  = sample_file_fullpath,
+              ))
+
+  except KeyboardInterrupt:
+    pass
+
+  if any(map(bool, file_dict.values())):
+    logging.info('Validation finished with errors')
+    for key in file_dict.keys():
+      if file_dict[key]:
+        logging.info('Number of {key} RLE files: {nof_key}'.format(key = key, nof_key = len(file_dict[key])))
+        for entry in file_dict[key]:
+          logging.info('{rle_file} <=> {sample_file}'.format(rle_file = entry[0], sample_file = entry[1]))
+  else:
+    logging.info('Validation finished successfully')
+  return
+
 if __name__ == '__main__':
   logging.basicConfig(
     stream = sys.stdout,
@@ -265,8 +413,13 @@ if __name__ == '__main__':
                       help = 'R|Force the creation of output directory if missing')
   parser.add_argument('-t', '--test', dest = 'test', action = 'store_true', default = False,
                       help = 'R|Do not submit the jobs')
+  parser.add_argument('-V', '--validate', dest = 'validate', action = 'store_true', default = False,
+                      help = 'R|Check if all the RLE numbers have been fetched')
   parser.add_argument('-v', '--verbose', dest = 'verbose', action = 'store_true', default = False,
                       help = 'R|Enable verbose printout')
   args = parser.parse_args()
 
-  dump_rle_parallel(args.output_dir, args.nof_files, args.force, args.test, args.verbose, args.sample_name, args.tmp_dir)
+  if args.validate:
+    validate(args.output_dir, args.verbose)
+  else:
+    dump_rle_parallel(args.output_dir, args.nof_files, args.force, args.test, args.verbose, args.sample_name, args.tmp_dir)
