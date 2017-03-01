@@ -31,6 +31,8 @@ process.produceNtuple_2lss_1tau = cms.PSet(
     use_HIP_mitigation_bTag = cms.bool(False),
     minNumBJets_loose = cms.int32(0),
     minNumBJets_medium = cms.int32(0),
+
+    isMC = cms.bool(True),
     
     selEventsFileName_input = cms.string(''),
 

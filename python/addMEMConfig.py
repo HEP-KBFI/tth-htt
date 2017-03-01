@@ -94,7 +94,7 @@ class addMEMConfig:
 
         self.cvmfs_error_log = {}
 
-    def createCfg_addMEM(self, inputFiles, startRange, endRange, outputFile, era, cfgFile_modified):
+    def createCfg_addMEM(self, inputFiles, startRange, endRange, outputFile, era, isMC, cfgFile_modified):
         raise ValueError(
             "Function 'createCfg_addMEM' not implemented in derrived class !!")
 
@@ -295,8 +295,9 @@ class addMEMConfig:
                 logging.warning("Skipping sample {sample_name}".format(sample_name = sample_name))
                 continue
 
-            process_name = sample_info["process_name_specific"]
+            process_name = sample_info["process_name_specific"]            
             logging.info("Creating configuration files to run '%s' for sample %s" % (self.executable_addMEM, process_name))
+            is_mc = (sample_info["type"] == "mc")
 
             inputFileList = generateInputFileList(sample_name, sample_info, self.max_files_per_job, self.debug)
             # typically, the analysis ends here and starts looping b/c the smallest unit of work processes
@@ -335,6 +336,7 @@ class addMEMConfig:
                     memEvtRangeDict[jobId]['event_range'][1],
                     self.outputFiles[key_file],
                     self.era,
+                    is_mc,
                     self.cfgFiles_addMEM_modified[key_file],
                 )
 

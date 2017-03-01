@@ -19,7 +19,7 @@ elif ERA == "2016":
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "2017Feb27"
+version = "2017Feb29"
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -29,8 +29,8 @@ if __name__ == '__main__':
 
   analysis = analyzeConfig_1l_2tau(
     configDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", ERA, version),
-    outputDir = os.path.join("/hdfs/local/ttH_2tau", getpass.getuser(), "ttHAnalysis", ERA, version),
-    ##outputDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", ERA, version),
+    ##outputDir = os.path.join("/hdfs/local/ttH_2tau", getpass.getuser(), "ttHAnalysis", ERA, version),
+    outputDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", ERA, version),
     executable_analyze = "analyze_1l_2tau", cfgFile_analyze = "analyze_1l_2tau_cfg.py",
     samples = samples,
     hadTau_selection = "dR03mvaTight",
@@ -91,7 +91,8 @@ if __name__ == '__main__':
 
   analysis.create()
 
-  run_analysis = query_yes_no("Start jobs ?")
+  ##run_analysis = query_yes_no("Start jobs ?")
+  run_analysis = True
   if run_analysis:
     analysis.run()
   else:

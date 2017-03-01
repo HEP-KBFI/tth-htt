@@ -447,7 +447,7 @@ int main(int argc, char* argv[])
   tightHadTauSelector_sublead.set_min_antiElectron(hadTauSelection_antiElectron_sublead);
   tightHadTauSelector_sublead.set_min_antiMuon(hadTauSelection_antiMuon_sublead);
 
-  RecoJetReader* jetReader = new RecoJetReader(era, Form("n%s", branchName_jets.data()), branchName_jets);
+  RecoJetReader* jetReader = new RecoJetReader(era, isMC, Form("n%s", branchName_jets.data()), branchName_jets);
   if ( use_HIP_mitigation_bTag ) jetReader->enable_HIP_mitigation();
   else jetReader->disable_HIP_mitigation();
   jetReader->setJetPt_central_or_shift(jetPt_option);
@@ -828,32 +828,33 @@ int main(int argc, char* argv[])
       continue;
     }
     
-//--- rank triggers by priority and ignore triggers of lower priority if a trigger of higher priority has fired for given event;
+//--- Rank triggers by priority and ignore triggers of lower priority if a trigger of higher priority has fired for given event;
 //    the ranking of the triggers is as follows: 1mu, 1e
-// CV: this logic is necessary to avoid that the same event is selected multiple times when processing different primary datasets
+// CV: This logic is necessary to avoid that the same event is selected multiple times when processing different primary datasets.
+//     The mu+tau and e+tau need to have the lowest priority, as not all e+tau trigger paths exists in the VHbb Ntuples of the SingleElectron and SingleMuon datasets!!
     if ( !isMC && !isDEBUG ) {
-      //bool isTriggered_SingleElectron = isTriggered_1e;
+      bool isTriggered_SingleElectron = isTriggered_1e;
       bool isTriggered_SingleMuon = isTriggered_1mu;
-      bool isTriggered_Tau = isTriggered_1e1tau || isTriggered_1mu1tau;
+      //bool isTriggered_Tau = isTriggered_1e1tau || isTriggered_1mu1tau;
 
       bool selTrigger_SingleElectron = selTrigger_1e;
-      bool selTrigger_SingleMuon = selTrigger_1mu;
-      //bool selTrigger_Tau = selTrigger_1e1tau || selTrigger_1mu1tau;
+      //bool selTrigger_SingleMuon = selTrigger_1mu;
+      bool selTrigger_Tau = selTrigger_1e1tau || selTrigger_1mu1tau;
       
-      if ( selTrigger_SingleMuon && isTriggered_Tau ) {
-	if ( run_lumi_eventSelector ) {
-	  std::cout << "event FAILS trigger selection." << std::endl; 
-	  std::cout << " (selTrigger_SingleMuon = " << selTrigger_SingleMuon
-		    << ", isTriggered_Tau = " << isTriggered_Tau << ")" << std::endl;
-	}
-	continue; 
-      }
-      if ( selTrigger_SingleElectron && (isTriggered_SingleMuon || isTriggered_Tau) ) {
+      if ( selTrigger_SingleElectron && isTriggered_SingleMuon ) {
 	if ( run_lumi_eventSelector ) {
 	  std::cout << "event FAILS trigger selection." << std::endl; 
 	  std::cout << " (selTrigger_SingleElectron = " << selTrigger_SingleElectron
+		    << ", isTriggered_SingleMuon = " << isTriggered_SingleMuon << ")" << std::endl;
+	}
+	continue; 
+      }
+      if ( selTrigger_Tau && (isTriggered_SingleMuon || isTriggered_SingleElectron) ) {
+	if ( run_lumi_eventSelector ) {
+	  std::cout << "event FAILS trigger selection." << std::endl; 
+	  std::cout << " (selTrigger_Tau = " << selTrigger_Tau
 		    << ", isTriggered_SingleMuon = " << isTriggered_SingleMuon
-		    << ", isTriggered_Tau = " << isTriggered_Tau << ")" << std::endl;
+		    << ", isTriggered_SingleElectron = " << isTriggered_SingleElectron << ")" << std::endl;
 	}
 	continue; 
       }
@@ -1187,6 +1188,26 @@ int main(int argc, char* argv[])
     cutFlowTable.update(">= 2 loose b-jets || 1 medium b-jet (2)", evtWeight);
     cutFlowHistManager->fillHistograms(">= 2 loose b-jets || 1 medium b-jet (2)", evtWeight);
  
+    bool failsLowMassVeto = false;
+    for ( std::vector<const RecoLepton*>::const_iterator lepton1 = preselLeptons.begin();
+	  lepton1 != preselLeptons.end(); ++lepton1 ) {
+      for ( std::vector<const RecoLepton*>::const_iterator lepton2 = lepton1 + 1;
+	    lepton2 != preselLeptons.end(); ++lepton2 ) {
+	double mass = ((*lepton1)->p4() + (*lepton2)->p4()).mass();
+	if ( mass < 12. ) {
+	  failsLowMassVeto = true;
+	}
+      }
+    }
+    if ( failsLowMassVeto ) {
+      if ( run_lumi_eventSelector ) {
+	std::cout << "event FAILS low mass lepton pair veto." << std::endl;
+      }
+      continue;
+    }
+    cutFlowTable.update("m(ll) > 12 GeV", evtWeight);
+    cutFlowHistManager->fillHistograms("m(ll) > 12 GeV", evtWeight);
+
     double minPt = selLepton->is_electron() ? 25. : 20.;
     if ( !(selLepton->pt() > minPt) ) continue;
     cutFlowTable.update("sel lepton pT > 25(e)/20(mu) GeV", evtWeight);

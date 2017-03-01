@@ -38,7 +38,7 @@ class analyzeConfig_charge_flip_mu(analyzeConfig_charge_flip):
           key_dir = getKey(sample_name, lepton_selection)  
           for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_DCRD, DKEY_RLES  ]:
             initDict(self.dirs, [ key_dir, dir_type ])
-            if dir_type in [ DKEY_CFGS ]:
+            if dir_type in [ DKEY_CFGS, DKEY_LOGS ]:
               self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel,
                 "_".join([ lepton_selection ]), process_name)
             else:

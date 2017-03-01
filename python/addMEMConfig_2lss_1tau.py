@@ -13,7 +13,7 @@ class addMEMConfig_2lss_1tau(addMEMConfig):
 
     self.cfgFile_addMEM_original = os.path.join(self.workingDir, "addMEM_2lss_1tau_cfg.py")
 
-  def createCfg_addMEM(self, inputFiles, startRange, endRange, outputFile, era, cfgFile_modified):
+  def createCfg_addMEM(self, inputFiles, startRange, endRange, outputFile, era, isMC, cfgFile_modified):
     """Create python configuration file for the addMEM_2lss_1tau executable (MEM code)
 
     Args:
@@ -43,5 +43,6 @@ class addMEMConfig_2lss_1tau(addMEMConfig):
       lines.append("process.addMEM_2lss_1tau.copy_histograms = cms.vstring()")
     lines.append("process.addMEM_2lss_1tau.leptonSelection = cms.string('%s')" % self.leptonSelection)
     lines.append("process.addMEM_2lss_1tau.hadTauSelection = cms.string('%s')" % self.hadTauSelection)
+    lines.append("process.addMEM_2lss_1tau.isMC = cms.bool(%s)" % isMC)
 
     create_cfg(self.cfgFile_addMEM_original, cfgFile_modified, lines)

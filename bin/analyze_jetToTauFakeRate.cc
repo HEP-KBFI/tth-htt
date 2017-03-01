@@ -450,7 +450,7 @@ int main(int argc, char* argv[])
   tightHadTauSelector.set_min_antiElectron(hadTauSelection_antiElectron);
   tightHadTauSelector.set_min_antiMuon(hadTauSelection_antiMuon);
 
-  RecoJetReader* jetReader = new RecoJetReader(era, "nJet", "Jet");
+  RecoJetReader* jetReader = new RecoJetReader(era, isMC, "nJet", "Jet");
   if ( use_HIP_mitigation_bTag ) jetReader->enable_HIP_mitigation();
   else jetReader->disable_HIP_mitigation();
   jetReader->setJetPt_central_or_shift(jetPt_option);

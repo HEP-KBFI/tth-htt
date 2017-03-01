@@ -349,7 +349,7 @@ int main(int argc, char* argv[])
   tightHadTauSelector_third.set_min_antiElectron(hadTauSelection_antiElectron_third);
   tightHadTauSelector_third.set_min_antiMuon(hadTauSelection_antiMuon_third);
 
-  RecoJetReader* jetReader = new RecoJetReader(era, "nJet", "Jet");
+  RecoJetReader* jetReader = new RecoJetReader(era, isMC, "nJet", "Jet");
   jetReader->setJetPt_central_or_shift(jetPt_option);
   jetReader->setBranchName_BtagWeight(jet_btagWeight_branch);
   jetReader->setBranchAddresses(inputTree);

@@ -357,7 +357,7 @@ int main(int argc, char* argv[])
   RecoHadTauCollectionSelectorTight tightHadTauSelector(era);
   if ( hadTauSelection_part2 != "" ) tightHadTauSelector.set(hadTauSelection_part2);
   
-  RecoJetReader* jetReader = new RecoJetReader(era, "nJet", "Jet");
+  RecoJetReader* jetReader = new RecoJetReader(era, isMC, "nJet", "Jet");
   jetReader->setJetPt_central_or_shift(jetPt_option);
   jetReader->setBranchName_BtagWeight(jet_btagWeight_branch);
   jetReader->setBranchAddresses(inputTree);

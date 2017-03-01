@@ -170,6 +170,7 @@ class prodNtupleConfig:
                 continue
 
             process_name = sample_info["process_name_specific"]
+            is_mc = (sample_info["type"] == "mc")
             rle_filename = ''
             if self.rle_directory:
                 rle_filename = os.path.join(self.rle_directory, "{base_name}.txt".format(base_name = process_name))
@@ -200,7 +201,7 @@ class prodNtupleConfig:
                   (process_name, jobId))
                 self.logFiles_prodNtuple[key_file] = os.path.join(self.dirs[key_dir][DKEY_LOGS], "produceNtuple_%s_%s_%i.log" % \
                   (self.channel, process_name, jobId))
-                self.createCfg_prodNtuple(self.inputFiles[key_file], self.outputFiles[key_file], self.era,
+                self.createCfg_prodNtuple(self.inputFiles[key_file], self.outputFiles[key_file], self.era, isMC, 
                                           self.cfgFiles_prodNtuple_modified[key_file], rle_filename)
                 
         if self.is_sbatch:

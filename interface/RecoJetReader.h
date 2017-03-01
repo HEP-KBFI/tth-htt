@@ -15,8 +15,8 @@
 class RecoJetReader
 {
  public:
-  RecoJetReader(int era);
-  RecoJetReader(int era, const std::string& branchName_num, const std::string& branchName_obj); 
+  RecoJetReader(int era, bool isMC);
+  RecoJetReader(int era, bool isMC, const std::string& branchName_num, const std::string& branchName_obj); 
   ~RecoJetReader();
 
   enum { kJetPt_central, kJetPt_jecUp, kJetPt_jecDown };
@@ -53,6 +53,7 @@ class RecoJetReader
   void setBranchNames();
 
   int era_;
+  bool isMC_;
   bool use_HIP_mitigation_;
   const int max_nJets_;
   std::string branchName_num_;

@@ -21,7 +21,7 @@ class prodNtupleConfig_2lss_1tau(prodNtupleConfig):
 
         self.cfgFile_prodNtuple_original = os.path.join(self.workingDir, cfgFile_prodNtuple)
                
-    def createCfg_prodNtuple(self, inputFiles, outputFile, era, cfgFile_modified, rle_filename = ''):
+    def createCfg_prodNtuple(self, inputFiles, outputFile, era, isMC, cfgFile_modified, rle_filename = ''):
         """Create python configuration file for the produceNtuple_2lss_1tau executable (Ntuple production code)
 
         Args:
@@ -34,5 +34,6 @@ class prodNtupleConfig_2lss_1tau(prodNtupleConfig):
         lines.append("process.produceNtuple_2lss_1tau.era = cms.string('%s')" % era)
         if rle_filename:
             lines.append("process.produceNtuple_2lss_1tau.selEventsFileName_addMEM = cms.string('%s')" % rle_filename)
+        lines.append("process.produceNtuple_2lss_1tau.isMC = cms.bool(%s)" % isMC)
         create_cfg(self.cfgFile_prodNtuple_original, cfgFile_modified, lines)
 

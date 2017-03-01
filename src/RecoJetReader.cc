@@ -9,8 +9,9 @@
 std::map<std::string, int> RecoJetReader::numInstances_;
 std::map<std::string, RecoJetReader*> RecoJetReader::instances_;
 
-RecoJetReader::RecoJetReader(int era)
+RecoJetReader::RecoJetReader(int era, bool isMC)
   : era_(era)
+  , isMC_(isMC)
   , use_HIP_mitigation_(true)
   , max_nJets_(32)
   , branchName_num_("nJet")
@@ -32,8 +33,9 @@ RecoJetReader::RecoJetReader(int era)
   setBranchNames();
 }
 
-RecoJetReader::RecoJetReader(int era, const std::string& branchName_num, const std::string& branchName_obj)
+RecoJetReader::RecoJetReader(int era, bool isMC, const std::string& branchName_num, const std::string& branchName_obj)
   : era_(era)
+  , isMC_(isMC)
   , use_HIP_mitigation_(true)
   , max_nJets_(32)
   , branchName_num_(branchName_num)
@@ -104,7 +106,9 @@ void RecoJetReader::setBranchNames()
       std::string branchName_BtagWeight = TString(getBranchName_bTagWeight(era_, idxShift)).ReplaceAll("Jet_", Form("%s_", branchName_obj_.data())).Data();
       branchNames_BtagWeight_systematics_[idxShift] = branchName_BtagWeight;
     }
-    branchName_heppyFlavour_ = Form("%s_%s", branchName_obj_.data(), "heppyFlavour");    
+    if ( isMC_ ) {
+      branchName_heppyFlavour_ = Form("%s_%s", branchName_obj_.data(), "heppyFlavour");    
+    }
     instances_[branchName_obj_] = this;
   } else {
     if ( branchName_num_ != instances_[branchName_obj_]->branchName_num_ ) {
@@ -119,7 +123,8 @@ void RecoJetReader::setBranchNames()
 
 namespace
 {
-  void initializeArray(Float_t* array, int numElements, double value = 0.)
+  template <typename T1, typename T2>
+  void initializeArray(T1* array, int numElements, T2 value)
   {
     for ( int idxElement = 0; idxElement < numElements; ++idxElement ) {
       array[idxElement] = value;
@@ -170,7 +175,11 @@ void RecoJetReader::setBranchAddresses(TTree* tree)
       }
     }
     jet_heppyFlavour_ = new Int_t[max_nJets_];
-    tree->SetBranchAddress(branchName_heppyFlavour_.data(), jet_heppyFlavour_); 
+    if ( branchName_heppyFlavour_ != "" ) {
+      tree->SetBranchAddress(branchName_heppyFlavour_.data(), jet_heppyFlavour_); 
+    } else {
+      initializeArray(jet_heppyFlavour_, max_nJets_, -1);
+    }
   }
 }
 

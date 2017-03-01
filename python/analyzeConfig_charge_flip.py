@@ -38,7 +38,7 @@ class analyzeConfig_charge_flip(analyzeConfig):
           key_dir = getKey(sample_name, lepton_selection)  
           for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_DCRD, DKEY_RLES  ]:
             initDict(self.dirs, [ key_dir, dir_type ])
-            if dir_type in [ DKEY_CFGS ]:
+            if dir_type in [ DKEY_CFGS, DKEY_LOGS ]:
               self.dirs[key_dir][dir_type] = os.path.join(self.configDir, dir_type, self.channel,
                 "_".join([ lepton_selection ]), process_name)
             else:
@@ -136,7 +136,7 @@ class analyzeConfig_charge_flip(analyzeConfig):
         key_dir = getKey(process_name, lepton_selection)
         for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_RLES ]:
           initDict(self.dirs, [ key_dir, dir_type ])
-          if dir_type in [ DKEY_CFGS ]:
+          if dir_type in [ DKEY_CFGS, DKEY_LOGS ]:
             self.dirs[key_dir][dir_type] = os.path.join(self.configDir, dir_type, self.channel,
               "_".join([ lepton_selection ]), process_name)
           else:
@@ -144,7 +144,7 @@ class analyzeConfig_charge_flip(analyzeConfig):
               "_".join([ lepton_selection ]), process_name)
     for dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_HIST, DKEY_DCRD, DKEY_PLOT ]:
       initDict(self.dirs, [ dir_type ])
-      if dir_type in [ DKEY_CFGS, DKEY_SCRIPTS ]:
+      if dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_LOGS ]:
         self.dirs[dir_type] = os.path.join(self.configDir, dir_type, self.channel)
       else:
         self.dirs[dir_type] = os.path.join(self.outputDir, dir_type, self.channel)

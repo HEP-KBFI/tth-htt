@@ -136,6 +136,8 @@ int main(int argc, char* argv[])
   int minNumBJets_loose = cfg_produceNtuple.getParameter<int>("minNumBJets_loose");
   int minNumBJets_medium = cfg_produceNtuple.getParameter<int>("minNumBJets_medium");
   
+  bool isMC = cfg_produceNtuple.getParameter<bool>("isMC"); 
+
   std::string selEventsFileName_input = cfg_produceNtuple.getParameter<std::string>("selEventsFileName_input");
   std::cout << "selEventsFileName_input = " << selEventsFileName_input << std::endl;
   RunLumiEventSelector* run_lumi_eventSelector = 0;
@@ -219,7 +221,7 @@ int main(int argc, char* argv[])
   fakeableHadTauSelector.set_min_pt(18.);
   tightHadTauSelector.set_min_pt(18.);
   
-  RecoJetReader* jetReader = new RecoJetReader(era, "nJet", "Jet");
+  RecoJetReader* jetReader = new RecoJetReader(era, isMC, "nJet", "Jet");
   if ( use_HIP_mitigation_bTag ) jetReader->enable_HIP_mitigation();
   else jetReader->disable_HIP_mitigation();
   // CV: apply jet pT cut on JEC upward shift, to make sure pT cut is loose enough

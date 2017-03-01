@@ -26,6 +26,8 @@ process.addMEM_2lss_1tau = cms.PSet(
     
     use_HIP_mitigation_bTag = cms.bool(False),
 
+    isMC = cms.bool(True),
+
     branchName_electrons = cms.string('Electron'),
     branchName_muons = cms.string('Muon'),
     branchName_hadTaus = cms.string('HadTau'),

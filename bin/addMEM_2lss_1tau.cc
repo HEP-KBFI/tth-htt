@@ -137,6 +137,8 @@ int main(int argc, char* argv[])
   bool use_HIP_mitigation_bTag = cfg_addMEM.getParameter<bool>("use_HIP_mitigation_bTag"); 
   std::cout << "use_HIP_mitigation_bTag = " << use_HIP_mitigation_bTag << std::endl;
   
+  bool isMC = cfg_addMEM.getParameter<bool>("isMC"); 
+
   std::string branchName_electrons = cfg_addMEM.getParameter<std::string>("branchName_electrons");
   std::string branchName_muons = cfg_addMEM.getParameter<std::string>("branchName_muons");
   std::string branchName_hadTaus = cfg_addMEM.getParameter<std::string>("branchName_hadTaus");
@@ -230,7 +232,7 @@ int main(int argc, char* argv[])
   fakeableHadTauSelector.set_min_pt(18.);
   tightHadTauSelector.set_min_pt(18.);
   
-  RecoJetReader* jetReader = new RecoJetReader(era, Form("n%s", branchName_jets.data()), branchName_jets);
+  RecoJetReader* jetReader = new RecoJetReader(era, isMC, Form("n%s", branchName_jets.data()), branchName_jets);
   if ( use_HIP_mitigation_bTag ) jetReader->enable_HIP_mitigation();
   else jetReader->disable_HIP_mitigation();
   // CV: apply jet pT cut on JEC upward shift, to make sure pT cut is loose enough

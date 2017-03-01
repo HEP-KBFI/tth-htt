@@ -686,7 +686,7 @@ main(int argc,
   RecoHadTauReader* hadTauReader = new RecoHadTauReader(era, "nTauGood", "TauGood");
   hadTauReader->setBranchAddresses(&chain);
   RecoHadTauCollectionSelectorTight hadTauSelector(era);
-  RecoJetReader* jetReader = new RecoJetReader(era, "nJet", "Jet");
+  RecoJetReader* jetReader = new RecoJetReader(era, isMC, "nJet", "Jet");
   jetReader->setBranchName_BtagWeight(jet_btagWeight_branch);
   jetReader->setBranchAddresses(&chain);
   RecoJetCollectionSelector jetSelector(era);

@@ -254,7 +254,7 @@ class analyzeConfig_3l_1tau(analyzeConfig):
             key_dir = getKey(process_name, lepton_and_hadTau_selection_and_frWeight, chargeSumSelection)  
             for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_ROOT, DKEY_RLES ]:
               initDict(self.dirs, [ key_dir, dir_type ])
-              if dir_type in [ DKEY_CFGS ]:
+              if dir_type in [ DKEY_CFGS, DKEY_LOGS ]:
                 self.dirs[key_dir][dir_type] = os.path.join(self.configDir, dir_type, self.channel,
                   "_".join([ lepton_and_hadTau_selection_and_frWeight, chargeSumSelection ]), process_name)
               else:
@@ -262,7 +262,7 @@ class analyzeConfig_3l_1tau(analyzeConfig):
                   "_".join([ lepton_and_hadTau_selection_and_frWeight, chargeSumSelection ]), process_name)
     for dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_HIST, DKEY_DCRD, DKEY_PLOT ]:
       initDict(self.dirs, [ dir_type ])
-      if dir_type in [ DKEY_CFGS, DKEY_SCRIPTS ]:
+      if dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_LOGS ]:
         self.dirs[dir_type] = os.path.join(self.configDir, dir_type, self.channel)
       else:
         self.dirs[dir_type] = os.path.join(self.outputDir, dir_type, self.channel)
