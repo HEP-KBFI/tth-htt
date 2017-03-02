@@ -38,6 +38,8 @@ class lutWrapperBase
                  double xMin = -1., double xMax = -1., double yMin = -1., double yMax = -1.);
   virtual ~lutWrapperBase() {}
   double getSF(double pt, double eta);
+  const std::string& inputFileName() const { return inputFileName_; }
+  const std::string& lutName() const { return lutName_; }
  protected:
   enum { kUndefined, kPt, kEta, kAbsEta };
   std::string inputFileName_;
@@ -54,7 +56,7 @@ class lutWrapperBase
 };
 
 typedef std::vector<lutWrapperBase*> vLutWrapperBase;
-double get_from_lut(const vLutWrapperBase& corrections, double pt, double eta);
+double get_from_lut(const vLutWrapperBase& corrections, double pt, double eta, bool isDEBUG = false);
 
 class lutWrapperTH1 : public lutWrapperBase
 {

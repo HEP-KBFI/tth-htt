@@ -44,7 +44,7 @@ elif ERA == "2016":
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "2017Mar02"
+version = "2017Mar03"
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -122,8 +122,7 @@ if __name__ == '__main__':
 ##       "CMS_ttHl_thu_shape_ttZ_y1Up",
 ##       "CMS_ttHl_thu_shape_ttZ_y1Down"           
     ],
-    ##max_files_per_job = 100,
-    max_files_per_job = 10000,
+    max_files_per_job = 100,
     era = ERA, use_lumi = True, lumi = LUMI,
     debug = False,
     running_method = "sbatch",

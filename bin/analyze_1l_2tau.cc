@@ -307,6 +307,7 @@ int main(int argc, char* argv[])
   cfg_dataToMCcorrectionInterface.addParameter<int>("hadTauSelection_antiElectron_sublead", hadTauSelection_antiElectron_sublead);
   cfg_dataToMCcorrectionInterface.addParameter<int>("hadTauSelection_antiMuon_sublead", hadTauSelection_antiMuon_sublead);
   cfg_dataToMCcorrectionInterface.addParameter<std::string>("central_or_shift", central_or_shift);
+  cfg_dataToMCcorrectionInterface.addParameter<bool>("isDEBUG", isDEBUG);
   Data_to_MC_CorrectionInterface* dataToMCcorrectionInterface = new Data_to_MC_CorrectionInterface(cfg_dataToMCcorrectionInterface);
   Data_to_MC_CorrectionInterface_1l_2tau_trigger* dataToMCcorrectionInterface_1l_2tau_trigger = new Data_to_MC_CorrectionInterface_1l_2tau_trigger(cfg_dataToMCcorrectionInterface);
   
@@ -1074,9 +1075,17 @@ int main(int argc, char* argv[])
 	else if ( lheScale_option == kLHE_scale_yDown ) evtWeight *= lheInfoReader->getWeight_scale_yDown();
 	else if ( lheScale_option == kLHE_scale_yUp   ) evtWeight *= lheInfoReader->getWeight_scale_yUp();
       }
+      double btagWeight = 1.;
       for ( std::vector<const RecoJet*>::const_iterator jet = selJets.begin();
 	    jet != selJets.end(); ++jet ) {
-	evtWeight *= (*jet)->BtagWeight();
+	btagWeight *= (*jet)->BtagWeight();
+      }
+      evtWeight *= btagWeight;
+      if ( isDEBUG ) {
+	std::cout << "lumiScale = " << lumiScale << std::endl;
+	if ( apply_genWeight ) std::cout << "genWeight = " << sgn(genWeight) << std::endl;
+	std::cout << "pileupWeight = " << pileupWeight << std::endl;
+	std::cout << "btagWeight = " << btagWeight << std::endl;
       }
     }
 
@@ -1127,11 +1136,17 @@ int main(int argc, char* argv[])
 //--- apply trigger efficiency turn-on curves to Spring16 non-reHLT MC
       if ( !apply_trigger_bits ) {
 	triggerWeight = dataToMCcorrectionInterface_1l_2tau_trigger->getWeight_leptonTriggerEff();
+	if ( isDEBUG ) {
+	  std::cout << "triggerWeight = " << triggerWeight << std::endl;
+	}
 	evtWeight *= triggerWeight;
       }
 
 //--- apply data/MC corrections for trigger efficiency
       double sf_triggerEff = dataToMCcorrectionInterface_1l_2tau_trigger->getSF_triggerEff();
+      if ( isDEBUG ) {
+	std::cout << "sf_triggerEff = " << sf_triggerEff << std::endl;
+      }
       triggerWeight *= sf_triggerEff;
       weight_data_to_MC_correction *= sf_triggerEff;
 
@@ -1147,6 +1162,9 @@ int main(int argc, char* argv[])
       weight_data_to_MC_correction *= dataToMCcorrectionInterface->getSF_hadTauID_and_Iso();
       weight_data_to_MC_correction *= dataToMCcorrectionInterface->getSF_eToTauFakeRate();
       weight_data_to_MC_correction *= dataToMCcorrectionInterface->getSF_muToTauFakeRate();
+      if ( isDEBUG ) {
+	std::cout << "weight_data_to_MC_correction = " << weight_data_to_MC_correction << std::endl;
+      }
 
       evtWeight *= weight_data_to_MC_correction;
     }       
@@ -1166,6 +1184,9 @@ int main(int argc, char* argv[])
         prob_fake_lepton, passesTight_lepton, 
 	prob_fake_hadTau_lead, passesTight_hadTau_lead, 
 	prob_fake_hadTau_sublead, passesTight_hadTau_sublead); 
+      if ( isDEBUG ) {
+	std::cout << "weight_fakeRate = " << weight_fakeRate << std::endl;
+      }
       evtWeight *= weight_fakeRate;
     } else if ( applyFakeRateWeights == kFR_2tau) {
       double prob_fake_hadTau_lead = jetToTauFakeRateInterface->getWeight_lead(selHadTau_lead->pt(), selHadTau_lead->absEta());
@@ -1175,6 +1196,9 @@ int main(int argc, char* argv[])
       weight_fakeRate = getWeight_2L(
         prob_fake_hadTau_lead, passesTight_hadTau_lead, 
 	prob_fake_hadTau_sublead, passesTight_hadTau_sublead);
+      if ( isDEBUG ) {
+	std::cout << "weight_fakeRate = " << weight_fakeRate << std::endl;
+      }
       evtWeight *= weight_fakeRate;
     }    
 

@@ -199,12 +199,20 @@ double lutWrapperBase::getSF(double pt, double eta)
   return getSF_private(x, y);
 }
 
-double get_from_lut(const vLutWrapperBase& corrections, double pt, double eta)
+double get_from_lut(const vLutWrapperBase& corrections, double pt, double eta, bool isDEBUG)
 {
+  if ( isDEBUG ) {
+    std::cout << "<get_from_lut>:" << std::endl;
+  }
   double sf = 1.;
   for ( vLutWrapperBase::const_iterator correction = corrections.begin();
-	correction != corrections.end(); ++correction ) {
+	correction != corrections.end(); ++correction ) {    
     sf *= (*correction)->getSF(pt, eta);
+    if ( isDEBUG ) {
+      std::cout << "pT = " << pt << ", eta = " << eta << std::endl;
+      std::cout << "LUT: inputFileName = " << (*correction)->inputFileName() << ", lutName = " << (*correction)->lutName() 
+		<< " --> SF = " << (*correction)->getSF(pt, eta) << std::endl;
+    }
   }
   return sf;
 }

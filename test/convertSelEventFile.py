@@ -19,8 +19,10 @@ import os
 #outputFileName = "/home/veelken/VHbbNtuples_8_0_x/CMSSW_8_0_19/src/tthAnalysis/HiggsToTauTau/test/sync_2017Feb24/2lss1tau_SR.txt"
 #inputFileName = "/home/veelken/VHbbNtuples_8_0_x/CMSSW_8_0_19/src/tthAnalysis/HiggsToTauTau/test/sync_2017Feb24/ttH_htt_2lss1tau_unformatted.txt"
 #outputFileName = "/home/veelken/VHbbNtuples_8_0_x/CMSSW_8_0_19/src/tthAnalysis/HiggsToTauTau/test/sync_2017Feb24/ttH_htt_2lss1tau.txt"
-inputFileName = "/home/veelken/VHbbNtuples_8_0_x/CMSSW_8_0_19/src/tthAnalysis/HiggsToTauTau/test/sync_2017Feb24/ttH_hww_2lss1tau_unformatted.txt"
-outputFileName = "/home/veelken/VHbbNtuples_8_0_x/CMSSW_8_0_19/src/tthAnalysis/HiggsToTauTau/test/sync_2017Feb24/ttH_hww_2lss1tau.txt"
+#inputFileName = "/home/veelken/VHbbNtuples_8_0_x/CMSSW_8_0_19/src/tthAnalysis/HiggsToTauTau/test/sync_2017Feb24/ttH_hww_2lss1tau_unformatted.txt"
+#outputFileName = "/home/veelken/VHbbNtuples_8_0_x/CMSSW_8_0_19/src/tthAnalysis/HiggsToTauTau/test/sync_2017Feb24/ttH_hww_2lss1tau.txt"
+inputFileName = "/home/veelken/VHbbNtuples_8_0_x/CMSSW_8_0_19/src/tthAnalysis/HiggsToTauTau/test/sync_2017Mar02/selEvents_1l_2tau_ttH_htt_SR_LLR_unformatted.txt"
+outputFileName = "/home/veelken/VHbbNtuples_8_0_x/CMSSW_8_0_19/src/tthAnalysis/HiggsToTauTau/test/sync_2017Mar02/selEvents_1l_2tau_ttH_htt_SR_LLR.txt"
 
 inputFile = open(inputFileName, "r")
 inputFile_content = inputFile.readlines()

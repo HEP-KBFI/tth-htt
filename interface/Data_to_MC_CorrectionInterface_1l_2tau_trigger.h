@@ -68,6 +68,7 @@ class Data_to_MC_CorrectionInterface_1l_2tau_trigger
 
   int era_;
   std::string hadTauSelection_;
+  bool isDEBUG_;
 
   bool isTriggered_1e_;
   bool isTriggered_1e1tau_;
