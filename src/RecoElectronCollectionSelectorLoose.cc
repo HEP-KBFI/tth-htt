@@ -11,13 +11,17 @@ RecoElectronSelectorLoose::RecoElectronSelectorLoose(int era, int index, bool de
   , max_dz_(0.1)
   , max_relIso_(0.4)
   , max_sip3d_(8.)
-  , min_mvaRawPOG_({ -0.7, -0.83, -0.92 })
+  , min_mvaRawPOG_vlow_({ -0.30,-0.46,-0.63 })
+  , min_mvaRawPOG_low_({ -0.86,-0.85,-0.81 })
+  , min_mvaRawPOG_high_({ -0.96,-0.96,-0.95 })
   , binning_absEta_({ 0.8, 1.479 })
   , apply_tightCharge_(false)
   , apply_conversionVeto_(false)
   , max_nLostHits_(1)
 {
-  assert(min_mvaRawPOG_.size() == 3);
+  assert(min_mvaRawPOG_vlow_.size() == 3);
+  assert(min_mvaRawPOG_low_.size() == 3);
+  assert(min_mvaRawPOG_high_.size() == 3);
   assert(binning_absEta_.size() == 2);
 }
 
@@ -30,7 +34,22 @@ bool RecoElectronSelectorLoose::operator()(const RecoElectron& electron) const
         if      ( electron.absEta() <= binning_absEta_[0] ) return 0;
         else if ( electron.absEta() <= binning_absEta_[1] ) return 1;
         else                                                return 2;
-    }();
+    }();    
+    
+    double mvaRawPOGCut = -1;
+    double mvaRawPOG = -1;
+    if (electron.pt() <= 10) {
+      mvaRawPOG = electron.mvaRawPOG_HZZ();
+      mvaRawPOGCut = min_mvaRawPOG_vlow_[idxBin];
+    }
+    else {
+      double a = min_mvaRawPOG_low_[idxBin];
+      double b = min_mvaRawPOG_high_[idxBin];
+      double c = (a-b)/10;
+      mvaRawPOGCut = std::min(a, std::max(b,a-c*(electron.pt()-15)));   // warning: the _high WP must be looser than the _low one
+      mvaRawPOG = electron.mvaRawPOG_GP();
+    }
+    
     std::cout << "pt           = " << electron.pt()                   << " (>= " << min_pt_
                                    << ") => " << (electron.pt()             >= min_pt_                ? "PASS" : "FAIL") << '\n'
               << "abs(eta)     = " << electron.absEta()               << " (<= " << max_absEta_ << "; idx = " << idxBin
@@ -45,8 +64,8 @@ bool RecoElectronSelectorLoose::operator()(const RecoElectron& electron) const
                                    << ") => " << (electron.sip3d()          <= max_sip3d_             ? "PASS" : "FAIL") << '\n'
               << "nLostHits    = " << electron.nLostHits()            << " (<= " << max_nLostHits_
                                    << ") => " << (electron.nLostHits()      <= max_nLostHits_         ? "PASS" : "FAIL") << '\n'
-              << "mvaRawPOG    = " << electron.mvaRawPOG()            << " (>= " << min_mvaRawPOG_[idxBin]
-                                   << ") => " << (electron.mvaRawPOG()      >= min_mvaRawPOG_[idxBin] ? "PASS" : "FAIL") << '\n';
+              << "mvaRawPOG    = " << mvaRawPOG                       << " (>= " << mvaRawPOGCut
+                                   << ") => " << (mvaRawPOG                 >= mvaRawPOGCut           ? "PASS" : "FAIL") << '\n';
     if(apply_tightCharge_)
       std::cout << "tight charge = " << electron.tightCharge() << " (>= 2) => "
                                      << (electron.tightCharge()      >= 2         ? "PASS" : "FAIL") << '\n';
@@ -69,9 +88,22 @@ bool RecoElectronSelectorLoose::operator()(const RecoElectron& electron) const
     else if ( electron.absEta() <= binning_absEta_[1] ) idxBin = 1;
     else                                                idxBin = 2;
     assert(idxBin >= 0 && idxBin <= 2);
-    if ( electron.mvaRawPOG() >= min_mvaRawPOG_[idxBin] ) {
-      if ( set_selection_flags_ ) electron.set_isLoose();
-      return true;
+    
+    if (electron.pt() <= 10) {
+      if ( electron.mvaRawPOG_HZZ() >= min_mvaRawPOG_vlow_[idxBin] ){
+        if ( set_selection_flags_ ) electron.set_isLoose();
+        return true;
+      }
+    }
+    else {
+      double a = min_mvaRawPOG_low_[idxBin];
+      double b = min_mvaRawPOG_high_[idxBin];
+      double c = (a-b)/10;
+      double cut = std::min(a, std::max(b,a-c*(electron.pt()-15)));   // warning: the _high WP must be looser than the _low one
+      if ( electron.mvaRawPOG_GP() >= cut ) {
+        if ( set_selection_flags_ ) electron.set_isLoose();
+        return true;
+      }  
     }
   }
   return false;

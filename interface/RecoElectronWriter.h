@@ -38,7 +38,8 @@ class RecoElectronWriter
 
   RecoLeptonWriter* leptonWriter_;
 
-  std::string branchName_mvaRawPOG_; 
+  std::string branchName_mvaRawPOG_GP_; 
+  std::string branchName_mvaRawPOG_HZZ_; 
   std::string branchName_sigmaEtaEta_;
   std::string branchName_HoE_;
   std::string branchName_deltaEta_;
@@ -47,7 +48,8 @@ class RecoElectronWriter
   std::string branchName_lostHits_;
   std::string branchName_conversionVeto_;
 
-  Float_t* mvaRawPOG_; 
+  Float_t* mvaRawPOG_GP_; 
+  Float_t* mvaRawPOG_HZZ_; 
   Float_t* sigmaEtaEta_;
   Float_t* HoE_;
   Float_t* deltaEta_;

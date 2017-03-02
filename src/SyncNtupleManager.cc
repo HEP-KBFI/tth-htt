@@ -382,7 +382,10 @@ SyncNtupleManager::read(std::vector<const RecoElectron *> & electrons,
     ele_sip3D[i] = electron -> sip3d();
     ele_dxy[i] = electron -> dxy();
     ele_dz[i] = electron -> dz();
-    ele_ntMVAeleID[i] = electron -> mvaRawPOG();
+    if (ele_pt[i] < 10)
+      ele_ntMVAeleID[i] = electron -> mvaRawPOG_HZZ();
+    else
+      ele_ntMVAeleID[i] = electron -> mvaRawPOG_GP();
     ele_leptonMVA[i] = electron -> mvaRawTTH();
     ele_conept[i] = comp_lep1_conePt(*electron);
     ele_isChargeConsistent[i] = electron -> tightCharge() == 2 ? 1 : 0;

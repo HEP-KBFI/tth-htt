@@ -11,7 +11,8 @@ RecoElectronReader::RecoElectronReader(int era)
   : branchName_num_("nselLeptons")
   , branchName_obj_("selLeptons")
   , leptonReader_(0)
-  , mvaRawPOG_(0)
+  , mvaRawPOG_GP_(0)
+  , mvaRawPOG_HZZ_(0)
   , sigmaEtaEta_(0)
   , HoE_(0)
   , deltaEta_(0)
@@ -29,7 +30,8 @@ RecoElectronReader::RecoElectronReader(int era, const std::string& branchName_nu
   : branchName_num_(branchName_num)
   , branchName_obj_(branchName_obj)
   , leptonReader_(0)
-  , mvaRawPOG_(0)
+  , mvaRawPOG_GP_(0)
+  , mvaRawPOG_HZZ_(0)
   , sigmaEtaEta_(0)
   , HoE_(0)
   , deltaEta_(0)
@@ -53,7 +55,8 @@ RecoElectronReader::~RecoElectronReader()
   if (numInstances_[branchName_obj_] == 0) {
     RecoElectronReader *gInstance = instances_[branchName_obj_];
     assert(gInstance);
-    delete[] gInstance->mvaRawPOG_;
+    delete[] gInstance->mvaRawPOG_GP_;
+    delete[] gInstance->mvaRawPOG_HZZ_;
     delete[] gInstance->sigmaEtaEta_;
     delete[] gInstance->HoE_;
     delete[] gInstance->deltaEta_;
@@ -68,7 +71,8 @@ RecoElectronReader::~RecoElectronReader()
 void RecoElectronReader::setBranchNames()
 {
   if (numInstances_[branchName_obj_] == 0) {
-    branchName_mvaRawPOG_ = Form("%s_%s", branchName_obj_.data(), "eleMVArawSpring15NonTrig");
+    branchName_mvaRawPOG_GP_ = Form("%s_%s", branchName_obj_.data(), "eleMVArawSpring16GP");
+    branchName_mvaRawPOG_HZZ_ = Form("%s_%s", branchName_obj_.data(), "eleMVArawSpring16HZZ");
     branchName_sigmaEtaEta_ = Form("%s_%s", branchName_obj_.data(), "eleSieie");
     branchName_HoE_ = Form("%s_%s", branchName_obj_.data(), "eleHoE");
     branchName_deltaEta_ = Form("%s_%s", branchName_obj_.data(), "eleDEta");
@@ -93,8 +97,10 @@ void RecoElectronReader::setBranchAddresses(TTree *tree)
   if ( instances_[branchName_obj_] == this ) {
     leptonReader_->setBranchAddresses(tree);
     int max_nLeptons = leptonReader_->max_nLeptons_;
-    mvaRawPOG_ = new Float_t[max_nLeptons];
-    tree->SetBranchAddress(branchName_mvaRawPOG_.data(), mvaRawPOG_);
+    mvaRawPOG_GP_ = new Float_t[max_nLeptons];
+    tree->SetBranchAddress(branchName_mvaRawPOG_GP_.data(), mvaRawPOG_GP_);
+    mvaRawPOG_HZZ_ = new Float_t[max_nLeptons];
+    tree->SetBranchAddress(branchName_mvaRawPOG_HZZ_.data(), mvaRawPOG_HZZ_);
     sigmaEtaEta_ = new Float_t[max_nLeptons];
     tree->SetBranchAddress(branchName_sigmaEtaEta_.data(), sigmaEtaEta_);
     HoE_ = new Float_t[max_nLeptons];
@@ -149,7 +155,8 @@ std::vector<RecoElectron> RecoElectronReader::read() const
           gLeptonReader->jetBtagCSV_[idxLepton],
           gLeptonReader->tightCharge_[idxLepton],
           gLeptonReader->charge_[idxLepton],
-          gElectronReader->mvaRawPOG_[idxLepton],
+          gElectronReader->mvaRawPOG_GP_[idxLepton],
+          gElectronReader->mvaRawPOG_HZZ_[idxLepton],
           gElectronReader->sigmaEtaEta_[idxLepton],
           gElectronReader->HoE_[idxLepton],
           gElectronReader->deltaEta_[idxLepton],

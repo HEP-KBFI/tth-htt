@@ -25,7 +25,8 @@ void ElectronHistManager::bookHistograms(TFileDirectory& dir)
   histogram_jetPtRatio_ = book1D(dir, "jetPtRatio", "jetPtRatio", 24, 0., 1.2);
   histogram_jetBtagCSV_ = book1D(dir, "jetBtagCSV", "jetBtagCSV", 40, 0., 1.);
   histogram_tightCharge_ = book1D(dir, "tightCharge", "tightCharge", 3, -0.5, +2.5);      
-  histogram_mvaRawPOG_ = book1D(dir, "mvaRawPOG", "mvaRawPOG", 40, -1., +1.);
+  histogram_mvaRawPOG_ = book1D(dir, "mvaRawPOG_GP", "mvaRawPOG_GP", 40, -1., +1.);
+  histogram_mvaRawPOG_HZZ_ = book1D(dir, "mvaRawPOG_HZZ", "mvaRawPOG_HZZ", 40, -1., +1.);
   histogram_sigmaEtaEta_ = book1D(dir, "sigmaEtaEta", "sigmaEtaEta", 40, 0., 0.04); 
   histogram_HoE_ = book1D(dir, "HoE", "HoE", 40, 0., 0.20);   
   histogram_deltaEta_ = book1D(dir, "deltaEta", "deltaEta", 40, 0., 0.02);  
@@ -55,7 +56,8 @@ void ElectronHistManager::fillHistograms(const RecoElectron& electron, double ev
   fillWithOverFlow(histogram_jetPtRatio_, electron.jetPtRatio(), evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_jetBtagCSV_, electron.jetBtagCSV(), evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_tightCharge_, electron.tightCharge(), evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_mvaRawPOG_, electron.mvaRawPOG(), evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_mvaRawPOG_, electron.mvaRawPOG_GP(), evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_mvaRawPOG_HZZ_, electron.mvaRawPOG_HZZ(), evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_sigmaEtaEta_, electron.sigmaEtaEta(), evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_HoE_, electron.HoE(), evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_deltaEta_, electron.deltaEta(), evtWeight, evtWeightErr);

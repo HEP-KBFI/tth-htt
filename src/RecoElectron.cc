@@ -19,7 +19,8 @@ RecoElectron::RecoElectron(Double_t pt,
                            Double_t jetBtagCSV,
                            Int_t    passesTightCharge,
                            Int_t    charge,
-                           Double_t mvaRawPOG,
+                           Double_t mvaRawPOG_GP,
+                           Double_t mvaRawPOG_HZZ,
                            Double_t sigmaEtaEta,
                            Double_t HoE,
                            Double_t deltaEta,
@@ -46,7 +47,8 @@ RecoElectron::RecoElectron(Double_t pt,
                jetBtagCSV,
                passesTightCharge,
                charge)
-  , mvaRawPOG_(mvaRawPOG)
+  , mvaRawPOG_GP_(mvaRawPOG_GP)
+  , mvaRawPOG_HZZ_(mvaRawPOG_HZZ)
   , sigmaEtaEta_(sigmaEtaEta)
   , HoE_(HoE)
   , deltaEta_(deltaEta)
@@ -64,7 +66,8 @@ std::ostream& operator<<(std::ostream& stream, const RecoElectron& electron)
          << " charge = " << electron.charge() << std::endl;
   stream << " dxy = " << electron.dxy() << ", dz = " << electron.dz() << ", sip3d = " << electron.sip3d() << std::endl;
   stream << " relIso = " << electron.relIso() << std::endl;
-  stream << " mvaPOG = " << electron.mvaRawPOG() << std::endl;
+  stream << " mvaPOG_GP = " << electron.mvaRawPOG_GP() << std::endl;
+  stream << " mvaPOG_HZZ = " << electron.mvaRawPOG_HZZ() << std::endl;
   stream << " tightCharge = " << electron.tightCharge() << std::endl;
   stream << " nLostHits = " << electron.nLostHits() << ", passesConversionVeto = " << electron.passesConversionVeto() << std::endl;
   stream << " sigmaEtaEta = " << electron.sigmaEtaEta() << ", deltaEta = " << electron.deltaEta() << ", deltaPhi = " << electron.deltaPhi() << std::endl;

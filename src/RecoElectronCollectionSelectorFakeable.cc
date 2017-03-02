@@ -18,7 +18,9 @@ RecoElectronSelectorFakeable::RecoElectronSelectorFakeable(int era, int index, b
   , max_dz_(0.1)
   , max_relIso_(0.4)
   , max_sip3d_(8.)
-  , min_mvaRawPOG_({ -0.7, -0.83, -0.92 })
+  , min_mvaRawPOG_vlow_({ -0.30,-0.46,-0.63 })
+  , min_mvaRawPOG_low_({ -0.86,-0.85,-0.81 })
+  , min_mvaRawPOG_high_({ -0.96,-0.96,-0.95 })
   , binning_absEta_({ 0.8, 1.479 })
   , min_pt_trig_(30.)
   , max_sigmaEtaEta_trig_({ 0.011, 0.011, 0.030 })
@@ -35,7 +37,9 @@ RecoElectronSelectorFakeable::RecoElectronSelectorFakeable(int era, int index, b
   if      ( era_ == kEra_2015 ) max_jetBtagCSV_ = { 0.6050, 0.8900 };
   else if ( era_ == kEra_2016 ) max_jetBtagCSV_ = { 0.5426, 0.8484 };
   else assert(0);
-  assert(min_mvaRawPOG_.size() == 3);
+  assert(min_mvaRawPOG_vlow_.size() == 3);
+  assert(min_mvaRawPOG_low_.size() == 3);
+  assert(min_mvaRawPOG_high_.size() == 3);
   assert(binning_absEta_.size() == 2);
   assert(max_sigmaEtaEta_trig_.size() == 3);
   assert(max_HoE_trig_.size() == 3);
@@ -76,31 +80,46 @@ bool RecoElectronSelectorFakeable::operator()(const RecoElectron& electron) cons
     else if ( electron.absEta() <= binning_absEta_[1] ) idxBin_absEta = 1;
     else                                                idxBin_absEta = 2;
     assert(idxBin_absEta >= 0 && idxBin_absEta <= 2);
-    if ( electron.mvaRawPOG() >= min_mvaRawPOG_[idxBin_absEta] ) {
+    
+    double mvaRawPOGCut = -1;
+    double mvaRawPOG = -1;
+    if (electron.pt() <= 10) {
+      mvaRawPOG = electron.mvaRawPOG_HZZ();
+      mvaRawPOGCut = min_mvaRawPOG_vlow_[idxBin_absEta];
+    }
+    else {
+      double a = min_mvaRawPOG_low_[idxBin_absEta];
+      double b = min_mvaRawPOG_high_[idxBin_absEta];
+      double c = (a-b)/10;
+      mvaRawPOGCut = std::min(a, std::max(b,a-c*(electron.pt()-15)));   // warning: the _high WP must be looser than the _low one
+      mvaRawPOG = electron.mvaRawPOG_GP();
+    }
+    
+    if ( mvaRawPOG >= mvaRawPOGCut ) {
       int idxBin_mvaTTH = -1;
       if   ( electron.mvaRawTTH() <= binning_mvaTTH_[0] ) idxBin_mvaTTH = 0;
       else                                                idxBin_mvaTTH = 1;
       assert(idxBin_mvaTTH >= 0 && idxBin_mvaTTH <= 1);
       if ( electron.jetPtRatio() >= min_jetPtRatio_[idxBin_mvaTTH] &&
-	   electron.jetBtagCSV() <= max_jetBtagCSV_[idxBin_mvaTTH] ) {
-	if ( pt <= min_pt_trig_ || !apply_offline_e_trigger_cuts_ ) {
-	  if ( set_selection_flags_ ) {
-	    electron.set_isFakeable();
-	    if ( isTight ) electron.set_isTight();
-	  }
-	  return true;
-	} else if ( electron.sigmaEtaEta() <= max_sigmaEtaEta_trig_[idxBin_absEta] &&
-		    electron.HoE() <= max_HoE_trig_[idxBin_absEta] &&
-		    electron.deltaEta() <= max_deltaEta_trig_[idxBin_absEta] &&
-		    electron.deltaPhi() <= max_deltaPhi_trig_[idxBin_absEta] &&
-		    electron.OoEminusOoP() >= min_OoEminusOoP_trig_ &&
-		    electron.OoEminusOoP() <= max_OoEminusOoP_trig_[idxBin_absEta] ) {
-	  if ( set_selection_flags_ ) {
-	    electron.set_isFakeable();
-	    if ( isTight ) electron.set_isTight();
-	  }
-	  return true;
-	}
+	        electron.jetBtagCSV() <= max_jetBtagCSV_[idxBin_mvaTTH] ) {
+	      if ( pt <= min_pt_trig_ || !apply_offline_e_trigger_cuts_ ) {
+	        if ( set_selection_flags_ ) {
+	          electron.set_isFakeable();
+	          if ( isTight ) electron.set_isTight();
+	        }
+	        return true;
+	      } else if ( electron.sigmaEtaEta() <= max_sigmaEtaEta_trig_[idxBin_absEta] &&
+		        electron.HoE() <= max_HoE_trig_[idxBin_absEta] &&
+		        electron.deltaEta() <= max_deltaEta_trig_[idxBin_absEta] &&
+		        electron.deltaPhi() <= max_deltaPhi_trig_[idxBin_absEta] &&
+		        electron.OoEminusOoP() >= min_OoEminusOoP_trig_ &&
+		        electron.OoEminusOoP() <= max_OoEminusOoP_trig_[idxBin_absEta] ) {
+	        if ( set_selection_flags_ ) {
+	          electron.set_isFakeable();
+	          if ( isTight ) electron.set_isTight();
+	        }
+	        return true;
+	      }
       }
     }
   }

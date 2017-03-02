@@ -53,10 +53,10 @@ bool RecoMuonSelectorFakeable::operator()(const RecoMuon& muon) const
     else                                            idxBin = 1;
     assert(idxBin >= 0 && idxBin <= 1);
     if ( muon.jetPtRatio() >= min_jetPtRatio_[idxBin] &&
-	 muon.jetBtagCSV() <= max_jetBtagCSV_[idxBin] ) {
+	      muon.jetBtagCSV() <= max_jetBtagCSV_[idxBin] ) {
       if ( set_selection_flags_ ) {
-	muon.set_isFakeable();
-	if ( isTight ) muon.set_isTight();
+	      muon.set_isFakeable();
+	      if ( isTight ) muon.set_isTight();
       }
       return true;
     }

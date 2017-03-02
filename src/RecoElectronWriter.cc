@@ -10,7 +10,8 @@ RecoElectronWriter::RecoElectronWriter(int era)
   : branchName_num_("nElectrons")
   , branchName_obj_("Electrons")
   , leptonWriter_(0)
-  , mvaRawPOG_(0)
+  , mvaRawPOG_GP_(0)
+  , mvaRawPOG_HZZ_(0)
   , sigmaEtaEta_(0)
   , HoE_(0)
   , deltaEta_(0)
@@ -28,7 +29,8 @@ RecoElectronWriter::RecoElectronWriter(int era, const std::string& branchName_nu
   : branchName_num_(branchName_num)
   , branchName_obj_(branchName_obj)
   , leptonWriter_(0)
-  , mvaRawPOG_(0)
+  , mvaRawPOG_GP_(0)
+  , mvaRawPOG_HZZ_(0)
   , sigmaEtaEta_(0)
   , HoE_(0)
   , deltaEta_(0)
@@ -45,7 +47,8 @@ RecoElectronWriter::RecoElectronWriter(int era, const std::string& branchName_nu
 RecoElectronWriter::~RecoElectronWriter()
 {
   delete leptonWriter_;
-  delete[] mvaRawPOG_;
+  delete[] mvaRawPOG_GP_;
+  delete[] mvaRawPOG_HZZ_;
   delete[] sigmaEtaEta_;
   delete[] HoE_;
   delete[] deltaEta_;
@@ -57,7 +60,8 @@ RecoElectronWriter::~RecoElectronWriter()
 
 void RecoElectronWriter::setBranchNames()
 {
-  branchName_mvaRawPOG_ = Form("%s_%s", branchName_obj_.data(), "eleMVArawSpring15NonTrig");
+  branchName_mvaRawPOG_GP_ = Form("%s_%s", branchName_obj_.data(), "eleMVArawSpring16GP");
+  branchName_mvaRawPOG_HZZ_ = Form("%s_%s", branchName_obj_.data(), "eleMVArawSpring16HZZ");
   branchName_sigmaEtaEta_ = Form("%s_%s", branchName_obj_.data(), "eleSieie");
   branchName_HoE_ = Form("%s_%s", branchName_obj_.data(), "eleHoE");
   branchName_deltaEta_ = Form("%s_%s", branchName_obj_.data(), "eleDEta");
@@ -71,8 +75,10 @@ void RecoElectronWriter::setBranches(TTree *tree)
 {
   leptonWriter_->setBranches(tree);
   int max_nLeptons = leptonWriter_->max_nLeptons_;
-  mvaRawPOG_ = new Float_t[max_nLeptons];
-  setBranchVF(tree, branchName_mvaRawPOG_, branchName_num_, mvaRawPOG_);
+  mvaRawPOG_GP_ = new Float_t[max_nLeptons];
+  setBranchVF(tree, branchName_mvaRawPOG_GP_, branchName_num_, mvaRawPOG_GP_);
+  mvaRawPOG_HZZ_ = new Float_t[max_nLeptons];
+  setBranchVF(tree, branchName_mvaRawPOG_HZZ_, branchName_num_, mvaRawPOG_HZZ_);
   sigmaEtaEta_ = new Float_t[max_nLeptons];
   setBranchVF(tree, branchName_sigmaEtaEta_, branchName_num_, sigmaEtaEta_);
   HoE_ = new Float_t[max_nLeptons];
@@ -96,7 +102,8 @@ void RecoElectronWriter::write(const std::vector<const RecoElectron*>& leptons)
   for ( Int_t idxLepton = 0; idxLepton < nLeptons; ++idxLepton ) {
     const RecoElectron* lepton = leptons[idxLepton];
     assert(lepton);
-    mvaRawPOG_[idxLepton] = lepton->mvaRawPOG(); 
+    mvaRawPOG_GP_[idxLepton] = lepton->mvaRawPOG_GP();
+    mvaRawPOG_HZZ_[idxLepton] = lepton->mvaRawPOG_HZZ();
     sigmaEtaEta_[idxLepton] = lepton->sigmaEtaEta();
     HoE_[idxLepton] = lepton->HoE();
     deltaEta_[idxLepton] = lepton->deltaEta();

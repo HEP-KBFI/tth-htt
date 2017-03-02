@@ -4,7 +4,9 @@ RecoElectronSelectorCutBased::RecoElectronSelectorCutBased(int era, int index, b
   : min_pt_(15.)
   , max_relIso_(0.1)
   , max_sip3d_(4.)
-  , min_mvaRawPOG_({ -0.7, -0.83, -0.92 }) /* min_mvaRawPOG_({ 0.87, 0.60, 0.17 }) */
+  , min_mvaRawPOG_vlow_({ -0.30,-0.46,-0.63 })
+  , min_mvaRawPOG_low_({ -0.86,-0.85,-0.81 })
+  , min_mvaRawPOG_high_({ -0.96,-0.96,-0.95 })
   , binning_absEta_({ 0.8, 1.479 })
   , apply_tightCharge_(true)
   , apply_conversionVeto_(true)
@@ -15,7 +17,9 @@ RecoElectronSelectorCutBased::RecoElectronSelectorCutBased(int era, int index, b
   else if ( era_ == kEra_2016 ) max_jetBtagCSV_ = 0.80;
   else assert(0);
    */
-  assert(min_mvaRawPOG_.size() == 3);
+  assert(min_mvaRawPOG_vlow_.size() == 3);
+  assert(min_mvaRawPOG_low_.size() == 3);
+  assert(min_mvaRawPOG_high_.size() == 3);
   assert(binning_absEta_.size() == 2);
 }
 
@@ -34,7 +38,18 @@ RecoElectronSelectorCutBased::operator()(const RecoElectron& electron) const
     else if (electron.absEta() <= binning_absEta_[1]) idxBin = 1;
     else                                              idxBin = 2;
     assert(idxBin >= 0 && idxBin <= 2);
-    if (electron.mvaRawPOG() >= min_mvaRawPOG_[idxBin]) return true;
+    if (electron.pt() <= 10) {
+      if ( electron.mvaRawPOG_HZZ() >= min_mvaRawPOG_vlow_[idxBin] )
+        return true;
+    }
+    else {
+      double a = min_mvaRawPOG_low_[idxBin];
+      double b = min_mvaRawPOG_high_[idxBin];
+      double c = (a-b)/10;
+      double cut = std::min(a, std::max(b,a-c*(electron.pt()-15)));   // warning: the _high WP must be looser than the _low one
+      if ( electron.mvaRawPOG_GP() >= cut )
+        return true;
+    }
   }
   return false;
 }
