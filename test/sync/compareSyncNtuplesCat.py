@@ -4,7 +4,8 @@ import math
 import os 
 import errno
 
-categories = ["1l2tau_SR", "1l2tau_Fake", "2lSS1tau_Flip", "2lSS1tau_SR", "2lSS1tau_Fake", "3l1tau_SR", "3l1tau_Fake"]
+#categories = ["1l2tau_SR", "1l2tau_Fake", "2lSS1tau_Flip", "2lSS1tau_SR", "2lSS1tau_Fake", "3l1tau_SR", "3l1tau_Fake"]
+categories = ["1l2tau_SR", "2lSS1tau_SR", "3l1tau_SR"]
 
 samples = {}
 samples["ttH"] = "ttHJetToTT_M125_13TeV_amcatnloFXFX_madspin_pythia8"
@@ -19,9 +20,9 @@ for name in groupnames:
   groups[name]["treePrefix"] = "syncTree"
 
 groups["Tallinn"]["inputFiles"]["ttH"] = "sync_ntuples_split.root"
-groups["LLR"]["inputFiles"]["ttH"] = "syncNtuple_event_ttH_80X.root"
+groups["LLR"]["inputFiles"]["ttH"] = "syncNtuple_event_ttH_80X_Summer16.root"
 groups["Cornell"]["inputFiles"]["ttH"] = "syncNtuple_event.root"
-groups["Notre Dame"]["inputFiles"]["ttH"] = "sync_ntuple.root"
+groups["Notre Dame"]["inputFiles"]["ttH"] = "sync_ntuple_m17_1l_2tau.root"
 
 #groups["Tallinn"]["inputPath"]["ttH"] = "sync_ntuples_split.root"
 #groups["LLR"]["inputPath"]["ttH"] = "syncNtuple_event_ttH_80X.root"
@@ -38,69 +39,69 @@ variables = [("n_presel_mu", "I", "", 20, -0.5, 8.5),
   ("mu0_charge", "I", "n_presel_mu >= 1", 3, -1.5, +1.5),
   ("mu0_jetNDauChargedMVASel", "F", "n_presel_mu >= 1", 20, -0.5, 19.5),
   ("mu0_jetPtRel", "F", "n_presel_mu >= 1", 100, -0.01, 10.),
-  ("mu0_miniIsoNeutral", "F", "n_presel_mu >= 1", 100, -0.01, 25.),
-  ("mu0_miniIsoCharged", "F", "n_presel_mu >= 1", 100, -0.01, 25.),
+  ("mu0_miniIsoNeutral", "F", "n_presel_mu >= 1", 100, -0.01, 2.),
+  ("mu0_miniIsoCharged", "F", "n_presel_mu >= 1", 100, -0.01, 2.),
   ("mu0_E", "F", "n_presel_mu >= 1", 100, 0., 250.),
   ("mu0_jetPtRatio", "F", "n_presel_mu >= 1", 100, -0.01, 2.),
   ("mu0_leptonMVA", "F", "n_presel_mu >= 1", 100, -1.1, +1.1),
   ("mu0_jetCSV", "F", "n_presel_mu >= 1", 100, -0.01, +1.01),
   ("mu0_segmentCompatibility", "F", "n_presel_mu >= 1", 100, -0.01, +1.01),
   ("mu0_phi", "F", "n_presel_mu >= 1", 36, -math.pi, +math.pi),
-  ("mu0_sip3D", "F", "n_presel_mu >= 1", 100, -20., +20.),
+  ("mu0_sip3D", "F", "n_presel_mu >= 1", 100, 0., +10.),
   ("mu0_pt", "F", "n_presel_mu >= 1", 100, 0., 250.),
   ("mu0_miniRelIso", "F", "n_presel_mu >= 1", 100, -0.01, 0.5),
-  ("mu0_dxy", "F", "n_presel_mu >= 1", 100, -0.1, +0.1),
+  ("mu0_dxy", "F", "n_presel_mu >= 1", 100, -0.02, +0.02),
   ("mu0_eta", "F", "n_presel_mu >= 1", 100, -3., +3.),
   ("mu0_dz", "F", "n_presel_mu >= 1", 100, -0.5, +0.5),
   ("mu1_charge", "I", "n_presel_mu >= 2", 3, -1.5, +1.5),
   ("mu1_jetNDauChargedMVASel", "F", "n_presel_mu >= 2", 20, -0.5, 19.5),
   ("mu1_jetPtRel", "F", "n_presel_mu >= 2", 100, -0.01, 10.),
-  ("mu1_miniIsoNeutral", "F", "n_presel_mu >= 2", 100, -0.01, 25.),
-  ("mu1_miniIsoCharged", "F", "n_presel_mu >= 2", 100, -0.01, 25.),
+  ("mu1_miniIsoNeutral", "F", "n_presel_mu >= 2", 100, -0.01, 2.),
+  ("mu1_miniIsoCharged", "F", "n_presel_mu >= 2", 100, -0.01, 2.),
   ("mu1_E", "F", "n_presel_mu >= 2", 100, 0., 250.),
   ("mu1_jetPtRatio", "F", "n_presel_mu >= 2", 100, -0.01, 2.),
   ("mu1_leptonMVA", "F", "n_presel_mu >= 2", 100, -1.1, +1.1),
   ("mu1_jetCSV", "F", "n_presel_mu >= 2", 100, -0.01, +1.01),
   ("mu1_segmentCompatibility", "F", "n_presel_mu >= 2", 100, -0.01, +1.01),
   ("mu1_phi", "F", "n_presel_mu >= 2", 36, -math.pi, +math.pi),
-  ("mu1_sip3D", "F", "n_presel_mu >= 2", 100, -20., +20.),
+  ("mu1_sip3D", "F", "n_presel_mu >= 2", 100, 0., +10.),
   ("mu1_pt", "F", "n_presel_mu >= 2", 100, 0., 250.),
   ("mu1_miniRelIso", "F", "n_presel_mu >= 2", 100, -0.01, 0.5),
-  ("mu1_dxy", "F", "n_presel_mu >= 2", 100, -0.1, +0.1),
+  ("mu1_dxy", "F", "n_presel_mu >= 2", 100, -0.02, +0.02),
   ("mu1_eta", "F", "n_presel_mu >= 2", 100, -3., +3.),
   ("mu1_dz", "F", "n_presel_mu >= 2", 100, -0.5, +0.5),
   ("ele0_ntMVAeleID", "F", "n_presel_ele >= 1", 100, -1.5, +1.5),
   ("ele0_charge", "F", "n_presel_ele >= 1", 3, -1.5, +1.5),
   ("ele0_jetNDauChargedMVASel", "F", "n_presel_ele >= 1", 20, -0.5, +19.5),
   ("ele0_jetPtRel", "F", "n_presel_ele >= 1", 100, -0.01, 10.),
-  ("ele0_miniIsoNeutral", "F", "n_presel_ele >= 1", 100, -0.01, 25.),
-  ("ele0_miniIsoCharged", "F", "n_presel_ele >= 1", 100, -0.01, 25.),
+  ("ele0_miniIsoNeutral", "F", "n_presel_ele >= 1", 100, -0.01, 2.),
+  ("ele0_miniIsoCharged", "F", "n_presel_ele >= 1", 100, -0.01, 2.),
   ("ele0_E", "F", "n_presel_ele >= 1", 100, 0., 250.),
   ("ele0_jetPtRatio", "F", "n_presel_ele >= 1", 100, -0.01, 2.),
   ("ele0_leptonMVA", "F", "n_presel_ele >= 1", 100, -1.1, +1.1),
   ("ele0_jetCSV", "F", "n_presel_ele >= 1", 100, -0.01, +1.01),
   ("ele0_phi", "F", "n_presel_ele >= 1", 36, -math.pi, +math.pi),
-  ("ele0_sip3D", "F", "n_presel_ele >= 1", 100, -20., +20.),
+  ("ele0_sip3D", "F", "n_presel_ele >= 1", 100, 0., +10.),
   ("ele0_pt", "F", "n_presel_ele >= 1", 100, 0., 250.),
   ("ele0_miniRelIso", "F", "n_presel_ele >= 1", 100, -0.01, 0.5),
-  ("ele0_dxy", "F", "n_presel_ele >= 1", 100, -0.1, +0.1),
+  ("ele0_dxy", "F", "n_presel_ele >= 1", 100, -0.02, +0.02),
   ("ele0_eta", "F", "n_presel_ele >= 1", 100, -3.0, +3.0),
   ("ele0_dz", "F", "n_presel_ele >= 1", 100, -0.5, +0.5),
   ("ele1_ntMVAeleID", "F", "n_presel_ele >= 2", 100, -1.5, +1.5),
   ("ele1_charge", "F", "n_presel_ele >= 2", 3, -1.5, +1.5),
   ("ele1_jetNDauChargedMVASel", "F", "n_presel_ele >= 2", 20, -0.5, +19.5),
   ("ele1_jetPtRel", "F", "n_presel_ele >= 2", 100, -0.01, 10.),
-  ("ele1_miniIsoNeutral", "F", "n_presel_ele >= 2", 100, -0.01, 25.),
-  ("ele1_miniIsoCharged", "F", "n_presel_ele >= 2", 100, -0.01, 25.),
+  ("ele1_miniIsoNeutral", "F", "n_presel_ele >= 2", 100, -0.01, 2.),
+  ("ele1_miniIsoCharged", "F", "n_presel_ele >= 2", 100, -0.01, 2.),
   ("ele1_E", "F", "n_presel_ele >= 2", 100, 0., 250.),
   ("ele1_jetPtRatio", "F", "n_presel_ele >= 2", 100, -0.01, 2.),
   ("ele1_leptonMVA", "F", "n_presel_ele >= 2", 100, -1.1, +1.1),
   ("ele1_jetCSV", "F", "n_presel_ele >= 2", 100, -0.01, +1.01),
   ("ele1_phi", "F", "n_presel_ele >= 2", 36, -math.pi, +math.pi),
-  ("ele1_sip3D", "F", "n_presel_ele >= 2", 100, -20., +20.),
+  ("ele1_sip3D", "F", "n_presel_ele >= 2", 100, 0., +10.),
   ("ele1_pt", "F", "n_presel_ele >= 2", 100, 0., 250.),
   ("ele1_miniRelIso", "F", "n_presel_ele >= 2", 100, -0.01, 0.5),
-  ("ele1_dxy", "F", "n_presel_ele >= 2", 100, -0.1, +0.1),
+  ("ele1_dxy", "F", "n_presel_ele >= 2", 100, -0.02, +0.02),
   ("ele1_eta", "F", "n_presel_ele >= 2", 100, -3.0, +3.0),
   ("ele1_dz", "F", "n_presel_ele >= 2", 100, -0.5, +0.5),
   ("tau0_againstElectronMediumMVA6", "I", "n_presel_tau >= 1", 2, -0.5, +1.5),
@@ -123,8 +124,8 @@ variables = [("n_presel_mu", "I", "", 20, -0.5, 8.5),
   ("tau0_byTightCombinedIsolationDeltaBetaCorr3HitsdR03", "I", "n_presel_tau >= 1", 2, -0.5, +1.5),
   ("tau0_byLooseIsolationMVArun2v1DBdR03oldDMwLT", "F", "n_presel_tau >= 1", 2, -0.5, +1.5),
   ("tau0_byCombinedIsolationDeltaBetaCorr3Hits", "F", "n_presel_tau >= 1", 100, -0.01, 10.),
-  ("tau0_dz", "F", "n_presel_tau >= 1", 100, -2., +2.),
-  ("tau0_dxy", "F", "n_presel_tau >= 1", 100, -0.2, +0.2),
+  ("tau0_dz", "F", "n_presel_tau >= 1", 100, -0.2, +0.2),
+  ("tau0_dxy", "F", "n_presel_tau >= 1", 100, -0.05, +0.05),
   ("tau0_pt", "F", "n_presel_tau >= 1", 100, 0., 250.),
   ("tau0_eta", "F", "n_presel_tau >= 1", 100, -3., +3.),
   ("tau0_phi", "F", "n_presel_tau >= 1", 36, -math.pi, +math.pi),
@@ -149,8 +150,8 @@ variables = [("n_presel_mu", "I", "", 20, -0.5, 8.5),
   ("tau1_byTightCombinedIsolationDeltaBetaCorr3HitsdR03", "I", "n_presel_tau >= 2", 2, -0.5, +1.5),
   ("tau1_byLooseIsolationMVArun2v1DBdR03oldDMwLT", "F", "n_presel_tau >= 2", 2, -0.5, +1.5),
   ("tau1_byCombinedIsolationDeltaBetaCorr3Hits", "F", "n_presel_tau >= 2", 100, -0.01, 10.),
-  ("tau1_dz", "F", "n_presel_tau >= 2", 100, -2., +2.),
-  ("tau1_dxy", "F", "n_presel_tau >= 2", 100, -0.2, +0.2),
+  ("tau1_dz", "F", "n_presel_tau >= 2", 100, -0.2, +0.2),
+  ("tau1_dxy", "F", "n_presel_tau >= 2", 100, -0.05, +0.05),
   ("tau1_pt", "F", "n_presel_tau >= 2", 100, 0., 250.),
   ("tau1_eta", "F", "n_presel_tau >= 2", 100, -3., +3.),
   ("tau1_phi", "F", "n_presel_tau >= 2", 36, -math.pi, +math.pi),
@@ -188,13 +189,13 @@ variables = [("n_presel_mu", "I", "", 20, -0.5, 8.5),
   ("n_jet25_recl", "I", "", 12, -0.5, 11.5),
   ("MVA_2lss_ttV", "F", "", 100, -1., 1.),
   ("MVA_2lss_ttbar", "F", "", 100, -1., 1.),
-  ("MC_weight", "F", "", 100, -10, 10.),
+  #("MC_weight", "F", "", 100, -10, 10.),
   ("FR_weight", "F", "", 100, -1., 3.),
   ("triggerSF_weight", "F", "", 100, 0., 2.),
   ("leptonSF_weight", "F", "", 100, 0., 2.),
-  ("bTagSF_weight", "F", "", 100, 0., 4.),
+  ("bTagSF_weight", "F", "", 100, 0., 2.),
   ("PU_weight", "F", "", 100, 0., 4.),
-  ("hadTauSF_weight", "F", "", 100, 0., 4.),
+  ("tauSF_weight", "F", "", 100, 0., 4.),
   #("gen_weight", "F", "", 100, 0., 250.),
 ]
 
@@ -419,8 +420,8 @@ if __name__ == "__main__":
           make_comparison_plot("Unweighted", var, groupname1, groupname2, category, "1", dataset = "ttH")
           
           #weight = "PU_weight*MC_weight*bTagSF_weight*leptonSF_weight*triggerSF_weight*FR_weight"
-          weight = "PU_weight*MC_weight*bTagSF_weight*leptonSF_weight*triggerSF_weight"
-          if not "Fake" in category:
+          weight = "PU_weight*MC_weight*bTagSF_weight*leptonSF_weight*triggerSF_weight*tauSF_weight"
+          if "Fake" in category:
             print category
             weight += "*FR_weight"
           
