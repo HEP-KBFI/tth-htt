@@ -1,4 +1,7 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+# Author: Karl Ehatäht
 
 #TODO: implement H-> gammagamma decay properly
 
@@ -206,7 +209,18 @@ In all steps (except for 2nd one of course) the script checks if all input files
 the output files exist; if they don't the script bails out. Currently, the aggregation and statistical
 summary can be performed only for the tth and ttz processes.
 
-Disclaimer: the program is tested with only ttHJetToNonbb_M125 sample and tth hypothesis.
+In case you want to parse or draw statistics from existing output of the cmsRun job, you can supply a secondary RLE
+file which is expected to be a subset of the initial RLE file (passed via -i/--input option at stage 1)). This can
+be achieved with -j/--secondary-input option.
+
+Also, if you want to save the RLE numbers of each specific decay channel to a separate file for later processing,
+you can do that by specificing the output directory where these files will be saved via -r/--secondary-output option.
+If the output directory doesn't exist, you can always pass -f/--force option so that the folder will be created for you.
+The RLE files are created for each decay mode, but also split by process initiators. Since the number of such decay
+modes may be huge, it is wise to keep them in a dedicated subdirectory as it could be painful to delete them later on.
+
+Disclaimer: the program is tested with only ttHJetToNonbb_M125, TTZToLLNuNu_M-10 and TTZToLLNuNu_M-10_ext1 samples,
+            and tth & ttz hypotheses.
 
 '''
 
@@ -239,6 +253,22 @@ def run_cmd(cmd_str):
   if cmd_stderr:
     raise ValueError("Command {cmd_str} failed: {reason}".format(cmd_str = cmd_str, reason = cmd_stderr))
   return cmd_stdout
+
+def read_rles(input):
+  if not os.path.isfile(input):
+    logging.error("No such file: {file}".format(file = input))
+
+  logging.debug("Reading RLE numbers from {rle_input}".format(rle_input = input))
+  rles = filter(lambda x: x != '', map(lambda x: x.rstrip('\n'), open(input, 'r').readlines()))
+  rle_pattern = re.compile('\d+:\d+:\d+')
+  if not all(map(lambda x: rle_pattern.match(x), rles)):
+    logging.error("File {rle_filename} contains invalid RLE number(s)".format(rle_filename = input))
+    sys.exit(1)
+  if not rles:
+    logging.error("You must provide at least one RLE number")
+    sys.exit(1)
+  logging.debug("Read {nof_rles} RLE numbers".format(nof_rles = len(rles)))
+  return rles
 
 printGenParticles_miniAOD_cfg = """import FWCore.ParameterSet.Config as cms
 
@@ -1203,7 +1233,7 @@ def aggregate(evts, hypothesis):
 
 ################################# FINAL FOURTH STEP: PRINT AGGREGATED RESULTS #################################
 
-def print_aggregate(agg, hypothesis, output_filename, nof_events_total):
+def print_aggregate(agg, hypothesis, output_filename, nof_events_total, secondary_output_dir = ''):
   # prints the final results to screen and save the same output to a file
 
   # sort by decreasin number of events
@@ -1214,28 +1244,41 @@ def print_aggregate(agg, hypothesis, output_filename, nof_events_total):
     # print onto screen and write to a file
     with MultipleStream([sys.stdout, output_filename]) as ms:
 
-      def print_initiatiors(init_type, arr):
-        # print he number of events (fraction to the event category) and the RLE numbers that correspond to
-        # the one process initiator pair; return the number of events which belong to both categories
-
-        evt_init_type = [x for x in arr if x['pp'] == init_type]
-        if len(evt_init_type):
-          ms.writeln(
-            "\tInitiated by %s: %d (%.2f%%)" % (init_type, len(evt_init_type), 100. * len(evt_init_type) / len(arr)))
-          for evt_init_type_entry in evt_init_type:
-            ms.writeln("\t\t%s" % evt_init_type_entry['rle'])
-        return len(evt_init_type)
-
       decmodes = ['tautau', 'WW']
       hz = 'H' if hypothesis == 'tth' else 'Z'
       if hypothesis == 'tth':
         # H -> ZZ, H -> mumu, H -> gamma gamma, H -> q qbar or H -> g g (whatever that means)
         decmodes.extend(['ZZ', 'mumu', 'g', 'gammagamma', 'qqbar', 'UNRECOGNIZED'])
       else:
-        decmodes.extend(['ll', 'qq']) # Z -> ll or Z -> qq
-      counter_map_keys = decmodes + [ 'gg', 'gq', 'qq' ]
-      counter_map = { k : 0 for k in counter_map_keys }
+        decmodes.extend(['ll', 'qq'])  # Z -> ll or Z -> qq
+      counter_map_keys = decmodes + ['gg', 'gq', 'qq']
+      counter_map = {k: 0 for k in counter_map_keys}
       channel_map = {}
+
+      def save_rles(proper_basename, evt_arr):
+        # saves RLE numbers of a specific channel (and maybe initiator) to a separate file
+
+        rle_filename = os.path.join(secondary_output_dir, proper_basename)
+        with open(rle_filename, 'w') as f2:
+          for evt_entry in evt_arr:
+            f2.write("%s\n" % evt_entry['rle'])
+
+      def print_initiatiors(init_type, arr, proper_basename = ''):
+        # print he number of events (fraction to the event category) and the RLE numbers that correspond to
+        # the one process initiator pair; return the number of events which belong to both categories
+
+        evt_init_type = [x for x in arr if x['pp'] == init_type]
+        if evt_init_type:
+          ms.writeln("\tInitiated by %s: %d (%.2f%%)" %
+            (init_type, len(evt_init_type), 100. * len(evt_init_type) / len(arr))
+          )
+          for evt_init_type_entry in evt_init_type:
+            ms.writeln("\t\t%s" % evt_init_type_entry['rle'])
+
+          if proper_basename:
+            save_rles(proper_basename, evt_init_type)
+
+        return len(evt_init_type)
 
       for i in range(len(agg_sorted)):
         evt_str    = agg_sorted[i][0]    # process label
@@ -1260,9 +1303,15 @@ def print_aggregate(agg, hypothesis, output_filename, nof_events_total):
         for evt_entry in evt_arr:
           ms.writeln("\t\t%s" % evt_entry['rle'])
 
+        if secondary_output_dir:
+          proper_basename = 'tt%s,%s.txt' % (hz, evt_str.replace('(', '[').replace(')', ']'))
+          save_rles(proper_basename, evt_arr)
+
         # do a breakdown based on particle initiators
         for init_type in ['gg', 'gq', 'qq']:
-          counter_map[init_type] += print_initiatiors(init_type, evt_arr)
+          proper_basename = '%s->tt%s,%s.txt' % (init_type, hz, evt_str.replace('(', '[').replace(')', ']')) \
+                            if secondary_output_dir else ''
+          counter_map[init_type] += print_initiatiors(init_type, evt_arr, proper_basename)
 
         # fill the counter map with the number of events belonging to certain higgs decay modes
         if hypothesis == 'tth':
@@ -1331,7 +1380,7 @@ def print_aggregate(agg, hypothesis, output_filename, nof_events_total):
       for pp in ['gg', 'gq', 'qq']:
         ms.writeln("Number of pp->%s events: %d (%.2f%%)" % (pp, counter_map[pp], 100. * counter_map[pp] / nof_events_total))
 
-      ms.writeln("Total number of events: %d" % nof_events_total)
+      ms.writeln("Total number of events: %s" % nof_events_total)
   else:
     raise ValueError("Unsupported hypothesis: {hypothesis}".format(hypothesis = hypothesis))
 
@@ -1358,8 +1407,12 @@ if __name__ == '__main__':
                       help = 'R|Sample name for which the decay chain is to be found')
   parser.add_argument('-i', '--input', metavar = 'file', required = True, type = str, default = '',
                       help = 'R|Input RLE file')
+  parser.add_argument('-j', '--secondary-input', metavar = 'file', required = False, type = str, default = '',
+                      help = 'R|Secondary RLE file (applies only if -p/--parse or -s/--statistics is triggered)')
   parser.add_argument('-c', '--cli', metavar = 'file', required = False, type = str, default = '',
                       help = 'R|Path to cli.py')
+  parser.add_argument('-r', '--secondary-output', metavar = 'directory', required = False, type = str, default = '',
+                      help = 'R|Secondary output directory (applies only if -s/--statistics is triggered)')
   parser.add_argument('-s', '--statistics', metavar = 'hypothesis', required = False, type = str, default = '',
                       choices = ('tth', 'ttz'),
                       help = 'R|Create decay statistics, given parsing results')
@@ -1377,6 +1430,9 @@ if __name__ == '__main__':
     raise parser.error("use one of the following options: -g/--generate, -p/--parse, -s/--statistics")
   if (args.generate and not args.cli) or (not args.generate and args.cli):
     raise parser.error("must use both or neither: -g/--generate, -c/--cli")
+
+  if args.secondary_input and args.generate:
+    logging.warning("Using -j/--secondary-input with -g/--generate has no effect")
 
   if args.verbose:
     logging.getLogger().setLevel(logging.DEBUG)
@@ -1417,16 +1473,7 @@ if __name__ == '__main__':
       sys.exit(1)
 
     # read RLE numbers and check if all non-empty lines have the correct RLE number format
-    logging.debug("Reading RLE numbers from {rle_input}".format(rle_input = args.input))
-    rles = filter(lambda x: x != '', map(lambda x: x.rstrip('\n'), open(args.input, 'r').readlines()))
-    rle_pattern = re.compile('\d+:\d+:\d+')
-    if not all(map(lambda x: rle_pattern.match(x), rles)):
-      logging.error("File {rle_filename} contains invalid RLE number(s)".format(rle_filename = args.input))
-      sys.exit(1)
-    if not rles:
-      logging.error("You must provide at least one RLE number")
-      sys.exit(1)
-    logging.debug("Read {nof_rles} RLE numbers".format(nof_rles = len(rles)))
+    rles = read_rles(args.input)
 
     logging.debug("Testing if proxy is up")
     try:
@@ -1513,13 +1560,14 @@ if __name__ == '__main__':
         try:
           os.makedirs(os.path.dirname(args.output))
         except IOError:
-          logging.error("Could not create directory {dir_name}".format(dir_name=os.path.dirname(args.output)))
+          logging.error("Could not create directory {dir_name}".format(dir_name = os.path.dirname(args.output)))
           sys.exit(1)
       else:
         logging.error("Use -f/--force flag to create the directory for output file {filename}".format(
           filename = args.output)
         )
 
+    secondary_rles = { k : False for k in read_rles(args.secondary_input) } if args.secondary_input else {}
     second_decay_products, rles = [], []
     with codecs.open(args.output, 'w', 'utf-8') as of:
       with codecs.open(args.input, 'r', 'utf-8') as f:
@@ -1534,8 +1582,12 @@ if __name__ == '__main__':
             # if we already have collected some lines of the decay chains, process them
             # if not, keep just record the RLE number and continue
             if len(rles) > 0:
-              of.write('%s\n' % rles[-1])
-              of.write('%s\n%s\n' % (process(lines.rstrip('\n'), second_decay_products), SEP))
+              last_rle = rles[-1]
+              if (secondary_rles and last_rle in secondary_rles) or not secondary_rles:
+                of.write('%s\n' % last_rle)
+                of.write('%s\n%s\n' % (process(lines.rstrip('\n'), second_decay_products), SEP))
+                if secondary_rles:
+                  secondary_rles[last_rle] = True
               lines = ''
 
             # get the RLE number and record it
@@ -1559,6 +1611,14 @@ if __name__ == '__main__':
               # record a line of the decay chain table
               lines += str(line)
 
+    if secondary_rles:
+      unmatched_rles = [k for k in secondary_rles if not secondary_rles[k]]
+      if unmatched_rles:
+        logging.warning("The following {nof} RLE numbers werent caught here:".format(nof = len(unmatched_rles)))
+        print('\n'.join(unmatched_rles))
+      else:
+        logging.info("Successfully masked all {nof} RLE numbers".format(nof = len(secondary_rles)))
+
     # print further instructions
     logging.debug("Processed {nof_events} events".format(nof_events = len(rles)))
     logging.info("Find statistics about the parsed result with the following command:\n\t{cmd}".format(
@@ -1572,25 +1632,59 @@ if __name__ == '__main__':
   elif args.statistics:
     # here we create decay statistics about the parsed results
 
+    if args.secondary_output:
+      if not args.statistics:
+        logging.warning("Using -r/--secondary-output makes sense only with -s/--statistics")
+      if not os.path.isdir(args.secondary_output):
+        logging.warning("No such directory: {output_dir}".format(output_dir = args.secondary_output))
+        if not args.force:
+          logging.error("Use the -f/--force to create missing output directory {output_dir}".format(
+            output_dir = args.secondary_output,
+          ))
+          sys.exit(1)
+        else:
+          try:
+            os.makedirs(args.secondary_output)
+          except IOError as err:
+            logging.error("Could not create directory {output_dir} for the following reasons: {reasons}".format(
+              output_dir = args.secondary_output,
+              reasons    = err,
+            ))
+          logging.info("Successfully created directory {output_dir}".format(output_dir = args.secondary_output))
+
+    secondary_rles = {k: False for k in read_rles(args.secondary_input)} if args.secondary_input else {}
     lines, rles, evt = [], [], {}
     with codecs.open(args.input, 'r', 'utf-8') as f:
       for line in f:
         line = str(line.rstrip('\n'))
         if line.startswith('1:'):
-          # record the RLE number
-          rles.append(line)
+          if (secondary_rles and line in secondary_rles) or not secondary_rles:
+            # record the RLE number
+            rles.append(line)
+            if secondary_rles:
+              secondary_rles[line] = True
         elif line == SEP:
           # process the recorded decay chains of the event, since we hit a separator
-          evt[rles[-1]] = stat(lines, args.statistics)
+          if lines:
+            if rles:
+              evt[rles[-1]] = stat(lines, args.statistics)
           lines = []
         else:
           # record the decay chain
           lines.append(line.split(' -> '))
 
+    if secondary_rles:
+      unmatched_rles = [k for k in secondary_rles if not secondary_rles[k]]
+      if unmatched_rles:
+        logging.warning("The following {nof} RLE numbers werent caught here:".format(nof = len(unmatched_rles)))
+        print('\n'.join(unmatched_rles))
+      else:
+        logging.info("Successfully masked all {nof} RLE numbers".format(nof = len(secondary_rles)))
+
     # aggregate and print the results
     # each complete decay mode is sorted by its frequency (followed by alphabetical ordering)
     agg = aggregate(evt, args.statistics)
-    print_aggregate(agg, args.statistics, args.output, len(rles))
+    print_aggregate(agg, args.statistics, args.output, len(rles), args.secondary_output)
 
   else:
     logging.error("Well that's awkward ...")
