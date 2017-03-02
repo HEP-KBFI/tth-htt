@@ -670,8 +670,8 @@ samples_2016["/SingleElectron/Run2016H-PromptReco-v3/MINIAOD"] = OD([
   ("type",                  "data"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "SingleElectron_Run2016H_v3_promptReco"),
-  ("nof_files",             194),
-  ("nof_events",            3184905),
+  ("nof_files",             136),
+  ("nof_events",            3191585),
   ("use_HIP_mitigation_bTag", False),
   ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                True),
@@ -680,9 +680,9 @@ samples_2016["/SingleElectron/Run2016H-PromptReco-v3/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau/SingleElectron/VHBB_HEPPY_V25tthtautau_SingleElectron__Run2016H-PromptReco-v3/170215_143535"),
+        ("path",      "/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau_v3/SingleElectron/VHBB_HEPPY_V25tthtautau_v3_SingleElectron__Run2016H-PromptReco-v3/170222_145637"),
         ("selection", "*"),
-        ("blacklist", [143]),
+        ("blacklist", []),
       ]),
     ]
   ),
@@ -1023,7 +1023,7 @@ samples_2016["/Tau/Run2016H-PromptReco-v2/MINIAOD"] = OD([
   ("sample_category",       "data_obs"),
   ("process_name_specific", "Tau_Run2016H_v2_promptReco"),
   ("nof_files",             6052),
-  ("nof_events",            76437603),
+  ("nof_events",            76504267),
   ("use_HIP_mitigation_bTag", False),
   ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                True),
@@ -1034,7 +1034,7 @@ samples_2016["/Tau/Run2016H-PromptReco-v2/MINIAOD"] = OD([
       OD([
         ("path",      "/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau_v3/Tau/VHBB_HEPPY_V25tthtautau_v3_Tau__Run2016H-PromptReco-v2/170221_162533"),
         ("selection", "*"),
-        ("blacklist", [3117]),
+        ("blacklist", []),
       ]),
     ]
   ),
