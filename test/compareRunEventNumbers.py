@@ -10,8 +10,10 @@ import json
 
 #inputFile_ref = '/home/veelken/VHbbNtuples_8_0_x/CMSSW_8_0_19/src/tthAnalysis/HiggsToTauTau/test/synchronization/Events_3l1tau_ttZ.txt'
 #inputFile_test = '/home/veelken/ttHAnalysis/2016/2017Jan11/output_rle/3l_1tau/Tight_OS/TTZToLLNuNu_M-10_ext1/rle_3l_1tau_SR_TTZToLLNuNu_M-10_ext1.txt'
-inputFile_ref = '/home/veelken/ttHAnalysis/2016/2017Jan16/output_rle/2lss_1tau/Tight_SS/ttHJetToNonbb_M125/rle_2lss_1tau_ttHJetToNonbb_M125_Tight_SS_central_all.txt'
-inputFile_test = '/home/veelken/ttHAnalysis/2016/2017Jan30_addMEM//output_rle/2lss_1tau/Tight_SS/ttHJetToNonbb_M125/rle_2lss_1tau_ttHJetToNonbb_M125_Tight_SS_central_1.txt'
+#inputFile_ref = '/home/veelken/ttHAnalysis/2016/2017Jan16/output_rle/2lss_1tau/Tight_SS/ttHJetToNonbb_M125/rle_2lss_1tau_ttHJetToNonbb_M125_Tight_SS_central_all.txt'
+#inputFile_test = '/home/veelken/ttHAnalysis/2016/2017Jan30_addMEM//output_rle/2lss_1tau/Tight_SS/ttHJetToNonbb_M125/rle_2lss_1tau_ttHJetToNonbb_M125_Tight_SS_central_1.txt'
+inputFile_ref = '/home/veelken/VHbbNtuples_8_0_x/CMSSW_8_0_19/src/tthAnalysis/HiggsToTauTau/test/sync_2017Mar02/selEvents_1l_2tau_ttH_htt_SR_LLR.txt'
+inputFile_test = '/home/veelken/ttHAnalysis/2016/2017Mar02/output_rle/1l_2tau/Tight_OS/ttHJetToNonbb_M125_amcatnlo/rle_1l_2tau_ttHJetToNonbb_M125_amcatnlo_Tight_OS_central_all.txt'
 
 matcher_ref = re.compile('(?P<run>\d*):(?P<lumi>\d*):(?P<evt>\d*)')
 #matcher_test = re.compile('\*(?P<garbage>[0-9 ]+)\*(?P<run>[0-9 ]+)\*(?P<lumi>[0-9 ]+)\*(?P<evt>[0-9 ]+)\*')
