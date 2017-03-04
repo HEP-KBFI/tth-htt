@@ -226,7 +226,7 @@ Disclaimer: the program is tested with only ttHJetToNonbb_M125, TTZToLLNuNu_M-10
 
 ################################################### IMPORTS ###################################################
 
-import argparse, logging, sys, subprocess, datetime, os, re, jinja2, codecs, copy, itertools
+import argparse, logging, sys, subprocess, os, re, jinja2, codecs, copy, itertools
 
 try:
   __import__('imp').find_module('tthAnalysis')
@@ -1308,10 +1308,13 @@ def print_aggregate(agg, hypothesis, output_filename, nof_events_total, secondar
           save_rles(proper_basename, evt_arr)
 
         # do a breakdown based on particle initiators
+        counter_map_init = {}
         for init_type in ['gg', 'gq', 'qq']:
           proper_basename = '%s->tt%s,%s.txt' % (init_type, hz, evt_str.replace('(', '[').replace(')', ']')) \
                             if secondary_output_dir else ''
-          counter_map[init_type] += print_initiatiors(init_type, evt_arr, proper_basename)
+          nof_init_type = print_initiatiors(init_type, evt_arr, proper_basename)
+          counter_map[init_type] += nof_init_type
+          counter_map_init[init_type] = nof_init_type
 
         # fill the counter map with the number of events belonging to certain higgs decay modes
         if hypothesis == 'tth':
@@ -1346,6 +1349,7 @@ def print_aggregate(agg, hypothesis, output_filename, nof_events_total, secondar
         channel_map[channel].append({
           'nof_events' : nof_events,
           'evt_type'   : evt_str,
+          'init'       : counter_map_init,
         })
 
         if i < len(agg_sorted) - 1:
@@ -1361,11 +1365,14 @@ def print_aggregate(agg, hypothesis, output_filename, nof_events_total, secondar
         channel_nof_events_percent = 100. * channel_nof_events / nof_events_total
         ms.writeln("\t%s: %d (%.2f%%)" % (channel_str, channel_nof_events, channel_nof_events_percent))
         for channel_evt_type in channel[1]:
-          ms.writeln("\t\t%s %d\t(%.2f%%/%.2f%%)" % (
+          ms.writeln("\t\t%s %d\t(%.2f%%/%.2f%%/gg:%.2f%%/gq:%.2f%%/qq:%.2f%%)" % (
             channel_evt_type['evt_type'].ljust(65),
             channel_evt_type['nof_events'],
             100. * channel_evt_type['nof_events'] / channel_nof_events,
-            100. * channel_evt_type['nof_events'] / nof_events_total
+            100. * channel_evt_type['nof_events'] / nof_events_total,
+            100. * channel_evt_type['init']['gg'] / channel_evt_type['nof_events'],
+            100. * channel_evt_type['init']['gq'] / channel_evt_type['nof_events'],
+            100. * channel_evt_type['init']['qq'] / channel_evt_type['nof_events'],
           ))
 
       ms.writeln(SEP.replace('-', '='))
@@ -1484,8 +1491,9 @@ if __name__ == '__main__':
       # at this point the voms-proxy-info seems to be available, which means that we can read how much time
       # is left until the proxy channel closes (if it's less than an hour, then exit)
       timeleft_str = filter(lambda x: x.startswith('timeleft'), voms_proxy_info_stdout.split('\n'))[0].split()[-1]
-      timeleft = datetime.datetime.strptime(timeleft_str, "%H:%M:%S")
-      if timeleft.hour == 0:
+      timeleft_split = timeleft_str.split(':')
+      timeleft_hour = int(timeleft_split[0])
+      if timeleft_hour == 0:
         raise ValueError("Not enough time to keep proxy alive: {timeleft}\nUse the following command:\n\t{command}".format(
           timeleft = timeleft_str,
           command  = "source /cvmfs/grid.cern.ch/glite/etc/profile.d/setup-ui-example.sh; \n\t"
