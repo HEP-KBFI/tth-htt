@@ -41,8 +41,7 @@ bool RecoElectronSelectorLoose::operator()(const RecoElectron& electron) const
     if (electron.pt() <= 10) {
       mvaRawPOG = electron.mvaRawPOG_HZZ();
       mvaRawPOGCut = min_mvaRawPOG_vlow_[idxBin];
-    }
-    else {
+    } else {
       double a = min_mvaRawPOG_low_[idxBin];
       double b = min_mvaRawPOG_high_[idxBin];
       double c = (a-b)/10;
@@ -94,8 +93,7 @@ bool RecoElectronSelectorLoose::operator()(const RecoElectron& electron) const
         if ( set_selection_flags_ ) electron.set_isLoose();
         return true;
       }
-    }
-    else {
+    } else {
       double a = min_mvaRawPOG_low_[idxBin];
       double b = min_mvaRawPOG_high_[idxBin];
       double c = (a-b)/10;

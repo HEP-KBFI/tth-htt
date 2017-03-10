@@ -277,7 +277,7 @@ SyncNtupleManager::initializeHLTBranches(const std::vector<std::vector<hltPath *
 {
   for(const auto & hltVector: hltPaths)
     for(const auto & hlt: hltVector)
-      hltMap[hlt -> branchName_] = -1;
+      hltMap[hlt -> getBranchName()] = -1;
   for(auto & kv: hltMap)
     outputTree -> Branch(hltMangle(kv.first).c_str(), &(hltMap[kv.first]),
                          Form("%s/%s", hltMangle(kv.first).c_str(), Traits<decltype(kv.second)>::TYPE_NAME));
@@ -518,7 +518,7 @@ SyncNtupleManager::read(const std::vector<std::vector<hltPath *>> & hltPaths)
 {
   for(const auto & hltVector: hltPaths)
     for(const auto & hlt: hltVector)
-      hltMap[hlt -> branchName_] = hlt -> value_;
+      hltMap[hlt -> getBranchName()] = hlt -> getValue();
 }
 
 void

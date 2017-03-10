@@ -65,5 +65,9 @@ std::ostream& operator<<(std::ostream& stream, const RecoMuon& muon)
   stream << " tightCharge = " << muon.tightCharge() << std::endl;
   stream << " jetBtagCSV = " << muon.jetBtagCSV() << std::endl;
   stream << " mvaRawTTH = " << muon.mvaRawTTH() << std::endl;
+  stream << "gen. matching:" 
+	 << " lepton = " << muon.genLepton() << "," 
+	 << " hadTau = " << muon.genHadTau() << "," 
+	 << " jet = " << muon.genJet() << std::endl;
   return stream;
 }

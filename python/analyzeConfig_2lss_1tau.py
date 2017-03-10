@@ -172,6 +172,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
     lines.append("process.analyze_2lss_1tau.use_triggers_1e1mu = cms.bool(%s)" % ("1e1mu" in jobOptions['triggers']))
     lines.append("process.analyze_2lss_1tau.leptonSelection = cms.string('%s')" % jobOptions['lepton_selection'])
     lines.append("process.analyze_2lss_1tau.apply_leptonGenMatching = cms.bool(%s)" % (jobOptions['apply_leptonGenMatching'] and jobOptions['is_mc']))
+    lines.append("process.analyze_2lss_1tau.apply_leptonGenMatching_ttZ_workaround = cms.bool(%s)" % (jobOptions['sample_category'] in [ "TTZ", "TTW", "signal" ]))
     lines.append("process.analyze_2lss_1tau.leptonChargeSelection = cms.string('%s')" % jobOptions['lepton_charge_selection'])
     lines.append("process.analyze_2lss_1tau.hadTauSelection = cms.string('%s')" % jobOptions['hadTau_selection'])
     lines.append("process.analyze_2lss_1tau.apply_hadTauGenMatching = cms.bool(%s)" % (jobOptions['apply_hadTauGenMatching'] and jobOptions['is_mc']))

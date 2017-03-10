@@ -86,8 +86,7 @@ bool RecoElectronSelectorFakeable::operator()(const RecoElectron& electron) cons
     if (electron.pt() <= 10) {
       mvaRawPOG = electron.mvaRawPOG_HZZ();
       mvaRawPOGCut = min_mvaRawPOG_vlow_[idxBin_absEta];
-    }
-    else {
+    } else {
       double a = min_mvaRawPOG_low_[idxBin_absEta];
       double b = min_mvaRawPOG_high_[idxBin_absEta];
       double c = (a-b)/10;
@@ -101,25 +100,25 @@ bool RecoElectronSelectorFakeable::operator()(const RecoElectron& electron) cons
       else                                                idxBin_mvaTTH = 1;
       assert(idxBin_mvaTTH >= 0 && idxBin_mvaTTH <= 1);
       if ( electron.jetPtRatio() >= min_jetPtRatio_[idxBin_mvaTTH] &&
-	        electron.jetBtagCSV() <= max_jetBtagCSV_[idxBin_mvaTTH] ) {
-	      if ( pt <= min_pt_trig_ || !apply_offline_e_trigger_cuts_ ) {
-	        if ( set_selection_flags_ ) {
-	          electron.set_isFakeable();
-	          if ( isTight ) electron.set_isTight();
-	        }
-	        return true;
-	      } else if ( electron.sigmaEtaEta() <= max_sigmaEtaEta_trig_[idxBin_absEta] &&
-		        electron.HoE() <= max_HoE_trig_[idxBin_absEta] &&
-		        electron.deltaEta() <= max_deltaEta_trig_[idxBin_absEta] &&
-		        electron.deltaPhi() <= max_deltaPhi_trig_[idxBin_absEta] &&
-		        electron.OoEminusOoP() >= min_OoEminusOoP_trig_ &&
-		        electron.OoEminusOoP() <= max_OoEminusOoP_trig_[idxBin_absEta] ) {
-	        if ( set_selection_flags_ ) {
-	          electron.set_isFakeable();
-	          if ( isTight ) electron.set_isTight();
-	        }
-	        return true;
-	      }
+	   electron.jetBtagCSV() <= max_jetBtagCSV_[idxBin_mvaTTH] ) {
+	if ( pt <= min_pt_trig_ || !apply_offline_e_trigger_cuts_ ) {
+	  if ( set_selection_flags_ ) {
+	    electron.set_isFakeable();
+	    if ( isTight ) electron.set_isTight();
+	  }
+	  return true;
+	} else if ( electron.sigmaEtaEta() <= max_sigmaEtaEta_trig_[idxBin_absEta] &&
+		    electron.HoE() <= max_HoE_trig_[idxBin_absEta] &&
+		    electron.deltaEta() <= max_deltaEta_trig_[idxBin_absEta] &&
+		    electron.deltaPhi() <= max_deltaPhi_trig_[idxBin_absEta] &&
+		    electron.OoEminusOoP() >= min_OoEminusOoP_trig_ &&
+		    electron.OoEminusOoP() <= max_OoEminusOoP_trig_[idxBin_absEta] ) {
+	  if ( set_selection_flags_ ) {
+	    electron.set_isFakeable();
+	    if ( isTight ) electron.set_isTight();
+	  }
+	  return true;
+	}
       }
     }
   }

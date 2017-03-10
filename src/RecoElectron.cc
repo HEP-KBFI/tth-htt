@@ -74,5 +74,9 @@ std::ostream& operator<<(std::ostream& stream, const RecoElectron& electron)
   stream << " HoE = " << electron.HoE() << ", OoEminusOoP = " << electron.OoEminusOoP() << std::endl;
   stream << " jetBtagCSV = " << electron.jetBtagCSV() << std::endl;
   stream << " mvaRawTTH = " << electron.mvaRawTTH() << std::endl;
+  stream << "gen. matching:" 
+	 << " lepton = " << electron.genLepton() << "," 
+	 << " hadTau = " << electron.genHadTau() << "," 
+	 << " jet = " << electron.genJet() << std::endl;
   return stream;
 }

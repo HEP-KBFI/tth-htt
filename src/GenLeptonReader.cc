@@ -136,15 +136,18 @@ void GenLeptonReader::setBranchAddresses(TTree* tree)
 
 std::vector<GenLepton> GenLeptonReader::read() const
 {
+  //std::cout << "<GenLeptonReader::read()>:" << std::endl;
   GenLeptonReader* gInstance = instances_[branchName_promptLeptons_];
   assert(gInstance);
   Int_t nPromptLeptons = gInstance->nPromptLeptons_;
+  //std::cout << "nPromptLeptons = " << nPromptLeptons << std::endl;
   if ( nPromptLeptons > max_nPromptLeptons_ ) {
     throw cms::Exception("GenLeptonReader") 
       << "Number of prompt leptons stored in Ntuple = " << nPromptLeptons << "," 
       << " exceeds max_nPromptLeptons = " << max_nPromptLeptons_ << " !!\n";
   }
   Int_t nLeptonsFromTau = gInstance->nLeptonsFromTau_;
+  //std::cout << "nLeptonsFromTau = " << nLeptonsFromTau << std::endl;
   if ( nLeptonsFromTau > max_nLeptonsFromTau_ ) {
     throw cms::Exception("GenLeptonReader") 
       << "Number of leptons from tau decays stored in Ntuple = " << nLeptonsFromTau << "," 

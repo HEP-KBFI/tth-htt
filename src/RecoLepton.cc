@@ -60,5 +60,9 @@ std::ostream& operator<<(std::ostream& stream, const RecoLepton& lepton)
   stream << " tightCharge = " << lepton.tightCharge() << std::endl;
   stream << " jetBtagCSV = " << lepton.jetBtagCSV() << std::endl;
   stream << " mvaRawTTH = " << lepton.mvaRawTTH() << std::endl;
+  stream << "gen. matching:" 
+	 << " lepton = " << lepton.genLepton() << "," 
+	 << " hadTau = " << lepton.genHadTau() << "," 
+	 << " jet = " << lepton.genJet() << std::endl;
   return stream;
 }

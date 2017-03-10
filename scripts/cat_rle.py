@@ -129,12 +129,12 @@ if __name__ == '__main__':
       logging.error("Couldn't create '{save_path}', aborting".format(save_path = save_path))
       sys.exit(1)
 
-  ##for sample_name in rles:
-  ##  rle_sample_file = os.path.join(save_path, '{base_name}.txt'.format(base_name = sample_name))
-  ##  logging.debug("Writing file '{rle_sample_file}'".format(rle_sample_file = rle_sample_file))
-  ##  with open(rle_sample_file, 'w') as f:
-  ##    for event in rles[sample_name]:
-  ##      f.write('{line}\n'.format(line = event))
+  for sample_name in rles:
+    rle_sample_file = os.path.join(save_path, '{base_name}.txt'.format(base_name = sample_name))
+    logging.debug("Writing file '{rle_sample_file}'".format(rle_sample_file = rle_sample_file))
+    with open(rle_sample_file, 'w') as f:
+      for event in rles[sample_name]:
+        f.write('{line}\n'.format(line = event))
   for sample_name in rles:
     if not sample_name.find("_Run") != -1:
       continue

@@ -23,7 +23,7 @@ bool hltPaths_isTriggered(const std::vector<hltPath*>& hltPaths)
   bool retVal = false;
   for ( std::vector<hltPath*>::const_iterator hltPath_iter = hltPaths.begin();
 	hltPath_iter != hltPaths.end(); ++hltPath_iter ) {
-    if ( (*hltPath_iter)->value_ >= 1 ) {
+    if ( (*hltPath_iter)->getValue() >= 1 ) {
       retVal = true;
       break;
     }

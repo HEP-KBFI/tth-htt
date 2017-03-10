@@ -1538,10 +1538,10 @@ samples_2016["/TTZToLLNuNu_M-10_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISummer1
   ("nof_files",             203),
   ("nof_events",            3685750),
   ("use_it",                True),
-  ("xsection",              0.252900),
+  ("xsection",              0.252900*1.08), # CV: scale by factor 1.08 (https://hypernews.cern.ch/HyperNews/CMS/get/HIG-17-004/19/1.html)
   ("genWeight",             True),
   ("triggers",              [ "1e", "1mu", "2e", "1e1mu", "2mu", "3e", "2e1mu", "1e2mu", "3mu", "1e1tau", "1mu1tau", "2tau" ]),
-  ("reHLT",                 True),
+  ("reHLT",                 True),   
   ("local_paths",
     [
       OD([
@@ -1559,7 +1559,7 @@ samples_2016["/TTZToLLNuNu_M-10_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISummer1
   ("nof_files",             610),
   ("nof_events",            3685750),
   ("use_it",                True),
-  ("xsection",              0.252900),
+  ("xsection",              0.252900*1.08), # CV: scale by factor 1.08 (https://hypernews.cern.ch/HyperNews/CMS/get/HIG-17-004/19/1.html)
   ("genWeight",             True),
   ("triggers",              [ "1e", "1mu", "2e", "1e1mu", "2mu", "3e", "2e1mu", "1e2mu", "3mu", "1e1tau", "1mu1tau", "2tau" ]),
   ("reHLT",                 True),
