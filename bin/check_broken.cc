@@ -289,7 +289,6 @@ struct Sample
       std::transform(blacklist_u.begin(), blacklist_u.end(), std::back_inserter(blacklist),
                      [](unsigned x) -> std::string { return std::to_string(x); });
     }
-
   }
 
   /**
@@ -408,7 +407,19 @@ struct Sample
 	    "$(" >> (boost::xpressive::s1 = +boost::xpressive::_w) >> ')';
     const std::string output = boost::xpressive::regex_replace(input, envar, fmt_fun);
     return output;
-  }  
+  }
+
+  friend std::ostream &
+  operator<<(std::ostream & os,
+             const Sample & sample)
+  {
+    os << "\n\tname         = " << sample.name
+       << "\n\tdbs_name     = " << sample.dbs_name
+       << "\n\tcategory     = " << sample.category
+       << "\n\tprocess_name = " << sample.process_name
+       << "\n\tuse_it       = " << std::boolalpha << sample.use_it;
+    return os;
+  }
 };
 
 std::vstring
@@ -468,7 +479,30 @@ struct Samples
   
   void define(const std::string sample_name, const std::string dbs_name, const std::string sample_category, const std::string process_name, double xs, int dbsevents, bool use_it = true, bool genweights = true)
   {
-    sample_list[sample_name] = new Sample(sample_name, dbs_name, sample_category, process_name, xs, dbsevents, use_it, genweights);
+    // KE: add some failsafes
+    Sample * sample = new Sample(sample_name, dbs_name, sample_category, process_name, xs, dbsevents, use_it, genweights);
+    std::cout << "Attempting to define sample:" << *sample << '\n';
+
+    if(sample_list.count(sample_name))
+    {
+      std::cerr << "Map already contains an entry w/ key " << sample_name << ':' << *sample_list[sample_name] << '\n';
+      throw std::runtime_error("Map entry w/ key " + sample_name + " already exists in the map!");
+    }
+    for(const auto & kv: sample_list)
+    {
+      if(kv.second -> dbs_name == sample -> dbs_name)
+      {
+        std::cerr << "Map already contains an entry with dbs_name = " << dbs_name << ':' << *kv.second << '\n';
+        throw std::runtime_error("There already exists a map entry w/ dbs_name = " + sample -> dbs_name);
+      }
+      if(kv.second -> process_name == sample -> process_name)
+      {
+        std::cerr << "Map already contains an entry with process_name = " << process_name << ':' << *kv.second << '\n';
+        throw std::runtime_error("There already exists a map entry w/ process_name = " + sample -> process_name);
+      }
+    }
+
+    sample_list[sample_name] = sample;
   }
   
   std::vector<Sample*> get_list()
@@ -493,11 +527,6 @@ struct Samples
     return sl;
   }
 };
-
-
-
-
-
 
 int
 main(int argc,
@@ -671,10 +700,10 @@ main(int argc,
     "EWK", "DYJetsToLL_M-10to50", 18610, 35291566);
   samples.define("VHBB_HEPPY_V25tthtautau_v3_DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-Py8__RunIISummer16MAv2-PUMoriond17_80r2as_2016_TrancheIV_v6_ext1-v2",
     "/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v2/MINIAODSIM",
-    "EWK", "DYJetsToLL_M-50", 6025.2, 49144274);
+    "EWK", "DYJetsToLL_M-50_ext1", 6025.2, 49144274);
   samples.define("VHBB_HEPPY_V25tthtautau_v3_DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-Py8__RunIISummer16MAv2-PUMoriond17_80r2as_2016_TrancheIV_v6_ext2-v1",
     "/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext2-v1/MINIAODSIM",
-    "EWK", "DYJetsToLL_M-50", 6025.2, 96658943);
+    "EWK", "DYJetsToLL_M-50_ext2", 6025.2, 96658943);
     
   samples.define("VHBB_HEPPY_V25tthtautau_GluGluHToZZTo4L_M125_13TeV_powheg2_JHUgenV6_Py8__RunIISummer16MAv2-PUMoriond17_80r2as_2016_TrancheIV_v6-v1",
     "/GluGluHToZZTo4L_M125_13TeV_powheg2_JHUgenV6_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM",
@@ -841,6 +870,8 @@ main(int argc,
   samples.define("VHBB_HEPPY_V25tthtautau_WZTo3LNu_TuneCUETP8M1_13TeV-powheg-Py8__matze-faster_v9_WZ_maod_54aa74f75231422e9f4d3766cb92a64a-v1",
     "/WZTo3LNu_TuneCUETP8M1_13TeV-powheg-pythia8/matze-faster_v9_WZ_maod_54aa74f75231422e9f4d3766cb92a64a-v1/USER",
     "EWK", "WZTo3LNu_fastsim", 4.102, 18814150, false);
+
+  std::cout << "All samples have been successfully defined\n";
   
   //--- parse command line arguments
   std::string histo_str, output_dir_str, filter;

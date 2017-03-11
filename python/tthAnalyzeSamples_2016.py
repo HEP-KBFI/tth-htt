@@ -1114,7 +1114,7 @@ samples_2016["/DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIIS
 samples_2016["/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v2/MINIAODSIM"] = OD([
   ("type",                  "mc"),
   ("sample_category",       "EWK"),
-  ("process_name_specific", "DYJetsToLL_M-50"),
+  ("process_name_specific", "DYJetsToLL_M-50_ext1"),
   ("nof_files",             2461),
   ("nof_events",            143970947),
   ("use_it",                True),
@@ -1135,7 +1135,7 @@ samples_2016["/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISumme
 samples_2016["/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext2-v1/MINIAODSIM"] = OD([
   ("type",                  "mc"),
   ("sample_category",       "EWK"),
-  ("process_name_specific", "DYJetsToLL_M-50"),
+  ("process_name_specific", "DYJetsToLL_M-50_ext2"),
   ("nof_files",             4851),
   ("nof_events",            143970947),
   ("use_it",                True),
