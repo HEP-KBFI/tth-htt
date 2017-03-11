@@ -1,10 +1,4 @@
-import codecs
-import os
-import logging
-import ROOT
-import array
-import sys
-import getpass
+import codecs, os, logging, ROOT, array
 
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd
 from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg, generateInputFileList
@@ -33,12 +27,13 @@ class addMEMConfig:
                            (does not limit number of MEM jobs running in parallel on batch system)
 
     """
-    def __init__(self, treeName, outputDir, executable_addMEM, samples, era, debug, running_method,
+    def __init__(self, treeName, outputDir, cfgDir, executable_addMEM, samples, era, debug, running_method,
                  max_files_per_job, mem_integrations_per_job, max_mem_integrations, num_parallel_jobs,
-                 leptonSelection, hadTauSelection, channel, maxPermutations_addMEM):
+                 leptonSelection, hadTauSelection, isForBDTtraining, channel, maxPermutations_addMEM):
 
         self.treeName = treeName
         self.outputDir = outputDir
+        self.cfgDir = cfgDir
         self.executable_addMEM = executable_addMEM
         self.mem_integrations_per_job = mem_integrations_per_job
         self.max_files_per_job = max_files_per_job
@@ -50,6 +45,7 @@ class addMEMConfig:
         self.leptonSelection = leptonSelection
         self.hadTauSelection = hadTauSelection
         self.maxPermutations_addMEM = maxPermutations_addMEM
+        self.isForBDTtraining = isForBDTtraining
         assert(running_method.lower() in [
           "sbatch", "makefile"]), "Invalid running method: %s" % running_method
         self.running_method = running_method
@@ -60,23 +56,24 @@ class addMEMConfig:
         else:
             self.is_makefile = True
         self.makefile = os.path.join(
-          self.outputDir, "Makefile_%s" % self.channel)
+          self.cfgDir, "Makefile_%s" % self.channel)
         self.num_parallel_jobs = num_parallel_jobs
 
         self.workingDir = os.getcwd()
         print "Working directory is: " + self.workingDir
 
-        create_if_not_exists(self.outputDir)
+        for dirPath in [self.outputDir, self.cfgDir]:
+          create_if_not_exists(dirPath)
         self.stdout_file = codecs.open(os.path.join(
-          self.outputDir, "stdout_%s.log" % self.channel), 'w', 'utf-8')
+          self.cfgDir, "stdout_%s.log" % self.channel), 'w', 'utf-8')
         self.stderr_file = codecs.open(os.path.join(
-          self.outputDir, "stderr_%s.log" % self.channel), 'w', 'utf-8')
+          self.cfgDir, "stderr_%s.log" % self.channel), 'w', 'utf-8')
         self.dirs = {}
         self.samples = samples
         self.cfgFiles_addMEM_modified = {}
         self.logFiles_addMEM = {}
         self.sbatchFile_addMEM = os.path.join(
-          self.outputDir, "sbatch_addMEM_%s.py" % self.channel)
+          self.cfgDir, "sbatch_addMEM_%s.py" % self.channel)
         self.inputFiles = {}
         self.outputFiles = {}
         self.hadd_records = {}
@@ -88,9 +85,12 @@ class addMEMConfig:
                 continue
             process_name = sample_info["process_name_specific"]
             key_dir = getKey(sample_name)
-            for dir_type in [ DKEY_CFGS, DKEY_NTUPLES, DKEY_FINAL_NTUPLES, DKEY_LOGS, DKEY_HADD ]:
-                initDict(self.dirs, [ key_dir, dir_type ])
+            for dir_type in [DKEY_NTUPLES, DKEY_FINAL_NTUPLES]:
+                initDict(self.dirs, [key_dir, dir_type])
                 self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel, process_name)
+            for dir_type in [DKEY_CFGS, DKEY_LOGS, DKEY_HADD]:
+                initDict(self.dirs, [key_dir, dir_type])
+                self.dirs[key_dir][dir_type] = os.path.join(self.cfgDir, dir_type, self.channel, process_name)
 
         self.cvmfs_error_log = {}
 
@@ -109,7 +109,7 @@ class addMEMConfig:
             output_file_names = self.outputFiles,
             log_file_names = self.logFiles_addMEM,
             working_dir = self.workingDir,
-            max_num_jobs = 100000,
+            max_num_jobs = 100000000, # it's really silly to limit the number of jobs; use an enormous number as the ,,fix''
             cvmfs_error_log = self.cvmfs_error_log,
         )
 
@@ -143,7 +143,7 @@ class addMEMConfig:
             hadd_in_files = hadd_in['output_files']
             hadd_fileset_id = hadd_in['fileset_id']
             sbatch_hadd_file = os.path.join(
-                self.outputDir, DKEY_HADD, "sbatch_hadd_%s_%s_%d.py" % (self.channel, 'cat', hadd_fileset_id)
+                self.cfgDir, DKEY_HADD, "sbatch_hadd_%s_%s_%d.py" % (self.channel, 'cat', hadd_fileset_id)
             )
             tools_createScript_sbatch_hadd(sbatch_hadd_file, hadd_in_files, hadd_out, 'cat', self.workingDir, False)
 

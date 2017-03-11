@@ -107,6 +107,13 @@ int main(int argc, char* argv[])
   else throw cms::Exception("addMEM_2lss_1tau") 
     << "Invalid Configuration parameter 'era' = " << era_string << " !!\n";
 
+  const bool isForBDTtraining = cfg_addMEM.getParameter<bool>("isForBDTtraining");
+  const std::string memPythonConfigFile =
+    isForBDTtraining                                         ?
+    "ttH_Htautau_MEM_Analysis/MEM/small_lowpoints_122016.py" :
+    "ttH_Htautau_MEM_Analysis/MEM/small_nomin_122016.py"
+   ;
+
   std::string leptonSelection_string = cfg_addMEM.getParameter<std::string>("leptonSelection").data();
   int leptonSelection = -1;
   if      ( leptonSelection_string == "Loose"    ) leptonSelection = kLoose;
@@ -428,7 +435,7 @@ int main(int argc, char* argv[])
 		  memOutput_2lss_1tau.set_hadTau_eta((*selHadTau)->eta());
 		  memOutput_2lss_1tau.set_hadTau_phi((*selHadTau)->phi());
 		} else {
-		  MEMInterface_2lss_1tau memInterface_2lss_1tau("ttH_Htautau_MEM_Analysis/MEM/small_lowpoints_122016.py");
+		  MEMInterface_2lss_1tau memInterface_2lss_1tau(memPythonConfigFile);
 		  memOutput_2lss_1tau = memInterface_2lss_1tau(
 	            *selLepton_lead, *selLepton_sublead, *selHadTau,
 		    met,
