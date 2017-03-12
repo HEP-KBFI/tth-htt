@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import os, logging, sys, getpass
 
 from tthAnalysis.HiggsToTauTau.addMEMConfig_3l_1tau import addMEMConfig_3l_1tau
@@ -23,7 +24,7 @@ else:
   from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_3l1tau_prodNtuples import samples_2016 as samples
 #--------------------------------------------------------------------------------
 
-version = "2017Jan26_dR03mvaVVLoose"
+version = "2017Mar12"
 ERA     = "2016"
 
 if __name__ == '__main__':
@@ -34,8 +35,8 @@ if __name__ == '__main__':
 
   addMEMProduction = addMEMConfig_3l_1tau(
     treeName                 = 'tree',
-    outputDir                = os.path.join("/hdfs", getpass.getuser(), "addMEM", ERA, version),
-    cfgDir                   = os.path.join("/home", getpass.getuser(), "addMEM", ERA, version),
+    outputDir                = os.path.join("/hdfs/local", getpass.getuser(), "addMEM", ERA, version),
+    cfgDir                   = os.path.join("/home",       getpass.getuser(), "addMEM", ERA, version),
     executable_addMEM        = "addMEM_3l_1tau",
     samples                  = samples,
     era                      = ERA,
