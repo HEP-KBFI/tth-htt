@@ -628,7 +628,7 @@ main(int argc,
   samples.define("VHBB_HEPPY_V25tthtautau_v2_SingleElectron__Run2016F-23Sep2016-v1",
     "/SingleElectron/Run2016F-23Sep2016-v1/MINIAOD",
     "data_obs", "SingleElectron_Run2016F_v1", 1, 70593532, true, false);
-  samples.define("VHBB_HEPPY_V25tthtautau_v3_SingleElectron__Run2016G-23Sep2016-v1",
+  samples.define("VHBB_HEPPY_V25tthtautau_v2_SingleElectron__Run2016G-23Sep2016-v1",
     "/SingleElectron/Run2016G-23Sep2016-v1/MINIAOD",
     "data_obs", "SingleElectron_Run2016G_v1", 1, 153363109, true, false);
   samples.define("VHBB_HEPPY_V25tthtautau_SingleElectron__Run2016H-PromptReco-v2",
