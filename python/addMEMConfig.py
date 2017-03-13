@@ -245,7 +245,7 @@ class addMEMConfig:
                 counter += nof_integrations
                 current_pos += 1
 
-            if counter <= self.mem_integrations_per_job and counter > 0:
+            if counter <= self.mem_integrations_per_job and counter >= 0:
                 if evt_ranges:
                     evt_ranges.append([evt_ranges[-1][1], int(nof_entries)])
                 else:
@@ -254,6 +254,13 @@ class addMEMConfig:
                 nof_events_pass.append(nof_events_pass_counter)
                 nof_int_pass.append(nof_int_pass_counter)
                 nof_events_zero.append(nof_zero_integrations)
+
+            # ensure that the event ranges won't overlap (i.e. there won't be any double-processing of any event)
+            evt_ranges_cat = []
+            for v in [range(x[0], x[1]) for x in evt_ranges]:
+              evt_ranges_cat += v
+            assert(evt_ranges_cat == range(nof_entries))
+            assert(bool(evt_ranges))
 
             for i in range(len(evt_ranges)):
                 jobId += 1
@@ -295,7 +302,7 @@ class addMEMConfig:
                 logging.warning("Skipping sample {sample_name}".format(sample_name = sample_name))
                 continue
 
-            process_name = sample_info["process_name_specific"]            
+            process_name = sample_info["process_name_specific"]
             logging.info("Creating configuration files to run '%s' for sample %s" % (self.executable_addMEM, process_name))
             is_mc = (sample_info["type"] == "mc")
 
@@ -344,8 +351,8 @@ class addMEMConfig:
                 #UDPATE: ONE OUTPUT FILE PER SAMPLE!
                 fileset_id = memEvtRangeDict[jobId]['fileset_id']
                 hadd_output = os.path.join(
-                    #self.dirs[key_dir][DKEY_FINAL_NTUPLES], '%s_%i.root' % ('tree', fileset_id) # UDPATE: REMOVED
-                    self.dirs[key_dir][DKEY_FINAL_NTUPLES], "tree.root" # UDPATE: ADDED
+                    self.dirs[key_dir][DKEY_FINAL_NTUPLES], '%s_%i.root' % ('tree', fileset_id) # UDPATE: ADDED
+                    #self.dirs[key_dir][DKEY_FINAL_NTUPLES], "tree.root" # UDPATE: REMOVED
                 )
                 if hadd_output not in self.hadd_records:
                     self.hadd_records[hadd_output] = {}
