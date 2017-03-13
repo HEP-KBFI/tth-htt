@@ -96,7 +96,7 @@ def generate_sbatch_line(executable, cfg_file_name, input_file_names, output_fil
     )
 
 def createScript_sbatch_hadd(sbatch_script_file_name, input_file_names, output_file_name, hadd_stage_name,
-                             working_dir = None, waitForJobs = True):
+                             working_dir = None, waitForJobs = True, auxDirName = None):
     """Creates the python script necessary to submit 'hadd' jobs to the batch system
     """
     if not working_dir:
@@ -105,16 +105,18 @@ def createScript_sbatch_hadd(sbatch_script_file_name, input_file_names, output_f
         input_file_names = input_file_names,
         output_file_name = output_file_name,
         working_dir = working_dir,
-        waitForJobs = waitForJobs
+        waitForJobs = waitForJobs,
+        auxDirName = auxDirName,
     )
     createFile(sbatch_script_file_name, sbatch_hadd_lines)
 
-def generate_sbatch_lines_hadd(input_file_names, output_file_name, working_dir, waitForJobs = True):
+def generate_sbatch_lines_hadd(input_file_names, output_file_name, working_dir, waitForJobs = True, auxDirName = None):
     template_vars = {
         'working_dir': working_dir,
         'input_file_names': input_file_names,
         'output_file_name': output_file_name,
         'waitForJobs'     : waitForJobs,
+        'auxDirName'      : auxDirName if auxDirName else ''
     }
 
     sbatch_code = """
@@ -125,6 +127,7 @@ m.hadd_in_cluster(
     inputFiles=%(input_file_names)s,
     outputFile='%(output_file_name)s',
     waitForJobs=%(waitForJobs)s,
+    auxDirName='%(auxDirName)s',
 )
 """ % template_vars
 

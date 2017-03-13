@@ -60,7 +60,8 @@ class sbatchManager:
         inputFiles=None,
         outputFile=None,
         maximum_histograms_in_batch=20,
-        waitForJobs=True
+        waitForJobs=True,
+        auxDirName=None,
     ):
         cluster_histogram_aggregator = ClusterHistogramAggregator(
             input_histograms=inputFiles,
@@ -68,6 +69,7 @@ class sbatchManager:
             maximum_histograms_in_batch=maximum_histograms_in_batch,
             waitForJobs = waitForJobs,
             sbatch_manager=self,
+            auxDirName=auxDirName,
         )
 
         cluster_histogram_aggregator.create_output_histogram()
@@ -187,11 +189,15 @@ class sbatchManager:
         print "writing sbatch script file = '%s'" % script_file
         with codecs.open(script_file, "w", "utf-8") as f:
             f.write(script)
+            f.flush()
+            os.fsync(f.fileno())
 
         # Run command
-
-        sbatch_command_result = run_cmd(sbatch_command)
-        job_id = sbatch_command_result.split()[-1]
+        sbatch_command_result = run_cmd(sbatch_command, return_stderr = True)
+        try:
+          job_id = sbatch_command_result[0].split()[-1]
+        except IndexError:
+          raise IndexError("Caught an error: '%s'" % sbatch_command_result[1])
         self.jobIds.append(job_id)
 
     def get_scratch_dir(self):

@@ -11,6 +11,7 @@ DKEY_NTUPLES       = "ntuples"
 DKEY_FINAL_NTUPLES = "final_ntuples"
 DKEY_LOGS          = "logs"
 DKEY_HADD          = "hadd_cfg"
+DKEY_HADD_RT       = "hadd_cfg_rt"
 
 executable_rm = 'rm'
 
@@ -88,7 +89,7 @@ class addMEMConfig:
             for dir_type in [DKEY_NTUPLES, DKEY_FINAL_NTUPLES]:
                 initDict(self.dirs, [key_dir, dir_type])
                 self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel, process_name)
-            for dir_type in [DKEY_CFGS, DKEY_LOGS, DKEY_HADD]:
+            for dir_type in [DKEY_CFGS, DKEY_LOGS, DKEY_HADD, DKEY_HADD_RT]:
                 initDict(self.dirs, [key_dir, dir_type])
                 self.dirs[key_dir][dir_type] = os.path.join(self.cfgDir, dir_type, self.channel, process_name)
 
@@ -142,10 +143,14 @@ class addMEMConfig:
         for hadd_out, hadd_in in self.hadd_records.iteritems():
             hadd_in_files = hadd_in['output_files']
             hadd_fileset_id = hadd_in['fileset_id']
+            process_name = hadd_in['process_name']
             sbatch_hadd_file = os.path.join(
-                self.cfgDir, DKEY_HADD, "sbatch_hadd_%s_%s_%d.py" % (self.channel, 'cat', hadd_fileset_id)
+                self.cfgDir, DKEY_HADD, self.channel, process_name, "sbatch_hadd_cat_%s_%d.py" % (process_name, hadd_fileset_id)
             )
-            tools_createScript_sbatch_hadd(sbatch_hadd_file, hadd_in_files, hadd_out, 'cat', self.workingDir, False)
+            sbatch_hadd_dir = os.path.join(
+                self.cfgDir, DKEY_HADD_RT, self.channel, process_name,
+            )
+            tools_createScript_sbatch_hadd(sbatch_hadd_file, hadd_in_files, hadd_out, 'cat', self.workingDir, False, sbatch_hadd_dir)
 
             lines_makefile.append("%s: %s" % (hadd_out, " ".join(hadd_in_files)))
             lines_makefile.append("\t%s %s" % ("rm -f", hadd_out))
@@ -359,6 +364,7 @@ class addMEMConfig:
                     self.hadd_records[hadd_output]['output_files'] = []
                 self.hadd_records[hadd_output]['fileset_id'] = fileset_id
                 self.hadd_records[hadd_output]['output_files'].append(self.outputFiles[key_file])
+                self.hadd_records[hadd_output]['process_name'] = process_name
                 #self.filesToClean.append(self.outputFiles[key_file])
 
             # let's sum the number of integration per sample

@@ -97,18 +97,22 @@ def generate_input_list(job_ids, secondary_files, primary_store, secondary_store
     input_list.append(input_file)
   return input_list
 
-def run_cmd(command, do_not_log = False, stdout_file = None, stderr_file = None):
+def run_cmd(command, do_not_log = False, stdout_file = None, stderr_file = None, return_stderr = False):
   """Runs given commands and logs stdout and stderr to files
   """
   if not do_not_log: logging.info(command)
   p = subprocess.Popen(command, shell = True, stdout = subprocess.PIPE, stderr = subprocess.PIPE)
   stdout, stderr = p.communicate()
+
   if stdout_file:
     stdout_file.write(command + "\n")
     stdout_file.write(stdout)
   if stderr_file:
     stderr_file.write(stderr)
 
-  print "jobTools#run_cmd('%s') returned: %s" % (command, stdout)
+  print("jobTools#run_cmd('%s') stdout: '%s'" % (command, stdout))
+  print("jobTools#run_cmd('%s') stderr: '%s'" % (command, stderr))
 
+  if return_stderr:
+    return stdout, stderr
   return stdout

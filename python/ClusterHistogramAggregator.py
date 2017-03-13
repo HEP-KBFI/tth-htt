@@ -8,13 +8,15 @@ class ClusterHistogramAggregator:
         final_output_histogram=None,
         maximum_histograms_in_batch=20,
         waitForJobs = True,
-        sbatch_manager=None
+        sbatch_manager=None,
+        auxDirName = None,
     ):
         self.input_histograms = input_histograms
         self.final_output_histogram = final_output_histogram
         self.sbatch_manager = sbatch_manager
         self.maximum_histograms_in_batch = maximum_histograms_in_batch
         self.waitForJobs = waitForJobs
+        self.auxDirName = auxDirName
 
     def create_output_histogram(
         self
@@ -100,10 +102,10 @@ class ClusterHistogramAggregator:
     def hadd_on_cluster_node(
         self,
         input_histograms=None,
-        output_histogram=None
+        output_histogram=None,
     ):
 
-        output_dir = '/'.join(output_histogram.split('/')[0:-1])
+        output_dir = self.auxDirName if self.auxDirName else os.path.dirname(output_histogram)
 
         print("ClusterHistogramAggregator#hadd_on_cluster_node(input_histograms=%s, output_histogram=%s, output_dir=%s)" % (
             input_histograms, output_histogram, output_dir))
@@ -199,7 +201,7 @@ class ClusterHistogramAggregator:
 
         ##task_name = 'create_%s' % output_histogram.replace(
         ##    '/', '_').replace(' ', '_')
-        task_name = 'create_%s' % output_histogram[output_histogram.rfind('/') + 1:]
+        task_name = 'create_%s' % os.path.basename(output_histogram)
 
         self.sbatch_manager.submit_job_version2(
             task_name=task_name,
