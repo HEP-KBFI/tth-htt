@@ -36,8 +36,8 @@ class sbatchManager:
     def __init__(self):
         self.workingDir = None
         self.logFileDir = None
-        ##self.queue = "low"  # low priority queue, maximum run-time of job = 2 days
-        self.queue = "main"  # standard priority queue, maximum run-time of job = 2 days
+        self.queue = "low"  # low priority queue, maximum run-time of job = 2 days
+        ##self.queue = "main"  # standard priority queue, maximum run-time of job = 2 days
         if os.environ.get('SBATCH_PRIORITY'):
             self.queue = os.environ.get('SBATCH_PRIORITY')
         self.command_submit = "sbatch"
