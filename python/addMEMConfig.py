@@ -1,10 +1,4 @@
-import codecs
-import os
-import logging
-import ROOT
-import array
-import sys
-import getpass
+import codecs, os, logging, ROOT, array
 
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd
 from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg, generateInputFileList
@@ -17,6 +11,7 @@ DKEY_NTUPLES       = "ntuples"
 DKEY_FINAL_NTUPLES = "final_ntuples"
 DKEY_LOGS          = "logs"
 DKEY_HADD          = "hadd_cfg"
+DKEY_HADD_RT       = "hadd_cfg_rt"
 
 executable_rm = 'rm'
 
@@ -33,12 +28,13 @@ class addMEMConfig:
                            (does not limit number of MEM jobs running in parallel on batch system)
 
     """
-    def __init__(self, treeName, outputDir, executable_addMEM, samples, era, debug, running_method,
+    def __init__(self, treeName, outputDir, cfgDir, executable_addMEM, samples, era, debug, running_method,
                  max_files_per_job, mem_integrations_per_job, max_mem_integrations, num_parallel_jobs,
-                 leptonSelection, hadTauSelection, channel, maxPermutations_addMEM):
+                 leptonSelection, hadTauSelection, isForBDTtraining, channel, maxPermutations_addMEM):
 
         self.treeName = treeName
         self.outputDir = outputDir
+        self.cfgDir = cfgDir
         self.executable_addMEM = executable_addMEM
         self.mem_integrations_per_job = mem_integrations_per_job
         self.max_files_per_job = max_files_per_job
@@ -50,6 +46,7 @@ class addMEMConfig:
         self.leptonSelection = leptonSelection
         self.hadTauSelection = hadTauSelection
         self.maxPermutations_addMEM = maxPermutations_addMEM
+        self.isForBDTtraining = isForBDTtraining
         assert(running_method.lower() in [
           "sbatch", "makefile"]), "Invalid running method: %s" % running_method
         self.running_method = running_method
@@ -60,23 +57,24 @@ class addMEMConfig:
         else:
             self.is_makefile = True
         self.makefile = os.path.join(
-          self.outputDir, "Makefile_%s" % self.channel)
+          self.cfgDir, "Makefile_%s" % self.channel)
         self.num_parallel_jobs = num_parallel_jobs
 
         self.workingDir = os.getcwd()
         print "Working directory is: " + self.workingDir
 
-        create_if_not_exists(self.outputDir)
+        for dirPath in [self.outputDir, self.cfgDir]:
+          create_if_not_exists(dirPath)
         self.stdout_file = codecs.open(os.path.join(
-          self.outputDir, "stdout_%s.log" % self.channel), 'w', 'utf-8')
+          self.cfgDir, "stdout_%s.log" % self.channel), 'w', 'utf-8')
         self.stderr_file = codecs.open(os.path.join(
-          self.outputDir, "stderr_%s.log" % self.channel), 'w', 'utf-8')
+          self.cfgDir, "stderr_%s.log" % self.channel), 'w', 'utf-8')
         self.dirs = {}
         self.samples = samples
         self.cfgFiles_addMEM_modified = {}
         self.logFiles_addMEM = {}
         self.sbatchFile_addMEM = os.path.join(
-          self.outputDir, "sbatch_addMEM_%s.py" % self.channel)
+          self.cfgDir, "sbatch_addMEM_%s.py" % self.channel)
         self.inputFiles = {}
         self.outputFiles = {}
         self.hadd_records = {}
@@ -88,9 +86,12 @@ class addMEMConfig:
                 continue
             process_name = sample_info["process_name_specific"]
             key_dir = getKey(sample_name)
-            for dir_type in [ DKEY_CFGS, DKEY_NTUPLES, DKEY_FINAL_NTUPLES, DKEY_LOGS, DKEY_HADD ]:
-                initDict(self.dirs, [ key_dir, dir_type ])
+            for dir_type in [DKEY_NTUPLES, DKEY_FINAL_NTUPLES]:
+                initDict(self.dirs, [key_dir, dir_type])
                 self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel, process_name)
+            for dir_type in [DKEY_CFGS, DKEY_LOGS, DKEY_HADD, DKEY_HADD_RT]:
+                initDict(self.dirs, [key_dir, dir_type])
+                self.dirs[key_dir][dir_type] = os.path.join(self.cfgDir, dir_type, self.channel, process_name)
 
         self.cvmfs_error_log = {}
 
@@ -109,7 +110,7 @@ class addMEMConfig:
             output_file_names = self.outputFiles,
             log_file_names = self.logFiles_addMEM,
             working_dir = self.workingDir,
-            max_num_jobs = 100000,
+            max_num_jobs = 100000000, # it's really silly to limit the number of jobs; use an enormous number as the ,,fix''
             cvmfs_error_log = self.cvmfs_error_log,
         )
 
@@ -142,10 +143,14 @@ class addMEMConfig:
         for hadd_out, hadd_in in self.hadd_records.iteritems():
             hadd_in_files = hadd_in['output_files']
             hadd_fileset_id = hadd_in['fileset_id']
+            process_name = hadd_in['process_name']
             sbatch_hadd_file = os.path.join(
-                self.outputDir, DKEY_HADD, "sbatch_hadd_%s_%s_%d.py" % (self.channel, 'cat', hadd_fileset_id)
+                self.cfgDir, DKEY_HADD, self.channel, process_name, "sbatch_hadd_cat_%s_%d.py" % (process_name, hadd_fileset_id)
             )
-            tools_createScript_sbatch_hadd(sbatch_hadd_file, hadd_in_files, hadd_out, 'cat', self.workingDir, False)
+            sbatch_hadd_dir = os.path.join(
+                self.cfgDir, DKEY_HADD_RT, self.channel, process_name,
+            )
+            tools_createScript_sbatch_hadd(sbatch_hadd_file, hadd_in_files, hadd_out, 'cat', self.workingDir, False, sbatch_hadd_dir)
 
             lines_makefile.append("%s: %s" % (hadd_out, " ".join(hadd_in_files)))
             lines_makefile.append("\t%s %s" % ("rm -f", hadd_out))
@@ -245,7 +250,7 @@ class addMEMConfig:
                 counter += nof_integrations
                 current_pos += 1
 
-            if counter <= self.mem_integrations_per_job and counter > 0:
+            if counter <= self.mem_integrations_per_job and counter >= 0:
                 if evt_ranges:
                     evt_ranges.append([evt_ranges[-1][1], int(nof_entries)])
                 else:
@@ -254,6 +259,13 @@ class addMEMConfig:
                 nof_events_pass.append(nof_events_pass_counter)
                 nof_int_pass.append(nof_int_pass_counter)
                 nof_events_zero.append(nof_zero_integrations)
+
+            # ensure that the event ranges won't overlap (i.e. there won't be any double-processing of any event)
+            evt_ranges_cat = []
+            for v in [range(x[0], x[1]) for x in evt_ranges]:
+              evt_ranges_cat += v
+            assert(evt_ranges_cat == range(nof_entries))
+            assert(bool(evt_ranges))
 
             for i in range(len(evt_ranges)):
                 jobId += 1
@@ -295,7 +307,7 @@ class addMEMConfig:
                 logging.warning("Skipping sample {sample_name}".format(sample_name = sample_name))
                 continue
 
-            process_name = sample_info["process_name_specific"]            
+            process_name = sample_info["process_name_specific"]
             logging.info("Creating configuration files to run '%s' for sample %s" % (self.executable_addMEM, process_name))
             is_mc = (sample_info["type"] == "mc")
 
@@ -344,14 +356,15 @@ class addMEMConfig:
                 #UDPATE: ONE OUTPUT FILE PER SAMPLE!
                 fileset_id = memEvtRangeDict[jobId]['fileset_id']
                 hadd_output = os.path.join(
-                    #self.dirs[key_dir][DKEY_FINAL_NTUPLES], '%s_%i.root' % ('tree', fileset_id) # UDPATE: REMOVED
-                    self.dirs[key_dir][DKEY_FINAL_NTUPLES], "tree.root" # UDPATE: ADDED
+                    self.dirs[key_dir][DKEY_FINAL_NTUPLES], '%s_%i.root' % ('tree', fileset_id) # UDPATE: ADDED
+                    #self.dirs[key_dir][DKEY_FINAL_NTUPLES], "tree.root" # UDPATE: REMOVED
                 )
                 if hadd_output not in self.hadd_records:
                     self.hadd_records[hadd_output] = {}
                     self.hadd_records[hadd_output]['output_files'] = []
                 self.hadd_records[hadd_output]['fileset_id'] = fileset_id
                 self.hadd_records[hadd_output]['output_files'].append(self.outputFiles[key_file])
+                self.hadd_records[hadd_output]['process_name'] = process_name
                 #self.filesToClean.append(self.outputFiles[key_file])
 
             # let's sum the number of integration per sample
