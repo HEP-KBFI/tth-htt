@@ -103,6 +103,9 @@ def run_cmd(command, do_not_log = False, stdout_file = None, stderr_file = None,
   if not do_not_log: logging.info(command)
   p = subprocess.Popen(command, shell = True, stdout = subprocess.PIPE, stderr = subprocess.PIPE)
   stdout, stderr = p.communicate()
+  # Remove trailing newline
+  stdout = stdout.rstrip('\n')
+  stderr = stderr.rstrip('\n')
 
   if stdout_file:
     stdout_file.write(command + "\n")

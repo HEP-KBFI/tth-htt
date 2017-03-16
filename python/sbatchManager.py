@@ -194,10 +194,18 @@ class sbatchManager:
 
         # Run command
         sbatch_command_result = run_cmd(sbatch_command, return_stderr = True)
+        # Fails if stdout returned by the last line is empty
         try:
           job_id = sbatch_command_result[0].split()[-1]
         except IndexError:
           raise IndexError("Caught an error: '%s'" % sbatch_command_result[1])
+        # The job ID must be a number, so.. we have to check if it really is one
+        try:
+          int(job_id)
+        except ValueError:
+          raise ValueError("job_id = '%s' NaN; sbatch stdout = '%s'; sbatch stderr = '%s'" % \
+                           (job_id, sbatch_command_result[0], sbatch_command_result[1]))
+        # Is a valid job ID
         self.jobIds.append(job_id)
 
     def get_scratch_dir(self):
