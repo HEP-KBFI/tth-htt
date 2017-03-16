@@ -97,6 +97,7 @@ namespace
 		const std::string& outputFileName)
   {
     std::cout << "<makePlot>:" << std::endl;
+    std::cout << " outputFileName = " << outputFileName << std::endl;
 
     TH1* histogramData_density = 0;
     if ( histogramData ) {

@@ -56,7 +56,7 @@ class RecoHadTauSelectorBase
       std::cerr << "Invalid Configuration parameter 'cut' = " << cut << " !!" << std::endl;
       assert(0);
     }
-    cut_ = cut_;
+    cut_ = cut;
   }
 
   int get_min_id_mva_dR03() const { return min_id_mva_dR03_; }

@@ -342,6 +342,11 @@ int main(int argc, char* argv[])
   std::string branchName_jets = cfg_analyze.getParameter<std::string>("branchName_jets");
   std::string branchName_met = cfg_analyze.getParameter<std::string>("branchName_met");
 
+  std::string branchName_genLeptons1 = cfg_analyze.getParameter<std::string>("branchName_genLeptons1");
+  std::string branchName_genLeptons2 = cfg_analyze.getParameter<std::string>("branchName_genLeptons2");
+  std::string branchName_genHadTaus = cfg_analyze.getParameter<std::string>("branchName_genHadTaus");
+  std::string branchName_genJets = cfg_analyze.getParameter<std::string>("branchName_genJets");
+
   std::string selEventsFileName_input = cfg_analyze.getParameter<std::string>("selEventsFileName_input");
   std::cout << "selEventsFileName_input = " << selEventsFileName_input << std::endl;
   RunLumiEventSelector* run_lumi_eventSelector = 0;
@@ -473,11 +478,11 @@ int main(int argc, char* argv[])
   GenJetReader* genJetReader = 0;
   LHEInfoReader* lheInfoReader = 0;
   if ( isMC ) {
-    genLeptonReader = new GenLeptonReader("nGenLep", "GenLep", "nGenLepFromTau", "GenLepFromTau");
+    genLeptonReader = new GenLeptonReader(Form("n%s", branchName_genLeptons1.data()), branchName_genLeptons1, Form("n%s", branchName_genLeptons2.data()), branchName_genLeptons2); 
     genLeptonReader->setBranchAddresses(inputTree);
-    genHadTauReader = new GenHadTauReader("nGenHadTaus", "GenHadTaus");
+    genHadTauReader = new GenHadTauReader(Form("n%s", branchName_genHadTaus.data()), branchName_genHadTaus);
     genHadTauReader->setBranchAddresses(inputTree);
-    genJetReader = new GenJetReader("nGenJet", "GenJet");
+    genJetReader = new GenJetReader(Form("n%s", branchName_genJets.data()), branchName_genJets);
     genJetReader->setBranchAddresses(inputTree);
     lheInfoReader = new LHEInfoReader();
     lheInfoReader->setBranchAddresses(inputTree);

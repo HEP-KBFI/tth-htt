@@ -19,7 +19,7 @@ elif ERA == "2016":
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "2017Feb22"
+version = "2017Mar16"
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -29,8 +29,8 @@ if __name__ == '__main__':
 
   analysis = analyzeConfig_jetToTauFakeRate(
     configDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", ERA, version),
-    outputDir = os.path.join("/hdfs/local/ttH_2tau", getpass.getuser(), "ttHAnalysis", ERA, version),
-    ##outputDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", ERA, version),
+    ##outputDir = os.path.join("/hdfs/local/ttH_2tau", getpass.getuser(), "ttHAnalysis", ERA, version),
+    outputDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", ERA, version),
     executable_analyze = "analyze_jetToTauFakeRate",
     samples = samples,
     charge_selections = [ "OS" ],
@@ -39,9 +39,6 @@ if __name__ == '__main__':
     jet_minAbsEta = -1.,
     jet_maxAbsEta = 2.3, 
     hadTau_selections = [
-      "dR05isoLoose",
-      "dR05isoMedium",
-      "dR05isoTight",
       "dR03mvaVLoose",
       "dR03mvaLoose",
       "dR03mvaMedium",

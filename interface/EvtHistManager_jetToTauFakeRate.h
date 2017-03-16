@@ -21,7 +21,7 @@ class EvtHistManager_jetToTauFakeRate
 
   /// book and fill histograms
   void bookHistograms(TFileDirectory& dir);
-  void fillHistograms(int numElectrons, int numMuons, int numHadTaus, int numJets, int numBJets_loose, int numBJets_medium, double evtWeight);
+  void fillHistograms(int numElectrons, int numMuons, int numHadTaus, int numJets, int numBJets_loose, int numBJets_medium, double mLL, double mT_e, double mT_mu, double evtWeight);
 
  private:
   TH1* histogram_numElectrons_;
@@ -30,6 +30,11 @@ class EvtHistManager_jetToTauFakeRate
   TH1* histogram_numJets_;
   TH1* histogram_numBJets_loose_;
   TH1* histogram_numBJets_medium_;
+
+  TH1* histogram_mLL_;
+
+  TH1* histogram_mT_e_;
+  TH1* histogram_mT_mu_;
 
   TH1* histogram_EventCounter_;
 

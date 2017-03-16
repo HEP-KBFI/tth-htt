@@ -87,6 +87,11 @@ process.analyze_2lss_1tau = cms.PSet(
     branchName_met = cms.string('met'),
     ##branchName_memOutput = cms.string('memObjects_2lss_1tau'),
     branchName_memOutput = cms.string(''),
+
+    branchName_genLeptons1 = cms.string('GenLep'),
+    branchName_genLeptons2 = cms.string('GenLepFromTau'),
+    branchName_genHadTaus = cms.string('GenHadTaus'),
+    branchName_genJets = cms.string('GenJet'),
     
     selEventsFileName_input = cms.string(''),
     selEventsFileName_output = cms.string('selEvents_analyze_2lss_1tau.txt'),

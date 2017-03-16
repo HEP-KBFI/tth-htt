@@ -253,6 +253,7 @@ void Data_to_MC_CorrectionInterface::setHadTauSelection(const std::string& hadTa
   else if ( hadTauSelection == "dR03mvaMedium"  ) hadTauSelection_ = 4;
   else if ( hadTauSelection == "dR03mvaTight"   ) hadTauSelection_ = 5;
   else if ( hadTauSelection == "dR03mvaVTight"  ) hadTauSelection_ = 6;
+  else if ( hadTauSelection == "dR03mvaVVTight" ) hadTauSelection_ = 7;
   else throw cms::Exception("Data_to_MC_CorrectionInterface") 
     << "Invalid Configuration parameter 'hadTauSelection' = " << hadTauSelection << " !!\n";
 }
