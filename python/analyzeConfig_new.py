@@ -18,10 +18,11 @@ DKEY_LOGS = "logs"        # dir for log files (stdout/stderr of jobs)
 DKEY_DCRD = "datacards"   # dir for the datacard
 DKEY_RLES = "output_rle"  # dir for the selected run:lumi:event numbers
 DKEY_ROOT = "output_root" # dir for the selected events dumped into a root file
+DKEY_HADD_RT = "hadd_cfg_rt" # dir for hadd cfg files generated during the runtime
 
 executable_rm = 'rm'
 
-DIRLIST = [ DKEY_CFGS, DKEY_DCRD, DKEY_HIST, DKEY_PLOT, DKEY_SCRIPTS, DKEY_LOGS, DKEY_RLES, DKEY_ROOT ]
+DIRLIST = [ DKEY_CFGS, DKEY_DCRD, DKEY_HIST, DKEY_PLOT, DKEY_SCRIPTS, DKEY_LOGS, DKEY_RLES, DKEY_ROOT, DKEY_HADD_RT ]
 
 class analyzeConfig:
     """Configuration metadata needed to run analysis in a single go.
@@ -338,7 +339,8 @@ class analyzeConfig:
 
     def create_hadd_python_file(self, inputFiles, outputFile, hadd_stage_name):
         sbatch_hadd_file = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_hadd_%s_%s.py" % (self.channel, hadd_stage_name))
-        tools_createScript_sbatch_hadd(sbatch_hadd_file, inputFiles, outputFile, hadd_stage_name, self.workingDir)
+        sbatch_hadd_dir = os.path.join(self.dirs[DKEY_HADD_RT], self.channel, hadd_stage_name)
+        tools_createScript_sbatch_hadd(sbatch_hadd_file, inputFiles, outputFile, hadd_stage_name, self.workingDir, auxDir = sbatch_hadd_dir)
         return sbatch_hadd_file
 
     def addToMakefile_analyze(self, lines_makefile):
