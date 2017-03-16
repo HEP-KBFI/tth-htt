@@ -301,13 +301,13 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
               key_dir = getKey(process_name, lepton_and_hadTau_selection_and_frWeight, lepton_charge_selection, chargeSumSelection)
               for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_RLES ]:
                 initDict(self.dirs, [ key_dir, dir_type ])
-                if dir_type in [ DKEY_CFGS, DKEY_LOGS, DKEY_HADD_RT ]:
+                if dir_type in [ DKEY_CFGS, DKEY_LOGS ]:
                   self.dirs[key_dir][dir_type] = os.path.join(self.configDir, dir_type, self.channel,
                     "_".join([ lepton_and_hadTau_selection_and_frWeight, lepton_charge_selection, chargeSumSelection ]), process_name)
                 else:
                   self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel,
                     "_".join([ lepton_and_hadTau_selection_and_frWeight, lepton_charge_selection, chargeSumSelection ]), process_name)
-    for dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_HIST, DKEY_DCRD, DKEY_PLOT ]:
+    for dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_HIST, DKEY_DCRD, DKEY_PLOT, DKEY_HADD_RT ]:
       initDict(self.dirs, [ dir_type ])
       if dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_LOGS, DKEY_HADD_RT ]:
         self.dirs[dir_type] = os.path.join(self.configDir, dir_type, self.channel)
