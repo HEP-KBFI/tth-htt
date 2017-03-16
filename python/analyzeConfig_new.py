@@ -102,9 +102,9 @@ class analyzeConfig:
         create_if_not_exists(self.configDir)
         create_if_not_exists(self.outputDir)
         self.stdout_file = codecs.open(os.path.join(
-            self.outputDir, "stdout_%s.log" % self.channel), 'w', 'utf-8')
+            self.configDir, "stdout_%s.log" % self.channel), 'w', 'utf-8')
         self.stderr_file = codecs.open(os.path.join(
-            self.outputDir, "stderr_%s.log" % self.channel), 'w', 'utf-8')
+            self.configDir, "stderr_%s.log" % self.channel), 'w', 'utf-8')
         self.dirs = {}
         self.samples = {}
                 
