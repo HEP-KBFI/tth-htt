@@ -86,13 +86,13 @@ class sbatchManager:
             logFile = os.path.join(self.logFileDir, os.path.basename(
                 script_file).replace(".sh", ".log"))
 
-        # if any of the output files exists, returns (Margus: BUG? Because only
-        # that file should be skipped, not all?)
+        # skip only if any of the output files are missing in the file system
         if skipIfOutputFileExists:
-            for outputFile in outputFiles:
-                if os.path.exists(os.path.join(outputFilePath, outputFile)):
-                    print "output file = '%s' exists --> skipping !!" % os.path.join(outputFilePath, outputFile)
-                    return
+            outputFiles_fullpath = map(lambda outputFile: os.path.join(outputFilePath, outputFile), outputFiles)
+            outputFiles_missing = [outputFile for outputFile in outputFiles_fullpath if not os.path.exists(outputFile)]
+            if not outputFiles_missing:
+                print "output file(s) = %s exist(s) --> skipping !!" % '; '.join(map(lambda x: "'%s'" % x, outputFiles_fullpath))
+                return
 
         if not self.workingDir:
             raise ValueError(
