@@ -1,4 +1,4 @@
-import getpass, logging, os, subprocess, sys, time, stat
+import getpass, logging, os, subprocess, sys, time, stat, errno
 
 def query_yes_no(question, default = "yes"):
   """Prompts user yes/no
@@ -37,8 +37,16 @@ def create_if_not_exists(dir_fullpath):
 
   Args:
     dir_fullpath: full path to the directory
+  
+  Inspired by: http://stackoverflow.com/a/600612
   """
-  if not os.path.exists(dir_fullpath): os.makedirs(dir_fullpath)
+  try:
+    os.makedirs(dir_fullpath)
+  except OSError as exc:
+    if exc.errno == errno.EEXIST and os.path.isdir(dir_fullpath):
+      pass
+    else:
+      raise
 
 def generate_file_ids(nof_files, max_files_per_job, blacklist = []):
   """Subsets file ids
