@@ -340,7 +340,7 @@ class analyzeConfig:
     def create_hadd_python_file(self, inputFiles, outputFile, hadd_stage_name):
         sbatch_hadd_file = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_hadd_%s_%s.py" % (self.channel, hadd_stage_name))
         sbatch_hadd_dir = os.path.join(self.dirs[DKEY_HADD_RT], self.channel, hadd_stage_name) if self.dirs[DKEY_HADD_RT] else ''
-        tools_createScript_sbatch_hadd(sbatch_hadd_file, inputFiles, outputFile, hadd_stage_name, self.workingDir, auxDir = sbatch_hadd_dir)
+        tools_createScript_sbatch_hadd(sbatch_hadd_file, inputFiles, outputFile, hadd_stage_name, self.workingDir, auxDirName = sbatch_hadd_dir)
         return sbatch_hadd_file
 
     def addToMakefile_analyze(self, lines_makefile):
