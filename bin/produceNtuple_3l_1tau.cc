@@ -227,7 +227,7 @@ int main(int argc, char* argv[])
   // CV: apply jet pT cut on JEC upward shift, to make sure pT cut is loose enough
   //     to allow systematic uncertainty on JEC to be estimated on analysis level 
   jetReader->setJetPt_central_or_shift(RecoJetReader::kJetPt_central); 
-  jetReader->read_BtagWeight_systematics(true);
+  jetReader->read_BtagWeight_systematics(isMC);
   jetReader->setBranchAddresses(inputTree);
   RecoJetCollectionCleaner jetCleaner(0.4);
   RecoJetSelector jetSelector(era);  

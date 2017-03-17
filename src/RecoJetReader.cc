@@ -96,17 +96,20 @@ void RecoJetReader::setBranchNames()
     if ( era_ == kEra_2015 ) {
       branchName_BtagCSVwHipMitigation_ = "";
       branchName_BtagCSVwoHipMitigation_ = Form("%s_%s", branchName_obj_.data(), "btagCSV");
-      branchName_BtagWeight_ = Form("%s_%s", branchName_obj_.data(), "bTagWeight");
     } else if ( era_ == kEra_2016 ) {
       branchName_BtagCSVwHipMitigation_ = Form("%s_%s", branchName_obj_.data(), "btagCSV");              // CV: CSV algorithm with HIP mitigation
       //branchName_BtagCSVwoHipMitigation_ = Form("%s_%s", branchName_obj_.data(), "btagNoHipMitigation"); // CV: CSV algorithm without HIP mitigation
-      branchName_BtagWeight_ = Form("%s_%s", branchName_obj_.data(), "btagWeightCSV");
     } else assert(0);
-    for ( int idxShift = kBtag_hfUp; idxShift <= kBtag_jesDown; ++idxShift ) {
-      std::string branchName_BtagWeight = TString(getBranchName_bTagWeight(era_, idxShift)).ReplaceAll("Jet_", Form("%s_", branchName_obj_.data())).Data();
-      branchNames_BtagWeight_systematics_[idxShift] = branchName_BtagWeight;
-    }
     if ( isMC_ ) {
+      if ( era_ == kEra_2015 ) {
+	branchName_BtagWeight_ = Form("%s_%s", branchName_obj_.data(), "bTagWeight");
+      } else if ( era_ == kEra_2016 ) {
+	branchName_BtagWeight_ = Form("%s_%s", branchName_obj_.data(), "btagWeightCSV");
+      } else assert(0);
+      for ( int idxShift = kBtag_hfUp; idxShift <= kBtag_jesDown; ++idxShift ) {
+	std::string branchName_BtagWeight = TString(getBranchName_bTagWeight(era_, idxShift)).ReplaceAll("Jet_", Form("%s_", branchName_obj_.data())).Data();
+	branchNames_BtagWeight_systematics_[idxShift] = branchName_BtagWeight;
+      }
       branchName_heppyFlavour_ = Form("%s_%s", branchName_obj_.data(), "heppyFlavour");    
     }
     instances_[branchName_obj_] = this;

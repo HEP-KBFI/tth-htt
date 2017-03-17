@@ -16,8 +16,10 @@ import json
 #inputFile_test = '/home/veelken/ttHAnalysis/2016/2017Mar02/output_rle/1l_2tau/Tight_OS/ttHJetToNonbb_M125_amcatnlo/rle_1l_2tau_ttHJetToNonbb_M125_amcatnlo_Tight_OS_central_all.txt'
 #inputFile_ref = '/home/veelken/VHbbNtuples_8_0_x/CMSSW_8_0_19/src/tthAnalysis/HiggsToTauTau/test/sync_2017Mar04/selEvents_3l_1tau_Data_fakeBgrCR_LLR.txt'
 #inputFile_test = '/home/veelken/VHbbNtuples_8_0_x/CMSSW_8_0_19/src/tthAnalysis/HiggsToTauTau/test/sync_2017Mar02/selEvents_3l_1tau_Data_fakeBgrCR_LLR_selectedByTallinn.txt'
-inputFile_ref = '/home/veelken/VHbbNtuples_8_0_x/CMSSW_8_0_19/src/tthAnalysis/HiggsToTauTau/test/sync_2017Mar08/selEvents_3l_1tau_SR_TTZToLL_M10_ext2_LLR.txt'
-inputFile_test = '/home/veelken/VHbbNtuples_8_0_x/CMSSW_8_0_19/src/tthAnalysis/HiggsToTauTau/test/sync_2017Mar08/selEvents_3l_1tau_SR_TTZToLL_M10_ext2_Tallinn.txt'
+#inputFile_ref = '/home/veelken/VHbbNtuples_8_0_x/CMSSW_8_0_19/src/tthAnalysis/HiggsToTauTau/test/sync_2017Mar08/selEvents_3l_1tau_SR_TTZToLL_M10_ext2_LLR.txt'
+#inputFile_test = '/home/veelken/VHbbNtuples_8_0_x/CMSSW_8_0_19/src/tthAnalysis/HiggsToTauTau/test/sync_2017Mar08/selEvents_3l_1tau_SR_TTZToLL_M10_ext2_Tallinn.txt'
+inputFile_ref = '/home/veelken/VHbbNtuples_8_0_x/CMSSW_8_0_19/src/tthAnalysis/HiggsToTauTau/test/sync_2017Mar17/2lss1tau_SR.txt'
+inputFile_test = '/home/veelken/VHbbNtuples_8_0_x/CMSSW_8_0_19/src/tthAnalysis/HiggsToTauTau/test/sync_2017Mar17/selEvents_2lss_1tau_Data.txt'
 
 matcher_ref = re.compile('(?P<run>\d*):(?P<lumi>\d*):(?P<evt>\d*)')
 #matcher_test = re.compile('\*(?P<garbage>[0-9 ]+)\*(?P<run>[0-9 ]+)\*(?P<lumi>[0-9 ]+)\*(?P<evt>[0-9 ]+)\*')
@@ -47,7 +49,7 @@ print "======= COMMON events (%i) ========" % len(common)
 for event in common:
     print ":".join(map(str, event))
     
-common_file = open('selEvents_analyze_3l_1tau_common.txt', 'w')
+common_file = open('selEvents_2lss_1tau_Data_common.txt', 'w')
 for event in common:
     common_file.write(":".join(map(str, event)) + "\n")
 
@@ -66,11 +68,11 @@ for event in events_ref:
     output_file_ref.write(":".join(map(str, event)) + "\n")
 
 ##only_file_ref = open('events_exclREF.txt', 'w')
-only_file_ref = open('selEvents_analyze_3l_1tau_onlyLLR.txt', 'w')
+only_file_ref = open('selEvents_2lss_1tau_Data_onlyLLR.txt', 'w')
 for event in only_ref:
     only_file_ref.write(":".join(map(str, event)) + "\n")
 
-only_file_test = open('selEvents_analyze_3l_1tau_onlyTallinn.txt', 'w')
+only_file_test = open('selEvents_2lss_1tau_Data_onlyTallinn.txt', 'w')
 for event in only_test:
     only_file_test.write(":".join(map(str, event)) + "\n")
 

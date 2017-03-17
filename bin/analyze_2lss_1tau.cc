@@ -499,7 +499,8 @@ int main(int argc, char* argv[])
   mvaInputVariables_2lss_ttV.push_back("mindr_lep2_jet");
   mvaInputVariables_2lss_ttV.push_back("LepGood_conePt[iF_Recl[0]]");
   mvaInputVariables_2lss_ttV.push_back("LepGood_conePt[iF_Recl[1]]");
-  TMVAInterface mva_2lss_ttV(mvaFileName_2lss_ttV, mvaInputVariables_2lss_ttV, { "iF_Recl[0]", "iF_Recl[1]", "iF_Recl[2]" });
+  TMVAInterface mva_2lss_ttV(mvaFileName_2lss_ttV, mvaInputVariables_2lss_ttV, 
+    { "iF_Recl[0]", "iF_Recl[1]", "iF_Recl[2]" });
 
   std::string mvaFileName_2lss_ttbar = "tthAnalysis/HiggsToTauTau/data/2lss_ttbar_BDTG.weights.xml";
   std::vector<std::string> mvaInputVariables_2lss_ttbar;
@@ -510,37 +511,35 @@ int main(int argc, char* argv[])
   mvaInputVariables_2lss_ttbar.push_back("min(met_pt,400)");
   mvaInputVariables_2lss_ttbar.push_back("avg_dr_jet");
   mvaInputVariables_2lss_ttbar.push_back("MT_met_lep1");
-  TMVAInterface mva_2lss_ttbar(mvaFileName_2lss_ttbar, mvaInputVariables_2lss_ttbar, { "iF_Recl[0]", "iF_Recl[1]", "iF_Recl[2]" });
+  TMVAInterface mva_2lss_ttbar(mvaFileName_2lss_ttbar, mvaInputVariables_2lss_ttbar, 
+    { "iF_Recl[0]", "iF_Recl[1]", "iF_Recl[2]" });
 
   std::vector<std::string> mvaInputVariables_2lss = get_mvaInputVariables(mvaInputVariables_2lss_ttV, mvaInputVariables_2lss_ttbar);
   std::map<std::string, double> mvaInputs_2lss;
 
 //--- initialize BDTs used to discriminate ttH vs. ttV and ttH vs. ttbar 
 //    trained by Arun for 2lss_1tau category 
-  std::string mvaFileName_2lss_1tau_ttV = "tthAnalysis/HiggsToTauTau/data/2lss_1tau_ttV_sklearn_10var.weights.xml";
+  std::string mvaFileName_2lss_1tau_ttV = "tthAnalysis/HiggsToTauTau/data/2lss_1tau_ttV_BDTG.weights.xml";
   std::vector<std::string> mvaInputVariables_2lss_1tau_ttV;
   mvaInputVariables_2lss_1tau_ttV.push_back("mindr_lep1_jet");
   mvaInputVariables_2lss_1tau_ttV.push_back("mindr_lep2_jet");
   mvaInputVariables_2lss_1tau_ttV.push_back("avg_dr_jet");
-  mvaInputVariables_2lss_1tau_ttV.push_back("lep1_pt");
-  mvaInputVariables_2lss_1tau_ttV.push_back("lep2_pt");
-  mvaInputVariables_2lss_1tau_ttV.push_back("max_lep_eta");
+  mvaInputVariables_2lss_1tau_ttV.push_back("TMath::Max(TMath::Abs(lep1_eta),TMath::Abs(lep2_eta))");
+  mvaInputVariables_2lss_1tau_ttV.push_back("lep1_conePt");
+  mvaInputVariables_2lss_1tau_ttV.push_back("lep2_conePt");
   mvaInputVariables_2lss_1tau_ttV.push_back("mT_lep1");
   mvaInputVariables_2lss_1tau_ttV.push_back("dr_leps");
   mvaInputVariables_2lss_1tau_ttV.push_back("mTauTauVis1");
   mvaInputVariables_2lss_1tau_ttV.push_back("mTauTauVis2");
   TMVAInterface mva_2lss_1tau_ttV(mvaFileName_2lss_1tau_ttV, mvaInputVariables_2lss_1tau_ttV);
 
-  std::string mvaFileName_2lss_1tau_ttbar = "tthAnalysis/HiggsToTauTau/data/2lss_1tau_ttbar_sklearn_11var.weights.xml";
+  std::string mvaFileName_2lss_1tau_ttbar = "tthAnalysis/HiggsToTauTau/data/2lss_1tau_ttbar_BDTG.weights.xml";
   std::vector<std::string> mvaInputVariables_2lss_1tau_ttbar;
   mvaInputVariables_2lss_1tau_ttbar.push_back("nJet");
   mvaInputVariables_2lss_1tau_ttbar.push_back("mindr_lep1_jet");
-  mvaInputVariables_2lss_1tau_ttbar.push_back("mindr_lep2_jet");
   mvaInputVariables_2lss_1tau_ttbar.push_back("avg_dr_jet");
-  mvaInputVariables_2lss_1tau_ttbar.push_back("max_lep_eta");
-  mvaInputVariables_2lss_1tau_ttbar.push_back("ptmiss");
-  mvaInputVariables_2lss_1tau_ttbar.push_back("mT_lep1");
-  mvaInputVariables_2lss_1tau_ttbar.push_back("htmiss");
+  mvaInputVariables_2lss_1tau_ttbar.push_back("TMath::Max(TMath::Abs(lep1_eta),TMath::Abs(lep2_eta))");
+  mvaInputVariables_2lss_1tau_ttbar.push_back("lep2_conePt");
   mvaInputVariables_2lss_1tau_ttbar.push_back("dr_leps");
   mvaInputVariables_2lss_1tau_ttbar.push_back("tau_pt");
   mvaInputVariables_2lss_1tau_ttbar.push_back("dr_lep1_tau");
@@ -549,9 +548,13 @@ int main(int argc, char* argv[])
   std::vector<std::string> mvaInputVariables_2lss_1tau = get_mvaInputVariables(mvaInputVariables_2lss_1tau_ttV, mvaInputVariables_2lss_1tau_ttbar);
   std::map<std::string, double> mvaInputs_2lss_1tau;
 
-  std::string inputFileNam_mva_mapping_2lss_1tau = "tthAnalysis/HiggsToTauTau/data/2lss_1tau_BDT_mapping.root";
-  TFile* inputFile_mva_mapping_2lss_1tau = openFile(LocalFileInPath(inputFileNam_mva_mapping_2lss_1tau));
-  TH2* mva_mapping_2lss_1tau = loadTH2(inputFile_mva_mapping_2lss_1tau, "hBinning");
+  std::string inputFileName_mva_mapping_2lss_1tau_clustering = "tthAnalysis/HiggsToTauTau/data/2lss_1tau_BDT_mapping_clustering.root";
+  TFile* inputFile_mva_mapping_2lss_1tau_clustering = openFile(LocalFileInPath(inputFileName_mva_mapping_2lss_1tau_clustering));
+  TH2* mva_mapping_2lss_1tau_clustering = loadTH2(inputFile_mva_mapping_2lss_1tau_clustering, "hBinning");
+
+  std::string inputFileName_mva_mapping_2lss_1tau_likelihood = "tthAnalysis/HiggsToTauTau/data/2lss_1tau_BDT_mapping_likelihood.root";
+  TFile* inputFile_mva_mapping_2lss_1tau_likelihood = openFile(LocalFileInPath(inputFileName_mva_mapping_2lss_1tau_likelihood));
+  TH2* mva_mapping_2lss_1tau_likelihood = loadTH2(inputFile_mva_mapping_2lss_1tau_likelihood, "hTargetBinning");
 
 //--- open output file containing run:lumi:event numbers of events passing final event selection criteria
   std::ostream* selEventsFile = ( selEventsFileName_output != "" ) ? new std::ofstream(selEventsFileName_output.data(), std::ios::out) : 0;
@@ -1118,7 +1121,7 @@ int main(int argc, char* argv[])
     preselHistManager->evt_->fillHistograms(
       preselElectrons.size(), preselMuons.size(), selHadTaus.size(), 
       selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
-      -1., -1., -1., -1., -1., -1., 
+      -1., -1., -1., -1., -1., -1., -1., 
       mTauTauVis1_presel, mTauTauVis2_presel, 
       0, 1.);
 
@@ -1569,22 +1572,30 @@ int main(int argc, char* argv[])
     //std::cout << std::endl;
 
 //--- compute output of BDTs used to discriminate ttH vs. ttV and ttH vs. ttbar trained by Arun for 2lss_1tau category
-    mvaInputs_2lss_1tau["lep1_pt"]        = selLepton_lead->pt();
-    mvaInputs_2lss_1tau["lep2_pt"]        = selLepton_sublead->pt();
-    mvaInputs_2lss_1tau["max_lep_eta"]    = TMath::Max(selLepton_lead->absEta(), selLepton_sublead->absEta());
-    mvaInputs_2lss_1tau["mindr_lep1_jet"] = TMath::Min(10., comp_mindr_lep1_jet(*selLepton_lead, selJets));
-    mvaInputs_2lss_1tau["mindr_lep2_jet"] = TMath::Min(10., comp_mindr_lep2_jet(*selLepton_sublead, selJets));
-    mvaInputs_2lss_1tau["avg_dr_jet"]     = comp_avg_dr_jet(selJets);
-    mvaInputs_2lss_1tau["ptmiss"]         = met.pt();
-    mvaInputs_2lss_1tau["mT_lep1"]        = comp_MT_met_lep1(selLepton_lead->p4(), met.pt(), met.phi());
-    mvaInputs_2lss_1tau["htmiss"]         = mht_p4.pt();
-    mvaInputs_2lss_1tau["dr_leps"]        = deltaR(selLepton_lead->p4(), selLepton_sublead->p4());
-    mvaInputs_2lss_1tau["nJet"]           = selJets.size();
-    mvaInputs_2lss_1tau["tau_pt"]         = ( selHadTau ) ? selHadTau->pt() : -1.;
-    mvaInputs_2lss_1tau["dr_lep1_tau"]    = ( selHadTau ) ? deltaR(selLepton_lead->p4(), selHadTau->p4()) : -1.;
-    mvaInputs_2lss_1tau["mTauTauVis1"]    = mTauTauVis1_sel;
-    mvaInputs_2lss_1tau["mTauTauVis2"]    = mTauTauVis2_sel;
-
+    mvaInputs_2lss_1tau["avg_dr_jet"]                                            = comp_avg_dr_jet(selJets);
+    mvaInputs_2lss_1tau["dr_leps"]                                               = deltaR(selLepton_lead->p4(), selLepton_sublead->p4());
+    mvaInputs_2lss_1tau["dr_lep1_tau"]                                           = deltaR(selLepton_lead->p4(), selHadTau->p4());
+    //mvaInputs_2lss_1tau["dr_lep2_tau"]                                           = deltaR(selLepton_sublead->p4(), selHadTau->p4());
+    //mvaInputs_2lss_1tau["htmiss"]                                                = mht_p4.pt();
+    mvaInputs_2lss_1tau["lep1_conePt"]                                           = selLepton_lead->cone_pt();
+    //mvaInputs_2lss_1tau["lep1_pt"]                                               = selLepton_lead->pt();
+    mvaInputs_2lss_1tau["lep2_conePt"]                                           = selLepton_sublead->cone_pt();
+    //mvaInputs_2lss_1tau["lep2_pt"]                                               = selLepton_sublead->pt();
+    mvaInputs_2lss_1tau["mindr_lep1_jet"]                                        = TMath::Min(10., comp_mindr_lep1_jet(*selLepton_lead, selJets));
+    mvaInputs_2lss_1tau["mindr_lep2_jet"]                                        = TMath::Min(10., comp_mindr_lep2_jet(*selLepton_sublead, selJets));
+    //mvaInputs_2lss_1tau["mindr_tau_jet" ]                                        = TMath::Min(10., comp_mindr_hadTau1_jet(*selHadTau, selJets));
+    mvaInputs_2lss_1tau["mT_lep1"]                                               = comp_MT_met_lep1(selLepton_lead->p4(), met.pt(), met.phi());
+    //mvaInputs_2lss_1tau["mT_lep2"]                                               = comp_MT_met_lep2(selLepton_sublead->p4(), met.pt(), met.phi());
+    mvaInputs_2lss_1tau["mTauTauVis1"]                                           = mTauTauVis1_sel;
+    mvaInputs_2lss_1tau["mTauTauVis2"]                                           = mTauTauVis2_sel;
+    mvaInputs_2lss_1tau["nJet"]                                                  = selJets.size();
+    //mvaInputs_2lss_1tau["ptmiss"]                                                = met.pt();
+    mvaInputs_2lss_1tau["tau_pt"]                                                = selHadTau->pt();
+    //mvaInputs_2lss_1tau["TMath::Abs(lep1_eta)"]                                  = selLepton_lead->absEta();
+    //mvaInputs_2lss_1tau["TMath::Abs(lep2_eta)"]                                  = selLepton_sublead->absEta();
+    //mvaInputs_2lss_1tau["TMath::Abs(tau_eta)"]                                   = selHadTau->absEta();
+    mvaInputs_2lss_1tau["TMath::Max(TMath::Abs(lep1_eta),TMath::Abs(lep2_eta))"] = TMath::Max(selLepton_lead->absEta(), selLepton_sublead->absEta());
+    
     check_mvaInputs(mvaInputs_2lss_1tau, run, lumi, event);
     //for ( std::map<std::string, double>::const_iterator mvaInput = mvaInputs_2lss.begin();
     //	    mvaInput != mvaInputs_2lss.end(); ++mvaInput ) {
@@ -1596,7 +1607,8 @@ int main(int argc, char* argv[])
     double mvaOutput_2lss_1tau_ttbar = mva_2lss_1tau_ttbar(mvaInputs_2lss_1tau);
     //std::cout << "mvaOutput_2lss_1tau_ttbar = " << mvaOutput_2lss_1tau_ttbar << std::endl;
     
-    Double_t mvaDiscr_2lss_1tau = getSF_from_TH2(mva_mapping_2lss_1tau, mvaOutput_2lss_1tau_ttbar, mvaOutput_2lss_1tau_ttV) + 1.;
+    Double_t mvaDiscr_2lss_1tau_clustering = getSF_from_TH2(mva_mapping_2lss_1tau_clustering, mvaOutput_2lss_1tau_ttbar, mvaOutput_2lss_1tau_ttV) + 1.;
+    Double_t mvaDiscr_2lss_1tau_likelihood = getSF_from_TH2(mva_mapping_2lss_1tau_likelihood, mvaOutput_2lss_1tau_ttbar, mvaOutput_2lss_1tau_ttV) + 1.;
 
     MEMOutput_2lss_1tau memOutput_2lss_1tau_matched;
     if(memReader)
@@ -1676,7 +1688,8 @@ int main(int argc, char* argv[])
     selHistManager->evt_->fillHistograms(
       selElectrons.size(), selMuons.size(), selHadTaus.size(), 
       selJets.size(), selBJets_loose.size(), selBJets_medium.size(), 
-      mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, mvaOutput_2lss_1tau_ttV, mvaOutput_2lss_1tau_ttbar, mvaDiscr_2lss_1tau, 
+      mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, 
+      mvaOutput_2lss_1tau_ttV, mvaOutput_2lss_1tau_ttbar, mvaDiscr_2lss_1tau_clustering, mvaDiscr_2lss_1tau_likelihood, 
       mTauTauVis1_sel, mTauTauVis2_sel, 
       memOutput_2lss_1tau_matched.is_initialized() ? &memOutput_2lss_1tau_matched : nullptr, evtWeight);
     if ( isSignal ) {
@@ -1685,7 +1698,8 @@ int main(int argc, char* argv[])
           selHistManager->evt_in_decayModes_[kv.first]->fillHistograms(
             selElectrons.size(), selMuons.size(), selHadTaus.size(), 
             selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
-            mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, mvaOutput_2lss_1tau_ttV, mvaOutput_2lss_1tau_ttbar, mvaDiscr_2lss_1tau, 
+            mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss,
+	    mvaOutput_2lss_1tau_ttV, mvaOutput_2lss_1tau_ttbar, mvaDiscr_2lss_1tau_clustering, mvaDiscr_2lss_1tau_likelihood,
             mTauTauVis1_sel, mTauTauVis2_sel, 
             memOutput_2lss_1tau_matched.is_initialized() ? &memOutput_2lss_1tau_matched : nullptr, evtWeight);
           break;
@@ -1792,7 +1806,8 @@ int main(int argc, char* argv[])
 
   delete run_lumi_eventSelector;
 
-  delete inputFile_mva_mapping_2lss_1tau;
+  delete inputFile_mva_mapping_2lss_1tau_clustering;
+  delete inputFile_mva_mapping_2lss_1tau_likelihood;
 
   delete selEventsFile;
 

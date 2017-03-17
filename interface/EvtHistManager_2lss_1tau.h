@@ -25,7 +25,7 @@ class EvtHistManager_2lss_1tau
   void bookHistograms(TFileDirectory& dir);
   void fillHistograms(int numElectrons, int numMuons, int numHadTaus, int numJets, int numBJets_loose, int numBJets_medium,
 		      double mvaOutput_2lss_ttV, double mvaOutput_2lss_ttbar, double mvaDiscr_2lss, 
-		      double mvaOutput_2lss_1tau_ttV, double mvaOutput_2lss_1tau_ttbar, double mvaDiscr_2lss_1tau, 
+		      double mvaOutput_2lss_1tau_ttV, double mvaOutput_2lss_1tau_ttbar, double mvaDiscr_2lss_1tau_clustering, double mvaDiscr_2lss_1tau_likelihood, 
 		      double mTauTauVis1, double mTauTauVis2, 
 		      const MEMOutput_2lss_1tau* memOutput_2lss_1tau, double evtWeight);
   
@@ -50,7 +50,8 @@ class EvtHistManager_2lss_1tau
 
   TH1* histogram_mvaOutput_2lss_1tau_ttV_;
   TH1* histogram_mvaOutput_2lss_1tau_ttbar_;
-  TH1* histogram_mvaDiscr_2lss_1tau_;
+  TH1* histogram_mvaDiscr_2lss_1tau_clustering_;
+  TH1* histogram_mvaDiscr_2lss_1tau_likelihood_;
 
   TH1* histogram_mTauTauVis_;
 

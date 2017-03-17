@@ -628,12 +628,12 @@ void compareDatacards()
 
   TH1::AddDirectory(false);
 
-  std::string inputFilePath_ref = "/home/veelken/ttHAnalysis/2016/2017Jan16/datacards/";
-  std::string inputFileName_ref = "prepareDatacards_2lss_1tau_mvaDiscr_2lss.root";
+  std::string inputFilePath_ref = "/home/veelken/ttHAnalysis/2016/2017Mar04/datacards/2lss_1tau/";
+  std::string inputFileName_ref = "prepareDatacards_2lss_1tau_sumOS_mvaDiscr_2lss.root";
   std::string legendEntry_ref = "Tallinn";
 
-  std::string inputFilePath_test = "/home/veelken/ttHAnalysis/2016/2017Feb03/datacards/";
-  std::string inputFileName_test = "prepareDatacards_2lss_1tau_mvaDiscr_2lss.root";
+  std::string inputFilePath_test = "/home/veelken/ttHAnalysis/2016/2017Mar16/datacards/2lss_1tau/";
+  std::string inputFileName_test = "prepareDatacards_2lss_1tau_sumOS_mvaDiscr_2lss.root";
   std::string legendEntry_test = "Tallinn (addMEM)";
 
   std::string inputFilePath_test2 = "";
