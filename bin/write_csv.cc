@@ -123,7 +123,7 @@ int main(int argc, char* argv[])
 //--- parse command-line arguments
   if ( argc < 2 ) {
     std::cout << "Usage: " << argv[0] << " [parameters.py]" << std::endl;
-    return 0;
+    return EXIT_FAILURE;
   }
 
   std::cout << "<write_csv>:" << std::endl;

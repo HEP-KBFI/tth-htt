@@ -32,6 +32,7 @@
 #include <TString.h>
 #include <TObjArray.h>
 #include <TObjString.h>
+#include <TError.h> // gErrorAbortLevel, kError
 
 #include <iostream>
 #include <string>
@@ -42,10 +43,13 @@ typedef std::vector<std::string> vstring;
 
 int main(int argc, char* argv[]) 
 {
+//--- throw an exception in case ROOT encounters an error
+  gErrorAbortLevel = kError;
+
 //--- parse command-line arguments
   if ( argc < 2 ) {
     std::cout << "Usage: " << argv[0] << " [parameters.py]" << std::endl;
-    return 0;
+    return EXIT_FAILURE;
   }
 
   std::cout << "<trainTTHMVA_1l_2tau>:" << std::endl;

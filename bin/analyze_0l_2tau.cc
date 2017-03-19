@@ -14,6 +14,7 @@
 #include <TBenchmark.h> // TBenchmark
 #include <TString.h> // TString, Form
 #include <TMatrixD.h> // TMatrixD
+#include <TError.h> // gErrorAbortLevel, kError
 
 #include "tthAnalysis/HiggsToTauTau/interface/RecoLepton.h" // RecoLepton
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTau.h" // RecoHadTau
@@ -100,10 +101,13 @@ const int hadTauSelection_antiMuon_sublead = 1; // Loose
  */
 int main(int argc, char* argv[]) 
 {
+//--- throw an exception in case ROOT encounters an error
+  gErrorAbortLevel = kError;
+
 //--- parse command-line arguments
   if ( argc < 2 ) {
     std::cout << "Usage: " << argv[0] << " [parameters.py]" << std::endl;
-    return EXIT_SUCCESS;
+    return EXIT_FAILURE;
   }
 
   std::cout << "<analyze_0l_2tau>:" << std::endl;
