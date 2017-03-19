@@ -24,7 +24,7 @@ else:
   from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_2lss1tau_prodNtuples_v3 import samples_2016 as samples
 #--------------------------------------------------------------------------------
 
-version = "2017Mar12"
+version = "2017Mar17"
 ERA     = "2016"
 
 if __name__ == '__main__':
@@ -45,7 +45,7 @@ if __name__ == '__main__':
     max_files_per_job        = 1, # so that we'd have 1-1 correspondence b/w input and output files
     mem_integrations_per_job = 50,
     max_mem_integrations     = 20000, # use -1 if you don't want to limit the nof MEM integrations
-    num_parallel_jobs        = 8,
+    num_parallel_jobs        = 16,
     leptonSelection          = "Fakeable",
     hadTauSelection          = "Tight|dR03mvaMedium",
     isForBDTtraining         = isForBDTtraining,

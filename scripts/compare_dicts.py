@@ -91,22 +91,4 @@ if __name__ == '__main__':
         test_name = dictmap['test']['process_name_specific'][val]
         logging.warning('%s in reference dictionary: %s [%s]' % (key, ref_val, ref_name))
         logging.warning('%s in test      dictionary: %s [%s]' % (key, test_val, test_name))
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
+

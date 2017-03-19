@@ -90,7 +90,7 @@ if __name__ == '__main__':
       file_list = ', '.join(to_archive),
     ))
 
-    tar = 'GZIP=-9 cd {tar_location}; tar -czf {tar_file} {to_archive}'.format(
+    tar = 'cd {tar_location};GZIP=-9 tar -czf {tar_file} {to_archive}'.format(
       tar_location = path,
       tar_file     = tar_basename,
       to_archive   = ' '.join(to_archive),

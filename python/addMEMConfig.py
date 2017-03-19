@@ -356,8 +356,8 @@ class addMEMConfig:
                 #UDPATE: ONE OUTPUT FILE PER SAMPLE!
                 fileset_id = memEvtRangeDict[jobId]['fileset_id']
                 hadd_output = os.path.join(
-                    self.dirs[key_dir][DKEY_FINAL_NTUPLES], '%s_%i.root' % ('tree', fileset_id) # UDPATE: ADDED
-                    #self.dirs[key_dir][DKEY_FINAL_NTUPLES], "tree.root" # UDPATE: REMOVED
+                    #self.dirs[key_dir][DKEY_FINAL_NTUPLES], '%s_%i.root' % ('tree', fileset_id) # UDPATE: ADDED
+                    self.dirs[key_dir][DKEY_FINAL_NTUPLES], "tree.root" # UDPATE: REMOVED
                 )
                 if hadd_output not in self.hadd_records:
                     self.hadd_records[hadd_output] = {}
