@@ -110,7 +110,7 @@ void RecoJetReader::setBranchNames()
 	std::string branchName_BtagWeight = TString(getBranchName_bTagWeight(era_, idxShift)).ReplaceAll("Jet_", Form("%s_", branchName_obj_.data())).Data();
 	branchNames_BtagWeight_systematics_[idxShift] = branchName_BtagWeight;
       }
-      branchName_heppyFlavour_ = Form("%s_%s", branchName_obj_.data(), "heppyFlavour");    
+//      branchName_heppyFlavour_ = Form("%s_%s", branchName_obj_.data(), "heppyFlavour"); // KE (20/03/17): doesn't exist in the latest production/addMEM Ntuples
     }
     instances_[branchName_obj_] = this;
   } else {

@@ -286,7 +286,7 @@ int main(int argc, char* argv[])
     electronWriter->setBranches(outputTree);
     hadTauWriter = new RecoHadTauWriter(era, Form("n%s", branchName_hadTaus.data()), branchName_hadTaus);
     hadTauWriter->setBranches(outputTree);
-    jetWriter = new RecoJetWriter(era, Form("n%s", branchName_jets.data()), branchName_jets);
+    jetWriter = new RecoJetWriter(era, isMC, Form("n%s", branchName_jets.data()), branchName_jets);
     jetWriter->setBranches(outputTree);
     metWriter = new RecoMEtWriter(era, branchName_met);
     metWriter->setBranches(outputTree);

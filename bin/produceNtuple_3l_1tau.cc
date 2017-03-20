@@ -277,7 +277,7 @@ int main(int argc, char* argv[])
   std::cout << "writing RecoHadTau objects to branch = '" << branchName_hadTaus << "'" << std::endl;
 
   std::string branchName_jets = "Jet";
-  RecoJetWriter* jetWriter = new RecoJetWriter(era, Form("n%s", branchName_jets.data()), branchName_jets);
+  RecoJetWriter* jetWriter = new RecoJetWriter(era, isMC, Form("n%s", branchName_jets.data()), branchName_jets);
   jetWriter->setBranches(outputTree);
   std::cout << "writing RecoJet objects to branch = '" << branchName_jets << "'" << std::endl;
 
