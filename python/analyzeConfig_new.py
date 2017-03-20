@@ -465,7 +465,7 @@ class analyzeConfig:
             self.filesToClean.append(rootOutput[0])
         if len(self.targets) == 0:
             self.targets.append("sbatch")
-        tools_createMakefile(self.makefile, self.targets, lines_makefile, self.filesToClean)
+        tools_createMakefile(self.makefile, self.targets, lines_makefile, self.filesToClean, self.is_sbatch)
         logging.info("Run it with:\tmake -f %s -j %i " % (self.makefile, self.num_parallel_jobs))
 
     def initializeInputFileIds(self, sample_name, sample_info):

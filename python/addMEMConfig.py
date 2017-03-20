@@ -162,7 +162,7 @@ class addMEMConfig:
         """Creates Makefile that runs the MEM
         """
         targets = self.hadd_records.keys()
-        tools_createMakefile(self.makefile, targets, lines_makefile, self.filesToClean)
+        tools_createMakefile(self.makefile, targets, lines_makefile, self.filesToClean, self.is_sbatch)
         logging.info("Run it with:\tmake -f %s -j %i " %
             (self.makefile, self.num_parallel_jobs))
 

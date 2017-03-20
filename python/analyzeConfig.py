@@ -410,7 +410,7 @@ class analyzeConfig:
             targets.append("makePlots%i" % idxJob)
         for rootOutput in self.rootOutputAux.values():
             self.filesToClean.append(rootOutput[0])
-        tools_createMakefile(self.makefile, targets, lines_makefile, self.filesToClean)
+        tools_createMakefile(self.makefile, targets, lines_makefile, self.filesToClean, self.is_sbatch)
         logging.info("Run it with:\tmake -f %s -j %i " %
             (self.makefile, self.num_parallel_jobs))
 
