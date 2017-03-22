@@ -1,7 +1,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/MEMInterface_3l_1tau.h" // MEMInterface_3l_1tau
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // isHigherCSV()
 #include "tthAnalysis/tthMEM/interface/Logger.h" // Logger::
-#include "tthAnalysis/tthMEM/interface/tthMEMlvFunctions.h" // getLorentzVector()
+#include "tthAnalysis/tthMEM/interface/general/lvFunctions.h" // getLorentzVector()
 
 MEMInterface_3l_1tau::MEMInterface_3l_1tau()
   : clock_(0)
