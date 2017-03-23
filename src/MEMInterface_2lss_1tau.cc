@@ -171,6 +171,12 @@ MEMInterface_2lss_1tau::operator()(
     return result;
   }
 
+  inputs[0].weight_ttH_ = 0.;
+  //inputs[0].weight_ttH_ = 1.;
+  inputs[0].weight_ttZ_ = 0.;
+  inputs[0].weight_ttZ_Zll_ = 0.;
+  inputs[0].weight_ttbar_DL_fakelep_ = 0.;
+
   clock_->Reset();
   clock_->Start("<MEMInterface_2lss_1tau::operator()>");
 
@@ -192,19 +198,21 @@ MEMInterface_2lss_1tau::operator()(
   result.weight_ttZ_ = inputs[0].weight_ttZ_;
   result.weight_ttZ_Zll_ = inputs[0].weight_ttZ_Zll_;
   result.weight_tt_ = inputs[0].weight_ttbar_DL_fakelep_;
+  // compute MEM likelihood ratio
+  // (kappa coefficients taken from Table 7 in AN-2016/363 v2)
   double k_ttZ = 0.;
   double k_ttZ_Zll = 0.;
   double k_tt = 0.;
   switch ( inputs[0].integration_type_ ) {
   case 0 :
-    k_ttZ = 5.e-2;
-    k_ttZ_Zll = 1.e-1;
-    k_tt = 1.e-17;
+    k_ttZ = 1.e-1;
+    k_ttZ_Zll = 2.e-1;
+    k_tt = 1.e-18;
     break;
   case 1 :
     k_ttZ = 5.e-2;
-    k_ttZ_Zll = 1.;
-    k_tt = 1.e-14;
+    k_ttZ_Zll = 5.e-1;
+    k_tt = 5.e-15;
     break;
   default:
     assert(0);

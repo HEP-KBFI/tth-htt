@@ -112,7 +112,7 @@ const leptonGenMatchEntry& getLeptonGenMatch(const std::vector<leptonGenMatchEnt
   assert(lepton_lead);
   countLeptonGenMatches(lepton_lead, numGenMatchedLeptons, numGenMatchedJets);
   if ( lepton_sublead ) countLeptonGenMatches(lepton_sublead, numGenMatchedLeptons, numGenMatchedJets);
-  if ( lepton_third   ) countLeptonGenMatches(lepton_sublead, numGenMatchedLeptons, numGenMatchedJets);
+  if ( lepton_third   ) countLeptonGenMatches(lepton_third, numGenMatchedLeptons, numGenMatchedJets);
   return getLeptonGenMatch(leptonGenMatch_definitions, numGenMatchedLeptons, numGenMatchedJets);
 }
 

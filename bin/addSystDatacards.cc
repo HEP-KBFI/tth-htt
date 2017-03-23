@@ -26,6 +26,7 @@
 #include <TArrayD.h>
 #include <TBenchmark.h>
 #include <TMath.h>
+#include <TError.h> // gErrorAbortLevel, kError
 #include "TPRegexp.h"
 #include "TDirectory.h"
 #include "TList.h"
@@ -107,10 +108,13 @@ namespace
 
 int main(int argc, char* argv[]) 
 {
+//--- throw an exception in case ROOT encounters an error
+  gErrorAbortLevel = kError;
+
 //--- parse command-line arguments
   if ( argc < 2 ) {
     std::cout << "Usage: " << argv[0] << " [parameters.py]" << std::endl;
-    return 0;
+    return EXIT_FAILURE;
   }
 
   std::cout << "<addSystDatacards>:" << std::endl;

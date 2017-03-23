@@ -19,7 +19,7 @@ elif ERA == "2016":
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "2017Feb22"
+version = "2017Mar13"
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -39,9 +39,6 @@ if __name__ == '__main__':
     jet_minAbsEta = -1.,
     jet_maxAbsEta = 2.3, 
     hadTau_selections = [
-      "dR05isoLoose",
-      "dR05isoMedium",
-      "dR05isoTight",
       "dR03mvaVLoose",
       "dR03mvaLoose",
       "dR03mvaMedium",

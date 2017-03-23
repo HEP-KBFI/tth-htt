@@ -15,8 +15,8 @@
 class RecoJetWriter
 {
  public:
-  RecoJetWriter(int era);
-  RecoJetWriter(int era, const std::string& branchName_num, const std::string& branchName_obj); 
+  RecoJetWriter(int era, bool isMC);
+  RecoJetWriter(int era, bool isMC, const std::string& branchName_num, const std::string& branchName_obj);
   ~RecoJetWriter();
 
   /**
@@ -36,6 +36,7 @@ class RecoJetWriter
   void setBranchNames();
 
   int era_;
+  bool isMC_;
   const int max_nJets_;
   std::string branchName_num_;
   std::string branchName_obj_;
@@ -50,6 +51,7 @@ class RecoJetWriter
   std::string branchName_BtagCSVwHipMitigation_;
   std::string branchName_BtagCSVwoHipMitigation_;
   std::string branchName_BtagWeight_;
+  std::string branchName_heppyFlavour_;
   std::map<int, std::string> branchNames_BtagWeight_systematics_;
 
   Int_t nJets_;
@@ -63,6 +65,7 @@ class RecoJetWriter
   Float_t* jet_BtagCSVwHipMitigation_;
   Float_t* jet_BtagCSVwoHipMitigation_;
   Float_t* jet_BtagWeight_;
+  Float_t* jet_heppyFlavour_;
   std::map<int, Float_t*> jet_BtagWeights_systematics_; 
 };
 

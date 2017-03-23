@@ -1,5 +1,6 @@
 #!/bin/bash
-
+# File: sbatch-node.template.sh
+# Version: 0.2
 
 # This value is provided by sbatchManager.py that creates sbatch scripts based this template
 
@@ -10,6 +11,8 @@ RUNNING_COMMAND="{{ RUNNING_COMMAND }}"
 
 main() {
     run_failure_wrapped_executable >> "{{ wrapper_log_file }}" 2>&1
+    EXIT_CODE=$?
+    return $EXIT_CODE
 }
 
 
@@ -18,10 +21,12 @@ main() {
 run_failure_wrapped_executable() {
     TRY_COUNT=$[TRY_COUNT+1]
     echo "Started (Try $TRY_COUNT)"
+    EXIT_CODE=1
 
     if [[ -f /cvmfs/cms.cern.ch/cmsset_default.sh ]]; then
         echo "Network drive mounted, started running on $HOSTNAME"
         run_wrapped_executable
+        EXIT_CODE=$?
     else
         echo "Unable to use node $HOSTNAME, will mark node offline: sudo scontrol update nodename=$HOSTNAME state=drain reason=Testing"
         sudo scontrol update nodename=$HOSTNAME state=drain reason=Testing
@@ -29,10 +34,12 @@ run_failure_wrapped_executable() {
         if [[ $TRY_COUNT -lt 3 ]]; then
             echo "Will resubmit job to other node: TRY_COUNT=$TRY_COUNT $RUNNING_COMMAND"
             TRY_COUNT=$TRY_COUNT $RUNNING_COMMAND
+            EXIT_CODE=$?
         else
             echo "Maximum tries reached, will not try to resubmit any more. GL & HF"
         fi
     fi
+    return $EXIT_CODE
 }
 
 
@@ -60,7 +67,6 @@ run_wrapped_executable() {
     mkdir -p $EXECUTABLE_LOG_DIR
 
     cd {{ working_dir }}
-    cmsenv
     cd $SCRATCH_DIR
 
     echo "Time is: `date`"
@@ -74,12 +80,12 @@ run_wrapped_executable() {
     CMSSW_SEARCH_PATH="$SCRATCH_DIR:$CMSSW_BASE/src"
     echo "Execute command: {{ exec_name }} {{ cfg_file }} &> $TEMPORARY_EXECUTABLE_LOG_FILE"
     {{ exec_name }} {{ cfg_file }} &> $TEMPORARY_EXECUTABLE_LOG_FILE
+    EXIT_CODE=$?
 
     echo "Time is: `date`"
 
     OUTPUT_FILES="{{ outputFiles }}"
     echo "Copying output files: {{ outputFiles }}"
-    EXIT_CODE=0
     for OUTPUT_FILE in $OUTPUT_FILES
     do
       OUTPUT_FILE_SIZE=$(stat -c '%s' $OUTPUT_FILE)
@@ -112,3 +118,9 @@ run_wrapped_executable() {
 # Calls main method
 
 main
+
+EXIT_CODE=$?
+echo "Final exit code is: $EXIT_CODE"
+exit $EXIT_CODE
+
+# End of file

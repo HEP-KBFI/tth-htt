@@ -201,7 +201,7 @@ class prodNtupleConfig:
                   (process_name, jobId))
                 self.logFiles_prodNtuple[key_file] = os.path.join(self.dirs[key_dir][DKEY_LOGS], "produceNtuple_%s_%s_%i.log" % \
                   (self.channel, process_name, jobId))
-                self.createCfg_prodNtuple(self.inputFiles[key_file], self.outputFiles[key_file], self.era, isMC, 
+                self.createCfg_prodNtuple(self.inputFiles[key_file], self.outputFiles[key_file], self.era, is_mc, 
                                           self.cfgFiles_prodNtuple_modified[key_file], rle_filename)
                 
         if self.is_sbatch:

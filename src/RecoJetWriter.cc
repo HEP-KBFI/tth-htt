@@ -6,8 +6,10 @@
 
 #include <TString.h> // Form
 
-RecoJetWriter::RecoJetWriter(int era)
+RecoJetWriter::RecoJetWriter(int era,
+                             bool isMC)
   : era_(era)
+  , isMC_(isMC)
   , max_nJets_(32)
   , branchName_num_("nJets")
   , branchName_obj_("Jets")
@@ -21,12 +23,14 @@ RecoJetWriter::RecoJetWriter(int era)
   , jet_BtagCSVwHipMitigation_(0)
   , jet_BtagCSVwoHipMitigation_(0)
   , jet_BtagWeight_(0)
+  , jet_heppyFlavour_(0)
 {
   setBranchNames();
 }
 
-RecoJetWriter::RecoJetWriter(int era, const std::string& branchName_num, const std::string& branchName_obj)
+RecoJetWriter::RecoJetWriter(int era, bool isMC, const std::string& branchName_num, const std::string& branchName_obj)
   : era_(era)
+  , isMC_(isMC)
   , max_nJets_(32)
   , branchName_num_(branchName_num)
   , branchName_obj_(branchName_obj)
@@ -40,6 +44,7 @@ RecoJetWriter::RecoJetWriter(int era, const std::string& branchName_num, const s
   , jet_BtagCSVwHipMitigation_(0)
   , jet_BtagCSVwoHipMitigation_(0)
   , jet_BtagWeight_(0)
+  , jet_heppyFlavour_(0)
 {
   setBranchNames();
 }
@@ -56,6 +61,7 @@ RecoJetWriter::~RecoJetWriter()
   delete[] jet_BtagCSVwHipMitigation_;
   delete[] jet_BtagCSVwoHipMitigation_;
   delete[] jet_BtagWeight_;
+  delete[] jet_heppyFlavour_;
   for ( std::map<int, Float_t*>::iterator it = jet_BtagWeights_systematics_.begin();
 	it != jet_BtagWeights_systematics_.end(); ++it ) {
     delete[] it->second;
@@ -83,6 +89,11 @@ void RecoJetWriter::setBranchNames()
   for ( int idxShift = kBtag_hfUp; idxShift <= kBtag_jesDown; ++idxShift ) {
     std::string branchName_BtagWeight = TString(getBranchName_bTagWeight(era_, idxShift)).ReplaceAll("Jet_", Form("%s_", branchName_obj_.data())).Data();
     branchNames_BtagWeight_systematics_[idxShift] = branchName_BtagWeight;
+  }
+  if(isMC_ && era_ == kEra_2016) {
+    branchName_heppyFlavour_ = Form("%s_%s", branchName_obj_.data(), "heppyFlavour");
+  } else {
+    branchName_heppyFlavour_ = "";
   }
 }
 
@@ -117,6 +128,10 @@ void RecoJetWriter::setBranches(TTree* tree)
     jet_BtagWeights_systematics_[idxShift] = new Float_t[max_nJets_];
     setBranchVF(tree, branchNames_BtagWeight_systematics_[idxShift], branchName_num_, jet_BtagWeights_systematics_[idxShift]);
   }
+  jet_heppyFlavour_ = new Float_t[max_nJets_];
+  if ( branchName_heppyFlavour_ != "" ) {
+    setBranchVF(tree, branchName_heppyFlavour_, branchName_num_, jet_heppyFlavour_);
+  }
 }
 
 void RecoJetWriter::write(const std::vector<const RecoJet*>& jets) 
@@ -143,5 +158,6 @@ void RecoJetWriter::write(const std::vector<const RecoJet*>& jets)
 	jet_BtagWeights_systematics_[idxShift][idxJet] = 1.;
       }
     }
+    jet_heppyFlavour_[idxJet] = jet->heppyFlavour();
   }
 }

@@ -13,6 +13,7 @@
 #include <TTree.h> // TTree
 #include <TBenchmark.h> // TBenchmark
 #include <TString.h> // TString, Form
+#include <TError.h> // gErrorAbortLevel, kError
 
 #include "tthAnalysis/HiggsToTauTau/interface/RecoLepton.h" // RecoLepton
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h" // RecoJet
@@ -120,10 +121,13 @@ struct HadTauHistManagerWrapper_eta
  */
 int main(int argc, char* argv[]) 
 {
+//--- throw an exception in case ROOT encounters an error
+  gErrorAbortLevel = kError;
+
 //--- parse command-line arguments
   if ( argc < 2 ) {
     std::cout << "Usage: " << argv[0] << " [parameters.py]" << std::endl;
-    return EXIT_SUCCESS;
+    return EXIT_FAILURE;
   }
 
   std::cout << "<analyze_1l_2tau>:" << std::endl;
@@ -185,6 +189,8 @@ int main(int argc, char* argv[])
   std::vector<leptonGenMatchEntry> leptonGenMatch_definitions = getLeptonGenMatch_definitions_1lepton(apply_leptonGenMatching);
   std::cout << "leptonGenMatch_definitions:" << std::endl;
   std::cout << leptonGenMatch_definitions;
+  bool apply_leptonGenMatching_ttZ_workaround = cfg_analyze.getParameter<bool>("apply_leptonGenMatching_ttZ_workaround");
+  std::cout << "apply_leptonGenMatching_ttZ_workaround = " << apply_leptonGenMatching_ttZ_workaround << std::endl;
 
   TString hadTauSelection_string = cfg_analyze.getParameter<std::string>("hadTauSelection").data();
   TObjArray* hadTauSelection_parts = hadTauSelection_string.Tokenize("|");
@@ -340,6 +346,11 @@ int main(int argc, char* argv[])
   std::string branchName_jets = cfg_analyze.getParameter<std::string>("branchName_jets");
   std::string branchName_met = cfg_analyze.getParameter<std::string>("branchName_met");
 
+  std::string branchName_genLeptons1 = cfg_analyze.getParameter<std::string>("branchName_genLeptons1");
+  std::string branchName_genLeptons2 = cfg_analyze.getParameter<std::string>("branchName_genLeptons2");
+  std::string branchName_genHadTaus = cfg_analyze.getParameter<std::string>("branchName_genHadTaus");
+  std::string branchName_genJets = cfg_analyze.getParameter<std::string>("branchName_genJets");
+
   std::string selEventsFileName_input = cfg_analyze.getParameter<std::string>("selEventsFileName_input");
   std::cout << "selEventsFileName_input = " << selEventsFileName_input << std::endl;
   RunLumiEventSelector* run_lumi_eventSelector = 0;
@@ -395,7 +406,9 @@ int main(int argc, char* argv[])
   }
 
   hltPaths_setBranchAddresses(inputTree, triggers_1e);
+  hltPaths_setBranchAddresses(inputTree, triggers_1e1tau);
   hltPaths_setBranchAddresses(inputTree, triggers_1mu);
+  hltPaths_setBranchAddresses(inputTree, triggers_1mu1tau);
 
   GENWEIGHT_TYPE genWeight = 1.;
   PUWEIGHT_TYPE pileupWeight = 1.;
@@ -469,11 +482,11 @@ int main(int argc, char* argv[])
   GenJetReader* genJetReader = 0;
   LHEInfoReader* lheInfoReader = 0;
   if ( isMC ) {
-    genLeptonReader = new GenLeptonReader("nGenLep", "GenLep", "nGenLepFromTau", "GenLepFromTau");
+    genLeptonReader = new GenLeptonReader(Form("n%s", branchName_genLeptons1.data()), branchName_genLeptons1, Form("n%s", branchName_genLeptons2.data()), branchName_genLeptons2); 
     genLeptonReader->setBranchAddresses(inputTree);
-    genHadTauReader = new GenHadTauReader("nGenHadTaus", "GenHadTaus");
+    genHadTauReader = new GenHadTauReader(Form("n%s", branchName_genHadTaus.data()), branchName_genHadTaus);
     genHadTauReader->setBranchAddresses(inputTree);
-    genJetReader = new GenJetReader("nGenJet", "GenJet");
+    genJetReader = new GenJetReader(Form("n%s", branchName_genJets.data()), branchName_genJets);
     genJetReader->setBranchAddresses(inputTree);
     lheInfoReader = new LHEInfoReader();
     lheInfoReader->setBranchAddresses(inputTree);
@@ -787,6 +800,12 @@ int main(int argc, char* argv[])
     cutFlowTable.update("run:ls:event selection");
     cutFlowHistManager->fillHistograms("run:ls:event selection", lumiScale);
 
+    if ( run_lumi_eventSelector ) {
+      std::cout << "processing Entry " << idxEntry << ":"
+		<< " run = " << run << ", lumi = " << lumi << ", event = " << event << std::endl;
+      if ( inputTree->GetFile() ) std::cout << "input File = " << inputTree->GetFile()->GetName() << std::endl;
+    }
+
 //--- build collections of generator level particles (before any cuts are applied, to check distributions in unbiased event samples)
     std::vector<GenLepton> genLeptons;
     std::vector<GenLepton> genElectrons;
@@ -976,6 +995,7 @@ int main(int argc, char* argv[])
     const RecoLepton* preselLepton = preselLeptons[0];
     const leptonGenMatchEntry& preselLepton_genMatch = getLeptonGenMatch(leptonGenMatch_definitions, preselLepton);
     int idxPreselLepton_genMatch = preselLepton_genMatch.idx_;
+    if ( apply_leptonGenMatching_ttZ_workaround ) idxPreselLepton_genMatch = kGen_1l0j;
     assert(idxPreselLepton_genMatch != kGen_LeptonUndefined1);
 
     // require that trigger paths match event category (with event category based on preselLeptons)
@@ -1055,6 +1075,7 @@ int main(int argc, char* argv[])
     int selLepton_type = getLeptonType(selLepton->pdgId());
     const leptonGenMatchEntry& selLepton_genMatch = getLeptonGenMatch(leptonGenMatch_definitions, selLepton);
     int idxSelLepton_genMatch = selLepton_genMatch.idx_;
+    if ( apply_leptonGenMatching_ttZ_workaround ) idxSelLepton_genMatch = kGen_1l0j;
     assert(idxSelLepton_genMatch != kGen_LeptonUndefined1);
 
     if ( isMC ) {
@@ -1201,6 +1222,9 @@ int main(int argc, char* argv[])
       }
       evtWeight *= weight_fakeRate;
     }    
+    if ( isDEBUG ) {
+      std::cout << "evtWeight = " << evtWeight << std::endl;
+    }
 
     double mTauTauVis = (selHadTau_lead->p4() + selHadTau_sublead->p4()).mass();
 

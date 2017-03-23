@@ -16,6 +16,7 @@
 #include <TBenchmark.h> // TBenchmark
 #include <TString.h> // TString, Form
 #include <TMatrixD.h> // TMatrixD
+#include <TError.h> // gErrorAbortLevel, kError
 
 #include "tthAnalysis/HiggsToTauTau/interface/RecoLepton.h" // RecoLepton
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h" // RecoJet
@@ -76,10 +77,13 @@ typedef std::vector<std::string> vstring;
  */
 int main(int argc, char* argv[]) 
 {
+//--- throw an exception in case ROOT encounters an error
+  gErrorAbortLevel = kError;
+
 //--- parse command-line arguments
   if ( argc < 2 ) {
     std::cout << "Usage: " << argv[0] << " [parameters.py]" << std::endl;
-    return EXIT_SUCCESS;
+    return EXIT_FAILURE;
   }
 
   std::cout << "<produceNtuple_2lss_1tau>:" << std::endl;
@@ -115,7 +119,7 @@ int main(int argc, char* argv[])
     << "Invalid Configuration parameter 'leptonSelection' = " << leptonSelection_string << " !!\n";
   int minNumLeptons = cfg_produceNtuple.getParameter<int>("minNumLeptons");
 
-   TString hadTauSelection_string = cfg_produceNtuple.getParameter<std::string>("hadTauSelection").data();
+  TString hadTauSelection_string = cfg_produceNtuple.getParameter<std::string>("hadTauSelection").data();
   TObjArray* hadTauSelection_parts = hadTauSelection_string.Tokenize("|");
   assert(hadTauSelection_parts->GetEntries() >= 1);
   std::string hadTauSelection_part1 = (dynamic_cast<TObjString*>(hadTauSelection_parts->At(0)))->GetString().Data();
@@ -210,11 +214,17 @@ int main(int argc, char* argv[])
   hadTauReader->setBranchAddresses(inputTree);
   RecoHadTauCollectionCleaner hadTauCleaner(0.3);
   RecoHadTauCollectionSelectorLoose preselHadTauSelector(era);
-if ( hadTauSelection_part2 == "dR03mvaVLoose" || hadTauSelection_part2 == "dR03mvaVVLoose" ) preselHadTauSelector.set(hadTauSelection_part2);
+  if ( hadTauSelection_part2 == "dR03mvaVLoose" || hadTauSelection_part2 == "dR03mvaVVLoose" ) preselHadTauSelector.set(hadTauSelection_part2);
+  preselHadTauSelector.set_min_antiElectron(-1);
+  preselHadTauSelector.set_min_antiMuon(-1);
   RecoHadTauCollectionSelectorFakeable fakeableHadTauSelector(era);
   if ( hadTauSelection_part2 == "dR03mvaVLoose" || hadTauSelection_part2 == "dR03mvaVVLoose" ) fakeableHadTauSelector.set(hadTauSelection_part2);
+  fakeableHadTauSelector.set_min_antiElectron(-1);
+  fakeableHadTauSelector.set_min_antiMuon(-1);
   RecoHadTauCollectionSelectorTight tightHadTauSelector(era);
   if ( hadTauSelection_part2 != "" ) tightHadTauSelector.set(hadTauSelection_part2);
+  tightHadTauSelector.set_min_antiElectron(-1);
+  tightHadTauSelector.set_min_antiMuon(-1);
   // CV: lower thresholds on hadronic taus by 2 GeV 
   //     with respect to thresholds applied on analysis level (in analyze_2lss_1tau.cc)
   preselHadTauSelector.set_min_pt(18.); 
@@ -225,7 +235,7 @@ if ( hadTauSelection_part2 == "dR03mvaVLoose" || hadTauSelection_part2 == "dR03m
   if ( use_HIP_mitigation_bTag ) jetReader->enable_HIP_mitigation();
   else jetReader->disable_HIP_mitigation();
   jetReader->setJetPt_central_or_shift(RecoJetReader::kJetPt_central); 
-  jetReader->read_BtagWeight_systematics(true);
+  jetReader->read_BtagWeight_systematics(isMC);
   jetReader->setBranchAddresses(inputTree);
   RecoJetCollectionCleaner jetCleaner(0.4);
   RecoJetSelector jetSelector(era);  
@@ -271,7 +281,7 @@ if ( hadTauSelection_part2 == "dR03mvaVLoose" || hadTauSelection_part2 == "dR03m
   std::cout << "writing RecoHadTau objects to branch = '" << branchName_hadTaus << "'" << std::endl;
 
   std::string branchName_jets = "Jet";
-  RecoJetWriter* jetWriter = new RecoJetWriter(era, Form("n%s", branchName_jets.data()), branchName_jets);
+  RecoJetWriter* jetWriter = new RecoJetWriter(era, isMC, Form("n%s", branchName_jets.data()), branchName_jets);
   jetWriter->setBranches(outputTree);
   std::cout << "writing RecoJet objects to branch = '" << branchName_jets << "'" << std::endl;
 

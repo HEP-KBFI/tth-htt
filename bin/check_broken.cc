@@ -11,10 +11,10 @@
 #include <algorithm> // std::set_difference(), std::accumulate(), std::any_of()
 #include <set> // std::set<>
 #include <iterator> // std::inserter()
+#include <regex> // std::regex, std::smatch, std::regex_match()
 
 #include <boost/filesystem.hpp> // boost::filesystem::
 #include <boost/program_options.hpp> // boost::program_options::
-#include <boost/regex.hpp> // boost::regex::
 #include <boost/lexical_cast.hpp> // boost::lexical_cast<>()
 #include <boost/iterator/counting_iterator.hpp> // boost::counting_iterator<>
 #include <boost/algorithm/string/join.hpp> // boost::algorithm::join()
@@ -172,18 +172,13 @@ unsigned
 get_nr_str(const std::string & str)
 {
 //--- set up the regex
-  static const boost::regex re("\\d+");
-  boost::sregex_iterator it(str.begin(), str.end(), re);
-  decltype(it) end;
-  std::vstring matches;
-  for(; it != end; ++it)
-    matches.push_back(it -> str());
-  if(matches.size() != 1)
-    throw std::runtime_error("Something's wrong");
-  return boost::lexical_cast<unsigned>(matches[0]);
+  static const std::regex re(R"(tree_(\d+).root)");
+  std::smatch sm;
+  const bool has_match = std::regex_match(str, sm, re);
+  if(! has_match)
+    throw std::runtime_error("String '" + str + "' doesn't match to the regex of a ROOT file");
+  return boost::lexical_cast<unsigned>(sm[1]);
 }
-
-
 
 struct Sample
 {
@@ -212,33 +207,12 @@ struct Sample
   bool gen_weight;
   double x_sec;
   unsigned max_nr;
-  unsigned long long nof_events;
-  unsigned long long nof_events_unweighted;
+  double nof_events;
+  double nof_events_unweighted;
   unsigned long long nof_dbs_events;
   bool found_on_disk;
 
   Sample() = default;
-  /*Sample(boost::filesystem::path path)
-    : path(path)
-    , name(path.filename().string())
-    , pathStr(path.string())
-    , gen_weight(false)
-    , x_sec(0)
-    , max_nr(0)
-    , nof_events(0)
-  {}
-  Sample(boost::filesystem::path path,
-         boost::filesystem::path parent)
-    : path(path)
-    , parent(parent)
-    , name(path.filename().string())
-    , pathStr(path.string())
-    , parentStr(parent.string())
-    , gen_weight(false)
-    , x_sec(0)
-    , max_nr(0)
-    , nof_events(0)
-  {}*/
 
   Sample(std::string sample_name, std::string dbs_name, std::string sample_category, std::string process_name, double xs, unsigned long long dbsevents, bool use_it, bool gen_weight)
     : name(sample_name)
@@ -248,8 +222,8 @@ struct Sample
     , use_it(use_it)
     , gen_weight(gen_weight)
     , x_sec(xs)
-    , nof_events(0)
-    , nof_events_unweighted(0)
+    , nof_events(0.)
+    , nof_events_unweighted(0.)
     , nof_dbs_events(dbsevents)
     , found_on_disk(false)    
   {}
@@ -289,7 +263,6 @@ struct Sample
       std::transform(blacklist_u.begin(), blacklist_u.end(), std::back_inserter(blacklist),
                      [](unsigned x) -> std::string { return std::to_string(x); });
     }
-
   }
 
   /**
@@ -319,6 +292,7 @@ struct Sample
   std::string
   get_cfg() const 
   {
+    const std::string nof_events_str = std::to_string(static_cast<long long>(std::round(nof_events)));
     const std::map<std::string, std::string> env = {
       { "sample_name",     name                                    },
       { "sample_dbs_name", dbs_name                                },
@@ -328,7 +302,7 @@ struct Sample
       { "g_weight",        gen_weight ? "True" : "False"           },
       { "use_it",          use_it     ? "True" : "False"           },
       { "max_nr",          std::to_string(max_nr)                  },
-      { "nof_events",      std::to_string(nof_events)              },
+      { "nof_events",      nof_events_str                          },
       { "nof_dbs_events",  std::to_string(nof_dbs_events)          },
       { "super_parent",    fileSuperParent                         },
       { "blacklist",       boost::algorithm::join(blacklist, ", ") }
@@ -408,7 +382,19 @@ struct Sample
 	    "$(" >> (boost::xpressive::s1 = +boost::xpressive::_w) >> ')';
     const std::string output = boost::xpressive::regex_replace(input, envar, fmt_fun);
     return output;
-  }  
+  }
+
+  friend std::ostream &
+  operator<<(std::ostream & os,
+             const Sample & sample)
+  {
+    os << "\n\tname         = " << sample.name
+       << "\n\tdbs_name     = " << sample.dbs_name
+       << "\n\tcategory     = " << sample.category
+       << "\n\tprocess_name = " << sample.process_name
+       << "\n\tuse_it       = " << std::boolalpha << sample.use_it;
+    return os;
+  }
 };
 
 std::vstring
@@ -468,7 +454,30 @@ struct Samples
   
   void define(const std::string sample_name, const std::string dbs_name, const std::string sample_category, const std::string process_name, double xs, int dbsevents, bool use_it = true, bool genweights = true)
   {
-    sample_list[sample_name] = new Sample(sample_name, dbs_name, sample_category, process_name, xs, dbsevents, use_it, genweights);
+    // KE: add some failsafes
+    Sample * sample = new Sample(sample_name, dbs_name, sample_category, process_name, xs, dbsevents, use_it, genweights);
+    std::cout << "Attempting to define sample:" << *sample << '\n';
+
+    if(sample_list.count(sample_name))
+    {
+      std::cerr << "Map already contains an entry w/ key " << sample_name << ':' << *sample_list[sample_name] << '\n';
+      throw std::runtime_error("Map entry w/ key " + sample_name + " already exists in the map!");
+    }
+    for(const auto & kv: sample_list)
+    {
+      if(kv.second -> dbs_name == sample -> dbs_name)
+      {
+        std::cerr << "Map already contains an entry with dbs_name = " << dbs_name << ':' << *kv.second << '\n';
+        throw std::runtime_error("There already exists a map entry w/ dbs_name = " + sample -> dbs_name);
+      }
+      if(kv.second -> process_name == sample -> process_name)
+      {
+        std::cerr << "Map already contains an entry with process_name = " << process_name << ':' << *kv.second << '\n';
+        throw std::runtime_error("There already exists a map entry w/ process_name = " + sample -> process_name);
+      }
+    }
+
+    sample_list[sample_name] = sample;
   }
   
   std::vector<Sample*> get_list()
@@ -493,11 +502,6 @@ struct Samples
     return sl;
   }
 };
-
-
-
-
-
 
 int
 main(int argc,
@@ -599,7 +603,7 @@ main(int argc,
   samples.define("VHBB_HEPPY_V25tthtautau_v2_SingleElectron__Run2016F-23Sep2016-v1",
     "/SingleElectron/Run2016F-23Sep2016-v1/MINIAOD",
     "data_obs", "SingleElectron_Run2016F_v1", 1, 70593532, true, false);
-  samples.define("VHBB_HEPPY_V25tthtautau_v3_SingleElectron__Run2016G-23Sep2016-v1",
+  samples.define("VHBB_HEPPY_V25tthtautau_v2_SingleElectron__Run2016G-23Sep2016-v1",
     "/SingleElectron/Run2016G-23Sep2016-v1/MINIAOD",
     "data_obs", "SingleElectron_Run2016G_v1", 1, 153363109, true, false);
   samples.define("VHBB_HEPPY_V25tthtautau_SingleElectron__Run2016H-PromptReco-v2",
@@ -671,10 +675,10 @@ main(int argc,
     "EWK", "DYJetsToLL_M-10to50", 18610, 35291566);
   samples.define("VHBB_HEPPY_V25tthtautau_v3_DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-Py8__RunIISummer16MAv2-PUMoriond17_80r2as_2016_TrancheIV_v6_ext1-v2",
     "/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v2/MINIAODSIM",
-    "EWK", "DYJetsToLL_M-50", 6025.2, 49144274);
+    "EWK", "DYJetsToLL_M-50_ext1", 6025.2, 49144274);
   samples.define("VHBB_HEPPY_V25tthtautau_v3_DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-Py8__RunIISummer16MAv2-PUMoriond17_80r2as_2016_TrancheIV_v6_ext2-v1",
     "/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext2-v1/MINIAODSIM",
-    "EWK", "DYJetsToLL_M-50", 6025.2, 96658943);
+    "EWK", "DYJetsToLL_M-50_ext2", 6025.2, 96658943);
     
   samples.define("VHBB_HEPPY_V25tthtautau_GluGluHToZZTo4L_M125_13TeV_powheg2_JHUgenV6_Py8__RunIISummer16MAv2-PUMoriond17_80r2as_2016_TrancheIV_v6-v1",
     "/GluGluHToZZTo4L_M125_13TeV_powheg2_JHUgenV6_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM",
@@ -841,6 +845,8 @@ main(int argc,
   samples.define("VHBB_HEPPY_V25tthtautau_WZTo3LNu_TuneCUETP8M1_13TeV-powheg-Py8__matze-faster_v9_WZ_maod_54aa74f75231422e9f4d3766cb92a64a-v1",
     "/WZTo3LNu_TuneCUETP8M1_13TeV-powheg-pythia8/matze-faster_v9_WZ_maod_54aa74f75231422e9f4d3766cb92a64a-v1/USER",
     "EWK", "WZTo3LNu_fastsim", 4.102, 18814150, false);
+
+  std::cout << "All samples have been successfully defined\n";
   
   //--- parse command line arguments
   std::string histo_str, output_dir_str, filter;
@@ -1006,6 +1012,22 @@ main(int argc,
         //if(verbose) std::cout << "Sample category: " << sample.category << '\n';
         //if(verbose) std::cout << "Process name: " << sample.process_name << '\n';
         //if(verbose) std::cout << "Checking: " << file_str << '\n';
+
+        // see if the root file matches to the format: tree_<digits>.root
+        try
+        {
+          get_nr_str(file.filename().string());
+        } catch(const boost::bad_lexical_cast & err)
+        {
+          std::cout << "Boost lexical error: " << err.what() << "; aborting\n";
+          return EXIT_FAILURE;
+        } catch(const std::runtime_error &)
+        {
+          if(verbose)
+            std::cout << "Skipping file " << file_str << " since it doesn't match against the regular expression\n";
+          continue;
+        }
+
 //--- parse the tree number
         sample->present.push_back(file_str);
 //--- read the file size before checking the zombiness
@@ -1021,7 +1043,7 @@ main(int argc,
         const double nof_events = check_broken(file_str, histo_str, isData); //tree_str);
         const double nof_events_unweighted = check_broken(file_str, "Count", isData); //tree_str);
         
-        if     (nof_events > 0)                sample->nof_events += nof_events;
+        if     (nof_events > 0)                    sample->nof_events += nof_events;
         else if(nof_events -0.5 < ZOMBIE_FILE_C)   sample->zombies.push_back(file_str);
         else if(nof_events -0.5 < IMPROPER_FILE_C) sample->improper.push_back(file_str);
         

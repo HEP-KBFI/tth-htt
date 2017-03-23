@@ -16,6 +16,7 @@
 #include <TBenchmark.h> // TBenchmark
 #include <TString.h> // TString, Form
 #include <TMatrixD.h> // TMatrixD
+#include <TError.h> // gErrorAbortLevel, kError
 
 #include "tthAnalysis/HiggsToTauTau/interface/RecoLepton.h" // RecoLepton
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h" // RecoJet
@@ -76,10 +77,13 @@ typedef std::vector<std::string> vstring;
  */
 int main(int argc, char* argv[]) 
 {
+//--- throw an exception in case ROOT encounters an error
+  gErrorAbortLevel = kError;
+
 //--- parse command-line arguments
   if ( argc < 2 ) {
     std::cout << "Usage: " << argv[0] << " [parameters.py]" << std::endl;
-    return EXIT_SUCCESS;
+    return EXIT_FAILURE;
   }
 
   std::cout << "<produceNtuple_3l_1tau>:" << std::endl;
@@ -227,7 +231,7 @@ int main(int argc, char* argv[])
   // CV: apply jet pT cut on JEC upward shift, to make sure pT cut is loose enough
   //     to allow systematic uncertainty on JEC to be estimated on analysis level 
   jetReader->setJetPt_central_or_shift(RecoJetReader::kJetPt_central); 
-  jetReader->read_BtagWeight_systematics(true);
+  jetReader->read_BtagWeight_systematics(isMC);
   jetReader->setBranchAddresses(inputTree);
   RecoJetCollectionCleaner jetCleaner(0.4);
   RecoJetSelector jetSelector(era);  
@@ -273,7 +277,7 @@ int main(int argc, char* argv[])
   std::cout << "writing RecoHadTau objects to branch = '" << branchName_hadTaus << "'" << std::endl;
 
   std::string branchName_jets = "Jet";
-  RecoJetWriter* jetWriter = new RecoJetWriter(era, Form("n%s", branchName_jets.data()), branchName_jets);
+  RecoJetWriter* jetWriter = new RecoJetWriter(era, isMC, Form("n%s", branchName_jets.data()), branchName_jets);
   jetWriter->setBranches(outputTree);
   std::cout << "writing RecoJet objects to branch = '" << branchName_jets << "'" << std::endl;
 

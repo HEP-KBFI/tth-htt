@@ -84,6 +84,11 @@ process.analyze_1l_2tau = cms.PSet(
     branchName_hadTaus = cms.string('TauGood'),
     branchName_jets = cms.string('Jet'),
     branchName_met = cms.string('met'),
+
+    branchName_genLeptons1 = cms.string('GenLep'),
+    branchName_genLeptons2 = cms.string('GenLepFromTau'),
+    branchName_genHadTaus = cms.string('GenHadTaus'),
+    branchName_genJets = cms.string('GenJet'),
     
     selEventsFileName_input = cms.string(''),
     selEventsFileName_output = cms.string(''),

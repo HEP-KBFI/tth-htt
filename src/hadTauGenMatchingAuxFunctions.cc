@@ -145,7 +145,7 @@ const hadTauGenMatchEntry& getHadTauGenMatch(const std::vector<hadTauGenMatchEnt
   assert(hadTau_lead);
   countHadTauGenMatches(hadTau_lead, numGenMatchedHadTaus, numGenMatchedElectrons, numGenMatchedMuons, numGenMatchedJets);
   if ( hadTau_sublead ) countHadTauGenMatches(hadTau_sublead, numGenMatchedHadTaus, numGenMatchedElectrons, numGenMatchedMuons, numGenMatchedJets);
-  if ( hadTau_third   ) countHadTauGenMatches(hadTau_sublead, numGenMatchedHadTaus, numGenMatchedElectrons, numGenMatchedMuons, numGenMatchedJets);
+  if ( hadTau_third   ) countHadTauGenMatches(hadTau_third, numGenMatchedHadTaus, numGenMatchedElectrons, numGenMatchedMuons, numGenMatchedJets);
   return getHadTauGenMatch(hadTauGenMatch_definitions, numGenMatchedHadTaus, numGenMatchedElectrons, numGenMatchedMuons, numGenMatchedJets);
 }
 

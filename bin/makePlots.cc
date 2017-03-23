@@ -32,6 +32,7 @@
 #include <TF1.h>
 #include <TStyle.h>
 #include <TROOT.h>
+#include <TError.h> // gErrorAbortLevel, kError
 
 #include <iostream>
 #include <string>
@@ -97,6 +98,7 @@ namespace
 		const std::string& outputFileName)
   {
     std::cout << "<makePlot>:" << std::endl;
+    std::cout << " outputFileName = " << outputFileName << std::endl;
 
     TH1* histogramData_density = 0;
     if ( histogramData ) {
@@ -574,10 +576,13 @@ namespace
 
 int main(int argc, char* argv[]) 
 {
+//--- throw an exception in case ROOT encounters an error
+  gErrorAbortLevel = kError;
+
 //--- parse command-line arguments
   if ( argc < 2 ) {
     std::cout << "Usage: " << argv[0] << " [parameters.py]" << std::endl;
-    return 0;
+    return EXIT_FAILURE;
   }
 
   std::cout << "<makePlots>:" << std::endl;

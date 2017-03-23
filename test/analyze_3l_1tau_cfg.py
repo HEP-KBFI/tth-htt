@@ -56,6 +56,7 @@ process.analyze_3l_1tau = cms.PSet(
     
     leptonSelection = cms.string('Tight'),
     apply_leptonGenMatching = cms.bool(True),
+    apply_leptonGenMatching_ttZ_workaround = cms.bool(False),
     
     hadTauSelection = cms.string('Tight|dR03mvaMedium'),
     apply_hadTauGenMatching = cms.bool(True),
@@ -98,6 +99,11 @@ process.analyze_3l_1tau = cms.PSet(
     branchName_met = cms.string('met'),
     ##branchName_memOutput = cms.string('memObjects_3l_1tau'),
     branchName_memOutput = cms.string(''),
+
+    branchName_genLeptons1 = cms.string('GenLep'),
+    branchName_genLeptons2 = cms.string('GenLepFromTau'),
+    branchName_genHadTaus = cms.string('GenHadTaus'),
+    branchName_genJets = cms.string('GenJet'),
         
     selEventsFileName_input = cms.string(''),
     selEventsFileName_output = cms.string('selEvents_analyze_3l_1tau.txt'),

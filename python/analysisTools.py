@@ -91,7 +91,7 @@ def generateInputFileList(sample_name, sample_info, max_files_per_job, debug = F
             inputFileList[jobId[0]] = generate_input_list(jobId, secondary_files, primary_store, secondary_store, debug)
     return inputFileList
 
-def createMakefile(makefileName, targets, lines_makefile, filesToClean = None):
+def createMakefile(makefileName, targets, lines_makefile, filesToClean = None, isSbatch = False):
     """Creates Makefile that runs the complete analysis workfow.
     """
     
@@ -101,8 +101,14 @@ def createMakefile(makefileName, targets, lines_makefile, filesToClean = None):
     lines_makefile_with_header.append("")
     lines_makefile_with_header.append("all: %s" % " ".join(targets))
     lines_makefile_with_header.append("")
+    phonies = []
     if filesToClean:
-        lines_makefile_with_header.append(".PHONY: clean")
+        phonies.append('clean')
+    if isSbatch:
+        phonies.append('sbatch')
+    if phonies:
+        lines_makefile_with_header.append(".PHONY: %s" % ' '.join(phonies))
+    if filesToClean:
         lines_makefile_with_header.append("clean:")
         for fileToClean in filesToClean:
             lines_makefile_with_header.append("\trm -f %s" % fileToClean)

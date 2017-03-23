@@ -1,11 +1,13 @@
 #!/bin/bash
 # File:     sbatch-node.submit_job_version2.sh
-# Version:  0.1
+# Version:  0.2
 
 # Runs executable, wrapped into failure wrapper + wrapped into node scratchdir
 
 main() {
     run_failure_wrapped_executable >> "{{wrapper_log_file}}" 2>&1
+    EXIT_CODE=$?
+    return $EXIT_CODE
 }
 
 
@@ -14,10 +16,12 @@ main() {
 run_failure_wrapped_executable() {
     TRY_COUNT=$[TRY_COUNT+1]
     echo "Started (Try $TRY_COUNT)"
+    EXIT_CODE=1
 
     if [[ -f /cvmfs/cms.cern.ch/cmsset_default.sh ]]; then
         echo "Network drive mounted, started running on $HOSTNAME"
         run_wrapped_executable
+        EXIT_CODE=$?
     else
         echo "Unable to use node $HOSTNAME, will mark node offline: sudo scontrol update nodename=$HOSTNAME state=drain reason=Testing"
         sudo scontrol update nodename=$HOSTNAME state=drain reason=Testing
@@ -25,10 +29,12 @@ run_failure_wrapped_executable() {
         if [[ $TRY_COUNT -lt 3 ]]; then
             echo "Will resubmit job to other node: TRY_COUNT=$TRY_COUNT {{sbatch_command}}"
             TRY_COUNT=$TRY_COUNT {{sbatch_command}}
+            EXIT_CODE=$?
         else
             echo "Maximum tries reached, will not try to resubmit any more. GL & HF"
         fi
     fi
+    return $EXIT_CODE
 }
 
 
@@ -63,7 +69,6 @@ run_wrapped_executable() {
     echo "Initialize CMSSW run-time environment: source /cvmfs/cms.cern.ch/cmsset_default.sh"
     source /cvmfs/cms.cern.ch/cmsset_default.sh
     cd {{working_dir}}
-    cmsenv
     cd $SCRATCH_DIR
 
     echo "Time is: `date`"
@@ -77,6 +82,7 @@ run_wrapped_executable() {
     CMSSW_SEARCH_PATH=$SCRATCH_DIR
     echo "Execute command output will be redirected to $TEMPORARY_EXECUTABLE_LOG_FILE"
     run_the_command > $TEMPORARY_EXECUTABLE_LOG_FILE 2>&1
+    EXIT_CODE=$?
 
     echo "Time is: `date`"
 
@@ -101,5 +107,8 @@ run_wrapped_executable() {
 
 main
 
+EXIT_CODE=$?
+echo "Final exit code is: $EXIT_CODE"
+exit $EXIT_CODE
 
 # End of file

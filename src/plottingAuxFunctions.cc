@@ -382,17 +382,14 @@ std::vector<plotEntryType*> readDistributions(const edm::VParameterSet& cfgDistr
 	cfgDistribution != cfgDistributions.end(); ++cfgDistribution ) {
     TString histogramName = cfgDistribution->getParameter<std::string>("histogramName").data();
     TObjArray* histogramName_parts = histogramName.Tokenize("/");
+    int numParts = histogramName_parts->GetEntries();
     std::string histogramName_wrt_subdir;
-    if ( histogramName_parts->GetEntries() >= 2 ) {
-      TObjString* histogramName_part1 = dynamic_cast<TObjString*>(histogramName_parts->At(1));
-      assert(histogramName_part1);
-      histogramName_wrt_subdir.append(histogramName_part1->GetString().Data());
-    }
-    if ( histogramName_parts->GetEntries() >= 4 ) {
-      TObjString* histogramName_part2 = dynamic_cast<TObjString*>(histogramName_parts->At(3));
-      assert(histogramName_part2);
+    for ( int idxPart = 0; idxPart < numParts; ++idxPart ) {
+      TObjString* part = dynamic_cast<TObjString*>(histogramName_parts->At(idxPart));
+      assert(part);
+      if ( part->GetString().Contains("$") ) continue;
       if ( histogramName_wrt_subdir.length() > 0 ) histogramName_wrt_subdir.append("_");
-      histogramName_wrt_subdir.append(histogramName_part2->GetString().Data());
+      histogramName_wrt_subdir.append(part->GetString().Data());
     }
     edm::ParameterSet cfgDistribution_modified(*cfgDistribution);
     cfgDistribution_modified.addParameter<std::string>("outputFileName", histogramName_wrt_subdir);

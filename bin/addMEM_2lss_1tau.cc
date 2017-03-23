@@ -16,6 +16,7 @@
 #include <TBenchmark.h> // TBenchmark
 #include <TString.h> // TString, Form
 #include <TMatrixD.h> // TMatrixD
+#include <TError.h> // gErrorAbortLevel, kError
 
 #include "tthAnalysis/HiggsToTauTau/interface/RecoLepton.h" // RecoLepton
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h" // RecoJet
@@ -77,10 +78,13 @@ bool skipAddMEM = false;
  */
 int main(int argc, char* argv[]) 
 {
+//--- throw an exception in case ROOT encounters an error
+  gErrorAbortLevel = kError;
+
 //--- parse command-line arguments
   if ( argc < 2 ) {
     std::cout << "Usage: " << argv[0] << " [parameters.py]" << std::endl;
-    return EXIT_SUCCESS;
+    return EXIT_FAILURE;
   }
 
   std::cout << "<addMEM_2lss_1tau>:" << std::endl;
@@ -107,6 +111,13 @@ int main(int argc, char* argv[])
   else throw cms::Exception("addMEM_2lss_1tau") 
     << "Invalid Configuration parameter 'era' = " << era_string << " !!\n";
 
+  const bool isForBDTtraining = cfg_addMEM.getParameter<bool>("isForBDTtraining");
+  const std::string memPythonConfigFile =
+    isForBDTtraining                                         ?
+    "ttH_Htautau_MEM_Analysis/MEM/small_lowpoints_122016.py" :
+    "ttH_Htautau_MEM_Analysis/MEM/small_nomin_122016.py"
+   ;
+
   std::string leptonSelection_string = cfg_addMEM.getParameter<std::string>("leptonSelection").data();
   int leptonSelection = -1;
   if      ( leptonSelection_string == "Loose"    ) leptonSelection = kLoose;
@@ -114,7 +125,6 @@ int main(int argc, char* argv[])
   else if ( leptonSelection_string == "Tight"    ) leptonSelection = kTight;
   else throw cms::Exception("addMEM_2lss_1tau") 
     << "Invalid Configuration parameter 'leptonSelection' = " << leptonSelection_string << " !!\n";
-  // KE: added Tight lepton selection for the sake of completeness
 
   TString hadTauSelection_string = cfg_addMEM.getParameter<std::string>("hadTauSelection").data();
   TObjArray * hadTauSelection_parts = hadTauSelection_string.Tokenize("|");
@@ -126,7 +136,6 @@ int main(int argc, char* argv[])
   else if ( hadTauSelection_part1 == "Tight"    ) hadTauSelection = kTight;
   else throw cms::Exception("addMEM_2lss_1tau") 
     << "Invalid Configuration parameter 'hadTauSelection' = " << hadTauSelection_string << " !!\n";
-  // KE: added Tight had tau selection for the sake of completeness
 
   std::string hadTauSelection_part2 =
     ( hadTauSelection_parts -> GetEntries() == 2 ) ?
@@ -138,6 +147,8 @@ int main(int argc, char* argv[])
   std::cout << "use_HIP_mitigation_bTag = " << use_HIP_mitigation_bTag << std::endl;
   
   bool isMC = cfg_addMEM.getParameter<bool>("isMC"); 
+
+  bool isDEBUG = ( cfg_addMEM.exists("isDEBUG") ) ? cfg_addMEM.getParameter<bool>("isDEBUG") : false; 
 
   std::string branchName_electrons = cfg_addMEM.getParameter<std::string>("branchName_electrons");
   std::string branchName_muons = cfg_addMEM.getParameter<std::string>("branchName_muons");
@@ -217,15 +228,17 @@ int main(int argc, char* argv[])
   hadTauReader->setBranchAddresses(inputTree);
   RecoHadTauCollectionCleaner hadTauCleaner(0.3);
   RecoHadTauCollectionSelectorLoose preselHadTauSelector(era);
+  if ( hadTauSelection_part2 == "dR03mvaVLoose" || hadTauSelection_part2 == "dR03mvaVVLoose" ) preselHadTauSelector.set(hadTauSelection_part2);
+  preselHadTauSelector.set_min_antiElectron(-1);
+  preselHadTauSelector.set_min_antiMuon(-1);
   RecoHadTauCollectionSelectorFakeable fakeableHadTauSelector(era);
+  if ( hadTauSelection_part2 == "dR03mvaVLoose" || hadTauSelection_part2 == "dR03mvaVVLoose" ) fakeableHadTauSelector.set(hadTauSelection_part2);
+  fakeableHadTauSelector.set_min_antiElectron(-1);
+  fakeableHadTauSelector.set_min_antiMuon(-1);
   RecoHadTauCollectionSelectorTight tightHadTauSelector(era);
-  if ( hadTauSelection_part2 == "dR03mvaVLoose" ||
-       hadTauSelection_part2 == "dR03mvaVVLoose" )
-  {
-    preselHadTauSelector.set(hadTauSelection_part2);
-    fakeableHadTauSelector.set(hadTauSelection_part2);
-    tightHadTauSelector.set(hadTauSelection_part2);
-  }
+  if ( hadTauSelection_part2 != "" ) tightHadTauSelector.set(hadTauSelection_part2);
+  tightHadTauSelector.set_min_antiElectron(-1);
+  tightHadTauSelector.set_min_antiMuon(-1);
   // CV: lower thresholds on hadronic taus by 2 GeV 
   //     with respect to thresholds applied on analysis level (in analyze_2lss_1tau.cc)
   preselHadTauSelector.set_min_pt(18.); 
@@ -238,7 +251,7 @@ int main(int argc, char* argv[])
   // CV: apply jet pT cut on JEC upward shift, to make sure pT cut is loose enough
   //     to allow systematic uncertainty on JEC to be estimated on analysis level 
   jetReader->setJetPt_central_or_shift(RecoJetReader::kJetPt_central); 
-  jetReader->read_BtagWeight_systematics(true);
+  jetReader->read_BtagWeight_systematics(isMC);
   jetReader->setBranchAddresses(inputTree);
   RecoJetCollectionCleaner jetCleaner(0.4);
   RecoJetCollectionSelector jetSelector(era);  
@@ -282,7 +295,7 @@ int main(int argc, char* argv[])
     electronWriter->setBranches(outputTree);
     hadTauWriter = new RecoHadTauWriter(era, Form("n%s", branchName_hadTaus.data()), branchName_hadTaus);
     hadTauWriter->setBranches(outputTree);
-    jetWriter = new RecoJetWriter(era, Form("n%s", branchName_jets.data()), branchName_jets);
+    jetWriter = new RecoJetWriter(era, isMC, Form("n%s", branchName_jets.data()), branchName_jets);
     jetWriter->setBranches(outputTree);
     metWriter = new RecoMEtWriter(era, branchName_met);
     metWriter->setBranches(outputTree);
@@ -348,6 +361,12 @@ int main(int argc, char* argv[])
     else if ( leptonSelection == kFakeable ) selMuons = fakeableMuons;
     else if ( leptonSelection == kTight    ) selMuons = tightMuons;
     else assert(0);
+    if ( isDEBUG ) {
+      for ( size_t idxSelMuon = 0; idxSelMuon < selMuons.size(); ++idxSelMuon ) {
+        std::cout << "selMuon #" << idxSelMuon << ":" << std::endl;
+        std::cout << (*selMuons[idxSelMuon]);
+      }
+    }
 
     std::vector<RecoElectron> electrons = electronReader->read();
     std::vector<const RecoElectron*> electron_ptrs = convert_to_ptrs(electrons);
@@ -360,6 +379,12 @@ int main(int argc, char* argv[])
     else if ( leptonSelection == kFakeable ) selElectrons = fakeableElectrons;
     else if ( leptonSelection == kTight    ) selElectrons = tightElectrons;
     else assert(0);
+    if ( isDEBUG ) {
+      for ( size_t idxSelElectron = 0; idxSelElectron < selElectrons.size(); ++idxSelElectron ) {
+        std::cout << "selElectron #" << idxSelElectron << ":" << std::endl;
+        std::cout << (*selElectrons[idxSelElectron]);
+      }
+    }
 
     std::vector<RecoHadTau> hadTaus = hadTauReader->read();
     std::vector<const RecoHadTau*> hadTau_ptrs = convert_to_ptrs(hadTaus);
@@ -372,6 +397,12 @@ int main(int argc, char* argv[])
     else if ( hadTauSelection == kFakeable ) selHadTaus = fakeableHadTaus;
     else if ( hadTauSelection == kTight    ) selHadTaus = tightHadTaus;
     else assert(0);
+    if ( isDEBUG ) {
+      for ( size_t idxSelHadTau = 0; idxSelHadTau < selHadTaus.size(); ++idxSelHadTau ) {
+        std::cout << "selHadTau #" << idxSelHadTau << ":" << std::endl;
+        std::cout << (*selHadTaus[idxSelHadTau]);
+      }
+    }
     
 //--- build collections of jets and select subset of jets passing b-tagging criteria
     std::vector<RecoJet> jets = jetReader->read();
@@ -428,7 +459,7 @@ int main(int argc, char* argv[])
 		  memOutput_2lss_1tau.set_hadTau_eta((*selHadTau)->eta());
 		  memOutput_2lss_1tau.set_hadTau_phi((*selHadTau)->phi());
 		} else {
-		  MEMInterface_2lss_1tau memInterface_2lss_1tau("ttH_Htautau_MEM_Analysis/MEM/small_lowpoints_122016.py");
+		  MEMInterface_2lss_1tau memInterface_2lss_1tau(memPythonConfigFile);
 		  memOutput_2lss_1tau = memInterface_2lss_1tau(
 	            *selLepton_lead, *selLepton_sublead, *selHadTau,
 		    met,
@@ -449,6 +480,9 @@ int main(int argc, char* argv[])
 	  }
 	}
       }
+    }
+    if ( isDEBUG ) {
+      std::cout << "#memOutputs_2lss_1tau = " << memOutputs_2lss_1tau.size() << std::endl;
     }
     
     memWriter->write(memOutputs_2lss_1tau);

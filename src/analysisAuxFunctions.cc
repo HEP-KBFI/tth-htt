@@ -136,6 +136,15 @@ std::vector<const RecoLepton*> mergeLeptonCollections(const std::vector<const Re
   return leptons;
 }
 
+void printGenLeptonCollection(const std::string& collection_name, const std::vector<GenLepton>& genLeptons)
+{
+  std::cout << " (#" << collection_name << " = " << genLeptons.size() << ")" << std::endl;
+  for ( size_t idxGenLepton = 0; idxGenLepton < genLeptons.size(); ++idxGenLepton ) {
+    std::cout << collection_name << "  #" << idxGenLepton << ":" << std::endl;
+    std::cout << genLeptons[idxGenLepton];
+  }
+} 
+
 void printLeptonCollection(const std::string& collection_name, const std::vector<const RecoLepton*>& leptons)
 {
   std::cout << " (#" << collection_name << " = " << leptons.size() << ")" << std::endl;
@@ -155,12 +164,30 @@ void printLeptonCollection(const std::string& collection_name, const std::vector
   }
 } 
 
+void printGenHadTauCollection(const std::string& collection_name, const std::vector<GenHadTau>& genHadTaus)
+{
+  std::cout << " (#" << collection_name << " = " << genHadTaus.size() << ")" << std::endl;
+  for ( size_t idxGenHadTau = 0; idxGenHadTau < genHadTaus.size(); ++idxGenHadTau ) {
+    std::cout << collection_name << "  #" << idxGenHadTau << ":" << std::endl;
+    std::cout << genHadTaus[idxGenHadTau];
+  }
+}
+
 void printHadTauCollection(const std::string& collection_name, const std::vector<const RecoHadTau*>& hadTaus)
 {
   std::cout << " (#" << collection_name << " = " << hadTaus.size() << ")" << std::endl;
   for ( size_t idxHadTau = 0; idxHadTau < hadTaus.size(); ++idxHadTau ) {
     std::cout << collection_name << "  #" << idxHadTau << ":" << std::endl;
     std::cout << (*hadTaus[idxHadTau]);
+  }
+}
+
+void printGenJetCollection(const std::string& collection_name, const std::vector<GenJet>& genJets)
+{
+  std::cout << " (#" << collection_name << " = " << genJets.size() << ")" << std::endl;
+  for ( size_t idxGenJet = 0; idxGenJet < genJets.size(); ++idxGenJet ) {
+    std::cout << collection_name << "  #" << idxGenJet << ":" << std::endl;
+    std::cout << genJets[idxGenJet];
   }
 }
 

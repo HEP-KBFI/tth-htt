@@ -44,6 +44,8 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
     self.cfgFile_analyze = os.path.join(self.workingDir, "analyze_jetToTauFakeRate_cfg.py")
     self.cfgFile_comp_jetToTauFakeRate = os.path.join(self.workingDir, "comp_jetToTauFakeRate_cfg.py")
     self.jobOptions_comp_jetToTauFakeRate = {}
+    self.cfgFile_make_plots = os.path.join(self.workingDir, "makePlots_jetToTauFakeRate_cfg.py")
+    self.cfgFile_make_plots_denominator = os.path.join(self.workingDir, "makePlots_jetToTauFakeRate_denominator_cfg.py")
     
   def createCfg_analyze(self, jobOptions):
     """Create python configuration file for the analyze_jetToTauFakeRate executable (analysis code)
@@ -139,9 +141,9 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
           else:
             self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel,
               "_".join([ charge_selection ]), process_name)
-    for dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_HIST, DKEY_DCRD, DKEY_PLOT ]:
+    for dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_HIST, DKEY_DCRD, DKEY_PLOT, DKEY_HADD_RT ]:
       initDict(self.dirs, [ dir_type ])
-      if dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_LOGS ]:
+      if dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_LOGS, DKEY_HADD_RT ]:
         self.dirs[dir_type] = os.path.join(self.configDir, dir_type, self.channel)
       else:
         self.dirs[dir_type] = os.path.join(self.outputDir, dir_type, self.channel)
@@ -230,7 +232,7 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
 
             # initialize input and output file names for hadd_stage1
             key_hadd_stage1 = getKey(process_name, charge_selection)
-            if not key_hadd_stage1 in self.inputFiles_hadd_stage1.keys():
+            if not key_hadd_stage1 in self.inputFiles_hadd_stage1:
               self.inputFiles_hadd_stage1[key_hadd_stage1] = []
             self.inputFiles_hadd_stage1[key_hadd_stage1].append(self.jobOptions_analyze[key_analyze_job]['histogramFile'])
             self.outputFile_hadd_stage1[key_hadd_stage1] = os.path.join(self.dirs[DKEY_HIST], "histograms_harvested_stage1_%s_%s_%s.root" % \
@@ -239,7 +241,7 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
         # initialize input and output file names for hadd_stage2
         key_hadd_stage1 = getKey(process_name, charge_selection)
         key_hadd_stage2 = getKey(charge_selection)
-        if not key_hadd_stage2 in self.inputFiles_hadd_stage2.keys():
+        if not key_hadd_stage2 in self.inputFiles_hadd_stage2:
           self.inputFiles_hadd_stage2[key_hadd_stage2] = []
         self.inputFiles_hadd_stage2[key_hadd_stage2].append(self.outputFile_hadd_stage1[key_hadd_stage1])
         self.outputFile_hadd_stage2[key_hadd_stage2] = os.path.join(self.dirs[DKEY_HIST], "histograms_harvested_stage2_%s_%s.root" % \
@@ -268,11 +270,60 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
       self.createCfg_comp_jetToTauFakeRate(self.jobOptions_comp_jetToTauFakeRate[key_comp_jetToTauFakeRate_job])
       self.targets.append(self.jobOptions_comp_jetToTauFakeRate[key_comp_jetToTauFakeRate_job]['outputFile'])
 
+    logging.info("Creating configuration files to run 'makePlots'")
+    for charge_selection in self.charge_selections:
+      key_makePlots_job = getKey(charge_selection)
+      key_hadd_stage2 = getKey(charge_selection)
+      self.jobOptions_make_plots[key_makePlots_job] = {
+        'executable' : self.executable_make_plots,
+        'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2],
+        'cfgFile_modified' : os.path.join(
+          self.dirs[DKEY_CFGS], "makePlots_%s_cfg.py" % self.channel),
+        'outputFile' : os.path.join(
+          self.dirs[DKEY_PLOT], "makePlots_%s.png" % self.channel),
+        'histogramDir' : "jetToTauFakeRate_%s" % charge_selection,
+        'label' : None,
+        'make_plots_backgrounds' : [ "TT", "TTW", "TTZ", "EWK", "Rares" ],
+      }
+      self.createCfg_makePlots(self.jobOptions_make_plots[key_makePlots_job])
+      self.cfgFile_make_plots = self.cfgFile_make_plots_denominator
+      for absEtaBin in [ "absEtaLt1_5", "absEta1_5to9_9" ]:
+        key_makePlots_job = getKey(charge_selection, absEtaBin, "denominator")
+        key_hadd_stage2 = getKey(charge_selection)
+        self.jobOptions_make_plots[key_makePlots_job] = {
+          'executable' : self.executable_make_plots,
+          'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2],
+          'cfgFile_modified' : os.path.join(
+            self.dirs[DKEY_CFGS], "makePlots_%s_%s_denominator_%s_cfg.py" % (self.channel, charge_selection, absEtaBin)),
+          'outputFile' : os.path.join(
+            self.dirs[DKEY_PLOT], "makePlots_%s_%s_denominator_%s.png" % (self.channel, charge_selection, absEtaBin)),
+          'histogramDir' : "jetToTauFakeRate_%s/denominator/%s" % (charge_selection, absEtaBin),
+          'label' : None,
+          'make_plots_backgrounds' : [ "TT", "TTW", "TTZ", "EWK", "Rares" ],
+        }
+        self.createCfg_makePlots(self.jobOptions_make_plots[key_makePlots_job])
+        for hadTau_selection in self.hadTau_selections:
+          key_makePlots_job = getKey(charge_selection, absEtaBin, "numerator", hadTau_selection)
+          key_hadd_stage2 = getKey(charge_selection)
+          self.jobOptions_make_plots[key_makePlots_job] = {
+            'executable' : self.executable_make_plots,
+            'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2],
+            'cfgFile_modified' : os.path.join(
+              self.dirs[DKEY_CFGS], "makePlots_%s_%s_numerator_%s_%s_cfg.py" % (self.channel, charge_selection, hadTau_selection, absEtaBin)),
+            'outputFile' : os.path.join(
+              self.dirs[DKEY_PLOT], "makePlots_%s_%s_numerator_%s_%s.png" % (self.channel, charge_selection, hadTau_selection, absEtaBin)),
+            'histogramDir' : "jetToTauFakeRate_%s/numerator/%s/%s" % (charge_selection, hadTau_selection, absEtaBin),
+            'label' : None,
+            'make_plots_backgrounds' : [ "TT", "TTW", "TTZ", "EWK", "Rares" ],
+          }
+          self.createCfg_makePlots(self.jobOptions_make_plots[key_makePlots_job])
+
     lines_makefile = []
     self.addToMakefile_analyze(lines_makefile)
     self.addToMakefile_hadd_stage1(lines_makefile)
     self.addToMakefile_hadd_stage2(lines_makefile)
     self.addToMakefile_comp_jetToTauFakeRate(lines_makefile)
+    self.addToMakefile_make_plots(lines_makefile)
     self.createMakefile(lines_makefile)
   
     logging.info("Done")

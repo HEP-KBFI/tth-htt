@@ -18,7 +18,7 @@ if mode == "VHbb":
   hadTau_selection = "dR03mvaMedium"
   changeBranchNames = False
 elif mode == "addMEM":
-  from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_2lss1tau_addMEM_v2 import samples_2016
+  from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_2lss1tau_addMEM_v3 import samples_2016
   hadTau_selection = "dR03mvaMedium"
   changeBranchNames = True
 elif mode == "forBDTtraining":
@@ -44,7 +44,7 @@ elif ERA == "2016":
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "2017Mar03"
+version = "2017Mar17"
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -130,15 +130,15 @@ if __name__ == '__main__':
     executable_addBackgrounds = "addBackgrounds",
     executable_addFakes = "addBackgroundLeptonFakes",
     executable_addFlips = "addBackgroundLeptonFlips", 
-    histograms_to_fit = [ "EventCounter", "numJets", "mvaDiscr_2lss", "mvaDiscr_2lss_1tau", "mTauTauVis", "memOutput_LR" ],
+    histograms_to_fit = [ "EventCounter", "numJets", "mvaDiscr_2lss", "mvaDiscr_2lss_1tau", "mTauTauVis", "memOutput_LR_type0", "memOutput_LR_type1" ],
     select_rle_output = True)
 
   if mode == "forBDTtraining":
     analysis.set_BDT_training()
   analysis.create()
 
-  ##run_analysis = query_yes_no("Start jobs ?")
-  run_analysis = True
+  run_analysis = query_yes_no("Start jobs ?")
+  ##run_analysis = True
   if run_analysis:
     analysis.run()
   else:

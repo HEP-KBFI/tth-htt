@@ -46,5 +46,7 @@ process.addMEM_2lss_1tau = cms.PSet(
         "CountWeightedLHEWeightPdf",
     ),
     
-    selEventsFileName_input = cms.string('')
+    selEventsFileName_input = cms.string(''),
+
+    isForBDTtraining = cms.bool(False)
 )

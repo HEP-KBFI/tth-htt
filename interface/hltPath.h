@@ -6,20 +6,33 @@
 
 #include <string> // std::string
 #include <vector> // std::vector<>
+#include <assert.h> // assert
 
 /**
  * @brief Auxiliary data structure for handling trigger information
  */
-struct hltPath
+class hltPath
 {
+ public:
   hltPath(const std::string& branchName)
-    : branchName_(branchName)
+    : branchName_(branchName),
+      value_(-1)
   {}
   ~hltPath() {}
   void setBranchAddress(TTree* tree)
   {
     tree->SetBranchAddress(branchName_.data(), &value_);
   } 
+  const std::string& getBranchName() const 
+  { 
+    return branchName_; 
+  }
+  Int_t getValue() const 
+  {
+    assert(value_ == 0 || value_ == 1); 
+    return value_; 
+  }
+ private:
   std::string branchName_;
   Int_t value_;
 };

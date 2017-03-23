@@ -1,4 +1,4 @@
-import getpass, logging, os, subprocess, sys, time, stat
+import getpass, logging, os, subprocess, sys, time, stat, errno
 
 def query_yes_no(question, default = "yes"):
   """Prompts user yes/no
@@ -37,8 +37,16 @@ def create_if_not_exists(dir_fullpath):
 
   Args:
     dir_fullpath: full path to the directory
+  
+  Inspired by: http://stackoverflow.com/a/600612
   """
-  if not os.path.exists(dir_fullpath): os.makedirs(dir_fullpath)
+  try:
+    os.makedirs(dir_fullpath)
+  except OSError as exc:
+    if exc.errno == errno.EEXIST and os.path.isdir(dir_fullpath):
+      pass
+    else:
+      raise
 
 def generate_file_ids(nof_files, max_files_per_job, blacklist = []):
   """Subsets file ids
@@ -97,18 +105,27 @@ def generate_input_list(job_ids, secondary_files, primary_store, secondary_store
     input_list.append(input_file)
   return input_list
 
-def run_cmd(command, do_not_log = False, stdout_file = None, stderr_file = None):
+def run_cmd(command, do_not_log = False, stdout_file = None, stderr_file = None,
+            return_stderr = False):
   """Runs given commands and logs stdout and stderr to files
   """
-  if not do_not_log: logging.info(command)
   p = subprocess.Popen(command, shell = True, stdout = subprocess.PIPE, stderr = subprocess.PIPE)
   stdout, stderr = p.communicate()
+  # Remove trailing newline
+  stdout = stdout.rstrip('\n')
+  stderr = stderr.rstrip('\n')
+
   if stdout_file:
     stdout_file.write(command + "\n")
-    stdout_file.write(stdout)
+    stdout_file.write('%s\n' % stdout)
   if stderr_file:
-    stderr_file.write(stderr)
+    stderr_file.write('%s\n' % stderr)
 
-  print "jobTools#run_cmd('%s') returned: %s" % (command, stdout)
+  if not do_not_log:
+    logging.debug("Executed command: '%s'" % command)
+    logging.debug("stdout: '%s'" % stdout)
+    logging.debug("stderr: '%s'" % stderr)
 
+  if return_stderr:
+    return stdout, stderr
   return stdout

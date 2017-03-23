@@ -1114,7 +1114,7 @@ samples_2016["/DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIIS
 samples_2016["/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v2/MINIAODSIM"] = OD([
   ("type",                  "mc"),
   ("sample_category",       "EWK"),
-  ("process_name_specific", "DYJetsToLL_M-50"),
+  ("process_name_specific", "DYJetsToLL_M-50_ext1"),
   ("nof_files",             2461),
   ("nof_events",            143970947),
   ("use_it",                True),
@@ -1135,7 +1135,7 @@ samples_2016["/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISumme
 samples_2016["/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext2-v1/MINIAODSIM"] = OD([
   ("type",                  "mc"),
   ("sample_category",       "EWK"),
-  ("process_name_specific", "DYJetsToLL_M-50"),
+  ("process_name_specific", "DYJetsToLL_M-50_ext2"),
   ("nof_files",             4851),
   ("nof_events",            143970947),
   ("use_it",                True),
@@ -1148,7 +1148,7 @@ samples_2016["/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISumme
       OD([
         ("path",      "/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau_v3/MC/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/VHBB_HEPPY_V25tthtautau_v3_DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-Py8__RunIISummer16MAv2-PUMoriond17_80r2as_2016_TrancheIV_v6_ext2-v1/170225_232809"),
         ("selection", "*"),
-        ("blacklist", [19, 31, 32, 63, 240, 252, 307, 393, 398, 412, 454, 532, 611, 715, 734, 736, 948, 1061, 1062, 1075, 1100, 1114, 1132, 1134, 1148, 1151, 1221, 1314, 1407, 1616, 1624, 1670, 1675, 1704, 1888, 1904, 1930, 1991, 2014, 2111, 2136, 2179, 2228, 2229, 2233, 2234, 2275, 2409, 2468, 2514, 2555, 2557, 2686, 2847, 2974, 3014, 3103, 3169, 3417, 3424, 3427, 3448, 3514, 3516, 3656, 3703, 3854, 3906, 4069, 4148, 4303, 4377, 4380, 4431, 4440, 4525, 4530, 4612, 4628, 4633, 4656, 4666, 4671, 4750, 4785]),
+        ("blacklist", [19, 31, 32, 63, 240, 252, 307, 393, 398, 412, 454, 532, 611, 715, 734, 736, 948, 1061, 1062, 1075, 1100, 1114, 1132, 1134, 1148, 1151, 1221, 1314, 1407, 1616, 1624, 1670, 1675, 1704, 1743, 1888, 1904, 1930, 1991, 2014, 2111, 2136, 2179, 2228, 2229, 2233, 2234, 2275, 2409, 2468, 2514, 2555, 2557, 2686, 2847, 2974, 3014, 3103, 3169, 3223, 3417, 3424, 3427, 3448, 3514, 3516, 3656, 3703, 3854, 3906, 4069, 4148, 4303, 4377, 4380, 4431, 4440, 4525, 4530, 4612, 4628, 4633, 4656, 4666, 4671, 4750, 4785]),
       ]),
     ]
   ),
@@ -1400,7 +1400,7 @@ samples_2016["/TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer1
       OD([
         ("path",      "/hdfs/cms/store/user/rdewanje/VHBBHeppyV25tthtautau/MC/TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/VHBB_HEPPY_V25tthtautau_TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-Py8__RunIISummer16MAv2-PUMoriond17_80r2as_2016_TrancheIV_v6_ext1-v1/170207_124429"),
         ("selection", "*"),
-        ("blacklist", [3, 14, 32, 57, 109, 341, 538, 615, 778, 1177, 1432, 1642, 1643, 1648, 1653, 1872, 1885, 1926, 2210, 2220, 2374, 2435]),
+        ("blacklist", [3, 14, 32, 51, 57, 109, 341, 538, 615, 659, 778, 1177, 1432, 1642, 1643, 1648, 1653, 1872, 1885, 1926, 2210, 2220, 2374, 2435]),
       ]),
     ]
   ),
@@ -1463,7 +1463,7 @@ samples_2016["/TTJets_SingleLeptFromTbar_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/
       OD([
         ("path",      "/hdfs/cms/store/user/mario/VHBBHeppyV25tthtautau/MC/TTJets_SingleLeptFromTbar_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/VHBB_HEPPY_V25tthtautau_TTJets_SingleLeptFromTbar_TuneCUETP8M1_13TeV-madgraphMLM-Py8__RunIISummer16MAv2-PUMoriond17_80r2as_2016_TrancheIV_v6-v1/170208_120816"),
         ("selection", "*"),
-        ("blacklist", [215]),
+        ("blacklist", [215, 291]),
       ]),
     ]
   ),
@@ -1538,10 +1538,10 @@ samples_2016["/TTZToLLNuNu_M-10_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISummer1
   ("nof_files",             203),
   ("nof_events",            3685750),
   ("use_it",                True),
-  ("xsection",              0.252900),
+  ("xsection",              0.252900*1.08), # CV: scale by factor 1.08 (https://hypernews.cern.ch/HyperNews/CMS/get/HIG-17-004/19/1.html)
   ("genWeight",             True),
   ("triggers",              [ "1e", "1mu", "2e", "1e1mu", "2mu", "3e", "2e1mu", "1e2mu", "3mu", "1e1tau", "1mu1tau", "2tau" ]),
-  ("reHLT",                 True),
+  ("reHLT",                 True),   
   ("local_paths",
     [
       OD([
@@ -1559,7 +1559,7 @@ samples_2016["/TTZToLLNuNu_M-10_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISummer1
   ("nof_files",             610),
   ("nof_events",            3685750),
   ("use_it",                True),
-  ("xsection",              0.252900),
+  ("xsection",              0.252900*1.08), # CV: scale by factor 1.08 (https://hypernews.cern.ch/HyperNews/CMS/get/HIG-17-004/19/1.html)
   ("genWeight",             True),
   ("triggers",              [ "1e", "1mu", "2e", "1e1mu", "2mu", "3e", "2e1mu", "1e2mu", "3mu", "1e1tau", "1mu1tau", "2tau" ]),
   ("reHLT",                 True),
@@ -1610,7 +1610,7 @@ samples_2016["/WGToLNuG_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISummer16Min
       OD([
         ("path",      "/hdfs/cms/store/user/mario/VHBBHeppyV25tthtautau/MC/WGToLNuG_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/VHBB_HEPPY_V25tthtautau_WGToLNuG_TuneCUETP8M1_13TeV-amcatnloFXFX-Py8__RunIISummer16MAv2-PUMoriond17_80r2as_2016_TrancheIV_v6_ext1-v1/170208_121122"),
         ("selection", "*"),
-        ("blacklist", [38, 133, 186, 223, 260, 300, 308, 334, 355, 363, 373]),
+        ("blacklist", [38, 133, 186, 223, 260, 262, 300, 308, 334, 355, 363, 373, 380, 396, 423, 424]),
       ]),
     ]
   ),

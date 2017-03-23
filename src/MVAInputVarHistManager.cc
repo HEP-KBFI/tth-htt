@@ -78,6 +78,7 @@ MVAInputVarHistManager::MVAInputVarHistManager(const edm::ParameterSet& cfg)
   binningOptions_["TMath::Abs(tau_eta)"] = new binningOptionType("TMath::Abs(tau_eta)", 50, 0., +2.5);
   binningOptions_["TMath::Abs(tau1_eta)"] = new binningOptionType("TMath::Abs(tau1_eta)", 50, 0., +2.5);
   binningOptions_["TMath::Abs(tau2_eta)"] = new binningOptionType("TMath::Abs(tau2_eta)", 50, 0., +2.5);
+  binningOptions_["TMath::Max(TMath::Abs(lep1_eta),TMath::Abs(lep2_eta))"] = new binningOptionType("TMath::Max(TMath::Abs(lep1_eta),TMath::Abs(lep2_eta))", 50, 0., +2.5);
 }
 
 MVAInputVarHistManager::~MVAInputVarHistManager()

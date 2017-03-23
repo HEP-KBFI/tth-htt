@@ -8,13 +8,15 @@ class ClusterHistogramAggregator:
         final_output_histogram=None,
         maximum_histograms_in_batch=20,
         waitForJobs = True,
-        sbatch_manager=None
+        sbatch_manager=None,
+        auxDirName = None,
     ):
         self.input_histograms = input_histograms
         self.final_output_histogram = final_output_histogram
         self.sbatch_manager = sbatch_manager
         self.maximum_histograms_in_batch = maximum_histograms_in_batch
         self.waitForJobs = waitForJobs
+        self.auxDirName = auxDirName
 
     def create_output_histogram(
         self
@@ -100,10 +102,10 @@ class ClusterHistogramAggregator:
     def hadd_on_cluster_node(
         self,
         input_histograms=None,
-        output_histogram=None
+        output_histogram=None,
     ):
 
-        output_dir = '/'.join(output_histogram.split('/')[0:-1])
+        output_dir = self.auxDirName if self.auxDirName else os.path.dirname(output_histogram)
 
         print("ClusterHistogramAggregator#hadd_on_cluster_node(input_histograms=%s, output_histogram=%s, output_dir=%s)" % (
             input_histograms, output_histogram, output_dir))
@@ -154,7 +156,7 @@ class ClusterHistogramAggregator:
             python $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/scripts/check_that_histograms_are_valid.py $SCRATCHED_INPUT_HISTOGRAMS
             check_that_histograms_are_valid_exit_status=$?
 
-            if [[ $check_that_histograms_are_valid_exit_status != 0 ]]; then
+            if [[ $check_that_histograms_are_valid_exit_status -ne 0 ]]; then
               echo 'ERROR Some of the input histograms are not valid. Will stop execution.'
               return 1
             fi
@@ -164,6 +166,12 @@ class ClusterHistogramAggregator:
 
             echo "Create a new histogram: hadd $SCRATCHED_OUTPUT_HISTOGRAM $SCRATCHED_INPUT_HISTOGRAMS"
             hadd $SCRATCHED_OUTPUT_HISTOGRAM $SCRATCHED_INPUT_HISTOGRAMS
+            hadd_exit_status=$?
+
+            if [[ $hadd_exit_status -ne 0 ]]; then
+              echo 'ERROR hadd exited w/ non-zero return code. Will stop execution.'
+              return 1
+            fi
 
 
             # Check that input histograms are equal to output histogram
@@ -171,7 +179,7 @@ class ClusterHistogramAggregator:
             python $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/scripts/check_that_histograms_are_equal.py $SCRATCHED_OUTPUT_HISTOGRAM $SCRATCHED_INPUT_HISTOGRAMS
             check_that_histograms_are_equal_exit_status=$?
 
-            if [[ $check_that_histograms_are_equal_exit_status != 0 ]]; then
+            if [[ $check_that_histograms_are_equal_exit_status -ne 0 ]]; then
               echo 'ERROR Input histograms do not equal output histogram. Will stop execution.'
               return 1
             fi
@@ -199,7 +207,7 @@ class ClusterHistogramAggregator:
 
         ##task_name = 'create_%s' % output_histogram.replace(
         ##    '/', '_').replace(' ', '_')
-        task_name = 'create_%s' % output_histogram[output_histogram.rfind('/') + 1:]
+        task_name = 'create_%s' % os.path.basename(output_histogram)
 
         self.sbatch_manager.submit_job_version2(
             task_name=task_name,

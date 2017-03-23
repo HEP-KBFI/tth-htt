@@ -16,6 +16,7 @@
 #include <TBenchmark.h> // TBenchmark
 #include <TString.h> // TString, Form
 #include <TMatrixD.h> // TMatrixD
+#include <TError.h> // gErrorAbortLevel, kError
 
 #include "tthAnalysis/HiggsToTauTau/interface/RecoLepton.h" // RecoLepton
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h" // RecoJet
@@ -77,10 +78,13 @@ bool skipAddMEM = false;
  */
 int main(int argc, char* argv[]) 
 {
+//--- throw an exception in case ROOT encounters an error
+  gErrorAbortLevel = kError;
+
 //--- parse command-line arguments
   if ( argc < 2 ) {
     std::cout << "Usage: " << argv[0] << " [parameters.py]" << std::endl;
-    return EXIT_SUCCESS;
+    return EXIT_FAILURE;
   }
 
   std::cout << "<addMEM_3l_1tau>:" << std::endl;
@@ -282,7 +286,7 @@ int main(int argc, char* argv[])
     electronWriter->setBranches(outputTree);
     hadTauWriter = new RecoHadTauWriter(era, Form("n%s", branchName_hadTaus.data()), branchName_hadTaus);
     hadTauWriter->setBranches(outputTree);
-    jetWriter = new RecoJetWriter(era, Form("n%s", branchName_jets.data()), branchName_jets);
+    jetWriter = new RecoJetWriter(era, isMC, Form("n%s", branchName_jets.data()), branchName_jets);
     jetWriter->setBranches(outputTree);
     metWriter = new RecoMEtWriter(era, branchName_met);
     metWriter->setBranches(outputTree);

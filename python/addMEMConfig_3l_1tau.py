@@ -5,11 +5,13 @@ from tthAnalysis.HiggsToTauTau.analysisTools import create_cfg
 
 class addMEMConfig_3l_1tau(addMEMConfig):
 
-  def __init__(self, treeName, outputDir, executable_addMEM, samples, era, debug, leptonSelection, hadTauSelection,
-               running_method, max_files_per_job, mem_integrations_per_job, max_mem_integrations, num_parallel_jobs):
-    addMEMConfig.__init__(self, treeName, outputDir, executable_addMEM, samples, era, debug, running_method,
+  def __init__(self, treeName, outputDir, cfgDir, executable_addMEM, samples, era, debug, leptonSelection, hadTauSelection,
+               running_method, max_files_per_job, mem_integrations_per_job, max_mem_integrations, num_parallel_jobs,
+               isForBDTtraining, pool_id):
+    addMEMConfig.__init__(self, treeName, outputDir, cfgDir, executable_addMEM, samples, era, debug, running_method,
                           max_files_per_job, mem_integrations_per_job, max_mem_integrations, num_parallel_jobs,
-                          leptonSelection, hadTauSelection, "3l_1tau", "maxPermutations_addMEM_3l_1tau")
+                          leptonSelection, hadTauSelection, isForBDTtraining, pool_id, "3l_1tau",
+                          "maxPermutations_addMEM_3l_1tau")
 
     self.cfgFile_addMEM_original = os.path.join(self.workingDir, "addMEM_3l_1tau_cfg.py")
 
@@ -44,5 +46,6 @@ class addMEMConfig_3l_1tau(addMEMConfig):
     lines.append("process.addMEM_3l_1tau.leptonSelection = cms.string('%s')" % self.leptonSelection)
     lines.append("process.addMEM_3l_1tau.hadTauSelection = cms.string('%s')" % self.hadTauSelection)
     lines.append("process.addMEM_3l_1tau.isMC = cms.bool(%s)" % isMC)
+    lines.append("process.addMEM_3l_1tau.isForBDTtraining = cms.bool(%s)" % self.isForBDTtraining)
 
     create_cfg(self.cfgFile_addMEM_original, cfgFile_modified, lines)

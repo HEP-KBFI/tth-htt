@@ -13,6 +13,7 @@
 #include <TTree.h> // TTree
 #include <TBenchmark.h> // TBenchmark
 #include <TString.h> // TString, Form
+#include <TError.h> // gErrorAbortLevel, kError
 
 #include "tthAnalysis/HiggsToTauTau/interface/RecoLepton.h" // RecoLepton
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTau.h" // RecoHadTau
@@ -90,22 +91,23 @@ struct denominatorHistManagers
   denominatorHistManagers(
     const std::string& process, int era, bool isMC, const std::string& chargeSelection, 
     double minAbsEta, double maxAbsEta, const std::string& central_or_shift)
-    : process_(process),
-      era_(era),
-      isMC_(isMC),
-      chargeSelection_(chargeSelection),
-      minAbsEta_(minAbsEta),
-      maxAbsEta_(maxAbsEta),
-      central_or_shift_(central_or_shift),
-      jetHistManager_(0),
-      jetHistManager_genHadTau_(0),
-      jetHistManager_genLepton_(0),
-      jetHistManager_genJet_(0),
-      hadTauHistManager_(0), 
-      hadTauHistManager_genHadTau_(0),
-      hadTauHistManager_genLepton_(0),
-      hadTauHistManager_genJet_(0),
-      fakeableHadTauSelector_(0)
+    : process_(process)
+    , era_(era)
+    , isMC_(isMC)
+    , chargeSelection_(chargeSelection)
+    , minAbsEta_(minAbsEta)
+    , maxAbsEta_(maxAbsEta)
+    , central_or_shift_(central_or_shift)
+    , jetHistManager_(0)
+    , jetHistManager_genHadTau_(0)
+    , jetHistManager_genLepton_(0)
+    , jetHistManager_genJet_(0)
+    , hadTauHistManager_(0)
+    , hadTauHistManager_genHadTau_(0)
+    , hadTauHistManager_genLepton_(0)
+    , hadTauHistManager_genJet_(0)
+    , fakeableHadTauSelector_(0)
+    , evtHistManager_(0)
   {
     std::string etaBin = getEtaBin(minAbsEta_, maxAbsEta_);
     subdir_ = Form("jetToTauFakeRate_%s/denominator/%s", chargeSelection_.data(), etaBin.data());
@@ -124,6 +126,7 @@ struct denominatorHistManagers
     delete hadTauHistManager_genLepton_;
     delete hadTauHistManager_genJet_;
     delete fakeableHadTauSelector_;
+    delete evtHistManager_;
   }
   void bookHistograms(TFileDirectory& dir)
   {
@@ -163,6 +166,9 @@ struct denominatorHistManagers
         Form("%s/hadTaus", subdir_.data()), central_or_shift_));
       hadTauHistManager_genJet_->bookHistograms(dir);
     }
+    evtHistManager_ = new EvtHistManager_jetToTauFakeRate(makeHistManager_cfg(process_, 
+      Form("%s/evt", subdir_.data()), central_or_shift_));
+    evtHistManager_->bookHistograms(dir);
   } 					 
   void fillHistograms(const RecoJet& jet, const RecoHadTau& hadTau, double evtWeight)					 
   {
@@ -200,6 +206,7 @@ struct denominatorHistManagers
   HadTauHistManager* hadTauHistManager_genLepton_;
   HadTauHistManager* hadTauHistManager_genJet_;
   RecoHadTauSelectorFakeable* fakeableHadTauSelector_;
+  EvtHistManager_jetToTauFakeRate* evtHistManager_;
 };
 
 /**
@@ -244,10 +251,13 @@ struct numeratorSelector_and_HistManagers : public denominatorHistManagers
  */
 int main(int argc, char* argv[]) 
 {
+//--- throw an exception in case ROOT encounters an error
+  gErrorAbortLevel = kError;
+
 //--- parse command-line arguments
   if ( argc < 2 ) {
     std::cout << "Usage: " << argv[0] << " [parameters.py]" << std::endl;
-    return EXIT_SUCCESS;
+    return EXIT_FAILURE;
   }
 
   std::cout << "<analyze_jetToTauFakeRate>:" << std::endl;
@@ -798,6 +808,21 @@ int main(int argc, char* argv[])
     const RecoLepton* selLepton_lead = selLeptons[0];
     const RecoLepton* selLepton_sublead = selLeptons[1];
 
+    const RecoLepton* selLepton_e = 0;
+    const RecoLepton* selLepton_mu = 0;
+    if      ( selLepton_lead->is_electron()    ) selLepton_e  = selLepton_lead;
+    else if ( selLepton_lead->is_muon()        ) selLepton_mu = selLepton_lead;
+    if      ( selLepton_sublead->is_electron() ) selLepton_e  = selLepton_sublead;
+    else if ( selLepton_sublead->is_muon()     ) selLepton_mu = selLepton_sublead;
+    if ( !(selLepton_e && selLepton_mu) ) {
+      continue;
+    }
+    cutFlowTable.update("1 sel electron + 1 sel muon", evtWeight);
+
+    double mLL = (selLepton_lead->p4() + selLepton_sublead->p4()).mass();
+    double mT_e = ( selLepton_e ) ? comp_MT_met_lep1(*selLepton_e, met.pt(), met.phi()) : -1.;
+    double mT_mu = ( selLepton_e ) ? comp_MT_met_lep1(*selLepton_mu, met.pt(), met.phi()) : -1.;
+
     // require that trigger paths match event category (with event category based on selLeptons)
     if ( !((selElectrons.size() >= 2 &&                          selTrigger_1e                                       ) ||
 	   (selElectrons.size() >= 1 && selMuons.size() >= 1 && (selTrigger_1e1mu || selTrigger_1mu || selTrigger_1e)) ||
@@ -882,6 +907,7 @@ int main(int argc, char* argv[])
     selMEtHistManager.fillHistograms(met, mht_p4, met_LD, evtWeight);
     selEvtHistManager.fillHistograms(selElectrons.size(), selMuons.size(), selHadTaus.size(), 
       selJets.size(), selBJets_loose.size(), selBJets_medium.size(), 
+      mLL, mT_e, mT_mu, 
       evtWeight);
 
 //--- iterate over jets
@@ -938,6 +964,42 @@ int main(int argc, char* argv[])
 
 	(*numerator)->fillHistograms(**cleanedJet, *preselHadTau_dRmatched, evtWeight_numerator);
       }
+    }
+
+    for ( std::vector<denominatorHistManagers*>::iterator denominator = denominators.begin();
+	  denominator != denominators.end(); ++denominator ) {
+      int numHadTaus_denominator = 0;
+      double evtWeight_denominator = evtWeight;
+      dataToMCcorrectionInterface->setHadTauSelection((*denominator)->fakeableHadTauSelector_->get());
+      for ( std::vector<const RecoHadTau*>::const_iterator preselHadTau = preselHadTaus.begin();
+	    preselHadTau != preselHadTaus.end(); ++preselHadTau ) {
+	if ( (*(*denominator)->fakeableHadTauSelector_)(**preselHadTau) ) ++numHadTaus_denominator;
+	int preselHadTau_genPdgId = getHadTau_genPdgId(*preselHadTau);
+	dataToMCcorrectionInterface->setHadTaus(preselHadTau_genPdgId, (*preselHadTau)->pt(), (*preselHadTau)->eta());
+	evtWeight_denominator *= dataToMCcorrectionInterface->getSF_hadTauID_and_Iso();
+      }
+      (*denominator)->evtHistManager_->fillHistograms(selElectrons.size(), selMuons.size(), numHadTaus_denominator,
+	selJets.size(), selBJets_loose.size(), selBJets_medium.size(), 
+	mLL, mT_e, mT_mu, 					      
+	evtWeight_denominator);
+    }
+    
+    for ( std::vector<numeratorSelector_and_HistManagers*>::iterator numerator = numerators.begin();
+	  numerator != numerators.end(); ++numerator ) {
+      int numHadTaus_numerator = 0;
+      double evtWeight_numerator = evtWeight;
+      dataToMCcorrectionInterface->setHadTauSelection((*numerator)->hadTauSelection_);
+      for ( std::vector<const RecoHadTau*>::const_iterator preselHadTau = preselHadTaus.begin();
+	    preselHadTau != preselHadTaus.end(); ++preselHadTau ) {
+	if ( (*(*numerator)->tightHadTauSelector_)(**preselHadTau) ) ++numHadTaus_numerator;
+	int preselHadTau_genPdgId = getHadTau_genPdgId(*preselHadTau);
+	dataToMCcorrectionInterface->setHadTaus(preselHadTau_genPdgId, (*preselHadTau)->pt(), (*preselHadTau)->eta());
+	evtWeight_numerator *= dataToMCcorrectionInterface->getSF_hadTauID_and_Iso();
+      }
+      (*numerator)->evtHistManager_->fillHistograms(selElectrons.size(), selMuons.size(), numHadTaus_numerator,
+	selJets.size(), selBJets_loose.size(), selBJets_medium.size(), 
+	mLL, mT_e, mT_mu, 
+	evtWeight);
     }
 
     if ( isMC ) {

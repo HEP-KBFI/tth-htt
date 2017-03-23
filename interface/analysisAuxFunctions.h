@@ -125,16 +125,19 @@ std::vector<const RecoLepton*> mergeLeptonCollections(const std::vector<const Re
 /**
  * @brief Print values of pT, eta, phi as well as ID and isolation variables for electrons and muons (for debugging purposes)
  */
+void printGenLeptonCollection(const std::string& collection_name, const std::vector<GenLepton>& genLeptons);
 void printLeptonCollection(const std::string& collection_name, const std::vector<const RecoLepton*>& leptons);
 
 /**
  * @brief Print values of pT, eta, phi as well as of tau ID/isolation variables for hadronic taus (for debugging purposes)
  */
+void printGenHadTauCollection(const std::string& collection_name, const std::vector<GenHadTau>& genHadTaus);
 void printHadTauCollection(const std::string& collection_name, const std::vector<const RecoHadTau*>& hadTaus);
 
 /**
  * @brief Print values of pT, eta, phi as well as the b-tagging discriminator values for jets (for debugging purposes)
  */
+void printGenJetCollection(const std::string& collection_name, const std::vector<GenJet>& genJets);
 void printJetCollection(const std::string& collection_name, const std::vector<const RecoJet*>& jets);
 
 /**
