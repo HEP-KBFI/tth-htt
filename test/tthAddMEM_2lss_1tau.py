@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import os, logging, sys, getpass
+import os, logging, sys, getpass, uuid
 
 from tthAnalysis.HiggsToTauTau.addMEMConfig_2lss_1tau import addMEMConfig_2lss_1tau
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
@@ -33,6 +33,8 @@ if __name__ == '__main__':
     level  = logging.DEBUG,
     format = '%(asctime)s - %(levelname)s: %(message)s')
 
+  uuid_comment = uuid.uuid4()
+
   addMEMProduction = addMEMConfig_2lss_1tau(
     treeName                 = 'tree',
     outputDir                = os.path.join("/hdfs/local", getpass.getuser(), "addMEM", ERA, version),
@@ -49,6 +51,7 @@ if __name__ == '__main__':
     leptonSelection          = "Fakeable",
     hadTauSelection          = "Tight|dR03mvaMedium",
     isForBDTtraining         = isForBDTtraining,
+    pool_id                  = uuid_comment,
   )
 
   goodToGo = addMEMProduction.create()

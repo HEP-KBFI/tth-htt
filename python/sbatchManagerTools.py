@@ -1,4 +1,4 @@
-import os
+import os, jinja2
 
 from tthAnalysis.HiggsToTauTau.jobTools import run_cmd
 from tthAnalysis.HiggsToTauTau.analysisTools import createFile
@@ -7,7 +7,7 @@ executable_rm = 'rm'
 
 def createScript_sbatch(sbatch_script_file_name,
                         executable, cfg_file_names, input_file_names, output_file_names, log_file_names = None,
-                        working_dir = None, max_num_jobs = 100000, cvmfs_error_log = None):
+                        working_dir = None, max_num_jobs = 100000, cvmfs_error_log = None, pool_id = ''):
     """Creates the python script necessary to submit analysis and/or Ntuple production jobs to the batch system
     """
     if not working_dir:
@@ -15,15 +15,16 @@ def createScript_sbatch(sbatch_script_file_name,
     sbatch_analyze_lines = generate_sbatch_lines(
       executable,
       cfg_file_names, input_file_names, output_file_names, log_file_names,
-      working_dir, max_num_jobs, cvmfs_error_log)
+      working_dir, max_num_jobs, cvmfs_error_log, pool_id
+    )
     createFile(sbatch_script_file_name, sbatch_analyze_lines)
     
 def generate_sbatch_lines(executable, cfg_file_names, input_file_names, output_file_names, log_file_names,
-                          working_dir, max_num_jobs, cvmfs_error_log = None):
+                          working_dir, max_num_jobs, cvmfs_error_log = None, pool_id = ''):
     lines_sbatch = []
-    lines_sbatch.append("from tthAnalysis.HiggsToTauTau.sbatchManager import sbatchManager")
+    lines_sbatch.append("from tthAnalysis.HiggsToTauTau.sbatchManager%s import sbatchManager" % ('_v2' if pool_id else ''))
     lines_sbatch.append("")
-    lines_sbatch.append("m = sbatchManager()")
+    lines_sbatch.append("m = sbatchManager(%s)" % ("'%s'" % pool_id if pool_id else ''))
     lines_sbatch.append("m.setWorkingDir('%s')" % working_dir)
 
     num_jobs = 0
@@ -96,7 +97,7 @@ def generate_sbatch_line(executable, cfg_file_name, input_file_names, output_fil
     )
 
 def createScript_sbatch_hadd(sbatch_script_file_name, input_file_names, output_file_name, hadd_stage_name,
-                             working_dir = None, waitForJobs = True, auxDirName = None):
+                             working_dir = None, waitForJobs = True, auxDirName = '', pool_id = ''):
     """Creates the python script necessary to submit 'hadd' jobs to the batch system
     """
     if not working_dir:
@@ -107,28 +108,32 @@ def createScript_sbatch_hadd(sbatch_script_file_name, input_file_names, output_f
         working_dir = working_dir,
         waitForJobs = waitForJobs,
         auxDirName = auxDirName,
+        pool_id = pool_id,
     )
     createFile(sbatch_script_file_name, sbatch_hadd_lines)
 
-def generate_sbatch_lines_hadd(input_file_names, output_file_name, working_dir, waitForJobs = True, auxDirName = None):
+def generate_sbatch_lines_hadd(input_file_names, output_file_name, working_dir, waitForJobs = True,
+                               auxDirName = '', pool_id = ''):
     template_vars = {
-        'working_dir': working_dir,
-        'input_file_names': input_file_names,
-        'output_file_name': output_file_name,
-        'waitForJobs'     : waitForJobs,
-        'auxDirName'      : auxDirName if auxDirName else ''
+        'working_dir'      : working_dir,
+        'input_file_names' : input_file_names,
+        'output_file_name' : output_file_name,
+        'waitForJobs'      : waitForJobs,
+        'auxDirName'       : auxDirName,
+        'pool_id'          : pool_id,
+        'version'          : '_v2' if pool_id else '',
     }
+    sbatch_template = """from tthAnalysis.HiggsToTauTau.sbatchManager{{version}} import sbatchManager
 
-    sbatch_code = """
-from tthAnalysis.HiggsToTauTau.sbatchManager import sbatchManager
-m = sbatchManager()
-m.setWorkingDir('%(working_dir)s')
+m = sbatchManager({% if pool_id %}'{{pool_id}}'{% endif %})
+m.setWorkingDir('{{working_dir}}')
 m.hadd_in_cluster(
-    inputFiles=%(input_file_names)s,
-    outputFile='%(output_file_name)s',
-    waitForJobs=%(waitForJobs)s,
-    auxDirName='%(auxDirName)s',
+    inputFiles={{input_file_names}},
+    outputFile='{{output_file_name}}',
+    waitForJobs={{waitForJobs}},
+    auxDirName='{{auxDirName}}',
 )
-""" % template_vars
+"""
+    sbatch_code = jinja2.Template(sbatch_template).render(**template_vars)
 
     return sbatch_code.splitlines()

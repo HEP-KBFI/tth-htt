@@ -30,7 +30,7 @@ class addMEMConfig:
     """
     def __init__(self, treeName, outputDir, cfgDir, executable_addMEM, samples, era, debug, running_method,
                  max_files_per_job, mem_integrations_per_job, max_mem_integrations, num_parallel_jobs,
-                 leptonSelection, hadTauSelection, isForBDTtraining, channel, maxPermutations_addMEM):
+                 leptonSelection, hadTauSelection, isForBDTtraining, pool_id, channel, maxPermutations_addMEM):
 
         self.treeName = treeName
         self.outputDir = outputDir
@@ -59,6 +59,7 @@ class addMEMConfig:
         self.makefile = os.path.join(
           self.cfgDir, "Makefile_%s" % self.channel)
         self.num_parallel_jobs = num_parallel_jobs
+        self.pool_id = pool_id
 
         self.workingDir = os.getcwd()
         print "Working directory is: " + self.workingDir
@@ -112,6 +113,7 @@ class addMEMConfig:
             working_dir = self.workingDir,
             max_num_jobs = 100000000, # it's really silly to limit the number of jobs; use an enormous number as the ,,fix''
             cvmfs_error_log = self.cvmfs_error_log,
+            pool_id = self.pool_id,
         )
 
     def addToMakefile_addMEM(self, lines_makefile):
@@ -145,12 +147,15 @@ class addMEMConfig:
             hadd_fileset_id = hadd_in['fileset_id']
             process_name = hadd_in['process_name']
             sbatch_hadd_file = os.path.join(
-                self.cfgDir, DKEY_HADD, self.channel, process_name, "sbatch_hadd_cat_%s_%d.py" % (process_name, hadd_fileset_id)
+                self.cfgDir, DKEY_HADD, self.channel, process_name,
+                "sbatch_hadd_cat_%s_%d.py" % (process_name, hadd_fileset_id)
             )
             sbatch_hadd_dir = os.path.join(
                 self.cfgDir, DKEY_HADD_RT, self.channel, process_name,
             )
-            tools_createScript_sbatch_hadd(sbatch_hadd_file, hadd_in_files, hadd_out, 'cat', self.workingDir, False, sbatch_hadd_dir)
+            tools_createScript_sbatch_hadd(
+              sbatch_hadd_file, hadd_in_files, hadd_out, 'cat', self.workingDir, False, sbatch_hadd_dir, self.pool_id
+            )
 
             lines_makefile.append("%s: %s" % (hadd_out, " ".join(hadd_in_files)))
             lines_makefile.append("\t%s %s" % ("rm -f", hadd_out))
