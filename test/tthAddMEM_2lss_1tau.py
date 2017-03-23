@@ -6,25 +6,34 @@ from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 
 isForBDTtraining = False
 
+from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_2lss1tau_prodNtuples_v3 import samples_2016 as samples
+
 #--------------------------------------------------------------------------------
 # CV: run Ntuple production jobs also for high statistics background samples
 #     not used in the analysis, but used for BDT training by Arun
-#TODO: update the disabled sample list for 2016 dataset
 if isForBDTtraining:
-  from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_2lss1tau_prodNtuples_forBDTtraining import samples_2016 as samples
-
   for sample_name, sample_info in samples.items():
-    if sample_name in [
-        "/TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16MiniAODv1-PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext3-v1/MINIAODSIM",
-        "/TT_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISpring16MiniAODv1-PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext4-v1/MINIAODSIM",
-        "/TTW/spring16DR80v6aMiniAODv1/FASTSIM",
+    if sample_info['process_name_specific'] in [
+      'TTTo2L2Nu_fastsim_p1',
+      'TTTo2L2Nu_fastsim_p2',
+      'TTTo2L2Nu_fastsim_p3',
+      'TTToSemilepton_fastsim_p1',
+      'TTToSemilepton_fastsim_p2',
+      'TTToSemilepton_fastsim_p3',
+      'TTWJetsToLNu_fastsim',
+      'TTZToLLNuNu_fastsim',
+      'WZTo3LNu_fastsim',
+      'ttHToNonbb_fastsim_p1',
+      'ttHToNonbb_fastsim_p2',
+      'ttHToNonbb_fastsim_p3',
     ]:
       sample_info["use_it"] = True
-else:
-  from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_2lss1tau_prodNtuples_v3 import samples_2016 as samples
+    else:
+      sample_info["use_it"] = False
+
 #--------------------------------------------------------------------------------
 
-version = "2017Mar17"
+version = "2017Mar24"
 ERA     = "2016"
 
 if __name__ == '__main__':
@@ -50,7 +59,7 @@ if __name__ == '__main__':
     num_parallel_jobs        = 16,
     leptonSelection          = "Fakeable",
     hadTauSelection          = "Tight|dR03mvaMedium",
-    isForBDTtraining         = isForBDTtraining,
+    isForBDTtraining         = False, # still use full integration points
     pool_id                  = uuid_comment,
   )
 
