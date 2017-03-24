@@ -14,16 +14,81 @@ submit_job_version2_template      = open(submit_job_version2_template_file, 'r')
 
 command_create_scratchDir = '/scratch/mkscratch'
 
+# Define error classes
+
+class sbatchManagerError(Exception):
+    pass
+
+class sbatchManagerMemoryError(sbatchManagerError):
+    pass
+
+class sbatchManagerTimeoutError(sbatchManagerError):
+    pass
+
+class sbatchManagerSyntaxError(sbatchManagerError):
+    pass
+
+class sbatchManagerRuntimeError(sbatchManagerError):
+    pass
+
 # Define Status
 
 class Status:
   submitted   = 1
   completed   = 2
 
-# Define sbatchManagerError
+  memory_exceeded = 11
+  timeout         = 12
+  syntax_error    = 13
+  runtime_error   = 14
+  other_error     = 15
 
-class sbatchManagerError(Exception):
-  pass
+  @staticmethod
+  def classify_error(ExitCode, DerivedExitCode, State):
+      if (ExitCode == '0:0' and DerivedExitCode == '0:0' and State == 'COMPLETED'):
+          return Status.completed
+      if (ExitCode == '0:0' and DerivedExitCode == '0:0' and (State == 'CANCELLED' or
+                                                              State == 'CANCELLED by 0')) or \
+         (ExitCode == '7:0'                              and State == 'FAILED'):
+          # The last condition found at: https://wiki.hpc.uconn.edu/index.php/Job_FAILED_due_to_lack_of_memory
+          return Status.memory_exceeded
+      if (ExitCode == '0:1' and DerivedExitCode == '0:0' and State == 'TIMEOUT'):
+          return Status.timeout
+      if (ExitCode == '2:0' and DerivedExitCode == '0:0' and State == 'FAILED'):
+          return Status.syntax_error
+      if (ExitCode == '1:0' and DerivedExitCode == '0:0' and State == 'FAILED'):
+          return Status.runtime_error
+      return Status.other_error
+
+  @staticmethod
+  def toString(status_type):
+      if status_type == Status.submitted:
+          return 'submitted'
+      if status_type == Status.completed:
+          return 'completed'
+      if status_type == Status.memory_exceeded:
+          return 'memory_exceeded_error'
+      if status_type == Status.timeout:
+          return 'timeout_error'
+      if status_type == Status.syntax_error:
+          return 'syntax_error'
+      if status_type == Status.runtime_error:
+          return 'runtime_error'
+      if status_type == Status.other_error:
+          return 'other_error'
+      return 'unknown_error'
+
+  @staticmethod
+  def raiseError(status_type):
+      if status_type == Status.memory_exceeded:
+          return sbatchManagerMemoryError
+      if status_type == Status.timeout:
+          return sbatchManagerTimeoutError
+      if status_type == Status.syntax_error:
+          return sbatchManagerSyntaxError
+      if status_type == Status.runtime_error:
+          return sbatchManagerRuntimeError
+      return sbatchManagerError
 
 # Define sbatchManager
 
@@ -52,6 +117,8 @@ class sbatchManager:
         self.pool_id        = pool_id
         self.log_completion = False
         self.max_nof_greps  = 1000
+        self.sbatchArgs     = ''
+        self.datetime       = datetime.datetime.now().strftime('%m/%d/%y-%H:%M:%S')
 
         logging.basicConfig(
             stream = sys.stdout,
@@ -95,7 +162,7 @@ class sbatchManager:
 
         cluster_histogram_aggregator.create_output_histogram()
 
-    def check_job_completion(self, jobsId_list, default_completion = True):
+    def check_job_completion(self, jobsId_list, default_completion = Status.completed):
         completion = { k : default_completion for k in jobsId_list }
 
         # If the input list is empty, just return here (we don't want to mess up the subprocess commands here)
@@ -106,17 +173,19 @@ class sbatchManager:
         delimiter = ','
 
         # First, let's try with sacct; explanation:
-        # 1) sacct -X -P -n -o JobID,ExitCode,DerivedExitCode
+        # 1) sacct -X -P -n -o JobID,ExitCode,DerivedExitCode,State
         #      Shows job IDs, exit codes and comments of all submitted, running and finished jobs, one line per job
         #        a) -X -- shows cumulative statistics of each job (has no effect here, though)
         #        b) -P -- output will be '|' delimited without a '|' at the end
         #        c) -n -- omit header
         #        d) -o JobID,ExitCode,DerivedExitCode -- output format
-        #        e_ -j {jobs} -- filter out only the relevant jobs by their job ID (comma-separated list)
+        #        e) -S {datetime} -- look only for jobs submitted after {datetime}
+        #        f) -j {jobs} -- filter out only the relevant jobs by their job ID (comma-separated list)
         # 2) sed ':a;N;$!ba;s/\\n/{delimiter}/g'
         #      Place all entries to one line, delimited by {{delimiter}} (otherwise the logs are hard to read)
-        sacct_cmd = "sacct -X -P -n -o JobID,ExitCode,DerivedExitCode -j {jobs} | " \
+        sacct_cmd = "sacct -X -P -n -o JobID,ExitCode,DerivedExitCode,State -S {datetime} -j {jobs} | " \
                     "sed ':a;N;$!ba;s/\\n/{delimiter}/g'".format(
+          datetime  = self.datetime,
           jobs      = ','.join(jobsId_list),
           delimiter = delimiter,
         )
@@ -126,9 +195,9 @@ class sbatchManager:
             # is defined in the command that issued the output
             lines = sacct_out.split(delimiter)
             for line in lines:
-                JobID, ExitCode, DerivedExitCode = line.split('|')
+                JobID, ExitCode, DerivedExitCode, State = line.split('|')
                 if JobID in completion:
-                    completion[JobID] = (ExitCode == '0:0' and DerivedExitCode == '0:0')
+                    completion[JobID] = Status.classify_error(ExitCode, DerivedExitCode, State)
             return completion
         else:
             # Likely returned along the lines of (due to heavy load on the cluster since SQL DB is overloaded):
@@ -166,7 +235,11 @@ class sbatchManager:
                     line_dict[k[-1]] = ' '.join(v[:-1] if i != len(line_split_eq_spaces) - 2 else v)
                 JobId = line_dict['JobId']
                 if JobId in completion:
-                    completion[JobId] = (line_dict['ExitCode'] == '0:0' and line_dict['DerivedExitCode'] == '0:0')
+                    completion[JobId] = Status.classify_error(
+                      line_dict['ExitCode'],
+                      line_dict['DerivedExitCode'],
+                      line_dict['State'],
+                    )
             return completion
         else:
             # scontrol probably returned something like:
@@ -230,10 +303,11 @@ class sbatchManager:
         wrapper_log_file    = logFile.replace('.log', '_wrapper.log')
         executable_log_file = logFile.replace('.log', '_executable.log')
 
-        sbatch_command = "sbatch --partition={partition} --output={output} --comment='{comment}' {cmd}".format(
+        sbatch_command = "sbatch --partition={partition} --output={output} --comment='{comment}' {args} {cmd}".format(
           partition = self.queue,
           output    = wrapper_log_file,
           comment   = self.pool_id,
+          args      = self.sbatchArgs,
           cmd       = script_file,
         )
 
@@ -281,10 +355,11 @@ class sbatchManager:
         create_if_not_exists(cfg_dir)
         create_if_not_exists(log_dir)
 
-        sbatch_command = "sbatch --partition={partition} --output={output} --comment='{comment}' {cmd}".format(
+        sbatch_command = "sbatch --partition={partition} --output={output} --comment='{comment}' {args} {cmd}".format(
             partition = self.queue,
             output    = wrapper_log_file,
             comment   = self.pool_id,
+            args      = self.sbatchArgs,
             cmd       = script_file,
         )
 
@@ -370,12 +445,17 @@ class sbatchManager:
                 ]
                 for finished_ids_chunk in finished_ids_chunks:
                     completion = self.check_job_completion(finished_ids_chunk)
-                    failed_jobs = [k for k in completion if not completion[k]]
+                    failed_jobs = [id_ for id_ in completion if completion[id_] != Status.completed]
                     # If there are any failed jobs, throw
                     if failed_jobs:
                         failed_jobs_str = ','.join(failed_jobs)
-                        logging.error("Job(s) w/ ID(s) {jobIds} finished with errors".format(jobIds = failed_jobs_str))
-                        raise sbatchManagerError("Job w/ IDs %s failed" % failed_jobs_str)
+                        errors          = [completion[id_] for id_ in failed_jobs]
+                        logging.error("Job(s) w/ ID(s) {jobIds} finished with errors: {reasons}".format(
+                            jobIds  = failed_jobs_str,
+                            reasons = ', '.join(map(Status.toString, errors)),
+                        ))
+                        # Raise the first error at hand
+                        raise Status.raiseError(errors[0])
                     else:
                         logging.debug("Job(s) w/ ID(s) {jobIds} finished successfully".format(
                           jobIds = ','.join(completion.keys())

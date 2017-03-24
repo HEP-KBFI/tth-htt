@@ -1,7 +1,8 @@
 #!/usr/bin/env python
-from tthAnalysis.HiggsToTauTau.sbatchManager_v2 import sbatchManager, sbatchManagerError
+from tthAnalysis.HiggsToTauTau.sbatchManager_v2 import sbatchManager, sbatchManagerRuntimeError
 import os, unittest, uuid
 
+# use a directory which is universally available by cluster nodes, i.e. either /home or /hdfs
 testDir = os.path.expanduser('~/test_bulk_sbatch')
 if os.path.isdir(testDir):
   raise ValueError("Directory '%s' already exists; pick another" % testDir)
@@ -60,7 +61,7 @@ class SbatchBulkTestCase(unittest.TestCase):
     testArgs = self.testArguments['negative']
     self.manager.submit_job_version2(testArgs['name'] % self.nof_jobs, testArgs['cmd'], testDir)
     # if passes, true negative; otherwise true positive
-    self.assertRaises(sbatchManagerError, self.manager.waitForJobs)
+    self.assertRaises(sbatchManagerRuntimeError, self.manager.waitForJobs)
 
 
 def suite():
