@@ -1,4 +1,4 @@
-import codecs, getpass, jinja2, logging, os, time, subprocess, datetime, uuid, sys
+import codecs, getpass, jinja2, logging, os, time, datetime, sys
 
 from tthAnalysis.HiggsToTauTau.ClusterHistogramAggregator import ClusterHistogramAggregator
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd
@@ -37,7 +37,10 @@ class sbatchManager:
          prio - ? (10min?) time limit, available immediately
     """
 
-    def __init__(self, uuid_str = '', verbose = True):
+    def __init__(self, pool_id = '', verbose = False):
+        if not pool_id:
+            raise ValueError("pool_id not specified!")
+
         self.workingDir     = None
         self.logFileDir     = None
         queue_environ = os.environ.get('SBATCH_PRIORITY')
@@ -46,11 +49,15 @@ class sbatchManager:
         self.jobIds         = {}
         self.analysisName   = "tthAnalysis"
         self.user           = getpass.getuser()
-        self.uuid           = uuid_str if uuid_str else uuid.uuid4()
-        if verbose:
-          self.unmute()
-        else:
-          self.mute()
+        self.pool_id        = pool_id
+        self.log_completion = False
+        self.max_nof_greps  = 1000
+
+        logging.basicConfig(
+            stream = sys.stdout,
+            level  = logging.DEBUG if verbose else logging.INFO,
+            format = '[%(filename)s:%(funcName)s] %(asctime)s - %(levelname)s: %(message)s',
+        )
 
     def setWorkingDir(self, workingDir):
         """Set path to CMSSW area in which jobs are executed
@@ -64,17 +71,10 @@ class sbatchManager:
         self.logFileDir = logFileDir
 
     def mute(self):
-      self.setLogLevel(logging.INFO)
+        logging.getLogger().setLevel(logging.INFO)
 
     def unmute(self):
-      self.setLogLevel(logging.DEBUG)
-
-    def setLogLevel(self, logLevel):
-      logging.basicConfig(
-        stream = sys.stdout,
-        level  = logLevel,
-        format = '[%(filename)s:%(funcName)s] %(asctime)s - %(levelname)s: %(message)s',
-      )
+        logging.getLogger().setLevel(logging.DEBUG)
 
     def hadd_in_cluster(
         self,
@@ -102,33 +102,61 @@ class sbatchManager:
         if not completion:
           return completion
 
-        # First, let's try with sacct
-        sacct_cmd = "sacct -X -P -n -o JobID,ExitCode,DerivedExitCode,Comment | grep {comment}".format(comment = self.uuid)
-        sacct_out, sacct_err = run_cmd(sacct_cmd, return_stderr = True)
+        # Set a delimiter, which distinguishes entries b/w different jobs
+        delimiter = ','
+
+        # First, let's try with sacct; explanation:
+        # 1) sacct -X -P -n -o JobID,ExitCode,DerivedExitCode
+        #      Shows job IDs, exit codes and comments of all submitted, running and finished jobs, one line per job
+        #        a) -X -- shows cumulative statistics of each job (has no effect here, though)
+        #        b) -P -- output will be '|' delimited without a '|' at the end
+        #        c) -n -- omit header
+        #        d) -o JobID,ExitCode,DerivedExitCode -- output format
+        #        e_ -j {jobs} -- filter out only the relevant jobs by their job ID (comma-separated list)
+        # 2) sed ':a;N;$!ba;s/\\n/{delimiter}/g'
+        #      Place all entries to one line, delimited by {{delimiter}} (otherwise the logs are hard to read)
+        sacct_cmd = "sacct -X -P -n -o JobID,ExitCode,DerivedExitCode -j {jobs} | " \
+                    "sed ':a;N;$!ba;s/\\n/{delimiter}/g'".format(
+          jobs      = ','.join(jobsId_list),
+          delimiter = delimiter,
+        )
+        sacct_out, sacct_err = run_cmd(sacct_cmd, do_not_log = not self.log_completion, return_stderr = True)
         if not sacct_err and sacct_out:
             # The output of sacct contains one line per job, each line has pipe-separated fields the order of which
             # is defined in the command that issued the output
-            lines = sacct_out.split('\n')
+            lines = sacct_out.split(delimiter)
             for line in lines:
-                JobID, ExitCode, DerivedExitCode, Comment = line.split('|')
+                JobID, ExitCode, DerivedExitCode = line.split('|')
                 if JobID in completion:
                     completion[JobID] = (ExitCode == '0:0' and DerivedExitCode == '0:0')
             return completion
         else:
-            # Likely returned along the lines of (due to heavy load on the cluster):
+            # Likely returned along the lines of (due to heavy load on the cluster since SQL DB is overloaded):
             # sacct: error: Problem talking to the database: Connection refused
             logging.info('sacct currently unavailable: %s' % sacct_err)
 
-        #time.sleep(1) # enable for testing only?
-        # Let's try with scontrol
+        # Let's try with scontrol if the sacct commands failed
         # scontrol doesn't have an option to take a list of Job IDs as an argument; thus, we have to grep the job IDs
-        scontrol_cmd = "scontrol show -od job | grep 'Comment={comment}'".format(comment = self.uuid)
-        scontrol_out, scontrol_err = run_cmd(scontrol_cmd, return_stderr = True)
+        # Explanation:
+        # 1) scontrol show -od job
+        #      Prints out everything about running or recently finished jobs
+        #        a) -o -- prints information one line per record
+        #        b) -d -- includes more detailed information about the job
+        #        c) job -- prints all jobs (it's possible to get information about other units like nodes and clusters)
+        # 2) grep '{jobs}'
+        #      Filter out jobs by their job ID (by concatenating the list with escaped regex OR operator '|')
+        # 3) sed ':a;N;$!ba;s/\\n/{delimiter}/g'
+        #      Put all the result on one line, where each record is delimited by {delimiter}
+        scontrol_cmd = "scontrol show -od job | grep '{jobs}' | sed ':a;N;$!ba;s/\\n/{delimiter}/g'".format(
+          jobs      = '\\|'.join(jobsId_list),
+          delimiter = delimiter,
+        )
+        scontrol_out, scontrol_err = run_cmd(scontrol_cmd, do_not_log = not self.log_completion, return_stderr = True)
         if not scontrol_err and scontrol_out:
             # The output of scontrol contains one entry per line, each line contains a space-delimited key-value pairs,
             # whereas the keys and values are separated by an equation sign
             # Although the keys do not contain any spaces, the values might, so we have to take care of that
-            lines = scontrol_out.split('\n')
+            lines = scontrol_out.split(delimiter)
             for line in lines:
                 line_dict = {}
                 line_split_eq_spaces = map(lambda x: x.split(), line.split('='))
@@ -146,8 +174,10 @@ class sbatchManager:
             # Probably because too much time has passed since the job completion and checking the exit status here
             logging.info('scontrol has errors: %s' % scontrol_err)
 
+        # scontrol still might fail if too much time has passed since the jobs completion (the metadata about each
+        # job is cached for a certain period of time, the length of which I don't know at the moment)
         # None of the SLURM commands work; let's just say that the job completed successfully
-        logging.error("Cannot tell if the job has been completed or not!")
+        logging.error("Cannot tell if the job has completed successfully or not!")
         return completion
 
     def submit(self, cmd_str):
@@ -174,6 +204,7 @@ class sbatchManager:
         """Waits for all sbatch jobs submitted by this instance of sbatchManager to finish processing
         """
         # raise if logfile missing
+        script_file = cfgFile.replace(".py", ".sh").replace("_cfg", "")
         if not logFile:
             if not self.logFileDir:
                 raise ValueError("Please call 'setLogFileDir' before calling 'submitJob' !!")
@@ -196,14 +227,13 @@ class sbatchManager:
         scratch_dir = self.get_scratch_dir()
 
         # create script for executing jobs
-        script_file         = cfgFile.replace(".py", ".sh").replace("_cfg", "")
         wrapper_log_file    = logFile.replace('.log', '_wrapper.log')
         executable_log_file = logFile.replace('.log', '_executable.log')
 
         sbatch_command = "sbatch --partition={partition} --output={output} --comment='{comment}' {cmd}".format(
           partition = self.queue,
           output    = wrapper_log_file,
-          comment   = self.uuid,
+          comment   = self.pool_id,
           cmd       = script_file,
         )
 
@@ -254,7 +284,7 @@ class sbatchManager:
         sbatch_command = "sbatch --partition={partition} --output={output} --comment='{comment}' {cmd}".format(
             partition = self.queue,
             output    = wrapper_log_file,
-            comment   = self.uuid,
+            comment   = self.pool_id,
             cmd       = script_file,
         )
 
@@ -289,31 +319,70 @@ class sbatchManager:
     def waitForJobs(self):
         """Waits for all sbatch jobs submitted by this instance of sbatchManager to finish processing
         """
-        command_template = "squeue -u {{user}} -o '%i %36k' | grep {{uuid}} | awk '{print $1}'"
+
+        # Set a delimiter, which distinguishes entries b/w different jobs
+        delimiter = ','
+        # Explanation:
+        # 1) squeue -h -u {{user}} -o '%i %36k'
+        #      Collects the list of running jobs
+        #        a) -h omits header
+        #        b) -u {{user}} looks only for jobs submitted by {{user}}
+        #        c) -o '%i %36k' specifies the output format
+        #           i)  %i -- job ID (1st column)
+        #           ii) %36k -- comment with width of 36 characters (2nd column)
+        #               If the job has no comments, the entry simply reads (null)
+        # 2) grep {{comment}}
+        #       Filter the jobs by the comment which must be unique per sbatchManager instance at all times
+        # 3) awk '{print $1}'
+        #       Filter only the jobs IDs out
+        # 4) sed ':a;N;$!ba;s/\\n/{{delimiter}}/g'
+        #       Place all job IDs to one line, delimited by {{delimiter}} (otherwise the logs are hard to read)
+        command_template = "squeue -h -u {{user}} -o '%i %36k' | grep {{comment}} | awk '{print $1}' | " \
+                           "sed ':a;N;$!ba;s/\\n/{{delimiter}}/g'"
         command = jinja2.Template(command_template).render(
-          user = self.user,
-          uuid = self.uuid,
+          user      = self.user,
+          comment   = self.pool_id,
+          delimiter = delimiter,
         )
 
+        # Initially, all jobs are marked as submitted so we have to go through all jobs and check their exit codes
+        # even if some of them have already finished
         jobIds_set = set([ k for k in self.jobIds if self.jobIds[k] == Status.submitted])
         nofJobs_left = len(jobIds_set)
         while nofJobs_left > 0:
+            # Get the list of running jobs and convert them to a set
             poll_result = run_cmd(command, do_not_log = False)
-            polled_ids = set(poll_result.split('\n'))
+            polled_ids = set(poll_result.split(delimiter))
+            # Subtract the list of running jobs from the list of all submitted jobs -- the result is a list of
+            # jobs that have finished already
             finished_ids = list(jobIds_set - polled_ids)
 
+            # Do not poll anything if currently there are no finished jobs
             if finished_ids:
-                # based on job's exit code what if the job has failed or completed successfully
-                completion = self.check_job_completion(finished_ids)
-                failed_jobs = [k for k in completion if not completion[k]]
-                if failed_jobs:
-                    failed_jobs_str = ','.join(failed_jobs)
-                    logging.error("Job(s) w/ ID(s) {jobIds} finished with errors".format(jobIds = failed_jobs_str))
-                    raise sbatchManagerError("Job w/ IDs %s failed" % failed_jobs_str)
-                else:
-                    logging.debug("Job(s) w/ ID(s) {jobIds} finished successfully".format(jobIds = ','.join(completion.keys())))
-                for completed_id in completion:
-                    self.jobIds[completed_id] = Status.completed
+                # Based on job's exit code what if the job has failed or completed successfully
+                # However, the sacct/scontrol commands yield too much output if too many jobs have been submitted here
+                # Therefore, we want to restrict the output by grepping specific job IDs
+                # There's another problem with that: the length of a bash command is limited by ARG_MAX kernel variable,
+                # which is of order 2e6
+                # This means that we have to split the job IDs into chunks each of which we have to check separately
+                finished_ids_chunks = [
+                  finished_ids[i : i + self.max_nof_greps] for i in range(0, len(finished_ids), self.max_nof_greps)
+                ]
+                for finished_ids_chunk in finished_ids_chunks:
+                    completion = self.check_job_completion(finished_ids_chunk)
+                    failed_jobs = [k for k in completion if not completion[k]]
+                    # If there are any failed jobs, throw
+                    if failed_jobs:
+                        failed_jobs_str = ','.join(failed_jobs)
+                        logging.error("Job(s) w/ ID(s) {jobIds} finished with errors".format(jobIds = failed_jobs_str))
+                        raise sbatchManagerError("Job w/ IDs %s failed" % failed_jobs_str)
+                    else:
+                        logging.debug("Job(s) w/ ID(s) {jobIds} finished successfully".format(
+                          jobIds = ','.join(completion.keys())
+                        ))
+                    # Mark successfully finished jobs as completed so that won't request their status code again
+                    for completed_id in completion:
+                        self.jobIds[completed_id] = Status.completed
 
             jobIds_set = set([ k for k in self.jobIds if self.jobIds[k] == Status.submitted])
             nofJobs_left = len(jobIds_set)
@@ -322,13 +391,3 @@ class sbatchManager:
             else:
                 break
             logging.info("Waiting for sbatch to finish (%d job(s) still left) ..." % nofJobs_left)
-
-
-    def log_ram_and_cpu_usage_information(self, log_file = None):
-        info_params = {
-          'job_ids' : ",".join(self.jobIds.keys()),
-          'log_file': log_file,
-        }
-        ram_and_cpu_info = run_cmd(
-          'sacct --long --jobs=%(job_ids)s > %(log_file)s; cat %(log_file)s;' % info_params
-        )

@@ -238,7 +238,7 @@ SyncNtupleManager::initializeBranches()
       outputTree -> Branch(Form("%s%d_%s", jstr, i, "phi"), &(jet_phi[i]), Form("%s%d_%s/%s", jstr, i, "phi", Traits<decltype(jet_phi)>::TYPE_NAME));
       outputTree -> Branch(Form("%s%d_%s", jstr, i, "E"), &(jet_E[i]), Form("%s%d_%s/%s", jstr, i, "E", Traits<decltype(jet_E)>::TYPE_NAME));
       outputTree -> Branch(Form("%s%d_%s", jstr, i, "CSV"), &(jet_CSV[i]), Form("%s%d_%s/%s", jstr, i, "CSV", Traits<decltype(jet_CSV)>::TYPE_NAME));
-      //outputTree -> Branch(Form("%s%d_%s", jstr, i, "heppyFlavour"), &(jet_heppyFlavour[i]), Form("%s%d_%s/%s", jstr, i, "heppyFlavour", Traits<decltype(jet_heppyFlavour)>::TYPE_NAME));
+      outputTree -> Branch(Form("%s%d_%s", jstr, i, "heppyFlavour"), &(jet_heppyFlavour[i]), Form("%s%d_%s/%s", jstr, i, "heppyFlavour", Traits<decltype(jet_heppyFlavour)>::TYPE_NAME));
     }
 
     outputTree -> Branch("PFMET", &(PFMET), Form("PFMET/%s", Traits<decltype(PFMET)>::TYPE_NAME));
@@ -382,10 +382,7 @@ SyncNtupleManager::read(std::vector<const RecoElectron *> & electrons,
     ele_sip3D[i] = electron -> sip3d();
     ele_dxy[i] = electron -> dxy();
     ele_dz[i] = electron -> dz();
-    if (ele_pt[i] < 10)
-      ele_ntMVAeleID[i] = electron -> mvaRawPOG_HZZ();
-    else
-      ele_ntMVAeleID[i] = electron -> mvaRawPOG_GP();
+    ele_ntMVAeleID[i] = electron -> mvaRawPOG_HZZ();
     ele_leptonMVA[i] = electron -> mvaRawTTH();
     ele_conept[i] = comp_lep1_conePt(*electron);
     ele_isChargeConsistent[i] = electron -> tightCharge() == 2 ? 1 : 0;
@@ -476,7 +473,7 @@ SyncNtupleManager::read(std::vector<const RecoJet *> & jets)
     jet_phi[i] = jet -> phi();
     jet_E[i] = (jet -> p4()).E();
     jet_CSV[i] = jet -> BtagCSV();
-    //jet_heppyFlavour[i] = jet -> heppyFlavour();
+    jet_heppyFlavour[i] = jet -> heppyFlavour();
   }
 }
 
@@ -636,7 +633,7 @@ SyncNtupleManager::reset(bool is_initializing)
     jet_phi[i] = placeholder_value;
     jet_E[i] = placeholder_value;
     jet_CSV[i] = placeholder_value;
-    //jet_heppyFlavour[i] = placeholder_value;
+    jet_heppyFlavour[i] = placeholder_value;
   }
   n_presel_jet = placeholder_value;
 
