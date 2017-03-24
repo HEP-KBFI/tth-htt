@@ -564,12 +564,7 @@ int main(int argc, char* argv[])
   std::ostream* selEventsFile = ( selEventsFileName_output != "" ) ? new std::ofstream(selEventsFileName_output.data(), std::ios::out) : 0;
   std::cout << "selEventsFileName_output = " << selEventsFileName_output << std::endl;
 
-  const bool selectBDT = [&cfg_analyze]() -> bool
-  {
-    if(cfg_analyze.exists("selectBDT"))
-      return cfg_analyze.getParameter<bool>("selectBDT");
-    return false;
-  }();
+  bool selectBDT = ( cfg_analyze.exists("selectBDT") ) ? cfg_analyze.getParameter<bool>("selectBDT") : false;
 
 //--- declare histograms
   struct preselHistManagerType
@@ -751,15 +746,14 @@ int main(int argc, char* argv[])
     lheInfoHistManager->bookHistograms(fs);
   }
 
-  NtupleFillerBDT<float, int> * bdt_filler = nullptr;
+  NtupleFillerBDT<float, int>* bdt_filler = nullptr;
   typedef std::remove_pointer<decltype(bdt_filler)>::type::float_type float_type;
-  typedef std::remove_pointer<decltype(bdt_filler)>::type::int_type   int_type;
-  if(selectBDT)
-  {
+  typedef std::remove_pointer<decltype(bdt_filler)>::type::int_type int_type;
+  if ( selectBDT ) {
     bdt_filler = new std::remove_pointer<decltype(bdt_filler)>::type(
       makeHistManager_cfg(process_string, Form("%s/sel/evtntuple", histogramDir.data()), central_or_shift)
     );
-    bdt_filler -> register_variable<float_type>(
+    bdt_filler->register_variable<float_type>(
       "lep1_pt", "lep1_conePt", "lep1_eta", "lep1_tth_mva", "mindr_lep1_jet", "mT_lep1", "dr_lep1_tau",
       "lep2_pt", "lep2_conePt", "lep2_eta", "lep2_tth_mva", "mindr_lep2_jet", "mT_lep2", "dr_lep2_tau",
       "mindr_tau_jet", "avg_dr_jet", "ptmiss",  "htmiss", "tau_mva", "tau_pt", "tau_eta",
@@ -767,10 +761,10 @@ int main(int argc, char* argv[])
       "memOutput_isValid", "memOutput_errorFlag", "memOutput_type", "memOutput_ttH", "memOutput_ttZ",
       "memOutput_ttZ_Zll", "memOutput_tt", "memOutput_LR"
     );
-    bdt_filler -> register_variable<int_type>(
+    bdt_filler->register_variable<int_type>(
       "nJet", "nBJetLoose", "nBJetMedium"
     );
-    bdt_filler -> bookTree(fs);
+    bdt_filler->bookTree(fs);
   }
 
   int numEntries = inputTree->GetEntries();
@@ -792,8 +786,9 @@ int main(int argc, char* argv[])
 
     inputTree->GetEntry(idxEntry);
 
-    if(isDEBUG)
+    if ( isDEBUG ) {
       std::cout << "event #" << idxEntry << ": run = " << run << ", lumi = " << lumi << ", event = " << event << std::endl;
+    }
 
     if ( run_lumi_eventSelector && !(*run_lumi_eventSelector)(run, lumi, event) ) continue;
     cutFlowTable.update("run:ls:event selection");

@@ -86,6 +86,8 @@ def generate_sbatch_line(executable, cfg_file_name, input_file_names, output_fil
                         cvmfs_error_log[hostname] = []
                     cvmfs_error_log[hostname].append(time)
 
+    if type(input_file_names) is str:
+        input_file_names = [ input_file_names ]
     return "m.submitJob(%s, '%s', '%s', '%s', %s, '%s', True)" % (
         input_file_names,
         executable,

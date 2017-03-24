@@ -32,16 +32,18 @@ void dumpEventYields()
 
   typedef std::vector<std::string> vstring;
   vstring channels;
-  channels.push_back("0l_2tau");
-  channels.push_back("1l_1tau");
+  //channels.push_back("0l_2tau");
+  //channels.push_back("1l_1tau");
   //channels.push_back("0l_3tau");
-  channels.push_back("1l_2tau");
-  channels.push_back("2lss_1tau");
-  channels.push_back("2los_1tau");
-  channels.push_back("2l_2tau");
-  channels.push_back("3l_1tau");
+  //channels.push_back("1l_2tau");
+  //channels.push_back("2lss_1tau");
+  //channels.push_back("2los_1tau");
+  //channels.push_back("2l_2tau");
+  channels.push_back("3l_1tau_2jets");
+  channels.push_back("3l_1tau_1or2jets");
 
-  std::string inputFilePath = "/home/veelken/ttHAnalysis/";
+  //std::string inputFilePath = "/home/veelken/ttHAnalysis/";
+  std::string inputFilePath = "/home/veelken/public/HIG16022_datacards/Tallinn/";
   std::map<std::string, std::string> inputFileNames; // key = channel
   inputFileNames["0l_2tau"] = "2016Aug15_dR03mvaTight/datacards/prepareDatacards_0l_2tau_mTauTauVis.root";
   inputFileNames["1l_1tau"] = "2016Aug15_dR03mvaVVTight/datacards/prepareDatacards_1l_1tau_numJets.root";
@@ -50,8 +52,9 @@ void dumpEventYields()
   inputFileNames["2lss_1tau"] = "2016Aug15_dR03mvaTight/datacards/prepareDatacards_2lss_1tau_mvaDiscr_2lss.root";
   inputFileNames["2los_1tau"] = "2016Aug15_dR03mvaVVTight/datacards/prepareDatacards_2los_1tau_mvaOutput_2los_1tau_ttbar.root";
   inputFileNames["2l_2tau"] = "2016Aug15_dR03mvaTight/datacards/prepareDatacards_2l_2tau_mTauTauVis.root";
-  inputFileNames["3l_1tau"] = "2016Aug15_dR03mvaLoose/datacards/prepareDatacards_3l_1tau_mvaDiscr_3l.root";
-  
+  inputFileNames["3l_1tau_2jets"] = "ttH_3l_1tau_35.9fb_mvaDiscr_3l_2017Mar10.input.root";
+  inputFileNames["3l_1tau_1or2jets"] = "ttH_3l_1tau_35.9fb_mvaDiscr_3l_2017Mar23_1or2jets.input.root";
+
   std::map<std::string, vstring> signal_processes; // key = channel
   signal_processes["0l_2tau"].push_back("ttH_htt");
   signal_processes["0l_2tau"].push_back("ttH_hww");
@@ -62,7 +65,8 @@ void dumpEventYields()
   signal_processes["2lss_1tau"] = signal_processes["0l_2tau"];
   signal_processes["2los_1tau"] = signal_processes["0l_2tau"];
   signal_processes["2l_2tau"] = signal_processes["0l_2tau"];
-  signal_processes["3l_1tau"] = signal_processes["0l_2tau"];
+  signal_processes["3l_1tau_2jets"] = signal_processes["0l_2tau"];
+  signal_processes["3l_1tau_1or2jets"] = signal_processes["0l_2tau"];
 
   std::map<std::string, vstring> background_processes; // key = channel
   background_processes["0l_2tau"].push_back("TT");
@@ -81,7 +85,8 @@ void dumpEventYields()
   background_processes["2lss_1tau"].push_back("flips_data");
   background_processes["2los_1tau"] = background_processes["0l_2tau"];
   background_processes["2l_2tau"] = background_processes["0l_2tau"];
-  background_processes["3l_1tau"] = background_processes["0l_2tau"];
+  background_processes["3l_1tau_2jets"] = background_processes["0l_2tau"];
+  background_processes["3l_1tau_1or2jets"] = background_processes["0l_2tau"];
 
   double lumi_datacard = 2.3;
   double lumi_projection = 20.;

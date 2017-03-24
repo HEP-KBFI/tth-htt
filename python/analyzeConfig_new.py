@@ -113,6 +113,7 @@ class analyzeConfig:
         self.outputFile_hadd_stage1 = {}
         self.cfgFile_addBackgrounds = os.path.join(self.workingDir, "addBackgrounds_cfg.py")
         self.jobOptions_addBackgrounds = {}
+        self.jobOptions_addBackgrounds_sum = {}
         self.inputFiles_hadd_stage1_5 = {}
         self.outputFile_hadd_stage1_5 = {}
         self.cfgFile_addFakes = os.path.join(self.workingDir, "addBackgroundLeptonFakes_cfg.py")
@@ -236,7 +237,7 @@ class analyzeConfig:
         """
         lines = []
         lines.append("process.fwliteInput.fileNames = cms.vstring('%s')" % jobOptions['inputFile'])
-        lines.append("process.fwliteOutput.fileName = cms.string('%s')" % jobOptions['outputFile'])
+        lines.append("process.fwliteOutput.fileName = cms.string('%s')" % os.path.basename(jobOptions['outputFile']))
         lines.append("process.addBackgrounds.categories = cms.vstring(%s)" % jobOptions['categories'])
         lines.append("process.addBackgrounds.processes_input = cms.vstring(%s)" % jobOptions['processes_input'])
         lines.append("process.addBackgrounds.process_output = cms.string('%s')" % jobOptions['process_output'])
@@ -251,7 +252,7 @@ class analyzeConfig:
         """  
         lines = []
         lines.append("process.fwliteInput.fileNames = cms.vstring('%s')" % jobOptions['inputFile'])
-        lines.append("process.fwliteOutput.fileName = cms.string('%s')" % jobOptions['outputFile'])
+        lines.append("process.fwliteOutput.fileName = cms.string('%s')" % os.path.basename(jobOptions['outputFile']))
         lines.append("process.addBackgroundLeptonFakes.categories = cms.VPSet(")
         lines.append("    cms.PSet(")
         lines.append("        signal = cms.string('%s')," % jobOptions['category_signal']) 
@@ -322,20 +323,27 @@ class analyzeConfig:
         lines.append(")")
         create_cfg(self.cfgFile_make_plots, jobOptions['cfgFile_modified'], lines)
 
-    def createScript_sbatch(self):
-        """Creates the python script necessary to submit the analysis jobs to the batch system
+    def createScript_sbatch(self, executable, sbatchFile, jobOptions,
+                            key_cfg_file = 'cfgFile_modified', key_input_file = 'inputFile', key_output_file = 'outputFile', key_log_file = 'logFile'):
+        """Creates the python script necessary to submit 'generic' (addBackgrounds, addBackgroundFakes/addBackgroundFlips) jobs to the batch system
         """
         tools_createScript_sbatch(
-            sbatch_script_file_name = self.sbatchFile_analyze,
-            executable = self.executable_analyze,
-            cfg_file_names = { key: jobOptions['cfgFile_modified'] for key, jobOptions in self.jobOptions_analyze.items() },
-            input_file_names = { key: jobOptions['ntupleFiles'] for key, jobOptions in self.jobOptions_analyze.items() },
-            output_file_names = { key: jobOptions['histogramFile'] for key, jobOptions in self.jobOptions_analyze.items() },
-            log_file_names = { key: jobOptions['logFile'] for key, jobOptions in self.jobOptions_analyze.items() },
+            sbatch_script_file_name = sbatchFile,
+            executable = executable,
+            cfg_file_names = { key: value[key_cfg_file] for key, value in jobOptions.items() },
+            input_file_names = { key: value[key_input_file] for key, value in jobOptions.items() },
+            output_file_names = { key: value[key_output_file] for key, value in jobOptions.items() },
+            log_file_names = { key: value[key_log_file] for key, value in jobOptions.items() },
             working_dir = self.workingDir,
             max_num_jobs = self.max_num_jobs,
             cvmfs_error_log = self.cvmfs_error_log
         )
+
+    def createScript_sbatch_analyze(self, executable, sbatchFile, jobOptions):
+        """Creates the python script necessary to submit the analysis jobs to the batch system
+        """
+        self.createScript_sbatch(executable, sbatchFile, jobOptions,
+                                 'cfgFile_modified', 'ntupleFiles', 'histogramFile', 'logFile')
 
     def create_hadd_python_file(self, inputFiles, outputFile, hadd_stage_name):
         sbatch_hadd_file = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_hadd_%s_%s.py" % (self.channel, hadd_stage_name))
@@ -347,7 +355,7 @@ class analyzeConfig:
         """Adds the commands to Makefile that are necessary for running the analysis code on the Ntuple and filling the histograms
         """
         if self.is_sbatch:
-            lines_makefile.append("sbatch:")
+            lines_makefile.append("sbatch_analyze:")
             lines_makefile.append("\t%s %s" % ("python", self.sbatchFile_analyze))
             lines_makefile.append("")
         for jobOptions in self.jobOptions_analyze.values():
@@ -356,7 +364,7 @@ class analyzeConfig:
                 lines_makefile.append("\t%s %s &> %s" % (self.executable_analyze, jobOptions['cfgFile_modified'], jobOptions['logFile']))
                 lines_makefile.append("")
             elif self.is_sbatch:
-                lines_makefile.append("%s: %s" % (jobOptions['histogramFile'], "sbatch"))
+                lines_makefile.append("%s: %s" % (jobOptions['histogramFile'], "sbatch_analyze"))
                 lines_makefile.append("\t%s" % ":")  # CV: null command
                 lines_makefile.append("")
             self.filesToClean.append(jobOptions['histogramFile'])
@@ -371,10 +379,19 @@ class analyzeConfig:
             self.filesToClean.append(self.outputFile_hadd_stage1[key])
 
     def addToMakefile_addBackgrounds(self, lines_makefile):
-        for jobOptions in self.jobOptions_addBackgrounds.values():
-            lines_makefile.append("%s: %s" % (jobOptions['outputFile'], jobOptions['inputFile']))
-            lines_makefile.append("\t%s %s" % (self.executable_addBackgrounds, jobOptions['cfgFile_modified']))
+        if self.is_sbatch:
+            lines_makefile.append("sbatch_addBackgrounds: %s" % " ".join([ jobOptions['inputFile'] for jobOptions in self.jobOptions_addBackgrounds.values() ]))
+            lines_makefile.append("\t%s %s" % ("python", self.sbatchFile_addBackgrounds))
             lines_makefile.append("")
+        for jobOptions in self.jobOptions_addBackgrounds.values():
+            if self.is_makefile:
+                lines_makefile.append("%s: %s" % (jobOptions['outputFile'], jobOptions['inputFile']))
+                lines_makefile.append("\t%s %s &> %s" % (self.executable_addBackgrounds, jobOptions['cfgFile_modified'], jobOptions['logFile']))
+                lines_makefile.append("")
+            elif self.is_sbatch:
+                lines_makefile.append("%s: %s" % (jobOptions['outputFile'], "sbatch_addBackgrounds"))
+                lines_makefile.append("\t%s" % ":")  # CV: null command
+                lines_makefile.append("")
             self.filesToClean.append(jobOptions['outputFile'])
 
     def addToMakefile_hadd_stage1_5(self, lines_makefile):
@@ -390,10 +407,19 @@ class analyzeConfig:
             self.filesToClean.append(self.outputFile_hadd_stage1_5[key])
 
     def addToMakefile_addFakes(self, lines_makefile):
+        if self.is_sbatch:
+            lines_makefile.append("sbatch_addFakes: %s" % " ".join([ jobOptions['inputFile'] for jobOptions in self.jobOptions_addFakes.values() ]))
+            lines_makefile.append("\t%s %s" % ("python", self.sbatchFile_addFakes))
+            lines_makefile.append("")        
         for jobOptions in self.jobOptions_addFakes.values():
-            lines_makefile.append("%s: %s" % (jobOptions['outputFile'], jobOptions['inputFile']))
-            lines_makefile.append("\t%s %s" % (self.executable_addFakes, jobOptions['cfgFile_modified']))
-            lines_makefile.append("")
+            if self.is_makefile:
+                lines_makefile.append("%s: %s" % (jobOptions['outputFile'], jobOptions['inputFile']))
+                lines_makefile.append("\t%s %s &> %s" % (self.executable_addFakes, jobOptions['cfgFile_modified'], jobOptions['logFile']))
+                lines_makefile.append("")
+            elif self.is_sbatch:
+                lines_makefile.append("%s: %s" % (jobOptions['outputFile'], "sbatch_addFakes"))
+                lines_makefile.append("\t%s" % ":")  # CV: null command
+                lines_makefile.append("")
             self.filesToClean.append(jobOptions['outputFile'])
 
     def addToMakefile_backgrounds_from_data(self, lines_makefile):

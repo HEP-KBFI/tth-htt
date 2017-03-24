@@ -141,9 +141,9 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
           else:
             self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel,
               "_".join([ charge_selection ]), process_name)
-    for dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_HIST, DKEY_DCRD, DKEY_PLOT, DKEY_HADD_RT ]:
+    for dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_HIST, DKEY_LOGS, DKEY_DCRD, DKEY_PLOT, DKEY_HADD_RT ]:
       initDict(self.dirs, [ dir_type ])
-      if dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_LOGS, DKEY_HADD_RT ]:
+      if dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_LOGS, DKEY_DCRD, DKEY_PLOT, DKEY_HADD_RT ]:
         self.dirs[dir_type] = os.path.join(self.configDir, dir_type, self.channel)
       else:
         self.dirs[dir_type] = os.path.join(self.outputDir, dir_type, self.channel)
@@ -250,7 +250,7 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
     if self.is_sbatch:
       logging.info("Creating script for submitting '%s' jobs to batch system" % self.executable_analyze)
       self.sbatchFile_analyze = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_analyze_%s.py" % self.channel)
-      self.createScript_sbatch()    
+      self.createScript_sbatch_analyze(self.executable_analyze, self.sbatchFile_analyze, self.jobOptions_analyze)
 
     logging.info("Creating configuration files for executing 'comp_jetToTauFakeRate'")
     for charge_selection in self.charge_selections:

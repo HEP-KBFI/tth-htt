@@ -41,7 +41,8 @@ if __name__ == '__main__':
     logging.getLogger().setLevel(logging.DEBUG)
 
   path_pattern = os.path.join(
-    '/home', '%s', 'ttHAnalysis', str(args.era), args.version, '%s', args.channel
+    ##'/home', '%s', 'ttHAnalysis', str(args.era), args.version, '%s', args.channel
+    '/hdfs/local/ttH_2tau', '%s', 'ttHAnalysis', str(args.era), args.version, '%s', args.channel
   )
   analysis_path = path_pattern % (args.user, 'output_rle')
   logging.debug("Checking if path '{directory_name}' is there".format(directory_name = analysis_path))
@@ -52,10 +53,11 @@ if __name__ == '__main__':
   rle_pattern = re.compile('\d+:\d+:\d+')
 
   valid_analysis_types = {
-    '2lss_1tau' : [ 'Fakeable_wFakeRateWeights_SS_OS', 'Tight_OS_OS', 'Tight_SS_OS', ],
+    ##'2lss_1tau' : [ 'Fakeable_wFakeRateWeights_SS_OS', 'Tight_OS_OS', 'Tight_SS_OS', ],
+    ##'2lss_1tau' : [ 'Fakeable_wFakeRateWeights_SS_OS', 'Tight_SS_OS', ],
     ##'2lss_1tau' : [ 'Tight_SS_SS', ],
     ##'2lss_1tau' : [ 'Fakeable_wFakeRateWeights_SS_SS', ],
-    ##'2lss_1tau' : [ 'forBDTtraining_SS' ],
+    '2lss_1tau' : [ 'forBDTtraining_SS_OS' ],
     '3l_1tau'   : [ 'Fakeable_wFakeRateWeights_OS', 'Tight_OS', ],
     ##'3l_1tau'   : [ 'forBDTtraining_OS' ],
   }

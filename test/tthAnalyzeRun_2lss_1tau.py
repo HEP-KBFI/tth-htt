@@ -7,24 +7,33 @@ import os, logging, sys, getpass
 #   'forBDTtraining' : to run the analysis on the Ntuples with MEM variables added, and with a relaxed event selection, to increase the BDT training statistics
 #--------------------------------------------------------------------------------
 
-mode = "VHbb"
+#mode = "VHbb"
 #mode = "addMEM"
+mode = "forBDTtraining_beforeAddMEM"
+#mode = "forBDTtraining_afterAddMEM"
 
+lepton_selection = None
 hadTau_selection = None
 changeBranchNames = None
 if mode == "VHbb":
   from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2lss_1tau_2015 import samples_2015
   from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2lss_1tau_2016 import samples_2016
+  lepton_selection = ""
   hadTau_selection = "dR03mvaMedium"
   changeBranchNames = False
 elif mode == "addMEM":
   from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_2lss1tau_addMEM_v3 import samples_2016
+  lepton_selection = ""
   hadTau_selection = "dR03mvaMedium"
   changeBranchNames = True
-elif mode == "forBDTtraining":
+elif mode == "forBDTtraining_beforeAddMEM":
+  from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_FastSim import samples_2016
+  hadTau_selection = "dR03mvaLoose"
+  changeBranchNames = False
+elif mode == "forBDTtraining_afterAddMEM":
   from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_2lss1tau_addMEM_forBDTtraining import samples_2016
-  hadTau_selection = "dR03mvaVVLoose"
-  changeBranchNames = True
+  hadTau_selection = "dR03mvaLoose"
+  changeBranchNames = False
 else:
   raise ValueError("Invalid Configuration parameter 'mode' = %s !!" % mode)
 from tthAnalysis.HiggsToTauTau.analyzeConfig_2lss_1tau import analyzeConfig_2lss_1tau
@@ -44,7 +53,7 @@ elif ERA == "2016":
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "2017Mar17"
+version = "2017Mar23"
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -54,8 +63,8 @@ if __name__ == '__main__':
 
   analysis = analyzeConfig_2lss_1tau(
     configDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", ERA, version),
-    ##outputDir = os.path.join("/hdfs/local/ttH_2tau", getpass.getuser(), "ttHAnalysis", ERA, version),
-    outputDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", ERA, version),
+    outputDir = os.path.join("/hdfs/local/ttH_2tau", getpass.getuser(), "ttHAnalysis", ERA, version),
+    ##outputDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", ERA, version),
     executable_analyze = "analyze_2lss_1tau", cfgFile_analyze = "analyze_2lss_1tau_cfg.py",
     samples = samples, changeBranchNames = changeBranchNames,
     lepton_charge_selections = [ "OS", "SS" ],
@@ -130,11 +139,12 @@ if __name__ == '__main__':
     executable_addBackgrounds = "addBackgrounds",
     executable_addFakes = "addBackgroundLeptonFakes",
     executable_addFlips = "addBackgroundLeptonFlips", 
-    histograms_to_fit = [ "EventCounter", "numJets", "mvaDiscr_2lss", "mvaDiscr_2lss_1tau", "mTauTauVis", "memOutput_LR_type0", "memOutput_LR_type1" ],
+    histograms_to_fit = [ "EventCounter", "numJets", "mvaDiscr_2lss", "mvaDiscr_2lss_1tau_clustering", "mvaDiscr_2lss_1tau_likelihood", "mTauTauVis", "memOutput_LR_type0", "memOutput_LR_type1" ],
     select_rle_output = True)
 
-  if mode == "forBDTtraining":
+  if mode.find("forBDTtraining") != -1:
     analysis.set_BDT_training()
+    
   analysis.create()
 
   run_analysis = query_yes_no("Start jobs ?")

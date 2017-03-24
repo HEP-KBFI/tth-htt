@@ -237,6 +237,9 @@ int main(int argc, char* argv[])
   else throw cms::Exception("analyze_3l_1tau") 
     << "Invalid Configuration parameter 'chargeSumSelection' = " << chargeSumSelection_string << " !!\n";
 
+  int minNumJets = cfg_analyze.getParameter<int>("minNumJets");
+  std::cout << "minNumJets = " << minNumJets << std::endl;
+
   bool use_HIP_mitigation_bTag = cfg_analyze.getParameter<bool>("use_HIP_mitigation_bTag"); 
   std::cout << "use_HIP_mitigation_bTag = " << use_HIP_mitigation_bTag << std::endl;
   bool use_HIP_mitigation_mediumMuonId = cfg_analyze.getParameter<bool>("use_HIP_mitigation_mediumMuonId"); 
@@ -1164,15 +1167,15 @@ int main(int argc, char* argv[])
     cutFlowHistManager->fillHistograms("presel lepton trigger match", lumiScale);
 
     // apply requirement on jets (incl. b-tagged jets) and hadronic taus on preselection level
-    if ( !(selJets.size() >= 2) ) {
+    if ( !((int)selJets.size() >= minNumJets) ) { 
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS selJets selection." << std::endl;
 	printJetCollection("selJets", selJets);
       }
       continue;
     }
-    cutFlowTable.update(">= 2 jets (1)");
-    cutFlowHistManager->fillHistograms(">= 2 jets (1)", lumiScale);
+    cutFlowTable.update(Form(">= %i jets (1)", minNumJets));
+    cutFlowHistManager->fillHistograms(Form(">= %i jets (1)", minNumJets), lumiScale);
     if ( !(selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS selBJets selection." << std::endl;
@@ -1459,15 +1462,15 @@ int main(int argc, char* argv[])
     cutFlowHistManager->fillHistograms("sel lepton trigger match", evtWeight);
 
     // apply requirement on jets (incl. b-tagged jets) and hadronic taus on level of final event selection
-    if ( !(selJets.size() >= 2) ) {
+    if ( !((int)selJets.size() >= minNumJets) ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS selJets selection." << std::endl;
 	printJetCollection("selJets", selJets);
       }
       continue;
     }
-    cutFlowTable.update(">= 2 jets (2)", evtWeight);
-    cutFlowHistManager->fillHistograms(">= 2 jets (2)", evtWeight);
+    cutFlowTable.update(Form(">= %i jets (2)", minNumJets), evtWeight);
+    cutFlowHistManager->fillHistograms(Form(">= %i jets (2)", minNumJets), evtWeight);
     if ( !(selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1)) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS selBJets selection." << std::endl;
