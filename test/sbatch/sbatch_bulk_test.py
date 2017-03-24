@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 from tthAnalysis.HiggsToTauTau.sbatchManager_v2 import sbatchManager, sbatchManagerRuntimeError
-import os, unittest, uuid
+import os, unittest, shutil, uuid
 
 # use a directory which is universally available by cluster nodes, i.e. either /home or /hdfs
 testDir = os.path.expanduser('~/test_bulk_sbatch')
@@ -73,4 +73,5 @@ suite_instance = suite()
 runner = unittest.TextTestRunner()
 runner.run(suite_instance)
 
-print("Remove directory {dirname} once all jobs submitted here are finished/cancelled".format(dirname = testDir))
+if os.path.isdir(testDir):
+  shutil.rmtree(testDir)

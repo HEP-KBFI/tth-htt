@@ -327,7 +327,11 @@ class sbatchManager:
         with codecs.open(script_file, "w", "utf-8") as f:
             f.write(script)
 
-        self.jobIds[self.submit(sbatch_command)] = Status.submitted
+        self.jobIds[self.submit(sbatch_command)] = {
+            'status'  : Status.submitted,
+            'log_wrap': wrapper_log_file,
+            'log_exec': executable_log_file,
+        }
 
     def submit_job_version2(
         self,
@@ -377,7 +381,11 @@ class sbatchManager:
             f.flush()
             os.fsync(f.fileno())
 
-        self.jobIds[self.submit(sbatch_command)] = Status.submitted
+        self.jobIds[self.submit(sbatch_command)] = {
+            'status'   : Status.submitted,
+            'log_wrap' : wrapper_log_file,
+            'log_exec' : executable_log_file,
+        }
 
     def get_scratch_dir(self):
         scratch_dir = "/scratch/%s" % getpass.getuser()
@@ -394,6 +402,7 @@ class sbatchManager:
     def waitForJobs(self):
         """Waits for all sbatch jobs submitted by this instance of sbatchManager to finish processing
         """
+        text_line = '-' * 120
 
         # Set a delimiter, which distinguishes entries b/w different jobs
         delimiter = ','
@@ -422,7 +431,7 @@ class sbatchManager:
 
         # Initially, all jobs are marked as submitted so we have to go through all jobs and check their exit codes
         # even if some of them have already finished
-        jobIds_set = set([ k for k in self.jobIds if self.jobIds[k] == Status.submitted])
+        jobIds_set = set([ id_ for id_ in self.jobIds if self.jobIds[id_]['status'] == Status.submitted])
         nofJobs_left = len(jobIds_set)
         while nofJobs_left > 0:
             # Get the list of running jobs and convert them to a set
@@ -454,6 +463,21 @@ class sbatchManager:
                             jobIds  = failed_jobs_str,
                             reasons = ', '.join(map(Status.toString, errors)),
                         ))
+                        sys.stderr.write('%s\n' % text_line)
+                        for failed_job in failed_jobs:
+                            for log in zip(['wrapper', 'executable'], ['log_wrap', 'log_exec']):
+                                logfile = self.jobIds[failed_job][log[1]]
+                                if os.path.isfile(logfile):
+                                    logfile_contents = open(logfile, 'r').read()
+                                else:
+                                    logfile_contents = '<file is missing>'
+                                sys.stderr.write('Job ID {id} {description} log ({path}):\n{line}\n{log}\n{line}\n'.format(
+                                    id          = failed_job,
+                                    description = log[0],
+                                    path        = logfile,
+                                    log         = logfile_contents,
+                                    line        = text_line,
+                                ))
                         # Raise the first error at hand
                         raise Status.raiseError(errors[0])
                     else:
@@ -462,9 +486,9 @@ class sbatchManager:
                         ))
                     # Mark successfully finished jobs as completed so that won't request their status code again
                     for completed_id in completion:
-                        self.jobIds[completed_id] = Status.completed
+                        self.jobIds[completed_id]['status'] = Status.completed
 
-            jobIds_set = set([ k for k in self.jobIds if self.jobIds[k] == Status.submitted])
+            jobIds_set = set([ id_ for id_ in self.jobIds if self.jobIds[id_]['status'] == Status.submitted])
             nofJobs_left = len(jobIds_set)
             if nofJobs_left > 0:
                 time.sleep(self.poll_interval)
