@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import os, logging, sys, getpass, uuid
+import os, logging, sys, getpass
 
 from tthAnalysis.HiggsToTauTau.addMEMConfig_3l_1tau import addMEMConfig_3l_1tau
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
@@ -32,8 +32,6 @@ if __name__ == '__main__':
     stream = sys.stdout,
     level  = logging.DEBUG,
     format = '%(asctime)s - %(levelname)s: %(message)s')
-  
-  uuid_comment = uuid.uuid4()
 
   addMEMProduction = addMEMConfig_3l_1tau(
     treeName                 = 'tree',
@@ -51,7 +49,6 @@ if __name__ == '__main__':
     leptonSelection          = "Loose",
     hadTauSelection          = "Tight|dR03mvaVVLoose",
     isForBDTtraining         = isForBDTtraining,
-    pool_id                  = uuid_comment,
   )
 
   goodToGo = addMEMProduction.create()

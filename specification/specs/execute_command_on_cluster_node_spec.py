@@ -1,5 +1,5 @@
-import subprocess
-import time
+import uuid
+
 from tthAnalysis.HiggsToTauTau.jobTools import run_cmd
 from tthAnalysis.HiggsToTauTau.sbatchManager import sbatchManager
 
@@ -14,7 +14,8 @@ def execute_command_on_cluster_node_spec():
 
     # Run task
 
-    m = sbatchManager()
+    pool_id = uuid.uuid4()
+    m = sbatchManager(pool_id)
     m.setWorkingDir('%(cmssw_base)s/src/analysis2mu1b1j/analysis2mu1b1j/test' % config)
 
     m.submit_job_version2(
@@ -30,7 +31,15 @@ def execute_command_on_cluster_node_spec():
 
     # Check the result
 
-    m.waitForJobs()
+    try:
+        m.waitForJobs()
+    except:
+        got_exception = True
+    else:
+        got_exception = False
+
+    if got_exception:
+        return False
 
     with file('%(temp_dir)s/execute_command_on_cluster_node_spec/result.txt' % config) as f:
         result = f.read().strip()
@@ -40,21 +49,4 @@ def execute_command_on_cluster_node_spec():
             print('FAILED: Execute on cluster node failed.')
             return False
 
-
-    # Log RAM and CPU usage information
-
-    m.log_ram_and_cpu_usage_information(
-        log_file = '%(temp_dir)s/execute_command_on_cluster_node_spec/cpu_and_ram_info.log' % config
-    )
-
-    with file('%(temp_dir)s/execute_command_on_cluster_node_spec/cpu_and_ram_info.log' % config) as f:
-        result = f.read().strip()
-
-        if result.find('MaxVMSize') == -1:
-            print("$TEST_DIR/ did not contain cpu_and_ram_info.log with content 'MaxVMSize'.")
-            print('FAILED: Execute on cluster node failed.')
-            return False
-
-
-    print('PASSED: Execute on cluster node passed.')
     return True

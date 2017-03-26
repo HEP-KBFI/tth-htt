@@ -1,8 +1,31 @@
 #!/usr/bin/env python
-from tthAnalysis.HiggsToTauTau.sbatchManager_v2 import sbatchManager, sbatchManagerRuntimeError
+from tthAnalysis.HiggsToTauTau.sbatchManager import sbatchManager, sbatchManagerRuntimeError
 import os, unittest, shutil, uuid
 
-# use a directory which is universally available by cluster nodes, i.e. either /home or /hdfs
+'''Tests sbatchManager submission and failure detection with a set of jobs
+
+The aim of this test is to verify that sbatchManager can handle a set of jobs submitted from its instance.
+
+The test cases are:
+1) 100 jobs which should finish successfully
+2) 99 jobs which should finish successfully + 1 job which should fail, thus propagating the errors up to sbatchManager
+Since we expect a job to fail in case 2), the test can only pass if the sbatchManager instance throws an error of type
+sbatchManagerRuntimeError.
+
+In order to run the test, navigate to the directory where this file resides and execute it:
+
+$ ./sbatch_bulk_test.py
+
+If you see the following message
+
+> Ran 2 tests in ...s
+>
+> OK
+
+then the tests passed.
+'''
+
+# use a directory which is universally available by cluster nodes and able to support writing in append mode, i.e. /home
 testDir = os.path.expanduser('~/test_bulk_sbatch')
 if os.path.isdir(testDir):
   raise ValueError("Directory '%s' already exists; pick another" % testDir)

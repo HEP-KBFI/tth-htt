@@ -1,4 +1,4 @@
-import codecs, os, logging, ROOT, array
+import codecs, os, logging, ROOT, array, uuid
 
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd
 from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg, generateInputFileList
@@ -30,7 +30,7 @@ class addMEMConfig:
     """
     def __init__(self, treeName, outputDir, cfgDir, executable_addMEM, samples, era, debug, running_method,
                  max_files_per_job, mem_integrations_per_job, max_mem_integrations, num_parallel_jobs,
-                 leptonSelection, hadTauSelection, isForBDTtraining, pool_id, channel, maxPermutations_addMEM):
+                 leptonSelection, hadTauSelection, isForBDTtraining, channel, maxPermutations_addMEM, pool_id = ''):
 
         self.treeName = treeName
         self.outputDir = outputDir
@@ -59,7 +59,7 @@ class addMEMConfig:
         self.makefile = os.path.join(
           self.cfgDir, "Makefile_%s" % self.channel)
         self.num_parallel_jobs = num_parallel_jobs
-        self.pool_id = pool_id
+        self.pool_id = pool_id if pool_id else uuid.uuid4()
 
         self.workingDir = os.getcwd()
         print "Working directory is: " + self.workingDir

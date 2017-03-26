@@ -12,6 +12,8 @@ def createScript_sbatch(sbatch_script_file_name,
     """
     if not working_dir:
         working_dir = os.getcwd()
+    if not pool_id:
+        raise ValueError('pool_id is empty')
     sbatch_analyze_lines = generate_sbatch_lines(
       executable,
       cfg_file_names, input_file_names, output_file_names, log_file_names,
@@ -21,10 +23,12 @@ def createScript_sbatch(sbatch_script_file_name,
     
 def generate_sbatch_lines(executable, cfg_file_names, input_file_names, output_file_names, log_file_names,
                           working_dir, max_num_jobs, cvmfs_error_log = None, pool_id = ''):
+    if not pool_id:
+        raise ValueError('pool_id is empty')
     lines_sbatch = []
-    lines_sbatch.append("from tthAnalysis.HiggsToTauTau.sbatchManager%s import sbatchManager" % ('_v2' if pool_id else ''))
+    lines_sbatch.append("from tthAnalysis.HiggsToTauTau.sbatchManager import sbatchManager")
     lines_sbatch.append("")
-    lines_sbatch.append("m = sbatchManager(%s)" % ("'%s'" % pool_id if pool_id else ''))
+    lines_sbatch.append("m = sbatchManager('%s')" % pool_id)
     lines_sbatch.append("m.setWorkingDir('%s')" % working_dir)
 
     num_jobs = 0
@@ -104,6 +108,8 @@ def createScript_sbatch_hadd(sbatch_script_file_name, input_file_names, output_f
     """
     if not working_dir:
         working_dir = os.getcwd()
+    if not pool_id:
+        raise ValueError('pool_id is empty')
     sbatch_hadd_lines = generate_sbatch_lines_hadd(
         input_file_names = input_file_names,
         output_file_name = output_file_name,
@@ -123,11 +129,12 @@ def generate_sbatch_lines_hadd(input_file_names, output_file_name, working_dir, 
         'waitForJobs'      : waitForJobs,
         'auxDirName'       : auxDirName,
         'pool_id'          : pool_id,
-        'version'          : '_v2' if pool_id else '',
     }
-    sbatch_template = """from tthAnalysis.HiggsToTauTau.sbatchManager{{version}} import sbatchManager
+    if not pool_id:
+        raise ValueError('pool_id is empty')
+    sbatch_template = """from tthAnalysis.HiggsToTauTau.sbatchManager import sbatchManager
 
-m = sbatchManager({% if pool_id %}'{{pool_id}}'{% endif %})
+m = sbatchManager('{{pool_id}}')
 m.setWorkingDir('{{working_dir}}')
 m.hadd_in_cluster(
     inputFiles={{input_file_names}},
