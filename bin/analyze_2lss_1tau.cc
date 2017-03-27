@@ -763,7 +763,7 @@ int main(int argc, char* argv[])
       "mindr_tau_jet", "avg_dr_jet", "ptmiss",  "htmiss", "tau_mva", "tau_pt", "tau_eta",
       "dr_leps", "mTauTauVis1", "mTauTauVis2", "lumiScale", "genWeight", "evtWeight",
       "memOutput_isValid", "memOutput_errorFlag", "memOutput_type", "memOutput_ttH", "memOutput_ttZ",
-      "memOutput_ttZ_Zll", "memOutput_tt", "memOutput_LR"
+      "memOutput_ttZ_Zll", "memOutput_tt", "memOutput_LR",
       "lep1_genLepPt", "lep2_genLepPt", 
       "tau_genTauPt", "lep1_fake_prob", "lep2_fake_prob", "tau_fake_prob",
       "mvaOutput_2lss_ttV", "mvaOutput_2lss_ttbar", "mvaDiscr_2lss"
