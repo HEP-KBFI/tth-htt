@@ -452,6 +452,10 @@ int main(int argc, char* argv[])
   if ( hadTauSelection_part2 != "" ) tightHadTauSelector.set(hadTauSelection_part2);
   tightHadTauSelector.set_min_antiElectron(hadTauSelection_antiElectron);
   tightHadTauSelector.set_min_antiMuon(hadTauSelection_antiMuon);
+  RecoHadTauSelectorTight tightHadTauFilter(era);
+  tightHadTauFilter.set("dR03mvaMedium");
+  tightHadTauFilter.set_min_antiElectron(hadTauSelection_antiElectron);
+  tightHadTauFilter.set_min_antiMuon(hadTauSelection_antiMuon);
   
   RecoJetReader* jetReader = new RecoJetReader(era, isMC, Form("n%s", branchName_jets.data()), branchName_jets);
   if ( use_HIP_mitigation_bTag ) jetReader->enable_HIP_mitigation();
@@ -760,9 +764,12 @@ int main(int argc, char* argv[])
       "dr_leps", "mTauTauVis1", "mTauTauVis2", "lumiScale", "genWeight", "evtWeight",
       "memOutput_isValid", "memOutput_errorFlag", "memOutput_type", "memOutput_ttH", "memOutput_ttZ",
       "memOutput_ttZ_Zll", "memOutput_tt", "memOutput_LR"
+      "lep1_genLepPt", "lep2_genLepPt", 
+      "tau_genTauPt", "lep1_fake_prob", "lep2_fake_prob", "tau_fake_prob",
+      "mvaOutput_2lss_ttV", "mvaOutput_2lss_ttbar", "mvaDiscr_2lss"
     );
     bdt_filler->register_variable<int_type>(
-      "nJet", "nBJetLoose", "nBJetMedium"
+      "nJet", "nBJetLoose", "nBJetMedium", "lep1_isTight", "lep2_isTight", "tau_isTight"
     );
     bdt_filler->bookTree(fs);
   }
@@ -1232,6 +1239,7 @@ int main(int argc, char* argv[])
     }
 
     double weight_fakeRate = 1.;
+    if(!selectBDT){
     if ( applyFakeRateWeights == kFR_3L ) {
       double prob_fake_lepton_lead = 1.;
       if      ( std::abs(selLepton_lead->pdgId()) == 11 ) prob_fake_lepton_lead = leptonFakeRateInterface->getWeight_e(selLepton_lead->cone_pt(), selLepton_lead->absEta());
@@ -1287,6 +1295,7 @@ int main(int argc, char* argv[])
 	std::cout << "weight_data_to_MC_correction_tau = " << weight_data_to_MC_correction_tau << std::endl;
       }
       evtWeight *= weight_data_to_MC_correction_tau;
+    }
     }
     if ( isDEBUG ) {
       std::cout << "evtWeight = " << evtWeight << std::endl;
@@ -1720,6 +1729,13 @@ int main(int argc, char* argv[])
       (*selEventsFile) << run << ":" << lumi << ":" << event << std::endl;
     }
 
+    //FR weights for bdt ntuple
+    double prob_fake_lepton_lead = 1.;
+    if      ( std::abs(selLepton_lead->pdgId()) == 11 ) prob_fake_lepton_lead = leptonFakeRateInterface->getWeight_e(selLepton_lead->cone_pt(), selLepton_lead->absEta());
+    else if ( std::abs(selLepton_lead->pdgId()) == 13 ) prob_fake_lepton_lead = leptonFakeRateInterface->getWeight_mu(selLepton_lead->cone_pt(), selLepton_lead->absEta());
+    double prob_fake_lepton_sublead = 1.;
+    if      ( std::abs(selLepton_sublead->pdgId()) == 11 ) prob_fake_lepton_sublead = leptonFakeRateInterface->getWeight_e(selLepton_sublead->cone_pt(), selLepton_sublead->absEta());
+    else if ( std::abs(selLepton_sublead->pdgId()) == 13 ) prob_fake_lepton_sublead = leptonFakeRateInterface->getWeight_mu(selLepton_sublead->cone_pt(), selLepton_sublead->absEta());
     if(bdt_filler)
     {
       bdt_filler -> operator()({ run, lumi, event })
@@ -1747,7 +1763,7 @@ int main(int argc, char* argv[])
           ("dr_leps",             deltaR(selLepton_lead -> p4(), selLepton_sublead -> p4()))
           ("mTauTauVis1",         mTauTauVis1_sel)
           ("mTauTauVis2",         mTauTauVis2_sel)
-          ("memOutput_isValid",   memOutput_2lss_1tau_matched.is_initialized() ? memOutput_2lss_1tau_matched.isValid()        : -100.)
+	  ("memOutput_isValid",   memOutput_2lss_1tau_matched.is_initialized() ? memOutput_2lss_1tau_matched.isValid()        : -100.)
           ("memOutput_errorFlag", memOutput_2lss_1tau_matched.is_initialized() ? memOutput_2lss_1tau_matched.errorFlag()      : -100.)
           ("memOutput_type",      memOutput_2lss_1tau_matched.is_initialized() ? memOutput_2lss_1tau_matched.type()           : -100.)
           ("memOutput_ttH",       memOutput_2lss_1tau_matched.is_initialized() ? memOutput_2lss_1tau_matched.weight_ttH()     : -100.)
@@ -1755,12 +1771,24 @@ int main(int argc, char* argv[])
           ("memOutput_ttZ_Zll",   memOutput_2lss_1tau_matched.is_initialized() ? memOutput_2lss_1tau_matched.weight_ttZ_Zll() : -100.)
           ("memOutput_tt",        memOutput_2lss_1tau_matched.is_initialized() ? memOutput_2lss_1tau_matched.weight_tt()      : -100.)
           ("memOutput_LR",        memOutput_2lss_1tau_matched.is_initialized() ? memOutput_2lss_1tau_matched.LR()             : -100.)
+	  ("lep1_genLepPt",       (selLepton_lead->genLepton() != 0) ? selLepton_lead->genLepton()->pt() : 0.)
+	  ("lep2_genLepPt",       (selLepton_sublead->genLepton() != 0) ? selLepton_sublead->genLepton() ->pt() : 0.)
+	  ("tau_genTauPt",        (selHadTau->genHadTau() != 0) ? selHadTau->genHadTau()->pt() : 0.)
+	  ("lep1_fake_prob",      prob_fake_lepton_lead)
+	  ("lep2_fake_prob",      prob_fake_lepton_sublead)
+	  ("tau_fake_prob",       jetToTauFakeRateInterface->getWeight_lead(selHadTau->pt(), selHadTau->absEta()))
+	  ("mvaOutput_2lss_ttV",    mvaOutput_2lss_ttV)
+	  ("mvaOutput_2lss_ttbar",  mvaOutput_2lss_ttbar)
+	  ("mvaDiscr_2lss",         mvaDiscr_2lss)
           ("lumiScale",           lumiScale)
           ("genWeight",           genWeight)
           ("evtWeight",           evtWeight)
           ("nJet",                selJets.size())
           ("nBJetLoose",          selBJets_loose.size())
           ("nBJetMedium",         selBJets_medium.size())
+	  ("lep1_isTight",        int(selLepton_lead -> isTight()))
+	  ("lep2_isTight",        int(selLepton_sublead -> isTight()))
+	  ("tau_isTight",         int(tightHadTauFilter(*selHadTau)))
         .fill()
       ;
     }
