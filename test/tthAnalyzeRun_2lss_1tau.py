@@ -27,21 +27,25 @@ if mode == "VHbb":
   from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2lss_1tau_2016 import samples_2016
   hadTau_selection = "dR03mvaMedium"
   changeBranchNames = False
+  applyFakeRateWeights  = "2lepton"
 
 elif mode == "addMEM":
   from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_2lss1tau_addMEM_v3 import samples_2016
   hadTau_selection = "dR03mvaMedium"
   changeBranchNames = True
+  applyFakeRateWeights  = "2lepton"
 
 elif mode == "forBDTtraining_beforeAddMEM":
   from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_FastSim import samples_2016
   hadTau_selection = "dR03mvaLoose"
   changeBranchNames = False
+  applyFakeRateWeights = "3L"
 
 elif mode == "forBDTtraining_afterAddMEM":
   from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_2lss1tau_addMEM_forBDTtraining_v2 import samples_2016
   hadTau_selection = "dR03mvaLoose"
   changeBranchNames = True
+  applyFakeRateWeights = "3L"
 
 else:
   raise ValueError("Invalid Configuration parameter 'mode' = %s !!" % mode)
@@ -83,7 +87,7 @@ if __name__ == '__main__':
     # CV: apply "fake" background estimation to leptons only and not to hadronic taus, as discussed on slide 10 of
     #     https://indico.cern.ch/event/597028/contributions/2413742/attachments/1391684/2120220/16.12.22_ttH_Htautau_-_Review_of_systematics.pdf
     ##applyFakeRateWeights      = "3L",
-    applyFakeRateWeights      = "2lepton",
+    applyFakeRateWeights      = applyFakeRateWeights,
     chargeSumSelections       = [ "OS", "SS" ],
     central_or_shifts         = [
       "central",
