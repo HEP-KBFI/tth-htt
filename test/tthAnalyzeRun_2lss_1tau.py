@@ -14,71 +14,54 @@ from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 #                                   and with a relaxed event selection, to increase the BDT training statistics
 #--------------------------------------------------------------------------------
 
-<<<<<<< HEAD
 #mode = "VHbb"
 mode = "addMEM"
 #mode = "forBDTtraining_beforeAddMEM"
 #mode = "forBDTtraining_afterAddMEM"
 
-hadTau_selection = None
-changeBranchNames = None
-=======
-ERA     = "2016"
-version = "2017Mar26"
-
-#mode    = "VHbb"
-#mode    = "addMEM"
-#mode    = "forBDTtraining_beforeAddMEM"
-mode    = "forBDTtraining_afterAddMEM"
-
->>>>>>> 6b09a382ce26d867d359aa1bc6cfba8a67111f5a
 if mode == "VHbb":
   from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2lss_1tau_2015 import samples_2015
   from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2lss_1tau_2016 import samples_2016
   hadTau_selection = "dR03mvaMedium"
   changeBranchNames = False
   applyFakeRateWeights  = "2lepton"
-
 elif mode == "addMEM":
   from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_2lss1tau_addMEM_v3 import samples_2016
   hadTau_selection = "dR03mvaMedium"
   changeBranchNames = True
   applyFakeRateWeights  = "2lepton"
-
 elif mode == "forBDTtraining_beforeAddMEM":
   from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_FastSim import samples_2016
   hadTau_selection = "dR03mvaLoose"
   changeBranchNames = False
   applyFakeRateWeights = "3L"
-
 elif mode == "forBDTtraining_afterAddMEM":
   from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_2lss1tau_addMEM_forBDTtraining_v2 import samples_2016
   hadTau_selection = "dR03mvaLoose"
   changeBranchNames = True
   applyFakeRateWeights = "3L"
-
 else:
   raise ValueError("Invalid Configuration parameter 'mode' = %s !!" % mode)
 
+#ERA = "2015"
+ERA = "2016"
+
+samples = None
+LUMI = None
 if ERA == "2015":
   try:
     samples = samples_2015
   except NameError:
     raise ValueError("Mode {mode} not available for era {era}".format(mode = mode, era = ERA))
   LUMI =  2.3e+3 # 1/pb
-
 elif ERA == "2016":
   samples = samples_2016
   LUMI = 35.9e+3 # 1/pb
-
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-<<<<<<< HEAD
 version = "2017Apr02"
 
-=======
->>>>>>> 6b09a382ce26d867d359aa1bc6cfba8a67111f5a
 if __name__ == '__main__':
   logging.basicConfig(
     stream = sys.stdout,
@@ -169,27 +152,20 @@ if __name__ == '__main__':
     running_method            = "sbatch",
     num_parallel_jobs         = 8,
     executable_addBackgrounds = "addBackgrounds",
-<<<<<<< HEAD
-    executable_addFakes = "addBackgroundLeptonFakes",
-    executable_addFlips = "addBackgroundLeptonFlips", 
-    histograms_to_fit = [ "EventCounter", "numJets", "mvaDiscr_2lss", "mvaDiscr_2lss_1tau", "mvaDiscr_2lss_1tau_wMEM", "mTauTauVis", "memOutput_LR_type0", "memOutput_LR_type1" ],
-    select_rle_output = True)
-=======
     executable_addFakes       = "addBackgroundLeptonFakes",
-    executable_addFlips       = "addBackgroundLeptonFlips",
+    executable_addFlips       = "addBackgroundLeptonFlips", 
     histograms_to_fit         = [
       "EventCounter",
       "numJets",
       "mvaDiscr_2lss",
-      "mvaDiscr_2lss_1tau_clustering",
-      "mvaDiscr_2lss_1tau_likelihood",
+      "mvaDiscr_2lss_1tau",
+      "mvaDiscr_2lss_1tau_wMEM",
       "mTauTauVis",
       "memOutput_LR_type0",
       "memOutput_LR_type1",
     ],
     select_rle_output         = True,
   )
->>>>>>> 6b09a382ce26d867d359aa1bc6cfba8a67111f5a
 
   if mode.find("forBDTtraining") != -1:
     analysis.set_BDT_training()
