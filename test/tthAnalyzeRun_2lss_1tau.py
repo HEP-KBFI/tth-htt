@@ -8,22 +8,19 @@ import os, logging, sys, getpass
 #--------------------------------------------------------------------------------
 
 #mode = "VHbb"
-#mode = "addMEM"
-mode = "forBDTtraining_beforeAddMEM"
+mode = "addMEM"
+#mode = "forBDTtraining_beforeAddMEM"
 #mode = "forBDTtraining_afterAddMEM"
 
-lepton_selection = None
 hadTau_selection = None
 changeBranchNames = None
 if mode == "VHbb":
   from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2lss_1tau_2015 import samples_2015
   from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2lss_1tau_2016 import samples_2016
-  lepton_selection = ""
   hadTau_selection = "dR03mvaMedium"
   changeBranchNames = False
 elif mode == "addMEM":
   from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_2lss1tau_addMEM_v3 import samples_2016
-  lepton_selection = ""
   hadTau_selection = "dR03mvaMedium"
   changeBranchNames = True
 elif mode == "forBDTtraining_beforeAddMEM":
@@ -53,7 +50,7 @@ elif ERA == "2016":
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "2017Mar23"
+version = "2017Apr02"
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -139,7 +136,7 @@ if __name__ == '__main__':
     executable_addBackgrounds = "addBackgrounds",
     executable_addFakes = "addBackgroundLeptonFakes",
     executable_addFlips = "addBackgroundLeptonFlips", 
-    histograms_to_fit = [ "EventCounter", "numJets", "mvaDiscr_2lss", "mvaDiscr_2lss_1tau_clustering", "mvaDiscr_2lss_1tau_likelihood", "mTauTauVis", "memOutput_LR_type0", "memOutput_LR_type1" ],
+    histograms_to_fit = [ "EventCounter", "numJets", "mvaDiscr_2lss", "mvaDiscr_2lss_1tau", "mvaDiscr_2lss_1tau_wMEM", "mTauTauVis", "memOutput_LR_type0", "memOutput_LR_type1" ],
     select_rle_output = True)
 
   if mode.find("forBDTtraining") != -1:
@@ -147,8 +144,8 @@ if __name__ == '__main__':
     
   analysis.create()
 
-  run_analysis = query_yes_no("Start jobs ?")
-  ##run_analysis = True
+  ##run_analysis = query_yes_no("Start jobs ?")
+  run_analysis = True
   if run_analysis:
     analysis.run()
   else:

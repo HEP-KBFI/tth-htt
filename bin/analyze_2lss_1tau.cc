@@ -552,13 +552,44 @@ int main(int argc, char* argv[])
   std::vector<std::string> mvaInputVariables_2lss_1tau = get_mvaInputVariables(mvaInputVariables_2lss_1tau_ttV, mvaInputVariables_2lss_1tau_ttbar);
   std::map<std::string, double> mvaInputs_2lss_1tau;
 
-  std::string inputFileName_mva_mapping_2lss_1tau_clustering = "tthAnalysis/HiggsToTauTau/data/2lss_1tau_BDT_mapping_clustering.root";
-  TFile* inputFile_mva_mapping_2lss_1tau_clustering = openFile(LocalFileInPath(inputFileName_mva_mapping_2lss_1tau_clustering));
-  TH2* mva_mapping_2lss_1tau_clustering = loadTH2(inputFile_mva_mapping_2lss_1tau_clustering, "hBinning");
+  std::string inputFileName_mva_mapping_2lss_1tau = "tthAnalysis/HiggsToTauTau/data/2lss_1tau_BDT_mapping_likelihood.root";
+  TFile* inputFile_mva_mapping_2lss_1tau = openFile(LocalFileInPath(inputFileName_mva_mapping_2lss_1tau));
+  TH2* mva_mapping_2lss_1tau = loadTH2(inputFile_mva_mapping_2lss_1tau, "hTargetBinning");
 
-  std::string inputFileName_mva_mapping_2lss_1tau_likelihood = "tthAnalysis/HiggsToTauTau/data/2lss_1tau_BDT_mapping_likelihood.root";
-  TFile* inputFile_mva_mapping_2lss_1tau_likelihood = openFile(LocalFileInPath(inputFileName_mva_mapping_2lss_1tau_likelihood));
-  TH2* mva_mapping_2lss_1tau_likelihood = loadTH2(inputFile_mva_mapping_2lss_1tau_likelihood, "hTargetBinning");
+  std::string mvaFileName_2lss_1tau_ttV_wMEM = "tthAnalysis/HiggsToTauTau/data/2lss_1tau_ttV_BDTGwMEM.weights.xml";
+  std::vector<std::string> mvaInputVariables_2lss_1tau_ttV_wMEM;
+  mvaInputVariables_2lss_1tau_ttV_wMEM.push_back("mindr_lep1_jet");
+  mvaInputVariables_2lss_1tau_ttV_wMEM.push_back("mindr_lep2_jet");
+  mvaInputVariables_2lss_1tau_ttV_wMEM.push_back("avg_dr_jet");
+  mvaInputVariables_2lss_1tau_ttV_wMEM.push_back("TMath::Max(TMath::Abs(lep1_eta),TMath::Abs(lep2_eta))");
+  mvaInputVariables_2lss_1tau_ttV_wMEM.push_back("lep1_conePt");
+  mvaInputVariables_2lss_1tau_ttV_wMEM.push_back("lep2_conePt");
+  mvaInputVariables_2lss_1tau_ttV_wMEM.push_back("mT_lep1");
+  mvaInputVariables_2lss_1tau_ttV_wMEM.push_back("dr_leps");
+  mvaInputVariables_2lss_1tau_ttV_wMEM.push_back("mTauTauVis1");
+  mvaInputVariables_2lss_1tau_ttV_wMEM.push_back("mTauTauVis2");
+  mvaInputVariables_2lss_1tau_ttV_wMEM.push_back("memOutput_LR");
+  TMVAInterface mva_2lss_1tau_ttV_wMEM(mvaFileName_2lss_1tau_ttV_wMEM, mvaInputVariables_2lss_1tau_ttV_wMEM);
+
+  std::string mvaFileName_2lss_1tau_ttbar_wMEM = "tthAnalysis/HiggsToTauTau/data/2lss_1tau_ttbar_BDTGwMEM.weights.xml";
+  std::vector<std::string> mvaInputVariables_2lss_1tau_ttbar_wMEM;
+  mvaInputVariables_2lss_1tau_ttbar_wMEM.push_back("nJet");
+  mvaInputVariables_2lss_1tau_ttbar_wMEM.push_back("mindr_lep1_jet");
+  mvaInputVariables_2lss_1tau_ttbar_wMEM.push_back("avg_dr_jet");
+  mvaInputVariables_2lss_1tau_ttbar_wMEM.push_back("TMath::Max(TMath::Abs(lep1_eta),TMath::Abs(lep2_eta))");
+  mvaInputVariables_2lss_1tau_ttbar_wMEM.push_back("lep2_conePt");
+  mvaInputVariables_2lss_1tau_ttbar_wMEM.push_back("dr_leps");
+  mvaInputVariables_2lss_1tau_ttbar_wMEM.push_back("tau_pt");
+  mvaInputVariables_2lss_1tau_ttbar_wMEM.push_back("dr_lep1_tau");
+  mvaInputVariables_2lss_1tau_ttbar_wMEM.push_back("memOutput_LR");
+  TMVAInterface mva_2lss_1tau_ttbar_wMEM(mvaFileName_2lss_1tau_ttbar_wMEM, mvaInputVariables_2lss_1tau_ttbar_wMEM);
+
+  std::vector<std::string> mvaInputVariables_2lss_1tau_wMEM = get_mvaInputVariables(mvaInputVariables_2lss_1tau_ttV_wMEM, mvaInputVariables_2lss_1tau_ttbar_wMEM);
+  std::map<std::string, double> mvaInputs_2lss_1tau_wMEM;
+
+  std::string inputFileName_mva_mapping_2lss_1tau_wMEM = "tthAnalysis/HiggsToTauTau/data/2lss_1tau_BDTwMEM_mapping_likelihood.root";
+  TFile* inputFile_mva_mapping_2lss_1tau_wMEM = openFile(LocalFileInPath(inputFileName_mva_mapping_2lss_1tau_wMEM));
+  TH2* mva_mapping_2lss_1tau_wMEM = loadTH2(inputFile_mva_mapping_2lss_1tau_wMEM, "hTargetBinning");
 
 //--- open output file containing run:lumi:event numbers of events passing final event selection criteria
   std::ostream* selEventsFile = ( selEventsFileName_output != "" ) ? new std::ofstream(selEventsFileName_output.data(), std::ios::out) : 0;
@@ -1120,7 +1151,7 @@ int main(int argc, char* argv[])
     preselHistManager->evt_->fillHistograms(
       preselElectrons.size(), preselMuons.size(), selHadTaus.size(), 
       selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
-      -1., -1., -1., -1., -1., -1., -1., 
+      -1., -1., -1., -1., -1., -1., -1., -1., -1.,   
       mTauTauVis1_presel, mTauTauVis2_presel, 
       0, 1.);
 
@@ -1570,6 +1601,59 @@ int main(int argc, char* argv[])
     //std::cout << "mvaDiscr_2lss = " << mvaDiscr_2lss << std::endl;
     //std::cout << std::endl;
 
+    MEMOutput_2lss_1tau memOutput_2lss_1tau_matched;
+    if ( memReader ) {
+      std::vector<MEMOutput_2lss_1tau> memOutputs_2lss_1tau = memReader->read();
+      for ( std::vector<MEMOutput_2lss_1tau>::const_iterator memOutput_2lss_1tau = memOutputs_2lss_1tau.begin();
+	    memOutput_2lss_1tau != memOutputs_2lss_1tau.end(); ++memOutput_2lss_1tau ) {
+        const double selLepton_lead_dR = deltaR(
+          selLepton_lead->eta(), selLepton_lead->phi(), 
+	  memOutput_2lss_1tau->leadLepton_eta(), memOutput_2lss_1tau->leadLepton_phi());
+        if ( selLepton_lead_dR > 1.e-2 ) continue;
+        const double selLepton_sublead_dR = deltaR(
+          selLepton_sublead->eta(), selLepton_sublead->phi(), 
+	  memOutput_2lss_1tau->subleadLepton_eta(), memOutput_2lss_1tau->subleadLepton_phi());
+        if ( selLepton_sublead_dR > 1.e-2 ) continue;
+        const double selHadTau_dR = deltaR(
+          selHadTau->eta(), selHadTau->phi(),
+          memOutput_2lss_1tau->hadTau_eta(), memOutput_2lss_1tau->hadTau_phi());
+        if ( selHadTau_dR > 1.e-2 ) continue;
+        memOutput_2lss_1tau_matched = (*memOutput_2lss_1tau);
+        break;
+      }
+      if ( !memOutput_2lss_1tau_matched.is_initialized() ) {
+        std::cout << "Warning in run = " << run << ", lumi = " << lumi << ", event = " << event << '\n'
+                  << "No MEMOutput_2lss_1tau object found for:\n"
+                  << "\tselLepton_lead: pT = " << selLepton_lead->pt()
+                  << ", eta = "                << selLepton_lead->eta()
+                  << ", phi = "                << selLepton_lead->phi()
+                  << ", pdgId = "              << selLepton_lead->pdgId() << '\n'
+                  << "\tselLepton_sublead: pT = " << selLepton_sublead->pt()
+                  << ", eta = "                   << selLepton_sublead->eta()
+                  << ", phi = "                   << selLepton_sublead->phi()
+                  << ", pdgId = "                 << selLepton_sublead->pdgId() << '\n'
+                  << "\tselHadTau: pT = " << selHadTau->pt()
+                  << ", eta = "           << selHadTau->eta()
+                  << ", phi = "           << selHadTau->phi() << '\n'
+                  << "Number of MEM objects read: " << memOutputs_2lss_1tau.size() << '\n';
+        if ( memOutputs_2lss_1tau.size() ) {
+          for ( unsigned mem_idx = 0; mem_idx < memOutputs_2lss_1tau.size(); ++mem_idx ) {
+            std::cout << "\t#" << mem_idx << " mem object;\n"
+                      << "\t\tlead lepton eta = " << memOutputs_2lss_1tau[mem_idx].leadLepton_eta()
+                      << "; phi = "               << memOutputs_2lss_1tau[mem_idx].leadLepton_phi() << '\n'
+                      << "\t\tsublead lepton eta = " << memOutputs_2lss_1tau[mem_idx].subleadLepton_eta()
+                      << "; phi = "                  << memOutputs_2lss_1tau[mem_idx].subleadLepton_phi() << '\n'
+                      << "\t\thadronic tau eta = " << memOutputs_2lss_1tau[mem_idx].hadTau_eta()
+                      << "; phi = "                << memOutputs_2lss_1tau[mem_idx].hadTau_phi() << '\n';
+	  }
+	} else {
+	  std::cout << "Event contains no MEM objects whatsoever !!\n";
+	}
+      }
+    }
+
+    double mvaInput_memOutput_LR = ( memOutput_2lss_1tau_matched.isValid() && !memOutput_2lss_1tau_matched.errorFlag() ) ? memOutput_2lss_1tau_matched.LR() : -1.;
+
 //--- compute output of BDTs used to discriminate ttH vs. ttV and ttH vs. ttbar trained by Arun for 2lss_1tau category
     mvaInputs_2lss_1tau["avg_dr_jet"]                                            = comp_avg_dr_jet(selJets);
     mvaInputs_2lss_1tau["dr_leps"]                                               = deltaR(selLepton_lead->p4(), selLepton_sublead->p4());
@@ -1579,7 +1663,7 @@ int main(int argc, char* argv[])
     mvaInputs_2lss_1tau["lep1_conePt"]                                           = selLepton_lead->cone_pt();
     //mvaInputs_2lss_1tau["lep1_pt"]                                               = selLepton_lead->pt();
     mvaInputs_2lss_1tau["lep2_conePt"]                                           = selLepton_sublead->cone_pt();
-    //mvaInputs_2lss_1tau["lep2_pt"]                                               = selLepton_sublead->pt();
+    //mvaInputs_2lss_1tau["lep2_pt"]                                               = selLepton_sublead->pt();    
     mvaInputs_2lss_1tau["mindr_lep1_jet"]                                        = TMath::Min(10., comp_mindr_lep1_jet(*selLepton_lead, selJets));
     mvaInputs_2lss_1tau["mindr_lep2_jet"]                                        = TMath::Min(10., comp_mindr_lep2_jet(*selLepton_sublead, selJets));
     //mvaInputs_2lss_1tau["mindr_tau_jet" ]                                        = TMath::Min(10., comp_mindr_hadTau1_jet(*selHadTau, selJets));
@@ -1602,71 +1686,15 @@ int main(int argc, char* argv[])
     //}
 
     double mvaOutput_2lss_1tau_ttV = mva_2lss_1tau_ttV(mvaInputs_2lss_1tau);
-    //std::cout << "mvaOutput_2lss_1tau_ttV = " << mvaOutput_2lss_1tau_ttV << std::endl;
-    double mvaOutput_2lss_1tau_ttbar = mva_2lss_1tau_ttbar(mvaInputs_2lss_1tau);
-    //std::cout << "mvaOutput_2lss_1tau_ttbar = " << mvaOutput_2lss_1tau_ttbar << std::endl;
-    
-    Double_t mvaDiscr_2lss_1tau_clustering = getSF_from_TH2(mva_mapping_2lss_1tau_clustering, mvaOutput_2lss_1tau_ttbar, mvaOutput_2lss_1tau_ttV) + 1.;
-    Double_t mvaDiscr_2lss_1tau_likelihood = getSF_from_TH2(mva_mapping_2lss_1tau_likelihood, mvaOutput_2lss_1tau_ttbar, mvaOutput_2lss_1tau_ttV) + 1.;
+    double mvaOutput_2lss_1tau_ttbar = mva_2lss_1tau_ttbar(mvaInputs_2lss_1tau);     
+    Double_t mvaDiscr_2lss_1tau = getSF_from_TH2(mva_mapping_2lss_1tau, mvaOutput_2lss_1tau_ttbar, mvaOutput_2lss_1tau_ttV) + 1.;
 
-    MEMOutput_2lss_1tau memOutput_2lss_1tau_matched;
-    if(memReader)
-    {
-      const std::vector<MEMOutput_2lss_1tau> memOutputs_2lss_1tau = memReader -> read();
-      for(const MEMOutput_2lss_1tau & memOutput_2lss_1tau: memOutputs_2lss_1tau)
-      {
-        const double selLepton_lead_dR = deltaR(
-          selLepton_lead -> eta(),              selLepton_lead -> phi(),
-          memOutput_2lss_1tau.leadLepton_eta(), memOutput_2lss_1tau.leadLepton_phi()
-        );
-        if(selLepton_lead_dR > 1.e-2)
-          continue;
-        const double selLepton_sublead_dR = deltaR(
-          selLepton_sublead -> eta(), selLepton_sublead -> phi(),
-          memOutput_2lss_1tau.subleadLepton_eta(), memOutput_2lss_1tau.subleadLepton_phi()
-        );
-        if(selLepton_sublead_dR > 1.e-2)
-          continue;
-        const double selHadTau_dR = deltaR(
-          selHadTau -> eta(),               selHadTau -> phi(),
-          memOutput_2lss_1tau.hadTau_eta(), memOutput_2lss_1tau.hadTau_phi()
-        );
-        if(selHadTau_dR > 1.e-2)
-          continue;
-        memOutput_2lss_1tau_matched = memOutput_2lss_1tau;
-        break;
-      }
-      if(! memOutput_2lss_1tau_matched.is_initialized())
-      {
-        std::cout << "Warning in run = " << run << ", lumi = " << lumi << ", event = " << event << '\n'
-                  << "No MEMOutput_2lss_1tau object found for:\n"
-                  << "\tselLepton_lead: pT = " << selLepton_lead -> pt()
-                  << ", eta = "                << selLepton_lead -> eta()
-                  << ", phi = "                << selLepton_lead -> phi()
-                  << ", pdgId = "              << selLepton_lead -> pdgId() << '\n'
-                  << "\tselLepton_sublead: pT = " << selLepton_sublead -> pt()
-                  << ", eta = "                   << selLepton_sublead -> eta()
-                  << ", phi = "                   << selLepton_sublead -> phi()
-                  << ", pdgId = "                 << selLepton_sublead -> pdgId() << '\n'
-                  << "\tselHadTau: pT = " << selHadTau -> pt()
-                  << ", eta = "           << selHadTau -> eta()
-                  << ", phi = "           << selHadTau -> phi() << '\n'
-                  << "Number of MEM objects read: " << memOutputs_2lss_1tau.size() << '\n';
-        if(memOutputs_2lss_1tau.size())
-        {
-          for(unsigned mem_idx = 0; mem_idx < memOutputs_2lss_1tau.size(); ++mem_idx)
-            std::cout << "\t#" << mem_idx << " mem object;\n"
-                      << "\t\tlead lepton eta = " << memOutputs_2lss_1tau[mem_idx].leadLepton_eta()
-                      << "; phi = "               << memOutputs_2lss_1tau[mem_idx].leadLepton_phi() << '\n'
-                      << "\t\tsublead lepton eta = " << memOutputs_2lss_1tau[mem_idx].subleadLepton_eta()
-                      << "; phi = "                  << memOutputs_2lss_1tau[mem_idx].subleadLepton_phi() << '\n'
-                      << "\t\thadronic tau eta = " << memOutputs_2lss_1tau[mem_idx].hadTau_eta()
-                      << "; phi = "                << memOutputs_2lss_1tau[mem_idx].hadTau_phi() << '\n';
-        }
-        else
-          std::cout << "No MEM objects whatsoever\n";
-      }
-    }
+    mvaInputs_2lss_1tau_wMEM = mvaInputs_2lss_1tau;
+    mvaInputs_2lss_1tau_wMEM["memOutput_LR"] = mvaInput_memOutput_LR;
+    
+    double mvaOutput_2lss_1tau_ttV_wMEM = mva_2lss_1tau_ttV_wMEM(mvaInputs_2lss_1tau_wMEM);
+    double mvaOutput_2lss_1tau_ttbar_wMEM = mva_2lss_1tau_ttbar_wMEM(mvaInputs_2lss_1tau_wMEM); 
+    Double_t mvaDiscr_2lss_1tau_wMEM = getSF_from_TH2(mva_mapping_2lss_1tau_wMEM, mvaOutput_2lss_1tau_ttbar_wMEM, mvaOutput_2lss_1tau_ttV_wMEM) + 1.;
 
 //--- fill histograms with events passing final selection 
     selHistManagerType* selHistManager = selHistManagers[idxSelLepton_genMatch][idxSelHadTau_genMatch];
@@ -1688,7 +1716,8 @@ int main(int argc, char* argv[])
       selElectrons.size(), selMuons.size(), selHadTaus.size(), 
       selJets.size(), selBJets_loose.size(), selBJets_medium.size(), 
       mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, 
-      mvaOutput_2lss_1tau_ttV, mvaOutput_2lss_1tau_ttbar, mvaDiscr_2lss_1tau_clustering, mvaDiscr_2lss_1tau_likelihood, 
+      mvaOutput_2lss_1tau_ttV, mvaOutput_2lss_1tau_ttbar, mvaDiscr_2lss_1tau, 
+      mvaOutput_2lss_1tau_ttV_wMEM, mvaOutput_2lss_1tau_ttbar_wMEM, mvaDiscr_2lss_1tau_wMEM, 
       mTauTauVis1_sel, mTauTauVis2_sel, 
       memOutput_2lss_1tau_matched.is_initialized() ? &memOutput_2lss_1tau_matched : nullptr, evtWeight);
     if ( isSignal ) {
@@ -1698,7 +1727,8 @@ int main(int argc, char* argv[])
             selElectrons.size(), selMuons.size(), selHadTaus.size(), 
             selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
             mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss,
-	    mvaOutput_2lss_1tau_ttV, mvaOutput_2lss_1tau_ttbar, mvaDiscr_2lss_1tau_clustering, mvaDiscr_2lss_1tau_likelihood,
+	    mvaOutput_2lss_1tau_ttV, mvaOutput_2lss_1tau_ttbar, mvaDiscr_2lss_1tau, 
+	    mvaOutput_2lss_1tau_ttV_wMEM, mvaOutput_2lss_1tau_ttbar_wMEM, mvaDiscr_2lss_1tau_wMEM, 
             mTauTauVis1_sel, mTauTauVis2_sel, 
             memOutput_2lss_1tau_matched.is_initialized() ? &memOutput_2lss_1tau_matched : nullptr, evtWeight);
           break;
@@ -1720,9 +1750,8 @@ int main(int argc, char* argv[])
       (*selEventsFile) << run << ":" << lumi << ":" << event << std::endl;
     }
 
-    if(bdt_filler)
-    {
-      bdt_filler -> operator()({ run, lumi, event })
+    if ( bdt_filler ) {
+      bdt_filler->operator()({ run, lumi, event })
           ("lep1_pt",             selLepton_lead -> pt())
           ("lep1_conePt",         comp_lep1_conePt(*selLepton_lead))
           ("lep1_eta",            selLepton_lead -> eta())
@@ -1805,8 +1834,8 @@ int main(int argc, char* argv[])
 
   delete run_lumi_eventSelector;
 
-  delete inputFile_mva_mapping_2lss_1tau_clustering;
-  delete inputFile_mva_mapping_2lss_1tau_likelihood;
+  delete inputFile_mva_mapping_2lss_1tau;
+  delete inputFile_mva_mapping_2lss_1tau_wMEM;
 
   delete selEventsFile;
 

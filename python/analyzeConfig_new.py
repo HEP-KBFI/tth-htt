@@ -365,7 +365,7 @@ class analyzeConfig:
                 lines_makefile.append("")
             elif self.is_sbatch:
                 lines_makefile.append("%s: %s" % (jobOptions['histogramFile'], "sbatch_analyze"))
-                lines_makefile.append("\t%s" % ":")  # CV: null command
+                lines_makefile.append("\t%s" % ":") # CV: null command
                 lines_makefile.append("")
             self.filesToClean.append(jobOptions['histogramFile'])
     
@@ -378,21 +378,21 @@ class analyzeConfig:
             lines_makefile.append("")
             self.filesToClean.append(self.outputFile_hadd_stage1[key])
 
-    def addToMakefile_addBackgrounds(self, lines_makefile):
+    def addToMakefile_addBackgrounds(self, lines_makefile, sbatchTarget, sbatchFile, jobOptions):
         if self.is_sbatch:
-            lines_makefile.append("sbatch_addBackgrounds: %s" % " ".join([ jobOptions['inputFile'] for jobOptions in self.jobOptions_addBackgrounds.values() ]))
-            lines_makefile.append("\t%s %s" % ("python", self.sbatchFile_addBackgrounds))
+            lines_makefile.append("%s: %s" % (sbatchTarget, " ".join([ value['inputFile'] for value in jobOptions.values() ])))
+            lines_makefile.append("\t%s %s" % ("python", sbatchFile))
             lines_makefile.append("")
-        for jobOptions in self.jobOptions_addBackgrounds.values():
+        for value in jobOptions.values():
             if self.is_makefile:
-                lines_makefile.append("%s: %s" % (jobOptions['outputFile'], jobOptions['inputFile']))
-                lines_makefile.append("\t%s %s &> %s" % (self.executable_addBackgrounds, jobOptions['cfgFile_modified'], jobOptions['logFile']))
+                lines_makefile.append("%s: %s" % (value['outputFile'], value['inputFile']))
+                lines_makefile.append("\t%s %s &> %s" % (self.executable_addBackgrounds, value['cfgFile_modified'], value['logFile']))
                 lines_makefile.append("")
             elif self.is_sbatch:
-                lines_makefile.append("%s: %s" % (jobOptions['outputFile'], "sbatch_addBackgrounds"))
-                lines_makefile.append("\t%s" % ":")  # CV: null command
+                lines_makefile.append("%s: %s" % (value['outputFile'], sbatchTarget))
+                lines_makefile.append("\t%s" % ":") # CV: null command
                 lines_makefile.append("")
-            self.filesToClean.append(jobOptions['outputFile'])
+            self.filesToClean.append(value['outputFile'])
 
     def addToMakefile_hadd_stage1_5(self, lines_makefile):
         """Adds the commands to Makefile that are necessary for building the intermediate histogram file
@@ -418,12 +418,13 @@ class analyzeConfig:
                 lines_makefile.append("")
             elif self.is_sbatch:
                 lines_makefile.append("%s: %s" % (jobOptions['outputFile'], "sbatch_addFakes"))
-                lines_makefile.append("\t%s" % ":")  # CV: null command
+                lines_makefile.append("\t%s" % ":") # CV: null command
                 lines_makefile.append("")
             self.filesToClean.append(jobOptions['outputFile'])
 
     def addToMakefile_backgrounds_from_data(self, lines_makefile):
-        self.addToMakefile_addBackgrounds(lines_makefile)
+        self.addToMakefile_addBackgrounds(lines_makefile, "sbatch_addBackgrounds", self.sbatchFile_addBackgrounds, self.jobOptions_addBackgrounds)
+        self.addToMakefile_addBackgrounds(lines_makefile, "sbatch_addBackgrounds_sum", self.sbatchFile_addBackgrounds_sum, self.jobOptions_addBackgrounds_sum)
         self.addToMakefile_hadd_stage1_5(lines_makefile)
         self.addToMakefile_addFakes(lines_makefile)
 

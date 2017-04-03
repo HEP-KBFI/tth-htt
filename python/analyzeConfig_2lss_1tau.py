@@ -281,12 +281,13 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
         lines_makefile.append("")
       elif self.is_sbatch:
         lines_makefile.append("%s: %s" % (jobOptions['outputFile'], "sbatch_addFlips"))
-        lines_makefile.append("\t%s" % ":")  # CV: null command
+        lines_makefile.append("\t%s" % ":") # CV: null command
         lines_makefile.append("")
       self.filesToClean.append(jobOptions['outputFile'])
 
   def addToMakefile_backgrounds_from_data(self, lines_makefile):
-    self.addToMakefile_addBackgrounds(lines_makefile)
+    self.addToMakefile_addBackgrounds(lines_makefile, "sbatch_addBackgrounds", self.sbatchFile_addBackgrounds, self.jobOptions_addBackgrounds)
+    self.addToMakefile_addBackgrounds(lines_makefile, "sbatch_addBackgrounds_sum", self.sbatchFile_addBackgrounds_sum, self.jobOptions_addBackgrounds_sum)
     self.addToMakefile_hadd_stage1_5(lines_makefile)
     self.addToMakefile_addFakes(lines_makefile)
     self.addToMakefile_hadd_stage1_6(lines_makefile)
