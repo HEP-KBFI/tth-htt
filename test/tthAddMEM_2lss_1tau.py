@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import os, logging, sys, getpass, uuid
+import os, logging, sys, getpass
 
 from tthAnalysis.HiggsToTauTau.addMEMConfig_2lss_1tau import addMEMConfig_2lss_1tau
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
@@ -30,6 +30,11 @@ if isForBDTtraining:
       sample_info["use_it"] = True
     else:
       sample_info["use_it"] = False
+  leptonSelection = "Loose"
+  hadTauSelection = "Tight|dR03mvaLoose"
+else:
+  leptonSelection = "Fakeable"
+  hadTauSelection = "Tight|dR03mvaMedium"
 
 #--------------------------------------------------------------------------------
 
@@ -41,8 +46,6 @@ if __name__ == '__main__':
     stream = sys.stdout,
     level  = logging.DEBUG,
     format = '%(asctime)s - %(levelname)s: %(message)s')
-
-  uuid_comment = uuid.uuid4()
 
   addMEMProduction = addMEMConfig_2lss_1tau(
     treeName                 = 'tree',
@@ -57,10 +60,9 @@ if __name__ == '__main__':
     mem_integrations_per_job = 50,
     max_mem_integrations     = 20000, # use -1 if you don't want to limit the nof MEM integrations
     num_parallel_jobs        = 16,
-    leptonSelection          = "Fakeable",
-    hadTauSelection          = "Tight|dR03mvaMedium",
+    leptonSelection          = leptonSelection,
+    hadTauSelection          = hadTauSelection,
     isForBDTtraining         = False, # still use full integration points
-    pool_id                  = uuid_comment,
   )
 
   goodToGo = addMEMProduction.create()

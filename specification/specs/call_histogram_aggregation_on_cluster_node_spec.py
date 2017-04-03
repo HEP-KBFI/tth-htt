@@ -1,6 +1,4 @@
-import subprocess
-import time
-import os
+import os, uuid
 from tthAnalysis.HiggsToTauTau.jobTools import run_cmd
 from tthAnalysis.HiggsToTauTau.sbatchManager import sbatchManager
 
@@ -16,18 +14,24 @@ def call_histogram_aggregation_on_cluster_node_spec():
 
     # Add histograms and run task
 
-    m = sbatchManager()
+    pool_id = uuid.uuid4()
+    m = sbatchManager(pool_id)
     m.setWorkingDir('%(cmssw_base)s/src/analysis2mu1b1j/analysis2mu1b1j/test' % config)
 
-    m.hadd_in_cluster(
-        inputFiles=[
-            '%(fixtures_dir)s/histogram_1.root' % config,
-            '%(fixtures_dir)s/histogram_2.root' % config
-        ],
-        outputFile='%(temp_dir)s/call_histogram_aggregation_on_cluster_node/result.root' % config
-    )
+    try:
+        m.hadd_in_cluster(
+            inputFiles=[
+                '%(fixtures_dir)s/histogram_1.root' % config,
+                '%(fixtures_dir)s/histogram_2.root' % config
+            ],
+            outputFile='%(temp_dir)s/call_histogram_aggregation_on_cluster_node/result.root' % config
+        )
 
-    m.waitForJobs()
+        m.waitForJobs()
+    except:
+        got_exception = True
+    else:
+        got_exception = False
 
 
     # Check result
@@ -43,4 +47,4 @@ def call_histogram_aggregation_on_cluster_node_spec():
     else:
         print('FAILED: HADD on cluster node failed')
 
-    return result_successful
+    return result_successful and not got_exception

@@ -1,9 +1,5 @@
-import subprocess
-import time
 import os
 from tthAnalysis.HiggsToTauTau.jobTools import run_cmd
-from tthAnalysis.HiggsToTauTau.sbatchManager import sbatchManager
-
 from config import config
 
 def executable_hadd_in_cluster_spec():
@@ -12,12 +8,15 @@ def executable_hadd_in_cluster_spec():
 
     run_cmd("rm -rf %(temp_dir)s/executable_hadd_in_cluster_spec/*" % config)
     run_cmd("mkdir -p %(temp_dir)s/executable_hadd_in_cluster_spec/" % config)
-    run_cmd("""echo "%(fixtures_dir)s/histogram_1.root\n%(fixtures_dir)s/histogram_2.root\n" > %(temp_dir)s/executable_hadd_in_cluster_spec/input_histograms_list.txt""" % config)
+    run_cmd("""echo "%(fixtures_dir)s/histogram_1.root\n%(fixtures_dir)s/histogram_2.root\n" > """ \
+            """%(temp_dir)s/executable_hadd_in_cluster_spec/input_histograms_list.txt""" % config)
 
 
     # Run task
 
-    run_cmd('python %(cmssw_base)s/src/tthAnalysis/HiggsToTauTau/scripts/hadd_in_cluster.py %(temp_dir)s/executable_hadd_in_cluster_spec/output_histogram.root %(temp_dir)s/executable_hadd_in_cluster_spec/input_histograms_list.txt' % config)
+    run_cmd('python %(cmssw_base)s/src/tthAnalysis/HiggsToTauTau/scripts/hadd_in_cluster.py ' \
+            '%(temp_dir)s/executable_hadd_in_cluster_spec/output_histogram.root ' \
+            '%(temp_dir)s/executable_hadd_in_cluster_spec/input_histograms_list.txt' % config)
 
 
     # Check the result

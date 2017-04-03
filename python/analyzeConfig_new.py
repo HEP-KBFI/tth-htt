@@ -1,6 +1,4 @@
-import codecs
-import os
-import logging
+import codecs, os, logging, uuid
 
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd, generate_file_ids
 from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg, createFile
@@ -64,7 +62,8 @@ class analyzeConfig:
                  executable_prep_dcard = "prepareDatacards",
                  executable_add_syst_dcard = "addSystDatacards",
                  executable_make_plots = "makePlots",
-                 executable_make_plots_mcClosure = "makePlots_mcClosure"):
+                 executable_make_plots_mcClosure = "makePlots_mcClosure",
+                 pool_id = ''):
 
         self.configDir = configDir
         self.outputDir = outputDir
@@ -95,6 +94,7 @@ class analyzeConfig:
         self.executable_add_syst_dcard = executable_add_syst_dcard  
         self.executable_make_plots = executable_make_plots
         self.executable_make_plots_mcClosure = executable_make_plots_mcClosure
+        self.pool_id = pool_id if pool_id else uuid.uuid4()
 
         self.workingDir = os.getcwd()
         print "Working directory is: " + self.workingDir
@@ -336,7 +336,8 @@ class analyzeConfig:
             log_file_names = { key: value[key_log_file] for key, value in jobOptions.items() },
             working_dir = self.workingDir,
             max_num_jobs = self.max_num_jobs,
-            cvmfs_error_log = self.cvmfs_error_log
+            cvmfs_error_log = self.cvmfs_error_log,
+            pool_id = self.pool_id,
         )
 
     def createScript_sbatch_analyze(self, executable, sbatchFile, jobOptions):
@@ -348,7 +349,10 @@ class analyzeConfig:
     def create_hadd_python_file(self, inputFiles, outputFile, hadd_stage_name):
         sbatch_hadd_file = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_hadd_%s_%s.py" % (self.channel, hadd_stage_name))
         sbatch_hadd_dir = os.path.join(self.dirs[DKEY_HADD_RT], self.channel, hadd_stage_name) if self.dirs[DKEY_HADD_RT] else ''
-        tools_createScript_sbatch_hadd(sbatch_hadd_file, inputFiles, outputFile, hadd_stage_name, self.workingDir, auxDirName = sbatch_hadd_dir)
+        tools_createScript_sbatch_hadd(
+            sbatch_hadd_file, inputFiles, outputFile, hadd_stage_name, self.workingDir, auxDirName = sbatch_hadd_dir,
+            pool_id = self.pool_id,
+        )
         return sbatch_hadd_file
 
     def addToMakefile_analyze(self, lines_makefile):
@@ -491,7 +495,7 @@ class analyzeConfig:
         for rootOutput in self.rootOutputAux.values():
             self.filesToClean.append(rootOutput[0])
         if len(self.targets) == 0:
-            self.targets.append("sbatch")
+            self.targets.append("sbatch_analyze")
         tools_createMakefile(self.makefile, self.targets, lines_makefile, self.filesToClean, self.is_sbatch)
         logging.info("Run it with:\tmake -f %s -j %i " % (self.makefile, self.num_parallel_jobs))
 

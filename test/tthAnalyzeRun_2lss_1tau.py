@@ -1,12 +1,20 @@
+#!/usr/bin/env python
 import os, logging, sys, getpass
+from tthAnalysis.HiggsToTauTau.analyzeConfig_2lss_1tau import analyzeConfig_2lss_1tau
+from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 
 #--------------------------------------------------------------------------------
 # NOTE: set mode flag to
-#   'VHbb' : to run the analysis directly on the VHbb Ntuples (to e.g. produce the RLE files to run the tthProdNtuple and ttHAddMEM steps)
-#   'addMEM' : to run the analysis on the Ntuples with MEM variables added
-#   'forBDTtraining' : to run the analysis on the Ntuples with MEM variables added, and with a relaxed event selection, to increase the BDT training statistics
+#   'VHbb'                        : to run the analysis directly on the VHbb Ntuples
+#                                   (to e.g. produce the RLE files to run the tthProdNtuple and ttHAddMEM steps)
+#   'addMEM'                      : to run the analysis on the Ntuples with MEM variables added
+#   'forBDTtraining_beforeAddMEM' : to run the analysis on the Ntuples without MEM variables added,
+#                                   and with a relaxed event selection, to increase the BDT training statistics
+#   'forBDTtraining_afterAddMEM'  : to run the analysis on the Ntuples with MEM variables added,
+#                                   and with a relaxed event selection, to increase the BDT training statistics
 #--------------------------------------------------------------------------------
 
+<<<<<<< HEAD
 #mode = "VHbb"
 mode = "addMEM"
 #mode = "forBDTtraining_beforeAddMEM"
@@ -14,73 +22,98 @@ mode = "addMEM"
 
 hadTau_selection = None
 changeBranchNames = None
+=======
+ERA     = "2016"
+version = "2017Mar26"
+
+#mode    = "VHbb"
+#mode    = "addMEM"
+#mode    = "forBDTtraining_beforeAddMEM"
+mode    = "forBDTtraining_afterAddMEM"
+
+>>>>>>> 6b09a382ce26d867d359aa1bc6cfba8a67111f5a
 if mode == "VHbb":
   from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2lss_1tau_2015 import samples_2015
   from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2lss_1tau_2016 import samples_2016
   hadTau_selection = "dR03mvaMedium"
   changeBranchNames = False
+  applyFakeRateWeights  = "2lepton"
+
 elif mode == "addMEM":
   from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_2lss1tau_addMEM_v3 import samples_2016
   hadTau_selection = "dR03mvaMedium"
   changeBranchNames = True
+  applyFakeRateWeights  = "2lepton"
+
 elif mode == "forBDTtraining_beforeAddMEM":
   from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_FastSim import samples_2016
   hadTau_selection = "dR03mvaLoose"
   changeBranchNames = False
+  applyFakeRateWeights = "3L"
+
 elif mode == "forBDTtraining_afterAddMEM":
-  from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_2lss1tau_addMEM_forBDTtraining import samples_2016
+  from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_2lss1tau_addMEM_forBDTtraining_v2 import samples_2016
   hadTau_selection = "dR03mvaLoose"
-  changeBranchNames = False
+  changeBranchNames = True
+  applyFakeRateWeights = "3L"
+
 else:
   raise ValueError("Invalid Configuration parameter 'mode' = %s !!" % mode)
-from tthAnalysis.HiggsToTauTau.analyzeConfig_2lss_1tau import analyzeConfig_2lss_1tau
-from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 
-#ERA = "2015"
-ERA = "2016"
-
-samples = None
-LUMI = None
 if ERA == "2015":
-  samples = samples_2015
+  try:
+    samples = samples_2015
+  except NameError:
+    raise ValueError("Mode {mode} not available for era {era}".format(mode = mode, era = ERA))
   LUMI =  2.3e+3 # 1/pb
+
 elif ERA == "2016":
   samples = samples_2016
   LUMI = 35.9e+3 # 1/pb
+
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
+<<<<<<< HEAD
 version = "2017Apr02"
 
+=======
+>>>>>>> 6b09a382ce26d867d359aa1bc6cfba8a67111f5a
 if __name__ == '__main__':
   logging.basicConfig(
     stream = sys.stdout,
-    level = logging.INFO,
-    format = '%(asctime)s - %(levelname)s: %(message)s')
+    level  = logging.INFO,
+    format = '%(asctime)s - %(levelname)s: %(message)s',
+  )
+
+  configDir = os.path.join("/home",                getpass.getuser(), "ttHAnalysis", ERA, version)
+  #outputDir = os.path.join("/hdfs/local/ttH_2tau", getpass.getuser(), "ttHAnalysis", ERA, version)
+  outputDir = os.path.join("/hdfs/local",          getpass.getuser(), "ttHAnalysis", ERA, version)
 
   analysis = analyzeConfig_2lss_1tau(
-    configDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", ERA, version),
-    outputDir = os.path.join("/hdfs/local/ttH_2tau", getpass.getuser(), "ttHAnalysis", ERA, version),
-    ##outputDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", ERA, version),
-    executable_analyze = "analyze_2lss_1tau", cfgFile_analyze = "analyze_2lss_1tau_cfg.py",
-    samples = samples, changeBranchNames = changeBranchNames,
-    lepton_charge_selections = [ "OS", "SS" ],
-    hadTau_selection = hadTau_selection,
+    configDir                 = configDir,
+    outputDir                 = outputDir,
+    executable_analyze        = "analyze_2lss_1tau",
+    cfgFile_analyze           = "analyze_2lss_1tau_cfg.py",
+    samples                   = samples,
+    changeBranchNames         = changeBranchNames,
+    lepton_charge_selections  = [ "OS", "SS" ],
+    hadTau_selection          = hadTau_selection,
     # CV: apply "fake" background estimation to leptons only and not to hadronic taus, as discussed on slide 10 of
     #     https://indico.cern.ch/event/597028/contributions/2413742/attachments/1391684/2120220/16.12.22_ttH_Htautau_-_Review_of_systematics.pdf
-    ##applyFakeRateWeights = "3L",
-    applyFakeRateWeights = "2lepton",
-    chargeSumSelections = [ "OS", "SS" ],
-    central_or_shifts = [ 
+    ##applyFakeRateWeights      = "3L",
+    applyFakeRateWeights      = applyFakeRateWeights,
+    chargeSumSelections       = [ "OS", "SS" ],
+    central_or_shifts         = [
       "central",
-##       "CMS_ttHl_btag_HFUp", 
-##       "CMS_ttHl_btag_HFDown",	
-##       "CMS_ttHl_btag_HFStats1Up", 
+##       "CMS_ttHl_btag_HFUp",
+##       "CMS_ttHl_btag_HFDown",
+##       "CMS_ttHl_btag_HFStats1Up",
 ##       "CMS_ttHl_btag_HFStats1Down",
-##       "CMS_ttHl_btag_HFStats2Up", 
+##       "CMS_ttHl_btag_HFStats2Up",
 ##       "CMS_ttHl_btag_HFStats2Down",
-##       "CMS_ttHl_btag_LFUp", 
-##       "CMS_ttHl_btag_LFDown",	
+##       "CMS_ttHl_btag_LFUp",
+##       "CMS_ttHl_btag_LFDown",
 ##       "CMS_ttHl_btag_LFStats1Up", 
 ##       "CMS_ttHl_btag_LFStats1Down",
 ##       "CMS_ttHl_btag_LFStats2Up", 
@@ -115,9 +148,9 @@ if __name__ == '__main__':
 ##       "CMS_ttHl_FRet_shiftDown",
 ##       "CMS_ttHl_FRmt_shiftUp",
 ##       "CMS_ttHl_FRmt_shiftDown",
-##       "CMS_ttHl_thu_shape_ttH_x1Up",  
+##       "CMS_ttHl_thu_shape_ttH_x1Up",
 ##       "CMS_ttHl_thu_shape_ttH_x1Down",
-##       "CMS_ttHl_thu_shape_ttH_y1Up",   
+##       "CMS_ttHl_thu_shape_ttH_y1Up",
 ##       "CMS_ttHl_thu_shape_ttH_y1Down",
 ##       "CMS_ttHl_thu_shape_ttW_x1Up",
 ##       "CMS_ttHl_thu_shape_ttW_x1Down",
@@ -126,22 +159,41 @@ if __name__ == '__main__':
 ##       "CMS_ttHl_thu_shape_ttZ_x1Up",
 ##       "CMS_ttHl_thu_shape_ttZ_x1Down",
 ##       "CMS_ttHl_thu_shape_ttZ_y1Up",
-##       "CMS_ttHl_thu_shape_ttZ_y1Down"           
+##       "CMS_ttHl_thu_shape_ttZ_y1Down",
     ],
-    max_files_per_job = 100,
-    era = ERA, use_lumi = True, lumi = LUMI,
-    debug = False,
-    running_method = "sbatch",
-    num_parallel_jobs = 8,
+    max_files_per_job         = 100,
+    era                       = ERA,
+    use_lumi                  = True,
+    lumi                      = LUMI,
+    debug                     = False,
+    running_method            = "sbatch",
+    num_parallel_jobs         = 8,
     executable_addBackgrounds = "addBackgrounds",
+<<<<<<< HEAD
     executable_addFakes = "addBackgroundLeptonFakes",
     executable_addFlips = "addBackgroundLeptonFlips", 
     histograms_to_fit = [ "EventCounter", "numJets", "mvaDiscr_2lss", "mvaDiscr_2lss_1tau", "mvaDiscr_2lss_1tau_wMEM", "mTauTauVis", "memOutput_LR_type0", "memOutput_LR_type1" ],
     select_rle_output = True)
+=======
+    executable_addFakes       = "addBackgroundLeptonFakes",
+    executable_addFlips       = "addBackgroundLeptonFlips",
+    histograms_to_fit         = [
+      "EventCounter",
+      "numJets",
+      "mvaDiscr_2lss",
+      "mvaDiscr_2lss_1tau_clustering",
+      "mvaDiscr_2lss_1tau_likelihood",
+      "mTauTauVis",
+      "memOutput_LR_type0",
+      "memOutput_LR_type1",
+    ],
+    select_rle_output         = True,
+  )
+>>>>>>> 6b09a382ce26d867d359aa1bc6cfba8a67111f5a
 
   if mode.find("forBDTtraining") != -1:
     analysis.set_BDT_training()
-    
+
   analysis.create()
 
   ##run_analysis = query_yes_no("Start jobs ?")
@@ -150,4 +202,3 @@ if __name__ == '__main__':
     analysis.run()
   else:
     sys.exit(0)
-

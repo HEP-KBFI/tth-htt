@@ -1,8 +1,4 @@
-import subprocess
-import time
-import os
 from tthAnalysis.HiggsToTauTau.jobTools import run_cmd
-from tthAnalysis.HiggsToTauTau.sbatchManager import sbatchManager
 
 from config import config
 

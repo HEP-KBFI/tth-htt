@@ -105,7 +105,7 @@ def createMakefile(makefileName, targets, lines_makefile, filesToClean = None, i
     if filesToClean:
         phonies.append('clean')
     if isSbatch:
-        phonies.append('sbatch')
+        phonies.append('sbatch_analyze sbatch_addBackgrounds sbatch_addFakes')
     if phonies:
         lines_makefile_with_header.append(".PHONY: %s" % ' '.join(phonies))
     if filesToClean:
