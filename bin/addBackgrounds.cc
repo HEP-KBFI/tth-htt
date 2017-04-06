@@ -33,6 +33,7 @@
 #include <string>
 #include <vector>
 #include <set>
+#include <cstdlib> // EXIT_SUCCESS, EXIT_FAILURE
 #include <assert.h>
 
 typedef std::vector<std::string> vstring;
@@ -206,5 +207,5 @@ int main(int argc, char* argv[])
 
   clock.Show("addBackgrounds");
 
-  return 0;
+  return EXIT_SUCCESS;
 }
