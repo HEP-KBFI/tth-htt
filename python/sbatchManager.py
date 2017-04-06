@@ -45,7 +45,7 @@ class Status:
 
   @staticmethod
   def classify_error(ExitCode, DerivedExitCode, State):
-      if (ExitCode == '0:0' and DerivedExitCode == '0:0' and State == 'COMPLETED'):
+      if (ExitCode == '0:0' and DerivedExitCode == '0:0' and State in ['COMPLETED', 'COMPLETING']):
           return Status.completed
       if (ExitCode == '0:0' and DerivedExitCode == '0:0' and (State == 'CANCELLED' or
                                                               State == 'CANCELLED by 0')) or \
