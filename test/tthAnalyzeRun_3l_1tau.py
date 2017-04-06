@@ -1,4 +1,7 @@
+#!/usr/bin/env python
 import os, logging, sys, getpass
+from tthAnalysis.HiggsToTauTau.analyzeConfig_3l_1tau import analyzeConfig_3l_1tau
+from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 
 #--------------------------------------------------------------------------------
 # NOTE: set mode flag to
@@ -11,6 +14,7 @@ mode = "VHbb"
 
 hadTau_selection = None
 changeBranchNames = None
+applyFakeRateWeights = None
 if mode == "VHbb":
   from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_3l_1tau_2015 import samples_2015
   from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_3l_1tau_2016 import samples_2016
@@ -29,8 +33,6 @@ elif mode == "forBDTtraining":
   applyFakeRateWeights = "4L"
 else:
   raise ValueError("Invalid Configuration parameter 'mode' = %s !!" % mode)
-from tthAnalysis.HiggsToTauTau.analyzeConfig_3l_1tau import analyzeConfig_3l_1tau
-from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 
 #ERA = "2015"
 ERA = "2016"
@@ -46,7 +48,7 @@ elif ERA == "2016":
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "2017Apr03"
+version = "2017Apr04"
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -64,7 +66,7 @@ if __name__ == '__main__':
     # CV: apply "fake" background estimation to leptons only and not to hadronic taus, as discussed on slide 10 of
     #     https://indico.cern.ch/event/597028/contributions/2413742/attachments/1391684/2120220/16.12.22_ttH_Htautau_-_Review_of_systematics.pdf
     #applyFakeRateWeights = "4L",
-    applyFakeRateWeights = applyFakeRateWeights
+    applyFakeRateWeights = applyFakeRateWeights,
     chargeSumSelections = [ "OS", "SS" ],
     central_or_shifts = [ 
       "central",
@@ -138,8 +140,8 @@ if __name__ == '__main__':
     analysis.set_BDT_training()
   analysis.create()
 
-  run_analysis = query_yes_no("Start jobs ?")
-  ##run_analysis = True
+  ##run_analysis = query_yes_no("Start jobs ?")
+  run_analysis = True
   if run_analysis:
     analysis.run()
   else:
