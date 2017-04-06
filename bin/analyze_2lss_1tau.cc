@@ -794,7 +794,8 @@ int main(int argc, char* argv[])
       "mindr_tau_jet", "avg_dr_jet", "ptmiss",  "htmiss", "tau_mva", "tau_pt", "tau_eta",
       "dr_leps", "mTauTauVis1", "mTauTauVis2", "lumiScale", "genWeight", "evtWeight",
       "memOutput_isValid", "memOutput_errorFlag", "memOutput_type", "memOutput_ttH", "memOutput_ttZ",
-      "memOutput_ttZ_Zll", "memOutput_tt", "memOutput_LR",
+      "memOutput_ttZ_Zll", "memOutput_tt", "memOutput_LR", "memOutput_tt_LR", "memOutput_ttZ_LR", 
+      "memOutput_ttZ_Ztt_LR", "memOutput_ttZ_Zll_LR",
       "lep1_genLepPt", "lep2_genLepPt", 
       "tau_genTauPt", "lep1_fake_prob", "lep2_fake_prob", "tau_fake_prob",
       "mvaOutput_2lss_ttV", "mvaOutput_2lss_ttbar", "mvaDiscr_2lss"
@@ -1767,6 +1768,28 @@ int main(int argc, char* argv[])
       double prob_fake_lepton_sublead = 1.;
       if      ( std::abs(selLepton_sublead->pdgId()) == 11 ) prob_fake_lepton_sublead = leptonFakeRateInterface->getWeight_e(selLepton_sublead->cone_pt(), selLepton_sublead->absEta());
       else if ( std::abs(selLepton_sublead->pdgId()) == 13 ) prob_fake_lepton_sublead = leptonFakeRateInterface->getWeight_mu(selLepton_sublead->cone_pt(), selLepton_sublead->absEta());
+      //comput individual mem LR
+      double k_ttZ = 0.;
+      double k_ttZ_Zll = 0.;
+      double k_tt = 0.;
+      double memOutput_tt_LR = -100.; double memOutput_ttZ_LR = -100.;
+      double memOutput_ttZ_Ztt_LR = -100.; double memOutput_ttZ_Zll_LR = -100.;
+      if(memOutput_2lss_1tau_matched.is_initialized()){
+	if(memOutput_2lss_1tau_matched.type() == 0){
+	  k_ttZ = 1.e-1;
+	  k_ttZ_Zll = 2.e-1;
+	  k_tt = 1.e-18;
+	}
+	else if(memOutput_2lss_1tau_matched.type() == 1){
+	  k_ttZ = 5.e-2;
+	  k_ttZ_Zll = 5.e-1;
+	  k_tt = 5.e-15;
+	}
+	memOutput_tt_LR = memOutput_2lss_1tau_matched.weight_ttH()/(memOutput_2lss_1tau_matched.weight_ttH() + k_tt*memOutput_2lss_1tau_matched.weight_tt());
+	memOutput_ttZ_LR = memOutput_2lss_1tau_matched.weight_ttH()/(memOutput_2lss_1tau_matched.weight_ttH() + k_ttZ*memOutput_2lss_1tau_matched.weight_ttZ() + k_ttZ_Zll*memOutput_2lss_1tau_matched.weight_ttZ_Zll());
+	memOutput_ttZ_Ztt_LR = memOutput_2lss_1tau_matched.weight_ttH()/(memOutput_2lss_1tau_matched.weight_ttH() + k_ttZ*memOutput_2lss_1tau_matched.weight_ttZ());
+	memOutput_ttZ_Zll_LR = memOutput_2lss_1tau_matched.weight_ttH()/(memOutput_2lss_1tau_matched.weight_ttH() +k_ttZ_Zll*memOutput_2lss_1tau_matched.weight_ttZ_Zll());
+      }
       bdt_filler -> operator()({ run, lumi, event })
           ("lep1_pt",             selLepton_lead -> pt())
           ("lep1_conePt",         comp_lep1_conePt(*selLepton_lead))
@@ -1800,6 +1823,10 @@ int main(int argc, char* argv[])
           ("memOutput_ttZ_Zll",   memOutput_2lss_1tau_matched.is_initialized() ? memOutput_2lss_1tau_matched.weight_ttZ_Zll() : -100.)
           ("memOutput_tt",        memOutput_2lss_1tau_matched.is_initialized() ? memOutput_2lss_1tau_matched.weight_tt()      : -100.)
           ("memOutput_LR",        memOutput_2lss_1tau_matched.is_initialized() ? memOutput_2lss_1tau_matched.LR()             : -100.)
+	  ("memOutput_tt_LR",     memOutput_tt_LR)
+	  ("memOutput_ttZ_LR",    memOutput_ttZ_LR)
+	  ("memOutput_ttZ_Ztt_LR",memOutput_ttZ_Ztt_LR)
+	  ("memOutput_ttZ_Zll_LR",memOutput_ttZ_Zll_LR)
 	  ("lep1_genLepPt",       (selLepton_lead->genLepton() != 0) ? selLepton_lead->genLepton()->pt() : 0.)
 	  ("lep2_genLepPt",       (selLepton_sublead->genLepton() != 0) ? selLepton_sublead->genLepton() ->pt() : 0.)
 	  ("tau_genTauPt",        (selHadTau->genHadTau() != 0) ? selHadTau->genHadTau()->pt() : 0.)

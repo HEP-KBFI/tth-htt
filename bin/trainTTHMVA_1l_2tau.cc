@@ -71,6 +71,9 @@ int main(int argc, char* argv[])
 
   std::string signalDirPath = cfgTrainTTHMVA.getParameter<std::string>("signalDirPath");
   std::string backgroundDirPath = cfgTrainTTHMVA.getParameter<std::string>("backgroundDirPath");
+  std::string backgroundDirPath2 = cfgTrainTTHMVA.getUntrackedParameter<std::string>("backgroundDirPath2", "");
+  std::string preselection = cfgTrainTTHMVA.getUntrackedParameter<std::string>("preselection", "");
+  std::string signalPreselection = cfgTrainTTHMVA.getUntrackedParameter<std::string>("signalPreselection", "");
 
   vstring inputVariables = cfgTrainTTHMVA.getParameter<vstring>("inputVariables");
 
@@ -86,12 +89,14 @@ int main(int argc, char* argv[])
 
   TChain* tree_signal = new TChain((signalDirPath+'/'+treeName).data());
   TChain* tree_background = new TChain((backgroundDirPath+'/'+treeName).data());
+  TChain* tree_background2 = new TChain((backgroundDirPath2+'/'+treeName).data());
   for ( vstring::const_iterator inputFileName = inputFiles.files().begin();
 	inputFileName != inputFiles.files().end(); ++inputFileName ) {
     std::cout << "signal Tree: adding file = " << (*inputFileName) << std::endl;
     tree_signal->AddFile(inputFileName->data());
     std::cout << "background Tree: adding file = " << (*inputFileName) << std::endl;
     tree_background->AddFile(inputFileName->data());
+    if(backgroundDirPath2 != "")tree_background2->AddFile(inputFileName->data());
   }
   
   if ( !(tree_signal->GetListOfFiles()->GetEntries() >= 1) ) {
@@ -127,8 +132,11 @@ int main(int argc, char* argv[])
   TMVA::Tools::Instance();
   TMVA::Factory* factory = new TMVA::Factory(mvaName.data(), outputFile, "!V:!Silent");
   
-  factory->AddSignalTree(tree_signal);
+  //factory->AddSignalTree(tree_signal);
+  TCut signalCut = TCut(signalPreselection.c_str());
+  factory->AddTree(tree_signal, "Signal", 1.0, signalCut);
   factory->AddBackgroundTree(tree_background);
+  if(backgroundDirPath2 != "")factory->AddBackgroundTree(tree_background2);
 
   for ( vstring::const_iterator inputVariable = inputVariables.begin();
 	inputVariable != inputVariables.end(); ++inputVariable ) {
@@ -162,7 +170,8 @@ int main(int argc, char* argv[])
     factory->SetBackgroundWeightExpression(branchNameEvtWeight.data());
   }
 
-  TCut cut = "";
+  TCut cut = TCut(preselection.c_str());
+  std::cout<<"preselection : "<<cut<<std::endl;
   factory->PrepareTrainingAndTestTree(cut, "nTrain_Signal=0:nTrain_Background=0:nTest_Signal=0:nTest_Background=0:SplitMode=Random:NormMode=NumEvents:!V");
   factory->BookMethod(mvaMethodType.data(), mvaMethodName.data(), mvaTrainingOptions.data());
 
