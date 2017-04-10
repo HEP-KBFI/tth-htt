@@ -20,15 +20,14 @@ process.analyze_LeptonFakeRate = cms.PSet(
 
     process = cms.string('ttH'),
 
-    era = cms.string('2015'),
-
-    triggers_1e = cms.vstring("HLT_BIT_HLT_Ele23_WPLoose_Gsf_v"),
+    era = cms.string('2016'),
+    ## ned to split up triggers by pt range later !!!
+    triggers_1e = cms.vstring("HLT_BIT_HLT_Ele12_CaloIdM_TrackIdM_PFJet30_v","HLT_BIT_HLT_Ele17_CaloIdM_TrackIdM_PFJet30_v","HLT_BIT_HLT_Ele23_CaloIdM_TrackIdM_PFJet30_v"),
     use_triggers_1e = cms.bool(True),
-    triggers_1mu = cms.vstring("HLT_BIT_HLT_IsoMu20_v", "HLT_BIT_HLT_IsoTkMu20_v"),
+    triggers_1mu = cms.vstring("HLT_BIT_HLT_Mu3_PFJet40_v", "HLT_BIT_HLT_Mu8_v", "HLT_BIT_HLT_Mu17_v", "HLT_BIT_HLT_Mu27_v" ),
     use_triggers_1mu = cms.bool(True),
 #    triggers_1e1mu = cms.vstring("HLT_BIT_HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v", "HLT_BIT_HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v"),
 #    use_triggers_1e1mu = cms.bool(False),
-
     apply_offline_e_trigger_cuts_1e = cms.bool(True),
     apply_offline_e_trigger_cuts_1mu = cms.bool(True),
 #    apply_offline_e_trigger_cuts_1e1mu = cms.bool(True),
@@ -61,7 +60,7 @@ process.analyze_LeptonFakeRate = cms.PSet(
     central_or_shift = cms.string('central'),
     lumiScale = cms.double(1.),
     apply_trigger_bits = cms.bool(True),
-
+    apply_genWeight = cms.bool(True),
     fillGenEvtHistograms = cms.bool(True),
     
     selEventsFileName_input = cms.string(''),

@@ -165,7 +165,7 @@ int main(int argc, char* argv[])
   bool isMC = cfg_analyze.getParameter<bool>("isMC"); 
   std::string central_or_shift = cfg_analyze.getParameter<std::string>("central_or_shift");
   double lumiScale = ( process_string != "data_obs" ) ? cfg_analyze.getParameter<double>("lumiScale") : 1.;
-  // bool apply_genWeight = cfg_analyze.getParameter<bool>("apply_genWeight"); 
+  bool apply_genWeight = cfg_analyze.getParameter<bool>("apply_genWeight"); 
   bool apply_trigger_bits = cfg_analyze.getParameter<bool>("apply_trigger_bits"); 
 
   std::string jet_btagWeight_branch;
@@ -175,10 +175,11 @@ int main(int argc, char* argv[])
     else assert(0);
   }
 
+  
   int jetPt_option = RecoJetReader::kJetPt_central;
   int hadTauPt_option = RecoHadTauReader::kHadTauPt_central;
 
-  /*
+  
   int lheScale_option = kLHE_scale_central;
   if ( isMC && central_or_shift != "central" ) {
     TString central_or_shift_tstring = central_or_shift.data();
@@ -210,8 +211,8 @@ int main(int argc, char* argv[])
 	<< "Invalid Configuration parameter 'central_or_shift' = " << central_or_shift << " !!\n";
     }
   }
+  
 
-*/
 
 
   edm::ParameterSet cfg_dataToMCcorrectionInterface;
@@ -268,6 +269,57 @@ int main(int argc, char* argv[])
     inputTree->SetBranchAddress(PUWEIGHT_KEY, &pileupWeight);
   }
 
+  //-------- defining the readers ------------------
+
+  RecoHadTauReader* hadTauReader = new RecoHadTauReader(era, "nTauGood", "TauGood");
+  hadTauReader->setHadTauPt_central_or_shift(hadTauPt_option);
+  hadTauReader->setBranchAddresses(inputTree);
+  RecoHadTauCollectionGenMatcher hadTauGenMatcher;
+  RecoHadTauCollectionCleaner hadTauCleaner(0.3);
+  RecoHadTauCollectionSelectorLoose preselHadTauSelector(era);
+  preselHadTauSelector.set_min_id_cut_dR05(-1000);
+  preselHadTauSelector.set_max_raw_cut_dR05(1.e+6);
+  preselHadTauSelector.set_min_antiElectron(hadTauSelection_antiElectron);
+  preselHadTauSelector.set_min_antiMuon(hadTauSelection_antiMuon);
+  RecoHadTauCollectionSelectorFakeable fakeableHadTauSelector(era);
+  fakeableHadTauSelector.set_min_antiElectron(hadTauSelection_antiElectron);
+  fakeableHadTauSelector.set_min_antiMuon(hadTauSelection_antiMuon);
+  RecoHadTauCollectionSelectorTight tightHadTauSelector(era);
+  tightHadTauSelector.set_min_antiElectron(hadTauSelection_antiElectron);
+  tightHadTauSelector.set_min_antiMuon(hadTauSelection_antiMuon);
+
+  RecoJetReader* jetReader = new RecoJetReader(era, isMC, "nJet", "Jet");
+  if ( use_HIP_mitigation_bTag ) jetReader->enable_HIP_mitigation();
+  else jetReader->disable_HIP_mitigation();
+  jetReader->setJetPt_central_or_shift(jetPt_option);
+  jetReader->setBranchName_BtagWeight(jet_btagWeight_branch);
+  jetReader->setBranchAddresses(inputTree);
+  RecoJetCollectionGenMatcher jetGenMatcher;
+  RecoJetCollectionCleaner jetCleaner(0.4);
+  RecoJetCollectionSelector jetSelector(era);  
+  RecoJetCollectionSelectorBtagLoose jetSelectorBtagLoose(era);
+  RecoJetCollectionSelectorBtagMedium jetSelectorBtagMedium(era);
+
+
+  GenLeptonReader* genLeptonReader = 0;
+  GenHadTauReader* genHadTauReader = 0;
+  GenJetReader* genJetReader = 0;
+  LHEInfoReader* lheInfoReader = 0;
+  if ( isMC ) {
+    genLeptonReader = new GenLeptonReader("nGenLep", "GenLep", "nGenLepFromTau", "GenLepFromTau");
+    genLeptonReader->setBranchAddresses(inputTree);
+    genHadTauReader = new GenHadTauReader("nGenHadTaus", "GenHadTaus");
+    genHadTauReader->setBranchAddresses(inputTree);
+    genJetReader = new GenJetReader("nGenJet", "GenJet");
+    genJetReader->setBranchAddresses(inputTree);
+    lheInfoReader = new LHEInfoReader();
+    lheInfoReader->setBranchAddresses(inputTree);
+  }
+
+// ------------------------------------------------
+
+
+
   int numEntries = inputTree->GetEntries();
   int analyzedEntries = 0;
   int selectedEntries = 0;
@@ -284,14 +336,59 @@ int main(int argc, char* argv[])
             std::cout << "processing Entry " << idxEntry << " (" << selectedEntries << " Entries selected)" << std::endl;                                                                               
             }                                                                                                                                                                                        
 
-    ++analyzedEntries;                                                                                                                                                                              
-    histogram_analyzedEntries->Fill(0.);                                                                                                                                                     
-    inputTree->GetEntry(idxEntry);    
 
 
-    ++selectedEntries;
-    // selectedEntries_weighted += evtWeight;
-    histogram_selectedEntries->Fill(0.);
+     ++analyzedEntries;                                                                                                                                                                              
+     histogram_analyzedEntries->Fill(0.);                                                                                                                                                     
+     inputTree->GetEntry(idxEntry);    
+
+     if ( isMC ) {                                                                                                                                                                                     
+          lheInfoReader->read();                                                                                                                                                                        
+     }                                                                                                                                                                                                 
+    
+                                                                                                                                                                                                        
+  
+     //--- compute event-level weight for data/MC correction of b-tagging efficiency and mistag rate                                                                                                    
+     //   (using the method "Event reweighting using scale factors calculated with a tag and probe method",                                                                                             
+     //    described on the BTV POG twiki https://twiki.cern.ch/twiki/bin/view/CMS/BTagShapeCalibration )                                                                                              
+     double evtWeight = 1.;                                                                                                                                                                             
+     if ( isMC ) {                                                                                                                                                                                      
+         evtWeight *= lumiScale;                                                                                                                                                                      
+            if ( apply_genWeight ) evtWeight *= sgn(genWeight);                                                                                                                                        
+                   evtWeight *= pileupWeight;                                                                                                                                                          
+          
+       if ( lheScale_option != kLHE_scale_central ) {                                                                                                                                                  
+    	 if      ( lheScale_option == kLHE_scale_xDown ) evtWeight *= lheInfoReader->getWeight_scale_xDown();                                                                                          
+    	 else if ( lheScale_option == kLHE_scale_xUp   ) evtWeight *= lheInfoReader->getWeight_scale_xUp();                                                                                            
+    	 else if ( lheScale_option == kLHE_scale_yDown ) evtWeight *= lheInfoReader->getWeight_scale_yDown();                                                                                          
+    	 else if ( lheScale_option == kLHE_scale_yUp   ) evtWeight *= lheInfoReader->getWeight_scale_yUp();                                                                                             
+      }   
+
+     }
+
+     bool isTriggered_1e = hltPaths_isTriggered(triggers_1e) || (isMC && !apply_trigger_bits);                                                                                                         
+     bool isTriggered_1mu = hltPaths_isTriggered(triggers_1mu) || (isMC && !apply_trigger_bits);                                                                                                      
+     // bool isTriggered_1e1mu = hltPaths_isTriggered(triggers_1e1mu) || (isMC && !apply_trigger_bits);                                                                                                  
+     
+
+                                                                                                                                                                                                
+     bool selTrigger_1e = use_triggers_1e && isTriggered_1e;                                                                                                                                  
+     bool selTrigger_1mu = use_triggers_1mu && isTriggered_1mu;                                                                                                                                         
+     // bool selTrigger_1e1mu = use_triggers_1e1mu && isTriggered_1e1mu;                                                                                                                                
+
+     // if ( !(selTrigger_1e || selTrigger_1mu || selTrigger_1e1mu) ){
+     if ( !(selTrigger_1e || selTrigger_1mu) ){
+          continue;
+     }           
+
+
+
+
+
+
+     ++selectedEntries;
+     selectedEntries_weighted += evtWeight;
+     histogram_selectedEntries->Fill(0.);
   }
 
 
