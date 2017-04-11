@@ -1785,10 +1785,10 @@ int main(int argc, char* argv[])
 	  k_ttZ_Zll = 5.e-1;
 	  k_tt = 5.e-15;
 	}
-	memOutput_tt_LR = memOutput_2lss_1tau_matched.weight_ttH()/(memOutput_2lss_1tau_matched.weight_ttH() + k_tt*memOutput_2lss_1tau_matched.weight_tt());
-	memOutput_ttZ_LR = memOutput_2lss_1tau_matched.weight_ttH()/(memOutput_2lss_1tau_matched.weight_ttH() + k_ttZ*memOutput_2lss_1tau_matched.weight_ttZ() + k_ttZ_Zll*memOutput_2lss_1tau_matched.weight_ttZ_Zll());
-	memOutput_ttZ_Ztt_LR = memOutput_2lss_1tau_matched.weight_ttH()/(memOutput_2lss_1tau_matched.weight_ttH() + k_ttZ*memOutput_2lss_1tau_matched.weight_ttZ());
-	memOutput_ttZ_Zll_LR = memOutput_2lss_1tau_matched.weight_ttH()/(memOutput_2lss_1tau_matched.weight_ttH() +k_ttZ_Zll*memOutput_2lss_1tau_matched.weight_ttZ_Zll());
+	memOutput_tt_LR = (memOutput_2lss_1tau_matched.weight_ttH() + k_tt*memOutput_2lss_1tau_matched.weight_tt()) > 0 ? memOutput_2lss_1tau_matched.weight_ttH()/(memOutput_2lss_1tau_matched.weight_ttH() + k_tt*memOutput_2lss_1tau_matched.weight_tt()) : -1.;
+	memOutput_ttZ_LR = (memOutput_2lss_1tau_matched.weight_ttH() + k_ttZ*memOutput_2lss_1tau_matched.weight_ttZ() + k_ttZ_Zll*memOutput_2lss_1tau_matched.weight_ttZ_Zll()) > 0 ? memOutput_2lss_1tau_matched.weight_ttH()/(memOutput_2lss_1tau_matched.weight_ttH() + k_ttZ*memOutput_2lss_1tau_matched.weight_ttZ() + k_ttZ_Zll*memOutput_2lss_1tau_matched.weight_ttZ_Zll()) : -1.;
+	memOutput_ttZ_Ztt_LR = (memOutput_2lss_1tau_matched.weight_ttH() + k_ttZ*memOutput_2lss_1tau_matched.weight_ttZ()) > 0 ? memOutput_2lss_1tau_matched.weight_ttH()/(memOutput_2lss_1tau_matched.weight_ttH() + k_ttZ*memOutput_2lss_1tau_matched.weight_ttZ()) : -1.;
+	memOutput_ttZ_Zll_LR = (memOutput_2lss_1tau_matched.weight_ttH() +k_ttZ_Zll*memOutput_2lss_1tau_matched.weight_ttZ_Zll()) > 0 ? memOutput_2lss_1tau_matched.weight_ttH()/(memOutput_2lss_1tau_matched.weight_ttH() +k_ttZ_Zll*memOutput_2lss_1tau_matched.weight_ttZ_Zll()) : -1.;
       }
       bdt_filler -> operator()({ run, lumi, event })
           ("lep1_pt",             selLepton_lead -> pt())
