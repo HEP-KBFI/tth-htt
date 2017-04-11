@@ -36,6 +36,7 @@ class sbatchManagerRuntimeError(sbatchManagerError):
 class Status:
   submitted   = 1
   completed   = 2
+  running     = 3
 
   memory_exceeded = 11
   timeout         = 12
@@ -45,7 +46,7 @@ class Status:
 
   @staticmethod
   def classify_error(ExitCode, DerivedExitCode, State):
-      if (ExitCode == '0:0' and DerivedExitCode == '0:0' and State in ['COMPLETED', 'COMPLETING']):
+      if (ExitCode == '0:0' and DerivedExitCode == '0:0' and State == 'COMPLETED'):
           return Status.completed
       if (ExitCode == '0:0' and DerivedExitCode == '0:0' and (State == 'CANCELLED' or
                                                               State == 'CANCELLED by 0')) or \
@@ -197,7 +198,10 @@ class sbatchManager:
             for line in lines:
                 JobID, ExitCode, DerivedExitCode, State = line.split('|')
                 if JobID in completion:
-                    completion[JobID] = Status.classify_error(ExitCode, DerivedExitCode, State)
+                    if State in ['RUNNING', 'COMPLETING']:
+                      completion[JobID] = Status.running
+                    else:
+                      completion[JobID] = Status.classify_error(ExitCode, DerivedExitCode, State)
             return completion
         else:
             # Likely returned along the lines of (due to heavy load on the cluster since SQL DB is overloaded):
@@ -238,7 +242,7 @@ class sbatchManager:
                     completion[JobId] = Status.classify_error(
                       line_dict['ExitCode'],
                       line_dict['DerivedExitCode'],
-                      line_dict['State'],
+                      line_dict['JobState'],
                     )
             return completion
         else:
@@ -454,7 +458,14 @@ class sbatchManager:
                 ]
                 for finished_ids_chunk in finished_ids_chunks:
                     completion = self.check_job_completion(finished_ids_chunk)
-                    failed_jobs = [id_ for id_ in completion if completion[id_] != Status.completed]
+                    completed_jobs, running_jobs, failed_jobs = [], [], []
+                    for id_, state in completion.iteritems():
+                      if state == Status.completed:
+                        completed_jobs.append(id_)
+                      elif state == Status.running:
+                        running_jobs.append(id_)
+                      else:
+                        failed_jobs.append(id_)
                     # If there are any failed jobs, throw
                     if failed_jobs:
                         failed_jobs_str = ','.join(failed_jobs)
@@ -481,12 +492,14 @@ class sbatchManager:
                         # Raise the first error at hand
                         raise Status.raiseError(errors[0])
                     else:
-                        logging.debug("Job(s) w/ ID(s) {jobIds} finished successfully".format(
-                          jobIds = ','.join(completion.keys())
+                        logging.debug("Job(s) w/ ID(s) {completedIds} finished successfully {runningInfo}".format(
+                          completedIds = ','.join(completed_jobs),
+                          runningInfo  = '(%s still running)' % ','.join(running_jobs) if running_jobs else '',
                         ))
                     # Mark successfully finished jobs as completed so that won't request their status code again
-                    for completed_id in completion:
-                        self.jobIds[completed_id]['status'] = Status.completed
+                    # Otherwise they will be still at ,,submitted'' state
+                    for id_ in completed_jobs:
+                        self.jobIds[id_]['status'] = Status.completed
 
             jobIds_set = set([ id_ for id_ in self.jobIds if self.jobIds[id_]['status'] == Status.submitted])
             nofJobs_left = len(jobIds_set)
