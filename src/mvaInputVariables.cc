@@ -38,6 +38,16 @@ double comp_MT_met_lep2(const GenParticle& lepton, double met_pt, double met_phi
   return comp_MT_met_lep2(lepton.p4(), met_pt, met_phi);
 }
 
+double comp_MT_met_lep3(const Particle::LorentzVector& leptonP4, double met_pt, double met_phi)
+{
+  return comp_MT_met_lep1(leptonP4, met_pt, met_phi);
+}
+
+double comp_MT_met_lep3(const GenParticle& lepton, double met_pt, double met_phi)
+{
+  return comp_MT_met_lep3(lepton.p4(), met_pt, met_phi);
+}
+
 double comp_MT_met_hadTau1(const GenParticle& hadTau, double met_pt, double met_phi)
 {
   return comp_MT_met_lep1(hadTau, met_pt, met_phi);

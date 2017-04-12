@@ -60,7 +60,7 @@ elif ERA == "2016":
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "2017Apr02"
+version = "2017Apr10"
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -160,6 +160,7 @@ if __name__ == '__main__':
       "mvaDiscr_2lss",
       "mvaDiscr_2lss_1tau",
       "mvaDiscr_2lss_1tau_wMEM",
+      "mvaDiscr_2lss_1tau_wMEMsepLR",
       "mTauTauVis",
       "memOutput_LR_type0",
       "memOutput_LR_type1",

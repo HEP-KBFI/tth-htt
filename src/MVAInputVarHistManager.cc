@@ -41,6 +41,8 @@ MVAInputVarHistManager::MVAInputVarHistManager(const edm::ParameterSet& cfg)
   binningOptions_["max(abs(LepGood_eta[iF_Recl[0]]),abs(LepGood_eta[iF_Recl[1]]))"] = new binningOptionType("max(abs(LepGood_eta[iF_Recl[0]]),abs(LepGood_eta[iF_Recl[1]]))", 50, -2.5, +2.5);
   binningOptions_["max_lep_eta"] = new binningOptionType("max_lep_eta", 50, -2.5, +2.5);
   binningOptions_["memOutput_LR"] = new binningOptionType("memOutput_LR", 20, 0., 1.);
+  binningOptions_["memOutput_ttZ_LR"] = new binningOptionType("memOutput_ttZ_LR", 20, 0., 1.);
+  binningOptions_["memOutput_tt_LR"] = new binningOptionType("memOutput_tt_LR", 20, 0., 1.);
   binningOptions_["mhtJet25_Recl"] = new binningOptionType("mhtJet25_Recl", 40, 0., 400.);
   binningOptions_["min(met_pt,400)"] = new binningOptionType("min(met_pt,400)", 40, 0., 200.);
   binningOptions_["mindr_lep_jet"] = new binningOptionType("mindr_lep_jet", 50, 0., 5.);
@@ -53,6 +55,7 @@ MVAInputVarHistManager::MVAInputVarHistManager(const edm::ParameterSet& cfg)
   binningOptions_["mT_lep"] = new binningOptionType("mT_lep", 40, 0., 200.);
   binningOptions_["mT_lep1"] = new binningOptionType("mT_lep1", 40, 0., 200.);
   binningOptions_["mT_lep2"] = new binningOptionType("mT_lep2", 40, 0., 200.);
+  binningOptions_["mT_lep3"] = new binningOptionType("mT_lep3", 40, 0., 200.);
   binningOptions_["MT_met_lep1"] = new binningOptionType("MT_met_lep1", 40, 0., 200.);
   binningOptions_["MT_met_lep2"] = new binningOptionType("MT_met_lep2", 40, 0., 200.);
   binningOptions_["mT_tau1"] = new binningOptionType("mT_tau1", 40, 0., 200.);
