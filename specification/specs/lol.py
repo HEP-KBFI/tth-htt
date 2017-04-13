@@ -2,7 +2,7 @@ from tthAnalysis.HiggsToTauTau.jobTools import run_cmd
 
 from config import config
 
-def check_that_histograms_are_valid_with_too_small_root_file_spec():
+def lol():
 
     # Prepare
 
