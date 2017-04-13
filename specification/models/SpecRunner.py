@@ -30,10 +30,13 @@ class SpecRunner:
         print_ok("Successful: %s" % len(self.successful))
         print_fail("Failed: %s" % len(self.failed))
 
+    def get_spec_name(self):
+        return spec.__name__.replace("_", " ").capitalize()
+
     def array_to_string_list(self, specs):
         strings = []
 
         for spec in specs:
-            strings.append("  * %s" % spec.__name__.replace("_", " ").capitalize())
+            strings.append("  * %s" % self.get_spec_name(spec))
 
         return " ".join(strings)
