@@ -16,6 +16,7 @@ spec_runner.run_specs([
     specs.executable_hadd_in_cluster_spec,
     specs.check_that_histograms_are_valid_spec,
     specs.check_that_histograms_are_valid_with_missing_input_histogram_spec,
+    specs.check_that_histograms_are_valid_with_too_small_root_file_spec,
     specs.check_that_histograms_are_equal_spec,
     specs.check_that_histograms_are_equal_with_unequal_data
 ])

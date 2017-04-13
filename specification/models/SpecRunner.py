@@ -17,3 +17,13 @@ class SpecRunner:
 
     def print_summary(self):
         print("Successful: %s, Failed: %s" % (len(self.successful), len(self.failed)))
+
+        print("\nPassed tests were:")
+        self.print_test_names(self.successful)
+
+        print("\nFailing tests were:")
+        self.print_test_names(self.failed)
+
+    def print_test_names(self, tests):
+        for test in tests:
+            print("  * %s" % test.__name__.replace("_", " ").capitalize())
