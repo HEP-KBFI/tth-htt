@@ -30,7 +30,7 @@ class SpecRunner:
         print_ok("Successful: %s" % len(self.successful))
         print_fail("Failed: %s" % len(self.failed))
 
-    def get_spec_name(self):
+    def get_spec_name(self, spec):
         return spec.__name__.replace("_", " ").capitalize()
 
     def array_to_string_list(self, specs):
