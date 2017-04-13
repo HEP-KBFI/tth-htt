@@ -37,6 +37,6 @@ class SpecRunner:
         strings = []
 
         for spec in specs:
-            strings.append("  * %s" % self.get_spec_name(spec))
+            strings.append("  * %s\n" % self.get_spec_name(spec))
 
         return " ".join(strings)
