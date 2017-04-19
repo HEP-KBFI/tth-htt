@@ -15,7 +15,7 @@ cmssw_base = run_cmd('echo $CMSSW_BASE').strip()
 temp_dir = '/home/%s/tmp/' % user
 fixtures_dir = '%s/src/tthAnalysis/HiggsToTauTau/specification/fixtures/' % cmssw_base
 sbatch_priority = run_cmd('echo $SBATCH_PRIORITY').strip()
-
+scripts_dir = "%s/src/tthAnalysis/HiggsToTauTau/scripts/" % cmssw_base
 
 # create config
 
@@ -24,7 +24,8 @@ config = {
     'cmssw_base': cmssw_base,
     'temp_dir': temp_dir,
     'fixtures_dir': fixtures_dir,
-    'sbatch_priority': sbatch_priority
+    'sbatch_priority': sbatch_priority,
+    'scripts_dir': scripts_dir
 }
 
 
