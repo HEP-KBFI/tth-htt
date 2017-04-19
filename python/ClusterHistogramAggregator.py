@@ -116,6 +116,25 @@ class ClusterHistogramAggregator:
 
         bash_command_template = '''
 
+            # Load vars
+
+            export SCRATCHED_INPUT_HISTOGRAMS=""
+            export INPUT_HISTOGRAMS="{input_histograms}"
+            export OUTPUT_HISTOGRAM="{output_histogram}"
+            echo "Input histograms are: $INPUT_HISTOGRAMS, Output histogram is: $OUTPUT_HISTOGRAM"
+
+
+            # Check that input histograms are ok on /home
+
+            python $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/scripts/check_that_histograms_are_valid.py $INPUT_HISTOGRAMS
+            check_that_histograms_are_valid_exit_status=$?
+
+            if [[ $check_that_histograms_are_valid_exit_status -ne 0 ]]; then
+              echo 'ERROR Some of the input histograms are not valid. Will stop execution.'
+              return 1
+            fi
+
+
             # Create scratch dir for output root
 
             export SCRATCHED_OUTPUT_HISTOGRAM="$SCRATCH_DIR/{output_histogram}"
@@ -126,13 +145,6 @@ class ClusterHistogramAggregator:
             echo "Create scratch dir for output root: mkdir -p $SCRATCHED_OUTPUT_HISTOGRAM_DIRECTORY"
             mkdir -p $SCRATCHED_OUTPUT_HISTOGRAM_DIRECTORY
 
-
-            # Create scratched histograms
-
-            export SCRATCHED_INPUT_HISTOGRAMS=""
-            export INPUT_HISTOGRAMS="{input_histograms}"
-            export OUTPUT_HISTOGRAM="{output_histogram}"
-            echo "Create scratched histograms for: $INPUT_HISTOGRAMS"
 
             for INPUT_HISTOGRAM in $INPUT_HISTOGRAMS; do
 
@@ -193,6 +205,7 @@ class ClusterHistogramAggregator:
 
             echo "Copy result from scratch to /home: cp $SCRATCHED_OUTPUT_HISTOGRAM $OUTPUT_HISTOGRAM_DIRECTORY"
             cp $SCRATCHED_OUTPUT_HISTOGRAM $OUTPUT_HISTOGRAM_DIRECTORY
+
 
 
             # Cleanup will be automatic

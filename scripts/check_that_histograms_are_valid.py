@@ -55,14 +55,14 @@ def check_that_histogram_is_big_enough(input_histogram):
         print('ERROR: root input file is too small (%s bytes): %s' % (filesize, input_histogram))
         sys.exit(1)
     else:
-        print('OK: root input file is OK (%s bytes): %s' % (filesize, input_histogram))
+        print('OK: root input file size is OK (%s bytes): %s' % (filesize, input_histogram))
 
 
 def check_that_histogram_is_not_zombie(input_histogram):
     root_tfile = ROOT.TFile(input_histogram, "read")
 
     if root_tfile.IsZombie(): # THIS IS NOT WORKING :(
-        print('ERROR: root input file is broken: %s' % input_histogram)
+        print('ERROR: root input file is IsZombie: %s' % input_histogram)
         sys.exit(1)
 
 main()
