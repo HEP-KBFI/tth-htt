@@ -34,11 +34,17 @@ def check_that_histogram_is_ready_for_usage(input_histogram):
     print('check_that_histogram_is_ready_for_usage: %s' % input_histogram)
 
     polling_delay    = 1 # in seconds
-    polling_cmd      = "fuser {filename}"
+    polling_cmd      = "fuser %s" % input_histogram
 
     is_file_ready = False
     while not is_file_ready:
-        stdout, stderr = run_cmd(polling_cmd.format(filename = input_histogram), return_stderr = True)
+
+        stdout, stderr = run_cmd(polling_cmd, return_stderr = True)
+        
+        print('Did run command: %s' % polling_cmd)
+        print('Output was: %s' % stdout)
+        print('Error was: %s' % stdout)
+
         if not stdout and not stderr:
             # No one uses this file, it's free to use for everyone
             break
