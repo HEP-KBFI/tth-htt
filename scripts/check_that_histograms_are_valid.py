@@ -40,10 +40,10 @@ def check_that_histogram_is_ready_for_usage(input_histogram):
     while not is_file_ready:
 
         stdout, stderr = run_cmd(polling_cmd, return_stderr = True)
-        
+
         print('Did run command: %s' % polling_cmd)
         print('Output was: %s' % stdout)
-        print('Error was: %s' % stdout)
+        print('Error was: %s' % stderr)
 
         if not stdout and not stderr:
             # No one uses this file, it's free to use for everyone
