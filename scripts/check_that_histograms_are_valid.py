@@ -24,11 +24,15 @@ def check_that_histogram_is_valid(input_histogram):
 
 
 def check_that_histogram_exists(input_histogram):
+    print('check_that_histogram_exists: %s' % input_histogram)
+
     if not os.path.isfile(input_histogram):
         print('ERROR: root input file is missing: %s' % input_histogram)
         sys.exit(1)
 
 def check_that_histogram_is_ready_for_usage(input_histogram):
+    print('check_that_histogram_is_ready_for_usage: %s' % input_histogram)
+
     polling_delay    = 1 # in seconds
     polling_cmd      = "fuser {filename}"
 
@@ -47,8 +51,8 @@ def check_that_histogram_is_ready_for_usage(input_histogram):
             time.sleep(polling_delay)
 
 def check_that_histogram_is_big_enough(input_histogram):
-    # or go with filesize_cmd ?
-    # filesize_cmd     = 'stat --printf="%s" {filename}' # use format method!
+    print('check_that_histogram_is_big_enough: %s' % input_histogram)
+
     filesize = os.path.getsize(input_histogram)
 
     if filesize < 5:
@@ -59,6 +63,8 @@ def check_that_histogram_is_big_enough(input_histogram):
 
 
 def check_that_histogram_is_not_zombie(input_histogram):
+    print('check_that_histogram_is_not_zombie: %s' % input_histogram)
+
     root_tfile = ROOT.TFile(input_histogram, "read")
 
     if root_tfile.IsZombie(): # THIS IS NOT WORKING :(
