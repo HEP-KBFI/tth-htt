@@ -3,7 +3,9 @@ from tthAnalysis.HiggsToTauTau.jobTools import run_cmd
 
 
 # set tests to fastest priority queue
-if not os.environ.get('SBATCH_PRIORITY'):
+allowed_sbatch_priorites = ['prio', 'test']
+
+if not os.environ.get('SBATCH_PRIORITY') in allowed_sbatch_priorites:
     print('Will run tests in cluster using SBATCH_PRIORITY="prio". For faster execution on Quasar, use SBATCH_PRIORITY="test". ;)')
     os.environ['SBATCH_PRIORITY'] = 'prio'
 
