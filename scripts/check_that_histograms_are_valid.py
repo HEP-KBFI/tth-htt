@@ -6,6 +6,8 @@ def main():
 
     print('check_that_histograms_are_valid.py %s' % " ".join(input_histograms))
 
+    run_cmd('sleep 20')
+
     for input_histogram in input_histograms:
         check_that_histogram_is_valid(input_histogram)
 
@@ -16,7 +18,7 @@ def main():
 def check_that_histogram_is_valid(input_histogram):
 
     check_that_histogram_exists(input_histogram)
-    check_that_histogram_is_ready_for_usage(input_histogram)
+    # check_that_histogram_is_ready_for_usage(input_histogram)
     check_that_histogram_is_big_enough(input_histogram)
     check_that_histogram_is_not_zombie(input_histogram)
 
