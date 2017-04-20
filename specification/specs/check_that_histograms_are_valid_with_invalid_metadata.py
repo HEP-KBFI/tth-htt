@@ -21,8 +21,8 @@ def check_that_histograms_are_valid_with_invalid_metadata():
     result = run_cmd(command_with_arguments)
 
     # Check result
-
-    if result.find('ERROR: real metadata does not match expected metadata for histogram: %s' % histogram_with_invalid_metadata) == -1:
+    expected_error_message = 'ERROR: real metadata does not match expected metadata for histogram: %s' % histogram_with_invalid_metadata
+    if result.find(expected_error_message) == -1:
         print('Output must contain information that metadata does not match')
         return False
 
