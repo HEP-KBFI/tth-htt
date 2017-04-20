@@ -44,8 +44,10 @@ def call_histogram_aggregation_on_cluster_node_spec():
     histogram_metadata_file = root_result_file + '.metadata'
     root_file_metadata_txt = run_cmd('cat %s' % histogram_metadata_file)
 
-    if root_file_metadata_txt.find('oi') == -1:
-        print('FAILED: Metadata "%s" is not correct' % root_file_metadata_txt)
+    expected_metadata_txt = "sha1sum: 34754a9cc5e0359f2b73c5b18cc6a60214f2c047\nevents_count: 1831527.0\n"
+
+    if root_file_metadata_txt.find(expected_metadata_txt) == -1:
+        print('FAILED: Metadata "%s" is not correct, should be "%s"' % (root_file_metadata_txt, expected_metadata_txt))
         return False
 
     print('PASSED: HADD on cluster node worked')
