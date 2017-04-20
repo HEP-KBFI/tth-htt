@@ -1,5 +1,6 @@
-from tthAnalysis.HiggsToTauTau.commands import *
 from tthAnalysis.HiggsToTauTau.jobTools import run_cmd
+from tthAnalysis.HiggsToTauTau.commands import *
+import sys
 
 def main():
     histogram = sys.argv[1]
