@@ -118,6 +118,7 @@ class ClusterHistogramAggregator:
 
             # Load vars
 
+            export SCRIPTS_DIR=$CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/scripts
             export SCRATCHED_INPUT_HISTOGRAMS=""
             export INPUT_HISTOGRAMS="{input_histograms}"
             export OUTPUT_HISTOGRAM="{output_histogram}"
@@ -126,7 +127,7 @@ class ClusterHistogramAggregator:
 
             # Check that input histograms are ok on /home
 
-            python $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/scripts/check_that_histograms_are_valid.py $INPUT_HISTOGRAMS
+            python $SCRIPTS_DIR/check_that_histograms_are_valid.py $INPUT_HISTOGRAMS
             check_that_histograms_are_valid_exit_status=$?
 
             if [[ $check_that_histograms_are_valid_exit_status -ne 0 ]]; then
@@ -159,6 +160,10 @@ class ClusterHistogramAggregator:
                 echo "Copy histogram to scratch: cp -a $INPUT_HISTOGRAM $SCRATCHED_INPUT_HISTOGRAM_DIRECTORY"
                 cp "$INPUT_HISTOGRAM" "$SCRATCHED_INPUT_HISTOGRAM_DIRECTORY"
 
+                INPUT_HISTOGRAM_METADATA=${INPUT_HISTOGRAM/.root/.metadata.txt}
+                echo "Copy histogram metadata to scratch: cp -a $INPUT_HISTOGRAM_METADATA $SCRATCHED_INPUT_HISTOGRAM_DIRECTORY"
+                cp "$INPUT_HISTOGRAM_METADATA" "$SCRATCHED_INPUT_HISTOGRAM_DIRECTORY"
+
                 export SCRATCHED_INPUT_HISTOGRAMS="$SCRATCHED_INPUT_HISTOGRAMS $SCRATCHED_INPUT_HISTOGRAM"
             done
 
@@ -186,6 +191,11 @@ class ClusterHistogramAggregator:
             fi
 
 
+            # Create a new metadata for output histogram
+
+            python $SCRIPTS_DIR/create_histogram_metadata.py $SCRATCHED_OUTPUT_HISTOGRAM
+
+
             # Check that input histograms are equal to output histogram
 
             python $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/scripts/check_that_histograms_are_equal.py $SCRATCHED_OUTPUT_HISTOGRAM $SCRATCHED_INPUT_HISTOGRAMS
@@ -203,10 +213,12 @@ class ClusterHistogramAggregator:
             echo "Make a directory for result root: mkdir -p $OUTPUT_HISTOGRAM_DIRECTORY"
             mkdir -p $OUTPUT_HISTOGRAM_DIRECTORY
 
-            echo "Copy result from scratch to /home: cp $SCRATCHED_OUTPUT_HISTOGRAM $OUTPUT_HISTOGRAM_DIRECTORY"
+            export SCRATCHED_OUTPUT_HISTOGRAM_METADATA=${SCRATCHED_OUTPUT_HISTOGRAM/.root/.metadata.txt}
+            echo "Copy result histogram metadata from scratch to /home: cp $SCRATCHED_OUTPUT_HISTOGRAM_METADATA $OUTPUT_HISTOGRAM_DIRECTORY"
+            cp $SCRATCHED_OUTPUT_HISTOGRAM_METADATA $OUTPUT_HISTOGRAM_DIRECTORY
+
+            echo "Copy result histogram from scratch to /home: cp $SCRATCHED_OUTPUT_HISTOGRAM $OUTPUT_HISTOGRAM_DIRECTORY"
             cp $SCRATCHED_OUTPUT_HISTOGRAM $OUTPUT_HISTOGRAM_DIRECTORY
-
-
 
             # Cleanup will be automatic
 
