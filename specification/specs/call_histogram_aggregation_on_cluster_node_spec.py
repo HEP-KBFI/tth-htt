@@ -37,14 +37,17 @@ def call_histogram_aggregation_on_cluster_node_spec():
     # Check result
 
     root_result_file = '%(temp_dir)s/call_histogram_aggregation_on_cluster_node/result.root' % config
-    result_successful = os.path.isfile(root_result_file)
+    root_file_exists = os.path.isfile(root_result_file)
 
+    if not root_file_exists:
+        print('FAILED: HADD on cluster node failed - file is missing')
 
-    # Output result
+    histogram_metadata_file = root_result_file + '.metadata'
+    root_file_metadata_txt = run_cmd('cat %s' % histogram_metadata_file)
 
-    if result_successful:
-        print('PASSED: HADD on cluster node worked')
-    else:
-        print('FAILED: HADD on cluster node failed')
+    if root_file_metadata_txt.find('oi') == -1:
+        print('FAILED: Metadata "%s" is not correct')
+
+    print('PASSED: HADD on cluster node worked')
 
     return result_successful and not got_exception
