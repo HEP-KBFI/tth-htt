@@ -29,9 +29,7 @@ def call_histogram_aggregation_on_cluster_node_spec():
 
         m.waitForJobs()
     except:
-        got_exception = True
-    else:
-        got_exception = False
+        return False
 
 
     # Check result
@@ -50,4 +48,4 @@ def call_histogram_aggregation_on_cluster_node_spec():
 
     print('PASSED: HADD on cluster node worked')
 
-    return result_successful and not got_exception
+    return True
