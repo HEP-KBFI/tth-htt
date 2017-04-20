@@ -1,5 +1,5 @@
 import sys
-from commands import *
+from tthAnalysis.HiggsToTauTau.commands import *
 
 def main():
     output_histogram = sys.argv[1]
