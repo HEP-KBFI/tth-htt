@@ -1,6 +1,6 @@
 from tthAnalysis.HiggsToTauTau.jobTools import run_cmd
 import time, os, sys, ROOT
-from commands import *
+from commands import get_histogram_metadata
 
 def main():
     input_histograms = sys.argv[1:len(sys.argv)]

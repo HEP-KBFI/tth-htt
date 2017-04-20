@@ -18,15 +18,15 @@ def check_that_histograms_are_valid_with_invalid_metadata():
     command_arguments = " ".join(histograms)
     command_with_arguments = command + " " + command_arguments + "; echo EXIT_STATUS_WAS: $?;"
 
-    result = run_cmd(command_with_arguments)
+    command_output = run_cmd(command_with_arguments)
 
     # Check result
     expected_error_message = 'ERROR: real metadata does not match expected metadata for histogram: %s' % histogram_with_invalid_metadata
-    if result.find(expected_error_message) == -1:
+    if command_output.find(expected_error_message) == -1:
         print('Output must contain information that metadata does not match')
         return False
 
-    if result.find('EXIT_STATUS_WAS: 1') == -1:
+    if command_output.find('EXIT_STATUS_WAS: 1') == -1:
         print('Exit status must be 1 if metadata does not match')
         return False
 

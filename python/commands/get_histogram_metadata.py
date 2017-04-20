@@ -1,5 +1,5 @@
 from tthAnalysis.HiggsToTauTau.jobTools import run_cmd
-from commands import *
+from commands import get_events_count
 
 def get_histogram_metadata(histogram):
     sha1sum = run_cmd('sha1sum %s' % histogram).split(' ')[0]
