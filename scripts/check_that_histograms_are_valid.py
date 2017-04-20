@@ -41,7 +41,7 @@ def check_that_metadata_is_ok(input_histogram):
 
     metadata_file = input_histogram.replace('.root', '.metadata.txt')
     expected_metadata_txt = run_cmd('cat %s' % metadata_file)
-    real_metadata_txt = commands.get_histogram_metadata(input_histogram)
+    real_metadata_txt = get_histogram_metadata(input_histogram)
 
     if real_metadata_txt.find(expected_metadata_txt) == -1:
         print('ERROR: real metadata does not match expected metadata for histogram: %s' % input_histogram)
