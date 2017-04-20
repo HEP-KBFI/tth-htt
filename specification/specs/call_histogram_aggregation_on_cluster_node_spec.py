@@ -39,12 +39,14 @@ def call_histogram_aggregation_on_cluster_node_spec():
 
     if not root_file_exists:
         print('FAILED: HADD on cluster node failed - file is missing')
+        return False
 
     histogram_metadata_file = root_result_file + '.metadata'
     root_file_metadata_txt = run_cmd('cat %s' % histogram_metadata_file)
 
     if root_file_metadata_txt.find('oi') == -1:
-        print('FAILED: Metadata "%s" is not correct')
+        print('FAILED: Metadata "%s" is not correct' % root_file_metadata_txt)
+        return False
 
     print('PASSED: HADD on cluster node worked')
 
