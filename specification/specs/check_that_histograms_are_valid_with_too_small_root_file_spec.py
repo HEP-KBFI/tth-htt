@@ -15,7 +15,7 @@ def check_that_histograms_are_valid_with_too_small_root_file_spec():
 
     # Run task
 
-    command = 'python %(cmssw_base)s/src/tthAnalysis/HiggsToTauTau/scripts/check_that_histograms_are_valid.py' % config
+    command = 'python %(scripts_dir)s/check_that_histograms_are_valid.py' % config
     command_arguments = " ".join(histograms)
     command_with_arguments = command + " " + command_arguments + "; echo EXIT_STATUS_WAS: $?;"
 

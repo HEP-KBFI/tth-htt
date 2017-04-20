@@ -10,6 +10,7 @@ spec_runner = models.SpecRunner()
 
 
 spec_runner.run_specs([
+    specs.check_that_histograms_are_valid_with_invalid_metadata,
     specs.call_histogram_aggregation_on_cluster_node_spec,
     specs.call_histogram_aggregation_on_cluster_node_with_invalid_input_spec,
     specs.execute_command_on_cluster_node_spec,

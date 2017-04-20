@@ -1,12 +1,11 @@
 from tthAnalysis.HiggsToTauTau.jobTools import run_cmd
 import time, os, sys, ROOT
+from tthAnalysis.HiggsToTauTau.commands import *
 
 def main():
     input_histograms = sys.argv[1:len(sys.argv)]
 
     print('check_that_histograms_are_valid.py %s' % " ".join(input_histograms))
-
-    run_cmd('sleep 20')
 
     for input_histogram in input_histograms:
         check_that_histogram_is_valid(input_histogram)
@@ -18,6 +17,7 @@ def main():
 def check_that_histogram_is_valid(input_histogram):
 
     check_that_histogram_exists(input_histogram)
+    check_that_metadata_is_ok(input_histogram)
     # check_that_histogram_is_ready_for_usage(input_histogram)
     check_that_histogram_is_big_enough(input_histogram)
     check_that_histogram_is_not_zombie(input_histogram)
@@ -31,6 +31,19 @@ def check_that_histogram_exists(input_histogram):
     if not os.path.isfile(input_histogram):
         print('ERROR: root input file is missing: %s' % input_histogram)
         sys.exit(1)
+
+
+def check_that_metadata_is_ok(input_histogram):
+    print('check_that_metadata_is_ok: %s' % input_histogram)
+
+    metadata_file = input_histogram + '.metadata'
+    expected_metadata_txt = run_cmd('cat %s' % metadata_file)
+    real_metadata_txt = get_histogram_metadata(input_histogram)
+
+    if real_metadata_txt.find(expected_metadata_txt) == -1:
+        print('ERROR: real metadata does not match expected metadata for histogram: %s' % input_histogram)
+        sys.exit(1)
+
 
 def check_that_histogram_is_ready_for_usage(input_histogram):
     print('check_that_histogram_is_ready_for_usage: %s' % input_histogram)
