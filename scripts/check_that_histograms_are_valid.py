@@ -36,7 +36,7 @@ def check_that_histogram_exists(input_histogram):
 def check_that_metadata_is_ok(input_histogram):
     print('check_that_metadata_is_ok: %s' % input_histogram)
 
-    metadata_file = input_histogram.replace('.root', '.metadata.txt')
+    metadata_file = input_histogram + '.metadata'
     expected_metadata_txt = run_cmd('cat %s' % metadata_file)
     real_metadata_txt = get_histogram_metadata(input_histogram)
 
