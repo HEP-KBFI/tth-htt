@@ -1,6 +1,6 @@
 from tthAnalysis.HiggsToTauTau.jobTools import run_cmd
 import time, os, sys, ROOT
-import commands
+import tthAnalysis.HiggsToTauTau.commands
 
 get_histogram_metadata = commands.get_histogram_metadata('/tmp/histogram_1.root')
 
