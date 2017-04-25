@@ -14,9 +14,11 @@
 class hltPath
 {
  public:
-  hltPath(const std::string& branchName)
-    : branchName_(branchName),
-      value_(-1)
+ hltPath(const std::string& branchName, double minPt = -1., double maxPt = -1.)
+    : branchName_(branchName)
+    , value_(-1)
+    , minPt_(minPt)
+    , maxPt_(maxPt)
   {}
   ~hltPath() {}
   void setBranchAddress(TTree* tree)
@@ -32,9 +34,19 @@ class hltPath
     assert(value_ == 0 || value_ == 1); 
     return value_; 
   }
+  double getMinPt() const
+  {
+    return minPt_; 
+  }
+  double getMaxPt() const
+  {
+    return maxPt_; 
+  }
  private:
   std::string branchName_;
   Int_t value_;
+  double minPt_; 
+  double maxPt_;
 };
 
 std::vector<hltPath*> create_hltPaths(const std::vector<std::string>& branchNames);
