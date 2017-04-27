@@ -28,6 +28,7 @@ double comp_lep1_conePt(const RecoLepton& lepton);
 double comp_lep2_conePt(const RecoLepton& lepton);
 double comp_lep3_conePt(const RecoLepton& lepton);
 double comp_avg_dr_jet(const std::vector<const RecoJet*>& jets_cleaned);
+double comp_max_dr_jet(const std::vector<const RecoJet*>& jets_cleaned);
 double compHT(const std::vector<const RecoLepton*>& leptons, const std::vector<const RecoHadTau*>& hadTaus, const std::vector<const RecoJet*>& jets_cleaned);
 
 #endif // mvaInputVariables_h

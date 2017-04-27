@@ -69,9 +69,8 @@ if __name__ == '__main__':
     format = '%(asctime)s - %(levelname)s: %(message)s',
   )
 
-  configDir = os.path.join("/home",                getpass.getuser(), "ttHAnalysis", ERA, version)
-  #outputDir = os.path.join("/hdfs/local/ttH_2tau", getpass.getuser(), "ttHAnalysis", ERA, version)
-  outputDir = os.path.join("/hdfs/local",          getpass.getuser(), "ttHAnalysis", ERA, version)
+  configDir = os.path.join("/home",       getpass.getuser(), "ttHAnalysis", ERA, version)
+  outputDir = os.path.join("/hdfs/local", getpass.getuser(), "ttHAnalysis", ERA, version)
 
   analysis = analyzeConfig_2lss_1tau(
     configDir                 = configDir,
