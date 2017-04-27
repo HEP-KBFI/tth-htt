@@ -15,7 +15,7 @@ from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 #--------------------------------------------------------------------------------
 
 #mode = "VHbb"
-mode = "addMEM"
+mode = "VHbb"
 #mode = "forBDTtraining_beforeAddMEM"
 #mode = "forBDTtraining_afterAddMEM"
 
@@ -60,7 +60,7 @@ elif ERA == "2016":
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "2017Apr02"
+version = "2017Apr07"
 
 if __name__ == '__main__':
   logging.basicConfig(
