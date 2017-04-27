@@ -14,7 +14,7 @@ def check_that_histograms_are_equal_with_unequal_data():
 
     # Run task
 
-    command = 'python %(cmssw_base)s/src/tthAnalysis/HiggsToTauTau/scripts/check_that_histograms_are_equal.py' % config
+    command = 'python %(scripts_dir)s/check_that_histograms_are_equal.py' % config
     command_arguments = output_histogram + " " + " ".join(input_histograms)
     command_with_arguments = command + " " + command_arguments + "; echo EXIT_STATUS_WAS: $?;"
 

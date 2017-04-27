@@ -585,17 +585,17 @@ int main(int argc, char* argv[])
 //    trained by Arun for 3l_1tau category 
   std::string mvaFileName_3l_1tau_ttV = "tthAnalysis/HiggsToTauTau/data/3l_1tau_ttV_BDTG.weights.xml";
   std::vector<std::string> mvaInputVariables_3l_1tau_ttV;
+  mvaInputVariables_3l_1tau_ttV.push_back("nJet");
   mvaInputVariables_3l_1tau_ttV.push_back("mindr_lep1_jet");
-  mvaInputVariables_3l_1tau_ttV.push_back("TMath::Abs(lep1_eta)");
-  mvaInputVariables_3l_1tau_ttV.push_back("TMath::Abs(lep2_eta)");
   mvaInputVariables_3l_1tau_ttV.push_back("lep1_conePt");
   mvaInputVariables_3l_1tau_ttV.push_back("lep2_conePt");
   mvaInputVariables_3l_1tau_ttV.push_back("lep3_conePt");
-  mvaInputVariables_3l_1tau_ttV.push_back("mT_lep1");
-  mvaInputVariables_3l_1tau_ttV.push_back("mT_lep2");
-  mvaInputVariables_3l_1tau_ttV.push_back("dr_leps");
+  mvaInputVariables_3l_1tau_ttV.push_back("mindr_tau_jet");
+  mvaInputVariables_3l_1tau_ttV.push_back("mT_lep3");
   mvaInputVariables_3l_1tau_ttV.push_back("tau_pt");
-  mvaInputVariables_3l_1tau_ttV.push_back("mTauTauVis1");
+  mvaInputVariables_3l_1tau_ttV.push_back("dr_lep1_tau");
+  mvaInputVariables_3l_1tau_ttV.push_back("dr_lep2_tau");
+  mvaInputVariables_3l_1tau_ttV.push_back("dr_lep3_tau");
   mvaInputVariables_3l_1tau_ttV.push_back("mTauTauVis2");
   TMVAInterface mva_3l_1tau_ttV(mvaFileName_3l_1tau_ttV, mvaInputVariables_3l_1tau_ttV);
 
@@ -604,6 +604,7 @@ int main(int argc, char* argv[])
   mvaInputVariables_3l_1tau_ttbar.push_back("nJet");
   mvaInputVariables_3l_1tau_ttbar.push_back("mindr_lep1_jet");
   mvaInputVariables_3l_1tau_ttbar.push_back("mindr_lep2_jet");
+  mvaInputVariables_3l_1tau_ttbar.push_back("mindr_lep3_jet");
   mvaInputVariables_3l_1tau_ttbar.push_back("avg_dr_jet");
   mvaInputVariables_3l_1tau_ttbar.push_back("mindr_tau_jet");
   mvaInputVariables_3l_1tau_ttbar.push_back("tau_pt");
@@ -611,6 +612,7 @@ int main(int argc, char* argv[])
   mvaInputVariables_3l_1tau_ttbar.push_back("dr_lep1_tau");
   mvaInputVariables_3l_1tau_ttbar.push_back("dr_lep2_tau");
   mvaInputVariables_3l_1tau_ttbar.push_back("dr_lep3_tau");
+  mvaInputVariables_3l_1tau_ttbar.push_back("mTauTauVis2");
   TMVAInterface mva_3l_1tau_ttbar(mvaFileName_3l_1tau_ttbar, mvaInputVariables_3l_1tau_ttbar);
 
   std::vector<std::string> mvaInputVariables_3l_1tau = get_mvaInputVariables(mvaInputVariables_3l_1tau_ttV, mvaInputVariables_3l_1tau_ttbar);
@@ -1665,7 +1667,6 @@ int main(int argc, char* argv[])
     } else assert(0);
     
     mvaInputs_3l_1tau["avg_dr_jet"]           = comp_avg_dr_jet(selJets);
-    mvaInputs_3l_1tau["dr_leps"]              = deltaR(selLepton_lead->p4(), selLepton_sublead->p4());
     mvaInputs_3l_1tau["dr_lep1_tau"]          = deltaR(selLepton_lead->p4(), selHadTau->p4());
     mvaInputs_3l_1tau["dr_lep2_tau"]          = deltaR(selLepton_sublead->p4(), selHadTau->p4());
     mvaInputs_3l_1tau["dr_lep3_tau"]          = deltaR(selLepton_third->p4(), selHadTau->p4());
@@ -1674,15 +1675,12 @@ int main(int argc, char* argv[])
     mvaInputs_3l_1tau["lep3_conePt"]          = comp_lep3_conePt(*selLepton_third);
     mvaInputs_3l_1tau["mindr_lep1_jet"]       = TMath::Min(10., comp_mindr_lep1_jet(*selLepton_lead, selJets));
     mvaInputs_3l_1tau["mindr_lep2_jet"]       = TMath::Min(10., comp_mindr_lep2_jet(*selLepton_sublead, selJets));
+    mvaInputs_3l_1tau["mindr_lep3_jet"]       = TMath::Min(10., comp_mindr_lep3_jet(*selLepton_third, selJets));
     mvaInputs_3l_1tau["mindr_tau_jet"]        = TMath::Min(10., comp_mindr_hadTau1_jet(*selHadTau, selJets));
-    mvaInputs_3l_1tau["mT_lep1"]              = comp_MT_met_lep1(selLepton_lead->cone_p4(), met.pt(), met.phi());
-    mvaInputs_3l_1tau["mT_lep2"]              = comp_MT_met_lep2(selLepton_sublead->cone_p4(), met.pt(), met.phi());
-    mvaInputs_3l_1tau["mTauTauVis1"]          = mTauTauVis1_sel;
     mvaInputs_3l_1tau["mTauTauVis2"]          = mTauTauVis2_sel;
+    mvaInputs_3l_1tau["mT_lep3"]              = comp_MT_met_lep3(selLepton_third->cone_p4(), met.pt(), met.phi());
     mvaInputs_3l_1tau["nJet"]                 = selJets.size();
     mvaInputs_3l_1tau["tau_pt"]               = selHadTau->pt();
-    mvaInputs_3l_1tau["TMath::Abs(lep1_eta)"] = selLepton_lead->absEta();
-    mvaInputs_3l_1tau["TMath::Abs(lep2_eta)"] = selLepton_sublead->absEta();
     mvaInputs_3l_1tau["TMath::Abs(tau_eta)"]  = selHadTau->absEta();
 
     check_mvaInputs(mvaInputs_3l_1tau, run, lumi, event);

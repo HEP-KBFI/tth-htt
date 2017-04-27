@@ -65,10 +65,16 @@ class MEMOutput_2lss_1tau
   Float_t weight_ttZ_Zll() const { return weight_ttZ_Zll_; }
   Float_t weight_tt() const { return weight_tt_; }
   Float_t LR() const { return LR_; }
+  Float_t ttZ_LR() const { return ttZ_LR_; }
+  Float_t ttbar_LR() const { return ttbar_LR_; }
   Float_t cpuTime() const { return cpuTime_; }
   Float_t realTime() const { return realTime_; }
   Int_t isValid() const { return isValid_; }
   Int_t errorFlag() const { return errorFlag_; }
+  Int_t isValid_ttZ_LR() const { return isValid_ttZ_LR_; }
+  Int_t errorFlag_ttZ_LR() const { return errorFlag_ttZ_LR_; }
+  Int_t isValid_ttbar_LR() const { return isValid_ttbar_LR_; }
+  Int_t errorFlag_ttbar_LR() const { return errorFlag_ttbar_LR_; }
 
   friend class MEMInterface_2lss_1tau;
 
@@ -88,10 +94,16 @@ class MEMOutput_2lss_1tau
   Float_t weight_ttZ_Zll_; // ttZ, Z->ll
   Float_t weight_tt_; // tt+jets (dilepton)
   Float_t LR_;
+  Float_t ttZ_LR_;
+  Float_t ttbar_LR_;
   Float_t cpuTime_;
   Float_t realTime_;
   Int_t isValid_;
   Int_t errorFlag_;
+  Int_t isValid_ttZ_LR_;
+  Int_t errorFlag_ttZ_LR_;
+  Int_t isValid_ttbar_LR_;
+  Int_t errorFlag_ttbar_LR_;
 };
 
 std::ostream& operator<<(std::ostream& stream, const MEMOutput_2lss_1tau& memOutput);

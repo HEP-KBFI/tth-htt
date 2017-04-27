@@ -2,16 +2,15 @@ from tthAnalysis.HiggsToTauTau.jobTools import run_cmd
 
 from config import config
 
-def check_that_histograms_are_valid_with_missing_input_histogram_spec():
-
+def check_that_histograms_are_valid_with_too_small_root_file_spec():
 
     # Prepare
 
-    missing_histogram = "%(fixtures_dir)s/histogram_THIS_DOES_NOT_EXIST.root" % config
+    too_small_histogram = "%(fixtures_dir)s/histogram_too_small.root" % config
 
     histograms = [
         "%(fixtures_dir)s/histogram_1.root" % config,
-        missing_histogram
+        too_small_histogram
     ]
 
     # Run task
@@ -24,12 +23,12 @@ def check_that_histograms_are_valid_with_missing_input_histogram_spec():
 
     # Check result
 
-    if result.find('ERROR: root input file is missing: %s' % missing_histogram) == -1:
-        print('Ouput must contain error information what file was missing')
+    if result.find('ERROR: root input file is too small (2 bytes): %s' % too_small_histogram) == -1:
+        print('Ouput must contain error information what file was too small')
         return False
 
     if result.find('EXIT_STATUS_WAS: 1') == -1:
-        print('Exit status must be 1 if file was missing')
+        print('Exit status must be 1 if file was too small')
         return False
 
     return True

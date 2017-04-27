@@ -226,6 +226,22 @@ MEMInterface_2lss_1tau::operator()(
     result.errorFlag_ = 1;
     result.LR_ = -1.;
   }
+  double denominator_ttZ_LR = result.weight_ttH_ + k_ttZ*result.weight_ttZ_ + k_ttZ_Zll*result.weight_ttZ_Zll_;
+  if ( denominator_ttZ_LR > 0. ) {
+    result.isValid_ttZ_LR_ = 1;
+    result.ttZ_LR_ = numerator/denominator_ttZ_LR;
+  } else {
+    result.errorFlag_ttZ_LR_ = 1;
+    result.ttZ_LR_ = -1.;
+  }
+  double denominator_ttbar_LR = result.weight_ttH_ + k_tt*result.weight_tt_;
+  if ( denominator_ttbar_LR > 0. ) {
+    result.isValid_ttbar_LR_ = 1;
+    result.ttbar_LR_ = numerator/denominator_ttbar_LR;
+  } else {
+    result.errorFlag_ttbar_LR_ = 1;
+    result.ttbar_LR_ = -1.;
+  }
   result.cpuTime_ = clock_->GetCpuTime("<MEMInterface_2lss_1tau::operator()>");
   result.realTime_ = clock_->GetRealTime("<MEMInterface_2lss_1tau::operator()>");
 
