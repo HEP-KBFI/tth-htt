@@ -14,7 +14,7 @@ def executable_hadd_in_cluster_spec():
 
     # Run task
 
-    run_cmd('python %(cmssw_base)s/src/tthAnalysis/HiggsToTauTau/scripts/hadd_in_cluster.py ' \
+    run_cmd('python %(scripts_dir)s/hadd_in_cluster.py ' \
             '%(temp_dir)s/executable_hadd_in_cluster_spec/output_histogram.root ' \
             '%(temp_dir)s/executable_hadd_in_cluster_spec/input_histograms_list.txt' % config)
 
