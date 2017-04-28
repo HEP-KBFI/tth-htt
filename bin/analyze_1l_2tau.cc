@@ -492,35 +492,37 @@ int main(int argc, char* argv[])
     lheInfoReader->setBranchAddresses(inputTree);
   }
 
-//--- initialize BDTs used to discriminate ttH vs. ttbar trained by Arun for 1l_2tau category
-  std::string mvaFileName_1l_2tau_ttbar_Arun = "tthAnalysis/HiggsToTauTau/data/1l_2tau_ttbar_sklearn_Arun.weights.xml";
-  std::vector<std::string> mvaInputVariables_1l_2tau_ttbar_Arun;
-  mvaInputVariables_1l_2tau_ttbar_Arun.push_back("nJet");
-  mvaInputVariables_1l_2tau_ttbar_Arun.push_back("mindr_lep_jet");
-  mvaInputVariables_1l_2tau_ttbar_Arun.push_back("avg_dr_jet");
-  mvaInputVariables_1l_2tau_ttbar_Arun.push_back("mT_lep");
-  mvaInputVariables_1l_2tau_ttbar_Arun.push_back("tau1_pt");
-  mvaInputVariables_1l_2tau_ttbar_Arun.push_back("tau2_pt");
-  mvaInputVariables_1l_2tau_ttbar_Arun.push_back("dr_lep_tau_os");
-  mvaInputVariables_1l_2tau_ttbar_Arun.push_back("dr_taus");
-  mvaInputVariables_1l_2tau_ttbar_Arun.push_back("mTauTauVis");
-  TMVAInterface mva_1l_2tau_ttbar_Arun(mvaFileName_1l_2tau_ttbar_Arun, mvaInputVariables_1l_2tau_ttbar_Arun);
+//--- initialize BDTs used to discriminate ttH vs. ttbar trained by Matthias for 1l_2tau category
+  std::string mvaFileName_1l_2tau_ttbar = "tthAnalysis/HiggsToTauTau/data/1l_2tau_ttbar_sklearn_Matthias.weights.xml";
+  std::vector<std::string> mvaInputVariables_1l_2tau_ttbar;
+  mvaInputVariables_1l_2tau_ttbar.push_back("ht");
+  mvaInputVariables_1l_2tau_ttbar.push_back("tt_deltaR");
+  mvaInputVariables_1l_2tau_ttbar.push_back("tt_visiblemass");
+  mvaInputVariables_1l_2tau_ttbar.push_back("tau1_pt");
+  mvaInputVariables_1l_2tau_ttbar.push_back("tau2_pt");
+  mvaInputVariables_1l_2tau_ttbar.push_back("jet_deltaRavg");
+  mvaInputVariables_1l_2tau_ttbar.push_back("njets_inclusive");
+  mvaInputVariables_1l_2tau_ttbar.push_back("ntags_loose");
+  TMVAInterface mva_1l_2tau_ttbar(mvaFileName_1l_2tau_ttbar, mvaInputVariables_1l_2tau_ttbar);
 
-  std::map<std::string, double> mvaInputs_Arun;
+  std::map<std::string, double> mvaInputs_ttbar;
 
-  std::string mvaFileName_1l_2tau_ttbar_Matthias = "tthAnalysis/HiggsToTauTau/data/1l_2tau_ttbar_sklearn_Matthias.weights.xml";
-  std::vector<std::string> mvaInputVariables_1l_2tau_ttbar_Matthias;
-  mvaInputVariables_1l_2tau_ttbar_Matthias.push_back("ht");
-  mvaInputVariables_1l_2tau_ttbar_Matthias.push_back("tt_deltaR");
-  mvaInputVariables_1l_2tau_ttbar_Matthias.push_back("tt_visiblemass");
-  mvaInputVariables_1l_2tau_ttbar_Matthias.push_back("tau1_pt");
-  mvaInputVariables_1l_2tau_ttbar_Matthias.push_back("tau2_pt");
-  mvaInputVariables_1l_2tau_ttbar_Matthias.push_back("jet_deltaRavg");
-  mvaInputVariables_1l_2tau_ttbar_Matthias.push_back("njets_inclusive");
-  mvaInputVariables_1l_2tau_ttbar_Matthias.push_back("ntags_loose");
-  TMVAInterface mva_1l_2tau_ttbar_Matthias(mvaFileName_1l_2tau_ttbar_Matthias, mvaInputVariables_1l_2tau_ttbar_Matthias);
+  std::string mvaFileName_1l_2tau_ttV = "tthAnalysis/HiggsToTauTau/data/1l_2tau_ttV_sklearn_Matthias.weights.xml";
+  std::vector<std::string> mvaInputVariables_1l_2tau_ttV;
+  mvaInputVariables_1l_2tau_ttV.push_back("ht");
+  mvaInputVariables_1l_2tau_ttV.push_back("tt_deltaR");
+  mvaInputVariables_1l_2tau_ttV.push_back("tt_visiblemass");
+  mvaInputVariables_1l_2tau_ttV.push_back("tt_sumpt");
+  mvaInputVariables_1l_2tau_ttV.push_back("jet_deltaRmax");
+  mvaInputVariables_1l_2tau_ttV.push_back("jet_deltaRavg");
+  mvaInputVariables_1l_2tau_ttV.push_back("njets_inclusive");
+  TMVAInterface mva_1l_2tau_ttV(mvaFileName_1l_2tau_ttV, mvaInputVariables_1l_2tau_ttV);
 
-  std::map<std::string, double> mvaInputs_Matthias;
+  std::map<std::string, double> mvaInputs_ttV;
+
+  std::string inputFileName_mva_mapping_1l_2tau = "tthAnalysis/HiggsToTauTau/data/1l_2tau_BDT_mapping.root";
+  TFile* inputFile_mva_mapping_1l_2tau = openFile(LocalFileInPath(inputFileName_mva_mapping_1l_2tau));
+  TH2* mva_mapping_1l_2tau = loadTH2(inputFile_mva_mapping_1l_2tau, "hTargetBinning");
   
 //--- open output file containing run:lumi:event numbers of events passing final event selection criteria
   std::ostream* selEventsFile = ( selEventsFileName_output != "" ) ? new std::ofstream(selEventsFileName_output.data(), std::ios::out) : 0;
@@ -561,8 +563,8 @@ int main(int argc, char* argv[])
     JetHistManager* subleadBJet_loose_;
     JetHistManager* BJets_medium_;
     MEtHistManager* met_;
-    MVAInputVarHistManager* mvaInputVariables_Arun_;
-    MVAInputVarHistManager* mvaInputVariables_Matthias_;
+    MVAInputVarHistManager* mvaInputVariables_ttbar_;
+    MVAInputVarHistManager* mvaInputVariables_ttV_;
     EvtHistManager_1l_2tau* evt_;
     std::map<std::string, EvtHistManager_1l_2tau*> evt_in_decayModes_;
     std::map<std::string, EvtHistManager_1l_2tau*> evt_in_categories_;
@@ -697,12 +699,12 @@ int main(int argc, char* argv[])
       selHistManager->met_ = new MEtHistManager(makeHistManager_cfg(process_and_genMatch, 
         Form("%s/sel/met", histogramDir.data()), central_or_shift));
       selHistManager->met_->bookHistograms(fs);
-      selHistManager->mvaInputVariables_Arun_ = new MVAInputVarHistManager(makeHistManager_cfg(process_and_genMatch, 
-        Form("%s/sel/mvaInputs_Arun", histogramDir.data()), central_or_shift));
-      selHistManager->mvaInputVariables_Arun_->bookHistograms(fs, mvaInputVariables_1l_2tau_ttbar_Arun);
-      selHistManager->mvaInputVariables_Matthias_ = new MVAInputVarHistManager(makeHistManager_cfg(process_and_genMatch, 
-        Form("%s/sel/mvaInputs_Matthias", histogramDir.data()), central_or_shift));
-      selHistManager->mvaInputVariables_Matthias_->bookHistograms(fs, mvaInputVariables_1l_2tau_ttbar_Matthias);
+      selHistManager->mvaInputVariables_ttbar_ = new MVAInputVarHistManager(makeHistManager_cfg(process_and_genMatch, 
+        Form("%s/sel/mvaInputs_ttbar", histogramDir.data()), central_or_shift));
+      selHistManager->mvaInputVariables_ttbar_->bookHistograms(fs, mvaInputVariables_1l_2tau_ttbar);
+      selHistManager->mvaInputVariables_ttV_ = new MVAInputVarHistManager(makeHistManager_cfg(process_and_genMatch, 
+        Form("%s/sel/mvaInputs_ttV", histogramDir.data()), central_or_shift));
+      selHistManager->mvaInputVariables_ttV_->bookHistograms(fs, mvaInputVariables_1l_2tau_ttV);
       selHistManager->evt_ = new EvtHistManager_1l_2tau(makeHistManager_cfg(process_and_genMatch, 
         Form("%s/sel/evt", histogramDir.data()), central_or_shift));
       selHistManager->evt_->bookHistograms(fs);      
@@ -945,7 +947,7 @@ int main(int argc, char* argv[])
 //--- build collections of jets and select subset of jets passing b-tagging criteria
     std::vector<RecoJet> jets = jetReader->read();
     std::vector<const RecoJet*> jet_ptrs = convert_to_ptrs(jets);
-    std::vector<const RecoJet*> cleanedJets = jetCleaner(jet_ptrs, selMuons, selElectrons, selHadTaus);
+    std::vector<const RecoJet*> cleanedJets = jetCleaner(jet_ptrs, fakeableMuons, fakeableElectrons, selHadTaus);
     std::vector<const RecoJet*> selJets = jetSelector(cleanedJets);
     std::vector<const RecoJet*> selBJets_loose = jetSelectorBtagLoose(cleanedJets);
     std::vector<const RecoJet*> selBJets_medium = jetSelectorBtagMedium(cleanedJets);    
@@ -1058,7 +1060,7 @@ int main(int argc, char* argv[])
     preselHistManager->met_->fillHistograms(met, mht_p4, met_LD, 1.);
     preselHistManager->evt_->fillHistograms(preselElectrons.size(), preselMuons.size(), selHadTaus.size(), 
       selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
-      -1., -1.,					
+      -1., -1.,	-1.,					
       mTauTauVis_presel, 1.);
 
 //--- apply final event selection 
@@ -1294,43 +1296,33 @@ int main(int argc, char* argv[])
       cutFlowHistManager->fillHistograms("signal region veto", evtWeight);
     }
     
-    const RecoHadTau* selHadTau_OS = 0;
-    //const RecoHadTau* selHadTau_SS = 0;
-    if ( selLepton->charge()*selHadTau_lead->charge() < 0. ) {
-      selHadTau_OS = selHadTau_lead;
-      //selHadTau_SS = selHadTau_sublead;
-    } else if ( selLepton->charge()*selHadTau_lead->charge() < 0. ) {
-      selHadTau_OS = selHadTau_sublead;
-      //selHadTau_SS = selHadTau_lead;
-    }
+//--- compute output of BDTs used to discriminate ttH vs. ttbar trained by Matthias for 1l_2tau category
+    mvaInputs_ttbar["ht"]              = compHT(fakeableLeptons, selHadTaus, selJets);
+    mvaInputs_ttbar["tt_deltaR"]       = deltaR(selHadTau_lead->p4(), selHadTau_sublead->p4());
+    mvaInputs_ttbar["tt_visiblemass"]  = mTauTauVis;
+    mvaInputs_ttbar["tau1_pt"]         = selHadTau_lead->pt();
+    mvaInputs_ttbar["tau2_pt"]         = selHadTau_sublead->pt();
+    mvaInputs_ttbar["jet_deltaRavg"]   = comp_avg_dr_jet(selJets);
+    mvaInputs_ttbar["njets_inclusive"] = selJets.size();
+    mvaInputs_ttbar["ntags_loose"]     = selBJets_loose.size();
 
-//--- compute output of BDTs used to discriminate ttH vs. ttbar trained by Arun and Matthias for 1l_2tau category
-    mvaInputs_Arun["nJet"]          = selJets.size();
-    mvaInputs_Arun["mindr_lep_jet"] = TMath::Min(10., comp_mindr_lep1_jet(*selLepton, selJets));
-    mvaInputs_Arun["avg_dr_jet"]    = comp_avg_dr_jet(selJets);
-    mvaInputs_Arun["mT_lep"]        = comp_MT_met_lep1(selLepton->p4(), met.pt(), met.phi());
-    mvaInputs_Arun["tau1_pt"]       = selHadTau_lead->pt();
-    mvaInputs_Arun["tau2_pt"]       = selHadTau_sublead->pt();
-    mvaInputs_Arun["dr_lep_tau_os"] = ( selHadTau_OS ) ? deltaR(selLepton->p4(), selHadTau_OS->p4()) : 10.;
-    mvaInputs_Arun["dr_taus"]       = deltaR(selHadTau_lead->p4(), selHadTau_sublead->p4());
-    mvaInputs_Arun["mTauTauVis"]    = mTauTauVis;
-    
-    check_mvaInputs(mvaInputs_Arun, run, lumi, event);
+    check_mvaInputs(mvaInputs_ttbar, run, lumi, event);
 
-    double mvaOutput_1l_2tau_ttbar_Arun = mva_1l_2tau_ttbar_Arun(mvaInputs_Arun);
+    double mvaOutput_1l_2tau_ttbar = mva_1l_2tau_ttbar(mvaInputs_ttbar);
 
-    mvaInputs_Matthias["ht"]              = compHT(fakeableLeptons, selHadTaus, selJets);
-    mvaInputs_Matthias["tt_deltaR"]       = deltaR(selHadTau_lead->p4(), selHadTau_sublead->p4());
-    mvaInputs_Matthias["tt_visiblemass"]  = mTauTauVis;
-    mvaInputs_Matthias["tau1_pt"]         = selHadTau_lead->pt();
-    mvaInputs_Matthias["tau2_pt"]         = selHadTau_sublead->pt();
-    mvaInputs_Matthias["jet_deltaRavg"]   = comp_avg_dr_jet(selJets);
-    mvaInputs_Matthias["njets_inclusive"] = selJets.size();
-    mvaInputs_Matthias["ntags_loose"]     = selBJets_loose.size();
+    mvaInputs_ttV["ht"]                = compHT(fakeableLeptons, selHadTaus, selJets);
+    mvaInputs_ttV["tt_deltaR"]         = deltaR(selHadTau_lead->p4(), selHadTau_sublead->p4());
+    mvaInputs_ttV["tt_visiblemass"]    = mTauTauVis;
+    mvaInputs_ttV["tt_sumpt"]          = selHadTau_lead->pt() + selHadTau_sublead->pt();
+    mvaInputs_ttV["jet_deltaRmax"]     = comp_max_dr_jet(selJets);
+    mvaInputs_ttV["jet_deltaRavg"]     = comp_avg_dr_jet(selJets);
+    mvaInputs_ttV["njets_inclusive"]   = selJets.size();
 
-    check_mvaInputs(mvaInputs_Matthias, run, lumi, event);
+    check_mvaInputs(mvaInputs_ttV, run, lumi, event);
 
-    double mvaOutput_1l_2tau_ttbar_Matthias = mva_1l_2tau_ttbar_Matthias(mvaInputs_Matthias);
+    double mvaOutput_1l_2tau_ttV = mva_1l_2tau_ttV(mvaInputs_ttV);
+
+    Double_t mvaDiscr_1l_2tau = 0.5*(getSF_from_TH2(mva_mapping_1l_2tau, mvaOutput_1l_2tau_ttbar, mvaOutput_1l_2tau_ttV) + 1.);
 
 //--- fill histograms with events passing final selection 
     selHistManagerType* selHistManager = selHistManagers[idxSelLepton_genMatch][idxSelHadTau_genMatch];
@@ -1348,12 +1340,12 @@ int main(int argc, char* argv[])
     selHistManager->subleadBJet_loose_->fillHistograms(selBJets_loose, evtWeight);
     selHistManager->BJets_medium_->fillHistograms(selBJets_medium, evtWeight);
     selHistManager->met_->fillHistograms(met, mht_p4, met_LD, evtWeight);
-    selHistManager->mvaInputVariables_Arun_->fillHistograms(mvaInputs_Arun, evtWeight);
-    selHistManager->mvaInputVariables_Matthias_->fillHistograms(mvaInputs_Matthias, evtWeight);
+    selHistManager->mvaInputVariables_ttbar_->fillHistograms(mvaInputs_ttbar, evtWeight);
+    selHistManager->mvaInputVariables_ttV_->fillHistograms(mvaInputs_ttV, evtWeight);
     selHistManager->evt_->fillHistograms(
       preselElectrons.size(), preselMuons.size(), selHadTaus.size(), 
       selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
-      mvaOutput_1l_2tau_ttbar_Arun, mvaOutput_1l_2tau_ttbar_Matthias,
+      mvaOutput_1l_2tau_ttbar, mvaOutput_1l_2tau_ttV, mvaDiscr_1l_2tau,
       mTauTauVis, evtWeight);
     if ( isSignal ) {
       for ( const auto & kv: decayMode_idString ) {
@@ -1361,7 +1353,7 @@ int main(int argc, char* argv[])
           selHistManager->evt_in_decayModes_[kv.first]->fillHistograms(
             preselElectrons.size(), preselMuons.size(), selHadTaus.size(), 
             selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
-	    mvaOutput_1l_2tau_ttbar_Arun, mvaOutput_1l_2tau_ttbar_Matthias,
+	    mvaOutput_1l_2tau_ttbar, mvaOutput_1l_2tau_ttV, mvaDiscr_1l_2tau,
 	    mTauTauVis, evtWeight);
           break;
         }
@@ -1392,7 +1384,7 @@ int main(int argc, char* argv[])
     selHistManager->evt_in_categories_[category]->fillHistograms(
       preselElectrons.size(), preselMuons.size(), selHadTaus.size(), 
       selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
-      mvaOutput_1l_2tau_ttbar_Arun, mvaOutput_1l_2tau_ttbar_Matthias,
+      mvaOutput_1l_2tau_ttbar, mvaOutput_1l_2tau_ttV, mvaDiscr_1l_2tau,
       mTauTauVis, evtWeight);
 
     if ( isMC ) {

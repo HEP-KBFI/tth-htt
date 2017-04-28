@@ -277,7 +277,7 @@ namespace
       histogramData_blinded_density->SetMarkerColor(kBlack);
       histogramData_blinded_density->SetLineColor(kBlack);
       legend->AddEntry(histogramData_blinded_density, "observed", "p");
-      histogramData_blinded_density->Draw("ep");
+      //histogramData_blinded_density->Draw("ep");
     }
         
     const int color_ttW     = 823; // dark green
@@ -409,7 +409,7 @@ namespace
     }
     
     if ( histogramData_blinded_density ) {
-      histogramData_blinded_density->Draw("epsame");
+      //histogramData_blinded_density->Draw("epsame");
       histogramData_blinded_density->Draw("axissame");
     }
 
@@ -520,7 +520,7 @@ namespace
 	//histogramRatioUncertainty->SetFillStyle(histogramUncertainty_density->GetFillStyle());    
 	histogramRatioUncertainty->SetFillStyle(3644);    
       }
-      histogramRatio->Draw("ep");
+      //histogramRatio->Draw("ep");
 
       line = new TF1("line","0", xAxis_bottom->GetXmin(), xAxis_bottom->GetXmax());
       line->SetLineStyle(3);
@@ -533,7 +533,7 @@ namespace
 	histogramRatioUncertainty->Draw("e2same");
       }
       
-      histogramRatio->Draw("epsame");
+      //histogramRatio->Draw("epsame");
     }
 
     canvas->Update();

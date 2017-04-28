@@ -135,6 +135,24 @@ double comp_avg_dr_jet(const std::vector<const RecoJet*>& jets_cleaned)
   return avg_dr_jet;
 }
 
+double comp_max_dr_jet(const std::vector<const RecoJet*>& jets_cleaned)
+{
+  double dRmax = 0.;
+  for ( std::vector<const RecoJet*>::const_iterator jet1 = jets_cleaned.begin();
+	jet1 != jets_cleaned.end(); ++jet1 ) {
+    if ( (*jet1)->pt() > 25. && std::fabs((*jet1)->eta()) < 2.4 ) {
+      for ( std::vector<const RecoJet*>::const_iterator jet2 = jet1 + 1;
+	    jet2 != jets_cleaned.end(); ++jet2 ) {
+	if ( (*jet2)->pt() > 25. && std::fabs((*jet2)->eta()) < 2.4 ) {
+	  double dR = deltaR((*jet1)->eta(), (*jet1)->phi(), (*jet2)->eta(), (*jet2)->phi());
+	  if ( dR > dRmax ) dRmax = dR;
+	}
+      }
+    }
+  }
+  return dRmax;
+}
+
 double compHT(const std::vector<const RecoLepton*>& leptons, const std::vector<const RecoHadTau*>& hadTaus, const std::vector<const RecoJet*>& jets_cleaned)
 {
   double ht = 0.;

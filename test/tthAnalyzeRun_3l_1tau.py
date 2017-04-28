@@ -48,7 +48,7 @@ elif ERA == "2016":
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "2017Apr10"
+version = "2017Apr24"
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -58,8 +58,7 @@ if __name__ == '__main__':
 
   analysis = analyzeConfig_3l_1tau(
     configDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", ERA, version),
-    outputDir = os.path.join("/hdfs/local/ttH_2tau", getpass.getuser(), "ttHAnalysis", ERA, version),
-    ##outputDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", ERA, version),
+    outputDir = os.path.join("/hdfs/local", getpass.getuser(), "ttHAnalysis", ERA, version),
     executable_analyze = "analyze_3l_1tau", cfgFile_analyze = "analyze_3l_1tau_cfg.py",
     samples = samples, changeBranchNames = changeBranchNames,
     hadTau_selection = hadTau_selection,
