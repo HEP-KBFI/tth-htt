@@ -501,7 +501,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
           (self.channel, hadTau_charge_selection)),
         'outputFile' : os.path.join(self.dirs[DKEY_HIST], "addBackgroundLeptonFakes_%s_%s.root" % \
           (self.channel, hadTau_charge_selection)),
-        'outputFile' : os.path.join(self.dirs[DKEY_LOGS], "addBackgroundLeptonFakes_%s_%s.log" % \
+        'logFile' : os.path.join(self.dirs[DKEY_LOGS], "addBackgroundLeptonFakes_%s_%s.log" % \
           (self.channel, hadTau_charge_selection)),
         'category_signal' : "1l_2tau_%s_Tight" % hadTau_charge_selection,
         'category_sideband' : category_sideband
