@@ -15,7 +15,7 @@ from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 #--------------------------------------------------------------------------------
 
 #mode = "VHbb"
-mode = "addMEM"
+mode = "VHbb"
 #mode = "forBDTtraining_beforeAddMEM"
 #mode = "forBDTtraining_afterAddMEM"
 
