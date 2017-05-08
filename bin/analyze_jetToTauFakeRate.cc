@@ -90,11 +90,12 @@ struct denominatorHistManagers
 {
   denominatorHistManagers(
     const std::string& process, int era, bool isMC, const std::string& chargeSelection, 
-    double minAbsEta, double maxAbsEta, const std::string& central_or_shift)
+    const std::string& hadTauSelection_denominator, double minAbsEta, double maxAbsEta, const std::string& central_or_shift)
     : process_(process)
     , era_(era)
     , isMC_(isMC)
     , chargeSelection_(chargeSelection)
+    , hadTauSelection_denominator_(hadTauSelection_denominator)
     , minAbsEta_(minAbsEta)
     , maxAbsEta_(maxAbsEta)
     , central_or_shift_(central_or_shift)
@@ -112,6 +113,7 @@ struct denominatorHistManagers
     std::string etaBin = getEtaBin(minAbsEta_, maxAbsEta_);
     subdir_ = Form("jetToTauFakeRate_%s/denominator/%s", chargeSelection_.data(), etaBin.data());
     fakeableHadTauSelector_ = new RecoHadTauSelectorFakeable(era_);
+    fakeableHadTauSelector_->set(hadTauSelection_denominator);
     fakeableHadTauSelector_->set_min_antiElectron(hadTauSelection_antiElectron);
     fakeableHadTauSelector_->set_min_antiMuon(hadTauSelection_antiMuon);
   }
@@ -193,6 +195,7 @@ struct denominatorHistManagers
   int era_;
   bool isMC_;
   std::string chargeSelection_;
+  std::string hadTauSelection_denominator_;
   double minAbsEta_;
   double maxAbsEta_;
   std::string central_or_shift_;
@@ -216,15 +219,15 @@ struct numeratorSelector_and_HistManagers : public denominatorHistManagers
 {
   numeratorSelector_and_HistManagers(
     const std::string& process, int era, bool isMC, const std::string& chargeSelection, 
-    const std::string& hadTauSelection, double minAbsEta, double maxAbsEta, const std::string& central_or_shift)
-    : denominatorHistManagers(process, era, isMC, chargeSelection, minAbsEta, maxAbsEta, central_or_shift),
-      hadTauSelection_(hadTauSelection),
+    const std::string& hadTauSelection_denominator, const std::string& hadTauSelection_numerator, double minAbsEta, double maxAbsEta, const std::string& central_or_shift)
+    : denominatorHistManagers(process, era, isMC, chargeSelection, hadTauSelection_denominator, minAbsEta, maxAbsEta, central_or_shift),
+      hadTauSelection_numerator_(hadTauSelection_numerator),
       tightHadTauSelector_(0)
   {
     std::string etaBin = getEtaBin(minAbsEta_, maxAbsEta_);    
-    subdir_ = Form("jetToTauFakeRate_%s/numerator/%s/%s", chargeSelection_.data(), hadTauSelection_.data(), etaBin.data());
+    subdir_ = Form("jetToTauFakeRate_%s/numerator/%s/%s", chargeSelection_.data(), hadTauSelection_numerator_.data(), etaBin.data());
     tightHadTauSelector_ = new RecoHadTauSelectorTight(era_);
-    tightHadTauSelector_->set(hadTauSelection);
+    tightHadTauSelector_->set(hadTauSelection_numerator);
     tightHadTauSelector_->set_min_antiElectron(hadTauSelection_antiElectron);
     tightHadTauSelector_->set_min_antiMuon(hadTauSelection_antiMuon);
   }
@@ -242,7 +245,7 @@ struct numeratorSelector_and_HistManagers : public denominatorHistManagers
   {
     denominatorHistManagers::fillHistograms(jet, hadTau, evtWeight);   
   }
-  std::string hadTauSelection_;
+  std::string hadTauSelection_numerator_;
   RecoHadTauSelectorTight* tightHadTauSelector_;
 };
 
@@ -313,7 +316,8 @@ int main(int argc, char* argv[])
   double jet_minAbsEta = cfg_analyze.getParameter<double>("jet_minAbsEta");
   double jet_maxAbsEta = cfg_analyze.getParameter<double>("jet_maxAbsEta");
 
-  vstring hadTauSelections = cfg_analyze.getParameter<vstring>("hadTauSelections");
+  std::string hadTauSelection_denominator = cfg_analyze.getParameter<std::string>("hadTauSelection_denominator");
+  vstring hadTauSelections_numerator = cfg_analyze.getParameter<vstring>("hadTauSelections_numerator");
 
   vdouble absEtaBins = cfg_analyze.getParameter<vdouble>("absEtaBins");
   if ( absEtaBins.size() < 2 ) throw cms::Exception("analyze_jetToTauFakeRate") 
@@ -451,6 +455,10 @@ int main(int argc, char* argv[])
   RecoHadTauCollectionSelectorLoose preselHadTauSelector(era);
   preselHadTauSelector.set_min_id_cut_dR05(-1000);
   preselHadTauSelector.set_max_raw_cut_dR05(1.e+6);
+  if ( hadTauSelection_denominator == "dR03mvaVVLoose" || 
+       hadTauSelection_denominator == "dR03mvaVLoose"  ) {
+    preselHadTauSelector.set(hadTauSelection_denominator);
+  }
   preselHadTauSelector.set_min_antiElectron(hadTauSelection_antiElectron);
   preselHadTauSelector.set_min_antiMuon(hadTauSelection_antiMuon);
   RecoHadTauCollectionSelectorFakeable fakeableHadTauSelector(era);
@@ -533,14 +541,14 @@ int main(int argc, char* argv[])
     double maxAbsEta = absEtaBins[idxEtaBin + 1];
 
     denominatorHistManagers* denominator = new denominatorHistManagers(
-      process_string, era, isMC, chargeSelection_string, minAbsEta, maxAbsEta, central_or_shift);
+      process_string, era, isMC, chargeSelection_string, hadTauSelection_denominator, minAbsEta, maxAbsEta, central_or_shift);
     denominator->bookHistograms(fs);
     denominators.push_back(denominator);
 
-    for ( vstring::const_iterator hadTauSelection = hadTauSelections.begin();
-	  hadTauSelection != hadTauSelections.end(); ++hadTauSelection ) {
+    for ( vstring::const_iterator hadTauSelection_numerator = hadTauSelections_numerator.begin();
+	  hadTauSelection_numerator != hadTauSelections_numerator.end(); ++hadTauSelection_numerator ) {
       numeratorSelector_and_HistManagers* numerator = new numeratorSelector_and_HistManagers(
-        process_string, era, isMC, chargeSelection_string, *hadTauSelection, minAbsEta, maxAbsEta, central_or_shift);
+	process_string, era, isMC, chargeSelection_string, hadTauSelection_denominator, *hadTauSelection_numerator, minAbsEta, maxAbsEta, central_or_shift);
       numerator->bookHistograms(fs);
       numerators.push_back(numerator);
     }
@@ -957,7 +965,7 @@ int main(int argc, char* argv[])
 //--- apply data/MC corrections for hadronic tau identification efficiency 
 //    and for e->tau and mu->tau misidentification rates
 	double evtWeight_numerator = evtWeight;
-	dataToMCcorrectionInterface->setHadTauSelection((*numerator)->hadTauSelection_);
+	dataToMCcorrectionInterface->setHadTauSelection((*numerator)->hadTauSelection_numerator_);
 	int preselHadTau_dRmatched_genPdgId = getHadTau_genPdgId(preselHadTau_dRmatched);
 	dataToMCcorrectionInterface->setHadTaus(preselHadTau_dRmatched_genPdgId, preselHadTau_dRmatched->pt(), preselHadTau_dRmatched->eta());
 	evtWeight_numerator *= dataToMCcorrectionInterface->getSF_hadTauID_and_Iso();
@@ -988,7 +996,7 @@ int main(int argc, char* argv[])
 	  numerator != numerators.end(); ++numerator ) {
       int numHadTaus_numerator = 0;
       double evtWeight_numerator = evtWeight;
-      dataToMCcorrectionInterface->setHadTauSelection((*numerator)->hadTauSelection_);
+      dataToMCcorrectionInterface->setHadTauSelection((*numerator)->hadTauSelection_numerator_);
       for ( std::vector<const RecoHadTau*>::const_iterator preselHadTau = preselHadTaus.begin();
 	    preselHadTau != preselHadTaus.end(); ++preselHadTau ) {
 	if ( (*(*numerator)->tightHadTauSelector_)(**preselHadTau) ) ++numHadTaus_numerator;

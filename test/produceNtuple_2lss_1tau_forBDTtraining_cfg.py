@@ -23,7 +23,7 @@ process.produceNtuple_2lss_1tau = cms.PSet(
     leptonSelection = cms.string('Loose'),
     minNumLeptons = cms.int32(2),
 
-    hadTauSelection = cms.string('Loose|dR03mvaVVLoose'),
+    hadTauSelection = cms.string('Tight|dR03mvaLoose'),
     minNumHadTaus = cms.int32(1),
 
     minNumJets = cms.int32(2),

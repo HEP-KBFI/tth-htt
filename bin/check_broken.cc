@@ -334,8 +334,8 @@ struct Sample
 		      input = input + "  (\"use_HIP_mitigation_mediumMuonId\", False),\n";
 		    }
 		    input = input + "  (\"use_it\",                $(use_it)),\n";
-			if(process_name.find("SingleElec")!=std::string::npos) input = input + "  (\"triggers\",              [ \"1e\" ]),\n";
-	    if(process_name.find("SingleMuon")!=std::string::npos) input = input + "  (\"triggers\",              [ \"1mu\" ]),\n";
+			if(process_name.find("SingleElec")!=std::string::npos) input = input + "  (\"triggers\",              [ \"1e\", \"1e1tau\" ]),\n";
+	    if(process_name.find("SingleMuon")!=std::string::npos) input = input + "  (\"triggers\",              [ \"1mu\", \"1mu1tau\" ]),\n";
 	    if(process_name.find("DoubleEG")!=std::string::npos  ) input = input + "  (\"triggers\",              [ \"2e\", \"3e\" ]),\n";
 	    if(process_name.find("DoubleMuon")!=std::string::npos) input = input + "  (\"triggers\",              [ \"2mu\", \"3mu\" ]),\n";
 	    if(process_name.find("MuonEG")!=std::string::npos    ) input = input + "  (\"triggers\",              [ \"1e1mu\", \"2e1mu\", \"1e2mu\" ]),\n";
@@ -640,28 +640,28 @@ main(int argc,
       
   samples.define("VHBB_HEPPY_V25tthtautau_HLT_Tau__Run2016B-23Sep2016-v3",
     "/Tau/Run2016B-23Sep2016-v3/MINIAOD",
-    "data_obs", "Tau_Run2016B_v3", 1, 68727458, true, false);
+    "data_obs", "Tau_Run2016B_v3", 1, 68727458, false, false);
   samples.define("VHBB_HEPPY_V25tthtautau_HLT_Tau__Run2016C-23Sep2016-v1",
     "/Tau/Run2016C-23Sep2016-v1/MINIAOD",
-    "data_obs", "Tau_Run2016C_v1", 1, 36931473, true, false);
+    "data_obs", "Tau_Run2016C_v1", 1, 36931473, false, false);
   samples.define("VHBB_HEPPY_V25tthtautau_HLT_Tau__Run2016D-23Sep2016-v1",
     "/Tau/Run2016D-23Sep2016-v1/MINIAOD",
-    "data_obs", "Tau_Run2016D_v1", 1, 56827771, true, false);
+    "data_obs", "Tau_Run2016D_v1", 1, 56827771, false, false);
   samples.define("VHBB_HEPPY_V25tthtautau_HLT_Tau__Run2016E-23Sep2016-v1",
     "/Tau/Run2016E-23Sep2016-v1/MINIAOD",
-    "data_obs", "Tau_Run2016E_v1", 1, 58348773, true, false);
+    "data_obs", "Tau_Run2016E_v1", 1, 58348773, false, false);
   samples.define("VHBB_HEPPY_V25tthtautau_HLT_Tau__Run2016F-23Sep2016-v1",
     "/Tau/Run2016F-23Sep2016-v1/MINIAOD",
-    "data_obs", "Tau_Run2016F_v1", 1, 40549716, true, false);
+    "data_obs", "Tau_Run2016F_v1", 1, 40549716, false, false);
   samples.define("VHBB_HEPPY_V25tthtautau_v2_Tau__Run2016G-23Sep2016-v1",
     "/Tau/Run2016G-23Sep2016-v1/MINIAOD",
-    "data_obs", "Tau_Run2016G_v1", 1, 79578661, true, false);
+    "data_obs", "Tau_Run2016G_v1", 1, 79578661, false, false);
   samples.define("VHBB_HEPPY_V25tthtautau_v3_Tau__Run2016H-PromptReco-v2",
     "/Tau/Run2016H-PromptReco-v2/MINIAOD",
-    "data_obs", "Tau_Run2016H_v2_promptReco", 1, 76504267, true, false);
+    "data_obs", "Tau_Run2016H_v2_promptReco", 1, 76504267, false, false);
   samples.define("VHBB_HEPPY_V25tthtautau_Tau__Run2016H-PromptReco-v3",
     "/Tau/Run2016H-PromptReco-v3/MINIAOD",
-    "data_obs", "Tau_Run2016H_v3_promptReco", 1, 1898072, true, false);
+    "data_obs", "Tau_Run2016H_v3_promptReco", 1, 1898072, false, false);
 
   //MC
   /*samples.define("VHBB_HEPPY_V25tthtautau_DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-amcatnloFXFX-Py8__RunIISummer16MAv2-PUMoriond17_80r2as_2016_TrancheIV_v6_ext1-v1",

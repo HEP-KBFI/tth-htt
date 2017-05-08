@@ -237,6 +237,9 @@ int main(int argc, char* argv[])
   else throw cms::Exception("analyze_3l_1tau") 
     << "Invalid Configuration parameter 'chargeSumSelection' = " << chargeSumSelection_string << " !!\n";
 
+  int minNumJets = cfg_analyze.getParameter<int>("minNumJets");
+  std::cout << "minNumJets = " << minNumJets << std::endl;
+
   bool use_HIP_mitigation_bTag = cfg_analyze.getParameter<bool>("use_HIP_mitigation_bTag"); 
   std::cout << "use_HIP_mitigation_bTag = " << use_HIP_mitigation_bTag << std::endl;
   bool use_HIP_mitigation_mediumMuonId = cfg_analyze.getParameter<bool>("use_HIP_mitigation_mediumMuonId"); 
@@ -481,7 +484,11 @@ int main(int argc, char* argv[])
   if ( hadTauSelection_part2 != "" ) tightHadTauSelector.set(hadTauSelection_part2);
   tightHadTauSelector.set_min_antiElectron(hadTauSelection_antiElectron);
   tightHadTauSelector.set_min_antiMuon(hadTauSelection_antiMuon);
-    
+  RecoHadTauSelectorTight tightHadTauFilter(era);
+  tightHadTauFilter.set("dR03mvaMedium");
+  tightHadTauFilter.set_min_antiElectron(hadTauSelection_antiElectron);
+  tightHadTauFilter.set_min_antiMuon(hadTauSelection_antiMuon);
+  
   RecoJetReader* jetReader = new RecoJetReader(era, isMC, Form("n%s", branchName_jets.data()), branchName_jets);
   if ( use_HIP_mitigation_bTag ) jetReader->enable_HIP_mitigation();
   else jetReader->disable_HIP_mitigation();
@@ -578,28 +585,34 @@ int main(int argc, char* argv[])
 //    trained by Arun for 3l_1tau category 
   std::string mvaFileName_3l_1tau_ttV = "tthAnalysis/HiggsToTauTau/data/3l_1tau_ttV_BDTG.weights.xml";
   std::vector<std::string> mvaInputVariables_3l_1tau_ttV;
+  mvaInputVariables_3l_1tau_ttV.push_back("nJet");
   mvaInputVariables_3l_1tau_ttV.push_back("mindr_lep1_jet");
-  mvaInputVariables_3l_1tau_ttV.push_back("lep3_abs_eta");
   mvaInputVariables_3l_1tau_ttV.push_back("lep1_conePt");
   mvaInputVariables_3l_1tau_ttV.push_back("lep2_conePt");
   mvaInputVariables_3l_1tau_ttV.push_back("lep3_conePt");
-  mvaInputVariables_3l_1tau_ttV.push_back("mT_lep1");
-  mvaInputVariables_3l_1tau_ttV.push_back("dr_leps");
+  mvaInputVariables_3l_1tau_ttV.push_back("mindr_tau_jet");
+  mvaInputVariables_3l_1tau_ttV.push_back("mT_lep3");
+  mvaInputVariables_3l_1tau_ttV.push_back("tau_pt");
   mvaInputVariables_3l_1tau_ttV.push_back("dr_lep1_tau");
-  mvaInputVariables_3l_1tau_ttV.push_back("mTauTauVis1");
+  mvaInputVariables_3l_1tau_ttV.push_back("dr_lep2_tau");
+  mvaInputVariables_3l_1tau_ttV.push_back("dr_lep3_tau");
+  mvaInputVariables_3l_1tau_ttV.push_back("mTauTauVis2");
   TMVAInterface mva_3l_1tau_ttV(mvaFileName_3l_1tau_ttV, mvaInputVariables_3l_1tau_ttV);
 
   std::string mvaFileName_3l_1tau_ttbar = "tthAnalysis/HiggsToTauTau/data/3l_1tau_ttbar_BDTG.weights.xml";
   std::vector<std::string> mvaInputVariables_3l_1tau_ttbar;
   mvaInputVariables_3l_1tau_ttbar.push_back("nJet");
+  mvaInputVariables_3l_1tau_ttbar.push_back("mindr_lep1_jet");
+  mvaInputVariables_3l_1tau_ttbar.push_back("mindr_lep2_jet");
   mvaInputVariables_3l_1tau_ttbar.push_back("mindr_lep3_jet");
   mvaInputVariables_3l_1tau_ttbar.push_back("avg_dr_jet");
-  mvaInputVariables_3l_1tau_ttbar.push_back("lep2_conePt");
-  mvaInputVariables_3l_1tau_ttbar.push_back("lep3_conePt");
-  mvaInputVariables_3l_1tau_ttbar.push_back("ptmiss");
+  mvaInputVariables_3l_1tau_ttbar.push_back("mindr_tau_jet");
   mvaInputVariables_3l_1tau_ttbar.push_back("tau_pt");
-  mvaInputVariables_3l_1tau_ttbar.push_back("tau_abs_eta");
-  mvaInputVariables_3l_1tau_ttbar.push_back("mTauTauVis1");
+  mvaInputVariables_3l_1tau_ttbar.push_back("TMath::Abs(tau_eta)");
+  mvaInputVariables_3l_1tau_ttbar.push_back("dr_lep1_tau");
+  mvaInputVariables_3l_1tau_ttbar.push_back("dr_lep2_tau");
+  mvaInputVariables_3l_1tau_ttbar.push_back("dr_lep3_tau");
+  mvaInputVariables_3l_1tau_ttbar.push_back("mTauTauVis2");
   TMVAInterface mva_3l_1tau_ttbar(mvaFileName_3l_1tau_ttbar, mvaInputVariables_3l_1tau_ttbar);
 
   std::vector<std::string> mvaInputVariables_3l_1tau = get_mvaInputVariables(mvaInputVariables_3l_1tau_ttV, mvaInputVariables_3l_1tau_ttbar);
@@ -607,17 +620,12 @@ int main(int argc, char* argv[])
 
   std::string inputFileNam_mva_mapping_3l_1tau = "tthAnalysis/HiggsToTauTau/data/3l_1tau_BDT_mapping.root";
   TFile* inputFile_mva_mapping_3l_1tau = openFile(LocalFileInPath(inputFileNam_mva_mapping_3l_1tau));
-  TH2* mva_mapping_3l_1tau = loadTH2(inputFile_mva_mapping_3l_1tau, "hBinning");
+  TH2* mva_mapping_3l_1tau = loadTH2(inputFile_mva_mapping_3l_1tau, "hTargetBinning");
 
 //--- open output file containing run:lumi:event numbers of events passing final event selection criteria
   std::ostream* selEventsFile = ( selEventsFileName_output != "" ) ? new std::ofstream(selEventsFileName_output.data(), std::ios::out) : 0;
 
-  const bool selectBDT = [&cfg_analyze]() -> bool
-  {
-    if(cfg_analyze.exists("selectBDT"))
-      return cfg_analyze.getParameter<bool>("selectBDT");
-    return false;
-  }();
+  bool selectBDT = ( cfg_analyze.exists("selectBDT") ) ? cfg_analyze.getParameter<bool>("selectBDT") : false;
 
 //--- declare histograms
   struct preselHistManagerType
@@ -790,11 +798,14 @@ int main(int argc, char* argv[])
       "lep3_pt", "lep3_conePt", "lep3_eta", "lep3_tth_mva", "mindr_lep3_jet", "mT_lep3", "dr_lep3_tau",
       "mindr_tau_jet", "avg_dr_jet", "ptmiss",  "htmiss", "tau_mva", "tau_pt", "tau_eta", "dr_leps",
       "mTauTauVis1", "mTauTauVis2", "lumiScale", "genWeight", "evtWeight",
-      "memOutput_isValid", "memOutput_errorFlag", "memOutput_ttH", "memOutput_ttZ", "memOutput_LR",
-      "memOutput_ttH_Hww"
+      //"memOutput_isValid", "memOutput_errorFlag", "memOutput_ttH", "memOutput_ttZ", "memOutput_LR",
+      //"memOutput_ttH_Hww"
+      "lep1_genLepPt", "lep2_genLepPt", "lep3_genLepPt", "tau_genTauPt", 
+      "lep1_fake_prob", "lep2_fake_prob", "lep3_fake_prob", "tau_fake_prob",
+      "mvaOutput_3l_ttV", "mvaOutput_3l_ttbar", "mvaDiscr_3l"
     );
     bdt_filler -> register_variable<int_type>(
-      "nJet", "nBJetLoose", "nBJetMedium"
+      "nJet", "nBJetLoose", "nBJetMedium", "lep1_isTight", "lep2_isTight", "lep3_isTight", "tau_isTight"
     );
     bdt_filler -> bookTree(fs);
   }
@@ -1164,15 +1175,15 @@ int main(int argc, char* argv[])
     cutFlowHistManager->fillHistograms("presel lepton trigger match", lumiScale);
 
     // apply requirement on jets (incl. b-tagged jets) and hadronic taus on preselection level
-    if ( !(selJets.size() >= 2) ) {
+    if ( !((int)selJets.size() >= minNumJets) ) { 
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS selJets selection." << std::endl;
 	printJetCollection("selJets", selJets);
       }
       continue;
     }
-    cutFlowTable.update(">= 2 jets (1)");
-    cutFlowHistManager->fillHistograms(">= 2 jets (1)", lumiScale);
+    cutFlowTable.update(Form(">= %i jets (1)", minNumJets));
+    cutFlowHistManager->fillHistograms(Form(">= %i jets (1)", minNumJets), lumiScale);
     if ( !(selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS selBJets selection." << std::endl;
@@ -1362,73 +1373,75 @@ int main(int argc, char* argv[])
     }
 
     double weight_fakeRate = 1.;
-    if ( applyFakeRateWeights == kFR_4L ) {
-      double prob_fake_lepton_lead = 1.;
-      if      ( std::abs(selLepton_lead->pdgId()) == 11 ) prob_fake_lepton_lead = leptonFakeRateInterface->getWeight_e(selLepton_lead->cone_pt(), selLepton_lead->absEta());
-      else if ( std::abs(selLepton_lead->pdgId()) == 13 ) prob_fake_lepton_lead = leptonFakeRateInterface->getWeight_mu(selLepton_lead->cone_pt(), selLepton_lead->absEta());
-      else assert(0);
-      bool passesTight_lepton_lead = isMatched(*selLepton_lead, tightElectrons) || isMatched(*selLepton_lead, tightMuons);
-      double prob_fake_lepton_sublead = 1.;
-      if      ( std::abs(selLepton_sublead->pdgId()) == 11 ) prob_fake_lepton_sublead = leptonFakeRateInterface->getWeight_e(selLepton_sublead->cone_pt(), selLepton_sublead->absEta());
-      else if ( std::abs(selLepton_sublead->pdgId()) == 13 ) prob_fake_lepton_sublead = leptonFakeRateInterface->getWeight_mu(selLepton_sublead->cone_pt(), selLepton_sublead->absEta());
-      else assert(0);
-      bool passesTight_lepton_sublead = isMatched(*selLepton_sublead, tightElectrons) || isMatched(*selLepton_sublead, tightMuons);
-      double prob_fake_lepton_third = 1.;
-      if      ( std::abs(selLepton_third->pdgId()) == 11 ) prob_fake_lepton_third = leptonFakeRateInterface->getWeight_e(selLepton_third->cone_pt(), selLepton_third->absEta());
-      else if ( std::abs(selLepton_third->pdgId()) == 13 ) prob_fake_lepton_third = leptonFakeRateInterface->getWeight_mu(selLepton_third->cone_pt(), selLepton_third->absEta());
-      else assert(0);
-      bool passesTight_lepton_third = isMatched(*selLepton_third, tightElectrons) || isMatched(*selLepton_third, tightMuons);
-      double prob_fake_hadTau = jetToTauFakeRateInterface->getWeight_lead(selHadTau->pt(), selHadTau->absEta());
-      bool passesTight_hadTau = isMatched(*selHadTau, tightHadTaus);
-      weight_fakeRate = getWeight_4L(
-        prob_fake_lepton_lead, passesTight_lepton_lead, 
-	prob_fake_lepton_sublead, passesTight_lepton_sublead, 
-	prob_fake_lepton_third, passesTight_lepton_third, 
-	prob_fake_hadTau, passesTight_hadTau);
-      if ( isDEBUG ) {
-	std::cout << "weight_fakeRate = " << weight_fakeRate << std::endl;
+    if ( !selectBDT ) {
+      if ( applyFakeRateWeights == kFR_4L ) {
+        double prob_fake_lepton_lead = 1.;
+	if      ( std::abs(selLepton_lead->pdgId()) == 11 ) prob_fake_lepton_lead = leptonFakeRateInterface->getWeight_e(selLepton_lead->cone_pt(), selLepton_lead->absEta());
+	else if ( std::abs(selLepton_lead->pdgId()) == 13 ) prob_fake_lepton_lead = leptonFakeRateInterface->getWeight_mu(selLepton_lead->cone_pt(), selLepton_lead->absEta());
+	else assert(0);
+	bool passesTight_lepton_lead = isMatched(*selLepton_lead, tightElectrons) || isMatched(*selLepton_lead, tightMuons);
+	double prob_fake_lepton_sublead = 1.;
+	if      ( std::abs(selLepton_sublead->pdgId()) == 11 ) prob_fake_lepton_sublead = leptonFakeRateInterface->getWeight_e(selLepton_sublead->cone_pt(), selLepton_sublead->absEta());
+	else if ( std::abs(selLepton_sublead->pdgId()) == 13 ) prob_fake_lepton_sublead = leptonFakeRateInterface->getWeight_mu(selLepton_sublead->cone_pt(), selLepton_sublead->absEta());
+	else assert(0);
+	bool passesTight_lepton_sublead = isMatched(*selLepton_sublead, tightElectrons) || isMatched(*selLepton_sublead, tightMuons);
+	double prob_fake_lepton_third = 1.;
+	if      ( std::abs(selLepton_third->pdgId()) == 11 ) prob_fake_lepton_third = leptonFakeRateInterface->getWeight_e(selLepton_third->cone_pt(), selLepton_third->absEta());
+	else if ( std::abs(selLepton_third->pdgId()) == 13 ) prob_fake_lepton_third = leptonFakeRateInterface->getWeight_mu(selLepton_third->cone_pt(), selLepton_third->absEta());
+	else assert(0);
+	bool passesTight_lepton_third = isMatched(*selLepton_third, tightElectrons) || isMatched(*selLepton_third, tightMuons);
+	double prob_fake_hadTau = jetToTauFakeRateInterface->getWeight_lead(selHadTau->pt(), selHadTau->absEta());
+	bool passesTight_hadTau = isMatched(*selHadTau, tightHadTaus);
+        weight_fakeRate = getWeight_4L(
+          prob_fake_lepton_lead, passesTight_lepton_lead, 
+	  prob_fake_lepton_sublead, passesTight_lepton_sublead, 
+	  prob_fake_lepton_third, passesTight_lepton_third, 
+	  prob_fake_hadTau, passesTight_hadTau);
+	if ( isDEBUG ) {
+	  std::cout << "weight_fakeRate = " << weight_fakeRate << std::endl;
+	}
+	evtWeight *= weight_fakeRate;
+      } else if ( applyFakeRateWeights == kFR_3lepton ) {
+	double prob_fake_lepton_lead = 1.;
+	if      ( std::abs(selLepton_lead->pdgId()) == 11 ) prob_fake_lepton_lead = leptonFakeRateInterface->getWeight_e(selLepton_lead->cone_pt(), selLepton_lead->absEta());
+	else if ( std::abs(selLepton_lead->pdgId()) == 13 ) prob_fake_lepton_lead = leptonFakeRateInterface->getWeight_mu(selLepton_lead->cone_pt(), selLepton_lead->absEta());
+	else assert(0);
+	bool passesTight_lepton_lead = isMatched(*selLepton_lead, tightElectrons) || isMatched(*selLepton_lead, tightMuons);
+	double prob_fake_lepton_sublead = 1.;
+	if      ( std::abs(selLepton_sublead->pdgId()) == 11 ) prob_fake_lepton_sublead = leptonFakeRateInterface->getWeight_e(selLepton_sublead->cone_pt(), selLepton_sublead->absEta());
+	else if ( std::abs(selLepton_sublead->pdgId()) == 13 ) prob_fake_lepton_sublead = leptonFakeRateInterface->getWeight_mu(selLepton_sublead->cone_pt(), selLepton_sublead->absEta());
+	else assert(0);
+	bool passesTight_lepton_sublead = isMatched(*selLepton_sublead, tightElectrons) || isMatched(*selLepton_sublead, tightMuons);
+	double prob_fake_lepton_third = 1.;
+	if      ( std::abs(selLepton_third->pdgId()) == 11 ) prob_fake_lepton_third = leptonFakeRateInterface->getWeight_e(selLepton_third->cone_pt(), selLepton_third->absEta());
+	else if ( std::abs(selLepton_third->pdgId()) == 13 ) prob_fake_lepton_third = leptonFakeRateInterface->getWeight_mu(selLepton_third->cone_pt(), selLepton_third->absEta());
+	else assert(0);
+	bool passesTight_lepton_third = isMatched(*selLepton_third, tightElectrons) || isMatched(*selLepton_third, tightMuons);
+        weight_fakeRate = getWeight_3L(
+          prob_fake_lepton_lead, passesTight_lepton_lead, 
+	  prob_fake_lepton_sublead, passesTight_lepton_sublead, 
+	  prob_fake_lepton_third, passesTight_lepton_third);
+	if ( isDEBUG ) {
+	  std::cout << "weight_fakeRate = " << weight_fakeRate << std::endl;
+	}
+	evtWeight *= weight_fakeRate;
+      } else if ( applyFakeRateWeights == kFR_1tau) {
+	double prob_fake_hadTau = jetToTauFakeRateInterface->getWeight_lead(selHadTau->pt(), selHadTau->absEta());
+	weight_fakeRate = prob_fake_hadTau;
+	if ( isDEBUG ) {
+	  std::cout << "weight_fakeRate = " << weight_fakeRate << std::endl;
+	}
+	evtWeight *= weight_fakeRate;
       }
-      evtWeight *= weight_fakeRate;
-    } else if ( applyFakeRateWeights == kFR_3lepton ) {
-      double prob_fake_lepton_lead = 1.;
-      if      ( std::abs(selLepton_lead->pdgId()) == 11 ) prob_fake_lepton_lead = leptonFakeRateInterface->getWeight_e(selLepton_lead->cone_pt(), selLepton_lead->absEta());
-      else if ( std::abs(selLepton_lead->pdgId()) == 13 ) prob_fake_lepton_lead = leptonFakeRateInterface->getWeight_mu(selLepton_lead->cone_pt(), selLepton_lead->absEta());
-      else assert(0);
-      bool passesTight_lepton_lead = isMatched(*selLepton_lead, tightElectrons) || isMatched(*selLepton_lead, tightMuons);
-      double prob_fake_lepton_sublead = 1.;
-      if      ( std::abs(selLepton_sublead->pdgId()) == 11 ) prob_fake_lepton_sublead = leptonFakeRateInterface->getWeight_e(selLepton_sublead->cone_pt(), selLepton_sublead->absEta());
-      else if ( std::abs(selLepton_sublead->pdgId()) == 13 ) prob_fake_lepton_sublead = leptonFakeRateInterface->getWeight_mu(selLepton_sublead->cone_pt(), selLepton_sublead->absEta());
-      else assert(0);
-      bool passesTight_lepton_sublead = isMatched(*selLepton_sublead, tightElectrons) || isMatched(*selLepton_sublead, tightMuons);
-      double prob_fake_lepton_third = 1.;
-      if      ( std::abs(selLepton_third->pdgId()) == 11 ) prob_fake_lepton_third = leptonFakeRateInterface->getWeight_e(selLepton_third->cone_pt(), selLepton_third->absEta());
-      else if ( std::abs(selLepton_third->pdgId()) == 13 ) prob_fake_lepton_third = leptonFakeRateInterface->getWeight_mu(selLepton_third->cone_pt(), selLepton_third->absEta());
-      else assert(0);
-      bool passesTight_lepton_third = isMatched(*selLepton_third, tightElectrons) || isMatched(*selLepton_third, tightMuons);
-      weight_fakeRate = getWeight_3L(
-        prob_fake_lepton_lead, passesTight_lepton_lead, 
-	prob_fake_lepton_sublead, passesTight_lepton_sublead, 
-	prob_fake_lepton_third, passesTight_lepton_third);
-      if ( isDEBUG ) {
-	std::cout << "weight_fakeRate = " << weight_fakeRate << std::endl;
-      }
-      evtWeight *= weight_fakeRate;
-    } else if ( applyFakeRateWeights == kFR_1tau) {
-      double prob_fake_hadTau = jetToTauFakeRateInterface->getWeight_lead(selHadTau->pt(), selHadTau->absEta());
-      weight_fakeRate = prob_fake_hadTau;
-      if ( isDEBUG ) {
-	std::cout << "weight_fakeRate = " << weight_fakeRate << std::endl;
-      }
-      evtWeight *= weight_fakeRate;
-    }
 
-    // CV: apply data/MC ratio for jet->tau fake-rates in case data-driven "fake" background estimation is applied to leptons only
-    if ( isMC && apply_hadTauFakeRateSF && hadTauSelection == kTight && !(selHadTau->genHadTau() || selHadTau->genLepton()) ) {
-      double weight_data_to_MC_correction_tau = jetToTauFakeRateInterface->getSF_lead(selHadTau->pt(), selHadTau->absEta());
-      if ( isDEBUG ) {
-	std::cout << "weight_data_to_MC_correction_tau = " << weight_data_to_MC_correction_tau << std::endl;
+      // CV: apply data/MC ratio for jet->tau fake-rates in case data-driven "fake" background estimation is applied to leptons only
+      if ( isMC && apply_hadTauFakeRateSF && hadTauSelection == kTight && !(selHadTau->genHadTau() || selHadTau->genLepton()) ) {
+	double weight_data_to_MC_correction_tau = jetToTauFakeRateInterface->getSF_lead(selHadTau->pt(), selHadTau->absEta());
+	if ( isDEBUG ) {
+	  std::cout << "weight_data_to_MC_correction_tau = " << weight_data_to_MC_correction_tau << std::endl;
+	}
+	evtWeight *= weight_data_to_MC_correction_tau;
       }
-      evtWeight *= weight_data_to_MC_correction_tau;
     }
     if ( isDEBUG ) {
       std::cout << "evtWeight = " << evtWeight << std::endl;
@@ -1459,15 +1472,15 @@ int main(int argc, char* argv[])
     cutFlowHistManager->fillHistograms("sel lepton trigger match", evtWeight);
 
     // apply requirement on jets (incl. b-tagged jets) and hadronic taus on level of final event selection
-    if ( !(selJets.size() >= 2) ) {
+    if ( !((int)selJets.size() >= minNumJets) ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS selJets selection." << std::endl;
 	printJetCollection("selJets", selJets);
       }
       continue;
     }
-    cutFlowTable.update(">= 2 jets (2)", evtWeight);
-    cutFlowHistManager->fillHistograms(">= 2 jets (2)", evtWeight);
+    cutFlowTable.update(Form(">= %i jets (2)", minNumJets), evtWeight);
+    cutFlowHistManager->fillHistograms(Form(">= %i jets (2)", minNumJets), evtWeight);
     if ( !(selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1)) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS selBJets selection." << std::endl;
@@ -1653,21 +1666,22 @@ int main(int argc, char* argv[])
       else                                                                mvaDiscr_3l = 1.;
     } else assert(0);
     
-    mvaInputs_3l_1tau["avg_dr_jet"]     = comp_avg_dr_jet(selJets);
-    mvaInputs_3l_1tau["dr_leps"]        = deltaR(selLepton_lead->p4(), selLepton_sublead->p4());
-    mvaInputs_3l_1tau["dr_lep1_tau"]    = deltaR(selLepton_lead->p4(), selHadTau->p4());
-    mvaInputs_3l_1tau["lep1_conePt"]    = comp_lep1_conePt(*selLepton_lead);
-    mvaInputs_3l_1tau["lep2_conePt"]    = comp_lep2_conePt(*selLepton_sublead);
-    mvaInputs_3l_1tau["lep3_abs_eta"]   = selLepton_third->absEta();
-    mvaInputs_3l_1tau["lep3_conePt"]    = comp_lep3_conePt(*selLepton_third);
-    mvaInputs_3l_1tau["mindr_lep1_jet"] = TMath::Min(10., comp_mindr_lep1_jet(*selLepton_lead, selJets));
-    mvaInputs_3l_1tau["mindr_lep3_jet"] = TMath::Min(10., comp_mindr_lep3_jet(*selLepton_third, selJets));
-    mvaInputs_3l_1tau["mT_lep1"]        = comp_MT_met_lep1(selLepton_lead->cone_p4(), met.pt(), met.phi());
-    mvaInputs_3l_1tau["mTauTauVis1"]    = mTauTauVis1_sel;
-    mvaInputs_3l_1tau["nJet"]           = selJets.size();
-    mvaInputs_3l_1tau["ptmiss"]         = met.pt();
-    mvaInputs_3l_1tau["tau_abs_eta"]    = selHadTau->absEta();
-    mvaInputs_3l_1tau["tau_pt"]         = selHadTau->pt();
+    mvaInputs_3l_1tau["avg_dr_jet"]           = comp_avg_dr_jet(selJets);
+    mvaInputs_3l_1tau["dr_lep1_tau"]          = deltaR(selLepton_lead->p4(), selHadTau->p4());
+    mvaInputs_3l_1tau["dr_lep2_tau"]          = deltaR(selLepton_sublead->p4(), selHadTau->p4());
+    mvaInputs_3l_1tau["dr_lep3_tau"]          = deltaR(selLepton_third->p4(), selHadTau->p4());
+    mvaInputs_3l_1tau["lep1_conePt"]          = comp_lep1_conePt(*selLepton_lead);
+    mvaInputs_3l_1tau["lep2_conePt"]          = comp_lep2_conePt(*selLepton_sublead);
+    mvaInputs_3l_1tau["lep3_conePt"]          = comp_lep3_conePt(*selLepton_third);
+    mvaInputs_3l_1tau["mindr_lep1_jet"]       = TMath::Min(10., comp_mindr_lep1_jet(*selLepton_lead, selJets));
+    mvaInputs_3l_1tau["mindr_lep2_jet"]       = TMath::Min(10., comp_mindr_lep2_jet(*selLepton_sublead, selJets));
+    mvaInputs_3l_1tau["mindr_lep3_jet"]       = TMath::Min(10., comp_mindr_lep3_jet(*selLepton_third, selJets));
+    mvaInputs_3l_1tau["mindr_tau_jet"]        = TMath::Min(10., comp_mindr_hadTau1_jet(*selHadTau, selJets));
+    mvaInputs_3l_1tau["mTauTauVis2"]          = mTauTauVis2_sel;
+    mvaInputs_3l_1tau["mT_lep3"]              = comp_MT_met_lep3(selLepton_third->cone_p4(), met.pt(), met.phi());
+    mvaInputs_3l_1tau["nJet"]                 = selJets.size();
+    mvaInputs_3l_1tau["tau_pt"]               = selHadTau->pt();
+    mvaInputs_3l_1tau["TMath::Abs(tau_eta)"]  = selHadTau->absEta();
 
     check_mvaInputs(mvaInputs_3l_1tau, run, lumi, event);
 
@@ -1796,8 +1810,17 @@ int main(int argc, char* argv[])
       (*selEventsFile) << run << ":" << lumi << ":" << event << std::endl;
     }
 
-    if(bdt_filler)
-    {
+    if ( bdt_filler ) {
+      //FR weights for bdt ntuple
+      double prob_fake_lepton_lead = 1.;
+      if      ( std::abs(selLepton_lead->pdgId()) == 11 ) prob_fake_lepton_lead = leptonFakeRateInterface->getWeight_e(selLepton_lead->cone_pt(), selLepton_lead->absEta());
+      else if ( std::abs(selLepton_lead->pdgId()) == 13 ) prob_fake_lepton_lead = leptonFakeRateInterface->getWeight_mu(selLepton_lead->cone_pt(), selLepton_lead->absEta());
+      double prob_fake_lepton_sublead = 1.;
+      if      ( std::abs(selLepton_sublead->pdgId()) == 11 ) prob_fake_lepton_sublead = leptonFakeRateInterface->getWeight_e(selLepton_sublead->cone_pt(), selLepton_sublead->absEta());
+      else if ( std::abs(selLepton_sublead->pdgId()) == 13 ) prob_fake_lepton_sublead = leptonFakeRateInterface->getWeight_mu(selLepton_sublead->cone_pt(), selLepton_sublead->absEta());
+      double prob_fake_lepton_third = 1.;
+      if      ( std::abs(selLepton_third->pdgId()) == 11 ) prob_fake_lepton_third = leptonFakeRateInterface->getWeight_e(selLepton_third->cone_pt(), selLepton_third->absEta());
+      else if ( std::abs(selLepton_third->pdgId()) == 13 ) prob_fake_lepton_third = leptonFakeRateInterface->getWeight_mu(selLepton_third->cone_pt(), selLepton_third->absEta());
       bdt_filler -> operator()({ run, lumi, event })
           ("lep1_pt",             selLepton_lead -> pt())
           ("lep1_conePt",         comp_lep1_conePt(*selLepton_lead))
@@ -1830,18 +1853,33 @@ int main(int argc, char* argv[])
           ("dr_leps",             deltaR(selLepton_lead -> p4(), selLepton_sublead -> p4()))
           ("mTauTauVis1",         mTauTauVis1_sel)
           ("mTauTauVis2",         mTauTauVis2_sel)
-          ("memOutput_isValid",   memOutput_3l_1tau_matched.is_initialized() ? memOutput_3l_1tau_matched.isValid()        : -100.)
-          ("memOutput_errorFlag", memOutput_3l_1tau_matched.is_initialized() ? memOutput_3l_1tau_matched.errorFlag()      : -100.)
-          ("memOutput_ttH",       memOutput_3l_1tau_matched.is_initialized() ? memOutput_3l_1tau_matched.weight_ttH()     : -100.)
-          ("memOutput_ttZ",       memOutput_3l_1tau_matched.is_initialized() ? memOutput_3l_1tau_matched.weight_ttZ()     : -100.)
-          ("memOutput_ttH_Hww",   memOutput_3l_1tau_matched.is_initialized() ? memOutput_3l_1tau_matched.weight_ttH_hww() : -100.)
-          ("memOutput_LR",        memOutput_3l_1tau_matched.is_initialized() ? memOutput_3l_1tau_matched.LR()             : -100.)
+          //("memOutput_isValid",   memOutput_3l_1tau_matched.is_initialized() ? memOutput_3l_1tau_matched.isValid()        : -100.)
+          //("memOutput_errorFlag", memOutput_3l_1tau_matched.is_initialized() ? memOutput_3l_1tau_matched.errorFlag()      : -100.)
+          //("memOutput_ttH",       memOutput_3l_1tau_matched.is_initialized() ? memOutput_3l_1tau_matched.weight_ttH()     : -100.)
+          //("memOutput_ttZ",       memOutput_3l_1tau_matched.is_initialized() ? memOutput_3l_1tau_matched.weight_ttZ()     : -100.)
+          //("memOutput_ttH_Hww",   memOutput_3l_1tau_matched.is_initialized() ? memOutput_3l_1tau_matched.weight_ttH_hww() : -100.)
+          //("memOutput_LR",        memOutput_3l_1tau_matched.is_initialized() ? memOutput_3l_1tau_matched.LR()             : -100.)
+	  ("lep1_genLepPt",       (selLepton_lead->genLepton() != 0) ? selLepton_lead->genLepton()->pt() : 0.)
+	  ("lep2_genLepPt",       (selLepton_sublead->genLepton() != 0) ? selLepton_sublead->genLepton() ->pt() : 0.)
+	  ("lep3_genLepPt",       (selLepton_third->genLepton() != 0) ? selLepton_third->genLepton() ->pt() : 0.)
+	  ("tau_genTauPt",        (selHadTau->genHadTau() != 0) ? selHadTau->genHadTau()->pt() : 0.)
+	  ("lep1_fake_prob",      prob_fake_lepton_lead)
+	  ("lep2_fake_prob",      prob_fake_lepton_sublead)
+	  ("lep3_fake_prob",      prob_fake_lepton_third)
+	  ("tau_fake_prob",       jetToTauFakeRateInterface->getWeight_lead(selHadTau->pt(), selHadTau->absEta()))
+	  ("mvaOutput_3l_ttV",    mvaOutput_3l_ttV)
+	  ("mvaOutput_3l_ttbar",  mvaOutput_3l_ttbar)
+	  ("mvaDiscr_3l",         mvaDiscr_3l)
           ("lumiScale",           lumiScale)
           ("genWeight",           genWeight)
           ("evtWeight",           evtWeight)
           ("nJet",                selJets.size())
           ("nBJetLoose",          selBJets_loose.size())
           ("nBJetMedium",         selBJets_medium.size())
+	  ("lep1_isTight",        int(selLepton_lead -> isTight()))
+	  ("lep2_isTight",        int(selLepton_sublead -> isTight()))
+	  ("lep3_isTight",        int(selLepton_third -> isTight()))
+	  ("tau_isTight",         int(tightHadTauFilter(*selHadTau)))
         .fill()
       ;
     }

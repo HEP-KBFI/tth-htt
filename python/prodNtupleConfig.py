@@ -1,8 +1,4 @@
-import codecs
-import os
-import logging
-import sys
-import getpass
+import codecs, os, logging, sys, getpass, uuid
 
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd
 from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg, createFile, generateInputFileList
@@ -28,7 +24,8 @@ class prodNtupleConfig:
   
     """
     def __init__(self, configDir, outputDir, executable_prodNtuple, channel, samples,
-                 era, debug, running_method, rle_directory, version, num_parallel_jobs):
+                 era, debug, running_method, rle_directory, version, num_parallel_jobs,
+                 pool_id = ''):
 
         self.configDir = configDir
         self.outputDir = outputDir
@@ -51,6 +48,7 @@ class prodNtupleConfig:
         self.makefile = os.path.join(
           self.configDir, "Makefile_%s" % self.channel)
         self.num_parallel_jobs = num_parallel_jobs
+        self.pool_id = pool_id if pool_id else uuid.uuid4()
 
         self.workingDir = os.getcwd()
         print "Working directory is: " + self.workingDir
@@ -115,7 +113,8 @@ class prodNtupleConfig:
             log_file_names = self.logFiles_prodNtuple,
             working_dir = self.workingDir,
             max_num_jobs = self.max_num_jobs,
-            cvmfs_error_log = self.cvmfs_error_log
+            cvmfs_error_log = self.cvmfs_error_log,
+            pool_id = self.pool_id,
         )
 
     def addToMakefile_prodNtuple(self, lines_makefile):

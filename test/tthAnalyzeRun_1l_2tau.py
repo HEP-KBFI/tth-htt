@@ -19,7 +19,7 @@ elif ERA == "2016":
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "2017Mar07"
+version = "2017Apr30"
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -29,11 +29,10 @@ if __name__ == '__main__':
 
   analysis = analyzeConfig_1l_2tau(
     configDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", ERA, version),
-    ##outputDir = os.path.join("/hdfs/local/ttH_2tau", getpass.getuser(), "ttHAnalysis", ERA, version),
-    outputDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", ERA, version),
+    outputDir = os.path.join("/hdfs/local", getpass.getuser(), "ttHAnalysis", ERA, version),
     executable_analyze = "analyze_1l_2tau", cfgFile_analyze = "analyze_1l_2tau_cfg.py",
     samples = samples,
-    hadTau_selection = "dR03mvaTight",
+    hadTau_selection = "dR03mvaVVTight",
     hadTau_charge_selections = [ "OS", "SS" ],
     applyFakeRateWeights = "3L",
     central_or_shifts = [ 
@@ -86,7 +85,7 @@ if __name__ == '__main__':
     num_parallel_jobs = 8,
     executable_addBackgrounds = "addBackgrounds",
     executable_addBackgroundJetToTauFakes = "addBackgroundLeptonFakes", # CV: use common executable for estimating jet->lepton and jet->tau_h fake background
-    histograms_to_fit = [ "EventCounter", "numJets", "mvaOutput_1l_2tau_ttbar_Arun", "mvaOutput_1l_2tau_ttbar_Matthias", "mTauTauVis" ],
+    histograms_to_fit = [ "EventCounter", "numJets", "mvaOutput_1l_2tau_ttbar", "mvaDiscr_1l_2tau", "mTauTauVis" ],
     select_rle_output = True)
 
   analysis.create()

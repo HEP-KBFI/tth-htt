@@ -1832,3 +1832,258 @@ samples_2016["/Tau/Run2016H-PromptReco-v2/MINIAOD"] = OD([
     ]
   ),
 ])
+
+# check_broken -p /hdfs/local/karl/addMEM/2016/2017Mar24/final_ntuples_recopied/2lss_1tau -o -z -i -P -v
+
+samples_2016["/TTTo2L2Nu_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/matze-faster_v8_ttjets_dl_maod_p1_3a2fa29ab1d54ae0995b28f27b405be9-v1/USER"] = OD([
+  ("type",                  "mc"),
+  ("sample_category",       "TT"),
+  ("process_name_specific", "TTTo2L2Nu_fastsim_p1"),
+  ("nof_files",             1),
+  ("nof_events",            90528028),
+  ("use_it",                False),
+  ("xsection",              87.300000),
+  ("genWeight",             True),
+  ("triggers",              [ "1e", "1mu", "2e", "1e1mu", "2mu", "3e", "2e1mu", "1e2mu", "3mu", "1e1tau", "1mu1tau", "2tau" ]),
+  ("reHLT",                 True),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/local/karl/addMEM/2016/2017Mar24/final_ntuples_recopied/2lss_1tau/TTTo2L2Nu_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/VHBB_HEPPY_V25tthtautau_TTTo2L2Nu_TuneCUETP8M2_ttHtranche3_13TeV-powheg-Py8__matze-faster_v8_ttjets_dl_maod_p1_3a2fa29ab1d54ae0995b28f27b405be9-v1/170207_130407"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+])
+samples_2016["/TTTo2L2Nu_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/matze-faster_v8_ttjets_dl_maod_p2_3a2fa29ab1d54ae0995b28f27b405be9-v1/USER"] = OD([
+  ("type",                  "mc"),
+  ("sample_category",       "TT"),
+  ("process_name_specific", "TTTo2L2Nu_fastsim_p2"),
+  ("nof_files",             1),
+  ("nof_events",            90528028),
+  ("use_it",                False),
+  ("xsection",              87.300000),
+  ("genWeight",             True),
+  ("triggers",              [ "1e", "1mu", "2e", "1e1mu", "2mu", "3e", "2e1mu", "1e2mu", "3mu", "1e1tau", "1mu1tau", "2tau" ]),
+  ("reHLT",                 True),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/local/karl/addMEM/2016/2017Mar24/final_ntuples_recopied/2lss_1tau/TTTo2L2Nu_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/VHBB_HEPPY_V25tthtautau_TTTo2L2Nu_TuneCUETP8M2_ttHtranche3_13TeV-powheg-Py8__matze-faster_v8_ttjets_dl_maod_p2_3a2fa29ab1d54ae0995b28f27b405be9-v1/170208_163923"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+])
+samples_2016["/TTTo2L2Nu_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/matze-faster_v8_ttjets_dl_maod_p3_3a2fa29ab1d54ae0995b28f27b405be9-v1/USER"] = OD([
+  ("type",                  "mc"),
+  ("sample_category",       "TT"),
+  ("process_name_specific", "TTTo2L2Nu_fastsim_p3"),
+  ("nof_files",             1),
+  ("nof_events",            90528028),
+  ("use_it",                False),
+  ("xsection",              87.300000),
+  ("genWeight",             True),
+  ("triggers",              [ "1e", "1mu", "2e", "1e1mu", "2mu", "3e", "2e1mu", "1e2mu", "3mu", "1e1tau", "1mu1tau", "2tau" ]),
+  ("reHLT",                 True),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/local/karl/addMEM/2016/2017Mar24/final_ntuples_recopied/2lss_1tau/TTTo2L2Nu_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/VHBB_HEPPY_V25tthtautau_TTTo2L2Nu_TuneCUETP8M2_ttHtranche3_13TeV-powheg-Py8__matze-faster_v8_ttjets_dl_maod_p3_3a2fa29ab1d54ae0995b28f27b405be9-v1/170208_163840"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+])
+samples_2016["/TTToSemilepton_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/matze-faster_v8_ttjets_sl_maod_p1_3a2fa29ab1d54ae0995b28f27b405be9-v1/USER"] = OD([
+  ("type",                  "mc"),
+  ("sample_category",       "TT"),
+  ("process_name_specific", "TTToSemilepton_fastsim_p1"),
+  ("nof_files",             1),
+  ("nof_events",            85311658),
+  ("use_it",                False),
+  ("xsection",              245.000000),
+  ("genWeight",             True),
+  ("triggers",              [ "1e", "1mu", "2e", "1e1mu", "2mu", "3e", "2e1mu", "1e2mu", "3mu", "1e1tau", "1mu1tau", "2tau" ]),
+  ("reHLT",                 True),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/local/karl/addMEM/2016/2017Mar24/final_ntuples_recopied/2lss_1tau/TTToSemilepton_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/VHBB_HEPPY_V25tthtautau_TTToSemilepton_TuneCUETP8M2_ttHtranche3_13TeV-powheg-Py8__matze-faster_v8_ttjets_sl_maod_p1_3a2fa29ab1d54ae0995b28f27b405be9-v1/170207_153448"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+])
+samples_2016["/TTToSemilepton_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/matze-faster_v8_ttjets_sl_maod_p2_3a2fa29ab1d54ae0995b28f27b405be9-v1/USER"] = OD([
+  ("type",                  "mc"),
+  ("sample_category",       "TT"),
+  ("process_name_specific", "TTToSemilepton_fastsim_p2"),
+  ("nof_files",             1),
+  ("nof_events",            85311658),
+  ("use_it",                False),
+  ("xsection",              245.000000),
+  ("genWeight",             True),
+  ("triggers",              [ "1e", "1mu", "2e", "1e1mu", "2mu", "3e", "2e1mu", "1e2mu", "3mu", "1e1tau", "1mu1tau", "2tau" ]),
+  ("reHLT",                 True),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/local/karl/addMEM/2016/2017Mar24/final_ntuples_recopied/2lss_1tau/TTToSemilepton_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/VHBB_HEPPY_V25tthtautau_TTToSemilepton_TuneCUETP8M2_ttHtranche3_13TeV-powheg-Py8__matze-faster_v8_ttjets_sl_maod_p2_3a2fa29ab1d54ae0995b28f27b405be9-v1/170208_162433"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+])
+samples_2016["/TTToSemilepton_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/matze-faster_v8_ttjets_sl_maod_p3_3a2fa29ab1d54ae0995b28f27b405be9-v1/USER"] = OD([
+  ("type",                  "mc"),
+  ("sample_category",       "TT"),
+  ("process_name_specific", "TTToSemilepton_fastsim_p3"),
+  ("nof_files",             1),
+  ("nof_events",            85311658),
+  ("use_it",                False),
+  ("xsection",              245.000000),
+  ("genWeight",             True),
+  ("triggers",              [ "1e", "1mu", "2e", "1e1mu", "2mu", "3e", "2e1mu", "1e2mu", "3mu", "1e1tau", "1mu1tau", "2tau" ]),
+  ("reHLT",                 True),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/local/karl/addMEM/2016/2017Mar24/final_ntuples_recopied/2lss_1tau/TTToSemilepton_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/VHBB_HEPPY_V25tthtautau_TTToSemilepton_TuneCUETP8M2_ttHtranche3_13TeV-powheg-Py8__matze-faster_v8_ttjets_sl_maod_p3_3a2fa29ab1d54ae0995b28f27b405be9-v1/170209_090617"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+])
+samples_2016["/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/matze-faster_v9_ttW_maod_54aa74f75231422e9f4d3766cb92a64a-v1/USER"] = OD([
+  ("type",                  "mc"),
+  ("sample_category",       "TTW"),
+  ("process_name_specific", "TTWJetsToLNu_fastsim"),
+  ("nof_files",             1),
+  ("nof_events",            7158310),
+  ("use_it",                False),
+  ("xsection",              0.204300),
+  ("genWeight",             True),
+  ("triggers",              [ "1e", "1mu", "2e", "1e1mu", "2mu", "3e", "2e1mu", "1e2mu", "3mu", "1e1tau", "1mu1tau", "2tau" ]),
+  ("reHLT",                 True),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/local/karl/addMEM/2016/2017Mar24/final_ntuples_recopied/2lss_1tau/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/VHBB_HEPPY_V25tthtautau_TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-Py8__matze-faster_v9_ttW_maod_54aa74f75231422e9f4d3766cb92a64a-v1/170208_163631"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+])
+samples_2016["/TTZToLLNuNu_M-10_TuneCUETP8M1_13TeV-amcatnlo-pythia8/matze-faster_v9_ttZ_maod_54aa74f75231422e9f4d3766cb92a64a-v1/USER"] = OD([
+  ("type",                  "mc"),
+  ("sample_category",       "TTZ"),
+  ("process_name_specific", "TTZToLLNuNu_fastsim"),
+  ("nof_files",             1),
+  ("nof_events",            8826709),
+  ("use_it",                False),
+  ("xsection",              0.252900),
+  ("genWeight",             True),
+  ("triggers",              [ "1e", "1mu", "2e", "1e1mu", "2mu", "3e", "2e1mu", "1e2mu", "3mu", "1e1tau", "1mu1tau", "2tau" ]),
+  ("reHLT",                 True),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/local/karl/addMEM/2016/2017Mar24/final_ntuples_recopied/2lss_1tau/TTZToLLNuNu_M-10_TuneCUETP8M1_13TeV-amcatnlo-pythia8/VHBB_HEPPY_V25tthtautau_TTZToLLNuNu_M-10_TuneCUETP8M1_13TeV-amcatnlo-Py8__matze-faster_v9_ttZ_maod_54aa74f75231422e9f4d3766cb92a64a-v1/170208_172612"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+])
+samples_2016["/WZTo3LNu_TuneCUETP8M1_13TeV-powheg-pythia8/matze-faster_v9_WZ_maod_54aa74f75231422e9f4d3766cb92a64a-v1/USER"] = OD([
+  ("type",                  "mc"),
+  ("sample_category",       "EWK"),
+  ("process_name_specific", "WZTo3LNu_fastsim"),
+  ("nof_files",             1),
+  ("nof_events",            18814814),
+  ("use_it",                False),
+  ("xsection",              4.102000),
+  ("genWeight",             True),
+  ("triggers",              [ "1e", "1mu", "2e", "1e1mu", "2mu", "3e", "2e1mu", "1e2mu", "3mu", "1e1tau", "1mu1tau", "2tau" ]),
+  ("reHLT",                 True),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/local/karl/addMEM/2016/2017Mar24/final_ntuples_recopied/2lss_1tau/WZTo3LNu_TuneCUETP8M1_13TeV-powheg-pythia8/VHBB_HEPPY_V25tthtautau_WZTo3LNu_TuneCUETP8M1_13TeV-powheg-Py8__matze-faster_v9_WZ_maod_54aa74f75231422e9f4d3766cb92a64a-v1/170209_090741"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+])
+samples_2016["/ttHToNonbb_M125_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/matze-faster_v8_ttH_maod_p1_3a2fa29ab1d54ae0995b28f27b405be9-v1/USER"] = OD([
+  ("type",                  "mc"),
+  ("sample_category",       "signal"),
+  ("process_name_specific", "ttHToNonbb_fastsim_p1"),
+  ("nof_files",             1),
+  ("nof_events",            16459380),
+  ("use_it",                False),
+  ("xsection",              0.215100),
+  ("genWeight",             True),
+  ("triggers",              [ "1e", "1mu", "2e", "1e1mu", "2mu", "3e", "2e1mu", "1e2mu", "3mu", "1e1tau", "1mu1tau", "2tau" ]),
+  ("reHLT",                 True),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/local/karl/addMEM/2016/2017Mar24/final_ntuples_recopied/2lss_1tau/ttHToNonbb_M125_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/VHBB_HEPPY_V25tthtautau_ttHToNonbb_M125_TuneCUETP8M2_ttHtranche3_13TeV-powheg-Py8__matze-faster_v8_ttH_maod_p1_3a2fa29ab1d54ae0995b28f27b405be9-v1/170207_130941"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+])
+samples_2016["/ttHToNonbb_M125_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/matze-faster_v8_ttH_maod_p2_3a2fa29ab1d54ae0995b28f27b405be9-v1/USER"] = OD([
+  ("type",                  "mc"),
+  ("sample_category",       "signal"),
+  ("process_name_specific", "ttHToNonbb_fastsim_p2"),
+  ("nof_files",             1),
+  ("nof_events",            16459380),
+  ("use_it",                False),
+  ("xsection",              0.215100),
+  ("genWeight",             True),
+  ("triggers",              [ "1e", "1mu", "2e", "1e1mu", "2mu", "3e", "2e1mu", "1e2mu", "3mu", "1e1tau", "1mu1tau", "2tau" ]),
+  ("reHLT",                 True),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/local/karl/addMEM/2016/2017Mar24/final_ntuples_recopied/2lss_1tau/ttHToNonbb_M125_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/VHBB_HEPPY_V25tthtautau_ttHToNonbb_M125_TuneCUETP8M2_ttHtranche3_13TeV-powheg-Py8__matze-faster_v8_ttH_maod_p2_3a2fa29ab1d54ae0995b28f27b405be9-v1/170208_162259"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+])
+samples_2016["/ttHToNonbb_M125_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/matze-faster_v8_ttH_maod_p3_3a2fa29ab1d54ae0995b28f27b405be9-v1/USER"] = OD([
+  ("type",                  "mc"),
+  ("sample_category",       "signal"),
+  ("process_name_specific", "ttHToNonbb_fastsim_p3"),
+  ("nof_files",             1),
+  ("nof_events",            16459380),
+  ("use_it",                False),
+  ("xsection",              0.215100),
+  ("genWeight",             True),
+  ("triggers",              [ "1e", "1mu", "2e", "1e1mu", "2mu", "3e", "2e1mu", "1e2mu", "3mu", "1e1tau", "1mu1tau", "2tau" ]),
+  ("reHLT",                 True),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/local/karl/addMEM/2016/2017Mar24/final_ntuples_recopied/2lss_1tau/ttHToNonbb_M125_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/VHBB_HEPPY_V25tthtautau_ttHToNonbb_M125_TuneCUETP8M2_ttHtranche3_13TeV-powheg-Py8__matze-faster_v8_ttH_maod_p3_3a2fa29ab1d54ae0995b28f27b405be9-v1/170208_124342"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+])

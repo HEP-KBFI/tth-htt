@@ -19,7 +19,7 @@ elif ERA == "2016":
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "2017Mar13"
+version = "2017Mar27"
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -37,8 +37,9 @@ if __name__ == '__main__':
     jet_minPt = 20.,
     jet_maxPt = 1.e+6,
     jet_minAbsEta = -1.,
-    jet_maxAbsEta = 2.3, 
-    hadTau_selections = [
+    jet_maxAbsEta = 2.3,
+    hadTau_selection_denominator = "dR03mvaVVLoose", 
+    hadTau_selections_numerator = [      
       "dR03mvaVLoose",
       "dR03mvaLoose",
       "dR03mvaMedium",
@@ -97,7 +98,8 @@ if __name__ == '__main__':
 
   analysis.create()
 
-  run_analysis = query_yes_no("Start jobs ?")
+  ##run_analysis = query_yes_no("Start jobs ?")
+  run_analysis = True
   if run_analysis:
     analysis.run()
   else:

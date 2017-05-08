@@ -12,3 +12,4 @@ for sample_dasname, sample_dict in samples_2016.iteritems():
     ("selection", "*"),
     ("blacklist", []),
   ])]
+

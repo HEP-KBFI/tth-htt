@@ -25,9 +25,11 @@ class EvtHistManager_2lss_1tau
   void bookHistograms(TFileDirectory& dir);
   void fillHistograms(int numElectrons, int numMuons, int numHadTaus, int numJets, int numBJets_loose, int numBJets_medium,
 		      double mvaOutput_2lss_ttV, double mvaOutput_2lss_ttbar, double mvaDiscr_2lss, 
-		      double mvaOutput_2lss_1tau_ttV, double mvaOutput_2lss_1tau_ttbar, double mvaDiscr_2lss_1tau_clustering, double mvaDiscr_2lss_1tau_likelihood, 
+		      double mvaOutput_2lss_1tau_ttV, double mvaOutput_2lss_1tau_ttbar, double mvaDiscr_2lss_1tau,
+		      double mvaOutput_2lss_1tau_ttV_wMEM, double mvaOutput_2lss_1tau_ttbar_wMEM, double mvaDiscr_2lss_1tau_wMEM,
+		      double mvaOutput_2lss_1tau_ttV_wMEMsepLR, double mvaOutput_2lss_1tau_ttbar_wMEMsepLR, double mvaDiscr_2lss_1tau_wMEMsepLR,
 		      double mTauTauVis1, double mTauTauVis2, 
-		      const MEMOutput_2lss_1tau* memOutput_2lss_1tau, double evtWeight);
+		      const MEMOutput_2lss_1tau* memOutput_2lss_1tau, double memDiscr, double evtWeight);
   
   const TH1* getHistogram_EventCounter() const { return histogram_EventCounter_; }
 
@@ -50,8 +52,13 @@ class EvtHistManager_2lss_1tau
 
   TH1* histogram_mvaOutput_2lss_1tau_ttV_;
   TH1* histogram_mvaOutput_2lss_1tau_ttbar_;
-  TH1* histogram_mvaDiscr_2lss_1tau_clustering_;
-  TH1* histogram_mvaDiscr_2lss_1tau_likelihood_;
+  TH1* histogram_mvaDiscr_2lss_1tau_;
+  TH1* histogram_mvaOutput_2lss_1tau_ttV_wMEM_;
+  TH1* histogram_mvaOutput_2lss_1tau_ttbar_wMEM_;
+  TH1* histogram_mvaDiscr_2lss_1tau_wMEM_;
+  TH1* histogram_mvaOutput_2lss_1tau_ttV_wMEMsepLR_;
+  TH1* histogram_mvaOutput_2lss_1tau_ttbar_wMEMsepLR_;
+  TH1* histogram_mvaDiscr_2lss_1tau_wMEMsepLR_;
 
   TH1* histogram_mTauTauVis_;
 
@@ -65,6 +72,9 @@ class EvtHistManager_2lss_1tau
   TH1* histogram_memOutput_LR_;
   TH1* histogram_memOutput_LR_type0_;
   TH1* histogram_memOutput_LR_type1_;
+  TH1* histogram_memDiscr_;
+  TH1* histogram_memDiscr_type0_;
+  TH1* histogram_memDiscr_type1_;
   TH1* histogram_mem_logCPUTime_;
   TH1* histogram_mem_logRealTime_;
 

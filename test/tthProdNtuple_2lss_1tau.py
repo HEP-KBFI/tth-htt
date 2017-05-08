@@ -44,7 +44,7 @@ if __name__ == '__main__':
     era = ERA,
     debug = False,
     running_method = "sbatch",
-    rle_directory = 'default', # [*]
+    rle_directory = os.path.join("/hdfs/local/ttH_2tau", getpass.getuser(), "ttHAnalysis", ERA, version, "rles/2lss_1tau"), # [*]
     version = version,
     num_parallel_jobs = 4)
   # [*] if rle_directory is set to 'default', then it looks files in /home/$USER/ttHAnalysis/era/version/rles/channel

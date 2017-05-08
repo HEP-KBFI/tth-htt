@@ -34,6 +34,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <cstdlib> // EXIT_SUCCESS, EXIT_FAILURE
 #include <assert.h>
 
 typedef std::vector<std::string> vstring;
@@ -274,5 +275,5 @@ int main(int argc, char* argv[])
 
   clock.Show("prepareDatacards");
   
-  return 0;
+  return EXIT_SUCCESS;
 }

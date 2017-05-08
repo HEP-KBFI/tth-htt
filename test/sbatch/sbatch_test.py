@@ -1,19 +1,46 @@
 #!/usr/bin/env python
-from tthAnalysis.HiggsToTauTau.sbatchManager_v2 import sbatchManager, sbatchManagerError
-import os, unittest, shutil
+from tthAnalysis.HiggsToTauTau.sbatchManager import sbatchManager, sbatchManagerRuntimeError
+import os, unittest, shutil, uuid
 
+'''Tests sbatchManager submission and failure detection with single jobs
+
+The aim of this test is to verify that sbatchManager works with minimal working units (read: that it works at all).
+
+The test cases are:
+1) 1 jobs which should finish successfully
+2) 1 job which should fail, thus propagating the errors up to sbatchManager
+Since we expect a job to fail in case 2), the test can only pass if the sbatchManager instance throws an error of type
+sbatchManagerRuntimeError.
+
+In order to run the test, navigate to the directory where this file resides and execute it:
+
+$ ./sbatch_test.py
+
+If you see the following message
+
+> Ran 2 tests in ...s
+>
+> OK
+
+then the tests passed.
+'''
+
+# use a directory which is universally available by cluster nodes and able to support writing in append mode, i.e. /home
 testDir = os.path.expanduser('~/test_sbatch')
 if os.path.isdir(testDir):
   raise ValueError("Directory '%s' already exists; pick another" % testDir)
 
 class SbatchTestCase(unittest.TestCase):
-  
+
   def __init__(self, *args, **kwargs):
     super(SbatchTestCase, self).__init__(*args, **kwargs)
-    self.manager = None
-    self.queue = 'prio'
-    self.poll_interval = 1
-    self.workingDir = os.getcwd()
+    self.manager        = None
+    self.queue          = 'prio'
+    self.poll_interval  = 1
+    self.pool_id        = uuid.uuid4()
+    self.verbose        = True
+    self.log_completion = True
+    self.workingDir     = os.getcwd()
     self.testArguments = {
       'positive' : {
         'name' : 'dummy_positive',
@@ -26,10 +53,11 @@ class SbatchTestCase(unittest.TestCase):
     }
 
   def setUp(self):
-    self.manager = sbatchManager(verbose = True)
+    self.manager = sbatchManager(pool_id = self.pool_id, verbose = self.verbose)
     self.manager.setWorkingDir(self.workingDir)
-    self.manager.queue = self.queue
-    self.manager.poll_interval = self.poll_interval
+    self.manager.queue          = self.queue
+    self.manager.poll_interval  = self.poll_interval
+    self.manager.log_completion = self.log_completion
 
   def tearDown(self):
     del self.manager
@@ -48,7 +76,7 @@ class SbatchTestCase(unittest.TestCase):
     testArgs = self.testArguments['negative']
     self.manager.submit_job_version2(testArgs['name'], testArgs['cmd'], testDir)
     # if passes, true negative; otherwise true positive
-    self.assertRaises(sbatchManagerError, self.manager.waitForJobs)
+    self.assertRaises(sbatchManagerRuntimeError, self.manager.waitForJobs)
 
 def suite():
   testSuite = unittest.TestSuite()

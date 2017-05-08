@@ -1,6 +1,4 @@
-import subprocess
-import time
-import os
+import os, uuid
 from tthAnalysis.HiggsToTauTau.jobTools import run_cmd
 from tthAnalysis.HiggsToTauTau.sbatchManager import sbatchManager
 
@@ -16,31 +14,42 @@ def call_histogram_aggregation_on_cluster_node_spec():
 
     # Add histograms and run task
 
-    m = sbatchManager()
+    pool_id = uuid.uuid4()
+    m = sbatchManager(pool_id)
     m.setWorkingDir('%(cmssw_base)s/src/analysis2mu1b1j/analysis2mu1b1j/test' % config)
 
-    m.hadd_in_cluster(
-        inputFiles=[
-            '%(fixtures_dir)s/histogram_1.root' % config,
-            '%(fixtures_dir)s/histogram_2.root' % config
-        ],
-        outputFile='%(temp_dir)s/call_histogram_aggregation_on_cluster_node/result.root' % config
-    )
+    try:
+        m.hadd_in_cluster(
+            inputFiles=[
+                '%(fixtures_dir)s/histogram_1.root' % config,
+                '%(fixtures_dir)s/histogram_2.root' % config
+            ],
+            outputFile='%(temp_dir)s/call_histogram_aggregation_on_cluster_node/result.root' % config
+        )
 
-    m.waitForJobs()
+        m.waitForJobs()
+    except:
+        return False
 
 
     # Check result
 
     root_result_file = '%(temp_dir)s/call_histogram_aggregation_on_cluster_node/result.root' % config
-    result_successful = os.path.isfile(root_result_file)
+    root_file_exists = os.path.isfile(root_result_file)
 
+    if not root_file_exists:
+        print('FAILED: HADD on cluster node failed - file is missing')
+        return False
 
-    # Output result
+    histogram_metadata_file = root_result_file + '.metadata'
+    root_file_metadata_txt = run_cmd('cat %s' % histogram_metadata_file)
 
-    if result_successful:
-        print('PASSED: HADD on cluster node worked')
-    else:
-        print('FAILED: HADD on cluster node failed')
+    expected_metadata_txt = "events_count: 3629292.0"
 
-    return result_successful
+    if root_file_metadata_txt.find(expected_metadata_txt) == -1:
+        print('FAILED: Metadata "%s" is not correct, should be "%s"' % (root_file_metadata_txt, expected_metadata_txt))
+        return False
+
+    print('PASSED: HADD on cluster node worked')
+
+    return True

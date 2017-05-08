@@ -1,6 +1,4 @@
-import codecs
-import os
-import logging
+import codecs, os, logging, uuid
 
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd, generate_file_ids
 from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg, createFile
@@ -58,7 +56,8 @@ class analyzeConfig:
 
     def __init__(self, outputDir, executable_analyze, channel, central_or_shifts,
                  max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,
-                 histograms_to_fit, executable_prep_dcard="prepareDatacards", executable_make_plots="makePlots"):
+                 histograms_to_fit, executable_prep_dcard="prepareDatacards", executable_make_plots="makePlots",
+                 pool_id = ''):
 
         self.outputDir = outputDir
         self.executable_analyze = executable_analyze
@@ -88,6 +87,7 @@ class analyzeConfig:
             "data_obs", "TT", "TTW", "TTZ", "EWK", "Rares"]
         self.prep_dcard_signals = ["ttH_hww", "ttH_hzz", "ttH_htt"]
         self.executable_make_plots = executable_make_plots
+        self.pool_id = pool_id if pool_id else uuid.uuid4()
 
         self.workingDir = os.getcwd()
         print "Working directory is: " + self.workingDir
@@ -101,8 +101,7 @@ class analyzeConfig:
         self.samples = {}
         self.cfgFiles_analyze_modified = {}
         self.logFiles_analyze = {}
-        self.sbatchFile_analyze = os.path.join(
-            self.outputDir, "sbatch_analyze_%s.py" % self.channel)
+        self.sbatchFile_analyze = os.path.join(self.outputDir, "sbatch_analyze_%s.py" % self.channel)
         self.ntupleFiles = {}
         self.histogramFiles = {}
         self.inputFiles_hadd_stage1 = []
@@ -290,12 +289,15 @@ class analyzeConfig:
             log_file_names = self.logFiles_analyze,
             working_dir = self.workingDir,
             max_num_jobs = self.max_num_jobs,
-            cvmfs_error_log = self.cvmfs_error_log
+            cvmfs_error_log = self.cvmfs_error_log,
+            pool_id = self.pool_id,
         )
 
     def create_hadd_python_file(self, inputFiles, outputFile, hadd_stage_name):
         sbatch_hadd_file = os.path.join(self.outputDir, "sbatch_hadd_%s_%s.py" % (self.channel, hadd_stage_name))
-        tools_createScript_sbatch_hadd(sbatch_hadd_file, inputFiles, outputFile, hadd_stage_name, self.workingDir)
+        tools_createScript_sbatch_hadd(
+            sbatch_hadd_file, inputFiles, outputFile, hadd_stage_name, self.workingDir, pool_id = self.pool_id
+        )
         return sbatch_hadd_file
 
     def addToMakefile_analyze(self, lines_makefile):

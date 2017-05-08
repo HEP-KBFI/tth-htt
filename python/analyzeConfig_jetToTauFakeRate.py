@@ -18,7 +18,7 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
   
   """
   def __init__(self, configDir, outputDir, executable_analyze, samples, charge_selections,
-               jet_minPt, jet_maxPt, jet_minAbsEta, jet_maxAbsEta, hadTau_selections, absEtaBins, ptBins, central_or_shifts,
+               jet_minPt, jet_maxPt, jet_minAbsEta, jet_maxAbsEta, hadTau_selection_denominator, hadTau_selections_numerator, absEtaBins, ptBins, central_or_shifts,
                max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,
                executable_comp_jetToTauFakeRate):
     analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "jetToTauFakeRate", central_or_shifts,
@@ -34,8 +34,9 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
     self.jet_minAbsEta = jet_minAbsEta
     self.jet_maxAbsEta = jet_maxAbsEta
 
-    self.hadTau_selections = hadTau_selections
-    
+    self.hadTau_selection_denominator = hadTau_selection_denominator
+    self.hadTau_selections_numerator = hadTau_selections_numerator
+        
     self.absEtaBins = absEtaBins
     self.ptBins = ptBins
 
@@ -75,8 +76,9 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
     lines.append("process.analyze_jetToTauFakeRate.jet_maxPt = cms.double('%f')" % jobOptions['jet_maxPt'])
     lines.append("process.analyze_jetToTauFakeRate.jet_minAbsEta = cms.double('%f')" % jobOptions['jet_minAbsEta'])
     lines.append("process.analyze_jetToTauFakeRate.jet_maxAbsEta = cms.double('%f')" % jobOptions['jet_maxAbsEta'])
-    lines.append("process.analyze_jetToTauFakeRate.hadTauSelections = cms.vstring(")
-    for hadTau_selection in jobOptions['hadTau_selections']:
+    lines.append("process.analyze_jetToTauFakeRate.hadTauSelection_denominator = cms.string('%s')" % jobOptions['hadTau_selection_denominator'])
+    lines.append("process.analyze_jetToTauFakeRate.hadTauSelections_numerator = cms.vstring(")
+    for hadTau_selection in jobOptions['hadTau_selections_numerator']:
       lines.append("    '%s'," % hadTau_selection)
     lines.append(")")
     lines.append("process.analyze_jetToTauFakeRate.absEtaBins = cms.vdouble(%s)" % jobOptions['absEtaBins'])
@@ -99,7 +101,7 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
     for charge_selection in self.charge_selections:
       lines = []
       lines.append("process.fwliteInput.fileNames = cms.vstring('%s')" % jobOptions['inputFile'])
-      lines.append("process.fwliteOutput.fileName = cms.string('%s')" % jobOptions['outputFile'])
+      lines.append("process.fwliteOutput.fileName = cms.string('%s')" % os.path.basename(jobOptions['outputFile']))
       lines.append("process.comp_jetToTauFakeRate.looseRegion = cms.string('%s')" % jobOptions['looseRegion'])
       lines.append("process.comp_jetToTauFakeRate.tightRegion = cms.string('%s')" % jobOptions['tightRegion'])
       lines.append("process.comp_jetToTauFakeRate.processData = cms.string('data_obs')")
@@ -117,10 +119,19 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
       create_cfg(self.cfgFile_comp_jetToTauFakeRate, jobOptions['cfgFile_modified'], lines)
     
   def addToMakefile_comp_jetToTauFakeRate(self, lines_makefile):
+    if self.is_sbatch:
+      lines_makefile.append("sbatch_comp_jetToTauFakeRate: %s" % " ".join([ jobOptions['inputFile'] for jobOptions in self.jobOptions_comp_jetToTauFakeRate.values() ]))
+      lines_makefile.append("\t%s %s" % ("python", self.sbatchFile_comp_jetToTauFakeRate))
+      lines_makefile.append("")      
     for jobOptions in self.jobOptions_comp_jetToTauFakeRate.values():
-      lines_makefile.append("%s: %s" % (jobOptions['outputFile'], jobOptions['inputFile']))
-      lines_makefile.append("\t%s %s" % (self.executable_comp_jetToTauFakeRate, jobOptions['cfgFile_modified']))
-      lines_makefile.append("")
+      if self.is_makefile:
+        lines_makefile.append("%s: %s" % (jobOptions['outputFile'], jobOptions['inputFile']))
+        lines_makefile.append("\t%s %s" % (self.executable_comp_jetToTauFakeRate, jobOptions['cfgFile_modified']))
+        lines_makefile.append("")
+      elif self.is_sbatch:
+        lines_makefile.append("%s: %s" % (jobOptions['outputFile'], "sbatch_comp_jetToTauFakeRate"))
+        lines_makefile.append("\t%s" % ":") # CV: null command
+        lines_makefile.append("")  
       self.filesToClean.append(jobOptions['outputFile'])
 
   def create(self):
@@ -141,9 +152,9 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
           else:
             self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel,
               "_".join([ charge_selection ]), process_name)
-    for dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_HIST, DKEY_DCRD, DKEY_PLOT, DKEY_HADD_RT ]:
+    for dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_HIST, DKEY_LOGS, DKEY_DCRD, DKEY_PLOT, DKEY_HADD_RT ]:
       initDict(self.dirs, [ dir_type ])
-      if dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_LOGS, DKEY_HADD_RT ]:
+      if dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_LOGS, DKEY_DCRD, DKEY_PLOT, DKEY_HADD_RT ]:
         self.dirs[dir_type] = os.path.join(self.configDir, dir_type, self.channel)
       else:
         self.dirs[dir_type] = os.path.join(self.outputDir, dir_type, self.channel)
@@ -216,7 +227,8 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
               'jet_maxPt' : self.jet_maxPt,
               'jet_minAbsEta' : self.jet_minAbsEta,
               'jet_maxAbsEta' : self.jet_maxAbsEta,
-              'hadTau_selections' : self.hadTau_selections,
+              'hadTau_selection_denominator' : self.hadTau_selection_denominator,
+              'hadTau_selections_numerator' : self.hadTau_selections_numerator,
               'absEtaBins' : self.absEtaBins,
               ##'use_HIP_mitigation_bTag' : sample_info["use_HIP_mitigation_bTag"],
               ##'use_HIP_mitigation_mediumMuonId' : sample_info["use_HIP_mitigation_mediumMuonId"],
@@ -247,11 +259,6 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
         self.outputFile_hadd_stage2[key_hadd_stage2] = os.path.join(self.dirs[DKEY_HIST], "histograms_harvested_stage2_%s_%s.root" % \
           (self.channel, charge_selection))
 
-    if self.is_sbatch:
-      logging.info("Creating script for submitting '%s' jobs to batch system" % self.executable_analyze)
-      self.sbatchFile_analyze = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_analyze_%s.py" % self.channel)
-      self.createScript_sbatch()    
-
     logging.info("Creating configuration files for executing 'comp_jetToTauFakeRate'")
     for charge_selection in self.charge_selections:
       key_comp_jetToTauFakeRate_job = getKey(charge_selection)
@@ -262,6 +269,8 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
           self.dirs[DKEY_CFGS], "comp_jetToTauFakeRate_%s_cfg.py" % charge_selection),
         'outputFile' : os.path.join(
           self.dirs[DKEY_HIST], "comp_jetToTauFakeRate_%s.root" % charge_selection),
+        'logFile' : os.path.join(
+          self.dirs[DKEY_LOGS], "comp_jetToTauFakeRate_%s.log" % charge_selection),
         'looseRegion' : "jetToTauFakeRate_%s/denominator/" % charge_selection,
         'tightRegion' : "jetToTauFakeRate_%s/numerator/" % charge_selection,
         'absEtaBins' : self.absEtaBins,
@@ -302,21 +311,29 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
           'make_plots_backgrounds' : [ "TT", "TTW", "TTZ", "EWK", "Rares" ],
         }
         self.createCfg_makePlots(self.jobOptions_make_plots[key_makePlots_job])
-        for hadTau_selection in self.hadTau_selections:
-          key_makePlots_job = getKey(charge_selection, absEtaBin, "numerator", hadTau_selection)
+        for hadTau_selection_numerator in self.hadTau_selections_numerator:
+          key_makePlots_job = getKey(charge_selection, absEtaBin, "numerator", hadTau_selection_numerator)
           key_hadd_stage2 = getKey(charge_selection)
           self.jobOptions_make_plots[key_makePlots_job] = {
             'executable' : self.executable_make_plots,
             'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2],
             'cfgFile_modified' : os.path.join(
-              self.dirs[DKEY_CFGS], "makePlots_%s_%s_numerator_%s_%s_cfg.py" % (self.channel, charge_selection, hadTau_selection, absEtaBin)),
+              self.dirs[DKEY_CFGS], "makePlots_%s_%s_numerator_%s_%s_cfg.py" % (self.channel, charge_selection, hadTau_selection_numerator, absEtaBin)),
             'outputFile' : os.path.join(
-              self.dirs[DKEY_PLOT], "makePlots_%s_%s_numerator_%s_%s.png" % (self.channel, charge_selection, hadTau_selection, absEtaBin)),
-            'histogramDir' : "jetToTauFakeRate_%s/numerator/%s/%s" % (charge_selection, hadTau_selection, absEtaBin),
+              self.dirs[DKEY_PLOT], "makePlots_%s_%s_numerator_%s_%s.png" % (self.channel, charge_selection, hadTau_selection_numerator, absEtaBin)),
+            'histogramDir' : "jetToTauFakeRate_%s/numerator/%s/%s" % (charge_selection, hadTau_selection_numerator, absEtaBin),
             'label' : None,
             'make_plots_backgrounds' : [ "TT", "TTW", "TTZ", "EWK", "Rares" ],
           }
           self.createCfg_makePlots(self.jobOptions_make_plots[key_makePlots_job])
+
+    if self.is_sbatch:
+      logging.info("Creating script for submitting '%s' jobs to batch system" % self.executable_analyze)
+      self.sbatchFile_analyze = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_analyze_%s.py" % self.channel)
+      self.createScript_sbatch_analyze(self.executable_analyze, self.sbatchFile_analyze, self.jobOptions_analyze)
+      logging.info("Creating script for submitting '%s' jobs to batch system" % self.executable_comp_jetToTauFakeRate)
+      self.sbatchFile_comp_jetToTauFakeRate = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_comp_jetToTauFakeRate.py")
+      self.createScript_sbatch(self.executable_comp_jetToTauFakeRate, self.sbatchFile_comp_jetToTauFakeRate, self.jobOptions_comp_jetToTauFakeRate)
 
     lines_makefile = []
     self.addToMakefile_analyze(lines_makefile)

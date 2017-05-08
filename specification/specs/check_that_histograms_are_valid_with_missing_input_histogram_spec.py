@@ -1,8 +1,4 @@
-import subprocess
-import time
-import os
 from tthAnalysis.HiggsToTauTau.jobTools import run_cmd
-from tthAnalysis.HiggsToTauTau.sbatchManager import sbatchManager
 
 from config import config
 
@@ -20,7 +16,7 @@ def check_that_histograms_are_valid_with_missing_input_histogram_spec():
 
     # Run task
 
-    command = 'python %(cmssw_base)s/src/tthAnalysis/HiggsToTauTau/scripts/check_that_histograms_are_valid.py' % config
+    command = 'python %(scripts_dir)s/check_that_histograms_are_valid.py' % config
     command_arguments = " ".join(histograms)
     command_with_arguments = command + " " + command_arguments + "; echo EXIT_STATUS_WAS: $?;"
 

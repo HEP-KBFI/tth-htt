@@ -38,6 +38,16 @@ double comp_MT_met_lep2(const GenParticle& lepton, double met_pt, double met_phi
   return comp_MT_met_lep2(lepton.p4(), met_pt, met_phi);
 }
 
+double comp_MT_met_lep3(const Particle::LorentzVector& leptonP4, double met_pt, double met_phi)
+{
+  return comp_MT_met_lep1(leptonP4, met_pt, met_phi);
+}
+
+double comp_MT_met_lep3(const GenParticle& lepton, double met_pt, double met_phi)
+{
+  return comp_MT_met_lep3(lepton.p4(), met_pt, met_phi);
+}
+
 double comp_MT_met_hadTau1(const GenParticle& hadTau, double met_pt, double met_phi)
 {
   return comp_MT_met_lep1(hadTau, met_pt, met_phi);
@@ -123,6 +133,24 @@ double comp_avg_dr_jet(const std::vector<const RecoJet*>& jets_cleaned)
   }
   double avg_dr_jet = ( n_jet_pairs > 0 ) ? dRsum/n_jet_pairs : 0.;
   return avg_dr_jet;
+}
+
+double comp_max_dr_jet(const std::vector<const RecoJet*>& jets_cleaned)
+{
+  double dRmax = 0.;
+  for ( std::vector<const RecoJet*>::const_iterator jet1 = jets_cleaned.begin();
+	jet1 != jets_cleaned.end(); ++jet1 ) {
+    if ( (*jet1)->pt() > 25. && std::fabs((*jet1)->eta()) < 2.4 ) {
+      for ( std::vector<const RecoJet*>::const_iterator jet2 = jet1 + 1;
+	    jet2 != jets_cleaned.end(); ++jet2 ) {
+	if ( (*jet2)->pt() > 25. && std::fabs((*jet2)->eta()) < 2.4 ) {
+	  double dR = deltaR((*jet1)->eta(), (*jet1)->phi(), (*jet2)->eta(), (*jet2)->phi());
+	  if ( dR > dRmax ) dRmax = dR;
+	}
+      }
+    }
+  }
+  return dRmax;
 }
 
 double compHT(const std::vector<const RecoLepton*>& leptons, const std::vector<const RecoHadTau*>& hadTaus, const std::vector<const RecoJet*>& jets_cleaned)

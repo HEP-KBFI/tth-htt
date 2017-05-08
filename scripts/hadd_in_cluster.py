@@ -1,8 +1,4 @@
-import subprocess
-import time
-import os
-import sys
-from tthAnalysis.HiggsToTauTau.jobTools import run_cmd
+import sys, uuid
 from tthAnalysis.HiggsToTauTau.sbatchManager import sbatchManager
 
 def main():
@@ -22,7 +18,8 @@ def main():
 
     print("hadd_in_cluster.py will read %s and add them into %s." % (input_histograms, output_histogram))
 
-    m = sbatchManager()
+    pool_id = uuid.uuid4()
+    m = sbatchManager(pool_id)
     m.setWorkingDir('/tmp/') # Why SBatch manager even needs to know this?
 
     m.hadd_in_cluster(

@@ -193,7 +193,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
     if jobOptions['hadTau_selection'].find("mcClosure") != -1:
       lines.append("process.analyze_2lss_1tau.hadTauFakeRateWeight.applyFitFunction_lead = cms.bool(False)")
       lines.append("process.analyze_2lss_1tau.hadTauFakeRateWeight.applyFitFunction_sublead = cms.bool(False)")
-    if jobOptions['hadTau_selection'].find("Tight") != -1 and self.applyFakeRateWeights not in [ "3L", "1tau" ]:
+    if jobOptions['hadTau_selection'].find("Tight") != -1 and self.applyFakeRateWeights not in [ "3L", "1tau" ] and not self.isBDTtraining:
       lines.append("process.analyze_2lss_1tau.hadTauFakeRateWeight.applyGraph_lead = cms.bool(False)")
       lines.append("process.analyze_2lss_1tau.hadTauFakeRateWeight.applyFitFunction_lead = cms.bool(True)")
       lines.append("process.analyze_2lss_1tau.hadTauFakeRateWeight.applyGraph_sublead = cms.bool(False)")
@@ -225,7 +225,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
     """  
     lines = []
     lines.append("process.fwliteInput.fileNames = cms.vstring('%s')" % jobOptions['inputFile'])
-    lines.append("process.fwliteOutput.fileName = cms.string('%s')" % jobOptions['outputFile'])
+    lines.append("process.fwliteOutput.fileName = cms.string('%s')" % os.path.basename(jobOptions['outputFile']))
     lines.append("process.addBackgroundLeptonFlips.categories = cms.VPSet(")
     lines.append("    cms.PSet(")
     lines.append("        signal = cms.string('%s')," % jobOptions['category_signal']) 
@@ -270,14 +270,24 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
     self.filesToClean.append(self.outputFile_hadd_stage1_6)
 
   def addToMakefile_addFlips(self, lines_makefile):
+    if self.is_sbatch:
+      lines_makefile.append("sbatch_addFlips: %s" % " ".join([ jobOptions['inputFile'] for jobOptions in self.jobOptions_addFlips.values() ]))
+      lines_makefile.append("\t%s %s" % ("python", self.sbatchFile_addFlips))
+      lines_makefile.append("")  
     for jobOptions in self.jobOptions_addFlips.values():
-      lines_makefile.append("%s: %s" % (jobOptions['outputFile'], jobOptions['inputFile']))
-      lines_makefile.append("\t%s %s" % (self.executable_addFlips, jobOptions['cfgFile_modified']))
-      lines_makefile.append("")
+      if self.is_makefile:
+        lines_makefile.append("%s: %s" % (jobOptions['outputFile'], jobOptions['inputFile']))
+        lines_makefile.append("\t%s %s &> %s" % (self.executable_addFlips, jobOptions['cfgFile_modified'], jobOptions['logFile']))
+        lines_makefile.append("")
+      elif self.is_sbatch:
+        lines_makefile.append("%s: %s" % (jobOptions['outputFile'], "sbatch_addFlips"))
+        lines_makefile.append("\t%s" % ":") # CV: null command
+        lines_makefile.append("")
       self.filesToClean.append(jobOptions['outputFile'])
 
   def addToMakefile_backgrounds_from_data(self, lines_makefile):
-    self.addToMakefile_addBackgrounds(lines_makefile)
+    self.addToMakefile_addBackgrounds(lines_makefile, "sbatch_addBackgrounds", self.sbatchFile_addBackgrounds, self.jobOptions_addBackgrounds)
+    self.addToMakefile_addBackgrounds(lines_makefile, "sbatch_addBackgrounds_sum", self.sbatchFile_addBackgrounds_sum, self.jobOptions_addBackgrounds_sum)
     self.addToMakefile_hadd_stage1_5(lines_makefile)
     self.addToMakefile_addFakes(lines_makefile)
     self.addToMakefile_hadd_stage1_6(lines_makefile)
@@ -307,9 +317,9 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
                 else:
                   self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel,
                     "_".join([ lepton_and_hadTau_selection_and_frWeight, lepton_charge_selection, chargeSumSelection ]), process_name)
-    for dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_HIST, DKEY_DCRD, DKEY_PLOT, DKEY_HADD_RT ]:
+    for dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_HIST, DKEY_LOGS, DKEY_DCRD, DKEY_PLOT, DKEY_HADD_RT ]:
       initDict(self.dirs, [ dir_type ])
-      if dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_LOGS, DKEY_HADD_RT ]:
+      if dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_LOGS, DKEY_DCRD, DKEY_PLOT, DKEY_HADD_RT ]:
         self.dirs[dir_type] = os.path.join(self.configDir, dir_type, self.channel)
       else:
         self.dirs[dir_type] = os.path.join(self.outputDir, dir_type, self.channel)
@@ -338,7 +348,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
 
       if lepton_and_hadTau_selection == "forBDTtraining":
         lepton_selection = "Loose"
-        hadTau_selection = "Tight|dR03mvaVVLoose"
+        hadTau_selection = "Tight|dR03mvaLoose"
       
       for lepton_and_hadTau_frWeight in self.lepton_and_hadTau_frWeights:          
         if lepton_and_hadTau_frWeight == "enabled" and not lepton_and_hadTau_selection.startswith("Fakeable"):
@@ -545,6 +555,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
                         'inputFile' : self.outputFile_hadd_stage1[key_hadd_stage1],
                         'cfgFile_modified' : cfgFile_modified,
                         'outputFile' : outputFile,
+                        'logFile' : os.path.join(self.dirs[DKEY_LOGS], os.path.basename(cfgFile_modified).replace("_cfg.py", ".log")),
                         'categories' : [ getHistogramDir(lepton_selection, hadTau_selection, lepton_and_hadTau_frWeight, lepton_charge_selection, chargeSumSelection) ],
                         'processes_input' : processes_input,
                         'process_output' : process_output
@@ -577,24 +588,26 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
             processes_input = []
             for sample_category in sample_categories:
               processes_input.append("%s_fake" % sample_category)
-            self.jobOptions_addBackgrounds[key_addBackgrounds_job] = {
+            self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job] = {
               'inputFile' : self.outputFile_hadd_stage1_5[key_hadd_stage1_5],
               'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "addBackgrounds_%s_fakes_mc_%s_lep%s_sum%s_cfg.py" % \
                 (self.channel, lepton_and_hadTau_selection_and_frWeight, lepton_charge_selection, chargeSumSelection)),
               'outputFile' : os.path.join(self.dirs[DKEY_HIST], "addBackgrounds_%s_fakes_mc_%s_lep%s_sum%s.root" % \
                 (self.channel, lepton_and_hadTau_selection_and_frWeight, lepton_charge_selection, chargeSumSelection)),
+              'logFile' : os.path.join(self.dirs[DKEY_LOGS], "addBackgrounds_%s_fakes_mc_%s_lep%s_sum%s.log" % \
+                (self.channel, lepton_and_hadTau_selection_and_frWeight, lepton_charge_selection, chargeSumSelection)),
               'categories' : [ getHistogramDir(lepton_selection, hadTau_selection, lepton_and_hadTau_frWeight, lepton_charge_selection, chargeSumSelection) ],
               'processes_input' : processes_input,
               'process_output' : "fakes_mc"
             }
-            self.createCfg_addBackgrounds(self.jobOptions_addBackgrounds[key_addBackgrounds_job])
+            self.createCfg_addBackgrounds(self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job])
 
             # initialize input and output file names for hadd_stage2
             key_hadd_stage2 = getKey(lepton_and_hadTau_selection_and_frWeight, lepton_charge_selection, chargeSumSelection)
             if not key_hadd_stage2 in self.inputFiles_hadd_stage2:
               self.inputFiles_hadd_stage2[key_hadd_stage2] = []
             if lepton_and_hadTau_selection == "Tight":
-              self.inputFiles_hadd_stage2[key_hadd_stage2].append(self.jobOptions_addBackgrounds[key_addBackgrounds_job]['outputFile'])
+              self.inputFiles_hadd_stage2[key_hadd_stage2].append(self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job]['outputFile'])
             key_hadd_stage1_5 = getKey(lepton_and_hadTau_selection_and_frWeight, lepton_charge_selection, chargeSumSelection)
             self.inputFiles_hadd_stage2[key_hadd_stage2].append(self.outputFile_hadd_stage1_5[key_hadd_stage1_5])
             self.outputFile_hadd_stage2[key_hadd_stage2] = os.path.join(self.dirs[DKEY_HIST], "histograms_harvested_stage2_%s_%s_lep%s_sum%s.root" % \
@@ -604,7 +617,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
       if self.is_sbatch:
         logging.info("Creating script for submitting '%s' jobs to batch system" % self.executable_analyze)
         self.sbatchFile_analyze = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_analyze_%s.py" % self.channel)
-        self.createScript_sbatch()        
+        self.createScript_sbatch_analyze(self.executable_analyze, self.sbatchFile_analyze, self.jobOptions_analyze)
       logging.info("Creating Makefile")
       lines_makefile = []
       self.addToMakefile_analyze(lines_makefile)
@@ -631,6 +644,8 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
           'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "addBackgroundLeptonFakes_%s_lep%s_sum%s_cfg.py" % \
             (self.channel, lepton_charge_selection, chargeSumSelection)),
           'outputFile' : os.path.join(self.dirs[DKEY_HIST], "addBackgroundLeptonFakes_%s_lep%s_sum%s.root" % \
+            (self.channel, lepton_charge_selection, chargeSumSelection)),
+          'logFile' : os.path.join(self.dirs[DKEY_LOGS], "addBackgroundLeptonFakes_%s_lep%s_sum%s.log" % \
             (self.channel, lepton_charge_selection, chargeSumSelection)),
           'category_signal' : "2lss_1tau_lep%s_sum%s_Tight" % (lepton_charge_selection, chargeSumSelection),
           'category_sideband' : category_sideband
@@ -660,6 +675,8 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
         'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "addBackgroundLeptonFlips_%s_sum%s_cfg.py" % \
           (self.channel, chargeSumSelection)),
         'outputFile' : os.path.join(self.dirs[DKEY_HIST], "addBackgroundLeptonFlips_%s_sum%s.root" % \
+          (self.channel, chargeSumSelection)),
+        'logFile' : os.path.join(self.dirs[DKEY_LOGS], "addBackgroundLeptonFlips_%s_sum%s.log" % \
           (self.channel, chargeSumSelection)),
         'category_signal' : "2lss_1tau_lepSS_sum%s_Tight" % chargeSumSelection,
         'category_sideband' : "2lss_1tau_lepOS_sum%s_Tight" % chargeSumSelection
@@ -759,7 +776,18 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
     if self.is_sbatch:
       logging.info("Creating script for submitting '%s' jobs to batch system" % self.executable_analyze)
       self.sbatchFile_analyze = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_analyze_%s.py" % self.channel)
-      self.createScript_sbatch()
+      self.createScript_sbatch_analyze(self.executable_analyze, self.sbatchFile_analyze, self.jobOptions_analyze)
+      logging.info("Creating script for submitting '%s' jobs to batch system" % self.executable_addBackgrounds)
+      self.sbatchFile_addBackgrounds = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_addBackgrounds_%s.py" % self.channel)
+      self.createScript_sbatch(self.executable_addBackgrounds, self.sbatchFile_addBackgrounds, self.jobOptions_addBackgrounds)
+      self.sbatchFile_addBackgrounds_sum = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_addBackgrounds_sum_%s.py" % self.channel)
+      self.createScript_sbatch(self.executable_addBackgrounds, self.sbatchFile_addBackgrounds_sum, self.jobOptions_addBackgrounds_sum)
+      logging.info("Creating script for submitting '%s' jobs to batch system" % self.executable_addFakes)
+      self.sbatchFile_addFakes = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_addFakes_%s.py" % self.channel)
+      self.createScript_sbatch(self.executable_addFakes, self.sbatchFile_addFakes, self.jobOptions_addFakes)
+      logging.info("Creating script for submitting '%s' jobs to batch system" % self.executable_addFlips)
+      self.sbatchFile_addFlips = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_addFlips_%s.py" % self.channel)
+      self.createScript_sbatch(self.executable_addFlips, self.sbatchFile_addFlips, self.jobOptions_addFlips)
 
     logging.info("Creating Makefile")
     lines_makefile = []
