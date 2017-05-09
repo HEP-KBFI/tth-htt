@@ -1,4 +1,4 @@
-import os, jinja2
+import os, jinja2, ROOT
 
 from tthAnalysis.HiggsToTauTau.jobTools import run_cmd
 from tthAnalysis.HiggsToTauTau.analysisTools import createFile
@@ -61,8 +61,14 @@ def generate_sbatch_line(executable, cfg_file_name, input_file_names, output_fil
         output_file_size = os.stat(output_file_name).st_size
         print "output file %s already exists, size = %i" % (output_file_name, output_file_size)
         if output_file_size > 20000:
-            print "--> skipping job because it has size creater than 20000"
-            return None
+            root_tfile = ROOT.TFile(output_file_name, "read")
+            if root_tfile.IsZombie():
+                print "--> output file is corrupted, deleting file and resubmitting job"
+                command = "%s %s" % (executable_rm, output_file_name)
+                run_cmd(command)
+            else:
+                print "--> skipping job because it has size greater than 20000"
+                return None
         else:
             print "--> deleting output file and resubmitting job because it has size smaller 20000"
             command = "%s %s" % (executable_rm, output_file_name)
