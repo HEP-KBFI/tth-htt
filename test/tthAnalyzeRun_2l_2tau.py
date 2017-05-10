@@ -1,12 +1,25 @@
+#!/usr/bin/env python
 import os, logging, sys, getpass
 
-from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2l_2tau_2015 import samples_2015
-from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2l_2tau_2016 import samples_2016
 from tthAnalysis.HiggsToTauTau.analyzeConfig_2l_2tau import analyzeConfig_2l_2tau
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 
-ERA = "2015"
-#ERA = "2016"
+mode = "VHbb"
+
+hadTau_selection = None
+changeBranchNames = None
+applyFakeRateWeights = None
+if mode == "VHbb":
+  from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2l_2tau_2015 import samples_2015
+  from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2l_2tau_2016 import samples_2016
+  hadTau_selection = "dR03mvaMedium"
+  changeBranchNames = False
+  applyFakeRateWeights = "2lepton"
+ else:
+  raise ValueError("Invalid Configuration parameter 'mode' = %s !!" % mode)
+
+#ERA = "2015"
+ERA = "2016"
 
 samples = None
 LUMI = None
@@ -15,11 +28,11 @@ if ERA == "2015":
   LUMI =  2.3e+3 # 1/pb
 elif ERA == "2016":
   samples = samples_2016
-  LUMI = 12.9e+3 # 1/pb
+  LUMI = 35.9e+3 # 1/pb
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "2016Sep14_dR03mvaTight"
+version = "2017May10"
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -28,12 +41,15 @@ if __name__ == '__main__':
     format = '%(asctime)s - %(levelname)s: %(message)s')
 
   analysis = analyzeConfig_2l_2tau(
-    outputDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", ERA, version),
+    configDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", ERA, version),
+    outputDir = os.path.join("/hdfs/local", getpass.getuser(), "ttHAnalysis", ERA, version),
     executable_analyze = "analyze_2l_2tau",
+    cfgFile_analyze = "analyze_2l_2tau_cfg.py",
     samples = samples,
+    changeBranchNames = changeBranchNames,
     lepton_charge_selections = [ "OS" ],
-    hadTau_selections = [ "Tight|dR03mvaTight", "Fakeable|dR03mvaTight", "Fakeable_mcClosure|dR03mvaTight" ],
-    ##hadTau_selections = [ "Tight|dR03mvaTight" ],
+    hadTau_selections = hadTau_selection,
+    applyFakeRateWeights = applyFakeRateWeights,
     hadTau_charge_selections = [ "OS", "SS" ],
     central_or_shifts = [ 
       "central",
@@ -78,18 +94,22 @@ if __name__ == '__main__':
 ##       "CMS_ttHl_thu_shape_ttZ_y1Up",
 ##       "CMS_ttHl_thu_shape_ttZ_y1Down"       
     ],
-    max_files_per_job = 30,
-    era = ERA, use_lumi = True, lumi = LUMI,
+    max_files_per_job = 100,
+    era = ERA,
+    use_lumi = True,
+    lumi = LUMI,
     debug = False,
     running_method = "sbatch",
-    num_parallel_jobs = 4,
+    num_parallel_jobs = 8,
     executable_addBackgrounds = "addBackgrounds",
     executable_addBackgroundJetToTauFakes = "addBackgroundLeptonFakes", # CV: use common executable for estimating jet->lepton and jet->tau_h fake background
-    histograms_to_fit = [ "EventCounter", "numJets", "mTauTauVis" ])
+    histograms_to_fit = [ "EventCounter", "numJets", "mTauTauVis" ],
+    select_rle_output = True)
 
   analysis.create()
 
-  run_analysis = query_yes_no("Start jobs ?")
+  ##run_analysis = query_yes_no("Start jobs ?")
+  run_analysis = True
   if run_analysis:
     analysis.run()
   else:
