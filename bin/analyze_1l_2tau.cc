@@ -493,7 +493,9 @@ int main(int argc, char* argv[])
   }
 
 //--- initialize BDTs used to discriminate ttH vs. ttbar trained by Matthias for 1l_2tau category
-  std::string mvaFileName_1l_2tau_ttbar = "tthAnalysis/HiggsToTauTau/data/1l_2tau_ttbar_sklearn_Matthias.weights.xml";
+  std::string mvaFileName_1l_2tau_ttbar;
+  if ( hadTauSelection_part2 == "dR03mvaVVTight" ) mvaFileName_1l_2tau_ttbar = "tthAnalysis/HiggsToTauTau/data/1l_2tau_ttbar_vvTight.weights.xml";
+  else mvaFileName_1l_2tau_ttbar = "tthAnalysis/HiggsToTauTau/data/1l_2tau_ttbar_vTight.weights.xml";
   std::vector<std::string> mvaInputVariables_1l_2tau_ttbar;
   mvaInputVariables_1l_2tau_ttbar.push_back("ht");
   mvaInputVariables_1l_2tau_ttbar.push_back("tt_deltaR");
@@ -507,7 +509,9 @@ int main(int argc, char* argv[])
 
   std::map<std::string, double> mvaInputs_ttbar;
 
-  std::string mvaFileName_1l_2tau_ttV = "tthAnalysis/HiggsToTauTau/data/1l_2tau_ttV_sklearn_Matthias.weights.xml";
+  std::string mvaFileName_1l_2tau_ttV;
+  if ( hadTauSelection_part2 == "dR03mvaVVTight" ) mvaFileName_1l_2tau_ttV = "tthAnalysis/HiggsToTauTau/data/1l_2tau_ttV_vvTight.weights.xml";
+  else mvaFileName_1l_2tau_ttV = "tthAnalysis/HiggsToTauTau/data/1l_2tau_ttV_vTight.weights.xml";
   std::vector<std::string> mvaInputVariables_1l_2tau_ttV;
   mvaInputVariables_1l_2tau_ttV.push_back("ht");
   mvaInputVariables_1l_2tau_ttV.push_back("tt_deltaR");
@@ -520,7 +524,9 @@ int main(int argc, char* argv[])
 
   std::map<std::string, double> mvaInputs_ttV;
 
-  std::string inputFileName_mva_mapping_1l_2tau = "tthAnalysis/HiggsToTauTau/data/1l_2tau_BDT_mapping.root";
+  std::string inputFileName_mva_mapping_1l_2tau;
+  if ( hadTauSelection_part2 == "dR03mvaVVTight" ) inputFileName_mva_mapping_1l_2tau = "tthAnalysis/HiggsToTauTau/data/1l_2tau_BDT_mapping_vvTight.root";
+  else mvaFileName_1l_2tau_ttV = inputFileName_mva_mapping_1l_2tau = "tthAnalysis/HiggsToTauTau/data/1l_2tau_BDT_mapping_vTight.root";
   TFile* inputFile_mva_mapping_1l_2tau = openFile(LocalFileInPath(inputFileName_mva_mapping_1l_2tau));
   TH2* mva_mapping_1l_2tau = loadTH2(inputFile_mva_mapping_1l_2tau, "hTargetBinning");
   
