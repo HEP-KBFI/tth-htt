@@ -71,7 +71,6 @@
                                 TTree
     -P [ --python ]             generate rudimentary python configuration file
     -v [ --verbose ]            log every file and folder
-    -n [ --no_njets_cut ]       cut on number of jets >= 2 was not applied
     -f [ --filter ]             only look at datasets containing specified string
 
  * Example usage:
@@ -706,9 +705,6 @@ main(int argc,
   samples.define("VHBB_HEPPY_V25tthtautau_TGJets_TuneCUETP8M1_13TeV_amcatnlo_madspin_Py8__RunIISummer16MAv2-PUMoriond17_80r2as_2016_TrancheIV_v6-v1",
     "/TGJets_TuneCUETP8M1_13TeV_amcatnlo_madspin_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM",
     "Rares", "TGJets", 2.967, 292508);
-  samples.define("VHBB_HEPPY_V25tthtautau_THW_Hincl_13TeV-madgraph-Py8_TuneCUETP8M1__RunIISummer16MAv2-PUMoriond17_80r2as_2016_TrancheIV_v6-v1",
-    "/THW_Hincl_13TeV-madgraph-pythia8_TuneCUETP8M1/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM",
-    "additional_signal_overlap", "THW_Hincl", 0.01561, 1499200);
   samples.define("VHBB_HEPPY_V25tthtautau_TTGJets_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-Py8__RunIISummer16MAv2-PUMoriond17_80r2as_2016_TrancheIV_v6_ext1-v1",
     "/TTGJets_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM",
     "Rares", "TTGJets_ext1", 3.697, 9885348);
@@ -803,6 +799,16 @@ main(int argc,
   samples.define("VHBB_HEPPY_V25tthtautau_ZZZ_TuneCUETP8M1_13TeV-amcatnlo-Py8__RunIISummer16MAv2-PUMoriond17_80r2as_2016_TrancheIV_v6-v1",
     "/ZZZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM",
     "Rares", "ZZZ", 0.01398, 249237);
+
+  samples.define("VHBB_HEPPY_V25tthtautau_tHq_tHW_THQ_Hincl_13TeV-madgraph-Py8_TuneCUETP8M1__RunIISummer16MAv2-PUMoriond17_80r2as_2016_TrancheIV_v6-v1",
+    "/THQ_Hincl_13TeV-madgraph-pythia8_TuneCUETP8M1/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM",
+    "tH", "THQ", 0.07096*0.324/0.705305, 3495799);
+  samples.define("VHBB_HEPPY_V25tthtautau_tHq_tHW_THW_Hincl_13TeV-madgraph-Py8_TuneCUETP8M1__RunIISummer16MAv2-PUMoriond17_80r2as_2016_TrancheIV_v6-v1",
+    "/THW_Hincl_13TeV-madgraph-pythia8_TuneCUETP8M1/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM",
+    "tH", "THW", 0.01561/0.273617, 1499200);
+  samples.define("VHBB_HEPPY_V25tthtautau_ttWW_TTWW_gpetrucc",
+    "/ttWW_lo/MINIAODSIM",
+    "ttWW", "TTWW", 0.011500*0.2002, 10000);
   
 
   //Fastsim
