@@ -108,6 +108,18 @@ std::string getPtBin(double minPt, double maxPt)
 }
 
 
+double Mt(const RecoLepton& lepton, double met_pt, double met_phi){
+  double mt = TMath::Sqrt( 2 * lepton.pt() * met_pt * (1 - TMath::Cos(lepton.phi() - met_phi)) );
+  return mt;
+}
+
+double Mt_fix(const RecoLepton& lepton, double pt_fix, double met_pt, double met_phi){
+  double mt = TMath::Sqrt( 2 * pt_fix * met_pt * (1 - TMath::Cos(lepton.phi() - met_phi)) );
+  return mt;
+}
+
+
+
 
 class LeptonJetPairMaker
 {
@@ -229,7 +241,8 @@ struct numeratorHistManagers_muon_LFR
         MuonHistManager_genJet_->bookHistograms(dir);
       }
 
-  } 
+  }
+ 
   void fillHistograms(const RecoMuon& muon, double evtWeight)
   {
     if ( !(std::abs(muon.eta()) >= minAbsEta_ && std::abs(muon.eta()) < maxAbsEta_ && muon.pt() >= minPt_ && muon.pt() < maxPt_) ) return;
@@ -240,6 +253,18 @@ struct numeratorHistManagers_muon_LFR
       else                        MuonHistManager_genJet_->fillHistograms(muon, evtWeight);
     }
   }
+
+  void fillHistograms2(const RecoMuon& muon, double evtWeight, double metpt=10., double metphi=0., double ptfix=35.)
+  {
+    if ( !(std::abs(muon.eta()) >= minAbsEta_ && std::abs(muon.eta()) < maxAbsEta_ && muon.pt() >= minPt_ && muon.pt() < maxPt_) ) return;
+    MuonHistManager_->fillHistograms2(muon, evtWeight, metpt, metphi, ptfix);
+    if ( isMC_ ) {
+      if      ( muon.genHadTau() ) MuonHistManager_genHadTau_->fillHistograms2(muon, evtWeight, metpt, metphi, ptfix);
+      else if ( muon.genLepton()) MuonHistManager_genLepton_->fillHistograms2(muon, evtWeight, metpt, metphi, ptfix);
+      else                        MuonHistManager_genJet_->fillHistograms2(muon, evtWeight, metpt, metphi, ptfix);
+    }
+  }
+
   std::string process_;
   bool isMC_;
   double minAbsEta_;
@@ -322,6 +347,18 @@ struct denominatorHistManagers_muon_LFR
       else                        MuonHistManager_genJet_->fillHistograms(muon, evtWeight);
     }
   }
+
+  void fillHistograms2(const RecoMuon& muon, double evtWeight, double metpt=10., double metphi=0., double ptfix=35.)
+  {
+    if ( !(std::abs(muon.eta()) >= minAbsEta_ && std::abs(muon.eta()) < maxAbsEta_ && muon.pt() >= minPt_ && muon.pt() < maxPt_) ) return;
+    MuonHistManager_->fillHistograms2(muon, evtWeight, metpt, metphi, ptfix);
+    if ( isMC_ ) {
+      if      ( muon.genHadTau() ) MuonHistManager_genHadTau_->fillHistograms2(muon, evtWeight, metpt, metphi, ptfix);
+      else if ( muon.genLepton()) MuonHistManager_genLepton_->fillHistograms2(muon, evtWeight, metpt, metphi, ptfix);
+      else                        MuonHistManager_genJet_->fillHistograms2(muon, evtWeight, metpt, metphi, ptfix);
+    }
+  }
+
   std::string process_;
   bool isMC_;
   double minAbsEta_;
@@ -403,6 +440,20 @@ struct numeratorHistManagers_electron_LFR
     }
   }
 
+  void fillHistograms2(const RecoElectron& electron, double evtWeight, double metpt=10., double metphi=0., double ptfix=35.)
+  {
+    if ( !(std::abs(electron.eta()) >= minAbsEta_ && std::abs(electron.eta()) < maxAbsEta_ && electron.pt() >= minPt_ && electron.pt() < maxPt_) ) return;
+    ElectronHistManager_->fillHistograms2(electron, evtWeight, metpt, metphi, ptfix);
+    if ( isMC_ ) {
+      if      ( electron.genHadTau() ) ElectronHistManager_genHadTau_->fillHistograms2(electron, evtWeight, metpt, metphi, ptfix);
+      else if ( electron.genLepton() ) ElectronHistManager_genLepton_->fillHistograms2(electron, evtWeight, metpt, metphi, ptfix);
+      else                            ElectronHistManager_genJet_->fillHistograms2(electron, evtWeight, metpt, metphi, ptfix);
+    }
+  }
+
+
+
+  
   std::string process_;
   bool isMC_;
   double minAbsEta_;
@@ -487,6 +538,19 @@ struct denominatorHistManagers_electron_LFR
       else                            ElectronHistManager_genJet_->fillHistograms(electron, evtWeight);
     }
   }
+
+  void fillHistograms2(const RecoElectron& electron, double evtWeight, double metpt=10., double metphi=0., double ptfix=35.)
+  {
+    if ( !(std::abs(electron.eta()) >= minAbsEta_ && std::abs(electron.eta()) < maxAbsEta_ && electron.pt() >= minPt_ && electron.pt() < maxPt_) ) return;
+    ElectronHistManager_->fillHistograms2(electron, evtWeight, metpt, metphi, ptfix);
+    if ( isMC_ ) {
+      if      ( electron.genHadTau() ) ElectronHistManager_genHadTau_->fillHistograms2(electron, evtWeight, metpt, metphi, ptfix);
+      else if ( electron.genLepton() ) ElectronHistManager_genLepton_->fillHistograms2(electron, evtWeight, metpt, metphi, ptfix);
+      else                            ElectronHistManager_genJet_->fillHistograms2(electron, evtWeight, metpt, metphi, ptfix);
+    }
+  }
+
+
   std::string process_;
   bool isMC_;
   double minAbsEta_;
@@ -775,6 +839,11 @@ int main(int argc, char* argv[])
   RecoJetCollectionSelectorBtagLoose jetSelectorBtagLoose(era);
   RecoJetCollectionSelectorBtagMedium jetSelectorBtagMedium(era);
 
+//--- declare missing transverse energy
+  RecoMEtReader* metReader = new RecoMEtReader(era, "met");
+  metReader->setBranchAddresses(inputTree);
+
+
 
 // ---------- GEN LEVEL INFO -----------------
   GenLeptonReader* genLeptonReader = 0;
@@ -901,7 +970,7 @@ for( int idxEntry = 0; idxEntry < numEntries && (maxEvents == -1 || idxEntry < m
     std::vector<GenHadTau> genHadTaus;
     std::vector<GenJet> genJets;
     if ( isMC && fillGenEvtHistograms ) {
-      genLeptons = genLeptonReader->read();
+            genLeptons = genLeptonReader->read();
       for ( std::vector<GenLepton>::const_iterator genLepton = genLeptons.begin();
     	    genLepton != genLeptons.end(); ++genLepton ) {
 	int abs_pdgId = std::abs(genLepton->pdgId());
@@ -927,18 +996,18 @@ for( int idxEntry = 0; idxEntry < numEntries && (maxEvents == -1 || idxEntry < m
     std::vector<RecoMuon> muons = muonReader->read();
     std::vector<const RecoMuon*> muon_ptrs = convert_to_ptrs(muons);
     std::vector<const RecoMuon*> cleanedMuons = muon_ptrs; // CV: no cleaning needed for muons, as they have the highest priority in the overlap removal
-    std::vector<const RecoMuon*> preselMuons = preselMuonSelector(cleanedMuons);
-    std::vector<const RecoMuon*> fakeableMuons = fakeableMuonSelector(preselMuons);
+    std::vector<const RecoMuon*> preselMuons = preselMuonSelector(cleanedMuons);    // clean muons passing Loose object def.
+    std::vector<const RecoMuon*> fakeableMuons = fakeableMuonSelector(preselMuons); // clean muons passing Loose and Fakeable object def.s
     // std::vector<const RecoMuon*> selMuons = tightMuonSelector(preselMuons); // DEF LINE
-    std::vector<const RecoMuon*> selMuons = tightMuonSelector(fakeableMuons);  // SINCE WE ARE COMPUTING FAKERATE
+    std::vector<const RecoMuon*> selMuons = tightMuonSelector(fakeableMuons);       // clean muons passing Loose, Fakeable and Tight object def.s
 
     std::vector<RecoElectron> electrons = electronReader->read();
     std::vector<const RecoElectron*> electron_ptrs = convert_to_ptrs(electrons);
     std::vector<const RecoElectron*> cleanedElectrons = electronCleaner(electron_ptrs, selMuons);
-    std::vector<const RecoElectron*> preselElectrons = preselElectronSelector(cleanedElectrons);
-    std::vector<const RecoElectron*> fakeableElectrons = fakeableElectronSelector(preselElectrons);
+    std::vector<const RecoElectron*> preselElectrons = preselElectronSelector(cleanedElectrons);      // clean electrons passing Loose object def.
+    std::vector<const RecoElectron*> fakeableElectrons = fakeableElectronSelector(preselElectrons);   // clean electrons passing Loose and Fakeable object def.s
     // std::vector<const RecoElectron*> selElectrons = tightElectronSelector(preselElectrons); // DEF LINE
-    std::vector<const RecoElectron*> selElectrons = tightElectronSelector(fakeableElectrons);  // SINCE WE ARE COMPUTING FAKERATE
+    std::vector<const RecoElectron*> selElectrons = tightElectronSelector(fakeableElectrons);         // clean electrons passing Loose, Fakeable and Tight object def.s
 
     std::vector<RecoHadTau> hadTaus = hadTauReader->read();
     std::vector<const RecoHadTau*> hadTau_ptrs = convert_to_ptrs(hadTaus);
@@ -1035,6 +1104,15 @@ for( int idxEntry = 0; idxEntry < numEntries && (maxEvents == -1 || idxEntry < m
     // std::cout<< "LeptonJetPairs.size() " << LeptonJetPairs.size() << std::endl;
 
 
+
+    //--- compute MHT and linear MET discriminant (met_LD)
+    RecoMEt met = metReader->read();
+    // std::vector<const RecoLepton*> fakeableLeptons = mergeLeptonCollections(fakeableElectrons, fakeableMuons);
+    // Particle::LorentzVector mht_p4 = compMHT(fakeableLeptons, selHadTaus, selJets);
+    // double met_LD = compMEt_LD(met.p4(), mht_p4);
+
+
+
     // ----- Filling Gen level Histograms (before gen level cuts) ------
     if ( isMC ) {
           genEvtHistManager_beforeCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genJets);
@@ -1124,6 +1202,17 @@ for( int idxEntry = 0; idxEntry < numEntries && (maxEvents == -1 || idxEntry < m
     }
     
 
+    int fake_lepton_nos = 0;
+    for (std::vector<LeptonJetPairMaker>::const_iterator LeptonJetPair = LeptonJetPairs.begin();
+         LeptonJetPair != LeptonJetPairs.end(); LeptonJetPair++)
+    {
+      if(LeptonJetPair->getLepton()->isFakeable()){ fake_lepton_nos++;   } 
+    }
+
+
+    if(fake_lepton_nos > 1){continue;} // Vetoing events with > 1 fake leptons to suppress Z contamination  
+
+
     for (std::vector<LeptonJetPairMaker>::const_iterator LeptonJetPair = LeptonJetPairs.begin();
          LeptonJetPair != LeptonJetPairs.end(); LeptonJetPair++)
     {
@@ -1132,6 +1221,9 @@ for( int idxEntry = 0; idxEntry < numEntries && (maxEvents == -1 || idxEntry < m
 	  continue; // deltaR() cond.
 	}	   
           
+	std::cout<< "Mt_fix "<< Mt_fix(*(LeptonJetPair->getLepton()), 35., met.pt(), met.phi())<< std::endl;
+
+
         // @@@@@@@@@@@  LOOP OVER ELECTRON PT AND ETA BINS @@@@@@@@@@             
         if(trigger_fired_e && LeptonJetPair->getLepton()->is_electron() && LeptonJetPair->getLepton()->cone_pt() > 30. && LeptonJetPair->getJet()->pt() > 30.)
         {
@@ -1141,7 +1233,8 @@ for( int idxEntry = 0; idxEntry < numEntries && (maxEvents == -1 || idxEntry < m
           if(LeptonJetPair->getLepton()->isTight()){
              for ( std::vector<numeratorHistManagers_electron_LFR*>::iterator numerator_e = electron_numerators.begin();
          	   numerator_e != electron_numerators.end(); numerator_e++ ) {
-	         (*numerator_e)->fillHistograms(*fake_electron, evtWeight);  //------ Numerator Histograms   
+	           // (*numerator_e)->fillHistograms(*fake_electron, evtWeight);  //------ Numerator Histograms
+	           (*numerator_e)->fillHistograms2(*fake_electron, evtWeight, met.pt(), met.phi(), 35.);     
     	     }
 	  }
 
@@ -1149,7 +1242,9 @@ for( int idxEntry = 0; idxEntry < numEntries && (maxEvents == -1 || idxEntry < m
           if(LeptonJetPair->getLepton()->isFakeable()){
              for ( std::vector<denominatorHistManagers_electron_LFR*>::iterator denominator_e = electron_denominators.begin();
          	   denominator_e != electron_denominators.end(); denominator_e++ ) {
-	         (*denominator_e)->fillHistograms(*fake_electron, evtWeight);  //------ Denominator Histograms   
+	           // (*denominator_e)->fillHistograms(*fake_electron, evtWeight);  //------ Denominator Histograms
+                   (*denominator_e)->fillHistograms2(*fake_electron, evtWeight, met.pt(), met.phi(), 35.);     
+   
     	     }
 	  }
  
@@ -1184,14 +1279,17 @@ for( int idxEntry = 0; idxEntry < numEntries && (maxEvents == -1 || idxEntry < m
           if(LeptonJetPair->getLepton()->isTight()){
              for ( std::vector<numeratorHistManagers_muon_LFR*>::iterator numerator_mu = muon_numerators.begin();
 	           numerator_mu != muon_numerators.end(); numerator_mu++ ) {
-	           (*numerator_mu)->fillHistograms(*fake_muon, evtWeight);  //------ Numerator Histograms   
+	           // (*numerator_mu)->fillHistograms(*fake_muon, evtWeight);  
+	           (*numerator_mu)->fillHistograms2(*fake_muon, evtWeight, met.pt(), met.phi(), 35.);  
+                   //------ Numerator Histograms   fillHistograms(const RecoMuon& muon, double evtWeight, double met=10., double metphi=0., double ptfix=35.)
     	     }
 	  }
 
           if(LeptonJetPair->getLepton()->isFakeable()){
              for ( std::vector<denominatorHistManagers_muon_LFR*>::iterator denominator_mu = muon_denominators.begin();
 	           denominator_mu != muon_denominators.end(); denominator_mu++ ) {
-	           (*denominator_mu)->fillHistograms(*fake_muon, evtWeight);  //------ Denominator Histograms   
+	           // (*denominator_mu)->fillHistograms(*fake_muon, evtWeight);  //------ Denominator Histograms
+                   (*denominator_mu)->fillHistograms2(*fake_muon, evtWeight, met.pt(), met.phi(), 35.);     
     	     }
 	  }
 	
