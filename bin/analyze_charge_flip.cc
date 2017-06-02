@@ -960,15 +960,12 @@ int main(int argc, char* argv[])
       histos[charge_cat]["total"][process_string]->Fill(mass_ll, evtWeight);
     }    
 
-    if (isMC && central_or_shift == "central" && std::strncmp(process_string.data(), "DY", 2) == 0)
+    if (isMC && central_or_shift == "central" && std::strncmp(process_string.data(), "DY", 2) == 0 &&
+      preselElectrons[0]->genLepton() != 0 && preselElectrons[1]->genLepton() != 0)
     {
       for (int i = 0; i < 2; i++)
       {
         const GenLepton *gp = preselElectrons[i]->genLepton();
-        if (gp == 0)
-        {
-          continue;
-        }
         #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
         gen_eff->FillWeighted(preselElectrons[i]->charge() != gp->charge(), evtWeight, gp->pt(), std::fabs(gp->eta()));
         //if (preselElectrons[i]->charge() == gp->charge())
@@ -983,48 +980,46 @@ int main(int argc, char* argv[])
       }
       const GenLepton *gen0 = preselElectrons[0]->genLepton();
       const GenLepton *gen1 = preselElectrons[1]->genLepton();
-      if (!(gen0 == 0 || gen1 == 0)){
-        const GenLepton *gp0;
-        const GenLepton *gp1;
-        if (gen1->pt() > gen0->pt()){        
-          gp0 = gen1;
-          gp1 = gen0;
-        }
-        else {
-          gp0 = gen0;
-          gp1 = gen1;
-        }
-        std::string stEtaGen;
-        std::string stLeadPtGen;
-        std::string stSubPtGen;
-        assert(gp0->pt() >= gp1->pt());
-        if (gp0->pt() >= 10 && gp0->pt() < 25) stLeadPtGen = "L";
-        else if (gp0->pt() >= 25 && gp0->pt() < 50) stLeadPtGen = "M";
-        else if (gp0->pt() > 50) stLeadPtGen = "H";
-        if (gp1->pt() >= 10 && gp1->pt() < 25) stSubPtGen = "L";
-        else if (gp1->pt() >= 25 && gp1->pt() < 50) stSubPtGen = "M";
-        else if (gp1->pt() > 50) stSubPtGen = "H";
-        else{
-          std::cout << "PT<10 " << gp0->pt() << " " << gp1->pt() << std::endl; 
-          stSubPtGen = "L";
-          //assert(0);
-        }
-
-        Double_t etaL0Gen = std::fabs(gp0->eta());
-        Double_t etaL1Gen = std::fabs(gp1->eta());
-        if (etaL0Gen < 1.479 && etaL1Gen < 1.479) stEtaGen = "BB";
-        else if (etaL0Gen > 1.479 && etaL1Gen > 1.479) stEtaGen = "EE";
-        else if (etaL0Gen < etaL1Gen) stEtaGen = "BE";
-        else
-        {
-          if (std::strncmp(stLeadPtGen.data(), stSubPtGen.data(), 1) == 0) stEtaGen = "BE";       //Symmetric case
-          else stEtaGen = "EB";
-        }
-        std::string categoryGen = Form("%s_%s%s", stEtaGen.data(), stLeadPtGen.data(), stSubPtGen.data());
-        std::string charge_catGen = ( isCharge_SS ) ? "SS" : "OS";
-        histos_2gen[charge_catGen][categoryGen.data()][process_string]->Fill(mass_ll, evtWeight);
-        histos_2gen[charge_catGen]["total"][process_string]->Fill(mass_ll, evtWeight);
+      const GenLepton *gp0;
+      const GenLepton *gp1;
+      if (gen1->pt() > gen0->pt()){        
+        gp0 = gen1;
+        gp1 = gen0;
       }
+      else {
+        gp0 = gen0;
+        gp1 = gen1;
+      }
+      std::string stEtaGen;
+      std::string stLeadPtGen;
+      std::string stSubPtGen;
+      assert(gp0->pt() >= gp1->pt());
+      if (gp0->pt() >= 10 && gp0->pt() < 25) stLeadPtGen = "L";
+      else if (gp0->pt() >= 25 && gp0->pt() < 50) stLeadPtGen = "M";
+      else if (gp0->pt() > 50) stLeadPtGen = "H";
+      if (gp1->pt() >= 10 && gp1->pt() < 25) stSubPtGen = "L";
+      else if (gp1->pt() >= 25 && gp1->pt() < 50) stSubPtGen = "M";
+      else if (gp1->pt() > 50) stSubPtGen = "H";
+      else{
+        std::cout << "PT<10 " << gp0->pt() << " " << gp1->pt() << std::endl; 
+        stSubPtGen = "L";
+        //assert(0);
+      }
+
+      Double_t etaL0Gen = std::fabs(gp0->eta());
+      Double_t etaL1Gen = std::fabs(gp1->eta());
+      if (etaL0Gen < 1.479 && etaL1Gen < 1.479) stEtaGen = "BB";
+      else if (etaL0Gen > 1.479 && etaL1Gen > 1.479) stEtaGen = "EE";
+      else if (etaL0Gen < etaL1Gen) stEtaGen = "BE";
+      else
+      {
+        if (std::strncmp(stLeadPtGen.data(), stSubPtGen.data(), 1) == 0) stEtaGen = "BE";       //Symmetric case
+        else stEtaGen = "EB";
+      }
+      std::string categoryGen = Form("%s_%s%s", stEtaGen.data(), stLeadPtGen.data(), stSubPtGen.data());
+      std::string charge_catGen = ( isCharge_SS ) ? "SS" : "OS";
+      histos_2gen[charge_catGen][categoryGen.data()][process_string]->Fill(mass_ll, evtWeight);
+      histos_2gen[charge_catGen]["total"][process_string]->Fill(mass_ll, evtWeight);
     }
     if (isCharge_SS)
       preselElectronHistManagerSS.fillHistograms(preselElectrons, evtWeight);
