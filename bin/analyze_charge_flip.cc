@@ -417,14 +417,16 @@ int main(int argc, char* argv[])
   for (int i=1;i<=11;i++) fail_counter->GetXaxis()->SetBinLabel(i,rejcs[i-1]); 
 
 
-  /*vstring categories_etapt_gen = {  //B-barrel, E-endcap, L-low pT (10 <= pT < 25), M-med pT (25 <= pT < 50), H-high pT (pT > 50)
-    "B_L", "B_M", "B_H", "E_L", "E_M", "E_M", "E_H"
-  };*/
+  vstring categories_etapt_gen = {  //B-barrel, E-endcap, L-low pT (10 <= pT < 25), M-med pT (25 <= pT < 50), H-high pT (pT > 50)
+    "BL", "BM", "BH", "EL", "EM", "EH"
+  };
 
   Double_t bins_eta[3] = {0, 1.479, 2.5};
   Double_t bins_pt[4] = {10, 25, 50, 1000};
 
   TEfficiency* gen_eff;
+  TEfficiency* gen_eff_rec;
+  TH2D* transfer_matrix;
   std::map<std::string, TH2D*> histos_gen;
   if (isMC && central_or_shift == "central"){
     TFileDirectory subD = fs.mkdir("gen_ratio");
@@ -437,6 +439,10 @@ int main(int argc, char* argv[])
     gen_eff = subD.make<TEfficiency>(Form("pt_eta_%s", process_string.data()),"pt_eta;pT;#eta;charge_misID", 3,  bins_pt, 2, bins_eta);
     gen_eff->SetUseWeightedEvents();
     gen_eff->SetStatisticOption(TEfficiency::kFNormal);
+    gen_eff_rec = subD.make<TEfficiency>(Form("pt_eta_%s_rec", process_string.data()),"pt_eta;pT;#eta;charge_misID", 3,  bins_pt, 2, bins_eta);
+    gen_eff_rec->SetUseWeightedEvents();
+    gen_eff_rec->SetStatisticOption(TEfficiency::kFNormal);
+    transfer_matrix = subD.make<TH2D>(Form("transfer_matrix"),"transfer_matrix", 6, 0, 6, 6, 0, 6);
   }
 
   GenEvtHistManager* genEvtHistManager_beforeCuts = 0;
@@ -968,6 +974,20 @@ int main(int argc, char* argv[])
         const GenLepton *gp = preselElectrons[i]->genLepton();
         #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
         gen_eff->FillWeighted(preselElectrons[i]->charge() != gp->charge(), evtWeight, gp->pt(), std::fabs(gp->eta()));
+        gen_eff_rec->FillWeighted(preselElectrons[i]->charge() != gp->charge(), evtWeight, preselElectrons[i]->pt(), std::fabs(preselElectrons[i]->eta()));
+        
+        int transfer_bin = 0, rec_bin = 0;
+        if (std::fabs(gp->eta()) > 1.479) transfer_bin += 3;
+        if (gp->pt() >= 15 && gp->pt() < 25) transfer_bin += 1;
+        else if (gp->pt() >= 25 && gp->pt() < 50) transfer_bin += 2;
+        else if (gp->pt() > 50) transfer_bin += 3;        
+        else transfer_bin = 0;
+        if (std::fabs(preselElectrons[i]->eta()) > 1.479) rec_bin += 3;
+        if (preselElectrons[i]->pt() >= 15 && preselElectrons[i]->pt() < 25) rec_bin += 1;
+        else if (preselElectrons[i]->pt() >= 25 && preselElectrons[i]->pt() < 50) rec_bin += 2;
+        else if (preselElectrons[i]->pt() > 50) rec_bin += 3;
+        else rec_bin = 0;
+        transfer_matrix->Fill(transfer_bin, rec_bin, evtWeight);
         //if (preselElectrons[i]->charge() == gp->charge())
         //{
           histos_gen["ID"]->Fill(gp->pt(), std::fabs(gp->eta()), evtWeight);
