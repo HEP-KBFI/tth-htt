@@ -10,6 +10,7 @@
 
 #define PUWEIGHT_TYPE          Float_t
 #define GENWEIGHT_TYPE         Float_t
+#define GENWEIGHTTH_TYPE       Float_t
 
 #define MET_PT_TYPE            Float_t
 #define MET_ETA_TYPE           Float_t
@@ -28,6 +29,7 @@
 
 #define GENWEIGHT_KEY         "genWeight"
 #define PUWEIGHT_KEY          "puWeight"
+#define GENWEIGHTTH_KEY       "lheWeightSM"
 
 #define MET_PT_KEY            "met_pt"
 #define MET_ETA_KEY           "met_eta"

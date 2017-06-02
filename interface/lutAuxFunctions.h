@@ -1,6 +1,8 @@
 #ifndef tthAnalysis_HiggsToTauTau_lutAuxFunctions_h
 #define tthAnalysis_HiggsToTauTau_lutAuxFunctions_h
 
+#include "FWCore/ParameterSet/interface/ParameterSet.h" // edm::ParameterSet
+
 #include "tthAnalysis/HiggsToTauTau/interface/LocalFileInPath.h" // LocalFileInPath
 
 #include <TFile.h> // TFile
@@ -34,6 +36,8 @@ class lutWrapperBase
 {
  public:
   lutWrapperBase();
+  lutWrapperBase(const std::string& lutName, int lutType,
+                 double xMin = -1., double xMax = -1., double yMin = -1., double yMax = -1.);
   lutWrapperBase(std::map<std::string, TFile*>& inputFiles, const std::string& inputFileName, const std::string& lutName, int lutType,
                  double xMin = -1., double xMax = -1., double yMin = -1., double yMax = -1.);
   virtual ~lutWrapperBase() {}
@@ -41,6 +45,7 @@ class lutWrapperBase
   const std::string& inputFileName() const { return inputFileName_; }
   const std::string& lutName() const { return lutName_; }
  protected:
+  void initialize(int lutType);
   enum { kUndefined, kPt, kEta, kAbsEta };
   std::string inputFileName_;
   TFile* inputFile_;
@@ -95,6 +100,20 @@ class lutWrapperTGraph : public lutWrapperBase
  private:
   double getSF_private(double x, double y);
   TGraph* lut_;
+};
+
+class lutWrapperCrystalBall : public lutWrapperBase
+{
+ public:
+  lutWrapperCrystalBall(const std::string& lutName, const edm::ParameterSet& cfg, int lutType, 
+			double xMin = -1., double xMax = -1., double yMin = -1., double yMax = -1.);
+ private:
+  double getSF_private(double x, double y);
+  double m0_;
+  double sigma_;
+  double alpha_;
+  double n_;
+  double norm_;
 };
 
 class lutWrapperData_to_MC : public lutWrapperBase

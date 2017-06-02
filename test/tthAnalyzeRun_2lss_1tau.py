@@ -6,7 +6,7 @@ from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 #--------------------------------------------------------------------------------
 # NOTE: set mode flag to
 #   'VHbb'                        : to run the analysis directly on the VHbb Ntuples
-#                                   (to e.g. produce the RLE files to run the tthProdNtuple and ttHAddMEM steps)
+#                                  (to e.g. produce the RLE files to run the tthProdNtuple and ttHAddMEM steps)
 #   'addMEM'                      : to run the analysis on the Ntuples with MEM variables added
 #   'forBDTtraining_beforeAddMEM' : to run the analysis on the Ntuples without MEM variables added,
 #                                   and with a relaxed event selection, to increase the BDT training statistics
@@ -14,7 +14,6 @@ from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 #                                   and with a relaxed event selection, to increase the BDT training statistics
 #--------------------------------------------------------------------------------
 
-#mode = "VHbb"
 mode = "VHbb"
 #mode = "forBDTtraining_beforeAddMEM"
 #mode = "forBDTtraining_afterAddMEM"
@@ -60,7 +59,7 @@ elif ERA == "2016":
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "2017Apr10"
+version = "2017May12"
 
 if __name__ == '__main__':
   logging.basicConfig(

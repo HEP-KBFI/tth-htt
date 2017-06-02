@@ -331,7 +331,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
                   'triggers' : sample_info["triggers"],
                   'lepton_selection' : lepton_selection,
                   'apply_leptonGenMatching' : self.apply_leptonGenMatching,                  
-                  'hadTau_selection' :  hadTau_selection,
+                  'hadTau_selection' : hadTau_selection,
                   'apply_hadTauGenMatching' : self.apply_hadTauGenMatching,
                   'hadTau_charge_selection' : hadTau_charge_selection,
                   'applyFakeRateWeights' : self.applyFakeRateWeights if not (lepton_selection == "Tight" and hadTau_selection.find("Tight") != -1) else "disabled",

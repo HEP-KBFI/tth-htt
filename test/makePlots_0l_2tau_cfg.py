@@ -2,9 +2,9 @@ import FWCore.ParameterSet.Config as cms
 
 import os
 
-from tthAnalysis.HiggsToTauTau.makePlots_mcClosure_cfg import process
+from tthAnalysis.HiggsToTauTau.makePlots_cfi import process
 
-process.makePlots_mcClosure.processesBackground = cms.vstring(
+process.makePlots.processesBackground = cms.vstring(
     ##"TT",
     "TTW",
     "TTZ",
@@ -12,16 +12,16 @@ process.makePlots_mcClosure.processesBackground = cms.vstring(
     "Rares",
     "fakes_data"
 )
-process.makePlots_mcClosure.processSignal = cms.string("signal")
+process.makePlots.processSignal = cms.string("signal")
 
-process.makePlots_mcClosure.categories = cms.VPSet(
+process.makePlots.categories = cms.VPSet(
     cms.PSet(
-        name = cms.string("1l_2tau_OS_Fakeable_mcClosure_wFakeRateWeights"),
-        label = cms.string("1l_2tau")
+        name = cms.string("0l_2tau_OS_Tight"),
+        label = cms.string("0l_2tau")
     )
 )
 
-process.makePlots_mcClosure.distributions.extend([
+process.makePlots.distributions.extend([
     cms.PSet(
         histogramName = cms.string('sel/leadHadTau/$PROCESS/pt'),
         xMin = cms.double(20.),
@@ -47,23 +47,28 @@ process.makePlots_mcClosure.distributions.extend([
         yAxisTitle = cms.string('dN/d#eta')
     ),
     cms.PSet(
-        histogramName = cms.string('sel/evt/$PROCESS/mvaOutput_1l_2tau_ttbar'),
+        histogramName = cms.string('sel/evt/$PROCESS/mvaOutput_0l_2tau_ttbar'),
         xAxisTitle = cms.string('MVA'),
         yAxisTitle = cms.string('dN/dMVA')
     ),
-    cms.PSet(
-        histogramName = cms.string('sel/evt/$PROCESS/mvaOutput_1l_2tau_ttV'),
-        xAxisTitle = cms.string('MVA'),
-        yAxisTitle = cms.string('dN/dMVA')
-    ),
-    cms.PSet(
-        histogramName = cms.string('sel/evt/$PROCESS/mvaDiscr_1l_2tau'),
-        xAxisTitle = cms.string("MVA Discriminant"),
-        yAxisTitle = cms.string("N")
-    ),
+    ##cms.PSet(
+    ##    histogramName = cms.string('sel/evt/$PROCESS/mvaOutput_0l_2tau_ttV'),
+    ##    xAxisTitle = cms.string('MVA'),
+    ##    yAxisTitle = cms.string('dN/dMVA')
+    ##),
+    ##cms.PSet(
+    ##    histogramName = cms.string('sel/evt/$PROCESS/mvaDiscr_0l_2tau'),
+    ##    xAxisTitle = cms.string("MVA Discriminant"),
+    ##    yAxisTitle = cms.string("N")
+    ##),
     cms.PSet(
         histogramName = cms.string('sel/evt/$PROCESS/mTauTauVis'),
         xAxisTitle = cms.string('m_{#tau#tau}^{vis} [GeV]'),
         yAxisTitle = cms.string('dN/dm_{#tau#tau}^{vis} [1/GeV]')
+    ),
+    cms.PSet(
+        histogramName = cms.string('sel/evt/$PROCESS/mTauTau'),
+        xAxisTitle = cms.string('m_{#tau#tau} [GeV]'),
+        yAxisTitle = cms.string('dN/dm_{#tau#tau} [1/GeV]')
     )
 ])

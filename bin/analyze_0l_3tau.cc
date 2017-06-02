@@ -783,12 +783,13 @@ int main(int argc, char* argv[])
     double mTauTauVis2 = ( selHadTau2_SS && selHadTau_OS ) ? (selHadTau2_SS->p4() + selHadTau_OS->p4()).mass() : -1.;
     
     if ( isMC ) {
+/*
 //--- weight simulated events by efficiency to pass HLT_DoubleMediumIsoPFTau35_Trk1_eta2p1_Reg trigger
 //   (triggers not simulated in Spring16 MC samples)
       evtWeight *= effHLT_DoubleMediumIsoPFTau35_Trk1_eta2p1_Reg(
         selHadTau_lead->pt(), selHadTau_lead->eta(), 
 	selHadTau_sublead->pt(), selHadTau_sublead->eta());
-
+ */
 //--- apply data/MC corrections for hadronic tau identification efficiency 
 //    and for e->tau and mu->tau misidentification rates
       int selHadTau_lead_genPdgId = getHadTau_genPdgId(selHadTau_lead);

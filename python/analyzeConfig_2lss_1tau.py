@@ -30,7 +30,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
   
      Args specific to analyzeConfig_2lss_1tau:
        lepton_selections: either `Tight`, `Loose` or `Fakeable`
-       hadTau_selection: either `dR05isoLoose/Medium/Tight` or `dR03mvaMedium/Tight/VTight/VVTight`
+       hadTau_selection: either `dR05iso[Loose|Medium|Tight]` or `dR03mva[Medium|Tight|VTight|VVTight]`
 
      See $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/python/analyzeConfig.py
      for documentation of further Args.
@@ -107,10 +107,8 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
     self.executable_addFakes = executable_addFakes
     self.executable_addFlips = executable_addFlips
     
-    ##self.nonfake_backgrounds = [ "TT", "TTW", "TTZ", "EWK", "Rares" ]
-    self.nonfake_backgrounds = [ "TTW", "TTZ", "EWK", "Rares" ]
-    self.prep_dcard_processesToCopy = [ "data_obs", "TT", "TTW", "TTZ", "EWK", "Rares", "fakes_data", "fakes_mc", "flips_data" ]
-    ##self.make_plots_backgrounds = [ "TT", "TTW", "TTZ", "EWK", "Rares", "fakes_data", "flips_data" ]
+    self.nonfake_backgrounds = [ "TTW", "TTZ", "TTWW", "EWK", "Rares", "tH" ]
+    self.prep_dcard_processesToCopy = [ "data_obs", "TTW", "TTZ", "TTWW", "EWK", "Rares", "tH", "fakes_data", "fakes_mc", "flips_data" ]
     self.make_plots_backgrounds = [ "TTW", "TTZ", "EWK", "Rares", "fakes_data", "flips_data" ]
     
     self.cfgFile_analyze = os.path.join(self.workingDir, cfgFile_analyze)
@@ -421,7 +419,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
                     'lepton_selection' : lepton_selection,
                     'apply_leptonGenMatching' : self.apply_leptonGenMatching,
                     'lepton_charge_selection' : lepton_charge_selection,
-                    'hadTau_selection' :  hadTau_selection,
+                    'hadTau_selection' : hadTau_selection,
                     'apply_hadTauGenMatching' : self.apply_hadTauGenMatching,
                     'chargeSumSelection' : chargeSumSelection,
                     'applyFakeRateWeights' : self.applyFakeRateWeights if not (lepton_selection == "Tight" and hadTau_selection.find("Tight") != -1) else "disabled",
@@ -568,7 +566,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
                         self.inputFiles_hadd_stage1_5[key_hadd_stage1_5] = []
                       self.inputFiles_hadd_stage1_5[key_hadd_stage1_5].append(self.jobOptions_addBackgrounds[key_addBackgrounds_job]['outputFile'])
                       self.outputFile_hadd_stage1_5[key_hadd_stage1_5] = os.path.join(self.dirs[DKEY_HIST], "histograms_harvested_stage1_5_%s_%s_lep%s_sum%s.root" % \
-                     (self.channel, lepton_and_hadTau_selection_and_frWeight, lepton_charge_selection, chargeSumSelection))
+                        (self.channel, lepton_and_hadTau_selection_and_frWeight, lepton_charge_selection, chargeSumSelection))
 
               # add output files of hadd_stage1 for data to list of input files for hadd_stage1_5
               if not is_mc:

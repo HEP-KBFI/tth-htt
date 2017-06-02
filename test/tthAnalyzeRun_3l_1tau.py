@@ -48,7 +48,7 @@ elif ERA == "2016":
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "2017Apr24"
+version = "2017May12"
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -66,7 +66,7 @@ if __name__ == '__main__':
     #     https://indico.cern.ch/event/597028/contributions/2413742/attachments/1391684/2120220/16.12.22_ttH_Htautau_-_Review_of_systematics.pdf
     #applyFakeRateWeights = "4L",
     applyFakeRateWeights = applyFakeRateWeights,
-    chargeSumSelections = [ "OS", "SS" ],
+    chargeSumSelections  = [ "OS", "SS" ],
     central_or_shifts = [ 
       "central",
 ##       "CMS_ttHl_btag_HFUp", 
