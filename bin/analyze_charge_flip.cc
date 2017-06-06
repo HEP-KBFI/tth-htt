@@ -382,6 +382,7 @@ int main(int argc, char* argv[])
   };
   std::map<std::string, std::map<std::string, std::map<std::string, TH1D*>>> histos;
   std::map<std::string, std::map<std::string, std::map<std::string, TH1D*>>> histos_2gen;
+  std::map<std::string, std::map<std::string, std::map<std::string, TH1D*>>> histos_2gen_rec;
   
   for ( vstring::const_iterator which = categories_charge.begin(); 	which != categories_charge.end(); ++which ) {
     TFileDirectory subDir = fs.mkdir( which->data() );
@@ -389,10 +390,14 @@ int main(int argc, char* argv[])
     TFileDirectory subD1 = fs.mkdir("gen");
     TFileDirectory subD = subD1.mkdir(which->data());
 
+    TFileDirectory subD1r = fs.mkdir("gen_rec");
+    TFileDirectory subDr = subD1r.mkdir(which->data());
+
     for ( vstring::const_iterator category = categories_etapt.begin(); 	category != categories_etapt.end(); ++category ) {
       TFileDirectory subDir1_5 = subDir.mkdir(category->data());
       TFileDirectory subDir2 = subDir1_5.mkdir(process_string.data());
       TFileDirectory subD2 = subD.mkdir(category->data());
+      TFileDirectory subD2r = subDr.mkdir(category->data());
       
       histos[which->data()][*category][process_string] = subDir2.make<TH1D>( Form("%smass_ll", central_or_shift_label_st.data()), "m_{ll}", 60,  60., 120. );
       histos[which->data()][*category][process_string]->Sumw2();
@@ -403,6 +408,8 @@ int main(int argc, char* argv[])
           if (central_or_shift == "central") {
             histos_2gen[which->data()][*category][process_string] = subD2.make<TH1D>( Form("%smass_ll", central_or_shift_label_st.data()), "m_{ll}", 60,  60., 120. );
             histos_2gen[which->data()][*category][process_string]->Sumw2();
+            histos_2gen_rec[which->data()][*category][process_string] = subD2r.make<TH1D>( Form("%smass_ll", central_or_shift_label_st.data()), "m_{ll}", 60,  60., 120. );
+            histos_2gen_rec[which->data()][*category][process_string]->Sumw2();
           }
       }      
     }
@@ -1048,6 +1055,8 @@ int main(int argc, char* argv[])
       std::string charge_catGen = ( isCharge_SS ) ? "SS" : "OS";
       histos_2gen[charge_catGen][categoryGen.data()][process_string]->Fill(mass_ll, evtWeight);
       histos_2gen[charge_catGen]["total"][process_string]->Fill(mass_ll, evtWeight);
+      histos_2gen_rec[charge_catGen][category.data()][process_string]->Fill(mass_ll, evtWeight);
+      histos_2gen_rec[charge_catGen]["total"][process_string]->Fill(mass_ll, evtWeight);
     }
     if (isCharge_SS)
       preselElectronHistManagerSS.fillHistograms(preselElectrons, evtWeight);
