@@ -451,9 +451,9 @@ int main(int argc, char* argv[])
     gen_eff_rec = subD.make<TEfficiency>(Form("pt_eta_%s_rec", process_string.data()),"pt_eta;pT;#eta;charge_misID", 3,  bins_pt, 2, bins_eta);
     gen_eff_rec->SetUseWeightedEvents();
     gen_eff_rec->SetStatisticOption(TEfficiency::kFNormal);
-    transfer_matrix = subD.make<TH2D>(Form("transfer_matrix"),"transfer_matrix", 6, 0, 6, 6, 0, 6);
-    transfer_matrix_flip = subD.make<TH2D>(Form("transfer_matrix_flip"),"transfer_matrix_flip", 6, 0, 6, 6, 0, 6);
-    transfer_matrix_noflip = subD.make<TH2D>(Form("transfer_matrix_noflip"),"transfer_matrix_noflip", 6, 0, 6, 6, 0, 6);
+    transfer_matrix = subD.make<TH2D>(Form("transfer_matrix"),"transfer_matrix", 6, -0.5, 5.5, 6, -0.5, 5.5);
+    transfer_matrix_flip = subD.make<TH2D>(Form("transfer_matrix_flip"),"transfer_matrix_flip", 6, -0.5, 5.5, 6, -0.5, 5.5);
+    transfer_matrix_noflip = subD.make<TH2D>(Form("transfer_matrix_noflip"),"transfer_matrix_noflip", 6, -0.5, 5.5, 6, -0.5, 5.5);
   }
 
   GenEvtHistManager* genEvtHistManager_beforeCuts = 0;
@@ -1003,6 +1003,13 @@ int main(int argc, char* argv[])
           transfer_matrix_flip->Fill(transfer_bin, rec_bin, evtWeight);
         else
           transfer_matrix_noflip->Fill(transfer_bin, rec_bin, evtWeight);
+        std::cout << transfer_bin << " " << rec_bin << " " << gp->pt() << " " << gp->eta() << " " << preselElectrons[i]->pt() << " " << preselElectrons[i]->eta() << std::endl;
+        /*"BL": 1
+        "BM": 2
+        "BH": 3
+        "EL": 4
+        "EM": 5
+        "EH": 6*/
         //if (preselElectrons[i]->charge() == gp->charge())
         //{
           histos_gen["ID"]->Fill(gp->pt(), std::fabs(gp->eta()), evtWeight);
