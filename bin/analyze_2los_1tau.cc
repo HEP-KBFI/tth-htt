@@ -731,7 +731,7 @@ int main(int argc, char* argv[])
       "mvaOutput_2lss_ttV", "mvaOutput_2lss_ttbar", "mvaDiscr_2lss"
     );
     bdt_filler->register_variable<int_type>(
-      "nJet", "nBJetLoose", "nBJetMedium", "lep1_isTight", "lep2_isTight", "tau_isTight"
+      "nJet", "nBJetLoose", "nBJetMedium", "lep1_isTight", "lep1_charge", "lep2_isTight", "lep2_charge", "tau_isTight", "tau_charge"
     );
     bdt_filler->bookTree(fs);
   }
@@ -1611,8 +1611,11 @@ int main(int argc, char* argv[])
           ("nBJetLoose",           selBJets_loose.size())
           ("nBJetMedium",          selBJets_medium.size())
 	  ("lep1_isTight",         int(selLepton_lead -> isTight()))
+          ("lep1_charge",          selLepton_lead -> charge())
 	  ("lep2_isTight",         int(selLepton_sublead -> isTight()))
+          ("lep2_charge",          selLepton_sublead -> charge())
 	  ("tau_isTight",          int(tightHadTauFilter(*selHadTau)))
+          ("tau_charge",           selHadTau -> charge())
         .fill()
       ;
     }
