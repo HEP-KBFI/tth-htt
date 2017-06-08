@@ -124,7 +124,7 @@ class analyzeConfig_0l_2tau(analyzeConfig):
     lines.append("process.analyze_0l_2tau.hadTauChargeSelection = cms.string('%s')" % jobOptions['hadTau_charge_selection'])
     lines.append("process.analyze_0l_2tau.apply_hadTauGenMatching = cms.bool(%s)" % (jobOptions['apply_hadTauGenMatching'] and jobOptions['is_mc']))
     lines.append("process.analyze_0l_2tau.applyFakeRateWeights = cms.string('%s')" % jobOptions['applyFakeRateWeights'])
-    if jobOptions['hadTau_selection'].find("Fakeable") != -1 and jobOptions['applyFakeRateWeights'] in [ "3L", "2tau" ]:
+    if jobOptions['hadTau_selection'].find("Fakeable") != -1 and jobOptions['applyFakeRateWeights'] in [ "2tau" ]:
       fitFunctionName = None
       if self.era == "2015":
         lines.append("process.analyze_0l_2tau.hadTauFakeRateWeight.inputFileName = cms.string('tthAnalysis/HiggsToTauTau/data/FR_tau_2015.root')")

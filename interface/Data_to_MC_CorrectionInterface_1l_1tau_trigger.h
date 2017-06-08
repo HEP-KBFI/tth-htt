@@ -1,5 +1,5 @@
-#ifndef tthAnalysis_HiggsToTauTau_Data_to_MC_CorrectionInterface_1l_2tau_trigger_h
-#define tthAnalysis_HiggsToTauTau_Data_to_MC_CorrectionInterface_1l_2tau_trigger_h
+#ifndef tthAnalysis_HiggsToTauTau_Data_to_MC_CorrectionInterface_1l_1tau_trigger_h
+#define tthAnalysis_HiggsToTauTau_Data_to_MC_CorrectionInterface_1l_1tau_trigger_h
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h" // edm::ParameterSet
 
@@ -9,11 +9,11 @@
 #include <map>
 #include <assert.h> // assert
 
-class Data_to_MC_CorrectionInterface_1l_2tau_trigger
+class Data_to_MC_CorrectionInterface_1l_1tau_trigger
 {
  public:
-  Data_to_MC_CorrectionInterface_1l_2tau_trigger(const edm::ParameterSet& cfg);
-  ~Data_to_MC_CorrectionInterface_1l_2tau_trigger();
+  Data_to_MC_CorrectionInterface_1l_1tau_trigger(const edm::ParameterSet& cfg);
+  ~Data_to_MC_CorrectionInterface_1l_1tau_trigger();
 
   //-----------------------------------------------------------------------------
   // set HLT trigger bits
@@ -26,8 +26,7 @@ class Data_to_MC_CorrectionInterface_1l_2tau_trigger
   // (to be called once per event, before calling any of the getSF.. functions)
   void setLeptons(int lepton_type, double lepton_pt, double lepton_eta);
 
-  void setHadTaus(int hadTau1_genPdgId, double hadTau1_pt, double hadTau1_eta, int hadTau1_decayMode, 
-		  int hadTau2_genPdgId, double hadTau2_pt, double hadTau2_eta, int hadTau2_decayMode);
+  void setHadTaus(int hadTau_genPdgId, double hadTau_pt, double hadTau_eta, int hadTau_decayMode);
   //-----------------------------------------------------------------------------
 
   //-----------------------------------------------------------------------------
@@ -78,14 +77,10 @@ class Data_to_MC_CorrectionInterface_1l_2tau_trigger
   int lepton_type_;
   double lepton_pt_;
   double lepton_eta_;
-  int hadTau1_genPdgId_;
-  double hadTau1_pt_;
-  double hadTau1_eta_;
-  int hadTau1_decayMode_;
-  int hadTau2_genPdgId_;
-  double hadTau2_pt_;
-  double hadTau2_eta_;
-  int hadTau2_decayMode_;
+  int hadTau_genPdgId_;
+  double hadTau_pt_;
+  double hadTau_eta_;
+  int hadTau_decayMode_;
 };
 
-#endif // tthAnalysis_HiggsToTauTau_data_to_MC_corrections_1l_2tau_trigger_h
+#endif // tthAnalysis_HiggsToTauTau_data_to_MC_corrections_1l_1tau_trigger_h

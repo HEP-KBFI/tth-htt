@@ -5,20 +5,46 @@ from tthAnalyzeSamples_2016 import samples_2016
 for sample_name, sample_info in samples_2016.items():
   if sample_info["type"] == "mc":
     sample_info["triggers"] = [ "2tau" ]
-  if sample_name in [ # CV: to be updated !!
-      "/DoubleMuon/Run2015C_25ns-16Dec2015-v1/MINIAOD",
-      "/DoubleMuon/Run2015D-16Dec2015-v1/MINIAOD",
-      "/DoubleEG/Run2015C_25ns-16Dec2015-v1/MINIAOD",
-      "/DoubleEG/Run2015D-16Dec2015-v2/MINIAOD",
-      "/MuonEG/Run2015C_25ns-16Dec2015-v1/MINIAOD", 
-      "/MuonEG/Run2015D-16Dec2015-v1/MINIAOD",
-      "/SingleMuon/Run2015C_25ns-16Dec2015-v1/MINIAOD",
-      "/SingleMuon/Run2015D-16Dec2015-v1/MINIAOD",
-      "/SingleElectron/Run2015C_25ns-16Dec2015-v1/MINIAOD",
-      "/SingleElectron/Run2015D-16Dec2015-v1/MINIAOD" ]:
+  if sample_name in [
+      "/DoubleEG/Run2016B-23Sep2016-v3/MINIAOD",
+      "/DoubleEG/Run2016C-23Sep2016-v1/MINIAOD",
+      "/DoubleEG/Run2016E-23Sep2016-v1/MINIAOD",
+      "/DoubleEG/Run2016G-23Sep2016-v1/MINIAOD",
+      "/DoubleEG/Run2016H-PromptReco-v2/MINIAOD",
+      "/DoubleEG/Run2016H-PromptReco-v3/MINIAOD",
+      "/DoubleEG/Run2016D-23Sep2016-v1/MINIAOD",
+      "/DoubleEG/Run2016F-23Sep2016-v1/MINIAOD",
+      "/DoubleMuon/Run2016B-23Sep2016-v3/MINIAOD",
+      "/DoubleMuon/Run2016E-23Sep2016-v1/MINIAOD",
+      "/DoubleMuon/Run2016F-23Sep2016-v1/MINIAOD",
+      "/DoubleMuon/Run2016H-PromptReco-v2/MINIAOD",
+      "/DoubleMuon/Run2016H-PromptReco-v3/MINIAOD",
+      "/DoubleMuon/Run2016C-23Sep2016-v1/MINIAOD",
+      "/DoubleMuon/Run2016D-23Sep2016-v1/MINIAOD",
+      "/DoubleMuon/Run2016G-23Sep2016-v1/MINIAOD",
+      "/MuonEG/Run2016D-23Sep2016-v1/MINIAOD",
+      "/MuonEG/Run2016H-PromptReco-v2/MINIAOD",
+      "/MuonEG/Run2016H-PromptReco-v3/MINIAOD",
+      "/MuonEG/Run2016B-23Sep2016-v3/MINIAOD",
+      "/MuonEG/Run2016C-23Sep2016-v1/MINIAOD",
+      "/MuonEG/Run2016E-23Sep2016-v1/MINIAOD",
+      "/MuonEG/Run2016F-23Sep2016-v1/MINIAOD",
+      "/MuonEG/Run2016G-23Sep2016-v1/MINIAOD",
+      "/SingleElectron/Run2016B-23Sep2016-v3/MINIAOD",
+      "/SingleElectron/Run2016C-23Sep2016-v1/MINIAOD",
+      "/SingleElectron/Run2016D-23Sep2016-v1/MINIAOD",
+      "/SingleElectron/Run2016E-23Sep2016-v1/MINIAOD",
+      "/SingleElectron/Run2016F-23Sep2016-v1/MINIAOD",
+      "/SingleElectron/Run2016H-PromptReco-v2/MINIAOD",
+      "/SingleElectron/Run2016H-PromptReco-v3/MINIAOD",
+      "/SingleElectron/Run2016G-23Sep2016-v1/MINIAOD",
+      "/SingleMuon/Run2016B-23Sep2016-v3/MINIAOD",
+      "/SingleMuon/Run2016C-23Sep2016-v1/MINIAOD",
+      "/SingleMuon/Run2016D-23Sep2016-v1/MINIAOD",
+      "/SingleMuon/Run2016E-23Sep2016-v1/MINIAOD",
+      "/SingleMuon/Run2016F-23Sep2016-v1/MINIAOD",
+      "/SingleMuon/Run2016H-PromptReco-v2/MINIAOD",
+      "/SingleMuon/Run2016H-PromptReco-v3/MINIAOD",
+      "/SingleMuon/Run2016G-23Sep2016-v1/MINIAOD" ]:
     sample_info["use_it"] = False
 
-# CV: this sample is used as place-holder to fill some data_obs histograms at all;
-#     we really need to process the TauPlusX datasets in order to compare data_obs with expected backgrounds in the 0l_2tau channel !!
-samples_2016["/DoubleMuon/Run2015C_25ns-16Dec2015-v1/MINIAOD"]["triggers"] = [ "2mu" ]
-samples_2016["/DoubleMuon/Run2015C_25ns-16Dec2015-v1/MINIAOD"]["use_it"] = True

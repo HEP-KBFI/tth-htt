@@ -1343,7 +1343,7 @@ int main(int argc, char* argv[])
     cutFlowHistManager->fillHistograms("lepton+tau charge", evtWeight);
 
     if ( leptonSelection == kFakeable || hadTauSelection == kFakeable ) {
-      if ( (tightMuons.size() + tightElectrons.size()) >= 1 && tightHadTaus_lead.size() >= 1 && tightHadTaus_sublead.size() >= 1 ) continue; // CV: avoid overlap with signal region
+      if ( tightLeptons.size() >= 1 && tightHadTaus_lead.size() >= 1 && tightHadTaus_sublead.size() >= 1 ) continue; // CV: avoid overlap with signal region
       cutFlowTable.update("signal region veto", evtWeight);
       cutFlowHistManager->fillHistograms("signal region veto", evtWeight);
     }
@@ -1420,10 +1420,10 @@ int main(int argc, char* argv[])
     selHistManager->weights_->fillHistograms("fakeRate", weight_fakeRate);
 
     std::string category;
-    if      ( selElectrons.size() == 1 && selBJets_medium.size() >= 1 ) category = "1e_2tau_btight"; 
-    else if ( selElectrons.size() == 1                                ) category = "1e_2tau_bloose";  
-    else if ( selMuons.size()     == 1 && selBJets_medium.size() >= 1 ) category = "1mu_2tau_btight"; 
-    else if ( selMuons.size()     == 1                                ) category = "1mu_2tau_bloose"; 
+    if      ( selElectrons.size() >= 1 && selBJets_medium.size() >= 1 ) category = "1e_2tau_btight"; 
+    else if ( selElectrons.size() >= 1                                ) category = "1e_2tau_bloose";  
+    else if ( selMuons.size()     >= 1 && selBJets_medium.size() >= 1 ) category = "1mu_2tau_btight"; 
+    else if ( selMuons.size()     >= 1                                ) category = "1mu_2tau_bloose"; 
     else assert(0);
 
     if ( selHistManager->electrons_in_categories_.find(category) != selHistManager->electrons_in_categories_.end() ) {

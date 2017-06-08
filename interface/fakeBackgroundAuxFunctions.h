@@ -1,6 +1,8 @@
 #ifndef tthAnalysis_HiggsToTauTau_fakeBackgroundAuxFunctions_h
 #define tthAnalysis_HiggsToTauTau_fakeBackgroundAuxFunctions_h
 
+double getWeight_1L(double prob_fake, bool passesTight);
+
 double getWeight_2L(double prob_fake_lead, bool passesTight_lead,
 		    double prob_fake_sublead, bool passesTight_sublead);
 

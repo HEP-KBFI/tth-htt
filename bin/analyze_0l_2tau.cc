@@ -64,8 +64,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/LHEInfoHistManager.h" // LHEInfoHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/leptonTypes.h" // getLeptonType, kElectron, kMuon
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // getBranchName_bTagWeight, getHadTau_genPdgId, isHigherPt, isMatched
-#include "tthAnalysis/HiggsToTauTau/interface/leptonGenMatchingAuxFunctions.h" // getLeptonGenMatch_definitions_1lepton, getLeptonGenMatch_string, getLeptonGenMatch_int
-#include "tthAnalysis/HiggsToTauTau/interface/hadTauGenMatchingAuxFunctions.h" // getHadTauGenMatch_definitions_1tau, getHadTauGenMatch_string, getHadTauGenMatch_int
+#include "tthAnalysis/HiggsToTauTau/interface/hadTauGenMatchingAuxFunctions.h" // getHadTauGenMatch_definitions_2tau, getHadTauGenMatch_string, getHadTauGenMatch_int
 #include "tthAnalysis/HiggsToTauTau/interface/fakeBackgroundAuxFunctions.h" // getWeight_2L
 #include "tthAnalysis/HiggsToTauTau/interface/hltPath.h" // hltPath, create_hltPaths, hltPaths_setBranchAddresses, hltPaths_isTriggered, hltPaths_delete
 #include "tthAnalysis/HiggsToTauTau/interface/Data_to_MC_CorrectionInterface.h" // Data_to_MC_CorrectionInterface
@@ -1061,7 +1060,7 @@ int main(int argc, char* argv[])
     cutFlowHistManager->fillHistograms("tau-pair OS/SS charge", evtWeight);
     
     if ( hadTauSelection == kFakeable ) {
-      if ( (tightMuons.size() + tightElectrons.size()) >= 1 && tightHadTaus_lead.size() >= 1 && tightHadTaus_sublead.size() >= 1 ) continue; // CV: avoid overlap with signal region
+      if ( tightHadTaus_lead.size() >= 1 && tightHadTaus_sublead.size() >= 1 ) continue; // CV: avoid overlap with signal region
       cutFlowTable.update("signal region veto", evtWeight);
       cutFlowHistManager->fillHistograms("signal region veto", evtWeight);
     }
@@ -1084,7 +1083,7 @@ int main(int argc, char* argv[])
     measuredTauLeptons.push_back(classic_svFit::MeasuredTauLepton(leg2Type, selHadTau_sublead->pt(), selHadTau_sublead->eta(), selHadTau_sublead->phi(), leg2Mass));
     ClassicSVfit svFitAlgo;
     svFitAlgo.addLogM_dynamic(false);
-    svFitAlgo.addLogM_fixed(true, 6.);
+    svFitAlgo.addLogM_fixed(true, 5.);
     svFitAlgo.integrate(measuredTauLeptons, met.p4().px(), met.p4().py(), met.cov());
     double mTauTau = ( svFitAlgo.isValidSolution() ) ? svFitAlgo.mass() : -1.;
 
