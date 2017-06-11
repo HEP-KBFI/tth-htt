@@ -26,7 +26,8 @@ def print_event_comparison(filename):
       if event.MVA_2lss_ttV>0.6:
       #if lumis[i] == 22552 and event.nEvent == 3202381:
         print "%d:%d:%d " % (event.run, lumis[i], event.nEvent),
-        print event.MVA_2lss_ttV, event.n_presel_jet, event.n_presel_mu, event.n_presel_ele, event.mindr_lep0_jet, event.mindr_lep1_jet, event.PFMET, event.avg_dr_jet, event.MT_met_lep0, event.mu0_pt, event.mu0_eta, event.ele0_pt, event.ele0_eta#, event.n_jet25_recl
+        #print event.MVA_2lss_ttV, event.n_presel_jet, event.n_presel_mu, event.n_presel_ele, event.mindr_lep0_jet, event.mindr_lep1_jet, event.PFMET, event.avg_dr_jet, event.MT_met_lep0, event.mu0_pt, event.mu0_eta, event.ele0_pt, event.ele0_eta#, event.n_jet25_recl
+        print event.ele0_charge, event.mu0_charge, event.tau0_charge,  
       """sums[0] += event.PU_weight
       sums[1] += event.MC_weight 
       sums[2] += event.bTagSF_weight
