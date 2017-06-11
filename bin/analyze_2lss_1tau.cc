@@ -108,8 +108,6 @@ const std::map<std::string, GENHIGGSDECAYMODE_TYPE> decayMode_idString = {
 const int hadTauSelection_antiElectron = -1; // not applied
 const int hadTauSelection_antiMuon = -1; // not applied
 
-
-
 /**
  * @brief Produce datacard and control plots for 2lss_1tau categories.
  */
@@ -143,7 +141,7 @@ int main(int argc, char* argv[])
 
   std::string process_string = cfg_analyze.getParameter<std::string>("process");
   bool isSignal = ( process_string == "signal" ) ? true : false;
-
+  
   std::string histogramDir = cfg_analyze.getParameter<std::string>("histogramDir");
 
   std::string era_string = cfg_analyze.getParameter<std::string>("era");
@@ -232,6 +230,7 @@ int main(int argc, char* argv[])
   std::cout << "apply_lepton_and_hadTauCharge_cut = " << apply_lepton_and_hadTauCharge_cut << std::endl;
 
   bool isMC = cfg_analyze.getParameter<bool>("isMC"); 
+  bool isMC_tH = ( process_string == "tH" ) ? true : false; 
   std::string central_or_shift = cfg_analyze.getParameter<std::string>("central_or_shift");
   double lumiScale = ( process_string != "data_obs" ) ? cfg_analyze.getParameter<double>("lumiScale") : 1.;
   bool apply_genWeight = cfg_analyze.getParameter<bool>("apply_genWeight"); 
@@ -411,9 +410,11 @@ int main(int argc, char* argv[])
   hltPaths_setBranchAddresses(inputTree, triggers_1e1mu);
 
   GENWEIGHT_TYPE genWeight = 1.;
+  GENWEIGHTTH_TYPE genWeight_tH = 1.; // reweight tH MC sample from kappa=-1 to kappa=+1 (SM) case 
   PUWEIGHT_TYPE pileupWeight = 1.;
   if ( isMC ) {
     inputTree->SetBranchAddress(GENWEIGHT_KEY, &genWeight);
+    if ( isMC_tH ) inputTree->SetBranchAddress(GENWEIGHTTH_KEY, &genWeight_tH);
     inputTree->SetBranchAddress(PUWEIGHT_KEY, &pileupWeight);
   }
 
@@ -1105,7 +1106,7 @@ int main(int argc, char* argv[])
     preselLeptons.insert(preselLeptons.end(), preselElectrons.begin(), preselElectrons.end());
     preselLeptons.insert(preselLeptons.end(), preselMuons.begin(), preselMuons.end());
     std::sort(preselLeptons.begin(), preselLeptons.end(), isHigherConePt);
-    // require exactly two leptons passing loose preselection criteria to avoid overlap with 3l category
+    // require at least two leptons passing loose preselection criteria 
     if ( !(preselLeptons.size() >= 2) ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS preselLeptons selection." << std::endl;
@@ -1149,8 +1150,8 @@ int main(int argc, char* argv[])
       }
       continue;
     }
-    cutFlowTable.update(">= 2 jets (1)");
-    cutFlowHistManager->fillHistograms(">= 2 jets (1)", lumiScale);
+    cutFlowTable.update(">= 2 jets");
+    cutFlowHistManager->fillHistograms(">= 2 jets", lumiScale);
     if ( !(selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS selBJets selection (1)." << std::endl;
@@ -1207,8 +1208,7 @@ int main(int argc, char* argv[])
     selLeptons.reserve(selElectrons.size() + selMuons.size());
     selLeptons.insert(selLeptons.end(), selElectrons.begin(), selElectrons.end());
     selLeptons.insert(selLeptons.end(), selMuons.begin(), selMuons.end());
-    std::sort(selLeptons.begin(), selLeptons.end(), isHigherPt);
-    // require exactly two leptons passing tight selection criteria of final event selection 
+    std::sort(selLeptons.begin(), selLeptons.end(), isHigherPt);    
     if ( !(selLeptons.size() >= 2) ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS selLeptons selection." << std::endl;
@@ -1239,6 +1239,7 @@ int main(int argc, char* argv[])
     if ( isMC ) {
       evtWeight *= lumiScale;
       if ( apply_genWeight ) evtWeight *= sgn(genWeight);
+      if ( isMC_tH ) evtWeight *= genWeight_tH;
       evtWeight *= pileupWeight;
       if ( lheScale_option != kLHE_scale_central ) {	
 	if      ( lheScale_option == kLHE_scale_xDown ) evtWeight *= lheInfoReader->getWeight_scale_xDown();
@@ -1372,6 +1373,7 @@ int main(int argc, char* argv[])
       std::cout << "evtWeight = " << evtWeight << std::endl;
     }
 
+    // require exactly two leptons passing tight selection criteria, to avoid overlap with other channels  
     std::vector<const RecoLepton*> tightLeptons;    
     tightLeptons.reserve(tightElectrons.size() + tightMuons.size());
     tightLeptons.insert(tightLeptons.end(), tightElectrons.begin(), tightElectrons.end());

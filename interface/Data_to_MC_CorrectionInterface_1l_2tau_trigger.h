@@ -22,9 +22,9 @@ class Data_to_MC_CorrectionInterface_1l_2tau_trigger
   //-----------------------------------------------------------------------------
 
   //-----------------------------------------------------------------------------
-  // set lepton type, pT and eta
+  // set lepton type, pT and eta as well as hadTau pT, eta and decay mode
   // (to be called once per event, before calling any of the getSF.. functions)
-  void setLeptons(int lepton1_type, double lepton1_pt, double lepton1_eta);
+  void setLeptons(int lepton_type, double lepton_pt, double lepton_eta);
 
   void setHadTaus(int hadTau1_genPdgId, double hadTau1_pt, double hadTau1_eta, int hadTau1_decayMode, 
 		  int hadTau2_genPdgId, double hadTau2_pt, double hadTau2_eta, int hadTau2_decayMode);
@@ -32,7 +32,7 @@ class Data_to_MC_CorrectionInterface_1l_2tau_trigger
 
   //-----------------------------------------------------------------------------
   // trigger efficiency turn-on curves for Spring16 non-reHLT MC (not yet implemented)
-  double getWeight_leptonTriggerEff() const { assert(0); }
+  double getWeight_triggerEff() const { assert(0); }
   //-----------------------------------------------------------------------------
 
   //-----------------------------------------------------------------------------

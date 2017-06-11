@@ -2258,7 +2258,7 @@ samples_2016["/THW_Hincl_13TeV-madgraph-pythia8_TuneCUETP8M1/RunIISummer16MiniAO
 
 samples_2016["/ttWW_lo/MINIAODSIM"] = OD([
   ("type",                  "mc"),
-  ("sample_category",       "ttWW"),
+  ("sample_category",       "TTWW"),
   ("process_name_specific", "TTWW"),
   ("nof_files",             10),
   ("nof_events",            9994),
