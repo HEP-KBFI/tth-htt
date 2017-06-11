@@ -19,7 +19,7 @@ elif ERA == "2016":
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "histosCF_summer_test"
+version = "histosCF_summer_June6"
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -30,7 +30,7 @@ if __name__ == '__main__':
   analysis = analyzeConfig_charge_flip(
     configDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", ERA, version),
     outputDir = os.path.join("/hdfs/local/ttH_2tau", getpass.getuser(), "ttHAnalysis", ERA, version),
-    ##outputDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", ERA, version),
+    #outputDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", ERA, version),
     executable_analyze = "analyze_charge_flip",
     samples = samples,
     lepton_selections = [ "Tight"],
@@ -59,12 +59,12 @@ if __name__ == '__main__':
        #"CMS_ttHl_tauESDown",
        #"CMS_ttHl_electronESUp",
        #"CMS_ttHl_electronESDown",
-       #"CMS_ttHl_electronERUp",
-       #"CMS_ttHl_electronERDown",
-       #"CMS_ttHl_electronESEndcapUp",
-       #"CMS_ttHl_electronESEndcapDown",
-       #"CMS_ttHl_electronESBarrelUp",
-       #"CMS_ttHl_electronESBarrelDown"
+       "CMS_ttHl_electronERUp",
+       "CMS_ttHl_electronERDown",
+       "CMS_ttHl_electronESEndcapUp",
+       "CMS_ttHl_electronESEndcapDown",
+       "CMS_ttHl_electronESBarrelUp",
+       "CMS_ttHl_electronESBarrelDown"
     ],
     max_files_per_job = 100,
     era = ERA, use_lumi = True, lumi = LUMI,
