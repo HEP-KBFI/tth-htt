@@ -7,7 +7,7 @@ process = cms.PSet()
 process.fwliteInput = cms.PSet(
 #    fileNames = cms.vstring('/home/karl/VHbbNtuples_7_6_x3/CMSSW_7_6_3/src/VHbbAnalysis/Heppy/test/Loop_1/tree.root'),
 #    fileNames = cms.vstring('/home/karl/VHbbNtuples_7_6_x3/CMSSW_7_6_3/src/VHbbAnalysis/Heppy/test/Loop_2/tree.root'),
-    fileNames = cms.vstring('/home/andres/tth/sync/ttHJetToNonbb_M125_13TeV_sync_summer_v1_crab.root'),
+    fileNames = cms.vstring('/home/andres/tth/sync/ttHJetToNonbb_M125_13TeV_sync_summer_v3.root'),
     maxEvents = cms.int32(-1),
     outputEvery = cms.uint32(10000)
 )
