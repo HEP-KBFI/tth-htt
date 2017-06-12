@@ -11,3 +11,13 @@ std::string getEtaBin(double minAbsEta, double maxAbsEta)
   absEtaBin = TString(absEtaBin.data()).ReplaceAll(".", "_").Data();
   return absEtaBin;
 }
+
+std::string getPtBin(double minPt, double maxPt)
+{
+  std::string PtBin = "";
+  if ( minPt > 0. && maxPt > 0. ) PtBin.append(Form("Pt%1.1fto%1.1f", minPt, maxPt));
+  else if ( minPt > 0. ) PtBin.append(Form("PtGt%1.1f", minPt));
+  else if ( maxPt > 0. ) PtBin.append(Form("PtLt%1.1f", maxPt));
+  PtBin = TString(PtBin.data()).ReplaceAll(".", "_").Data();
+  return PtBin;
+}
