@@ -56,6 +56,7 @@ class ElectronHistManager
   std::vector<TH1*> histograms_;
 
   TH1* histogram_Mt_;     // NEWLY ADDED     
+
   TH1* histogram_Mt_fix_; // NEWLY ADDED     
 
 
