@@ -4,6 +4,9 @@
 
 # This value is provided by sbatchManager.py that creates sbatch scripts based this template
 
+echo 'Running version (sbatch-node.template.sh)'
+
+
 RUNNING_COMMAND="{{ RUNNING_COMMAND }}"
 
 
@@ -88,14 +91,17 @@ run_wrapped_executable() {
     echo "Copying output files: {{ outputFiles }}"
     for OUTPUT_FILE in $OUTPUT_FILES
     do
-      OUTPUT_FILE_SIZE=$(stat -c '%s' $OUTPUT_FILE)
-      if [ $OUTPUT_FILE_SIZE -ge 1000 ]; then
-        echo "cp $OUTPUT_FILE {{ outputDir }}"
-        cp $OUTPUT_FILE {{ outputDir }}
-      else
-        rm $OUTPUT_FILE
-        EXIT_CODE=1
-      fi
+      echo "cp $OUTPUT_FILE {{ outputDir }}"
+      cp $OUTPUT_FILE {{ outputDir }}
+
+      # OUTPUT_FILE_SIZE=$(stat -c '%s' $OUTPUT_FILE)
+      # if [ $OUTPUT_FILE_SIZE -ge 1000 ]; then
+      #   echo "cp $OUTPUT_FILE {{ outputDir }}"
+      #   cp $OUTPUT_FILE {{ outputDir }}
+      # else
+      #   rm $OUTPUT_FILE
+      #   EXIT_CODE=1
+      # fi
     done
 
     echo "Time is: `date`"

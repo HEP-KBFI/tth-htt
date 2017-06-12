@@ -4,6 +4,8 @@
 
 # Runs executable, wrapped into failure wrapper + wrapped into node scratchdir
 
+echo 'Running version (sbatch-node.submit_job_version2.sh)'
+
 main() {
     run_failure_wrapped_executable >> "{{wrapper_log_file}}" 2>&1
     EXIT_CODE=$?
