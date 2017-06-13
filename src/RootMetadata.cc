@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <string>
 using namespace std;
 
 
@@ -11,7 +12,7 @@ RootMetadata::RootMetadata()
 }
 
 string RootMetadata::toString() {
-  return "selectedEntries: " + to_string(this.selectedEntries) + "\n";
+  return std::to_string("selectedEntries: ") + std::to_string(this.selectedEntries) + "\n";
 }
 
 bool RootMetadata::save(std::string fileName)
