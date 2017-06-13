@@ -1,4 +1,4 @@
-#include "tthAnalysis/HiggsToTauTau/interface/RecoElectron.h" // RecoElectron, RecoLepton, GenLepton
+#include "tthAnalysis/HiggsToTauTau/interface/RootMetadata.h" // RecoElectron, RecoLepton, GenLepton
 
 #include <iostream>
 #include <fstream>
@@ -12,7 +12,7 @@ RootMetadata::RootMetadata()
 }
 
 string RootMetadata::toString() {
-  return std::to_string("selectedEntries: ") + std::to_string(this.selectedEntries) + "\n";
+  return std::string("selectedEntries: ") + std::to_string(this.selectedEntries) + std::string("\n");
 }
 
 bool RootMetadata::save(std::string fileName)
