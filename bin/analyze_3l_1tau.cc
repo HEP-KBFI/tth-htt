@@ -1926,6 +1926,13 @@ int main(int argc, char* argv[])
   cutFlowTable.print(std::cout);
   std::cout << std::endl;
 
+  std::string rootMetadataFile = to_string(outputFile.file().data()) + ".metadata";
+  RootMetadata metadata();
+  metadata.numEntries = numEntries;
+  metadata.selectedEntries = selectedEntries;
+  metadata.selectedEntriesWeighted = selectedEntries_weighted;
+  metadata.save(rootMetadataFile);
+
   std::cout << "sel. Entries by gen. matching:" << std::endl;
   for ( std::vector<leptonGenMatchEntry>::const_iterator leptonGenMatch_definition = leptonGenMatch_definitions.begin();
 	leptonGenMatch_definition != leptonGenMatch_definitions.end(); ++leptonGenMatch_definition ) {
