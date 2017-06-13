@@ -6,12 +6,7 @@
 using namespace std;
 
 
-RootMetadata::RootMetadata()
-{
-
-}
-
-string RootMetadata::toString() {
+std::string RootMetadata::toString() {
   return std::string("selectedEntries: ") + std::to_string(this.selectedEntries) + std::string("\n");
 }
 
