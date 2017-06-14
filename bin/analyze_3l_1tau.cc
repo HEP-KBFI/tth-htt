@@ -78,7 +78,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/NtupleFillerUnits.h" // ...
 #include "tthAnalysis/HiggsToTauTau/interface/NtupleFillerMEM.h" // NtupleFillerMEM
 #include "tthAnalysis/HiggsToTauTau/interface/NtupleFillerBDT.h" // NtupleFillerBDT
-#include "tthAnalysis/HiggsToTauTau/interface/RootMetadata.h"
+// #include "tthAnalysis/HiggsToTauTau/interface/RootMetadata.h"
 
 #include <boost/range/algorithm/copy.hpp> // boost::copy()
 #include <boost/range/adaptor/map.hpp> // boost::adaptors::map_keys
@@ -1928,11 +1928,11 @@ int main(int argc, char* argv[])
   std::cout << std::endl;
 
   std::string rootMetadataFile = std::string(outputFile.file().data()) + std::string(".metadata");
-  RootMetadata* metadata = new RootMetadata();
-  metadata->numEntries = numEntries;
-  metadata->selectedEntries = selectedEntries;
-  metadata->selectedEntriesWeighted = selectedEntries_weighted;
-  metadata->save(rootMetadataFile);
+  // RootMetadata* metadata = new RootMetadata();
+  // metadata->numEntries = numEntries;
+  // metadata->selectedEntries = selectedEntries;
+  // metadata->selectedEntriesWeighted = selectedEntries_weighted;
+  // metadata->save(rootMetadataFile);
 
   std::cout << "sel. Entries by gen. matching:" << std::endl;
   for ( std::vector<leptonGenMatchEntry>::const_iterator leptonGenMatch_definition = leptonGenMatch_definitions.begin();
