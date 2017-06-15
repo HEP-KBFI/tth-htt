@@ -4,6 +4,9 @@
 
 # This value is provided by sbatchManager.py that creates sbatch scripts based this template
 
+echo 'Running version (sbatch-node.template.sh)'
+
+
 RUNNING_COMMAND="{{ RUNNING_COMMAND }}"
 
 
@@ -81,6 +84,7 @@ run_wrapped_executable() {
     echo "Execute command: {{ exec_name }} {{ cfg_file }} &> $TEMPORARY_EXECUTABLE_LOG_FILE"
     {{ exec_name }} {{ cfg_file }} &> $TEMPORARY_EXECUTABLE_LOG_FILE
     EXIT_CODE=$?
+    echo "Command {{ exec_name }} exited with code $EXIT_CODE"
 
     echo "Time is: `date`"
 
@@ -88,11 +92,15 @@ run_wrapped_executable() {
     echo "Copying output files: {{ outputFiles }}"
     for OUTPUT_FILE in $OUTPUT_FILES
     do
+      echo "cp $OUTPUT_FILE {{ outputDir }}"
+      cp $OUTPUT_FILE {{ outputDir }}
+
       OUTPUT_FILE_SIZE=$(stat -c '%s' $OUTPUT_FILE)
       if [ $OUTPUT_FILE_SIZE -ge 1000 ]; then
         echo "cp $OUTPUT_FILE {{ outputDir }}"
         cp $OUTPUT_FILE {{ outputDir }}
       else
+        echo "$OUTPUT_FILE is broken, will exit with code 1."
         rm $OUTPUT_FILE
         EXIT_CODE=1
       fi
