@@ -1,7 +1,6 @@
 import logging
 
 from tthAnalysis.HiggsToTauTau.analyzeConfig_new import *
-import tthAnalyzeSamples_chargeflip_2016
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists
 from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg, createFile, generateInputFileList
 
@@ -142,13 +141,13 @@ class analyzeConfig_charge_flip(analyzeConfig):
           else:
             self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel,
               "_".join([ lepton_selection ]), process_name)
-    for dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_HIST, DKEY_DCRD, DKEY_PLOT ]:
+    for dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_HIST, DKEY_LOGS, DKEY_DCRD, DKEY_PLOT, DKEY_HADD_RT ]:
       initDict(self.dirs, [ dir_type ])
-      if dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_LOGS ]:
+      if dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_LOGS, DKEY_DCRD, DKEY_PLOT, DKEY_HADD_RT ]:
         self.dirs[dir_type] = os.path.join(self.configDir, dir_type, self.channel)
       else:
         self.dirs[dir_type] = os.path.join(self.outputDir, dir_type, self.channel)
-    ##print "self.dirs = ", self.dirs
+    ##print "self.dirs = ", self.dirs    
 
     for key in self.dirs.keys():
       if type(self.dirs[key]) == dict:
@@ -156,6 +155,13 @@ class analyzeConfig_charge_flip(analyzeConfig):
           create_if_not_exists(self.dirs[key][dir_type])
       else:
         create_if_not_exists(self.dirs[key])
+
+    inputFileLists = {}
+    for sample_name, sample_info in self.samples.items():
+      if not sample_info["use_it"] or sample_info["sample_category"] in [ "additional_signal_overlap", "background_data_estimate" ]:
+        continue
+      logging.info("Checking input files for sample %s" % sample_info["process_name_specific"])
+      inputFileLists[sample_name] = generateInputFileList(sample_name, sample_info, self.max_files_per_job, self.debug)
 
     for lepton_selection in self.lepton_selections:
         for sample_name, sample_info in self.samples.items():
@@ -167,10 +173,8 @@ class analyzeConfig_charge_flip(analyzeConfig):
           sample_category = sample_info["sample_category"]
           is_mc = (sample_info["type"] == "mc")
           is_signal = (sample_category == "signal")
-
+          inputFileList = inputFileLists[sample_name]
           for central_or_shift in self.central_or_shifts:
-
-            inputFileList = generateInputFileList(sample_name, sample_info, self.max_files_per_job, self.debug)
             for jobId in inputFileList.keys():
               #if central_or_shift != "central" and not (lepton_and_hadTau_selection.startswith("Tight") and lepton_charge_selection == "SS"):
               #  continue
@@ -274,7 +278,8 @@ class analyzeConfig_charge_flip(analyzeConfig):
     if self.is_sbatch:
       logging.info("Creating script for submitting '%s' jobs to batch system" % self.executable_analyze)
       self.sbatchFile_analyze = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_analyze_%s.py" % self.channel)
-      self.createScript_sbatch()
+      self.createScript_sbatch_analyze(self.executable_analyze, self.sbatchFile_analyze, self.jobOptions_analyze)
+      
 
     logging.info("Creating Makefile")
     lines_makefile = []

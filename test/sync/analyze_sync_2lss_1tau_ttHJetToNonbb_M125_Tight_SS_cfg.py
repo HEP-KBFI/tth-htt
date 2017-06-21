@@ -93,7 +93,7 @@ process.analyze_2lss_1tau = cms.PSet(
     selectBDT = cms.bool(False),
 )
 
-process.fwliteInput.fileNames = cms.vstring(['/home/andres/tth/sync/ttHJetToNonbb_M125_13TeV_sync_summer_v1_crab.root'])
+process.fwliteInput.fileNames = cms.vstring(['/home/andres/tth/sync/ttHJetToNonbb_M125_13TeV_sync_summer_v3.root'])
 process.fwliteOutput.fileName = cms.string('output/ttHJetToNonbb_2lss_1tau_M125_Tight_SS.root')
 process.analyze_2lss_1tau.process = cms.string('signal')
 process.analyze_2lss_1tau.histogramDir = cms.string('2lss_1tau_SS_Tight')
@@ -134,3 +134,8 @@ process.analyze_2lss_1tau.apply_trigger_bits = cms.bool(True)
 #process.analyze_2lss_1tau.selEventsFileName_output = cms.string('/home/andres/tth/VHbbNtuples_8_0_x/CMSSW_8_0_19/src/tthAnalysis/HiggsToTauTau/test/sync/str_2lss_1tau_SR.txt')
 #process.analyze_2lss_1tau.selEventsFileName_output = cms.string('/home/veelken/ttHAnalysis/2016/2017Feb22/output_rle/2lss_1tau/Tight_SS_OS/ttHJetToNonbb_M125_amcatnlo/rle_2lss_1tau_ttHJetToNonbb_M125_amcatnlo_Tight_lepSS_sumOS_central_1.txt')
 process.analyze_2lss_1tau.selectBDT = cms.bool(False)
+process.analyze_2lss_1tau.apply_leptonGenMatching_ttZ_workaround = cms.bool(False)
+process.analyze_2lss_1tau.branchName_genLeptons1 = cms.string('GenLep')
+process.analyze_2lss_1tau.branchName_genLeptons2 = cms.string('GenLepFromTau')
+process.analyze_2lss_1tau.branchName_genHadTaus = cms.string('GenHadTaus')
+process.analyze_2lss_1tau.branchName_genJets = cms.string('GenJet')
