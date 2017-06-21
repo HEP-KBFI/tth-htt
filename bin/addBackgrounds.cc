@@ -207,5 +207,6 @@ int main(int argc, char* argv[])
 
   clock.Show("addBackgrounds");
 
+  std::cout << "returning exit code = " << EXIT_SUCCESS << " (EXIT_SUCCESS)." << std::endl;
   return EXIT_SUCCESS;
 }

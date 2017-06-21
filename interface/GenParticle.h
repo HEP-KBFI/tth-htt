@@ -1,52 +1,35 @@
 #ifndef tthAnalysis_HiggsToTauTau_GenParticle_h
 #define tthAnalysis_HiggsToTauTau_GenParticle_h
 
-#include <Rtypes.h> // Int_t, Long64_t, Double_t
-#include "DataFormats/Math/interface/LorentzVector.h" // math::PtEtaPhiMLorentzVector
-#include "DataFormats/Math/interface/deltaR.h" // deltaR()
-
-namespace Particle
-{
-  typedef math::PtEtaPhiMLorentzVector LorentzVector;
-};
+#include "tthAnalysis/HiggsToTauTau/interface/Particle.h" // Particle
 
 class GenParticle
+  : public Particle
 {
  public:
   GenParticle() = default;
   GenParticle(Double_t pt,
-              Double_t eta,
-              Double_t phi,
-              Double_t mass);
-  GenParticle(const Particle::LorentzVector & p4);
+	      Double_t eta,
+	      Double_t phi,
+	      Double_t mass,
+	      Int_t pdgId,
+	      Double_t charge);
+  GenParticle(const math::PtEtaPhiMLorentzVector& p4,
+	      Int_t pdgId,
+	      Double_t charge);
 
   /**
    * @brief Funtions to access data-members
    * @return Values of data-members
-   * 
-   * NOTE: get_pt and get_p4 functions needs to be virtual, so that they can be overwritten 
-   *       to implement cone_pT logic for fakeable && !tight leptons in RecoLepton class
    */
-  virtual Double_t pt() const { return pt_; } 
-  Double_t eta() const { return eta_; } 
-  Double_t phi() const { return phi_; } 
-  Double_t mass() const { return mass_; } 
-  
-  Double_t absEta() const { return absEta_; }
-
-  virtual const Particle::LorentzVector& p4() const { return p4_; }
+  Int_t pdgId() const { return pdgId_; }
+  Double_t charge() const { return charge_; }
 
  protected:
-  Double_t pt_;   ///< pT of the particle
-  Double_t eta_;  ///< eta of the particle
-  Double_t phi_;  ///< phi of the particle
-  Double_t mass_; ///< mass of the particle
-
-  Double_t absEta_; ///< |eta| of the particle
-
-  Particle::LorentzVector p4_; ///< 4-momentum constructed from the pT, eta, phi and mass
+  Int_t pdgId_;  ///< PDG id of the particle (signed)
+  Double_t charge_; ///< charge of particle
 };
 
-std::ostream& operator<<(std::ostream& stream, const GenParticle& particle);
+std::ostream& operator<<(std::ostream& stream, const GenParticle& lepton);
 
 #endif // tthAnalysis_HiggsToTauTau_GenParticle_h

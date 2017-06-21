@@ -28,6 +28,7 @@ RecoJetReader::RecoJetReader(int era, bool isMC)
   , jet_BtagCSVwHipMitigation_(0)
   , jet_BtagCSVwoHipMitigation_(0)
   , jet_BtagWeight_(0)
+  , jet_QGDiscr_(0)
   , jet_heppyFlavour_(0)
 {
   setBranchNames();
@@ -52,6 +53,7 @@ RecoJetReader::RecoJetReader(int era, bool isMC, const std::string& branchName_n
   , jet_BtagCSVwHipMitigation_(0)
   , jet_BtagCSVwoHipMitigation_(0)
   , jet_BtagWeight_(0)
+  , jet_QGDiscr_(0)
   , jet_heppyFlavour_(0)
 {
   setBranchNames();
@@ -74,6 +76,7 @@ RecoJetReader::~RecoJetReader()
     delete[] gInstance->jet_BtagCSVwHipMitigation_;
     delete[] gInstance->jet_BtagCSVwoHipMitigation_;
     delete[] gInstance->jet_BtagWeight_;
+    delete[] gInstance->jet_QGDiscr_;
     delete[] gInstance->jet_heppyFlavour_;
     for ( std::map<int, Float_t*>::iterator it = gInstance->jet_BtagWeights_systematics_.begin();
 	  it != gInstance->jet_BtagWeights_systematics_.end(); ++it ) {
@@ -96,9 +99,11 @@ void RecoJetReader::setBranchNames()
     if ( era_ == kEra_2015 ) {
       branchName_BtagCSVwHipMitigation_ = "";
       branchName_BtagCSVwoHipMitigation_ = Form("%s_%s", branchName_obj_.data(), "btagCSV");
+      branchName_QGDiscr_ = "";
     } else if ( era_ == kEra_2016 ) {
       branchName_BtagCSVwHipMitigation_ = Form("%s_%s", branchName_obj_.data(), "btagCSV");              // CV: CSV algorithm with HIP mitigation
       //branchName_BtagCSVwoHipMitigation_ = Form("%s_%s", branchName_obj_.data(), "btagNoHipMitigation"); // CV: CSV algorithm without HIP mitigation
+      branchName_QGDiscr_ = Form("%s_%s", branchName_obj_.data(), "qgl");
     } else assert(0);
     if ( isMC_ ) {
       if ( era_ == kEra_2015 ) {
@@ -109,8 +114,8 @@ void RecoJetReader::setBranchNames()
       for ( int idxShift = kBtag_hfUp; idxShift <= kBtag_jesDown; ++idxShift ) {
 	std::string branchName_BtagWeight = TString(getBranchName_bTagWeight(era_, idxShift)).ReplaceAll("Jet_", Form("%s_", branchName_obj_.data())).Data();
 	branchNames_BtagWeight_systematics_[idxShift] = branchName_BtagWeight;
-      }
-//      branchName_heppyFlavour_ = Form("%s_%s", branchName_obj_.data(), "heppyFlavour"); // KE (20/03/17): doesn't exist in the latest production/addMEM Ntuples
+      }      
+      //branchName_heppyFlavour_ = Form("%s_%s", branchName_obj_.data(), "heppyFlavour"); // KE (20/03/17): doesn't exist in the latest production/addMEM Ntuples
     }
     instances_[branchName_obj_] = this;
   } else {
@@ -177,6 +182,12 @@ void RecoJetReader::setBranchAddresses(TTree* tree)
 	tree->SetBranchAddress(branchNames_BtagWeight_systematics_[idxShift].data(), jet_BtagWeights_systematics_[idxShift]);
       }
     }
+    jet_QGDiscr_ = new Float_t[max_nJets_];
+    if ( branchName_QGDiscr_ != "" ) {
+      tree->SetBranchAddress(branchName_QGDiscr_.data(), jet_QGDiscr_); 
+    } else { 
+      initializeArray(jet_QGDiscr_, max_nJets_, 1.);
+    }
     jet_heppyFlavour_ = new Int_t[max_nJets_];
     if ( branchName_heppyFlavour_ != "" ) {
       tree->SetBranchAddress(branchName_heppyFlavour_.data(), jet_heppyFlavour_); 
@@ -213,7 +224,8 @@ std::vector<RecoJet> RecoJetReader::read() const
 	gInstance->jet_corr_JECUp_[idxJet],
 	gInstance->jet_corr_JECDown_[idxJet],
 	( use_HIP_mitigation_ ) ? gInstance->jet_BtagCSVwHipMitigation_[idxJet] : gInstance->jet_BtagCSVwoHipMitigation_[idxJet],
-	gInstance->jet_BtagWeight_[idxJet],	
+	gInstance->jet_BtagWeight_[idxJet],
+	gInstance->jet_QGDiscr_[idxJet],
 	gInstance->jet_heppyFlavour_[idxJet],
 	idxJet ));
       RecoJet& jet = jets.back();

@@ -1,14 +1,14 @@
 #ifndef tthAnalysis_HiggsToTauTau_RecoHadTau_h
 #define tthAnalysis_HiggsToTauTau_RecoHadTau_h
 
-#include "tthAnalysis/HiggsToTauTau/interface/GenParticle.h" // GenParticle
+#include "tthAnalysis/HiggsToTauTau/interface/Particle.h" // Particle
 #include "tthAnalysis/HiggsToTauTau/interface/GenLepton.h" // GenLepton
 #include "tthAnalysis/HiggsToTauTau/interface/GenHadTau.h" // GenHadTau
 #include "tthAnalysis/HiggsToTauTau/interface/GenJet.h" // GenJet
 
 #include <ostream> // ostream
 
-class RecoHadTau : public GenParticle
+class RecoHadTau : public Particle
 {
  public:
   RecoHadTau() = default;

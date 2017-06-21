@@ -865,14 +865,14 @@ int main(int argc, char* argv[])
       }
     }
 
-    std::vector<GenParticleExt> genNuFromTau;
-    std::vector<GenParticleExt> genTau;
-    std::vector<GenParticleExt> genLepFromTop;
-    std::vector<GenParticleExt> genBQuarkFromTop;
-    std::vector<GenParticleExt> genNuFromTop;
-    std::vector<GenParticleExt> genLepFromTau;
-    std::vector<GenParticleExt> genTop;
-    std::vector<GenParticleExt> genVbosons;
+    std::vector<GenParticle> genNuFromTau;
+    std::vector<GenParticle> genTau;
+    std::vector<GenParticle> genLepFromTop;
+    std::vector<GenParticle> genBQuarkFromTop;
+    std::vector<GenParticle> genNuFromTop;
+    std::vector<GenParticle> genLepFromTau;
+    std::vector<GenParticle> genTop;
+    std::vector<GenParticle> genVbosons;
     if ( isMC && writeSelEventsFile && era == kEra_2016 ) {
       genHadTaus = genHadTauReader->read();
       genNuFromTau = genNuFromTauReader->read();
@@ -1557,8 +1557,8 @@ int main(int argc, char* argv[])
     cutFlowTable.update("sel lepton charge", evtWeight);
     cutFlowHistManager->fillHistograms("sel lepton charge", evtWeight);
 
-    bool isCharge_SS = sumLeptonCharge*selHadTau->charge() > 0;
-    bool isCharge_OS = sumLeptonCharge*selHadTau->charge() < 0;
+    bool isCharge_SS = sumLeptonCharge*selHadTau->charge() > 0.;
+    bool isCharge_OS = sumLeptonCharge*selHadTau->charge() < 0.;
     if ( (chargeSumSelection == kOS && isCharge_SS) || (chargeSumSelection == kSS && isCharge_OS) ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS lepton+tau charge selection." << std::endl;	

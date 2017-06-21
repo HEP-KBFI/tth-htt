@@ -75,6 +75,7 @@ process.analyze_1l_2tau = cms.PSet(
     isMC = cms.bool(False),
     central_or_shift = cms.string('central'),
     lumiScale = cms.double(1.),
+    apply_genWeight = cms.bool(True),
     apply_trigger_bits = cms.bool(True),
 
     fillGenEvtHistograms = cms.bool(False),

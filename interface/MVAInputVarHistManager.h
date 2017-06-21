@@ -24,6 +24,9 @@ class MVAInputVarHistManager
   MVAInputVarHistManager(edm::ParameterSet const& cfg);
   ~MVAInputVarHistManager();
 
+  /// define binning options
+  void defineBinningOption(const std::string& histogramName, int numBinsX, double xMin, double xMax);
+
   /// book and fill histograms
   void bookHistograms(TFileDirectory& dir, const std::vector<std::string>& mvaInputVariables);
   void bookHistograms(TFileDirectory& dir) { assert (0); } // call bookHistograms(TFileDirectory& dir, const std::vector<std::string>& mvaInputVariables) instead !!

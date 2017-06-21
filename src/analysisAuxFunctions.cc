@@ -3,7 +3,7 @@
 #include <map> // std::map
 #include <algorithm> // std::sort
 
-bool isHigherPt(const GenParticle* particle1, const GenParticle* particle2)
+bool isHigherPt(const Particle* particle1, const Particle* particle2)
 {
   return (particle1->pt() > particle2->pt());
 }

@@ -108,6 +108,79 @@ const std::map<std::string, GENHIGGSDECAYMODE_TYPE> decayMode_idString = {
 const int hadTauSelection_antiElectron = -1; // not applied
 const int hadTauSelection_antiMuon = -1; // not applied
 
+double comp_mvaOutput_Hj_tagger(const RecoJet* jet, 
+				const std::vector<const RecoLepton*>& leptons, 
+				std::map<std::string, double>& mvaInputs_Hj_tagger, TMVAInterface& mva_Hj_tagger,
+				RUN_TYPE run, LUMI_TYPE lumi, EVT_TYPE event)
+{
+  double dRmin_lepton = -1.;
+  double dRmax_lepton = -1.;
+  for ( std::vector<const RecoLepton*>::const_iterator lepton = leptons.begin();
+	lepton != leptons.end(); ++lepton ) {
+    double dR = deltaR(jet->eta(), jet->phi(), (*lepton)->eta(), (*lepton)->phi());
+    if ( dRmin_lepton == -1. || dR < dRmin_lepton ) dRmin_lepton = dR;
+    if ( dRmax_lepton == -1. || dR > dRmax_lepton ) dRmax_lepton = dR;
+  }
+
+  mvaInputs_Hj_tagger["Jet_lepdrmin"] = dRmin_lepton;
+  mvaInputs_Hj_tagger["max(Jet_pfCombinedInclusiveSecondaryVertexV2BJetTags,0.)"] = std::max(0., jet->BtagCSV());
+  mvaInputs_Hj_tagger["max(Jet_qg,0.)"] = std::max(0., jet->QGDiscr());
+  mvaInputs_Hj_tagger["Jet_lepdrmax"] = dRmax_lepton;
+  mvaInputs_Hj_tagger["Jet_pt"] = jet->pt();
+
+  check_mvaInputs(mvaInputs_Hj_tagger, run, lumi, event);
+
+  double mvaOutput_Hj_tagger = mva_Hj_tagger(mvaInputs_Hj_tagger);
+  return mvaOutput_Hj_tagger;
+}
+
+double comp_mvaOutput_Hjj_tagger(const RecoJet* jet1, const RecoJet* jet2, const std::vector<const RecoJet*>& jets, 
+				 const std::vector<const RecoLepton*>& leptons, 
+				 std::map<std::string, double>& mvaInputs_Hjj_tagger, TMVAInterface& mva_Hjj_tagger,
+				 std::map<std::string, double>& mvaInputs_Hj_tagger, TMVAInterface& mva_Hj_tagger,
+				 RUN_TYPE run, LUMI_TYPE lumi, EVT_TYPE event)
+{
+  double jet1_mvaOutput_Hj_tagger = comp_mvaOutput_Hj_tagger(
+    jet1, leptons, 
+    mvaInputs_Hj_tagger, mva_Hj_tagger,
+    run, lumi, event);
+  double jet2_mvaOutput_Hj_tagger = comp_mvaOutput_Hj_tagger(
+    jet2, leptons, 
+    mvaInputs_Hj_tagger, mva_Hj_tagger,
+    run, lumi, event);
+  Particle::LorentzVector dijetP4 = jet1->p4() + jet2->p4();
+  const RecoLepton* lepton_nearest = 0;
+  double dRmin_lepton = -1.;
+  for ( std::vector<const RecoLepton*>::const_iterator lepton = leptons.begin();
+	lepton != leptons.end(); ++lepton ) {
+    double dR = deltaR(dijetP4.eta(), dijetP4.phi(), (*lepton)->eta(), (*lepton)->phi());
+    if ( dRmin_lepton == -1. || dR < dRmin_lepton ) {
+      lepton_nearest = (*lepton);
+      dRmin_lepton = dR;
+    }
+  }
+  double dRmin_jet_other = -1.;
+  double dRmax_jet_other = -1.;
+  for ( std::vector<const RecoJet*>::const_iterator jet_other = jets.begin();
+	jet_other != jets.end(); ++jet_other ) {
+    if ( (*jet_other) == jet1 || (*jet_other) == jet2 ) continue;
+    double dR = deltaR(dijetP4.eta(), dijetP4.phi(), (*jet_other)->eta(), (*jet_other)->phi());
+    if ( dRmin_jet_other == -1. || dR < dRmin_jet_other ) dRmin_jet_other = dR;
+    if ( dRmax_jet_other == -1. || dR > dRmax_jet_other ) dRmax_jet_other = dR;
+  }
+  mvaInputs_Hjj_tagger["bdtJetPair_minlepmass"] = ( lepton_nearest ) ? (dijetP4 + lepton_nearest->p4()).mass() : 0.;
+  mvaInputs_Hjj_tagger["bdtJetPair_sumbdt"] = jet1_mvaOutput_Hj_tagger + jet2_mvaOutput_Hj_tagger;
+  mvaInputs_Hjj_tagger["bdtJetPair_dr"] = deltaR(jet1->eta(), jet1->phi(), jet2->eta(), jet2->phi());
+  mvaInputs_Hjj_tagger["bdtJetPair_minjdr"] = dRmin_jet_other;
+  mvaInputs_Hjj_tagger["bdtJetPair_mass"] = dijetP4.mass();
+  mvaInputs_Hjj_tagger["bdtJetPair_minjOvermaxjdr"] = ( dRmax_jet_other > 0. ) ? dRmin_jet_other/dRmax_jet_other : 1.;
+
+  check_mvaInputs(mvaInputs_Hjj_tagger, run, lumi, event);
+
+  double mvaOutput_Hjj_tagger = mva_Hjj_tagger(mvaInputs_Hjj_tagger);
+  return mvaOutput_Hjj_tagger;
+}
+
 /**
  * @brief Produce datacard and control plots for 2lss_1tau categories.
  */
@@ -634,6 +707,29 @@ int main(int argc, char* argv[])
   std::string inputFileName_mva_mapping_2lss_1tau_wMEMsepLR = "tthAnalysis/HiggsToTauTau/data/2lss_1tau_BDTwMEMsepLR_mapping_likelihood.root";
   TFile* inputFile_mva_mapping_2lss_1tau_wMEMsepLR = openFile(LocalFileInPath(inputFileName_mva_mapping_2lss_1tau_wMEMsepLR));
   TH2* mva_mapping_2lss_1tau_wMEMsepLR = loadTH2(inputFile_mva_mapping_2lss_1tau_wMEMsepLR, "hTargetBinning");
+
+  std::string mvaFileName_Hj_tagger = "tthAnalysis/HiggsToTauTau/data/Hj_csv_BDTG.weights.xml";
+  std::vector<std::string> mvaInputVariables_Hj_tagger;
+  mvaInputVariables_Hj_tagger.push_back("Jet_lepdrmin");
+  mvaInputVariables_Hj_tagger.push_back("max(Jet_pfCombinedInclusiveSecondaryVertexV2BJetTags,0.)");
+  mvaInputVariables_Hj_tagger.push_back("max(Jet_qg,0.)");
+  mvaInputVariables_Hj_tagger.push_back("Jet_lepdrmax");
+  mvaInputVariables_Hj_tagger.push_back("Jet_pt");
+  TMVAInterface mva_Hj_tagger(mvaFileName_Hj_tagger, mvaInputVariables_Hj_tagger);
+
+  std::map<std::string, double> mvaInputs_Hj_tagger;
+
+  std::string mvaFileName_Hjj_tagger = "tthAnalysis/HiggsToTauTau/data/Hjj_csv_BDTG.weights.xml";
+  std::vector<std::string> mvaInputVariables_Hjj_tagger;
+  mvaInputVariables_Hjj_tagger.push_back("bdtJetPair_minlepmass");
+  mvaInputVariables_Hjj_tagger.push_back("bdtJetPair_sumbdt");
+  mvaInputVariables_Hjj_tagger.push_back("bdtJetPair_dr");
+  mvaInputVariables_Hjj_tagger.push_back("bdtJetPair_minjdr");
+  mvaInputVariables_Hjj_tagger.push_back("bdtJetPair_mass");
+  mvaInputVariables_Hjj_tagger.push_back("bdtJetPair_minjOvermaxjdr");
+  TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagger);
+
+  std::map<std::string, double> mvaInputs_Hjj_tagger;
 
 //--- open output file containing run:lumi:event numbers of events passing final event selection criteria
   std::ostream* selEventsFile = ( selEventsFileName_output != "" ) ? new std::ofstream(selEventsFileName_output.data(), std::ios::out) : 0;
@@ -1199,7 +1295,7 @@ int main(int argc, char* argv[])
     preselHistManager->evt_->fillHistograms(
       preselElectrons.size(), preselMuons.size(), selHadTaus.size(), 
       selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
-      -1., -1., -1., -1., -1., -1., -1., -1., -1., -1., -1., -1.,      
+      -1., -1., -1., -1., -1., -1., -1., -1., -1., -1., -1., -1., -1., -1.,         
       mTauTauVis1_presel, mTauTauVis2_presel, 
       0, -1., 1.);
 
@@ -1759,6 +1855,30 @@ int main(int argc, char* argv[])
     double mvaOutput_2lss_1tau_ttbar_wMEMsepLR = mva_2lss_1tau_ttbar_wMEMsepLR(mvaInputs_2lss_1tau_wMEMsepLR); 
     Double_t mvaDiscr_2lss_1tau_wMEMsepLR = getSF_from_TH2(mva_mapping_2lss_1tau_wMEMsepLR, mvaOutput_2lss_1tau_ttbar_wMEMsepLR, mvaOutput_2lss_1tau_ttV_wMEMsepLR) + 1.;
 
+    double mvaOutput_Hj_tagger = -1.;
+    for ( std::vector<const RecoJet*>::const_iterator selJet = selJets.begin();
+	  selJet != selJets.end(); ++selJet ) {
+      double mvaOutput = comp_mvaOutput_Hj_tagger(
+        *selJet, fakeableLeptons, 
+	mvaInputs_Hj_tagger, mva_Hj_tagger,
+        run, lumi, event);
+      if ( mvaOutput > mvaOutput_Hj_tagger ) mvaOutput_Hj_tagger = mvaOutput;
+    }
+
+    double mvaOutput_Hjj_tagger = -1.;
+    for ( std::vector<const RecoJet*>::const_iterator selJet1 = selJets.begin();
+	  selJet1 != selJets.end(); ++selJet1 ) {
+      for ( std::vector<const RecoJet*>::const_iterator selJet2 = selJet1 + 1;
+	    selJet2 != selJets.end(); ++selJet2 ) {
+	double mvaOutput = comp_mvaOutput_Hjj_tagger(
+	  *selJet1, *selJet2, selJets, fakeableLeptons, 
+	  mvaInputs_Hjj_tagger, mva_Hjj_tagger, 
+	  mvaInputs_Hj_tagger, mva_Hj_tagger,
+	  run, lumi, event);
+	if ( mvaOutput > mvaOutput_Hjj_tagger ) mvaOutput_Hjj_tagger = mvaOutput;
+      }
+    }
+
 //--- fill histograms with events passing final selection 
     selHistManagerType* selHistManager = selHistManagers[idxSelLepton_genMatch][idxSelHadTau_genMatch];
     assert(selHistManager != 0);
@@ -1782,6 +1902,7 @@ int main(int argc, char* argv[])
       mvaOutput_2lss_1tau_ttV, mvaOutput_2lss_1tau_ttbar, mvaDiscr_2lss_1tau, 
       mvaOutput_2lss_1tau_ttV_wMEM, mvaOutput_2lss_1tau_ttbar_wMEM, mvaDiscr_2lss_1tau_wMEM, 
       mvaOutput_2lss_1tau_ttV_wMEMsepLR, mvaOutput_2lss_1tau_ttbar_wMEMsepLR, mvaDiscr_2lss_1tau_wMEMsepLR, 
+      mvaOutput_Hj_tagger, mvaOutput_Hjj_tagger,
       mTauTauVis1_sel, mTauTauVis2_sel, 
       memOutput_2lss_1tau_matched.is_initialized() ? &memOutput_2lss_1tau_matched : nullptr, memDiscr, evtWeight);
     if ( isSignal ) {
@@ -1794,7 +1915,8 @@ int main(int argc, char* argv[])
 	    mvaOutput_2lss_1tau_ttV, mvaOutput_2lss_1tau_ttbar, mvaDiscr_2lss_1tau, 
 	    mvaOutput_2lss_1tau_ttV_wMEM, mvaOutput_2lss_1tau_ttbar_wMEM, mvaDiscr_2lss_1tau_wMEM, 
 	    mvaOutput_2lss_1tau_ttV_wMEMsepLR, mvaOutput_2lss_1tau_ttbar_wMEMsepLR, mvaDiscr_2lss_1tau_wMEMsepLR, 
-            mTauTauVis1_sel, mTauTauVis2_sel, 
+            mvaOutput_Hj_tagger, mvaOutput_Hjj_tagger,
+	    mTauTauVis1_sel, mTauTauVis2_sel, 
             memOutput_2lss_1tau_matched.is_initialized() ? &memOutput_2lss_1tau_matched : nullptr, memDiscr, evtWeight);
           break;
         }
@@ -1867,6 +1989,8 @@ int main(int argc, char* argv[])
 	  ("mvaOutput_2lss_ttV",   mvaOutput_2lss_ttV)
 	  ("mvaOutput_2lss_ttbar", mvaOutput_2lss_ttbar)
 	  ("mvaDiscr_2lss",        mvaDiscr_2lss)
+	  ("mvaOutput_Hj_tagger",  mvaOutput_Hj_tagger)
+	  ("mvaOutput_Hjj_tagger", mvaOutput_Hjj_tagger)
           ("lumiScale",            lumiScale)
           ("genWeight",            genWeight)
           ("evtWeight",            evtWeight)
