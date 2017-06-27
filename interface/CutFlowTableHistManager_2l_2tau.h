@@ -5,8 +5,6 @@
  *
  * Book and fill histogram recording cut-flow in 2l_2tau category of ttH, H->tautau analysis
  *
- * \author Christian Veelken, Tallinn
- *
  */
 
 #include "tthAnalysis/HiggsToTauTau/interface/HistManagerBase.h" // HistManagerBase

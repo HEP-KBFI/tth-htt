@@ -147,4 +147,3 @@ process.analyze_3l_1tau.apply_trigger_bits = cms.bool(True)
 #process.analyze_3l_1tau.selEventsFileName_output = cms.string('/home/veelken/ttHAnalysis/2016/2017Feb22/output_rle/3l_1tau/Tight_OS/ttHJetToNonbb_M125_amcatnlo/rle_3l_1tau_ttHJetToNonbb_M125_amcatnlo_Tight_OS_central_1.txt')
 #process.analyze_3l_1tau.selEventsTFileName = cms.string('')
 process.analyze_3l_1tau.selectBDT = cms.bool(False)
-

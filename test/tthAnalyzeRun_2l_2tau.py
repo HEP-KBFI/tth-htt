@@ -15,7 +15,7 @@ if mode == "VHbb":
   hadTau_selection = "dR03mvaMedium"
   changeBranchNames = False
   applyFakeRateWeights = "2lepton"
- else:
+else:
   raise ValueError("Invalid Configuration parameter 'mode' = %s !!" % mode)
 
 #ERA = "2015"
@@ -49,8 +49,8 @@ if __name__ == '__main__':
     changeBranchNames = changeBranchNames,
     lepton_charge_selections = [ "OS" ],
     hadTau_selections = hadTau_selection,
-    applyFakeRateWeights = applyFakeRateWeights,
     hadTau_charge_selections = [ "OS", "SS" ],
+    applyFakeRateWeights = applyFakeRateWeights,
     central_or_shifts = [ 
       "central",
 ##       "CMS_ttHl_btag_HFUp", 
@@ -108,8 +108,8 @@ if __name__ == '__main__':
 
   analysis.create()
 
-  ##run_analysis = query_yes_no("Start jobs ?")
-  run_analysis = True
+  run_analysis = query_yes_no("Start jobs ?")
+  ##run_analysis = True
   if run_analysis:
     analysis.run()
   else:

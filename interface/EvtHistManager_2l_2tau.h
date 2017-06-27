@@ -6,8 +6,6 @@
  * Book and fill histograms for event-level quantities in ttH, H->tautau analysis
  * in 2l_2tau category
  *
- * \author Christian Veelken, Tallin
- *
  */
 
 #include "tthAnalysis/HiggsToTauTau/interface/HistManagerBase.h" // HistManagerBase

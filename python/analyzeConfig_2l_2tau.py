@@ -2,6 +2,7 @@ import logging
 
 from tthAnalysis.HiggsToTauTau.analyzeConfig import *
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists
+from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg, createFile, generateInputFileList
 
 def get_hadTau_selection_and_frWeight(hadTau_selection, hadTau_frWeight):
   hadTau_selection_and_frWeight = hadTau_selection
@@ -38,14 +39,20 @@ class analyzeConfig_2l_2tau(analyzeConfig):
   for documentation of further Args.
   
   """
-  def __init__(self, outputDir, executable_analyze, samples, lepton_charge_selections, hadTau_selections, hadTau_charge_selections, central_or_shifts,
+  def __init__(self, configDir, outputDir, executable_analyze, cfgFile_analyze, samples, changeBranchNames, lepton_charge_selections,
+               hadTau_selections, hadTau_charge_selections, applyFakeRateWeights, central_or_shifts,
                max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs, 
-               executable_addBackgrounds, executable_addBackgroundJetToTauFakes, histograms_to_fit, executable_prep_dcard="prepareDatacard"):
-    analyzeConfig.__init__(self, outputDir, executable_analyze, "2l_2tau", central_or_shifts,
+               executable_addBackgrounds, executable_addBackgroundJetToTauFakes, histograms_to_fit, select_rle_output = False,
+               executable_prep_dcard="prepareDatacards", executable_add_syst_dcard = "addSystDatacards",
+               select_root_output = False):
+    analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "2l_2tau", central_or_shifts,
       max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs, 
-      histograms_to_fit)
+      histograms_to_fit,
+      executable_prep_dcard = executable_prep_dcard,
+      executable_add_syst_dcard = executable_add_syst_dcard)
 
     self.samples = samples
+    self.changeBranchNames = changeBranchNames
 
     self.lepton_charge_selections = lepton_charge_selections
 
