@@ -1,33 +1,34 @@
-#include "tthAnalysis/HiggsToTauTau/interface/GenParticle.h" // GenParticle
+#include "tthAnalysis/HiggsToTauTau/interface/GenParticle.h" // GenParticle, Particle
 
-#include <cmath> // std::abs(), std::fabs(), std::sqrt(), std::pow()
+#include <cmath> // std::abs
 
 GenParticle::GenParticle(Double_t pt,
-                         Double_t eta,
-                         Double_t phi,
-                         Double_t mass)
-  : pt_(pt)
-  , eta_(eta)
-  , phi_(phi)
-  , mass_(mass)
-  , absEta_(std::fabs(eta_))
-  , p4_{pt_, eta_, phi_, mass_}
-{ }
+			 Double_t eta,
+			 Double_t phi,
+			 Double_t mass,
+			 Int_t pdgId,
+			 Double_t charge)
+  : Particle(pt, eta, phi, mass)
+  , pdgId_(pdgId)
+  , charge_(charge)
+{}
 
-GenParticle::GenParticle(const Particle::LorentzVector & p4)
-  : pt_(p4.pt())
-  , eta_(p4.eta())
-  , phi_(p4.phi())
-  , mass_(p4.mass())
-  , absEta_(std::fabs(eta_))
-  , p4_(p4)
-{ }
+GenParticle::GenParticle(const math::PtEtaPhiMLorentzVector & p4,
+			 Int_t pdgId,
+			 Double_t charge)
+  : Particle(p4)
+  , pdgId_(pdgId)
+  , charge_(charge)
+{}
 
 std::ostream& operator<<(std::ostream& stream, const GenParticle& particle)
 {
-  stream << " pT = " << particle.pt() << ","
+  stream << " E = " << particle.p4().energy() << " (p = " << particle.p4().P() << "),"
+	 << " pT = " << particle.pt() << ","
          << " eta = " << particle.eta() << ","
          << " phi = " << particle.phi() << ","
-         << " mass = " << particle.mass() << std::endl;
+	 << " mass = " << particle.mass() << ","
+         << " pdgId = " << particle.pdgId() << " (charge = " << particle.charge() << ")" << std::endl;
   return stream;
 }
+

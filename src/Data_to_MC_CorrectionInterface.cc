@@ -531,18 +531,16 @@ namespace
 {
   double getSF_hadTauID_and_Iso_2015(int hadTauSelection)
   {
-    // CV: take data/MC correction to be equal to unity, following Tau POG recommendation for 2015 data,
+    // CV: take data/MC correction to be equal to unity for all WPs, following Tau POG recommendation for 2015 data,
     //     cf. https://twiki.cern.ch/twiki/bin/viewauth/CMS/TauIDRecommendation13TeV
     return 1.; 
   }
 
   double getSF_hadTauID_and_Iso_2016(int hadTauSelection)
   {
-    // CV: take data/MC correction to be equal to unity, following Tau POG recommendation for 2016 data,
+    // CV: take data/MC correction to be equal to 0.95 for all WPs, following Tau POG recommendation for 2016 data,
     //     cf. https://twiki.cern.ch/twiki/bin/viewauth/CMS/TauIDRecommendation13TeV
-    double sf = 1.;
-    if      ( hadTauSelection <= 5 ) sf = 0.99;
-    else if ( hadTauSelection >= 6 ) sf = 0.91;
+    double sf = 0.95;
     return sf; 
   }
 }

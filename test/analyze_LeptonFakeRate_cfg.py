@@ -8,7 +8,11 @@ process.fwliteInput = cms.PSet(
     ##fileNames = cms.vstring('/afs/cern.ch/user/v/veelken/scratch0/VHbbNtuples_7_6_x/CMSSW_7_6_3/src/VHbbAnalysis/Heppy/test/latest_Loop/tree.root'),
     fileNames = cms.vstring('/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau/MC/ZZTo4L_13TeV_powheg_pythia8/VHBB_HEPPY_V25tthtautau_ZZTo4L_13TeV_powheg_Py8__RunIISummer16MAv2-PUMoriond17_80r2as_2016_TrancheIV_v6-v1/170207_125252/0000/tree_1.root',
                             '/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau/MC/ZZTo4L_13TeV_powheg_pythia8/VHBB_HEPPY_V25tthtautau_ZZTo4L_13TeV_powheg_Py8__RunIISummer16MAv2-PUMoriond17_80r2as_2016_TrancheIV_v6-v1/170207_125252/0000/tree_2.root',
-                            '/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau/MC/ZZTo4L_13TeV_powheg_pythia8/VHBB_HEPPY_V25tthtautau_ZZTo4L_13TeV_powheg_Py8__RunIISummer16MAv2-PUMoriond17_80r2as_2016_TrancheIV_v6-v1/170207_125252/0000/tree_3.root'
+                            '/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau/MC/ZZTo4L_13TeV_powheg_pythia8/VHBB_HEPPY_V25tthtautau_ZZTo4L_13TeV_powheg_Py8__RunIISummer16MAv2-PUMoriond17_80r2as_2016_TrancheIV_v6-v1/170207_125252/0000/tree_3.root',
+                            '/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau/MC/ZZTo4L_13TeV_powheg_pythia8/VHBB_HEPPY_V25tthtautau_ZZTo4L_13TeV_powheg_Py8__RunIISummer16MAv2-PUMoriond17_80r2as_2016_TrancheIV_v6-v1/170207_125252/0000/tree_4.root',
+                            '/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau/MC/ZZTo4L_13TeV_powheg_pythia8/VHBB_HEPPY_V25tthtautau_ZZTo4L_13TeV_powheg_Py8__RunIISummer16MAv2-PUMoriond17_80r2as_2016_TrancheIV_v6-v1/170207_125252/0000/tree_5.root',
+                            '/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau/MC/ZZTo4L_13TeV_powheg_pythia8/VHBB_HEPPY_V25tthtautau_ZZTo4L_13TeV_powheg_Py8__RunIISummer16MAv2-PUMoriond17_80r2as_2016_TrancheIV_v6-v1/170207_125252/0000/tree_6.root',
+                            '/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau/MC/ZZTo4L_13TeV_powheg_pythia8/VHBB_HEPPY_V25tthtautau_ZZTo4L_13TeV_powheg_Py8__RunIISummer16MAv2-PUMoriond17_80r2as_2016_TrancheIV_v6-v1/170207_125252/0000/tree_7.root'
     ),
     maxEvents = cms.int32(-1),
     outputEvery = cms.uint32(100000)
@@ -29,22 +33,26 @@ process.analyze_LeptonFakeRate = cms.PSet(
         cms.PSet(
             path = cms.vstring("HLT_BIT_HLT_Mu3_PFJet40_v"),
             cone_minPt = cms.double(10.),
-            cone_maxPt = cms.double(30.)
+            cone_maxPt = cms.double(30.),
+            jet_minPt = cms.double(40.)
         ),
         cms.PSet(
             path = cms.vstring("HLT_BIT_HLT_Mu8_v"),
             cone_minPt = cms.double(15.),
-            cone_maxPt = cms.double(45.)
+            cone_maxPt = cms.double(45.),
+            jet_minPt = cms.double(-1.)
         ),
         cms.PSet(
             path = cms.vstring("HLT_BIT_HLT_Mu17_v"),
             cone_minPt = cms.double(30.),
-            cone_maxPt = cms.double(100000.)
+            cone_maxPt = cms.double(100000.),
+            jet_minPt = cms.double(-1.)
         ),
         cms.PSet(
             path = cms.vstring("HLT_BIT_HLT_Mu27_v"),
             cone_minPt = cms.double(30.),
-            cone_maxPt = cms.double(100000.)
+            cone_maxPt = cms.double(100000.),
+            jet_minPt = cms.double(-1.)
         )
     ),
 #   use_triggers_1mu = cms.bool(True),
@@ -52,12 +60,14 @@ process.analyze_LeptonFakeRate = cms.PSet(
         cms.PSet(
             path = cms.vstring("HLT_BIT_HLT_Ele12_CaloIdM_TrackIdM_PFJet30_v"),
             cone_minPt = cms.double(20.),
-            cone_maxPt = cms.double(30.)
+            cone_maxPt = cms.double(30.),
+            jet_minPt = cms.double(30.)
         ),
         cms.PSet(
             path = cms.vstring("HLT_BIT_HLT_Ele17_CaloIdM_TrackIdM_PFJet30_v"),
             cone_minPt = cms.double(30.),
-            cone_maxPt = cms.double(100000.)
+            cone_maxPt = cms.double(100000.),
+            jet_minPt = cms.double(30.)   ## propagate in .cc file
         )
     ),
 #    use_triggers_1e = cms.bool(True),
@@ -84,7 +94,7 @@ process.analyze_LeptonFakeRate = cms.PSet(
 #        'dR03mvaVVTight'
 #    ),
     
-    absEtaBins = cms.vdouble(-1., 1.479, 9.9),
+#    absEtaBins = cms.vdouble(-1., 1.479, 9.9),
     absEtaBins_e = cms.vdouble(-1., 1.479, 9.9),
     absEtaBins_mu = cms.vdouble(-1., 1.479, 9.9),
     absPtBins_e = cms.vdouble(20., 30., 100000.),
@@ -105,8 +115,9 @@ process.analyze_LeptonFakeRate = cms.PSet(
     selEventsFileName_output = cms.string('')
 )
 
-process.fwliteInput.fileNames = cms.vstring([ '/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau/SingleMuon/VHBB_HEPPY_V25tthtautau_SingleMuon__Run2016H-PromptReco-v3/170215_144050/0000/tree_1.root', '/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau/SingleMuon/VHBB_HEPPY_V25tthtautau_SingleMuon__Run2016H-PromptReco-v3/170215_144050/0000/tree_2.root', '/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau/SingleMuon/VHBB_HEPPY_V25tthtautau_SingleMuon__Run2016H-PromptReco-v3/170215_144050/0000/tree_3.root'])
+process.fwliteInput.fileNames = cms.vstring(['/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau/SingleMuon/VHBB_HEPPY_V25tthtautau_SingleMuon__Run2016H-PromptReco-v3/170215_144050/0000/tree_1.root', '/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau/SingleMuon/VHBB_HEPPY_V25tthtautau_SingleMuon__Run2016H-PromptReco-v3/170215_144050/0000/tree_2.root', '/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau/SingleMuon/VHBB_HEPPY_V25tthtautau_SingleMuon__Run2016H-PromptReco-v3/170215_144050/0000/tree_3.root', '/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau/SingleMuon/VHBB_HEPPY_V25tthtautau_SingleMuon__Run2016H-PromptReco-v3/170215_144050/0000/tree_4.root', '/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau/SingleMuon/VHBB_HEPPY_V25tthtautau_SingleMuon__Run2016H-PromptReco-v3/170215_144050/0000/tree_5.root'])
 process.analyze_LeptonFakeRate.isMC = cms.bool(False)  ## FOR DATA
 process.analyze_LeptonFakeRate.apply_genWeight = cms.bool(False)
 process.analyze_LeptonFakeRate.fillGenEvtHistograms = cms.bool(False)
 process.analyze_LeptonFakeRate.apply_trigger_bits = cms.bool(True)
+

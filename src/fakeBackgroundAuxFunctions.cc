@@ -1,5 +1,12 @@
 #include "tthAnalysis/HiggsToTauTau/interface/fakeBackgroundAuxFunctions.h"
 
+double getWeight_1L(double prob_fake, bool passesTight)
+{
+  double p = prob_fake/(1. - prob_fake);
+  double weight = p;
+  return weight;
+}
+
 double getWeight_2L(double prob_fake_lead, bool passesTight_lead,
 		    double prob_fake_sublead, bool passesTight_sublead)
 {

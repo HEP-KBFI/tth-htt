@@ -22,7 +22,7 @@ RecoHadTau::RecoHadTau(Double_t pt,
 		       Double_t raw_cut_dR05,
 		       Int_t antiElectron,
 		       Int_t antiMuon)
-  : GenParticle(pt, eta, phi, mass)
+  : Particle(pt, eta, phi, mass)
   , charge_(charge)
   , dxy_(dxy)
   , dz_(dz)

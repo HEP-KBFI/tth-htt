@@ -1300,27 +1300,7 @@ samples_2016["/TGJets_TuneCUETP8M1_13TeV_amcatnlo_madspin_pythia8/RunIISummer16M
     ]
   ),
 ])
-samples_2016["/THW_Hincl_13TeV-madgraph-pythia8_TuneCUETP8M1/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"] = OD([
-  ("type",                  "mc"),
-  ("sample_category",       "additional_signal_overlap"),
-  ("process_name_specific", "THW_Hincl"),
-  ("nof_files",             150),
-  ("nof_events",            1498975),
-  ("use_it",                True),
-  ("xsection",              0.015610),
-  ("genWeight",             True),
-  ("triggers",              [ "1e", "1mu", "2e", "1e1mu", "2mu", "3e", "2e1mu", "1e2mu", "3mu", "1e1tau", "1mu1tau", "2tau" ]),
-  ("reHLT",                 True),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/cms/store/user/veelken/VHBBHeppyV25tthtautau/MC/THW_Hincl_13TeV-madgraph-pythia8_TuneCUETP8M1/VHBB_HEPPY_V25tthtautau_THW_Hincl_13TeV-madgraph-Py8_TuneCUETP8M1__RunIISummer16MAv2-PUMoriond17_80r2as_2016_TrancheIV_v6-v1/170207_134333"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-])
+
 samples_2016["/TTGJets_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"] = OD([
   ("type",                  "mc"),
   ("sample_category",       "Rares"),
@@ -1442,7 +1422,7 @@ samples_2016["/TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/Run
       OD([
         ("path",      "/hdfs/cms/store/user/mario/VHBBHeppyV25tthtautau/MC/TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/VHBB_HEPPY_V25tthtautau_TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-Py8__RunIISummer16MAv2-PUMoriond17_80r2as_2016_TrancheIV_v6_ext1-v1/170208_120653"),
         ("selection", "*"),
-        ("blacklist", [182, 206, 425, 496, 542, 1101, 1108, 1186, 1426, 1618, 2502, 2509, 2755, 2912, 2924, 3039, 3156, 3165, 3180, 3201, 3204, 3212, 3357, 3390, 3492, 3658, 4040, 4159, 4173, 4275, 4312, 4314, 4398, 4440, 4441, 4672, 4707, 4747, 4752, 4785]),
+        ("blacklist", [182, 206, 425, 496, 542, 732, 1101, 1108, 1186, 1426, 1618, 2502, 2509, 2755, 2912, 2924, 3039, 3156, 3165, 3180, 3201, 3204, 3212, 3357, 3390, 3492, 3658, 4040, 4159, 4173, 4275, 4312, 4314, 4398, 4440, 4441, 4672, 4707, 4747, 4752, 4785]),
       ]),
     ]
   ),
@@ -2227,6 +2207,76 @@ samples_2016["/ttHToNonbb_M125_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/mat
   ),
 ])
 
+# file generated with command:
+# check_broken -p /hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau_tHq_tHW/ --histo CountWeighted --output=samples/tH -P -z -v -f tH
+
+samples_2016["/THQ_Hincl_13TeV-madgraph-pythia8_TuneCUETP8M1/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"] = OD([
+  ("type",                  "mc"),
+  ("sample_category",       "tH"),
+  ("process_name_specific", "THQ"),
+  ("nof_files",             175),
+  ("nof_events",            3476259),
+  ("use_it",                True),
+  ("xsection",              0.032597),
+  ("genWeight",             True),
+  ("triggers",              [ "1e", "1mu", "2e", "1e1mu", "2mu", "3e", "2e1mu", "1e2mu", "3mu", "1e1tau", "1mu1tau", "2tau" ]),
+  ("reHLT",                 True),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau_tHq_tHW/MC/THQ_Hincl_13TeV-madgraph-pythia8_TuneCUETP8M1/VHBB_HEPPY_V25tthtautau_tHq_tHW_THQ_Hincl_13TeV-madgraph-Py8_TuneCUETP8M1__RunIISummer16MAv2-PUMoriond17_80r2as_2016_TrancheIV_v6-v1/170502_162701"),
+        ("selection", "*"),
+        ("blacklist", [75]),
+      ]),
+    ]
+  ),
+])
+samples_2016["/THW_Hincl_13TeV-madgraph-pythia8_TuneCUETP8M1/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"] = OD([
+  ("type",                  "mc"),
+  ("sample_category",       "tH"),
+  ("process_name_specific", "THW"),
+  ("nof_files",             75),
+  ("nof_events",            1499036),
+  ("use_it",                True),
+  ("xsection",              0.057051),
+  ("genWeight",             True),
+  ("triggers",              [ "1e", "1mu", "2e", "1e1mu", "2mu", "3e", "2e1mu", "1e2mu", "3mu", "1e1tau", "1mu1tau", "2tau" ]),
+  ("reHLT",                 True),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau_tHq_tHW/MC/THW_Hincl_13TeV-madgraph-pythia8_TuneCUETP8M1/VHBB_HEPPY_V25tthtautau_tHq_tHW_THW_Hincl_13TeV-madgraph-Py8_TuneCUETP8M1__RunIISummer16MAv2-PUMoriond17_80r2as_2016_TrancheIV_v6-v1/170502_162842"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+])
+
+# file generated with command:
+# check_broken -p /hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau_ttWW --histo CountWeighted --output=samples/ttWW/ -P -z -v -f ttWW
+
+samples_2016["/ttWW_lo/MINIAODSIM"] = OD([
+  ("type",                  "mc"),
+  ("sample_category",       "TTWW"),
+  ("process_name_specific", "TTWW"),
+  ("nof_files",             10),
+  ("nof_events",            9994),
+  ("use_it",                True),
+  ("xsection",              0.002302),
+  ("genWeight",             True),
+  ("triggers",              [ "1e", "1mu", "2e", "1e1mu", "2mu", "3e", "2e1mu", "1e2mu", "3mu", "1e1tau", "1mu1tau", "2tau" ]),
+  ("reHLT",                 True),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau_ttWW/MC/TTWW_gpetrucc/VHBB_HEPPY_V25tthtautau_ttWW_TTWW_gpetrucc/170504_085619"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+])
 
 #--------------------------------------------------------------------------------
 # !!! ONLY FOR TESTING

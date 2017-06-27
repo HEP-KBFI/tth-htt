@@ -23,6 +23,8 @@ class MuonHistManager
   void bookHistograms(TFileDirectory& dir);
   void fillHistograms(const RecoMuon& muon, double evtWeight);
   void fillHistograms(const std::vector<const RecoMuon*>& muons, double evtWeight);
+  void fillHistograms2(const RecoMuon& muon, double evtWeight, double met, double metphi, double ptfix);                       // NEWLY ADDED
+  void fillHistograms2(const std::vector<const RecoMuon*>& muons, double evtWeight, double met, double metphi, double ptfix);  // NEWLY ADDED
 
  private:
   TH1* histogram_pt_;
@@ -43,6 +45,9 @@ class MuonHistManager
 
   TH1* histogram_abs_genPdgId_;
   TH1* histogram_gen_times_recCharge_;
+
+  TH1* histogram_Mt_;     // NEWLY ADDED
+  TH1* histogram_Mt_fix_; // NEWLY ADDED
 
   std::vector<TH1*> histograms_;
 

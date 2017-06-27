@@ -96,6 +96,11 @@ MVAInputVarHistManager::~MVAInputVarHistManager()
   }
 }
 
+void MVAInputVarHistManager::defineBinningOption(const std::string& histogramName, int numBinsX, double xMin, double xMax)
+{
+  binningOptions_[histogramName] = new binningOptionType(histogramName, numBinsX, xMin, xMax);
+}
+
 void MVAInputVarHistManager::bookHistograms(TFileDirectory& dir, const std::vector<std::string>& mvaInputVariables)
 {
   for ( std::vector<std::string>::const_iterator mvaInputVariable = mvaInputVariables.begin();

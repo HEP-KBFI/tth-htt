@@ -23,7 +23,7 @@ double comp_MT_met_lep1(const Particle::LorentzVector& leptonP4, double met_pt, 
   return mT;
 }
 
-double comp_MT_met_lep1(const GenParticle& lepton, double met_pt, double met_phi)
+double comp_MT_met_lep1(const Particle& lepton, double met_pt, double met_phi)
 {
   return comp_MT_met_lep1(lepton.p4(), met_pt, met_phi);
 }
@@ -33,7 +33,7 @@ double comp_MT_met_lep2(const Particle::LorentzVector& leptonP4, double met_pt, 
   return comp_MT_met_lep1(leptonP4, met_pt, met_phi);
 }
 
-double comp_MT_met_lep2(const GenParticle& lepton, double met_pt, double met_phi)
+double comp_MT_met_lep2(const Particle& lepton, double met_pt, double met_phi)
 {
   return comp_MT_met_lep2(lepton.p4(), met_pt, met_phi);
 }
@@ -43,17 +43,22 @@ double comp_MT_met_lep3(const Particle::LorentzVector& leptonP4, double met_pt, 
   return comp_MT_met_lep1(leptonP4, met_pt, met_phi);
 }
 
-double comp_MT_met_lep3(const GenParticle& lepton, double met_pt, double met_phi)
+double comp_MT_met_lep3(const Particle& lepton, double met_pt, double met_phi)
 {
   return comp_MT_met_lep3(lepton.p4(), met_pt, met_phi);
 }
 
-double comp_MT_met_hadTau1(const GenParticle& hadTau, double met_pt, double met_phi)
+double comp_MT_met_hadTau1(const Particle& hadTau, double met_pt, double met_phi)
 {
   return comp_MT_met_lep1(hadTau, met_pt, met_phi);
 }
 
-double comp_MT_met_hadTau2(const GenParticle& hadTau, double met_pt, double met_phi)
+double comp_MT_met_hadTau2(const Particle& hadTau, double met_pt, double met_phi)
+{
+  return comp_MT_met_lep1(hadTau, met_pt, met_phi);
+}
+
+double comp_MT_met_hadTau3(const Particle& hadTau, double met_pt, double met_phi)
 {
   return comp_MT_met_lep1(hadTau, met_pt, met_phi);
 }
@@ -68,7 +73,7 @@ double comp_n_jet25_recl(const std::vector<const RecoJet*>& jets_cleaned)
   return n_jets;
 }
 
-double comp_mindr_lep1_jet(const GenParticle& lepton, const std::vector<const RecoJet*>& jets_cleaned)
+double comp_mindr_lep1_jet(const Particle& lepton, const std::vector<const RecoJet*>& jets_cleaned)
 {
   double dRmin = 1.e+3;
   for ( std::vector<const RecoJet*>::const_iterator jet = jets_cleaned.begin();
@@ -79,22 +84,27 @@ double comp_mindr_lep1_jet(const GenParticle& lepton, const std::vector<const Re
   return dRmin;
 }
 
-double comp_mindr_lep2_jet(const GenParticle& lepton, const std::vector<const RecoJet*>& jets_cleaned)
+double comp_mindr_lep2_jet(const Particle& lepton, const std::vector<const RecoJet*>& jets_cleaned)
 {
   return comp_mindr_lep1_jet(lepton, jets_cleaned);
 }
 
-double comp_mindr_lep3_jet(const GenParticle& lepton, const std::vector<const RecoJet*>& jets_cleaned)
+double comp_mindr_lep3_jet(const Particle& lepton, const std::vector<const RecoJet*>& jets_cleaned)
 {
   return comp_mindr_lep1_jet(lepton, jets_cleaned);
 }
 
-double comp_mindr_hadTau1_jet(const GenParticle& hadTau, const std::vector<const RecoJet*>& jets_cleaned)
+double comp_mindr_hadTau1_jet(const Particle& hadTau, const std::vector<const RecoJet*>& jets_cleaned)
 {
   return comp_mindr_lep1_jet(hadTau, jets_cleaned);
 }
 
-double comp_mindr_hadTau2_jet(const GenParticle& hadTau, const std::vector<const RecoJet*>& jets_cleaned)
+double comp_mindr_hadTau2_jet(const Particle& hadTau, const std::vector<const RecoJet*>& jets_cleaned)
+{
+  return comp_mindr_lep1_jet(hadTau, jets_cleaned);
+}
+
+double comp_mindr_hadTau3_jet(const Particle& hadTau, const std::vector<const RecoJet*>& jets_cleaned)
 {
   return comp_mindr_lep1_jet(hadTau, jets_cleaned);
 }

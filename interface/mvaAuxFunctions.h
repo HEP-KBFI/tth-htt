@@ -7,7 +7,7 @@
 #include <vector> // std::vector<>
 #include <map> // std::map<>
 
-void check_mvaInputs(std::map<std::string, double>& mvaInputs, RUN_TYPE run, LUMI_TYPE lumi, EVT_TYPE event);
+void check_mvaInputs(std::map<std::string, double>& mvaInputs, RUN_TYPE run = 0, LUMI_TYPE lumi = 0, EVT_TYPE event = 0);
 
 std::vector<std::string> get_mvaInputVariables(const std::vector<std::string>& mvaInputVariables_ttV, const std::vector<std::string>& mvaInputVariables_ttbar);
 

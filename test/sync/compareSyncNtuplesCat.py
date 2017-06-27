@@ -5,13 +5,14 @@ import os
 import errno
 
 #categories = ["1l2tau_SR", "1l2tau_Fake", "2lSS1tau_Flip", "2lSS1tau_SR", "2lSS1tau_Fake", "3l1tau_SR", "3l1tau_Fake"]
-categories = ["1l2tau_SR", "2lSS1tau_SR", "3l1tau_SR"]
+categories = ["1l2tau_SR"]#, "2lSS1tau_SR", "3l1tau_SR"]
 
 samples = {}
 samples["ttH"] = "ttHJetToTT_M125_13TeV_amcatnloFXFX_madspin_pythia8"
 samples["ttbar"] = "TT_TuneCUETP8M1_13TeV-powheg-pythia8"
 
 groupnames = ["Tallinn", "LLR", "Cornell", "Notre Dame"]
+groupnames = ["Tallinn", "Notre Dame"]
 groups = {}
 for name in groupnames:
   groups[name] = {}
@@ -20,8 +21,8 @@ for name in groupnames:
   groups[name]["treePrefix"] = "syncTree"
 
 groups["Tallinn"]["inputFiles"]["ttH"] = "sync_ntuples_split.root"
-groups["LLR"]["inputFiles"]["ttH"] = "syncNtuple_event_ttH_80X_Summer16.root"
-groups["Cornell"]["inputFiles"]["ttH"] = "syncNtuple_event.root"
+#groups["LLR"]["inputFiles"]["ttH"] = "syncNtuple_event_ttH_80X_Summer16.root"
+#groups["Cornell"]["inputFiles"]["ttH"] = "syncNtuple_event.root"
 groups["Notre Dame"]["inputFiles"]["ttH"] = "sync_ntuple_m17_1l_2tau.root"
 
 #groups["Tallinn"]["inputPath"]["ttH"] = "sync_ntuples_split.root"
@@ -32,20 +33,20 @@ groups["Notre Dame"]["inputFiles"]["ttH"] = "sync_ntuple_m17_1l_2tau.root"
 #std::string inputFilePath_test = "/afs/cern.ch/work/t/tstreble/public/syncNtuple_ttH_Htautau/";
 #std::string inputFilePath_test3 = "/afs/cern.ch/user/m/matze/public/ttH/";
 
-variables = [("n_presel_mu", "I", "", 20, -0.5, 8.5),
-  ("n_presel_ele", "I", "", 20, -0.5, 8.5),
-  ("n_presel_tau", "I", "", 20, -0.5, 12.5),
+variables = [("n_presel_mu", "I", "", 9, -0.5, 8.5),
+  ("n_presel_ele", "I", "", 9, -0.5, 8.5),
+  ("n_presel_tau", "I", "", 13, -0.5, 12.5),
   ("n_presel_jet", "I", "", 20, -0.5, 19.5),
   ("mu0_charge", "I", "n_presel_mu >= 1", 3, -1.5, +1.5),
   ("mu0_jetNDauChargedMVASel", "F", "n_presel_mu >= 1", 20, -0.5, 19.5),
   ("mu0_jetPtRel", "F", "n_presel_mu >= 1", 100, -0.01, 10.),
-  ("mu0_miniIsoNeutral", "F", "n_presel_mu >= 1", 100, -0.01, 2.),
-  ("mu0_miniIsoCharged", "F", "n_presel_mu >= 1", 100, -0.01, 2.),
+  ("mu0_miniIsoNeutral", "F", "n_presel_mu >= 1", 20, -0.01, 2.),
+  ("mu0_miniIsoCharged", "F", "n_presel_mu >= 1", 20, -0.01, 2.),
   ("mu0_E", "F", "n_presel_mu >= 1", 100, 0., 250.),
   ("mu0_jetPtRatio", "F", "n_presel_mu >= 1", 100, -0.01, 2.),
   ("mu0_leptonMVA", "F", "n_presel_mu >= 1", 100, -1.1, +1.1),
   ("mu0_jetCSV", "F", "n_presel_mu >= 1", 100, -0.01, +1.01),
-  ("mu0_segmentCompatibility", "F", "n_presel_mu >= 1", 100, -0.01, +1.01),
+  ("mu0_segmentCompatibility", "F", "n_presel_mu >= 1", 50, -0.01, +1.01),
   ("mu0_phi", "F", "n_presel_mu >= 1", 36, -math.pi, +math.pi),
   ("mu0_sip3D", "F", "n_presel_mu >= 1", 100, 0., +10.),
   ("mu0_pt", "F", "n_presel_mu >= 1", 100, 0., 250.),
@@ -189,7 +190,7 @@ variables = [("n_presel_mu", "I", "", 20, -0.5, 8.5),
   ("n_jet25_recl", "I", "", 12, -0.5, 11.5),
   ("MVA_2lss_ttV", "F", "", 100, -1., 1.),
   ("MVA_2lss_ttbar", "F", "", 100, -1., 1.),
-  #("MC_weight", "F", "", 100, -10, 10.),
+  ("MC_weight", "F", "", 100, -10, 10.),
   ("FR_weight", "F", "", 100, -1., 3.),
   ("triggerSF_weight", "F", "", 100, 0., 2.),
   ("leptonSF_weight", "F", "", 100, 0., 2.),
@@ -248,8 +249,10 @@ def make_comparison_plot(outdir, var, groupname1, groupname2, category, weight =
   histos.append(plot1)
   histos.append(plot2)
 
-  leg_entry = [groupname1, groupname2]
-  leg=TLegend(0.55,0.74,0.85,0.89)
+  leg_entry = []
+  leg_entry.append("%s:\t N=%d, mean=%.2f, RMS=%.2f" % (groupname1, plot1.GetEntries(), plot1.GetMean(), plot1.GetRMS()))
+  leg_entry.append("%s:\t N=%d, mean=%.2f, RMS=%.2f" % (groupname2, plot2.GetEntries(), plot2.GetMean(), plot2.GetRMS()))
+  leg=TLegend(0.45,0.74,0.85,0.89)
   
   leg.SetHeader(get_header(category));
   leg.SetBorderSize(0)
@@ -362,8 +365,8 @@ def make_comparison_plot(outdir, var, groupname1, groupname2, category, weight =
   plot_file_name="%s" % (var_name)
   dirname = ("%s_vs_%s/%s/%s" % (groupname1, groupname2, category, outdir)).replace(" ", "_")
   for file_format in ["png", "pdf"]:
-      mkdir_p("plots/%s/%s" % (dirname, file_format))
-      c.SaveAs("plots/%s/%s/%s.%s" % (dirname, file_format, plot_file_name, file_format))
+      mkdir_p("plots_test/%s/%s" % (dirname, file_format))
+      c.SaveAs("plots_test/%s/%s/%s.%s" % (dirname, file_format, plot_file_name, file_format))
 
 
 def single_plot(file, name, tree_name, var, cut, n_bins, range_low, range_high):
@@ -415,12 +418,12 @@ if __name__ == "__main__":
     groupname1 = groupnames[i]
     for j in range(i+1, len(groupnames)):
       groupname2 = groupnames[j]
-      for var in variables:
-        for category in categories:
+      for category in categories:
+        for var in variables:
           make_comparison_plot("Unweighted", var, groupname1, groupname2, category, "1", dataset = "ttH")
           
           #weight = "PU_weight*MC_weight*bTagSF_weight*leptonSF_weight*triggerSF_weight*FR_weight"
-          weight = "PU_weight*MC_weight*bTagSF_weight*leptonSF_weight*triggerSF_weight*tauSF_weight"
+          weight = "PU_weight*MC_weight*bTagSF_weight*leptonSF_weight*triggerSF_weight"#*tauSF_weight"
           if "Fake" in category:
             print category
             weight += "*FR_weight"
@@ -430,4 +433,4 @@ if __name__ == "__main__":
             weight = "1"
           
           make_comparison_plot("Weighted", var, groupname1, groupname2, category, weight, dataset = "ttH")
-
+        #make_comparison_plot("Unweighted", ("total weight", "F", "", 100, -2., 4.), groupname1, groupname2, category, "1", dataset = "ttH")

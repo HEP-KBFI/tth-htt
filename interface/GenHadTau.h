@@ -1,10 +1,10 @@
 #ifndef tthAnalysis_HiggsToTauTau_GenHadTau_h
 #define tthAnalysis_HiggsToTauTau_GenHadTau_h
 
-#include "tthAnalysis/HiggsToTauTau/interface/GenParticle.h" // GenParticle
+#include "tthAnalysis/HiggsToTauTau/interface/Particle.h" // Particle
 
 class GenHadTau
-  : public GenParticle
+  : public Particle
 {
  public:
   GenHadTau() = default;

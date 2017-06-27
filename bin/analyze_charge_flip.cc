@@ -382,6 +382,7 @@ int main(int argc, char* argv[])
   };
   std::map<std::string, std::map<std::string, std::map<std::string, TH1D*>>> histos;
   std::map<std::string, std::map<std::string, std::map<std::string, TH1D*>>> histos_2gen;
+  std::map<std::string, std::map<std::string, std::map<std::string, TH1D*>>> histos_2gen_rec;
   
   for ( vstring::const_iterator which = categories_charge.begin(); 	which != categories_charge.end(); ++which ) {
     TFileDirectory subDir = fs.mkdir( which->data() );
@@ -389,10 +390,14 @@ int main(int argc, char* argv[])
     TFileDirectory subD1 = fs.mkdir("gen");
     TFileDirectory subD = subD1.mkdir(which->data());
 
+    TFileDirectory subD1r = fs.mkdir("gen_rec");
+    TFileDirectory subDr = subD1r.mkdir(which->data());
+
     for ( vstring::const_iterator category = categories_etapt.begin(); 	category != categories_etapt.end(); ++category ) {
       TFileDirectory subDir1_5 = subDir.mkdir(category->data());
       TFileDirectory subDir2 = subDir1_5.mkdir(process_string.data());
       TFileDirectory subD2 = subD.mkdir(category->data());
+      TFileDirectory subD2r = subDr.mkdir(category->data());
       
       histos[which->data()][*category][process_string] = subDir2.make<TH1D>( Form("%smass_ll", central_or_shift_label_st.data()), "m_{ll}", 60,  60., 120. );
       histos[which->data()][*category][process_string]->Sumw2();
@@ -403,6 +408,8 @@ int main(int argc, char* argv[])
           if (central_or_shift == "central") {
             histos_2gen[which->data()][*category][process_string] = subD2.make<TH1D>( Form("%smass_ll", central_or_shift_label_st.data()), "m_{ll}", 60,  60., 120. );
             histos_2gen[which->data()][*category][process_string]->Sumw2();
+            histos_2gen_rec[which->data()][*category][process_string] = subD2r.make<TH1D>( Form("%smass_ll", central_or_shift_label_st.data()), "m_{ll}", 60,  60., 120. );
+            histos_2gen_rec[which->data()][*category][process_string]->Sumw2();
           }
       }      
     }
@@ -417,14 +424,18 @@ int main(int argc, char* argv[])
   for (int i=1;i<=11;i++) fail_counter->GetXaxis()->SetBinLabel(i,rejcs[i-1]); 
 
 
-  /*vstring categories_etapt_gen = {  //B-barrel, E-endcap, L-low pT (10 <= pT < 25), M-med pT (25 <= pT < 50), H-high pT (pT > 50)
-    "B_L", "B_M", "B_H", "E_L", "E_M", "E_M", "E_H"
-  };*/
+  vstring categories_etapt_gen = {  //B-barrel, E-endcap, L-low pT (10 <= pT < 25), M-med pT (25 <= pT < 50), H-high pT (pT > 50)
+    "BL", "BM", "BH", "EL", "EM", "EH"
+  };
 
   Double_t bins_eta[3] = {0, 1.479, 2.5};
   Double_t bins_pt[4] = {10, 25, 50, 1000};
 
   TEfficiency* gen_eff;
+  TEfficiency* gen_eff_rec;
+  TH2D* transfer_matrix;
+  TH2D* transfer_matrix_flip;
+  TH2D* transfer_matrix_noflip;
   std::map<std::string, TH2D*> histos_gen;
   if (isMC && central_or_shift == "central"){
     TFileDirectory subD = fs.mkdir("gen_ratio");
@@ -437,6 +448,12 @@ int main(int argc, char* argv[])
     gen_eff = subD.make<TEfficiency>(Form("pt_eta_%s", process_string.data()),"pt_eta;pT;#eta;charge_misID", 3,  bins_pt, 2, bins_eta);
     gen_eff->SetUseWeightedEvents();
     gen_eff->SetStatisticOption(TEfficiency::kFNormal);
+    gen_eff_rec = subD.make<TEfficiency>(Form("pt_eta_%s_rec", process_string.data()),"pt_eta;pT;#eta;charge_misID", 3,  bins_pt, 2, bins_eta);
+    gen_eff_rec->SetUseWeightedEvents();
+    gen_eff_rec->SetStatisticOption(TEfficiency::kFNormal);
+    transfer_matrix = subD.make<TH2D>(Form("transfer_matrix"),"transfer_matrix", 6, 0.5, 6.5, 6, 0.5, 6.5);
+    transfer_matrix_flip = subD.make<TH2D>(Form("transfer_matrix_flip"),"transfer_matrix_flip", 6, 0.5, 6.5, 6, 0.5, 6.5);
+    transfer_matrix_noflip = subD.make<TH2D>(Form("transfer_matrix_noflip"),"transfer_matrix_noflip", 6, 0.5, 6.5, 6, 0.5, 6.5);
   }
 
   GenEvtHistManager* genEvtHistManager_beforeCuts = 0;
@@ -960,17 +977,39 @@ int main(int argc, char* argv[])
       histos[charge_cat]["total"][process_string]->Fill(mass_ll, evtWeight);
     }    
 
-    if (isMC && central_or_shift == "central" && std::strncmp(process_string.data(), "DY", 2) == 0)
+    if (isMC && central_or_shift == "central" && std::strncmp(process_string.data(), "DY", 2) == 0 &&
+      preselElectrons[0]->genLepton() != 0 && preselElectrons[1]->genLepton() != 0)
     {
       for (int i = 0; i < 2; i++)
       {
         const GenLepton *gp = preselElectrons[i]->genLepton();
-        if (gp == 0)
-        {
-          continue;
-        }
         #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
         gen_eff->FillWeighted(preselElectrons[i]->charge() != gp->charge(), evtWeight, gp->pt(), std::fabs(gp->eta()));
+        gen_eff_rec->FillWeighted(preselElectrons[i]->charge() != gp->charge(), evtWeight, preselElectrons[i]->pt(), std::fabs(preselElectrons[i]->eta()));
+        
+        int transfer_bin = 0, rec_bin = 0;
+        if (std::fabs(gp->eta()) > 1.479) transfer_bin += 3;
+        if (gp->pt() >= 15 && gp->pt() < 25) transfer_bin += 1;
+        else if (gp->pt() >= 25 && gp->pt() < 50) transfer_bin += 2;
+        else if (gp->pt() > 50) transfer_bin += 3;        
+        else transfer_bin = 0;
+        if (std::fabs(preselElectrons[i]->eta()) > 1.479) rec_bin += 3;
+        if (preselElectrons[i]->pt() >= 15 && preselElectrons[i]->pt() < 25) rec_bin += 1;
+        else if (preselElectrons[i]->pt() >= 25 && preselElectrons[i]->pt() < 50) rec_bin += 2;
+        else if (preselElectrons[i]->pt() > 50) rec_bin += 3;
+        else rec_bin = 0;
+        transfer_matrix->Fill(transfer_bin, rec_bin, evtWeight);
+        if (preselElectrons[i]->charge() != gp->charge())
+          transfer_matrix_flip->Fill(transfer_bin, rec_bin, evtWeight);
+        else
+          transfer_matrix_noflip->Fill(transfer_bin, rec_bin, evtWeight);
+        std::cout << transfer_bin << " " << rec_bin << " " << gp->pt() << " " << gp->eta() << " " << preselElectrons[i]->pt() << " " << preselElectrons[i]->eta() << std::endl;
+        /*"BL": 1
+        "BM": 2
+        "BH": 3
+        "EL": 4
+        "EM": 5
+        "EH": 6*/
         //if (preselElectrons[i]->charge() == gp->charge())
         //{
           histos_gen["ID"]->Fill(gp->pt(), std::fabs(gp->eta()), evtWeight);
@@ -983,48 +1022,48 @@ int main(int argc, char* argv[])
       }
       const GenLepton *gen0 = preselElectrons[0]->genLepton();
       const GenLepton *gen1 = preselElectrons[1]->genLepton();
-      if (!(gen0 == 0 || gen1 == 0)){
-        const GenLepton *gp0;
-        const GenLepton *gp1;
-        if (gen1->pt() > gen0->pt()){        
-          gp0 = gen1;
-          gp1 = gen0;
-        }
-        else {
-          gp0 = gen0;
-          gp1 = gen1;
-        }
-        std::string stEtaGen;
-        std::string stLeadPtGen;
-        std::string stSubPtGen;
-        assert(gp0->pt() >= gp1->pt());
-        if (gp0->pt() >= 10 && gp0->pt() < 25) stLeadPtGen = "L";
-        else if (gp0->pt() >= 25 && gp0->pt() < 50) stLeadPtGen = "M";
-        else if (gp0->pt() > 50) stLeadPtGen = "H";
-        if (gp1->pt() >= 10 && gp1->pt() < 25) stSubPtGen = "L";
-        else if (gp1->pt() >= 25 && gp1->pt() < 50) stSubPtGen = "M";
-        else if (gp1->pt() > 50) stSubPtGen = "H";
-        else{
-          std::cout << "PT<10 " << gp0->pt() << " " << gp1->pt() << std::endl; 
-          stSubPtGen = "L";
-          //assert(0);
-        }
-
-        Double_t etaL0Gen = std::fabs(gp0->eta());
-        Double_t etaL1Gen = std::fabs(gp1->eta());
-        if (etaL0Gen < 1.479 && etaL1Gen < 1.479) stEtaGen = "BB";
-        else if (etaL0Gen > 1.479 && etaL1Gen > 1.479) stEtaGen = "EE";
-        else if (etaL0Gen < etaL1Gen) stEtaGen = "BE";
-        else
-        {
-          if (std::strncmp(stLeadPtGen.data(), stSubPtGen.data(), 1) == 0) stEtaGen = "BE";       //Symmetric case
-          else stEtaGen = "EB";
-        }
-        std::string categoryGen = Form("%s_%s%s", stEtaGen.data(), stLeadPtGen.data(), stSubPtGen.data());
-        std::string charge_catGen = ( isCharge_SS ) ? "SS" : "OS";
-        histos_2gen[charge_catGen][categoryGen.data()][process_string]->Fill(mass_ll, evtWeight);
-        histos_2gen[charge_catGen]["total"][process_string]->Fill(mass_ll, evtWeight);
+      const GenLepton *gp0;
+      const GenLepton *gp1;
+      if (gen1->pt() > gen0->pt()){        
+        gp0 = gen1;
+        gp1 = gen0;
       }
+      else {
+        gp0 = gen0;
+        gp1 = gen1;
+      }
+      std::string stEtaGen;
+      std::string stLeadPtGen;
+      std::string stSubPtGen;
+      assert(gp0->pt() >= gp1->pt());
+      if (gp0->pt() >= 10 && gp0->pt() < 25) stLeadPtGen = "L";
+      else if (gp0->pt() >= 25 && gp0->pt() < 50) stLeadPtGen = "M";
+      else if (gp0->pt() > 50) stLeadPtGen = "H";
+      if (gp1->pt() >= 10 && gp1->pt() < 25) stSubPtGen = "L";
+      else if (gp1->pt() >= 25 && gp1->pt() < 50) stSubPtGen = "M";
+      else if (gp1->pt() > 50) stSubPtGen = "H";
+      else{
+        std::cout << "PT<10 " << gp0->pt() << " " << gp1->pt() << std::endl; 
+        stSubPtGen = "L";
+        //assert(0);
+      }
+
+      Double_t etaL0Gen = std::fabs(gp0->eta());
+      Double_t etaL1Gen = std::fabs(gp1->eta());
+      if (etaL0Gen < 1.479 && etaL1Gen < 1.479) stEtaGen = "BB";
+      else if (etaL0Gen > 1.479 && etaL1Gen > 1.479) stEtaGen = "EE";
+      else if (etaL0Gen < etaL1Gen) stEtaGen = "BE";
+      else
+      {
+        if (std::strncmp(stLeadPtGen.data(), stSubPtGen.data(), 1) == 0) stEtaGen = "BE";       //Symmetric case
+        else stEtaGen = "EB";
+      }
+      std::string categoryGen = Form("%s_%s%s", stEtaGen.data(), stLeadPtGen.data(), stSubPtGen.data());
+      std::string charge_catGen = ( isCharge_SS ) ? "SS" : "OS";
+      histos_2gen[charge_catGen][categoryGen.data()][process_string]->Fill(mass_ll, evtWeight);
+      histos_2gen[charge_catGen]["total"][process_string]->Fill(mass_ll, evtWeight);
+      histos_2gen_rec[charge_catGen][category.data()][process_string]->Fill(mass_ll, evtWeight);
+      histos_2gen_rec[charge_catGen]["total"][process_string]->Fill(mass_ll, evtWeight);
     }
     if (isCharge_SS)
       preselElectronHistManagerSS.fillHistograms(preselElectrons, evtWeight);

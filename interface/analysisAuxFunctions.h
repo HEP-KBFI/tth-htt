@@ -3,7 +3,7 @@
 
 #include "DataFormats/Math/interface/deltaR.h" // deltaR
 
-#include "tthAnalysis/HiggsToTauTau/interface/GenParticle.h" // GenParticle, Candidate::LorentzVector
+#include "tthAnalysis/HiggsToTauTau/interface/Particle.h" // Particle, Particle::LorentzVector
 #include "tthAnalysis/HiggsToTauTau/interface/RecoLepton.h" // RecoLepton
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectron.h" // RecoElectron
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuon.h" // RecoMuon
@@ -38,7 +38,7 @@ enum { kLoose, kFakeable, kTight };
  * @param Given pair of leptons
  * @return True, if first lepton has higher pT; false if second lepton has higher pT
  */
-bool isHigherPt(const GenParticle* particle1, const GenParticle* particle2);
+bool isHigherPt(const Particle* particle1, const Particle* particle2);
 
 /**
  * @brief Auxiliary function used for sorting leptons by decreasing cone pT
@@ -54,7 +54,7 @@ bool isHigherConePt(const RecoLepton* particle1, const RecoLepton* particle2);
  * @param jet2 The second jet
  * @return True, if the 1st jet has higher CSV score
  */
-bool isHigherCSV(const RecoJet * jet1, const RecoJet * jet2);
+bool isHigherCSV(const RecoJet* jet1, const RecoJet* jet2);
 
 /**
  * @brief Auxiliary function for checking if leptons passing fake-able lepton selection pass tight lepton identification criteria also
@@ -151,5 +151,6 @@ int sgn(T val)
   else if ( val < 0 ) return -1;
   else                return  0;
 }
+
 
 #endif

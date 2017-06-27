@@ -45,11 +45,11 @@ def calc_probs(infile, processes):
 if __name__ == "__main__":
   #procs = ["additional_signal_overlap", "WZ", "TTW", "Rares", "TTZ", "signal", "DY"]
   procs = ["DY"]
-  for infile in ["/home/andres/tth/histograms/histosCF_genWeight/histograms/histograms_harvested_stage2_charge_flip.root",
-      "/home/andres/tth/histograms/histosCF_mu2/histograms/histograms_harvested_stage2_charge_flip.root",
+  for infile in ["/hdfs/local/ttH_2tau/andres/ttHAnalysis/2016/histosCF_summer2/histograms/charge_flip/histograms_harvested_stage2_charge_flip_Tight.root",
+      #"/home/andres/tth/histograms/histosCF_mu_1bin/histograms/histograms_harvested_stage2_charge_flip.root",
       ]:
     print infile
     calc_probs(infile, procs)
-    #calc_probs_hist(infile, procs)
+    calc_probs_hist(infile, procs)
   
   

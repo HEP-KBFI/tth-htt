@@ -2,6 +2,8 @@
 
 #include "FWCore/Utilities/interface/Exception.h" // cms::Exception
 
+#include "tthAnalysis/HiggsToTauTau/interface/hadTauTriggerTurnOnCurves.h" // integralCrystalBall
+
 #include <TAxis.h> // TAxis
 
 #include <iostream>
@@ -153,6 +155,17 @@ lutWrapperBase::lutWrapperBase()
   , yMax_(-1.)
 {}
 
+lutWrapperBase::lutWrapperBase(const std::string& lutName, int lutType,
+                               double xMin, double xMax, double yMin, double yMax)
+  : lutName_(lutName)
+  , xMin_(xMin)
+  , xMax_(xMax)
+  , yMin_(yMin)
+  , yMax_(yMax)
+{
+  initialize(lutType);
+}
+
 lutWrapperBase::lutWrapperBase(std::map<std::string, TFile*>& inputFiles, const std::string& inputFileName, const std::string& lutName, int lutType,
                                double xMin, double xMax, double yMin, double yMax)
   : inputFileName_(inputFileName)
@@ -162,6 +175,17 @@ lutWrapperBase::lutWrapperBase(std::map<std::string, TFile*>& inputFiles, const 
   , xMax_(xMax)
   , yMin_(yMin)
   , yMax_(yMax)
+{
+  if ( inputFiles.find(inputFileName) != inputFiles.end() ) {
+    inputFile_ = inputFiles[inputFileName];
+  } else {
+    inputFile_ = openFile(LocalFileInPath(inputFileName_));
+    inputFiles[inputFileName] = inputFile_;
+  }
+  initialize(lutType);
+}
+
+void lutWrapperBase::initialize(int lutType)
 {
   if      ( lutType == kXpt        || lutType == kXptYpt     || lutType == kXptYeta    || lutType == kXptYabsEta ) lutTypeX_ = kPt;
   else if ( lutType == kXeta       || lutType == kXetaYpt                                                        ) lutTypeX_ = kEta;
@@ -178,12 +202,6 @@ lutWrapperBase::lutWrapperBase(std::map<std::string, TFile*>& inputFiles, const 
     yMax_ = -1.;
   }
   if ( yMin_ != -1. && yMax_ != -1. ) assert(yMax_ > yMin_);
-  if ( inputFiles.find(inputFileName) != inputFiles.end() ) {
-    inputFile_ = inputFiles[inputFileName];
-  } else {
-    inputFile_ = openFile(LocalFileInPath(inputFileName_));
-    inputFiles[inputFileName] = inputFile_;
-  }
 }
 
 double lutWrapperBase::getSF(double pt, double eta)
@@ -295,6 +313,32 @@ double lutWrapperTGraph::getSF_private(double x, double y)
     if ( xMin_ != -1. && x < xMin_ ) x = xMin_;
     if ( xMax_ != -1. && x > xMax_ ) x = xMax_;
     sf = getSF_from_TGraph(lut_, x);
+  }
+  return sf;
+}
+//-------------------------------------------------------------------------------
+
+//-------------------------------------------------------------------------------
+lutWrapperCrystalBall::lutWrapperCrystalBall(const std::string& lutName, const edm::ParameterSet& cfg, int lutType, 
+					     double xMin, double xMax, double yMin, double yMax)
+  : lutWrapperBase(lutName, lutType, xMin, xMax, yMin, yMax)
+{
+  m0_    = cfg.getParameter<double>("m_{0}");
+  sigma_ = cfg.getParameter<double>("sigma");
+  alpha_ = cfg.getParameter<double>("alpha");
+  n_     = cfg.getParameter<double>("n");
+  norm_  = cfg.getParameter<double>("norm");
+}
+
+double lutWrapperCrystalBall::getSF_private(double x, double y)
+{
+  double sf = 1.;
+  if ( (y >= yMin_ || yMin_ == -1.) && (y < yMax_ || yMax_ == -1.) ) {
+    if ( xMin_ != -1. && x < xMin_ ) x = xMin_;
+    if ( xMax_ != -1. && x > xMax_ ) x = xMax_;
+    sf = integralCrystalBall(x, m0_, sigma_, alpha_, n_, norm_);
+    if ( sf < 0. ) sf = 0.;
+    if ( sf > 1. ) sf = 1.;
   }
   return sf;
 }

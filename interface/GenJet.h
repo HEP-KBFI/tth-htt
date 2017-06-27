@@ -1,10 +1,10 @@
 #ifndef GENJET_H
 #define GENJET_H
 
-#include "tthAnalysis/HiggsToTauTau/interface/GenParticle.h" // GenParticle
+#include "tthAnalysis/HiggsToTauTau/interface/Particle.h" // Particle
 
 class GenJet
-  : public GenParticle
+  : public Particle
 {
 public:
   GenJet() = default;

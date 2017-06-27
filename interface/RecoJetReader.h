@@ -69,6 +69,7 @@ class RecoJetReader
   std::string branchName_BtagCSVwHipMitigation_;
   std::string branchName_BtagCSVwoHipMitigation_;
   std::string branchName_BtagWeight_;
+  std::string branchName_QGDiscr_;
   std::string branchName_heppyFlavour_;
 
   std::map<int, std::string> branchNames_BtagWeight_systematics_;
@@ -88,6 +89,7 @@ class RecoJetReader
   Float_t* jet_BtagCSVwHipMitigation_;
   Float_t* jet_BtagCSVwoHipMitigation_;
   Float_t* jet_BtagWeight_;
+  Float_t* jet_QGDiscr_;
   Int_t* jet_heppyFlavour_;
 
   std::map<int, Float_t*> jet_BtagWeights_systematics_; // CV: needed by RecoJetWriter

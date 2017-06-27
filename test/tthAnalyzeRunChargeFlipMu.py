@@ -19,7 +19,7 @@ elif ERA == "2016":
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "histosCF_mu_testPt"
+version = "histosCF_mu_summer"
 
 if __name__ == '__main__':
   logging.basicConfig(

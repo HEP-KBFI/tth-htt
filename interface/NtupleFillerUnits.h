@@ -1,8 +1,8 @@
 #ifndef NTUPLEFILLERUNITS_H
 #define NTUPLEFILLERUNITS_H
 
+#include "tthAnalysis/HiggsToTauTau/interface/Particle.h" // Particle
 #include "tthAnalysis/HiggsToTauTau/interface/GenParticle.h" // GenParticle
-#include "tthAnalysis/HiggsToTauTau/interface/GenLepton.h" // GenLepton
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTau.h" // RecoHadTau
 #include "tthAnalysis/HiggsToTauTau/interface/TypeTraits.h" // Traits<>
 #include "tthAnalysis/HiggsToTauTau/interface/KeyTypes.h" // RUN_*, LUMI_*, EVT_*
@@ -307,20 +307,20 @@ struct METFiller
 
 template <typename FloatType,
           typename = typename std::enable_if<std::is_floating_point<FloatType>::value>::type>
-struct GenParticleFiller
+struct ParticleFiller
 {
-  GenParticleFiller()
+  ParticleFiller()
     : particle_(0)
   {}
-  GenParticleFiller(const std::string & name)
+  ParticleFiller(const std::string & name)
     : pt_(Form("%s_%s", name.c_str(), "pt"))
     , eta_(Form("%s_%s", name.c_str(), "eta"))
     , phi_(Form("%s_%s", name.c_str(), "phi"))
     , mass_(Form("%s_%s", name.c_str(), "mass"))
     , particle_(0)
   {}
-  GenParticleFiller(const std::string & name,
-                    GenParticle * particle)
+  ParticleFiller(const std::string & name,
+		 Particle * particle)
     : pt_(Form("%s_%s", name.c_str(), "pt"))
     , eta_(Form("%s_%s", name.c_str(), "eta"))
     , phi_(Form("%s_%s", name.c_str(), "phi"))
@@ -348,7 +348,7 @@ struct GenParticleFiller
   }
 
   void
-  setValues(const GenParticle & particle)
+  setValues(const Particle & particle)
   {
     pt_.setValue(particle.pt());
     eta_.setValue(particle.eta());
@@ -357,7 +357,7 @@ struct GenParticleFiller
   }
 
   void
-  setPtr(GenParticle * particle)
+  setPtr(Particle * particle)
   {
     particle_ = particle;
   }
@@ -377,27 +377,27 @@ protected:
   BasicFiller<FloatType> phi_;
   BasicFiller<FloatType> mass_;
 
-  GenParticle * particle_;
+  Particle * particle_;
 };
 
 template <typename FloatType,
           typename = typename std::enable_if<std::is_floating_point<FloatType>::value>::type>
-struct GenLeptonFiller
-  : public GenParticleFiller<FloatType>
+struct GenParticleFiller
+  : public ParticleFiller<FloatType>
 {
-  GenLeptonFiller()
-    : GenParticleFiller<FloatType>()
+  GenParticleFiller()
+    : ParticleFiller<FloatType>()
     , lepton_(0)
   {}
-  GenLeptonFiller(const std::string & name)
-    : GenParticleFiller<FloatType>(name)
+  GenParticleFiller(const std::string & name)
+    : ParticleFiller<FloatType>(name)
     , charge_(Form("%s_%s", name.c_str(), "charge"))
     , pdgId_(Form("%s_%s", name.c_str(), "pdgId"))
     , lepton_(0)
   {}
-  GenLeptonFiller(const std::string & name,
-                  GenLepton * lepton)
-    : GenParticleFiller<FloatType>(name, static_cast<GenParticle *>(lepton))
+  GenParticleFiller(const std::string & name,
+                  GenParticle * lepton)
+    : ParticleFiller<FloatType>(name, static_cast<Particle *>(lepton))
     , charge_(Form("%s_%s", name.c_str(), "charge"))
     , pdgId_(Form("%s_%s", name.c_str(), "pdgId"))
     , lepton_(lepton)
@@ -412,31 +412,31 @@ struct GenLeptonFiller
       pdgId_.setValuePtr(lepton_ -> pdgId());
     }
 
-    int err = GenParticleFiller<FloatType>::initBranches(tree);
+    int err = ParticleFiller<FloatType>::initBranches(tree);
     err |= (charge_.initBranch(tree) << 4);
     err |= (pdgId_.initBranch(tree) << 5);
     return err;
   }
 
   void
-  setValues(const GenLepton & lepton)
+  setValues(const GenParticle & lepton)
   {
-    GenParticleFiller<FloatType>::setValues(static_cast<const GenParticle &>(lepton));
+    ParticleFiller<FloatType>::setValues(static_cast<const Particle &>(lepton));
     charge_.setValue(lepton.charge());
     pdgId_.setValue(lepton.pdgId());
   }
 
   void
-  setPtr(GenLepton * lepton)
+  setPtr(GenParticle * lepton)
   {
-    GenParticleFiller<FloatType>::setPtr(static_cast<GenParticle *>(lepton));
+    ParticleFiller<FloatType>::setPtr(static_cast<Particle *>(lepton));
     lepton_ = lepton;
   }
 
   void
   setBranchName(const std::string & name)
   {
-    GenParticleFiller<FloatType>::setBranchName(name);
+    ParticleFiller<FloatType>::setBranchName(name);
     charge_.setBranchName(Form("%s_%s", name.c_str(), "charge"));
     pdgId_.setBranchName(Form("%s_%s", name.c_str(), "pdgId"));
   }
@@ -445,27 +445,27 @@ protected:
   BasicFiller<Int_t> charge_;
   BasicFiller<Int_t> pdgId_;
 
-  GenLepton * lepton_;
+  GenParticle * lepton_;
 };
 
 template <typename FloatType,
           typename = typename std::enable_if<std::is_floating_point<FloatType>::value>::type>
 struct RecoHadTauFiller
-  : public GenParticleFiller<FloatType>
+  : public ParticleFiller<FloatType>
 {
   RecoHadTauFiller()
-    : GenParticleFiller<FloatType>()
+    : ParticleFiller<FloatType>()
     , hadTau_(0)
   {}
   RecoHadTauFiller(const std::string & name)
-    : GenParticleFiller<FloatType>(name)
+    : ParticleFiller<FloatType>(name)
     , charge_(Form("%s_%s", name.c_str(), "charge"))
     , decayMode_(Form("%s_%s", name.c_str(), "decayMode"))
     , hadTau_(0)
   {}
   RecoHadTauFiller(const std::string & name,
                   RecoHadTau * hadTau)
-    : GenParticleFiller<FloatType>(name, static_cast<GenParticle *>(hadTau))
+    : ParticleFiller<FloatType>(name, static_cast<Particle *>(hadTau))
     , charge_(Form("%s_%s", name.c_str(), "charge"))
     , decayMode_(Form("%s_%s", name.c_str(), "decayMode"))
     , hadTau_(hadTau)
@@ -480,7 +480,7 @@ struct RecoHadTauFiller
       decayMode_.setValuePtr(hadTau_ -> decayMode());
     }
 
-    int err = GenParticleFiller<FloatType>::initBranches(tree);
+    int err = ParticleFiller<FloatType>::initBranches(tree);
     err |= (charge_.initBranch(tree) << 4);
     err |= (decayMode_.initBranch(tree) << 5);
     return err;
@@ -489,7 +489,7 @@ struct RecoHadTauFiller
   void
   setValues(const RecoHadTau & hadTau)
   {
-    GenParticleFiller<FloatType>::setValues(static_cast<const GenParticle &>(hadTau));
+    ParticleFiller<FloatType>::setValues(static_cast<const Particle &>(hadTau));
     charge_.setValue(hadTau.charge());
     decayMode_.setValue(hadTau.decayMode());
   }
@@ -497,14 +497,14 @@ struct RecoHadTauFiller
   void
   setPtr(RecoHadTau * hadTau)
   {
-    GenParticleFiller<FloatType>::setPtr(static_cast<GenParticle *>(hadTau));
+    ParticleFiller<FloatType>::setPtr(static_cast<Particle *>(hadTau));
     hadTau_ = hadTau;
   }
 
   void
   setBranchName(const std::string & name)
   {
-    GenParticleFiller<FloatType>::setBranchName(name);
+    ParticleFiller<FloatType>::setBranchName(name);
     charge_.setBranchName(Form("%s_%s", name.c_str(), "charge"));
     decayMode_.setBranchName(Form("%s_%s", name.c_str(), "decayMode"));
   }
@@ -519,20 +519,20 @@ protected:
 template <typename FloatType,
           typename = typename std::enable_if<std::is_floating_point<FloatType>::value>::type>
 struct GenHadTauFiller
-  : public GenParticleFiller<FloatType>
+  : public ParticleFiller<FloatType>
 {
   GenHadTauFiller()
-    : GenParticleFiller<FloatType>()
+    : ParticleFiller<FloatType>()
     , genHadTau_(0)
   {}
   GenHadTauFiller(const std::string & name)
-    : GenParticleFiller<FloatType>(name)
+    : ParticleFiller<FloatType>(name)
     , charge_(Form("%s_%s", name.c_str(), "charge"))
     , genHadTau_(0)
   {}
   GenHadTauFiller(const std::string & name,
                   GenHadTau * genHadTau)
-    : GenParticleFiller<FloatType>(name, static_cast<GenParticle *>(genHadTau))
+    : ParticleFiller<FloatType>(name, static_cast<Particle *>(genHadTau))
     , charge_(Form("%s_%s", name.c_str(), "charge"))
     , genHadTau_(genHadTau)
   {}
@@ -543,7 +543,7 @@ struct GenHadTauFiller
     if(genHadTau_)
       charge_.setValuePtr(genHadTau_ -> charge());
 
-    int err = GenParticleFiller<FloatType>::initBranches(tree);
+    int err = ParticleFiller<FloatType>::initBranches(tree);
     err |= (charge_.initBranch(tree) << 4);
     return err;
   }
@@ -551,21 +551,21 @@ struct GenHadTauFiller
   void
   setValues(const GenHadTau & genHadTau)
   {
-    GenParticleFiller<FloatType>::setValues(static_cast<const GenParticle &>(genHadTau));
+    ParticleFiller<FloatType>::setValues(static_cast<const Particle &>(genHadTau));
     charge_.setValue(genHadTau.charge());
   }
 
   void
   setPtr(GenHadTau * genHadTau)
   {
-    GenParticleFiller<FloatType>::setPtr(static_cast<GenParticle *>(genHadTau));
+    ParticleFiller<FloatType>::setPtr(static_cast<Particle *>(genHadTau));
     genHadTau_ = genHadTau;
   }
 
   void
   setBranchName(const std::string & name)
   {
-    GenParticleFiller<FloatType>::setBranchName(name);
+    ParticleFiller<FloatType>::setBranchName(name);
     charge_.setBranchName(Form("%s_%s", name.c_str(), "charge"));
   }
 

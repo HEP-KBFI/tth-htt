@@ -31,7 +31,8 @@ class RecoLepton
 	     Double_t jetPtRatio,
 	     Double_t jetBtagCSV,
 	     Int_t tightCharge,
-	     Int_t charge);
+	     Int_t charge
+);
 
   /**
    * @brief Set flags indicating whether or not lepton passes loose, fakeable and/or tight selection criteria

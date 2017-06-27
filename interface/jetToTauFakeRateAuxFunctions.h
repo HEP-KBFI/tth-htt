@@ -5,4 +5,6 @@
 
 std::string getEtaBin(double minAbsEta, double maxAbsEta);
 
+std::string getPtBin(double minPt, double maxPt); 
+
 #endif // tthAnalysis_HiggsToTauTau_jetToTauFakeRateAuxFunctions_h

@@ -50,7 +50,7 @@ process.analyze_2lss_1tau = cms.PSet(
 
     chargeSumSelection = cms.string('OS'),
 
-    applyFakeRateWeights = cms.string("disabled"), # either "disabled", "3L" or "2tau"
+    applyFakeRateWeights = cms.string("disabled"), # either "disabled", "2lepton", "3L" or "1tau"
     leptonFakeRateWeight = cms.PSet(
         inputFileName = cms.string("tthAnalysis/HiggsToTauTau/data/FR_lep_ttH_mva_2016_data.root"),
         histogramName_e = cms.string("FR_mva075_el_data_comb"),
@@ -96,5 +96,5 @@ process.analyze_2lss_1tau = cms.PSet(
     
     selEventsFileName_input = cms.string(''),
     selEventsFileName_output = cms.string('selEvents_analyze_2lss_1tau.txt'),
-    selectBDT = cms.bool(False),
+    selectBDT = cms.bool(False)
 )

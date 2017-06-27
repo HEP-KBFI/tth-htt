@@ -7,17 +7,13 @@ GenLepton::GenLepton(Double_t pt,
                      Double_t phi,
                      Double_t mass,
                      Int_t pdgId)
-  : GenParticle(pt, eta, phi, mass)
-  , pdgId_(pdgId)
-  , charge_(-pdgId_ / std::abs(pdgId_))
-{ }
+  : GenParticle(pt, eta, phi, mass, pdgId, -pdgId/std::abs(pdgId))
+{}
 
 GenLepton::GenLepton(const math::PtEtaPhiMLorentzVector & p4,
                      Int_t pdgId)
-  : GenParticle(p4)
-  , pdgId_(pdgId)
-  , charge_(-pdgId_ / std::abs(pdgId_))
-{ }
+  : GenParticle(p4, pdgId, -pdgId/std::abs(pdgId))
+{}
 
 std::ostream& operator<<(std::ostream& stream, const GenLepton& lepton)
 {
