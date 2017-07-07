@@ -45,7 +45,7 @@ elif ERA == "2016":
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "2017May30"
+version = "2017Jul07"
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -147,8 +147,8 @@ if __name__ == '__main__':
 
   analysis.create()
 
-  ##run_analysis = query_yes_no("Start jobs ?")
-  run_analysis = True
+  run_analysis = query_yes_no("Start jobs ?")
+  ##run_analysis = True
   if run_analysis:
     analysis.run()
   else:
