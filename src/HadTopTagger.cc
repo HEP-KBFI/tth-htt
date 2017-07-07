@@ -28,6 +28,9 @@ HadTopTagger::HadTopTagger(const std::string& mvaFileName)
   mvaInputVariables_.push_back("dR_Wj1Wj2");
   mvaInputVariables_.push_back("dR_bW");
   mvaInputVariables_.push_back("nllKinFit");
+  mvaInputVariables_.push_back("alphaKinFit");
+  mvaInputVariables_.push_back("logPKinFit");
+  mvaInputVariables_.push_back("logPErrKinFit");
   mvaInputVariables_.push_back("qg_b");
   mvaInputVariables_.push_back("qg_Wj1");
   mvaInputVariables_.push_back("qg_Wj2");
@@ -77,7 +80,12 @@ double HadTopTagger::operator()(const RecoJet& recBJet, const RecoJet& recWJet1,
   mvaInputs_["dR_Wj1Wj2"]              = dR_Wj1Wj2;
   mvaInputs_["dR_bW"]                  = deltaR(recBJet.p4(), p4_Wj1Wj2);
   kinFit_->fit(recBJet.p4(), recWJet1.p4(), recWJet2.p4());
+  mvaInputs_["statusKinFit"]           = kinFit_->fit_status();
   mvaInputs_["nllKinFit"]              = kinFit_->nll();
+  mvaInputs_["alphaKinFit"]            = kinFit_->alpha();
+  kinFit_->integrate(recBJet.p4(), recWJet1.p4(), recWJet2.p4());
+  mvaInputs_["logPKinFit"]             = ( kinFit_->p()    > 0. ) ? log(kinFit_->p())    : -1.e+3;
+  mvaInputs_["logPErrKinFit"]          = ( kinFit_->pErr() > 0. ) ? log(kinFit_->pErr()) : -1.e+3;
   mvaInputs_["qg_b"]                   = recBJet.QGDiscr();
   mvaInputs_["qg_Wj1"]                 = recWJet1.QGDiscr();
   mvaInputs_["qg_Wj2"]                 = recWJet2.QGDiscr();

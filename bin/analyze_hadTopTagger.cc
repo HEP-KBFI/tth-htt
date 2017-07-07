@@ -313,7 +313,11 @@ int main(int argc, char* argv[])
     mvaInputHistManager->defineBinningOption("dR_bWj2", 100, 0., 5.);
     mvaInputHistManager->defineBinningOption("dR_Wj1Wj2", 100, 0., 5.);
     mvaInputHistManager->defineBinningOption("dR_bW", 100, 0., 5.);
-    mvaInputHistManager->defineBinningOption("nllKinFit", 200, -5., +95.);
+    mvaInputHistManager->defineBinningOption("statusKinFit", 6, -1., +5.);
+    mvaInputHistManager->defineBinningOption("nllKinFit", 150, -10., +5.);
+    mvaInputHistManager->defineBinningOption("alphaKinFit", 200, 0., 2.);
+    mvaInputHistManager->defineBinningOption("logPKinFit", 150, -10., +5.);
+    mvaInputHistManager->defineBinningOption("logPErrKinFit", 250, -20., +5.);
     mvaInputHistManager->defineBinningOption("qg_b", 100, 0., 1.);
     mvaInputHistManager->defineBinningOption("qg_Wj1", 100, 0., 1.);
     mvaInputHistManager->defineBinningOption("qg_Wj2", 100, 0., 1.);
@@ -344,7 +348,7 @@ int main(int argc, char* argv[])
       "CSV_b", "CSV_Wj1", "CSV_Wj2",
       "pT_b", "pT_Wj1", "pT_Wj2",
       "dR_bWj1", "dR_bWj2", "dR_Wj1Wj2", "dR_bW",
-      "nllKinFit",
+      "nllKinFit", "alphaKinFit", "logPKinFit", "logPErrKinFit", 
       "qg_b", "qg_Wj1", "qg_Wj2",
       "pT_bWj1Wj2", "pT_Wj1Wj2",
       "max_dR_div_expRjet"
