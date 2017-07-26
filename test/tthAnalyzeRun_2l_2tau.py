@@ -51,6 +51,7 @@ if __name__ == '__main__':
     hadTau_selections = hadTau_selection,
     hadTau_charge_selections = [ "OS", "SS" ],
     applyFakeRateWeights = applyFakeRateWeights,
+    chargeSumSelections  = [ "OS", "SS" ],
     central_or_shifts = [ 
       "central",
 ##       "CMS_ttHl_btag_HFUp", 

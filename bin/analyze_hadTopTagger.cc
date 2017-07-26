@@ -348,7 +348,7 @@ int main(int argc, char* argv[])
       "CSV_b", "CSV_Wj1", "CSV_Wj2",
       "pT_b", "pT_Wj1", "pT_Wj2",
       "dR_bWj1", "dR_bWj2", "dR_Wj1Wj2", "dR_bW",
-      "nllKinFit", "alphaKinFit", "logPKinFit", "logPErrKinFit", 
+      "statusKinFit", "nllKinFit", "alphaKinFit", "logPKinFit", "logPErrKinFit", 
       "qg_b", "qg_Wj1", "qg_Wj2",
       "pT_bWj1Wj2", "pT_Wj1Wj2",
       "max_dR_div_expRjet"

@@ -155,7 +155,7 @@
   <use   name="roottmva"/>
   <use   name="boost"/>
 </bin>
-<!--bin file="analyze_2l_2tau.cc" name="analyze_2l_2tau">
+<bin file="analyze_2l_2tau.cc" name="analyze_2l_2tau">
   <use   name="FWCore/FWLite"/>
   <use   name="FWCore/ParameterSet"/>
   <use   name="FWCore/PythonParameterSet"/>
@@ -167,7 +167,7 @@
   <use   name="root"/>
   <use   name="roottmva"/>
   <use   name="boost"/>
-</bin-->
+</bin>
 <bin file="addBackgroundLeptonFakes.cc" name="addBackgroundLeptonFakes">
   <use   name="FWCore/FWLite"/>
   <use   name="FWCore/ParameterSet"/>

@@ -1187,7 +1187,7 @@ int main(int argc, char* argv[])
       continue;
     }
     cutFlowTable.update(Form(">= %i jets (1)", minNumJets));
-    cutFlowHistManager->fillHistograms(Form(">= %i jets (1)", minNumJets), lumiScale);
+    cutFlowHistManager->fillHistograms(">= N jets (1)", lumiScale);
     if ( !(selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS selBJets selection." << std::endl;
@@ -1485,7 +1485,7 @@ int main(int argc, char* argv[])
       continue;
     }
     cutFlowTable.update(Form(">= %i jets (2)", minNumJets), evtWeight);
-    cutFlowHistManager->fillHistograms(Form(">= %i jets (2)", minNumJets), evtWeight);
+    cutFlowHistManager->fillHistograms(">= N jets (2)", evtWeight);
     if ( !(selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1)) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS selBJets selection." << std::endl;

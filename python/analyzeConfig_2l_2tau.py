@@ -1,6 +1,6 @@
 import logging
 
-from tthAnalysis.HiggsToTauTau.analyzeConfig import *
+from tthAnalysis.HiggsToTauTau.analyzeConfig_new import *
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists
 from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg, createFile, generateInputFileList
 
@@ -40,11 +40,10 @@ class analyzeConfig_2l_2tau(analyzeConfig):
   
   """
   def __init__(self, configDir, outputDir, executable_analyze, cfgFile_analyze, samples, changeBranchNames, lepton_charge_selections,
-               hadTau_selections, hadTau_charge_selections, applyFakeRateWeights, central_or_shifts,
+               hadTau_selections, hadTau_charge_selections, applyFakeRateWeights, chargeSumSelections, central_or_shifts,
                max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs, 
                executable_addBackgrounds, executable_addBackgroundJetToTauFakes, histograms_to_fit, select_rle_output = False,
-               executable_prep_dcard="prepareDatacards", executable_add_syst_dcard = "addSystDatacards",
-               select_root_output = False):
+               executable_prep_dcard="prepareDatacards", executable_add_syst_dcard = "addSystDatacards"):
     analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "2l_2tau", central_or_shifts,
       max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs, 
       histograms_to_fit,
@@ -94,7 +93,7 @@ class analyzeConfig_2l_2tau(analyzeConfig):
     for dir_type in [ DKEY_DCRD, DKEY_PLOT ]:
       initDict(self.dirs, [ dir_type ])
       self.dirs[dir_type] = os.path.join(self.outputDir, dir_type, self.channel)
-    ##print "self.dirs = ", self.dirs
+    print "self.dirs = ", self.dirs
 
     self.nonfake_backgrounds = [ "TT", "TTW", "TTZ", "EWK", "Rares" ]
     

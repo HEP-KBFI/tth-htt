@@ -41,8 +41,8 @@ if __name__ == '__main__':
 
   analysis.create()
 
-  run_analysis = query_yes_no("Start jobs ?")
-  ##run_analysis = True
+  ##run_analysis = query_yes_no("Start jobs ?")
+  run_analysis = True
   if run_analysis:
     analysis.run()
   else:

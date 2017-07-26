@@ -20,7 +20,9 @@ class EvtHistManager_2l_2tau
   /// book and fill histograms
   void bookHistograms(TFileDirectory& dir);
   void fillHistograms(int numElectrons, int numMuons, int numHadTaus, int numJets, int numBJets_loose, int numBJets_medium,
-		      double mTauTauVis, double evtWeight);
+		      double mTauTauVis, double leptonPairCharge, double hadTauPairCharge, double evtWeight);
+
+  const TH1* getHistogram_EventCounter() const { return histogram_EventCounter_; }
 
  private:
   TH1* histogram_numElectrons_;
@@ -34,6 +36,8 @@ class EvtHistManager_2l_2tau
   TH2* histogram_numBJets_medium_vs_numJets_; //     to avoid overlap with ttH, H->bb analysis (alternative: ttH, H->bb analysis adds hadronic tau veto)
 
   TH1* histogram_mTauTauVis_;
+  TH1* histogram_leptonPairCharge_;
+  TH1* histogram_hadTauPairCharge_;
 
   TH1* histogram_EventCounter_;
 

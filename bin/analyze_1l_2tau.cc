@@ -1223,7 +1223,6 @@ int main(int argc, char* argv[])
       }
       weight_hadTauEff *= sf_hadTauEff;
       weight_data_to_MC_correction *= sf_hadTauEff;
-
       if ( isDEBUG ) {
 	std::cout << "weight_data_to_MC_correction = " << weight_data_to_MC_correction << std::endl;
       }

@@ -27,6 +27,7 @@ HadTopTagger::HadTopTagger(const std::string& mvaFileName)
   mvaInputVariables_.push_back("dR_bWj2");
   mvaInputVariables_.push_back("dR_Wj1Wj2");
   mvaInputVariables_.push_back("dR_bW");
+  mvaInputVariables_.push_back("statusKinFit");
   mvaInputVariables_.push_back("nllKinFit");
   mvaInputVariables_.push_back("alphaKinFit");
   mvaInputVariables_.push_back("logPKinFit");
