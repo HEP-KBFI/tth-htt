@@ -76,6 +76,7 @@
 
 #include "TauAnalysis/ClassicSVfit/interface/ClassicSVfit.h"
 #include "TauAnalysis/ClassicSVfit/interface/MeasuredTauLepton.h"
+#include "TauAnalysis/ClassicSVfit/interface/svFitHistogramAdapter.h"
 #include "TauAnalysis/ClassicSVfit/interface/svFitAuxFunctions.h"
 
 #include <boost/range/algorithm/copy.hpp> // boost::copy()
@@ -1291,7 +1292,7 @@ int main(int argc, char* argv[])
     svFitAlgo.addLogM_dynamic(false);
     svFitAlgo.addLogM_fixed(true, 4.);
     svFitAlgo.integrate(measuredTauLeptons, met.p4().px(), met.p4().py(), met.cov());
-    double mTauTau = ( svFitAlgo.isValidSolution() ) ? svFitAlgo.mass() : -1.;
+    double mTauTau = ( svFitAlgo.isValidSolution() ) ? static_cast<classic_svFit::DiTauSystemHistogramAdapter*>(svFitAlgo.getHistogramAdapter())->getMass() : -1.;
 
 //--- compute output of BDTs used to discriminate ttH vs. ttbar trained by Arun for 1l_2tau category
     mvaInputs_ttbar["lep_pt"]              = selLepton->pt();
