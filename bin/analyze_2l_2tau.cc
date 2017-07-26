@@ -252,8 +252,7 @@ int main(int argc, char* argv[])
   double lumiScale = ( process_string != "data_obs" ) ? cfg_analyze.getParameter<double>("lumiScale") : 1.;
   bool apply_genWeight = cfg_analyze.getParameter<bool>("apply_genWeight"); 
   bool apply_trigger_bits = cfg_analyze.getParameter<bool>("apply_trigger_bits"); 
-  bool apply_hadTauFakeRateSF = cfg_analyze.getParameter<bool>("apply_hadTauFakeRateSF");
-
+ 
   bool isDEBUG = ( cfg_analyze.exists("isDEBUG") ) ? cfg_analyze.getParameter<bool>("isDEBUG") : false; 
   if ( isDEBUG ) std::cout << "Warning: DEBUG mode enabled -> trigger selection will not be applied for data !!" << std::endl;
 
@@ -355,8 +354,7 @@ int main(int argc, char* argv[])
   }
 
   JetToTauFakeRateInterface* jetToTauFakeRateInterface = 0;
-  if ( applyFakeRateWeights == kFR_4L || applyFakeRateWeights == kFR_2tau || apply_hadTauFakeRateSF ) {
-									  
+  if ( applyFakeRateWeights == kFR_4L || applyFakeRateWeights == kFR_2tau ) {									  
     edm::ParameterSet cfg_hadTauFakeRateWeight = cfg_analyze.getParameter<edm::ParameterSet>("hadTauFakeRateWeight");
     cfg_hadTauFakeRateWeight.addParameter<std::string>("hadTauSelection", hadTauSelection_part2);
     jetToTauFakeRateInterface = new JetToTauFakeRateInterface(cfg_hadTauFakeRateWeight, jetToTauFakeRate_option);
@@ -389,9 +387,6 @@ int main(int argc, char* argv[])
   std::string selEventsFileName_output = cfg_analyze.getParameter<std::string>("selEventsFileName_output");
   std::cout << "selEventsFileName_output = " << selEventsFileName_output << std::endl;
   
-  std::string selEventsTFileName = cfg_analyze.getParameter<std::string>("selEventsTFileName");
-  const bool writeSelEventsFile = selEventsTFileName != "";
-
   fwlite::InputSource inputFiles(cfg); 
   int maxEvents = inputFiles.maxEvents();
   std::cout << " maxEvents = " << maxEvents << std::endl;
@@ -412,19 +407,6 @@ int main(int argc, char* argv[])
       << "Failed to identify input Tree !!\n";
   }
   
-  // CV: need to call TChain::LoadTree before processing first event 
-  //     in order to prevent ROOT causing a segmentation violation,
-  //     cf. http://root.cern.ch/phpBB3/viewtopic.php?t=10062
-  inputTree->LoadTree(0);
-  
-//--- create output root file from selected events if needed
-  NtupleFillerMEM mem;
-  if ( writeSelEventsFile ) {
-    mem.use2016(era == kEra_2016);
-    mem.isSignal(isSignal);
-    mem.setFileName(selEventsTFileName);
-  }
-
   std::cout << "input Tree contains " << inputTree->GetEntries() << " Entries in " << inputTree->GetListOfFiles()->GetEntries() << " files." << std::endl;
 
 //--- declare event-level variables
@@ -964,7 +946,6 @@ int main(int argc, char* argv[])
     if ( apply_leptonGenMatching_ttZ_workaround ) idxPreselLepton_genMatch = kGen_2l0j;
     assert(idxPreselLepton_genMatch != kGen_LeptonUndefined2);
 
-
     // require that trigger paths match event category (with event category based on preselLeptons);
     if ( preselElectrons.size() == 2 && !(selTrigger_1e  || selTrigger_2e) ) {
       if ( run_lumi_eventSelector ) {
@@ -1371,7 +1352,9 @@ int main(int argc, char* argv[])
       }
       continue;
     }
-    cutFlowTable.update(Form("sel lepton-pair %s charge", leptonChargeSelection_string.data()), evtWeight);
+    if ( leptonChargeSelection != kDisabled ) {
+      cutFlowTable.update(Form("sel lepton-pair %s charge", leptonChargeSelection_string.data()), evtWeight);
+    }
     cutFlowHistManager->fillHistograms("sel lepton-pair OS/SS charge", evtWeight);
 	
     bool isCharge_hadTau_SS = selHadTau_lead->charge()*selHadTau_sublead->charge() > 0;
@@ -1392,7 +1375,9 @@ int main(int argc, char* argv[])
       }
       continue;
     }
-    cutFlowTable.update(Form("tau-pair %s charge", hadTauChargeSelection_string.data()), evtWeight);
+    if ( hadTauChargeSelection != kDisabled ) {
+      cutFlowTable.update(Form("tau-pair %s charge", hadTauChargeSelection_string.data()), evtWeight);
+    }
     cutFlowHistManager->fillHistograms("tau-pair OS/SS charge", evtWeight);
 
     if ( (chargeSumSelection == kOS && std::abs(selLepton_lead->charge() + selLepton_sublead->charge() + selHadTau_lead->charge() + selHadTau_sublead->charge()) != 0) ||

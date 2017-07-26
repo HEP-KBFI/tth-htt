@@ -32,7 +32,7 @@ elif ERA == "2016":
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "2017May10"
+version = "2017Jul27"
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -47,9 +47,9 @@ if __name__ == '__main__':
     cfgFile_analyze = "analyze_2l_2tau_cfg.py",
     samples = samples,
     changeBranchNames = changeBranchNames,
-    lepton_charge_selections = [ "OS" ],
-    hadTau_selections = hadTau_selection,
-    hadTau_charge_selections = [ "OS", "SS" ],
+    lepton_charge_selections = [ "disabled" ],
+    hadTau_selection = hadTau_selection,
+    hadTau_charge_selections = [ "disabled" ],
     applyFakeRateWeights = applyFakeRateWeights,
     chargeSumSelections  = [ "OS", "SS" ],
     central_or_shifts = [ 
@@ -106,6 +106,9 @@ if __name__ == '__main__':
     executable_addBackgroundJetToTauFakes = "addBackgroundLeptonFakes", # CV: use common executable for estimating jet->lepton and jet->tau_h fake background
     histograms_to_fit = [ "EventCounter", "numJets", "mTauTauVis" ],
     select_rle_output = True)
+
+  if mode.find("forBDTtraining") != -1:
+    analysis.set_BDT_training()
 
   analysis.create()
 
