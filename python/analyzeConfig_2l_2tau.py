@@ -529,7 +529,7 @@ class analyzeConfig_2l_2tau(analyzeConfig):
                         self.createCfg_addBackgrounds(self.jobOptions_addBackgrounds[key_addBackgrounds_job])
                       
                         # initialize input and output file names for hadd_stage1_5
-                        key_hadd_stage1_5 = getKey(lepton_and_hadTau_selection_and_frWeight, lepton_charge_selection, hadTau_charge_selection, chargeSumSelection)
+                        key_hadd_stage1_5 = getKey(lepton_charge_selection, hadTau_charge_selection, lepton_and_hadTau_selection_and_frWeight, chargeSumSelection)
                         if not key_hadd_stage1_5 in self.inputFiles_hadd_stage1_5:
                           self.inputFiles_hadd_stage1_5[key_hadd_stage1_5] = []
                         self.inputFiles_hadd_stage1_5[key_hadd_stage1_5].append(self.jobOptions_addBackgrounds[key_addBackgrounds_job]['outputFile'])
@@ -538,8 +538,8 @@ class analyzeConfig_2l_2tau(analyzeConfig):
 
                 # add output files of hadd_stage1 for data to list of input files for hadd_stage1_5
                 if not is_mc:
-                  key_hadd_stage1 = getKey(process_name, lepton_and_hadTau_selection_and_frWeight, lepton_charge_selection, hadTau_charge_selection, chargeSumSelection)
-                  key_hadd_stage1_5 = getKey(lepton_and_hadTau_selection_and_frWeight, lepton_charge_selection, hadTau_charge_selection, chargeSumSelection)
+                  key_hadd_stage1 = getKey(process_name, lepton_charge_selection, hadTau_charge_selection, lepton_and_hadTau_selection_and_frWeight, chargeSumSelection)
+                  key_hadd_stage1_5 = getKey(lepton_charge_selection, hadTau_charge_selection, lepton_and_hadTau_selection_and_frWeight, chargeSumSelection)
                   if not key_hadd_stage1_5 in self.inputFiles_hadd_stage1_5:
                     self.inputFiles_hadd_stage1_5[key_hadd_stage1_5] = []
                   self.inputFiles_hadd_stage1_5[key_hadd_stage1_5].append(self.outputFile_hadd_stage1[key_hadd_stage1])
@@ -547,7 +547,7 @@ class analyzeConfig_2l_2tau(analyzeConfig):
               # sum fake contributions for the total of all MC sample
               # input processes: TT1l1j,TT0l2j,...
               # output process: fakes_mc
-              key_addBackgrounds_job = getKey(lepton_and_hadTau_selection_and_frWeight, lepton_charge_selection, hadTau_charge_selection, chargeSumSelection)
+              key_addBackgrounds_job = getKey(lepton_charge_selection, hadTau_charge_selection, lepton_and_hadTau_selection_and_frWeight, chargeSumSelection)
               sample_categories = []
               sample_categories.extend(self.nonfake_backgrounds)
               sample_categories.extend([ "signal" ])
@@ -570,12 +570,12 @@ class analyzeConfig_2l_2tau(analyzeConfig):
               self.createCfg_addBackgrounds(self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job])
 
               # initialize input and output file names for hadd_stage2
-              key_hadd_stage2 = getKey(lepton_and_hadTau_selection_and_frWeight, lepton_charge_selection, hadTau_charge_selection, chargeSumSelection)
+              key_hadd_stage2 = getKey(lepton_charge_selection, hadTau_charge_selection, lepton_and_hadTau_selection_and_frWeight, chargeSumSelection)
               if not key_hadd_stage2 in self.inputFiles_hadd_stage2:
                 self.inputFiles_hadd_stage2[key_hadd_stage2] = []
               if lepton_and_hadTau_selection == "Tight":
                 self.inputFiles_hadd_stage2[key_hadd_stage2].append(self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job]['outputFile'])
-              key_hadd_stage1_5 = getKey(lepton_and_hadTau_selection_and_frWeight, lepton_charge_selection, hadTau_charge_selection, chargeSumSelection)
+              key_hadd_stage1_5 = getKey(lepton_charge_selection, hadTau_charge_selection, lepton_and_hadTau_selection_and_frWeight, chargeSumSelection)
               self.inputFiles_hadd_stage2[key_hadd_stage2].append(self.outputFile_hadd_stage1_5[key_hadd_stage1_5])
               self.outputFile_hadd_stage2[key_hadd_stage2] = os.path.join(self.dirs[DKEY_HIST], "histograms_harvested_stage2_%s_%s_%s_%s_%s.root" % \
                 (self.channel, lepton_charge_selection, hadTau_charge_selection, lepton_and_hadTau_selection_and_frWeight, chargeSumSelection))
@@ -596,8 +596,8 @@ class analyzeConfig_2l_2tau(analyzeConfig):
     for lepton_charge_selection in self.lepton_charge_selections:
       for hadTau_charge_selection in self.hadTau_charge_selections:
         for chargeSumSelection in self.chargeSumSelections:
-          key_addFakes_job = getKey("fakes_data", lepton_charge_selection, hadTau_charge_selection, chargeSumSelection)
-          key_hadd_stage1_5 = getKey(get_lepton_and_hadTau_selection_and_frWeight("Fakeable", "enabled"), lepton_charge_selection, hadTau_charge_selection, chargeSumSelection)
+          key_addFakes_job = getKey(lepton_charge_selection, hadTau_charge_selection, "fakes_data", chargeSumSelection)
+          key_hadd_stage1_5 = getKey(lepton_charge_selection, hadTau_charge_selection, get_lepton_and_hadTau_selection_and_frWeight("Fakeable", "enabled"), chargeSumSelection)
           category_sideband = None
           if self.applyFakeRateWeights == "2lepton":
             category_sideband = getHistogramDir("Fakeable", "Tight", "enabled", lepton_charge_selection, hadTau_charge_selection, chargeSumSelection)
@@ -619,7 +619,7 @@ class analyzeConfig_2l_2tau(analyzeConfig):
         'category_sideband' : category_sideband
       }
       self.createCfg_addFakes(self.jobOptions_addFakes[key_addFakes_job])
-      key_hadd_stage2 = getKey(get_lepton_and_hadTau_selection_and_frWeight("Tight", "disabled"), lepton_charge_selection, hadTau_charge_selection, chargeSumSelection)
+      key_hadd_stage2 = getKey(lepton_charge_selection, hadTau_charge_selection, get_lepton_and_hadTau_selection_and_frWeight("Tight", "disabled"), chargeSumSelection)
       self.inputFiles_hadd_stage2[key_hadd_stage2].append(self.jobOptions_addFakes[key_addFakes_job]['outputFile'])
 
     logging.info("Creating configuration files to run 'prepareDatacards'")
@@ -646,8 +646,8 @@ class analyzeConfig_2l_2tau(analyzeConfig):
             processesToCopy.append("%s_faketau" % process)
           self.prep_dcard_signals = processesToCopy    
         for histogramToFit in self.histograms_to_fit:
-          key_prep_dcard_job = getKey(histogramToFit, lepton_charge_selection, hadTau_charge_selection)
-          key_hadd_stage2 = getKey(get_lepton_and_hadTau_selection_and_frWeight("Tight", "disabled"), lepton_charge_selection, hadTau_charge_selection, "OS")          
+          key_prep_dcard_job = getKey(lepton_charge_selection, hadTau_charge_selection, histogramToFit)
+          key_hadd_stage2 = getKey(lepton_charge_selection, hadTau_charge_selection, get_lepton_and_hadTau_selection_and_frWeight("Tight", "disabled"), "OS")          
           self.jobOptions_prep_dcard[key_prep_dcard_job] = {
             'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2],
             'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "prepareDatacards_%s%s_%s_cfg.py" % (self.channel, lepton_and_hadTau_charge_selection, histogramToFit)),
@@ -659,8 +659,8 @@ class analyzeConfig_2l_2tau(analyzeConfig):
           self.createCfg_prep_dcard(self.jobOptions_prep_dcard[key_prep_dcard_job])
       
       if "SS" in self.chargeSumSelections:
-        key_prep_dcard_job = getKey(histogramToFit, lepton_charge_selection, hadTau_charge_selection, "SS")
-        key_hadd_stage2 = getKey(get_lepton_and_hadTau_selection_and_frWeight("Tight", "disabled"), lepton_charge_selection, hadTau_charge_selection, "SS")                      
+        key_prep_dcard_job = getKey(lepton_charge_selection, hadTau_charge_selection, histogramToFit, "SS")
+        key_hadd_stage2 = getKey(lepton_charge_selection, hadTau_charge_selection, get_lepton_and_hadTau_selection_and_frWeight("Tight", "disabled"), "SS")                      
         self.jobOptions_prep_dcard[key_prep_dcard_job] = {
           'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2],
           'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "prepareDatacards_%s%s_sumSS_%s_cfg.py" % (self.channel, lepton_and_hadTau_charge_selection, histogramToFit)),
@@ -681,7 +681,7 @@ class analyzeConfig_2l_2tau(analyzeConfig):
           lepton_and_hadTau_charge_selection += "_hadTau%s" % hadTau_charge_selection
           
         key_makePlots_job = getKey(lepton_charge_selection, hadTau_charge_selection, "OS")
-        key_hadd_stage2 = getKey(get_lepton_and_hadTau_selection_and_frWeight("Tight", "disabled"), lepton_charge_selection, hadTau_charge_selection, "OS")                            
+        key_hadd_stage2 = getKey(lepton_charge_selection, hadTau_charge_selection, get_lepton_and_hadTau_selection_and_frWeight("Tight", "disabled"), "OS")                            
         self.jobOptions_make_plots[key_makePlots_job] = {
           'executable' : self.executable_make_plots,
           'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2],
@@ -694,7 +694,7 @@ class analyzeConfig_2l_2tau(analyzeConfig):
         self.createCfg_makePlots(self.jobOptions_make_plots[key_makePlots_job])
         if "SS" in self.chargeSumSelections:
           key_makePlots_job = getKey(lepton_charge_selection, hadTau_charge_selection, "SS")
-          key_hadd_stage2 = getKey(get_lepton_and_hadTau_selection_and_frWeight("Tight", "disabled"), lepton_charge_selection, hadTau_charge_selection, "SS")                        
+          key_hadd_stage2 = getKey(lepton_charge_selection, hadTau_charge_selection, get_lepton_and_hadTau_selection_and_frWeight("Tight", "disabled"), "SS")                        
           self.jobOptions_make_plots[key_makePlots_job] = {
             'executable' : self.executable_make_plots,
             'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2],
@@ -707,7 +707,7 @@ class analyzeConfig_2l_2tau(analyzeConfig):
           self.createCfg_makePlots(self.jobOptions_make_plots[key_makePlots_job])
         if "Fakeable_mcClosure" in self.lepton_and_hadTau_selections:
           key_makePlots_job = getKey(lepton_charge_selection, hadTau_charge_selection, "OS")
-          key_hadd_stage2 = getKey(get_lepton_and_hadTau_selection_and_frWeight("Tight", "disabled"), lepton_charge_selection, hadTau_charge_selection, "OS")
+          key_hadd_stage2 = getKey(lepton_charge_selection, hadTau_charge_selection, get_lepton_and_hadTau_selection_and_frWeight("Tight", "disabled"), "OS")
           self.jobOptions_make_plots[key_makePlots_job] = {
             'executable' : self.executable_make_plots_mcClosure,
             'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2],
