@@ -2,7 +2,7 @@ import os, logging, sys, getpass
 
 from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_jetToTauFakeRate_2015 import samples_2015
 from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_jetToTauFakeRate_2016 import samples_2016
-from tthAnalysis.HiggsToTauTau.analyzeConfig_jetToTauFakeRate import analyzeConfig_jetToTauFakeRate
+from tthAnalysis.HiggsToTauTau.analyzeConfig_LeptonFakeRate import analyzeConfig_LeptonFakeRate
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 
 #ERA = "2015"
@@ -19,7 +19,7 @@ elif ERA == "2016":
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "2017Mar27"
+version = "2017Jul31"
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -27,27 +27,16 @@ if __name__ == '__main__':
     level = logging.INFO,
     format = '%(asctime)s - %(levelname)s: %(message)s')
 
-  analysis = analyzeConfig_jetToTauFakeRate(
+  analysis = analyzeConfig_LeptonFakeRate(
     configDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", ERA, version),
-    outputDir = os.path.join("/hdfs/local", getpass.getuser(), "ttHAnalysis", ERA, version)
-    executable_analyze = "analyze_jetToTauFakeRate",
+    outputDir = os.path.join("/hdfs/local", getpass.getuser(), "ttHAnalysis_LeptonFakeRate_trial_2017Jul31", ERA, version),
+    executable_analyze = "analyze_LeptonFakeRate",
     samples = samples,
-    charge_selections = [ "OS" ],
-    jet_minPt = 20.,
-    jet_maxPt = 1.e+6,
-    jet_minAbsEta = -1.,
-    jet_maxAbsEta = 2.3,
-    hadTau_selection_denominator = "dR03mvaVVLoose", 
-    hadTau_selections_numerator = [      
-      "dR03mvaVLoose",
-      "dR03mvaLoose",
-      "dR03mvaMedium",
-      "dR03mvaTight",
-      "dR03mvaVTight",
-      "dR03mvaVVTight"
-    ],
-    absEtaBins = [ -1., 1.479, 9.9 ],
-    ptBins = [ 20., 25., 30., 35., 40., 45., 50., 60., 70., 80., 100., 200. ],
+    absEtaBins_e  = [ -1., 1.479, 9.9 ],
+    absEtaBins_mu = [ -1., 1.479, 9.9 ],
+    absPtBins_e   = [ 20., 30., 100000.],
+    absPtBins_mu  = [ 10., 30., 100000.],
+    fillGenEvtHistograms = False,
     central_or_shifts = [ 
       "central",
 ##       "CMS_ttHl_btag_HFUp", 
@@ -86,19 +75,22 @@ if __name__ == '__main__':
 ##       "CMS_ttHl_thu_shape_ttZ_x1Down",
 ##       "CMS_ttHl_thu_shape_ttZ_y1Up",
 ##       "CMS_ttHl_thu_shape_ttZ_y1Down"  
-      
     ],
     max_files_per_job = 100,
-    era = ERA, use_lumi = True, lumi = LUMI,
+    era = ERA, 
+    use_lumi = True, 
+    lumi = LUMI,
     debug = False,
     running_method = "sbatch",
-    num_parallel_jobs = 8,
-    executable_comp_jetToTauFakeRate = "comp_jetToTauFakeRate")
+#    charge_selections = [ "OS" ],
+#    executable_comp_LeptonFakeRate = "comp_LeptonFakeRate",
+    num_parallel_jobs = 8
+)
+
 
   analysis.create()
 
-  ##run_analysis = query_yes_no("Start jobs ?")
-  run_analysis = True
+  run_analysis = query_yes_no("Start jobs ?")
   if run_analysis:
     analysis.run()
   else:
