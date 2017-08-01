@@ -5,7 +5,8 @@ from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists
 from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg, createFile, generateInputFileList
 
 class analyzeConfig_jetToTauFakeRate(analyzeConfig):
-  """Configuration metadata needed to run analysis in a single go.
+  """
+  Configuration metadata needed to run analysis in a single go.
   
   Sets up a folder structure by defining full path names; no directory creation is delegated here.
   
