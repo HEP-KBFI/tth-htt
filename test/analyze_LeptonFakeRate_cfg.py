@@ -115,22 +115,22 @@ process.analyze_LeptonFakeRate = cms.PSet(
 #    absEtaBins = cms.vdouble(-1., 1.479, 9.9),
 )
 
-process.fwliteInput.fileNames = cms.vstring(['/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau/SingleMuon/VHBB_HEPPY_V25tthtautau_SingleMuon__Run2016H-PromptReco-v3/170215_144050/0000/tree_1.root', 
-                                             '/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau/SingleMuon/VHBB_HEPPY_V25tthtautau_SingleMuon__Run2016H-PromptReco-v3/170215_144050/0000/tree_2.root', 
-                                             '/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau/SingleMuon/VHBB_HEPPY_V25tthtautau_SingleMuon__Run2016H-PromptReco-v3/170215_144050/0000/tree_3.root', 
-                                             '/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau/SingleMuon/VHBB_HEPPY_V25tthtautau_SingleMuon__Run2016H-PromptReco-v3/170215_144050/0000/tree_4.root', 
-                                             '/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau/SingleMuon/VHBB_HEPPY_V25tthtautau_SingleMuon__Run2016H-PromptReco-v3/170215_144050/0000/tree_5.root',
-                                             '/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau/SingleMuon/VHBB_HEPPY_V25tthtautau_SingleMuon__Run2016H-PromptReco-v3/170215_144050/0000/tree_6.root',
-                                             '/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau/SingleMuon/VHBB_HEPPY_V25tthtautau_SingleMuon__Run2016H-PromptReco-v3/170215_144050/0000/tree_7.root',
-                                             '/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau/SingleMuon/VHBB_HEPPY_V25tthtautau_SingleMuon__Run2016H-PromptReco-v3/170215_144050/0000/tree_8.root',
-                                             '/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau/SingleMuon/VHBB_HEPPY_V25tthtautau_SingleMuon__Run2016H-PromptReco-v3/170215_144050/0000/tree_9.root',
-                                             '/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau/SingleMuon/VHBB_HEPPY_V25tthtautau_SingleMuon__Run2016H-PromptReco-v3/170215_144050/0000/tree_10.root'])
+# process.fwliteInput.fileNames = cms.vstring(['/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau/SingleMuon/VHBB_HEPPY_V25tthtautau_SingleMuon__Run2016H-PromptReco-v3/170215_144050/0000/tree_1.root', 
+#                                             '/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau/SingleMuon/VHBB_HEPPY_V25tthtautau_SingleMuon__Run2016H-PromptReco-v3/170215_144050/0000/tree_2.root', 
+#                                             '/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau/SingleMuon/VHBB_HEPPY_V25tthtautau_SingleMuon__Run2016H-PromptReco-v3/170215_144050/0000/tree_3.root', 
+#                                             '/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau/SingleMuon/VHBB_HEPPY_V25tthtautau_SingleMuon__Run2016H-PromptReco-v3/170215_144050/0000/tree_4.root', 
+#                                             '/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau/SingleMuon/VHBB_HEPPY_V25tthtautau_SingleMuon__Run2016H-PromptReco-v3/170215_144050/0000/tree_5.root',
+#                                             '/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau/SingleMuon/VHBB_HEPPY_V25tthtautau_SingleMuon__Run2016H-PromptReco-v3/170215_144050/0000/tree_6.root',
+#                                             '/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau/SingleMuon/VHBB_HEPPY_V25tthtautau_SingleMuon__Run2016H-PromptReco-v3/170215_144050/0000/tree_7.root',
+#                                             '/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau/SingleMuon/VHBB_HEPPY_V25tthtautau_SingleMuon__Run2016H-PromptReco-v3/170215_144050/0000/tree_8.root',
+#                                             '/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau/SingleMuon/VHBB_HEPPY_V25tthtautau_SingleMuon__Run2016H-PromptReco-v3/170215_144050/0000/tree_9.root',
+#                                             '/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau/SingleMuon/VHBB_HEPPY_V25tthtautau_SingleMuon__Run2016H-PromptReco-v3/170215_144050/0000/tree_10.root'])
 
 
-process.analyze_LeptonFakeRate.isMC = cms.bool(False)  ## FOR DATA
-process.analyze_LeptonFakeRate.apply_genWeight = cms.bool(False)
-process.analyze_LeptonFakeRate.fillGenEvtHistograms = cms.bool(False)
-process.analyze_LeptonFakeRate.apply_trigger_bits = cms.bool(True) ## True for both Data and MC
-process.analyze_LeptonFakeRate.use_triggers_1e = cms.bool(True)
-process.analyze_LeptonFakeRate.use_triggers_1mu = cms.bool(True)
+# process.analyze_LeptonFakeRate.isMC = cms.bool(False)  ## FOR DATA
+# process.analyze_LeptonFakeRate.apply_genWeight = cms.bool(False)
+# process.analyze_LeptonFakeRate.fillGenEvtHistograms = cms.bool(False)
+# process.analyze_LeptonFakeRate.apply_trigger_bits = cms.bool(True) ## True for both Data and MC
+# process.analyze_LeptonFakeRate.use_triggers_1e = cms.bool(True)
+# process.analyze_LeptonFakeRate.use_triggers_1mu = cms.bool(True)
 
