@@ -40,7 +40,8 @@ process.analyze_1l_2tau = cms.PSet(
 
     leptonSelection = cms.string('Tight'),
     apply_leptonGenMatching = cms.bool(False),
-        
+    apply_leptonGenMatching_ttZ_workaround = cms.bool(False),
+            
     hadTauSelection = cms.string('Tight|dR03mvaTight'),
     hadTauChargeSelection = cms.string('OS'),
     apply_hadTauGenMatching = cms.bool(False),

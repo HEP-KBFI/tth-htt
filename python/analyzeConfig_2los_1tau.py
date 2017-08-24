@@ -665,4 +665,6 @@ class analyzeConfig_2los_1tau(analyzeConfig):
   
     logging.info("Done")
 
+    return self.num_jobs
+
  

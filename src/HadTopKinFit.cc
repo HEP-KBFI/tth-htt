@@ -16,19 +16,23 @@ const HadTopKinFit* HadTopKinFit::gHadTopKinFit = 0;
 
 double ObjectiveFunctionAdapterMINUIT::operator()(const double* x) const // NOTE: return value = -log(p)
 {
+  //std::cout << "<ObjectiveFunctionAdapterMINUIT::operator()>:" << std::endl;
   double alpha = x[0];
   double prob = HadTopKinFit::gHadTopKinFit->comp_prob(alpha);
   double nll;
   if ( prob > 0. ) nll = -log(prob);
   else nll = std::numeric_limits<float>::min();
+  //std::cout << " alpha = " << alpha << ": nll = " << nll << std::endl;
   return nll;
 }
 
 double ObjectiveFunctionAdapterVEGAS::operator()(const double* x) const // NOTE: return value = p
 {
+  //std::cout << "<ObjectiveFunctionAdapterVEGAS::operator()>:" << std::endl;
   double alpha = x[0];
   double prob = HadTopKinFit::gHadTopKinFit->comp_prob(alpha);
   if ( TMath::IsNaN(prob) ) prob = 0.;
+  //std::cout << " alpha = " << alpha << ": prob = " << prob << std::endl;
   return prob;
 }
 
@@ -93,17 +97,43 @@ HadTopKinFit::~HadTopKinFit()
 void HadTopKinFit::fit(const Particle::LorentzVector& recBJetP4, const Particle::LorentzVector& recWJet1P4, const Particle::LorentzVector& recWJet2P4)
 {
   //std::cout << "<HadTopKinFit::fit>:" << std::endl;
-
+  //std::cout << " recBJetP4: pT = " << recBJetP4.pt() << ", eta = " << recBJetP4.eta() << "," 
+  //	      << " phi = " << recBJetP4.phi() << ", mass = " << recBJetP4.mass() << std::endl;
+  //std::cout << " recWJet1P4: pT = " << recWJet1P4.pt() << ", eta = " << recWJet1P4.eta() << "," 
+  //	      << " phi = " << recWJet1P4.phi() << ", mass = " << recWJet1P4.mass() << std::endl;
+  //std::cout << " recWJet2P4: pT = " << recWJet2P4.pt() << ", eta = " << recWJet2P4.eta() << "," 
+  //          << " phi = " << recWJet2P4.phi() << ", mass = " << recWJet2P4.mass() << std::endl;
+  //std::cout << "reconstructed masses: W = " << (recWJet1P4 + recWJet2P4).mass() << "," 
+  //	      << " top = " << (recBJetP4 + recWJet1P4 + recWJet2P4).mass() << std::endl;
+  
 //--- clear minimizer
   minimizer_->Clear();
 
 //--- set verbosity level of minimizer
-  minimizer_->SetPrintLevel(-2);
+  minimizer_->SetPrintLevel(-1);
+
+//--- set reconstructed jet pT, eta, phi, mass 
+  recBJetP4_ = recBJetP4;
+  recWJet1P4_ = recWJet1P4;
+  recWJet2P4_ = recWJet2P4;
+
+  double alpha0 = 1.;
+  double min_nll = -1.;
+  max_prob_ = -1.; // CV: store alpha, max_prob and jet pT, eta, phi, mass that minimize -log(p) during scan
+  for ( double alpha = 0.1; alpha <= 5.; alpha += 0.1 ) {
+    double x[1] = { alpha };
+    double nll = objectiveFunctionAdapterMINUIT_(x);
+    //std::cout << "alpha = " << alpha << ": nll = " << nll << std::endl;
+    if ( nll < min_nll || min_nll == -1. ) {
+      alpha0 = alpha;
+      min_nll = nll;
+    }
+  }
 
 //--- set interface to MINUIT
   ROOT::Math::Functor toMinimize(objectiveFunctionAdapterMINUIT_, 1);
   minimizer_->SetFunction(toMinimize); 
-  minimizer_->SetVariable(0, "alpha", 1., 5.e-2);
+  minimizer_->SetLowerLimitedVariable(0, "alpha", alpha0, 0.1, 0.);
   minimizer_->SetMaxFunctionCalls(maxObjFunctionCalls_);
   minimizer_->SetErrorDef(0.5);
 
@@ -112,11 +142,11 @@ void HadTopKinFit::fit(const Particle::LorentzVector& recBJetP4, const Particle:
   minimizer_->SetStrategy(2);
 
 //--- do the minimization
-  recBJetP4_ = recBJetP4;
-  recWJet1P4_ = recWJet1P4;
-  recWJet2P4_ = recWJet2P4;
-  alpha_ = 1.;
-  minimizer_->Minimize();
+  if ( min_nll < 20. ) {
+    alpha_ = 1.;
+    max_prob_ = -1.;
+    minimizer_->Minimize();
+  } 
   if ( max_prob_ > 0. ) nll_ = -log(max_prob_);
   else nll_ = std::numeric_limits<float>::min();
 
@@ -129,12 +159,21 @@ void HadTopKinFit::fit(const Particle::LorentzVector& recBJetP4, const Particle:
 //       5: Any other failure
   fit_status_ = minimizer_->Status();
 
+  //std::cout << " fittedBJetP4: pT = " << fittedBJetP4_.pt() << ", eta = " << fittedBJetP4_.eta() << "," 
+  //	      << " phi = " << fittedBJetP4_.phi() << ", mass = " << fittedBJetP4_.mass() << std::endl;
+  //std::cout << " fittedWJet1P4: pT = " << fittedWJet1P4_.pt() << ", eta = " << fittedWJet1P4_.eta() << "," 
+  //	      << " phi = " << fittedWJet1P4_.phi() << ", mass = " << fittedWJet1P4_.mass() << std::endl;
+  //std::cout << " fittedWJet2P4: pT = " << fittedWJet2P4_.pt() << ", eta = " << fittedWJet2P4_.eta() << "," 
+  //	      << " phi = " << fittedWJet2P4_.phi() << ", mass = " << fittedWJet2P4_.mass() << std::endl;
+  //std::cout << "fitted masses: W = " << (fittedWJet1P4_ + fittedWJet2P4_).mass() << "," 
+  //	      << " top = " << (fittedBJetP4_ + fittedWJet1P4_ + fittedWJet2P4_).mass() << std::endl;
+  //std::cout << "(alpha = " << alpha_ << ", fit status = " << fit_status_ << ", max_prob = " << max_prob_ << ", nll = " << nll_ << ")" << std::endl;
 }
 
 void HadTopKinFit::integrate(const Particle::LorentzVector& recBJetP4, const Particle::LorentzVector& recWJet1P4, const Particle::LorentzVector& recWJet2P4)
 {
   //std::cout << "<HadTopKinFit::integrate>:" << std::endl;
-
+ 
 //--- create instance of VEGAS integration algorithm
   ROOT::Math::GSLMCIntegrator vegas("vegas", 0., 1.e-6, 10000);
   ROOT::Math::Functor toIntegrate(&objectiveFunctionAdapterVEGAS_, &ObjectiveFunctionAdapterVEGAS::operator(), 1);
@@ -210,16 +249,15 @@ namespace
     double cosAngle = ( p1P > 0. && p2P > 0. ) ? (p1.px()*p2.px() + p1.py()*p2.py() + p1.pz()*p2.pz())/(p1P*p2P) : 1.;
     return cosAngle;
   }
-/*
-  void dumpLorentzVector(const std::string& label, const Particle::LorentzVector& p4)
-  {
-    std::cout << label << ":" 
-	      << " pT = " << p4.pt() << ","
-	      << " eta = " << p4.eta() << ","
-	      << " phi = " << p4.phi() << ","
-	      << " mass = " << p4.mass() << std::endl;
-  }
- */
+
+  //void dumpLorentzVector(const std::string& label, const Particle::LorentzVector& p4)
+  //{
+  //  std::cout << label << ":" 
+  //	        << " pT = " << p4.pt() << ","
+  //	        << " eta = " << p4.eta() << ","
+  //	        << " phi = " << p4.phi() << ","
+  //	        << " mass = " << p4.mass() << std::endl;
+  //}
 }
 
 double HadTopKinFit::comp_prob(double alpha) const

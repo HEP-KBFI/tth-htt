@@ -41,7 +41,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RunLumiEventSelector.h" // RunLumiEventSelector
 #include "tthAnalysis/HiggsToTauTau/interface/MVAInputVarHistManager.h" // MVAInputVarHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/CutFlowTableHistManager_gen.h" // CutFlowTableHistManager_gen
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2015, kEra_2016
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2015, kEra_2016, random_start
 #include "tthAnalysis/HiggsToTauTau/interface/histogramAuxFunctions.h" // createSubdirectory_recursively
 #include "tthAnalysis/HiggsToTauTau/interface/cutFlowTable.h" // cutFlowTableType
 #include "tthAnalysis/HiggsToTauTau/interface/NtupleFillerBDT.h" // NtupleFillerBDT
@@ -100,6 +100,17 @@ int getGenMatch(bool b_isGenMatched, bool Wj1_isGenMatched, bool Wj2_isGenMatche
   else                                                               idxGenMatch = kGen_none;
   return idxGenMatch;
 }        
+
+void openFile_and_printContent(const std::string& inputFileName, const std::string& treeName)
+{
+  TFile* inputFile = TFile::Open(inputFileName.data());
+  if ( !inputFile ) throw cms::Exception("openFile_and_printContent") 
+    << " Failed to open file = " << inputFileName << " !!\n";
+  inputFile->ls();
+  TTree* tree = dynamic_cast<TTree*>(inputFile->Get(treeName.data()));
+  if ( tree ) std::cout << "(input Tree '" << treeName << "' contains " << tree->GetEntries() << " Entries)" << std::endl;
+  delete inputFile;
+}
 
 /**
  * @brief Produce datacard and control plots for 1l_2tau category.
@@ -191,10 +202,23 @@ int main(int argc, char* argv[])
 
   bool selectBDT = ( cfg_analyze.exists("selectBDT") ) ? cfg_analyze.getParameter<bool>("selectBDT") : false;
   
+  // CV: delay start by random time, to avoid that multiple analysis jobs
+  //     open all Ntuples at the same time, causing high load on /hdfs file system,
+  //     when running on batch
+  random_start();
+
   fwlite::InputSource inputFiles(cfg); 
   int maxEvents = inputFiles.maxEvents();
   std::cout << " maxEvents = " << maxEvents << std::endl;
   unsigned reportEvery = inputFiles.reportAfter();
+
+  // CV: open all input ROOT files and print content, 
+  //     to see why analysis jobs run fine when executed interactively on quasar, but fail when executed on Tallinn batch system
+  for ( std::vector<std::string>::const_iterator inputFileName = inputFiles.files().begin();
+	inputFileName != inputFiles.files().end(); ++inputFileName ) {
+    std::cout << "checking input file = " << (*inputFileName) << ":" << std::endl;
+    openFile_and_printContent(*inputFileName, treeName);
+  }
 
   fwlite::OutputFiles outputFile(cfg);
   fwlite::TFileService fs = fwlite::TFileService(outputFile.file().data());
@@ -575,18 +599,27 @@ int main(int argc, char* argv[])
 
     for ( std::vector<const RecoJet*>::const_iterator selBJet = selJets.begin();
 	  selBJet != selJets.end(); ++selBJet ) {
+
       bool selBJet_isFromTop = deltaR((*selBJet)->p4(), genBJetFromTop->p4()) < 0.2;
       bool selBJet_isFromAntiTop = deltaR((*selBJet)->p4(), genBJetFromAntiTop->p4()) < 0.2;
-      for ( std::vector<const RecoJet*>::const_iterator selWJet1 = selBJet + 1;
+
+      for ( std::vector<const RecoJet*>::const_iterator selWJet1 = selJets.begin();
 	    selWJet1 != selJets.end(); ++selWJet1 ) {
+
+	if ( &(*selWJet1) == &(*selBJet) ) continue;
+
 	bool selWJet1_isFromTop = 
 	  (genWJetFromTop_lead        && deltaR((*selWJet1)->p4(), genWJetFromTop_lead->p4())        < 0.2) || 
 	  (genWJetFromTop_sublead     && deltaR((*selWJet1)->p4(), genWJetFromTop_sublead->p4())     < 0.2);
 	bool selWJet1_isFromAntiTop = 
 	  (genWJetFromAntiTop_lead    && deltaR((*selWJet1)->p4(), genWJetFromAntiTop_lead->p4())    < 0.2) || 
 	  (genWJetFromAntiTop_sublead && deltaR((*selWJet1)->p4(), genWJetFromAntiTop_sublead->p4()) < 0.2);
+
 	for ( std::vector<const RecoJet*>::const_iterator selWJet2 = selWJet1 + 1;
 	      selWJet2 != selJets.end(); ++selWJet2 ) {
+
+	  if ( &(*selWJet2) == &(*selBJet) ) continue;
+
 	  bool selWJet2_isFromTop = 
   	    (genWJetFromTop_lead        && deltaR((*selWJet2)->p4(), genWJetFromTop_lead->p4())        < 0.2) || 
 	    (genWJetFromTop_sublead     && deltaR((*selWJet2)->p4(), genWJetFromTop_sublead->p4())     < 0.2);
@@ -596,6 +629,14 @@ int main(int argc, char* argv[])
 
 	  double mvaOutput = (*hadTopTagger)(**selBJet, **selWJet1, **selWJet2);
 	  const std::map<std::string, double>& mvaInputs = hadTopTagger->mvaInputs();
+	  //std::cout << "mvaInputs:" << std::endl;
+	  //for ( std::map<std::string, double>::const_iterator mvaInput = mvaInputs.begin();
+	  //  	  mvaInput != mvaInputs.end(); ++mvaInput ) {
+	  //  std::cout << " " << mvaInput->first << " = " << mvaInput->second << std::endl;
+	  //}
+	  //std::cout << "selBJet: isFromTop = " << selBJet_isFromTop << ", isFromAntiTop = " << selBJet_isFromAntiTop << std::endl;
+	  //std::cout << "selWJet1: isFromTop = " << selWJet1_isFromTop << ", isFromAntiTop = " << selWJet1_isFromAntiTop << std::endl;
+	  //std::cout << "selWJet2: isFromTop = " << selWJet2_isFromTop << ", isFromAntiTop = " << selWJet2_isFromAntiTop << std::endl;
 
 	  int idxGenMatch_top     = getGenMatch(selBJet_isFromTop, selWJet1_isFromTop, selWJet2_isFromTop);
 	  int idxGenMatch_antiTop = getGenMatch(selBJet_isFromAntiTop, selWJet1_isFromAntiTop, selWJet2_isFromAntiTop);

@@ -32,7 +32,9 @@ elif ERA == "2016":
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "2017Jul27"
+version = "2017Aug24"
+
+max_job_resubmission = 10
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -40,82 +42,102 @@ if __name__ == '__main__':
     level = logging.INFO,
     format = '%(asctime)s - %(levelname)s: %(message)s')
 
-  analysis = analyzeConfig_2l_2tau(
-    configDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", ERA, version),
-    outputDir = os.path.join("/hdfs/local", getpass.getuser(), "ttHAnalysis", ERA, version),
-    executable_analyze = "analyze_2l_2tau",
-    cfgFile_analyze = "analyze_2l_2tau_cfg.py",
-    samples = samples,
-    changeBranchNames = changeBranchNames,
-    lepton_charge_selections = [ "disabled" ],
-    hadTau_selection = hadTau_selection,
-    hadTau_charge_selections = [ "disabled" ],
-    applyFakeRateWeights = applyFakeRateWeights,
-    chargeSumSelections  = [ "OS", "SS" ],
-    central_or_shifts = [ 
-      "central",
-##       "CMS_ttHl_btag_HFUp", 
-##       "CMS_ttHl_btag_HFDown",	
-##       "CMS_ttHl_btag_HFStats1Up", 
-##       "CMS_ttHl_btag_HFStats1Down",
-##       "CMS_ttHl_btag_HFStats2Up", 
-##       "CMS_ttHl_btag_HFStats2Down",
-##       "CMS_ttHl_btag_LFUp", 
-##       "CMS_ttHl_btag_LFDown",	
-##       "CMS_ttHl_btag_LFStats1Up", 
-##       "CMS_ttHl_btag_LFStats1Down",
-##       "CMS_ttHl_btag_LFStats2Up", 
-##       "CMS_ttHl_btag_LFStats2Down",
-##       "CMS_ttHl_btag_cErr1Up",
-##       "CMS_ttHl_btag_cErr1Down",
-##       "CMS_ttHl_btag_cErr2Up",
-##       "CMS_ttHl_btag_cErr2Down",
-##       "CMS_ttHl_JESUp",
-##       "CMS_ttHl_JESDown",
-##       "CMS_ttHl_tauESUp",
-##       "CMS_ttHl_tauESDown",
-##       "CMS_ttHl_FRjt_normUp",
-##       "CMS_ttHl_FRjt_normDown",
-##       "CMS_ttHl_FRjt_shapeUp",
-##       "CMS_ttHl_FRjt_shapeDown"
-##       "CMS_ttHl_FRet_shiftUp",
-##       "CMS_ttHl_FRet_shiftDown",
-##       "CMS_ttHl_FRmt_shiftUp",
-##       "CMS_ttHl_FRmt_shiftDown",
-##       "CMS_ttHl_thu_shape_ttH_x1Up",  
-##       "CMS_ttHl_thu_shape_ttH_x1Down",
-##       "CMS_ttHl_thu_shape_ttH_y1Up",   
-##       "CMS_ttHl_thu_shape_ttH_y1Down",
-##       "CMS_ttHl_thu_shape_ttW_x1Up",
-##       "CMS_ttHl_thu_shape_ttW_x1Down",
-##       "CMS_ttHl_thu_shape_ttW_y1Up",
-##       "CMS_ttHl_thu_shape_ttW_y1Down",
-##       "CMS_ttHl_thu_shape_ttZ_x1Up",
-##       "CMS_ttHl_thu_shape_ttZ_x1Down",
-##       "CMS_ttHl_thu_shape_ttZ_y1Up",
-##       "CMS_ttHl_thu_shape_ttZ_y1Down"       
-    ],
-    max_files_per_job = 100,
-    era = ERA,
-    use_lumi = True,
-    lumi = LUMI,
-    debug = False,
-    running_method = "sbatch",
-    num_parallel_jobs = 8,
-    executable_addBackgrounds = "addBackgrounds",
-    executable_addBackgroundJetToTauFakes = "addBackgroundLeptonFakes", # CV: use common executable for estimating jet->lepton and jet->tau_h fake background
-    histograms_to_fit = [ "EventCounter", "numJets", "mTauTauVis" ],
-    select_rle_output = True)
+  job_statistics_summary = {}
 
-  if mode.find("forBDTtraining") != -1:
-    analysis.set_BDT_training()
+  run_analysis = False
+  is_last_resubmission = False
+  for idx_job_resubmission in range(max_job_resubmission):
+    if is_last_resubmission:
+      continue
+    print "Job submission #%i:" % (idx_job_resubmission + 1)
 
-  analysis.create()
+    analysis = analyzeConfig_2l_2tau(
+      configDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", ERA, version),
+      outputDir = os.path.join("/hdfs/local", getpass.getuser(), "ttHAnalysis", ERA, version),
+      executable_analyze = "analyze_2l_2tau",
+      cfgFile_analyze = "analyze_2l_2tau_cfg.py",
+      samples = samples,
+      changeBranchNames = changeBranchNames,
+      lepton_charge_selections = [ "disabled" ],
+      hadTau_selection = hadTau_selection,
+      hadTau_charge_selections = [ "disabled" ],
+      applyFakeRateWeights = applyFakeRateWeights,
+      chargeSumSelections  = [ "OS", "SS" ],
+      central_or_shifts = [ 
+        "central",
+##         "CMS_ttHl_btag_HFUp", 
+##         "CMS_ttHl_btag_HFDown",	
+##         "CMS_ttHl_btag_HFStats1Up", 
+##         "CMS_ttHl_btag_HFStats1Down",
+##         "CMS_ttHl_btag_HFStats2Up", 
+##         "CMS_ttHl_btag_HFStats2Down",
+##         "CMS_ttHl_btag_LFUp", 
+##         "CMS_ttHl_btag_LFDown",	
+##         "CMS_ttHl_btag_LFStats1Up", 
+##         "CMS_ttHl_btag_LFStats1Down",
+##         "CMS_ttHl_btag_LFStats2Up", 
+##         "CMS_ttHl_btag_LFStats2Down",
+##         "CMS_ttHl_btag_cErr1Up",
+##         "CMS_ttHl_btag_cErr1Down",
+##         "CMS_ttHl_btag_cErr2Up",
+##         "CMS_ttHl_btag_cErr2Down",
+##         "CMS_ttHl_JESUp",
+##         "CMS_ttHl_JESDown",
+##         "CMS_ttHl_tauESUp",
+##         "CMS_ttHl_tauESDown",
+##         "CMS_ttHl_FRjt_normUp",
+##         "CMS_ttHl_FRjt_normDown",
+##         "CMS_ttHl_FRjt_shapeUp",
+##         "CMS_ttHl_FRjt_shapeDown"
+##         "CMS_ttHl_FRet_shiftUp",
+##         "CMS_ttHl_FRet_shiftDown",
+##         "CMS_ttHl_FRmt_shiftUp",
+##         "CMS_ttHl_FRmt_shiftDown",
+##         "CMS_ttHl_thu_shape_ttH_x1Up",  
+##         "CMS_ttHl_thu_shape_ttH_x1Down",
+##         "CMS_ttHl_thu_shape_ttH_y1Up",   
+##         "CMS_ttHl_thu_shape_ttH_y1Down",
+##         "CMS_ttHl_thu_shape_ttW_x1Up",
+##         "CMS_ttHl_thu_shape_ttW_x1Down",
+##         "CMS_ttHl_thu_shape_ttW_y1Up",
+##         "CMS_ttHl_thu_shape_ttW_y1Down",
+##         "CMS_ttHl_thu_shape_ttZ_x1Up",
+##         "CMS_ttHl_thu_shape_ttZ_x1Down",
+##         "CMS_ttHl_thu_shape_ttZ_y1Up",
+##         "CMS_ttHl_thu_shape_ttZ_y1Down"       
+      ],
+      max_files_per_job = 20,
+      era = ERA,
+      use_lumi = True,
+      lumi = LUMI,
+      debug = False,
+      running_method = "sbatch",
+      num_parallel_jobs = 8,
+      executable_addBackgrounds = "addBackgrounds",
+      executable_addBackgroundJetToTauFakes = "addBackgroundLeptonFakes", # CV: use common executable for estimating jet->lepton and jet->tau_h fake background
+      histograms_to_fit = [ "EventCounter", "numJets", "mTauTauVis" ],
+      select_rle_output = True)
 
-  run_analysis = query_yes_no("Start jobs ?")
-  ##run_analysis = True
-  if run_analysis:
-    analysis.run()
-  else:
-    sys.exit(0)
+    if mode.find("forBDTtraining") != -1:
+      analysis.set_BDT_training()
+    
+    job_statistics = analysis.create()
+    for job_type, num_jobs in job_statistics.items():
+      print " #jobs of type '%s' = %i" % (job_type, num_jobs)
+    job_statistics_summary[idx_job_resubmission] = job_statistics
 
+    if idx_job_resubmission == 0:
+      ##run_analysis = query_yes_no("Start jobs ?")
+      run_analysis = True
+    if run_analysis:
+      analysis.run()
+    else:
+      sys.exit(0)
+
+    if job_statistics['analyze'] == 0:
+      is_last_resubmission = True
+
+  for idx_job_resubmission in job_statistics_summary.keys():
+    print "Job submission #%i:" % (idx_job_resubmission + 1)
+    for job_type, num_jobs in job_statistics_summary[idx_job_resubmission].items():
+      print " #jobs of type '%s' = %i" % (job_type, num_jobs)

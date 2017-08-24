@@ -131,7 +131,7 @@ class ClusterHistogramAggregator:
             check_that_histograms_are_valid_exit_status=$?
 
             if [[ $check_that_histograms_are_valid_exit_status -ne 0 ]]; then
-              echo 'ERROR Some of the input histograms are not valid. Will stop execution.'
+              echo 'ERROR: Some of the input histograms are not valid. Will stop execution.'
               return 1
             fi
 
@@ -170,7 +170,7 @@ class ClusterHistogramAggregator:
             check_that_histograms_are_valid_exit_status=$?
 
             if [[ $check_that_histograms_are_valid_exit_status -ne 0 ]]; then
-              echo 'ERROR Some of the input histograms are not valid. Will stop execution.'
+              echo 'ERROR: Some of the input histograms are not valid. Will stop execution.'
               return 1
             fi
 
@@ -182,7 +182,7 @@ class ClusterHistogramAggregator:
             hadd_exit_status=$?
 
             if [[ $hadd_exit_status -ne 0 ]]; then
-              echo 'ERROR hadd exited w/ non-zero return code. Will stop execution.'
+              echo 'ERROR: hadd exited w/ non-zero return code. Will stop execution.'
               return 1
             fi
 
@@ -198,7 +198,7 @@ class ClusterHistogramAggregator:
             check_that_histograms_are_equal_exit_status=$?
 
             if [[ $check_that_histograms_are_equal_exit_status -ne 0 ]]; then
-              echo 'ERROR Input histograms do not equal output histogram. Will stop execution.'
+              echo 'ERROR: Input histograms do not equal output histogram. Will stop execution.'
               return 1
             fi
 

@@ -14,12 +14,13 @@ def createScript_sbatch(sbatch_script_file_name,
         working_dir = os.getcwd()
     if not pool_id:
         raise ValueError('pool_id is empty')
-    sbatch_analyze_lines = generate_sbatch_lines(
+    sbatch_analyze_lines, num_jobs = generate_sbatch_lines(
       executable,
       cfg_file_names, input_file_names, output_file_names, log_file_names,
       working_dir, max_num_jobs, cvmfs_error_log, pool_id
     )
     createFile(sbatch_script_file_name, sbatch_analyze_lines)
+    return num_jobs
     
 def generate_sbatch_lines(executable, cfg_file_names, input_file_names, output_file_names, log_file_names,
                           working_dir, max_num_jobs, cvmfs_error_log = None, pool_id = ''):
@@ -47,13 +48,13 @@ def generate_sbatch_lines(executable, cfg_file_names, input_file_names, output_f
             )
             if sbatch_line:
                 lines_sbatch.append(sbatch_line)
-        num_jobs = num_jobs + 1
+                num_jobs = num_jobs + 1
     if num_jobs > max_num_jobs:
         print "Warning: number of jobs = %i exceeds limit of %i --> skipping submission of %i jobs !!" % \
           (num_jobs, max_num_jobs, num_jobs - max_num_jobs)
 
     lines_sbatch.append("m.waitForJobs()")
-    return lines_sbatch
+    return lines_sbatch, num_jobs
 
 def generate_sbatch_line(executable, cfg_file_name, input_file_names, output_file_name, log_file_name = None,
                          cvmfs_error_log = None):
@@ -116,7 +117,7 @@ def createScript_sbatch_hadd(sbatch_script_file_name, input_file_names, output_f
         working_dir = os.getcwd()
     if not pool_id:
         raise ValueError('pool_id is empty')
-    sbatch_hadd_lines = generate_sbatch_lines_hadd(
+    sbatch_hadd_lines, num_jobs = generate_sbatch_lines_hadd(
         input_file_names = input_file_names,
         output_file_name = output_file_name,
         working_dir = working_dir,
@@ -125,6 +126,7 @@ def createScript_sbatch_hadd(sbatch_script_file_name, input_file_names, output_f
         pool_id = pool_id,
     )
     createFile(sbatch_script_file_name, sbatch_hadd_lines)
+    return num_jobs
 
 def generate_sbatch_lines_hadd(input_file_names, output_file_name, working_dir, waitForJobs = True,
                                auxDirName = '', pool_id = ''):
@@ -150,5 +152,6 @@ m.hadd_in_cluster(
 )
 """
     sbatch_code = jinja2.Template(sbatch_template).render(**template_vars)
+    num_jobs = 1
 
-    return sbatch_code.splitlines()
+    return sbatch_code.splitlines(), num_jobs

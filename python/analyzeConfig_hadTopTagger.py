@@ -147,3 +147,5 @@ class analyzeConfig_hadTopTagger(analyzeConfig):
     self.createMakefile(lines_makefile)
   
     logging.info("Done")
+
+    return self.num_jobs

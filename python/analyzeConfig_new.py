@@ -218,6 +218,12 @@ class analyzeConfig:
 
         self.cvmfs_error_log = {}
 
+        self.num_jobs = {}
+        self.num_jobs['analyze'] = 0
+        self.num_jobs['hadd'] = 0
+        self.num_jobs['addBackgrounds'] = 0
+        self.num_jobs['addFakes'] = 0
+
     def __del__(self):
         for hostname, times in self.cvmfs_error_log.items():
             print "Problem with cvmfs access: host = %s (%i jobs)" % (hostname, len(times))
@@ -327,7 +333,7 @@ class analyzeConfig:
                             key_cfg_file = 'cfgFile_modified', key_input_file = 'inputFile', key_output_file = 'outputFile', key_log_file = 'logFile'):
         """Creates the python script necessary to submit 'generic' (addBackgrounds, addBackgroundFakes/addBackgroundFlips) jobs to the batch system
         """
-        tools_createScript_sbatch(
+        num_jobs = tools_createScript_sbatch(
             sbatch_script_file_name = sbatchFile,
             executable = executable,
             cfg_file_names = { key: value[key_cfg_file] for key, value in jobOptions.items() },
@@ -339,17 +345,28 @@ class analyzeConfig:
             cvmfs_error_log = self.cvmfs_error_log,
             pool_id = self.pool_id,
         )
+        return num_jobs
 
     def createScript_sbatch_analyze(self, executable, sbatchFile, jobOptions):
         """Creates the python script necessary to submit the analysis jobs to the batch system
         """
-        self.createScript_sbatch(executable, sbatchFile, jobOptions,
-                                 'cfgFile_modified', 'ntupleFiles', 'histogramFile', 'logFile')
+        self.num_jobs['analyze'] += self.createScript_sbatch(executable, sbatchFile, jobOptions,
+                                                             'cfgFile_modified', 'ntupleFiles', 'histogramFile', 'logFile')
+
+    def createScript_sbatch_addBackgrounds(self, executable, sbatchFile, jobOptions):
+        """Creates the python script necessary to submit the analysis jobs to the batch system
+        """
+        self.num_jobs['addBackgrounds'] += self.createScript_sbatch(executable, sbatchFile, jobOptions)
+
+    def createScript_sbatch_addFakes(self, executable, sbatchFile, jobOptions):
+        """Creates the python script necessary to submit the analysis jobs to the batch system
+        """
+        self.num_jobs['addFakes'] += self.createScript_sbatch(executable, sbatchFile, jobOptions)
 
     def create_hadd_python_file(self, inputFiles, outputFile, hadd_stage_name):
         sbatch_hadd_file = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_hadd_%s_%s.py" % (self.channel, hadd_stage_name))
         sbatch_hadd_dir = os.path.join(self.dirs[DKEY_HADD_RT], self.channel, hadd_stage_name) if self.dirs[DKEY_HADD_RT] else ''
-        tools_createScript_sbatch_hadd(
+        self.num_jobs['hadd'] += tools_createScript_sbatch_hadd(
             sbatch_hadd_file, inputFiles, outputFile, hadd_stage_name, self.workingDir, auxDirName = sbatch_hadd_dir,
             pool_id = self.pool_id,
         )

@@ -1,5 +1,8 @@
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h"
 
+#include <TRandom3.h> // TRandom3
+#include <TMath.h> // TMath::Nint
+
 #include <map> // std::map
 #include <algorithm> // std::sort
 
@@ -200,3 +203,10 @@ void printJetCollection(const std::string& collection_name, const std::vector<co
   }
 }
 
+void random_start(double max_delay)
+{
+  TRandom3 rnd;
+  int delay = TMath::Nint(rnd.Rndm()*max_delay);
+  std::cout << "<random_start>: sleeping for " << delay << " seconds." << std::endl;
+  sleep(delay); 
+}
