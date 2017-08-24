@@ -57,7 +57,10 @@
 #include "tthAnalysis/HiggsToTauTau/interface/EvtHistManager_LeptonFakeRate.h" // EvtHistManager_LeptonFakeRate  // NEW FILE ADDED
 #include "tthAnalysis/HiggsToTauTau/interface/GenEvtHistManager.h" // GenEvtHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/LHEInfoHistManager.h" // LHEInfoHistManager
+#include "tthAnalysis/HiggsToTauTau/interface/WeightHistManager.h" // WeightHistManager    
 #include "tthAnalysis/HiggsToTauTau/interface/jetToTauFakeRateAuxFunctions.h" // getEtaBin, getPtBin
+#include "tthAnalysis/HiggsToTauTau/interface/leptonGenMatchingAuxFunctions.h" // getLeptonGenMatch_definitions_1lepton, getLeptonGenMatch_string, getLeptonGenMatch_int    
+#include "tthAnalysis/HiggsToTauTau/interface/hadTauGenMatchingAuxFunctions.h" // getHadTauGenMatch_definitions_1tau, getHadTauGenMatch_string, getHadTauGenMatch_int    
 #include "tthAnalysis/HiggsToTauTau/interface/leptonTypes.h" // getLeptonType, kElectron, kMuon
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // getBranchName_bTagWeight, isHigherPt, isMatched
 #include "tthAnalysis/HiggsToTauTau/interface/backgroundEstimation.h" // prob_chargeMisId
@@ -176,7 +179,8 @@ std::vector<hltPath_LeptonFakeRate*> create_hltPaths_LeptonFakeRate(const std::v
 bool hltPaths_LeptonFakeRate_isTriggered(const std::vector<hltPath_LeptonFakeRate*>& hltPaths_LeptonFakeRate, double lepton_cone_pt, double jet_pt){ 
   bool retVal = false;
   for ( std::vector<hltPath_LeptonFakeRate*>::const_iterator hltPath_iter = hltPaths_LeptonFakeRate.begin();
-        hltPath_iter != hltPaths_LeptonFakeRate.end(); ++hltPath_iter ) { 
+        hltPath_iter != hltPaths_LeptonFakeRate.end(); ++hltPath_iter ) {
+        // std::cout<<" (*hltPath_iter)->getValue() "<< (*hltPath_iter)->getValue() << std::endl; 
     if ( lepton_cone_pt >= (*hltPath_iter)->getMinPt() && lepton_cone_pt <= (*hltPath_iter)->getMaxPt() && 
          (*hltPath_iter)->getMinJetPt() > jet_pt && (*hltPath_iter)->getValue() >= 1 ) {
       retVal = true;
@@ -185,6 +189,21 @@ bool hltPaths_LeptonFakeRate_isTriggered(const std::vector<hltPath_LeptonFakeRat
   }
   return retVal;
 }  
+
+bool hltPaths_isTriggered(const std::vector<hltPath_LeptonFakeRate*>& hltPaths_LeptonFakeRate)
+{
+  bool retVal = false;
+  for ( std::vector<hltPath_LeptonFakeRate*>::const_iterator hltPath_iter = hltPaths_LeptonFakeRate.begin();
+        hltPath_iter != hltPaths_LeptonFakeRate.end(); ++hltPath_iter ) {
+    if ( (*hltPath_iter)->getValue() >= 1 ) {
+      retVal = true;
+      break;
+    }
+  }
+  return retVal;
+}
+
+
 
 void hltPaths_LeptonFakeRate_delete(const std::vector<hltPath_LeptonFakeRate*>& hltPaths)
 {
@@ -199,7 +218,7 @@ void hltPaths_LeptonFakeRate_delete(const std::vector<hltPath_LeptonFakeRate*>& 
 struct numeratorHistManagers_muon_LFR
 {
  numeratorHistManagers_muon_LFR(const std::string& process, bool isMC, double minAbsEta, double maxAbsEta, double minPt, double maxPt, 
-                              const std::string& central_or_shift, const std::string& dir_path)
+                                const std::string& central_or_shift, const std::string& dir_path)
     : process_(process),
       isMC_(isMC),
       minAbsEta_(minAbsEta),
@@ -586,13 +605,11 @@ int main(int argc, char* argv[])
       << "No ParameterSet 'process' found in configuration file = " << argv[1] << " !!\n";
 
   edm::ParameterSet cfg = edm::readPSetsFrom(argv[1])->getParameter<edm::ParameterSet>("process");
-
   edm::ParameterSet cfg_analyze = cfg.getParameter<edm::ParameterSet>("analyze_LeptonFakeRate");
-
   std::string treeName = cfg_analyze.getParameter<std::string>("treeName");
   std::string process_string = cfg_analyze.getParameter<std::string>("process");
-  std::string era_string = cfg_analyze.getParameter<std::string>("era");
 
+  std::string era_string = cfg_analyze.getParameter<std::string>("era");
   int era = -1;
   if      ( era_string == "2015" ) era = kEra_2015;
   else if ( era_string == "2016" ) era = kEra_2016;
@@ -625,12 +642,11 @@ int main(int argc, char* argv[])
     triggers_mu.insert(triggers_mu.end(), hltPaths.begin(), hltPaths.end()); // TO CHANGE THE ORDER OF INSERTION USE triggers_mu.begin()
   }
   
-
-
   bool apply_offline_e_trigger_cuts_1e = cfg_analyze.getParameter<bool>("apply_offline_e_trigger_cuts_1e");
   bool apply_offline_e_trigger_cuts_1mu = cfg_analyze.getParameter<bool>("apply_offline_e_trigger_cuts_1mu");
 
 
+  /*
   enum { kOS, kSS };
   std::string chargeSelection_string = cfg_analyze.getParameter<std::string>("chargeSelection");
   int chargeSelection = -1;
@@ -638,7 +654,7 @@ int main(int argc, char* argv[])
   else if ( chargeSelection_string == "SS" ) chargeSelection = kSS;
   else throw cms::Exception("analyze_LeptonFakeRate") 
     << "Invalid Configuration parameter 'chargeSelection' = " << chargeSelection_string << " !!\n";
-  
+  */
 
   vdouble EtaBins_e = cfg_analyze.getParameter<vdouble>("absEtaBins_e");
   vdouble PtBins_e = cfg_analyze.getParameter<vdouble>("absPtBins_e"); 
@@ -655,6 +671,11 @@ int main(int argc, char* argv[])
   double lumiScale = ( process_string != "data_obs" ) ? cfg_analyze.getParameter<double>("lumiScale") : 1.;
   bool apply_genWeight = cfg_analyze.getParameter<bool>("apply_genWeight"); 
   bool apply_trigger_bits = cfg_analyze.getParameter<bool>("apply_trigger_bits"); 
+
+
+  bool use_triggers_1e  = cfg_analyze.getParameter<bool>("use_triggers_1e");
+  bool use_triggers_1mu = cfg_analyze.getParameter<bool>("use_triggers_1mu");
+
 
   std::string jet_btagWeight_branch;
   if ( isMC ) {
@@ -753,8 +774,10 @@ int main(int argc, char* argv[])
 
   hltPaths_LeptonFakeRate_setBranchAddresses(inputTree, triggers_e);
   hltPaths_LeptonFakeRate_setBranchAddresses(inputTree, triggers_mu);
-
   // hltPaths_setBranchAddresses(inputTree, triggers_1e1mu);
+
+
+
 
   GENWEIGHT_TYPE genWeight = 1.;
   PUWEIGHT_TYPE pileupWeight;
@@ -807,6 +830,7 @@ int main(int argc, char* argv[])
   jetReader->setBranchAddresses(inputTree);
   RecoJetCollectionGenMatcher jetGenMatcher;
   RecoJetCollectionCleaner jetCleaner(0.4);
+  RecoJetCollectionCleaner jetCleaner_dR07(0.7); // CHRISTIAN'S SUGGESTION
   RecoJetCollectionSelector jetSelector(era);  
   RecoJetCollectionSelectorBtagLoose jetSelectorBtagLoose(era);
   RecoJetCollectionSelectorBtagMedium jetSelectorBtagMedium(era);
@@ -839,11 +863,17 @@ int main(int argc, char* argv[])
 // ------------ BOOK HISTOGRAMS ----------
 
 // ------ Fake Leptons (Electron/Muon) in bins of pT and Eta  
-  std::vector<denominatorHistManagers_electron_LFR*> electron_denominators;
-  std::vector<denominatorHistManagers_muon_LFR*> muon_denominators;
+  std::vector<denominatorHistManagers_electron_LFR*> electron_denominators_prompt;
+  std::vector<denominatorHistManagers_muon_LFR*> muon_denominators_prompt;
 
-  std::vector<numeratorHistManagers_electron_LFR*> electron_numerators;
-  std::vector<numeratorHistManagers_muon_LFR*> muon_numerators;
+  std::vector<numeratorHistManagers_electron_LFR*> electron_numerators_prompt;
+  std::vector<numeratorHistManagers_muon_LFR*> muon_numerators_prompt;
+
+  std::vector<denominatorHistManagers_electron_LFR*> electron_denominators_fake;
+  std::vector<denominatorHistManagers_muon_LFR*> muon_denominators_fake;
+
+  std::vector<numeratorHistManagers_electron_LFR*> electron_numerators_fake;
+  std::vector<numeratorHistManagers_muon_LFR*> muon_numerators_fake;
 
 
   int numEtaBins_e  = EtaBins_e.size() - 1;
@@ -857,16 +887,33 @@ int main(int argc, char* argv[])
      for(int idxPtBin_e = 0; idxPtBin_e < numPtBins_e; ++idxPtBin_e ) { // ELECTRON PT LOOP                          
              double minPt_e = PtBins_e[idxPtBin_e];
 	     double maxPt_e = PtBins_e[idxPtBin_e + 1];
+           
+             // ------ Prompt electron --------
+             denominatorHistManagers_electron_LFR* denominator_e_prompt = new denominatorHistManagers_electron_LFR( process_string, isMC, minAbsEta_e, maxAbsEta_e, minPt_e,
+		                    					            			     maxPt_e, central_or_shift, "LeptonFakeRate/denominator/electrons_prompt");
+             denominator_e_prompt->bookHistograms(fs);
+             electron_denominators_prompt.push_back(denominator_e_prompt);
 
-             denominatorHistManagers_electron_LFR* denominator_e = new denominatorHistManagers_electron_LFR( process_string, isMC, minAbsEta_e, maxAbsEta_e, minPt_e,
-		                     					            			     maxPt_e, central_or_shift, "LeptonFakeRate/denominator/electrons");
-             denominator_e->bookHistograms(fs);
-             electron_denominators.push_back(denominator_e);
 
-             numeratorHistManagers_electron_LFR* numerator_e = new numeratorHistManagers_electron_LFR( process_string, isMC, minAbsEta_e, maxAbsEta_e, minPt_e,
-		                     								       maxPt_e, central_or_shift, "LeptonFakeRate/numerator/electrons");
-             numerator_e->bookHistograms(fs);
-             electron_numerators.push_back(numerator_e);
+             numeratorHistManagers_electron_LFR* numerator_e_prompt = new numeratorHistManagers_electron_LFR( process_string, isMC, minAbsEta_e, maxAbsEta_e, minPt_e,
+		                     								       maxPt_e, central_or_shift, "LeptonFakeRate/numerator/electrons_prompt");
+             numerator_e_prompt->bookHistograms(fs);
+             electron_numerators_prompt.push_back(numerator_e_prompt);
+
+             // ------ Fake electron --------
+             denominatorHistManagers_electron_LFR* denominator_e_fake = new denominatorHistManagers_electron_LFR( process_string, isMC, minAbsEta_e, maxAbsEta_e, minPt_e,
+		                     					            			     maxPt_e, central_or_shift, "LeptonFakeRate/denominator/electrons_fake");
+             denominator_e_fake->bookHistograms(fs);
+             electron_denominators_fake.push_back(denominator_e_fake);
+
+             numeratorHistManagers_electron_LFR* numerator_e_fake = new numeratorHistManagers_electron_LFR( process_string, isMC, minAbsEta_e, maxAbsEta_e, minPt_e,
+		                     								       maxPt_e, central_or_shift, "LeptonFakeRate/numerator/electrons_fake");
+             numerator_e_fake->bookHistograms(fs);
+             electron_numerators_fake.push_back(numerator_e_fake);
+
+
+
+
      }
   }
 
@@ -878,15 +925,29 @@ int main(int argc, char* argv[])
              double minPt_mu = PtBins_mu[idxPtBin_mu];
 	     double maxPt_mu = PtBins_mu[idxPtBin_mu + 1];
 
-             denominatorHistManagers_muon_LFR* denominator_mu = new denominatorHistManagers_muon_LFR( process_string, isMC, minAbsEta_mu, maxAbsEta_mu, minPt_mu,
-		                     								       maxPt_mu, central_or_shift, "LeptonFakeRate/denominator/muons");
-             denominator_mu->bookHistograms(fs);
-             muon_denominators.push_back(denominator_mu);
 
-             numeratorHistManagers_muon_LFR* numerator_mu = new numeratorHistManagers_muon_LFR( process_string, isMC, minAbsEta_mu, maxAbsEta_mu, minPt_mu,
-		                     								maxPt_mu, central_or_shift, "LeptonFakeRate/numerator/muons");
-             numerator_mu->bookHistograms(fs);
-             muon_numerators.push_back(numerator_mu);
+             // ------ Prompt muon --------
+             denominatorHistManagers_muon_LFR* denominator_mu_prompt = new denominatorHistManagers_muon_LFR( process_string, isMC, minAbsEta_mu, maxAbsEta_mu, minPt_mu,
+		                     								       maxPt_mu, central_or_shift, "LeptonFakeRate/denominator/muons_prompt");
+             denominator_mu_prompt->bookHistograms(fs);
+             muon_denominators_prompt.push_back(denominator_mu_prompt);
+
+             numeratorHistManagers_muon_LFR* numerator_mu_prompt = new numeratorHistManagers_muon_LFR( process_string, isMC, minAbsEta_mu, maxAbsEta_mu, minPt_mu,
+		                     								maxPt_mu, central_or_shift, "LeptonFakeRate/numerator/muons_prompt");
+             numerator_mu_prompt->bookHistograms(fs);
+             muon_numerators_prompt.push_back(numerator_mu_prompt);
+
+
+             // ------ Fake muon --------
+             denominatorHistManagers_muon_LFR* denominator_mu_fake = new denominatorHistManagers_muon_LFR( process_string, isMC, minAbsEta_mu, maxAbsEta_mu, minPt_mu,
+		                     								       maxPt_mu, central_or_shift, "LeptonFakeRate/denominator/muons_fake");
+             denominator_mu_fake->bookHistograms(fs);
+             muon_denominators_fake.push_back(denominator_mu_fake);
+
+             numeratorHistManagers_muon_LFR* numerator_mu_fake = new numeratorHistManagers_muon_LFR( process_string, isMC, minAbsEta_mu, maxAbsEta_mu, minPt_mu,
+		                     								maxPt_mu, central_or_shift, "LeptonFakeRate/numerator/muons_fake");
+             numerator_mu_fake->bookHistograms(fs);
+             muon_numerators_fake.push_back(numerator_mu_fake);
 
      }
   }
@@ -895,38 +956,35 @@ int main(int argc, char* argv[])
   GenEvtHistManager* genEvtHistManager_beforeCuts = 0;
   GenEvtHistManager* genEvtHistManager_afterCuts = 0;
   LHEInfoHistManager* lheInfoHistManager = 0;
-  if ( isMC ) {
+  if(isMC){
     genEvtHistManager_beforeCuts = new GenEvtHistManager(makeHistManager_cfg(process_string, 
-      Form("LeptonFakeRate_%s/unbiased/genEvt", chargeSelection_string.data()), central_or_shift));
+    //  Form("LeptonFakeRate_%s/unbiased/genEvt", chargeSelection_string.data()), central_or_shift));
+    "LeptonFakeRate/gen_unbiased/genEvt", central_or_shift));
     genEvtHistManager_beforeCuts->bookHistograms(fs);
     genEvtHistManager_afterCuts = new GenEvtHistManager(makeHistManager_cfg(process_string, 
-      Form("LeptonFakeRate_%s/sel/genEvt", chargeSelection_string.data()), central_or_shift));
+    //  Form("LeptonFakeRate_%s/sel/genEvt", chargeSelection_string.data()), central_or_shift));
+    "LeptonFakeRate/gen_sel/genEvt", central_or_shift));
     genEvtHistManager_afterCuts->bookHistograms(fs);
     lheInfoHistManager = new LHEInfoHistManager(makeHistManager_cfg(process_string, 
-      Form("LeptonFakeRate_%s/sel/lheInfo", chargeSelection_string.data()), central_or_shift));
+    //  Form("LeptonFakeRate_%s/sel/lheInfo", chargeSelection_string.data()), central_or_shift));
+    "LeptonFakeRate/gen_sel/lheInfo", central_or_shift));
     lheInfoHistManager->bookHistograms(fs);
   }
-
-
-
 
   int numEntries = inputTree->GetEntries();
   int analyzedEntries = 0;
   int selectedEntries = 0;
   double selectedEntries_weighted = 0.;
 
-
-
   TH1* histogram_analyzedEntries = fs.make<TH1D>("analyzedEntries", "analyzedEntries", 1, -0.5, +0.5);                                                                                                 
   TH1* histogram_selectedEntries = fs.make<TH1D>("selectedEntries", "selectedEntries", 1, -0.5, +0.5);                                                                                             
-  cutFlowTableType cutFlowTable;                                                                                                                                                                        
+  cutFlowTableType cutFlowTable; // NOT USED AT THE MOMENT
+                                                                                                                                                                        
   
-for( int idxEntry = 0; idxEntry < numEntries && (maxEvents == -1 || idxEntry < maxEvents); ++idxEntry ) {                                                                                    
-       if ( idxEntry > 0 && (idxEntry % reportEvery) == 0 ) {                                                                                                                                    
-            std::cout << "processing Entry " << idxEntry << " (" << selectedEntries << " Entries selected)" << std::endl;                                                                               
-            }                                                                                                                                                                                        
-
-
+for( int idxEntry = 0; idxEntry < numEntries && (maxEvents == -1 || idxEntry < maxEvents); ++idxEntry ) { // LOOP OVER EVENTS BEGIN
+           if(idxEntry > 0 && (idxEntry % reportEvery) == 0){                                                                                                                                    
+               std::cout << "processing Entry " << idxEntry << " (" << selectedEntries << " Entries selected)" << std::endl;                                                                        
+               }                                                                                                                                                                                        
      ++analyzedEntries;                                                                                                                                                                              
      histogram_analyzedEntries->Fill(0.);                                                                                                                                                     
      inputTree->GetEntry(idxEntry);    
@@ -950,16 +1008,7 @@ for( int idxEntry = 0; idxEntry < numEntries && (maxEvents == -1 || idxEntry < m
     }
     
 
-// --- Applying offline electron trigger cuts    
-    if ( (!apply_offline_e_trigger_cuts_1mu) ||	(!apply_offline_e_trigger_cuts_1e)    ) {
-      tightElectronSelector.disable_offline_e_trigger_cuts();
-    } else {
-      tightElectronSelector.enable_offline_e_trigger_cuts();
-    }
-
-
-
-//--- build collections of electrons, muons and hadronic taus;
+//--- build reco level collections of electrons, muons and hadronic taus;
 //    resolve overlaps in order of priority: muon, electron,
     std::vector<RecoMuon> muons = muonReader->read();
     std::vector<const RecoMuon*> muon_ptrs = convert_to_ptrs(muons);
@@ -971,7 +1020,7 @@ for( int idxEntry = 0; idxEntry < numEntries && (maxEvents == -1 || idxEntry < m
 
     std::vector<RecoElectron> electrons = electronReader->read();
     std::vector<const RecoElectron*> electron_ptrs = convert_to_ptrs(electrons);
-    std::vector<const RecoElectron*> cleanedElectrons = electronCleaner(electron_ptrs, selMuons);
+    std::vector<const RecoElectron*> cleanedElectrons = electronCleaner(electron_ptrs, preselMuons);  // removing overlap b/w electrons and preselMuons
     std::vector<const RecoElectron*> preselElectrons = preselElectronSelector(cleanedElectrons);      // clean electrons passing Loose object def.
     std::vector<const RecoElectron*> fakeableElectrons = fakeableElectronSelector(preselElectrons);   // clean electrons passing Loose and Fakeable object def.s
     // std::vector<const RecoElectron*> selElectrons = tightElectronSelector(preselElectrons); // DEF LINE
@@ -979,7 +1028,7 @@ for( int idxEntry = 0; idxEntry < numEntries && (maxEvents == -1 || idxEntry < m
 
     std::vector<RecoHadTau> hadTaus = hadTauReader->read();
     std::vector<const RecoHadTau*> hadTau_ptrs = convert_to_ptrs(hadTaus);
-    std::vector<const RecoHadTau*> cleanedHadTaus = hadTauCleaner(hadTau_ptrs, preselMuons, preselElectrons);
+    std::vector<const RecoHadTau*> cleanedHadTaus = hadTauCleaner(hadTau_ptrs, preselMuons, preselElectrons); // removing overlap b/w hadTaus with preselMuons and preselElectrons
     std::vector<const RecoHadTau*> preselHadTaus = preselHadTauSelector(cleanedHadTaus);
 
 //--- split hadronic tau candidates into different collections,
@@ -1005,11 +1054,10 @@ for( int idxEntry = 0; idxEntry < numEntries && (maxEvents == -1 || idxEntry < m
 //--- build collections of jets and select subset of jets passing b-tagging criteria
     std::vector<RecoJet> jets = jetReader->read();
     std::vector<const RecoJet*> jet_ptrs = convert_to_ptrs(jets);
-    std::vector<const RecoJet*> cleanedJets = jetCleaner(jet_ptrs, selMuons, selElectrons);
+    std::vector<const RecoJet*> cleanedJets = jetCleaner(jet_ptrs, selMuons, selElectrons); // removing overlap b/w jets with preselMuons and preselElectrons
     std::vector<const RecoJet*> selJets = jetSelector(cleanedJets);
     std::vector<const RecoJet*> selBJets_loose = jetSelectorBtagLoose(cleanedJets);
     std::vector<const RecoJet*> selBJets_medium = jetSelectorBtagMedium(cleanedJets);    
-
 
 //--- build collections of generator level particles (after some cuts are applied, to safe computing time)
     if ( isMC && !fillGenEvtHistograms ) {
@@ -1044,28 +1092,34 @@ for( int idxEntry = 0; idxEntry < numEntries && (maxEvents == -1 || idxEntry < m
     }
 
 
-    std::cout<< "chargeSelections " << chargeSelection  << std::endl;
+    // std::cout<< "chargeSelections " << chargeSelection  << std::endl;
     // std::cout<< "genElectrons.size() " << genElectrons.size() << " preselElectrons.size() " << preselElectrons.size() << " fakeableElectrons.size()  " << fakeableElectrons.size() << " selElectrons.size() "<< selElectrons.size() << std::endl; 
     // std::cout<< "genMuons.size() " << genMuons.size() << " preselMuons.size() " << preselMuons.size() << " fakeableMuons.size()  " << fakeableMuons.size() << " selMuons.size() "<< selMuons.size() << std::endl; 
     
 
     // -------- Making fakeLeptons collection --------
     std::vector<const RecoLepton*> fakeableLeptons = mergeLeptonCollections(fakeableElectrons, fakeableMuons);  
+    std::vector<const RecoJet*> cleanedJets_dR07   = jetCleaner_dR07(jet_ptrs, fakeableLeptons); // removing overlap b/w jets with fakeableLeptons (within cone dR = 0.7)
+    std::vector<const RecoJet*> cleanedJets_dR04   = jetCleaner(jet_ptrs, fakeableLeptons);      // removing overlap b/w jets with fakeableLeptons (within cone dR = 0.4) [TO BE USED FOR B-TAG]
+    std::vector<const RecoJet*> selJets_dR07       = jetSelector(cleanedJets_dR07);    
+    std::vector<const RecoJet*> selBJets_loose_dR04 = jetSelectorBtagLoose(cleanedJets_dR04);
+
     // std::cout<< "fakeableLeptons.size() " << fakeableLeptons.size() << std::endl;
-    // std::cout<< "selJets.size() " << selJets.size() << std::endl;
-    if(fakeableLeptons.size() != 1){continue;} // vetoing events with > 1,0 fakeable lepton 
+    // std::cout<< "selJets_dR07.size() " << selJets_dR07.size() << std::endl;
+    if(fakeableLeptons.size() != 1){continue;} // vetoing events with > 1 fakeable lepton 
 
-
+    
     // ----- Making the fakeLepton Jet pairs --------
     std::vector<LeptonJetPairMaker> LeptonJetPairs;
-    for(unsigned int i=0; i<fakeableLeptons.size();i++){
+    for(unsigned int i=0; i<fakeableLeptons.size();i++){ // LOOP OVE FAKEABLE LEPTONS BEGINS
        // if(fakeableLeptons[i]->isTight()){std::cout<< "This fakeLepton passes tight selections"<< std::endl;}
-       for(unsigned int j=0; j<selJets.size();j++){
-	  LeptonJetPairMaker LeptonJetPair = LeptonJetPairMaker(fakeableLeptons[i], selJets[j]);
-	  if(LeptonJetPair.getDeltaR() > 0.7){ LeptonJetPairs.push_back(LeptonJetPair);} // selecting lepton jet pairs seperated by deltaR > 0.7
-	  
-      }
-    }
+       for(unsigned int j=0; j<selJets_dR07.size();j++){ // LOOP OVER SEL-JETS_dR07 BEGINS
+           LeptonJetPairMaker LeptonJetPair = LeptonJetPairMaker(fakeableLeptons[i], selJets_dR07[j]);
+	   if(LeptonJetPair.getDeltaR() > 0.7){ LeptonJetPairs.push_back(LeptonJetPair);} // selecting lepton jet pairs seperated by deltaR > 0.7
+       } // LOOP OVER SEL-JETS_dR07 ENDS
+
+
+    } // LOOP OVE FAKEABLE LEPTONS BEGINS
 
     // ------- Sorting the pairs by deltaR() -------
     std::sort (LeptonJetPairs.begin(), LeptonJetPairs.end(), SortByDeltaR); 
@@ -1073,15 +1127,12 @@ for( int idxEntry = 0; idxEntry < numEntries && (maxEvents == -1 || idxEntry < m
 
     if(LeptonJetPairs.size() == 0){continue;} // demanding atleast one fakelepton-jet pair
 
-
     RecoMEt met = metReader->read();
 
     //--- compute MHT and linear MET discriminant (met_LD)
     // std::vector<const RecoLepton*> fakeableLeptons2 = mergeLeptonCollections(fakeableElectrons, fakeableMuons);
     // Particle::LorentzVector mht_p4 = compMHT(fakeableLeptons2, selHadTaus, selJets);
     // double met_LD = compMEt_LD(met.p4(), mht_p4);
-
-
 
     // ----- Filling Gen level Histograms (before gen level cuts) ------
     if ( isMC ) {
@@ -1117,35 +1168,78 @@ for( int idxEntry = 0; idxEntry < numEntries && (maxEvents == -1 || idxEntry < m
        lheInfoHistManager->fillHistograms(*lheInfoReader, evtWeight);
     }
 
+    /*  
+  // ################## JET-TAU-FAKE RATE TRIGGER LOGIC #############
+  bool isTriggered_1e = hltPaths_isTriggered(triggers_e) || (isMC && !apply_trigger_bits);   
+  bool isTriggered_1mu = hltPaths_isTriggered(triggers_mu) || (isMC && !apply_trigger_bits); 
 
-    // ------ Trigger logic -------
+  bool selTrigger_1e = use_triggers_1e && isTriggered_1e;
+  bool selTrigger_1mu = use_triggers_1mu && isTriggered_1mu;
+  if ( !(selTrigger_1e || selTrigger_1mu) ) {
+    continue;
+  }
+
+  if(selTrigger_1mu){ std::cout<< "Muon trigger fired "<< std::endl;}
+  if(selTrigger_1e){ std::cout<< "Electron trigger fired "<< std::endl; }
+
+  //--- rank triggers by priority and ignore triggers of lower priority if a trigger of higher priority has fired for given event;                                                                
+  //    the ranking of the triggers is as follows: 1e1mu, 1mu, 1e                                                                                                                                 
+  // CV: this logic is necessary to avoid that the same event is selected multiple times when processing different primary datasets                                                                
+  if ( !isMC ) {
+    if ( selTrigger_1e && isTriggered_1mu) {
+      continue;
+    }
+  }
+
+  if((selTrigger_1mu   && !apply_offline_e_trigger_cuts_1mu) ||
+     (selTrigger_1e    && !apply_offline_e_trigger_cuts_1e)    ){
+       tightElectronSelector.disable_offline_e_trigger_cuts();
+  }else{
+       tightElectronSelector.enable_offline_e_trigger_cuts();
+  }
+  // ###########################################
+  */
+
+
+
+  
+// ------ New Trigger logic -------
     bool trigger_fired_e = false;
     bool trigger_fired_mu = false;
     for (std::vector<LeptonJetPairMaker>::const_iterator LeptonJetPair = LeptonJetPairs.begin();
          LeptonJetPair != LeptonJetPairs.end(); LeptonJetPair++)
     {
-      if( LeptonJetPair->getLepton()->is_electron() && 
+      if( LeptonJetPair->getLepton()->is_electron() && use_triggers_1e && 
           (hltPaths_LeptonFakeRate_isTriggered(triggers_e, LeptonJetPair->getLepton()->cone_pt(), LeptonJetPair->getJet()->pt()) || (isMC && !apply_trigger_bits)) )  // extend hltPaths_isTriggered .. to include jet pt
       { 
           trigger_fired_e = true;
       } // to ensure bool stays true once turned on 
  
-      if( LeptonJetPair->getLepton()->is_muon() && 
+      if( LeptonJetPair->getLepton()->is_muon() && use_triggers_1mu &&
           (hltPaths_LeptonFakeRate_isTriggered(triggers_mu, LeptonJetPair->getLepton()->cone_pt(), LeptonJetPair->getJet()->pt()) || (isMC && !apply_trigger_bits)) )
       { 
           trigger_fired_mu = true;
       }  // to ensure bool stays true once turned on  
-      std::cout<< "trigger_fired_e " << trigger_fired_e << " trigger_fired_mu " << trigger_fired_mu << std::endl;
-
     }
 
 
-    if(!trigger_fired_e && !trigger_fired_mu)
-    {
-      std::cout<< "Event dropped "<< std::endl;
-      continue; // Drop the event if it fires no trigger
+  //--- rank triggers by priority and ignore triggers of lower priority if a trigger of higher priority has fired for given event;                                                                
+  //    the ranking of the triggers is as follows: 1e1mu, 1mu, 1e                                                                                                                                 
+  // CV: this logic is necessary to avoid that the same event is selected multiple times when processing different primary datasets                                                                
+    if ( !isMC ) {
+      if ( trigger_fired_e && trigger_fired_mu) {
+	continue;
+      }
     }
-    
+
+    if((trigger_fired_mu   && !apply_offline_e_trigger_cuts_1mu) ||
+       (trigger_fired_e    && !apply_offline_e_trigger_cuts_1e)    ){
+         tightElectronSelector.disable_offline_e_trigger_cuts();
+       }else{
+         tightElectronSelector.enable_offline_e_trigger_cuts();
+    }
+// ---------------------
+
 
 
     for (std::vector<LeptonJetPairMaker>::const_iterator LeptonJetPair = LeptonJetPairs.begin();
@@ -1156,10 +1250,18 @@ for( int idxEntry = 0; idxEntry < numEntries && (maxEvents == -1 || idxEntry < m
 	  continue; // deltaR() cond.
 	}	   
           
-	std::cout<< "Mt_fix "<< Mt_fix(*(LeptonJetPair->getLepton()), 35., met.pt(), met.phi())<< std::endl;
+	// std::cout<< "Mt_fix "<< Mt_fix(*(LeptonJetPair->getLepton()), 35., met.pt(), met.phi())<< std::endl;
 
 	double mT_L     = Mt(*(LeptonJetPair->getLepton()), met.pt(), met.phi());
 	double mT_fix_L = Mt_fix(*(LeptonJetPair->getLepton()), 35., met.pt(), met.phi());;
+
+	if( (LeptonJetPair->getLepton())->genLepton()){
+            std::cout<< " This is a prompt lepton"<< std::endl;
+           } else {
+            std::cout<< " This is a fake lepton"<< std::endl;
+	}
+
+
 
 
         // @@@@@@@@@@@  LOOP OVER ELECTRON PT AND ETA BINS @@@@@@@@@@             
@@ -1168,43 +1270,86 @@ for( int idxEntry = 0; idxEntry < numEntries && (maxEvents == -1 || idxEntry < m
           const RecoElectron* fake_electron = dynamic_cast<const RecoElectron*>(LeptonJetPair->getLepton());
 	  std::cout<< "electron H/E "<< fake_electron->HoE() << std::endl;
 
-          if(LeptonJetPair->getLepton()->isTight()){ // ELECTRON NUMERATOR (TIGHT)
-             for ( std::vector<numeratorHistManagers_electron_LFR*>::iterator numerator_e = electron_numerators.begin();
-         	   numerator_e != electron_numerators.end(); numerator_e++ ) {
-	           (*numerator_e)->fillHistograms(*fake_electron, mT_L, mT_fix_L, evtWeight);  //------ Numerator Histograms
+         if(LeptonJetPair->getLepton()->isTight()){ // ELECTRON NUMERATOR (TIGHT)
+	   if( (LeptonJetPair->getLepton())->genLepton()){ // PROMPT ELECTRON
+             for ( std::vector<numeratorHistManagers_electron_LFR*>::iterator numerator_e_prompt = electron_numerators_prompt.begin();
+         	   numerator_e_prompt != electron_numerators_prompt.end(); numerator_e_prompt++ ) {
+	           (*numerator_e_prompt)->fillHistograms(*fake_electron, mT_L, mT_fix_L, evtWeight);  //------ Numerator Histograms
 	     }
+
+	   } else { // FAKE ELECTRON
+
+             for ( std::vector<numeratorHistManagers_electron_LFR*>::iterator numerator_e_fake = electron_numerators_fake.begin();
+         	   numerator_e_fake != electron_numerators_fake.end(); numerator_e_fake++ ) {
+	           (*numerator_e_fake)->fillHistograms(*fake_electron, mT_L, mT_fix_L, evtWeight);  //------ Numerator Histograms
+	     }
+
+	    }
 	  }
 
+
           if(LeptonJetPair->getLepton()->isFakeable()){ // ELECTRON DENOMINATOR (FAKEABLE)
-             for ( std::vector<denominatorHistManagers_electron_LFR*>::iterator denominator_e = electron_denominators.begin();
-         	   denominator_e != electron_denominators.end(); denominator_e++ ) {
-	           (*denominator_e)->fillHistograms(*fake_electron, mT_L, mT_fix_L, evtWeight);  //------ Denominator Histograms
+	   if( (LeptonJetPair->getLepton())->genLepton()){ // PROMPT ELECTRON
+             for ( std::vector<denominatorHistManagers_electron_LFR*>::iterator denominator_e_prompt = electron_denominators_prompt.begin();
+         	   denominator_e_prompt != electron_denominators_prompt.end(); denominator_e_prompt++ ) {
+	           (*denominator_e_prompt)->fillHistograms(*fake_electron, mT_L, mT_fix_L, evtWeight);  //------ Denominator Histograms
       	     }
+
+	   } else { // FAKE ELECTRON
+
+             for ( std::vector<denominatorHistManagers_electron_LFR*>::iterator denominator_e_fake = electron_denominators_fake.begin();
+         	   denominator_e_fake != electron_denominators_fake.end(); denominator_e_fake++ ) {
+	           (*denominator_e_fake)->fillHistograms(*fake_electron, mT_L, mT_fix_L, evtWeight);  //------ Denominator Histograms
+      	     }
+	   }
+
 	  }
-          
-	}   // ELECTRON SECTION ENDS
+        }   // ELECTRON SECTION ENDS
         // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 
         // @@@@@@@@@@@  LOOP OVER MUON PT AND ETA BINS @@@@@@@@@@
         if(trigger_fired_mu && LeptonJetPair->getLepton()->is_muon() && ((LeptonJetPair->getLepton()->cone_pt() > 30. && LeptonJetPair->getJet()->pt()> 30.) || 
-           (LeptonJetPair->getLepton()->cone_pt() > 10. && LeptonJetPair->getJet()->pt()> 40.) ) )
-        {
+									 (LeptonJetPair->getLepton()->cone_pt() > 10. && LeptonJetPair->getJet()->pt()> 40.) ||
+									 (LeptonJetPair->getLepton()->cone_pt() < 30. && selBJets_loose_dR04.size() >= 1)) )
+         { // last selection for better agreement of ttbar and QCD fake rates (AN-2017-029_v5)
           const RecoMuon* fake_muon = dynamic_cast<const RecoMuon*>(LeptonJetPair->getLepton());
 	  std::cout<< "muon relIso() " << fake_muon->relIso() << std::endl;
 
           if(LeptonJetPair->getLepton()->isTight()){
-             for ( std::vector<numeratorHistManagers_muon_LFR*>::iterator numerator_mu = muon_numerators.begin();
-	           numerator_mu != muon_numerators.end(); numerator_mu++ ) { // MUON NUMERATOR (TIGHT)
-	           (*numerator_mu)->fillHistograms(*fake_muon, mT_L, mT_fix_L, evtWeight);  //------ Numerator Histograms   
+	   if( (LeptonJetPair->getLepton())->genLepton()){ // PROMPT MUON
+             for ( std::vector<numeratorHistManagers_muon_LFR*>::iterator numerator_mu_prompt = muon_numerators_prompt.begin();
+	           numerator_mu_prompt != muon_numerators_prompt.end(); numerator_mu_prompt++ ) { // MUON NUMERATOR (TIGHT)
+	           (*numerator_mu_prompt)->fillHistograms(*fake_muon, mT_L, mT_fix_L, evtWeight);  //------ Numerator Histograms   
     	     }
+
+	   } else { // FAKE MUON
+
+             for ( std::vector<numeratorHistManagers_muon_LFR*>::iterator numerator_mu_fake = muon_numerators_fake.begin();
+	           numerator_mu_fake != muon_numerators_fake.end(); numerator_mu_fake++ ) { // MUON NUMERATOR (TIGHT)
+	           (*numerator_mu_fake)->fillHistograms(*fake_muon, mT_L, mT_fix_L, evtWeight);  //------ Numerator Histograms   
+    	     }
+
+	   }
 	  }
 
+
           if(LeptonJetPair->getLepton()->isFakeable()){
-             for ( std::vector<denominatorHistManagers_muon_LFR*>::iterator denominator_mu = muon_denominators.begin();
-	           denominator_mu != muon_denominators.end(); denominator_mu++ ) { // MUON DENOMINATOR (FAKEABLE)
-	           (*denominator_mu)->fillHistograms(*fake_muon, mT_L, mT_fix_L, evtWeight);  //------ Denominator Histograms
+           if( (LeptonJetPair->getLepton())->genLepton()){ // PROMPT MUON
+             for ( std::vector<denominatorHistManagers_muon_LFR*>::iterator denominator_mu_prompt = muon_denominators_prompt.begin();
+	           denominator_mu_prompt != muon_denominators_prompt.end(); denominator_mu_prompt++ ) { // MUON DENOMINATOR (FAKEABLE)
+	           (*denominator_mu_prompt)->fillHistograms(*fake_muon, mT_L, mT_fix_L, evtWeight);  //------ Denominator Histograms
       	     }
+
+
+	   } else { // FAKE MUON
+
+             for ( std::vector<denominatorHistManagers_muon_LFR*>::iterator denominator_mu_fake = muon_denominators_fake.begin();
+	           denominator_mu_fake != muon_denominators_fake.end(); denominator_mu_fake++ ) { // MUON DENOMINATOR (FAKEABLE)
+	           (*denominator_mu_fake)->fillHistograms(*fake_muon, mT_L, mT_fix_L, evtWeight);  //------ Denominator Histograms
+      	     }
+
+	   }
 	  }
 	    
       	}   // MUON SECTION ENDS
