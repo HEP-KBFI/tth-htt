@@ -135,11 +135,12 @@ int main(int argc, char* argv[])
 
   int minNumJets = cfg_produceNtuple.getParameter<int>("minNumJets");
 
-  bool use_HIP_mitigation_bTag = cfg_produceNtuple.getParameter<bool>("use_HIP_mitigation_bTag"); 
-  std::cout << "use_HIP_mitigation_bTag = " << use_HIP_mitigation_bTag << std::endl;
   int minNumBJets_loose = cfg_produceNtuple.getParameter<int>("minNumBJets_loose");
   int minNumBJets_medium = cfg_produceNtuple.getParameter<int>("minNumBJets_medium");
   
+  bool use_HIP_mitigation_mediumMuonId = cfg_produceNtuple.getParameter<bool>("use_HIP_mitigation_mediumMuonId"); 
+  std::cout << "use_HIP_mitigation_mediumMuonId = " << use_HIP_mitigation_mediumMuonId << std::endl;
+
   bool isMC = cfg_produceNtuple.getParameter<bool>("isMC"); 
 
   std::string selEventsFileName_input = cfg_produceNtuple.getParameter<std::string>("selEventsFileName_input");
@@ -180,11 +181,6 @@ int main(int argc, char* argv[])
     throw cms::Exception("produceNtuple_2lss_1tau") 
       << "Failed to identify input Tree !!\n";
   }
-  
-  // CV: need to call TChain::LoadTree before processing first event 
-  //     in order to prevent ROOT causing a segmentation violation,
-  //     cf. http://root.cern.ch/phpBB3/viewtopic.php?t=10062
-  inputTree->LoadTree(0);
 
   std::cout << "input Tree contains " << inputTree->GetEntries() << " Entries in " << inputTree->GetListOfFiles()->GetEntries() << " files." << std::endl;
   
@@ -198,6 +194,8 @@ int main(int argc, char* argv[])
 
 //--- declare particle collections
   RecoMuonReader* muonReader = new RecoMuonReader(era, "nselLeptons", "selLeptons");
+  if ( use_HIP_mitigation_mediumMuonId ) muonReader->enable_HIP_mitigation();
+  else muonReader->disable_HIP_mitigation();
   muonReader->setBranchAddresses(inputTree);
   RecoMuonCollectionSelectorLoose preselMuonSelector(era);
   RecoMuonCollectionSelectorFakeable fakeableMuonSelector(era);
@@ -232,8 +230,6 @@ int main(int argc, char* argv[])
   tightHadTauSelector.set_min_pt(18.);
   
   RecoJetReader* jetReader = new RecoJetReader(era, isMC, "nJet", "Jet");
-  if ( use_HIP_mitigation_bTag ) jetReader->enable_HIP_mitigation();
-  else jetReader->disable_HIP_mitigation();
   jetReader->setJetPt_central_or_shift(RecoJetReader::kJetPt_central); 
   jetReader->read_BtagWeight_systematics(isMC);
   jetReader->setBranchAddresses(inputTree);

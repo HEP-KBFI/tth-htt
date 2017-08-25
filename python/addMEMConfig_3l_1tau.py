@@ -30,7 +30,6 @@ class addMEMConfig_3l_1tau(addMEMConfig):
     - process.addMEM_3l_1tau.branchName_hadTaus
     - process.addMEM_3l_1tau.branchName_jets
     - process.addMEM_3l_1tau.branchName_met
-    - process.addMEM_3l_1tau.use_HIP_mitigation_bTag
     '''
 
     lines = []

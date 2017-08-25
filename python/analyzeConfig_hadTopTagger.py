@@ -41,7 +41,6 @@ class analyzeConfig_hadTopTagger(analyzeConfig):
     lines.append("process.analyze_hadTopTagger.histogramDir = cms.string('analyze_hadTopTagger')")
     lines.append("process.analyze_hadTopTagger.era = cms.string('%s')" % self.era)
     lines.append("process.analyze_hadTopTagger.hadTauSelection = cms.string('%s')" % jobOptions['hadTau_selection'])
-    lines.append("process.analyze_hadTopTagger.use_HIP_mitigation_bTag = cms.bool(%s)" % jobOptions['use_HIP_mitigation_bTag'])
     lines.append("process.analyze_hadTopTagger.use_HIP_mitigation_mediumMuonId = cms.bool(%s)" % jobOptions['use_HIP_mitigation_mediumMuonId'])
     lines.append("process.analyze_hadTopTagger.isMC = cms.bool(%s)" % jobOptions['is_mc'])
     lines.append("process.analyze_hadTopTagger.lumiScale = cms.double(%f)" % jobOptions['lumi_scale'])
@@ -117,7 +116,6 @@ class analyzeConfig_hadTopTagger(analyzeConfig):
              (self.channel, process_name, jobId)),
           'sample_category' : sample_category,
           'hadTau_selection' : self.hadTau_selection,
-          'use_HIP_mitigation_bTag' : True,
           'use_HIP_mitigation_mediumMuonId' : True,
           'is_mc' : is_mc,
           'lumi_scale' : 1. if not (self.use_lumi and is_mc) else sample_info["xsection"] * self.lumi / sample_info["nof_events"],

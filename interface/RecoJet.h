@@ -65,8 +65,6 @@ public:
 
   //---------------------------------------------------------
   // CV: needed by RecoJetWriter
-  Double_t BtagCSVwHipMitigation_;  
-  Double_t BtagCSVwoHipMitigation_; 
   std::map<int, Double_t> BtagWeight_systematics_; 
   //---------------------------------------------------------
 

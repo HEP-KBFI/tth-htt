@@ -138,9 +138,6 @@ int main(int argc, char* argv[])
       "";
   delete hadTauSelection_parts;
 
-  bool use_HIP_mitigation_bTag = cfg_addMEM.getParameter<bool>("use_HIP_mitigation_bTag"); 
-  std::cout << "use_HIP_mitigation_bTag = " << use_HIP_mitigation_bTag << std::endl;
-  
   bool isMC = cfg_addMEM.getParameter<bool>("isMC"); 
 
   std::string branchName_electrons = cfg_addMEM.getParameter<std::string>("branchName_electrons");
@@ -237,8 +234,6 @@ int main(int argc, char* argv[])
   tightHadTauSelector.set_min_pt(18.);
   
   RecoJetReader* jetReader = new RecoJetReader(era, isMC, Form("n%s", branchName_jets.data()), branchName_jets);
-  if ( use_HIP_mitigation_bTag ) jetReader->enable_HIP_mitigation();
-  else jetReader->disable_HIP_mitigation();
   // CV: apply jet pT cut on JEC upward shift, to make sure pT cut is loose enough
   //     to allow systematic uncertainty on JEC to be estimated on analysis level 
   jetReader->setJetPt_central_or_shift(RecoJetReader::kJetPt_central); 

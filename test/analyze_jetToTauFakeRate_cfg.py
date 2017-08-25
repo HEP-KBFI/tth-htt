@@ -54,7 +54,6 @@ process.analyze_jetToTauFakeRate = cms.PSet(
     
     absEtaBins = cms.vdouble(-1., 1.479, 9.9),
 
-    use_HIP_mitigation_bTag = cms.bool(False),
     use_HIP_mitigation_mediumMuonId = cms.bool(False),
                                       
     isMC = cms.bool(False),

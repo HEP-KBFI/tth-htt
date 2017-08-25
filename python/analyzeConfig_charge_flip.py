@@ -81,7 +81,6 @@ class analyzeConfig_charge_flip(analyzeConfig):
     lines.append("process.analyze_charge_flip.lumiScale = cms.double(%f)" % jobOptions["lumi_scale"])
     lines.append("process.analyze_charge_flip.apply_trigger_bits = cms.bool(%s)" % jobOptions["apply_trigger_bits"])
     lines.append("process.analyze_charge_flip.selEventsFileName_output = cms.string('%s')" % jobOptions["rleOutputFile"])
-    lines.append("process.analyze_charge_flip.use_HIP_mitigation_bTag = cms.bool(%s)" % jobOptions["use_HIP_mitigation_bTag"])
     lines.append("process.analyze_charge_flip.use_HIP_mitigation_mediumMuonId = cms.bool(%s)" % jobOptions["use_HIP_mitigation_mediumMuonId"])
     lines.append("process.analyze_charge_flip.applyFakeRateWeights = cms.string('%s')" % jobOptions["applyFakeRateWeights"])
     
@@ -205,7 +204,6 @@ class analyzeConfig_charge_flip(analyzeConfig):
                 #'apply_hadTauGenMatching' : self.apply_hadTauGenMatching,
                 #'applyFakeRateWeights' : self.applyFakeRateWeights if not (lepton_selection == "Tight" and hadTau_selection.find("Tight") != -1) else "disabled",
                 'applyFakeRateWeights' : "disabled",
-                'use_HIP_mitigation_bTag' : True,
                 'use_HIP_mitigation_mediumMuonId' : True,
                 'is_mc' : is_mc,
                 'central_or_shift' : central_or_shift,

@@ -48,8 +48,7 @@ class RecoJetWriter
   std::string branchName_corr_;
   std::string branchName_corr_JECUp_;
   std::string branchName_corr_JECDown_;
-  std::string branchName_BtagCSVwHipMitigation_;
-  std::string branchName_BtagCSVwoHipMitigation_;
+  std::string branchName_BtagCSV_;
   std::string branchName_BtagWeight_;
   std::string branchName_heppyFlavour_;
   std::map<int, std::string> branchNames_BtagWeight_systematics_;
@@ -62,8 +61,7 @@ class RecoJetWriter
   Float_t* jet_corr_;
   Float_t* jet_corr_JECUp_;
   Float_t* jet_corr_JECDown_;
-  Float_t* jet_BtagCSVwHipMitigation_;
-  Float_t* jet_BtagCSVwoHipMitigation_;
+  Float_t* jet_BtagCSV_;
   Float_t* jet_BtagWeight_;
   Float_t* jet_heppyFlavour_;
   std::map<int, Float_t*> jet_BtagWeights_systematics_; 

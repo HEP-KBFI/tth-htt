@@ -28,9 +28,10 @@ process.produceNtuple_2lss_1tau = cms.PSet(
 
     minNumJets = cms.int32(2),
 
-    use_HIP_mitigation_bTag = cms.bool(False),
     minNumBJets_loose = cms.int32(0),
     minNumBJets_medium = cms.int32(0),
+
+    use_HIP_mitigation_mediumMuonId = cms.bool(False),
 
     isMC = cms.bool(True),
     

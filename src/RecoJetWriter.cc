@@ -20,8 +20,7 @@ RecoJetWriter::RecoJetWriter(int era,
   , jet_corr_(0)
   , jet_corr_JECUp_(0)
   , jet_corr_JECDown_(0) 
-  , jet_BtagCSVwHipMitigation_(0)
-  , jet_BtagCSVwoHipMitigation_(0)
+  , jet_BtagCSV_(0)
   , jet_BtagWeight_(0)
   , jet_heppyFlavour_(0)
 {
@@ -41,8 +40,7 @@ RecoJetWriter::RecoJetWriter(int era, bool isMC, const std::string& branchName_n
   , jet_corr_(0)
   , jet_corr_JECUp_(0)
   , jet_corr_JECDown_(0) 
-  , jet_BtagCSVwHipMitigation_(0)
-  , jet_BtagCSVwoHipMitigation_(0)
+  , jet_BtagCSV_(0)
   , jet_BtagWeight_(0)
   , jet_heppyFlavour_(0)
 {
@@ -58,8 +56,7 @@ RecoJetWriter::~RecoJetWriter()
   delete[] jet_corr_;
   delete[] jet_corr_JECUp_;
   delete[] jet_corr_JECDown_;
-  delete[] jet_BtagCSVwHipMitigation_;
-  delete[] jet_BtagCSVwoHipMitigation_;
+  delete[] jet_BtagCSV_;
   delete[] jet_BtagWeight_;
   delete[] jet_heppyFlavour_;
   for ( std::map<int, Float_t*>::iterator it = jet_BtagWeights_systematics_.begin();
@@ -77,13 +74,10 @@ void RecoJetWriter::setBranchNames()
   branchName_corr_ = Form("%s_%s", branchName_obj_.data(), "corr");
   branchName_corr_JECUp_ = Form("%s_%s_%s", branchName_obj_.data(), "corr", "JECUp");
   branchName_corr_JECDown_ = Form("%s_%s_%s", branchName_obj_.data(), "corr", "JECDown");
+  branchName_BtagCSV_ = Form("%s_%s", branchName_obj_.data(), "btagCSV");
   if ( era_ == kEra_2015 ) {
-    branchName_BtagCSVwHipMitigation_ = "";
-    branchName_BtagCSVwoHipMitigation_ = Form("%s_%s", branchName_obj_.data(), "btagCSV");
     branchName_BtagWeight_ = Form("%s_%s", branchName_obj_.data(), "bTagWeight");
   } else if ( era_ == kEra_2016 ) {
-    branchName_BtagCSVwHipMitigation_ = Form("%s_%s", branchName_obj_.data(), "btagCSV");               // CV: CSV algorithm with HIP mitigation
-    branchName_BtagCSVwoHipMitigation_ = Form("%s_%s", branchName_obj_.data(), "btagNoHipMitigation"); // CV: CSV algorithm without HIP mitigation
     branchName_BtagWeight_ = Form("%s_%s", branchName_obj_.data(), "btagWeightCSV");
   } else assert(0);
   for ( int idxShift = kBtag_hfUp; idxShift <= kBtag_jesDown; ++idxShift ) {
@@ -114,14 +108,8 @@ void RecoJetWriter::setBranches(TTree* tree)
   setBranchVF(tree, branchName_corr_JECUp_, branchName_num_, jet_corr_JECUp_);
   jet_corr_JECDown_ = new Float_t[max_nJets_];
   setBranchVF(tree, branchName_corr_JECDown_, branchName_num_, jet_corr_JECDown_);
-  jet_BtagCSVwHipMitigation_ = new Float_t[max_nJets_];
-  if ( branchName_BtagCSVwHipMitigation_ != "" ) {
-    setBranchVF(tree, branchName_BtagCSVwHipMitigation_, branchName_num_, jet_BtagCSVwHipMitigation_);
-  }
-  jet_BtagCSVwoHipMitigation_ = new Float_t[max_nJets_];
-  if ( branchName_BtagCSVwoHipMitigation_ != "" ) {
-    setBranchVF(tree, branchName_BtagCSVwoHipMitigation_, branchName_num_, jet_BtagCSVwoHipMitigation_);
-  }
+  jet_BtagCSV_ = new Float_t[max_nJets_];
+  setBranchVF(tree, branchName_BtagCSV_, branchName_num_, jet_BtagCSV_);
   jet_BtagWeight_ = new Float_t[max_nJets_];
   setBranchVF(tree, branchName_BtagWeight_, branchName_num_, jet_BtagWeight_);
   for ( int idxShift = kBtag_hfUp; idxShift <= kBtag_jesDown; ++idxShift ) {
@@ -147,8 +135,7 @@ void RecoJetWriter::write(const std::vector<const RecoJet*>& jets)
     jet_corr_[idxJet] = jet->corr();
     jet_corr_JECUp_[idxJet] = jet->corr_JECUp();
     jet_corr_JECDown_[idxJet] = jet->corr_JECDown();
-    jet_BtagCSVwHipMitigation_[idxJet] = jet->BtagCSVwHipMitigation_;
-    jet_BtagCSVwoHipMitigation_[idxJet] = jet->BtagCSVwoHipMitigation_;
+    jet_BtagCSV_[idxJet] = jet->BtagCSV_;
     jet_BtagWeight_[idxJet] = jet->BtagWeight();
     for ( int idxShift = kBtag_hfUp; idxShift <= kBtag_jesDown; ++idxShift ) {
       std::map<int, Double_t>::const_iterator jet_BtagWeight_systematics_iter = jet->BtagWeight_systematics_.find(idxShift);

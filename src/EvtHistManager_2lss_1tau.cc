@@ -40,9 +40,6 @@ void EvtHistManager_2lss_1tau::bookHistograms(TFileDirectory& dir)
   histogram_mvaOutput_2lss_1tau_ttV_wMEM_ = book1D(dir, "mvaOutput_2lss_1tau_ttV_wMEM", "mvaOutput_2lss_1tau_ttV_wMEM", 20, -1., +1.);
   histogram_mvaOutput_2lss_1tau_ttbar_wMEM_ = book1D(dir, "mvaOutput_2lss_1tau_ttbar_wMEM", "mvaOutput_2lss_1tau_ttbar_wMEM", 20, -1., +1.);
   histogram_mvaDiscr_2lss_1tau_wMEM_ = book1D(dir, "mvaDiscr_2lss_1tau_wMEM", "mvaDiscr_2lss_1tau_wMEM", 8, 0.5, 8.5);
-  histogram_mvaOutput_2lss_1tau_ttV_wMEMsepLR_ = book1D(dir, "mvaOutput_2lss_1tau_ttV_wMEMsepLR", "mvaOutput_2lss_1tau_ttV_wMEMsepLR", 20, -1., +1.);
-  histogram_mvaOutput_2lss_1tau_ttbar_wMEMsepLR_ = book1D(dir, "mvaOutput_2lss_1tau_ttbar_wMEMsepLR", "mvaOutput_2lss_1tau_ttbar_wMEMsepLR", 20, -1., +1.);
-  histogram_mvaDiscr_2lss_1tau_wMEMsepLR_ = book1D(dir, "mvaDiscr_2lss_1tau_wMEMsepLR", "mvaDiscr_2lss_1tau_wMEMsepLR", 8, 0.5, 8.5);
 
   histogram_mvaOutput_Hj_tagger_ = book1D(dir, "mvaOutput_Hj_tagger", "mvaOutput_Hj_tagger", 20, -1., +1.);
   histogram_mvaOutput_Hjj_tagger_ = book1D(dir, "mvaOutput_Hjj_tagger", "mvaOutput_Hjj_tagger", 20, -1., +1.);
@@ -72,7 +69,6 @@ void EvtHistManager_2lss_1tau::fillHistograms(int numElectrons, int numMuons, in
 					      double mvaOutput_2lss_ttV, double mvaOutput_2lss_ttbar, double mvaDiscr_2lss, 
 					      double mvaOutput_2lss_1tau_ttV, double mvaOutput_2lss_1tau_ttbar, double mvaDiscr_2lss_1tau,
 					      double mvaOutput_2lss_1tau_ttV_wMEM, double mvaOutput_2lss_1tau_ttbar_wMEM, double mvaDiscr_2lss_1tau_wMEM,
-					      double mvaOutput_2lss_1tau_ttV_wMEMsepLR, double mvaOutput_2lss_1tau_ttbar_wMEMsepLR, double mvaDiscr_2lss_1tau_wMEMsepLR,
 					      double mvaOutput_Hj_tagger, double mvaOutput_Hjj_tagger,
 					      double mTauTauVis1, double mTauTauVis2, 
 					      const MEMOutput_2lss_1tau* memOutput_2lss_1tau, double memDiscr, double evtWeight)
@@ -99,9 +95,6 @@ void EvtHistManager_2lss_1tau::fillHistograms(int numElectrons, int numMuons, in
   fillWithOverFlow(histogram_mvaOutput_2lss_1tau_ttV_wMEM_, mvaOutput_2lss_1tau_ttV_wMEM, evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_mvaOutput_2lss_1tau_ttbar_wMEM_, mvaOutput_2lss_1tau_ttbar_wMEM, evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_mvaDiscr_2lss_1tau_wMEM_, mvaDiscr_2lss_1tau_wMEM, evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_mvaOutput_2lss_1tau_ttV_wMEMsepLR_, mvaOutput_2lss_1tau_ttV_wMEMsepLR, evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_mvaOutput_2lss_1tau_ttbar_wMEMsepLR_, mvaOutput_2lss_1tau_ttbar_wMEMsepLR, evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_mvaDiscr_2lss_1tau_wMEMsepLR_, mvaDiscr_2lss_1tau_wMEMsepLR, evtWeight, evtWeightErr);
 
   fillWithOverFlow(histogram_mvaOutput_Hj_tagger_, mvaOutput_Hj_tagger, evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_mvaOutput_Hjj_tagger_, mvaOutput_Hjj_tagger, evtWeight, evtWeightErr);

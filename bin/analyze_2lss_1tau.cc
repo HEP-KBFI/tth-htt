@@ -294,8 +294,6 @@ int main(int argc, char* argv[])
   else throw cms::Exception("analyze_2lss_1tau") 
     << "Invalid Configuration parameter 'chargeSumSelection' = " << chargeSumSelection_string << " !!\n";
 
-  bool use_HIP_mitigation_bTag = cfg_analyze.getParameter<bool>("use_HIP_mitigation_bTag"); 
-  std::cout << "use_HIP_mitigation_bTag = " << use_HIP_mitigation_bTag << std::endl;
   bool use_HIP_mitigation_mediumMuonId = cfg_analyze.getParameter<bool>("use_HIP_mitigation_mediumMuonId"); 
   std::cout << "use_HIP_mitigation_mediumMuonId = " << use_HIP_mitigation_mediumMuonId << std::endl;
 
@@ -532,8 +530,6 @@ int main(int argc, char* argv[])
   tightHadTauFilter.set_min_antiMuon(hadTauSelection_antiMuon);
   
   RecoJetReader* jetReader = new RecoJetReader(era, isMC, Form("n%s", branchName_jets.data()), branchName_jets);
-  if ( use_HIP_mitigation_bTag ) jetReader->enable_HIP_mitigation();
-  else jetReader->disable_HIP_mitigation();
   jetReader->setJetPt_central_or_shift(jetPt_option);
   jetReader->setBranchName_BtagWeight(jet_btagWeight_branch);
   jetReader->setBranchAddresses(inputTree);
@@ -672,41 +668,6 @@ int main(int argc, char* argv[])
   std::string inputFileName_mva_mapping_2lss_1tau_wMEM = "tthAnalysis/HiggsToTauTau/data/2lss_1tau_BDTwMEM_mapping_likelihood.root";
   TFile* inputFile_mva_mapping_2lss_1tau_wMEM = openFile(LocalFileInPath(inputFileName_mva_mapping_2lss_1tau_wMEM));
   TH2* mva_mapping_2lss_1tau_wMEM = loadTH2(inputFile_mva_mapping_2lss_1tau_wMEM, "hTargetBinning");
-
-  std::string mvaFileName_2lss_1tau_ttV_wMEMsepLR = "tthAnalysis/HiggsToTauTau/data/2lss_1tau_ttV_BDTGwMEMsepLR.weights.xml";
-  std::vector<std::string> mvaInputVariables_2lss_1tau_ttV_wMEMsepLR;
-  mvaInputVariables_2lss_1tau_ttV_wMEMsepLR.push_back("mindr_lep1_jet");
-  mvaInputVariables_2lss_1tau_ttV_wMEMsepLR.push_back("mindr_lep2_jet");
-  mvaInputVariables_2lss_1tau_ttV_wMEMsepLR.push_back("avg_dr_jet");
-  mvaInputVariables_2lss_1tau_ttV_wMEMsepLR.push_back("TMath::Max(TMath::Abs(lep1_eta),TMath::Abs(lep2_eta))");
-  mvaInputVariables_2lss_1tau_ttV_wMEMsepLR.push_back("lep1_conePt");
-  mvaInputVariables_2lss_1tau_ttV_wMEMsepLR.push_back("lep2_conePt");
-  mvaInputVariables_2lss_1tau_ttV_wMEMsepLR.push_back("mT_lep1");
-  mvaInputVariables_2lss_1tau_ttV_wMEMsepLR.push_back("dr_leps");
-  mvaInputVariables_2lss_1tau_ttV_wMEMsepLR.push_back("mTauTauVis1");
-  mvaInputVariables_2lss_1tau_ttV_wMEMsepLR.push_back("mTauTauVis2");
-  mvaInputVariables_2lss_1tau_ttV_wMEMsepLR.push_back("memOutput_ttZ_LR");
-  TMVAInterface mva_2lss_1tau_ttV_wMEMsepLR(mvaFileName_2lss_1tau_ttV_wMEMsepLR, mvaInputVariables_2lss_1tau_ttV_wMEMsepLR);
-
-  std::string mvaFileName_2lss_1tau_ttbar_wMEMsepLR = "tthAnalysis/HiggsToTauTau/data/2lss_1tau_ttbar_BDTGwMEMsepLR.weights.xml";
-  std::vector<std::string> mvaInputVariables_2lss_1tau_ttbar_wMEMsepLR;
-  mvaInputVariables_2lss_1tau_ttbar_wMEMsepLR.push_back("nJet");
-  mvaInputVariables_2lss_1tau_ttbar_wMEMsepLR.push_back("mindr_lep1_jet");
-  mvaInputVariables_2lss_1tau_ttbar_wMEMsepLR.push_back("avg_dr_jet");
-  mvaInputVariables_2lss_1tau_ttbar_wMEMsepLR.push_back("TMath::Max(TMath::Abs(lep1_eta),TMath::Abs(lep2_eta))");
-  mvaInputVariables_2lss_1tau_ttbar_wMEMsepLR.push_back("lep2_conePt");
-  mvaInputVariables_2lss_1tau_ttbar_wMEMsepLR.push_back("dr_leps");
-  mvaInputVariables_2lss_1tau_ttbar_wMEMsepLR.push_back("tau_pt");
-  mvaInputVariables_2lss_1tau_ttbar_wMEMsepLR.push_back("dr_lep1_tau");
-  mvaInputVariables_2lss_1tau_ttbar_wMEMsepLR.push_back("memOutput_tt_LR");
-  TMVAInterface mva_2lss_1tau_ttbar_wMEMsepLR(mvaFileName_2lss_1tau_ttbar_wMEMsepLR, mvaInputVariables_2lss_1tau_ttbar_wMEMsepLR);
-
-  std::vector<std::string> mvaInputVariables_2lss_1tau_wMEMsepLR = get_mvaInputVariables(mvaInputVariables_2lss_1tau_ttV_wMEMsepLR, mvaInputVariables_2lss_1tau_ttbar_wMEMsepLR);
-  std::map<std::string, double> mvaInputs_2lss_1tau_wMEMsepLR;
-
-  std::string inputFileName_mva_mapping_2lss_1tau_wMEMsepLR = "tthAnalysis/HiggsToTauTau/data/2lss_1tau_BDTwMEMsepLR_mapping_likelihood.root";
-  TFile* inputFile_mva_mapping_2lss_1tau_wMEMsepLR = openFile(LocalFileInPath(inputFileName_mva_mapping_2lss_1tau_wMEMsepLR));
-  TH2* mva_mapping_2lss_1tau_wMEMsepLR = loadTH2(inputFile_mva_mapping_2lss_1tau_wMEMsepLR, "hTargetBinning");
 
   std::string mvaFileName_Hj_tagger = "tthAnalysis/HiggsToTauTau/data/Hj_csv_BDTG.weights.xml";
   std::vector<std::string> mvaInputVariables_Hj_tagger;
@@ -1295,7 +1256,7 @@ int main(int argc, char* argv[])
     preselHistManager->evt_->fillHistograms(
       preselElectrons.size(), preselMuons.size(), selHadTaus.size(), 
       selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
-      -1., -1., -1., -1., -1., -1., -1., -1., -1., -1., -1., -1., -1., -1.,         
+      -1., -1., -1., -1., -1., -1., -1., -1., -1., -1., -1.,         
       mTauTauVis1_presel, mTauTauVis2_presel, 
       0, -1., 1.);
 
@@ -1847,14 +1808,6 @@ int main(int argc, char* argv[])
     double mvaOutput_2lss_1tau_ttbar_wMEM = mva_2lss_1tau_ttbar_wMEM(mvaInputs_2lss_1tau_wMEM); 
     Double_t mvaDiscr_2lss_1tau_wMEM = getSF_from_TH2(mva_mapping_2lss_1tau_wMEM, mvaOutput_2lss_1tau_ttbar_wMEM, mvaOutput_2lss_1tau_ttV_wMEM) + 1.;
 
-    mvaInputs_2lss_1tau_wMEMsepLR = mvaInputs_2lss_1tau;
-    mvaInputs_2lss_1tau_wMEMsepLR["memOutput_ttZ_LR"] = memOutput_ttZ_LR;
-    mvaInputs_2lss_1tau_wMEMsepLR["memOutput_tt_LR"] = memOutput_ttbar_LR;
-
-    double mvaOutput_2lss_1tau_ttV_wMEMsepLR = mva_2lss_1tau_ttV_wMEMsepLR(mvaInputs_2lss_1tau_wMEMsepLR);
-    double mvaOutput_2lss_1tau_ttbar_wMEMsepLR = mva_2lss_1tau_ttbar_wMEMsepLR(mvaInputs_2lss_1tau_wMEMsepLR); 
-    Double_t mvaDiscr_2lss_1tau_wMEMsepLR = getSF_from_TH2(mva_mapping_2lss_1tau_wMEMsepLR, mvaOutput_2lss_1tau_ttbar_wMEMsepLR, mvaOutput_2lss_1tau_ttV_wMEMsepLR) + 1.;
-
     double mvaOutput_Hj_tagger = -1.;
     for ( std::vector<const RecoJet*>::const_iterator selJet = selJets.begin();
 	  selJet != selJets.end(); ++selJet ) {
@@ -1901,7 +1854,6 @@ int main(int argc, char* argv[])
       mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss, 
       mvaOutput_2lss_1tau_ttV, mvaOutput_2lss_1tau_ttbar, mvaDiscr_2lss_1tau, 
       mvaOutput_2lss_1tau_ttV_wMEM, mvaOutput_2lss_1tau_ttbar_wMEM, mvaDiscr_2lss_1tau_wMEM, 
-      mvaOutput_2lss_1tau_ttV_wMEMsepLR, mvaOutput_2lss_1tau_ttbar_wMEMsepLR, mvaDiscr_2lss_1tau_wMEMsepLR, 
       mvaOutput_Hj_tagger, mvaOutput_Hjj_tagger,
       mTauTauVis1_sel, mTauTauVis2_sel, 
       memOutput_2lss_1tau_matched.is_initialized() ? &memOutput_2lss_1tau_matched : nullptr, memDiscr, evtWeight);
@@ -1914,7 +1866,6 @@ int main(int argc, char* argv[])
             mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss,
 	    mvaOutput_2lss_1tau_ttV, mvaOutput_2lss_1tau_ttbar, mvaDiscr_2lss_1tau, 
 	    mvaOutput_2lss_1tau_ttV_wMEM, mvaOutput_2lss_1tau_ttbar_wMEM, mvaDiscr_2lss_1tau_wMEM, 
-	    mvaOutput_2lss_1tau_ttV_wMEMsepLR, mvaOutput_2lss_1tau_ttbar_wMEMsepLR, mvaDiscr_2lss_1tau_wMEMsepLR, 
             mvaOutput_Hj_tagger, mvaOutput_Hjj_tagger,
 	    mTauTauVis1_sel, mTauTauVis2_sel, 
             memOutput_2lss_1tau_matched.is_initialized() ? &memOutput_2lss_1tau_matched : nullptr, memDiscr, evtWeight);

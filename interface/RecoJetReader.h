@@ -22,15 +22,6 @@ class RecoJetReader
   enum { kJetPt_central, kJetPt_jecUp, kJetPt_jecDown };
   void setJetPt_central_or_shift(int jetPt_option) { jetPt_option_ = jetPt_option; }
 
-  void enable_HIP_mitigation() { 
-    std::cout << "<RecoJetReader::enable_HIP_mitigation>:" << std::endl; 
-    use_HIP_mitigation_ = true; 
-  }
-  void disable_HIP_mitigation() { 
-    std::cout << "<RecoJetReader::disable_HIP_mitigation>:" << std::endl; 
-    use_HIP_mitigation_ = false; 
-  }
-
   void setBranchName_BtagWeight(const std::string& branchName_BtagWeight) { branchName_BtagWeight_ = branchName_BtagWeight; }
 
   void read_BtagWeight_systematics(bool flag) { read_BtagWeight_systematics_ = flag; }
@@ -54,7 +45,6 @@ class RecoJetReader
 
   int era_;
   bool isMC_;
-  bool use_HIP_mitigation_;
   const int max_nJets_;
   std::string branchName_num_;
   std::string branchName_obj_;
@@ -66,8 +56,7 @@ class RecoJetReader
   std::string branchName_corr_;
   std::string branchName_corr_JECUp_;
   std::string branchName_corr_JECDown_;
-  std::string branchName_BtagCSVwHipMitigation_;
-  std::string branchName_BtagCSVwoHipMitigation_;
+  std::string branchName_BtagCSV_;
   std::string branchName_BtagWeight_;
   std::string branchName_QGDiscr_;
   std::string branchName_heppyFlavour_;
@@ -86,8 +75,7 @@ class RecoJetReader
   Float_t* jet_corr_;
   Float_t* jet_corr_JECUp_;
   Float_t* jet_corr_JECDown_;
-  Float_t* jet_BtagCSVwHipMitigation_;
-  Float_t* jet_BtagCSVwoHipMitigation_;
+  Float_t* jet_BtagCSV_;
   Float_t* jet_BtagWeight_;
   Float_t* jet_QGDiscr_;
   Int_t* jet_heppyFlavour_;

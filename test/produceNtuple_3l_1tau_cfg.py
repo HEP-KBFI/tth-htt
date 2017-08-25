@@ -31,6 +31,8 @@ process.produceNtuple_3l_1tau = cms.PSet(
     minNumBJets_loose = cms.int32(0),
     minNumBJets_medium = cms.int32(0),
 
+    use_HIP_mitigation_mediumMuonId = cms.bool(False),
+
     isMC = cms.bool(True),
     
     selEventsFileName_input = cms.string(''),

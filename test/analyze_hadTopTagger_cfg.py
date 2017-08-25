@@ -26,7 +26,6 @@ process.analyze_hadTopTagger = cms.PSet(
 
     hadTauSelection = cms.string('Tight|dR03mvaMedium'),
 
-    use_HIP_mitigation_bTag = cms.bool(True),
     use_HIP_mitigation_mediumMuonId = cms.bool(True),
 
     isMC = cms.bool(True),

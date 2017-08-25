@@ -200,7 +200,6 @@ class analyzeConfig_3l_1tau(analyzeConfig):
       lines.append("process.analyze_3l_1tau.hadTauFakeRateWeight.applyFitFunction_lead = cms.bool(True)")
       lines.append("process.analyze_3l_1tau.apply_hadTauFakeRateSF = cms.bool(True)")      
     lines.append("process.analyze_3l_1tau.chargeSumSelection = cms.string('%s')" % jobOptions['chargeSumSelection'])
-    lines.append("process.analyze_3l_1tau.use_HIP_mitigation_bTag = cms.bool(%s)" % jobOptions['use_HIP_mitigation_bTag'])
     lines.append("process.analyze_3l_1tau.use_HIP_mitigation_mediumMuonId = cms.bool(%s)" % jobOptions['use_HIP_mitigation_mediumMuonId'])
     lines.append("process.analyze_3l_1tau.isMC = cms.bool(%s)" % jobOptions['is_mc'])
     lines.append("process.analyze_3l_1tau.central_or_shift = cms.string('%s')" % jobOptions['central_or_shift'])
@@ -374,9 +373,7 @@ class analyzeConfig_3l_1tau(analyzeConfig):
                   'apply_hadTauGenMatching' : self.apply_hadTauGenMatching,
                   'chargeSumSelection' : chargeSumSelection,
                   'applyFakeRateWeights' : self.applyFakeRateWeights if not (lepton_selection == "Tight" and hadTau_selection.find("Tight") != -1) else "disabled",
-                  ##'use_HIP_mitigation_bTag' : sample_info["use_HIP_mitigation_bTag"],
                   ##'use_HIP_mitigation_mediumMuonId' : sample_info["use_HIP_mitigation_mediumMuonId"],
-                  'use_HIP_mitigation_bTag' : True,
                   'use_HIP_mitigation_mediumMuonId' : True,
                   'is_mc' : is_mc,
                   'central_or_shift' : central_or_shift,

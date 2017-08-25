@@ -74,7 +74,6 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     lines.append("process.analyze_LeptonFakeRate.absEtaBins_mu = cms.vdouble(%s)" % self.absEtaBins_mu)
     lines.append("process.analyze_LeptonFakeRate.absPtBins_e = cms.vdouble(%s)" % self.absPtBins_e)
     lines.append("process.analyze_LeptonFakeRate.absPtBins_mu = cms.vdouble(%s)" % self.absPtBins_mu)
-    lines.append("process.analyze_LeptonFakeRate.use_HIP_mitigation_bTag = cms.bool(%s)" % jobOptions['use_HIP_mitigation_bTag'])
     lines.append("process.analyze_LeptonFakeRate.use_HIP_mitigation_mediumMuonId = cms.bool(%s)" % jobOptions['use_HIP_mitigation_mediumMuonId'])
     lines.append("process.analyze_LeptonFakeRate.isMC = cms.bool(%s)" % jobOptions['is_mc'])
     lines.append("process.analyze_LeptonFakeRate.central_or_shift = cms.string('%s')" % jobOptions['central_or_shift'])
@@ -242,9 +241,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
               'absEtaBins_mu' : self.absEtaBins_mu,
               'absPtBins_e' : self.absPtBins_e,
               'absPtBins_mu' : self.absPtBins_mu,
-              ##'use_HIP_mitigation_bTag' : sample_info["use_HIP_mitigation_bTag"],
               ##'use_HIP_mitigation_mediumMuonId' : sample_info["use_HIP_mitigation_mediumMuonId"],
-              'use_HIP_mitigation_bTag' : True,
               'use_HIP_mitigation_mediumMuonId' : True,
               'is_mc' : is_mc,
               'central_or_shift' : central_or_shift,

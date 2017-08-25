@@ -59,7 +59,6 @@ process.analyze_0l_3tau = cms.PSet(
 
     triggerSF_2tau = cms.PSet(),
 
-    use_HIP_mitigation_bTag = cms.bool(False),
     use_HIP_mitigation_mediumMuonId = cms.bool(False),
         
     isMC = cms.bool(False),
