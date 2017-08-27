@@ -52,11 +52,11 @@ void GenParticleWriter::setBranches(TTree* tree)
   setBranchVI(tree, branchName_pdgId_, branchName_num_, particle_pdgId_); 
 }
 
-void GenParticleWriter::write(const std::vector<GenLepton>& particles)
+void GenParticleWriter::write(const std::vector<GenParticle>& particles)
 {
   nParticles_ = particles.size();
   for ( Int_t idxParticle = 0; idxParticle < nParticles_; ++idxParticle ) {
-    const GenLepton& particle = particles[idxParticle];
+    const GenParticle& particle = particles[idxParticle];
     particle_pt_[idxParticle] = particle.pt();
     particle_eta_[idxParticle] = particle.eta();
     particle_phi_[idxParticle] = particle.phi();

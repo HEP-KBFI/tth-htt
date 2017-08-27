@@ -104,5 +104,7 @@ process.analyze_2l_2tau = cms.PSet(
     
     selEventsFileName_input = cms.string(''),
     selEventsFileName_output = cms.string('selEvents_analyze_2l_2tau.txt'),
-    selectBDT = cms.bool(False)
+    selectBDT = cms.bool(False),
+
+    random_seed = cms.uint32(4357)
 )

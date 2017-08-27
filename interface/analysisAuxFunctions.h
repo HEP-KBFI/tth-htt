@@ -158,6 +158,6 @@ int sgn(T val)
  *        when running on batch
  *       (default is to delay start by up to 5 minutes = 300 seconds)
  */
-void random_start(double max_delay = 300.);
+void random_start(unsigned random_seed = 4357, double max_delay = 300.);
 
 #endif

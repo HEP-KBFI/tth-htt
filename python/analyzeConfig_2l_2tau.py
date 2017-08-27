@@ -204,6 +204,7 @@ class analyzeConfig_2l_2tau(analyzeConfig):
     lines.append("process.analyze_2l_2tau.apply_trigger_bits = cms.bool(%s)" % jobOptions['apply_trigger_bits'])
     lines.append("process.analyze_2l_2tau.selEventsFileName_output = cms.string('%s')" % jobOptions['rleOutputFile'])
     lines.append("process.analyze_2l_2tau.selectBDT = cms.bool(%s)" % str(jobOptions['selectBDT']))
+    lines.append("process.analyze_2l_2tau.random_seed = cms.uint32(%i)" % jobOptions['random_seed'])
     create_cfg(self.cfgFile_analyze, jobOptions['cfgFile_modified'], lines)
 
   def createCfg_makePlots_mcClosure(self, jobOptions):
@@ -384,7 +385,8 @@ class analyzeConfig_2l_2tau(analyzeConfig):
                       'lumi_scale' : 1. if not (self.use_lumi and is_mc) else sample_info["xsection"] * self.lumi / sample_info["nof_events"],
                       'apply_genWeight' : sample_info["genWeight"] if (is_mc and "genWeight" in sample_info) else False,
                       'apply_trigger_bits' : (is_mc and (self.era == "2015" or (self.era == "2016" and sample_info["reHLT"]))) or not is_mc,
-                      'selectBDT': self.isBDTtraining
+                      'selectBDT': self.isBDTtraining,
+                      'random_seed' : jobId
                     }
                     self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job])
 

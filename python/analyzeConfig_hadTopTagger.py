@@ -46,6 +46,7 @@ class analyzeConfig_hadTopTagger(analyzeConfig):
     lines.append("process.analyze_hadTopTagger.lumiScale = cms.double(%f)" % jobOptions['lumi_scale'])
     lines.append("process.analyze_hadTopTagger.apply_genWeight = cms.bool(%s)" % jobOptions['apply_genWeight'])
     lines.append("process.analyze_hadTopTagger.selectBDT = cms.bool(%s)" % str(jobOptions['selectBDT']))
+    lines.append("process.analyze_hadTopTagger.random_seed = cms.uint32(%i)" % jobOptions['random_seed'])
     create_cfg(self.cfgFile_analyze, jobOptions['cfgFile_modified'], lines)
     
   def create(self):
@@ -120,7 +121,8 @@ class analyzeConfig_hadTopTagger(analyzeConfig):
           'is_mc' : is_mc,
           'lumi_scale' : 1. if not (self.use_lumi and is_mc) else sample_info["xsection"] * self.lumi / sample_info["nof_events"],
           'apply_genWeight' : sample_info["genWeight"] if (is_mc and "genWeight" in sample_info) else False,
-          'selectBDT' : True
+          'selectBDT' : True,
+          'random_seed' : jobId
         }
         self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job])
 

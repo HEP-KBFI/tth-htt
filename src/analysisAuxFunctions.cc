@@ -203,9 +203,10 @@ void printJetCollection(const std::string& collection_name, const std::vector<co
   }
 }
 
-void random_start(double max_delay)
+void random_start(unsigned random_seed, double max_delay)
 {
   TRandom3 rnd;
+  rnd.SetSeed(random_seed);
   int delay = TMath::Nint(rnd.Rndm()*max_delay);
   std::cout << "<random_start>: sleeping for " << delay << " seconds." << std::endl;
   sleep(delay); 

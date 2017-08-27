@@ -1,7 +1,7 @@
 #ifndef tthAnalysis_HiggsToTauTau_GenParticleWriter_h
 #define tthAnalysis_HiggsToTauTau_GenParticleWriter_h
 
-#include "tthAnalysis/HiggsToTauTau/interface/GenLepton.h" // GenLepton
+#include "tthAnalysis/HiggsToTauTau/interface/GenParticle.h" // GenParticle
 
 #include <Rtypes.h> // Int_t, Double_t
 #include <TTree.h> // TTree
@@ -23,7 +23,7 @@ class GenParticleWriter
   /**
    * @brief Write collection of GenParticle objects to tree
    */
-  void write(const std::vector<GenLepton>& particles);
+  void write(const std::vector<GenParticle>& particles);
   
  protected: 
  /**

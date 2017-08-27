@@ -43,5 +43,7 @@ process.analyze_hadTopTagger = cms.PSet(
     branchName_genWJets = cms.string('GenWZQuark'),
     
     selEventsFileName_input = cms.string(''),
-    selectBDT = cms.bool(True)
+    selectBDT = cms.bool(True),
+
+    random_seed = cms.uint32(4357)
 )

@@ -388,7 +388,8 @@ int main(int argc, char* argv[])
   // CV: delay start by random time, to avoid that multiple analysis jobs
   //     open all Ntuples at the same time, causing high load on /hdfs file system,
   //     when running on batch
-  random_start();
+  unsigned random_seed = cfg_analyze.getParameter<unsigned>("random_seed");
+  random_start(random_seed);
   
   fwlite::InputSource inputFiles(cfg); 
   int maxEvents = inputFiles.maxEvents();

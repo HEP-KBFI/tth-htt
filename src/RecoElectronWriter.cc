@@ -21,7 +21,6 @@ RecoElectronWriter::RecoElectronWriter(int era)
   , conversionVeto_(0)
 {
   leptonWriter_ = new RecoLeptonWriter(branchName_num_, branchName_obj_);
-  leptonWriter_->setBranchNames();
   setBranchNames();
 }
 
@@ -40,7 +39,6 @@ RecoElectronWriter::RecoElectronWriter(int era, const std::string& branchName_nu
   , conversionVeto_(0)
 {
   leptonWriter_ = new RecoLeptonWriter(branchName_num_, branchName_obj_);
-  leptonWriter_->setBranchNames();
   setBranchNames();
 }
 

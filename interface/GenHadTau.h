@@ -3,8 +3,7 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/Particle.h" // Particle
 
-class GenHadTau
-  : public Particle
+class GenHadTau : public Particle
 {
  public:
   GenHadTau() = default;

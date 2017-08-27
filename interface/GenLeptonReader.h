@@ -15,7 +15,7 @@ class GenLeptonReader
  public:
   GenLeptonReader();
   GenLeptonReader(const std::string& branchName_nPromptLeptons, const std::string& branchName_promptLeptons,
-		  const std::string& branchName_nLeptonsFromTau, const std::string& branchName_leptonsFromTau); 
+		  const std::string& branchName_nLeptonsFromTau= "", const std::string& branchName_leptonsFromTau= ""); 
   ~GenLeptonReader();
 
   /**
@@ -39,11 +39,13 @@ class GenLeptonReader
   const int max_nPromptLeptons_;
   std::string branchName_nPromptLeptons_; 
   std::string branchName_promptLeptons_;
-  
+  bool read_promptLeptons_;
+
   // electrons and muons from tau decays
   const int max_nLeptonsFromTau_;
   std::string branchName_nLeptonsFromTau_;
   std::string branchName_leptonsFromTau_;
+  bool read_leptonsFromTau_;
 
   std::string branchName_promptLepton_pt_;
   std::string branchName_promptLepton_eta_;

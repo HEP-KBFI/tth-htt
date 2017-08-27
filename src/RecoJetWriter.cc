@@ -6,13 +6,15 @@
 
 #include <TString.h> // Form
 
-RecoJetWriter::RecoJetWriter(int era,
-                             bool isMC)
+RecoJetWriter::RecoJetWriter(int era, bool isMC)
   : era_(era)
   , isMC_(isMC)
   , max_nJets_(32)
   , branchName_num_("nJets")
   , branchName_obj_("Jets")
+  , genLeptonWriter_(0)
+  , genHadTauWriter_(0)
+  , genJetWriter_(0)
   , jet_pt_(0)
   , jet_eta_(0)
   , jet_phi_(0)
@@ -24,6 +26,9 @@ RecoJetWriter::RecoJetWriter(int era,
   , jet_BtagWeight_(0)
   , jet_heppyFlavour_(0)
 {
+  genLeptonWriter_ = new GenParticleWriter(Form("%s_genLepton", branchName_num_.data()), Form("%s_genLepton", branchName_obj_.data()));
+  genHadTauWriter_ = new GenParticleWriter(Form("%s_genHadTau", branchName_num_.data()), Form("%s_genHadTau", branchName_obj_.data()));
+  genJetWriter_ = new GenParticleWriter(Form("%s_genJet", branchName_num_.data()), Form("%s_genJet", branchName_obj_.data()));
   setBranchNames();
 }
 
@@ -33,6 +38,9 @@ RecoJetWriter::RecoJetWriter(int era, bool isMC, const std::string& branchName_n
   , max_nJets_(32)
   , branchName_num_(branchName_num)
   , branchName_obj_(branchName_obj)
+  , genLeptonWriter_(0)
+  , genHadTauWriter_(0)
+  , genJetWriter_(0)
   , jet_pt_(0)
   , jet_eta_(0)
   , jet_phi_(0)
@@ -44,11 +52,17 @@ RecoJetWriter::RecoJetWriter(int era, bool isMC, const std::string& branchName_n
   , jet_BtagWeight_(0)
   , jet_heppyFlavour_(0)
 {
+  genLeptonWriter_ = new GenParticleWriter(Form("%s_genLepton", branchName_num_.data()), Form("%s_genLepton", branchName_obj_.data()));
+  genHadTauWriter_ = new GenParticleWriter(Form("%s_genHadTau", branchName_num_.data()), Form("%s_genHadTau", branchName_obj_.data()));
+  genJetWriter_ = new GenParticleWriter(Form("%s_genJet", branchName_num_.data()), Form("%s_genJet", branchName_obj_.data()));
   setBranchNames();
 }
 
 RecoJetWriter::~RecoJetWriter()
 {
+  delete genLeptonWriter_;
+  delete genHadTauWriter_;
+  delete genJetWriter_;
   delete[] jet_pt_;
   delete[] jet_eta_;
   delete[] jet_phi_;
@@ -93,6 +107,9 @@ void RecoJetWriter::setBranchNames()
 
 void RecoJetWriter::setBranches(TTree* tree)
 {
+  genLeptonWriter_->setBranches(tree);
+  genHadTauWriter_->setBranches(tree);
+  genJetWriter_->setBranches(tree);
   setBranchI(tree, branchName_num_, &nJets_);
   jet_pt_ = new Float_t[max_nJets_];
   setBranchVF(tree, branchName_pt_, branchName_num_, jet_pt_);
@@ -147,4 +164,29 @@ void RecoJetWriter::write(const std::vector<const RecoJet*>& jets)
     }
     jet_heppyFlavour_[idxJet] = jet->heppyFlavour();
   }
+  writeGenMatching(jets);
+}
+
+void RecoJetWriter::writeGenMatching(const std::vector<const RecoJet*>& jets) 
+{
+  std::vector<GenParticle> matched_genLeptons;
+  std::vector<GenParticle> matched_genHadTaus;
+  std::vector<GenParticle> matched_genJets;
+  assert(nJets_ == (int)jets.size());
+  for ( Int_t idxJet = 0; idxJet < nJets_; ++idxJet ) {
+    const RecoJet* jet = jets[idxJet];
+    assert(jet);
+    const GenLepton* matched_genLepton = jet->genLepton();
+    if ( matched_genLepton ) matched_genLeptons.push_back(GenParticle(matched_genLepton->p4(), matched_genLepton->pdgId(), matched_genLepton->charge()));
+    else matched_genLeptons.push_back(dummyGenParticle_);
+    const GenHadTau* matched_genHadTau = jet->genHadTau();
+    if ( matched_genHadTau ) matched_genHadTaus.push_back(GenParticle(matched_genHadTau->p4(), 0, matched_genHadTau->charge()));
+    else matched_genHadTaus.push_back(dummyGenParticle_);
+    const GenJet* matched_genJet = jet->genJet();
+    if ( matched_genJet ) matched_genJets.push_back(GenParticle(matched_genJet->p4(), 0, 0));
+    else matched_genJets.push_back(dummyGenParticle_);
+  }
+  genLeptonWriter_->write(matched_genLeptons);
+  genHadTauWriter_->write(matched_genHadTaus);
+  genJetWriter_->write(matched_genJets);
 }

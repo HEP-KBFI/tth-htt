@@ -2,6 +2,10 @@
 #define tthAnalysis_HiggsToTauTau_RecoLeptonWriter_h
 
 #include "tthAnalysis/HiggsToTauTau/interface/RecoLepton.h" // RecoLepton
+#include "tthAnalysis/HiggsToTauTau/interface/GenParticleWriter.h" // GenParticleWriter
+#include "tthAnalysis/HiggsToTauTau/interface/GenLepton.h" // GenLepton
+#include "tthAnalysis/HiggsToTauTau/interface/GenHadTau.h" // GenHadTau
+#include "tthAnalysis/HiggsToTauTau/interface/GenJet.h" // GenJet
 
 #include <Rtypes.h> // Int_t, Float_t
 #include <TTree.h> // TTree
@@ -29,7 +33,7 @@ class RecoLeptonWriter
     nLeptons_ = leptons.size();
     for ( Int_t idxLepton = 0; idxLepton < nLeptons_; ++idxLepton ) {
       const T* lepton = leptons[idxLepton];
-      assert(lepton);
+      assert(lepton);      
       pt_[idxLepton] = lepton->lepton_pt();
       eta_[idxLepton] = lepton->eta();
       phi_[idxLepton] = lepton->phi();
@@ -50,6 +54,36 @@ class RecoLeptonWriter
       tightCharge_[idxLepton] = lepton->tightCharge();
       charge_[idxLepton] = lepton->charge();
     }
+    writeGenMatching(leptons);
+  }
+
+  /**
+   * @brief Write branches containing information on matching of RecoElectrons and RecoMuons 
+   *        to generator level electrons, muons, hadronic taus, and jets to tree
+   */
+  template<typename T>
+  void writeGenMatching(const std::vector<const T*>& leptons)
+  {
+    std::vector<GenParticle> matched_genLeptons;
+    std::vector<GenParticle> matched_genHadTaus;
+    std::vector<GenParticle> matched_genJets;
+    assert(nLeptons_ == (int)leptons.size());
+    for ( Int_t idxLepton = 0; idxLepton < nLeptons_; ++idxLepton ) {
+      const T* lepton = leptons[idxLepton];
+      assert(lepton);
+      const GenLepton* matched_genLepton = lepton->genLepton();
+      if ( matched_genLepton ) matched_genLeptons.push_back(GenParticle(matched_genLepton->p4(), matched_genLepton->pdgId(), matched_genLepton->charge()));
+      else matched_genLeptons.push_back(dummyGenParticle_);
+      const GenHadTau* matched_genHadTau = lepton->genHadTau();
+      if ( matched_genHadTau ) matched_genHadTaus.push_back(GenParticle(matched_genHadTau->p4(), 0, matched_genHadTau->charge()));
+      else matched_genHadTaus.push_back(dummyGenParticle_);
+      const GenJet* matched_genJet = lepton->genJet();
+      if ( matched_genJet ) matched_genJets.push_back(GenParticle(matched_genJet->p4(), 0, 0));
+      else matched_genJets.push_back(dummyGenParticle_);
+    }
+    genLeptonWriter_->write(matched_genLeptons);
+    genHadTauWriter_->write(matched_genHadTaus);
+    genJetWriter_->write(matched_genJets);
   }
 
   friend class RecoElectronWriter;
@@ -64,6 +98,11 @@ class RecoLeptonWriter
   const int max_nLeptons_;
   std::string branchName_num_;
   std::string branchName_obj_;
+
+  GenParticleWriter* genLeptonWriter_;
+  GenParticleWriter* genHadTauWriter_;
+  GenParticleWriter* genJetWriter_;
+  GenLepton dummyGenParticle_;
 
   std::string branchName_pt_;
   std::string branchName_eta_;

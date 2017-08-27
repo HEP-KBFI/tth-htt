@@ -2,7 +2,12 @@
 #define tthAnalysis_HiggsToTauTau_RecoJetReader_h
 
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h" // RecoJet
-
+#include "tthAnalysis/HiggsToTauTau/interface/GenLeptonReader.h" // GenLeptonReader
+#include "tthAnalysis/HiggsToTauTau/interface/GenLepton.h" // GenLepton
+#include "tthAnalysis/HiggsToTauTau/interface/GenHadTauReader.h" // GenHadTauReader
+#include "tthAnalysis/HiggsToTauTau/interface/GenHadTau.h" // GenHadTau
+#include "tthAnalysis/HiggsToTauTau/interface/GenJetReader.h" // GenJetReader
+#include "tthAnalysis/HiggsToTauTau/interface/GenJet.h" // GenJet
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2015, kEra_2016
 
 #include <Rtypes.h> // Int_t, Float_t
@@ -15,8 +20,8 @@
 class RecoJetReader
 {
  public:
-  RecoJetReader(int era, bool isMC);
-  RecoJetReader(int era, bool isMC, const std::string& branchName_num, const std::string& branchName_obj); 
+  RecoJetReader(int era, bool isMC, bool readGenMatching = false);
+  RecoJetReader(int era, bool isMC, const std::string& branchName_num, const std::string& branchName_obj, bool readGenMatching = false); 
   ~RecoJetReader();
 
   enum { kJetPt_central, kJetPt_jecUp, kJetPt_jecDown };
@@ -48,6 +53,21 @@ class RecoJetReader
   const int max_nJets_;
   std::string branchName_num_;
   std::string branchName_obj_;
+
+  /**
+   * @brief Read branches containing information on matching of RecoJet objects
+   *        to generator level electrons, muons, hadronic taus, and jets from tree
+   *        and add this information to collection of RecoJet objects given as function argument
+   */
+  void readGenMatching(std::vector<RecoJet>& jets) const;
+
+  GenLeptonReader* genLeptonReader_;
+  GenHadTauReader* genHadTauReader_;
+  GenJetReader* genJetReader_;
+  bool readGenMatching_;
+  mutable std::vector<GenLepton> matched_genLeptons_;
+  mutable std::vector<GenHadTau> matched_genHadTaus_;
+  mutable std::vector<GenJet> matched_genJets_;
 
   std::string branchName_pt_;  
   std::string branchName_eta_;

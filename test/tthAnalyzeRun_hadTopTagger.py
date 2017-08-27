@@ -19,7 +19,7 @@ elif ERA == "2016":
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "2017Aug24"
+version = "2017Aug27"
 
 max_job_resubmission = 10
 

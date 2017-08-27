@@ -3,10 +3,9 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/Particle.h" // Particle
 
-class GenJet
-  : public Particle
+class GenJet : public Particle
 {
-public:
+ public:
   GenJet() = default;
   GenJet(Double_t _pt,
          Double_t _eta,

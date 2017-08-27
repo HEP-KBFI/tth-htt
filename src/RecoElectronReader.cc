@@ -7,7 +7,7 @@
 std::map<std::string, int> RecoElectronReader::numInstances_;
 std::map<std::string, RecoElectronReader *> RecoElectronReader::instances_;
 
-RecoElectronReader::RecoElectronReader(int era)
+RecoElectronReader::RecoElectronReader(int era, bool readGenMatching)
   : branchName_num_("nselLeptons")
   , branchName_obj_("selLeptons")
   , leptonReader_(0)
@@ -21,12 +21,11 @@ RecoElectronReader::RecoElectronReader(int era)
   , lostHits_(0)
   , conversionVeto_(0)
 {
-  leptonReader_ = new RecoLeptonReader(branchName_num_, branchName_obj_);
-  leptonReader_->setBranchNames();
+  leptonReader_ = new RecoLeptonReader(branchName_num_, branchName_obj_, readGenMatching);
   setBranchNames();
 }
 
-RecoElectronReader::RecoElectronReader(int era, const std::string& branchName_num, const std::string& branchName_obj)
+RecoElectronReader::RecoElectronReader(int era, const std::string& branchName_num, const std::string& branchName_obj, bool readGenMatching)
   : branchName_num_(branchName_num)
   , branchName_obj_(branchName_obj)
   , leptonReader_(0)
@@ -40,8 +39,7 @@ RecoElectronReader::RecoElectronReader(int era, const std::string& branchName_nu
   , lostHits_(0)
   , conversionVeto_(0)
 {
-  leptonReader_ = new RecoLeptonReader(branchName_num_, branchName_obj_);
-  leptonReader_->setBranchNames();
+  leptonReader_ = new RecoLeptonReader(branchName_num_, branchName_obj_, readGenMatching);
   setBranchNames();
 }
 
@@ -53,7 +51,7 @@ RecoElectronReader::~RecoElectronReader()
   assert(numInstances_[branchName_obj_] >= 0);
 
   if (numInstances_[branchName_obj_] == 0) {
-    RecoElectronReader *gInstance = instances_[branchName_obj_];
+    RecoElectronReader* gInstance = instances_[branchName_obj_];
     assert(gInstance);
     delete[] gInstance->mvaRawPOG_GP_;
     delete[] gInstance->mvaRawPOG_HZZ_;
@@ -167,6 +165,7 @@ std::vector<RecoElectron> RecoElectronReader::read() const
         }));
       }
     }
+    gLeptonReader->readGenMatching(electrons);
   }
   return electrons;
 }

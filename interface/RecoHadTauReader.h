@@ -2,6 +2,12 @@
 #define tthAnalysis_HiggsToTauTau_RecoHadTauReader_h
 
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTau.h" // RecoHadTau
+#include "tthAnalysis/HiggsToTauTau/interface/GenLeptonReader.h" // GenLeptonReader
+#include "tthAnalysis/HiggsToTauTau/interface/GenLepton.h" // GenLepton
+#include "tthAnalysis/HiggsToTauTau/interface/GenHadTauReader.h" // GenHadTauReader
+#include "tthAnalysis/HiggsToTauTau/interface/GenHadTau.h" // GenHadTau
+#include "tthAnalysis/HiggsToTauTau/interface/GenJetReader.h" // GenJetReader
+#include "tthAnalysis/HiggsToTauTau/interface/GenJet.h" // GenJet
 
 #include <Rtypes.h> // Int_t, Float_t
 #include <TTree.h> // TTree
@@ -16,8 +22,8 @@
 class RecoHadTauReader
 {
  public:
-  RecoHadTauReader(int era);
-  RecoHadTauReader(int era, const std::string& branchName_num, const std::string& branchName_obj); 
+  RecoHadTauReader(int era, bool readGenMatching = false);
+  RecoHadTauReader(int era, const std::string& branchName_num, const std::string& branchName_obj, bool readGenMatching = false); 
   ~RecoHadTauReader();
 
   enum { kHadTauPt_central, kHadTauPt_shiftUp, kHadTauPt_shiftDown };
@@ -46,7 +52,7 @@ class RecoHadTauReader
   TGraph* DBdR03oldDMwLTEff95_;
   TFormula* mvaOutput_normalization_DBdR03oldDMwLT_;
 
- /**
+  /**
    * @brief Initialize names of branches to be read from tree
    */
   void setBranchNames();
@@ -55,6 +61,21 @@ class RecoHadTauReader
   const int max_nHadTaus_;
   std::string branchName_num_;
   std::string branchName_obj_;
+
+  /**
+   * @brief Read branches containing information on matching of RecoHadTau objects
+   *        to generator level electrons, muons, hadronic taus, and jets from tree
+   *        and add this information to collection of RecoHadTau objects given as function argument
+   */
+  void readGenMatching(std::vector<RecoHadTau>& hadTaus) const;
+
+  GenLeptonReader* genLeptonReader_;
+  GenHadTauReader* genHadTauReader_;
+  GenJetReader* genJetReader_;
+  bool readGenMatching_;
+  mutable std::vector<GenLepton> matched_genLeptons_;
+  mutable std::vector<GenHadTau> matched_genHadTaus_;
+  mutable std::vector<GenJet> matched_genJets_;
 
   std::string branchName_pt_;
   std::string branchName_eta_;
