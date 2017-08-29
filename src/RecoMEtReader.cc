@@ -16,9 +16,11 @@ RecoMEtReader::RecoMEtReader(int era)
   setBranchNames();
 }
 
-RecoMEtReader::RecoMEtReader(int era, const std::string& branchName_obj)
+RecoMEtReader::RecoMEtReader(int era, const std::string& branchName_obj, const std::string& branchName_cov)
   : era_(era)
   , branchName_obj_(branchName_obj)
+  , branchName_cov_(branchName_cov)
+
 {
   setBranchNames();
 }
@@ -39,9 +41,9 @@ void RecoMEtReader::setBranchNames()
   if ( numInstances_[branchName_obj_] == 0 ) {
     branchName_pt_ = Form("%s_%s", branchName_obj_.data(), "pt");
     branchName_phi_ = Form("%s_%s", branchName_obj_.data(), "phi");
-    branchName_covXX_ = Form("%s_%s", branchName_obj_.data(), "covXX");
-    branchName_covXY_ = Form("%s_%s", branchName_obj_.data(), "covXY");
-    branchName_covYY_ = Form("%s_%s", branchName_obj_.data(), "covYY");
+    branchName_covXX_ = Form("%s_%s", branchName_cov_.data(), "covXX");
+    branchName_covXY_ = Form("%s_%s", branchName_cov_.data(), "covXY");
+    branchName_covYY_ = Form("%s_%s", branchName_cov_.data(), "covYY");
     instances_[branchName_obj_] = this;
   }
   ++numInstances_[branchName_obj_];

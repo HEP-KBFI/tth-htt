@@ -14,7 +14,7 @@ class RecoMEtReader
 {
  public:
   RecoMEtReader(int era);
-  RecoMEtReader(int era, const std::string& branchName_obj); 
+  RecoMEtReader(int era, const std::string& branchName_obj, const std::string& branchName_cov = "met"); 
   ~RecoMEtReader();
 
   /**
@@ -36,6 +36,7 @@ class RecoMEtReader
 
   int era_;
   std::string branchName_obj_;
+  std::string branchName_cov_;
 
   std::string branchName_pt_;
   std::string branchName_phi_;

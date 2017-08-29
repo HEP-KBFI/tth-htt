@@ -17,7 +17,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
   for documentation of further Args.
   
   """
-  def __init__(self, configDir, outputDir, executable_analyze, samples, 
+  def __init__(self, configDir, outputDir, cmssw_base_dir_combine,  executable_analyze, samples, 
                absEtaBins_e, absPtBins_e, absEtaBins_mu, absPtBins_mu, fillGenEvtHistograms, central_or_shifts,
                max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs):
                # charge_selections, jet_minPt, jet_maxPt, jet_minAbsEta, jet_maxAbsEta, hadTau_selections, 
@@ -26,6 +26,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
       max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs, 
       [])
 
+    self.cmssw_base_dir_combine = cmssw_base_dir_combine
     self.samples = samples
     self.absEtaBins_e = absEtaBins_e
     self.absEtaBins_mu = absEtaBins_mu
@@ -83,7 +84,6 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     lines.append("process.analyze_LeptonFakeRate.apply_genWeight = cms.bool(%s)" % jobOptions['apply_genWeight'])
     lines.append("process.analyze_LeptonFakeRate.fillGenEvtHistograms = cms.bool(%s)" % self.fillGenEvtHistograms)
     create_cfg(self.cfgFile_analyze, jobOptions['cfgFile_modified'], lines)
-
 #    lines.append("process.analyze_LeptonFakeRate.triggers_1e = cms.vstring(%s)" % self.triggers_1e)
 #    lines.append("process.analyze_LeptonFakeRate.triggers_1mu = cms.vstring(%s)" % self.triggers_1mu)
 #    lines.append("process.analyze_LeptonFakeRate.triggers_1e1mu = cms.vstring(%s)" % self.triggers_1e1mu)
@@ -162,7 +162,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
         self.dirs[dir_type] = os.path.join(self.configDir, dir_type, self.channel)
       else:
         self.dirs[dir_type] = os.path.join(self.outputDir, dir_type, self.channel)
-    ##print "self.dirs = ", self.dirs
+    print "self.dirs = ", self.dirs
 
     for key in self.dirs.keys():
       if type(self.dirs[key]) == dict:
@@ -264,16 +264,19 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
 #              (self.channel, process_name, charge_selection))                                                                                 ## NO CHARGE SELECTION NEEDED HERE      
             self.outputFile_hadd_stage1[key_hadd_stage1] = os.path.join(self.dirs[DKEY_HIST], "histograms_harvested_stage1_%s_%s.root" % \
               (self.channel, process_name))
-
-
         # initialize input and output file names for hadd_stage2
-#        key_hadd_stage1 = getKey(process_name, charge_selection)
 #        key_hadd_stage2 = getKey(charge_selection)                                                                                            ## NO CHARGE SELECTION NEEDED HERE      
 #        if not key_hadd_stage2 in self.inputFiles_hadd_stage2:                                                                                ## NO CHARGE SELECTION NEEDED HERE      
 #          self.inputFiles_hadd_stage2[key_hadd_stage2] = []                                                                                   ## NO CHARGE SELECTION NEEDED HERE      
 #        self.inputFiles_hadd_stage2[key_hadd_stage2].append(self.outputFile_hadd_stage1[key_hadd_stage1])                                     ## NO CHARGE SELECTION NEEDED HERE      
 #        self.outputFile_hadd_stage2[key_hadd_stage2] = os.path.join(self.dirs[DKEY_HIST], "histograms_harvested_stage2_%s_%s.root" % \        ## NO CHARGE SELECTION NEEDED HERE      
 #          (self.channel, charge_selection))                                                                                                   ## NO CHARGE SELECTION NEEDED HERE      
+      key_hadd_stage2 = getKey("")              
+      if not key_hadd_stage2 in self.inputFiles_hadd_stage2:  
+        self.inputFiles_hadd_stage2[key_hadd_stage2] = []     
+      self.inputFiles_hadd_stage2[key_hadd_stage2].append(self.outputFile_hadd_stage1[key_hadd_stage1]) 
+      self.outputFile_hadd_stage2[key_hadd_stage2] = os.path.join(self.dirs[DKEY_HIST], "histograms_harvested_stage2_%s.root" % (self.channel))                                                        
+                                     
 
     if self.is_sbatch:
       logging.info("Creating script for submitting '%s' jobs to batch system" % self.executable_analyze)
@@ -360,9 +363,10 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     lines_makefile = []
     self.addToMakefile_analyze(lines_makefile)
     self.addToMakefile_hadd_stage1(lines_makefile)
-#    self.addToMakefile_hadd_stage2(lines_makefile)             ## TO BE IMPLEMENTED LATER
+    self.addToMakefile_hadd_stage2(lines_makefile)             ## TO BE IMPLEMENTED LATER
 #    self.addToMakefile_comp_jetToTauFakeRate(lines_makefile)   ## TO BE IMPLEMENTED LATER
 #    self.addToMakefile_make_plots(lines_makefile)              ## TO BE IMPLEMENTED LATER
+    self.targets = [ outputFile for outputFile in self.outputFile_hadd_stage2.values() ]
     self.createMakefile(lines_makefile)
   
     logging.info("Done")
