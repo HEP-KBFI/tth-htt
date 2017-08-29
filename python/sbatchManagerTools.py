@@ -7,23 +7,27 @@ executable_rm = 'rm'
 
 def createScript_sbatch(sbatch_script_file_name,
                         executable, cfg_file_names, input_file_names, output_file_names, log_file_names = None,
-                        working_dir = None, max_num_jobs = 100000, cvmfs_error_log = None, pool_id = ''):
+                        working_dir = None, max_num_jobs = 100000, cvmfs_error_log = None, pool_id = '', cmssw_base_dir = None):
     """Creates the python script necessary to submit analysis and/or Ntuple production jobs to the batch system
     """
     if not working_dir:
         working_dir = os.getcwd()
+
+    if not cmssw_base_dir:
+        cmssw_base_dir = os.environ['CMSSW_BASE']
+
     if not pool_id:
         raise ValueError('pool_id is empty')
     sbatch_analyze_lines, num_jobs = generate_sbatch_lines(
       executable,
       cfg_file_names, input_file_names, output_file_names, log_file_names,
-      working_dir, max_num_jobs, cvmfs_error_log, pool_id
+      working_dir, max_num_jobs, cvmfs_error_log, pool_id, cmssw_base_dir
     )
     createFile(sbatch_script_file_name, sbatch_analyze_lines)
     return num_jobs
     
 def generate_sbatch_lines(executable, cfg_file_names, input_file_names, output_file_names, log_file_names,
-                          working_dir, max_num_jobs, cvmfs_error_log = None, pool_id = ''):
+                          working_dir, max_num_jobs, cvmfs_error_log = None, pool_id = '', cmssw_base_dir = None):
     if not pool_id:
         raise ValueError('pool_id is empty')
     lines_sbatch = []
@@ -31,6 +35,7 @@ def generate_sbatch_lines(executable, cfg_file_names, input_file_names, output_f
     lines_sbatch.append("")
     lines_sbatch.append("m = sbatchManager('%s')" % pool_id)
     lines_sbatch.append("m.setWorkingDir('%s')" % working_dir)
+    lines_sbatch.append("m.setcmssw_base_dir('%s')" % cmssw_base_dir)
 
     num_jobs = 0
     for key_file, cfg_file_name in cfg_file_names.items():

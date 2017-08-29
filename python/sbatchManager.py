@@ -107,6 +107,7 @@ class sbatchManager:
         if not pool_id:
             raise ValueError("pool_id not specified!")
 
+        self.cmssw_base_dir     = None
         self.workingDir     = None
         self.logFileDir     = None
         queue_environ = os.environ.get('SBATCH_PRIORITY')
@@ -131,6 +132,11 @@ class sbatchManager:
         """Set path to CMSSW area in which jobs are executed
         """
         self.workingDir = workingDir
+
+    def setcmssw_base_dir(self, cmssw_base_dir):
+        """Set path to cmssw_base_dir area in which jobs are executed
+        """
+        self.cmssw_base_dir = cmssw_base_dir
 
     def setLogFileDir(self, logFileDir):
         """Set path to directory in which log files are to be stored (matters only if 'logFile'
@@ -301,6 +307,11 @@ class sbatchManager:
         if not self.workingDir:
             raise ValueError("Please call 'setWorkingDir' before calling 'submitJob' !!")
 
+        if not self.cmssw_base_dir:
+            raise ValueError("Please call 'setcmssw_base_dir' before calling 'submitJob' !!")
+
+
+
         scratch_dir = self.get_scratch_dir()
 
         # create script for executing jobs
@@ -317,6 +328,7 @@ class sbatchManager:
 
         script = jinja2.Template(job_template).render(
             working_dir         = self.workingDir,
+            cmssw_base_dir      = self.cmssw_base_dir,
             scratch_dir         = scratch_dir,
             exec_name           = executable,
             cfg_file            = cfgFile,

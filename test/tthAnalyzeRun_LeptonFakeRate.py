@@ -19,7 +19,7 @@ elif ERA == "2016":
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "2017Jul31"
+version = "2017Aug22"
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -29,7 +29,8 @@ if __name__ == '__main__':
 
   analysis = analyzeConfig_LeptonFakeRate(
     configDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", ERA, version),
-    outputDir = os.path.join("/hdfs/local", getpass.getuser(), "ttHAnalysis_LeptonFakeRate_trial_2017Jul31", ERA, version),
+    outputDir = os.path.join("/hdfs/local", getpass.getuser(), "ttHAnalysis_LeptonFakeRate_trial_2017Aug22", ERA, version),
+    cmssw_base_dir_combine = "",
     executable_analyze = "analyze_LeptonFakeRate",
     samples = samples,
     absEtaBins_e  = [ -1., 1.479, 9.9 ],
@@ -39,6 +40,12 @@ if __name__ == '__main__':
     fillGenEvtHistograms = False,
     central_or_shifts = [ 
       "central",
+      "CMS_ttHl_JESUp",
+      "CMS_ttHl_JESDown",
+      "CMS_ttHl_JERUp",
+      "CMS_ttHl_JERDown",
+      "CMS_ttHl_UnclusteredEnUp",
+      "CMS_ttHl_UnclusteredEnDown"
 ##       "CMS_ttHl_btag_HFUp", 
 ##       "CMS_ttHl_btag_HFDown",	
 ##       "CMS_ttHl_btag_HFStats1Up", 
