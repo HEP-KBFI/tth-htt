@@ -5,6 +5,8 @@ from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_hadTopTagger_2016 import sample
 from tthAnalysis.HiggsToTauTau.analyzeConfig_hadTopTagger import analyzeConfig_hadTopTagger
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 
+changeBranchNames = False
+
 #ERA = "2015"
 ERA = "2016"
 
@@ -19,7 +21,7 @@ elif ERA == "2016":
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "2017Aug27"
+version = "2017Aug30"
 
 ##max_job_resubmission = 3
 max_job_resubmission = 1
@@ -44,6 +46,7 @@ if __name__ == '__main__':
       outputDir = os.path.join("/hdfs/local", getpass.getuser(), "ttHAnalysis", ERA, version),
       executable_analyze = "analyze_hadTopTagger", cfgFile_analyze = "analyze_hadTopTagger_cfg.py",
       samples = samples,
+      changeBranchNames = changeBranchNames,
       hadTau_selection = "Tight|dR03mvaMedium",
       max_files_per_job = 10,
       era = ERA, use_lumi = True, lumi = LUMI,

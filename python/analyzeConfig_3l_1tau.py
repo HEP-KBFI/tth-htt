@@ -214,6 +214,11 @@ class analyzeConfig_3l_1tau(analyzeConfig):
       lines.append("process.analyze_3l_1tau.branchName_muons = cms.string('Muon')")
       lines.append("process.analyze_3l_1tau.branchName_hadTaus = cms.string('HadTau')")
       lines.append("process.analyze_3l_1tau.branchName_memOutput = cms.string('memObjects_3l_1tau')")
+      lines.append("process.analyze_3l_1tau.branchName_genLeptons1 = cms.string('')")
+      lines.append("process.analyze_3l_1tau.branchName_genLeptons2 = cms.string('')")
+      lines.append("process.analyze_3l_1tau.branchName_genHadTaus = cms.string('')")
+      lines.append("process.analyze_3l_1tau.branchName_genJets = cms.string('')")
+      lines.append("process.analyze_3l_1tau.redoGenMatching = cms.bool(False)")
     create_cfg(self.cfgFile_analyze, jobOptions['cfgFile_modified'], lines)
 
   def createCfg_makePlots_mcClosure(self, jobOptions):

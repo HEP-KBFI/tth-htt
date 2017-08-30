@@ -84,7 +84,6 @@ run_wrapped_executable() {
 
     echo "Time is: `date`"
 
-    # CMSSW_SEARCH_PATH="$SCRATCH_DIR:$CMSSW_BASE/src" ## OLD DEF LINE
     CMSSW_SEARCH_PATH="$SCRATCH_DIR:{{ cmssw_base_dir }}/src" 
 
     echo "Execute command: {{ exec_name }} {{ cfg_file }} &> $TEMPORARY_EXECUTABLE_LOG_FILE"

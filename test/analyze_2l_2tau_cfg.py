@@ -101,10 +101,9 @@ process.analyze_2l_2tau = cms.PSet(
     branchName_genLeptons2 = cms.string('GenLepFromTau'),
     branchName_genHadTaus = cms.string('GenHadTaus'),
     branchName_genJets = cms.string('GenJet'),
+    redoGenMatching = cms.bool(True),
     
     selEventsFileName_input = cms.string(''),
     selEventsFileName_output = cms.string('selEvents_analyze_2l_2tau.txt'),
-    selectBDT = cms.bool(False),
-
-    random_seed = cms.uint32(4357)
+    selectBDT = cms.bool(False)
 )

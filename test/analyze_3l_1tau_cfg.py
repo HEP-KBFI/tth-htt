@@ -106,6 +106,7 @@ process.analyze_3l_1tau = cms.PSet(
     branchName_genLeptons2 = cms.string('GenLepFromTau'),
     branchName_genHadTaus = cms.string('GenHadTaus'),
     branchName_genJets = cms.string('GenJet'),
+    redoGenMatching = cms.bool(True),
         
     selEventsFileName_input = cms.string(''),
     selEventsFileName_output = cms.string('selEvents_analyze_3l_1tau.txt'),

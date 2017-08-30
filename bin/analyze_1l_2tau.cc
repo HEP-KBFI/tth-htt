@@ -349,6 +349,7 @@ int main(int argc, char* argv[])
   std::string branchName_genLeptons2 = cfg_analyze.getParameter<std::string>("branchName_genLeptons2");
   std::string branchName_genHadTaus = cfg_analyze.getParameter<std::string>("branchName_genHadTaus");
   std::string branchName_genJets = cfg_analyze.getParameter<std::string>("branchName_genJets");
+  bool redoGenMatching = cfg_analyze.getParameter<bool>("redoGenMatching");
 
   std::string selEventsFileName_input = cfg_analyze.getParameter<std::string>("selEventsFileName_input");
   std::cout << "selEventsFileName_input = " << selEventsFileName_input << std::endl;
@@ -479,12 +480,18 @@ int main(int argc, char* argv[])
   GenJetReader* genJetReader = 0;
   LHEInfoReader* lheInfoReader = 0;
   if ( isMC ) {
-    genLeptonReader = new GenLeptonReader(Form("n%s", branchName_genLeptons1.data()), branchName_genLeptons1, Form("n%s", branchName_genLeptons2.data()), branchName_genLeptons2); 
-    genLeptonReader->setBranchAddresses(inputTree);
-    genHadTauReader = new GenHadTauReader(Form("n%s", branchName_genHadTaus.data()), branchName_genHadTaus);
-    genHadTauReader->setBranchAddresses(inputTree);
-    genJetReader = new GenJetReader(Form("n%s", branchName_genJets.data()), branchName_genJets);
-    genJetReader->setBranchAddresses(inputTree);
+    if ( branchName_genLeptons1 != "" || branchName_genLeptons2 != "" ) {
+      genLeptonReader = new GenLeptonReader(Form("n%s", branchName_genLeptons1.data()), branchName_genLeptons1, Form("n%s", branchName_genLeptons2.data()), branchName_genLeptons2); 
+      genLeptonReader->setBranchAddresses(inputTree);
+    }
+    if ( branchName_genHadTaus != "" ) {
+      genHadTauReader = new GenHadTauReader(Form("n%s", branchName_genHadTaus.data()), branchName_genHadTaus);
+      genHadTauReader->setBranchAddresses(inputTree);
+    }
+    if ( branchName_genJets != "" ) {
+      genJetReader = new GenJetReader(Form("n%s", branchName_genJets.data()), branchName_genJets);
+      genJetReader->setBranchAddresses(inputTree);
+    }
     lheInfoReader = new LHEInfoReader();
     lheInfoReader->setBranchAddresses(inputTree);
   }
@@ -766,8 +773,7 @@ int main(int argc, char* argv[])
   NtupleFillerBDT<float, int> * bdt_filler = nullptr;
   typedef std::remove_pointer<decltype(bdt_filler)>::type::float_type float_type;
   typedef std::remove_pointer<decltype(bdt_filler)>::type::int_type   int_type;
-  if(selectBDT)
-  {
+  if ( selectBDT ) {
     bdt_filler = new std::remove_pointer<decltype(bdt_filler)>::type(
       makeHistManager_cfg(process_string, Form("%s/sel/evtntuple", histogramDir.data()), central_or_shift)
     );
@@ -819,15 +825,21 @@ int main(int argc, char* argv[])
     std::vector<GenHadTau> genHadTaus;
     std::vector<GenJet> genJets;
     if ( isMC && fillGenEvtHistograms ) {
-      genLeptons = genLeptonReader->read();
-      for ( std::vector<GenLepton>::const_iterator genLepton = genLeptons.begin();
-    	    genLepton != genLeptons.end(); ++genLepton ) {
-	int abs_pdgId = std::abs(genLepton->pdgId());
-	if      ( abs_pdgId == 11 ) genElectrons.push_back(*genLepton);
-	else if ( abs_pdgId == 13 ) genMuons.push_back(*genLepton);
+      if ( genLeptonReader ) {
+	genLeptons = genLeptonReader->read();
+	for ( std::vector<GenLepton>::const_iterator genLepton = genLeptons.begin();
+	      genLepton != genLeptons.end(); ++genLepton ) {
+	  int abs_pdgId = std::abs(genLepton->pdgId());
+	  if      ( abs_pdgId == 11 ) genElectrons.push_back(*genLepton);
+	  else if ( abs_pdgId == 13 ) genMuons.push_back(*genLepton);
+	}
       }
-      genHadTaus = genHadTauReader->read();
-      genJets = genJetReader->read();
+      if ( genHadTauReader ) {
+	genHadTaus = genHadTauReader->read();
+      }
+      if ( genJetReader ) {
+	genJets = genJetReader->read();
+      }
     }
 
     if ( isMC ) {
@@ -957,20 +969,26 @@ int main(int argc, char* argv[])
     std::vector<const RecoJet*> selBJets_medium = jetSelectorBtagMedium(cleanedJets);    
 
 //--- build collections of generator level particles (after some cuts are applied, to safe computing time)
-    if ( isMC && !fillGenEvtHistograms ) {
-      genLeptons = genLeptonReader->read();
-      for ( std::vector<GenLepton>::const_iterator genLepton = genLeptons.begin();
-    	    genLepton != genLeptons.end(); ++genLepton ) {
-    	int abs_pdgId = std::abs(genLepton->pdgId());
-    	if      ( abs_pdgId == 11 ) genElectrons.push_back(*genLepton);
-    	else if ( abs_pdgId == 13 ) genMuons.push_back(*genLepton);
+    if ( isMC && redoGenMatching && !fillGenEvtHistograms ) {
+      if ( genLeptonReader ) {
+	genLeptons = genLeptonReader->read();
+	for ( std::vector<GenLepton>::const_iterator genLepton = genLeptons.begin();
+	      genLepton != genLeptons.end(); ++genLepton ) {
+	  int abs_pdgId = std::abs(genLepton->pdgId());
+	  if      ( abs_pdgId == 11 ) genElectrons.push_back(*genLepton);
+	  else if ( abs_pdgId == 13 ) genMuons.push_back(*genLepton);
+	}
       }
-      genHadTaus = genHadTauReader->read();
-      genJets = genJetReader->read();
+      if ( genHadTauReader ) {
+	genHadTaus = genHadTauReader->read();
+      }
+      if ( genJetReader ) {
+	genJets = genJetReader->read();
+      }
     }
 
 //--- match reconstructed to generator level particles
-    if ( isMC ) {
+    if ( isMC && redoGenMatching ) {
       muonGenMatcher.addGenLeptonMatch(preselMuons, genLeptons, 0.2);
       muonGenMatcher.addGenHadTauMatch(preselMuons, genHadTaus, 0.2);
       muonGenMatcher.addGenJetMatch(preselMuons, genJets, 0.2);

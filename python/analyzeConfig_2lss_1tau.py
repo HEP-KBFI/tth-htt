@@ -211,6 +211,11 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
       lines.append("process.analyze_2lss_1tau.branchName_muons = cms.string('Muon')")
       lines.append("process.analyze_2lss_1tau.branchName_hadTaus = cms.string('HadTau')")
       lines.append("process.analyze_2lss_1tau.branchName_memOutput = cms.string('memObjects_2lss_1tau')")
+      lines.append("process.analyze_2lss_1tau.branchName_genLeptons1 = cms.string('')")
+      lines.append("process.analyze_2lss_1tau.branchName_genLeptons2 = cms.string('')")
+      lines.append("process.analyze_2lss_1tau.branchName_genHadTaus = cms.string('')")
+      lines.append("process.analyze_2lss_1tau.branchName_genJets = cms.string('')")
+      lines.append("process.analyze_2lss_1tau.redoGenMatching = cms.bool(False)")
     create_cfg(self.cfgFile_analyze, jobOptions['cfgFile_modified'], lines)
 
   def createCfg_addFlips(self, jobOptions):
@@ -430,7 +435,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
                     'apply_genWeight' : sample_info["genWeight"] if (is_mc and "genWeight" in sample_info) else False,
                     'apply_trigger_bits' : (is_mc and (self.era == "2015" or (self.era == "2016" and sample_info["reHLT"]))) or not is_mc,
                     'selectBDT' : self.isBDTtraining,
-                    'changeBranchNames' : self.changeBranchNames,
+                    'changeBranchNames' : self.changeBranchNames
                   }
                   self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job])
 

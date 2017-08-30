@@ -18,6 +18,9 @@ mode = "VHbb"
 #mode = "forBDTtraining_beforeAddMEM"
 #mode = "forBDTtraining_afterAddMEM"
 
+hadTau_selection =  None
+changeBranchNames = None
+applyFakeRateWeights = None
 if mode == "VHbb":
   from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2lss_1tau_2015 import samples_2015
   from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2lss_1tau_2016 import samples_2016

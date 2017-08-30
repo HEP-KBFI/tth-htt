@@ -58,6 +58,7 @@ if __name__ == '__main__':
       cfgFile_analyze = "analyze_2l_2tau_cfg.py",
       samples = samples,
       changeBranchNames = changeBranchNames,
+      changeBranchNames = changeBranchNames,
       lepton_charge_selections = [ "disabled" ],
       hadTau_selection = hadTau_selection,
       hadTau_charge_selections = [ "disabled" ],

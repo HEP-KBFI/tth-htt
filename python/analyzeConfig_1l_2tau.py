@@ -40,7 +40,8 @@ class analyzeConfig_1l_2tau(analyzeConfig):
   for documentation of further Args.
   
   """
-  def __init__(self, configDir, outputDir, executable_analyze, cfgFile_analyze, samples, hadTau_selection, hadTau_charge_selections, applyFakeRateWeights, central_or_shifts,
+  def __init__(self, configDir, outputDir, executable_analyze, cfgFile_analyze, samples, changeBranchNames,
+               hadTau_selection, hadTau_charge_selections, applyFakeRateWeights, central_or_shifts,
                max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs, 
                executable_addBackgrounds, executable_addBackgroundJetToTauFakes, histograms_to_fit, select_rle_output = False, executable_prep_dcard="prepareDatacard"):
     analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "1l_2tau", central_or_shifts,
@@ -48,6 +49,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
       histograms_to_fit)
 
     self.samples = samples
+    self.changeBranchNames = changeBranchNames
     
     ##self.lepton_and_hadTau_selections = [ "Tight", "Fakeable", "Fakeable_mcClosure" ]
     self.lepton_and_hadTau_selections = [ "Tight", "Fakeable" ]
@@ -184,6 +186,15 @@ class analyzeConfig_1l_2tau(analyzeConfig):
     lines.append("process.analyze_1l_2tau.apply_genWeight = cms.bool(%s)" % jobOptions['apply_genWeight'])
     lines.append("process.analyze_1l_2tau.apply_trigger_bits = cms.bool(%s)" % jobOptions['apply_trigger_bits'])
     lines.append("process.analyze_1l_2tau.selEventsFileName_output = cms.string('%s')" % jobOptions['rleOutputFile'])
+    if jobOptions['changeBranchNames']:
+      lines.append("process.analyze_1l_2tau.branchName_electrons = cms.string('Electron')")
+      lines.append("process.analyze_1l_2tau.branchName_muons = cms.string('Muon')")
+      lines.append("process.analyze_1l_2tau.branchName_hadTaus = cms.string('HadTau')")
+      lines.append("process.analyze_1l_2tau.branchName_genLeptons1 = cms.string('')")
+      lines.append("process.analyze_1l_2tau.branchName_genLeptons2 = cms.string('')")
+      lines.append("process.analyze_1l_2tau.branchName_genHadTaus = cms.string('')")
+      lines.append("process.analyze_1l_2tau.branchName_genJets = cms.string('')")
+      lines.append("process.analyze_1l_2tau.redoGenMatching = cms.bool(False)")
     create_cfg(self.cfgFile_analyze, jobOptions['cfgFile_modified'], lines)
 
   def createCfg_makePlots_mcClosure(self, jobOptions):
@@ -343,7 +354,8 @@ class analyzeConfig_1l_2tau(analyzeConfig):
                   'central_or_shift' : central_or_shift,
                   'lumi_scale' : 1. if not (self.use_lumi and is_mc) else sample_info["xsection"] * self.lumi / sample_info["nof_events"],
                   'apply_genWeight' : sample_info["genWeight"] if (is_mc and "genWeight" in sample_info) else False,
-                  'apply_trigger_bits' : (is_mc and (self.era == "2015" or (self.era == "2016" and sample_info["reHLT"]))) or not is_mc
+                  'apply_trigger_bits' : (is_mc and (self.era == "2015" or (self.era == "2016" and sample_info["reHLT"]))) or not is_mc,
+                  'changeBranchNames' : self.changeBranchNames
                 }
                 self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job])
 

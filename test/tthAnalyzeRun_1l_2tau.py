@@ -5,6 +5,8 @@ from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_1l_2tau_2016 import samples_201
 from tthAnalysis.HiggsToTauTau.analyzeConfig_1l_2tau import analyzeConfig_1l_2tau
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 
+changeBranchNames = False
+
 #ERA = "2015"
 ERA = "2016"
 
@@ -32,6 +34,7 @@ if __name__ == '__main__':
     outputDir = os.path.join("/hdfs/local", getpass.getuser(), "ttHAnalysis", ERA, version),
     executable_analyze = "analyze_1l_2tau", cfgFile_analyze = "analyze_1l_2tau_cfg.py",
     samples = samples,
+    changeBranchNames = changeBranchNames,
     hadTau_selection = "dR03mvaVTight",
     hadTau_charge_selections = [ "OS", "SS" ],
     applyFakeRateWeights = "3L",

@@ -41,7 +41,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RunLumiEventSelector.h" // RunLumiEventSelector
 #include "tthAnalysis/HiggsToTauTau/interface/MVAInputVarHistManager.h" // MVAInputVarHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/CutFlowTableHistManager_gen.h" // CutFlowTableHistManager_gen
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2015, kEra_2016, random_start
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2015, kEra_2016
 #include "tthAnalysis/HiggsToTauTau/interface/histogramAuxFunctions.h" // createSubdirectory_recursively
 #include "tthAnalysis/HiggsToTauTau/interface/cutFlowTable.h" // cutFlowTableType
 #include "tthAnalysis/HiggsToTauTau/interface/NtupleFillerBDT.h" // NtupleFillerBDT
@@ -200,12 +200,6 @@ int main(int argc, char* argv[])
 
   bool selectBDT = ( cfg_analyze.exists("selectBDT") ) ? cfg_analyze.getParameter<bool>("selectBDT") : false;
   
-  // CV: delay start by random time, to avoid that multiple analysis jobs
-  //     open all Ntuples at the same time, causing high load on /hdfs file system,
-  //     when running on batch
-  //unsigned random_seed = cfg_analyze.getParameter<unsigned>("random_seed");
-  //random_start(random_seed);
-
   fwlite::InputSource inputFiles(cfg); 
   int maxEvents = inputFiles.maxEvents();
   std::cout << " maxEvents = " << maxEvents << std::endl;

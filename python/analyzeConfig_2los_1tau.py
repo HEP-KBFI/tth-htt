@@ -47,8 +47,8 @@ class analyzeConfig_2los_1tau(analyzeConfig):
       executable_prep_dcard = executable_prep_dcard,
       executable_add_syst_dcard = executable_add_syst_dcard)
 
-
     self.samples = samples
+    self.changeBranchNames = changeBranchNames
 
     self.lepton_and_hadTau_selections = [ "Tight", "Fakeable" ]
     self.lepton_and_hadTau_frWeights = [ "enabled", "disabled" ]
@@ -195,6 +195,15 @@ class analyzeConfig_2los_1tau(analyzeConfig):
     lines.append("process.analyze_2los_1tau.apply_trigger_bits = cms.bool(%s)" % jobOptions['apply_trigger_bits'])
     lines.append("process.analyze_2los_1tau.selEventsFileName_output = cms.string('%s')" % jobOptions['rleOutputFile'])
     lines.append("process.analyze_2los_1tau.selectBDT = cms.bool(%s)" % str(jobOptions['selectBDT']))
+    if jobOptions['changeBranchNames']:
+      lines.append("process.analyze_2los_1tau.branchName_electrons = cms.string('Electron')")
+      lines.append("process.analyze_2los_1tau.branchName_muons = cms.string('Muon')")
+      lines.append("process.analyze_2los_1tau.branchName_hadTaus = cms.string('HadTau')")
+      lines.append("process.analyze_2los_1tau.branchName_genLeptons1 = cms.string('')")
+      lines.append("process.analyze_2los_1tau.branchName_genLeptons2 = cms.string('')")
+      lines.append("process.analyze_2los_1tau.branchName_genHadTaus = cms.string('')")
+      lines.append("process.analyze_2los_1tau.branchName_genJets = cms.string('')")
+      lines.append("process.analyze_2los_1tau.redoGenMatching = cms.bool(False)")
     create_cfg(self.cfgFile_analyze, jobOptions['cfgFile_modified'], lines)
 
   def createCfg_makePlots_mcClosure(self, jobOptions):
@@ -352,7 +361,8 @@ class analyzeConfig_2los_1tau(analyzeConfig):
                 'lumi_scale' : 1. if not (self.use_lumi and is_mc) else sample_info["xsection"] * self.lumi / sample_info["nof_events"],
                 'apply_genWeight' : sample_info["genWeight"] if (is_mc and "genWeight" in sample_info) else False,
                 'apply_trigger_bits' : (is_mc and (self.era == "2015" or (self.era == "2016" and sample_info["reHLT"]))) or not is_mc,
-                'selectBDT' : self.isBDTtraining
+                'selectBDT' : self.isBDTtraining,
+                'changeBranchNames' : self.changeBranchNames
               }
               self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job])
 

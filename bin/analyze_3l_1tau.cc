@@ -371,6 +371,7 @@ int main(int argc, char* argv[])
   std::string branchName_genLeptons2 = cfg_analyze.getParameter<std::string>("branchName_genLeptons2");
   std::string branchName_genHadTaus = cfg_analyze.getParameter<std::string>("branchName_genHadTaus");
   std::string branchName_genJets = cfg_analyze.getParameter<std::string>("branchName_genJets");
+  bool redoGenMatching = cfg_analyze.getParameter<bool>("redoGenMatching");
 
   std::string selEventsFileName_input = cfg_analyze.getParameter<std::string>("selEventsFileName_input");
   std::cout << "selEventsFileName_input = " << selEventsFileName_input << std::endl;
@@ -515,43 +516,57 @@ int main(int argc, char* argv[])
   GenLeptonReader* genLeptonReader = 0;
   GenHadTauReader* genHadTauReader = 0;
   GenJetReader* genJetReader = 0;
-  GenParticleReader* genNuFromTauReader = 0;
-  GenParticleReader* genTauReader = 0;
-  GenParticleReader* genLepFromTopReader = 0;
-  GenParticleReader* genBQuarkFromTopReader = 0;
-  GenParticleReader* genNuFromTopReader = 0;
-  GenParticleReader* genLepFromTauReader = 0;
-  GenParticleReader* genTopReader = 0;
-  GenParticleReader* genVbosonsReader = 0;
+  //-----------------------------------------------------------------------------
+  // CV: functionality temporarily disabled, 
+  //     as all generator level information is stored in RecoLepton, RecoHadTau and RecoJet branches in case tthProdNtuple workflow is used
+  //GenParticleReader* genNuFromTauReader = 0;
+  //GenParticleReader* genTauReader = 0;
+  //GenParticleReader* genLepFromTopReader = 0;
+  //GenParticleReader* genBQuarkFromTopReader = 0;
+  //GenParticleReader* genNuFromTopReader = 0;
+  //GenParticleReader* genLepFromTauReader = 0;
+  //GenParticleReader* genTopReader = 0;
+  //GenParticleReader* genVbosonsReader = 0;
+  //-----------------------------------------------------------------------------
   LHEInfoReader* lheInfoReader = 0;
   if ( isMC ) {
-    genLeptonReader = new GenLeptonReader(Form("n%s", branchName_genLeptons1.data()), branchName_genLeptons1, Form("n%s", branchName_genLeptons2.data()), branchName_genLeptons2);
-    genLeptonReader->setBranchAddresses(inputTree);
-    genHadTauReader = new GenHadTauReader(Form("n%s", branchName_genHadTaus.data()), branchName_genHadTaus);
-    genHadTauReader->setBranchAddresses(inputTree);
-    genJetReader = new GenJetReader(Form("n%s", branchName_genJets.data()), branchName_genJets);
-    genJetReader->setBranchAddresses(inputTree);
+    if ( branchName_genLeptons1 != "" || branchName_genLeptons2 != "" ) {
+      genLeptonReader = new GenLeptonReader(Form("n%s", branchName_genLeptons1.data()), branchName_genLeptons1, Form("n%s", branchName_genLeptons2.data()), branchName_genLeptons2); 
+      genLeptonReader->setBranchAddresses(inputTree);
+    }
+    if ( branchName_genHadTaus != "" ) {
+      genHadTauReader = new GenHadTauReader(Form("n%s", branchName_genHadTaus.data()), branchName_genHadTaus);
+      genHadTauReader->setBranchAddresses(inputTree);
+    }
+    if ( branchName_genJets != "" ) {
+      genJetReader = new GenJetReader(Form("n%s", branchName_genJets.data()), branchName_genJets);
+      genJetReader->setBranchAddresses(inputTree);
+    }
     lheInfoReader = new LHEInfoReader();
     lheInfoReader->setBranchAddresses(inputTree);
 
-    if ( writeSelEventsFile && era == kEra_2016 ){
-      genNuFromTauReader = new GenParticleReader("nGenNuFromTau", "GenNuFromTau");
-      genNuFromTauReader->setBranchAddresses(inputTree);
-      genTauReader = new GenParticleReader("nGenTaus", "GenTaus");
-      genTauReader->setBranchAddresses(inputTree);
-      genLepFromTopReader = new GenParticleReader("nGenLepFromTop", "GenLepFromTop");
-      genLepFromTopReader->setBranchAddresses(inputTree);
-      genBQuarkFromTopReader = new GenParticleReader("nGenBQuarkFromTop", "GenBQuarkFromTop");
-      genBQuarkFromTopReader->setBranchAddresses(inputTree);
-      genNuFromTopReader = new GenParticleReader("nGenNuFromTop", "GenNuFromTop");
-      genNuFromTopReader->setBranchAddresses(inputTree);
-      genLepFromTauReader = new GenParticleReader("nGenLepFromTau", "GenLepFromTau");
-      genLepFromTauReader->setBranchAddresses(inputTree);
-      genTopReader = new GenParticleReader("nGenTop", "GenTop");
-      genTopReader->setBranchAddresses(inputTree);
-      genVbosonsReader = new GenParticleReader("nGenVbosons", "GenVbosons");
-      genVbosonsReader->setBranchAddresses(inputTree);
-    }
+    //---------------------------------------------------------------------------
+    // CV: functionality temporarily disabled, 
+    //     as all generator level information is stored in RecoLepton, RecoHadTau and RecoJet branches in case tthProdNtuple workflow is used
+    //if ( writeSelEventsFile && era == kEra_2016 ){
+    //  genNuFromTauReader = new GenParticleReader("nGenNuFromTau", "GenNuFromTau");
+    //  genNuFromTauReader->setBranchAddresses(inputTree);
+    //  genTauReader = new GenParticleReader("nGenTaus", "GenTaus");
+    //  genTauReader->setBranchAddresses(inputTree);
+    //  genLepFromTopReader = new GenParticleReader("nGenLepFromTop", "GenLepFromTop");
+    //  genLepFromTopReader->setBranchAddresses(inputTree);
+    //  genBQuarkFromTopReader = new GenParticleReader("nGenBQuarkFromTop", "GenBQuarkFromTop");
+    //  genBQuarkFromTopReader->setBranchAddresses(inputTree);
+    //  genNuFromTopReader = new GenParticleReader("nGenNuFromTop", "GenNuFromTop");
+    //  genNuFromTopReader->setBranchAddresses(inputTree);
+    //  genLepFromTauReader = new GenParticleReader("nGenLepFromTau", "GenLepFromTau");
+    //  genLepFromTauReader->setBranchAddresses(inputTree);
+    //  genTopReader = new GenParticleReader("nGenTop", "GenTop");
+    //  genTopReader->setBranchAddresses(inputTree);
+    //  genVbosonsReader = new GenParticleReader("nGenVbosons", "GenVbosons");
+    //  genVbosonsReader->setBranchAddresses(inputTree);
+    //}
+    //---------------------------------------------------------------------------
   }
 
 //--- initialize BDTs used to discriminate ttH vs. ttV and ttH vs. ttbar
@@ -787,8 +802,7 @@ int main(int argc, char* argv[])
   NtupleFillerBDT<float, int> * bdt_filler = nullptr;
   typedef std::remove_pointer<decltype(bdt_filler)>::type::float_type float_type;
   typedef std::remove_pointer<decltype(bdt_filler)>::type::int_type   int_type;
-  if(selectBDT)
-  {
+  if ( selectBDT ) {
     bdt_filler = new std::remove_pointer<decltype(bdt_filler)>::type(
       makeHistManager_cfg(process_string, Form("%s/sel/evtntuple", histogramDir.data()), central_or_shift)
     );
@@ -846,15 +860,21 @@ int main(int argc, char* argv[])
     std::vector<GenHadTau> genHadTaus;
     std::vector<GenJet> genJets;
     if ( isMC && fillGenEvtHistograms ) {
-      genLeptons = genLeptonReader->read();
-      for ( std::vector<GenLepton>::const_iterator genLepton = genLeptons.begin();
-    	    genLepton != genLeptons.end(); ++genLepton ) {
-	int abs_pdgId = std::abs(genLepton->pdgId());
-	if      ( abs_pdgId == 11 ) genElectrons.push_back(*genLepton);
-	else if ( abs_pdgId == 13 ) genMuons.push_back(*genLepton);
+      if ( genLeptonReader ) {
+	genLeptons = genLeptonReader->read();
+	for ( std::vector<GenLepton>::const_iterator genLepton = genLeptons.begin();
+	      genLepton != genLeptons.end(); ++genLepton ) {
+	  int abs_pdgId = std::abs(genLepton->pdgId());
+	  if      ( abs_pdgId == 11 ) genElectrons.push_back(*genLepton);
+	  else if ( abs_pdgId == 13 ) genMuons.push_back(*genLepton);
+	}
       }
-      genHadTaus = genHadTauReader->read();
-      genJets = genJetReader->read();
+      if ( genHadTauReader ) {
+	genHadTaus = genHadTauReader->read();
+      }
+      if ( genJetReader ) {
+	genJets = genJetReader->read();
+      }
       if ( isDEBUG ) {
 	printGenLeptonCollection("genLeptons", genLeptons);
 	printGenHadTauCollection("genHadTaus", genHadTaus);
@@ -862,25 +882,29 @@ int main(int argc, char* argv[])
       }
     }
 
-    std::vector<GenParticle> genNuFromTau;
-    std::vector<GenParticle> genTau;
-    std::vector<GenParticle> genLepFromTop;
-    std::vector<GenParticle> genBQuarkFromTop;
-    std::vector<GenParticle> genNuFromTop;
-    std::vector<GenParticle> genLepFromTau;
-    std::vector<GenParticle> genTop;
-    std::vector<GenParticle> genVbosons;
-    if ( isMC && writeSelEventsFile && era == kEra_2016 ) {
-      genHadTaus = genHadTauReader->read();
-      genNuFromTau = genNuFromTauReader->read();
-      genTau = genTauReader->read();
-      genLepFromTop = genLepFromTopReader->read();
-      genBQuarkFromTop = genBQuarkFromTopReader->read();
-      genNuFromTop = genNuFromTopReader->read();
-      genLepFromTau = genLepFromTauReader->read();
-      genTop = genTopReader->read();
-      genVbosons = genVbosonsReader->read();
-    }
+    //---------------------------------------------------------------------------
+    // CV: functionality temporarily disabled, 
+    //     as all generator level information is stored in RecoLepton, RecoHadTau and RecoJet branches in case tthProdNtuple workflow is used
+    //std::vector<GenParticle> genNuFromTau;
+    //std::vector<GenParticle> genTau;
+    //std::vector<GenParticle> genLepFromTop;
+    //std::vector<GenParticle> genBQuarkFromTop;
+    //std::vector<GenParticle> genNuFromTop;
+    //std::vector<GenParticle> genLepFromTau;
+    //std::vector<GenParticle> genTop;
+    //std::vector<GenParticle> genVbosons;
+    //if ( isMC && writeSelEventsFile && era == kEra_2016 ) {
+    //  genHadTaus = genHadTauReader->read();
+    //  genNuFromTau = genNuFromTauReader->read();
+    //  genTau = genTauReader->read();
+    //  genLepFromTop = genLepFromTopReader->read();
+    //  genBQuarkFromTop = genBQuarkFromTopReader->read();
+    //  genNuFromTop = genNuFromTopReader->read();
+    //  genLepFromTau = genLepFromTauReader->read();
+    //  genTop = genTopReader->read();
+    //  genVbosons = genVbosonsReader->read();
+    //}
+    //---------------------------------------------------------------------------
 
     if ( isMC ) {
       genEvtHistManager_beforeCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genJets);
@@ -1095,20 +1119,26 @@ int main(int argc, char* argv[])
     std::vector<const RecoJet*> selBJets_medium = jetSelectorBtagMedium(cleanedJets);
 
 //--- build collections of generator level particles (after some cuts are applied, to safe computing time)
-    if ( isMC && !fillGenEvtHistograms ) {
-      genLeptons = genLeptonReader->read();
-      for ( std::vector<GenLepton>::const_iterator genLepton = genLeptons.begin();
-    	    genLepton != genLeptons.end(); ++genLepton ) {
-    	int abs_pdgId = std::abs(genLepton->pdgId());
-    	if      ( abs_pdgId == 11 ) genElectrons.push_back(*genLepton);
-    	else if ( abs_pdgId == 13 ) genMuons.push_back(*genLepton);
+    if ( isMC && redoGenMatching && !fillGenEvtHistograms ) {
+      if ( genLeptonReader ) {
+	genLeptons = genLeptonReader->read();
+	for ( std::vector<GenLepton>::const_iterator genLepton = genLeptons.begin();
+	      genLepton != genLeptons.end(); ++genLepton ) {
+	  int abs_pdgId = std::abs(genLepton->pdgId());
+	  if      ( abs_pdgId == 11 ) genElectrons.push_back(*genLepton);
+	  else if ( abs_pdgId == 13 ) genMuons.push_back(*genLepton);
+	}
       }
-      genHadTaus = genHadTauReader->read();
-      genJets = genJetReader->read();
+      if ( genHadTauReader ) {
+	genHadTaus = genHadTauReader->read();
+      }
+      if ( genJetReader ) {
+	genJets = genJetReader->read();
+      }
     }
 
 //--- match reconstructed to generator level particles
-    if ( isMC ) {
+    if ( isMC && redoGenMatching ) {
       muonGenMatcher.addGenLeptonMatch(preselMuons, genLeptons, 0.2);
       muonGenMatcher.addGenHadTauMatch(preselMuons, genHadTaus, 0.2);
       muonGenMatcher.addGenJetMatch(preselMuons, genJets, 0.2);
@@ -1891,11 +1921,10 @@ int main(int argc, char* argv[])
 
     if ( writeSelEventsFile ) {
       const RLEUnit rleUnit{ run, lumi, event };
+      mem.add(rleUnit);
       const METUnit<double> metUnit{
         met.pt(), met.phi(), met.covXX(), met.covXY(), met.covYY(), era == kEra_2016
       };
-
-      mem.add(rleUnit);
       mem.add(metUnit);
       mem.add(mvaInputs_3l, mvaOutput_3l_ttV, mvaOutput_3l_ttbar);
       mem.add(selBJets_loose, selBJets_medium, selJets);
@@ -1905,11 +1934,15 @@ int main(int argc, char* argv[])
 	if ( isSignal ) {
 	  mem.add(genHiggsDecayMode);
 	}
-	if ( era == kEra_2016 ) {
-	  mem.add(genHadTaus, genBQuarkFromTop, genLepFromTau,
-		  genNuFromTau, genTau, genLepFromTop, genNuFromTop,
-		  genTop, genVbosons);
-	}
+	//-----------------------------------------------------------------------
+	// CV: functionality temporarily disabled, 
+	//     as all generator level information is stored in RecoLepton, RecoHadTau and RecoJet branches in case tthProdNtuple workflow is used
+	//if ( era == kEra_2016 ) {
+	//  mem.add(genHadTaus, genBQuarkFromTop, genLepFromTau,
+	//	    genNuFromTau, genTau, genLepFromTop, genNuFromTop,
+	//	    genTop, genVbosons);	  
+	//}
+	//-----------------------------------------------------------------------
       }
       mem.fill(false);
     }

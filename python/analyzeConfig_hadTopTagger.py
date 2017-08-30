@@ -13,7 +13,7 @@ class analyzeConfig_hadTopTagger(analyzeConfig):
   for documentation of further Args.
   
   """
-  def __init__(self, configDir, outputDir, executable_analyze, cfgFile_analyze, samples, 
+  def __init__(self, configDir, outputDir, executable_analyze, cfgFile_analyze, samples, changeBranchNames, 
                hadTau_selection,
                max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs):
     analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "hadTopTagger", [ "central" ],
@@ -46,7 +46,15 @@ class analyzeConfig_hadTopTagger(analyzeConfig):
     lines.append("process.analyze_hadTopTagger.lumiScale = cms.double(%f)" % jobOptions['lumi_scale'])
     lines.append("process.analyze_hadTopTagger.apply_genWeight = cms.bool(%s)" % jobOptions['apply_genWeight'])
     lines.append("process.analyze_hadTopTagger.selectBDT = cms.bool(%s)" % str(jobOptions['selectBDT']))
-    lines.append("process.analyze_hadTopTagger.random_seed = cms.uint32(%i)" % jobOptions['random_seed'])
+    if jobOptions['changeBranchNames']:
+      lines.append("process.analyze_hadTopTagger.branchName_electrons = cms.string('Electron')")
+      lines.append("process.analyze_hadTopTagger.branchName_muons = cms.string('Muon')")
+      lines.append("process.analyze_hadTopTagger.branchName_hadTaus = cms.string('HadTau')")
+      lines.append("process.analyze_hadTopTagger.branchName_genLeptons1 = cms.string('')")
+      lines.append("process.analyze_hadTopTagger.branchName_genLeptons2 = cms.string('')")
+      lines.append("process.analyze_hadTopTagger.branchName_genHadTaus = cms.string('')")
+      lines.append("process.analyze_hadTopTagger.branchName_genJets = cms.string('')")
+      lines.append("process.analyze_hadTopTagger.redoGenMatching = cms.bool(False)")
     create_cfg(self.cfgFile_analyze, jobOptions['cfgFile_modified'], lines)
     
   def create(self):
@@ -121,8 +129,7 @@ class analyzeConfig_hadTopTagger(analyzeConfig):
           'is_mc' : is_mc,
           'lumi_scale' : 1. if not (self.use_lumi and is_mc) else sample_info["xsection"] * self.lumi / sample_info["nof_events"],
           'apply_genWeight' : sample_info["genWeight"] if (is_mc and "genWeight" in sample_info) else False,
-          'selectBDT' : True,
-          'random_seed' : jobId
+          'selectBDT' : True
         }
         self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job])
 

@@ -14,12 +14,15 @@ mode = "VHbb"
 #mode = "forBDTtraining_beforeAddMEM"
 #mode = "forBDTtraining_afterAddMEM"
 
+hadTau_selection =  None
+changeBranchNames = None
+applyFakeRateWeights = None
 if mode == "VHbb":
   from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2los_1tau_2015 import samples_2015
   from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2los_1tau_2016 import samples_2016
   hadTau_selection = "dR03mvaMedium"
   changeBranchNames = False
-  applyFakeRateWeights  = "3L"
+  applyFakeRateWeights = "3L"
 elif mode == "forBDTtraining":
   from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_FastSim import samples_2016
   hadTau_selection = "dR03mvaLoose"
@@ -71,6 +74,7 @@ if __name__ == '__main__':
       executable_analyze = "analyze_2los_1tau",
       cfgFile_analyze = "analyze_2los_1tau_cfg.py",
       samples = samples,
+      changeBranchNames = changeBranchNames,
       changeBranchNames = changeBranchNames,
       hadTau_selection = hadTau_selection,
       applyFakeRateWeights = applyFakeRateWeights,

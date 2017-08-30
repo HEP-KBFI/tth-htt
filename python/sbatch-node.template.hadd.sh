@@ -91,7 +91,8 @@ run_wrapped_executable() {
 
     echo "Time is: `date`"
 
-    CMSSW_SEARCH_PATH="$SCRATCH_DIR:$CMSSW_BASE/src"
+    CMSSW_SEARCH_PATH="$SCRATCH_DIR:{{ cmssw_base_dir }}/src" 
+
     echo "Execute command: {{ exec_name }} {{ command_line_parameter }} &> $TEMPORARY_EXECUTABLE_LOG_FILE"
     {{ exec_name }} {{ command_line_parameter }} &> $TEMPORARY_EXECUTABLE_LOG_FILE
     HADD_EXIT_CODE=$?
