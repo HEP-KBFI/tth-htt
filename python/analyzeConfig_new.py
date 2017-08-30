@@ -336,14 +336,15 @@ class analyzeConfig:
         num_jobs = tools_createScript_sbatch(
             sbatch_script_file_name = sbatchFile,
             executable = executable,
-            cfg_file_names = { key: value[key_cfg_file] for key, value in jobOptions.items() },
+            command_line_parameters = { key: value[key_cfg_file] for key, value in jobOptions.items() },
             input_file_names = { key: value[key_input_file] for key, value in jobOptions.items() },
             output_file_names = { key: value[key_output_file] for key, value in jobOptions.items() },
+            script_file_names = { key: value[key_cfg_file].replace(".py", ".sh").replace("_cfg", "") for key, value in jobOptions.items() },
             log_file_names = { key: value[key_log_file] for key, value in jobOptions.items() },
             working_dir = self.workingDir,
             max_num_jobs = self.max_num_jobs,
             cvmfs_error_log = self.cvmfs_error_log,
-            pool_id = self.pool_id,
+            pool_id = self.pool_id
         )
         return num_jobs
 
@@ -365,9 +366,12 @@ class analyzeConfig:
 
     def create_hadd_python_file(self, inputFiles, outputFile, hadd_stage_name):
         sbatch_hadd_file = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_hadd_%s_%s.py" % (self.channel, hadd_stage_name))
+        sbatch_hadd_file = sbatch_hadd_file.replace(".root", "")
+        scriptFile = os.path.join(self.dirs[DKEY_SCRIPTS], os.path.basename(sbatch_hadd_file).replace(".py", ".sh"))
+        logFile = os.path.join(self.dirs[DKEY_LOGS], os.path.basename(sbatch_hadd_file).replace(".py", ".log"))
         sbatch_hadd_dir = os.path.join(self.dirs[DKEY_HADD_RT], self.channel, hadd_stage_name) if self.dirs[DKEY_HADD_RT] else ''
         self.num_jobs['hadd'] += tools_createScript_sbatch_hadd(
-            sbatch_hadd_file, inputFiles, outputFile, hadd_stage_name, self.workingDir, auxDirName = sbatch_hadd_dir,
+            sbatch_hadd_file, inputFiles, outputFile, scriptFile, logFile, self.workingDir, auxDirName = sbatch_hadd_dir,
             pool_id = self.pool_id,
         )
         return sbatch_hadd_file

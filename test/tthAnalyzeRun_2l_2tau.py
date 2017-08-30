@@ -34,7 +34,7 @@ else:
 
 version = "2017Aug24"
 
-max_job_resubmission = 10
+max_job_resubmission = 3
 
 if __name__ == '__main__':
   logging.basicConfig(

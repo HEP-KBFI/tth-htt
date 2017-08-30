@@ -92,7 +92,7 @@ void RecoLeptonWriter::setBranches(TTree *tree)
 {
   genLeptonWriter_->setBranches(tree);
   genHadTauWriter_->setBranches(tree);
-  genJetWriter_->setBranches(tree);  
+  genJetWriter_->setBranches(tree);
   setBranchI(tree, branchName_num_, &nLeptons_);
   pt_ = new Float_t[max_nLeptons_];
   setBranchVF(tree, branchName_pt_, branchName_num_, pt_);

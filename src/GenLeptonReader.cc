@@ -115,6 +115,7 @@ void GenLeptonReader::setBranchAddresses(TTree* tree)
 {
   if ( instances_[branchName_promptLeptons_] == this ) {
     if ( read_promptLeptons_ ) {
+      std::cout << "setting branch addresses for PromptLeptons" << std::endl;
       tree->SetBranchAddress(branchName_nPromptLeptons_.data(), &nPromptLeptons_);   
       promptLepton_pt_ = new Float_t[max_nPromptLeptons_];
       tree->SetBranchAddress(branchName_promptLepton_pt_.data(), promptLepton_pt_); 
@@ -128,6 +129,7 @@ void GenLeptonReader::setBranchAddresses(TTree* tree)
       tree->SetBranchAddress(branchName_promptLepton_pdgId_.data(), promptLepton_pdgId_); 
     }
     if ( read_leptonsFromTau_ ) {
+      std::cout << "setting branch addresses for LeptonsFromTau" << std::endl;
       tree->SetBranchAddress(branchName_nLeptonsFromTau_.data(), &nLeptonsFromTau_);   
       leptonFromTau_pt_ = new Float_t[max_nLeptonsFromTau_];
       tree->SetBranchAddress(branchName_leptonFromTau_pt_.data(), leptonFromTau_pt_); 

@@ -1,0 +1,39 @@
+import os
+
+from tthAnalysis.HiggsToTauTau.preselNtupleConfig import *
+from tthAnalysis.HiggsToTauTau.analysisTools import create_cfg
+
+class preselNtupleConfig_3l_1tau(preselNtupleConfig):
+    """Configuration metadata needed to run production of preselected Ntuple for 3l_1tau channel (in preparation for 'addMEM' step).
+
+    Args:
+        outputDir: The root output dir -- all configuration, log and output files are stored in its subdirectories
+        executable_prodNtuple: Name of the executable that runs the Ntuple production; expected value is `prodNtuple_3l_1tau`
+        debug: if True, checks each input root file (Ntuple) before creating the python configuration files
+        running_method: either `sbatch` (uses SLURM) or `Makefile`
+        num_parallel_jobs: number of jobs that can be run in parallel on local machine (does not limit number of Ntuple production jobs running in parallel on batch system)
+  
+    """
+    def __init__(self, configDir, outputDir, executable_prodNtuple, cfgFile_prodNtuple, samples,
+                 era, debug, running_method, rle_directory, version, num_parallel_jobs):
+        preselNtupleConfig.__init__(self, configDir, outputDir, executable_prodNtuple, "3l_1tau", samples,
+          era, debug, running_method, rle_directory, version, num_parallel_jobs)
+
+        self.cfgFile_preselNtuple_original = os.path.join(self.workingDir, cfgFile_prodNtuple)
+       
+    def createCfg_preselNtuple(self, inputFiles, outputFile, era, isMC, cfgFile_modified, rle_filename = ''):
+        """Create python configuration file for the preselNtuple_3l_1tau executable (Ntuple production code)
+
+        Args:
+          inputFiles: list of input files (Ntuples)
+          outputFile: output file of the job -- a ROOT file containing histogram
+        """  
+        lines = []
+        lines.append("process.fwliteInput.fileNames = cms.vstring(%s)" % inputFiles)
+        lines.append("process.fwliteOutput.fileName = cms.string('%s')" % os.path.basename(outputFile))
+        lines.append("process.preselNtuple_3l_1tau.era = cms.string('%s')" % era)
+        if rle_filename:
+            lines.append("process.preselNtuple_3l_1tau.selEventsFileName_addMEM = cms.string('%s')" % rle_filename)
+        lines.append("process.preselNtuple_3l_1tau.isMC = cms.bool(%s)" % isMC)    
+        create_cfg(self.cfgFile_preselNtuple_original, cfgFile_modified, lines)
+

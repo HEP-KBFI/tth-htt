@@ -15,10 +15,12 @@ def main():
     input_histograms_events_total_count = sum(input_histograms_events_counts)
 
     if abs(output_histogram_events_total_count - input_histograms_events_total_count) < 2.0:
-        print('Output histogram event count is same as input histograms event counts sum (%s and %s)' % (output_histogram_events_total_count, input_histograms_events_total_count))
+        print("Event counts (%i%) match between output file and sum of input files." % output_histogram_events_total_count)
         sys.exit(0)
     else:
-        print('ERROR: count(output_histogram.events) != count(input_histograms.events) (%s and %s)' % (output_histogram_events_total_count, input_histograms_events_total_count))
+        print("ERROR: Event counts between output file (%i) and sum of input files (%i) does not match !!" % (output_histogram_events_total_count, input_histograms_events_total_count))
+        print("output file = '%s'" % output_histogram)
+        print("input files = '%s'" % " ".join(input_histograms))
         sys.exit(1)
 
 main()

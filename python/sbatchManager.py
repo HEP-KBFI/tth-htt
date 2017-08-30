@@ -1,16 +1,11 @@
-import codecs, getpass, jinja2, logging, os, time, datetime, sys
+import codecs, getpass, jinja2, logging, os, time, datetime, sys, random
 
 from tthAnalysis.HiggsToTauTau.ClusterHistogramAggregator import ClusterHistogramAggregator
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd
 
 # Template for wrapper that is ran on cluster node
 
-current_dir       = os.path.dirname(os.path.realpath(__file__))
-job_template_file = os.path.join(current_dir, 'sbatch-node.template.sh')
-job_template      = open(job_template_file, 'r').read()
-
-submit_job_version2_template_file = os.path.join(current_dir, 'sbatch-node.submit_job_version2_template.sh')
-submit_job_version2_template      = open(submit_job_version2_template_file, 'r').read()
+current_dir = os.path.dirname(os.path.realpath(__file__))
 
 command_create_scratchDir = '/scratch/mkscratch'
 
@@ -144,25 +139,6 @@ class sbatchManager:
     def unmute(self):
         logging.getLogger().setLevel(logging.DEBUG)
 
-    def hadd_in_cluster(
-        self,
-        inputFiles                  = None,
-        outputFile                  = None,
-        maximum_histograms_in_batch = 20,
-        waitForJobs                 = True,
-        auxDirName                  = None,
-    ):
-        cluster_histogram_aggregator = ClusterHistogramAggregator(
-            input_histograms            = inputFiles,
-            final_output_histogram      = outputFile,
-            maximum_histograms_in_batch = maximum_histograms_in_batch,
-            waitForJobs                 = waitForJobs,
-            sbatch_manager              = self,
-            auxDirName                  = auxDirName,
-        )
-
-        cluster_histogram_aggregator.create_output_histogram()
-
     def check_job_completion(self, jobsId_list, default_completion = Status.completed):
         completion = { k : default_completion for k in jobsId_list }
 
@@ -276,21 +252,26 @@ class sbatchManager:
         # Is a valid job ID
         return job_id
 
-    def submitJob(self, inputFiles, executable, cfgFile, outputFilePath, outputFiles,
-                  logFile = None, skipIfOutputFileExists = False):
+    def submitJob(self, inputFiles, executable, command_line_parameter, outputFilePath, outputFiles,
+                  scriptFile, logFile = None, skipIfOutputFileExists = False, job_template_file = 'sbatch-node.template.sh'):
         """Waits for all sbatch jobs submitted by this instance of sbatchManager to finish processing
         """
+
+        logging.debug("<sbatchManager::submitJob>: job_template_file = '%s'" % job_template_file)
+
+        job_template_file = os.path.join(current_dir, job_template_file)
+        job_template = open(job_template_file, 'r').read()
+        
         # raise if logfile missing
-        script_file = cfgFile.replace(".py", ".sh").replace("_cfg", "")
         if not logFile:
             if not self.logFileDir:
                 raise ValueError("Please call 'setLogFileDir' before calling 'submitJob' !!")
-            logFile = os.path.join(self.logFileDir, os.path.basename(script_file).replace(".sh", ".log"))
+            logFile = os.path.join(self.logFileDir, os.path.basename(scriptFile).replace(".sh", ".log"))
 
         # skip only if none of the output files are missing in the file system
         if skipIfOutputFileExists:
             outputFiles_fullpath = map(lambda outputFile: os.path.join(outputFilePath, outputFile), outputFiles)
-            outputFiles_missing = [outputFile for outputFile in outputFiles_fullpath if not os.path.exists(outputFile)]
+            outputFiles_missing = [ outputFile for outputFile in outputFiles_fullpath if not os.path.exists(outputFile) ]
             if not outputFiles_missing:
                 logging.debug(
                   "output file(s) = %s exist(s) --> skipping !!" % \
@@ -312,79 +293,33 @@ class sbatchManager:
           output    = wrapper_log_file,
           comment   = self.pool_id,
           args      = self.sbatchArgs,
-          cmd       = script_file,
+          cmd       = scriptFile,
         )
 
+        two_pow_sixteen = 65536
+        random.seed((abs(hash(command_line_parameter))) % two_pow_sixteen)
+        max_delay = 300
+        delay = random.randint(0, max_delay)
+        
         script = jinja2.Template(job_template).render(
-            working_dir         = self.workingDir,
-            scratch_dir         = scratch_dir,
-            exec_name           = executable,
-            cfg_file            = cfgFile,
-            inputFiles          = " ".join(inputFiles),
-            outputDir           = outputFilePath,
-            outputFiles         = " ".join(outputFiles),
-            wrapper_log_file    = wrapper_log_file,
-            executable_log_file = executable_log_file,
-            RUNNING_COMMAND     = sbatch_command,
+            working_dir            = self.workingDir,
+            scratch_dir            = scratch_dir,
+            exec_name              = executable,
+            command_line_parameter = command_line_parameter,
+            inputFiles             = " ".join(inputFiles),
+            outputDir              = outputFilePath,
+            outputFiles            = " ".join(outputFiles),
+            wrapper_log_file       = wrapper_log_file,
+            executable_log_file    = executable_log_file,
+            RUNNING_COMMAND        = sbatch_command,
+            random_sleep           = delay
         )
-        logging.debug("writing sbatch script file = '%s'" % script_file)
-        with codecs.open(script_file, "w", "utf-8") as f:
-            f.write(script)
-
-        self.jobIds[self.submit(sbatch_command)] = {
-            'status'  : Status.submitted,
-            'log_wrap': wrapper_log_file,
-            'log_exec': executable_log_file,
-        }
-
-    def submit_job_version2(
-        self,
-        task_name  = None,
-        command    = None,
-        output_dir = None
-    ):
-        '''This method is similar to submitJob, but has less required parameters.
-           Supports multiple lines of Bash commands instead of fixed oneliner.
-        '''
-        logging.debug("task_name=%s, command=%s, output_dir=%s)" % (task_name, command, output_dir))
-
-        if not self.workingDir:
-            raise ValueError("Please call 'setWorkingDir' before calling 'submitJob' !!")
-
-        scratch_dir = self.get_scratch_dir()
-
-        # Create script for executing jobs
-
-        cfg_dir = os.path.join(output_dir, 'cfgs')
-        log_dir = os.path.join(output_dir, 'logs')
-        script_file         = os.path.join(cfg_dir, '%s.sh' % task_name)
-        wrapper_log_file    = os.path.join(log_dir, '%s_wrapper.log' % task_name)
-        executable_log_file = os.path.join(log_dir, '%s_executable.log' % task_name)
-        create_if_not_exists(cfg_dir)
-        create_if_not_exists(log_dir)
-
-        sbatch_command = "sbatch --partition={partition} --output={output} --comment='{comment}' {args} {cmd}".format(
-            partition = self.queue,
-            output    = wrapper_log_file,
-            comment   = self.pool_id,
-            args      = self.sbatchArgs,
-            cmd       = script_file,
-        )
-
-        script = jinja2.Template(submit_job_version2_template).render(
-            command             = command,
-            working_dir         = self.workingDir,
-            scratch_dir         = scratch_dir,
-            wrapper_log_file    = wrapper_log_file,
-            executable_log_file = executable_log_file,
-            sbatch_command      = sbatch_command,
-        )
-        logging.debug("writing sbatch script file = '%s'" % script_file)
-        with codecs.open(script_file, "w", "utf-8") as f:
+        logging.debug("writing sbatch script file = '%s'" % scriptFile)
+        with codecs.open(scriptFile, "w", "utf-8") as f:
             f.write(script)
             f.flush()
             os.fsync(f.fileno())
-
+            
         self.jobIds[self.submit(sbatch_command)] = {
             'status'   : Status.submitted,
             'log_wrap' : wrapper_log_file,

@@ -4,12 +4,14 @@ class ClusterHistogramAggregator:
 
     def __init__(
         self,
-        input_histograms=None,
-        final_output_histogram=None,
-        maximum_histograms_in_batch=20,
+        input_histograms = None,
+        final_output_histogram = None,
+        maximum_histograms_in_batch = 20,
         waitForJobs = True,
-        sbatch_manager=None,
+        sbatch_manager = None,
         auxDirName = None,
+        script_file_name = None,
+        log_file_name = None
     ):
         self.input_histograms = input_histograms
         self.final_output_histogram = final_output_histogram
@@ -17,6 +19,8 @@ class ClusterHistogramAggregator:
         self.maximum_histograms_in_batch = maximum_histograms_in_batch
         self.waitForJobs = waitForJobs
         self.auxDirName = auxDirName
+        self.cfg_dir = os.path.dirname(script_file_name)
+        self.log_dir = os.path.dirname(log_file_name)
 
     def create_output_histogram(
         self
@@ -29,10 +33,10 @@ class ClusterHistogramAggregator:
 
     def aggregate(
         self,
-        input_histograms=None,
-        final_output_histogram=None,
-        maximum_histograms_in_batch=20,
-        level=0
+        input_histograms = None,
+        final_output_histogram = None,
+        maximum_histograms_in_batch = 20,
+        level = 0
     ):
 
         # Log some info
@@ -59,8 +63,8 @@ class ClusterHistogramAggregator:
             output_histograms.append(output_histogram)
 
             self.hadd_on_cluster_node(
-                input_histograms=input_histograms[start_pos:end_pos],
-                output_histogram=output_histogram
+                input_histograms = input_histograms[start_pos:end_pos],
+                output_histogram = output_histogram
             )
 
             current_job_id = current_job_id + 1
@@ -74,10 +78,10 @@ class ClusterHistogramAggregator:
             # Recursive call to method self
 
             self.aggregate(
-                input_histograms=output_histograms,
-                final_output_histogram=final_output_histogram,
-                maximum_histograms_in_batch=maximum_histograms_in_batch,
-                level=level + 1
+                input_histograms = output_histograms,
+                final_output_histogram = final_output_histogram,
+                maximum_histograms_in_batch = maximum_histograms_in_batch,
+                level = level + 1
             )
 
         else:
@@ -101,8 +105,8 @@ class ClusterHistogramAggregator:
 
     def hadd_on_cluster_node(
         self,
-        input_histograms=None,
-        output_histogram=None,
+        input_histograms = None,
+        output_histogram = None,
     ):
 
         output_dir = self.auxDirName if self.auxDirName else os.path.dirname(output_histogram)
@@ -114,122 +118,23 @@ class ClusterHistogramAggregator:
             raise ValueError(
                 'SBatchManager#hadd_on_cluster_node: All parameters not defined.')
 
-        bash_command_template = '''
-
-            # Load vars
-
-            export SCRIPTS_DIR="$CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/scripts"
-            export SCRATCHED_INPUT_HISTOGRAMS=""
-            export INPUT_HISTOGRAMS="{input_histograms}"
-            export OUTPUT_HISTOGRAM="{output_histogram}"
-            echo "Input histograms are: $INPUT_HISTOGRAMS, Output histogram is: $OUTPUT_HISTOGRAM"
-
-
-            # Check that input histograms are ok on /home
-
-            python $SCRIPTS_DIR/check_that_histograms_are_valid.py $INPUT_HISTOGRAMS
-            check_that_histograms_are_valid_exit_status=$?
-
-            if [[ $check_that_histograms_are_valid_exit_status -ne 0 ]]; then
-              echo 'ERROR: Some of the input histograms are not valid. Will stop execution.'
-              return 1
-            fi
-
-
-            # Create scratch dir for output root
-
-            export SCRATCHED_OUTPUT_HISTOGRAM="$SCRATCH_DIR/{output_histogram}"
-            export SCRATCHED_OUTPUT_HISTOGRAM_DIRECTORY="`dirname $SCRATCHED_OUTPUT_HISTOGRAM`"
-            echo "SCRATCHED_OUTPUT_HISTOGRAM: $SCRATCHED_OUTPUT_HISTOGRAM"
-            echo "SCRATCHED_OUTPUT_HISTOGRAM_DIRECTORY: $SCRATCHED_OUTPUT_HISTOGRAM_DIRECTORY"
-
-            echo "Create scratch dir for output root: mkdir -p $SCRATCHED_OUTPUT_HISTOGRAM_DIRECTORY"
-            mkdir -p $SCRATCHED_OUTPUT_HISTOGRAM_DIRECTORY
-
-
-            for INPUT_HISTOGRAM in $INPUT_HISTOGRAMS; do
-
-                SCRATCHED_INPUT_HISTOGRAM="$SCRATCH_DIR/$INPUT_HISTOGRAM"
-                SCRATCHED_INPUT_HISTOGRAM_DIRECTORY="`dirname $SCRATCHED_INPUT_HISTOGRAM`"
-                echo "SCRATCHED_INPUT_HISTOGRAM: $SCRATCHED_INPUT_HISTOGRAM"
-                echo "SCRATCHED_INPUT_HISTOGRAM_DIRECTORY: $SCRATCHED_INPUT_HISTOGRAM"
-
-                echo "Create parent dir: mkdir -p $SCRATCHED_INPUT_HISTOGRAM_DIRECTORY"
-                mkdir -p $SCRATCHED_INPUT_HISTOGRAM_DIRECTORY
-
-                echo "Copy histogram and metadata to scratch: cp -a $INPUT_HISTOGRAM* $SCRATCHED_INPUT_HISTOGRAM_DIRECTORY"
-                cp "$INPUT_HISTOGRAM"* "$SCRATCHED_INPUT_HISTOGRAM_DIRECTORY"
-
-                export SCRATCHED_INPUT_HISTOGRAMS="$SCRATCHED_INPUT_HISTOGRAMS $SCRATCHED_INPUT_HISTOGRAM"
-            done
-
-
-            # Check that input histograms are valid
-
-            python $SCRIPTS_DIR/check_that_histograms_are_valid.py $SCRATCHED_INPUT_HISTOGRAMS
-            check_that_histograms_are_valid_exit_status=$?
-
-            if [[ $check_that_histograms_are_valid_exit_status -ne 0 ]]; then
-              echo 'ERROR: Some of the input histograms are not valid. Will stop execution.'
-              return 1
-            fi
-
-
-            # Hadd
-
-            echo "Create a new histogram: hadd $SCRATCHED_OUTPUT_HISTOGRAM $SCRATCHED_INPUT_HISTOGRAMS"
-            hadd $SCRATCHED_OUTPUT_HISTOGRAM $SCRATCHED_INPUT_HISTOGRAMS
-            hadd_exit_status=$?
-
-            if [[ $hadd_exit_status -ne 0 ]]; then
-              echo 'ERROR: hadd exited w/ non-zero return code. Will stop execution.'
-              return 1
-            fi
-
-
-            # Create metadata file for output histogram on scratch
-
-            python $SCRIPTS_DIR/create_histogram_metadata.py $SCRATCHED_OUTPUT_HISTOGRAM
-
-
-            # Check that input histograms are equal to output histogram
-
-            python $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/scripts/check_that_histograms_are_equal.py $SCRATCHED_OUTPUT_HISTOGRAM $SCRATCHED_INPUT_HISTOGRAMS
-            check_that_histograms_are_equal_exit_status=$?
-
-            if [[ $check_that_histograms_are_equal_exit_status -ne 0 ]]; then
-              echo 'ERROR: Input histograms do not equal output histogram. Will stop execution.'
-              return 1
-            fi
-
-
-            # Store result in correct place
-
-            OUTPUT_HISTOGRAM_DIRECTORY="`dirname $OUTPUT_HISTOGRAM`"
-            echo "Make a directory for result root: mkdir -p $OUTPUT_HISTOGRAM_DIRECTORY"
-            mkdir -p $OUTPUT_HISTOGRAM_DIRECTORY
-
-            echo "Copy result from scratch to /home: cp $SCRATCHED_OUTPUT_HISTOGRAM* $OUTPUT_HISTOGRAM_DIRECTORY"
-            cp "$SCRATCHED_OUTPUT_HISTOGRAM"* $OUTPUT_HISTOGRAM_DIRECTORY
-
-
-
-            # Cleanup will be automatic
-
-            echo "Cleanup will be automatic"
-        '''
-
-        bash_command = bash_command_template.format(
-            input_histograms=" ".join(input_histograms),
-            output_histogram=output_histogram
-        )
-
-        ##task_name = 'create_%s' % output_histogram.replace(
-        ##    '/', '_').replace(' ', '_')
+        output_and_input_histograms = []
+        output_and_input_histograms.append(os.path.basename(output_histogram))
+        output_and_input_histograms.extend(input_histograms)
+        ##print "output_and_input_histograms = ", output_and_input_histograms
+        
         task_name = 'create_%s' % os.path.basename(output_histogram)
+        scriptFile = os.path.join(self.cfg_dir, '%s.sh' % task_name)
+        logFile = os.path.join(self.log_dir, '%s.log' % task_name)
 
-        self.sbatch_manager.submit_job_version2(
-            task_name=task_name,
-            command=bash_command,
-            output_dir=output_dir
+        self.sbatch_manager.submitJob(
+            inputFiles = input_histograms,
+            executable = "hadd",
+            command_line_parameter = " ".join(output_and_input_histograms),
+            outputFilePath = os.path.dirname(output_histogram),
+            outputFiles = [ os.path.basename(output_histogram) ],
+            scriptFile = scriptFile,
+            logFile = logFile,
+            skipIfOutputFileExists = False,
+            job_template_file = 'sbatch-node.template.hadd.sh'
         )

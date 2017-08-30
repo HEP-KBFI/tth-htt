@@ -1,14 +1,14 @@
 #!/bin/bash
-# File: sbatch-node.template.sh
+# File: sbatch-node.template.hadd.sh
 # Version: 0.2
 
 # This value is provided by sbatchManager.py that creates sbatch scripts based this template
 
-echo 'Running version (sbatch-node.template.sh)'
+echo 'Running version (sbatch-node.template.hadd.sh)'
 
 
 RUNNING_COMMAND="{{ RUNNING_COMMAND }}"
-
+SCRATCH_DIR="{{ scratch_dir }}/$SLURM_JOBID"
 
 # Runs executable, wrapped into failure wrapper + wrapped into node scratchdir
 
@@ -42,6 +42,10 @@ run_failure_wrapped_executable() {
             echo "Maximum tries reached, will not try to resubmit any more. GL & HF"
         fi
     fi
+
+    echo "Delete Scratch directory: rm -r $SCRATCH_DIR"
+    rm -r $SCRATCH_DIR
+
     return $EXIT_CODE
 }
 
@@ -49,7 +53,6 @@ run_failure_wrapped_executable() {
 # Creates scratch dir on cluster node and runs executable
 
 run_wrapped_executable() {
-    export SCRATCH_DIR="{{ scratch_dir }}/$SLURM_JOBID"
     EXECUTABLE_LOG_FILE="{{ executable_log_file }}"
     EXECUTABLE_LOG_DIR="`dirname $EXECUTABLE_LOG_FILE`"
     EXECUTABLE_LOG_FILE_NAME="`basename $EXECUTABLE_LOG_FILE`"
@@ -63,6 +66,16 @@ run_wrapped_executable() {
 
     echo "Sleeping for $RANDOM_SLEEP seconds"
     sleep $RANDOM_SLEEP
+
+    # Check that input histograms are ok on /home
+    export SCRIPTS_DIR="$CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/scripts"
+    python $SCRIPTS_DIR/check_that_histograms_are_valid.py {{ inputFiles }}
+    check_that_histograms_are_valid_exit_status=$?
+
+    if [[ $check_that_histograms_are_valid_exit_status -ne 0 ]]; then
+	echo "ERROR: Some of the input histograms are not valid. Will stop execution."
+	return 1
+    fi
 
     echo "Create scratch directory: mkdir -p $SCRATCH_DIR"
     mkdir -p $SCRATCH_DIR
@@ -78,24 +91,35 @@ run_wrapped_executable() {
 
     echo "Time is: `date`"
 
-    echo "Copying contents of 'tthAnalysis/HiggsToTauTau/data' directory to Scratch: cp -rL $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/data/* $SCRATCH_DIR/tthAnalysis/HiggsToTauTau/data"
-    mkdir -p tthAnalysis/HiggsToTauTau/data
-    cp -rL $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/data/* $SCRATCH_DIR/tthAnalysis/HiggsToTauTau/data
-
-    echo "Time is: `date`"
-
     CMSSW_SEARCH_PATH="$SCRATCH_DIR:$CMSSW_BASE/src"
-    echo "Execute command: {{ exec_name }} {{ cfg_file }} &> $TEMPORARY_EXECUTABLE_LOG_FILE"
+    echo "Execute command: {{ exec_name }} {{ command_line_parameter }} &> $TEMPORARY_EXECUTABLE_LOG_FILE"
     {{ exec_name }} {{ command_line_parameter }} &> $TEMPORARY_EXECUTABLE_LOG_FILE
-    EXIT_CODE=$?
-    echo "Command {{ exec_name }} exited with code $EXIT_CODE"
+    HADD_EXIT_CODE=$?
+    echo "Command {{ exec_name }} exited with code $HADD_EXIT_CODE"
 
     echo "Time is: `date`"
+
+    if [[ $HADD_EXIT_CODE -ne 0 ]]; then
+	echo 'ERROR: hadd exited w/ non-zero return code. Will stop execution.'
+	return 1
+    fi
 
     OUTPUT_FILES="{{ outputFiles }}"
     echo "Copying output files: {{ outputFiles }}"
     for OUTPUT_FILE in $OUTPUT_FILES
     do
+      # Create metadata file for output histogram on scratch
+      python $SCRIPTS_DIR/create_histogram_metadata.py $OUTPUT_FILE
+
+      # Check that input histograms are equal to output histogram
+      python $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/scripts/check_that_histograms_are_equal.py $OUTPUT_FILE {{ inputFiles }}
+      CHECK_THAT_HISTOGRAMS_ARE_EQUAL_EXIT_CODE=$?
+
+      if [[ $CHECK_THAT_HISTOGRAMS_ARE_EQUAL_EXIT_CODE -ne 0 ]]; then
+	  echo 'ERROR: Input histograms do not equal output histogram. Will stop execution.'
+	  return 1
+      fi
+
       echo "cp $OUTPUT_FILE {{ outputDir }}"
       cp $OUTPUT_FILE {{ outputDir }}
 
@@ -118,12 +142,9 @@ run_wrapped_executable() {
     echo "Copy from temporary output dir to output dir: cp -a $TEMPORARY_EXECUTABLE_LOG_DIR/* $EXECUTABLE_LOG_DIR/"
     cp -a $TEMPORARY_EXECUTABLE_LOG_DIR/* $EXECUTABLE_LOG_DIR/
 
-    echo "Delete Scratch directory: rm -r $SCRATCH_DIR"
-    rm -r $SCRATCH_DIR
-
     echo "End time is: `date`"
 
-    return $EXIT_CODE
+    return $HADD_EXIT_CODE
 }
 
 

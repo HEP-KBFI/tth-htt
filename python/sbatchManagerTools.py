@@ -5,8 +5,9 @@ from tthAnalysis.HiggsToTauTau.analysisTools import createFile
 
 executable_rm = 'rm'
 
+
 def createScript_sbatch(sbatch_script_file_name,
-                        executable, cfg_file_names, input_file_names, output_file_names, log_file_names = None,
+                        executable, command_line_parameters, input_file_names, output_file_names, script_file_names, log_file_names = None,
                         working_dir = None, max_num_jobs = 100000, cvmfs_error_log = None, pool_id = ''):
     """Creates the python script necessary to submit analysis and/or Ntuple production jobs to the batch system
     """
@@ -16,13 +17,13 @@ def createScript_sbatch(sbatch_script_file_name,
         raise ValueError('pool_id is empty')
     sbatch_analyze_lines, num_jobs = generate_sbatch_lines(
       executable,
-      cfg_file_names, input_file_names, output_file_names, log_file_names,
+      command_line_parameters, input_file_names, output_file_names, script_file_names, log_file_names,
       working_dir, max_num_jobs, cvmfs_error_log, pool_id
     )
     createFile(sbatch_script_file_name, sbatch_analyze_lines)
     return num_jobs
     
-def generate_sbatch_lines(executable, cfg_file_names, input_file_names, output_file_names, log_file_names,
+def generate_sbatch_lines(executable, command_line_parameters, input_file_names, output_file_names, script_file_names, log_file_names,
                           working_dir, max_num_jobs, cvmfs_error_log = None, pool_id = ''):
     if not pool_id:
         raise ValueError('pool_id is empty')
@@ -33,16 +34,17 @@ def generate_sbatch_lines(executable, cfg_file_names, input_file_names, output_f
     lines_sbatch.append("m.setWorkingDir('%s')" % working_dir)
 
     num_jobs = 0
-    for key_file, cfg_file_name in cfg_file_names.items():
+    for key_file, command_line_parameter in command_line_parameters.items():
         log_file_name = None
         if log_file_names:
             log_file_name = log_file_names[key_file]
         if num_jobs <= max_num_jobs:
             sbatch_line = generate_sbatch_line(
                 executable = executable,
-                cfg_file_name = cfg_file_name,
+                command_line_parameter = command_line_parameter,
                 input_file_names = input_file_names[key_file],
                 output_file_name = output_file_names[key_file],
+                script_file_name = script_file_names[key_file],
                 log_file_name = log_file_name,
                 cvmfs_error_log = cvmfs_error_log
             )
@@ -56,7 +58,7 @@ def generate_sbatch_lines(executable, cfg_file_names, input_file_names, output_f
     lines_sbatch.append("m.waitForJobs()")
     return lines_sbatch, num_jobs
 
-def generate_sbatch_line(executable, cfg_file_name, input_file_names, output_file_name, log_file_name = None,
+def generate_sbatch_line(executable, command_line_parameter, input_file_names, output_file_name, script_file_name, log_file_name = None,
                          cvmfs_error_log = None):
     if os.path.exists(output_file_name):
         output_file_size = os.stat(output_file_name).st_size
@@ -100,16 +102,17 @@ def generate_sbatch_line(executable, cfg_file_name, input_file_names, output_fil
 
     if type(input_file_names) is str:
         input_file_names = [ input_file_names ]
-    return "m.submitJob(%s, '%s', '%s', '%s', %s, '%s', True)" % (
+    return "m.submitJob(%s, '%s', '%s', '%s', %s, '%s', '%s', True)" % (
         input_file_names,
         executable,
-        cfg_file_name,
+        command_line_parameter,
         os.path.dirname(output_file_name),
         [ os.path.basename(output_file_name) ],
+        script_file_name,
         log_file_name
     )
 
-def createScript_sbatch_hadd(sbatch_script_file_name, input_file_names, output_file_name, hadd_stage_name,
+def createScript_sbatch_hadd(sbatch_script_file_name, input_file_names, output_file_name, script_file_name, log_file_name = None,
                              working_dir = None, waitForJobs = True, auxDirName = '', pool_id = ''):
     """Creates the python script necessary to submit 'hadd' jobs to the batch system
     """
@@ -120,6 +123,8 @@ def createScript_sbatch_hadd(sbatch_script_file_name, input_file_names, output_f
     sbatch_hadd_lines, num_jobs = generate_sbatch_lines_hadd(
         input_file_names = input_file_names,
         output_file_name = output_file_name,
+        script_file_name = script_file_name,
+        log_file_name = log_file_name,
         working_dir = working_dir,
         waitForJobs = waitForJobs,
         auxDirName = auxDirName,
@@ -128,28 +133,39 @@ def createScript_sbatch_hadd(sbatch_script_file_name, input_file_names, output_f
     createFile(sbatch_script_file_name, sbatch_hadd_lines)
     return num_jobs
 
-def generate_sbatch_lines_hadd(input_file_names, output_file_name, working_dir, waitForJobs = True,
-                               auxDirName = '', pool_id = ''):
+def generate_sbatch_lines_hadd(input_file_names, output_file_name, script_file_name, log_file_name,
+                               working_dir, waitForJobs = True, auxDirName = '', pool_id = ''):
     template_vars = {
-        'working_dir'      : working_dir,
-        'input_file_names' : input_file_names,
-        'output_file_name' : output_file_name,
-        'waitForJobs'      : waitForJobs,
-        'auxDirName'       : auxDirName,
-        'pool_id'          : pool_id,
+        'working_dir'                 : working_dir,
+        'input_file_names'            : input_file_names,
+        'output_file_name'            : output_file_name,
+        'waitForJobs'                 : waitForJobs,
+        'auxDirName'                  : auxDirName,
+        'pool_id'                     : pool_id,
+        'maximum_histograms_in_batch' : 20,
+        'script_file_name'            : script_file_name,
+        'log_file_name'               : log_file_name
     }
     if not pool_id:
         raise ValueError('pool_id is empty')
-    sbatch_template = """from tthAnalysis.HiggsToTauTau.sbatchManager import sbatchManager
+    sbatch_template = """
+from tthAnalysis.HiggsToTauTau.sbatchManager import sbatchManager
+from tthAnalysis.HiggsToTauTau.ClusterHistogramAggregator import ClusterHistogramAggregator
 
 m = sbatchManager('{{pool_id}}')
 m.setWorkingDir('{{working_dir}}')
-m.hadd_in_cluster(
-    inputFiles={{input_file_names}},
-    outputFile='{{output_file_name}}',
-    waitForJobs={{waitForJobs}},
-    auxDirName='{{auxDirName}}',
+
+cluster_histogram_aggregator = ClusterHistogramAggregator(
+  input_histograms            = {{input_file_names}},
+  final_output_histogram      = '{{output_file_name}}',
+  maximum_histograms_in_batch = {{maximum_histograms_in_batch}},
+  waitForJobs                 = {{waitForJobs}},
+  sbatch_manager              = m,
+  auxDirName                  = '{{auxDirName}}',
+  script_file_name            = '{{script_file_name}}',
+  log_file_name               = '{{log_file_name}}',
 )
+cluster_histogram_aggregator.create_output_histogram()
 """
     sbatch_code = jinja2.Template(sbatch_template).render(**template_vars)
     num_jobs = 1

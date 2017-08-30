@@ -7,9 +7,9 @@ def get_events_count(root_file):
 
     if has_entries_count:
         entries_count = count.GetEntries()
-        print('Event count for %s is %s' % (root_file, entries_count))
+        print("Input file '%s' contains %i analyzed events." % (root_file, entries_count))
         return entries_count
     else:
         entries_count = 0.0
-        print('Event count for %s is %s, because files does not have count entries' % (root_file, entries_count))
+        print("ERROR: Failed to read number of analyzed events in input file '%s' !! Will set number of analyzed events to zero.")
         return entries_count

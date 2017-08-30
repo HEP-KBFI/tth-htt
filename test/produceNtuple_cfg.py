@@ -15,7 +15,7 @@ process.fwliteOutput = cms.PSet(
     fileName = cms.string('produceNtuple.root')
 )
 
-process.produceNtuple_2lss_1tau = cms.PSet(
+process.produceNtuple = cms.PSet(
     treeName = cms.string('tree'),
 
     era = cms.string('2016'),
@@ -71,16 +71,17 @@ process.produceNtuple_2lss_1tau = cms.PSet(
         "keep puWeight*",
         "keep genWeight*",
         "keep btagWeight*",        
-        "keep *GenLep*",
-        "keep *GenTaus*",
-        "keep *GenTauHad*",
-        "keep *GenHadTaus*",
-        "keep *GenNu*",
-        "keep *GenBQuarkFromTop*",
-        "keep *GenHiggsBoson*",
-        "keep *GenTop*",
-        "keep *GenVbosons*",
-        "keep *GenJet*",
+        ##"keep *GenLep*",
+        ##"keep *GenLepFromTau*",
+        ##"keep *GenTaus*",
+        ##"keep *GenTauHad*",
+        ##"keep *GenHadTaus*",
+        ##"keep *GenNu*",
+        ##"keep *GenBQuarkFromTop*",
+        ##"keep *GenHiggsBoson*",
+        ##"keep *GenTop*",
+        ##"keep *GenVbosons*",
+        ##"keep *GenJet*",
         "keep genHiggsDecayMode",
         "keep genTTH*",
         "drop *Recovered*",
@@ -94,6 +95,8 @@ process.produceNtuple_2lss_1tau = cms.PSet(
         "CountNegWeight",
         "CountWeightedLHEWeightScale",
         "CountWeightedLHEWeightPdf",
-    )
+    ),
+
+    random_seed = cms.uint32(4357)
 )
 
