@@ -26,7 +26,7 @@ class EvtHistManager_LeptonFakeRate
   /// book and fill histograms
   void bookHistograms(TFileDirectory& dir);
   // void fillHistograms(int numElectrons, int numMuons, int numHadTaus, int numJets, int numBJets_loose, int numBJets_medium, double mLL, double mT_e, double mT_mu, double evtWeight);
-  void fillHistograms(double mT_L, double mT_fix_L, double evtWeight);
+  void fillHistograms(double met, double mT_L, double mT_fix_L, double evtWeight);
 
  private:
   // TH1* histogram_numElectrons_;
@@ -42,6 +42,7 @@ class EvtHistManager_LeptonFakeRate
 
   TH1* histogram_mT_L_;
   TH1* histogram_mT_fix_L_;
+  TH1* histogram_MET_;
   TH1* histogram_EventCounter_;
   // std::vector<TH1*> histograms_;
 };
