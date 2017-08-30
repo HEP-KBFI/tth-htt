@@ -4,7 +4,10 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/lutAuxFunctions.h" // loadTF1
 
-#include "Math/GSLMCIntegrator.h" // ROOT::Math::GSLMCIntegrator
+//#include "Math/GSLMCIntegrator.h" // ROOT::Math::GSLMCIntegrator
+#include <gsl/gsl_rng.h> // gsl_rng
+#include <gsl/gsl_monte.h> // gsl_monte_function
+#include <gsl/gsl_monte_vegas.h> // gsl_monte_vegas_state
 #include <TMath.h> // TMath::Pi()
 
 #include <math.h> // exp, sin, sqrt
@@ -170,22 +173,79 @@ void HadTopKinFit::fit(const Particle::LorentzVector& recBJetP4, const Particle:
   //std::cout << "(alpha = " << alpha_ << ", fit status = " << fit_status_ << ", max_prob = " << max_prob_ << ", nll = " << nll_ << ")" << std::endl;
 }
 
+double objectiveFunctionVEGAS(double* x, size_t dim, void* params)
+{
+  //std::cout << "<objectiveFunctionVEGAS>:" << std::endl;
+  double alpha = x[0];
+  double prob = HadTopKinFit::gHadTopKinFit->comp_prob(alpha);
+  if ( TMath::IsNaN(prob) ) prob = 0.;
+  //std::cout << " alpha = " << alpha << ": prob = " << prob << std::endl;
+  return prob;
+}
+
 void HadTopKinFit::integrate(const Particle::LorentzVector& recBJetP4, const Particle::LorentzVector& recWJet1P4, const Particle::LorentzVector& recWJet2P4)
 {
   //std::cout << "<HadTopKinFit::integrate>:" << std::endl;
  
-//--- create instance of VEGAS integration algorithm
-  ROOT::Math::GSLMCIntegrator vegas("vegas", 0., 1.e-6, 10000);
-  ROOT::Math::Functor toIntegrate(&objectiveFunctionAdapterVEGAS_, &ObjectiveFunctionAdapterVEGAS::operator(), 1);
-  vegas.SetFunction(toIntegrate);
+//--- set integration boundaries
   double xl[1];
   xl[0] = 1. - 5./std::max(1., TMath::Sqrt(recWJet1P4_.energy()));
   if ( xl[0] < 0. ) xl[0] = 0.;
   double xh[1];
   xh[0] = 1. + 5./std::max(1., TMath::Sqrt(recWJet1P4_.energy()));
   if ( xh[0] > 1.e+1 ) xh[0] = 1.e+1;
-  p_ = vegas.Integral(xl, xh);
-  pErr_ = vegas.Error();
+
+  //-----------------------------------------------------------------------------
+  // CV: avoid usage of ROOT::Math::GSLMCIntegrator class,
+  //     as it seems to cause a non-negligible memory leak,
+  //     related to allocation and missing deallocation of GSL random number generator:
+  //    ==21714== 13,735,504 (45,504 direct, 13,690,000 indirect) bytes in 2,844 blocks are definitely lost in loss record 26,482 of 26,482
+  //    ==21714==    at 0x4026B7F: malloc (in /cvmfs/cms.cern.ch/slc6_amd64_gcc493/external/valgrind/3.10.1/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+  //    ==21714==    by 0x8992542: gsl_rng_alloc (in /cvmfs/cms.cern.ch/slc6_amd64_gcc493/external/gsl/1.10/lib/libgsl.so.0.10.0)
+  //    ==21714==    by 0x7897415: ROOT::Math::GSLMCIntegrator::GSLMCIntegrator(char const*, double, double, unsigned int) (in /cvmfs/cms.cern.ch/slc6_amd64_gcc493/lcg/root/6.06.00-ikhhed5/lib/libMathMore.so)
+  //    ==21714==    by 0x4C5D1AB: HadTopKinFit::integrate(ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<double> > const&, ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<double> > const&, ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<double> > const&) (in /home/veelken/VHbbNtuples_8_0_x/CMSSW_8_0_19/lib/slc6_amd64_gcc493/libtthAnalysisHiggsToTauTau.so)
+  //    ==21714==    by 0x4C611FE: HadTopTagger::operator()(RecoJet const&, RecoJet const&, RecoJet const&) (in /home/veelken/VHbbNtuples_8_0_x/CMSSW_8_0_19/lib/slc6_amd64_gcc493/libtthAnalysisHiggsToTauTau.so)
+  //    ==21714==    by 0x40E6B6: main (in /home/veelken/VHbbNtuples_8_0_x/CMSSW_8_0_19/bin/slc6_amd64_gcc493/analyze_hadTopTagger)
+  //    (reported at the end of 'valgrind.out', obtained by executing 'valgrind --tool=memcheck `cmsvgsupp` --leak-check=yes --show-reachable=yes --num-callers=20 --track-fds=yes --log-file=valgrind.out analyze_hadTopTagger analyze_hadTopTagger_cfg.py')
+  //-----------------------------------------------------------------------------
+
+//--- create instance of VEGAS integration algorithm
+  //ROOT::Math::GSLMCIntegrator vegas("vegas", 0., 1.e-6, 10000);
+  //ROOT::Math::Functor toIntegrate(&objectiveFunctionAdapterVEGAS_, &ObjectiveFunctionAdapterVEGAS::operator(), 1);
+  //vegas.SetFunction(toIntegrate);
+  //p_ = vegas.Integral(xl, xh);
+  //pErr_ = vegas.Error();
+  
+//--- run VEGAS integration directly via GSL functions
+  gsl_monte_function* vegas_integrand = new gsl_monte_function;
+  vegas_integrand->f = &objectiveFunctionVEGAS;
+  vegas_integrand->dim = 1;
+  vegas_integrand->params = 0;
+  gsl_monte_vegas_state* vegas_workspace = gsl_monte_vegas_alloc(1);
+  gsl_rng_env_setup();
+  gsl_rng* vegas_rnd = gsl_rng_alloc(gsl_rng_default);
+  gsl_rng_set(vegas_rnd, 12345);
+  gsl_monte_vegas_init(vegas_workspace);
+  vegas_workspace->stage = 0;
+  double integral = 0.;
+  double integralErr = 0.;
+  gsl_monte_vegas_integrate(vegas_integrand, xl, xh, 1, 2000, vegas_rnd, vegas_workspace, &integral, &integralErr);
+  vegas_workspace->stage = 1;
+  integral = 0.;
+  integralErr = 0.;
+  unsigned iteration = 0;
+  double chi2 = -1;
+  do {
+    gsl_monte_vegas_integrate(vegas_integrand, xl, xh, 1, 2000, vegas_rnd, vegas_workspace, &integral, &integralErr);
+    vegas_workspace->stage = 3;
+    ++iteration;
+    chi2 = vegas_workspace->chisq;
+  } while ( (chi2 > 2. || integralErr > (1.e-3*integral)) && iteration < 5 );
+  p_ = integral;
+  pErr_ = integralErr;
+  delete vegas_integrand;
+  gsl_monte_vegas_free(vegas_workspace);
+  gsl_rng_free(vegas_rnd);
 } 
 
 const Particle::LorentzVector& HadTopKinFit::fittedBJet() const 
