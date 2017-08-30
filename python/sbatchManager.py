@@ -102,7 +102,7 @@ class sbatchManager:
         if not pool_id:
             raise ValueError("pool_id not specified!")
 
-        self.cmssw_base_dir     = None
+        self.cmssw_base_dir = None
         self.workingDir     = None
         self.logFileDir     = None
         queue_environ = os.environ.get('SBATCH_PRIORITY')
@@ -289,9 +289,8 @@ class sbatchManager:
             raise ValueError("Please call 'setWorkingDir' before calling 'submitJob' !!")
 
         if not self.cmssw_base_dir:
-            raise ValueError("Please call 'setcmssw_base_dir' before calling 'submitJob' !!")
-
-
+            print("cmssw_base_dir not set, setting it to '%s'" % os.environ.get('CMSSW_BASE'))
+            self.cmssw_base_dir = os.environ.get('CMSSW_BASE')
 
         scratch_dir = self.get_scratch_dir()
 
@@ -326,8 +325,8 @@ class sbatchManager:
             RUNNING_COMMAND        = sbatch_command,
             random_sleep           = delay
         )
-        logging.debug("writing sbatch script file = '%s'" % script_file)
-        with codecs.open(script_file, "w", "utf-8") as f:
+        logging.debug("writing sbatch script file = '%s'" % scriptFile)
+        with codecs.open(scriptFile, "w", "utf-8") as f:
             f.write(script)
             f.flush()
             os.fsync(f.fileno())
