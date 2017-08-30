@@ -81,14 +81,14 @@ def check_that_histogram_is_big_enough(input_file):
     filesize = os.path.getsize(input_file)
 
     if filesize < 5:
-        print("ERROR: Input file '%s' has too small size (%s bytes)" % (filesize, input_file))
+        print("ERROR: Input file '%s' has too small size (%s bytes)" % (input_file, filesize))
         sys.exit(1)
     else:
-        print("Input file '%s' has size of %s bytes" % (filesize, input_file))
+        print("Input file '%s' has size of %s bytes" % (input_file, filesize))
 
 
 def check_that_histogram_is_not_zombie(input_file):
-    print('<check_that_histogram_is_not_zombie>: %s' % input_file)
+    print("<check_that_histogram_is_not_zombie>: input file = '%s'" % input_file)
 
     root_tfile = ROOT.TFile(input_file, "read")
 

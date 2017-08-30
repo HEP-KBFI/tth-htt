@@ -15,7 +15,7 @@ def main():
     input_histograms_events_total_count = sum(input_histograms_events_counts)
 
     if abs(output_histogram_events_total_count - input_histograms_events_total_count) < 2.0:
-        print("Event counts (%i%) match between output file and sum of input files." % output_histogram_events_total_count)
+        print("Event counts (%i) match between output file and sum of input files." % output_histogram_events_total_count)
         sys.exit(0)
     else:
         print("ERROR: Event counts between output file (%i) and sum of input files (%i) does not match !!" % (output_histogram_events_total_count, input_histograms_events_total_count))
