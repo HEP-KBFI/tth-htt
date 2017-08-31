@@ -21,6 +21,7 @@ class analyzeConfig_hadTopTagger(analyzeConfig):
       [])
 
     self.samples = samples
+    self.changeBranchNames = changeBranchNames
 
     self.hadTau_selection = hadTau_selection
     
@@ -50,10 +51,10 @@ class analyzeConfig_hadTopTagger(analyzeConfig):
       lines.append("process.analyze_hadTopTagger.branchName_electrons = cms.string('Electron')")
       lines.append("process.analyze_hadTopTagger.branchName_muons = cms.string('Muon')")
       lines.append("process.analyze_hadTopTagger.branchName_hadTaus = cms.string('HadTau')")
-      lines.append("process.analyze_hadTopTagger.branchName_genLeptons1 = cms.string('')")
+      lines.append("process.analyze_hadTopTagger.branchName_genLeptons1 = cms.string('GenLep')")
       lines.append("process.analyze_hadTopTagger.branchName_genLeptons2 = cms.string('')")
-      lines.append("process.analyze_hadTopTagger.branchName_genHadTaus = cms.string('')")
-      lines.append("process.analyze_hadTopTagger.branchName_genJets = cms.string('')")
+      lines.append("process.analyze_hadTopTagger.branchName_genHadTaus = cms.string('GenHadTaus')")
+      lines.append("process.analyze_hadTopTagger.branchName_genJets = cms.string('GenJet')")
       lines.append("process.analyze_hadTopTagger.redoGenMatching = cms.bool(False)")
     create_cfg(self.cfgFile_analyze, jobOptions['cfgFile_modified'], lines)
     
