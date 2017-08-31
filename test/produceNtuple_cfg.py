@@ -87,7 +87,7 @@ process.produceNtuple = cms.PSet(
         "keep *GenHiggsBoson*",
         "keep *GenTop*",
         "keep *GenVbosons*",
-        "keep *GenJet*",
+        ##"keep *GenJet*",
         "keep genHiggsDecayMode",
         "keep genTTH*",
         "drop *Recovered*",
