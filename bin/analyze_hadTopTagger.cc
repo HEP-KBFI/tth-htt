@@ -207,11 +207,11 @@ int main(int argc, char* argv[])
 
   // CV: open all input ROOT files and print content, 
   //     to see why analysis jobs run fine when executed interactively on quasar, but fail when executed on Tallinn batch system
-  for ( std::vector<std::string>::const_iterator inputFileName = inputFiles.files().begin();
-	inputFileName != inputFiles.files().end(); ++inputFileName ) {
-    std::cout << "checking input file = " << (*inputFileName) << ":" << std::endl;
-    openFile_and_printContent(*inputFileName, treeName);
-  }
+  //for ( std::vector<std::string>::const_iterator inputFileName = inputFiles.files().begin();
+  //	  inputFileName != inputFiles.files().end(); ++inputFileName ) {
+  //  std::cout << "checking input file = " << (*inputFileName) << ":" << std::endl;
+  //  openFile_and_printContent(*inputFileName, treeName);
+  //}
 
   fwlite::OutputFiles outputFile(cfg);
   fwlite::TFileService fs = fwlite::TFileService(outputFile.file().data());

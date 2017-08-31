@@ -76,6 +76,36 @@
 typedef math::PtEtaPhiMLorentzVector LV;
 typedef std::vector<std::string> vstring;
  
+std::vector<GenParticle> convert_to_GenParticle(const std::vector<GenLepton>& genLeptons)
+{
+  std::vector<GenParticle> genParticles;
+  for ( std::vector<GenLepton>::const_iterator genLepton = genLeptons.begin();
+	genLepton != genLeptons.end(); ++genLepton ) {
+    genParticles.push_back(GenParticle(genLepton->p4(), genLepton->pdgId(), genLepton->charge()));
+  }
+  return genParticles;
+}
+
+std::vector<GenParticle> convert_to_GenParticle(const std::vector<GenHadTau>& genHadTaus)
+{
+  std::vector<GenParticle> genParticles;
+  for ( std::vector<GenHadTau>::const_iterator genHadTau = genHadTaus.begin();
+	genHadTau != genHadTaus.end(); ++genHadTau ) {
+    genParticles.push_back(GenParticle(genHadTau->p4(), 0, genHadTau->charge()));
+  }
+  return genParticles;
+}
+
+std::vector<GenParticle> convert_to_GenParticle(const std::vector<GenJet>& genJets)
+{
+  std::vector<GenParticle> genParticles;
+  for ( std::vector<GenJet>::const_iterator genJet = genJets.begin();
+	genJet != genJets.end(); ++genJet ) {
+    genParticles.push_back(GenParticle(genJet->p4(), 0, 0));
+  }
+  return genParticles;
+}
+
 /**
  * @brief Produce Ntuple containing preselected events,
  *        drop branches not needed for ttH, H->tautau analysis,
@@ -311,6 +341,26 @@ int main(int argc, char* argv[])
   RecoMEtWriter* metWriter = new RecoMEtWriter(era, branchName_met);
   metWriter->setBranches(outputTree);
   std::cout << "writing RecoMEt object to branch = '" << branchName_met << "'" << std::endl;
+
+  GenParticleWriter* genLeptonWriter = 0;
+  GenParticleWriter* genHadTauWriter = 0;
+  GenParticleWriter* genJetWriter = 0;
+  if ( isMC ) {
+    std::string branchName_genLeptons = "GenLep";
+    genLeptonWriter = new GenParticleWriter(Form("n%s", branchName_genLeptons.data()), branchName_genLeptons);
+    genLeptonWriter->setBranches(outputTree);
+    std::cout << "writing GenLepton objects to branch = '" << branchName_genLeptons << "'" << std::endl;
+
+    std::string branchName_genHadTaus = "GenHadTaus";
+    genHadTauWriter = new GenParticleWriter(Form("n%s", branchName_genHadTaus.data()), branchName_genHadTaus);
+    genHadTauWriter->setBranches(outputTree);
+    std::cout << "writing GenHadTau objects to branch = '" << branchName_genHadTaus << "'" << std::endl;
+
+    std::string branchName_genJets = "GenJet";
+    genJetWriter = new GenParticleWriter(Form("n%s", branchName_genJets.data()), branchName_genJets);
+    genJetWriter->setBranches(outputTree);
+    std::cout << "writing GenJet objects to branch = '" << branchName_genJets << "'" << std::endl;
+  }
 
   std::map<std::string, bool> isBranchToKeep = getBranchesToKeep(inputTree, outputCommands); // key = branchName
   std::map<std::string, branchEntryBaseType*> branchesToKeep; // key = branchName
@@ -553,6 +603,12 @@ int main(int argc, char* argv[])
     jetWriter->write(selJets);
     metWriter->write(met);
 
+    if ( isMC ) {
+      genLeptonWriter->write(convert_to_GenParticle(genLeptons));
+      genHadTauWriter->write(convert_to_GenParticle(genHadTaus));
+      genJetWriter->write(convert_to_GenParticle(genJets));
+    }
+
     //std::cout << "copying branches:" << std::endl;
     for ( std::map<std::string, branchEntryBaseType*>::const_iterator branchEntry = branchesToKeep.begin();
           branchEntry != branchesToKeep.end(); ++branchEntry ) {
@@ -590,6 +646,10 @@ int main(int argc, char* argv[])
   delete hadTauWriter;
   delete jetWriter;
   delete metWriter;
+
+  delete genLeptonWriter;
+  delete genHadTauWriter;
+  delete genJetWriter;
 
 //--- copy histograms keeping track of number of processed events from input files to output file
   std::cout << "copying histograms:" << std::endl;

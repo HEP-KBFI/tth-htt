@@ -24,7 +24,7 @@ double ObjectiveFunctionAdapterMINUIT::operator()(const double* x) const // NOTE
   double prob = HadTopKinFit::gHadTopKinFit->comp_prob(alpha);
   double nll;
   if ( prob > 0. ) nll = -log(prob);
-  else nll = std::numeric_limits<float>::min();
+  else nll = std::numeric_limits<float>::max();
   //std::cout << " alpha = " << alpha << ": nll = " << nll << std::endl;
   return nll;
 }
@@ -132,6 +132,7 @@ void HadTopKinFit::fit(const Particle::LorentzVector& recBJetP4, const Particle:
       min_nll = nll;
     }
   }
+  //std::cout << "alpha0 = " << alpha0 << ": min_nll = " << min_nll << std::endl;
 
 //--- set interface to MINUIT
   ROOT::Math::Functor toMinimize(objectiveFunctionAdapterMINUIT_, 1);
@@ -163,13 +164,13 @@ void HadTopKinFit::fit(const Particle::LorentzVector& recBJetP4, const Particle:
   fit_status_ = minimizer_->Status();
 
   //std::cout << " fittedBJetP4: pT = " << fittedBJetP4_.pt() << ", eta = " << fittedBJetP4_.eta() << "," 
-  //	      << " phi = " << fittedBJetP4_.phi() << ", mass = " << fittedBJetP4_.mass() << std::endl;
+  //          << " phi = " << fittedBJetP4_.phi() << ", mass = " << fittedBJetP4_.mass() << std::endl;
   //std::cout << " fittedWJet1P4: pT = " << fittedWJet1P4_.pt() << ", eta = " << fittedWJet1P4_.eta() << "," 
   //	      << " phi = " << fittedWJet1P4_.phi() << ", mass = " << fittedWJet1P4_.mass() << std::endl;
   //std::cout << " fittedWJet2P4: pT = " << fittedWJet2P4_.pt() << ", eta = " << fittedWJet2P4_.eta() << "," 
   //	      << " phi = " << fittedWJet2P4_.phi() << ", mass = " << fittedWJet2P4_.mass() << std::endl;
   //std::cout << "fitted masses: W = " << (fittedWJet1P4_ + fittedWJet2P4_).mass() << "," 
-  //	      << " top = " << (fittedBJetP4_ + fittedWJet1P4_ + fittedWJet2P4_).mass() << std::endl;
+  //          << " top = " << (fittedBJetP4_ + fittedWJet1P4_ + fittedWJet2P4_).mass() << std::endl;
   //std::cout << "(alpha = " << alpha_ << ", fit status = " << fit_status_ << ", max_prob = " << max_prob_ << ", nll = " << nll_ << ")" << std::endl;
 }
 

@@ -39,6 +39,13 @@ process.produceNtuple = cms.PSet(
     
     selEventsFileName_input = cms.string(''),
 
+    #----------------------------------------------------------------------------
+    # CV: Copy additional branches from input to output tree
+    #     Note that branches that are accessed by
+    #      - RecoElectron, RecoMuon, RecoHadTau, RecoJet, RecoMEt
+    #      - GenLepton, GenHadTau, GenJet (if MC)
+    #     reader classes must *not* appear in the outputCommands,
+    #     as ROOT cannot handle accesses from multiple places in the code to the same branch
     outputCommands = cms.vstring(
         "drop *",
         ##"keep run",
@@ -73,20 +80,20 @@ process.produceNtuple = cms.PSet(
         "keep btagWeight*",        
         ##"keep *GenLep*",
         ##"keep *GenLepFromTau*",
-        ##"keep *GenTaus*",
-        ##"keep *GenTauHad*",
+        "keep *GenTaus*",
         ##"keep *GenHadTaus*",
-        ##"keep *GenNu*",
-        ##"keep *GenBQuarkFromTop*",
-        ##"keep *GenHiggsBoson*",
-        ##"keep *GenTop*",
-        ##"keep *GenVbosons*",
-        ##"keep *GenJet*",
+        "keep *GenNu*",
+        "keep *GenBQuarkFromTop*",
+        "keep *GenHiggsBoson*",
+        "keep *GenTop*",
+        "keep *GenVbosons*",
+        "keep *GenJet*",
         "keep genHiggsDecayMode",
         "keep genTTH*",
         "drop *Recovered*",
     ),
-
+    #----------------------------------------------------------------------------
+    
     copy_histograms = cms.vstring(
         "Count",
         "CountFullWeighted",

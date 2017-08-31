@@ -21,7 +21,7 @@ elif ERA == "2016":
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "2017Aug30"
+version = "2017Aug31"
 
 ##max_job_resubmission = 3
 max_job_resubmission = 1
@@ -48,7 +48,7 @@ if __name__ == '__main__':
       samples = samples,
       changeBranchNames = changeBranchNames,
       hadTau_selection = "Tight|dR03mvaMedium",
-      max_files_per_job = 10,
+      max_files_per_job = 3,
       era = ERA, use_lumi = True, lumi = LUMI,
       debug = False,
       running_method = "sbatch",
