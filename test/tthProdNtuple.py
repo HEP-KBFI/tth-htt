@@ -25,7 +25,7 @@ if preselection == "enabled":
     'minNumLeptons' : 1,
     'minNumHadTaus' : 1,
     'minNumLeptons_and_HadTaus' : 2,
-    'minNumJets' : 2,
+    'minNumJets' : 1,
     'minNumBJets_loose' : 2,
     'minNumBJets_medium' : 1
   }
