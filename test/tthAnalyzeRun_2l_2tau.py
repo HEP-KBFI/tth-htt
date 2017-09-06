@@ -5,6 +5,7 @@ from tthAnalysis.HiggsToTauTau.analyzeConfig_2l_2tau import analyzeConfig_2l_2ta
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 
 mode = "VHbb"
+#mode = "forBDTtraining"
 
 hadTau_selection = None
 changeBranchNames = None
@@ -15,6 +16,11 @@ if mode == "VHbb":
   hadTau_selection = "dR03mvaVTight"
   changeBranchNames = False
   applyFakeRateWeights = "2lepton"
+elif mode == "forBDTtraining":
+  from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_FastSim import samples_2016
+  hadTau_selection = "dR03mvaLoose"
+  changeBranchNames = False
+  applyFakeRateWeights = "4L"
 else:
   raise ValueError("Invalid Configuration parameter 'mode' = %s !!" % mode)
 

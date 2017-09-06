@@ -307,8 +307,8 @@ class analyzeConfig_2l_2tau(analyzeConfig):
 
           if lepton_and_hadTau_selection == "forBDTtraining":
             lepton_selection = "Loose"
-            hadTau_selection = "Tight|dR03mvaVVLoose"
-      
+            hadTau_selection = "Tight|dR03mvaLoose"
+                  
           for lepton_and_hadTau_frWeight in self.lepton_and_hadTau_frWeights:
             if lepton_and_hadTau_frWeight == "enabled" and not lepton_and_hadTau_selection.startswith("Fakeable"):
               continue
