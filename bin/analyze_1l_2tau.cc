@@ -770,7 +770,7 @@ int main(int argc, char* argv[])
     lheInfoHistManager->bookHistograms(fs);
   }
 
-  NtupleFillerBDT<float, int> * bdt_filler = nullptr;
+  NtupleFillerBDT<float, int>* bdt_filler = nullptr;
   typedef std::remove_pointer<decltype(bdt_filler)>::type::float_type float_type;
   typedef std::remove_pointer<decltype(bdt_filler)>::type::int_type   int_type;
   if ( selectBDT ) {
@@ -778,7 +778,7 @@ int main(int argc, char* argv[])
       makeHistManager_cfg(process_string, Form("%s/sel/evtntuple", histogramDir.data()), central_or_shift)
     );
     bdt_filler -> register_variable<float_type>(
-      "lep_pt", "lep_eta", "lep_tth_mva", "mindr_lep_jet", "mindr_tau1_jet", "mindr_tau2_jet",
+      "lep_pt", "lep_conePt", "lep_eta", "lep_tth_mva", "mindr_lep_jet", "mindr_tau1_jet", "mindr_tau2_jet",
       "avg_dr_jet", "ptmiss", "mT_lep", "htmiss", "tau1_mva", "tau2_mva", "tau1_pt", "tau2_pt",
       "tau1_eta", "tau2_eta", "dr_taus", "dr_lep_tau_os", "dr_lep_tau_ss", "mTauTauVis",
       "lumiScale", "genWeight", "evtWeight"
@@ -1462,10 +1462,10 @@ int main(int argc, char* argv[])
       (*selEventsFile) << run << ":" << lumi << ":" << event << std::endl;
     }
 
-    if(bdt_filler)
-    {
+    if ( bdt_filler ) {
       bdt_filler -> operator()({ run, lumi, event })
           ("lep_pt",         selLepton -> pt())
+          ("lep_conePt",     selLepton -> cone_pt()) 
           ("lep_eta",        selLepton -> eta())
           ("lep_tth_mva",    selLepton -> mvaRawTTH())
           ("mindr_lep_jet",  TMath::Min(10., comp_mindr_lep1_jet(*selLepton, selJets)))

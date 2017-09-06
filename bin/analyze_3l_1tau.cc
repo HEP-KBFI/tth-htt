@@ -1754,8 +1754,7 @@ int main(int argc, char* argv[])
         memOutput_3l_1tau_matched = memOutput_3l_1tau;
         break;
       }
-      if(! memOutput_3l_1tau_matched.is_initialized())
-      {
+      if ( ! memOutput_3l_1tau_matched.is_initialized() ) {
         std::cout << "Warning in run = " << run << ", lumi = " << lumi << ", event = " << event << '\n';
         std::cout << "No MEMOutput_3l_1tau object found for:" << '\n'
                   << "\tselLepton_lead: pT = " << selLepton_lead -> pt()
@@ -1774,9 +1773,8 @@ int main(int argc, char* argv[])
                   << ", eta = "           << selHadTau -> eta()
                   << ", phi = "           << selHadTau -> phi() << '\n';
       }
-      if(memOutputs_3l_1tau.size())
-      {
-        for(unsigned mem_idx = 0; mem_idx < memOutputs_3l_1tau.size(); ++mem_idx)
+      if ( memOutputs_3l_1tau.size() ) {
+        for ( unsigned mem_idx = 0; mem_idx < memOutputs_3l_1tau.size(); ++mem_idx ) {
           std::cout << "\t#" << mem_idx << " mem object;\n"
                     << "\t\tlead lepton eta = " << memOutputs_3l_1tau[mem_idx].leadLepton_eta()
                     << "; phi = "               << memOutputs_3l_1tau[mem_idx].leadLepton_phi() << '\n'
@@ -1786,9 +1784,10 @@ int main(int argc, char* argv[])
                     << "; phi = "                << memOutputs_3l_1tau[mem_idx].thirdLepton_phi() << '\n'
                     << "\t\thadronic tau eta = " << memOutputs_3l_1tau[mem_idx].hadTau_eta()
                     << "; phi = "                << memOutputs_3l_1tau[mem_idx].hadTau_phi() << '\n';
-      }
-      else
+	}
+      } else {
         std::cout << "No MEM objects whatsoever\n";
+      }
     }
 
 //--- fill histograms with events passing final selection

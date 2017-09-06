@@ -544,6 +544,8 @@ int main(int argc, char* argv[])
     MuonHistManager* subleadMuon_;
     std::map<std::string, MuonHistManager*> subleadMuon_in_categories_;
     HadTauHistManager* hadTaus_;
+    HadTauHistManager* leadHadTau_;
+    HadTauHistManager* subleadHadTau_;
     JetHistManager* jets_;
     JetHistManager* leadJet_;
     JetHistManager* subleadJet_;
@@ -619,6 +621,12 @@ int main(int argc, char* argv[])
       selHistManager->hadTaus_ = new HadTauHistManager(makeHistManager_cfg(process_and_genMatch, 
         Form("%s/sel/hadTaus", histogramDir.data()), central_or_shift));
       selHistManager->hadTaus_->bookHistograms(fs);
+      selHistManager->leadHadTau_ = new HadTauHistManager(makeHistManager_cfg(process_and_genMatch, 
+        Form("%s/sel/leadHadTau", histogramDir.data()), central_or_shift));
+      selHistManager->leadHadTau_->bookHistograms(fs);
+      selHistManager->subleadHadTau_ = new HadTauHistManager(makeHistManager_cfg(process_and_genMatch, 
+        Form("%s/sel/subleadHadTau", histogramDir.data()), central_or_shift));
+      selHistManager->subleadHadTau_->bookHistograms(fs);
       selHistManager->jets_ = new JetHistManager(makeHistManager_cfg(process_and_genMatch, 
         Form("%s/sel/jets", histogramDir.data()), central_or_shift));
       selHistManager->jets_->bookHistograms(fs);
@@ -684,7 +692,7 @@ int main(int argc, char* argv[])
     lheInfoHistManager->bookHistograms(fs);
   }
   
-  NtupleFillerBDT<float, int> * bdt_filler = nullptr;
+  NtupleFillerBDT<float, int>* bdt_filler = nullptr;
   typedef std::remove_pointer<decltype(bdt_filler)>::type::float_type float_type;
   typedef std::remove_pointer<decltype(bdt_filler)>::type::int_type   int_type;
   if ( selectBDT ) {

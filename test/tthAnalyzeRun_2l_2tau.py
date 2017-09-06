@@ -12,7 +12,7 @@ applyFakeRateWeights = None
 if mode == "VHbb":
   from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2l_2tau_2015 import samples_2015
   from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2l_2tau_2016 import samples_2016
-  hadTau_selection = "dR03mvaMedium"
+  hadTau_selection = "dR03mvaVTight"
   changeBranchNames = False
   applyFakeRateWeights = "2lepton"
 else:
@@ -32,7 +32,7 @@ elif ERA == "2016":
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "2017Aug24"
+version = "2017Sep02_vTight"
 
 max_job_resubmission = 3
 
