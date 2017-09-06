@@ -24,6 +24,7 @@ RecoJetWriter::RecoJetWriter(int era, bool isMC)
   , jet_corr_JECDown_(0) 
   , jet_BtagCSV_(0)
   , jet_BtagWeight_(0)
+  , jet_QGDiscr_(0)
   , jet_heppyFlavour_(0)
 {
   genLeptonWriter_ = new GenParticleWriter(Form("%s_genLepton", branchName_num_.data()), Form("%s_genLepton", branchName_obj_.data()));
@@ -50,6 +51,7 @@ RecoJetWriter::RecoJetWriter(int era, bool isMC, const std::string& branchName_n
   , jet_corr_JECDown_(0) 
   , jet_BtagCSV_(0)
   , jet_BtagWeight_(0)
+  , jet_QGDiscr_(0)
   , jet_heppyFlavour_(0)
 {
   genLeptonWriter_ = new GenParticleWriter(Form("%s_genLepton", branchName_num_.data()), Form("%s_genLepton", branchName_obj_.data()));
@@ -72,6 +74,7 @@ RecoJetWriter::~RecoJetWriter()
   delete[] jet_corr_JECDown_;
   delete[] jet_BtagCSV_;
   delete[] jet_BtagWeight_;
+  delete[] jet_QGDiscr_;
   delete[] jet_heppyFlavour_;
   for ( std::map<int, Float_t*>::iterator it = jet_BtagWeights_systematics_.begin();
 	it != jet_BtagWeights_systematics_.end(); ++it ) {
@@ -89,6 +92,11 @@ void RecoJetWriter::setBranchNames()
   branchName_corr_JECUp_ = Form("%s_%s_%s", branchName_obj_.data(), "corr", "JECUp");
   branchName_corr_JECDown_ = Form("%s_%s_%s", branchName_obj_.data(), "corr", "JECDown");
   branchName_BtagCSV_ = Form("%s_%s", branchName_obj_.data(), "btagCSV");
+  if ( era_ == kEra_2015 ) {
+    branchName_QGDiscr_ = "";
+  } else if ( era_ == kEra_2016 ) {
+    branchName_QGDiscr_ = Form("%s_%s", branchName_obj_.data(), "qgl");
+  } else assert(0);
   if ( era_ == kEra_2015 ) {
     branchName_BtagWeight_ = Form("%s_%s", branchName_obj_.data(), "bTagWeight");
   } else if ( era_ == kEra_2016 ) {
@@ -133,6 +141,10 @@ void RecoJetWriter::setBranches(TTree* tree)
     jet_BtagWeights_systematics_[idxShift] = new Float_t[max_nJets_];
     setBranchVF(tree, branchNames_BtagWeight_systematics_[idxShift], branchName_num_, jet_BtagWeights_systematics_[idxShift]);
   }
+  jet_QGDiscr_ = new Float_t[max_nJets_];
+  if(branchName_QGDiscr_ != "") {
+    setBranchVF(tree, branchName_QGDiscr_, branchName_num_, jet_QGDiscr_);
+  }
   jet_heppyFlavour_ = new Float_t[max_nJets_];
   if ( branchName_heppyFlavour_ != "" ) {
     setBranchVF(tree, branchName_heppyFlavour_, branchName_num_, jet_heppyFlavour_);
@@ -162,6 +174,7 @@ void RecoJetWriter::write(const std::vector<const RecoJet*>& jets)
 	jet_BtagWeights_systematics_[idxShift][idxJet] = 1.;
       }
     }
+    jet_QGDiscr_[idxJet] = jet->QGDiscr();
     jet_heppyFlavour_[idxJet] = jet->heppyFlavour();
   }
   writeGenMatching(jets);

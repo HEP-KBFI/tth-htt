@@ -95,7 +95,7 @@
   <use   name="FWCore/ParameterSet"/>
   <use   name="FWCore/PythonParameterSet"/>
   <use   name="FWCore/Utilities"/>
-  <use   name="DataFormats/FWLite"/> 
+  <use   name="DataFormats/FWLite"/>
   <use   name="DataFormats/Math"/>
   <use   name="PhysicsTools/FWLite"/>
   <use   name="tthAnalysis/HiggsToTauTau"/>
@@ -147,7 +147,7 @@
   <use   name="FWCore/ParameterSet"/>
   <use   name="FWCore/PythonParameterSet"/>
   <use   name="FWCore/Utilities"/>
-  <use   name="DataFormats/FWLite"/> 
+  <use   name="DataFormats/FWLite"/>
   <use   name="DataFormats/Math"/>
   <use   name="PhysicsTools/FWLite"/>
   <use   name="tthAnalysis/HiggsToTauTau"/>
@@ -350,19 +350,19 @@
   <use   name="tthAnalysis/HiggsToTauTau"/>
   <Flags CXXFLAGS="-g"/>
 </bin>
-<bin file="trainTTHMVA_1l_2tau.cc" name="trainTTHMVA_1l_2tau"> 
-  <!--  <Flags CppDefines="DEBUG=1"/> --> 
-  <use   name="FWCore/FWLite"/> 
-  <use   name="FWCore/ParameterSet"/> 
-  <use   name="FWCore/PythonParameterSet"/> 
-  <use   name="FWCore/Utilities"/> 
-  <use   name="DataFormats/FWLite"/> 
-  <use   name="DataFormats/Math"/> 
-  <use   name="PhysicsTools/FWLite"/> 
-  <use   name="tthAnalysis/HiggsToTauTau"/> 
-  <use   name="root"/> 
-  <use   name="roottmva"/> 
-  <use   name="boost"/> 
+<bin file="trainTTHMVA_1l_2tau.cc" name="trainTTHMVA_1l_2tau">
+  <!--  <Flags CppDefines="DEBUG=1"/> -->
+  <use   name="FWCore/FWLite"/>
+  <use   name="FWCore/ParameterSet"/>
+  <use   name="FWCore/PythonParameterSet"/>
+  <use   name="FWCore/Utilities"/>
+  <use   name="DataFormats/FWLite"/>
+  <use   name="DataFormats/Math"/>
+  <use   name="PhysicsTools/FWLite"/>
+  <use   name="tthAnalysis/HiggsToTauTau"/>
+  <use   name="root"/>
+  <use   name="roottmva"/>
+  <use   name="boost"/>
 </bin>
 <bin file="analyze_WZctrl.cc" name="analyze_WZctrl">
   <use   name="FWCore/FWLite"/>
@@ -433,19 +433,6 @@
   <use name="boost_regex" />
 </bin>
 <bin file="analyze_LeptonFakeRate.cc" name="analyze_LeptonFakeRate">
-  <use   name="FWCore/FWLite"/>
-  <use   name="FWCore/ParameterSet"/>
-  <use   name="FWCore/PythonParameterSet"/>
-  <use   name="FWCore/Utilities"/>
-  <use   name="DataFormats/FWLite"/>
-  <use   name="DataFormats/Math"/>
-  <use   name="PhysicsTools/FWLite"/>
-  <use   name="tthAnalysis/HiggsToTauTau"/>
-  <use   name="root"/>
-  <use   name="roottmva"/>
-  <use   name="boost"/>
-</bin>
-<bin file="analyze_gen.cc" name="analyze_gen">
   <use   name="FWCore/FWLite"/>
   <use   name="FWCore/ParameterSet"/>
   <use   name="FWCore/PythonParameterSet"/>
