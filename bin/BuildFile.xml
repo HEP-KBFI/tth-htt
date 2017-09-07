@@ -460,6 +460,5 @@
 </bin>
 <bin file="minimal_hdfs_read.cc" name="minimal_hdfs_read">
   <use   name="root" />
-  <Flags CXXFLAGS="-I/usr/lib/hadoop/include" />
-  <Flags LDFLAGS="-Wl,-rpath,/usr/lib/jvm/java-1.8.0/jre/lib/amd64/server -L/usr/lib/jvm/java-1.8.0/jre/lib/amd64/server -ljvm -L/usr/lib/hadoop/lib/native -lhdfs -lpthread" />
+  <use   name="tthAnalysis/HiggsToTauTau"/>
 </bin>
