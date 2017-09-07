@@ -5,7 +5,25 @@ from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_1l_2tau_2016 import samples_201
 from tthAnalysis.HiggsToTauTau.analyzeConfig_1l_2tau import analyzeConfig_1l_2tau
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 
-changeBranchNames = False
+mode = "VHbb"
+#mode = "forBDTtraining"
+
+hadTau_selection = None
+changeBranchNames = None
+applyFakeRateWeights = None
+if mode == "VHbb":
+  from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2l_2tau_2015 import samples_2015
+  from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2l_2tau_2016 import samples_2016
+  hadTau_selection = "dR03mvaVTight",
+  changeBranchNames = False
+  applyFakeRateWeights = "3L"
+elif mode == "forBDTtraining":
+  from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_FastSim import samples_2016
+  hadTau_selection = "dR03mvaLoose"
+  changeBranchNames = False
+  applyFakeRateWeights = "3L"
+else:
+  raise ValueError("Invalid Configuration parameter 'mode' = %s !!" % mode)
 
 #ERA = "2015"
 ERA = "2016"
@@ -35,9 +53,9 @@ if __name__ == '__main__':
     executable_analyze = "analyze_1l_2tau", cfgFile_analyze = "analyze_1l_2tau_cfg.py",
     samples = samples,
     changeBranchNames = changeBranchNames,
-    hadTau_selection = "dR03mvaVTight",
+    hadTau_selection = hadTau_selection,
     hadTau_charge_selections = [ "OS", "SS" ],
-    applyFakeRateWeights = "3L",
+    applyFakeRateWeights = applyFakeRateWeights,
     central_or_shifts = [ 
       "central",
 ##      "CMS_ttHl_btag_HFUp", 
@@ -90,6 +108,9 @@ if __name__ == '__main__':
     executable_addBackgroundJetToTauFakes = "addBackgroundLeptonFakes", # CV: use common executable for estimating jet->lepton and jet->tau_h fake background
     histograms_to_fit = [ "EventCounter", "numJets", "mvaOutput_1l_2tau_ttbar", "mvaDiscr_1l_2tau", "mTauTauVis" ],
     select_rle_output = True)
+
+  if mode.find("forBDTtraining") != -1:
+      analysis.set_BDT_training()
 
   analysis.create()
 

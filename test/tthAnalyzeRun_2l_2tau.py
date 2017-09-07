@@ -5,6 +5,7 @@ from tthAnalysis.HiggsToTauTau.analyzeConfig_2l_2tau import analyzeConfig_2l_2ta
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 
 mode = "VHbb"
+#mode = "forBDTtraining"
 
 hadTau_selection = None
 changeBranchNames = None
@@ -12,9 +13,14 @@ applyFakeRateWeights = None
 if mode == "VHbb":
   from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2l_2tau_2015 import samples_2015
   from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2l_2tau_2016 import samples_2016
-  hadTau_selection = "dR03mvaMedium"
+  hadTau_selection = "dR03mvaVTight"
   changeBranchNames = False
   applyFakeRateWeights = "2lepton"
+elif mode == "forBDTtraining":
+  from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_FastSim import samples_2016
+  hadTau_selection = "dR03mvaLoose"
+  changeBranchNames = False
+  applyFakeRateWeights = "4L"
 else:
   raise ValueError("Invalid Configuration parameter 'mode' = %s !!" % mode)
 
@@ -32,7 +38,7 @@ elif ERA == "2016":
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "2017Aug24"
+version = "2017Sep02_vTight"
 
 max_job_resubmission = 3
 

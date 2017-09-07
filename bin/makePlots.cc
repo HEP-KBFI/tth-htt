@@ -114,6 +114,8 @@ namespace
     std::vector<TH1*> histogramsBackground_density;
     TH1* histogramTTW = 0;
     TH1* histogramTTW_density = 0;
+    TH1* histogramTTWW = 0;
+    TH1* histogramTTWW_density = 0;
     TH1* histogramTTZ = 0;
     TH1* histogramTTZ_density = 0;
     TH1* histogramTTH = 0;
@@ -140,7 +142,10 @@ namespace
       printHistogram(histogramBackground);
       checkCompatibleBinning(histogramBackground, histogramData);
       TH1* histogramBackground_density = divideHistogramByBinWidth(histogramBackground); 
-      if ( process.find("TTW") != std::string::npos ) {
+      if ( process.find("TTWW") != std::string::npos ) {
+	histogramTTWW = histogramBackground;
+	histogramTTWW_density = histogramBackground_density;
+      } else if ( process.find("TTW") != std::string::npos ) {
 	histogramTTW = histogramBackground;
 	histogramTTW_density = histogramBackground_density;
       } else if ( process.find("TTZ") != std::string::npos ) {
@@ -174,6 +179,7 @@ namespace
       histogramsBackground_density.push_back(histogramBackground_density);
     }
     std::cout << "histogramTTW_density = " << histogramTTW_density << std::endl;
+    std::cout << "histogramTTWW_density = " << histogramTTWW_density << std::endl;
     std::cout << "histogramTTZ_density = " << histogramTTZ_density << std::endl;
 
     TH1* histogramSignal_density = 0;
@@ -197,6 +203,12 @@ namespace
       if ( histogramData ) checkCompatibleBinning(histogramUncertainty, histogramData);
       histogramUncertainty_density = divideHistogramByBinWidth(histogramUncertainty);
     }
+
+    //---------------------------------------------------------------------------
+    // CV: sum ttW and ttWW backgrounds
+    histogramTTW->Add(histogramTTWW);
+    histogramTTW_density->Add(histogramTTWW_density);
+    //---------------------------------------------------------------------------
 
     TCanvas* canvas = new TCanvas("canvas", "", canvasSizeX, canvasSizeY);
     canvas->SetFillColor(10);
@@ -291,7 +303,11 @@ namespace
     const int color_Fakes   =   1; // black
     const int color_Flips   =   1; // black
     
-    const std::string legendEntry_ttW     = "t#bar{t}W";
+    //---------------------------------------------------------------------------
+    // CV: sum ttW and ttWW backgrounds
+    const std::string legendEntry_ttW     = "t#bar{t}W + t#bar{t}WW";
+    //---------------------------------------------------------------------------
+    //const std::string legendEntry_ttW     = "t#bar{t}W";
     const std::string legendEntry_ttZ     = "t#bar{t}Z";
     const std::string legendEntry_ttH     = "t#bar{t}H";
     const std::string legendEntry_ttjets  = "t#bar{t}+jets";

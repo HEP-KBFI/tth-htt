@@ -307,8 +307,8 @@ class analyzeConfig_2l_2tau(analyzeConfig):
 
           if lepton_and_hadTau_selection == "forBDTtraining":
             lepton_selection = "Loose"
-            hadTau_selection = "Tight|dR03mvaVVLoose"
-      
+            hadTau_selection = "Tight|dR03mvaLoose"
+                  
           for lepton_and_hadTau_frWeight in self.lepton_and_hadTau_frWeights:
             if lepton_and_hadTau_frWeight == "enabled" and not lepton_and_hadTau_selection.startswith("Fakeable"):
               continue
@@ -614,20 +614,20 @@ class analyzeConfig_2l_2tau(analyzeConfig):
             category_sideband = getHistogramDir("Tight", "Fakeable", "enabled", lepton_charge_selection, hadTau_charge_selection, chargeSumSelection)
           else:
             raise ValueError("Invalid Configuration parameter 'applyFakeRateWeights' = %s !!" % applyFakeRateWeights)
-      self.jobOptions_addFakes[key_addFakes_job] = {
-        'inputFile' : self.outputFile_hadd_stage1_5[key_hadd_stage1_5],
-        'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "addBackgroundLeptonFakes_%s_%s_%s_%s_cfg.py" % \
-          (self.channel, lepton_charge_selection, hadTau_charge_selection, chargeSumSelection)),
-        'outputFile' : os.path.join(self.dirs[DKEY_HIST], "addBackgroundLeptonFakes_%s_%s_%s_%s.root" % \
-          (self.channel, lepton_charge_selection, hadTau_charge_selection, chargeSumSelection)),
-        'logFile' : os.path.join(self.dirs[DKEY_LOGS], "addBackgroundLeptonFakes_%s_%s_%s_%s.log" % \
-          (self.channel, lepton_charge_selection, hadTau_charge_selection, chargeSumSelection)),
-        'category_signal' : getHistogramDir("Tight", "Tight", "disabled", lepton_charge_selection, hadTau_charge_selection, chargeSumSelection),
-        'category_sideband' : category_sideband
-      }
-      self.createCfg_addFakes(self.jobOptions_addFakes[key_addFakes_job])
-      key_hadd_stage2 = getKey(lepton_charge_selection, hadTau_charge_selection, get_lepton_and_hadTau_selection_and_frWeight("Tight", "disabled"), chargeSumSelection)
-      self.inputFiles_hadd_stage2[key_hadd_stage2].append(self.jobOptions_addFakes[key_addFakes_job]['outputFile'])
+          self.jobOptions_addFakes[key_addFakes_job] = {
+            'inputFile' : self.outputFile_hadd_stage1_5[key_hadd_stage1_5],
+            'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "addBackgroundLeptonFakes_%s_%s_%s_%s_cfg.py" % \
+              (self.channel, lepton_charge_selection, hadTau_charge_selection, chargeSumSelection)),
+            'outputFile' : os.path.join(self.dirs[DKEY_HIST], "addBackgroundLeptonFakes_%s_%s_%s_%s.root" % \
+              (self.channel, lepton_charge_selection, hadTau_charge_selection, chargeSumSelection)),
+            'logFile' : os.path.join(self.dirs[DKEY_LOGS], "addBackgroundLeptonFakes_%s_%s_%s_%s.log" % \
+              (self.channel, lepton_charge_selection, hadTau_charge_selection, chargeSumSelection)),
+            'category_signal' : getHistogramDir("Tight", "Tight", "disabled", lepton_charge_selection, hadTau_charge_selection, chargeSumSelection),
+            'category_sideband' : category_sideband
+          }
+          self.createCfg_addFakes(self.jobOptions_addFakes[key_addFakes_job])
+          key_hadd_stage2 = getKey(lepton_charge_selection, hadTau_charge_selection, get_lepton_and_hadTau_selection_and_frWeight("Tight", "disabled"), chargeSumSelection)
+          self.inputFiles_hadd_stage2[key_hadd_stage2].append(self.jobOptions_addFakes[key_addFakes_job]['outputFile'])
 
     logging.info("Creating configuration files to run 'prepareDatacards'")
     for lepton_charge_selection in self.lepton_charge_selections:
