@@ -459,6 +459,11 @@
   <use   name="boost"/>
 </bin>
 <bin file="minimal_hdfs_read.cc" name="minimal_hdfs_read">
-  <use   name="root" />
+  <Flags CXXFLAGS="-Wno-comment"/>
+  <use   name="root"/>
+  <use   name="tthAnalysis/HiggsToTauTau"/>
+</bin>
+<bin file="hadd_hdfs.cc" name="hadd_hdfs">
+  <use   name="root"/>
   <use   name="tthAnalysis/HiggsToTauTau"/>
 </bin>
