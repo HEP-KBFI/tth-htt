@@ -170,6 +170,7 @@ THDFSFile::~THDFSFile()
    // Turned off now due to compilation issues.
    // The very awkward way of releasing HDFS FS objects (by accessing JNI
    // internals) is going away in the next libhdfs version.
+   SysClose(0); // re-enabled this guy
 }
 
 ////////////////////////////////////////////////////////////////////////////////

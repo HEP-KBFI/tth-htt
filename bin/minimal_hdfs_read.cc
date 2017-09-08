@@ -1,4 +1,4 @@
-#include "tthAnalysis/HiggsToTauTau/interface/THDFSFile.h"
+#include "tthAnalysis/HiggsToTauTau/interface/TFileOpenWrapper.h" // TFileOpenWrapper::, TFile
 
 #include <TTree.h>
 
@@ -12,11 +12,12 @@ for j in $(ls /usr/lib/hadoop/client/*.jar); do export CLASSPATH=$CLASSPATH:$j; 
 */
 
 int main(int argc, char **argv) {
-    
-    THDFSFile * f = new THDFSFile("hdfs:///local/karl/sandbox/tree_1.root", "read");
-    TTree * t     = static_cast<TTree *>(f -> Get("tree"));
+
+    TFile * f = TFileOpenWrapper::Open("hdfs:///local/karl/sandbox/tree_1.root", "read");
+    TTree * t = static_cast<TTree *>(f -> Get("tree"));
     const unsigned n = t -> GetEntries();
     std::cout << "Read " << n <<" events\n";
+    delete f;
 
     return 0;
 }
