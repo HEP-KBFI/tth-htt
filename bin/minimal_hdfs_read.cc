@@ -13,7 +13,10 @@ for j in $(ls /usr/lib/hadoop/client/*.jar); do export CLASSPATH=$CLASSPATH:$j; 
 
 int main(int argc, char **argv) {
 
-    TFile * f = TFileOpenWrapper::Open("hdfs:///local/karl/sandbox/tree_1.root", "read");
+    const bool try_hdfs = true;
+    TFile * f = try_hdfs ? TFileOpenWrapper::Open("hdfs:///local/karl/sandbox/tree_1.root", "read") :
+                           TFileOpenWrapper::Open("/hdfs/local/karl/sandbox/tree_1.root", "read")
+    ;
     TTree * t = static_cast<TTree *>(f -> Get("tree"));
     const unsigned n = t -> GetEntries();
     std::cout << "Read " << n <<" events\n";

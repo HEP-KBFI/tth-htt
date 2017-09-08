@@ -910,9 +910,9 @@ Bool_t TFileMerger::OpenExcessFiles()
             Error("OpenExcessFiles", "cannot get a local copy of file %s", url->GetName());
             return kFALSE;
          }
-         newfile = TFile::Open(localcopy, "READ");
+         newfile = TFileOpenWrapper::Open(localcopy, "READ");
       } else {
-         newfile = TFile::Open(url->GetName(), "READ");
+         newfile = TFileOpenWrapper::Open(url->GetName(), "READ");
       }
 
       if (!newfile) {
