@@ -3,8 +3,6 @@
 
 #include <TPRegexp.h> // TPRegexp
 
-#include <iostream> // std::cout, std::endl
-
 namespace TFileOpenWrapper
 {
 /**
@@ -49,7 +47,6 @@ namespace TFileOpenWrapper
       const char * ftitle,
       Int_t compress) -> void
     {
-      std::cout << "Reading via THDFSFile" << std::endl;
       f = new THDFSFile(path, option, ftitle, compress);
       if(f && f -> IsZombie())
       {
