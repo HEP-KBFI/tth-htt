@@ -3,6 +3,8 @@
 
 #include <TPRegexp.h> // TPRegexp
 
+#include <iostream> // std::cout, std::endl
+
 namespace TFileOpenWrapper
 {
 /**
@@ -28,21 +30,45 @@ namespace TFileOpenWrapper
        Int_t compress)
   {
     TFile * f = nullptr;
-    const TString path_str(path);
-    // we use triple forward slashes because if the user opts for
-    // the hdfs protocol, the given path must be absolute/full and
-    // therefore starting with a forward slash (although this check
-    // is probably done in THDFSFile as well)
-    const TString hdfs_protocol_prefix("hdfs:///");
-    TPRegexp hdfs_regex("^" + hdfs_protocol_prefix);
-    if(path_str(hdfs_regex) != "")
+    TString path_str(path);
+    TString option_str(option);
+    option_str.ToUpper();
+
+    const TString hdfs_protocol_prefix("hdfs://");
+    TPRegexp hdfs_protocol_regex("^" + hdfs_protocol_prefix);
+
+    // if the mode is empty or set to read, and the given path starts
+    // with /hdfs, we prepend the path suitable for the hdfs protocol
+    // (we want to avoid opening files on /hdfs for writing)
+    const TString hdfs_path_prefix("/hdfs");
+    TPRegexp hdfs_path_regex("^" + hdfs_path_prefix);
+
+    const auto read_from_hdfs = [&f](
+      const char * path,
+      Option_t * option,
+      const char * ftitle,
+      Int_t compress) -> void
     {
+      std::cout << "Reading via THDFSFile" << std::endl;
       f = new THDFSFile(path, option, ftitle, compress);
       if(f && f -> IsZombie())
       {
         delete f;
         f = nullptr;
       }
+      return;
+    };
+
+    if(path_str(hdfs_protocol_regex) != "")
+    {
+      read_from_hdfs(path, option, ftitle, compress);
+    }
+    else if(path_str(hdfs_path_regex) != "" && (option_str == "" || option_str == "READ"))
+    {
+      // here we change the path: /hdfs/A/B/C/... -> hdfs:///A/B/C/...
+      read_from_hdfs(
+        path_str.Replace(0, hdfs_path_prefix.Length(), hdfs_protocol_prefix), option, ftitle, compress
+      );
     }
     else
     {
