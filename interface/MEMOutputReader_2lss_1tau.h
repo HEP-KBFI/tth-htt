@@ -3,6 +3,7 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/MEMOutput_2lss_1tau.h" // MEMOutput_2lss_1tau
 #include "tthAnalysis/HiggsToTauTau/interface/KeyTypes.h" // RUN_TYPE, LUMI_TYPE, EVT_TYPE
+#include "tthAnalysis/HiggsToTauTau/interface/ReaderBase.h" // ReaderBase
 
 #include <Rtypes.h> // Int_t, Double_t
 #include <TTree.h> // TTree
@@ -12,23 +13,24 @@
 #include <map>
 
 class MEMOutputReader_2lss_1tau
+  : public ReaderBase
 {
  public:
-  MEMOutputReader_2lss_1tau(const std::string& branchName_num, const std::string& branchName_obj); 
+  MEMOutputReader_2lss_1tau(const std::string& branchName_num, const std::string& branchName_obj);
   ~MEMOutputReader_2lss_1tau();
 
   /**
    * @brief Call tree->SetBranchAddress for all GenParticle branches
    */
-  void setBranchAddresses(TTree* tree);
+  void setBranchAddresses(TTree* tree) override;
 
   /**
    * @brief Read branches from tree and use information to fill collection of MEMOutput_2lss_1tau objects
    * @return Collection of MEMOutput_2lss_1tau objects
    */
   std::vector<MEMOutput_2lss_1tau> read() const;
-  
- protected: 
+
+ protected:
  /**
    * @brief Initialize names of branches to be read from tree
    */
@@ -68,11 +70,11 @@ class MEMOutputReader_2lss_1tau
   Float_t* subleadLepton_phi_;
   Float_t* hadTau_eta_;
   Float_t* hadTau_phi_;
-  Int_t* type_; 
+  Int_t* type_;
   Float_t* weight_ttH_;
-  Float_t* weight_ttZ_; 
+  Float_t* weight_ttZ_;
   Float_t* weight_ttZ_Zll_;
-  Float_t* weight_tt_; 
+  Float_t* weight_tt_;
   Float_t* LR_;
   Float_t* cpuTime_;
   Float_t* realTime_;

@@ -3,6 +3,8 @@
 
 #include <TPRegexp.h> // TPRegexp
 
+#include <cstring> // std::strcmp()
+
 namespace TFileOpenWrapper
 {
 /**
@@ -47,10 +49,9 @@ namespace TFileOpenWrapper
       const char * ftitle,
       Int_t compress) -> void
     {
-      f = new THDFSFile(path, option, ftitle, compress);
+      f = THDFSFile::Open(path, option, ftitle, compress);
       if(f && f -> IsZombie())
       {
-        delete f;
         f = nullptr;
       }
       return;
@@ -60,17 +61,30 @@ namespace TFileOpenWrapper
     {
       read_from_hdfs(path, option, ftitle, compress);
     }
-    else if(path_str(hdfs_path_regex) != "" && (option_str == "" || option_str == "READ"))
-    {
-      // here we change the path: /hdfs/A/B/C/... -> hdfs:///A/B/C/...
-      read_from_hdfs(
-        path_str.Replace(0, hdfs_path_prefix.Length(), hdfs_protocol_prefix), option, ftitle, compress
-      );
-    }
+//    else if(path_str(hdfs_path_regex) != "" && (option_str == "" || option_str == "READ"))
+//    {
+//      // here we change the path: /hdfs/A/B/C/... -> hdfs:///A/B/C/...
+//      read_from_hdfs(
+//        path_str.Replace(0, hdfs_path_prefix.Length(), hdfs_protocol_prefix), option, ftitle, compress
+//      );
+//    }
     else
     {
       f = TFile::Open(path, option, ftitle, compress);
     }
     return f;
+  }
+
+  void
+  Close(TFile * f)
+  {
+    if(std::strcmp(f -> ClassName(), THDFSFile::GetClassName()) == 0)
+    {
+      f -> Close();
+    }
+    else
+    {
+      delete f;
+    }
   }
 }

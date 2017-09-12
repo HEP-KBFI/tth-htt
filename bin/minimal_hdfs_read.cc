@@ -1,4 +1,5 @@
 #include "tthAnalysis/HiggsToTauTau/interface/TFileOpenWrapper.h" // TFileOpenWrapper::, TFile
+#include "tthAnalysis/HiggsToTauTau/interface/TTreeWrapper.h" // TTreeWrapper
 
 #include <TTree.h>
 
@@ -13,14 +14,34 @@ for j in $(ls /usr/lib/hadoop/client/*.jar); do export CLASSPATH=$CLASSPATH:$j; 
 
 int main(int argc, char **argv) {
 
-    const bool try_hdfs = true;
-    TFile * f = try_hdfs ? TFileOpenWrapper::Open("hdfs:///local/karl/sandbox/tree_1.root", "read") :
-                           TFileOpenWrapper::Open("/hdfs/local/karl/sandbox/tree_1.root", "read")
+    for(unsigned i = 0; i < 10; ++i)
+    {
+        const bool try_hdfs = i % 2 == 0;
+        const std::string inputFileName = try_hdfs ?
+          //"/home/karl/sandbox/tree_1.root" : "/home/karl/sandbox/tree_2.root"
+           "hdfs:///local/karl/sandbox/tree_1.root" : "/hdfs/local/karl/sandbox/tree_2.root"
+        ;
+        TFile * f = TFileOpenWrapper::Open(inputFileName.c_str(), "read");
+        TTree * t = static_cast<TTree *>(f -> Get("tree"));
+        const unsigned n = t -> GetEntries();
+        std::cout << "Read " << n << " events from " << inputFileName << '\n';
+        for(unsigned k = 0; k < n; ++k)
+          t -> GetEntry(k);
+        TFileOpenWrapper::Close(f);
+        f = nullptr;
+     }
+
+    TTreeWrapper w("tree", {
+      "hdfs:///local/karl/sandbox/tree_1.root",
+      "hdfs:///local/karl/sandbox/tree_2.root"
+    });
+    std::cout << w.getFileCount() << '\n'
+              << w.getEventCount() << '\n'
     ;
-    TTree * t = static_cast<TTree *>(f -> Get("tree"));
-    const unsigned n = t -> GetEntries();
-    std::cout << "Read " << n <<" events\n";
-    delete f;
+    while(w.hasNextEvent())
+    {
+      //
+    }
 
     return 0;
 }

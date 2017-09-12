@@ -17,6 +17,9 @@ namespace TFileOpenWrapper
        Option_t * option = "",
        const char * ftitle = "",
        Int_t compress = 1);
+
+  void
+  Close(TFile * f);
 }
 
 #endif // TFILEOPENWRAPPER_H

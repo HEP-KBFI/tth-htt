@@ -1,6 +1,8 @@
 #ifndef tthAnalysis_HiggsToTauTau_LHEInfoReader_h
 #define tthAnalysis_HiggsToTauTau_LHEInfoReader_h
 
+#include "tthAnalysis/HiggsToTauTau/interface/ReaderBase.h" // ReaderBase
+
 #include <Rtypes.h> // Int_t, Double_t
 #include <TTree.h> // TTree
 
@@ -11,6 +13,7 @@
 enum { kLHE_scale_central, kLHE_scale_xUp, kLHE_scale_xDown, kLHE_scale_yUp, kLHE_scale_yDown };
 
 class LHEInfoReader
+  : public ReaderBase
 {
  public:
   LHEInfoReader();
@@ -19,7 +22,7 @@ class LHEInfoReader
   /**
    * @brief Call tree->SetBranchAddress for all branches containing LHE (scale and PDF) information
    */
-  void setBranchAddresses(TTree* tree);
+  void setBranchAddresses(TTree* tree) override;
 
   /**
    * @brief Read branches from tree and return values
@@ -34,8 +37,8 @@ class LHEInfoReader
 
   int getNumWeights_pdf() const;
   double getWeight_pdf(int idx) const;
-    
- protected: 
+
+ protected:
  /**
    * @brief Initialize names of branches to be read from tree
    */

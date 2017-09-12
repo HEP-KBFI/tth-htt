@@ -24,6 +24,11 @@ void check_mvaInputs(std::map<std::string, double>& mvaInputs, RUN_TYPE run, LUM
   }
 }
 
+void check_mvaInputs(std::map<std::string, double> & mvaInputs, const EventInfo & info)
+{
+  return check_mvaInputs(mvaInputs, info.run, info.lumi, info.event);
+}
+
 std::vector<std::string> get_mvaInputVariables(const std::vector<std::string>& mvaInputVariables_ttV, const std::vector<std::string>& mvaInputVariables_ttbar)
 {
   std::set<std::string> mvaInputVariables_set;

@@ -1,6 +1,8 @@
 #ifndef tthAnalysis_HiggsToTauTau_hltPath_h
 #define tthAnalysis_HiggsToTauTau_hltPath_h
 
+#include "tthAnalysis/HiggsToTauTau/interface/ReaderBase.h" // ReaderBase
+
 #include <Rtypes.h> // Int_t
 #include <TTree.h> // TTree
 
@@ -12,6 +14,7 @@
  * @brief Auxiliary data structure for handling trigger information
  */
 class hltPath
+  : public ReaderBase
 {
  public:
  hltPath(const std::string& branchName, double minPt = -1., double maxPt = -1.)
@@ -24,28 +27,32 @@ class hltPath
   void setBranchAddress(TTree* tree)
   {
     tree->SetBranchAddress(branchName_.data(), &value_);
-  } 
-  const std::string& getBranchName() const 
-  { 
-    return branchName_; 
   }
-  Int_t getValue() const 
+  void setBranchAddresses(TTree * tree) override
   {
-    assert(value_ == 0 || value_ == 1); 
-    return value_; 
+    return setBranchAddress(tree);
+  }
+  const std::string& getBranchName() const
+  {
+    return branchName_;
+  }
+  Int_t getValue() const
+  {
+    assert(value_ == 0 || value_ == 1);
+    return value_;
   }
   double getMinPt() const
   {
-    return minPt_; 
+    return minPt_;
   }
   double getMaxPt() const
   {
-    return maxPt_; 
+    return maxPt_;
   }
  private:
   std::string branchName_;
   Int_t value_;
-  double minPt_; 
+  double minPt_;
   double maxPt_;
 };
 

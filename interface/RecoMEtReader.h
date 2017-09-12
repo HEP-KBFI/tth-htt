@@ -2,6 +2,7 @@
 #define tthAnalysis_HiggsToTauTau_RecoMEtReader_h
 
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMEt.h" // RecoMEt
+#include "tthAnalysis/HiggsToTauTau/interface/ReaderBase.h" // ReaderBase
 
 #include <Rtypes.h> // Int_t, Double_t
 #include <TTree.h> // TTree
@@ -11,24 +12,25 @@
 #include <map>
 
 class RecoMEtReader
+  : public ReaderBase
 {
  public:
   RecoMEtReader(int era);
-  RecoMEtReader(int era, const std::string& branchName_obj, const std::string& branchName_cov = "met"); 
+  RecoMEtReader(int era, const std::string& branchName_obj, const std::string& branchName_cov = "met");
   ~RecoMEtReader();
 
   /**
    * @brief Call tree->SetBranchAddress for all RecoMEt branches
    */
-  void setBranchAddresses(TTree* tree);
+  void setBranchAddresses(TTree* tree) override;
 
   /**
    * @brief Read branches from tree and use information to fill RecoMEt object
    * @return RecoMEt object
    */
   RecoMEt read() const;
-  
- protected: 
+
+ protected:
  /**
    * @brief Initialize names of branches to be read from tree
    */

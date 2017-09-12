@@ -2,6 +2,7 @@
 #define tthAnalysis_HiggsToTauTau_GenParticleReader_h
 
 #include "tthAnalysis/HiggsToTauTau/interface/GenParticle.h" // GenParticle
+#include "tthAnalysis/HiggsToTauTau/interface/ReaderBase.h" // ReaderBase
 
 #include <Rtypes.h> // Int_t, Double_t
 #include <TTree.h> // TTree
@@ -11,6 +12,7 @@
 #include <map>
 
 class GenParticleReader
+  : public ReaderBase
 {
  public:
   GenParticleReader();
@@ -20,24 +22,24 @@ class GenParticleReader
   /**
    * @brief Call tree->SetBranchAddress for all GenParticle branches
    */
-  void setBranchAddresses(TTree* tree);
+  void setBranchAddresses(TTree* tree) override;
 
   /**
    * @brief Read branches from tree and use information to fill collection of GenParticle objects
-   * @return Collection of GenParticle objects 
+   * @return Collection of GenParticle objects
    */
   std::vector<GenParticle> read() const;
-  
- protected: 
+
+ protected:
  /**
    * @brief Initialize names of branches to be read from tree
    */
   void setBranchNames();
 
   const int max_nParticles_;
-  std::string branchName_nParticles_; 
+  std::string branchName_nParticles_;
   std::string branchName_particles_;
-  
+
   std::string branchName_particle_pt_;
   std::string branchName_particle_eta_;
   std::string branchName_particle_phi_;

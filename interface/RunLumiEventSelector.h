@@ -10,10 +10,12 @@
  *
  */
 
-#include "FWCore/Framework/interface/EDFilter.h"
-#include "FWCore/Framework/interface/Event.h"
-#include "FWCore/Framework/interface/EventSetup.h"
-#include "FWCore/ParameterSet/interface/ParameterSet.h"
+#include "tthAnalysis/HiggsToTauTau/interface/EventInfo.h" // EventInfo
+
+#include <FWCore/Framework/interface/EDFilter.h>
+#include <FWCore/Framework/interface/Event.h>
+#include <FWCore/Framework/interface/EventSetup.h>
+#include <FWCore/ParameterSet/interface/ParameterSet.h>
 
 #include <TObject.h>
 
@@ -30,6 +32,7 @@ class RunLumiEventSelector
   virtual ~RunLumiEventSelector();
     
   bool operator()(ULong_t, ULong_t, ULong_t) const;
+  bool operator()(const EventInfo & info) const;
 
  private:
 

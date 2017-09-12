@@ -8,6 +8,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/GenHadTau.h" // GenHadTau
 #include "tthAnalysis/HiggsToTauTau/interface/GenJetReader.h" // GenJetReader
 #include "tthAnalysis/HiggsToTauTau/interface/GenJet.h" // GenJet
+#include "tthAnalysis/HiggsToTauTau/interface/ReaderBase.h" // ReaderBase
 
 #include <Rtypes.h> // Int_t, Float_t
 #include <TTree.h> // TTree
@@ -20,10 +21,11 @@
 #include <map>
 
 class RecoHadTauReader
+  : public ReaderBase
 {
  public:
   RecoHadTauReader(int era, bool readGenMatching = false);
-  RecoHadTauReader(int era, const std::string& branchName_num, const std::string& branchName_obj, bool readGenMatching = false); 
+  RecoHadTauReader(int era, const std::string& branchName_num, const std::string& branchName_obj, bool readGenMatching = false);
   ~RecoHadTauReader();
 
   enum { kHadTauPt_central, kHadTauPt_shiftUp, kHadTauPt_shiftDown };
@@ -32,15 +34,15 @@ class RecoHadTauReader
   /**
    * @brief Call tree->SetBranchAddress for all RecoHadTau branches
    */
-  void setBranchAddresses(TTree* tree);
+  void setBranchAddresses(TTree* tree) override;
 
   /**
    * @brief Read branches from tree and use information to fill collection of RecoHadTau objects
    * @return Collection of RecoHadTau objects
    */
   std::vector<RecoHadTau> read() const;
-  
- protected: 
+
+ protected:
   /**
    * @brief Compute "VVLose" (95% signal efficiency) working point for tau ID MVA trained for dR=0.3 isolation cone,
    *        used to enhance background event statistics for training of event-level MVAs that separate ttH signal from backgrounds
@@ -97,7 +99,7 @@ class RecoHadTauReader
   std::string branchName_rawCombIso_dR05_;
   std::string branchName_idAgainstElec_;
   std::string branchName_idAgainstMu_;
-  
+
   int hadTauPt_option_;
 
   Int_t nHadTaus_;

@@ -34,12 +34,24 @@ private:
    Int_t    SysStat(Int_t fd, Long_t *id, Long64_t *size, Long_t *flags, Long_t *modtime);
    Int_t    SysSync(Int_t fd);
 
-public:
    THDFSFile(const char *path, Option_t *option="",
              const char *ftitle="", Int_t compress=1);
    virtual ~THDFSFile();
 
+public:
+   static THDFSFile *
+   Open(const char *path, Option_t *option="",
+        const char *ftitle="", Int_t compress=1);
+
+   THDFSFile(const THDFSFile &) = delete;
+   THDFSFile & operator=(const THDFSFile &) = delete;
+   THDFSFile(THDFSFile &&) = delete;
+   THDFSFile & operator=(THDFSFile &&) = delete;
+
    void ResetErrno() const;
+   void Close();
+   const char * ClassName() const override;
+   static const char * GetClassName();
 
 //   ClassDef(THDFSFile, 0) //A ROOT file that reads/writes via HDFS
 };

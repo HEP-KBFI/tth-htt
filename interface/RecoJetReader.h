@@ -9,6 +9,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/GenJetReader.h" // GenJetReader
 #include "tthAnalysis/HiggsToTauTau/interface/GenJet.h" // GenJet
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2015, kEra_2016
+#include "tthAnalysis/HiggsToTauTau/interface/ReaderBase.h" // ReaderBase
 
 #include <Rtypes.h> // Int_t, Float_t
 #include <TTree.h> // TTree
@@ -18,10 +19,11 @@
 #include <map>
 
 class RecoJetReader
+  : public ReaderBase
 {
  public:
   RecoJetReader(int era, bool isMC, bool readGenMatching = false);
-  RecoJetReader(int era, bool isMC, const std::string& branchName_num, const std::string& branchName_obj, bool readGenMatching = false); 
+  RecoJetReader(int era, bool isMC, const std::string& branchName_num, const std::string& branchName_obj, bool readGenMatching = false);
   ~RecoJetReader();
 
   enum { kJetPt_central, kJetPt_jecUp, kJetPt_jecDown };
@@ -34,15 +36,15 @@ class RecoJetReader
   /**
    * @brief Call tree->SetBranchAddress for all RecoJet branches
    */
-  void setBranchAddresses(TTree* tree);
+  void setBranchAddresses(TTree* tree) override;
 
   /**
    * @brief Read branches from tree and use information to fill collection of RecoJet objects
    * @return Collection of RecoJet objects
    */
   std::vector<RecoJet> read() const;
-  
- protected: 
+
+ protected:
  /**
    * @brief Initialize names of branches to be read from tree
    */
@@ -69,7 +71,7 @@ class RecoJetReader
   mutable std::vector<GenHadTau> matched_genHadTaus_;
   mutable std::vector<GenJet> matched_genJets_;
 
-  std::string branchName_pt_;  
+  std::string branchName_pt_;
   std::string branchName_eta_;
   std::string branchName_phi_;
   std::string branchName_mass_;
@@ -85,7 +87,7 @@ class RecoJetReader
 
   int jetPt_option_;
 
-  bool read_BtagWeight_systematics_; 
+  bool read_BtagWeight_systematics_;
 
   Int_t nJets_;
   Float_t* jet_pt_;

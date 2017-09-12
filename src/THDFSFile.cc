@@ -73,6 +73,13 @@ static const int hdfs_default_port = 0;
 
 //ClassImp(THDFSFile);
 
+THDFSFile *
+THDFSFile::Open(const char *path, Option_t *option,
+                const char *ftitle, Int_t compress)
+{
+  return new THDFSFile(path, option, ftitle, compress);
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 /// Usual Constructor.  See the TFile constructor for details.
 
@@ -170,7 +177,6 @@ THDFSFile::~THDFSFile()
    // Turned off now due to compilation issues.
    // The very awkward way of releasing HDFS FS objects (by accessing JNI
    // internals) is going away in the next libhdfs version.
-   SysClose(0); // re-enabled this guy
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -317,6 +323,21 @@ Int_t THDFSFile::SysSync(Int_t)
 void THDFSFile::ResetErrno() const
 {
    TSystem::ResetErrno();
+}
+
+void THDFSFile::Close()
+{
+  SysClose(0);
+}
+
+const char * THDFSFile::ClassName() const
+{
+  return THDFSFile::GetClassName();
+}
+
+const char * THDFSFile::GetClassName()
+{
+  return "THDFSFile";
 }
 
 
