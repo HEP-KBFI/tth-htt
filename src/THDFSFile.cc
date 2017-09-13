@@ -55,6 +55,10 @@ Example HDFS URLs:
 #include "hdfs.h"
 //#include "hdfsJniHelper.h"
 
+#include <iostream> // std::cout
+#include <cstring> // std::strcmp()
+#include <cstdlib> // std::getenv()
+
 // For now, we don't allow any write/fs modification operations.
 static const Bool_t R__HDFS_ALLOW_CHANGES = kFALSE;
 
@@ -77,6 +81,16 @@ THDFSFile *
 THDFSFile::Open(const char *path, Option_t *option,
                 const char *ftitle, Int_t compress)
 {
+  const char * malloc_check_ = std::getenv("MALLOC_CHECK_");
+  if(std::strcmp(malloc_check_, "0") != 0)
+  {
+    std::cout << "It is discouraged to use this class in full analysis. "
+                 "If you experience any problems with this class while "
+                 "your application is about to terminate, please set "
+                 "MALLOC_CHECK_ environment variable to 0 so that the errors "
+                 "will be masked and the return code will still remain 0: "
+                 "export MALLOC_CHECK_=0\n";
+  }
   return new THDFSFile(path, option, ftitle, compress);
 }
 
