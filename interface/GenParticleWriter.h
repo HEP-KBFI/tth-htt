@@ -39,6 +39,7 @@ class GenParticleWriter
   std::string branchName_eta_;
   std::string branchName_phi_;
   std::string branchName_mass_;
+  std::string branchName_charge_;
   std::string branchName_pdgId_;
 
   Int_t nParticles_;
@@ -46,6 +47,7 @@ class GenParticleWriter
   Float_t* particle_eta_;
   Float_t* particle_phi_;
   Float_t* particle_mass_;
+  Float_t* particle_charge_;
   Int_t* particle_pdgId_;
 };
 

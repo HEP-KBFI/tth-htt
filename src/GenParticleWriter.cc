@@ -14,6 +14,7 @@ GenParticleWriter::GenParticleWriter(const std::string& branchName_num, const st
   , particle_eta_(0)
   , particle_phi_(0)
   , particle_mass_(0)
+  , particle_charge_(0)
   , particle_pdgId_(0)
 {
   setBranchNames();
@@ -25,6 +26,7 @@ GenParticleWriter::~GenParticleWriter()
   delete[] particle_eta_;
   delete[] particle_phi_;
   delete[] particle_mass_;
+  delete[] particle_charge_;
   delete[] particle_pdgId_;
 }
 
@@ -34,6 +36,7 @@ void GenParticleWriter::setBranchNames()
   branchName_eta_ = Form("%s_%s", branchName_obj_.data(), "eta");
   branchName_phi_ = Form("%s_%s", branchName_obj_.data(), "phi");
   branchName_mass_ = Form("%s_%s", branchName_obj_.data(), "mass");
+  branchName_charge_ = Form("%s_%s", branchName_obj_.data(), "charge");
   branchName_pdgId_ = Form("%s_%s", branchName_obj_.data(), "pdgId");
 }
 
@@ -48,6 +51,8 @@ void GenParticleWriter::setBranches(TTree* tree)
   setBranchVF(tree, branchName_phi_, branchName_num_, particle_phi_); 
   particle_mass_ = new Float_t[max_nParticles_];
   setBranchVF(tree, branchName_mass_, branchName_num_, particle_mass_); 
+  particle_charge_ = new Float_t[max_nParticles_];
+  setBranchVF(tree, branchName_charge_, branchName_num_, particle_charge_);
   particle_pdgId_ = new Int_t[max_nParticles_];
   setBranchVI(tree, branchName_pdgId_, branchName_num_, particle_pdgId_); 
 }
@@ -61,6 +66,7 @@ void GenParticleWriter::write(const std::vector<GenParticle>& particles)
     particle_eta_[idxParticle] = particle.eta();
     particle_phi_[idxParticle] = particle.phi();
     particle_mass_[idxParticle] = particle.mass();
+    particle_charge_[idxParticle] = particle.charge();
     particle_pdgId_[idxParticle] = particle.pdgId();
   }
 }
