@@ -13,17 +13,19 @@ TTreeWrapper::TTreeWrapper()
 {}
 
 TTreeWrapper::TTreeWrapper(const std::string & treeName,
-                           const std::vector<std::string> & fileNames)
+                           const std::vector<std::string> & fileNames,
+                           long long maxEvents)
   : currentFileIdx_(0)
   , currentEventIdx_(0)
   , currentMaxEvents_(-1)
   , currentMaxEventIdx_(0)
-  , maxEvents_(-1)
+  , maxEvents_(maxEvents)
   , currentFilePtr_(nullptr)
   , currentTreePtr_(nullptr)
   , treeName_(treeName)
   , fileNames_(fileNames)
   , fileCount_(fileNames_.size())
+  , cumulativeMaxEventCount_(0)
   , eventCount_(-1)
 {
   if(! treeName_.empty())
@@ -36,9 +38,9 @@ TTreeWrapper::TTreeWrapper(const std::string & treeName,
   }
   if(fileCount_)
   {
-    for(const std::string fileName: fileNames_)
+    for(std::size_t i = 0; i < fileNames_.size(); ++i)
     {
-      std::cout << "Adding file: " << fileName << '\n';
+      std::cout << "Adding file #" << i << ": " << fileNames_[i] << '\n';
     }
   }
   else
@@ -48,7 +50,9 @@ TTreeWrapper::TTreeWrapper(const std::string & treeName,
 }
 
 TTreeWrapper::~TTreeWrapper()
-{}
+{
+  close();
+}
 
 int
 TTreeWrapper::getFileCount() const
@@ -57,44 +61,27 @@ TTreeWrapper::getFileCount() const
 }
 
 long long
-TTreeWrapper::getEventCount() const
-{
-  // we have to open the files one-by-one and get the event counts
-  // in each file separately
-  if(eventCount_ < 0)
-  {
-    long long totalNofEvents = 0;
-    for(const std::string & fileName: fileNames_)
-    {
-      TFile * filePtr = TFileOpenWrapper::Open(fileName.c_str(), "READ");
-      if(! filePtr)
-      {
-        throw cms::Exception("TTreeWrapper") << "Could not open file " << fileName << '\n';
-      }
-      if(filePtr -> IsZombie())
-      {
-        throw cms::Exception("TTreeWrapper")
-          << "The file '" << fileName << "' appears to be a zombie\n";
-      }
-      TTree * treePtr = static_cast<TTree *>(filePtr -> Get(treeName_.c_str()));
-      if(! treePtr)
-      {
-        throw cms::Exception("TTreeWrapper")
-          << "The file '" << fileName << "' does not have a TTree named " << treeName_ << '\n';
-      }
-      totalNofEvents += treePtr -> GetEntries();
-
-      TFileOpenWrapper::Close(filePtr);
-    }
-    eventCount_ = totalNofEvents;
-  }
-  return eventCount_;
-}
-
-long long
 TTreeWrapper::getCurrentMaxEventIdx() const
 {
   return currentMaxEventIdx_;
+}
+
+long long
+TTreeWrapper::getCumulativeMaxEventCount() const
+{
+  return cumulativeMaxEventCount_;
+}
+
+int
+TTreeWrapper::getProcessedFileCount() const
+{
+  return currentMaxEventIdx_ > 0 ? currentFileIdx_ + 1 : 0;
+}
+
+long long
+TTreeWrapper::getCurrentEventIdx() const
+{
+  return currentEventIdx_;
 }
 
 bool
@@ -131,7 +118,7 @@ TTreeWrapper::hasNextEvent()
     // try to open the file
     if(currentFileIdx_ < fileCount_)
     {
-      std::cout << "Opening file " << fileNames_[currentFileIdx_] << '\n';
+      std::cout << "Opening #" << currentFileIdx_ << " file " << fileNames_[currentFileIdx_] << '\n';
       currentFilePtr_ = TFileOpenWrapper::Open(fileNames_[currentFileIdx_].c_str(), "READ");
     }
     else
@@ -173,6 +160,7 @@ TTreeWrapper::hasNextEvent()
 
     // save the total number of events in this file
     currentMaxEvents_ = currentTreePtr_ -> GetEntries();
+    cumulativeMaxEventCount_ += currentMaxEvents_;
   }
 
   const bool belowMaxEvents = (maxEvents_ == -1 || currentMaxEventIdx_ < maxEvents_);
@@ -207,4 +195,39 @@ TTreeWrapper::close()
     currentMaxEvents_ = -1;
     currentEventIdx_  =  0;
   }
+}
+
+long long
+TTreeWrapper::getEventCount() const
+{
+  // we have to open the files one-by-one and get the event counts
+  // in each file separately
+  if(eventCount_ < 0)
+  {
+    long long totalNofEvents = 0;
+    for(const std::string & fileName: fileNames_)
+    {
+      TFile * filePtr = TFileOpenWrapper::Open(fileName.c_str(), "READ");
+      if(! filePtr)
+      {
+        throw cms::Exception("TTreeWrapper") << "Could not open file " << fileName << '\n';
+      }
+      if(filePtr -> IsZombie())
+      {
+        throw cms::Exception("TTreeWrapper")
+          << "The file '" << fileName << "' appears to be a zombie\n";
+      }
+      TTree * treePtr = static_cast<TTree *>(filePtr -> Get(treeName_.c_str()));
+      if(! treePtr)
+      {
+        throw cms::Exception("TTreeWrapper")
+          << "The file '" << fileName << "' does not have a TTree named " << treeName_ << '\n';
+      }
+      totalNofEvents += treePtr -> GetEntries();
+
+      TFileOpenWrapper::Close(filePtr);
+    }
+    eventCount_ = totalNofEvents;
+  }
+  return eventCount_;
 }

@@ -34,7 +34,8 @@ public:
    *       fileNames does not contain any elements
    */
   TTreeWrapper(const std::string & treeName,
-               const std::vector<std::string> & fileNames);
+               const std::vector<std::string> & fileNames,
+               long long maxEvents = -1);
 
   /**
    * @brief Cleanup
@@ -49,16 +50,6 @@ public:
   getFileCount() const;
 
   /**
-   * @brief Returns the total number of events in the files
-   * @return The sum of the number of events across all files
-   *
-   * @note Calling this function will cause opening all the files
-   *       sequentially.
-   */
-  long long
-  getEventCount() const;
-
-  /**
    * @brief Returns the cumulative event index across all files
    * @return The index
    *
@@ -69,6 +60,46 @@ public:
    */
   long long
   getCurrentMaxEventIdx() const;
+
+  /**
+   * @brief Returns cumulative event count
+   * @return The cumulative event count
+   *
+   * @note By ,,cumulative event count'' we mean the sum of entries
+   *       of all files processed. By default, we try to process all events
+   *       in all files. But if the number of entries to be processed is
+   *       bound by maxEvents_, the total cumulative number of max events
+   *       and the total number of processed events will differ. For instance,
+   *       let's assume that we have 1000 entries in the first three files, but
+   *       maxEvents_ is set to 1500. This means that this function would return
+   *       2000, getCurrentMaxEventIdx() would return 1499 (=1500 - 1),
+   *       getEventCount() would return 3000 and getCurrentEventIdx would return
+   *       499 (=1500 - 1000 - 1).
+   */
+  long long
+  getCumulativeMaxEventCount() const;
+
+  /**
+   * @brief Return the number of files that have been processed
+   * @return The number of files that have been processed
+   *
+   * @note The returned number may differ from the total number files
+   *       returned by getFileCount() if maxEvents_ is other than -1.
+   *       In other words, if we limit the number of events to be processed
+   *       by some number, we won't actually analyze all files but only
+   *       first few of them.
+   */
+  int
+  getProcessedFileCount() const;
+
+  /**
+   * @brief Returns the index of event in currently open file
+   * @return The index of event in currently open file
+   *
+   * @see Comment in getCumulativeMaxEventCount()
+   */
+  long long
+  getCurrentEventIdx() const;
 
   /**
    * @brief Check if the user can report more detailed information about
@@ -175,6 +206,7 @@ private:
   std::vector<std::string> fileNames_;  ///< List of input files
   std::vector<ReaderBase *> readers_;   ///< List of pointers to *Reader objects
   unsigned fileCount_;                  ///< Total number of input files
+  long long cumulativeMaxEventCount_;   ///< Sum of total nof events across all processed files
   mutable long long eventCount_;        ///< Total number of events across all files
 
   /**
@@ -182,6 +214,20 @@ private:
    */
   void
   close();
+
+  /**
+   * @brief Returns the total number of events in the files
+   * @return The sum of the number of events across all files
+   *
+   * @note Calling this function will cause opening all the files
+   *       sequentially.
+   * @note This function is set to private b/c otherwise we would read all files at once
+   *       when called. This would defeat the whole purpose of having this class -- to delay
+   *       reading each input file by the amount of time it takes to process all events in
+   *       a file.
+   */
+  long long
+  getEventCount() const;
 };
 
 #endif // TTREEWRAPPER_H

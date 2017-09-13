@@ -18,7 +18,6 @@ int main(int argc, char **argv) {
     {
         const bool try_hdfs = i % 2 == 0;
         const std::string inputFileName = try_hdfs ?
-          //"/home/karl/sandbox/tree_1.root" : "/home/karl/sandbox/tree_2.root"
            "hdfs:///local/karl/sandbox/tree_1.root" : "/hdfs/local/karl/sandbox/tree_2.root"
         ;
         TFile * f = TFileOpenWrapper::Open(inputFileName.c_str(), "read");
@@ -35,9 +34,7 @@ int main(int argc, char **argv) {
       "hdfs:///local/karl/sandbox/tree_1.root",
       "hdfs:///local/karl/sandbox/tree_2.root"
     });
-    std::cout << w.getFileCount() << '\n'
-              << w.getEventCount() << '\n'
-    ;
+    std::cout << w.getFileCount() << '\n';
     while(w.hasNextEvent())
     {
       //

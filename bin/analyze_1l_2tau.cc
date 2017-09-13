@@ -370,15 +370,9 @@ int main(int argc, char* argv[])
   fwlite::OutputFiles outputFile(cfg);
   fwlite::TFileService fs = fwlite::TFileService(outputFile.file().data());
 
-  TTreeWrapper * inputTree = new TTreeWrapper(treeName.data(), inputFiles.files());
-  
-  if (! inputTree -> getEventCount())
-  {
-    throw cms::Exception("analyze_1l_2tau") << "Failed to identify input Tree !!\n";
-  }
+  TTreeWrapper * inputTree = new TTreeWrapper(treeName.data(), inputFiles.files(), maxEvents);
 
-  std::cout << "input Tree contains " << inputTree -> getEventCount() << " entries in "
-            << inputTree -> getFileCount() << " files.\n";
+  std::cout << "Loaded " << inputTree -> getFileCount() << " files.\n";
 
 //--- declare event-level variables
   EventInfo eventInfo(isSignal, isMC);
@@ -778,7 +772,9 @@ int main(int argc, char* argv[])
     if(inputTree -> canReport(reportEvery))
     {
       std::cout << "processing Entry " << inputTree -> getCurrentMaxEventIdx()
-                << " (" << selectedEntries << " Entries selected)\n";
+                << " or " << inputTree -> getCurrentEventIdx() << " entry in #"
+                << (inputTree -> getProcessedFileCount() - 1)
+                << " file (" << selectedEntries << " Entries selected)\n";
     }
     ++analyzedEntries;
     histogram_analyzedEntries->Fill(0.);
@@ -1489,12 +1485,13 @@ int main(int argc, char* argv[])
     histogram_selectedEntries->Fill(0.);
   }
 
-  std::cout << "num. Entries = " << inputTree -> getEventCount() << std::endl;
-  std::cout << " analyzed = " << analyzedEntries << std::endl;
-  std::cout << " selected = " << selectedEntries << " (weighted = " << selectedEntries_weighted << ")" << std::endl;
-  std::cout << std::endl;
-
-  std::cout << "cut-flow table" << std::endl;
+  std::cout << "max num. Entries = " << inputTree -> getCumulativeMaxEventCount()
+            << " (limited by " << maxEvents << ") processed in "
+            << inputTree -> getProcessedFileCount() << " files (out of "
+            << inputTree -> getFileCount() << ")\n"
+            << " analyzed = " << analyzedEntries << '\n'
+            << " selected = " << selectedEntries << " (weighted = " << selectedEntries_weighted << ")n\n"
+            << "cut-flow table" << std::endl;
   cutFlowTable.print(std::cout);
   std::cout << std::endl;
 
