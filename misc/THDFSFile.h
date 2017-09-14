@@ -12,9 +12,13 @@
 #ifndef ROOT_THDFSFile
 #define ROOT_THDFSFile
 
+#ifndef ROOT_TFile
 #include "TFile.h"
+#endif
 
+#ifndef ROOT_TSystem
 #include "TSystem.h"
+#endif
 
 class THDFSFile : public TFile {
 
@@ -23,8 +27,7 @@ private:
    void     *fFS;        ///< HDFS user handle
    Long64_t  fSize;      ///< File size
    Long64_t  fSysOffset; ///< Seek offset in file
-   TUrl      fUrl;       ///< HDFS url
-   TString   fPath;      ///< HDFS path
+   char     *fPath;      ///< HDFS path name
 
    Int_t    SysOpen(const char *pathname, Int_t flags, UInt_t mode);
    Int_t    SysClose(Int_t fd);
@@ -34,26 +37,14 @@ private:
    Int_t    SysStat(Int_t fd, Long_t *id, Long64_t *size, Long_t *flags, Long_t *modtime);
    Int_t    SysSync(Int_t fd);
 
+public:
    THDFSFile(const char *path, Option_t *option="",
              const char *ftitle="", Int_t compress=1);
    virtual ~THDFSFile();
 
-public:
-   static THDFSFile *
-   Open(const char *path, Option_t *option="",
-        const char *ftitle="", Int_t compress=1);
-
-   THDFSFile(const THDFSFile &) = delete;
-   THDFSFile & operator=(const THDFSFile &) = delete;
-   THDFSFile(THDFSFile &&) = delete;
-   THDFSFile & operator=(THDFSFile &&) = delete;
-
    void ResetErrno() const;
-   void Close();
-   const char * ClassName() const override;
-   static const char * GetClassName();
 
-//   ClassDef(THDFSFile, 0) //A ROOT file that reads/writes via HDFS
+   ClassDef(THDFSFile, 0) //A ROOT file that reads/writes via HDFS
 };
 
 
@@ -79,7 +70,7 @@ public:
     Bool_t      AccessPathName(const char *path, EAccessMode mode);
     Int_t       Unlink(const char *path);
 
-//    ClassDef(THDFSSystem,0)   // Directory handler for HDFS (THDFSFile)
+    ClassDef(THDFSSystem,0)   // Directory handler for HDFS (THDFSFile)
 };
 
 #endif

@@ -10,4 +10,6 @@ log.txt
 *.creator.user.3.2-pre1
 .idea/
 .gdb_history
+*.o
+G__HDFS.*
 
