@@ -2,7 +2,7 @@ CXX       := g++
 ROOTCLING := rootcling
 RM        := rm
 
-CXXFLAGS := -pipe -m64 -Wshadow -Wall -W -Woverloaded-virtual -fsigned-char -fPIC -pthread -std=c++11 -O2 -g -DNDEBUG
+CXXFLAGS := -pipe -m64 -Wshadow -Wall -W -Woverloaded-virtual -fsigned-char -fPIC -pthread -std=c++11 -O2 -ggdb3 -Og -DDEBUG
 
 LIBNAME := HDFS
 LIB     := $(CMSSW_BASE)/lib/$(SCRAM_ARCH)/lib$(LIBNAME).so
@@ -25,7 +25,7 @@ all: $(LIB)
 
 $(RFLX) $(RMF) $(PCM): $(HEADERS)
 	@echo "Generating reflex source, dictionary and rootmap files"
-	@$(ROOTCLING) -rootbuild -f $(RFLX) -s $(LIB) -rml $(LIBBASENAME).so -rmf $(RMF) -I$(ROOT_INCLUDE) -I/usr/include -I$(MAKEFILE_DIR) $^
+	@$(ROOTCLING) -rootbuild -f $(RFLX) -s $(LIB) -rml $(notdir $(LIB)) -rmf $(RMF) -I$(ROOT_INCLUDE) -I/usr/include -I$(MAKEFILE_DIR) $^
 
 $(SRCFILE_OBJECT): $(SRCFILE)
 	@echo "Building source object"

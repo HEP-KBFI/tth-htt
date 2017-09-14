@@ -19,7 +19,7 @@ namespace TFileOpenWrapper
        Int_t compress = 1);
 
   void
-  Close(TFile * f);
+  Close(TFile * & f);
 }
 
 #endif // TFILEOPENWRAPPER_H

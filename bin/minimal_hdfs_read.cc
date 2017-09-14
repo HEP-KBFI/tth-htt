@@ -24,21 +24,15 @@ int main(int argc, char **argv) {
         TTree * t = static_cast<TTree *>(f -> Get("tree"));
         const unsigned n = t -> GetEntries();
         std::cout << "Read " << n << " events from " << inputFileName << '\n';
-        for(unsigned k = 0; k < n; ++k)
-          t -> GetEntry(k);
         TFileOpenWrapper::Close(f);
-        f = nullptr;
      }
 
     TTreeWrapper w("tree", {
-      "hdfs:///local/karl/sandbox/tree_1.root",
+      "/hdfs/local/karl/sandbox/tree_1.root",
       "hdfs:///local/karl/sandbox/tree_2.root"
     });
     std::cout << w.getFileCount() << '\n';
-    while(w.hasNextEvent())
-    {
-      //
-    }
+    while(w.hasNextEvent()) { }
 
     return 0;
 }

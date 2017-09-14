@@ -1,8 +1,10 @@
 #include "tthAnalysis/HiggsToTauTau/interface/TFileOpenWrapper.h" // TFileOpenWrapper::, TFile, TString
-#include "tthAnalysis/HiggsToTauTau/interface/THDFSFile.h" // THDFSFile
+
+#include "FWCore/Utilities/interface/Exception.h" // cms::Exception
 
 #include <TPRegexp.h> // TPRegexp
 
+#include <iostream> // std::cout
 #include <cstring> // std::strcmp()
 
 namespace TFileOpenWrapper
@@ -16,12 +18,7 @@ namespace TFileOpenWrapper
    * @param compress Compression level and algorithm
    * @return Pointer to a TFile * instance
    *
-   * @note NB! Need to free the memory explicitly! Even though we could only have an
-   *       upcasted pointer to play with (i.e. TFile *, not THDFSFile *), the fact
-   *       that the TFile destructor is made virtual will delete all additional
-   *       memory inherited by its base classes thanks to dynamic dispatch.
-   *
-   * @todo Safeguards for writing? This is not supported by the THDFSFile class
+   * @note Use TFileOpenWrapper::Close() to close the file
    */
   TFile *
   Open(const char * path,
@@ -35,56 +32,39 @@ namespace TFileOpenWrapper
     option_str.ToUpper();
 
     const TString hdfs_protocol_prefix("hdfs://");
-    TPRegexp hdfs_protocol_regex("^" + hdfs_protocol_prefix);
-
     // if the mode is empty or set to read, and the given path starts
     // with /hdfs, we prepend the path suitable for the hdfs protocol
     // (we want to avoid opening files on /hdfs for writing)
     const TString hdfs_path_prefix("/hdfs");
     TPRegexp hdfs_path_regex("^" + hdfs_path_prefix);
-
-    const auto read_from_hdfs = [&f](
-      const char * path,
-      Option_t * option,
-      const char * ftitle,
-      Int_t compress) -> void
+    if(path_str(hdfs_path_regex) != "" && (option_str == "" || option_str == "READ"))
     {
-      f = THDFSFile::Open(path, option, ftitle, compress);
-      if(f && f -> IsZombie())
-      {
-        f = nullptr;
-      }
-      return;
-    };
-
-    if(path_str(hdfs_protocol_regex) != "")
-    {
-      read_from_hdfs(path, option, ftitle, compress);
+      // here we change the path: /hdfs/A/B/C/... -> hdfs:///A/B/C/...
+      path_str.Replace(0, hdfs_path_prefix.Length(), hdfs_protocol_prefix);
     }
-//    else if(path_str(hdfs_path_regex) != "" && (option_str == "" || option_str == "READ"))
-//    {
-//      // here we change the path: /hdfs/A/B/C/... -> hdfs:///A/B/C/...
-//      read_from_hdfs(
-//        path_str.Replace(0, hdfs_path_prefix.Length(), hdfs_protocol_prefix), option, ftitle, compress
-//      );
-//    }
-    else
+
+    f = TFile::Open(path_str, option, ftitle, compress);
+    if(f && f -> IsZombie())
     {
-      f = TFile::Open(path, option, ftitle, compress);
+      delete f;
+      f = nullptr;
     }
+
     return f;
   }
 
+  /**
+   * @brief Closes given TFile
+   * @param filePtr Pointer to the TFile instance which will be deleted
+   */
   void
-  Close(TFile * f)
+  Close(TFile * & filePtr)
   {
-    if(std::strcmp(f -> ClassName(), THDFSFile::GetClassName()) == 0)
+    if(filePtr)
     {
-      f -> Close();
-    }
-    else
-    {
-      delete f;
+      filePtr -> Close();
+      delete filePtr;
+      filePtr = nullptr;
     }
   }
 }

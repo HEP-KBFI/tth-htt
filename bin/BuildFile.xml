@@ -463,7 +463,3 @@
   <use   name="root"/>
   <use   name="tthAnalysis/HiggsToTauTau"/>
 </bin>
-<bin file="hadd_hdfs.cc" name="hadd_hdfs">
-  <use   name="root"/>
-  <use   name="tthAnalysis/HiggsToTauTau"/>
-</bin>

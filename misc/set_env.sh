@@ -10,6 +10,11 @@ if [ -z "$SCRAM_ARCH" ]; then
   return 1;
 fi
 
+if [ -z "$ROOTSYS" ]; then
+  echo "Error! Variable ROOTSYS unset";
+  return 1;
+fi
+
 MAKEFILE_LOCATION="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/Makefile";
 if [ ! -f $MAKEFILE_LOCATION ]; then
   echo "File $MAKEFILE_LOCATION not present in the system, aborting";
@@ -40,7 +45,20 @@ if [ "$LIBHDFS_BUILT" = true ]; then
     return 1;
   fi
 
+  if [ "$JAVA_HOME" != "/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.141-2.b16.el6_9.x86_64/jre" ]; then
+    echo "Setting JAVA_HOME"
+    export JAVA_HOME="/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.141-2.b16.el6_9.x86_64/jre";
+  fi
+
   if [[ -z "$CLASSPATH" || "$FORCE_SETENV" = true ]]; then
+    echo "Setting hadoop environment"
+    HADOOP_SETENV_SCRIPT=/usr/lib/hadoop/libexec/hadoop-config.sh
+    if [ ! -f $HADOOP_SETENV_SCRIPT ]; then
+      echo "File $HADOOP_SETENV_SCRIPT not available, aborting";
+      return 1;
+    fi
+    source $HADOOP_SETENV_SCRIPT
+
     echo "Setting up CLASSPATH";
     export CLASSPATH=`hadoop classpath --glob`;
     for j in $(ls /usr/lib/hadoop/client/*.jar); do export CLASSPATH=$CLASSPATH:$j; done;

@@ -7,8 +7,7 @@
 <use   name="root"/>
 <use   name="roottmva"/>
 <use   name="boost" />
-<Flags CXXFLAGS="-O3 -fPIC -I/usr/lib/hadoop/include" />
-<Flags LDFLAGS="-Wl,-rpath,/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.141-2.b16.el6_9.x86_64/jre/lib/amd64/server -L/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.141-2.b16.el6_9.x86_64/jre/lib/amd64/server -ljvm -L/usr/lib64 -lhdfs -lpthread" />
+<Flags CXXFLAGS="-O3 -fPIC" />
 <export>
   <lib   name="1"/>
 </export>

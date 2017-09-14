@@ -12,4 +12,5 @@ log.txt
 .gdb_history
 *.o
 G__HDFS.*
+__init__.py
 

@@ -190,7 +190,6 @@ TTreeWrapper::close()
   {
     std::cout << "Closing " << fileNames_[currentFileIdx_] << '\n';
     TFileOpenWrapper::Close(currentFilePtr_);
-    currentFilePtr_ = nullptr;
     currentTreePtr_ = nullptr;
     currentMaxEvents_ = -1;
     currentEventIdx_  =  0;
