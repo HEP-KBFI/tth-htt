@@ -23,24 +23,24 @@ if [ $? -ne 0 ]; then
   return 1;
 else
   echo "Successfully built libHDFS";
-  SET_CLASSPATH=true;
+  LIBHDFS_BUILT=true;
 fi
 
 FORCE_SETENV=false
 if [ "$LIBHDFS_BUILT" = true ]; then
-  if [ $# -eq 2 ]; then
+  if [ $# -eq 1 ]; then
     if [ "$1" = "-f" ]; then
       FORCE_SETENV=true;
     else
       echo "Unrecognized argument: $1";
       return 1;
     fi
-  elif [ $# -gt 2 ]; then
+  elif [ $# -gt 1 ]; then
     echo "Too many arguments";
     return 1;
   fi
 
-  if [ -z "$CLASSPATH" || "$FORCE_SETENV" = true ]; then
+  if [[ -z "$CLASSPATH" || "$FORCE_SETENV" = true ]]; then
     echo "Setting up CLASSPATH";
     export CLASSPATH=`hadoop classpath --glob`;
     for j in $(ls /usr/lib/hadoop/client/*.jar); do export CLASSPATH=$CLASSPATH:$j; done;
