@@ -58,6 +58,8 @@ if [ "$LIBHDFS_BUILT" = true ]; then
       return 1;
     fi
     source $HADOOP_SETENV_SCRIPT
+    # HADOOP_HDFS_HOME breaks hadoop commands, so we unset it
+    unset HADOOP_HDFS_HOME
 
     echo "Setting up CLASSPATH";
     export CLASSPATH=`hadoop classpath --glob`;
