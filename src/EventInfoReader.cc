@@ -27,6 +27,11 @@ EventInfoReader::setBranchAddresses(TTree * tree)
     tree -> SetBranchAddress(GENWEIGHT_KEY, &info_ -> genWeight);
     tree -> SetBranchAddress(PUWEIGHT_KEY,  &info_ -> pileupWeight);
   }
+
+  if(info_ -> is_mc_th())
+  {
+    tree -> SetBranchAddress(GENWEIGHTTH_KEY, &info_ -> genWeight_tH);
+  }
 }
 
 void

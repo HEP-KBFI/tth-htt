@@ -17,11 +17,12 @@ const std::map<std::string, GENHIGGSDECAYMODE_TYPE> EventInfo::decayMode_idStrin
 };
 
 EventInfo::EventInfo()
-  : EventInfo(false, false)
+  : EventInfo(false, false, false)
 {}
 
 EventInfo::EventInfo(bool is_signal,
-                     bool is_mc)
+                     bool is_mc,
+                     bool is_mc_th)
   : run(0)
   , lumi(0)
   , event(0)
@@ -30,6 +31,7 @@ EventInfo::EventInfo(bool is_signal,
   , pileupWeight(1.)
   , is_signal_(is_signal)
   , is_mc_(is_mc)
+  , is_mc_th_(is_mc_th)
 {}
 
 bool
@@ -42,6 +44,12 @@ bool
 EventInfo::is_mc() const
 {
   return is_mc_;
+}
+
+bool
+EventInfo::is_mc_th() const
+{
+  return is_mc_th_;
 }
 
 bool
