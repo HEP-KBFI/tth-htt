@@ -47,7 +47,12 @@ process.prepareDatacards = cms.PSet(
     setBinsToZeroBelow = cms.double(-1.),
 
     sysShifts = cms.vstring(
-        ""
+      "CMS_ttHl_JESUp",
+      "CMS_ttHl_JESDown",
+      "CMS_ttHl_JERUp",
+      "CMS_ttHl_JERDown",
+      "CMS_ttHl_UnclusteredEnUp",
+      "CMS_ttHl_UnclusteredEnDown"
 #        "CMS_ttHl_btag_HFUp",
 #        "CMS_ttHl_btag_HFDown",
 #        "CMS_ttHl_btag_HFStats1Up",

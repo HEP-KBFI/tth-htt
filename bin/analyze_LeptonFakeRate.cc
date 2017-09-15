@@ -132,13 +132,14 @@ bool SortByDeltaR(LeptonJetPairMaker Pair1, LeptonJetPairMaker Pair2){
 class hltPath_LeptonFakeRate : public hltPath
 {
  public:
-  hltPath_LeptonFakeRate(const std::string& branchName, double minPt = -1., double maxPt = -1., double min_JetPt = -1.)
+  hltPath_LeptonFakeRate(const std::string& branchName, double minPt = -1., double maxPt = -1., double min_JetPt = -1., double prescale = 1.)
     : hltPath(branchName, minPt, maxPt) 
     , branchName_(branchName)
     , value_(-1)
     , minPt_(minPt)
     , maxPt_(maxPt)
     , minJetPt_(min_JetPt)
+    , prescale_(prescale)
     {}
     ~hltPath_LeptonFakeRate() {}    
 
@@ -146,12 +147,19 @@ class hltPath_LeptonFakeRate : public hltPath
   {
     return minJetPt_;  
   }
+
+  double getPrescale() const
+  {
+    return prescale_;  
+  }
+
   private:
   std::string branchName_;
   Int_t value_;
   double minPt_;
   double maxPt_;
   double minJetPt_;
+  double prescale_;
 };
 
 // ----- overriding functions written inside "../src/hltPath.cc" ----
@@ -165,12 +173,12 @@ void hltPaths_LeptonFakeRate_setBranchAddresses(TTree* tree, const std::vector<h
 
 
 
-std::vector<hltPath_LeptonFakeRate*> create_hltPaths_LeptonFakeRate(const std::vector<std::string>& branchNames, double minPt, double maxPt, double jet_MinPt)
+std::vector<hltPath_LeptonFakeRate*> create_hltPaths_LeptonFakeRate(const std::vector<std::string>& branchNames, double minPt, double maxPt, double jet_MinPt, double prescale)
 {
   std::vector<hltPath_LeptonFakeRate*> hltPaths_LeptonFakeRate;
   for ( std::vector<std::string>::const_iterator branchName = branchNames.begin();
         branchName != branchNames.end(); ++branchName ) {
-        hltPaths_LeptonFakeRate.push_back(new hltPath_LeptonFakeRate(*branchName, minPt, maxPt, jet_MinPt));
+        hltPaths_LeptonFakeRate.push_back(new hltPath_LeptonFakeRate(*branchName, minPt, maxPt, jet_MinPt, prescale));
   }
   return hltPaths_LeptonFakeRate;
 }
@@ -189,6 +197,23 @@ bool hltPaths_LeptonFakeRate_isTriggered(const std::vector<hltPath_LeptonFakeRat
   }
   return retVal;
 }  
+
+double hltPaths_LeptonFakeRate_applyPrescale(const std::vector<hltPath_LeptonFakeRate*>& hltPaths_LeptonFakeRate, double lepton_cone_pt, double jet_pt, double evtWeight){
+
+  for ( std::vector<hltPath_LeptonFakeRate*>::const_iterator hltPath_iter = hltPaths_LeptonFakeRate.begin();
+        hltPath_iter != hltPaths_LeptonFakeRate.end(); ++hltPath_iter ) {
+    // std::cout<<" (*hltPath_iter)->getValue() "<< (*hltPath_iter)->getValue() << std::endl;                                                                                                      
+     if ( lepton_cone_pt >= (*hltPath_iter)->getMinPt() && lepton_cone_pt < (*hltPath_iter)->getMaxPt() &&
+         (*hltPath_iter)->getMinJetPt() > jet_pt && (*hltPath_iter)->getValue() >= 1 ) {
+          evtWeight /= (*hltPath_iter)->getPrescale();
+      break;
+    }
+  }
+  return evtWeight;
+}
+
+
+
 
 bool hltPaths_isTriggered(const std::vector<hltPath_LeptonFakeRate*>& hltPaths_LeptonFakeRate)
 {
@@ -347,6 +372,8 @@ struct numeratorHistManagers_muon_LFR_incl
 
   void fillHistograms(const RecoMuon& muon, double met, double mT_L, double mT_fix_L, double evtWeight)
   {
+   
+   // if(isMC_){ evtWeight /= average_prescale_; } // implemant it in the class evthistmanager class
    // inclusive
       MuonHistManager_incl_->fillHistograms(muon, evtWeight);
       EvtHistManager_LeptonFakeRate_incl_->fillHistograms(met, mT_L, mT_fix_L, evtWeight);
@@ -555,7 +582,8 @@ struct numeratorHistManagers_muon_LFR
  
   void fillHistograms(const RecoMuon& muon, double met, double mT_L, double mT_fix_L, double evtWeight)
   {
-   
+    // if(isMC_){ evtWeight /= average_prescale_; } // implemant it in the class evthistmanager class
+
     if(!(std::abs(muon.eta()) >= minAbsEta_ && std::abs(muon.eta()) < maxAbsEta_ && muon.pt() >= minPt_ && muon.pt() < maxPt_)) return;
        MuonHistManager_->fillHistograms(muon, evtWeight);
        EvtHistManager_LeptonFakeRate_->fillHistograms(met, mT_L, mT_fix_L, evtWeight);
@@ -1920,11 +1948,12 @@ int main(int argc, char* argv[])
   std::vector<hltPath_LeptonFakeRate*> triggers_e;
   // std::vector<hltPath*>::iterator it1;
   for(edm::VParameterSet::const_iterator trigger_PSet = trigger_e_PSet.begin(); trigger_PSet != trigger_e_PSet.end(); trigger_PSet++){
-    vstring trigger_paths_e = trigger_PSet->getParameter<vstring>("path");  // READ FROM THE VPSET                                                                                                    
-    double minPt_e = trigger_PSet->getParameter<double>("cone_minPt");  // READ FROM THE VPSET                                                                                                    
-    double maxPt_e = trigger_PSet->getParameter<double>("cone_maxPt");  // READ FROM THE VPSET                                                                               
-    double jet_minPt = trigger_PSet->getParameter<double>("jet_minPt"); // READ FROM THE VPSET                                                                               
-    std::vector<hltPath_LeptonFakeRate*> hltPaths = create_hltPaths_LeptonFakeRate(trigger_paths_e, minPt_e, maxPt_e, jet_minPt);
+    vstring trigger_paths_e = trigger_PSet->getParameter<vstring>("path");     // READ FROM THE VPSET                                                                                              
+    double minPt_e   = trigger_PSet->getParameter<double>("cone_minPt");       // READ FROM THE VPSET                                                                                           
+    double maxPt_e   = trigger_PSet->getParameter<double>("cone_maxPt");       // READ FROM THE VPSET                                                                               
+    double jet_minPt = trigger_PSet->getParameter<double>("jet_minPt");        // READ FROM THE VPSET                                                                               
+    double prescale  = trigger_PSet->getParameter<double>("average_prescale"); // READ FROM THE VPSET                                                                               
+    std::vector<hltPath_LeptonFakeRate*> hltPaths = create_hltPaths_LeptonFakeRate(trigger_paths_e, minPt_e, maxPt_e, jet_minPt, prescale);
     // it1 = triggers_e.begin();
     triggers_e.insert(triggers_e.end(), hltPaths.begin(), hltPaths.end()); // TO CHANGE THE ORDER OF INSERTION USE triggers_e.begin()
   }
@@ -1933,11 +1962,12 @@ int main(int argc, char* argv[])
   std::vector<hltPath_LeptonFakeRate*> triggers_mu;
   // std::vector<hltPath*>::iterator it2;
   for(edm::VParameterSet::const_iterator trigger_PSet = trigger_mu_PSet.begin(); trigger_PSet != trigger_mu_PSet.end(); trigger_PSet++){
-    vstring trigger_paths_mu = trigger_PSet->getParameter<vstring>("path");  // READ FROM THE VPSET                                                                                               
-    double minPt_mu = trigger_PSet->getParameter<double>("cone_minPt");  // READ FROM THE VPSET                                                                                                    
-    double maxPt_mu = trigger_PSet->getParameter<double>("cone_maxPt");  // READ FROM THE VPSET
-    double jet_minPt = trigger_PSet->getParameter<double>("jet_minPt");                                                                                                      
-    std::vector<hltPath_LeptonFakeRate*> hltPaths = create_hltPaths_LeptonFakeRate(trigger_paths_mu, minPt_mu, maxPt_mu, jet_minPt);
+    vstring trigger_paths_mu = trigger_PSet->getParameter<vstring>("path");    // READ FROM THE VPSET                                                                                               
+    double minPt_mu = trigger_PSet->getParameter<double>("cone_minPt");        // READ FROM THE VPSET                                                                                              
+    double maxPt_mu = trigger_PSet->getParameter<double>("cone_maxPt");        // READ FROM THE VPSET
+    double jet_minPt = trigger_PSet->getParameter<double>("jet_minPt");        // READ FROM THE VPSET                                                                                        
+    double prescale  = trigger_PSet->getParameter<double>("average_prescale"); // READ FROM THE VPSET                                                                               
+    std::vector<hltPath_LeptonFakeRate*> hltPaths = create_hltPaths_LeptonFakeRate(trigger_paths_mu, minPt_mu, maxPt_mu, jet_minPt, prescale);
     // it2 = triggers_mu.begin();
     triggers_mu.insert(triggers_mu.end(), hltPaths.begin(), hltPaths.end()); // TO CHANGE THE ORDER OF INSERTION USE triggers_mu.begin()
   }
@@ -1988,8 +2018,10 @@ int main(int argc, char* argv[])
 
   
   int lheScale_option = kLHE_scale_central;
+  TString central_or_shift_tstring = central_or_shift.data();
+
+  std::string met_branch = "met";
   if ( isMC && central_or_shift != "central" ) {
-    TString central_or_shift_tstring = central_or_shift.data();
     std::string shiftUp_or_Down = "";
     if      ( central_or_shift_tstring.EndsWith("Up")   ) shiftUp_or_Down = "Up";
     else if ( central_or_shift_tstring.EndsWith("Down") ) shiftUp_or_Down = "Down";
@@ -1999,9 +2031,19 @@ int main(int argc, char* argv[])
       jet_btagWeight_branch = getBranchName_bTagWeight(era, central_or_shift);
     } else if ( central_or_shift_tstring.BeginsWith("CMS_ttHl_JES") ) {
       jet_btagWeight_branch = getBranchName_bTagWeight(era, central_or_shift);
-      if      ( shiftUp_or_Down == "Up"   ) jetPt_option = RecoJetReader::kJetPt_jecUp;
-      else if ( shiftUp_or_Down == "Down" ) jetPt_option = RecoJetReader::kJetPt_jecDown;
-      else assert(0);
+      if( shiftUp_or_Down == "Up"   ){ 
+        jetPt_option = RecoJetReader::kJetPt_jecUp;
+        met_branch += "_shifted_JetEnUp";
+      } else if( shiftUp_or_Down == "Down" ){ 
+        jetPt_option = RecoJetReader::kJetPt_jecDown;
+        met_branch += "_shifted_JetEnDown";
+      }else assert(0);
+    }else if(central_or_shift_tstring.BeginsWith("CMS_ttHl_JER")){
+      if(central_or_shift_tstring.EndsWith("Up")) met_branch += "_shifted_JetResUp";
+      else if(central_or_shift_tstring.EndsWith("Down")) met_branch += "_shifted_JetResDown";
+    }else if(central_or_shift_tstring.BeginsWith("CMS_ttHl_UnclusteredEn")){
+      if(central_or_shift_tstring.EndsWith("Up")) met_branch += "_shifted_UnclusteredEnUp";
+      else if(central_or_shift_tstring.EndsWith("Down")) met_branch += "_shifted_UnclusteredEnDown";
     } else if ( central_or_shift_tstring.BeginsWith("CMS_ttHl_tauES") ) {
       if      ( shiftUp_or_Down == "Up"   ) hadTauPt_option = RecoHadTauReader::kHadTauPt_shiftUp;
       else if ( shiftUp_or_Down == "Down" ) hadTauPt_option = RecoHadTauReader::kHadTauPt_shiftDown;
@@ -2016,7 +2058,7 @@ int main(int argc, char* argv[])
 		  central_or_shift_tstring.BeginsWith("CMS_ttHl_FRmt")) ) {
       throw cms::Exception("analyze_LeptonFakeRate")
 	<< "Invalid Configuration parameter 'central_or_shift' = " << central_or_shift << " !!\n";
-    }
+    } 
   }
   
 
@@ -2131,8 +2173,9 @@ int main(int argc, char* argv[])
   RecoJetCollectionSelectorBtagLoose jetSelectorBtagLoose(era);
   RecoJetCollectionSelectorBtagMedium jetSelectorBtagMedium(era);
 
+
 //--- declare missing transverse energy [implement the shape unc branches HERE !!! ]]
-  RecoMEtReader* metReader = new RecoMEtReader(era, "met");
+  RecoMEtReader* metReader = new RecoMEtReader(era, met_branch);
   metReader->setBranchAddresses(inputTree);
 
 
@@ -2439,14 +2482,14 @@ for( int idxEntry = 0; idxEntry < numEntries && (maxEvents == -1 || idxEntry < m
     //   (using the method "Event reweighting using scale factors calculated with a tag and probe method",                                                                                             
     //    described on the BTV POG twiki https://twiki.cern.ch/twiki/bin/view/CMS/BTagShapeCalibration )                                                                                              
     double evtWeight = 1.;                                                                                                                                                                             
-    if ( isMC ) {                                                                                                                                                                                         std::cout<< "evtWeight "<< evtWeight << std::endl; 
+    if ( isMC ) {                                                                                                                                                                                          // std::cout<< "evtWeight "<< evtWeight << std::endl; 
        evtWeight *= lumiScale;                                                                                                                                                         
-    std::cout<< "evtWeight * lumiscale "<< evtWeight << std::endl;                                                                                                                      
+       // std::cout<< "evtWeight * lumiscale "<< evtWeight << std::endl;                                                                                                                      
            if ( apply_genWeight ) evtWeight *= sgn(genWeight);
-	   std::cout<< "genWeight "<< genWeight << " sgn(genWeight) "<< sgn(genWeight) << std::endl;                               
-           std::cout<< "evtWeight * lumiscale * sgn(genweight) "<< evtWeight << std::endl;                                                                                                         
+	   // std::cout<< "genWeight "<< genWeight << " sgn(genWeight) "<< sgn(genWeight) << std::endl;                               
+           // std::cout<< "evtWeight * lumiscale * sgn(genweight) "<< evtWeight << std::endl;                                                                                 
                   evtWeight *= pileupWeight;                                                                                                                                                          
-    std::cout<< "evtWeight * lumiscale * genweight * pileupWeight "<< evtWeight << std::endl;
+		  // std::cout<< "evtWeight * lumiscale * sgn(genweight) * pileupWeight "<< evtWeight << std::endl;
 		  
       if ( lheScale_option != kLHE_scale_central ) {                                                                                                                                                  
   	 if      ( lheScale_option == kLHE_scale_xDown ) evtWeight *= lheInfoReader->getWeight_scale_xDown();                                                                                          
@@ -2455,6 +2498,21 @@ for( int idxEntry = 0; idxEntry < numEntries && (maxEvents == -1 || idxEntry < m
     	 else if ( lheScale_option == kLHE_scale_yUp   ) evtWeight *= lheInfoReader->getWeight_scale_yUp();                                                                                             
       }   
     }
+
+    // std::cout<< "evtWeight after applying LHEInfo weights "<< evtWeight << std::endl;
+
+    /*
+    // -------- APPLYING B-TAG WEIGHTS -------
+    double btagWeight = 1.;
+    for ( std::vector<const RecoJet*>::const_iterator jet = selJets.begin();
+	  jet != selJets.end(); ++jet ) {
+      btagWeight *= (*jet)->BtagWeight();
+    }
+    evtWeight *= btagWeight;
+    */
+
+    // std::cout<< "evtWeight after applying btag weights "<< evtWeight << std::endl;
+
 
     // ----- Filling Gen level Histograms (before gen level cuts) ------
     if(isMC){
@@ -2475,12 +2533,16 @@ for( int idxEntry = 0; idxEntry < numEntries && (maxEvents == -1 || idxEntry < m
       if( LeptonJetPair->getLepton()->is_electron() && use_triggers_1e && 
           (hltPaths_LeptonFakeRate_isTriggered(triggers_e, LeptonJetPair->getLepton()->cone_pt(), LeptonJetPair->getJet()->pt()) || (isMC && !apply_trigger_bits)) )  // apply_trigger_bits = true for both data and MC
       { 
+          evtWeight = hltPaths_LeptonFakeRate_applyPrescale(triggers_e, LeptonJetPair->getLepton()->cone_pt(), LeptonJetPair->getJet()->pt(), evtWeight);
+          // std::cout<< "evtWeight after applying prescales "<< evtWeight << std::endl;
           isTriggered_1e = true;
       } // to ensure bool stays true once turned on 
  
       if( LeptonJetPair->getLepton()->is_muon() && use_triggers_1mu &&
           (hltPaths_LeptonFakeRate_isTriggered(triggers_mu, LeptonJetPair->getLepton()->cone_pt(), LeptonJetPair->getJet()->pt()) || (isMC && !apply_trigger_bits)) )
       { 
+          evtWeight = hltPaths_LeptonFakeRate_applyPrescale(triggers_mu, LeptonJetPair->getLepton()->cone_pt(), LeptonJetPair->getJet()->pt(), evtWeight); 
+          // std::cout<< "evtWeight after applying prescales "<< evtWeight << std::endl;
           isTriggered_1mu = true;
       }  // to ensure bool stays true once turned on  
     }
