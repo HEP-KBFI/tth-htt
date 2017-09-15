@@ -48,6 +48,8 @@ if [ "$LIBHDFS_BUILT" = true ]; then
   if [ "$JAVA_HOME" != "/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.141-2.b16.el6_9.x86_64/jre" ]; then
     echo "Setting JAVA_HOME"
     export JAVA_HOME="/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.141-2.b16.el6_9.x86_64/jre";
+    echo "Modifying LD_LIBRARY_PATH (needed by comp nodes)"
+    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$JAVA_HOME/lib/amd64/server
   fi
 
   if [[ -z "$CLASSPATH" || "$FORCE_SETENV" = true ]]; then
