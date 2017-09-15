@@ -372,7 +372,7 @@ int main(int argc, char* argv[])
 
   TTreeWrapper * inputTree = new TTreeWrapper(treeName.data(), inputFiles.files(), maxEvents);
 
-  std::cout << "Loaded " << inputTree -> getFileCount() << " files.\n";
+  std::cout << "Loaded " << inputTree -> getFileCount() << " file(s).\n";
 
 //--- declare event-level variables
   EventInfo eventInfo(isSignal, isMC);
@@ -1487,7 +1487,7 @@ int main(int argc, char* argv[])
 
   std::cout << "max num. Entries = " << inputTree -> getCumulativeMaxEventCount()
             << " (limited by " << maxEvents << ") processed in "
-            << inputTree -> getProcessedFileCount() << " files (out of "
+            << inputTree -> getProcessedFileCount() << " file(s) (out of "
             << inputTree -> getFileCount() << ")\n"
             << " analyzed = " << analyzedEntries << '\n'
             << " selected = " << selectedEntries << " (weighted = " << selectedEntries_weighted << ")n\n"

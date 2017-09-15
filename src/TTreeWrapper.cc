@@ -75,7 +75,7 @@ TTreeWrapper::getCumulativeMaxEventCount() const
 int
 TTreeWrapper::getProcessedFileCount() const
 {
-  return currentMaxEventIdx_ > 0 ? currentFileIdx_ + 1 : 0;
+  return currentMaxEventIdx_ > 0 ? currentFileIdx_ + (!!currentFilePtr_ ? 1 : 0) : 0;
 }
 
 long long
