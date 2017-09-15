@@ -54,7 +54,6 @@ class GenLeptonReader
   std::string branchName_promptLepton_phi_;
   std::string branchName_promptLepton_mass_;
   std::string branchName_promptLepton_pdgId_;
-  std::string branchName_promptLepton_charge_;
 
   Int_t nPromptLeptons_;
   Float_t* promptLepton_pt_;
@@ -62,14 +61,12 @@ class GenLeptonReader
   Float_t* promptLepton_phi_;
   Float_t* promptLepton_mass_;
   Int_t* promptLepton_pdgId_;
-  Float_t* promptLepton_charge_;
 
   std::string branchName_leptonFromTau_pt_;
   std::string branchName_leptonFromTau_eta_;
   std::string branchName_leptonFromTau_phi_;
   std::string branchName_leptonFromTau_mass_;
   std::string branchName_leptonFromTau_pdgId_;
-  std::string branchName_leptonFromTau_charge_;
 
   Int_t nLeptonsFromTau_;
   Float_t* leptonFromTau_pt_;
@@ -77,7 +74,6 @@ class GenLeptonReader
   Float_t* leptonFromTau_phi_;
   Float_t* leptonFromTau_mass_;
   Int_t* leptonFromTau_pdgId_;
-  Float_t* leptonFromTau_charge_;
 
   // CV: make sure that only one GenLeptonReader instance exists for a given branchName,
   //     as ROOT cannot handle multiple TTree::SetBranchAddress calls for the same branch.
