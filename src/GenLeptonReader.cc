@@ -19,11 +19,13 @@ GenLeptonReader::GenLeptonReader()
   , promptLepton_phi_(0)
   , promptLepton_mass_(0)
   , promptLepton_pdgId_(0)
+  , promptLepton_charge_(0)
   , leptonFromTau_pt_(0)
   , leptonFromTau_eta_(0)
   , leptonFromTau_phi_(0)
   , leptonFromTau_mass_(0)
   , leptonFromTau_pdgId_(0)
+  , leptonFromTau_charge_(0)
 {
   read_promptLeptons_ = true;
   read_leptonsFromTau_ = true;
@@ -43,11 +45,13 @@ GenLeptonReader::GenLeptonReader(const std::string& branchName_nPromptLeptons, c
   , promptLepton_phi_(0)
   , promptLepton_mass_(0)
   , promptLepton_pdgId_(0)
+  , promptLepton_charge_(0)
   , leptonFromTau_pt_(0)
   , leptonFromTau_eta_(0)
   , leptonFromTau_phi_(0)
   , leptonFromTau_mass_(0)
   , leptonFromTau_pdgId_(0)
+  , leptonFromTau_charge_(0)
 {
   read_promptLeptons_ = branchName_nPromptLeptons != "" && branchName_promptLeptons != "";
   read_leptonsFromTau_ = branchName_nLeptonsFromTau != "" && branchName_leptonsFromTau != "";
@@ -67,11 +71,13 @@ GenLeptonReader::~GenLeptonReader()
     delete[] gInstance->promptLepton_phi_;
     delete[] gInstance->promptLepton_mass_;
     delete[] gInstance->promptLepton_pdgId_;
+    delete[] gInstance->promptLepton_charge_;
     delete[] gInstance->leptonFromTau_pt_;
     delete[] gInstance->leptonFromTau_eta_;
     delete[] gInstance->leptonFromTau_phi_;
     delete[] gInstance->leptonFromTau_mass_;
     delete[] gInstance->leptonFromTau_pdgId_;
+    delete[] gInstance->leptonFromTau_charge_;
     instances_[branchName_promptLeptons_] = 0;
   }
 }
@@ -84,11 +90,13 @@ void GenLeptonReader::setBranchNames()
     branchName_promptLepton_phi_ = Form("%s_%s", branchName_promptLeptons_.data(), "phi");
     branchName_promptLepton_mass_ = Form("%s_%s", branchName_promptLeptons_.data(), "mass");
     branchName_promptLepton_pdgId_ = Form("%s_%s", branchName_promptLeptons_.data(), "pdgId");
+    branchName_promptLepton_charge_ = Form("%s_%s", branchName_promptLeptons_.data(), "charge");
     branchName_leptonFromTau_pt_ = Form("%s_%s", branchName_leptonsFromTau_.data(), "pt");
     branchName_leptonFromTau_eta_ = Form("%s_%s", branchName_leptonsFromTau_.data(), "eta");
     branchName_leptonFromTau_phi_ = Form("%s_%s", branchName_leptonsFromTau_.data(), "phi");
     branchName_leptonFromTau_mass_ = Form("%s_%s", branchName_leptonsFromTau_.data(), "mass");
     branchName_leptonFromTau_pdgId_ = Form("%s_%s", branchName_leptonsFromTau_.data(), "pdgId");
+    branchName_leptonFromTau_charge_ = Form("%s_%s", branchName_leptonsFromTau_.data(), "charge");
     instances_[branchName_promptLeptons_] = this;
   } else {
     GenLeptonReader* gInstance = instances_[branchName_promptLeptons_];
@@ -127,6 +135,8 @@ void GenLeptonReader::setBranchAddresses(TTree* tree)
       tree->SetBranchAddress(branchName_promptLepton_mass_.data(), promptLepton_mass_); 
       promptLepton_pdgId_ = new Int_t[max_nPromptLeptons_];
       tree->SetBranchAddress(branchName_promptLepton_pdgId_.data(), promptLepton_pdgId_); 
+      promptLepton_charge_ = new Float_t[max_nPromptLeptons_];
+      tree->SetBranchAddress(branchName_promptLepton_charge_.data(), promptLepton_charge_);
     }
     if ( read_leptonsFromTau_ ) {
       std::cout << "setting branch addresses for LeptonsFromTau" << std::endl;
@@ -141,6 +151,8 @@ void GenLeptonReader::setBranchAddresses(TTree* tree)
       tree->SetBranchAddress(branchName_leptonFromTau_mass_.data(), leptonFromTau_mass_); 
       leptonFromTau_pdgId_ = new Int_t[max_nLeptonsFromTau_];
       tree->SetBranchAddress(branchName_leptonFromTau_pdgId_.data(), leptonFromTau_pdgId_); 
+      leptonFromTau_charge_ = new Float_t[max_nLeptonsFromTau_];
+      tree->SetBranchAddress(branchName_leptonFromTau_charge_.data(), leptonFromTau_charge_);
     } 
   }
 }
@@ -179,7 +191,9 @@ std::vector<GenLepton> GenLeptonReader::read() const
         gInstance->promptLepton_eta_[idxLepton],
         gInstance->promptLepton_phi_[idxLepton],
         gInstance->promptLepton_mass_[idxLepton],
-        gInstance->promptLepton_pdgId_[idxLepton] }));
+        gInstance->promptLepton_pdgId_[idxLepton],
+        gInstance->promptLepton_charge_[idxLepton]
+      }));
     }
     for ( Int_t idxLepton = 0; idxLepton < nLeptonsFromTau; ++idxLepton ) {
       leptons.push_back(GenLepton({ 
@@ -187,7 +201,9 @@ std::vector<GenLepton> GenLeptonReader::read() const
         gInstance->leptonFromTau_eta_[idxLepton],
         gInstance->leptonFromTau_phi_[idxLepton],
         gInstance->leptonFromTau_mass_[idxLepton],
-        gInstance->leptonFromTau_pdgId_[idxLepton] }));
+        gInstance->leptonFromTau_pdgId_[idxLepton],
+        gInstance->leptonFromTau_charge_[idxLepton]
+      }));
     } 
   } 
   return leptons;
