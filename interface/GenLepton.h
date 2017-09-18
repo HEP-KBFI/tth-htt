@@ -12,6 +12,12 @@ class GenLepton : public GenParticle
             Double_t phi,
             Double_t mass,
             Int_t pdgId);
+  GenLepton(Double_t pt,
+            Double_t eta,
+            Double_t phi,
+            Double_t mass,
+            Int_t pdgId,
+            Double_t charge);
   GenLepton(const math::PtEtaPhiMLorentzVector & p4,
             Int_t pdgId);
 };

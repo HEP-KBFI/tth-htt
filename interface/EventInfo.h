@@ -12,13 +12,15 @@ class EventInfo
 public:
   EventInfo();
   EventInfo(bool is_signal,
-            bool is_mc);
+            bool is_mc,
+            bool is_mc_th = false);
 
   RUN_TYPE               run;               ///< run number
   LUMI_TYPE              lumi;              ///< luminosity
   EVT_TYPE               event;             ///< event number
   GENHIGGSDECAYMODE_TYPE genHiggsDecayMode; ///< Higgs decay mode (only if MC signal)
   GENWEIGHT_TYPE         genWeight;         ///< generator-level weight (only if MC)
+  GENWEIGHTTH_TYPE       genWeight_tH;      ///< reweight tH MC sample from kappa=-1 to kappa=+1 (SM) case
   PUWEIGHT_TYPE          pileupWeight;      ///< pile-up weight (only if MC)
 
   bool
@@ -26,6 +28,9 @@ public:
 
   bool
   is_mc() const;
+
+  bool
+  is_mc_th() const;
 
   bool
   is_initialized() const;
@@ -43,6 +48,7 @@ public:
 private:
   const bool is_signal_;
   const bool is_mc_;
+  const bool is_mc_th_;
 
   static const std::map<std::string, GENHIGGSDECAYMODE_TYPE> decayMode_idString;
 };
