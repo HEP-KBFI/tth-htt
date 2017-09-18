@@ -84,6 +84,6 @@ std::ostream &
 operator<<(std::ostream & os,
            const EventInfo & info)
 {
-  os << info.run << ':' << info.lumi << ':' << info.event;
+  os << "run = " << info.run << ", ls = " << info.lumi << ", event = " << info.event;
   return os;
 }
