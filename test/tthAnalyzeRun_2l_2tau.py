@@ -38,7 +38,7 @@ elif ERA == "2016":
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "2017Sep02_vTight"
+version = "2017Sep18_vTight"
 
 max_job_resubmission = 3
 
@@ -118,7 +118,7 @@ if __name__ == '__main__':
       lumi = LUMI,
       debug = False,
       running_method = "sbatch",
-      num_parallel_jobs = 8,
+      num_parallel_jobs = 32,
       executable_addBackgrounds = "addBackgrounds",
       executable_addBackgroundJetToTauFakes = "addBackgroundLeptonFakes", # CV: use common executable for estimating jet->lepton and jet->tau_h fake background
       histograms_to_fit = [ "EventCounter", "numJets", "mTauTauVis" ],
