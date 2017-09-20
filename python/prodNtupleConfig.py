@@ -186,12 +186,18 @@ class prodNtupleConfig:
             process_name = sample_info["process_name_specific"]
             is_mc = (sample_info["type"] == "mc")
 
-            logging.info("Creating configuration files to run '%s' for sample %s" % (self.executable_prodNtuple, process_name))  
-    
+            logging.info("Creating configuration files to run '%s' for sample %s" % (self.executable_prodNtuple, process_name))
+
             inputFileList = generateInputFileList(sample_name, sample_info, self.max_files_per_job, self.debug)
+            key_dir = getKey(sample_name)
+            subDirs = list(map(
+                lambda y: os.path.join(self.dirs[key_dir][DKEY_NTUPLES], '%04d' % y),
+                set(map(lambda x: x // 1000, inputFileList.keys()))
+            ))
+            for subDir in subDirs:
+                create_if_not_exists(subDir)
             for jobId in inputFileList.keys():
-            
-                key_dir = getKey(sample_name)
+
                 key_file = getKey(sample_name, jobId)
 
                 self.inputFiles[key_file] = inputFileList[jobId]
@@ -200,8 +206,7 @@ class prodNtupleConfig:
                     continue
                 self.cfgFiles_prodNtuple_modified[key_file] = os.path.join(self.dirs[key_dir][DKEY_CFGS], "produceNtuple_%s_%i_cfg.py" % \
                   (process_name, jobId))
-                self.outputFiles[key_file] = os.path.join(self.dirs[key_dir][DKEY_NTUPLES], "%s_%i.root" % \
-                  (process_name, jobId))
+                self.outputFiles[key_file] = os.path.join(self.dirs[key_dir][DKEY_NTUPLES], "%04d" % (jobId // 1000), "tree_%i.root" % jobId)
                 self.logFiles_prodNtuple[key_file] = os.path.join(self.dirs[key_dir][DKEY_LOGS], "produceNtuple_%s_%i.log" % \
                   (process_name, jobId))
                 jobOptions = {

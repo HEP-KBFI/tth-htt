@@ -1,0 +1,9 @@
+/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau
+/hdfs/cms/store/user/mario/VHBBHeppyV25tthtautau
+/hdfs/cms/store/user/rdewanje/VHBBHeppyV25tthtautau
+/hdfs/cms/store/user/veelken/VHBBHeppyV25tthtautau/
+/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau_v2
+/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau_v3
+/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau_HLT
+/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau_tHq_tHW
+/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau_ttWW

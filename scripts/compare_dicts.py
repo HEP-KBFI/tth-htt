@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import subprocess, argparse, os, sys, logging, imp, re
+import argparse, os, sys, logging, imp
 
 def load_dict(path, name):
   if not os.path.isfile(path):
