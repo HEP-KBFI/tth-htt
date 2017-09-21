@@ -578,8 +578,8 @@ if __name__ == '__main__':
 
   # we need to post-process the meta dictionary
   output = jinja2.Template(header_str).render(
-    command     = ' '.join(sys.argv),
-    sample_name = args.output_dict_name,
+    command   = ' '.join(sys.argv),
+    dict_name = args.output_dict_name,
   )
   for key, entry in meta_dict.items():
     if not name_regex.match(entry['process_name_specific']):
