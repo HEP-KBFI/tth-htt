@@ -119,7 +119,11 @@ TTreeWrapper::hasNextEvent()
     if(currentFileIdx_ < fileCount_)
     {
       std::cout << "Opening #" << currentFileIdx_ << " file " << fileNames_[currentFileIdx_] << '\n';
+#if 0
       currentFilePtr_ = TFileOpenWrapper::Open(fileNames_[currentFileIdx_].c_str(), "READ");
+#else
+      currentFilePtr_ = TFile::Open(fileNames_[currentFileIdx_].c_str(), "READ");
+#endif
     }
     else
     {
@@ -189,7 +193,16 @@ TTreeWrapper::close()
   if(currentFilePtr_)
   {
     std::cout << "Closing " << fileNames_[currentFileIdx_] << '\n';
+#if 0
     TFileOpenWrapper::Close(currentFilePtr_);
+#else
+    if(currentFilePtr_)
+    {
+      currentFilePtr_ -> Close();
+      delete currentFilePtr_;
+      currentFilePtr_ = nullptr;
+    }
+#endif
     currentTreePtr_ = nullptr;
     currentMaxEvents_ = -1;
     currentEventIdx_  =  0;
