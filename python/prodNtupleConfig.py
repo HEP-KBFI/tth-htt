@@ -13,7 +13,7 @@ executable_rm = 'rm'
 
 class prodNtupleConfig:
     """Configuration metadata needed to run Ntuple production.
-    
+
     Args:
         configDir: The root config dir -- all configuration files are stored in its subdirectories
         outputDir: The root output dir -- all log and output files are stored in its subdirectories
@@ -21,7 +21,7 @@ class prodNtupleConfig:
         debug: if True, checks each input root file (Ntuple) before creating the python configuration files
         running_method: either `sbatch` (uses SLURM) or `Makefile`
         num_parallel_jobs: number of jobs that can be run in parallel on local machine (does not limit number of Ntuple production jobs running in parallel on batch system)
-  
+
     """
     def __init__(self, configDir, outputDir, executable_prodNtuple, cfgFile_prodNtuple, samples,
                  max_files_per_job, era, preselection_cuts, debug, running_method, version, num_parallel_jobs,
@@ -55,7 +55,7 @@ class prodNtupleConfig:
 
         self.version = version
 
-        create_if_not_exists(self.configDir)        
+        create_if_not_exists(self.configDir)
         create_if_not_exists(self.outputDir)
         self.stdout_file = codecs.open(os.path.join(
           self.configDir, "stdout_prodNtuple.log"), 'w', 'utf-8')
@@ -71,9 +71,9 @@ class prodNtupleConfig:
         self.inputFiles = {}
         self.outputFiles = {}
         self.filesToClean = []
-        
+
         for sample_name, sample_info in self.samples.items():
-            if not sample_info["use_it"] or sample_info["sample_category"] in [ "additional_signal_overlap", "background_data_estimate" ]:
+            if not sample_info["use_it"]:
                 continue
             process_name = sample_info["process_name_specific"]
             key_dir = getKey(sample_name)
@@ -90,16 +90,16 @@ class prodNtupleConfig:
             else:
                 self.dirs[dir_type] = os.path.join(self.outputDir, dir_type)
         ##print "self.dirs = ", self.dirs
-                
+
         self.cvmfs_error_log = {}
-               
-    def createCfg_prodNtuple(self, jobOptions): 
+
+    def createCfg_prodNtuple(self, jobOptions):
         """Create python configuration file for the prodNtuple executable (Ntuple production code)
 
         Args:
           inputFiles: list of input files (Ntuples)
           outputFile: output file of the job -- a ROOT file containing histogram
-        """  
+        """
         lines = []
         lines.append("process.fwliteInput.fileNames = cms.vstring(%s)" % jobOptions['inputFiles'])
         lines.append("process.fwliteOutput.fileName = cms.string('%s')" % os.path.basename(jobOptions['outputFile']))
@@ -165,7 +165,7 @@ class prodNtupleConfig:
             targets = self.outputFiles.values()
         tools_createMakefile(self.makefile, targets, lines_makefile, self.filesToClean)
         logging.info("Run it with:\tmake -f %s -j %i " %
-            (self.makefile, self.num_parallel_jobs))    
+            (self.makefile, self.num_parallel_jobs))
 
     def create(self):
         """Creates all necessary config files and runs the Ntuple production -- either locally or on the batch system
@@ -177,10 +177,10 @@ class prodNtupleConfig:
                     create_if_not_exists(self.dirs[key][dir_type])
             else:
                 create_if_not_exists(self.dirs[key])
-  
+
         self.inputFileIds = {}
         for sample_name, sample_info in self.samples.items():
-            if not sample_info["use_it"] or sample_info["sample_category"] in [ "additional_signal_overlap", "background_data_estimate" ]:
+            if not sample_info["use_it"]:
                 continue
 
             process_name = sample_info["process_name_specific"]
@@ -219,7 +219,7 @@ class prodNtupleConfig:
                     'random_seed' : jobId
                 }
                 self.createCfg_prodNtuple(jobOptions)
-                
+
         if self.is_sbatch:
             logging.info("Creating script for submitting '%s' jobs to batch system" % self.executable_prodNtuple)
             self.createScript_sbatch()
@@ -229,7 +229,7 @@ class prodNtupleConfig:
         self.addToMakefile_prodNtuple(lines_makefile)
         #self.addToMakefile_clean(lines_makefile)
         self.createMakefile(lines_makefile)
-  
+
         logging.info("Done")
 
     def run(self):

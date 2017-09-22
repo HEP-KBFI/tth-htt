@@ -5,12 +5,6 @@ from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016 import samples_2016
 from tthAnalysis.HiggsToTauTau.prodNtupleConfig import prodNtupleConfig
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 
-for sample_key, sample_entry in samples_2016.items():
-  if sample_entry['process_name_specific'] != 'ttHJetToNonbb_M125_amcatnlo':
-    sample_entry['use_it'] = False
-  else:
-    sample_entry['use_it'] = True
-
 #ERA = "2015"
 ERA = "2016"
 
