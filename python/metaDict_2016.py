@@ -2,6 +2,23 @@ from collections import OrderedDict as OD
 
 meta_dictionary = OD()
 
+### event sums
+
+sum_events = {
+  ("TTWJetsToLNu_ext1", "TTWJetsToLNu_ext2"),
+  ("TTJets_SingleLeptFromT", "TTJets_SingleLeptFromT_ext1"),
+  ("TGJets", "TGJets_ext1"),
+  ("ttHToNonbb_fastsim_p1", "ttHToNonbb_fastsim_p2", "ttHToNonbb_fastsim_p3"),
+  ("TTTo2L2Nu_fastsim_p1", "TTTo2L2Nu_fastsim_p2", "TTTo2L2Nu_fastsim_p3"),
+  ("TTToSemilepton_fastsim_p1", "TTToSemilepton_fastsim_p2", "TTToSemilepton_fastsim_p3"),
+  ("TTJets_SingleLeptFromTbar", "TTJets_SingleLeptFromTbar_ext1"),
+  ("TTZToLL_M10_ext1", "TTZToLL_M10_ext2"),
+  ("DYJetsToLL_M-50_ext1", "DYJetsToLL_M-50_ext2"),
+  ("WGToLNuG_ext1", "WGToLNuG_ext2"),
+  ("TTJets_DiLept", "TTJets_DiLept_ext1"),
+  ("TTGJets", "TTGJets_ext1"),
+}
+
 ### DATA
 
 meta_dictionary["/DoubleEG/Run2016B-23Sep2016-v3/MINIAOD"] = OD([

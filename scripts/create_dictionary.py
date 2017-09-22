@@ -450,9 +450,6 @@ if __name__ == '__main__':
   parser.add_argument('-m', '--meta-dictionary', dest = 'meta_dictionary', metavar = 'file',
                       required = True, type = str,
                       help = 'R|Path to the meta dictionary')
-  parser.add_argument('-n', '--dict-name', dest = 'dict_name', metavar = 'name',
-                      default = 'meta_dictionary', type = str,
-                      help = 'R|Name of the dictionary (specified by -m)')
   parser.add_argument('-N', '--output-dict-name', dest = 'output_dict_name', metavar = 'name',
                       type = str, default = 'sample',
                       help = 'R|Name of the output dictionary')
@@ -530,11 +527,16 @@ if __name__ == '__main__':
     path.sparent_depth = path.depth
 
   # load the dictionaries
-  meta_dict = load_dict(args.meta_dictionary, args.dict_name)
+  meta_dict = load_dict(args.meta_dictionary, "meta_dictionary")
+  sum_events = load_dict(args.meta_dictionary, "sum_events")
   process_names = { entry['process_name_specific'] : dbs_name for dbs_name, entry in meta_dict.items() }
   crab_strings  = { entry['crab_string']           : dbs_name for dbs_name, entry in meta_dict.items() }
   for key, entry in meta_dict.items():
     entry['located'] = False
+  for key_arr in sum_events:
+    for key in key_arr:
+      if key not in process_names:
+        raise ValueError("No such key in meta_dictionary: %s" % key)
 
   # set up the regex object
   name_regex = re.compile(args.filter)
@@ -577,6 +579,27 @@ if __name__ == '__main__':
           paths.append(entry)
 
   # we need to post-process the meta dictionary
+  for key, entry in meta_dict.items():
+    if not name_regex.match(entry['process_name_specific']):
+      continue
+    if entry['located']:
+      process_paths(meta_dict, key)
+  for key_arr in sum_events:
+    event_sum = 0
+    missing_keys = []
+    for meta_key, meta_entry in meta_dict.items():
+      if meta_entry['process_name_specific'] in key_arr:
+        if not meta_entry['located']:
+          missing_keys.append(meta_entry['process_name_specific'])
+        else:
+          event_sum += meta_entry['nof_events']
+    if 0 < len(missing_keys) < len(key_arr):
+      raise ValueError("Could not find all samples to compute the number of events: %s" % \
+                       ', '.join(missing_keys))
+    for meta_key, meta_entry in meta_dict.items():
+      if meta_entry['process_name_specific'] in key_arr:
+        meta_entry['nof_events'] = event_sum
+
   output = jinja2.Template(header_str).render(
     command   = ' '.join(sys.argv),
     dict_name = args.output_dict_name,
@@ -585,7 +608,6 @@ if __name__ == '__main__':
     if not name_regex.match(entry['process_name_specific']):
       continue
     if entry['located']:
-      process_paths(meta_dict, key)
       path_entries_arr = []
       for path_entry in meta_dict[key]['local_paths']:
         path_entries_arr.append(jinja2.Template(path_entry_str).render(
@@ -626,7 +648,7 @@ if __name__ == '__main__':
     if args.save_zeroes:
       zeroes_path = os.path.join(args.output_directory, ZEROES_FILE)
       with open(zeroes_path, 'w') as f:
-        f.write('\n'.join(filetracker.zero_file_size))
+        f.write('\n'.join(filetracker.zero_file_size) + '\n')
       logging.info("Saved the list of files with zero file size to {path}".format(
         path = zeroes_path,
       ))
@@ -637,7 +659,7 @@ if __name__ == '__main__':
     if args.save_zombies:
       zombies_path = os.path.join(args.output_directory, ZOMBIES_FILE)
       with open(zombies_path, 'w') as f:
-        f.write('\n'.join(filetracker.zombie_files))
+        f.write('\n'.join(filetracker.zombie_files) + '\n')
       logging.info("Saved the list of zombie files to {path}".format(path = zombies_path))
   if filetracker.corrupted_files:
     logging.info("The following files were corrupted:\n{corrupted}".format(
@@ -646,5 +668,5 @@ if __name__ == '__main__':
     if args.save_corrupted:
       corrupted_path = os.path.join(args.output_directory, CORRUPTED_FILE)
       with open(corrupted_path, 'r') as f:
-        f.write('\n'.join(filetracker.corrupted_files))
+        f.write('\n'.join(filetracker.corrupted_files) + '\n')
       logging.info("Saved the list of corrupted files to {path}".format(path = corrupted_path))
