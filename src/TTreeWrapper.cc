@@ -171,9 +171,9 @@ TTreeWrapper::hasNextEvent()
   if(currentEventIdx_ < currentMaxEvents_ && belowMaxEvents)
   {
     // we still have some events to be read here
+    currentTreePtr_ -> GetEntry(currentEventIdx_);
     ++currentEventIdx_;
     ++currentMaxEventIdx_;
-    currentTreePtr_ -> GetEntry(currentEventIdx_);
   }
   else
   {
