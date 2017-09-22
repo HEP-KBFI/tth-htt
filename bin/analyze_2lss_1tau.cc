@@ -523,17 +523,20 @@ int main(int argc, char* argv[])
   GenJetReader* genJetReader = 0;
   LHEInfoReader* lheInfoReader = 0;
   if ( isMC ) {
-    if ( branchName_genLeptons1 != "" || branchName_genLeptons2 != "" ) {
-      genLeptonReader = new GenLeptonReader(Form("n%s", branchName_genLeptons1.data()), branchName_genLeptons1, Form("n%s", branchName_genLeptons2.data()), branchName_genLeptons2); 
-      inputTree -> registerReader(genLeptonReader);
-    }
-    if ( branchName_genHadTaus != "" ) {
-      genHadTauReader = new GenHadTauReader(Form("n%s", branchName_genHadTaus.data()), branchName_genHadTaus);
-      inputTree -> registerReader(genHadTauReader);
-    }
-    if ( branchName_genJets != "" ) {
-      genJetReader = new GenJetReader(Form("n%s", branchName_genJets.data()), branchName_genJets);
-      inputTree -> registerReader(genJetReader);
+    if(! readGenObjects)
+    {
+      if ( branchName_genLeptons1 != "" || branchName_genLeptons2 != "" ) {
+        genLeptonReader = new GenLeptonReader(Form("n%s", branchName_genLeptons1.data()), branchName_genLeptons1, Form("n%s", branchName_genLeptons2.data()), branchName_genLeptons2);
+        inputTree -> registerReader(genLeptonReader);
+      }
+      if ( branchName_genHadTaus != "" ) {
+        genHadTauReader = new GenHadTauReader(Form("n%s", branchName_genHadTaus.data()), branchName_genHadTaus);
+        inputTree -> registerReader(genHadTauReader);
+      }
+      if ( branchName_genJets != "" ) {
+        genJetReader = new GenJetReader(Form("n%s", branchName_genJets.data()), branchName_genJets);
+        inputTree -> registerReader(genJetReader);
+      }
     }
     lheInfoReader = new LHEInfoReader();
     inputTree -> registerReader(lheInfoReader);
@@ -891,7 +894,8 @@ int main(int argc, char* argv[])
       std::cout << "processing Entry " << inputTree -> getCurrentMaxEventIdx()
                 << " or " << inputTree -> getCurrentEventIdx() << " entry in #"
                 << (inputTree -> getProcessedFileCount() - 1)
-                << " file (" << selectedEntries << " Entries selected)\n";
+                << " (" << eventInfo
+                << ") file (" << selectedEntries << " Entries selected)\n";
     }
     ++analyzedEntries;
     histogram_analyzedEntries->Fill(0.);

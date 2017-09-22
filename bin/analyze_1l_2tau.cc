@@ -773,7 +773,8 @@ int main(int argc, char* argv[])
       std::cout << "processing Entry " << inputTree -> getCurrentMaxEventIdx()
                 << " or " << inputTree -> getCurrentEventIdx() << " entry in #"
                 << (inputTree -> getProcessedFileCount() - 1)
-                << " file (" << selectedEntries << " Entries selected)\n";
+                << " (" << eventInfo
+                << ") file (" << selectedEntries << " Entries selected)\n";
     }
     ++analyzedEntries;
     histogram_analyzedEntries->Fill(0.);
