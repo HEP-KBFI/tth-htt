@@ -80,7 +80,7 @@ std::vector<GenParticle> convert_to_GenParticle(const std::vector<GenLepton>& ge
 {
   std::vector<GenParticle> genParticles;
   for ( std::vector<GenLepton>::const_iterator genLepton = genLeptons.begin();
-	genLepton != genLeptons.end(); ++genLepton ) {
+        genLepton != genLeptons.end(); ++genLepton ) {
     genParticles.push_back(GenParticle(genLepton->p4(), genLepton->pdgId(), genLepton->charge()));
   }
   return genParticles;
@@ -90,7 +90,7 @@ std::vector<GenParticle> convert_to_GenParticle(const std::vector<GenHadTau>& ge
 {
   std::vector<GenParticle> genParticles;
   for ( std::vector<GenHadTau>::const_iterator genHadTau = genHadTaus.begin();
-	genHadTau != genHadTaus.end(); ++genHadTau ) {
+        genHadTau != genHadTaus.end(); ++genHadTau ) {
     genParticles.push_back(GenParticle(genHadTau->p4(), 0, genHadTau->charge()));
   }
   return genParticles;
@@ -100,7 +100,7 @@ std::vector<GenParticle> convert_to_GenParticle(const std::vector<GenJet>& genJe
 {
   std::vector<GenParticle> genParticles;
   for ( std::vector<GenJet>::const_iterator genJet = genJets.begin();
-	genJet != genJets.end(); ++genJet ) {
+        genJet != genJets.end(); ++genJet ) {
     genParticles.push_back(GenParticle(genJet->p4(), 0, 0));
   }
   return genParticles;
@@ -210,7 +210,7 @@ int main(int argc, char* argv[])
 
   TChain* inputTree = new TChain(treeName.data());
   for ( std::vector<std::string>::const_iterator inputFileName = inputFiles.files().begin();
-	inputFileName != inputFiles.files().end(); ++inputFileName ) {
+        inputFileName != inputFiles.files().end(); ++inputFileName ) {
     std::cout << "input Tree: adding file = " << (*inputFileName) << std::endl;
     inputTree->AddFile(inputFileName->data());
   }
@@ -270,7 +270,7 @@ int main(int argc, char* argv[])
   preselHadTauSelector.set_min_pt(18.); 
   fakeableHadTauSelector.set_min_pt(18.);
   tightHadTauSelector.set_min_pt(18.);
-  
+
   RecoJetReader* jetReader = new RecoJetReader(era, isMC, "nJet", "Jet");
   jetReader->setJetPt_central_or_shift(RecoJetReader::kJetPt_central); 
   jetReader->read_BtagWeight_systematics(isMC);
@@ -383,8 +383,8 @@ int main(int argc, char* argv[])
 
     if ( idxEntry > 0 && (idxEntry % reportEvery) == 0 ) {
       std::cout << "processing Entry " << idxEntry << ":"
-		<< " run = " << run << ", lumi = " << lumi << ", event = " << event
-		<< " (" << selectedEntries << " Entries selected)" << std::endl;
+                << " run = " << run << ", lumi = " << lumi << ", event = " << event
+                << " (" << selectedEntries << " Entries selected)" << std::endl;
     }
     ++analyzedEntries;
     
@@ -395,7 +395,7 @@ int main(int argc, char* argv[])
 
     if ( run_lumi_eventSelector ) {
       std::cout << "processing Entry " << idxEntry << ":"
-		<< " run = " << run << ", lumi = " << lumi << ", event = " << event << std::endl;
+                << " run = " << run << ", lumi = " << lumi << ", event = " << event << std::endl;
       if ( inputTree->GetFile() ) std::cout << "input File = " << inputTree->GetFile()->GetName() << std::endl;
     }
 
@@ -436,14 +436,16 @@ int main(int argc, char* argv[])
     else if ( hadTauSelection == kFakeable ) selHadTaus = fakeableHadTaus;
     else if ( hadTauSelection == kTight    ) selHadTaus = tightHadTaus;
     else assert(0);
-    
+
 //--- build collections of jets and select subset of jets passing b-tagging criteria
     std::vector<RecoJet> jets = jetReader->read();
     std::vector<const RecoJet*> jet_ptrs = convert_to_ptrs(jets);
-    std::vector<const RecoJet*> cleanedJets = jetCleaner(jet_ptrs, fakeableMuons, fakeableElectrons, fakeableHadTaus);
+    // Karl: do not clean w.r.t the taus b/c their definition changes across the analyses
+    //       we are better off if we keep a bit more jets per event
+    std::vector<const RecoJet*> cleanedJets = jetCleaner(jet_ptrs, fakeableMuons, fakeableElectrons);
     std::vector<const RecoJet*> selJets;
     for ( std::vector<const RecoJet*>::const_iterator cleanedJet = cleanedJets.begin();
-	  cleanedJet != cleanedJets.end(); ++cleanedJet ) {
+          cleanedJet != cleanedJets.end(); ++cleanedJet ) {
       double cleanedJet_pt = (*cleanedJet)->pt();
       double cleanedJet_pt_JECUp = cleanedJet_pt*((*cleanedJet)->corr_JECUp()/(*cleanedJet)->corr());
       double cleanedJet_pt_JECDown = cleanedJet_pt*((*cleanedJet)->corr_JECDown()/(*cleanedJet)->corr());
@@ -451,7 +453,7 @@ int main(int argc, char* argv[])
       double min_pT = jetSelector.get_min_pt();
       double max_absEta = jetSelector.get_max_absEta();
       if ( (cleanedJet_pt >= min_pT || cleanedJet_pt_JECUp >= min_pT || cleanedJet_pt_JECDown >= min_pT ) && cleanedJet_absEta < max_absEta ) {
-	selJets.push_back(*cleanedJet);
+        selJets.push_back(*cleanedJet);
       }
     }
     std::vector<const RecoJet*> selBJets_loose = jetSelectorBtagLoose(cleanedJets);
@@ -459,22 +461,22 @@ int main(int argc, char* argv[])
 
     RecoMEt met = metReader->read();
 
-//--- apply preselection    
+//--- apply preselection
     std::vector<const RecoLepton*> selLeptons = mergeLeptonCollections(selElectrons, selMuons);
     if ( !((int)selLeptons.size() >= minNumLeptons) ) {
       if ( run_lumi_eventSelector ) {
-	std::cout << "event FAILS selLeptons selection." << std::endl;
-	std::vector<const RecoLepton*> preselLeptons = mergeLeptonCollections(preselElectrons, preselMuons);
-	std::cout << " (#preselLeptons = " << preselLeptons.size() << ")" << std::endl;
-	for ( size_t idxPreselLepton = 0; idxPreselLepton < preselLeptons.size(); ++idxPreselLepton ) {
-	  std::cout << "preselLepton #" << idxPreselLepton << ":" << std::endl;
-	  std::cout << (*preselLeptons[idxPreselLepton]);
-	}
-	std::cout << " (#selLeptons = " << selLeptons.size() << ")" << std::endl;
-	for ( size_t idxSelLepton = 0; idxSelLepton < selLeptons.size(); ++idxSelLepton ) {
-	  std::cout << "selLepton #" << idxSelLepton << ":" << std::endl;
-	  std::cout << (*selLeptons[idxSelLepton]);
-	}
+        std::cout << "event FAILS selLeptons selection." << std::endl;
+        std::vector<const RecoLepton*> preselLeptons = mergeLeptonCollections(preselElectrons, preselMuons);
+        std::cout << " (#preselLeptons = " << preselLeptons.size() << ")" << std::endl;
+        for ( size_t idxPreselLepton = 0; idxPreselLepton < preselLeptons.size(); ++idxPreselLepton ) {
+          std::cout << "preselLepton #" << idxPreselLepton << ":" << std::endl;
+          std::cout << (*preselLeptons[idxPreselLepton]);
+        }
+        std::cout << " (#selLeptons = " << selLeptons.size() << ")" << std::endl;
+        for ( size_t idxSelLepton = 0; idxSelLepton < selLeptons.size(); ++idxSelLepton ) {
+          std::cout << "selLepton #" << idxSelLepton << ":" << std::endl;
+          std::cout << (*selLeptons[idxSelLepton]);
+        }
       }
       continue;
     }
@@ -487,31 +489,38 @@ int main(int argc, char* argv[])
       //     to allow for e-ES and mu-ES uncertainties to be estimated
       double minPt_lead = -1.;
       if      ( era == kEra_2015 ) minPt_lead = 18.; 
-      else if ( era == kEra_2016 ) minPt_lead = 23.;
+      else if ( era == kEra_2016 ) { // to accommodate 1l_2tau cuts
+        if (selLepton_lead -> is_electron()) {
+          minPt_lead = 23.;
+        }
+        else {
+          minPt_lead = 18.;
+        }
+      }
       else assert(0);
       if ( !(selLepton_lead->pt() > minPt_lead) ) {
-	if ( run_lumi_eventSelector ) {
-	  std::cout << "event FAILS lepton pT selection." << std::endl;
-	  std::cout << " (leading selLepton pT = " << selLepton_lead->pt() << ", minPt_lead = " << minPt_lead << ")" << std::endl;
-	}
-	continue;
+        if ( run_lumi_eventSelector ) {
+          std::cout << "event FAILS lepton pT selection." << std::endl;
+          std::cout << " (leading selLepton pT = " << selLepton_lead->pt() << ", minPt_lead = " << minPt_lead << ")" << std::endl;
+        }
+        continue;
       }
       cutFlowTable.update(Form("lead lepton pT > %1.0f GeV", minPt_lead));
     }
 
     if ( !((int)selHadTaus.size() >= minNumHadTaus) ) {
       if ( run_lumi_eventSelector ) {
-	std::cout << "event FAILS selHadTaus selection." << std::endl;
-	std::cout << " (#preselHadTaus = " << preselHadTaus.size() << ")" << std::endl;
-	for ( size_t idxPreselHadTau = 0; idxPreselHadTau < preselHadTaus.size(); ++idxPreselHadTau ) {
-	  std::cout << "preselHadTau #" << idxPreselHadTau << ":" << std::endl;
-	  std::cout << (*preselHadTaus[idxPreselHadTau]);
-	}
-	std::cout << " (#selHadTaus = " << selHadTaus.size() << ")" << std::endl;
-	for ( size_t idxSelHadTau = 0; idxSelHadTau < selHadTaus.size(); ++idxSelHadTau ) {
-	  std::cout << "selHadTau #" << idxSelHadTau << ":" << std::endl;
-	  std::cout << (*selHadTaus[idxSelHadTau]);
-	}
+        std::cout << "event FAILS selHadTaus selection." << std::endl;
+        std::cout << " (#preselHadTaus = " << preselHadTaus.size() << ")" << std::endl;
+        for ( size_t idxPreselHadTau = 0; idxPreselHadTau < preselHadTaus.size(); ++idxPreselHadTau ) {
+          std::cout << "preselHadTau #" << idxPreselHadTau << ":" << std::endl;
+          std::cout << (*preselHadTaus[idxPreselHadTau]);
+        }
+        std::cout << " (#selHadTaus = " << selHadTaus.size() << ")" << std::endl;
+        for ( size_t idxSelHadTau = 0; idxSelHadTau < selHadTaus.size(); ++idxSelHadTau ) {
+          std::cout << "selHadTau #" << idxSelHadTau << ":" << std::endl;
+          std::cout << (*selHadTaus[idxSelHadTau]);
+        }
       }
       continue;
     }
@@ -525,12 +534,12 @@ int main(int argc, char* argv[])
     // apply requirement on jets 
     if ( !((int)selJets.size() >= minNumJets) ) {
       if ( run_lumi_eventSelector ) {
-	std::cout << "event FAILS selJets selection." << std::endl;
-	std::cout << " (#selJets = " << selJets.size() << ")" << std::endl;
-	for ( size_t idxSelJet = 0; idxSelJet < selJets.size(); ++idxSelJet ) {
-	  std::cout << "selJet #" << idxSelJet << ":" << std::endl;
-	  std::cout << (*selJets[idxSelJet]);
-	}
+        std::cout << "event FAILS selJets selection." << std::endl;
+        std::cout << " (#selJets = " << selJets.size() << ")" << std::endl;
+        for ( size_t idxSelJet = 0; idxSelJet < selJets.size(); ++idxSelJet ) {
+          std::cout << "selJet #" << idxSelJet << ":" << std::endl;
+          std::cout << (*selJets[idxSelJet]);
+        }
       }
       continue;
     }
@@ -539,22 +548,22 @@ int main(int argc, char* argv[])
     // apply requirement on b-jets 
     if ( !((int)selBJets_loose.size() >= minNumBJets_loose || (int)selBJets_medium.size() >= minNumBJets_medium) ) {
       if ( run_lumi_eventSelector ) {
-	std::cout << "event FAILS selBJets selection." << std::endl;
-	std::cout << " (#selJets = " << selJets.size() << ")" << std::endl;
-	for ( size_t idxSelJet = 0; idxSelJet < selJets.size(); ++idxSelJet ) {
-	  std::cout << "selJet #" << idxSelJet << ":" << std::endl;
-	  std::cout << (*selJets[idxSelJet]);
-	}
-	std::cout << " (#selBJets_loose = " << selBJets_loose.size() << ")" << std::endl;
-	for ( size_t idxSelBJet_loose = 0; idxSelBJet_loose < selBJets_loose.size(); ++idxSelBJet_loose ) {
-	  std::cout << "selBJet_loose #" << idxSelBJet_loose << ":" << std::endl;
-	  std::cout << (*selBJets_loose[idxSelBJet_loose]);
-	}
-	std::cout << " (#selBJets_medium = " << selBJets_medium.size() << ")" << std::endl;
-	for ( size_t idxSelBJet_medium = 0; idxSelBJet_medium < selBJets_medium.size(); ++idxSelBJet_medium ) {
-	  std::cout << "selBJet_medium #" << idxSelBJet_medium << ":" << std::endl;
-	  std::cout << (*selBJets_medium[idxSelBJet_medium]);
-	}
+        std::cout << "event FAILS selBJets selection." << std::endl;
+        std::cout << " (#selJets = " << selJets.size() << ")" << std::endl;
+        for ( size_t idxSelJet = 0; idxSelJet < selJets.size(); ++idxSelJet ) {
+          std::cout << "selJet #" << idxSelJet << ":" << std::endl;
+          std::cout << (*selJets[idxSelJet]);
+        }
+        std::cout << " (#selBJets_loose = " << selBJets_loose.size() << ")" << std::endl;
+        for ( size_t idxSelBJet_loose = 0; idxSelBJet_loose < selBJets_loose.size(); ++idxSelBJet_loose ) {
+          std::cout << "selBJet_loose #" << idxSelBJet_loose << ":" << std::endl;
+          std::cout << (*selBJets_loose[idxSelBJet_loose]);
+        }
+        std::cout << " (#selBJets_medium = " << selBJets_medium.size() << ")" << std::endl;
+        for ( size_t idxSelBJet_medium = 0; idxSelBJet_medium < selBJets_medium.size(); ++idxSelBJet_medium ) {
+          std::cout << "selBJet_medium #" << idxSelBJet_medium << ":" << std::endl;
+          std::cout << (*selBJets_medium[idxSelBJet_medium]);
+        }
       }
       continue;
     }
@@ -569,10 +578,10 @@ int main(int argc, char* argv[])
     if ( isMC ) {
       genLeptons = genLeptonReader->read();
       for ( std::vector<GenLepton>::const_iterator genLepton = genLeptons.begin();
-    	    genLepton != genLeptons.end(); ++genLepton ) {
-	int abs_pdgId = std::abs(genLepton->pdgId());
-	if      ( abs_pdgId == 11 ) genElectrons.push_back(*genLepton);
-	else if ( abs_pdgId == 13 ) genMuons.push_back(*genLepton);
+                genLepton != genLeptons.end(); ++genLepton ) {
+        int abs_pdgId = std::abs(genLepton->pdgId());
+        if      ( abs_pdgId == 11 ) genElectrons.push_back(*genLepton);
+        else if ( abs_pdgId == 13 ) genMuons.push_back(*genLepton);
       }
       genHadTaus = genHadTauReader->read();
       genJets = genJetReader->read();
@@ -597,8 +606,8 @@ int main(int argc, char* argv[])
       jetGenMatcher.addGenJetMatch(selJets, genJets, 0.2);
     }
 
-    muonWriter->write(fakeableMuons);
-    electronWriter->write(fakeableElectrons);
+    muonWriter->write(preselMuons);
+    electronWriter->write(preselElectrons);
     hadTauWriter->write(fakeableHadTaus);
     jetWriter->write(selJets);
     metWriter->write(met);
@@ -620,7 +629,7 @@ int main(int argc, char* argv[])
 
     ++selectedEntries;
   }
-												
+
   std::cout << "num. Entries = " << numEntries << std::endl;
   std::cout << " analyzed = " << analyzedEntries << std::endl;
   std::cout << " selected = " << selectedEntries << std::endl;
@@ -656,35 +665,35 @@ int main(int argc, char* argv[])
   delete inputTree;
   std::map<std::string, TH1*> histograms;
   for ( std::vector<std::string>::const_iterator inputFileName = inputFiles.files().begin();
-	inputFileName != inputFiles.files().end(); ++inputFileName ) {
+        inputFileName != inputFiles.files().end(); ++inputFileName ) {
     TFile* inputFile = new TFile(inputFileName->data());
     if ( !inputFile ) 
       throw cms::Exception("produceNtuple") 
-	<< "Failed to open input File = '" << (*inputFileName) << "' !!\n";
+        << "Failed to open input File = '" << (*inputFileName) << "' !!\n";
     
     for ( vstring::const_iterator histogramName = copy_histograms.begin();
-	  histogramName != copy_histograms.end(); ++histogramName ) {
+          histogramName != copy_histograms.end(); ++histogramName ) {
       if ( inputFiles.files().size() > 1 ) {
-	std::cout << " " << (*histogramName) << " from input File = '" << (*inputFileName) << "'" << std::endl;
+        std::cout << " " << (*histogramName) << " from input File = '" << (*inputFileName) << "'" << std::endl;
       } else { 
-	std::cout << " " << (*histogramName) << std::endl;
+        std::cout << " " << (*histogramName) << std::endl;
       }
       TH1* histogram_input = dynamic_cast<TH1*>(inputFile->Get(histogramName->data()));
       if ( !histogram_input ) continue;
 
       TH1* histogram_output = histograms[*histogramName];
       if ( histogram_output ) {
-	histogram_output->Add(histogram_input);
+        histogram_output->Add(histogram_input);
       } else {
-	if      ( dynamic_cast<TH1F*>(histogram_input) ) histogram_output = fs.make<TH1F>(*(dynamic_cast<TH1F*>(histogram_input)));
-	else if ( dynamic_cast<TH1D*>(histogram_input) ) histogram_output = fs.make<TH1D>(*(dynamic_cast<TH1D*>(histogram_input)));
-	assert(histogram_output);
-	histograms[*histogramName] = histogram_output;
+        if      ( dynamic_cast<TH1F*>(histogram_input) ) histogram_output = fs.make<TH1F>(*(dynamic_cast<TH1F*>(histogram_input)));
+        else if ( dynamic_cast<TH1D*>(histogram_input) ) histogram_output = fs.make<TH1D>(*(dynamic_cast<TH1D*>(histogram_input)));
+        assert(histogram_output);
+        histograms[*histogramName] = histogram_output;
       }
     }
     delete inputFile;
   }
-												
+
   clock.Show("produceNtuple");
 
   return EXIT_SUCCESS;
