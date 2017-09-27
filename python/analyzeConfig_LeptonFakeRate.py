@@ -19,21 +19,29 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
   """
   def __init__(self, configDir, outputDir, cmssw_base_dir_combine,  executable_analyze, samples, 
                absEtaBins_e, absPtBins_e, absEtaBins_mu, absPtBins_mu, fillGenEvtHistograms, central_or_shifts,
-               max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs):
+               max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs, prep_dcard,
+               histograms_to_fit, executable_prep_dcard):
                # charge_selections, jet_minPt, jet_maxPt, jet_minAbsEta, jet_maxAbsEta, hadTau_selections, 
                # executable_comp_LeptonFakeRate):
     analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "LeptonFakeRate", central_or_shifts,
-      max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs, 
-      [])
-
+      max_files_per_job, era, use_lumi, lumi, debug, 
+      running_method, num_parallel_jobs, 
+      prep_dcard,
+      histograms_to_fit,
+      executable_prep_dcard)
     self.cmssw_base_dir_combine = cmssw_base_dir_combine
     self.samples = samples
     self.absEtaBins_e = absEtaBins_e
     self.absEtaBins_mu = absEtaBins_mu
     self.absPtBins_e = absPtBins_e
     self.absPtBins_mu = absPtBins_mu
+    self.prep_dcard = prep_dcard
+    self.histograms_to_fit = histograms_to_fit
+    self.executable_prep_dcard = executable_prep_dcard
     self.fillGenEvtHistograms = fillGenEvtHistograms
     self.cfgFile_analyze = os.path.join(self.workingDir, "analyze_LeptonFakeRate_cfg.py")
+    self.prep_dcard_processesToCopy = ["data_obs","TTWl_plus_t","TTZl_plus_t","TTl_plus_t","Raresl_plus_t","EWKl_plus_t","signall_plus_t"]
+    self.histogramDir_prep_dcard = "LeptonFakeRate"
 #    self.executable_comp_LeptonFakeRate = executable_comp_LeptonFakeRate                           ## TO BE INCLUDED LATER
 #    self.cfgFile_comp_LeptonFakeRate = os.path.join(self.workingDir, "comp_LeptonFakeRate_cfg.py") ## TO BE INCLUDED LATER
 #    self.jobOptions_comp_LeptonFakeRate = {}
@@ -268,12 +276,30 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
 #        self.inputFiles_hadd_stage2[key_hadd_stage2].append(self.outputFile_hadd_stage1[key_hadd_stage1])                                     ## NO CHARGE SELECTION NEEDED HERE      
 #        self.outputFile_hadd_stage2[key_hadd_stage2] = os.path.join(self.dirs[DKEY_HIST], "histograms_harvested_stage2_%s_%s.root" % \        ## NO CHARGE SELECTION NEEDED HERE      
 #          (self.channel, charge_selection))                                                                                                   ## NO CHARGE SELECTION NEEDED HERE      
-      key_hadd_stage2 = getKey("")              
-      if not key_hadd_stage2 in self.inputFiles_hadd_stage2:  
-        self.inputFiles_hadd_stage2[key_hadd_stage2] = []     
+    key_hadd_stage2 = getKey('')              
+    if not key_hadd_stage2 in self.inputFiles_hadd_stage2:  
+      self.inputFiles_hadd_stage2[key_hadd_stage2] = []    
+    for key_hadd_stage1 in self.outputFile_hadd_stage1.keys():  
       self.inputFiles_hadd_stage2[key_hadd_stage2].append(self.outputFile_hadd_stage1[key_hadd_stage1]) 
-      self.outputFile_hadd_stage2[key_hadd_stage2] = os.path.join(self.dirs[DKEY_HIST], "histograms_harvested_stage2_%s.root" % (self.channel))                                                        
-                                     
+      self.outputFile_hadd_stage2[key_hadd_stage2] = os.path.join(self.dirs[DKEY_HIST], "histograms_harvested_stage2_%s.root" % (self.channel))                                                       
+
+    if self.prep_dcard:
+      processesToCopy = []
+      logging.info("Creating configuration files to run 'prepareDatacards'")
+      for process in self.prep_dcard_processesToCopy:
+        processesToCopy.append(process)             
+      self.prep_dcard_processesToCopy = processesToCopy
+      for histogramToFit in self.histograms_to_fit: 
+        key_prep_dcard_job = getKey(histogramToFit)
+        self.jobOptions_prep_dcard[key_prep_dcard_job] = {
+        'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2],
+        'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "prepareDatacards_LeptonFakeRate_%s_cfg.py" % (histogramToFit)),
+        'datacardFile' : os.path.join(self.dirs[DKEY_DCRD], "prepareDatacards_%s.root" % (histogramToFit)),
+        'histogramDir' : (self.histogramDir_prep_dcard),
+        'histogramToFit' : histogramToFit,
+        'label' : None
+      }
+      self.createCfg_prep_dcard(self.jobOptions_prep_dcard[key_prep_dcard_job])       
 
     if self.is_sbatch:
       logging.info("Creating script for submitting '%s' jobs to batch system" % self.executable_analyze)
@@ -286,6 +312,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
 #      self.createScript_sbatch(self.executable_comp_jetToTauFakeRate, self.sbatchFile_comp_jetToTauFakeRate, self.jobOptions_comp_jetToTauFakeRate)
 
 
+    
 
 
 #### FAKE RATE COMP BLOCK COMMENTED OUT ########################
@@ -360,7 +387,8 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     lines_makefile = []
     self.addToMakefile_analyze(lines_makefile)
     self.addToMakefile_hadd_stage1(lines_makefile)
-    self.addToMakefile_hadd_stage2(lines_makefile)             ## TO BE IMPLEMENTED LATER
+    self.addToMakefile_hadd_stage2(lines_makefile)             
+    self.addToMakefile_prep_dcard(lines_makefile)
 #    self.addToMakefile_comp_jetToTauFakeRate(lines_makefile)   ## TO BE IMPLEMENTED LATER
 #    self.addToMakefile_make_plots(lines_makefile)              ## TO BE IMPLEMENTED LATER
     self.targets = [ outputFile for outputFile in self.outputFile_hadd_stage2.values() ]
