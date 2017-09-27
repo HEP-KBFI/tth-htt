@@ -32,10 +32,10 @@ void makeBinContentsPositive(TH1*, int = 0);
 
 void dumpHistogram(const TH1*);
 
-TDirectory* getDirectory(TFile*, const std::string&, bool);
-TDirectory* getSubdirectory(TDirectory*, const std::string&, bool);
+TDirectory* getDirectory(const TFile*, const std::string&, bool);
+TDirectory* getSubdirectory(const TDirectory*, const std::string&, bool);
 
-TH1* getHistogram(TDirectory*, const std::string&, const std::string&, const std::string&, bool);
+TH1* getHistogram(const TDirectory*, const std::string&, const std::string&, const std::string&, bool);
 
 TDirectory* createSubdirectory(TDirectory*, const std::string&);
 TDirectory* createSubdirectory_recursively(TFileDirectory&, const std::string&);

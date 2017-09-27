@@ -301,14 +301,14 @@ void dumpHistogram(const TH1* histogram)
 //-------------------------------------------------------------------------------
 //
 
-TDirectory* getDirectory(TFile* inputFile, const std::string& dirName, bool enableException)
+TDirectory* getDirectory(const TFile* inputFile, const std::string& dirName, bool enableException)
 {
   std::cout << "<getDirectory>:" << std::endl;
   std::cout << " inputFile = " << inputFile->GetName() << std::endl;
   std::cout << " dirName = " << dirName << std::endl;
   //std::cout << " enableException = " << enableException << std::endl;
   std::string dirName_tmp = ( dirName.find_last_of('/') == (dirName.length() - 1) ) ? std::string(dirName, 0, dirName.length() - 1) : dirName;
-  TDirectory* dir = dynamic_cast<TDirectory*>(inputFile->Get(dirName_tmp.data()));
+  TDirectory* dir = dynamic_cast<TDirectory*>((const_cast<TFile*>(inputFile))->Get(dirName_tmp.data()));
   if ( enableException && !dir ) {
     inputFile->ls();
     throw cms::Exception("getDirectory") 
@@ -318,14 +318,14 @@ TDirectory* getDirectory(TFile* inputFile, const std::string& dirName, bool enab
   return dir;
 }
 
-TDirectory* getSubdirectory(TDirectory* dir, const std::string& subdirName, bool enableException)
+TDirectory* getSubdirectory(const TDirectory* dir, const std::string& subdirName, bool enableException)
 {
   std::cout << "<getSubdirectory>:" << std::endl;
   std::cout << " dir = " << dir->GetName() << std::endl;
   std::cout << " subdirName = " << subdirName << std::endl;
   //std::cout << " enableException = " << enableException << std::endl;
   std::string subdirName_tmp = ( subdirName.find_last_of('/') == (subdirName.length() - 1) ) ? std::string(subdirName, 0, subdirName.length() - 1) : subdirName;
-  TDirectory* subdir = dynamic_cast<TDirectory*>(dir->Get(subdirName_tmp.data()));
+  TDirectory* subdir = dynamic_cast<TDirectory*>((const_cast<TDirectory*>(dir))->Get(subdirName_tmp.data()));
   if ( enableException && !subdir ) {
     dir->ls();
     throw cms::Exception("getSubdirectory") 
@@ -335,7 +335,7 @@ TDirectory* getSubdirectory(TDirectory* dir, const std::string& subdirName, bool
   return subdir;
 }
 
-TH1* getHistogram(TDirectory* dir, const std::string& process, const std::string& histogramName, const std::string& central_or_shift, bool enableException)
+TH1* getHistogram(const TDirectory* dir, const std::string& process, const std::string& histogramName, const std::string& central_or_shift, bool enableException)
 {
   //std::cout << "<getHistogram>:" << std::endl;
   //std::cout << " dir = " << dir->GetName() << std::endl;
@@ -349,7 +349,7 @@ TH1* getHistogram(TDirectory* dir, const std::string& process, const std::string
   } else {
     histogramName_full.append(histogramName);
   }
-  TH1* histogram = dynamic_cast<TH1*>(dir->Get(histogramName_full.data()));
+  TH1* histogram = dynamic_cast<TH1*>((const_cast<TDirectory*>(dir))->Get(histogramName_full.data()));
   if ( enableException && !histogram ) {
     dir->ls();
     throw cms::Exception("getHistogram") 

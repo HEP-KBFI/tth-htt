@@ -73,7 +73,7 @@ void parseValue_and_Uncertainty(const std::string& valueErr_string, double& valu
   } else throw cms::Exception("parseValue_and_Uncertainty") 
 	   << "Failed to parse string = '" << valueErr_string << "' !!\n";    
 }
-TH1* getHistogram_wrapper(TDirectory* dir, const std::string& process, const std::string& histogramName, const std::string& central_or_shift, bool enableException)
+TH1* getHistogram_wrapper(const TDirectory* dir, const std::string& process, const std::string& histogramName, const std::string& central_or_shift, bool enableException)
 {
   std::string histogramName_full = TString(histogramName.data()).ReplaceAll("$PROCESS", process.data()).Data();
   size_t idx = histogramName_full.find_last_of("/");
