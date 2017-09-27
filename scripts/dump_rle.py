@@ -138,6 +138,8 @@ if __name__ == '__main__':
 
         for rootfile_basename in os.listdir(sample_subdir):
           rootfile = os.path.join(sample_subdir, rootfile_basename)
+          if not os.path.isfile(rootfile):
+            continue
           logging.debug("Dumping RLE numbers for file '{rootfile_name}'".format(
             rootfile_name = rootfile,
           ))

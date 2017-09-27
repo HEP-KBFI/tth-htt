@@ -266,7 +266,7 @@ if __name__ == '__main__':
           missing_rles.append(rle_i)
       logging.error("There are still some RLE numbers left for which no ROOT file was found: "
                     "{rle_list}".format(
-        rle_list = ", ".join(missing_rles),
+        rle_list = "\n".join(missing_rles),
       ))
     # let's make the list of matched ROOT files unique
     rle_matched_files = list(set(filter(lambda x: x != '', rles.values())))
