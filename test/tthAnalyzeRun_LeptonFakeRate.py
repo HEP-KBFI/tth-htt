@@ -19,7 +19,7 @@ elif ERA == "2016":
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "2017Sep15"
+version = "2017Sep19"
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -28,8 +28,8 @@ if __name__ == '__main__':
     format = '%(asctime)s - %(levelname)s: %(message)s')
 
   analysis = analyzeConfig_LeptonFakeRate(
-    configDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis_2017Sep15", ERA, version),
-    outputDir = os.path.join("/hdfs/local", getpass.getuser(), "ttHAnalysis_LeptonFakeRate_trial_2017Sep15", ERA, version),
+    configDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis_2017Sep19", ERA, version),
+    outputDir = os.path.join("/hdfs/local", getpass.getuser(), "ttHAnalysis_LeptonFakeRate_trial_2017Sep19", ERA, version),
     cmssw_base_dir_combine = "",
     executable_analyze = "analyze_LeptonFakeRate",
     samples = samples,
@@ -93,7 +93,7 @@ if __name__ == '__main__':
     lumi = LUMI,
     debug = False,
     running_method = "sbatch",
-    executable_prep_dcard = "prepareDatacards_LeptonFakeRate",
+    executable_prep_dcard = "prepareDatacards",
 #    charge_selections = [ "OS" ],
 #    executable_comp_LeptonFakeRate = "comp_LeptonFakeRate",
     num_parallel_jobs = 8

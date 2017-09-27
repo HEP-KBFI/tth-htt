@@ -198,18 +198,19 @@ bool hltPaths_LeptonFakeRate_isTriggered(const std::vector<hltPath_LeptonFakeRat
   return retVal;
 }  
 
-double hltPaths_LeptonFakeRate_applyPrescale(const std::vector<hltPath_LeptonFakeRate*>& hltPaths_LeptonFakeRate, double lepton_cone_pt, double jet_pt, double evtWeight){
+double hltPaths_LeptonFakeRate_getPrescale(const std::vector<hltPath_LeptonFakeRate*>& hltPaths_LeptonFakeRate, double lepton_cone_pt, double jet_pt){
 
+  double prescale = 1.;
   for ( std::vector<hltPath_LeptonFakeRate*>::const_iterator hltPath_iter = hltPaths_LeptonFakeRate.begin();
         hltPath_iter != hltPaths_LeptonFakeRate.end(); ++hltPath_iter ) {
     // std::cout<<" (*hltPath_iter)->getValue() "<< (*hltPath_iter)->getValue() << std::endl;                                                                                                      
      if ( lepton_cone_pt >= (*hltPath_iter)->getMinPt() && lepton_cone_pt < (*hltPath_iter)->getMaxPt() &&
          (*hltPath_iter)->getMinJetPt() > jet_pt && (*hltPath_iter)->getValue() >= 1 ) {
-          evtWeight /= (*hltPath_iter)->getPrescale();
+          prescale = (*hltPath_iter)->getPrescale();
       break;
     }
   }
-  return evtWeight;
+  return prescale;
 }
 
 
@@ -2482,6 +2483,7 @@ for( int idxEntry = 0; idxEntry < numEntries && (maxEvents == -1 || idxEntry < m
     //   (using the method "Event reweighting using scale factors calculated with a tag and probe method",                                                                                             
     //    described on the BTV POG twiki https://twiki.cern.ch/twiki/bin/view/CMS/BTagShapeCalibration )                                                                                              
     double evtWeight = 1.;                                                                                                                                                                             
+    double btagWeight = 1.;
     if ( isMC ) {                                                                                                                                                                                          // std::cout<< "evtWeight "<< evtWeight << std::endl; 
        evtWeight *= lumiScale;                                                                                                                                                         
        // std::cout<< "evtWeight * lumiscale "<< evtWeight << std::endl;                                                                                                                      
@@ -2489,7 +2491,7 @@ for( int idxEntry = 0; idxEntry < numEntries && (maxEvents == -1 || idxEntry < m
 	   // std::cout<< "genWeight "<< genWeight << " sgn(genWeight) "<< sgn(genWeight) << std::endl;                               
            // std::cout<< "evtWeight * lumiscale * sgn(genweight) "<< evtWeight << std::endl;                                                                                 
                   evtWeight *= pileupWeight;                                                                                                                                                          
-		  // std::cout<< "evtWeight * lumiscale * sgn(genweight) * pileupWeight "<< evtWeight << std::endl;
+		  std::cout<< "evtWeight * lumiscale * sgn(genweight) * pileupWeight "<< evtWeight << std::endl;
 		  
       if ( lheScale_option != kLHE_scale_central ) {                                                                                                                                                  
   	 if      ( lheScale_option == kLHE_scale_xDown ) evtWeight *= lheInfoReader->getWeight_scale_xDown();                                                                                          
@@ -2497,21 +2499,19 @@ for( int idxEntry = 0; idxEntry < numEntries && (maxEvents == -1 || idxEntry < m
     	 else if ( lheScale_option == kLHE_scale_yDown ) evtWeight *= lheInfoReader->getWeight_scale_yDown();                                                                                          
     	 else if ( lheScale_option == kLHE_scale_yUp   ) evtWeight *= lheInfoReader->getWeight_scale_yUp();                                                                                             
       }   
-    }
 
+    // -------- APPLYING B-TAG WEIGHTS -------
+    for (std::vector<LeptonJetPairMaker>::const_iterator LeptonJetPair = LeptonJetPairs.begin();
+         LeptonJetPair != LeptonJetPairs.end(); LeptonJetPair++)
+      {
+	btagWeight *= (LeptonJetPair->getJet())->BtagWeight();
+      }   
+      evtWeight *= btagWeight;
+    }
     // std::cout<< "evtWeight after applying LHEInfo weights "<< evtWeight << std::endl;
 
-    /*
-    // -------- APPLYING B-TAG WEIGHTS -------
-    double btagWeight = 1.;
-    for ( std::vector<const RecoJet*>::const_iterator jet = selJets.begin();
-	  jet != selJets.end(); ++jet ) {
-      btagWeight *= (*jet)->BtagWeight();
-    }
-    evtWeight *= btagWeight;
-    */
-
-    // std::cout<< "evtWeight after applying btag weights "<< evtWeight << std::endl;
+    
+    std::cout<< "evtWeight after applying btag weights "<< evtWeight << std::endl;
 
 
     // ----- Filling Gen level Histograms (before gen level cuts) ------
@@ -2533,7 +2533,7 @@ for( int idxEntry = 0; idxEntry < numEntries && (maxEvents == -1 || idxEntry < m
       if( LeptonJetPair->getLepton()->is_electron() && use_triggers_1e && 
           (hltPaths_LeptonFakeRate_isTriggered(triggers_e, LeptonJetPair->getLepton()->cone_pt(), LeptonJetPair->getJet()->pt()) || (isMC && !apply_trigger_bits)) )  // apply_trigger_bits = true for both data and MC
       { 
-          evtWeight = hltPaths_LeptonFakeRate_applyPrescale(triggers_e, LeptonJetPair->getLepton()->cone_pt(), LeptonJetPair->getJet()->pt(), evtWeight);
+	if(isMC) evtWeight *= 1./( hltPaths_LeptonFakeRate_getPrescale(triggers_e, LeptonJetPair->getLepton()->cone_pt(), LeptonJetPair->getJet()->pt()) );
           // std::cout<< "evtWeight after applying prescales "<< evtWeight << std::endl;
           isTriggered_1e = true;
       } // to ensure bool stays true once turned on 
@@ -2541,7 +2541,7 @@ for( int idxEntry = 0; idxEntry < numEntries && (maxEvents == -1 || idxEntry < m
       if( LeptonJetPair->getLepton()->is_muon() && use_triggers_1mu &&
           (hltPaths_LeptonFakeRate_isTriggered(triggers_mu, LeptonJetPair->getLepton()->cone_pt(), LeptonJetPair->getJet()->pt()) || (isMC && !apply_trigger_bits)) )
       { 
-          evtWeight = hltPaths_LeptonFakeRate_applyPrescale(triggers_mu, LeptonJetPair->getLepton()->cone_pt(), LeptonJetPair->getJet()->pt(), evtWeight); 
+	if(isMC) evtWeight *= 1./( hltPaths_LeptonFakeRate_getPrescale(triggers_mu, LeptonJetPair->getLepton()->cone_pt(), LeptonJetPair->getJet()->pt()) );
           // std::cout<< "evtWeight after applying prescales "<< evtWeight << std::endl;
           isTriggered_1mu = true;
       }  // to ensure bool stays true once turned on  

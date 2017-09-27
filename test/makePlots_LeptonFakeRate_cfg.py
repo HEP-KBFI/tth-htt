@@ -5,7 +5,7 @@ import os
 from tthAnalysis.HiggsToTauTau.makePlots_LeptonFakeRate_cfi import process
 
 process.fwliteInput = cms.PSet(
-    fileNames = cms.vstring("/hdfs/local/ram/ttHAnalysis_LeptonFakeRate_trial_2017Aug22/2016/2017Aug22/histograms/LeptonFakeRate/histograms_harvested_stage2_LeptonFakeRate.root")
+    fileNames = cms.vstring("/hdfs/local/ram/ttHAnalysis_LeptonFakeRate_trial_2017Sep19/2016/2017Sep19/histograms/LeptonFakeRate/histograms_harvested_stage2_LeptonFakeRate.root")
 )
 
 
@@ -42,7 +42,7 @@ process.makePlots.distributions.extend([
 #        yAxisTitle = cms.string("dN/dm_{#tau#tau}^{vis} [1/GeV]")
 #    ),
     cms.PSet(
-        histogramName = cms.string("denominator/muons_fakeable/incl/$PROCESS/mT_fix_L"),
+        histogramName = cms.string("numerator/muons_tight/incl/$PROCESS/mT_fix_L"),
         xAxisTitle = cms.string("m_{T}^{fix} (GeV)"),
         yAxisTitle = cms.string("N")
     )

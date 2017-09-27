@@ -276,29 +276,30 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
 #        self.inputFiles_hadd_stage2[key_hadd_stage2].append(self.outputFile_hadd_stage1[key_hadd_stage1])                                     ## NO CHARGE SELECTION NEEDED HERE      
 #        self.outputFile_hadd_stage2[key_hadd_stage2] = os.path.join(self.dirs[DKEY_HIST], "histograms_harvested_stage2_%s_%s.root" % \        ## NO CHARGE SELECTION NEEDED HERE      
 #          (self.channel, charge_selection))                                                                                                   ## NO CHARGE SELECTION NEEDED HERE      
-      key_hadd_stage2 = getKey("")              
-      if not key_hadd_stage2 in self.inputFiles_hadd_stage2:  
-        self.inputFiles_hadd_stage2[key_hadd_stage2] = []     
+    key_hadd_stage2 = getKey('')              
+    if not key_hadd_stage2 in self.inputFiles_hadd_stage2:  
+      self.inputFiles_hadd_stage2[key_hadd_stage2] = []    
+    for key_hadd_stage1 in self.outputFile_hadd_stage1.keys():  
       self.inputFiles_hadd_stage2[key_hadd_stage2].append(self.outputFile_hadd_stage1[key_hadd_stage1]) 
       self.outputFile_hadd_stage2[key_hadd_stage2] = os.path.join(self.dirs[DKEY_HIST], "histograms_harvested_stage2_%s.root" % (self.channel))                                                       
 
-      if self.prep_dcard:
-        processesToCopy = []
-        logging.info("Creating configuration files to run 'prepareDatacards'")
-        for process in self.prep_dcard_processesToCopy:
-          processesToCopy.append(process)             
-        self.prep_dcard_processesToCopy = processesToCopy
-        for histogramToFit in self.histograms_to_fit: 
-          key_prep_dcard_job = getKey(histogramToFit)
-          self.jobOptions_prep_dcard[key_prep_dcard_job] = {
-          'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2],
-          'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "prepareDatacards_LeptonFakeRate_%s_cfg.py" % (histogramToFit)),
-          'datacardFile' : os.path.join(self.dirs[DKEY_DCRD], "prepareDatacards_%s.root" % (histogramToFit)),
-          'histogramDir' : (self.histogramDir_prep_dcard),
-          'histogramToFit' : histogramToFit,
-          'label' : None
-        }
-        self.createCfg_prep_dcard(self.jobOptions_prep_dcard[key_prep_dcard_job])       
+    if self.prep_dcard:
+      processesToCopy = []
+      logging.info("Creating configuration files to run 'prepareDatacards'")
+      for process in self.prep_dcard_processesToCopy:
+        processesToCopy.append(process)             
+      self.prep_dcard_processesToCopy = processesToCopy
+      for histogramToFit in self.histograms_to_fit: 
+        key_prep_dcard_job = getKey(histogramToFit)
+        self.jobOptions_prep_dcard[key_prep_dcard_job] = {
+        'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2],
+        'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "prepareDatacards_LeptonFakeRate_%s_cfg.py" % (histogramToFit)),
+        'datacardFile' : os.path.join(self.dirs[DKEY_DCRD], "prepareDatacards_%s.root" % (histogramToFit)),
+        'histogramDir' : (self.histogramDir_prep_dcard),
+        'histogramToFit' : histogramToFit,
+        'label' : None
+      }
+      self.createCfg_prep_dcard(self.jobOptions_prep_dcard[key_prep_dcard_job])       
 
     if self.is_sbatch:
       logging.info("Creating script for submitting '%s' jobs to batch system" % self.executable_analyze)
@@ -386,7 +387,8 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     lines_makefile = []
     self.addToMakefile_analyze(lines_makefile)
     self.addToMakefile_hadd_stage1(lines_makefile)
-    self.addToMakefile_hadd_stage2(lines_makefile)             ## TO BE IMPLEMENTED LATER
+    self.addToMakefile_hadd_stage2(lines_makefile)             
+    self.addToMakefile_prep_dcard(lines_makefile)
 #    self.addToMakefile_comp_jetToTauFakeRate(lines_makefile)   ## TO BE IMPLEMENTED LATER
 #    self.addToMakefile_make_plots(lines_makefile)              ## TO BE IMPLEMENTED LATER
     self.targets = [ outputFile for outputFile in self.outputFile_hadd_stage2.values() ]

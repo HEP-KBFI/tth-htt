@@ -5,7 +5,7 @@ import os
 process = cms.PSet()
 
 process.fwliteInput = cms.PSet(
-    fileNames = cms.vstring("/hdfs/local/ram/ttHAnalysis_LeptonFakeRate_trial_2017Aug22/2016/2017Aug22/histograms/LeptonFakeRate/histograms_harvested_stage2_LeptonFakeRate.root")
+    fileNames = cms.vstring("/hdfs/local/ram/ttHAnalysis_LeptonFakeRate_trial_2017Sep15/2016/2017Sep15/histograms/LeptonFakeRate/histograms_harvested_stage2_LeptonFakeRate.root")
 )
 
 process.fwliteOutput = cms.PSet(

@@ -353,7 +353,7 @@ TH1* getHistogram(TDirectory* dir, const std::string& process, const std::string
   if ( enableException && !histogram ) {
     dir->ls();
     throw cms::Exception("getHistogram") 
-      << "Failed to find histogram = '" << histogramName_full << "' in directory = " << dir << ": name = '" << dir->GetTitle() << "' !!\n";    
+      << "Failed to find histogram = '" << histogramName_full << "' in directory = " << dir << ": name = '" << dir->GetName() << "' !!\n";    
   }
   return histogram;
 }

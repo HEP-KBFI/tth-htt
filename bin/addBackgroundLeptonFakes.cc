@@ -1,4 +1,3 @@
-
 /** \executable addBackgroundLeptonFakes
  *
  * Compute shape templates and normalization for fake lepton background in 2lss_1tau and 2os_1tau channels.
