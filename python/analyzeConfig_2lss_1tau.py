@@ -107,7 +107,8 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
     self.executable_addFakes = executable_addFakes
     self.executable_addFlips = executable_addFlips
     
-    self.nonfake_backgrounds = [ "TTW", "TTZ", "TTWW", "EWK", "Rares", "tH" ]
+    self.nonfake_backgrounds = [ "TT", "TTW", "TTZ", "TTWW", "EWK", "Rares", "tH" ]
+        
     self.prep_dcard_processesToCopy = [ "data_obs", "TTW", "TTZ", "TTWW", "EWK", "Rares", "tH", "fakes_data", "fakes_mc", "flips_data" ]
     self.make_plots_backgrounds = [ "TTW", "TTZ", "EWK", "Rares", "fakes_data", "flips_data" ]
     

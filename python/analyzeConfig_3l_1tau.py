@@ -108,9 +108,9 @@ class analyzeConfig_3l_1tau(analyzeConfig):
     
     self.executable_addBackgrounds = executable_addBackgrounds
     self.executable_addFakes = executable_addBackgroundJetToTauFakes
-
-    self.nonfake_backgrounds = [ "TTW", "TTZ", "TTWW", "EWK", "Rares", "tH" ]
     
+    self.nonfake_backgrounds = [ "TT", "TTW", "TTZ", "TTWW", "EWK", "Rares", "tH" ]
+        
     self.cfgFile_analyze = os.path.join(self.workingDir, cfgFile_analyze)
     self.prep_dcard_processesToCopy = [ "data_obs" ] + self.nonfake_backgrounds + [ "fakes_data", "fakes_mc" ]
     self.histogramDir_prep_dcard = "3l_1tau_OS_lepTight_tauTight"

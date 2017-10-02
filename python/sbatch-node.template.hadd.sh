@@ -145,6 +145,9 @@ run_wrapped_executable() {
 
     echo "End time is: `date`"
 
+    echo "Waiting for 10 seconds before returning"
+    sleep 10
+
     return $HADD_EXIT_CODE
 }
 
