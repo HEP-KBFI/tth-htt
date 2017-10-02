@@ -36,22 +36,22 @@ if __name__ == '__main__':
   parser.add_argument('-v', '--verbose', dest = 'verbose', action = 'store_true', default = False,
                       help = 'R|Enable verbose printout')
   args = parser.parse_args()
-  
+
   dictionary_1 = args.dictionary_1
   dictionary_2 = args.dictionary_2
   dict_name    = args.dict_name
   verbose      = args.verbose
-  
+
   if verbose:
     logging.getLogger().setLevel(logging.DEBUG)
 
   # load the dictionaries
   ref_dict  = load_dict(dictionary_1, dict_name)
   test_dict = load_dict(dictionary_2, dict_name)
-  
+
   logging.debug('Reference dictionary is: %s::%s' % (dictionary_1, dict_name))
   logging.debug('Test      dictionary is: %s::%s' % (dictionary_2, dict_name))
-  
+
   # compare dictionary keys
   ref_keys  = ref_dict.keys()
   test_keys = test_dict.keys()
@@ -61,7 +61,7 @@ if __name__ == '__main__':
   logging.info('There are %d missing  keys: %s' % (len(missing_keys),  ','.join(missing_keys)))
   logging.info('There are %d overflow keys: %s' % (len(overflow_keys), ','.join(overflow_keys)))
   logging.info('There are %d common   keys' % len(common_keys))
-  
+
   endtree = lambda x: os.sep.join(x.split(os.sep)[-3:])
   funcmap = {
     'process_name_specific' : (lambda d: d['process_name_specific']),
@@ -69,6 +69,8 @@ if __name__ == '__main__':
     'nof_events'            : (lambda d: d['nof_events']),
     'path'                  : (lambda d: endtree(d['local_paths'][0]['path'])),
     'blacklist'             : (lambda d: d['local_paths'][0]['blacklist']),
+    'use_it'                : (lambda d: d['use_it']),
+    'genWeight'             : (lambda d: d['genWeight'] if 'genWeight' in d else True),
   }
 
   # loop over common keys
