@@ -711,7 +711,7 @@ int main(int argc, char* argv[])
   CutFlowTableHistManager_2l_2tau* cutFlowHistManager = new CutFlowTableHistManager_2l_2tau(makeHistManager_cfg(process_string, 
     Form("%s/sel/cutFlow", histogramDir.data()), central_or_shift));
   cutFlowHistManager->bookHistograms(fs);
-  while ( inputTree->hasNextEvent() ) {
+  while ( inputTree->hasNextEvent() && (! run_lumi_eventSelector || (run_lumi_eventSelector && ! run_lumi_eventSelector -> areWeDone())) ) {
     if(inputTree -> canReport(reportEvery))
     {
       std::cout << "processing Entry " << inputTree -> getCurrentMaxEventIdx()

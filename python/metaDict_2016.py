@@ -547,7 +547,7 @@ meta_dictionary["/ttHToNonbb_M125_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/
   ("sample_category",       "signal"),
   ("process_name_specific", "ttHToNonbb_M125_powheg"),
   ("xsection",              0.2151),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
 ])
 

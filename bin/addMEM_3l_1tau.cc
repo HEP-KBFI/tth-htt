@@ -320,6 +320,11 @@ int main(int argc, char* argv[])
   cutFlowTableType cutFlowTable;
   for ( int idxEntry = skipEvents; idxEntry < numEntries && (maxEvents == -1 || idxEntry < (skipEvents + maxEvents)); ++idxEntry ) {
 
+    if(run_lumi_eventSelector && run_lumi_eventSelector -> areWeDone())
+    {
+      break;
+    }
+
     inputTree->GetEntry(idxEntry);
 
     if ( idxEntry > 0 && (idxEntry % reportEvery) == 0 ) {

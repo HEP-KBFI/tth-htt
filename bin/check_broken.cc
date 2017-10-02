@@ -333,8 +333,8 @@ struct Sample
 		      input = input + "  (\"use_HIP_mitigation_mediumMuonId\", False),\n";
 		    }
 		    input = input + "  (\"use_it\",                $(use_it)),\n";
-			if(process_name.find("SingleElec")!=std::string::npos) input = input + "  (\"triggers\",              [ \"1e\", \"1e1tau\" ]),\n";
-	    if(process_name.find("SingleMuon")!=std::string::npos) input = input + "  (\"triggers\",              [ \"1mu\", \"1mu1tau\" ]),\n";
+            if(process_name.find("SingleElec")!=std::string::npos) input = input + "  (\"triggers\",              [ \"1e\" ]),\n";
+        if(process_name.find("SingleMuon")!=std::string::npos) input = input + "  (\"triggers\",              [ \"1mu\" ]),\n";
 	    if(process_name.find("DoubleEG")!=std::string::npos  ) input = input + "  (\"triggers\",              [ \"2e\", \"3e\" ]),\n";
 	    if(process_name.find("DoubleMuon")!=std::string::npos) input = input + "  (\"triggers\",              [ \"2mu\", \"3mu\" ]),\n";
 	    if(process_name.find("MuonEG")!=std::string::npos    ) input = input + "  (\"triggers\",              [ \"1e1mu\", \"2e1mu\", \"1e2mu\" ]),\n";

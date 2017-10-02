@@ -8,6 +8,10 @@ from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 #ERA = "2015"
 ERA = "2016"
 
+# Karl: consolidate all Ntuples
+for sample_key, sample_entry in samples_2016.items():
+  sample_entry['use_it'] = True
+
 samples = None
 LUMI    = None
 if ERA == "2016":
@@ -37,7 +41,7 @@ else:
     'minNumBJets_medium'        : -1,
   }
 
-version = "2017Sep13_wPreselection"
+version = "2017Sep29_wPreselection"
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -51,7 +55,7 @@ if __name__ == '__main__':
     executable_prodNtuple = "produceNtuple",
     cfgFile_prodNtuple    = "produceNtuple_cfg.py",
     samples               = samples,
-    max_files_per_job     = 40,
+    max_files_per_job     = 200,
     era                   = ERA,
     preselection_cuts     = preselection_cuts,
     debug                 = False,

@@ -767,7 +767,7 @@ int main(int argc, char* argv[])
     Form("%s/sel/cutFlow", histogramDir.data()), central_or_shift));
   cutFlowHistManager->bookHistograms(fs);
 
-  while(inputTree -> hasNextEvent())
+  while(inputTree -> hasNextEvent() && (! run_lumi_eventSelector || (run_lumi_eventSelector && ! run_lumi_eventSelector -> areWeDone())))
   {
     if(inputTree -> canReport(reportEvery))
     {
@@ -1221,8 +1221,8 @@ int main(int argc, char* argv[])
         std::cout << "weight_data_to_MC_correction = " << weight_data_to_MC_correction << std::endl;
       }
       evtWeight *= weight_data_to_MC_correction;
-    }       
-    
+    }
+
     double weight_fakeRate = 1.;
     if ( !selectBDT ) {
       if ( applyFakeRateWeights == kFR_3L ) {

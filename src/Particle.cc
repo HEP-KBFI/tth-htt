@@ -2,6 +2,10 @@
 
 #include <cmath> // std::abs(), std::fabs(), std::sqrt(), std::pow()
 
+Particle::Particle()
+  : Particle(0., 0., 0., 0.)
+{}
+
 Particle::Particle(Double_t pt,
 		   Double_t eta,
 		   Double_t phi,
@@ -12,6 +16,7 @@ Particle::Particle(Double_t pt,
   , mass_(mass)
   , absEta_(std::fabs(eta_))
   , p4_{pt_, eta_, phi_, mass_}
+  , isValid_(pt_ > 0.)
 { }
 
 Particle::Particle(const Particle::LorentzVector & p4)
@@ -21,7 +26,14 @@ Particle::Particle(const Particle::LorentzVector & p4)
   , mass_(p4.mass())
   , absEta_(std::fabs(eta_))
   , p4_(p4)
+  , isValid_(true)
 { }
+
+bool
+Particle::isValid() const
+{
+  return isValid_;
+}
 
 std::ostream& operator<<(std::ostream& stream, const Particle& particle)
 {

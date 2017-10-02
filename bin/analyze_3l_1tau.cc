@@ -838,6 +838,10 @@ int main(int argc, char* argv[])
     if ( idxEntry > 0 && (idxEntry % reportEvery) == 0 ) {
       std::cout << "processing Entry " << idxEntry << " (" << selectedEntries << " Entries selected)" << std::endl;
     }
+    if(run_lumi_eventSelector && run_lumi_eventSelector -> areWeDone())
+    {
+      break;
+    }
     ++analyzedEntries;
     histogram_analyzedEntries->Fill(0.);
 

@@ -8,3 +8,8 @@ GenHadTau::GenHadTau(Double_t pt,
   : Particle(pt, eta, phi, mass)
   , charge_(charge)
 {}
+
+GenHadTau::operator GenParticle() const
+{
+  return GenParticle(pt_, eta_, phi_, mass_, 0, charge_);
+}

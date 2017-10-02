@@ -10,7 +10,7 @@ class Particle
  public:
   typedef math::PtEtaPhiMLorentzVector LorentzVector;
 
-  Particle() = default;
+  Particle();
   Particle(Double_t pt,
 	   Double_t eta,
 	   Double_t phi,
@@ -31,6 +31,8 @@ class Particle
   
   Double_t absEta() const { return absEta_; }
 
+  bool isValid() const;
+
   virtual const Particle::LorentzVector& p4() const { return p4_; }
 
  protected:
@@ -42,6 +44,8 @@ class Particle
   Double_t absEta_; ///< |eta| of the particle
 
   Particle::LorentzVector p4_; ///< 4-momentum constructed from the pT, eta, phi and mass
+
+  bool isValid_; ///< true if the particle is physical (meaning that its pT > 0)
 };
 
 std::ostream& operator<<(std::ostream& stream, const Particle& particle);

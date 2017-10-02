@@ -219,13 +219,13 @@ void RecoHadTauWriter::writeGenMatching(const std::vector<const RecoHadTau*>& ha
     const RecoHadTau* hadTau = hadTaus[idxHadTau];
     assert(hadTau);
     const GenLepton* matched_genLepton = hadTau->genLepton();
-    if ( matched_genLepton ) matched_genLeptons.push_back(GenParticle(matched_genLepton->p4(), matched_genLepton->pdgId(), matched_genLepton->charge()));
+    if ( matched_genLepton ) matched_genLeptons.push_back(static_cast<GenParticle>(*matched_genLepton));
     else matched_genLeptons.push_back(dummyGenParticle_);
     const GenHadTau* matched_genHadTau = hadTau->genHadTau();
-    if ( matched_genHadTau ) matched_genHadTaus.push_back(GenParticle(matched_genHadTau->p4(), 0, matched_genHadTau->charge()));
+    if ( matched_genHadTau ) matched_genHadTaus.push_back(static_cast<GenParticle>(*matched_genHadTau));
     else matched_genHadTaus.push_back(dummyGenParticle_);
     const GenJet* matched_genJet = hadTau->genJet();
-    if ( matched_genJet ) matched_genJets.push_back(GenParticle(matched_genJet->p4(), 0, 0));
+    if ( matched_genJet ) matched_genJets.push_back(static_cast<GenParticle>(*matched_genJet));
     else matched_genJets.push_back(dummyGenParticle_);
   }
   genLeptonWriter_->write(matched_genLeptons);
