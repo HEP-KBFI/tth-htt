@@ -774,6 +774,10 @@ int main(int argc, char* argv[])
     if ( idxEntry > 0 && (idxEntry % reportEvery) == 0 ) {
       std::cout << "processing Entry " << idxEntry << " (" << selectedEntries << " Entries selected)" << std::endl;
     }
+    if(run_lumi_eventSelector && run_lumi_eventSelector -> areWeDone())
+    {
+      break;
+    }
     ++analyzedEntries;
     histogram_analyzedEntries->Fill(0.);
 
@@ -1296,11 +1300,11 @@ int main(int argc, char* argv[])
       
       // CV: apply data/MC ratio for jet->tau fake-rates in case data-driven "fake" background estimation is applied to leptons only
       if ( isMC && apply_hadTauFakeRateSF && hadTauSelection == kTight && !(selHadTau->genHadTau() || selHadTau->genLepton()) ) {
-	double weight_data_to_MC_correction_tau = jetToTauFakeRateInterface->getSF_lead(selHadTau->pt(), selHadTau->absEta());
+	double weight_data_to_MC_correction_hadTau = jetToTauFakeRateInterface->getSF_lead(selHadTau->pt(), selHadTau->absEta());
 	if ( isDEBUG ) {
-	  std::cout << "weight_data_to_MC_correction_tau = " << weight_data_to_MC_correction_tau << std::endl;
+	  std::cout << "weight_data_to_MC_correction_hadTau = " << weight_data_to_MC_correction_hadTau << std::endl;
 	}
-	evtWeight *= weight_data_to_MC_correction_tau;
+	evtWeight *= weight_data_to_MC_correction_hadTau;
       }
     }
     if ( isDEBUG ) {

@@ -112,7 +112,7 @@ class analyzeConfig_2l_2tau(analyzeConfig):
     self.executable_addBackgrounds = executable_addBackgrounds
     self.executable_addFakes = executable_addBackgroundJetToTauFakes
 
-    self.nonfake_backgrounds = [ "TTW", "TTZ", "TTWW", "EWK", "Rares", "tH" ]
+    self.nonfake_backgrounds = [ "TT", "TTW", "TTZ", "TTWW", "EWK", "Rares", "tH" ]
     
     self.cfgFile_analyze = os.path.join(self.workingDir, cfgFile_analyze)
     self.prep_dcard_processesToCopy = [ "data_obs" ] + self.nonfake_backgrounds + [ "fakes_data", "fakes_mc" ]
@@ -195,6 +195,12 @@ class analyzeConfig_2l_2tau(analyzeConfig):
     if jobOptions['hadTau_selection'].find("mcClosure") != -1:
       lines.append("process.analyze_2l_2tau.hadTauFakeRateWeight.applyFitFunction_lead = cms.bool(False)")
       lines.append("process.analyze_2l_2tau.hadTauFakeRateWeight.applyFitFunction_sublead = cms.bool(False)")
+    if jobOptions['hadTau_selection'].find("Tight") != -1 and self.applyFakeRateWeights not in [ "4L", "2tau" ] and not self.isBDTtraining:
+      lines.append("process.analyze_2l_2tau.hadTauFakeRateWeight.applyGraph_lead = cms.bool(False)")
+      lines.append("process.analyze_2l_2tau.hadTauFakeRateWeight.applyFitFunction_lead = cms.bool(True)")
+      lines.append("process.analyze_2l_2tau.hadTauFakeRateWeight.applyGraph_sublead = cms.bool(False)")
+      lines.append("process.analyze_2l_2tau.hadTauFakeRateWeight.applyFitFunction_sublead = cms.bool(True)")
+      lines.append("process.analyze_2l_2tau.apply_hadTauFakeRateSF = cms.bool(True)")      
     lines.append("process.analyze_2l_2tau.chargeSumSelection = cms.string('%s')" % jobOptions['chargeSumSelection'])
     lines.append("process.analyze_2l_2tau.use_HIP_mitigation_mediumMuonId = cms.bool(%s)" % jobOptions['use_HIP_mitigation_mediumMuonId'])
     lines.append("process.analyze_2l_2tau.isMC = cms.bool(%s)" % jobOptions['is_mc'])
@@ -298,10 +304,10 @@ class analyzeConfig_2l_2tau(analyzeConfig):
       for hadTau_charge_selection in self.hadTau_charge_selections:
         for lepton_and_hadTau_selection in self.lepton_and_hadTau_selections:
           lepton_selection = lepton_and_hadTau_selection
-          if self.applyFakeRateWeights == "1tau":
+          if self.applyFakeRateWeights == "2tau":
             lepton_selection = "Tight"
           hadTau_selection = lepton_and_hadTau_selection
-          if self.applyFakeRateWeights == "3lepton":
+          if self.applyFakeRateWeights == "2lepton":
             hadTau_selection = "Tight"
           hadTau_selection = "|".join([ hadTau_selection, self.hadTau_selection_part2 ])
 

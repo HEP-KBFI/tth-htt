@@ -7,7 +7,7 @@ from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 use_prod_ntuples = True
 mode             = "VHbb"
 ERA              = "2016"
-version          = "2017Sep22"
+version          = "2017Sep30"
 
 samples              = None
 LUMI                 = None
@@ -150,13 +150,13 @@ if __name__ == '__main__':
 ##      "CMS_ttHl_thu_shape_ttZ_y1Up",
 ##      "CMS_ttHl_thu_shape_ttZ_y1Down",
     ],
-    max_files_per_job                     = 100,
+    max_files_per_job                     = 10,
     era                                   = ERA,
     use_lumi                              = True,
     lumi                                  = LUMI,
     debug                                 = False,
     running_method                        = "sbatch",
-    num_parallel_jobs                     = 8,
+    num_parallel_jobs                     = 52,
     executable_addBackgrounds             = "addBackgrounds",
     executable_addBackgroundJetToTauFakes = "addBackgroundLeptonFakes", # CV: use common executable for estimating jet->lepton and jet->tau_h fake background
     histograms_to_fit                     = [

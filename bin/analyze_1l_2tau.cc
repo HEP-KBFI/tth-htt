@@ -213,6 +213,7 @@ int main(int argc, char* argv[])
   double lumiScale = ( process_string != "data_obs" ) ? cfg_analyze.getParameter<double>("lumiScale") : 1.;
   bool apply_genWeight = cfg_analyze.getParameter<bool>("apply_genWeight"); 
   bool apply_trigger_bits = cfg_analyze.getParameter<bool>("apply_trigger_bits"); 
+  bool apply_hadTauFakeRateSF = cfg_analyze.getParameter<bool>("apply_hadTauFakeRateSF");
 
   bool isDEBUG = ( cfg_analyze.exists("isDEBUG") ) ? cfg_analyze.getParameter<bool>("isDEBUG") : false; 
   if ( isDEBUG ) std::cout << "Warning: DEBUG mode enabled -> trigger selection will not be applied for data !!" << std::endl;
@@ -766,7 +767,7 @@ int main(int argc, char* argv[])
     Form("%s/sel/cutFlow", histogramDir.data()), central_or_shift));
   cutFlowHistManager->bookHistograms(fs);
 
-  while(inputTree -> hasNextEvent())
+  while(inputTree -> hasNextEvent() && (! run_lumi_eventSelector || (run_lumi_eventSelector && ! run_lumi_eventSelector -> areWeDone())))
   {
     if(inputTree -> canReport(reportEvery))
     {
@@ -1107,8 +1108,8 @@ int main(int argc, char* argv[])
       evtWeight *= btagWeight;
       if ( isDEBUG ) {
         std::cout << "lumiScale = " << lumiScale << std::endl;
-    if ( apply_genWeight ) std::cout << "genWeight = " << sgn(eventInfo.genWeight) << std::endl;
-    std::cout << "pileupWeight = " << eventInfo.pileupWeight << std::endl;
+	if ( apply_genWeight ) std::cout << "genWeight = " << sgn(eventInfo.genWeight) << std::endl;
+	std::cout << "pileupWeight = " << eventInfo.pileupWeight << std::endl;
         std::cout << "btagWeight = " << btagWeight << std::endl;
       }
     }
@@ -1220,40 +1221,60 @@ int main(int argc, char* argv[])
         std::cout << "weight_data_to_MC_correction = " << weight_data_to_MC_correction << std::endl;
       }
       evtWeight *= weight_data_to_MC_correction;
-    }       
-    
+    }
+
     double weight_fakeRate = 1.;
-    if ( applyFakeRateWeights == kFR_3L ) {
-      double prob_fake_lepton = 1.;
-      if      ( std::abs(selLepton->pdgId()) == 11 ) prob_fake_lepton = leptonFakeRateInterface->getWeight_e(selLepton->cone_pt(), selLepton->absEta());
-      else if ( std::abs(selLepton->pdgId()) == 13 ) prob_fake_lepton = leptonFakeRateInterface->getWeight_mu(selLepton->cone_pt(), selLepton->absEta());
-      else assert(0);
-      bool passesTight_lepton = isMatched(*selLepton, tightElectrons) || isMatched(*selLepton, tightMuons);
-      double prob_fake_hadTau_lead = jetToTauFakeRateInterface->getWeight_lead(selHadTau_lead->pt(), selHadTau_lead->absEta());
-      bool passesTight_hadTau_lead = isMatched(*selHadTau_lead, tightHadTaus);
-      double prob_fake_hadTau_sublead = jetToTauFakeRateInterface->getWeight_sublead(selHadTau_sublead->pt(), selHadTau_sublead->absEta());
-      bool passesTight_hadTau_sublead = isMatched(*selHadTau_sublead, tightHadTaus);
-      weight_fakeRate = getWeight_3L(
-        prob_fake_lepton, passesTight_lepton, 
-        prob_fake_hadTau_lead, passesTight_hadTau_lead,
-        prob_fake_hadTau_sublead, passesTight_hadTau_sublead);
-      if ( isDEBUG ) {
-        std::cout << "weight_fakeRate = " << weight_fakeRate << std::endl;
+    if ( !selectBDT ) {
+      if ( applyFakeRateWeights == kFR_3L ) {
+	double prob_fake_lepton = 1.;
+	if      ( std::abs(selLepton->pdgId()) == 11 ) prob_fake_lepton = leptonFakeRateInterface->getWeight_e(selLepton->cone_pt(), selLepton->absEta());
+	else if ( std::abs(selLepton->pdgId()) == 13 ) prob_fake_lepton = leptonFakeRateInterface->getWeight_mu(selLepton->cone_pt(), selLepton->absEta());
+	else assert(0);
+	bool passesTight_lepton = isMatched(*selLepton, tightElectrons) || isMatched(*selLepton, tightMuons);
+	double prob_fake_hadTau_lead = jetToTauFakeRateInterface->getWeight_lead(selHadTau_lead->pt(), selHadTau_lead->absEta());
+	bool passesTight_hadTau_lead = isMatched(*selHadTau_lead, tightHadTaus);
+	double prob_fake_hadTau_sublead = jetToTauFakeRateInterface->getWeight_sublead(selHadTau_sublead->pt(), selHadTau_sublead->absEta());
+	bool passesTight_hadTau_sublead = isMatched(*selHadTau_sublead, tightHadTaus);
+	weight_fakeRate = getWeight_3L(
+	  prob_fake_lepton, passesTight_lepton, 
+	  prob_fake_hadTau_lead, passesTight_hadTau_lead,
+	  prob_fake_hadTau_sublead, passesTight_hadTau_sublead);
+	if ( isDEBUG ) {
+	  std::cout << "weight_fakeRate = " << weight_fakeRate << std::endl;
+	}
+	evtWeight *= weight_fakeRate;
+      } else if ( applyFakeRateWeights == kFR_2tau) {
+	double prob_fake_hadTau_lead = jetToTauFakeRateInterface->getWeight_lead(selHadTau_lead->pt(), selHadTau_lead->absEta());
+	bool passesTight_hadTau_lead = isMatched(*selHadTau_lead, tightHadTaus);
+	double prob_fake_hadTau_sublead = jetToTauFakeRateInterface->getWeight_sublead(selHadTau_sublead->pt(), selHadTau_sublead->absEta());
+	bool passesTight_hadTau_sublead = isMatched(*selHadTau_sublead, tightHadTaus);
+	weight_fakeRate = getWeight_2L(
+          prob_fake_hadTau_lead, passesTight_hadTau_lead, 
+          prob_fake_hadTau_sublead, passesTight_hadTau_sublead);
+	if ( isDEBUG ) {
+	  std::cout << "weight_fakeRate = " << weight_fakeRate << std::endl;
+	}
+	evtWeight *= weight_fakeRate;
       }
-      evtWeight *= weight_fakeRate;
-    } else if ( applyFakeRateWeights == kFR_2tau) {
-      double prob_fake_hadTau_lead = jetToTauFakeRateInterface->getWeight_lead(selHadTau_lead->pt(), selHadTau_lead->absEta());
-      bool passesTight_hadTau_lead = isMatched(*selHadTau_lead, tightHadTaus);
-      double prob_fake_hadTau_sublead = jetToTauFakeRateInterface->getWeight_sublead(selHadTau_sublead->pt(), selHadTau_sublead->absEta());
-      bool passesTight_hadTau_sublead = isMatched(*selHadTau_sublead, tightHadTaus);
-      weight_fakeRate = getWeight_2L(
-        prob_fake_hadTau_lead, passesTight_hadTau_lead, 
-        prob_fake_hadTau_sublead, passesTight_hadTau_sublead);
-      if ( isDEBUG ) {
-        std::cout << "weight_fakeRate = " << weight_fakeRate << std::endl;
+
+      // CV: apply data/MC ratio for jet->tau fake-rates in case data-driven "fake" background estimation is applied to leptons only
+      if ( isMC && apply_hadTauFakeRateSF && hadTauSelection == kTight ) {
+	double weight_data_to_MC_correction_hadTau_lead = 1.;
+	if ( !(selHadTau_lead->genHadTau() || selHadTau_lead->genLepton()) ) {
+	  weight_data_to_MC_correction_hadTau_lead = jetToTauFakeRateInterface->getSF_lead(selHadTau_lead->pt(), selHadTau_lead->absEta());
+	}
+	double weight_data_to_MC_correction_hadTau_sublead = 1.;
+	if ( !(selHadTau_sublead->genHadTau() || selHadTau_sublead->genLepton()) ) {
+	  weight_data_to_MC_correction_hadTau_sublead = jetToTauFakeRateInterface->getSF_sublead(selHadTau_sublead->pt(), selHadTau_sublead->absEta());
+	}
+	if ( isDEBUG ) {
+	  std::cout << "weight_data_to_MC_correction_hadTau:" 
+		    << " lead = " << weight_data_to_MC_correction_hadTau_lead << "," 
+		    << " sublead = " << weight_data_to_MC_correction_hadTau_sublead << std::endl;
+	}
+	evtWeight *= (weight_data_to_MC_correction_hadTau_lead*weight_data_to_MC_correction_hadTau_sublead);
       }
-      evtWeight *= weight_fakeRate;
-    }    
+    }
     if ( isDEBUG ) {
       std::cout << "evtWeight = " << evtWeight << std::endl;
     }

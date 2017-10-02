@@ -14,7 +14,7 @@ CutFlowTableHistManager_2l_2tau::CutFlowTableHistManager_2l_2tau(const edm::Para
 
 void CutFlowTableHistManager_2l_2tau::bookHistograms(TFileDirectory& dir)
 {
-  int numCuts = 20;
+  int numCuts = 22;
   histogram_cutFlow_ = book1D(dir, "cutFlow", "cutFlow", numCuts, -0.5, numCuts - 0.5);
   TAxis* xAxis = histogram_cutFlow_->GetXaxis();
   xAxis->SetBinLabel(1, "run:ls:event selection");
@@ -36,7 +36,9 @@ void CutFlowTableHistManager_2l_2tau::bookHistograms(TFileDirectory& dir)
   xAxis->SetBinLabel(17, "sel lepton-pair OS/SS charge");
   xAxis->SetBinLabel(18, "tau-pair OS/SS charge");
   xAxis->SetBinLabel(19, "sel lepton+tau charge");
-  xAxis->SetBinLabel(20, "signal region veto");
+  xAxis->SetBinLabel(20, "Z-boson mass veto");
+  xAxis->SetBinLabel(21, "met LD");
+  xAxis->SetBinLabel(22, "signal region veto");
 }
 
 void CutFlowTableHistManager_2l_2tau::fillHistograms(const std::string& cut, double evtWeight)

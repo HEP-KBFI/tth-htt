@@ -101,7 +101,8 @@ class analyzeConfig_1l_2tau(analyzeConfig):
     self.executable_addBackgrounds = executable_addBackgrounds
     self.executable_addFakes = executable_addBackgroundJetToTauFakes
 
-    self.nonfake_backgrounds = [ "TT", "TTW", "TTZ", "EWK", "Rares" ]
+    self.nonfake_backgrounds = [ "TT", "TTW", "TTZ", "TTWW", "EWK", "Rares", "tH" ]
+    
     self.prep_dcard_processesToCopy = [ "data_obs" ] + self.nonfake_backgrounds + [ "fakes_data", "fakes_mc" ]
     ##self.make_plots_backgrounds = self.nonfake_backgrounds + [ "fakes_data" ]
     self.make_plots_backgrounds = [ "TTW", "TTWW", "TTZ", "EWK", "Rares", "fakes_data" ]
@@ -188,6 +189,12 @@ class analyzeConfig_1l_2tau(analyzeConfig):
     if jobOptions['hadTau_selection'].find("mcClosure") != -1:
       lines.append("process.analyze_1l_2tau.hadTauFakeRateWeight.applyFitFunction_lead = cms.bool(False)")
       lines.append("process.analyze_1l_2tau.hadTauFakeRateWeight.applyFitFunction_sublead = cms.bool(False)")
+    if jobOptions['hadTau_selection'].find("Tight") != -1 and self.applyFakeRateWeights not in [ "3L", "1tau" ] and not self.isBDTtraining:
+      lines.append("process.analyze_1l_2tau.hadTauFakeRateWeight.applyGraph_lead = cms.bool(False)")
+      lines.append("process.analyze_1l_2tau.hadTauFakeRateWeight.applyFitFunction_lead = cms.bool(True)")
+      lines.append("process.analyze_1l_2tau.hadTauFakeRateWeight.applyGraph_sublead = cms.bool(False)")
+      lines.append("process.analyze_1l_2tau.hadTauFakeRateWeight.applyFitFunction_sublead = cms.bool(True)")
+      lines.append("process.analyze_1l_2tau.apply_hadTauFakeRateSF = cms.bool(True)")        
     lines.append("process.analyze_1l_2tau.use_HIP_mitigation_bTag = cms.bool(%s)" % jobOptions['use_HIP_mitigation_bTag'])
     lines.append("process.analyze_1l_2tau.use_HIP_mitigation_mediumMuonId = cms.bool(%s)" % jobOptions['use_HIP_mitigation_mediumMuonId'])
     lines.append("process.analyze_1l_2tau.isMC = cms.bool(%s)" % jobOptions['is_mc'])

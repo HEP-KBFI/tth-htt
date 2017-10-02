@@ -176,6 +176,11 @@ bool RunLumiEventSelector::operator()(ULong_t run, ULong_t ls, ULong_t event) co
   }
 }
 
+bool RunLumiEventSelector::areWeDone() const
+{
+  return numEventsToBeSelected_ == numEventsSelected_;
+}
+
 bool RunLumiEventSelector::operator()(const EventInfo & info) const
 {
   return RunLumiEventSelector::operator()(info.run, info.lumi, info.event);

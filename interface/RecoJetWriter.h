@@ -53,7 +53,7 @@ class RecoJetWriter
   GenParticleWriter* genLeptonWriter_;
   GenParticleWriter* genHadTauWriter_;
   GenParticleWriter* genJetWriter_;
-  GenLepton dummyGenParticle_;
+  GenParticle dummyGenParticle_;
 
   std::string branchName_pt_;  
   std::string branchName_eta_;
