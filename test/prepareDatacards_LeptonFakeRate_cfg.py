@@ -5,7 +5,8 @@ import os
 process = cms.PSet()
 
 process.fwliteInput = cms.PSet(
-    fileNames = cms.vstring("/hdfs/local/ram/ttHAnalysis_LeptonFakeRate_trial_2017Sep15/2016/2017Sep15/histograms/LeptonFakeRate/histograms_harvested_stage2_LeptonFakeRate.root")
+#    fileNames = cms.vstring("/hdfs/local/ram/ttHAnalysis_LeptonFakeRate_trial_2017Sep15/2016/2017Sep15/histograms/LeptonFakeRate/histograms_harvested_stage2_LeptonFakeRate.root")
+    fileNames = cms.vstring("output_stage2.root")
 )
 
 process.fwliteOutput = cms.PSet(
@@ -23,6 +24,7 @@ process.prepareDatacards = cms.PSet(
 #        "fakes_data",
 #        "flips_data"
         "EWKl_plus_t"
+
     ),
 
     sf_signal = cms.double(1.),

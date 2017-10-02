@@ -326,10 +326,13 @@ TDirectory* getSubdirectory(const TDirectory* dir, const std::string& subdirName
   std::cout << " subdirName = " << subdirName << std::endl;
   //std::cout << " enableException = " << enableException << std::endl;
   std::string subdirName_tmp = ( subdirName.find_last_of('/') == (subdirName.length() - 1) ) ? std::string(subdirName, 0, subdirName.length() - 1) : subdirName;
+  std::cout<< " subdirName_tmp "<< subdirName_tmp << std::endl;
   TDirectory* subdir = dynamic_cast<TDirectory*>((const_cast<TDirectory*>(dir))->Get(subdirName_tmp.data()));
+        std::cout << "--> returning subdir = " << subdir << ": name = '" << subdirName << "'" << std::endl;    
   if ( subdir ) {
-    std::cout << "--> returning subdir = " << subdir << ": name = '" << subdir->GetName() << "'" << std::endl;    
+        std::cout << "--> returning subdir = " << subdir << ": name = '" << subdir->GetName() << "'" << std::endl;    
   } else if ( enableException ) {
+        std::cout << "--> returning subdir = " << subdir << ": name = '" << subdir->GetName() << "'" << std::endl;    
     dir->ls();
     throw cms::Exception("getSubdirectory") 
       << "Failed to find subdirectory = '" << subdirName << "' in directory = " << dir << ": name = '" << dir->GetName() << "' !!\n";    

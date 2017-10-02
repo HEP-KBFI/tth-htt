@@ -2284,6 +2284,7 @@ samples_2016["/ttWW_lo/MINIAODSIM"] = OD([
   ),
 ])
 
+
 #--------------------------------------------------------------------------------
 # !!! ONLY FOR TESTING
 ## samples_2016 = OD()
@@ -2299,13 +2300,13 @@ samples_2016["/ttWW_lo/MINIAODSIM"] = OD([
 ##   ("triggers",              [ "1e", "1mu", "2e", "1e1mu", "2mu", "3e", "2e1mu", "1e2mu", "3mu", "1e1tau", "1mu1tau", "2tau" ]),
 ##   ("reHLT",                 True),
 ##   ("local_paths",
-##     [
+##    [
 ##       OD([
 ##         ("path",      "/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau/MC/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/VHBB_HEPPY_V25tthtautau_ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_Py8_mWCutfix__RunIISummer16MAv2-PUMoriond17_80r2as_2016_TrancheIV_v6_ext1-v1/170207_122849"),
 ##         ("selection", "*"),
 ##         ("blacklist", [645, 835, 909, 986]),
 ##       ]),
-##     ]
+##    ]
 ##   ),
 ## ])
 #     FOR TESTING ONLY !!!
