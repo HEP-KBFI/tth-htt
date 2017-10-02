@@ -34,6 +34,8 @@ class RunLumiEventSelector
   bool operator()(ULong_t, ULong_t, ULong_t) const;
   bool operator()(const EventInfo & info) const;
 
+  bool areWeDone() const;
+
  private:
 
 //--- read ASCII file containing run and event numbers
