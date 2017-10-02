@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import argparse, os.path, sys, logging, imp, jinja2, ROOT, re, ctypes
+import argparse, os.path, sys, logging, imp, jinja2, ROOT, re, ctypes, copy
 
 try:
     from urllib.parse import urlparse
@@ -176,9 +176,9 @@ class PathEntry:
 
 def get_triggers(process_name_specific, is_data):
   if 'SingleElec' in process_name_specific:
-    return ['1e', '1e1tau']
+    return ['1e']
   if 'SingleMuon' in process_name_specific:
-    return ['1mu', '1tau']
+    return ['1mu']
   if 'DoubleEG' in process_name_specific:
     return ['2e', '3e']
   if 'DoubleMuon' in process_name_specific:
@@ -400,7 +400,8 @@ def traverse_double(hdfs_system, meta_dict, path_obj, key, histogram_name, check
   entries = hdfs_system.get_dir_entries(path_obj)
   for entry in entries:
     traverse_single(
-      hdfs_system, meta_dict, entry, key, histogram_name, check_every_event, filetracker, file_idx)
+      hdfs_system, meta_dict, entry, key, histogram_name, check_every_event, filetracker, file_idx
+    )
   return
 
 def obtain_paths(hdfs_system, input_path):
@@ -441,8 +442,6 @@ if __name__ == '__main__':
         return text[2:].splitlines()
       return argparse.HelpFormatter._split_lines(self, text, width)
 
-  ZEROES_FILE    = 'zeroes.txt'
-  ZOMBIES_FILE   = 'zombies.txt'
   CORRUPTED_FILE = 'corrupted.txt'
 
   parser = argparse.ArgumentParser(
@@ -473,24 +472,24 @@ if __name__ == '__main__':
   parser.add_argument('-g', '--generate-python', dest = 'generate_python', metavar = 'name',
                       type = str, default = 'dict.py',
                       help = 'R|File name of the new python dictionary')
+  parser.add_argument('-s', '--skip-header', dest = 'skip_header', action = 'store_true',
+                      default = False,
+                      help = 'R|Skip dictionary definitions in the output')
+  parser.add_argument('-J', '--generate-jobs', dest = 'generate_jobs', metavar = 'generate_jobs',
+                      type = str, default = '', required = False,
+                      help = 'R|Generate SLURM jobs instead of running locally')
   parser.add_argument('-c', '--check-every-event', dest = 'check_every_event', metavar = 'name',
                       type = str, default = "", required = False,
                       help = 'R|Supply TTree name to check every event (NB! Extremely slow!)')
-  parser.add_argument('-z', '--save-zombies', dest = 'save_zombies', action = 'store_true',
-                      default = False,
-                      help = 'R|Save the list of zombie files to {path}'.format(
-                        path = ZOMBIES_FILE,
-                      ))
-  parser.add_argument('-Z', '--save-zeroes', dest = 'save_zeroes', action = 'store_true',
-                      default = False,
-                      help = 'R|Save the list of files with zero file size to {path}'.format(
-                        path = ZEROES_FILE,
-                      ))
-  parser.add_argument('-C', '--save-corrupted', dest = 'save_corrupted', action = 'store_true',
-                      default = False,
-                      help = 'R|Save the list of corrupted files to {path}'.format(
-                        path = CORRUPTED_FILE,
-                      ))
+  parser.add_argument('-z', '--save-zombies', dest = 'save_zombies', metavar = 'save_zombies',
+                      type = str, default = '',
+                      help = 'R|Save the list of zombie files')
+  parser.add_argument('-Z', '--save-zeroes', dest = 'save_zeroes', metavar = 'save_zeros',
+                      type = str, default = '',
+                      help = 'R|Save the list of files with zero file size')
+  parser.add_argument('-C', '--save-corrupted', dest = 'save_corrupted', metavar = 'save_corrupted',
+                      type = str, default = '',
+                      help = 'R|Save the list of corrupted files')
   parser.add_argument('-j', '--file-idx', dest = 'file_idx', metavar = 'number', type = int,
                       default = -1,
                       help = 'R|Check files at specified index (default: all files)')
@@ -503,6 +502,9 @@ if __name__ == '__main__':
 
   if not os.path.isdir(args.output_directory):
     raise parser.error("Directory %s does not exist" % args.output_directory)
+
+  if args.generate_jobs and not os.path.isdir(args.generate_jobs):
+    raise parser.error("Directory %s does not exist" % args.generate_jobs)
 
   if (args.file_idx < 0 or not args.filter) and args.check_every_event:
     raise parser.error("Checking all files for data corruption is extremely slow! "
@@ -542,29 +544,44 @@ if __name__ == '__main__':
   name_regex = re.compile(args.filter)
 
   # process the directory structure of each path
+  paths_to_traverse = []
   while paths:
     path = paths.pop(0)
     if path in excluded_paths:
-      logging.info("Skipping path {path} since it is in exclusion list".format(path = path.name))
+      logging.info("Skipping path {path} since it is in the exclusion list".format(path = path.name))
+      continue
     if args.depth > 0 and (path.depth - path.sparent_depth) >= args.depth:
       continue
     if path.basename in process_names:
       is_match = name_regex.match(meta_dict[process_names[path.basename]]['process_name_specific'])
       if is_match:
-        traverse_single(
-          hdfs_system, meta_dict, path, process_names[path.basename], args.histogram,
-          args.check_every_event, filetracker, args.file_idx
-        )
+        if args.generate_jobs:
+          paths_to_traverse.append(path.name_fuse)
+        else:
+          traverse_single(
+            hdfs_system, meta_dict, path, process_names[path.basename], args.histogram,
+            args.check_every_event, filetracker, args.file_idx
+          )
     elif path.basename in crab_strings:
       is_match = name_regex.match(meta_dict[crab_strings[path.basename]]['process_name_specific'])
       if is_match:
-        traverse_double(
-          hdfs_system, meta_dict, path, crab_strings[path.basename], args.histogram,
-          args.check_every_event, filetracker, args.file_idx
-        )
+        if args.generate_jobs:
+          paths_to_traverse.append(path.name_fuse)
+        else:
+          traverse_double(
+            hdfs_system, meta_dict, path, crab_strings[path.basename], args.histogram,
+            args.check_every_event, filetracker, args.file_idx
+          )
     else:
       entries = hdfs_system.get_dir_entries(path)
-      entries_dirs = filter(lambda entry: entry.is_dir(), entries)
+      entries_dirs = filter(
+        lambda entry: entry.is_dir() and os.path.basename(entry.name_fuse) not in ["failed", "log"] and \
+                      not any(map(
+                        lambda path_to_traverse: entry.name_fuse.startswith(path_to_traverse),
+                        paths_to_traverse
+                      )),
+        entries
+      )
       for entry in entries_dirs:
         if entry not in paths:
           if entry.sparent_depth < 0:
@@ -577,6 +594,37 @@ if __name__ == '__main__':
             )
           )
           paths.append(entry)
+
+  if args.generate_jobs:
+    commands = {}
+    for arg in vars(args):
+      args_attr = getattr(args, arg)
+      if args_attr:
+        option_key = ''
+        option_default = None
+        for option in parser._optionals._actions:
+          if option.dest == arg:
+            option_key = option.option_strings[0]
+            option_default = option.default
+            break
+        if not option_key:
+          raise ValueError("Internal error: inconsistencies in ArgumentParser!")
+        if args_attr != option_default:
+          if type(args_attr) is not bool:
+            if type(args_attr) is list:
+              commands[option_key] = ' '.join(map(str, args_attr))
+            else:
+              commands[option_key] = str(args_attr)
+    for path_idx in range(len(paths_to_traverse)):
+      commands_cp = copy.deepcopy(commands)
+      commands_cp['-p'] = paths_to_traverse[path_idx]
+      commands_cp['-N'] = 'dict.py.%i' % path_idx
+      for key in ['-z', '-Z', '-C']:
+        if key in commands_cp:
+          commands_cp[key] = '%s.%i' % (commands_cp[key], path_idx)
+      del commands_cp['-J']
+      print(' '.join([sys.argv[0]] + [k + ' ' + v for k, v in commands_cp.items()]))
+    sys.exit(0)
 
   # we need to post-process the meta dictionary
   for key, entry in meta_dict.items():
@@ -603,7 +651,7 @@ if __name__ == '__main__':
   output = jinja2.Template(header_str).render(
     command   = ' '.join(sys.argv),
     dict_name = args.output_dict_name,
-  )
+  ) if not args.skip_header else ''
   for key, entry in meta_dict.items():
     if not name_regex.match(entry['process_name_specific']):
       continue
@@ -646,7 +694,7 @@ if __name__ == '__main__':
       zero_fs = '\n'.join(filetracker.zero_file_size),
     ))
     if args.save_zeroes:
-      zeroes_path = os.path.join(args.output_directory, ZEROES_FILE)
+      zeroes_path = os.path.join(args.output_directory, args.save_zeroes)
       with open(zeroes_path, 'w') as f:
         f.write('\n'.join(filetracker.zero_file_size) + '\n')
       logging.info("Saved the list of files with zero file size to {path}".format(
@@ -657,7 +705,7 @@ if __name__ == '__main__':
       zombies = '\n'.join(filetracker.zombie_files),
     ))
     if args.save_zombies:
-      zombies_path = os.path.join(args.output_directory, ZOMBIES_FILE)
+      zombies_path = os.path.join(args.output_directory, args.save_zombies)
       with open(zombies_path, 'w') as f:
         f.write('\n'.join(filetracker.zombie_files) + '\n')
       logging.info("Saved the list of zombie files to {path}".format(path = zombies_path))
@@ -666,7 +714,7 @@ if __name__ == '__main__':
       corrupted = '\n'.join(filetracker.corrupted_files),
     ))
     if args.save_corrupted:
-      corrupted_path = os.path.join(args.output_directory, CORRUPTED_FILE)
+      corrupted_path = os.path.join(args.output_directory, args.save_corrupted)
       with open(corrupted_path, 'r') as f:
         f.write('\n'.join(filetracker.corrupted_files) + '\n')
       logging.info("Saved the list of corrupted files to {path}".format(path = corrupted_path))
