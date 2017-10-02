@@ -6,3 +6,8 @@ GenJet::GenJet(Double_t pt,
                Double_t mass)
   : Particle(pt, eta, phi, mass)
 {}
+
+GenJet::operator GenParticle() const
+{
+  return GenParticle(pt_, eta_, phi_, mass_, 0, 0);
+}

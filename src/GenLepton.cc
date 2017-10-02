@@ -26,6 +26,11 @@ GenLepton::GenLepton(const math::PtEtaPhiMLorentzVector & p4,
   : GenParticle(p4, pdgId, -pdgId/std::abs(pdgId))
 {}
 
+GenLepton::operator GenParticle() const
+{
+  return GenParticle(pt_, eta_, phi_, mass_, pdgId_, charge_);
+}
+
 std::ostream& operator<<(std::ostream& stream, const GenLepton& lepton)
 {
   stream << " pT = " << lepton.pt() << ","

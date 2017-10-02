@@ -72,13 +72,13 @@ class RecoLeptonWriter
       const T* lepton = leptons[idxLepton];
       assert(lepton);
       const GenLepton* matched_genLepton = lepton->genLepton();
-      if ( matched_genLepton ) matched_genLeptons.push_back(GenParticle(matched_genLepton->p4(), matched_genLepton->pdgId(), matched_genLepton->charge()));
+      if ( matched_genLepton ) matched_genLeptons.push_back(static_cast<GenParticle>(*matched_genLepton));
       else matched_genLeptons.push_back(dummyGenParticle_);
       const GenHadTau* matched_genHadTau = lepton->genHadTau();
-      if ( matched_genHadTau ) matched_genHadTaus.push_back(GenParticle(matched_genHadTau->p4(), 0, matched_genHadTau->charge()));
+      if ( matched_genHadTau ) matched_genHadTaus.push_back(static_cast<GenParticle>(*matched_genHadTau));
       else matched_genHadTaus.push_back(dummyGenParticle_);
       const GenJet* matched_genJet = lepton->genJet();
-      if ( matched_genJet ) matched_genJets.push_back(GenParticle(matched_genJet->p4(), 0, 0));
+      if ( matched_genJet ) matched_genJets.push_back(static_cast<GenParticle>(*matched_genJet));
       else matched_genJets.push_back(dummyGenParticle_);
     }
     genLeptonWriter_->write(matched_genLeptons);
@@ -102,7 +102,7 @@ class RecoLeptonWriter
   GenParticleWriter* genLeptonWriter_;
   GenParticleWriter* genHadTauWriter_;
   GenParticleWriter* genJetWriter_;
-  GenLepton dummyGenParticle_;
+  GenParticle dummyGenParticle_;
 
   std::string branchName_pt_;
   std::string branchName_eta_;

@@ -20,6 +20,8 @@ class GenLepton : public GenParticle
             Double_t charge);
   GenLepton(const math::PtEtaPhiMLorentzVector & p4,
             Int_t pdgId);
+
+  operator GenParticle() const;
 };
 
 std::ostream& operator<<(std::ostream& stream, const GenLepton& lepton);

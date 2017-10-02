@@ -75,33 +75,16 @@
 
 typedef math::PtEtaPhiMLorentzVector LV;
 typedef std::vector<std::string> vstring;
- 
-std::vector<GenParticle> convert_to_GenParticle(const std::vector<GenLepton>& genLeptons)
-{
-  std::vector<GenParticle> genParticles;
-  for ( std::vector<GenLepton>::const_iterator genLepton = genLeptons.begin();
-        genLepton != genLeptons.end(); ++genLepton ) {
-    genParticles.push_back(GenParticle(genLepton->p4(), genLepton->pdgId(), genLepton->charge()));
-  }
-  return genParticles;
-}
 
-std::vector<GenParticle> convert_to_GenParticle(const std::vector<GenHadTau>& genHadTaus)
+template <typename GenParticleType>
+std::vector<GenParticle>
+convert_to_GenParticle(const std::vector<GenParticleType>& genOtherObjects)
 {
   std::vector<GenParticle> genParticles;
-  for ( std::vector<GenHadTau>::const_iterator genHadTau = genHadTaus.begin();
-        genHadTau != genHadTaus.end(); ++genHadTau ) {
-    genParticles.push_back(GenParticle(genHadTau->p4(), 0, genHadTau->charge()));
-  }
-  return genParticles;
-}
-
-std::vector<GenParticle> convert_to_GenParticle(const std::vector<GenJet>& genJets)
-{
-  std::vector<GenParticle> genParticles;
-  for ( std::vector<GenJet>::const_iterator genJet = genJets.begin();
-        genJet != genJets.end(); ++genJet ) {
-    genParticles.push_back(GenParticle(genJet->p4(), 0, 0));
+  for(const GenParticleType & genOtherObject: genOtherObjects)
+  {
+    const GenParticle p = static_cast<GenParticle>(genOtherObject);
+    genParticles.push_back(p);
   }
   return genParticles;
 }
