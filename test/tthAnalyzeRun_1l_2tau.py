@@ -32,10 +32,12 @@ else:
   raise ValueError("Invalid Configuration parameter 'mode' = %s !!" % mode)
 
 if use_prod_ntuples:
-    from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_prodNtuples_2016 import samples_2016
-    changeBranchNames = True
+  if ERA == "2015":
+    raise ValueError("No production Ntuples for 2015 data & MC")
+  from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_prodNtuples_2016 import samples_2016
+  changeBranchNames = True
 
-if samples_2015:
+if ERA == "2015":
   for sample_name, sample_info in samples_2015.items():
     if sample_info["type"] == "mc":
       sample_info["triggers"] = ["1e", "1mu"]
@@ -156,7 +158,7 @@ if __name__ == '__main__':
     lumi                                  = LUMI,
     debug                                 = False,
     running_method                        = "sbatch",
-    num_parallel_jobs                     = 52,
+    num_parallel_jobs                     = 100, # Karl: speed up the hadd steps
     executable_addBackgrounds             = "addBackgrounds",
     executable_addBackgroundJetToTauFakes = "addBackgroundLeptonFakes", # CV: use common executable for estimating jet->lepton and jet->tau_h fake background
     histograms_to_fit                     = [

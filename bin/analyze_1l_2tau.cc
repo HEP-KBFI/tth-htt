@@ -780,6 +780,10 @@ int main(int argc, char* argv[])
     ++analyzedEntries;
     histogram_analyzedEntries->Fill(0.);
 
+    if ( isDEBUG ) {
+      std::cout << "event #" << inputTree -> getCurrentMaxEventIdx() << ' ' << eventInfo << '\n';
+    }
+
     if (run_lumi_eventSelector && !(*run_lumi_eventSelector)(eventInfo))
     {
       continue;
@@ -1528,7 +1532,7 @@ int main(int argc, char* argv[])
             << inputTree -> getProcessedFileCount() << " file(s) (out of "
             << inputTree -> getFileCount() << ")\n"
             << " analyzed = " << analyzedEntries << '\n'
-            << " selected = " << selectedEntries << " (weighted = " << selectedEntries_weighted << ")n\n"
+            << " selected = " << selectedEntries << " (weighted = " << selectedEntries_weighted << ")\n\n"
             << "cut-flow table" << std::endl;
   cutFlowTable.print(std::cout);
   std::cout << std::endl;
