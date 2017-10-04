@@ -10,19 +10,17 @@ version          = "2017Oct04"
 
 samples           = None
 LUMI              = None
-changeBranchNames = None
+changeBranchNames = use_prod_ntuples
+
+if use_prod_ntuples and ERA == "2015":
+  raise ValueError("No production Ntuples for 2015 data & MC")
 
 if use_prod_ntuples:
-  if ERA == "2015":
-    raise ValueError("No production Ntuples for 2015 data & MC")
   from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_prodNtuples_2016 import samples_2016
-  changeBranchNames = True
 else:
   from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2015 import samples_2015
   from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016 import samples_2016
-  changeBranchNames = False
 
-if ERA == "2015":
   for sample_name, sample_info in samples_2015.items():
     if sample_info["type"] == "mc":
       sample_info["triggers"] = ["1e", "1mu"]

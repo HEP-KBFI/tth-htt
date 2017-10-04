@@ -4,56 +4,46 @@ import os, logging, sys, getpass
 from tthAnalysis.HiggsToTauTau.analyzeConfig_1l_2tau import analyzeConfig_1l_2tau
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 
-use_prod_ntuples = True
-mode             = "VHbb"
-ERA              = "2016"
-version          = "2017Sep30"
+use_prod_ntuples  = True
+mode              = "VHbb"
+ERA               = "2016"
+version           = "2017Oct04"
+changeBranchNames = use_prod_ntuples
 
 samples              = None
 LUMI                 = None
 hadTau_selection     = None
-changeBranchNames    = None
 applyFakeRateWeights = None
 
+if use_prod_ntuples and ERA == "2015":
+  raise ValueError("No production Ntuples for 2015 data & MC")
+
+if mode != "VHbb" and ERA == "2015":
+  raise ValueError("No fastsim samples for 2015")
+
 if mode == "VHbb":
-  from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2015 import samples_2015
-  from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016 import samples_2016
-  hadTau_selection     = "dR03mvaVTight"
-  changeBranchNames    = False
-  applyFakeRateWeights = "3L"
-elif mode == "forBDTtraining":
-  if ERA == "2015":
-    raise ValueError("Wrong combination of era and mode: %s and %s" % (ERA, mode))
-  from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_FastSim import samples_2016
-  hadTau_selection     = "dR03mvaLoose"
-  changeBranchNames    = False
-  applyFakeRateWeights = "3L"
-else:
-  raise ValueError("Invalid Configuration parameter 'mode' = %s !!" % mode)
+  if use_prod_ntuples:
+    from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_prodNtuples_2016 import samples_2016
+  else:
+    from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2015 import samples_2015
+    from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016 import samples_2016
 
-if use_prod_ntuples:
-  if ERA == "2015":
-    raise ValueError("No production Ntuples for 2015 data & MC")
-  from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_prodNtuples_2016 import samples_2016
-  changeBranchNames = True
+    for sample_name, sample_info in samples_2015.items():
+      if sample_info["type"] == "mc":
+        sample_info["triggers"] = ["1e", "1mu"]
+      if sample_name in [
+        "/DoubleMuon/Run2015C_25ns-16Dec2015-v1/MINIAOD",
+        "/DoubleMuon/Run2015D-16Dec2015-v1/MINIAOD",
+        "/DoubleEG/Run2015C_25ns-16Dec2015-v1/MINIAOD",
+        "/DoubleEG/Run2015D-16Dec2015-v2/MINIAOD",
+        "/MuonEG/Run2015C_25ns-16Dec2015-v1/MINIAOD",
+        "/MuonEG/Run2015D-16Dec2015-v1/MINIAOD"]:
+        sample_info["use_it"] = False
 
-if ERA == "2015":
-  for sample_name, sample_info in samples_2015.items():
+  for sample_name, sample_info in samples_2016.items():
     if sample_info["type"] == "mc":
       sample_info["triggers"] = ["1e", "1mu"]
     if sample_name in [
-      "/DoubleMuon/Run2015C_25ns-16Dec2015-v1/MINIAOD",
-      "/DoubleMuon/Run2015D-16Dec2015-v1/MINIAOD",
-      "/DoubleEG/Run2015C_25ns-16Dec2015-v1/MINIAOD",
-      "/DoubleEG/Run2015D-16Dec2015-v2/MINIAOD",
-      "/MuonEG/Run2015C_25ns-16Dec2015-v1/MINIAOD",
-      "/MuonEG/Run2015D-16Dec2015-v1/MINIAOD"]:
-      sample_info["use_it"] = False
-
-for sample_name, sample_info in samples_2016.items():
-  if sample_info["type"] == "mc":
-    sample_info["triggers"] = [ "1e", "1mu" ]
-  if sample_name in [
       "/DoubleMuon/Run2016B-PromptReco-v2/MINIAOD",
       "/DoubleMuon/Run2016C-PromptReco-v2/MINIAOD",
       "/DoubleMuon/Run2016D-PromptReco-v2/MINIAOD",
@@ -77,13 +67,22 @@ for sample_name, sample_info in samples_2016.items():
       "/Tau/Run2016D-PromptReco-v2/MINIAOD",
       "/Tau/Run2016E-PromptReco-v2/MINIAOD",
       "/Tau/Run2016F-PromptReco-v1/MINIAOD",
-      "/Tau/Run2016G-PromptReco-v1/MINIAOD" ]:
-    sample_info["use_it"] = False
+      "/Tau/Run2016G-PromptReco-v1/MINIAOD"]:
+      sample_info["use_it"] = False
 
+  hadTau_selection     = "dR03mvaVTight"
+  applyFakeRateWeights = "3L"
+elif mode == "forBDTtraining":
+  if use_prod_ntuples:
+    from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_prodNtuples_2016_FastSim import samples_2016
+  else:
+    from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_FastSim import samples_2016
+  hadTau_selection     = "dR03mvaLoose"
+  applyFakeRateWeights = "3L"
+else:
+  raise ValueError("Invalid Configuration parameter 'mode' = %s !!" % mode)
 
 if ERA == "2015":
-  if mode != "VHbb":
-    raise ValueError("Invalid mode for era 2015: %s" % mode)
   samples = samples_2015
   LUMI    = 2.3e+3 # 1/pb
 elif ERA == "2016":
