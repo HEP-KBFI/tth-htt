@@ -20,6 +20,7 @@ LUMI                 = None
 hadTau_selection     = None
 changeBranchNames    = use_prod_ntuples
 applyFakeRateWeights = None
+useMEMbranch         = False
 
 # Karl: temporarily disable other modes until we've proper Ntuples
 if mode != "VHbb":
@@ -60,6 +61,7 @@ elif mode == "addMEM":
   hadTau_selection     = "dR03mvaMedium"
   changeBranchNames    = True
   applyFakeRateWeights = "3lepton"
+  useMEMbranch         = True
 elif mode == "forBDTtraining":
   from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_3l1tau_addMEM_forBDTtraining import samples_2016
   hadTau_selection     = "dR03mvaVVLoose"
@@ -91,6 +93,7 @@ if __name__ == '__main__':
     cfgFile_analyze      = "analyze_3l_1tau_cfg.py",
     samples              = samples,
     changeBranchNames    = changeBranchNames,
+    useMEMbranch         = useMEMbranch,
     hadTau_selection     = hadTau_selection,
     # CV: apply "fake" background estimation to leptons only and not to hadronic taus, as discussed on slide 10 of
     #     https://indico.cern.ch/event/597028/contributions/2413742/attachments/1391684/2120220/16.12.22_ttH_Htautau_-_Review_of_systematics.pdf

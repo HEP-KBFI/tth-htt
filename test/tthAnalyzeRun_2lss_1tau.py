@@ -24,6 +24,7 @@ LUMI                 = None
 hadTau_selection     = None
 changeBranchNames    = use_prod_ntuples
 applyFakeRateWeights = None
+useMEMbranch         = False
 
 if use_prod_ntuples and mode not in ["VHbb", "forBDTtraining_beforeAddMEM"]:
   raise ValueError("No production Ntuples for %s" % mode)
@@ -58,6 +59,7 @@ if mode == "VHbb":
 elif mode == "addMEM":
   from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_2lss1tau_addMEM import samples_2016
   changeBranchNames    = True
+  useMEMbranch         = True
   hadTau_selection     = "dR03mvaMedium"
   applyFakeRateWeights = "2lepton"
 elif mode == "forBDTtraining_beforeAddMEM":
@@ -70,6 +72,7 @@ elif mode == "forBDTtraining_beforeAddMEM":
 elif mode == "forBDTtraining_afterAddMEM":
   from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_2lss1tau_addMEM import samples_2016
   changeBranchNames    = True
+  useMEMbranch         = True
   hadTau_selection     = "dR03mvaLoose"
   applyFakeRateWeights = "3L"
 
@@ -120,6 +123,7 @@ if __name__ == '__main__':
     cfgFile_analyze           = "analyze_2lss_1tau_cfg.py",
     samples                   = samples,
     changeBranchNames         = changeBranchNames,
+    useMEMbranch              = useMEMbranch,
     lepton_charge_selections  = [ "OS", "SS" ],
     hadTau_selection          = hadTau_selection,
     # CV: apply "fake" background estimation to leptons only and not to hadronic taus, as discussed on slide 10 of
