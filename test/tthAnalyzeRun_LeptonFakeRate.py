@@ -19,7 +19,7 @@ elif ERA == "2016":
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "2017Aug22"
+version = "2017Sep19"
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -28,8 +28,8 @@ if __name__ == '__main__':
     format = '%(asctime)s - %(levelname)s: %(message)s')
 
   analysis = analyzeConfig_LeptonFakeRate(
-    configDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", ERA, version),
-    outputDir = os.path.join("/hdfs/local", getpass.getuser(), "ttHAnalysis_LeptonFakeRate_trial_2017Aug22", ERA, version),
+    configDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis_2017Sep19", ERA, version),
+    outputDir = os.path.join("/hdfs/local", getpass.getuser(), "ttHAnalysis_LeptonFakeRate_trial_2017Sep19", ERA, version),
     cmssw_base_dir_combine = "",
     executable_analyze = "analyze_LeptonFakeRate",
     samples = samples,
@@ -83,12 +83,18 @@ if __name__ == '__main__':
 ##       "CMS_ttHl_thu_shape_ttZ_y1Up",
 ##       "CMS_ttHl_thu_shape_ttZ_y1Down"  
     ],
+    histograms_to_fit = [
+      "mT_fix_L"
+    ],
+    prep_dcard = True,
     max_files_per_job = 100,
     era = ERA, 
     use_lumi = True, 
     lumi = LUMI,
     debug = False,
     running_method = "sbatch",
+    executable_addBackgrounds_LeptonFakeRate = "addBackground_LeptonFakeRate",
+    executable_prep_dcard = "prepareDatacards",
 #    charge_selections = [ "OS" ],
 #    executable_comp_LeptonFakeRate = "comp_LeptonFakeRate",
     num_parallel_jobs = 8

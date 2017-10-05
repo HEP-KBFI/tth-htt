@@ -1896,7 +1896,7 @@ int main(int argc, char* argv[])
     }
 
     if ( selEventsFile ) {
-      (*selEventsFile) << eventInfo << std::endl;
+      (*selEventsFile) << eventInfo.run << ':' << eventInfo.lumi << ':' << eventInfo.event << '\n';
     }
 
     if ( bdt_filler ) {
@@ -1976,7 +1976,7 @@ int main(int argc, char* argv[])
             << inputTree -> getProcessedFileCount() << " file(s) (out of "
             << inputTree -> getFileCount() << ")\n"
             << " analyzed = " << analyzedEntries << '\n'
-            << " selected = " << selectedEntries << " (weighted = " << selectedEntries_weighted << ")n\n"
+            << " selected = " << selectedEntries << " (weighted = " << selectedEntries_weighted << ")\n\n"
             << "cut-flow table" << std::endl;
   cutFlowTable.print(std::cout);
   std::cout << std::endl;

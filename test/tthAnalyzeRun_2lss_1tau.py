@@ -14,55 +14,97 @@ from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 #                                   and with a relaxed event selection, to increase the BDT training statistics
 #--------------------------------------------------------------------------------
 
-mode = "VHbb"
-#mode = "forBDTtraining_beforeAddMEM"
-#mode = "forBDTtraining_afterAddMEM"
+use_prod_ntuples = True
+mode             = "VHbb"
+ERA              = "2016"
+version          = "2017Oct04"
 
-hadTau_selection =  None
-changeBranchNames = None
+samples              = None
+LUMI                 = None
+hadTau_selection     = None
+changeBranchNames    = use_prod_ntuples
 applyFakeRateWeights = None
+useMEMbranch         = False
+
+if use_prod_ntuples and mode not in ["VHbb", "forBDTtraining_beforeAddMEM"]:
+  raise ValueError("No production Ntuples for %s" % mode)
+
+if use_prod_ntuples and ERA == "2015":
+  raise ValueError("No production Ntuples for 2015 data & MC")
+
+if mode != "VHbb" and ERA == "2015":
+  raise ValueError("Invalid mode for 2015: %s" % mode)
+
 if mode == "VHbb":
-  from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2lss_1tau_2015 import samples_2015
-  from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2lss_1tau_2016 import samples_2016
-  hadTau_selection = "dR03mvaMedium"
-  changeBranchNames = False
-  applyFakeRateWeights  = "2lepton"
+  if use_prod_ntuples:
+    from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_prodNtuples_2016 import samples_2016
+  else:
+    from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2015 import samples_2015
+    from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016 import samples_2016
+
+  for sample_name, sample_info in samples_2016.items():
+    if sample_name in [
+      "/Tau/Run2016B-23Sep2016-v3/MINIAOD",
+      "/Tau/Run2016C-23Sep2016-v1/MINIAOD",
+      "/Tau/Run2016D-23Sep2016-v1/MINIAOD",
+      "/Tau/Run2016E-23Sep2016-v1/MINIAOD",
+      "/Tau/Run2016F-23Sep2016-v1/MINIAOD",
+      "/Tau/Run2016G-23Sep2016-v1/MINIAOD",
+      "/Tau/Run2016H-PromptReco-v2/MINIAOD",
+      "/Tau/Run2016H-PromptReco-v3/MINIAOD"]:
+      sample_info["use_it"] = False
+
+  hadTau_selection     = "dR03mvaMedium"
+  applyFakeRateWeights = "2lepton"
 elif mode == "addMEM":
-  from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_2lss1tau_addMEM_v3 import samples_2016
-  hadTau_selection = "dR03mvaMedium"
-  changeBranchNames = True
-  applyFakeRateWeights  = "2lepton"
+  from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_2lss1tau_addMEM import samples_2016
+  changeBranchNames    = True
+  useMEMbranch         = True
+  hadTau_selection     = "dR03mvaMedium"
+  applyFakeRateWeights = "2lepton"
 elif mode == "forBDTtraining_beforeAddMEM":
-  from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_FastSim import samples_2016
-  hadTau_selection = "dR03mvaLoose"
-  changeBranchNames = False
+  if use_prod_ntuples:
+    from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_prodNtuples_2016_FastSim import samples_2016
+  else:
+    from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_FastSim import samples_2016
+  hadTau_selection     = "dR03mvaLoose"
   applyFakeRateWeights = "3L"
 elif mode == "forBDTtraining_afterAddMEM":
-  from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_2lss1tau_addMEM_forBDTtraining_v2 import samples_2016
-  hadTau_selection = "dR03mvaLoose"
-  changeBranchNames = True
+  from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_2lss1tau_addMEM import samples_2016
+  changeBranchNames    = True
+  useMEMbranch         = True
+  hadTau_selection     = "dR03mvaLoose"
   applyFakeRateWeights = "3L"
+
+  for sample_name, sample_info in samples_2016.items():
+    if sample_info['process_name_specific'] in [
+      'TTTo2L2Nu_fastsim_p1',
+      'TTTo2L2Nu_fastsim_p2',
+      'TTTo2L2Nu_fastsim_p3',
+      'TTToSemilepton_fastsim_p1',
+      'TTToSemilepton_fastsim_p2',
+      'TTToSemilepton_fastsim_p3',
+      'TTWJetsToLNu_fastsim',
+      'TTZToLLNuNu_fastsim',
+      'WZTo3LNu_fastsim',
+      'ttHToNonbb_fastsim_p1',
+      'ttHToNonbb_fastsim_p2',
+      'ttHToNonbb_fastsim_p3',
+    ]:
+      sample_info["use_it"] = True
+    else:
+      sample_info["use_it"] = False
 else:
   raise ValueError("Invalid Configuration parameter 'mode' = %s !!" % mode)
 
-#ERA = "2015"
-ERA = "2016"
-
-samples = None
-LUMI = None
 if ERA == "2015":
-  try:
-    samples = samples_2015
-  except NameError:
-    raise ValueError("Mode {mode} not available for era {era}".format(mode = mode, era = ERA))
-  LUMI =  2.3e+3 # 1/pb
+  samples = samples_2015
+  LUMI    = 2.3e+3 # 1/pb
 elif ERA == "2016":
   samples = samples_2016
-  LUMI = 35.9e+3 # 1/pb
+  LUMI    = 35.9e+3 # 1/pb
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
-
-version = "2017May12"
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -81,6 +123,7 @@ if __name__ == '__main__':
     cfgFile_analyze           = "analyze_2lss_1tau_cfg.py",
     samples                   = samples,
     changeBranchNames         = changeBranchNames,
+    useMEMbranch              = useMEMbranch,
     lepton_charge_selections  = [ "OS", "SS" ],
     hadTau_selection          = hadTau_selection,
     # CV: apply "fake" background estimation to leptons only and not to hadronic taus, as discussed on slide 10 of
@@ -98,9 +141,9 @@ if __name__ == '__main__':
 ##       "CMS_ttHl_btag_HFStats2Down",
 ##       "CMS_ttHl_btag_LFUp",
 ##       "CMS_ttHl_btag_LFDown",
-##       "CMS_ttHl_btag_LFStats1Up", 
+##       "CMS_ttHl_btag_LFStats1Up",
 ##       "CMS_ttHl_btag_LFStats1Down",
-##       "CMS_ttHl_btag_LFStats2Up", 
+##       "CMS_ttHl_btag_LFStats2Up",
 ##       "CMS_ttHl_btag_LFStats2Down",
 ##       "CMS_ttHl_btag_cErr1Up",
 ##       "CMS_ttHl_btag_cErr1Down",
@@ -145,16 +188,16 @@ if __name__ == '__main__':
 ##       "CMS_ttHl_thu_shape_ttZ_y1Up",
 ##       "CMS_ttHl_thu_shape_ttZ_y1Down",
     ],
-    max_files_per_job         = 100,
+    max_files_per_job         = 10,
     era                       = ERA,
     use_lumi                  = True,
     lumi                      = LUMI,
     debug                     = False,
     running_method            = "sbatch",
-    num_parallel_jobs         = 8,
+    num_parallel_jobs         = 100, # Karl: speed up the hadd steps
     executable_addBackgrounds = "addBackgrounds",
     executable_addFakes       = "addBackgroundLeptonFakes",
-    executable_addFlips       = "addBackgroundLeptonFlips", 
+    executable_addFlips       = "addBackgroundLeptonFlips",
     histograms_to_fit         = [
       "EventCounter",
       "numJets",
@@ -174,8 +217,7 @@ if __name__ == '__main__':
 
   analysis.create()
 
-  ##run_analysis = query_yes_no("Start jobs ?")
-  run_analysis = True
+  run_analysis = query_yes_no("Start jobs ?")
   if run_analysis:
     analysis.run()
   else:
