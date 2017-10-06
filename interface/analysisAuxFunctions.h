@@ -33,6 +33,25 @@ enum { kBtag_central,
 //--- declare selection criteria for leptons and hadronic taus
 enum { kLoose, kFakeable, kTight };
 
+//--- define the tau MVA ID WPs
+const std::map<std::string, int>
+id_mva_dr03_map = {
+  { "dR03mvaVVLoose", 1 }, // custom WP with 95% signal efficiency, computed in RecoHadTauReader
+  { "dR03mvaVLoose",  2 },
+  { "dR03mvaLoose",   3 },
+  { "dR03mvaMedium",  4 },
+  { "dR03mvaTight",   5 },
+  { "dR03mvaVTight",  6 },
+  { "dR03mvaVVTight", 7 }
+};
+
+const std::map<std::string, int>
+id_mva_dr05_map = {
+  { "dR05isoLoose",  1 },
+  { "dR05isoMedium", 2 },
+  { "dR05isoTight",  3 }
+};
+
 /**
  * @brief Auxiliary function used for sorting leptons by decreasing pT
  * @param Given pair of leptons
