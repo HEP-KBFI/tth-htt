@@ -2,11 +2,8 @@
 #define tthAnalysis_HiggsToTauTau_RecoHadTauSelectorBase_h
 
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTau.h" // RecoHadTau
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // id_mva_dr05_map, id_mva_dr03_map
 
 #include <Rtypes.h> // Int_t, Double_t
-
-#include <boost/algorithm/string/predicate.hpp> // boost::starts_with()
 
 #include <string>
 #include <map>
@@ -45,26 +42,20 @@ class RecoHadTauSelectorBase
     set_max_raw_cut_dR03(1.e+6);
     set_min_id_cut_dR05(-1000);
     set_max_raw_cut_dR05(1.e+6);
-
-    bool invalid_cut = false;
-    if(boost::starts_with(cut, "dR05"))
-    {
-      if(! id_mva_dr05_map.count(cut)) invalid_cut = true;
-      else set_min_id_cut_dR05(id_mva_dr05_map.at(cut));
-    }
-    else if(boost::starts_with(cut, "dR03"))
-    {
-      if(! id_mva_dr03_map.count(cut)) invalid_cut = true;
-      else set_min_id_cut_dR03(id_mva_dr03_map.at(cut));
-    }
-    else
-      invalid_cut = true;
-    if(invalid_cut)
-    {
+    if      ( cut == "dR05isoLoose"   ) set_min_id_cut_dR05(1);
+    else if ( cut == "dR05isoMedium"  ) set_min_id_cut_dR05(2);
+    else if ( cut == "dR05isoTight"   ) set_min_id_cut_dR05(3);
+    else if ( cut == "dR03mvaVVLoose" ) set_min_id_mva_dR03(1); // custom WP with 95% signal efficiency, computed in RecoHadTauReader
+    else if ( cut == "dR03mvaVLoose"  ) set_min_id_mva_dR03(2);
+    else if ( cut == "dR03mvaLoose"   ) set_min_id_mva_dR03(3);
+    else if ( cut == "dR03mvaMedium"  ) set_min_id_mva_dR03(4);
+    else if ( cut == "dR03mvaTight"   ) set_min_id_mva_dR03(5);
+    else if ( cut == "dR03mvaVTight"  ) set_min_id_mva_dR03(6);
+    else if ( cut == "dR03mvaVVTight" ) set_min_id_mva_dR03(7);
+    else {
       std::cerr << "Invalid Configuration parameter 'cut' = " << cut << " !!" << std::endl;
       assert(0);
     }
-
     cut_ = cut;
   }
 
