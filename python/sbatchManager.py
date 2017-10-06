@@ -240,13 +240,20 @@ class sbatchManager:
         return completion
 
     def submit(self, cmd_str):
-        # Run command
-        cmd_outerr = run_cmd(cmd_str, return_stderr = True)
-        # Fails if stdout returned by the last line is empty
-        try:
-          job_id = cmd_outerr[0].split()[-1]
-        except IndexError:
-          raise IndexError("Caught an error: '%s'" % cmd_outerr[1])
+        nof_max_retries = 10
+        current_retry   = 0
+        while current_retry < nof_max_retries:
+          # Run command
+          cmd_outerr = run_cmd(cmd_str, return_stderr = True)
+          try:
+            job_id = cmd_outerr[0].split()[-1]
+            break
+          except IndexError:
+            # Fails if stdout returned by the last line is empty
+            logging.warning("Caught an error: '%s'; resubmitting %i-th time" % (cmd_outerr[1], current_retry))
+            current_retry += 1
+            time.sleep(60) # Let's wait for 60 seconds until the next resubmission
+
         # The job ID must be a number, so.. we have to check if it really is one
         try:
           int(job_id)
@@ -267,7 +274,7 @@ class sbatchManager:
 
         job_template_file = os.path.join(current_dir, job_template_file)
         job_template = open(job_template_file, 'r').read()
-        
+
         # raise if logfile missing
         if not logFile:
             if not self.logFileDir:
@@ -310,7 +317,7 @@ class sbatchManager:
         random.seed((abs(hash(command_line_parameter))) % two_pow_sixteen)
         max_delay = 300
         delay = random.randint(0, max_delay)
-        
+
         script = jinja2.Template(job_template).render(
             working_dir            = self.workingDir,
             cmssw_base_dir         = self.cmssw_base_dir,
