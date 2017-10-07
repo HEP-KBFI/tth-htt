@@ -58,11 +58,11 @@
 #include "tthAnalysis/HiggsToTauTau/interface/cutFlowTable.h" // cutFlowTableType
 #include "tthAnalysis/HiggsToTauTau/interface/CutFlowTableHistManager_2lss_1tau.h" // CutFlowTableHistManager_2lss_1tau
 #include "tthAnalysis/HiggsToTauTau/interface/histogramAuxFunctions.h" // createSubdirectory_recursively
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // z_mass, z_window
 #include "tthAnalysis/HiggsToTauTau/interface/branchEntryType.h"
 #include "tthAnalysis/HiggsToTauTau/interface/branchEntryTypeAuxFunctions.h"
 
-#include <boost/range/algorithm/copy.hpp> // boost::copy()
-#include <boost/range/adaptor/map.hpp> // boost::adaptors::map_keys
+#include <boost/algorithm/string/predicate.hpp> // boost::starts_with()
 
 #include <iostream> // std::cerr, std::fixed
 #include <iomanip> // std::setprecision(), std::setw()
@@ -235,14 +235,17 @@ int main(int argc, char* argv[])
   hadTauReader->setBranchAddresses(inputTree);
   RecoHadTauCollectionGenMatcher hadTauGenMatcher;
   RecoHadTauCollectionCleaner hadTauCleaner(0.3);
+  std::cout << "Setting preselHadTauSelector\n";
   RecoHadTauCollectionSelectorLoose preselHadTauSelector(era);
   if ( hadTauSelection_part2 == "dR03mvaVLoose" || hadTauSelection_part2 == "dR03mvaVVLoose" ) preselHadTauSelector.set(hadTauSelection_part2);
   preselHadTauSelector.set_min_antiElectron(-1);
   preselHadTauSelector.set_min_antiMuon(-1);
+  std::cout << "Setting fakeableHadTauSelector\n";
   RecoHadTauCollectionSelectorFakeable fakeableHadTauSelector(era);
   if ( hadTauSelection_part2 == "dR03mvaVLoose" || hadTauSelection_part2 == "dR03mvaVVLoose" ) fakeableHadTauSelector.set(hadTauSelection_part2);
   fakeableHadTauSelector.set_min_antiElectron(-1);
   fakeableHadTauSelector.set_min_antiMuon(-1);
+  std::cout << "Setting tightHadTauSelector\n";
   RecoHadTauCollectionSelectorTight tightHadTauSelector(era);
   if ( hadTauSelection_part2 != "" ) tightHadTauSelector.set(hadTauSelection_part2);
   tightHadTauSelector.set_min_antiElectron(-1);
@@ -253,6 +256,7 @@ int main(int argc, char* argv[])
   preselHadTauSelector.set_min_pt(18.); 
   fakeableHadTauSelector.set_min_pt(18.);
   tightHadTauSelector.set_min_pt(18.);
+  std::cout << hadTauSelection_part2 <<'\n';
 
   RecoJetReader* jetReader = new RecoJetReader(era, isMC, "nJet", "Jet");
   jetReader->setJetPt_central_or_shift(RecoJetReader::kJetPt_central); 
@@ -354,6 +358,65 @@ int main(int argc, char* argv[])
   for ( std::map<std::string, branchEntryBaseType*>::const_iterator branchEntry = branchesToKeep.begin();
         branchEntry != branchesToKeep.end(); ++branchEntry ) {
     std::cout << " " << branchEntry->second->outputBranchName_ << " (type = " << branchEntry->second->outputBranchType_string_ << ")" << std::endl;
+  }
+
+  std::map<int, std::map<int, std::map<std::string, int>>> maxPermutations_addMEM_2lss_1tau;
+  std::map<int, std::map<int, std::map<std::string, int>>> maxPermutations_addMEM_3l_1tau;
+  const auto find_selection_str = [](int selection_idx) -> std::string
+  {
+    if(selection_idx == kLoose)    return "Loose";
+    if(selection_idx == kFakeable) return "Fakeable";
+    if(selection_idx == kTight)    return "Tight";
+    throw cms::Exception("produceNtuple") << "Invalid index: " << selection_idx;
+  };
+
+  // let's find all valid tau ID WPs which are equal to or tighter than the WP supplied here
+  // i.e. if we have dR03mvaMedium, we'll consider all WPs up to dR03mvaVVTight
+  const bool use_dR03 = boost::starts_with(hadTauSelection_part2, "dR03");
+  const std::map<std::string, int> & tau_wps = use_dR03 ? id_mva_dr03_map : id_mva_dr05_map;
+  const int tau_min_selection = tau_wps.at(hadTauSelection_part2);
+  const int tau_max_selection = tau_wps.at(use_dR03 ? "dR03mvaTight" : "dR05isoTight");
+  std::vector<std::string> hadTauSelectionsOnMVA;
+  for(const auto & kv: tau_wps)
+  {
+    if(kv.second >= tau_min_selection && kv.second <= tau_max_selection)
+    {
+      hadTauSelectionsOnMVA.push_back(kv.first);
+    }
+  }
+
+  std::cout << "adding branches:\n";
+  for(int leptonSelection_idx = leptonSelection; leptonSelection_idx <= kTight; ++leptonSelection_idx)
+  {
+    const std::string leptonSelection_str = find_selection_str(leptonSelection_idx);
+    for(int hadTauSelection_idx = hadTauSelection; hadTauSelection_idx <= kTight; ++hadTauSelection_idx)
+    {
+      const std::string hadTauSelection_str = find_selection_str(hadTauSelection_idx);
+      for(const std::string & hadTauSelectionOnMVA: hadTauSelectionsOnMVA)
+      {
+        maxPermutations_addMEM_2lss_1tau[leptonSelection_idx][hadTauSelection_idx][hadTauSelectionOnMVA] = 0;
+        maxPermutations_addMEM_3l_1tau[leptonSelection_idx][hadTauSelection_idx][hadTauSelectionOnMVA] = 0;
+
+        const std::string maxPermutations_addMEM_2lss_1tau_str = Form(
+          "maxPermutations_addMEM_2lss_1tau_lep%s_tau%s_%s", leptonSelection_str.c_str(), hadTauSelection_str.c_str(), hadTauSelectionOnMVA.c_str()
+        );
+        const std::string maxPermutations_addMEM_3l_1tau_str = Form(
+          "maxPermutations_addMEM_3l_1tau_lep%s_tau%s_%s", leptonSelection_str.c_str(), hadTauSelection_str.c_str(), hadTauSelectionOnMVA.c_str()
+        );
+        outputTree->Branch(
+          maxPermutations_addMEM_2lss_1tau_str.c_str(),
+          &maxPermutations_addMEM_2lss_1tau[leptonSelection_idx][hadTauSelection_idx][hadTauSelectionOnMVA],
+          Form("%s/I", maxPermutations_addMEM_2lss_1tau_str.c_str())
+        );
+        outputTree->Branch(
+          maxPermutations_addMEM_3l_1tau_str.c_str(),
+          &maxPermutations_addMEM_3l_1tau[leptonSelection_idx][hadTauSelection_idx][hadTauSelectionOnMVA],
+          Form("%s/I", maxPermutations_addMEM_3l_1tau_str.c_str())
+        );
+        std::cout << ' ' << maxPermutations_addMEM_2lss_1tau_str << " (type = I)\n "
+                         << maxPermutations_addMEM_3l_1tau_str << " (type = I)\n";
+      }
+    }
   }
 
   int numEntries = inputTree->GetEntries();
@@ -588,6 +651,86 @@ int main(int argc, char* argv[])
       jetGenMatcher.addGenHadTauMatch(selJets, genHadTaus, 0.2);
       jetGenMatcher.addGenJetMatch(selJets, genJets, 0.2);
     }
+
+    bool failsZbosonMassVeto = false;
+    const std::vector<const RecoLepton*> fakeableLeptons = mergeLeptonCollections(fakeableElectrons, fakeableMuons);
+    for ( std::size_t lepton1_idx = 0; lepton1_idx < fakeableLeptons.size(); ++lepton1_idx ) {
+      for ( std::size_t lepton2_idx = lepton1_idx + 1; lepton2_idx < fakeableLeptons.size(); ++lepton2_idx ) {
+        const RecoLepton* lepton1 = fakeableLeptons[lepton1_idx];
+        const RecoLepton* lepton2 = fakeableLeptons[lepton2_idx];
+        const double mass = (lepton1->p4() + lepton2->p4()).mass();
+        if ( lepton1->is_electron() && lepton2->is_electron() && std::fabs(mass - z_mass) < z_window ) {
+          failsZbosonMassVeto = true;
+        }
+      }
+    }
+
+    for(int leptonSelection_idx = leptonSelection; leptonSelection_idx <= kTight; ++leptonSelection_idx)
+    {
+      std::vector<const RecoElectron*> selElectrons_mem;
+      std::vector<const RecoMuon*> selMuons_mem;
+      switch(leptonSelection_idx) {
+        case kLoose:    selElectrons_mem = preselElectrons;   selMuons_mem = preselMuons;   break;
+        case kFakeable: selElectrons_mem = fakeableElectrons; selMuons_mem = fakeableMuons; break;
+        case kTight:    selElectrons_mem = tightElectrons;    selMuons_mem = tightMuons;    break;
+        default: throw cms::Exception("produceNtuple") << "Invalid lepton selection: " << leptonSelection_idx;
+      }
+      std::vector<const RecoLepton*> selLeptons_mem = mergeLeptonCollections(selElectrons_mem, selMuons_mem);
+
+      for(int hadTauSelection_idx = hadTauSelection; hadTauSelection_idx <= kTight; ++hadTauSelection_idx)
+      {
+        for(const std::string & hadTauSelectionOnMVA: hadTauSelectionsOnMVA)
+        {
+          int & maxPermutations_addMEM_2lss_1tau_value = maxPermutations_addMEM_2lss_1tau[leptonSelection_idx][hadTauSelection_idx][hadTauSelectionOnMVA];
+          int & maxPermutations_addMEM_3l_1tau_value   = maxPermutations_addMEM_3l_1tau[leptonSelection_idx][hadTauSelection_idx][hadTauSelectionOnMVA];
+
+          std::vector<const RecoHadTau*> selHadTaus_mem;
+          switch(hadTauSelection_idx) {
+            case kLoose: {
+              RecoHadTauCollectionSelectorLoose preselHadTauSelector_mem(era);
+              preselHadTauSelector_mem.set(hadTauSelectionOnMVA);
+              preselHadTauSelector_mem.set_min_antiElectron(-1);
+              preselHadTauSelector_mem.set_min_antiMuon(-1);
+              preselHadTauSelector_mem.set_min_pt(18.);
+              selHadTaus_mem = preselHadTauSelector_mem(cleanedHadTaus);
+              break;
+            }
+            case kFakeable: {
+              RecoHadTauCollectionSelectorFakeable fakeableHadTauSelector_mem(era);
+              fakeableHadTauSelector_mem.set(hadTauSelectionOnMVA);
+              fakeableHadTauSelector_mem.set_min_antiElectron(-1);
+              fakeableHadTauSelector_mem.set_min_antiMuon(-1);
+              fakeableHadTauSelector_mem.set_min_pt(18.);
+              selHadTaus_mem = fakeableHadTauSelector_mem(cleanedHadTaus);
+              break;
+            }
+            case kTight: {
+              RecoHadTauCollectionSelectorTight tightHadTauSelector_mem(era);
+              tightHadTauSelector_mem.set(hadTauSelectionOnMVA);
+              tightHadTauSelector_mem.set_min_antiElectron(-1);
+              tightHadTauSelector_mem.set_min_antiMuon(-1);
+              tightHadTauSelector_mem.set_min_pt(18.);
+              selHadTaus_mem = tightHadTauSelector_mem(cleanedHadTaus);
+              break;
+            }
+            default: throw cms::Exception("produceNtuple") << "Invalid tau selection: " << hadTauSelection_idx;
+          }
+
+          if((selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) && ! failsZbosonMassVeto && selLeptons_mem.size() >= 2 && selHadTaus_mem.size() >= 1) {
+            maxPermutations_addMEM_2lss_1tau_value = TMath::Nint((1./2)*selLeptons_mem.size()*(selLeptons_mem.size() - 1)*selHadTaus_mem.size());
+          }
+          else {
+            maxPermutations_addMEM_2lss_1tau_value = 0;
+          }
+          if((selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) && ! failsZbosonMassVeto && selLeptons_mem.size() >= 3 && selHadTaus_mem.size() >= 1 ) {
+            maxPermutations_addMEM_3l_1tau_value = TMath::Nint((1./6)*selLeptons_mem.size()*(selLeptons_mem.size() - 1)*(selLeptons_mem.size() - 2)*selHadTaus_mem.size());
+          }
+          else {
+            maxPermutations_addMEM_3l_1tau_value = 0;
+          }
+        } // hadTauSelectionOnMVA
+      } // hadTauSelection_idx
+    } // leptonSelection_idx
 
     muonWriter->write(preselMuons);
     electronWriter->write(preselElectrons);
