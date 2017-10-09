@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import argparse, os.path, sys, logging, imp, jinja2, ROOT, re, ctypes, copy
+import argparse, os.path, sys, logging, imp, jinja2, ROOT, re, ctypes
 
 try:
     from urllib.parse import urlparse
@@ -221,11 +221,12 @@ def process_paths(meta_dict, key):
       for local_path in local_paths_sorted[1:]:
         if blacklisted_idx not in local_path.blacklist and blacklisted_idx < local_path.nof_files:
           local_path.selection.append(blacklisted_idx)
-    for local_path in local_paths_sorted:
+    for local_path_idx, local_path in enumerate(local_paths_sorted):
       meta_dict[key]['local_paths'].append({
         'path'      : local_path.path,
         'selection' : '*' if not local_path.selection else ",".join(map(str, local_path.selection)),
-        'blacklist' : local_path.blacklist,
+        # no blacklist for non-primary storage paths
+        'blacklist' : local_path.blacklist if local_path_idx == 0 else [],
       })
   else:
     raise ValueError("Not enough paths to locate for %s" % key)
@@ -472,12 +473,6 @@ if __name__ == '__main__':
   parser.add_argument('-g', '--generate-python', dest = 'generate_python', metavar = 'name',
                       type = str, default = 'dict.py',
                       help = 'R|File name of the new python dictionary')
-  parser.add_argument('-s', '--skip-header', dest = 'skip_header', action = 'store_true',
-                      default = False,
-                      help = 'R|Skip dictionary definitions in the output')
-  parser.add_argument('-J', '--generate-jobs', dest = 'generate_jobs', metavar = 'generate_jobs',
-                      type = str, default = '', required = False,
-                      help = 'R|Generate SLURM jobs instead of running locally')
   parser.add_argument('-c', '--check-every-event', dest = 'check_every_event', metavar = 'name',
                       type = str, default = "", required = False,
                       help = 'R|Supply TTree name to check every event (NB! Extremely slow!)')
@@ -502,9 +497,6 @@ if __name__ == '__main__':
 
   if not os.path.isdir(args.output_directory):
     raise parser.error("Directory %s does not exist" % args.output_directory)
-
-  if args.generate_jobs and not os.path.isdir(args.generate_jobs):
-    raise parser.error("Directory %s does not exist" % args.generate_jobs)
 
   if (args.file_idx < 0 or not args.filter) and args.check_every_event:
     raise parser.error("Checking all files for data corruption is extremely slow! "
@@ -544,7 +536,6 @@ if __name__ == '__main__':
   name_regex = re.compile(args.filter)
 
   # process the directory structure of each path
-  paths_to_traverse = []
   while paths:
     path = paths.pop(0)
     if path in excluded_paths:
@@ -555,31 +546,21 @@ if __name__ == '__main__':
     if path.basename in process_names:
       is_match = name_regex.match(meta_dict[process_names[path.basename]]['process_name_specific'])
       if is_match:
-        if args.generate_jobs:
-          paths_to_traverse.append(path.name_fuse)
-        else:
-          traverse_single(
-            hdfs_system, meta_dict, path, process_names[path.basename], args.histogram,
-            args.check_every_event, filetracker, args.file_idx
-          )
+        traverse_single(
+          hdfs_system, meta_dict, path, process_names[path.basename], args.histogram,
+          args.check_every_event, filetracker, args.file_idx
+        )
     elif path.basename in crab_strings:
       is_match = name_regex.match(meta_dict[crab_strings[path.basename]]['process_name_specific'])
       if is_match:
-        if args.generate_jobs:
-          paths_to_traverse.append(path.name_fuse)
-        else:
-          traverse_double(
-            hdfs_system, meta_dict, path, crab_strings[path.basename], args.histogram,
-            args.check_every_event, filetracker, args.file_idx
-          )
+        traverse_double(
+          hdfs_system, meta_dict, path, crab_strings[path.basename], args.histogram,
+          args.check_every_event, filetracker, args.file_idx
+        )
     else:
       entries = hdfs_system.get_dir_entries(path)
       entries_dirs = filter(
-        lambda entry: entry.is_dir() and os.path.basename(entry.name_fuse) not in ["failed", "log"] and \
-                      not any(map(
-                        lambda path_to_traverse: entry.name_fuse.startswith(path_to_traverse),
-                        paths_to_traverse
-                      )),
+        lambda entry: entry.is_dir() and os.path.basename(entry.name_fuse) not in ["failed", "log"],
         entries
       )
       for entry in entries_dirs:
@@ -594,37 +575,6 @@ if __name__ == '__main__':
             )
           )
           paths.append(entry)
-
-  if args.generate_jobs:
-    commands = {}
-    for arg in vars(args):
-      args_attr = getattr(args, arg)
-      if args_attr:
-        option_key = ''
-        option_default = None
-        for option in parser._optionals._actions:
-          if option.dest == arg:
-            option_key = option.option_strings[0]
-            option_default = option.default
-            break
-        if not option_key:
-          raise ValueError("Internal error: inconsistencies in ArgumentParser!")
-        if args_attr != option_default:
-          if type(args_attr) is not bool:
-            if type(args_attr) is list:
-              commands[option_key] = ' '.join(map(str, args_attr))
-            else:
-              commands[option_key] = str(args_attr)
-    for path_idx in range(len(paths_to_traverse)):
-      commands_cp = copy.deepcopy(commands)
-      commands_cp['-p'] = paths_to_traverse[path_idx]
-      commands_cp['-N'] = 'dict.py.%i' % path_idx
-      for key in ['-z', '-Z', '-C']:
-        if key in commands_cp:
-          commands_cp[key] = '%s.%i' % (commands_cp[key], path_idx)
-      del commands_cp['-J']
-      print(' '.join([sys.argv[0]] + [k + ' ' + v for k, v in commands_cp.items()]))
-    sys.exit(0)
 
   # we need to post-process the meta dictionary
   for key, entry in meta_dict.items():
@@ -651,7 +601,7 @@ if __name__ == '__main__':
   output = jinja2.Template(header_str).render(
     command   = ' '.join(sys.argv),
     dict_name = args.output_dict_name,
-  ) if not args.skip_header else ''
+  )
   for key, entry in meta_dict.items():
     if not name_regex.match(entry['process_name_specific']):
       continue
