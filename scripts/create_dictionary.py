@@ -164,11 +164,12 @@ path_entry_str = """      OD([
 """
 
 class PathEntry:
-  def __init__(self, path, nof_files, blacklist, nof_events):
+  def __init__(self, path, indices):
     self.path       = path
-    self.nof_files  = nof_files
-    self.blacklist  = blacklist
-    self.nof_events = nof_events
+    self.indices    = indices
+    self.nof_events = sum(self.indices.values())
+    self.nof_files  = max(self.indices.keys())
+    self.blacklist  = []
     self.selection  = [] # if empty, select all
 
   def __repr__(self):
@@ -195,39 +196,69 @@ def get_triggers(process_name_specific, is_data):
 
 def process_paths(meta_dict, key):
   local_paths = meta_dict[key]['paths']
-  if len(local_paths) == 1:
-    meta_dict[key]['nof_files'] = local_paths[0].nof_files
-    meta_dict[key]['nof_events'] = int(local_paths[0].nof_events)
-    meta_dict[key]['local_paths'] = [{
-      'path'      : local_paths[0].path,
-      'selection' : '*',
-      'blacklist' : local_paths[0].blacklist,
-    }]
-  elif len(local_paths) > 1:
-    max_nof_files = max([path_entry.nof_files for path_entry in local_paths])
-    sum_of_events = int(sum([path_entry.nof_events for path_entry in local_paths]))
-    meta_dict[key]['nof_files'] = max_nof_files
-    meta_dict[key]['nof_events'] = sum_of_events
-    meta_dict[key]['local_paths'] = []
 
+  nof_files = max([path_entry.nof_files for path_entry in local_paths])
+
+  meta_dict[key]['nof_files']   = nof_files
+  meta_dict[key]['local_paths'] = []
+
+  # build the blacklists for all the paths
+  for local_path in local_paths:
+    local_path.blacklist = list(sorted(
+      list(set(range(1, nof_files + 1)) - set(local_path.indices.keys()))
+    ))
+
+  if len(local_paths) > 1:
     # sort the paths by the largest coverage
     local_paths_sorted = list(sorted(
       local_paths,
-      key = lambda local_path: local_path.nof_files - len(local_path.blacklist),
+      key     = lambda local_path: nof_files - len(local_path.blacklist),
       reverse = True,
     ))
-    # determine which files to select in secondary storages
-    for blacklisted_idx in local_paths_sorted[0].blacklist:
-      for local_path in local_paths_sorted[1:]:
-        if blacklisted_idx not in local_path.blacklist and blacklisted_idx < local_path.nof_files:
-          local_path.selection.append(blacklisted_idx)
-    for local_path_idx, local_path in enumerate(local_paths_sorted):
-      meta_dict[key]['local_paths'].append({
-        'path'      : local_path.path,
-        'selection' : '*' if not local_path.selection else ",".join(map(str, local_path.selection)),
-        # no blacklist for non-primary storage paths
-        'blacklist' : local_path.blacklist if local_path_idx == 0 else [],
-      })
+
+    if nof_files == len(local_paths_sorted[0].indices):
+      # the path with the largest coverage already spans all possible files
+      local_paths_sorted = [local_paths_sorted[0]]
+  elif len(local_paths) == 1:
+    local_paths_sorted = local_paths
+
+  if len(local_paths_sorted) == 1:
+    # let's compute the number of files, events and the list of blacklisted files
+    nof_events = sum(local_paths_sorted[0].indices.values())
+
+    meta_dict[key]['nof_events']  = nof_events
+    meta_dict[key]['local_paths'] = [{
+      'path'      : local_paths_sorted[0].path,
+      'selection' : '*',
+      'blacklist' : local_paths_sorted[0].blacklist,
+    }]
+  elif len(local_paths_sorted) > 1:
+      # determine which files to select in secondary storages
+      for blacklisted_idx in local_paths_sorted[0].blacklist:
+        for local_path in local_paths_sorted[1:]:
+          if blacklisted_idx not in local_path.blacklist and blacklisted_idx < local_path.nof_files:
+            local_path.selection.append(blacklisted_idx)
+
+      # only keep the first two paths and ignore the rest
+      local_paths_sorted = local_paths_sorted[0:2]
+
+      # compute the nof events by summing the nof events in the primary storage and adding the nof events
+      # in the selected files part of the secondary storage
+      sum_of_events = local_paths_sorted[0].nof_events + sum(
+        local_paths_sorted[1].indices[sel_idx] for sel_idx in local_paths_sorted[1].selection
+      )
+      meta_dict[key]['nof_events'] = sum_of_events
+
+      # do not print out the blacklist of the secondary storage since it might include many-many files
+      local_paths_sorted[1].blacklist = []
+
+      for local_path in local_paths_sorted:
+        meta_dict[key]['local_paths'].append({
+          'path'      : local_path.path,
+          'selection' : '*' if not local_path.selection else ",".join(map(str, local_path.selection)),
+          'blacklist' : local_path.blacklist,
+        })
+
   else:
     raise ValueError("Not enough paths to locate for %s" % key)
 
@@ -269,12 +300,11 @@ def traverse_single(hdfs_system, meta_dict, path_obj, key, histogram_name, check
   digit_regex = re.compile(r"tree_(?P<i>\d+)\.root")
   is_data = meta_dict[key]['sample_category'] == 'data_obs'
   histogram_name_t = histogram_name if not is_data else 'Count'
-  nof_events = 0.
 
+  indices = {}
   for entry in entries_valid:
     subentries = hdfs_system.get_dir_entries(entry)
     subentry_files = filter(lambda path: path.is_file(), subentries)
-    indices = []
     for subentry_file in subentry_files:
       digit_match = digit_regex.search(subentry_file.basename)
       if not digit_match:
@@ -336,30 +366,20 @@ def traverse_single(hdfs_system, meta_dict, path_obj, key, histogram_name, check
           histogram_name = histogram_name_t,
           path           = subentry_file.name,
         ))
-      nof_events += h.Integral()
+      indices[matched_idx] = h.Integral()
       f.Close()
       del h
       del f
-      indices.append(matched_idx)
 
   if not indices:
     logging.debug("Path {path} contains no ROOT files".format(path = path_obj.name))
     return
-  minimum_idx      = min(indices)
-  maximum_idx      = max(indices)
-  nof_files        = len(indices)
-  actual_nof_files = maximum_idx if maximum_idx > nof_files else nof_files
-  if minimum_idx == 0:
-    logging.warning("The entry {key} has the first file starting with index 0")
-  blacklist = list(sorted(list(set(range(1, actual_nof_files + 1)) - set(indices))))
 
-  logging.debug("Found {nof_events} events in {nof_files} files in {path} for entry "
-                "{key} (from which the following indices were missing: {blacklist})".format(
-    nof_events = nof_events,
-    nof_files  = actual_nof_files,
+  logging.debug("Found {nof_events} events in {nof_files} files in {path} for entry {key}".format(
+    nof_events = sum(indices.values()),
+    nof_files  = len(indices.keys()),
     path       = path_obj.name_fuse,
     key        = key,
-    blacklist  = ', '.join(map(str, blacklist)) if blacklist else 'None',
   ))
 
   if not meta_dict[key]['located']:
@@ -376,7 +396,7 @@ def traverse_single(hdfs_system, meta_dict, path_obj, key, histogram_name, check
     meta_dict[key]['reHLT']                           = True
     meta_dict[key]['located']                         = True
   meta_dict[key]['paths'].append(
-    PathEntry(path_obj.name_fuse, actual_nof_files, blacklist, nof_events)
+    PathEntry(path_obj.name_fuse, indices)
   )
 
   return
@@ -442,8 +462,6 @@ if __name__ == '__main__':
       if text.startswith('R|'):
         return text[2:].splitlines()
       return argparse.HelpFormatter._split_lines(self, text, width)
-
-  CORRUPTED_FILE = 'corrupted.txt'
 
   parser = argparse.ArgumentParser(
     formatter_class = lambda prog: SmartFormatter(prog, max_help_position = 35))
@@ -621,7 +639,7 @@ if __name__ == '__main__':
         sample_category                 = meta_dict[key]['sample_category'],
         process_name_specific           = meta_dict[key]['process_name_specific'],
         nof_files                       = meta_dict[key]['nof_files'],
-        nof_events                      = meta_dict[key]['nof_events'],
+        nof_events                      = int(meta_dict[key]['nof_events']),
         use_HIP_mitigation_bTag         = meta_dict[key]['use_HIP_mitigation_bTag'],
         use_HIP_mitigation_mediumMuonId = meta_dict[key]['use_HIP_mitigation_mediumMuonId'],
         use_it                          = meta_dict[key]['use_it'],
