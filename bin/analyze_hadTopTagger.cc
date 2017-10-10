@@ -360,8 +360,10 @@ int main(int argc, char* argv[])
     bdt_filler->register_variable<float_type>(
       "m_bWj1Wj2", "m_Wj1Wj2", "m_bWj1", "m_bWj2", 
       "m_Wj1Wj2_div_m_bWj1Wj2",
-      "CSV_b", "CSV_Wj1", "CSV_Wj2",
-      "pT_b", "pT_Wj1", "pT_Wj2",
+      "CSV_b", "CSV_Wj1", "CSV_Wj2", 
+      "pT_b", "eta_b", "phi_b", "mass_b", "kinFit_pT_b", "kinFit_eta_b", "kinFit_phi_b", "kinFit_mass_b", 
+      "pT_Wj1", "eta_Wj1", "phi_Wj1", "mass_Wj1", "kinFit_pT_Wj1", "kinFit_eta_Wj1", "kinFit_phi_Wj1", "kinFit_mass_Wj1", 
+      "pT_Wj2", "eta_Wj2", "phi_Wj2", "mass_Wj2", "kinFit_pT_Wj2", "kinFit_eta_Wj2", "kinFit_phi_Wj2", "kinFit_mass_Wj2",
       "dR_bWj1", "dR_bWj2", "dR_Wj1Wj2", "dR_bW",
       "statusKinFit", "nllKinFit", "alphaKinFit", "logPKinFit", "logPErrKinFit", 
       "qg_b", "qg_Wj1", "qg_Wj2",
