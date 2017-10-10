@@ -6,6 +6,63 @@ try:
 except ImportError:
      from urlparse import urlparse
 
+class hdfsException(Exception):
+  pass
+
+def normalize_path(path):
+  if not path.startswith('/hdfs') and not path.startswith("hdfs://"):
+    raise hdfsException("Invalid path: %s" % path)
+  path_t = re.sub('^/hdfs', 'hdfs://', path) if path.startswith('/hdfs') else path
+  path_url = urlparse(path_t)
+  path_f = path_url.scheme + '://' + path_url.path
+  return path_f
+
+def fuse_path(path):
+  if not path.startswith("hdfs://"):
+    raise hdfsException("Invalid path: %s" % path)
+  return re.sub('^hdfs://', '/hdfs', path)
+
+class nohdfs:
+  class info:
+    def __init__(self, name_fuse):
+      self.name_fuse     = name_fuse
+      self.kind          = 'F' if os.path.isfile(self.name_fuse) else 'D'
+      self.size          = os.path.getsize(name_fuse)
+      self.basename      = os.path.basename(self.name_fuse)
+      self.depth         = len(self.name_fuse.split(os.path.sep)) - 1
+      self.sparent_depth = -1
+
+    def __str__(self):
+      return self.name_fuse
+
+    def __repr__(self):
+      return self.name_fuse
+
+    def is_file(self):
+      return self.kind == 'F'
+
+    def is_dir(self):
+      return self.kind == 'D'
+
+  class hdfsException(Exception):
+    pass
+
+  def __init__(self):
+    pass
+
+  def get_path_info(self, path):
+    if not os.path.exists(path):
+      raise hdfsException("No such path: %s" % path)
+    return nohdfs.info(path)
+
+  def get_dir_entries(self, path_obj):
+    if not os.path.isdir(path_obj.name_fuse):
+      raise hdfsException("No such path: %s" % path_obj.name_fuse)
+    entries = [
+      nohdfs.info(os.path.join(path_obj.name_fuse, entry)) for entry in os.listdir(path_obj.name_fuse)
+    ]
+    return entries
+
 class hdfs:
   class hdfsFileInfo(ctypes.Structure):
     _fields_ = [
@@ -43,13 +100,10 @@ class hdfs:
     def is_dir(self):
       return self.kind == 'D'
 
-  class hdfsException(Exception):
-    pass
-
   def __init__(self):
     self.lib_path = "/usr/lib64/libhdfs.so"
     if not os.path.isfile(self.lib_path):
-      raise hdfs.hdfsException("No such file: %s" % self.lib_path)
+      raise hdfsException("No such file: %s" % self.lib_path)
 
     logging.debug("Loading {lib}".format(lib = self.lib_path))
     self.lib = ctypes.cdll.LoadLibrary(self.lib_path)
@@ -60,35 +114,20 @@ class hdfs:
     logging.debug("Building HDFS interface")
     self.bld = self.lib.hdfsNewBuilder()
     if not self.bld:
-      raise hdfs.hdfsException("Could not create new HDFS interface")
+      raise hdfsException("Could not create new HDFS interface")
     self.lib.hdfsBuilderSetNameNode(self.bld, "default")
     self.lib.hdfsBuilderSetNameNodePort(self.bld, 0)
 
     logging.debug("Connecting to the HDFS interface")
     self.fs = self.lib.hdfsBuilderConnect(self.bld)
     if not self.fs:
-      raise hdfs.hdfsException("Could not connect to the HDFS interface")
-
-  @staticmethod
-  def normalize_path(path):
-    if not path.startswith('/hdfs') and not path.startswith("hdfs://"):
-      raise hdfs.hdfsException("Invalid path: %s" % path)
-    path_t = re.sub('^/hdfs', 'hdfs://', path) if path.startswith('/hdfs') else path
-    path_url = urlparse(path_t)
-    path_f = path_url.scheme + '://' + path_url.path
-    return path_f
-
-  @staticmethod
-  def fuse_path(path):
-    if not path.startswith("hdfs://"):
-      raise hdfs.hdfsException("Invalid path: %s" % path)
-    return re.sub('^hdfs://', '/hdfs', path)
+      raise hdfsException("Could not connect to the HDFS interface")
 
   def get_path_info(self, path):
     normalized_path = hdfs.normalize_path(path)
     path_info = self.lib.hdfsGetPathInfo(self.fs, normalized_path)
     if not path_info:
-      raise hdfs.hdfsException("No such path: %s" % normalized_path)
+      raise hdfsException("No such path: %s" % normalized_path)
     path_obj = hdfs.info(path_info)
     self.lib.hdfsFreeFileInfo(path_info, 1)
     return path_obj
@@ -97,7 +136,7 @@ class hdfs:
     nof_entries = ctypes.c_int()
     dir_ptr = self.lib.hdfsListDirectory(self.fs, path_obj.name, ctypes.byref(nof_entries))
     if not dir_ptr:
-      raise hdfs.hdfsException("No such path: %s" % path_obj.name)
+      raise hdfsException("No such path: %s" % path_obj.name)
     dir_ptr_copy = dir_ptr
     entries = []
     for j in range(nof_entries.value):
@@ -283,7 +322,7 @@ def traverse_single(hdfs_system, meta_dict, path_obj, key, histogram_name, check
     logging.warning("Path {path} has already been traversed".format(path = path_obj.name_fuse))
     return
 
-  logging.info("Single-traversing {path}".format(path = path_obj.name))
+  logging.info("Single-traversing {path}".format(path = path_obj.name_fuse))
   entries = hdfs_system.get_dir_entries(path_obj)
   entries_valid = []
   for entry in entries:
@@ -311,43 +350,43 @@ def traverse_single(hdfs_system, meta_dict, path_obj, key, histogram_name, check
         continue
       matched_idx = int(digit_match.group('i'))
       if file_idx > 0 and matched_idx != file_idx:
-        logging.debug("Skipping file {path}".format(path = subentry_file.name))
+        logging.debug("Skipping file {path}".format(path = subentry_file.name_fuse))
         continue
 
       if subentry_file.size == 0:
-        logging.debug("File {path} has a file size of 0".format(path = subentry_file.name))
-        filetracker.zero_file_size.append(subentry_file.name)
+        logging.debug("File {path} has a file size of 0".format(path = subentry_file.name_fuse))
+        filetracker.zero_file_size.append(subentry_file.name_fuse)
         continue
-      logging.debug("Opening file {path}".format(path = subentry_file.name))
-      f = ROOT.TFile.Open(subentry_file.name, "read")
+      logging.debug("Opening file {path}".format(path = subentry_file.name_fuse))
+      f = ROOT.TFile.Open(subentry_file.name_fuse, "read")
       if not f:
-        raise ValueError("Could not open {path}".format(path = subentry_file.name))
+        raise ValueError("Could not open {path}".format(path = subentry_file.name_fuse))
       if f.IsZombie():
-        logging.warning("File {path} is a zombie".format(path = subentry_file.name))
+        logging.warning("File {path} is a zombie".format(path = subentry_file.name_fuse))
         f.Close()
         del f
-        filetracker.zombie_files.append(subentry_file.name)
+        filetracker.zombie_files.append(subentry_file.name_fuse)
         continue
       if check_every_event:
-        logging.info("Inspecting file {path} for corruption".format(path = subentry_file.name))
+        logging.info("Inspecting file {path} for corruption".format(path = subentry_file.name_fuse))
         if check_every_event not in f.GetListOfKeys():
           raise ValueError("Tree of the name {tree} is not in file {path}".format(
             tree = check_every_event,
-            path = subentry_file.name,
+            path = subentry_file.name_fuse,
           ))
         t = f.Get(check_every_event)
         if not t:
           raise ValueError("Could not find tree of the name {tree} in file {path}".format(
             tree = check_every_event,
-            path = subentry_file.name,
+            path = subentry_file.name_fuse,
           ))
         nof_entries = t.GetEntries()
         for i in range(0, nof_entries):
           nof_bytes_read = t.GetEntry(i)
           if nof_bytes_read < 0:
-            filetracker.corrupted_files.append(subentry_file.name)
+            filetracker.corrupted_files.append(subentry_file.name_fuse)
             logging.debug("File {path} seems to be corrupted starting from event {idx}".format(
-              path = subentry_file.name,
+              path = subentry_file.name_fuse,
               idx  = i,
             ))
             break
@@ -358,13 +397,13 @@ def traverse_single(hdfs_system, meta_dict, path_obj, key, histogram_name, check
       if histogram_name_t not in f.GetListOfKeys():
         raise ValueError("Histogram of the name {histogram_name} is not in file {path}".format(
           histogram_name = histogram_name_t,
-          path           = subentry_file.name,
+          path           = subentry_file.name_fuse,
         ))
       h = f.Get(histogram_name_t)
       if not h:
         raise ValueError("Could not find histogram of the name {histogram_name} in file {path}".format(
           histogram_name = histogram_name_t,
-          path           = subentry_file.name,
+          path           = subentry_file.name_fuse,
         ))
       indices[matched_idx] = h.Integral()
       f.Close()
@@ -372,7 +411,7 @@ def traverse_single(hdfs_system, meta_dict, path_obj, key, histogram_name, check
       del f
 
   if not indices:
-    logging.debug("Path {path} contains no ROOT files".format(path = path_obj.name))
+    logging.debug("Path {path} contains no ROOT files".format(path = path_obj.name_fuse))
     return
 
   logging.debug("Found {nof_events} events in {nof_files} files in {path} for entry {key}".format(
@@ -417,7 +456,7 @@ def traverse_double(hdfs_system, meta_dict, path_obj, key, histogram_name, check
   :param file_idx:          Index of the corrupted file
   :return: None
   '''
-  logging.info("Double-traversing {path}".format(path = path_obj.name))
+  logging.info("Double-traversing {path}".format(path = path_obj.name_fuse))
   entries = hdfs_system.get_dir_entries(path_obj)
   for entry in entries:
     traverse_single(
@@ -506,6 +545,8 @@ if __name__ == '__main__':
   parser.add_argument('-j', '--file-idx', dest = 'file_idx', metavar = 'number', type = int,
                       default = -1,
                       help = 'R|Check files at specified index (default: all files)')
+  parser.add_argument('-u', '--use-libhdfs', dest = 'use_libhdfs', action = 'store_true', default = False,
+                      help = 'R|Use libhdfs')
   parser.add_argument('-v', '--verbose', dest = 'verbose', action = 'store_true', default = False,
                       help = 'R|Enable verbose printout')
   args = parser.parse_args()
@@ -524,7 +565,7 @@ if __name__ == '__main__':
   if args.save_corrupted and not args.check_every_event:
     logging.warning("The flag -C/--save-corrupted has no effect w/o -c/--check-every-event option")
 
-  hdfs_system = hdfs()
+  hdfs_system = hdfs() if args.use_libhdfs else nohdfs()
   filetracker = FileTracker()
 
   paths_unchecked = obtain_paths(hdfs_system, args.path)
@@ -557,7 +598,7 @@ if __name__ == '__main__':
   while paths:
     path = paths.pop(0)
     if path in excluded_paths:
-      logging.info("Skipping path {path} since it is in the exclusion list".format(path = path.name))
+      logging.info("Skipping path {path} since it is in the exclusion list".format(path = path.name_fuse))
       continue
     if args.depth > 0 and (path.depth - path.sparent_depth) >= args.depth:
       continue
@@ -587,7 +628,7 @@ if __name__ == '__main__':
             entry.sparent_depth = path.sparent_depth
           logging.debug(
             "Adding entry {entry} ({sparent_depth}/{depth})".format(
-              entry         = entry.name,
+              entry         = entry.name_fuse,
               sparent_depth = entry.sparent_depth,
               depth         = entry.depth,
             )
