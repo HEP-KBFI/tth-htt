@@ -528,7 +528,7 @@ void makeHadTopTaggerPlots()
   gROOT->SetBatch(true);
 
   std::string inputFilePath = "/home/veelken/VHbbNtuples_8_0_x/CMSSW_8_0_19/src/tthAnalysis/HiggsToTauTau/macros/";
-  std::string inputFileName = "analyzeHadTopTaggerNtuples_2017Oct06.root";
+  std::string inputFileName = "analyzeHadTopTaggerNtuples.root";
   std::string inputFileName_full = inputFilePath;
   if ( inputFileName_full.find_last_of("/") != (inputFileName_full.size() - 1) ) inputFileName_full.append("/");
   inputFileName_full.append(inputFileName);
@@ -549,7 +549,7 @@ void makeHadTopTaggerPlots()
   int colors[6] = { 1, 2, 8, 4, 6, 7 };
   int lineStyles[6] = { 1, 1, 1, 1, 1, 1 };
   int markerStyles[6] = { 22, 32, 20, 24, 21, 25 };
-  
+
   std::vector<std::string> histograms1d;
   histograms1d.push_back("numTriplets");
   
@@ -580,15 +580,27 @@ void makeHadTopTaggerPlots()
   }
 	
   std::vector<std::string> histograms1d_SandB;
-  histograms1d_SandB.push_back("mvaOutput");
-  histograms1d_SandB.push_back("max_mvaOutput");
+  histograms1d_SandB.push_back("mvaOutput_old");
+  histograms1d_SandB.push_back("max_mvaOutput_old");
+  histograms1d_SandB.push_back("mvaOutput_opt1");
+  histograms1d_SandB.push_back("max_mvaOutput_opt1");
+  histograms1d_SandB.push_back("mvaOutput_opt2");
+  histograms1d_SandB.push_back("max_mvaOutput_opt2");
+  histograms1d_SandB.push_back("mvaOutput_opt3");
+  histograms1d_SandB.push_back("max_mvaOutput_opt3");  
   histograms1d_SandB.push_back("CSV_b");
   histograms1d_SandB.push_back("nllKinFit");
   histograms1d_SandB.push_back("logPKinFit");
 
   std::map<std::string, std::string> xAxisTitles; // key = histogramName
-  xAxisTitles["mvaOutput"] = "MVA output";
-  xAxisTitles["max_mvaOutput"] = "max(MVA output)";
+  xAxisTitles["mvaOutput_old"] = "-log((1 - MVA output)/2 + 10^{-12})";
+  xAxisTitles["max_mvaOutput_old"] = "max(-log((1 - MVA output)/2 + 10^{-12}))";
+  xAxisTitles["mvaOutput_opt1"]= xAxisTitles["mvaOutput_old"];
+  xAxisTitles["max_mvaOutput_opt1"] = xAxisTitles["max_mvaOutput_old"];
+  xAxisTitles["mvaOutput_opt2"]= xAxisTitles["mvaOutput_old"];
+  xAxisTitles["max_mvaOutput_opt2"] = xAxisTitles["max_mvaOutput_old"];
+  xAxisTitles["mvaOutput_opt3"]= xAxisTitles["mvaOutput_old"];
+  xAxisTitles["max_mvaOutput_opt3"] = xAxisTitles["max_mvaOutput_old"];  
   xAxisTitles["CSV_b"] = "b-jet CSV Discriminator";
   xAxisTitles["nllKinFit"] = "NLL_{kinfit}";
   xAxisTitles["logPKinFit"] = "log(P_{kinfit})";
@@ -626,17 +638,23 @@ void makeHadTopTaggerPlots()
   }
 
   std::vector<std::string> histograms1d_ROC;
-  histograms1d_ROC.push_back("mvaOutput");
-  histograms1d_ROC.push_back("max_mvaOutput");
+  histograms1d_ROC.push_back("mvaOutput_old");
+  histograms1d_ROC.push_back("max_mvaOutput_old");
+  histograms1d_ROC.push_back("mvaOutput_opt1");
+  histograms1d_ROC.push_back("max_mvaOutput_opt1");
+  histograms1d_ROC.push_back("mvaOutput_opt2");
+  histograms1d_ROC.push_back("max_mvaOutput_opt2");
+  histograms1d_ROC.push_back("mvaOutput_opt3");
+  histograms1d_ROC.push_back("max_mvaOutput_opt3");
   histograms1d_ROC.push_back("CSV_b");
   histograms1d_ROC.push_back("nllKinFit");
   histograms1d_ROC.push_back("logPKinFit");
 
   for ( std::vector<std::string>::const_iterator histogramName = histograms1d_ROC.begin();
 	histogramName != histograms1d_ROC.end(); ++histogramName ) {
-
+    
     std::map<std::string, TGraph*> graphs_ROC; // key = sample
-
+    
     for ( std::vector<std::string>::const_iterator sample = samples.begin();
 	  sample != samples.end(); ++sample ) {
       std::string histogramName_S_full = Form("%s/%s_S", sample->data(), histogramName->data());
@@ -667,6 +685,52 @@ void makeHadTopTaggerPlots()
     for ( std::map<std::string, TGraph*>::iterator it = graphs_ROC.begin();
 	  it != graphs_ROC.end(); ++it ) {
       delete it->second;
+    }
+  }
+
+  std::vector<std::string> histograms1d_ROC_comp;
+  histograms1d_ROC_comp.push_back("mvaOutput");
+  histograms1d_ROC_comp.push_back("max_mvaOutput");
+   
+  for ( std::vector<std::string>::const_iterator histogramName = histograms1d_ROC_comp.begin();
+	histogramName != histograms1d_ROC_comp.end(); ++histogramName ) {
+    for ( std::vector<std::string>::const_iterator sample = samples.begin();
+	  sample != samples.end(); ++sample ) {
+
+      std::vector<std::string> mvaTrainings = { "old", "opt1", "opt2", "opt3" };
+
+      std::map<std::string, TGraph*> graphs_ROC; // key = mvaTraining
+
+      for ( std::vector<std::string>::const_iterator mvaTraining = mvaTrainings.begin();
+	    mvaTraining != mvaTrainings.end(); ++mvaTraining ) {
+	std::string histogramName_S_full = Form("%s/%s_%s_S", sample->data(), histogramName->data(), mvaTraining->data());
+	TH1* histogram_S = loadHistogram(inputFile, histogramName_S_full);
+	std::string histogramName_B_full = Form("%s/%s_%s_B", sample->data(), histogramName->data(), mvaTraining->data());
+	TH1* histogram_B = loadHistogram(inputFile, histogramName_B_full);
+	graphs_ROC[*mvaTraining] = compGraph_ROCcurve_fromHistogram1d(histogram_S, histogram_B);
+      }
+
+      std::string outputFileName = Form("makeHadTopTaggerPlots_ROC_comp_%s_%s.png", sample->data(), histogramName->data());
+    
+      showGraphs(1150, 800,
+		 graphs_ROC["old"], "'Old'",
+		 graphs_ROC["opt1"], "Opt1",
+		 graphs_ROC["opt2"], "Opt2",
+		 graphs_ROC["opt3"], "Opt3",
+		 0, "",
+		 0, "",
+		 colors, markerStyles, 
+		 0.050, 0.63, 0.23, 0.26, 0.21, 
+		 labelTextLines, 0.050,
+		 0.63, 0.65, 0.26, 0.07, 
+		 0., 1., "P(Signal)", 1.2, 
+		 true, 1.e-3, 1.e0, "P(Background)", 1.2, 
+		 outputFileName);
+
+      for ( std::map<std::string, TGraph*>::iterator it = graphs_ROC.begin();
+	    it != graphs_ROC.end(); ++it ) {
+	delete it->second;
+      }
     }
   }
   
@@ -713,6 +777,71 @@ void makeHadTopTaggerPlots()
       delete it->second;
     }
   }
+ 
+  std::vector<std::string> histograms1d_vs_genMatching;
+  histograms1d_vs_genMatching.push_back("mvaOutput_old_vs_idxGenMatching");
+  histograms1d_vs_genMatching.push_back("max_mvaOutput_old_vs_idxGenMatching");
+  histograms1d_vs_genMatching.push_back("mvaOutput_opt1_vs_idxGenMatching");
+  histograms1d_vs_genMatching.push_back("max_mvaOutput_opt1_vs_idxGenMatching");
+  histograms1d_vs_genMatching.push_back("mvaOutput_opt2_vs_idxGenMatching");
+  histograms1d_vs_genMatching.push_back("max_mvaOutput_opt2_vs_idxGenMatching");
+  histograms1d_vs_genMatching.push_back("mvaOutput_opt3_vs_idxGenMatching");
+  histograms1d_vs_genMatching.push_back("max_mvaOutput_opt3_vs_idxGenMatching");
+  
+  xAxisTitles["mvaOutput_old_vs_idxGenMatching"] = xAxisTitles["mvaOutput_old"];
+  xAxisTitles["max_mvaOutput_old_vs_idxGenMatching"] = xAxisTitles["max_mvaOutput_old"];
+  xAxisTitles["mvaOutput_opt1_vs_idxGenMatching"] = xAxisTitles["mvaOutput_opt1"];
+  xAxisTitles["max_mvaOutput_opt1_vs_idxGenMatching"] = xAxisTitles["max_mvaOutput_opt1"];
+  xAxisTitles["mvaOutput_opt2_vs_idxGenMatching"] = xAxisTitles["mvaOutput_opt2"];
+  xAxisTitles["max_mvaOutput_opt2_vs_idxGenMatching"] = xAxisTitles["max_mvaOutput_opt2"];
+  xAxisTitles["mvaOutput_opt3_vs_idxGenMatching"] = xAxisTitles["mvaOutput_opt3"];
+  xAxisTitles["max_mvaOutput_opt3_vs_idxGenMatching"] = xAxisTitles["max_mvaOutput_opt3"];
+
+  for ( std::vector<std::string>::const_iterator histogramName = histograms1d_vs_genMatching.begin();
+	histogramName != histograms1d_vs_genMatching.end(); ++histogramName ) {
+    for ( std::vector<std::string>::const_iterator sample = samples.begin();
+	  sample != samples.end(); ++sample ) {
+      std::string histogramName_full = Form("%s/%s", sample->data(), histogramName->data());
+      TH2* histogram = dynamic_cast<TH2*>(loadHistogram(inputFile, histogramName_full));
+
+      std::map<int, TH1*> histograms_genMatching;
+      for ( int genMatching = 0; genMatching <= 7; ++genMatching ) {
+	std::string histogramName_genMatching = Form("%s_genMatchingEq%i", histogram->GetName(), genMatching);	
+	int idxBin = histogram->GetXaxis()->FindBin(genMatching);
+	TH1* histogram_genMatching = histogram->ProjectionY(histogramName_genMatching.data(), idxBin, idxBin);
+	//std::cout << "genMatching = " << genMatching << ": integral = " << histogram_genMatching->Integral() << std::endl;
+	normalizeHistogram1d(histogram_genMatching);
+	histograms_genMatching[genMatching] = histogram_genMatching;
+      }
+      
+      TH1* histogram_bWj_isGenMatched = histograms_genMatching[6];
+      histogram_bWj_isGenMatched->Add(histograms_genMatching[5]);
+      normalizeHistogram1d(histogram_bWj_isGenMatched);
+
+      TH1* histogram_Wj_isGenMatched = histograms_genMatching[2];
+      histogram_Wj_isGenMatched->Add(histograms_genMatching[1]);
+      normalizeHistogram1d(histogram_Wj_isGenMatched);
+
+      std::string outputFileName = Form("makeHadTopTaggerPlots_%s_%s.png", sample->data(), histogramName->data());
+
+      showHistograms(1150, 800,
+		     histograms_genMatching[7], "bWj1Wj2",
+		     histogram_bWj_isGenMatched, "bWj1 || bWj2",
+		     histograms_genMatching[4], "b",
+		     histograms_genMatching[3], "Wj1Wj2",
+		     histogram_Wj_isGenMatched, "Wj1 || Wj2",
+		     histograms_genMatching[0], "no match",
+		     colors, lineStyles, 
+		     0.040, 0.17, 0.165, 0.26, 0.26, 
+		     labelTextLines, 0.050,
+		     0.63, 0.65, 0.26, 0.07, 
+		     -1., -1., xAxisTitles[*histogramName], 1.2, 
+		     true, 1.e-4, 1.e0, "Triplets", 1.2, 
+		     outputFileName);
+    }
+  }
+
+  
   
   delete inputFile;
 }

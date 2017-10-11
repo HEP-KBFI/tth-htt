@@ -273,6 +273,22 @@ const Particle::LorentzVector& HadTopKinFit::fittedWJet2() const
   return fittedWJet2P4_;
 }
 
+Particle::LorentzVector HadTopKinFit::fittedTop() const
+{
+  if ( nll_ == -1. ) 
+    throw cms::Exception("HadTopKinFit") 
+      << "Kinematic fit has not yet run or failed !!\n";
+  return fittedBJetP4_ + fittedWJet1P4_ + fittedWJet2P4_;
+}
+
+Particle::LorentzVector HadTopKinFit::fittedW() const
+{
+  if ( nll_ == -1. ) 
+    throw cms::Exception("HadTopKinFit") 
+      << "Kinematic fit has not yet run or failed !!\n";
+  return fittedWJet1P4_ + fittedWJet2P4_;
+}
+
 double HadTopKinFit::alpha() const
 {
   if ( nll_ == -1. ) 

@@ -72,6 +72,7 @@ void dumpEventYields()
   std::map<std::string, vstring> background_processes; // key = channel
   //background_processes["0l_2tau"].push_back("TT");
   background_processes["0l_2tau"].push_back("TTW");
+  background_processes["0l_2tau"].push_back("TTWW");
   background_processes["0l_2tau"].push_back("TTZ");
   background_processes["0l_2tau"].push_back("EWK");
   background_processes["0l_2tau"].push_back("Rares");

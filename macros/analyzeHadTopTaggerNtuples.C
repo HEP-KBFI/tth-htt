@@ -22,6 +22,45 @@
 #include <math.h>
 #include <limits>
 
+TMVA::Reader* bookMVA(const std::string& mvaFilePath, const std::string& mvaFileName,  
+		      Float_t* CSV_Wj1, Float_t* CSV_b, Float_t* dR_Wj1Wj2, Float_t* dR_bW, Float_t* m_Wj1Wj2, Float_t* nllKinFit, Float_t* pT_Wj2, Float_t* pT_bWj1Wj2, Float_t* qg_Wj2)
+{
+  TMVA::Reader* mva = new TMVA::Reader("!V:!Silent");
+  mva->AddVariable("CSV_Wj1", CSV_Wj1);
+  mva->AddVariable("CSV_b", CSV_b);
+  mva->AddVariable("dR_Wj1Wj2", dR_Wj1Wj2);
+  mva->AddVariable("dR_bW", dR_bW);
+  mva->AddVariable("m_Wj1Wj2", m_Wj1Wj2);
+  mva->AddVariable("nllKinFit", nllKinFit);
+  mva->AddVariable("pT_Wj2", pT_Wj2);
+  mva->AddVariable("pT_bWj1Wj2", pT_bWj1Wj2);
+  mva->AddVariable("qg_Wj2", qg_Wj2);
+  std::string mvaFileName_full = mvaFilePath;
+  if ( mvaFileName_full.back() != '/' ) mvaFileName_full.append("/");
+  mvaFileName_full.append(mvaFileName);
+  mva->BookMVA("BDTG", mvaFileName_full.data());
+  return mva;
+}
+
+double evalMVA(TMVA::Reader* mva)
+{
+  double mvaOutput = mva->EvaluateMVA("BDTG");
+  mvaOutput = -TMath::Log(0.5*(1 - mvaOutput) + 1.e-12);
+  return mvaOutput;
+}
+
+TH1* bookHistogram1d(const std::string& histogramName, int numBinsX, double xMin, double xMax)
+{
+  TH1* histogram = new TH1D(histogramName.data(), histogramName.data(), numBinsX, xMin, xMax);
+  return histogram;
+}
+
+TH2* bookHistogram2d(const std::string& histogramName, int numBinsX, double xMin, double xMax, int numBinsY, double yMin, double yMax)
+{
+  TH2* histogram = new TH2D(histogramName.data(), histogramName.data(), numBinsX, xMin, xMax, numBinsY, yMin, yMax);
+  return histogram;
+}
+
 void fillWithOverFlow(TH1* histogram, double x)
 {
   const double epsilon = 1.e-3;
@@ -49,6 +88,96 @@ void fillWithOverFlow2d(TH2* histogram, double x, double y)
   histogram->Fill(x, y);
 }
 
+struct mvaHistogramType
+{
+  mvaHistogramType(const std::string& mvaName)
+    : mvaName_(mvaName)
+  {
+    last_run_ = 0;
+    last_lumi_ = 0;
+    last_evt_ = 0;
+    idxJetTriplet_ = 0;
+    max_mvaOutput_ = -1.e+3;
+    max_mvaOutput_idxGenMatching_ = -1;
+    max_mvaOutput_idxJetTriplet_ = -1;
+  }
+  ~mvaHistogramType() {}
+  void bookHistograms()
+  {
+    histogram_mvaOutput_S_ = bookHistogram1d(Form("mvaOutput_%s_S", mvaName_.data()), 1000, 0., 10.);
+    histogram_mvaOutput_B_ = bookHistogram1d(Form("mvaOutput_%s_B", mvaName_.data()), 1000, 0., 10.);
+    histogram_mvaOutput_vs_idxGenMatching_ = bookHistogram2d(Form("mvaOutput_%s_vs_idxGenMatching", mvaName_.data()), 9, -1.5, +7.5, 1000, 0., 10.);
+    histogram_max_mvaOutput_S_ = bookHistogram1d(Form("max_mvaOutput_%s_S", mvaName_.data()), 1000, 0., 10.);
+    histogram_max_mvaOutput_B_ = bookHistogram1d(Form("max_mvaOutput_%s_B", mvaName_.data()), 1000, 0., 10.);
+    histogram_max_mvaOutput_vs_idxGenMatching_ = bookHistogram2d(Form("max_mvaOutput_%s_vs_idxGenMatching", mvaName_.data()), 9, -1.5, +7.5, 1000, 0., 10.); 
+    histogram_max_mvaOutput_idxJetTriplet_ = bookHistogram1d(Form("max_mvaOutput_%s_idxJetTriplet", mvaName_.data()), 1001, -1.5, +999.5);
+  }
+  void fillHistograms(UInt_t run, UInt_t lumi, ULong64_t evt, double mvaOutput, int idxGenMatching)
+  {
+    TH1* histogram_mvaOutput = 0;
+    if ( idxGenMatching == 7 ) {
+      histogram_mvaOutput = histogram_mvaOutput_S_;
+    } else {
+      histogram_mvaOutput = histogram_mvaOutput_B_;
+    }
+    fillWithOverFlow(histogram_mvaOutput, mvaOutput);
+    fillWithOverFlow2d(histogram_mvaOutput_vs_idxGenMatching_, idxGenMatching, mvaOutput);
+
+    if ( mvaOutput > max_mvaOutput_ ) {
+      max_mvaOutput_ = mvaOutput;
+      max_mvaOutput_idxGenMatching_ = idxGenMatching;
+      max_mvaOutput_idxJetTriplet_ = idxJetTriplet_;	
+    }
+    ++idxJetTriplet_;
+    
+    if ( run != last_run_ || lumi != last_lumi_ || evt != last_evt_ ) {
+      if ( !(last_run_ == 0 && last_lumi_ == 0 && last_evt_ == 0) ) {
+	TH1* histogram_max_mvaOutput = 0;
+	if ( max_mvaOutput_idxGenMatching_ == 7 ) {
+	  histogram_max_mvaOutput = histogram_max_mvaOutput_S_;
+	} else {
+	  histogram_max_mvaOutput = histogram_max_mvaOutput_B_;
+	}
+	fillWithOverFlow(histogram_max_mvaOutput, max_mvaOutput_);
+	fillWithOverFlow2d(histogram_max_mvaOutput_vs_idxGenMatching_, max_mvaOutput_idxGenMatching_, max_mvaOutput_);
+	fillWithOverFlow(histogram_max_mvaOutput_idxJetTriplet_, max_mvaOutput_idxJetTriplet_);
+      }
+      last_run_ = run;
+      last_lumi_ = lumi;
+      last_evt_ = evt;
+      idxJetTriplet_ = 0;
+      max_mvaOutput_ = -1.e+3;
+      max_mvaOutput_idxGenMatching_ = -1;
+      max_mvaOutput_idxJetTriplet_ = -1;
+    }
+  }
+  void writeHistograms()
+  {
+    histogram_mvaOutput_S_->Write();
+    histogram_mvaOutput_B_->Write();
+    histogram_mvaOutput_vs_idxGenMatching_->Write();
+    histogram_max_mvaOutput_S_->Write();
+    histogram_max_mvaOutput_B_->Write();
+    histogram_max_mvaOutput_vs_idxGenMatching_->Write();
+    histogram_max_mvaOutput_idxJetTriplet_->Write();
+  }
+  std::string mvaName_;
+  TH1* histogram_mvaOutput_S_;
+  TH1* histogram_mvaOutput_B_;
+  TH2* histogram_mvaOutput_vs_idxGenMatching_;
+  TH1* histogram_max_mvaOutput_S_;
+  TH1* histogram_max_mvaOutput_B_;
+  TH2* histogram_max_mvaOutput_vs_idxGenMatching_;
+  TH1* histogram_max_mvaOutput_idxJetTriplet_;
+  UInt_t last_run_;
+  UInt_t last_lumi_;
+  ULong64_t last_evt_;
+  Int_t idxJetTriplet_;
+  Float_t max_mvaOutput_;
+  Int_t max_mvaOutput_idxGenMatching_;
+  Int_t max_mvaOutput_idxJetTriplet_;
+};
+
 void analyze(const std::string& sample, TFile* outputFile, const std::string& inputFilePath, const std::vector<std::string>& inputFileNames)
 {
   std::cout << "<analyze>: processing sample = '" << sample << "'" << std::endl;
@@ -60,18 +189,17 @@ void analyze(const std::string& sample, TFile* outputFile, const std::string& in
   outputDir->cd();
 
   TH1* histogram_numTriplets = new TH1D("numTriplets", "numTriplets", 1000, -0.5, +999.5);
+  TH1* histogram_numTriplets_genMatched = new TH1D("numTriplets_genMatched", "numTriplets_genMatched", 3, -0.5, +2.5);
 
-  TH1* histogram_mvaOutput_S = new TH1D("mvaOutput_S", "mvaOutput_S", 100, 0., 10.);
-  TH1* histogram_mvaOutput_B = new TH1D("mvaOutput_B", "mvaOutput_B", 100, 0., 10.);
-
-  TH2* histogram_mvaOutput_vs_idxGenMatching = new TH2D("mvaOutput_vs_idxGenMatching", "mvaOutput_vs_idxGenMatching", 9, -1.5, +7.5, 20000, -1., +1.);
+  mvaHistogramType histograms_mva_old("old");
+  histograms_mva_old.bookHistograms();
+  mvaHistogramType histograms_mva_opt1("opt1");
+  histograms_mva_opt1.bookHistograms();
+  mvaHistogramType histograms_mva_opt2("opt2");
+  histograms_mva_opt2.bookHistograms();
+  mvaHistogramType histograms_mva_opt3("opt3");
+  histograms_mva_opt3.bookHistograms();
   
-  TH1* histogram_max_mvaOutput_S = new TH1D("max_mvaOutput_S", "max_mvaOutput_S", 100, 0., 10.);
-  TH1* histogram_max_mvaOutput_B = new TH1D("max_mvaOutput_B", "max_mvaOutput_B", 100, 0., 10.);
-
-  TH1* histogram_max_mvaOutput_idxJetTriplet = new TH1D("max_mvaOutput_idxJetTriplet", "max_mvaOutput_idxJetTripet", 1001, -1.5, +999.5);
-  TH1* histogram_max_mvaOutput_idxGenMatching = new TH1D("max_mvaOutput_idxGenMatching", "max_mvaOutput_idxGenMatching", 9, -1.5, +7.5);
-
   TH1* histogram_CSV_b_S = new TH1D("CSV_b_S", "CSV_b_S", 200, -1., +1.);
   TH1* histogram_CSV_b_B = new TH1D("CSV_b_B", "CSV_b_B", 200, -1., +1.);
   
@@ -140,35 +268,26 @@ void analyze(const std::string& sample, TFile* outputFile, const std::string& in
     tree->SetBranchAddress("Wj1_isGenMatched", &Wj1_isGenMatched);
     Int_t Wj2_isGenMatched;
     tree->SetBranchAddress("Wj2_isGenMatched", &Wj2_isGenMatched);
-    Int_t bWj1Wj2_isGenMatched;
-    tree->SetBranchAddress("bWj1Wj2_isGenMatched", &bWj1Wj2_isGenMatched);
 
     TMVA::Tools::Instance();
-    TMVA::Reader* mva = new TMVA::Reader("!V:!Silent");
-    mva->AddVariable("CSV_Wj1", &CSV_Wj1);
-    mva->AddVariable("CSV_b", &CSV_b);
-    mva->AddVariable("dR_Wj1Wj2", &dR_Wj1Wj2);
-    mva->AddVariable("dR_bW", &dR_bW);
-    mva->AddVariable("m_Wj1Wj2", &m_Wj1Wj2);
-    mva->AddVariable("nllKinFit", &nllKinFit);
-    mva->AddVariable("pT_Wj2", &pT_Wj2);
-    mva->AddVariable("pT_bWj1Wj2", &pT_bWj1Wj2);
-    mva->AddVariable("qg_Wj2", &qg_Wj2);
-    std::string mvaFileName = "/home/veelken/VHbbNtuples_8_0_x/CMSSW_8_0_19/src/tthAnalysis/HiggsToTauTau/data/TMVABDT_hadTopTagger_maxDepth3_9Var_ttH.xml";
-    mva->BookMVA("BDTG", mvaFileName.data());
+    std::string mvaFilePath = "/home/veelken/VHbbNtuples_8_0_x/CMSSW_8_0_19/src/tthAnalysis/HiggsToTauTau/data/";
+    std::string mvaFileName_old = "TMVABDT_hadTopTagger_maxDepth3_9Var_ttH.xml";
+    TMVA::Reader* mva_old = bookMVA(mvaFilePath, mvaFileName_old, &CSV_Wj1, &CSV_b, &dR_Wj1Wj2, &dR_bW, &m_Wj1Wj2, &nllKinFit, &pT_Wj2, &pT_bWj1Wj2, &qg_Wj2);
+    std::string mvaFileName_opt1 = "hadTopTagger_BDTG_2017Oct10_opt1.xml";
+    TMVA::Reader* mva_opt1 = bookMVA(mvaFilePath, mvaFileName_opt1, &CSV_Wj1, &CSV_b, &dR_Wj1Wj2, &dR_bW, &m_Wj1Wj2, &nllKinFit, &pT_Wj2, &pT_bWj1Wj2, &qg_Wj2);
+    std::string mvaFileName_opt2 = "hadTopTagger_BDTG_2017Oct10_opt2.xml";
+    TMVA::Reader* mva_opt2 = bookMVA(mvaFilePath, mvaFileName_opt2, &CSV_Wj1, &CSV_b, &dR_Wj1Wj2, &dR_bW, &m_Wj1Wj2, &nllKinFit, &pT_Wj2, &pT_bWj1Wj2, &qg_Wj2);
+    std::string mvaFileName_opt3 = "hadTopTagger_BDTG_2017Oct10_opt3.xml";
+    TMVA::Reader* mva_opt3 = bookMVA(mvaFilePath, mvaFileName_opt3, &CSV_Wj1, &CSV_b, &dR_Wj1Wj2, &dR_bW, &m_Wj1Wj2, &nllKinFit, &pT_Wj2, &pT_bWj1Wj2, &qg_Wj2);
 
     //const int maxEvents = -1;
-    const int maxEvents = 10000000;
+    const int maxEvents = 100000000;
 
     UInt_t last_run = 0;
     UInt_t last_lumi = 0;
     ULong64_t last_evt = 0;
     int numJetTriplets = 0;
-    int idxJetTriplet = 0;
-    Float_t max_mvaOutput = -1.e+3;
-    Int_t max_mvaOutput_isGenMatched = false;
-    Int_t max_mvaOutput_idxJetTriplet = -1;
-    Int_t max_mvaOutput_idxGenMatching = -1;
+    int numJetTriplets_genMatched = 0;
 
     int numEntries = tree->GetEntries();
     std::cout << "processing input file = '" << inputFileName_full << "' (" << numEntries << " entries)" << std::endl;
@@ -179,86 +298,76 @@ void analyze(const std::string& sample, TFile* outputFile, const std::string& in
     
       tree->GetEntry(idxEntry);
 
-      double mvaOutput = mva->EvaluateMVA("BDTG");
-      mvaOutput = -TMath::Log(0.5*(1 - mvaOutput) + 1.e-12);
-
       int idxGenMatching = 0;
       if ( b_isGenMatched   ) idxGenMatching += 4;
       if ( Wj1_isGenMatched ) idxGenMatching += 2;
       if ( Wj2_isGenMatched ) idxGenMatching += 1;
 
-      TH1* histogram_mvaOutput = 0;
       TH1* histogram_CSV_b = 0;
       TH1* histogram_nllKinFit = 0;
       TH2* histogram_nllKinFit_vs_CSV_b = 0;
       TH1* histogram_logPKinFit = 0;
       TH2* histogram_logPKinFit_vs_CSV_b = 0;
-      if ( bWj1Wj2_isGenMatched ) {
-	histogram_mvaOutput = histogram_mvaOutput_S;
+      if ( idxGenMatching == 7 ) {
 	histogram_CSV_b = histogram_CSV_b_S;
 	histogram_nllKinFit = histogram_nllKinFit_S;
 	histogram_nllKinFit_vs_CSV_b = histogram_nllKinFit_vs_CSV_b_S;
 	histogram_logPKinFit = histogram_logPKinFit_S;
 	histogram_logPKinFit_vs_CSV_b = histogram_logPKinFit_vs_CSV_b_S;
       } else {
-	histogram_mvaOutput = histogram_mvaOutput_B;
 	histogram_CSV_b = histogram_CSV_b_B;
 	histogram_nllKinFit = histogram_nllKinFit_B;
 	histogram_nllKinFit_vs_CSV_b = histogram_nllKinFit_vs_CSV_b_B;
 	histogram_logPKinFit = histogram_logPKinFit_B;
 	histogram_logPKinFit_vs_CSV_b = histogram_logPKinFit_vs_CSV_b_B;
       }
-      fillWithOverFlow(histogram_mvaOutput, mvaOutput);
-      fillWithOverFlow2d(histogram_mvaOutput_vs_idxGenMatching, idxGenMatching, mvaOutput);
       fillWithOverFlow(histogram_CSV_b, CSV_b);
       fillWithOverFlow(histogram_nllKinFit, nllKinFit);
       fillWithOverFlow2d(histogram_nllKinFit_vs_CSV_b, CSV_b, nllKinFit);
       fillWithOverFlow(histogram_logPKinFit, logPKinFit);
       fillWithOverFlow2d(histogram_logPKinFit_vs_CSV_b, CSV_b, logPKinFit);
-            
-      if ( mvaOutput > max_mvaOutput ) {
-	max_mvaOutput = mvaOutput;
-	max_mvaOutput_isGenMatched = bWj1Wj2_isGenMatched;
-	max_mvaOutput_idxJetTriplet = numJetTriplets;	
-	max_mvaOutput_idxGenMatching = idxGenMatching;
-      }
-      numJetTriplets++;
+
+      double mvaOutput_old = evalMVA(mva_old);
+      histograms_mva_old.fillHistograms(run, lumi, evt, mvaOutput_old, idxGenMatching);
+      double mvaOutput_opt1 = evalMVA(mva_opt1);
+      histograms_mva_opt1.fillHistograms(run, lumi, evt, mvaOutput_opt1, idxGenMatching);
+      double mvaOutput_opt2 = evalMVA(mva_opt2);
+      histograms_mva_opt2.fillHistograms(run, lumi, evt, mvaOutput_opt2, idxGenMatching);
+      double mvaOutput_opt3 = evalMVA(mva_opt3);
+      histograms_mva_opt3.fillHistograms(run, lumi, evt, mvaOutput_opt3, idxGenMatching);
+      
+      ++numJetTriplets;
+      if ( idxGenMatching == 7 ) ++numJetTriplets_genMatched;
 
       if ( run != last_run || lumi != last_lumi || evt != last_evt ) {
-	if ( !(last_run == 0 && lumi == 0 && evt == 0) ) {
+	if ( !(last_run == 0 && last_lumi == 0 && last_evt == 0) ) {
 	  fillWithOverFlow(histogram_numTriplets, numJetTriplets);
-	  TH1* histogram_max_mvaOutput = 0;
-	  if ( max_mvaOutput_isGenMatched ) histogram_max_mvaOutput = histogram_max_mvaOutput_S;
-	  else histogram_max_mvaOutput = histogram_max_mvaOutput_B;
-	  fillWithOverFlow(histogram_max_mvaOutput, max_mvaOutput);
-	  fillWithOverFlow(histogram_max_mvaOutput_idxJetTriplet, max_mvaOutput_idxJetTriplet);
-	  fillWithOverFlow(histogram_max_mvaOutput_idxGenMatching, max_mvaOutput_idxGenMatching);
+	  fillWithOverFlow(histogram_numTriplets_genMatched, numJetTriplets_genMatched);
 	}	
 	last_run = run;
 	last_lumi = lumi;
 	last_evt = evt;
 	numJetTriplets = 0;
-	max_mvaOutput = -1.e+3;
-	max_mvaOutput_idxJetTriplet = -1;
-	max_mvaOutput_idxGenMatching = -1;
+	numJetTriplets_genMatched = 0;
       }
     }
 
     TMVA::Tools::DestroyInstance();
-    delete mva;
+    delete mva_old;
+    delete mva_opt1;
+    delete mva_opt2;
+    delete mva_opt3;
 
     delete inputFile;
   }
 
   outputDir->cd();
   histogram_numTriplets->Write();
-  histogram_mvaOutput_S->Write();
-  histogram_mvaOutput_B->Write();
-  histogram_mvaOutput_vs_idxGenMatching->Write();
-  histogram_max_mvaOutput_S->Write();
-  histogram_max_mvaOutput_B->Write();
-  histogram_max_mvaOutput_idxJetTriplet->Write();
-  histogram_max_mvaOutput_idxGenMatching->Write();
+  histogram_numTriplets_genMatched->Write();
+  histograms_mva_old.writeHistograms();
+  histograms_mva_opt1.writeHistograms();
+  histograms_mva_opt2.writeHistograms();
+  histograms_mva_opt3.writeHistograms();
   histogram_CSV_b_S->Write();
   histogram_CSV_b_B->Write();
   histogram_nllKinFit_S->Write();

@@ -141,3 +141,8 @@ const std::map<std::string, double>& HadTopTagger::mvaInputs() const
   return mvaInputs_; 
 }
 
+const HadTopKinFit* HadTopTagger::kinFit() const 
+{ 
+  return kinFit_; 
+}
+
