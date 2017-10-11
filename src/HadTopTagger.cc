@@ -12,41 +12,51 @@ HadTopTagger::HadTopTagger(const std::string& mvaFileName)
 {
   kinFit_ = new HadTopKinFit();
 
-  mvaInputVariables_.push_back("m_bWj1Wj2");
-  mvaInputVariables_.push_back("m_Wj1Wj2");
-  mvaInputVariables_.push_back("m_bWj1");
-  mvaInputVariables_.push_back("m_bWj2");
-  mvaInputVariables_.push_back("m_Wj1Wj2_div_m_bWj1Wj2");
-  mvaInputVariables_.push_back("CSV_b");
   mvaInputVariables_.push_back("CSV_Wj1");
-  mvaInputVariables_.push_back("CSV_Wj2");
-  mvaInputVariables_.push_back("pT_b");
-  mvaInputVariables_.push_back("eta_b");
-  mvaInputVariables_.push_back("phi_b");
-  mvaInputVariables_.push_back("mass_b");
-  mvaInputVariables_.push_back("pT_Wj1");
-  mvaInputVariables_.push_back("eta_Wj1");
-  mvaInputVariables_.push_back("phi_Wj1");
-  mvaInputVariables_.push_back("mass_Wj1");
-  mvaInputVariables_.push_back("pT_Wj2");
-  mvaInputVariables_.push_back("eta_Wj2");
-  mvaInputVariables_.push_back("phi_Wj2");
-  mvaInputVariables_.push_back("mass_Wj2");
-  mvaInputVariables_.push_back("dR_bWj1");
-  mvaInputVariables_.push_back("dR_bWj2");
+  mvaInputVariables_.push_back("CSV_b");
   mvaInputVariables_.push_back("dR_Wj1Wj2");
   mvaInputVariables_.push_back("dR_bW");
-  mvaInputVariables_.push_back("statusKinFit");
+  mvaInputVariables_.push_back("m_Wj1Wj2");
   mvaInputVariables_.push_back("nllKinFit");
-  mvaInputVariables_.push_back("alphaKinFit");
-  mvaInputVariables_.push_back("logPKinFit");
-  mvaInputVariables_.push_back("logPErrKinFit");
-  mvaInputVariables_.push_back("qg_b");
-  mvaInputVariables_.push_back("qg_Wj1");
-  mvaInputVariables_.push_back("qg_Wj2");
+  mvaInputVariables_.push_back("pT_Wj2");
   mvaInputVariables_.push_back("pT_bWj1Wj2");
-  mvaInputVariables_.push_back("pT_Wj1Wj2");
-  mvaInputVariables_.push_back("max_dR_div_expRjet");
+  mvaInputVariables_.push_back("qg_Wj2");
+
+  //mvaInputVariables_.push_back("m_bWj1Wj2");
+  //mvaInputVariables_.push_back("m_Wj1Wj2");
+  //mvaInputVariables_.push_back("m_bWj1");
+  //mvaInputVariables_.push_back("m_bWj2");
+  //mvaInputVariables_.push_back("m_Wj1Wj2_div_m_bWj1Wj2");
+  //mvaInputVariables_.push_back("CSV_b");
+  //mvaInputVariables_.push_back("CSV_Wj1");
+  //mvaInputVariables_.push_back("CSV_Wj2");
+  //mvaInputVariables_.push_back("pT_b");
+  //mvaInputVariables_.push_back("eta_b");
+  //mvaInputVariables_.push_back("phi_b");
+  //mvaInputVariables_.push_back("mass_b");
+  //mvaInputVariables_.push_back("pT_Wj1");
+  //mvaInputVariables_.push_back("eta_Wj1");
+  //mvaInputVariables_.push_back("phi_Wj1");
+  //mvaInputVariables_.push_back("mass_Wj1");
+  //mvaInputVariables_.push_back("pT_Wj2");
+  //mvaInputVariables_.push_back("eta_Wj2");
+  //mvaInputVariables_.push_back("phi_Wj2");
+  //mvaInputVariables_.push_back("mass_Wj2");
+  //mvaInputVariables_.push_back("dR_bWj1");
+  //mvaInputVariables_.push_back("dR_bWj2");
+  //mvaInputVariables_.push_back("dR_Wj1Wj2");
+  //mvaInputVariables_.push_back("dR_bW");
+  //mvaInputVariables_.push_back("statusKinFit");
+  //mvaInputVariables_.push_back("nllKinFit");
+  //mvaInputVariables_.push_back("alphaKinFit");
+  //mvaInputVariables_.push_back("logPKinFit");
+  //mvaInputVariables_.push_back("logPErrKinFit");
+  //mvaInputVariables_.push_back("qg_b");
+  //mvaInputVariables_.push_back("qg_Wj1");
+  //mvaInputVariables_.push_back("qg_Wj2");
+  //mvaInputVariables_.push_back("pT_bWj1Wj2");
+  //mvaInputVariables_.push_back("pT_Wj1Wj2");
+  //mvaInputVariables_.push_back("max_dR_div_expRjet");
   if ( mvaFileName != "" ) {
     mva_ = new TMVAInterface(mvaFileName, mvaInputVariables_, {});
   }
@@ -58,72 +68,72 @@ HadTopTagger::~HadTopTagger()
   delete mva_;
 }
 
-namespace
-{
-  double max(double value1, double value2, double value3)
-  {
-    double max12 = std::max(value1, value2);
-    return std::max(max12, value3);
-  } 
-}
+//namespace
+//{
+//  double max(double value1, double value2, double value3)
+//  {
+//    double max12 = std::max(value1, value2);
+//    return std::max(max12, value3);
+//  } 
+//}
 
 double HadTopTagger::operator()(const RecoJet& recBJet, const RecoJet& recWJet1, const RecoJet& recWJet2)
 {
   Particle::LorentzVector p4_bWj1Wj2 = recBJet.p4() + recWJet1.p4() + recWJet2.p4();
-  mvaInputs_["m_bWj1Wj2"]              = p4_bWj1Wj2.mass();
+  //mvaInputs_["m_bWj1Wj2"]              = p4_bWj1Wj2.mass();
   Particle::LorentzVector p4_Wj1Wj2 = recWJet1.p4() + recWJet2.p4();
   mvaInputs_["m_Wj1Wj2"]               = p4_Wj1Wj2.mass();
-  mvaInputs_["m_bWj1"]                 = (recBJet.p4() + recWJet1.p4()).mass();
-  mvaInputs_["m_bWj2"]                 = (recBJet.p4() + recWJet2.p4()).mass();
-  mvaInputs_["m_Wj1Wj2_div_m_bWj1Wj2"] = ( p4_bWj1Wj2.mass() > 0. ) ? p4_Wj1Wj2.mass()/p4_bWj1Wj2.mass() : -1.;
+  //mvaInputs_["m_bWj1"]                 = (recBJet.p4() + recWJet1.p4()).mass();
+  //mvaInputs_["m_bWj2"]                 = (recBJet.p4() + recWJet2.p4()).mass();
+  //mvaInputs_["m_Wj1Wj2_div_m_bWj1Wj2"] = ( p4_bWj1Wj2.mass() > 0. ) ? p4_Wj1Wj2.mass()/p4_bWj1Wj2.mass() : -1.;
   mvaInputs_["CSV_b"]                  = recBJet.BtagCSV();
   mvaInputs_["CSV_Wj1"]                = recWJet1.BtagCSV();
-  mvaInputs_["CSV_Wj2"]                = recWJet2.BtagCSV();
-  mvaInputs_["pT_b"]                   = recBJet.pt();
-  mvaInputs_["eta_b"]                  = recBJet.eta();
-  mvaInputs_["phi_b"]                  = recBJet.phi();
-  mvaInputs_["mass_b"]                 = recBJet.mass();
-  mvaInputs_["pT_Wj1"]                 = recWJet1.pt();
-  mvaInputs_["eta_Wj1"]                = recWJet1.eta();
-  mvaInputs_["phi_Wj1"]                = recWJet1.phi();
-  mvaInputs_["mass_Wj1"]               = recWJet1.mass();  
+  //mvaInputs_["CSV_Wj2"]                = recWJet2.BtagCSV();
+  //mvaInputs_["pT_b"]                   = recBJet.pt();
+  //mvaInputs_["eta_b"]                  = recBJet.eta();
+  //mvaInputs_["phi_b"]                  = recBJet.phi();
+  //mvaInputs_["mass_b"]                 = recBJet.mass();
+  //mvaInputs_["pT_Wj1"]                 = recWJet1.pt();
+  //mvaInputs_["eta_Wj1"]                = recWJet1.eta();
+  //mvaInputs_["phi_Wj1"]                = recWJet1.phi();
+  //mvaInputs_["mass_Wj1"]               = recWJet1.mass();  
   mvaInputs_["pT_Wj2"]                 = recWJet2.pt();
-  mvaInputs_["eta_Wj2"]                = recWJet2.eta();
-  mvaInputs_["phi_Wj2"]                = recWJet2.phi();
-  mvaInputs_["mass_Wj2"]               = recWJet2.mass();  
-  double dR_bWj1 = deltaR(recBJet.p4(), recWJet1.p4());
-  mvaInputs_["dR_bWj1"]                = dR_bWj1;
-  double dR_bWj2 = deltaR(recBJet.p4(), recWJet2.p4());
-  mvaInputs_["dR_bWj2"]                = dR_bWj2;
+  //mvaInputs_["eta_Wj2"]                = recWJet2.eta();
+  //mvaInputs_["phi_Wj2"]                = recWJet2.phi();
+  //mvaInputs_["mass_Wj2"]               = recWJet2.mass();  
+  //double dR_bWj1 = deltaR(recBJet.p4(), recWJet1.p4());
+  //mvaInputs_["dR_bWj1"]                = dR_bWj1;
+  //double dR_bWj2 = deltaR(recBJet.p4(), recWJet2.p4());
+  //mvaInputs_["dR_bWj2"]                = dR_bWj2;
   double dR_Wj1Wj2 = deltaR(recWJet1.p4(), recWJet2.p4());
   mvaInputs_["dR_Wj1Wj2"]              = dR_Wj1Wj2;
   mvaInputs_["dR_bW"]                  = deltaR(recBJet.p4(), p4_Wj1Wj2);
   kinFit_->fit(recBJet.p4(), recWJet1.p4(), recWJet2.p4());
-  mvaInputs_["statusKinFit"]           = kinFit_->fit_status();
+  //mvaInputs_["statusKinFit"]           = kinFit_->fit_status();
   mvaInputs_["nllKinFit"]              = kinFit_->nll();
-  mvaInputs_["alphaKinFit"]            = kinFit_->alpha();
-  mvaInputs_["kinFit_pT_b"]            = kinFit_->fittedBJet().pt();
-  mvaInputs_["kinFit_eta_b"]           = kinFit_->fittedBJet().eta();
-  mvaInputs_["kinFit_phi_b"]           = kinFit_->fittedBJet().phi();
-  mvaInputs_["kinFit_mass_b"]          = kinFit_->fittedBJet().mass();
-  mvaInputs_["kinFit_pT_Wj1"]          = kinFit_->fittedWJet1().pt();
-  mvaInputs_["kinFit_eta_Wj1"]         = kinFit_->fittedWJet1().eta();
-  mvaInputs_["kinFit_phi_Wj1"]         = kinFit_->fittedWJet1().phi();
-  mvaInputs_["kinFit_mass_Wj1"]        = kinFit_->fittedWJet1().mass();  
-  mvaInputs_["kinFit_pT_Wj2"]          = kinFit_->fittedWJet2().pt();
-  mvaInputs_["kinFit_eta_Wj2"]         = kinFit_->fittedWJet2().eta();
-  mvaInputs_["kinFit_phi_Wj2"]         = kinFit_->fittedWJet2().phi();
-  mvaInputs_["kinFit_mass_Wj2"]        = kinFit_->fittedWJet2().mass();  
-  kinFit_->integrate(recBJet.p4(), recWJet1.p4(), recWJet2.p4());
-  mvaInputs_["logPKinFit"]             = ( kinFit_->p()    > 0. ) ? log(kinFit_->p())    : -1.e+3;
-  mvaInputs_["logPErrKinFit"]          = ( kinFit_->pErr() > 0. ) ? log(kinFit_->pErr()) : -1.e+3;
-  mvaInputs_["qg_b"]                   = recBJet.QGDiscr();
-  mvaInputs_["qg_Wj1"]                 = recWJet1.QGDiscr();
+  //mvaInputs_["alphaKinFit"]            = kinFit_->alpha();
+  //mvaInputs_["kinFit_pT_b"]            = kinFit_->fittedBJet().pt();
+  //mvaInputs_["kinFit_eta_b"]           = kinFit_->fittedBJet().eta();
+  //mvaInputs_["kinFit_phi_b"]           = kinFit_->fittedBJet().phi();
+  //mvaInputs_["kinFit_mass_b"]          = kinFit_->fittedBJet().mass();
+  //mvaInputs_["kinFit_pT_Wj1"]          = kinFit_->fittedWJet1().pt();
+  //mvaInputs_["kinFit_eta_Wj1"]         = kinFit_->fittedWJet1().eta();
+  //mvaInputs_["kinFit_phi_Wj1"]         = kinFit_->fittedWJet1().phi();
+  //mvaInputs_["kinFit_mass_Wj1"]        = kinFit_->fittedWJet1().mass();  
+  //mvaInputs_["kinFit_pT_Wj2"]          = kinFit_->fittedWJet2().pt();
+  //mvaInputs_["kinFit_eta_Wj2"]         = kinFit_->fittedWJet2().eta();
+  //mvaInputs_["kinFit_phi_Wj2"]         = kinFit_->fittedWJet2().phi();
+  //mvaInputs_["kinFit_mass_Wj2"]        = kinFit_->fittedWJet2().mass();  
+  //kinFit_->integrate(recBJet.p4(), recWJet1.p4(), recWJet2.p4());
+  //mvaInputs_["logPKinFit"]             = ( kinFit_->p()    > 0. ) ? log(kinFit_->p())    : -1.e+3;
+  //mvaInputs_["logPErrKinFit"]          = ( kinFit_->pErr() > 0. ) ? log(kinFit_->pErr()) : -1.e+3;
+  //mvaInputs_["qg_b"]                   = recBJet.QGDiscr();
+  //mvaInputs_["qg_Wj1"]                 = recWJet1.QGDiscr();
   mvaInputs_["qg_Wj2"]                 = recWJet2.QGDiscr();
   mvaInputs_["pT_bWj1Wj2"]             = p4_bWj1Wj2.pt();
-  mvaInputs_["pT_Wj1Wj2"]              = p4_Wj1Wj2.pt();
-  double expRjet = ( p4_bWj1Wj2.pt() > 0. ) ? 327./p4_bWj1Wj2.pt() : -1.;
-  mvaInputs_["max_dR_div_expRjet"]     = max(dR_bWj1, dR_bWj2, dR_Wj1Wj2)/expRjet;
+  //mvaInputs_["pT_Wj1Wj2"]              = p4_Wj1Wj2.pt();
+  //double expRjet = ( p4_bWj1Wj2.pt() > 0. ) ? 327./p4_bWj1Wj2.pt() : -1.;
+  //mvaInputs_["max_dR_div_expRjet"]     = max(dR_bWj1, dR_bWj2, dR_Wj1Wj2)/expRjet;
   if ( mva_ ) {
     check_mvaInputs(mvaInputs_);
     mvaOutput_ = (*mva_)(mvaInputs_);

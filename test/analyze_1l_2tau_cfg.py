@@ -21,7 +21,7 @@ process.analyze_1l_2tau = cms.PSet(
 
     histogramDir = cms.string('1l_2tau_OS_Tight'),
 
-    era = cms.string('2015'),
+    era = cms.string('2016'),
 
     triggers_1e = cms.vstring("HLT_BIT_HLT_Ele23_WPLoose_Gsf_v"),
     use_triggers_1e = cms.bool(True),
