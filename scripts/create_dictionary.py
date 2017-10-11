@@ -748,9 +748,6 @@ if __name__ == '__main__':
       commands_cp['-s'] = ''
       del commands_cp['-J']
 
-      if os.path.exists(commands_cp['-g']): #TODO remove when the debugging has been completed
-        continue
-
       cmd = ' '.join(['python', sys.argv[0]] + [k + ' ' + v for k, v in commands_cp.items()])
       sh = jinja2.Template(sh_str).render(cmd = cmd)
       sh_file = os.path.join(args.generate_jobs, 'job_%i.sh' % path_idx)
