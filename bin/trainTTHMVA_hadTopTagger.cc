@@ -22,6 +22,7 @@
 #include "TMVA/MethodBase.h"
 #include "TMVA/Tools.h"
 #include "TMVA/Reader.h"
+#include "TMVA/DataLoader.h"
 
 #include <TFile.h>
 #include <TChain.h>
@@ -140,18 +141,17 @@ int main(int argc, char* argv[])
   std::string mvaTrainingOptions = cfgTrainTTHMVA.getParameter<std::string>("mvaTrainingOptions");
 
   TMVA::Tools::Instance();
+  TMVA::DataLoader * dataLoader = new TMVA::DataLoader();
   TMVA::Factory* factory = new TMVA::Factory(mvaName.data(), outputFile, "!V:!Silent");
-  
-  //factory->AddSignalTree(tree1);
+
   TCut signalCut = TCut(signalPreselection.c_str());
-  factory->AddTree(tree1, "Signal", 1.0, signalCut);
-  if(treeDirPath2 != "")factory->AddTree(tree2, "Signal", 1.0, signalCut);
-  if(treeDirPath3 != "")factory->AddTree(tree3, "Signal", 1.0, signalCut);
-  //factory->AddBackgroundTree(tree2);
+  dataLoader->AddTree(tree1, "Signal", 1.0, signalCut);
+  if(treeDirPath2 != "")dataLoader->AddTree(tree2, "Signal", 1.0, signalCut);
+  if(treeDirPath3 != "")dataLoader->AddTree(tree3, "Signal", 1.0, signalCut);
   TCut bkgCut = TCut(bkgPreselection.c_str());
-  factory->AddTree(tree1, "Background", 1.0, bkgCut);
-  if(treeDirPath2 != "")factory->AddTree(tree2, "Background", 1.0, bkgCut);
-  if(treeDirPath3 != "")factory->AddTree(tree3, "Background", 1.0, bkgCut);
+  dataLoader->AddTree(tree1, "Background", 1.0, bkgCut);
+  if(treeDirPath2 != "")dataLoader->AddTree(tree2, "Background", 1.0, bkgCut);
+  if(treeDirPath3 != "")dataLoader->AddTree(tree3, "Background", 1.0, bkgCut);
 
   for ( vstring::const_iterator inputVariable = inputVariables.begin();
 	inputVariable != inputVariables.end(); ++inputVariable ) {
@@ -159,7 +159,7 @@ int main(int argc, char* argv[])
     if ( idx == (inputVariable->length() - 2) ) {
       std::string inputVariableName = std::string(*inputVariable, 0, idx);      
       char inputVariableType = (*inputVariable)[idx + 1];
-      factory->AddVariable(inputVariableName.data(), inputVariableType);
+      dataLoader->AddVariable(inputVariableName.data(), inputVariableType);
     } else {
       throw cms::Exception("trainTTHMVA_hadTopTagger") 
 	<< "Failed to determine name & type for inputVariable = " << (*inputVariable) << " !!\n";
@@ -177,18 +177,18 @@ int main(int argc, char* argv[])
       if ( spectatorVariableName == inputVariableName ) isInputVariable = true;
     }
     if ( !isInputVariable ) {
-      factory->AddSpectator(spectatorVariableName.data());
+      dataLoader->AddSpectator(spectatorVariableName.data());
     }
   }
   if ( branchNameEvtWeight != "" ){
-    factory->SetSignalWeightExpression(branchNameEvtWeight.data());
-    factory->SetBackgroundWeightExpression(branchNameEvtWeight.data());
+    dataLoader->SetSignalWeightExpression(branchNameEvtWeight.data());
+    dataLoader->SetBackgroundWeightExpression(branchNameEvtWeight.data());
   }
 
   TCut cut = TCut(preselection.c_str());
   std::cout<<"preselection : "<<cut<<std::endl;
-  factory->PrepareTrainingAndTestTree(cut, "nTrain_Signal=0:nTrain_Background=0:nTest_Signal=0:nTest_Background=0:SplitMode=Random:NormMode=NumEvents:!V");
-  factory->BookMethod(mvaMethodType.data(), mvaMethodName.data(), mvaTrainingOptions.data());
+  dataLoader->PrepareTrainingAndTestTree(cut, "nTrain_Signal=0:nTrain_Background=0:nTest_Signal=0:nTest_Background=0:SplitMode=Random:NormMode=NumEvents:!V");
+  factory->BookMethod(dataLoader, mvaMethodType.data(), mvaMethodName.data(), mvaTrainingOptions.data());
 
   std::cout << "Info: calling TMVA::Factory::TrainAllMethods" << std::endl;
   factory->TrainAllMethods();
