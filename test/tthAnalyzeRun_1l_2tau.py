@@ -5,8 +5,9 @@ from tthAnalysis.HiggsToTauTau.analyzeConfig_1l_2tau import analyzeConfig_1l_2ta
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 
 use_prod_ntuples  = True
-##mode              = "VHbb"
-mode              = "forBDTtraining"
+#use_prod_ntuples  = False
+mode              = "VHbb"
+#mode              = "forBDTtraining"
 ERA               = "2016"
 version           = "2017Oct04"
 changeBranchNames = use_prod_ntuples
