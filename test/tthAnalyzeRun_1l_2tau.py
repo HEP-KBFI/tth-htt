@@ -5,15 +5,18 @@ from tthAnalysis.HiggsToTauTau.analyzeConfig_1l_2tau import analyzeConfig_1l_2ta
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 
 use_prod_ntuples  = True
-mode              = "VHbb"
+##mode              = "VHbb"
+mode              = "forBDTtraining"
 ERA               = "2016"
 version           = "2017Oct04"
 changeBranchNames = use_prod_ntuples
 
-samples              = None
-LUMI                 = None
-hadTau_selection     = None
-applyFakeRateWeights = None
+samples                            = None
+LUMI                               = None
+hadTau_selection                   = None
+hadTau_selection_relaxed           = None
+applyFakeRateWeights               = None
+hadTauFakeRateWeight_inputFileName = None
 
 if use_prod_ntuples and ERA == "2015":
   raise ValueError("No production Ntuples for 2015 data & MC")
@@ -70,15 +73,17 @@ if mode == "VHbb":
       "/Tau/Run2016G-PromptReco-v1/MINIAOD"]:
       sample_info["use_it"] = False
 
-  hadTau_selection     = "dR03mvaVTight"
-  applyFakeRateWeights = "3L"
+  hadTau_selection         = "dR03mvaVTight"
+  applyFakeRateWeights     = "3L"
 elif mode == "forBDTtraining":
   if use_prod_ntuples:
     from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_prodNtuples_2016_FastSim import samples_2016
   else:
     from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_FastSim import samples_2016
-  hadTau_selection     = "dR03mvaLoose"
-  applyFakeRateWeights = "3L"
+  hadTau_selection         = "dR03mvaVTight"
+  hadTau_selection_relaxed = "dR03mvaLoose"
+  applyFakeRateWeights     = "3L"
+  hadTauFakeRateWeight_inputFileName = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016.root"
 else:
   raise ValueError("Invalid Configuration parameter 'mode' = %s !!" % mode)
 
@@ -171,7 +176,7 @@ if __name__ == '__main__':
   )
 
   if mode.find("forBDTtraining") != -1:
-      analysis.set_BDT_training()
+      analysis.set_BDT_training(hadTau_selection_relaxed, hadTauFakeRateWeight_inputFileName)
 
   analysis.create()
 

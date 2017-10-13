@@ -360,7 +360,7 @@ TGraph* compGraph_ROCcurve_fromHistogram2d(TH2* histogram_signal, TH2* histogram
     if ( cut.probS_ == -1. || cut.probB_ == -1. ) continue;
     double x = cut.probS_;
     double y = cut.probB_;
-    std::cout << "cut: x = " << cut.xCut_ << ", y = " << cut.yCut_ << " --> prob: S = " << cut.probS_ << ", B = " << cut.probB_ << std::endl;
+    //std::cout << "cut: x = " << cut.xCut_ << ", y = " << cut.yCut_ << " --> prob: S = " << cut.probS_ << ", B = " << cut.probB_ << std::endl;
     xPoints.push_back(x);
     yPoints.push_back(y);
   }  
@@ -804,12 +804,14 @@ void makeHadTopTaggerPlots()
       std::string histogramName_full = Form("%s/%s", sample->data(), histogramName->data());
       TH2* histogram = dynamic_cast<TH2*>(loadHistogram(inputFile, histogramName_full));
 
+      std::cout << "sample = '" << (*sample) << "', histogram = '" << (*histogramName) << "'" << std::endl;
+
       std::map<int, TH1*> histograms_genMatching;
       for ( int genMatching = 0; genMatching <= 7; ++genMatching ) {
 	std::string histogramName_genMatching = Form("%s_genMatchingEq%i", histogram->GetName(), genMatching);	
 	int idxBin = histogram->GetXaxis()->FindBin(genMatching);
 	TH1* histogram_genMatching = histogram->ProjectionY(histogramName_genMatching.data(), idxBin, idxBin);
-	//std::cout << "genMatching = " << genMatching << ": integral = " << histogram_genMatching->Integral() << std::endl;
+	std::cout << "genMatching = " << genMatching << ": fraction = " << histogram_genMatching->Integral()/histogram->Integral() << std::endl;
 	normalizeHistogram1d(histogram_genMatching);
 	histograms_genMatching[genMatching] = histogram_genMatching;
       }
@@ -840,8 +842,6 @@ void makeHadTopTaggerPlots()
 		     outputFileName);
     }
   }
-
-  
   
   delete inputFile;
 }
