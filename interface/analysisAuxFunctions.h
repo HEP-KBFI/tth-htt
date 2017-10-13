@@ -171,4 +171,15 @@ int sgn(T val)
   else                return  0;
 }
 
+/**
+ * @brief Computes the number of k combinations out of n
+ * @param n Number of instances to choose from
+ * @param k Length of a single combination
+ *
+ * Credit to the author of: https://stackoverflow.com/a/9331125
+ */
+int
+nCombinationsK(int n,
+               int k);
+
 #endif
