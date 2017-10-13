@@ -62,6 +62,9 @@ public:
         const std::array<const std::vector<const RecoJet*>, 2> & selBJets,
         const std::vector<const RecoHadTau*> & cleanedHadTaus);
 
+  static std::string
+  get_maxPermutations_addMEM_pattern();
+
 private:
   int minLepSelection_;
   int maxLepSelection_;
@@ -74,6 +77,8 @@ private:
   std::map<std::string, RecoHadTauCollectionSelectorLoose *>    hadTauSelectorsLoose_;
   std::map<std::string, RecoHadTauCollectionSelectorFakeable *> hadTauSelectorsFakeable_;
   std::map<std::string, RecoHadTauCollectionSelectorTight *>    hadTauSelectorsTight_;
+
+  const static std::string maxPermutations_addMEM_pattern_;
 
   std::string
   find_selection_str(int selection_idx);
