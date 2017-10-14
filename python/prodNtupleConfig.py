@@ -24,8 +24,8 @@ class prodNtupleConfig:
 
     """
     def __init__(self, configDir, outputDir, executable_prodNtuple, cfgFile_prodNtuple, samples,
-                 max_files_per_job, era, preselection_cuts, debug, running_method, version, num_parallel_jobs,
-                 pool_id = ''):
+                 max_files_per_job, era, preselection_cuts, leptonSelection, hadTauSelection, debug,
+                 running_method, version, num_parallel_jobs, pool_id = ''):
 
         self.configDir = configDir
         self.outputDir = outputDir
@@ -35,6 +35,8 @@ class prodNtupleConfig:
         self.max_files_per_job = max_files_per_job
         self.era = era
         self.preselection_cuts = preselection_cuts
+        self.leptonSelection = leptonSelection
+        self.hadTauSelection = hadTauSelection
         self.debug = debug
         assert(running_method.lower() in [
           "sbatch", "makefile"]), "Invalid running method: %s" % running_method
@@ -112,6 +114,8 @@ class prodNtupleConfig:
         lines.append("process.produceNtuple.minNumBJets_loose = cms.int32(%i)" % self.preselection_cuts['minNumBJets_loose'])
         lines.append("process.produceNtuple.minNumBJets_medium = cms.int32(%i)" % self.preselection_cuts['minNumBJets_medium'])
         lines.append("process.produceNtuple.isMC = cms.bool(%s)" % jobOptions['is_mc'])
+        lines.append("process.produceNtuple.leptonSelection = cms.string('%s')" % self.leptonSelection)
+        lines.append("process.produceNtuple.hadTauSelection = cms.string('%s')" % self.hadTauSelection)
         lines.append("process.produceNtuple.random_seed = cms.uint32(%i)" % jobOptions['random_seed'])
         create_cfg(self.cfgFile_prodNtuple_original, jobOptions['cfgFile_modified'], lines)
 
