@@ -2,8 +2,12 @@
 # File: sbatch-node.template.sh
 # Version: 0.2
 
-# This value is provided by sbatchManager.py that creates sbatch scripts based this template
+# unset JAVA_HOME, because hadoop commands might not work
+# this is especially true if one has sourced necessary files for the GRID proxy
+echo 'Unsetting JAVA_HOME=$JAVA_HOME'
+unset JAVA_HOME
 
+# This value is provided by sbatchManager.py that creates sbatch scripts based this template
 echo 'Running version (sbatch-node.template.sh)'
 
 

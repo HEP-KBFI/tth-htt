@@ -2,8 +2,12 @@
 # File: sbatch-node.template.hadd.sh
 # Version: 0.2
 
-# This value is provided by sbatchManager.py that creates sbatch scripts based this template
+# unset JAVA_HOME, because hadoop commands might not work
+# this is especially true if one has sourced necessary files for the GRID proxy
+echo 'Unsetting JAVA_HOME=$JAVA_HOME'
+unset JAVA_HOME
 
+# This value is provided by sbatchManager.py that creates sbatch scripts based this template
 echo 'Running version (sbatch-node.template.hadd.sh)'
 
 
@@ -91,7 +95,7 @@ run_wrapped_executable() {
 
     echo "Time is: `date`"
 
-    CMSSW_SEARCH_PATH="$SCRATCH_DIR:{{ cmssw_base_dir }}/src" 
+    CMSSW_SEARCH_PATH="$SCRATCH_DIR:{{ cmssw_base_dir }}/src"
 
     echo "Execute command: {{ exec_name }} {{ command_line_parameter }} &> $TEMPORARY_EXECUTABLE_LOG_FILE"
     {{ exec_name }} {{ command_line_parameter }} &> $TEMPORARY_EXECUTABLE_LOG_FILE

@@ -204,7 +204,7 @@ if __name__ == '__main__':
       "mvaDiscr_2lss",
       "mvaDiscr_2lss_1tau",
       "mvaDiscr_2lss_1tau_wMEM",
-      "mvaDiscr_2lss_1tau_wMEMsepLR",
+#      "mvaDiscr_2lss_1tau_wMEMsepLR",
       "mTauTauVis",
       "memOutput_LR_type0",
       "memOutput_LR_type1",

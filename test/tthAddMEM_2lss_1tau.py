@@ -6,39 +6,23 @@ from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 
 isForBDTtraining = False
 
-from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_2lss1tau_prodNtuples_v3 import samples_2016 as samples
-
 #--------------------------------------------------------------------------------
 # CV: run Ntuple production jobs also for high statistics background samples
 #     not used in the analysis, but used for BDT training by Arun
 if isForBDTtraining:
-  for sample_name, sample_info in samples.items():
-    if sample_info['process_name_specific'] in [
-      'TTTo2L2Nu_fastsim_p1',
-      'TTTo2L2Nu_fastsim_p2',
-      'TTTo2L2Nu_fastsim_p3',
-      'TTToSemilepton_fastsim_p1',
-      'TTToSemilepton_fastsim_p2',
-      'TTToSemilepton_fastsim_p3',
-      'TTWJetsToLNu_fastsim',
-      'TTZToLLNuNu_fastsim',
-      'WZTo3LNu_fastsim',
-      'ttHToNonbb_fastsim_p1',
-      'ttHToNonbb_fastsim_p2',
-      'ttHToNonbb_fastsim_p3',
-    ]:
-      sample_info["use_it"] = True
-    else:
-      sample_info["use_it"] = False
+  from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_prodNtuples_2016_FastSim import samples_2016 as samples
   leptonSelection = "Loose"
   hadTauSelection = "Tight|dR03mvaLoose"
 else:
+  from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_prodNtuples_2016 import samples_2016 as samples
   leptonSelection = "Fakeable"
   hadTauSelection = "Tight|dR03mvaMedium"
 
+#TODO: create a new set of Ntuples with loose lepton, tight tau and vvloose tau wp selection
+#      for the purpose of training
 #--------------------------------------------------------------------------------
 
-version = "2017Mar24"
+version = "2017Oct13"
 ERA     = "2016"
 
 if __name__ == '__main__':
@@ -62,7 +46,8 @@ if __name__ == '__main__':
     num_parallel_jobs        = 16,
     leptonSelection          = leptonSelection,
     hadTauSelection          = hadTauSelection,
-    isForBDTtraining         = False, # still use full integration points
+    isForBDTtraining         = False, # if False, use full integration points
+    isDebug                  = True,
   )
 
   goodToGo = addMEMProduction.create()

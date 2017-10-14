@@ -8,6 +8,9 @@
 
 #include <boost/algorithm/string/predicate.hpp> // boost::starts_with()
 
+const std::string
+MEMPermutationWriter::maxPermutations_addMEM_pattern_ = "maxPermutations_addMEM_%s_lep%s_tau%s_%s";
+
 MEMPermutationWriter::~MEMPermutationWriter()
 {
   for(auto & kv: hadTauSelectorsLoose_)
@@ -147,7 +150,7 @@ MEMPermutationWriter::setBranchNames(TTree * tree,
         for(const std::string & hadTauWorkingPoint: hadTauWorkingPoints_)
         {
           const std::string maxPermutations_addMEM_str = Form(
-            "maxPermutations_addMEM_%s_lep%s_tau%s_%s",
+            maxPermutations_addMEM_pattern_.c_str(),
             channel.c_str(), leptonSelection_str.c_str(), hadTauSelection_str.c_str(), hadTauWorkingPoint.c_str()
           );
           branches_[channel][leptonSelection_idx][hadTauSelection_idx][hadTauWorkingPoint] = 0;
@@ -234,5 +237,11 @@ MEMPermutationWriter::find_selection_str(int selection_idx)
   if(selection_idx == kFakeable) return "Fakeable";
   if(selection_idx == kTight)    return "Tight";
   throw cms::Exception("MEMPermutationWriter") << "Invalid index: " << selection_idx;
+}
+
+std::string
+MEMPermutationWriter::get_maxPermutations_addMEM_pattern()
+{
+  return maxPermutations_addMEM_pattern_;
 }
 
