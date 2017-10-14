@@ -21,6 +21,18 @@
 
 /// comapreDatacards v2
 ///@todo enable > 2 test datacards (need to switch from test & test2 to a vector of tests)
+///
+
+void
+mkdir_p(const std::string & path)
+{
+  const Int_t mkdir_exit_code = gSystem -> Exec(Form("mkdir -p %s", path.c_str()));
+  if(mkdir_exit_code)
+  {
+    std::cerr << "Could not create directory " << path << '\n';
+    throw 1;
+  }
+}
 
 enum { kUndefined, kAbsolute, kRelative };
 
@@ -38,11 +50,20 @@ struct InputFileEntry
         inputFileName_
       )
     , legendEntry_(legendEntry)
+    , legendEntry_noSpecialChars_(TString(legendEntry_)
+                                  .ReplaceAll(" ", "_")
+                                  .ReplaceAll("(", "_")
+                                  .ReplaceAll(")", "_")
+                                  .ReplaceAll("|", "_")
+                                  .ReplaceAll("<", "_")
+                                  .ReplaceAll(">", "_")
+                                  .ReplaceAll("&", "and"))
   {}
   const std::string inputFilePath_;
   const std::string inputFileName_;
   const std::string inputFileFullPath_;
   const std::string legendEntry_;
+  const std::string legendEntry_noSpecialChars_;
 
   TFile * file_;
 
@@ -123,6 +144,7 @@ showHistograms(const HistogramEntry & ref,
                const std::string & xAxisTitle,
                const std::string & yAxisTitle,
                const std::string & outputFileName,
+               const std::string & header = "",
                double canvasSizeX = 800,
                double canvasSizeY = 900,
                double xAxisOffset = 1.10,
@@ -175,9 +197,10 @@ showHistograms(const HistogramEntry & ref,
   const int markerStyles[6] = { 24, 25, 20, 21, 22, 23 };
   const int markerSizes[6]  = { 1, 1, 1, 1, 1, 1 };
 
-  TLegend* legend = new TLegend(legendX0, legendY0, legendX0 + 0.61, legendY0 + 0.21, "", "brNDC"); 
+  TLegend* legend = new TLegend(legendX0, legendY0, legendX0 + 0.51, legendY0 + 0.18, "", "brNDC");
   legend->SetBorderSize(0);
   legend->SetFillColor(0);
+  legend->SetHeader(header.c_str());
 
   ref.histogram_->SetTitle("");
   ref.histogram_->SetStats(false);
@@ -394,7 +417,8 @@ TH1* loadHistogram(TFile* inputFile, const std::string& histogramName)
 
 void makePlot(const ComparisonEntries & entries,
               const std::string & outputFileName,
-              const std::string & histogramName)
+              const std::string & histogramName,
+              const std::string & header)
 {
   std::cout << "<makePlot_shift_minus_central>:\n";
 
@@ -439,7 +463,7 @@ void makePlot(const ComparisonEntries & entries,
     { histogram_test2, entries.test2_.legendEntry_, integral_test2 },
   };
 
-  showHistograms(ref, tests, entries.xAxisTitle_, entries.yAxisTitle_, outputFileName);
+  showHistograms(ref, tests, entries.xAxisTitle_, entries.yAxisTitle_, outputFileName, header);
 
   TH1* histogramErr_ref   = compHistogramErr(histogram_ref);
   TH1* histogramErr_test  = compHistogramErr(histogram_test);
@@ -452,7 +476,7 @@ void makePlot(const ComparisonEntries & entries,
     { histogramErr_test2, entries.test2_.legendEntry_, -1. }
   };
 
-  showHistograms(ref_err, tests_err, entries.xAxisTitle_, entries.yAxisTitleErr_, outputFileNameErr);
+  showHistograms(ref_err, tests_err, entries.xAxisTitle_, entries.yAxisTitleErr_, outputFileNameErr, header);
 
   delete histogramErr_ref;
   delete histogramErr_test;
@@ -512,7 +536,8 @@ TH1* subtractHistograms(const std::string& newHistogramName, const TH1* histogra
 void makePlot_shift_minus_central(const ComparisonEntries & entries,
                                   const std::string & histogramName_central,
                                   const std::string & histogramName_shift,
-                                  const std::string & outputFileName)
+                                  const std::string & outputFileName,
+                                  const std::string & header)
 {
   std::cout << "<makePlot_shift_minus_central>:\n";
 
@@ -587,18 +612,19 @@ void makePlot_shift_minus_central(const ComparisonEntries & entries,
     .append(idx != std::string::npos ? std::string(outputFileName, idx) : "")
   ;
 
-  const HistogramEntry ref(histogram_ref_shift_minus_centralAbs, entries.ref_.legendEntry_, integral_ref);
+  const HistogramEntry ref_abs(histogram_ref_shift_minus_centralAbs, entries.ref_.legendEntry_, integral_ref);
   const std::vector<HistogramEntry> tests_abs = {
     { histogram_test_shift_minus_centralAbs,  entries.test_.legendEntry_,  integral_test },
     { histogram_test2_shift_minus_centralAbs, entries.test2_.legendEntry_, integral_test2 }
   };
+  const HistogramEntry ref_rel(histogram_ref_shift_minus_centralRel, entries.ref_.legendEntry_, integral_ref);
   const std::vector<HistogramEntry> tests_rel = {
     { histogram_test_shift_minus_centralRel,  entries.test_.legendEntry_,  integral_test },
     { histogram_test2_shift_minus_centralRel, entries.test2_.legendEntry_, integral_test2 }
   };
 
-  showHistograms(ref, tests_abs, entries.xAxisTitle_, entries.yAxisTitle_,    outputFileName_abs);
-  showHistograms(ref, tests_rel, entries.xAxisTitle_, entries.yAxisTitleRel_, outputFileName_rel);
+  showHistograms(ref_abs, tests_abs, entries.xAxisTitle_, entries.yAxisTitle_,    outputFileName_abs, header);
+  showHistograms(ref_rel, tests_rel, entries.xAxisTitle_, entries.yAxisTitleRel_, outputFileName_rel, header);
 
   delete inputFile_ref;
   if(inputFile_test != inputFile_ref)
@@ -611,82 +637,170 @@ void makePlot_shift_minus_central(const ComparisonEntries & entries,
   }
 }
 
+void makePlots_ref_systematics(const ComparisonEntries & entries,
+                               const std::string & histogramName_central,
+                               const std::string & histogramName_shifted_bare,
+                               const std::string & outputFileName,
+                               const std::string & header)
+{
+  TFile* inputFile_ref = new TFile(entries.ref_.inputFileFullPath_.data());
+  TH1* histogram_ref_up      = loadHistogram(inputFile_ref, histogramName_shifted_bare + "Up");
+  TH1* histogram_ref_central = loadHistogram(inputFile_ref, histogramName_central);
+  TH1* histogram_ref_down    = loadHistogram(inputFile_ref, histogramName_shifted_bare + "Down");
+
+  const double integral_ref_up      = compIntegral(histogram_ref_up);
+  const double integral_ref_central = compIntegral(histogram_ref_central);
+  const double integral_ref_down    = compIntegral(histogram_ref_down);
+
+  divideByBinWidth(histogram_ref_up);
+  divideByBinWidth(histogram_ref_central);
+  divideByBinWidth(histogram_ref_down);
+
+  const HistogramEntry ref_central(histogram_ref_central, entries.ref_.legendEntry_ + " (central)", integral_ref_central);
+  const std::vector<HistogramEntry> ref_syss = {
+    { histogram_ref_up,   entries.ref_.legendEntry_ + " (up)",   integral_ref_up   },
+    { histogram_ref_down, entries.ref_.legendEntry_ + " (down)", integral_ref_down }
+  };
+
+  showHistograms(ref_central, ref_syss, entries.xAxisTitle_, entries.yAxisTitle_, outputFileName, header);
+
+  const std::string histogramName_up_minus_central   = Form("%s_up_minus_central",   histogramName_shifted_bare.c_str());
+  const std::string histogramName_central_minus_down = Form("%s_central_minus_down", histogramName_shifted_bare.c_str());
+  TH1 * histogram_up_minus_central_abs = subtractHistograms(histogramName_up_minus_central + "Abs", histogram_ref_up, histogram_ref_central, kAbsolute);
+  TH1 * histogram_up_minus_central_rel = subtractHistograms(histogramName_up_minus_central + "Rel", histogram_ref_up, histogram_ref_central, kRelative);
+  TH1 * histogram_central_minus_down_abs = subtractHistograms(histogramName_central_minus_down + "Abs", histogram_ref_central, histogram_ref_down, kAbsolute);
+  TH1 * histogram_central_minus_down_rel = subtractHistograms(histogramName_central_minus_down + "Rel", histogram_ref_central, histogram_ref_down, kRelative);
+  divideByBinWidth(histogram_up_minus_central_abs);
+  divideByBinWidth(histogram_central_minus_down_abs);
+  const double integral_up_minus_central   = compIntegral(histogram_up_minus_central_abs);
+  const double integral_central_minus_down = compIntegral(histogram_central_minus_down_abs);
+  std::cout << " integral_up_minus_central = " << integral_up_minus_central << '\n'
+            << " integral_central_minus_down = " << integral_central_minus_down << '\n';
+
+  const std::size_t idx = outputFileName.find_last_of('.');
+  const std::string outputFileName_abs = std::string(outputFileName, 0, idx)
+    .append("_absolute")
+    .append(idx != std::string::npos ? std::string(outputFileName, idx) : "")
+  ;
+  const std::string outputFileName_rel = std::string(outputFileName, 0, idx)
+    .append("_relative")
+    .append(idx != std::string::npos ? std::string(outputFileName, idx) : "")
+  ;
+
+  const HistogramEntry ref_central_diff_abs(histogram_up_minus_central_abs, entries.ref_.legendEntry_ + " (up - central)", integral_up_minus_central);
+  const std::vector<HistogramEntry> test_central_diff_abs = {
+    { histogram_central_minus_down_abs,  entries.test_.legendEntry_ + " (central - down)",  integral_central_minus_down }
+  };
+  showHistograms(ref_central_diff_abs, test_central_diff_abs, entries.xAxisTitle_, entries.yAxisTitle_, outputFileName_abs, header);
+
+  const HistogramEntry ref_central_diff_rel(histogram_up_minus_central_rel, entries.ref_.legendEntry_ + " (up - central)", -1.);
+  const std::vector<HistogramEntry> test_central_diff_rel = {
+    { histogram_central_minus_down_rel,  entries.test_.legendEntry_ + " (central - down)",  -1. }
+  };
+  showHistograms(ref_central_diff_rel, test_central_diff_rel, entries.xAxisTitle_, entries.yAxisTitle_, outputFileName_rel, header);
+
+  delete inputFile_ref;
+}
+
 void compareDatacards_run(const ComparisonEntries & entry)
 {
-  const Int_t mkdir_exit_code = gSystem -> Exec(Form("mkdir -p %s", entry.outputFilePath_.c_str()));
-  if(mkdir_exit_code)
-  {
-    std::cerr << "Could not create directory " << entry.outputFilePath_ << '\n';
-    return;
-  }
-
   const std::vector<std::string> processes = {
     "data_obs",
-    "ttH_hww"
+    "ttH",
+    "ttH_fake",
+    "ttH_hww",
     "ttH_htt",
     "ttH_hzz",
+    "tH",
+    "TT",
     "TTW",
+    "TTWW",
     "TTZ",
     "EWK",
     "Rares",
+    "signal",
+    "fakes_mc",
     "fakes_data",
-    "flips_data",
-    "TT"
+    "flips_data"
   };
 
-  const std::vector<std::string> sysShifts = {
-    /*
-    "CMS_ttHl_tauESUp",
-    "CMS_ttHl_tauESDown",
-    "CMS_ttHl_JESUp",
-    "CMS_ttHl_JESDown",
-    "CMS_ttHl_FRe_shape_2lss_anticorr1Up",
-    "CMS_ttHl_FRe_shape_2lss_anticorr1Down",
-    "CMS_ttHl_FRe_shape_2lss_corr1Up",
-    "CMS_ttHl_FRe_shape_2lss_corr1Down",
-    "CMS_ttHl_FRm_shape_2lss_anticorr1Up",
-    "CMS_ttHl_FRm_shape_2lss_anticorr1Down",
-    "CMS_ttHl_FRm_shape_2lss_corr1Up",
-    "CMS_ttHl_FRm_shape_2lss_corr1Down",
-    "CMS_ttHl_btag_HFUp",
-    "CMS_ttHl_btag_HFDown",
-    "CMS_ttHl_btag_HFStats1Up",
-    "CMS_ttHl_btag_HFStats1Down",
-    "CMS_ttHl_btag_HFStats2Up",
-    "CMS_ttHl_btag_HFStats2Down",
-    "CMS_ttHl_btag_LFUp",
-    "CMS_ttHl_btag_LFDown",
-    "CMS_ttHl_btag_LFStats1Up",
-    "CMS_ttHl_btag_LFStats1Down",
-    "CMS_ttHl_btag_LFStats2Up",
-    "CMS_ttHl_btag_LFStats2Down",
-    "CMS_ttHl_btag_cErr1Up",
-    "CMS_ttHl_btag_cErr1Down",
-    "CMS_ttHl_btag_cErr2Up",
-    "CMS_ttHl_btag_cErr2Down",
-    "CMS_ttHl_thu_shape_ttH_x1Up",
-    "CMS_ttHl_thu_shape_ttH_x1Down",
-    "CMS_ttHl_thu_shape_ttH_y1Up",
-    "CMS_ttHl_thu_shape_ttH_y1Down",
-    "CMS_ttHl_thu_shape_ttW_x1Up",
-    "CMS_ttHl_thu_shape_ttW_x1Down",
-    "CMS_ttHl_thu_shape_ttW_y1Up",
-    "CMS_ttHl_thu_shape_ttW_y1Down",
-    "CMS_ttHl_thu_shape_ttZ_x1Up",
-    "CMS_ttHl_thu_shape_ttZ_x1Down",
-    "CMS_ttHl_thu_shape_ttZ_y1Up",
-    "CMS_ttHl_thu_shape_ttZ_y1Down",
-    */
-    "" // central value
+  const std::vector<std::string> sysShifts_common = {
+     "CMS_ttHl_btag_HFUp",
+     "CMS_ttHl_btag_HFDown",
+     "CMS_ttHl_btag_HFStats1Up",
+     "CMS_ttHl_btag_HFStats1Down",
+     "CMS_ttHl_btag_HFStats2Up",
+     "CMS_ttHl_btag_HFStats2Down",
+     "CMS_ttHl_btag_LFUp",
+     "CMS_ttHl_btag_LFDown",
+     "CMS_ttHl_btag_LFStats1Up",
+     "CMS_ttHl_btag_LFStats1Down",
+     "CMS_ttHl_btag_LFStats2Up",
+     "CMS_ttHl_btag_LFStats2Down",
+     "CMS_ttHl_btag_cErr1Up",
+     "CMS_ttHl_btag_cErr1Down",
+     "CMS_ttHl_btag_cErr2Up",
+     "CMS_ttHl_btag_cErr2Down",
+     "CMS_ttHl_JESUp",
+     "CMS_ttHl_JESDown",
+     "CMS_ttHl_tauESUp",
+     "CMS_ttHl_tauESDown",
+     "CMS_ttHl_FRjt_normUp",
+     "CMS_ttHl_FRjt_normDown",
+     "CMS_ttHl_FRjt_shapeUp",
+     "CMS_ttHl_FRjt_shapeDown",
+     "CMS_ttHl_FRet_shiftUp",
+     "CMS_ttHl_FRet_shiftDown",
+     "CMS_ttHl_FRmt_shiftUp",
+     "CMS_ttHl_FRmt_shiftDown",
+     "CMS_ttHl_thu_shape_ttH_x1Up",
+     "CMS_ttHl_thu_shape_ttH_x1Down",
+     "CMS_ttHl_thu_shape_ttH_y1Up",
+     "CMS_ttHl_thu_shape_ttH_y1Down",
+     "CMS_ttHl_thu_shape_ttW_x1Up",
+     "CMS_ttHl_thu_shape_ttW_x1Down",
+     "CMS_ttHl_thu_shape_ttW_y1Up",
+     "CMS_ttHl_thu_shape_ttW_y1Down",
+     "CMS_ttHl_thu_shape_ttZ_x1Up",
+     "CMS_ttHl_thu_shape_ttZ_x1Down",
+     "CMS_ttHl_thu_shape_ttZ_y1Up",
+     "CMS_ttHl_thu_shape_ttZ_y1Down",
+     ""
   };
+
+  const std::vector<std::string> sysShifts_CMS_ttHl_FR_shape = {
+    "CMS_ttHl_FRe_shape_ptUp",
+    "CMS_ttHl_FRe_shape_ptDown",
+    "CMS_ttHl_FRe_shape_etaUp",
+    "CMS_ttHl_FRe_shape_etaDown",
+    "CMS_ttHl_FRe_shape_eta_barrelUp",
+    "CMS_ttHl_FRe_shape_eta_barrelDown",
+    "CMS_ttHl_FRm_shape_ptUp",
+    "CMS_ttHl_FRm_shape_ptDown",
+    "CMS_ttHl_FRm_shape_etaUp",
+    "CMS_ttHl_FRm_shape_etaDown",
+  };
+
+  std::vector<std::string> sysShifts = sysShifts_common;
+  if(false)
+  {
+    sysShifts.insert(sysShifts.end(), sysShifts_CMS_ttHl_FR_shape.begin(), sysShifts_CMS_ttHl_FR_shape.end());
+  }
+
+  std::vector<std::string> sysShifts_ref;
+  std::string ref_vs_tests = entry.ref_.legendEntry_noSpecialChars_;
+  if(! entry.test_.legendEntry_.empty())
+    ref_vs_tests += "_vs_" + entry.test_.legendEntry_noSpecialChars_;
+  if(! entry.test2_.legendEntry_.empty())
+    ref_vs_tests += "_vs_" + entry.test2_.legendEntry_noSpecialChars_;
 
   for(const std::string & process: processes)
   {
+    const std::string outputFilePath_process = Form("%s/%s/%s", entry.outputFilePath_.data(), ref_vs_tests.c_str(), process.c_str());
+    const std::string histogramName_central = Form("x_%s",    process.data());
     for(const std::string & central_or_shift: sysShifts)
     {
       std::cout << "processing: process = " << process << ", central_or_shift = " << central_or_shift << '\n';
-
-      const std::string histogramName_central = Form("x_%s",    process.data());
       const std::string histogramName_shifted = Form("x_%s_%s", process.data(), central_or_shift.data());
       const bool is_central = central_or_shift == "" || central_or_shift == "central";
 
@@ -696,19 +810,37 @@ void compareDatacards_run(const ComparisonEntries & entry)
         Form("compareDatacards_%s_%s.png", process.data(), central_or_shift.data())
       ;
 
-      makePlot(entry, Form("%s/%s", entry.outputFilePath_.data(), outputFileName.data()), histogramName);
+      const std::string sysShift_bare(is_central ? "central" : TString(central_or_shift.data()).ReplaceAll("Down", "").ReplaceAll("Up", "").Data());
+      const std::string header = Form("%s (%s)", process.c_str(), sysShift_bare.c_str());
+      const std::string outputFilePath_process_sys = ! is_central ? Form(
+        "%s/%s", outputFilePath_process.c_str(), sysShift_bare.c_str()
+      ) : outputFilePath_process;
+      mkdir_p(outputFilePath_process_sys);
+      makePlot(entry, Form("%s/%s", outputFilePath_process_sys.data(), outputFileName.data()), histogramName, header);
       if(! is_central)
       {
+        const std::string outputFilePath_process_sys_minus_central = Form("%s/%s", outputFilePath_process_sys.c_str(), "minus_central");
+        mkdir_p(outputFilePath_process_sys_minus_central);
         const std::string outputFileName_minus_central = Form(
-          "%s/compareDatacards_%s_%s_minus_central.png", entry.outputFilePath_.data(), process.data(), central_or_shift.data()
+          "%s/compareDatacards_%s_%s_minus_central.png", outputFilePath_process_sys_minus_central.data(), process.data(), central_or_shift.data()
         );
         if(central_or_shift.find("Up") != std::string::npos)
         {
-          makePlot_shift_minus_central(entry, histogramName_central, histogramName_shifted, outputFileName_minus_central);
+          makePlot_shift_minus_central(entry, histogramName_central, histogramName_shifted, outputFileName_minus_central, header);
         }
         if(central_or_shift.find("Down") != std::string::npos)
         {
-          makePlot_shift_minus_central(entry, histogramName_shifted, histogramName_central, outputFileName_minus_central);
+          makePlot_shift_minus_central(entry, histogramName_shifted, histogramName_central, outputFileName_minus_central, header);
+        }
+
+        if(std::find(sysShifts_ref.begin(), sysShifts_ref.end(), sysShift_bare) == sysShifts_ref.end())
+        {
+          const std::string outputFilePath_sys = Form("%s/%s/%s", entry.outputFilePath_.data(), entry.ref_.legendEntry_noSpecialChars_.c_str(), sysShift_bare.c_str());
+          const std::string histogramName_shifted_bare(TString(histogramName_shifted).ReplaceAll("Up", "").ReplaceAll("Down", "").Data());
+          const std::string outputFileName = Form("%s/%s_central_vs_%s.png", outputFilePath_sys.c_str(), process.c_str(), sysShift_bare.c_str());
+          mkdir_p(outputFilePath_sys);
+          makePlots_ref_systematics(entry, histogramName_central, histogramName_shifted_bare, outputFileName, header);
+          sysShifts_ref.push_back(sysShift_bare);
         }
       } // ! is_central
     } // for central_or_shift
@@ -721,7 +853,7 @@ void compareDatacards()
 
     TH1::AddDirectory(false);
 
-    const std::vector<std::array<std::string, 4>> discriminatingVariables = {
+    const std::vector<std::array<std::string, 4>> discriminatingVariables_1l_2tau = {
       { "1l_2tau_EventCounter",               "Events",                        ""    },
       { "1l_2tau_SS_EventCounter",            "Events (SS)",                   ""    },
       { "1l_2tau_SS_mTauTauVis",              "m_{#tau#tau} (SS)",             "GeV" },
@@ -733,14 +865,28 @@ void compareDatacards()
       { "1l_2tau_mvaOutput_1l_2tau_ttbar",    "MVA out 1l2#tau t#bar{t}",      ""    },
       { "1l_2tau_numJets",                    "#Jets",                         ""    }
     };
+    const std::vector<std::array<std::string, 4>> discriminatingVariables_2lss_1tau = {
+      { "2lss_1tau_sumOS_EventCounter",            "Events (sumOS)",                   ""    },
+      { "2lss_1tau_sumSS_EventCounter",            "Events (sumSS)",                   ""    },
+      { "2lss_1tau_sumOS_mTauTauVis",              "m_{#tau#tau} (sumOS)",             "GeV" },
+      { "2lss_1tau_sumSS_mTauTauVis",              "m_{#tau#tau} (sumSS)",             "GeV" },
+      { "2lss_1tau_sumOS_mvaDiscr_2lss",           "MVA discr 2lss (sumOS)",           ""    },
+      { "2lss_1tau_sumSS_mvaDiscr_2lss",           "MVA discr 2lss (sumSS)",           ""    },
+      { "2lss_1tau_sumOS_mvaDiscr_2lss_1tau",      "MVA discr 2lss1#tau (sumOS)",      ""    },
+      { "2lss_1tau_sumSS_mvaDiscr_2lss_1tau",      "MVA discr 2lss1#tau (sumSS)",      ""    },
+      { "2lss_1tau_sumOS_mvaDiscr_2lss_1tau_wMEM", "MVA discr 2lss1#tau wMEM (sumOS)", ""    },
+      { "2lss_1tau_sumSS_mvaDiscr_2lss_1tau_wMEM", "MVA discr 2lss1#tau wMEM (sumSS)", ""    },
+      { "2lss_1tau_sumOS_numJets",                 "#Jets (sumOS)",                    ""    },
+      { "2lss_1tau_sumSS_numJets",                 "#Jets (sumSS)",                    ""    }
+    };
     std::vector<ComparisonEntries> entries;
-    const std::string ref_path  = "/home/karl/ttHAnalysis/2016/2017Sep27/datacards/1l_2tau/";
-    const std::string test_path = "/home/karl/ttHAnalysis/2016/2017Sep30/datacards/1l_2tau/";
-    for(const std::array<std::string, 4> & var: discriminatingVariables)
+    const std::string ref_path  = "/home/karl/ttHAnalysis/2016/2017Oct11/datacards/2lss_1tau/";
+    const std::string test_path = "/home/karl/ttHAnalysis/2016/2017Oct11/datacards/2lss_1tau/";
+    for(const std::array<std::string, 4> & var: discriminatingVariables_2lss_1tau)
     {
-      const InputFileEntry ref  = {ref_path,  Form("prepareDatacards_%s.root", var.at(0).c_str()), "Tallinn"};
-      const InputFileEntry test = {test_path, Form("prepareDatacards_%s.root", var.at(0).c_str()), "Production Ntuples"};
-      const std::string outputFilePath = Form("/home/karl/sandbox/plots/plots_%s", var.at(0).c_str());
+      const InputFileEntry ref  = {ref_path,  Form("prepareDatacards_%s.root", var.at(0).c_str()), "Tallinn Oct11"};
+      const InputFileEntry test = {test_path, Form("prepareDatacards_%s.root", var.at(0).c_str()), "Tallinn Oct11"};
+      const std::string outputFilePath = Form("/home/karl/sandbox/plots_sys_2lss_1tau/plots_%s", var.at(0).c_str());
       entries.push_back({ref, test, {}, outputFilePath, var.at(1), var.at(2)});
     }
 
