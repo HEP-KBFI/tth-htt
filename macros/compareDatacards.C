@@ -702,7 +702,8 @@ void makePlots_ref_systematics(const ComparisonEntries & entries,
   delete inputFile_ref;
 }
 
-void compareDatacards_run(const ComparisonEntries & entry)
+void compareDatacards_run(const ComparisonEntries & entry,
+                          bool useFRsys)
 {
   const std::vector<std::string> processes = {
     "data_obs",
@@ -782,7 +783,7 @@ void compareDatacards_run(const ComparisonEntries & entry)
   };
 
   std::vector<std::string> sysShifts = sysShifts_common;
-  if(false)
+  if(useFRsys)
   {
     sysShifts.insert(sysShifts.end(), sysShifts_CMS_ttHl_FR_shape.begin(), sysShifts_CMS_ttHl_FR_shape.end());
   }
@@ -833,7 +834,7 @@ void compareDatacards_run(const ComparisonEntries & entry)
           makePlot_shift_minus_central(entry, histogramName_shifted, histogramName_central, outputFileName_minus_central, header);
         }
 
-        if(std::find(sysShifts_ref.begin(), sysShifts_ref.end(), sysShift_bare) == sysShifts_ref.end())
+        if(std::find(sysShifts_ref.begin(), sysShifts_ref.end(), sysShift_bare + process) == sysShifts_ref.end())
         {
           const std::string outputFilePath_sys = Form("%s/%s/%s", entry.outputFilePath_.data(), entry.ref_.legendEntry_noSpecialChars_.c_str(), sysShift_bare.c_str());
           const std::string histogramName_shifted_bare(TString(histogramName_shifted).ReplaceAll("Up", "").ReplaceAll("Down", "").Data());
@@ -886,7 +887,7 @@ void compareDatacards()
     {
       const InputFileEntry ref  = {ref_path,  Form("prepareDatacards_%s.root", var.at(0).c_str()), "Tallinn Oct11"};
       const InputFileEntry test = {test_path, Form("prepareDatacards_%s.root", var.at(0).c_str()), "Tallinn Oct11"};
-      const std::string outputFilePath = Form("/home/karl/sandbox/plots_sys_2lss_1tau/plots_%s", var.at(0).c_str());
+      const std::string outputFilePath = Form("/home/karl/sandbox/plots_sys_2017Oct14/plots_%s", var.at(0).c_str());
       entries.push_back({ref, test, {}, outputFilePath, var.at(1), var.at(2)});
     }
 
@@ -905,6 +906,6 @@ void compareDatacards()
 
     for(const ComparisonEntries & entry: entries)
     {
-      compareDatacards_run(entry);
+      compareDatacards_run(entry, true);
     }
 }
