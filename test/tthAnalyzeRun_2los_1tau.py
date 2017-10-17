@@ -6,20 +6,23 @@ from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 #--------------------------------------------------------------------------------
 # NOTE: set mode flag to
 #   'VHbb'           : to run the analysis on the VHbb Ntuples, with the nominal event selection
-#   'forBDTtraining' : to run the analysis on the VHbb Ntuples, with a relaxed event selection, to increase the BDT training statistics
+#   'forBDTtraining' : to run the analysis on the VHbb Ntuples, with a relaxed event selection,
+#                      to increase the BDT training statistics
 #--------------------------------------------------------------------------------
 
 use_prod_ntuples     = True
 mode                 = "VHbb"
 ERA                  = "2016"
-version              = "2017Oct04"
+version              = "2017Oct17"
 max_job_resubmission = 10
-
-samples              = None
-LUMI                 = None
-hadTau_selection     = None
 changeBranchNames    = use_prod_ntuples
-applyFakeRateWeights = None
+
+samples                            = None
+LUMI                               = None
+hadTau_selection                   = None
+hadTau_selection_relaxed           = None
+applyFakeRateWeights               = None
+hadTauFakeRateWeight_inputFileName = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016.root"
 
 if use_prod_ntuples and ERA == "2015":
   raise ValueError("No production Ntuples for 2015 data & MC")
@@ -52,8 +55,9 @@ elif mode == "forBDTtraining":
     from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_prodNtuples_2016_FastSim import samples_2016
   else:
     from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_FastSim import samples_2016
-  hadTau_selection = "dR03mvaLoose"
-  applyFakeRateWeights = "3L"
+  hadTau_selection         = "dR03mvaVTight"
+  hadTau_selection_relaxed = "dR03mvaLoose"
+  applyFakeRateWeights     = "3L"
 else:
   raise ValueError("Invalid Configuration parameter 'mode' = %s !!" % mode)
 
@@ -169,7 +173,7 @@ if __name__ == '__main__':
     )
 
     if mode.find("forBDTtraining") != -1:
-      analysis.set_BDT_training()
+      analysis.set_BDT_training(hadTau_selection_relaxed, hadTauFakeRateWeight_inputFileName)
 
     job_statistics = analysis.create()
     for job_type, num_jobs in job_statistics.items():

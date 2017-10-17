@@ -5,28 +5,34 @@ from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 
 #--------------------------------------------------------------------------------
 # NOTE: set mode flag to
-#   'VHbb' : to run the analysis directly on the VHbb Ntuples (to e.g. produce the RLE files to run the tthProdNtuple and ttHAddMEM steps)
-#   'addMEM' : to run the analysis on the Ntuples with MEM variables added
-#   'forBDTtraining' : to run the analysis on the Ntuples with MEM variables added, and with a relaxed event selection, to increase the BDT training statistics
+#   'VHbb'                        : to run the analysis directly on the VHbb Ntuples
+#                                   (to e.g. produce the RLE files to run the tthProdNtuple and ttHAddMEM steps)
+#   'addMEM'                      : to run the analysis on the Ntuples with MEM variables added
+#   'forBDTtraining_beforeAddMEM' : to run the analysis with a relaxed event selection,
+#                                   to increase the BDT training statistics
+#   'forBDTtraining_afterAddMEM'  : to run the analysis on the Ntuples with MEM variables added, and
+#                                   with a relaxed event selection, to increase the BDT training statistics
 #--------------------------------------------------------------------------------
 
 use_prod_ntuples = True
 mode             = "VHbb"
 ERA              = "2016"
-version          = "2017Oct04"
+version          = "2017Oct17"
 
-samples              = None
-LUMI                 = None
-hadTau_selection     = None
-changeBranchNames    = use_prod_ntuples
-applyFakeRateWeights = None
-useMEMbranch         = False
+samples                            = None
+LUMI                               = None
+hadTau_selection                   = None
+hadTau_selection_relaxed           = None
+changeBranchNames                  = use_prod_ntuples
+applyFakeRateWeights               = None
+useMEMbranch                       = False
+hadTauFakeRateWeight_inputFileName = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016.root"
 
 # Karl: temporarily disable other modes until we've proper Ntuples
-if mode != "VHbb":
+if mode not in ["VHbb", "forBDTtraining_beforeAddMEM"]:
   raise ValueError("No Ntuples with MEM entries, yet!")
 
-if use_prod_ntuples and mode != "VHbb":
+if use_prod_ntuples and mode not in ["VHbb", "forBDTtraining_beforeAddMEM"]:
   raise ValueError("No production Ntuples for %s" % mode)
 
 if use_prod_ntuples and ERA == "2015":
@@ -62,11 +68,21 @@ elif mode == "addMEM":
   changeBranchNames    = True
   applyFakeRateWeights = "3lepton"
   useMEMbranch         = True
-elif mode == "forBDTtraining":
+elif mode == "forBDTtraining_beforeAddMEM":
+  if use_prod_ntuples:
+    from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_prodNtuples_2016_FastSim import samples_2016
+  else:
+    from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_FastSim import samples_2016
+  applyFakeRateWeights     = "4L"
+  hadTau_selection         = "dR03mvaVTight"
+  hadTau_selection_relaxed = "dR03mvaVVLoose"
+elif mode == "forBDTtraining_afterAddMEM":
   from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_3l1tau_addMEM_forBDTtraining import samples_2016
-  hadTau_selection     = "dR03mvaVVLoose"
-  changeBranchNames    = True
-  applyFakeRateWeights = "4L"
+  changeBranchNames        = True
+  applyFakeRateWeights     = "4L"
+  hadTau_selection         = "dR03mvaVTight"
+  hadTau_selection_relaxed = "dR03mvaVVLoose"
+  useMEMbranch             = True
 else:
   raise ValueError("Invalid Configuration parameter 'mode' = %s !!" % mode)
 
@@ -97,7 +113,6 @@ if __name__ == '__main__':
     hadTau_selection     = hadTau_selection,
     # CV: apply "fake" background estimation to leptons only and not to hadronic taus, as discussed on slide 10 of
     #     https://indico.cern.ch/event/597028/contributions/2413742/attachments/1391684/2120220/16.12.22_ttH_Htautau_-_Review_of_systematics.pdf
-    #applyFakeRateWeights = "4L",
     applyFakeRateWeights = applyFakeRateWeights,
     chargeSumSelections  = [ "OS", "SS" ],
     central_or_shifts    = [
@@ -157,7 +172,7 @@ if __name__ == '__main__':
 ##       "CMS_ttHl_thu_shape_ttZ_y1Up",
 ##       "CMS_ttHl_thu_shape_ttZ_y1Down",
     ],
-    max_files_per_job                     = 10,
+    max_files_per_job                     = 50,
     era                                   = ERA,
     use_lumi                              = True,
     lumi                                  = LUMI,
@@ -177,8 +192,8 @@ if __name__ == '__main__':
     select_root_output                    = False,
   )
 
-  if mode == "forBDTtraining":
-    analysis.set_BDT_training()
+  if mode.find("forBDTtraining") != -1:
+    analysis.set_BDT_training(hadTau_selection_relaxed, hadTauFakeRateWeight_inputFileName)
   analysis.create()
 
   run_analysis = query_yes_no("Start jobs ?")
