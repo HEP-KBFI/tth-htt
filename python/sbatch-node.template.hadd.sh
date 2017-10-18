@@ -2,8 +2,12 @@
 # File: sbatch-node.template.hadd.sh
 # Version: 0.2
 
-# This value is provided by sbatchManager.py that creates sbatch scripts based this template
+# unset JAVA_HOME, because hadoop commands might not work
+# this is especially true if one has sourced necessary files for the GRID proxy
+echo 'Unsetting JAVA_HOME=$JAVA_HOME'
+unset JAVA_HOME
 
+# This value is provided by sbatchManager.py that creates sbatch scripts based this template
 echo 'Running version (sbatch-node.template.hadd.sh)'
 
 
@@ -91,9 +95,12 @@ run_wrapped_executable() {
 
     echo "Time is: `date`"
 
-    CMSSW_SEARCH_PATH="$SCRATCH_DIR:{{ cmssw_base_dir }}/src" 
+    CMSSW_SEARCH_PATH="$SCRATCH_DIR:{{ cmssw_base_dir }}/src"
 
-    echo "Execute command: {{ exec_name }} {{ command_line_parameter }} &> $TEMPORARY_EXECUTABLE_LOG_FILE"
+    echo "Execute command: {{ exec_name }} {{ command_line_parameter }} &> $TEMPORARY_EXECUTABLE_LOG_FILE"    
+    # CV: use newer hadd version that supports increasing cachesize, to reduce random disk access
+    export PATH=/cvmfs/cms.cern.ch/slc6_amd64_gcc630/cms/cmssw/CMSSW_9_4_0_pre2/external/slc6_amd64_gcc630/bin/:$PATH
+    export LD_LIBRARY_PATH=/cvmfs/cms.cern.ch/slc6_amd64_gcc630/cms/cmssw/CMSSW_9_4_0_pre2/biglib/slc6_amd64_gcc630:/cvmfs/cms.cern.ch/slc6_amd64_gcc630/cms/cmssw/CMSSW_9_4_0_pre2/lib/slc6_amd64_gcc630:/cvmfs/cms.cern.ch/slc6_amd64_gcc630/cms/cmssw/CMSSW_9_4_0_pre2/external/slc6_amd64_gcc630/lib:/cvmfs/cms.cern.ch/slc6_amd64_gcc630/external/llvm/4.0.1/lib64:/cvmfs/cms.cern.ch/slc6_amd64_gcc630/external/gcc/6.3.0/lib64:/cvmfs/cms.cern.ch/slc6_amd64_gcc630/external/gcc/6.3.0/lib:$LD_LIBRARY_PATH
     {{ exec_name }} {{ command_line_parameter }} &> $TEMPORARY_EXECUTABLE_LOG_FILE
     HADD_EXIT_CODE=$?
     echo "Command {{ exec_name }} exited with code $HADD_EXIT_CODE"

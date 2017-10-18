@@ -68,8 +68,13 @@ if __name__ == '__main__':
     'nof_files'             : (lambda d: d['nof_files']),
     'nof_events'            : (lambda d: d['nof_events']),
     'path'                  : (lambda d: endtree(d['local_paths'][0]['path'])),
-    'blacklist'             : (lambda d: d['local_paths'][0]['blacklist']),
+    'blacklist'             : (lambda d: d['local_paths'][0]['blacklist'] if 'blacklist' in d['local_paths'][0] else []),
+    'selection'             : (lambda d: d['local_paths'][0]['selection']),
+    'selection2'            : (lambda d: d['local_paths'][1]['selection'] if len(d['local_paths']) > 1 else True),
     'use_it'                : (lambda d: d['use_it']),
+    'reHLT'                 : (lambda d: d['reHLT'] if 'reHLT' in d else True),
+    'xsection'              : (lambda d: d['xsection'] if 'xsection' in d else True),
+    'triggers'              : (lambda d: list(sorted(d['triggers']))),
     'genWeight'             : (lambda d: d['genWeight'] if 'genWeight' in d else True),
   }
 

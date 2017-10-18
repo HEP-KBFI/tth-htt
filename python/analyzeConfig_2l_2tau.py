@@ -126,13 +126,15 @@ class analyzeConfig_2l_2tau(analyzeConfig):
 
     self.isBDTtraining = False
 
-  def set_BDT_training(self):
+  def set_BDT_training(self, hadTau_selection_relaxed, hadTauFakeRateWeight_inputFileName):
     """Run analysis with loose selection criteria for leptons and hadronic taus,
        for the purpose of preparing event list files for BDT training.
     """
-    self.lepton_and_hadTau_selections = [ "forBDTtraining" ]
-    self.lepton_and_hadTau_frWeights = [ "disabled" ]
-    self.isBDTtraining = True
+    self.lepton_and_hadTau_selections       = ["forBDTtraining"]
+    self.lepton_and_hadTau_frWeights        = ["disabled"]
+    self.hadTau_selection_relaxed           = hadTau_selection_relaxed
+    self.hadTauFakeRateWeight_inputFileName = hadTauFakeRateWeight_inputFileName
+    self.isBDTtraining                      = True
 
   def createCfg_analyze(self, jobOptions):
     """Create python configuration file for the analyze_2l_2tau executable (analysis code)
@@ -201,6 +203,12 @@ class analyzeConfig_2l_2tau(analyzeConfig):
       lines.append("process.analyze_2l_2tau.hadTauFakeRateWeight.applyGraph_sublead = cms.bool(False)")
       lines.append("process.analyze_2l_2tau.hadTauFakeRateWeight.applyFitFunction_sublead = cms.bool(True)")
       lines.append("process.analyze_2l_2tau.apply_hadTauFakeRateSF = cms.bool(True)")
+    if self.isBDTtraining:
+      lines.append("process.analyze_2l_2tau.hadTauFakeRateWeight.inputFileName = cms.string('%s')" % self.hadTauFakeRateWeight_inputFileName)
+      lines.append("process.analyze_2l_2tau.hadTauFakeRateWeight.lead.graphName = cms.string('jetToTauFakeRate/%s/$etaBin/jetToTauFakeRate_mc_hadTaus_pt')" % self.hadTau_selection_part2)
+      lines.append("process.analyze_2l_2tau.hadTauFakeRateWeight.lead.fitFunctionName = cms.string('jetToTauFakeRate/%s/$etaBin/fitFunction_data_div_mc_hadTaus_pt')" % self.hadTau_selection_part2)
+      lines.append("process.analyze_2l_2tau.hadTauFakeRateWeight.sublead.graphName = cms.string('jetToTauFakeRate/%s/$etaBin/jetToTauFakeRate_mc_hadTaus_pt')" % self.hadTau_selection_part2)
+      lines.append("process.analyze_2l_2tau.hadTauFakeRateWeight.sublead.fitFunctionName = cms.string('jetToTauFakeRate/%s/$etaBin/fitFunction_data_div_mc_hadTaus_pt')" % self.hadTau_selection_part2)
     lines.append("process.analyze_2l_2tau.chargeSumSelection = cms.string('%s')" % jobOptions['chargeSumSelection'])
     lines.append("process.analyze_2l_2tau.use_HIP_mitigation_mediumMuonId = cms.bool(%s)" % jobOptions['use_HIP_mitigation_mediumMuonId'])
     lines.append("process.analyze_2l_2tau.isMC = cms.bool(%s)" % jobOptions['is_mc'])
@@ -413,6 +421,9 @@ class analyzeConfig_2l_2tau(analyzeConfig):
                     self.outputFile_hadd_stage1[key_hadd_stage1] = os.path.join(self.dirs[DKEY_HIST], "histograms_harvested_stage1_%s_%s_%s_%s_%s_%s.root" % \
                       (self.channel, process_name, lepton_charge_selection, hadTau_charge_selection, lepton_and_hadTau_selection_and_frWeight, chargeSumSelection))
 
+                if self.isBDTtraining:
+                  continue
+
                 if is_mc:
                   logging.info("Creating configuration files to run 'addBackgrounds' for sample %s" % process_name)
 
@@ -550,6 +561,9 @@ class analyzeConfig_2l_2tau(analyzeConfig):
                         self.outputFile_hadd_stage1_5[key_hadd_stage1_5] = os.path.join(self.dirs[DKEY_HIST], "histograms_harvested_stage1_5_%s_%s_%s_%s_%s.root" % \
                          (self.channel, lepton_charge_selection, hadTau_charge_selection, lepton_and_hadTau_selection_and_frWeight, chargeSumSelection))
 
+                if self.isBDTtraining:
+                  continue
+
                 # add output files of hadd_stage1 for data to list of input files for hadd_stage1_5
                 if not is_mc:
                   key_hadd_stage1 = getKey(process_name, lepton_charge_selection, hadTau_charge_selection, lepton_and_hadTau_selection_and_frWeight, chargeSumSelection)
@@ -557,6 +571,9 @@ class analyzeConfig_2l_2tau(analyzeConfig):
                   if not key_hadd_stage1_5 in self.inputFiles_hadd_stage1_5:
                     self.inputFiles_hadd_stage1_5[key_hadd_stage1_5] = []
                   self.inputFiles_hadd_stage1_5[key_hadd_stage1_5].append(self.outputFile_hadd_stage1[key_hadd_stage1])
+
+              if self.isBDTtraining:
+                continue
 
               # sum fake contributions for the total of all MC sample
               # input processes: TT1l1j,TT0l2j,...
@@ -602,9 +619,10 @@ class analyzeConfig_2l_2tau(analyzeConfig):
       logging.info("Creating Makefile")
       lines_makefile = []
       self.addToMakefile_analyze(lines_makefile)
+      self.addToMakefile_hadd_stage1(lines_makefile)
       self.createMakefile(lines_makefile)
       logging.info("Done")
-      return
+      return self.num_jobs
 
     logging.info("Creating configuration files to run 'addBackgroundFakes'")
     for lepton_charge_selection in self.lepton_charge_selections:

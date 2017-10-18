@@ -393,15 +393,18 @@ class analyzeConfig:
                 lines_makefile.append("\t%s" % ":") # CV: null command
                 lines_makefile.append("")
             self.filesToClean.append(jobOptions['histogramFile'])
+
+    def addToMakefile_hadd(self, lines_makefile, inputFiles, outputFiles, label):
+        for key in outputFiles.keys():
+            script = self.create_hadd_python_file(inputFiles[key], outputFiles[key], "_".join([ "stage1", key ]))
+            lines_makefile.append("%s: %s" % (outputFiles[key], " ".join(inputFiles[key])))
+            lines_makefile.append("\t%s %s" % ("rm -f", outputFiles[key]))
+            lines_makefile.append("\t%s %s" % ("python", script))
+            lines_makefile.append("")
+            self.filesToClean.append(outputFiles[key])
     
     def addToMakefile_hadd_stage1(self, lines_makefile):
-        for key in self.outputFile_hadd_stage1.keys():
-            script_hadd_stage1 = self.create_hadd_python_file(self.inputFiles_hadd_stage1[key], self.outputFile_hadd_stage1[key], "_".join([ "stage1", key ]))
-            lines_makefile.append("%s: %s" % (self.outputFile_hadd_stage1[key], " ".join(self.inputFiles_hadd_stage1[key])))
-            lines_makefile.append("\t%s %s" % ("rm -f", self.outputFile_hadd_stage1[key]))
-            lines_makefile.append("\t%s %s" % ("python", script_hadd_stage1))
-            lines_makefile.append("")
-            self.filesToClean.append(self.outputFile_hadd_stage1[key])
+        addToMakefile_hadd(self, lines_makefile, self.inputFiles_hadd_stage1, self.outputFile_hadd_stage1, "stage1")
 
     def addToMakefile_addBackgrounds(self, lines_makefile, sbatchTarget, sbatchFile, jobOptions):
         if self.is_sbatch:
@@ -423,13 +426,7 @@ class analyzeConfig:
         """Adds the commands to Makefile that are necessary for building the intermediate histogram file
            that is used as input for data-driven background estimation.
         """
-        for key in self.outputFile_hadd_stage1_5.keys():
-            script_hadd_stage1_5 = self.create_hadd_python_file(self.inputFiles_hadd_stage1_5[key], self.outputFile_hadd_stage1_5[key], "_".join([ "stage1_5", key]))
-            lines_makefile.append("%s: %s" % (self.outputFile_hadd_stage1_5[key], " ".join(self.inputFiles_hadd_stage1_5[key])))
-            lines_makefile.append("\t%s %s" % ("rm -f", self.outputFile_hadd_stage1_5[key]))
-            lines_makefile.append("\t%s %s" % ("python", script_hadd_stage1_5))
-            lines_makefile.append("")
-            self.filesToClean.append(self.outputFile_hadd_stage1_5[key])
+        addToMakefile_hadd(self, lines_makefile, self.inputFiles_hadd_stage1_5, self.outputFile_hadd_stage1_5, "stage1_5")
 
     def addToMakefile_addFakes(self, lines_makefile):
         if self.is_sbatch:
@@ -456,13 +453,7 @@ class analyzeConfig:
     def addToMakefile_hadd_stage2(self, lines_makefile):
         """Adds the commands to Makefile that are necessary for building the final histogram file.
         """
-        for key in self.outputFile_hadd_stage2.keys():
-            script_hadd_stage2 = self.create_hadd_python_file(self.inputFiles_hadd_stage2[key], self.outputFile_hadd_stage2[key], "_".join([ "stage2", key]))
-            lines_makefile.append("%s: %s" % (self.outputFile_hadd_stage2[key], " ".join(self.inputFiles_hadd_stage2[key])))
-            lines_makefile.append("\t%s %s" % ("rm -f", self.outputFile_hadd_stage2[key]))
-            lines_makefile.append("\t%s %s" % ("python", script_hadd_stage2))
-            lines_makefile.append("")
-            self.filesToClean.append(self.outputFile_hadd_stage2[key])
+        addToMakefile_hadd(self, lines_makefile, self.inputFiles_hadd_stage2, self.outputFile_hadd_stage2[key], "stage2")
             
     def addToMakefile_prep_dcard(self, lines_makefile):
         """Adds the commands to Makefile that are necessary for building the datacards.

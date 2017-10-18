@@ -61,13 +61,13 @@ class RecoLeptonReader
       matched_genJets_ = genJetReader_->read();
       assert(matched_genJets_.size() == nLeptons);
       for ( size_t idxLepton = 0; idxLepton < nLeptons; ++idxLepton ) {
-    T* lepton = &leptons[idxLepton];
-    const GenLepton* matched_genLepton = &matched_genLeptons_[idxLepton];
-    if ( matched_genLepton->pt() > 0. ) lepton->set_genLepton(matched_genLepton);
-    const GenHadTau* matched_genHadTau = &matched_genHadTaus_[idxLepton];
-    if ( matched_genHadTau->pt() > 0. ) lepton->set_genHadTau(matched_genHadTau);
-    const GenJet* matched_genJet = &matched_genJets_[idxLepton];
-    if ( matched_genJet->pt() > 0. ) lepton->set_genJet(matched_genJet);
+	T* lepton = &leptons[idxLepton];
+	const GenLepton* matched_genLepton = &matched_genLeptons_[idxLepton];
+	if ( matched_genLepton->pt() > 0. ) lepton->set_genLepton(matched_genLepton);
+	const GenHadTau* matched_genHadTau = &matched_genHadTaus_[idxLepton];
+	if ( matched_genHadTau->pt() > 0. ) lepton->set_genHadTau(matched_genHadTau);
+	const GenJet* matched_genJet = &matched_genJets_[idxLepton];
+	if ( matched_genJet->pt() > 0. ) lepton->set_genJet(matched_genJet);
       }
     }
   }
