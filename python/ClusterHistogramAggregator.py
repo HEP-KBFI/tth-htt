@@ -56,10 +56,18 @@ class ClusterHistogramAggregator:
         while current_job_id * maximum_histograms_in_batch < len(input_histograms):
             start_pos = current_job_id * maximum_histograms_in_batch
             end_pos = start_pos + maximum_histograms_in_batch
-            output_histogram = final_output_histogram.replace(
-                ".root",
-                "_%s-%s.root" % (level, current_job_id)
-            )
+            output_histogram = None
+            if len(input_histograms) <= maximum_histograms_in_batch:
+                # This is the last aggregation,
+                # the output file produced by this hadd job will be the final one
+                output_histogram = final_output_histogram
+            else:
+                # This is not the last aggregation,
+                # this hadd job will produce a temporary output file
+                output_histogram = final_output_histogram.replace(
+                    ".root",
+                    "_%s-%s.root" % (level, current_job_id)
+                )
             output_histograms.append(output_histogram)
 
             self.hadd_on_cluster_node(
@@ -73,7 +81,7 @@ class ClusterHistogramAggregator:
 
         # Aggregate output files
 
-        if len(output_histograms) > maximum_histograms_in_batch:
+        if len(output_histograms) > 1:
 
             # Recursive call to method self
 
@@ -83,18 +91,6 @@ class ClusterHistogramAggregator:
                 maximum_histograms_in_batch = maximum_histograms_in_batch,
                 level = level + 1
             )
-
-        else:
-
-            # This is the last aggregation
-
-            self.hadd_on_cluster_node(
-                input_histograms=output_histograms,
-                output_histogram=final_output_histogram
-            )
-
-            if self.waitForJobs:
-                self.sbatch_manager.waitForJobs()
 
         # Delete output files produced by "intermediate" levels
 
@@ -129,7 +125,7 @@ class ClusterHistogramAggregator:
 
         self.sbatch_manager.submitJob(
             inputFiles = input_histograms,
-            executable = "hadd",
+            executable = "hadd -cachesize 1GiB", # CV: use 1 Gb of cache memory to reduce random disk access
             command_line_parameter = " ".join(output_and_input_histograms),
             outputFilePath = os.path.dirname(output_histogram),
             outputFiles = [ os.path.basename(output_histogram) ],
