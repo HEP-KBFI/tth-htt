@@ -102,7 +102,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
     self.executable_addFakes = executable_addBackgroundJetToTauFakes
 
     self.nonfake_backgrounds = [ "TT", "TTW", "TTZ", "TTWW", "EWK", "Rares", "tH" ]
-    
+
     self.prep_dcard_processesToCopy = [ "data_obs" ] + self.nonfake_backgrounds + [ "fakes_data", "fakes_mc" ]
     ##self.make_plots_backgrounds = self.nonfake_backgrounds + [ "fakes_data" ]
     self.make_plots_backgrounds = [ "TTW", "TTWW", "TTZ", "EWK", "Rares", "fakes_data" ]
@@ -121,11 +121,11 @@ class analyzeConfig_1l_2tau(analyzeConfig):
     """Run analysis with loose selection criteria for leptons and hadronic taus,
        for the purpose of preparing event list files for BDT training.
     """
-    self.lepton_and_hadTau_selections = [ "forBDTtraining" ]
-    self.lepton_and_hadTau_frWeights = [ "disabled" ]
-    self.hadTau_selection_relaxed = hadTau_selection_relaxed
+    self.lepton_and_hadTau_selections       = [ "forBDTtraining" ]
+    self.lepton_and_hadTau_frWeights        = [ "disabled" ]
+    self.hadTau_selection_relaxed           = hadTau_selection_relaxed
     self.hadTauFakeRateWeight_inputFileName = hadTauFakeRateWeight_inputFileName
-    self.isBDTtraining = True
+    self.isBDTtraining                      = True
 
   def createCfg_analyze(self, jobOptions):
     """Create python configuration file for the analyze_1l_2tau executable (analysis code)
@@ -397,6 +397,9 @@ class analyzeConfig_1l_2tau(analyzeConfig):
                 self.outputFile_hadd_stage1[key_hadd_stage1] = os.path.join(self.dirs[DKEY_HIST], "histograms_harvested_stage1_%s_%s_%s_%s.root" % \
                     (self.channel, process_name, lepton_and_hadTau_selection_and_frWeight, hadTau_charge_selection))
 
+            if self.isBDTtraining:
+              continue
+
             if is_mc:
               logging.info("Creating configuration files to run 'addBackgrounds' for sample %s" % process_name)
 
@@ -483,6 +486,9 @@ class analyzeConfig_1l_2tau(analyzeConfig):
                   self.outputFile_hadd_stage1_5[key_hadd_stage1_5] = os.path.join(self.dirs[DKEY_HIST], "histograms_harvested_stage1_5_%s_%s_%s.root" % \
                     (self.channel, lepton_and_hadTau_selection_and_frWeight, hadTau_charge_selection))
 
+            if self.isBDTtraining:
+              continue
+
             # add output files of hadd_stage1 for data to list of input files for hadd_stage1_5
             if not is_mc:
               key_hadd_stage1 = getKey(process_name, lepton_and_hadTau_selection_and_frWeight, hadTau_charge_selection)
@@ -490,6 +496,9 @@ class analyzeConfig_1l_2tau(analyzeConfig):
               if not key_hadd_stage1_5 in self.inputFiles_hadd_stage1_5:
                 self.inputFiles_hadd_stage1_5[key_hadd_stage1_5] = []
               self.inputFiles_hadd_stage1_5[key_hadd_stage1_5].append(self.outputFile_hadd_stage1[key_hadd_stage1])
+
+          if self.isBDTtraining:
+            continue
 
           # sum fake contributions for the total of all MC sample
           # input processes: TT1t0e0m1j, TT0t1e0m1j, TT0t0e1m1j, TT0t0e0m2j; TTW1t0e0m1j,...
@@ -526,95 +535,107 @@ class analyzeConfig_1l_2tau(analyzeConfig):
           self.outputFile_hadd_stage2[key_hadd_stage2] = os.path.join(self.dirs[DKEY_HIST], "histograms_harvested_stage2_%s_%s_%s.root" % \
             (self.channel, lepton_and_hadTau_selection_and_frWeight, hadTau_charge_selection))
 
-    if not self.isBDTtraining:
-      logging.info("Creating configuration files to run 'addBackgroundFakes'")
-      for hadTau_charge_selection in self.hadTau_charge_selections:
-        key_addFakes_job = getKey("fakes_data", hadTau_charge_selection)
-        key_hadd_stage1_5 = getKey(get_lepton_and_hadTau_selection_and_frWeight("Fakeable", "enabled"), hadTau_charge_selection)
-        category_sideband = None
-        if self.applyFakeRateWeights == "3L":
-          category_sideband = "1l_2tau_%s_Fakeable_wFakeRateWeights" % hadTau_charge_selection
-        elif self.applyFakeRateWeights == "2tau":
-          category_sideband = "1l_2tau_%s_Fakeable_wFakeRateWeights" % hadTau_charge_selection
-        else:
-          raise ValueError("Invalid Configuration parameter 'applyFakeRateWeights' = %s !!" % applyFakeRateWeights)
-        self.jobOptions_addFakes[key_addFakes_job] = {
-          'inputFile' : self.outputFile_hadd_stage1_5[key_hadd_stage1_5],
-          'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "addBackgroundLeptonFakes_%s_%s_cfg.py" % \
-            (self.channel, hadTau_charge_selection)),
-          'outputFile' : os.path.join(self.dirs[DKEY_HIST], "addBackgroundLeptonFakes_%s_%s.root" % \
-            (self.channel, hadTau_charge_selection)),
-          'logFile' : os.path.join(self.dirs[DKEY_LOGS], "addBackgroundLeptonFakes_%s_%s.log" % \
-            (self.channel, hadTau_charge_selection)),
-          'category_signal' : "1l_2tau_%s_Tight" % hadTau_charge_selection,
-          'category_sideband' : category_sideband
-        }
-        self.createCfg_addFakes(self.jobOptions_addFakes[key_addFakes_job])
-        key_hadd_stage2 = getKey(get_lepton_and_hadTau_selection_and_frWeight("Tight", "disabled"), hadTau_charge_selection)
-        self.inputFiles_hadd_stage2[key_hadd_stage2].append(self.jobOptions_addFakes[key_addFakes_job]['outputFile'])
+    if self.isBDTtraining:
+      if self.is_sbatch:
+        logging.info("Creating script for submitting '%s' jobs to batch system" % self.executable_analyze)
+        self.sbatchFile_analyze = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_analyze_%s.py" % self.channel)
+        self.createScript_sbatch_analyze(self.executable_analyze, self.sbatchFile_analyze, self.jobOptions_analyze)
+      logging.info("Creating Makefile")
+      lines_makefile = []
+      self.addToMakefile_analyze(lines_makefile)
+      self.addToMakefile_hadd_stage1(lines_makefile)
+      self.createMakefile(lines_makefile)
+      logging.info("Done")
+      return self.num_jobs
 
-      logging.info("Creating configuration files to run 'prepareDatacards'")
-      for histogramToFit in self.histograms_to_fit:
-        key_prep_dcard_job = getKey(histogramToFit)
-        key_hadd_stage2 = getKey(get_lepton_and_hadTau_selection_and_frWeight("Tight", "disabled"), "OS")
+    logging.info("Creating configuration files to run 'addBackgroundFakes'")
+    for hadTau_charge_selection in self.hadTau_charge_selections:
+      key_addFakes_job = getKey("fakes_data", hadTau_charge_selection)
+      key_hadd_stage1_5 = getKey(get_lepton_and_hadTau_selection_and_frWeight("Fakeable", "enabled"), hadTau_charge_selection)
+      category_sideband = None
+      if self.applyFakeRateWeights == "3L":
+        category_sideband = "1l_2tau_%s_Fakeable_wFakeRateWeights" % hadTau_charge_selection
+      elif self.applyFakeRateWeights == "2tau":
+        category_sideband = "1l_2tau_%s_Fakeable_wFakeRateWeights" % hadTau_charge_selection
+      else:
+        raise ValueError("Invalid Configuration parameter 'applyFakeRateWeights' = %s !!" % applyFakeRateWeights)
+      self.jobOptions_addFakes[key_addFakes_job] = {
+        'inputFile' : self.outputFile_hadd_stage1_5[key_hadd_stage1_5],
+        'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "addBackgroundLeptonFakes_%s_%s_cfg.py" % \
+          (self.channel, hadTau_charge_selection)),
+        'outputFile' : os.path.join(self.dirs[DKEY_HIST], "addBackgroundLeptonFakes_%s_%s.root" % \
+          (self.channel, hadTau_charge_selection)),
+        'logFile' : os.path.join(self.dirs[DKEY_LOGS], "addBackgroundLeptonFakes_%s_%s.log" % \
+          (self.channel, hadTau_charge_selection)),
+        'category_signal' : "1l_2tau_%s_Tight" % hadTau_charge_selection,
+        'category_sideband' : category_sideband
+      }
+      self.createCfg_addFakes(self.jobOptions_addFakes[key_addFakes_job])
+      key_hadd_stage2 = getKey(get_lepton_and_hadTau_selection_and_frWeight("Tight", "disabled"), hadTau_charge_selection)
+      self.inputFiles_hadd_stage2[key_hadd_stage2].append(self.jobOptions_addFakes[key_addFakes_job]['outputFile'])
+
+    logging.info("Creating configuration files to run 'prepareDatacards'")
+    for histogramToFit in self.histograms_to_fit:
+      key_prep_dcard_job = getKey(histogramToFit)
+      key_hadd_stage2 = getKey(get_lepton_and_hadTau_selection_and_frWeight("Tight", "disabled"), "OS")
+      self.jobOptions_prep_dcard[key_prep_dcard_job] = {
+        'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2],
+        'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "prepareDatacards_%s_%s_cfg.py" % (self.channel, histogramToFit)),
+        'datacardFile' : os.path.join(self.dirs[DKEY_DCRD], "prepareDatacards_%s_%s.root" % (self.channel, histogramToFit)),
+        'histogramDir' : self.histogramDir_prep_dcard,
+        'histogramToFit' : histogramToFit,
+        'label' : None
+      }
+      self.createCfg_prep_dcard(self.jobOptions_prep_dcard[key_prep_dcard_job])
+      if "SS" in self.hadTau_charge_selections:
+        key_prep_dcard_job = getKey(histogramToFit, "SS")
+        key_hadd_stage2 = getKey(get_lepton_and_hadTau_selection_and_frWeight("Tight", "disabled"), "SS")
         self.jobOptions_prep_dcard[key_prep_dcard_job] = {
           'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2],
-          'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "prepareDatacards_%s_%s_cfg.py" % (self.channel, histogramToFit)),
-          'datacardFile' : os.path.join(self.dirs[DKEY_DCRD], "prepareDatacards_%s_%s.root" % (self.channel, histogramToFit)),
-          'histogramDir' : self.histogramDir_prep_dcard,
+          'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "prepareDatacards_%s_SS_%s_cfg.py" % (self.channel, histogramToFit)),
+          'datacardFile' : os.path.join(self.dirs[DKEY_DCRD], "prepareDatacards_%s_SS_%s.root" % (self.channel, histogramToFit)),
+          'histogramDir' : self.histogramDir_prep_dcard_SS,
           'histogramToFit' : histogramToFit,
-          'label' : None
+          'label' : 'SS'
         }
         self.createCfg_prep_dcard(self.jobOptions_prep_dcard[key_prep_dcard_job])
-        if "SS" in self.hadTau_charge_selections:
-          key_prep_dcard_job = getKey(histogramToFit, "SS")
-          key_hadd_stage2 = getKey(get_lepton_and_hadTau_selection_and_frWeight("Tight", "disabled"), "SS")
-          self.jobOptions_prep_dcard[key_prep_dcard_job] = {
-            'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2],
-            'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "prepareDatacards_%s_SS_%s_cfg.py" % (self.channel, histogramToFit)),
-            'datacardFile' : os.path.join(self.dirs[DKEY_DCRD], "prepareDatacards_%s_SS_%s.root" % (self.channel, histogramToFit)),
-            'histogramDir' : self.histogramDir_prep_dcard_SS,
-            'histogramToFit' : histogramToFit,
-            'label' : 'SS'
-          }
-          self.createCfg_prep_dcard(self.jobOptions_prep_dcard[key_prep_dcard_job])
 
-      logging.info("Creating configuration files to run 'makePlots'")
-      key_makePlots_job = getKey("OS")
-      key_hadd_stage2 = getKey(get_lepton_and_hadTau_selection_and_frWeight("Tight", "disabled"), "OS")
+    logging.info("Creating configuration files to run 'makePlots'")
+    key_makePlots_job = getKey("OS")
+    key_hadd_stage2 = getKey(get_lepton_and_hadTau_selection_and_frWeight("Tight", "disabled"), "OS")
+    self.jobOptions_make_plots[key_makePlots_job] = {
+      'executable' : self.executable_make_plots,
+      'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2],
+      'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "makePlots_%s_cfg.py" % self.channel),
+      'outputFile' : os.path.join(self.dirs[DKEY_PLOT], "makePlots_%s.png" % self.channel),
+      'histogramDir' : self.histogramDir_prep_dcard,
+      'label' : None,
+      'make_plots_backgrounds' : self.make_plots_backgrounds
+    }
+    self.createCfg_makePlots(self.jobOptions_make_plots[key_makePlots_job])
+    if "SS" in self.hadTau_charge_selections:
+      key_makePlots_job = getKey("SS")
+      key_hadd_stage2 = getKey(get_lepton_and_hadTau_selection_and_frWeight("Tight", "disabled"), "SS")
       self.jobOptions_make_plots[key_makePlots_job] = {
         'executable' : self.executable_make_plots,
         'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2],
-        'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "makePlots_%s_cfg.py" % self.channel),
-        'outputFile' : os.path.join(self.dirs[DKEY_PLOT], "makePlots_%s.png" % self.channel),
-        'histogramDir' : self.histogramDir_prep_dcard,
-        'label' : None,
+        'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "makePlots_%s_SS_cfg.py" % self.channel),
+        'outputFile' : os.path.join(self.dirs[DKEY_PLOT], "makePlots_%s_SS.png" % self.channel),
+        'histogramDir' : self.histogramDir_prep_dcard_SS,
+        'label' : "SS",
         'make_plots_backgrounds' : self.make_plots_backgrounds
       }
       self.createCfg_makePlots(self.jobOptions_make_plots[key_makePlots_job])
-      if "SS" in self.hadTau_charge_selections:
-        key_makePlots_job = getKey("SS")
-        key_hadd_stage2 = getKey(get_lepton_and_hadTau_selection_and_frWeight("Tight", "disabled"), "SS")
-        self.jobOptions_make_plots[key_makePlots_job] = {
-          'executable' : self.executable_make_plots,
-          'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2],
-          'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "makePlots_%s_SS_cfg.py" % self.channel),
-          'outputFile' : os.path.join(self.dirs[DKEY_PLOT], "makePlots_%s_SS.png" % self.channel),
-          'histogramDir' : self.histogramDir_prep_dcard_SS,
-          'label' : "SS",
-          'make_plots_backgrounds' : self.make_plots_backgrounds
-        }
-        self.createCfg_makePlots(self.jobOptions_make_plots[key_makePlots_job])
-      if "Fakeable_mcClosure" in self.lepton_and_hadTau_selections:
-        key_makePlots_job = getKey("OS")
-        key_hadd_stage2 = getKey(get_lepton_and_hadTau_selection_and_frWeight("Tight", "disabled"), "OS")
-        self.jobOptions_make_plots[key_makePlots_job] = {
-          'executable' : self.executable_make_plots_mcClosure,
-          'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2],
-          'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "makePlots_mcClosure_%s_cfg.py" % self.channel),
-          'outputFile' : os.path.join(self.dirs[DKEY_PLOT], "makePlots_mcClosure_%s.png" % self.channel)
-        }
-        self.createCfg_makePlots_mcClosure(self.jobOptions_make_plots[key_makePlots_job])
+    if "Fakeable_mcClosure" in self.lepton_and_hadTau_selections:
+      key_makePlots_job = getKey("OS")
+      key_hadd_stage2 = getKey(get_lepton_and_hadTau_selection_and_frWeight("Tight", "disabled"), "OS")
+      self.jobOptions_make_plots[key_makePlots_job] = {
+        'executable' : self.executable_make_plots_mcClosure,
+        'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2],
+        'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "makePlots_mcClosure_%s_cfg.py" % self.channel),
+        'outputFile' : os.path.join(self.dirs[DKEY_PLOT], "makePlots_mcClosure_%s.png" % self.channel)
+      }
+      self.createCfg_makePlots_mcClosure(self.jobOptions_make_plots[key_makePlots_job])
 
     if self.is_sbatch:
       logging.info("Creating script for submitting '%s' jobs to batch system" % self.executable_analyze)

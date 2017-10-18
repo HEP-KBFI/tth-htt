@@ -43,6 +43,7 @@ process.makePlots.nuisanceParameters.normalization = cms.PSet(
     signal = cms.string("1.0 +/- 0.20"),
     TT = cms.string("1.0 +/- 0.20"),
     TTW = cms.string("1.0 +/- 0.20"),
+    TTWW = cms.string("1.0 +/- 0.20"),
     TTZ = cms.string("1.0 +/- 0.20"),
     EWK = cms.string("1.0 +/- 0.20"),
     Rares = cms.string("1.0 +/- 0.20"),
