@@ -65,7 +65,7 @@ def generate_sbatch_lines(executable, command_line_parameters, input_file_names,
 
 def generate_sbatch_line(executable, command_line_parameter, input_file_names, output_file_name, script_file_name, log_file_name = None,
                          cvmfs_error_log = None):
-    if os.path.exists(output_file_name):
+    if output_file_name and os.path.exists(output_file_name):
         output_file_size = os.stat(output_file_name).st_size
         print "output file %s already exists, size = %i" % (output_file_name, output_file_size)
         if output_file_size > 20000:
@@ -107,15 +107,24 @@ def generate_sbatch_line(executable, command_line_parameter, input_file_names, o
 
     if type(input_file_names) is str:
         input_file_names = [ input_file_names ]
-    return "m.submitJob(%s, '%s', '%s', '%s', %s, '%s', '%s', True)" % (
-        input_file_names,
-        executable,
-        command_line_parameter,
-        os.path.dirname(output_file_name),
-        [ os.path.basename(output_file_name) ],
-        script_file_name,
-        log_file_name
-    )
+    if output_file_name:
+        return "m.submitJob(%s, '%s', '%s', '%s', %s, '%s', '%s', True)" % (
+            input_file_names,
+            executable,
+            command_line_parameter,
+            os.path.dirname(output_file_name),
+            [ os.path.basename(output_file_name) ],
+            script_file_name,
+            log_file_name
+        )
+    else:
+        return "m.submitJob(%s, '%s', '%s', '', [], '%s', '%s', False)" % (
+            input_file_names,
+            executable,
+            command_line_parameter,
+            script_file_name,
+            log_file_name
+        )
 
 def createScript_sbatch_hadd(sbatch_script_file_name, input_file_names, output_file_name, script_file_name, log_file_name = None,
                              working_dir = None, waitForJobs = True, auxDirName = '', pool_id = ''):
@@ -141,15 +150,15 @@ def createScript_sbatch_hadd(sbatch_script_file_name, input_file_names, output_f
 def generate_sbatch_lines_hadd(input_file_names, output_file_name, script_file_name, log_file_name,
                                working_dir, waitForJobs = True, auxDirName = '', pool_id = ''):
     template_vars = {
-        'working_dir'                 : working_dir,
-        'input_file_names'            : input_file_names,
-        'output_file_name'            : output_file_name,
-        'waitForJobs'                 : waitForJobs,
-        'auxDirName'                  : auxDirName,
-        'pool_id'                     : pool_id,
-        'maximum_histograms_in_batch' : 20,
-        'script_file_name'            : script_file_name,
-        'log_file_name'               : log_file_name
+        'working_dir'             : working_dir,
+        'input_file_names'        : input_file_names,
+        'output_file_name'        : output_file_name,
+        'waitForJobs'             : waitForJobs,
+        'auxDirName'              : auxDirName,
+        'pool_id'                 : pool_id,
+        'max_input_files_per_job' : 5,
+        'script_file_name'        : script_file_name,
+        'log_file_name'           : log_file_name
     }
     if not pool_id:
         raise ValueError('pool_id is empty')
@@ -161,16 +170,16 @@ m = sbatchManager('{{pool_id}}')
 m.setWorkingDir('{{working_dir}}')
 
 cluster_histogram_aggregator = ClusterHistogramAggregator(
-  input_histograms            = {{input_file_names}},
-  final_output_histogram      = '{{output_file_name}}',
-  maximum_histograms_in_batch = {{maximum_histograms_in_batch}},
-  waitForJobs                 = {{waitForJobs}},
-  sbatch_manager              = m,
-  auxDirName                  = '{{auxDirName}}',
-  script_file_name            = '{{script_file_name}}',
-  log_file_name               = '{{log_file_name}}',
+  input_files             = {{input_file_names}},
+  final_output_file       = '{{output_file_name}}',
+  max_input_files_per_job = {{max_input_files_per_job}},
+  waitForJobs             = {{waitForJobs}},
+  sbatch_manager          = m,
+  auxDirName              = '{{auxDirName}}',
+  script_file_name        = '{{script_file_name}}',
+  log_file_name           = '{{log_file_name}}',
 )
-cluster_histogram_aggregator.create_output_histogram()
+cluster_histogram_aggregator.create_output_file()
 """
     sbatch_code = jinja2.Template(sbatch_template).render(**template_vars)
     num_jobs = 1

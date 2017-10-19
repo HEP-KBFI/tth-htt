@@ -397,35 +397,35 @@ class analyzeConfig:
         scriptFiles = {}
         jobOptions = {}
         for key in outputFiles.keys():
-            scriptFiles[key] = self.create_hadd_python_file(inputFiles[key], outputFiles[key], "_".join([ label, key ]))
+            scriptFiles[key] = self.create_hadd_python_file(inputFiles[key], outputFiles[key], "_".join([ label, key, "ClusterHistogramAggregator" ]))
             jobOptions[key] = {
                 'inputFile' : inputFiles[key],
                 'cfgFile_modified' : scriptFiles[key],
-                'outputFile' : outputFiles[key],
+                'outputFile' : None, # CV: output file written to /hdfs by ClusterHistogramAggregator directly and does not need to be copied
                 'logFile' : os.path.join(self.dirs[DKEY_LOGS], os.path.basename(outputFiles[key]).replace(".root", ".log"))
             }
         sbatchTarget = None
         if self.is_sbatch:
             sbatchTarget = "sbatch_hadd_%s" % label
             self.phoniesToAdd.append(sbatchTarget)
-            lines_makefile.append("%s: %s" % (sbatchTarget, " ".join([ " ".join(value['inputFile']) for value in jobOptions.values() ])))
-            for value in jobOptions.values():
-                lines_makefile.append("\t%s %s" % ("rm -f", value['outputFile']))
+            lines_makefile.append("%s: %s" % (sbatchTarget, " ".join([ " ".join(inputFiles[key]) for key in inputFiles.keys()])))
+            for outputFile in outputFiles.values():
+                lines_makefile.append("\t%s %s" % ("rm -f", outputFile))
             sbatchFile = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_hadd_%s_%s.py" % (self.channel, label))
             self.createScript_sbatch('python', sbatchFile, jobOptions)
             lines_makefile.append("\t%s %s" % ("python", sbatchFile))
             lines_makefile.append("")
-        for value in jobOptions.values():
+        for key in outputFiles.keys():
             if self.is_makefile:
-                lines_makefile.append("%s: %s" % (value['outputFile'], " ".join(value['inputFile'])))
-                lines_makefile.append("\t%s %s" % ("rm -f", value['outputFile']))
-                lines_makefile.append("\t%s %s" % ("python", value['cfgFile_modified']))
+                lines_makefile.append("%s: %s" % (outputFiles[key], " ".join(inputFiles[key])))
+                lines_makefile.append("\t%s %s" % ("rm -f", outputFiles[key]))
+                lines_makefile.append("\t%s %s" % ("python", scriptFiles[key]))
                 lines_makefile.append("")
             elif self.is_sbatch:
-                lines_makefile.append("%s: %s" % (value['outputFile'], sbatchTarget))
+                lines_makefile.append("%s: %s" % (outputFiles[key], sbatchTarget))
                 lines_makefile.append("\t%s" % ":") # CV: null command
                 lines_makefile.append("")
-            self.filesToClean.append(value['outputFile'])
+            self.filesToClean.append(outputFiles[key])
     
     def addToMakefile_hadd_stage1(self, lines_makefile):
         self.addToMakefile_hadd(lines_makefile, self.inputFiles_hadd_stage1, self.outputFile_hadd_stage1, "stage1")

@@ -14,7 +14,7 @@ from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 use_prod_ntuples     = True
 mode                 = "VHbb"
 ERA                  = "2016"
-version              = "2017Oct17"
+version              = "2017Oct18"
 changeBranchNames    = use_prod_ntuples
 max_job_resubmission = 3
 
@@ -136,7 +136,7 @@ if __name__ == '__main__':
       lumi                                  = LUMI,
       debug                                 = False,
       running_method                        = "sbatch",
-      num_parallel_jobs                     = 100, # Karl: speed up the hadd steps
+      num_parallel_jobs                     = 16,
       executable_addBackgrounds             = "addBackgrounds",
       executable_addBackgroundJetToTauFakes = "addBackgroundLeptonFakes", # CV: use common executable for estimating jet->lepton and jet->tau_h fake background
       histograms_to_fit                     = [

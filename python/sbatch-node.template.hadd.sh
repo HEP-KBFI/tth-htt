@@ -8,7 +8,7 @@ echo 'Unsetting JAVA_HOME=$JAVA_HOME'
 unset JAVA_HOME
 
 # This value is provided by sbatchManager.py that creates sbatch scripts based this template
-echo 'Running version (sbatch-node.template.hadd.sh)'
+echo 'Running script {{ script_file }} (created from template sbatch-node.template.hadd.sh)'
 
 
 RUNNING_COMMAND="{{ RUNNING_COMMAND }}"
@@ -99,10 +99,14 @@ run_wrapped_executable() {
 
     echo "Execute command: {{ exec_name }} {{ command_line_parameter }} &> $TEMPORARY_EXECUTABLE_LOG_FILE"    
     # CV: use newer hadd version that supports increasing cachesize, to reduce random disk access
+    OLD_PATH=$PATH
     export PATH=/cvmfs/cms.cern.ch/slc6_amd64_gcc630/cms/cmssw/CMSSW_9_4_0_pre2/external/slc6_amd64_gcc630/bin/:$PATH
+    OLD_LD_LIBRARY_PATH=$LD_LIBRARY_PATH
     export LD_LIBRARY_PATH=/cvmfs/cms.cern.ch/slc6_amd64_gcc630/cms/cmssw/CMSSW_9_4_0_pre2/biglib/slc6_amd64_gcc630:/cvmfs/cms.cern.ch/slc6_amd64_gcc630/cms/cmssw/CMSSW_9_4_0_pre2/lib/slc6_amd64_gcc630:/cvmfs/cms.cern.ch/slc6_amd64_gcc630/cms/cmssw/CMSSW_9_4_0_pre2/external/slc6_amd64_gcc630/lib:/cvmfs/cms.cern.ch/slc6_amd64_gcc630/external/llvm/4.0.1/lib64:/cvmfs/cms.cern.ch/slc6_amd64_gcc630/external/gcc/6.3.0/lib64:/cvmfs/cms.cern.ch/slc6_amd64_gcc630/external/gcc/6.3.0/lib:$LD_LIBRARY_PATH
     {{ exec_name }} {{ command_line_parameter }} &> $TEMPORARY_EXECUTABLE_LOG_FILE
     HADD_EXIT_CODE=$?
+    export PATH=$OLD_PATH
+    export LD_LIBRARY_PATH=$OLD_LD_LIBRARY_PATH
     echo "Command {{ exec_name }} exited with code $HADD_EXIT_CODE"
 
     echo "Time is: `date`"
@@ -111,6 +115,9 @@ run_wrapped_executable() {
 	echo 'ERROR: hadd exited w/ non-zero return code. Will stop execution.'
 	return 1
     fi
+
+    echo "Contents of temporary scratch dir: ls -laR $SCRATCH_DIR"
+    ls -laR $SCRATCH_DIR
 
     OUTPUT_FILES="{{ outputFiles }}"
     echo "Copying output files: {{ outputFiles }}"

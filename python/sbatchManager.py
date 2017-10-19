@@ -1,4 +1,4 @@
-import codecs, getpass, jinja2, logging, os, time, datetime, sys, random
+import codecs, getpass, jinja2, logging, os, time, datetime, sys, random, uuid
 
 from tthAnalysis.HiggsToTauTau.ClusterHistogramAggregator import ClusterHistogramAggregator
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd
@@ -316,7 +316,7 @@ class sbatchManager:
         two_pow_sixteen = 65536
         random.seed((abs(hash(command_line_parameter))) % two_pow_sixteen)
         max_delay = 300
-        delay = random.randint(0, max_delay)
+        random_delay = random.randint(0, max_delay)
 
         script = jinja2.Template(job_template).render(
             working_dir            = self.workingDir,
@@ -329,8 +329,9 @@ class sbatchManager:
             outputFiles            = " ".join(outputFiles),
             wrapper_log_file       = wrapper_log_file,
             executable_log_file    = executable_log_file,
+            script_file            = scriptFile,
             RUNNING_COMMAND        = sbatch_command,
-            random_sleep           = delay
+            random_sleep           = random_delay
         )
         logging.debug("writing sbatch script file = '%s'" % scriptFile)
         with codecs.open(scriptFile, "w", "utf-8") as f:
@@ -383,7 +384,7 @@ class sbatchManager:
         command = jinja2.Template(command_template).render(
           user      = self.user,
           comment   = self.pool_id,
-          delimiter = delimiter,
+          delimiter = delimiter
         )
 
         # Initially, all jobs are marked as submitted so we have to go through all jobs and check their exit codes
@@ -457,7 +458,11 @@ class sbatchManager:
             jobIds_set = set([ id_ for id_ in self.jobIds if self.jobIds[id_]['status'] == Status.submitted])
             nofJobs_left = len(jobIds_set)
             if nofJobs_left > 0:
-                time.sleep(self.poll_interval)
+                two_pow_sixteen = 65536
+                random.seed((abs(hash(uuid.uuid4()))) % two_pow_sixteen)
+                max_delay = 300
+                random_delay = random.randint(0, max_delay)
+                time.sleep(self.poll_interval + random_delay)
             else:
                 break
             logging.info("Waiting for sbatch to finish (%d job(s) still left) ..." % nofJobs_left)

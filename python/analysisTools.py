@@ -91,7 +91,7 @@ def generateInputFileList(sample_name, sample_info, max_files_per_job, debug = F
             inputFileList[jobId[0]] = generate_input_list(jobId, secondary_files, primary_store, secondary_store, debug)
     return inputFileList
 
-def createMakefile(makefileName, targets, lines_makefile, filesToClean = None, isSbatch = False):
+def createMakefile(makefileName, targets, lines_makefile, filesToClean = None, isSbatch = False, phoniesToAdd = []):
     """Creates Makefile that runs the complete analysis workfow.
     """
     
@@ -106,6 +106,7 @@ def createMakefile(makefileName, targets, lines_makefile, filesToClean = None, i
         phonies.append('clean')
     if isSbatch:
         phonies.append('sbatch_analyze sbatch_addBackgrounds sbatch_addFakes')
+        phonies.append(' '.join(phoniesToAdd))
     if phonies:
         lines_makefile_with_header.append(".PHONY: %s" % ' '.join(phonies))
     if filesToClean:
