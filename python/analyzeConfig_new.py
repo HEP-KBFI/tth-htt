@@ -62,8 +62,7 @@ class analyzeConfig:
                  executable_prep_dcard = "prepareDatacards",
                  executable_add_syst_dcard = "addSystDatacards",
                  executable_make_plots = "makePlots",
-                 executable_make_plots_mcClosure = "makePlots_mcClosure",
-                 pool_id = ''):
+                 executable_make_plots_mcClosure = "makePlots_mcClosure"):
 
         self.configDir = configDir
         self.outputDir = outputDir
@@ -94,8 +93,7 @@ class analyzeConfig:
         self.executable_add_syst_dcard = executable_add_syst_dcard  
         self.executable_make_plots = executable_make_plots
         self.executable_make_plots_mcClosure = executable_make_plots_mcClosure
-        self.pool_id = pool_id if pool_id else uuid.uuid4()
-
+        
         self.workingDir = os.getcwd()
         print "Working directory is: " + self.workingDir
 
@@ -130,6 +128,7 @@ class analyzeConfig:
         self.cfgFile_make_plots = os.path.join(self.workingDir, "makePlots_cfg.py")
         self.jobOptions_make_plots = {}
         self.filesToClean = []
+        self.phoniesToAdd = []
         self.rleOutputFiles = {}
         self.rootOutputFiles = {}
         self.rootOutputAux = {}
@@ -344,7 +343,7 @@ class analyzeConfig:
             working_dir = self.workingDir,
             max_num_jobs = self.max_num_jobs,
             cvmfs_error_log = self.cvmfs_error_log,
-            pool_id = self.pool_id
+            pool_id = uuid.uuid4()
         )
         return num_jobs
 
@@ -372,7 +371,7 @@ class analyzeConfig:
         sbatch_hadd_dir = os.path.join(self.dirs[DKEY_HADD_RT], self.channel, hadd_stage_name) if self.dirs[DKEY_HADD_RT] else ''
         self.num_jobs['hadd'] += tools_createScript_sbatch_hadd(
             sbatch_hadd_file, inputFiles, outputFile, scriptFile, logFile, self.workingDir, auxDirName = sbatch_hadd_dir,
-            pool_id = self.pool_id,
+            pool_id = uuid.uuid4()
         )
         return sbatch_hadd_file
 
@@ -395,16 +394,41 @@ class analyzeConfig:
             self.filesToClean.append(jobOptions['histogramFile'])
 
     def addToMakefile_hadd(self, lines_makefile, inputFiles, outputFiles, label):
+        scriptFiles = {}
+        jobOptions = {}
         for key in outputFiles.keys():
-            script = self.create_hadd_python_file(inputFiles[key], outputFiles[key], "_".join([ "stage1", key ]))
-            lines_makefile.append("%s: %s" % (outputFiles[key], " ".join(inputFiles[key])))
-            lines_makefile.append("\t%s %s" % ("rm -f", outputFiles[key]))
-            lines_makefile.append("\t%s %s" % ("python", script))
+            scriptFiles[key] = self.create_hadd_python_file(inputFiles[key], outputFiles[key], "_".join([ label, key ]))
+            jobOptions[key] = {
+                'inputFile' : inputFiles[key],
+                'cfgFile_modified' : scriptFiles[key],
+                'outputFile' : outputFiles[key],
+                'logFile' : os.path.join(self.dirs[DKEY_LOGS], os.path.basename(outputFiles[key]).replace(".root", ".log"))
+            }
+        sbatchTarget = None
+        if self.is_sbatch:
+            sbatchTarget = "sbatch_hadd_%s" % label
+            self.phoniesToAdd.append(sbatchTarget)
+            lines_makefile.append("%s: %s" % (sbatchTarget, " ".join([ " ".join(value['inputFile']) for value in jobOptions.values() ])))
+            for value in jobOptions.values():
+                lines_makefile.append("\t%s %s" % ("rm -f", value['outputFile']))
+            sbatchFile = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_hadd_%s_%s.py" % (self.channel, label))
+            self.createScript_sbatch('python', sbatchFile, jobOptions)
+            lines_makefile.append("\t%s %s" % ("python", sbatchFile))
             lines_makefile.append("")
-            self.filesToClean.append(outputFiles[key])
+        for value in jobOptions.values():
+            if self.is_makefile:
+                lines_makefile.append("%s: %s" % (value['outputFile'], " ".join(value['inputFile'])))
+                lines_makefile.append("\t%s %s" % ("rm -f", value['outputFile']))
+                lines_makefile.append("\t%s %s" % ("python", value['cfgFile_modified']))
+                lines_makefile.append("")
+            elif self.is_sbatch:
+                lines_makefile.append("%s: %s" % (value['outputFile'], sbatchTarget))
+                lines_makefile.append("\t%s" % ":") # CV: null command
+                lines_makefile.append("")
+            self.filesToClean.append(value['outputFile'])
     
     def addToMakefile_hadd_stage1(self, lines_makefile):
-        addToMakefile_hadd(self, lines_makefile, self.inputFiles_hadd_stage1, self.outputFile_hadd_stage1, "stage1")
+        self.addToMakefile_hadd(lines_makefile, self.inputFiles_hadd_stage1, self.outputFile_hadd_stage1, "stage1")
 
     def addToMakefile_addBackgrounds(self, lines_makefile, sbatchTarget, sbatchFile, jobOptions):
         if self.is_sbatch:
@@ -426,7 +450,7 @@ class analyzeConfig:
         """Adds the commands to Makefile that are necessary for building the intermediate histogram file
            that is used as input for data-driven background estimation.
         """
-        addToMakefile_hadd(self, lines_makefile, self.inputFiles_hadd_stage1_5, self.outputFile_hadd_stage1_5, "stage1_5")
+        self.addToMakefile_hadd(lines_makefile, self.inputFiles_hadd_stage1_5, self.outputFile_hadd_stage1_5, "stage1_5")
 
     def addToMakefile_addFakes(self, lines_makefile):
         if self.is_sbatch:
@@ -453,7 +477,7 @@ class analyzeConfig:
     def addToMakefile_hadd_stage2(self, lines_makefile):
         """Adds the commands to Makefile that are necessary for building the final histogram file.
         """
-        addToMakefile_hadd(self, lines_makefile, self.inputFiles_hadd_stage2, self.outputFile_hadd_stage2[key], "stage2")
+        self.addToMakefile_hadd(lines_makefile, self.inputFiles_hadd_stage2, self.outputFile_hadd_stage2, "stage2")
             
     def addToMakefile_prep_dcard(self, lines_makefile):
         """Adds the commands to Makefile that are necessary for building the datacards.
@@ -508,7 +532,7 @@ class analyzeConfig:
             self.filesToClean.append(rootOutput[0])
         if len(self.targets) == 0:
             self.targets.append("sbatch_analyze")
-        tools_createMakefile(self.makefile, self.targets, lines_makefile, self.filesToClean, self.is_sbatch)
+        tools_createMakefile(self.makefile, self.targets, lines_makefile, self.filesToClean, self.is_sbatch, self.phoniesToAdd)
         logging.info("Run it with:\tmake -f %s -j %i " % (self.makefile, self.num_parallel_jobs))
 
     def initializeInputFileIds(self, sample_name, sample_info):
