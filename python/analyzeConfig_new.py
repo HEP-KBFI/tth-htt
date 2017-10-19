@@ -404,7 +404,7 @@ class analyzeConfig:
             self.filesToClean.append(outputFiles[key])
     
     def addToMakefile_hadd_stage1(self, lines_makefile):
-        addToMakefile_hadd(self, lines_makefile, self.inputFiles_hadd_stage1, self.outputFile_hadd_stage1, "stage1")
+        self.addToMakefile_hadd(lines_makefile, self.inputFiles_hadd_stage1, self.outputFile_hadd_stage1, "stage1")
 
     def addToMakefile_addBackgrounds(self, lines_makefile, sbatchTarget, sbatchFile, jobOptions):
         if self.is_sbatch:
