@@ -663,3 +663,5 @@ class analyzeConfig_1l_2tau(analyzeConfig):
     self.createMakefile(lines_makefile)
 
     logging.info("Done")
+
+    return self.num_jobs

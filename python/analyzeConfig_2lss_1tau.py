@@ -818,3 +818,4 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
 
     logging.info("Done")
 
+    return self.num_jobs

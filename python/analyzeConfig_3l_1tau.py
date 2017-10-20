@@ -744,3 +744,4 @@ class analyzeConfig_3l_1tau(analyzeConfig):
 
     logging.info("Done")
 
+    return self.num_jobs
