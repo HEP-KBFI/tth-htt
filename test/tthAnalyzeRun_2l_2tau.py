@@ -130,7 +130,7 @@ if __name__ == '__main__':
 ##         "CMS_ttHl_thu_shape_ttZ_y1Up",
 ##         "CMS_ttHl_thu_shape_ttZ_y1Down",
       ],
-      max_files_per_job                     = 10,
+      max_files_per_job                     = 50,
       era                                   = ERA,
       use_lumi                              = True,
       lumi                                  = LUMI,

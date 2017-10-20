@@ -11,11 +11,12 @@ from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 #                      to increase the BDT training statistics
 #--------------------------------------------------------------------------------
 
-use_prod_ntuples  = True
-mode              = "VHbb"
-ERA               = "2016"
-version           = "2017Oct17"
-changeBranchNames = use_prod_ntuples
+use_prod_ntuples     = True
+mode                 = "VHbb"
+ERA                  = "2016"
+version              = "2017Oct17"
+changeBranchNames    = use_prod_ntuples
+max_job_resubmission = 3
 
 samples                            = None
 LUMI                               = None
@@ -108,85 +109,106 @@ if __name__ == '__main__':
     format = '%(asctime)s - %(levelname)s: %(message)s'
   )
 
-  analysis = analyzeConfig_1l_2tau(
-    configDir          = os.path.join("/home",       getpass.getuser(), "ttHAnalysis", ERA, version),
-    outputDir          = os.path.join("/hdfs/local", getpass.getuser(), "ttHAnalysis", ERA, version),
-    executable_analyze       = "analyze_1l_2tau",
-    cfgFile_analyze          = "analyze_1l_2tau_cfg.py",
-    samples                  = samples,
-    changeBranchNames        = changeBranchNames,
-    hadTau_selection         = hadTau_selection,
-    hadTau_charge_selections = [ "OS", "SS" ],
-    applyFakeRateWeights     = applyFakeRateWeights,
-    central_or_shifts = [
-      "central",
-##      "CMS_ttHl_btag_HFUp",
-##      "CMS_ttHl_btag_HFDown",
-##      "CMS_ttHl_btag_HFStats1Up",
-##      "CMS_ttHl_btag_HFStats1Down",
-##      "CMS_ttHl_btag_HFStats2Up",
-##      "CMS_ttHl_btag_HFStats2Down",
-##      "CMS_ttHl_btag_LFUp",
-##      "CMS_ttHl_btag_LFDown",
-##      "CMS_ttHl_btag_LFStats1Up",
-##      "CMS_ttHl_btag_LFStats1Down",
-##      "CMS_ttHl_btag_LFStats2Up",
-##      "CMS_ttHl_btag_LFStats2Down",
-##      "CMS_ttHl_btag_cErr1Up",
-##      "CMS_ttHl_btag_cErr1Down",
-##      "CMS_ttHl_btag_cErr2Up",
-##      "CMS_ttHl_btag_cErr2Down",
-##      "CMS_ttHl_JESUp",
-##      "CMS_ttHl_JESDown",
-##      "CMS_ttHl_tauESUp",
-##      "CMS_ttHl_tauESDown",
-##      "CMS_ttHl_FRjt_normUp",
-##      "CMS_ttHl_FRjt_normDown",
-##      "CMS_ttHl_FRjt_shapeUp",
-##      "CMS_ttHl_FRjt_shapeDown",
-##      "CMS_ttHl_FRet_shiftUp",
-##      "CMS_ttHl_FRet_shiftDown",
-##      "CMS_ttHl_FRmt_shiftUp",
-##      "CMS_ttHl_FRmt_shiftDown",
-##      "CMS_ttHl_thu_shape_ttH_x1Up",
-##      "CMS_ttHl_thu_shape_ttH_x1Down",
-##      "CMS_ttHl_thu_shape_ttH_y1Up",
-##      "CMS_ttHl_thu_shape_ttH_y1Down",
-##      "CMS_ttHl_thu_shape_ttW_x1Up",
-##      "CMS_ttHl_thu_shape_ttW_x1Down",
-##      "CMS_ttHl_thu_shape_ttW_y1Up",
-##      "CMS_ttHl_thu_shape_ttW_y1Down",
-##      "CMS_ttHl_thu_shape_ttZ_x1Up",
-##      "CMS_ttHl_thu_shape_ttZ_x1Down",
-##      "CMS_ttHl_thu_shape_ttZ_y1Up",
-##      "CMS_ttHl_thu_shape_ttZ_y1Down",
-    ],
-    max_files_per_job                     = 10,
-    era                                   = ERA,
-    use_lumi                              = True,
-    lumi                                  = LUMI,
-    debug                                 = False,
-    running_method                        = "sbatch",
-    num_parallel_jobs                     = 100, # Karl: speed up the hadd steps
-    executable_addBackgrounds             = "addBackgrounds",
-    executable_addBackgroundJetToTauFakes = "addBackgroundLeptonFakes", # CV: use common executable for estimating jet->lepton and jet->tau_h fake background
-    histograms_to_fit                     = [
-      "EventCounter",
-      "numJets",
-      "mvaOutput_1l_2tau_ttbar",
-      "mvaDiscr_1l_2tau",
-      "mTauTauVis",
-    ],
-    select_rle_output                     = True,
-  )
+  job_statistics_summary = {}
+  run_analysis           = False
+  is_last_resubmission   = False
 
-  if mode.find("forBDTtraining") != -1:
+  for idx_job_resubmission in range(max_job_resubmission):
+    if is_last_resubmission:
+      continue
+    logging.info("Job submission #%i:" % (idx_job_resubmission + 1))
+
+    analysis = analyzeConfig_1l_2tau(
+      configDir          = os.path.join("/home",       getpass.getuser(), "ttHAnalysis", ERA, version),
+      outputDir          = os.path.join("/hdfs/local", getpass.getuser(), "ttHAnalysis", ERA, version),
+      executable_analyze       = "analyze_1l_2tau",
+      cfgFile_analyze          = "analyze_1l_2tau_cfg.py",
+      samples                  = samples,
+      changeBranchNames        = changeBranchNames,
+      hadTau_selection         = hadTau_selection,
+      hadTau_charge_selections = [ "OS", "SS" ],
+      applyFakeRateWeights     = applyFakeRateWeights,
+      central_or_shifts = [
+        "central",
+##        "CMS_ttHl_btag_HFUp",
+##        "CMS_ttHl_btag_HFDown",
+##        "CMS_ttHl_btag_HFStats1Up",
+##        "CMS_ttHl_btag_HFStats1Down",
+##        "CMS_ttHl_btag_HFStats2Up",
+##        "CMS_ttHl_btag_HFStats2Down",
+##        "CMS_ttHl_btag_LFUp",
+##        "CMS_ttHl_btag_LFDown",
+##        "CMS_ttHl_btag_LFStats1Up",
+##        "CMS_ttHl_btag_LFStats1Down",
+##        "CMS_ttHl_btag_LFStats2Up",
+##        "CMS_ttHl_btag_LFStats2Down",
+##        "CMS_ttHl_btag_cErr1Up",
+##        "CMS_ttHl_btag_cErr1Down",
+##        "CMS_ttHl_btag_cErr2Up",
+##        "CMS_ttHl_btag_cErr2Down",
+##        "CMS_ttHl_JESUp",
+##        "CMS_ttHl_JESDown",
+##        "CMS_ttHl_tauESUp",
+##        "CMS_ttHl_tauESDown",
+##        "CMS_ttHl_FRjt_normUp",
+##        "CMS_ttHl_FRjt_normDown",
+##        "CMS_ttHl_FRjt_shapeUp",
+##        "CMS_ttHl_FRjt_shapeDown",
+##        "CMS_ttHl_FRet_shiftUp",
+##        "CMS_ttHl_FRet_shiftDown",
+##        "CMS_ttHl_FRmt_shiftUp",
+##        "CMS_ttHl_FRmt_shiftDown",
+##        "CMS_ttHl_thu_shape_ttH_x1Up",
+##        "CMS_ttHl_thu_shape_ttH_x1Down",
+##        "CMS_ttHl_thu_shape_ttH_y1Up",
+##        "CMS_ttHl_thu_shape_ttH_y1Down",
+##        "CMS_ttHl_thu_shape_ttW_x1Up",
+##        "CMS_ttHl_thu_shape_ttW_x1Down",
+##        "CMS_ttHl_thu_shape_ttW_y1Up",
+##        "CMS_ttHl_thu_shape_ttW_y1Down",
+##        "CMS_ttHl_thu_shape_ttZ_x1Up",
+##        "CMS_ttHl_thu_shape_ttZ_x1Down",
+##        "CMS_ttHl_thu_shape_ttZ_y1Up",
+##        "CMS_ttHl_thu_shape_ttZ_y1Down",
+      ],
+      max_files_per_job                     = 50,
+      era                                   = ERA,
+      use_lumi                              = True,
+      lumi                                  = LUMI,
+      debug                                 = False,
+      running_method                        = "sbatch",
+      num_parallel_jobs                     = 16,
+      executable_addBackgrounds             = "addBackgrounds",
+      executable_addBackgroundJetToTauFakes = "addBackgroundLeptonFakes", # CV: use common executable for estimating jet->lepton and jet->tau_h fake background
+      histograms_to_fit                     = [
+        "EventCounter",
+        "numJets",
+        "mvaOutput_1l_2tau_ttbar",
+        "mvaDiscr_1l_2tau",
+        "mTauTauVis",
+      ],
+      select_rle_output                     = True,
+    )
+
+    if mode.find("forBDTtraining") != -1:
       analysis.set_BDT_training(hadTau_selection_relaxed, hadTauFakeRateWeight_inputFileName)
 
-  analysis.create()
+    job_statistics = analysis.create()
+    for job_type, num_jobs in job_statistics.items():
+      logging.info(" #jobs of type '%s' = %i" % (job_type, num_jobs))
+    job_statistics_summary[idx_job_resubmission] = job_statistics
 
-  run_analysis = query_yes_no("Start jobs ?")
-  if run_analysis:
-    analysis.run()
-  else:
-    sys.exit(0)
+    if idx_job_resubmission == 0:
+      run_analysis = query_yes_no("Start jobs ?")
+    if run_analysis:
+      analysis.run()
+    else:
+      sys.exit(0)
+
+    if job_statistics['analyze'] == 0:
+      is_last_resubmission = True
+
+  for idx_job_resubmission in job_statistics_summary.keys():
+    logging.info("Job submission #%i:" % (idx_job_resubmission + 1))
+    for job_type, num_jobs in job_statistics_summary[idx_job_resubmission].items():
+      logging.info(" #jobs of type '%s' = %i" % (job_type, num_jobs))
