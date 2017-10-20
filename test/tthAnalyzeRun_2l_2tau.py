@@ -14,9 +14,10 @@ from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 use_prod_ntuples     = True
 mode                 = "VHbb"
 ERA                  = "2016"
-version              = "2017Oct18"
+version              = "2017Oct20"
 changeBranchNames    = use_prod_ntuples
 max_job_resubmission = 3
+max_files_per_job    = 10 if use_prod_ntuples else 100
 
 samples                            = None
 LUMI                               = None
@@ -130,7 +131,11 @@ if __name__ == '__main__':
 ##         "CMS_ttHl_thu_shape_ttZ_y1Up",
 ##         "CMS_ttHl_thu_shape_ttZ_y1Down",
       ],
+<<<<<<< HEAD
       max_files_per_job                     = 50,
+=======
+      max_files_per_job                     = max_files_per_job,
+>>>>>>> 0ee93f8d11eff2b86e9f98029e3ecf7138e638ea
       era                                   = ERA,
       use_lumi                              = True,
       lumi                                  = LUMI,

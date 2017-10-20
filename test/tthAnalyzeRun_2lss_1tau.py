@@ -19,6 +19,7 @@ mode                 = "VHbb"
 ERA                  = "2016"
 version              = "2017Oct17"
 max_job_resubmission = 3
+max_files_per_job    = 10 if use_prod_ntuples else 100
 
 samples                            = None
 LUMI                               = None
@@ -202,7 +203,7 @@ if __name__ == '__main__':
 ##         "CMS_ttHl_thu_shape_ttZ_y1Up",
 ##         "CMS_ttHl_thu_shape_ttZ_y1Down",
       ],
-      max_files_per_job         = 50,
+      max_files_per_job         = max_files_per_job,
       era                       = ERA,
       use_lumi                  = True,
       lumi                      = LUMI,

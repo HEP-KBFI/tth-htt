@@ -105,7 +105,7 @@ run_wrapped_executable() {
     for OUTPUT_FILE in $OUTPUT_FILES
     do
       OUTPUT_DIR="{{ outputDir }}"
-      if [[ "$OUTPUT_DIR" =~ ^/hdfs* ]]; then
+      if [[ "$OUTPUT_DIR" =~ ^/hdfs* && ( ! -z $(which hadoop) ) ]]; then
         cp_cmd="hadoop fs -copyFromLocal";
         st_cmd="hadoop fs -stat '%b'"
         OUTPUT_DIR=${OUTPUT_DIR#/hdfs}
@@ -129,7 +129,7 @@ run_wrapped_executable() {
           sleep 5s
 
           REMOTE_SIZE=$($st_cmd $OUTPUT_DIR/$OUTPUT_FILE)
-          if [ $REMOTE_SIZE == $OUTPUT_FILE_SIZE ]; then
+          if [ "$REMOTE_SIZE" == "$OUTPUT_FILE_SIZE" ]; then
             COPIED=true
             break;
           else

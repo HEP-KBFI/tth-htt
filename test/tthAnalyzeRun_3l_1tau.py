@@ -19,7 +19,8 @@ mode                 = "VHbb"
 ERA                  = "2016"
 version              = "2017Oct19"
 max_job_resubmission = 3
-   
+max_files_per_job    = 10 if use_prod_ntuples else 100
+
 samples                            = None
 LUMI                               = None
 hadTau_selection                   = None
@@ -182,7 +183,7 @@ if __name__ == '__main__':
 ##         "CMS_ttHl_thu_shape_ttZ_y1Up",
 ##         "CMS_ttHl_thu_shape_ttZ_y1Down",
       ],
-      max_files_per_job                     = 50,
+      max_files_per_job                     = max_files_per_job,
       era                                   = ERA,
       use_lumi                              = True,
       lumi                                  = LUMI,
@@ -224,3 +225,4 @@ if __name__ == '__main__':
     logging.info("Job submission #%i:" % (idx_job_resubmission + 1))
     for job_type, num_jobs in job_statistics_summary[idx_job_resubmission].items():
       logging.info(" #jobs of type '%s' = %i" % (job_type, num_jobs))
+
