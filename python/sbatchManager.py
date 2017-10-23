@@ -1,6 +1,5 @@
 import codecs, getpass, jinja2, logging, os, time, datetime, sys, random, uuid
 
-from tthAnalysis.HiggsToTauTau.ClusterHistogramAggregator import ClusterHistogramAggregator
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd
 
 # Template for wrapper that is ran on cluster node
@@ -86,6 +85,15 @@ class Status:
           return sbatchManagerRuntimeError
       return sbatchManagerError
 
+# Define JobCompletion class to hold information about finished jobs
+
+class JobCompletion:
+  def __init__(self, status, exit_code = '-1:-1', derived_exit_code = '-1:-1', state = 'N/A'):
+      self.status            = status
+      self.exit_code         = exit_code
+      self.derived_exit_code = derived_exit_code
+      self.state             = state
+
 # Define sbatchManager
 
 class sbatchManager:
@@ -146,7 +154,7 @@ class sbatchManager:
         logging.getLogger().setLevel(logging.DEBUG)
 
     def check_job_completion(self, jobsId_list, default_completion = Status.completed):
-        completion = { k : default_completion for k in jobsId_list }
+        completion = { k : JobCompletion(status = default_completion) for k in jobsId_list }
 
         # If the input list is empty, just return here (we don't want to mess up the subprocess commands here)
         if not completion:
@@ -181,9 +189,19 @@ class sbatchManager:
                 JobID, ExitCode, DerivedExitCode, State = line.split('|')
                 if JobID in completion:
                     if State in ['RUNNING', 'COMPLETING']:
-                      completion[JobID] = Status.running
+                      completion[JobID] = JobCompletion(
+                          status            = Status.running,
+                          exit_code         = ExitCode,
+                          derived_exit_code = DerivedExitCode,
+                          state             = State,
+                      )
                     else:
-                      completion[JobID] = Status.classify_error(ExitCode, DerivedExitCode, State)
+                      completion[JobID] = JobCompletion(
+                          status            = Status.classify_error(ExitCode, DerivedExitCode, State),
+                          exit_code         = ExitCode,
+                          derived_exit_code = DerivedExitCode,
+                          state             = State,
+                      )
             return completion
         else:
             # Likely returned along the lines of (due to heavy load on the cluster since SQL DB is overloaded):
@@ -221,10 +239,15 @@ class sbatchManager:
                     line_dict[k[-1]] = ' '.join(v[:-1] if i != len(line_split_eq_spaces) - 2 else v)
                 JobId = line_dict['JobId']
                 if JobId in completion:
-                    completion[JobId] = Status.classify_error(
-                      line_dict['ExitCode'],
-                      line_dict['DerivedExitCode'],
-                      line_dict['JobState'],
+                    completion[JobId] = JobCompletion(
+                        status = Status.classify_error(
+                          line_dict['ExitCode'],
+                          line_dict['DerivedExitCode'],
+                          line_dict['JobState'],
+                        ),
+                        exit_code         = line_dict['ExitCode'],
+                        derived_exit_code = line_dict['DerivedExitCode'],
+                        state             = line_dict['JobState']
                     )
             return completion
         else:
@@ -422,12 +445,27 @@ class sbatchManager:
                         failed_jobs.append(id_)
                     # If there are any failed jobs, throw
                     if failed_jobs:
+
                         failed_jobs_str = ','.join(failed_jobs)
-                        errors          = [completion[id_] for id_ in failed_jobs]
+                        errors          = [completion[id_].status for id_ in failed_jobs]
                         logging.error("Job(s) w/ ID(s) {jobIds} finished with errors: {reasons}".format(
                             jobIds  = failed_jobs_str,
                             reasons = ', '.join(map(Status.toString, errors)),
                         ))
+
+                        # Let's print a table where the first column corresponds to the job ID
+                        # and the second column lists the exit code, the derived exit code, the status
+                        # and the classification of the failed job
+                        logging.error("Error table:")
+                        for id_ in failed_jobs:
+                            sys.stderr.write("{jobId} {exitCode} {derivedExitCode} {state} {status}\n".format(
+                                jobId           = id_,
+                                exitCode        = completion[id_].exit_code,
+                                derivedExitCode = completion[id_].derived_exit_code,
+                                state           = completion[id_].state,
+                                status          = Status.toString(completion[id_].status),
+                            ))
+
                         sys.stderr.write('%s\n' % text_line)
                         for failed_job in failed_jobs:
                             for log in zip(['wrapper', 'executable'], ['log_wrap', 'log_exec']):
@@ -442,7 +480,9 @@ class sbatchManager:
                                     path        = logfile,
                                     log         = logfile_contents,
                                     line        = text_line,
-                                ))
+                                  )
+                                )
+
                         # Raise the first error at hand
                         raise Status.raiseError(errors[0])
                     else:
