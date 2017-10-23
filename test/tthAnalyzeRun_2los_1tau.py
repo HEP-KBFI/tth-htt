@@ -13,7 +13,7 @@ from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 use_prod_ntuples     = True
 mode                 = "VHbb"
 ERA                  = "2016"
-version              = "2017Oct20"
+version              = "2017Oct23"
 max_job_resubmission = 10
 changeBranchNames    = use_prod_ntuples
 max_files_per_job    = 10 if use_prod_ntuples else 100
@@ -171,6 +171,7 @@ if __name__ == '__main__':
         "mTauTauVis"
       ],
       select_rle_output         = True,
+      verbose                   = idx_job_resubmission > 0,
     )
 
     if mode.find("forBDTtraining") != -1:

@@ -17,7 +17,7 @@ from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 use_prod_ntuples     = True
 mode                 = "VHbb"
 ERA                  = "2016"
-version              = "2017Oct19"
+version              = "2017Oct23"
 max_job_resubmission = 3
 max_files_per_job    = 10 if use_prod_ntuples else 100
 
@@ -201,6 +201,7 @@ if __name__ == '__main__':
       ],
       select_rle_output                     = True,
       select_root_output                    = False,
+      verbose                               = idx_job_resubmission > 0,
     )
 
     if mode.find("forBDTtraining") != -1:

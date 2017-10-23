@@ -40,12 +40,15 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
                lepton_charge_selections, hadTau_selection, applyFakeRateWeights, chargeSumSelections, central_or_shifts,
                max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,
                executable_addBackgrounds, executable_addFakes, executable_addFlips, histograms_to_fit, select_rle_output = False,
-               executable_prep_dcard = "prepareDatacards", executable_add_syst_dcard = "addSystDatacards"):
+               executable_prep_dcard = "prepareDatacards", executable_add_syst_dcard = "addSystDatacards",
+               verbose = False):
     analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "2lss_1tau", central_or_shifts,
       max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,
       histograms_to_fit,
       executable_prep_dcard = executable_prep_dcard,
-      executable_add_syst_dcard = executable_add_syst_dcard)
+      executable_add_syst_dcard = executable_add_syst_dcard,
+      verbose = verbose,
+    )
 
     self.samples = samples
     self.changeBranchNames = changeBranchNames
@@ -275,7 +278,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
        that is used as input for data-driven background estimation.
     """
     self.addToMakefile_hadd(lines_makefile, self.inputFiles_hadd_stage1_6, self.outputFile_hadd_stage1_6, "stage1_6")
-    
+
   def addToMakefile_addFlips(self, lines_makefile):
     if self.is_sbatch:
       lines_makefile.append("sbatch_addFlips: %s" % " ".join([ jobOptions['inputFile'] for jobOptions in self.jobOptions_addFlips.values() ]))

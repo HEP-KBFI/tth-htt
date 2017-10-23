@@ -17,7 +17,7 @@ from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 use_prod_ntuples     = True
 mode                 = "VHbb"
 ERA                  = "2016"
-version              = "2017Oct17"
+version              = "2017Oct23"
 max_job_resubmission = 3
 max_files_per_job    = 10 if use_prod_ntuples else 100
 
@@ -119,7 +119,7 @@ if __name__ == '__main__':
     level  = logging.INFO,
     format = '%(asctime)s - %(levelname)s: %(message)s',
   )
-  
+
   configDir = os.path.join("/home",       getpass.getuser(), "ttHAnalysis", ERA, version)
   outputDir = os.path.join("/hdfs/local", getpass.getuser(), "ttHAnalysis", ERA, version)
 
@@ -225,6 +225,7 @@ if __name__ == '__main__':
         "memOutput_LR_type1",
       ],
       select_rle_output         = True,
+      verbose                   = idx_job_resubmission > 0,
     )
 
     if mode.find("forBDTtraining") != -1:
