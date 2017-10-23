@@ -29,7 +29,7 @@ class analyzeConfig:
 
        Args:
          configDir: The root config dir -- all configuration files are stored in its subdirectories
-         outputDir: The root output dir -- all log and output files are stored in its subdirectories  
+         outputDir: The root output dir -- all log and output files are stored in its subdirectories
          executable_analyze: Name of the executable that runs the analysis; possible values are `analyze_2lss_1tau`, `analyze_2los_1tau`, `analyze_1l_2tau`,...
          max_files_per_job: maximum number of input ROOT files (Ntuples) are allowed to chain together per job
          use_lumi: if True, use lumiSection aka event weight ( = xsection * luminosity / nof events), otherwise uses plain event count
@@ -87,25 +87,41 @@ class analyzeConfig:
             self.configDir, "Makefile_%s" % self.channel)
         self.num_parallel_jobs = num_parallel_jobs
         self.histograms_to_fit = histograms_to_fit
-        self.executable_prep_dcard = executable_prep_dcard        
+        self.executable_prep_dcard = executable_prep_dcard
         self.prep_dcard_processesToCopy = [ "data_obs", "TT", "TTW", "TTZ", "EWK", "Rares" ]
         self.prep_dcard_signals = [ "signal", "ttH", "ttH_hww", "ttH_hzz", "ttH_htt", "ttH_fake" ]
-        self.executable_add_syst_dcard = executable_add_syst_dcard  
+        self.executable_add_syst_dcard = executable_add_syst_dcard
         self.executable_make_plots = executable_make_plots
         self.executable_make_plots_mcClosure = executable_make_plots_mcClosure
-        
+
         self.workingDir = os.getcwd()
-        print "Working directory is: " + self.workingDir
+        logging.info("Working directory is: %s" % self.workingDir)
 
         create_if_not_exists(self.configDir)
         create_if_not_exists(self.outputDir)
-        self.stdout_file = codecs.open(os.path.join(
-            self.configDir, "stdout_%s.log" % self.channel), 'w', 'utf-8')
-        self.stderr_file = codecs.open(os.path.join(
-            self.configDir, "stderr_%s.log" % self.channel), 'w', 'utf-8')
+
+        stdout_file_path = os.path.join(self.configDir, "stdout_%s.log" % self.channel)
+        stderr_file_path = os.path.join(self.configDir, "stderr_%s.log" % self.channel)
+        if os.path.isfile(stdout_file_path) or os.path.isfile(stderr_file_path):
+            # The file already exists; let's version the output files
+            version_idx = 1
+            while True:
+                stdout_file_path_tmp = "%s.%i" % (stdout_file_path, version_idx)
+                stderr_file_path_tmp = "%s.%i" % (stderr_file_path, version_idx)
+                if os.path.isfile(stdout_file_path_tmp) or os.path.isfile(stderr_file_path_tmp):
+                    # If a versioned stdout/stderr file already exists, increment the version
+                    version_idx += 1
+                else:
+                    # We have found a vacant version number
+                    stdout_file_path = stdout_file_path_tmp
+                    stderr_file_path = stderr_file_path_tmp
+                    break
+
+        self.stdout_file = codecs.open(stdout_file_path, 'w', 'utf-8')
+        self.stderr_file = codecs.open(stderr_file_path, 'w', 'utf-8')
         self.dirs = {}
         self.samples = {}
-                
+
         self.jobOptions_analyze = {}
         self.inputFiles_hadd_stage1 = {}
         self.outputFile_hadd_stage1 = {}
@@ -158,7 +174,7 @@ class analyzeConfig:
             ]
             self.triggers_1mu1tau = []
             self.triggers_1e1tau = []
-            self.triggers_2tau = []            
+            self.triggers_2tau = []
         elif era == '2016':
             self.triggers_3mu = [
                 'HLT_BIT_HLT_TripleMu_12_10_5_v',
@@ -205,7 +221,7 @@ class analyzeConfig:
                 ##'HLT_BIT_HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau20_SingleL1_v',
                 ##'HLT_BIT_HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau20_v',
                 'HLT_BIT_HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau30_v'
-            ]           
+            ]
             self.triggers_2tau = [
                 'HLT_BIT_HLT_DoubleMediumIsoPFTau35_Trk1_eta2p1_Reg_v',
                 'HLT_BIT_HLT_DoubleMediumCombinedIsoPFTau35_Trk1_eta2p1_Reg_v'
@@ -225,9 +241,9 @@ class analyzeConfig:
 
     def __del__(self):
         for hostname, times in self.cvmfs_error_log.items():
-            print "Problem with cvmfs access: host = %s (%i jobs)" % (hostname, len(times))
+            logging.error("Problem with cvmfs access: host = %s (%i jobs)" % (hostname, len(times)))
             for time in times:
-                print time
+                logging.error(str(time))
 
     def createCfg_analyze(self, *args):
         raise ValueError(
@@ -254,13 +270,13 @@ class analyzeConfig:
            Args:
              inputFiles: input file (the ROOT file produced by hadd_stage1)
              outputFile: output file of the job
-        """  
+        """
         lines = []
         lines.append("process.fwliteInput.fileNames = cms.vstring('%s')" % jobOptions['inputFile'])
         lines.append("process.fwliteOutput.fileName = cms.string('%s')" % os.path.basename(jobOptions['outputFile']))
         lines.append("process.addBackgroundLeptonFakes.categories = cms.VPSet(")
         lines.append("    cms.PSet(")
-        lines.append("        signal = cms.string('%s')," % jobOptions['category_signal']) 
+        lines.append("        signal = cms.string('%s')," % jobOptions['category_signal'])
         lines.append("        sideband = cms.string('%s')" % jobOptions['category_sideband'])
         lines.append("    )")
         lines.append(")")
@@ -426,7 +442,7 @@ class analyzeConfig:
                 lines_makefile.append("\t%s" % ":") # CV: null command
                 lines_makefile.append("")
             self.filesToClean.append(outputFiles[key])
-    
+
     def addToMakefile_hadd_stage1(self, lines_makefile):
         self.addToMakefile_hadd(lines_makefile, self.inputFiles_hadd_stage1, self.outputFile_hadd_stage1, "stage1")
 
@@ -456,7 +472,7 @@ class analyzeConfig:
         if self.is_sbatch:
             lines_makefile.append("sbatch_addFakes: %s" % " ".join([ jobOptions['inputFile'] for jobOptions in self.jobOptions_addFakes.values() ]))
             lines_makefile.append("\t%s %s" % ("python", self.sbatchFile_addFakes))
-            lines_makefile.append("")        
+            lines_makefile.append("")
         for jobOptions in self.jobOptions_addFakes.values():
             if self.is_makefile:
                 lines_makefile.append("%s: %s" % (jobOptions['outputFile'], jobOptions['inputFile']))
@@ -478,7 +494,7 @@ class analyzeConfig:
         """Adds the commands to Makefile that are necessary for building the final histogram file.
         """
         self.addToMakefile_hadd(lines_makefile, self.inputFiles_hadd_stage2, self.outputFile_hadd_stage2, "stage2")
-            
+
     def addToMakefile_prep_dcard(self, lines_makefile):
         """Adds the commands to Makefile that are necessary for building the datacards.
         """
@@ -496,7 +512,7 @@ class analyzeConfig:
             lines_makefile.append("\t%s %s" % (self.executable_add_syst_dcard, jobOptions['cfgFile_modified']))
             self.filesToClean.append(jobOptions['outputFile'])
             lines_makefile.append("")
-      
+
     def addToMakefile_make_plots(self, lines_makefile):
         """Adds the commands to Makefile that are necessary for making control plots of the jet->tau fake background estimation procedure.
         """
@@ -521,7 +537,7 @@ class analyzeConfig:
 
     def createMakefile(self, lines_makefile):
         """Creates Makefile that runs the complete analysis workfow.
-        """                
+        """
         self.targets.extend([ jobOptions['datacardFile'] for jobOptions in self.jobOptions_prep_dcard.values() ])
         self.targets.extend([ jobOptions['outputFile'] for jobOptions in self.jobOptions_add_syst_dcard.values() ])
         if self.rootOutputAux:
@@ -541,8 +557,9 @@ class analyzeConfig:
 
            TODO: add blacklist to the secondary storage as well
         """
-        print "Warning: Function <initializeInputFileIds> is deprecated and should not be used anymore !!"
-        print " Please have a look at 'analyzeConfig_2lss_1tau.py' to see how to migrate your python scripts to the new syntax."
+        logging.warning("Function <initializeInputFileIds> is deprecated and should not be used anymore !!")
+        logging.warning("Please have a look at 'analyzeConfig_2lss_1tau.py' to see " \
+                        "how to migrate your python scripts to the new syntax.")
         nof_inputFiles = sample_info["nof_files"]
         store_dirs = sample_info["local_paths"]
         assert(len(store_dirs) <= 2), "There is more than one secondary dir!"
@@ -559,7 +576,7 @@ class analyzeConfig:
                                       "selection"].split(","))
         self.inputFileIds[sample_name] = generate_file_ids(
             nof_inputFiles, self.max_files_per_job, blacklist)
-        return (secondary_files, primary_store, secondary_store)    
+        return (secondary_files, primary_store, secondary_store)
 
     def create(self):
         """Creates all config files necessary for runing the complete analysis workfow.
