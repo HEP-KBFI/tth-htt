@@ -4,17 +4,27 @@ import os, logging, sys, getpass
 from tthAnalysis.HiggsToTauTau.analyzeConfig_2l_2tau import analyzeConfig_2l_2tau
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 
+#--------------------------------------------------------------------------------
+# NOTE: set mode flag to
+#   'VHbb'           : to run the analysis on the VHbb Ntuples, with the nominal event selection
+#   'forBDTtraining' : to run the analysis on the VHbb Ntuples, with a relaxed event selection,
+#                      to increase the BDT training statistics
+#--------------------------------------------------------------------------------
+
 use_prod_ntuples     = True
 mode                 = "VHbb"
 ERA                  = "2016"
-version              = "2017Oct04"
-max_job_resubmission = 3
-
-samples              = None
-LUMI                 = None
-hadTau_selection     = None
+version              = "2017Oct23"
 changeBranchNames    = use_prod_ntuples
-applyFakeRateWeights = None
+max_job_resubmission = 3
+max_files_per_job    = 10 if use_prod_ntuples else 100
+
+samples                            = None
+LUMI                               = None
+hadTau_selection                   = None
+hadTau_selection_relaxed           = None
+applyFakeRateWeights               = None
+hadTauFakeRateWeight_inputFileName = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016.root"
 
 if use_prod_ntuples and ERA == "2015":
   raise ValueError("No production Ntuples for 2015 data & MC")
@@ -35,8 +45,9 @@ elif mode == "forBDTtraining":
     from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_prodNtuples_2016_FastSim import samples_2016
   else:
     from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_FastSim import samples_2016
-  hadTau_selection     = "dR03mvaLoose"
-  applyFakeRateWeights = "4L"
+  hadTau_selection         = "dR03mvaVTight"
+  hadTau_selection_relaxed = "dR03mvaLoose"
+  applyFakeRateWeights     = "4L"
 else:
   raise ValueError("Invalid Configuration parameter 'mode' = %s !!" % mode)
 
@@ -120,13 +131,13 @@ if __name__ == '__main__':
 ##         "CMS_ttHl_thu_shape_ttZ_y1Up",
 ##         "CMS_ttHl_thu_shape_ttZ_y1Down",
       ],
-      max_files_per_job                     = 10,
+      max_files_per_job                     = max_files_per_job,
       era                                   = ERA,
       use_lumi                              = True,
       lumi                                  = LUMI,
       debug                                 = False,
       running_method                        = "sbatch",
-      num_parallel_jobs                     = 100, # Karl: speed up the hadd steps
+      num_parallel_jobs                     = 16,
       executable_addBackgrounds             = "addBackgrounds",
       executable_addBackgroundJetToTauFakes = "addBackgroundLeptonFakes", # CV: use common executable for estimating jet->lepton and jet->tau_h fake background
       histograms_to_fit                     = [
@@ -135,10 +146,11 @@ if __name__ == '__main__':
         "mTauTauVis",
       ],
       select_rle_output                     = True,
+      verbose                               = idx_job_resubmission > 0,
     )
 
     if mode.find("forBDTtraining") != -1:
-      analysis.set_BDT_training()
+      analysis.set_BDT_training(hadTau_selection_relaxed, hadTauFakeRateWeight_inputFileName)
 
     job_statistics = analysis.create()
     for job_type, num_jobs in job_statistics.items():

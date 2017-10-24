@@ -220,23 +220,25 @@ class PathEntry:
   def __repr__(self):
     return self.path
 
-def get_triggers(process_name_specific, is_data):
+def get_triggers(process_name_specific, is_data, era):
   if 'SingleElec' in process_name_specific:
     return ['1e']
   if 'SingleMuon' in process_name_specific:
     return ['1mu']
   if 'DoubleEG' in process_name_specific:
-    return ['2e', '3e']
+    return ['2e', '3e'] if era > 2015 else ['2e']
   if 'DoubleMuon' in process_name_specific:
-    return ['2mu', '3mu']
+    return ['2mu', '3mu'] if era > 2015 else ['2mu']
   if 'MuonEG' in process_name_specific:
-    return ['1e1mu', '2e1mu', '1e2mu']
+    return ['1e1mu', '2e1mu', '1e2mu']  if era > 2015 else ['1e1mu']
   if 'Tau' in process_name_specific:
-    return ['1e1tau', '1mu1tau', '2tau']
+    return ['1e1tau', '1mu1tau', '2tau'] if era > 2015 else ['']
   if is_data:
     raise ValueError("Expected MC!")
   return [
     '1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau'
+  ] if era > 2015 else [
+    '1e', '1e1mu', '1mu', '2e', '2mu'
   ]
 
 def process_paths(meta_dict, key):
@@ -308,7 +310,7 @@ def process_paths(meta_dict, key):
     raise ValueError("Not enough paths to locate for %s" % key)
 
 def traverse_single(hdfs_system, meta_dict, path_obj, key, histogram_name, check_every_event,
-                    filetracker, file_idx):
+                    filetracker, file_idx, era):
   ''' Assume that the following subdirectories are of the form: 0000, 0001, 0002, ...
       In these directories we expect root files of the form: tree_1.root, tree_2.root, ...
       If either of those assumptions doesn't hold, we bail out; no clever event count needed
@@ -366,7 +368,9 @@ def traverse_single(hdfs_system, meta_dict, path_obj, key, histogram_name, check
       logging.debug("Opening file {path}".format(path = subentry_file.name_fuse))
       f = ROOT.TFile.Open(subentry_file.name_fuse, "read")
       if not f:
-        raise ValueError("Could not open {path}".format(path = subentry_file.name_fuse))
+        logging.warning("Could not open {path}".format(path = subentry_file.name_fuse))
+        filetracker.corrupted_files.append((subentry_file.name_fuse))
+        continue
       if f.IsZombie():
         logging.warning("File {path} is a zombie".format(path = subentry_file.name_fuse))
         f.Close()
@@ -434,7 +438,7 @@ def traverse_single(hdfs_system, meta_dict, path_obj, key, histogram_name, check
     ) and is_data
     meta_dict[key]['use_HIP_mitigation_mediumMuonId'] = meta_dict[key]['use_HIP_mitigation_bTag']
     meta_dict[key]['triggers']                        = get_triggers(
-      meta_dict[key]['process_name_specific'], is_data
+      meta_dict[key]['process_name_specific'], is_data, era
     )
     meta_dict[key]['genWeight']                       = not is_data
     meta_dict[key]['type']                            = 'data' if is_data else 'mc'
@@ -447,7 +451,7 @@ def traverse_single(hdfs_system, meta_dict, path_obj, key, histogram_name, check
   return
 
 def traverse_double(hdfs_system, meta_dict, path_obj, key, histogram_name, check_every_event,
-                    filetracker, file_idx):
+                    filetracker, file_idx, era):
   ''' Assume that the name of the following subdirectories are the CRAB job IDs
       The tree structure inside those directories should be the same as described in
       traverse_single()
@@ -466,7 +470,7 @@ def traverse_double(hdfs_system, meta_dict, path_obj, key, histogram_name, check
   entries = hdfs_system.get_dir_entries(path_obj)
   for entry in entries:
     traverse_single(
-      hdfs_system, meta_dict, entry, key, histogram_name, check_every_event, filetracker, file_idx
+      hdfs_system, meta_dict, entry, key, histogram_name, check_every_event, filetracker, file_idx, era
     )
   return
 
@@ -559,6 +563,9 @@ if __name__ == '__main__':
   parser.add_argument('-J', '--generate-jobs', dest = 'generate_jobs', metavar = 'generate_jobs',
                       type = str, default = '', required = False,
                       help = 'R|Generate SLURM jobs instead of running locally')
+  parser.add_argument('-E', '--era', dest = 'era', metavar = 'era', type = int, default = -1,
+                      required = True, choices = (2015, 2016),
+                      help = 'R|Era of the samples')
   parser.add_argument('-x', '--clean', dest = 'clean', action = 'store_true', default = False,
                       help = 'R|Clean the temporary SLURM directory specified by -J')
   parser.add_argument('-F', '--force', dest = 'force', action = 'store_true', default = False,
@@ -639,7 +646,7 @@ if __name__ == '__main__':
         else:
           traverse_single(
             hdfs_system, meta_dict, path, process_names[path.basename], args.histogram,
-            args.check_every_event, filetracker, args.file_idx
+            args.check_every_event, filetracker, args.file_idx, args.era
           )
     elif path.basename in crab_strings:
       expected_key = meta_dict[crab_strings[path.basename]]['process_name_specific']
@@ -652,7 +659,7 @@ if __name__ == '__main__':
         else:
           traverse_double(
             hdfs_system, meta_dict, path, crab_strings[path.basename], args.histogram,
-            args.check_every_event, filetracker, args.file_idx
+            args.check_every_event, filetracker, args.file_idx, args.era
           )
     else:
       entries = hdfs_system.get_dir_entries(path)
@@ -846,7 +853,7 @@ if __name__ == '__main__':
           use_HIP_mitigation_bTag         = meta_dict[key]['use_HIP_mitigation_bTag'],
           use_HIP_mitigation_mediumMuonId = meta_dict[key]['use_HIP_mitigation_mediumMuonId'],
           use_it                          = meta_dict[key]['use_it'],
-          xsection                        = meta_dict[key]['xsection'] if is_mc else None,
+          xsection                        = round(meta_dict[key]['xsection'], 6) if is_mc else None,
           genWeight                       = meta_dict[key]['genWeight'],
           triggers                        = meta_dict[key]['triggers'],
           reHLT                           = meta_dict[key]['reHLT'],

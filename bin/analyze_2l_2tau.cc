@@ -674,7 +674,7 @@ int main(int argc, char* argv[])
     bdt_filler -> register_variable<float_type>(
       "lep1_pt", "lep1_conePt", "lep1_eta", "lep1_tth_mva", "mindr_lep1_jet", "mT_lep1", "dr_lep1_tau1", "dr_lep1_tau2",
       "lep2_pt", "lep2_conePt", "lep2_eta", "lep2_tth_mva", "mindr_lep2_jet", "mT_lep2", "dr_lep2_tau1", "dr_lep2_tau2",
-      "mindr_tau1_jet", "mindr_tau2_jet", "avg_dr_jet", "ptmiss",  "htmiss", "tau1_mva", "tau1_pt", "tau1_eta", "tau2_mva", "tau2_pt", "tau2_eta", "dr_leps",
+      "mindr_tau1_jet", "mindr_tau2_jet", "avg_dr_jet", "ptmiss",  "htmiss", "tau1_mva", "tau1_pt", "tau1_eta", "tau2_mva", "tau2_pt", "tau2_eta", "dr_leps", "dr_taus",
       "mTauTauVis", "leptonPairCharge", "hadTauPairCharge", "lumiScale", "genWeight", "evtWeight",
       "lep1_genLepPt", "lep2_genLepPt", "tau1_genTauPt", "tau2_genTauPt", 
       "lep1_fake_prob", "lep2_fake_prob", "tau1_fake_prob", "tau2_fake_prob",
@@ -1526,6 +1526,8 @@ int main(int argc, char* argv[])
           ("tau2_genTauPt",        ( selHadTau_sublead->genHadTau() != 0 ) ? selHadTau_sublead->genHadTau()->pt() : 0.)
 	  ("lep1_fake_prob",       prob_fake_lepton_lead)
 	  ("lep2_fake_prob",       prob_fake_lepton_sublead)
+    	  ("tau1_fake_prob",       jetToTauFakeRateInterface->getWeight_lead(selHadTau_lead->pt(), selHadTau_lead->absEta()))
+          ("tau2_fake_prob",       jetToTauFakeRateInterface->getWeight_sublead(selHadTau_sublead->pt(), selHadTau_sublead->absEta()))
           ("lumiScale",            lumiScale)
           ("genWeight",            eventInfo.genWeight)
           ("evtWeight",            evtWeight)
