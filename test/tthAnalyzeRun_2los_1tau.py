@@ -6,51 +6,70 @@ from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 #--------------------------------------------------------------------------------
 # NOTE: set mode flag to
 #   'VHbb'           : to run the analysis on the VHbb Ntuples, with the nominal event selection
-#   'forBDTtraining' : to run the analysis on the VHbb Ntuples, with a relaxed event selection, to increase the BDT training statistics
+#   'forBDTtraining' : to run the analysis on the VHbb Ntuples, with a relaxed event selection,
+#                      to increase the BDT training statistics
 #--------------------------------------------------------------------------------
 
-#mode = "VHbb"
-mode = "VHbb"
-#mode = "forBDTtraining_beforeAddMEM"
-#mode = "forBDTtraining_afterAddMEM"
+use_prod_ntuples     = True
+mode                 = "VHbb"
+ERA                  = "2016"
+version              = "2017Oct23"
+max_job_resubmission = 10
+changeBranchNames    = use_prod_ntuples
+max_files_per_job    = 10 if use_prod_ntuples else 100
 
-hadTau_selection =  None
-changeBranchNames = None
-applyFakeRateWeights = None
+samples                            = None
+LUMI                               = None
+hadTau_selection                   = None
+hadTau_selection_relaxed           = None
+applyFakeRateWeights               = None
+hadTauFakeRateWeight_inputFileName = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016.root"
+
+if use_prod_ntuples and ERA == "2015":
+  raise ValueError("No production Ntuples for 2015 data & MC")
+
+if mode == "forBDTtraining" and ERA == "2015":
+  raise ValueError("No fastsim samples for 2015")
+
 if mode == "VHbb":
-  from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2los_1tau_2015 import samples_2015
-  from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2los_1tau_2016 import samples_2016
+  if use_prod_ntuples:
+    from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_prodNtuples_2016 import samples_2016
+  else:
+    from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2015 import samples_2015
+    from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016 import samples_2016
+
+  for sample_name, sample_info in samples_2016.items():
+    if sample_name in [
+      "/Tau/Run2016B-PromptReco-v2/MINIAOD",
+      "/Tau/Run2016C-PromptReco-v2/MINIAOD",
+      "/Tau/Run2016D-PromptReco-v2/MINIAOD",
+      "/Tau/Run2016E-PromptReco-v2/MINIAOD",
+      "/Tau/Run2016F-PromptReco-v1/MINIAOD",
+      "/Tau/Run2016G-PromptReco-v1/MINIAOD"]:
+      sample_info["use_it"] = False
+
   hadTau_selection = "dR03mvaMedium"
-  changeBranchNames = False
   applyFakeRateWeights = "3L"
+
 elif mode == "forBDTtraining":
-  from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_FastSim import samples_2016
-  hadTau_selection = "dR03mvaLoose"
-  changeBranchNames = False
-  applyFakeRateWeights = "3L"
+  if use_prod_ntuples:
+    from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_prodNtuples_2016_FastSim import samples_2016
+  else:
+    from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_FastSim import samples_2016
+  hadTau_selection         = "dR03mvaVTight"
+  hadTau_selection_relaxed = "dR03mvaLoose"
+  applyFakeRateWeights     = "3L"
 else:
   raise ValueError("Invalid Configuration parameter 'mode' = %s !!" % mode)
 
-#ERA = "2015"
-ERA = "2016"
-
-samples = None
-LUMI = None
 if ERA == "2015":
-  try:
-    samples = samples_2015
-  except NameError:
-    raise ValueError("Mode {mode} not available for era {era}".format(mode = mode, era = ERA))
-  LUMI =  2.3e+3 # 1/pb
+  samples = samples_2015
+  LUMI    = 2.3e+3 # 1/pb
 elif ERA == "2016":
   samples = samples_2016
-  LUMI = 35.9e+3 # 1/pb
+  LUMI    = 35.9e+3 # 1/pb
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
-
-version = "2017Jul28"
-
-max_job_resubmission = 10
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -60,25 +79,24 @@ if __name__ == '__main__':
   )
 
   job_statistics_summary = {}
+  run_analysis           = False
+  is_last_resubmission   = False
 
-  run_analysis = False
-  is_last_resubmission = False
   for idx_job_resubmission in range(max_job_resubmission):
     if is_last_resubmission:
       continue
-    print "Job submission #%i:" % (idx_job_resubmission + 1)
+    logging.info("Job submission #%i:" % (idx_job_resubmission + 1))
 
     analysis = analyzeConfig_2los_1tau(
-      configDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", ERA, version),
-      outputDir = outputDir = os.path.join("/hdfs/local", getpass.getuser(), "ttHAnalysis", ERA, version),
-      executable_analyze = "analyze_2los_1tau",
-      cfgFile_analyze = "analyze_2los_1tau_cfg.py",
-      samples = samples,
-      changeBranchNames = changeBranchNames,
-      changeBranchNames = changeBranchNames,
-      hadTau_selection = hadTau_selection,
+      configDir          = os.path.join("/home",       getpass.getuser(), "ttHAnalysis", ERA, version),
+      outputDir          = os.path.join("/hdfs/local", getpass.getuser(), "ttHAnalysis", ERA, version),
+      executable_analyze   = "analyze_2los_1tau",
+      cfgFile_analyze      = "analyze_2los_1tau_cfg.py",
+      samples              = samples,
+      changeBranchNames    = changeBranchNames,
+      hadTau_selection     = hadTau_selection,
       applyFakeRateWeights = applyFakeRateWeights,
-      central_or_shifts = [
+      central_or_shifts    = [
         "central",
 ##         "CMS_ttHl_btag_HFUp",
 ##         "CMS_ttHl_btag_HFDown",
@@ -88,9 +106,9 @@ if __name__ == '__main__':
 ##         "CMS_ttHl_btag_HFStats2Down",
 ##         "CMS_ttHl_btag_LFUp",
 ##         "CMS_ttHl_btag_LFDown",
-##         "CMS_ttHl_btag_LFStats1Up", 
+##         "CMS_ttHl_btag_LFStats1Up",
 ##         "CMS_ttHl_btag_LFStats1Down",
-##         "CMS_ttHl_btag_LFStats2Up", 
+##         "CMS_ttHl_btag_LFStats2Up",
 ##         "CMS_ttHl_btag_LFStats2Down",
 ##         "CMS_ttHl_btag_cErr1Up",
 ##         "CMS_ttHl_btag_cErr1Down",
@@ -117,7 +135,7 @@ if __name__ == '__main__':
 ##         "CMS_ttHl_FRjt_normUp",
 ##         "CMS_ttHl_FRjt_normDown",
 ##         "CMS_ttHl_FRjt_shapeUp",
-##         "CMS_ttHl_FRjt_shapeDown"
+##         "CMS_ttHl_FRjt_shapeDown",
 ##         "CMS_ttHl_FRet_shiftUp",
 ##         "CMS_ttHl_FRet_shiftDown",
 ##         "CMS_ttHl_FRmt_shiftUp",
@@ -135,16 +153,16 @@ if __name__ == '__main__':
 ##         "CMS_ttHl_thu_shape_ttZ_y1Up",
 ##         "CMS_ttHl_thu_shape_ttZ_y1Down",
       ],
-      max_files_per_job = 100,
-      era = ERA,
-      use_lumi = True,
-      lumi = LUMI,
-      debug = False,
-      running_method = "sbatch",
-      num_parallel_jobs = 8,
+      max_files_per_job         = max_files_per_job,
+      era                       = ERA,
+      use_lumi                  = True,
+      lumi                      = LUMI,
+      debug                     = False,
+      running_method            = "sbatch",
+      num_parallel_jobs         = 100, # Karl: speed up the hadd steps
       executable_addBackgrounds = "addBackgrounds",
-      executable_addFakes = "addBackgroundLeptonFakes",
-      histograms_to_fit = [
+      executable_addFakes       = "addBackgroundLeptonFakes",
+      histograms_to_fit         = [
         "EventCounter",
         "numJets",
         "mvaDiscr_2lss",
@@ -153,19 +171,19 @@ if __name__ == '__main__':
         "mTauTauVis"
       ],
       select_rle_output         = True,
+      verbose                   = idx_job_resubmission > 0,
     )
 
     if mode.find("forBDTtraining") != -1:
-      analysis.set_BDT_training()
-    
+      analysis.set_BDT_training(hadTau_selection_relaxed, hadTauFakeRateWeight_inputFileName)
+
     job_statistics = analysis.create()
     for job_type, num_jobs in job_statistics.items():
-      print " #jobs of type '%s' = %i" % (job_type, num_jobs)
+      logging.info(" #jobs of type '%s' = %i" % (job_type, num_jobs))
     job_statistics_summary[idx_job_resubmission] = job_statistics
 
     if idx_job_resubmission == 0:
-      ##run_analysis = query_yes_no("Start jobs ?")
-      run_analysis = True
+      run_analysis = query_yes_no("Start jobs ?")
     if run_analysis:
       analysis.run()
     else:
@@ -175,6 +193,6 @@ if __name__ == '__main__':
       is_last_resubmission = True
 
   for idx_job_resubmission in job_statistics_summary.keys():
-    print "Job submission #%i:" % (idx_job_resubmission + 1)
+    logging.info("Job submission #%i:" % (idx_job_resubmission + 1))
     for job_type, num_jobs in job_statistics_summary[idx_job_resubmission].items():
-      print " #jobs of type '%s' = %i" % (job_type, num_jobs)
+      logging.info(" #jobs of type '%s' = %i" % (job_type, num_jobs))

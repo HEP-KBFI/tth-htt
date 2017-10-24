@@ -1,6 +1,5 @@
-import codecs, getpass, jinja2, logging, os, time, datetime, sys, random
+import codecs, getpass, jinja2, logging, os, time, datetime, sys, random, uuid
 
-from tthAnalysis.HiggsToTauTau.ClusterHistogramAggregator import ClusterHistogramAggregator
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd
 
 # Template for wrapper that is ran on cluster node
@@ -86,6 +85,15 @@ class Status:
           return sbatchManagerRuntimeError
       return sbatchManagerError
 
+# Define JobCompletion class to hold information about finished jobs
+
+class JobCompletion:
+  def __init__(self, status, exit_code = '-1:-1', derived_exit_code = '-1:-1', state = 'N/A'):
+      self.status            = status
+      self.exit_code         = exit_code
+      self.derived_exit_code = derived_exit_code
+      self.state             = state
+
 # Define sbatchManager
 
 class sbatchManager:
@@ -146,7 +154,7 @@ class sbatchManager:
         logging.getLogger().setLevel(logging.DEBUG)
 
     def check_job_completion(self, jobsId_list, default_completion = Status.completed):
-        completion = { k : default_completion for k in jobsId_list }
+        completion = { k : JobCompletion(status = default_completion) for k in jobsId_list }
 
         # If the input list is empty, just return here (we don't want to mess up the subprocess commands here)
         if not completion:
@@ -181,9 +189,19 @@ class sbatchManager:
                 JobID, ExitCode, DerivedExitCode, State = line.split('|')
                 if JobID in completion:
                     if State in ['RUNNING', 'COMPLETING']:
-                      completion[JobID] = Status.running
+                      completion[JobID] = JobCompletion(
+                          status            = Status.running,
+                          exit_code         = ExitCode,
+                          derived_exit_code = DerivedExitCode,
+                          state             = State,
+                      )
                     else:
-                      completion[JobID] = Status.classify_error(ExitCode, DerivedExitCode, State)
+                      completion[JobID] = JobCompletion(
+                          status            = Status.classify_error(ExitCode, DerivedExitCode, State),
+                          exit_code         = ExitCode,
+                          derived_exit_code = DerivedExitCode,
+                          state             = State,
+                      )
             return completion
         else:
             # Likely returned along the lines of (due to heavy load on the cluster since SQL DB is overloaded):
@@ -221,10 +239,15 @@ class sbatchManager:
                     line_dict[k[-1]] = ' '.join(v[:-1] if i != len(line_split_eq_spaces) - 2 else v)
                 JobId = line_dict['JobId']
                 if JobId in completion:
-                    completion[JobId] = Status.classify_error(
-                      line_dict['ExitCode'],
-                      line_dict['DerivedExitCode'],
-                      line_dict['JobState'],
+                    completion[JobId] = JobCompletion(
+                        status = Status.classify_error(
+                          line_dict['ExitCode'],
+                          line_dict['DerivedExitCode'],
+                          line_dict['JobState'],
+                        ),
+                        exit_code         = line_dict['ExitCode'],
+                        derived_exit_code = line_dict['DerivedExitCode'],
+                        state             = line_dict['JobState']
                     )
             return completion
         else:
@@ -240,13 +263,20 @@ class sbatchManager:
         return completion
 
     def submit(self, cmd_str):
-        # Run command
-        cmd_outerr = run_cmd(cmd_str, return_stderr = True)
-        # Fails if stdout returned by the last line is empty
-        try:
-          job_id = cmd_outerr[0].split()[-1]
-        except IndexError:
-          raise IndexError("Caught an error: '%s'" % cmd_outerr[1])
+        nof_max_retries = 10
+        current_retry   = 0
+        while current_retry < nof_max_retries:
+          # Run command
+          cmd_outerr = run_cmd(cmd_str, return_stderr = True)
+          try:
+            job_id = cmd_outerr[0].split()[-1]
+            break
+          except IndexError:
+            # Fails if stdout returned by the last line is empty
+            logging.warning("Caught an error: '%s'; resubmitting %i-th time" % (cmd_outerr[1], current_retry))
+            current_retry += 1
+            time.sleep(60) # Let's wait for 60 seconds until the next resubmission
+
         # The job ID must be a number, so.. we have to check if it really is one
         try:
           int(job_id)
@@ -267,7 +297,7 @@ class sbatchManager:
 
         job_template_file = os.path.join(current_dir, job_template_file)
         job_template = open(job_template_file, 'r').read()
-        
+
         # raise if logfile missing
         if not logFile:
             if not self.logFileDir:
@@ -309,8 +339,8 @@ class sbatchManager:
         two_pow_sixteen = 65536
         random.seed((abs(hash(command_line_parameter))) % two_pow_sixteen)
         max_delay = 300
-        delay = random.randint(0, max_delay)
-        
+        random_delay = random.randint(0, max_delay)
+
         script = jinja2.Template(job_template).render(
             working_dir            = self.workingDir,
             cmssw_base_dir         = self.cmssw_base_dir,
@@ -322,8 +352,9 @@ class sbatchManager:
             outputFiles            = " ".join(outputFiles),
             wrapper_log_file       = wrapper_log_file,
             executable_log_file    = executable_log_file,
+            script_file            = scriptFile,
             RUNNING_COMMAND        = sbatch_command,
-            random_sleep           = delay
+            random_sleep           = random_delay
         )
         logging.debug("writing sbatch script file = '%s'" % scriptFile)
         with codecs.open(scriptFile, "w", "utf-8") as f:
@@ -376,7 +407,7 @@ class sbatchManager:
         command = jinja2.Template(command_template).render(
           user      = self.user,
           comment   = self.pool_id,
-          delimiter = delimiter,
+          delimiter = delimiter
         )
 
         # Initially, all jobs are marked as submitted so we have to go through all jobs and check their exit codes
@@ -414,12 +445,27 @@ class sbatchManager:
                         failed_jobs.append(id_)
                     # If there are any failed jobs, throw
                     if failed_jobs:
+
                         failed_jobs_str = ','.join(failed_jobs)
-                        errors          = [completion[id_] for id_ in failed_jobs]
+                        errors          = [completion[id_].status for id_ in failed_jobs]
                         logging.error("Job(s) w/ ID(s) {jobIds} finished with errors: {reasons}".format(
                             jobIds  = failed_jobs_str,
                             reasons = ', '.join(map(Status.toString, errors)),
                         ))
+
+                        # Let's print a table where the first column corresponds to the job ID
+                        # and the second column lists the exit code, the derived exit code, the status
+                        # and the classification of the failed job
+                        logging.error("Error table:")
+                        for id_ in failed_jobs:
+                            sys.stderr.write("{jobId} {exitCode} {derivedExitCode} {state} {status}\n".format(
+                                jobId           = id_,
+                                exitCode        = completion[id_].exit_code,
+                                derivedExitCode = completion[id_].derived_exit_code,
+                                state           = completion[id_].state,
+                                status          = Status.toString(completion[id_].status),
+                            ))
+
                         sys.stderr.write('%s\n' % text_line)
                         for failed_job in failed_jobs:
                             for log in zip(['wrapper', 'executable'], ['log_wrap', 'log_exec']):
@@ -434,7 +480,9 @@ class sbatchManager:
                                     path        = logfile,
                                     log         = logfile_contents,
                                     line        = text_line,
-                                ))
+                                  )
+                                )
+
                         # Raise the first error at hand
                         raise Status.raiseError(errors[0])
                     else:
@@ -450,7 +498,11 @@ class sbatchManager:
             jobIds_set = set([ id_ for id_ in self.jobIds if self.jobIds[id_]['status'] == Status.submitted])
             nofJobs_left = len(jobIds_set)
             if nofJobs_left > 0:
-                time.sleep(self.poll_interval)
+                two_pow_sixteen = 65536
+                random.seed((abs(hash(uuid.uuid4()))) % two_pow_sixteen)
+                max_delay = 300
+                random_delay = random.randint(0, max_delay)
+                time.sleep(self.poll_interval + random_delay)
             else:
                 break
             logging.info("Waiting for sbatch to finish (%d job(s) still left) ..." % nofJobs_left)

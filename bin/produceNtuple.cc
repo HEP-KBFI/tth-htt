@@ -53,16 +53,17 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauWriter.h" // RecoHadTauWriter
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetWriter.h" // RecoJetWriter
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMEtWriter.h" // RecoMEtWriter
+#include "tthAnalysis/HiggsToTauTau/interface/MEMPermutationWriter.h" // MEMPermutationWriter
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // isHigherPt, random_start
 #include "tthAnalysis/HiggsToTauTau/interface/RunLumiEventSelector.h" // RunLumiEventSelector
 #include "tthAnalysis/HiggsToTauTau/interface/cutFlowTable.h" // cutFlowTableType
 #include "tthAnalysis/HiggsToTauTau/interface/CutFlowTableHistManager_2lss_1tau.h" // CutFlowTableHistManager_2lss_1tau
 #include "tthAnalysis/HiggsToTauTau/interface/histogramAuxFunctions.h" // createSubdirectory_recursively
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // z_mass, z_window
 #include "tthAnalysis/HiggsToTauTau/interface/branchEntryType.h"
 #include "tthAnalysis/HiggsToTauTau/interface/branchEntryTypeAuxFunctions.h"
 
-#include <boost/range/algorithm/copy.hpp> // boost::copy()
-#include <boost/range/adaptor/map.hpp> // boost::adaptors::map_keys
+#include <boost/algorithm/string/predicate.hpp> // boost::starts_with()
 
 #include <iostream> // std::cerr, std::fixed
 #include <iomanip> // std::setprecision(), std::setw()
@@ -235,14 +236,17 @@ int main(int argc, char* argv[])
   hadTauReader->setBranchAddresses(inputTree);
   RecoHadTauCollectionGenMatcher hadTauGenMatcher;
   RecoHadTauCollectionCleaner hadTauCleaner(0.3);
+  std::cout << "Setting preselHadTauSelector\n";
   RecoHadTauCollectionSelectorLoose preselHadTauSelector(era);
   if ( hadTauSelection_part2 == "dR03mvaVLoose" || hadTauSelection_part2 == "dR03mvaVVLoose" ) preselHadTauSelector.set(hadTauSelection_part2);
   preselHadTauSelector.set_min_antiElectron(-1);
   preselHadTauSelector.set_min_antiMuon(-1);
+  std::cout << "Setting fakeableHadTauSelector\n";
   RecoHadTauCollectionSelectorFakeable fakeableHadTauSelector(era);
   if ( hadTauSelection_part2 == "dR03mvaVLoose" || hadTauSelection_part2 == "dR03mvaVVLoose" ) fakeableHadTauSelector.set(hadTauSelection_part2);
   fakeableHadTauSelector.set_min_antiElectron(-1);
   fakeableHadTauSelector.set_min_antiMuon(-1);
+  std::cout << "Setting tightHadTauSelector\n";
   RecoHadTauCollectionSelectorTight tightHadTauSelector(era);
   if ( hadTauSelection_part2 != "" ) tightHadTauSelector.set(hadTauSelection_part2);
   tightHadTauSelector.set_min_antiElectron(-1);
@@ -253,6 +257,7 @@ int main(int argc, char* argv[])
   preselHadTauSelector.set_min_pt(18.); 
   fakeableHadTauSelector.set_min_pt(18.);
   tightHadTauSelector.set_min_pt(18.);
+  std::cout << hadTauSelection_part2 <<'\n';
 
   RecoJetReader* jetReader = new RecoJetReader(era, isMC, "nJet", "Jet");
   jetReader->setJetPt_central_or_shift(RecoJetReader::kJetPt_central); 
@@ -356,6 +361,21 @@ int main(int argc, char* argv[])
     std::cout << " " << branchEntry->second->outputBranchName_ << " (type = " << branchEntry->second->outputBranchType_string_ << ")" << std::endl;
   }
 
+  // define the writer class for the nof MEM permutations
+  MEMPermutationWriter memPermutationWriter;
+  memPermutationWriter
+    .setLepSelection       (leptonSelection, kTight)
+    .setHadTauSelection    (hadTauSelection, kTight)
+    .setHadTauWorkingPoints(hadTauSelection_part2) // up until Tight
+  ;
+  // add conditions for computing the nof MEM permutations in 2lss1tau and 3l1tau channels
+  // the arguments are: the name of the channel, minimum number of leptons, minimum number of hadronic taus
+  memPermutationWriter
+    .addCondition("2lss_1tau", 2, 1)
+    .addCondition("3l_1tau",   3, 1)
+  ;
+  memPermutationWriter.setBranchNames(outputTree, era, true);
+
   int numEntries = inputTree->GetEntries();
   int analyzedEntries = 0;
   int selectedEntries = 0;
@@ -444,12 +464,16 @@ int main(int argc, char* argv[])
 
     RecoMEt met = metReader->read();
 
+//--- construct the merged lepton collections
+    const std::vector<const RecoLepton*> preselLeptons   = mergeLeptonCollections(preselElectrons,   preselMuons);
+    const std::vector<const RecoLepton*> fakeableLeptons = mergeLeptonCollections(fakeableElectrons, fakeableMuons);
+    const std::vector<const RecoLepton*> tightLeptons    = mergeLeptonCollections(tightElectrons,    tightMuons);
+    const std::vector<const RecoLepton*> selLeptons      = mergeLeptonCollections(selElectrons, selMuons);
+
 //--- apply preselection
-    std::vector<const RecoLepton*> selLeptons = mergeLeptonCollections(selElectrons, selMuons);
     if ( !((int)selLeptons.size() >= minNumLeptons) ) {
       if ( run_lumi_eventSelector ) {
         std::cout << "event FAILS selLeptons selection." << std::endl;
-        std::vector<const RecoLepton*> preselLeptons = mergeLeptonCollections(preselElectrons, preselMuons);
         std::cout << " (#preselLeptons = " << preselLeptons.size() << ")" << std::endl;
         for ( size_t idxPreselLepton = 0; idxPreselLepton < preselLeptons.size(); ++idxPreselLepton ) {
           std::cout << "preselLepton #" << idxPreselLepton << ":" << std::endl;
@@ -588,6 +612,10 @@ int main(int argc, char* argv[])
       jetGenMatcher.addGenHadTauMatch(selJets, genHadTaus, 0.2);
       jetGenMatcher.addGenJetMatch(selJets, genJets, 0.2);
     }
+
+    memPermutationWriter.write(
+      {{preselLeptons, fakeableLeptons, tightLeptons}}, {{selBJets_loose, selBJets_medium}}, cleanedHadTaus
+    );
 
     muonWriter->write(preselMuons);
     electronWriter->write(preselElectrons);

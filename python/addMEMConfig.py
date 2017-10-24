@@ -30,7 +30,7 @@ class addMEMConfig:
     """
     def __init__(self, treeName, outputDir, cfgDir, executable_addMEM, samples, era, debug, running_method,
                  max_files_per_job, mem_integrations_per_job, max_mem_integrations, num_parallel_jobs,
-                 leptonSelection, hadTauSelection, isForBDTtraining, channel, maxPermutations_addMEM, pool_id = ''):
+                 leptonSelection, hadTauSelection, isForBDTtraining, channel, pool_id = ''):
 
         self.treeName = treeName
         self.outputDir = outputDir
@@ -45,10 +45,14 @@ class addMEMConfig:
         self.channel = channel
         self.leptonSelection = leptonSelection
         self.hadTauSelection = hadTauSelection
-        self.maxPermutations_addMEM = maxPermutations_addMEM
+        self.hadTauDefinition = self.hadTauSelection.split('|')[0]
+        self.hadTauWorkingPoint = self.hadTauSelection.split('|')[1]
+        self.maxPermutations_branchName = "maxPermutations_addMEM_%s_lep%s_tau%s_%s" % (
+            self.channel, self.leptonSelection, self.hadTauDefinition, self.hadTauWorkingPoint,
+        )
         self.isForBDTtraining = isForBDTtraining
-        assert(running_method.lower() in [
-          "sbatch", "makefile"]), "Invalid running method: %s" % running_method
+        if running_method.lower() not in ["sbatch", "makefile"]:
+            raise ValueError("Invalid running method: %s" % running_method)
         self.running_method = running_method
         self.is_sbatch = False
         self.is_makefile = False
@@ -62,20 +66,18 @@ class addMEMConfig:
         self.pool_id = pool_id if pool_id else uuid.uuid4()
 
         self.workingDir = os.getcwd()
-        print "Working directory is: " + self.workingDir
+        logging.info("Working directory is: {workingDir}".format(workingDir = self.workingDir))
 
         for dirPath in [self.outputDir, self.cfgDir]:
           create_if_not_exists(dirPath)
-        self.stdout_file = codecs.open(os.path.join(
-          self.cfgDir, "stdout_%s.log" % self.channel), 'w', 'utf-8')
-        self.stderr_file = codecs.open(os.path.join(
-          self.cfgDir, "stderr_%s.log" % self.channel), 'w', 'utf-8')
+        self.stdout_file = codecs.open(os.path.join(self.cfgDir, "stdout_%s.log" % self.channel), 'w', 'utf-8')
+        self.stderr_file = codecs.open(os.path.join(self.cfgDir, "stderr_%s.log" % self.channel), 'w', 'utf-8')
         self.dirs = {}
         self.samples = samples
         self.cfgFiles_addMEM_modified = {}
+        self.shFiles_addMEM_modified = {}
         self.logFiles_addMEM = {}
-        self.sbatchFile_addMEM = os.path.join(
-          self.cfgDir, "sbatch_addMEM_%s.py" % self.channel)
+        self.sbatchFile_addMEM = os.path.join(self.cfgDir, "sbatch_addMEM_%s.py" % self.channel)
         self.inputFiles = {}
         self.outputFiles = {}
         self.hadd_records = {}
@@ -105,15 +107,16 @@ class addMEMConfig:
         """
         tools_createScript_sbatch(
             sbatch_script_file_name = self.sbatchFile_addMEM,
-            executable = self.executable_addMEM,
-            cfg_file_names = self.cfgFiles_addMEM_modified,
-            input_file_names = self.inputFiles,
-            output_file_names = self.outputFiles,
-            log_file_names = self.logFiles_addMEM,
-            working_dir = self.workingDir,
-            max_num_jobs = 100000000, # it's really silly to limit the number of jobs; use an enormous number as the ,,fix''
-            cvmfs_error_log = self.cvmfs_error_log,
-            pool_id = self.pool_id,
+            executable              = self.executable_addMEM,
+            command_line_parameters = self.cfgFiles_addMEM_modified,
+            input_file_names        = self.inputFiles,
+            output_file_names       = self.outputFiles,
+            script_file_names       = self.shFiles_addMEM_modified,
+            log_file_names          = self.logFiles_addMEM,
+            working_dir             = self.workingDir,
+            max_num_jobs            = 100000000, # it's really silly to limit the number of jobs; use an enormous number as the ,,fix''
+            cvmfs_error_log         = self.cvmfs_error_log,
+            pool_id                 = self.pool_id,
         )
 
     def addToMakefile_addMEM(self, lines_makefile):
@@ -121,8 +124,7 @@ class addMEMConfig:
         """
         if self.is_sbatch:
             lines_makefile.append("sbatch:")
-            lines_makefile.append("\t%s %s" % (
-                "python", self.sbatchFile_addMEM))
+            lines_makefile.append("\t%s %s" % ("python", self.sbatchFile_addMEM))
             lines_makefile.append("")
         for key_file, output_file in self.outputFiles.items():
             cfg_file_addMEM_modified = self.cfgFiles_addMEM_modified[key_file]
@@ -130,8 +132,7 @@ class addMEMConfig:
                 lines_makefile.append("%s:" % output_file)
                 cfg_file = cfg_file_addMEM_modified
                 log_file = self.logFiles_addMEM[key_file]
-                lines_makefile.append("\t%s %s &> %s" % (
-                  self.executable_addMEM, cfg_file, log_file))
+                lines_makefile.append("\t%s %s &> %s" % (self.executable_addMEM, cfg_file, log_file))
                 lines_makefile.append("")
             elif self.is_sbatch:
                 lines_makefile.append("%s: %s" % (output_file, "sbatch"))
@@ -150,11 +151,27 @@ class addMEMConfig:
                 self.cfgDir, DKEY_HADD, self.channel, process_name,
                 "sbatch_hadd_cat_%s_%d.py" % (process_name, hadd_fileset_id)
             )
+            sbatch_hadd_shFile = os.path.join(
+                self.cfgDir, DKEY_HADD, self.channel, process_name,
+                "sbatch_hadd_cat_%s_%d.sh" % (process_name, hadd_fileset_id)
+            )
+            sbatch_hadd_logFile = os.path.join(
+                self.cfgDir, DKEY_HADD, self.channel, process_name,
+                "sbatch_hadd_cat_%s_%d.log" % (process_name, hadd_fileset_id)
+            )
             sbatch_hadd_dir = os.path.join(
                 self.cfgDir, DKEY_HADD_RT, self.channel, process_name,
             )
             tools_createScript_sbatch_hadd(
-              sbatch_hadd_file, hadd_in_files, hadd_out, 'cat', self.workingDir, False, sbatch_hadd_dir, self.pool_id
+                sbatch_script_file_name = sbatch_hadd_file,
+                input_file_names        = hadd_in_files,
+                output_file_name        = hadd_out,
+                script_file_name        = sbatch_hadd_shFile,
+                log_file_name           = sbatch_hadd_logFile,
+                working_dir             = self.workingDir,
+                waitForJobs             = False,
+                auxDirName              = sbatch_hadd_dir,
+                pool_id                 = self.pool_id,
             )
 
             lines_makefile.append("%s: %s" % (hadd_out, " ".join(hadd_in_files)))
@@ -168,8 +185,7 @@ class addMEMConfig:
         """
         targets = self.hadd_records.keys()
         tools_createMakefile(self.makefile, targets, lines_makefile, self.filesToClean, self.is_sbatch)
-        logging.info("Run it with:\tmake -f %s -j %i " %
-            (self.makefile, self.num_parallel_jobs))
+        logging.info("Run it with:\tmake -f %s -j %i " % (self.makefile, self.num_parallel_jobs))
 
     def memJobList(self, inputFileList):
         '''
@@ -192,6 +208,7 @@ class addMEMConfig:
             ch = ROOT.TChain(self.treeName)
             for fn in inputFileSet:
                 # chaining a file
+                logging.debug("Processing file {fileName}".format(fileName = fn))
                 ch.AddFile(fn)
 
             nof_entries = ch.GetEntries()
@@ -200,11 +217,11 @@ class addMEMConfig:
             if nof_entries == 0:
                 jobId += 1
                 memJobDict[jobId] = dict({
-                    'event_range': [0, 0],
-                    'nof_int': 0,
-                    'nof_int_pass': 0,
-                    'nof_events_pass': 0,
-                    'nof_zero': 0,
+                    'event_range'     : [0, 0],
+                    'nof_int'         : 0,
+                    'nof_int_pass'    : 0,
+                    'nof_events_pass' : 0,
+                    'nof_zero'        : 0,
                 }, **memJobDict_common)
                 continue
 
@@ -217,10 +234,12 @@ class addMEMConfig:
             nof_zero_integrations,   nof_events_zero = 0, []
 
             maxPermutations_addMEM = array.array('i', [0])
-            ch.SetBranchAddress(self.maxPermutations_addMEM, maxPermutations_addMEM)
+            ch.SetBranchAddress(self.maxPermutations_branchName, maxPermutations_addMEM)
 
             for i in range(nof_entries):
                 ch.GetEntry(i)
+                if i > 0 and i % 10000 == 0:
+                    logging.debug("Processing event %i/%i" % (i, nof_entries))
 
                 nof_integrations = maxPermutations_addMEM[0]
                 if nof_integrations < 0:
@@ -341,6 +360,9 @@ class addMEMConfig:
                 self.cfgFiles_addMEM_modified[key_file] = os.path.join(
                     self.dirs[key_dir][DKEY_CFGS], "addMEM_%s_%s_%i_cfg.py" % (self.channel, process_name, jobId)
                 )
+                self.shFiles_addMEM_modified[key_file] = os.path.join(
+                    self.dirs[key_dir][DKEY_CFGS], "addMEM_%s_%s_%i.sh" % (self.channel, process_name, jobId)
+                )
                 self.outputFiles[key_file] = os.path.join(
                     self.dirs[key_dir][DKEY_NTUPLES], "%s_%i.root" % (process_name, jobId)
                 )
@@ -361,8 +383,8 @@ class addMEMConfig:
                 #UDPATE: ONE OUTPUT FILE PER SAMPLE!
                 fileset_id = memEvtRangeDict[jobId]['fileset_id']
                 hadd_output = os.path.join(
-                    #self.dirs[key_dir][DKEY_FINAL_NTUPLES], '%s_%i.root' % ('tree', fileset_id) # UDPATE: ADDED
-                    self.dirs[key_dir][DKEY_FINAL_NTUPLES], "tree.root" # UDPATE: REMOVED
+                    self.dirs[key_dir][DKEY_FINAL_NTUPLES], '%s_%i.root' % ('tree', fileset_id) # UDPATE: ADDED
+                    #self.dirs[key_dir][DKEY_FINAL_NTUPLES], "tree.root" # UDPATE: REMOVED
                 )
                 if hadd_output not in self.hadd_records:
                     self.hadd_records[hadd_output] = {}

@@ -1,7 +1,5 @@
 import FWCore.ParameterSet.Config as cms
 
-import os
-
 process = cms.PSet()
 
 process.fwliteInput = cms.PSet(
@@ -44,5 +42,6 @@ process.addMEM_3l_1tau = cms.PSet(
         "CountWeightedLHEWeightPdf",
     ),
 
-    selEventsFileName_input = cms.string('')
+    selEventsFileName_input = cms.string(''),
+    isDEBUG = False,
 )

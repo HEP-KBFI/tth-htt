@@ -1,10 +1,68 @@
 #!/usr/bin/env python
-import argparse, os.path, sys, logging, imp, jinja2, ROOT, re, ctypes, copy
+import argparse, os.path, sys, logging, imp, jinja2, ROOT, re, ctypes, copy, itertools, time, shutil
+from tthAnalysis.HiggsToTauTau.jobTools import run_cmd
 
 try:
     from urllib.parse import urlparse
 except ImportError:
      from urlparse import urlparse
+
+class hdfsException(Exception):
+  pass
+
+def normalize_path(path):
+  if not path.startswith('/hdfs') and not path.startswith("hdfs://"):
+    raise hdfsException("Invalid path: %s" % path)
+  path_t = re.sub('^/hdfs', 'hdfs://', path) if path.startswith('/hdfs') else path
+  path_url = urlparse(path_t)
+  path_f = path_url.scheme + '://' + path_url.path
+  return path_f
+
+def fuse_path(path):
+  if not path.startswith("hdfs://"):
+    raise hdfsException("Invalid path: %s" % path)
+  return re.sub('^hdfs://', '/hdfs', path)
+
+class nohdfs:
+  class info:
+    def __init__(self, name_fuse):
+      self.name_fuse     = name_fuse
+      self.kind          = 'F' if os.path.isfile(self.name_fuse) else 'D'
+      self.size          = os.path.getsize(name_fuse)
+      self.basename      = os.path.basename(self.name_fuse)
+      self.depth         = len(self.name_fuse.split(os.path.sep)) - 1
+      self.sparent_depth = -1
+
+    def __str__(self):
+      return self.name_fuse
+
+    def __repr__(self):
+      return self.name_fuse
+
+    def is_file(self):
+      return self.kind == 'F'
+
+    def is_dir(self):
+      return self.kind == 'D'
+
+  class hdfsException(Exception):
+    pass
+
+  def __init__(self):
+    pass
+
+  def get_path_info(self, path):
+    if not os.path.exists(path):
+      raise hdfsException("No such path: %s" % path)
+    return nohdfs.info(path)
+
+  def get_dir_entries(self, path_obj):
+    if not os.path.isdir(path_obj.name_fuse):
+      raise hdfsException("No such path: %s" % path_obj.name_fuse)
+    entries = [
+      nohdfs.info(os.path.join(path_obj.name_fuse, entry)) for entry in os.listdir(path_obj.name_fuse)
+    ]
+    return entries
 
 class hdfs:
   class hdfsFileInfo(ctypes.Structure):
@@ -24,9 +82,9 @@ class hdfs:
   class info:
     def __init__(self, hdfsFileInfoObject):
       self.kind          = chr(hdfsFileInfoObject.contents.mKind)
-      self.name          = hdfs.normalize_path(hdfsFileInfoObject.contents.mName)
+      self.name          = normalize_path(hdfsFileInfoObject.contents.mName)
       self.size          = hdfsFileInfoObject.contents.mSize
-      self.name_fuse     = hdfs.fuse_path(self.name)
+      self.name_fuse     = fuse_path(self.name)
       self.basename      = os.path.basename(self.name_fuse)
       self.depth         = len(self.name_fuse.split(os.path.sep)) - 1
       self.sparent_depth = -1
@@ -43,13 +101,10 @@ class hdfs:
     def is_dir(self):
       return self.kind == 'D'
 
-  class hdfsException(Exception):
-    pass
-
   def __init__(self):
     self.lib_path = "/usr/lib64/libhdfs.so"
     if not os.path.isfile(self.lib_path):
-      raise hdfs.hdfsException("No such file: %s" % self.lib_path)
+      raise hdfsException("No such file: %s" % self.lib_path)
 
     logging.debug("Loading {lib}".format(lib = self.lib_path))
     self.lib = ctypes.cdll.LoadLibrary(self.lib_path)
@@ -60,35 +115,20 @@ class hdfs:
     logging.debug("Building HDFS interface")
     self.bld = self.lib.hdfsNewBuilder()
     if not self.bld:
-      raise hdfs.hdfsException("Could not create new HDFS interface")
+      raise hdfsException("Could not create new HDFS interface")
     self.lib.hdfsBuilderSetNameNode(self.bld, "default")
     self.lib.hdfsBuilderSetNameNodePort(self.bld, 0)
 
     logging.debug("Connecting to the HDFS interface")
     self.fs = self.lib.hdfsBuilderConnect(self.bld)
     if not self.fs:
-      raise hdfs.hdfsException("Could not connect to the HDFS interface")
-
-  @staticmethod
-  def normalize_path(path):
-    if not path.startswith('/hdfs') and not path.startswith("hdfs://"):
-      raise hdfs.hdfsException("Invalid path: %s" % path)
-    path_t = re.sub('^/hdfs', 'hdfs://', path) if path.startswith('/hdfs') else path
-    path_url = urlparse(path_t)
-    path_f = path_url.scheme + '://' + path_url.path
-    return path_f
-
-  @staticmethod
-  def fuse_path(path):
-    if not path.startswith("hdfs://"):
-      raise hdfs.hdfsException("Invalid path: %s" % path)
-    return re.sub('^hdfs://', '/hdfs', path)
+      raise hdfsException("Could not connect to the HDFS interface")
 
   def get_path_info(self, path):
-    normalized_path = hdfs.normalize_path(path)
+    normalized_path = normalize_path(path)
     path_info = self.lib.hdfsGetPathInfo(self.fs, normalized_path)
     if not path_info:
-      raise hdfs.hdfsException("No such path: %s" % normalized_path)
+      raise hdfsException("No such path: %s" % normalized_path)
     path_obj = hdfs.info(path_info)
     self.lib.hdfsFreeFileInfo(path_info, 1)
     return path_obj
@@ -97,7 +137,7 @@ class hdfs:
     nof_entries = ctypes.c_int()
     dir_ptr = self.lib.hdfsListDirectory(self.fs, path_obj.name, ctypes.byref(nof_entries))
     if not dir_ptr:
-      raise hdfs.hdfsException("No such path: %s" % path_obj.name)
+      raise hdfsException("No such path: %s" % path_obj.name)
     dir_ptr_copy = dir_ptr
     entries = []
     for j in range(nof_entries.value):
@@ -163,75 +203,114 @@ path_entry_str = """      OD([
       ]),
 """
 
+sh_str = """#!/bin/bash
+
+{{ cmd }}
+"""
+
 class PathEntry:
-  def __init__(self, path, nof_files, blacklist, nof_events):
+  def __init__(self, path, indices):
     self.path       = path
-    self.nof_files  = nof_files
-    self.blacklist  = blacklist
-    self.nof_events = nof_events
+    self.indices    = indices
+    self.nof_events = sum(self.indices.values())
+    self.nof_files  = max(self.indices.keys())
+    self.blacklist  = []
     self.selection  = [] # if empty, select all
 
   def __repr__(self):
     return self.path
 
-def get_triggers(process_name_specific, is_data):
+def get_triggers(process_name_specific, is_data, era):
   if 'SingleElec' in process_name_specific:
     return ['1e']
   if 'SingleMuon' in process_name_specific:
     return ['1mu']
   if 'DoubleEG' in process_name_specific:
-    return ['2e', '3e']
+    return ['2e', '3e'] if era > 2015 else ['2e']
   if 'DoubleMuon' in process_name_specific:
-    return ['2mu', '3mu']
+    return ['2mu', '3mu'] if era > 2015 else ['2mu']
   if 'MuonEG' in process_name_specific:
-    return ['1e1mu', '2e1mu', '1e2mu']
+    return ['1e1mu', '2e1mu', '1e2mu']  if era > 2015 else ['1e1mu']
   if 'Tau' in process_name_specific:
-    return ['1e1tau', '1mu1tau', '2tau']
+    return ['1e1tau', '1mu1tau', '2tau'] if era > 2015 else ['']
   if is_data:
     raise ValueError("Expected MC!")
   return [
     '1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau'
+  ] if era > 2015 else [
+    '1e', '1e1mu', '1mu', '2e', '2mu'
   ]
 
 def process_paths(meta_dict, key):
   local_paths = meta_dict[key]['paths']
-  if len(local_paths) == 1:
-    meta_dict[key]['nof_files'] = local_paths[0].nof_files
-    meta_dict[key]['nof_events'] = int(local_paths[0].nof_events)
-    meta_dict[key]['local_paths'] = [{
-      'path'      : local_paths[0].path,
-      'selection' : '*',
-      'blacklist' : local_paths[0].blacklist,
-    }]
-  elif len(local_paths) > 1:
-    max_nof_files = max([path_entry.nof_files for path_entry in local_paths])
-    sum_of_events = int(sum([path_entry.nof_events for path_entry in local_paths]))
-    meta_dict[key]['nof_files'] = max_nof_files
-    meta_dict[key]['nof_events'] = sum_of_events
-    meta_dict[key]['local_paths'] = []
 
+  nof_files = max([path_entry.nof_files for path_entry in local_paths])
+
+  meta_dict[key]['nof_files']   = nof_files
+  meta_dict[key]['local_paths'] = []
+
+  # build the blacklists for all the paths
+  for local_path in local_paths:
+    local_path.blacklist = list(sorted(
+      list(set(range(1, nof_files + 1)) - set(local_path.indices.keys()))
+    ))
+
+  if len(local_paths) > 1:
     # sort the paths by the largest coverage
     local_paths_sorted = list(sorted(
       local_paths,
-      key = lambda local_path: local_path.nof_files - len(local_path.blacklist),
+      key     = lambda local_path: nof_files - len(local_path.blacklist),
       reverse = True,
     ))
-    # determine which files to select in secondary storages
-    for blacklisted_idx in local_paths_sorted[0].blacklist:
-      for local_path in local_paths_sorted[1:]:
-        if blacklisted_idx not in local_path.blacklist and blacklisted_idx < local_path.nof_files:
-          local_path.selection.append(blacklisted_idx)
-    for local_path in local_paths_sorted:
-      meta_dict[key]['local_paths'].append({
-        'path'      : local_path.path,
-        'selection' : '*' if not local_path.selection else ",".join(map(str, local_path.selection)),
-        'blacklist' : local_path.blacklist,
-      })
+
+    if nof_files == len(local_paths_sorted[0].indices):
+      # the path with the largest coverage already spans all possible files
+      local_paths_sorted = [local_paths_sorted[0]]
+  elif len(local_paths) == 1:
+    local_paths_sorted = local_paths
+
+  if len(local_paths_sorted) == 1:
+    # let's compute the number of files, events and the list of blacklisted files
+    nof_events = sum(local_paths_sorted[0].indices.values())
+
+    meta_dict[key]['nof_events']  = nof_events
+    meta_dict[key]['local_paths'] = [{
+      'path'      : local_paths_sorted[0].path,
+      'selection' : '*',
+      'blacklist' : local_paths_sorted[0].blacklist,
+    }]
+  elif len(local_paths_sorted) > 1:
+      # determine which files to select in secondary storages
+      for blacklisted_idx in local_paths_sorted[0].blacklist:
+        for local_path in local_paths_sorted[1:]:
+          if blacklisted_idx not in local_path.blacklist and blacklisted_idx < local_path.nof_files:
+            local_path.selection.append(blacklisted_idx)
+
+      # only keep the first two paths and ignore the rest
+      local_paths_sorted = local_paths_sorted[0:2]
+
+      # compute the nof events by summing the nof events in the primary storage and adding the nof events
+      # in the selected files part of the secondary storage
+      sum_of_events = local_paths_sorted[0].nof_events + sum(
+        local_paths_sorted[1].indices[sel_idx] for sel_idx in local_paths_sorted[1].selection
+      )
+      meta_dict[key]['nof_events'] = sum_of_events
+
+      # do not print out the blacklist of the secondary storage since it might include many-many files
+      local_paths_sorted[1].blacklist = []
+
+      for local_path in local_paths_sorted:
+        meta_dict[key]['local_paths'].append({
+          'path'      : local_path.path,
+          'selection' : '*' if not local_path.selection else ",".join(map(str, local_path.selection)),
+          'blacklist' : local_path.blacklist,
+        })
+
   else:
     raise ValueError("Not enough paths to locate for %s" % key)
 
 def traverse_single(hdfs_system, meta_dict, path_obj, key, histogram_name, check_every_event,
-                    filetracker, file_idx):
+                    filetracker, file_idx, era):
   ''' Assume that the following subdirectories are of the form: 0000, 0001, 0002, ...
       In these directories we expect root files of the form: tree_1.root, tree_2.root, ...
       If either of those assumptions doesn't hold, we bail out; no clever event count needed
@@ -251,7 +330,7 @@ def traverse_single(hdfs_system, meta_dict, path_obj, key, histogram_name, check
     logging.warning("Path {path} has already been traversed".format(path = path_obj.name_fuse))
     return
 
-  logging.info("Single-traversing {path}".format(path = path_obj.name))
+  logging.info("Single-traversing {path}".format(path = path_obj.name_fuse))
   entries = hdfs_system.get_dir_entries(path_obj)
   entries_valid = []
   for entry in entries:
@@ -268,55 +347,56 @@ def traverse_single(hdfs_system, meta_dict, path_obj, key, histogram_name, check
   digit_regex = re.compile(r"tree_(?P<i>\d+)\.root")
   is_data = meta_dict[key]['sample_category'] == 'data_obs'
   histogram_name_t = histogram_name if not is_data else 'Count'
-  nof_events = 0.
 
+  indices = {}
   for entry in entries_valid:
     subentries = hdfs_system.get_dir_entries(entry)
     subentry_files = filter(lambda path: path.is_file(), subentries)
-    indices = []
     for subentry_file in subentry_files:
       digit_match = digit_regex.search(subentry_file.basename)
       if not digit_match:
         continue
       matched_idx = int(digit_match.group('i'))
       if file_idx > 0 and matched_idx != file_idx:
-        logging.debug("Skipping file {path}".format(path = subentry_file.name))
+        logging.debug("Skipping file {path}".format(path = subentry_file.name_fuse))
         continue
 
       if subentry_file.size == 0:
-        logging.debug("File {path} has a file size of 0".format(path = subentry_file.name))
-        filetracker.zero_file_size.append(subentry_file.name)
+        logging.debug("File {path} has a file size of 0".format(path = subentry_file.name_fuse))
+        filetracker.zero_file_size.append(subentry_file.name_fuse)
         continue
-      logging.debug("Opening file {path}".format(path = subentry_file.name))
-      f = ROOT.TFile.Open(subentry_file.name, "read")
+      logging.debug("Opening file {path}".format(path = subentry_file.name_fuse))
+      f = ROOT.TFile.Open(subentry_file.name_fuse, "read")
       if not f:
-        raise ValueError("Could not open {path}".format(path = subentry_file.name))
+        logging.warning("Could not open {path}".format(path = subentry_file.name_fuse))
+        filetracker.corrupted_files.append((subentry_file.name_fuse))
+        continue
       if f.IsZombie():
-        logging.warning("File {path} is a zombie".format(path = subentry_file.name))
+        logging.warning("File {path} is a zombie".format(path = subentry_file.name_fuse))
         f.Close()
         del f
-        filetracker.zombie_files.append(subentry_file.name)
+        filetracker.zombie_files.append(subentry_file.name_fuse)
         continue
       if check_every_event:
-        logging.info("Inspecting file {path} for corruption".format(path = subentry_file.name))
+        logging.info("Inspecting file {path} for corruption".format(path = subentry_file.name_fuse))
         if check_every_event not in f.GetListOfKeys():
           raise ValueError("Tree of the name {tree} is not in file {path}".format(
             tree = check_every_event,
-            path = subentry_file.name,
+            path = subentry_file.name_fuse,
           ))
         t = f.Get(check_every_event)
         if not t:
           raise ValueError("Could not find tree of the name {tree} in file {path}".format(
             tree = check_every_event,
-            path = subentry_file.name,
+            path = subentry_file.name_fuse,
           ))
         nof_entries = t.GetEntries()
         for i in range(0, nof_entries):
           nof_bytes_read = t.GetEntry(i)
           if nof_bytes_read < 0:
-            filetracker.corrupted_files.append(subentry_file.name)
+            filetracker.corrupted_files.append(subentry_file.name_fuse)
             logging.debug("File {path} seems to be corrupted starting from event {idx}".format(
-              path = subentry_file.name,
+              path = subentry_file.name_fuse,
               idx  = i,
             ))
             break
@@ -327,38 +407,28 @@ def traverse_single(hdfs_system, meta_dict, path_obj, key, histogram_name, check
       if histogram_name_t not in f.GetListOfKeys():
         raise ValueError("Histogram of the name {histogram_name} is not in file {path}".format(
           histogram_name = histogram_name_t,
-          path           = subentry_file.name,
+          path           = subentry_file.name_fuse,
         ))
       h = f.Get(histogram_name_t)
       if not h:
         raise ValueError("Could not find histogram of the name {histogram_name} in file {path}".format(
           histogram_name = histogram_name_t,
-          path           = subentry_file.name,
+          path           = subentry_file.name_fuse,
         ))
-      nof_events += h.Integral()
+      indices[matched_idx] = h.Integral()
       f.Close()
       del h
       del f
-      indices.append(matched_idx)
 
   if not indices:
-    logging.debug("Path {path} contains no ROOT files".format(path = path_obj.name))
+    logging.debug("Path {path} contains no ROOT files".format(path = path_obj.name_fuse))
     return
-  minimum_idx      = min(indices)
-  maximum_idx      = max(indices)
-  nof_files        = len(indices)
-  actual_nof_files = maximum_idx if maximum_idx > nof_files else nof_files
-  if minimum_idx == 0:
-    logging.warning("The entry {key} has the first file starting with index 0")
-  blacklist = list(sorted(list(set(range(1, actual_nof_files + 1)) - set(indices))))
 
-  logging.debug("Found {nof_events} events in {nof_files} files in {path} for entry "
-                "{key} (from which the following indices were missing: {blacklist})".format(
-    nof_events = nof_events,
-    nof_files  = actual_nof_files,
+  logging.debug("Found {nof_events} events in {nof_files} files in {path} for entry {key}".format(
+    nof_events = sum(indices.values()),
+    nof_files  = len(indices.keys()),
     path       = path_obj.name_fuse,
     key        = key,
-    blacklist  = ', '.join(map(str, blacklist)) if blacklist else 'None',
   ))
 
   if not meta_dict[key]['located']:
@@ -368,20 +438,20 @@ def traverse_single(hdfs_system, meta_dict, path_obj, key, histogram_name, check
     ) and is_data
     meta_dict[key]['use_HIP_mitigation_mediumMuonId'] = meta_dict[key]['use_HIP_mitigation_bTag']
     meta_dict[key]['triggers']                        = get_triggers(
-      meta_dict[key]['process_name_specific'], is_data
+      meta_dict[key]['process_name_specific'], is_data, era
     )
     meta_dict[key]['genWeight']                       = not is_data
     meta_dict[key]['type']                            = 'data' if is_data else 'mc'
     meta_dict[key]['reHLT']                           = True
     meta_dict[key]['located']                         = True
   meta_dict[key]['paths'].append(
-    PathEntry(path_obj.name_fuse, actual_nof_files, blacklist, nof_events)
+    PathEntry(path_obj.name_fuse, indices)
   )
 
   return
 
 def traverse_double(hdfs_system, meta_dict, path_obj, key, histogram_name, check_every_event,
-                    filetracker, file_idx):
+                    filetracker, file_idx, era):
   ''' Assume that the name of the following subdirectories are the CRAB job IDs
       The tree structure inside those directories should be the same as described in
       traverse_single()
@@ -396,11 +466,11 @@ def traverse_double(hdfs_system, meta_dict, path_obj, key, histogram_name, check
   :param file_idx:          Index of the corrupted file
   :return: None
   '''
-  logging.info("Double-traversing {path}".format(path = path_obj.name))
+  logging.info("Double-traversing {path}".format(path = path_obj.name_fuse))
   entries = hdfs_system.get_dir_entries(path_obj)
   for entry in entries:
     traverse_single(
-      hdfs_system, meta_dict, entry, key, histogram_name, check_every_event, filetracker, file_idx
+      hdfs_system, meta_dict, entry, key, histogram_name, check_every_event, filetracker, file_idx, era
     )
   return
 
@@ -442,8 +512,6 @@ if __name__ == '__main__':
         return text[2:].splitlines()
       return argparse.HelpFormatter._split_lines(self, text, width)
 
-  CORRUPTED_FILE = 'corrupted.txt'
-
   parser = argparse.ArgumentParser(
     formatter_class = lambda prog: SmartFormatter(prog, max_help_position = 35))
   parser.add_argument('-m', '--meta-dictionary', dest = 'meta_dictionary', metavar = 'file',
@@ -472,12 +540,6 @@ if __name__ == '__main__':
   parser.add_argument('-g', '--generate-python', dest = 'generate_python', metavar = 'name',
                       type = str, default = 'dict.py',
                       help = 'R|File name of the new python dictionary')
-  parser.add_argument('-s', '--skip-header', dest = 'skip_header', action = 'store_true',
-                      default = False,
-                      help = 'R|Skip dictionary definitions in the output')
-  parser.add_argument('-J', '--generate-jobs', dest = 'generate_jobs', metavar = 'generate_jobs',
-                      type = str, default = '', required = False,
-                      help = 'R|Generate SLURM jobs instead of running locally')
   parser.add_argument('-c', '--check-every-event', dest = 'check_every_event', metavar = 'name',
                       type = str, default = "", required = False,
                       help = 'R|Supply TTree name to check every event (NB! Extremely slow!)')
@@ -493,6 +555,21 @@ if __name__ == '__main__':
   parser.add_argument('-j', '--file-idx', dest = 'file_idx', metavar = 'number', type = int,
                       default = -1,
                       help = 'R|Check files at specified index (default: all files)')
+  parser.add_argument('-u', '--use-libhdfs', dest = 'use_libhdfs', action = 'store_true', default = False,
+                      help = 'R|Use libhdfs')
+  parser.add_argument('-s', '--skip-header', dest = 'skip_header', action = 'store_true',
+                      default = False,
+                      help = 'R|Skip dictionary definitions in the output')
+  parser.add_argument('-J', '--generate-jobs', dest = 'generate_jobs', metavar = 'generate_jobs',
+                      type = str, default = '', required = False,
+                      help = 'R|Generate SLURM jobs instead of running locally')
+  parser.add_argument('-E', '--era', dest = 'era', metavar = 'era', type = int, default = -1,
+                      required = True, choices = (2015, 2016),
+                      help = 'R|Era of the samples')
+  parser.add_argument('-x', '--clean', dest = 'clean', action = 'store_true', default = False,
+                      help = 'R|Clean the temporary SLURM directory specified by -J')
+  parser.add_argument('-F', '--force', dest = 'force', action = 'store_true', default = False,
+                      help = 'R|Force the creation of missing directories')
   parser.add_argument('-v', '--verbose', dest = 'verbose', action = 'store_true', default = False,
                       help = 'R|Enable verbose printout')
   args = parser.parse_args()
@@ -501,10 +578,16 @@ if __name__ == '__main__':
     logging.getLogger().setLevel(logging.DEBUG)
 
   if not os.path.isdir(args.output_directory):
-    raise parser.error("Directory %s does not exist" % args.output_directory)
+    if not args.force:
+      raise parser.error("Directory %s does not exist (use -F/--force to create it)" % args.output_directory)
+    else:
+      os.makedirs(args.output_directory)
 
   if args.generate_jobs and not os.path.isdir(args.generate_jobs):
-    raise parser.error("Directory %s does not exist" % args.generate_jobs)
+    if not args.force:
+      raise parser.error("Directory %s does not exist" % args.generate_jobs)
+    else:
+      os.makedirs(args.generate_jobs)
 
   if (args.file_idx < 0 or not args.filter) and args.check_every_event:
     raise parser.error("Checking all files for data corruption is extremely slow! "
@@ -514,7 +597,7 @@ if __name__ == '__main__':
   if args.save_corrupted and not args.check_every_event:
     logging.warning("The flag -C/--save-corrupted has no effect w/o -c/--check-every-event option")
 
-  hdfs_system = hdfs()
+  hdfs_system = hdfs() if args.use_libhdfs else nohdfs()
   filetracker = FileTracker()
 
   paths_unchecked = obtain_paths(hdfs_system, args.path)
@@ -544,33 +627,39 @@ if __name__ == '__main__':
   name_regex = re.compile(args.filter)
 
   # process the directory structure of each path
-  paths_to_traverse = []
+  paths_to_traverse = {}
   while paths:
     path = paths.pop(0)
     if path in excluded_paths:
-      logging.info("Skipping path {path} since it is in the exclusion list".format(path = path.name))
+      logging.info("Skipping path {path} since it is in the exclusion list".format(path = path.name_fuse))
       continue
     if args.depth > 0 and (path.depth - path.sparent_depth) >= args.depth:
       continue
     if path.basename in process_names:
-      is_match = name_regex.match(meta_dict[process_names[path.basename]]['process_name_specific'])
+      expected_key = meta_dict[process_names[path.basename]]['process_name_specific']
+      is_match = name_regex.match(expected_key)
       if is_match:
         if args.generate_jobs:
-          paths_to_traverse.append(path.name_fuse)
+          if expected_key not in paths_to_traverse:
+            paths_to_traverse[expected_key] = []
+          paths_to_traverse[expected_key].append(path.name_fuse)
         else:
           traverse_single(
             hdfs_system, meta_dict, path, process_names[path.basename], args.histogram,
-            args.check_every_event, filetracker, args.file_idx
+            args.check_every_event, filetracker, args.file_idx, args.era
           )
     elif path.basename in crab_strings:
-      is_match = name_regex.match(meta_dict[crab_strings[path.basename]]['process_name_specific'])
+      expected_key = meta_dict[crab_strings[path.basename]]['process_name_specific']
+      is_match = name_regex.match(expected_key)
       if is_match:
         if args.generate_jobs:
-          paths_to_traverse.append(path.name_fuse)
+          if expected_key not in paths_to_traverse:
+            paths_to_traverse[expected_key] = []
+          paths_to_traverse[expected_key].append(path.name_fuse)
         else:
           traverse_double(
             hdfs_system, meta_dict, path, crab_strings[path.basename], args.histogram,
-            args.check_every_event, filetracker, args.file_idx
+            args.check_every_event, filetracker, args.file_idx, args.era
           )
     else:
       entries = hdfs_system.get_dir_entries(path)
@@ -578,7 +667,7 @@ if __name__ == '__main__':
         lambda entry: entry.is_dir() and os.path.basename(entry.name_fuse) not in ["failed", "log"] and \
                       not any(map(
                         lambda path_to_traverse: entry.name_fuse.startswith(path_to_traverse),
-                        paths_to_traverse
+                        list(itertools.chain.from_iterable(paths_to_traverse.values()))
                       )),
         entries
       )
@@ -588,15 +677,44 @@ if __name__ == '__main__':
             entry.sparent_depth = path.sparent_depth
           logging.debug(
             "Adding entry {entry} ({sparent_depth}/{depth})".format(
-              entry         = entry.name,
+              entry         = entry.name_fuse,
               sparent_depth = entry.sparent_depth,
               depth         = entry.depth,
             )
           )
           paths.append(entry)
 
+  output = jinja2.Template(header_str).render(
+    command = ' '.join(sys.argv),
+    dict_name = args.output_dict_name,
+  ) if not args.skip_header else ''
+
   if args.generate_jobs:
+    # divide the paths according to their phase space
+    # first, let's check if we've complete phase space together
+    path_arrs = []
+    for key_arr in sum_events:
+      key_intersection = set(key_arr) & set(paths_to_traverse.keys())
+      if len(key_intersection) == len(key_arr):
+        # we've complete phase space together
+        path_arr = []
+        for key in key_arr:
+          path_arr.extend(paths_to_traverse[key])
+          del paths_to_traverse[key]
+        path_arrs.append(path_arr)
+      elif len(key_intersection) == 0:
+        # the phase space is completely missing
+        pass
+      else:
+        raise ValueError("Incomplete phase space: %s (should be: %s)" % (
+          ', '.join(key_intersection),
+          ', '.join(key_arr)
+        ))
+    # set the remaining paths
+    path_arrs.extend(paths_to_traverse.values())
+
     commands = {}
+    to_cat = { 'dicts' : [], }
     for arg in vars(args):
       args_attr = getattr(args, arg)
       if args_attr:
@@ -615,74 +733,134 @@ if __name__ == '__main__':
               commands[option_key] = ' '.join(map(str, args_attr))
             else:
               commands[option_key] = str(args_attr)
-    for path_idx in range(len(paths_to_traverse)):
+
+    # copy the supplied CLI parameters over, modify them such that the intermediate files
+    # would be stored in a different directory specified by args.generate_jobs and construct
+    # the list of shell commands that will be submitted to SLURM system
+    job_params = []
+    for path_idx, path_arr in enumerate(path_arrs):
       commands_cp = copy.deepcopy(commands)
-      commands_cp['-p'] = paths_to_traverse[path_idx]
-      commands_cp['-N'] = 'dict.py.%i' % path_idx
+      commands_cp['-p'] = os.path.join(os.path.realpath(args.generate_jobs), ' '.join(path_arr))
+      commands_cp['-g'] = os.path.join(os.path.realpath(args.generate_jobs), 'dict.py.%i' % path_idx)
+      to_cat['dicts'].append(commands_cp['-g'])
+
+
       for key in ['-z', '-Z', '-C']:
         if key in commands_cp:
-          commands_cp[key] = '%s.%i' % (commands_cp[key], path_idx)
+          commands_cp[key] = os.path.join(os.path.realpath(args.generate_jobs), '%s.%i' % (commands_cp[key], path_idx))
+          if key not in to_cat:
+            to_cat[key] = []
+          to_cat[key].append(commands_cp[key])
+      commands_cp['-m'] = os.path.join(os.getcwd(), commands_cp['-m'])
+      commands_cp['-s'] = ''
       del commands_cp['-J']
-      print(' '.join([sys.argv[0]] + [k + ' ' + v for k, v in commands_cp.items()]))
-    sys.exit(0)
 
-  # we need to post-process the meta dictionary
-  for key, entry in meta_dict.items():
-    if not name_regex.match(entry['process_name_specific']):
-      continue
-    if entry['located']:
-      process_paths(meta_dict, key)
-  for key_arr in sum_events:
-    event_sum = 0
-    missing_keys = []
-    for meta_key, meta_entry in meta_dict.items():
-      if meta_entry['process_name_specific'] in key_arr:
-        if not meta_entry['located']:
-          missing_keys.append(meta_entry['process_name_specific'])
-        else:
-          event_sum += meta_entry['nof_events']
-    if 0 < len(missing_keys) < len(key_arr):
-      raise ValueError("Could not find all samples to compute the number of events: %s" % \
-                       ', '.join(missing_keys))
-    for meta_key, meta_entry in meta_dict.items():
-      if meta_entry['process_name_specific'] in key_arr:
-        meta_entry['nof_events'] = event_sum
+      cmd = ' '.join(['python', sys.argv[0]] + [k + ' ' + v for k, v in commands_cp.items()])
+      sh = jinja2.Template(sh_str).render(cmd = cmd)
+      sh_file = os.path.join(args.generate_jobs, 'job_%i.sh' % path_idx)
+      with open(sh_file, 'w') as f:
+        f.write(sh)
+      log_file = os.path.join(args.generate_jobs, 'log_%i.txt' % path_idx)
+      job_params.append((log_file, sh_file))
 
-  output = jinja2.Template(header_str).render(
-    command   = ' '.join(sys.argv),
-    dict_name = args.output_dict_name,
-  ) if not args.skip_header else ''
-  for key, entry in meta_dict.items():
-    if not name_regex.match(entry['process_name_specific']):
-      continue
-    if entry['located']:
-      path_entries_arr = []
-      for path_entry in meta_dict[key]['local_paths']:
-        path_entries_arr.append(jinja2.Template(path_entry_str).render(
-          path      = path_entry['path'],
-          selection = path_entry['selection'],
-          blacklist = path_entry['blacklist'], #TODO: format properly
-        ))
-      is_mc = meta_dict[key]['type'] == 'mc'
-      output += jinja2.Template(dictionary_entry_str).render(
-        dict_name                       = args.output_dict_name,
-        dbs_name                        = key,
-        sample_type                     = meta_dict[key]['type'],
-        sample_category                 = meta_dict[key]['sample_category'],
-        process_name_specific           = meta_dict[key]['process_name_specific'],
-        nof_files                       = meta_dict[key]['nof_files'],
-        nof_events                      = meta_dict[key]['nof_events'],
-        use_HIP_mitigation_bTag         = meta_dict[key]['use_HIP_mitigation_bTag'],
-        use_HIP_mitigation_mediumMuonId = meta_dict[key]['use_HIP_mitigation_mediumMuonId'],
-        use_it                          = meta_dict[key]['use_it'],
-        xsection                        = meta_dict[key]['xsection'] if is_mc else None,
-        genWeight                       = meta_dict[key]['genWeight'],
-        triggers                        = meta_dict[key]['triggers'],
-        reHLT                           = meta_dict[key]['reHLT'],
-        paths                           = '\n'.join(path_entries_arr),
-      ) + '\n\n'
-    else:
-      logging.warning("Could not locate paths for {key}".format(key = key))
+    # submit the jobs
+    submit_cmds = list(map(
+      lambda job_param: 'sbatch --partition=small --output=%s %s' % job_param,
+      job_params
+    ))
+    squeue_codes = []
+    for submit_cmd in submit_cmds:
+      squeue_code = run_cmd(submit_cmd).split()[-1]
+      squeue_codes.append(squeue_code)
+      logging.info("Submitted sbatch job {jobId}".format(jobId = squeue_code))
+
+    has_completed = not bool(squeue_codes)
+    while not has_completed:
+      squeue = run_cmd("squeue -j {jobIds} -h | wc -l".format(jobIds = ','.join(squeue_codes))).rstrip('\n')
+      if squeue == '0':
+        has_completed = True
+      logging.debug("{nofJobs} job(s) still running...".format(nofJobs = squeue))
+      time.sleep(5)
+    logging.info("All jobs have been finished")
+
+    # cat the dictionary
+    for dict_file in to_cat['dicts']:
+      if not os.path.exists(dict_file):
+        raise ValueError("Missing temporary dictionary: %s" % dict_file)
+      with open(dict_file, 'r') as f:
+        output += '\n'.join(map(lambda line: line.rstrip('\n'), f.readlines()))
+
+    # cat the faulty files
+    for key in ['-z', '-Z', '-C']:
+      if key not in to_cat:
+        continue
+      for faulty_list_file in to_cat[key]:
+        if os.path.exists(faulty_list_file):
+          with open(faulty_list_file, 'r') as f:
+            lines = map(lambda line: line.rstrip('\n'), f.readlines())
+            if key == '-z':
+              filetracker.zombie_files.extend(lines)
+            if key == '-Z':
+              filetracker.zero_file_size.extend(lines)
+            if key == '-C':
+              filetracker.corrupted_files.extend(lines)
+
+    if args.clean:
+      shutil.rmtree(args.generate_jobs)
+  else:
+    # we need to post-process the meta dictionary
+    for key, entry in meta_dict.items():
+      if not name_regex.match(entry['process_name_specific']):
+        continue
+      if entry['located']:
+        process_paths(meta_dict, key)
+    for key_arr in sum_events:
+      event_sum = 0
+      missing_keys = []
+      for meta_key, meta_entry in meta_dict.items():
+        if meta_entry['process_name_specific'] in key_arr:
+          if not meta_entry['located']:
+            missing_keys.append(meta_entry['process_name_specific'])
+          else:
+            event_sum += meta_entry['nof_events']
+      if 0 < len(missing_keys) < len(key_arr):
+        raise ValueError("Could not find all samples to compute the number of events: %s" % \
+                         ', '.join(missing_keys))
+      for meta_key, meta_entry in meta_dict.items():
+        if meta_entry['process_name_specific'] in key_arr:
+          meta_entry['nof_events'] = event_sum
+
+    for key, entry in meta_dict.items():
+      if not name_regex.match(entry['process_name_specific']):
+        continue
+      if entry['located']:
+        path_entries_arr = []
+        for path_entry in meta_dict[key]['local_paths']:
+          path_entries_arr.append(jinja2.Template(path_entry_str).render(
+            path      = path_entry['path'],
+            selection = path_entry['selection'],
+            blacklist = path_entry['blacklist'], #TODO: format properly
+          ))
+        is_mc = meta_dict[key]['type'] == 'mc'
+        output += jinja2.Template(dictionary_entry_str).render(
+          dict_name                       = args.output_dict_name,
+          dbs_name                        = key,
+          sample_type                     = meta_dict[key]['type'],
+          sample_category                 = meta_dict[key]['sample_category'],
+          process_name_specific           = meta_dict[key]['process_name_specific'],
+          nof_files                       = meta_dict[key]['nof_files'],
+          nof_events                      = int(meta_dict[key]['nof_events']),
+          use_HIP_mitigation_bTag         = meta_dict[key]['use_HIP_mitigation_bTag'],
+          use_HIP_mitigation_mediumMuonId = meta_dict[key]['use_HIP_mitigation_mediumMuonId'],
+          use_it                          = meta_dict[key]['use_it'],
+          xsection                        = round(meta_dict[key]['xsection'], 6) if is_mc else None,
+          genWeight                       = meta_dict[key]['genWeight'],
+          triggers                        = meta_dict[key]['triggers'],
+          reHLT                           = meta_dict[key]['reHLT'],
+          paths                           = '\n'.join(path_entries_arr),
+        ) + '\n\n'
+      else:
+        logging.warning("Could not locate paths for {key}".format(key = key))
 
   dictionary_path = os.path.join(args.output_directory, args.generate_python)
   with open(dictionary_path, 'w') as f:

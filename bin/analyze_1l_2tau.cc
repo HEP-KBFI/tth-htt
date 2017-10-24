@@ -69,6 +69,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/Data_to_MC_CorrectionInterface_1l_2tau_trigger.h" // Data_to_MC_CorrectionInterface_1l_2tau_trigger
 #include "tthAnalysis/HiggsToTauTau/interface/cutFlowTable.h" // cutFlowTableType
 #include "tthAnalysis/HiggsToTauTau/interface/NtupleFillerBDT.h" // NtupleFillerBDT
+#include "tthAnalysis/HiggsToTauTau/interface/HadTopTagger.h" // HadTopTagger
 #include "tthAnalysis/HiggsToTauTau/interface/TTreeWrapper.h" // TTreeWrapper
 
 #include <iostream> // std::cerr, std::fixed
@@ -463,6 +464,10 @@ int main(int argc, char* argv[])
     inputTree -> registerReader(lheInfoReader);
   }
 
+//--- initialize hadronic top tagger BDT
+  std::string mvaFileName_hadTopTagger = "tthAnalysis/HiggsToTauTau/data/hadTopTagger_BDTG_2017Oct10_opt2.xml";
+  HadTopTagger* hadTopTagger = new HadTopTagger(mvaFileName_hadTopTagger);
+
 //--- initialize BDTs used to discriminate ttH vs. ttbar trained by Matthias for 1l_2tau category
   std::string mvaFileName_1l_2tau_ttbar;
   if ( hadTauSelection_part2 == "dR03mvaVVTight" ) mvaFileName_1l_2tau_ttbar = "tthAnalysis/HiggsToTauTau/data/1l_2tau_ttbar_vvTight.weights.xml";
@@ -749,7 +754,8 @@ int main(int argc, char* argv[])
       "lep_pt", "lep_conePt", "lep_eta", "lep_tth_mva", "mindr_lep_jet", "mindr_tau1_jet", "mindr_tau2_jet",
       "avg_dr_jet", "ptmiss", "mT_lep", "htmiss", "tau1_mva", "tau2_mva", "tau1_pt", "tau2_pt",
       "tau1_eta", "tau2_eta", "dr_taus", "dr_lep_tau_os", "dr_lep_tau_ss", "mTauTauVis",
-      "lumiScale", "genWeight", "evtWeight"
+      "lumiScale", "genWeight", "evtWeight",
+      "mvaOutput_hadTopTagger", "fittedHadTop_pt", "fittedHadTop_eta", "dr_lep_fittedHadTop"
     );
     bdt_filler -> register_variable<int_type>(
       "nJet", "nBJetLoose", "nBJetMedium"
@@ -779,6 +785,10 @@ int main(int argc, char* argv[])
     }
     ++analyzedEntries;
     histogram_analyzedEntries->Fill(0.);
+
+    if ( isDEBUG ) {
+      std::cout << "event #" << inputTree -> getCurrentMaxEventIdx() << ' ' << eventInfo << '\n';
+    }
 
     if (run_lumi_eventSelector && !(*run_lumi_eventSelector)(eventInfo))
     {
@@ -1374,6 +1384,30 @@ int main(int argc, char* argv[])
       cutFlowTable.update("signal region veto", evtWeight);
       cutFlowHistManager->fillHistograms("signal region veto", evtWeight);
     }
+
+//--- compute output of hadronic top tagger BDT
+    double max_mvaOutput_hadTopTagger = -1.;
+    Particle::LorentzVector fittedHadTopP4;
+    for ( std::vector<const RecoJet*>::const_iterator selBJet = selJets.begin();
+	  selBJet != selJets.end(); ++selBJet ) {
+      for ( std::vector<const RecoJet*>::const_iterator selWJet1 = selJets.begin();
+	    selWJet1 != selJets.end(); ++selWJet1 ) {
+	
+	if ( &(*selWJet1) == &(*selBJet) ) continue;
+	
+	for ( std::vector<const RecoJet*>::const_iterator selWJet2 = selWJet1 + 1;
+	      selWJet2 != selJets.end(); ++selWJet2 ) {
+	  
+	  if ( &(*selWJet2) == &(*selBJet) ) continue;
+	  
+	  double mvaOutput_hadTopTagger = (*hadTopTagger)(**selBJet, **selWJet1, **selWJet2);
+	  if ( mvaOutput_hadTopTagger > max_mvaOutput_hadTopTagger ) {
+	    max_mvaOutput_hadTopTagger = mvaOutput_hadTopTagger;
+	    fittedHadTopP4 = hadTopTagger->kinFit()->fittedTop();
+	  }
+	}
+      }
+    }
     
 //--- compute output of BDTs used to discriminate ttH vs. ttbar trained by Matthias for 1l_2tau category
     mvaInputs_ttbar["ht"]              = compHT(fakeableLeptons, selHadTaus, selJets);
@@ -1482,38 +1516,42 @@ int main(int argc, char* argv[])
     }
 
     if ( selEventsFile ) {
-      (*selEventsFile) << eventInfo.run << ":" << eventInfo.lumi << ":" << eventInfo.event << std::endl;
+      (*selEventsFile) << eventInfo.run << ':' << eventInfo.lumi << ':' << eventInfo.event << '\n';
     }
 
     if ( bdt_filler ) {
       bdt_filler -> operator()({ eventInfo.run, eventInfo.lumi, eventInfo.event })
-          ("lep_pt",         selLepton -> pt())
-          ("lep_conePt",     selLepton -> cone_pt()) 
-          ("lep_eta",        selLepton -> eta())
-          ("lep_tth_mva",    selLepton -> mvaRawTTH())
-          ("mindr_lep_jet",  TMath::Min(10., comp_mindr_lep1_jet(*selLepton, selJets)))
-          ("mindr_tau1_jet", TMath::Min(10., comp_mindr_hadTau1_jet(*selHadTau_lead, selJets)))
-          ("mindr_tau2_jet", TMath::Min(10., comp_mindr_hadTau2_jet(*selHadTau_sublead, selJets)))
-          ("avg_dr_jet",     comp_avg_dr_jet(selJets))
-          ("ptmiss",         met.pt())
-          ("mT_lep",         comp_MT_met_lep1(*selLepton, met.pt(), met.phi()))
-          ("htmiss",         mht_p4.pt())
-          ("tau1_mva",       selHadTau_lead -> raw_mva_dR03())
-          ("tau2_mva",       selHadTau_sublead -> raw_mva_dR03())
-          ("tau1_pt",        selHadTau_lead -> pt())
-          ("tau2_pt",        selHadTau_sublead -> pt())
-          ("tau1_eta",       selHadTau_lead -> eta())
-          ("tau2_eta",       selHadTau_sublead -> eta())
-          ("dr_taus",        deltaR(selHadTau_lead -> p4(), selHadTau_sublead -> p4()))
-          ("dr_lep_tau_os",  deltaR(selLepton->p4(), selHadTau_OS->p4()))
-          ("dr_lep_tau_ss",  deltaR(selLepton->p4(), selHadTau_SS->p4()))
-          ("mTauTauVis",     mTauTauVis)
-          ("lumiScale",      lumiScale)
-          ("genWeight",      eventInfo.genWeight)
-          ("evtWeight",      evtWeight)
-          ("nJet",           selJets.size())
-          ("nBJetLoose",     selBJets_loose.size())
-          ("nBJetMedium",    selBJets_medium.size())
+          ("lep_pt",                 selLepton -> pt())
+          ("lep_conePt",             selLepton -> cone_pt()) 
+          ("lep_eta",                selLepton -> eta())
+          ("lep_tth_mva",            selLepton -> mvaRawTTH())
+          ("mindr_lep_jet",          TMath::Min(10., comp_mindr_lep1_jet(*selLepton, selJets)))
+          ("mindr_tau1_jet",         TMath::Min(10., comp_mindr_hadTau1_jet(*selHadTau_lead, selJets)))
+          ("mindr_tau2_jet",         TMath::Min(10., comp_mindr_hadTau2_jet(*selHadTau_sublead, selJets)))
+          ("avg_dr_jet",             comp_avg_dr_jet(selJets))
+          ("ptmiss",                 met.pt())
+          ("mT_lep",                 comp_MT_met_lep1(*selLepton, met.pt(), met.phi()))
+          ("htmiss",                 mht_p4.pt())
+          ("tau1_mva",               selHadTau_lead -> raw_mva_dR03())
+          ("tau2_mva",               selHadTau_sublead -> raw_mva_dR03())
+          ("tau1_pt",                selHadTau_lead -> pt())
+          ("tau2_pt",                selHadTau_sublead -> pt())
+          ("tau1_eta",               selHadTau_lead -> eta())
+          ("tau2_eta",               selHadTau_sublead -> eta())
+          ("dr_taus",                deltaR(selHadTau_lead -> p4(), selHadTau_sublead -> p4()))
+          ("dr_lep_tau_os",          deltaR(selLepton->p4(), selHadTau_OS->p4()))
+          ("dr_lep_tau_ss",          deltaR(selLepton->p4(), selHadTau_SS->p4()))
+          ("mTauTauVis",             mTauTauVis)
+	  ("mvaOutput_hadTopTagger", max_mvaOutput_hadTopTagger)
+	  ("fittedHadTop_pt",        fittedHadTopP4.pt())
+	  ("fittedHadTop_eta",       fittedHadTopP4.eta()) 
+	  ("dr_lep_fittedHadTop",    deltaR(selLepton->p4(), fittedHadTopP4))
+          ("lumiScale",              lumiScale)
+          ("genWeight",              eventInfo.genWeight)
+          ("evtWeight",              evtWeight)
+          ("nJet",                   selJets.size())
+          ("nBJetLoose",             selBJets_loose.size())
+          ("nBJetMedium",            selBJets_medium.size())
         .fill()
       ;
     }
@@ -1528,7 +1566,7 @@ int main(int argc, char* argv[])
             << inputTree -> getProcessedFileCount() << " file(s) (out of "
             << inputTree -> getFileCount() << ")\n"
             << " analyzed = " << analyzedEntries << '\n'
-            << " selected = " << selectedEntries << " (weighted = " << selectedEntries_weighted << ")n\n"
+            << " selected = " << selectedEntries << " (weighted = " << selectedEntries_weighted << ")\n\n"
             << "cut-flow table" << std::endl;
   cutFlowTable.print(std::cout);
   std::cout << std::endl;
@@ -1572,6 +1610,8 @@ int main(int argc, char* argv[])
   delete genHadTauReader;
   delete genJetReader;
   delete lheInfoReader;
+
+  delete hadTopTagger;
 
   delete genEvtHistManager_beforeCuts;
   delete genEvtHistManager_afterCuts;

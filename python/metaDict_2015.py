@@ -2,6 +2,15 @@ from collections import OrderedDict as OD
 
 meta_dictionary = OD()
 
+### event sums
+
+sum_events = {
+  ("ST_t-channel_4f_leptonDecays", "ST_t-channel_4f_leptonDecays_ext1"),
+  ("TTTT", "TTTT_ext1"),
+}
+
+### MC
+
 meta_dictionary["/THW_Hincl_13TeV-madgraph-pythia8_TuneCUETP8M1/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM"] = OD([
   ("crab_string",           "VHBB_HEPPY_V12_THW_Hincl_13TeV-madgraph-Py8_TuneCUETP8M1__fall15MAv2-pu25ns15v1_76r2as_v12-v1"),
   ("sample_category",       "additional_signal_overlap"),
@@ -257,6 +266,8 @@ meta_dictionary["/ttHToNonbb_M125_13TeV_powheg_pythia8/RunIIFall15MiniAODv2-PU25
   ("xsection",              0.2151),
   ("use_it",                False),
 ])
+
+### DATA
 
 meta_dictionary["/DoubleMuon/Run2015C_25ns-16Dec2015-v1/MINIAOD"] = OD([
   ("crab_string",           "VHBB_HEPPY_H20_DoubleMuon__Run2015C_25ns-16Dec2015-v1"),

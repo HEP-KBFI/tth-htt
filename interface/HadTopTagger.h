@@ -23,6 +23,8 @@ class HadTopTagger
 
   const std::map<std::string, double>& mvaInputs() const;
 
+  const HadTopKinFit* kinFit() const;
+  
  protected:
   HadTopKinFit* kinFit_;
 

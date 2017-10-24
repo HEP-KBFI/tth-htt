@@ -74,6 +74,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/lutAuxFunctions.h" // loadTH2, getSF_from_TH2
 #include "tthAnalysis/HiggsToTauTau/interface/cutFlowTable.h" // cutFlowTableType
 #include "tthAnalysis/HiggsToTauTau/interface/NtupleFillerBDT.h" // NtupleFillerBDT
+#include "tthAnalysis/HiggsToTauTau/interface/HadTopTagger.h" // HadTopTagger
 #include "tthAnalysis/HiggsToTauTau/interface/TTreeWrapper.h" // TTreeWrapper
 
 #include <iostream> // std::cerr, std::fixed
@@ -542,6 +543,10 @@ int main(int argc, char* argv[])
     inputTree -> registerReader(lheInfoReader);
   }
 
+//--- initialize hadronic top tagger BDT
+  std::string mvaFileName_hadTopTagger = "tthAnalysis/HiggsToTauTau/data/hadTopTagger_BDTG_2017Oct10_opt2.xml";
+  HadTopTagger* hadTopTagger = new HadTopTagger(mvaFileName_hadTopTagger);
+
 //--- initialize BDTs used to discriminate ttH vs. ttV and ttH vs. ttbar 
 //    in 2lss_1tau category of ttH multilepton analysis
   std::string mvaFileName_2lss_ttV = "tthAnalysis/HiggsToTauTau/data/2lss_ttV_BDTG.weights.xml";
@@ -867,9 +872,11 @@ int main(int argc, char* argv[])
       "memOutput_isValid", "memOutput_errorFlag", "memOutput_type", "memOutput_ttH", "memOutput_ttZ",
       "memOutput_ttZ_Zll", "memOutput_tt", "memOutput_LR", "memOutput_tt_LR", "memOutput_ttZ_LR", 
       "memOutput_ttZ_Ztt_LR", "memOutput_ttZ_Zll_LR",
-      "lep1_genLepPt", "lep2_genLepPt", 
-      "tau_genTauPt", "lep1_fake_prob", "lep2_fake_prob", "tau_fake_prob",
-      "mvaOutput_2lss_ttV", "mvaOutput_2lss_ttbar", "mvaDiscr_2lss"
+      "lep1_genLepPt", "lep2_genLepPt", "tau_genTauPt", 
+      "lep1_fake_prob", "lep2_fake_prob", "tau_fake_prob",
+      "mvaOutput_2lss_ttV", "mvaOutput_2lss_ttbar", "mvaDiscr_2lss",
+      "mvaOutput_Hj_tagger", "mvaOutput_Hjj_tagger",
+      "mvaOutput_hadTopTagger", "fittedHadTop_pt", "fittedHadTop_eta"
     );
     bdt_filler->register_variable<int_type>(
       "nJet", "nBJetLoose", "nBJetMedium", "lep1_isTight", "lep2_isTight", "tau_isTight"
@@ -1764,6 +1771,30 @@ int main(int argc, char* argv[])
 
     Double_t memDiscr = getSF_from_TH2(mem_mapping, memOutput_ttbar_LR, memOutput_ttZ_LR);
 
+//--- compute output of hadronic top tagger BDT
+    double max_mvaOutput_hadTopTagger = -1.;
+    Particle::LorentzVector fittedHadTopP4;
+    for ( std::vector<const RecoJet*>::const_iterator selBJet = selJets.begin();
+	  selBJet != selJets.end(); ++selBJet ) {
+      for ( std::vector<const RecoJet*>::const_iterator selWJet1 = selJets.begin();
+	    selWJet1 != selJets.end(); ++selWJet1 ) {
+
+	if ( &(*selWJet1) == &(*selBJet) ) continue;
+
+	for ( std::vector<const RecoJet*>::const_iterator selWJet2 = selWJet1 + 1;
+	      selWJet2 != selJets.end(); ++selWJet2 ) {
+
+	  if ( &(*selWJet2) == &(*selBJet) ) continue;
+
+	  double mvaOutput_hadTopTagger = (*hadTopTagger)(**selBJet, **selWJet1, **selWJet2);
+	  if ( mvaOutput_hadTopTagger > max_mvaOutput_hadTopTagger ) {
+	    max_mvaOutput_hadTopTagger = mvaOutput_hadTopTagger;
+	    fittedHadTopP4 = hadTopTagger->kinFit()->fittedTop();
+	  }
+	}
+      }
+    }
+
 //--- compute output of BDTs used to discriminate ttH vs. ttV and ttH vs. ttbar trained by Arun for 2lss_1tau category
     mvaInputs_2lss_1tau["avg_dr_jet"]                                            = comp_avg_dr_jet(selJets);
     mvaInputs_2lss_1tau["dr_leps"]                                               = deltaR(selLepton_lead->p4(), selLepton_sublead->p4());
@@ -1896,7 +1927,7 @@ int main(int argc, char* argv[])
     }
 
     if ( selEventsFile ) {
-      (*selEventsFile) << eventInfo << std::endl;
+      (*selEventsFile) << eventInfo.run << ':' << eventInfo.lumi << ':' << eventInfo.event << '\n';
     }
 
     if ( bdt_filler ) {
@@ -1908,60 +1939,63 @@ int main(int argc, char* argv[])
       if      ( std::abs(selLepton_sublead->pdgId()) == 11 ) prob_fake_lepton_sublead = leptonFakeRateInterface->getWeight_e(selLepton_sublead->cone_pt(), selLepton_sublead->absEta());
       else if ( std::abs(selLepton_sublead->pdgId()) == 13 ) prob_fake_lepton_sublead = leptonFakeRateInterface->getWeight_mu(selLepton_sublead->cone_pt(), selLepton_sublead->absEta());
       bdt_filler -> operator()({ eventInfo.run, eventInfo.lumi, eventInfo.event })
-          ("lep1_pt",              selLepton_lead -> pt())
-          ("lep1_conePt",          comp_lep1_conePt(*selLepton_lead))
-          ("lep1_eta",             selLepton_lead -> eta())
-          ("lep1_tth_mva",         selLepton_lead -> mvaRawTTH())
-          ("mindr_lep1_jet",       TMath::Min(10., comp_mindr_lep1_jet(*selLepton_lead, selJets)))
-          ("mT_lep1",              comp_MT_met_lep1(*selLepton_lead, met.pt(), met.phi()))
-          ("dr_lep1_tau",          deltaR(selLepton_lead -> p4(), selHadTau -> p4()))
-          ("lep2_pt",              selLepton_sublead -> pt())
-          ("lep2_conePt",          comp_lep1_conePt(*selLepton_sublead))
-          ("lep2_eta",             selLepton_sublead -> eta())
-          ("lep2_tth_mva",         selLepton_sublead -> mvaRawTTH())
-          ("mindr_lep2_jet",       TMath::Min(10., comp_mindr_lep1_jet(*selLepton_sublead, selJets)))
-          ("mT_lep2",              comp_MT_met_lep1(*selLepton_sublead, met.pt(), met.phi()))
-          ("dr_lep2_tau",          deltaR(selLepton_sublead -> p4(), selHadTau -> p4()))
-          ("mindr_tau_jet",        TMath::Min(10., comp_mindr_hadTau1_jet(*selHadTau, selJets)))
-          ("avg_dr_jet",           comp_avg_dr_jet(selJets))
-          ("ptmiss",               met.pt())
-          ("htmiss",               mht_p4.pt())
-          ("tau_mva",              selHadTau -> raw_mva_dR03())
-          ("tau_pt",               selHadTau -> pt())
-          ("tau_eta",              selHadTau -> eta())
-          ("dr_leps",              deltaR(selLepton_lead -> p4(), selLepton_sublead -> p4()))
-          ("mTauTauVis1",          mTauTauVis1_sel)
-          ("mTauTauVis2",          mTauTauVis2_sel)
-          ("memOutput_isValid",    memOutput_2lss_1tau_matched.is_initialized() ? memOutput_2lss_1tau_matched.isValid()        : -100.)
-          ("memOutput_errorFlag",  memOutput_2lss_1tau_matched.is_initialized() ? memOutput_2lss_1tau_matched.errorFlag()      : -100.)
-          ("memOutput_type",       memOutput_2lss_1tau_matched.is_initialized() ? memOutput_2lss_1tau_matched.type()           : -100.)
-          ("memOutput_ttH",        memOutput_2lss_1tau_matched.is_initialized() ? memOutput_2lss_1tau_matched.weight_ttH()     : -100.)
-          ("memOutput_ttZ",        memOutput_2lss_1tau_matched.is_initialized() ? memOutput_2lss_1tau_matched.weight_ttZ()     : -100.)
-          ("memOutput_ttZ_Zll",    memOutput_2lss_1tau_matched.is_initialized() ? memOutput_2lss_1tau_matched.weight_ttZ_Zll() : -100.)
-          ("memOutput_tt",         memOutput_2lss_1tau_matched.is_initialized() ? memOutput_2lss_1tau_matched.weight_tt()      : -100.)
-          ("memOutput_LR",         memOutput_LR)
-          ("memOutput_tt_LR",      memOutput_ttbar_LR)
-          ("memOutput_ttZ_LR",     memOutput_ttZ_LR)
-          ("lep1_genLepPt",        ( selLepton_lead->genLepton() != 0 ) ? selLepton_lead->genLepton()->pt() : 0.)
-          ("lep2_genLepPt",        ( selLepton_sublead->genLepton() != 0 ) ? selLepton_sublead->genLepton()->pt() : 0.)
-          ("tau_genTauPt",         ( selHadTau->genHadTau() != 0 ) ? selHadTau->genHadTau()->pt() : 0.)
-          ("lep1_fake_prob",       prob_fake_lepton_lead)
-          ("lep2_fake_prob",       prob_fake_lepton_sublead)
-          ("tau_fake_prob",        jetToTauFakeRateInterface->getWeight_lead(selHadTau->pt(), selHadTau->absEta()))
-          ("mvaOutput_2lss_ttV",   mvaOutput_2lss_ttV)
-          ("mvaOutput_2lss_ttbar", mvaOutput_2lss_ttbar)
-          ("mvaDiscr_2lss",        mvaDiscr_2lss)
-          ("mvaOutput_Hj_tagger",  mvaOutput_Hj_tagger)
-          ("mvaOutput_Hjj_tagger", mvaOutput_Hjj_tagger)
-          ("lumiScale",            lumiScale)
-          ("genWeight",            eventInfo.genWeight)
-          ("evtWeight",            evtWeight)
-          ("nJet",                 selJets.size())
-          ("nBJetLoose",           selBJets_loose.size())
-          ("nBJetMedium",          selBJets_medium.size())
-          ("lep1_isTight",         int(selLepton_lead -> isTight()))
-          ("lep2_isTight",         int(selLepton_sublead -> isTight()))
-          ("tau_isTight",          int(tightHadTauFilter(*selHadTau)))
+          ("lep1_pt",                selLepton_lead -> pt())
+          ("lep1_conePt",            comp_lep1_conePt(*selLepton_lead))
+          ("lep1_eta",               selLepton_lead -> eta())
+          ("lep1_tth_mva",           selLepton_lead -> mvaRawTTH())
+          ("mindr_lep1_jet",         TMath::Min(10., comp_mindr_lep1_jet(*selLepton_lead, selJets)))
+          ("mT_lep1",                comp_MT_met_lep1(*selLepton_lead, met.pt(), met.phi()))
+          ("dr_lep1_tau",            deltaR(selLepton_lead -> p4(), selHadTau -> p4()))
+          ("lep2_pt",                selLepton_sublead -> pt())
+          ("lep2_conePt",            comp_lep1_conePt(*selLepton_sublead))
+          ("lep2_eta",               selLepton_sublead -> eta())
+          ("lep2_tth_mva",           selLepton_sublead -> mvaRawTTH())
+          ("mindr_lep2_jet",         TMath::Min(10., comp_mindr_lep1_jet(*selLepton_sublead, selJets)))
+          ("mT_lep2",                comp_MT_met_lep1(*selLepton_sublead, met.pt(), met.phi()))
+          ("dr_lep2_tau",            deltaR(selLepton_sublead -> p4(), selHadTau -> p4()))
+          ("mindr_tau_jet",          TMath::Min(10., comp_mindr_hadTau1_jet(*selHadTau, selJets)))
+          ("avg_dr_jet",             comp_avg_dr_jet(selJets))
+          ("ptmiss",                 met.pt())
+          ("htmiss",                 mht_p4.pt())
+          ("tau_mva",                selHadTau -> raw_mva_dR03())
+          ("tau_pt",                 selHadTau -> pt())
+          ("tau_eta",                selHadTau -> eta())
+          ("dr_leps",                deltaR(selLepton_lead -> p4(), selLepton_sublead -> p4()))
+          ("mTauTauVis1",            mTauTauVis1_sel)
+          ("mTauTauVis2",            mTauTauVis2_sel)
+          ("memOutput_isValid",      memOutput_2lss_1tau_matched.is_initialized() ? memOutput_2lss_1tau_matched.isValid()        : -100.)
+          ("memOutput_errorFlag",    memOutput_2lss_1tau_matched.is_initialized() ? memOutput_2lss_1tau_matched.errorFlag()      : -100.)
+          ("memOutput_type",         memOutput_2lss_1tau_matched.is_initialized() ? memOutput_2lss_1tau_matched.type()           : -100.)
+          ("memOutput_ttH",          memOutput_2lss_1tau_matched.is_initialized() ? memOutput_2lss_1tau_matched.weight_ttH()     : -100.)
+          ("memOutput_ttZ",          memOutput_2lss_1tau_matched.is_initialized() ? memOutput_2lss_1tau_matched.weight_ttZ()     : -100.)
+          ("memOutput_ttZ_Zll",      memOutput_2lss_1tau_matched.is_initialized() ? memOutput_2lss_1tau_matched.weight_ttZ_Zll() : -100.)
+          ("memOutput_tt",           memOutput_2lss_1tau_matched.is_initialized() ? memOutput_2lss_1tau_matched.weight_tt()      : -100.)
+          ("memOutput_LR",           memOutput_LR)
+          ("memOutput_tt_LR",        memOutput_ttbar_LR)
+          ("memOutput_ttZ_LR",       memOutput_ttZ_LR)
+          ("lep1_genLepPt",          ( selLepton_lead->genLepton() != 0 ) ? selLepton_lead->genLepton()->pt() : 0.)
+          ("lep2_genLepPt",          ( selLepton_sublead->genLepton() != 0 ) ? selLepton_sublead->genLepton()->pt() : 0.)
+          ("tau_genTauPt",           ( selHadTau->genHadTau() != 0 ) ? selHadTau->genHadTau()->pt() : 0.)
+          ("lep1_fake_prob",         prob_fake_lepton_lead)
+          ("lep2_fake_prob",         prob_fake_lepton_sublead)
+          ("tau_fake_prob",          jetToTauFakeRateInterface->getWeight_lead(selHadTau->pt(), selHadTau->absEta()))
+          ("mvaOutput_2lss_ttV",     mvaOutput_2lss_ttV)
+          ("mvaOutput_2lss_ttbar",   mvaOutput_2lss_ttbar)
+          ("mvaDiscr_2lss",          mvaDiscr_2lss)
+          ("mvaOutput_Hj_tagger",    mvaOutput_Hj_tagger)
+          ("mvaOutput_Hjj_tagger",   mvaOutput_Hjj_tagger)
+          ("mvaOutput_hadTopTagger", max_mvaOutput_hadTopTagger)
+	  ("fittedHadTop_pt",        fittedHadTopP4.pt())
+	  ("fittedHadTop_eta",       fittedHadTopP4.eta()) 
+          ("lumiScale",              lumiScale)
+          ("genWeight",              eventInfo.genWeight)
+          ("evtWeight",              evtWeight)
+          ("nJet",                   selJets.size())
+          ("nBJetLoose",             selBJets_loose.size())
+          ("nBJetMedium",            selBJets_medium.size())
+          ("lep1_isTight",           int(selLepton_lead -> isTight()))
+          ("lep2_isTight",           int(selLepton_sublead -> isTight()))
+          ("tau_isTight",            int(tightHadTauFilter(*selHadTau)))
         .fill()
       ;
     }
@@ -1976,7 +2010,7 @@ int main(int argc, char* argv[])
             << inputTree -> getProcessedFileCount() << " file(s) (out of "
             << inputTree -> getFileCount() << ")\n"
             << " analyzed = " << analyzedEntries << '\n'
-            << " selected = " << selectedEntries << " (weighted = " << selectedEntries_weighted << ")n\n"
+            << " selected = " << selectedEntries << " (weighted = " << selectedEntries_weighted << ")\n\n"
             << "cut-flow table" << std::endl;
   cutFlowTable.print(std::cout);
   std::cout << std::endl;
@@ -2023,6 +2057,8 @@ int main(int argc, char* argv[])
   delete genHadTauReader;
   delete genJetReader;
   delete lheInfoReader;
+
+  delete hadTopTagger;
 
   delete genEvtHistManager_beforeCuts;
   delete genEvtHistManager_afterCuts;

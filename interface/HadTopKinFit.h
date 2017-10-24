@@ -51,6 +51,8 @@ class HadTopKinFit
   const Particle::LorentzVector& fittedBJet() const;
   const Particle::LorentzVector& fittedWJet1() const;
   const Particle::LorentzVector& fittedWJet2() const;
+  Particle::LorentzVector fittedTop() const;
+  Particle::LorentzVector fittedW() const;
   double alpha() const;
   double nll() const;
   int fit_status() const;
