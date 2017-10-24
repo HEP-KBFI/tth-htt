@@ -57,7 +57,7 @@ def createFile(fileName, lines):
 def initializeInputFileIds(sample_name, sample_info, max_files_per_job):
     """Retrieves the number of input ROOT files (Ntuples) corresponding to a given sample
        and fills the number into the dictionary 'inputFileIds', with the name of the sample as key
-       
+
        TODO: add blacklist to the secondary storage as well
     """
     #print "<initializeInputFileIds>:"
@@ -94,7 +94,7 @@ def generateInputFileList(sample_name, sample_info, max_files_per_job, debug = F
 def createMakefile(makefileName, targets, lines_makefile, filesToClean = None, isSbatch = False, phoniesToAdd = []):
     """Creates Makefile that runs the complete analysis workfow.
     """
-    
+
     lines_makefile_with_header = []
     lines_makefile_with_header.append(".DEFAULT_GOAL := all")
     lines_makefile_with_header.append("SHELL := /bin/bash")
@@ -105,7 +105,7 @@ def createMakefile(makefileName, targets, lines_makefile, filesToClean = None, i
     if filesToClean:
         phonies.append('clean')
     if isSbatch:
-        phonies.append('sbatch_analyze sbatch_addBackgrounds sbatch_addFakes')
+        phonies.append('sbatch_analyze sbatch_addBackgrounds sbatch_addFakes sbatch_addMEM')
         phonies.append(' '.join(phoniesToAdd))
     if phonies:
         lines_makefile_with_header.append(".PHONY: %s" % ' '.join(phonies))

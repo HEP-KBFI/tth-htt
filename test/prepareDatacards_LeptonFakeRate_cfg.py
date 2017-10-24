@@ -5,8 +5,7 @@ import os
 process = cms.PSet()
 
 process.fwliteInput = cms.PSet(
-#    fileNames = cms.vstring("/hdfs/local/ram/ttHAnalysis_LeptonFakeRate_trial_2017Sep15/2016/2017Sep15/histograms/LeptonFakeRate/histograms_harvested_stage2_LeptonFakeRate.root")
-    fileNames = cms.vstring("output_stage2.root")
+    fileNames = cms.vstring("/hdfs/local/ram/ttHAnalysis_LeptonFakeRate_trial_2017Sep19/2016/2017Sep19/histograms/LeptonFakeRate/histograms_harvested_stage2.root")
 )
 
 process.fwliteOutput = cms.PSet(
@@ -14,34 +13,43 @@ process.fwliteOutput = cms.PSet(
 )
 
 process.prepareDatacards = cms.PSet(
-
     processesToCopy = cms.vstring(
         "data_obs",
-        "TTWl_plus_t",
-        "TTZl_plus_t",
-        "TTl_plus_t",
-        "Raresl_plus_t",
-#        "fakes_data",
-#        "flips_data"
-        "EWKl_plus_t"
-
+        "TTW",
+        "TTZ",
+        "TT",
+        "Rares",
+        "fakes_data",
+        "EWK",
+        "tH",
+        "TTWW",
+        "ttH_hbb"
     ),
 
     sf_signal = cms.double(1.),
     signals = cms.vstring(
-#        "ttH_hww",
-#        "ttH_hzz",
-#        "ttH_htt"
-        "signall_plus_t"
+        "signal"
     ),
 
     categories = cms.VPSet(
         cms.PSet(
             input = cms.string("LeptonFakeRate/denominator/muons_fakeable/incl"),
             output = cms.string("muons_fakeable_incl_shapes")
+        ),
+        cms.PSet(
+            input = cms.string("LeptonFakeRate/denominator/electrons_fakeable/incl"),
+            output = cms.string("electrons_fakeable_incl_shapes")
+        ),
+        cms.PSet(
+            input = cms.string("LeptonFakeRate/numerator/muons_tight/incl"),
+            output = cms.string("muons_tight_incl_shapes")
+        ),
+        cms.PSet(
+            input = cms.string("LeptonFakeRate/numerator/electrons_tight/incl"),
+            output = cms.string("electrons_tight_incl_shapes")
         )
     ),
-    makeSubDir = cms.bool(False),
+    makeSubDir = cms.bool(True),
 
     histogramToFit = cms.string("mT_fix_L"),
     histogramToFit_rebin = cms.int32(1),
@@ -49,6 +57,7 @@ process.prepareDatacards = cms.PSet(
     setBinsToZeroBelow = cms.double(-1.),
 
     sysShifts = cms.vstring(
+      "central",
       "CMS_ttHl_JESUp",
       "CMS_ttHl_JESDown",
       "CMS_ttHl_JERUp",
