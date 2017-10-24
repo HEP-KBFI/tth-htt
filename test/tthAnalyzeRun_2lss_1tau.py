@@ -13,11 +13,19 @@ from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 #   'forBDTtraining_afterAddMEM'  : to run the analysis on the Ntuples with MEM variables added,
 #                                   and with a relaxed event selection, to increase the BDT training statistics
 #--------------------------------------------------------------------------------
+# E.g. to run: python tthAnalyzeRun_2lss_1tau.py --version "2017Oct24" --mode "forBDTtraining_afterAddMEM" --use_prod_ntuples 
+from optparse import OptionParser
+parser = OptionParser()
+parser.add_option("--version ", type="string", dest="version", help="Name of output reository with results\n Trees will be stored in /hdfs/local/USER/ttHAnalysis/2016/VERSION/", default='dumb')
+parser.add_option("--mode", type="string", dest="mode", help="Set the mode flag, read the script for options", default="VHbb")
+parser.add_option("--ERA", type="string", dest="ERA", help="Era of data", default='2016')
+parser.add_option("--use_prod_ntuples", action="store_true", dest="use_prod_ntuples", help="Production flag", default=False)
+(options, args) = parser.parse_args()
 
-use_prod_ntuples     = True
-mode                 = "VHbb"
-ERA                  = "2016"
-version              = "2017Oct23"
+use_prod_ntuples     = options.use_prod_ntuples #True
+mode                 = options.mode #"forBDTtraining_afterAddMEM"
+ERA                  = options.ERA #"2016"
+version              = options.version #"2017Oct24"
 max_job_resubmission = 3
 max_files_per_job    = 10 if use_prod_ntuples else 100
 
