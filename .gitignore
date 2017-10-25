@@ -13,4 +13,5 @@ log.txt
 *.o
 G__HDFS.*
 __init__.py
+*~
 

@@ -32,6 +32,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     self.absEtaBins_mu = absEtaBins_mu
     self.absPtBins_e = absPtBins_e
     self.absPtBins_mu = absPtBins_mu
+    self.cfgFile_prep_dcard = "prepareDatacards_LeptonFakeRate_cfg.py"
     self.prep_dcard = prep_dcard
     self.histograms_to_fit = histograms_to_fit
     self.executable_addBackgrounds_LeptonFakeRate = executable_addBackgrounds_LeptonFakeRate
@@ -39,7 +40,9 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     self.fillGenEvtHistograms = fillGenEvtHistograms
     self.cfgFile_analyze = os.path.join(self.workingDir, "analyze_LeptonFakeRate_cfg.py")
     self.cfgFile_addBackgrounds_LeptonFakeRate = os.path.join(self.workingDir, "addBackground_LeptonFakeRate_cfg.py")
-    self.prep_dcard_processesToCopy = ["data_obs","TTWl_plus_t","TTZl_plus_t","TTl_plus_t","Raresl_plus_t","EWKl_plus_t","signall_plus_t", "TTWWl_plus_t", "tHl_plus_t","ttH_hbbl_plus_t"]
+    self.prep_dcard_processesToCopy = ["data_obs","TTW","TTZ","TT","Rares","EWK","signal", "TTWW", "tH","ttH_hbb", "fakes_data"]
+    self.prep_dcard_signals = ["signal"]
+
     self.histogramDir_prep_dcard = "LeptonFakeRate"
     self.jobOptions_addBackgrounds_LeptonFakeRate = {}
     
@@ -180,6 +183,36 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
       lines_makefile.append("")
       self.filesToClean.append(jobOptions['outputFile'])
 
+
+  def createCfg_prep_dcard_LeptonFakeRate(self, jobOptions):
+        """  
+        Fills the template of python configuration file for datacard preparation                                                                                                               
+        Args:                                                                                                                                                                                          
+        histogramToFit: name of the histogram used for signal extraction                                                                                                                             
+        """
+        category_output = self.channel
+        if jobOptions['label']:
+            category_output += "_%s" % jobOptions['label']
+        lines = []
+        lines.append("process.fwliteInput.fileNames = cms.vstring('%s')" % jobOptions['inputFile'])
+        lines.append("process.fwliteOutput.fileName = cms.string('%s')" % jobOptions['datacardFile'])  ## DEF LINE
+        # lines.append("process.fwliteOutput.fileName = cms.string('%s')" % os.path.basename(jobOptions['datacardFile']))
+
+        ## lines.append("process.prepareDatacards.processesToCopy = cms.vstring(%s)" % self.prep_dcard_processesToCopy)
+        ## lines.append("process.prepareDatacards.signals = cms.vstring(%s)" % self.prep_dcard_signals)
+        # lines.append("process.prepareDatacards.makeSubDir = cms.bool(False)")
+        # lines.append("process.prepareDatacards.categories = cms.VPSet(")
+        # lines.append("    cms.PSet(")
+        # lines.append("        input = cms.string('%s/sel/evt')," % jobOptions['histogramDir'])
+        # lines.append("        output = cms.string('ttH_%s')" % category_output)
+        # lines.append("    )")
+        # lines.append(")")
+        # lines.append("process.prepareDatacards.histogramToFit = cms.string('%s')" % jobOptions['histogramToFit'])
+        create_cfg(self.cfgFile_prep_dcard, jobOptions['cfgFile_modified'], lines)
+
+
+
+
   def create(self):
     """Creates all necessary config files and runs the complete analysis workfow -- either locally or on the batch system
     """
@@ -203,7 +236,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
           self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel, process_name)
     for dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_LOGS, DKEY_HIST, DKEY_DCRD, DKEY_PLOT, DKEY_HADD_RT ]:
       initDict(self.dirs, [ dir_type ])
-      if dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_LOGS, DKEY_HADD_RT ]:
+      if dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_LOGS, DKEY_DCRD, DKEY_HADD_RT ]:  ## DKEY_PLOT TO BE ADDED LATER
         self.dirs[dir_type] = os.path.join(self.configDir, dir_type, self.channel)
       else:
         self.dirs[dir_type] = os.path.join(self.outputDir, dir_type, self.channel)
@@ -343,7 +376,11 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
 
     if self.prep_dcard:
       processesToCopy = []
-      logging.info("Creating configuration files to run 'prepareDatacards'")
+      signals = []
+      logging.info("Creating configuration files to run 'prepareDatacards_LeptonFakeRate'")
+      for process in self.prep_dcard_signals:
+        signals.append(process)             
+      self.prep_dcard_signals = signals
       for process in self.prep_dcard_processesToCopy:
         processesToCopy.append(process)             
       self.prep_dcard_processesToCopy = processesToCopy
@@ -356,8 +393,10 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
         'histogramDir' : (self.histogramDir_prep_dcard),
         'histogramToFit' : histogramToFit,
         'label' : None
-      }
-      self.createCfg_prep_dcard(self.jobOptions_prep_dcard[key_prep_dcard_job])       
+        }
+#        self.createCfg_prep_dcard(self.jobOptions_prep_dcard[key_prep_dcard_job])       ## DEF LINE
+        self.createCfg_prep_dcard_LeptonFakeRate(self.jobOptions_prep_dcard[key_prep_dcard_job])       
+
 
     if self.is_sbatch:
       logging.info("Creating script for submitting '%s' jobs to batch system" % self.executable_analyze)

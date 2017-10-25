@@ -43,10 +43,11 @@ class analyzeConfig_1l_1tau(analyzeConfig):
   def __init__(self, configDir, outputDir, executable_analyze, cfgFile_analyze, samples, changeBranchNames,
                hadTau_selection, chargeSumSelections, applyFakeRateWeights, central_or_shifts,
                max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,
-               executable_addBackgrounds, executable_addBackgroundJetToTauFakes, histograms_to_fit, select_rle_output = False, executable_prep_dcard="prepareDatacard"):
+               executable_addBackgrounds, executable_addBackgroundJetToTauFakes, histograms_to_fit,
+               select_rle_output = False, executable_prep_dcard="prepareDatacard", verbose = False):
     analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "1l_1tau", central_or_shifts,
       max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,
-      histograms_to_fit)
+      histograms_to_fit, verbose = verbose)
 
     self.samples = samples
     self.changeBranchNames = changeBranchNames

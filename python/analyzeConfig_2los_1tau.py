@@ -40,12 +40,15 @@ class analyzeConfig_2los_1tau(analyzeConfig):
                hadTau_selection, applyFakeRateWeights, central_or_shifts,
                max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,
                executable_addBackgrounds, executable_addFakes, histograms_to_fit, select_rle_output = False,
-               executable_prep_dcard = "prepareDatacards", executable_add_syst_dcard = "addSystDatacards"):
+               executable_prep_dcard = "prepareDatacards", executable_add_syst_dcard = "addSystDatacards",
+               verbose = False):
     analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "2los_1tau", central_or_shifts,
       max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,
       histograms_to_fit,
       executable_prep_dcard = executable_prep_dcard,
-      executable_add_syst_dcard = executable_add_syst_dcard)
+      executable_add_syst_dcard = executable_add_syst_dcard,
+      verbose = verbose
+    )
 
     self.samples = samples
     self.changeBranchNames = changeBranchNames
@@ -118,13 +121,15 @@ class analyzeConfig_2los_1tau(analyzeConfig):
 
     self.isBDTtraining = False
 
-  def set_BDT_training(self):
+  def set_BDT_training(self, hadTau_selection_relaxed, hadTauFakeRateWeight_inputFileName):
     """Run analysis with loose selection criteria for leptons and hadronic taus,
        for the purpose of preparing event list files for BDT training.
     """
-    self.lepton_and_hadTau_selections = [ "forBDTtraining" ]
-    self.lepton_and_hadTau_frWeights = [ "disabled" ]
-    self.isBDTtraining = True
+    self.lepton_and_hadTau_selections       = ["forBDTtraining"]
+    self.lepton_and_hadTau_frWeights        = ["disabled"]
+    self.hadTau_selection_relaxed           = hadTau_selection_relaxed
+    self.hadTauFakeRateWeight_inputFileName = hadTauFakeRateWeight_inputFileName
+    self.isBDTtraining                      = True
 
   def createCfg_analyze(self, jobOptions):
     """Create python configuration file for the analyze_2los_1tau executable (analysis code)
@@ -188,6 +193,10 @@ class analyzeConfig_2los_1tau(analyzeConfig):
       lines.append("process.analyze_2los_1tau.hadTauFakeRateWeight.applyGraph_sublead = cms.bool(False)")
       lines.append("process.analyze_2los_1tau.hadTauFakeRateWeight.applyFitFunction_sublead = cms.bool(True)")
       lines.append("process.analyze_2los_1tau.apply_hadTauFakeRateSF = cms.bool(True)")
+    if self.isBDTtraining:
+      lines.append("process.analyze_2los_1tau.hadTauFakeRateWeight.inputFileName = cms.string('%s')" % self.hadTauFakeRateWeight_inputFileName)
+      lines.append("process.analyze_2los_1tau.hadTauFakeRateWeight.lead.graphName = cms.string('jetToTauFakeRate/%s/$etaBin/jetToTauFakeRate_mc_hadTaus_pt')" % self.hadTau_selection_part2)
+      lines.append("process.analyze_2los_1tau.hadTauFakeRateWeight.lead.fitFunctionName = cms.string('jetToTauFakeRate/%s/$etaBin/fitFunction_data_div_mc_hadTaus_pt')" % self.hadTau_selection_part2)
     lines.append("process.analyze_2los_1tau.use_HIP_mitigation_mediumMuonId = cms.bool(%s)" % jobOptions['use_HIP_mitigation_mediumMuonId'])
     lines.append("process.analyze_2los_1tau.isMC = cms.bool(%s)" % jobOptions['is_mc'])
     lines.append("process.analyze_2los_1tau.central_or_shift = cms.string('%s')" % jobOptions['central_or_shift'])
@@ -287,7 +296,7 @@ class analyzeConfig_2los_1tau(analyzeConfig):
 
       if lepton_and_hadTau_selection == "forBDTtraining":
         lepton_selection = "Loose"
-        hadTau_selection = "Tight|dR03mvaLoose"
+        hadTau_selection = "Tight|%s" % self.hadTau_selection_relaxed
 
       for lepton_and_hadTau_frWeight in self.lepton_and_hadTau_frWeights:
         if lepton_and_hadTau_frWeight == "enabled" and not lepton_and_hadTau_selection.startswith("Fakeable"):
@@ -375,6 +384,9 @@ class analyzeConfig_2los_1tau(analyzeConfig):
               self.inputFiles_hadd_stage1[key_hadd_stage1].append(self.jobOptions_analyze[key_analyze_job]['histogramFile'])
               self.outputFile_hadd_stage1[key_hadd_stage1] = os.path.join(self.dirs[DKEY_HIST], "histograms_harvested_stage1_%s_%s_%s.root" % \
                 (self.channel, process_name, lepton_and_hadTau_selection_and_frWeight))
+
+          if self.isBDTtraining:
+            continue
 
           if is_mc:
             logging.info("Creating configuration files to run 'addBackgrounds' for sample %s" % process_name)
@@ -499,6 +511,9 @@ class analyzeConfig_2los_1tau(analyzeConfig):
                   self.outputFile_hadd_stage1_5[key_hadd_stage1_5] = os.path.join(self.dirs[DKEY_HIST], "histograms_harvested_stage1_5_%s_%s.root" % \
                     (self.channel, lepton_and_hadTau_selection_and_frWeight))
 
+          if self.isBDTtraining:
+            continue
+
           # add output files of hadd_stage1 for data to list of input files for hadd_stage1_5
           if not is_mc:
             key_hadd_stage1 = getKey(process_name, lepton_and_hadTau_selection_and_frWeight)
@@ -506,6 +521,9 @@ class analyzeConfig_2los_1tau(analyzeConfig):
             if not key_hadd_stage1_5 in self.inputFiles_hadd_stage1_5:
               self.inputFiles_hadd_stage1_5[key_hadd_stage1_5] = []
             self.inputFiles_hadd_stage1_5[key_hadd_stage1_5].append(self.outputFile_hadd_stage1[key_hadd_stage1])
+
+        if self.isBDTtraining:
+          continue
 
         # sum fake contributions for the total of all MC samples
         # input processes: TT1l1j,TT0l2j,...
@@ -550,9 +568,10 @@ class analyzeConfig_2los_1tau(analyzeConfig):
       logging.info("Creating Makefile")
       lines_makefile = []
       self.addToMakefile_analyze(lines_makefile)
+      self.addToMakefile_hadd_stage1(lines_makefile)
       self.createMakefile(lines_makefile)
       logging.info("Done")
-      return
+      return self.num_jobs
 
     logging.info("Creating configuration files to run 'addBackgroundFakes'")
     key_addFakes_job = getKey("fakes_data")

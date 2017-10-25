@@ -6,20 +6,33 @@ from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 #--------------------------------------------------------------------------------
 # NOTE: set mode flag to
 #   'VHbb'           : to run the analysis on the VHbb Ntuples, with the nominal event selection
-#   'forBDTtraining' : to run the analysis on the VHbb Ntuples, with a relaxed event selection, to increase the BDT training statistics
+#   'forBDTtraining' : to run the analysis on the VHbb Ntuples, with a relaxed event selection,
+#                      to increase the BDT training statistics
 #--------------------------------------------------------------------------------
 
-use_prod_ntuples     = True
-mode                 = "VHbb"
-ERA                  = "2016"
-version              = "2017Oct04"
-max_job_resubmission = 10
+# E.g. to run: python tthAnalyzeRun_2lss_1tau.py --version "2017Oct24" --mode "forBDTtraining_afterAddMEM" --use_prod_ntuples 
+from optparse import OptionParser
+parser = OptionParser()
+parser.add_option("--version ", type="string", dest="version", help="Name of output reository with results\n Trees will be stored in /hdfs/local/USER/ttHAnalysis/2016/VERSION/", default='dumb')
+parser.add_option("--mode", type="string", dest="mode", help="Set the mode flag, read the script for options", default="VHbb")
+parser.add_option("--ERA", type="string", dest="ERA", help="Era of data", default='2016')
+parser.add_option("--use_prod_ntuples", action="store_true", dest="use_prod_ntuples", help="Production flag", default=False)
+(options, args) = parser.parse_args()
 
-samples              = None
-LUMI                 = None
-hadTau_selection     = None
+use_prod_ntuples     = options.use_prod_ntuples #True
+mode                 = options.mode #"forBDTtraining_afterAddMEM"
+ERA                  = options.ERA #"2016"
+version              = options.version #"2017Oct24"
+max_job_resubmission = 10
 changeBranchNames    = use_prod_ntuples
-applyFakeRateWeights = None
+max_files_per_job    = 10 if use_prod_ntuples else 100
+
+samples                            = None
+LUMI                               = None
+hadTau_selection                   = None
+hadTau_selection_relaxed           = None
+applyFakeRateWeights               = None
+hadTauFakeRateWeight_inputFileName = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016.root"
 
 if use_prod_ntuples and ERA == "2015":
   raise ValueError("No production Ntuples for 2015 data & MC")
@@ -52,8 +65,9 @@ elif mode == "forBDTtraining":
     from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_prodNtuples_2016_FastSim import samples_2016
   else:
     from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_FastSim import samples_2016
-  hadTau_selection = "dR03mvaLoose"
-  applyFakeRateWeights = "3L"
+  hadTau_selection         = "dR03mvaVTight"
+  hadTau_selection_relaxed = "dR03mvaLoose"
+  applyFakeRateWeights     = "3L"
 else:
   raise ValueError("Invalid Configuration parameter 'mode' = %s !!" % mode)
 
@@ -148,7 +162,7 @@ if __name__ == '__main__':
 ##         "CMS_ttHl_thu_shape_ttZ_y1Up",
 ##         "CMS_ttHl_thu_shape_ttZ_y1Down",
       ],
-      max_files_per_job         = 10,
+      max_files_per_job         = max_files_per_job,
       era                       = ERA,
       use_lumi                  = True,
       lumi                      = LUMI,
@@ -166,10 +180,11 @@ if __name__ == '__main__':
         "mTauTauVis"
       ],
       select_rle_output         = True,
+      verbose                   = idx_job_resubmission > 0,
     )
 
     if mode.find("forBDTtraining") != -1:
-      analysis.set_BDT_training()
+      analysis.set_BDT_training(hadTau_selection_relaxed, hadTauFakeRateWeight_inputFileName)
 
     job_statistics = analysis.create()
     for job_type, num_jobs in job_statistics.items():

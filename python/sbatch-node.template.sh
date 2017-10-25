@@ -8,7 +8,7 @@ echo 'Unsetting JAVA_HOME=$JAVA_HOME'
 unset JAVA_HOME
 
 # This value is provided by sbatchManager.py that creates sbatch scripts based this template
-echo 'Running version (sbatch-node.template.sh)'
+echo 'Running script {{ script_file }} (created from template sbatch-node.template.sh)'
 
 
 RUNNING_COMMAND="{{ RUNNING_COMMAND }}"
@@ -90,7 +90,7 @@ run_wrapped_executable() {
 
     CMSSW_SEARCH_PATH="$SCRATCH_DIR:{{ cmssw_base_dir }}/src"
 
-    echo "Execute command: {{ exec_name }} {{ cfg_file }} &> $TEMPORARY_EXECUTABLE_LOG_FILE"
+    echo "Execute command: {{ exec_name }} {{ command_line_parameter }} &> $TEMPORARY_EXECUTABLE_LOG_FILE"
     {{ exec_name }} {{ command_line_parameter }} &> $TEMPORARY_EXECUTABLE_LOG_FILE
     EXIT_CODE=$?
     echo "Command {{ exec_name }} exited with code $EXIT_CODE"
@@ -105,7 +105,7 @@ run_wrapped_executable() {
     for OUTPUT_FILE in $OUTPUT_FILES
     do
       OUTPUT_DIR="{{ outputDir }}"
-      if [[ "$OUTPUT_DIR" =~ ^/hdfs* ]]; then
+      if [[ "$OUTPUT_DIR" =~ ^/hdfs* && ( ! -z $(which hadoop) ) ]]; then
         cp_cmd="hadoop fs -copyFromLocal";
         st_cmd="hadoop fs -stat '%b'"
         OUTPUT_DIR=${OUTPUT_DIR#/hdfs}
@@ -129,7 +129,7 @@ run_wrapped_executable() {
           sleep 5s
 
           REMOTE_SIZE=$($st_cmd $OUTPUT_DIR/$OUTPUT_FILE)
-          if [ $REMOTE_SIZE == $OUTPUT_FILE_SIZE ]; then
+          if [ "$REMOTE_SIZE" == "$OUTPUT_FILE_SIZE" ]; then
             COPIED=true
             break;
           else
