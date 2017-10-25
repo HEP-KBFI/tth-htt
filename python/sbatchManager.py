@@ -436,10 +436,10 @@ class sbatchManager:
                 for finished_ids_chunk in finished_ids_chunks:
                     completion = self.check_job_completion(finished_ids_chunk)
                     completed_jobs, running_jobs, failed_jobs = [], [], []
-                    for id_, state in completion.iteritems():
-                      if state == Status.completed:
+                    for id_, details in completion.iteritems():
+                      if details.status == Status.completed:
                         completed_jobs.append(id_)
-                      elif state == Status.running:
+                      elif details.status == Status.running:
                         running_jobs.append(id_)
                       else:
                         failed_jobs.append(id_)
