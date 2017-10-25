@@ -5,10 +5,17 @@ from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016 import samples_2016
 from tthAnalysis.HiggsToTauTau.prodNtupleConfig import prodNtupleConfig
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 
+#--------------------------------------------------------------------------------
+# NOTE: set mode flag to
+#   'all'                   : to produce the Ntuples from all samples
+#   'forBDTtraining_only'   : to produce the Ntuples only from the FastSim samples
+#   'forBDTtraining_except' : to produce the Ntuples from all but the FastSim samples
+#--------------------------------------------------------------------------------
+
 ERA          = "2016"
-mode         = "forBDTtraining_only"
+mode         = "all"
 preselection = True
-version      = "2017Oct14_wPreselection_%s" % mode
+version      = "2017Oct20_w%sPreselection_%s" % ("" if preselection else "o", mode)
 
 samples         = None
 LUMI            = None

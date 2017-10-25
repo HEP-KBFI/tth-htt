@@ -277,7 +277,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
     """Adds the commands to Makefile that are necessary for building the intermediate histogram file
        that is used as input for data-driven background estimation.
     """
-    self.addToMakefile_hadd(lines_makefile, self.inputFiles_hadd_stage1_6, self.outputFile_hadd_stage1_6, "stage1_6")
+    self.addToMakefile_hadd(lines_makefile, { 'all' : self.inputFiles_hadd_stage1_6 }, { 'all' : self.outputFile_hadd_stage1_6 }, "stage1_6")
 
   def addToMakefile_addFlips(self, lines_makefile):
     if self.is_sbatch:
