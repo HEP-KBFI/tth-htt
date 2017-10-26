@@ -20,7 +20,6 @@ RecoMuonWriter::RecoMuonWriter(int era)
   , segmentCompatibility_(0)
 {
   leptonWriter_ = new RecoLeptonWriter(branchName_num_, branchName_obj_);
-  leptonWriter_->setBranchNames();
   setBranchNames();
 }
 
@@ -39,7 +38,6 @@ RecoMuonWriter::RecoMuonWriter(int era,
   , segmentCompatibility_(0)
 {
   leptonWriter_ = new RecoLeptonWriter(branchName_num_, branchName_obj_);
-  leptonWriter_->setBranchNames();
   setBranchNames();
 }
 

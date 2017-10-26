@@ -142,7 +142,6 @@ class analyzeConfig_0l_2tau(analyzeConfig):
     if jobOptions['hadTau_selection'].find("mcClosure") != -1:
       lines.append("process.analyze_0l_2tau.hadTauFakeRateWeight.applyFitFunction_lead = cms.bool(False)")
       lines.append("process.analyze_0l_2tau.hadTauFakeRateWeight.applyFitFunction_sublead = cms.bool(False)")
-    lines.append("process.analyze_0l_2tau.use_HIP_mitigation_bTag = cms.bool(%s)" % jobOptions['use_HIP_mitigation_bTag'])
     lines.append("process.analyze_0l_2tau.use_HIP_mitigation_mediumMuonId = cms.bool(%s)" % jobOptions['use_HIP_mitigation_mediumMuonId'])  
     lines.append("process.analyze_0l_2tau.isMC = cms.bool(%s)" % jobOptions['is_mc'])
     lines.append("process.analyze_0l_2tau.central_or_shift = cms.string('%s')" % jobOptions['central_or_shift'])
@@ -292,9 +291,7 @@ class analyzeConfig_0l_2tau(analyzeConfig):
                   'apply_hadTauGenMatching' : self.apply_hadTauGenMatching,
                   'hadTau_charge_selection' : hadTau_charge_selection,
                   'applyFakeRateWeights' : "disabled" if hadTau_selection.find("Tight") != -1 else self.applyFakeRateWeights,
-                  ##'use_HIP_mitigation_bTag' : sample_info["use_HIP_mitigation_bTag"],
                   ##'use_HIP_mitigation_mediumMuonId' : sample_info["use_HIP_mitigation_mediumMuonId"],
-                  'use_HIP_mitigation_bTag' : True,
                   'use_HIP_mitigation_mediumMuonId' : True,
                   'is_mc' : is_mc,
                   'central_or_shift' : central_or_shift,

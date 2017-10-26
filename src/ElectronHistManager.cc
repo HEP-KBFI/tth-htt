@@ -37,10 +37,6 @@ void ElectronHistManager::bookHistograms(TFileDirectory& dir)
 
   histogram_abs_genPdgId_ = book1D(dir, "abs_genPdgId", "abs_genPdgId", 22, -0.5, +21.5);
   histogram_gen_times_recCharge_ = book1D(dir, "gen_times_recCharge", "gen_times_recCharge", 3, -1.5, +1.5);
-
-  histogram_Mt_ = book1D(dir, "Mt", "Mt", 40, 0., 200.);                  // NEWLY ADDED       
-  histogram_Mt_fix_ = book1D(dir, "Mt_{fix}", "Mt_{fix}", 40, 0., 200.);  // NEWLY ADDED       
-
 }
 
 void ElectronHistManager::fillHistograms(const RecoElectron& electron, double evtWeight)
@@ -81,50 +77,6 @@ void ElectronHistManager::fillHistograms(const RecoElectron& electron, double ev
   }
 }
 
-
-void ElectronHistManager::fillHistograms2(const RecoElectron& electron, double evtWeight, double met=10., double metphi=0., double ptfix=35.)
-{ // NEWLY ADDED       
-  double evtWeightErr = 0.;
- 
-  fillWithOverFlow(histogram_pt_, electron.pt(), evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_eta_, electron.eta(), evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_phi_, electron.phi(), evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_charge_, electron.charge(), evtWeight, evtWeightErr);
-    
-  fillWithOverFlow(histogram_dxy_, electron.dxy(), evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_dz_, electron.dz(), evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_relIso_, electron.relIso(), evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_sip3d_, electron.sip3d(), evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_mvaRawTTH_, electron.mvaRawTTH(), evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_jetPtRatio_, electron.jetPtRatio(), evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_jetBtagCSV_, electron.jetBtagCSV(), evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_tightCharge_, electron.tightCharge(), evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_mvaRawPOG_, electron.mvaRawPOG_GP(), evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_mvaRawPOG_HZZ_, electron.mvaRawPOG_HZZ(), evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_sigmaEtaEta_, electron.sigmaEtaEta(), evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_HoE_, electron.HoE(), evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_deltaEta_, electron.deltaEta(), evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_deltaPhi_, electron.deltaPhi(), evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_OoEminusOoP_, electron.OoEminusOoP(), evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_nLostHits_, electron.nLostHits(), evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_passesConversionVeto_, electron.passesConversionVeto(), evtWeight, evtWeightErr);
-  
-  int abs_genPdgId = 0;
-  if      ( electron.genLepton() ) abs_genPdgId = std::abs(electron.genLepton()->pdgId()); // generator level match to electron or muon
-  else if ( electron.genHadTau() ) abs_genPdgId = 15; // generator level match to hadronic tau decay 
-  else if ( electron.genJet()    ) abs_genPdgId = 21; // generator level match to jet; fill histogram with pdgId of gluon
-  else                             abs_genPdgId = 0;  // no match to any generator level particle (reconstructed electron most likely due to pileup)
-  fillWithOverFlow(histogram_abs_genPdgId_, abs_genPdgId, evtWeight, evtWeightErr);
-  if ( abs_genPdgId == 11 ) {
-    fillWithOverFlow(histogram_gen_times_recCharge_, electron.charge()*electron.genLepton()->charge(), evtWeight, evtWeightErr);
-  }
-
-  fillWithOverFlow(histogram_Mt_, (TMath::Sqrt( 2 * electron.pt() * met * (1 - TMath::Cos(electron.phi() - metphi)) )), evtWeight, evtWeightErr); // NEWLY ADDED       
-  fillWithOverFlow(histogram_Mt_fix_, (TMath::Sqrt( 2 * ptfix * met * (1 - TMath::Cos(electron.phi() - metphi)) )), evtWeight, evtWeightErr); // NEWLY ADDED       
-
-}
-
-
 void ElectronHistManager::fillHistograms(const std::vector<const RecoElectron*>& electron_ptrs, double evtWeight)
 {    
   size_t numElectrons = electron_ptrs.size();
@@ -137,13 +89,3 @@ void ElectronHistManager::fillHistograms(const std::vector<const RecoElectron*>&
 
 
 
-
-void ElectronHistManager::fillHistograms2(const std::vector<const RecoElectron*>& electron_ptrs, double evtWeight, double met=10., double metphi=0., double ptfix=35.)
-{ // NEWLY ADDED       
-  size_t numElectrons = electron_ptrs.size();
-  for ( size_t idxElectron = 0; idxElectron < numElectrons; ++idxElectron ) {
-    const RecoElectron* electron = electron_ptrs[idxElectron];
-    if ( idx_ >= 0 && (int)idxElectron != idx_ ) continue;
-        fillHistograms2(*electron, evtWeight, met, metphi, ptfix);
-  }
-}

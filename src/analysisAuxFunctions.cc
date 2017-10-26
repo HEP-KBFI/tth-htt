@@ -1,9 +1,12 @@
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h"
 
+#include <TRandom3.h> // TRandom3
+#include <TMath.h> // TMath::Nint
+
 #include <map> // std::map
 #include <algorithm> // std::sort
 
-bool isHigherPt(const GenParticle* particle1, const GenParticle* particle2)
+bool isHigherPt(const Particle* particle1, const Particle* particle2)
 {
   return (particle1->pt() > particle2->pt());
 }
@@ -198,5 +201,23 @@ void printJetCollection(const std::string& collection_name, const std::vector<co
     std::cout << collection_name << "  #" << idxJet << ":" << std::endl;
     std::cout << (*jets[idxJet]);
   }
+}
+
+int
+nCombinationsK(int n,
+               int k)
+{
+  assert(n >= k && n >= 0 && k >= 0);
+  if(k > n)     return 0;
+  if(k * 2 > n) k = n-k;
+  if(k == 0)    return 1;
+
+  int result = n;
+  for(int i = 2; i <= k; ++i)
+  {
+    result *= (n - i + 1);
+    result /= i;
+  }
+  return result;
 }
 

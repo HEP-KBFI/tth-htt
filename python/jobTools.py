@@ -109,6 +109,7 @@ def run_cmd(command, do_not_log = False, stdout_file = None, stderr_file = None,
             return_stderr = False):
   """Runs given commands and logs stdout and stderr to files
   """
+  #print "<run_cmd>: executing command = '%s'" % command
   p = subprocess.Popen(command, shell = True, stdout = subprocess.PIPE, stderr = subprocess.PIPE)
   stdout, stderr = p.communicate()
   # Remove trailing newline

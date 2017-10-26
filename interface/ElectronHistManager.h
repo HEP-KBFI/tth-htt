@@ -23,8 +23,6 @@ class ElectronHistManager
   void bookHistograms(TFileDirectory& dir);
   void fillHistograms(const RecoElectron& electron, double evtWeight);
   void fillHistograms(const std::vector<const RecoElectron*>& electrons, double evtWeight);
-  void fillHistograms2(const RecoElectron& electron, double evtWeight, double met, double metphi, double ptfix);                       // NEWLY ADDED      
-  void fillHistograms2(const std::vector<const RecoElectron*>& electrons, double evtWeight, double met, double metphi, double ptfix);  // NEWLY ADDED    
 
   private:
   TH1* histogram_pt_;
@@ -54,10 +52,6 @@ class ElectronHistManager
   TH1* histogram_gen_times_recCharge_;
 
   std::vector<TH1*> histograms_;
-
-  TH1* histogram_Mt_;     // NEWLY ADDED     
-  TH1* histogram_Mt_fix_; // NEWLY ADDED     
-
 
   int idx_; // flag to select leading or subleading electron (set idx to -1 to make plots for all electrons)
 };

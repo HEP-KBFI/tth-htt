@@ -3,6 +3,7 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/MEMOutput_3l_1tau.h" // MEMOutput_3l_1tau
 #include "tthAnalysis/HiggsToTauTau/interface/KeyTypes.h" // RUN_TYPE, LUMI_TYPE, EVT_TYPE
+#include "tthAnalysis/HiggsToTauTau/interface/ReaderBase.h" // ReaderBase
 
 #include <Rtypes.h> // Int_t, Double_t
 #include <TTree.h> // TTree
@@ -12,23 +13,24 @@
 #include <map>
 
 class MEMOutputReader_3l_1tau
+  : public ReaderBase
 {
  public:
-  MEMOutputReader_3l_1tau(const std::string& branchName_num, const std::string& branchName_obj); 
+  MEMOutputReader_3l_1tau(const std::string& branchName_num, const std::string& branchName_obj);
   ~MEMOutputReader_3l_1tau();
 
   /**
    * @brief Call tree->SetBranchAddress for all GenParticle branches
    */
-  void setBranchAddresses(TTree* tree);
+  void setBranchAddresses(TTree* tree) override;
 
   /**
    * @brief Read branches from tree and use information to fill collection of MEMOutput_3l_1tau objects
    * @return Collection of MEMOutput_3l_1tau objects
    */
   std::vector<MEMOutput_3l_1tau> read() const;
-  
- protected: 
+
+ protected:
  /**
    * @brief Initialize names of branches to be read from tree
    */
@@ -71,7 +73,7 @@ class MEMOutputReader_3l_1tau
   Float_t* hadTau_eta_;
   Float_t* hadTau_phi_;
   Float_t* weight_ttH_;
-  Float_t* weight_ttZ_; 
+  Float_t* weight_ttZ_;
   Float_t* weight_ttH_hww_;
   Float_t* LR_;
   Float_t* cpuTime_;

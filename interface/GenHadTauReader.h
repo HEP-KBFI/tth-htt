@@ -2,6 +2,7 @@
 #define tthAnalysis_HiggsToTauTau_GenHadTauReader_h
 
 #include "tthAnalysis/HiggsToTauTau/interface/GenHadTau.h" // GenHadTau
+#include "tthAnalysis/HiggsToTauTau/interface/ReaderBase.h" // ReaderBase
 
 #include <Rtypes.h> // Int_t, Float_t
 #include <TTree.h> // TTree
@@ -11,24 +12,25 @@
 #include <map>
 
 class GenHadTauReader
+  : public ReaderBase
 {
  public:
   GenHadTauReader();
-  GenHadTauReader(const std::string& branchName_num, const std::string& branchName_obj); 
+  GenHadTauReader(const std::string& branchName_num, const std::string& branchName_obj);
   ~GenHadTauReader();
 
   /**
    * @brief Call tree->SetBranchAddress for all GenHadTau branches
    */
-  void setBranchAddresses(TTree* tree);
+  void setBranchAddresses(TTree* tree) override;
 
   /**
    * @brief Read branches from tree and use information to fill collection of GenHadTau objects
    * @return Collection of GenHadTau objects
    */
   std::vector<GenHadTau> read() const;
-  
- protected: 
+
+ protected:
  /**
    * @brief Initialize names of branches to be read from tree
    */

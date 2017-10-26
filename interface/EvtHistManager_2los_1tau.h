@@ -22,7 +22,8 @@ class EvtHistManager_2los_1tau
   /// book and fill histograms
   void bookHistograms(TFileDirectory& dir);
   void fillHistograms(int numElectrons, int numMuons, int numHadTaus, int numJets, int numBJets_loose, int numBJets_medium,
-		      double mvaOutput_2lss_ttV, double mvaOutput_2lss_ttbar, double mvaDiscr_2lss, double mvaOutput_2los_1tau_ttbar, 
+		      double mvaOutput_2lss_ttV, double mvaOutput_2lss_ttbar, double mvaDiscr_2lss, 
+		      double mvaOutput_2los_1tau_ttV, double mvaOutput_2los_1tau_ttbar, double mvaDiscr_2los_1tau, 
 		      double mTauTauVis, double evtWeight);
 
   const TH1* getHistogram_EventCounter() const { return histogram_EventCounter_; }
@@ -42,7 +43,9 @@ class EvtHistManager_2los_1tau
   TH1* histogram_mvaOutput_2lss_ttbar_;
   TH1* histogram_mvaDiscr_2lss_;
 
+  TH1* histogram_mvaOutput_2los_1tau_ttV_;
   TH1* histogram_mvaOutput_2los_1tau_ttbar_;
+  TH1* histogram_mvaDiscr_2los_1tau_;
 
   TH1* histogram_mTauTauVis_;
 

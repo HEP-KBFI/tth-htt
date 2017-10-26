@@ -3,6 +3,7 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuon.h" // RecoMuon
 #include "tthAnalysis/HiggsToTauTau/interface/RecoLeptonReader.h" // RecoLeptonReader
+#include "tthAnalysis/HiggsToTauTau/interface/ReaderBase.h" // ReaderBase
 
 #include <Rtypes.h> // Int_t
 #include <TTree.h> // TTree
@@ -12,33 +13,34 @@
 #include <map>
 
 class RecoMuonReader
+  : public ReaderBase
 {
  public:
-  RecoMuonReader(int era);
-  RecoMuonReader(int era, const std::string& branchName_num, const std::string& branchName_obj); 
+  RecoMuonReader(int era, bool readGenMatching = false);
+  RecoMuonReader(int era, const std::string& branchName_num, const std::string& branchName_obj, bool readGenMatching = false);
   ~RecoMuonReader();
 
-  void enable_HIP_mitigation() { 
-    std::cout << "<RecoMuonReader::enable_HIP_mitigation>:" << std::endl; 
-    use_HIP_mitigation_ = true; 
+  void enable_HIP_mitigation() {
+    std::cout << "<RecoMuonReader::enable_HIP_mitigation>:" << std::endl;
+    use_HIP_mitigation_ = true;
   }
-  void disable_HIP_mitigation() { 
-    std::cout << "<RecoMuonReader::disable_HIP_mitigation>:" << std::endl; 
-    use_HIP_mitigation_ = false; 
+  void disable_HIP_mitigation() {
+    std::cout << "<RecoMuonReader::disable_HIP_mitigation>:" << std::endl;
+    use_HIP_mitigation_ = false;
   }
 
   /**
    * @brief Call tree->SetBranchAddress for all lepton branches specific to RecoMuons
    */
-  void setBranchAddresses(TTree* tree);
+  void setBranchAddresses(TTree* tree) override;
 
   /**
    * @brief Read branches from tree and use information to fill collection of RecoMuon objects
    * @return Collection of RecoMuon objects
    */
   std::vector<RecoMuon> read() const;
-  
- protected: 
+
+ protected:
  /**
    * @brief Initialize names of branches to be read from tree
    */
@@ -51,7 +53,7 @@ class RecoMuonReader
 
   RecoLeptonReader* leptonReader_;
 
-  std::string branchName_looseIdPOG_; 
+  std::string branchName_looseIdPOG_;
   std::string branchName_mediumIdPOG_;
 #ifdef DPT_DIV_PT
   std::string branchName_dpt_div_pt_;

@@ -2,6 +2,10 @@
 #define tthAnalysis_HiggsToTauTau_RecoHadTauWriter_h
 
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTau.h" // RecoHadTau
+#include "tthAnalysis/HiggsToTauTau/interface/GenParticleWriter.h" // GenParticleWriter
+#include "tthAnalysis/HiggsToTauTau/interface/GenLepton.h" // GenLepton
+#include "tthAnalysis/HiggsToTauTau/interface/GenHadTau.h" // GenHadTau
+#include "tthAnalysis/HiggsToTauTau/interface/GenJet.h" // GenJet
 
 #include <Rtypes.h> // Int_t, Float_t
 #include <TTree.h> // TTree
@@ -26,6 +30,12 @@ class RecoHadTauWriter
    */
   void write(const std::vector<const RecoHadTau*>& hadTaus);
   
+  /**
+   * @brief Write branches containing information on matching of RecoHadTau objects
+   *        to generator level electrons, muons, hadronic taus, and jets to tree
+   */
+  void writeGenMatching(const std::vector<const RecoHadTau*>& hadTaus);
+
  protected: 
  /**
    * @brief Initialize names of branches to be read from tree
@@ -36,6 +46,11 @@ class RecoHadTauWriter
   const int max_nHadTaus_;
   std::string branchName_num_;
   std::string branchName_obj_;
+
+  GenParticleWriter* genLeptonWriter_;
+  GenParticleWriter* genHadTauWriter_;
+  GenParticleWriter* genJetWriter_;
+  GenParticle dummyGenParticle_;
 
   std::string branchName_pt_;
   std::string branchName_eta_;

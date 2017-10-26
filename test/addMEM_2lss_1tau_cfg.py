@@ -1,9 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
-import os
-  
 process = cms.PSet()
-  
+
 process.fwliteInput = cms.PSet(
     fileNames = cms.vstring('/home/veelken/VHbbNtuples_8_0_x/CMSSW_8_0_19/src/tthAnalysis/HiggsToTauTau/test/produceNtuple_2lss_1tau.root'),
     skipEvents = cms.uint32(0),
@@ -21,10 +19,8 @@ process.addMEM_2lss_1tau = cms.PSet(
     era = cms.string('2016'),
 
     leptonSelection = cms.string('Fakeable'),
-    
+
     hadTauSelection = cms.string('Tight|dR03mvaMedium'),
-    
-    use_HIP_mitigation_bTag = cms.bool(False),
 
     isMC = cms.bool(True),
 
@@ -32,7 +28,7 @@ process.addMEM_2lss_1tau = cms.PSet(
     branchName_muons = cms.string('Muon'),
     branchName_hadTaus = cms.string('HadTau'),
     branchName_jets = cms.string('Jet'),
-    branchName_met = cms.string('met'), 
+    branchName_met = cms.string('met'),
 
     copy_all_branches = cms.bool(True),
 
@@ -45,8 +41,9 @@ process.addMEM_2lss_1tau = cms.PSet(
         "CountWeightedLHEWeightScale",
         "CountWeightedLHEWeightPdf",
     ),
-    
+
     selEventsFileName_input = cms.string(''),
 
-    isForBDTtraining = cms.bool(False)
+    isForBDTtraining = cms.bool(False),
+    isDEBUG = False,
 )

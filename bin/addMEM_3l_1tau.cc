@@ -1,4 +1,3 @@
-
 #include "FWCore/ParameterSet/interface/ParameterSet.h" // edm::ParameterSet
 #include "FWCore/PythonParameterSet/interface/MakeParameterSets.h" // edm::readPSetsFrom()
 #include "FWCore/Utilities/interface/Exception.h" // cms::Exception
@@ -54,6 +53,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/histogramAuxFunctions.h" // createSubdirectory_recursively
 #include "tthAnalysis/HiggsToTauTau/interface/branchEntryType.h"
 #include "tthAnalysis/HiggsToTauTau/interface/branchEntryTypeAuxFunctions.h"
+#include "tthAnalysis/HiggsToTauTau/interface/MEMPermutationWriter.h" // MEMPermutationWriter::get_maxPermutations_addMEM_pattern()
 
 #include <boost/range/algorithm/copy.hpp> // boost::copy()
 #include <boost/range/adaptor/map.hpp> // boost::adaptors::map_keys
@@ -138,16 +138,17 @@ int main(int argc, char* argv[])
       "";
   delete hadTauSelection_parts;
 
-  bool use_HIP_mitigation_bTag = cfg_addMEM.getParameter<bool>("use_HIP_mitigation_bTag"); 
-  std::cout << "use_HIP_mitigation_bTag = " << use_HIP_mitigation_bTag << std::endl;
-  
   bool isMC = cfg_addMEM.getParameter<bool>("isMC"); 
 
-  std::string branchName_electrons = cfg_addMEM.getParameter<std::string>("branchName_electrons");
-  std::string branchName_muons = cfg_addMEM.getParameter<std::string>("branchName_muons");
-  std::string branchName_hadTaus = cfg_addMEM.getParameter<std::string>("branchName_hadTaus");
-  std::string branchName_jets = cfg_addMEM.getParameter<std::string>("branchName_jets");
-  std::string branchName_met = cfg_addMEM.getParameter<std::string>("branchName_met");
+  const std::string branchName_electrons = cfg_addMEM.getParameter<std::string>("branchName_electrons");
+  const std::string branchName_muons = cfg_addMEM.getParameter<std::string>("branchName_muons");
+  const std::string branchName_hadTaus = cfg_addMEM.getParameter<std::string>("branchName_hadTaus");
+  const std::string branchName_jets = cfg_addMEM.getParameter<std::string>("branchName_jets");
+  const std::string branchName_met = cfg_addMEM.getParameter<std::string>("branchName_met");
+  const std::string branchName_maxPermutations_addMEM = Form(
+    MEMPermutationWriter::get_maxPermutations_addMEM_pattern().c_str(),
+    "3l_1tau", leptonSelection_string.c_str(), hadTauSelection_part1.c_str(), hadTauSelection_part2.c_str()
+  );
 
   bool copy_all_branches = cfg_addMEM.getParameter<bool>("copy_all_branches");
 
@@ -175,7 +176,7 @@ int main(int argc, char* argv[])
 
   TChain* inputTree = new TChain(treeName.data());
   for ( std::vector<std::string>::const_iterator inputFileName = inputFiles.files().begin();
-	inputFileName != inputFiles.files().end(); ++inputFileName ) {
+        inputFileName != inputFiles.files().end(); ++inputFileName ) {
     std::cout << "input Tree: adding file = " << (*inputFileName) << std::endl;
     inputTree->AddFile(inputFileName->data());
   }
@@ -201,7 +202,7 @@ int main(int argc, char* argv[])
   inputTree->SetBranchAddress(EVT_KEY, &event);
 
   Int_t maxPermutations_addMEM_3l_1tau;
-  inputTree->SetBranchAddress("maxPermutations_addMEM_3l_1tau", &maxPermutations_addMEM_3l_1tau);
+  inputTree->SetBranchAddress(branchName_maxPermutations_addMEM.c_str(), &maxPermutations_addMEM_3l_1tau);
 
 //--- declare particle collections
   RecoMuonReader* muonReader = new RecoMuonReader(era, Form("n%s", branchName_muons.data()), branchName_muons);
@@ -237,17 +238,13 @@ int main(int argc, char* argv[])
   tightHadTauSelector.set_min_pt(18.);
   
   RecoJetReader* jetReader = new RecoJetReader(era, isMC, Form("n%s", branchName_jets.data()), branchName_jets);
-  if ( use_HIP_mitigation_bTag ) jetReader->enable_HIP_mitigation();
-  else jetReader->disable_HIP_mitigation();
   // CV: apply jet pT cut on JEC upward shift, to make sure pT cut is loose enough
   //     to allow systematic uncertainty on JEC to be estimated on analysis level 
   jetReader->setJetPt_central_or_shift(RecoJetReader::kJetPt_central); 
   jetReader->read_BtagWeight_systematics(true);
   jetReader->setBranchAddresses(inputTree);
   RecoJetCollectionCleaner jetCleaner(0.4);
-  RecoJetCollectionSelector jetSelector(era);  
-  RecoJetCollectionSelectorBtagLoose jetSelectorBtagLoose(era);
-  RecoJetCollectionSelectorBtagMedium jetSelectorBtagMedium(era);
+  RecoJetCollectionSelector jetSelector(era);
 
 //--- declare missing transverse energy
   RecoMEtReader* metReader = new RecoMEtReader(era, branchName_met);
@@ -301,7 +298,9 @@ int main(int argc, char* argv[])
     outputCommands_string.push_back(Form("drop *%s*", branchName_hadTaus.data()));
     outputCommands_string.push_back(Form("drop *%s*", branchName_jets.data()));
     outputCommands_string.push_back(Form("drop *%s*", branchName_met.data()));
-    outputCommands_string.push_back("drop maxPermutations_addMEM_3l_1tau");
+    outputCommands_string.push_back(Form("drop %s",   Form(
+      MEMPermutationWriter::get_maxPermutations_addMEM_pattern().c_str(), "3l_1tau", "*", "*", "*"
+    )));
     outputCommands_string.push_back("keep *metPuppi*");
     outputCommands_string.push_back("keep HLT_BIT_HLT_*");
     outputCommands_string.push_back("keep *l1*");
@@ -325,12 +324,17 @@ int main(int argc, char* argv[])
   cutFlowTableType cutFlowTable;
   for ( int idxEntry = skipEvents; idxEntry < numEntries && (maxEvents == -1 || idxEntry < (skipEvents + maxEvents)); ++idxEntry ) {
 
+    if(run_lumi_eventSelector && run_lumi_eventSelector -> areWeDone())
+    {
+      break;
+    }
+
     inputTree->GetEntry(idxEntry);
 
     if ( idxEntry > 0 && (idxEntry % reportEvery) == 0 ) {
       std::cout << "processing Entry " << idxEntry << ":"
-		<< " run = " << run << ", lumi = " << lumi << ", event = " << event
-		<< " (" << selectedEntries << " Entries selected)" << std::endl;
+                << " run = " << run << ", lumi = " << lumi << ", event = " << event
+                << " (" << selectedEntries << " Entries selected)" << std::endl;
     }
     ++analyzedEntries;
     
@@ -391,73 +395,73 @@ int main(int argc, char* argv[])
       int idxPermutation = -1;
       std::vector<const RecoLepton*> selLeptons = mergeLeptonCollections(selElectrons, selMuons);
       for ( std::vector<const RecoLepton*>::const_iterator selLepton_lead = selLeptons.begin();
-	    selLepton_lead != selLeptons.end(); ++selLepton_lead ) {
-	for ( std::vector<const RecoLepton*>::const_iterator selLepton_sublead = selLepton_lead + 1;
-	      selLepton_sublead != selLeptons.end(); ++selLepton_sublead ) {
-	  for ( std::vector<const RecoLepton*>::const_iterator selLepton_third = selLepton_sublead + 1;
-		selLepton_third != selLeptons.end(); ++selLepton_third ) {
-	    for ( std::vector<const RecoHadTau*>::const_iterator selHadTau = selHadTaus.begin();
-		  selHadTau != selHadTaus.end(); ++selHadTau ) {
-	      std::vector<const RecoLepton*> selLeptons_forCleaning;
-	      selLeptons_forCleaning.push_back(*selLepton_lead);
-	      selLeptons_forCleaning.push_back(*selLepton_sublead);
-	      selLeptons_forCleaning.push_back(*selLepton_third);
-	      std::vector<const RecoHadTau*> selHadTaus_forCleaning;
-	      selHadTaus_forCleaning.push_back(*selHadTau);
-	      std::vector<const RecoJet*> selJets_cleaned = jetCleaner(selJets, selLeptons_forCleaning, selHadTaus_forCleaning);
-	      if ( selJets_cleaned.size() >= 2 ) {
-		++idxPermutation;
-		if ( idxPermutation < maxPermutations_addMEM_3l_1tau ) {
-		  std::cout << "computing MEM for run = " << run << ", lumi = " << lumi << ", event = " << event 
-			    << " (idxPermutation = " << idxPermutation << "):" << std::endl;
-		  std::cout << "inputs:" << std::endl; 
-		  std::cout << " leading lepton: pT = " << (*selLepton_lead)->pt() << ", eta = " << (*selLepton_lead)->eta() << "," 
-			    << " phi = " << (*selLepton_lead)->phi() << ", pdgId = " << (*selLepton_lead)->pdgId() << std::endl;
-		  std::cout << " subleading lepton: pT = " << (*selLepton_sublead)->pt() << ", eta = " << (*selLepton_sublead)->eta() << "," 
-			    << " phi = " << (*selLepton_sublead)->phi() << ", pdgId = " << (*selLepton_sublead)->pdgId() << std::endl;
-		  std::cout << " third lepton: pT = " << (*selLepton_third)->pt() << ", eta = " << (*selLepton_third)->eta() << "," 
-			    << " phi = " << (*selLepton_third)->phi() << ", pdgId = " << (*selLepton_third)->pdgId() << std::endl;
-		  std::cout << " hadTau: pT = " << (*selHadTau)->pt() << ", eta = " << (*selHadTau)->eta() << "," 
-			    << " phi = " << (*selHadTau)->phi() << ", decayMode = " << (*selHadTau)->decayMode() << ", mass = " << (*selHadTau)->mass() << std::endl;
-		  std::cout << " MET: pT = " << met.pt() << ", phi = " << met.phi() << std::endl;
-		  std::cout << " MET cov:" << std::endl;
-		  met.cov().Print();
-		  int idxJet = 0;
-		  for ( std::vector<const RecoJet*>::const_iterator selJet = selJets_cleaned.begin();
-			selJet != selJets_cleaned.end(); ++selJet ) {
-		    std::cout << " jet #" << idxJet << ": pT = " << (*selJet)->pt() << ", eta = " << (*selJet)->eta() << "," 
-			      << " phi = " << (*selJet)->phi() << ", mass = " << (*selJet)->mass() << ", CSV = " << (*selJet)->BtagCSV() << std::endl;
-		    ++idxJet;
-		  }
-		  MEMOutput_3l_1tau memOutput_3l_1tau;
-		  if ( skipAddMEM ) {
-		    memOutput_3l_1tau.set_leadLepton_eta((*selLepton_lead)->eta());
-		    memOutput_3l_1tau.set_leadLepton_phi((*selLepton_lead)->phi());
-		    memOutput_3l_1tau.set_subleadLepton_eta((*selLepton_sublead)->eta());
-		    memOutput_3l_1tau.set_subleadLepton_phi((*selLepton_sublead)->phi());
-		    memOutput_3l_1tau.set_hadTau_eta((*selHadTau)->eta());
-		    memOutput_3l_1tau.set_hadTau_phi((*selHadTau)->phi());
-  		  } else {
-		    memOutput_3l_1tau = memInterface_3l_1tau(
-	              *selLepton_lead, *selLepton_sublead, *selLepton_third, *selHadTau,
-		      met,
-		      selJets_cleaned);		    
-		  }
-		  memOutput_3l_1tau.set_run(run);
-		  memOutput_3l_1tau.set_lumi(lumi);
-		  memOutput_3l_1tau.set_evt(event);
-		  std::cout << "output:" << std::endl; 
-		  std::cout << memOutput_3l_1tau;
-		  memOutputs_3l_1tau.push_back(memOutput_3l_1tau);
-		} else if ( idxPermutation == maxPermutations_addMEM_3l_1tau ) { // CV: print warning only once per event
-		  std::cout << "Warning in run = " << run << ", lumi = " << lumi << ", event = " << event << ":" << std::endl; 
-		  std::cout << "Number of permutations exceeds 'maxPermutations_addMEM_3l_1tau' = " << maxPermutations_addMEM_3l_1tau 
-			    << " --> skipping MEM computation after " << maxPermutations_addMEM_3l_1tau << " permutations !!\n";
-		}
-	      }
-	    }
-	  }
-	}
+            selLepton_lead != selLeptons.end(); ++selLepton_lead ) {
+        for ( std::vector<const RecoLepton*>::const_iterator selLepton_sublead = selLepton_lead + 1;
+              selLepton_sublead != selLeptons.end(); ++selLepton_sublead ) {
+          for ( std::vector<const RecoLepton*>::const_iterator selLepton_third = selLepton_sublead + 1;
+                selLepton_third != selLeptons.end(); ++selLepton_third ) {
+            for ( std::vector<const RecoHadTau*>::const_iterator selHadTau = selHadTaus.begin();
+                  selHadTau != selHadTaus.end(); ++selHadTau ) {
+              std::vector<const RecoLepton*> selLeptons_forCleaning;
+              selLeptons_forCleaning.push_back(*selLepton_lead);
+              selLeptons_forCleaning.push_back(*selLepton_sublead);
+              selLeptons_forCleaning.push_back(*selLepton_third);
+              std::vector<const RecoHadTau*> selHadTaus_forCleaning;
+              selHadTaus_forCleaning.push_back(*selHadTau);
+              std::vector<const RecoJet*> selJets_cleaned = jetCleaner(selJets, selLeptons_forCleaning, selHadTaus_forCleaning);
+              if ( selJets_cleaned.size() >= 2 ) {
+                ++idxPermutation;
+                if ( idxPermutation < maxPermutations_addMEM_3l_1tau ) {
+                  std::cout << "computing MEM for run = " << run << ", lumi = " << lumi << ", event = " << event
+                            << " (idxPermutation = " << idxPermutation << "):" << std::endl;
+                  std::cout << "inputs:" << std::endl;
+                  std::cout << " leading lepton: pT = " << (*selLepton_lead)->pt() << ", eta = " << (*selLepton_lead)->eta() << ","
+                            << " phi = " << (*selLepton_lead)->phi() << ", pdgId = " << (*selLepton_lead)->pdgId() << std::endl;
+                  std::cout << " subleading lepton: pT = " << (*selLepton_sublead)->pt() << ", eta = " << (*selLepton_sublead)->eta() << ","
+                            << " phi = " << (*selLepton_sublead)->phi() << ", pdgId = " << (*selLepton_sublead)->pdgId() << std::endl;
+                  std::cout << " third lepton: pT = " << (*selLepton_third)->pt() << ", eta = " << (*selLepton_third)->eta() << ","
+                            << " phi = " << (*selLepton_third)->phi() << ", pdgId = " << (*selLepton_third)->pdgId() << std::endl;
+                  std::cout << " hadTau: pT = " << (*selHadTau)->pt() << ", eta = " << (*selHadTau)->eta() << ","
+                            << " phi = " << (*selHadTau)->phi() << ", decayMode = " << (*selHadTau)->decayMode() << ", mass = " << (*selHadTau)->mass() << std::endl;
+                  std::cout << " MET: pT = " << met.pt() << ", phi = " << met.phi() << std::endl;
+                  std::cout << " MET cov:" << std::endl;
+                  met.cov().Print();
+                  int idxJet = 0;
+                  for ( std::vector<const RecoJet*>::const_iterator selJet = selJets_cleaned.begin();
+                        selJet != selJets_cleaned.end(); ++selJet ) {
+                    std::cout << " jet #" << idxJet << ": pT = " << (*selJet)->pt() << ", eta = " << (*selJet)->eta() << ","
+                              << " phi = " << (*selJet)->phi() << ", mass = " << (*selJet)->mass() << ", CSV = " << (*selJet)->BtagCSV() << std::endl;
+                    ++idxJet;
+                  }
+                  MEMOutput_3l_1tau memOutput_3l_1tau;
+                  if ( skipAddMEM ) {
+                    memOutput_3l_1tau.set_leadLepton_eta((*selLepton_lead)->eta());
+                    memOutput_3l_1tau.set_leadLepton_phi((*selLepton_lead)->phi());
+                    memOutput_3l_1tau.set_subleadLepton_eta((*selLepton_sublead)->eta());
+                    memOutput_3l_1tau.set_subleadLepton_phi((*selLepton_sublead)->phi());
+                    memOutput_3l_1tau.set_hadTau_eta((*selHadTau)->eta());
+                    memOutput_3l_1tau.set_hadTau_phi((*selHadTau)->phi());
+                    } else {
+                    memOutput_3l_1tau = memInterface_3l_1tau(
+                      *selLepton_lead, *selLepton_sublead, *selLepton_third, *selHadTau,
+                      met,
+                      selJets_cleaned);
+                  }
+                  memOutput_3l_1tau.set_run(run);
+                  memOutput_3l_1tau.set_lumi(lumi);
+                  memOutput_3l_1tau.set_evt(event);
+                  std::cout << "output:" << std::endl;
+                  std::cout << memOutput_3l_1tau;
+                  memOutputs_3l_1tau.push_back(memOutput_3l_1tau);
+                } else if ( idxPermutation == maxPermutations_addMEM_3l_1tau ) { // CV: print warning only once per event
+                  std::cout << "Warning in run = " << run << ", lumi = " << lumi << ", event = " << event << ":" << std::endl;
+                  std::cout << "Number of permutations exceeds 'maxPermutations_addMEM_3l_1tau' = " << maxPermutations_addMEM_3l_1tau
+                            << " --> skipping MEM computation after " << maxPermutations_addMEM_3l_1tau << " permutations !!\n";
+                }
+              }
+            }
+          }
+        }
       }
     }
     
@@ -471,8 +475,8 @@ int main(int argc, char* argv[])
       metWriter->write(met);
 
       for ( std::map<std::string, branchEntryBaseType*>::const_iterator branchEntry = branchesToKeep.begin();
-	    branchEntry != branchesToKeep.end(); ++branchEntry ) {
-	branchEntry->second->copyBranch();
+            branchEntry != branchesToKeep.end(); ++branchEntry ) {
+        branchEntry->second->copyBranch();
       }
     }
 
@@ -480,7 +484,7 @@ int main(int argc, char* argv[])
 
     ++selectedEntries;
   }
-												
+
   std::cout << "num. Entries = " << numEntries << std::endl;
   std::cout << " analyzed = " << analyzedEntries << std::endl;
   std::cout << " selected = " << selectedEntries << std::endl;
@@ -508,30 +512,30 @@ int main(int argc, char* argv[])
   delete inputTree;
   std::map<std::string, TH1*> histograms;
   for ( std::vector<std::string>::const_iterator inputFileName = inputFiles.files().begin();
-	inputFileName != inputFiles.files().end(); ++inputFileName ) {
+        inputFileName != inputFiles.files().end(); ++inputFileName ) {
     TFile* inputFile = new TFile(inputFileName->data());
     if ( !inputFile ) 
       throw cms::Exception("addMEM_3l_1tau") 
-	<< "Failed to open input File = '" << (*inputFileName) << "' !!\n";
+        << "Failed to open input File = '" << (*inputFileName) << "' !!\n";
     
     for ( vstring::const_iterator histogramName = copy_histograms.begin();
-	  histogramName != copy_histograms.end(); ++histogramName ) {
+          histogramName != copy_histograms.end(); ++histogramName ) {
       if ( inputFiles.files().size() > 1 ) {
-	std::cout << " " << (*histogramName) << " from input File = '" << (*inputFileName) << "'" << std::endl;
+        std::cout << " " << (*histogramName) << " from input File = '" << (*inputFileName) << "'" << std::endl;
       } else { 
-	std::cout << " " << (*histogramName) << std::endl;
+        std::cout << " " << (*histogramName) << std::endl;
       }
       TH1* histogram_input = dynamic_cast<TH1*>(inputFile->Get(histogramName->data()));
       if ( !histogram_input ) continue;
 
       TH1* histogram_output = histograms[*histogramName];
       if ( histogram_output ) {
-	histogram_output->Add(histogram_input);
+        histogram_output->Add(histogram_input);
       } else {
-	if      ( dynamic_cast<TH1F*>(histogram_input) ) histogram_output = fs.make<TH1F>(*(dynamic_cast<TH1F*>(histogram_input)));
-	else if ( dynamic_cast<TH1D*>(histogram_input) ) histogram_output = fs.make<TH1D>(*(dynamic_cast<TH1D*>(histogram_input)));
-	assert(histogram_output);
-	histograms[*histogramName] = histogram_output;
+        if      ( dynamic_cast<TH1F*>(histogram_input) ) histogram_output = fs.make<TH1F>(*(dynamic_cast<TH1F*>(histogram_input)));
+        else if ( dynamic_cast<TH1D*>(histogram_input) ) histogram_output = fs.make<TH1D>(*(dynamic_cast<TH1D*>(histogram_input)));
+        assert(histogram_output);
+        histograms[*histogramName] = histogram_output;
       }
     }
     delete inputFile;

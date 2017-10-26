@@ -25,6 +25,8 @@ GenLeptonReader::GenLeptonReader()
   , leptonFromTau_mass_(0)
   , leptonFromTau_pdgId_(0)
 {
+  read_promptLeptons_ = true;
+  read_leptonsFromTau_ = true;
   setBranchNames();
 }
 
@@ -47,6 +49,9 @@ GenLeptonReader::GenLeptonReader(const std::string& branchName_nPromptLeptons, c
   , leptonFromTau_mass_(0)
   , leptonFromTau_pdgId_(0)
 {
+  read_promptLeptons_ = branchName_nPromptLeptons != "" && branchName_promptLeptons != "";
+  read_leptonsFromTau_ = branchName_nLeptonsFromTau != "" && branchName_leptonsFromTau != "";
+  assert(read_promptLeptons_ || read_leptonsFromTau_);
   setBranchNames();
 }
 
@@ -109,28 +114,34 @@ void GenLeptonReader::setBranchNames()
 void GenLeptonReader::setBranchAddresses(TTree* tree)
 {
   if ( instances_[branchName_promptLeptons_] == this ) {
-    tree->SetBranchAddress(branchName_nPromptLeptons_.data(), &nPromptLeptons_);   
-    promptLepton_pt_ = new Float_t[max_nPromptLeptons_];
-    tree->SetBranchAddress(branchName_promptLepton_pt_.data(), promptLepton_pt_); 
-    promptLepton_eta_ = new Float_t[max_nPromptLeptons_];
-    tree->SetBranchAddress(branchName_promptLepton_eta_.data(), promptLepton_eta_); 
-    promptLepton_phi_ = new Float_t[max_nPromptLeptons_];
-    tree->SetBranchAddress(branchName_promptLepton_phi_.data(), promptLepton_phi_); 
-    promptLepton_mass_ = new Float_t[max_nPromptLeptons_];
-    tree->SetBranchAddress(branchName_promptLepton_mass_.data(), promptLepton_mass_); 
-    promptLepton_pdgId_ = new Int_t[max_nPromptLeptons_];
-    tree->SetBranchAddress(branchName_promptLepton_pdgId_.data(), promptLepton_pdgId_); 
-    tree->SetBranchAddress(branchName_nLeptonsFromTau_.data(), &nLeptonsFromTau_);   
-    leptonFromTau_pt_ = new Float_t[max_nLeptonsFromTau_];
-    tree->SetBranchAddress(branchName_leptonFromTau_pt_.data(), leptonFromTau_pt_); 
-    leptonFromTau_eta_ = new Float_t[max_nLeptonsFromTau_];
-    tree->SetBranchAddress(branchName_leptonFromTau_eta_.data(), leptonFromTau_eta_); 
-    leptonFromTau_phi_ = new Float_t[max_nLeptonsFromTau_];
-    tree->SetBranchAddress(branchName_leptonFromTau_phi_.data(), leptonFromTau_phi_); 
-    leptonFromTau_mass_ = new Float_t[max_nLeptonsFromTau_];
-    tree->SetBranchAddress(branchName_leptonFromTau_mass_.data(), leptonFromTau_mass_); 
-    leptonFromTau_pdgId_ = new Int_t[max_nLeptonsFromTau_];
-    tree->SetBranchAddress(branchName_leptonFromTau_pdgId_.data(), leptonFromTau_pdgId_); 
+    if ( read_promptLeptons_ ) {
+      std::cout << "setting branch addresses for PromptLeptons: " << branchName_promptLeptons_ << std::endl;
+      tree->SetBranchAddress(branchName_nPromptLeptons_.data(), &nPromptLeptons_);   
+      promptLepton_pt_ = new Float_t[max_nPromptLeptons_];
+      tree->SetBranchAddress(branchName_promptLepton_pt_.data(), promptLepton_pt_); 
+      promptLepton_eta_ = new Float_t[max_nPromptLeptons_];
+      tree->SetBranchAddress(branchName_promptLepton_eta_.data(), promptLepton_eta_); 
+      promptLepton_phi_ = new Float_t[max_nPromptLeptons_];
+      tree->SetBranchAddress(branchName_promptLepton_phi_.data(), promptLepton_phi_); 
+      promptLepton_mass_ = new Float_t[max_nPromptLeptons_];
+      tree->SetBranchAddress(branchName_promptLepton_mass_.data(), promptLepton_mass_); 
+      promptLepton_pdgId_ = new Int_t[max_nPromptLeptons_];
+      tree->SetBranchAddress(branchName_promptLepton_pdgId_.data(), promptLepton_pdgId_); 
+    }
+    if ( read_leptonsFromTau_ ) {
+      std::cout << "setting branch addresses for LeptonsFromTau" << std::endl;
+      tree->SetBranchAddress(branchName_nLeptonsFromTau_.data(), &nLeptonsFromTau_);   
+      leptonFromTau_pt_ = new Float_t[max_nLeptonsFromTau_];
+      tree->SetBranchAddress(branchName_leptonFromTau_pt_.data(), leptonFromTau_pt_); 
+      leptonFromTau_eta_ = new Float_t[max_nLeptonsFromTau_];
+      tree->SetBranchAddress(branchName_leptonFromTau_eta_.data(), leptonFromTau_eta_); 
+      leptonFromTau_phi_ = new Float_t[max_nLeptonsFromTau_];
+      tree->SetBranchAddress(branchName_leptonFromTau_phi_.data(), leptonFromTau_phi_); 
+      leptonFromTau_mass_ = new Float_t[max_nLeptonsFromTau_];
+      tree->SetBranchAddress(branchName_leptonFromTau_mass_.data(), leptonFromTau_mass_); 
+      leptonFromTau_pdgId_ = new Int_t[max_nLeptonsFromTau_];
+      tree->SetBranchAddress(branchName_leptonFromTau_pdgId_.data(), leptonFromTau_pdgId_); 
+    } 
   }
 }
 
@@ -139,19 +150,25 @@ std::vector<GenLepton> GenLeptonReader::read() const
   //std::cout << "<GenLeptonReader::read()>:" << std::endl;
   GenLeptonReader* gInstance = instances_[branchName_promptLeptons_];
   assert(gInstance);
-  Int_t nPromptLeptons = gInstance->nPromptLeptons_;
-  //std::cout << "nPromptLeptons = " << nPromptLeptons << std::endl;
-  if ( nPromptLeptons > max_nPromptLeptons_ ) {
-    throw cms::Exception("GenLeptonReader") 
-      << "Number of prompt leptons stored in Ntuple = " << nPromptLeptons << "," 
-      << " exceeds max_nPromptLeptons = " << max_nPromptLeptons_ << " !!\n";
+  Int_t nPromptLeptons = 0;
+  if ( read_promptLeptons_ ) {
+    nPromptLeptons = gInstance->nPromptLeptons_;
+    //std::cout << "nPromptLeptons = " << nPromptLeptons << std::endl;
+    if ( nPromptLeptons > max_nPromptLeptons_ ) {
+      throw cms::Exception("GenLeptonReader") 
+	<< "Number of prompt leptons stored in Ntuple = " << nPromptLeptons << "," 
+	<< " exceeds max_nPromptLeptons = " << max_nPromptLeptons_ << " !!\n";
+    }
   }
-  Int_t nLeptonsFromTau = gInstance->nLeptonsFromTau_;
-  //std::cout << "nLeptonsFromTau = " << nLeptonsFromTau << std::endl;
-  if ( nLeptonsFromTau > max_nLeptonsFromTau_ ) {
-    throw cms::Exception("GenLeptonReader") 
-      << "Number of leptons from tau decays stored in Ntuple = " << nLeptonsFromTau << "," 
-      << " exceeds max_nLeptonsFromTau = " << max_nLeptonsFromTau_ << " !!\n";
+  Int_t nLeptonsFromTau = 0;
+  if ( read_leptonsFromTau_ ) {
+    nLeptonsFromTau = gInstance->nLeptonsFromTau_;
+    //std::cout << "nLeptonsFromTau = " << nLeptonsFromTau << std::endl;
+    if ( nLeptonsFromTau > max_nLeptonsFromTau_ ) {
+      throw cms::Exception("GenLeptonReader") 
+	<< "Number of leptons from tau decays stored in Ntuple = " << nLeptonsFromTau << "," 
+	<< " exceeds max_nLeptonsFromTau = " << max_nLeptonsFromTau_ << " !!\n";
+    }
   }
   std::vector<GenLepton> leptons;
   if ( (nPromptLeptons + nLeptonsFromTau) > 0 ) {

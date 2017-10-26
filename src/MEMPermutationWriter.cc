@@ -1,0 +1,247 @@
+#include "tthAnalysis/HiggsToTauTau/interface/MEMPermutationWriter.h" // MEMPermutationWriter
+
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // z_mass, z_window, kLoose, kMedium, kTight, id_mva_dr0*_map
+
+#include "FWCore/Utilities/interface/Exception.h" // cms::Exception
+
+#include <TTree.h> // TTree
+
+#include <boost/algorithm/string/predicate.hpp> // boost::starts_with()
+
+const std::string
+MEMPermutationWriter::maxPermutations_addMEM_pattern_ = "maxPermutations_addMEM_%s_lep%s_tau%s_%s";
+
+MEMPermutationWriter::~MEMPermutationWriter()
+{
+  for(auto & kv: hadTauSelectorsLoose_)
+  {
+    if(hadTauSelectorsLoose_[kv.first])
+    {
+      delete hadTauSelectorsLoose_[kv.first];
+      hadTauSelectorsLoose_[kv.first] = nullptr;
+    }
+    if(hadTauSelectorsFakeable_[kv.first])
+    {
+      delete hadTauSelectorsFakeable_[kv.first];
+      hadTauSelectorsFakeable_[kv.first] = nullptr;
+    }
+    if(hadTauSelectorsTight_[kv.first])
+    {
+      delete hadTauSelectorsTight_[kv.first];
+      hadTauSelectorsTight_[kv.first] = nullptr;
+    }
+  }
+}
+
+MEMPermutationWriter &
+MEMPermutationWriter::setLepSelection(int minLepSelection,
+                                      int maxLepSelection)
+{
+  minLepSelection_ = minLepSelection;
+  maxLepSelection_ = maxLepSelection;
+  return *this;
+}
+
+MEMPermutationWriter &
+MEMPermutationWriter::setHadTauSelection(int minHadTauSelection,
+                                         int maxHadTauSelection)
+{
+  minHadTauSelection_ = minHadTauSelection;
+  maxHadTauSelection_ = maxHadTauSelection;
+  return *this;
+}
+
+MEMPermutationWriter &
+MEMPermutationWriter::setHadTauWorkingPoints(const std::string & minHadTauWorkingPoint)
+{
+  const bool use_dR03 = boost::starts_with(minHadTauWorkingPoint, "dR03");
+  const std::map<std::string, int> & tau_wps = use_dR03 ? id_mva_dr03_map : id_mva_dr05_map;
+  const int tau_min_selection = tau_wps.at(minHadTauWorkingPoint);
+  const int tau_max_selection = tau_wps.at(use_dR03 ? "dR03mvaTight" : "dR05isoTight");
+  for(const auto & kv: tau_wps)
+  {
+    if(kv.second >= tau_min_selection && kv.second <= tau_max_selection)
+    {
+      hadTauWorkingPoints_.push_back(kv.first);
+    }
+  }
+  return *this;
+}
+
+MEMPermutationWriter &
+MEMPermutationWriter::addCondition(const std::string & channel,
+                                   const MEMPremutationCondition & condition)
+{
+  if(conditions_.count(channel))
+  {
+    throw cms::Exception("MEMPermutationWriter") << "Channel '" << channel << "' already supplied";
+  }
+  conditions_[channel] = condition;
+  return *this;
+}
+
+MEMPermutationWriter &
+MEMPermutationWriter::addCondition(const std::string & channel,
+                                   unsigned minSelLeptons,
+                                   unsigned minSelHadTaus,
+                                   unsigned minSelBJets_loose,
+                                   unsigned minSelBJets_medium)
+{
+  const MEMPremutationCondition condition = [
+      minSelLeptons, minSelHadTaus, minSelBJets_loose, minSelBJets_medium
+    ](
+      const std::vector<const RecoLepton*> & selLeptons,
+      const std::vector<const RecoHadTau*> & selHadTaus,
+      const std::vector<const RecoJet*> & selBJets_loose,
+      const std::vector<const RecoJet*> & selBJets_medium,
+      bool failsZbosonMassVeto
+    ) -> int
+  {
+    return (
+        (selBJets_loose.size() >= minSelBJets_loose || selBJets_medium.size() >= minSelBJets_medium) &&
+        ! failsZbosonMassVeto                                                                        &&
+        selLeptons.size() >= minSelLeptons                                                           &&
+        selHadTaus.size() >= minSelHadTaus
+    ) ? nCombinationsK(selLeptons.size(), minSelLeptons) * nCombinationsK(selHadTaus.size(), minSelHadTaus) : 0;
+  };
+  return addCondition(channel, condition);
+}
+
+void
+MEMPermutationWriter::setBranchNames(TTree * tree,
+                                     int era,
+                                     bool verbose)
+{
+  // initialize the selector classes
+  for(const std::string & hadTauWorkingPoint: hadTauWorkingPoints_)
+  {
+    hadTauSelectorsLoose_[hadTauWorkingPoint] = new RecoHadTauCollectionSelectorLoose(era);
+    hadTauSelectorsLoose_[hadTauWorkingPoint] -> set(hadTauWorkingPoint);
+    hadTauSelectorsLoose_[hadTauWorkingPoint] -> set_min_antiElectron(-1);
+    hadTauSelectorsLoose_[hadTauWorkingPoint] -> set_min_antiMuon(-1);
+    hadTauSelectorsLoose_[hadTauWorkingPoint] -> set_min_pt(18.);
+
+    hadTauSelectorsFakeable_[hadTauWorkingPoint] = new RecoHadTauCollectionSelectorFakeable(era);
+    hadTauSelectorsFakeable_[hadTauWorkingPoint] -> set(hadTauWorkingPoint);
+    hadTauSelectorsFakeable_[hadTauWorkingPoint] -> set_min_antiElectron(-1);
+    hadTauSelectorsFakeable_[hadTauWorkingPoint] -> set_min_antiMuon(-1);
+    hadTauSelectorsFakeable_[hadTauWorkingPoint] -> set_min_pt(18.);
+
+    hadTauSelectorsTight_[hadTauWorkingPoint] = new RecoHadTauCollectionSelectorTight(era);
+    hadTauSelectorsTight_[hadTauWorkingPoint] -> set(hadTauWorkingPoint);
+    hadTauSelectorsTight_[hadTauWorkingPoint] -> set_min_antiElectron(-1);
+    hadTauSelectorsTight_[hadTauWorkingPoint] -> set_min_antiMuon(-1);
+    hadTauSelectorsTight_[hadTauWorkingPoint] -> set_min_pt(18.);
+  }
+
+  // initialize the branches
+  for(const auto & kv: conditions_)
+  {
+    const std::string & channel = kv.first;
+    branches_[channel] = {};
+    for(int leptonSelection_idx = minLepSelection_; leptonSelection_idx <= maxLepSelection_; ++leptonSelection_idx)
+    {
+      const std::string leptonSelection_str = find_selection_str(leptonSelection_idx);
+      branches_[channel][leptonSelection_idx] = {};
+      for(int hadTauSelection_idx = minHadTauSelection_; hadTauSelection_idx <= maxHadTauSelection_; ++hadTauSelection_idx)
+      {
+        const std::string hadTauSelection_str = find_selection_str(hadTauSelection_idx);
+        branches_[channel][leptonSelection_idx][hadTauSelection_idx] = {};
+        for(const std::string & hadTauWorkingPoint: hadTauWorkingPoints_)
+        {
+          const std::string maxPermutations_addMEM_str = Form(
+            maxPermutations_addMEM_pattern_.c_str(),
+            channel.c_str(), leptonSelection_str.c_str(), hadTauSelection_str.c_str(), hadTauWorkingPoint.c_str()
+          );
+          branches_[channel][leptonSelection_idx][hadTauSelection_idx][hadTauWorkingPoint] = 0;
+          tree -> Branch(
+            maxPermutations_addMEM_str.c_str(),
+            &branches_[channel][leptonSelection_idx][hadTauSelection_idx][hadTauWorkingPoint],
+            Form("%s/I", maxPermutations_addMEM_str.c_str())
+          );
+          if(verbose)
+          {
+            std::cout << "adding branch: " << maxPermutations_addMEM_str << " (type = I)\n";
+          } // verbose
+        } // hadTauWorkingPoint
+      } // hadTauSelection_idx
+    } // leptonSelection_idx
+  } // kv
+  return;
+}
+
+void
+MEMPermutationWriter::write(const std::array<const std::vector<const RecoLepton*>, 3> & leptons,
+                            const std::array<const std::vector<const RecoJet*>, 2> & selBJets,
+                            const std::vector<const RecoHadTau*> & cleanedHadTaus)
+{
+  // compute if the event passes the Z boson veto
+  bool failsZbosonMassVeto = false;
+  const std::vector<const RecoLepton*> & fakeableLeptons = leptons.at(kFakeable);
+  for(std::size_t lepton1_idx = 0; lepton1_idx < fakeableLeptons.size(); ++lepton1_idx)
+  {
+    for(std::size_t lepton2_idx = lepton1_idx + 1; lepton2_idx < fakeableLeptons.size(); ++lepton2_idx)
+    {
+      const RecoLepton* lepton1 = fakeableLeptons.at(lepton1_idx);
+      const RecoLepton* lepton2 = fakeableLeptons.at(lepton2_idx);
+      const double mass = (lepton1->p4() + lepton2->p4()).mass();
+      if(lepton1->is_electron() && lepton2->is_electron() && std::fabs(mass - z_mass) < z_window)
+      {
+        failsZbosonMassVeto = true;
+      }
+    } // lepton2_idx
+  } // lepton1_idx
+
+  // get the b jets
+  const std::vector<const RecoJet*> & selBJets_loose  = selBJets.at(0);
+  const std::vector<const RecoJet*> & selBJets_medium = selBJets.at(1);
+
+  // loop over the lepton, had tau and had tau wp branches
+  for(int leptonSelection_idx = minLepSelection_; leptonSelection_idx <= maxLepSelection_; ++leptonSelection_idx)
+  {
+    const std::vector<const RecoLepton*> & selLeptons = leptons.at(leptonSelection_idx);
+    for(int hadTauSelection_idx = minHadTauSelection_; hadTauSelection_idx <= maxHadTauSelection_; ++hadTauSelection_idx)
+    {
+      for(const std::string & hadTauWorkingPoint: hadTauWorkingPoints_)
+      {
+        const std::vector<const RecoHadTau*> selHadTaus = [&]()
+        {
+          // pick the had tau selector
+          switch(hadTauSelection_idx)
+          {
+            case kLoose:    return (*hadTauSelectorsLoose_   [hadTauWorkingPoint])(cleanedHadTaus);
+            case kFakeable: return (*hadTauSelectorsFakeable_[hadTauWorkingPoint])(cleanedHadTaus);
+            case kTight:    return (*hadTauSelectorsTight_   [hadTauWorkingPoint])(cleanedHadTaus);
+            default:        throw cms::Exception("MEMPermutationWriter")
+                              << "Unexpected had tau selection: " << hadTauSelection_idx;
+          }
+        }(); // selHadTaus
+
+        // loop over the channels and assign an estimate for the MEM permutations
+        for(const auto & kv: branches_)
+        {
+          const std::string & channel = kv.first;
+          branches_[channel][leptonSelection_idx][hadTauSelection_idx][hadTauWorkingPoint] =
+            conditions_[channel](selLeptons, selHadTaus, selBJets_loose, selBJets_medium, failsZbosonMassVeto);
+        } // branches
+      } // hadTauWorkingPoint
+    } // hadTauSelection_idx
+  } // leptonSelection_idx
+  return;
+}
+
+std::string
+MEMPermutationWriter::find_selection_str(int selection_idx)
+{
+  if(selection_idx == kLoose)    return "Loose";
+  if(selection_idx == kFakeable) return "Fakeable";
+  if(selection_idx == kTight)    return "Tight";
+  throw cms::Exception("MEMPermutationWriter") << "Invalid index: " << selection_idx;
+}
+
+std::string
+MEMPermutationWriter::get_maxPermutations_addMEM_pattern()
+{
+  return maxPermutations_addMEM_pattern_;
+}
+

@@ -8,7 +8,8 @@
 #include <TFile.h> // TFile
 #include <TH1.h> // TH1
 #include <TH2.h> // TH2
-#include <TGraph.h> // TH2
+#include <TGraph.h> // TGraph
+#include <TF1.h> // TF1
 
 #include <string>
 #include <vector>
@@ -26,6 +27,8 @@ TH1* loadTH1(TFile* inputFile, const std::string& histogramName);
 TH2* loadTH2(TFile* inputFile, const std::string& histogramName);
 
 TGraph* loadTGraph(TFile* inputFile, const std::string& graphName);
+
+TF1* loadTF1(TFile* inputFile, const std::string& functionName);
 
 double getSF_from_TH1(TH1* lut, double x);
 double getSF_from_TH2(TH2* lut, double x, double y);

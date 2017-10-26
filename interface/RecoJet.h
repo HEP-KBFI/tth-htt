@@ -4,7 +4,6 @@
 #include "tthAnalysis/HiggsToTauTau/interface/GenJet.h" // GenJet
 #include "tthAnalysis/HiggsToTauTau/interface/GenLepton.h" // GenLepton
 #include "tthAnalysis/HiggsToTauTau/interface/GenHadTau.h" // GenHadTau
-#include "tthAnalysis/HiggsToTauTau/interface/GenJet.h" // GenJet
 
 #include <map>
 #include <ostream>
@@ -14,7 +13,6 @@ class RecoJet
 {
 public:
   RecoJet() = default;
-/*
   RecoJet(Double_t pt,
           Double_t eta,
           Double_t phi,
@@ -24,17 +22,7 @@ public:
 	  Double_t corr_JECDown,
 	  Double_t BtagCSV,          
 	  Double_t BtagWeight,
-          Int_t idx);
- */          
-  RecoJet(Double_t pt,
-          Double_t eta,
-          Double_t phi,
-          Double_t mass,
-	  Double_t corr,
-	  Double_t corr_JECUp,
-	  Double_t corr_JECDown,
-	  Double_t BtagCSV,          
-	  Double_t BtagWeight,
+	  Double_t QGDiscr,
 	  Int_t heppyFlavour,
           Int_t idx);
 
@@ -54,6 +42,7 @@ public:
   Double_t corr_JECDown() const { return corr_JECDown_; }
   Double_t BtagCSV() const { return BtagCSV_; }
   Double_t BtagWeight() const { return BtagWeight_; }
+  Double_t QGDiscr() const { return QGDiscr_; }
   Int_t heppyFlavour() const { return heppyFlavour_; }
   Int_t idx() const { return idx_; }
 
@@ -70,13 +59,12 @@ public:
   Double_t corr_JECDown_; ///< -1 sigma (downward shifted) jet energy correction
   Double_t BtagCSV_;      ///< CSV b-tagging discriminator value
   Double_t BtagWeight_;   ///< weight for data/MC correction of b-tagging efficiency and mistag rate
+  Double_t QGDiscr_;      ///< quark/gluon discriminator
   Int_t heppyFlavour_;    ///< Jet heppy flavour
   Int_t idx_;             ///< index of jet in the ntuple
 
   //---------------------------------------------------------
   // CV: needed by RecoJetWriter
-  Double_t BtagCSVwHipMitigation_;  
-  Double_t BtagCSVwoHipMitigation_; 
   std::map<int, Double_t> BtagWeight_systematics_; 
   //---------------------------------------------------------
 

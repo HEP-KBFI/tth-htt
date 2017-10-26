@@ -12,12 +12,21 @@ void check_mvaInputs(std::map<std::string, double>& mvaInputs, RUN_TYPE run, LUM
   for ( std::map<std::string, double>::const_iterator mvaInput = mvaInputs.begin();
 	mvaInput != mvaInputs.end(); ++mvaInput ) {
     if ( TMath::IsNaN(mvaInput->second) ) {
-      std::cout << "Warning in run = " << run << ", lumi = " << lumi << ", event = " << event << ":" << std::endl; 
+      std::cout << "Warning";
+      if ( !(run == 0 && lumi == 0 && event == 0) ) {
+	std::cout << " in run = " << run << ", lumi = " << lumi << ", event = " << event;
+      }
+      std::cout << ":" << std::endl; 
       std::cout << " mvaInput #" << index << " ('" << mvaInput->first << "') = " << mvaInput->second << " --> setting mvaInput value to zero !!" << std::endl; 
       mvaInputs[mvaInput->first] = 0.;
       ++index;
     }
   }
+}
+
+void check_mvaInputs(std::map<std::string, double> & mvaInputs, const EventInfo & info)
+{
+  return check_mvaInputs(mvaInputs, info.run, info.lumi, info.event);
 }
 
 std::vector<std::string> get_mvaInputVariables(const std::vector<std::string>& mvaInputVariables_ttV, const std::vector<std::string>& mvaInputVariables_ttbar)

@@ -2,6 +2,7 @@
 #define tthAnalysis_HiggsToTauTau_GenJetReader_h
 
 #include "tthAnalysis/HiggsToTauTau/interface/GenJet.h" // GenJet
+#include "tthAnalysis/HiggsToTauTau/interface/ReaderBase.h" // ReaderBase
 
 #include <Rtypes.h> // Int_t, Double_t
 #include <TTree.h> // TTree
@@ -11,24 +12,25 @@
 #include <map>
 
 class GenJetReader
+  : public ReaderBase
 {
  public:
   GenJetReader();
-  GenJetReader(const std::string& branchName_num, const std::string& branchName_obj); 
+  GenJetReader(const std::string& branchName_num, const std::string& branchName_obj);
   ~GenJetReader();
 
   /**
    * @brief Call tree->SetBranchAddress for all GenJet branches
    */
-  void setBranchAddresses(TTree* tree);
+  void setBranchAddresses(TTree* tree) override;
 
   /**
    * @brief Read branches from tree and use information to fill collection of GenJet objects
    * @return Collection of GenJet objects
    */
   std::vector<GenJet> read() const;
-  
- protected: 
+
+ protected:
  /**
    * @brief Initialize names of branches to be read from tree
    */

@@ -1,5 +1,21 @@
 # tth-htt
 Code and python config files for ttH, H -> tautau analysis with matrix element techniques
+
+### HDFS plugin
+
+Since FUSE appears to be buggy, accessing files via /hdfs mountpoint is really slow (especially when a given folder contains thousands of files).
+One of the (viable) solutions is to build the HDFS plugin ourselves because CMSSW stack doesn't ship ROOT with HDFS support.
+This can be done by executing the following command which builds the plugin and sets necessary environment variables to access any file via the HDFS protocol:
+
+```bash
+source $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/misc/set_env.sh
+```
+The files residing on /hdfs can be read via
+```c++
+TFile * f = TFile::Open("hdfs:///your/desired/path");
+```
+anywhere. NB! The plugin does not support writing via this protocol.
+
 ### Setup
 
 Clone this repository into `$CMSSW_BASE/src/tthAnalysis/HiggsToTauTau`, i.e.
@@ -54,119 +70,7 @@ Press enter and wait til the script tells you `"Done"`. Or, you could decline an
 make -f /home/$USER/ttHAnalysis/2016Jul19_dR03mvaTight/Makefile_3l_1tau -j 4
 ```
 This runs a python script (`sbatch_analyze_3l_1tau.py`) which submits the analysis jobs to SLURM and waits them to complete (approx 30 min per channel).
-All the results are stored in `outputDir` defined in `tthAnalyzeRun_3l_1tau.py`:
-<details> 
-  <summary>Directory structure</summary>
-```text
-/home/$USER/ttHAnalysis/2016Jul19_dR03mvaTight/
-├── cfgs
-│   ├── 3l_1tau
-│   │   └── Tight
-│   │       ├── DoubleEG_Run2015C
-│   │       │   ├── analyze_3l_1tau_DoubleEG_Run2015C_Tight_central_0_cfg.py
-│   │       │   ├── analyze_3l_1tau_DoubleEG_Run2015C_Tight_central_0.sh
-│   │       │   ├── analyze_3l_1tau_DoubleEG_Run2015C_Tight_central_1_cfg.py
-│   │       │   └── analyze_3l_1tau_DoubleEG_Run2015C_Tight_central_1.sh
-│   │       ├── DoubleEG_Run2015D
-│   │       │   ├── analyze_3l_1tau_DoubleEG_Run2015D_Tight_central_0_cfg.py
-│   │       │   ├── ...
-│   │       ...
-│   │       └── ZZTo4L
-│   │           ├── analyze_3l_1tau_ZZTo4L_Tight_central_0_cfg.py
-│   │           ├── analyze_3l_1tau_ZZTo4L_Tight_central_0.sh
-│   │           ├── analyze_3l_1tau_ZZTo4L_Tight_central_1_cfg.py
-│   │           ├── analyze_3l_1tau_ZZTo4L_Tight_central_1.sh
-│   │           ├── analyze_3l_1tau_ZZTo4L_Tight_central_2_cfg.py
-│   │           ├── analyze_3l_1tau_ZZTo4L_Tight_central_2.sh
-│   │           ├── analyze_3l_1tau_ZZTo4L_Tight_central_3_cfg.py
-│   │           ├── analyze_3l_1tau_ZZTo4L_Tight_central_3.sh
-│   │           ├── analyze_3l_1tau_ZZTo4L_Tight_central_4_cfg.py
-│   │           ├── analyze_3l_1tau_ZZTo4L_Tight_central_4.sh
-│   │           ├── analyze_3l_1tau_ZZTo4L_Tight_central_5_cfg.py
-│   │           └── analyze_3l_1tau_ZZTo4L_Tight_central_5.sh
-│   ├── prepareDatacards_3l_1tau_EventCounter_cfg.py
-│   ├── prepareDatacards_3l_1tau_mTauTauVis_cfg.py
-│   ├── prepareDatacards_3l_1tau_mvaDiscr_3l_cfg.py
-│   └── prepareDatacards_3l_1tau_numJets_cfg.py
-├── datacards
-│   ├── 3l_1tau
-│   │   └── Tight
-│   │       ├── DoubleEG_Run2015C
-│   │       ├── DoubleEG_Run2015D
-│   │       ├── ...
-│   │       ├── ZGTo2LG
-│   │       └── ZZTo4L
-│   ├── prepareDatacards_3l_1tau_EventCounter.root
-│   ├── prepareDatacards_3l_1tau_mTauTauVis.root
-│   ├── prepareDatacards_3l_1tau_mvaDiscr_3l.root
-│   └── prepareDatacards_3l_1tau_numJets.root
-├── histograms
-│   ├── 3l_1tau
-│   │   └── Tight
-│   │       ├── DoubleEG_Run2015C
-│   │       │   ├── DoubleEG_Run2015C_Tight_central_0.root
-│   │       │   └── DoubleEG_Run2015C_Tight_central_1.root
-│   │       ├── DoubleEG_Run2015D
-│   │       │   ├── DoubleEG_Run2015D_Tight_central_0.root
-│   │       │   ├── DoubleEG_Run2015D_Tight_central_10.root
-│   │       │   ├── ...
-│   │       ...
-│   │       └── ZZTo4L
-│   │           ├── ZZTo4L_Tight_central_0.root
-│   │           ├── ZZTo4L_Tight_central_1.root
-│   │           ├── ZZTo4L_Tight_central_2.root
-│   │           ├── ZZTo4L_Tight_central_3.root
-│   │           ├── ZZTo4L_Tight_central_4.root
-│   │           └── ZZTo4L_Tight_central_5.root
-│   ├── histograms_harvested_stage1_3l_1tau_DoubleEG_Run2015C.root
-│   ├── histograms_harvested_stage1_3l_1tau_DoubleEG_Run2015C_Tight_central.root
-│   ├── ...
-│   ├── histograms_harvested_stage1_3l_1tau_ZZTo4L.root
-│   ├── histograms_harvested_stage1_3l_1tau_ZZTo4L_Tight_central.root
-│   └── histograms_harvested_stage2_3l_1tau.root
-├── logs
-│   └── 3l_1tau
-│       └── Tight
-│           ├── DoubleEG_Run2015C
-│           │   ├── analyze_3l_1tau_DoubleEG_Run2015C_Tight_central_0.log
-│           │   └── analyze_3l_1tau_DoubleEG_Run2015C_Tight_central_1.log
-│           ├── DoubleEG_Run2015D
-│           │   ├── analyze_3l_1tau_DoubleEG_Run2015D_Tight_central_0.log
-│           │   ├── analyze_3l_1tau_DoubleEG_Run2015D_Tight_central_10.log
-│           │   ├── ...
-│           ...
-│           └── ZZTo4L
-│               ├── analyze_3l_1tau_ZZTo4L_Tight_central_0.log
-│               ├── analyze_3l_1tau_ZZTo4L_Tight_central_1.log
-│               ├── analyze_3l_1tau_ZZTo4L_Tight_central_2.log
-│               ├── analyze_3l_1tau_ZZTo4L_Tight_central_3.log
-│               ├── analyze_3l_1tau_ZZTo4L_Tight_central_4.log
-│               └── analyze_3l_1tau_ZZTo4L_Tight_central_5.log
-├── Makefile_3l_1tau
-├── output_rle
-│   └── 3l_1tau
-│       └── Tight
-│           ├── DoubleEG_Run2015C
-│           │   ├── rle_3l_1tau_DoubleEG_Run2015C_Tight_central_0.txt
-│           │   └── rle_3l_1tau_DoubleEG_Run2015C_Tight_central_1.txt
-│           ├── DoubleEG_Run2015D
-│           │   ├── rle_3l_1tau_DoubleEG_Run2015D_Tight_central_0.txt
-│           │   ├── rle_3l_1tau_DoubleEG_Run2015D_Tight_central_10.txt
-│           │   ├── ...
-│           ...
-│           └── ZZTo4L
-│               ├── rle_3l_1tau_ZZTo4L_Tight_central_0.txt
-│               ├── rle_3l_1tau_ZZTo4L_Tight_central_1.txt
-│               ├── rle_3l_1tau_ZZTo4L_Tight_central_2.txt
-│               ├── rle_3l_1tau_ZZTo4L_Tight_central_3.txt
-│               ├── rle_3l_1tau_ZZTo4L_Tight_central_4.txt
-│               └── rle_3l_1tau_ZZTo4L_Tight_central_5.txt
-├── sbatch_analyze_3l_1tau.py
-├── stderr_3l_1tau.log
-└── stdout_3l_1tau.log
-
-```
-</details>
+All the results are stored in `outputDir` defined in `tthAnalyzeRun_3l_1tau.py.
 The datacards are located under `datacards`; the run-lumi-event numbers of selected events are under `output_rle`.
 
 ### Synchronization

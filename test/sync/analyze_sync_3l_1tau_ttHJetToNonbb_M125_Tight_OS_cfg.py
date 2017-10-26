@@ -146,6 +146,9 @@ process.analyze_3l_1tau.apply_genWeight = cms.bool(True)
 process.analyze_3l_1tau.apply_trigger_bits = cms.bool(True)
 #process.analyze_3l_1tau.selEventsFileName_output = cms.string('/home/veelken/ttHAnalysis/2016/2017Feb22/output_rle/3l_1tau/Tight_OS/ttHJetToNonbb_M125_amcatnlo/rle_3l_1tau_ttHJetToNonbb_M125_amcatnlo_Tight_OS_central_1.txt')
 #process.analyze_3l_1tau.selEventsTFileName = cms.string('')
+<<<<<<< HEAD
+process.analyze_3l_1tau.selectBDT = cms.bool(False)
+=======
 process.analyze_3l_1tau.selectBDT = cms.bool(False)
 process.analyze_3l_1tau.apply_leptonGenMatching_ttZ_workaround = cms.bool(False)
 process.analyze_3l_1tau.branchName_genLeptons1 = cms.string('GenLep')
@@ -153,3 +156,4 @@ process.analyze_3l_1tau.branchName_genLeptons2 = cms.string('GenLepFromTau')
 process.analyze_3l_1tau.branchName_genHadTaus = cms.string('GenHadTaus')
 process.analyze_3l_1tau.branchName_genJets = cms.string('GenJet')
 process.analyze_3l_1tau.minNumJets = cms.int32(1)
+>>>>>>> b2e86e495863e8c5d1a11dfd59d77bc4d3350340

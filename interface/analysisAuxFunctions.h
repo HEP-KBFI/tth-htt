@@ -3,7 +3,7 @@
 
 #include "DataFormats/Math/interface/deltaR.h" // deltaR
 
-#include "tthAnalysis/HiggsToTauTau/interface/GenParticle.h" // GenParticle, Candidate::LorentzVector
+#include "tthAnalysis/HiggsToTauTau/interface/Particle.h" // Particle, Particle::LorentzVector
 #include "tthAnalysis/HiggsToTauTau/interface/RecoLepton.h" // RecoLepton
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectron.h" // RecoElectron
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuon.h" // RecoMuon
@@ -33,12 +33,31 @@ enum { kBtag_central,
 //--- declare selection criteria for leptons and hadronic taus
 enum { kLoose, kFakeable, kTight };
 
+//--- define the tau MVA ID WPs
+const std::map<std::string, int>
+id_mva_dr03_map = {
+  { "dR03mvaVVLoose", 1 }, // custom WP with 95% signal efficiency, computed in RecoHadTauReader
+  { "dR03mvaVLoose",  2 },
+  { "dR03mvaLoose",   3 },
+  { "dR03mvaMedium",  4 },
+  { "dR03mvaTight",   5 },
+  { "dR03mvaVTight",  6 },
+  { "dR03mvaVVTight", 7 }
+};
+
+const std::map<std::string, int>
+id_mva_dr05_map = {
+  { "dR05isoLoose",  1 },
+  { "dR05isoMedium", 2 },
+  { "dR05isoTight",  3 }
+};
+
 /**
  * @brief Auxiliary function used for sorting leptons by decreasing pT
  * @param Given pair of leptons
  * @return True, if first lepton has higher pT; false if second lepton has higher pT
  */
-bool isHigherPt(const GenParticle* particle1, const GenParticle* particle2);
+bool isHigherPt(const Particle* particle1, const Particle* particle2);
 
 /**
  * @brief Auxiliary function used for sorting leptons by decreasing cone pT
@@ -54,7 +73,7 @@ bool isHigherConePt(const RecoLepton* particle1, const RecoLepton* particle2);
  * @param jet2 The second jet
  * @return True, if the 1st jet has higher CSV score
  */
-bool isHigherCSV(const RecoJet * jet1, const RecoJet * jet2);
+bool isHigherCSV(const RecoJet* jet1, const RecoJet* jet2);
 
 /**
  * @brief Auxiliary function for checking if leptons passing fake-able lepton selection pass tight lepton identification criteria also
@@ -151,5 +170,16 @@ int sgn(T val)
   else if ( val < 0 ) return -1;
   else                return  0;
 }
+
+/**
+ * @brief Computes the number of k combinations out of n
+ * @param n Number of instances to choose from
+ * @param k Length of a single combination
+ *
+ * Credit to the author of: https://stackoverflow.com/a/9331125
+ */
+int
+nCombinationsK(int n,
+               int k);
 
 #endif

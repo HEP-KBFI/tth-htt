@@ -6,6 +6,7 @@
 <use   name="tthAnalysis/tthMEM"/>
 <use   name="root"/>
 <use   name="roottmva"/>
+<use   name="boost" />
 <Flags CXXFLAGS="-O3 -fPIC" />
 <export>
   <lib   name="1"/>

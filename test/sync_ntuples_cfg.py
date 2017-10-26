@@ -93,7 +93,6 @@ process.syncNtuple = cms.PSet(
     apply_hadTauFakeRateSF = cms.bool(True),
     isMC = cms.bool(True),
     apply_genWeight = cms.bool(True),
-    use_HIP_mitigation_bTag = cms.bool(True),
     use_HIP_mitigation_mediumMuonId = cms.bool(False),
     
     selectBDT = cms.bool(False)

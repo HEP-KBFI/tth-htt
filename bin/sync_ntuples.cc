@@ -196,8 +196,6 @@ int main(int argc, char* argv[])
   bool apply_hadTauGenMatching = cfg_analyze.getParameter<bool>("apply_hadTauGenMatching");
   std::vector<hadTauGenMatchEntry> hadTauGenMatch_definitions = getHadTauGenMatch_definitions_1tau(apply_hadTauGenMatching);
 
-  bool use_HIP_mitigation_bTag = cfg_analyze.getParameter<bool>("use_HIP_mitigation_bTag"); 
-  std::cout << "use_HIP_mitigation_bTag = " << use_HIP_mitigation_bTag << std::endl;
   bool use_HIP_mitigation_mediumMuonId = cfg_analyze.getParameter<bool>("use_HIP_mitigation_mediumMuonId"); 
   std::cout << "use_HIP_mitigation_mediumMuonId = " << use_HIP_mitigation_mediumMuonId << std::endl;
 
@@ -352,8 +350,6 @@ int main(int argc, char* argv[])
   }
 
   RecoJetReader* jetReader = new RecoJetReader(era, isMC, "nJet", "Jet");
-  if ( use_HIP_mitigation_bTag ) jetReader->enable_HIP_mitigation();
-  else jetReader->disable_HIP_mitigation();
   jetReader->setJetPt_central_or_shift(jetPt_option);
   jetReader->setBranchName_BtagWeight(jet_btagWeight_branch);
   jetReader->setBranchAddresses(inputTree);
@@ -759,9 +755,9 @@ int main(int argc, char* argv[])
     double mTauTauVis1_sel = -99;
     double mTauTauVis2_sel = -99;
     if(lepton_lead != 0 && selHadTaus.size()>0)
-      double mTauTauVis1_sel = (lepton_lead->p4() + selHadTaus[0]->p4()).mass();
+      mTauTauVis1_sel = (lepton_lead->p4() + selHadTaus[0]->p4()).mass();
     if(lepton_sublead != 0 && selHadTaus.size()>0)
-      double mTauTauVis2_sel = (lepton_sublead->p4() + selHadTaus[0]->p4()).mass();
+      mTauTauVis2_sel = (lepton_sublead->p4() + selHadTaus[0]->p4()).mass();
 
 //--- compute output of BDTs used to discriminate ttH vs. ttV and ttH vs. ttbar 
 //    in 2lss_1tau category of ttH multilepton analysis 
@@ -907,6 +903,7 @@ int main(int argc, char* argv[])
       mvaInputs_2lss_1tau["tau_pt"]                                                = selHadTaus[0]->pt();
     
 
+    Double_t mvaDiscr_2lss_1tau = -1.;
     if (lepton_sublead !=0){
       check_mvaInputs(mvaInputs_2lss_1tau, run, lumi, event);
       //for ( std::map<std::string, double>::const_iterator mvaInput = mvaInputs_2lss.begin();
@@ -916,8 +913,9 @@ int main(int argc, char* argv[])
 
       double mvaOutput_2lss_1tau_ttV = mva_2lss_1tau_ttV(mvaInputs_2lss_1tau);
       double mvaOutput_2lss_1tau_ttbar = mva_2lss_1tau_ttbar(mvaInputs_2lss_1tau);     
-      Double_t mvaDiscr_2lss_1tau = getSF_from_TH2(mva_mapping_2lss_1tau, mvaOutput_2lss_1tau_ttbar, mvaOutput_2lss_1tau_ttV) + 1.;
+      mvaDiscr_2lss_1tau = getSF_from_TH2(mva_mapping_2lss_1tau, mvaOutput_2lss_1tau_ttbar, mvaOutput_2lss_1tau_ttV) + 1.;
     }
+    std::cout << "mvaDiscr_2lss_1tau = " << mvaDiscr_2lss_1tau << std::endl;
 
     //mvaInputs_2lss_1tau_wMEM = mvaInputs_2lss_1tau;
     //mvaInputs_2lss_1tau_wMEM["memOutput_LR"] = memOutput_LR;

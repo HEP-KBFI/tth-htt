@@ -64,7 +64,8 @@ namespace
       return;
     }   
     std::cout << " integral(" << process << ") = " << histogram_input->Integral() << std::endl;
-    std::string histogramName_output_full = std::string("x").append("_").append(process);
+    // std::string histogramName_output_full = std::string("x").append("_").append(process); // DEF LINE
+    std::string histogramName_output_full = process; // MY LINE
     if ( !(central_or_shift == "" || central_or_shift == "central") ) histogramName_output_full.append("_").append(central_or_shift);
     if ( histogramName_output != "" ) histogramName_output_full.append("_").append(histogramName_output);
     TArrayD histogramBinning = getBinning(histogram_input);

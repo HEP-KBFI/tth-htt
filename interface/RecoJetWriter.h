@@ -2,7 +2,10 @@
 #define tthAnalysis_HiggsToTauTau_RecoJetWriter_h
 
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h" // RecoJet
-
+#include "tthAnalysis/HiggsToTauTau/interface/GenParticleWriter.h" // GenParticleWriter
+#include "tthAnalysis/HiggsToTauTau/interface/GenLepton.h" // GenLepton
+#include "tthAnalysis/HiggsToTauTau/interface/GenHadTau.h" // GenHadTau
+#include "tthAnalysis/HiggsToTauTau/interface/GenJet.h" // GenJet
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2015, kEra_2016
 
 #include <Rtypes.h> // Int_t, Float_t
@@ -29,6 +32,12 @@ class RecoJetWriter
    */
   void write(const std::vector<const RecoJet*>& jets);
   
+  /**
+   * @brief Write branches containing information on matching of RecoJet objects
+   *        to generator level electrons, muons, hadronic taus, and jets to tree
+   */
+  void writeGenMatching(const std::vector<const RecoJet*>& jets);
+
  protected: 
  /**
    * @brief Initialize names of branches to be read from tree
@@ -41,6 +50,11 @@ class RecoJetWriter
   std::string branchName_num_;
   std::string branchName_obj_;
 
+  GenParticleWriter* genLeptonWriter_;
+  GenParticleWriter* genHadTauWriter_;
+  GenParticleWriter* genJetWriter_;
+  GenParticle dummyGenParticle_;
+
   std::string branchName_pt_;  
   std::string branchName_eta_;
   std::string branchName_phi_;
@@ -48,9 +62,9 @@ class RecoJetWriter
   std::string branchName_corr_;
   std::string branchName_corr_JECUp_;
   std::string branchName_corr_JECDown_;
-  std::string branchName_BtagCSVwHipMitigation_;
-  std::string branchName_BtagCSVwoHipMitigation_;
+  std::string branchName_BtagCSV_;
   std::string branchName_BtagWeight_;
+  std::string branchName_QGDiscr_;
   std::string branchName_heppyFlavour_;
   std::map<int, std::string> branchNames_BtagWeight_systematics_;
 
@@ -62,9 +76,9 @@ class RecoJetWriter
   Float_t* jet_corr_;
   Float_t* jet_corr_JECUp_;
   Float_t* jet_corr_JECDown_;
-  Float_t* jet_BtagCSVwHipMitigation_;
-  Float_t* jet_BtagCSVwoHipMitigation_;
+  Float_t* jet_BtagCSV_;
   Float_t* jet_BtagWeight_;
+  Float_t* jet_QGDiscr_;
   Float_t* jet_heppyFlavour_;
   std::map<int, Float_t*> jet_BtagWeights_systematics_; 
 };

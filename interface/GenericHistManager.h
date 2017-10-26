@@ -7,6 +7,7 @@
 #include <utility> // std::pair<>
 #include <type_traits> // std::enable_if<>, std::is_enum<>
 #include <iostream> // std::cerr
+#include <numeric> // std::accumulate()
 
 #include <Rtypes.h> // Double_t, Int_t, kTRUE
 #include <TH1D.h> // TH1D

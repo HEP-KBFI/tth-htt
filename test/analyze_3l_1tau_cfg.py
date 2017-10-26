@@ -5,7 +5,7 @@ import os
 process = cms.PSet()
   
 process.fwliteInput = cms.PSet(
-    fileNames = cms.vstring('/hdfs/local/lucia/VHBBHeppyV24bis/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/VHBB_HEPPY_V24bis_ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_Py8_mWCutfix__spr16MAv2-puspr16_HLT_80r2as_v14_ext1-v1/160911_223711/0000/tree_1.root'),
+    fileNames = cms.vstring('/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau/MC/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/VHBB_HEPPY_V25tthtautau_ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_Py8_mWCutfix__RunIISummer16MAv2-PUMoriond17_80r2as_2016_TrancheIV_v6_ext1-v1/170207_122849/0000/tree_1.root'),
     maxEvents = cms.int32(-1),
     outputEvery = cms.uint32(100000)
 )
@@ -83,7 +83,6 @@ process.analyze_3l_1tau = cms.PSet(
     ##minNumJets = cms.int32(2),
     minNumJets = cms.int32(1),
 
-    use_HIP_mitigation_bTag = cms.bool(False),
     use_HIP_mitigation_mediumMuonId = cms.bool(False),
             
     isMC = cms.bool(True),
@@ -107,6 +106,7 @@ process.analyze_3l_1tau = cms.PSet(
     branchName_genLeptons2 = cms.string('GenLepFromTau'),
     branchName_genHadTaus = cms.string('GenHadTaus'),
     branchName_genJets = cms.string('GenJet'),
+    redoGenMatching = cms.bool(True),
         
     selEventsFileName_input = cms.string(''),
     selEventsFileName_output = cms.string('selEvents_analyze_3l_1tau.txt'),

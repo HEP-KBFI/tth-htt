@@ -2,7 +2,13 @@
 # File:     sbatch-node.submit_job_version2.sh
 # Version:  0.2
 
+# unset JAVA_HOME, because hadoop commands might not work
+# this is especially true if one has sourced necessary files for the GRID proxy
+echo 'Unsetting JAVA_HOME=$JAVA_HOME'
+unset JAVA_HOME
+
 # Runs executable, wrapped into failure wrapper + wrapped into node scratchdir
+echo 'Running version (sbatch-node.submit_job_version2.sh)'
 
 main() {
     run_failure_wrapped_executable >> "{{wrapper_log_file}}" 2>&1

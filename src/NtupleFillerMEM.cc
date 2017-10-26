@@ -247,14 +247,14 @@ NtupleFillerMEM::add(const RecoHadTau * selHadTau)
 
 void
 NtupleFillerMEM::add(const std::vector<GenHadTau> & genHadTaus,
-                     const std::vector<GenLepton> & genBQuarkFromTop,
-                     const std::vector<GenLepton> & genLepFromTau,
-                     const std::vector<GenLepton> & genNuFromTau,
-                     const std::vector<GenLepton> & genTau,
-                     const std::vector<GenLepton> & genLepFromTop,
-                     const std::vector<GenLepton> & genNuFromTop,
-                     const std::vector<GenLepton> & genTop,
-                     const std::vector<GenLepton> & genVbosons)
+                     const std::vector<GenParticle> & genBQuarkFromTop,
+                     const std::vector<GenParticle> & genLepFromTau,
+                     const std::vector<GenParticle> & genNuFromTau,
+                     const std::vector<GenParticle> & genTau,
+                     const std::vector<GenParticle> & genLepFromTop,
+                     const std::vector<GenParticle> & genNuFromTop,
+                     const std::vector<GenParticle> & genTop,
+                     const std::vector<GenParticle> & genVbosons)
 {
   // STRATEGY
   //  - select the correct underlying generator level event, the objects of which
@@ -274,8 +274,8 @@ NtupleFillerMEM::add(const std::vector<GenHadTau> & genHadTaus,
   genMultiplicity_f_[N_GENTOP           ].setValue(genTop.size());
   genMultiplicity_f_[N_GENVBOSONS       ].setValue(genVbosons.size());
 
-  std::vector<std::reference_wrapper<const GenLepton>> genWbosons;
-  for(const GenLepton & genVboson: genVbosons)
+  std::vector<std::reference_wrapper<const GenParticle>> genWbosons;
+  for(const GenParticle & genVboson: genVbosons)
     if(std::abs(genVboson.pdgId()) == 24)
       genWbosons.push_back(std::cref(genVboson));
 
@@ -374,36 +374,36 @@ NtupleFillerMEM::add(const std::vector<GenHadTau> & genHadTaus,
   }
 
 //--- particles that end with underscore are ,,less correct'' than the ones w/o the underscore
-  const GenLepton & t_    __attribute__((unused)) = genTop[0].pdgId() > 0 ? genTop[0] : genTop[1];
-  const GenLepton & tbar_ __attribute__((unused)) = genTop[0].pdgId() < 0 ? genTop[0] : genTop[1];
+  const GenParticle & t_    __attribute__((unused)) = genTop[0].pdgId() > 0 ? genTop[0] : genTop[1];
+  const GenParticle & tbar_ __attribute__((unused)) = genTop[0].pdgId() < 0 ? genTop[0] : genTop[1];
 
-  const GenLepton & Wpos_lep = genLepFromTop[0].pdgId() < 0 ? genLepFromTop[0] : genLepFromTop[1];
-  const GenLepton & Wneg_lep = genLepFromTop[0].pdgId() > 0 ? genLepFromTop[0] : genLepFromTop[1];
-  const GenLepton & Wpos_nu_ = genNuFromTop[0].pdgId() > 0 ? genNuFromTop[0] : genNuFromTop[1];
-  const GenLepton & Wneg_nu_ = genNuFromTop[0].pdgId() < 0 ? genNuFromTop[0] : genNuFromTop[1];
+  const GenParticle & Wpos_lep = genLepFromTop[0].pdgId() < 0 ? genLepFromTop[0] : genLepFromTop[1];
+  const GenParticle & Wneg_lep = genLepFromTop[0].pdgId() > 0 ? genLepFromTop[0] : genLepFromTop[1];
+  const GenParticle & Wpos_nu_ = genNuFromTop[0].pdgId() > 0 ? genNuFromTop[0] : genNuFromTop[1];
+  const GenParticle & Wneg_nu_ = genNuFromTop[0].pdgId() < 0 ? genNuFromTop[0] : genNuFromTop[1];
 
-  const GenLepton Wpos_nu = getNu(Wpos_lep, Wpos_nu_, W_MASS, Wpos_nu_.pdgId());
-  const GenLepton Wneg_nu = getNu(Wneg_lep, Wneg_nu_, W_MASS, Wneg_nu_.pdgId());
+  const GenParticle Wpos_nu = getNu(Wpos_lep, Wpos_nu_, W_MASS, Wpos_nu_.pdgId());
+  const GenParticle Wneg_nu = getNu(Wneg_lep, Wneg_nu_, W_MASS, Wneg_nu_.pdgId());
 
-  const GenLepton & Wpos_ = genWbosons[0].get().pdgId() > 0 ? genWbosons[0] : genWbosons[1];
-  const GenLepton & Wneg_ = genWbosons[0].get().pdgId() < 0 ? genWbosons[0] : genWbosons[1];
-  const GenLepton Wpos = GenLepton((Wpos_nu.p4() + Wpos_lep.p4()), Wpos_.pdgId());
-  const GenLepton Wneg = GenLepton((Wneg_nu.p4() + Wneg_lep.p4()), Wneg_.pdgId());
-  const GenLepton & b_    = genBQuarkFromTop[0].pdgId() > 0 ? genBQuarkFromTop[0] : genBQuarkFromTop[1];
-  const GenLepton & bbar_ = genBQuarkFromTop[0].pdgId() < 0 ? genBQuarkFromTop[0] : genBQuarkFromTop[1];
-  const GenLepton b    = getB(b_, Wpos, b_.pdgId());
-  const GenLepton bbar = getB(bbar_, Wneg, bbar_.pdgId());
+  const GenParticle & Wpos_ = genWbosons[0].get().pdgId() > 0 ? genWbosons[0] : genWbosons[1];
+  const GenParticle & Wneg_ = genWbosons[0].get().pdgId() < 0 ? genWbosons[0] : genWbosons[1];
+  const GenParticle Wpos = GenParticle((Wpos_nu.p4() + Wpos_lep.p4()), Wpos_.pdgId(), Wpos_.charge());
+  const GenParticle Wneg = GenParticle((Wneg_nu.p4() + Wneg_lep.p4()), Wneg_.pdgId(), Wneg_.charge());
+  const GenParticle & b_    = genBQuarkFromTop[0].pdgId() > 0 ? genBQuarkFromTop[0] : genBQuarkFromTop[1];
+  const GenParticle & bbar_ = genBQuarkFromTop[0].pdgId() < 0 ? genBQuarkFromTop[0] : genBQuarkFromTop[1];
+  const GenParticle b    = getB(b_, Wpos, b_.pdgId());
+  const GenParticle bbar = getB(bbar_, Wneg, bbar_.pdgId());
 
-  const GenLepton & lepFromTau = genLepFromTau[0];
-  const GenLepton & tauPos = genTau[0].pdgId() < 0 ? genTau[0] : genTau[1];
-  const GenLepton & tauNeg = genTau[0].pdgId() > 0 ? genTau[0] : genTau[1];
-  const GenLepton & tauL __attribute__((unused)) = lepFromTau.pdgId() > 0 ? tauNeg : tauPos;
-  const GenLepton & tauH = lepFromTau.pdgId() < 0 ? tauNeg : tauPos;
+  const GenParticle & lepFromTau = genLepFromTau[0];
+  const GenParticle & tauPos = genTau[0].pdgId() < 0 ? genTau[0] : genTau[1];
+  const GenParticle & tauNeg = genTau[0].pdgId() > 0 ? genTau[0] : genTau[1];
+  const GenParticle & tauL __attribute__((unused)) = lepFromTau.pdgId() > 0 ? tauNeg : tauPos;
+  const GenParticle & tauH = lepFromTau.pdgId() < 0 ? tauNeg : tauPos;
 
-  std::vector<std::reference_wrapper<const GenLepton>> nuLepFromTau_candidates,
+  std::vector<std::reference_wrapper<const GenParticle>> nuLepFromTau_candidates,
                                                        nuTauFromLTau_candidates,
                                                        nuTauFromHTau_candidates;
-  for(const GenLepton & nu: genNuFromTau)
+  for(const GenParticle & nu: genNuFromTau)
     if(std::abs(nu.pdgId()) == std::abs(lepFromTau.pdgId()) + 1)
       nuLepFromTau_candidates.push_back(std::cref(nu));
     else if(nu.pdgId() * lepFromTau.pdgId() > 0)
@@ -427,9 +427,9 @@ NtupleFillerMEM::add(const std::vector<GenHadTau> & genHadTaus,
     errCode_ |= NUTPLE_ERR_NO_GEN_NU_LEP_FROM_HTAU;
     return;
   }
-  const GenLepton & nuLepFromTau_ = nuLepFromTau_candidates[0];
-  const GenLepton & nuTauFromLTau_ = nuTauFromLTau_candidates[0];
-  const GenLepton & nuTauFromHTau_ = nuTauFromHTau_candidates[0];
+  const GenParticle & nuLepFromTau_ = nuLepFromTau_candidates[0];
+  const GenParticle & nuTauFromLTau_ = nuTauFromLTau_candidates[0];
+  const GenParticle & nuTauFromHTau_ = nuTauFromHTau_candidates[0];
 
   std::vector<std::reference_wrapper<const GenHadTau>> htau_candidates;
   for(const GenHadTau & htau_candidate: genHadTaus)
@@ -446,20 +446,20 @@ NtupleFillerMEM::add(const std::vector<GenHadTau> & genHadTaus,
   // step 1 -- exclude the event if taus from Higgs emitted soft particles
   // step 1.1 -- recompute the neutrino energy/momentum so that it adds up to tau lepton with mass 1.777 GeV
   //             when added to its complementary lepton
-  const GenLepton nuTauFromHTau = getNu(GenLepton(htau.p4(), 1), nuTauFromHTau_, TAU_MASS, nuTauFromHTau_.pdgId());
-  const GenLepton reco_hTau(htau.p4() + nuTauFromHTau.p4(), tauH.pdgId());
+  const GenParticle nuTauFromHTau = getNu(GenParticle(htau.p4(), 1, 0.), nuTauFromHTau_, TAU_MASS, nuTauFromHTau_.pdgId());
+  const GenParticle reco_hTau(htau.p4() + nuTauFromHTau.p4(), tauH.pdgId(), tauH.charge());
   // step 1.2 -- recompute neutrino energy/momentum of both neutrinos coming from tau decaying leptonically so that
   //               a) the sum of two neutrinos plus the lepton adds up to tau w/ mass of 1.777 GeV
   //               b) the sum of both taus adds up to Higgs w/ mass of 125.000 GeV
   //             if the rescaling fails, drop the event anyways (nothing to do about it)
   const double diTauMass  = isSignal_b_ ? HIGGS_MASS : Z_MASS;
   const double diTauWidth = 3 * (isSignal_b_ ? HIGGS_WIDTH : Z_WIDTH); // 3 sigma window
-  const std::array<GenLepton, 2> newNus = getNuNu(reco_hTau, lepFromTau, nuLepFromTau_, nuTauFromLTau_, diTauMass);
+  const std::array<GenParticle, 2> newNus = getNuNu(reco_hTau, lepFromTau, nuLepFromTau_, nuTauFromLTau_, diTauMass);
 //--- the order is the same as passed to getNuNu()
-  const GenLepton & nuLepFromTau  = newNus[0];
-  const GenLepton & nuTauFromLTau = newNus[1];
-  const GenLepton reco_lTau(nuLepFromTau.p4() + nuTauFromLTau.p4() + lepFromTau.p4(), tauL.pdgId());
-  const GenLepton reco_hz = GenLepton((reco_lTau.p4() + reco_hTau.p4()), isSignal_b_ ? 25 : 23);
+  const GenParticle & nuLepFromTau  = newNus[0];
+  const GenParticle & nuTauFromLTau = newNus[1];
+  const GenParticle reco_lTau(nuLepFromTau.p4() + nuTauFromLTau.p4() + lepFromTau.p4(), tauL.pdgId(), tauL.charge());
+  const GenParticle reco_hz = GenParticle((reco_lTau.p4() + reco_hTau.p4()), isSignal_b_ ? 25 : 23, 0);
   if(std::fabs(reco_lTau.mass() - TAU_MASS) > TAU_WIDTH)
   {
     errCode_ |= NTUPLE_ERR_LTAU_MASS_OFF;
@@ -495,8 +495,8 @@ NtupleFillerMEM::add(const std::vector<GenHadTau> & genHadTaus,
   // step 3 -- exclude the event if there's a soft activity due to b quarks
   // use the new W, b/c by construction the resulting particle must have top mass
   // this check should never fail
-  const GenLepton t    = GenLepton((Wpos.p4() + b.p4()), t_.pdgId());
-  const GenLepton tbar = GenLepton((Wneg.p4() + bbar.p4()), tbar_.pdgId());
+  const GenParticle t    = GenParticle((Wpos.p4() + b.p4()), t_.pdgId(), t_.charge());
+  const GenParticle tbar = GenParticle((Wneg.p4() + bbar.p4()), tbar_.pdgId(), tbar_.charge());
   if(std::fabs(t.mass() - TOP_MASS) > 3 * TOP_WIDTH)
   {
     errCode_ |= NTUPLE_ERR_T_MASS_OFF;
@@ -647,13 +647,13 @@ NtupleFillerMEM::add(const std::vector<GenHadTau> & genHadTaus,
               << "\ngen b: " << b
               << "\nFirst 2 selected jets\n";
     for(const RecoJet * const jet: selBJetsMerged_)
-      std::cout << "\tb jet: " << static_cast<GenParticle>(*jet) << '\n';
+      std::cout << "\tb jet: " << static_cast<Particle>(*jet) << '\n';
     if(selBJetsMerged_rest.size())
     {
       std::cout << "Remaining selected jets\n";
       for(const RecoJet * const jet: selBJetsMerged_rest)
       {
-        std::cout << "\tb jet: " << static_cast<GenParticle>(*jet) << "; ";
+        std::cout << "\tb jet: " << static_cast<Particle>(*jet) << "; ";
         if(deltaR(jet->p4(), b.p4()) < 0.5)
         {
           std::cout << "PASS";
@@ -673,13 +673,13 @@ NtupleFillerMEM::add(const std::vector<GenHadTau> & genHadTaus,
               << "\ngen bbar: " << bbar
               << "\nFirst 2 selected jets\n";
     for(const RecoJet * const jet: selBJetsMerged_)
-      std::cout << "\tb jet: " << static_cast<GenParticle>(*jet) << '\n';
+      std::cout << "\tb jet: " << static_cast<Particle>(*jet) << '\n';
     if(selBJetsMerged_rest.size())
     {
       std::cout << "Remaining selected jets\n";
       for(const RecoJet * const jet: selBJetsMerged_rest)
       {
-        std::cout << "bbar jet: " << static_cast<GenParticle>(*jet) << "; ";
+        std::cout << "bbar jet: " << static_cast<Particle>(*jet) << "; ";
         if(deltaR(jet->p4(), bbar.p4()) < 0.5)
         {
           std::cout << "PASS";
@@ -710,12 +710,12 @@ NtupleFillerMEM::add(const std::vector<GenHadTau> & genHadTaus,
   //      the 4-momenta of reco selected objects and generator level neutrinos? Nope..
 
   // step 5 -- fill the branches
-  // we need to pass GenLepton object -> must convert the tau 4-momenta to GenLepton
-  // obtained by summing individual generator decay products (if we use GenLepton objects
+  // we need to pass GenParticle object -> must convert the tau 4-momenta to GenParticle
+  // obtained by summing individual generator decay products (if we use GenParticle objects
   // stored directly in the root file, the 4-momentum conservation won't necessarily hold)
   // also, fill b (W+) and then bbar (W-), as required by MG ME
-  const GenLepton reco_tauPos = lepFromTau.pdgId() < 0 ? reco_lTau : reco_hTau;
-  const GenLepton reco_tauNeg = lepFromTau.pdgId() > 0 ? reco_lTau : reco_hTau;
+  const GenParticle reco_tauPos = lepFromTau.pdgId() < 0 ? reco_lTau : reco_hTau;
+  const GenParticle reco_tauNeg = lepFromTau.pdgId() > 0 ? reco_lTau : reco_hTau;
   genTaus_f_[0].setValues      (reco_tauPos);
   genTaus_f_[1].setValues      (reco_tauNeg);
   genBQuark_f_[0].setValues    (b);
@@ -762,9 +762,9 @@ NtupleFillerMEM::close()
   }
 }
 
-GenLepton
-NtupleFillerMEM::getB(const GenLepton & b,
-                      const GenLepton & W,
+GenParticle
+NtupleFillerMEM::getB(const GenParticle & b,
+                      const GenParticle & W,
                       Int_t pdgId)
 {
   const double eW = W.p4().E();
@@ -796,13 +796,13 @@ NtupleFillerMEM::getB(const GenLepton & b,
   const double sol = std::sqrt(en * en - B_MASS * B_MASS);
   const double pt = sol / std::cosh(b.eta());
 
-  const GenLepton result(pt, b.eta(), b.phi(), B_MASS, pdgId);
+  const GenParticle result(pt, b.eta(), b.phi(), B_MASS, pdgId, -(1./3)*(pdgId/std::abs(pdgId)));
   return result;
 }
 
-GenLepton
-NtupleFillerMEM::getNu(const GenLepton & l,
-                       const GenLepton & nu,
+GenParticle
+NtupleFillerMEM::getNu(const GenParticle & l,
+                       const GenParticle & nu,
                        double momMass,
                        Int_t pdgId)
 {
@@ -815,15 +815,15 @@ NtupleFillerMEM::getNu(const GenLepton & l,
     (momMass * momMass - ml * ml) / (2 * (El - pl * cosThetaLnu))
   ;
   const double pt = Enu / std::cosh(nu.eta());
-  const GenLepton result(pt, nu.eta(), nu.phi(), 0., pdgId);
+  const GenParticle result(pt, nu.eta(), nu.phi(), 0., pdgId, 0.);
   return result;
 }
 
-std::array<GenLepton, 2>
-NtupleFillerMEM::getNuNu(const GenLepton & tau1,
-                         const GenLepton & l,
-                         const GenLepton & nu1,
-                         const GenLepton & nu2,
+std::array<GenParticle, 2>
+NtupleFillerMEM::getNuNu(const GenParticle & tau1,
+                         const GenParticle & l,
+                         const GenParticle & nu1,
+                         const GenParticle & nu2,
                          double momMass)
 {
   const double Etau1 = tau1.p4().E();
@@ -877,9 +877,9 @@ NtupleFillerMEM::getNuNu(const GenLepton & tau1,
   }
 
   const double pt1 = Enu1 / std::cosh(nu1.eta());
-  const GenLepton nu1_new(pt1, nu1.eta(), nu1.phi(), 0, nu1.pdgId());
+  const GenParticle nu1_new(pt1, nu1.eta(), nu1.phi(), 0, nu1.pdgId(), 0.);
   const double pt2 = Enu2 / std::cosh(nu2.eta());
-  const GenLepton nu2_new(pt2, nu2.eta(), nu2.phi(), 0, nu2.pdgId());
+  const GenParticle nu2_new(pt2, nu2.eta(), nu2.phi(), 0, nu2.pdgId(), 0.);
 
   return {{ nu1_new, nu2_new }};
 }

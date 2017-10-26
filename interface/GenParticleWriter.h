@@ -1,7 +1,7 @@
 #ifndef tthAnalysis_HiggsToTauTau_GenParticleWriter_h
 #define tthAnalysis_HiggsToTauTau_GenParticleWriter_h
 
-#include "tthAnalysis/HiggsToTauTau/interface/GenLepton.h" // GenLepton
+#include "tthAnalysis/HiggsToTauTau/interface/GenParticle.h" // GenParticle
 
 #include <Rtypes.h> // Int_t, Double_t
 #include <TTree.h> // TTree
@@ -23,7 +23,7 @@ class GenParticleWriter
   /**
    * @brief Write collection of GenParticle objects to tree
    */
-  void write(const std::vector<GenLepton>& particles);
+  void write(const std::vector<GenParticle>& particles);
   
  protected: 
  /**
@@ -39,6 +39,7 @@ class GenParticleWriter
   std::string branchName_eta_;
   std::string branchName_phi_;
   std::string branchName_mass_;
+  std::string branchName_charge_;
   std::string branchName_pdgId_;
 
   Int_t nParticles_;
@@ -46,6 +47,7 @@ class GenParticleWriter
   Float_t* particle_eta_;
   Float_t* particle_phi_;
   Float_t* particle_mass_;
+  Float_t* particle_charge_;
   Int_t* particle_pdgId_;
 };
 

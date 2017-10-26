@@ -65,7 +65,6 @@ class analyzeConfig_WZctrl(analyzeConfig):
     lines.append("process.analyze_WZctrl.triggers_1e1mu = cms.vstring(%s)" % self.triggers_1e1mu)
     lines.append("process.analyze_WZctrl.use_triggers_1e1mu = cms.bool(%s)" % ("1e1mu" in jobOptions['triggers']))
     lines.append("process.analyze_WZctrl.hadTauSelection = cms.string('Tight|%s')" % jobOptions['hadTau_selection'])
-    lines.append("process.analyze_WZctrl.use_HIP_mitigation_bTag = cms.bool(%s)" % jobOptions['use_HIP_mitigation_bTag'])
     lines.append("process.analyze_WZctrl.use_HIP_mitigation_mediumMuonId = cms.bool(%s)" % jobOptions['use_HIP_mitigation_mediumMuonId'])
     lines.append("process.analyze_WZctrl.isMC = cms.bool(%s)" % jobOptions['is_mc'])
     lines.append("process.analyze_WZctrl.central_or_shift = cms.string('%s')" % jobOptions['central_or_shift'])
@@ -154,9 +153,7 @@ class analyzeConfig_WZctrl(analyzeConfig):
             'sample_category' : sample_category,
             'triggers' : sample_info["triggers"],
             'hadTau_selection' : self.hadTau_selection_part2,
-            ##'use_HIP_mitigation_bTag' : sample_info["use_HIP_mitigation_bTag"],
             ##'use_HIP_mitigation_mediumMuonId' : sample_info["use_HIP_mitigation_mediumMuonId"],
-            'use_HIP_mitigation_bTag' : True,
             'use_HIP_mitigation_mediumMuonId' : True,
             'is_mc' : is_mc,
             'central_or_shift' : central_or_shift,

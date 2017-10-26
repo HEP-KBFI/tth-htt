@@ -9,7 +9,7 @@
 std::map<std::string, int> RecoMuonReader::numInstances_;
 std::map<std::string, RecoMuonReader *> RecoMuonReader::instances_;
 
-RecoMuonReader::RecoMuonReader(int era)
+RecoMuonReader::RecoMuonReader(int era, bool readGenMatching)
   : era_(era)
   , use_HIP_mitigation_(true)
   , branchName_num_("nselLeptons")
@@ -22,14 +22,11 @@ RecoMuonReader::RecoMuonReader(int era)
 #endif // ifdef DPT_DIV_PT
   , segmentCompatibility_(0)
 {
-  leptonReader_ = new RecoLeptonReader(branchName_num_, branchName_obj_);
-  leptonReader_->setBranchNames();
+  leptonReader_ = new RecoLeptonReader(branchName_num_, branchName_obj_, readGenMatching);
   setBranchNames();
 }
 
-RecoMuonReader::RecoMuonReader(int era,
-                               const std::string& branchName_num,
-                               const std::string& branchName_obj)
+RecoMuonReader::RecoMuonReader(int era, const std::string& branchName_num, const std::string& branchName_obj, bool readGenMatching)
   : era_(era)
   , use_HIP_mitigation_(true)
   , branchName_num_(branchName_num)
@@ -42,8 +39,7 @@ RecoMuonReader::RecoMuonReader(int era,
 #endif // ifdef DPT_DIV_PT
   , segmentCompatibility_(0)
 {
-  leptonReader_ = new RecoLeptonReader(branchName_num_, branchName_obj_);
-  leptonReader_->setBranchNames();
+  leptonReader_ = new RecoLeptonReader(branchName_num_, branchName_obj_, readGenMatching);
   setBranchNames();
 }
 
@@ -114,7 +110,6 @@ void RecoMuonReader::setBranchAddresses(TTree *tree)
 std::vector<RecoMuon> RecoMuonReader::read() const
 {
   RecoLeptonReader* gLeptonReader = leptonReader_->instances_[branchName_obj_];
-
   assert(gLeptonReader);
   RecoMuonReader* gMuonReader = instances_[branchName_obj_];
   assert(gMuonReader);
@@ -158,6 +153,7 @@ std::vector<RecoMuon> RecoMuonReader::read() const
         }));
       }
     }
+    gLeptonReader->readGenMatching(muons);
   }
   return muons;
 }

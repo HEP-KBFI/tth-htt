@@ -2,6 +2,13 @@
 #define tthAnalysis_HiggsToTauTau_RecoLeptonReader_h
 
 #include "tthAnalysis/HiggsToTauTau/interface/RecoLepton.h" // RecoLepton
+#include "tthAnalysis/HiggsToTauTau/interface/GenLeptonReader.h" // GenLeptonReader
+#include "tthAnalysis/HiggsToTauTau/interface/GenLepton.h" // GenLepton
+#include "tthAnalysis/HiggsToTauTau/interface/GenHadTauReader.h" // GenHadTauReader
+#include "tthAnalysis/HiggsToTauTau/interface/GenHadTau.h" // GenHadTau
+#include "tthAnalysis/HiggsToTauTau/interface/GenJetReader.h" // GenJetReader
+#include "tthAnalysis/HiggsToTauTau/interface/GenJet.h" // GenJet
+#include "tthAnalysis/HiggsToTauTau/interface/ReaderBase.h" // ReaderBase
 
 #include <Rtypes.h> // Int_t, Float_t
 #include <TTree.h> // TTree
@@ -11,16 +18,17 @@
 #include <map>
 
 class RecoLeptonReader
+  : public ReaderBase
 {
  public:
-  RecoLeptonReader();
-  RecoLeptonReader(const std::string& branchName_num, const std::string& branchName_obj);
+  RecoLeptonReader(bool readGenMatching = false);
+  RecoLeptonReader(const std::string& branchName_num, const std::string& branchName_obj, bool readGenMatching = false);
   ~RecoLeptonReader();
 
   /**
    * @brief Call tree->SetBranchAddress for all lepton branches common to RecoElectrons and RecoMuons
    */
-  void setBranchAddresses(TTree* tree);
+  void setBranchAddresses(TTree* tree) override;
 
   friend class RecoElectronReader;
   friend class RecoMuonReader;
@@ -34,6 +42,43 @@ class RecoLeptonReader
   const int max_nLeptons_;
   std::string branchName_num_;
   std::string branchName_obj_;
+
+  /**
+   * @brief Read branches containing information on matching of RecoElectrons and RecoMuons
+   *        to generator level electrons, muons, hadronic taus, and jets from tree
+   *        and add this information to collection of RecoElectron and RecoMuon objects given as function argument
+   */
+  template<typename T>
+  void readGenMatching(std::vector<T>& leptons) const
+  {
+    if ( readGenMatching_ ) {
+      assert(genLeptonReader_ && genHadTauReader_ && genJetReader_);
+      size_t nLeptons = leptons.size();
+      matched_genLeptons_ = genLeptonReader_->read();
+      assert(matched_genLeptons_.size() == nLeptons);
+      matched_genHadTaus_ = genHadTauReader_->read();
+      assert(matched_genHadTaus_.size() == nLeptons);
+      matched_genJets_ = genJetReader_->read();
+      assert(matched_genJets_.size() == nLeptons);
+      for ( size_t idxLepton = 0; idxLepton < nLeptons; ++idxLepton ) {
+	T* lepton = &leptons[idxLepton];
+	const GenLepton* matched_genLepton = &matched_genLeptons_[idxLepton];
+	if ( matched_genLepton->pt() > 0. ) lepton->set_genLepton(matched_genLepton);
+	const GenHadTau* matched_genHadTau = &matched_genHadTaus_[idxLepton];
+	if ( matched_genHadTau->pt() > 0. ) lepton->set_genHadTau(matched_genHadTau);
+	const GenJet* matched_genJet = &matched_genJets_[idxLepton];
+	if ( matched_genJet->pt() > 0. ) lepton->set_genJet(matched_genJet);
+      }
+    }
+  }
+
+  GenLeptonReader* genLeptonReader_;
+  GenHadTauReader* genHadTauReader_;
+  GenJetReader* genJetReader_;
+  bool readGenMatching_;
+  mutable std::vector<GenLepton> matched_genLeptons_;
+  mutable std::vector<GenHadTau> matched_genHadTaus_;
+  mutable std::vector<GenJet> matched_genJets_;
 
   std::string branchName_pt_;
   std::string branchName_eta_;

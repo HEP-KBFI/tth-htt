@@ -27,7 +27,7 @@ class EvtHistManager_2lss_1tau
 		      double mvaOutput_2lss_ttV, double mvaOutput_2lss_ttbar, double mvaDiscr_2lss, 
 		      double mvaOutput_2lss_1tau_ttV, double mvaOutput_2lss_1tau_ttbar, double mvaDiscr_2lss_1tau,
 		      double mvaOutput_2lss_1tau_ttV_wMEM, double mvaOutput_2lss_1tau_ttbar_wMEM, double mvaDiscr_2lss_1tau_wMEM,
-		      double mvaOutput_2lss_1tau_ttV_wMEMsepLR, double mvaOutput_2lss_1tau_ttbar_wMEMsepLR, double mvaDiscr_2lss_1tau_wMEMsepLR,
+		      double mvaOutput_Hj_tagger, double mvaOutput_Hjj_tagger,
 		      double mTauTauVis1, double mTauTauVis2, 
 		      const MEMOutput_2lss_1tau* memOutput_2lss_1tau, double memDiscr, double evtWeight);
   
@@ -56,9 +56,9 @@ class EvtHistManager_2lss_1tau
   TH1* histogram_mvaOutput_2lss_1tau_ttV_wMEM_;
   TH1* histogram_mvaOutput_2lss_1tau_ttbar_wMEM_;
   TH1* histogram_mvaDiscr_2lss_1tau_wMEM_;
-  TH1* histogram_mvaOutput_2lss_1tau_ttV_wMEMsepLR_;
-  TH1* histogram_mvaOutput_2lss_1tau_ttbar_wMEMsepLR_;
-  TH1* histogram_mvaDiscr_2lss_1tau_wMEMsepLR_;
+
+  TH1* histogram_mvaOutput_Hj_tagger_;
+  TH1* histogram_mvaOutput_Hjj_tagger_;
 
   TH1* histogram_mTauTauVis_;
 

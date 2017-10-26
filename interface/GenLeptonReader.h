@@ -2,6 +2,7 @@
 #define tthAnalysis_HiggsToTauTau_GenLeptonReader_h
 
 #include "tthAnalysis/HiggsToTauTau/interface/GenLepton.h" // GenLepton
+#include "tthAnalysis/HiggsToTauTau/interface/ReaderBase.h" // ReaderBase
 
 #include <Rtypes.h> // Int_t, Double_t
 #include <TTree.h> // TTree
@@ -11,25 +12,26 @@
 #include <map>
 
 class GenLeptonReader
+  : public ReaderBase
 {
  public:
   GenLeptonReader();
   GenLeptonReader(const std::string& branchName_nPromptLeptons, const std::string& branchName_promptLeptons,
-		  const std::string& branchName_nLeptonsFromTau, const std::string& branchName_leptonsFromTau); 
+          const std::string& branchName_nLeptonsFromTau= "", const std::string& branchName_leptonsFromTau= "");
   ~GenLeptonReader();
 
   /**
    * @brief Call tree->SetBranchAddress for all GenLepton branches
    */
-  void setBranchAddresses(TTree* tree);
+  void setBranchAddresses(TTree* tree) override;
 
   /**
    * @brief Read branches from tree and use information to fill collection of GenLepton objects
-   * @return Collection of GenLepton objects 
+   * @return Collection of GenLepton objects
    */
   std::vector<GenLepton> read() const;
-  
- protected: 
+
+ protected:
  /**
    * @brief Initialize names of branches to be read from tree
    */
@@ -37,13 +39,15 @@ class GenLeptonReader
 
   // electrons and muons from W and Z boson decays
   const int max_nPromptLeptons_;
-  std::string branchName_nPromptLeptons_; 
+  std::string branchName_nPromptLeptons_;
   std::string branchName_promptLeptons_;
-  
+  bool read_promptLeptons_;
+
   // electrons and muons from tau decays
   const int max_nLeptonsFromTau_;
   std::string branchName_nLeptonsFromTau_;
   std::string branchName_leptonsFromTau_;
+  bool read_leptonsFromTau_;
 
   std::string branchName_promptLepton_pt_;
   std::string branchName_promptLepton_eta_;

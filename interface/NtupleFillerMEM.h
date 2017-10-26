@@ -66,22 +66,20 @@
 #define NTUPLE_WARN_BBAR_MATCH_OUTSIDE_2_SELJETS      1ull << 6
 #define NTUPLE_WARN_HTAUTAU_RESCALING_FAILURE         1ull << 7
 
-typedef GenLepton GenParticleExt;
+template <typename FloatType>
+using RecoLeptonFiller = GenParticleFiller<FloatType>;
 
 template <typename FloatType>
-using RecoLeptonFiller = GenLeptonFiller<FloatType>;
+using RecoJetFiller = ParticleFiller<FloatType>;
 
 template <typename FloatType>
-using RecoJetFiller = GenParticleFiller<FloatType>;
+using GenTauFiller = GenParticleFiller<FloatType>;
 
 template <typename FloatType>
-using GenTauFiller = GenLeptonFiller<FloatType>;
+using GenJetFiller = GenParticleFiller<FloatType>;
 
 template <typename FloatType>
-using GenJetFiller = GenLeptonFiller<FloatType>;
-
-template <typename FloatType>
-using GenNuFiller = GenLeptonFiller<FloatType>;
+using GenNuFiller = GenParticleFiller<FloatType>;
 
 struct NtupleFillerMEM // only for 3l1tau analysis
 {
@@ -197,14 +195,14 @@ struct NtupleFillerMEM // only for 3l1tau analysis
    */
   void
   add(const std::vector<GenHadTau> & genHadTaus,
-      const std::vector<GenLepton> & genBQuarkFromTop,
-      const std::vector<GenLepton> & genLepFromTau,
-      const std::vector<GenLepton> & genNuFromTau,
-      const std::vector<GenLepton> & genTau,
-      const std::vector<GenLepton> & genLepFromTop,
-      const std::vector<GenLepton> & genNuFromTop,
-      const std::vector<GenLepton> & genTop,
-      const std::vector<GenLepton> & genVbosons);
+      const std::vector<GenParticle> & genBQuarkFromTop,
+      const std::vector<GenParticle> & genLepFromTau,
+      const std::vector<GenParticle> & genNuFromTau,
+      const std::vector<GenParticle> & genTau,
+      const std::vector<GenParticle> & genLepFromTop,
+      const std::vector<GenParticle> & genNuFromTop,
+      const std::vector<GenParticle> & genTop,
+      const std::vector<GenParticle> & genVbosons);
 
   /**
    * @brief Fills the tree (ofc if it's initialized) and clears whatever
@@ -258,13 +256,13 @@ protected:
 
   /* generator level, enabled only if use2016_ is true */
   std::array<GenTauFiller<double>, 2>    genTaus_f_;
-  std::array<GenLeptonFiller<double>, 2> genLepFromTop_f_,
+  std::array<GenParticleFiller<double>, 2> genLepFromTop_f_,
                                          genW_f_,
                                          genT_f_;
   std::array<GenJetFiller<double>, 2>    genBQuark_f_;
   std::array<GenNuFiller<double>, 2>     genNuFromTop_f_;
   GenHadTauFiller<double> genHtau_f_;
-  GenLeptonFiller<double> genLepFromTau_f_,
+  GenParticleFiller<double> genLepFromTau_f_,
                           genHZ_f_;
   GenNuFiller<double>     genNuLepFromTau_f_,
                           genNuFromHTau_f_,
@@ -290,9 +288,9 @@ private:
    *  2) if by adding b and W, the resulting top also has the PDG value for its mass;
    *  3) while b's direction remains untouched.
    */
-  static GenLepton
-  getB(const GenLepton & b,
-       const GenLepton & W,
+  static GenParticle
+  getB(const GenParticle & b,
+       const GenParticle & W,
        Int_t pdgId);
 
   /**
@@ -303,9 +301,9 @@ private:
    * @param pdgId   The PDG id of the resulting neutrino
    * @return The new neutrino
    */
-  static GenLepton
-  getNu(const GenLepton & l,
-        const GenLepton & nu,
+  static GenParticle
+  getNu(const GenParticle & l,
+        const GenParticle & nu,
         double momMass,
         Int_t pdgId);
 
@@ -326,11 +324,11 @@ private:
    * Note that if the energy rescaling was not possible, then
    * corresponding warning code is saved.
    */
-  std::array<GenLepton, 2>
-  getNuNu(const GenLepton & tau1,
-          const GenLepton & l,
-          const GenLepton & nu1,
-          const GenLepton & nu2,
+  std::array<GenParticle, 2>
+  getNuNu(const GenParticle & tau1,
+          const GenParticle & l,
+          const GenParticle & nu1,
+          const GenParticle & nu2,
           double momMass);
 
   std::vector<const RecoJet*> selBJetsMerged_;

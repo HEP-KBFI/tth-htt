@@ -1,7 +1,5 @@
 import FWCore.ParameterSet.Config as cms
 
-import os
-
 process = cms.PSet()
 
 process.fwliteInput = cms.PSet(
@@ -24,8 +22,6 @@ process.addMEM_3l_1tau = cms.PSet(
 
     hadTauSelection = cms.string('Tight|dR03mvaMedium'),
 
-    use_HIP_mitigation_bTag = cms.bool(False),
-
     isMC = cms.bool(True),
 
     branchName_electrons = cms.string('Electron'),
@@ -46,5 +42,6 @@ process.addMEM_3l_1tau = cms.PSet(
         "CountWeightedLHEWeightPdf",
     ),
 
-    selEventsFileName_input = cms.string('')
+    selEventsFileName_input = cms.string(''),
+    isDEBUG = False,
 )

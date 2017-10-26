@@ -29,8 +29,7 @@ if __name__ == '__main__':
 
   analysis = analyzeConfig_jetToTauFakeRate(
     configDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", ERA, version),
-    outputDir = os.path.join("/hdfs/local/ttH_2tau", getpass.getuser(), "ttHAnalysis", ERA, version),
-    ##outputDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", ERA, version),
+    outputDir = os.path.join("/hdfs/local", getpass.getuser(), "ttHAnalysis", ERA, version)
     executable_analyze = "analyze_jetToTauFakeRate",
     samples = samples,
     charge_selections = [ "OS" ],

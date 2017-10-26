@@ -76,6 +76,22 @@ TGraph* loadTGraph(TFile* inputFile, const std::string& graphName)
   //return graph_cloned;
   return graph;
 }
+/**
+ * @brief Load function (TF1) from ROOT file 
+ * @param fileName: name of ROOT file; functionName: name of the function
+ * @return pointer to TF1 object
+ */
+TF1* loadTF1(TFile* inputFile, const std::string& functionName)
+{
+  TF1* function = dynamic_cast<TF1*>(inputFile->Get(functionName.data()));
+  if ( !function ) 
+    throw cms::Exception("loadTF1") 
+      << " Failed to load TF1 = " << functionName.data() << " from file = " << inputFile->GetName() << " !!\n";
+  //std::string functionName_cloned = Form("%s_cloned", function->GetName());
+  //TF1* function_cloned = (TF1*)function->Clone(functionName_cloned.data());
+  //return function_cloned;
+  return function;
+}
 
 /**
  * @brief Retrieve data/MC scale-factor for given pT or eta value from one-dimensional histogram

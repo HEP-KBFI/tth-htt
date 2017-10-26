@@ -5,7 +5,8 @@ from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists
 from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg, createFile, generateInputFileList
 
 class analyzeConfig_jetToTauFakeRate(analyzeConfig):
-  """Configuration metadata needed to run analysis in a single go.
+  """
+  Configuration metadata needed to run analysis in a single go.
   
   Sets up a folder structure by defining full path names; no directory creation is delegated here.
   
@@ -82,7 +83,6 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
       lines.append("    '%s'," % hadTau_selection)
     lines.append(")")
     lines.append("process.analyze_jetToTauFakeRate.absEtaBins = cms.vdouble(%s)" % jobOptions['absEtaBins'])
-    lines.append("process.analyze_jetToTauFakeRate.use_HIP_mitigation_bTag = cms.bool(%s)" % jobOptions['use_HIP_mitigation_bTag'])
     lines.append("process.analyze_jetToTauFakeRate.use_HIP_mitigation_mediumMuonId = cms.bool(%s)" % jobOptions['use_HIP_mitigation_mediumMuonId'])
     lines.append("process.analyze_jetToTauFakeRate.isMC = cms.bool(%s)" % jobOptions['is_mc'])
     lines.append("process.analyze_jetToTauFakeRate.central_or_shift = cms.string('%s')" % jobOptions['central_or_shift'])
@@ -230,9 +230,7 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
               'hadTau_selection_denominator' : self.hadTau_selection_denominator,
               'hadTau_selections_numerator' : self.hadTau_selections_numerator,
               'absEtaBins' : self.absEtaBins,
-              ##'use_HIP_mitigation_bTag' : sample_info["use_HIP_mitigation_bTag"],
               ##'use_HIP_mitigation_mediumMuonId' : sample_info["use_HIP_mitigation_mediumMuonId"],
-              'use_HIP_mitigation_bTag' : True,
               'use_HIP_mitigation_mediumMuonId' : True,
               'is_mc' : is_mc,
               'central_or_shift' : central_or_shift,

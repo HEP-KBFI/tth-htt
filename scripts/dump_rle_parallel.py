@@ -316,7 +316,7 @@ def validate(output_dir, verbose = False):
             if not root_file_regex_match:
               continue
 
-            root_file_idx = sample_subpath_idx * 1000 + int(root_file_regex_match.group(1))
+            root_file_idx = int(root_file_regex_match.group(1))
             expected_rle_file_basename = '{root_file_idx}.txt'.format(root_file_idx = root_file_idx)
             expected_rle_file          = os.path.join(sample_dir, expected_rle_file_basename)
             file_dict_entry            = (expected_rle_file, sample_file_fullpath)

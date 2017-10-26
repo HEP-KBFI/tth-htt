@@ -1106,7 +1106,7 @@ samples_2016["/DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIIS
       OD([
         ("path",      "/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau_v3/MC/DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/VHBB_HEPPY_V25tthtautau_v3_DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-Py8__RunIISummer16MAv2-PUMoriond17_80r2as_2016_TrancheIV_v6-v1/170225_232933"),
         ("selection", "*"),
-        ("blacklist", [314, 800, 1237]),
+        ("blacklist", [784, 800, 1237]),
       ]),
     ]
   ),
@@ -1148,7 +1148,7 @@ samples_2016["/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISumme
       OD([
         ("path",      "/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau_v3/MC/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/VHBB_HEPPY_V25tthtautau_v3_DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-Py8__RunIISummer16MAv2-PUMoriond17_80r2as_2016_TrancheIV_v6_ext2-v1/170225_232809"),
         ("selection", "*"),
-        ("blacklist", [63, 252, 412, 1134, 1148, 1670, 1721, 1743, 2014, 2173, 2234, 2736, 3223, 3259, 3448, 3514, 4046, 4628]),
+        ("blacklist", [19, 31, 32, 63, 240, 252, 307, 393, 398, 412, 454, 532, 611, 715, 734, 736, 948, 1061, 1062, 1075, 1100, 1114, 1132, 1134, 1148, 1151, 1221, 1314, 1407, 1616, 1624, 1670, 1675, 1704, 1743, 1888, 1904, 1930, 1991, 2014, 2111, 2136, 2179, 2228, 2229, 2233, 2234, 2275, 2409, 2468, 2514, 2555, 2557, 2686, 2847, 2974, 3014, 3103, 3169, 3223, 3259, 3417, 3424, 3427, 3448, 3514, 3516, 3656, 3703, 3854, 3906, 4069, 4148, 4303, 4377, 4380, 4431, 4440, 4525, 4530, 4612, 4628, 4633, 4656, 4666, 4671, 4750, 4785]),
       ]),
     ]
   ),
@@ -1422,7 +1422,7 @@ samples_2016["/TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/Run
       OD([
         ("path",      "/hdfs/cms/store/user/mario/VHBBHeppyV25tthtautau/MC/TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/VHBB_HEPPY_V25tthtautau_TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-Py8__RunIISummer16MAv2-PUMoriond17_80r2as_2016_TrancheIV_v6_ext1-v1/170208_120653"),
         ("selection", "*"),
-        ("blacklist", [182, 206, 425, 496, 542, 1101, 1108, 1186, 1426, 1618, 2502, 2509, 2755, 2912, 2924, 3039, 3156, 3165, 3180, 3201, 3204, 3212, 3357, 3390, 3492, 3658, 4040, 4159, 4173, 4275, 4312, 4314, 4398, 4440, 4441, 4672, 4707, 4747, 4752, 4785]),
+        ("blacklist", [182, 206, 425, 496, 542, 732, 1101, 1108, 1186, 1426, 1618, 2502, 2509, 2755, 2912, 2924, 3039, 3156, 3165, 3180, 3201, 3204, 3212, 3357, 3390, 3492, 3658, 4040, 4159, 4173, 4275, 4312, 4314, 4398, 4440, 4441, 4672, 4707, 4747, 4752, 4785]),
       ]),
     ]
   ),
@@ -1953,13 +1953,19 @@ samples_2016["/ttHJetTobb_M125_13TeV_amcatnloFXFX_madspin_pythia8/RunIISummer16M
   ),
 ])
 
+#############
 #Fastsim
+#############
+
+# file generated with command:
+# check_broken -p /hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau/MC_fastsim/ /hdfs/cms/store/user/mario/VHBBHeppyV25tthtautau/MC_fastsim/ /hdfs/cms/store/user/rdewanje/VHBBHeppyV25tthtautau/MC_fastsim/ /hdfs/cms/store/user/veelken/VHBBHeppyV25tthtautau/MC_fastsim/ --histo CountWeighted --output=. -P -z -v
+
 samples_2016["/TTTo2L2Nu_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/matze-faster_v8_ttjets_dl_maod_p1_3a2fa29ab1d54ae0995b28f27b405be9-v1/USER"] = OD([
   ("type",                  "mc"),
   ("sample_category",       "TT"),
   ("process_name_specific", "TTTo2L2Nu_fastsim_p1"),
   ("nof_files",             1822),
-  ("nof_events",            90523463),
+  ("nof_events",            90528027),
   ("use_it",                False),
   ("xsection",              87.300000),
   ("genWeight",             True),
@@ -1980,7 +1986,7 @@ samples_2016["/TTTo2L2Nu_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/matze-fas
   ("sample_category",       "TT"),
   ("process_name_specific", "TTTo2L2Nu_fastsim_p2"),
   ("nof_files",             3646),
-  ("nof_events",            90523463),
+  ("nof_events",            90528027),
   ("use_it",                False),
   ("xsection",              87.300000),
   ("genWeight",             True),
@@ -2001,7 +2007,7 @@ samples_2016["/TTTo2L2Nu_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/matze-fas
   ("sample_category",       "TT"),
   ("process_name_specific", "TTTo2L2Nu_fastsim_p3"),
   ("nof_files",             3642),
-  ("nof_events",            90523463),
+  ("nof_events",            90528027),
   ("use_it",                False),
   ("xsection",              87.300000),
   ("genWeight",             True),
@@ -2022,7 +2028,7 @@ samples_2016["/TTToSemilepton_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/matz
   ("sample_category",       "TT"),
   ("process_name_specific", "TTToSemilepton_fastsim_p1"),
   ("nof_files",             1702),
-  ("nof_events",            85307397),
+  ("nof_events",            85311661),
   ("use_it",                False),
   ("xsection",              245.000000),
   ("genWeight",             True),
@@ -2043,7 +2049,7 @@ samples_2016["/TTToSemilepton_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/matz
   ("sample_category",       "TT"),
   ("process_name_specific", "TTToSemilepton_fastsim_p2"),
   ("nof_files",             3403),
-  ("nof_events",            85307397),
+  ("nof_events",            85311661),
   ("use_it",                False),
   ("xsection",              245.000000),
   ("genWeight",             True),
@@ -2064,7 +2070,7 @@ samples_2016["/TTToSemilepton_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/matz
   ("sample_category",       "TT"),
   ("process_name_specific", "TTToSemilepton_fastsim_p3"),
   ("nof_files",             3404),
-  ("nof_events",            85307397),
+  ("nof_events",            85311661),
   ("use_it",                False),
   ("xsection",              245.000000),
   ("genWeight",             True),
@@ -2085,7 +2091,7 @@ samples_2016["/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/matz
   ("sample_category",       "TTW"),
   ("process_name_specific", "TTWJetsToLNu_fastsim"),
   ("nof_files",             1408),
-  ("nof_events",            7157601),
+  ("nof_events",            7158309),
   ("use_it",                False),
   ("xsection",              0.204300),
   ("genWeight",             True),
@@ -2106,7 +2112,7 @@ samples_2016["/TTZToLLNuNu_M-10_TuneCUETP8M1_13TeV-amcatnlo-pythia8/matze-faster
   ("sample_category",       "TTZ"),
   ("process_name_specific", "TTZToLLNuNu_fastsim"),
   ("nof_files",             1945),
-  ("nof_events",            8825723),
+  ("nof_events",            8826709),
   ("use_it",                False),
   ("xsection",              0.252900),
   ("genWeight",             True),
@@ -2127,7 +2133,7 @@ samples_2016["/WZTo3LNu_TuneCUETP8M1_13TeV-powheg-pythia8/matze-faster_v9_WZ_mao
   ("sample_category",       "EWK"),
   ("process_name_specific", "WZTo3LNu_fastsim"),
   ("nof_files",             1876),
-  ("nof_events",            18813875),
+  ("nof_events",            18814814),
   ("use_it",                False),
   ("xsection",              4.102000),
   ("genWeight",             True),
@@ -2148,7 +2154,7 @@ samples_2016["/ttHToNonbb_M125_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/mat
   ("sample_category",       "signal"),
   ("process_name_specific", "ttHToNonbb_fastsim_p1"),
   ("nof_files",             337),
-  ("nof_events",            16458549),
+  ("nof_events",            16459379),
   ("use_it",                False),
   ("xsection",              0.215100),
   ("genWeight",             True),
@@ -2169,7 +2175,7 @@ samples_2016["/ttHToNonbb_M125_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/mat
   ("sample_category",       "signal"),
   ("process_name_specific", "ttHToNonbb_fastsim_p2"),
   ("nof_files",             674),
-  ("nof_events",            16458549),
+  ("nof_events",            16459379),
   ("use_it",                False),
   ("xsection",              0.215100),
   ("genWeight",             True),
@@ -2190,7 +2196,7 @@ samples_2016["/ttHToNonbb_M125_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/mat
   ("sample_category",       "signal"),
   ("process_name_specific", "ttHToNonbb_fastsim_p3"),
   ("nof_files",             674),
-  ("nof_events",            16458549),
+  ("nof_events",            16459379),
   ("use_it",                False),
   ("xsection",              0.215100),
   ("genWeight",             True),
@@ -2278,6 +2284,7 @@ samples_2016["/ttWW_lo/MINIAODSIM"] = OD([
   ),
 ])
 
+
 #--------------------------------------------------------------------------------
 # !!! ONLY FOR TESTING
 ## samples_2016 = OD()
@@ -2293,13 +2300,13 @@ samples_2016["/ttWW_lo/MINIAODSIM"] = OD([
 ##   ("triggers",              [ "1e", "1mu", "2e", "1e1mu", "2mu", "3e", "2e1mu", "1e2mu", "3mu", "1e1tau", "1mu1tau", "2tau" ]),
 ##   ("reHLT",                 True),
 ##   ("local_paths",
-##     [
+##    [
 ##       OD([
 ##         ("path",      "/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau/MC/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/VHBB_HEPPY_V25tthtautau_ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_Py8_mWCutfix__RunIISummer16MAv2-PUMoriond17_80r2as_2016_TrancheIV_v6_ext1-v1/170207_122849"),
 ##         ("selection", "*"),
 ##         ("blacklist", [645, 835, 909, 986]),
 ##       ]),
-##     ]
+##    ]
 ##   ),
 ## ])
 #     FOR TESTING ONLY !!!

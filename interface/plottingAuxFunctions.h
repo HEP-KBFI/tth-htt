@@ -42,7 +42,7 @@ struct plotEntryType
 //-----------------------------------------------------------------------------
 void parseValue_and_Uncertainty(const std::string& valueErr_string, double& value, double& err);
 
-TH1* getHistogram_wrapper(TDirectory* dir, const std::string& process, const std::string& histogramName, const std::string& central_or_shift, bool enableException);
+TH1* getHistogram_wrapper(const TDirectory* dir, const std::string& process, const std::string& histogramName, const std::string& central_or_shift, bool enableException);
 
 void printHistogram(const TH1* histogram);
 
