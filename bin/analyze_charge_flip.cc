@@ -482,7 +482,7 @@ int main(int argc, char* argv[])
     }
     ++analyzedEntries;
     histogram_analyzedEntries->Fill(0.);
-
+    
     inputTree->GetEntry(idxEntry);
     
     if ( run_lumi_eventSelector && !(*run_lumi_eventSelector)(run, lumi, event) ) continue;
@@ -550,7 +550,7 @@ int main(int argc, char* argv[])
       fakeableElectronSelector.enable_offline_e_trigger_cuts();
       tightElectronSelector.enable_offline_e_trigger_cuts();
     } 
-
+    
 //--- build collections of electrons, muons and hadronic taus;
 //    resolve overlaps in order of priority: muon, electron,
     std::vector<RecoMuon> muons = muonReader->read();
@@ -688,7 +688,7 @@ int main(int argc, char* argv[])
 	evtWeight *= (*jet)->BtagWeight();
       }
     }    
-
+    
 //--- apply final event selection
     std::vector<const RecoLepton*> selLeptons;
     selLeptons.reserve(selElectrons.size() + selMuons.size());
@@ -740,7 +740,7 @@ int main(int argc, char* argv[])
     /*if ( selElectrons.size() == 2 &&                         !(selTrigger_1e  || selTrigger_2e)                       ) continue;
     if ( selElectrons.size() == 1 && selMuons.size() == 1 && !(selTrigger_1e  || selTrigger_1mu || selTrigger_1e1mu) ) continue;
     */
-
+    
     // Determine event category
     std::string stEta;
     std::string stLeadPt;
@@ -792,7 +792,6 @@ int main(int argc, char* argv[])
       continue;
     }
     
-    
     bool failsTightChargeCut = false;
     for ( std::vector<const RecoLepton*>::const_iterator lepton = selLeptons.begin();
 	    lepton != selLeptons.end(); ++lepton ) {
@@ -822,7 +821,6 @@ int main(int argc, char* argv[])
 
     int selLepton_lead_type = getLeptonType(selLepton_lead->pdgId());
     int selLepton_sublead_type = getLeptonType(selLepton_sublead->pdgId());
-
     if ( isMC ) {
       dataToMCcorrectionInterface->setLeptons(
         selLepton_lead_type, selLepton_lead->pt(), selLepton_lead->eta(), 
@@ -907,15 +905,15 @@ int main(int argc, char* argv[])
       }
     }    
   }
-
+    
 //--- fill histograms with events passing final selection
 //--- Calclulate mass of lepton system
     math::PtEtaPhiMLorentzVector p4 =
       math::PtEtaPhiMLorentzVector(pt0, preselElectrons[0]->eta(), preselElectrons[0]->phi(), preselElectrons[0]->mass()) +
       math::PtEtaPhiMLorentzVector(pt1, preselElectrons[1]->eta(), preselElectrons[1]->phi(), preselElectrons[1]->mass());
     Double_t mass_ll = p4.M();
-    //Adjust central value
-    mass_ll *= 1.02;
+    //Adjust central value - not
+    //mass_ll *= 1.02;
     if (mass_ll < 60 || mass_ll > 120) {
       if ( run_lumi_eventSelector ) {
 	      std::cout << "event FAILS dilepton mass selection." << std::endl;
@@ -926,11 +924,18 @@ int main(int argc, char* argv[])
     }
     if (pt0 >= 10 && pt0 < 25) stLeadPt = "L";
     else if (pt0 >= 25 && pt0 < 50) stLeadPt = "M";
-    else if (pt0 > 50) stLeadPt = "H";
+    else if (pt0 >= 50) stLeadPt = "H";
+    else {
+      std::cout << "Problem with leading electron pt! " << pt0 << std::endl;
+      assert(false);
+    }
     if (pt1 >= 10 && pt1 < 25) stSubPt = "L";
     else if (pt1 >= 25 && pt1 < 50) stSubPt = "M";
-    else if (pt1 > 50) stSubPt = "H";
-    //else assert(0);
+    else if (pt1 >= 50) stSubPt = "H";
+    else {
+      std::cout << "Problem with subleading electron pt! " << pt1 << std::endl;
+      assert(false);
+    }
 
     if (etaL0 < 1.479 && etaL1 < 1.479) stEta = "BB";
     else if (etaL0 >= 1.479 && etaL1 >= 1.479) stEta = "EE";
@@ -941,9 +946,7 @@ int main(int argc, char* argv[])
       else stEta = "EB";
     }
     //std::cout << stEta << " "<< stLeadPt  <<" " << stSubPt << " " << pt0 << " " << pt1 << " " << etaL0 << " " << etaL1 << std::endl;
-  
     std::string category = Form("%s_%s%s", stEta.data(), stLeadPt.data(), stSubPt.data());
-
     std::string charge_cat = ( isCharge_SS ) ? "SS" : "OS";
     if (std::strncmp(process_string.data(), "DY", 2) == 0){    //Split DY
       const GenLepton *gp0 = preselElectrons[0]->genLepton();
@@ -957,7 +960,7 @@ int main(int argc, char* argv[])
         
         //Adjust central value to better match data shape
         if (central_or_shift == "central" || central_or_shift == "")
-          mass_ll = mass_ll + 0.25 * (mass_ll - mass_ll_gen);
+          mass_ll = mass_ll; // + 0.25 * (mass_ll - mass_ll_gen);
         else if (central_or_shift == "CMS_ttHl_electronERDown")   
           mass_ll = mass_ll - 0.25 * (mass_ll - mass_ll_gen);
         else if (central_or_shift == "CMS_ttHl_electronERUp")
@@ -975,7 +978,6 @@ int main(int argc, char* argv[])
       histos[charge_cat][category.data()][process_string]->Fill(mass_ll, evtWeight);
       histos[charge_cat]["total"][process_string]->Fill(mass_ll, evtWeight);
     }    
-
     if (isMC && central_or_shift == "central" && std::strncmp(process_string.data(), "DY", 2) == 0 &&
       preselElectrons[0]->genLepton() != 0 && preselElectrons[1]->genLepton() != 0)
     {
@@ -1002,7 +1004,7 @@ int main(int argc, char* argv[])
           transfer_matrix_flip->Fill(transfer_bin, rec_bin, evtWeight);
         else
           transfer_matrix_noflip->Fill(transfer_bin, rec_bin, evtWeight);
-        std::cout << transfer_bin << " " << rec_bin << " " << gp->pt() << " " << gp->eta() << " " << preselElectrons[i]->pt() << " " << preselElectrons[i]->eta() << std::endl;
+        //std::cout << transfer_bin << " " << rec_bin << " " << gp->pt() << " " << gp->eta() << " " << preselElectrons[i]->pt() << " " << preselElectrons[i]->eta() << std::endl;
         /*"BL": 1
         "BM": 2
         "BH": 3
@@ -1046,7 +1048,6 @@ int main(int argc, char* argv[])
         stSubPtGen = "L";
         //assert(0);
       }
-
       Double_t etaL0Gen = std::fabs(gp0->eta());
       Double_t etaL1Gen = std::fabs(gp1->eta());
       if (etaL0Gen < 1.479 && etaL1Gen < 1.479) stEtaGen = "BB";
