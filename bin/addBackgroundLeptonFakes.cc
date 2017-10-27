@@ -211,6 +211,13 @@ int main(int argc, char* argv[])
     }
   }
   
+  //---------------------------------------------------------------------------------------------------
+  // CV: Add (dummy) histograms for number of analyzed and processed events
+  //     This is needed to avoid run-time errors/warnings when executing python/commands/get_events_count.py (called by python/sbatch-node.template.hadd.sh)
+  fs.make<TH1D>("analyzedEntries", "analyzedEntries", 1, -0.5, +0.5);
+  fs.make<TH1D>("selectedEntries", "selectedEntries", 1, -0.5, +0.5);
+  //---------------------------------------------------------------------------------------------------
+
   delete inputFile;
 
   clock.Show("addBackgroundLeptonFakes");
