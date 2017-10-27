@@ -11,5 +11,5 @@ def get_events_count(root_file):
         return entries_count
     else:
         entries_count = 0.0
-        print("ERROR: Failed to read number of analyzed events in input file '%s' !! Will set number of analyzed events to zero.")
+        print("ERROR: Failed to read number of analyzed events in input file '%s' !! Will set number of analyzed events to zero." % root_file)
         return entries_count

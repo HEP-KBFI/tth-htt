@@ -133,7 +133,7 @@ samples_2016["/DoubleEG/Run2016H-PromptReco-v3/MINIAOD"] = OD([
       OD([
         ("path",      "/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau_v3/DoubleEG/VHBB_HEPPY_V25tthtautau_v3_DoubleEG__Run2016H-PromptReco-v3/170221_105758"),
         ("selection", "*"),
-        ("blacklist", [124, 128, 130, 131, 132, 133, 134]),
+        ("blacklist", [128, 130, 133]),
       ]),
     ]
   ),
@@ -1095,7 +1095,7 @@ samples_2016["/DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIIS
   ("sample_category",       "EWK"),
   ("process_name_specific", "DYJetsToLL_M-10to50"),
   ("nof_files",             1782),
-  ("nof_events",            35252387),
+  ("nof_events",            35253490),
   ("use_it",                True),
   ("xsection",              18610.000000),
   ("genWeight",             True),
@@ -1116,7 +1116,7 @@ samples_2016["/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISumme
   ("sample_category",       "EWK"),
   ("process_name_specific", "DYJetsToLL_M-50_ext1"),
   ("nof_files",             2461),
-  ("nof_events",            143970947),
+  ("nof_events",            145528414),
   ("use_it",                True),
   ("xsection",              6025.200000),
   ("genWeight",             True),
@@ -1127,7 +1127,7 @@ samples_2016["/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISumme
       OD([
         ("path",      "/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau_v3/MC/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/VHBB_HEPPY_V25tthtautau_v3_DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-Py8__RunIISummer16MAv2-PUMoriond17_80r2as_2016_TrancheIV_v6_ext1-v2/170225_232649"),
         ("selection", "*"),
-        ("blacklist", [474, 1871, 2012, 2305, 2320, 2321, 2323]),
+        ("blacklist", [2012]),
       ]),
     ]
   ),
@@ -1137,7 +1137,7 @@ samples_2016["/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISumme
   ("sample_category",       "EWK"),
   ("process_name_specific", "DYJetsToLL_M-50_ext2"),
   ("nof_files",             4851),
-  ("nof_events",            143970947),
+  ("nof_events",            145528414),
   ("use_it",                True),
   ("xsection",              6025.200000),
   ("genWeight",             True),
