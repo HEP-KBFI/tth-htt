@@ -174,3 +174,75 @@ samples_2016["/ttHToNonbb_M125_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/mat
     ]
   ),
 ])
+samples_2016["/TTTo2L2Nu_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/matze-faster_v8_ttjets_dl_maod_p1_3a2fa29ab1d54ae0995b28f27b405be9-v1/USER"] = OD([
+  ("type",                            "mc"),
+  ("sample_category",                 "TT"),
+  ("process_name_specific",           "TTTo2L2Nu_fastsim_p1"),
+  ("nof_files",                       92),
+  ("nof_events",                      90528028),
+  ("use_HIP_mitigation_bTag",         False),
+  ("use_HIP_mitigation_mediumMuonId", False),
+  ("use_it",                          True),
+  ("xsection",                        87.3),
+  ("genWeight",                       True),
+  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
+  ("reHLT",                           True),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct17_woPreselection_forBDTtraining_only/ntuples/TTTo2L2Nu_fastsim_p1"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+])
+
+samples_2016["/TTTo2L2Nu_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/matze-faster_v8_ttjets_dl_maod_p2_3a2fa29ab1d54ae0995b28f27b405be9-v1/USER"] = OD([
+  ("type",                            "mc"),
+  ("sample_category",                 "TT"),
+  ("process_name_specific",           "TTTo2L2Nu_fastsim_p2"),
+  ("nof_files",                       183),
+  ("nof_events",                      90528028),
+  ("use_HIP_mitigation_bTag",         False),
+  ("use_HIP_mitigation_mediumMuonId", False),
+  ("use_it",                          True),
+  ("xsection",                        87.3),
+  ("genWeight",                       True),
+  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
+  ("reHLT",                           True),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct17_woPreselection_forBDTtraining_only/ntuples/TTTo2L2Nu_fastsim_p2"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+])
+
+samples_2016["/TTTo2L2Nu_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/matze-faster_v8_ttjets_dl_maod_p3_3a2fa29ab1d54ae0995b28f27b405be9-v1/USER"] = OD([
+  ("type",                            "mc"),
+  ("sample_category",                 "TT"),
+  ("process_name_specific",           "TTTo2L2Nu_fastsim_p3"),
+  ("nof_files",                       183),
+  ("nof_events",                      90528028),
+  ("use_HIP_mitigation_bTag",         False),
+  ("use_HIP_mitigation_mediumMuonId", False),
+  ("use_it",                          True),
+  ("xsection",                        87.3),
+  ("genWeight",                       True),
+  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
+  ("reHLT",                           True),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct17_woPreselection_forBDTtraining_only/ntuples/TTTo2L2Nu_fastsim_p3"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+])
+
