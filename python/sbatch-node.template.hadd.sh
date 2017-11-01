@@ -100,13 +100,27 @@ run_wrapped_executable() {
     echo "Execute command: {{ exec_name }} {{ command_line_parameter }} &> $TEMPORARY_EXECUTABLE_LOG_FILE"
     # CV: use newer hadd version that supports increasing cachesize, to reduce random disk access
     OLD_PATH=$PATH
-    export PATH=/cvmfs/cms.cern.ch/slc6_amd64_gcc630/cms/cmssw/CMSSW_9_4_0_pre2/external/slc6_amd64_gcc630/bin/:$PATH
-    echo "Setting PATH = '$PATH'"
+    export PATH="/cvmfs/cms.cern.ch/share/overrides/bin:\
+/cvmfs/cms.cern.ch/slc6_amd64_gcc630/cms/cmssw/CMSSW_9_4_0_pre3/bin/slc6_amd64_gcc630:\
+/cvmfs/cms.cern.ch/slc6_amd64_gcc630/cms/cmssw/CMSSW_9_4_0_pre3/external/slc6_amd64_gcc630/bin:\
+/cvmfs/cms.cern.ch/slc6_amd64_gcc630/external/llvm/4.0.1/bin:\
+/cvmfs/cms.cern.ch/slc6_amd64_gcc630/external/gcc/6.3.0/bin:\
+/cvmfs/cms.cern.ch/common:\
+/cvmfs/cms.cern.ch/bin:\
+/usr/lib64/qt-3.3/bin:\
+/usr/local/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/sbin"
+    echo "Set PATH = '$PATH'"
     OLD_LD_LIBRARY_PATH=$LD_LIBRARY_PATH
-    export LD_LIBRARY_PATH=/cvmfs/cms.cern.ch/slc6_amd64_gcc630/cms/cmssw/CMSSW_9_4_0_pre2/biglib/slc6_amd64_gcc630:/cvmfs/cms.cern.ch/slc6_amd64_gcc630/cms/cmssw/CMSSW_9_4_0_pre2/lib/slc6_amd64_gcc630:/cvmfs/cms.cern.ch/slc6_amd64_gcc630/cms/cmssw/CMSSW_9_4_0_pre2/external/slc6_amd64_gcc630/lib:/cvmfs/cms.cern.ch/slc6_amd64_gcc630/external/llvm/4.0.1/lib64:/cvmfs/cms.cern.ch/slc6_amd64_gcc630/external/gcc/6.3.0/lib64:/cvmfs/cms.cern.ch/slc6_amd64_gcc630/external/gcc/6.3.0/lib:$LD_LIBRARY_PATH
-    echo "Setting LD_LIBRARY_PATH = '$LD_LIBRARY_PATH'"
+    export LD_LIBRARY_PATH="/cvmfs/cms.cern.ch/slc6_amd64_gcc630/cms/cmssw/CMSSW_9_4_0_pre3/biglib/slc6_amd64_gcc630:\
+/cvmfs/cms.cern.ch/slc6_amd64_gcc630/cms/cmssw/CMSSW_9_4_0_pre3/lib/slc6_amd64_gcc630:\
+/cvmfs/cms.cern.ch/slc6_amd64_gcc630/cms/cmssw/CMSSW_9_4_0_pre3/external/slc6_amd64_gcc630/lib:\
+/cvmfs/cms.cern.ch/slc6_amd64_gcc630/external/llvm/4.0.1/lib64:\
+/cvmfs/cms.cern.ch/slc6_amd64_gcc630/external/gcc/6.3.0/lib64:\
+/cvmfs/cms.cern.ch/slc6_amd64_gcc630/external/gcc/6.3.0/lib"
+    echo "Set LD_LIBRARY_PATH = '$LD_LIBRARY_PATH'"
     {{ exec_name }} {{ command_line_parameter }} &> $TEMPORARY_EXECUTABLE_LOG_FILE
     HADD_EXIT_CODE=$?
+    echo "Restoring old PATH and LD_LIBRARY_PATH"
     export PATH=$OLD_PATH
     export LD_LIBRARY_PATH=$OLD_LD_LIBRARY_PATH
     echo "Command {{ exec_name }} exited with code $HADD_EXIT_CODE"
