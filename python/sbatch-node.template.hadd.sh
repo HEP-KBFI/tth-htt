@@ -97,7 +97,7 @@ run_wrapped_executable() {
 
     CMSSW_SEARCH_PATH="$SCRATCH_DIR:{{ cmssw_base_dir }}/src"
 
-    echo "Execute command: {{ exec_name }} {{ command_line_parameter }} &> $TEMPORARY_EXECUTABLE_LOG_FILE"    
+    echo "Execute command: {{ exec_name }} {{ command_line_parameter }} &> $TEMPORARY_EXECUTABLE_LOG_FILE"
     # CV: use newer hadd version that supports increasing cachesize, to reduce random disk access
     OLD_PATH=$PATH
     export PATH=/cvmfs/cms.cern.ch/slc6_amd64_gcc630/cms/cmssw/CMSSW_9_4_0_pre2/external/slc6_amd64_gcc630/bin/:$PATH
@@ -150,13 +150,13 @@ run_wrapped_executable() {
 
       OUTPUT_FILE_SIZE=$(stat -c '%s' $OUTPUT_FILE)
       if [ -n "$OUTPUT_FILE_SIZE" ] && [ $OUTPUT_FILE_SIZE -ge 1000 ]; then
-        echo "$cp_cmd $OUTPUT_FILE $OUTPUT_DIR"
+        echo "$cp_cmd $OUTPUT_FILE $OUTPUT_DIR/$OUTPUT_FILE"
 
         CP_RETRIES=0
         COPIED=false
         while [ $CP_RETRIES -lt 3 ]; do
           CP_RETRIES=$[CP_RETRIES + 1];
-          $cp_cmd -f $OUTPUT_FILE $OUTPUT_DIR/$OUTPUT_FILE
+          $cp_cmd $OUTPUT_FILE $OUTPUT_DIR/$OUTPUT_FILE
 
           # add a small delay before stat'ing the file
           sleep 5s
