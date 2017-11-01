@@ -138,15 +138,20 @@ run_wrapped_executable() {
       fi
 
       OUTPUT_DIR="{{ outputDir }}"
-      if [[ "$OUTPUT_DIR" =~ ^/hdfs* && ( ! -z $(which hadoop) ) ]]; then
+      if [[ "$OUTPUT_DIR" =~ ^/hdfs* && ( ! -z $(which hadoop 2>/dev/null) ) ]]; then
+        echo "Hadoop commands available"
         cp_cmd="hadoop fs -copyFromLocal";
         st_cmd="hadoop fs -stat '%b'"
+        ls_cmd="hadoop fs -ls"
         OUTPUT_DIR=${OUTPUT_DIR#/hdfs}
       else
+        echo "Hadoop commands not available; resorting to POSIX commands"
         cp_cmd=cp;
         st_cmd="stat --printf='%s'"
+        ls_cmd="ls"
       fi
       cp_cmd="$cp_cmd -f"
+      ls_cmd="$ls_cmd -l"
 
       OUTPUT_FILE_SIZE=$(stat -c '%s' $OUTPUT_FILE)
       if [ -n "$OUTPUT_FILE_SIZE" ] && [ $OUTPUT_FILE_SIZE -ge 1000 ]; then
@@ -172,6 +177,8 @@ run_wrapped_executable() {
 
         if [ ! $COPIED ]; then
           EXIT_CODE=1;
+        else
+          $ls_cmd $OUTPUT_DIR/$OUTPUT_FILE
         fi
 
       else
