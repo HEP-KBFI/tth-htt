@@ -217,7 +217,7 @@ if __name__ == '__main__':
       lumi                      = LUMI,
       debug                     = False,
       running_method            = "sbatch",
-      num_parallel_jobs         = 16,
+      num_parallel_jobs         = 100, # KE: run up to 100 'hadd' jobs in parallel on batch system
       executable_addBackgrounds = "addBackgrounds",
       executable_addFakes       = "addBackgroundLeptonFakes",
       executable_addFlips       = "addBackgroundLeptonFlips",

@@ -78,7 +78,7 @@ class analyzeConfig:
         self.debug = debug
         assert(running_method.lower() in [ "sbatch", "makefile" ]), "Invalid running method: %s" % running_method
         self.running_method = running_method
-        self.is_sbatch = False
+        self.is_sbatch = False        
         self.is_makefile = False
         if self.running_method.lower() == "sbatch":
             self.is_sbatch = True
@@ -86,6 +86,7 @@ class analyzeConfig:
             self.is_makefile = True
         self.makefile = os.path.join(
             self.configDir, "Makefile_%s" % self.channel)
+        self.run_hadd_master_on_batch = False
         self.num_parallel_jobs = num_parallel_jobs
         self.histograms_to_fit = histograms_to_fit
         self.executable_prep_dcard = executable_prep_dcard
@@ -424,7 +425,7 @@ class analyzeConfig:
                 'logFile' : os.path.join(self.dirs[DKEY_LOGS], os.path.basename(outputFiles[key]).replace(".root", ".log"))
             }
         sbatchTarget = None
-        if self.is_sbatch:
+        if self.is_sbatch and self.run_hadd_master_on_batch:
             sbatchTarget = "sbatch_hadd_%s" % label
             self.phoniesToAdd.append(sbatchTarget)
             lines_makefile.append("%s: %s" % (sbatchTarget, " ".join([ " ".join(inputFiles[key]) for key in inputFiles.keys()])))
@@ -435,14 +436,14 @@ class analyzeConfig:
             lines_makefile.append("\t%s %s" % ("python", sbatchFile))
             lines_makefile.append("")
         for key in outputFiles.keys():
-            if self.is_makefile:
+            if self.is_sbatch and self.run_hadd_master_on_batch:
+                lines_makefile.append("%s: %s" % (outputFiles[key], sbatchTarget))
+                lines_makefile.append("\t%s" % ":") # CV: null command
+                lines_makefile.append("")
+            else:
                 lines_makefile.append("%s: %s" % (outputFiles[key], " ".join(inputFiles[key])))
                 lines_makefile.append("\t%s %s" % ("rm -f", outputFiles[key]))
                 lines_makefile.append("\t%s %s" % ("python", scriptFiles[key]))
-                lines_makefile.append("")
-            elif self.is_sbatch:
-                lines_makefile.append("%s: %s" % (outputFiles[key], sbatchTarget))
-                lines_makefile.append("\t%s" % ":") # CV: null command
                 lines_makefile.append("")
             self.filesToClean.append(outputFiles[key])
 
