@@ -117,13 +117,13 @@ run_wrapped_executable() {
 
       OUTPUT_FILE_SIZE=$(stat -c '%s' $OUTPUT_FILE)
       if [ -n "$OUTPUT_FILE_SIZE" ] && [ $OUTPUT_FILE_SIZE -ge 1000 ]; then
-        echo "$cp_cmd $OUTPUT_FILE $OUTPUT_DIR"
+        echo "$cp_cmd $OUTPUT_FILE $OUTPUT_DIR/$OUTPUT_FILE"
 
         CP_RETRIES=0
         COPIED=false
         while [ $CP_RETRIES -lt 3 ]; do
           CP_RETRIES=$[CP_RETRIES + 1];
-          $cp_cmd -f $OUTPUT_FILE $OUTPUT_DIR/$OUTPUT_FILE
+          $cp_cmd $OUTPUT_FILE $OUTPUT_DIR/$OUTPUT_FILE
 
           # add a small delay before stat'ing the file
           sleep 5s

@@ -97,16 +97,30 @@ run_wrapped_executable() {
 
     CMSSW_SEARCH_PATH="$SCRATCH_DIR:{{ cmssw_base_dir }}/src"
 
-    echo "Execute command: {{ exec_name }} {{ command_line_parameter }} &> $TEMPORARY_EXECUTABLE_LOG_FILE"    
+    echo "Execute command: {{ exec_name }} {{ command_line_parameter }} &> $TEMPORARY_EXECUTABLE_LOG_FILE"
     # CV: use newer hadd version that supports increasing cachesize, to reduce random disk access
     OLD_PATH=$PATH
-    export PATH=/cvmfs/cms.cern.ch/slc6_amd64_gcc630/cms/cmssw/CMSSW_9_4_0_pre2/external/slc6_amd64_gcc630/bin/:$PATH
-    echo "Setting PATH = '$PATH'"
+    export PATH="/cvmfs/cms.cern.ch/share/overrides/bin:\
+/cvmfs/cms.cern.ch/slc6_amd64_gcc630/cms/cmssw/CMSSW_9_4_0_pre3/bin/slc6_amd64_gcc630:\
+/cvmfs/cms.cern.ch/slc6_amd64_gcc630/cms/cmssw/CMSSW_9_4_0_pre3/external/slc6_amd64_gcc630/bin:\
+/cvmfs/cms.cern.ch/slc6_amd64_gcc630/external/llvm/4.0.1/bin:\
+/cvmfs/cms.cern.ch/slc6_amd64_gcc630/external/gcc/6.3.0/bin:\
+/cvmfs/cms.cern.ch/common:\
+/cvmfs/cms.cern.ch/bin:\
+/usr/lib64/qt-3.3/bin:\
+/usr/local/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/sbin"
+    echo "Set PATH = '$PATH'"
     OLD_LD_LIBRARY_PATH=$LD_LIBRARY_PATH
-    export LD_LIBRARY_PATH=/cvmfs/cms.cern.ch/slc6_amd64_gcc630/cms/cmssw/CMSSW_9_4_0_pre2/biglib/slc6_amd64_gcc630:/cvmfs/cms.cern.ch/slc6_amd64_gcc630/cms/cmssw/CMSSW_9_4_0_pre2/lib/slc6_amd64_gcc630:/cvmfs/cms.cern.ch/slc6_amd64_gcc630/cms/cmssw/CMSSW_9_4_0_pre2/external/slc6_amd64_gcc630/lib:/cvmfs/cms.cern.ch/slc6_amd64_gcc630/external/llvm/4.0.1/lib64:/cvmfs/cms.cern.ch/slc6_amd64_gcc630/external/gcc/6.3.0/lib64:/cvmfs/cms.cern.ch/slc6_amd64_gcc630/external/gcc/6.3.0/lib:$LD_LIBRARY_PATH
-    echo "Setting LD_LIBRARY_PATH = '$LD_LIBRARY_PATH'"
+    export LD_LIBRARY_PATH="/cvmfs/cms.cern.ch/slc6_amd64_gcc630/cms/cmssw/CMSSW_9_4_0_pre3/biglib/slc6_amd64_gcc630:\
+/cvmfs/cms.cern.ch/slc6_amd64_gcc630/cms/cmssw/CMSSW_9_4_0_pre3/lib/slc6_amd64_gcc630:\
+/cvmfs/cms.cern.ch/slc6_amd64_gcc630/cms/cmssw/CMSSW_9_4_0_pre3/external/slc6_amd64_gcc630/lib:\
+/cvmfs/cms.cern.ch/slc6_amd64_gcc630/external/llvm/4.0.1/lib64:\
+/cvmfs/cms.cern.ch/slc6_amd64_gcc630/external/gcc/6.3.0/lib64:\
+/cvmfs/cms.cern.ch/slc6_amd64_gcc630/external/gcc/6.3.0/lib"
+    echo "Set LD_LIBRARY_PATH = '$LD_LIBRARY_PATH'"
     {{ exec_name }} {{ command_line_parameter }} &> $TEMPORARY_EXECUTABLE_LOG_FILE
     HADD_EXIT_CODE=$?
+    echo "Restoring old PATH and LD_LIBRARY_PATH"
     export PATH=$OLD_PATH
     export LD_LIBRARY_PATH=$OLD_LD_LIBRARY_PATH
     echo "Command {{ exec_name }} exited with code $HADD_EXIT_CODE"
@@ -138,25 +152,30 @@ run_wrapped_executable() {
       fi
 
       OUTPUT_DIR="{{ outputDir }}"
-      if [[ "$OUTPUT_DIR" =~ ^/hdfs* && ( ! -z $(which hadoop) ) ]]; then
+      if [[ "$OUTPUT_DIR" =~ ^/hdfs* && ( ! -z $(which hadoop 2>/dev/null) ) ]]; then
+        echo "Hadoop commands available"
         cp_cmd="hadoop fs -copyFromLocal";
         st_cmd="hadoop fs -stat '%b'"
+        ls_cmd="hadoop fs -ls"
         OUTPUT_DIR=${OUTPUT_DIR#/hdfs}
       else
+        echo "Hadoop commands not available; resorting to POSIX commands"
         cp_cmd=cp;
         st_cmd="stat --printf='%s'"
+        ls_cmd="ls"
       fi
       cp_cmd="$cp_cmd -f"
+      ls_cmd="$ls_cmd -l"
 
       OUTPUT_FILE_SIZE=$(stat -c '%s' $OUTPUT_FILE)
       if [ -n "$OUTPUT_FILE_SIZE" ] && [ $OUTPUT_FILE_SIZE -ge 1000 ]; then
-        echo "$cp_cmd $OUTPUT_FILE $OUTPUT_DIR"
+        echo "$cp_cmd $OUTPUT_FILE $OUTPUT_DIR/$OUTPUT_FILE"
 
         CP_RETRIES=0
         COPIED=false
         while [ $CP_RETRIES -lt 3 ]; do
           CP_RETRIES=$[CP_RETRIES + 1];
-          $cp_cmd -f $OUTPUT_FILE $OUTPUT_DIR/$OUTPUT_FILE
+          $cp_cmd $OUTPUT_FILE $OUTPUT_DIR/$OUTPUT_FILE
 
           # add a small delay before stat'ing the file
           sleep 5s
@@ -172,6 +191,8 @@ run_wrapped_executable() {
 
         if [ ! $COPIED ]; then
           EXIT_CODE=1;
+        else
+          $ls_cmd $OUTPUT_DIR/$OUTPUT_FILE
         fi
 
       else
