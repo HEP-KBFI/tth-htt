@@ -117,6 +117,31 @@ class prodNtupleConfig:
         lines.append("process.produceNtuple.leptonSelection = cms.string('%s')" % self.leptonSelection)
         lines.append("process.produceNtuple.hadTauSelection = cms.string('%s')" % self.hadTauSelection)
         lines.append("process.produceNtuple.random_seed = cms.uint32(%i)" % jobOptions['random_seed'])
+
+        if self.era == "2017":
+            branchName_electrons   = 'Electron'
+            branchName_muons       = 'Muon'
+            branchName_hadTaus     = 'Tau'
+            branchName_genLeptons1 = 'GenPart'
+            branchName_genLeptons2 = ''
+            branchName_genHadTaus  = 'GenVisTau'
+        else:
+            branchName_electrons   = 'selLeptons'
+            branchName_muons       = 'selLeptons'
+            branchName_hadTaus     = 'TauGood'
+            branchName_genLeptons1 = 'GenLep'
+            branchName_genLeptons2 = 'GenLepFromTau'
+            branchName_genHadTaus  = 'GenHadTaus'
+        lines.append("process.produceNtuple.branchName_electrons   = cms.string('%s')" % branchName_electrons)
+        lines.append("process.produceNtuple.branchName_muons       = cms.string('%s')" % branchName_muons)
+        lines.append("process.produceNtuple.branchName_hadTaus     = cms.string('%s')" % branchName_hadTaus)
+        lines.append("process.produceNtuple.branchName_jets        = cms.string('Jet')")
+        lines.append("process.produceNtuple.branchName_met         = cms.string('met')")
+        lines.append("process.produceNtuple.branchName_genLeptons1 = cms.string('%s')" % branchName_genLeptons1)
+        lines.append("process.produceNtuple.branchName_genLeptons2 = cms.string('%s')" % branchName_genLeptons2)
+        lines.append("process.produceNtuple.branchName_genHadTaus  = cms.string('%s')" % branchName_genHadTaus)
+        lines.append("process.produceNtuple.branchName_genJets     = cms.string('GenJet')")
+
         create_cfg(self.cfgFile_prodNtuple_original, jobOptions['cfgFile_modified'], lines)
 
     def createScript_sbatch(self):
