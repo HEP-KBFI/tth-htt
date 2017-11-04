@@ -32,7 +32,11 @@ class cutFlowTableType
 
   void update(const std::string& cut, double evtWeight = 1.);
 
-  void print(std::ostream& stream);
+  void print(std::ostream& stream) const;
+
+  friend std::ostream &
+  operator<<(std::ostream & os,
+             const cutFlowTableType & cutFlowTable);
 
  protected:
   std::map<std::string, cutFlowTable_namespace::rowType*> rows_;
