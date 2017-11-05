@@ -416,7 +416,16 @@ class sbatchManager:
         nofJobs_left = len(jobIds_set)
         while nofJobs_left > 0:
             # Get the list of running jobs and convert them to a set
-            poll_result = run_cmd(command, do_not_log = False)
+            poll_result, poll_result_err = '', ''
+            while True:
+                poll_result, poll_result_err = run_cmd(command, do_not_log = False, return_stderr = True)
+                if not poll_result and poll_result_err:
+                    logging.warning('squeue caught an error: {squeue_error}'.format(squeue_error = poll_result_err))
+                else:
+                    break
+                # sleep a minute and then try again
+                # in principle we could limit the number of retries, but hopefully that's not necessary
+                time.sleep(60)
             polled_ids = set(poll_result.split(delimiter))
             # Subtract the list of running jobs from the list of all submitted jobs -- the result is a list of
             # jobs that have finished already

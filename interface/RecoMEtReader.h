@@ -5,11 +5,12 @@
 #include "tthAnalysis/HiggsToTauTau/interface/ReaderBase.h" // ReaderBase
 
 #include <Rtypes.h> // Int_t, Double_t
-#include <TTree.h> // TTree
 
-#include <string>
-#include <vector>
-#include <map>
+#include <string> // std::string
+#include <map> // std::map<,>
+
+// forward declarations
+class TTree;
 
 class RecoMEtReader
   : public ReaderBase
@@ -18,6 +19,8 @@ class RecoMEtReader
   RecoMEtReader(int era);
   RecoMEtReader(int era, const std::string& branchName_obj, const std::string& branchName_cov = "met");
   ~RecoMEtReader();
+
+  void setMEt_central_or_shift(int met_option) { met_option_ = met_option; }
 
   /**
    * @brief Call tree->SetBranchAddress for all RecoMEt branches
@@ -40,17 +43,15 @@ class RecoMEtReader
   std::string branchName_obj_;
   std::string branchName_cov_;
 
-  std::string branchName_pt_;
-  std::string branchName_phi_;
+  std::map<int, std::string> branchName_pt_;
+  std::map<int, std::string> branchName_phi_;
   std::string branchName_covXX_;
   std::string branchName_covXY_;
   std::string branchName_covYY_;
 
-  Float_t met_pt_;
-  Float_t met_phi_;
-  Float_t met_covXX_;
-  Float_t met_covXY_;
-  Float_t met_covYY_;
+  RecoMEt met_;
+
+  int met_option_;
 
   // CV: make sure that only one RecoMEtReader instance exists for a given branchName,
   //     as ROOT cannot handle multiple TTree::SetBranchAddress calls for the same branch.

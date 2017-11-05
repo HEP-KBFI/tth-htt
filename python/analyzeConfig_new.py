@@ -86,6 +86,7 @@ class analyzeConfig:
             self.is_makefile = True
         self.makefile = os.path.join(
             self.configDir, "Makefile_%s" % self.channel)
+        self.run_hadd_master_on_batch = False
         self.num_parallel_jobs = num_parallel_jobs
         self.histograms_to_fit = histograms_to_fit
         self.executable_prep_dcard = executable_prep_dcard
@@ -246,6 +247,21 @@ class analyzeConfig:
             logging.error("Problem with cvmfs access: host = %s (%i jobs)" % (hostname, len(times)))
             for time in times:
                 logging.error(str(time))
+
+    def get_addMEM_systematics(self, central_or_shift):
+        if central_or_shift in [
+            "central",
+            "CMS_ttHl_JESUp",
+            "CMS_ttHl_JESDown",
+            "CMS_ttHl_tauESUp",
+            "CMS_ttHl_tauESDown",
+            "CMS_ttHl_JERUp",
+            "CMS_ttHl_JERDown",
+            "CMS_ttHl_UnclusteredEnUp",
+            "CMS_ttHl_UnclusteredEnDown",
+        ]:
+            return central_or_shift
+        return "central"
 
     def createCfg_analyze(self, *args):
         raise ValueError(
@@ -424,7 +440,7 @@ class analyzeConfig:
                 'logFile' : os.path.join(self.dirs[DKEY_LOGS], os.path.basename(outputFiles[key]).replace(".root", ".log"))
             }
         sbatchTarget = None
-        if self.is_sbatch:
+        if self.is_sbatch and self.run_hadd_master_on_batch:
             sbatchTarget = "sbatch_hadd_%s" % label
             self.phoniesToAdd.append(sbatchTarget)
             lines_makefile.append("%s: %s" % (sbatchTarget, " ".join([ " ".join(inputFiles[key]) for key in inputFiles.keys()])))
@@ -435,14 +451,14 @@ class analyzeConfig:
             lines_makefile.append("\t%s %s" % ("python", sbatchFile))
             lines_makefile.append("")
         for key in outputFiles.keys():
-            if self.is_makefile:
+            if self.is_sbatch and self.run_hadd_master_on_batch:
+                lines_makefile.append("%s: %s" % (outputFiles[key], sbatchTarget))
+                lines_makefile.append("\t%s" % ":") # CV: null command
+                lines_makefile.append("")
+            else:
                 lines_makefile.append("%s: %s" % (outputFiles[key], " ".join(inputFiles[key])))
                 lines_makefile.append("\t%s %s" % ("rm -f", outputFiles[key]))
                 lines_makefile.append("\t%s %s" % ("python", scriptFiles[key]))
-                lines_makefile.append("")
-            elif self.is_sbatch:
-                lines_makefile.append("%s: %s" % (outputFiles[key], sbatchTarget))
-                lines_makefile.append("\t%s" % ":") # CV: null command
                 lines_makefile.append("")
             self.filesToClean.append(outputFiles[key])
 

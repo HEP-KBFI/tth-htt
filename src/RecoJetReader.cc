@@ -218,9 +218,9 @@ std::vector<RecoJet> RecoJetReader::read() const
     jets.reserve(nJets);
     for ( Int_t idxJet = 0; idxJet < nJets; ++idxJet ) {
       Float_t jet_pt = -1.;
-      if      ( jetPt_option_ == kJetPt_central ) jet_pt = gInstance->jet_pt_[idxJet];
-      else if ( jetPt_option_ == kJetPt_jecUp   ) jet_pt = gInstance->jet_pt_[idxJet]*gInstance->jet_corr_JECUp_[idxJet]/gInstance->jet_corr_[idxJet];
-      else if ( jetPt_option_ == kJetPt_jecDown ) jet_pt = gInstance->jet_pt_[idxJet]*gInstance->jet_corr_JECDown_[idxJet]/gInstance->jet_corr_[idxJet];    
+      if      ( jetPt_option_ == RecoJetReader::kJetPt_central ) jet_pt = gInstance->jet_pt_[idxJet];
+      else if ( jetPt_option_ == RecoJetReader::kJetPt_jecUp   ) jet_pt = gInstance->jet_pt_[idxJet]*gInstance->jet_corr_JECUp_[idxJet]/gInstance->jet_corr_[idxJet];
+      else if ( jetPt_option_ == RecoJetReader::kJetPt_jecDown ) jet_pt = gInstance->jet_pt_[idxJet]*gInstance->jet_corr_JECDown_[idxJet]/gInstance->jet_corr_[idxJet];
       else assert(0);
       jets.push_back(RecoJet(
         jet_pt,      

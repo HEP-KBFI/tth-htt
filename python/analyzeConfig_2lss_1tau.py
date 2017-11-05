@@ -36,7 +36,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
      for documentation of further Args.
 
   """
-  def __init__(self, configDir, outputDir, executable_analyze, cfgFile_analyze, samples, changeBranchNames, useMEMbranch,
+  def __init__(self, configDir, outputDir, executable_analyze, cfgFile_analyze, samples, changeBranchNames, MEMbranch,
                lepton_charge_selections, hadTau_selection, applyFakeRateWeights, chargeSumSelections, central_or_shifts,
                max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,
                executable_addBackgrounds, executable_addFakes, executable_addFlips, histograms_to_fit, select_rle_output = False,
@@ -52,7 +52,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
 
     self.samples = samples
     self.changeBranchNames = changeBranchNames
-    self.useMEMbranch = useMEMbranch
+    self.MEMbranch = MEMbranch
 
     ##self.lepton_and_hadTau_selections = [ "Tight", "Fakeable", "Fakeable_mcClosure" ]
     self.lepton_and_hadTau_selections = [ "Tight", "Fakeable" ]
@@ -227,8 +227,14 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
       lines.append("process.analyze_2lss_1tau.branchName_genJets = cms.string('GenJet')")
       lines.append("process.analyze_2lss_1tau.redoGenMatching = cms.bool(False)")
       lines.append("process.analyze_2lss_1tau.fillGenEvtHistograms = cms.bool(True)")
-    if jobOptions['useMEMbranch']:
-      lines.append("process.analyze_2lss_1tau.branchName_memOutput = cms.string('memObjects_2lss_1tau')")
+    if jobOptions['MEMbranch']:
+      lines.append(
+        "process.analyze_2lss_1tau.branchName_memOutput = cms.string('%s_%s')" % (
+          jobOptions['MEMbranch'],
+          'central',
+#          self.get_addMEM_systematics(jobOptions['central_or_shift']),
+        )
+      )
     create_cfg(self.cfgFile_analyze, jobOptions['cfgFile_modified'], lines)
 
   def createCfg_addFlips(self, jobOptions):
@@ -413,7 +419,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
                   key_analyze_job = getKey(process_name, lepton_and_hadTau_selection_and_frWeight, lepton_charge_selection, chargeSumSelection, central_or_shift, jobId)
                   ntupleFiles = inputFileList[jobId]
                   if len(ntupleFiles) == 0:
-                    print "Warning: ntupleFiles['%s'] = %s --> skipping job !!" % (key_job, ntupleFiles)
+                    logging.warning("ntupleFiles['%s'] = %s --> skipping job !!" % (key_job, ntupleFiles))
                     continue
                   self.jobOptions_analyze[key_analyze_job] = {
                     'ntupleFiles' : ntupleFiles,
@@ -444,7 +450,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
                     'apply_trigger_bits' : (is_mc and (self.era == "2015" or (self.era == "2016" and sample_info["reHLT"]))) or not is_mc,
                     'selectBDT' : self.isBDTtraining,
                     'changeBranchNames' : self.changeBranchNames,
-                    'useMEMbranch' : self.useMEMbranch,
+                    'MEMbranch' : self.MEMbranch,
                   }
                   self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job])
 

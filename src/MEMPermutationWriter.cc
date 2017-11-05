@@ -1,15 +1,13 @@
 #include "tthAnalysis/HiggsToTauTau/interface/MEMPermutationWriter.h" // MEMPermutationWriter
 
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // z_mass, z_window, kLoose, kMedium, kTight, id_mva_dr0*_map
+#include "tthAnalysis/HiggsToTauTau/interface/memAuxFunctions.h" // get_memPermutationBranchName()
 
 #include "FWCore/Utilities/interface/Exception.h" // cms::Exception
 
 #include <TTree.h> // TTree
 
 #include <boost/algorithm/string/predicate.hpp> // boost::starts_with()
-
-const std::string
-MEMPermutationWriter::maxPermutations_addMEM_pattern_ = "maxPermutations_addMEM_%s_lep%s_tau%s_%s";
 
 MEMPermutationWriter::~MEMPermutationWriter()
 {
@@ -149,9 +147,8 @@ MEMPermutationWriter::setBranchNames(TTree * tree,
         branches_[channel][leptonSelection_idx][hadTauSelection_idx] = {};
         for(const std::string & hadTauWorkingPoint: hadTauWorkingPoints_)
         {
-          const std::string maxPermutations_addMEM_str = Form(
-            maxPermutations_addMEM_pattern_.c_str(),
-            channel.c_str(), leptonSelection_str.c_str(), hadTauSelection_str.c_str(), hadTauWorkingPoint.c_str()
+          const std::string maxPermutations_addMEM_str = get_memPermutationBranchName(
+            channel, leptonSelection_str, hadTauSelection_str, hadTauWorkingPoint
           );
           branches_[channel][leptonSelection_idx][hadTauSelection_idx][hadTauWorkingPoint] = 0;
           tree -> Branch(
@@ -238,10 +235,3 @@ MEMPermutationWriter::find_selection_str(int selection_idx)
   if(selection_idx == kTight)    return "Tight";
   throw cms::Exception("MEMPermutationWriter") << "Invalid index: " << selection_idx;
 }
-
-std::string
-MEMPermutationWriter::get_maxPermutations_addMEM_pattern()
-{
-  return maxPermutations_addMEM_pattern_;
-}
-

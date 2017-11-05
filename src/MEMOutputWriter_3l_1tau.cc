@@ -83,13 +83,13 @@ void MEMOutputWriter_3l_1tau::setBranchNames()
 
 void MEMOutputWriter_3l_1tau::setBranches(TTree* tree)
 {
-  setBranchI(tree, branchName_num_, &nMEMOutputs_);   
+  setBranchI(tree, branchName_num_, &nMEMOutputs_);
   run_ = new RUN_TYPE[max_nMEMOutputs_];
-  setBranchVUI(tree, branchName_run_, branchName_num_, run_); 
+  setBranchVUI(tree, branchName_run_, branchName_num_, run_);
   lumi_ = new LUMI_TYPE[max_nMEMOutputs_];
-  setBranchVUI(tree, branchName_lumi_, branchName_num_, lumi_); 
+  setBranchVUI(tree, branchName_lumi_, branchName_num_, lumi_);
   evt_ = new EVT_TYPE[max_nMEMOutputs_];
-  setBranchVUL(tree, branchName_evt_, branchName_num_, evt_); 
+  setBranchVUL(tree, branchName_evt_, branchName_num_, evt_);
   leadLepton_eta_ = new Float_t[max_nMEMOutputs_];
   setBranchVF(tree, branchName_leadLepton_eta_, branchName_num_, leadLepton_eta_); 
   leadLepton_phi_ = new Float_t[max_nMEMOutputs_];
@@ -124,7 +124,7 @@ void MEMOutputWriter_3l_1tau::setBranches(TTree* tree)
   setBranchVI(tree, branchName_errorFlag_, branchName_num_, errorFlag_); 
 }
 
-void MEMOutputWriter_3l_1tau::write(const std::vector<MEMOutput_3l_1tau>& memOutputs) 
+void MEMOutputWriter_3l_1tau::write(const std::vector<MEMOutput_3l_1tau>& memOutputs)
 {
   nMEMOutputs_ = memOutputs.size();
   if ( nMEMOutputs_ > max_nMEMOutputs_ ) {
@@ -134,17 +134,17 @@ void MEMOutputWriter_3l_1tau::write(const std::vector<MEMOutput_3l_1tau>& memOut
   }
   for ( Int_t idxMEMOutput = 0; idxMEMOutput < nMEMOutputs_; ++idxMEMOutput ) {
     const MEMOutput_3l_1tau& memOutput = memOutputs[idxMEMOutput];
-    run_[idxMEMOutput] = memOutput.run();
-    lumi_[idxMEMOutput] = memOutput.lumi();
-    evt_[idxMEMOutput] = memOutput.evt();
-    leadLepton_eta_[idxMEMOutput] = memOutput.leadLepton_eta();
-    leadLepton_phi_[idxMEMOutput] = memOutput.leadLepton_phi();
-    subleadLepton_eta_[idxMEMOutput] = memOutput.subleadLepton_eta();
-    subleadLepton_phi_[idxMEMOutput] = memOutput.subleadLepton_phi();
-    thirdLepton_eta_[idxMEMOutput] = memOutput.thirdLepton_eta();
-    thirdLepton_phi_[idxMEMOutput] = memOutput.thirdLepton_phi();
-    hadTau_eta_[idxMEMOutput] = memOutput.hadTau_eta();
-    hadTau_phi_[idxMEMOutput] = memOutput.hadTau_phi();
+    run_[idxMEMOutput] = memOutput.eventInfo_.run;
+    lumi_[idxMEMOutput] = memOutput.eventInfo_.lumi;
+    evt_[idxMEMOutput] = memOutput.eventInfo_.event;
+    leadLepton_eta_[idxMEMOutput] = memOutput.leadLepton_eta_;
+    leadLepton_phi_[idxMEMOutput] = memOutput.leadLepton_phi_;
+    subleadLepton_eta_[idxMEMOutput] = memOutput.subleadLepton_eta_;
+    subleadLepton_phi_[idxMEMOutput] = memOutput.subleadLepton_phi_;
+    thirdLepton_eta_[idxMEMOutput] = memOutput.thirdLepton_eta_;
+    thirdLepton_phi_[idxMEMOutput] = memOutput.thirdLepton_phi_;
+    hadTau_eta_[idxMEMOutput] = memOutput.hadTau_eta_;
+    hadTau_phi_[idxMEMOutput] = memOutput.hadTau_phi_;
     weight_ttH_[idxMEMOutput] = memOutput.weight_ttH();
     weight_ttZ_[idxMEMOutput] = memOutput.weight_ttZ();
     weight_ttH_hww_[idxMEMOutput] = memOutput.weight_ttH_hww();
