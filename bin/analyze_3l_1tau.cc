@@ -1701,25 +1701,25 @@ int main(int argc, char* argv[])
       {
         const double selLepton_lead_dR = deltaR(
           selLepton_lead -> eta(),            selLepton_lead -> phi(),
-          memOutput_3l_1tau.leadLepton_eta(), memOutput_3l_1tau.leadLepton_phi()
+          memOutput_3l_1tau.leadLepton_eta_, memOutput_3l_1tau.leadLepton_phi_
         );
         if(selLepton_lead_dR > 1.e-2)
           continue;
         const double selLepton_sublead_dR = deltaR(
           selLepton_sublead -> eta(),            selLepton_sublead -> phi(),
-          memOutput_3l_1tau.subleadLepton_eta(), memOutput_3l_1tau.subleadLepton_phi()
+          memOutput_3l_1tau.subleadLepton_eta_, memOutput_3l_1tau.subleadLepton_phi_
         );
         if(selLepton_sublead_dR > 1.e-2)
           continue;
         const double selLepton_third_dR = deltaR(
           selLepton_third -> eta(),            selLepton_third -> phi(),
-          memOutput_3l_1tau.thirdLepton_eta(), memOutput_3l_1tau.thirdLepton_phi()
+          memOutput_3l_1tau.thirdLepton_eta_, memOutput_3l_1tau.thirdLepton_phi_
         );
         if(selLepton_third_dR > 1.e-2)
           continue;
         const double selHadTau_dR = deltaR(
           selHadTau -> eta(),             selHadTau -> phi(),
-          memOutput_3l_1tau.hadTau_eta(), memOutput_3l_1tau.hadTau_phi()
+          memOutput_3l_1tau.hadTau_eta_, memOutput_3l_1tau.hadTau_phi_
         );
         if(selHadTau_dR > 1.e-2)
           continue;
@@ -1748,14 +1748,14 @@ int main(int argc, char* argv[])
       if ( memOutputs_3l_1tau.size() ) {
         for ( unsigned mem_idx = 0; mem_idx < memOutputs_3l_1tau.size(); ++mem_idx ) {
           std::cout << "\t#" << mem_idx << " mem object;\n"
-                    << "\t\tlead lepton eta = " << memOutputs_3l_1tau[mem_idx].leadLepton_eta()
-                    << "; phi = "               << memOutputs_3l_1tau[mem_idx].leadLepton_phi() << '\n'
-                    << "\t\tsublead lepton eta = " << memOutputs_3l_1tau[mem_idx].subleadLepton_eta()
-                    << "; phi = "                  << memOutputs_3l_1tau[mem_idx].subleadLepton_phi() << '\n'
-                    << "\t\tthird lepton eta = " << memOutputs_3l_1tau[mem_idx].thirdLepton_eta()
-                    << "; phi = "                << memOutputs_3l_1tau[mem_idx].thirdLepton_phi() << '\n'
-                    << "\t\thadronic tau eta = " << memOutputs_3l_1tau[mem_idx].hadTau_eta()
-                    << "; phi = "                << memOutputs_3l_1tau[mem_idx].hadTau_phi() << '\n';
+                    << "\t\tlead lepton eta = " << memOutputs_3l_1tau[mem_idx].leadLepton_eta_
+                    << "; phi = "               << memOutputs_3l_1tau[mem_idx].leadLepton_phi_ << '\n'
+                    << "\t\tsublead lepton eta = " << memOutputs_3l_1tau[mem_idx].subleadLepton_eta_
+                    << "; phi = "                  << memOutputs_3l_1tau[mem_idx].subleadLepton_phi_ << '\n'
+                    << "\t\tthird lepton eta = " << memOutputs_3l_1tau[mem_idx].thirdLepton_eta_
+                    << "; phi = "                << memOutputs_3l_1tau[mem_idx].thirdLepton_phi_ << '\n'
+                    << "\t\thadronic tau eta = " << memOutputs_3l_1tau[mem_idx].hadTau_eta_
+                    << "; phi = "                << memOutputs_3l_1tau[mem_idx].hadTau_phi_ << '\n';
 	}
       } else {
         std::cout << "No MEM objects whatsoever\n";
