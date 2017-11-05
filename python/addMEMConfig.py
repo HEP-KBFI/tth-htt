@@ -123,7 +123,7 @@ class addMEMConfig:
         """Adds the commands to Makefile that are necessary for running the MEM code
         """
         if self.is_sbatch:
-            lines_makefile.append("sbatch:")
+            lines_makefile.append("sbatch_addMEM:")
             lines_makefile.append("\t%s %s" % ("python", self.sbatchFile_addMEM))
             lines_makefile.append("")
         for key_file, output_file in self.outputFiles.items():
@@ -135,7 +135,7 @@ class addMEMConfig:
                 lines_makefile.append("\t%s %s &> %s" % (self.executable_addMEM, cfg_file, log_file))
                 lines_makefile.append("")
             elif self.is_sbatch:
-                lines_makefile.append("%s: %s" % (output_file, "sbatch"))
+                lines_makefile.append("%s: %s" % (output_file, "sbatch_addMEM"))
                 lines_makefile.append("\t%s" % ":")  # CV: null command
                 lines_makefile.append("")
             #self.filesToClean.append(output_file)
@@ -382,9 +382,15 @@ class addMEMConfig:
                 # associate the output file with the fileset_id
                 #UDPATE: ONE OUTPUT FILE PER SAMPLE!
                 fileset_id = memEvtRangeDict[jobId]['fileset_id']
+                hadd_output_dir = os.path.join(
+                    self.dirs[key_dir][DKEY_FINAL_NTUPLES],
+                    str('%04d' % fileset_id // 1000)
+                )
+                if not os.path.exists(hadd_output_dir):
+                    os.makedirs(hadd_output_dir)
                 hadd_output = os.path.join(
-                    self.dirs[key_dir][DKEY_FINAL_NTUPLES], '%s_%i.root' % ('tree', fileset_id) # UDPATE: ADDED
-                    #self.dirs[key_dir][DKEY_FINAL_NTUPLES], "tree.root" # UDPATE: REMOVED
+                    hadd_output_dir, '%s_%i.root' % ('tree', fileset_id) # UDPATE: ADDED
+                    #hadd_output_dir, "tree.root" # UDPATE: REMOVED
                 )
                 if hadd_output not in self.hadd_records:
                     self.hadd_records[hadd_output] = {}
