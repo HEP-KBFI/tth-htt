@@ -16,7 +16,8 @@ class MEMOutputReader_2lss_1tau
   : public ReaderBase
 {
  public:
-  MEMOutputReader_2lss_1tau(const std::string& branchName_num, const std::string& branchName_obj);
+  MEMOutputReader_2lss_1tau(const std::string& branchName_num,
+                            const std::string& branchName_obj);
   ~MEMOutputReader_2lss_1tau();
 
   /**
