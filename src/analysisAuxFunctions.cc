@@ -1,7 +1,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h"
 
 #include <TRandom3.h> // TRandom3
-#include <TMath.h> // TMath::Nint
+#include <TMath.h> // TMath::Nint()
 
 #include <map> // std::map
 #include <algorithm> // std::sort
@@ -19,6 +19,25 @@ bool isHigherConePt(const RecoLepton* particle1, const RecoLepton* particle2)
 bool isHigherCSV(const RecoJet* jet1, const RecoJet* jet2)
 {
   return (jet1 -> BtagCSV()) > (jet2 -> BtagCSV());
+}
+
+int
+get_selection(const std::string & selectionString)
+{
+  if(selectionString == "Loose")    return kLoose;
+  if(selectionString == "Fakeable") return kFakeable;
+  if(selectionString == "Tight")    return kTight;
+  std::cerr << "Invalid Configuration parameter for object selection = " << selectionString << " !!\n";
+  throw 1;
+}
+
+int
+get_era(const std::string & eraString)
+{
+  if(eraString == "2015") return kEra_2015;
+  if(eraString == "2016") return kEra_2016;
+  std::cerr  << "Invalid Configuration parameter 'era' = " << eraString << " !!\n";
+  throw 1;
 }
 
 std::string getBranchName_bTagWeight(int era, const std::string& central_or_shift)
@@ -92,6 +111,30 @@ std::string getBranchName_bTagWeight(int era, int central_or_shift)
   std::map<int, std::string>::const_iterator branchName_bTagWeight = branchNames_bTagWeight.find(central_or_shift);
   assert(branchName_bTagWeight != branchNames_bTagWeight.end());
   return branchName_bTagWeight->second;
+}
+
+std::string
+getBranchName_MEt(int,
+                  const std::string & default_branchName,
+                  int central_or_shift)
+{
+  std::string branchName = default_branchName; // copy
+  switch(central_or_shift)
+  {
+    case kMEt_central:                                                               break;
+    case kMEt_shifted_JetEnUp:           branchName += "_shifted_JetEnUp";           break;
+    case kMEt_shifted_JetEnDown:         branchName += "_shifted_JetEnDown";         break;
+    case kMEt_shifted_JetResUp:          branchName += "_shifted_JetResUp";          break;
+    case kMEt_shifted_JetResDown:        branchName += "_shifted_JetResDown";        break;
+    case kMEt_shifted_UnclusteredEnUp:   branchName += "_shifted_UnclusteredEnUp";   break;
+    case kMEt_shifted_UnclusteredEnDown: branchName += "_shifted_UnclusteredEnDown"; break;
+    default:
+    {
+      std::cerr << "Invalid met correction: " << central_or_shift << '\n';
+      throw 1;
+    }
+  }
+  return branchName;
 }
 
 int getHadTau_genPdgId(const RecoHadTau* hadTau)
