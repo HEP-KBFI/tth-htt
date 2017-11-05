@@ -78,7 +78,7 @@ class analyzeConfig:
         self.debug = debug
         assert(running_method.lower() in [ "sbatch", "makefile" ]), "Invalid running method: %s" % running_method
         self.running_method = running_method
-        self.is_sbatch = False        
+        self.is_sbatch = False
         self.is_makefile = False
         if self.running_method.lower() == "sbatch":
             self.is_sbatch = True
@@ -247,6 +247,21 @@ class analyzeConfig:
             logging.error("Problem with cvmfs access: host = %s (%i jobs)" % (hostname, len(times)))
             for time in times:
                 logging.error(str(time))
+
+    def get_addMEM_systematics(self, central_or_shift):
+        if central_or_shift in [
+            "central",
+            "CMS_ttHl_JESUp",
+            "CMS_ttHl_JESDown",
+            "CMS_ttHl_tauESUp",
+            "CMS_ttHl_tauESDown",
+            "CMS_ttHl_JERUp",
+            "CMS_ttHl_JERDown",
+            "CMS_ttHl_UnclusteredEnUp",
+            "CMS_ttHl_UnclusteredEnDown",
+        ]:
+            return central_or_shift
+        return "central"
 
     def createCfg_analyze(self, *args):
         raise ValueError(

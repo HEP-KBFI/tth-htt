@@ -13,7 +13,7 @@ from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 #   'forBDTtraining_afterAddMEM'  : to run the analysis on the Ntuples with MEM variables added,
 #                                   and with a relaxed event selection, to increase the BDT training statistics
 #--------------------------------------------------------------------------------
-# E.g. to run: python tthAnalyzeRun_2lss_1tau.py --version "2017Oct24" --mode "forBDTtraining_afterAddMEM" --use_prod_ntuples 
+# E.g. to run: python tthAnalyzeRun_2lss_1tau.py --version "2017Oct24" --mode "forBDTtraining_afterAddMEM" --use_prod_ntuples
 from optparse import OptionParser
 parser = OptionParser()
 parser.add_option("--version ", type="string", dest="version", help="Name of output reository with results\n Trees will be stored in /hdfs/local/USER/ttHAnalysis/2016/VERSION/", default='dumb')
@@ -35,7 +35,7 @@ hadTau_selection                   = None
 hadTau_selection_relaxed           = None
 changeBranchNames                  = use_prod_ntuples
 applyFakeRateWeights               = None
-useMEMbranch                       = False
+MEMbranch                          = ''
 hadTauFakeRateWeight_inputFileName = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016.root"
 
 # Karl: temporarily disable other modes until we've proper Ntuples
@@ -72,7 +72,7 @@ if mode == "VHbb":
 elif mode == "addMEM":
   from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_2lss1tau_addMEM import samples_2016
   changeBranchNames    = True
-  useMEMbranch         = True
+  MEMbranch            = 'memObjects_2lss_1tau_lepFakeable_tauTight_dR03mvaMedium'
   hadTau_selection     = "dR03mvaMedium"
   applyFakeRateWeights = "2lepton"
 elif mode == "forBDTtraining_beforeAddMEM":
@@ -86,7 +86,7 @@ elif mode == "forBDTtraining_beforeAddMEM":
 elif mode == "forBDTtraining_afterAddMEM":
   from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_2lss1tau_addMEM import samples_2016
   changeBranchNames        = True
-  useMEMbranch             = True
+  MEMbranch                = 'memObjects_2lss_1tau_lepLoose_tauTight_dR03mvaLoose'
   hadTau_selection         = "dR03mvaVTight"
   hadTau_selection_relaxed = "dR03mvaLoose"
   applyFakeRateWeights     = "3L"
@@ -147,7 +147,7 @@ if __name__ == '__main__':
       cfgFile_analyze           = "analyze_2lss_1tau_cfg.py",
       samples                   = samples,
       changeBranchNames         = changeBranchNames,
-      useMEMbranch              = useMEMbranch,
+      MEMbranch                 = MEMbranch,
       lepton_charge_selections  = [ "OS", "SS" ],
       hadTau_selection          = hadTau_selection,
       # CV: apply "fake" background estimation to leptons only and not to hadronic taus, as discussed on slide 10 of
