@@ -108,7 +108,9 @@ class sbatchManager:
 
     def __init__(self, pool_id = '', verbose = False):
         if not pool_id:
-            raise ValueError("pool_id not specified!")
+            raise ValueError("Parameter 'pool_id' not specified!")
+        if len(pool_id) > 100:
+            raise ValueError("Parameter 'pool_id' exceeds maximum length of 100 characters!")
 
         self.cmssw_base_dir = None
         self.workingDir     = None
@@ -388,13 +390,13 @@ class sbatchManager:
         # Set a delimiter, which distinguishes entries b/w different jobs
         delimiter = ','
         # Explanation:
-        # 1) squeue -h -u {{user}} -o '%i %36k'
+        # 1) squeue -h -u {{user}} -o '%i %256k'
         #      Collects the list of running jobs
         #        a) -h omits header
         #        b) -u {{user}} looks only for jobs submitted by {{user}}
-        #        c) -o '%i %36k' specifies the output format
+        #        c) -o '%i %256k' specifies the output format
         #           i)  %i -- job ID (1st column)
-        #           ii) %36k -- comment with width of 36 characters (2nd column)
+        #           ii) %256k -- comment with width of 256 characters (2nd column)
         #               If the job has no comments, the entry simply reads (null)
         # 2) grep {{comment}}
         #       Filter the jobs by the comment which must be unique per sbatchManager instance at all times
@@ -402,7 +404,7 @@ class sbatchManager:
         #       Filter only the jobs IDs out
         # 4) sed ':a;N;$!ba;s/\\n/{{delimiter}}/g'
         #       Place all job IDs to one line, delimited by {{delimiter}} (otherwise the logs are hard to read)
-        command_template = "squeue -h -u {{user}} -o '%i %36k' | grep {{comment}} | awk '{print $1}' | " \
+        command_template = "squeue -h -u {{user}} -o '%i %256k' | grep {{comment}} | awk '{print $1}' | " \
                            "sed ':a;N;$!ba;s/\\n/{{delimiter}}/g'"
         command = jinja2.Template(command_template).render(
           user      = self.user,
