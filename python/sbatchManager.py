@@ -40,6 +40,8 @@ class Status:
 
   @staticmethod
   def classify_error(ExitCode, DerivedExitCode, State):
+      if State in ['COMPLETING', 'RUNNING', 'PENDING']:
+          return Status.running
       if (ExitCode in ['0:0', '0:1'] and DerivedExitCode in ['0:0', '0:1'] and State == 'COMPLETED'):
           return Status.completed
       if (ExitCode == '0:0' and DerivedExitCode == '0:0' and (State == 'CANCELLED' or
@@ -107,10 +109,13 @@ class sbatchManager:
     """
 
     def __init__(self, pool_id = '', verbose = False):
+        self.max_pool_id_length = 256
         if not pool_id:
             raise ValueError("Parameter 'pool_id' not specified!")
-        if len(pool_id) > 100:
-            raise ValueError("Parameter 'pool_id' exceeds maximum length of 100 characters!")
+        if len(pool_id) > self.max_pool_id_length:
+            raise ValueError(
+                "Parameter 'pool_id' exceeds maximum length of %i characters!" % self.max_pool_id_length
+            )
 
         self.cmssw_base_dir = None
         self.workingDir     = None
@@ -190,20 +195,12 @@ class sbatchManager:
             for line in lines:
                 JobID, ExitCode, DerivedExitCode, State = line.split('|')
                 if JobID in completion:
-                    if State in ['RUNNING', 'COMPLETING']:
-                      completion[JobID] = JobCompletion(
-                          status            = Status.running,
-                          exit_code         = ExitCode,
-                          derived_exit_code = DerivedExitCode,
-                          state             = State,
-                      )
-                    else:
-                      completion[JobID] = JobCompletion(
-                          status            = Status.classify_error(ExitCode, DerivedExitCode, State),
-                          exit_code         = ExitCode,
-                          derived_exit_code = DerivedExitCode,
-                          state             = State,
-                      )
+                  completion[JobID] = JobCompletion(
+                      status            = Status.classify_error(ExitCode, DerivedExitCode, State),
+                      exit_code         = ExitCode,
+                      derived_exit_code = DerivedExitCode,
+                      state             = State,
+                  )
             return completion
         else:
             # Likely returned along the lines of (due to heavy load on the cluster since SQL DB is overloaded):
@@ -389,7 +386,7 @@ class sbatchManager:
 
         # Set a delimiter, which distinguishes entries b/w different jobs
         delimiter = ','
-        # Explanation:
+        # Explanation (the maximum pool ID length = 256 is configurable via self.max_pool_id_length):
         # 1) squeue -h -u {{user}} -o '%i %256k'
         #      Collects the list of running jobs
         #        a) -h omits header
@@ -404,12 +401,13 @@ class sbatchManager:
         #       Filter only the jobs IDs out
         # 4) sed ':a;N;$!ba;s/\\n/{{delimiter}}/g'
         #       Place all job IDs to one line, delimited by {{delimiter}} (otherwise the logs are hard to read)
-        command_template = "squeue -h -u {{user}} -o '%i %256k' | grep {{comment}} | awk '{print $1}' | " \
+        command_template = "squeue -h -u {{user}} -o '%i %{{ pool_id_length }}k' | grep {{comment}} | awk '{print $1}' | " \
                            "sed ':a;N;$!ba;s/\\n/{{delimiter}}/g'"
         command = jinja2.Template(command_template).render(
-          user      = self.user,
-          comment   = self.pool_id,
-          delimiter = delimiter
+          user           = self.user,
+          pool_id_length = self.max_pool_id_length,
+          comment        = self.pool_id,
+          delimiter      = delimiter
         )
 
         # Initially, all jobs are marked as submitted so we have to go through all jobs and check their exit codes
