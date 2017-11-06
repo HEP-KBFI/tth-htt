@@ -278,9 +278,9 @@ std::vector<RecoHadTau> RecoHadTauReader::read() const
     hadTaus.reserve(nHadTaus);
     for ( Int_t idxHadTau = 0; idxHadTau < nHadTaus; ++idxHadTau ) {
       Float_t hadTau_pt = -1.;
-      if      ( hadTauPt_option_ == kHadTauPt_central   ) hadTau_pt = 1.00*gInstance->hadTau_pt_[idxHadTau];
-      else if ( hadTauPt_option_ == kHadTauPt_shiftUp   ) hadTau_pt = 1.03*gInstance->hadTau_pt_[idxHadTau];
-      else if ( hadTauPt_option_ == kHadTauPt_shiftDown ) hadTau_pt = 0.97*gInstance->hadTau_pt_[idxHadTau];
+      if      ( hadTauPt_option_ == RecoHadTauReader::kHadTauPt_central   ) hadTau_pt = 1.00*gInstance->hadTau_pt_[idxHadTau];
+      else if ( hadTauPt_option_ == RecoHadTauReader::kHadTauPt_shiftUp   ) hadTau_pt = 1.03*gInstance->hadTau_pt_[idxHadTau];
+      else if ( hadTauPt_option_ == RecoHadTauReader::kHadTauPt_shiftDown ) hadTau_pt = 0.97*gInstance->hadTau_pt_[idxHadTau];
       else assert(0);
       // compute "VVLose" (95% signal efficiency) working point for tau ID MVA trained for dR=0.3 isolation cone,
       // used to enhance background event statistics for training of event-level MVAs that separate ttH signal from backgrounds

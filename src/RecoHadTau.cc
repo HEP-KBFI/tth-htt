@@ -57,10 +57,16 @@ std::ostream& operator<<(std::ostream& stream, const RecoHadTau& hadTau)
   stream << " decayModeFinding = " << hadTau.decayModeFinding() << "," 
 	 << " id_mva_dR03 = " << hadTau.id_mva_dR03() << " (raw = " << hadTau.raw_mva_dR03() << ")," 
 	 << " antiElectron = " << hadTau.antiElectron() << ", antiMuon = " << hadTau.antiMuon()  << std::endl;
-  stream << "gen. matching:" 
-	 << " lepton = " << hadTau.genLepton() << "," 
-	 << " hadTau = " << hadTau.genHadTau() << "," 
-	 << " jet = " << hadTau.genJet() << std::endl;
+  stream << "gen. matching:"
+            "\n lepton = ";
+  if(hadTau.genLepton()) stream << *hadTau.genLepton();
+  else                   stream << "0\n";
+  stream << " hadTau = ";
+  if(hadTau.genHadTau()) stream << *hadTau.genHadTau();
+  else                   stream << "0\n";
+  stream << " jet = ";
+  if(hadTau.genJet()) stream << *hadTau.genJet();
+  else                 stream << "0\n";
   return stream;
 }
 

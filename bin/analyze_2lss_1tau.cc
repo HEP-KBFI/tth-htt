@@ -389,6 +389,7 @@ int main(int argc, char* argv[])
   else if ( applyFakeRateWeights_string == "1tau"     ) applyFakeRateWeights = kFR_1tau;
   else throw cms::Exception("analyze_2lss_1tau") 
     << "Invalid Configuration parameter 'applyFakeRateWeights' = " << applyFakeRateWeights_string << " !!\n";
+  std::cout << "Applying fake rate weights = " << applyFakeRateWeights_string << " (" << applyFakeRateWeights << ")\n";
   
   LeptonFakeRateInterface* leptonFakeRateInterface = 0;
   if ( applyFakeRateWeights == kFR_2lepton || applyFakeRateWeights == kFR_3L ) {
@@ -870,8 +871,7 @@ int main(int argc, char* argv[])
       "mindr_tau_jet", "avg_dr_jet", "ptmiss",  "htmiss", "tau_mva", "tau_pt", "tau_eta",
       "dr_leps", "mTauTauVis1", "mTauTauVis2", "lumiScale", "genWeight", "evtWeight",
       "memOutput_isValid", "memOutput_errorFlag", "memOutput_type", "memOutput_ttH", "memOutput_ttZ",
-      "memOutput_ttZ_Zll", "memOutput_tt", "memOutput_LR", "memOutput_tt_LR", "memOutput_ttZ_LR", 
-      "memOutput_ttZ_Ztt_LR", "memOutput_ttZ_Zll_LR",
+      "memOutput_ttZ_Zll", "memOutput_tt", "memOutput_LR", "memOutput_tt_LR", "memOutput_ttZ_LR",
       "lep1_genLepPt", "lep2_genLepPt", "tau_genTauPt", 
       "lep1_fake_prob", "lep2_fake_prob", "tau_fake_prob",
       "mvaOutput_2lss_ttV", "mvaOutput_2lss_ttbar", "mvaDiscr_2lss",
@@ -1718,18 +1718,18 @@ int main(int argc, char* argv[])
     if ( memReader ) {
       std::vector<MEMOutput_2lss_1tau> memOutputs_2lss_1tau = memReader->read();
       for ( std::vector<MEMOutput_2lss_1tau>::const_iterator memOutput_2lss_1tau = memOutputs_2lss_1tau.begin();
-	    memOutput_2lss_1tau != memOutputs_2lss_1tau.end(); ++memOutput_2lss_1tau ) {
+            memOutput_2lss_1tau != memOutputs_2lss_1tau.end(); ++memOutput_2lss_1tau ) {
         const double selLepton_lead_dR = deltaR(
           selLepton_lead->eta(), selLepton_lead->phi(), 
-	  memOutput_2lss_1tau->leadLepton_eta(), memOutput_2lss_1tau->leadLepton_phi());
+          memOutput_2lss_1tau->leadLepton_eta_, memOutput_2lss_1tau->leadLepton_phi_);
         if ( selLepton_lead_dR > 1.e-2 ) continue;
         const double selLepton_sublead_dR = deltaR(
           selLepton_sublead->eta(), selLepton_sublead->phi(), 
-	  memOutput_2lss_1tau->subleadLepton_eta(), memOutput_2lss_1tau->subleadLepton_phi());
+          memOutput_2lss_1tau->subleadLepton_eta_, memOutput_2lss_1tau->subleadLepton_phi_);
         if ( selLepton_sublead_dR > 1.e-2 ) continue;
         const double selHadTau_dR = deltaR(
           selHadTau->eta(), selHadTau->phi(),
-          memOutput_2lss_1tau->hadTau_eta(), memOutput_2lss_1tau->hadTau_phi());
+          memOutput_2lss_1tau->hadTau_eta_, memOutput_2lss_1tau->hadTau_phi_);
         if ( selHadTau_dR > 1.e-2 ) continue;
         memOutput_2lss_1tau_matched = (*memOutput_2lss_1tau);
         break;
@@ -1752,12 +1752,12 @@ int main(int argc, char* argv[])
         if ( memOutputs_2lss_1tau.size() ) {
           for ( unsigned mem_idx = 0; mem_idx < memOutputs_2lss_1tau.size(); ++mem_idx ) {
             std::cout << "\t#" << mem_idx << " mem object;\n"
-                      << "\t\tlead lepton eta = " << memOutputs_2lss_1tau[mem_idx].leadLepton_eta()
-                      << "; phi = "               << memOutputs_2lss_1tau[mem_idx].leadLepton_phi() << '\n'
-                      << "\t\tsublead lepton eta = " << memOutputs_2lss_1tau[mem_idx].subleadLepton_eta()
-                      << "; phi = "                  << memOutputs_2lss_1tau[mem_idx].subleadLepton_phi() << '\n'
-                      << "\t\thadronic tau eta = " << memOutputs_2lss_1tau[mem_idx].hadTau_eta()
-                      << "; phi = "                << memOutputs_2lss_1tau[mem_idx].hadTau_phi() << '\n';
+                      << "\t\tlead lepton eta = " << memOutputs_2lss_1tau[mem_idx].leadLepton_eta_
+                      << "; phi = "               << memOutputs_2lss_1tau[mem_idx].leadLepton_phi_ << '\n'
+                      << "\t\tsublead lepton eta = " << memOutputs_2lss_1tau[mem_idx].subleadLepton_eta_
+                      << "; phi = "                  << memOutputs_2lss_1tau[mem_idx].subleadLepton_phi_ << '\n'
+                      << "\t\thadronic tau eta = " << memOutputs_2lss_1tau[mem_idx].hadTau_eta_
+                      << "; phi = "                << memOutputs_2lss_1tau[mem_idx].hadTau_phi_ << '\n';
 	  }
 	} else {
 	  std::cout << "Event contains no MEM objects whatsoever !!\n";
@@ -1933,11 +1933,17 @@ int main(int argc, char* argv[])
     if ( bdt_filler ) {
       //FR weights for bdt ntuple
       double prob_fake_lepton_lead = 1.;
-      if      ( std::abs(selLepton_lead->pdgId()) == 11 ) prob_fake_lepton_lead = leptonFakeRateInterface->getWeight_e(selLepton_lead->cone_pt(), selLepton_lead->absEta());
-      else if ( std::abs(selLepton_lead->pdgId()) == 13 ) prob_fake_lepton_lead = leptonFakeRateInterface->getWeight_mu(selLepton_lead->cone_pt(), selLepton_lead->absEta());
+      if(leptonFakeRateInterface)
+      {
+        if      ( std::abs(selLepton_lead->pdgId()) == 11 ) prob_fake_lepton_lead = leptonFakeRateInterface->getWeight_e(selLepton_lead->cone_pt(), selLepton_lead->absEta());
+        else if ( std::abs(selLepton_lead->pdgId()) == 13 ) prob_fake_lepton_lead = leptonFakeRateInterface->getWeight_mu(selLepton_lead->cone_pt(), selLepton_lead->absEta());
+      }
       double prob_fake_lepton_sublead = 1.;
-      if      ( std::abs(selLepton_sublead->pdgId()) == 11 ) prob_fake_lepton_sublead = leptonFakeRateInterface->getWeight_e(selLepton_sublead->cone_pt(), selLepton_sublead->absEta());
-      else if ( std::abs(selLepton_sublead->pdgId()) == 13 ) prob_fake_lepton_sublead = leptonFakeRateInterface->getWeight_mu(selLepton_sublead->cone_pt(), selLepton_sublead->absEta());
+      if(leptonFakeRateInterface)
+      {
+        if      ( std::abs(selLepton_sublead->pdgId()) == 11 ) prob_fake_lepton_sublead = leptonFakeRateInterface->getWeight_e(selLepton_sublead->cone_pt(), selLepton_sublead->absEta());
+        else if ( std::abs(selLepton_sublead->pdgId()) == 13 ) prob_fake_lepton_sublead = leptonFakeRateInterface->getWeight_mu(selLepton_sublead->cone_pt(), selLepton_sublead->absEta());
+      }
       bdt_filler -> operator()({ eventInfo.run, eventInfo.lumi, eventInfo.event })
           ("lep1_pt",                selLepton_lead -> pt())
           ("lep1_conePt",            comp_lep1_conePt(*selLepton_lead))

@@ -35,17 +35,26 @@ void cutFlowTableType::update(const std::string& cut, double evtWeight)
   }
 }
 
-void cutFlowTableType::print(std::ostream& stream)
+void cutFlowTableType::print(std::ostream& stream) const
 {
   std::vector<const rowType*> row_ptrs;
-  for ( std::map<std::string, rowType*>::const_iterator row = rows_.begin();
-	row != rows_.end(); ++row ) {
-    row_ptrs.push_back(row->second);
+  for(const auto & row: rows_)
+  {
+    row_ptrs.push_back(row.second);
   }
   std::sort(row_ptrs.begin(), row_ptrs.end(), isLowerIdx);
 
-  for ( std::vector<const rowType*>::const_iterator row_ptr = row_ptrs.begin();
-	row_ptr != row_ptrs.end(); ++row_ptr ) {
-    stream << " " << (*row_ptr)->cut_ << " = " << (*row_ptr)->selEvents_ << " (weighted = " << (*row_ptr)->selEvents_weighted_ << ")" << std::endl;
+  for(const rowType* row_ptr: row_ptrs)
+  {
+    stream << ' ' << row_ptr->cut_ << " = " << row_ptr->selEvents_
+           << " (weighted = " << row_ptr->selEvents_weighted_ << ")\n";
   }
+}
+
+std::ostream &
+operator<<(std::ostream & os,
+           const cutFlowTableType & cutFlowTable)
+{
+  cutFlowTable.print(os);
+  return os;
 }

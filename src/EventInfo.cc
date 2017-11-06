@@ -34,6 +34,28 @@ EventInfo::EventInfo(bool is_signal,
   , is_mc_th_(is_mc_th)
 {}
 
+EventInfo::EventInfo(const EventInfo & eventInfo)
+{
+  *this = eventInfo;
+}
+
+EventInfo &
+EventInfo::operator=(const EventInfo & eventInfo)
+{
+  run               = eventInfo.run;
+  lumi              = eventInfo.lumi;
+  event             = eventInfo.event;
+  genHiggsDecayMode = eventInfo.genHiggsDecayMode;
+  genWeight         = eventInfo.genWeight;
+  genWeight_tH      = eventInfo.genWeight_tH;
+
+  is_signal_ = eventInfo.is_signal_;
+  is_mc_     = eventInfo.is_mc_;
+  is_mc_th_  = eventInfo.is_mc_th_;
+
+  return *this;
+}
+
 bool
 EventInfo::is_signal() const
 {

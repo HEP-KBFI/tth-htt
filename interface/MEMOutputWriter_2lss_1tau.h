@@ -65,11 +65,11 @@ class MEMOutputWriter_2lss_1tau
   Float_t* subleadLepton_phi_;
   Float_t* hadTau_eta_;
   Float_t* hadTau_phi_;
-  Int_t* type_; 
+  Int_t* type_;
   Float_t* weight_ttH_;
-  Float_t* weight_ttZ_; 
+  Float_t* weight_ttZ_;
   Float_t* weight_ttZ_Zll_;
-  Float_t* weight_tt_; 
+  Float_t* weight_tt_;
   Float_t* LR_;
   Float_t* cpuTime_;
   Float_t* realTime_;

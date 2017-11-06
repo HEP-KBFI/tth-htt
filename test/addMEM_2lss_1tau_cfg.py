@@ -3,7 +3,7 @@ import FWCore.ParameterSet.Config as cms
 process = cms.PSet()
 
 process.fwliteInput = cms.PSet(
-    fileNames = cms.vstring('/home/veelken/VHbbNtuples_8_0_x/CMSSW_8_0_19/src/tthAnalysis/HiggsToTauTau/test/produceNtuple_2lss_1tau.root'),
+    fileNames = cms.vstring(''),
     skipEvents = cms.uint32(0),
     maxEvents = cms.int32(-1),
     outputEvery = cms.uint32(1000)
@@ -43,7 +43,11 @@ process.addMEM_2lss_1tau = cms.PSet(
     ),
 
     selEventsFileName_input = cms.string(''),
-
+    isDEBUG = cms.bool(False),
+    readGenObjects = cms.bool(True),
     isForBDTtraining = cms.bool(False),
-    isDEBUG = False,
+
+    central_or_shift = cms.vstring(
+        "central",
+    )
 )
