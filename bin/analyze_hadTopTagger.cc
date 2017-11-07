@@ -59,6 +59,11 @@
 #include <fstream> // std::ofstream
 #include <assert.h> // assert
 
+#include <iostream>
+#include <boost/python.hpp>
+#include <boost/python/suite/indexing/vector_indexing_suite.hpp>
+using namespace boost::python;
+
 #define EPS 1E-2
 
 typedef math::PtEtaPhiMLorentzVector LV;
@@ -220,6 +225,7 @@ int main(int argc, char* argv[])
   for ( std::vector<std::string>::const_iterator inputFileName = inputFiles.files().begin();
 	inputFileName != inputFiles.files().end(); ++inputFileName ) {
     std::cout << "input Tree: adding file = " << (*inputFileName) << std::endl;
+	//std::cout <<inputFileName->data()->GetEntries() << std::endl;
     inputTree->AddFile(inputFileName->data());
   }
   
@@ -250,13 +256,16 @@ int main(int argc, char* argv[])
   }
   
 //--- declare particle collections
+  std::cout << "Here before RecoMuonReader" << std::endl;
   RecoMuonReader* muonReader = new RecoMuonReader(era, Form("n%s", branchName_muons.data()), branchName_muons);
   if ( use_HIP_mitigation_mediumMuonId ) muonReader->enable_HIP_mitigation();
   else muonReader->disable_HIP_mitigation();
+  std::cout << "Here before RecoMuonReader read tree" << std::endl; 
   muonReader->setBranchAddresses(inputTree);
   RecoMuonCollectionGenMatcher muonGenMatcher;
   RecoMuonCollectionSelectorLoose preselMuonSelector(era);
   RecoMuonCollectionSelectorFakeable fakeableMuonSelector(era);
+  std::cout << "Here after RecoMuonReader" << std::endl;
 
   RecoElectronReader* electronReader = new RecoElectronReader(era, Form("n%s", branchName_electrons.data()), branchName_electrons);
   electronReader->setBranchAddresses(inputTree);
@@ -313,6 +322,7 @@ int main(int argc, char* argv[])
     else assert(0);
     MVAInputVarHistManager* mvaInputHistManager = new MVAInputVarHistManager(makeHistManager_cfg(process_string, 
       Form("%s/%s/mvaInputs", histogramDir.data(), genMatch.data()), "central"));
+	///*  
     mvaInputHistManager->defineBinningOption("m_bWj1Wj2", 100, 0., 1.e+3);
     mvaInputHistManager->defineBinningOption("m_Wj1Wj2", 100, 0., 1.e+3);
     mvaInputHistManager->defineBinningOption("m_bWj1", 100, 0., 1.e+3);
@@ -321,9 +331,73 @@ int main(int argc, char* argv[])
     mvaInputHistManager->defineBinningOption("CSV_b", 100, 0., 1.);
     mvaInputHistManager->defineBinningOption("CSV_Wj1", 100, 0., 1.);
     mvaInputHistManager->defineBinningOption("CSV_Wj2", 100, 0., 1.);
+	
     mvaInputHistManager->defineBinningOption("pT_b", 100, 0., 5.e+2);
     mvaInputHistManager->defineBinningOption("pT_Wj1", 100, 0., 5.e+2);
     mvaInputHistManager->defineBinningOption("pT_Wj2", 100, 0., 5.e+2);
+	
+	mvaInputHistManager->defineBinningOption("eta_b", 100, -5., 5.);
+    mvaInputHistManager->defineBinningOption("eta_Wj1", 100, -5., 5.);
+    mvaInputHistManager->defineBinningOption("eta_Wj2", 100, -5., 5.);
+
+	mvaInputHistManager->defineBinningOption("phi_b", 100, -5., 5.);
+    mvaInputHistManager->defineBinningOption("phi_Wj1", 100, -5., 5.);
+    mvaInputHistManager->defineBinningOption("phi_Wj2", 100, -5., 5.);
+
+    mvaInputHistManager->defineBinningOption("mass_b", 100, 0., 5.e+2);
+    mvaInputHistManager->defineBinningOption("mass_Wj1", 100, 0., 5.e+2);
+    mvaInputHistManager->defineBinningOption("mass_Wj2", 100, 0., 5.e+2);
+	////
+	mvaInputHistManager->defineBinningOption("kinFit_pT_b", 100, 0., 5.e+2);
+    mvaInputHistManager->defineBinningOption("kinFit_pT_Wj1", 100, 0., 5.e+2);
+    mvaInputHistManager->defineBinningOption("kinFit_pT_Wj2", 100, 0., 5.e+2);
+	
+	mvaInputHistManager->defineBinningOption("kinFit_eta_b", 100, -5., 5.);
+    mvaInputHistManager->defineBinningOption("kinFit_eta_Wj1", 100, -5., 5.);
+    mvaInputHistManager->defineBinningOption("kinFit_eta_Wj2", 100, -5., 5.);
+
+	mvaInputHistManager->defineBinningOption("kinFit_phi_b", 100, -5., 5.);
+    mvaInputHistManager->defineBinningOption("kinFit_phi_Wj1", 100, -5., 5.);
+    mvaInputHistManager->defineBinningOption("kinFit_phi_Wj2", 100, -5., 5.);
+
+    mvaInputHistManager->defineBinningOption("kinFit_mass_b", 100, 0., 5.e+2);
+    mvaInputHistManager->defineBinningOption("kinFit_mass_Wj1", 100, 0., 5.e+2);
+    mvaInputHistManager->defineBinningOption("kinFit_mass_Wj2", 100, 0., 5.e+2);
+	// 	  ,, ,,
+
+	mvaInputHistManager->defineBinningOption("cosTheta_leadWj_restTop", 100, -1., 1.);
+    mvaInputHistManager->defineBinningOption("cosTheta_subleadWj_restTop", 100, -1., 1.);
+    mvaInputHistManager->defineBinningOption("cosTheta_Kin_leadWj_restTop", 100, -1., 1.);
+    mvaInputHistManager->defineBinningOption("cosTheta_Kin_subleadWj_restTop", 100, -1., 1.);	
+
+	mvaInputHistManager->defineBinningOption("cosTheta_leadEWj_restTop", 100, -1., 1.);
+    mvaInputHistManager->defineBinningOption("cosTheta_subleadEWj_restTop", 100, -1., 1.);
+    mvaInputHistManager->defineBinningOption("cosTheta_Kin_leadEWj_restTop", 100, -1., 1.);
+    mvaInputHistManager->defineBinningOption("cosTheta_Kin_subleadEWj_restTop", 100, -1., 1.);	
+	
+	mvaInputHistManager->defineBinningOption("cosThetaW_rest", 100, -1., 1.);
+    mvaInputHistManager->defineBinningOption("cosThetaKinW_rest", 100, -1., 1.);
+    mvaInputHistManager->defineBinningOption("cosThetaW_lab", 100, -1., 1.);
+    mvaInputHistManager->defineBinningOption("cosThetaKinW_lab", 100, -1., 1.);	
+	
+	mvaInputHistManager->defineBinningOption("cosThetab_rest", 100, -1., 1.);
+    mvaInputHistManager->defineBinningOption("cosThetaKinb_rest", 100, -1., 1.);
+    mvaInputHistManager->defineBinningOption("cosThetab_lab", 100, -1., 1.);
+    mvaInputHistManager->defineBinningOption("cosThetaKinb_lab", 100, -1., 1.);	
+
+	
+	mvaInputHistManager->defineBinningOption("Dphi_Wj1_Wj2_lab", 100, -5., 5.);
+	mvaInputHistManager->defineBinningOption("Dphi_KinWj1_KinWj2_lab", 100, -5., 5.);
+	
+	mvaInputHistManager->defineBinningOption("Dphi_Wb_rest", 100, -5., 5.);
+    mvaInputHistManager->defineBinningOption("Dphi_KinWb_rest", 100, -5., 5.);
+    mvaInputHistManager->defineBinningOption("Dphi_Wb_lab", 100, -5., 5.);
+    mvaInputHistManager->defineBinningOption("Dphi_KinWb_lab", 100, -5., 5.);
+	
+	mvaInputHistManager->defineBinningOption("cosThetaWj1_restW", 100, -1., 1.);
+	mvaInputHistManager->defineBinningOption("cosThetaKinWj_restW", 100, -1., 1.);
+	
+	//
     mvaInputHistManager->defineBinningOption("dR_bWj1", 100, 0., 5.);
     mvaInputHistManager->defineBinningOption("dR_bWj2", 100, 0., 5.);
     mvaInputHistManager->defineBinningOption("dR_Wj1Wj2", 100, 0., 5.);
@@ -341,15 +415,15 @@ int main(int argc, char* argv[])
     mvaInputHistManager->defineBinningOption("max_dR_div_expRjet", 200, 0., 2.);
     mvaInputHistManager->bookHistograms(fs, hadTopTagger->mvaInputVariables());
     mvaInputHistManagers[idxGenMatch] = mvaInputHistManager; 
-
+    //*/
     std::string subdirName = Form("%s/%s/%s", histogramDir.data(), genMatch.data(), process_string.data());
     TDirectory* subdir = createSubdirectory_recursively(fs, subdirName);
     subdir->cd();
 
-    TH1* histogram_mvaOutput = book1D("mvaOutput", "mvaOutput", 200, -1., +1.);
-    mvaOutputHistManagers[idxGenMatch] = histogram_mvaOutput;
+    //TH1* histogram_mvaOutput = book1D("mvaOutput", "mvaOutput", 200, -1., +1.);
+    //mvaOutputHistManagers[idxGenMatch] = histogram_mvaOutput;
   }
-
+  std::cout << "Here before bdt filler" << std::endl;
   NtupleFillerBDT<float, int>* bdt_filler = nullptr;
   typedef std::remove_pointer<decltype(bdt_filler)>::type::float_type float_type;
   typedef std::remove_pointer<decltype(bdt_filler)>::type::int_type int_type;
@@ -361,21 +435,36 @@ int main(int argc, char* argv[])
       "m_bWj1Wj2", "m_Wj1Wj2", "m_bWj1", "m_bWj2", 
       "m_Wj1Wj2_div_m_bWj1Wj2",
       "CSV_b", "CSV_Wj1", "CSV_Wj2", 
-      "pT_b", "eta_b", "phi_b", "mass_b", "kinFit_pT_b", "kinFit_eta_b", "kinFit_phi_b", "kinFit_mass_b", 
-      "pT_Wj1", "eta_Wj1", "phi_Wj1", "mass_Wj1", "kinFit_pT_Wj1", "kinFit_eta_Wj1", "kinFit_phi_Wj1", "kinFit_mass_Wj1", 
-      "pT_Wj2", "eta_Wj2", "phi_Wj2", "mass_Wj2", "kinFit_pT_Wj2", "kinFit_eta_Wj2", "kinFit_phi_Wj2", "kinFit_mass_Wj2",
+      "pT_b", "eta_b", "phi_b", "mass_b", 
+	  "kinFit_pT_b", "kinFit_eta_b", "kinFit_phi_b", "kinFit_mass_b", 
+      "pT_Wj1", "eta_Wj1", "phi_Wj1", "mass_Wj1", 
+	  "kinFit_pT_Wj1", "kinFit_eta_Wj1", "kinFit_phi_Wj1", "kinFit_mass_Wj1", 
+      "pT_Wj2", "eta_Wj2", "phi_Wj2", "mass_Wj2", 
+	  "kinFit_pT_Wj2", "kinFit_eta_Wj2", "kinFit_phi_Wj2", "kinFit_mass_Wj2",
+	  "cosTheta_leadWj_restTop","cosTheta_subleadWj_restTop", "cosTheta_Kin_leadWj_restTop","cosTheta_Kin_subleadWj_restTop",
+	  "cosTheta_leadEWj_restTop","cosTheta_subleadEWj_restTop", "cosTheta_Kin_leadEWj_restTop","cosTheta_Kin_subleadEWj_restTop",
+	  "cosThetaW_rest","cosThetaKinW_rest","cosThetaW_lab","cosThetaKinW_lab",
+	  "cosThetab_rest","cosThetaKinb_rest","cosThetab_lab","cosThetaKinb_lab",
+	  "Dphi_Wj1_Wj2_lab","Dphi_KinWj1_KinWj2_lab",
+	  "Dphi_Wb_rest","Dphi_KinWb_rest","Dphi_Wb_lab","Dphi_KinWb_lab",
+	  "cosThetaWj1_restW","cosThetaKinWj_restW",
       "dR_bWj1", "dR_bWj2", "dR_Wj1Wj2", "dR_bW",
       "statusKinFit", "nllKinFit", "alphaKinFit", "logPKinFit", "logPErrKinFit", 
       "qg_b", "qg_Wj1", "qg_Wj2",
       "pT_bWj1Wj2", "pT_Wj1Wj2",
       "max_dR_div_expRjet"
     );
+	
+
     bdt_filler->register_variable<int_type>(
       "b_isGenMatched", "Wj1_isGenMatched", "Wj2_isGenMatched",
       "bWj1Wj2_isGenMatched"
     );
+	bdt_filler->register_variable<int_type>("mvaOutput_hadTopTagger");
     bdt_filler->bookTree(fs);
+		
   }
+  std::cout << "Here after bdt filler" << std::endl; 
 
   int numEntries = inputTree->GetEntries();
   int analyzedEntries = 0;
@@ -625,32 +714,82 @@ int main(int argc, char* argv[])
 	    (genWJetFromAntiTop_sublead && deltaR((*selWJet2)->p4(), genWJetFromAntiTop_sublead->p4()) < 0.2);
 
 	  double mvaOutput = (*hadTopTagger)(**selBJet, **selWJet1, **selWJet2);
-	  const std::map<std::string, double>& mvaInputs = hadTopTagger->mvaInputs();
-	  //std::cout << "mvaInputs:" << std::endl;
+	  const std::map<std::string, double>& mvaInputs =  hadTopTagger->mvaInputs();
+	  std::cout << "mvaInputs:" << std::endl;
 	  //for ( std::map<std::string, double>::const_iterator mvaInput = mvaInputs.begin();
-	  //  	  mvaInput != mvaInputs.end(); ++mvaInput ) {
+	  //  	  mvaInput != mvaInputs.end(); ++mvaInput ) { 
 	  //  std::cout << " " << mvaInput->first << " = " << mvaInput->second << std::endl;
 	  //}
 	  //std::cout << "selBJet: isFromTop = " << selBJet_isFromTop << ", isFromAntiTop = " << selBJet_isFromAntiTop << std::endl;
 	  //std::cout << "selWJet1: isFromTop = " << selWJet1_isFromTop << ", isFromAntiTop = " << selWJet1_isFromAntiTop << std::endl;
 	  //std::cout << "selWJet2: isFromTop = " << selWJet2_isFromTop << ", isFromAntiTop = " << selWJet2_isFromAntiTop << std::endl;
+	  
+	  /////////////////////////////////////////////////////////////
+	  // angles computation 
+	  ////////////////////////////////////////////////////////////
+	  // "cosThetaWb_rest","cosThetaKinWb_rest","cosThetaWb_lab","cosThetaKinWb_lab"
+      ///*
 
+      //} catch( error_already_set ) {
+      //      PyErr_Print();
+      //}
+	  //*/
+	  /*
+	  int five_squared=0;
+      int a =3;
+      Py_Initialize();
+      object main_module = import("__main__");
+      object main_namespace = main_module.attr("__dict__");
+      main_namespace["var"]=a;
+      object ignored = exec("result = 5 ** var", main_namespace);
+      five_squared = extract<int>(main_namespace["result"]);
+      std::cout << five_squared << std::endl;
+      */
 	  int idxGenMatch_top     = getGenMatch(selBJet_isFromTop, selWJet1_isFromTop, selWJet2_isFromTop);
 	  int idxGenMatch_antiTop = getGenMatch(selBJet_isFromAntiTop, selWJet1_isFromAntiTop, selWJet2_isFromAntiTop);
+	  /*
+	  std::vector<double> vec;
+      vec.push_back(1.2);
+      vec.push_back(3.4);
+	  //try {   
+		Py_Initialize();
 
-	  if ( idxGenMatch_antiTop != kGen_bWj1Wj2 ) { // CV: don't consider top matching if reconstructed jet triplet is (fully) matched to anti-top
+		boost::python::class_<std::vector<double> >("PyVec")
+		.def(boost::python::vector_indexing_suite<std::vector<double> >());
+
+		object main_module = import("__main__");
+		object globals = main_module.attr("__dict__");
+		globals["var"]=vec;
+		object ignored = exec(
+				 "from time import time,ctime\n"
+				 "import sklearn\n"
+				 "import pandas\n"
+				 "import pickle\n"
+				 "result = sum(var)\n"
+				 "print 'Today is',ctime(time()), 'All python libraries we need loaded good	'\n"
+			, globals, globals);
+		double result = extract<double>(globals["result"]);
+		std::cout << result << std::endl;
+		*/
+	  if ( idxGenMatch_antiTop != kGen_bWj1Wj2 ) { 
+	    // CV: don't consider top matching if reconstructed jet triplet is (fully) matched to anti-top
 	    assert(mvaInputHistManagers.find(idxGenMatch_top) != mvaInputHistManagers.end());
 	    mvaInputHistManagers[idxGenMatch_top]->fillHistograms(mvaInputs, evtWeight);
 	    fillWithOverFlow(mvaOutputHistManagers[idxGenMatch_top], mvaOutput, evtWeight);
+		
 	    bdt_filler->operator()({ run, lumi, event });
 	    for ( std::map<std::string, double>::const_iterator mvaInput = mvaInputs.begin();
 		  mvaInput != mvaInputs.end(); ++mvaInput ) {
 	      bdt_filler->operator()(mvaInput->first, mvaInput->second);
 	    }
+		
+		
 	    bdt_filler->operator()("b_isGenMatched", selBJet_isFromTop);
 	    bdt_filler->operator()("Wj1_isGenMatched", selWJet1_isFromTop);
 	    bdt_filler->operator()("Wj2_isGenMatched", selWJet2_isFromTop);
 	    bdt_filler->operator()("bWj1Wj2_isGenMatched", selBJet_isFromTop && selWJet1_isFromTop && selWJet2_isFromTop);
+		//bdt_filler->operator()("mvaOutput_hadTopTagger", result);
+		// 
 	    bdt_filler->fill();
 	  }
 	  if ( idxGenMatch_top != kGen_bWj1Wj2 ) { // CV: don't consider anti-top matching if reconstructed jet triplet is (fully) matched to top
@@ -666,6 +805,7 @@ int main(int argc, char* argv[])
 	    bdt_filler->operator()("Wj1_isGenMatched", selWJet1_isFromAntiTop);
 	    bdt_filler->operator()("Wj2_isGenMatched", selWJet2_isFromAntiTop);
 	    bdt_filler->operator()("bWj1Wj2_isGenMatched", selBJet_isFromAntiTop && selWJet1_isFromAntiTop && selWJet2_isFromAntiTop);
+		//bdt_filler->operator()("mvaOutput_hadTopTagger", result);
 	    bdt_filler->fill();
 	  }
 	}
@@ -698,7 +838,7 @@ int main(int argc, char* argv[])
   delete genWBosonReader;
   delete genWJetReader;
 
-  delete hadTopTagger;
+  delete hadTopTagger; 
 
   clock.Show("analyze_hadTopTagger");
 
