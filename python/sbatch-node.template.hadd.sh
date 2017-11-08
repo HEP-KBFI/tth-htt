@@ -162,10 +162,9 @@ run_wrapped_executable() {
         echo "Hadoop commands not available; resorting to POSIX commands"
         cp_cmd=cp;
         st_cmd="stat --printf='%s'"
-        ls_cmd="ls"
+        ls_cmd="ls -l"
       fi
       cp_cmd="$cp_cmd -f"
-      ls_cmd="$ls_cmd -l"
 
       OUTPUT_FILE_SIZE=$(stat -c '%s' $OUTPUT_FILE)
       if [ -n "$OUTPUT_FILE_SIZE" ] && [ $OUTPUT_FILE_SIZE -ge 1000 ]; then
