@@ -1,9 +1,9 @@
-
 /** \executable prepareDatacards
  *
  * Prepare datacards for ttH, H->tautau analysis
  *
  * \author Christian Veelken, Tallinn
+cfg_prepareDatacards 
  *
  */
 
@@ -17,6 +17,8 @@
 #include "DataFormats/FWLite/interface/OutputFiles.h"
 
 #include "tthAnalysis/HiggsToTauTau/interface/histogramAuxFunctions.h"
+#include "tthAnalysis/HiggsToTauTau/interface/jetToTauFakeRateAuxFunctions.h" // getEtaBin, getPtBin 
+
 
 #include <TFile.h>
 #include <TH1.h>
@@ -38,6 +40,8 @@
 #include <assert.h>
 
 typedef std::vector<std::string> vstring;
+typedef std::vector<double> vdouble;
+
 
 namespace
 {
@@ -169,7 +173,55 @@ int main(int argc, char* argv[])
   edm::ParameterSet cfg = edm::readPSetsFrom(argv[1])->getParameter<edm::ParameterSet>("process");
 
   edm::ParameterSet cfg_prepareDatacards = cfg.getParameter<edm::ParameterSet>("prepareDatacards");
-  
+
+
+/*  
+// ------ NEW LINES ------
+  vdouble EtaBins_e  = cfg_prepareDatacards.getParameter<vdouble>("absEtaBins_e");
+  vdouble PtBins_e   = cfg_prepareDatacards.getParameter<vdouble>("absPtBins_e");
+  vdouble EtaBins_mu = cfg_prepareDatacards.getParameter<vdouble>("absEtaBins_mu");
+  vdouble PtBins_mu  = cfg_prepareDatacards.getParameter<vdouble>("absPtBins_mu");
+
+  int numEtaBins_e  = EtaBins_e.size() - 1;
+  int numPtBins_e   = PtBins_e.size() - 1;
+  int numEtaBins_mu = EtaBins_mu.size() - 1;
+  int numPtBins_mu  = PtBins_mu.size() - 1;
+
+  for(int idxEtaBin_e = 0; idxEtaBin_e < numEtaBins_e; ++idxEtaBin_e ) { // ELECTRON ETA LOOP                                                                          
+       double minAbsEta_e = std::abs(EtaBins_e[idxEtaBin_e]);
+       double maxAbsEta_e = std::abs(EtaBins_e[idxEtaBin_e + 1]);
+    for(int idxPtBin_e = 0; idxPtBin_e < numPtBins_e; ++idxPtBin_e ) { // ELECTRON PT LOOP                                                                                 
+        double minPt_e = PtBins_e[idxPtBin_e];
+        double maxPt_e = PtBins_e[idxPtBin_e + 1];
+        std::string etaBin_e = getEtaBin(minAbsEta_e, maxAbsEta_e);
+        std::string PtBin_e = getPtBin(minPt_e, maxPt_e);
+   
+        std::cout<< PtBin_e << " " << etaBin_e << std::endl;
+
+    }
+  }
+
+
+  for(int idxEtaBin_mu = 0; idxEtaBin_mu < numEtaBins_mu; ++idxEtaBin_mu ){ // MUON ETA LOOP                                                                               
+    double minAbsEta_mu = std::abs(EtaBins_mu[idxEtaBin_mu]);
+    double maxAbsEta_mu = std::abs(EtaBins_mu[idxEtaBin_mu + 1]);
+    for(int idxPtBin_mu = 0; idxPtBin_mu < numPtBins_mu; ++idxPtBin_mu ) { // MUON PT LOOP                                                                                 
+        double minPt_mu = PtBins_mu[idxPtBin_mu];
+        double maxPt_mu = PtBins_mu[idxPtBin_mu + 1];
+
+        std::string etaBin_mu = getEtaBin(minAbsEta_mu, maxAbsEta_mu);
+        std::string PtBin_mu  = getPtBin(minPt_mu, maxPt_mu);
+
+        std::cout<< PtBin_mu << " " << etaBin_mu << std::endl;
+
+    }
+  }
+// -----------------------
+*/
+
+
+
+
   vstring processesToCopy_string = cfg_prepareDatacards.getParameter<vstring>("processesToCopy");
   std::vector<TPRegexp*> processesToCopy;
   for ( vstring::const_iterator processToCopy_string = processesToCopy_string.begin();
