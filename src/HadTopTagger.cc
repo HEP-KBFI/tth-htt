@@ -222,18 +222,15 @@ double HadTopTagger::operator()(const RecoJet& recBJet, const RecoJet& recWJet1,
 	"				pkldata = pickle.load(f) \n"\
 	"			except pickle.UnpicklingError as e:  \n"\
     "				# normal, somewhat expected  \n"\
+	"				#print ('pkl loaded') \n"\
 	"				model = pkldata.booster().get_dump() \n"\
-    "				print len(model) \n"\
 	"			except (AttributeError,  EOFError, ImportError, IndexError) as e:  \n"\
     "				# secondary errors  \n"\
 	"				print(traceback.format_exc(e))  \n"\
-    "				#continue  \n"\
 	"			except Exception as e:  \n"\
-    "				# everything else, possibly fatal  \n"\
+    "				# everything else \n"\
 	"				print(traceback.format_exc(e))  \n"\
-	"				print('Oops!',sys.exc_info()[0],'occured.') \n"\
 	"			else:  \n"\
-	"				#print ('pkl loaded') \n"\
 	"				try: \n"\
 	"					proba = pkldata.predict_proba(data[data.columns.values.tolist()].values  ) \n"\
 	"				except : \n"\
