@@ -24,9 +24,19 @@ RecoJet::RecoJet(Double_t pt,
   , heppyFlavour_(heppyFlavour)
   , idx_(idx)
   , genLepton_(0)
+  , genLepton_isOwner_(false)
   , genHadTau_(0)
+  , genHadTau_isOwner_(false)
   , genJet_(0)
+  , genJet_isOwner_(false)
 {}
+
+RecoJet::~RecoJet()
+{
+  if ( genLepton_isOwner_ ) delete genLepton_;
+  if ( genHadTau_isOwner_ ) delete genHadTau_;
+  if ( genJet_isOwner_    ) delete genJet_;
+}
 
 std::ostream& operator<<(std::ostream& stream, const RecoJet& jet)
 {

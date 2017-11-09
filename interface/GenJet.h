@@ -12,7 +12,10 @@ class GenJet : public Particle
          Double_t _eta,
          Double_t _phi,
          Double_t _mass);
-  operator GenParticle() const;
+
+  virtual ~GenJet() {};
+
+  operator GenParticle() const;  
 };
 
 #endif // GENJET_H

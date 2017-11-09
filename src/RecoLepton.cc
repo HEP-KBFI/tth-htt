@@ -38,14 +38,24 @@ RecoLepton::RecoLepton(Double_t pt,
   , charge_(charge)
   , cone_pt_(0.)
   , genLepton_(0)
+  , genLepton_isOwner_(false)
   , genHadTau_(0)
+  , genHadTau_isOwner_(false)
   , genJet_(0)
+  , genJet_isOwner_(false)
   , isLoose_(false)
   , isFakeable_(false)
   , isTight_(false)
 {
   double cone_pt = ( jetPtRatio_ > 1.e-3 ) ? 0.85*pt_/jetPtRatio_ : pt_;
   set_cone_pt(cone_pt);
+}
+
+RecoLepton::~RecoLepton()
+{
+  if ( genLepton_isOwner_ ) delete genLepton_;
+  if ( genHadTau_isOwner_ ) delete genHadTau_;
+  if ( genJet_isOwner_    ) delete genJet_;
 }
 
 std::ostream& operator<<(std::ostream& stream, const RecoLepton& lepton)

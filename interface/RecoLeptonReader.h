@@ -54,20 +54,20 @@ class RecoLeptonReader
     if ( readGenMatching_ ) {
       assert(genLeptonReader_ && genHadTauReader_ && genJetReader_);
       size_t nLeptons = leptons.size();
-      matched_genLeptons_ = genLeptonReader_->read();
-      assert(matched_genLeptons_.size() == nLeptons);
-      matched_genHadTaus_ = genHadTauReader_->read();
-      assert(matched_genHadTaus_.size() == nLeptons);
-      matched_genJets_ = genJetReader_->read();
-      assert(matched_genJets_.size() == nLeptons);
+      std::vector<GenLepton> matched_genLeptons = genLeptonReader_->read();
+      assert(matched_genLeptons.size() == nLeptons);
+      std::vector<GenHadTau> matched_genHadTaus = genHadTauReader_->read();
+      assert(matched_genHadTaus.size() == nLeptons);
+      std::vector<GenJet> matched_genJets = genJetReader_->read();
+      assert(matched_genJets.size() == nLeptons);
       for ( size_t idxLepton = 0; idxLepton < nLeptons; ++idxLepton ) {
 	T* lepton = &leptons[idxLepton];
-	const GenLepton* matched_genLepton = &matched_genLeptons_[idxLepton];
-	if ( matched_genLepton->pt() > 0. ) lepton->set_genLepton(matched_genLepton);
-	const GenHadTau* matched_genHadTau = &matched_genHadTaus_[idxLepton];
-	if ( matched_genHadTau->pt() > 0. ) lepton->set_genHadTau(matched_genHadTau);
-	const GenJet* matched_genJet = &matched_genJets_[idxLepton];
-	if ( matched_genJet->pt() > 0. ) lepton->set_genJet(matched_genJet);
+	const GenLepton& matched_genLepton = matched_genLeptons[idxLepton];
+	if ( matched_genLepton.isValid() ) lepton->set_genLepton(new GenLepton(matched_genLepton), true);
+	const GenHadTau& matched_genHadTau = matched_genHadTaus[idxLepton];
+	if ( matched_genHadTau.isValid() ) lepton->set_genHadTau(new GenHadTau(matched_genHadTau), true);
+	const GenJet& matched_genJet = matched_genJets[idxLepton];
+	if ( matched_genJet.isValid() ) lepton->set_genJet(new GenJet(matched_genJet), true);
       }
     }
   }
@@ -76,9 +76,6 @@ class RecoLeptonReader
   GenHadTauReader* genHadTauReader_;
   GenJetReader* genJetReader_;
   bool readGenMatching_;
-  mutable std::vector<GenLepton> matched_genLeptons_;
-  mutable std::vector<GenHadTau> matched_genHadTaus_;
-  mutable std::vector<GenJet> matched_genJets_;
 
   std::string branchName_pt_;
   std::string branchName_eta_;

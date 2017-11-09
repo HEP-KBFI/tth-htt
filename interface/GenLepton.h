@@ -21,6 +21,8 @@ class GenLepton : public GenParticle
   GenLepton(const math::PtEtaPhiMLorentzVector & p4,
             Int_t pdgId);
 
+  virtual ~GenLepton() {};
+
   operator GenParticle() const;
 };
 
