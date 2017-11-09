@@ -136,6 +136,6 @@ class ClusterHistogramAggregator:
             outputFiles = [ os.path.basename(output_file) ],
             scriptFile = script_file,
             logFile = log_file,
-            skipIfOutputFileExists = False,
+            skipIfOutputFileExists = True,
             job_template_file = 'sbatch-node.template.hadd.sh'
         )
