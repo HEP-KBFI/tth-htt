@@ -24,97 +24,12 @@ HadTopTagger::HadTopTagger(const std::string& mvaFileName)
 {
   kinFit_ = new HadTopKinFit();
 
-  mvaInputVariables_.push_back("CSV_Wj1");
   mvaInputVariables_.push_back("CSV_b");
-  mvaInputVariables_.push_back("dR_Wj1Wj2");
-  mvaInputVariables_.push_back("dR_bW");
-  mvaInputVariables_.push_back("m_Wj1Wj2");
-  mvaInputVariables_.push_back("nllKinFit");
   mvaInputVariables_.push_back("pT_Wj2");
-  mvaInputVariables_.push_back("pT_bWj1Wj2");
-  mvaInputVariables_.push_back("qg_Wj2");
-
-  mvaInputVariables_.push_back("m_bWj1Wj2");
-  mvaInputVariables_.push_back("m_Wj1Wj2");
-  mvaInputVariables_.push_back("m_bWj1");
-  mvaInputVariables_.push_back("m_bWj2");
-  mvaInputVariables_.push_back("m_Wj1Wj2_div_m_bWj1Wj2");
-  mvaInputVariables_.push_back("CSV_b");
-  mvaInputVariables_.push_back("CSV_Wj1");
-  mvaInputVariables_.push_back("CSV_Wj2");
-  mvaInputVariables_.push_back("pT_b");
-  mvaInputVariables_.push_back("eta_b");
-  mvaInputVariables_.push_back("phi_b");
-  mvaInputVariables_.push_back("mass_b");
-  mvaInputVariables_.push_back("pT_Wj1");
-  mvaInputVariables_.push_back("eta_Wj1");
-  mvaInputVariables_.push_back("phi_Wj1");
-  mvaInputVariables_.push_back("mass_Wj1");
-  mvaInputVariables_.push_back("pT_Wj2");
-  mvaInputVariables_.push_back("eta_Wj2");
-  mvaInputVariables_.push_back("phi_Wj2");
-  mvaInputVariables_.push_back("mass_Wj2");
-  
-  mvaInputVariables_.push_back("dR_bWj1");
-  mvaInputVariables_.push_back("dR_bWj2");
-  mvaInputVariables_.push_back("dR_Wj1Wj2");
-  mvaInputVariables_.push_back("dR_bW");
-  mvaInputVariables_.push_back("statusKinFit");
-  mvaInputVariables_.push_back("nllKinFit");
-  mvaInputVariables_.push_back("alphaKinFit");
-    
-  mvaInputVariables_.push_back("kinFit_pT_b");
-  mvaInputVariables_.push_back("kinFit_eta_b");
-  mvaInputVariables_.push_back("kinFit_phi_b");
-  mvaInputVariables_.push_back("kinFit_mass_b");
-  mvaInputVariables_.push_back("kinFit_pT_Wj1");
-  mvaInputVariables_.push_back("kinFit_eta_Wj1");
-  mvaInputVariables_.push_back("kinFit_phi_Wj1");
-  mvaInputVariables_.push_back("kinFit_mass_Wj1");
-  mvaInputVariables_.push_back("kinFit_pT_Wj2");
-  mvaInputVariables_.push_back("kinFit_eta_Wj2");
-  mvaInputVariables_.push_back("kinFit_phi_Wj2");
-  mvaInputVariables_.push_back("kinFit_mass_Wj2");
-  
-  mvaInputVariables_.push_back("cosTheta_leadWj_restTop");
-  mvaInputVariables_.push_back("cosTheta_subleadWj_restTop");
-  mvaInputVariables_.push_back("cosTheta_Kin_leadWj_restTop");
-  mvaInputVariables_.push_back("cosTheta_Kin_subleadWj_restTop");
-
-  mvaInputVariables_.push_back("cosTheta_leadEWj_restTop");
-  mvaInputVariables_.push_back("cosTheta_subleadEWj_restTop");
-  mvaInputVariables_.push_back("cosTheta_Kin_leadEWj_restTop");
-  mvaInputVariables_.push_back("cosTheta_Kin_subleadEWj_restTop");
-  
-  mvaInputVariables_.push_back("cosThetaW_rest");
-  mvaInputVariables_.push_back("cosThetaKinW_rest");
-  mvaInputVariables_.push_back("cosThetaW_lab");
-  mvaInputVariables_.push_back("cosThetaKinW_lab");
-  
-  mvaInputVariables_.push_back("cosThetab_rest");
-  mvaInputVariables_.push_back("cosThetaKinb_rest");
-  mvaInputVariables_.push_back("cosThetab_lab");
-  mvaInputVariables_.push_back("cosThetaKinb_lab");
-
-  mvaInputVariables_.push_back("Dphi_Wj1_Wj2_lab");
-  mvaInputVariables_.push_back("Dphi_KinWj1_KinWj2_lab");
-  
-  mvaInputVariables_.push_back("Dphi_Wb_rest");
-  mvaInputVariables_.push_back("Dphi_KinWb_rest");
-  mvaInputVariables_.push_back("Dphi_Wb_lab");
-  mvaInputVariables_.push_back("Dphi_KinWb_lab");
-
-  mvaInputVariables_.push_back("cosThetaWj1_restW");
-  mvaInputVariables_.push_back("cosThetaKinWj_restW");
-	  
-  mvaInputVariables_.push_back("logPKinFit");
-  mvaInputVariables_.push_back("logPErrKinFit");
-  mvaInputVariables_.push_back("qg_b");
-  mvaInputVariables_.push_back("qg_Wj1");
+  mvaInputVariables_.push_back("m_Wj1Wj2");  
+  mvaInputVariables_.push_back("nllKinFit");    
   mvaInputVariables_.push_back("qg_Wj2");
   mvaInputVariables_.push_back("pT_bWj1Wj2");
-  mvaInputVariables_.push_back("pT_Wj1Wj2");
-  mvaInputVariables_.push_back("max_dR_div_expRjet");
   //if ( mvaFileName != "" ) {
   //  mva_ = new TMVAInterface(mvaFileName, mvaInputVariables_, {});
   //}
@@ -159,6 +74,8 @@ PyObject* vectorToTuple_String(std::vector<std::basic_string<char>> &data) {
 
 double HadTopTagger::operator()(const RecoJet& recBJet, const RecoJet& recWJet1, const RecoJet& recWJet2)
 {
+  char* pkldir=(char*) "/home/acaan/CMSSW_9_4_0_pre1/src/tth-bdt-training-test/HadTopTagger/";
+  char* pklpath=(char*) "HadTopTagger_sklearnV0o17o1_HypOpt/TTToSemilepton_HadTopTagger_sklearnV0o17o1_HypOpt_XGB_ntrees_2_deph_1_lr_0o01_CSV_sort.pkl";
   mvaInputs_["pT_Wj2"]                 = recWJet2.pt();
   Particle::LorentzVector p4_bWj1Wj2 = recBJet.p4() + recWJet1.p4() + recWJet2.p4();
   mvaInputs_["pT_bWj1Wj2"]             = p4_bWj1Wj2.pt();
@@ -179,13 +96,10 @@ double HadTopTagger::operator()(const RecoJet& recBJet, const RecoJet& recWJet1,
 	  //std::cout << " " << mvaInput->first << " = " << mvaInput->second << std::endl;
   }
 
-  if ( 1>0 ) { // if ( mva_ ) {
     check_mvaInputs(mvaInputs_);
-    mvaOutput_ = 34; // (*mva_)(mvaInputs_);
+    //mvaOutput_ = 34; // (*mva_)(mvaInputs_);
 	// https://stackoverflow.com/questions/3286448/calling-a-python-method-from-c-c-and-extracting-its-return-value
-	char* pklpath=(char*) "HadTopTagger_sklearnV0o17o1_HypOpt/TTToSemilepton_HadTopTagger_sklearnV0o17o1_HypOpt_XGB_ntrees_2_deph_1_lr_0o01_CSV_sort.pkl";
-	char* pkldir=(char*) "/home/acaan/CMSSW_9_4_0_pre1/src/tth-bdt-training-test/HadTopTagger/";
-	std::cout << "Do python, HTT, size: "<<mvaInputs_.size() << std::endl;
+	//std::cout << "Do python, HTT, size: "<<mvaInputs_.size() << std::endl;
 	Py_SetProgramName((char*) "application");
 	PyObject *moduleMainString = PyString_FromString("__main__");
 	PyObject *moduleMain = PyImport_Import(moduleMainString);
@@ -249,7 +163,6 @@ double HadTopTagger::operator()(const RecoJet& recBJet, const RecoJet& recWJet1,
 	mvaOutput_=PyFloat_AsDouble(result);
 	// https://gist.github.com/rjzak/5681680
 	///////////////////////////////////////////////////////////////	
-  } else mvaOutput_=-3;
   return mvaOutput_;
 }
 
@@ -267,4 +180,6 @@ const HadTopKinFit* HadTopTagger::kinFit() const
 { 
   return kinFit_; 
 }
+
+
 
