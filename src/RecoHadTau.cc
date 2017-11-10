@@ -40,12 +40,22 @@ RecoHadTau::RecoHadTau(Double_t pt,
   , antiElectron_(antiElectron)
   , antiMuon_(antiMuon)
   , genLepton_(0)
+  , genLepton_isOwner_(false)
   , genHadTau_(0)
+  , genHadTau_isOwner_(false)
   , genJet_(0)
+  , genJet_isOwner_(false)
   , isLoose_(false)
   , isFakeable_(false)
   , isTight_(false)
 {}
+
+RecoHadTau::~RecoHadTau()
+{
+  if ( genLepton_isOwner_ ) delete genLepton_;
+  if ( genHadTau_isOwner_ ) delete genHadTau_;
+  if ( genJet_isOwner_    ) delete genJet_;
+}
 
 std::ostream& operator<<(std::ostream& stream, const RecoHadTau& hadTau)
 {

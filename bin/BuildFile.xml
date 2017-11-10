@@ -181,7 +181,7 @@
   <use   name="roottmva"/>
   <use   name="boost"/>
 </bin>
-<bin file="addBackgroundLeptonFakes.cc" name="addBackgroundLeptonFakes">
+<bin file="addBackground_LeptonFakeRate.cc" name="addBackground_LeptonFakeRate">
   <use   name="FWCore/FWLite"/>
   <use   name="FWCore/ParameterSet"/>
   <use   name="FWCore/PythonParameterSet"/>

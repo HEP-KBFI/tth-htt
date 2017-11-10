@@ -327,20 +327,20 @@ void RecoHadTauReader::readGenMatching(std::vector<RecoHadTau>& hadTaus) const
   if ( readGenMatching_ ) {
     assert(genLeptonReader_ && genHadTauReader_ && genJetReader_);
     size_t nHadTaus = hadTaus.size();
-    matched_genLeptons_ = genLeptonReader_->read();
-    assert(matched_genLeptons_.size() == nHadTaus);
-    matched_genHadTaus_ = genHadTauReader_->read();
-    assert(matched_genHadTaus_.size() == nHadTaus);
-    matched_genJets_ = genJetReader_->read();
-    assert(matched_genJets_.size() == nHadTaus);
+    std::vector<GenLepton> matched_genLeptons = genLeptonReader_->read();
+    assert(matched_genLeptons.size() == nHadTaus);
+    std::vector<GenHadTau> matched_genHadTaus = genHadTauReader_->read();
+    assert(matched_genHadTaus.size() == nHadTaus);
+    std::vector<GenJet> matched_genJets = genJetReader_->read();
+    assert(matched_genJets.size() == nHadTaus);
     for ( size_t idxHadTau = 0; idxHadTau < nHadTaus; ++idxHadTau ) {
       RecoHadTau* hadTau = &hadTaus[idxHadTau];
-      const GenLepton* matched_genLepton = &matched_genLeptons_[idxHadTau];
-      if ( matched_genLepton -> isValid() ) hadTau->set_genLepton(matched_genLepton);
-      const GenHadTau* matched_genHadTau = &matched_genHadTaus_[idxHadTau];
-      if ( matched_genHadTau -> isValid() ) hadTau->set_genHadTau(matched_genHadTau);
-      const GenJet* matched_genJet = &matched_genJets_[idxHadTau];
-      if ( matched_genJet -> isValid() ) hadTau->set_genJet(matched_genJet);
+      const GenLepton& matched_genLepton = matched_genLeptons[idxHadTau];
+      if ( matched_genLepton.isValid() ) hadTau->set_genLepton(new GenLepton(matched_genLepton), true);
+      const GenHadTau& matched_genHadTau = matched_genHadTaus[idxHadTau];
+      if ( matched_genHadTau.isValid() ) hadTau->set_genHadTau(new GenHadTau(matched_genHadTau), true);
+      const GenJet& matched_genJet = matched_genJets[idxHadTau];
+      if ( matched_genJet.isValid() ) hadTau->set_genJet(new GenJet(matched_genJet), true);
     }
   }
 }

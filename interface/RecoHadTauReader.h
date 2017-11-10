@@ -75,9 +75,6 @@ class RecoHadTauReader
   GenHadTauReader* genHadTauReader_;
   GenJetReader* genJetReader_;
   bool readGenMatching_;
-  mutable std::vector<GenLepton> matched_genLeptons_;
-  mutable std::vector<GenHadTau> matched_genHadTaus_;
-  mutable std::vector<GenJet> matched_genJets_;
 
   std::string branchName_pt_;
   std::string branchName_eta_;

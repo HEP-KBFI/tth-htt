@@ -33,6 +33,8 @@ class RecoHadTau : public Particle
 	     Int_t antiElectron,
 	     Int_t antiMuon);
 
+  virtual ~RecoHadTau();
+
   /**
    * @brief Set flags indicating whether or not lepton passes loose, fakeable and/or tight selection criteria
    */
@@ -43,9 +45,9 @@ class RecoHadTau : public Particle
   /**
    * @brief Set links to generator level particles (matched by dR)
    */
-  void set_genLepton(const GenLepton* genLepton) { genLepton_ = genLepton; }
-  void set_genHadTau(const GenHadTau* genHadTau) { genHadTau_ = genHadTau; }
-  void set_genJet(const GenJet* genJet) { genJet_ = genJet; }
+  void set_genLepton(const GenLepton* genLepton, bool isOwner = false) { genLepton_ = genLepton; genLepton_isOwner_ = isOwner; }
+  void set_genHadTau(const GenHadTau* genHadTau, bool isOwner = false) { genHadTau_ = genHadTau; genHadTau_isOwner_ = isOwner; }
+  void set_genJet(const GenJet* genJet, bool isOwner = false) { genJet_ = genJet; genJet_isOwner_ = isOwner; }
 
   /**
    * @brief Funtions to access data-members
@@ -96,8 +98,11 @@ class RecoHadTau : public Particle
 
 //--- matching to generator level particles
   const GenLepton* genLepton_;
+  bool genLepton_isOwner_;
   const GenHadTau* genHadTau_;
+  bool genHadTau_isOwner_;
   const GenJet* genJet_;
+  bool genJet_isOwner_;
 
 //--- flags indicating whether or not lepton passes loose, fakeable and/or tight selection criteria
   mutable bool isLoose_;

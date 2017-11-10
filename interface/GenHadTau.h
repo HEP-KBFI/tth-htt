@@ -14,6 +14,8 @@ class GenHadTau : public Particle
 	    Double_t mass, 
 	    Int_t charge);
 
+  virtual ~GenHadTau() {};
+
   /**
    * @brief Funtions to access data-members
    * @return Values of data-members

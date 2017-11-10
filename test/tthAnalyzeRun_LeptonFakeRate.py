@@ -19,7 +19,7 @@ elif ERA == "2016":
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "2017Sep19"
+version = "2017Nov4"
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -28,15 +28,15 @@ if __name__ == '__main__':
     format = '%(asctime)s - %(levelname)s: %(message)s')
 
   analysis = analyzeConfig_LeptonFakeRate(
-    configDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis_2017Sep19", ERA, version),
-    outputDir = os.path.join("/hdfs/local", getpass.getuser(), "ttHAnalysis_LeptonFakeRate_trial_2017Sep19", ERA, version),
+    configDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis_2017Nov4", ERA, version),
+    outputDir = os.path.join("/hdfs/local", getpass.getuser(), "ttHAnalysis_LeptonFakeRate_trial_2017Nov4", ERA, version),
     cmssw_base_dir_combine = "",
     executable_analyze = "analyze_LeptonFakeRate",
     samples = samples,
-    absEtaBins_e  = [ -1., 1.479, 9.9 ],
-    absEtaBins_mu = [ -1., 1.479, 9.9 ],
-    absPtBins_e   = [ 20., 30., 100000.],
-    absPtBins_mu  = [ 10., 30., 100000.],
+    absEtaBins_e  = [ 0., 1.479, 9.9 ],
+    absEtaBins_mu = [ 0., 1.479, 9.9 ],
+    absPtBins_e   = [ 15., 20., 30., 45., 65., 100000. ],
+    absPtBins_mu  = [ 10., 15., 20., 30., 45., 65., 100000. ],
     fillGenEvtHistograms = False,
     central_or_shifts = [ 
       "central",
