@@ -17,6 +17,8 @@ class Particle
 	   Double_t mass);
   Particle(const Particle::LorentzVector & p4);
 
+  virtual ~Particle() {}
+
   /**
    * @brief Funtions to access data-members
    * @return Values of data-members

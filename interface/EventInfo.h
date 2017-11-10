@@ -14,6 +14,9 @@ public:
   EventInfo(bool is_signal,
             bool is_mc,
             bool is_mc_th = false);
+  EventInfo(const EventInfo & eventInfo);
+  EventInfo &
+  operator=(const EventInfo & eventInfo);
 
   RUN_TYPE               run;               ///< run number
   LUMI_TYPE              lumi;              ///< luminosity
@@ -45,10 +48,12 @@ public:
   operator<<(std::ostream & os,
              const EventInfo & info);
 
+  friend class EventInfoWriter;
+
 private:
-  const bool is_signal_;
-  const bool is_mc_;
-  const bool is_mc_th_;
+  bool is_signal_;
+  bool is_mc_;
+  bool is_mc_th_;
 
   static const std::map<std::string, GENHIGGSDECAYMODE_TYPE> decayMode_idString;
 };

@@ -40,12 +40,22 @@ RecoHadTau::RecoHadTau(Double_t pt,
   , antiElectron_(antiElectron)
   , antiMuon_(antiMuon)
   , genLepton_(0)
+  , genLepton_isOwner_(false)
   , genHadTau_(0)
+  , genHadTau_isOwner_(false)
   , genJet_(0)
+  , genJet_isOwner_(false)
   , isLoose_(false)
   , isFakeable_(false)
   , isTight_(false)
 {}
+
+RecoHadTau::~RecoHadTau()
+{
+  if ( genLepton_isOwner_ ) delete genLepton_;
+  if ( genHadTau_isOwner_ ) delete genHadTau_;
+  if ( genJet_isOwner_    ) delete genJet_;
+}
 
 std::ostream& operator<<(std::ostream& stream, const RecoHadTau& hadTau)
 {
@@ -57,10 +67,16 @@ std::ostream& operator<<(std::ostream& stream, const RecoHadTau& hadTau)
   stream << " decayModeFinding = " << hadTau.decayModeFinding() << "," 
 	 << " id_mva_dR03 = " << hadTau.id_mva_dR03() << " (raw = " << hadTau.raw_mva_dR03() << ")," 
 	 << " antiElectron = " << hadTau.antiElectron() << ", antiMuon = " << hadTau.antiMuon()  << std::endl;
-  stream << "gen. matching:" 
-	 << " lepton = " << hadTau.genLepton() << "," 
-	 << " hadTau = " << hadTau.genHadTau() << "," 
-	 << " jet = " << hadTau.genJet() << std::endl;
+  stream << "gen. matching:"
+            "\n lepton = ";
+  if(hadTau.genLepton()) stream << *hadTau.genLepton();
+  else                   stream << "0\n";
+  stream << " hadTau = ";
+  if(hadTau.genHadTau()) stream << *hadTau.genHadTau();
+  else                   stream << "0\n";
+  stream << " jet = ";
+  if(hadTau.genJet()) stream << *hadTau.genJet();
+  else                 stream << "0\n";
   return stream;
 }
 

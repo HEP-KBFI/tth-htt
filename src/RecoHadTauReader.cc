@@ -278,9 +278,9 @@ std::vector<RecoHadTau> RecoHadTauReader::read() const
     hadTaus.reserve(nHadTaus);
     for ( Int_t idxHadTau = 0; idxHadTau < nHadTaus; ++idxHadTau ) {
       Float_t hadTau_pt = -1.;
-      if      ( hadTauPt_option_ == kHadTauPt_central   ) hadTau_pt = 1.00*gInstance->hadTau_pt_[idxHadTau];
-      else if ( hadTauPt_option_ == kHadTauPt_shiftUp   ) hadTau_pt = 1.03*gInstance->hadTau_pt_[idxHadTau];
-      else if ( hadTauPt_option_ == kHadTauPt_shiftDown ) hadTau_pt = 0.97*gInstance->hadTau_pt_[idxHadTau];
+      if      ( hadTauPt_option_ == RecoHadTauReader::kHadTauPt_central   ) hadTau_pt = 1.00*gInstance->hadTau_pt_[idxHadTau];
+      else if ( hadTauPt_option_ == RecoHadTauReader::kHadTauPt_shiftUp   ) hadTau_pt = 1.03*gInstance->hadTau_pt_[idxHadTau];
+      else if ( hadTauPt_option_ == RecoHadTauReader::kHadTauPt_shiftDown ) hadTau_pt = 0.97*gInstance->hadTau_pt_[idxHadTau];
       else assert(0);
       // compute "VVLose" (95% signal efficiency) working point for tau ID MVA trained for dR=0.3 isolation cone,
       // used to enhance background event statistics for training of event-level MVAs that separate ttH signal from backgrounds
@@ -327,20 +327,20 @@ void RecoHadTauReader::readGenMatching(std::vector<RecoHadTau>& hadTaus) const
   if ( readGenMatching_ ) {
     assert(genLeptonReader_ && genHadTauReader_ && genJetReader_);
     size_t nHadTaus = hadTaus.size();
-    matched_genLeptons_ = genLeptonReader_->read();
-    assert(matched_genLeptons_.size() == nHadTaus);
-    matched_genHadTaus_ = genHadTauReader_->read();
-    assert(matched_genHadTaus_.size() == nHadTaus);
-    matched_genJets_ = genJetReader_->read();
-    assert(matched_genJets_.size() == nHadTaus);
+    std::vector<GenLepton> matched_genLeptons = genLeptonReader_->read();
+    assert(matched_genLeptons.size() == nHadTaus);
+    std::vector<GenHadTau> matched_genHadTaus = genHadTauReader_->read();
+    assert(matched_genHadTaus.size() == nHadTaus);
+    std::vector<GenJet> matched_genJets = genJetReader_->read();
+    assert(matched_genJets.size() == nHadTaus);
     for ( size_t idxHadTau = 0; idxHadTau < nHadTaus; ++idxHadTau ) {
       RecoHadTau* hadTau = &hadTaus[idxHadTau];
-      const GenLepton* matched_genLepton = &matched_genLeptons_[idxHadTau];
-      if ( matched_genLepton -> isValid() ) hadTau->set_genLepton(matched_genLepton);
-      const GenHadTau* matched_genHadTau = &matched_genHadTaus_[idxHadTau];
-      if ( matched_genHadTau -> isValid() ) hadTau->set_genHadTau(matched_genHadTau);
-      const GenJet* matched_genJet = &matched_genJets_[idxHadTau];
-      if ( matched_genJet -> isValid() ) hadTau->set_genJet(matched_genJet);
+      const GenLepton& matched_genLepton = matched_genLeptons[idxHadTau];
+      if ( matched_genLepton.isValid() ) hadTau->set_genLepton(new GenLepton(matched_genLepton), true);
+      const GenHadTau& matched_genHadTau = matched_genHadTaus[idxHadTau];
+      if ( matched_genHadTau.isValid() ) hadTau->set_genHadTau(new GenHadTau(matched_genHadTau), true);
+      const GenJet& matched_genJet = matched_genJets[idxHadTau];
+      if ( matched_genJet.isValid() ) hadTau->set_genJet(new GenJet(matched_genJet), true);
     }
   }
 }

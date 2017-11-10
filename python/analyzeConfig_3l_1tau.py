@@ -40,7 +40,7 @@ class analyzeConfig_3l_1tau(analyzeConfig):
 
   """
   def __init__(self, configDir, outputDir, executable_analyze, cfgFile_analyze, samples, changeBranchNames,
-               useMEMbranch, hadTau_selection, applyFakeRateWeights, chargeSumSelections, central_or_shifts,
+               MEMbranch, hadTau_selection, applyFakeRateWeights, chargeSumSelections, central_or_shifts,
                max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,
                executable_addBackgrounds, executable_addBackgroundJetToTauFakes, histograms_to_fit, select_rle_output = False,
                executable_prep_dcard="prepareDatacards", executable_add_syst_dcard = "addSystDatacards",
@@ -55,7 +55,7 @@ class analyzeConfig_3l_1tau(analyzeConfig):
 
     self.samples = samples
     self.changeBranchNames = changeBranchNames
-    self.useMEMbranch = useMEMbranch
+    self.MEMbranch = MEMbranch
 
     ##self.lepton_and_hadTau_selections = [ "Tight", "Fakeable", "Fakeable_mcClosure" ]
     self.lepton_and_hadTau_selections = [ "Tight", "Fakeable" ]
@@ -228,8 +228,14 @@ class analyzeConfig_3l_1tau(analyzeConfig):
       lines.append("process.analyze_3l_1tau.branchName_genJets = cms.string('GenJet')")
       lines.append("process.analyze_3l_1tau.redoGenMatching = cms.bool(False)")
       lines.append("process.analyze_3l_1tau.fillGenEvtHistograms = cms.bool(True)")
-    if jobOptions['useMEMbranch']:
-      lines.append("process.analyze_3l_1tau.branchName_memOutput = cms.string('memObjects_3l_1tau')")
+    if jobOptions['MEMbranch']:
+      lines.append(
+        "process.analyze_3l_1tau.branchName_memOutput = cms.string('%s_%s')" % (
+          jobOptions['MEMbranch'],
+          'central',
+#          self.get_addMEM_systematics(jobOptions['central_or_shift'])
+        )
+      )
     create_cfg(self.cfgFile_analyze, jobOptions['cfgFile_modified'], lines)
 
   def createCfg_makePlots_mcClosure(self, jobOptions):
@@ -398,7 +404,7 @@ class analyzeConfig_3l_1tau(analyzeConfig):
                   'apply_trigger_bits' : (is_mc and (self.era == "2015" or (self.era == "2016" and sample_info["reHLT"]))) or not is_mc,
                   'selectBDT': self.isBDTtraining,
                   'changeBranchNames': self.changeBranchNames,
-                  'useMEMbranch' : self.useMEMbranch,
+                  'MEMbranch' : self.MEMbranch,
                 }
                 self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job])
 

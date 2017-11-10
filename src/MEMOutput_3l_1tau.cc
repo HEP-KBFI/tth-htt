@@ -1,10 +1,10 @@
 #include "tthAnalysis/HiggsToTauTau/interface/MEMOutput_3l_1tau.h" // MEMOutput_3l_1tau
 
+#include "tthAnalysis/HiggsToTauTau/interface/RecoLepton.h" // RecoLepton
+#include "tthAnalysis/HiggsToTauTau/interface/RecoHadTau.h" // RecoHadTau
+
 MEMOutput_3l_1tau::MEMOutput_3l_1tau()
-  : run_(0)
-  , lumi_(0)
-  , evt_(0)
-  , leadLepton_eta_(0.)
+  : leadLepton_eta_(0.)
   , leadLepton_phi_(0.)
   , subleadLepton_eta_(0.)
   , subleadLepton_phi_(0.)
@@ -22,63 +22,48 @@ MEMOutput_3l_1tau::MEMOutput_3l_1tau()
   , errorFlag_(0)
 {}
 
-MEMOutput_3l_1tau::MEMOutput_3l_1tau(RUN_TYPE run,
-				     LUMI_TYPE lumi,
-				     EVT_TYPE evt,
-				     Float_t leadLepton_eta,
-				     Float_t leadLepton_phi,
-				     Float_t subleadLepton_eta,
-				     Float_t subleadLepton_phi,
-				     Float_t thirdLepton_eta,
-				     Float_t thirdLepton_phi,
-				     Float_t hadTau_eta,
-				     Float_t hadTau_phi,
-				     Float_t weight_ttH,
-				     Float_t weight_ttZ,
-				     Float_t weight_ttH_hww,
-				     Float_t LR,
-				     Float_t cpuTime,
-				     Float_t realTime,
-				     Int_t isValid,
-				     Int_t errorFlag)
-  : run_(run)
-  , lumi_(lumi)
-  , evt_(evt)
-  , leadLepton_eta_(leadLepton_eta)
-  , leadLepton_phi_(leadLepton_phi)
-  , subleadLepton_eta_(subleadLepton_eta)
-  , subleadLepton_phi_(subleadLepton_phi)
-  , thirdLepton_eta_(thirdLepton_eta)
-  , thirdLepton_phi_(thirdLepton_phi)
-  , hadTau_eta_(hadTau_eta)
-  , hadTau_phi_(hadTau_phi)
-  , weight_ttH_(weight_ttH)
-  , weight_ttZ_(weight_ttZ)
-  , weight_ttH_hww_(weight_ttH_hww)
-  , LR_(LR)
-  , cpuTime_(cpuTime)
-  , realTime_(realTime)
-  , isValid_(isValid)
-  , errorFlag_(errorFlag)
-{}
-
-std::ostream& operator<<(std::ostream& stream, const MEMOutput_3l_1tau& memOutput)
+void
+MEMOutput_3l_1tau::fillInputs(const RecoLepton * leadLepton,
+                              const RecoLepton * subleadLepton,
+                              const RecoLepton * thirdLepton,
+                              const RecoHadTau * hadTau)
 {
-  stream << "<MEMOutput (3l_1tau)>:" << std::endl;
-  stream << " run: " << memOutput.run() << ", lumi = " << memOutput.lumi() << ", event = " << memOutput.evt() << std::endl;
-  stream << " leading lepton: eta = " << memOutput.leadLepton_eta() << ", phi = " << memOutput.leadLepton_phi() << std::endl;
-  stream << " subleading lepton: eta = " << memOutput.subleadLepton_eta() << ", phi = " << memOutput.subleadLepton_phi() << std::endl;
-  stream << " third lepton: eta = " << memOutput.thirdLepton_eta() << ", phi = " << memOutput.thirdLepton_phi() << std::endl;
-  stream << " hadTau: eta = " << memOutput.hadTau_eta() << ", phi = " << memOutput.hadTau_phi() << std::endl;
-  stream << " weights:" << std::endl;
-  stream << "  ttH = " << memOutput.weight_ttH() << std::endl;
-  stream << "  ttZ = " << memOutput.weight_ttZ() << std::endl;
-  stream << "  ttH(H->WW) = " << memOutput.weight_ttH_hww() << std::endl;
-  stream << " LR = " << memOutput.LR() << std::endl;
-  stream << " isValid = " << memOutput.isValid() << std::endl;
-  stream << " errorFlag = " << memOutput.errorFlag() << std::endl;
-  stream << " cpuTime = " << memOutput.cpuTime() << std::endl;
-  stream << " realTime = " << memOutput.realTime() << std::endl;
+  leadLepton_eta_    = leadLepton -> eta();
+  leadLepton_phi_    = leadLepton -> phi();
+  subleadLepton_eta_ = subleadLepton -> eta();
+  subleadLepton_phi_ = subleadLepton -> phi();
+  thirdLepton_eta_   = thirdLepton -> eta();
+  thirdLepton_phi_   = thirdLepton -> phi();
+  hadTau_eta_        = hadTau -> eta();
+  hadTau_phi_        = hadTau -> phi();
+}
+
+std::ostream& operator<<(std::ostream& stream,
+                         const MEMOutput_3l_1tau& memOutput)
+{
+  stream << "<MEMOutput (3l_1tau)>:\n"
+            " "       << memOutput.eventInfo_               << "\n"
+            " leading lepton:"
+            " eta = " << memOutput.leadLepton_eta_          << ","
+            " phi = " << memOutput.leadLepton_phi_          << "\n"
+            " subleading lepton:"
+            " eta = " << memOutput.subleadLepton_eta_       << ","
+            " phi = " << memOutput.subleadLepton_phi_       << "\n"
+            " third lepton: "
+            " eta = " << memOutput.thirdLepton_eta_         << ","
+            " phi = " << memOutput.thirdLepton_phi_         << "\n"
+            " hadTau: "
+            " eta = " << memOutput.hadTau_eta_              << ","
+            " phi = " << memOutput.hadTau_phi_              << "\n"
+            " weights:\n"
+            "  ttH = " << memOutput.weight_ttH()            << "\n"
+            "  ttZ = " << memOutput.weight_ttZ()            << "\n"
+            "  ttH(H->WW) = " << memOutput.weight_ttH_hww() << "\n"
+            " LR = "        << memOutput.LR()               << "\n"
+            " isValid = "   << memOutput.isValid()          << "\n"
+            " errorFlag = " << memOutput.errorFlag()        << "\n"
+            " cpuTime = "   << memOutput.cpuTime()          << "\n"
+            " realTime = "  << memOutput.realTime()         << "\n";
   return stream;
 }
 

@@ -3,47 +3,85 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/GenParticle.h" // Particle::LorentzVector
 
-#include <Rtypes.h> // Int_t, Long64_t, Double_t
+#include <DataFormats/Math/interface/deltaR.h> // deltaR()
+
+#include <Rtypes.h> // Int_t, Long64_t, Float_t
 #include <TMatrixD.h> // TMatrixD
-#include "DataFormats/Math/interface/deltaR.h" // deltaR()
+
+#include <map> // std::map<,>
 
 class RecoMEt
 {
 public:
   RecoMEt();
-  RecoMEt(Double_t pt,
-	  Double_t phi,
-	  Double_t covXX,
-	  Double_t covXY,
-	  Double_t covYY);
-  RecoMEt(const math::PtEtaPhiMLorentzVector & p4, const TMatrixD& cov);
+  RecoMEt(Float_t pt,
+          Float_t phi,
+          Float_t covXX,
+          Float_t covXY,
+          Float_t covYY);
+  RecoMEt(const math::PtEtaPhiMLorentzVector & p4,
+          const TMatrixD& cov);
+  RecoMEt &
+  operator=(const RecoMEt & other);
 
   /**
    * @brief Funtions to access data-members
    * @return Values of data-members
    */
-  Double_t pt() const { return pt_; }
-  Double_t phi() const { return phi_; }
+  Double_t pt() const { return static_cast<Double_t>(default_.pt_); }
+  Double_t phi() const { return static_cast<Double_t>(default_.phi_); }
 
-  Double_t covXX() const { return covXX_; }
-  Double_t covXY() const { return covXY_; }
-  Double_t covYY() const { return covYY_; }
+  Double_t covXX() const { return static_cast<Double_t>(covXX_); }
+  Double_t covXY() const { return static_cast<Double_t>(covXY_); }
+  Double_t covYY() const { return static_cast<Double_t>(covYY_); }
   
   const Particle::LorentzVector& p4() const { return p4_; }
 
   const TMatrixD& cov() const { return cov_; }
 
- protected:
-  Double_t pt_;   ///< pT of missing transverse momentum vector
-  Double_t phi_;  ///< phi of missing transverse momentum vector
+  friend class RecoMEtReader;
+  friend class RecoMEtWriter;
 
-  Double_t covXX_; ///< XX element of MET resolution matrix
-  Double_t covXY_; ///< XY element of MET resolution matrix
-  Double_t covYY_; ///< YY element of MET resolution matrix
-    
-  math::PtEtaPhiMLorentzVector p4_; ///< 4-momentum constructed from pT and phi, assuming eta and mass to be equal to zero
+protected:
+
+  struct MEt
+  {
+    MEt()
+     : pt_(0.)
+     , phi_(0.)
+    {}
+    MEt(Float_t pt,
+        Float_t phi)
+      : pt_(pt)
+      , phi_(phi)
+    {}
+    MEt &
+    operator=(const MEt & other)
+    {
+      pt_ = other.pt_;
+      phi_ = other.phi_;
+      return *this;
+    }
+    Float_t pt_;  ///< pT of missing transverse momentum vector
+    Float_t phi_; ///< phi of missing transverse momentum vector
+  };
+
+  MEt default_; ///< Default values
+  std::map<int, MEt> systematics_; ///< Needed by RecoMEtReader/Writer
+
+  Float_t covXX_; ///< XX element of MET resolution matrix
+  Float_t covXY_; ///< XY element of MET resolution matrix
+  Float_t covYY_; ///< YY element of MET resolution matrix
+
+  ///< (default) 4-momentum constructed from pT and phi, assuming eta and mass to be equal to zero
+  math::PtEtaPhiMLorentzVector p4_;
 
   TMatrixD cov_; ///< MET resolution matrix
+
+  ///< Update cov and p4 (needed by RecoMEtReader)
+  void update();
+  void update_p4();
+  void update_cov();
 };
 
 std::ostream& operator<<(std::ostream& stream, const RecoMEt& met);

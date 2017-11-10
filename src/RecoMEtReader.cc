@@ -1,10 +1,11 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMEtReader.h" // RecoMEtReader
 
-#include "FWCore/Utilities/interface/Exception.h"
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // getBranchName_MEt()
 
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2015, kEra_2016
+#include <FWCore/Utilities/interface/Exception.h>
 
 #include <TString.h> // Form
+#include <TTree.h> // TTree
 
 std::map<std::string, int> RecoMEtReader::numInstances_;
 std::map<std::string, RecoMEtReader*> RecoMEtReader::instances_;
@@ -12,6 +13,7 @@ std::map<std::string, RecoMEtReader*> RecoMEtReader::instances_;
 RecoMEtReader::RecoMEtReader(int era)
   : era_(era)
   , branchName_obj_("met")
+  , met_option_(kMEt_central)
 {
   setBranchNames();
 }
@@ -20,7 +22,7 @@ RecoMEtReader::RecoMEtReader(int era, const std::string& branchName_obj, const s
   : era_(era)
   , branchName_obj_(branchName_obj)
   , branchName_cov_(branchName_cov)
-
+  , met_option_(kMEt_central)
 {
   setBranchNames();
 }
@@ -38,9 +40,14 @@ RecoMEtReader::~RecoMEtReader()
 
 void RecoMEtReader::setBranchNames()
 {
-  if ( numInstances_[branchName_obj_] == 0 ) {
-    branchName_pt_ = Form("%s_%s", branchName_obj_.data(), "pt");
-    branchName_phi_ = Form("%s_%s", branchName_obj_.data(), "phi");
+  if(numInstances_[branchName_obj_] == 0)
+  {
+    for(int met_option = kMEt_central; met_option <= kMEt_shifted_UnclusteredEnDown; ++met_option)
+    {
+      const std::string branchName_obj = getBranchName_MEt(era_, branchName_obj_, met_option);
+      branchName_pt_[met_option]  = Form("%s_%s", branchName_obj.data(), "pt");
+      branchName_phi_[met_option] = Form("%s_%s", branchName_obj.data(), "phi");
+    }
     branchName_covXX_ = Form("%s_%s", branchName_cov_.data(), "covXX");
     branchName_covXY_ = Form("%s_%s", branchName_cov_.data(), "covXY");
     branchName_covYY_ = Form("%s_%s", branchName_cov_.data(), "covYY");
@@ -51,17 +58,25 @@ void RecoMEtReader::setBranchNames()
 
 void RecoMEtReader::setBranchAddresses(TTree* tree)
 {
-  if ( instances_[branchName_obj_] == this ) {
-    tree->SetBranchAddress(branchName_pt_.data(), &met_pt_); 
-    tree->SetBranchAddress(branchName_phi_.data(), &met_phi_); 
-    if ( era_ == kEra_2015 ) { // CV: branch does not exist in VHbb Ntuples v12 produced by Karl for 2015 data
-      met_covXX_ = 400.;       //     assume 20 GeV MET resolution independently in x-direction and in y-direction
-      met_covXY_ =   0.;       //    (cf. Fig. 11 in arXiv:1411.0511)
-      met_covYY_ = 400.;
-    } else {
-      tree->SetBranchAddress(branchName_covXX_.data(), &met_covXX_); 
-      tree->SetBranchAddress(branchName_covXY_.data(), &met_covXY_); 
-      tree->SetBranchAddress(branchName_covYY_.data(), &met_covYY_); 
+  if(instances_[branchName_obj_] == this)
+  {
+    for(int met_option = kMEt_central; met_option <= kMEt_shifted_UnclusteredEnDown; ++met_option)
+    {
+      met_.systematics_[met_option] = {0., 0.};
+      tree->SetBranchAddress(branchName_pt_[met_option].data(),  &met_.systematics_[met_option].pt_);
+      tree->SetBranchAddress(branchName_phi_[met_option].data(), &met_.systematics_[met_option].phi_);
+    }
+    if(era_ == kEra_2015)
+    { // CV: branch does not exist in VHbb Ntuples v12 produced by Karl for 2015 data
+      met_.covXX_ = 400.;       //     assume 20 GeV MET resolution independently in x-direction and in y-direction
+      met_.covXY_ =   0.;       //    (cf. Fig. 11 in arXiv:1411.0511)
+      met_.covYY_ = 400.;
+    }
+    else
+    {
+      tree->SetBranchAddress(branchName_covXX_.data(), &met_.covXX_);
+      tree->SetBranchAddress(branchName_covXY_.data(), &met_.covXY_);
+      tree->SetBranchAddress(branchName_covYY_.data(), &met_.covYY_);
     }
   }
 }
@@ -70,11 +85,8 @@ RecoMEt RecoMEtReader::read() const
 {
   RecoMEtReader* gInstance = instances_[branchName_obj_];
   assert(gInstance);
-  RecoMEt met(
-    gInstance->met_pt_,
-    gInstance->met_phi_,
-    gInstance->met_covXX_,
-    gInstance->met_covXY_,
-    gInstance->met_covYY_);
+  RecoMEt met = met_;
+  met.default_ = met.systematics_[met_option_];
+  met.update(); // update cov and p4
   return met;
 }

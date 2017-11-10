@@ -4,7 +4,20 @@ import os, logging, sys, getpass
 from tthAnalysis.HiggsToTauTau.addMEMConfig_3l_1tau import addMEMConfig_3l_1tau
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 
+version          = "2017Nov05"
+ERA              = "2016"
 isForBDTtraining = False
+central_or_shift = [
+  "central",
+  # "CMS_ttHl_JESUp",
+  # "CMS_ttHl_JESDown",
+  # "CMS_ttHl_tauESUp",
+  # "CMS_ttHl_tauESDown",
+  # "CMS_ttHl_JERUp",
+  # "CMS_ttHl_JERDown",
+  # "CMS_ttHl_UnclusteredEnUp",
+  # "CMS_ttHl_UnclusteredEnDown",
+]
 
 #--------------------------------------------------------------------------------
 # CV: run Ntuple production jobs also for high statistics background samples
@@ -17,13 +30,6 @@ else:
   from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_prodNtuples_2016 import samples_2016 as samples
   leptonSelection = "Fakeable"
   hadTauSelection = "Tight|dR03mvaMedium"
-
-#TODO: create a new set of Ntuples with loose lepton, tight tau and vvloose tau wp selection
-#      for the purpose of training
-#--------------------------------------------------------------------------------
-
-version = "2017Oct13"
-ERA     = "2016"
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -48,6 +54,7 @@ if __name__ == '__main__':
     hadTauSelection          = hadTauSelection,
     isForBDTtraining         = isForBDTtraining,
     isDebug                  = False,
+    central_or_shift         = central_or_shift,
   )
 
   goodToGo = addMEMProduction.create()

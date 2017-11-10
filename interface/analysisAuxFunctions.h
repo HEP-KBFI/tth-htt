@@ -21,7 +21,7 @@ const double met_coef =  0.00397;
 const double mht_coef =  0.00265;
 
 //--- declare data-taking periods
-enum { kEra_2015, kEra_2016 };
+enum { kEra_2015, kEra_2016, kEra_2017 };
 
 //--- declare systematic uncertainties on data/MC corrections for b-tagging efficiency and mistag rates
 enum { kBtag_central, 
@@ -30,8 +30,43 @@ enum { kBtag_central,
        kBtag_cErr1Up, kBtag_cErr1Down, kBtag_cErr2Up, kBtag_cErr2Down, 
        kBtag_jesUp, kBtag_jesDown };
 
+//--- declare systematic uncertainties on MEt
+enum {
+  kMEt_central,
+  kMEt_shifted_JetEnUp, kMEt_shifted_JetEnDown,
+  kMEt_shifted_JetResUp, kMEt_shifted_JetResDown,
+  kMEt_shifted_UnclusteredEnUp, kMEt_shifted_UnclusteredEnDown
+};
+
 //--- declare selection criteria for leptons and hadronic taus
 enum { kLoose, kFakeable, kTight };
+
+//--- selector class
+template <typename LeptonType>
+std::vector<LeptonType>
+selectObjects(int objectSelection,
+              const std::vector<LeptonType> & preselObjects,
+              const std::vector<LeptonType> & fakeableObjects,
+              const std::vector<LeptonType> & tightObjects)
+{
+  switch(objectSelection)
+  {
+    case kLoose:    return preselObjects;
+    case kFakeable: return fakeableObjects;
+    case kTight:    return tightObjects;
+    default:
+    {
+      std::cerr << "Invalid selection: " << objectSelection;
+      throw 1;
+    }
+  }
+}
+
+int
+get_selection(const std::string & selectionString);
+
+int
+get_era(const std::string & eraString);
 
 //--- define the tau MVA ID WPs
 const std::map<std::string, int>
@@ -94,6 +129,13 @@ bool isMatched(const Tfakeable& fakeableLepton, const std::vector<Ttight*>& tigh
  */
 std::string getBranchName_bTagWeight(int era, const std::string& central_or_shift);
 std::string getBranchName_bTagWeight(int era, int central_or_shift);
+
+/**
+ * @brief Return branch name to read MEt pt and phi
+ */
+std::string getBranchName_MEt(int era,
+                              const std::string & defaul_branchName,
+                              int central_or_shift);
 
 /**
  * @brief Return first N objects from collection given as function argument. In case the input collection contains fewer than N objects, the whole input collection is returned

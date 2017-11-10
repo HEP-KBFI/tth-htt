@@ -1,8 +1,5 @@
 #include "tthAnalysis/HiggsToTauTau/interface/writerAuxFunctions.h"
 
-#include <iostream> // std::cerr, std::fixed
-#include <iomanip> // std::setprecision(), std::setw()
-
 void setBranchI(TTree* tree, const std::string& branchName, Int_t* address)
 {
   tree->Branch(branchName.data(), address, Form("%s/I", branchName.data()));   

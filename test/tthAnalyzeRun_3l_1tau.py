@@ -14,7 +14,7 @@ from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 #                                   with a relaxed event selection, to increase the BDT training statistics
 #--------------------------------------------------------------------------------
 
-# E.g. to run: python tthAnalyzeRun_2lss_1tau.py --version "2017Oct24" --mode "forBDTtraining_afterAddMEM" --use_prod_ntuples 
+# E.g. to run: python tthAnalyzeRun_2lss_1tau.py --version "2017Oct24" --mode "forBDTtraining_afterAddMEM" --use_prod_ntuples
 from optparse import OptionParser
 parser = OptionParser()
 parser.add_option("--version ", type="string", dest="version", help="Name of output reository with results\n Trees will be stored in /hdfs/local/USER/ttHAnalysis/2016/VERSION/", default='dumb')
@@ -37,7 +37,7 @@ hadTau_selection                   = None
 hadTau_selection_relaxed           = None
 changeBranchNames                  = use_prod_ntuples
 applyFakeRateWeights               = None
-useMEMbranch                       = False
+MEMbranch                          = ''
 hadTauFakeRateWeight_inputFileName = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016.root"
 
 # Karl: temporarily disable other modes until we've proper Ntuples
@@ -79,7 +79,7 @@ elif mode == "addMEM":
   hadTau_selection     = "dR03mvaMedium"
   changeBranchNames    = True
   applyFakeRateWeights = "3lepton"
-  useMEMbranch         = True
+  MEMbranch            = 'memObjects_2lss_1tau_lepFakeable_tauTight_dR03mvaMedium'
 elif mode == "forBDTtraining_beforeAddMEM":
   if use_prod_ntuples:
     from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_prodNtuples_2016_FastSim import samples_2016
@@ -94,7 +94,7 @@ elif mode == "forBDTtraining_afterAddMEM":
   applyFakeRateWeights     = "4L"
   hadTau_selection         = "dR03mvaVTight"
   hadTau_selection_relaxed = "dR03mvaVVLoose"
-  useMEMbranch             = True
+  MEMbranch                = 'memObjects_2lss_1tau_lepLoose_tauTight_dR03mvaVVLoose'
 else:
   raise ValueError("Invalid Configuration parameter 'mode' = %s !!" % mode)
 
@@ -130,7 +130,7 @@ if __name__ == '__main__':
       cfgFile_analyze      = "analyze_3l_1tau_cfg.py",
       samples              = samples,
       changeBranchNames    = changeBranchNames,
-      useMEMbranch         = useMEMbranch,
+      MEMbranch            = MEMbranch,
       hadTau_selection     = hadTau_selection,
       # CV: apply "fake" background estimation to leptons only and not to hadronic taus, as discussed on slide 10 of
       #     https://indico.cern.ch/event/597028/contributions/2413742/attachments/1391684/2120220/16.12.22_ttH_Htautau_-_Review_of_systematics.pdf
@@ -199,7 +199,7 @@ if __name__ == '__main__':
       lumi                                  = LUMI,
       debug                                 = False,
       running_method                        = "sbatch",
-      num_parallel_jobs                     = 16,
+      num_parallel_jobs                     = 100, # KE: run up to 100 'hadd' jobs in parallel on batch system
       executable_addBackgrounds             = "addBackgrounds",
       executable_addBackgroundJetToTauFakes = "addBackgroundLeptonFakes", # CV: use common executable for estimating jet->lepton and jet->tau_h fake background
       histograms_to_fit                     = [

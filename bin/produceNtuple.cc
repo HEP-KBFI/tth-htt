@@ -128,6 +128,7 @@ int main(int argc, char* argv[])
   int era = -1;
   if      ( era_string == "2015" ) era = kEra_2015;
   else if ( era_string == "2016" ) era = kEra_2016;
+  else if ( era_string == "2017" ) era = kEra_2017;
   else throw cms::Exception("produceNtuple") 
     << "Invalid Configuration parameter 'era' = " << era_string << " !!\n";
 
@@ -152,6 +153,17 @@ int main(int argc, char* argv[])
     << "Invalid Configuration parameter 'hadTauSelection' = " << hadTauSelection_string << " !!\n";
   std::string hadTauSelection_part2 = ( hadTauSelection_parts->GetEntries() == 2 ) ? (dynamic_cast<TObjString*>(hadTauSelection_parts->At(1)))->GetString().Data() : "";
   delete hadTauSelection_parts;
+
+  const std::string branchName_electrons_in   = cfg_produceNtuple.getParameter<std::string>("branchName_electrons");
+  const std::string branchName_muons_in       = cfg_produceNtuple.getParameter<std::string>("branchName_muons");
+  const std::string branchName_hadTaus_in     = cfg_produceNtuple.getParameter<std::string>("branchName_hadTaus");
+  const std::string branchName_jets_in        = cfg_produceNtuple.getParameter<std::string>("branchName_jets");
+  const std::string branchName_met_in         = cfg_produceNtuple.getParameter<std::string>("branchName_met");
+  const std::string branchName_genLeptons1_in = cfg_produceNtuple.getParameter<std::string>("branchName_genLeptons1");
+  const std::string branchName_genLeptons2_in = cfg_produceNtuple.getParameter<std::string>("branchName_genLeptons2");
+  const std::string branchName_genHadTaus_in  = cfg_produceNtuple.getParameter<std::string>("branchName_genHadTaus");
+  const std::string branchName_genJets_in     = cfg_produceNtuple.getParameter<std::string>("branchName_genJets");
+
   int minNumHadTaus = cfg_produceNtuple.getParameter<int>("minNumHadTaus");
 
   int minNumLeptons_and_HadTaus = cfg_produceNtuple.getParameter<int>("minNumLeptons_and_HadTaus");
@@ -215,7 +227,7 @@ int main(int argc, char* argv[])
   inputTree->SetBranchAddress(EVT_KEY, &event);
 
 //--- declare particle collections
-  RecoMuonReader* muonReader = new RecoMuonReader(era, "nselLeptons", "selLeptons");
+  RecoMuonReader* muonReader = new RecoMuonReader(era, Form("n%s", branchName_muons_in.c_str()), branchName_muons_in);
   if ( use_HIP_mitigation_mediumMuonId ) muonReader->enable_HIP_mitigation();
   else muonReader->disable_HIP_mitigation();
   muonReader->setBranchAddresses(inputTree);
@@ -224,7 +236,7 @@ int main(int argc, char* argv[])
   RecoMuonCollectionSelectorFakeable fakeableMuonSelector(era);
   RecoMuonCollectionSelectorTight tightMuonSelector(era);
   
-  RecoElectronReader* electronReader = new RecoElectronReader(era, "nselLeptons", "selLeptons");
+  RecoElectronReader* electronReader = new RecoElectronReader(era, Form("n%s", branchName_electrons_in.c_str()), branchName_electrons_in);
   electronReader->setBranchAddresses(inputTree);
   RecoElectronCollectionGenMatcher electronGenMatcher;
   RecoElectronCollectionCleaner electronCleaner(0.3);
@@ -232,7 +244,7 @@ int main(int argc, char* argv[])
   RecoElectronCollectionSelectorFakeable fakeableElectronSelector(era);
   RecoElectronCollectionSelectorTight tightElectronSelector(era);
 
-  RecoHadTauReader* hadTauReader = new RecoHadTauReader(era, "nTauGood", "TauGood");
+  RecoHadTauReader* hadTauReader = new RecoHadTauReader(era, Form("n%s", branchName_hadTaus_in.c_str()), branchName_hadTaus_in);
   hadTauReader->setBranchAddresses(inputTree);
   RecoHadTauCollectionGenMatcher hadTauGenMatcher;
   RecoHadTauCollectionCleaner hadTauCleaner(0.3);
@@ -259,7 +271,7 @@ int main(int argc, char* argv[])
   tightHadTauSelector.set_min_pt(18.);
   std::cout << hadTauSelection_part2 <<'\n';
 
-  RecoJetReader* jetReader = new RecoJetReader(era, isMC, "nJet", "Jet");
+  RecoJetReader* jetReader = new RecoJetReader(era, isMC, Form("n%s", branchName_jets_in.c_str()), branchName_hadTaus_in);
   jetReader->setJetPt_central_or_shift(RecoJetReader::kJetPt_central); 
   jetReader->read_BtagWeight_systematics(isMC);
   jetReader->setBranchAddresses(inputTree);
@@ -270,7 +282,7 @@ int main(int argc, char* argv[])
   RecoJetCollectionSelectorBtagMedium jetSelectorBtagMedium(era);
 
 //--- declare missing transverse energy
-  RecoMEtReader* metReader = new RecoMEtReader(era, "met");
+  RecoMEtReader* metReader = new RecoMEtReader(era, branchName_met_in);
   metReader->setBranchAddresses(inputTree);  
 
 //--- declare generator level information
@@ -278,11 +290,14 @@ int main(int argc, char* argv[])
   GenHadTauReader* genHadTauReader = 0;
   GenJetReader* genJetReader = 0;
   if ( isMC ) {
-    genLeptonReader = new GenLeptonReader("nGenLep", "GenLep", "nGenLepFromTau", "GenLepFromTau"); 
+    genLeptonReader = new GenLeptonReader(
+                                            Form("n%s", branchName_genLeptons1_in.c_str()),      branchName_genLeptons1_in,
+      ! branchName_genLeptons2_in.empty() ? Form("n%s", branchName_genLeptons2_in.c_str()) : "", branchName_genLeptons2_in
+    );
     genLeptonReader->setBranchAddresses(inputTree);
-    genHadTauReader = new GenHadTauReader("nGenHadTaus", "GenHadTaus");
+    genHadTauReader = new GenHadTauReader(Form("n%s", branchName_genHadTaus_in.c_str()), branchName_genHadTaus_in);
     genHadTauReader->setBranchAddresses(inputTree);
-    genJetReader = new GenJetReader("nGenJet", "GenJet");
+    genJetReader = new GenJetReader(Form("n%s", branchName_genJets_in.c_str()), branchName_genJets_in);
     genJetReader->setBranchAddresses(inputTree);
   }
 

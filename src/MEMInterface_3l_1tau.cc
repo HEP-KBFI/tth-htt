@@ -1,10 +1,16 @@
 #include "tthAnalysis/HiggsToTauTau/interface/MEMInterface_3l_1tau.h" // MEMInterface_3l_1tau
+
+#include "tthAnalysis/HiggsToTauTau/interface/RecoLepton.h" // RecoLepton
+#include "tthAnalysis/HiggsToTauTau/interface/RecoHadTau.h" // RecoHadTau
+#include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h" // RecoJet
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // isHigherCSV()
 #include "tthAnalysis/tthMEM/interface/Logger.h" // Logger::
 #include "tthAnalysis/tthMEM/interface/general/lvFunctions.h" // getLorentzVector()
 
+#include <TBenchmark.h> // TBenchmark
+
 MEMInterface_3l_1tau::MEMInterface_3l_1tau()
-  : clock_(0)
+  : clock_(nullptr)
 {
   Logger::enableLogging(false);
   std::cout << "<MEMInterface_3l_1tau>:\n";
@@ -37,7 +43,9 @@ MEMInterface_3l_1tau::operator()(const RecoLepton * selLepton_lead,
   {
     jets.push_back({ getLorentzVector(j -> p4()) });
     if(jets.size() >= MAX_NOF_RECO_JETS)
+    {
       break;
+    }
   }
   const MeasuredLepton leadingLepton(
     getLorentzVector(selLepton_lead -> p4()), selLepton_lead -> charge()
@@ -56,32 +64,31 @@ MEMInterface_3l_1tau::operator()(const RecoLepton * selLepton_lead,
   );
 
   MEMOutput_3l_1tau result;
-  if ( mem_ ) {
+  if(mem_)
+  {
     clock_->Reset();
     clock_->Start("<MEMInterface_3l_1tau::operator()>");
 
-    MEMOutput_3l1tau tmpResult = mem_->operator()(jets, leadingLepton, subLeadingLepton, thirdLepton, tau, m_met);
+    const MEMOutput_3l1tau tmpResult = mem_->operator()(
+      jets, leadingLepton, subLeadingLepton, thirdLepton, tau, m_met
+    );
 
     clock_->Stop("<MEMInterface_3l_1tau::operator()>");
     clock_->Show("<MEMInterface_3l_1tau::operator()>");
 
-    result.leadLepton_eta_ = selLepton_lead->eta();
-    result.leadLepton_phi_ = selLepton_lead->phi();
-    result.subleadLepton_eta_ = selLepton_sublead->eta();
-    result.subleadLepton_phi_ = selLepton_sublead->phi();
-    result.thirdLepton_eta_ = selLepton_third->eta();
-    result.thirdLepton_phi_ = selLepton_third->phi();
-    result.hadTau_eta_ = selHadTau->eta();
-    result.hadTau_phi_ = selHadTau->phi();
-    result.weight_ttH_ = tmpResult.prob_tth;
-    result.weight_ttZ_ = tmpResult.prob_ttz;
+    result.fillInputs(selLepton_lead, selLepton_sublead, selLepton_third, selHadTau);
+    result.weight_ttH_     = tmpResult.prob_tth;
+    result.weight_ttZ_     = tmpResult.prob_ttz;
     result.weight_ttH_hww_ = tmpResult.prob_tth_h2ww;
-    result.LR_ = tmpResult.lr;
-    result.isValid_ = ( !tmpResult.err ) ? 1 : 0;
-    result.errorFlag_ = tmpResult.err;
-    result.cpuTime_ = clock_->GetCpuTime("<MEMInterface_3l_1tau::operator()>");
+    result.LR_             = tmpResult.lr;
+    result.isValid_        = ! tmpResult.err ? 1 : 0;
+    result.errorFlag_      = tmpResult.err;
+
+    result.cpuTime_  = clock_->GetCpuTime("<MEMInterface_3l_1tau::operator()>");
     result.realTime_ = clock_->GetRealTime("<MEMInterface_3l_1tau::operator()>");
-  } else {
+  }
+  else
+  {
     result.isValid_ = 0;
   }
 

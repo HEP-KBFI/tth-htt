@@ -4,11 +4,12 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMEt.h" // RecoMEt
 
 #include <Rtypes.h> // Int_t, Double_t
-#include <TTree.h> // TTree
 
-#include <string>
-#include <vector>
-#include <map>
+#include <string> // std::string
+#include <map> // std::map<,>
+
+// forward declarations
+class TTree;
 
 class RecoMEtWriter
 {
@@ -36,17 +37,13 @@ class RecoMEtWriter
   int era_;
   std::string branchName_obj_;
 
-  std::string branchName_pt_;
-  std::string branchName_phi_;
+  std::map<int, std::string> branchName_pt_;
+  std::map<int, std::string> branchName_phi_;
   std::string branchName_covXX_;
   std::string branchName_covXY_;
   std::string branchName_covYY_;
 
-  Float_t met_pt_;
-  Float_t met_phi_;
-  Float_t met_covXX_;
-  Float_t met_covXY_;
-  Float_t met_covYY_;
+  RecoMEt met_;
 };
 
 #endif // tthAnalysis_HiggsToTauTau_RecoMEtWriter_h

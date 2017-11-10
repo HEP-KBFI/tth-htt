@@ -1,12 +1,12 @@
 #ifndef tthAnalysis_HiggsToTauTau_ParticleCollectionCleaner_h
 #define tthAnalysis_HiggsToTauTau_ParticleCollectionCleaner_h
 
-#include "DataFormats/Math/interface/deltaR.h" // deltaR
+#include <DataFormats/Math/interface/deltaR.h> // deltaR()
 
 template <typename T>
 class ParticleCollectionCleaner
 {
- public:
+public:
   ParticleCollectionCleaner(double dR = 0.4)
     : dR_(dR)
   {}
@@ -17,49 +17,57 @@ class ParticleCollectionCleaner
    * @return Collection of non-overlapping particles
    */
   template <typename Toverlap>
-  std::vector<const T*> operator()(const std::vector<const T*>& particles, const std::vector<const Toverlap*>& overlaps)
+  std::vector<const T*> operator()(const std::vector<const T*>& particles,
+                                   const std::vector<const Toverlap*>& overlaps) const
   {
     std::vector<const T*> cleanedParticles;
-    for ( typename std::vector<const T*>::const_iterator particle = particles.begin();
-	  particle != particles.end(); ++particle ) {
+    for(const T* particle: particles)
+    {
       bool isOverlap = false;
-      for ( typename std::vector<const Toverlap*>::const_iterator overlap = overlaps.begin();
-	    overlap != overlaps.end(); ++overlap ) {
-	double dRoverlap = deltaR((*particle)->eta(), (*particle)->phi(), (*overlap)->eta(), (*overlap)->phi());
-	if ( dRoverlap < dR_ ) {
-	  isOverlap = true;
-	  break;
-	}
+      for(const Toverlap* overlap: overlaps)
+      {
+        const double dRoverlap = deltaR(particle->eta(), particle->phi(), overlap->eta(), overlap->phi());
+        if(dRoverlap < dR_)
+        {
+          isOverlap = true;
+          break;
+        }
       }
-      if ( !isOverlap ) {
-	cleanedParticles.push_back(*particle);
+      if(! isOverlap)
+      {
+        cleanedParticles.push_back(particle);
       }
     }
     return cleanedParticles;
   }
-  template <typename Toverlap, typename... Args>
-  std::vector<const T*> operator()(const std::vector<const T*>& particles, const std::vector<const Toverlap*>& overlaps, Args... args)
+
+  template <typename Toverlap,
+            typename... Args>
+  std::vector<const T*> operator()(const std::vector<const T*>& particles,
+                                   const std::vector<const Toverlap*>& overlaps, Args... args) const
   {
     std::vector<const T*> cleanedParticles;
-    for ( typename std::vector<const T*>::const_iterator particle = particles.begin();
-	  particle != particles.end(); ++particle ) {
+    for(const T* particle: particles)
+    {
       bool isOverlap = false;
-      for ( typename std::vector<const Toverlap*>::const_iterator overlap = overlaps.begin();
-	    overlap != overlaps.end(); ++overlap ) {
-	double dRoverlap = deltaR((*particle)->eta(), (*particle)->phi(), (*overlap)->eta(), (*overlap)->phi());
-	if ( dRoverlap < dR_ ) {
-	  isOverlap = true;
-	  break;
-	}
+      for(const Toverlap* overlap: overlaps)
+      {
+        const double dRoverlap = deltaR(particle->eta(), particle->phi(), overlap->eta(), overlap->phi());
+        if(dRoverlap < dR_)
+        {
+          isOverlap = true;
+          break;
+        }
       }
-      if ( !isOverlap ) {
-	cleanedParticles.push_back(*particle);
+      if(! isOverlap)
+      {
+        cleanedParticles.push_back(particle);
       }
     }
     return this->operator()(cleanedParticles, args...);
   }
-  
- protected: 
+
+protected:
   double dR_;
 };
 
