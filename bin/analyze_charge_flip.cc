@@ -1,14 +1,11 @@
-#include "FWCore/ParameterSet/interface/ParameterSet.h" // edm::ParameterSet
-#include "FWCore/PythonParameterSet/interface/MakeParameterSets.h" // edm::readPSetsFrom()
-#include "FWCore/Utilities/interface/Exception.h" // cms::Exception
-#include "PhysicsTools/FWLite/interface/TFileService.h" // fwlite::TFileService
-#include "DataFormats/FWLite/interface/InputSource.h" // fwlite::InputSource
-#include "DataFormats/FWLite/interface/OutputFiles.h" // fwlite::OutputFiles
-#include "DataFormats/Math/interface/LorentzVector.h" // math::PtEtaPhiMLorentzVector
+#include <FWCore/ParameterSet/interface/ParameterSet.h> // edm::ParameterSet
+#include <FWCore/PythonParameterSet/interface/MakeParameterSets.h> // edm::readPSetsFrom()
+#include <FWCore/Utilities/interface/Exception.h> // cms::Exception
+#include <PhysicsTools/FWLite/interface/TFileService.h> // fwlite::TFileService
+#include <DataFormats/FWLite/interface/InputSource.h> // fwlite::InputSource
+#include <DataFormats/FWLite/interface/OutputFiles.h> // fwlite::OutputFiles
+#include <DataFormats/Math/interface/LorentzVector.h> // math::PtEtaPhiMLorentzVector
 
-#include <Rtypes.h> // Int_t, Long64_t, Double_t
-#include <TChain.h> // TChain
-#include <TTree.h> // TTree
 #include <TBenchmark.h> // TBenchmark
 #include <TString.h> // TString, Form
 #include <TEfficiency.h>
@@ -22,7 +19,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/GenHadTau.h" // GenHadTau
 #include "tthAnalysis/HiggsToTauTau/interface/TMVAInterface.h" // TMVAInterface
 #include "tthAnalysis/HiggsToTauTau/interface/mvaInputVariables.h" // auxiliary functions for computing input variables of the MVA used for signal extraction in the 2lss_1tau category
-#include "tthAnalysis/HiggsToTauTau/interface/KeyTypes.h"
+#include "tthAnalysis/HiggsToTauTau/interface/EventInfoReader.h" // EventInfo, EventInfoReader
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronReader.h" // RecoElectronReader
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonReader.h" // RecoMuonReader
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauReader.h" // RecoHadTauReader
@@ -56,6 +53,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/LeptonFakeRateInterface.h" // LeptonFakeRateInterface
 #include "tthAnalysis/HiggsToTauTau/interface/JetToTauFakeRateInterface.h" // JetToTauFakeRateInterface
 #include "tthAnalysis/HiggsToTauTau/interface/fakeBackgroundAuxFunctions.h" // getWeight_2L, getWeight_3L
+#include "tthAnalysis/HiggsToTauTau/interface/TTreeWrapper.h" // TTreeWrapper
 
 #include <iostream> // std::cerr, std::fixed
 #include <cstring> // std::strncpm
@@ -66,8 +64,6 @@
 #include <algorithm> // std::sort
 #include <fstream> // std::ofstream
 #include <assert.h> // assert
-
-#define EPS 1E-2
 
 typedef math::PtEtaPhiMLorentzVector LV;
 typedef std::vector<std::string> vstring;
@@ -106,6 +102,7 @@ int main(int argc, char* argv[])
   edm::ParameterSet cfg_analyze = cfg.getParameter<edm::ParameterSet>("analyze_charge_flip");
   std::string treeName = cfg_analyze.getParameter<std::string>("treeName");
   std::string process_string = cfg_analyze.getParameter<std::string>("process");
+  bool isDEBUG = ( cfg_analyze.exists("isDEBUG") ) ? cfg_analyze.getParameter<bool>("isDEBUG") : false;
 
   std::string era_string = cfg_analyze.getParameter<std::string>("era");
   int era = -1;
@@ -138,7 +135,6 @@ int main(int argc, char* argv[])
 
   bool isMC = cfg_analyze.getParameter<bool>("isMC");
   std::string central_or_shift = cfg_analyze.getParameter<std::string>("central_or_shift");
-  std::string central_or_shift_label = central_or_shift == "central" ? "" : "_"+central_or_shift;
   std::string central_or_shift_label_st = central_or_shift == "central" ? "" : central_or_shift+"_";
   double lumiScale = ( process_string != "data_obs" ) ? cfg_analyze.getParameter<double>("lumiScale") : 1.;
   bool apply_trigger_bits = cfg_analyze.getParameter<bool>("apply_trigger_bits"); 
@@ -235,7 +231,6 @@ int main(int argc, char* argv[])
   std::string branchName_muons = cfg_analyze.getParameter<std::string>("branchName_muons");
   std::string branchName_hadTaus = cfg_analyze.getParameter<std::string>("branchName_hadTaus");
   std::string branchName_jets = cfg_analyze.getParameter<std::string>("branchName_jets");
-  std::string branchName_met = cfg_analyze.getParameter<std::string>("branchName_met");
 
   std::string selEventsFileName_input = cfg_analyze.getParameter<std::string>("selEventsFileName_input");
   std::cout << "selEventsFileName_input = " << selEventsFileName_input << std::endl;
@@ -257,56 +252,31 @@ int main(int argc, char* argv[])
   fwlite::OutputFiles outputFile(cfg);
   fwlite::TFileService fs = fwlite::TFileService(outputFile.file().data());
 
-  TChain* inputTree = new TChain(treeName.data());
-  for ( std::vector<std::string>::const_iterator inputFileName = inputFiles.files().begin();
-	inputFileName != inputFiles.files().end(); ++inputFileName ) {
-    std::cout << "input Tree: adding file = " << (*inputFileName) << std::endl;
-    inputTree->AddFile(inputFileName->data());
-  }
-
-  if ( !(inputTree->GetListOfFiles()->GetEntries() >= 1) ) {
-    throw cms::Exception("analyze_charge_flip")
-      << "Failed to identify input Tree !!\n";
-  }
-
-  // CV: need to call TChain::LoadTree before processing first event
-  //     in order to prevent ROOT causing a segmentation violation,
-  //     cf. http://root.cern.ch/phpBB3/viewtopic.php?t=10062
-  inputTree->LoadTree(0);
-
-  std::cout << "input Tree contains " << inputTree->GetEntries() << " Entries in " << inputTree->GetListOfFiles()->GetEntries() << " files." << std::endl;
+  TTreeWrapper * inputTree = new TTreeWrapper(treeName.data(), inputFiles.files(), maxEvents);
+  std::cout << "Loaded " << inputTree->getFileCount() << " file(s)." << std::endl;
 
 //--- declare event-level variables
-  RUN_TYPE run;
-  inputTree->SetBranchAddress(RUN_KEY, &run);
-  LUMI_TYPE lumi;
-  inputTree->SetBranchAddress(LUMI_KEY, &lumi);
-  EVT_TYPE event;
-  inputTree->SetBranchAddress(EVT_KEY, &event);
+  EventInfo eventInfo(false, isMC);
+  EventInfoReader eventInfoReader(&eventInfo);
+  inputTree->registerReader(&eventInfoReader);
 
-  hltPaths_setBranchAddresses(inputTree, triggers_1e);
-  hltPaths_setBranchAddresses(inputTree, triggers_2e);
-
-  PUWEIGHT_TYPE pileupWeight;
-  GENWEIGHT_TYPE genWeight = 1.;
-  
-  if ( isMC ) {
-    inputTree->SetBranchAddress(GENWEIGHT_KEY, &genWeight);
-    inputTree->SetBranchAddress(PUWEIGHT_KEY, &pileupWeight);
+  for(const std::vector<hltPath *> hltPaths: {triggers_1e, triggers_2e})
+  {
+    inputTree -> registerReader(hltPaths);
   }
 
 //--- declare particle collections
   RecoMuonReader* muonReader = new RecoMuonReader(era, Form("n%s", branchName_muons.data()), branchName_muons);
   if ( use_HIP_mitigation_mediumMuonId ) muonReader->enable_HIP_mitigation();
   else muonReader->disable_HIP_mitigation();
-  muonReader->setBranchAddresses(inputTree);
+  inputTree -> registerReader(muonReader);
   RecoMuonCollectionGenMatcher muonGenMatcher;
   RecoMuonCollectionSelectorLoose preselMuonSelector(era);
   RecoMuonCollectionSelectorFakeable fakeableMuonSelector(era);
   RecoMuonCollectionSelectorTight tightMuonSelector(era);
 
   RecoElectronReader* electronReader = new RecoElectronReader(era, Form("n%s", branchName_electrons.data()), branchName_electrons);
-  electronReader->setBranchAddresses(inputTree);
+  inputTree -> registerReader(electronReader);
   RecoElectronCollectionGenMatcher electronGenMatcher;
   RecoElectronCollectionCleaner electronCleaner(0.3);
   RecoElectronCollectionSelectorLoose preselElectronSelector(era);
@@ -315,8 +285,7 @@ int main(int argc, char* argv[])
 
   RecoHadTauReader* hadTauReader = new RecoHadTauReader(era, Form("n%s", branchName_hadTaus.data()), branchName_hadTaus);
   hadTauReader->setHadTauPt_central_or_shift(hadTauPt_option);
-  hadTauReader->setBranchAddresses(inputTree);
-  RecoHadTauCollectionGenMatcher hadTauGenMatcher;
+  inputTree -> registerReader(hadTauReader);
   RecoHadTauCollectionCleaner hadTauCleaner(0.3);
   RecoHadTauCollectionSelectorLoose preselHadTauSelector(era);
   if ( hadTauSelection_part2 == "dR03mvaVLoose" || hadTauSelection_part2 == "dR03mvaVVLoose" ) preselHadTauSelector.set(hadTauSelection_part2);
@@ -334,12 +303,9 @@ int main(int argc, char* argv[])
   RecoJetReader* jetReader = new RecoJetReader(era, isMC, Form("n%s", branchName_jets.data()), branchName_jets);
   jetReader->setJetPt_central_or_shift(jetPt_option);
   jetReader->setBranchName_BtagWeight(jet_btagWeight_branch);
-  jetReader->setBranchAddresses(inputTree);
-  RecoJetCollectionGenMatcher jetGenMatcher;
+  inputTree -> registerReader(jetReader);
   RecoJetCollectionCleaner jetCleaner(0.4);
-  RecoJetCollectionSelector jetSelector(era);  
-  RecoJetCollectionSelectorBtagLoose jetSelectorBtagLoose(era);
-  RecoJetCollectionSelectorBtagMedium jetSelectorBtagMedium(era);
+  RecoJetCollectionSelector jetSelector(era);
 
   GenLeptonReader* genLeptonReader = 0;
   GenHadTauReader* genHadTauReader = 0;
@@ -347,13 +313,13 @@ int main(int argc, char* argv[])
   LHEInfoReader* lheInfoReader = 0;
   if ( isMC ) {
     genLeptonReader = new GenLeptonReader("nGenLep", "GenLep", "nGenLepFromTau", "GenLepFromTau");
-    genLeptonReader->setBranchAddresses(inputTree);
+    inputTree -> registerReader(genLeptonReader);
     genHadTauReader = new GenHadTauReader("nGenHadTaus", "GenHadTaus");
-    genHadTauReader->setBranchAddresses(inputTree);
+    inputTree -> registerReader(genHadTauReader);
     genJetReader = new GenJetReader("nGenJet", "GenJet");
-    genJetReader->setBranchAddresses(inputTree);
+    inputTree -> registerReader(genJetReader);
     lheInfoReader = new LHEInfoReader();
-    lheInfoReader->setBranchAddresses(inputTree);
+    inputTree -> registerReader(lheInfoReader);
   }
 
 //--- open output file containing run:lumi:event numbers of events passing final event selection criteria
@@ -416,12 +382,7 @@ int main(int argc, char* argv[])
   TFileDirectory subDir_fails = fs.mkdir( Form("failed_cuts") );
   TH1I* fail_counter = subDir_fails.make<TH1I>( process_string.data(), "Rejected events", 11,  0, 11 );
   const char *rejcs[11] = {"Trigger", "Trig_2e1e", "2e", "0mu", "2e_trig", "2e_sel", "2e_sel_trig", "0mu_sel", "pT_el", "tight_charge", "m_ll"};
-  for (int i=1;i<=11;i++) fail_counter->GetXaxis()->SetBinLabel(i,rejcs[i-1]); 
-
-
-  vstring categories_etapt_gen = {  //B-barrel, E-endcap, L-low pT (10 <= pT < 25), M-med pT (25 <= pT < 50), H-high pT (pT > 50)
-    "BL", "BM", "BH", "EL", "EM", "EH"
-  };
+  for (int i=1;i<=11;i++) fail_counter->GetXaxis()->SetBinLabel(i,rejcs[i-1]);
 
   Double_t bins_eta[3] = {0, 1.479, 2.5};
   Double_t bins_pt[4] = {10, 25, 50, 1000};
@@ -466,26 +427,32 @@ int main(int argc, char* argv[])
     lheInfoHistManager->bookHistograms(fs);
   }
 
-  int numEntries = inputTree->GetEntries();
   int analyzedEntries = 0;
   int selectedEntries = 0;
   double selectedEntries_weighted = 0.;
   TH1* histogram_analyzedEntries = fs.make<TH1D>("analyzedEntries", "analyzedEntries", 1, -0.5, +0.5);
   TH1* histogram_selectedEntries = fs.make<TH1D>("selectedEntries", "selectedEntries", 1, -0.5, +0.5);
-  for ( int idxEntry = 0; idxEntry < numEntries && (maxEvents == -1 || idxEntry < maxEvents); ++idxEntry ) {
-    if ( idxEntry > 0 && (idxEntry % reportEvery) == 0 ) {
-      std::cout << "processing Entry " << idxEntry << " (" << selectedEntries << " Entries selected)" << std::endl;
-    }
-    if(run_lumi_eventSelector && run_lumi_eventSelector -> areWeDone())
+  while(inputTree -> hasNextEvent() && (! run_lumi_eventSelector || (run_lumi_eventSelector && ! run_lumi_eventSelector -> areWeDone())))
+  {
+    if(inputTree -> canReport(reportEvery))
     {
-      break;
+      std::cout << "processing Entry " << inputTree -> getCurrentMaxEventIdx()
+                << " or " << inputTree -> getCurrentEventIdx() << " entry in #"
+                << (inputTree -> getProcessedFileCount() - 1)
+                << " (" << eventInfo
+                << ") file (" << selectedEntries << " Entries selected)\n";
     }
     ++analyzedEntries;
     histogram_analyzedEntries->Fill(0.);
-    
-    inputTree->GetEntry(idxEntry);
-    
-    if ( run_lumi_eventSelector && !(*run_lumi_eventSelector)(run, lumi, event) ) continue;
+
+    if ( isDEBUG ) {
+      std::cout << "event #" << inputTree -> getCurrentMaxEventIdx() << ' ' << eventInfo << '\n';
+    }
+
+    if (run_lumi_eventSelector && !(*run_lumi_eventSelector)(eventInfo))
+    {
+      continue;
+    }
 
 //--- build collections of generator level particles (before any cuts are applied, to check distributions in unbiased event samples)
     std::vector<GenLepton> genLeptons;
@@ -594,8 +561,6 @@ int main(int argc, char* argv[])
     std::vector<const RecoJet*> jet_ptrs = convert_to_ptrs(jets);
     std::vector<const RecoJet*> cleanedJets = jetCleaner(jet_ptrs, selMuons, selElectrons, selHadTaus);
     std::vector<const RecoJet*> selJets = jetSelector(cleanedJets);
-    std::vector<const RecoJet*> selBJets_loose = jetSelectorBtagLoose(cleanedJets);
-    std::vector<const RecoJet*> selBJets_medium = jetSelectorBtagMedium(cleanedJets);
 
 //--- build collections of generator level particles (after some cuts are applied, to safe computing time)
     if ( isMC && !fillGenEvtHistograms ) {
@@ -675,8 +640,8 @@ int main(int argc, char* argv[])
     double evtWeight = 1.;
     if ( isMC ) {
       evtWeight *= lumiScale;
-      if ( apply_genWeight ) evtWeight *= sgn(genWeight);
-      evtWeight *= pileupWeight;
+      if ( apply_genWeight ) evtWeight *= sgn(eventInfo.genWeight);
+      evtWeight *= eventInfo.pileupWeight;
       if ( lheScale_option != kLHE_scale_central ) {	
 	if      ( lheScale_option == kLHE_scale_xDown ) evtWeight *= lheInfoReader->getWeight_scale_xDown();
 	else if ( lheScale_option == kLHE_scale_xUp   ) evtWeight *= lheInfoReader->getWeight_scale_xUp();
@@ -1025,7 +990,7 @@ int main(int argc, char* argv[])
       const GenLepton *gen1 = preselElectrons[1]->genLepton();
       const GenLepton *gp0;
       const GenLepton *gp1;
-      if (gen1->pt() > gen0->pt()){        
+      if (gen1->pt() > gen0->pt()){
         gp0 = gen1;
         gp1 = gen0;
       }
@@ -1075,18 +1040,19 @@ int main(int argc, char* argv[])
       lheInfoHistManager->fillHistograms(*lheInfoReader, evtWeight);
     }
 
-    (*selEventsFile) << run << ":" << lumi << ":" << event << std::endl;
-    (*selEventsFile) << run << ":" << lumi << ":" << event << std::endl;
+    (*selEventsFile) << eventInfo.run << ':' << eventInfo.lumi << ':' << eventInfo.event << '\n';
 
     ++selectedEntries;
     selectedEntries_weighted += evtWeight;
     histogram_selectedEntries->Fill(0.);
   }
 
-
-  std::cout << "num. Entries = " << numEntries << std::endl;
-  std::cout << " analyzed = " << analyzedEntries << std::endl;
-  std::cout << " selected = " << selectedEntries << " (weighted = " << selectedEntries_weighted << ")" << std::endl;
+  std::cout << "max num. Entries = " << inputTree -> getCumulativeMaxEventCount()
+            << " (limited by " << maxEvents << ") processed in "
+            << inputTree -> getProcessedFileCount() << " file(s) (out of "
+            << inputTree -> getFileCount() << ")\n"
+            << " analyzed = " << analyzedEntries << '\n'
+            << " selected = " << selectedEntries << " (weighted = " << selectedEntries_weighted << ")\n\n";
 
   delete dataToMCcorrectionInterface;
 
