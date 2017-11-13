@@ -108,7 +108,7 @@ class sbatchManager:
          prio - ? (10min?) time limit, available immediately
     """
 
-    def __init__(self, pool_id = '', verbose = False):
+    def __init__(self, pool_id = '', verbose = False, dry_run = False):
         self.max_pool_id_length = 256
         if not pool_id:
             raise ValueError("Parameter 'pool_id' not specified!")
@@ -131,6 +131,7 @@ class sbatchManager:
         self.max_nof_greps  = 1000
         self.sbatchArgs     = ''
         self.datetime       = datetime.datetime.now().strftime('%m/%d/%y-%H:%M:%S')
+        self.dry_run        = dry_run
 
         logging.basicConfig(
             stream = sys.stdout,
@@ -360,6 +361,9 @@ class sbatchManager:
             f.write(script)
             f.flush()
             os.fsync(f.fileno())
+
+        if self.dry_run:
+            return
 
         self.jobIds[self.submit(sbatch_command)] = {
             'status'   : Status.submitted,

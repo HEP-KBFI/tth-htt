@@ -1,7 +1,7 @@
 #!/usr/bin/env python
-import os, logging, sys, getpass
+import os, logging, sys, getpass, argparse, datetime
 
-from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016 import samples_2016
+from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2017_test import samples_2017
 from tthAnalysis.HiggsToTauTau.prodNtupleConfig import prodNtupleConfig
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 
@@ -12,33 +12,65 @@ from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 #   'forBDTtraining_except' : to produce the Ntuples from all but the FastSim samples
 #--------------------------------------------------------------------------------
 
-ERA          = "2016"
-mode         = "all"
-preselection = True
-version      = "2017Oct20_w%sPreselection_%s" % ("" if preselection else "o", mode)
+class SmartFormatter(argparse.HelpFormatter):
+  def _split_lines(self, text, width):
+    if text.startswith('R|'):
+      return text[2:].splitlines()
+    return argparse.HelpFormatter._split_lines(self, text, width)
+
+parser = argparse.ArgumentParser(
+  formatter_class = lambda prog: SmartFormatter(prog, max_help_position = 35)
+)
+parser.add_argument('-v', '--version',
+  type = str, dest = 'version', metavar = 'version', default = None, required = True,
+  help = 'R|Analysis version (e.g. %s)' % datetime.date.today().strftime('%Y%b%d'),
+)
+parser.add_argument('-m', '--mode',
+  type = str, dest = 'mode', metavar = 'mode', default = None, required = True,
+  choices = ['all', 'forBDTtraining_only', 'forBDTtraining_except'],
+  help = 'R|Analysis type',
+)
+parser.add_argument('-e', '--era',
+  type = str, dest = 'era', metavar = 'era', choices = ['2017'], default = None, required = True,
+  help = 'R|Era of data/MC',
+)
+parser.add_argument('-p', '--disable-preselection',
+  dest = 'disable_preselection', action = 'store_false', default = True,
+  help = 'R|Enable preselection (read this script for the list of cuts)',
+)
+parser.add_argument('-n', '--disable-nanoaod-preprocess',
+  dest = 'disable_nanoaod_preprocess', action = 'store_false', default = True,
+  help = 'R|Disable nanoAOD preprocessing step',
+)
+parser.add_argument('-d', '--dry-run',
+  dest = 'dry_run', action = 'store_true', default = False,
+  help = 'R|Do not submit the jobs, just generate the necessary shell scripts'
+)
+parser.add_argument('-V', '--verbose',
+  dest = 'verbose', action = 'store_true', default = False,
+  help = 'R|Increase verbosity level in sbatchManager'
+)
+args = parser.parse_args()
+
+era          = args.era
+mode         = args.mode
+preselection = args.disable_preselection
+nanoaod_prep = args.disable_nanoaod_preprocess
+version      = "%s_w%sPreselection_%s" % (args.version, ("" if preselection else "o"), mode)
+verbose      = args.verbose
+dry_run      = args.dry_run
 
 samples         = None
-LUMI            = None
 leptonSelection = None
 hadTauSelection = None
 
-for sample_key, sample_entry in samples_2016.items():
+for sample_key, sample_entry in samples_2017.items():
   if mode == "all":
     sample_entry['use_it'] = True
   elif mode in ["forBDTtraining_only", "forBDTtraining_except"]:
     if sample_key in [
-      "/TTTo2L2Nu_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/matze-faster_v8_ttjets_dl_maod_p1_3a2fa29ab1d54ae0995b28f27b405be9-v1/USER",
-      "/TTTo2L2Nu_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/matze-faster_v8_ttjets_dl_maod_p2_3a2fa29ab1d54ae0995b28f27b405be9-v1/USER",
-      "/TTTo2L2Nu_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/matze-faster_v8_ttjets_dl_maod_p3_3a2fa29ab1d54ae0995b28f27b405be9-v1/USER",
-      "/TTToSemilepton_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/matze-faster_v8_ttjets_sl_maod_p1_3a2fa29ab1d54ae0995b28f27b405be9-v1/USER",
-      "/TTToSemilepton_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/matze-faster_v8_ttjets_sl_maod_p2_3a2fa29ab1d54ae0995b28f27b405be9-v1/USER",
-      "/TTToSemilepton_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/matze-faster_v8_ttjets_sl_maod_p3_3a2fa29ab1d54ae0995b28f27b405be9-v1/USER",
-      "/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/matze-faster_v9_ttW_maod_54aa74f75231422e9f4d3766cb92a64a-v1/USER",
-      "/TTZToLLNuNu_M-10_TuneCUETP8M1_13TeV-amcatnlo-pythia8/matze-faster_v9_ttZ_maod_54aa74f75231422e9f4d3766cb92a64a-v1/USER",
-      "/WZTo3LNu_TuneCUETP8M1_13TeV-powheg-pythia8/matze-faster_v9_WZ_maod_54aa74f75231422e9f4d3766cb92a64a-v1/USER",
-      "/ttHToNonbb_M125_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/matze-faster_v8_ttH_maod_p1_3a2fa29ab1d54ae0995b28f27b405be9-v1/USER",
-      "/ttHToNonbb_M125_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/matze-faster_v8_ttH_maod_p2_3a2fa29ab1d54ae0995b28f27b405be9-v1/USER",
-      "/ttHToNonbb_M125_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/matze-faster_v8_ttH_maod_p3_3a2fa29ab1d54ae0995b28f27b405be9-v1/USER" ]:
+      # list of FastSim samples
+    ]:
       sample_entry["use_it"] = mode == "forBDTtraining_only"
     else:
       sample_entry["use_it"] = mode != "forBDTtraining_only"
@@ -54,11 +86,10 @@ else:
   hadTauSelection   = 'Loose|dR03mvaVVLoose'
   max_files_per_job = 50
 
-if ERA == "2016":
-  samples = samples_2016
-  LUMI    = 35.9e+3 # 1/pb
+if era == "2017":
+  samples = samples_2017
 else:
-  raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
+  raise ValueError("Invalid Configuration parameter 'era' = %s !!" % era)
 
 preselection_cuts = None
 if preselection:
@@ -87,20 +118,24 @@ if __name__ == '__main__':
     format = '%(asctime)s - %(levelname)s: %(message)s')
 
   ntupleProduction = prodNtupleConfig(
-    configDir = os.path.join("/home",       getpass.getuser(), "ttHNtupleProduction", ERA, version),
-    outputDir = os.path.join("/hdfs/local", getpass.getuser(), "ttHNtupleProduction", ERA, version),
+    configDir = os.path.join("/home",       getpass.getuser(), "ttHNtupleProduction", era, version),
+    outputDir = os.path.join("/hdfs/local", getpass.getuser(), "ttHNtupleProduction", era, version),
+    executable_nanoAOD    = "produceNtuple.sh",
     executable_prodNtuple = "produceNtuple",
     cfgFile_prodNtuple    = "produceNtuple_cfg.py",
     samples               = samples,
     max_files_per_job     = max_files_per_job,
-    era                   = ERA,
+    era                   = era,
     preselection_cuts     = preselection_cuts,
     leptonSelection       = leptonSelection,
     hadTauSelection       = hadTauSelection,
+    nanoaod_prep          = nanoaod_prep,
     debug                 = False,
     running_method        = "sbatch",
     version               = version,
     num_parallel_jobs     = 8,
+    verbose               = verbose,
+    dry_run               = dry_run,
   )
 
   ntupleProduction.create()

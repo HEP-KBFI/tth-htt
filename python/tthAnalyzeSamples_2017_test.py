@@ -1,11 +1,11 @@
 from collections import OrderedDict as OD
 
-samples_2016 = OD()
+samples_2017 = OD()
 
 # generated from file:
 # /hdfs/local/karl/store/mc/RunIISummer17MiniAOD/TT_TuneCUETP8M2T4_13TeV-powheg-pythia8/MINIAODSIM/92X_upgrade2017_realistic_v10_ext1-v1/110000/187F7EDA-0986-E711-ABB3-02163E014C21.root
 
-samples_2016["/TT_TuneCUETP8M2T4_13TeV-powheg-pythia8/RunIISummer17MiniAOD-92X_upgrade2017_realistic_v10_ext1-v1/MINIAODSIM"] = OD([
+samples_2017["/TT_TuneCUETP8M2T4_13TeV-powheg-pythia8/RunIISummer17MiniAOD-92X_upgrade2017_realistic_v10_ext1-v1/MINIAODSIM"] = OD([
   ("type",                            "mc"),
   ("sample_category",                 "TT"),
   ("process_name_specific",           "TT"),
@@ -30,7 +30,7 @@ samples_2016["/TT_TuneCUETP8M2T4_13TeV-powheg-pythia8/RunIISummer17MiniAOD-92X_u
 # generated from file:
 # /hdfs/local/karl/store/mc/RunIISummer17MiniAOD/ttHToNonbb_M125_TuneCUETP8M2_13TeV-powheg-pythia8/MINIAODSIM/NZSFlatPU28to62_92X_upgrade2017_realistic_v10-v1/150000/563AD7C5-25AF-E711-B84F-FA163EBF5DEF.root
 
-samples_2016["/ttHToNonbb_M125_TuneCUETP8M2_13TeV-powheg-pythia8/RunIISummer17MiniAOD-NZSFlatPU28to62_92X_upgrade2017_realistic_v10-v1/MINIAODSIM"] = OD([
+samples_2017["/ttHToNonbb_M125_TuneCUETP8M2_13TeV-powheg-pythia8/RunIISummer17MiniAOD-NZSFlatPU28to62_92X_upgrade2017_realistic_v10-v1/MINIAODSIM"] = OD([
   ("type",                            "mc"),
   ("sample_category",                 "signal"),
   ("process_name_specific",           "ttHToNonbb_M125"),
