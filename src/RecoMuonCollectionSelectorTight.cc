@@ -27,7 +27,7 @@ RecoMuonSelectorTight::RecoMuonSelectorTight(int era, int index, bool debug, boo
       max_jetBtagCSV_ = 0.8484;
       break;
     }
-    default: throw cms::Exception("RecoMuonSelectorFakeable") << "Invalid era: " << era_;
+    default: throw cms::Exception("RecoMuonSelectorTight") << "Invalid era: " << era_;
   }
 }
 
