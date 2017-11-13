@@ -75,8 +75,6 @@ private:
   Float_t * mu_miniRelIso;
   Float_t * mu_miniIsoCharged;
   Float_t * mu_miniIsoNeutral;
-  Int_t * mu_jetNDauChargedMVASel;
-  Float_t * mu_jetPtRel;
   Float_t * mu_jetPtRatio;
   Float_t * mu_jetCSV;
   Float_t * mu_sip3D;
@@ -85,10 +83,7 @@ private:
   Float_t * mu_segmentCompatibility;
   Float_t * mu_leptonMVA;
   Float_t * mu_conept;
-  Int_t * mu_mediumID;
-#ifdef DPT_DIV_PT
-  Float_t * mu_dpt_div_pt;
-#endif
+  Bool_t * mu_mediumID;
   Int_t * mu_isfakeablesel;
   Int_t * mu_iscutsel;
   Int_t * mu_ismvasel;
@@ -105,8 +100,6 @@ private:
   Float_t * ele_miniRelIso;
   Float_t * ele_miniIsoCharged;
   Float_t * ele_miniIsoNeutral;
-  Int_t * ele_jetNDauChargedMVASel;
-  Float_t * ele_jetPtRel;
   Float_t * ele_jetPtRatio;
   Float_t * ele_jetCSV;
   Float_t * ele_sip3D;

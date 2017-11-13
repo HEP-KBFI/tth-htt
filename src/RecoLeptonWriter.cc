@@ -26,8 +26,6 @@ RecoLeptonWriter::RecoLeptonWriter(const std::string& branchName_num, const std:
   , miniIsoNeutral_(0)
   , sip3d_(0)
   , mvaRawTTH_(0)
-  , jetNDauChargedMVASel_(0)
-  , jetPtRel_(0)
   , jetPtRatio_(0)
   , jetBtagCSV_(0)
   , tightCharge_(0)
@@ -57,8 +55,6 @@ RecoLeptonWriter::~RecoLeptonWriter()
   delete miniIsoNeutral_;
   delete sip3d_;
   delete mvaRawTTH_;
-  delete jetNDauChargedMVASel_;
-  delete jetPtRel_;
   delete jetPtRatio_;
   delete jetBtagCSV_;
   delete tightCharge_;
@@ -80,8 +76,6 @@ void RecoLeptonWriter::setBranchNames()
   branchName_miniIsoNeutral_ = Form("%s_%s", branchName_obj_.data(), "miniIsoNeutral");
   branchName_sip3d_ = Form("%s_%s", branchName_obj_.data(), "sip3d");
   branchName_mvaRawTTH_ = Form("%s_%s", branchName_obj_.data(), "mvaTTH");
-  branchName_jetNDauChargedMVASel_ = Form("%s_%s", branchName_obj_.data(), "mvaTTHjetNDauChargedMVASel");
-  branchName_jetPtRel_ = Form("%s_%s", branchName_obj_.data(), "mvaTTHjetPtRel");
   branchName_jetPtRatio_ = Form("%s_%s", branchName_obj_.data(), "jetPtRatio");
   branchName_jetBtagCSV_ = Form("%s_%s", branchName_obj_.data(), "jetBTagCSV");
   branchName_tightCharge_ = Form("%s_%s", branchName_obj_.data(), "tightCharge");
@@ -120,10 +114,6 @@ void RecoLeptonWriter::setBranches(TTree *tree)
   setBranchVF(tree, branchName_sip3d_, branchName_num_, sip3d_);
   mvaRawTTH_ = new Float_t[max_nLeptons_];
   setBranchVF(tree, branchName_mvaRawTTH_, branchName_num_, mvaRawTTH_);
-  jetNDauChargedMVASel_ = new Float_t[max_nLeptons_];
-  setBranchVF(tree, branchName_jetNDauChargedMVASel_, branchName_num_, jetNDauChargedMVASel_);
-  jetPtRel_ = new Float_t[max_nLeptons_];
-  setBranchVF(tree, branchName_jetPtRel_, branchName_num_, jetPtRel_);
   jetPtRatio_ = new Float_t[max_nLeptons_];
   setBranchVF(tree, branchName_jetPtRatio_, branchName_num_, jetPtRatio_);
   jetBtagCSV_ = new Float_t[max_nLeptons_];

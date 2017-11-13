@@ -49,8 +49,8 @@ void MuonHistManager::fillHistograms(const RecoMuon& muon, double evtWeight)
   fillWithOverFlow(histogram_jetPtRatio_, muon.jetPtRatio(), evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_jetBtagCSV_, muon.jetBtagCSV(), evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_tightCharge_, muon.tightCharge(), evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_passesLooseIdPOG_, muon.passesLooseIdPOG(), evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_passesMediumIdPOG_, muon.passesMediumIdPOG(), evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_passesLooseIdPOG_, static_cast<int>(muon.passesLooseIdPOG()), evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_passesMediumIdPOG_, static_cast<int>(muon.passesMediumIdPOG()), evtWeight, evtWeightErr);
   
   int abs_genPdgId = 0;
   if      ( muon.genLepton() ) abs_genPdgId = std::abs(muon.genLepton()->pdgId()); // generator level match to electron or muon

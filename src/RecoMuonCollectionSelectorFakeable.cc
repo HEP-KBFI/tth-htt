@@ -1,6 +1,8 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorFakeable.h" // RecoMuonSelectorFakeable
 
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2015, kEra_2016
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2017
+
+#include "FWCore/Utilities/interface/Exception.h" // cms::Exception
 
 #include <cmath> // fabs
 
@@ -19,9 +21,15 @@ RecoMuonSelectorFakeable::RecoMuonSelectorFakeable(int era, int index, bool debu
   , min_jetPtRatio_({ 0.30, -1.e+3 })   
   , apply_mediumIdPOG_(false)
 {
-  if      ( era_ == kEra_2015 ) max_jetBtagCSV_ = { 0.6050, 0.8900 };
-  else if ( era_ == kEra_2016 ) max_jetBtagCSV_ = { 0.5426, 0.8484 };
-  else assert(0);
+  switch(era_)
+  {
+    case kEra_2017:
+    {
+      max_jetBtagCSV_ = { 0.5426, 0.8484 };
+      break;
+    }
+    default: throw cms::Exception("RecoMuonSelectorFakeable") << "Invalid era: " << era_;
+  }
   tightMuonSelector_ = new RecoMuonSelectorTight(era_, index, debug, false);
 }
 

@@ -24,12 +24,9 @@ RecoLeptonReader::RecoLeptonReader(bool readGenMatching)
   , dz_(0)
   , relIso_(0)
   , chargedHadRelIso03_(0)
-  , miniIsoCharged_(0)
-  , miniIsoNeutral_(0)
+  , miniRelIsoCharged_(0)
   , sip3d_(0)
   , mvaRawTTH_(0)
-  , jetNDauChargedMVASel_(0)
-  , jetPtRel_(0)
   , jetPtRatio_(0)
   , jetBtagCSV_(0)
   , tightCharge_(0)
@@ -60,12 +57,9 @@ RecoLeptonReader::RecoLeptonReader(const std::string& branchName_num, const std:
   , dz_(0)
   , relIso_(0)
   , chargedHadRelIso03_(0)
-  , miniIsoCharged_(0)
-  , miniIsoNeutral_(0)
+  , miniRelIsoCharged_(0)
   , sip3d_(0)
   , mvaRawTTH_(0)
-  , jetNDauChargedMVASel_(0)
-  , jetPtRel_(0)
   , jetPtRatio_(0)
   , jetBtagCSV_(0)
   , tightCharge_(0)
@@ -99,12 +93,9 @@ RecoLeptonReader::~RecoLeptonReader()
     delete gInstance->dz_;
     delete gInstance->relIso_;
     delete gInstance->chargedHadRelIso03_;
-    delete gInstance->miniIsoCharged_;
-    delete gInstance->miniIsoNeutral_;
+    delete gInstance->miniRelIsoCharged_;
     delete gInstance->sip3d_;
     delete gInstance->mvaRawTTH_;
-    delete gInstance->jetNDauChargedMVASel_;
-    delete gInstance->jetPtRel_;
     delete gInstance->jetPtRatio_;
     delete gInstance->jetBtagCSV_;
     delete gInstance->tightCharge_;
@@ -123,16 +114,13 @@ void RecoLeptonReader::setBranchNames()
     branchName_pdgId_ = Form("%s_%s", branchName_obj_.data(), "pdgId");
     branchName_dxy_ = Form("%s_%s", branchName_obj_.data(), "dxy");
     branchName_dz_ = Form("%s_%s", branchName_obj_.data(), "dz");
-    branchName_relIso_ = Form("%s_%s", branchName_obj_.data(), "miniRelIso");
-    branchName_chargedHadRelIso03_ = Form("%s_%s", branchName_obj_.data(), "chargedHadRelIso03");
-    branchName_miniIsoCharged_ = Form("%s_%s", branchName_obj_.data(), "miniIsoCharged");
-    branchName_miniIsoNeutral_ = Form("%s_%s", branchName_obj_.data(), "miniIsoNeutral");
+    branchName_relIso_ = Form("%s_%s", branchName_obj_.data(), "miniPFRelIso_all");
+    branchName_chargedHadRelIso03_ = Form("%s_%s", branchName_obj_.data(), "pfRelIso03_chg");
+    branchName_miniRelIsoCharged_ = Form("%s_%s", branchName_obj_.data(), "miniPFRelIso_chg");
     branchName_sip3d_ = Form("%s_%s", branchName_obj_.data(), "sip3d");
     branchName_mvaRawTTH_ = Form("%s_%s", branchName_obj_.data(), "mvaTTH");
-    branchName_jetNDauChargedMVASel_ = Form("%s_%s", branchName_obj_.data(), "mvaTTHjetNDauChargedMVASel");
-    branchName_jetPtRel_ = Form("%s_%s", branchName_obj_.data(), "mvaTTHjetPtRel");
     branchName_jetPtRatio_ = Form("%s_%s", branchName_obj_.data(), "jetPtRatio");
-    branchName_jetBtagCSV_ = Form("%s_%s", branchName_obj_.data(), "jetBTagCSV");
+    branchName_jetBtagCSV_ = Form("%s_%s", branchName_obj_.data(), "jetBtagCSV");
     branchName_tightCharge_ = Form("%s_%s", branchName_obj_.data(), "tightCharge");
     branchName_charge_ = Form("%s_%s", branchName_obj_.data(), "charge");
     instances_[branchName_obj_] = this;
@@ -174,18 +162,12 @@ void RecoLeptonReader::setBranchAddresses(TTree *tree)
     tree->SetBranchAddress(branchName_relIso_.data(), relIso_);
     chargedHadRelIso03_ = new Float_t[max_nLeptons_];
     tree->SetBranchAddress(branchName_chargedHadRelIso03_.data(), chargedHadRelIso03_);
-    miniIsoCharged_ = new Float_t[max_nLeptons_];
-    tree->SetBranchAddress(branchName_miniIsoCharged_.data(), miniIsoCharged_);
-    miniIsoNeutral_ = new Float_t[max_nLeptons_];
-    tree->SetBranchAddress(branchName_miniIsoNeutral_.data(), miniIsoNeutral_);
+    miniRelIsoCharged_ = new Float_t[max_nLeptons_];
+    tree->SetBranchAddress(branchName_miniRelIsoCharged_.data(), miniRelIsoCharged_);
     sip3d_ = new Float_t[max_nLeptons_];
     tree->SetBranchAddress(branchName_sip3d_.data(), sip3d_);
     mvaRawTTH_ = new Float_t[max_nLeptons_];
     tree->SetBranchAddress(branchName_mvaRawTTH_.data(), mvaRawTTH_);
-    jetNDauChargedMVASel_ = new Float_t[max_nLeptons_];
-    tree->SetBranchAddress(branchName_jetNDauChargedMVASel_.data(), jetNDauChargedMVASel_);
-    jetPtRel_ = new Float_t[max_nLeptons_];
-    tree->SetBranchAddress(branchName_jetPtRel_.data(), jetPtRel_);
     jetPtRatio_ = new Float_t[max_nLeptons_];
     tree->SetBranchAddress(branchName_jetPtRatio_.data(), jetPtRatio_);
     jetBtagCSV_ = new Float_t[max_nLeptons_];

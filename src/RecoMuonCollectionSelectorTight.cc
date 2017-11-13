@@ -1,6 +1,8 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorTight.h" // RecoMuonSelectorTight
 
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2015, kEra_2016
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2017
+
+#include "FWCore/Utilities/interface/Exception.h" // cms::Exception
 
 #include <cmath> // fabs
 
@@ -18,9 +20,15 @@ RecoMuonSelectorTight::RecoMuonSelectorTight(int era, int index, bool debug, boo
   , apply_mediumIdPOG_(true)
   , min_mvaTTH_(0.75)
 {
-  if      ( era_ == kEra_2015 ) max_jetBtagCSV_ = 0.8900;
-  else if ( era_ == kEra_2016 ) max_jetBtagCSV_ = 0.8484;
-  else assert(0);
+  switch(era_)
+  {
+    case kEra_2017:
+    {
+      max_jetBtagCSV_ = 0.8484;
+      break;
+    }
+    default: throw cms::Exception("RecoMuonSelectorFakeable") << "Invalid era: " << era_;
+  }
 }
 
 bool RecoMuonSelectorTight::operator()(const RecoMuon& muon) const

@@ -9,21 +9,15 @@ RecoMuon::RecoMuon(Double_t pt,
                    Double_t dz,
                    Double_t relIso,
                    Double_t chargedHadRelIso03,
-                   Double_t miniIsoCharged,
-                   Double_t miniIsoNeutral,
+                   Double_t miniRelIsoCharged,
                    Double_t sip3d,
                    Double_t mvaRawTTH,
-                   Double_t jetNDauChargedMVASel,
-                   Double_t jetPtRel,
                    Double_t jetPtRatio,
                    Double_t jetBtagCSV,
                    Int_t    passesTightCharge,
                    Int_t    charge,
-                   Int_t    passesLooseIdPOG,
-                   Int_t    passesMediumIdPOG,
-#ifdef DPT_DIV_PT
-                   Float_t  dpt_div_pt,
-#endif // ifdef DPT_DIV_PT
+                   Bool_t    passesLooseIdPOG,
+                   Bool_t    passesMediumIdPOG,
                    Float_t  segmentCompatibility)
   : RecoLepton(pt,
                eta,
@@ -34,21 +28,15 @@ RecoMuon::RecoMuon(Double_t pt,
                dz,
                relIso,
                chargedHadRelIso03,
-               miniIsoCharged,
-               miniIsoNeutral,
+               miniRelIsoCharged,
                sip3d,
                mvaRawTTH,
-               jetNDauChargedMVASel,
-               jetPtRel,
                jetPtRatio,
                jetBtagCSV,
                passesTightCharge,
                charge)
   , passesLooseIdPOG_(passesLooseIdPOG)
   , passesMediumIdPOG_(passesMediumIdPOG)
-#ifdef DPT_DIV_PT
-  , dpt_div_pt_(dpt_div_pt)
-#endif // ifdef DPT_DIV_PT
   , segmentCompatibility_(segmentCompatibility)
 {}
 

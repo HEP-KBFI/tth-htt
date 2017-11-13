@@ -14,9 +14,6 @@ RecoMuonWriter::RecoMuonWriter(int era)
   , leptonWriter_(0)
   , looseIdPOG_(0)
   , mediumIdPOG_(0)
-#ifdef DPT_DIV_PT
-  , dpt_div_pt_(0)
-#endif // ifdef DPT_DIV_PT
   , segmentCompatibility_(0)
 {
   leptonWriter_ = new RecoLeptonWriter(branchName_num_, branchName_obj_);
@@ -32,9 +29,6 @@ RecoMuonWriter::RecoMuonWriter(int era,
   , leptonWriter_(0)
   , looseIdPOG_(0)
   , mediumIdPOG_(0)
-#ifdef DPT_DIV_PT
-  , dpt_div_pt_(0)
-#endif // ifdef DPT_DIV_PT
   , segmentCompatibility_(0)
 {
   leptonWriter_ = new RecoLeptonWriter(branchName_num_, branchName_obj_);
@@ -46,9 +40,6 @@ RecoMuonWriter::~RecoMuonWriter()
   delete leptonWriter_;
   delete[] looseIdPOG_;
   delete[] mediumIdPOG_;
-#ifdef DPT_DIV_PT
-  delete[] dpt_div_pt_;
-#endif // ifdef DPT_DIV_PT
   delete[] segmentCompatibility_;
 }
 
@@ -60,9 +51,6 @@ void RecoMuonWriter::setBranchNames()
   if      ( era_ == kEra_2015 ) branchName_mediumIdPOG_ = Form("%s_%s", branchName_obj_.data(), "mediumMuonId");
   else if ( era_ == kEra_2016 ) branchName_mediumIdPOG_ = Form("%s_%s", branchName_obj_.data(), "mediumIdPOG_ICHEP2016");
   else assert(0);
-#ifdef DPT_DIV_PT
-  branchName_dpt_div_pt_ = Form("%s_%s", branchName_obj_.data(), "dpt_div_pt");
-#endif // ifdef DPT_DIV_PT
   branchName_segmentCompatibility_ = Form("%s_%s", branchName_obj_.data(), "segmentCompatibility");
 }
 
@@ -74,10 +62,6 @@ void RecoMuonWriter::setBranches(TTree *tree)
   setBranchVI(tree, branchName_looseIdPOG_, branchName_num_, looseIdPOG_);
   mediumIdPOG_ = new Int_t[max_nLeptons];
   setBranchVI(tree, branchName_mediumIdPOG_, branchName_num_, mediumIdPOG_);
-#ifdef DPT_DIV_PT
-  dpt_div_pt_ = new Float_t[max_nLeptons];
-  setBranchVF(tree, branchName_dpt_div_pt_, branchName_num_, dpt_div_pt_);
-#endif // ifdef DPT_DIV_PT
   segmentCompatibility_ = new Float_t[max_nLeptons];
   setBranchVF(tree, branchName_segmentCompatibility_, branchName_num_, segmentCompatibility_);
 }
@@ -91,9 +75,6 @@ void RecoMuonWriter::write(const std::vector<const RecoMuon*>& leptons)
     assert(lepton);
     looseIdPOG_[idxLepton] = lepton->passesLooseIdPOG();
     mediumIdPOG_[idxLepton] = lepton->passesMediumIdPOG();
-#ifdef DPT_DIV_PT
-    dpt_div_pt_[idxLepton] = lepton->dpt_div_pt();
-#endif
     segmentCompatibility_[idxLepton] = lepton->segmentCompatibility();
   }
 }

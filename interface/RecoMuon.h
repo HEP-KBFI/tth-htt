@@ -5,13 +5,6 @@
 
 #include <ostream>
 
-// KE: set the following flag to 1 if the branch exists
-#define DPT_DIV_PT_FLAG 0
-
-#if DPT_DIV_PT_FLAG == 1
-#define DPT_DIV_PT
-#endif
-
 class RecoMuon
   : public RecoLepton
 {
@@ -26,32 +19,23 @@ public:
            Double_t dz,
            Double_t relIso,
            Double_t chargedHadRelIso03,
-           Double_t miniIsoCharged,
-           Double_t miniIsoNeutral,
+           Double_t miniRelIsoCharged,
            Double_t sip3d,
            Double_t mvaRawTTH,
-           Double_t jetNDauChargedMVASel,
-           Double_t jetPtRel,
            Double_t jetPtRatio,
            Double_t jetBtagCSV,
            Int_t passesTightCharge,
            Int_t charge,
-           Int_t passesLooseIdPOG,
-           Int_t passesMediumIdPOG,
-#ifdef DPT_DIV_PT
-           Float_t dpt_div_pt,
-#endif
+           Bool_t passesLooseIdPOG,
+           Bool_t passesMediumIdPOG,
            Float_t segmentCompatibility);
 
   /**
    * @brief Funtions to access data-members
    * @return Values of data-members
    */
-  Int_t passesLooseIdPOG() const { return passesLooseIdPOG_; }
-  Int_t passesMediumIdPOG() const { return passesMediumIdPOG_; }
-#ifdef DPT_DIV_PT
-  Float_t dpt_div_pt() const { return dpt_div_pt_; }
-#endif
+  Bool_t passesLooseIdPOG() const { return passesLooseIdPOG_; }
+  Bool_t passesMediumIdPOG() const { return passesMediumIdPOG_; }
   Float_t segmentCompatibility() const { return segmentCompatibility_; }
 
   /**
@@ -69,11 +53,8 @@ public:
   is_muon() const { return true; }
 
 //--- observables specific to muons
-  Int_t passesLooseIdPOG_;       ///< flag indicating if muon passes (1) or fails (0) loose PFMuon id
-  Int_t passesMediumIdPOG_;      ///< flag indicating if muon passes (1) or fails (0) medium PFMuon id
-#ifdef DPT_DIV_PT
-  Float_t dpt_div_pt_;           ///< relative pT error
-#endif
+  Bool_t passesLooseIdPOG_;       ///< flag indicating if muon passes (true) or fails (false) loose PFMuon id
+  Bool_t passesMediumIdPOG_;      ///< flag indicating if muon passes (true) or fails (false) medium PFMuon id
   Float_t segmentCompatibility_; ///< muon segment compatibility
 };
 

@@ -15,11 +15,7 @@ RecoMuonReader::RecoMuonReader(int era, bool readGenMatching)
   , branchName_num_("nselLeptons")
   , branchName_obj_("selLeptons")
   , leptonReader_(0)
-  , looseIdPOG_(0)
   , mediumIdPOG_(0)
-#ifdef DPT_DIV_PT
-  , dpt_div_pt_(0)
-#endif // ifdef DPT_DIV_PT
   , segmentCompatibility_(0)
 {
   leptonReader_ = new RecoLeptonReader(branchName_num_, branchName_obj_, readGenMatching);
@@ -32,11 +28,7 @@ RecoMuonReader::RecoMuonReader(int era, const std::string& branchName_num, const
   , branchName_num_(branchName_num)
   , branchName_obj_(branchName_obj)
   , leptonReader_(0)
-  , looseIdPOG_(0)
   , mediumIdPOG_(0)
-#ifdef DPT_DIV_PT
-  , dpt_div_pt_(0)
-#endif // ifdef DPT_DIV_PT
   , segmentCompatibility_(0)
 {
   leptonReader_ = new RecoLeptonReader(branchName_num_, branchName_obj_, readGenMatching);
@@ -51,11 +43,7 @@ RecoMuonReader::~RecoMuonReader()
   if (numInstances_[branchName_obj_] == 0) {
     RecoMuonReader *gInstance = instances_[branchName_obj_];
     assert(gInstance);
-    delete[] gInstance->looseIdPOG_;
     delete[] gInstance->mediumIdPOG_;
-#ifdef DPT_DIV_PT
-    delete[] gInstance->dpt_div_pt_;
-#endif // ifdef DPT_DIV_PT
     delete[] gInstance->segmentCompatibility_;
     instances_[branchName_obj_] = 0;
   }
@@ -64,19 +52,8 @@ RecoMuonReader::~RecoMuonReader()
 void RecoMuonReader::setBranchNames()
 {
   if ( numInstances_[branchName_obj_] == 0 ) {
-    branchName_looseIdPOG_ = Form("%s_%s", branchName_obj_.data(), "looseIdPOG");
-    // CV: for 2016 data, switch to short term Muon POG recommendation for ICHEP,
-    //     given at https://twiki.cern.ch/twiki/bin/view/CMS/SWGuideMuonIdRun2#Short_Term_Medium_Muon_Definitio
-    if ( era_ == kEra_2015 ) {
-      branchName_mediumIdPOG_ = Form("%s_%s", branchName_obj_.data(), "mediumMuonId");
-    } else if ( era_ == kEra_2016 ) {
-      if ( use_HIP_mitigation_ ) branchName_mediumIdPOG_ = Form("%s_%s", branchName_obj_.data(), "mediumIdPOG_ICHEP2016");
-      else branchName_mediumIdPOG_ = Form("%s_%s", branchName_obj_.data(), "mediumMuonId");
-    } else assert(0);
-#ifdef DPT_DIV_PT
-    branchName_dpt_div_pt_ = Form("%s_%s", branchName_obj_.data(), "dpt_div_pt");
-#endif // ifdef DPT_DIV_PT
-    branchName_segmentCompatibility_ = Form("%s_%s", branchName_obj_.data(), "segmentCompatibility");
+    branchName_mediumIdPOG_ = Form("%s_%s", branchName_obj_.data(), "mediumId"); // Karl: already includes HIP mitigation for 2016 B-F
+    branchName_segmentCompatibility_ = Form("%s_%s", branchName_obj_.data(), "segmentComp");
     instances_[branchName_obj_] = this;
   } else {
     if (branchName_num_ != instances_[branchName_obj_]->branchName_num_) {
@@ -94,14 +71,8 @@ void RecoMuonReader::setBranchAddresses(TTree *tree)
   if ( instances_[branchName_obj_] == this ) {
     leptonReader_->setBranchAddresses(tree);
     int max_nLeptons = leptonReader_->max_nLeptons_;
-    looseIdPOG_ = new Int_t[max_nLeptons];
-    tree->SetBranchAddress(branchName_looseIdPOG_.data(), looseIdPOG_);
-    mediumIdPOG_ = new Int_t[max_nLeptons];
+    mediumIdPOG_ = new Bool_t[max_nLeptons];
     tree->SetBranchAddress(branchName_mediumIdPOG_.data(), mediumIdPOG_);
-#ifdef DPT_DIV_PT
-    dpt_div_pt_ = new Float_t[max_nLeptons];
-    tree->SetBranchAddress(branchName_dpt_div_pt_.data(), dpt_div_pt_);
-#endif // ifdef DPT_DIV_PT
     segmentCompatibility_ = new Float_t[max_nLeptons];
     tree->SetBranchAddress(branchName_segmentCompatibility_.data(), segmentCompatibility_);
   }
@@ -134,21 +105,15 @@ std::vector<RecoMuon> RecoMuonReader::read() const
           gLeptonReader->dz_[idxLepton],
           gLeptonReader->relIso_[idxLepton],
           gLeptonReader->chargedHadRelIso03_[idxLepton],
-          gLeptonReader->miniIsoCharged_[idxLepton],
-          gLeptonReader->miniIsoNeutral_[idxLepton],
+          gLeptonReader->miniRelIsoCharged_[idxLepton],
           gLeptonReader->sip3d_[idxLepton],
           gLeptonReader->mvaRawTTH_[idxLepton],
-          gLeptonReader->jetNDauChargedMVASel_[idxLepton],
-          gLeptonReader->jetPtRel_[idxLepton],
           gLeptonReader->jetPtRatio_[idxLepton],
           gLeptonReader->jetBtagCSV_[idxLepton],
           gLeptonReader->tightCharge_[idxLepton],
           gLeptonReader->charge_[idxLepton],
-          gMuonReader->looseIdPOG_[idxLepton],
+          true, // Karl: all muon objects pass Muon POG's loose definition at the nanoAOD prodction level
           gMuonReader->mediumIdPOG_[idxLepton],
-#ifdef DPT_DIV_PT
-          gMuonReader->dpt_div_pt_[idxLepton],
-#endif // ifdef DPT_DIV_PT
           gMuonReader->segmentCompatibility_[idxLepton]
         }));
       }

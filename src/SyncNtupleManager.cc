@@ -42,8 +42,6 @@ SyncNtupleManager::initializeBranches()
   mu_miniRelIso = new std::remove_pointer<decltype(mu_miniRelIso)>::type[nof_mus];
   mu_miniIsoCharged = new std::remove_pointer<decltype(mu_miniIsoCharged)>::type[nof_mus];
   mu_miniIsoNeutral = new std::remove_pointer<decltype(mu_miniIsoNeutral)>::type[nof_mus];
-  mu_jetNDauChargedMVASel = new std::remove_pointer<decltype(mu_jetNDauChargedMVASel)>::type[nof_mus];
-  mu_jetPtRel = new std::remove_pointer<decltype(mu_jetPtRel)>::type[nof_mus];
   mu_jetPtRatio = new std::remove_pointer<decltype(mu_jetPtRatio)>::type[nof_mus];
   mu_jetCSV = new std::remove_pointer<decltype(mu_jetCSV)>::type[nof_mus];
   mu_sip3D = new std::remove_pointer<decltype(mu_sip3D)>::type[nof_mus];
@@ -53,9 +51,6 @@ SyncNtupleManager::initializeBranches()
   mu_leptonMVA = new std::remove_pointer<decltype(mu_leptonMVA)>::type[nof_mus];
   mu_conept = new std::remove_pointer<decltype(mu_conept)>::type[nof_mus];
   mu_mediumID = new std::remove_pointer<decltype(mu_mediumID)>::type[nof_mus];
-#ifdef DPT_DIV_PT
-  mu_dpt_div_pt = new std::remove_pointer<decltype(mu_dpt_div_pt)>::type[nof_mus];
-#endif
   mu_isfakeablesel = new std::remove_pointer<decltype(mu_isfakeablesel)>::type[nof_mus];
   mu_iscutsel = new std::remove_pointer<decltype(mu_iscutsel)>::type[nof_mus];
   mu_ismvasel = new std::remove_pointer<decltype(mu_ismvasel)>::type[nof_mus];
@@ -68,8 +63,6 @@ SyncNtupleManager::initializeBranches()
   ele_miniRelIso = new std::remove_pointer<decltype(ele_miniRelIso)>::type[nof_eles];
   ele_miniIsoCharged = new std::remove_pointer<decltype(ele_miniIsoCharged)>::type[nof_eles];
   ele_miniIsoNeutral = new std::remove_pointer<decltype(ele_miniIsoNeutral)>::type[nof_eles];
-  ele_jetNDauChargedMVASel = new std::remove_pointer<decltype(ele_jetNDauChargedMVASel)>::type[nof_eles];
-  ele_jetPtRel = new std::remove_pointer<decltype(ele_jetPtRel)>::type[nof_eles];
   ele_jetPtRatio = new std::remove_pointer<decltype(ele_jetPtRatio)>::type[nof_eles];
   ele_jetCSV = new std::remove_pointer<decltype(ele_jetCSV)>::type[nof_eles];
   ele_sip3D = new std::remove_pointer<decltype(ele_sip3D)>::type[nof_eles];
@@ -153,8 +146,6 @@ SyncNtupleManager::initializeBranches()
       outputTree -> Branch(Form("%s%d_%s", mstr, i, "miniRelIso"), &(mu_miniRelIso[i]), Form("%s%d_%s/%s", mstr, i, "miniRelIso", Traits<decltype(mu_miniRelIso)>::TYPE_NAME));
       outputTree -> Branch(Form("%s%d_%s", mstr, i, "miniIsoCharged"), &(mu_miniIsoCharged[i]), Form("%s%d_%s/%s", mstr, i, "miniIsoCharged", Traits<decltype(mu_miniIsoCharged)>::TYPE_NAME));
       outputTree -> Branch(Form("%s%d_%s", mstr, i, "miniIsoNeutral"), &(mu_miniIsoNeutral[i]), Form("%s%d_%s/%s", mstr, i, "miniIsoNeutral", Traits<decltype(mu_miniIsoNeutral)>::TYPE_NAME));
-      outputTree -> Branch(Form("%s%d_%s", mstr, i, "jetNDauChargedMVASel"), &(mu_jetNDauChargedMVASel[i]), Form("%s%d_%s/%s", mstr, i, "jetNDauChargedMVASel", Traits<decltype(mu_jetNDauChargedMVASel)>::TYPE_NAME));
-      outputTree -> Branch(Form("%s%d_%s", mstr, i, "jetPtRel"), &(mu_jetPtRel[i]), Form("%s%d_%s/%s", mstr, i, "jetPtRel", Traits<decltype(mu_jetPtRel)>::TYPE_NAME));
       outputTree -> Branch(Form("%s%d_%s", mstr, i, "jetPtRatio"), &(mu_jetPtRatio[i]), Form("%s%d_%s/%s", mstr, i, "jetPtRatio", Traits<decltype(mu_jetPtRatio)>::TYPE_NAME));
       outputTree -> Branch(Form("%s%d_%s", mstr, i, "jetCSV"), &(mu_jetCSV[i]), Form("%s%d_%s/%s", mstr, i, "jetCSV", Traits<decltype(mu_jetCSV)>::TYPE_NAME));
       outputTree -> Branch(Form("%s%d_%s", mstr, i, "sip3D"), &(mu_sip3D[i]), Form("%s%d_%s/%s", mstr, i, "sip3D", Traits<decltype(mu_sip3D)>::TYPE_NAME));
@@ -164,9 +155,6 @@ SyncNtupleManager::initializeBranches()
       outputTree -> Branch(Form("%s%d_%s", mstr, i, "leptonMVA"), &(mu_leptonMVA[i]), Form("%s%d_%s/%s", mstr, i, "leptonMVA", Traits<decltype(mu_leptonMVA)>::TYPE_NAME));
       outputTree -> Branch(Form("%s%d_%s", mstr, i, "conept"), &(mu_conept[i]), Form("%s%d_%s/%s", mstr, i, "conept", Traits<decltype(mu_conept)>::TYPE_NAME));
       outputTree -> Branch(Form("%s%d_%s", mstr, i, "mediumID"), &(mu_mediumID[i]), Form("%s%d_%s/%s", mstr, i, "mediumID", Traits<decltype(mu_mediumID)>::TYPE_NAME));
-#ifdef DPT_DIV_PT
-      outputTree -> Branch(Form("%s%d_%s", mstr, i, "dpt_div_pt"), &(mu_dpt_div_pt[i]), Form("%s%d_%s/%s", mstr, i, "dpt_div_pt", Traits<decltype(mu_dpt_div_pt)>::TYPE_NAME));
-#endif
       outputTree -> Branch(Form("%s%d_%s", mstr, i, "isfakeablesel"), &(mu_isfakeablesel[i]), Form("%s%d_%s/%s", mstr, i, "isfakeablesel", Traits<decltype(mu_isfakeablesel)>::TYPE_NAME));
       outputTree -> Branch(Form("%s%d_%s", mstr, i, "iscutsel"), &(mu_iscutsel[i]), Form("%s%d_%s/%s", mstr, i, "iscutsel", Traits<decltype(mu_iscutsel)>::TYPE_NAME));
       outputTree -> Branch(Form("%s%d_%s", mstr, i, "ismvasel"), &(mu_ismvasel[i]), Form("%s%d_%s/%s", mstr, i, "ismvasel", Traits<decltype(mu_ismvasel)>::TYPE_NAME));
@@ -182,8 +170,6 @@ SyncNtupleManager::initializeBranches()
       outputTree -> Branch(Form("%s%d_%s", estr, i, "miniRelIso"), &(ele_miniRelIso[i]), Form("%s%d_%s/%s", estr, i, "miniRelIso", Traits<decltype(ele_miniRelIso)>::TYPE_NAME));
       outputTree -> Branch(Form("%s%d_%s", estr, i, "miniIsoCharged"), &(ele_miniIsoCharged[i]), Form("%s%d_%s/%s", estr, i, "miniIsoCharged", Traits<decltype(ele_miniIsoCharged)>::TYPE_NAME));
       outputTree -> Branch(Form("%s%d_%s", estr, i, "miniIsoNeutral"), &(ele_miniIsoNeutral[i]), Form("%s%d_%s/%s", estr, i, "miniIsoNeutral", Traits<decltype(ele_miniIsoNeutral)>::TYPE_NAME));
-      outputTree -> Branch(Form("%s%d_%s", estr, i, "jetNDauChargedMVASel"), &(ele_jetNDauChargedMVASel[i]), Form("%s%d_%s/%s", estr, i, "jetNDauChargedMVASel", Traits<decltype(ele_jetNDauChargedMVASel)>::TYPE_NAME));
-      outputTree -> Branch(Form("%s%d_%s", estr, i, "jetPtRel"), &(ele_jetPtRel[i]), Form("%s%d_%s/%s", estr, i, "jetPtRel", Traits<decltype(ele_jetPtRel)>::TYPE_NAME));
       outputTree -> Branch(Form("%s%d_%s", estr, i, "jetPtRatio"), &(ele_jetPtRatio[i]), Form("%s%d_%s/%s", estr, i, "jetPtRatio", Traits<decltype(ele_jetPtRatio)>::TYPE_NAME));
       outputTree -> Branch(Form("%s%d_%s", estr, i, "jetCSV"), &(ele_jetCSV[i]), Form("%s%d_%s/%s", estr, i, "jetCSV", Traits<decltype(ele_jetCSV)>::TYPE_NAME));
       outputTree -> Branch(Form("%s%d_%s", estr, i, "sip3D"), &(ele_sip3D[i]), Form("%s%d_%s/%s", estr, i, "sip3D", Traits<decltype(ele_sip3D)>::TYPE_NAME));
@@ -315,8 +301,6 @@ SyncNtupleManager::read(std::vector<const RecoMuon *> & muons,
     mu_miniRelIso[i] = muon -> relIso();
     mu_miniIsoCharged[i] = muon -> miniIsoCharged();
     mu_miniIsoNeutral[i] = muon -> miniIsoNeutral();
-    mu_jetNDauChargedMVASel[i] = muon -> jetNDauChargedMVASel();
-    mu_jetPtRel[i] = muon -> jetPtRel();
     mu_jetPtRatio[i] = muon -> jetPtRatio();
     mu_jetCSV[i] = muon -> jetBtagCSV();
     mu_sip3D[i] = muon -> sip3d();
@@ -326,9 +310,6 @@ SyncNtupleManager::read(std::vector<const RecoMuon *> & muons,
     mu_leptonMVA[i] = muon -> mvaRawTTH();
     mu_conept[i] = comp_lep1_conePt(*muon);
     mu_mediumID[i] = muon -> passesMediumIdPOG();
-#ifdef DPT_DIV_PT
-    mu_dpt_div_pt[i] = muon -> dpt_div_pt();
-#endif
     mu_isfakeablesel[i] = 0;
     for(const auto & fakeable_muon: fakeable_muons)
       if(muon == fakeable_muon)
@@ -375,8 +356,6 @@ SyncNtupleManager::read(std::vector<const RecoElectron *> & electrons,
     ele_miniRelIso[i] = electron -> relIso();
     ele_miniIsoCharged[i] = electron -> miniIsoCharged();
     ele_miniIsoNeutral[i] = electron -> miniIsoNeutral();
-    ele_jetNDauChargedMVASel[i] = electron -> jetNDauChargedMVASel();
-    ele_jetPtRel[i] = electron -> jetPtRel();
     ele_jetPtRatio[i] = electron -> jetPtRatio();
     ele_jetCSV[i] = electron -> jetBtagCSV();
     ele_sip3D[i] = electron -> sip3d();
@@ -536,8 +515,6 @@ SyncNtupleManager::reset(bool is_initializing)
     mu_miniRelIso[i] = placeholder_value;
     mu_miniIsoCharged[i] = placeholder_value;
     mu_miniIsoNeutral[i] = placeholder_value;
-    mu_jetNDauChargedMVASel[i] = placeholder_value;
-    mu_jetPtRel[i] = placeholder_value;
     mu_jetPtRatio[i] = placeholder_value;
     mu_jetCSV[i] = placeholder_value;
     mu_sip3D[i] = placeholder_value;
@@ -547,9 +524,6 @@ SyncNtupleManager::reset(bool is_initializing)
     mu_leptonMVA[i] = placeholder_value;
     mu_conept[i] = placeholder_value;
     mu_mediumID[i] = placeholder_value;
-#ifdef DPT_DIV_PT
-    mu_dpt_div_pt[i] = placeholder_value;
-#endif
     mu_isfakeablesel[i] = placeholder_value;
     mu_iscutsel[i] = placeholder_value;
     mu_ismvasel[i] = placeholder_value;
@@ -570,8 +544,6 @@ SyncNtupleManager::reset(bool is_initializing)
     ele_miniRelIso[i] = placeholder_value;
     ele_miniIsoCharged[i] = placeholder_value;
     ele_miniIsoNeutral[i] = placeholder_value;
-    ele_jetNDauChargedMVASel[i] = placeholder_value;
-    ele_jetPtRel[i] = placeholder_value;
     ele_jetPtRatio[i] = placeholder_value;
     ele_jetCSV[i] = placeholder_value;
     ele_sip3D[i] = placeholder_value;

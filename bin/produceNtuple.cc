@@ -222,9 +222,9 @@ int main(int argc, char* argv[])
   RUN_TYPE run;
   inputTree->SetBranchAddress(RUN_KEY, &run);
   LUMI_TYPE lumi;
-  inputTree->SetBranchAddress(LUMI_KEY, &lumi);
+  inputTree->SetBranchAddress("luminosityBlock", &lumi);
   EVT_TYPE event;
-  inputTree->SetBranchAddress(EVT_KEY, &event);
+  inputTree->SetBranchAddress("event", &event);
 
 //--- declare particle collections
   RecoMuonReader* muonReader = new RecoMuonReader(era, Form("n%s", branchName_muons_in.c_str()), branchName_muons_in);

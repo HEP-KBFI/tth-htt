@@ -86,18 +86,15 @@ class RecoLeptonReader
   std::string branchName_dz_;
   std::string branchName_relIso_;
   std::string branchName_chargedHadRelIso03_;
-  std::string branchName_miniIsoCharged_;
-  std::string branchName_miniIsoNeutral_;
+  std::string branchName_miniRelIsoCharged_;
   std::string branchName_sip3d_;
   std::string branchName_mvaRawTTH_;
-  std::string branchName_jetNDauChargedMVASel_;
-  std::string branchName_jetPtRel_;
   std::string branchName_jetPtRatio_;
   std::string branchName_jetBtagCSV_;
   std::string branchName_tightCharge_;
   std::string branchName_charge_;
 
-  Int_t nLeptons_;
+  UInt_t nLeptons_;
   Float_t* pt_;
   Float_t* eta_;
   Float_t* phi_;
@@ -107,12 +104,9 @@ class RecoLeptonReader
   Float_t* dz_;
   Float_t* relIso_;
   Float_t* chargedHadRelIso03_;
-  Float_t* miniIsoCharged_;
-  Float_t* miniIsoNeutral_;
+  Float_t* miniRelIsoCharged_;
   Float_t* sip3d_;
   Float_t* mvaRawTTH_;
-  Float_t* jetNDauChargedMVASel_;
-  Float_t* jetPtRel_;
   Float_t* jetPtRatio_;
   Float_t* jetBtagCSV_;
   Int_t* tightCharge_;
