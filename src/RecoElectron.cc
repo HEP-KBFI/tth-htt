@@ -24,7 +24,7 @@ RecoElectron::RecoElectron(Double_t pt,
                            Double_t deltaPhi,
                            Double_t OoEminusOoP,
                            Int_t    nLostHits,
-                           Int_t    passesConversionVeto)
+                           Bool_t   passesConversionVeto)
   : RecoLepton(pt,
                eta,
                phi,

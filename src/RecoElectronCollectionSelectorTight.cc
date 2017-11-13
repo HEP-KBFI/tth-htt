@@ -1,9 +1,11 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorTight.h" // RecoElectronSelectorTight
 
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2015, kEra_2016
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2017
 
-#include <cmath> // fabs
-#include <assert.h> // assert
+#include <FWCore/Utilities/interface/Exception.h> // cms::Exception
+
+#include <cmath> // fabs()
+#include <assert.h> // assert()
 
 RecoElectronSelectorTight::RecoElectronSelectorTight(int era, int index, bool debug, bool set_selection_flags)
   : era_(era)
@@ -31,9 +33,15 @@ RecoElectronSelectorTight::RecoElectronSelectorTight(int era, int index, bool de
   , max_nLostHits_(0)
   , min_mvaTTH_(0.75)  
 {
-  if      ( era_ == kEra_2015 ) max_jetBtagCSV_ = 0.8900;
-  else if ( era_ == kEra_2016 ) max_jetBtagCSV_ = 0.8484;
-  else assert(0);
+  switch(era_)
+  {
+    case kEra_2017:
+    {
+      max_jetBtagCSV_ = 0.8484;
+      break;
+    }
+    default: throw cms::Exception("RecoElectronSelectorTight") << "Invalid era: " << era_;
+  }
   assert(min_mvaRawPOG_vlow_.size() == 3);
   assert(min_mvaRawPOG_low_.size() == 3);
   assert(min_mvaRawPOG_high_.size() == 3);

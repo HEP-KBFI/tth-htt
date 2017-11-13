@@ -80,7 +80,7 @@ bool RecoElectronSelectorLoose::operator()(const RecoElectron& electron) const
        electron.relIso() <= max_relIso_ &&
        electron.sip3d() <= max_sip3d_ &&
        (electron.tightCharge() >= 2 || !apply_tightCharge_) && 
-       (electron.passesConversionVeto() > 0 || !apply_conversionVeto_) &&
+       (electron.passesConversionVeto() || !apply_conversionVeto_) &&
        electron.nLostHits() <= max_nLostHits_ ) {
     int idxBin = -1;
     if      ( electron.absEta() <= binning_absEta_[0] ) idxBin = 0;

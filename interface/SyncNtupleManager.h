@@ -109,7 +109,7 @@ private:
   Float_t * ele_leptonMVA;
   Float_t * ele_conept;
   Int_t * ele_isChargeConsistent;
-  Int_t * ele_passesConversionVeto;
+  Bool_t * ele_passesConversionVeto;
   Int_t * ele_nMissingHits;
   Int_t * ele_isfakeablesel;
   Int_t * ele_iscutsel;

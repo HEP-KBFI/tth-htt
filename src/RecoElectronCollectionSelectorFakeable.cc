@@ -1,11 +1,11 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorFakeable.h" // RecoElectronSelectorFakeable
 
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2015, kEra_2016
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2017
 
 #include <FWCore/Utilities/interface/Exception.h> // cms::Exception
 
-#include <cmath> // fabs
-#include <assert.h> // assert
+#include <cmath> // fabs()
+#include <assert.h> // assert()
 
 RecoElectronSelectorFakeable::RecoElectronSelectorFakeable(int era, int index, bool debug, bool set_selection_flags)
   : era_(era)
@@ -34,9 +34,15 @@ RecoElectronSelectorFakeable::RecoElectronSelectorFakeable(int era, int index, b
   , apply_conversionVeto_(true)   
   , max_nLostHits_(0)
 {
-  if      ( era_ == kEra_2015 ) max_jetBtagCSV_ = { 0.6050, 0.8900 };
-  else if ( era_ == kEra_2016 ) max_jetBtagCSV_ = { 0.5426, 0.8484 };
-  else assert(0);
+  switch(era_)
+  {
+    case kEra_2017:
+    {
+      max_jetBtagCSV_ = { 0.5426, 0.8484 };
+      break;
+    }
+    default: throw cms::Exception("RecoElectronSelectorFakeable") << "Invalid era: " << era_;
+  }
   assert(min_mvaRawPOG_vlow_.size() == 3);
   assert(min_mvaRawPOG_low_.size() == 3);
   assert(min_mvaRawPOG_high_.size() == 3);

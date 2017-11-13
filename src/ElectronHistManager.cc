@@ -64,7 +64,7 @@ void ElectronHistManager::fillHistograms(const RecoElectron& electron, double ev
   fillWithOverFlow(histogram_deltaPhi_, electron.deltaPhi(), evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_OoEminusOoP_, electron.OoEminusOoP(), evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_nLostHits_, electron.nLostHits(), evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_passesConversionVeto_, electron.passesConversionVeto(), evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_passesConversionVeto_, static_cast<int>(electron.passesConversionVeto()), evtWeight, evtWeightErr);
   
   int abs_genPdgId = 0;
   if      ( electron.genLepton() ) abs_genPdgId = std::abs(electron.genLepton()->pdgId()); // generator level match to electron or muon

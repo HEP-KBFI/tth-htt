@@ -69,13 +69,13 @@ RecoElectronReader::~RecoElectronReader()
 void RecoElectronReader::setBranchNames()
 {
   if (numInstances_[branchName_obj_] == 0) {
-    branchName_mvaRawPOG_GP_ = Form("%s_%s", branchName_obj_.data(), "eleMVArawSpring16GP");
-    branchName_mvaRawPOG_HZZ_ = Form("%s_%s", branchName_obj_.data(), "eleMVArawSpring16HZZ");
-    branchName_sigmaEtaEta_ = Form("%s_%s", branchName_obj_.data(), "eleSieie");
-    branchName_HoE_ = Form("%s_%s", branchName_obj_.data(), "eleHoE");
+    branchName_mvaRawPOG_GP_ = Form("%s_%s", branchName_obj_.data(), "mvaSpring16GP");
+    branchName_mvaRawPOG_HZZ_ = Form("%s_%s", branchName_obj_.data(), "mvaSpring16HZZ");
+    branchName_sigmaEtaEta_ = Form("%s_%s", branchName_obj_.data(), "sieie");
+    branchName_HoE_ = Form("%s_%s", branchName_obj_.data(), "hoe");
     branchName_deltaEta_ = Form("%s_%s", branchName_obj_.data(), "eleDEta");
     branchName_deltaPhi_ = Form("%s_%s", branchName_obj_.data(), "eleDPhi");
-    branchName_OoEminusOoP_ = Form("%s_%s", branchName_obj_.data(), "eleooEmooP");
+    branchName_OoEminusOoP_ = Form("%s_%s", branchName_obj_.data(), "eInvMinusPInv");
     branchName_lostHits_ = Form("%s_%s", branchName_obj_.data(), "lostHits");
     branchName_conversionVeto_ = Form("%s_%s", branchName_obj_.data(), "convVeto");
     instances_[branchName_obj_] = this;
@@ -109,9 +109,9 @@ void RecoElectronReader::setBranchAddresses(TTree *tree)
     tree->SetBranchAddress(branchName_deltaPhi_.data(), deltaPhi_);
     OoEminusOoP_ = new Float_t[max_nLeptons];
     tree->SetBranchAddress(branchName_OoEminusOoP_.data(), OoEminusOoP_);
-    lostHits_ = new Int_t[max_nLeptons];
+    lostHits_ = new UChar_t[max_nLeptons];
     tree->SetBranchAddress(branchName_lostHits_.data(), lostHits_);
-    conversionVeto_ = new Int_t[max_nLeptons];
+    conversionVeto_ = new Bool_t[max_nLeptons];
     tree->SetBranchAddress(branchName_conversionVeto_.data(), conversionVeto_);
   }
 }

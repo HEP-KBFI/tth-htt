@@ -34,7 +34,7 @@ class RecoElectron
 	       Double_t deltaPhi,
 	       Double_t OoEminusOoP,
 	       Int_t nLostHits,
-	       Int_t passesConversionVeto);
+         Bool_t passesConversionVeto);
 
   /**
    * @brief Funtions to access data-members
@@ -48,7 +48,7 @@ class RecoElectron
   Double_t deltaPhi() const { return deltaPhi_; }
   Double_t OoEminusOoP() const { return OoEminusOoP_; }
   Int_t nLostHits() const { return nLostHits_; }
-  Int_t passesConversionVeto() const { return passesConversionVeto_; }
+  Bool_t passesConversionVeto() const { return passesConversionVeto_; }
 
   /**
    * @brief Checks whether a given lepton is an electron by its PDG id
@@ -65,15 +65,15 @@ class RecoElectron
   is_muon() const { return false; }
 
 //--- observables specific to electrons
-  Double_t mvaRawPOG_GP_;         ///< raw output value of EGamma POG electron id MVA, General Purpose (pt>10)
-  Double_t mvaRawPOG_HZZ_;         ///< raw output value of EGamma POG electron id MVA, HZZ(pt < 10)
-  Double_t sigmaEtaEta_;       ///< second shower moment in eta-direction
-  Double_t HoE_;               ///< ratio of energy deposits in hadronic/electromagnetic section of calorimeter
-  Double_t deltaEta_;          ///< difference in eta between impact position of track and electron cluster
-  Double_t deltaPhi_;          ///< difference in phi between impact position of track and electron cluster
-  Double_t OoEminusOoP_;       ///< difference between calorimeter energy and track momentum (1/E - 1/P)
-  Int_t nLostHits_;            ///< number of operational tracker layers between interaction point and innermost hit on track
-  Int_t passesConversionVeto_; ///< Flag indicating if electron passes (1) or fails (0) photon conversion veto
+  Double_t mvaRawPOG_GP_;       ///< raw output value of EGamma POG electron id MVA, General Purpose (pt>10)
+  Double_t mvaRawPOG_HZZ_;      ///< raw output value of EGamma POG electron id MVA, HZZ(pt < 10)
+  Double_t sigmaEtaEta_;        ///< second shower moment in eta-direction
+  Double_t HoE_;                ///< ratio of energy deposits in hadronic/electromagnetic section of calorimeter
+  Double_t deltaEta_;           ///< difference in eta between impact position of track and electron cluster
+  Double_t deltaPhi_;           ///< difference in phi between impact position of track and electron cluster
+  Double_t OoEminusOoP_;        ///< difference between calorimeter energy and track momentum (1/E - 1/P)
+  Int_t nLostHits_;             ///< number of operational tracker layers between interaction point and innermost hit on track
+  Bool_t passesConversionVeto_; ///< Flag indicating if electron passes (true) or fails (false) photon conversion veto
 };
 
 std::ostream& operator<<(std::ostream& stream, const RecoElectron& electron);
