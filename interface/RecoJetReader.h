@@ -52,7 +52,7 @@ class RecoJetReader
 
   int era_;
   bool isMC_;
-  const int max_nJets_;
+  const unsigned int max_nJets_;
   std::string branchName_num_;
   std::string branchName_obj_;
 
@@ -86,7 +86,7 @@ class RecoJetReader
 
   bool read_BtagWeight_systematics_;
 
-  Int_t nJets_;
+  UInt_t nJets_;
   Float_t* jet_pt_;
   Float_t* jet_eta_;
   Float_t* jet_phi_;

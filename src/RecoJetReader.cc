@@ -112,22 +112,11 @@ void RecoJetReader::setBranchNames()
     branchName_corr_JECUp_ = Form("%s_%s_%s", branchName_obj_.data(), "corr", "JECUp");
     branchName_corr_JECDown_ = Form("%s_%s_%s", branchName_obj_.data(), "corr", "JECDown");
     branchName_BtagCSV_ = Form("%s_%s", branchName_obj_.data(), "btagCSV");  
-    if ( era_ == kEra_2015 ) {
-      branchName_QGDiscr_ = "";
-    } else if ( era_ == kEra_2016 ) {
-      branchName_QGDiscr_ = Form("%s_%s", branchName_obj_.data(), "qgl");
-    } else assert(0);
-    if ( isMC_ ) {
-      if ( era_ == kEra_2015 ) {
-	branchName_BtagWeight_ = Form("%s_%s", branchName_obj_.data(), "bTagWeight");
-      } else if ( era_ == kEra_2016 ) {
-	branchName_BtagWeight_ = Form("%s_%s", branchName_obj_.data(), "btagWeightCSV");
-      } else assert(0);
-      for ( int idxShift = kBtag_hfUp; idxShift <= kBtag_jesDown; ++idxShift ) {
-	std::string branchName_BtagWeight = TString(getBranchName_bTagWeight(era_, idxShift)).ReplaceAll("Jet_", Form("%s_", branchName_obj_.data())).Data();
-	branchNames_BtagWeight_systematics_[idxShift] = branchName_BtagWeight;
-      }      
-      //branchName_heppyFlavour_ = Form("%s_%s", branchName_obj_.data(), "heppyFlavour"); // KE (20/03/17): doesn't exist in the latest production/addMEM Ntuples
+    branchName_QGDiscr_ = Form("%s_%s", branchName_obj_.data(), "qgl");
+    branchName_BtagWeight_ = Form("%s_%s", branchName_obj_.data(), "btagSF");
+    for ( int idxShift = kBtag_hfUp; idxShift <= kBtag_jesDown; ++idxShift ) {
+      std::string branchName_BtagWeight = TString(getBranchName_bTagWeight(era_, idxShift)).ReplaceAll("Jet_", Form("%s_", branchName_obj_.data())).Data();
+      branchNames_BtagWeight_systematics_[idxShift] = branchName_BtagWeight;
     }
     instances_[branchName_obj_] = this;
   } else {
@@ -209,14 +198,14 @@ std::vector<RecoJet> RecoJetReader::read() const
   RecoJetReader* gInstance = instances_[branchName_obj_];
   assert(gInstance);
   std::vector<RecoJet> jets;
-  Int_t nJets = gInstance->nJets_;
+  UInt_t nJets = gInstance->nJets_;
   if ( nJets > max_nJets_ ) {
     throw cms::Exception("RecoJetReader") 
       << "Number of jets stored in Ntuple = " << nJets << ", exceeds max_nJets = " << max_nJets_ << " !!\n";
   }
   if ( nJets > 0 ) {
     jets.reserve(nJets);
-    for ( Int_t idxJet = 0; idxJet < nJets; ++idxJet ) {
+    for ( UInt_t idxJet = 0; idxJet < nJets; ++idxJet ) {
       Float_t jet_pt = -1.;
       if      ( jetPt_option_ == RecoJetReader::kJetPt_central ) jet_pt = gInstance->jet_pt_[idxJet];
       else if ( jetPt_option_ == RecoJetReader::kJetPt_jecUp   ) jet_pt = gInstance->jet_pt_[idxJet]*gInstance->jet_corr_JECUp_[idxJet]/gInstance->jet_corr_[idxJet];
