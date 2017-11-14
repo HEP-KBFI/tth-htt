@@ -124,7 +124,7 @@ class prodNtupleConfig:
             "process.produceNtuple.branchName_hadTaus              = cms.string('Tau')",
             "process.produceNtuple.branchName_jets                 = cms.string('Jet')",
             "process.produceNtuple.branchName_met                  = cms.string('met')",
-            "process.produceNtuple.branchName_genLeptons1          = cms.string('GenPart')",
+            "process.produceNtuple.branchName_genLeptons1          = cms.string('GenLep')",
             "process.produceNtuple.branchName_genLeptons2          = cms.string('')",
             "process.produceNtuple.branchName_genHadTaus           = cms.string('GenVisTau')",
             "process.produceNtuple.branchName_genJets              = cms.string('GenJet')",
