@@ -17,9 +17,7 @@ public:
           Double_t eta,
           Double_t phi,
           Double_t mass,
-	  Double_t corr,
-	  Double_t corr_JECUp,
-	  Double_t corr_JECDown,
+    Double_t jecUncertTotal,
 	  Double_t BtagCSV,          
 	  Double_t BtagWeight,
 	  Double_t QGDiscr,
@@ -39,9 +37,7 @@ public:
    * @brief Funtions to access data-members
    * @return Values of data-members
    */
-  Double_t corr() const { return corr_; }  
-  Double_t corr_JECUp() const { return corr_JECUp_; }
-  Double_t corr_JECDown() const { return corr_JECDown_; }
+  Double_t jecUncertTotal() const { return jecUncertTotal_; }
   Double_t BtagCSV() const { return BtagCSV_; }
   Double_t BtagWeight() const { return BtagWeight_; }
   Double_t QGDiscr() const { return QGDiscr_; }
@@ -56,9 +52,7 @@ public:
   friend class RecoJetWriter;
 
  protected:
-  Double_t corr_;         ///< nominal jet energy correction (L1FastL2L3 for MC, L1FastL2L3Residual for data)
-  Double_t corr_JECUp_;   ///< +1 sigma (upward shifted) jet energy correction
-  Double_t corr_JECDown_; ///< -1 sigma (downward shifted) jet energy correction
+  Double_t jecUncertTotal_; ///< 1 sigma jet energy correction
   Double_t BtagCSV_;      ///< CSV b-tagging discriminator value
   Double_t BtagWeight_;   ///< weight for data/MC correction of b-tagging efficiency and mistag rate
   Double_t QGDiscr_;      ///< quark/gluon discriminator

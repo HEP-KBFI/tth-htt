@@ -19,9 +19,7 @@ RecoJetWriter::RecoJetWriter(int era, bool isMC)
   , jet_eta_(0)
   , jet_phi_(0)
   , jet_mass_(0)
-  , jet_corr_(0)
-  , jet_corr_JECUp_(0)
-  , jet_corr_JECDown_(0) 
+  , jet_jecUncertTotal_(0)
   , jet_BtagCSV_(0)
   , jet_BtagWeight_(0)
   , jet_QGDiscr_(0)
@@ -46,9 +44,7 @@ RecoJetWriter::RecoJetWriter(int era, bool isMC, const std::string& branchName_n
   , jet_eta_(0)
   , jet_phi_(0)
   , jet_mass_(0)
-  , jet_corr_(0)
-  , jet_corr_JECUp_(0)
-  , jet_corr_JECDown_(0) 
+  , jet_jecUncertTotal_(0)
   , jet_BtagCSV_(0)
   , jet_BtagWeight_(0)
   , jet_QGDiscr_(0)
@@ -69,9 +65,7 @@ RecoJetWriter::~RecoJetWriter()
   delete[] jet_eta_;
   delete[] jet_phi_;
   delete[] jet_mass_;
-  delete[] jet_corr_;
-  delete[] jet_corr_JECUp_;
-  delete[] jet_corr_JECDown_;
+  delete[] jet_jecUncertTotal_;
   delete[] jet_BtagCSV_;
   delete[] jet_BtagWeight_;
   delete[] jet_QGDiscr_;
@@ -88,9 +82,7 @@ void RecoJetWriter::setBranchNames()
   branchName_eta_ = Form("%s_%s", branchName_obj_.data(), "eta");
   branchName_phi_ = Form("%s_%s", branchName_obj_.data(), "phi");
   branchName_mass_ = Form("%s_%s", branchName_obj_.data(), "mass");
-  branchName_corr_ = Form("%s_%s", branchName_obj_.data(), "corr");
-  branchName_corr_JECUp_ = Form("%s_%s_%s", branchName_obj_.data(), "corr", "JECUp");
-  branchName_corr_JECDown_ = Form("%s_%s_%s", branchName_obj_.data(), "corr", "JECDown");
+  branchName_jecUncertTotal_ = Form("%s_%s", branchName_obj_.data(), "jecUncertTotal");
   branchName_BtagCSV_ = Form("%s_%s", branchName_obj_.data(), "btagCSV");
   if ( era_ == kEra_2015 ) {
     branchName_QGDiscr_ = "";
@@ -127,12 +119,8 @@ void RecoJetWriter::setBranches(TTree* tree)
   setBranchVF(tree, branchName_phi_, branchName_num_, jet_phi_);
   jet_mass_ = new Float_t[max_nJets_];
   setBranchVF(tree, branchName_mass_, branchName_num_, jet_mass_);
-  jet_corr_ = new Float_t[max_nJets_];
-  setBranchVF(tree, branchName_corr_, branchName_num_, jet_corr_);
-  jet_corr_JECUp_ = new Float_t[max_nJets_];
-  setBranchVF(tree, branchName_corr_JECUp_, branchName_num_, jet_corr_JECUp_);
-  jet_corr_JECDown_ = new Float_t[max_nJets_];
-  setBranchVF(tree, branchName_corr_JECDown_, branchName_num_, jet_corr_JECDown_);
+  jet_jecUncertTotal_ = new Float_t[max_nJets_];
+  setBranchVF(tree, branchName_jecUncertTotal_, branchName_num_, jet_jecUncertTotal_);
   jet_BtagCSV_ = new Float_t[max_nJets_];
   setBranchVF(tree, branchName_BtagCSV_, branchName_num_, jet_BtagCSV_);
   jet_BtagWeight_ = new Float_t[max_nJets_];
@@ -161,9 +149,7 @@ void RecoJetWriter::write(const std::vector<const RecoJet*>& jets)
     jet_eta_[idxJet] = jet->eta();
     jet_phi_[idxJet] = jet->phi();
     jet_mass_[idxJet] = jet->mass();
-    jet_corr_[idxJet] = jet->corr();
-    jet_corr_JECUp_[idxJet] = jet->corr_JECUp();
-    jet_corr_JECDown_[idxJet] = jet->corr_JECDown();
+    jet_jecUncertTotal_[idxJet] = jet->jecUncertTotal();
     jet_BtagCSV_[idxJet] = jet->BtagCSV_;
     jet_BtagWeight_[idxJet] = jet->BtagWeight();
     for ( int idxShift = kBtag_hfUp; idxShift <= kBtag_jesDown; ++idxShift ) {

@@ -68,7 +68,7 @@ std::string getBranchName_bTagWeight(int era, int central_or_shift)
 {
   std::map<int, std::string> branchNames_bTagWeight;
   if ( era == kEra_2017 ) {
-    branchNames_bTagWeight[kBtag_central]      = "Jet_btagSF";
+    branchNames_bTagWeight[kBtag_central]      = "Jet_btagSF_shape";
     branchNames_bTagWeight[kBtag_hfUp]         = branchNames_bTagWeight[kBtag_central] + "_up_hf";
     branchNames_bTagWeight[kBtag_hfDown]       = branchNames_bTagWeight[kBtag_central] + "_down_hf";
     branchNames_bTagWeight[kBtag_hfStats1Up]   = branchNames_bTagWeight[kBtag_central] + "_up_hfstats1";

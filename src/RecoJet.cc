@@ -6,18 +6,14 @@ RecoJet::RecoJet(Double_t pt,
                  Double_t eta,
                  Double_t phi,
                  Double_t mass,
-		 Double_t corr,
-		 Double_t corr_JECUp,
-		 Double_t corr_JECDown,
+     Double_t jecUncertTotal,
                  Double_t BtagCSV,
 		 Double_t BtagWeight,
                  Double_t QGDiscr,
 		 Int_t heppyFlavour,
                  Int_t idx)
   : GenJet(pt, eta, phi, mass)
-  , corr_(corr)
-  , corr_JECUp_(corr_JECUp)
-  , corr_JECDown_(corr_JECDown)
+  , jecUncertTotal_(jecUncertTotal)
   , BtagCSV_(BtagCSV)
   , BtagWeight_(BtagWeight)
   , QGDiscr_(QGDiscr)

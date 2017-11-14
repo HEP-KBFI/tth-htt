@@ -381,8 +381,8 @@ int main(int argc, char* argv[])
     for ( std::vector<const RecoJet*>::const_iterator cleanedJet = cleanedJets.begin();
 	  cleanedJet != cleanedJets.end(); ++cleanedJet ) {
       double cleanedJet_pt = (*cleanedJet)->pt();
-      double cleanedJet_pt_JECUp = cleanedJet_pt*((*cleanedJet)->corr_JECUp()/(*cleanedJet)->corr());
-      double cleanedJet_pt_JECDown = cleanedJet_pt*((*cleanedJet)->corr_JECDown()/(*cleanedJet)->corr());
+      double cleanedJet_pt_JECUp = cleanedJet_pt*(1. + (*cleanedJet)->jecUncertTotal());
+      double cleanedJet_pt_JECDown = cleanedJet_pt*(1. - (*cleanedJet)->jecUncertTotal());
       double cleanedJet_absEta = (*cleanedJet)->absEta();
       double min_pT = jetSelector.get_min_pt();
       double max_absEta = jetSelector.get_max_absEta();

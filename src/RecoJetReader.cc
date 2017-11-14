@@ -24,9 +24,7 @@ RecoJetReader::RecoJetReader(int era, bool isMC, bool readGenMatching)
   , jet_eta_(0)
   , jet_phi_(0)
   , jet_mass_(0)
-  , jet_corr_(0)
-  , jet_corr_JECUp_(0)
-  , jet_corr_JECDown_(0) 
+  , jet_jecUncertTotal_(0)
   , jet_BtagCSV_(0)
   , jet_BtagWeight_(0)
   , jet_QGDiscr_(0)
@@ -56,9 +54,7 @@ RecoJetReader::RecoJetReader(int era, bool isMC, const std::string& branchName_n
   , jet_eta_(0)
   , jet_phi_(0)
   , jet_mass_(0)
-  , jet_corr_(0)
-  , jet_corr_JECUp_(0)
-  , jet_corr_JECDown_(0) 
+  , jet_jecUncertTotal_(0)
   , jet_BtagCSV_(0)
   , jet_BtagWeight_(0)
   , jet_QGDiscr_(0)
@@ -86,9 +82,7 @@ RecoJetReader::~RecoJetReader()
     delete[] gInstance->jet_eta_;
     delete[] gInstance->jet_phi_;
     delete[] gInstance->jet_mass_;
-    delete[] gInstance->jet_corr_;
-    delete[] gInstance->jet_corr_JECUp_;
-    delete[] gInstance->jet_corr_JECDown_;
+    delete[] gInstance->jet_jecUncertTotal_;
     delete[] gInstance->jet_BtagCSV_;
     delete[] gInstance->jet_BtagWeight_;
     delete[] gInstance->jet_QGDiscr_;
@@ -108,10 +102,8 @@ void RecoJetReader::setBranchNames()
     branchName_eta_ = Form("%s_%s", branchName_obj_.data(), "eta");
     branchName_phi_ = Form("%s_%s", branchName_obj_.data(), "phi");
     branchName_mass_ = Form("%s_%s", branchName_obj_.data(), "mass");
-    branchName_corr_ = Form("%s_%s", branchName_obj_.data(), "corr");
-    branchName_corr_JECUp_ = Form("%s_%s_%s", branchName_obj_.data(), "corr", "JECUp");
-    branchName_corr_JECDown_ = Form("%s_%s_%s", branchName_obj_.data(), "corr", "JECDown");
-    branchName_BtagCSV_ = Form("%s_%s", branchName_obj_.data(), "btagCSV");  
+    branchName_jecUncertTotal_ = Form("%s_%s", branchName_obj_.data(), "jecUncertTotal");
+    branchName_BtagCSV_ = Form("%s_%s", branchName_obj_.data(), "btagCSVV2");
     branchName_QGDiscr_ = Form("%s_%s", branchName_obj_.data(), "qgl");
     branchName_BtagWeight_ = Form("%s_%s", branchName_obj_.data(), "btagSF");
     for ( int idxShift = kBtag_hfUp; idxShift <= kBtag_jesDown; ++idxShift ) {
@@ -158,12 +150,8 @@ void RecoJetReader::setBranchAddresses(TTree* tree)
     tree->SetBranchAddress(branchName_phi_.data(), jet_phi_); 
     jet_mass_ = new Float_t[max_nJets_];
     tree->SetBranchAddress(branchName_mass_.data(), jet_mass_); 
-    jet_corr_ = new Float_t[max_nJets_];
-    tree->SetBranchAddress(branchName_corr_.data(), jet_corr_); 
-    jet_corr_JECUp_ = new Float_t[max_nJets_];
-    tree->SetBranchAddress(branchName_corr_JECUp_.data(), jet_corr_JECUp_); 
-    jet_corr_JECDown_ = new Float_t[max_nJets_];
-    tree->SetBranchAddress(branchName_corr_JECDown_.data(), jet_corr_JECDown_);     
+    jet_jecUncertTotal_ = new Float_t[max_nJets_];
+    tree->SetBranchAddress(branchName_jecUncertTotal_.data(), jet_jecUncertTotal_);
     jet_BtagCSV_ = new Float_t[max_nJets_];
     tree->SetBranchAddress(branchName_BtagCSV_.data(), jet_BtagCSV_); 
     jet_BtagWeight_ = new Float_t[max_nJets_];
@@ -208,17 +196,15 @@ std::vector<RecoJet> RecoJetReader::read() const
     for ( UInt_t idxJet = 0; idxJet < nJets; ++idxJet ) {
       Float_t jet_pt = -1.;
       if      ( jetPt_option_ == RecoJetReader::kJetPt_central ) jet_pt = gInstance->jet_pt_[idxJet];
-      else if ( jetPt_option_ == RecoJetReader::kJetPt_jecUp   ) jet_pt = gInstance->jet_pt_[idxJet]*gInstance->jet_corr_JECUp_[idxJet]/gInstance->jet_corr_[idxJet];
-      else if ( jetPt_option_ == RecoJetReader::kJetPt_jecDown ) jet_pt = gInstance->jet_pt_[idxJet]*gInstance->jet_corr_JECDown_[idxJet]/gInstance->jet_corr_[idxJet];
+      else if ( jetPt_option_ == RecoJetReader::kJetPt_jecUp   ) jet_pt = gInstance->jet_pt_[idxJet]*(1. + jet_jecUncertTotal_[idxJet]);
+      else if ( jetPt_option_ == RecoJetReader::kJetPt_jecDown ) jet_pt = gInstance->jet_pt_[idxJet]*(1. - jet_jecUncertTotal_[idxJet]);
       else assert(0);
       jets.push_back(RecoJet(
         jet_pt,      
 	gInstance->jet_eta_[idxJet],
 	gInstance->jet_phi_[idxJet],
 	gInstance->jet_mass_[idxJet],
-	gInstance->jet_corr_[idxJet],
-	gInstance->jet_corr_JECUp_[idxJet],
-	gInstance->jet_corr_JECDown_[idxJet],
+  gInstance->jet_jecUncertTotal_[idxJet],
 	gInstance->jet_BtagCSV_[idxJet],
 	gInstance->jet_BtagWeight_[idxJet],
 	gInstance->jet_QGDiscr_[idxJet],

@@ -37,8 +37,8 @@ class RecoJetSelectorBtagLoose
   explicit RecoJetSelectorBtagLoose(int era, int index = -1, bool debug = false)
     : RecoJetSelectorBtag(era, index, debug) 
   {
-    if      ( era_ == kEra_2015 ) min_BtagCSV_ = 0.460;  // CSV loose WP, cf. https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation76X#Supported_Algorithms_and_Operati
-    else if ( era_ == kEra_2016 ) min_BtagCSV_ = 0.5426; // CSV loose WP, cf. https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation80XReReco
+    // NB! no btag CSVv2 WPs for 2017, yet!
+    if ( era_ == kEra_2017 ) min_BtagCSV_ = 0.5426; // CSV loose WP, cf. https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation80XReReco
     else assert(0);
   }
 };
@@ -52,8 +52,8 @@ class RecoJetSelectorBtagMedium
   explicit RecoJetSelectorBtagMedium(int era, int index = -1, bool debug = false)
     : RecoJetSelectorBtag(era, index, debug)
   {
-    if      ( era_ == kEra_2015 ) min_BtagCSV_ = 0.800;  // CSV medium WP, cf. https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation76X#Supported_Algorithms_and_Operati
-    else if ( era_ == kEra_2016 ) min_BtagCSV_ = 0.8484; // CSV medium WP, cf. https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation80XReReco
+    // NB! no btag CSVv2 WPs for 2017, yet!
+    if ( era_ == kEra_2017 ) min_BtagCSV_ = 0.8484; // CSV medium WP, cf. https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation80XReReco
     else assert(0);
   }
 };
