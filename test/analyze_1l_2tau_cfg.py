@@ -92,6 +92,11 @@ process.analyze_1l_2tau = cms.PSet(
     branchName_genJets = cms.string('GenJet'),
     redoGenMatching = cms.bool(True),
     
+    branchName_genTopQuarks = cms.string('GenTop'),
+    branchName_genBJets = cms.string('GenBQuarkFromTop'),
+    branchName_genWBosons = cms.string('GenVbosons'),
+    branchName_genWJets = cms.string('GenWZQuark'),
+	
     selEventsFileName_input = cms.string(''),
     selEventsFileName_output = cms.string(''),
     selectBDT = cms.bool(False),
