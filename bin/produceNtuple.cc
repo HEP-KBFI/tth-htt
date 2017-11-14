@@ -271,7 +271,7 @@ int main(int argc, char* argv[])
   tightHadTauSelector.set_min_pt(18.);
   std::cout << hadTauSelection_part2 <<'\n';
 
-  RecoJetReader* jetReader = new RecoJetReader(era, isMC, Form("n%s", branchName_jets_in.c_str()), branchName_hadTaus_in);
+  RecoJetReader* jetReader = new RecoJetReader(era, isMC, Form("n%s", branchName_jets_in.c_str()), branchName_jets_in);
   jetReader->setJetPt_central_or_shift(RecoJetReader::kJetPt_central); 
   jetReader->read_BtagWeight_systematics(isMC);
   jetReader->setBranchAddresses(inputTree);
