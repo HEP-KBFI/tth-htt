@@ -408,7 +408,6 @@ SyncNtupleManager::read(std::vector<const RecoHadTau *> & hadtaus)
     tau_dz[i] = hadtau -> dz();
     tau_decayModeFindingOldDMs[i] = hadtau -> decayModeFinding();
     tau_decayModeFindingNewDMs[i] = hadtau -> decayModeFindingNew();
-    tau_byCombinedIsolationDeltaBetaCorr3Hits[i] = hadtau -> raw_cut_dR05();
 
     const Int_t idCI3hit = hadtau -> id_cut_dR05();
     tau_byLooseCombinedIsolationDeltaBetaCorr3Hits[i] = idCI3hit >= 1 ? 1 : 0;

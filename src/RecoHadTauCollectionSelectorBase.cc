@@ -8,7 +8,7 @@ RecoHadTauSelectorBase::RecoHadTauSelectorBase(int era, int index, bool debug, b
   , min_pt_(20.)
   , max_absEta_(2.3)
   , max_dz_(0.2)
-  , min_decayModeFinding_(1)
+  , apply_decayModeFinding_(true)
   , min_id_mva_dR03_(-1000)
   , min_raw_mva_dR03_(-1.e+6)
   , min_id_mva_dR05_(-1000)
@@ -16,7 +16,6 @@ RecoHadTauSelectorBase::RecoHadTauSelectorBase(int era, int index, bool debug, b
   , min_id_cut_dR03_(-1000)
   , max_raw_cut_dR03_(1.e+6)
   , min_id_cut_dR05_(-1000)
-  , max_raw_cut_dR05_(1.e+6) 
   , min_antiElectron_(-1000)
   , min_antiMuon_(-1000)   
 {}
@@ -39,7 +38,7 @@ bool RecoHadTauSelectorBase::operator()(const RecoHadTau& hadTau) const
     if ( debug_ ) std::cout << "FAILS dz cut." << std::endl;
     return false;
   }
-  if ( hadTau.decayModeFinding() < min_decayModeFinding_ ) {
+  if ( apply_decayModeFinding_ && ! hadTau.decayModeFinding() ) {
     if ( debug_ ) std::cout << "FAILS decayModeFinding cut." << std::endl;
     return false;
   }
@@ -69,10 +68,6 @@ bool RecoHadTauSelectorBase::operator()(const RecoHadTau& hadTau) const
   }
   if ( hadTau.id_cut_dR05() < min_id_cut_dR05_ ) {
     if ( debug_ ) std::cout << "FAILS id_cut_dR05 cut." << std::endl;
-    return false;
-  }
-  if ( hadTau.raw_cut_dR05() > max_raw_cut_dR05_ ) {
-    if ( debug_ ) std::cout << "FAILS raw_cut_dR05 cut." << std::endl;
     return false;
   }
   if ( hadTau.antiElectron() < min_antiElectron_ ) {

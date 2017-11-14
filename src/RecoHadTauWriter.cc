@@ -202,7 +202,6 @@ void RecoHadTauWriter::write(const std::vector<const RecoHadTau*>& hadTaus)
     hadTau_idCombIso_dR03_[idxHadTau] = hadTau->id_cut_dR03();
     hadTau_rawCombIso_dR03_[idxHadTau] = hadTau->raw_cut_dR03();
     hadTau_idCombIso_dR05_[idxHadTau] = hadTau->id_cut_dR05();
-    hadTau_rawCombIso_dR05_[idxHadTau] = hadTau->raw_cut_dR05();
     hadTau_idAgainstElec_[idxHadTau] = hadTau->antiElectron();
     hadTau_idAgainstMu_[idxHadTau] = hadTau->antiMuon();
   }

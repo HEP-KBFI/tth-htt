@@ -2205,7 +2205,6 @@ int main(int argc, char* argv[])
   RecoHadTauCollectionCleaner hadTauCleaner(0.3); // cleaning hadronic taus from overlapping jets within cone radius 0.3
   RecoHadTauCollectionSelectorLoose preselHadTauSelector(era);
   preselHadTauSelector.set_min_id_cut_dR05(-1000);
-  preselHadTauSelector.set_max_raw_cut_dR05(1.e+6);
   preselHadTauSelector.set_min_antiElectron(hadTauSelection_antiElectron);
   preselHadTauSelector.set_min_antiMuon(hadTauSelection_antiMuon);
   RecoHadTauCollectionSelectorFakeable fakeableHadTauSelector(era);

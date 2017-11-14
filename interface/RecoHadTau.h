@@ -20,8 +20,8 @@ class RecoHadTau : public Particle
 	     Double_t dxy,
 	     Double_t dz,
 	     Int_t decayMode,
-	     Int_t decayModeFinding,
-	     Int_t decayModeFindingNew,
+       Bool_t decayModeFinding,
+       Bool_t decayModeFindingNew,
 	     Int_t id_mva_dR03,
 	     Double_t raw_mva_dR03,
 	     Int_t id_mva_dR05,
@@ -29,7 +29,6 @@ class RecoHadTau : public Particle
 	     Int_t id_cut_dR03,
 	     Double_t raw_cut_dR03,
 	     Int_t id_cut_dR05,
-	     Double_t raw_cut_dR05,
 	     Int_t antiElectron,
 	     Int_t antiMuon);
 
@@ -57,8 +56,8 @@ class RecoHadTau : public Particle
   Double_t dxy() const { return dxy_; }
   Double_t dz() const { return dz_; }
   Int_t decayMode() const { return decayMode_; }
-  Int_t decayModeFinding() const { return decayModeFinding_; }
-  Int_t decayModeFindingNew() const { return decayModeFindingNew_; }
+  Bool_t decayModeFinding() const { return decayModeFinding_; }
+  Bool_t decayModeFindingNew() const { return decayModeFindingNew_; }
   Int_t id_mva_dR03() const { return id_mva_dR03_; }
   Double_t raw_mva_dR03() const { return raw_mva_dR03_; }
   Int_t id_mva_dR05() const { return id_mva_dR05_; }
@@ -66,7 +65,6 @@ class RecoHadTau : public Particle
   Int_t id_cut_dR03() const { return id_cut_dR03_; }
   Double_t raw_cut_dR03() const { return raw_cut_dR03_; }
   Int_t id_cut_dR05() const { return id_cut_dR05_; }
-  Double_t raw_cut_dR05() const { return raw_cut_dR05_; }
   Int_t antiElectron() const { return antiElectron_; }
   Int_t antiMuon() const { return antiMuon_; }
 
@@ -83,8 +81,8 @@ class RecoHadTau : public Particle
   Double_t dxy_;              ///< d_{xy}, distance in the transverse plane w.r.t PV
   Double_t dz_;               ///< d_{z}, distance on the z axis w.r.t PV
   Int_t decayMode_;           ///< tau decay mode (5x(nof charged pions - 1) - (nof neutral pions))
-  Int_t decayModeFinding_;    ///< decayModeFinding discriminator
-  Int_t decayModeFindingNew_; ///< new decayModeFinding discriminator
+  Bool_t decayModeFinding_;    ///< decayModeFinding discriminator
+  Bool_t decayModeFindingNew_; ///< new decayModeFinding discriminator
   Int_t id_mva_dR03_;         ///< MVA-based tau id computed with dR=0.3 isolation cone
   Double_t raw_mva_dR03_;     ///< raw output of MVA-based tau id computed with dR=0.3 isolation cone
   Int_t id_mva_dR05_;         ///< MVA-based tau id computed with dR=0.5 isolation cone
@@ -92,7 +90,6 @@ class RecoHadTau : public Particle
   Int_t id_cut_dR03_;         ///< cut-based tau id computed with dR=0.3 isolation cone
   Double_t raw_cut_dR03_;     ///< raw isolation pT-sum of cut-based tau id computed with dR=0.3 isolation cone
   Int_t id_cut_dR05_;         ///< cut-based tau id computed with dR=0.5 isolation cone
-  Double_t raw_cut_dR05_;     ///< raw isolation pT-sum of cut-based tau id computed with dR=0.5 isolation cone
   Int_t antiElectron_;        ///< discriminator against electrons
   Int_t antiMuon_;            ///< discriminator against muons
 

@@ -451,7 +451,6 @@ int main(int argc, char* argv[])
   RecoHadTauCollectionCleaner hadTauCleaner(0.3);
   RecoHadTauCollectionSelectorLoose preselHadTauSelector(era);
   preselHadTauSelector.set_min_id_cut_dR05(-1000);
-  preselHadTauSelector.set_max_raw_cut_dR05(1.e+6);
   if ( hadTauSelection_denominator == "dR03mvaVVLoose" || 
        hadTauSelection_denominator == "dR03mvaVLoose"  ) {
     preselHadTauSelector.set(hadTauSelection_denominator);

@@ -30,7 +30,6 @@ class RecoHadTauSelectorBase
   void set_min_id_cut_dR03(int min_id_cut_dR03) { min_id_cut_dR03_ = min_id_cut_dR03; }
   void set_max_raw_cut_dR03(double max_raw_cut_dR03) { max_raw_cut_dR03_ = max_raw_cut_dR03; }
   void set_min_id_cut_dR05(int min_id_cut_dR05) { min_id_cut_dR05_ = min_id_cut_dR05; }
-  void set_max_raw_cut_dR05(double max_raw_cut_dR05) { max_raw_cut_dR05_ = max_raw_cut_dR05; }
 
   void set(const std::string& cut)
   {    
@@ -41,7 +40,6 @@ class RecoHadTauSelectorBase
     set_min_id_cut_dR03(-1000);
     set_max_raw_cut_dR03(1.e+6);
     set_min_id_cut_dR05(-1000);
-    set_max_raw_cut_dR05(1.e+6);
     if      ( cut == "dR05isoLoose"   ) set_min_id_cut_dR05(1);
     else if ( cut == "dR05isoMedium"  ) set_min_id_cut_dR05(2);
     else if ( cut == "dR05isoTight"   ) set_min_id_cut_dR05(3);
@@ -67,7 +65,6 @@ class RecoHadTauSelectorBase
   int get_min_id_cut_dR03() const { return min_id_cut_dR03_; }
   double get_max_raw_cut_dR03() const { return max_raw_cut_dR03_; }
   int get_min_id_cut_dR05() const { return min_id_cut_dR05_; }
-  double get_max_raw_cut_dR05() const { return max_raw_cut_dR05_; }
 
   void set_min_antiElectron(int min_antiElectron) { min_antiElectron_ = min_antiElectron; }
   void set_min_antiMuon(int min_antiMuon) { min_antiMuon_ = min_antiMuon; }
@@ -92,7 +89,7 @@ class RecoHadTauSelectorBase
   Double_t min_pt_;            ///< lower cut threshold on pT
   Double_t max_absEta_;        ///< upper cut threshold on absolute value of eta
   Double_t max_dz_;            ///< upper cut threshold on d_{z}, distance on the z axis w.r.t PV
-  Int_t min_decayModeFinding_; ///< lower cut threshold on decayModeFinding discriminator
+  Bool_t apply_decayModeFinding_; ///< lower cut threshold on decayModeFinding discriminator
   Int_t min_id_mva_dR03_;      ///< lower cut threshold on MVA-based tau id computed with dR=0.3 isolation cone
   Double_t min_raw_mva_dR03_;  ///< lower cut threshold on raw output of MVA-based tau id computed with dR=0.3 isolation cone
   Int_t min_id_mva_dR05_;      ///< lower cut threshold on MVA-based tau id computed with dR=0.5 isolation cone
@@ -100,7 +97,6 @@ class RecoHadTauSelectorBase
   Int_t min_id_cut_dR03_;      ///< lower cut threshold on cut-based tau id computed with dR=0.3 isolation cone
   Double_t max_raw_cut_dR03_;  ///< upper cut threshold on raw isolation pT-sum of cut-based tau id computed with dR=0.3 isolation cone
   Int_t min_id_cut_dR05_;      ///< lower cut threshold on cut-based tau id computed with dR=0.5 isolation cone
-  Double_t max_raw_cut_dR05_;  ///< upper cut threshold on raw isolation pT-sum of cut-based tau id computed with dR=0.5 isolation cone
   Int_t min_antiElectron_;     ///< lower cut threshold on discriminator against electrons
   Int_t min_antiMuon_;         ///< lower cut threshold on discriminator against muons
   std::string cut_;    
@@ -127,7 +123,6 @@ class RecoHadTauCollectionSelector
   void set_min_id_cut_dR03(int min_id_cut_dR03) { selector_.set_min_id_cut_dR03(min_id_cut_dR03); }
   void set_max_raw_cut_dR03(double max_raw_cut_dR03) { selector_.set_max_raw_cut_dR03(max_raw_cut_dR03); }
   void set_min_id_cut_dR05(int min_id_cut_dR05) { selector_.set_min_id_cut_dR05(min_id_cut_dR05); }
-  void set_max_raw_cut_dR05(double max_raw_cut_dR05) { selector_.set_max_raw_cut_dR05(max_raw_cut_dR05); }
 
   void set(const std::string& cut) { selector_.set(cut); }
   

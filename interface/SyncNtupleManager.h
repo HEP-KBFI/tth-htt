@@ -123,8 +123,8 @@ private:
   Int_t * tau_charge;
   Float_t * tau_dxy;
   Float_t * tau_dz;
-  Int_t * tau_decayModeFindingOldDMs;
-  Int_t * tau_decayModeFindingNewDMs;
+  Bool_t * tau_decayModeFindingOldDMs;
+  Bool_t * tau_decayModeFindingNewDMs;
   Float_t * tau_byCombinedIsolationDeltaBetaCorr3Hits;
   Int_t * tau_byLooseCombinedIsolationDeltaBetaCorr3Hits;
   Int_t * tau_byMediumCombinedIsolationDeltaBetaCorr3Hits;
