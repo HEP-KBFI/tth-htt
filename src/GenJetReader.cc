@@ -85,14 +85,14 @@ std::vector<GenJet> GenJetReader::read() const
   GenJetReader* gInstance = instances_[branchName_obj_];
   assert(gInstance);
   std::vector<GenJet> jets;
-  Int_t nJets = gInstance->nJets_;
+  UInt_t nJets = gInstance->nJets_;
   if ( nJets > max_nJets_ ) {
     throw cms::Exception("GenJetReader") 
       << "Number of jets stored in Ntuple = " << nJets << ", exceeds max_nJets = " << max_nJets_ << " !!\n";
   }
   if ( nJets > 0 ) {
     jets.reserve(nJets);
-    for ( Int_t idxJet = 0; idxJet < nJets; ++idxJet ) {
+    for ( UInt_t idxJet = 0; idxJet < nJets; ++idxJet ) {
       jets.push_back(GenJet({ 
         gInstance->jet_pt_[idxJet],
         gInstance->jet_eta_[idxJet],

@@ -150,7 +150,7 @@ std::vector<GenLepton> GenLeptonReader::read() const
   //std::cout << "<GenLeptonReader::read()>:" << std::endl;
   GenLeptonReader* gInstance = instances_[branchName_promptLeptons_];
   assert(gInstance);
-  Int_t nPromptLeptons = 0;
+  UInt_t nPromptLeptons = 0;
   if ( read_promptLeptons_ ) {
     nPromptLeptons = gInstance->nPromptLeptons_;
     //std::cout << "nPromptLeptons = " << nPromptLeptons << std::endl;
@@ -160,7 +160,7 @@ std::vector<GenLepton> GenLeptonReader::read() const
 	<< " exceeds max_nPromptLeptons = " << max_nPromptLeptons_ << " !!\n";
     }
   }
-  Int_t nLeptonsFromTau = 0;
+  UInt_t nLeptonsFromTau = 0;
   if ( read_leptonsFromTau_ ) {
     nLeptonsFromTau = gInstance->nLeptonsFromTau_;
     //std::cout << "nLeptonsFromTau = " << nLeptonsFromTau << std::endl;
@@ -173,7 +173,7 @@ std::vector<GenLepton> GenLeptonReader::read() const
   std::vector<GenLepton> leptons;
   if ( (nPromptLeptons + nLeptonsFromTau) > 0 ) {
     leptons.reserve(nPromptLeptons + nLeptonsFromTau);
-    for ( Int_t idxLepton = 0; idxLepton < nPromptLeptons; ++idxLepton ) {
+    for ( UInt_t idxLepton = 0; idxLepton < nPromptLeptons; ++idxLepton ) {
       leptons.push_back(GenLepton({ 
         gInstance->promptLepton_pt_[idxLepton],
         gInstance->promptLepton_eta_[idxLepton],
@@ -181,7 +181,7 @@ std::vector<GenLepton> GenLeptonReader::read() const
         gInstance->promptLepton_mass_[idxLepton],
         gInstance->promptLepton_pdgId_[idxLepton] }));
     }
-    for ( Int_t idxLepton = 0; idxLepton < nLeptonsFromTau; ++idxLepton ) {
+    for ( UInt_t idxLepton = 0; idxLepton < nLeptonsFromTau; ++idxLepton ) {
       leptons.push_back(GenLepton({ 
         gInstance->leptonFromTau_pt_[idxLepton],
         gInstance->leptonFromTau_eta_[idxLepton],

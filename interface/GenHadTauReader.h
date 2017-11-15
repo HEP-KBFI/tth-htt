@@ -36,7 +36,7 @@ class GenHadTauReader
    */
   void setBranchNames();
 
-  const int max_nHadTaus_;
+  const unsigned int max_nHadTaus_;
   std::string branchName_num_;
   std::string branchName_obj_;
 
@@ -46,12 +46,12 @@ class GenHadTauReader
   std::string branchName_mass_;
   std::string branchName_charge_;
 
-  Int_t nHadTaus_;
+  UInt_t nHadTaus_;
   Float_t* hadTau_pt_;
   Float_t* hadTau_eta_;
   Float_t* hadTau_phi_;
   Float_t* hadTau_mass_;
-  Float_t* hadTau_charge_;
+  Int_t* hadTau_charge_;
 
   // CV: make sure that only one GenHadTauReader instance exists for a given branchName,
   //     as ROOT cannot handle multiple TTree::SetBranchAddress calls for the same branch.

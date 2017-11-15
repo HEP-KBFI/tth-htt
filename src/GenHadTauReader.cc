@@ -81,7 +81,7 @@ void GenHadTauReader::setBranchAddresses(TTree* tree)
     tree->SetBranchAddress(branchName_phi_.data(), hadTau_phi_); 
     hadTau_mass_ = new Float_t[max_nHadTaus_];
     tree->SetBranchAddress(branchName_mass_.data(), hadTau_mass_); 
-    hadTau_charge_ = new Float_t[max_nHadTaus_];
+    hadTau_charge_ = new Int_t[max_nHadTaus_];
     tree->SetBranchAddress(branchName_charge_.data(), hadTau_charge_);
   }
 }
@@ -91,20 +91,20 @@ std::vector<GenHadTau> GenHadTauReader::read() const
   GenHadTauReader* gInstance = instances_[branchName_obj_];
   assert(gInstance);
   std::vector<GenHadTau> hadTaus;
-  Int_t nHadTaus = gInstance->nHadTaus_;
+  UInt_t nHadTaus = gInstance->nHadTaus_;
   if ( nHadTaus > max_nHadTaus_ ) {
     throw cms::Exception("GenHadTauReader") 
       << "Number of hadronic taus stored in Ntuple = " << nHadTaus << ", exceeds max_nHadTaus = " << max_nHadTaus_ << " !!\n";
   }
   if ( nHadTaus > 0 ) {
     hadTaus.reserve(nHadTaus);
-    for ( Int_t idxHadTau = 0; idxHadTau < nHadTaus; ++idxHadTau ) {
+    for ( UInt_t idxHadTau = 0; idxHadTau < nHadTaus; ++idxHadTau ) {
       hadTaus.push_back(GenHadTau({ 
         gInstance->hadTau_pt_[idxHadTau],
         gInstance->hadTau_eta_[idxHadTau],
         gInstance->hadTau_phi_[idxHadTau],
         gInstance->hadTau_mass_[idxHadTau],
-        static_cast<Int_t>(gInstance->hadTau_charge_[idxHadTau]) }));
+        gInstance->hadTau_charge_[idxHadTau] }));
     }
   }
   return hadTaus;

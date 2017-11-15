@@ -36,7 +36,7 @@ class GenJetReader
    */
   void setBranchNames();
 
-  const int max_nJets_;
+  const unsigned int max_nJets_;
   std::string branchName_num_;
   std::string branchName_obj_;
 
@@ -45,7 +45,7 @@ class GenJetReader
   std::string branchName_phi_;
   std::string branchName_mass_;
 
-  Int_t nJets_;
+  UInt_t nJets_;
   Float_t* jet_pt_;
   Float_t* jet_eta_;
   Float_t* jet_phi_;

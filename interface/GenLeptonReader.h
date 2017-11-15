@@ -38,13 +38,13 @@ class GenLeptonReader
   void setBranchNames();
 
   // electrons and muons from W and Z boson decays
-  const int max_nPromptLeptons_;
+  const unsigned int max_nPromptLeptons_;
   std::string branchName_nPromptLeptons_;
   std::string branchName_promptLeptons_;
   bool read_promptLeptons_;
 
   // electrons and muons from tau decays
-  const int max_nLeptonsFromTau_;
+  const unsigned int max_nLeptonsFromTau_;
   std::string branchName_nLeptonsFromTau_;
   std::string branchName_leptonsFromTau_;
   bool read_leptonsFromTau_;
@@ -55,7 +55,7 @@ class GenLeptonReader
   std::string branchName_promptLepton_mass_;
   std::string branchName_promptLepton_pdgId_;
 
-  Int_t nPromptLeptons_;
+  UInt_t nPromptLeptons_;
   Float_t* promptLepton_pt_;
   Float_t* promptLepton_eta_;
   Float_t* promptLepton_phi_;
@@ -68,7 +68,7 @@ class GenLeptonReader
   std::string branchName_leptonFromTau_mass_;
   std::string branchName_leptonFromTau_pdgId_;
 
-  Int_t nLeptonsFromTau_;
+  UInt_t nLeptonsFromTau_;
   Float_t* leptonFromTau_pt_;
   Float_t* leptonFromTau_eta_;
   Float_t* leptonFromTau_phi_;
