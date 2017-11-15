@@ -1,9 +1,9 @@
 import FWCore.ParameterSet.Config as cms
 
 import os
-  
+
 process = cms.PSet()
-  
+
 process.fwliteInput = cms.PSet(
     fileNames = cms.vstring('/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau/MC/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/VHBB_HEPPY_V25tthtautau_ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_Py8_mWCutfix__RunIISummer16MAv2-PUMoriond17_80r2as_2016_TrancheIV_v6_ext1-v1/170207_122849/0000/tree_1.root'),
     maxEvents = cms.int32(-1),
@@ -31,7 +31,7 @@ process.analyze_1l_2tau = cms.PSet(
     use_triggers_1mu = cms.bool(True),
     triggers_1mu1tau = cms.vstring(),
     use_triggers_1mu1tau = cms.bool(False),
-    
+
     apply_offline_e_trigger_cuts_1e = cms.bool(True),
     apply_offline_e_trigger_cuts_1e1tau = cms.bool(True),
     apply_offline_e_trigger_cuts_1mu = cms.bool(True),
@@ -40,7 +40,7 @@ process.analyze_1l_2tau = cms.PSet(
     leptonSelection = cms.string('Tight'),
     apply_leptonGenMatching = cms.bool(False),
     apply_leptonGenMatching_ttZ_workaround = cms.bool(False),
-            
+
     hadTauSelection = cms.string('Tight|dR03mvaTight'),
     hadTauChargeSelection = cms.string('OS'),
     apply_hadTauGenMatching = cms.bool(False),
@@ -70,7 +70,7 @@ process.analyze_1l_2tau = cms.PSet(
     ),
 
     use_HIP_mitigation_mediumMuonId = cms.bool(False),
-        
+
     isMC = cms.bool(False),
     central_or_shift = cms.string('central'),
     lumiScale = cms.double(1.),
@@ -91,12 +91,12 @@ process.analyze_1l_2tau = cms.PSet(
     branchName_genHadTaus = cms.string('GenHadTaus'),
     branchName_genJets = cms.string('GenJet'),
     redoGenMatching = cms.bool(True),
-    
+
     branchName_genTopQuarks = cms.string('GenTop'),
     branchName_genBJets = cms.string('GenBQuarkFromTop'),
     branchName_genWBosons = cms.string('GenVbosons'),
-    branchName_genWJets = cms.string('GenWZQuark'),
-	
+    #branchName_genWJets = cms.string('GenWZQuark'),
+
     selEventsFileName_input = cms.string(''),
     selEventsFileName_output = cms.string(''),
     selectBDT = cms.bool(False),

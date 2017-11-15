@@ -347,7 +347,7 @@ int main(int argc, char* argv[])
   std::string branchName_genTopQuarks = cfg_analyze.getParameter<std::string>("branchName_genTopQuarks");
   std::string branchName_genBJets = cfg_analyze.getParameter<std::string>("branchName_genBJets");
   std::string branchName_genWBosons = cfg_analyze.getParameter<std::string>("branchName_genWBosons");
-  std::string branchName_genWJets = cfg_analyze.getParameter<std::string>("branchName_genWJets");
+  //std::string branchName_genWJets = cfg_analyze.getParameter<std::string>("branchName_genWJets");
 
   bool redoGenMatching = cfg_analyze.getParameter<bool>("redoGenMatching");
 
@@ -452,12 +452,12 @@ int main(int argc, char* argv[])
   	GenParticleReader* genTopQuarkReader = new GenParticleReader(Form("n%s", branchName_genTopQuarks.data()), branchName_genTopQuarks);
 	GenParticleReader* genBJetReader = new GenParticleReader(Form("n%s", branchName_genBJets.data()), branchName_genBJets);
 	GenParticleReader* genWBosonReader = new GenParticleReader(Form("n%s", branchName_genWBosons.data()), branchName_genWBosons);
-	GenParticleReader* genWJetReader = new GenParticleReader(Form("n%s", branchName_genWJets.data()), branchName_genWJets);
+	//GenParticleReader* genWJetReader = new GenParticleReader(Form("n%s", branchName_genWJets.data()), branchName_genWJets);
 
 	inputTree -> registerReader(genTopQuarkReader);
 	inputTree -> registerReader(genBJetReader);
 	inputTree -> registerReader(genWBosonReader);
-	inputTree -> registerReader(genWJetReader);
+	//inputTree -> registerReader(genWJetReader);
 
 //--- declare missing transverse energy
   RecoMEtReader* metReader = new RecoMEtReader(era, branchName_met);
@@ -1372,7 +1372,7 @@ int main(int argc, char* argv[])
     std::vector<GenParticle> genTopQuarks = genTopQuarkReader->read();
     std::vector<GenParticle> genBJets = genBJetReader->read();
     std::vector<GenParticle> genWBosons = genWBosonReader->read();
-    std::vector<GenParticle> genWJets = genWJetReader->read();
+    //std::vector<GenParticle> genWJets = genWJetReader->read();
 	//--- compute output of hadronic top tagger BDT
   double max_mvaOutput_hadTopTagger = -1.;
   double max_mvaOutput_hadTopTaggerWithKinFit = -1.;
@@ -1389,17 +1389,17 @@ int main(int argc, char* argv[])
         //std::vector<bool> truth_hadTopTagger;
 				//std::cout << "Calling mva output " << mvaOutput_hadTopTagger[0] << " "<< mvaOutput_hadTopTagger[1]<<" "<<(truth_hadTopTagger[6] || truth_hadTopTagger[7])  << std::endl;
 				if ( mvaOutput_hadTopTagger[1] > max_mvaOutput_hadTopTagger ) {
-          std::vector<bool>  truth_hadTopTagger= hadTopTagger->isTruth3Jet(**selBJet, **selWJet1, **selWJet2,\
-  					                                           genTopQuarks, genBJets, genWBosons,genWJets);
-					max_truth_hadTopTagger= (truth_hadTopTagger[6] || truth_hadTopTagger[7]);
+          //std::vector<bool>  truth_hadTopTagger= hadTopTagger->isTruth3Jet(**selBJet, **selWJet1, **selWJet2,\
+  				//	                                           genTopQuarks, genBJets, genWBosons,genWJets);
+					max_truth_hadTopTagger= 1; //(truth_hadTopTagger[6] || truth_hadTopTagger[7]);
 					max_mvaOutput_hadTopTagger = mvaOutput_hadTopTagger[1];
 					fittedHadTopP4Kin = hadTopTagger->kinFit()->fittedTop();
           fittedHadTopP4 = hadTopTagger->Particles(**selBJet, **selWJet1, **selWJet2)[2]; // **selBJet->p4() + **selWJet1->p4() + **selWJet2->p4();
 				}
         if ( mvaOutput_hadTopTagger[0] > max_mvaOutput_hadTopTaggerWithKinFit ) {
-          std::vector<bool> truth_hadTopTaggerWithKinFit= hadTopTagger->isTruth3Jet(**selBJet, **selWJet1, **selWJet2,\
-  					                                                     genTopQuarks, genBJets, genWBosons,genWJets);
-					max_truth_hadTopTagger= (truth_hadTopTaggerWithKinFit[6] || truth_hadTopTaggerWithKinFit[7]);
+          //std::vector<bool> truth_hadTopTaggerWithKinFit= hadTopTagger->isTruth3Jet(**selBJet, **selWJet1, **selWJet2,\
+  				//	                                                     genTopQuarks, genBJets, genWBosons,genWJets);
+					max_truth_hadTopTagger= 1;//(truth_hadTopTaggerWithKinFit[6] || truth_hadTopTaggerWithKinFit[7]);
 					max_mvaOutput_hadTopTaggerWithKinFit = mvaOutput_hadTopTagger[0];
 					fittedHadTopP4KinBDTWithKin = hadTopTagger->kinFit()->fittedTop();
           fittedHadTopP4BDTWithKin =  hadTopTagger->Particles(**selBJet, **selWJet1, **selWJet2)[2]; // *selBJet->p4() + *selWJet1->p4() + *selWJet2->p4();
