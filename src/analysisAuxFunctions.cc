@@ -101,13 +101,13 @@ getBranchName_MEt(int,
   std::string branchName = default_branchName; // copy
   switch(central_or_shift)
   {
-    case kMEt_central:                                                               break;
-    case kMEt_shifted_JetEnUp:           branchName += "_shifted_JetEnUp";           break;
-    case kMEt_shifted_JetEnDown:         branchName += "_shifted_JetEnDown";         break;
-    case kMEt_shifted_JetResUp:          branchName += "_shifted_JetResUp";          break;
-    case kMEt_shifted_JetResDown:        branchName += "_shifted_JetResDown";        break;
-    case kMEt_shifted_UnclusteredEnUp:   branchName += "_shifted_UnclusteredEnUp";   break;
-    case kMEt_shifted_UnclusteredEnDown: branchName += "_shifted_UnclusteredEnDown"; break;
+    case kMEt_central:                                                   break;
+    case kMEt_shifted_JetEnUp:           branchName += "_jesTotalUp";    break; // JetEnUp
+    case kMEt_shifted_JetEnDown:         branchName += "_jesTotalDown";  break; // JetEnDown
+    case kMEt_shifted_JetResUp:          branchName += "_jerUp";         break;
+    case kMEt_shifted_JetResDown:        branchName += "_jerDown";       break;
+    case kMEt_shifted_UnclusteredEnUp:   branchName += "_unclustEnUp";   break;
+    case kMEt_shifted_UnclusteredEnDown: branchName += "_unclustEnDown"; break;
     default:
     {
       std::cerr << "Invalid met correction: " << central_or_shift << '\n';
