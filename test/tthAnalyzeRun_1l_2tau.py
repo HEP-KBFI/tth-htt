@@ -10,7 +10,7 @@ from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 #   'forBDTtraining' : to run the analysis on the VHbb Ntuples, with a relaxed event selection,
 #                      to increase the BDT training statistics
 #--------------------------------------------------------------------------------
-# E.g. to run: python tthAnalyzeRun_1l_2tau.py --version "2017Nov02" --mode "forBDTtraining" --use_prod_ntuples 
+# E.g. to run: python tthAnalyzeRun_1l_2tau.py --version "2017Nov02" --mode "forBDTtraining" --use_prod_ntuples
 from optparse import OptionParser
 parser = OptionParser()
 parser.add_option("--version ", type="string", dest="version", help="Name of output reository with results\n Trees will be stored in /hdfs/local/USER/ttHAnalysis/2016/VERSION/", default='dumb')
@@ -44,7 +44,7 @@ if mode == "VHbb":
   if use_prod_ntuples:
     from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_prodNtuples_2016 import samples_2016
   else:
-    #from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2015 import samples_2015
+    from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2015 import samples_2015
     from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016 import samples_2016
 
     for sample_name, sample_info in samples_2015.items():
@@ -194,14 +194,12 @@ if __name__ == '__main__':
       histograms_to_fit                     = [
         "EventCounter",
         "numJets",
-		"""
-        "mvaOutput_1l_2tau_ttbar",
-		"mvaOutput_1l_2tau_ttbar_withLepID",
-		"mvaOutput_1l_2tau_ttbar_withLepID_HTTbase",
-		"mvaOutput_1l_2tau_ttbar_baseline",
-		"mvaOutput_1l_2tau_ttbar_baseline_HTTbase",
-        "mvaDiscr_1l_2tau",
-		"""
+#       "mvaOutput_1l_2tau_ttbar",
+#       "mvaOutput_1l_2tau_ttbar_withLepID",
+#       "mvaOutput_1l_2tau_ttbar_withLepID_HTTbase",
+#       "mvaOutput_1l_2tau_ttbar_baseline",
+#       "mvaOutput_1l_2tau_ttbar_baseline_HTTbase",
+#       "mvaDiscr_1l_2tau",
         "mTauTauVis",
       ],
       select_rle_output                     = True,
