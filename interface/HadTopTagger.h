@@ -16,7 +16,7 @@
 class HadTopTagger
 {
  public:
-  HadTopTagger(const std::string& mvaFileName = "");
+  HadTopTagger(const std::string& mvaFileNameWithKinFit,const std::string& mvaFileNameNoKinFit);
   ~HadTopTagger();
 
   /**
@@ -40,6 +40,8 @@ class HadTopTagger
 
  protected:
   HadTopKinFit* kinFit_;
+  const char* mvaFileNameWithKinFit_;
+  const char* mvaFileNameNoKinFit_;
 
   std::vector<std::string> mvaInputVariables_;
   TMVAInterface* mva_;

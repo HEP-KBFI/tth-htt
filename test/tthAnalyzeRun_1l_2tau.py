@@ -25,7 +25,7 @@ ERA                  = options.ERA #"2016"
 version              = options.version #"2017Oct24"
 changeBranchNames    = use_prod_ntuples
 max_job_resubmission = 3
-max_files_per_job    = 10 if use_prod_ntuples else 100
+max_files_per_job    = 10 if use_prod_ntuples else 10
 
 samples                            = None
 LUMI                               = None

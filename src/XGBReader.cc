@@ -42,12 +42,12 @@ double XGBReader( std::map<std::string, double> mvaInputs_ , char* pklpath )
   setenv("OMP_NUM_THREADS", "1", 0);
 	double mvaOutput_=-20;
     // here I can start the XGBReader
-	char* pkldir=(char*) "/home/acaan/CMSSW_9_4_0_pre1/src/tth-bdt-training-test/HadTopTagger/";
+	char* pkldir=(char*) "/home/acaan/VHbbNtuples_8_0_x/CMSSW_8_0_21/src/tthAnalysis/HiggsToTauTau/data/"; //
 	std::vector<float> vectorValuesVec;
-	std::vector<std::basic_string<char>> vectorNamesVec;  
+	std::vector<std::basic_string<char>> vectorNamesVec;
 	// prepare dictionary to pass to pyObject functions
 	for ( std::map<std::string, double>::const_iterator mvaInput = mvaInputs_.begin();
-		mvaInput != mvaInputs_.end(); ++mvaInput ) { 
+		mvaInput != mvaInputs_.end(); ++mvaInput ) {
 		vectorValuesVec.push_back(mvaInput->second);
 		vectorNamesVec.push_back((std::basic_string<char>) mvaInput->first);
 		//std::cout << " " << mvaInput->first << " : " << mvaInput->second << std::endl;
@@ -62,7 +62,7 @@ double XGBReader( std::map<std::string, double> mvaInputs_ , char* pklpath )
 	PyObject *moduleMain = PyImport_Import(moduleMainString);
 	// https://ubuntuforums.org/archive/index.php/t-324544.html
 	// https://stackoverflow.com/questions/4060221/how-to-reliably-open-a-file-in-the-same-directory-as-a-python-script
-    // https://gist.github.com/rjzak/5681680
+  // https://gist.github.com/rjzak/5681680
 	PyRun_SimpleString(
 	"from time import time,ctime\n"
   "import sys,os \n"
@@ -75,7 +75,6 @@ double XGBReader( std::map<std::string, double> mvaInputs_ , char* pklpath )
   "from itertools import izip \n"
   "sys.path.insert(0, '/cvmfs/cms.cern.ch/slc6_amd64_gcc530/external/py2-pippkgs_depscipy/3.0-njopjo7/lib/python2.7/site-packages') \n"
   "import xgboost as xgb  \n"
-  "#print('The xgb version is {}.'.format(xgb.__version__)) \n"
   "def mul(vec, vec2,pkldir,pklpath): \n"
   "	#print 'Today is',ctime(time()), 'All python libraries we need loaded good	HTT'\n"
   "	new_dict = dict(izip(vec2,vec)) \n"
@@ -89,38 +88,28 @@ double XGBReader( std::map<std::string, double> mvaInputs_ , char* pklpath )
   "	except IOError as e: \n"
   "		print('Couldnt open or write to file (%s).' % e) \n"
   "	else: \n"
-  "			#print ('file opened') \n"
   "			try: \n"
   "				pkldata = pickle.load(f) \n"
-  "				#print ('pkl loaded') \n"
-  "			except pickle.UnpicklingError as e:  \n"
-  "				# normal, somewhat expected  \n"
+  "			except pickle.UnpicklingError as e: # normal, somewhat expected  \n"
   "				model = pkldata.booster().get_dump() \n"
   "			except (AttributeError,  EOFError, ImportError, IndexError) as e:  \n"
-  "				# secondary errors  \n"
   "				print(traceback.format_exc(e))  \n"
-  "			except Exception as e:  \n"
-  "				# everything else \n"
-  "				print(traceback.format_exc(e))  \n"
+  "			except Exception as e: print(traceback.format_exc(e))  \n"
   "			else:  \n"
   "				try: \n"
   "					proba = pkldata.predict_proba(data[data.columns.values.tolist()].values  ) \n"
-  "					#print ('proba', proba)  \n"
   "				except : \n"
   "					print('Oops!',sys.exc_info()[0],'occured.') \n"
   "				else:  \n"
   "					result = proba[:,1][0]\n"
-  "					#print ('predict BDT to one event',result)  \n"
   "			f.close()  \n"
 	"	return result                                \n"
 	);
 	PyObject *func = PyObject_GetAttrString(moduleMain, "mul");
 	PyObject* vectorValues=vectorToTuple_Float(vectorValuesVec);
 	PyObject* vecNames=vectorToTuple_String(vectorNamesVec);
-	PyObject *args = PyTuple_Pack(4, vectorValues, vecNames , PyString_FromString( (char*) pkldir), PyString_FromString( (char*) pklpath) ); //    
+	PyObject *args = PyTuple_Pack(4, vectorValues, vecNames , PyString_FromString( (char*) pkldir), PyString_FromString( (char*) pklpath) ); //
   PyObject *result = PyObject_CallObject(func, args);
   mvaOutput_=PyFloat_AsDouble(result);
     return mvaOutput_;
 }
-
-

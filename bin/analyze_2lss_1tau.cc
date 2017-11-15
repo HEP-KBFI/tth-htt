@@ -545,8 +545,13 @@ int main(int argc, char* argv[])
   }
 
 //--- initialize hadronic top tagger BDT
-  std::string mvaFileName_hadTopTagger = "tthAnalysis/HiggsToTauTau/data/hadTopTagger_BDTG_2017Oct10_opt2.xml";
-  HadTopTagger* hadTopTagger = new HadTopTagger(mvaFileName_hadTopTagger);
+  //std::string mvaFileName_hadTopTagger = "tthAnalysis/HiggsToTauTau/data/hadTopTagger_BDTG_2017Oct10_opt2.xml";
+  //HadTopTagger* hadTopTagger = new HadTopTagger(mvaFileName_hadTopTagger);
+
+  //std::string mvaFileName_hadTopTagger = "tthAnalysis/HiggsToTauTau/data/hadTopTagger_BDTG_2017Oct10_opt2.xml";
+  std::string mvaFileName_hadTopTaggerWithKinFit = "all_HadTopTagger_sklearnV0o17o1_HypOpt_XGB_ntrees_1000_deph_3_lr_0o01_CSV_sort_withKinFit.pkl";
+  std::string mvaFileName_hadTopTaggerNoKinFit = "all_HadTopTagger_sklearnV0o17o1_HypOpt_XGB_ntrees_1000_deph_3_lr_0o01_CSV_sort.pkl";
+  HadTopTagger* hadTopTagger = new HadTopTagger(mvaFileName_hadTopTaggerWithKinFit,mvaFileName_hadTopTaggerNoKinFit); // mvaFileName_hadTopTagger
 
 //--- initialize BDTs used to discriminate ttH vs. ttV and ttH vs. ttbar
 //    in 2lss_1tau category of ttH multilepton analysis

@@ -18,13 +18,14 @@
 #include <fstream> // std::ofstream
 #include <assert.h> // assert
 
-HadTopTagger::HadTopTagger(const std::string& mvaFileName)
+HadTopTagger::HadTopTagger(const std::string& mvaFileNameWithKinFit,const std::string& mvaFileNameNoKinFit)
   : kinFit_(0),
     mva_(0),
     mvaOutput_(-1.)
 {
   kinFit_ = new HadTopKinFit();
-
+  mvaFileNameWithKinFit_=  mvaFileNameWithKinFit.c_str();
+  mvaFileNameNoKinFit_= mvaFileNameNoKinFit.c_str();
 }
 
 HadTopTagger::~HadTopTagger()
@@ -39,7 +40,7 @@ std::vector<double> HadTopTagger::operator()(const RecoJet& recBJet, const RecoJ
   std::vector<double> result;
   // order IS important - I will fix that
   // ['CSV_b', 'qg_Wj2', 'pT_bWj1Wj2', 'm_Wj1Wj2', 'nllKinFit', 'pT_b_o_kinFit_pT_b', 'pT_Wj2']
-  char* pklpath=(char*) "HadTopTagger_sklearnV0o17o1_HypOpt/all_HadTopTagger_sklearnV0o17o1_HypOpt_XGB_ntrees_1000_deph_3_lr_0o01_CSV_sort_withKinFit.pkl";
+  char* pklpath=(char*) mvaFileNameWithKinFit_; //"HadTopTagger_sklearnV0o17o1_HypOpt/all_HadTopTagger_sklearnV0o17o1_HypOpt_XGB_ntrees_1000_deph_3_lr_0o01_CSV_sort_withKinFit.pkl";
   mvaInputsWithKinFit_["CSV_b"]                  = recBJet.BtagCSV();
   mvaInputsWithKinFit_["qg_Wj2"]                 = recWJet2.QGDiscr();
   Particle::LorentzVector p4_bWj1Wj2 = recBJet.p4() + recWJet1.p4() + recWJet2.p4();
@@ -55,7 +56,7 @@ std::vector<double> HadTopTagger::operator()(const RecoJet& recBJet, const RecoJ
   ///////////////////////////////////////////////////////////////
   // order IS important  - I will fix that
   // ['CSV_b', 'qg_Wj2', 'qg_Wj1', 'm_bWj1Wj2', 'pT_bWj1Wj2', 'm_Wj1Wj2', 'pT_Wj2']
-  char* pklpathNoKinFit=(char*) "HadTopTagger_sklearnV0o17o1_HypOpt/all_HadTopTagger_sklearnV0o17o1_HypOpt_XGB_ntrees_1000_deph_3_lr_0o01_CSV_sort.pkl";
+  char* pklpathNoKinFit=(char*) mvaFileNameNoKinFit_; // "HadTopTagger_sklearnV0o17o1_HypOpt/all_HadTopTagger_sklearnV0o17o1_HypOpt_XGB_ntrees_1000_deph_3_lr_0o01_CSV_sort.pkl";
   mvaInputsNoKinFit_["CSV_b"]                  = recBJet.BtagCSV();
   mvaInputsNoKinFit_["qg_Wj2"]                 = recWJet2.QGDiscr();
   mvaInputsNoKinFit_["qg_Wj1"]                 = recWJet1.QGDiscr();
