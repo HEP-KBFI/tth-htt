@@ -55,8 +55,8 @@ class RecoElectronWriter
   Float_t* deltaEta_;
   Float_t* deltaPhi_;
   Float_t* OoEminusOoP_;
-  Int_t* lostHits_; 
-  Int_t* conversionVeto_;
+  UChar_t* lostHits_;
+  Bool_t* conversionVeto_;
 };
 
 #endif // tthAnalysis_HiggsToTauTau_RecoElectronWriter_h

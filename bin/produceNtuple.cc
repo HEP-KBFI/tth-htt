@@ -317,7 +317,7 @@ int main(int argc, char* argv[])
   TTree* outputTree = new TTree(outputTreeName.data(), outputTreeName.data());
 
   outputTree->Branch("run", &run, "run/i");
-  outputTree->Branch("lumi", &lumi, "lumi/i");
+  outputTree->Branch("luminosityBlock", &lumi, "luminosityBlock/i");
   outputTree->Branch("evt", &event, "evt/l");
 
   std::string branchName_muons = "Muon";
@@ -510,8 +510,7 @@ int main(int argc, char* argv[])
       //     with respect to thresholds applied on analysis level
       //     to allow for e-ES and mu-ES uncertainties to be estimated
       double minPt_lead = -1.;
-      if      ( era == kEra_2015 ) minPt_lead = 18.; 
-      else if ( era == kEra_2016 ) { // to accommodate 1l_2tau cuts
+      if ( era == kEra_2017 ) { // to accommodate 1l_2tau cuts
         if (selLepton_lead -> is_electron()) {
           minPt_lead = 23.;
         }

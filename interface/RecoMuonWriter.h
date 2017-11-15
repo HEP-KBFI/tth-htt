@@ -43,8 +43,8 @@ class RecoMuonWriter
   std::string branchName_mediumIdPOG_;
   std::string branchName_segmentCompatibility_;
 
-  Int_t* looseIdPOG_;
-  Int_t* mediumIdPOG_;
+  Bool_t* looseIdPOG_;
+  Bool_t* mediumIdPOG_;
   Float_t* segmentCompatibility_;
 };
 

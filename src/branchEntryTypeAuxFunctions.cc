@@ -104,13 +104,17 @@ void copyBranches_singleType(TTree* inputTree, TTree* outputTree, std::map<std::
       if ( branchInfo.find("[") != std::string::npos && branchInfo.find("]") != std::string::npos ) continue; // skip branches of "vector" type
 
       branchEntryBaseType* outputTree_branch = 0;
-      if      ( branchType == "Float_t"   ) outputTree_branch = new branchEntryTypeFF(branchName, "F", branchName, "F");
-      else if ( branchType == "Double_t"  ) outputTree_branch = new branchEntryTypeDD(branchName, "D", branchName, "D");
-      else if ( branchType == "Int_t"     ) outputTree_branch = new branchEntryTypeII(branchName, "I", branchName, "I");
+      if      ( branchType == "Float_t"   ) outputTree_branch = new branchEntryTypeFF  (branchName, "F", branchName, "F");
+      else if ( branchType == "Double_t"  ) outputTree_branch = new branchEntryTypeDD  (branchName, "D", branchName, "D");
+      else if ( branchType == "Int_t"     ) outputTree_branch = new branchEntryTypeII  (branchName, "I", branchName, "I");
       else if ( branchType == "UInt_t"    ) outputTree_branch = new branchEntryTypeUIUI(branchName, "i", branchName, "i");
       else if ( branchType == "ULong64_t" ) outputTree_branch = new branchEntryTypeULUL(branchName, "l", branchName, "l");
+      else if ( branchType == "UChar_t"   ) outputTree_branch = new branchEntryTypeUCUC(branchName, "b", branchName, "b");
+      else if ( branchType == "Short_t"   ) outputTree_branch = new branchEntryTypeSS  (branchName, "S", branchName, "S");
+      else if ( branchType == "UShort_t"  ) outputTree_branch = new branchEntryTypeUSUS(branchName, "s", branchName, "s");
+      else if ( branchType == "Bool_t"    ) outputTree_branch = new branchEntryTypeBB  (branchName, "O", branchName, "O");
       else throw cms::Exception("copyBranches") 
-	<< "Branch = '" << branchName << "' is of unsupported Type = " << branchType << " !!\n";
+        << "Branch = '" << branchName << "' is of unsupported Type = " << branchType << " !!\n";
       outputTree_branch->setInputTree(inputTree);
       outputTree_branch->setOutputTree(outputTree);
       outputTree_branches[branchName] = outputTree_branch;

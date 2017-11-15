@@ -24,6 +24,6 @@ DEFINE_TYPE_TRAIT(Long64_t,   "L");
 DEFINE_TYPE_TRAIT(Long64_t *, "L");
 DEFINE_TYPE_TRAIT(ULong64_t,   "l");
 DEFINE_TYPE_TRAIT(ULong64_t *, "l");
-DEFINE_TYPE_TRAIT(Bool_t,   "o");
-DEFINE_TYPE_TRAIT(Bool_t *, "o");
+DEFINE_TYPE_TRAIT(Bool_t,   "O");
+DEFINE_TYPE_TRAIT(Bool_t *, "O");
 

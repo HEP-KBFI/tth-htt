@@ -43,8 +43,7 @@ class RecoLeptonWriter
       dz_[idxLepton] = lepton->dz();
       relIso_[idxLepton] = lepton->relIso();
       chargedHadRelIso03_[idxLepton] = lepton->chargedHadRelIso03();
-      miniIsoCharged_[idxLepton] = lepton->miniIsoCharged();
-      miniIsoNeutral_[idxLepton] = lepton->miniIsoNeutral();
+      miniRelIsoCharged_[idxLepton] = lepton->miniRelIsoCharged();
       sip3d_[idxLepton] = lepton->sip3d();
       mvaRawTTH_[idxLepton] = lepton->mvaRawTTH();
       jetPtRatio_[idxLepton] = lepton->jetPtRatio();
@@ -111,8 +110,7 @@ class RecoLeptonWriter
   std::string branchName_dz_;
   std::string branchName_relIso_;
   std::string branchName_chargedHadRelIso03_;
-  std::string branchName_miniIsoCharged_;
-  std::string branchName_miniIsoNeutral_;
+  std::string branchName_miniRelIsoCharged_;
   std::string branchName_sip3d_;
   std::string branchName_mvaRawTTH_;
   std::string branchName_jetPtRatio_;
@@ -130,8 +128,7 @@ class RecoLeptonWriter
   Float_t* dz_;
   Float_t* relIso_;
   Float_t* chargedHadRelIso03_;
-  Float_t* miniIsoCharged_;
-  Float_t* miniIsoNeutral_;
+  Float_t* miniRelIsoCharged_;
   Float_t* sip3d_;
   Float_t* mvaRawTTH_;
   Float_t* jetPtRatio_;

@@ -98,7 +98,7 @@ RecoJetReader::~RecoJetReader()
 void RecoJetReader::setBranchNames()
 {
   if ( numInstances_[branchName_obj_] == 0 ) {
-    branchName_pt_ = Form("%s_%s", branchName_obj_.data(), "pt");    
+    branchName_pt_ = Form("%s_%s", branchName_obj_.data(), "pt");
     branchName_eta_ = Form("%s_%s", branchName_obj_.data(), "eta");
     branchName_phi_ = Form("%s_%s", branchName_obj_.data(), "phi");
     branchName_mass_ = Form("%s_%s", branchName_obj_.data(), "mass");

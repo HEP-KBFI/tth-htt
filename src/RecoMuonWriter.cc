@@ -45,25 +45,23 @@ RecoMuonWriter::~RecoMuonWriter()
 
 void RecoMuonWriter::setBranchNames()
 {
+  // Karl: let's write the looseIdPOG branch even though we aren't going to read it
+  //       in the first place
   branchName_looseIdPOG_ = Form("%s_%s", branchName_obj_.data(), "looseIdPOG");
-  // CV: for 2016 data, switch to short term Muon POG recommendation for ICHEP,
-  //     given at https://twiki.cern.ch/twiki/bin/view/CMS/SWGuideMuonIdRun2#Short_Term_Medium_Muon_Definitio
-  if      ( era_ == kEra_2015 ) branchName_mediumIdPOG_ = Form("%s_%s", branchName_obj_.data(), "mediumMuonId");
-  else if ( era_ == kEra_2016 ) branchName_mediumIdPOG_ = Form("%s_%s", branchName_obj_.data(), "mediumIdPOG_ICHEP2016");
-  else assert(0);
-  branchName_segmentCompatibility_ = Form("%s_%s", branchName_obj_.data(), "segmentCompatibility");
+  branchName_mediumIdPOG_ = Form("%s_%s", branchName_obj_.data(), "mediumId");
+  branchName_segmentCompatibility_ = Form("%s_%s", branchName_obj_.data(), "segmentComp");
 }
 
 void RecoMuonWriter::setBranches(TTree *tree)
 {
   leptonWriter_->setBranches(tree);
   int max_nLeptons = leptonWriter_->max_nLeptons_;
-  looseIdPOG_ = new Int_t[max_nLeptons];
-  setBranchVI(tree, branchName_looseIdPOG_, branchName_num_, looseIdPOG_);
-  mediumIdPOG_ = new Int_t[max_nLeptons];
-  setBranchVI(tree, branchName_mediumIdPOG_, branchName_num_, mediumIdPOG_);
+  looseIdPOG_ = new Bool_t[max_nLeptons];
+  setBranch(tree, looseIdPOG_, branchName_looseIdPOG_, branchName_num_);
+  mediumIdPOG_ = new Bool_t[max_nLeptons];
+  setBranch(tree, mediumIdPOG_, branchName_mediumIdPOG_, branchName_num_);
   segmentCompatibility_ = new Float_t[max_nLeptons];
-  setBranchVF(tree, branchName_segmentCompatibility_, branchName_num_, segmentCompatibility_);
+  setBranch(tree, segmentCompatibility_, branchName_segmentCompatibility_, branchName_num_);
 }
 
 void RecoMuonWriter::write(const std::vector<const RecoMuon*>& leptons) 

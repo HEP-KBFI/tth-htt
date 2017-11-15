@@ -58,13 +58,13 @@ RecoElectronWriter::~RecoElectronWriter()
 
 void RecoElectronWriter::setBranchNames()
 {
-  branchName_mvaRawPOG_GP_ = Form("%s_%s", branchName_obj_.data(), "eleMVArawSpring16GP");
-  branchName_mvaRawPOG_HZZ_ = Form("%s_%s", branchName_obj_.data(), "eleMVArawSpring16HZZ");
-  branchName_sigmaEtaEta_ = Form("%s_%s", branchName_obj_.data(), "eleSieie");
-  branchName_HoE_ = Form("%s_%s", branchName_obj_.data(), "eleHoE");
+  branchName_mvaRawPOG_GP_ = Form("%s_%s", branchName_obj_.data(), "mvaSpring16GP");
+  branchName_mvaRawPOG_HZZ_ = Form("%s_%s", branchName_obj_.data(), "mvaSpring16HZZ");
+  branchName_sigmaEtaEta_ = Form("%s_%s", branchName_obj_.data(), "sieie");
+  branchName_HoE_ = Form("%s_%s", branchName_obj_.data(), "hoe");
   branchName_deltaEta_ = Form("%s_%s", branchName_obj_.data(), "eleDEta");
   branchName_deltaPhi_ = Form("%s_%s", branchName_obj_.data(), "eleDPhi");
-  branchName_OoEminusOoP_ = Form("%s_%s", branchName_obj_.data(), "eleooEmooP");
+  branchName_OoEminusOoP_ = Form("%s_%s", branchName_obj_.data(), "eInvMinusPInv");
   branchName_lostHits_ = Form("%s_%s", branchName_obj_.data(), "lostHits");
   branchName_conversionVeto_ = Form("%s_%s", branchName_obj_.data(), "convVeto");
 }
@@ -74,23 +74,23 @@ void RecoElectronWriter::setBranches(TTree *tree)
   leptonWriter_->setBranches(tree);
   int max_nLeptons = leptonWriter_->max_nLeptons_;
   mvaRawPOG_GP_ = new Float_t[max_nLeptons];
-  setBranchVF(tree, branchName_mvaRawPOG_GP_, branchName_num_, mvaRawPOG_GP_);
+  setBranch(tree, mvaRawPOG_GP_, branchName_mvaRawPOG_GP_, branchName_num_);
   mvaRawPOG_HZZ_ = new Float_t[max_nLeptons];
-  setBranchVF(tree, branchName_mvaRawPOG_HZZ_, branchName_num_, mvaRawPOG_HZZ_);
+  setBranch(tree, mvaRawPOG_HZZ_, branchName_mvaRawPOG_HZZ_, branchName_num_);
   sigmaEtaEta_ = new Float_t[max_nLeptons];
-  setBranchVF(tree, branchName_sigmaEtaEta_, branchName_num_, sigmaEtaEta_);
+  setBranch(tree, sigmaEtaEta_, branchName_sigmaEtaEta_, branchName_num_);
   HoE_ = new Float_t[max_nLeptons];
-  setBranchVF(tree, branchName_HoE_, branchName_num_, HoE_);
+  setBranch(tree, HoE_, branchName_HoE_, branchName_num_);
   deltaEta_ = new Float_t[max_nLeptons];
-  setBranchVF(tree, branchName_deltaEta_, branchName_num_, deltaEta_);
+  setBranch(tree, deltaEta_, branchName_deltaEta_, branchName_num_);
   deltaPhi_ = new Float_t[max_nLeptons];
-  setBranchVF(tree, branchName_deltaPhi_, branchName_num_, deltaPhi_);
+  setBranch(tree, deltaPhi_, branchName_deltaPhi_, branchName_num_);
   OoEminusOoP_ = new Float_t[max_nLeptons];
-  setBranchVF(tree, branchName_OoEminusOoP_, branchName_num_, OoEminusOoP_);
-  lostHits_ = new Int_t[max_nLeptons];
-  setBranchVI(tree, branchName_lostHits_, branchName_num_, lostHits_);
-  conversionVeto_ = new Int_t[max_nLeptons];
-  setBranchVI(tree, branchName_conversionVeto_, branchName_num_, conversionVeto_);
+  setBranch(tree, OoEminusOoP_, branchName_OoEminusOoP_, branchName_num_);
+  lostHits_ = new UChar_t[max_nLeptons];
+  setBranch(tree, lostHits_, branchName_lostHits_, branchName_num_);
+  conversionVeto_ = new Bool_t[max_nLeptons];
+  setBranch(tree, conversionVeto_, branchName_conversionVeto_, branchName_num_);
 }
 
 void RecoElectronWriter::write(const std::vector<const RecoElectron*>& leptons) 

@@ -30,6 +30,10 @@ struct branchEntryBaseType
     else if ( inputBranchType == "I" ) inputBranchType_ = kI;
     else if ( inputBranchType == "i" ) inputBranchType_ = kUI;
     else if ( inputBranchType == "l" ) inputBranchType_ = kUL;
+    else if ( inputBranchType == "b" ) inputBranchType_ = kUC;
+    else if ( inputBranchType == "S" ) inputBranchType_ = kS;
+    else if ( inputBranchType == "s" ) inputBranchType_ = kUS;
+    else if ( inputBranchType == "O" ) inputBranchType_ = kB;
     else throw cms::Exception("branchEntryBaseType") 
       << "Invalid branch type = '" << inputBranchType << "' for branch = '" << inputBranchName << "' !!\n";
     assert(outputBranchName_ != "");
@@ -47,8 +51,16 @@ struct branchEntryBaseType
       outputBranchType_ = kUI;
     } else if ( outputBranchType == "l" ) {
       outputBranchType_ = kUL;
-    } else throw cms::Exception("branchEntryBaseType") 
-      << "Invalid branch type = '" << outputBranchType << "' for branch = '" << outputBranchName << "' !!\n";
+    } else if ( outputBranchType == "b" ) {
+      outputBranchType_ = kUC;
+    } else if ( outputBranchType == "S" ) {
+      outputBranchType_ = kS;
+    } else if ( outputBranchType == "s" ) {
+      outputBranchType_ = kUS;
+    } else if ( outputBranchType == "O" ) {
+      outputBranchType_ = kB;
+    } else throw cms::Exception("branchEntryBaseType")
+        << "Invalid branch type = '" << outputBranchType << "' for branch = '" << outputBranchName << "' !!\n";
   }
   virtual ~branchEntryBaseType() {}
   virtual void setInputTree(TTree*) = 0;
@@ -60,7 +72,7 @@ struct branchEntryBaseType
   virtual Int_t getValue_int(int idxElement = 0) const = 0;
   std::string inputBranchName_;
   std::string inputBranchType_string_;
-  enum { kF, kD, kI, kUI, kUL };
+  enum { kF, kD, kI, kUI, kUL, kUC, kS, kUS, kB };
   int inputBranchType_;
   int idxColumn_;
   std::string outputBranchName_;
@@ -111,6 +123,8 @@ struct branchEntryType : branchEntryBaseType
   T1 inputValue_;
   T2 outputValue_;
 };
+
+// no Long_t or Char_t b/c apparently these types depend on the machine
 typedef branchEntryType<Float_t,     Float_t> branchEntryTypeFF;
 typedef branchEntryType<Float_t,    Double_t> branchEntryTypeFD;
 typedef branchEntryType<Float_t,       Int_t> branchEntryTypeFI;
@@ -120,6 +134,10 @@ typedef branchEntryType<Double_t,      Int_t> branchEntryTypeDI;
 typedef branchEntryType<Int_t,         Int_t> branchEntryTypeII;
 typedef branchEntryType<UInt_t,       UInt_t> branchEntryTypeUIUI;
 typedef branchEntryType<ULong64_t, ULong64_t> branchEntryTypeULUL;
+typedef branchEntryType<UChar_t,     UChar_t> branchEntryTypeUCUC;
+typedef branchEntryType<Short_t,     Short_t> branchEntryTypeSS;
+typedef branchEntryType<UShort_t,   UShort_t> branchEntryTypeUSUS;
+typedef branchEntryType<Bool_t,       Bool_t> branchEntryTypeBB;
 
 template <typename T>
 struct branchEntryFormulaType : branchEntryBaseType
