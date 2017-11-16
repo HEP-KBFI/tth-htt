@@ -13,9 +13,9 @@ from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 #--------------------------------------------------------------------------------
 
 ERA          = "2016"
-mode         = "all"
-preselection = True
-version      = "2017Oct20_w%sPreselection_%s" % ("" if preselection else "o", mode)
+mode         = "forBDTtraining_only"
+preselection = False
+version      = "2017Nov15_w%sPreselection_%s" % ("" if preselection else "o", mode)
 
 samples         = None
 LUMI            = None

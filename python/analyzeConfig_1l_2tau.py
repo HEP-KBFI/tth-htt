@@ -212,7 +212,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
     lines.append("process.analyze_1l_2tau.apply_genWeight = cms.bool(%s)" % jobOptions['apply_genWeight'])
     lines.append("process.analyze_1l_2tau.apply_trigger_bits = cms.bool(%s)" % jobOptions['apply_trigger_bits'])
     lines.append("process.analyze_1l_2tau.selEventsFileName_output = cms.string('%s')" % jobOptions['rleOutputFile'])
-    lines.append("process.analyze_1l_2tau.selectBDT = cms.bool(%s)" % str(jobOptions['selectBDT']))
+    #lines.append("process.analyze_1l_2tau.selectBDT = cms.bool(%s)" % str(jobOptions['selectBDT']))
     if jobOptions['changeBranchNames']:
       lines.append("process.analyze_1l_2tau.branchName_electrons = cms.string('Electron')")
       lines.append("process.analyze_1l_2tau.branchName_muons = cms.string('Muon')")
