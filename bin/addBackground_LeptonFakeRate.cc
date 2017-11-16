@@ -38,6 +38,73 @@ typedef std::vector<std::string> vstring;
 
 namespace
 {
+  double square(double x)
+  {
+    return x*x;
+  }
+}
+
+void makeBinContentsPositive_LeptonFakeRate(TH1* histogram, TH1* histogram_data, int verbosity)
+{
+  if ( verbosity ) {
+    std::cout << "<makeBinContentsPositive>:" << std::endl;
+    std::cout << " integral(" << histogram->GetName() << ") = " << histogram->Integral() << std::endl;
+  }
+  double integral_original = compIntegral(histogram, true, true);
+  if ( integral_original < 0. ) integral_original = 0.;
+  if ( verbosity ) {
+    std::cout << " integral_original = " << integral_original << std::endl;
+  }
+  int numBins = histogram->GetNbinsX();
+  for ( int iBin = 0; iBin <= (numBins + 1); ++iBin ) {
+    double binContent_data_original = histogram_data->GetBinContent(iBin); // Get Bin error of data
+    double binContent_original = histogram->GetBinContent(iBin);
+    double binError2_original = square(histogram->GetBinError(iBin));
+    if ( binContent_original < 0. ) {
+      double binContent_modified = 0.;
+      double binError2_modified = 0.;
+      if(std::abs(binContent_original) <= (0.20 * binContent_data_original)){ 
+	binError2_modified = 0.20 * binContent_data_original;  
+      }else{
+	binError2_modified = binError2_original + square(binContent_original - binContent_modified);
+      }
+      
+      assert(binError2_modified >= 0.);
+      if ( verbosity ) {
+	std::cout << "bin #" << iBin << " (x =  " << histogram->GetBinCenter(iBin) << "): binContent = " << binContent_original << " +/- " << TMath::Sqrt(binError2_original)
+                  << " --> setting it to binContent = " << binContent_modified << " +/- " << TMath::Sqrt(binError2_modified) << std::endl;
+      }
+      histogram->SetBinContent(iBin, binContent_modified);
+      histogram->SetBinError(iBin, TMath::Sqrt(binError2_modified));
+    }
+  }
+  double integral_modified = compIntegral(histogram, true, true);
+  if ( integral_modified < 0. ) integral_modified = 0.;
+  if ( verbosity ) {
+    std::cout << " integral_modified = " << integral_modified << std::endl;
+  }
+  if ( integral_modified > 0. ) {
+    double sf = integral_original/integral_modified;
+    if ( verbosity ) {
+      std::cout << "--> scaling histogram by factor = " << sf << std::endl;
+    }
+    histogram->Scale(sf);
+  } else {
+    for ( int iBin = 0; iBin <= (numBins + 1); ++iBin ) {
+      histogram->SetBinContent(iBin, 0.);
+    }
+  }
+  if ( verbosity ) {
+    std::cout << " integral(" << histogram->GetName() << ") = " << histogram->Integral() << std::endl;
+  }
+}
+
+
+
+
+
+namespace
+{
   struct categoryEntryType
   {
     categoryEntryType(const edm::ParameterSet& cfg)
@@ -141,6 +208,7 @@ void processHistogram(const TFile* inputFile, const TDirectory* dir_den, const T
         }                  
 
         TH1* histogramData_num = getHistogram(dir_num, processData, *histogram, *central_or_shift, false);                                                                             
+
         if ( !histogramData_num ) {                                                                                  
 	        histogramData_num = getHistogram(dir_num, processData, *histogram, "central", true);
         	// histogramData_num = getHistogram(dir_num, processData, *histogram, "", true);
@@ -188,26 +256,60 @@ void processHistogram(const TFile* inputFile, const TDirectory* dir_den, const T
         TDirectory* subdir_output = createSubdirectory_recursively(fs, subdirName_output);
       	subdir_output->cd();                                                                                                                                                                          
 
-	std::string histogramNameLeptonFakes;                                                                                                                                                         
-	if ( !((*central_or_shift) == "" || (*central_or_shift) == "central") ) histogramNameLeptonFakes.append(*central_or_shift);                                                                   
-	if ( histogramNameLeptonFakes.length() > 0 ) histogramNameLeptonFakes.append("_");                                                                                                            
-	histogramNameLeptonFakes.append(*histogram);                                                                                                                                                  
-	TH1* histogramLeptonFakes = subtractHistograms(histogramNameLeptonFakes, histogramData_den, histogramsToSubtract_den, verbosity);  
+        // ---------- Denominator Fake background histograms -------
+	std::string histogramNameFakeBg_den;                                                                                                                                                         
+	if ( !((*central_or_shift) == "" || (*central_or_shift) == "central") ) histogramNameFakeBg_den.append(*central_or_shift);                                                                   
+	if ( histogramNameFakeBg_den.length() > 0 ) histogramNameFakeBg_den.append("_");                                                                                                            
+	histogramNameFakeBg_den.append(*histogram);                                                                                                                                                  
+	TH1* histogramFakeBg_den = subtractHistograms(histogramNameFakeBg_den, histogramData_den, histogramsToSubtract_den, verbosity);  // Doing (Data - Sum Bg.)
       	if ( verbosity ) {                                                                                                                                                                            
-	  std::cout << " integral(Fakes) before scaling = " << histogramLeptonFakes->Integral() << std::endl;                                                                                   
-                   }                                                                                                                                                                        
-	makeBinContentsPositive(histogramLeptonFakes, verbosity);
+	  std::cout << " integral(Fakes) before scaling = " << histogramFakeBg_den->Integral() << std::endl;                                                                                   
+	}                                                                                                                                                                        
+	makeBinContentsPositive(histogramFakeBg_den, verbosity);
 
+
+	/*
+        // ---------- Numerator Fake background histograms (NEW: taking into account whether the data is > sum Prompt bg.s or not !) -------
+	std::string histogramNameFakeBg_num;                                                                                                                                                         
+	if ( !((*central_or_shift) == "" || (*central_or_shift) == "central") ) histogramNameFakeBg_num.append(*central_or_shift);                                                                   
+	if ( histogramNameFakeBg_num.length() > 0 ) histogramNameFakeBg_num.append("_");                                                                                                            
+	histogramNameFakeBg_num.append(*histogram);                                                                                                                                                  
+	TH1* histogramFakeBg_num = subtractHistograms(histogramNameFakeBg_num, histogramData_num, histogramsToSubtract_num, verbosity);  // Doing (Data - Sum Bg.)
+      	if ( verbosity ) {                                                                                                                                                                            
+	  std::cout << " integral(Fakes) before scaling = " << histogramFakeBg_num->Integral() << std::endl;                                                                                   
+	}                                                                                                                                                                        
+	// makeBinContentsPositive(histogramFakeBg_num, verbosity);
+	makeBinContentsPositive_LeptonFakeRate(histogramFakeBg_num, histogramData_num, verbosity); // Doing the 20% data yield cond. and making the histo +ve definite
+        double integral_num = compIntegral(histogramFakeBg_num, true, true);
+	// -----------------------------------------------------------------------
+	 */
+
+
+	// ----- Default way of computing the numerator fake bg yield (w/o taking into account whether the data is > sum Prompt bg.s or not !)
         double integral_num = compIntegral(histogramData_num, true, true);
         for ( std::vector<TH1*>::const_iterator histogramToSubtract_num = histogramsToSubtract_num.begin();
 	      histogramToSubtract_num != histogramsToSubtract_num.end(); ++histogramToSubtract_num ) {
           integral_num -= compIntegral(*histogramToSubtract_num, true, true);
         }
-        double integral_den = compIntegral(histogramLeptonFakes, true, true);
+	// -------------------------------------------
+
+
+	
+	// ----------- checking for (Data - Sum bGS) -----------
+        double integral_num_data = compIntegral(histogramData_num, true, true); 
+        if(integral_num <= (0.10 * integral_num_data)){
+  	  std::cout<< "RESETTING (DATA - BG) TO 10% OF DATA  " << std::endl;
+	  // std::cout<< "Histo path "<< histogramData_num->GetName() << std::endl;
+	  // std::cout << "data yield " <<  integral_num_data << " (Data - Total Prompt Bgs) " << integral_num << std::endl;
+          integral_num = (0.10 * integral_num_data);
+	}
+	
+        
+        double integral_den = compIntegral(histogramFakeBg_den, true, true);
         if ( integral_den > 0. ) {
-          histogramLeptonFakes->Scale(integral_num/integral_den);
+          // histogramFakeBg_den->Scale(integral_num/integral_den); // Setting the yield in the denominator histogram to the one in numerator
 	  std::cout<< "integral_num " << integral_num << " integral_den " << integral_den << " integral_num/integral_den " << (integral_num/integral_den) << std::endl;
-          std::cout<< " integral(Fakes) after scaling = " << histogramLeptonFakes->Integral() << std::endl;                                                                                   
+          std::cout<< " integral(Fakes) after scaling = " << histogramFakeBg_den->Integral() << std::endl;                                                                                   
 	}
 
     }
