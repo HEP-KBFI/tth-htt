@@ -41,6 +41,7 @@ process.prepareDatacards = cms.PSet(
 
     histogramToFit = cms.string("mvaDiscr_2lss"),
     histogramToFit_rebin = cms.int32(1),
+    histogramToFit_makeBinContentsPositive = cms.bool(True),
 
     setBinsToZeroBelow = cms.double(-1.),
 

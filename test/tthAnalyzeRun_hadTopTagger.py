@@ -21,7 +21,7 @@ elif ERA == "2016":
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "2017Aug31"
+version = "2017Nov11"
 
 ##max_job_resubmission = 3
 max_job_resubmission = 1
@@ -60,8 +60,8 @@ if __name__ == '__main__':
     job_statistics_summary[idx_job_resubmission] = job_statistics
 
     if idx_job_resubmission == 0:
-      ##run_analysis = query_yes_no("Start jobs ?")
-      run_analysis = True
+      run_analysis = query_yes_no("Start jobs ?")
+      #run_analysis = True
     if run_analysis:
       analysis.run()
     else:

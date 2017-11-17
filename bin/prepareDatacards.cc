@@ -111,7 +111,7 @@ namespace
       histogram_output->Rebin(rebin);
     }    
     if ( setNegativeBinsToZero ) {
-      makeBinContentsPositive(histogramLeptonFakes, verbosity);	
+      makeBinContentsPositive(histogram_output);	
     }
   }
   
@@ -146,8 +146,6 @@ namespace
     return isMatched;
   }
 }
-
-
 
 int main(int argc, char* argv[]) 
 {

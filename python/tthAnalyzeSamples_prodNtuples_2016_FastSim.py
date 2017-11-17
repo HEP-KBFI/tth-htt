@@ -1,7 +1,7 @@
 from collections import OrderedDict as OD
 
 # file generated with the following command:
-# ./scripts/create_dictionary.py -v -m python/metaDict_2016.py -p /hdfs/local/karl/ttHNtupleProduction/2016/2017Oct22_woPreselection_forBDTtraining_only/ntuples -Z zeroes.txt -z zombies.txt -N samples_2016 -F -E 2016 -g python/tthAnalyzeSamples_prodNtuples_2016_FastSim2.py
+# ./scripts/create_dictionary.py -v -m python/metaDict_2016.py -p /hdfs/local/karl/ttHNtupleProduction/2016/2017Nov15_woPreselection_forBDTtraining_only/ntuples -Z zeroes.txt -z zombies.txt -N samples_2016 -F -E 2016 -g python/tthAnalyzeSamples_prodNtuples_2016_FastSim.py
 
 samples_2016 = OD()
 samples_2016["/ttHToNonbb_M125_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/matze-faster_v8_ttH_maod_p1_3a2fa29ab1d54ae0995b28f27b405be9-v1/USER"] = OD([
@@ -20,7 +20,7 @@ samples_2016["/ttHToNonbb_M125_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/mat
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct22_woPreselection_forBDTtraining_only/ntuples/ttHToNonbb_fastsim_p1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov15_woPreselection_forBDTtraining_only/ntuples/ttHToNonbb_fastsim_p1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -44,7 +44,7 @@ samples_2016["/ttHToNonbb_M125_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/mat
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct22_woPreselection_forBDTtraining_only/ntuples/ttHToNonbb_fastsim_p2"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov15_woPreselection_forBDTtraining_only/ntuples/ttHToNonbb_fastsim_p2"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -68,7 +68,7 @@ samples_2016["/ttHToNonbb_M125_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/mat
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct22_woPreselection_forBDTtraining_only/ntuples/ttHToNonbb_fastsim_p3"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov15_woPreselection_forBDTtraining_only/ntuples/ttHToNonbb_fastsim_p3"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -92,7 +92,7 @@ samples_2016["/TTTo2L2Nu_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/matze-fas
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct22_woPreselection_forBDTtraining_only/ntuples/TTTo2L2Nu_fastsim_p1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov15_woPreselection_forBDTtraining_only/ntuples/TTTo2L2Nu_fastsim_p1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -116,7 +116,7 @@ samples_2016["/TTTo2L2Nu_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/matze-fas
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct22_woPreselection_forBDTtraining_only/ntuples/TTTo2L2Nu_fastsim_p2"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov15_woPreselection_forBDTtraining_only/ntuples/TTTo2L2Nu_fastsim_p2"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -140,7 +140,7 @@ samples_2016["/TTTo2L2Nu_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/matze-fas
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct22_woPreselection_forBDTtraining_only/ntuples/TTTo2L2Nu_fastsim_p3"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov15_woPreselection_forBDTtraining_only/ntuples/TTTo2L2Nu_fastsim_p3"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -164,7 +164,7 @@ samples_2016["/TTToSemilepton_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/matz
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct22_woPreselection_forBDTtraining_only/ntuples/TTToSemilepton_fastsim_p1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov15_woPreselection_forBDTtraining_only/ntuples/TTToSemilepton_fastsim_p1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -188,7 +188,7 @@ samples_2016["/TTToSemilepton_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/matz
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct22_woPreselection_forBDTtraining_only/ntuples/TTToSemilepton_fastsim_p2"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov15_woPreselection_forBDTtraining_only/ntuples/TTToSemilepton_fastsim_p2"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -212,7 +212,7 @@ samples_2016["/TTToSemilepton_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/matz
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct22_woPreselection_forBDTtraining_only/ntuples/TTToSemilepton_fastsim_p3"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov15_woPreselection_forBDTtraining_only/ntuples/TTToSemilepton_fastsim_p3"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -236,7 +236,7 @@ samples_2016["/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/matz
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct22_woPreselection_forBDTtraining_only/ntuples/TTWJetsToLNu_fastsim"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov15_woPreselection_forBDTtraining_only/ntuples/TTWJetsToLNu_fastsim"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -260,7 +260,7 @@ samples_2016["/TTZToLLNuNu_M-10_TuneCUETP8M1_13TeV-amcatnlo-pythia8/matze-faster
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct22_woPreselection_forBDTtraining_only/ntuples/TTZToLLNuNu_fastsim"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov15_woPreselection_forBDTtraining_only/ntuples/TTZToLLNuNu_fastsim"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -284,7 +284,7 @@ samples_2016["/WZTo3LNu_TuneCUETP8M1_13TeV-powheg-pythia8/matze-faster_v9_WZ_mao
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct22_woPreselection_forBDTtraining_only/ntuples/WZTo3LNu_fastsim"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov15_woPreselection_forBDTtraining_only/ntuples/WZTo3LNu_fastsim"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
