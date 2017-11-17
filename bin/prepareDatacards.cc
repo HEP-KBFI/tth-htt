@@ -19,7 +19,6 @@ cfg_prepareDatacards
 #include "tthAnalysis/HiggsToTauTau/interface/histogramAuxFunctions.h"
 #include "tthAnalysis/HiggsToTauTau/interface/jetToTauFakeRateAuxFunctions.h" // getEtaBin, getPtBin 
 
-
 #include <TFile.h>
 #include <TH1.h>
 #include <TArrayD.h>
@@ -42,11 +41,10 @@ cfg_prepareDatacards
 typedef std::vector<std::string> vstring;
 typedef std::vector<double> vdouble;
 
-
 namespace
 {
   void copyHistogram(TDirectory* dir_input, const std::string& process, const std::string& histogramName_input, 
-		     const std::string& histogramName_output, double sf, double setBinsToZeroBelow, int rebin, const std::string& central_or_shift, 
+		     const std::string& histogramName_output, double sf, double setBinsToZeroBelow, int rebin, bool setNegativeBinsToZero, const std::string& central_or_shift, 
 		     bool enableException, bool setEmptySystematicFromCentral = true)
   {
     //std::cout << "<copyHistogram>:" << std::endl;
@@ -69,7 +67,7 @@ namespace
     }   
     std::cout << " integral(" << process << ") = " << histogram_input->Integral() << std::endl;
     // std::string histogramName_output_full = std::string("x").append("_").append(process); // DEF LINE
-    std::string histogramName_output_full = process; // MY LINE
+    std::string histogramName_output_full = process; 
     if ( !(central_or_shift == "" || central_or_shift == "central") ) histogramName_output_full.append("_").append(central_or_shift);
     if ( histogramName_output != "" ) histogramName_output_full.append("_").append(histogramName_output);
     TArrayD histogramBinning = getBinning(histogram_input);
@@ -112,6 +110,9 @@ namespace
     if ( rebin > 1 ) {
       histogram_output->Rebin(rebin);
     }    
+    if ( setNegativeBinsToZero ) {
+      makeBinContentsPositive(histogramLeptonFakes, verbosity);	
+    }
   }
   
   struct categoryType
@@ -174,54 +175,6 @@ int main(int argc, char* argv[])
 
   edm::ParameterSet cfg_prepareDatacards = cfg.getParameter<edm::ParameterSet>("prepareDatacards");
 
-
-/*  
-// ------ NEW LINES ------
-  vdouble EtaBins_e  = cfg_prepareDatacards.getParameter<vdouble>("absEtaBins_e");
-  vdouble PtBins_e   = cfg_prepareDatacards.getParameter<vdouble>("absPtBins_e");
-  vdouble EtaBins_mu = cfg_prepareDatacards.getParameter<vdouble>("absEtaBins_mu");
-  vdouble PtBins_mu  = cfg_prepareDatacards.getParameter<vdouble>("absPtBins_mu");
-
-  int numEtaBins_e  = EtaBins_e.size() - 1;
-  int numPtBins_e   = PtBins_e.size() - 1;
-  int numEtaBins_mu = EtaBins_mu.size() - 1;
-  int numPtBins_mu  = PtBins_mu.size() - 1;
-
-  for(int idxEtaBin_e = 0; idxEtaBin_e < numEtaBins_e; ++idxEtaBin_e ) { // ELECTRON ETA LOOP                                                                          
-       double minAbsEta_e = std::abs(EtaBins_e[idxEtaBin_e]);
-       double maxAbsEta_e = std::abs(EtaBins_e[idxEtaBin_e + 1]);
-    for(int idxPtBin_e = 0; idxPtBin_e < numPtBins_e; ++idxPtBin_e ) { // ELECTRON PT LOOP                                                                                 
-        double minPt_e = PtBins_e[idxPtBin_e];
-        double maxPt_e = PtBins_e[idxPtBin_e + 1];
-        std::string etaBin_e = getEtaBin(minAbsEta_e, maxAbsEta_e);
-        std::string PtBin_e = getPtBin(minPt_e, maxPt_e);
-   
-        std::cout<< PtBin_e << " " << etaBin_e << std::endl;
-
-    }
-  }
-
-
-  for(int idxEtaBin_mu = 0; idxEtaBin_mu < numEtaBins_mu; ++idxEtaBin_mu ){ // MUON ETA LOOP                                                                               
-    double minAbsEta_mu = std::abs(EtaBins_mu[idxEtaBin_mu]);
-    double maxAbsEta_mu = std::abs(EtaBins_mu[idxEtaBin_mu + 1]);
-    for(int idxPtBin_mu = 0; idxPtBin_mu < numPtBins_mu; ++idxPtBin_mu ) { // MUON PT LOOP                                                                                 
-        double minPt_mu = PtBins_mu[idxPtBin_mu];
-        double maxPt_mu = PtBins_mu[idxPtBin_mu + 1];
-
-        std::string etaBin_mu = getEtaBin(minAbsEta_mu, maxAbsEta_mu);
-        std::string PtBin_mu  = getPtBin(minPt_mu, maxPt_mu);
-
-        std::cout<< PtBin_mu << " " << etaBin_mu << std::endl;
-
-    }
-  }
-// -----------------------
-*/
-
-
-
-
   vstring processesToCopy_string = cfg_prepareDatacards.getParameter<vstring>("processesToCopy");
   std::vector<TPRegexp*> processesToCopy;
   for ( vstring::const_iterator processToCopy_string = processesToCopy_string.begin();
@@ -248,6 +201,7 @@ int main(int argc, char* argv[])
   
   std::string histogramToFit = cfg_prepareDatacards.getParameter<std::string>("histogramToFit");
   int histogramToFit_rebin = cfg_prepareDatacards.getParameter<int>("histogramToFit_rebin");
+  bool histogramToFit_makeBinContentsPositive = cfg_prepareDatacards.getParameter<bool>("histogramToFit_makeBinContentsPositive");
 
   double setBinsToZeroBelow = cfg_prepareDatacards.getParameter<double>("setBinsToZeroBelow");
 
@@ -318,7 +272,7 @@ int main(int argc, char* argv[])
 	  double sf = ( isSignal ) ? sf_signal : 1.;
 	  copyHistogram(
 	    subdir, subdir->GetName(), histogramToFit, "", 
-	    sf, setBinsToZeroBelow, histogramToFit_rebin, *central_or_shift, (*central_or_shift) == "" || (*central_or_shift) == "central");	      
+	    sf, setBinsToZeroBelow, histogramToFit_rebin, histogramToFit_makeBinContentsPositive, *central_or_shift, (*central_or_shift) == "" || (*central_or_shift) == "central");
 	}
       }
     }
