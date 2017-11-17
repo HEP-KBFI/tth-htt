@@ -10,7 +10,7 @@ from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 #   'forBDTtraining' : to run the analysis on the VHbb Ntuples, with a relaxed event selection,
 #                      to increase the BDT training statistics
 #--------------------------------------------------------------------------------
-# E.g. to run: python tthAnalyzeRun_1l_2tau.py --version "2017Oct24" --mode "VHbb" --use_prod_ntuples 
+# E.g. to run: python tthAnalyzeRun_1l_2tau.py --version "2017Oct24" --mode "VHbb" --use_prod_ntuples
 from optparse import OptionParser
 parser = OptionParser()
 parser.add_option("--version ", type="string", dest="version", help="Name of output reository with results\n Trees will be stored in /hdfs/local/USER/ttHAnalysis/2016/VERSION/", default='dumb')
@@ -137,7 +137,7 @@ if __name__ == '__main__':
       samples                  = samples,
       changeBranchNames        = changeBranchNames,
       hadTau_selection         = hadTau_selection,
-      hadTau_charge_selections = [ "OS", "SS" ],
+      hadTau_charge_selections = [ "OS"] if mode == "forBDTtraining" else [ "OS", "SS" ],
       applyFakeRateWeights     = applyFakeRateWeights,
       central_or_shifts = [
         "central",
