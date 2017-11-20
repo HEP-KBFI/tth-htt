@@ -76,15 +76,16 @@ std::vector<double> HadTopTagger::operator()(const RecoJet& recBJet, const RecoJ
  */
 bool isHigherPt(const Particle* particle1, const Particle* particle2);
 
-std::vector<bool> HadTopTagger::isTruth3Jet(const RecoJet& recBJet, const RecoJet& recWJet1, const RecoJet& recWJet2,\
+bool HadTopTagger::isTruth3Jet(const RecoJet& recBJet, const RecoJet& recWJet1, const RecoJet& recWJet2,
 					//std::vector<const RecoJet*> selJets,
-					std::vector<GenParticle> genTopQuarks, std::vector<GenParticle> genBJets, std::vector<GenParticle> genWBosons,\
-					std::vector<GenParticle> genWJets )
+					std::vector<GenParticle> genTopQuarks, std::vector<GenParticle> genBJets, std::vector<GenParticle> genWBosons,
+					std::vector<GenParticle> genWJets , std::vector<bool>& truth_)
 {
 
-	std::vector<bool> truth_;
+	//std::vector<bool> truth_;
+
 	const GenParticle* genTopQuark = 0;
-    const GenParticle* genAntiTopQuark = 0;
+  const GenParticle* genAntiTopQuark = 0;
 	for ( std::vector<GenParticle>::const_iterator it = genTopQuarks.begin();
 	  it != genTopQuarks.end(); ++it ) {
       if ( it->pdgId() == +6 && !genTopQuark     ) genTopQuark = &(*it);
@@ -135,31 +136,34 @@ std::vector<bool> HadTopTagger::isTruth3Jet(const RecoJet& recBJet, const RecoJe
 		}
     }
 	/////////////////////////////////////////////////////////
-    if ( !(genWJetsFromTop.size() == 2 || genWJetsFromAntiTop.size() == 2) ) {
-		truth_.push_back(0);
-		truth_.push_back(0);
-		truth_.push_back(0);
-		truth_.push_back(0);
-		return truth_;
-
-	}
+    if ( !(genWJetsFromTop.size() == 2 || genWJetsFromAntiTop.size() == 2) and  genWJets.size() < 2  ) return 0; 
+		//truth_.push_back(0);
+		//truth_.push_back(0);
+		//truth_.push_back(0);
+		//truth_.push_back(0);
+		//return truth_;
+  	//}
     const GenParticle* genWJetFromTop_lead = 0;
     const GenParticle* genWJetFromTop_sublead = 0;
-    bool failsWbosonMassVeto_top = false;
+    bool passWbosonMassVeto_top = false;
     if ( genWJetsFromTop.size() == 2 ) {
       std::sort(genWJetsFromTop.begin(), genWJetsFromTop.end(), isHigherPt);
       genWJetFromTop_lead = genWJetsFromTop[0];
       genWJetFromTop_sublead = genWJetsFromTop[1];
-      if ( !(std::fabs((genWJetFromTop_lead->p4() + genWJetFromTop_sublead->p4()).mass() - genWBosonFromTop->mass()) < 15.) ) failsWbosonMassVeto_top = true;
+      if ( std::fabs((genWJetFromTop_lead->p4() + genWJetFromTop_sublead->p4()).mass() - genWBosonFromTop->mass()) < 15.
+            &&  (genWJetFromTop_lead->p4() + genWJetFromTop_sublead->p4()).mass() > 60.
+            && !(genWJetsFromAntiTop_mass == -1.) ) passWbosonMassVeto_top = true;
     }
     const GenParticle* genWJetFromAntiTop_lead = 0;
     const GenParticle* genWJetFromAntiTop_sublead = 0;
-    bool failsWbosonMassVeto_antiTop = false;
+    bool passWbosonMassVeto_antiTop = false;
     if ( genWJetsFromAntiTop.size() == 2 ) {
       std::sort(genWJetsFromAntiTop.begin(), genWJetsFromAntiTop.end(), isHigherPt);
       genWJetFromAntiTop_lead = genWJetsFromAntiTop[0];
       genWJetFromAntiTop_sublead = genWJetsFromAntiTop[1];
-      if ( !(std::fabs((genWJetFromAntiTop_lead->p4() + genWJetFromAntiTop_sublead->p4()).mass() - genWBosonFromAntiTop->mass()) < 15.) ) failsWbosonMassVeto_antiTop = true;
+      if ( (std::fabs((genWJetFromAntiTop_lead->p4() + genWJetFromAntiTop_sublead->p4()).mass() - genWBosonFromAntiTop->mass()) < 15.)
+            &&  (genWJetFromTop_lead->p4() + genWJetFromTop_sublead->p4()).mass() > 60.
+            && !(genWJetsFromAntiTop_mass == -1.) ) passWbosonMassVeto_antiTop = true;
     }
 
 	bool selBJet_isFromTop = deltaR(recBJet.p4(), genBJetFromTop->p4()) < 0.2;
@@ -179,26 +183,26 @@ std::vector<bool> HadTopTagger::isTruth3Jet(const RecoJet& recBJet, const RecoJe
 		(genWJetFromAntiTop_sublead && deltaR(recWJet2.p4(), genWJetFromAntiTop_sublead->p4()) < 0.2);
 
 	truth_.push_back(selBJet_isFromAntiTop);
-	truth_.push_back(selWJet1_isFromAntiTop && !failsWbosonMassVeto_antiTop );
-	truth_.push_back(selWJet2_isFromAntiTop && !failsWbosonMassVeto_antiTop );
+	truth_.push_back(selWJet1_isFromAntiTop && passWbosonMassVeto_antiTop );
+	truth_.push_back(selWJet2_isFromAntiTop && passWbosonMassVeto_antiTop );
 
 	truth_.push_back(selBJet_isFromTop );
-	truth_.push_back(selWJet1_isFromTop && !failsWbosonMassVeto_top );
-	truth_.push_back(selWJet2_isFromTop && !failsWbosonMassVeto_top );
+	truth_.push_back(selWJet1_isFromTop && passWbosonMassVeto_top );
+	truth_.push_back(selWJet2_isFromTop && passWbosonMassVeto_top );
 
 	bool ttruthAnti= (selBJet_isFromAntiTop == 1) && \
 					 (selWJet1_isFromAntiTop == 1) && \
 					 (selWJet2_isFromAntiTop == 1) &&
-					 !failsWbosonMassVeto_antiTop;
+					 passWbosonMassVeto_antiTop;
 	bool ttruth    = (selBJet_isFromTop == 1) && \
 					 (selWJet1_isFromTop == 1) && \
 					 (selWJet2_isFromTop == 1) &&
-					 !failsWbosonMassVeto_top;
+					 passWbosonMassVeto_top;
 
 	truth_.push_back(ttruthAnti);
 	truth_.push_back(ttruth);
 
-	return truth_;
+	return 1;
 }
 
 std::vector<Particle::LorentzVector> HadTopTagger::Particles(const RecoJet& recBJet, const RecoJet& recWJet1, const RecoJet& recWJet2)
