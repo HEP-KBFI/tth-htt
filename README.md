@@ -73,6 +73,19 @@ This runs a python script (`sbatch_analyze_3l_1tau.py`) which submits the analys
 All the results are stored in `outputDir` defined in `tthAnalyzeRun_3l_1tau.py.
 The datacards are located under `datacards`; the run-lumi-event numbers of selected events are under `output_rle`.
 
+### Analysis OptionParser
+
+1) mode
+
+  1.a) VHbb -- runs the analysis on all the samples, except for the FastSim samples; the final products of this analysis are datacard files that contain the distributions of various variables used in signal extraction across all event categories (signal, ttbar, ewk, fakes, rares etc); these datacards are used as an input to combine which calculates the limits;
+
+  1.b) forBDTtraining -- runs the analysis exclusively on the FastSim samples; the final products are root files which contain an Ntuple; these Ntuples are used as an input to a BDT training algorithm; no datacards, no limits here;
+
+2) use_prod_ntuples
+  2.a) disabled -- runs the analysis on ,,VHbb Ntuples'', i.e. the original Ntuples which we produced ~1 year ago with Heppy; these Ntuples contain all information;
+
+  2.b) enabled -- runs the analysis on ,,production Ntuples'', i.e. the Ntuples that are derived from the ,,VHbb Ntuples'' by removing branches which we don't use in our analysis; by default, the events are required to pass a very loose preselection containing at least 1 fakeable lepton and 1 fakeable tau passing the medium tau WP; in case of FastSim samples, there is no preselection applied, only the unused branches are stripped.
+
 ### Synchronization
 
 If you want to produce the ntuples for the synchronization exercise, run
