@@ -65,7 +65,7 @@ class RecoJetWriter
   std::string branchName_QGDiscr_;
   std::map<int, std::string> branchNames_BtagWeight_systematics_;
 
-  Int_t nJets_;
+  UInt_t nJets_;
   Float_t* jet_pt_;
   Float_t* jet_eta_;
   Float_t* jet_phi_;

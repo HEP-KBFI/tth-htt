@@ -12,12 +12,12 @@ RecoHadTau::RecoHadTau(Double_t pt,
 		       Int_t decayMode,
            Bool_t decayModeFinding,
            Bool_t decayModeFindingNew,
-		       Int_t id_mva_dR03,		       
-		       Double_t raw_mva_dR03,
+           Int_t id_mva_dR03,
+           Double_t raw_mva_dR03,
 		       Int_t id_mva_dR05,
-		       Double_t raw_mva_dR05,
+           Double_t raw_mva_dR05,
 		       Int_t id_cut_dR03,
-		       Double_t raw_cut_dR03,
+           Double_t raw_cut_dR03,
 		       Int_t id_cut_dR05,
 		       Int_t antiElectron,
 		       Int_t antiMuon)
@@ -63,7 +63,7 @@ std::ostream& operator<<(std::ostream& stream, const RecoHadTau& hadTau)
 	 << " mass = " << hadTau.mass() << "," 
 	 << " charge = " << hadTau.charge() << std::endl; 
   stream << " decayModeFinding = " << hadTau.decayModeFinding() << "," 
-	 << " id_mva_dR03 = " << hadTau.id_mva_dR03() << " (raw = " << hadTau.raw_mva_dR03() << ")," 
+   << " id_mva_dR03 = " << hadTau.id_mva_dR03() << " (raw = " << hadTau.raw_mva_dR03() << "),"
 	 << " antiElectron = " << hadTau.antiElectron() << ", antiMuon = " << hadTau.antiMuon()  << std::endl;
   stream << "gen. matching:"
             "\n lepton = ";

@@ -117,15 +117,15 @@ void RecoHadTauWriter::setBranchNames()
   branchName_decayMode_ = Form("%s_%s", branchName_obj_.data(), "decayMode");
   branchName_idDecayMode_ = Form("%s_%s", branchName_obj_.data(), "idDecayMode");
   branchName_idDecayModeNewDMs_ = Form("%s_%s", branchName_obj_.data(), "idDecayModeNewDMs");
-  branchName_idMVA_dR03_ = Form("%s_%s", branchName_obj_.data(), "idMVArun2dR03");
-  branchName_rawMVA_dR03_ = Form("%s_%s", branchName_obj_.data(), "rawMVArun2dR03");
-  branchName_idMVA_dR05_ = Form("%s_%s", branchName_obj_.data(), "idMVArun2");
-  branchName_rawMVA_dR05_ = Form("%s_%s", branchName_obj_.data(), "rawMVArun2");
+  branchName_idMVA_dR03_ = Form("%s_%s", branchName_obj_.data(), "idMVAoldDMdR03");
+  branchName_rawMVA_dR03_ = Form("%s_%s", branchName_obj_.data(), "rawMVAoldDMdR03");
+  branchName_idMVA_dR05_ = Form("%s_%s", branchName_obj_.data(), "idMVAoldDM");
+  branchName_rawMVA_dR05_ = Form("%s_%s", branchName_obj_.data(), "rawMVAoldDM");
   branchName_idCombIso_dR03_ = Form("%s_%s", branchName_obj_.data(), "idCI3hitdR03");
   branchName_rawCombIso_dR03_ = Form("%s_%s", branchName_obj_.data(), "isoCI3hitdR03");
   branchName_idCombIso_dR05_ = Form("%s_%s", branchName_obj_.data(), "idCI3hit");
   branchName_rawCombIso_dR05_ = Form("%s_%s", branchName_obj_.data(), "isoCI3hit"); 
-  branchName_idAgainstElec_ = Form("%s_%s", branchName_obj_.data(), "idAntiErun2");
+  branchName_idAgainstElec_ = Form("%s_%s", branchName_obj_.data(), "idAntiEle");
   branchName_idAgainstMu_ = Form("%s_%s", branchName_obj_.data(), "idAntiMu");
 }
 
@@ -134,7 +134,7 @@ void RecoHadTauWriter::setBranches(TTree* tree)
   genLeptonWriter_->setBranches(tree);
   genHadTauWriter_->setBranches(tree);
   genJetWriter_->setBranches(tree);
-  setBranchI(tree, branchName_num_, &nHadTaus_);
+  setBranch(tree, &nHadTaus_, branchName_num_);
   hadTau_pt_ = new Float_t[max_nHadTaus_];
   setBranchVF(tree, branchName_pt_, branchName_num_, hadTau_pt_);
   hadTau_eta_ = new Float_t[max_nHadTaus_];
@@ -151,36 +151,36 @@ void RecoHadTauWriter::setBranches(TTree* tree)
   setBranchVF(tree, branchName_dz_, branchName_num_, hadTau_dz_);
   hadTau_decayMode_ = new Int_t[max_nHadTaus_];
   setBranchVI(tree, branchName_decayMode_, branchName_num_, hadTau_decayMode_);
-  hadTau_idDecayMode_ = new Int_t[max_nHadTaus_];
-  setBranchVI(tree, branchName_idDecayMode_, branchName_num_, hadTau_idDecayMode_);
-  hadTau_idDecayModeNewDMs_ = new Int_t[max_nHadTaus_];
-  setBranchVI(tree, branchName_idDecayModeNewDMs_, branchName_num_, hadTau_idDecayModeNewDMs_);
-  hadTau_idMVA_dR03_ = new Int_t[max_nHadTaus_];
-  setBranchVI(tree, branchName_idMVA_dR03_, branchName_num_, hadTau_idMVA_dR03_);
+  hadTau_idDecayMode_ = new Bool_t[max_nHadTaus_];
+  setBranch(tree, hadTau_idDecayMode_, branchName_idDecayMode_, branchName_num_);
+  hadTau_idDecayModeNewDMs_ = new Bool_t[max_nHadTaus_];
+  setBranch(tree, hadTau_idDecayModeNewDMs_, branchName_idDecayModeNewDMs_, branchName_num_);
+  hadTau_idMVA_dR03_ = new UChar_t[max_nHadTaus_];
+  setBranch(tree, hadTau_idMVA_dR03_, branchName_idMVA_dR03_, branchName_num_);
   hadTau_rawMVA_dR03_ = new Float_t[max_nHadTaus_];
   setBranchVF(tree, branchName_rawMVA_dR03_, branchName_num_, hadTau_rawMVA_dR03_);
-  hadTau_idMVA_dR05_ = new Int_t[max_nHadTaus_];
-  setBranchVI(tree, branchName_idMVA_dR05_, branchName_num_, hadTau_idMVA_dR05_);
+  hadTau_idMVA_dR05_ = new UChar_t[max_nHadTaus_];
+  setBranch(tree, hadTau_idMVA_dR05_, branchName_idMVA_dR05_, branchName_num_);
   hadTau_rawMVA_dR05_ = new Float_t[max_nHadTaus_];
   setBranchVF(tree, branchName_rawMVA_dR05_, branchName_num_, hadTau_rawMVA_dR05_);
   hadTau_idCombIso_dR03_ = new Int_t[max_nHadTaus_];
   setBranchVI(tree, branchName_idCombIso_dR03_, branchName_num_, hadTau_idCombIso_dR03_);
-  hadTau_rawCombIso_dR03_ = new Float_t[max_nHadTaus_]; 
+  hadTau_rawCombIso_dR03_ = new Float_t[max_nHadTaus_];
   setBranchVF(tree, branchName_rawCombIso_dR03_, branchName_num_, hadTau_rawCombIso_dR03_);
   hadTau_idCombIso_dR05_ = new Int_t[max_nHadTaus_];
   setBranchVI(tree, branchName_idCombIso_dR05_, branchName_num_, hadTau_idCombIso_dR05_);
   hadTau_rawCombIso_dR05_ = new Float_t[max_nHadTaus_];
   setBranchVF(tree, branchName_rawCombIso_dR05_, branchName_num_, hadTau_rawCombIso_dR05_);
-  hadTau_idAgainstElec_ = new Int_t[max_nHadTaus_];
-  setBranchVI(tree, branchName_idAgainstElec_, branchName_num_, hadTau_idAgainstElec_);
-  hadTau_idAgainstMu_ = new Int_t[max_nHadTaus_];
-  setBranchVI(tree, branchName_idAgainstMu_, branchName_num_, hadTau_idAgainstMu_);
+  hadTau_idAgainstElec_ = new UChar_t[max_nHadTaus_];
+  setBranch(tree, hadTau_idAgainstElec_, branchName_idAgainstElec_, branchName_num_);
+  hadTau_idAgainstMu_ = new UChar_t[max_nHadTaus_];
+  setBranch(tree, hadTau_idAgainstMu_, branchName_idAgainstMu_, branchName_num_);
 }
 
 void RecoHadTauWriter::write(const std::vector<const RecoHadTau*>& hadTaus) 
 {
   nHadTaus_ = hadTaus.size();
-  for ( Int_t idxHadTau = 0; idxHadTau < nHadTaus_; ++idxHadTau ) {
+  for ( UInt_t idxHadTau = 0; idxHadTau < nHadTaus_; ++idxHadTau ) {
     const RecoHadTau* hadTau = hadTaus[idxHadTau];
     assert(hadTau);
     hadTau_pt_[idxHadTau] = hadTau->pt();
@@ -213,8 +213,8 @@ void RecoHadTauWriter::writeGenMatching(const std::vector<const RecoHadTau*>& ha
   std::vector<GenParticle> matched_genLeptons;
   std::vector<GenParticle> matched_genHadTaus;
   std::vector<GenParticle> matched_genJets;
-  assert(nHadTaus_ == (int)hadTaus.size());
-  for ( Int_t idxHadTau = 0; idxHadTau < nHadTaus_; ++idxHadTau ) {
+  assert(nHadTaus_ == hadTaus.size());
+  for ( UInt_t idxHadTau = 0; idxHadTau < nHadTaus_; ++idxHadTau ) {
     const RecoHadTau* hadTau = hadTaus[idxHadTau];
     assert(hadTau);
     const GenLepton* matched_genLepton = hadTau->genLepton();

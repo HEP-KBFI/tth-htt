@@ -31,7 +31,7 @@ class RecoLeptonWriter
   void write(const std::vector<const T*>& leptons)
   {
     nLeptons_ = leptons.size();
-    for ( Int_t idxLepton = 0; idxLepton < nLeptons_; ++idxLepton ) {
+    for ( UInt_t idxLepton = 0; idxLepton < nLeptons_; ++idxLepton ) {
       const T* lepton = leptons[idxLepton];
       assert(lepton);      
       pt_[idxLepton] = lepton->lepton_pt();
@@ -64,8 +64,8 @@ class RecoLeptonWriter
     std::vector<GenParticle> matched_genLeptons;
     std::vector<GenParticle> matched_genHadTaus;
     std::vector<GenParticle> matched_genJets;
-    assert(nLeptons_ == (int)leptons.size());
-    for ( Int_t idxLepton = 0; idxLepton < nLeptons_; ++idxLepton ) {
+    assert(nLeptons_ == leptons.size());
+    for ( UInt_t idxLepton = 0; idxLepton < nLeptons_; ++idxLepton ) {
       const T* lepton = leptons[idxLepton];
       assert(lepton);
       const GenLepton* matched_genLepton = lepton->genLepton();
@@ -118,7 +118,7 @@ class RecoLeptonWriter
   std::string branchName_tightCharge_;
   std::string branchName_charge_;
 
-  Int_t nLeptons_;
+  UInt_t nLeptons_;
   Float_t* pt_;
   Float_t* eta_;
   Float_t* phi_;

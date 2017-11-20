@@ -318,29 +318,29 @@ int main(int argc, char* argv[])
 
   outputTree->Branch("run", &run, "run/i");
   outputTree->Branch("luminosityBlock", &lumi, "luminosityBlock/i");
-  outputTree->Branch("evt", &event, "evt/l");
+  outputTree->Branch("event", &event, "event/l");
 
-  std::string branchName_muons = "Muon";
+  std::string branchName_muons = branchName_muons_in;
   RecoMuonWriter* muonWriter = new RecoMuonWriter(era, Form("n%s", branchName_muons.data()), branchName_muons);
   muonWriter->setBranches(outputTree);
   std::cout << "writing RecoMuon objects to branch = '" << branchName_muons << "'" << std::endl;
 
-  std::string branchName_electrons = "Electron";
+  std::string branchName_electrons = branchName_electrons_in;
   RecoElectronWriter* electronWriter = new RecoElectronWriter(era, Form("n%s", branchName_electrons.data()), branchName_electrons);
   electronWriter->setBranches(outputTree);
   std::cout << "writing RecoElectron objects to branch = '" << branchName_electrons << "'" << std::endl;
 
-  std::string branchName_hadTaus = "HadTau";
+  std::string branchName_hadTaus = branchName_hadTaus_in;
   RecoHadTauWriter* hadTauWriter = new RecoHadTauWriter(era, Form("n%s", branchName_hadTaus.data()), branchName_hadTaus);
   hadTauWriter->setBranches(outputTree);
   std::cout << "writing RecoHadTau objects to branch = '" << branchName_hadTaus << "'" << std::endl;
 
-  std::string branchName_jets = "Jet";
+  std::string branchName_jets = branchName_jets_in;
   RecoJetWriter* jetWriter = new RecoJetWriter(era, isMC, Form("n%s", branchName_jets.data()), branchName_jets);
   jetWriter->setBranches(outputTree);
   std::cout << "writing RecoJet objects to branch = '" << branchName_jets << "'" << std::endl;
 
-  std::string branchName_met = "met";
+  std::string branchName_met = branchName_met_in;
   RecoMEtWriter* metWriter = new RecoMEtWriter(era, branchName_met);
   metWriter->setBranches(outputTree);
   std::cout << "writing RecoMEt object to branch = '" << branchName_met << "'" << std::endl;
@@ -349,17 +349,17 @@ int main(int argc, char* argv[])
   GenParticleWriter* genHadTauWriter = 0;
   GenParticleWriter* genJetWriter = 0;
   if ( isMC ) {
-    std::string branchName_genLeptons = "GenLep";
+    std::string branchName_genLeptons = branchName_genLeptons1_in;
     genLeptonWriter = new GenParticleWriter(Form("n%s", branchName_genLeptons.data()), branchName_genLeptons);
     genLeptonWriter->setBranches(outputTree);
     std::cout << "writing GenLepton objects to branch = '" << branchName_genLeptons << "'" << std::endl;
 
-    std::string branchName_genHadTaus = "GenHadTaus";
+    std::string branchName_genHadTaus = branchName_genHadTaus_in;
     genHadTauWriter = new GenParticleWriter(Form("n%s", branchName_genHadTaus.data()), branchName_genHadTaus);
     genHadTauWriter->setBranches(outputTree);
     std::cout << "writing GenHadTau objects to branch = '" << branchName_genHadTaus << "'" << std::endl;
 
-    std::string branchName_genJets = "GenJet";
+    std::string branchName_genJets = branchName_genJets_in;
     genJetWriter = new GenParticleWriter(Form("n%s", branchName_genJets.data()), branchName_genJets);
     genJetWriter->setBranches(outputTree);
     std::cout << "writing GenJet objects to branch = '" << branchName_genJets << "'" << std::endl;

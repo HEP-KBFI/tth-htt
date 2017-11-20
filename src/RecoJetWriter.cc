@@ -94,7 +94,7 @@ void RecoJetWriter::setBranches(TTree* tree)
   genLeptonWriter_->setBranches(tree);
   genHadTauWriter_->setBranches(tree);
   genJetWriter_->setBranches(tree);
-  setBranchI(tree, branchName_num_, &nJets_);
+  setBranch(tree, &nJets_, branchName_num_);
   jet_pt_ = new Float_t[max_nJets_];
   setBranchVF(tree, branchName_pt_, branchName_num_, jet_pt_);
   jet_eta_ = new Float_t[max_nJets_];
@@ -122,7 +122,7 @@ void RecoJetWriter::setBranches(TTree* tree)
 void RecoJetWriter::write(const std::vector<const RecoJet*>& jets) 
 {
   nJets_ = jets.size();
-  for ( Int_t idxJet = 0; idxJet < nJets_; ++idxJet ) {
+  for ( UInt_t idxJet = 0; idxJet < nJets_; ++idxJet ) {
     const RecoJet* jet = jets[idxJet];
     assert(jet);
     jet_pt_[idxJet] = jet->pt();
@@ -150,8 +150,8 @@ void RecoJetWriter::writeGenMatching(const std::vector<const RecoJet*>& jets)
   std::vector<GenParticle> matched_genLeptons;
   std::vector<GenParticle> matched_genHadTaus;
   std::vector<GenParticle> matched_genJets;
-  assert(nJets_ == (int)jets.size());
-  for ( Int_t idxJet = 0; idxJet < nJets_; ++idxJet ) {
+  assert(nJets_ == jets.size());
+  for ( UInt_t idxJet = 0; idxJet < nJets_; ++idxJet ) {
     const RecoJet* jet = jets[idxJet];
     assert(jet);
     const GenLepton* matched_genLepton = jet->genLepton();

@@ -42,7 +42,7 @@ void GenParticleWriter::setBranchNames()
 
 void GenParticleWriter::setBranches(TTree* tree)
 {
-  setBranchI(tree, branchName_num_, &nParticles_);
+  setBranch(tree, &nParticles_, branchName_num_);
   particle_pt_ = new Float_t[max_nParticles_];
   setBranchVF(tree, branchName_pt_, branchName_num_, particle_pt_);
   particle_eta_ = new Float_t[max_nParticles_];
@@ -51,8 +51,8 @@ void GenParticleWriter::setBranches(TTree* tree)
   setBranchVF(tree, branchName_phi_, branchName_num_, particle_phi_); 
   particle_mass_ = new Float_t[max_nParticles_];
   setBranchVF(tree, branchName_mass_, branchName_num_, particle_mass_); 
-  particle_charge_ = new Float_t[max_nParticles_];
-  setBranchVF(tree, branchName_charge_, branchName_num_, particle_charge_);
+  particle_charge_ = new Int_t[max_nParticles_];
+  setBranch(tree, particle_charge_, branchName_charge_, branchName_num_);
   particle_pdgId_ = new Int_t[max_nParticles_];
   setBranchVI(tree, branchName_pdgId_, branchName_num_, particle_pdgId_); 
 }
@@ -60,7 +60,7 @@ void GenParticleWriter::setBranches(TTree* tree)
 void GenParticleWriter::write(const std::vector<GenParticle>& particles)
 {
   nParticles_ = particles.size();
-  for ( Int_t idxParticle = 0; idxParticle < nParticles_; ++idxParticle ) {
+  for ( UInt_t idxParticle = 0; idxParticle < nParticles_; ++idxParticle ) {
     const GenParticle& particle = particles[idxParticle];
     particle_pt_[idxParticle] = particle.pt();
     particle_eta_[idxParticle] = particle.eta();
