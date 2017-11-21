@@ -4,7 +4,7 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/LocalFileInPath.h" // LocalFileInPath
 
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2015, kEra_2016
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2017, setValue_int(), setValue_float()
 
 #include <TString.h> // Form
 
@@ -188,22 +188,6 @@ void RecoHadTauReader::setBranchNames()
     }
   }
   ++numInstances_[branchName_obj_];
-}
-
-namespace
-{
-  void setValue_int(Int_t* array, int n, Int_t value = 0)
-  {
-    for ( int idx = 0; idx < n; ++idx ) {
-      array[idx] = value;
-    }
-  }
-  void setValue_float(Float_t* array, int n, Float_t value = 0.)
-  {
-    for ( int idx = 0; idx < n; ++idx ) {
-      array[idx] = value;
-    }
-  }
 }
 
 void RecoHadTauReader::setBranchAddresses(TTree* tree)

@@ -1,5 +1,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronReader.h" // RecoElectronReader
 
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // setValue_float()
+
 #include "FWCore/Utilities/interface/Exception.h"
 
 #include <TString.h> // Form
@@ -103,10 +105,12 @@ void RecoElectronReader::setBranchAddresses(TTree *tree)
     tree->SetBranchAddress(branchName_sigmaEtaEta_.data(), sigmaEtaEta_);
     HoE_ = new Float_t[max_nLeptons];
     tree->SetBranchAddress(branchName_HoE_.data(), HoE_);
+//--- Karl: ECAL-related variables missing in nanoAOD
     deltaEta_ = new Float_t[max_nLeptons];
-    tree->SetBranchAddress(branchName_deltaEta_.data(), deltaEta_);
+    setValue_float(deltaEta_, max_nLeptons, 0.);
     deltaPhi_ = new Float_t[max_nLeptons];
-    tree->SetBranchAddress(branchName_deltaPhi_.data(), deltaPhi_);
+    setValue_float(deltaPhi_, max_nLeptons, 0.);
+//--- end
     OoEminusOoP_ = new Float_t[max_nLeptons];
     tree->SetBranchAddress(branchName_OoEminusOoP_.data(), OoEminusOoP_);
     lostHits_ = new UChar_t[max_nLeptons];

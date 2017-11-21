@@ -40,6 +40,19 @@ get_era(const std::string & eraString)
   throw 1;
 }
 
+void setValue_int(Int_t* array, int n, Int_t value)
+{
+  for ( int idx = 0; idx < n; ++idx ) {
+    array[idx] = value;
+  }
+}
+void setValue_float(Float_t* array, int n, Float_t value)
+{
+  for ( int idx = 0; idx < n; ++idx ) {
+    array[idx] = value;
+  }
+}
+
 std::string getBranchName_bTagWeight(int era, const std::string& central_or_shift)
 {
   int central_or_shift_int = kBtag_central;

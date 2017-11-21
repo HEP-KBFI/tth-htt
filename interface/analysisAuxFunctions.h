@@ -68,6 +68,10 @@ get_selection(const std::string & selectionString);
 int
 get_era(const std::string & eraString);
 
+//--- default branch fillers
+void setValue_int(Int_t* array, int n, Int_t value = 0);
+void setValue_float(Float_t* array, int n, Float_t value = 0.);
+
 //--- define the tau MVA ID WPs
 const std::map<std::string, int>
 id_mva_dr03_map = {
