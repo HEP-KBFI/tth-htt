@@ -212,7 +212,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
     lines.append("process.analyze_1l_2tau.apply_genWeight = cms.bool(%s)" % jobOptions['apply_genWeight'])
     lines.append("process.analyze_1l_2tau.apply_trigger_bits = cms.bool(%s)" % jobOptions['apply_trigger_bits'])
     lines.append("process.analyze_1l_2tau.selEventsFileName_output = cms.string('%s')" % jobOptions['rleOutputFile'])
-    lines.append("process.analyze_1l_2tau.selectBDT = cms.bool(%s)" % str(jobOptions['selectBDT']))
+    #lines.append("process.analyze_1l_2tau.selectBDT = cms.bool(%s)" % str(jobOptions['selectBDT']))
     if jobOptions['changeBranchNames']:
       lines.append("process.analyze_1l_2tau.branchName_electrons = cms.string('Electron')")
       lines.append("process.analyze_1l_2tau.branchName_muons = cms.string('Muon')")
@@ -221,6 +221,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
       lines.append("process.analyze_1l_2tau.branchName_genLeptons2 = cms.string('')")
       lines.append("process.analyze_1l_2tau.branchName_genHadTaus = cms.string('GenHadTaus')")
       lines.append("process.analyze_1l_2tau.branchName_genJets = cms.string('GenJet')")
+      lines.append("process.analyze_1l_2tau.branchName_genWJets = cms.string('GenWZQuark')") 
       lines.append("process.analyze_1l_2tau.redoGenMatching = cms.bool(False)")
       lines.append("process.analyze_1l_2tau.fillGenEvtHistograms = cms.bool(True)")
     create_cfg(self.cfgFile_analyze, jobOptions['cfgFile_modified'], lines)
