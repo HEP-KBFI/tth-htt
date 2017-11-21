@@ -45,17 +45,103 @@ typedef std::vector<double> vdouble;
 
 namespace
 {
-  void copyHistogram(TDirectory* dir_input, const std::string& process, const std::string& histogramName_input, 
+  
+  std::vector<double> compBinning(TH1* histogram, double minEvents)
+  {
+    assert(histogram_data->GetNbinsX() == histogram->GetNbinsX());
+    std::vector<double> histogramBinning;
+    const TAxis* xAxis = histogram->GetXaxis();
+    histogramBinning.push_back(xAxis->GetBinLowEdge(1));
+    double sumEvents = 0.;
+    int numBins = xAxis->GetNbins();
+    for ( int idxBin = 1; idxBin <= numBins; ++idxBin ) {
+      sumEvents += histogram->GetBinContent(idxBin);
+      if ( sumEvents >= minEvents ) {
+	histogramBinning.push_back(xAxis->GetBinUpEdge(idxBin));
+	sumEvents = 0.;
+      }
+    }
+    if ( TMath::Abs(histogramBinning.back() - xAxis->GetBinUpEdge(numBins)) > 1.e-3 ) {
+      if ( histogramBinning.size() >= 2 ) histogramBinning.back() = xAxis->GetBinUpEdge(numBins);
+      else histogramBinning.push_back(xAxis->GetBinUpEdge(numBins));
+    }
+    assert(histogramBinning.size() >= 2);
+    return histogramBinning;
+  }
+  
+  TH1* rebinHistogram(const std::vector<double>& histogramBinning, const TH1* histogram, bool normalize = true)
+  {
+    TArrayF histogramBinning_array(histogramBinning.size());
+    int idx = 0;
+    for ( std::vector<double>::const_iterator binEdge = histogramBinning.begin();
+	  binEdge != histogramBinning.end(); ++binEdge ) {
+      histogramBinning_array[idx] = (*binEdge);
+      ++idx;
+    }
+    std::string histogramName = Form("%s_rebinned", histogram->GetName());
+    std::string histogramTitle = histogram->GetTitle();
+    int numBins_rebinned = histogramBinning_array.GetSize() - 1;
+    //std::cout << "numBins_rebinned = " << numBins_rebinned << std::endl;
+    TH1* histogram_rebinned = new TH1D(histogramName.data(), histogramTitle.data(), numBins_rebinned, histogramBinning_array.GetArray());
+    if ( !histogram_rebinned->GetSumw2N() ) histogram_rebinned->Sumw2();
+    const TAxis* xAxis = histogram->GetXaxis();
+    int numBins = xAxis->GetNbins();
+    const TAxis* xAxis_rebinned = histogram_rebinned->GetXaxis();
+    double binContentSum = 0.;
+    double binError2Sum = 0.;
+    int iBin_rebinned = 1;
+    double binEdgeLow_rebinned = xAxis_rebinned->GetBinLowEdge(iBin_rebinned);
+    for ( int iBin = 1; iBin <= numBins; ++iBin ) {
+      double binCenter = xAxis->GetBinCenter(iBin);
+      double binContent = histogram->GetBinContent(iBin);
+      double binError = histogram->GetBinError(iBin);
+      bool isNextBin_rebinned = false;
+      if ( iBin == numBins ) {
+	isNextBin_rebinned = true;
+      } else {
+	if ( iBin_rebinned < numBins_rebinned && binCenter > xAxis_rebinned->GetBinLowEdge(iBin_rebinned + 1) ) {
+	  isNextBin_rebinned = true;
+	}
+      }
+      if ( isNextBin_rebinned ) {
+	double binWidth_rebinned = xAxis_rebinned->GetBinLowEdge(iBin_rebinned + 1) - binEdgeLow_rebinned;
+	histogram_rebinned->SetBinContent(iBin_rebinned, binContentSum/binWidth_rebinned);
+	histogram_rebinned->SetBinError(iBin_rebinned, TMath::Sqrt(binError2Sum)/binWidth_rebinned);
+	binContentSum = 0.;
+	binError2Sum = 0.;
+	binEdgeLow_rebinned = xAxis_rebinned->GetBinLowEdge(iBin_rebinned + 1);
+	++iBin_rebinned;
+      }
+      //std::cout << "binCenter = " << binCenter << ": iBin = " << iBin << ", iBin_rebinned = " << iBin_rebinned << std::endl;
+      binContentSum += binContent;
+      binError2Sum += (binError*binError);
+    }
+    if ( normalize ) {
+      double integral = 0.;
+      for ( int idxBin = 1; idxBin <= histogram_rebinned->GetNbinsX(); ++idxBin ) {
+	integral += histogram_rebinned->GetBinContent(idxBin);
+      }
+      if ( integral > 0. ) histogram_rebinned->Scale(1./integral);
+    }
+    return histogram_rebinned;
+  } 
+
+
+
+
+  TH1* copyHistogram(TDirectory* dir_input, const std::string& process, const std::string& histogramName_input, 
 		     const std::string& histogramName_output, double sf, double setBinsToZeroBelow, int rebin, const std::string& central_or_shift, 
 		     bool enableException, bool setEmptySystematicFromCentral = true)
   {
-    //std::cout << "<copyHistogram>:" << std::endl;
-    //std::cout << " dir_input = " << dir_input->GetName() << std::endl;
-    //std::cout << " process = " << process << std::endl;
-    //std::cout << " histogramName_input = " << histogramName_input << std::endl;
-    //std::cout << " histogramName_output = " << histogramName_output << std::endl;
-    //std::cout << " central_or_shift = " << central_or_shift << std::endl;
-    //std::cout << " enableException = " << enableException << std::endl;
+    std::cout << "\n\n\nprepareDatacards::copyHistogram()::" << std::endl;
+    std::cout << "<copyHistogram>:" << std::endl;
+    std::cout << " dir_input = " << dir_input->GetName() << std::endl;
+    std::cout << " process = " << process << std::endl;
+    std::cout << " histogramName_input = " << histogramName_input << std::endl;
+    std::cout << " histogramName_output = " << histogramName_output << std::endl;
+    std::cout << " central_or_shift = " << central_or_shift << std::endl;
+    std::cout << " enableException = " << enableException << std::endl;
+
     std::string histogramName_input_full = "";
     if ( !(central_or_shift == "" || central_or_shift == "central") ) histogramName_input_full.append(central_or_shift);
     if( histogramName_input_full != "" ) histogramName_input_full.append("_");
@@ -112,6 +198,8 @@ namespace
     if ( rebin > 1 ) {
       histogram_output->Rebin(rebin);
     }    
+
+    return histogram_output;
   }
   
   struct categoryType
@@ -275,6 +363,7 @@ int main(int argc, char* argv[])
     TList* list = dir->GetListOfKeys();
     TIter next(list);
     TKey* key = 0;
+    TH1 *histogramSumBackground = 0, *histogramTmp;
     while ( (key = dynamic_cast<TKey*>(next())) ) {
       TObject* object = key->ReadObj();
       TDirectory* subdir = dynamic_cast<TDirectory*>(object);
@@ -316,12 +405,22 @@ int main(int argc, char* argv[])
 	    subsubdir_output->cd();
 	  }
 	  double sf = ( isSignal ) ? sf_signal : 1.;
-	  copyHistogram(
-	    subdir, subdir->GetName(), histogramToFit, "", 
-	    sf, setBinsToZeroBelow, histogramToFit_rebin, *central_or_shift, (*central_or_shift) == "" || (*central_or_shift) == "central");	      
+	  histogramTmp = copyHistogram(
+			    subdir, subdir->GetName(), histogramToFit, "", 
+			    sf, setBinsToZeroBelow, histogramToFit_rebin, *central_or_shift, (*central_or_shift) == "" || (*central_or_shift) == "central");	  
+	  if (!isSignal) {
+	    if (!histogramSumBackground) histogramSumBackground = (TH1*)histogramTmp->Clone(Form("%s_BackgroundSum",category->input_));
+	    else                         histogramSumBackground.Add(histogramTmp);  
+	  }
 	}
       }
     }
+
+    // rebinning histogramSumBackground
+    double minEvents = 1.;
+    std::vector<double> histogramBinning = compBinning(histogramSumBackground, minEvents);
+    histogramSumBackground = rebinHistogram(histogramBinning, histogramSumBackground);
+    assert(histogramSumBackground);
   }
   
   delete inputFile;
