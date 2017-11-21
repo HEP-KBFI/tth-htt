@@ -281,6 +281,9 @@ int main(int argc, char* argv[])
   vstring central_or_shifts = cfg_prepareDatacards.getParameter<vstring>("sysShifts");
   central_or_shifts.push_back(""); // CV: add central value
 
+  bool apply_automatic_rebinning = cfg_prepareDatacards.getParameter<bool>("apply_automatic_rebinning");
+  double minEvents_automatic_rebinning = cfg_prepareDatacards.getParameter<double>("minEvents_automatic_rebinning");
+
   fwlite::InputSource inputFiles(cfg); 
   if ( !(inputFiles.files().size() == 1) )
     throw cms::Exception("prepareDatacards") 
@@ -358,14 +361,15 @@ int main(int argc, char* argv[])
 	}
       }
     }
-    assert(histogramBackgroundSum);
 
-    // rebin histograms to avoid bins with zero background.
-    const double minEventsPerBin = 0.1;
-    std::vector<double> histogramBinning = compBinning(histogramBackgroundSum, minEventsPerBin);
-    for ( std::vector<TH1*>::iterator histogram = histogramsToRebin.begin();
-	  histogram != histogramsToRebin.end(); ++histogram ) {
-      rebinHistogram(histogramBinning, *histogram);
+    if ( apply_automatic_rebinning ) {
+      // rebin histograms to avoid bins with zero background
+      assert(histogramBackgroundSum);
+      std::vector<double> histogramBinning = compBinning(histogramBackgroundSum, minEvents_automatic_rebinning);
+      for ( std::vector<TH1*>::iterator histogram = histogramsToRebin.begin();
+	    histogram != histogramsToRebin.end(); ++histogram ) {
+	rebinHistogram(histogramBinning, *histogram);
+      }
     }
 
     delete histogramBackgroundSum;
