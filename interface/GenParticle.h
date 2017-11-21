@@ -6,27 +6,27 @@
 class GenParticle : public Particle
 {
  public:
-  GenParticle() = default;
+  GenParticle();
   GenParticle(Double_t pt,
 	      Double_t eta,
 	      Double_t phi,
 	      Double_t mass,
 	      Int_t pdgId,
-	      Double_t charge);
+        Int_t charge);
   GenParticle(const math::PtEtaPhiMLorentzVector& p4,
 	      Int_t pdgId,
-	      Double_t charge);
+        Int_t charge);
 
   /**
    * @brief Funtions to access data-members
    * @return Values of data-members
    */
   Int_t pdgId() const { return pdgId_; }
-  Double_t charge() const { return charge_; }
+  Int_t charge() const { return charge_; }
 
  protected:
   Int_t pdgId_;  ///< PDG id of the particle (signed)
-  Double_t charge_; ///< charge of particle
+  Int_t charge_; ///< charge of particle
 };
 
 std::ostream& operator<<(std::ostream& stream, const GenParticle& lepton);

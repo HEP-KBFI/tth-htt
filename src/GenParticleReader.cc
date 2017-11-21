@@ -91,7 +91,7 @@ void GenParticleReader::setBranchAddresses(TTree* tree)
     tree->SetBranchAddress(branchName_particle_mass_.data(), particle_mass_); 
     particle_pdgId_ = new Int_t[max_nParticles_];
     tree->SetBranchAddress(branchName_particle_pdgId_.data(), particle_pdgId_); 
-    particle_charge_ = new Float_t[max_nParticles_];
+    particle_charge_ = new Int_t[max_nParticles_];
     tree->SetBranchAddress(branchName_particle_charge_.data(), particle_charge_); 
   }
 }

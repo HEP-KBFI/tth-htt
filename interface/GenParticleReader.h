@@ -53,7 +53,7 @@ class GenParticleReader
   Float_t* particle_phi_;
   Float_t* particle_mass_;
   Int_t* particle_pdgId_;
-  Float_t* particle_charge_;
+  Int_t* particle_charge_;
 
   // CV: make sure that only one GenParticleReader instance exists for a given branchName,
   //     as ROOT cannot handle multiple TTree::SetBranchAddress calls for the same branch.
