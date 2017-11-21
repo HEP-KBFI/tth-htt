@@ -19,7 +19,6 @@ cfg_prepareDatacards
 #include "tthAnalysis/HiggsToTauTau/interface/histogramAuxFunctions.h"
 #include "tthAnalysis/HiggsToTauTau/interface/jetToTauFakeRateAuxFunctions.h" // getEtaBin, getPtBin 
 
-
 #include <TFile.h>
 #include <TH1.h>
 #include <TArrayD.h>
@@ -42,11 +41,10 @@ cfg_prepareDatacards
 typedef std::vector<std::string> vstring;
 typedef std::vector<double> vdouble;
 
-
 namespace
 {
   void copyHistogram(TDirectory* dir_input, const std::string& process, const std::string& histogramName_input, 
-		     const std::string& histogramName_output, double sf, double setBinsToZeroBelow, int rebin, const std::string& central_or_shift, 
+		     const std::string& histogramName_output, double sf, double setBinsToZeroBelow, int rebin, bool setNegativeBinsToZero, const std::string& central_or_shift, 
 		     bool enableException, bool setEmptySystematicFromCentral = true)
   {
     //std::cout << "<copyHistogram>:" << std::endl;
@@ -69,7 +67,7 @@ namespace
     }   
     std::cout << " integral(" << process << ") = " << histogram_input->Integral() << std::endl;
     // std::string histogramName_output_full = std::string("x").append("_").append(process); // DEF LINE
-    std::string histogramName_output_full = process; // MY LINE
+    std::string histogramName_output_full = process; 
     if ( !(central_or_shift == "" || central_or_shift == "central") ) histogramName_output_full.append("_").append(central_or_shift);
     if ( histogramName_output != "" ) histogramName_output_full.append("_").append(histogramName_output);
     TArrayD histogramBinning = getBinning(histogram_input);
@@ -112,6 +110,9 @@ namespace
     if ( rebin > 1 ) {
       histogram_output->Rebin(rebin);
     }    
+    if ( setNegativeBinsToZero ) {
+      makeBinContentsPositive(histogram_output);	
+    }
   }
   
   struct categoryType
@@ -146,8 +147,6 @@ namespace
   }
 }
 
-
-
 int main(int argc, char* argv[]) 
 {
 //--- throw an exception in case ROOT encounters an error
@@ -173,7 +172,6 @@ int main(int argc, char* argv[])
   edm::ParameterSet cfg = edm::readPSetsFrom(argv[1])->getParameter<edm::ParameterSet>("process");
 
   edm::ParameterSet cfg_prepareDatacards = cfg.getParameter<edm::ParameterSet>("prepareDatacards");
-
 
   vstring processesToCopy_string = cfg_prepareDatacards.getParameter<vstring>("processesToCopy");
   std::vector<TPRegexp*> processesToCopy;
@@ -201,6 +199,7 @@ int main(int argc, char* argv[])
   
   std::string histogramToFit = cfg_prepareDatacards.getParameter<std::string>("histogramToFit");
   int histogramToFit_rebin = cfg_prepareDatacards.getParameter<int>("histogramToFit_rebin");
+  bool histogramToFit_makeBinContentsPositive = cfg_prepareDatacards.getParameter<bool>("histogramToFit_makeBinContentsPositive");
 
   double setBinsToZeroBelow = cfg_prepareDatacards.getParameter<double>("setBinsToZeroBelow");
 
@@ -271,7 +270,7 @@ int main(int argc, char* argv[])
 	  double sf = ( isSignal ) ? sf_signal : 1.;
 	  copyHistogram(
 	    subdir, subdir->GetName(), histogramToFit, "", 
-	    sf, setBinsToZeroBelow, histogramToFit_rebin, *central_or_shift, (*central_or_shift) == "" || (*central_or_shift) == "central");	      
+	    sf, setBinsToZeroBelow, histogramToFit_rebin, histogramToFit_makeBinContentsPositive, *central_or_shift, (*central_or_shift) == "" || (*central_or_shift) == "central");
 	}
       }
     }
