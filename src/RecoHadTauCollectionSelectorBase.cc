@@ -16,6 +16,7 @@ RecoHadTauSelectorBase::RecoHadTauSelectorBase(int era, int index, bool debug, b
   , min_id_cut_dR03_(-1000)
   , max_raw_cut_dR03_(1.e+6)
   , min_id_cut_dR05_(-1000)
+  , max_raw_cut_dR05_(1.e+6)
   , min_antiElectron_(-1000)
   , min_antiMuon_(-1000)   
 {}
@@ -68,6 +69,10 @@ bool RecoHadTauSelectorBase::operator()(const RecoHadTau& hadTau) const
   }
   if ( hadTau.id_cut_dR05() < min_id_cut_dR05_ ) {
     if ( debug_ ) std::cout << "FAILS id_cut_dR05 cut." << std::endl;
+    return false;
+  }
+  if ( hadTau.raw_cut_dR05() > max_raw_cut_dR05_ ) {
+    if ( debug_ ) std::cout << "FAILS raw_cut_dR05 cut." << std::endl;
     return false;
   }
   if ( hadTau.antiElectron() < min_antiElectron_ ) {

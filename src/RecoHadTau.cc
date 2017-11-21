@@ -19,6 +19,7 @@ RecoHadTau::RecoHadTau(Double_t pt,
 		       Int_t id_cut_dR03,
            Double_t raw_cut_dR03,
 		       Int_t id_cut_dR05,
+           Double_t raw_cut_dR05,
 		       Int_t antiElectron,
 		       Int_t antiMuon)
   : Particle(pt, eta, phi, mass)
@@ -35,6 +36,7 @@ RecoHadTau::RecoHadTau(Double_t pt,
   , id_cut_dR03_(id_cut_dR03)
   , raw_cut_dR03_(raw_cut_dR03)
   , id_cut_dR05_(id_cut_dR05)
+  , raw_cut_dR05_(raw_cut_dR05)
   , antiElectron_(antiElectron)
   , antiMuon_(antiMuon)
   , genLepton_(0)

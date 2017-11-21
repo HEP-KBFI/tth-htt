@@ -91,8 +91,10 @@ class RecoHadTauReader
   std::string branchName_idMVA_dR05_;
   std::string branchName_rawMVA_dR05_;
   std::string branchName_idCombIso_dR03_;
+  std::string branchName_isoCombIso_dR03_;
   std::string branchName_rawCombIso_dR03_;
   std::string branchName_idCombIso_dR05_;
+  std::string branchName_isoCombIso_dR05_;
   std::string branchName_idAgainstElec_;
   std::string branchName_idAgainstMu_;
 
@@ -116,6 +118,7 @@ class RecoHadTauReader
   Int_t* hadTau_idCombIso_dR03_;
   Float_t* hadTau_rawCombIso_dR03_;
   Int_t* hadTau_idCombIso_dR05_;
+  Float_t* hadTau_rawCombIso_dR05_;
   UChar_t* hadTau_idAgainstElec_;
   UChar_t* hadTau_idAgainstMu_;
 

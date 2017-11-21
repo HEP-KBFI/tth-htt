@@ -104,7 +104,7 @@ RecoHadTauReader::~RecoHadTauReader()
 
     int numInstances_total = 0;
     for ( std::map<std::string, int>::const_iterator it = numInstances_.begin();
-	  it != numInstances_.end(); ++it ) {
+          it != numInstances_.end(); ++it ) {
       numInstances_total += it->second;
     }
     if ( numInstances_total == 0 ) {
@@ -134,6 +134,7 @@ RecoHadTauReader::~RecoHadTauReader()
     delete[] gInstance->hadTau_idCombIso_dR03_;
     delete[] gInstance->hadTau_rawCombIso_dR03_;
     delete[] gInstance->hadTau_idCombIso_dR05_;
+    delete[] gInstance->hadTau_rawCombIso_dR05_;
     delete[] gInstance->hadTau_idAgainstElec_;
     delete[] gInstance->hadTau_idAgainstMu_;
     delete[] gInstance->hadTau_charge_;
@@ -172,16 +173,18 @@ void RecoHadTauReader::setBranchNames()
     branchName_idMVA_dR05_ = Form("%s_%s", branchName_obj_.data(), "idMVAoldDM");
     branchName_rawMVA_dR05_ = Form("%s_%s", branchName_obj_.data(), "rawMVAoldDM");
     branchName_idCombIso_dR03_ = Form("%s_%s", branchName_obj_.data(), "idCI3hitdR03");
+    branchName_isoCombIso_dR03_ = Form("%s_%s", branchName_obj_.data(), "isoCI3hitdR03");
     branchName_idCombIso_dR05_ = Form("%s_%s", branchName_obj_.data(), "idCI3hit");
+    branchName_isoCombIso_dR05_ = Form("%s_%s", branchName_obj_.data(), "isoCI3hit");
     branchName_idAgainstElec_ = Form("%s_%s", branchName_obj_.data(), "idAntiEle");
     branchName_idAgainstMu_ = Form("%s_%s", branchName_obj_.data(), "idAntiMu");
     instances_[branchName_obj_] = this;
   } else {
     if ( branchName_num_ != instances_[branchName_obj_]->branchName_num_ ) {
       throw cms::Exception("RecoHadTauReader") 
-	<< "Association between configuration parameters 'branchName_num' and 'branchName_obj' must be unique:"
-	<< " present association 'branchName_num' = " << branchName_num_ << " with 'branchName_obj' = " << branchName_obj_ 
-	<< " does not match previous association 'branchName_num' = " << instances_[branchName_obj_]->branchName_num_ << " with 'branchName_obj' = " << instances_[branchName_obj_]->branchName_obj_ << " !!\n";
+        << "Association between configuration parameters 'branchName_num' and 'branchName_obj' must be unique:"
+        << " present association 'branchName_num' = " << branchName_num_ << " with 'branchName_obj' = " << branchName_obj_
+        << " does not match previous association 'branchName_num' = " << instances_[branchName_obj_]->branchName_num_ << " with 'branchName_obj' = " << instances_[branchName_obj_]->branchName_obj_ << " !!\n";
     }
   }
   ++numInstances_[branchName_obj_];
@@ -240,16 +243,16 @@ void RecoHadTauReader::setBranchAddresses(TTree* tree)
     tree->SetBranchAddress(branchName_idMVA_dR05_.data(), hadTau_idMVA_dR05_);
     hadTau_rawMVA_dR05_ = new Float_t[max_nHadTaus_];
     tree->SetBranchAddress(branchName_rawMVA_dR05_.data(), hadTau_rawMVA_dR05_); 
+//--- Karl: the following tau ID (fallback) variables missing in nanoAOD
     hadTau_idCombIso_dR03_ = new Int_t[max_nHadTaus_];
-    if ( era_ == kEra_2015 ) { // CV: branch does not exist in VHbb Ntuples v24 produced by Andrea for 2016 data
-      tree->SetBranchAddress(branchName_idCombIso_dR03_.data(), hadTau_idCombIso_dR03_); 
-    } else {
-      setValue_int(hadTau_idCombIso_dR03_, max_nHadTaus_, -1);
-    }    
-    hadTau_rawCombIso_dR03_ = new Float_t[max_nHadTaus_]; 
-    setValue_float(hadTau_rawCombIso_dR03_, max_nHadTaus_, -1.); // CV: branch does not exist in VHbb Ntuples yet
+    setValue_int(hadTau_idCombIso_dR03_, max_nHadTaus_, -1);
+    hadTau_rawCombIso_dR03_ = new Float_t[max_nHadTaus_];
+    setValue_float(hadTau_rawCombIso_dR03_, max_nHadTaus_, -1.);
     hadTau_idCombIso_dR05_ = new Int_t[max_nHadTaus_];
-    tree->SetBranchAddress(branchName_idCombIso_dR05_.data(), hadTau_idCombIso_dR05_);
+    setValue_int(hadTau_idCombIso_dR05_, max_nHadTaus_, -1);
+    hadTau_rawCombIso_dR05_ = new Float_t[max_nHadTaus_];
+    setValue_float(hadTau_rawCombIso_dR05_, max_nHadTaus_, -1.);
+//--- end
     hadTau_idAgainstElec_ = new UChar_t[max_nHadTaus_];
     tree->SetBranchAddress(branchName_idAgainstElec_.data(), hadTau_idAgainstElec_); 
     hadTau_idAgainstMu_ = new UChar_t[max_nHadTaus_];
@@ -283,31 +286,32 @@ std::vector<RecoHadTau> RecoHadTauReader::read() const
       } else {
         assert(DBdR03oldDMwLTEff95_ && mvaOutput_normalization_DBdR03oldDMwLT_);
         if ( mvaOutput_normalization_DBdR03oldDMwLT_->Eval(gInstance->hadTau_rawMVA_dR03_[idxHadTau]) > DBdR03oldDMwLTEff95_->Eval(gInstance->hadTau_pt_[idxHadTau]) ) {
- 	  hadTau_idMVA_dR03 = 1;
+           hadTau_idMVA_dR03 = 1;
         } else { 
-	  hadTau_idMVA_dR03 = 0;
-	}
+          hadTau_idMVA_dR03 = 0;
+        }
       }
       hadTaus.push_back(RecoHadTau(
         hadTau_pt,
         gInstance->hadTau_eta_[idxHadTau],
-	gInstance->hadTau_phi_[idxHadTau],
-	gInstance->hadTau_mass_[idxHadTau],
-	gInstance->hadTau_charge_[idxHadTau],
-	gInstance->hadTau_dxy_[idxHadTau],
-	gInstance->hadTau_dz_[idxHadTau],
-	gInstance->hadTau_decayMode_[idxHadTau],
-	gInstance->hadTau_idDecayMode_[idxHadTau],
-	gInstance->hadTau_idDecayModeNewDMs_[idxHadTau],
-	hadTau_idMVA_dR03,
-	gInstance->hadTau_rawMVA_dR03_[idxHadTau],
-	gInstance->hadTau_idMVA_dR05_[idxHadTau],
-	gInstance->hadTau_rawMVA_dR05_[idxHadTau],	
-	gInstance->hadTau_idCombIso_dR03_[idxHadTau],
-	gInstance->hadTau_rawCombIso_dR03_[idxHadTau],
-	gInstance->hadTau_idCombIso_dR05_[idxHadTau],
-	gInstance->hadTau_idAgainstElec_[idxHadTau],
-	gInstance->hadTau_idAgainstMu_[idxHadTau] ));
+        gInstance->hadTau_phi_[idxHadTau],
+        gInstance->hadTau_mass_[idxHadTau],
+        gInstance->hadTau_charge_[idxHadTau],
+        gInstance->hadTau_dxy_[idxHadTau],
+        gInstance->hadTau_dz_[idxHadTau],
+        gInstance->hadTau_decayMode_[idxHadTau],
+        gInstance->hadTau_idDecayMode_[idxHadTau],
+        gInstance->hadTau_idDecayModeNewDMs_[idxHadTau],
+        hadTau_idMVA_dR03,
+        gInstance->hadTau_rawMVA_dR03_[idxHadTau],
+        gInstance->hadTau_idMVA_dR05_[idxHadTau],
+        gInstance->hadTau_rawMVA_dR05_[idxHadTau],
+        gInstance->hadTau_idCombIso_dR03_[idxHadTau],
+        gInstance->hadTau_rawCombIso_dR03_[idxHadTau],
+        gInstance->hadTau_idCombIso_dR05_[idxHadTau],
+        gInstance->hadTau_rawCombIso_dR05_[idxHadTau],
+        gInstance->hadTau_idAgainstElec_[idxHadTau],
+        gInstance->hadTau_idAgainstMu_[idxHadTau] ));
     }
     readGenMatching(hadTaus);
   }

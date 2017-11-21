@@ -29,6 +29,7 @@ class RecoHadTau : public Particle
        Int_t id_cut_dR03,
        Double_t raw_cut_dR03,
 	     Int_t id_cut_dR05,
+       Double_t raw_cut_dR05,
 	     Int_t antiElectron,
 	     Int_t antiMuon);
 
@@ -65,6 +66,7 @@ class RecoHadTau : public Particle
   Int_t id_cut_dR03() const { return id_cut_dR03_; }
   Double_t raw_cut_dR03() const { return raw_cut_dR03_; }
   Int_t id_cut_dR05() const { return id_cut_dR05_; }
+  Double_t raw_cut_dR05() const { return raw_cut_dR05_; }
   Int_t antiElectron() const { return antiElectron_; }
   Int_t antiMuon() const { return antiMuon_; }
 
@@ -90,6 +92,7 @@ class RecoHadTau : public Particle
   Int_t id_cut_dR03_;         ///< cut-based tau id computed with dR=0.3 isolation cone
   Double_t raw_cut_dR03_;     ///< raw isolation pT-sum of cut-based tau id computed with dR=0.3 isolation cone
   Int_t id_cut_dR05_;         ///< cut-based tau id computed with dR=0.5 isolation cone
+  Double_t raw_cut_dR05_;     ///< raw isolation pT-sum of cut-based tau id computed with dR=0.5 isolation cone
   Int_t antiElectron_;        ///< discriminator against electrons
   Int_t antiMuon_;            ///< discriminator against muons
 
