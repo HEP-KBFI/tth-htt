@@ -195,7 +195,7 @@ void RecoHadTauWriter::write(const std::vector<const RecoHadTau*>& hadTaus)
     hadTau_idDecayModeNewDMs_[idxHadTau] = hadTau->decayModeFindingNew();
     // "undo" insertion of "VVLose" (95% signal efficiency) working point for tau ID MVA trained for dR=0->3 isolation cone
     // and store discriminator information in the same format as in the VHbb Ntuples v24 produced by Andrea for 2016 data
-    hadTau_idMVA_dR03_[idxHadTau] = ( hadTau->id_mva_dR03() >= 2 ) ? hadTau->id_mva_dR03() - 1 : 0;
+    hadTau_idMVA_dR03_[idxHadTau] = ( hadTau->id_mva_dR03() >= 1 ) ? hadTau->id_mva_dR03() >> 1 : 0;
     hadTau_rawMVA_dR03_[idxHadTau] = hadTau->raw_mva_dR03();
     hadTau_idMVA_dR05_[idxHadTau] = hadTau->id_mva_dR05();
     hadTau_rawMVA_dR05_[idxHadTau] = hadTau->raw_mva_dR05();

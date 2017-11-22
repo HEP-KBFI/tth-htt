@@ -22,7 +22,7 @@ class RecoHadTauSelectorBase
   double get_min_pt() const { return min_pt_; }
   double get_max_absEta() const { return max_absEta_; }
 
-  void set_min_id_mva_dR03(int min_id_mva_dR03) { min_id_mva_dR03_ = min_id_mva_dR03; }
+  void set_min_id_mva_dR03(int min_id_mva_dR03) { min_id_mva_dR03_ = min_id_mva_dR03 < 0 ? min_id_mva_dR03 : (1 << (min_id_mva_dR03 - 1)); }
   void set_min_raw_mva_dR03(double min_raw_mva_dR03) { min_raw_mva_dR03_ = min_raw_mva_dR03; }
   void set_min_id_mva_dR05(int min_id_mva_dR05) { min_id_mva_dR05_ = min_id_mva_dR05; }
   void set_min_raw_mva_dR05(double min_raw_mva_dR05) { min_raw_mva_dR05_ = min_raw_mva_dR05; }
@@ -34,6 +34,7 @@ class RecoHadTauSelectorBase
 
   void set(const std::string& cut)
   {    
+    std::cout << cut << '\n';
     set_min_id_mva_dR03(-1000);
     set_min_raw_mva_dR03(-1.e+6);
     set_min_id_mva_dR05(-1000);
@@ -42,10 +43,7 @@ class RecoHadTauSelectorBase
     set_max_raw_cut_dR03(1.e+6);
     set_min_id_cut_dR05(-1000);
     set_max_raw_cut_dR05(1.e+6);
-    if      ( cut == "dR05isoLoose"   ) set_min_id_cut_dR05(1);
-    else if ( cut == "dR05isoMedium"  ) set_min_id_cut_dR05(2);
-    else if ( cut == "dR05isoTight"   ) set_min_id_cut_dR05(3);
-    else if ( cut == "dR03mvaVVLoose" ) set_min_id_mva_dR03(1); // custom WP with 95% signal efficiency, computed in RecoHadTauReader
+    if      ( cut == "dR03mvaVVLoose" ) set_min_id_mva_dR03(1); // custom WP with 95% signal efficiency, computed in RecoHadTauReader
     else if ( cut == "dR03mvaVLoose"  ) set_min_id_mva_dR03(2);
     else if ( cut == "dR03mvaLoose"   ) set_min_id_mva_dR03(3);
     else if ( cut == "dR03mvaMedium"  ) set_min_id_mva_dR03(4);
@@ -72,7 +70,7 @@ class RecoHadTauSelectorBase
   void set_min_antiElectron(int min_antiElectron) { min_antiElectron_ = min_antiElectron; }
   void set_min_antiMuon(int min_antiMuon) { min_antiMuon_ = min_antiMuon; }
 
-  const std::string& get() const { return cut_; };
+  const std::string& get() const { return cut_; }
 
   int get_min_antiElectron() const { return min_antiElectron_; }
   int get_min_antiMuon() const { return min_antiMuon_; }

@@ -266,7 +266,8 @@ std::vector<RecoHadTau> RecoHadTauReader::read() const
       // used to enhance background event statistics for training of event-level MVAs that separate ttH signal from backgrounds
       Int_t hadTau_idMVA_dR03 = hadTau_idMVA_dR03_[idxHadTau];
       if ( hadTau_idMVA_dR03 >= 1 ) {
-        hadTau_idMVA_dR03 += 1;
+        // Karl: the ID is a bit mask; possible values: 0, 1, 3, 7, 15, 31, 63(, 127, 255)
+        hadTau_idMVA_dR03 = (hadTau_idMVA_dR03 << 1) + 1;
       } else {
         assert(DBdR03oldDMwLTEff95_ && mvaOutput_normalization_DBdR03oldDMwLT_);
         if ( mvaOutput_normalization_DBdR03oldDMwLT_->Eval(gInstance->hadTau_rawMVA_dR03_[idxHadTau]) > DBdR03oldDMwLTEff95_->Eval(gInstance->hadTau_pt_[idxHadTau]) ) {
