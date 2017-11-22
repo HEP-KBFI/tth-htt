@@ -82,5 +82,8 @@ process.prepareDatacards = cms.PSet(
         "CMS_ttHl_thu_shape_ttZ_x1Down",
         "CMS_ttHl_thu_shape_ttZ_y1Up",
         "CMS_ttHl_thu_shape_ttZ_y1Down"
-    )
+    ),
+
+    apply_automatic_rebinning = cms.bool(False),
+    minEvents_automatic_rebinning = cms.double(0.1)
 )
