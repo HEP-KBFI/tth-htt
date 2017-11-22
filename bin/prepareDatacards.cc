@@ -47,6 +47,7 @@ namespace
 {
   std::vector<double> compBinning(TH1* histogram, double minEvents)
   {
+    std::cout << "<compBinning>:" << std::endl;
     std::vector<double> histogramBinning;
     const TAxis* xAxis = histogram->GetXaxis();
     histogramBinning.push_back(xAxis->GetBinLowEdge(1));
@@ -64,11 +65,20 @@ namespace
       else histogramBinning.push_back(xAxis->GetBinUpEdge(numBins));
     }
     assert(histogramBinning.size() >= 2);
+    std::cout << "binning = {";
+    for ( std::vector<double>::const_iterator bin = histogramBinning.begin();
+	  bin != histogramBinning.end(); ++bin ) {
+      if ( bin != histogramBinning.begin() ) std::cout << ", ";
+      std::cout << (*bin);
+    }
+    std::cout << " }" << std::endl;
     return histogramBinning;
   }
   
   TH1* rebinHistogram(const std::vector<double>& histogramBinning, const TH1* histogram)
   {
+    //std::cout << "<rebinHistogram>:" << std::endl;
+
     TArrayF histogramBinning_array(histogramBinning.size());
     int idx = 0;
     for ( std::vector<double>::const_iterator binEdge = histogramBinning.begin();
@@ -121,13 +131,13 @@ namespace
 		     const std::string& histogramName_output, double sf, double setBinsToZeroBelow, int rebin, const std::string& central_or_shift, 
 		     bool enableException, bool setEmptySystematicFromCentral = true)
   {
-    std::cout << "<copyHistogram>:" << std::endl;
-    std::cout << " dir_input = " << dir_input->GetName() << std::endl;
-    std::cout << " process = " << process << std::endl;
-    std::cout << " histogramName_input = " << histogramName_input << std::endl;
-    std::cout << " histogramName_output = " << histogramName_output << std::endl;
-    std::cout << " central_or_shift = " << central_or_shift << std::endl;
-    std::cout << " enableException = " << enableException << std::endl;
+    //std::cout << "<copyHistogram>:" << std::endl;
+    //std::cout << " dir_input = " << dir_input->GetName() << std::endl;
+    //std::cout << " process = " << process << std::endl;
+    //std::cout << " histogramName_input = " << histogramName_input << std::endl;
+    //std::cout << " histogramName_output = " << histogramName_output << std::endl;
+    //std::cout << " central_or_shift = " << central_or_shift << std::endl;
+    //std::cout << " enableException = " << enableException << std::endl;
 
     std::string histogramName_input_full = "";
     if ( !(central_or_shift == "" || central_or_shift == "central") ) histogramName_input_full.append(central_or_shift);
