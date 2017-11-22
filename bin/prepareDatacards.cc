@@ -351,6 +351,7 @@ int main(int argc, char* argv[])
 	  TH1* histogram = copyHistogram(
 	    subdir, subdir->GetName(), histogramToFit, "", 
 	    sf, setBinsToZeroBelow, histogramToFit_rebin, *central_or_shift, (*central_or_shift) == "" || (*central_or_shift) == "central");	  
+	  if (!histogram) continue;
 	  assert(histogram);
 	  bool isData = compMatch(subdir->GetName(), data);
 	  if ( !(isData || isSignal) ) {
