@@ -1,8 +1,8 @@
-#include "tthAnalysis/HiggsToTauTau/interface/mvaInputVariables.h" 
+#include "tthAnalysis/HiggsToTauTau/interface/mvaInputVariables.h"
 
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectron.h" // RecoElectron
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuon.h" // RecoMuon
-
+#include "TLorentzVector.h"
 #include "DataFormats/Math/interface/deltaR.h" // deltaR
 
 #include <cmath> // std::abs(), std::fabs(), std::sqrt(), std::pow()
@@ -13,6 +13,14 @@ namespace
   {
     return x*x;
   }
+}
+
+double comp_MT_met_lep1TLV(TLorentzVector leptonP4, double met_pt, double met_phi)
+{
+  double met_px = met_pt*std::cos(met_phi);
+  double met_py = met_pt*std::sin(met_phi);
+  double mT = std::sqrt(std::max(0., square(leptonP4.Et() + met_pt) - (square(leptonP4.Px() + met_px) + square(leptonP4.Py() + met_py))));
+  return mT;
 }
 
 double comp_MT_met_lep1(const Particle::LorentzVector& leptonP4, double met_pt, double met_phi)
