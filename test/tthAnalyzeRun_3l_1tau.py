@@ -27,7 +27,7 @@ use_prod_ntuples     = options.use_prod_ntuples #True
 mode                 = options.mode #"VHbb"
 ERA                  = options.ERA #"2016"
 version              = options.version #"2017Oct24"
-version              = "2017Oct23"
+version              = "2017Nov22"
 max_job_resubmission = 3
 max_files_per_job    = 10 if use_prod_ntuples else 100
 
@@ -124,8 +124,8 @@ if __name__ == '__main__':
     logging.info("Job submission #%i:" % (idx_job_resubmission + 1))
 
     analysis = analyzeConfig_3l_1tau(
-      configDir          = os.path.join("/home",       getpass.getuser(), "ttHAnalysis", ERA, version),
-      outputDir          = os.path.join("/hdfs/local", getpass.getuser(), "ttHAnalysis", ERA, version),
+      configDir          = os.path.join("/home",       getpass.getuser(), "ttHAnalysis_TEST", ERA, version),
+      outputDir          = os.path.join("/hdfs/local", getpass.getuser(), "ttHAnalysis_TEST", ERA, version),
       executable_analyze   = "analyze_3l_1tau",
       cfgFile_analyze      = "analyze_3l_1tau_cfg.py",
       samples              = samples,
