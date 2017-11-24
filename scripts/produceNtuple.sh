@@ -49,8 +49,8 @@ for F in $FILES; do
   F_i=$(basename "${F%.*}_i.${F##*.}")
   F_ii=$(basename "${F%.*}_ii.${F##*.}")
   echo "Adding new branches: $F -> $F_i"
-  nano_postproc.py -s _i -I tthAnalysis.NanoAODTools.postprocessing.tthModules                                                \
-                             genHiggsDecayMode,lepJetVar,genLepton,btagSF,puWeight,jecUncert_cpp,jetmetUncertainties,tauIDLog \
+  nano_postproc.py -s _i -I tthAnalysis.NanoAODTools.postprocessing.tthModules                                                                    \
+                             genHiggsDecayMode,lepJetVar,genLepton,btagSF,puWeight,jecUncert_cpp,jetmetUncertainties,tauIDLog,eventCountHistogram \
                    . $F;
   test_exit_code $?
   echo "Removing useless branches: $F_i -> $F_ii"
