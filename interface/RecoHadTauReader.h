@@ -111,16 +111,16 @@ class RecoHadTauReader
   Int_t* hadTau_decayMode_;
   Bool_t* hadTau_idDecayMode_;
   Bool_t* hadTau_idDecayModeNewDMs_;
-  UChar_t* hadTau_idMVA_dR03_;
+  Int_t* hadTau_idMVA_dR03_;
   Float_t* hadTau_rawMVA_dR03_;
-  UChar_t* hadTau_idMVA_dR05_;
+  Int_t* hadTau_idMVA_dR05_;
   Float_t* hadTau_rawMVA_dR05_;
   Int_t* hadTau_idCombIso_dR03_;
   Float_t* hadTau_rawCombIso_dR03_;
   Int_t* hadTau_idCombIso_dR05_;
   Float_t* hadTau_rawCombIso_dR05_;
-  UChar_t* hadTau_idAgainstElec_;
-  UChar_t* hadTau_idAgainstMu_;
+  Int_t* hadTau_idAgainstElec_;
+  Int_t* hadTau_idAgainstMu_;
 
   // CV: make sure that only one RecoHadronicTauReader instance exists for a given branchName,
   //     as ROOT cannot handle multiple TTree::SetBranchAddress calls for the same branch.

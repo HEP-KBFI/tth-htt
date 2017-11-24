@@ -43,7 +43,7 @@ bool RecoHadTauSelectorBase::operator()(const RecoHadTau& hadTau) const
     if ( debug_ ) std::cout << "FAILS decayModeFinding cut." << std::endl;
     return false;
   }
-  if ( ! (min_id_mva_dR03_ >= 0 && hadTau.id_mva_dR03() & min_id_mva_dR03_) ) {
+  if ( hadTau.id_mva_dR03() < min_id_mva_dR03_ ) {
     if ( debug_ ) std::cout << "FAILS id_mva_dR03 cut." << std::endl;
     return false;
   }

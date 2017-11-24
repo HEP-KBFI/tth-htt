@@ -117,16 +117,16 @@ void RecoHadTauWriter::setBranchNames()
   branchName_decayMode_ = Form("%s_%s", branchName_obj_.data(), "decayMode");
   branchName_idDecayMode_ = Form("%s_%s", branchName_obj_.data(), "idDecayMode");
   branchName_idDecayModeNewDMs_ = Form("%s_%s", branchName_obj_.data(), "idDecayModeNewDMs");
-  branchName_idMVA_dR03_ = Form("%s_%s", branchName_obj_.data(), "idMVAoldDMdR03");
+  branchName_idMVA_dR03_ = Form("%s_%s", branchName_obj_.data(), "idMVAoldDMdR03_log");
   branchName_rawMVA_dR03_ = Form("%s_%s", branchName_obj_.data(), "rawMVAoldDMdR03");
-  branchName_idMVA_dR05_ = Form("%s_%s", branchName_obj_.data(), "idMVAoldDM");
+  branchName_idMVA_dR05_ = Form("%s_%s", branchName_obj_.data(), "idMVAoldDM_log");
   branchName_rawMVA_dR05_ = Form("%s_%s", branchName_obj_.data(), "rawMVAoldDM");
   branchName_idCombIso_dR03_ = Form("%s_%s", branchName_obj_.data(), "idCI3hitdR03");
   branchName_rawCombIso_dR03_ = Form("%s_%s", branchName_obj_.data(), "isoCI3hitdR03");
   branchName_idCombIso_dR05_ = Form("%s_%s", branchName_obj_.data(), "idCI3hit");
   branchName_rawCombIso_dR05_ = Form("%s_%s", branchName_obj_.data(), "isoCI3hit"); 
-  branchName_idAgainstElec_ = Form("%s_%s", branchName_obj_.data(), "idAntiEle");
-  branchName_idAgainstMu_ = Form("%s_%s", branchName_obj_.data(), "idAntiMu");
+  branchName_idAgainstElec_ = Form("%s_%s", branchName_obj_.data(), "idAntiEle_log");
+  branchName_idAgainstMu_ = Form("%s_%s", branchName_obj_.data(), "idAntiMu_log");
 }
 
 void RecoHadTauWriter::setBranches(TTree* tree)
@@ -155,11 +155,11 @@ void RecoHadTauWriter::setBranches(TTree* tree)
   setBranch(tree, hadTau_idDecayMode_, branchName_idDecayMode_, branchName_num_);
   hadTau_idDecayModeNewDMs_ = new Bool_t[max_nHadTaus_];
   setBranch(tree, hadTau_idDecayModeNewDMs_, branchName_idDecayModeNewDMs_, branchName_num_);
-  hadTau_idMVA_dR03_ = new UChar_t[max_nHadTaus_];
+  hadTau_idMVA_dR03_ = new Int_t[max_nHadTaus_];
   setBranch(tree, hadTau_idMVA_dR03_, branchName_idMVA_dR03_, branchName_num_);
   hadTau_rawMVA_dR03_ = new Float_t[max_nHadTaus_];
   setBranchVF(tree, branchName_rawMVA_dR03_, branchName_num_, hadTau_rawMVA_dR03_);
-  hadTau_idMVA_dR05_ = new UChar_t[max_nHadTaus_];
+  hadTau_idMVA_dR05_ = new Int_t[max_nHadTaus_];
   setBranch(tree, hadTau_idMVA_dR05_, branchName_idMVA_dR05_, branchName_num_);
   hadTau_rawMVA_dR05_ = new Float_t[max_nHadTaus_];
   setBranchVF(tree, branchName_rawMVA_dR05_, branchName_num_, hadTau_rawMVA_dR05_);
@@ -171,9 +171,9 @@ void RecoHadTauWriter::setBranches(TTree* tree)
   setBranchVI(tree, branchName_idCombIso_dR05_, branchName_num_, hadTau_idCombIso_dR05_);
   hadTau_rawCombIso_dR05_ = new Float_t[max_nHadTaus_];
   setBranchVF(tree, branchName_rawCombIso_dR05_, branchName_num_, hadTau_rawCombIso_dR05_);
-  hadTau_idAgainstElec_ = new UChar_t[max_nHadTaus_];
+  hadTau_idAgainstElec_ = new Int_t[max_nHadTaus_];
   setBranch(tree, hadTau_idAgainstElec_, branchName_idAgainstElec_, branchName_num_);
-  hadTau_idAgainstMu_ = new UChar_t[max_nHadTaus_];
+  hadTau_idAgainstMu_ = new Int_t[max_nHadTaus_];
   setBranch(tree, hadTau_idAgainstMu_, branchName_idAgainstMu_, branchName_num_);
 }
 
@@ -195,7 +195,7 @@ void RecoHadTauWriter::write(const std::vector<const RecoHadTau*>& hadTaus)
     hadTau_idDecayModeNewDMs_[idxHadTau] = hadTau->decayModeFindingNew();
     // "undo" insertion of "VVLose" (95% signal efficiency) working point for tau ID MVA trained for dR=0->3 isolation cone
     // and store discriminator information in the same format as in the VHbb Ntuples v24 produced by Andrea for 2016 data
-    hadTau_idMVA_dR03_[idxHadTau] = ( hadTau->id_mva_dR03() >= 1 ) ? hadTau->id_mva_dR03() >> 1 : 0;
+    hadTau_idMVA_dR03_[idxHadTau] = ( hadTau->id_mva_dR03() >= 2 ) ? hadTau->id_mva_dR03() - 1 : 0;
     hadTau_rawMVA_dR03_[idxHadTau] = hadTau->raw_mva_dR03();
     hadTau_idMVA_dR05_[idxHadTau] = hadTau->id_mva_dR05();
     hadTau_rawMVA_dR05_[idxHadTau] = hadTau->raw_mva_dR05();

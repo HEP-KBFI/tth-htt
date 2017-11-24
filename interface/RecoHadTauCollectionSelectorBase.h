@@ -22,19 +22,18 @@ class RecoHadTauSelectorBase
   double get_min_pt() const { return min_pt_; }
   double get_max_absEta() const { return max_absEta_; }
 
-  void set_min_id_mva_dR03(int min_id_mva_dR03) { min_id_mva_dR03_ = min_id_mva_dR03 < 0 ? min_id_mva_dR03 : (1 << (min_id_mva_dR03 - 1)); }
+  void set_min_id_mva_dR03(int min_id_mva_dR03)      { min_id_mva_dR03_ = min_id_mva_dR03; }
   void set_min_raw_mva_dR03(double min_raw_mva_dR03) { min_raw_mva_dR03_ = min_raw_mva_dR03; }
-  void set_min_id_mva_dR05(int min_id_mva_dR05) { min_id_mva_dR05_ = min_id_mva_dR05; }
+  void set_min_id_mva_dR05(int min_id_mva_dR05)      { min_id_mva_dR05_ = min_id_mva_dR05; }
   void set_min_raw_mva_dR05(double min_raw_mva_dR05) { min_raw_mva_dR05_ = min_raw_mva_dR05; }
   
-  void set_min_id_cut_dR03(int min_id_cut_dR03) { min_id_cut_dR03_ = min_id_cut_dR03; }
+  void set_min_id_cut_dR03(int min_id_cut_dR03)      { min_id_cut_dR03_ = min_id_cut_dR03; }
   void set_max_raw_cut_dR03(double max_raw_cut_dR03) { max_raw_cut_dR03_ = max_raw_cut_dR03; }
-  void set_min_id_cut_dR05(int min_id_cut_dR05) { min_id_cut_dR05_ = min_id_cut_dR05; }
+  void set_min_id_cut_dR05(int min_id_cut_dR05)      { min_id_cut_dR05_ = min_id_cut_dR05; }
   void set_max_raw_cut_dR05(double max_raw_cut_dR05) { max_raw_cut_dR05_ = max_raw_cut_dR05; }
 
   void set(const std::string& cut)
-  {    
-    std::cout << cut << '\n';
+  {
     set_min_id_mva_dR03(-1000);
     set_min_raw_mva_dR03(-1.e+6);
     set_min_id_mva_dR05(-1000);
