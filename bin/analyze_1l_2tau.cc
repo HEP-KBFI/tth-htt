@@ -1433,7 +1433,7 @@ int main(int argc, char* argv[])
 				if ( &(*selWJet2) == &(*selWJet1) ) continue;
 				std::vector<double> mvaOutput_hadTopTagger = (*hadTopTagger)(**selBJet, **selWJet1, **selWJet2);
         //std::cout<<"here decide if do truth - saved "<< isBDTtraining<<std::endl;
-        isBDTtraining =0;
+        isBDTtraining =1;
         bool truth_hadTopTagger=0;
         if ( isMC  && isBDTtraining ) {
            //std::cout<<"Do truth "<<std::endl;
@@ -1458,6 +1458,7 @@ int main(int argc, char* argv[])
       }
     }
     }
+    //std::cout<<"Do truth "<<max_truth_hadTopTagger<<" "<< max_truth_hadTopTaggerWithKinFit<<std::endl;
 
 
   //--- compute output of BDTs used to discriminate ttH vs. ttbar trained by Matthias for 1l_2tau category

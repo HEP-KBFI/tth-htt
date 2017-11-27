@@ -172,13 +172,13 @@ bool HadTopTagger::isTruth3Jet(const RecoJet& recBJet, const RecoJet& recWJet1, 
 	bool selWJet2_isFromAntiTop =
 		(genWJetFromAntiTop_lead    && deltaR(recWJet2.p4(), genWJetFromAntiTop_lead->p4())    < 0.2) ||
 		(genWJetFromAntiTop_sublead && deltaR(recWJet2.p4(), genWJetFromAntiTop_sublead->p4()) < 0.2);
-	truth_.push_back(selBJet_isFromAntiTop);
-	truth_.push_back(selWJet1_isFromAntiTop && passWbosonMassVeto_AntiTop );
-	truth_.push_back(selWJet2_isFromAntiTop && passWbosonMassVeto_AntiTop );
+    truth_[0]=(selBJet_isFromAntiTop);
+  	truth_[1]=(selWJet1_isFromAntiTop && passWbosonMassVeto_AntiTop );
+  	truth_[2]=(selWJet2_isFromAntiTop && passWbosonMassVeto_AntiTop );
 
-	truth_.push_back(selBJet_isFromTop );
-	truth_.push_back(selWJet1_isFromTop && passWbosonMassVeto_top );
-	truth_.push_back(selWJet2_isFromTop && passWbosonMassVeto_top );
+  	truth_[3]=(selBJet_isFromTop );
+  	truth_[4]=(selWJet1_isFromTop && passWbosonMassVeto_top );
+  	truth_[5]=(selWJet2_isFromTop && passWbosonMassVeto_top );
 
 	bool ttruthAnti= (selBJet_isFromAntiTop == 1) && \
 					 (selWJet1_isFromAntiTop == 1) && \
@@ -189,8 +189,8 @@ bool HadTopTagger::isTruth3Jet(const RecoJet& recBJet, const RecoJet& recWJet1, 
 					 (selWJet2_isFromTop == 1) &&
 					 passWbosonMassVeto_top;
 
-	truth_.push_back(ttruthAnti);
-	truth_.push_back(ttruth);
+    truth_[6]=(ttruthAnti);
+    truth_[7]=(ttruth);
 
 	return 1;
 }
