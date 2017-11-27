@@ -1419,6 +1419,10 @@ int main(int argc, char* argv[])
   truth_.push_back(0);
   truth_.push_back(0);
   truth_.push_back(0);
+  truth_.push_back(0);
+  truth_.push_back(0);
+  truth_.push_back(0);
+  truth_.push_back(0);
   int hadtruth=0;
   Particle::LorentzVector fittedHadTopP4, fittedHadTopP4Kin, fittedHadTopP4BDTWithKin, fittedHadTopP4KinBDTWithKin;
   for ( std::vector<const RecoJet*>::const_iterator selBJet = selJets.begin(); selBJet != selJets.end(); ++selBJet ) {
