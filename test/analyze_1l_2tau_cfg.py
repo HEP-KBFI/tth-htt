@@ -77,6 +77,7 @@ process.analyze_1l_2tau = cms.PSet(
   apply_genWeight = cms.bool(True),
   apply_trigger_bits = cms.bool(True),
   apply_hadTauFakeRateSF = cms.bool(False),
+  isBDTtraining = cms.bool(False), 
 
   fillGenEvtHistograms = cms.bool(False),
 

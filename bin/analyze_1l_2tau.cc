@@ -1428,16 +1428,6 @@ int main(int argc, char* argv[])
 				if ( &(*selWJet2) == &(*selBJet) ) continue;
 				if ( &(*selWJet2) == &(*selWJet1) ) continue;
 				std::vector<double> mvaOutput_hadTopTagger = (*hadTopTagger)(**selBJet, **selWJet1, **selWJet2);
-        /*
-				if ( mvaOutput_hadTopTagger[1] > max_mvaOutput_hadTopTagger ) {
-          bool  truth_hadTopTagger= hadTopTagger->isTruth3Jet(**selBJet, **selWJet1, **selWJet2,
-  					                 genTopQuarks, genBJets, genWBosons,genWJets, truth_);
-					if (truth_hadTopTagger) max_truth_hadTopTagger= (truth_[6]==1 || truth_[7]==1);
-					max_mvaOutput_hadTopTagger = mvaOutput_hadTopTagger[1];
-					fittedHadTopP4Kin = hadTopTagger->kinFit()->fittedTop();
-          fittedHadTopP4 = hadTopTagger->Particles(**selBJet, **selWJet1, **selWJet2)[2]; // **selBJet->p4() + **selWJet1->p4() + **selWJet2->p4();
-        }
-        */
         //std::cout<<"here decide if do truth - saved "<< isBDTtraining<<std::endl;
         isBDTtraining =0;
         bool truth_hadTopTagger=0;
@@ -1452,13 +1442,13 @@ int main(int argc, char* argv[])
           if (truth_hadTopTagger) max_truth_hadTopTaggerWithKinFit= (truth_[6]==1 || truth_[7]==1);
           max_mvaOutput_hadTopTaggerWithKinFit = mvaOutput_hadTopTagger[0];
           fittedHadTopP4KinBDTWithKin = hadTopTagger->kinFit()->fittedTop();
-          fittedHadTopP4BDTWithKin =  hadTopTagger->Particles(**selBJet, **selWJet1, **selWJet2)[2]; // *selBJet->p4() + *selWJet1->p4() + *selWJet2->p4();
+          fittedHadTopP4BDTWithKin =  hadTopTagger->Particles(**selBJet, **selWJet1, **selWJet2)[2];
         }
         if ( mvaOutput_hadTopTagger[1] > max_mvaOutput_hadTopTagger ) {
           if (truth_hadTopTagger) max_truth_hadTopTagger= (truth_[6]==1 || truth_[7]==1);
           max_mvaOutput_hadTopTagger = mvaOutput_hadTopTagger[0];
           //fittedHadTopP4KinBDTWithKin = hadTopTagger->kinFit()->fittedTop();
-          //fittedHadTopP4BDTWithKin =  hadTopTagger->Particles(**selBJet, **selWJet1, **selWJet2)[2]; // *selBJet->p4() + *selWJet1->p4() + *selWJet2->p4();
+          //fittedHadTopP4BDTWithKin =  hadTopTagger->Particles(**selBJet, **selWJet1, **selWJet2)[2];
         }
        }
       }
