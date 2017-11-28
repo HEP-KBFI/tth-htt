@@ -521,6 +521,7 @@ int main(int argc, char* argv[])
   mvaInputVariables_hadTopTagger.push_back("pT_b_o_kinFit_pT_b");
   mvaInputVariables_hadTopTagger.push_back("pT_Wj2");
   TMVAInterface mva_hadTopTagger_tmva(mvaFileName_hadTopTagger_tmva, mvaInputVariables_hadTopTagger);
+  mva_hadTopTagger_tmva.enableBDTTransform();
   XGBInterface mva_hadTopTagger_xgb(mvaFileName_hadTopTagger_xgb, mvaInputVariables_hadTopTagger);
 
   //--- open output file containing run:lumi:event numbers of events passing final event selection criteria

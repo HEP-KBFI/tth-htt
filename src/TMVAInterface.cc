@@ -8,6 +8,7 @@
 
 TMVAInterface::TMVAInterface(const std::string& mvaFileName, const std::vector<std::string>& mvaInputVariables, const std::vector<std::string>& spectators)
   : mva_(0)
+  , isBDTTransform_(false) 
 {
   LocalFileInPath mvaFileName_fip(mvaFileName);
   mvaFileName_ = mvaFileName_fip.fullPath();
@@ -48,7 +49,11 @@ TMVAInterface::operator()(const std::map<std::string, double>& mvaInputs) const
   }
 
   double mvaOutput = mva_->EvaluateMVA("BDTG");
+  if ( isBDTTransform_ ) {
+    mvaOutput = 1./(1. + sqrt((1. - mvaOutput)/(1. + mvaOutput)));
+  }
   //std::cout << "mvaOutput = " << mvaOutput << std::endl;
+
   return mvaOutput;
 }
 

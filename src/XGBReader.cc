@@ -69,7 +69,7 @@ double XGBReader( std::map<std::string, double> mvaInputs , std::vector<std::str
 	PyRun_SimpleString(
 	"from time import time,ctime\n"
   "import sys,os \n"
-  "sys.path.insert(0, '/cvmfs/cms.cern.ch/slc6_amd64_gcc630/external/py2-pippkgs_depscipy/3.0-fmblme/lib/python2.7/site-packages/')\n"
+	//"sys.path.insert(0, '/cvmfs/cms.cern.ch/slc6_amd64_gcc630/external/py2-pippkgs_depscipy/3.0-fmblme/lib/python2.7/site-packages/')\n"
   "import sklearn\n"
   "import pandas\n"
   "import cPickle as pickle\n"
