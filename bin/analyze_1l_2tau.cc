@@ -18,7 +18,8 @@
 #include "tthAnalysis/HiggsToTauTau/interface/GenLepton.h" // GenLepton
 #include "tthAnalysis/HiggsToTauTau/interface/GenJet.h" // GenJet
 #include "tthAnalysis/HiggsToTauTau/interface/GenHadTau.h" // GenHadTau
-//#include "tthAnalysis/HiggsToTauTau/interface/TMVAInterface.h" // TMVAInterface
+#include "tthAnalysis/HiggsToTauTau/interface/TMVAInterface.h" // TMVAInterface
+#include "tthAnalysis/HiggsToTauTau/interface/XGBInterface.h" // XGBInterface
 #include "tthAnalysis/HiggsToTauTau/interface/mvaAuxFunctions.h" // check_mvaInputs, get_mvaInputVariables
 #include "tthAnalysis/HiggsToTauTau/interface/mvaInputVariables.h" // auxiliary functions for computing input variables of the MVA used for signal extraction in the 1l_2tau category
 #include "tthAnalysis/HiggsToTauTau/interface/LeptonFakeRateInterface.h" // LeptonFakeRateInterface
@@ -61,6 +62,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/LHEInfoHistManager.h" // LHEInfoHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/leptonTypes.h" // getLeptonType, kElectron, kMuon
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // getBranchName_bTagWeight, getHadTau_genPdgId, isHigherPt, isMatched
+#include "tthAnalysis/HiggsToTauTau/interface/histogramAuxFunctions.h" // fillWithOverFlow2d
 #include "tthAnalysis/HiggsToTauTau/interface/leptonGenMatchingAuxFunctions.h" // getLeptonGenMatch_definitions_1lepton, getLeptonGenMatch_string, getLeptonGenMatch_int
 #include "tthAnalysis/HiggsToTauTau/interface/hadTauGenMatchingAuxFunctions.h" // getHadTauGenMatch_definitions_1tau, getHadTauGenMatch_string, getHadTauGenMatch_int
 #include "tthAnalysis/HiggsToTauTau/interface/fakeBackgroundAuxFunctions.h" // getWeight_2L, getWeight_3L
@@ -506,8 +508,24 @@ int main(int argc, char* argv[])
   std::string mvaFileName_hadTopTaggerNoKinFit = "all_HadTopTagger_sklearnV0o17o1_HypOpt_XGB_ntrees_1000_deph_3_lr_0o01_CSV_sort.pkl";
   HadTopTagger* hadTopTagger = new HadTopTagger(mvaFileName_hadTopTaggerWithKinFit,mvaFileName_hadTopTaggerNoKinFit); // mvaFileName_hadTopTagger
   std::map<std::string, double> mvaInputs_ttbar;
+
+  //--- evaluate hadronic top tagger BDT from pickle and from XML files directly
+  std::string mvaFileName_hadTopTagger_xgb = "tthAnalysis/HiggsToTauTau/data/all_HadTopTagger_sklearnV0o17o1_HypOpt_XGB_ntrees_1000_deph_3_lr_0o01_CSV_sort_withKinFit.pkl";
+  std::string mvaFileName_hadTopTagger_tmva = "tthAnalysis/HiggsToTauTau/data/all_HadTopTagger_sklearnV0o17o1_HypOpt_XGB_ntrees_1000_deph_3_lr_0o01_CSV_sort_withKinFit.xml";
+  std::vector<std::string> mvaInputVariables_hadTopTagger;
+  mvaInputVariables_hadTopTagger.push_back("CSV_b");
+  mvaInputVariables_hadTopTagger.push_back("qg_Wj2");
+  mvaInputVariables_hadTopTagger.push_back("pT_bWj1Wj2");
+  mvaInputVariables_hadTopTagger.push_back("m_Wj1Wj2");
+  mvaInputVariables_hadTopTagger.push_back("nllKinFit");
+  mvaInputVariables_hadTopTagger.push_back("pT_b_o_kinFit_pT_b");
+  mvaInputVariables_hadTopTagger.push_back("pT_Wj2");
+  TMVAInterface mva_hadTopTagger_tmva(mvaFileName_hadTopTagger_tmva, mvaInputVariables_hadTopTagger);
+  XGBInterface mva_hadTopTagger_xgb(mvaFileName_hadTopTagger_xgb, mvaInputVariables_hadTopTagger);
+
   //--- open output file containing run:lumi:event numbers of events passing final event selection criteria
   std::ostream* selEventsFile = ( selEventsFileName_output != "" ) ? new std::ofstream(selEventsFileName_output.data(), std::ios::out) : 0;
+
   //--- declare histograms
   struct preselHistManagerType
   {
@@ -780,6 +798,7 @@ int main(int argc, char* argv[])
   double selectedEntries_weighted = 0.;
   TH1* histogram_analyzedEntries = fs.make<TH1D>("analyzedEntries", "analyzedEntries", 1, -0.5, +0.5);
   TH1* histogram_selectedEntries = fs.make<TH1D>("selectedEntries", "selectedEntries", 1, -0.5, +0.5);
+  TH2* histogram_mva_hadTopTagger = fs.make<TH2D>("mva_hadTopTagger", "mva_hadTopTagger", 200, -1., +1., 200, -1., +1.);
   cutFlowTableType cutFlowTable;
   CutFlowTableHistManager_1l_2tau* cutFlowHistManager = new CutFlowTableHistManager_1l_2tau(makeHistManager_cfg(process_string,
     Form("%s/sel/cutFlow", histogramDir.data()), central_or_shift));
@@ -1548,6 +1567,11 @@ int main(int argc, char* argv[])
   mvaInputsWithKinFit_["mvaOutput_hadTopTaggerWithKinFit"]                 = max_mvaOutput_hadTopTaggerWithKinFit;
   double mvaOutput_1l_2tau_ttbar_HadTopTaggerVarMVAonly = XGBReader(mvaInputsWithKinFit_ , (char*) pklpath_HadTopTaggerVarMVAonly.c_str() ); // mva_1l_2tau_ttbar(mvaInputs_ttbar);
 
+  double mvaOutput_hadTopTaggerWithKinFit_xgb = mva_hadTopTagger_xgb(mvaInputsWithKinFit_);
+  std::cout << "mvaOutput_hadTopTaggerWithKinFit_xgb = " << mvaOutput_hadTopTaggerWithKinFit_xgb << std::endl;
+  double mvaOutput_hadTopTaggerWithKinFit_tmva = mva_hadTopTagger_tmva(mvaInputsWithKinFit_);
+  std::cout << "mvaOutput_hadTopTaggerWithKinFit_tmva = " << mvaOutput_hadTopTaggerWithKinFit_tmva << std::endl;
+  fillWithOverFlow2d(histogram_mva_hadTopTagger, mvaOutput_hadTopTaggerWithKinFit_xgb, mvaOutput_hadTopTaggerWithKinFit_tmva, 1.);
 
    //std::cout<<mvaOutput_1l_2tau_ttbar_HadTopTaggerVarMVAonly<<" "<< mvaOutput_1l_2tau_ttbar<<std::endl;
     double mvaOutput_1l_2tau_ttV = 1.0; //mva_1l_2tau_ttV(mvaInputs_ttV);
