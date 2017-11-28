@@ -1471,6 +1471,12 @@ int main(int argc, char* argv[])
           //fittedHadTopP4KinBDTWithKin = hadTopTagger->kinFit()->fittedTop();
           //fittedHadTopP4BDTWithKin =  hadTopTagger->Particles(**selBJet, **selWJet1, **selWJet2)[2];
         }
+
+	double mvaOutput_hadTopTaggerWithKinFit_xgb = mva_hadTopTagger_xgb(hadTopTagger->mvaInputs());
+	std::cout << "mvaOutput_hadTopTaggerWithKinFit_xgb = " << mvaOutput_hadTopTaggerWithKinFit_xgb << std::endl;
+	double mvaOutput_hadTopTaggerWithKinFit_tmva = mva_hadTopTagger_tmva(hadTopTagger->mvaInputs());
+	std::cout << "mvaOutput_hadTopTaggerWithKinFit_tmva = " << mvaOutput_hadTopTaggerWithKinFit_tmva << std::endl;
+	fillWithOverFlow2d(histogram_mva_hadTopTagger, mvaOutput_hadTopTaggerWithKinFit_xgb, mvaOutput_hadTopTaggerWithKinFit_tmva, 1.);
     }
     }
     }
@@ -1593,12 +1599,6 @@ int main(int argc, char* argv[])
   mvaInputsWithKinFit_["costS_tau"]             = std::abs(HadTauBoost.CosTheta());
   mvaInputsWithKinFit_["mvaOutput_hadTopTaggerWithKinFit"]                 = max_mvaOutput_hadTopTaggerWithKinFit;
   double mvaOutput_1l_2tau_ttbar_HadTopTaggerVarMVAonly = XGBReader(mvaInputsWithKinFit_ , mvaInputsWithKinFitSort, (char*) pklpath_HadTopTaggerVarMVAonly.c_str() ); // mva_1l_2tau_ttbar(mvaInputs_ttbar);
-
-  double mvaOutput_hadTopTaggerWithKinFit_xgb = mva_hadTopTagger_xgb(mvaInputsWithKinFit_);
-  std::cout << "mvaOutput_hadTopTaggerWithKinFit_xgb = " << mvaOutput_hadTopTaggerWithKinFit_xgb << std::endl;
-  double mvaOutput_hadTopTaggerWithKinFit_tmva = mva_hadTopTagger_tmva(mvaInputsWithKinFit_);
-  std::cout << "mvaOutput_hadTopTaggerWithKinFit_tmva = " << mvaOutput_hadTopTaggerWithKinFit_tmva << std::endl;
-  fillWithOverFlow2d(histogram_mva_hadTopTagger, mvaOutput_hadTopTaggerWithKinFit_xgb, mvaOutput_hadTopTaggerWithKinFit_tmva, 1.);
 
    //std::cout<<mvaOutput_1l_2tau_ttbar_HadTopTaggerVarMVAonly<<" "<< mvaOutput_1l_2tau_ttbar<<std::endl;
     double mvaOutput_1l_2tau_ttV = 1.0; //mva_1l_2tau_ttV(mvaInputs_ttV);
