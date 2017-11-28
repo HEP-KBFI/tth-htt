@@ -1433,9 +1433,7 @@ int main(int argc, char* argv[])
 				if ( &(*selWJet2) == &(*selWJet1) ) continue;
 				std::vector<double> mvaOutput_hadTopTagger = (*hadTopTagger)(**selBJet, **selWJet1, **selWJet2);
         //std::cout<<"here decide if do truth - saved "<< isBDTtraining<<std::endl;
-        isBDTtraining =1;
         if ( isMC  && isBDTtraining ) {
-           //std::cout<<"Do truth "<<std::endl;
            if (genWJets.size() > 1 && genBJets.size() >0 && genTopQuarks.size()>0 && genWBosons.size()){
               hadTopTagger->isTruth3Jet(**selBJet, **selWJet1, **selWJet2,
                             genTopQuarks, genBJets, genWBosons,genWJets, truth);
@@ -1694,8 +1692,8 @@ int main(int argc, char* argv[])
           ("nBJetMedium",            selBJets_medium.size())
 		      ("bWj1Wj2_isGenMatched",   max_truth_hadTopTagger)
           ("bWj1Wj2_isGenMatchedWithKinFit",   max_truth_hadTopTaggerWithKinFit)
-          ("mT_lepHadTop",                comp_MT_met_lep1TLV(Lepton+HadTop, met.pt(), met.phi())) //std::sqrt(std::max(0., square((Lepton+HadTop).Et() + met.pt()) - (square((Lepton+HadTop).Px() + met_px) + square((Lepton+HadTop).Py() + met_py)))) ) // ((HadTop+Lepton).E()+met.pt())*((HadTop+Lepton).E()+met.pt()) - ((HadTop+Lepton).Pt()+met.pt())*((HadTop+Lepton).Pt()+met.pt()) )
-          ("mT_lepHadTopH",               comp_MT_met_lep1TLV(Lepton+HadTop+PH, met.pt(), met.phi())) //std::sqrt(std::max(0., square((Lepton+HadTop+PH).Et() + met.pt()) - (square((Lepton+HadTop+PH).Px() + met_px) + square((Lepton+HadTop+PH).Py() +met_py))))) //  ((HadTop+Lepton+PH).E()+met.pt())*((HadTop+Lepton+PH).E()+met.pt()) - ((HadTop+Lepton+PH).Pt()+met.pt())*((HadTop+Lepton+PH).Pt()+met.pt()) )
+          ("mT_lepHadTop",                comp_MT_met_lep1TLV(Lepton+HadTop, met.pt(), met.phi()))
+          ("mT_lepHadTopH",               comp_MT_met_lep1TLV(Lepton+HadTop+PH, met.pt(), met.phi()))
           ("dr_HadTop_tau_OS",          HadTop.DeltaR(HadTau_OS))
           ("dr_HadTop_tau_SS",       HadTop.DeltaR(HadTau_SS))
           ("mvaOutput_1l_2tau_ttbar_HadTopTaggerVarMVAonly", mvaOutput_1l_2tau_ttbar_HadTopTaggerVarMVAonly)
