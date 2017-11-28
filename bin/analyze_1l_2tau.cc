@@ -1426,9 +1426,9 @@ int main(int argc, char* argv[])
   int hadtruth=0;
   Particle::LorentzVector fittedHadTopP4, fittedHadTopP4Kin, fittedHadTopP4BDTWithKin, fittedHadTopP4KinBDTWithKin;
   for ( std::vector<const RecoJet*>::const_iterator selBJet = selJets.begin(); selBJet != selJets.end(); ++selBJet ) {
-		for ( std::vector<const RecoJet*>::const_iterator selWJet1 = selJets.begin(); selWJet1 != selJets.end(); ++selWJet1 ) {
-			if ( &(*selWJet1) == &(*selBJet) ) continue;
-			for ( std::vector<const RecoJet*>::const_iterator selWJet2 = selWJet1 + 1; selWJet2 != selJets.end(); ++selWJet2 ) {
+	for ( std::vector<const RecoJet*>::const_iterator selWJet1 = selJets.begin(); selWJet1 != selJets.end(); ++selWJet1 ) {
+	if ( &(*selWJet1) == &(*selBJet) ) continue;
+	for ( std::vector<const RecoJet*>::const_iterator selWJet2 = selWJet1 + 1; selWJet2 != selJets.end(); ++selWJet2 ) {
 				if ( &(*selWJet2) == &(*selBJet) ) continue;
 				if ( &(*selWJet2) == &(*selWJet1) ) continue;
 				std::vector<double> mvaOutput_hadTopTagger = (*hadTopTagger)(**selBJet, **selWJet1, **selWJet2);
@@ -1437,7 +1437,8 @@ int main(int argc, char* argv[])
            if (genWJets.size() > 1 && genBJets.size() >0 && genTopQuarks.size()>0 && genWBosons.size()){
               hadTopTagger->isTruth3Jet(**selBJet, **selWJet1, **selWJet2,
                             genTopQuarks, genBJets, genWBosons,genWJets, truth);
-            }
+           }
+        }
         if (hadtruth==0) hadtruth=(truth[6]==1 || truth[7]==1);
         if ( mvaOutput_hadTopTagger[0] > max_mvaOutput_hadTopTaggerWithKinFit ) {
           max_truth_hadTopTaggerWithKinFit= (truth[6]==1 || truth[7]==1);
@@ -1451,8 +1452,7 @@ int main(int argc, char* argv[])
           //fittedHadTopP4KinBDTWithKin = hadTopTagger->kinFit()->fittedTop();
           //fittedHadTopP4BDTWithKin =  hadTopTagger->Particles(**selBJet, **selWJet1, **selWJet2)[2];
         }
-       }
-      }
+    }
     }
     }
     //std::cout<<"Do truth "<<max_truth_hadTopTagger<<" "<< max_truth_hadTopTaggerWithKinFit<<std::endl;
@@ -1514,6 +1514,20 @@ int main(int argc, char* argv[])
   // ['avg_dr_jet', 'dr_taus', 'ptmiss', 'lep_conePt', 'mT_lep',
   // 'mTauTauVis', 'mindr_lep_jet', 'mindr_tau1_jet', 'nJet', 'dr_lep_tau_ss',
   // 'dr_lep_tau_lead', 'costS_tau']
+  std::vector<std::string> mvaInputsSort;
+  mvaInputsSort.push_back("avg_dr_jet");
+  mvaInputsSort.push_back("dr_taus");
+  mvaInputsSort.push_back("ptmiss");
+  mvaInputsSort.push_back("lep_conePt");
+  mvaInputsSort.push_back("mT_lep");
+  mvaInputsSort.push_back("mTauTauVis");
+  mvaInputsSort.push_back("mindr_lep_jet");
+  mvaInputsSort.push_back("mindr_tau1_jet");
+  mvaInputsSort.push_back("nJet");
+  mvaInputsSort.push_back("dr_lep_tau_ss");
+  mvaInputsSort.push_back("dr_lep_tau_lead");
+  mvaInputsSort.push_back("costS_tau");
+  //
   mvaInputs_["avg_dr_jet"]                  = comp_avg_dr_jet(selJets);
   mvaInputs_["dr_taus"]                 = deltaR(selHadTau_lead -> p4(), selHadTau_sublead -> p4());
   mvaInputs_["ptmiss"]                 = met.pt();
@@ -1530,7 +1544,22 @@ int main(int argc, char* argv[])
   //'mTauTauVis', 'mindr_lep_jet', 'mindr_tau1_jet', 'nJet',
   //'dr_lep_tau_ss', 'dr_lep_tau_lead', 'costS_tau',
   //'mvaOutput_hadTopTaggerWithKinFit']
-  double mvaOutput_1l_2tau_ttbar= XGBReader(mvaInputs_ , (char*) pklpath.c_str() );
+  double mvaOutput_1l_2tau_ttbar= XGBReader(mvaInputs_ , mvaInputsSort , (char*) pklpath.c_str() );
+  std::vector<std::string> mvaInputsWithKinFitSort;
+  mvaInputsWithKinFitSort.push_back("avg_dr_jet");
+  mvaInputsWithKinFitSort.push_back("dr_taus");
+  mvaInputsWithKinFitSort.push_back("ptmiss");
+  mvaInputsWithKinFitSort.push_back("lep_conePt");
+  mvaInputsWithKinFitSort.push_back("mT_lep");
+  mvaInputsWithKinFitSort.push_back("mTauTauVis");
+  mvaInputsWithKinFitSort.push_back("mindr_lep_jet");
+  mvaInputsWithKinFitSort.push_back("mindr_tau1_jet");
+  mvaInputsWithKinFitSort.push_back("nJet");
+  mvaInputsWithKinFitSort.push_back("dr_lep_tau_ss");
+  mvaInputsWithKinFitSort.push_back("dr_lep_tau_lead");
+  mvaInputsWithKinFitSort.push_back("costS_tau");
+  mvaInputsWithKinFitSort.push_back("mvaOutput_hadTopTaggerWithKinFit");
+  //
   mvaInputsWithKinFit_["avg_dr_jet"]                  = comp_avg_dr_jet(selJets);
   mvaInputsWithKinFit_["dr_taus"]                 = deltaR(selHadTau_lead -> p4(), selHadTau_sublead -> p4());
   mvaInputsWithKinFit_["ptmiss"]                 = met.pt();
@@ -1544,7 +1573,7 @@ int main(int argc, char* argv[])
   mvaInputsWithKinFit_["dr_lep_tau_lead"]             = deltaR(selLepton->p4(), selHadTau_lead->p4());
   mvaInputsWithKinFit_["costS_tau"]             = std::abs(HadTauBoost.CosTheta());
   mvaInputsWithKinFit_["mvaOutput_hadTopTaggerWithKinFit"]                 = max_mvaOutput_hadTopTaggerWithKinFit;
-  double mvaOutput_1l_2tau_ttbar_HadTopTaggerVarMVAonly = XGBReader(mvaInputsWithKinFit_ , (char*) pklpath_HadTopTaggerVarMVAonly.c_str() ); // mva_1l_2tau_ttbar(mvaInputs_ttbar);
+  double mvaOutput_1l_2tau_ttbar_HadTopTaggerVarMVAonly = XGBReader(mvaInputsWithKinFit_ , mvaInputsWithKinFitSort, (char*) pklpath_HadTopTaggerVarMVAonly.c_str() ); // mva_1l_2tau_ttbar(mvaInputs_ttbar);
 
 
    //std::cout<<mvaOutput_1l_2tau_ttbar_HadTopTaggerVarMVAonly<<" "<< mvaOutput_1l_2tau_ttbar<<std::endl;
