@@ -24,8 +24,8 @@ HadTopTagger::HadTopTagger(const std::string& mvaFileNameWithKinFit,const std::s
     mvaOutput_(-1.)
 {
   kinFit_ = new HadTopKinFit();
-  mvaFileNameWithKinFit_=  mvaFileNameWithKinFit.c_str();
-  mvaFileNameNoKinFit_= mvaFileNameNoKinFit.c_str();
+  mvaFileNameWithKinFitRead= mvaFileNameWithKinFit.c_str();
+  mvaFileNameNoKinFitRead= mvaFileNameNoKinFit.c_str();
 }
 
 HadTopTagger::~HadTopTagger()
@@ -40,32 +40,50 @@ std::vector<double> HadTopTagger::operator()(const RecoJet& recBJet, const RecoJ
   std::vector<double> result;
   // order IS important - I will fix that
   // ['CSV_b', 'qg_Wj2', 'pT_bWj1Wj2', 'm_Wj1Wj2', 'nllKinFit', 'pT_b_o_kinFit_pT_b', 'pT_Wj2']
-  char* pklpath=(char*) mvaFileNameWithKinFit_; //"HadTopTagger_sklearnV0o17o1_HypOpt/all_HadTopTagger_sklearnV0o17o1_HypOpt_XGB_ntrees_1000_deph_3_lr_0o01_CSV_sort_withKinFit.pkl";
-  mvaInputsWithKinFit_["CSV_b"]                  = recBJet.BtagCSV();
-  mvaInputsWithKinFit_["qg_Wj2"]                 = recWJet2.QGDiscr();
+  char* pklpath=(char*) mvaFileNameWithKinFitRead;
+  std::vector<std::string> mvaInputsWithKinFitSort;
+  mvaInputsWithKinFitSort.push_back("CSV_b");
+  mvaInputsWithKinFitSort.push_back("qg_Wj2");
+  mvaInputsWithKinFitSort.push_back("pT_bWj1Wj2");
+  mvaInputsWithKinFitSort.push_back("m_Wj1Wj2");
+  mvaInputsWithKinFitSort.push_back("nllKinFit");
+  mvaInputsWithKinFitSort.push_back("pT_b_o_kinFit_pT_b");
+  mvaInputsWithKinFitSort.push_back("pT_Wj2");
+  mvaInputVariables_=mvaInputsWithKinFitSort;
+  //
+  mvaInputsWithKinFit["CSV_b"]                  = recBJet.BtagCSV();
+  mvaInputsWithKinFit["qg_Wj2"]                 = recWJet2.QGDiscr();
   Particle::LorentzVector p4_bWj1Wj2 = recBJet.p4() + recWJet1.p4() + recWJet2.p4();
-  mvaInputsWithKinFit_["pT_bWj1Wj2"]             = p4_bWj1Wj2.pt();
+  mvaInputsWithKinFit["pT_bWj1Wj2"]             = p4_bWj1Wj2.pt();
   Particle::LorentzVector p4_Wj1Wj2 = recWJet1.p4() + recWJet2.p4();
-  mvaInputsWithKinFit_["m_Wj1Wj2"]               = p4_Wj1Wj2.mass();
+  mvaInputsWithKinFit["m_Wj1Wj2"]               = p4_Wj1Wj2.mass();
   kinFit_->fit(recBJet.p4(), recWJet1.p4(), recWJet2.p4());
-  mvaInputsWithKinFit_["nllKinFit"]              = kinFit_->nll();
-  mvaInputsWithKinFit_["pT_b_o_kinFit_pT_b"]     = recBJet.pt()/kinFit_->fittedBJet().pt();
-  mvaInputsWithKinFit_["pT_Wj2"]                 = recWJet2.pt();
-  double mvaOutputWithKinFit_= XGBReader(mvaInputsWithKinFit_ , pklpath );
-  result.push_back(mvaOutputWithKinFit_);
+  mvaInputsWithKinFit["nllKinFit"]              = kinFit_->nll();
+  mvaInputsWithKinFit["pT_b_o_kinFit_pT_b"]     = recBJet.pt()/kinFit_->fittedBJet().pt();
+  mvaInputsWithKinFit["pT_Wj2"]                 = recWJet2.pt();
+  double mvaOutputWithKinFit= XGBReader(mvaInputsWithKinFit, mvaInputsWithKinFitSort , pklpath );
+  result.push_back(mvaOutputWithKinFit);
   ///////////////////////////////////////////////////////////////
   // order IS important  - I will fix that
   // ['CSV_b', 'qg_Wj2', 'qg_Wj1', 'm_bWj1Wj2', 'pT_bWj1Wj2', 'm_Wj1Wj2', 'pT_Wj2']
-  char* pklpathNoKinFit=(char*) mvaFileNameNoKinFit_; // "HadTopTagger_sklearnV0o17o1_HypOpt/all_HadTopTagger_sklearnV0o17o1_HypOpt_XGB_ntrees_1000_deph_3_lr_0o01_CSV_sort.pkl";
-  mvaInputsNoKinFit_["CSV_b"]                  = recBJet.BtagCSV();
-  mvaInputsNoKinFit_["qg_Wj2"]                 = recWJet2.QGDiscr();
-  mvaInputsNoKinFit_["qg_Wj1"]                 = recWJet1.QGDiscr();
-  mvaInputsNoKinFit_["m_bWj1Wj2"]             = p4_bWj1Wj2.mass();
-  mvaInputsNoKinFit_["pT_bWj1Wj2"]             = p4_bWj1Wj2.pt();
-  mvaInputsNoKinFit_["m_Wj1Wj2"]               = p4_Wj1Wj2.mass();
-  mvaInputsNoKinFit_["pT_Wj2"]                 = recWJet2.pt();
-  double mvaOutputNoKinFit_= XGBReader(mvaInputsNoKinFit_ , pklpathNoKinFit );
-  result.push_back(mvaOutputNoKinFit_);
+  char* pklpathNoKinFit=(char*) mvaFileNameNoKinFitRead;
+  std::vector<std::string> mvaFileNameNoKinFitSort;
+  mvaFileNameNoKinFitSort.push_back("CSV_b");
+  mvaFileNameNoKinFitSort.push_back("qg_Wj2");
+  mvaFileNameNoKinFitSort.push_back("qg_Wj1");
+  mvaFileNameNoKinFitSort.push_back("m_bWj1Wj2");
+  mvaFileNameNoKinFitSort.push_back("pT_bWj1Wj2");
+  mvaFileNameNoKinFitSort.push_back("m_Wj1Wj2");
+  mvaFileNameNoKinFitSort.push_back("pT_Wj2");
+  mvaInputsNoKinFit["CSV_b"]                  = recBJet.BtagCSV();
+  mvaInputsNoKinFit["qg_Wj2"]                 = recWJet2.QGDiscr();
+  mvaInputsNoKinFit["qg_Wj1"]                 = recWJet1.QGDiscr();
+  mvaInputsNoKinFit["m_bWj1Wj2"]             = p4_bWj1Wj2.mass();
+  mvaInputsNoKinFit["pT_bWj1Wj2"]             = p4_bWj1Wj2.pt();
+  mvaInputsNoKinFit["m_Wj1Wj2"]               = p4_Wj1Wj2.mass();
+  mvaInputsNoKinFit["pT_Wj2"]                 = recWJet2.pt();
+  double mvaOutputNoKinFit= XGBReader(mvaInputsNoKinFit , mvaFileNameNoKinFitSort , pklpathNoKinFit );
+  result.push_back(mvaOutputNoKinFit);
   return result;
 }
 
@@ -105,7 +123,7 @@ void HadTopTagger::isTruth3Jet(const RecoJet& recBJet, const RecoJet& recWJet1, 
   std::vector<const GenParticle*> genWJetsFromTop;
   double genWJetsFromTop_mass = -1.;
   std::vector<const GenParticle*> genWJetsFromAntiTop;
-  double genWJetsFromAntiTop_mass = -1.;  
+  double genWJetsFromAntiTop_mass = -1.;
   for ( std::vector<GenParticle>::const_iterator it1 = genWJets.begin(); it1 != genWJets.end(); ++it1 ) {
     for ( std::vector<GenParticle>::const_iterator it2 = it1 + 1; it2 != genWJets.end(); ++it2 ) {
       if ( genWBosonFromTop ){
@@ -180,7 +198,7 @@ void HadTopTagger::isTruth3Jet(const RecoJet& recBJet, const RecoJet& recWJet1, 
   truth[3]=(selBJet_isFromTop );
   truth[4]=(selWJet1_isFromTop && passWbosonMassVeto_top );
   truth[5]=(selWJet2_isFromTop && passWbosonMassVeto_top );
-  
+
   bool ttruthAnti = (selBJet_isFromAntiTop == 1) &&
     (selWJet1_isFromAntiTop == 1) &&
     (selWJet2_isFromAntiTop == 1) &&
@@ -207,6 +225,6 @@ std::vector<Particle::LorentzVector> HadTopTagger::Particles(const RecoJet& recB
 
 const std::vector<std::string>& HadTopTagger::mvaInputVariables() const { return mvaInputVariables_; }
 
-const std::map<std::string, double>& HadTopTagger::mvaInputs() const { return mvaInputsWithKinFit_; }
+const std::map<std::string, double>& HadTopTagger::mvaInputs() const { return mvaInputsWithKinFit; }
 
 const HadTopKinFit* HadTopTagger::kinFit() const { return kinFit_; }

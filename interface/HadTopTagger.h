@@ -39,13 +39,13 @@ class HadTopTagger
 
  protected:
   HadTopKinFit* kinFit_;
-  const char* mvaFileNameWithKinFit_;
-  const char* mvaFileNameNoKinFit_;
+  const char* mvaFileNameWithKinFitRead;
+  const char* mvaFileNameNoKinFitRead;
 
   std::vector<std::string> mvaInputVariables_;
   TMVAInterface* mva_;
-  std::map<std::string, double> mvaInputsWithKinFit_;
-  std::map<std::string, double> mvaInputsNoKinFit_;
+  std::map<std::string, double> mvaInputsWithKinFit;
+  std::map<std::string, double> mvaInputsNoKinFit;
   double mvaOutput_;
 };
 

@@ -652,10 +652,10 @@ int main(int argc, char* argv[])
 											 (selWJet1_isFromAntiTop == 1) && \
 											 (selWJet2_isFromAntiTop == 1);
 					bdt_filler->operator()("bWj1Wj2_isGenMatched", tripletTruth==1 && tripletTruthAnti==1);
-					std::vector<bool> truth_hadTopTagger= hadTopTaggerFill->isTruth(**selBJet, **selWJet1, **selWJet2,\
-																						genTopQuarks, genBJets, genWBosons);
-					std::vector<bool> truth_hadTopTagger3Jet= hadTopTaggerFill->isTruth3Jet(**selBJet, **selWJet1, **selWJet2,\
-														genTopQuarks, genBJets, genWBosons, genWJets);
+					std::vector<bool> truth_hadTopTagger; //= hadTopTaggerFill->isTruth(**selBJet, **selWJet1, **selWJet2,
+																						//genTopQuarks, genBJets, genWBosons);
+					std::vector<bool> truth_hadTopTagger3Jet; //= hadTopTaggerFill->isTruth3Jet(**selBJet, **selWJet1, **selWJet2,
+														// genTopQuarks, genBJets, genWBosons, genWJets);
 					if (mvaOutput==0){
 						bdt_filler->fill();
 						//std::cout<<(1>0 && 2>1 && 3>1)<<" "<<(1>0 && 1>2) <<std::endl;

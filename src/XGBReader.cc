@@ -37,7 +37,7 @@ PyObject* vectorToTuple_String(std::vector<std::basic_string<char>> &data) {
 	return tuple;
 }
 
-double XGBReader( std::map<std::string, double> mvaInputs_ , char* pklpath )
+double XGBReader( std::map<std::string, double> mvaInputs , std::vector<std::string>  sort , char* pklpath )
 {
   setenv("OMP_NUM_THREADS", "1", 0);
 	double mvaOutput_=-20;
@@ -46,17 +46,20 @@ double XGBReader( std::map<std::string, double> mvaInputs_ , char* pklpath )
 	std::vector<float> vectorValuesVec;
 	std::vector<std::basic_string<char>> vectorNamesVec;
 	// prepare dictionary to pass to pyObject functions
-	for ( std::map<std::string, double>::const_iterator mvaInput = mvaInputs_.begin();
-		mvaInput != mvaInputs_.end(); ++mvaInput ) {
-		vectorValuesVec.push_back(mvaInput->second);
-		vectorNamesVec.push_back((std::basic_string<char>) mvaInput->first);
-		//std::cout << " " << mvaInput->first << " : " << mvaInput->second << std::endl;
+
+	//for ( std::vector<std::string>::const_iterator sorted = sort.begin(); sorted != sort.end(); ++sorted ) {
+  for ( unsigned int ii = 0 ; ii <  sort.size() ; ii++ ) {
+    double value = mvaInputs.find(sort[ii])->second;
+		vectorValuesVec.push_back(value);
+    std::basic_string<char> name =  mvaInputs.find(sort[ii])->first;
+    vectorNamesVec.push_back(name);
+		//vectorNamesVec.push_back((std::basic_string<char>) mvaInputs.find(sorted)->first);
+		//std::cout << " " << name << " : " << value << " "<< sort.size() <<std::endl;
 	}
 
-    check_mvaInputs(mvaInputs_);
-    //mvaOutput_ = 34; // (*mva_)(mvaInputs_);
+  //check_mvaInputs(mvaInputs);
 	// https://stackoverflow.com/questions/3286448/calling-a-python-method-from-c-c-and-extracting-its-return-value
-	//std::cout << "Do python, HTT, size: "<<mvaInputs_.size() << std::endl;
+	//std::cout << "Do python, HTT, size: "<<mvaInputs.size() << std::endl;
 	Py_SetProgramName((char*) "application");
 	PyObject *moduleMainString = PyString_FromString("__main__");
 	PyObject *moduleMain = PyImport_Import(moduleMainString);
@@ -66,6 +69,7 @@ double XGBReader( std::map<std::string, double> mvaInputs_ , char* pklpath )
 	PyRun_SimpleString(
 	"from time import time,ctime\n"
   "import sys,os \n"
+  "sys.path.insert(0, '/cvmfs/cms.cern.ch/slc6_amd64_gcc630/external/py2-pippkgs_depscipy/3.0-fmblme/lib/python2.7/site-packages/')\n"
   "import sklearn\n"
   "import pandas\n"
   "import cPickle as pickle\n"
@@ -112,5 +116,6 @@ double XGBReader( std::map<std::string, double> mvaInputs_ , char* pklpath )
 	PyObject *args = PyTuple_Pack(4, vectorValues, vecNames , PyString_FromString( (char*) pkldir), PyString_FromString( (char*) pklpath) ); //
   PyObject *result = PyObject_CallObject(func, args);
   mvaOutput_=PyFloat_AsDouble(result);
-    return mvaOutput_;
+  //delete *result;
+  return mvaOutput_;
 }

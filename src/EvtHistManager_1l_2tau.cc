@@ -20,8 +20,8 @@ void EvtHistManager_1l_2tau::bookHistograms(TFileDirectory& dir)
   histogram_numBJets_loose_vs_numJets_ = book2D(dir, "numBJets_loose_vs_numJets", "numBJets_loose_vs_numJets", 8, -0.5, +7.5, 6, -0.5, +5.5);
   histogram_numBJets_medium_vs_numJets_ = book2D(dir, "numBJets_medium_vs_numJets", "numBJets_medium_vs_numJets", 8, -0.5, +7.5, 6, -0.5, +5.5);
 
-  histogram_mvaOutput_1l_2tau_ttbar_ = book1D(dir, "mvaOutput_1l_2tau_ttbar", "mvaOutput_1l_2tau_ttbar", 20, -1., +1.);
-  histogram_mvaOutput_1l_2tau_ttbar_HadTopTaggerVarMVAonly_ = book1D(dir, "mvaOutput_1l_2tau_ttbar_HadTopTaggerVarMVAonly", "mvaOutput_1l_2tau_ttbar_HadTopTaggerVarMVAonly", 20, -1., +1.);
+  histogram_mvaOutput_1l_2tau_ttbar_ = book1D(dir, "mvaOutput_1l_2tau_ttbar", "mvaOutput_1l_2tau_ttbar", 10, 0., +1.);
+  histogram_mvaOutput_1l_2tau_ttbar_HadTopTaggerVarMVAonly_ = book1D(dir, "mvaOutput_1l_2tau_ttbar_HadTopTaggerVarMVAonly", "mvaOutput_1l_2tau_ttbar_HadTopTaggerVarMVAonly", 10, 0., +1.);
   histogram_mvaOutput_1l_2tau_ttV_ = book1D(dir, "mvaOutput_1l_2tau_ttV", "mvaOutput_1l_2tau_ttV", 20, -1., +1.);
   histogram_mvaDiscr_1l_2tau_ = book1D(dir, "mvaDiscr_1l_2tau", "mvaDiscr_1l_2tau", 10, 0.5, 10.5);
 
