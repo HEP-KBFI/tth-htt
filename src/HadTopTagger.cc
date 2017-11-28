@@ -49,6 +49,7 @@ std::vector<double> HadTopTagger::operator()(const RecoJet& recBJet, const RecoJ
   mvaInputsWithKinFitSort.push_back("nllKinFit");
   mvaInputsWithKinFitSort.push_back("pT_b_o_kinFit_pT_b");
   mvaInputsWithKinFitSort.push_back("pT_Wj2");
+  mvaInputVariables_=mvaInputsWithKinFitSort;
   //
   mvaInputsWithKinFit["CSV_b"]                  = recBJet.BtagCSV();
   mvaInputsWithKinFit["qg_Wj2"]                 = recWJet2.QGDiscr();
@@ -222,8 +223,8 @@ std::vector<Particle::LorentzVector> HadTopTagger::Particles(const RecoJet& recB
   return particles;
 }
 
-//const std::vector<std::string>& HadTopTagger::mvaInputVariables() const { return mvaInputVariables_; }
+const std::vector<std::string>& HadTopTagger::mvaInputVariables() const { return mvaInputVariables_; }
 
-//const std::map<std::string, double>& HadTopTagger::mvaInputs() const { return mvaInputsWithKinFit_; }
+const std::map<std::string, double>& HadTopTagger::mvaInputs() const { return mvaInputsWithKinFit; }
 
 const HadTopKinFit* HadTopTagger::kinFit() const { return kinFit_; }
