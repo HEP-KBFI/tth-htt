@@ -511,7 +511,8 @@ int main(int argc, char* argv[])
 
   //--- evaluate hadronic top tagger BDT from pickle and from XML files directly
   std::string mvaFileName_hadTopTagger_xgb = "tthAnalysis/HiggsToTauTau/data/all_HadTopTagger_sklearnV0o17o1_HypOpt_XGB_ntrees_1000_deph_3_lr_0o01_CSV_sort_withKinFit.pkl";
-  std::string mvaFileName_hadTopTagger_tmva = "tthAnalysis/HiggsToTauTau/data/all_HadTopTagger_sklearnV0o17o1_HypOpt_XGB_ntrees_1000_deph_3_lr_0o01_CSV_sort_withKinFit.xml";
+
+  //std::string mvaFileName_hadTopTagger_tmva = "tthAnalysis/HiggsToTauTau/data/all_HadTopTagger_sklearnV0o17o1_HypOpt_XGB_ntrees_1000_deph_3_lr_0o01_CSV_sort_withKinFit.xml";
   std::vector<std::string> mvaInputVariables_hadTopTagger;
   mvaInputVariables_hadTopTagger.push_back("CSV_b");
   mvaInputVariables_hadTopTagger.push_back("qg_Wj2");
@@ -520,8 +521,9 @@ int main(int argc, char* argv[])
   mvaInputVariables_hadTopTagger.push_back("nllKinFit");
   mvaInputVariables_hadTopTagger.push_back("pT_b_o_kinFit_pT_b");
   mvaInputVariables_hadTopTagger.push_back("pT_Wj2");
-  TMVAInterface mva_hadTopTagger_tmva(mvaFileName_hadTopTagger_tmva, mvaInputVariables_hadTopTagger);
-  mva_hadTopTagger_tmva.enableBDTTransform();
+  //TMVAInterface mva_hadTopTagger_tmva(mvaFileName_hadTopTagger_tmva, mvaInputVariables_hadTopTagger);
+  //mva_hadTopTagger_tmva.enableBDTTransform();
+
   XGBInterface mva_hadTopTagger_xgb(mvaFileName_hadTopTagger_xgb, mvaInputVariables_hadTopTagger);
 
   //--- open output file containing run:lumi:event numbers of events passing final event selection criteria
@@ -1475,9 +1477,9 @@ int main(int argc, char* argv[])
 
 	double mvaOutput_hadTopTaggerWithKinFit_xgb = mva_hadTopTagger_xgb(hadTopTagger->mvaInputs());
 	std::cout << "mvaOutput_hadTopTaggerWithKinFit_xgb = " << mvaOutput_hadTopTaggerWithKinFit_xgb << std::endl;
-	double mvaOutput_hadTopTaggerWithKinFit_tmva = mva_hadTopTagger_tmva(hadTopTagger->mvaInputs());
-	std::cout << "mvaOutput_hadTopTaggerWithKinFit_tmva = " << mvaOutput_hadTopTaggerWithKinFit_tmva << std::endl;
-	fillWithOverFlow2d(histogram_mva_hadTopTagger, mvaOutput_hadTopTaggerWithKinFit_xgb, mvaOutput_hadTopTaggerWithKinFit_tmva, 1.);
+	//double mvaOutput_hadTopTaggerWithKinFit_tmva = mva_hadTopTagger_tmva(hadTopTagger->mvaInputs());
+	//std::cout << "mvaOutput_hadTopTaggerWithKinFit_tmva = " << mvaOutput_hadTopTaggerWithKinFit_tmva << std::endl;
+	//fillWithOverFlow2d(histogram_mva_hadTopTagger, mvaOutput_hadTopTaggerWithKinFit_xgb, mvaOutput_hadTopTaggerWithKinFit_tmva, 1.);
     }
     }
     }

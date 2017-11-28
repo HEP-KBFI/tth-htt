@@ -66,16 +66,18 @@ double XGBReader( std::map<std::string, double> mvaInputs , std::vector<std::str
 	// https://ubuntuforums.org/archive/index.php/t-324544.html
 	// https://stackoverflow.com/questions/4060221/how-to-reliably-open-a-file-in-the-same-directory-as-a-python-script
   // https://gist.github.com/rjzak/5681680
+  // "print('The scikit-learn version is {}.'.format(sklearn.__file__))\n"
+  //"print('The pandas version is {}.'.format(pandas.__file__))\n" /cvmfs/cms.cern.ch/slc6_amd64_gcc530/external/py2-scikit-learn/0.17.1-ikhhed/lib/python2.7/site-packages
 	PyRun_SimpleString(
 	"from time import time,ctime\n"
   "import sys,os \n"
-	//"sys.path.insert(0, '/cvmfs/cms.cern.ch/slc6_amd64_gcc630/external/py2-pippkgs_depscipy/3.0-fmblme/lib/python2.7/site-packages/')\n"
+  "sys.path.insert(0, '/cvmfs/cms.cern.ch/slc6_amd64_gcc530/external/py2-scikit-learn/0.17.1-ikhhed/lib/python2.7/site-packages')\n"
   "import sklearn\n"
+  "sys.path.insert(0, '/cvmfs/cms.cern.ch/slc6_amd64_gcc530/external/py2-pandas/0.17.1-ikhhed/lib/python2.7/site-packages/pandas-0.17.1-py2.7-linux-x86_64.egg')\n"
   "import pandas\n"
   "import cPickle as pickle\n"
   "import numpy as np \n"
   "import subprocess \n"
-  "from sklearn.externals import joblib \n"
   "from itertools import izip \n"
   "sys.path.insert(0, '/cvmfs/cms.cern.ch/slc6_amd64_gcc530/external/py2-pippkgs_depscipy/3.0-njopjo7/lib/python2.7/site-packages') \n"
   "import xgboost as xgb  \n"
