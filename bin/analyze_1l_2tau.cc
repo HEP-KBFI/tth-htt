@@ -1414,15 +1414,15 @@ int main(int argc, char* argv[])
   double max_mvaOutput_hadTopTagger = -1.;
 	int max_truth_hadTopTagger = 0;
   int max_truth_hadTopTaggerWithKinFit = 0;
-  std::vector<bool> truth_;
-  truth_.push_back(0);
-  truth_.push_back(0);
-  truth_.push_back(0);
-  truth_.push_back(0);
-  truth_.push_back(0);
-  truth_.push_back(0);
-  truth_.push_back(0);
-  truth_.push_back(0);
+  std::vector<bool> truth;
+  truth.push_back(0);
+  truth.push_back(0);
+  truth.push_back(0);
+  truth.push_back(0);
+  truth.push_back(0);
+  truth.push_back(0);
+  truth.push_back(0);
+  truth.push_back(0);
   int hadtruth=0;
   Particle::LorentzVector fittedHadTopP4, fittedHadTopP4Kin, fittedHadTopP4BDTWithKin, fittedHadTopP4KinBDTWithKin;
   for ( std::vector<const RecoJet*>::const_iterator selBJet = selJets.begin(); selBJet != selJets.end(); ++selBJet ) {
@@ -1434,22 +1434,21 @@ int main(int argc, char* argv[])
 				std::vector<double> mvaOutput_hadTopTagger = (*hadTopTagger)(**selBJet, **selWJet1, **selWJet2);
         //std::cout<<"here decide if do truth - saved "<< isBDTtraining<<std::endl;
         isBDTtraining =1;
-        bool truth_hadTopTagger=0;
         if ( isMC  && isBDTtraining ) {
            //std::cout<<"Do truth "<<std::endl;
            if (genWJets.size() > 1 && genBJets.size() >0 && genTopQuarks.size()>0 && genWBosons.size()){
-              truth_hadTopTagger= hadTopTagger->isTruth3Jet(**selBJet, **selWJet1, **selWJet2,
-                            genTopQuarks, genBJets, genWBosons,genWJets, truth_);
+              hadTopTagger->isTruth3Jet(**selBJet, **selWJet1, **selWJet2,
+                            genTopQuarks, genBJets, genWBosons,genWJets, truth);
             }
-        if (hadtruth==0) hadtruth=(truth_[6]==1 || truth_[7]==1);
+        if (hadtruth==0) hadtruth=(truth[6]==1 || truth[7]==1);
         if ( mvaOutput_hadTopTagger[0] > max_mvaOutput_hadTopTaggerWithKinFit ) {
-          if (truth_hadTopTagger) max_truth_hadTopTaggerWithKinFit= (truth_[6]==1 || truth_[7]==1);
+          max_truth_hadTopTaggerWithKinFit= (truth[6]==1 || truth[7]==1);
           max_mvaOutput_hadTopTaggerWithKinFit = mvaOutput_hadTopTagger[0];
           fittedHadTopP4KinBDTWithKin = hadTopTagger->kinFit()->fittedTop();
           fittedHadTopP4BDTWithKin =  hadTopTagger->Particles(**selBJet, **selWJet1, **selWJet2)[2];
         }
         if ( mvaOutput_hadTopTagger[1] > max_mvaOutput_hadTopTagger ) {
-          if (truth_hadTopTagger) max_truth_hadTopTagger= (truth_[6]==1 || truth_[7]==1);
+          max_truth_hadTopTagger= (truth[6]==1 || truth[7]==1);
           max_mvaOutput_hadTopTagger = mvaOutput_hadTopTagger[0];
           //fittedHadTopP4KinBDTWithKin = hadTopTagger->kinFit()->fittedTop();
           //fittedHadTopP4BDTWithKin =  hadTopTagger->Particles(**selBJet, **selWJet1, **selWJet2)[2];

@@ -26,10 +26,9 @@ class HadTopTagger
    */
   std::vector<double> operator()(const RecoJet& recBJet, const RecoJet& recWJet1, const RecoJet& recWJet2);
 
-  bool isTruth3Jet(const RecoJet& recBJet, const RecoJet& recWJet1, const RecoJet& recWJet2,\
-					//std::vector<const RecoJet*> selJets,
-					std::vector<GenParticle> genTopQuarks, std::vector<GenParticle> genBJets,std::vector<GenParticle> genWBosons,\
-					std::vector<GenParticle> genWJets, std::vector<bool>& truth_);
+  void isTruth3Jet(const RecoJet& recBJet, const RecoJet& recWJet1, const RecoJet& recWJet2,
+		   std::vector<GenParticle> genTopQuarks, std::vector<GenParticle> genBJets,std::vector<GenParticle> genWBosons,
+		   std::vector<GenParticle> genWJets, std::vector<bool>& truth);
 
   std::vector<Particle::LorentzVector> Particles(const RecoJet& recBJet, const RecoJet& recWJet1, const RecoJet& recWJet2);
   const std::vector<std::string>& mvaInputVariables() const;
