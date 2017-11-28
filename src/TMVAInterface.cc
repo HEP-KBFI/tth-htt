@@ -43,7 +43,7 @@ TMVAInterface::operator()(const std::map<std::string, double>& mvaInputs) const
       //std::cout << " " << mvaInputVariable->first << " = " << mvaInputVariable->second << std::endl;
     } else {
       throw cms::Exception("TMVAInterface::operator()")
-	<< "Missing value for MVA input variable = " << mvaInputVariable->first << " !!\n";
+	<< "Missing value for MVA input variable = '" << mvaInputVariable->first << "' !!\n";
     }
   }
 
