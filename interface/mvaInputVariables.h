@@ -12,7 +12,6 @@
 #include "TLorentzVector.h"
 
 double comp_MT_met_lep1(const Particle::LorentzVector& leptonP4, double met_pt, double met_phi);
-double comp_MT_met_lep1TLV(TLorentzVector leptonP4, double met_pt, double met_phi);
 double comp_MT_met_lep1(const Particle& lepton, double met_pt, double met_phi);
 double comp_MT_met_lep2(const Particle::LorentzVector& leptonP4, double met_pt, double met_phi);
 double comp_MT_met_lep2(const Particle& lepton, double met_pt, double met_phi);
