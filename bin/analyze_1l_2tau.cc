@@ -72,6 +72,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/cutFlowTable.h" // cutFlowTableType
 #include "tthAnalysis/HiggsToTauTau/interface/NtupleFillerBDT.h" // NtupleFillerBDT
 #include "tthAnalysis/HiggsToTauTau/interface/HadTopTagger.h" // HadTopTagger
+#include "tthAnalysis/HiggsToTauTau/interface/hadTopTaggerAuxFunctions.h" // isGenMatchedJetTriplet
 #include "tthAnalysis/HiggsToTauTau/interface/TTreeWrapper.h" // TTreeWrapper
 
 #include "tthAnalysis/HiggsToTauTau/interface/XGBReader.h" // XGBReader
@@ -1463,22 +1464,13 @@ int main(int argc, char* argv[])
     //double max_mvaOutput_hadTopTagger = -1.;
     double max_mvaOutput_hadTopTaggerWithKinFit = -1.;
     double max_mvaOutput_hadTopTagger = -1.;
-    int max_truth_hadTopTagger = 0;
-    int max_truth_hadTopTaggerWithKinFit = 0;
-    std::vector<bool> truth;
-    truth.push_back(0);
-    truth.push_back(0);
-    truth.push_back(0);
-    truth.push_back(0);
-    truth.push_back(0);
-    truth.push_back(0);
-    truth.push_back(0); // t-truth
-    truth.push_back(0); // tbar-truth
+    bool max_truth_hadTopTagger = false;
+    bool max_truth_hadTopTaggerWithKinFit = false;
+    bool hadtruth = false;
     std::vector<double> bdtResult;
     bdtResult.push_back(-1.); // XGB with kinfit
     bdtResult.push_back(-1.); // TMVA with kin fit
     bdtResult.push_back(-1.); // XGB althernative
-    int hadtruth=0;
     Particle::LorentzVector unfittedHadTopP4, fittedHadTopP4;
     for ( std::vector<const RecoJet*>::const_iterator selBJet = selJets.begin(); selBJet != selJets.end(); ++selBJet ) {
       for ( std::vector<const RecoJet*>::const_iterator selWJet1 = selJets.begin(); selWJet1 != selJets.end(); ++selWJet1 ) {
@@ -1486,21 +1478,24 @@ int main(int argc, char* argv[])
 	for ( std::vector<const RecoJet*>::const_iterator selWJet2 = selWJet1 + 1; selWJet2 != selJets.end(); ++selWJet2 ) {
 	  if ( &(*selWJet2) == &(*selBJet) ) continue;
 	  if ( &(*selWJet2) == &(*selWJet1) ) continue;
-	  bool mvaOutput_hadTopTagger = (*hadTopTagger)(**selBJet, **selWJet1, **selWJet2,bdtResult);
-	  if ( isMC  && isBDTtraining && mvaOutput_hadTopTagger ) {
+	  bool mvaOutput_hadTopTagger = (*hadTopTagger)(**selBJet, **selWJet1, **selWJet2, bdtResult);
+	  bool isGenMatched = false;
+	  if ( isMC && isBDTtraining && mvaOutput_hadTopTagger ) {
 	    if ( genWJets.size() >= 2 && genBJets.size() >= 1 && genTopQuarks.size() >= 1 && genWBosons.size() >= 1 ){
-              hadTopTagger->isTruth3Jet(**selBJet, **selWJet1, **selWJet2, genTopQuarks, genBJets, genWBosons,genWJets, truth);
+	      std::vector<bool> genMatchingTop = isGenMatchedJetTriplet(**selBJet, **selWJet1, **selWJet2, genTopQuarks, genBJets, genWBosons, genWJets, kGenTop);
+	      std::vector<bool> genMatchingAntiTop = isGenMatchedJetTriplet(**selBJet, **selWJet1, **selWJet2, genTopQuarks, genBJets, genWBosons, genWJets, kGenAntiTop);
+	      isGenMatched = (genMatchingTop[kGenMatchedTriplet] || genMatchingAntiTop[kGenMatchedTriplet]);
+	      if ( isGenMatched ) hadtruth = true;
 	    }
 	  }
-	  if (hadtruth==0) hadtruth=(truth[6]==1 || truth[7]==1);
 	  if ( bdtResult[0] > max_mvaOutput_hadTopTaggerWithKinFit ) { // hadTopTaggerWithKinFit
-	    max_truth_hadTopTaggerWithKinFit= (truth[6]==1 || truth[7]==1);
+	    max_truth_hadTopTaggerWithKinFit = isGenMatched;
 	    max_mvaOutput_hadTopTaggerWithKinFit = bdtResult[0];
 	    fittedHadTopP4 = hadTopTagger->kinFit()->fittedTop();
 	    unfittedHadTopP4 = (*selBJet)->p4() + (*selWJet1)->p4() + (*selWJet2)->p4();
 	  }
 	  if ( bdtResult[2] > max_mvaOutput_hadTopTagger ) { // hadTopTaggerNoKinFit
-	    max_truth_hadTopTagger= (truth[6]==1 || truth[7]==1);
+	    max_truth_hadTopTagger = isGenMatched;
 	    max_mvaOutput_hadTopTagger = bdtResult[0];
 	  }  
 	  fillWithOverFlow2d(histogram_mva_hadTopTagger, bdtResult[0], bdtResult[1], 1.);
@@ -1735,7 +1730,7 @@ int main(int argc, char* argv[])
           ("dr_HadTop_tau_SS",       deltaR(fittedHadTopP4, selHadTau_SS->p4()))
           ("mvaOutput_1l_2tau_ttbar_HadTopTaggerVarMVAonly", mvaOutput_1l_2tau_ttbar_HadTopTaggerVarMVAonly)
           ("mvaOutput_1l_2tau_ttbar", mvaOutput_1l_2tau_ttbar)
-          ("hadtruth",               hadtruth)
+	  ("hadtruth",               hadtruth)
         .fill()
       ;
     }
