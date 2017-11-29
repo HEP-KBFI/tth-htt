@@ -21,7 +21,12 @@ class EvtHistManager_1l_2tau
 
   /// book and fill histograms
   void bookHistograms(TFileDirectory& dir);
-  void fillHistograms(int numElectrons, int numMuons, int numHadTaus, int numJets, int numBJets_loose, int numBJets_medium, double mvaOutput_1l_2tau_ttbar, double mvaOutput_1l_2tau_ttbar_HadTopTaggerVarMVAonly , double mvaOutput_1l_2tau_ttV, double mvaDiscr_1l_2tau, double mTauTauVis, double evtWeight);
+  void fillHistograms(int numElectrons, int numMuons, int numHadTaus, int numJets, int numBJets_loose, int numBJets_medium,
+    double mvaOutput_1l_2tau_ttbar,
+    double mvaOutput_1l_2tau_ttbar_HTTWithKinFit_MVAonly,
+    double mvaOutput_1l_2tau_ttbar_HTTNoKinFit_MVAonly,
+    double mvaOutput_1l_2tau_ttbar_Old,
+    double mvaOutput_1l_2tau_ttV, double mvaDiscr_1l_2tau, double mTauTauVis, double evtWeight);
 
   const TH1* getHistogram_EventCounter() const { return histogram_EventCounter_; }
 
@@ -37,9 +42,12 @@ class EvtHistManager_1l_2tau
   TH2* histogram_numBJets_medium_vs_numJets_; //     to avoid overlap with ttH, H->bb analysis (alternative: ttH, H->bb analysis adds hadronic tau veto)
 
   TH1* histogram_mvaOutput_1l_2tau_ttbar_;
-  TH1* histogram_mvaOutput_1l_2tau_ttbar_HadTopTaggerVarMVAonly_;
+  TH1* histogram_mvaOutput_1l_2tau_ttbar_HTTWithKinFit_MVAonly_;
+  TH1* histogram_mvaOutput_1l_2tau_ttbar_HTTNoKinFit_MVAonly_;
+  TH1* histogram_mvaOutput_1l_2tau_ttbar_Old_;
+
   TH1* histogram_mvaOutput_1l_2tau_ttV_;
-  TH1* histogram_mvaDiscr_1l_2tau_;
+  TH1* histogram_mvaDiscr_1l_2tau_; 
 
   TH1* histogram_mTauTauVis_;
 
