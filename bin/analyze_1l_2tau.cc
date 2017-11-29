@@ -1460,7 +1460,7 @@ int main(int argc, char* argv[])
     bdtResult.push_back(-1.); // TMVA with kin fit
     bdtResult.push_back(-1.); // XGB althernative
     int hadtruth=0;
-    Particle::LorentzVector fittedHadTopP4, fittedHadTopP4Kin, fittedHadTopP4BDTWithKin, fittedHadTopP4KinBDTWithKin;
+    Particle::LorentzVector unfittedHadTopP4, fittedHadTopP4;
     for ( std::vector<const RecoJet*>::const_iterator selBJet = selJets.begin(); selBJet != selJets.end(); ++selBJet ) {
       for ( std::vector<const RecoJet*>::const_iterator selWJet1 = selJets.begin(); selWJet1 != selJets.end(); ++selWJet1 ) {
 	if ( &(*selWJet1) == &(*selBJet) ) continue;
@@ -1468,32 +1468,22 @@ int main(int argc, char* argv[])
 	  if ( &(*selWJet2) == &(*selBJet) ) continue;
 	  if ( &(*selWJet2) == &(*selWJet1) ) continue;
 	  bool mvaOutput_hadTopTagger = (*hadTopTagger)(**selBJet, **selWJet1, **selWJet2,bdtResult);
-	  //std::cout<<"here decide if do truth - saved "<< isBDTtraining<<std::endl;
 	  if ( isMC  && isBDTtraining && mvaOutput_hadTopTagger ) {
-	    if (genWJets.size() > 1 && genBJets.size() >0 && genTopQuarks.size()>0 && genWBosons.size()){
-              hadTopTagger->isTruth3Jet(**selBJet, **selWJet1, **selWJet2,
-					genTopQuarks, genBJets, genWBosons,genWJets, truth);
+	    if ( genWJets.size() >= 2 && genBJets.size() >= 1 && genTopQuarks.size() >= 1 && genWBosons.size() >= 1 ){
+              hadTopTagger->isTruth3Jet(**selBJet, **selWJet1, **selWJet2, genTopQuarks, genBJets, genWBosons,genWJets, truth);
 	    }
 	  }
-	  //double mvaOutput_hadTopTaggerWithKinFit_xgb = mva_hadTopTagger_xgb(hadTopTagger->mvaInputs());
 	  if (hadtruth==0) hadtruth=(truth[6]==1 || truth[7]==1);
-	  // comparison xgb and tmva eval
-	  //std::cout << bdtResult[0]<<" "<<bdtResult[1] <<" "<<bdtResult[2] <<std::endl;
 	  if ( bdtResult[0] > max_mvaOutput_hadTopTaggerWithKinFit ) { // hadTopTaggerWithKinFit
 	    max_truth_hadTopTaggerWithKinFit= (truth[6]==1 || truth[7]==1);
 	    max_mvaOutput_hadTopTaggerWithKinFit = bdtResult[0];
-	    fittedHadTopP4KinBDTWithKin = hadTopTagger->kinFit()->fittedTop();
-	    fittedHadTopP4BDTWithKin =  hadTopTagger->Particles(**selBJet, **selWJet1, **selWJet2)[2];
+	    fittedHadTopP4 = hadTopTagger->kinFit()->fittedTop();
+	    unfittedHadTopP4 = (*selBJet)->p4() + (*selWJet1)->p4() + (*selWJet2)->p4();
 	  }
 	  if ( bdtResult[2] > max_mvaOutput_hadTopTagger ) { // hadTopTaggerNoKinFit
 	    max_truth_hadTopTagger= (truth[6]==1 || truth[7]==1);
 	    max_mvaOutput_hadTopTagger = bdtResult[0];
-	    //fittedHadTopP4KinBDTWithKin = hadTopTagger->kinFit()->fittedTop();
-	    //fittedHadTopP4BDTWithKin =  hadTopTagger->Particles(**selBJet, **selWJet1, **selWJet2)[2];
-	  }
-	  
-	  //std::cout << "mvaOutput_hadTopTaggerWithKinFit_xgb = " << bdtResult[0]<< std::endl;
-	  //std::cout << "mvaOutput_hadTopTaggerWithKinFit_tmva = " << bdtResult[1] << std::endl;
+	  }  
 	  fillWithOverFlow2d(histogram_mva_hadTopTagger, bdtResult[0], bdtResult[1], 1.);
 	}
       }
@@ -1539,10 +1529,10 @@ int main(int argc, char* argv[])
 			   selHadTau_SS -> phi(),
 			   selHadTau_SS -> mass());
     TLorentzVector HadTop;
-    HadTop.SetPtEtaPhiM(fittedHadTopP4KinBDTWithKin.pt(),
-			fittedHadTopP4KinBDTWithKin.eta(),
-			fittedHadTopP4KinBDTWithKin.phi(),
-			fittedHadTopP4KinBDTWithKin.mass());
+    HadTop.SetPtEtaPhiM(fittedHadTopP4.pt(),
+			fittedHadTopP4.eta(),
+			fittedHadTopP4.phi(),
+			fittedHadTopP4.mass());
     TLorentzVector PH = HadTau_lead + HadTau_sublead;
     TLorentzVector HadTauBoost=HadTau_lead;
     TLorentzVector HadTopBoost=HadTop;
@@ -1731,18 +1721,18 @@ int main(int argc, char* argv[])
           ("dr_lep_tau_ss",          deltaR(selLepton->p4(), selHadTau_SS->p4()))
           ("dr_lep_tau_lead",          deltaR(selLepton->p4(), selHadTau_lead->p4()))
           ("dr_lep_tau_sublead",          deltaR(selLepton->p4(), selHadTau_sublead->p4()))
-          ("dr_HadTop_tau_lead",          HadTop.DeltaR(HadTau_lead))
-          ("dr_HadTop_tau_sublead",       HadTop.DeltaR(HadTau_sublead))
-          ("dr_HadTop_tautau",          HadTop.DeltaR(PH))
-          ("dr_HadTop_lepton",          HadTop.DeltaR(Lepton))
-          ("mass_HadTop_lepton",          (HadTop+Lepton).M())
+  	  ("dr_HadTop_tau_lead",          deltaR(fittedHadTopP4, selHadTau_lead->p4()))
+	  ("dr_HadTop_tau_sublead",       deltaR(fittedHadTopP4, selHadTau_sublead->p4()))
+   	  ("dr_HadTop_tautau",          deltaR(fittedHadTopP4, selHadTau_lead->p4() + selHadTau_sublead->p4()))
+	  ("dr_HadTop_lepton",          deltaR(fittedHadTopP4, selLepton->p4()))
+	  ("mass_HadTop_lepton",          (fittedHadTopP4 + selLepton->p4()).mass())
           ("costS_HadTop_tautau",          std::abs(HadTopBoost.CosTheta()))
           ("costS_tau",          std::abs(HadTauBoost.CosTheta()))
           ("mTauTauVis",             mTauTauVis)
 	  ("mvaOutput_hadTopTaggerWithKinFit", max_mvaOutput_hadTopTaggerWithKinFit)
           ("mvaOutput_hadTopTagger", max_mvaOutput_hadTopTagger)
-          ("HadTop_pt",        fittedHadTopP4BDTWithKin.pt())
-	  ("HadTop_eta",       std::abs(fittedHadTopP4BDTWithKin.eta()))
+          ("HadTop_pt",        fittedHadTopP4.pt())
+	  ("HadTop_eta",       std::abs(fittedHadTopP4.eta()))
 	  ("dr_lep_HadTop",    deltaR(selLepton->p4(), fittedHadTopP4))
           ("lumiScale",              lumiScale)
           ("genWeight",              eventInfo.genWeight)
@@ -1752,8 +1742,8 @@ int main(int argc, char* argv[])
           ("nBJetMedium",            selBJets_medium.size())
 	  ("bWj1Wj2_isGenMatched",   max_truth_hadTopTagger)
           ("bWj1Wj2_isGenMatchedWithKinFit",   max_truth_hadTopTaggerWithKinFit)
-          ("mT_lepHadTop",                comp_MT_met_lep1TLV(Lepton+HadTop, met.pt(), met.phi()))
-          ("mT_lepHadTopH",               comp_MT_met_lep1TLV(Lepton+HadTop+PH, met.pt(), met.phi()))
+	("mT_lepHadTop",                comp_MT_met_lep1(selLepton->p4() + fittedHadTopP4, met.pt(), met.phi()))
+	("mT_lepHadTopH",               comp_MT_met_lep1(selLepton->p4() + fittedHadTopP4 + selHadTau_lead->p4() + selHadTau_sublead->p4(), met.pt(), met.phi()))
           ("dr_HadTop_tau_OS",          HadTop.DeltaR(HadTau_OS))
           ("dr_HadTop_tau_SS",       HadTop.DeltaR(HadTau_SS))
           ("mvaOutput_1l_2tau_ttbar_HadTopTaggerVarMVAonly", mvaOutput_1l_2tau_ttbar_HadTopTaggerVarMVAonly)
