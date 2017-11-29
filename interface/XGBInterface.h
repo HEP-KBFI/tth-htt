@@ -1,8 +1,8 @@
 #ifndef tthAnalysis_HiggsToTauTau_XGBInterface_h
 #define tthAnalysis_HiggsToTauTau_XGBInterface_h
 
-#include "tthAnalysis/HiggsToTauTau/interface/KeyTypes.h" // RUN_TYPE, LUMI_TYPE, EVT_TYPE  
-
+#include "tthAnalysis/HiggsToTauTau/interface/KeyTypes.h" // RUN_TYPE, LUMI_TYPE, EVT_TYPE
+#include <Python.h>
 #include <vector>
 #include <string>
 #include <map>
@@ -18,13 +18,17 @@ class XGBInterface
    * @param mvaInputs Values of MVA input variables (stored in std::map with key = MVA input variable name)
    * @return          MVA output
    */
+
   double
-  operator()(const std::map<std::string, double>& mvaInputs) const;
+  operator()(const std::map<std::string, double>& mvaInputs, const std::vector<std::string>& mvaInputVariables) const;
 
  private:
   std::string mvaFileName_;
 
   std::vector<std::string> mvaInputVariableNames_; // list of MVA input variables
+  PyObject* pkldata;
+  PyObject* moduleMainString;
+  PyObject* moduleMain;
   mutable std::map<std::string, Float_t> mvaInputVariables_; // key = MVA input variable name
 };
 
