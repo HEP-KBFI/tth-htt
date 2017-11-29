@@ -504,15 +504,23 @@ int main(int argc, char* argv[])
   }
   //--- initialize hadronic top tagger BDT
   //std::string mvaFileName_hadTopTagger = "tthAnalysis/HiggsToTauTau/data/hadTopTagger_BDTG_2017Oct10_opt2.xml";
-  std::string mvaFileName_hadTopTaggerWithKinFit = "all_HadTopTagger_sklearnV0o17o1_HypOpt_XGB_ntrees_1000_deph_3_lr_0o01_CSV_sort_withKinFit.pkl";
-  std::string mvaFileName_hadTopTaggerNoKinFit = "all_HadTopTagger_sklearnV0o17o1_HypOpt_XGB_ntrees_1000_deph_3_lr_0o01_CSV_sort.pkl";
-  HadTopTagger* hadTopTagger = new HadTopTagger(mvaFileName_hadTopTaggerWithKinFit,mvaFileName_hadTopTaggerNoKinFit); // mvaFileName_hadTopTagger
-  std::map<std::string, double> mvaInputs_ttbar;
+  std::string mvaFileName_hadTopTaggerWithKinFit = "tthAnalysis/HiggsToTauTau/data/all_HadTopTagger_sklearnV0o17o1_HypOpt_XGB_ntrees_1000_deph_3_lr_0o01_CSV_sort_withKinFit.pkl";
+  std::string mvaFileName_hadTopTaggerNoKinFit = "tthAnalysis/HiggsToTauTau/data/all_HadTopTagger_sklearnV0o17o1_HypOpt_XGB_ntrees_1000_deph_3_lr_0o01_CSV_sort.pkl";
+  std::string mvaFileName_hadTopTagger_tmva = "tthAnalysis/HiggsToTauTau/data/all_HadTopTagger_sklearnV0o17o1_HypOpt_XGB_ntrees_1000_deph_3_lr_0o01_CSV_sort_withKinFit.xml";
+  //XGBInterface mva_hadTopTagger_xgb(mvaFileNameWithKinFitRead);
+  //TMVAInterface mva_hadTopTagger_tmva(mvaFileName_hadTopTagger_tmvaRead);
+  //XGBInterface mva_hadTopTagger_xgb_2(mvaFileNameWithKinFitRead);
+  HadTopTagger* hadTopTagger = new HadTopTagger(
+          mvaFileName_hadTopTaggerWithKinFit,
+          mvaFileName_hadTopTaggerNoKinFit,
+          mvaFileName_hadTopTagger_tmva); // mvaFileName_hadTopTagger
+  //std::map<std::string, double> mvaInputs_ttbar;
 
   //--- evaluate hadronic top tagger BDT from pickle and from XML files directly
-  std::string mvaFileName_hadTopTagger_xgb = "tthAnalysis/HiggsToTauTau/data/all_HadTopTagger_sklearnV0o17o1_HypOpt_XGB_ntrees_1000_deph_3_lr_0o01_CSV_sort_withKinFit.pkl";
+  //std::string mvaFileName_hadTopTagger_xgb = "tthAnalysis/HiggsToTauTau/data/all_HadTopTagger_sklearnV0o17o1_HypOpt_XGB_ntrees_1000_deph_3_lr_0o01_CSV_sort_withKinFit.pkl";
 
-  //std::string mvaFileName_hadTopTagger_tmva = "tthAnalysis/HiggsToTauTau/data/all_HadTopTagger_sklearnV0o17o1_HypOpt_XGB_ntrees_1000_deph_3_lr_0o01_CSV_sort_withKinFit.xml";
+  //
+  /*
   std::vector<std::string> mvaInputVariables_hadTopTagger;
   mvaInputVariables_hadTopTagger.push_back("CSV_b");
   mvaInputVariables_hadTopTagger.push_back("qg_Wj2");
@@ -521,10 +529,11 @@ int main(int argc, char* argv[])
   mvaInputVariables_hadTopTagger.push_back("nllKinFit");
   mvaInputVariables_hadTopTagger.push_back("pT_b_o_kinFit_pT_b");
   mvaInputVariables_hadTopTagger.push_back("pT_Wj2");
+  */
   //TMVAInterface mva_hadTopTagger_tmva(mvaFileName_hadTopTagger_tmva, mvaInputVariables_hadTopTagger);
   //mva_hadTopTagger_tmva.enableBDTTransform();
 
-  XGBInterface mva_hadTopTagger_xgb(mvaFileName_hadTopTagger_xgb, mvaInputVariables_hadTopTagger);
+  //XGBInterface mva_hadTopTagger_xgb(mvaFileName_hadTopTaggerWithKinFit, mvaInputVariables_hadTopTagger);
 
   //--- open output file containing run:lumi:event numbers of events passing final event selection criteria
   std::ostream* selEventsFile = ( selEventsFileName_output != "" ) ? new std::ofstream(selEventsFileName_output.data(), std::ios::out) : 0;
@@ -1443,8 +1452,12 @@ int main(int argc, char* argv[])
   truth.push_back(0);
   truth.push_back(0);
   truth.push_back(0);
-  truth.push_back(0);
-  truth.push_back(0);
+  truth.push_back(0); // t-truth
+  truth.push_back(0); // tbar-truth
+  std::vector<double> bdtResult;
+  bdtResult.push_back(-1.); // XGB with kinfit
+  bdtResult.push_back(-1.); // TMVA with kin fit
+  bdtResult.push_back(-1.); // XGB althernative
   int hadtruth=0;
   Particle::LorentzVector fittedHadTopP4, fittedHadTopP4Kin, fittedHadTopP4BDTWithKin, fittedHadTopP4KinBDTWithKin;
   for ( std::vector<const RecoJet*>::const_iterator selBJet = selJets.begin(); selBJet != selJets.end(); ++selBJet ) {
@@ -1453,33 +1466,34 @@ int main(int argc, char* argv[])
 	for ( std::vector<const RecoJet*>::const_iterator selWJet2 = selWJet1 + 1; selWJet2 != selJets.end(); ++selWJet2 ) {
 				if ( &(*selWJet2) == &(*selBJet) ) continue;
 				if ( &(*selWJet2) == &(*selWJet1) ) continue;
-				std::vector<double> mvaOutput_hadTopTagger = (*hadTopTagger)(**selBJet, **selWJet1, **selWJet2);
+				bool mvaOutput_hadTopTagger = (*hadTopTagger)(**selBJet, **selWJet1, **selWJet2,bdtResult);
         //std::cout<<"here decide if do truth - saved "<< isBDTtraining<<std::endl;
-        if ( isMC  && isBDTtraining ) {
+        if ( isMC  && isBDTtraining && mvaOutput_hadTopTagger ) {
            if (genWJets.size() > 1 && genBJets.size() >0 && genTopQuarks.size()>0 && genWBosons.size()){
               hadTopTagger->isTruth3Jet(**selBJet, **selWJet1, **selWJet2,
                             genTopQuarks, genBJets, genWBosons,genWJets, truth);
            }
         }
+        //double mvaOutput_hadTopTaggerWithKinFit_xgb = mva_hadTopTagger_xgb(hadTopTagger->mvaInputs());
         if (hadtruth==0) hadtruth=(truth[6]==1 || truth[7]==1);
-        if ( mvaOutput_hadTopTagger[0] > max_mvaOutput_hadTopTaggerWithKinFit ) {
+        // comparison xgb and tmva eval
+        //std::cout << bdtResult[0]<<" "<<bdtResult[1] <<" "<<bdtResult[2] <<std::endl;
+        if ( bdtResult[0] > max_mvaOutput_hadTopTaggerWithKinFit ) { // hadTopTaggerWithKinFit
           max_truth_hadTopTaggerWithKinFit= (truth[6]==1 || truth[7]==1);
-          max_mvaOutput_hadTopTaggerWithKinFit = mvaOutput_hadTopTagger[0];
+          max_mvaOutput_hadTopTaggerWithKinFit = bdtResult[0];
           fittedHadTopP4KinBDTWithKin = hadTopTagger->kinFit()->fittedTop();
           fittedHadTopP4BDTWithKin =  hadTopTagger->Particles(**selBJet, **selWJet1, **selWJet2)[2];
         }
-        if ( mvaOutput_hadTopTagger[1] > max_mvaOutput_hadTopTagger ) {
+        if ( bdtResult[2] > max_mvaOutput_hadTopTagger ) { // hadTopTaggerNoKinFit
           max_truth_hadTopTagger= (truth[6]==1 || truth[7]==1);
-          max_mvaOutput_hadTopTagger = mvaOutput_hadTopTagger[0];
+          max_mvaOutput_hadTopTagger = bdtResult[0];
           //fittedHadTopP4KinBDTWithKin = hadTopTagger->kinFit()->fittedTop();
           //fittedHadTopP4BDTWithKin =  hadTopTagger->Particles(**selBJet, **selWJet1, **selWJet2)[2];
         }
 
-	double mvaOutput_hadTopTaggerWithKinFit_xgb = mva_hadTopTagger_xgb(hadTopTagger->mvaInputs());
-	std::cout << "mvaOutput_hadTopTaggerWithKinFit_xgb = " << mvaOutput_hadTopTaggerWithKinFit_xgb << std::endl;
-	//double mvaOutput_hadTopTaggerWithKinFit_tmva = mva_hadTopTagger_tmva(hadTopTagger->mvaInputs());
-	//std::cout << "mvaOutput_hadTopTaggerWithKinFit_tmva = " << mvaOutput_hadTopTaggerWithKinFit_tmva << std::endl;
-	//fillWithOverFlow2d(histogram_mva_hadTopTagger, mvaOutput_hadTopTaggerWithKinFit_xgb, mvaOutput_hadTopTaggerWithKinFit_tmva, 1.);
+	//std::cout << "mvaOutput_hadTopTaggerWithKinFit_xgb = " << bdtResult[0]<< std::endl;
+	//std::cout << "mvaOutput_hadTopTaggerWithKinFit_tmva = " << bdtResult[1] << std::endl;
+	fillWithOverFlow2d(histogram_mva_hadTopTagger, bdtResult[0], bdtResult[1], 1.);
     }
     }
     }
