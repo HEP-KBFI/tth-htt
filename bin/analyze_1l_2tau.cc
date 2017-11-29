@@ -113,6 +113,25 @@ struct HadTauHistManagerWrapper_eta
   double etaMax_;
 };
 
+void comp_cosThetaS(const Particle::LorentzVector& hadTauP4_lead, const Particle::LorentzVector& hadTauP4_sublead, 
+		    const Particle::LorentzVector& hadTopP4,
+		    double& cosThetaS_hadTau, double& cosThetaS_hadTop)
+{
+  TLorentzVector hadTauP4tlv_lead;
+  hadTauP4tlv_lead.SetPtEtaPhiM(hadTauP4_lead.pt(), hadTauP4_lead.eta(), hadTauP4_lead.phi(), hadTauP4_lead.mass());
+  TLorentzVector hadTauP4tlv_sublead;
+  hadTauP4tlv_sublead.SetPtEtaPhiM(hadTauP4_sublead.pt(), hadTauP4_sublead.eta(), hadTauP4_sublead.phi(), hadTauP4_sublead.mass());
+  TLorentzVector hadTopP4tlv;
+  hadTopP4tlv.SetPtEtaPhiM(hadTopP4.pt(), hadTopP4.eta(), hadTopP4.phi(), hadTopP4.mass());
+  TLorentzVector diTauP4 = hadTauP4tlv_lead + hadTauP4tlv_sublead;
+  TLorentzVector hadTauBoost = hadTauP4tlv_lead;
+  TLorentzVector hadTopBoost = hadTopP4tlv;
+  hadTauBoost.Boost(-diTauP4.BoostVector());
+  hadTopBoost.Boost(-diTauP4.BoostVector());
+  cosThetaS_hadTau = std::abs(hadTauBoost.CosTheta());
+  cosThetaS_hadTop = std::abs(hadTopBoost.CosTheta());
+}
+
 /**
  * @brief Produce datacard and control plots for 1l_2tau category.
  */
@@ -897,10 +916,10 @@ int main(int argc, char* argv[])
       continue;
     }
 
-	//--- Rank triggers by priority and ignore triggers of lower priority if a trigger of higher priority has fired for given event;
-	//    the ranking of the triggers is as follows: 1mu, 1e
-	// CV: This logic is necessary to avoid that the same event is selected multiple times when processing different primary datasets.
-	//     The mu+tau and e+tau need to have the lowest priority, as not all e+tau trigger paths exists in the VHbb Ntuples of the SingleElectron and SingleMuon datasets!!
+//--- Rank triggers by priority and ignore triggers of lower priority if a trigger of higher priority has fired for given event;
+//    the ranking of the triggers is as follows: 1mu, 1e
+// CV: This logic is necessary to avoid that the same event is selected multiple times when processing different primary datasets.
+//     The mu+tau and e+tau need to have the lowest priority, as not all e+tau trigger paths exists in the VHbb Ntuples of the SingleElectron and SingleMuon datasets!!
     if ( !isMC && !isDEBUG ) {
       bool isTriggered_SingleElectron = isTriggered_1e;
       bool isTriggered_SingleMuon = isTriggered_1mu;
@@ -930,7 +949,7 @@ int main(int argc, char* argv[])
     }
     cutFlowTable.update("trigger");
     cutFlowHistManager->fillHistograms("trigger", lumiScale);
-    //std::cout << "Passed triggers" << std::endl;
+   
     if ( (selTrigger_1mu     && !apply_offline_e_trigger_cuts_1mu)     ||
          (selTrigger_1mu1tau && !apply_offline_e_trigger_cuts_1mu1tau) ||
          (selTrigger_1e      && !apply_offline_e_trigger_cuts_1e)      ||
@@ -942,8 +961,8 @@ int main(int argc, char* argv[])
       tightElectronSelector.enable_offline_e_trigger_cuts();
     }
 
-	//--- build collections of electrons, muons and hadronic taus;
-	//    resolve overlaps in order of priority: muon, electron,
+//--- build collections of electrons, muons and hadronic taus;
+//    resolve overlaps in order of priority: muon, electron,
     std::vector<RecoMuon> muons = muonReader->read();
     std::vector<const RecoMuon*> muon_ptrs = convert_to_ptrs(muons);
     std::vector<const RecoMuon*> cleanedMuons = muon_ptrs; // CV: no cleaning needed for muons, as they have the highest priority in the overlap removal
@@ -1503,41 +1522,9 @@ int main(int argc, char* argv[])
     check_mvaInputs(mvaInputs_ttbar, eventInfo);
 	*/
     
-    TLorentzVector Lepton;
-    Lepton.SetPtEtaPhiM(selLepton -> pt(),
-			selLepton -> eta(),
-			selLepton -> phi(),
-			selLepton -> mass());
-    TLorentzVector HadTau_lead;
-    HadTau_lead.SetPtEtaPhiM(selHadTau_lead -> pt(),
-			     selHadTau_lead -> eta(),
-			     selHadTau_lead -> phi(),
-			     selHadTau_lead -> mass());
-    TLorentzVector HadTau_sublead;
-    HadTau_sublead.SetPtEtaPhiM(selHadTau_sublead -> pt(),
-				selHadTau_sublead -> eta(),
-				selHadTau_sublead -> phi(),
-				selHadTau_sublead -> mass());
-    TLorentzVector HadTau_OS;
-    HadTau_OS.SetPtEtaPhiM(selHadTau_OS -> pt(),
-			   selHadTau_OS -> eta(),
-			   selHadTau_OS -> phi(),
-			   selHadTau_OS -> mass());
-    TLorentzVector HadTau_SS;
-    HadTau_SS.SetPtEtaPhiM(selHadTau_SS -> pt(),
-			   selHadTau_SS -> eta(),
-			   selHadTau_SS -> phi(),
-			   selHadTau_SS -> mass());
-    TLorentzVector HadTop;
-    HadTop.SetPtEtaPhiM(fittedHadTopP4.pt(),
-			fittedHadTopP4.eta(),
-			fittedHadTopP4.phi(),
-			fittedHadTopP4.mass());
-    TLorentzVector PH = HadTau_lead + HadTau_sublead;
-    TLorentzVector HadTauBoost=HadTau_lead;
-    TLorentzVector HadTopBoost=HadTop;
-    HadTauBoost.Boost(-PH.BoostVector());
-    HadTopBoost.Boost(-PH.BoostVector());
+    double cosThetaS_hadTau, cosThetaS_hadTop;
+    comp_cosThetaS(selHadTau_lead->p4(), selHadTau_sublead->p4(), fittedHadTopP4, cosThetaS_hadTau, cosThetaS_hadTop);
+
     std::string pklpath_HadTopTaggerVarMVAonly="1l_2tau_XGB_HadTopTaggerVarMVAonly_evtLevelTT_TTH_13Var.pkl";
     std::string pklpath="1l_2tau_XGB_noHadTopTaggerVar_evtLevelTT_TTH_12Var.pkl";
     std::map<std::string, double> mvaInputs_;
@@ -1570,7 +1557,7 @@ int main(int argc, char* argv[])
     mvaInputs_["nJet"]                 = selJets.size();
     mvaInputs_["dr_lep_tau_ss"]                 = deltaR(selLepton->p4(), selHadTau_SS->p4());
     mvaInputs_["dr_lep_tau_lead"]             = deltaR(selLepton->p4(), selHadTau_lead->p4());
-    mvaInputs_["costS_tau"]             = std::abs(HadTauBoost.CosTheta());
+    mvaInputs_["costS_tau"]             = cosThetaS_hadTau;
     //['avg_dr_jet', 'dr_taus', 'ptmiss', 'lep_conePt', 'mT_lep',
     //'mTauTauVis', 'mindr_lep_jet', 'mindr_tau1_jet', 'nJet',
     //'dr_lep_tau_ss', 'dr_lep_tau_lead', 'costS_tau',
@@ -1602,7 +1589,7 @@ int main(int argc, char* argv[])
     mvaInputsWithKinFit_["nJet"]                 = selJets.size();
     mvaInputsWithKinFit_["dr_lep_tau_ss"]                 = deltaR(selLepton->p4(), selHadTau_SS->p4());
     mvaInputsWithKinFit_["dr_lep_tau_lead"]             = deltaR(selLepton->p4(), selHadTau_lead->p4());
-    mvaInputsWithKinFit_["costS_tau"]             = std::abs(HadTauBoost.CosTheta());
+    mvaInputsWithKinFit_["costS_tau"]             = cosThetaS_hadTau;
     mvaInputsWithKinFit_["mvaOutput_hadTopTaggerWithKinFit"]                 = max_mvaOutput_hadTopTaggerWithKinFit;
     double mvaOutput_1l_2tau_ttbar_HadTopTaggerVarMVAonly = XGBReader(mvaInputsWithKinFit_ , mvaInputsWithKinFitSort, (char*) pklpath_HadTopTaggerVarMVAonly.c_str() ); // mva_1l_2tau_ttbar(mvaInputs_ttbar);
     
@@ -1719,21 +1706,21 @@ int main(int argc, char* argv[])
           ("dr_taus",                deltaR(selHadTau_lead -> p4(), selHadTau_sublead -> p4()))
           ("dr_lep_tau_os",          deltaR(selLepton->p4(), selHadTau_OS->p4()))
           ("dr_lep_tau_ss",          deltaR(selLepton->p4(), selHadTau_SS->p4()))
-          ("dr_lep_tau_lead",          deltaR(selLepton->p4(), selHadTau_lead->p4()))
-          ("dr_lep_tau_sublead",          deltaR(selLepton->p4(), selHadTau_sublead->p4()))
-  	  ("dr_HadTop_tau_lead",          deltaR(fittedHadTopP4, selHadTau_lead->p4()))
-	  ("dr_HadTop_tau_sublead",       deltaR(fittedHadTopP4, selHadTau_sublead->p4()))
-   	  ("dr_HadTop_tautau",          deltaR(fittedHadTopP4, selHadTau_lead->p4() + selHadTau_sublead->p4()))
-	  ("dr_HadTop_lepton",          deltaR(fittedHadTopP4, selLepton->p4()))
-	  ("mass_HadTop_lepton",          (fittedHadTopP4 + selLepton->p4()).mass())
-          ("costS_HadTop_tautau",          std::abs(HadTopBoost.CosTheta()))
-          ("costS_tau",          std::abs(HadTauBoost.CosTheta()))
+          ("dr_lep_tau_lead",        deltaR(selLepton->p4(), selHadTau_lead->p4()))
+          ("dr_lep_tau_sublead",     deltaR(selLepton->p4(), selHadTau_sublead->p4()))
+  	  ("dr_HadTop_tau_lead",     deltaR(fittedHadTopP4, selHadTau_lead->p4()))
+	  ("dr_HadTop_tau_sublead",  deltaR(fittedHadTopP4, selHadTau_sublead->p4()))
+   	  ("dr_HadTop_tautau",       deltaR(fittedHadTopP4, selHadTau_lead->p4() + selHadTau_sublead->p4()))
+	  ("dr_HadTop_lepton",       deltaR(fittedHadTopP4, selLepton->p4()))
+	  ("mass_HadTop_lepton",     (fittedHadTopP4 + selLepton->p4()).mass())
+  	  ("costS_HadTop_tautau",    cosThetaS_hadTop)
+          ("costS_tau",              cosThetaS_hadTau)
           ("mTauTauVis",             mTauTauVis)
 	  ("mvaOutput_hadTopTaggerWithKinFit", max_mvaOutput_hadTopTaggerWithKinFit)
           ("mvaOutput_hadTopTagger", max_mvaOutput_hadTopTagger)
-          ("HadTop_pt",        fittedHadTopP4.pt())
-	  ("HadTop_eta",       std::abs(fittedHadTopP4.eta()))
-	  ("dr_lep_HadTop",    deltaR(selLepton->p4(), fittedHadTopP4))
+          ("HadTop_pt",              fittedHadTopP4.pt())
+	  ("HadTop_eta",             std::abs(fittedHadTopP4.eta()))
+	  ("dr_lep_HadTop",          deltaR(selLepton->p4(), fittedHadTopP4))
           ("lumiScale",              lumiScale)
           ("genWeight",              eventInfo.genWeight)
           ("evtWeight",              evtWeight)
@@ -1742,13 +1729,13 @@ int main(int argc, char* argv[])
           ("nBJetMedium",            selBJets_medium.size())
 	  ("bWj1Wj2_isGenMatched",   max_truth_hadTopTagger)
           ("bWj1Wj2_isGenMatchedWithKinFit",   max_truth_hadTopTaggerWithKinFit)
-	("mT_lepHadTop",                comp_MT_met_lep1(selLepton->p4() + fittedHadTopP4, met.pt(), met.phi()))
-	("mT_lepHadTopH",               comp_MT_met_lep1(selLepton->p4() + fittedHadTopP4 + selHadTau_lead->p4() + selHadTau_sublead->p4(), met.pt(), met.phi()))
-          ("dr_HadTop_tau_OS",          HadTop.DeltaR(HadTau_OS))
-          ("dr_HadTop_tau_SS",       HadTop.DeltaR(HadTau_SS))
+	  ("mT_lepHadTop",                comp_MT_met_lep1(selLepton->p4() + fittedHadTopP4, met.pt(), met.phi()))
+	  ("mT_lepHadTopH",               comp_MT_met_lep1(selLepton->p4() + fittedHadTopP4 + selHadTau_lead->p4() + selHadTau_sublead->p4(), met.pt(), met.phi()))
+	  ("dr_HadTop_tau_OS",       deltaR(fittedHadTopP4, selHadTau_OS->p4()))
+          ("dr_HadTop_tau_SS",       deltaR(fittedHadTopP4, selHadTau_SS->p4()))
           ("mvaOutput_1l_2tau_ttbar_HadTopTaggerVarMVAonly", mvaOutput_1l_2tau_ttbar_HadTopTaggerVarMVAonly)
-          ("mvaOutput_1l_2tau_ttbar" , mvaOutput_1l_2tau_ttbar)
-          ("hadtruth"                , hadtruth)
+          ("mvaOutput_1l_2tau_ttbar", mvaOutput_1l_2tau_ttbar)
+          ("hadtruth",               hadtruth)
         .fill()
       ;
     }
