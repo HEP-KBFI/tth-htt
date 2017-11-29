@@ -1,158 +1,131 @@
-#include "tthAnalysis/HiggsToTauTau/interface/HadTopTagger.h" // HadTopTagger
 
+#include "tthAnalysis/HiggsToTauTau/interface/HadTopTagger.h" // HadTopTagger
+#include "tthAnalysis/HiggsToTauTau/interface/XGBReader.h" // XGBReader
+#include "FWCore/ParameterSet/interface/ParameterSet.h" // edm::ParameterSet
+#include "FWCore/PythonParameterSet/interface/MakeParameterSets.h" // edm::readPSetsFrom()
 #include "FWCore/Utilities/interface/Exception.h" // cms::Exception
 
+#include "TLorentzVector.h"
 #include "tthAnalysis/HiggsToTauTau/interface/Particle.h" // Particle::LorentzVector
 #include "tthAnalysis/HiggsToTauTau/interface/mvaAuxFunctions.h" // check_mvaInputs
 
-HadTopTagger::HadTopTagger(const std::string& mvaFileName)
+#include "tthAnalysis/HiggsToTauTau/interface/LocalFileInPath.h"
+#include "tthAnalysis/HiggsToTauTau/interface/XGBInterface.h" // XGBInterface
+#include "tthAnalysis/HiggsToTauTau/interface/TMVAInterface.h" // TMVAInterface
+
+#include <iostream> // std::cerr, std::fixed
+#include <iomanip> // std::setprecision(), std::setw()
+#include <string> // std::string
+#include <vector> // std::vector<>
+#include <cstdlib> // EXIT_SUCCESS, EXIT_FAILURE
+#include <algorithm> // std::sort
+#include <fstream> // std::ofstream
+#include <assert.h> // assert
+
+
+
+HadTopTagger::HadTopTagger(
+  const std::string& mvaFileNameWithKinFit,
+  const std::string& mvaFileNameNoKinFit,
+  const std::string& mvaFileName_hadTopTagger_tmva
+)
   : kinFit_(0),
     mva_(0),
-    mvaOutput_(-1.)
+    mvaOutput_(-1.),
+    mva_hadTopTagger_xgb_(0),
+    mva_hadTopTagger_xgb_2_(0),
+    mva_hadTopTagger_tmva_(0)
+
 {
   kinFit_ = new HadTopKinFit();
 
-  mvaInputVariables_.push_back("CSV_Wj1");
-  mvaInputVariables_.push_back("CSV_b");
-  mvaInputVariables_.push_back("dR_Wj1Wj2");
-  mvaInputVariables_.push_back("dR_bW");
-  mvaInputVariables_.push_back("m_Wj1Wj2");
-  mvaInputVariables_.push_back("nllKinFit");
-  mvaInputVariables_.push_back("pT_Wj2");
-  mvaInputVariables_.push_back("pT_bWj1Wj2");
-  mvaInputVariables_.push_back("qg_Wj2");
+  mvaInputsWithKinFitSort.push_back("CSV_b");
+  mvaInputsWithKinFitSort.push_back("qg_Wj2");
+  mvaInputsWithKinFitSort.push_back("pT_bWj1Wj2");
+  mvaInputsWithKinFitSort.push_back("m_Wj1Wj2");
+  mvaInputsWithKinFitSort.push_back("nllKinFit");
+  mvaInputsWithKinFitSort.push_back("pT_b_o_kinFit_pT_b");
+  mvaInputsWithKinFitSort.push_back("pT_Wj2");
+  mvaInputVariables_=mvaInputsWithKinFitSort;
+  mva_hadTopTagger_xgb_ = new XGBInterface(mvaFileNameWithKinFit,mvaInputsWithKinFitSort);
+  // order IS important - I will fix that
+  // ['CSV_b', 'qg_Wj2', 'pT_bWj1Wj2', 'm_Wj1Wj2', 'nllKinFit', 'pT_b_o_kinFit_pT_b', 'pT_Wj2']
+  //char* pklpath=(char*) mvaFileNameWithKinFitRead;
+  mva_hadTopTagger_tmva_ = new TMVAInterface(mvaFileName_hadTopTagger_tmva,mvaInputsWithKinFitSort);
+  mva_hadTopTagger_tmva_->enableBDTTransform();
+  ///////////////////////////////////////////////////////////////
+  // order IS important  - I will fix that
+  // ['CSV_b', 'qg_Wj2', 'qg_Wj1', 'm_bWj1Wj2', 'pT_bWj1Wj2', 'm_Wj1Wj2', 'pT_Wj2']
+  mvaFileNameNoKinFitSort.push_back("CSV_b");
+  mvaFileNameNoKinFitSort.push_back("qg_Wj2");
+  mvaFileNameNoKinFitSort.push_back("qg_Wj1");
+  mvaFileNameNoKinFitSort.push_back("m_bWj1Wj2");
+  mvaFileNameNoKinFitSort.push_back("pT_bWj1Wj2");
+  mvaFileNameNoKinFitSort.push_back("m_Wj1Wj2");
+  mvaFileNameNoKinFitSort.push_back("pT_Wj2");
+  mva_hadTopTagger_xgb_2_ = new XGBInterface(mvaFileNameWithKinFit,mvaFileNameNoKinFitSort);
 
-  //mvaInputVariables_.push_back("m_bWj1Wj2");
-  //mvaInputVariables_.push_back("m_Wj1Wj2");
-  //mvaInputVariables_.push_back("m_bWj1");
-  //mvaInputVariables_.push_back("m_bWj2");
-  //mvaInputVariables_.push_back("m_Wj1Wj2_div_m_bWj1Wj2");
-  //mvaInputVariables_.push_back("CSV_b");
-  //mvaInputVariables_.push_back("CSV_Wj1");
-  //mvaInputVariables_.push_back("CSV_Wj2");
-  //mvaInputVariables_.push_back("pT_b");
-  //mvaInputVariables_.push_back("eta_b");
-  //mvaInputVariables_.push_back("phi_b");
-  //mvaInputVariables_.push_back("mass_b");
-  //mvaInputVariables_.push_back("pT_Wj1");
-  //mvaInputVariables_.push_back("eta_Wj1");
-  //mvaInputVariables_.push_back("phi_Wj1");
-  //mvaInputVariables_.push_back("mass_Wj1");
-  //mvaInputVariables_.push_back("pT_Wj2");
-  //mvaInputVariables_.push_back("eta_Wj2");
-  //mvaInputVariables_.push_back("phi_Wj2");
-  //mvaInputVariables_.push_back("mass_Wj2");
-  //mvaInputVariables_.push_back("dR_bWj1");
-  //mvaInputVariables_.push_back("dR_bWj2");
-  //mvaInputVariables_.push_back("dR_Wj1Wj2");
-  //mvaInputVariables_.push_back("dR_bW");
-  //mvaInputVariables_.push_back("statusKinFit");
-  //mvaInputVariables_.push_back("nllKinFit");
-  //mvaInputVariables_.push_back("alphaKinFit");
-  //mvaInputVariables_.push_back("logPKinFit");
-  //mvaInputVariables_.push_back("logPErrKinFit");
-  //mvaInputVariables_.push_back("qg_b");
-  //mvaInputVariables_.push_back("qg_Wj1");
-  //mvaInputVariables_.push_back("qg_Wj2");
-  //mvaInputVariables_.push_back("pT_bWj1Wj2");
-  //mvaInputVariables_.push_back("pT_Wj1Wj2");
-  //mvaInputVariables_.push_back("max_dR_div_expRjet");
-  if ( mvaFileName != "" ) {
-    mva_ = new TMVAInterface(mvaFileName, mvaInputVariables_, {});
-  }
 }
 
 HadTopTagger::~HadTopTagger()
 {
   delete kinFit_;
   delete mva_;
+  delete mva_hadTopTagger_xgb_;
+  delete mva_hadTopTagger_xgb_2_;
+  delete mva_hadTopTagger_tmva_;
 }
 
-//namespace
-//{
-//  double max(double value1, double value2, double value3)
-//  {
-//    double max12 = std::max(value1, value2);
-//    return std::max(max12, value3);
-//  } 
-//}
-
-double HadTopTagger::operator()(const RecoJet& recBJet, const RecoJet& recWJet1, const RecoJet& recWJet2)
+bool HadTopTagger::operator()(const RecoJet& recBJet, const RecoJet& recWJet1, const RecoJet& recWJet2,std::vector<double>& result)
 {
+
+  mvaInputsWithKinFit["CSV_b"]                  = recBJet.BtagCSV();
+  mvaInputsWithKinFit["qg_Wj2"]                 = recWJet2.QGDiscr();
   Particle::LorentzVector p4_bWj1Wj2 = recBJet.p4() + recWJet1.p4() + recWJet2.p4();
-  //mvaInputs_["m_bWj1Wj2"]              = p4_bWj1Wj2.mass();
+  mvaInputsWithKinFit["pT_bWj1Wj2"]             = p4_bWj1Wj2.pt();
   Particle::LorentzVector p4_Wj1Wj2 = recWJet1.p4() + recWJet2.p4();
-  mvaInputs_["m_Wj1Wj2"]               = p4_Wj1Wj2.mass();
-  //mvaInputs_["m_bWj1"]                 = (recBJet.p4() + recWJet1.p4()).mass();
-  //mvaInputs_["m_bWj2"]                 = (recBJet.p4() + recWJet2.p4()).mass();
-  //mvaInputs_["m_Wj1Wj2_div_m_bWj1Wj2"] = ( p4_bWj1Wj2.mass() > 0. ) ? p4_Wj1Wj2.mass()/p4_bWj1Wj2.mass() : -1.;
-  mvaInputs_["CSV_b"]                  = recBJet.BtagCSV();
-  mvaInputs_["CSV_Wj1"]                = recWJet1.BtagCSV();
-  //mvaInputs_["CSV_Wj2"]                = recWJet2.BtagCSV();
-  //mvaInputs_["pT_b"]                   = recBJet.pt();
-  //mvaInputs_["eta_b"]                  = recBJet.eta();
-  //mvaInputs_["phi_b"]                  = recBJet.phi();
-  //mvaInputs_["mass_b"]                 = recBJet.mass();
-  //mvaInputs_["pT_Wj1"]                 = recWJet1.pt();
-  //mvaInputs_["eta_Wj1"]                = recWJet1.eta();
-  //mvaInputs_["phi_Wj1"]                = recWJet1.phi();
-  //mvaInputs_["mass_Wj1"]               = recWJet1.mass();  
-  mvaInputs_["pT_Wj2"]                 = recWJet2.pt();
-  //mvaInputs_["eta_Wj2"]                = recWJet2.eta();
-  //mvaInputs_["phi_Wj2"]                = recWJet2.phi();
-  //mvaInputs_["mass_Wj2"]               = recWJet2.mass();  
-  //double dR_bWj1 = deltaR(recBJet.p4(), recWJet1.p4());
-  //mvaInputs_["dR_bWj1"]                = dR_bWj1;
-  //double dR_bWj2 = deltaR(recBJet.p4(), recWJet2.p4());
-  //mvaInputs_["dR_bWj2"]                = dR_bWj2;
-  double dR_Wj1Wj2 = deltaR(recWJet1.p4(), recWJet2.p4());
-  mvaInputs_["dR_Wj1Wj2"]              = dR_Wj1Wj2;
-  mvaInputs_["dR_bW"]                  = deltaR(recBJet.p4(), p4_Wj1Wj2);
+  mvaInputsWithKinFit["m_Wj1Wj2"]               = p4_Wj1Wj2.mass();
   kinFit_->fit(recBJet.p4(), recWJet1.p4(), recWJet2.p4());
-  //mvaInputs_["statusKinFit"]           = kinFit_->fit_status();
-  mvaInputs_["nllKinFit"]              = kinFit_->nll();
-  //mvaInputs_["alphaKinFit"]            = kinFit_->alpha();
-  //mvaInputs_["kinFit_pT_b"]            = kinFit_->fittedBJet().pt();
-  //mvaInputs_["kinFit_eta_b"]           = kinFit_->fittedBJet().eta();
-  //mvaInputs_["kinFit_phi_b"]           = kinFit_->fittedBJet().phi();
-  //mvaInputs_["kinFit_mass_b"]          = kinFit_->fittedBJet().mass();
-  //mvaInputs_["kinFit_pT_Wj1"]          = kinFit_->fittedWJet1().pt();
-  //mvaInputs_["kinFit_eta_Wj1"]         = kinFit_->fittedWJet1().eta();
-  //mvaInputs_["kinFit_phi_Wj1"]         = kinFit_->fittedWJet1().phi();
-  //mvaInputs_["kinFit_mass_Wj1"]        = kinFit_->fittedWJet1().mass();  
-  //mvaInputs_["kinFit_pT_Wj2"]          = kinFit_->fittedWJet2().pt();
-  //mvaInputs_["kinFit_eta_Wj2"]         = kinFit_->fittedWJet2().eta();
-  //mvaInputs_["kinFit_phi_Wj2"]         = kinFit_->fittedWJet2().phi();
-  //mvaInputs_["kinFit_mass_Wj2"]        = kinFit_->fittedWJet2().mass();  
-  //kinFit_->integrate(recBJet.p4(), recWJet1.p4(), recWJet2.p4());
-  //mvaInputs_["logPKinFit"]             = ( kinFit_->p()    > 0. ) ? log(kinFit_->p())    : -1.e+3;
-  //mvaInputs_["logPErrKinFit"]          = ( kinFit_->pErr() > 0. ) ? log(kinFit_->pErr()) : -1.e+3;
-  //mvaInputs_["qg_b"]                   = recBJet.QGDiscr();
-  //mvaInputs_["qg_Wj1"]                 = recWJet1.QGDiscr();
-  mvaInputs_["qg_Wj2"]                 = recWJet2.QGDiscr();
-  mvaInputs_["pT_bWj1Wj2"]             = p4_bWj1Wj2.pt();
-  //mvaInputs_["pT_Wj1Wj2"]              = p4_Wj1Wj2.pt();
-  //double expRjet = ( p4_bWj1Wj2.pt() > 0. ) ? 327./p4_bWj1Wj2.pt() : -1.;
-  //mvaInputs_["max_dR_div_expRjet"]     = max(dR_bWj1, dR_bWj2, dR_Wj1Wj2)/expRjet;
-  if ( mva_ ) {
-    check_mvaInputs(mvaInputs_);
-    mvaOutput_ = (*mva_)(mvaInputs_);
-  }
-  return mvaOutput_;
+  mvaInputsWithKinFit["nllKinFit"]              = kinFit_->nll();
+  mvaInputsWithKinFit["pT_b_o_kinFit_pT_b"]     = recBJet.pt()/kinFit_->fittedBJet().pt();
+  mvaInputsWithKinFit["pT_Wj2"]                 = recWJet2.pt();
+  // functuion way to read pkl - please leave this template here by now
+  //std::string mvaFileName_hadTopTaggerWithKinFitR = "all_HadTopTagger_sklearnV0o17o1_HypOpt_XGB_ntrees_1000_deph_3_lr_0o01_CSV_sort_withKinFit.pkl";
+  //const char* mvaFileNameWithKinFitRead= mvaFileName_hadTopTaggerWithKinFitR.c_str(); // to remove
+  //char* pklpathWithKinFit=(char*) mvaFileNameWithKinFitRead;
+  //double mvaOutputNoKinFit=XGBReader( mvaInputsWithKinFit , mvaInputsWithKinFitSort , pklpathWithKinFit );
+  double HTT_WithKin_xgb= (*mva_hadTopTagger_xgb_)(mvaInputsWithKinFit);
+  result[0]=HTT_WithKin_xgb;
+  //result[1]=mvaOutputNoKinFit;
+
+
+  double HTT_WithKin_tmva=(*mva_hadTopTagger_tmva_)(mvaInputsWithKinFit);
+  result[1]=HTT_WithKin_tmva;
+
+  mvaInputsNoKinFit["CSV_b"]                  = recBJet.BtagCSV();
+  mvaInputsNoKinFit["qg_Wj2"]                 = recWJet2.QGDiscr();
+  mvaInputsNoKinFit["qg_Wj1"]                 = recWJet1.QGDiscr();
+  mvaInputsNoKinFit["m_bWj1Wj2"]             = p4_bWj1Wj2.mass();
+  mvaInputsNoKinFit["pT_bWj1Wj2"]             = p4_bWj1Wj2.pt();
+  mvaInputsNoKinFit["m_Wj1Wj2"]               = p4_Wj1Wj2.mass();
+  mvaInputsNoKinFit["pT_Wj2"]                 = recWJet2.pt();
+
+  double HTT_NoKin_xgb=(*mva_hadTopTagger_xgb_2_)(mvaInputsNoKinFit);
+  result[2]=HTT_NoKin_xgb;
+  return 1;
 }
 
-const std::vector<std::string>& HadTopTagger::mvaInputVariables() const
-{ 
-  return mvaInputVariables_; 
-}
+/**
+ * @brief Auxiliary function used for sorting leptons by decreasing pT
+ * @param Given pair of leptons
+ * @return True, if first lepton has higher pT; false if second lepton has higher pT
+ */
+bool isHigherPt(const Particle* particle1, const Particle* particle2);
 
-const std::map<std::string, double>& HadTopTagger::mvaInputs() const
-{ 
-  return mvaInputs_; 
-}
 
-const HadTopKinFit* HadTopTagger::kinFit() const 
-{ 
-  return kinFit_; 
-}
 
+const std::vector<std::string>& HadTopTagger::mvaInputVariables() const { return mvaInputVariables_; }
+
+const std::map<std::string, double>& HadTopTagger::mvaInputs() const { return mvaInputsWithKinFit; }
+
+const HadTopKinFit* HadTopTagger::kinFit() const { return kinFit_; }

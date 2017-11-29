@@ -12,9 +12,9 @@ echo 'Running script {{ script_file }} (created from template sbatch-node.templa
 
 
 RUNNING_COMMAND="{{ RUNNING_COMMAND }}"
-SCRATCH_DIR="{{ scratch_dir }}/$SLURM_JOBID"
+JOB_DIR="{{ job_dir }}/$SLURM_JOBID"
 
-# Runs executable, wrapped into failure wrapper + wrapped into node scratchdir
+# Runs executable, wrapped into failure wrapper
 
 main() {
     run_failure_wrapped_executable >> "{{ wrapper_log_file }}" 2>&1
@@ -47,20 +47,20 @@ run_failure_wrapped_executable() {
         fi
     fi
 
-    echo "Delete Scratch directory: rm -r $SCRATCH_DIR"
-    rm -r $SCRATCH_DIR
+    echo "Delete job directory: rm -r $JOB_DIR"
+    rm -r $JOB_DIR
 
     return $EXIT_CODE
 }
 
 
-# Creates scratch dir on cluster node and runs executable
+# Creates scratch dir on cluster node or on /home and runs executable
 
 run_wrapped_executable() {
     EXECUTABLE_LOG_FILE="{{ executable_log_file }}"
     EXECUTABLE_LOG_DIR="`dirname $EXECUTABLE_LOG_FILE`"
     EXECUTABLE_LOG_FILE_NAME="`basename $EXECUTABLE_LOG_FILE`"
-    TEMPORARY_EXECUTABLE_LOG_DIR="$SCRATCH_DIR/$EXECUTABLE_LOG_DIR/"
+    TEMPORARY_EXECUTABLE_LOG_DIR="$JOB_DIR/$EXECUTABLE_LOG_DIR/"
     TEMPORARY_EXECUTABLE_LOG_FILE="$TEMPORARY_EXECUTABLE_LOG_DIR/$EXECUTABLE_LOG_FILE_NAME"
     RANDOM_SLEEP={{ random_sleep }}
 
@@ -81,8 +81,8 @@ run_wrapped_executable() {
 	return 1
     fi
 
-    echo "Create scratch directory: mkdir -p $SCRATCH_DIR"
-    mkdir -p $SCRATCH_DIR
+    echo "Create job directory: mkdir -p $JOB_DIR"
+    mkdir -p $JOB_DIR
 
     echo "Create temporary log directory: mkdir -p $TEMPORARY_EXECUTABLE_LOG_DIR"
     mkdir -p $TEMPORARY_EXECUTABLE_LOG_DIR
@@ -90,12 +90,11 @@ run_wrapped_executable() {
     echo "Create final log directory: mkdir -p $EXECUTABLE_LOG_DIR"
     mkdir -p $EXECUTABLE_LOG_DIR
 
-    cd {{ working_dir }}
-    cd $SCRATCH_DIR
+    cd $JOB_DIR
 
     echo "Time is: `date`"
 
-    CMSSW_SEARCH_PATH="$SCRATCH_DIR:{{ cmssw_base_dir }}/src"
+    CMSSW_SEARCH_PATH="$JOB_DIR:{{ cmssw_base_dir }}/src"
 
     echo "Execute command: {{ exec_name }} {{ command_line_parameter }} &> $TEMPORARY_EXECUTABLE_LOG_FILE"
     # CV: use newer hadd version that supports increasing cachesize, to reduce random disk access
@@ -132,14 +131,14 @@ run_wrapped_executable() {
 	return 1
     fi
 
-    echo "Contents of temporary scratch dir: ls -laR $SCRATCH_DIR"
-    ls -laR $SCRATCH_DIR
+    echo "Contents of temporary job dir: ls -laR $JOB_DIR"
+    ls -laR $JOB_DIR
 
     OUTPUT_FILES="{{ outputFiles }}"
     echo "Copying output files: {{ outputFiles }}"
     for OUTPUT_FILE in $OUTPUT_FILES
     do
-      # Create metadata file for output histogram on scratch
+      # Create metadata file for output histogram in the job directory
       #python $SCRIPTS_DIR/create_histogram_metadata.py $OUTPUT_FILE
 
       # Check that input histograms are equal to output histogram

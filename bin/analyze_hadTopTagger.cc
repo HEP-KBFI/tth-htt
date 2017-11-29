@@ -22,7 +22,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTau.h" // RecoHadTau
 #include "tthAnalysis/HiggsToTauTau/interface/GenParticle.h" // GenParticle
 #include "tthAnalysis/HiggsToTauTau/interface/GenParticleReader.h" // GenParticleReader
-#include "tthAnalysis/HiggsToTauTau/interface/KeyTypes.h" // RUN_TYPE, LUMI_TYPE, EVT_TYPE 
+#include "tthAnalysis/HiggsToTauTau/interface/KeyTypes.h" // RUN_TYPE, LUMI_TYPE, EVT_TYPE
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronReader.h" // RecoElectronReader
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonReader.h" // RecoMuonReader
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauReader.h" // RecoHadTauReader
@@ -45,7 +45,9 @@
 #include "tthAnalysis/HiggsToTauTau/interface/histogramAuxFunctions.h" // createSubdirectory_recursively
 #include "tthAnalysis/HiggsToTauTau/interface/cutFlowTable.h" // cutFlowTableType
 #include "tthAnalysis/HiggsToTauTau/interface/NtupleFillerBDT.h" // NtupleFillerBDT
-#include "tthAnalysis/HiggsToTauTau/interface/HadTopTagger.h" // HadTopTagger
+
+//#include "tthAnalysis/HiggsToTauTau/interface/HadTopTagger.h" // HadTopTagger
+#include "tthAnalysis/HiggsToTauTau/interface/HadTopTaggerFill.h" // HadTopTaggerFill
 
 #include <boost/range/algorithm/copy.hpp> // boost::copy()
 #include <boost/range/adaptor/map.hpp> // boost::adaptors::map_keys
@@ -59,11 +61,18 @@
 #include <fstream> // std::ofstream
 #include <assert.h> // assert
 
+#include <iostream>
+#include <boost/python.hpp>
+#include <boost/python/suite/indexing/vector_indexing_suite.hpp>
+using namespace boost::python;
+
 #define EPS 1E-2
 
 typedef math::PtEtaPhiMLorentzVector LV;
 typedef std::vector<std::string> vstring;
 typedef std::vector<double> vdouble;
+
+bool DoHist=0;
 
 enum { kGen_bWj1Wj2, kGen_bWj1, kGen_bWj2, kGen_Wj1Wj2, kGen_b, kGen_Wj1, kGen_Wj2, kGen_none };
 
@@ -99,12 +108,12 @@ int getGenMatch(bool b_isGenMatched, bool Wj1_isGenMatched, bool Wj2_isGenMatche
   else if (                                       Wj2_isGenMatched ) idxGenMatch = kGen_Wj2;
   else                                                               idxGenMatch = kGen_none;
   return idxGenMatch;
-}        
+}
 
 void openFile_and_printContent(const std::string& inputFileName, const std::string& treeName)
 {
   TFile* inputFile = TFile::Open(inputFileName.data());
-  if ( !inputFile ) throw cms::Exception("openFile_and_printContent") 
+  if ( !inputFile ) throw cms::Exception("openFile_and_printContent")
     << " Failed to open file = " << inputFileName << " !!\n";
   inputFile->ls();
   TTree* tree = dynamic_cast<TTree*>(inputFile->Get(treeName.data()));
@@ -115,7 +124,7 @@ void openFile_and_printContent(const std::string& inputFileName, const std::stri
 /**
  * @brief Produce datacard and control plots for 1l_2tau category.
  */
-int main(int argc, char* argv[]) 
+int main(int argc, char* argv[])
 {
 //--- throw an exception in case ROOT encounters an error
   gErrorAbortLevel = kError;
@@ -133,8 +142,8 @@ int main(int argc, char* argv[])
   clock.Start("analyze_hadTopTagger");
 
 //--- read python configuration parameters
-  if ( !edm::readPSetsFrom(argv[1])->existsAs<edm::ParameterSet>("process") ) 
-    throw cms::Exception("analyze_hadTopTagger") 
+  if ( !edm::readPSetsFrom(argv[1])->existsAs<edm::ParameterSet>("process") )
+    throw cms::Exception("analyze_hadTopTagger")
       << "No ParameterSet 'process' found in configuration file = " << argv[1] << " !!\n";
 
   edm::ParameterSet cfg = edm::readPSetsFrom(argv[1])->getParameter<edm::ParameterSet>("process");
@@ -152,7 +161,7 @@ int main(int argc, char* argv[])
   int era = -1;
   if      ( era_string == "2015" ) era = kEra_2015;
   else if ( era_string == "2016" ) era = kEra_2016;
-  else throw cms::Exception("analyze_hadTopTagger") 
+  else throw cms::Exception("analyze_hadTopTagger")
     << "Invalid Configuration parameter 'era' = " << era_string << " !!\n";
 
   TString hadTauSelection_string = cfg_analyze.getParameter<std::string>("hadTauSelection").data();
@@ -163,19 +172,19 @@ int main(int argc, char* argv[])
   if      ( hadTauSelection_part1 == "Loose"    ) hadTauSelection = kLoose;
   else if ( hadTauSelection_part1 == "Fakeable" ) hadTauSelection = kFakeable;
   else if ( hadTauSelection_part1 == "Tight"    ) hadTauSelection = kTight;
-  else throw cms::Exception("analyze_hadTopTagger") 
+  else throw cms::Exception("analyze_hadTopTagger")
     << "Invalid Configuration parameter 'hadTauSelection' = " << hadTauSelection_string << " !!\n";
   std::string hadTauSelection_part2 = ( hadTauSelection_parts->GetEntries() == 2 ) ? (dynamic_cast<TObjString*>(hadTauSelection_parts->At(1)))->GetString().Data() : "";
   delete hadTauSelection_parts;
 
-  bool use_HIP_mitigation_mediumMuonId = cfg_analyze.getParameter<bool>("use_HIP_mitigation_mediumMuonId"); 
+  bool use_HIP_mitigation_mediumMuonId = cfg_analyze.getParameter<bool>("use_HIP_mitigation_mediumMuonId");
   std::cout << "use_HIP_mitigation_mediumMuonId = " << use_HIP_mitigation_mediumMuonId << std::endl;
 
-  bool isMC = cfg_analyze.getParameter<bool>("isMC"); 
+  bool isMC = cfg_analyze.getParameter<bool>("isMC");
   double lumiScale = ( process_string != "data_obs" ) ? cfg_analyze.getParameter<double>("lumiScale") : 1.;
-  bool apply_genWeight = cfg_analyze.getParameter<bool>("apply_genWeight"); 
+  bool apply_genWeight = cfg_analyze.getParameter<bool>("apply_genWeight");
 
-  bool isDEBUG = ( cfg_analyze.exists("isDEBUG") ) ? cfg_analyze.getParameter<bool>("isDEBUG") : false; 
+  bool isDEBUG = ( cfg_analyze.exists("isDEBUG") ) ? cfg_analyze.getParameter<bool>("isDEBUG") : false;
   if ( isDEBUG ) std::cout << "Warning: DEBUG mode enabled !!" << std::endl;
 
   std::string branchName_electrons = cfg_analyze.getParameter<std::string>("branchName_electrons");
@@ -199,13 +208,13 @@ int main(int argc, char* argv[])
   }
 
   bool selectBDT = ( cfg_analyze.exists("selectBDT") ) ? cfg_analyze.getParameter<bool>("selectBDT") : false;
-  
-  fwlite::InputSource inputFiles(cfg); 
+
+  fwlite::InputSource inputFiles(cfg);
   int maxEvents = inputFiles.maxEvents();
   std::cout << " maxEvents = " << maxEvents << std::endl;
   unsigned reportEvery = inputFiles.reportAfter();
 
-  // CV: open all input ROOT files and print content, 
+  // CV: open all input ROOT files and print content,
   //     to see why analysis jobs run fine when executed interactively on quasar, but fail when executed on Tallinn batch system
   //for ( std::vector<std::string>::const_iterator inputFileName = inputFiles.files().begin();
   //	  inputFileName != inputFiles.files().end(); ++inputFileName ) {
@@ -220,14 +229,15 @@ int main(int argc, char* argv[])
   for ( std::vector<std::string>::const_iterator inputFileName = inputFiles.files().begin();
 	inputFileName != inputFiles.files().end(); ++inputFileName ) {
     std::cout << "input Tree: adding file = " << (*inputFileName) << std::endl;
+	//std::cout <<inputFileName->data()->GetEntries() << std::endl;
     inputTree->AddFile(inputFileName->data());
   }
-  
+
   if ( !(inputTree->GetListOfFiles()->GetEntries() >= 1) ) {
-    throw cms::Exception("analyze_hadTopTagger") 
+    throw cms::Exception("analyze_hadTopTagger")
       << "Failed to identify input Tree !!\n";
   }
-  
+
   std::cout << "input Tree contains " << inputTree->GetEntries() << " Entries in " << inputTree->GetListOfFiles()->GetEntries() << " files." << std::endl;
 
 //--- declare event-level variables
@@ -248,15 +258,18 @@ int main(int argc, char* argv[])
     inputTree->SetBranchAddress(GENWEIGHT_KEY, &genWeight);
     inputTree->SetBranchAddress(PUWEIGHT_KEY, &pileupWeight);
   }
-  
+
 //--- declare particle collections
+  std::cout << "Here before RecoMuonReader" << std::endl;
   RecoMuonReader* muonReader = new RecoMuonReader(era, Form("n%s", branchName_muons.data()), branchName_muons);
   if ( use_HIP_mitigation_mediumMuonId ) muonReader->enable_HIP_mitigation();
   else muonReader->disable_HIP_mitigation();
+  std::cout << "Here before RecoMuonReader read tree" << std::endl;
   muonReader->setBranchAddresses(inputTree);
   RecoMuonCollectionGenMatcher muonGenMatcher;
   RecoMuonCollectionSelectorLoose preselMuonSelector(era);
   RecoMuonCollectionSelectorFakeable fakeableMuonSelector(era);
+  std::cout << "Here after RecoMuonReader" << std::endl;
 
   RecoElectronReader* electronReader = new RecoElectronReader(era, Form("n%s", branchName_electrons.data()), branchName_electrons);
   electronReader->setBranchAddresses(inputTree);
@@ -284,7 +297,7 @@ int main(int argc, char* argv[])
   jetReader->setBranchAddresses(inputTree);
   RecoJetCollectionGenMatcher jetGenMatcher;
   RecoJetCollectionCleaner jetCleaner(0.4);
-  RecoJetCollectionSelector jetSelector(era);  
+  RecoJetCollectionSelector jetSelector(era);
 
   GenParticleReader* genTopQuarkReader = new GenParticleReader(Form("n%s", branchName_genTopQuarks.data()), branchName_genTopQuarks);
   genTopQuarkReader->setBranchAddresses(inputTree);
@@ -295,9 +308,13 @@ int main(int argc, char* argv[])
   GenParticleReader* genWJetReader = new GenParticleReader(Form("n%s", branchName_genWJets.data()), branchName_genWJets);
   genWJetReader->setBranchAddresses(inputTree);
 
-  HadTopTagger* hadTopTagger = new HadTopTagger();
+  //HadTopTagger* hadTopTagger = new HadTopTagger();
+  HadTopTaggerFill* hadTopTaggerFill = new HadTopTaggerFill();
 
-//--- declare histograms
+  /////////////////////////////////////////////////////////////////////////////////
+
+  ////////////////////////////////////////////////////////////////////////////////
+  //--- declare histograms
   std::map<int, MVAInputVarHistManager*> mvaInputHistManagers;
   std::map<int, TH1*> mvaOutputHistManagers;
   for ( int idxGenMatch = kGen_bWj1Wj2; idxGenMatch <= kGen_none; ++idxGenMatch ) {
@@ -311,45 +328,23 @@ int main(int argc, char* argv[])
     else if ( idxGenMatch == kGen_Wj2     ) genMatch = "gen_Wj2";
     else if ( idxGenMatch == kGen_none    ) genMatch = "gen_none";
     else assert(0);
-    MVAInputVarHistManager* mvaInputHistManager = new MVAInputVarHistManager(makeHistManager_cfg(process_string, 
-      Form("%s/%s/mvaInputs", histogramDir.data(), genMatch.data()), "central"));
-    mvaInputHistManager->defineBinningOption("m_bWj1Wj2", 100, 0., 1.e+3);
-    mvaInputHistManager->defineBinningOption("m_Wj1Wj2", 100, 0., 1.e+3);
-    mvaInputHistManager->defineBinningOption("m_bWj1", 100, 0., 1.e+3);
-    mvaInputHistManager->defineBinningOption("m_bWj2", 100, 0., 1.e+3);
-    mvaInputHistManager->defineBinningOption("m_Wj1Wj2_div_m_bWj1Wj2", 100, 0., 1.);
-    mvaInputHistManager->defineBinningOption("CSV_b", 100, 0., 1.);
-    mvaInputHistManager->defineBinningOption("CSV_Wj1", 100, 0., 1.);
-    mvaInputHistManager->defineBinningOption("CSV_Wj2", 100, 0., 1.);
-    mvaInputHistManager->defineBinningOption("pT_b", 100, 0., 5.e+2);
-    mvaInputHistManager->defineBinningOption("pT_Wj1", 100, 0., 5.e+2);
-    mvaInputHistManager->defineBinningOption("pT_Wj2", 100, 0., 5.e+2);
-    mvaInputHistManager->defineBinningOption("dR_bWj1", 100, 0., 5.);
-    mvaInputHistManager->defineBinningOption("dR_bWj2", 100, 0., 5.);
-    mvaInputHistManager->defineBinningOption("dR_Wj1Wj2", 100, 0., 5.);
-    mvaInputHistManager->defineBinningOption("dR_bW", 100, 0., 5.);
-    mvaInputHistManager->defineBinningOption("statusKinFit", 6, -1., +5.);
-    mvaInputHistManager->defineBinningOption("nllKinFit", 150, -10., +5.);
-    mvaInputHistManager->defineBinningOption("alphaKinFit", 200, 0., 2.);
-    mvaInputHistManager->defineBinningOption("logPKinFit", 150, -10., +5.);
-    mvaInputHistManager->defineBinningOption("logPErrKinFit", 250, -20., +5.);
-    mvaInputHistManager->defineBinningOption("qg_b", 100, 0., 1.);
-    mvaInputHistManager->defineBinningOption("qg_Wj1", 100, 0., 1.);
-    mvaInputHistManager->defineBinningOption("qg_Wj2", 100, 0., 1.);
-    mvaInputHistManager->defineBinningOption("pT_bWj1Wj2", 100, 0., 5.e+2);
-    mvaInputHistManager->defineBinningOption("pT_Wj1Wj2", 100, 0., 5.e+2);
-    mvaInputHistManager->defineBinningOption("max_dR_div_expRjet", 200, 0., 2.);
-    mvaInputHistManager->bookHistograms(fs, hadTopTagger->mvaInputVariables());
-    mvaInputHistManagers[idxGenMatch] = mvaInputHistManager; 
 
+    MVAInputVarHistManager* mvaInputHistManager = new MVAInputVarHistManager(makeHistManager_cfg(process_string,
+      Form("%s/%s/mvaInputs", histogramDir.data(), genMatch.data()), "central"));
+	if (DoHist) {
+		hadTopTaggerFill->DefineHist(mvaInputHistManager);
+	    mvaInputHistManager->bookHistograms(fs, hadTopTaggerFill->mvaInputVariables());
+		mvaInputHistManagers[idxGenMatch] = mvaInputHistManager;
+		TH1* histogram_mvaOutput = book1D("mvaOutput", "mvaOutput", 200, -1., +1.);
+		mvaOutputHistManagers[idxGenMatch] = histogram_mvaOutput;
+	}
     std::string subdirName = Form("%s/%s/%s", histogramDir.data(), genMatch.data(), process_string.data());
     TDirectory* subdir = createSubdirectory_recursively(fs, subdirName);
     subdir->cd();
 
-    TH1* histogram_mvaOutput = book1D("mvaOutput", "mvaOutput", 200, -1., +1.);
-    mvaOutputHistManagers[idxGenMatch] = histogram_mvaOutput;
-  }
 
+  }
+  std::cout << "Here before bdt filler" << std::endl;
   NtupleFillerBDT<float, int>* bdt_filler = nullptr;
   typedef std::remove_pointer<decltype(bdt_filler)>::type::float_type float_type;
   typedef std::remove_pointer<decltype(bdt_filler)>::type::int_type int_type;
@@ -358,24 +353,39 @@ int main(int argc, char* argv[])
       makeHistManager_cfg(process_string, Form("%s/evtntuple", histogramDir.data()), "central")
     );
     bdt_filler->register_variable<float_type>(
-      "m_bWj1Wj2", "m_Wj1Wj2", "m_bWj1", "m_bWj2", 
+      "m_bWj1Wj2", "m_Wj1Wj2", "m_bWj1", "m_bWj2",
       "m_Wj1Wj2_div_m_bWj1Wj2",
-      "CSV_b", "CSV_Wj1", "CSV_Wj2", 
-      "pT_b", "eta_b", "phi_b", "mass_b", "kinFit_pT_b", "kinFit_eta_b", "kinFit_phi_b", "kinFit_mass_b", 
-      "pT_Wj1", "eta_Wj1", "phi_Wj1", "mass_Wj1", "kinFit_pT_Wj1", "kinFit_eta_Wj1", "kinFit_phi_Wj1", "kinFit_mass_Wj1", 
-      "pT_Wj2", "eta_Wj2", "phi_Wj2", "mass_Wj2", "kinFit_pT_Wj2", "kinFit_eta_Wj2", "kinFit_phi_Wj2", "kinFit_mass_Wj2",
+      "CSV_b", "CSV_Wj1", "CSV_Wj2",
+      "pT_b", "eta_b", "phi_b", "mass_b",
+	  "kinFit_pT_b", "kinFit_eta_b", "kinFit_phi_b", "kinFit_mass_b",
+      "pT_Wj1", "eta_Wj1", "phi_Wj1", "mass_Wj1",
+	  "kinFit_pT_Wj1", "kinFit_eta_Wj1", "kinFit_phi_Wj1", "kinFit_mass_Wj1",
+      "pT_Wj2", "eta_Wj2", "phi_Wj2", "mass_Wj2",
+	  "kinFit_pT_Wj2", "kinFit_eta_Wj2", "kinFit_phi_Wj2", "kinFit_mass_Wj2",
+	  "cosTheta_leadWj_restTop","cosTheta_subleadWj_restTop", "cosTheta_Kin_leadWj_restTop","cosTheta_Kin_subleadWj_restTop",
+	  "cosTheta_leadEWj_restTop","cosTheta_subleadEWj_restTop", "cosTheta_Kin_leadEWj_restTop","cosTheta_Kin_subleadEWj_restTop",
+	  "cosThetaW_rest","cosThetaKinW_rest","cosThetaW_lab","cosThetaKinW_lab",
+	  "cosThetab_rest","cosThetaKinb_rest","cosThetab_lab","cosThetaKinb_lab",
+	  "Dphi_Wj1_Wj2_lab","Dphi_KinWj1_KinWj2_lab",
+	  "Dphi_Wb_rest","Dphi_KinWb_rest","Dphi_Wb_lab","Dphi_KinWb_lab",
+	  "cosThetaWj1_restW","cosThetaKinWj_restW",
       "dR_bWj1", "dR_bWj2", "dR_Wj1Wj2", "dR_bW",
-      "statusKinFit", "nllKinFit", "alphaKinFit", "logPKinFit", "logPErrKinFit", 
+      "statusKinFit", "nllKinFit", "alphaKinFit", "logPKinFit", "logPErrKinFit",
       "qg_b", "qg_Wj1", "qg_Wj2",
       "pT_bWj1Wj2", "pT_Wj1Wj2",
       "max_dR_div_expRjet"
     );
+
+
     bdt_filler->register_variable<int_type>(
       "b_isGenMatched", "Wj1_isGenMatched", "Wj2_isGenMatched",
       "bWj1Wj2_isGenMatched"
     );
+	//bdt_filler->register_variable<int_type>("mvaOutput_hadTopTagger");
     bdt_filler->bookTree(fs);
+
   }
+  std::cout << "Here after bdt filler" << std::endl;
 
   int numEntries = inputTree->GetEntries();
   int analyzedEntries = 0;
@@ -442,7 +452,7 @@ int main(int argc, char* argv[])
     std::vector<const RecoJet*> cleanedJets = jetCleaner(jet_ptrs, fakeableMuons, fakeableElectrons, selHadTaus);
     std::vector<const RecoJet*> selJets = jetSelector(cleanedJets);
 
-//--- build collections of generator level particles 
+	//--- build collections of generator level particles
     std::vector<GenParticle> genTopQuarks = genTopQuarkReader->read();
     std::vector<GenParticle> genBJets = genBJetReader->read();
     std::vector<GenParticle> genWBosons = genWBosonReader->read();
@@ -457,28 +467,30 @@ int main(int argc, char* argv[])
     }
 
     if ( !(genTopQuarks.size() == 2) ) continue;
-    cutFlowTable.update("2 genTopQuarks");
-    cutFlowHistManager->fillHistograms("2 genTopQuarks");
+    //cutFlowTable.update("2 genTopQuarks");
+    //cutFlowHistManager->fillHistograms("2 genTopQuarks");
     if ( !(genBJets.size() == 2) ) continue;
-    cutFlowTable.update("2 genBJets");
-    cutFlowHistManager->fillHistograms("2 genBJets");
+    //cutFlowTable.update("2 genBJets");
+    //cutFlowHistManager->fillHistograms("2 genBJets");
     if ( !(genWBosons.size() == 2) ) continue;
-    cutFlowTable.update("2 genWBosons");
-    cutFlowHistManager->fillHistograms("2 genWBosons");
+    //cutFlowTable.update("2 genWBosons");
+    //cutFlowHistManager->fillHistograms("2 genWBosons");
     if ( !(genWJets.size() >= 2) ) continue;
-    cutFlowTable.update(">= 2 genWJets");
-    cutFlowHistManager->fillHistograms(">= 2 genWJets");
-    
+    //cutFlowTable.update(">= 2 genWJets");
+    //cutFlowHistManager->fillHistograms(">= 2 genWJets");
+
     const GenParticle* genTopQuark = 0;
     const GenParticle* genAntiTopQuark = 0;
+	//const GenParticle* genWBosonsFromTop = 0;
+    //const GenParticle* genWBosonsFromAntiTop = 0;
     for ( std::vector<GenParticle>::const_iterator it = genTopQuarks.begin();
 	  it != genTopQuarks.end(); ++it ) {
       if ( it->pdgId() == +6 && !genTopQuark     ) genTopQuark = &(*it);
       if ( it->pdgId() == -6 && !genAntiTopQuark ) genAntiTopQuark = &(*it);
     }
-    if ( !(genTopQuark && genAntiTopQuark) ) continue;
-    cutFlowTable.update("genTopQuark && genAntiTopQuark");
-    cutFlowHistManager->fillHistograms("genTopQuark && genAntiTopQuark");
+    //if ( !(genTopQuark && genAntiTopQuark) ) continue;
+    //cutFlowTable.update("genTopQuark && genAntiTopQuark");
+    //cutFlowHistManager->fillHistograms("genTopQuark && genAntiTopQuark");
 
     const GenParticle* genBJetFromTop = 0;
     const GenParticle* genBJetFromAntiTop = 0;
@@ -487,9 +499,9 @@ int main(int argc, char* argv[])
       if ( it->pdgId() == +5 && !genBJetFromTop     ) genBJetFromTop = &(*it);
       if ( it->pdgId() == -5 && !genBJetFromAntiTop ) genBJetFromAntiTop = &(*it);
     }
-    if ( !(genBJetFromTop && genBJetFromAntiTop) ) continue;
-    cutFlowTable.update("genBJetFromTop && genBJetFromAntiTop");
-    cutFlowHistManager->fillHistograms("genBJetFromTop && genBJetFromAntiTop");
+    //if ( !(genBJetFromTop && genBJetFromAntiTop) ) continue;
+    //cutFlowTable.update("genBJetFromTop && genBJetFromAntiTop");
+    //cutFlowHistManager->fillHistograms("genBJetFromTop && genBJetFromAntiTop");
 
     const GenParticle* genWBosonFromTop = 0;
     const GenParticle* genWBosonFromAntiTop = 0;
@@ -498,45 +510,44 @@ int main(int argc, char* argv[])
       if ( it->pdgId() == +24 && !genWBosonFromTop     ) genWBosonFromTop = &(*it);
       if ( it->pdgId() == -24 && !genWBosonFromAntiTop ) genWBosonFromAntiTop = &(*it);
     }
-    if ( !(genWBosonFromTop && genWBosonFromAntiTop) ) continue;
-    cutFlowTable.update("genWBosonFromTop && genWBosonFromAntiTop");
-    cutFlowHistManager->fillHistograms("genWBosonFromTop && genWBosonFromAntiTop");
-
-    if ( !(std::fabs((genBJetFromTop->p4() + genWBosonFromTop->p4()).mass() - genTopQuark->mass()) < 1.e+1) ) continue;
-    cutFlowTable.update("genTopQuark mass");
-    cutFlowHistManager->fillHistograms("genTopQuark mass");
-    if ( !(std::fabs((genBJetFromAntiTop->p4() + genWBosonFromAntiTop->p4()).mass() - genAntiTopQuark->mass()) < 1.e+1) ) continue;
-    cutFlowTable.update("genAntiTopQuark mass");
-    cutFlowHistManager->fillHistograms("genAntiTopQuark mass");
-
+    //if ( !(genWBosonFromTop && genWBosonFromAntiTop) ) continue;
+    //cutFlowTable.update("genWBosonFromTop && genWBosonFromAntiTop");
+    //cutFlowHistManager->fillHistograms("genWBosonFromTop && genWBosonFromAntiTop");
+    if ( !(std::fabs((genBJetFromTop->p4() + genWBosonFromTop->p4()).mass() - genTopQuark->mass()) < 15.) ) continue;
+    //cutFlowTable.update("genTopQuark mass");
+    //cutFlowHistManager->fillHistograms("genTopQuark mass");
+    if ( !(std::fabs((genBJetFromAntiTop->p4() + genWBosonFromAntiTop->p4()).mass() - genAntiTopQuark->mass()) < 15.) ) continue;
+    //cutFlowTable.update("genAntiTopQuark mass");
+    //cutFlowHistManager->fillHistograms("genAntiTopQuark mass");
+	////////////////////////////////////////////////////////////////////////
     std::vector<const GenParticle*> genWJetsFromTop;
     double genWJetsFromTop_mass = -1.;
     std::vector<const GenParticle*> genWJetsFromAntiTop;
     double genWJetsFromAntiTop_mass = -1.;
-    for ( std::vector<GenParticle>::const_iterator it1 = genWJets.begin();
-	  it1 != genWJets.end(); ++it1 ) {
-      for ( std::vector<GenParticle>::const_iterator it2 = it1 + 1;
-	    it2 != genWJets.end(); ++it2 ) {
-	if ( ((it1->charge() + it2->charge()) - genWBosonFromTop->charge()) < 1.e-2 ) {
-	  if ( genWJetsFromTop_mass == -1. || 
-	       std::fabs((it1->p4() + it2->p4()).mass() - genWBosonFromTop->mass()) < std::fabs(genWJetsFromTop_mass - genWBosonFromTop->mass()) ) {
-	    genWJetsFromTop.clear();
-	    genWJetsFromTop.push_back(&(*it1));
-	    genWJetsFromTop.push_back(&(*it2));
-	    genWJetsFromTop_mass = (it1->p4() + it2->p4()).mass();
-	  }
-	}
-	if ( ((it1->charge() + it2->charge()) - genWBosonFromAntiTop->charge()) < 1.e-2 ) {
-	  if ( genWJetsFromAntiTop_mass == -1. || 
-	       std::fabs((it1->p4() + it2->p4()).mass() - genWBosonFromAntiTop->mass()) < std::fabs(genWJetsFromAntiTop_mass - genWBosonFromAntiTop->mass()) ) {
-	    genWJetsFromAntiTop.clear();
-	    genWJetsFromAntiTop.push_back(&(*it1));
-	    genWJetsFromAntiTop.push_back(&(*it2));
-	    genWJetsFromAntiTop_mass = (it1->p4() + it2->p4()).mass();
-	  }
-	}
-      }
-    }    
+    for ( std::vector<GenParticle>::const_iterator it1 = genWJets.begin(); it1 != genWJets.end(); ++it1 ) {
+		for ( std::vector<GenParticle>::const_iterator it2 = it1 + 1;
+			it2 != genWJets.end(); ++it2 ) {
+			if ( ((it1->charge() + it2->charge()) - genWBosonFromTop->charge()) < 1.e-2 ) {
+			  if ( genWJetsFromTop_mass == -1. ||
+				   std::fabs((it1->p4() + it2->p4()).mass() - genWBosonFromTop->mass()) < std::fabs(genWJetsFromTop_mass - genWBosonFromTop->mass()) ) {
+				genWJetsFromTop.clear();
+				genWJetsFromTop.push_back(&(*it1));
+				genWJetsFromTop.push_back(&(*it2));
+				genWJetsFromTop_mass = (it1->p4() + it2->p4()).mass();
+			  }
+			}
+			if ( ((it1->charge() + it2->charge()) - genWBosonFromAntiTop->charge()) < 1.e-2 ) {
+			  if ( genWJetsFromAntiTop_mass == -1. ||
+				   std::fabs((it1->p4() + it2->p4()).mass() - genWBosonFromAntiTop->mass()) < std::fabs(genWJetsFromAntiTop_mass - genWBosonFromAntiTop->mass()) ) {
+				genWJetsFromAntiTop.clear();
+				genWJetsFromAntiTop.push_back(&(*it1));
+				genWJetsFromAntiTop.push_back(&(*it2));
+				genWJetsFromAntiTop_mass = (it1->p4() + it2->p4()).mass();
+				}
+			}
+		}
+    }
+	/////////////////////////////////////////////////////////
     if ( !(genWJetsFromTop.size() == 2 || genWJetsFromAntiTop.size() == 2) ) continue;
     cutFlowTable.update("2 genWJetsFromTop || 2 genWJetsFromAntiTop");
     cutFlowHistManager->fillHistograms("2 genWJetsFromTop || 2 genWJetsFromAntiTop");
@@ -547,9 +558,9 @@ int main(int argc, char* argv[])
       std::sort(genWJetsFromTop.begin(), genWJetsFromTop.end(), isHigherPt);
       genWJetFromTop_lead = genWJetsFromTop[0];
       genWJetFromTop_sublead = genWJetsFromTop[1];
-      if ( !(std::fabs((genWJetFromTop_lead->p4() + genWJetFromTop_sublead->p4()).mass() - genWBosonFromTop->mass()) < 5.) ) failsWbosonMassVeto_top = true;
+      if ( !(std::fabs((genWJetFromTop_lead->p4() + genWJetFromTop_sublead->p4()).mass() - genWBosonFromTop->mass()) < 15.) ) failsWbosonMassVeto_top = true;
     }
-    if ( failsWbosonMassVeto_top ) continue; 
+    if ( failsWbosonMassVeto_top ) continue;
     cutFlowTable.update("genWBosonFromTop mass");
     cutFlowHistManager->fillHistograms("genWBosonFromTop mass");
     const GenParticle* genWJetFromAntiTop_lead = 0;
@@ -559,12 +570,12 @@ int main(int argc, char* argv[])
       std::sort(genWJetsFromAntiTop.begin(), genWJetsFromAntiTop.end(), isHigherPt);
       genWJetFromAntiTop_lead = genWJetsFromAntiTop[0];
       genWJetFromAntiTop_sublead = genWJetsFromAntiTop[1];
-      if ( !(std::fabs((genWJetFromAntiTop_lead->p4() + genWJetFromAntiTop_sublead->p4()).mass() - genWBosonFromAntiTop->mass()) < 5.) ) failsWbosonMassVeto_antiTop = true;
+      if ( !(std::fabs((genWJetFromAntiTop_lead->p4() + genWJetFromAntiTop_sublead->p4()).mass() - genWBosonFromAntiTop->mass()) < 15.) ) failsWbosonMassVeto_antiTop = true;
     }
-    if ( failsWbosonMassVeto_antiTop ) continue; 
+    if ( failsWbosonMassVeto_antiTop ) continue;
     cutFlowTable.update("genWBosonFromAntiTop mass");
     cutFlowHistManager->fillHistograms("genWBosonFromAntiTop mass");
-    
+
     if ( isDEBUG ) {
       std::cout << "top:" << (*genTopQuark);
       std::cout << " b:" << (*genBJetFromTop);
@@ -586,7 +597,7 @@ int main(int argc, char* argv[])
       }
       std::cout << std::endl;
     }
-    
+
     double evtWeight = 1.;
     if ( isMC ) {
       evtWeight *= lumiScale;
@@ -594,84 +605,104 @@ int main(int argc, char* argv[])
       evtWeight *= pileupWeight;
     }
 
-    for ( std::vector<const RecoJet*>::const_iterator selBJet = selJets.begin();
-	  selBJet != selJets.end(); ++selBJet ) {
+    for ( std::vector<const RecoJet*>::const_iterator selBJet = selJets.begin(); selBJet != selJets.end(); ++selBJet ) {
+		bool selBJet_isFromTop = deltaR((*selBJet)->p4(), genBJetFromTop->p4()) < 0.2;
+		bool selBJet_isFromAntiTop = deltaR((*selBJet)->p4(), genBJetFromAntiTop->p4()) < 0.2;
+		for ( std::vector<const RecoJet*>::const_iterator selWJet1 = selJets.begin(); selWJet1 != selJets.end(); ++selWJet1 ) {
+			if ( &(*selWJet1) == &(*selBJet) ) continue;
+			bool selWJet1_isFromTop =
+				(genWJetFromTop_lead        && deltaR((*selWJet1)->p4(), genWJetFromTop_lead->p4())        < 0.2) ||
+				(genWJetFromTop_sublead     && deltaR((*selWJet1)->p4(), genWJetFromTop_sublead->p4())     < 0.2);
+			bool selWJet1_isFromAntiTop =
+				(genWJetFromAntiTop_lead    && deltaR((*selWJet1)->p4(), genWJetFromAntiTop_lead->p4())    < 0.2) ||
+				(genWJetFromAntiTop_sublead && deltaR((*selWJet1)->p4(), genWJetFromAntiTop_sublead->p4()) < 0.2);
+			for ( std::vector<const RecoJet*>::const_iterator selWJet2 = selWJet1 + 1; selWJet2 != selJets.end(); ++selWJet2 ) {
+				if ( &(*selWJet2) == &(*selBJet) ) continue;
+				if ( &(*selWJet1) == &(*selWJet2) ) continue;
+				  bool selWJet2_isFromTop =
+					(genWJetFromTop_lead        && deltaR((*selWJet2)->p4(), genWJetFromTop_lead->p4())        < 0.2) ||
+					(genWJetFromTop_sublead     && deltaR((*selWJet2)->p4(), genWJetFromTop_sublead->p4())     < 0.2);
+				  bool selWJet2_isFromAntiTop =
+					(genWJetFromAntiTop_lead    && deltaR((*selWJet2)->p4(), genWJetFromAntiTop_lead->p4())    < 0.2) ||
+					(genWJetFromAntiTop_sublead && deltaR((*selWJet2)->p4(), genWJetFromAntiTop_sublead->p4()) < 0.2);
+				double  mvaOutput = (*hadTopTaggerFill)(**selBJet, **selWJet1, **selWJet2);
+				const std::map<std::string, double>& mvaInputs =  hadTopTaggerFill->mvaInputs();
+				//std::cout << "mvaInputs:" << std::endl;
+				int idxGenMatch_top     = getGenMatch(selBJet_isFromTop, selWJet1_isFromTop, selWJet2_isFromTop);
+				int idxGenMatch_antiTop = getGenMatch(selBJet_isFromAntiTop, selWJet1_isFromAntiTop, selWJet2_isFromAntiTop);
+				if ( (idxGenMatch_antiTop != kGen_bWj1Wj2) || (idxGenMatch_top != kGen_bWj1Wj2) ) {
+					// CV: don't consider top matching if reconstructed jet triplet is (fully) matched to anti-top
+					if (DoHist) {
+						assert(mvaInputHistManagers.find(idxGenMatch_top) != mvaInputHistManagers.end());
+						mvaInputHistManagers[idxGenMatch_top]->fillHistograms(mvaInputs, evtWeight);
+						//fillWithOverFlow(mvaOutputHistManagers[idxGenMatch_top], mvaOutput[0], evtWeight);
+					}
+					bdt_filler->operator()({ run, lumi, event });
+					for ( std::map<std::string, double>::const_iterator mvaInput = mvaInputs.begin();
+						mvaInput != mvaInputs.end(); ++mvaInput ) {
+						bdt_filler->operator()(mvaInput->first, mvaInput->second);
+					}
+					bdt_filler->operator()("b_isGenMatched", selBJet_isFromTop || selBJet_isFromAntiTop);
+					bdt_filler->operator()("Wj1_isGenMatched", selWJet1_isFromTop || selWJet1_isFromAntiTop);
+					bdt_filler->operator()("Wj2_isGenMatched", selWJet2_isFromTop || selWJet2_isFromAntiTop);
+					bool tripletTruth    = (selBJet_isFromTop == 1) && \
+											 (selWJet1_isFromTop == 1) && \
+											 (selWJet2_isFromTop == 1);
+					bool tripletTruthAnti= (selBJet_isFromAntiTop == 1) && \
+											 (selWJet1_isFromAntiTop == 1) && \
+											 (selWJet2_isFromAntiTop == 1);
+					bdt_filler->operator()("bWj1Wj2_isGenMatched", tripletTruth==1 && tripletTruthAnti==1);
+					std::vector<bool> truth_hadTopTagger; //= hadTopTaggerFill->isTruth(**selBJet, **selWJet1, **selWJet2,
+																						//genTopQuarks, genBJets, genWBosons);
+					std::vector<bool> truth_hadTopTagger3Jet; //= hadTopTaggerFill->isTruth3Jet(**selBJet, **selWJet1, **selWJet2,
+														// genTopQuarks, genBJets, genWBosons, genWJets);
+					if (mvaOutput==0){
+						bdt_filler->fill();
+						//std::cout<<(1>0 && 2>1 && 3>1)<<" "<<(1>0 && 1>2) <<std::endl;
+            /*
+						if ( !(truth_hadTopTagger3Jet[6]==tripletTruthAnti) )
+							{std::cout
+							<<truth_hadTopTagger3Jet[0]<<" "<<truth_hadTopTagger3Jet[1]<<" "<<truth_hadTopTagger3Jet[2]<<"  : "
+							<<truth_hadTopTagger3Jet[3]<<" "<<truth_hadTopTagger3Jet[4]<<" "<<truth_hadTopTagger3Jet[5]<<" , "
+							<<truth_hadTopTagger3Jet[6]<<" "<<truth_hadTopTagger3Jet[7]<<" / "
+								<<selBJet_isFromTop<<" "<<selWJet1_isFromTop<<" "<<selWJet2_isFromTop<<"  : "
+								<<selBJet_isFromAntiTop<<" "<<selWJet1_isFromAntiTop<<" "<<selWJet2_isFromAntiTop<<" , "
+								<<tripletTruth<<" "<<tripletTruthAnti<<std::endl;}
+						else if ( !(truth_hadTopTagger3Jet[7]==tripletTruth) )
+							{std::cout
+							<<truth_hadTopTagger3Jet[0]<<" "<<truth_hadTopTagger3Jet[1]<<" "<<truth_hadTopTagger3Jet[2]<<"  : "
+							<<truth_hadTopTagger3Jet[3]<<" "<<truth_hadTopTagger3Jet[4]<<" "<<truth_hadTopTagger3Jet[5]<<" , "
+							<<truth_hadTopTagger3Jet[6]<<" "<<truth_hadTopTagger3Jet[7]<<" / "
+								<<selBJet_isFromTop<<" "<<selWJet1_isFromTop<<" "<<selWJet2_isFromTop<<"  : "
+								<<selBJet_isFromAntiTop<<" "<<selWJet1_isFromAntiTop<<" "<<selWJet2_isFromAntiTop<<" , "
+								<<tripletTruth<<" "<<tripletTruthAnti<<std::endl;}
+						else {std::cout
+								<<truth_hadTopTagger3Jet[0]<<" "<<truth_hadTopTagger3Jet[1]<<" "<<truth_hadTopTagger3Jet[2]<<"  : "
+								<<truth_hadTopTagger3Jet[3]<<" "<<truth_hadTopTagger3Jet[4]<<" "<<truth_hadTopTagger3Jet[5]<<" , "
+								<<truth_hadTopTagger3Jet[6]<<" "<<truth_hadTopTagger3Jet[7]<<" / "
+								<<selBJet_isFromTop<<" "<<selWJet1_isFromTop<<" "<<selWJet2_isFromTop<<"  : "
+								<<selBJet_isFromAntiTop<<" "<<selWJet1_isFromAntiTop<<" "<<selWJet2_isFromAntiTop<<" , "
+								<<tripletTruth<<" "<<tripletTruthAnti<<" top truth problem "<<std::endl;}
+						*/
+						//
+						/*
+						if (selBJet_isFromTop) {std::cout<<" "<<truth_hadTopTagger3Jet[3] <<" top truth problem "<<
+							deltaR((*selWJet1)->p4()+(*selWJet2)->p4(), genWBosonsFromAntiTop->p4())<<" "
+							<< deltaR((*selWJet1)->p4()+(*selWJet2)->p4(), genWBosonsFromTop->p4())<<std::endl;
+						} else {std::cout<<" "<<truth_hadTopTagger3Jet[3] <<" "<<
+							deltaR((*selWJet1)->p4()+(*selWJet2)->p4(), genWBosonsFromAntiTop->p4())<<" "
+							<< deltaR((*selWJet1)->p4()+(*selWJet2)->p4(), genWBosonsFromTop->p4())<<std::endl;}
+						*/
+					}
+					//bdt_filler->operator()("mvaOutput_hadTopTagger", result);
+					//
 
-      bool selBJet_isFromTop = deltaR((*selBJet)->p4(), genBJetFromTop->p4()) < 0.2;
-      bool selBJet_isFromAntiTop = deltaR((*selBJet)->p4(), genBJetFromAntiTop->p4()) < 0.2;
-
-      for ( std::vector<const RecoJet*>::const_iterator selWJet1 = selJets.begin();
-	    selWJet1 != selJets.end(); ++selWJet1 ) {
-
-	if ( &(*selWJet1) == &(*selBJet) ) continue;
-
-	bool selWJet1_isFromTop = 
-	  (genWJetFromTop_lead        && deltaR((*selWJet1)->p4(), genWJetFromTop_lead->p4())        < 0.2) || 
-	  (genWJetFromTop_sublead     && deltaR((*selWJet1)->p4(), genWJetFromTop_sublead->p4())     < 0.2);
-	bool selWJet1_isFromAntiTop = 
-	  (genWJetFromAntiTop_lead    && deltaR((*selWJet1)->p4(), genWJetFromAntiTop_lead->p4())    < 0.2) || 
-	  (genWJetFromAntiTop_sublead && deltaR((*selWJet1)->p4(), genWJetFromAntiTop_sublead->p4()) < 0.2);
-
-	for ( std::vector<const RecoJet*>::const_iterator selWJet2 = selWJet1 + 1;
-	      selWJet2 != selJets.end(); ++selWJet2 ) {
-
-	  if ( &(*selWJet2) == &(*selBJet) ) continue;
-
-	  bool selWJet2_isFromTop = 
-  	    (genWJetFromTop_lead        && deltaR((*selWJet2)->p4(), genWJetFromTop_lead->p4())        < 0.2) || 
-	    (genWJetFromTop_sublead     && deltaR((*selWJet2)->p4(), genWJetFromTop_sublead->p4())     < 0.2);
-	  bool selWJet2_isFromAntiTop = 
-	    (genWJetFromAntiTop_lead    && deltaR((*selWJet2)->p4(), genWJetFromAntiTop_lead->p4())    < 0.2) || 
-	    (genWJetFromAntiTop_sublead && deltaR((*selWJet2)->p4(), genWJetFromAntiTop_sublead->p4()) < 0.2);
-
-	  double mvaOutput = (*hadTopTagger)(**selBJet, **selWJet1, **selWJet2);
-	  const std::map<std::string, double>& mvaInputs = hadTopTagger->mvaInputs();
-	  //std::cout << "mvaInputs:" << std::endl;
-	  //for ( std::map<std::string, double>::const_iterator mvaInput = mvaInputs.begin();
-	  //  	  mvaInput != mvaInputs.end(); ++mvaInput ) {
-	  //  std::cout << " " << mvaInput->first << " = " << mvaInput->second << std::endl;
-	  //}
-	  //std::cout << "selBJet: isFromTop = " << selBJet_isFromTop << ", isFromAntiTop = " << selBJet_isFromAntiTop << std::endl;
-	  //std::cout << "selWJet1: isFromTop = " << selWJet1_isFromTop << ", isFromAntiTop = " << selWJet1_isFromAntiTop << std::endl;
-	  //std::cout << "selWJet2: isFromTop = " << selWJet2_isFromTop << ", isFromAntiTop = " << selWJet2_isFromAntiTop << std::endl;
-
-	  int idxGenMatch_top     = getGenMatch(selBJet_isFromTop, selWJet1_isFromTop, selWJet2_isFromTop);
-	  int idxGenMatch_antiTop = getGenMatch(selBJet_isFromAntiTop, selWJet1_isFromAntiTop, selWJet2_isFromAntiTop);
-
-	  if ( idxGenMatch_antiTop != kGen_bWj1Wj2 ) { // CV: don't consider top matching if reconstructed jet triplet is (fully) matched to anti-top
-	    assert(mvaInputHistManagers.find(idxGenMatch_top) != mvaInputHistManagers.end());
-	    mvaInputHistManagers[idxGenMatch_top]->fillHistograms(mvaInputs, evtWeight);
-	    fillWithOverFlow(mvaOutputHistManagers[idxGenMatch_top], mvaOutput, evtWeight);
-	    bdt_filler->operator()({ run, lumi, event });
-	    for ( std::map<std::string, double>::const_iterator mvaInput = mvaInputs.begin();
-		  mvaInput != mvaInputs.end(); ++mvaInput ) {
-	      bdt_filler->operator()(mvaInput->first, mvaInput->second);
-	    }
-	    bdt_filler->operator()("b_isGenMatched", selBJet_isFromTop);
-	    bdt_filler->operator()("Wj1_isGenMatched", selWJet1_isFromTop);
-	    bdt_filler->operator()("Wj2_isGenMatched", selWJet2_isFromTop);
-	    bdt_filler->operator()("bWj1Wj2_isGenMatched", selBJet_isFromTop && selWJet1_isFromTop && selWJet2_isFromTop);
-	    bdt_filler->fill();
-	  }
-	  if ( idxGenMatch_top != kGen_bWj1Wj2 ) { // CV: don't consider anti-top matching if reconstructed jet triplet is (fully) matched to top
-	    assert(mvaInputHistManagers.find(idxGenMatch_antiTop) != mvaInputHistManagers.end());
-	    mvaInputHistManagers[idxGenMatch_antiTop]->fillHistograms(mvaInputs, evtWeight);
-	    fillWithOverFlow(mvaOutputHistManagers[idxGenMatch_antiTop], mvaOutput, evtWeight);
-	    bdt_filler->operator()({ run, lumi, event });
-	    for ( std::map<std::string, double>::const_iterator mvaInput = mvaInputs.begin();
-		  mvaInput != mvaInputs.end(); ++mvaInput ) {
-	      bdt_filler->operator()(mvaInput->first, mvaInput->second);
-	    }
-	    bdt_filler->operator()("b_isGenMatched", selBJet_isFromAntiTop);
-	    bdt_filler->operator()("Wj1_isGenMatched", selWJet1_isFromAntiTop);
-	    bdt_filler->operator()("Wj2_isGenMatched", selWJet2_isFromAntiTop);
-	    bdt_filler->operator()("bWj1Wj2_isGenMatched", selBJet_isFromAntiTop && selWJet1_isFromAntiTop && selWJet2_isFromAntiTop);
-	    bdt_filler->fill();
-	  }
-	}
-      }
+				}
+				//}
+			}
+        }
     }
-        
+
     ++selectedEntries;
     selectedEntries_weighted += evtWeight;
     histogram_selectedEntries->Fill(0.);
@@ -681,7 +712,7 @@ int main(int argc, char* argv[])
   std::cout << " analyzed = " << analyzedEntries << std::endl;
   std::cout << " selected = " << selectedEntries << " (weighted = " << selectedEntries_weighted << ")" << std::endl;
   std::cout << std::endl;
-  
+
   std::cout << "cut-flow table" << std::endl;
   cutFlowTable.print(std::cout);
   std::cout << std::endl;
@@ -698,10 +729,9 @@ int main(int argc, char* argv[])
   delete genWBosonReader;
   delete genWJetReader;
 
-  delete hadTopTagger;
+  delete hadTopTaggerFill;
 
   clock.Show("analyze_hadTopTagger");
 
   return EXIT_SUCCESS;
 }
-

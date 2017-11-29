@@ -322,7 +322,7 @@ class sbatchManager:
             print("cmssw_base_dir not set, setting it to '%s'" % os.environ.get('CMSSW_BASE'))
             self.cmssw_base_dir = os.environ.get('CMSSW_BASE')
 
-        scratch_dir = self.get_scratch_dir()
+        job_dir = self.get_job_dir()
 
         # create script for executing jobs
         wrapper_log_file    = logFile.replace('.log', '_wrapper.log')
@@ -344,7 +344,7 @@ class sbatchManager:
         script = jinja2.Template(job_template).render(
             working_dir            = self.workingDir,
             cmssw_base_dir         = self.cmssw_base_dir,
-            scratch_dir            = scratch_dir,
+            job_dir                = job_dir,
             exec_name              = executable,
             command_line_parameter = command_line_parameter,
             inputFiles             = " ".join(inputFiles),
@@ -371,17 +371,18 @@ class sbatchManager:
             'log_exec' : executable_log_file,
         }
 
-    def get_scratch_dir(self):
-        scratch_dir = "/scratch/%s" % getpass.getuser()
-        if not os.path.exists(scratch_dir):
-            logging.info("Directory '%s' does not yet exist, creating it !!" % scratch_dir)
+    def get_job_dir(self, use_home = False):
+        if use_home:
+            prefix = os.path.join('/home', getpass.getuser(), 'jobs')
+        else:
+            prefix = os.path.join('/scratch', getpass.getuser())
+        if not use_home and not os.path.exists(prefix):
+            logging.info("Directory '%s' does not yet exist, creating it !!" % prefix)
             run_cmd(command_create_scratchDir)
-        scratch_dir = os.path.join(
-            scratch_dir,
-            "%s_%s" % (self.analysisName, datetime.date.today().isoformat()),
+        job_dir = os.path.join(
+            prefix, "%s_%s" % (self.analysisName, datetime.date.today().isoformat()),
         )
-        create_if_not_exists(scratch_dir)
-        return scratch_dir
+        return job_dir
 
     def waitForJobs(self):
         """Waits for all sbatch jobs submitted by this instance of sbatchManager to finish processing

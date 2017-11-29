@@ -1,7 +1,7 @@
 from collections import OrderedDict as OD
 
 # file generated with the following command:
-# ./scripts/create_dictionary.py -v -m python/metaDict_2016.py -p /hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all -Z zeroes.txt -z zombies.txt -N samples_2016 -E 2016
+# ./scripts/create_dictionary.py -v -m python/metaDict_2016.py -p /hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all -Z zeroes.txt -z zombies.txt -N samples_2016 -E 2016
 
 samples_2016 = OD()
 samples_2016["/DoubleEG/Run2016B-23Sep2016-v3/MINIAOD"] = OD([
@@ -18,7 +18,7 @@ samples_2016["/DoubleEG/Run2016B-23Sep2016-v3/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/DoubleEG_Run2016B_v3"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/DoubleEG_Run2016B_v3"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -40,7 +40,7 @@ samples_2016["/DoubleEG/Run2016C-23Sep2016-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/DoubleEG_Run2016C_v1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/DoubleEG_Run2016C_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -62,7 +62,7 @@ samples_2016["/DoubleEG/Run2016D-23Sep2016-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/DoubleEG_Run2016D_v1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/DoubleEG_Run2016D_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -84,7 +84,7 @@ samples_2016["/DoubleEG/Run2016E-23Sep2016-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/DoubleEG_Run2016E_v1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/DoubleEG_Run2016E_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -106,7 +106,7 @@ samples_2016["/DoubleEG/Run2016F-23Sep2016-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/DoubleEG_Run2016F_v1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/DoubleEG_Run2016F_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -128,7 +128,7 @@ samples_2016["/DoubleEG/Run2016G-23Sep2016-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/DoubleEG_Run2016G_v1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/DoubleEG_Run2016G_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -150,7 +150,7 @@ samples_2016["/DoubleEG/Run2016H-PromptReco-v2/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/DoubleEG_Run2016H_v2_promptReco"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/DoubleEG_Run2016H_v2_promptReco"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -172,7 +172,7 @@ samples_2016["/DoubleEG/Run2016H-PromptReco-v3/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/DoubleEG_Run2016H_v3_promptReco"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/DoubleEG_Run2016H_v3_promptReco"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -194,7 +194,7 @@ samples_2016["/DoubleMuon/Run2016B-23Sep2016-v3/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/DoubleMuon_Run2016B_v3"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/DoubleMuon_Run2016B_v3"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -216,7 +216,7 @@ samples_2016["/DoubleMuon/Run2016C-23Sep2016-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/DoubleMuon_Run2016C_v1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/DoubleMuon_Run2016C_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -238,7 +238,7 @@ samples_2016["/DoubleMuon/Run2016D-23Sep2016-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/DoubleMuon_Run2016D_v1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/DoubleMuon_Run2016D_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -260,7 +260,7 @@ samples_2016["/DoubleMuon/Run2016E-23Sep2016-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/DoubleMuon_Run2016E_v1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/DoubleMuon_Run2016E_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -282,7 +282,7 @@ samples_2016["/DoubleMuon/Run2016F-23Sep2016-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/DoubleMuon_Run2016F_v1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/DoubleMuon_Run2016F_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -304,7 +304,7 @@ samples_2016["/DoubleMuon/Run2016G-23Sep2016-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/DoubleMuon_Run2016G_v1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/DoubleMuon_Run2016G_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -326,7 +326,7 @@ samples_2016["/DoubleMuon/Run2016H-PromptReco-v2/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/DoubleMuon_Run2016H_v2_promptReco"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/DoubleMuon_Run2016H_v2_promptReco"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -348,7 +348,7 @@ samples_2016["/DoubleMuon/Run2016H-PromptReco-v3/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/DoubleMuon_Run2016H_v3_promptReco"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/DoubleMuon_Run2016H_v3_promptReco"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -370,7 +370,7 @@ samples_2016["/MuonEG/Run2016B-23Sep2016-v3/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/MuonEG_Run2016B_v3"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/MuonEG_Run2016B_v3"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -392,7 +392,7 @@ samples_2016["/MuonEG/Run2016C-23Sep2016-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/MuonEG_Run2016C_v1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/MuonEG_Run2016C_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -414,7 +414,7 @@ samples_2016["/MuonEG/Run2016D-23Sep2016-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/MuonEG_Run2016D_v1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/MuonEG_Run2016D_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -436,7 +436,7 @@ samples_2016["/MuonEG/Run2016E-23Sep2016-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/MuonEG_Run2016E_v1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/MuonEG_Run2016E_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -458,7 +458,7 @@ samples_2016["/MuonEG/Run2016F-23Sep2016-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/MuonEG_Run2016F_v1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/MuonEG_Run2016F_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -480,7 +480,7 @@ samples_2016["/MuonEG/Run2016G-23Sep2016-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/MuonEG_Run2016G_v1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/MuonEG_Run2016G_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -502,7 +502,7 @@ samples_2016["/MuonEG/Run2016H-PromptReco-v2/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/MuonEG_Run2016H_v2_promptReco"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/MuonEG_Run2016H_v2_promptReco"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -524,7 +524,7 @@ samples_2016["/MuonEG/Run2016H-PromptReco-v3/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/MuonEG_Run2016H_v3_promptReco"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/MuonEG_Run2016H_v3_promptReco"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -546,7 +546,7 @@ samples_2016["/SingleElectron/Run2016B-23Sep2016-v3/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/SingleElectron_Run2016B_v3"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/SingleElectron_Run2016B_v3"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -568,7 +568,7 @@ samples_2016["/SingleElectron/Run2016C-23Sep2016-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/SingleElectron_Run2016C_v1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/SingleElectron_Run2016C_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -590,7 +590,7 @@ samples_2016["/SingleElectron/Run2016D-23Sep2016-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/SingleElectron_Run2016D_v1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/SingleElectron_Run2016D_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -612,7 +612,7 @@ samples_2016["/SingleElectron/Run2016E-23Sep2016-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/SingleElectron_Run2016E_v1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/SingleElectron_Run2016E_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -634,7 +634,7 @@ samples_2016["/SingleElectron/Run2016F-23Sep2016-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/SingleElectron_Run2016F_v1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/SingleElectron_Run2016F_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -656,7 +656,7 @@ samples_2016["/SingleElectron/Run2016G-23Sep2016-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/SingleElectron_Run2016G_v1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/SingleElectron_Run2016G_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -678,7 +678,7 @@ samples_2016["/SingleElectron/Run2016H-PromptReco-v2/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/SingleElectron_Run2016H_v2_promptReco"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/SingleElectron_Run2016H_v2_promptReco"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -700,7 +700,7 @@ samples_2016["/SingleElectron/Run2016H-PromptReco-v3/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/SingleElectron_Run2016H_v3_promptReco"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/SingleElectron_Run2016H_v3_promptReco"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -722,7 +722,7 @@ samples_2016["/SingleMuon/Run2016B-23Sep2016-v3/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/SingleMuon_Run2016B_v3"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/SingleMuon_Run2016B_v3"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -744,7 +744,7 @@ samples_2016["/SingleMuon/Run2016C-23Sep2016-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/SingleMuon_Run2016C_v1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/SingleMuon_Run2016C_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -766,7 +766,7 @@ samples_2016["/SingleMuon/Run2016D-23Sep2016-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/SingleMuon_Run2016D_v1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/SingleMuon_Run2016D_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -788,7 +788,7 @@ samples_2016["/SingleMuon/Run2016E-23Sep2016-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/SingleMuon_Run2016E_v1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/SingleMuon_Run2016E_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -810,7 +810,7 @@ samples_2016["/SingleMuon/Run2016F-23Sep2016-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/SingleMuon_Run2016F_v1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/SingleMuon_Run2016F_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -832,7 +832,7 @@ samples_2016["/SingleMuon/Run2016G-23Sep2016-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/SingleMuon_Run2016G_v1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/SingleMuon_Run2016G_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -854,7 +854,7 @@ samples_2016["/SingleMuon/Run2016H-PromptReco-v2/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/SingleMuon_Run2016H_v2_promptReco"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/SingleMuon_Run2016H_v2_promptReco"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -876,7 +876,7 @@ samples_2016["/SingleMuon/Run2016H-PromptReco-v3/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/SingleMuon_Run2016H_v3_promptReco"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/SingleMuon_Run2016H_v3_promptReco"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -898,7 +898,7 @@ samples_2016["/Tau/Run2016B-23Sep2016-v3/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/Tau_Run2016B_v3"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/Tau_Run2016B_v3"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -920,7 +920,7 @@ samples_2016["/Tau/Run2016C-23Sep2016-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/Tau_Run2016C_v1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/Tau_Run2016C_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -942,7 +942,7 @@ samples_2016["/Tau/Run2016D-23Sep2016-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/Tau_Run2016D_v1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/Tau_Run2016D_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -964,7 +964,7 @@ samples_2016["/Tau/Run2016E-23Sep2016-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/Tau_Run2016E_v1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/Tau_Run2016E_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -986,7 +986,7 @@ samples_2016["/Tau/Run2016F-23Sep2016-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/Tau_Run2016F_v1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/Tau_Run2016F_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -1008,7 +1008,7 @@ samples_2016["/Tau/Run2016G-23Sep2016-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/Tau_Run2016G_v1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/Tau_Run2016G_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -1030,7 +1030,7 @@ samples_2016["/Tau/Run2016H-PromptReco-v2/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/Tau_Run2016H_v2_promptReco"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/Tau_Run2016H_v2_promptReco"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -1052,7 +1052,7 @@ samples_2016["/Tau/Run2016H-PromptReco-v3/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/Tau_Run2016H_v3_promptReco"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/Tau_Run2016H_v3_promptReco"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -1076,7 +1076,7 @@ samples_2016["/DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIIS
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/DYJetsToLL_M-10to50"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/DYJetsToLL_M-10to50"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -1100,7 +1100,7 @@ samples_2016["/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISumme
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/DYJetsToLL_M-50_ext1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/DYJetsToLL_M-50_ext1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -1124,7 +1124,7 @@ samples_2016["/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISumme
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/DYJetsToLL_M-50_ext2"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/DYJetsToLL_M-50_ext2"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -1148,7 +1148,7 @@ samples_2016["/GluGluHToZZTo4L_M125_13TeV_powheg2_JHUgenV6_pythia8/RunIISummer16
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/GluGluHToZZTo4L"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/GluGluHToZZTo4L"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -1172,7 +1172,7 @@ samples_2016["/ST_s-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1/
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/ST_s-channel_4f_leptonDecays"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/ST_s-channel_4f_leptonDecays"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -1196,7 +1196,7 @@ samples_2016["/ST_t-channel_antitop_4f_inclusiveDecays_13TeV-powhegV2-madspin-py
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/ST_t-channel_antitop_4f_inclusiveDecays"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/ST_t-channel_antitop_4f_inclusiveDecays"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -1220,7 +1220,7 @@ samples_2016["/ST_t-channel_top_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/ST_t-channel_top_4f_inclusiveDecays"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/ST_t-channel_top_4f_inclusiveDecays"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -1244,7 +1244,7 @@ samples_2016["/ST_tW_antitop_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/ST_tW_antitop_5f_inclusiveDecays"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/ST_tW_antitop_5f_inclusiveDecays"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -1268,7 +1268,7 @@ samples_2016["/ST_tW_top_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1/Ru
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/ST_tW_top_5f_inclusiveDecays"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/ST_tW_top_5f_inclusiveDecays"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -1292,7 +1292,7 @@ samples_2016["/TGJets_TuneCUETP8M1_13TeV_amcatnlo_madspin_pythia8/RunIISummer16M
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/TGJets_ext1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/TGJets_ext1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -1316,7 +1316,7 @@ samples_2016["/TGJets_TuneCUETP8M1_13TeV_amcatnlo_madspin_pythia8/RunIISummer16M
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/TGJets"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/TGJets"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -1340,7 +1340,7 @@ samples_2016["/TTGJets_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/RunIISumm
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/TTGJets_ext1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/TTGJets_ext1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -1364,7 +1364,7 @@ samples_2016["/TTGJets_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/RunIISumm
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/TTGJets"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/TTGJets"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -1388,7 +1388,7 @@ samples_2016["/ttHJetTobb_M125_13TeV_amcatnloFXFX_madspin_pythia8/RunIISummer16M
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/ttHJetTobb_M125"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/ttHJetTobb_M125"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -1412,7 +1412,7 @@ samples_2016["/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/Ru
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/ttHJetToNonbb_M125_amcatnlo"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/ttHJetToNonbb_M125_amcatnlo"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -1436,7 +1436,7 @@ samples_2016["/ttHToNonbb_M125_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/Run
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/ttHToNonbb_M125_powheg"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/ttHToNonbb_M125_powheg"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -1460,7 +1460,7 @@ samples_2016["/TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer1
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/TTJets_DiLept_ext1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/TTJets_DiLept_ext1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -1484,7 +1484,7 @@ samples_2016["/TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer1
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/TTJets_DiLept"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/TTJets_DiLept"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -1508,7 +1508,7 @@ samples_2016["/TTJets_SingleLeptFromTbar_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/TTJets_SingleLeptFromTbar_ext1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/TTJets_SingleLeptFromTbar_ext1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -1532,7 +1532,7 @@ samples_2016["/TTJets_SingleLeptFromTbar_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/TTJets_SingleLeptFromTbar"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/TTJets_SingleLeptFromTbar"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -1556,7 +1556,7 @@ samples_2016["/TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/Run
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/TTJets_SingleLeptFromT_ext1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/TTJets_SingleLeptFromT_ext1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -1580,7 +1580,7 @@ samples_2016["/TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/Run
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/TTJets_SingleLeptFromT"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/TTJets_SingleLeptFromT"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -1604,7 +1604,7 @@ samples_2016["/TTTT_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv2-P
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/TTTT"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/TTTT"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -1628,7 +1628,7 @@ samples_2016["/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/RunI
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/TTWJetsToLNu_ext1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/TTWJetsToLNu_ext1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -1652,7 +1652,7 @@ samples_2016["/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/RunI
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/TTWJetsToLNu_ext2"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/TTWJetsToLNu_ext2"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -1676,7 +1676,7 @@ samples_2016["/TTZToLL_M-1to10_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISumme
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/TTZToLL_M-1to10"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/TTZToLL_M-1to10"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -1700,7 +1700,7 @@ samples_2016["/TTZToLLNuNu_M-10_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISummer1
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/TTZToLL_M10_ext1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/TTZToLL_M10_ext1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -1724,7 +1724,7 @@ samples_2016["/TTZToLLNuNu_M-10_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISummer1
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/TTZToLL_M10_ext2"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/TTZToLL_M10_ext2"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -1748,7 +1748,7 @@ samples_2016["/tZq_ll_4f_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv2-PUMoriond
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/tZq_ll_4f"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/tZq_ll_4f"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -1772,7 +1772,7 @@ samples_2016["/WGToLNuG_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISummer16Min
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/WGToLNuG_ext1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/WGToLNuG_ext1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -1796,7 +1796,7 @@ samples_2016["/WGToLNuG_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISummer16Min
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/WGToLNuG_ext2"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/WGToLNuG_ext2"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -1820,7 +1820,7 @@ samples_2016["/WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISummer16M
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/WJetsToLNu"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/WJetsToLNu"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -1844,7 +1844,7 @@ samples_2016["/WpWpJJ_EWK-QCD_TuneCUETP8M1_13TeV-madgraph-pythia8/RunIISummer16M
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/WpWpJJ_EWK-QCD"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/WpWpJJ_EWK-QCD"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -1868,7 +1868,7 @@ samples_2016["/WWTo2L2Nu_13TeV-powheg/RunIISummer16MiniAODv2-PUMoriond17_80X_mcR
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/WWTo2L2Nu"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/WWTo2L2Nu"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -1892,7 +1892,7 @@ samples_2016["/WWTo2L2Nu_DoubleScattering_13TeV-pythia8/RunIISummer16MiniAODv2-P
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/WWTo2L2Nu_DoubleScattering"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/WWTo2L2Nu_DoubleScattering"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -1916,7 +1916,7 @@ samples_2016["/WWW_4F_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv2
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/WWW_4F"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/WWW_4F"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -1940,7 +1940,7 @@ samples_2016["/WWZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv2-PU
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/WWZ"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/WWZ"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -1964,7 +1964,7 @@ samples_2016["/WZTo3LNu_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISummer16MiniAODv2
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/WZTo3LNu"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/WZTo3LNu"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -1988,7 +1988,7 @@ samples_2016["/WZZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv2-PU
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/WZZ"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/WZZ"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -2012,7 +2012,7 @@ samples_2016["/ZGTo2LG_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISummer16Mini
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/ZGTo2LG"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/ZGTo2LG"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -2036,7 +2036,7 @@ samples_2016["/ZZTo4L_13TeV_powheg_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/ZZTo4L"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/ZZTo4L"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -2060,7 +2060,7 @@ samples_2016["/ZZZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv2-PU
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/ZZZ"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/ZZZ"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -2084,7 +2084,7 @@ samples_2016["/THQ_Hincl_13TeV-madgraph-pythia8_TuneCUETP8M1/RunIISummer16MiniAO
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/THQ"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/THQ"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -2108,7 +2108,7 @@ samples_2016["/THW_Hincl_13TeV-madgraph-pythia8_TuneCUETP8M1/RunIISummer16MiniAO
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/THW"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/THW"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -2132,7 +2132,7 @@ samples_2016["/ttWW_lo/MINIAODSIM"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/TTWW"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/TTWW"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -2156,7 +2156,7 @@ samples_2016["/ttHToNonbb_M125_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/mat
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/ttHToNonbb_fastsim_p1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/ttHToNonbb_fastsim_p1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -2180,7 +2180,7 @@ samples_2016["/ttHToNonbb_M125_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/mat
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/ttHToNonbb_fastsim_p2"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/ttHToNonbb_fastsim_p2"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -2204,7 +2204,7 @@ samples_2016["/ttHToNonbb_M125_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/mat
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/ttHToNonbb_fastsim_p3"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/ttHToNonbb_fastsim_p3"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -2228,7 +2228,7 @@ samples_2016["/TTTo2L2Nu_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/matze-fas
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/TTTo2L2Nu_fastsim_p1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/TTTo2L2Nu_fastsim_p1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -2252,7 +2252,7 @@ samples_2016["/TTTo2L2Nu_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/matze-fas
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/TTTo2L2Nu_fastsim_p2"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/TTTo2L2Nu_fastsim_p2"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -2276,7 +2276,7 @@ samples_2016["/TTTo2L2Nu_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/matze-fas
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/TTTo2L2Nu_fastsim_p3"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/TTTo2L2Nu_fastsim_p3"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -2300,7 +2300,7 @@ samples_2016["/TTToSemilepton_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/matz
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/TTToSemilepton_fastsim_p1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/TTToSemilepton_fastsim_p1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -2324,7 +2324,7 @@ samples_2016["/TTToSemilepton_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/matz
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/TTToSemilepton_fastsim_p2"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/TTToSemilepton_fastsim_p2"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -2348,7 +2348,7 @@ samples_2016["/TTToSemilepton_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/matz
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/TTToSemilepton_fastsim_p3"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/TTToSemilepton_fastsim_p3"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -2372,7 +2372,7 @@ samples_2016["/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/matz
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/TTWJetsToLNu_fastsim"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/TTWJetsToLNu_fastsim"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -2396,7 +2396,7 @@ samples_2016["/TTZToLLNuNu_M-10_TuneCUETP8M1_13TeV-amcatnlo-pythia8/matze-faster
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/TTZToLLNuNu_fastsim"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/TTZToLLNuNu_fastsim"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -2420,7 +2420,7 @@ samples_2016["/WZTo3LNu_TuneCUETP8M1_13TeV-powheg-pythia8/matze-faster_v9_WZ_mao
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Oct21_wPreselection_all/ntuples/WZTo3LNu_fastsim"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/WZTo3LNu_fastsim"),
         ("selection", "*"),
         ("blacklist", []),
       ]),

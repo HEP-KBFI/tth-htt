@@ -5,7 +5,8 @@ import os
 process = cms.PSet()
 
 process.fwliteInput = cms.PSet(
-    fileNames = cms.vstring("/hdfs/local/ram/ttHAnalysis_LeptonFakeRate_trial_2017Sep19/2016/2017Sep19/histograms/LeptonFakeRate/histograms_harvested_stage2.root")
+#    fileNames = cms.vstring("/hdfs/local/ram/ttHAnalysis_LeptonFakeRate_trial_2017Sep19/2016/2017Sep19/histograms/LeptonFakeRate/histograms_harvested_stage2.root")
+    fileNames = cms.vstring("/hdfs/local/ram/ttHAnalysis_LeptonFakeRate_trial_2017Nov4/2016/2017Nov4/histograms/LeptonFakeRate/histograms_harvested_stage2.root")
 )
 
 process.fwliteOutput = cms.PSet(
@@ -52,71 +53,184 @@ process.prepareDatacards = cms.PSet(
         ),
 ### Electrons pT and eta bins
         cms.PSet(
-            input = cms.string("LeptonFakeRate/denominator/electrons_fakeable/absEta1_0to1_5/Pt20_0to30_0"),
-            output = cms.string("electrons_fakeable_absEta1_0to1_5_Pt20_0to30_0_shapes")
+            input = cms.string("LeptonFakeRate/denominator/electrons_fakeable/absEtaLt1_5/Pt15_0to20_0"),
+            output = cms.string("electrons_fakeable_absEtaLt1_5_Pt15_0to20_0_shapes")
         ),
         cms.PSet(
-            input = cms.string("LeptonFakeRate/denominator/electrons_fakeable/absEta1_0to1_5/Pt30_0to100000_0"),
-            output = cms.string("electrons_fakeable_absEta1_0to1_5_Pt30_0to100000_0_shapes")
+            input = cms.string("LeptonFakeRate/denominator/electrons_fakeable/absEtaLt1_5/Pt20_0to30_0"),
+            output = cms.string("electrons_fakeable_absEtaLt1_5_Pt20_0to30_0_shapes")
+        ),
+        cms.PSet(
+            input = cms.string("LeptonFakeRate/denominator/electrons_fakeable/absEtaLt1_5/Pt30_0to45_0"),
+            output = cms.string("electrons_fakeable_absEtaLt1_5_Pt30_0to45_0_shapes")
+        ),
+        cms.PSet(
+            input = cms.string("LeptonFakeRate/denominator/electrons_fakeable/absEtaLt1_5/Pt45_0to65_0"),
+            output = cms.string("electrons_fakeable_absEtaLt1_5_Pt45_0to65_0_shapes")
+        ),
+        cms.PSet(
+            input = cms.string("LeptonFakeRate/denominator/electrons_fakeable/absEtaLt1_5/Pt65_0to100000_0"),
+            output = cms.string("electrons_fakeable_absEtaLt1_5_Pt65_0to100000_0_shapes")
+        ),
+        cms.PSet(
+            input = cms.string("LeptonFakeRate/denominator/electrons_fakeable/absEta1_5to9_9/Pt15_0to20_0"),
+            output = cms.string("electrons_fakeable_absEta1_5to9_9_Pt15_0to20_0_shapes")
         ),
         cms.PSet(
             input = cms.string("LeptonFakeRate/denominator/electrons_fakeable/absEta1_5to9_9/Pt20_0to30_0"),
             output = cms.string("electrons_fakeable_absEta1_5to9_9_Pt20_0to30_0_shapes")
         ),
         cms.PSet(
-            input = cms.string("LeptonFakeRate/denominator/electrons_fakeable/absEta1_5to9_9/Pt30_0to100000_0"),
-            output = cms.string("electrons_fakeable_absEta1_5to9_9_Pt30_0to100000_0_shapes")
+            input = cms.string("LeptonFakeRate/denominator/electrons_fakeable/absEta1_5to9_9/Pt30_0to45_0"),
+            output = cms.string("electrons_fakeable_absEta1_5to9_9_Pt30_0to45_0_shapes")
         ),
         cms.PSet(
-            input = cms.string("LeptonFakeRate/numerator/electrons_tight/absEta1_0to1_5/Pt20_0to30_0"),
-            output = cms.string("electrons_tight_absEta1_0to1_5_Pt20_0to30_0_shapes")
+            input = cms.string("LeptonFakeRate/denominator/electrons_fakeable/absEta1_5to9_9/Pt45_0to65_0"),
+            output = cms.string("electrons_fakeable_absEta1_5to9_9_Pt45_0to65_0_shapes")
         ),
         cms.PSet(
-            input = cms.string("LeptonFakeRate/numerator/electrons_tight/absEta1_0to1_5/Pt30_0to100000_0"),
-            output = cms.string("electrons_tight_absEta1_0to1_5_Pt30_0to100000_0_shapes")
+            input = cms.string("LeptonFakeRate/denominator/electrons_fakeable/absEta1_5to9_9/Pt65_0to100000_0"),
+            output = cms.string("electrons_fakeable_absEta1_5to9_9_Pt65_0to100000_0_shapes")
+        ),
+
+        cms.PSet(
+            input = cms.string("LeptonFakeRate/numerator/electrons_tight/absEtaLt1_5/Pt15_0to20_0"),
+            output = cms.string("electrons_tight_absEtaLt1_5_Pt15_0to20_0_shapes")
+        ),
+        cms.PSet(
+            input = cms.string("LeptonFakeRate/numerator/electrons_tight/absEtaLt1_5/Pt20_0to30_0"),
+            output = cms.string("electrons_tight_absEtaLt1_5_Pt20_0to30_0_shapes")
+        ),
+        cms.PSet(
+            input = cms.string("LeptonFakeRate/numerator/electrons_tight/absEtaLt1_5/Pt30_0to45_0"),
+            output = cms.string("electrons_tight_absEtaLt1_5_Pt30_0to45_0_shapes")
+        ),
+        cms.PSet(
+            input = cms.string("LeptonFakeRate/numerator/electrons_tight/absEtaLt1_5/Pt45_0to65_0"),
+            output = cms.string("electrons_tight_absEtaLt1_5_Pt45_0to65_0_shapes")
+        ),
+        cms.PSet(
+            input = cms.string("LeptonFakeRate/numerator/electrons_tight/absEtaLt1_5/Pt65_0to100000_0"),
+            output = cms.string("electrons_tight_absEtaLt1_5_Pt65_0to100000_0_shapes")
+        ),
+        cms.PSet(
+            input = cms.string("LeptonFakeRate/numerator/electrons_tight/absEta1_5to9_9/Pt15_0to20_0"),
+            output = cms.string("electrons_tight_absEta1_5to9_9_Pt15_0to20_0_shapes")
         ),
         cms.PSet(
             input = cms.string("LeptonFakeRate/numerator/electrons_tight/absEta1_5to9_9/Pt20_0to30_0"),
             output = cms.string("electrons_tight_absEta1_5to9_9_Pt20_0to30_0_shapes")
         ),
         cms.PSet(
-            input = cms.string("LeptonFakeRate/numerator/electrons_tight/absEta1_5to9_9/Pt30_0to100000_0"),
-            output = cms.string("electrons_tight_absEta1_5to9_9_Pt30_0to100000_0_shapes")
+            input = cms.string("LeptonFakeRate/numerator/electrons_tight/absEta1_5to9_9/Pt30_0to45_0"),
+            output = cms.string("electrons_tight_absEta1_5to9_9_Pt30_0to45_0_shapes")
+        ),
+        cms.PSet(
+            input = cms.string("LeptonFakeRate/numerator/electrons_tight/absEta1_5to9_9/Pt45_0to65_0"),
+            output = cms.string("electrons_tight_absEta1_5to9_9_Pt45_0to65_0_shapes")
+        ),
+        cms.PSet(
+            input = cms.string("LeptonFakeRate/numerator/electrons_tight/absEta1_5to9_9/Pt65_0to100000_0"),
+            output = cms.string("electrons_tight_absEta1_5to9_9_Pt65_0to100000_0_shapes")
         ),
 ### Muons pT and eta bins
         cms.PSet(
-            input = cms.string("LeptonFakeRate/denominator/muons_fakeable/absEta1_0to1_5/Pt10_0to30_0"),
-            output = cms.string("muons_fakeable_absEta1_0to1_5_Pt10_0to30_0_shapes")
-        ),
+            input = cms.string("LeptonFakeRate/denominator/muons_fakeable/absEtaLt1_5/Pt10_0to15_0"),
+            output = cms.string("muons_fakeable_absEtaLt1_5_Pt10_0to15_0_shapes")
+            ),
         cms.PSet(
-            input = cms.string("LeptonFakeRate/denominator/muons_fakeable/absEta1_0to1_5/Pt30_0to100000_0"),
-            output = cms.string("muons_fakeable_absEta1_0to1_5_Pt30_0to100000_0_shapes")
-        ),
+            input = cms.string("LeptonFakeRate/denominator/muons_fakeable/absEtaLt1_5/Pt15_0to20_0"),
+            output = cms.string("muons_fakeable_absEtaLt1_5_Pt15_0to20_0_shapes")
+            ),
         cms.PSet(
-            input = cms.string("LeptonFakeRate/denominator/muons_fakeable/absEta1_5to9_9/Pt10_0to30_0"),
-            output = cms.string("muons_fakeable_absEta1_5to9_9_Pt10_0to30_0_shapes")
-        ),
+            input = cms.string("LeptonFakeRate/denominator/muons_fakeable/absEtaLt1_5/Pt20_0to30_0"),
+            output = cms.string("muons_fakeable_absEtaLt1_5_Pt20_0to30_0_shapes")
+            ),
         cms.PSet(
-            input = cms.string("LeptonFakeRate/denominator/muons_fakeable/absEta1_5to9_9/Pt30_0to100000_0"),
-            output = cms.string("muons_fakeable_absEta1_5to9_9_Pt30_0to100000_0_shapes")
-        ),
+            input = cms.string("LeptonFakeRate/denominator/muons_fakeable/absEtaLt1_5/Pt30_0to45_0"),
+            output = cms.string("muons_fakeable_absEtaLt1_5_Pt30_0to45_0_shapes")
+            ),
         cms.PSet(
-            input = cms.string("LeptonFakeRate/numerator/muons_tight/absEta1_0to1_5/Pt10_0to30_0"),
-            output = cms.string("muons_tight_absEta1_0to1_5_Pt10_0to30_0_shapes")
-        ),
+            input = cms.string("LeptonFakeRate/denominator/muons_fakeable/absEtaLt1_5/Pt45_0to65_0"),
+            output = cms.string("muons_fakeable_absEtaLt1_5_Pt45_0to65_0_shapes")
+            ),
         cms.PSet(
-            input = cms.string("LeptonFakeRate/numerator/muons_tight/absEta1_0to1_5/Pt30_0to100000_0"),
-            output = cms.string("muons_tight_absEta1_0to1_5_Pt30_0to100000_0_shapes")
-        ),
+            input = cms.string("LeptonFakeRate/denominator/muons_fakeable/absEtaLt1_5/Pt65_0to100000_0"),
+            output = cms.string("muons_fakeable_absEtaLt1_5_Pt65_0to100000_0_shapes")
+            ),
         cms.PSet(
-            input = cms.string("LeptonFakeRate/numerator/muons_tight/absEta1_5to9_9/Pt10_0to30_0"),
-            output = cms.string("muons_tight_absEta1_5to9_9_Pt10_0to30_0_shapes")
-        ),
+            input = cms.string("LeptonFakeRate/denominator/muons_fakeable/absEta1_5to9_9/Pt10_0to15_0"),
+            output = cms.string("muons_fakeable_absEta1_5to9_9_Pt10_0to15_0_shapes")
+            ),
         cms.PSet(
-            input = cms.string("LeptonFakeRate/numerator/muons_tight/absEta1_5to9_9/Pt30_0to100000_0"),
-            output = cms.string("muons_tight_absEta1_5to9_9_Pt30_0to100000_0_shapes")
-        )
-    ),
+            input = cms.string("LeptonFakeRate/denominator/muons_fakeable/absEta1_5to9_9/Pt15_0to20_0"),
+            output = cms.string("muons_fakeable_absEta1_5to9_9_Pt15_0to20_0_shapes")
+            ),
+        cms.PSet(
+            input = cms.string("LeptonFakeRate/denominator/muons_fakeable/absEta1_5to9_9/Pt20_0to30_0"),
+            output = cms.string("muons_fakeable_absEta1_5to9_9_Pt20_0to30_0_shapes")
+            ),
+        cms.PSet(
+            input = cms.string("LeptonFakeRate/denominator/muons_fakeable/absEta1_5to9_9/Pt30_0to45_0"),
+            output = cms.string("muons_fakeable_absEta1_5to9_9_Pt30_0to45_0_shapes")
+            ),
+        cms.PSet(
+            input = cms.string("LeptonFakeRate/denominator/muons_fakeable/absEta1_5to9_9/Pt45_0to65_0"),
+            output = cms.string("muons_fakeable_absEta1_5to9_9_Pt45_0to65_0_shapes")
+            ),
+        cms.PSet(
+            input = cms.string("LeptonFakeRate/denominator/muons_fakeable/absEta1_5to9_9/Pt65_0to100000_0"),
+            output = cms.string("muons_fakeable_absEta1_5to9_9_Pt65_0to100000_0_shapes")
+            ),
+        cms.PSet(
+            input = cms.string("LeptonFakeRate/numerator/muons_tight/absEtaLt1_5/Pt10_0to15_0"),
+            output = cms.string("muons_tight_absEtaLt1_5_Pt10_0to15_0_shapes")
+            ),
+        cms.PSet(
+            input = cms.string("LeptonFakeRate/numerator/muons_tight/absEtaLt1_5/Pt15_0to20_0"),
+            output = cms.string("muons_tight_absEtaLt1_5_Pt15_0to20_0_shapes")
+            ),
+        cms.PSet(
+            input = cms.string("LeptonFakeRate/numerator/muons_tight/absEtaLt1_5/Pt20_0to30_0"),
+            output = cms.string("muons_tight_absEtaLt1_5_Pt20_0to30_0_shapes")
+            ),
+        cms.PSet(
+            input = cms.string("LeptonFakeRate/numerator/muons_tight/absEtaLt1_5/Pt30_0to45_0"),
+            output = cms.string("muons_tight_absEtaLt1_5_Pt30_0to45_0_shapes")
+            ),
+        cms.PSet(
+            input = cms.string("LeptonFakeRate/numerator/muons_tight/absEtaLt1_5/Pt45_0to65_0"),
+            output = cms.string("muons_tight_absEtaLt1_5_Pt45_0to65_0_shapes")
+            ),
+        cms.PSet(
+            input = cms.string("LeptonFakeRate/numerator/muons_tight/absEtaLt1_5/Pt65_0to100000_0"),
+            output = cms.string("muons_tight_absEtaLt1_5_Pt65_0to100000_0_shapes")
+            ),
+        cms.PSet(
+            input = cms.string("LeptonFakeRate/numerator/muons_tight/absEta1_5to9_9/Pt10_0to15_0"),
+            output = cms.string("muons_tight_absEta1_5to9_9_Pt10_0to15_0_shapes")
+            ),
+        cms.PSet(
+            input = cms.string("LeptonFakeRate/numerator/muons_tight/absEta1_5to9_9/Pt15_0to20_0"),
+            output = cms.string("muons_tight_absEta1_5to9_9_Pt15_0to20_0_shapes")
+            ),
+        cms.PSet(
+            input = cms.string("LeptonFakeRate/numerator/muons_tight/absEta1_5to9_9/Pt20_0to30_0"),
+            output = cms.string("muons_tight_absEta1_5to9_9_Pt20_0to30_0_shapes")
+            ),
+        cms.PSet(
+            input = cms.string("LeptonFakeRate/numerator/muons_tight/absEta1_5to9_9/Pt30_0to45_0"),
+            output = cms.string("muons_tight_absEta1_5to9_9_Pt30_0to45_0_shapes")
+            ),
+        cms.PSet(
+            input = cms.string("LeptonFakeRate/numerator/muons_tight/absEta1_5to9_9/Pt45_0to65_0"),
+            output = cms.string("muons_tight_absEta1_5to9_9_Pt45_0to65_0_shapes")
+            ),
+        cms.PSet(
+            input = cms.string("LeptonFakeRate/numerator/muons_tight/absEta1_5to9_9/Pt65_0to100000_0"),
+            output = cms.string("muons_tight_absEta1_5to9_9_Pt65_0to100000_0_shapes")
+            ),
+        ),
     makeSubDir = cms.bool(True),
 
     histogramToFit = cms.string("mT_fix_L"),
