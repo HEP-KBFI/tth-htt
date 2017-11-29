@@ -526,15 +526,13 @@ int main(int argc, char* argv[])
   //std::string mvaFileName_hadTopTagger = "tthAnalysis/HiggsToTauTau/data/hadTopTagger_BDTG_2017Oct10_opt2.xml";
   std::string mvaFileName_hadTopTaggerWithKinFit = "tthAnalysis/HiggsToTauTau/data/all_HadTopTagger_sklearnV0o17o1_HypOpt_XGB_ntrees_1000_deph_3_lr_0o01_CSV_sort_withKinFit.pkl";
   std::string mvaFileName_hadTopTaggerNoKinFit = "tthAnalysis/HiggsToTauTau/data/all_HadTopTagger_sklearnV0o17o1_HypOpt_XGB_ntrees_1000_deph_3_lr_0o01_CSV_sort.pkl";
-  std::string mvaFileName_hadTopTagger_tmva = "tthAnalysis/HiggsToTauTau/data/all_HadTopTagger_sklearnV0o17o1_HypOpt_XGB_ntrees_1000_deph_3_lr_0o01_CSV_sort_withKinFit.xml";
-  //XGBInterface mva_hadTopTagger_xgb(mvaFileNameWithKinFitRead);
-  //TMVAInterface mva_hadTopTagger_tmva(mvaFileName_hadTopTagger_tmvaRead);
-  //XGBInterface mva_hadTopTagger_xgb_2(mvaFileNameWithKinFitRead);
+  std::string mvaFileName_hadTopTagger_tmva = "tthAnalysis/HiggsToTauTau/data/1l_2tau_HadTopTagger_BDT.weights.xml";
   HadTopTagger* hadTopTagger = new HadTopTagger(
           mvaFileName_hadTopTaggerWithKinFit,
           mvaFileName_hadTopTaggerNoKinFit,
           mvaFileName_hadTopTagger_tmva); // mvaFileName_hadTopTagger
-  //std::map<std::string, double> mvaInputs_ttbar;
+  //--- initialize event level BDT
+  //XGBInterface mva_hadTopTagger_xgb(mvaFileNameWithKinFitRead);
 
   //--- evaluate hadronic top tagger BDT from pickle and from XML files directly
   //std::string mvaFileName_hadTopTagger_xgb = "tthAnalysis/HiggsToTauTau/data/all_HadTopTagger_sklearnV0o17o1_HypOpt_XGB_ntrees_1000_deph_3_lr_0o01_CSV_sort_withKinFit.pkl";
@@ -917,10 +915,10 @@ int main(int argc, char* argv[])
       continue;
     }
 
-//--- Rank triggers by priority and ignore triggers of lower priority if a trigger of higher priority has fired for given event;
-//    the ranking of the triggers is as follows: 1mu, 1e
-// CV: This logic is necessary to avoid that the same event is selected multiple times when processing different primary datasets.
-//     The mu+tau and e+tau need to have the lowest priority, as not all e+tau trigger paths exists in the VHbb Ntuples of the SingleElectron and SingleMuon datasets!!
+	//--- Rank triggers by priority and ignore triggers of lower priority if a trigger of higher priority has fired for given event;
+	//    the ranking of the triggers is as follows: 1mu, 1e
+	// CV: This logic is necessary to avoid that the same event is selected multiple times when processing different primary datasets.
+	//     The mu+tau and e+tau need to have the lowest priority, as not all e+tau trigger paths exists in the VHbb Ntuples of the SingleElectron and SingleMuon datasets!!
     if ( !isMC && !isDEBUG ) {
       bool isTriggered_SingleElectron = isTriggered_1e;
       bool isTriggered_SingleMuon = isTriggered_1mu;
@@ -950,7 +948,7 @@ int main(int argc, char* argv[])
     }
     cutFlowTable.update("trigger");
     cutFlowHistManager->fillHistograms("trigger", lumiScale);
-   
+    //std::cout << "Passed triggers" << std::endl;
     if ( (selTrigger_1mu     && !apply_offline_e_trigger_cuts_1mu)     ||
          (selTrigger_1mu1tau && !apply_offline_e_trigger_cuts_1mu1tau) ||
          (selTrigger_1e      && !apply_offline_e_trigger_cuts_1e)      ||
@@ -962,8 +960,8 @@ int main(int argc, char* argv[])
       tightElectronSelector.enable_offline_e_trigger_cuts();
     }
 
-//--- build collections of electrons, muons and hadronic taus;
-//    resolve overlaps in order of priority: muon, electron,
+	//--- build collections of electrons, muons and hadronic taus;
+	//    resolve overlaps in order of priority: muon, electron,
     std::vector<RecoMuon> muons = muonReader->read();
     std::vector<const RecoMuon*> muon_ptrs = convert_to_ptrs(muons);
     std::vector<const RecoMuon*> cleanedMuons = muon_ptrs; // CV: no cleaning needed for muons, as they have the highest priority in the overlap removal
@@ -1010,11 +1008,11 @@ int main(int argc, char* argv[])
     else if ( hadTauSelection == kTight    ) selHadTaus = tightHadTaus;
     else assert(0);
     selHadTaus = pickFirstNobjects(selHadTaus, 2);
-
-//--- build collections of jets and select subset of jets passing b-tagging criteria
+    //std::cout << "Buitl leptons" << std::endl;
+	//--- build collections of jets and select subset of jets passing b-tagging criteria
     std::vector<RecoJet> jets = jetReader->read();
     std::vector<const RecoJet*> jet_ptrs = convert_to_ptrs(jets);
-    // KE: we might want to change jet cleaning wrt selHadTaus to fakeableHadTaus
+    // Karl: we might want to change jet cleaning w.r.t selHadTaus to fakeableHadTaus
     // see https://twiki.cern.ch/twiki/bin/viewauth/CMS/TTHtautauFor13TeV#Jet_cleaning
     // the change should be propagated to other channels as well
     std::vector<const RecoJet*> cleanedJets = jetCleaner(jet_ptrs, fakeableMuons, fakeableElectrons, selHadTaus);
@@ -1022,7 +1020,7 @@ int main(int argc, char* argv[])
     std::vector<const RecoJet*> selBJets_loose = jetSelectorBtagLoose(cleanedJets);
     std::vector<const RecoJet*> selBJets_medium = jetSelectorBtagMedium(cleanedJets);
 
-//--- build collections of generator level particles (after some cuts are applied, to safe computing time)
+	//--- build collections of generator level particles (after some cuts are applied, to safe computing time)
     if ( isMC && redoGenMatching && !fillGenEvtHistograms ) {
       if ( genLeptonReader ) {
         genLeptons = genLeptonReader->read();
@@ -1041,7 +1039,7 @@ int main(int argc, char* argv[])
       }
     }
 
-//--- match reconstructed to generator level particles
+	//--- match reconstructed to generator level particles
     if ( isMC && redoGenMatching ) {
       muonGenMatcher.addGenLeptonMatch(preselMuons, genLeptons, 0.2);
       muonGenMatcher.addGenHadTauMatch(preselMuons, genHadTaus, 0.2);
@@ -1060,7 +1058,7 @@ int main(int argc, char* argv[])
       jetGenMatcher.addGenJetMatch(selJets, genJets, 0.2);
     }
 
-//--- apply preselection
+	//--- apply preselection
     std::vector<const RecoLepton*> preselLeptons;
     preselLeptons.reserve(preselElectrons.size() + preselMuons.size());
     preselLeptons.insert(preselLeptons.end(), preselElectrons.begin(), preselElectrons.end());
@@ -1075,7 +1073,7 @@ int main(int argc, char* argv[])
     int idxPreselLepton_genMatch = preselLepton_genMatch.idx_;
     if ( apply_leptonGenMatching_ttZ_workaround ) idxPreselLepton_genMatch = kGen_1l0j;
     assert(idxPreselLepton_genMatch != kGen_LeptonUndefined1);
-   
+    //std::cout << "Selection applied" << std::endl;
     // require that trigger paths match event category (with event category based on preselLeptons)
     if ( !((preselElectrons.size() >= 1 && (selTrigger_1e  || selTrigger_1e1tau )) ||
            (preselMuons.size()     >= 1 && (selTrigger_1mu || selTrigger_1mu1tau))) ) {
@@ -1116,13 +1114,13 @@ int main(int argc, char* argv[])
     cutFlowTable.update(">= 2 loose b-jets || 1 medium b-jet (1)");
     cutFlowHistManager->fillHistograms(">= 2 loose b-jets || 1 medium b-jet (1)", lumiScale);
 
-//--- compute MHT and linear MET discriminant (met_LD)
+	//--- compute MHT and linear MET discriminant (met_LD)
     RecoMEt met = metReader->read();
     std::vector<const RecoLepton*> fakeableLeptons = mergeLeptonCollections(fakeableElectrons, fakeableMuons);
     Particle::LorentzVector mht_p4 = compMHT(fakeableLeptons, selHadTaus, selJets);
     double met_LD = compMEt_LD(met.p4(), mht_p4);
-
-//--- fill histograms with events passing preselection
+    //std::cout << "Read MET" << std::endl;
+	//--- fill histograms with events passing preselection
     preselHistManagerType* preselHistManager = preselHistManagers[idxPreselLepton_genMatch][idxPreselHadTau_genMatch];
     assert(preselHistManager != 0);
     preselHistManager->electrons_->fillHistograms(preselElectrons, 1.);
@@ -1139,7 +1137,7 @@ int main(int argc, char* argv[])
       -1., -1.,   -1.,  -1.,
       mTauTauVis_presel, 1.);
 
-//--- apply final event selection
+	//--- apply final event selection
     std::vector<const RecoLepton*> selLeptons;
     selLeptons.reserve(selElectrons.size() + selMuons.size());
     selLeptons.insert(selLeptons.end(), selElectrons.begin(), selElectrons.end());
@@ -1158,10 +1156,10 @@ int main(int argc, char* argv[])
     if ( isMC ) {
       lheInfoReader->read();
     }
-
-//--- compute event-level weight for data/MC correction of b-tagging efficiency and mistag rate
-//   (using the method "Event reweighting using scale factors calculated with a tag and probe method",
-//    described on the BTV POG twiki https://twiki.cern.ch/twiki/bin/view/CMS/BTagShapeCalibration )
+    //std::cout << "Apply final event selections" << std::endl;
+	//--- compute event-level weight for data/MC correction of b-tagging efficiency and mistag rate
+	//  (using the method "Event reweighting using scale factors calculated with a tag and probe method",
+	//    described on the BTV POG twiki https://twiki.cern.ch/twiki/bin/view/CMS/BTagShapeCalibration )
     double evtWeight = 1.;
     if ( isMC ) {
       evtWeight *= lumiScale;
@@ -1186,7 +1184,7 @@ int main(int argc, char* argv[])
         std::cout << "btagWeight = " << btagWeight << std::endl;
       }
     }
-
+    //std::cout << "Did btag weight" << std::endl;
     // require exactly one lepton passing tight selection criteria, to avoid overlap with other channels
     std::vector<const RecoLepton*> tightLeptons;
     tightLeptons.reserve(tightElectrons.size() + tightMuons.size());
@@ -1516,7 +1514,7 @@ int main(int argc, char* argv[])
 
     check_mvaInputs(mvaInputs_ttbar, eventInfo);
 	*/
-    
+  
     double cosThetaS_hadTau, cosThetaS_hadTop;
     comp_cosThetaS(selHadTau_lead->p4(), selHadTau_sublead->p4(), fittedHadTopP4, cosThetaS_hadTau, cosThetaS_hadTop);
 
@@ -1730,9 +1728,8 @@ int main(int argc, char* argv[])
           ("dr_HadTop_tau_SS",       deltaR(fittedHadTopP4, selHadTau_SS->p4()))
           ("mvaOutput_1l_2tau_ttbar_HadTopTaggerVarMVAonly", mvaOutput_1l_2tau_ttbar_HadTopTaggerVarMVAonly)
           ("mvaOutput_1l_2tau_ttbar", mvaOutput_1l_2tau_ttbar)
-	  ("hadtruth",               hadtruth)
-        .fill()
-      ;
+          ("hadtruth",               hadtruth)
+        .fill();
     }
 
     ++selectedEntries;
