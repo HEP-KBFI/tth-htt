@@ -94,7 +94,7 @@ bool HadTopTagger::operator()(const RecoJet& recBJet, const RecoJet& recWJet1, c
   //const char* mvaFileNameWithKinFitRead= mvaFileName_hadTopTaggerWithKinFitR.c_str(); // to remove
   //char* pklpathWithKinFit=(char*) mvaFileNameWithKinFitRead;
   //double mvaOutputNoKinFit=XGBReader( mvaInputsWithKinFit , mvaInputsWithKinFitSort , pklpathWithKinFit );
-  //double HTT_WithKin_xgb= (*mva_hadTopTagger_xgb_)(mvaInputsWithKinFit,mvaInputsWithKinFitSort);
+  double HTT_WithKin_xgb= (*mva_hadTopTagger_xgb_)(mvaInputsWithKinFit);
   result[0]=HTT_WithKin_xgb;
   //result[1]=mvaOutputNoKinFit;
 
@@ -110,7 +110,7 @@ bool HadTopTagger::operator()(const RecoJet& recBJet, const RecoJet& recWJet1, c
   mvaInputsNoKinFit["m_Wj1Wj2"]               = p4_Wj1Wj2.mass();
   mvaInputsNoKinFit["pT_Wj2"]                 = recWJet2.pt();
 
-  double HTT_NoKin_xgb=(*mva_hadTopTagger_xgb_2_)(mvaInputsNoKinFit,mvaFileNameNoKinFitSort);
+  double HTT_NoKin_xgb=(*mva_hadTopTagger_xgb_2_)(mvaInputsNoKinFit);
   result[2]=HTT_NoKin_xgb;
   return 1;
 }

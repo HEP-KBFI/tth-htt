@@ -20,16 +20,15 @@ class XGBInterface
    */
 
   double
-  operator()(const std::map<std::string, double>& mvaInputs, const std::vector<std::string>& mvaInputVariables) const;
+  operator()(const std::map<std::string, double>& mvaInputs) const;
 
  private:
   std::string mvaFileName_;
 
-  std::vector<std::string> mvaInputVariableNames_; // list of MVA input variables
-  PyObject* pkldata;
-  PyObject* moduleMainString;
-  PyObject* moduleMain;
-  mutable std::map<std::string, Float_t> mvaInputVariables_; // key = MVA input variable name
+  std::vector<std::string> mvaInputVariables_; // list of MVA input variables
+  PyObject* pkldata_;
+  PyObject* moduleMainString_;
+  PyObject* moduleMain_;
 };
 
 #endif // XGBInterface_h
