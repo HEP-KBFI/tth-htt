@@ -9,9 +9,19 @@ process.fwliteInput = cms.PSet(
     fileNames = cms.vstring("/hdfs/local/ram/ttHAnalysis_LeptonFakeRate_trial_2017Nov4/2016/2017Nov4/histograms/LeptonFakeRate/histograms_harvested_stage2.root")
 )
 
+#process.fwliteOutput = cms.PSet(
+#    fileName = cms.string('prepareDatacards_mT_fix_L.root')
+#)
+
+#process.fwliteOutput = cms.PSet(
+#    fileName = cms.string('prepareDatacards_EventCounter.root')
+#)
+
 process.fwliteOutput = cms.PSet(
-    fileName = cms.string('datacard_LeptonFakeRate.root')
+    fileName = cms.string('prepareDatacards_pt.root')
 )
+
+
 
 process.prepareDatacards = cms.PSet(
     processesToCopy = cms.vstring(
@@ -233,9 +243,11 @@ process.prepareDatacards = cms.PSet(
         ),
     makeSubDir = cms.bool(True),
 
-    histogramToFit = cms.string("mT_fix_L"),
+    # histogramToFit = cms.string("mT_fix_L"),
+    # histogramToFit = cms.string("EventCounter"),
+    histogramToFit = cms.string("pt"),
     histogramToFit_rebin = cms.int32(1),
-
+    histogramToFit_makeBinContentsPositive = cms.bool(True),
     setBinsToZeroBelow = cms.double(-1.),
 
     sysShifts = cms.vstring(

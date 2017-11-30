@@ -2186,14 +2186,16 @@ int main(int argc, char* argv[])
   else muonReader->disable_HIP_mitigation();
   muonReader->setBranchAddresses(inputTree);
   RecoMuonCollectionGenMatcher muonGenMatcher;
+  RecoMuonCollectionCleaner muonCleaner(0.3); // cleaning muons from overlapping objects within cone radius 0.3 [NEW!]
   RecoMuonCollectionSelectorLoose preselMuonSelector(era);
   RecoMuonCollectionSelectorFakeable fakeableMuonSelector(era);
   RecoMuonCollectionSelectorTight tightMuonSelector(era);
 
+
   RecoElectronReader* electronReader = new RecoElectronReader(era, "nselLeptons", "selLeptons");
   electronReader->setBranchAddresses(inputTree);
   RecoElectronCollectionGenMatcher electronGenMatcher;
-  RecoElectronCollectionCleaner electronCleaner(0.3); // cleaning electrons from overlapping jets within cone radius 0.3
+  RecoElectronCollectionCleaner electronCleaner(0.3); // cleaning electrons from overlapping objects within cone radius 0.3
   RecoElectronCollectionSelectorLoose preselElectronSelector(era);
   RecoElectronCollectionSelectorFakeable fakeableElectronSelector(era);
   RecoElectronCollectionSelectorTight tightElectronSelector(era);
@@ -2398,17 +2400,22 @@ for( int idxEntry = 0; idxEntry < numEntries && (maxEvents == -1 || idxEntry < m
     std::vector<const RecoMuon*> muon_ptrs = convert_to_ptrs(muons);
     std::vector<const RecoMuon*> cleanedMuons = muon_ptrs; // CV: no cleaning needed for muons, as they have the highest priority in the overlap removal
     std::vector<const RecoMuon*> preselMuons = preselMuonSelector(cleanedMuons);    // clean muons passing Loose object def.
-    std::vector<const RecoMuon*> fakeableMuons = fakeableMuonSelector(preselMuons); // clean muons passing Loose and Fakeable object def.s
-    // std::vector<const RecoMuon*> selMuons = tightMuonSelector(preselMuons); // DEF LINE
-    std::vector<const RecoMuon*> selMuons = tightMuonSelector(fakeableMuons);       // clean muons passing Loose, Fakeable and Tight object def.s
+    //  std::vector<const RecoMuon*> fakeableMuons = fakeableMuonSelector(preselMuons); // clean muons passing Loose and Fakeable object def.s [OLD METHOD]
+    // std::vector<const RecoMuon*> selMuons = tightMuonSelector(fakeableMuons);       // clean muons passing Loose, Fakeable and Tight object def.s [OLD METHOD]
+    std::vector<const RecoMuon*> fakeableMuons1 = fakeableMuonSelector(preselMuons); // clean muons passing Loose and Fakeable object def.s [NEW METHOD]
+    std::vector<const RecoMuon*> selMuons = tightMuonSelector(fakeableMuons1);       // clean muons passing Loose, Fakeable and Tight object def.s [NEW METHOD]
+    std::vector<const RecoMuon*> fakeableMuons = muonCleaner(fakeableMuons1, selMuons);   // removing overlap b/w Fakeable muons and tight muons [NEW METHOD]
+
 
     std::vector<RecoElectron> electrons = electronReader->read();
     std::vector<const RecoElectron*> electron_ptrs = convert_to_ptrs(electrons);
     std::vector<const RecoElectron*> cleanedElectrons = electronCleaner(electron_ptrs, preselMuons);  // removing overlap b/w electrons and preselMuons
     std::vector<const RecoElectron*> preselElectrons = preselElectronSelector(cleanedElectrons);      // clean electrons passing Loose object def.
-    std::vector<const RecoElectron*> fakeableElectrons = fakeableElectronSelector(preselElectrons);   // clean electrons passing Loose and Fakeable object def.s
-    // std::vector<const RecoElectron*> selElectrons = tightElectronSelector(preselElectrons); // DEF LINE
-    std::vector<const RecoElectron*> selElectrons = tightElectronSelector(fakeableElectrons);         // clean electrons passing Loose, Fakeable and Tight object def.s
+    // std::vector<const RecoElectron*> fakeableElectrons = fakeableElectronSelector(preselElectrons);   // clean electrons passing Loose and Fakeable object def.s [OLD METHOD]
+    // std::vector<const RecoElectron*> selElectrons = tightElectronSelector(fakeableElectrons);         // clean electrons passing Loose, Fakeable and Tight object def.s [OLD METHOD]
+    std::vector<const RecoElectron*> fakeableElectrons1 = fakeableElectronSelector(preselElectrons);   // clean electrons passing Loose and Fakeable object def.s [NEW METHOD]
+    std::vector<const RecoElectron*> selElectrons = tightElectronSelector(fakeableElectrons1);         // clean electrons passing Loose, Fakeable and Tight object def.s [NEW METHOD]
+    std::vector<const RecoElectron*> fakeableElectrons = electronCleaner(fakeableElectrons1, selElectrons);   // removing overlap b/w Fakeable electrons and tight electrons [NEW METHOD]
 
     std::vector<RecoHadTau> hadTaus = hadTauReader->read();
     std::vector<const RecoHadTau*> hadTau_ptrs = convert_to_ptrs(hadTaus);
