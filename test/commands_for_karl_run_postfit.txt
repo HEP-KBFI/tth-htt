@@ -1,0 +1,9 @@
+# run_postFit.sh /home/ram/VHBB_NTUPLES_2017/CMSSW_8_0_21_LeptonFakeRate_postNov4/src/tthAnalysis/HiggsToTauTau/test /home/ram/VHBB_NTUPLES_2017/CMSSW_7_4_7_CombineHarvestor/src/CombineHarvester/ttH_htt_LeptonFakeRate /home/ram/ttHAnalysis_2017Nov4/2016/2017Nov4/datacards/LeptonFakeRate /home/ram/VHBB_NTUPLES_2017/CMSSW_7_4_7_CombineHarvestor/src/CombineHarvester/ttH_htt_LeptonFakeRate/output/mlfit_LeptonFakeRate_mT_fix_L prepareDatacards_mT_fix_L.root /home/ram/VHBB_NTUPLES_2017/CMSSW_7_4_7_CombineHarvestor/src/CombineHarvester/ttH_htt_LeptonFakeRate/output/mlfit_LeptonFakeRate_EventCounter prepareDatacards_EventCounter.root 
+
+run_postFit.sh /home/ram/VHBB_NTUPLES_2017/CMSSW_8_0_21_LeptonFakeRate_postNov4/src/tthAnalysis/HiggsToTauTau/test /home/ram/VHBB_NTUPLES_2017/CMSSW_7_4_7_CombineHarvestor/src/CombineHarvester/ttH_htt_LeptonFakeRate /home/ram/ttHAnalysis_2017Nov4/2016/2017Nov4/datacards/LeptonFakeRate /home/ram/VHBB_NTUPLES_2017/CMSSW_7_4_7_CombineHarvestor/src/CombineHarvester/ttH_htt_LeptonFakeRate/output/mlfit_LeptonFakeRate_mT_fix_L_2 prepareDatacards_mT_fix_L.root /home/ram/VHBB_NTUPLES_2017/CMSSW_7_4_7_CombineHarvestor/src/CombineHarvester/ttH_htt_LeptonFakeRate/output/mlfit_LeptonFakeRate_EventCounter_2 prepareDatacards_EventCounter.root 
+
+
+
+
+
+
