@@ -124,8 +124,8 @@ if __name__ == '__main__':
     logging.info("Job submission #%i:" % (idx_job_resubmission + 1))
 
     analysis = analyzeConfig_3l_1tau(
-      configDir          = os.path.join("/home",       getpass.getuser(), "ttHAnalysis_TEST", ERA, version),
-      outputDir          = os.path.join("/hdfs/local", getpass.getuser(), "ttHAnalysis_TEST", ERA, version),
+      configDir          = os.path.join("/home",       getpass.getuser(), "ttHAnalysis", ERA, version),
+      outputDir          = os.path.join("/hdfs/local", getpass.getuser(), "ttHAnalysis", ERA, version),
       executable_analyze   = "analyze_3l_1tau",
       cfgFile_analyze      = "analyze_3l_1tau_cfg.py",
       samples              = samples,
