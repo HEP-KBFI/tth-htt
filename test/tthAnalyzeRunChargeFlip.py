@@ -19,7 +19,7 @@ elif ERA == "2016":
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-version = "histosCF_summer_June6"
+version = "histosCF_summer_June6_test"
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -59,12 +59,12 @@ if __name__ == '__main__':
        #"CMS_ttHl_tauESDown",
        #"CMS_ttHl_electronESUp",
        #"CMS_ttHl_electronESDown",
-       "CMS_ttHl_electronERUp",
-       "CMS_ttHl_electronERDown",
-       "CMS_ttHl_electronESEndcapUp",
-       "CMS_ttHl_electronESEndcapDown",
-       "CMS_ttHl_electronESBarrelUp",
-       "CMS_ttHl_electronESBarrelDown"
+       #"CMS_ttHl_electronERUp", ###
+       #"CMS_ttHl_electronERDown",
+       #"CMS_ttHl_electronESEndcapUp",
+       #"CMS_ttHl_electronESEndcapDown",
+       #"CMS_ttHl_electronESBarrelUp",
+       #"CMS_ttHl_electronESBarrelDown"
     ],
     max_files_per_job = 100,
     era = ERA, use_lumi = True, lumi = LUMI,
@@ -78,9 +78,19 @@ if __name__ == '__main__':
 
   analysis.create()
 
+  '''
   run_analysis = query_yes_no("Start jobs ?")
   if run_analysis:
     analysis.run()
   else:
-    sys.exit(0)
+    sys.exit(0)  
+  '''
 
+  #'''
+  logging.info("Run jobs now..")
+  analysis.run()
+  logging.info("Running jobs are done. \n\nBye...\n")
+  #'''
+  #logging.info("Jobs will not run.. Terminating..") 
+
+               

@@ -37,7 +37,7 @@ PyObject* vectorToTuple_String(std::vector<std::basic_string<char>> &data) {
 	return tuple;
 }
 
-double XGBReader( std::map<std::string, double> mvaInputs_ , char* pklpath )
+double XGBReader( std::map<std::string, double> mvaInputs , std::vector<std::string>  sort , char* pklpath )
 {
   setenv("OMP_NUM_THREADS", "1", 0);
 	double mvaOutput_=-20;
@@ -46,40 +46,47 @@ double XGBReader( std::map<std::string, double> mvaInputs_ , char* pklpath )
 	std::vector<float> vectorValuesVec;
 	std::vector<std::basic_string<char>> vectorNamesVec;
 	// prepare dictionary to pass to pyObject functions
-	for ( std::map<std::string, double>::const_iterator mvaInput = mvaInputs_.begin();
-		mvaInput != mvaInputs_.end(); ++mvaInput ) {
-		vectorValuesVec.push_back(mvaInput->second);
-		vectorNamesVec.push_back((std::basic_string<char>) mvaInput->first);
-		//std::cout << " " << mvaInput->first << " : " << mvaInput->second << std::endl;
+
+	//for ( std::vector<std::string>::const_iterator sorted = sort.begin(); sorted != sort.end(); ++sorted ) {
+  for ( unsigned int ii = 0 ; ii <  sort.size() ; ii++ ) {
+    double value = mvaInputs.find(sort[ii])->second;
+		vectorValuesVec.push_back(value);
+    std::basic_string<char> name =  mvaInputs.find(sort[ii])->first;
+    vectorNamesVec.push_back(name);
+		//vectorNamesVec.push_back((std::basic_string<char>) mvaInputs.find(sorted)->first);
+		//std::cout << " " << name << " : " << value << " "<< sort.size() <<std::endl;
 	}
 
-    check_mvaInputs(mvaInputs_);
-    //mvaOutput_ = 34; // (*mva_)(mvaInputs_);
+  //check_mvaInputs(mvaInputs);
 	// https://stackoverflow.com/questions/3286448/calling-a-python-method-from-c-c-and-extracting-its-return-value
-	//std::cout << "Do python, HTT, size: "<<mvaInputs_.size() << std::endl;
+	//std::cout << "Do python, HTT, size: "<<mvaInputs.size() << std::endl;
 	Py_SetProgramName((char*) "application");
 	PyObject *moduleMainString = PyString_FromString("__main__");
 	PyObject *moduleMain = PyImport_Import(moduleMainString);
 	// https://ubuntuforums.org/archive/index.php/t-324544.html
 	// https://stackoverflow.com/questions/4060221/how-to-reliably-open-a-file-in-the-same-directory-as-a-python-script
   // https://gist.github.com/rjzak/5681680
+  // "print('The scikit-learn version is {}.'.format(sklearn.__file__))\n"
+  //"print('The pandas version is {}.'.format(pandas.__file__))\n" /cvmfs/cms.cern.ch/slc6_amd64_gcc530/external/py2-scikit-learn/0.17.1-ikhhed/lib/python2.7/site-packages
 	PyRun_SimpleString(
 	"from time import time,ctime\n"
   "import sys,os \n"
+  "sys.path.insert(0, '/cvmfs/cms.cern.ch/slc6_amd64_gcc530/external/py2-scikit-learn/0.17.1-ikhhed/lib/python2.7/site-packages')\n"
   "import sklearn\n"
+  "sys.path.insert(0, '/cvmfs/cms.cern.ch/slc6_amd64_gcc530/external/py2-pandas/0.17.1-ikhhed/lib/python2.7/site-packages/pandas-0.17.1-py2.7-linux-x86_64.egg')\n"
   "import pandas\n"
   "import cPickle as pickle\n"
   "import numpy as np \n"
   "import subprocess \n"
-  "from sklearn.externals import joblib \n"
   "from itertools import izip \n"
   "sys.path.insert(0, '/cvmfs/cms.cern.ch/slc6_amd64_gcc530/external/py2-pippkgs_depscipy/3.0-njopjo7/lib/python2.7/site-packages') \n"
   "import xgboost as xgb  \n"
+	"from collections import OrderedDict \n"
   "def mul(vec, vec2,pkldir,pklpath): \n"
   "	#print 'Today is',ctime(time()), 'All python libraries we need loaded good	HTT'\n"
-  "	new_dict = dict(izip(vec2,vec)) \n"
+  "	new_dict = OrderedDict(izip(vec2,vec)) \n"
   "	#print (new_dict) \n"
-  "	data = pandas.DataFrame() \n"
+  "	data = pandas.DataFrame(columns=list(new_dict.keys())) \n"
   "	data=data.append(new_dict, ignore_index=True) \n"
   "	result=-20 \n"
   "	f = None  \n"
@@ -111,5 +118,6 @@ double XGBReader( std::map<std::string, double> mvaInputs_ , char* pklpath )
 	PyObject *args = PyTuple_Pack(4, vectorValues, vecNames , PyString_FromString( (char*) pkldir), PyString_FromString( (char*) pklpath) ); //
   PyObject *result = PyObject_CallObject(func, args);
   mvaOutput_=PyFloat_AsDouble(result);
-    return mvaOutput_;
+  //delete *result;
+  return mvaOutput_;
 }

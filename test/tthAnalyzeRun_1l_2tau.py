@@ -91,6 +91,7 @@ if mode == "VHbb":
 
   hadTau_selection         = "dR03mvaVTight"
   applyFakeRateWeights     = "3L"
+  #isBDTtraining = False
 elif mode == "forBDTtraining":
   if use_prod_ntuples:
     from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_prodNtuples_2016_FastSim import samples_2016
@@ -101,6 +102,7 @@ elif mode == "forBDTtraining":
   hadTau_selection                   = "dR03mvaVTight"
   hadTau_selection_relaxed           = "dR03mvaLoose"
   applyFakeRateWeights               = "3L"
+  #isBDTtraining  = True
 else:
   raise ValueError("Invalid Configuration parameter 'mode' = %s !!" % mode)
 
@@ -137,7 +139,7 @@ if __name__ == '__main__':
       samples                  = samples,
       changeBranchNames        = changeBranchNames,
       hadTau_selection         = hadTau_selection,
-      hadTau_charge_selections = [ "OS"] if mode == "forBDTtraining" else [ "OS", "SS" ],
+      hadTau_charge_selections =  [ "OS"] if mode == "forBDTtraining" else [ "OS", "SS" ], #
       applyFakeRateWeights     = applyFakeRateWeights,
       central_or_shifts = [
         "central",
@@ -188,25 +190,26 @@ if __name__ == '__main__':
       lumi                                  = LUMI,
       debug                                 = False,
       running_method                        = "sbatch",
-      num_parallel_jobs                     = 16,
+      num_parallel_jobs                     = 100,
       executable_addBackgrounds             = "addBackgrounds",
       executable_addBackgroundJetToTauFakes = "addBackgroundLeptonFakes", # CV: use common executable for estimating jet->lepton and jet->tau_h fake background
       histograms_to_fit                     = [
         "EventCounter",
         "numJets",
-#       "mvaOutput_1l_2tau_ttbar",
+        "mvaOutput_1l_2tau_ttbar_HadTopTaggerVarMVAonly",
+        "mvaOutput_1l_2tau_ttbar",
 #       "mvaOutput_1l_2tau_ttbar_withLepID",
 #       "mvaOutput_1l_2tau_ttbar_withLepID_HTTbase",
 #       "mvaOutput_1l_2tau_ttbar_baseline",
 #       "mvaOutput_1l_2tau_ttbar_baseline_HTTbase",
 #       "mvaDiscr_1l_2tau",
-        "mTauTauVis",
+        "mTauTauVis"
       ],
       select_rle_output                     = True,
       verbose                               = idx_job_resubmission > 0,
     )
 
-    if mode.find("forBDTtraining") != -1:
+    if mode == "forBDTtraining" :
       analysis.set_BDT_training(hadTau_selection_relaxed, hadTauFakeRateWeight_inputFileName)
 
     job_statistics = analysis.create()

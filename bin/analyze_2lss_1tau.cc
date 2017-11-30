@@ -551,7 +551,7 @@ int main(int argc, char* argv[])
   //std::string mvaFileName_hadTopTagger = "tthAnalysis/HiggsToTauTau/data/hadTopTagger_BDTG_2017Oct10_opt2.xml";
   std::string mvaFileName_hadTopTaggerWithKinFit = "all_HadTopTagger_sklearnV0o17o1_HypOpt_XGB_ntrees_1000_deph_3_lr_0o01_CSV_sort_withKinFit.pkl";
   std::string mvaFileName_hadTopTaggerNoKinFit = "all_HadTopTagger_sklearnV0o17o1_HypOpt_XGB_ntrees_1000_deph_3_lr_0o01_CSV_sort.pkl";
-  HadTopTagger* hadTopTagger = new HadTopTagger(mvaFileName_hadTopTaggerWithKinFit,mvaFileName_hadTopTaggerNoKinFit); // mvaFileName_hadTopTagger
+  //HadTopTagger* hadTopTagger = new HadTopTagger(mvaFileName_hadTopTaggerWithKinFit,mvaFileName_hadTopTaggerNoKinFit,mvaFileName_hadTopTaggerNoKinFit); // mvaFileName_hadTopTagger
 
 //--- initialize BDTs used to discriminate ttH vs. ttV and ttH vs. ttbar
 //    in 2lss_1tau category of ttH multilepton analysis
@@ -1791,10 +1791,12 @@ int main(int argc, char* argv[])
 
 	  if ( &(*selWJet2) == &(*selBJet) ) continue;
 
-	  std::vector<double> mvaOutput_hadTopTagger = (*hadTopTagger)(**selBJet, **selWJet1, **selWJet2);
+	  std::vector<double> mvaOutput_hadTopTagger;
+    mvaOutput_hadTopTagger.push_back(-1.0);
+    // = (*hadTopTagger)(**selBJet, **selWJet1, **selWJet2);
 	  if ( mvaOutput_hadTopTagger[0] > max_mvaOutput_hadTopTagger ) {
 	    max_mvaOutput_hadTopTagger = mvaOutput_hadTopTagger[0];
-	    fittedHadTopP4 = hadTopTagger->kinFit()->fittedTop();
+	    fittedHadTopP4 =  selLepton_lead->p4(); //hadTopTagger->kinFit()->fittedTop();
 	  }
 	}
       }
@@ -2069,7 +2071,7 @@ int main(int argc, char* argv[])
   delete genJetReader;
   delete lheInfoReader;
 
-  delete hadTopTagger;
+  //delete hadTopTagger;
 
   delete genEvtHistManager_beforeCuts;
   delete genEvtHistManager_afterCuts;

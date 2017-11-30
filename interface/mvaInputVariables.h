@@ -9,6 +9,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h" // RecoJet
 #include "tthAnalysis/HiggsToTauTau/interface/RecoLepton.h" // RecoLepton
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTau.h" // RecoHadTau
+#include "TLorentzVector.h"
 
 double comp_MT_met_lep1(const Particle::LorentzVector& leptonP4, double met_pt, double met_phi);
 double comp_MT_met_lep1(const Particle& lepton, double met_pt, double met_phi);

@@ -14,7 +14,7 @@ echo 'Running script {{ script_file }} (created from template sbatch-node.templa
 RUNNING_COMMAND="{{ RUNNING_COMMAND }}"
 
 
-# Runs executable, wrapped into failure wrapper + wrapped into node scratchdir
+# Runs executable, wrapped into failure wrapper
 
 main() {
     run_failure_wrapped_executable >> "{{ wrapper_log_file }}" 2>&1
@@ -50,14 +50,14 @@ run_failure_wrapped_executable() {
 }
 
 
-# Creates scratch dir on cluster node and runs executable
+# Creates scratch dir on cluster node or a directory under $HOME and runs the executable
 
 run_wrapped_executable() {
-    export SCRATCH_DIR="{{ scratch_dir }}/$SLURM_JOBID"
+    export JOB_DIR="{{ job_dir }}/$SLURM_JOBID"
     EXECUTABLE_LOG_FILE="{{ executable_log_file }}"
     EXECUTABLE_LOG_DIR="`dirname $EXECUTABLE_LOG_FILE`"
     EXECUTABLE_LOG_FILE_NAME="`basename $EXECUTABLE_LOG_FILE`"
-    TEMPORARY_EXECUTABLE_LOG_DIR="$SCRATCH_DIR/$EXECUTABLE_LOG_DIR/"
+    TEMPORARY_EXECUTABLE_LOG_DIR="$JOB_DIR/$EXECUTABLE_LOG_DIR/"
     TEMPORARY_EXECUTABLE_LOG_FILE="$TEMPORARY_EXECUTABLE_LOG_DIR/$EXECUTABLE_LOG_FILE_NAME"
     RANDOM_SLEEP={{ random_sleep }}
 
@@ -68,8 +68,8 @@ run_wrapped_executable() {
     echo "Sleeping for $RANDOM_SLEEP seconds"
     sleep $RANDOM_SLEEP
 
-    echo "Create scratch directory: mkdir -p $SCRATCH_DIR"
-    mkdir -p $SCRATCH_DIR
+    echo "Create job directory: mkdir -p $JOB_DIR"
+    mkdir -p $JOB_DIR
 
     echo "Create temporary log directory: mkdir -p $TEMPORARY_EXECUTABLE_LOG_DIR"
     mkdir -p $TEMPORARY_EXECUTABLE_LOG_DIR
@@ -78,17 +78,19 @@ run_wrapped_executable() {
     mkdir -p $EXECUTABLE_LOG_DIR
 
     cd {{ working_dir }}
-    cd $SCRATCH_DIR
+    cd $JOB_DIR
 
     echo "Time is: `date`"
 
-    echo "Copying contents of 'tthAnalysis/HiggsToTauTau/data' directory to Scratch: cp -rL $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/data/* $SCRATCH_DIR/tthAnalysis/HiggsToTauTau/data"
-    mkdir -p tthAnalysis/HiggsToTauTau/data
-    cp -rL $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/data/* $SCRATCH_DIR/tthAnalysis/HiggsToTauTau/data
+    if [[ "$JOB_DIR" =~ ^/scratch* ]]; then
+      echo "Copying contents of 'tthAnalysis/HiggsToTauTau/data' directory to Scratch: cp -rL $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/data/* $JOB_DIR/tthAnalysis/HiggsToTauTau/data"
+      mkdir -p tthAnalysis/HiggsToTauTau/data
+      cp -rL $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/data/* $JOB_DIR/tthAnalysis/HiggsToTauTau/data
+    fi
 
     echo "Time is: `date`"
 
-    CMSSW_SEARCH_PATH="$SCRATCH_DIR:{{ cmssw_base_dir }}/src"
+    CMSSW_SEARCH_PATH="$JOB_DIR:{{ cmssw_base_dir }}/src"
 
     echo "Execute command: {{ exec_name }} {{ command_line_parameter }} &> $TEMPORARY_EXECUTABLE_LOG_FILE"
     {{ exec_name }} {{ command_line_parameter }} &> $TEMPORARY_EXECUTABLE_LOG_FILE
@@ -156,8 +158,8 @@ run_wrapped_executable() {
     echo "Copy from temporary output dir to output dir: cp -a $TEMPORARY_EXECUTABLE_LOG_DIR/* $EXECUTABLE_LOG_DIR/"
     cp -a $TEMPORARY_EXECUTABLE_LOG_DIR/* $EXECUTABLE_LOG_DIR/
 
-    echo "Delete Scratch directory: rm -r $SCRATCH_DIR"
-    rm -r $SCRATCH_DIR
+    echo "Delete job directory: rm -r $JOB_DIR"
+    rm -r $JOB_DIR
 
     echo "End time is: `date`"
 

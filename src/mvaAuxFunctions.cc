@@ -24,7 +24,7 @@ void check_mvaInputs(std::map<std::string, double>& mvaInputs, RUN_TYPE run, LUM
   }
 }
 
-void check_mvaInputs(std::map<std::string, double> & mvaInputs, const EventInfo & info)
+void check_mvaInputs(std::map<std::string, double>& mvaInputs, const EventInfo& info)
 {
   return check_mvaInputs(mvaInputs, info.run, info.lumi, info.event);
 }
