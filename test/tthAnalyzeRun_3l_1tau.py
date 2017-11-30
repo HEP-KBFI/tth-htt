@@ -27,7 +27,6 @@ use_prod_ntuples     = options.use_prod_ntuples #True
 mode                 = options.mode #"VHbb"
 ERA                  = options.ERA #"2016"
 version              = options.version #"2017Oct24"
-version              = "2017Nov22"
 max_job_resubmission = 3
 max_files_per_job    = 10 if use_prod_ntuples else 100
 
