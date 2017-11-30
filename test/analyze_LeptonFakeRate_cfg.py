@@ -34,7 +34,11 @@ process.analyze_LeptonFakeRate = cms.PSet(
             jet_minPt = cms.double(30.),
 #            pufile    = cms.FileInPath(""), ## PU file to be implemented later
             average_prescale = cms.double(143),
-            prescale_rand_mc = cms.double(5.) 
+            prescale_rand_mc = cms.double(5.),
+            use_triggers_1mu = cms.bool(True),             
+            use_triggers_2mu = cms.bool(False),             
+            use_triggers_1e = cms.bool(False),             
+            use_triggers_2e = cms.bool(False)             
         ),
         cms.PSet(
             path = cms.vstring("HLT_BIT_HLT_Mu17_v"),
@@ -43,8 +47,12 @@ process.analyze_LeptonFakeRate = cms.PSet(
             jet_minPt = cms.double(30.),
 #            pufile    = cms.FileInPath(""), ## PU file to be implemented later
             average_prescale = cms.double(126),
-            prescale_rand_mc = cms.double(5.) 
-        ),
+            prescale_rand_mc = cms.double(5.),
+            use_triggers_1mu = cms.bool(False),             
+            use_triggers_2mu = cms.bool(True),             
+            use_triggers_1e = cms.bool(False),             
+            use_triggers_2e = cms.bool(False)             
+         ),
         cms.PSet(
             path = cms.vstring("HLT_BIT_HLT_Mu8_v"),
             cone_minPt = cms.double(15.),
@@ -52,7 +60,11 @@ process.analyze_LeptonFakeRate = cms.PSet(
             jet_minPt = cms.double(30.),
 #            pufile    = cms.FileInPath(""), ## PU file to be implemented later
             average_prescale = cms.double(9072),
-            prescale_rand_mc = cms.double(100.) 
+            prescale_rand_mc = cms.double(100.),
+            use_triggers_1mu = cms.bool(False),             
+            use_triggers_2mu = cms.bool(True),             
+            use_triggers_1e = cms.bool(False),             
+            use_triggers_2e = cms.bool(False)              
         ),
         cms.PSet(
             path = cms.vstring("HLT_BIT_HLT_Mu3_PFJet40_v"),
@@ -61,7 +73,11 @@ process.analyze_LeptonFakeRate = cms.PSet(
             jet_minPt = cms.double(40.), 
 #            pufile    = cms.FileInPath(""), ## PU file to be implemented later
             average_prescale = cms.double(4841),
-            prescale_rand_mc = cms.double(100.)
+            prescale_rand_mc = cms.double(100.),
+            use_triggers_1mu = cms.bool(False),             
+            use_triggers_2mu = cms.bool(True),             
+            use_triggers_1e = cms.bool(False),             
+            use_triggers_2e = cms.bool(False)             
          )
     ),
     use_triggers_1mu = cms.bool(True),
@@ -74,7 +90,11 @@ process.analyze_LeptonFakeRate = cms.PSet(
             jet_minPt = cms.double(30.),
 #            pufile    = cms.FileInPath(""), ## PU file to be implemented later
             average_prescale = cms.double(569),
-            prescale_rand_mc = cms.double(1.)   
+            prescale_rand_mc = cms.double(1.),
+            use_triggers_1mu = cms.bool(False),             
+            use_triggers_2mu = cms.bool(False),             
+            use_triggers_1e = cms.bool(False),             
+            use_triggers_2e = cms.bool(True)                
         ),
         cms.PSet(
             path = cms.vstring("HLT_BIT_HLT_Ele12_CaloIdM_TrackIdM_PFJet30_v"),
@@ -83,7 +103,11 @@ process.analyze_LeptonFakeRate = cms.PSet(
             jet_minPt = cms.double(30.),
 #            pufile    = cms.FileInPath(""), ## PU file to be implemented later
             average_prescale = cms.double(2021),
-            prescale_rand_mc = cms.double(1.)
+            prescale_rand_mc = cms.double(1.),
+            use_triggers_1mu = cms.bool(False),             
+            use_triggers_2mu = cms.bool(False),             
+            use_triggers_1e = cms.bool(False),             
+            use_triggers_2e = cms.bool(True)             
         )
     ),
     use_triggers_1e = cms.bool(True),
