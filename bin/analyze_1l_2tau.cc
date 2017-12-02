@@ -858,16 +858,14 @@ int main(int argc, char* argv[])
     cutFlowTable.update("run:ls:event selection");
     cutFlowHistManager->fillHistograms("run:ls:event selection", lumiScale);
 
-    if(run_lumi_eventSelector)
-    {
+    if ( run_lumi_eventSelector ) {
       std::cout << "processing Entry " << inputTree -> getCurrentMaxEventIdx() << ": " << eventInfo << '\n';
-      if(inputTree -> isOpen())
-      {
+      if ( inputTree->isOpen() ) {
         std::cout << "input File = " << inputTree -> getCurrentFileName() << '\n';
       }
     }
 
-    //--- build collections of generator level particles (before any cuts are applied, to check distributions in unbiased event samples)
+//--- build collections of generator level particles (before any cuts are applied, to check distributions in unbiased event samples)
     std::vector<GenLepton> genLeptons;
     std::vector<GenLepton> genElectrons;
     std::vector<GenLepton> genMuons;
@@ -890,7 +888,7 @@ int main(int argc, char* argv[])
         genJets = genJetReader->read();
       }
     }
-    //std::cout << "Did gen level" << std::endl;
+
     if ( isMC ) {
       genEvtHistManager_beforeCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genJets);
     }
@@ -915,10 +913,10 @@ int main(int argc, char* argv[])
       continue;
     }
 
-	//--- Rank triggers by priority and ignore triggers of lower priority if a trigger of higher priority has fired for given event;
-	//    the ranking of the triggers is as follows: 1mu, 1e
-	// CV: This logic is necessary to avoid that the same event is selected multiple times when processing different primary datasets.
-	//     The mu+tau and e+tau need to have the lowest priority, as not all e+tau trigger paths exists in the VHbb Ntuples of the SingleElectron and SingleMuon datasets!!
+//--- Rank triggers by priority and ignore triggers of lower priority if a trigger of higher priority has fired for given event;
+//    the ranking of the triggers is as follows: 1mu, 1e
+// CV: This logic is necessary to avoid that the same event is selected multiple times when processing different primary datasets.
+//     The mu+tau and e+tau need to have the lowest priority, as not all e+tau trigger paths exists in the VHbb Ntuples of the SingleElectron and SingleMuon datasets!!
     if ( !isMC && !isDEBUG ) {
       bool isTriggered_SingleElectron = isTriggered_1e;
       bool isTriggered_SingleMuon = isTriggered_1mu;
@@ -948,7 +946,7 @@ int main(int argc, char* argv[])
     }
     cutFlowTable.update("trigger");
     cutFlowHistManager->fillHistograms("trigger", lumiScale);
-    //std::cout << "Passed triggers" << std::endl;
+
     if ( (selTrigger_1mu     && !apply_offline_e_trigger_cuts_1mu)     ||
          (selTrigger_1mu1tau && !apply_offline_e_trigger_cuts_1mu1tau) ||
          (selTrigger_1e      && !apply_offline_e_trigger_cuts_1e)      ||
@@ -960,8 +958,8 @@ int main(int argc, char* argv[])
       tightElectronSelector.enable_offline_e_trigger_cuts();
     }
 
-	//--- build collections of electrons, muons and hadronic taus;
-	//    resolve overlaps in order of priority: muon, electron,
+//--- build collections of electrons, muons and hadronic taus;
+//    resolve overlaps in order of priority: muon, electron,
     std::vector<RecoMuon> muons = muonReader->read();
     std::vector<const RecoMuon*> muon_ptrs = convert_to_ptrs(muons);
     std::vector<const RecoMuon*> cleanedMuons = muon_ptrs; // CV: no cleaning needed for muons, as they have the highest priority in the overlap removal
@@ -1008,8 +1006,8 @@ int main(int argc, char* argv[])
     else if ( hadTauSelection == kTight    ) selHadTaus = tightHadTaus;
     else assert(0);
     selHadTaus = pickFirstNobjects(selHadTaus, 2);
-    //std::cout << "Buitl leptons" << std::endl;
-	//--- build collections of jets and select subset of jets passing b-tagging criteria
+
+//--- build collections of jets and select subset of jets passing b-tagging criteria
     std::vector<RecoJet> jets = jetReader->read();
     std::vector<const RecoJet*> jet_ptrs = convert_to_ptrs(jets);
     // Karl: we might want to change jet cleaning w.r.t selHadTaus to fakeableHadTaus
@@ -1020,7 +1018,7 @@ int main(int argc, char* argv[])
     std::vector<const RecoJet*> selBJets_loose = jetSelectorBtagLoose(cleanedJets);
     std::vector<const RecoJet*> selBJets_medium = jetSelectorBtagMedium(cleanedJets);
 
-	//--- build collections of generator level particles (after some cuts are applied, to safe computing time)
+//--- build collections of generator level particles (after some cuts are applied, to safe computing time)
     if ( isMC && redoGenMatching && !fillGenEvtHistograms ) {
       if ( genLeptonReader ) {
         genLeptons = genLeptonReader->read();
@@ -1039,7 +1037,7 @@ int main(int argc, char* argv[])
       }
     }
 
-	//--- match reconstructed to generator level particles
+//--- match reconstructed to generator level particles
     if ( isMC && redoGenMatching ) {
       muonGenMatcher.addGenLeptonMatch(preselMuons, genLeptons, 0.2);
       muonGenMatcher.addGenHadTauMatch(preselMuons, genHadTaus, 0.2);
@@ -1058,7 +1056,7 @@ int main(int argc, char* argv[])
       jetGenMatcher.addGenJetMatch(selJets, genJets, 0.2);
     }
 
-	//--- apply preselection
+//--- apply preselection
     std::vector<const RecoLepton*> preselLeptons;
     preselLeptons.reserve(preselElectrons.size() + preselMuons.size());
     preselLeptons.insert(preselLeptons.end(), preselElectrons.begin(), preselElectrons.end());

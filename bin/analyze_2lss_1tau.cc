@@ -448,8 +448,7 @@ int main(int argc, char* argv[])
   EventInfoReader eventInfoReader(&eventInfo);
   inputTree -> registerReader(&eventInfoReader);
 
-  for(const std::vector<hltPath *> hltPaths: {triggers_1e, triggers_2e, triggers_1mu, triggers_2mu, triggers_1e1mu})
-  {
+  for ( const std::vector<hltPath*> hltPaths: { triggers_1e, triggers_2e, triggers_1mu, triggers_2mu, triggers_1e1mu } ) {
     inputTree -> registerReader(hltPaths);
   }
 
@@ -525,8 +524,7 @@ int main(int argc, char* argv[])
   GenJetReader* genJetReader = 0;
   LHEInfoReader* lheInfoReader = 0;
   if ( isMC ) {
-    if(! readGenObjects)
-    {
+    if ( !readGenObjects ) {
       if ( branchName_genLeptons1 != "" || branchName_genLeptons2 != "" ) {
         genLeptonReader = new GenLeptonReader(Form("n%s", branchName_genLeptons1.data()), branchName_genLeptons1, Form("n%s", branchName_genLeptons2.data()), branchName_genLeptons2);
         inputTree -> registerReader(genLeptonReader);
