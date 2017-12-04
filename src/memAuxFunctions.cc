@@ -19,12 +19,12 @@ get_addMEM_systematics(const std::string & central_or_shift,
     if(boost::algorithm::ends_with(central_or_shift, "Up"))
     {
       jetPt_option = RecoJetReader::kJetPt_jecUp;
-      met_option   = kMEt_shifted_JetEnUp;
+      met_option   = RecoMEtReader::kMEt_shifted_JetEnUp;
     }
     else if(boost::algorithm::ends_with(central_or_shift, "Down"))
     {
       jetPt_option = RecoJetReader::kJetPt_jecDown;
-      met_option   = kMEt_shifted_JetEnDown;
+      met_option   = RecoMEtReader::kMEt_shifted_JetEnDown;
     }
     else
     {
@@ -52,11 +52,11 @@ get_addMEM_systematics(const std::string & central_or_shift,
   {
     if(boost::algorithm::ends_with(central_or_shift, "Up"))
     {
-      met_option = kMEt_shifted_JetResUp;
+      met_option = RecoMEtReader::kMEt_shifted_JetResUp;
     }
     else if(boost::algorithm::ends_with(central_or_shift, "Down"))
     {
-      met_option = kMEt_shifted_JetResDown;
+      met_option = RecoMEtReader::kMEt_shifted_JetResDown;
     }
     else
     {
@@ -68,11 +68,11 @@ get_addMEM_systematics(const std::string & central_or_shift,
   {
     if(boost::algorithm::ends_with(central_or_shift, "Up"))
     {
-      met_option = kMEt_shifted_UnclusteredEnUp;
+      met_option = RecoMEtReader::kMEt_shifted_UnclusteredEnUp;
     }
     else if(boost::algorithm::ends_with(central_or_shift, "Down"))
     {
-      met_option = kMEt_shifted_UnclusteredEnDown;
+      met_option = RecoMEtReader::kMEt_shifted_UnclusteredEnDown;
     }
     else
     {

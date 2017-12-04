@@ -234,7 +234,7 @@ int main(int argc,
 
 //--- declare missing transverse energy
   RecoMEtReader* metReader = new RecoMEtReader(era, branchName_met);
-  metReader->setMEt_central_or_shift(kMEt_central);
+  metReader->setMEt_central_or_shift(RecoMEtReader::kMEt_central);
   metReader->setBranchAddresses(inputTree);
 
   std::string outputTreeName = treeName;
@@ -458,7 +458,7 @@ int main(int argc,
           {
             int jetPt_option    = RecoJetReader::kJetPt_central;
             int hadTauPt_option = RecoHadTauReader::kHadTauPt_central;
-            int met_option      = kMEt_central;
+            int met_option      = RecoMEtReader::kMEt_central;
 
             if(get_addMEM_systematics(central_or_shift, jetPt_option, hadTauPt_option, met_option))
             {

@@ -436,8 +436,8 @@ int main(int argc, char* argv[])
   }
   
   int jetPt_option = RecoJetReader::kJetPt_central;
+  int met_option = RecoMEtReader::kMEt_central;
   int hadTauPt_option = RecoHadTauReader::kHadTauPt_central;
-
   int lheScale_option = kLHE_scale_central;
   if ( isMC && central_or_shift != "central" ) {
     TString central_or_shift_tstring = central_or_shift.data();
@@ -452,17 +452,19 @@ int main(int argc, char* argv[])
       jet_btagWeight_branch = getBranchName_bTagWeight(era, central_or_shift);
       if( shiftUp_or_Down == "Up"   ){ 
         jetPt_option = RecoJetReader::kJetPt_jecUp;
-        branchName_met += "_shifted_JetEnUp";
+	met_option = RecoMEtReader::kMEt_shifted_JetEnUp;
       } else if( shiftUp_or_Down == "Down" ){ 
         jetPt_option = RecoJetReader::kJetPt_jecDown;
-        branchName_met += "_shifted_JetEnDown";
+	met_option = RecoMEtReader::kMEt_shifted_JetEnDown;
       } else assert(0);
-    }else if(central_or_shift_tstring.BeginsWith("CMS_ttHl_JER")){
-      if ( central_or_shift_tstring.EndsWith("Up") ) branchName_met += "_shifted_JetResUp";
-      else if ( central_or_shift_tstring.EndsWith("Down") ) branchName_met += "_shifted_JetResDown";
-    }else if(central_or_shift_tstring.BeginsWith("CMS_ttHl_UnclusteredEn")){
-      if ( central_or_shift_tstring.EndsWith("Up") ) branchName_met += "_shifted_UnclusteredEnUp";
-      else if ( central_or_shift_tstring.EndsWith("Down") ) branchName_met += "_shifted_UnclusteredEnDown";
+    } else if ( central_or_shift_tstring.BeginsWith("CMS_ttHl_JER") ) {
+      if ( central_or_shift_tstring.EndsWith("Up") ) met_option = RecoMEtReader::kMEt_shifted_JetResUp;
+      else if ( central_or_shift_tstring.EndsWith("Down") ) met_option = RecoMEtReader::kMEt_shifted_JetResDown;
+      else assert(0);
+    } else if ( central_or_shift_tstring.BeginsWith("CMS_ttHl_UnclusteredEn") ) {
+      if ( central_or_shift_tstring.EndsWith("Up") ) met_option = RecoMEtReader::kMEt_shifted_UnclusteredEnUp;
+      else if ( central_or_shift_tstring.EndsWith("Down") ) met_option = RecoMEtReader::kMEt_shifted_UnclusteredEnDown;
+      else assert(0);
     } else if ( central_or_shift_tstring.BeginsWith("CMS_ttHl_tauES") ) {
       if      ( shiftUp_or_Down == "Up"   ) hadTauPt_option = RecoHadTauReader::kHadTauPt_shiftUp;
       else if ( shiftUp_or_Down == "Down" ) hadTauPt_option = RecoHadTauReader::kHadTauPt_shiftDown;
@@ -562,6 +564,7 @@ int main(int argc, char* argv[])
 
 //--- declare missing transverse energy
   RecoMEtReader* metReader = new RecoMEtReader(era, branchName_met);
+  metReader->setMEt_central_or_shift(met_option);
   inputTree->registerReader(metReader);
 
 //--- declare generator level information

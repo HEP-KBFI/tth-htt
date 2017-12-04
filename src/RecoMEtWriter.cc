@@ -27,7 +27,7 @@ RecoMEtWriter::~RecoMEtWriter()
 
 void RecoMEtWriter::setBranchNames()
 {
-  for(int met_option = kMEt_central; met_option <= kMEt_shifted_UnclusteredEnDown; ++met_option)
+  for(int met_option = RecoMEtReader::kMEt_central; met_option <= RecoMEtReader::kMEt_shifted_UnclusteredEnDown; ++met_option)
   {
     const std::string branchName_obj = getBranchName_MEt(era_, branchName_obj_, met_option);
     branchName_pt_[met_option]  = Form("%s_%s", branchName_obj.data(), "pt");
@@ -40,7 +40,7 @@ void RecoMEtWriter::setBranchNames()
 
 void RecoMEtWriter::setBranches(TTree* tree)
 {
-  for(int met_option = kMEt_central; met_option <= kMEt_shifted_UnclusteredEnDown; ++met_option)
+  for(int met_option = RecoMEtReader::kMEt_central; met_option <= RecoMEtReader::kMEt_shifted_UnclusteredEnDown; ++met_option)
   {
     setBranch(tree, &met_.systematics_[met_option].pt_,  branchName_pt_[met_option]);
     setBranch(tree, &met_.systematics_[met_option].phi_, branchName_phi_[met_option]);

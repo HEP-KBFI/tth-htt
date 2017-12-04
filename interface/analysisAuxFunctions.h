@@ -30,14 +30,6 @@ enum { kBtag_central,
        kBtag_cErr1Up, kBtag_cErr1Down, kBtag_cErr2Up, kBtag_cErr2Down, 
        kBtag_jesUp, kBtag_jesDown };
 
-//--- declare systematic uncertainties on MEt
-enum {
-  kMEt_central,
-  kMEt_shifted_JetEnUp, kMEt_shifted_JetEnDown,
-  kMEt_shifted_JetResUp, kMEt_shifted_JetResDown,
-  kMEt_shifted_UnclusteredEnUp, kMEt_shifted_UnclusteredEnDown
-};
-
 //--- declare selection criteria for leptons and hadronic taus
 enum { kLoose, kFakeable, kTight };
 
