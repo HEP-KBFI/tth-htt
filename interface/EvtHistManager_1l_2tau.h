@@ -26,6 +26,9 @@ class EvtHistManager_1l_2tau
     double mvaOutput_1l_2tau_ttbar_HTTWithKinFit_MVAonly,
     double mvaOutput_1l_2tau_ttbar_HTTNoKinFit_MVAonly,
     double mvaOutput_1l_2tau_ttbar_Old,
+    double mvaOutput_1l_2tau_ttbar_HTTLepID,
+    double mvaOutput_1l_2tau_ttbar_OldVar,
+    double mvaOutput_1l_2tau_ttbar_OldVarHTT,
     double mvaOutput_1l_2tau_ttV, double mvaDiscr_1l_2tau, double mTauTauVis, double evtWeight);
 
   const TH1* getHistogram_EventCounter() const { return histogram_EventCounter_; }
@@ -43,11 +46,14 @@ class EvtHistManager_1l_2tau
 
   TH1* histogram_mvaOutput_1l_2tau_ttbar_;
   TH1* histogram_mvaOutput_1l_2tau_ttbar_HTTWithKinFit_MVAonly_;
-  TH1* histogram_mvaOutput_1l_2tau_ttbar_HTTNoKinFit_MVAonly_;
+  TH1* histogram_mvaOutput_1l_2tau_ttbar_HTTWithKinFit_;
   TH1* histogram_mvaOutput_1l_2tau_ttbar_Old_;
+  TH1* histogram_mvaOutput_1l_2tau_ttbar_HTTLepID_;
+  TH1* histogram_mvaOutput_1l_2tau_ttbar_OldVar_;
+  TH1* histogram_mvaOutput_1l_2tau_ttbar_OldVarHTT_;
 
   TH1* histogram_mvaOutput_1l_2tau_ttV_;
-  TH1* histogram_mvaDiscr_1l_2tau_; 
+  TH1* histogram_mvaDiscr_1l_2tau_;
 
   TH1* histogram_mTauTauVis_;
 

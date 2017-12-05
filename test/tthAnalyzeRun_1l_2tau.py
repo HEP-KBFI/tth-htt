@@ -196,8 +196,12 @@ if __name__ == '__main__':
       histograms_to_fit                     = [
         "EventCounter",
         "numJets",
-        "mvaOutput_1l_2tau_ttbar_HadTopTaggerVarMVAonly",
+        "mvaOutput_1l_2tau_ttbar_HTTWithKinFit_MVAonly",
+        "mvaOutput_1l_2tau_ttbar_HTTWithKinFit",
         "mvaOutput_1l_2tau_ttbar",
+        "mvaOutput_1l_2tau_ttbar_Old",
+        "mvaOutput_1l_2tau_ttbar_OldVar",
+        "mvaOutput_1l_2tau_ttbar_OldVarHTT",
 #       "mvaOutput_1l_2tau_ttbar_withLepID",
 #       "mvaOutput_1l_2tau_ttbar_withLepID_HTTbase",
 #       "mvaOutput_1l_2tau_ttbar_baseline",

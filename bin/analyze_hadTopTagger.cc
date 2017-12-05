@@ -373,7 +373,7 @@ int main(int argc, char* argv[])
       "statusKinFit", "nllKinFit", "alphaKinFit", "logPKinFit", "logPErrKinFit",
       "qg_b", "qg_Wj1", "qg_Wj2",
       "pT_bWj1Wj2", "pT_Wj1Wj2",
-      "max_dR_div_expRjet"
+      "max_dR_div_expRjet","genTopPt","genAntiTopPt"
     );
 
 
@@ -488,6 +488,7 @@ int main(int argc, char* argv[])
       if ( it->pdgId() == +6 && !genTopQuark     ) genTopQuark = &(*it);
       if ( it->pdgId() == -6 && !genAntiTopQuark ) genAntiTopQuark = &(*it);
     }
+
     //if ( !(genTopQuark && genAntiTopQuark) ) continue;
     //cutFlowTable.update("genTopQuark && genAntiTopQuark");
     //cutFlowHistManager->fillHistograms("genTopQuark && genAntiTopQuark");
@@ -652,9 +653,11 @@ int main(int argc, char* argv[])
 											 (selWJet1_isFromAntiTop == 1) && \
 											 (selWJet2_isFromAntiTop == 1);
 					bdt_filler->operator()("bWj1Wj2_isGenMatched", tripletTruth==1 && tripletTruthAnti==1);
+          bdt_filler->operator()("genTopPt", genTopQuark->pt());
+          bdt_filler->operator()("genAntiTopPt", genAntiTopQuark->pt());
 					std::vector<bool> truth_hadTopTagger; //= hadTopTaggerFill->isTruth(**selBJet, **selWJet1, **selWJet2,
 																						//genTopQuarks, genBJets, genWBosons);
-					std::vector<bool> truth_hadTopTagger3Jet; //= hadTopTaggerFill->isTruth3Jet(**selBJet, **selWJet1, **selWJet2,
+					//std::vector<bool> truth_hadTopTagger3Jet; //= hadTopTaggerFill->isTruth3Jet(**selBJet, **selWJet1, **selWJet2,
 														// genTopQuarks, genBJets, genWBosons, genWJets);
 					if (mvaOutput==0){
 						bdt_filler->fill();
