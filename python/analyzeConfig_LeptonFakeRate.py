@@ -1,8 +1,99 @@
-import logging, copy
+import logging, jinja2, codecs, os
 
 from tthAnalysis.HiggsToTauTau.analyzeConfig_new import *
-from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists
+from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, add_chmodX
 from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg, createFile, generateInputFileList
+
+current_dir = os.path.dirname(os.path.realpath(__file__))
+DKEY_COMBINE_OUTPUT="combine_output"
+
+def getBinName(label, minValue, maxValue):
+  binName = ''
+  if minValue > 0. and maxValue > 0.:
+    binName = '%s%1.1fto%1.1f' % (label, minValue, maxValue)
+  elif minValue > 0.:
+    binName = '%sGt%1.1f' % (label, minValue)
+  elif maxValue > 0.:
+    binName = '%sLt%1.1f' % (label, maxValue)
+  binName = binName.replace('.', '_')
+  return binName
+
+def getEtaBin(minAbsEta, maxAbsEta):
+  return getBinName("absEta", minAbsEta, maxAbsEta)
+
+def getPtBin(minPt, maxPt):
+  return getBinName("Pt", minPt, maxPt)
+
+fit_param_range_map = {
+  'electron' : {
+    'tight' : {
+      'incl'                            : '-10.0,15.0',
+      'absEtaLt1_5_Pt15_0to20_0'        : '-10.0,10.0',
+      'absEtaLt1_5_Pt20_0to30_0'        : '-10.0,10.0',
+      'absEtaLt1_5_Pt30_0to45_0'        : '-10.0,20.0',
+      'absEtaLt1_5_Pt45_0to65_0'        : '-10.0,10.0',
+      'absEtaLt1_5_Pt65_0to100000_0'    : '-10.0,10.0',
+      'absEta1_5to9_9_Pt15_0to20_0'     : '-100.0,100.0',
+      'absEta1_5to9_9_Pt20_0to30_0'     : '-5.0,13.0',
+      'absEta1_5to9_9_Pt30_0to45_0'     : '-5.0,20.0',
+      'absEta1_5to9_9_Pt45_0to65_0'     : '-100.0,100.0',
+      'absEta1_5to9_9_Pt65_0to100000_0' : '-100.0,100.0',
+    },
+    'fakeable' : {
+        'incl'                            : '-100.0,100.0',
+        'absEtaLt1_5_Pt15_0to20_0'        : '-100.0,100.0',
+        'absEtaLt1_5_Pt20_0to30_0'        : '-100.0,100.0',
+        'absEtaLt1_5_Pt30_0to45_0'        : '-100.0,100.0',
+        'absEtaLt1_5_Pt45_0to65_0'        : '-100.0,100.0',
+        'absEtaLt1_5_Pt65_0to100000_0'    : '-100.0,100.0',
+        'absEta1_5to9_9_Pt15_0to20_0'     : '-100.0,100.0',
+        'absEta1_5to9_9_Pt20_0to30_0'     : '-100.0,100.0',
+        'absEta1_5to9_9_Pt30_0to45_0'     : '-100.0,100.0',
+        'absEta1_5to9_9_Pt45_0to65_0'     : '-100.0,100.0',
+        'absEta1_5to9_9_Pt65_0to100000_0' : '-100.0,100.0',
+    },
+  },
+  'muon' : {
+    'tight' : {
+        'incl'                            : '-100.0,100.0',
+        'absEtaLt1_5_Pt10_0to15_0'        : '-100.0,100.0',
+        'absEtaLt1_5_Pt15_0to20_0'        : '-100.0,100.0',
+        'absEtaLt1_5_Pt20_0to30_0'        : '-100.0,100.0',
+        'absEtaLt1_5_Pt30_0to45_0'        : '-100.0,100.0',
+        'absEtaLt1_5_Pt45_0to65_0'        : '-10.0,10.0',
+        'absEtaLt1_5_Pt65_0to100000_0'    : '-100.0,100.0',
+        'absEta1_5to9_9_Pt10_0to15_0'     : '-5.0,5.0',
+        'absEta1_5to9_9_Pt15_0to20_0'     : '-100.0,100.0',
+        'absEta1_5to9_9_Pt20_0to30_0'     : '-15.0,15.0',
+        'absEta1_5to9_9_Pt30_0to45_0'     : '-50.0,50.0',
+        'absEta1_5to9_9_Pt45_0to65_0'     : '-50.0,50.0',
+        'absEta1_5to9_9_Pt65_0to100000_0' : '-20.0,20.0',
+    },
+    'fakeable' : {
+      'incl'                            : '-100.0,100.0',
+      'absEtaLt1_5_Pt10_0to15_0'        : '-100.0,100.0',
+      'absEtaLt1_5_Pt15_0to20_0'        : '-100.0,100.0',
+      'absEtaLt1_5_Pt20_0to30_0'        : '-100.0,100.0',
+      'absEtaLt1_5_Pt30_0to45_0'        : '-100.0,100.0',
+      'absEtaLt1_5_Pt45_0to65_0'        : '-10.0,10.0',
+      'absEtaLt1_5_Pt65_0to100000_0'    : '-100.0,100.0',
+      'absEta1_5to9_9_Pt10_0to15_0'     : '-5.0,5.0',
+      'absEta1_5to9_9_Pt15_0to20_0'     : '-100.0,100.0',
+      'absEta1_5to9_9_Pt20_0to30_0'     : '-15.0,15.0',
+      'absEta1_5to9_9_Pt30_0to45_0'     : '-50.0,50.0',
+      'absEta1_5to9_9_Pt45_0to65_0'     : '-50.0,50.0',
+      'absEta1_5to9_9_Pt65_0to100000_0' : '-20.0,20.0',
+    },
+  },
+}
+
+def construct_lepton_params(lepton, lepton_short, selection, absEtaPtBinString, error_msg):
+  if absEtaPtBinString not in fit_param_range_map[lepton][selection]:
+    raise ValueError(error_msg)
+  lepton_id = '%ss_%s_%s' % (lepton, selection, absEtaPtBinString)
+  lepton_id_short = lepton_id.replace('%ss_' % lepton, '%s_' % lepton_short)
+  lepton_range = fit_param_range_map[lepton][selection][absEtaPtBinString]
+  return (lepton_id_short, lepton_range, lepton_id)
 
 class analyzeConfig_LeptonFakeRate(analyzeConfig):
   """Configuration metadata needed to run analysis in a single go.
@@ -42,9 +133,11 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     self.cfgFile_prep_dcard = "prepareDatacards_LeptonFakeRate_cfg.py"
     self.prep_dcard = prep_dcard
 
-    self.numerator_histogram = numerator_histogram
-    self.denominator_histogram = denominator_histogram
+    self.numerator_histogram = numerator_histogram[0]
+    self.denominator_histogram = denominator_histogram[0]
     self.histograms_to_fit = [self.numerator_histogram, self.denominator_histogram]
+    self.numerator_plotLabel = numerator_histogram[1]
+    self.denominator_plotLabel = denominator_histogram[1]
 
     self.executable_addBackgrounds_LeptonFakeRate = executable_addBackgrounds_LeptonFakeRate
     self.executable_prep_dcard = executable_prep_dcard
@@ -247,9 +340,9 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
 #            self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel,
 #              "_".join([ charge_selection ]), process_name)                                                    ## NO CHARGE SELECTION NEEDED HERE
           self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel, process_name)
-    for dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_LOGS, DKEY_HIST, DKEY_DCRD, DKEY_PLOT, DKEY_HADD_RT ]:
+    for dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_LOGS, DKEY_HIST, DKEY_DCRD, DKEY_PLOT, DKEY_HADD_RT, DKEY_COMBINE_OUTPUT ]:
       initDict(self.dirs, [ dir_type ])
-      if dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_LOGS, DKEY_DCRD, DKEY_HADD_RT ]:  ## DKEY_PLOT TO BE ADDED LATER
+      if dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_LOGS, DKEY_DCRD, DKEY_HADD_RT, DKEY_COMBINE_OUTPUT ]:  ## DKEY_PLOT TO BE ADDED LATER
         self.dirs[dir_type] = os.path.join(self.configDir, dir_type, self.channel)
       else:
         self.dirs[dir_type] = os.path.join(self.outputDir, dir_type, self.channel)
@@ -406,9 +499,103 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
         'histogramToFit' : histogramToFit,
         'label' : None
         }
-#        self.createCfg_prep_dcard(self.jobOptions_prep_dcard[key_prep_dcard_job])       ## DEF LINE
         self.createCfg_prep_dcard_LeptonFakeRate(self.jobOptions_prep_dcard[key_prep_dcard_job])
 
+      # We need to generate the eta and pt bins for electrons and muons
+      lepton_bins = {}
+      for lepton in ['electron', 'muon']:
+        if lepton not in lepton_bins:
+          lepton_bins[lepton] = {}
+
+        absEtaBins   = None
+        absPtBins    = None
+        lepton_short = None
+        if lepton == 'electron':
+          absEtaBins   = self.absEtaBins_e
+          absPtBins    = self.absPtBins_e # Karl: why has this variable ,,abs'' in front of it?!
+          lepton_short = 'e'
+        elif lepton == 'muon':
+          absEtaBins   = self.absEtaBins_mu
+          absPtBins    = self.absPtBins_mu
+          lepton_short = 'mu'
+        else:
+          raise ValueError('Invalid lepton type: %s' % lepton)
+        for selection in ['tight', 'fakeable']:
+          if selection not in lepton_bins[lepton]:
+            lepton_bins[lepton][selection] = []
+          for absEtaBin_idx in range(0, len(absEtaBins) - 1):
+            absEtaBinLowerEdge = absEtaBins[absEtaBin_idx]
+            absEtaBinUpperEdge = absEtaBins[absEtaBin_idx + 1]
+            absEtaBinString = getEtaBin(absEtaBinLowerEdge, absEtaBinUpperEdge)
+            for absPtBin_idx in range(0, len(absPtBins) - 1):
+              absPtBinsLowerEdge = absPtBins[absPtBin_idx]
+              absPtBinsUpperEdge = absPtBins[absPtBin_idx + 1]
+              absPtBinString = getPtBin(absPtBinsLowerEdge, absPtBinsUpperEdge)
+              absEtaPtBinString = '%s_%s' % (absEtaBinString, absPtBinString)
+
+              lepton_bins[lepton][selection].append(
+                construct_lepton_params(
+                  lepton, lepton_short, selection, absEtaPtBinString,
+                  error_msg = "No fit parameter range specified for abs eta range = (%.3f, %.3f) and "
+                  "pT range = (%.3f, %3f) for lepton type %s" % \
+                  (absEtaBinLowerEdge, absEtaBinUpperEdge, absPtBinsLowerEdge, absPtBinsUpperEdge, lepton)
+                )
+              )
+
+          # Let's also add inclusive category
+          lepton_bins[lepton][selection].append(
+            construct_lepton_params(
+              lepton, lepton_short, selection, 'incl',
+              error_msg = "No fit parameter range specified for lepton type %s" % lepton
+            )
+          )
+      lepton_bins_merged = []
+      for lepton_type in lepton_bins:
+        for lepton_selection in lepton_bins[lepton_type]:
+          lepton_bins_merged.extend(lepton_bins[lepton_type][lepton_selection])
+
+      # Create setupDatacards_LeptonFakeRate.py script from the template
+      setup_dcards_template_file = os.path.join(current_dir, 'setupDatacards_LeptonFakeRate.py.template')
+      setup_dcards_template = open(setup_dcards_template_file, 'r').read()
+      setup_dcards_script = jinja2.Template(setup_dcards_template).render(leptons = lepton_bins_merged)
+      setup_dcards_script_path = os.path.join(self.dirs[DKEY_SCRIPTS], 'setupDatacards_LeptonFakeRate.py')
+      logging.debug("writing setupDatacards_LeptonFakeRate script file = '%s'" % setup_dcards_script_path)
+      with codecs.open(setup_dcards_script_path, "w", "utf-8") as setup_dcards_script_file:
+        setup_dcards_script_file.write(setup_dcards_script)
+        setup_dcards_script_file.flush()
+        os.fsync(setup_dcards_script_file.fileno())
+      add_chmodX(setup_dcards_script_path)
+
+      postfit_plot_script_path = os.path.join(os.environ['CMSSW_BASE'], 'src/tthAnalysis/HiggsToTauTau/data/leptonFR/scripts/postFitPlot.py')
+      yieldtable_script_path   = os.path.join(os.environ['CMSSW_BASE'], 'src/tthAnalysis/HiggsToTauTau/data/leptonFR/scripts/yieldTable.py')
+
+      # Create run_postFit.sh script from the template
+      postfit_template_file = os.path.join(current_dir, 'run_postFit.sh.template')
+      postfit_template = open(postfit_template_file, 'r').read()
+      postfit_script = jinja2.Template(postfit_template).render(
+        new_cmssw_base         = self.cmssw_base_dir_combine,
+        setup_dcards_script    = setup_dcards_script_path,
+        postfit_plot_script    = postfit_plot_script_path,
+        yieldtable_script      = yieldtable_script_path,
+        numerator_datacard     = os.path.join(self.dirs[DKEY_DCRD], "prepareDatacards_%s.root" % self.numerator_histogram),
+        denominator_datacard   = os.path.join(self.dirs[DKEY_DCRD], "prepareDatacards_%s.root" % self.denominator_histogram),
+        output_dir             = os.path.join(self.dirs[DKEY_COMBINE_OUTPUT], 'output'),
+        numerator_output_dir   = os.path.join(self.dirs[DKEY_COMBINE_OUTPUT], 'output', 'mlfit_LeptonFakeRate_%s' % self.numerator_histogram),
+        denominator_output_dir = os.path.join(self.dirs[DKEY_COMBINE_OUTPUT], 'output', 'mlfit_LeptonFakeRate_%s' % self.denominator_histogram),
+        numerator_plotLabel    = self.numerator_plotLabel,
+        denominator_plotLabel  = self.denominator_plotLabel,
+        etights                = lepton_bins['electron']['tight'],
+        efakes                 = lepton_bins['electron']['fakeable'],
+        mtights                = lepton_bins['muon']['tight'],
+        mfakes                 = lepton_bins['muon']['fakeable'],
+      )
+      postfit_script_path = os.path.join(self.dirs[DKEY_SCRIPTS], 'run_postFit.sh')
+      logging.debug("Writing run_postFit script file = '%s'" % postfit_script_path)
+      with codecs.open(postfit_script_path, "w", "utf-8") as postfit_script_file:
+        postfit_script_file.write(postfit_script)
+        postfit_script_file.flush()
+        os.fsync(postfit_script_file.fileno())
+      add_chmodX(postfit_script_path)
 
     if self.is_sbatch:
       logging.info("Creating script for submitting '%s' jobs to batch system" % self.executable_analyze)

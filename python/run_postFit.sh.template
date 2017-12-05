@@ -1,0 +1,256 @@
+#!/bin/bash
+
+# Let's record the paths to the scripts which we're about to run
+SETUPDATACARDS_LEPTONFAKERATE="{{ setup_dcards_script }}"
+POSTFITPLOT="{{ postfit_plot_script }}"
+YIELDTABLE="{{ yieldtable_script }}"
+
+# Path to the new CMSSW area
+NEW_CMSSW_BASE="{{ new_cmssw_base }}" # /home/ram/VHBB_NTUPLES_2017/CMSSW_7_4_7_CombineHarvestor
+NEW_CMSSW_AREA="$NEW_CMSSW_BASE/src/CombineHarvester/ttH_htt_LeptonFakeRate"
+
+# Read the input datacard directory and output directory
+OUTPUT_DIR="{{ output_dir }}" # /home/ram/ttHAnalysis_2017Nov4/2016/2017Nov4/fitResults
+
+# Set the numerator and denominator paths (both datacard and output paths)
+DATACARD_NUM="{{ numerator_datacard }}" # /home/ram/ttHAnalysis_2017Nov4/2016/2017Nov4/datacards/LeptonFakeRate/prepareDatacards_mT_fix_L.root
+DATACARD_DEN="{{ denominator_datacard }}" # /home/ram/ttHAnalysis_2017Nov4/2016/2017Nov4/datacards/LeptonFakeRate/prepareDatacards_EventCounter.root
+OUTPUT_DIR_NUM="{{ numerator_output_dir }}" # /home/ram/ttHAnalysis_2017Nov4/2016/2017Nov4/fitResults/output/mlfit_LeptonFakeRate_mT_fix_L
+OUTPUT_DIR_DEN="{{ denominator_output_dir }}" # /home/ram/ttHAnalysis_2017Nov4/2016/2017Nov4/fitResults/output/mlfit_LeptonFakeRate_EventCounter
+
+echo "Creating the shapes directory and copying the datacards over there"
+SHAPES_DIR="$OUTPUT_DIR/shapes"
+SHAPES_EL_DIR="$SHAPES_DIR/electron"
+SHAPES_MU_DIR="$SHAPES_DIR/muon"
+mkdir -p $SHAPES_EL_DIR
+mkdir -p $SHAPES_MU_DIR
+cp $DATACARD_NUM $SHAPES_MU_DIR/.
+cp $DATACARD_DEN $SHAPES_MU_DIR/.
+cp $DATACARD_NUM $SHAPES_EL_DIR/.
+cp $DATACARD_DEN $SHAPES_EL_DIR/.
+
+echo "Initializing new CMSSW workspace to: '$NEW_CMSSW_BASE/src'"
+cd "$NEW_CMSSW_BASE/src"
+eval $(scramv1 runtime -sh) # same as cmsenv
+echo $SCRAM_ARCH
+
+echo $OUTPUT_DIR_NUM
+echo "Creating datacards for electrons and muons numerator both inclusively and in pT and eta bins"
+python $SETUPDATACARDS_LEPTONFAKERATE -i $DATACARD_NAME_NUM  -o $OUTPUT_DIR_NUM -s $SHAPES_DIR
+
+echo $OUTPUT_DIR_DEN
+echo "Creating datacards for electrons and muons denominator both inclusively and in pT and eta bins"
+python $SETUPDATACARDS_LEPTONFAKERATE -i $DATACARD_NAME_DEN  -o $OUTPUT_DIR_DEN -s $SHAPES_DIR
+
+echo "Going to the output directory: $OUTPUT_DIR"
+cd $OUTPUT_DIR
+
+
+
+
+echo " ---------- Running scripts for Electrons Numerator ------- "
+
+{% for e_array, e_range, e_sub_dir in etights %}
+
+echo "Making Workspace for $OUTPUT_DIR_NUM/{{ e_array }}/datacard.txt"
+combineTool.py -M T2W -o wsp.root -i $OUTPUT_DIR_NUM/{{ e_array }}/datacard.txt
+
+echo "Running MaxLikelihood Fit on {{ e_array }}"
+combineTool.py -M MaxLikelihoodFit -m 125 --robustFit 1 --minimizerAlgoForMinos Minuit2,Migrad  \
+  -d $OUTPUT_DIR_NUM/{{ e_array }}/datacard.txt --skipBOnlyFit --setPhysicsModelParameterRanges \
+  r={{ e_range }} --there -n {{ e_array }}
+
+NAME='{{ e_array }}_mlfit_shapes.root'
+echo "Extracting PostFit shapes from the mlfit: $NAME"
+MLFIT_OUTPUT='mlfit{{ e_array }}.root'
+PostFitShapesFromWorkspace -w $OUTPUT_DIR_NUM/{{ e_array }}/wsp.root \
+  -d $OUTPUT_DIR_NUM/{{ e_array }}/datacard.txt -o $OUTPUT_DIR_NUM/{{ e_array }}/$NAME \
+  -f $OUTPUT_DIR_NUM/{{ e_array }}/$MLFIT_OUTPUT:fit_s -m 90 --postfit  --sampling --print
+
+LABEL={{ e_array }}
+OUTLABEL1=$LABEL"_num_prefit_linear"
+OUTLABEL2=$LABEL"_num_postfit_linear"
+OUTLABEL3=$LABEL"_num_prefit_log"
+OUTLABEL4=$LABEL"_num_postfit_log"
+MLFIT_FILE=$OUTPUT_DIR_NUM/{{ e_array }}/$NAME
+
+printf '\n Making PostFit plots \n'
+if [ -f "$MLFIT_FILE" ]
+then
+    echo "$MLFIT_FILE exists."
+    python $POSTFITPLOT -i $MLFIT_FILE:"{{ e_sub_dir }}_shapes_prefit"  -c e --x-title '{{ numerator_plotLabel }}'        -o $OUTLABEL1
+    python $POSTFITPLOT -i $MLFIT_FILE:"{{ e_sub_dir }}_shapes_postfit" -c e --x-title '{{ numerator_plotLabel }}'        -o $OUTLABEL2
+    python $POSTFITPLOT -i $MLFIT_FILE:"{{ e_sub_dir }}_shapes_prefit"  -c e --x-title '{{ numerator_plotLabel }}' --logy -o $OUTLABEL3
+    python $POSTFITPLOT -i $MLFIT_FILE:"{{ e_sub_dir }}_shapes_postfit" -c e --x-title '{{ numerator_plotLabel }}' --logy -o $OUTLABEL4
+
+    python $YIELDTABLE $OUTPUT_DIR_NUM/{{ e_array }}/wsp.root \
+      $OUTPUT_DIR_NUM/{{ e_array }}/$MLFIT_OUTPUT "{{ e_sub_dir }}_shapes" \
+      >> $OUTPUT_DIR_NUM/{{ e_array }}/fit_results2_{{ e_array }}.txt
+else
+    echo "$MLFIT_FILE does not exist. Exiting."
+    exit 1
+fi
+
+{% endfor %}
+
+echo " ---------- Finished Running scripts for Electrons Numerator ------- "
+
+
+
+
+
+
+echo " ---------- Running scripts for Electrons Denominator ------- "
+
+{% for e_array, e_range, e_sub_dir in efakes %}
+
+echo "Making Workspace for $OUTPUT_DIR_DEN/{{ e_array }}/datacard.txt"
+combineTool.py -M T2W -o wsp.root -i $OUTPUT_DIR_DEN/{{ e_array }}/datacard.txt
+
+echo "Running MaxLikelihood Fit on {{ e_array }}"
+combineTool.py -M MaxLikelihoodFit -m 125 --robustFit 1 --minimizerAlgoForMinos Minuit2,Migrad \
+  -d $OUTPUT_DIR_DEN/{{ e_array }}/datacard.txt --skipBOnlyFit --setPhysicsModelParameterRanges \
+  r={{ e_range }} --there -n {{ e_array }}
+
+NAME='{{ e_array }}_mlfit_shapes.root'
+echo "Extracting PostFit shapes from the mlfit: $NAME"
+MLFIT_OUTPUT='mlfit{{ e_array }}.root'
+PostFitShapesFromWorkspace -w $OUTPUT_DIR_DEN/{{ e_array }}/wsp.root \
+  -d $OUTPUT_DIR_DEN/{{ e_array }}/datacard.txt -o $OUTPUT_DIR_DEN/{{ e_array }}/$NAME \
+  -f $OUTPUT_DIR_DEN/{{ e_array }}/$MLFIT_OUTPUT:fit_s -m 90 --postfit  --sampling --print
+
+LABEL={{ e_array }}
+OUTLABEL1=$LABEL"_den_prefit_linear"
+OUTLABEL2=$LABEL"_den_postfit_linear"
+OUTLABEL3=$LABEL"_den_prefit_log"
+OUTLABEL4=$LABEL"_den_postfit_log"
+MLFIT_FILE=$OUTPUT_DIR_DEN/{{ e_array }}/$NAME
+
+echo "Making PostFit plots"
+if [ -f "$MLFIT_FILE" ]
+then
+    echo "$MLFIT_FILE exists."
+### PLOTING SCRIPT NOT WORKING FOR EVENT COUNTER  ####
+#    python $POSTFITPLOT -i $MLFIT_FILE:"{{ e_sub_dir }}_shapes_prefit"  -c e --x-title '{{ denominator_plotLabel }}'        -o $OUTLABEL1
+#    python $POSTFITPLOT -i $MLFIT_FILE:"{{ e_sub_dir }}_shapes_postfit" -c e --x-title '{{ denominator_plotLabel }}'        -o $OUTLABEL2
+#    python $POSTFITPLOT -i $MLFIT_FILE:"{{ e_sub_dir }}_shapes_prefit"  -c e --x-title '{{ denominator_plotLabel }}' --logy -o $OUTLABEL3
+#    python $POSTFITPLOT -i $MLFIT_FILE:"{{ e_sub_dir }}_shapes_postfit" -c e --x-title '{{ denominator_plotLabel }}' --logy -o $OUTLABEL4
+#####################################################
+    python $YIELDTABLE $OUTPUT_DIR_DEN/{{ e_array }}/wsp.root \
+      $OUTPUT_DIR_DEN/{{ e_array }}/$MLFIT_OUTPUT "{{ e_sub_dir }}_shapes" \
+      >> $OUTPUT_DIR_DEN/{{ e_array }}/fit_results2_den_{{ e_array }}.txt
+else
+    echo "$MLFIT_FILE does not exist. Exiting."
+    exit 1
+fi
+
+{% endfor %}
+
+echo " ---------- Finished Running scripts for Electrons Denominator ------- "
+
+
+
+
+
+
+echo " -------- Running scripts for Muons Numerator--------- "
+
+{% for mu_array, mu_range, mu_sub_dir in mtights %}
+
+echo "Making Workspace for $OUTPUT_DIR_NUM/{{ mu_array }}/datacard.txt"
+combineTool.py -M T2W -o wsp.root -i $OUTPUT_DIR_NUM/{{ mu_array }}/datacard.txt
+
+echo "Running MaxLikelihood Fit on {{mu_array }}"
+combineTool.py -M MaxLikelihoodFit -m 125 --robustFit 1 --minimizerAlgoForMinos Minuit2,Migrad \
+  -d $OUTPUT_DIR_NUM/{{ mu_array }}/datacard.txt --skipBOnlyFit --setPhysicsModelParameterRanges \
+  r={{ mu_range }} --there -n {{ mu_array }}
+
+NAME='{{ mu_array }}_mlfit_shapes.root'
+echo "Extracting PostFit shapes from the mlfit: $NAME"
+MLFIT_OUTPUT='mlfit{{ mu_array }}.root'
+PostFitShapesFromWorkspace -w $OUTPUT_DIR_NUM/{{ mu_array }}/wsp.root \
+  -d $OUTPUT_DIR_NUM/{{ mu_array }}/datacard.txt -o $OUTPUT_DIR_NUM/{{ mu_array }}/$NAME \
+  -f $OUTPUT_DIR_NUM/{{ mu_array }}/$MLFIT_OUTPUT:fit_s -m 90 --postfit  --sampling --print
+
+LABEL={{ mu_array }}
+OUTLABEL1=$LABEL"_num_prefit_linear"
+OUTLABEL2=$LABEL"_num_postfit_linear"
+OUTLABEL3=$LABEL"_num_prefit_log"
+OUTLABEL4=$LABEL"_num_postfit_log"
+MLFIT_FILE=$OUTPUT_DIR_NUM/{{ mu_array }}/$NAME
+
+echo "Making PostFit plots"
+if [ -f "$MLFIT_FILE" ]
+then
+    echo "$MLFIT_FILE exists."
+    python $POSTFITPLOT -i $MLFIT_FILE:"{{ mu_sub_dir }}_shapes_prefit"  -c mu --x-title '{{ numerator_plotLabel }}'        -o $OUTLABEL1
+    python $POSTFITPLOT -i $MLFIT_FILE:"{{ mu_sub_dir }}_shapes_postfit" -c mu --x-title '{{ numerator_plotLabel }}'        -o $OUTLABEL2
+    python $POSTFITPLOT -i $MLFIT_FILE:"{{ mu_sub_dir }}_shapes_prefit"  -c mu --x-title '{{ numerator_plotLabel }}' --logy -o $OUTLABEL3
+    python $POSTFITPLOT -i $MLFIT_FILE:"{{ mu_sub_dir }}_shapes_postfit" -c mu --x-title '{{ numerator_plotLabel }}' --logy -o $OUTLABEL4
+
+    python $YIELDTABLE $OUTPUT_DIR_NUM/{{ mu_array }}/wsp.root \
+      $OUTPUT_DIR_NUM/{{ mu_array }}/$MLFIT_OUTPUT "{{ mu_sub_dir }}_shapes" \
+      >> $OUTPUT_DIR_NUM/{{ mu_array }}/fit_results2_{{ mu_array }}.txt
+else
+    echo "$MLFIT_FILE does not exist. Exiting."
+    exit 1
+fi
+
+{% endfor %}
+
+echo " --------Finished Running scripts for Muons Numerator--------- "
+
+
+
+
+
+echo " -------- Running scripts for Muons Denominator--------- "
+
+{% for mu_array, mu_range, mu_sub_dir in mfakes %}
+
+echo "Making Workspace for $OUTPUT_DIR_DEN/{{ mu_array }}/datacard.txt"
+combineTool.py -M T2W -o wsp.root -i $OUTPUT_DIR_DEN/{{ mu_array }}/datacard.txt
+
+echo "Running MaxLikelihood Fit on {{ mu_array }}"
+combineTool.py -M MaxLikelihoodFit -m 125 --robustFit 1 --minimizerAlgoForMinos Minuit2,Migrad \
+  -d $OUTPUT_DIR_DEN/{{ mu_array }}/datacard.txt --skipBOnlyFit --setPhysicsModelParameterRanges \
+  r={{ mu_range }} --there -n {{ mu_array }}
+
+
+NAME='{{ mu_array }}_mlfit_shapes.root'
+echo "Extracting PostFit shapes from the mlfit: $NAME"
+MLFIT_OUTPUT='mlfit{{ mu_array }}.root'
+
+PostFitShapesFromWorkspace -w $OUTPUT_DIR_DEN/{{ mu_array }}/wsp.root \
+  -d $OUTPUT_DIR_DEN/{{ mu_array }}/datacard.txt -o $OUTPUT_DIR_DEN/{{ mu_array }}/$NAME \
+  -f $OUTPUT_DIR_DEN/{{ mu_array }}/$MLFIT_OUTPUT:fit_s -m 90 --postfit  --sampling --print
+
+LABEL={{ mu_array }}
+OUTLABEL1=$LABEL"_den_prefit_linear"
+OUTLABEL2=$LABEL"_den_postfit_linear"
+OUTLABEL3=$LABEL"_den_prefit_log"
+OUTLABEL4=$LABEL"_den_postfit_log"
+MLFIT_FILE=$OUTPUT_DIR_DEN/{{ mu_array }}/$NAME
+
+echo "Making PostFit plots"
+if [ -f "$MLFIT_FILE" ]
+then
+    echo "$MLFIT_FILE exists."
+### PLOTING SCRIPT NOT WORKING FOR EVENT COUNTER  ####
+#    python $POSTFITPLOT -i $MLFIT_FILE:"{{ mu_sub_dir }}_shapes_prefit"  -c mu --x-title '{{ denominator_plotLabel }}'        -o $OUTLABEL1
+#    python $POSTFITPLOT -i $MLFIT_FILE:"{{ mu_sub_dir }}_shapes_postfit" -c mu --x-title '{{ denominator_plotLabel }}'        -o $OUTLABEL2
+#    python $POSTFITPLOT -i $MLFIT_FILE:"{{ mu_sub_dir }}_shapes_prefit"  -c mu --x-title '{{ denominator_plotLabel }}' --logy -o $OUTLABEL3
+#    python $POSTFITPLOT -i $MLFIT_FILE:"{{ mu_sub_dir }}_shapes_postfit" -c mu --x-title '{{ denominator_plotLabel }}' --logy -o $OUTLABEL4
+
+    python $YIELDTABLE $OUTPUT_DIR_DEN/{{ mu_array }}/wsp.root \
+      $OUTPUT_DIR_DEN/{{ mu_array }}/$MLFIT_OUTPUT "{{ mu_sub_dir }}_shapes" \
+      >> $OUTPUT_DIR_DEN/{{ mu_array }}/fit_results2_{{ mu_array }}.txt
+else
+    echo "$MLFIT_FILE does not exist. Exiting."
+    exit 1
+fi
+
+{% endfor %}
+
+echo " --------Finished Running scripts for Muons Denominator--------- "
+

@@ -6,7 +6,7 @@ from tthAnalysis.HiggsToTauTau.analyzeConfig_LeptonFakeRate import analyzeConfig
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 
 ERA                    = "2016"
-version                = "2017Dec01"
+version                = "2017Dec05"
 cmssw_base_dir_combine = os.path.expanduser('~/CMSSW_7_4_7') # immediate parent dir to src folder
 
 if ERA == "2016":
@@ -14,6 +14,12 @@ if ERA == "2016":
   LUMI = 35.9e+3 # 1/pb
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
+
+for sample_key, sample_entry in samples.items():
+  if sample_entry['process_name_specific'] == 'ttHJetToNonbb_M125_amcatnlo':
+    sample_entry['use_it'] = True
+  else:
+    sample_entry['use_it'] = False
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -77,8 +83,8 @@ if __name__ == '__main__':
 ##       "CMS_ttHl_thu_shape_ttZ_y1Up",
 ##       "CMS_ttHl_thu_shape_ttZ_y1Down",
     ],
-    numerator_histogram                      = "mT_fix_L", # or "pt"
-    denominator_histogram                    = "EventCounter",
+    numerator_histogram                      = ("mT_fix_L",     "m_{T}^{fix}"), # or ("pt", "p_{T}"),
+    denominator_histogram                    = ("EventCounter", "Number of events"),
     prep_dcard                               = True,
     max_files_per_job                        = 100,
     era                                      = ERA,
