@@ -95,6 +95,13 @@ def construct_lepton_params(lepton, lepton_short, selection, absEtaPtBinString, 
   lepton_range = fit_param_range_map[lepton][selection][absEtaPtBinString]
   return (lepton_id_short, lepton_range, lepton_id)
 
+category_template = """{% for input, output in categories %}
+  cms.PSet(
+    input = cms.string("{{ input }}"),
+    output = cms.string("{{ output }}"),
+  ),{% endfor %}
+"""
+
 class analyzeConfig_LeptonFakeRate(analyzeConfig):
   """Configuration metadata needed to run analysis in a single go.
 
@@ -302,17 +309,14 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
         lines = []
         lines.append("process.fwliteInput.fileNames = cms.vstring('%s')" % jobOptions['inputFile'])
         lines.append("process.fwliteOutput.fileName = cms.string('%s')" % jobOptions['datacardFile'])  ## DEF LINE
-        # lines.append("process.fwliteOutput.fileName = cms.string('%s')" % os.path.basename(jobOptions['datacardFile']))
-
-        ## lines.append("process.prepareDatacards.processesToCopy = cms.vstring(%s)" % self.prep_dcard_processesToCopy)
-        ## lines.append("process.prepareDatacards.signals = cms.vstring(%s)" % self.prep_dcard_signals)
-        # lines.append("process.prepareDatacards.makeSubDir = cms.bool(False)")
-        # lines.append("process.prepareDatacards.categories = cms.VPSet(")
-        # lines.append("    cms.PSet(")
-        # lines.append("        input = cms.string('%s/sel/evt')," % jobOptions['histogramDir'])
-        # lines.append("        output = cms.string('ttH_%s')" % category_output)
-        # lines.append("    )")
-        # lines.append(")")
+        category_entries = jinja2.Template(category_template).render(categories = jobOptions['categories'])
+        lines.append(
+          "process.prepareDatacards.sysShifts = cms.vstring(\n  %s,\n)" % \
+          ',\n  '.join(map(lambda central_or_shift: "'%s'" % central_or_shift, self.central_or_shifts))
+        )
+        lines.append(
+          "process.prepareDatacards.categories = cms.VPSet(%s\n)" % category_entries
+        )
         lines.append("process.prepareDatacards.histogramToFit = cms.string('%s')" % jobOptions['histogramToFit'])
         create_cfg(self.cfgFile_prep_dcard, jobOptions['cfgFile_modified'], lines)
 
@@ -479,10 +483,86 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     self.inputFiles_hadd_stage2[key_hadd_stage2].append(self.jobOptions_addBackgrounds_LeptonFakeRate[key_addBackgrounds_job]['outputFile'])
     self.outputFile_hadd_stage2[key_hadd_stage2] = os.path.join(self.dirs[DKEY_HIST], "histograms_harvested_stage2.root")
 
+    # We need to generate the eta and pt bins for electrons and muons
+    lepton_bins = {}
+    categories = []
+    for lepton in ['electron', 'muon']:
+      if lepton not in lepton_bins:
+        lepton_bins[lepton] = {}
+
+      absEtaBins = None
+      absPtBins = None
+      lepton_short = None
+      if lepton == 'electron':
+        absEtaBins = self.absEtaBins_e
+        absPtBins = self.absPtBins_e  # Karl: why has this variable ,,abs'' in front of it?!
+        lepton_short = 'e'
+      elif lepton == 'muon':
+        absEtaBins = self.absEtaBins_mu
+        absPtBins = self.absPtBins_mu
+        lepton_short = 'mu'
+      else:
+        raise ValueError('Invalid lepton type: %s' % lepton)
+      for selection in ['tight', 'fakeable']:
+        if selection not in lepton_bins[lepton]:
+          lepton_bins[lepton][selection] = []
+        num_or_den = None
+        if selection == 'tight':
+          num_or_den = 'numerator'
+        elif selection == 'fakeable':
+          num_or_den = 'denominator'
+        else:
+          raise ValueError('Invalid lepton selection: %s' % selection)
+        for absEtaBin_idx in range(0, len(absEtaBins) - 1):
+          absEtaBinLowerEdge = absEtaBins[absEtaBin_idx]
+          absEtaBinUpperEdge = absEtaBins[absEtaBin_idx + 1]
+          absEtaBinString = getEtaBin(absEtaBinLowerEdge, absEtaBinUpperEdge)
+          for absPtBin_idx in range(0, len(absPtBins) - 1):
+            absPtBinsLowerEdge = absPtBins[absPtBin_idx]
+            absPtBinsUpperEdge = absPtBins[absPtBin_idx + 1]
+            absPtBinString = getPtBin(absPtBinsLowerEdge, absPtBinsUpperEdge)
+            absEtaPtBinString = '%s_%s' % (absEtaBinString, absPtBinString)
+
+            lepton_bins[lepton][selection].append(
+              construct_lepton_params(
+                lepton, lepton_short, selection, absEtaPtBinString,
+                error_msg = "No fit parameter range specified for abs eta range = (%.3f, %.3f) and "
+                            "pT range = (%.3f, %3f) for lepton type %s" % \
+                            (absEtaBinLowerEdge, absEtaBinUpperEdge, absPtBinsLowerEdge,
+                             absPtBinsUpperEdge, lepton)
+              )
+            )
+
+            categories.append(
+              (
+                "LeptonFakeRate/%s/%ss_%s/%s/%s" % (num_or_den, lepton, selection, absEtaBinString, absPtBinString),
+                "%ss_%s_%s_shapes" % (lepton, selection, absEtaPtBinString),
+              )
+            )
+
+        # Let's also add inclusive category
+        lepton_bins[lepton][selection].append(
+          construct_lepton_params(
+            lepton, lepton_short, selection, 'incl',
+            error_msg = "No fit parameter range specified for lepton type %s" % lepton
+          )
+        )
+        categories.append(
+          (
+            "LeptonFakeRate/%s/%ss_%s/incl" % (num_or_den, lepton, selection),
+            "%ss_%s_incl_shapes" % (lepton, selection),
+          )
+        )
+    lepton_bins_merged = []
+    for lepton_type in lepton_bins:
+      for lepton_selection in lepton_bins[lepton_type]:
+        lepton_bins_merged.extend(lepton_bins[lepton_type][lepton_selection])
+
     if self.prep_dcard:
       processesToCopy = []
       signals = []
       logging.info("Creating configuration files to run 'prepareDatacards_LeptonFakeRate'")
+
       for process in self.prep_dcard_signals:
         signals.append(process)
       self.prep_dcard_signals = signals
@@ -497,62 +577,10 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
         'datacardFile' : os.path.join(self.dirs[DKEY_DCRD], "prepareDatacards_%s.root" % (histogramToFit)),
         'histogramDir' : (self.histogramDir_prep_dcard),
         'histogramToFit' : histogramToFit,
-        'label' : None
+        'label' : None,
+        'categories' : categories,
         }
         self.createCfg_prep_dcard_LeptonFakeRate(self.jobOptions_prep_dcard[key_prep_dcard_job])
-
-      # We need to generate the eta and pt bins for electrons and muons
-      lepton_bins = {}
-      for lepton in ['electron', 'muon']:
-        if lepton not in lepton_bins:
-          lepton_bins[lepton] = {}
-
-        absEtaBins   = None
-        absPtBins    = None
-        lepton_short = None
-        if lepton == 'electron':
-          absEtaBins   = self.absEtaBins_e
-          absPtBins    = self.absPtBins_e # Karl: why has this variable ,,abs'' in front of it?!
-          lepton_short = 'e'
-        elif lepton == 'muon':
-          absEtaBins   = self.absEtaBins_mu
-          absPtBins    = self.absPtBins_mu
-          lepton_short = 'mu'
-        else:
-          raise ValueError('Invalid lepton type: %s' % lepton)
-        for selection in ['tight', 'fakeable']:
-          if selection not in lepton_bins[lepton]:
-            lepton_bins[lepton][selection] = []
-          for absEtaBin_idx in range(0, len(absEtaBins) - 1):
-            absEtaBinLowerEdge = absEtaBins[absEtaBin_idx]
-            absEtaBinUpperEdge = absEtaBins[absEtaBin_idx + 1]
-            absEtaBinString = getEtaBin(absEtaBinLowerEdge, absEtaBinUpperEdge)
-            for absPtBin_idx in range(0, len(absPtBins) - 1):
-              absPtBinsLowerEdge = absPtBins[absPtBin_idx]
-              absPtBinsUpperEdge = absPtBins[absPtBin_idx + 1]
-              absPtBinString = getPtBin(absPtBinsLowerEdge, absPtBinsUpperEdge)
-              absEtaPtBinString = '%s_%s' % (absEtaBinString, absPtBinString)
-
-              lepton_bins[lepton][selection].append(
-                construct_lepton_params(
-                  lepton, lepton_short, selection, absEtaPtBinString,
-                  error_msg = "No fit parameter range specified for abs eta range = (%.3f, %.3f) and "
-                  "pT range = (%.3f, %3f) for lepton type %s" % \
-                  (absEtaBinLowerEdge, absEtaBinUpperEdge, absPtBinsLowerEdge, absPtBinsUpperEdge, lepton)
-                )
-              )
-
-          # Let's also add inclusive category
-          lepton_bins[lepton][selection].append(
-            construct_lepton_params(
-              lepton, lepton_short, selection, 'incl',
-              error_msg = "No fit parameter range specified for lepton type %s" % lepton
-            )
-          )
-      lepton_bins_merged = []
-      for lepton_type in lepton_bins:
-        for lepton_selection in lepton_bins[lepton_type]:
-          lepton_bins_merged.extend(lepton_bins[lepton_type][lepton_selection])
 
       # Create setupDatacards_LeptonFakeRate.py script from the template
       setup_dcards_template_file = os.path.join(current_dir, 'setupDatacards_LeptonFakeRate.py.template')
