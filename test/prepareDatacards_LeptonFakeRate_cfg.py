@@ -49,5 +49,7 @@ process.prepareDatacards = cms.PSet(
       "CMS_ttHl_JERDown",
       "CMS_ttHl_UnclusteredEnUp",
       "CMS_ttHl_UnclusteredEnDown",
-    )
+    ),
+    apply_automatic_rebinning = cms.bool(True),
+    minEvents_automatic_rebinning = cms.double(0.1),
 )
