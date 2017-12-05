@@ -1,6 +1,29 @@
 # tth-htt
 Code and python config files for ttH, H -> tautau analysis with matrix element techniques
 
+### Necessary steps to run the lepton fake rate analysis
+
+You need to install the CombineHarvester package by following [these](http://cms-analysis.github.io/CombineHarvester/) and [these](https://twiki.cern.ch/twiki/bin/viewauth/CMS/SWGuideHiggsAnalysisCombinedLimit#ROOT6_SLC6_release_CMSSW_7_4_X) instructions.
+At the time of writing, the instructions are:
+```bash
+# open up a new shell session
+
+export SCRAM_ARCH=slc6_amd64_gcc491
+scram project CMSSW CMSSW_7_4_7
+cd CMSSW_7_4_7/src
+cmsenv
+git clone https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git HiggsAnalysis/CombinedLimit
+
+# IMPORTANT: Checkout the recommended tag on the link above
+cd $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit
+git fetch origin
+git checkout v6.3.1
+cd $CMSSW_BASE/src
+
+git clone https://github.com/cms-analysis/CombineHarvester.git CombineHarvester
+scram b -j8
+```
+
 ### HDFS plugin
 
 Since FUSE appears to be buggy, accessing files via /hdfs mountpoint is really slow (especially when a given folder contains thousands of files).

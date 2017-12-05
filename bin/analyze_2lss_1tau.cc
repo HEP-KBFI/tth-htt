@@ -309,6 +309,7 @@ int main(int argc, char* argv[])
 
   int jetPt_option = RecoJetReader::kJetPt_central;
   int jetToLeptonFakeRate_option = kFRl_central;
+  int met_option = RecoMEtReader::kMEt_central;
   int hadTauPt_option = RecoHadTauReader::kHadTauPt_central;
   int jetToTauFakeRate_option = kFRjt_central;
   int lheScale_option = kLHE_scale_central;
@@ -326,11 +327,23 @@ int main(int argc, char* argv[])
     } else if ( central_or_shift_tstring.BeginsWith("CMS_ttHl_JES") ) {
       if ( isMC ) {
 	jet_btagWeight_branch = getBranchName_bTagWeight(era, central_or_shift);
-	if      ( shiftUp_or_Down == "Up"   ) jetPt_option = RecoJetReader::kJetPt_jecUp;
-	else if ( shiftUp_or_Down == "Down" ) jetPt_option = RecoJetReader::kJetPt_jecDown;
-	else assert(0);
+	if      ( shiftUp_or_Down == "Up"   ) {
+	  jetPt_option = RecoJetReader::kJetPt_jecUp;
+	  met_option = RecoMEtReader::kMEt_shifted_JetEnUp;
+	} else if ( shiftUp_or_Down == "Down" ) {
+	  jetPt_option = RecoJetReader::kJetPt_jecDown;
+	  met_option = RecoMEtReader::kMEt_shifted_JetEnDown;
+	} else assert(0);
       } else cms::Exception("analyze_2lss_1tau")
 	  << "Configuration parameter 'central_or_shift' = " << central_or_shift << " not supported for data !!\n";
+    } else if ( central_or_shift_tstring.BeginsWith("CMS_ttHl_JER") ) {
+      if ( central_or_shift_tstring.EndsWith("Up") ) met_option = RecoMEtReader::kMEt_shifted_JetResUp;
+      else if ( central_or_shift_tstring.EndsWith("Down") ) met_option = RecoMEtReader::kMEt_shifted_JetResDown;
+      else assert(0);
+    } else if ( central_or_shift_tstring.BeginsWith("CMS_ttHl_UnclusteredEn") ) {
+      if ( central_or_shift_tstring.EndsWith("Up") ) met_option = RecoMEtReader::kMEt_shifted_UnclusteredEnUp;
+      else if ( central_or_shift_tstring.EndsWith("Down") ) met_option = RecoMEtReader::kMEt_shifted_UnclusteredEnDown;
+      else assert(0);
     } else if ( central_or_shift_tstring.BeginsWith("CMS_ttHl_FRe_shape") ||
 		central_or_shift_tstring.BeginsWith("CMS_ttHl_FRm_shape") ) {
       if      ( central_or_shift_tstring.EndsWith("e_shape_ptUp")           ) jetToLeptonFakeRate_option = kFRe_shape_ptUp;
@@ -448,8 +461,7 @@ int main(int argc, char* argv[])
   EventInfoReader eventInfoReader(&eventInfo);
   inputTree -> registerReader(&eventInfoReader);
 
-  for(const std::vector<hltPath *> hltPaths: {triggers_1e, triggers_2e, triggers_1mu, triggers_2mu, triggers_1e1mu})
-  {
+  for ( const std::vector<hltPath*> hltPaths: { triggers_1e, triggers_2e, triggers_1mu, triggers_2mu, triggers_1e1mu } ) {
     inputTree -> registerReader(hltPaths);
   }
 
@@ -506,6 +518,7 @@ int main(int argc, char* argv[])
 
 //--- declare missing transverse energy
   RecoMEtReader* metReader = new RecoMEtReader(era, branchName_met);
+  metReader->setMEt_central_or_shift(met_option);
   inputTree -> registerReader(metReader);
 
 //--- declare likelihoods for signal/background hypotheses, obtained by matrix element method
@@ -525,8 +538,7 @@ int main(int argc, char* argv[])
   GenJetReader* genJetReader = 0;
   LHEInfoReader* lheInfoReader = 0;
   if ( isMC ) {
-    if(! readGenObjects)
-    {
+    if ( !readGenObjects ) {
       if ( branchName_genLeptons1 != "" || branchName_genLeptons2 != "" ) {
         genLeptonReader = new GenLeptonReader(Form("n%s", branchName_genLeptons1.data()), branchName_genLeptons1, Form("n%s", branchName_genLeptons2.data()), branchName_genLeptons2);
         inputTree -> registerReader(genLeptonReader);

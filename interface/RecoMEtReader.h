@@ -20,6 +20,12 @@ class RecoMEtReader
   RecoMEtReader(int era, const std::string& branchName_obj, const std::string& branchName_cov = "met");
   ~RecoMEtReader();
 
+  enum {
+    kMEt_central,
+    kMEt_shifted_JetEnUp, kMEt_shifted_JetEnDown,
+    kMEt_shifted_JetResUp, kMEt_shifted_JetResDown,
+    kMEt_shifted_UnclusteredEnUp, kMEt_shifted_UnclusteredEnDown
+  };
   void setMEt_central_or_shift(int met_option) { met_option_ = met_option; }
 
   /**

@@ -2,6 +2,7 @@
 #define tthAnalysis_HiggsToTauTau_RecoMEtWriter_h
 
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMEt.h" // RecoMEt
+#include "tthAnalysis/HiggsToTauTau/interface/RecoMEtReader.h" // RecoMEtReader::kMEt_central, RecoMEtReader::kMEt_shifted_JetEnUp...
 
 #include <Rtypes.h> // Int_t, Double_t
 

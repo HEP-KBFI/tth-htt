@@ -76,8 +76,17 @@ def generate_sbatch_line(executable, command_line_parameter, input_file_names, o
                 command = "%s %s" % (executable_rm, output_file_name)
                 run_cmd(command)
             else:
-                print "--> skipping job because it has size greater than 20000"
-                return None
+                # Let's open the file via bash as well to see if ROOT tries to recover the file
+                open_cmd = "root -b -l -q %s 2>&1 > /dev/null | grep 'trying to recover' | wc -l" % output_file_name
+                open_out = run_cmd(open_cmd)
+                if open_out.rstrip('\n') != '0':
+                    print("--> output file is probably corrupted, deleting file and resubmitting job")
+                    command = "%s %s" % (executable_rm, output_file_name)
+                    run_cmd(command)
+                else:
+                    print "--> skipping job because it has size greater than 20000"
+                    return None
+            root_tfile.Close()
         else:
             print "--> deleting output file and resubmitting job because it has size smaller 20000"
             command = "%s %s" % (executable_rm, output_file_name)

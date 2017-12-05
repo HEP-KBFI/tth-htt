@@ -251,12 +251,42 @@ void processHistogram(const TFile* inputFile, const TDirectory* dir_den, const T
 
 	std::string subdirName2_string = subdirName_num.Data();
 	std::string subdirName_output = Form("%s/%s", subdirName2_string.data(), processLeptonFakes.data());        
-       
-	// std::cout<< " subdirName_output " << subdirName_output << std::endl;
-        TDirectory* subdir_output = createSubdirectory_recursively(fs, subdirName_output);
-      	subdir_output->cd();                                                                                                                                                                          
 
-        // ---------- Denominator Fake background histograms -------
+
+	TString subdirName_den = TString(dir_num->GetPath()).ReplaceAll("numerator", "denominator");
+        subdirName_den = subdirName_den.ReplaceAll("tight", "fakeable");         
+	std::string subdirName_den_string = subdirName_den.Data();
+	size_t pos2 = subdirName_den_string.find(":/");
+        assert(pos2 < (subdirName_den_string.length() - 2));
+        subdirName_den_string = std::string(subdirName_den_string, pos + 2);
+        subdirName_den = subdirName_den_string.data();
+
+	std::string subdirName3_string = subdirName_den.Data();
+        std::string subdirName_output_orig_den_histo = Form("%s/%s", subdirName3_string.data(), processLeptonFakes.data());        
+
+	// -------- SAVING THE ORIGINAL "DENOMINATOR [DATA - Sum(PROMPT BG)] HISTOGRAMS" ---------------
+	std::cout << " subdirName_output_orig_den_histo " << subdirName_output_orig_den_histo << std::endl;
+        TDirectory* subdir_output_orig_den_histo = createSubdirectory_recursively(fs, subdirName_output_orig_den_histo);
+      	subdir_output_orig_den_histo->cd();                                                                                                                                             
+                 
+     	std::string histogramNameFakeBg_den_orig;
+        if ( !((*central_or_shift) == "" || (*central_or_shift) == "central") ) histogramNameFakeBg_den_orig.append(*central_or_shift);
+        if ( histogramNameFakeBg_den_orig.length() > 0 ) histogramNameFakeBg_den_orig.append("_");
+        histogramNameFakeBg_den_orig.append(*histogram);
+        TH1* histogramFakeBg_den_orig = subtractHistograms(histogramNameFakeBg_den_orig, histogramData_den, histogramsToSubtract_den, verbosity);  // Doing (Data - Sum Bg.)              
+	if ( verbosity ) {
+	  std::cout << " integral(Fakes) original = " << histogramFakeBg_den_orig->Integral() << std::endl;
+        }
+        makeBinContentsPositive(histogramFakeBg_den_orig, verbosity);
+        // histogramFakeBg_den_orig->Write();
+	// ------------------------------------------------------
+            
+
+        // ---------- Saving the "Denominator [Data - Sum(Prompt Bg)] histogram shapes" scaled by the "numerator [Data - Sum(Prompt Bg)] yields" -------
+	std::cout<< " subdirName_output " << subdirName_output << std::endl;
+        TDirectory* subdir_output = createSubdirectory_recursively(fs, subdirName_output);
+      	subdir_output->cd();                                                                                                                                                             
+
 	std::string histogramNameFakeBg_den;                                                                                                                                                         
 	if ( !((*central_or_shift) == "" || (*central_or_shift) == "central") ) histogramNameFakeBg_den.append(*central_or_shift);                                                                   
 	if ( histogramNameFakeBg_den.length() > 0 ) histogramNameFakeBg_den.append("_");                                                                                                            
@@ -266,7 +296,7 @@ void processHistogram(const TFile* inputFile, const TDirectory* dir_den, const T
 	  std::cout << " integral(Fakes) before scaling = " << histogramFakeBg_den->Integral() << std::endl;                                                                                   
 	}                                                                                                                                                                        
 	makeBinContentsPositive(histogramFakeBg_den, verbosity);
-
+	// ------------------------------------------------------
 
 	/*
         // ---------- Numerator Fake background histograms (NEW: taking into account whether the data is > sum Prompt bg.s or not !) -------
@@ -307,12 +337,13 @@ void processHistogram(const TFile* inputFile, const TDirectory* dir_den, const T
         
         double integral_den = compIntegral(histogramFakeBg_den, true, true);
         if ( integral_den > 0. ) {
-          // histogramFakeBg_den->Scale(integral_num/integral_den); // Setting the yield in the denominator histogram to the one in numerator
+          histogramFakeBg_den->Scale(integral_num/integral_den); // Setting the yield in the denominator histogram to the one in numerator
 	  std::cout<< "integral_num " << integral_num << " integral_den " << integral_den << " integral_num/integral_den " << (integral_num/integral_den) << std::endl;
           std::cout<< " integral(Fakes) after scaling = " << histogramFakeBg_den->Integral() << std::endl;                                                                                   
 	}
+	// histogramFakeBg_den->Write();
 
-    }
+      }
   }
 
 }
