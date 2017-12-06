@@ -530,7 +530,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
                             "pT range = (%.3f, %3f) for lepton type %s" % \
                             (absEtaBinLowerEdge, absEtaBinUpperEdge, absPtBinsLowerEdge,
                              absPtBinsUpperEdge, lepton)
-              )
+              ) + (absEtaBinLowerEdge, absEtaBinUpperEdge, absPtBinsLowerEdge, absPtBinsUpperEdge, 0)
             )
 
             categories.append(
@@ -545,7 +545,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
           construct_lepton_params(
             lepton, lepton_short, selection, 'incl',
             error_msg = "No fit parameter range specified for lepton type %s" % lepton
-          )
+          ) + (-1., -1., -1., -1., 1)
         )
         categories.append(
           (
@@ -598,6 +598,8 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
       yieldtable_script_path   = os.path.join(os.environ['CMSSW_BASE'], 'src/tthAnalysis/HiggsToTauTau/data/leptonFR/scripts/yieldTable.py')
 
       # Create run_postFit.sh script from the template
+      combine_output_dir = os.path.join(self.dirs[DKEY_COMBINE_OUTPUT], 'output')
+      r_value_file       = os.path.join(combine_output_dir, 'r_values.txt')
       postfit_template_file = os.path.join(current_dir, 'run_postFit.sh.template')
       postfit_template = open(postfit_template_file, 'r').read()
       postfit_script = jinja2.Template(postfit_template).render(
@@ -607,15 +609,16 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
         yieldtable_script      = yieldtable_script_path,
         numerator_datacard     = os.path.join(self.dirs[DKEY_DCRD], "prepareDatacards_%s.root" % self.numerator_histogram),
         denominator_datacard   = os.path.join(self.dirs[DKEY_DCRD], "prepareDatacards_%s.root" % self.denominator_histogram),
-        output_dir             = os.path.join(self.dirs[DKEY_COMBINE_OUTPUT], 'output'),
-        numerator_output_dir   = os.path.join(self.dirs[DKEY_COMBINE_OUTPUT], 'output', 'mlfit_LeptonFakeRate_%s' % self.numerator_histogram),
-        denominator_output_dir = os.path.join(self.dirs[DKEY_COMBINE_OUTPUT], 'output', 'mlfit_LeptonFakeRate_%s' % self.denominator_histogram),
+        output_dir             = combine_output_dir,
+        numerator_output_dir   = os.path.join(combine_output_dir, 'mlfit_LeptonFakeRate_%s' % self.numerator_histogram),
+        denominator_output_dir = os.path.join(combine_output_dir, 'mlfit_LeptonFakeRate_%s' % self.denominator_histogram),
         numerator_plotLabel    = self.numerator_plotLabel,
         denominator_plotLabel  = self.denominator_plotLabel,
         etights                = lepton_bins['electron']['tight'],
         efakes                 = lepton_bins['electron']['fakeable'],
         mtights                = lepton_bins['muon']['tight'],
         mfakes                 = lepton_bins['muon']['fakeable'],
+        r_value_file           = r_value_file,
       )
       postfit_script_path = os.path.join(self.dirs[DKEY_SCRIPTS], 'run_postFit.sh')
       logging.debug("Writing run_postFit script file = '%s'" % postfit_script_path)

@@ -2,6 +2,13 @@
 
 EXIT_WHEN_FAIL=false
 
+# Replace the file containing the r-values
+R_VALUE_FILE="{{ r_value_file }}"
+rm -f $R_VALUE_FILE
+echo "# File created at: `date`" > $R_VALUE_FILE
+echo "# <flavor> <numerator/denominator> <selection> <inclusive 1, not inclusive 0>" \
+     "<eta low> <eta high> <pt low> <pt high> <mu> <mu up uncert> <mu down uncert>" >> $R_VALUE_FILE
+
 # Let's record the paths to the scripts which we're about to run
 SETUPDATACARDS_LEPTONFAKERATE="{{ setup_dcards_script }}"
 POSTFITPLOT="{{ postfit_plot_script }}"
@@ -58,7 +65,7 @@ cd $OUTPUT_DIR
 
 echo " ---------- Running scripts for Electrons Numerator ------- "
 
-{% for e_array, e_range, e_sub_dir in etights %}
+{% for e_array, e_range, e_sub_dir, e_eta_low, e_eta_high, e_pt_low, e_pt_high, e_is_inclusive in etights %}
 
 echo "Making Workspace for $OUTPUT_DIR_NUM/{{ e_array }}/datacard.txt"
 combineTool.py -M T2W -o wsp.root -i $OUTPUT_DIR_NUM/{{ e_array }}/datacard.txt \
@@ -85,6 +92,8 @@ OUTLABEL4=$LABEL"_num_postfit_log"
 MLFIT_FILE=$OUTPUT_DIR_NUM/{{ e_array }}/$NAME
 
 echo "Making PostFit plots"
+R_VALUES=""
+
 if [ -f "$MLFIT_FILE" ]
 then
     echo "$MLFIT_FILE exists."
@@ -97,16 +106,24 @@ then
     python $POSTFITPLOT -i $MLFIT_FILE:"{{ e_sub_dir }}_shapes_postfit" -c e --x-title '{{ numerator_plotLabel }}' --logy \
       -o $OUTLABEL4 &> "$OUTPUT_DIR_NUM/{{ e_array }}/plot_shapes_postfit_log.log"
 
+    FIT_RESULTS="$OUTPUT_DIR_NUM/{{ e_array }}/fit_results2_{{ e_array }}.txt"
     python $YIELDTABLE $OUTPUT_DIR_NUM/{{ e_array }}/wsp.root \
       $OUTPUT_DIR_NUM/{{ e_array }}/$MLFIT_OUTPUT "{{ e_sub_dir }}_shapes" \
-      1> $OUTPUT_DIR_NUM/{{ e_array }}/fit_results2_{{ e_array }}.txt \
+      1> $FIT_RESULTS \
       2> $OUTPUT_DIR_NUM/{{ e_array }}/fit_results2_{{ e_array }}_errors.log
+
+    R_VALUES=`grep "Post-fit mu values:" -A 3 $FIT_RESULTS | tail -n 1 | awk '{print $2" "$4" "$6}'`
 else
     echo "$MLFIT_FILE does not exist. Exiting."
     if [ "$EXIT_WHEN_FAIL" = true ]; then
       exit 1
     fi
 fi
+
+if [ -z "$R_VALUES" ]; then
+    R_VALUES="-1 -1 -1"
+fi
+echo "e num tight {{ e_is_inclusive }} {{ e_eta_low }} {{ e_eta_high }} {{ e_pt_low }} {{ e_pt_high }} $R_VALUES" >> $R_VALUE_FILE
 
 {% endfor %}
 
@@ -119,7 +136,7 @@ echo " ---------- Finished Running scripts for Electrons Numerator ------- "
 
 echo " ---------- Running scripts for Electrons Denominator ------- "
 
-{% for e_array, e_range, e_sub_dir in efakes %}
+{% for e_array, e_range, e_sub_dir, e_eta_low, e_eta_high, e_pt_low, e_pt_high, e_is_inclusive in efakes %}
 
 echo "Making Workspace for $OUTPUT_DIR_DEN/{{ e_array }}/datacard.txt"
 combineTool.py -M T2W -o wsp.root -i $OUTPUT_DIR_DEN/{{ e_array }}/datacard.txt \
@@ -146,6 +163,8 @@ OUTLABEL4=$LABEL"_den_postfit_log"
 MLFIT_FILE=$OUTPUT_DIR_DEN/{{ e_array }}/$NAME
 
 echo "Making PostFit plots"
+R_VALUES=""
+
 if [ -f "$MLFIT_FILE" ]
 then
     echo "$MLFIT_FILE exists."
@@ -159,16 +178,24 @@ then
 #    python $POSTFITPLOT -i $MLFIT_FILE:"{{ e_sub_dir }}_shapes_postfit" -c e --x-title '{{ denominator_plotLabel }}' --logy \
 #      -o $OUTLABEL4 &> "$OUTPUT_DIR_DEN/{{ e_array }}/plot_shapes_postfit_log.log"
 #####################################################
+    FIT_RESULTS="$OUTPUT_DIR_DEN/{{ e_array }}/fit_results2_{{ e_array }}.txt"
     python $YIELDTABLE $OUTPUT_DIR_DEN/{{ e_array }}/wsp.root \
       $OUTPUT_DIR_DEN/{{ e_array }}/$MLFIT_OUTPUT "{{ e_sub_dir }}_shapes" \
-      1> $OUTPUT_DIR_DEN/{{ e_array }}/fit_results2_den_{{ e_array }}.txt \
+      1> $FIT_RESULTS \
       2> $OUTPUT_DIR_DEN/{{ e_array }}/fit_results2_den_{{ e_array }}_errors.log
+
+    R_VALUES=`grep "Post-fit mu values:" -A 3 $FIT_RESULTS | tail -n 1 | awk '{print $2" "$4" "$6}'`
 else
     echo "$MLFIT_FILE does not exist. Exiting."
     if [ "$EXIT_WHEN_FAIL" = true ]; then
       exit 1
     fi
 fi
+
+if [ -z "$R_VALUES" ]; then
+    R_VALUES="-1 -1 -1"
+fi
+echo "e den fakeable {{ e_is_inclusive }} {{ e_eta_low }} {{ e_eta_high }} {{ e_pt_low }} {{ e_pt_high }} $R_VALUES" >> $R_VALUE_FILE
 
 {% endfor %}
 
@@ -181,7 +208,7 @@ echo " ---------- Finished Running scripts for Electrons Denominator ------- "
 
 echo " -------- Running scripts for Muons Numerator--------- "
 
-{% for mu_array, mu_range, mu_sub_dir in mtights %}
+{% for mu_array, mu_range, mu_sub_dir, mu_eta_low, mu_eta_high, mu_pt_low, mu_pt_high, mu_is_inclusive in mtights %}
 
 echo "Making Workspace for $OUTPUT_DIR_NUM/{{ mu_array }}/datacard.txt"
 combineTool.py -M T2W -o wsp.root -i $OUTPUT_DIR_NUM/{{ mu_array }}/datacard.txt \
@@ -208,6 +235,8 @@ OUTLABEL4=$LABEL"_num_postfit_log"
 MLFIT_FILE=$OUTPUT_DIR_NUM/{{ mu_array }}/$NAME
 
 echo "Making PostFit plots"
+R_VALUES=""
+
 if [ -f "$MLFIT_FILE" ]
 then
     echo "$MLFIT_FILE exists."
@@ -220,16 +249,24 @@ then
     python $POSTFITPLOT -i $MLFIT_FILE:"{{ mu_sub_dir }}_shapes_postfit" -c mu --x-title '{{ numerator_plotLabel }}' --logy \
       -o $OUTLABEL4 &> "$OUTPUT_DIR_NUM/{{ mu_array }}/plot_shapes_postfit_log.log"
 
+    FIT_RESULTS="$OUTPUT_DIR_NUM/{{ mu_array }}/fit_results2_{{ mu_array }}.txt"
     python $YIELDTABLE $OUTPUT_DIR_NUM/{{ mu_array }}/wsp.root \
       $OUTPUT_DIR_NUM/{{ mu_array }}/$MLFIT_OUTPUT "{{ mu_sub_dir }}_shapes" \
-      1> $OUTPUT_DIR_NUM/{{ mu_array }}/fit_results2_{{ mu_array }}.txt \
+      1> $FIT_RESULTS \
       2> $OUTPUT_DIR_NUM/{{ mu_array }}/fit_results2_{{ mu_array }}_errors.log
+
+    R_VALUES=`grep "Post-fit mu values:" -A 3 $FIT_RESULTS | tail -n 1 | awk '{print $2" "$4" "$6}'`
 else
     echo "$MLFIT_FILE does not exist. Exiting."
     if [ "$EXIT_WHEN_FAIL" = true ]; then
       exit 1
     fi
 fi
+
+if [ -z "$R_VALUES" ]; then
+    R_VALUES="-1 -1 -1"
+fi
+echo "mu num tight {{ mu_is_inclusive }} {{ mu_eta_low }} {{ mu_eta_high }} {{ mu_pt_low }} {{ mu_pt_high }} $R_VALUES" >> $R_VALUE_FILE
 
 {% endfor %}
 
@@ -241,7 +278,7 @@ echo " --------Finished Running scripts for Muons Numerator--------- "
 
 echo " -------- Running scripts for Muons Denominator--------- "
 
-{% for mu_array, mu_range, mu_sub_dir in mfakes %}
+{% for mu_array, mu_range, mu_sub_dir, mu_eta_low, mu_eta_high, mu_pt_low, mu_pt_high, mu_is_inclusive in mfakes %}
 
 echo "Making Workspace for $OUTPUT_DIR_DEN/{{ mu_array }}/datacard.txt"
 combineTool.py -M T2W -o wsp.root -i $OUTPUT_DIR_DEN/{{ mu_array }}/datacard.txt \
@@ -270,6 +307,8 @@ OUTLABEL4=$LABEL"_den_postfit_log"
 MLFIT_FILE=$OUTPUT_DIR_DEN/{{ mu_array }}/$NAME
 
 echo "Making PostFit plots"
+R_VALUES=""
+
 if [ -f "$MLFIT_FILE" ]
 then
     echo "$MLFIT_FILE exists."
@@ -283,10 +322,13 @@ then
 #    python $POSTFITPLOT -i $MLFIT_FILE:"{{ mu_sub_dir }}_shapes_postfit" -c mu --x-title '{{ denominator_plotLabel }}' --logy \
 #      -o $OUTLABEL4 &> "$OUTPUT_DIR_DEN/{{ e_array }}/plot_shapes_postfit_log.log"
 
+    FIT_RESULTS="$OUTPUT_DIR_DEN/{{ mu_array }}/fit_results2_{{ mu_array }}.txt"
     python $YIELDTABLE $OUTPUT_DIR_DEN/{{ mu_array }}/wsp.root \
       $OUTPUT_DIR_DEN/{{ mu_array }}/$MLFIT_OUTPUT "{{ mu_sub_dir }}_shapes" \
-      1> $OUTPUT_DIR_DEN/{{ mu_array }}/fit_results2_{{ mu_array }}.txt \
+      1> $FIT_RESULTS \
       2> $OUTPUT_DIR_DEN/{{ mu_array }}/fit_results2_{{ mu_array }}_errors.log
+
+    R_VALUES=`grep "Post-fit mu values:" -A 3 $FIT_RESULTS | tail -n 1 | awk '{print $2" "$4" "$6}'`
 else
     echo "$MLFIT_FILE does not exist. Exiting."
     if [ "$EXIT_WHEN_FAIL" = true ]; then
@@ -294,7 +336,13 @@ else
     fi
 fi
 
+if [ -z "$R_VALUES" ]; then
+    R_VALUES="-1 -1 -1"
+fi
+echo "mu den fakeable {{ mu_is_inclusive }} {{ mu_eta_low }} {{ mu_eta_high }} {{ mu_pt_low }} {{ mu_pt_high }} $R_VALUES" >> $R_VALUE_FILE
+
 {% endfor %}
 
 echo " --------Finished Running scripts for Muons Denominator--------- "
+
 
