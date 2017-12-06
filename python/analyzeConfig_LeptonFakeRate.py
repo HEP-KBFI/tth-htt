@@ -617,7 +617,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
 
       # Create run_postFit.sh script from the template
       combine_output_dir = os.path.join(self.dirs[DKEY_COMBINE_OUTPUT], 'output')
-      r_value_file       = os.path.join(combine_output_dir, 'r_values.txt')
+      fit_value_file     = os.path.join(combine_output_dir, 'fit_values.txt')
       postfit_template_file = os.path.join(current_dir, 'run_postFit.sh.template')
       postfit_template = open(postfit_template_file, 'r').read()
       postfit_script = jinja2.Template(postfit_template).render(
@@ -636,7 +636,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
         efakes                 = lepton_bins['electron']['fakeable'],
         mtights                = lepton_bins['muon']['tight'],
         mfakes                 = lepton_bins['muon']['fakeable'],
-        r_value_file           = r_value_file,
+        fit_value_file         = fit_value_file,
       )
       postfit_script_path = os.path.join(self.dirs[DKEY_SCRIPTS], 'run_postFit.sh')
       logging.debug("Writing run_postFit script file = '%s'" % postfit_script_path)
@@ -648,7 +648,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
 
       self.jobOptions_combine = {
         'inputFile'       : ' '.join(datacards),
-        'outputFile'      : r_value_file,
+        'outputFile'      : fit_value_file,
         'combineOutputDir': combine_output_dir,
         'postFitScript'   : postfit_script_path,
         'logFile'         : os.path.join(self.dirs[DKEY_LOGS], os.path.basename(postfit_script_path).replace('.sh', '.log')),
@@ -656,7 +656,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
 
       leptonFR_final_output = os.path.join(combine_output_dir, 'leptonFakeRates.root')
       self.jobOptions_prep_compLeptonFakeRate = {
-        'inputFile'        : r_value_file,
+        'inputFile'        : fit_value_file,
         'outputFile'       : leptonFR_final_output,
         'logFile'          : os.path.join(self.dirs[DKEY_LOGS], os.path.basename(self.cfgFile_prep_compLeptonFakeRate).replace('_cfg.py', '.log')),
         'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], os.path.basename(self.cfgFile_prep_compLeptonFakeRate)),

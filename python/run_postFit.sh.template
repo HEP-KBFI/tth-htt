@@ -3,11 +3,8 @@
 EXIT_WHEN_FAIL=false
 
 # Replace the file containing the r-values
-R_VALUE_FILE="{{ r_value_file }}"
-rm -f $R_VALUE_FILE
-echo "# File created at: `date`" > $R_VALUE_FILE
-echo "# <flavor> <numerator/denominator> <selection> <inclusive 1, not inclusive 0>" \
-     "<eta low> <eta high> <pt low> <pt high> <mu> <mu up uncert> <mu down uncert>" >> $R_VALUE_FILE
+FIT_VALUE_FILE="{{ fit_value_file }}"
+rm -f $FIT_VALUE_FILE
 
 # Let's record the paths to the scripts which we're about to run
 SETUPDATACARDS_LEPTONFAKERATE="{{ setup_dcards_script }}"
@@ -92,7 +89,8 @@ OUTLABEL4=$LABEL"_num_postfit_log"
 MLFIT_FILE=$OUTPUT_DIR_NUM/{{ e_array }}/$NAME
 
 echo "Making PostFit plots"
-R_VALUES=""
+PREFIT_VALUES=""
+POSTFIT_VALUES=""
 
 if [ -f "$MLFIT_FILE" ]
 then
@@ -112,7 +110,8 @@ then
       1> $FIT_RESULTS \
       2> $OUTPUT_DIR_NUM/{{ e_array }}/fit_results2_{{ e_array }}_errors.log
 
-    R_VALUES=`grep "Post-fit mu values:" -A 3 $FIT_RESULTS | tail -n 1 | awk '{print $2" "$4" "$6}'`
+    PREFIT_VALUES=`grep "Pre-fit fakes_data" $FIT_RESULTS | awk '{print $4" "$6}'`
+    POSTFIT_VALUES=`grep "Post-fit fakes_data" $FIT_RESULTS | awk '{print $4" "$6}'`
 else
     echo "$MLFIT_FILE does not exist. Exiting."
     if [ "$EXIT_WHEN_FAIL" = true ]; then
@@ -120,10 +119,13 @@ else
     fi
 fi
 
-if [ -z "$R_VALUES" ]; then
-    R_VALUES="-1 -1 -1"
+if [ -z "$PREFIT_VALUES" ]; then
+    PREFIT_VALUES="-1 -1"
 fi
-echo "e num tight {{ e_is_inclusive }} {{ e_eta_low }} {{ e_eta_high }} {{ e_pt_low }} {{ e_pt_high }} $R_VALUES" >> $R_VALUE_FILE
+if [ -z "$POSTFIT_VALUES" ]; then
+    POSTFIT_VALUES="-1 -1"
+fi
+echo "e num tight {{ e_is_inclusive }} {{ e_eta_low }} {{ e_eta_high }} {{ e_pt_low }} {{ e_pt_high }} $PREFIT_VALUES $POSTFIT_VALUES" >> $FIT_VALUE_FILE
 
 {% endfor %}
 
@@ -163,7 +165,8 @@ OUTLABEL4=$LABEL"_den_postfit_log"
 MLFIT_FILE=$OUTPUT_DIR_DEN/{{ e_array }}/$NAME
 
 echo "Making PostFit plots"
-R_VALUES=""
+PREFIT_VALUES=""
+POSTFIT_VALUES=""
 
 if [ -f "$MLFIT_FILE" ]
 then
@@ -184,7 +187,8 @@ then
       1> $FIT_RESULTS \
       2> $OUTPUT_DIR_DEN/{{ e_array }}/fit_results2_den_{{ e_array }}_errors.log
 
-    R_VALUES=`grep "Post-fit mu values:" -A 3 $FIT_RESULTS | tail -n 1 | awk '{print $2" "$4" "$6}'`
+    PREFIT_VALUES=`grep "Pre-fit fakes_data" $FIT_RESULTS | awk '{print $4" "$6}'`
+    POSTFIT_VALUES=`grep "Post-fit fakes_data" $FIT_RESULTS | awk '{print $4" "$6}'`
 else
     echo "$MLFIT_FILE does not exist. Exiting."
     if [ "$EXIT_WHEN_FAIL" = true ]; then
@@ -192,10 +196,13 @@ else
     fi
 fi
 
-if [ -z "$R_VALUES" ]; then
-    R_VALUES="-1 -1 -1"
+if [ -z "$PREFIT_VALUES" ]; then
+    PREFIT_VALUES="-1 -1"
 fi
-echo "e den fakeable {{ e_is_inclusive }} {{ e_eta_low }} {{ e_eta_high }} {{ e_pt_low }} {{ e_pt_high }} $R_VALUES" >> $R_VALUE_FILE
+if [ -z "$POSTFIT_VALUES" ]; then
+    POSTFIT_VALUES="-1 -1"
+fi
+echo "e den fakeable {{ e_is_inclusive }} {{ e_eta_low }} {{ e_eta_high }} {{ e_pt_low }} {{ e_pt_high }} $PREFIT_VALUES $POSTFIT_VALUES" >> $FIT_VALUE_FILE
 
 {% endfor %}
 
@@ -235,7 +242,8 @@ OUTLABEL4=$LABEL"_num_postfit_log"
 MLFIT_FILE=$OUTPUT_DIR_NUM/{{ mu_array }}/$NAME
 
 echo "Making PostFit plots"
-R_VALUES=""
+PREFIT_VALUES=""
+POSTFIT_VALUES=""
 
 if [ -f "$MLFIT_FILE" ]
 then
@@ -255,7 +263,8 @@ then
       1> $FIT_RESULTS \
       2> $OUTPUT_DIR_NUM/{{ mu_array }}/fit_results2_{{ mu_array }}_errors.log
 
-    R_VALUES=`grep "Post-fit mu values:" -A 3 $FIT_RESULTS | tail -n 1 | awk '{print $2" "$4" "$6}'`
+    PREFIT_VALUES=`grep "Pre-fit fakes_data" $FIT_RESULTS | awk '{print $4" "$6}'`
+    POSTFIT_VALUES=`grep "Post-fit fakes_data" $FIT_RESULTS | awk '{print $4" "$6}'`
 else
     echo "$MLFIT_FILE does not exist. Exiting."
     if [ "$EXIT_WHEN_FAIL" = true ]; then
@@ -263,10 +272,13 @@ else
     fi
 fi
 
-if [ -z "$R_VALUES" ]; then
-    R_VALUES="-1 -1 -1"
+if [ -z "$PREFIT_VALUES" ]; then
+    PREFIT_VALUES="-1 -1"
 fi
-echo "mu num tight {{ mu_is_inclusive }} {{ mu_eta_low }} {{ mu_eta_high }} {{ mu_pt_low }} {{ mu_pt_high }} $R_VALUES" >> $R_VALUE_FILE
+if [ -z "$POSTFIT_VALUES" ]; then
+    POSTFIT_VALUES="-1 -1"
+fi
+echo "mu num tight {{ mu_is_inclusive }} {{ mu_eta_low }} {{ mu_eta_high }} {{ mu_pt_low }} {{ mu_pt_high }} $PREFIT_VALUES $POSTFIT_VALUES" >> $FIT_VALUE_FILE
 
 {% endfor %}
 
@@ -307,7 +319,8 @@ OUTLABEL4=$LABEL"_den_postfit_log"
 MLFIT_FILE=$OUTPUT_DIR_DEN/{{ mu_array }}/$NAME
 
 echo "Making PostFit plots"
-R_VALUES=""
+PREFIT_VALUES=""
+POSTFIT_VALUES=""
 
 if [ -f "$MLFIT_FILE" ]
 then
@@ -328,7 +341,8 @@ then
       1> $FIT_RESULTS \
       2> $OUTPUT_DIR_DEN/{{ mu_array }}/fit_results2_{{ mu_array }}_errors.log
 
-    R_VALUES=`grep "Post-fit mu values:" -A 3 $FIT_RESULTS | tail -n 1 | awk '{print $2" "$4" "$6}'`
+    PREFIT_VALUES=`grep "Pre-fit fakes_data" $FIT_RESULTS | awk '{print $4" "$6}'`
+    POSTFIT_VALUES=`grep "Post-fit fakes_data" $FIT_RESULTS | awk '{print $4" "$6}'`
 else
     echo "$MLFIT_FILE does not exist. Exiting."
     if [ "$EXIT_WHEN_FAIL" = true ]; then
@@ -336,10 +350,13 @@ else
     fi
 fi
 
-if [ -z "$R_VALUES" ]; then
-    R_VALUES="-1 -1 -1"
+if [ -z "$PREFIT_VALUES" ]; then
+    PREFIT_VALUES="-1 -1"
 fi
-echo "mu den fakeable {{ mu_is_inclusive }} {{ mu_eta_low }} {{ mu_eta_high }} {{ mu_pt_low }} {{ mu_pt_high }} $R_VALUES" >> $R_VALUE_FILE
+if [ -z "$POSTFIT_VALUES" ]; then
+    POSTFIT_VALUES="-1 -1"
+fi
+echo "mu den fakeable {{ mu_is_inclusive }} {{ mu_eta_low }} {{ mu_eta_high }} {{ mu_pt_low }} {{ mu_pt_high }} $PREFIT_VALUES $POSTFIT_VALUES" >> $FIT_VALUE_FILE
 
 {% endfor %}
 
