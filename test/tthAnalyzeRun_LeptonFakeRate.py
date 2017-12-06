@@ -15,12 +15,6 @@ if ERA == "2016":
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
 
-for sample_key, sample_entry in samples.items():
-  if sample_entry['process_name_specific'] == 'ttHJetToNonbb_M125_amcatnlo':
-    sample_entry['use_it'] = True
-  else:
-    sample_entry['use_it'] = False
-
 if __name__ == '__main__':
   logging.basicConfig(
     stream = sys.stdout,
