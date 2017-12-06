@@ -88,8 +88,7 @@ if __name__ == '__main__':
     running_method                           = "sbatch",
     executable_addBackgrounds_LeptonFakeRate = "addBackground_LeptonFakeRate",
     executable_prep_dcard                    = "prepareDatacards",
-#    charge_selections                        = [ "OS" ],
-#    executable_comp_LeptonFakeRate           = "comp_LeptonFakeRate",
+    executable_comp_LeptonFakeRate           = "comp_LeptonFakeRate",
     num_parallel_jobs                        = 8,
   )
 
