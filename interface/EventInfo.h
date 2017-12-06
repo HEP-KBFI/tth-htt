@@ -13,7 +13,7 @@ public:
   EventInfo();
   EventInfo(bool is_signal,
             bool is_mc,
-            bool is_mc_th = false);
+            bool is_mc_th);
   EventInfo(const EventInfo & eventInfo);
   EventInfo &
   operator=(const EventInfo & eventInfo);
