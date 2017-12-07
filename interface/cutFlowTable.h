@@ -27,7 +27,7 @@ namespace cutFlowTable_namespace
 class cutFlowTableType
 {
  public:
-  cutFlowTableType();
+  cutFlowTableType(bool isDEBUG = false);
   ~cutFlowTableType();
 
   void update(const std::string& cut, double evtWeight = 1.);
@@ -39,6 +39,7 @@ class cutFlowTableType
              const cutFlowTableType & cutFlowTable);
 
  protected:
+  bool isDEBUG_;
   std::map<std::string, cutFlowTable_namespace::rowType*> rows_;
   int row_idx_;
 };

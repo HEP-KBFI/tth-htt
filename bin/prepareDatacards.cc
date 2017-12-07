@@ -16,7 +16,7 @@ cfg_prepareDatacards
 #include "DataFormats/FWLite/interface/InputSource.h"
 #include "DataFormats/FWLite/interface/OutputFiles.h"
 
-#include "tthAnalysis/HiggsToTauTau/interface/histogramAuxFunctions.h"
+#include "tthAnalysis/HiggsToTauTau/interface/histogramAuxFunctions.h" // compIntegral
 #include "tthAnalysis/HiggsToTauTau/interface/jetToTauFakeRateAuxFunctions.h" // getEtaBin, getPtBin 
 
 
@@ -42,7 +42,6 @@ cfg_prepareDatacards
 typedef std::vector<std::string> vstring;
 typedef std::vector<double> vdouble;
 
-
 namespace
 {
   std::vector<double> compBinning(TH1* histogram, double minEvents)
@@ -65,7 +64,7 @@ namespace
       else histogramBinning.push_back(xAxis->GetBinUpEdge(numBins));
     }
     assert(histogramBinning.size() >= 2);
-    std::cout << "binning = {";
+    std::cout << "binning = { ";
     for ( std::vector<double>::const_iterator bin = histogramBinning.begin();
 	  bin != histogramBinning.end(); ++bin ) {
       if ( bin != histogramBinning.begin() ) std::cout << ", ";
@@ -77,7 +76,8 @@ namespace
   
   TH1* rebinHistogram(const std::vector<double>& histogramBinning, const TH1* histogram)
   {
-    //std::cout << "<rebinHistogram>:" << std::endl;
+    std::cout << "<rebinHistogram>:" << std::endl;
+    std::cout << "integral(histogram) = " << compIntegral(histogram, false, false) << std::endl;
 
     TArrayF histogramBinning_array(histogramBinning.size());
     int idx = 0;
@@ -89,7 +89,7 @@ namespace
     std::string histogramName = Form("%s_rebinned", histogram->GetName());
     std::string histogramTitle = histogram->GetTitle();
     int numBins_rebinned = histogramBinning_array.GetSize() - 1;
-    //std::cout << "numBins_rebinned = " << numBins_rebinned << std::endl;
+    std::cout << "numBins_rebinned = " << numBins_rebinned << std::endl;
     TH1* histogram_rebinned = new TH1D(histogramName.data(), histogramTitle.data(), numBins_rebinned, histogramBinning_array.GetArray());
     if ( !histogram_rebinned->GetSumw2N() ) histogram_rebinned->Sumw2();
     const TAxis* xAxis = histogram->GetXaxis();
@@ -98,32 +98,30 @@ namespace
     double binContentSum = 0.;
     double binError2Sum = 0.;
     int iBin_rebinned = 1;
-    double binEdgeLow_rebinned = xAxis_rebinned->GetBinLowEdge(iBin_rebinned);
     for ( int iBin = 1; iBin <= numBins; ++iBin ) {
-      double binCenter = xAxis->GetBinCenter(iBin);
       double binContent = histogram->GetBinContent(iBin);
+      binContentSum += binContent;
       double binError = histogram->GetBinError(iBin);
+      binError2Sum += (binError*binError);
       bool isNextBin_rebinned = false;
       if ( iBin == numBins ) {
 	isNextBin_rebinned = true;
       } else {
-	if ( iBin_rebinned < numBins_rebinned && binCenter > xAxis_rebinned->GetBinLowEdge(iBin_rebinned + 1) ) {
+	if ( xAxis->GetBinCenter(iBin + 1) > xAxis_rebinned->GetBinLowEdge(iBin_rebinned + 1) ) {
 	  isNextBin_rebinned = true;
 	}
       }
       if ( isNextBin_rebinned ) {
-	double binWidth_rebinned = xAxis_rebinned->GetBinLowEdge(iBin_rebinned + 1) - binEdgeLow_rebinned;
-	histogram_rebinned->SetBinContent(iBin_rebinned, binContentSum/binWidth_rebinned);
-	histogram_rebinned->SetBinError(iBin_rebinned, TMath::Sqrt(binError2Sum)/binWidth_rebinned);
+	assert(iBin_rebinned <= numBins_rebinned);
+	histogram_rebinned->SetBinContent(iBin_rebinned, binContentSum);
+	histogram_rebinned->SetBinError(iBin_rebinned, TMath::Sqrt(binError2Sum));
 	binContentSum = 0.;
 	binError2Sum = 0.;
-	binEdgeLow_rebinned = xAxis_rebinned->GetBinLowEdge(iBin_rebinned + 1);
 	++iBin_rebinned;
       }
       //std::cout << "binCenter = " << binCenter << ": iBin = " << iBin << ", iBin_rebinned = " << iBin_rebinned << std::endl;
-      binContentSum += binContent;
-      binError2Sum += (binError*binError);
     }
+    std::cout << "integral(histogram_rebinned) = " << compIntegral(histogram_rebinned, false, false) << std::endl;
     return histogram_rebinned;
   } 
 
@@ -151,8 +149,8 @@ namespace
       return 0;
     }   
     std::cout << " integral(" << process << ") = " << histogram_input->Integral() << std::endl;
-    // std::string histogramName_output_full = std::string("x").append("_").append(process); // DEF LINE
-    std::string histogramName_output_full = process; // MY LINE
+    // std::string histogramName_output_full = std::string("x").append("_").append(process);
+    std::string histogramName_output_full = process; 
     if ( !(central_or_shift == "" || central_or_shift == "central") ) histogramName_output_full.append("_").append(central_or_shift);
     if ( histogramName_output != "" ) histogramName_output_full.append("_").append(histogramName_output);
     TArrayD histogramBinning = getBinning(histogram_input);
@@ -289,7 +287,15 @@ int main(int argc, char* argv[])
   double setBinsToZeroBelow = cfg_prepareDatacards.getParameter<double>("setBinsToZeroBelow");
 
   vstring central_or_shifts = cfg_prepareDatacards.getParameter<vstring>("sysShifts");
-  central_or_shifts.push_back(""); // CV: add central value
+  // CV: check if central value needs to be added
+  bool containsCentralValue = false;
+  for ( vstring::const_iterator central_or_shift = central_or_shifts.begin();
+	central_or_shift != central_or_shifts.end(); ++central_or_shift ) {
+    if ( (*central_or_shift) == "central" || (*central_or_shift) == "" ) containsCentralValue = true;
+  }
+  if ( !containsCentralValue ) {
+    central_or_shifts.push_back(""); 
+  }
 
   bool apply_automatic_rebinning = cfg_prepareDatacards.getParameter<bool>("apply_automatic_rebinning");
   double minEvents_automatic_rebinning = cfg_prepareDatacards.getParameter<double>("minEvents_automatic_rebinning");
@@ -381,7 +387,7 @@ int main(int argc, char* argv[])
 	rebinHistogram(histogramBinning, *histogram);
       }
     }
-
+  
     delete histogramBackgroundSum;
   }
   
