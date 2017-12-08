@@ -1579,6 +1579,7 @@ int main(int argc, char* argv[])
       cutFlowHistManager->fillHistograms("signal region veto", evtWeight);
     }
 
+
 //--- build collections of generator level particles
     std::vector<GenParticle> genTopQuarks;
     std::vector<GenParticle> genBJets;
