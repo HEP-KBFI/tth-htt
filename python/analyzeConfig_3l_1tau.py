@@ -366,7 +366,7 @@ class analyzeConfig_3l_1tau(analyzeConfig):
                 key_analyze_job = getKey(process_name, lepton_and_hadTau_selection_and_frWeight, chargeSumSelection, central_or_shift, jobId)
                 ntupleFiles = inputFileList[jobId]
                 if len(ntupleFiles) == 0:
-                  print "Warning: ntupleFiles['%s'] = %s --> skipping job !!" % (key_job, ntupleFiles)
+                  logging.warning("No input ntuples for %s --> skipping job !!" % (key_analyze_job))
                   continue
                 rootOutputFile = ""
                 if self.select_root_output:
