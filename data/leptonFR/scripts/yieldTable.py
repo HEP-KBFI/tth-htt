@@ -32,9 +32,9 @@ mlf = ROOT.TFile(sys.argv[2])
 rfr = mlf.Get('fit_s')
 
 def AddSystQuad(a,b):
-    a2 = math.pow(a, 2.) 
+    a2 = math.pow(a, 2.)
     b2 = math.pow(b, 2.)
-    x  = a2 + b2 
+    x  = a2 + b2
     quad =  math.sqrt(x)
     return quad
 
@@ -63,7 +63,7 @@ def PrintMuToText(mlf, tree_name):
        mu_value = tree.mu
        mu_low_err = tree.muLoErr
        mu_high_err = tree.muHiErr
-       print r'r: %.2f + %.2f - %.2f' % (mu_value, mu_high_err, mu_low_err) 
+       print r'r: %.2f + %.2f - %.2f' % (mu_value, mu_high_err, mu_low_err)
 
 
 #### ----- TO GET THE PREF-FIT fakes_data VALUE AND UNCERT. ----- #####
@@ -79,6 +79,6 @@ PrintTables(cmb, (rfr, 500), 'Post-fit')
 
 
 #### ----- TO GET THE POSTFIT r VALUE AND UNCERT. ----- #####
-# print 'Post-fit mu values:\n\n'
-# PrintMuToText(mlf, 'tree_fit_sb')
+print 'Post-fit mu values:\n\n'
+PrintMuToText(mlf, 'tree_fit_sb')
 

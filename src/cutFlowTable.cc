@@ -1,12 +1,16 @@
 #include "tthAnalysis/HiggsToTauTau/interface/cutFlowTable.h"
 
+#include <iostream> // std::cerr, std::fixed
+#include <iomanip> // std::setprecision(), std::setw()
 #include <vector> // std::vector<>
 #include <algorithm> // std::sort
+#include <assert.h> // assert
 
 using namespace cutFlowTable_namespace;
 
-cutFlowTableType::cutFlowTableType()
-  : row_idx_(0)
+cutFlowTableType::cutFlowTableType(bool isDEBUG)
+  : isDEBUG_(isDEBUG)
+  , row_idx_(0)
 {}
  
 cutFlowTableType::~cutFlowTableType()
@@ -20,18 +24,25 @@ cutFlowTableType::~cutFlowTableType()
 void cutFlowTableType::update(const std::string& cut, double evtWeight)
 {
   std::map<std::string, rowType*>::iterator row_iter = rows_.find(cut);
+  rowType* row = 0;
   if ( row_iter != rows_.end() ) {
-    rowType* row = row_iter->second;
-    ++row->selEvents_;
-    row->selEvents_weighted_ += evtWeight;
+    row = row_iter->second;
   } else {
-    rowType* row = new rowType();
+    row = new rowType();
     row->cut_ = cut;
-    row->selEvents_ = 1;
-    row->selEvents_weighted_ = evtWeight;
+    row->selEvents_ = 0;
+    row->selEvents_weighted_ = 0.;
     row->idx_ = row_idx_;
     rows_[cut] = row;
     ++row_idx_;
+  }
+  assert(row);
+  if ( isDEBUG_ ) {
+    std::cout << "<cutFlowTableType::update>: cut = " << cut << ", evtWeight = " << evtWeight << std::endl;
+  }
+  if ( evtWeight != -1. ) {
+    ++row->selEvents_;
+    row->selEvents_weighted_ += evtWeight;
   }
 }
 

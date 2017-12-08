@@ -39,4 +39,9 @@ void hltPaths_delete(const std::vector<hltPath*>& hltPaths)
   }
 }
 
-
+std::ostream& operator<<(std::ostream& stream, const hltPath& hltPath_iter)
+{
+  stream << "hltPath = " << hltPath_iter.getBranchName() << ": value = " << hltPath_iter.getValue() 
+	 << " (minPt = " << hltPath_iter.getMinPt() << ", maxPt = " << hltPath_iter.getMaxPt() << ")" << std::endl;
+  return stream;
+}

@@ -1,5 +1,5 @@
 ## import CombineHarvester.CombineTools.plotting as plot
-import CombineHarvester.CombineTools.plotting_OLD as plot
+import plotting as plot
 
 import ROOT
 import argparse

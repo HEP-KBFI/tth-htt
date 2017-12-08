@@ -26,7 +26,7 @@ TH1* addHistograms(const std::string&, const std::vector<TH1*>&, int = 0);
 TH1* subtractHistograms(const std::string&, const TH1*, const TH1*, int = 0);
 TH1* subtractHistograms(const std::string&, const TH1*, const std::vector<TH1*>&, int = 0);
 
-double compIntegral(TH1*, bool, bool);
+double compIntegral(const TH1*, bool, bool);
 
 void makeBinContentsPositive(TH1*, int = 0);
 

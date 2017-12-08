@@ -52,7 +52,14 @@ process.analyze_charge_flip = cms.PSet(
     isMC = cms.bool(False),
     central_or_shift = cms.string('central'),
     lumiScale = cms.double(1.),
+    apply_genWeight = cms.bool(True),
     apply_trigger_bits = cms.bool(True),
+
+    branchName_electrons = cms.string('selLeptons'),
+    branchName_muons = cms.string('selLeptons'),
+    branchName_hadTaus = cms.string('TauGood'),
+    branchName_jets = cms.string('Jet'),
+    branchName_met = cms.string('met'),
 
     fillGenEvtHistograms = cms.bool(False),
     

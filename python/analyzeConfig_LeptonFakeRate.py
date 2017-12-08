@@ -119,7 +119,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
                absEtaBins_e, absPtBins_e, absEtaBins_mu, absPtBins_mu, fillGenEvtHistograms, central_or_shifts,
                max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs, prep_dcard,
                numerator_histogram, denominator_histogram, executable_addBackgrounds_LeptonFakeRate,
-               executable_prep_dcard):
+               executable_prep_dcard, executable_comp_LeptonFakeRate):
                # charge_selections, jet_minPt, jet_maxPt, jet_minAbsEta, jet_maxAbsEta, hadTau_selections,
                # executable_comp_LeptonFakeRate):
     analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "LeptonFakeRate", central_or_shifts,
@@ -138,6 +138,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     self.absPtBins_e = absPtBins_e
     self.absPtBins_mu = absPtBins_mu
     self.cfgFile_prep_dcard = "prepareDatacards_LeptonFakeRate_cfg.py"
+    self.cfgFile_prep_compLeptonFakeRate = "comp_LeptonFakeRate_cfg.py"
     self.prep_dcard = prep_dcard
 
     self.numerator_histogram = numerator_histogram[0]
@@ -148,6 +149,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
 
     self.executable_addBackgrounds_LeptonFakeRate = executable_addBackgrounds_LeptonFakeRate
     self.executable_prep_dcard = executable_prep_dcard
+    self.executable_comp_LeptonFakeRate = executable_comp_LeptonFakeRate
     self.fillGenEvtHistograms = fillGenEvtHistograms
     self.cfgFile_analyze = os.path.join(self.workingDir, "analyze_LeptonFakeRate_cfg.py")
     self.cfgFile_addBackgrounds_LeptonFakeRate = os.path.join(self.workingDir, "addBackground_LeptonFakeRate_cfg.py")
@@ -156,6 +158,8 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
 
     self.histogramDir_prep_dcard = "LeptonFakeRate"
     self.jobOptions_addBackgrounds_LeptonFakeRate = {}
+    self.jobOptions_prep_compLeptonFakeRate = {}
+    self.jobOptions_combine = {}
 
 #    self.executable_comp_LeptonFakeRate = executable_comp_LeptonFakeRate                           ## TO BE INCLUDED LATER
 #    self.cfgFile_comp_LeptonFakeRate = os.path.join(self.workingDir, "comp_LeptonFakeRate_cfg.py") ## TO BE INCLUDED LATER
@@ -286,15 +290,21 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     self.addToMakefile_hadd_stage1_5(lines_makefile)
     self.addToMakefile_addBackgrounds_LeptonFakeRate(lines_makefile)
 
+  def addToMakefile_combine(self, lines_makefile):
+    jobOptions = self.jobOptions_combine
+    lines_makefile.append("%s: %s" % (jobOptions['outputFile'], jobOptions['inputFile']))
+    lines_makefile.append("\trm -rf %s" % jobOptions['combineOutputDir'])
+    lines_makefile.append("\t%s &> %s" % (jobOptions['postFitScript'], jobOptions['logFile']))
+    lines_makefile.append("")
+    self.filesToClean.append(jobOptions['outputFile'])
 
-
-
-  def addToMakefile_comp_jetToTauFakeRate(self, lines_makefile):
-    for jobOptions in self.jobOptions_comp_jetToTauFakeRate.values():
-      lines_makefile.append("%s: %s" % (jobOptions['outputFile'], jobOptions['inputFile']))
-      lines_makefile.append("\t%s %s" % (self.executable_comp_jetToTauFakeRate, jobOptions['cfgFile_modified']))
-      lines_makefile.append("")
-      self.filesToClean.append(jobOptions['outputFile'])
+  def addToMakefile_comp_leptonFakeRate(self, lines_makefile):
+    jobOptions = self.jobOptions_prep_compLeptonFakeRate
+    lines_makefile.append("%s: %s" % (jobOptions['outputFile'], jobOptions['inputFile']))
+    lines_makefile.append("\trm -f %s" % jobOptions['outputFile'])
+    lines_makefile.append("\t%s %s &> %s" % (self.executable_comp_LeptonFakeRate, jobOptions['cfgFile_modified'], jobOptions['logFile']))
+    lines_makefile.append("")
+    self.filesToClean.append(jobOptions['outputFile'])
 
 
   def createCfg_prep_dcard_LeptonFakeRate(self, jobOptions):
@@ -320,7 +330,12 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
         lines.append("process.prepareDatacards.histogramToFit = cms.string('%s')" % jobOptions['histogramToFit'])
         create_cfg(self.cfgFile_prep_dcard, jobOptions['cfgFile_modified'], lines)
 
-
+  def createCfg_prep_compLeptonFakeRate(self, jobOptions):
+    lines = [
+        "process.fwliteInput.fileNames = cms.vstring('%s')" % jobOptions['inputFile'],
+        "process.fwliteOutput.fileName = cms.string('%s')"  % jobOptions['outputFile'],
+    ]
+    create_cfg(self.cfgFile_prep_compLeptonFakeRate, jobOptions['cfgFile_modified'], lines)
 
 
   def create(self):
@@ -530,7 +545,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
                             "pT range = (%.3f, %3f) for lepton type %s" % \
                             (absEtaBinLowerEdge, absEtaBinUpperEdge, absPtBinsLowerEdge,
                              absPtBinsUpperEdge, lepton)
-              )
+              ) + (absEtaBinLowerEdge, absEtaBinUpperEdge, absPtBinsLowerEdge, absPtBinsUpperEdge, 0)
             )
 
             categories.append(
@@ -545,7 +560,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
           construct_lepton_params(
             lepton, lepton_short, selection, 'incl',
             error_msg = "No fit parameter range specified for lepton type %s" % lepton
-          )
+          ) + (-1., -1., -1., -1., 1)
         )
         categories.append(
           (
@@ -569,17 +584,20 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
       for process in self.prep_dcard_processesToCopy:
         processesToCopy.append(process)
       self.prep_dcard_processesToCopy = processesToCopy
+      datacards = []
       for histogramToFit in self.histograms_to_fit:
         key_prep_dcard_job = getKey(histogramToFit)
+        datacard = os.path.join(self.dirs[DKEY_DCRD], "prepareDatacards_%s.root" % (histogramToFit))
         self.jobOptions_prep_dcard[key_prep_dcard_job] = {
         'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2],
         'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "prepareDatacards_LeptonFakeRate_%s_cfg.py" % (histogramToFit)),
-        'datacardFile' : os.path.join(self.dirs[DKEY_DCRD], "prepareDatacards_%s.root" % (histogramToFit)),
+        'datacardFile' : datacard,
         'histogramDir' : (self.histogramDir_prep_dcard),
         'histogramToFit' : histogramToFit,
         'label' : None,
         'categories' : categories,
         }
+        datacards.append(datacard)
         self.createCfg_prep_dcard_LeptonFakeRate(self.jobOptions_prep_dcard[key_prep_dcard_job])
 
       # Create setupDatacards_LeptonFakeRate.py script from the template
@@ -598,6 +616,8 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
       yieldtable_script_path   = os.path.join(os.environ['CMSSW_BASE'], 'src/tthAnalysis/HiggsToTauTau/data/leptonFR/scripts/yieldTable.py')
 
       # Create run_postFit.sh script from the template
+      combine_output_dir = os.path.join(self.dirs[DKEY_COMBINE_OUTPUT], 'output')
+      fit_value_file     = os.path.join(combine_output_dir, 'fit_values.txt')
       postfit_template_file = os.path.join(current_dir, 'run_postFit.sh.template')
       postfit_template = open(postfit_template_file, 'r').read()
       postfit_script = jinja2.Template(postfit_template).render(
@@ -607,15 +627,16 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
         yieldtable_script      = yieldtable_script_path,
         numerator_datacard     = os.path.join(self.dirs[DKEY_DCRD], "prepareDatacards_%s.root" % self.numerator_histogram),
         denominator_datacard   = os.path.join(self.dirs[DKEY_DCRD], "prepareDatacards_%s.root" % self.denominator_histogram),
-        output_dir             = os.path.join(self.dirs[DKEY_COMBINE_OUTPUT], 'output'),
-        numerator_output_dir   = os.path.join(self.dirs[DKEY_COMBINE_OUTPUT], 'output', 'mlfit_LeptonFakeRate_%s' % self.numerator_histogram),
-        denominator_output_dir = os.path.join(self.dirs[DKEY_COMBINE_OUTPUT], 'output', 'mlfit_LeptonFakeRate_%s' % self.denominator_histogram),
+        output_dir             = combine_output_dir,
+        numerator_output_dir   = os.path.join(combine_output_dir, 'mlfit_LeptonFakeRate_%s' % self.numerator_histogram),
+        denominator_output_dir = os.path.join(combine_output_dir, 'mlfit_LeptonFakeRate_%s' % self.denominator_histogram),
         numerator_plotLabel    = self.numerator_plotLabel,
         denominator_plotLabel  = self.denominator_plotLabel,
         etights                = lepton_bins['electron']['tight'],
         efakes                 = lepton_bins['electron']['fakeable'],
         mtights                = lepton_bins['muon']['tight'],
         mfakes                 = lepton_bins['muon']['fakeable'],
+        fit_value_file         = fit_value_file,
       )
       postfit_script_path = os.path.join(self.dirs[DKEY_SCRIPTS], 'run_postFit.sh')
       logging.debug("Writing run_postFit script file = '%s'" % postfit_script_path)
@@ -624,6 +645,23 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
         postfit_script_file.flush()
         os.fsync(postfit_script_file.fileno())
       add_chmodX(postfit_script_path)
+
+      self.jobOptions_combine = {
+        'inputFile'       : ' '.join(datacards),
+        'outputFile'      : fit_value_file,
+        'combineOutputDir': combine_output_dir,
+        'postFitScript'   : postfit_script_path,
+        'logFile'         : os.path.join(self.dirs[DKEY_LOGS], os.path.basename(postfit_script_path).replace('.sh', '.log')),
+      }
+
+      leptonFR_final_output = os.path.join(combine_output_dir, 'leptonFakeRates.root')
+      self.jobOptions_prep_compLeptonFakeRate = {
+        'inputFile'        : fit_value_file,
+        'outputFile'       : leptonFR_final_output,
+        'logFile'          : os.path.join(self.dirs[DKEY_LOGS], os.path.basename(self.cfgFile_prep_compLeptonFakeRate).replace('_cfg.py', '.log')),
+        'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], os.path.basename(self.cfgFile_prep_compLeptonFakeRate)),
+      }
+      self.createCfg_prep_compLeptonFakeRate(self.jobOptions_prep_compLeptonFakeRate)
 
     if self.is_sbatch:
       logging.info("Creating script for submitting '%s' jobs to batch system" % self.executable_analyze)
@@ -718,9 +756,9 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     self.addToMakefile_backgrounds_from_data(lines_makefile)
     self.addToMakefile_hadd_stage2(lines_makefile)
     self.addToMakefile_prep_dcard(lines_makefile)
-#    self.addToMakefile_comp_jetToTauFakeRate(lines_makefile)   ## TO BE IMPLEMENTED LATER
-#    self.addToMakefile_make_plots(lines_makefile)              ## TO BE IMPLEMENTED LATER
-    self.targets = [ outputFile for outputFile in self.outputFile_hadd_stage2.values() ]
+    self.addToMakefile_combine(lines_makefile)
+    self.addToMakefile_comp_leptonFakeRate(lines_makefile)
+    self.targets = [ self.jobOptions_prep_compLeptonFakeRate['outputFile'] ]
     self.createMakefile(lines_makefile)
 
     logging.info("Done")

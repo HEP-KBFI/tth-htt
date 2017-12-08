@@ -38,3 +38,11 @@ void hltPaths_LeptonFakeRate_delete(const std::vector<hltPath_LeptonFakeRate*>& 
   }
 }
 
+std::ostream& operator<<(std::ostream& stream, const hltPath_LeptonFakeRate& hltPath_iter)
+{
+  stream << "hltPath = " << hltPath_iter.getBranchName() << ": value = " << hltPath_iter.getValue() 
+	 << " (minPt = " << hltPath_iter.getMinPt() << ", maxPt = " << hltPath_iter.getMaxPt() << ", minJetPt = " << hltPath_iter.getMinJetPt() << ","
+	 << " prescale = " << hltPath_iter.getPrescale() << ", prescale_rand_mc = " << hltPath_iter.getPrescale_rand_mc() << ")" << std::endl;
+  return stream;
+}
+

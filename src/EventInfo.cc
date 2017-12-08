@@ -28,6 +28,7 @@ EventInfo::EventInfo(bool is_signal,
   , event(0)
   , genHiggsDecayMode(-1)
   , genWeight(1.)
+  , genWeight_tH(1.)
   , pileupWeight(1.)
   , is_signal_(is_signal)
   , is_mc_(is_mc)

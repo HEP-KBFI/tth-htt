@@ -48,11 +48,6 @@ class hltPath_LeptonFakeRate : public hltPath
     return prescale_rand_mc_;  
   }
 
-  std::string getPathName() const
-  {
-    return branchName_;
-  }
-
   bool is_trigger_1mu() const 
   { 
     return is_trigger_1mu_; 
@@ -87,5 +82,7 @@ class hltPath_LeptonFakeRate : public hltPath
 void hltPaths_LeptonFakeRate_setBranchAddresses(TTree* tree, const std::vector<hltPath_LeptonFakeRate*>& hltPaths);
 std::vector<hltPath_LeptonFakeRate*> create_hltPaths_LeptonFakeRate(const std::vector<std::string>& branchNames, const edm::ParameterSet& cfg);
 void hltPaths_LeptonFakeRate_delete(const std::vector<hltPath_LeptonFakeRate*>& hltPaths);
+
+std::ostream& operator<<(std::ostream& stream, const hltPath_LeptonFakeRate& hltPath_iter);
 
 #endif // tthAnalysis_HiggsToTauTau_hltPath_LeptonFakeRate_h
