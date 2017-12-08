@@ -272,7 +272,7 @@ int main(int argc, char* argv[])
       << "Invalid Configuration parameter 'central_or_shift' = " << central_or_shift << " !!\n";
     if ( central_or_shift_tstring.BeginsWith("CMS_ttHl_btag") ) {
       if ( isMC ) jet_btagWeight_branch = getBranchName_bTagWeight(era, central_or_shift);
-      else throw cms::Exception("analyze_1l_2tau")
+      else cms::Exception("analyze_1l_2tau")
         << "Configuration parameter 'central_or_shift' = " << central_or_shift << " not supported for data !!\n";
     } else if ( central_or_shift_tstring.BeginsWith("CMS_ttHl_JES") ) {
       if ( isMC ) {
@@ -284,7 +284,7 @@ int main(int argc, char* argv[])
 	  jetPt_option = RecoJetReader::kJetPt_jecDown;
 	  met_option = RecoMEtReader::kMEt_shifted_JetEnDown;
 	} else assert(0);
-      } else throw cms::Exception("analyze_1l_2tau")
+      } else cms::Exception("analyze_1l_2tau")
           << "Configuration parameter 'central_or_shift' = " << central_or_shift << " not supported for data !!\n";
     } else if ( central_or_shift_tstring.BeginsWith("CMS_ttHl_JER") ) {
       if ( central_or_shift_tstring.EndsWith("Up") ) met_option = RecoMEtReader::kMEt_shifted_JetResUp;
@@ -312,7 +312,7 @@ int main(int argc, char* argv[])
         if      ( shiftUp_or_Down == "Up"   ) hadTauPt_option = RecoHadTauReader::kHadTauPt_shiftUp;
         else if ( shiftUp_or_Down == "Down" ) hadTauPt_option = RecoHadTauReader::kHadTauPt_shiftDown;
         else assert(0);
-      } else throw cms::Exception("analyze_1l_2tau")
+      } else cms::Exception("analyze_1l_2tau")
           << "Configuration parameter 'central_or_shift' = " << central_or_shift << " not supported for data !!\n";
     } else if ( central_or_shift_tstring.BeginsWith("CMS_ttHl_FRjt") ) {
       if      ( central_or_shift_tstring.EndsWith("normUp")    ) jetToTauFakeRate_option = kFRjt_normUp;
@@ -327,7 +327,7 @@ int main(int argc, char* argv[])
         else if ( central_or_shift_tstring.EndsWith("y1Down") ) lheScale_option = kLHE_scale_yDown;
         else if ( central_or_shift_tstring.EndsWith("y1Up")   ) lheScale_option = kLHE_scale_yUp;
         else assert(0);
-      } else throw cms::Exception("analyze_1l_2tau")
+      } else cms::Exception("analyze_1l_2tau")
           << "Configuration parameter 'central_or_shift' = " << central_or_shift << " not supported for data !!\n";
     } else if ( !(central_or_shift_tstring.BeginsWith("CMS_ttHl_FRet") ||
                   central_or_shift_tstring.BeginsWith("CMS_ttHl_FRmt")) ) {
@@ -680,22 +680,6 @@ int main(int argc, char* argv[])
   mvaInputVariables_1l_2tau_ttbar.push_back("ntags_loose");
   TMVAInterface mva_1l_2tau_ttbar_Old(mvaFileName_1l_2tau_ttbar_Old, mvaInputVariables_1l_2tau_ttbar);
 
-  //
-  /*
-  std::vector<std::string> mvaInputVariables_hadTopTagger;
-  mvaInputVariables_hadTopTagger.push_back("CSV_b");
-  mvaInputVariables_hadTopTagger.push_back("qg_Wj2");
-  mvaInputVariables_hadTopTagger.push_back("pT_bWj1Wj2");
-  mvaInputVariables_hadTopTagger.push_back("m_Wj1Wj2");
-  mvaInputVariables_hadTopTagger.push_back("nllKinFit");
-  mvaInputVariables_hadTopTagger.push_back("pT_b_o_kinFit_pT_b");
-  mvaInputVariables_hadTopTagger.push_back("pT_Wj2");
-  */
-  //TMVAInterface mva_hadTopTagger_tmva(mvaFileName_hadTopTagger_tmva, mvaInputVariables_hadTopTagger);
-  //mva_hadTopTagger_tmva.enableBDTTransform();
-
-  //XGBInterface mva_hadTopTagger_xgb(mvaFileName_hadTopTaggerWithKinFit, mvaInputVariables_hadTopTagger);
-
   //--- open output file containing run:lumi:event numbers of events passing final event selection criteria
   std::ostream* selEventsFile = ( selEventsFileName_output != "" ) ? new std::ofstream(selEventsFileName_output.data(), std::ios::out) : 0;
 
@@ -735,14 +719,12 @@ int main(int argc, char* argv[])
     JetHistManager* subleadBJet_loose_;
     JetHistManager* BJets_medium_;
     MEtHistManager* met_;
-    //MVAInputVarHistManager* mvaInputVariables_ttbar_;
-    //MVAInputVarHistManager* mvaInputVariables_ttV_;
     EvtHistManager_1l_2tau* evt_;
     std::map<std::string, EvtHistManager_1l_2tau*> evt_in_decayModes_;
     std::map<std::string, EvtHistManager_1l_2tau*> evt_in_categories_;
     WeightHistManager* weights_;
   };
-  //std::cout << "End declare histos" << std::endl;
+
   typedef std::map<int, selHistManagerType*> int_to_selHistManagerMap;
   std::map<int, int_to_selHistManagerMap> selHistManagers;
   for ( std::vector<leptonGenMatchEntry>::const_iterator leptonGenMatch_definition = leptonGenMatch_definitions.begin();
@@ -871,7 +853,6 @@ int main(int argc, char* argv[])
       selHistManager->met_ = new MEtHistManager(makeHistManager_cfg(process_and_genMatch,
         Form("%s/sel/met", histogramDir.data()), central_or_shift));
       selHistManager->met_->bookHistograms(fs);
-	  //std::cout << "booked met histograms" << std::endl;
       //selHistManager->mvaInputVariables_ttbar_ = new MVAInputVarHistManager(makeHistManager_cfg(process_and_genMatch,
       //  Form("%s/sel/mvaInputs_ttbar", histogramDir.data()), central_or_shift));
       //selHistManager->mvaInputVariables_ttbar_->bookHistograms(fs, mvaInputVariables_1l_2tau_ttbar);
@@ -951,9 +932,6 @@ int main(int argc, char* argv[])
       "lumiScale", "genWeight", "evtWeight",
       "mvaOutput_hadTopTagger",
       "mvaOutput_hadTopTaggerWithKinFit","mT_lepHadTop","mT_lepHadTopH",
-      //"fittedHadTop_pt", "fittedHadTop_eta",
-      //"fittedHadTopKin_pt","fittedHadTopKin_eta",
-      //"fittedHadTopP4KinBDTWithKin_pt","fittedHadTopP4KinBDTWithKin_eta",
       "HadTop_pt","HadTop_eta",
       "dr_lep_HadTop",
       "dr_HadTop_tau_OS","dr_HadTop_tau_SS",
@@ -1664,19 +1642,6 @@ int main(int argc, char* argv[])
     }
 
 //--- compute output of BDTs used to discriminate ttH vs. ttbar trained by Matthias for 1l_2tau category
-	/*
-    mvaInputs_ttbar["ht"]              = compHT(fakeableLeptons, selHadTaus, selJets);
-    mvaInputs_ttbar["tt_deltaR"]       = deltaR(selHadTau_lead->p4(), selHadTau_sublead->p4());
-    mvaInputs_ttbar["tt_visiblemass"]  = mTauTauVis;
-    mvaInputs_ttbar["tau1_pt"]         = selHadTau_lead->pt();
-    mvaInputs_ttbar["tau2_pt"]         = selHadTau_sublead->pt();
-    mvaInputs_ttbar["jet_deltaRavg"]   = comp_avg_dr_jet(selJets);
-    mvaInputs_ttbar["njets_inclusive"] = selJets.size();
-    mvaInputs_ttbar["ntags_loose"]     = selBJets_loose.size();
-
-    check_mvaInputs(mvaInputs_ttbar, eventInfo);
-	*/
-
     double cosThetaS_hadTau, cosThetaS_hadTop;
     comp_cosThetaS(selHadTau_lead->p4(), selHadTau_sublead->p4(),
                   fittedHadTopP4, cosThetaS_hadTau, cosThetaS_hadTop
@@ -1793,8 +1758,6 @@ int main(int argc, char* argv[])
     mvaInputs_ttbarOld["ntags_loose"]     = selBJets_loose.size();
     check_mvaInputs(mvaInputs_ttbarOld, eventInfo);
     double mvaOutput_1l_2tau_ttbar_Old = mva_1l_2tau_ttbar_Old(mvaInputs_ttbarOld);
-
-    //std::cout<<mvaOutput_1l_2tau_ttbar_HadTopTaggerVarMVAonly<<" "<< mvaOutput_1l_2tau_ttbar<<std::endl;
     double mvaOutput_1l_2tau_ttV = 1.0; //mva_1l_2tau_ttV(mvaInputs_ttV);
     Double_t mvaDiscr_1l_2tau = 0.5; //*(getSF_from_TH2(mva_mapping_1l_2tau, mvaOutput_1l_2tau_ttbar, mvaOutput_1l_2tau_ttV) + 1.);
 
