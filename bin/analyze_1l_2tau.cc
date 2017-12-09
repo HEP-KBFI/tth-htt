@@ -503,7 +503,7 @@ int main(int argc, char* argv[])
   GenParticleReader* genBJetReader = new GenParticleReader(Form("n%s", branchName_genBJets.data()), branchName_genBJets);
   GenParticleReader* genWBosonReader = new GenParticleReader(Form("n%s", branchName_genWBosons.data()), branchName_genWBosons);
   GenParticleReader* genWJetReader = new GenParticleReader(Form("n%s", branchName_genWJets.data()), branchName_genWJets);
-
+  
   if ( isMC ) {
 	  inputTree -> registerReader(genTopQuarkReader);
 	  inputTree -> registerReader(genBJetReader);
