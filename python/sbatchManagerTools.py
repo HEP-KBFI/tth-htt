@@ -131,12 +131,12 @@ def generate_sbatch_line(
                 open_cmd = "root -b -l -q %s 2>&1 > /dev/null | grep 'trying to recover' | wc -l" % output_file_name
                 open_out = run_cmd(open_cmd)
                 if open_out.rstrip('\n') != '0':
-                    print("--> output file is probably corrupted, deleting file and resubmitting job")
+                    logging.info("--> output file is probably corrupted, deleting file and resubmitting job")
                     command = "%s %s" % (executable_rm, output_file_name)
                     run_cmd(command)
                 else:
                     root_tfile.Close()
-                    print "--> skipping job because it has size greater than 20000"
+                    logging.info("--> skipping job because it has size greater than 20000")
                     return None
             root_tfile.Close()
         else:
