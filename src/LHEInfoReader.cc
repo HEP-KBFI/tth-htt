@@ -8,13 +8,12 @@ std::map<std::string, int> LHEInfoReader::numInstances_;
 std::map<std::string, LHEInfoReader*> LHEInfoReader::instances_;
 
 LHEInfoReader::LHEInfoReader()
-  : max_scale_nWeights_(6)
-  , branchName_scale_nWeights_("nLHE_weights_scale")
-  , branchName_scale_weights_("LHE_weights_scale_wgt")
-  , branchName_scale_ids_("LHE_weights_scale_id")
-  , max_pdf_nWeights_(103)
-  , branchName_pdf_nWeights_("nLHE_weights_pdf")
-  , branchName_pdf_weights_("LHE_weights_pdf_wgt")
+  : max_scale_nWeights_(9)
+  , branchName_scale_nWeights_("nLHEScaleWeight")
+  , branchName_scale_weights_("LHEScaleWeight")
+  , max_pdf_nWeights_(102)
+  , branchName_pdf_nWeights_("nLHEPdfWeight")
+  , branchName_pdf_weights_("LHEPdfWeight")
   , weight_scale_xUp_(1.)
   , weight_scale_xDown_(1.)
   , weight_scale_yUp_(1.)
@@ -31,7 +30,6 @@ LHEInfoReader::~LHEInfoReader()
     LHEInfoReader* gInstance = instances_[branchName_scale_weights_];
     assert(gInstance);
     delete[] gInstance->scale_weights_;
-    delete[] gInstance->scale_ids_;
     delete[] gInstance->pdf_weights_;
     instances_[branchName_scale_weights_] = 0;
   }
@@ -44,7 +42,6 @@ void LHEInfoReader::setBranchNames()
   } else {
     LHEInfoReader* gInstance = instances_[branchName_scale_weights_];
     if ( branchName_scale_nWeights_ != gInstance->branchName_scale_nWeights_ ||
-	 branchName_scale_ids_      != gInstance->branchName_scale_ids_      ||
 	 branchName_pdf_nWeights_   != gInstance->branchName_pdf_nWeights_   ||
          branchName_pdf_weights_    != gInstance->branchName_pdf_weights_    ) {
       throw cms::Exception("LHEInfoReader") 
@@ -62,8 +59,6 @@ void LHEInfoReader::setBranchAddresses(TTree* tree)
     tree->SetBranchAddress(branchName_scale_nWeights_.data(), &scale_nWeights_);   
     scale_weights_ = new Float_t[max_scale_nWeights_];
     tree->SetBranchAddress(branchName_scale_weights_.data(), scale_weights_); 
-    scale_ids_ = new Int_t[max_scale_nWeights_];
-    tree->SetBranchAddress(branchName_scale_ids_.data(), scale_ids_); 
     tree->SetBranchAddress(branchName_pdf_nWeights_.data(), &pdf_nWeights_);   
     pdf_weights_ = new Float_t[max_pdf_nWeights_];
     tree->SetBranchAddress(branchName_pdf_weights_.data(), pdf_weights_); 
@@ -78,18 +73,20 @@ void LHEInfoReader::read() const
     throw cms::Exception("LHEInfoReader") 
       << "Number of Scale weights stored in Ntuple = " << gInstance->scale_nWeights_ << ", exceeds max_scale_nWeights_ = " << max_scale_nWeights_ << " !!\n";
   }
-  weight_scale_xUp_   = 1.;
-  weight_scale_xDown_ = 1.;
-  weight_scale_yUp_   = 1.;
-  weight_scale_yDown_ = 1.;
-  for ( int idx = 0; idx < gInstance->scale_nWeights_; ++idx ) {
-    double weight = gInstance->scale_weights_[idx];
-    int id = gInstance->scale_ids_[idx];
-    if      ( id == 1002 ) weight_scale_xUp_   = weight; // muF = 2, muR = 1
-    else if ( id == 1003 ) weight_scale_xDown_ = weight; // muF = 0.5, muR = 1
-    else if ( id == 1004 ) weight_scale_yUp_   = weight; // muF = 1, muR = 2
-    else if ( id == 1007 ) weight_scale_yDown_ = weight; // muF = 1, muR = 0.5
-  }
+  // Karl: nomenclature:
+  //    [0] is muR=0.5 muF=0.5 hdamp=mt=272.7225
+  //    [1] is muR=0.5 muF=1   hdamp=mt=272.7225
+  //    [2] is muR=0.5 muF=2   hdamp=mt=272.7225
+  //    [3] is muR=1   muF=0.5 hdamp=mt=272.7225
+  //    [4] is muR=1   muF=1   hdamp=mt=272.7225
+  //    [5] is muR=1   muF=2   hdamp=mt=272.7225
+  //    [6] is muR=2   muF=0.5 hdamp=mt=272.7225
+  //    [7] is muR=2   muF=1   hdamp=mt=272.7225
+  //    [8] is muR=2   muF=2   hdamp=mt=272.7225
+  weight_scale_yDown_ = gInstance->scale_weights_[1]; // muR=0.5 muF=1
+  weight_scale_xDown_ = gInstance->scale_weights_[3]; // muR=1   muF=0.5
+  weight_scale_xUp_   = gInstance->scale_weights_[5]; // muR=1   muF=2
+  weight_scale_yUp_   = gInstance->scale_weights_[7]; // muR=2   muF=1
   if ( gInstance->pdf_nWeights_ > max_pdf_nWeights_ ) {
     throw cms::Exception("LHEInfoReader") 
       << "Number of PDF weights stored in Ntuple = " << gInstance->pdf_nWeights_ << ", exceeds max_pdf_nWeights_ = " << max_pdf_nWeights_ << " !!\n";
@@ -117,18 +114,11 @@ int LHEInfoReader::getNumWeights_pdf() const
 {
   return pdf_nWeights_;
 }
-double LHEInfoReader::getWeight_pdf(int idx) const
+double LHEInfoReader::getWeight_pdf(unsigned int idx) const
 {
-  if ( !(idx >= 0 && idx < pdf_nWeights_) ) {
+  if ( idx >= pdf_nWeights_ ) {
     throw cms::Exception("LHEInfoReader") 
       << "Given index = " << idx << ", exceeds number of PDF weights stored in Ntuple = " << pdf_nWeights_ << " !!\n";
   }
   return pdf_weights_[idx];
 }
-
-
-
-
-
-
-

@@ -36,7 +36,7 @@ class LHEInfoReader
   double getWeight_scale_yDown() const;
 
   int getNumWeights_pdf() const;
-  double getWeight_pdf(int idx) const;
+  double getWeight_pdf(unsigned int idx) const;
 
  protected:
  /**
@@ -44,18 +44,16 @@ class LHEInfoReader
    */
   void setBranchNames();
 
-  const int max_scale_nWeights_;
+  const unsigned int max_scale_nWeights_;
   std::string branchName_scale_nWeights_;
   std::string branchName_scale_weights_;
-  std::string branchName_scale_ids_;
-  const int max_pdf_nWeights_;
+  const unsigned int max_pdf_nWeights_;
   std::string branchName_pdf_nWeights_;
   std::string branchName_pdf_weights_;
 
-  Int_t scale_nWeights_;
+  UInt_t scale_nWeights_;
   Float_t* scale_weights_;
-  Int_t* scale_ids_;
-  Int_t pdf_nWeights_;
+  UInt_t pdf_nWeights_;
   Float_t* pdf_weights_;
 
   mutable double weight_scale_xUp_;
