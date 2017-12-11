@@ -259,7 +259,7 @@ int main(int argc, char* argv[])
       << "Invalid Configuration parameter 'central_or_shift' = " << central_or_shift << " !!\n";
     if ( central_or_shift_tstring.BeginsWith("CMS_ttHl_btag") ) {
       if ( isMC ) jet_btagWeight_branch = getBranchName_bTagWeight(era, central_or_shift);
-      else cms::Exception("analyze_ttZctrl")
+      else throw cms::Exception("analyze_ttZctrl")
 	<< "Configuration parameter 'central_or_shift' = " << central_or_shift << " not supported for data !!\n";
     } else if ( central_or_shift_tstring.BeginsWith("CMS_ttHl_JES") ) {
       if ( isMC ) {
@@ -267,14 +267,14 @@ int main(int argc, char* argv[])
 	if      ( shiftUp_or_Down == "Up"   ) jetPt_option = RecoJetReader::kJetPt_jecUp;
 	else if ( shiftUp_or_Down == "Down" ) jetPt_option = RecoJetReader::kJetPt_jecDown;
 	else assert(0);
-      } else cms::Exception("analyze_ttZctrl")
+      } else throw cms::Exception("analyze_ttZctrl")
 	  << "Configuration parameter 'central_or_shift' = " << central_or_shift << " not supported for data !!\n";
     } else if ( central_or_shift_tstring.BeginsWith("CMS_ttHl_tauES") ) {
       if ( isMC ) {
 	if      ( shiftUp_or_Down == "Up"   ) hadTauPt_option = RecoHadTauReader::kHadTauPt_shiftUp;
 	else if ( shiftUp_or_Down == "Down" ) hadTauPt_option = RecoHadTauReader::kHadTauPt_shiftDown;
 	else assert(0);
-      } else cms::Exception("analyze_ttZctrl")
+      } else throw cms::Exception("analyze_ttZctrl")
 	  << "Configuration parameter 'central_or_shift' = " << central_or_shift << " not supported for data !!\n";
     } else if ( central_or_shift_tstring.BeginsWith("CMS_ttHl_thu_shape") ) {
       if ( isMC ) {
@@ -283,7 +283,7 @@ int main(int argc, char* argv[])
 	else if ( central_or_shift_tstring.EndsWith("y1Down") ) lheScale_option = kLHE_scale_yDown;
 	else if ( central_or_shift_tstring.EndsWith("y1Up")   ) lheScale_option = kLHE_scale_yUp;
 	else assert(0);
-      } else cms::Exception("analyze_ttZctrl")
+      } else throw cms::Exception("analyze_ttZctrl")
 	  << "Configuration parameter 'central_or_shift' = " << central_or_shift << " not supported for data !!\n";
     } else throw cms::Exception("analyze_ttZctrl")
 	<< "Invalid Configuration parameter 'central_or_shift' = " << central_or_shift << " !!\n";
