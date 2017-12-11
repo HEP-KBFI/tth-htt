@@ -148,12 +148,12 @@ if __name__ == '__main__':
       samples                   = samples,
       changeBranchNames         = changeBranchNames,
       MEMbranch                 = MEMbranch,
-      lepton_charge_selections  = [ "OS", "SS" ],
+      lepton_charge_selections  = ["SS" ] if mode.find("forBDTtraining") != -1 else [ "OS", "SS" ],
       hadTau_selection          = hadTau_selection,
       # CV: apply "fake" background estimation to leptons only and not to hadronic taus, as discussed on slide 10 of
       #     https://indico.cern.ch/event/597028/contributions/2413742/attachments/1391684/2120220/16.12.22_ttH_Htautau_-_Review_of_systematics.pdf
       applyFakeRateWeights      = applyFakeRateWeights,
-      chargeSumSelections       = [ "OS", "SS" ],
+      chargeSumSelections       = [ "OS"] if mode.find("forBDTtraining") != -1 else [ "OS", "SS" ],
       central_or_shifts         = [
         "central",
 ##         "CMS_ttHl_btag_HFUp",
@@ -258,4 +258,3 @@ if __name__ == '__main__':
     logging.info("Job submission #%i:" % (idx_job_resubmission + 1))
     for job_type, num_jobs in job_statistics_summary[idx_job_resubmission].items():
       logging.info(" #jobs of type '%s' = %i" % (job_type, num_jobs))
-

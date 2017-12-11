@@ -1,5 +1,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h"
 
+#include "tthAnalysis/HiggsToTauTau/interface/RecoMEtReader.h" // RecoMEtReader::kMEt_*
+
 #include <TRandom3.h> // TRandom3
 #include <TMath.h> // TMath::Nint()
 
@@ -114,13 +116,13 @@ getBranchName_MEt(int,
   std::string branchName = default_branchName; // copy
   switch(central_or_shift)
   {
-    case kMEt_central:                                                   break;
-    case kMEt_shifted_JetEnUp:           branchName += "_jesTotalUp";    break; // JetEnUp
-    case kMEt_shifted_JetEnDown:         branchName += "_jesTotalDown";  break; // JetEnDown
-    case kMEt_shifted_JetResUp:          branchName += "_jerUp";         break;
-    case kMEt_shifted_JetResDown:        branchName += "_jerDown";       break;
-    case kMEt_shifted_UnclusteredEnUp:   branchName += "_unclustEnUp";   break;
-    case kMEt_shifted_UnclusteredEnDown: branchName += "_unclustEnDown"; break;
+    case RecoMEtReader::kMEt_central:                                                   break;
+    case RecoMEtReader::kMEt_shifted_JetEnUp:           branchName += "_jesTotalUp";    break; // JetEnUp
+    case RecoMEtReader::kMEt_shifted_JetEnDown:         branchName += "_jesTotalDown";  break; // JetEnDown
+    case RecoMEtReader::kMEt_shifted_JetResUp:          branchName += "_jerUp";         break;
+    case RecoMEtReader::kMEt_shifted_JetResDown:        branchName += "_jerDown";       break;
+    case RecoMEtReader::kMEt_shifted_UnclusteredEnUp:   branchName += "_unclustEnUp";   break;
+    case RecoMEtReader::kMEt_shifted_UnclusteredEnDown: branchName += "_unclustEnDown"; break;
     default:
     {
       std::cerr << "Invalid met correction: " << central_or_shift << '\n';

@@ -222,7 +222,7 @@ TH1* subtractHistograms(const std::string& newHistogramName, const TH1* histogra
   return newHistogram;
 }
 
-double compIntegral(TH1* histogram, bool includeUnderflowBin, bool includeOverflowBin)
+double compIntegral(const TH1* histogram, bool includeUnderflowBin, bool includeOverflowBin)
 {
   double sumBinContent = 0.;
   int numBins = histogram->GetNbinsX();

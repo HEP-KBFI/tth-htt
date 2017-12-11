@@ -71,7 +71,7 @@ process.analyze_charge_flip = cms.PSet(
     branchName_muons = cms.string('selLeptons'),
     branchName_hadTaus = cms.string('TauGood'),
     branchName_jets = cms.string('Jet'),
-    branchName_met = cms.string('met'),
+    #branchName_met = cms.string('met'),
 
     fillGenEvtHistograms = cms.bool(False),
     

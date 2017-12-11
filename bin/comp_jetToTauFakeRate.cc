@@ -35,7 +35,6 @@
 #include <TCanvas.h>
 #include <TPad.h>
 #include <TLegend.h>
-#include <TRandom3.h>
 #include <TError.h> // gErrorAbortLevel, kError
 
 #include <iostream>
@@ -525,7 +524,6 @@ void compFakeRate(double nPass, double nPassErr, double nFail, double nFailErr, 
   if ( sumWeights > 0. && sumWeights2 > 0. ) {
     double n_eff = square(sumWeights/TMath::Sqrt(sumWeights2));
     double sf = n_eff/(sumWeights);
-    static TRandom3 rnd;
     Int_t nPass_int = TMath::Nint(sf*nPass);
     if ( nPass_int < 0 ) nPass_int = 0;
     TH1* histogram_pass_tmp = new TH1D("histogram_pass_tmp", "histogram_pass_tmp", 1, -0.5, +0.5);

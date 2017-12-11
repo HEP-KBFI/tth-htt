@@ -61,4 +61,6 @@ void hltPaths_setBranchAddresses(TTree* tree, const std::vector<hltPath*>& hltPa
 bool hltPaths_isTriggered(const std::vector<hltPath*>& hltPaths);
 void hltPaths_delete(const std::vector<hltPath*>& hltPaths);
 
+std::ostream& operator<<(std::ostream& stream, const hltPath& hltPath_iter);
+
 #endif // tthAnalysis_HiggsToTauTau_hltPath_h

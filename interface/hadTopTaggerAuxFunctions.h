@@ -7,9 +7,11 @@
 #include <vector>
 
 enum { kGenMatchedBJet, kGenMatchedWJet1, kGenMatchedWJet2, kGenMatchedTriplet };
-enum { kGenTop, kGenAntiTop }; 
+enum { kGenTop, kGenAntiTop };
 
 std::vector<bool> isGenMatchedJetTriplet(const RecoJet& recBJet, const RecoJet& recWJet1, const RecoJet& recWJet2,
-					 const std::vector<GenParticle>& genTopQuarks, 
-					 const std::vector<GenParticle>& genBJets, const std::vector<GenParticle>& genWBosons, const std::vector<GenParticle>& genWJets, int mode);
+					 const std::vector<GenParticle>& genTopQuarks,
+					 const std::vector<GenParticle>& genBJets, const std::vector<GenParticle>& genWBosons, const std::vector<GenParticle>& genWJets, int mode,
+					 double& genTopPt
+				 );
 #endif

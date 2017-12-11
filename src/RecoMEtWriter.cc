@@ -27,12 +27,11 @@ RecoMEtWriter::~RecoMEtWriter()
 
 void RecoMEtWriter::setBranchNames()
 {
-  const std::string branchName_obj_pt  = Form("%s_pt",  branchName_obj_.data());
-  const std::string branchName_obj_phi = Form("%s_phi", branchName_obj_.data());
-  for(int met_option = kMEt_central; met_option <= kMEt_shifted_UnclusteredEnDown; ++met_option)
+  for(int met_option = RecoMEtReader::kMEt_central; met_option <= RecoMEtReader::kMEt_shifted_UnclusteredEnDown; ++met_option)
   {
-    branchName_pt_[met_option]  = getBranchName_MEt(era_, branchName_obj_pt,  met_option);
-    branchName_phi_[met_option] = getBranchName_MEt(era_, branchName_obj_phi, met_option);
+    const std::string branchName_obj = getBranchName_MEt(era_, branchName_obj_, met_option);
+    branchName_pt_[met_option]  = Form("%s_%s", branchName_obj.data(), "pt");
+    branchName_phi_[met_option] = Form("%s_%s", branchName_obj.data(), "phi");
   }
   branchName_covXX_ = Form("%s_%s", branchName_obj_.data(), "covXX");
   branchName_covXY_ = Form("%s_%s", branchName_obj_.data(), "covXY");
@@ -41,7 +40,7 @@ void RecoMEtWriter::setBranchNames()
 
 void RecoMEtWriter::setBranches(TTree* tree)
 {
-  for(int met_option = kMEt_central; met_option <= kMEt_shifted_UnclusteredEnDown; ++met_option)
+  for(int met_option = RecoMEtReader::kMEt_central; met_option <= RecoMEtReader::kMEt_shifted_UnclusteredEnDown; ++met_option)
   {
     setBranch(tree, &met_.systematics_[met_option].pt_,  branchName_pt_[met_option]);
     setBranch(tree, &met_.systematics_[met_option].phi_, branchName_phi_[met_option]);
