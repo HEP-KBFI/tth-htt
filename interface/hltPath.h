@@ -51,7 +51,7 @@ class hltPath
   }
  private:
   std::string branchName_;
-  Int_t value_;
+  Bool_t value_;
   double minPt_;
   double maxPt_;
 };
