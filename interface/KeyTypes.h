@@ -23,8 +23,8 @@
 ///////////////////////////////////////////////////////
 
 #define RUN_KEY               "run"
-#define LUMI_KEY              "lumi"
-#define EVT_KEY               "evt"
+#define LUMI_KEY              "luminosityBlock"
+#define EVT_KEY               "event"
 #define GENHIGGSDECAYMODE_KEY "genHiggsDecayMode"
 
 #define GENWEIGHT_KEY         "genWeight"
