@@ -3,6 +3,7 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectron.h" // RecoElectron
 #include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionSelector.h" // ParticleCollectionSelector
+#include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorTight.h" // RecoElectronSelectorTight
 
 #include <Rtypes.h> // Int_t, Double_t
 
@@ -12,7 +13,7 @@ class RecoElectronSelectorLoose
 {
  public:
   explicit RecoElectronSelectorLoose(int era, int index = -1, bool debug = false, bool set_selection_flags = true);
-  ~RecoElectronSelectorLoose() {}
+  ~RecoElectronSelectorLoose();
 
   /**
    * @brief Check if electron given as function argument passes "loose" electron selection, defined in Table 13 of AN-2015/321
@@ -20,9 +21,12 @@ class RecoElectronSelectorLoose
    */
   bool operator()(const RecoElectron& electron) const;
 
- protected: 
+ protected:
   bool set_selection_flags_;
   bool debug_;                        ///< enable printout for debugging purposes
+  int era_;
+
+  RecoElectronSelectorTight* tightElectronSelector_;
 
   Double_t min_pt_;                   ///< lower cut threshold on pT
   Double_t max_absEta_;               ///< upper cut threshold on absolute value of eta
@@ -35,7 +39,7 @@ class RecoElectronSelectorLoose
   typedef std::vector<Double_t> vDouble_t;
   vDouble_t min_mvaRawPOG_vlow_;       ///< upper cut threshold on EGamma POG electron MVA value, very low pT
   vDouble_t min_mvaRawPOG_low_;        ///< upper cut threshold on EGamma POG electron MVA value, low pT
-  vDouble_t min_mvaRawPOG_high_;       ///< upper cut threshold on EGamma POG electron MVA value, high pT  
+  vDouble_t min_mvaRawPOG_high_;       ///< upper cut threshold on EGamma POG electron MVA value, high pT
   vDouble_t binning_absEta_;          ///< eta values separating central, transition and forward region (0.8, 1.479)
 //-------------------------------------------------------------------------------
   bool apply_tightCharge_;            ///< apply (True) or do not apply (False) tight charge cut
@@ -47,4 +51,3 @@ class RecoElectronSelectorLoose
 typedef ParticleCollectionSelector<RecoElectron, RecoElectronSelectorLoose> RecoElectronCollectionSelectorLoose;
 
 #endif // tthAnalysis_HiggsToTauTau_RecoElectronCollectionSelectorLoose_h
-
