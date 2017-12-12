@@ -4,12 +4,16 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/lutAuxFunctions.h" // openFile, loadTH1/TH2, get_sf_from_TH1/TH2 
 #include "tthAnalysis/HiggsToTauTau/interface/leptonTypes.h" // kElectron, kMuon
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2015, kEra_2016
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2017
 
 #include <TString.h>
 
 #include <algorithm> // std::sort()
 #include <assert.h> // assert
+
+//TODO:
+// - update the data/MC corrections for 2017 data & MC
+// - rename the functions where possible
 
 namespace
 {
@@ -62,8 +66,7 @@ Data_to_MC_CorrectionInterface::Data_to_MC_CorrectionInterface(const edm::Parame
   , hadTau_eta_(3)
 {
   std::string era_string = cfg.getParameter<std::string>("era");
-  if      ( era_string == "2015" ) era_ = kEra_2015;
-  else if ( era_string == "2016" ) era_ = kEra_2016;
+  if ( era_string == "2017" ) era_ = kEra_2017;
   else throw cms::Exception("Data_to_MC_CorrectionInterface") 
     << "Invalid Configuration parameter 'era' = " << era_string << " !!\n";
 
@@ -105,30 +108,7 @@ Data_to_MC_CorrectionInterface::Data_to_MC_CorrectionInterface(const edm::Parame
     } 
   }
 
-  if ( era_ == kEra_2015 ) {
-    sfElectronID_and_Iso_loose_.push_back(new lutWrapperTH2(
-      inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2015/kinematicBinSFele.root", "MVAVLooseFO_and_IDEmu_and_TightIP2D", 
-      lut::kXptYabsEta, -1., 80.));
-    sfElectronID_and_Iso_loose_.push_back(new lutWrapperTH2(
-      inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2015/kinematicBinSFele.root", "MiniIso0p4_vs_AbsEta", 
-      lut::kXptYabsEta, -1., 80.));
-    sfElectronID_and_Iso_tight_to_loose_woTightCharge_.push_back(new lutWrapperTH2(
-      inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2015/lepMVAEffSF_e_3l.root", "sf",
-      lut::kXptYabsEta, -1., 80.));
-    sfElectronID_and_Iso_tight_to_loose_wTightCharge_.push_back(new lutWrapperTH2(
-      inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2015/lepMVAEffSF_e_2lss.root", "sf",
-      lut::kXptYabsEta, -1., 80.));
-
-    sfMuonID_and_Iso_loose_.push_back(new lutWrapperTH2(
-      inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2015/mu_eff_recoToLoose_ttH.root", "FINAL",
-      lut::kXptYabsEta, -1., 80.));
-    sfMuonID_and_Iso_tight_to_loose_woTightCharge_.push_back(new lutWrapperTH2(
-      inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2015/lepMVAEffSF_m_3l.root", "sf",
-      lut::kXptYabsEta, -1., 80.));
-    sfMuonID_and_Iso_tight_to_loose_wTightCharge_.push_back(new lutWrapperTH2(
-      inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2015/lepMVAEffSF_m_2lss.root", "sf",
-      lut::kXptYabsEta, -1., 80.));
-  } else if ( era_ == kEra_2016 ) {
+  if ( era_ == kEra_2017 ) {
     sfElectronID_and_Iso_loose_.push_back(new lutWrapperTH2(
       inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2016/el_scaleFactors_Moriond17.root", "GsfElectronToMVAVLooseFOIDEmuTightIP2D",
        lut::kXptYabsEta));
@@ -342,7 +322,7 @@ void Data_to_MC_CorrectionInterface::setHadTaus(int hadTau1_genPdgId, double had
 double Data_to_MC_CorrectionInterface::getWeight_leptonTriggerEff() const
 {
   double weight = 1.;
-  if ( era_ == kEra_2016 ) {
+  if ( era_ == kEra_2017 ) {
     if ( numLeptons_ >= 2 ) {
       std::vector<double> lepton_pt_sorted;
       for ( int idxLepton = 0; idxLepton < numLeptons_; ++idxLepton ) {
@@ -376,38 +356,6 @@ namespace
   {
     const double epsilon = 1.e-1;
     double sf = eff_data/TMath::Max(epsilon, eff_mc);
-    return sf;
-  }
-
-  /**
-   * @brief Evaluate data/MC correction for electron and muon trigger efficiency in 2015 data (Table 10 in AN-2015/321)
-   * @param type (either kElectron or kMuon), pT and eta of all leptons
-   * @return data/MC scale-factor, to be applied as event weight to simulated events
-   */
-  double sf_triggerEff_2015(int numElectrons, int numMuons,		     
-			    int lepton1_type, double lepton1_pt, double lepton1_eta, 
-			    int lepton2_type, double lepton2_pt, double lepton2_eta, 
-			    int lepton3_type, double lepton3_pt, double lepton3_eta,
-			    const std::vector<lutWrapperBase*>& effTrigger_1e_data, const std::vector<lutWrapperBase*>& effTrigger_1e_mc, 
-			    const std::vector<lutWrapperBase*>& effTrigger_1m_data, const std::vector<lutWrapperBase*>& effTrigger_1m_mc)
-  {
-    double sf = 1.;
-    if ( numElectrons == 1 && numMuons == 0 ) {
-      double eff_data = get_from_lut(effTrigger_1e_data, lepton1_pt, lepton1_eta);
-      double eff_mc = get_from_lut(effTrigger_1e_mc, lepton1_pt, lepton1_eta);
-      sf = compSF(eff_data, eff_mc);
-    } else if ( numElectrons == 0 && numMuons == 1 ) {
-      double eff_data = get_from_lut(effTrigger_1m_data, lepton1_pt, lepton1_eta);
-      double eff_mc = get_from_lut(effTrigger_1m_mc, lepton1_pt, lepton1_eta);
-      sf = compSF(eff_data, eff_mc);
-    } else if ( numElectrons == 2 && numMuons == 0 ) {
-      if ( std::max(lepton1_pt, lepton2_pt) > 40. ) sf = 0.99;
-      else sf = 0.95;
-    } else if ( numElectrons == 1 && numMuons == 1 ) {
-      sf = 0.98;
-    } else {
-      sf = 1.;
-    }
     return sf;
   }
 
@@ -448,15 +396,7 @@ namespace
 double Data_to_MC_CorrectionInterface::getSF_leptonTriggerEff() const
 {
   double sf = 1.;
-  if ( era_ == kEra_2015 ) {
-    sf = sf_triggerEff_2015(
-      numElectrons_, numMuons_,		     
-      lepton_type_[0], lepton_pt_[0], lepton_eta_[0], 
-      lepton_type_[1], lepton_pt_[1], lepton_eta_[1], 
-      lepton_type_[2], lepton_pt_[2], lepton_eta_[2],
-      effTrigger_1e_data_, effTrigger_1e_mc_, 
-      effTrigger_1m_data_, effTrigger_1m_mc_);
-  } else if ( era_ == kEra_2016 ) {
+  if ( era_ == kEra_2017 ) {
     sf = sf_triggerEff_2016(
       numElectrons_, numMuons_,	
       lepton_type_[0], lepton_pt_[0], lepton_eta_[0], 
@@ -529,13 +469,6 @@ double Data_to_MC_CorrectionInterface::getSF_leptonID_and_Iso_tight_to_loose_wTi
 
 namespace
 {
-  double getSF_hadTauID_and_Iso_2015(int hadTauSelection)
-  {
-    // CV: take data/MC correction to be equal to unity for all WPs, following Tau POG recommendation for 2015 data,
-    //     cf. https://twiki.cern.ch/twiki/bin/viewauth/CMS/TauIDRecommendation13TeV
-    return 1.; 
-  }
-
   double getSF_hadTauID_and_Iso_2016(int hadTauSelection)
   {
     // CV: take data/MC correction to be equal to 0.95 for all WPs, following Tau POG recommendation for 2016 data,
@@ -550,8 +483,7 @@ double Data_to_MC_CorrectionInterface::getSF_hadTauID_and_Iso() const
   double sf = 1.;
   for ( int idxHadTau = 0; idxHadTau < numHadTaus_; ++idxHadTau ) {
     if ( hadTau_genPdgId_[idxHadTau] == 15 ) {
-      if      ( era_ == kEra_2015 ) sf *= getSF_hadTauID_and_Iso_2015(hadTauSelection_);
-      else if ( era_ == kEra_2016 ) sf *= getSF_hadTauID_and_Iso_2016(hadTauSelection_);
+      if ( era_ == kEra_2017 ) sf *= getSF_hadTauID_and_Iso_2016(hadTauSelection_);
       else assert(0);
     }
   }
@@ -566,7 +498,7 @@ namespace
     double sf = 1.;
     double sfErr = 0.;
     if ( hadTauSelection_antiElectron <= 0 ) { // no anti-electron discriminator applied
-      return sf; 
+      return sf;
     } else if ( hadTauSelection_antiElectron == 1 ) { // vLoose
       if   ( hadTau_absEta < 1.479 ) { sf = 1.02; sfErr = 0.05; }
       else                           { sf = 1.11; sfErr = 0.05; }
@@ -582,11 +514,11 @@ namespace
     } else if ( hadTauSelection_antiElectron == 5 ) { // vTight
       if   ( hadTau_absEta < 1.479 ) { sf = 1.89; sfErr = 0.35; }
       else                           { sf = 1.69; sfErr = 0.68; }
-    } else throw cms::Exception("getSF_eToTauFakeRate") 
-	<< "Invalid parameter 'hadTauSelection_antiElectron' = " << hadTauSelection_antiElectron << " !!\n";
+    } else throw cms::Exception("getSF_eToTauFakeRate")
+  << "Invalid parameter 'hadTauSelection_antiElectron' = " << hadTauSelection_antiElectron << " !!\n";
     if      ( central_or_shift == kFRet_shiftUp   ) sf += sfErr;
     else if ( central_or_shift == kFRet_shiftDown ) sf -= sfErr;
-    else if ( central_or_shift != kFRet_central   ) throw cms::Exception("sf_eToTauFakeRate") 
+    else if ( central_or_shift != kFRet_central   ) throw cms::Exception("sf_eToTauFakeRate")
       << "Invalid parameter 'central_or_shift' = " << central_or_shift << " !!\n";
     if ( sf < 0. ) sf = 0.; // CV: require e->tau fake-rates to be positive
     return sf;
