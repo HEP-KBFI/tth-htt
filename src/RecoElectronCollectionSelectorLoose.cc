@@ -1,10 +1,12 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorLoose.h" // RecoElectronSelectorLoose
-
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2017
 #include <cmath> // std::fabs()
 
 RecoElectronSelectorLoose::RecoElectronSelectorLoose(int era, int index, bool debug, bool set_selection_flags)
   : set_selection_flags_(set_selection_flags)
   , debug_(debug)
+  , era_(era)
+  , tightElectronSelector_(nullptr)
   , min_pt_(7.)
   , max_absEta_(2.5)
   , max_dxy_(0.05)
@@ -23,10 +25,21 @@ RecoElectronSelectorLoose::RecoElectronSelectorLoose(int era, int index, bool de
   assert(min_mvaRawPOG_low_.size() == 3);
   assert(min_mvaRawPOG_high_.size() == 3);
   assert(binning_absEta_.size() == 2);
+  tightElectronSelector_ = new RecoElectronSelectorTight(era_, index, debug, false);
+}
+
+RecoElectronSelectorLoose::~RecoElectronSelectorLoose()
+{
+  if(tightElectronSelector_)
+  {
+    delete tightElectronSelector_;
+    tightElectronSelector_ = nullptr;
+  }
 }
 
 bool RecoElectronSelectorLoose::operator()(const RecoElectron& electron) const
 {
+  const bool isTight = tightElectronSelector_ ? (*tightElectronSelector_)(electron) : false;
   if(debug_)
   {
     const int idxBin = [this, &electron]() -> int
@@ -34,8 +47,8 @@ bool RecoElectronSelectorLoose::operator()(const RecoElectron& electron) const
         if      ( electron.absEta() <= binning_absEta_[0] ) return 0;
         else if ( electron.absEta() <= binning_absEta_[1] ) return 1;
         else                                                return 2;
-    }();    
-    
+    }();
+
     double mvaRawPOGCut = -1;
     double mvaRawPOG = -1;
     if (electron.pt() <= 10) {
@@ -48,7 +61,7 @@ bool RecoElectronSelectorLoose::operator()(const RecoElectron& electron) const
       mvaRawPOGCut = std::min(a, std::max(b,a-c*(electron.pt()-15)));   // warning: the _high WP must be looser than the _low one
       mvaRawPOG = electron.mvaRawPOG_GP();
     }
-    
+
     std::cout << "pt           = " << electron.pt()                   << " (>= " << min_pt_
                                    << ") => " << (electron.pt()             >= min_pt_                ? "PASS" : "FAIL") << '\n'
               << "abs(eta)     = " << electron.absEta()               << " (<= " << max_absEta_ << "; idx = " << idxBin
@@ -79,7 +92,7 @@ bool RecoElectronSelectorLoose::operator()(const RecoElectron& electron) const
        std::fabs(electron.dz()) <= max_dz_ &&
        electron.relIso() <= max_relIso_ &&
        electron.sip3d() <= max_sip3d_ &&
-       (electron.tightCharge() >= 2 || !apply_tightCharge_) && 
+       (electron.tightCharge() >= 2 || !apply_tightCharge_) &&
        (electron.passesConversionVeto() || !apply_conversionVeto_) &&
        electron.nLostHits() <= max_nLostHits_ ) {
     int idxBin = -1;
@@ -87,10 +100,11 @@ bool RecoElectronSelectorLoose::operator()(const RecoElectron& electron) const
     else if ( electron.absEta() <= binning_absEta_[1] ) idxBin = 1;
     else                                                idxBin = 2;
     assert(idxBin >= 0 && idxBin <= 2);
-    
+
     if (electron.pt() <= 10) {
       if ( electron.mvaRawPOG_HZZ() >= min_mvaRawPOG_vlow_[idxBin] ){
         if ( set_selection_flags_ ) electron.set_isLoose();
+        if ( isTight ) electron.set_isTight();
         return true;
       }
     } else {
@@ -100,8 +114,9 @@ bool RecoElectronSelectorLoose::operator()(const RecoElectron& electron) const
       double cut = std::min(a, std::max(b,a-c*(electron.pt()-15)));   // warning: the _high WP must be looser than the _low one
       if ( electron.mvaRawPOG_GP() >= cut ) {
         if ( set_selection_flags_ ) electron.set_isLoose();
+        if ( isTight ) electron.set_isTight();
         return true;
-      }  
+      }
     }
   }
   return false;

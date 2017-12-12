@@ -124,7 +124,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
     """
     self.lepton_and_hadTau_selections       = [ "forBDTtraining" ]
     self.lepton_and_hadTau_frWeights        = [ "disabled" ]
-    self.hadTau_selection_relaxed           = hadTau_selection_relaxed
+    self.hadTau_selection_relaxed           =  hadTau_selection_relaxed
     self.hadTauFakeRateWeight_inputFileName = hadTauFakeRateWeight_inputFileName
     self.isBDTtraining                      = True
 
@@ -199,7 +199,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
       lines.append("process.analyze_1l_2tau.hadTauFakeRateWeight.applyFitFunction_sublead = cms.bool(True)")
       lines.append("process.analyze_1l_2tau.apply_hadTauFakeRateSF = cms.bool(True)")
     if self.isBDTtraining:
-      lines.append("process.analyze_1l_2tau.hadTauFakeRateWeight.inputFileName = cms.string('%s')" % self.hadTauFakeRateWeight_inputFileName)
+      #lines.append("process.analyze_1l_2tau.hadTauFakeRateWeight.inputFileName = cms.string('%s')" % self.hadTauFakeRateWeight_inputFileName)
       lines.append("process.analyze_1l_2tau.hadTauFakeRateWeight.lead.graphName = cms.string('jetToTauFakeRate/%s/$etaBin/jetToTauFakeRate_mc_hadTaus_pt')" % self.hadTau_selection_part2)
       lines.append("process.analyze_1l_2tau.hadTauFakeRateWeight.lead.fitFunctionName = cms.string('jetToTauFakeRate/%s/$etaBin/fitFunction_data_div_mc_hadTaus_pt')" % self.hadTau_selection_part2)
       lines.append("process.analyze_1l_2tau.hadTauFakeRateWeight.sublead.graphName = cms.string('jetToTauFakeRate/%s/$etaBin/jetToTauFakeRate_mc_hadTaus_pt')" % self.hadTau_selection_part2)
@@ -304,7 +304,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
       hadTau_selection = "|".join([ lepton_and_hadTau_selection, self.hadTau_selection_part2 ])
 
       if lepton_and_hadTau_selection == "forBDTtraining":
-        lepton_selection = "Loose"
+        lepton_selection = "Loose"  # "Tight"  Xanda
         hadTau_selection = "Tight|%s" % self.hadTau_selection_relaxed
 
       for lepton_and_hadTau_frWeight in self.lepton_and_hadTau_frWeights:

@@ -1190,9 +1190,9 @@ int main(int argc, char* argv[])
           continue;
         }
 
-    std::vector<const RecoJet*> cleanedJets;
-    if (selectBDT) cleanedJets=jetCleaner(jet_ptrs, selHadTaus, selLeptons, fakeableElectrons, fakeableMuons); // leptin is loose and loose>fakeable
-    else cleanedJets=jetCleaner(jet_ptrs, selLeptons, fakeableElectrons, fakeableMuons);
+    std::vector<const RecoJet*> cleanedJets=jetCleaner(jet_ptrs, selHadTaus, selLeptons, fakeableElectrons, fakeableMuons);
+    // selLeptons for BDT training is loose, and loose>fakeable
+    // this has no effect on datacards making as there selLeptons are tight and tight<fakeable
     std::vector<const RecoJet*> selJets = jetSelector(cleanedJets);
     std::vector<const RecoJet*> selBJets_loose = jetSelectorBtagLoose(cleanedJets);
     std::vector<const RecoJet*> selBJets_medium = jetSelectorBtagMedium(cleanedJets);
