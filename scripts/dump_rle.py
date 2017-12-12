@@ -2,18 +2,19 @@
 
 import logging, argparse, os, sys, ROOT, array
 
-def dump_rle(input_file, output_file):
+def dump_rle(input_file, output_file, tree_name = 'Events',
+             run_br = 'run', lumi_br = 'luminosityBlock', event_br = 'event'):
   with open(output_file, 'w') as f:
-    ch_root = ROOT.TChain("tree")
+    ch_root = ROOT.TChain(tree_name)
     ch_root.AddFile(input_file)
 
     run_a  = array.array('I', [0])
     lumi_a = array.array('I', [0])
     evt_a  = array.array('L', [0])
 
-    ch_root.SetBranchAddress("run",  run_a)
-    ch_root.SetBranchAddress("lumi", lumi_a)
-    ch_root.SetBranchAddress("evt",  evt_a)
+    ch_root.SetBranchAddress(run_br,   run_a)
+    ch_root.SetBranchAddress(lumi_br,  lumi_a)
+    ch_root.SetBranchAddress(event_br, evt_a)
 
     nof_entries = ch_root.GetEntries()
     rle_i_arr = []
@@ -71,6 +72,14 @@ if __name__ == '__main__':
                      help = 'R|Sample the RLE numbers of which will be dumped (default: all)')
   parser.add_argument('-o', '--output', metavar = 'path', required = False, type = str, default = '',
                       help = 'R|Directory (or file if -i/--input is used) where the list of RLE numbers will be saved')
+  parser.add_argument('-t', '--tree', metavar = 'name', required = False, type = str, default = 'Events',
+                      help = 'R|Event tree')
+  parser.add_argument('-r', '--run', metavar = 'name', required = False, type = str, default = 'run',
+                      help = 'R|Name of the run branch')
+  parser.add_argument('-l', '--lumi', metavar = 'name', required = False, type = str, default = 'luminosityBlock',
+                      help = 'R|Name of the lumi branch')
+  parser.add_argument('-e', '--event', metavar = 'name', required = False, type = str, default = 'event',
+                      help = 'R|Name of the event branch')
   parser.add_argument('-f', '--force', dest = 'force', action = 'store_true', default = False,
                       help = 'R|Force the creation of output directory if missing')
   parser.add_argument('-v', '--verbose', dest = 'verbose', action = 'store_true', default = False,
@@ -91,7 +100,7 @@ if __name__ == '__main__':
       sys.exit(1)
 
     output_file = output
-    parent_dir  = os.path.dirname(output_file)
+    parent_dir  = os.path.dirname(os.path.abspath(output_file))
     if not check_dir(parent_dir, use_force):
       sys.exit(1)
 
@@ -100,7 +109,7 @@ if __name__ == '__main__':
       output_file = output_file,
     ))
 
-    dump_rle(input_file, output_file)
+    dump_rle(input_file, output_file, args.tree, args.run, args.lumi, args.event)
 
   else:
 
@@ -150,6 +159,6 @@ if __name__ == '__main__':
             logging.warning("Whoops, file already exists; skipping that")
             continue
 
-          dump_rle(rootfile, outfile_idx)
+          dump_rle(rootfile, outfile_idx, args.tree, args.run, args.lumi, args.event)
 
   logging.debug("Done!")
