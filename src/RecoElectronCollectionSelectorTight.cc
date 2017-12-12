@@ -56,8 +56,7 @@ RecoElectronSelectorTight::RecoElectronSelectorTight(int era, int index, bool de
 bool RecoElectronSelectorTight::operator()(const RecoElectron& electron) const
 {
   if ( debug_ ) {
-    std::cout << "<RecoElectronSelectorTight::operator()>:" << std::endl;
-    std::cout << " electron: pT = " << electron.pt() << ", eta = " << electron.eta() << ", phi = " << electron.phi() << ", charge = " << electron.charge() << std::endl;
+    std::cout << "<RecoElectronSelectorTight::operator()>:\n" << electron;
   }
   if ( electron.pt() < min_pt_ ) {
     if ( debug_ ) std::cout << "FAILS pT cut." << std::endl;
