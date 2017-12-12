@@ -134,8 +134,7 @@ int main(int argc, char* argv[])
 
   std::string era_string = cfg_analyze.getParameter<std::string>("era");
   int era = -1;
-  if      ( era_string == "2015" ) era = kEra_2015;
-  else if ( era_string == "2016" ) era = kEra_2016;
+  if      ( era_string == "2017" ) era = kEra_2017;
   else throw cms::Exception("analyze_3l_1tau")
     << "Invalid Configuration parameter 'era' = " << era_string << " !!\n";
 
@@ -241,8 +240,7 @@ int main(int argc, char* argv[])
 
   std::string jet_btagWeight_branch;
   if ( isMC ) {
-    if      ( era == kEra_2015 ) jet_btagWeight_branch = "Jet_bTagWeight";
-    else if ( era == kEra_2016 ) jet_btagWeight_branch = "Jet_btagWeightCSV";
+    if ( era == kEra_2017 ) jet_btagWeight_branch = "Jet_btagSF";
     else assert(0);
   }
 
@@ -401,7 +399,7 @@ int main(int argc, char* argv[])
 //--- create output root file from selected events if needed
   NtupleFillerMEM mem;
   if ( writeSelEventsFile ) {
-    mem.use2016(era == kEra_2016);
+    mem.use2016(era == kEra_2017); // TODO: CHANGE THIS MEMBER FUNCTION!
     mem.isSignal(isSignal);
     mem.setFileName(selEventsTFileName);
   }
@@ -518,7 +516,7 @@ int main(int argc, char* argv[])
     //---------------------------------------------------------------------------
     // CV: functionality temporarily disabled, 
     //     as all generator level information is stored in RecoLepton, RecoHadTau and RecoJet branches in case tthProdNtuple workflow is used
-    //if ( writeSelEventsFile && era == kEra_2016 ){
+    //if ( writeSelEventsFile && era == kEra_2017 ){
     //  genNuFromTauReader = new GenParticleReader("nGenNuFromTau", "GenNuFromTau");
     //  genNuFromTauReader->setBranchAddresses(inputTree);
     //  genTauReader = new GenParticleReader("nGenTaus", "GenTaus");
@@ -879,7 +877,7 @@ int main(int argc, char* argv[])
     //std::vector<GenParticle> genLepFromTau;
     //std::vector<GenParticle> genTop;
     //std::vector<GenParticle> genVbosons;
-    //if ( isMC && writeSelEventsFile && era == kEra_2016 ) {
+    //if ( isMC && writeSelEventsFile && era == kEra_2017 ) {
     //  genHadTaus = genHadTauReader->read();
     //  genNuFromTau = genNuFromTauReader->read();
     //  genTau = genTauReader->read();
@@ -1540,8 +1538,7 @@ int main(int argc, char* argv[])
     cutFlowHistManager->fillHistograms("m(ll) > 12 GeV", evtWeight);
 
     double minPt_lead = -1.;
-    if      ( era == kEra_2015 ) minPt_lead = 20.;
-    else if ( era == kEra_2016 ) minPt_lead = 25.; // CV: increase minimum lepton pT cut to 25 GeV to keep-up with higher trigger thresholds in 2016 data
+    if ( era == kEra_2017 ) minPt_lead = 25.; // CV: increase minimum lepton pT cut to 25 GeV to keep-up with higher trigger thresholds in 2016 data
     else assert(0);
     double minPt_sublead = selLepton_sublead->is_electron() ? 15. : 10.;
     double minPt_third = 10.;
@@ -1671,11 +1668,7 @@ int main(int argc, char* argv[])
 //--- compute integer discriminant based on both BDT outputs,
 //    as defined in Table 16 (10) of AN-2015/321 (AN-2016/211) for analysis of 2015 (2016) data
     Double_t mvaDiscr_3l = -1;
-    if ( era == kEra_2015 ) {
-      if      ( mvaOutput_3l_ttbar >  +0.3 && mvaOutput_3l_ttV >  -0.1 ) mvaDiscr_3l = 3.;
-      else if ( mvaOutput_3l_ttbar <= +0.3 && mvaOutput_3l_ttV <= -0.1 ) mvaDiscr_3l = 1.;
-      else                                                               mvaDiscr_3l = 2.;
-    } else if ( era == kEra_2016 ) {
+    if ( era == kEra_2017 ) {
       if      ( mvaOutput_3l_ttbar > +0.30 && mvaOutput_3l_ttV >  +0.25 ) mvaDiscr_3l = 5.;
       else if ( mvaOutput_3l_ttbar > +0.30 && mvaOutput_3l_ttV <= +0.25 ) mvaDiscr_3l = 4.;
       else if ( mvaOutput_3l_ttbar > -0.30 && mvaOutput_3l_ttV >  +0.25 ) mvaDiscr_3l = 3.;
@@ -1920,7 +1913,7 @@ int main(int argc, char* argv[])
       const RLEUnit rleUnit{ eventInfo.run, eventInfo.lumi, eventInfo.event };
       mem.add(rleUnit);
       const METUnit<double> metUnit{
-        met.pt(), met.phi(), met.covXX(), met.covXY(), met.covYY(), era == kEra_2016
+        met.pt(), met.phi(), met.covXX(), met.covXY(), met.covYY(), era == kEra_2017
       };
       mem.add(metUnit);
       mem.add(mvaInputs_3l, mvaOutput_3l_ttV, mvaOutput_3l_ttbar);
@@ -1934,7 +1927,7 @@ int main(int argc, char* argv[])
         //-----------------------------------------------------------------------
         // CV: functionality temporarily disabled,
         //     as all generator level information is stored in RecoLepton, RecoHadTau and RecoJet branches in case tthProdNtuple workflow is used
-        //if ( era == kEra_2016 ) {
+        //if ( era == kEra_2017 ) {
         //  mem.add(genHadTaus, genBQuarkFromTop, genLepFromTau,
         //          genNuFromTau, genTau, genLepFromTop, genNuFromTop,
         //          genTop, genVbosons);

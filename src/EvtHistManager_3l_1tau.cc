@@ -1,7 +1,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/EvtHistManager_3l_1tau.h"
 
 #include "tthAnalysis/HiggsToTauTau/interface/histogramAuxFunctions.h" // fillWithOverFlow, fillWithOverFlow2d, getLogWeight
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2015, kEra_2016
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2017
 
 #include <TMath.h>
 
@@ -10,8 +10,7 @@ EvtHistManager_3l_1tau::EvtHistManager_3l_1tau(const edm::ParameterSet& cfg)
 {
   std::string era_string = cfg.getParameter<std::string>("era");
   era_ = -1;
-  if      ( era_string == "2015" ) era_ = kEra_2015;
-  else if ( era_string == "2016" ) era_ = kEra_2016;
+  if ( era_string == "2017" ) era_ = kEra_2017;
   else throw cms::Exception("EvtHistManager_3l_1tau") 
     << "Invalid Configuration parameter 'era' = " << era_string << " !!\n";
 }
@@ -30,8 +29,7 @@ void EvtHistManager_3l_1tau::bookHistograms(TFileDirectory& dir)
 
   histogram_mvaOutput_3l_ttV_ = book1D(dir, "mvaOutput_3l_ttV", "mvaOutput_3l_ttV", 40, -1., +1.);
   histogram_mvaOutput_3l_ttbar_ = book1D(dir, "mvaOutput_3l_ttbar", "mvaOutput_3l_ttbar", 40, -1., +1.);
-  if      ( era_ == kEra_2015 ) histogram_mvaDiscr_3l_  = book1D(dir, "mvaDiscr_3l", "mvaDiscr_3l", 3, 0.5, 3.5);
-  else if ( era_ == kEra_2016 ) histogram_mvaDiscr_3l_  = book1D(dir, "mvaDiscr_3l", "mvaDiscr_3l", 5, 0.5, 5.5);
+  if ( era_ == kEra_2017 ) histogram_mvaDiscr_3l_  = book1D(dir, "mvaDiscr_3l", "mvaDiscr_3l", 5, 0.5, 5.5);
   else assert(0);
 
   histogram_mvaOutput_3l_1tau_ttV_ = book1D(dir, "mvaOutput_3l_1tau_ttV", "mvaOutput_3l_1tau_ttV", 40, -1., +1.);
