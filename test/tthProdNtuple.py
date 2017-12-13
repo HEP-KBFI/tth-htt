@@ -12,6 +12,8 @@ from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 #   'forBDTtraining_except' : to produce the Ntuples from all but the FastSim samples
 #--------------------------------------------------------------------------------
 
+# E.g.: ./tthProdNtuple.py -v 2017Dec13 -m all -e 2017 -V -r 2
+
 mode_choices               = ['all', 'forBDTtraining_only', 'forBDTtraining_except']
 era_choices                = ['2017']
 default_resubmission_limit = 4
