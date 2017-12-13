@@ -1,5 +1,5 @@
 #!/bin/bash
-# File: sbatch-node.template.sh
+# File: sbatch-node.template.produce.sh
 # Version: 0.2
 
 # unset JAVA_HOME, because hadoop commands might not work
@@ -8,11 +8,11 @@ echo 'Unsetting JAVA_HOME=$JAVA_HOME'
 unset JAVA_HOME
 
 # This value is provided by sbatchManager.py that creates sbatch scripts based this template
-echo 'Running script {{ script_file }} (created from template sbatch-node.template.sh)'
+echo 'Running script {{ script_file }} (created from template {{ job_template_file }})'
 
 RUNNING_COMMAND="{{ RUNNING_COMMAND }}"
 
-# Runs executable, wrapped into failure wrapper + wrapped into node scratchdir
+# Runs executable, wrapped into failure wrapper
 
 main() {
     run_failure_wrapped_executable >> "{{ wrapper_log_file }}" 2>&1
@@ -46,17 +46,17 @@ run_failure_wrapped_executable() {
     return $EXIT_CODE
 }
 
-# Creates scratch dir on cluster node and runs executable
+# Creates scratch dir on cluster node or a directory under $HOME and runs the executable
 
 run_wrapped_executable() {
-    export SCRATCH_DIR="{{ scratch_dir }}/$SLURM_JOBID"
+    export JOB_DIR="{{ job_dir }}/$SLURM_JOBID"
     EXECUTABLE_LOG_FILE="{{ executable_log_file }}"
     EXECUTABLE_LOG_DIR="`dirname $EXECUTABLE_LOG_FILE`"
     EXECUTABLE_LOG_FILE_NAME="`basename $EXECUTABLE_LOG_FILE`"
-    TEMPORARY_EXECUTABLE_LOG_DIR="$SCRATCH_DIR/$EXECUTABLE_LOG_DIR/"
+    TEMPORARY_EXECUTABLE_LOG_DIR="$JOB_DIR/$EXECUTABLE_LOG_DIR/"
     TEMPORARY_EXECUTABLE_LOG_FILE="$TEMPORARY_EXECUTABLE_LOG_DIR/$EXECUTABLE_LOG_FILE_NAME"
     RANDOM_SLEEP={{ random_sleep }}
-    CMSSW_SEARCH_PATH="$SCRATCH_DIR:$CMSSW_SEARCH_PATH"
+    CMSSW_SEARCH_PATH="$JOB_DIR:$CMSSW_SEARCH_PATH"
 
     echo "Time is: `date`"
     echo "Hostname: `hostname`"
@@ -65,8 +65,8 @@ run_wrapped_executable() {
     echo "Sleeping for $RANDOM_SLEEP seconds"
     sleep $RANDOM_SLEEP
 
-    echo "Create scratch directory: mkdir -p $SCRATCH_DIR"
-    mkdir -p $SCRATCH_DIR
+    echo "Create job directory: mkdir -p $JOB_DIR"
+    mkdir -p $JOB_DIR
 
     echo "Create temporary log directory: mkdir -p $TEMPORARY_EXECUTABLE_LOG_DIR"
     mkdir -p $TEMPORARY_EXECUTABLE_LOG_DIR
@@ -75,7 +75,7 @@ run_wrapped_executable() {
     mkdir -p $EXECUTABLE_LOG_DIR
 
     cd {{ working_dir }}
-    cd $SCRATCH_DIR
+    cd $JOB_DIR
 
     echo "Time is: `date`"
 
@@ -145,8 +145,8 @@ run_wrapped_executable() {
     echo "Copy from temporary output dir to output dir: cp -a $TEMPORARY_EXECUTABLE_LOG_DIR/* $EXECUTABLE_LOG_DIR/"
     cp -a $TEMPORARY_EXECUTABLE_LOG_DIR/* $EXECUTABLE_LOG_DIR/
 
-    echo "Delete Scratch directory: rm -r $SCRATCH_DIR"
-    rm -r $SCRATCH_DIR
+    echo "Delete job directory: rm -r $JOB_DIR"
+    rm -r $JOB_DIR
 
     echo "End time is: `date`"
 

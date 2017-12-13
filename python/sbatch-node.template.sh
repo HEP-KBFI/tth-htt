@@ -8,7 +8,7 @@ echo 'Unsetting JAVA_HOME=$JAVA_HOME'
 unset JAVA_HOME
 
 # This value is provided by sbatchManager.py that creates sbatch scripts based this template
-echo 'Running script {{ script_file }} (created from template sbatch-node.template.sh)'
+echo 'Running script {{ script_file }} (created from template {{ job_template_file }})'
 
 
 RUNNING_COMMAND="{{ RUNNING_COMMAND }}"

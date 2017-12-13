@@ -345,6 +345,7 @@ class sbatchManager:
             working_dir            = self.workingDir,
             cmssw_base_dir         = self.cmssw_base_dir,
             job_dir                = job_dir,
+            job_template_file      = job_template_file,
             exec_name              = executable,
             command_line_parameter = command_line_parameter,
             inputFiles             = " ".join(inputFiles),
