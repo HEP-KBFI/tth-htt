@@ -6,8 +6,6 @@ from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd
 
 current_dir = os.path.dirname(os.path.realpath(__file__))
 
-command_create_scratchDir = '/scratch/mkscratch'
-
 # Define error classes
 
 class sbatchManagerError(Exception):
@@ -376,10 +374,14 @@ class sbatchManager:
         if use_home:
             prefix = os.path.join('/home', getpass.getuser(), 'jobs')
         else:
-            prefix = os.path.join('/scratch', getpass.getuser())
-        if not use_home and not os.path.exists(prefix):
+            prefix = os.path.join('/scratch2', getpass.getuser())
+        if not os.path.exists(prefix):
             logging.info("Directory '%s' does not yet exist, creating it !!" % prefix)
-            run_cmd(command_create_scratchDir)
+            try:
+                os.makedirs(prefix)
+            except IOError as err:
+                logging.error("Could not created directory '%s' because: %s" % (prefix, err))
+                sys.exit(1)
         job_dir = os.path.join(
             prefix, "%s_%s" % (self.analysisName, datetime.date.today().isoformat()),
         )
