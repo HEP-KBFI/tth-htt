@@ -96,6 +96,12 @@ if mode == "VHbb":
   else:
     from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2017_test import samples_2017
 
+  for sample_name, sample_info in samples_2017.items():
+    if sample_name in [
+        #TODO list of samples collected with tau triggers?
+      ]:
+      sample_info["use_it"] = False
+
   hadTau_selection     = "dR03mvaMedium"
   applyFakeRateWeights = "2lepton"
 elif mode == "addMEM":
