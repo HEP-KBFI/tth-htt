@@ -66,11 +66,11 @@ class prodNtupleConfig:
 
         create_if_not_exists(self.configDir)
         create_if_not_exists(self.outputDir)
-        stdout_file_path = os.path.join(self.configDir, "stdout_prodNtuple.log")
-        stderr_file_path = os.path.join(self.configDir, "stderr_prodNtuple.log")
-        stdout_file_path, stderr_file_path = get_log_version((stdout_file_path, stderr_file_path))
-        self.stdout_file = codecs.open(stdout_file_path, 'w', 'utf-8')
-        self.stderr_file = codecs.open(stderr_file_path, 'w', 'utf-8')
+        self.stdout_file_path = os.path.join(self.configDir, "stdout_prodNtuple.log")
+        self.stderr_file_path = os.path.join(self.configDir, "stderr_prodNtuple.log")
+        self.stdout_file_path, self.stderr_file_path = get_log_version((
+            self.stdout_file_path, self.stderr_file_path,
+        ))
 
         self.cfgFile_prodNtuple_original = os.path.join(self.workingDir, cfgFile_prodNtuple)
         self.sbatchFile_prodNtuple       = os.path.join(self.configDir, "sbatch_prodNtuple.py")
@@ -266,6 +266,7 @@ class prodNtupleConfig:
                 }
                 self.createCfg_prodNtuple(jobOptions)
 
+        num_jobs = 0
         if self.is_sbatch:
             logging.info("Creating script for submitting '%s' jobs to batch system" % self.executable)
             num_jobs = self.createScript_sbatch()
@@ -277,11 +278,13 @@ class prodNtupleConfig:
         self.createMakefile(lines_makefile)
 
         logging.info("Done")
+        return num_jobs
 
     def run(self):
         """Runs all Ntuple production jobs -- either locally or on the batch system.
         """
         run_cmd(
-            "make -f %s -j %i " % (self.makefile, self.num_parallel_jobs),
-            False, self.stdout_file, self.stderr_file,
+            "make -f %s -j %i 2>%s 1>%s" % \
+            (self.makefile, self.num_parallel_jobs, self.stderr_file_path, self.stdout_file_path),
+            False
         )

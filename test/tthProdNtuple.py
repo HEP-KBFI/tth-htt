@@ -12,8 +12,9 @@ from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 #   'forBDTtraining_except' : to produce the Ntuples from all but the FastSim samples
 #--------------------------------------------------------------------------------
 
-mode_choices = ['all', 'forBDTtraining_only', 'forBDTtraining_except']
-era_choices  = ['2017']
+mode_choices               = ['all', 'forBDTtraining_only', 'forBDTtraining_except']
+era_choices                = ['2017']
+default_resubmission_limit = 4
 
 class SmartFormatter(argparse.HelpFormatter):
   def _split_lines(self, text, width):
@@ -22,7 +23,7 @@ class SmartFormatter(argparse.HelpFormatter):
     return argparse.HelpFormatter._split_lines(self, text, width)
 
 parser = argparse.ArgumentParser(
-  formatter_class = lambda prog: SmartFormatter(prog, max_help_position = 40)
+  formatter_class = lambda prog: SmartFormatter(prog, max_help_position = 45)
 )
 parser.add_argument('-v', '--version',
   type = str, dest = 'version', metavar = 'version', default = None, required = True,
@@ -49,19 +50,30 @@ parser.add_argument('-d', '--dry-run',
   dest = 'dry_run', action = 'store_true', default = False,
   help = 'R|Do not submit the jobs, just generate the necessary shell scripts'
 )
+parser.add_argument('-r', '--resubmission-limit',
+  type = int, dest = 'resubmission_limit', metavar = 'number', default = default_resubmission_limit,
+  required = False,
+  help = 'R|Maximum number of resubmissions (default: %i)' % default_resubmission_limit
+)
+parser.add_argument('-R', '--disable-resubmission',
+  dest = 'disable_resubmission', action = 'store_false', default = True,
+  help = 'R|Disable resubmission (overwrites option -r/--resubmission-limit)'
+)
 parser.add_argument('-V', '--verbose',
   dest = 'verbose', action = 'store_true', default = False,
   help = 'R|Increase verbosity level in sbatchManager'
 )
 args = parser.parse_args()
 
-era          = args.era
-mode         = args.mode
-preselection = args.disable_preselection
-nanoaod_prep = args.disable_nanoaod_preprocess
-version      = "%s_w%sPreselection_%s" % (args.version, ("" if preselection else "o"), mode)
-verbose      = args.verbose
-dry_run      = args.dry_run
+era                = args.era
+mode               = args.mode
+preselection       = args.disable_preselection
+nanoaod_prep       = args.disable_nanoaod_preprocess
+resubmit           = args.disable_resubmission
+resubmission_limit = args.resubmission_limit if resubmit else 1 # submit only once
+version            = "%s_w%sPreselection_%s" % (args.version, ("" if preselection else "o"), mode)
+verbose            = args.verbose
+dry_run            = args.dry_run
 
 samples         = None
 leptonSelection = None
@@ -120,31 +132,36 @@ if __name__ == '__main__':
     level = logging.INFO,
     format = '%(asctime)s - %(levelname)s: %(message)s')
 
-  ntupleProduction = prodNtupleConfig(
-    configDir = os.path.join("/home",       getpass.getuser(), "ttHNtupleProduction", era, version),
-    outputDir = os.path.join("/hdfs/local", getpass.getuser(), "ttHNtupleProduction", era, version),
-    executable_nanoAOD    = "produceNtuple.sh",
-    executable_prodNtuple = "produceNtuple",
-    cfgFile_prodNtuple    = "produceNtuple_cfg.py",
-    samples               = samples,
-    max_files_per_job     = max_files_per_job,
-    era                   = era,
-    preselection_cuts     = preselection_cuts,
-    leptonSelection       = leptonSelection,
-    hadTauSelection       = hadTauSelection,
-    nanoaod_prep          = nanoaod_prep,
-    debug                 = False,
-    running_method        = "sbatch",
-    version               = version,
-    num_parallel_jobs     = 8,
-    verbose               = verbose,
-    dry_run               = dry_run,
-  )
+  for resubmission_idx in range(resubmission_limit):
+    logging.info("Submission attempt #%i" % (resubmission_idx + 1))
+    ntupleProduction = prodNtupleConfig(
+      configDir = os.path.join("/home",       getpass.getuser(), "ttHNtupleProduction", era, version),
+      outputDir = os.path.join("/hdfs/local", getpass.getuser(), "ttHNtupleProduction", era, version),
+      executable_nanoAOD    = "produceNtuple.sh",
+      executable_prodNtuple = "produceNtuple",
+      cfgFile_prodNtuple    = "produceNtuple_cfg.py",
+      samples               = samples,
+      max_files_per_job     = max_files_per_job,
+      era                   = era,
+      preselection_cuts     = preselection_cuts,
+      leptonSelection       = leptonSelection,
+      hadTauSelection       = hadTauSelection,
+      nanoaod_prep          = nanoaod_prep,
+      debug                 = False,
+      running_method        = "sbatch",
+      version               = version,
+      num_parallel_jobs     = 8,
+      verbose               = verbose,
+      dry_run               = dry_run,
+    )
 
-  ntupleProduction.create()
+    num_jobs = ntupleProduction.create()
 
-  run_ntupleProduction = query_yes_no("Start jobs ?")
-  if run_ntupleProduction:
-    ntupleProduction.run()
-  else:
-    sys.exit(0)
+    if num_jobs > 0:
+      run_ntupleProduction = query_yes_no("Start jobs ?") if resubmission_idx == 0 else True
+      if run_ntupleProduction:
+        ntupleProduction.run()
+      else:
+        sys.exit(0)
+    else:
+      logging.info("All jobs done")
