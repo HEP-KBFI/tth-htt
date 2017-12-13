@@ -150,7 +150,7 @@ class prodNtupleConfig:
     def createScript_sbatch(self):
         """Creates the python script necessary to submit the Ntuple production jobs to the batch system
         """
-        tools_createScript_sbatch(
+        num_jobs = tools_createScript_sbatch(
             sbatch_script_file_name = self.sbatchFile_prodNtuple,
             executable              = self.executable,
             command_line_parameters = self.cfgFiles_prodNtuple_modified,
@@ -168,6 +168,7 @@ class prodNtupleConfig:
             job_template_file       = 'sbatch-node.template.produce.sh',
             dry_run                 = self.dry_run,
         )
+        return num_jobs
 
     def addToMakefile_prodNtuple(self, lines_makefile):
         """Adds the commands to Makefile that are necessary for running the Ntuple production code
@@ -267,7 +268,8 @@ class prodNtupleConfig:
 
         if self.is_sbatch:
             logging.info("Creating script for submitting '%s' jobs to batch system" % self.executable)
-            self.createScript_sbatch()
+            num_jobs = self.createScript_sbatch()
+            logging.info("Generated %i job(s)" % num_jobs)
 
         logging.info("Creating Makefile")
         lines_makefile = []
