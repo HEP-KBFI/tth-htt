@@ -913,7 +913,8 @@ int main(int argc, char* argv[])
     bdt_filler->register_variable<float_type>(
       "lep1_pt", "lep1_conePt", "lep1_eta", "lep1_tth_mva", "mindr_lep1_jet",
       "mindr_lep2_jet", "mT_lep1",  "MT_met_lep1", "dr_lep1_tau",
-      "lep2_pt", "lep2_conePt", "lep2_eta", "max_lep_eta", "lep2_tth_mva", "mT_lep2", "dr_lep2_tau",
+      "lep2_pt", "lep2_conePt", "lep2_eta", "max_lep_eta", "avg_dr_lep",
+      "lep2_tth_mva", "mT_lep2", "dr_lep2_tau",
       "mindr_tau_jet", "avg_dr_jet",  "nJet25_Recl", "ptmiss", "htmiss",
       "tau_mva", "tau_pt", "tau_eta", "dr_leps",
       "mTauTauVis1", "mTauTauVis2",
@@ -924,7 +925,9 @@ int main(int argc, char* argv[])
       "tau_genTauPt",  "lep1_frWeight", "lep2_frWeight",   "tau_frWeight",
       "mvaOutput_2lss_ttV",  "mvaOutput_2lss_ttbar", "mvaDiscr_2lss",
       "mvaOutput_Hj_tagger", "mvaOutput_Hjj_tagger",
-      "fittedHadTop_pt", "fittedHadTop_eta", "unfittedHadTop_pt", "unfittedHadTop_eta","fitHTptoHTpt" , "fitHTptoHTmass",
+      "fittedHadTop_pt", "fittedHadTop_eta", "unfittedHadTop_pt",
+      "unfittedHadTop_eta","fitHTptoHTpt" , "fitHTptoHTmass",
+      "dr_lep1_HTfitted", "dr_lep2_HTfitted", "dr_tau_HTfitted", "mass_lep1_HTfitted", "mass_lep2_HTfitted",  "dr_lep1_HTunfitted", "dr_lep2_HTunfitted", "dr_tau_HTunfitted",
       "lumiScale", "genWeight", "evtWeight",
       "mvaOutput_hadTopTaggerWithKinFit", "mvaOutput_hadTopTagger",
       "bWj1Wj2_isGenMatched", "bWj1Wj2_isGenMatchedWithKinFit",
@@ -934,7 +937,7 @@ int main(int argc, char* argv[])
     );
     bdt_filler->register_variable<int_type>(
       "nJet", "nBJetLoose", "nBJetMedium", "nLep","nTau",
-      "lep1_isTight", "lep2_isTight", "tau_isTight"
+      "lep1_isTight", "lep2_isTight", "tau_isTight","failsTightChargeCut"
     );
     bdt_filler->bookTree(fs);
   }
@@ -1614,7 +1617,7 @@ int main(int argc, char* argv[])
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS tight lepton charge requirement." << std::endl;
       }
-      continue;
+      if (!selectBDT) continue;
     }
     cutFlowTable.update("tight lepton charge", evtWeight);
     cutFlowHistManager->fillHistograms("tight lepton charge", evtWeight);
@@ -2066,9 +2069,8 @@ int main(int argc, char* argv[])
           ("lep2_conePt",            comp_lep1_conePt(*selLepton_sublead))
           ("lep2_eta",               std::abs(selLepton_sublead -> eta()))
           ("max_lep_eta",            TMath::Max(std::abs(selLepton_lead -> eta()), std::abs(selLepton_sublead -> eta())))
-          //("avg_dr_lep",             comp_avg_dr_jet(selLeptons))
+          ("avg_dr_lep",             1.0) // comp_avg_dr_jet(selLeptons))
           ("lep2_tth_mva",           selLepton_sublead -> mvaRawTTH())
-          //("mindr_lep2_jet",         TMath::Min(10., comp_mindr_lep1_jet(*selLepton_sublead, selJets)))
           ("mT_lep2",                comp_MT_met_lep1(*selLepton_sublead, met.pt(), met.phi()))
           ("dr_lep2_tau",            deltaR(selLepton_sublead -> p4(), selHadTau -> p4()))
           ("mindr_tau_jet",          TMath::Min(10., comp_mindr_hadTau1_jet(*selHadTau, selJets)))
@@ -2111,6 +2113,17 @@ int main(int argc, char* argv[])
           ("unfittedHadTop_eta",     std::abs(unfittedHadTopP4.eta()))
           ("fitHTptoHTpt",           fittedHadTopP4.pt()/unfittedHadTopP4.pt())
           ("fitHTptoHTmass",           fittedHadTopP4.mass()/unfittedHadTopP4.mass())
+
+          ("dr_lep1_HTfitted",        deltaR(selLepton_lead -> p4(), fittedHadTopP4) )
+          ("dr_lep2_HTfitted",        deltaR(selLepton_sublead -> p4(), fittedHadTopP4) )
+          ("dr_tau_HTfitted",         deltaR(selHadTau -> p4(), fittedHadTopP4))
+          ("mass_lep1_HTfitted",        (selLepton_lead -> p4() + fittedHadTopP4).mass() )
+          ("mass_lep2_HTfitted",        (selLepton_sublead -> p4() + fittedHadTopP4).mass() )
+
+          ("dr_lep1_HTunfitted",        deltaR(selLepton_lead -> p4(), unfittedHadTopP4) )
+          ("dr_lep2_HTunfitted",        deltaR(selLepton_sublead -> p4(), unfittedHadTopP4) )
+          ("dr_tau_HTunfitted",         deltaR(selHadTau -> p4(), unfittedHadTopP4))
+
           ("lumiScale",              lumiScale)
           ("genWeight",              eventInfo.genWeight)
           ("evtWeight",              evtWeight)
@@ -2136,6 +2149,7 @@ int main(int argc, char* argv[])
           ("ptbb",       selBJets_medium.size()>1 ?  (selBJets_medium[0]->p4()+selBJets_medium[1]->p4()).pt() : -1000  )
           ("mbb_loose",       selBJets_loose.size()>1 ?  (selBJets_loose[0]->p4()+selBJets_loose[1]->p4()).mass() : -1000  )
           ("ptbb_loose",       selBJets_loose.size()>1 ?  (selBJets_loose[0]->p4()+selBJets_loose[1]->p4()).pt() : -1000  )
+          ("failsTightChargeCut",          failsTightChargeCut)
           // add kinematical variables between HadTop and leptons/taus
           // min/max dr
         .fill()

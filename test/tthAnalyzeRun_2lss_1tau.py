@@ -74,22 +74,22 @@ elif mode == "addMEM":
   changeBranchNames    = True
   MEMbranch            = 'memObjects_2lss_1tau_lepFakeable_tauTight_dR03mvaMedium'
   hadTau_selection     = "dR03mvaMedium"
-  applyFakeRateWeights = "2lepton"
+  applyFakeRateWeights = "3L"
 elif mode == "forBDTtraining_beforeAddMEM":
   if use_prod_ntuples:
     from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_prodNtuples_2016_FastSim import samples_2016
   else:
     from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_FastSim import samples_2016
-  hadTau_selection         = "dR03mvaVTight"
-  hadTau_selection_relaxed = "dR03mvaLoose"
-  applyFakeRateWeights     = "3L"
+  hadTau_selection         = "dR03mvaMedium" ## "dR03mvaVTight"
+  hadTau_selection_relaxed = "dR03mvaMedium" ## "dR03mvaLoose"
+  applyFakeRateWeights = "2lepton"
 elif mode == "forBDTtraining_afterAddMEM":
   from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_2lss1tau_addMEM import samples_2016
   changeBranchNames        = True
   MEMbranch                = 'memObjects_2lss_1tau_lepLoose_tauTight_dR03mvaLoose'
-  hadTau_selection         = "dR03mvaVTight"
-  hadTau_selection_relaxed = "dR03mvaLoose"
-  applyFakeRateWeights     = "3L"
+  hadTau_selection         = "dR03mvaMedium"  ## "dR03mvaVTight"
+  hadTau_selection_relaxed = "dR03mvaMedium"
+  applyFakeRateWeights =  "2lepton"
 
   for sample_name, sample_info in samples_2016.items():
     if sample_info['process_name_specific'] in [
@@ -148,7 +148,7 @@ if __name__ == '__main__':
       samples                   = samples,
       changeBranchNames         = changeBranchNames,
       MEMbranch                 = MEMbranch,
-      lepton_charge_selections  = ["SS" ] if mode.find("forBDTtraining") != -1 else [ "OS", "SS" ],
+      lepton_charge_selections  = [ "SS" ] if mode.find("forBDTtraining") != -1 else [ "OS", "SS" ],
       hadTau_selection          = hadTau_selection,
       # CV: apply "fake" background estimation to leptons only and not to hadronic taus, as discussed on slide 10 of
       #     https://indico.cern.ch/event/597028/contributions/2413742/attachments/1391684/2120220/16.12.22_ttH_Htautau_-_Review_of_systematics.pdf
