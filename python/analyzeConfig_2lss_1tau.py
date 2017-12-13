@@ -204,7 +204,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
       lines.append("process.analyze_2lss_1tau.hadTauFakeRateWeight.applyGraph_sublead = cms.bool(False)")
       lines.append("process.analyze_2lss_1tau.hadTauFakeRateWeight.applyFitFunction_sublead = cms.bool(True)")
       lines.append("process.analyze_2lss_1tau.apply_hadTauFakeRateSF = cms.bool(True)")
-    elif self.isBDTtraining:
+    elif self.isBDTtraining :
       lines.append("process.analyze_2lss_1tau.hadTauFakeRateWeight.inputFileName = cms.string('%s')" % self.hadTauFakeRateWeight_inputFileName)
       lines.append("process.analyze_2lss_1tau.hadTauFakeRateWeight.lead.graphName = cms.string('jetToTauFakeRate/%s/$etaBin/jetToTauFakeRate_mc_hadTaus_pt')" % self.hadTau_selection_part2)
       lines.append("process.analyze_2lss_1tau.hadTauFakeRateWeight.lead.fitFunctionName = cms.string('jetToTauFakeRate/%s/$etaBin/fitFunction_data_div_mc_hadTaus_pt')" % self.hadTau_selection_part2)
@@ -364,8 +364,9 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
 
       if lepton_and_hadTau_selection == "forBDTtraining":
         lepton_selection = "Loose" # "Fakeable" ## "Tight" ## Xanda
-        if not self.applyFakeRateWeights == "2lepton": hadTau_selection = "Tight|%s" % self.hadTau_selection_relaxed
-        # xanda now it is the same level of analysis
+        if not self.applyFakeRateWeights == "2lepton":
+            hadTau_selection = "Tight|%s" % self.hadTau_selection_relaxed
+            # hadTau ID it is the same level of analysis if applyFakeRateWeights == "2lepton"
 
       for lepton_and_hadTau_frWeight in self.lepton_and_hadTau_frWeights:
         if lepton_and_hadTau_frWeight == "enabled" and not lepton_and_hadTau_selection.startswith("Fakeable"):
