@@ -1,6 +1,16 @@
 #!/usr/bin/env python
-import argparse, os.path, sys, logging, imp, jinja2, ROOT, re, ctypes, copy, itertools, time, shutil
+import argparse, os.path, sys, logging, imp, jinja2, ROOT, re, ctypes, copy, itertools, time, shutil, array
 from tthAnalysis.HiggsToTauTau.jobTools import run_cmd
+
+HISTOGRAM_COUNT         = 'Count'
+HISTOGRAM_COUNTWEIGHTED = 'CountWeighted'
+EVENTS_TREE             = 'Events'
+RUN_TREE                = 'Runs'
+BRANCH_COUNT            = 'genEventCount'
+BRANCH_COUNTWEIGHTED    = 'genEventSumw'
+
+HISTOGRAM_COUNT_KEY = 'histogram_count'
+TREE_COUNT_KEY      = 'tree_count'
 
 try:
     from urllib.parse import urlparse
@@ -181,6 +191,8 @@ dictionary_entry_str = """{{ dict_name }}["{{ dbs_name }}"] = OD([
   ("process_name_specific",           "{{ process_name_specific }}"),
   ("nof_files",                       {{ nof_files }}),
   ("nof_events",                      {{ nof_events }}),
+  ("nof_tree_events",                 {{ nof_tree_events }}),
+  ("nof_db_events",                   {{ nof_db_events }}),
   ("use_HIP_mitigation_bTag",         {{ use_HIP_mitigation_bTag }}),
   ("use_HIP_mitigation_mediumMuonId", {{ use_HIP_mitigation_mediumMuonId }}),
   ("use_it",                          {{ use_it }}),{% if sample_type == "mc" %}
@@ -210,12 +222,13 @@ sh_str = """#!/bin/bash
 
 class PathEntry:
   def __init__(self, path, indices):
-    self.path       = path
-    self.indices    = indices
-    self.nof_events = sum(self.indices.values())
-    self.nof_files  = max(self.indices.keys())
-    self.blacklist  = []
-    self.selection  = [] # if empty, select all
+    self.path            = path
+    self.indices         = indices
+    self.nof_events      = sum(index_entry[HISTOGRAM_COUNT_KEY] for index_entry in self.indices.values())
+    self.nof_tree_events = sum(index_entry[TREE_COUNT_KEY]      for index_entry in self.indices.values())
+    self.nof_files       = max(self.indices.keys())
+    self.blacklist       = []
+    self.selection       = [] # if empty, select all
 
   def __repr__(self):
     return self.path
@@ -240,6 +253,40 @@ def get_triggers(process_name_specific, is_data, era):
   ] if era > 2015 else [
     '1e', '1e1mu', '1mu', '2e', '2mu'
   ]
+
+def get_array_type(tree, branch_name, array_multiplier = 1):
+  branch = tree.GetBranch(branch_name)
+  leaf = branch.GetLeaf(branch_name)
+  leaf_type = leaf.GetTypeName()
+
+  if leaf_type == 'UInt_t':
+    arr_type = 'I'
+  elif leaf_type == 'Int_t':
+    arr_type = 'i'
+  elif leaf_type == 'ULong64_t':
+    arr_type = 'L'
+  elif leaf_type == 'Long64_t':
+    arr_type = 'l'
+  elif leaf_type == 'Float_t':
+    arr_type = 'f'
+  elif leaf_type == 'Double_t':
+    arr_type = 'd'
+  elif leaf_type == 'UChar_t':
+    arr_type = 'B'
+  elif leaf_type == 'Char_t':
+    arr_type = 'b'
+  elif leaf_type == 'UShort_t':
+    arr_type = 'H'
+  elif leaf_type == 'Short_t':
+    arr_type = 'h'
+  elif leaf_type == 'Bool_t':
+    arr_type = 'b' # use char; bool allocates 8 bits anyways
+  else:
+    raise ValueError("Invalid leaf type: %s" % leaf_type)
+  if arr_type in ['d', 'f']:
+    return (arr_type, [0.] * array_multiplier)
+  else:
+    return (arr_type, [0] * array_multiplier)
 
 def process_paths(meta_dict, key):
   local_paths = meta_dict[key]['paths']
@@ -271,9 +318,11 @@ def process_paths(meta_dict, key):
 
   if len(local_paths_sorted) == 1:
     # let's compute the number of files, events and the list of blacklisted files
-    nof_events = sum(local_paths_sorted[0].indices.values())
+    nof_events      = sum(index_entry[HISTOGRAM_COUNT_KEY] for index_entry in local_paths_sorted[0].indices.values())
+    nof_tree_events = sum(index_entry[TREE_COUNT_KEY]      for index_entry in local_paths_sorted[0].indices.values())
 
-    meta_dict[key]['nof_events']  = nof_events
+    meta_dict[key]['nof_events']      = nof_events
+    meta_dict[key]['nof_tree_events'] = nof_tree_events
     meta_dict[key]['local_paths'] = [{
       'path'      : local_paths_sorted[0].path,
       'selection' : '*',
@@ -292,9 +341,15 @@ def process_paths(meta_dict, key):
       # compute the nof events by summing the nof events in the primary storage and adding the nof events
       # in the selected files part of the secondary storage
       sum_of_events = local_paths_sorted[0].nof_events + sum(
-        local_paths_sorted[1].indices[sel_idx] for sel_idx in local_paths_sorted[1].selection
+        local_paths_sorted[1].indices[sel_idx][HISTOGRAM_COUNT_KEY]
+        for sel_idx in local_paths_sorted[1].selection
       )
-      meta_dict[key]['nof_events'] = sum_of_events
+      sum_of_tree_events = local_paths_sorted[0].nof_tree_events + sum(
+        local_paths_sorted[1].indices[sel_idx][TREE_COUNT_KEY]
+        for sel_idx in local_paths_sorted[1].selection
+      )
+      meta_dict[key]['nof_events']      = sum_of_events
+      meta_dict[key]['nof_tree_events'] = sum_of_tree_events
 
       # do not print out the blacklist of the secondary storage since it might include many-many files
       local_paths_sorted[1].blacklist = []
@@ -309,7 +364,7 @@ def process_paths(meta_dict, key):
   else:
     raise ValueError("Not enough paths to locate for %s" % key)
 
-def traverse_single(hdfs_system, meta_dict, path_obj, key, histogram_name, check_every_event,
+def traverse_single(hdfs_system, meta_dict, path_obj, key, check_every_event,
                     filetracker, file_idx, era):
   ''' Assume that the following subdirectories are of the form: 0000, 0001, 0002, ...
       In these directories we expect root files of the form: tree_1.root, tree_2.root, ...
@@ -318,8 +373,7 @@ def traverse_single(hdfs_system, meta_dict, path_obj, key, histogram_name, check
   :param meta_dict:         Meta-dictionary
   :param path_obj:          Contains meta-information about a path (instance of hdfs.info)
   :param key:               Key to the meta-dictionary the entry of which will be updated
-  :param histogram_name:    Name of the histogram containing event counts
-  :param check_every_event: Name of the TTree to be looped over for error checking purposes
+  :param check_every_event: Loop over all events for error checking purposes
   :param filetracker:       An instance of FileTracker() for logging broken files
   :param file_idx:          Index of the corrupted file
   :return: None
@@ -346,10 +400,15 @@ def traverse_single(hdfs_system, meta_dict, path_obj, key, histogram_name, check
 
   digit_regex = re.compile(r"tree_(?P<i>\d+)\.root")
   is_data = meta_dict[key]['sample_category'] == 'data_obs'
-  histogram_name_t = histogram_name if not is_data else 'Count'
+  histogram_name = HISTOGRAM_COUNTWEIGHTED if not is_data else HISTOGRAM_COUNT
 
   indices = {}
   for entry in entries_valid:
+    index_entry = {
+      HISTOGRAM_COUNT_KEY : -1,
+      TREE_COUNT_KEY      : -1,
+    }
+
     subentries = hdfs_system.get_dir_entries(entry)
     subentry_files = filter(lambda path: path.is_file(), subentries)
     for subentry_file in subentry_files:
@@ -366,69 +425,109 @@ def traverse_single(hdfs_system, meta_dict, path_obj, key, histogram_name, check
         filetracker.zero_file_size.append(subentry_file.name_fuse)
         continue
       logging.debug("Opening file {path}".format(path = subentry_file.name_fuse))
-      f = ROOT.TFile.Open(subentry_file.name_fuse, "read")
-      if not f:
+      root_file = ROOT.TFile.Open(subentry_file.name_fuse, "read")
+      if not root_file:
         logging.warning("Could not open {path}".format(path = subentry_file.name_fuse))
         filetracker.corrupted_files.append((subentry_file.name_fuse))
         continue
-      if f.IsZombie():
+      if root_file.IsZombie():
         logging.warning("File {path} is a zombie".format(path = subentry_file.name_fuse))
-        f.Close()
-        del f
+        root_file.Close()
+        del root_file
         filetracker.zombie_files.append(subentry_file.name_fuse)
         continue
+
+      if EVENTS_TREE not in root_file.GetListOfKeys():
+        raise ValueError("Tree of the name {tree} is not in file {path}".format(
+          tree = EVENTS_TREE,
+          path = subentry_file.name_fuse,
+        ))
+      tree = root_file.Get(EVENTS_TREE)
+      if not tree:
+        raise ValueError("Could not find tree of the name {tree} in file {path}".format(
+          tree = check_every_event,
+          path = subentry_file.name_fuse,
+        ))
+      index_entry[TREE_COUNT_KEY] = tree.GetEntries()
+
       if check_every_event:
         logging.info("Inspecting file {path} for corruption".format(path = subentry_file.name_fuse))
-        if check_every_event not in f.GetListOfKeys():
-          raise ValueError("Tree of the name {tree} is not in file {path}".format(
-            tree = check_every_event,
-            path = subentry_file.name_fuse,
-          ))
-        t = f.Get(check_every_event)
-        if not t:
-          raise ValueError("Could not find tree of the name {tree} in file {path}".format(
-            tree = check_every_event,
-            path = subentry_file.name_fuse,
-          ))
-        nof_entries = t.GetEntries()
-        for i in range(0, nof_entries):
-          nof_bytes_read = t.GetEntry(i)
+        no_errors_midfile = True
+        for i in range(0, index_entry[TREE_COUNT_KEY]):
+          nof_bytes_read = tree.GetEntry(i)
           if nof_bytes_read < 0:
             filetracker.corrupted_files.append(subentry_file.name_fuse)
             logging.debug("File {path} seems to be corrupted starting from event {idx}".format(
               path = subentry_file.name_fuse,
               idx  = i,
             ))
+            no_errors_midfile = False
             break
-        f.Close()
-        del t
-        del f
-        continue
-      if histogram_name_t not in f.GetListOfKeys():
-        raise ValueError("Histogram of the name {histogram_name} is not in file {path}".format(
-          histogram_name = histogram_name_t,
+        if not no_errors_midfile:
+          # closing the ttree and file
+          root_file.Close()
+          del tree
+          del root_file
+          continue
+
+      if histogram_name not in root_file.GetListOfKeys():
+        logging.warning("Histogram of the name {histogram_name} is not in file {path}".format(
+          histogram_name = histogram_name,
           path           = subentry_file.name_fuse,
         ))
-      h = f.Get(histogram_name_t)
-      if not h:
-        raise ValueError("Could not find histogram of the name {histogram_name} in file {path}".format(
-          histogram_name = histogram_name_t,
-          path           = subentry_file.name_fuse,
-        ))
-      indices[matched_idx] = h.Integral()
-      f.Close()
-      del h
-      del f
+        # Using a fallback solution
+        if RUN_TREE not in root_file.GetListOfKeys():
+          raise ValueError("Tree of the name {tree_name} is not in file {path}".format(
+            tree_name = RUN_TREE,
+            path      = subentry_file.name_fuse,
+          ))
+        tree_run = root_file.Get(RUN_TREE)
+        branches_run = [branch.GetName() for branch in tree_run.GetListOfBranches()]
+        requested_branch = BRANCH_COUNT if is_data else BRANCH_COUNTWEIGHTED
+        if requested_branch not in branches_run:
+          raise ValueError("No branch named {branch} in tree named {tree} in file {path}".format(
+            branch = requested_branch,
+            tree   = RUN_TREE,
+            path   = subentry_file.name_fuse,
+          ))
+
+        array_str, array_lst = get_array_type(tree_run, requested_branch, 1)
+        run_count = array.array(array_str, array_lst)
+        tree_run.SetBranchAddress(requested_branch, run_count)
+        run_entries = tree_run.GetEntries()
+        nof_run_events = 0
+        for run_idx in range(run_entries):
+          tree_run.GetEntry(run_idx)
+          nof_run_events += run_count[0]
+        del tree_run
+      else:
+        histogram = root_file.Get(histogram_name)
+        if not histogram:
+          raise ValueError("Could not find histogram of the name {histogram_name} in file {path}".format(
+            histogram_name = histogram_name,
+            path           = subentry_file.name_fuse,
+          ))
+        index_entry[HISTOGRAM_COUNT_KEY] = histogram.Integral()
+        del histogram
+
+      # this was probably a success: record the results
+      indices[matched_idx] = index_entry
+
+      root_file.Close()
+      del tree
+      del root_file
 
   if not indices:
     logging.debug("Path {path} contains no ROOT files".format(path = path_obj.name_fuse))
     return
 
-  logging.debug("Found {nof_events} events in {nof_files} files in {path} for entry {key}".format(
-    nof_events = sum(indices.values()),
-    nof_files  = len(indices.keys()),
-    path       = path_obj.name_fuse,
-    key        = key,
+  logging.debug("Found {nof_events} ({nof_tree_events} tree) events in {nof_files} files in {path} " \
+                "for entry {key}".format(
+    nof_events      = sum([index_entry[HISTOGRAM_COUNT_KEY] for index_entry in indices.values()]),
+    nof_tree_events = sum([index_entry[TREE_COUNT_KEY] for index_entry in indices.values()]),
+    nof_files       = len(indices.keys()),
+    path            = path_obj.name_fuse,
+    key             = key,
   ))
 
   if not meta_dict[key]['located']:
@@ -450,7 +549,7 @@ def traverse_single(hdfs_system, meta_dict, path_obj, key, histogram_name, check
 
   return
 
-def traverse_double(hdfs_system, meta_dict, path_obj, key, histogram_name, check_every_event,
+def traverse_double(hdfs_system, meta_dict, path_obj, key, check_every_event,
                     filetracker, file_idx, era):
   ''' Assume that the name of the following subdirectories are the CRAB job IDs
       The tree structure inside those directories should be the same as described in
@@ -460,8 +559,7 @@ def traverse_double(hdfs_system, meta_dict, path_obj, key, histogram_name, check
   :param meta_dict:         Meta-dictionary
   :param path_obj:          Contains meta-information about a path (instance of hdfs.info)
   :param key:               Key to the meta-dictionary the entry of which will be updated
-  :param histogram_name:    Name of the histogram containing event counts
-  :param check_every_event: Name of the TTree to be looped over for error checking purposes
+  :param check_every_event: Loop over all events for error checking purposes
   :param filetracker:       An instance of FileTracker() for logging broken files
   :param file_idx:          Index of the corrupted file
   :return: None
@@ -470,7 +568,7 @@ def traverse_double(hdfs_system, meta_dict, path_obj, key, histogram_name, check
   entries = hdfs_system.get_dir_entries(path_obj)
   for entry in entries:
     traverse_single(
-      hdfs_system, meta_dict, entry, key, histogram_name, check_every_event, filetracker, file_idx, era
+      hdfs_system, meta_dict, entry, key, check_every_event, filetracker, file_idx, era
     )
   return
 
@@ -488,13 +586,14 @@ def obtain_paths(hdfs_system, input_path):
     else:
       if not os.path.exists(path):
         raise ValueError("No such file: {path}".format(path = path))
-      if not os.path.isfile(path):
-        raise ValueError("Not a file: {path}".format(path = path))
-      with open(path, 'r') as f:
-        for line in f:
-          line_stripped = line.rstrip('\n').rstrip(os.path.sep)
-          if line_stripped:
-            paths.append(line_stripped)
+      if os.path.isfile(path):
+        with open(path, 'r') as f:
+          for line in f:
+            line_stripped = line.rstrip('\n').rstrip(os.path.sep)
+            if line_stripped:
+              paths.append(line_stripped)
+      else:
+        paths = input_path
   else:
     paths = input_path
   return paths
@@ -531,9 +630,6 @@ if __name__ == '__main__':
   parser.add_argument('-f', '--filter', dest = 'filter', metavar = 'name', required = False,
                       type = str, default = '.*',
                       help = 'R|Regular expression for selecting only specific samples')
-  parser.add_argument('-H', '--histogram', dest = 'histogram', metavar = 'name', type = str,
-                      default = 'CountWeighted',
-                      help = 'R|Expected TH1F name')
   parser.add_argument('-o', '--output-directory', dest = 'output_directory', metavar = 'path',
                       type = str, default = '.',
                       help = 'R|Output directory')
@@ -564,7 +660,7 @@ if __name__ == '__main__':
                       type = str, default = '', required = False,
                       help = 'R|Generate SLURM jobs instead of running locally')
   parser.add_argument('-E', '--era', dest = 'era', metavar = 'era', type = int, default = -1,
-                      required = True, choices = (2015, 2016),
+                      required = True, choices = (2017,),
                       help = 'R|Era of the samples')
   parser.add_argument('-x', '--clean', dest = 'clean', action = 'store_true', default = False,
                       help = 'R|Clean the temporary SLURM directory specified by -J')
@@ -645,7 +741,7 @@ if __name__ == '__main__':
           paths_to_traverse[expected_key].append(path.name_fuse)
         else:
           traverse_single(
-            hdfs_system, meta_dict, path, process_names[path.basename], args.histogram,
+            hdfs_system, meta_dict, path, process_names[path.basename],
             args.check_every_event, filetracker, args.file_idx, args.era
           )
     elif path.basename in crab_strings:
@@ -658,7 +754,7 @@ if __name__ == '__main__':
           paths_to_traverse[expected_key].append(path.name_fuse)
         else:
           traverse_double(
-            hdfs_system, meta_dict, path, crab_strings[path.basename], args.histogram,
+            hdfs_system, meta_dict, path, crab_strings[path.basename],
             args.check_every_event, filetracker, args.file_idx, args.era
           )
     else:
@@ -850,6 +946,8 @@ if __name__ == '__main__':
           process_name_specific           = meta_dict[key]['process_name_specific'],
           nof_files                       = meta_dict[key]['nof_files'],
           nof_events                      = int(meta_dict[key]['nof_events']),
+          nof_tree_events                 = meta_dict[key]['nof_tree_events'],
+          nof_db_events                   = meta_dict[key]['nof_db_events'],
           use_HIP_mitigation_bTag         = meta_dict[key]['use_HIP_mitigation_bTag'],
           use_HIP_mitigation_mediumMuonId = meta_dict[key]['use_HIP_mitigation_mediumMuonId'],
           use_it                          = meta_dict[key]['use_it'],
