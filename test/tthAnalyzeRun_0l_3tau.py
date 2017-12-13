@@ -168,6 +168,7 @@ if __name__ == '__main__':
         "mTauTauVis",
       ],
       select_rle_output                     = True,
+      verbose                               = idx_job_resubmission > 0,
     )
 
     job_statistics = analysis.create()

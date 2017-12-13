@@ -40,12 +40,14 @@ class analyzeConfig_0l_2tau(analyzeConfig):
   for documentation of further Args.
 
   """
-  def __init__(self, configDir, outputDir, executable_analyze, cfgFile_analyze, samples, hadTau_selection, hadTau_charge_selections, applyFakeRateWeights, central_or_shifts,
+  def __init__(self, configDir, outputDir, executable_analyze, cfgFile_analyze, samples, hadTau_selection,
+               hadTau_charge_selections, applyFakeRateWeights, central_or_shifts,
                max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,
-               executable_addBackgrounds, executable_addBackgroundJetToTauFakes, histograms_to_fit, select_rle_output = False, executable_prep_dcard="prepareDatacard"):
+               executable_addBackgrounds, executable_addBackgroundJetToTauFakes, histograms_to_fit,
+               select_rle_output = False, verbose = False):
     analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "0l_2tau", central_or_shifts,
       max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,
-      histograms_to_fit)
+      histograms_to_fit, verbose = verbose)
 
     self.samples = samples
 
