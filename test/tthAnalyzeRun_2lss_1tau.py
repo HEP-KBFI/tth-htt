@@ -74,22 +74,22 @@ elif mode == "addMEM":
   changeBranchNames    = True
   MEMbranch            = 'memObjects_2lss_1tau_lepFakeable_tauTight_dR03mvaMedium'
   hadTau_selection     = "dR03mvaMedium"
-  applyFakeRateWeights = "2lepton"
+  applyFakeRateWeights = "3L"
 elif mode == "forBDTtraining_beforeAddMEM":
   if use_prod_ntuples:
     from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_prodNtuples_2016_FastSim import samples_2016
   else:
     from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_FastSim import samples_2016
-  hadTau_selection         = "dR03mvaMedium" ## Xanda "dR03mvaVTight"
-  hadTau_selection_relaxed = "dR03mvaMedium" ## "dR03mvaLoose" ## ##"dR03mvaLoose" ## Xanda "dR03mvaTight" #"dR03mvaMedium" #"dR03mvaVTight"#
-  applyFakeRateWeights = "2lepton" ## "3L" Xanda, now the same of the anlysis 
+  hadTau_selection         = "dR03mvaMedium" ## "dR03mvaVTight"
+  hadTau_selection_relaxed = "dR03mvaMedium" ## "dR03mvaLoose"
+  applyFakeRateWeights = "2lepton"
 elif mode == "forBDTtraining_afterAddMEM":
   from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_2lss1tau_addMEM import samples_2016
   changeBranchNames        = True
   MEMbranch                = 'memObjects_2lss_1tau_lepLoose_tauTight_dR03mvaLoose'
-  hadTau_selection         = "dR03mvaMedium"  ## Xanda "dR03mvaVTight"
-  hadTau_selection_relaxed = "dR03mvaLoose"
-  applyFakeRateWeights =  "3L"
+  hadTau_selection         = "dR03mvaMedium"  ## "dR03mvaVTight"
+  hadTau_selection_relaxed = "dR03mvaMedium"
+  applyFakeRateWeights =  "2lepton"
 
   for sample_name, sample_info in samples_2016.items():
     if sample_info['process_name_specific'] in [
