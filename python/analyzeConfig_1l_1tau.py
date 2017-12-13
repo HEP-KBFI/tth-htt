@@ -163,12 +163,8 @@ class analyzeConfig_1l_1tau(analyzeConfig):
     lines.append("process.analyze_1l_1tau.applyFakeRateWeights = cms.string('%s')" % jobOptions['applyFakeRateWeights'])
     if jobOptions['hadTau_selection'].find("Fakeable") != -1 and jobOptions['applyFakeRateWeights'] in [ "2L", "1tau" ]:
       fitFunctionName = None
-      if self.era == "2015":
-        lines.append("process.analyze_1l_1tau.hadTauFakeRateWeight.inputFileName = cms.string('tthAnalysis/HiggsToTauTau/data/FR_tau_2015.root')")
-        # CV: use data/MC corrections determined for dR03mvaLoose discriminator,
-        #     as the event statistics in 2015 data is too low to determine data/MC corrections for tighter working-points
-        fitFunctionName = "jetToTauFakeRate/dR03mvaLoose/$etaBin/fitFunction_data_div_mc_hadTaus_pt"
-      elif self.era == "2016":
+      if self.era == "2017":
+        # TODO: update the FR file for 2017 analysis
         lines.append("process.analyze_1l_1tau.hadTauFakeRateWeight.inputFileName = cms.string('tthAnalysis/HiggsToTauTau/data/FR_tau_2016.root')")
         # CV: use data/MC corrections determined for dR03mvaMedium discriminator for 2016 data
         fitFunctionName = "jetToTauFakeRate/dR03mvaMedium/$etaBin/fitFunction_data_div_mc_hadTaus_pt"
@@ -607,3 +603,5 @@ class analyzeConfig_1l_1tau(analyzeConfig):
     self.createMakefile(lines_makefile)
 
     logging.info("Done")
+
+    return self.num_jobs
