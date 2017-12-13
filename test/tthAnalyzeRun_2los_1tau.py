@@ -109,7 +109,7 @@ if era == "2017":
   lumi    = 35.9e+3 # 1/pb
   # TODO: update lumi
 else:
-  raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % era)
+  raise ValueError("Invalid Configuration parameter 'era' = %s !!" % era)
 
 if __name__ == '__main__':
   logging.basicConfig(
