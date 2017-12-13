@@ -74,6 +74,7 @@ applyFakeRateWeights = "3tau"
 max_files_per_job    = 10 if use_prod_ntuples else 100
 
 if use_prod_ntuples:
+  #TODO: the sample must have a different preselection from the usual minimum of 1l and 1tau
   from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_prodNtuples_2017_test import samples_2017
 else:
   from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2017_test import samples_2017
@@ -99,6 +100,7 @@ if __name__ == '__main__':
   for idx_job_resubmission in range(max_job_resubmission):
     if is_last_resubmission:
       continue
+
     analysis = analyzeConfig_0l_3tau(
       configDir                = os.path.join("/home",       getpass.getuser(), "ttHAnalysis", era, version),
       outputDir                = os.path.join("/hdfs/local", getpass.getuser(), "ttHAnalysis", era, version),
@@ -108,7 +110,7 @@ if __name__ == '__main__':
       hadTau_selection         = hadTau_selection,
       hadTau_charge_selections = [ "OS", "SS" ],
       applyFakeRateWeights     = applyFakeRateWeights,
-      central_or_shifts = [
+      central_or_shifts        = [
         "central",
   ##      "CMS_ttHl_btag_HFUp",
   ##      "CMS_ttHl_btag_HFDown",
