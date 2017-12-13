@@ -37,7 +37,7 @@ def create_if_not_exists(dir_fullpath):
 
   Args:
     dir_fullpath: full path to the directory
-  
+
   Inspired by: http://stackoverflow.com/a/600612
   """
   try:
@@ -130,3 +130,24 @@ def run_cmd(command, do_not_log = False, stdout_file = None, stderr_file = None,
   if return_stderr:
     return stdout, stderr
   return stdout
+
+def get_log_version(list_of_log_files):
+  """
+  :param list_of_log_files: tuple of strings, List of log files that need to have the same version number
+  :return: tuple of strings, List of log files with the same version number
+
+  Instead of passing log files one-by-one, the more consistent way of dealing with these things is
+  to loop over a set of log files that represents a single joint iteration of the jobs.
+  """
+  if all(map(lambda path: not os.path.exists(path), list_of_log_files)):
+    # if none of the files exist, then retain the path names
+    return list_of_log_files
+  # loop over version numbers until none of the paths exist
+  version_idx = 1
+  while True:
+    list_of_log_files_versioned = tuple(map(lambda path: "%s.%i" % (path, version_idx), list_of_log_files))
+    if all(map(lambda path: not os.path.exists(path), list_of_log_files_versioned)):
+      return list_of_log_files_versioned
+    else:
+      # some log files already exist -> increase the version number
+      version_idx += 1

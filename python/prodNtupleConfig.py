@@ -1,6 +1,6 @@
 import codecs, os, logging, uuid
 
-from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd
+from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd, get_log_version
 from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg, generateInputFileList
 from tthAnalysis.HiggsToTauTau.analysisTools import createMakefile as tools_createMakefile
 from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch as tools_createScript_sbatch
@@ -66,8 +66,11 @@ class prodNtupleConfig:
 
         create_if_not_exists(self.configDir)
         create_if_not_exists(self.outputDir)
-        self.stdout_file = codecs.open(os.path.join(self.configDir, "stdout_prodNtuple.log"), 'w', 'utf-8')
-        self.stderr_file = codecs.open(os.path.join(self.configDir, "stderr_prodNtuple.log"), 'w', 'utf-8')
+        stdout_file_path = os.path.join(self.configDir, "stdout_prodNtuple.log")
+        stderr_file_path = os.path.join(self.configDir, "stderr_prodNtuple.log")
+        stdout_file_path, stderr_file_path = get_log_version((stdout_file_path, stderr_file_path))
+        self.stdout_file = codecs.open(stdout_file_path, 'w', 'utf-8')
+        self.stderr_file = codecs.open(stderr_file_path, 'w', 'utf-8')
 
         self.cfgFile_prodNtuple_original = os.path.join(self.workingDir, cfgFile_prodNtuple)
         self.sbatchFile_prodNtuple       = os.path.join(self.configDir, "sbatch_prodNtuple.py")

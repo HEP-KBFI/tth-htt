@@ -1,6 +1,6 @@
 import codecs, os, logging, uuid
 
-from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd, generate_file_ids
+from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd, generate_file_ids, get_log_version
 from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg, createFile
 from tthAnalysis.HiggsToTauTau.analysisTools import createMakefile as tools_createMakefile
 from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch as tools_createScript_sbatch
@@ -105,20 +105,7 @@ class analyzeConfig:
 
         stdout_file_path = os.path.join(self.configDir, "stdout_%s.log" % self.channel)
         stderr_file_path = os.path.join(self.configDir, "stderr_%s.log" % self.channel)
-        if os.path.isfile(stdout_file_path) or os.path.isfile(stderr_file_path):
-            # The file already exists; let's version the output files
-            version_idx = 1
-            while True:
-                stdout_file_path_tmp = "%s.%i" % (stdout_file_path, version_idx)
-                stderr_file_path_tmp = "%s.%i" % (stderr_file_path, version_idx)
-                if os.path.isfile(stdout_file_path_tmp) or os.path.isfile(stderr_file_path_tmp):
-                    # If a versioned stdout/stderr file already exists, increment the version
-                    version_idx += 1
-                else:
-                    # We have found a vacant version number
-                    stdout_file_path = stdout_file_path_tmp
-                    stderr_file_path = stderr_file_path_tmp
-                    break
+        stdout_file_path, stderr_file_path = get_log_version((stdout_file_path, stderr_file_path))
 
         self.stdout_file = codecs.open(stdout_file_path, 'w', 'utf-8')
         self.stderr_file = codecs.open(stderr_file_path, 'w', 'utf-8')

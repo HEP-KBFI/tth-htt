@@ -1,6 +1,6 @@
 import codecs, os, logging, ROOT, array, uuid
 
-from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd
+from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd, get_log_version
 from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg, generateInputFileList
 from tthAnalysis.HiggsToTauTau.analysisTools import createMakefile as tools_createMakefile
 from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch as tools_createScript_sbatch
@@ -70,8 +70,13 @@ class addMEMConfig:
 
         for dirPath in [self.outputDir, self.cfgDir]:
           create_if_not_exists(dirPath)
-        self.stdout_file = codecs.open(os.path.join(self.cfgDir, "stdout_%s.log" % self.channel), 'w', 'utf-8')
-        self.stderr_file = codecs.open(os.path.join(self.cfgDir, "stderr_%s.log" % self.channel), 'w', 'utf-8')
+
+        stdout_file_path = os.path.join(self.configDir, "stdout_%s.log" % self.channel)
+        stderr_file_path = os.path.join(self.configDir, "stderr_%s.log" % self.channel)
+        stdout_file_path, stderr_file_path = get_log_version((stdout_file_path, stderr_file_path))
+        self.stdout_file = codecs.open(stdout_file_path, 'w', 'utf-8')
+        self.stderr_file = codecs.open(stderr_file_path, 'w', 'utf-8')
+
         self.dirs = {}
         self.samples = samples
         self.cfgFiles_addMEM_modified = {}
@@ -162,6 +167,7 @@ class addMEMConfig:
             sbatch_hadd_dir = os.path.join(
                 self.cfgDir, DKEY_HADD_RT, self.channel, process_name,
             )
+            sbatch_hadd_logFile = get_log_version((sbatch_hadd_logFile,))
             tools_createScript_sbatch_hadd(
                 sbatch_script_file_name = sbatch_hadd_file,
                 input_file_names        = hadd_in_files,
@@ -369,6 +375,7 @@ class addMEMConfig:
                 self.logFiles_addMEM[key_file] = os.path.join(
                     self.dirs[key_dir][DKEY_LOGS], "addMEM_%s_%s_%i.log" % (self.channel, process_name, jobId)
                 )
+                self.logFiles_addMEM[key_file] = get_log_version((self.logFiles_addMEM[key_file],))
                 self.createCfg_addMEM(
                     self.inputFiles[key_file],
                     memEvtRangeDict[jobId]['event_range'][0],

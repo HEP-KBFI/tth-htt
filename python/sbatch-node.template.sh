@@ -17,7 +17,7 @@ RUNNING_COMMAND="{{ RUNNING_COMMAND }}"
 # Runs executable, wrapped into failure wrapper
 
 main() {
-    run_failure_wrapped_executable >> "{{ wrapper_log_file }}" 2>&1
+    run_failure_wrapped_executable &> "{{ wrapper_log_file }}"
     EXIT_CODE=$?
     return $EXIT_CODE
 }

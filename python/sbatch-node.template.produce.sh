@@ -15,7 +15,7 @@ RUNNING_COMMAND="{{ RUNNING_COMMAND }}"
 # Runs executable, wrapped into failure wrapper
 
 main() {
-    run_failure_wrapped_executable >> "{{ wrapper_log_file }}" 2>&1
+    run_failure_wrapped_executable &> "{{ wrapper_log_file }}"
     EXIT_CODE=$?
     return $EXIT_CODE
 }
@@ -79,8 +79,8 @@ run_wrapped_executable() {
 
     echo "Time is: `date`"
 
-    echo "Execute command: {{ exec_name }} {{ command_line_parameter }} >> $TEMPORARY_EXECUTABLE_LOG_FILE"
-    {{ exec_name }} {{ command_line_parameter }} &>> $TEMPORARY_EXECUTABLE_LOG_FILE
+    echo "Execute command: {{ exec_name }} {{ command_line_parameter }} &> $TEMPORARY_EXECUTABLE_LOG_FILE"
+    {{ exec_name }} {{ command_line_parameter }} &> $TEMPORARY_EXECUTABLE_LOG_FILE
     EXIT_CODE=$?
     echo "Command {{ exec_name }} exited with code $EXIT_CODE"
 

@@ -1,6 +1,6 @@
 import codecs, getpass, jinja2, logging, os, time, datetime, sys, random, uuid
 
-from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd
+from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd, get_log_version
 
 # Template for wrapper that is ran on cluster node
 
@@ -325,6 +325,7 @@ class sbatchManager:
         # create script for executing jobs
         wrapper_log_file    = logFile.replace('.log', '_wrapper.log')
         executable_log_file = logFile.replace('.log', '_executable.log')
+        wrapper_log_file, executable_log_file = get_log_version((wrapper_log_file, executable_log_file))
 
         sbatch_command = "sbatch --partition={partition} --output={output} --comment='{comment}' {args} {cmd}".format(
           partition = self.queue,
