@@ -139,82 +139,58 @@ class analyzeConfig:
         self.rootOutputFiles = {}
         self.rootOutputAux = {}
 
-        if era == '2015':
-            self.triggers_3mu = []
-            self.triggers_1e2mu = []
-            self.triggers_2e1mu = []
-            self.triggers_3e = []
-            self.triggers_2mu = [
-                'HLT_BIT_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v',
-                'HLT_BIT_HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v'
-            ]
-            self.triggers_1e1mu = [
-                'HLT_BIT_HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v',
-                'HLT_BIT_HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v'
-            ]
-            self.triggers_2e = [
-                'HLT_BIT_HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v'
-            ]
-            self.triggers_1mu = [
-                'HLT_BIT_HLT_IsoMu20_v',
-                'HLT_BIT_HLT_IsoTkMu20_v'
-            ]
-            self.triggers_1e = [
-                'HLT_BIT_HLT_Ele23_WPLoose_Gsf_v'
-            ]
-            self.triggers_1mu1tau = []
-            self.triggers_1e1tau = []
-            self.triggers_2tau = []
-        elif era == '2016':
+        if era == '2017':
             self.triggers_3mu = [
-                'HLT_BIT_HLT_TripleMu_12_10_5_v',
+                'HLT_TripleMu_12_10_5',
             ]
             self.triggers_1e2mu = [
-                'HLT_BIT_HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v'
+                'HLT_DiMu9_Ele9_CaloIdL_TrackIdL',
             ]
             self.triggers_2e1mu = [
-                'HLT_BIT_HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v'
+                'HLT_Mu8_DiEle12_CaloIdL_TrackIdL',
             ]
             self.triggers_3e = [
-                'HLT_BIT_HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v'
+                'HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL',
             ]
             self.triggers_2mu = [
-                'HLT_BIT_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v',
-                'HLT_BIT_HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v'
+                'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ',
+                # available in 2016 but not in 2017 nano: 'HLT_BIT_HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v'
             ]
             self.triggers_1e1mu = [
-                'HLT_BIT_HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v',
-                'HLT_BIT_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v'
+                'HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL',
+                'HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL',
             ]
             self.triggers_2e = [
-                'HLT_BIT_HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v'
+                'HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ',
             ]
             self.triggers_1mu = [
-                'HLT_BIT_HLT_IsoMu22_v',
-                'HLT_BIT_HLT_IsoTkMu22_v',
-                'HLT_BIT_HLT_IsoMu22_eta2p1_v',
-                'HLT_BIT_HLT_IsoTkMu22_eta2p1_v',
-                'HLT_BIT_HLT_IsoMu24_v',
-                'HLT_BIT_HLT_IsoTkMu24_v'
+                # available in 2016 but not in 2017 nano: 'HLT_BIT_HLT_IsoMu22_v'
+                # available in 2016 but not in 2017 nano: 'HLT_BIT_HLT_IsoTkMu22_v'
+                # available in 2016 but not in 2017 nano: 'HLT_BIT_HLT_IsoMu22_eta2p1_v'
+                # available in 2016 but not in 2017 nano: 'HLT_BIT_HLT_IsoTkMu22_eta2p1_v'
+                'HLT_IsoMu24',
+                # available in 2016 but not in 2017 nano: 'HLT_BIT_HLT_IsoTkMu24_v'
             ]
             self.triggers_1e = [
-                'HLT_BIT_HLT_Ele25_WPTight_Gsf_v',
-                'HLT_BIT_HLT_Ele27_WPTight_Gsf_v',
-                'HLT_BIT_HLT_Ele25_eta2p1_WPTight_Gsf_v',
-                'HLT_BIT_HLT_Ele27_eta2p1_WPLoose_Gsf_v',
-                ##'HLT_BIT_HLT_Ele45_WPLoose_Gsf_L1JetTauSeeded_v'
+                # available in 2016 but not in 2017 nano: 'HLT_BIT_HLT_Ele25_WPTight_Gsf_v'
+                'HLT_Ele27_WPTight_Gsf',
+                # available in 2016 but not in 2017 nano: 'HLT_BIT_HLT_Ele25_eta2p1_WPTight_Gsf_v'
+                # available in 2016 but not in 2017 nano: 'HLT_BIT_HLT_Ele27_eta2p1_WPLoose_Gsf_v'
             ]
             self.triggers_1mu1tau = [
-                'HLT_BIT_HLT_IsoMu19_eta2p1_LooseIsoPFTau20_SingleL1_v'
+                # available in 2016 but not in 2017 nano: 'HLT_BIT_HLT_IsoMu19_eta2p1_LooseIsoPFTau20_SingleL1_v'
+                # alternatives:
+                # 'HLT_IsoMu24_eta2p1_LooseChargedIsoPFTau20_SingleL1',
             ]
             self.triggers_1e1tau = [
-                ##'HLT_BIT_HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau20_SingleL1_v',
-                ##'HLT_BIT_HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau20_v',
-                'HLT_BIT_HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau30_v'
+                # available in 2016 but not in 2017 nano: 'HLT_BIT_HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau30_v',
+                # alternatives:
+                # 'HLT_Ele24_eta2p1_WPTight_Gsf_LooseChargedIsoPFTau30_eta2p1_CrossL1',
+                # 'HLT_Ele24_eta2p1_WPTight_Gsf_LooseChargedIsoPFTau30_eta2p1_TightID_CrossL1',
             ]
             self.triggers_2tau = [
-                'HLT_BIT_HLT_DoubleMediumIsoPFTau35_Trk1_eta2p1_Reg_v',
-                'HLT_BIT_HLT_DoubleMediumCombinedIsoPFTau35_Trk1_eta2p1_Reg_v'
+                'HLT_DoubleMediumChargedIsoPFTau35_Trk1_eta2p1_Reg',
+                'HLT_DoubleMediumChargedIsoPFTau35_Trk1_eta2p1_Reg',
             ]
         else:
             raise ValueError("Invalid Configuration parameter 'era' = %s !!" % era)
