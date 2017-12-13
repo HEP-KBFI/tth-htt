@@ -183,12 +183,8 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
     lines.append("process.analyze_2lss_1tau.apply_hadTauGenMatching = cms.bool(%s)" % (jobOptions['apply_hadTauGenMatching'] and jobOptions['is_mc']))
     lines.append("process.analyze_2lss_1tau.applyFakeRateWeights = cms.string('%s')" % jobOptions['applyFakeRateWeights'])
     fitFunctionName = None
-    if self.era == "2015":
-      lines.append("process.analyze_2lss_1tau.hadTauFakeRateWeight.inputFileName = cms.string('tthAnalysis/HiggsToTauTau/data/FR_tau_2015.root')")
-      # CV: use data/MC corrections determined for dR03mvaLoose discriminator,
-      #     as the event statistics in 2015 data is too low to determine data/MC corrections for tighter working-points
-      fitFunctionName = "jetToTauFakeRate/dR03mvaLoose/$etaBin/fitFunction_data_div_mc_hadTaus_pt"
-    elif self.era == "2016":
+    if self.era == "2017":
+      # TODO: update the FR file for 2017 analysis
       lines.append("process.analyze_2lss_1tau.hadTauFakeRateWeight.inputFileName = cms.string('tthAnalysis/HiggsToTauTau/data/FR_tau_2016.root')")
       # CV: use data/MC corrections determined for dR03mvaMedium discriminator for 2016 data
       fitFunctionName = "jetToTauFakeRate/dR03mvaMedium/$etaBin/fitFunction_data_div_mc_hadTaus_pt"

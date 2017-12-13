@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import os, logging, sys, getpass
+import os, logging, sys, getpass, argparse, datetime
 from tthAnalysis.HiggsToTauTau.analyzeConfig_2lss_1tau import analyzeConfig_2lss_1tau
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 
@@ -13,113 +13,121 @@ from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 #   'forBDTtraining_afterAddMEM'  : to run the analysis on the Ntuples with MEM variables added,
 #                                   and with a relaxed event selection, to increase the BDT training statistics
 #--------------------------------------------------------------------------------
-# E.g. to run: python tthAnalyzeRun_2lss_1tau.py --version "2017Oct24" --mode "VHbb" --use_prod_ntuples
-from optparse import OptionParser
-parser = OptionParser()
-parser.add_option("--version ", type="string", dest="version", help="Name of output repository with results\n Trees will be stored in /hdfs/local/USER/ttHAnalysis/2016/VERSION/", default='dumb')
-parser.add_option("--mode", type="string", dest="mode", help="Set the mode flag, read the script for options", default="VHbb")
-parser.add_option("--ERA", type="string", dest="ERA", help="Era of data", default='2016')
-parser.add_option("--use_prod_ntuples", action="store_true", dest="use_prod_ntuples", help="Production flag", default=False)
-(options, args) = parser.parse_args()
 
-use_prod_ntuples     = options.use_prod_ntuples #True
-mode                 = options.mode #"VHbb"
-ERA                  = options.ERA #"2016"
-version              = options.version #"2017Oct24"
-max_job_resubmission = 3
+# E.g. to run: ./tthAnalyzeRun_2lss_1tau.py -v 2017Dec13 -mode VHbb -e 2017 --use-prod-ntuples
+
+#TODO: needs actual Ntuples
+#TODO: needs an updated value of integrated luminosity for 2017 data
+
+mode_choices               = ['VHbb', 'addMEM', 'forBDTtraining_beforeAddMEM', 'forBDTtraining_afterAddMEM']
+era_choices                = ['2017']
+default_resubmission_limit = 4
+
+class SmartFormatter(argparse.HelpFormatter):
+  def _split_lines(self, text, width):
+    if text.startswith('R|'):
+      return text[2:].splitlines()
+    return argparse.HelpFormatter._split_lines(self, text, width)
+
+parser = argparse.ArgumentParser(
+  formatter_class = lambda prog: SmartFormatter(prog, max_help_position = 45)
+)
+parser.add_argument('-v', '--version',
+  type = str, dest = 'version', metavar = 'version', default = None, required = True,
+  help = 'R|Analysis version (e.g. %s)' % datetime.date.today().strftime('%Y%b%d'),
+)
+parser.add_argument('-m', '--mode',
+  type = str, dest = 'mode', metavar = 'mode', default = None, required = True,
+  choices = mode_choices,
+  help = 'R|Analysis type (choices: %s)' % ', '.join(map(lambda choice: "'%s'" % choice, mode_choices)),
+)
+parser.add_argument('-e', '--era',
+  type = str, dest = 'era', metavar = 'era', choices = era_choices, default = None, required = True,
+  help = 'R|Era of data/MC (choices: %s)' % ', '.join(map(lambda choice: "'%s'" % choice, era_choices)),
+)
+parser.add_argument(
+  '-p', '--use-production-ntuples',
+  dest = 'use_production_ntuples', action = 'store_true', default = False,
+  help = 'R|Use production Ntuples'
+)
+parser.add_argument('-d', '--dry-run',
+  dest = 'dry_run', action = 'store_true', default = False,
+  help = 'R|Do not submit the jobs, just generate the necessary shell scripts'
+)
+parser.add_argument('-r', '--resubmission-limit',
+  type = int, dest = 'resubmission_limit', metavar = 'number', default = default_resubmission_limit,
+  required = False,
+  help = 'R|Maximum number of resubmissions (default: %i)' % default_resubmission_limit
+)
+parser.add_argument('-R', '--disable-resubmission',
+  dest = 'disable_resubmission', action = 'store_false', default = True,
+  help = 'R|Disable resubmission (overwrites option -r/--resubmission-limit)'
+)
+parser.add_argument('-V', '--verbose',
+  dest = 'verbose', action = 'store_true', default = False,
+  help = 'R|Increase verbosity level in sbatchManager'
+)
+args = parser.parse_args()
+
+use_prod_ntuples     = args.use_production_ntuples
+mode                 = args.mode
+era                  = args.era
+version              = args.version
+resubmit             = args.disable_resubmission
+max_job_resubmission = args.resubmission_limit if resubmit else 1
 max_files_per_job    = 10 if use_prod_ntuples else 100
 
 samples                            = None
-LUMI                               = None
+lumi                               = None
 hadTau_selection                   = None
 hadTau_selection_relaxed           = None
 changeBranchNames                  = use_prod_ntuples
 applyFakeRateWeights               = None
 MEMbranch                          = ''
-hadTauFakeRateWeight_inputFileName = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016.root"
+hadTauFakeRateWeight_inputFileName = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016.root" #TODO update
 
 # Karl: temporarily disable other modes until we've proper Ntuples
-if use_prod_ntuples and mode not in ["VHbb", "forBDTtraining_beforeAddMEM"]:
-  raise ValueError("No production Ntuples for %s" % mode)
-
-if use_prod_ntuples and ERA == "2015":
-  raise ValueError("No production Ntuples for 2015 data & MC")
-
-if mode != "VHbb" and ERA == "2015":
-  raise ValueError("Invalid mode for 2015: %s" % mode)
+if mode != "VHbb":
+  raise ValueError("Only VHbb mode available")
 
 if mode == "VHbb":
   if use_prod_ntuples:
-    from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_prodNtuples_2016 import samples_2016
+    from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_prodNtuples_2017_test import samples_2017
   else:
-    from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2015 import samples_2015
-    from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016 import samples_2016
-
-  for sample_name, sample_info in samples_2016.items():
-    if sample_name in [
-      "/Tau/Run2016B-23Sep2016-v3/MINIAOD",
-      "/Tau/Run2016C-23Sep2016-v1/MINIAOD",
-      "/Tau/Run2016D-23Sep2016-v1/MINIAOD",
-      "/Tau/Run2016E-23Sep2016-v1/MINIAOD",
-      "/Tau/Run2016F-23Sep2016-v1/MINIAOD",
-      "/Tau/Run2016G-23Sep2016-v1/MINIAOD",
-      "/Tau/Run2016H-PromptReco-v2/MINIAOD",
-      "/Tau/Run2016H-PromptReco-v3/MINIAOD"]:
-      sample_info["use_it"] = False
+    from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2017_test import samples_2017
 
   hadTau_selection     = "dR03mvaMedium"
   applyFakeRateWeights = "2lepton"
 elif mode == "addMEM":
-  from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_2lss1tau_addMEM import samples_2016
+#  from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2017_2lss1tau_addMEM import samples_2017
   changeBranchNames    = True
   MEMbranch            = 'memObjects_2lss_1tau_lepFakeable_tauTight_dR03mvaMedium'
   hadTau_selection     = "dR03mvaMedium"
   applyFakeRateWeights = "3L"
 elif mode == "forBDTtraining_beforeAddMEM":
-  if use_prod_ntuples:
-    from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_prodNtuples_2016_FastSim import samples_2016
-  else:
-    from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_FastSim import samples_2016
-  hadTau_selection         = "dR03mvaMedium" ## "dR03mvaVTight"
-  hadTau_selection_relaxed = "dR03mvaMedium" ## "dR03mvaLoose"
-  applyFakeRateWeights = "2lepton"
+#  if use_prod_ntuples:
+#    from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_prodNtuples_2017_FastSim import samples_2017
+#  else:
+#    from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2017_FastSim import samples_2017
+  hadTau_selection         = "dR03mvaMedium"
+  hadTau_selection_relaxed = "dR03mvaMedium"
+  applyFakeRateWeights     = "2lepton"
 elif mode == "forBDTtraining_afterAddMEM":
-  from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_2lss1tau_addMEM import samples_2016
+#  from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2017_2lss1tau_addMEM import samples_2017
   changeBranchNames        = True
   MEMbranch                = 'memObjects_2lss_1tau_lepLoose_tauTight_dR03mvaLoose'
-  hadTau_selection         = "dR03mvaMedium"  ## "dR03mvaVTight"
+  hadTau_selection         = "dR03mvaMedium"
   hadTau_selection_relaxed = "dR03mvaMedium"
-  applyFakeRateWeights =  "2lepton"
-
-  for sample_name, sample_info in samples_2016.items():
-    if sample_info['process_name_specific'] in [
-      'TTTo2L2Nu_fastsim_p1',
-      'TTTo2L2Nu_fastsim_p2',
-      'TTTo2L2Nu_fastsim_p3',
-      'TTToSemilepton_fastsim_p1',
-      'TTToSemilepton_fastsim_p2',
-      'TTToSemilepton_fastsim_p3',
-      'TTWJetsToLNu_fastsim',
-      'TTZToLLNuNu_fastsim',
-      'WZTo3LNu_fastsim',
-      'ttHToNonbb_fastsim_p1',
-      'ttHToNonbb_fastsim_p2',
-      'ttHToNonbb_fastsim_p3',
-    ]:
-      sample_info["use_it"] = True
-    else:
-      sample_info["use_it"] = False
+  applyFakeRateWeights     =  "2lepton"
 else:
   raise ValueError("Invalid Configuration parameter 'mode' = %s !!" % mode)
 
-if ERA == "2015":
-  samples = samples_2015
-  LUMI    = 2.3e+3 # 1/pb
-elif ERA == "2016":
-  samples = samples_2016
-  LUMI    = 35.9e+3 # 1/pb
+if era == "2017":
+  samples = samples_2017
+  lumi    = 35.9e+3 # 1/pb
+  # TODO: update lumi
 else:
-  raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
+  raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % era)
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -128,8 +136,8 @@ if __name__ == '__main__':
     format = '%(asctime)s - %(levelname)s: %(message)s',
   )
 
-  configDir = os.path.join("/home",       getpass.getuser(), "ttHAnalysis", ERA, version)
-  outputDir = os.path.join("/hdfs/local", getpass.getuser(), "ttHAnalysis", ERA, version)
+  configDir = os.path.join("/home",       getpass.getuser(), "ttHAnalysis", era, version)
+  outputDir = os.path.join("/hdfs/local", getpass.getuser(), "ttHAnalysis", era, version)
 
   job_statistics_summary = {}
   run_analysis           = False
@@ -212,9 +220,9 @@ if __name__ == '__main__':
 ##         "CMS_ttHl_thu_shape_ttZ_y1Down",
       ],
       max_files_per_job         = max_files_per_job,
-      era                       = ERA,
+      era                       = era,
       use_lumi                  = True,
-      lumi                      = LUMI,
+      lumi                      = lumi,
       debug                     = False,
       running_method            = "sbatch",
       num_parallel_jobs         = 100, # KE: run up to 100 'hadd' jobs in parallel on batch system

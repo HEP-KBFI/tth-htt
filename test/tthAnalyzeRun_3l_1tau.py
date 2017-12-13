@@ -84,7 +84,7 @@ hadTau_selection_relaxed           = None
 changeBranchNames                  = use_prod_ntuples
 applyFakeRateWeights               = None
 MEMbranch                          = ''
-hadTauFakeRateWeight_inputFileName = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016.root"
+hadTauFakeRateWeight_inputFileName = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016.root" #TODO update
 
 if mode != "VHbb":
   raise ValueError("Only VHbb mode available")
