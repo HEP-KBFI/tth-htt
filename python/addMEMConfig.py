@@ -71,11 +71,11 @@ class addMEMConfig:
         for dirPath in [self.outputDir, self.cfgDir]:
           create_if_not_exists(dirPath)
 
-        stdout_file_path = os.path.join(self.configDir, "stdout_%s.log" % self.channel)
-        stderr_file_path = os.path.join(self.configDir, "stderr_%s.log" % self.channel)
-        stdout_file_path, stderr_file_path = get_log_version((stdout_file_path, stderr_file_path))
-        self.stdout_file = codecs.open(stdout_file_path, 'w', 'utf-8')
-        self.stderr_file = codecs.open(stderr_file_path, 'w', 'utf-8')
+        self.stdout_file_path = os.path.join(self.configDir, "stdout_%s.log" % self.channel)
+        self.stderr_file_path = os.path.join(self.configDir, "stderr_%s.log" % self.channel)
+        self.stdout_file_path, self.stderr_file_path = get_log_version((
+            self.stdout_file_path, self.stderr_file_path,
+        ))
 
         self.dirs = {}
         self.samples = samples
@@ -491,5 +491,8 @@ class addMEMConfig:
     def run(self):
         """Runs all Ntuple addMEM jobs -- either locally or on the batch system.
         """
-        run_cmd("make -f %s -j %i " % (self.makefile, self.num_parallel_jobs),
-                False, self.stdout_file, self.stderr_file)
+        run_cmd(
+            "make -f %s -j %i 2>%s 1>%s" % \
+            (self.makefile, self.num_parallel_jobs, self.stderr_file_path, self.stdout_file_path),
+            False
+        )
