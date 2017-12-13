@@ -89,6 +89,7 @@ for sample_name, sample_info in samples_2017.items():
 if era == "2017":
   samples = samples_2017
   lumi    = 35.9e+3 # 1/pb
+  # TODO: update lumi
 else:
   raise ValueError("Invalid Configuration parameter 'era' = %s !!" % era)
 
@@ -100,8 +101,8 @@ if __name__ == '__main__':
   )
 
   job_statistics_summary = {}
-  run_analysis = False
-  is_last_resubmission = False
+  run_analysis           = False
+  is_last_resubmission   = False
 
   for idx_job_resubmission in range(max_job_resubmission):
     if is_last_resubmission:
