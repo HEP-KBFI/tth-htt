@@ -67,6 +67,8 @@ if __name__ == '__main__':
     'process_name_specific' : (lambda d: d['process_name_specific']),
     'nof_files'             : (lambda d: d['nof_files']),
     'nof_events'            : (lambda d: d['nof_events']),
+    'nof_tree_events'       : (lambda d: d['nof_tree_events']),
+    'nof_db_events'         : (lambda d: d['nof_db_events']),
     'path'                  : (lambda d: endtree(d['local_paths'][0]['path'])),
     'blacklist'             : (lambda d: d['local_paths'][0]['blacklist'] if 'blacklist' in d['local_paths'][0] else []),
     'selection'             : (lambda d: d['local_paths'][0]['selection']),
