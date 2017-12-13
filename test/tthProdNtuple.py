@@ -12,6 +12,9 @@ from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 #   'forBDTtraining_except' : to produce the Ntuples from all but the FastSim samples
 #--------------------------------------------------------------------------------
 
+mode_choices = ['all', 'forBDTtraining_only', 'forBDTtraining_except']
+era_choices  = ['2017']
+
 class SmartFormatter(argparse.HelpFormatter):
   def _split_lines(self, text, width):
     if text.startswith('R|'):
@@ -19,7 +22,7 @@ class SmartFormatter(argparse.HelpFormatter):
     return argparse.HelpFormatter._split_lines(self, text, width)
 
 parser = argparse.ArgumentParser(
-  formatter_class = lambda prog: SmartFormatter(prog, max_help_position = 35)
+  formatter_class = lambda prog: SmartFormatter(prog, max_help_position = 40)
 )
 parser.add_argument('-v', '--version',
   type = str, dest = 'version', metavar = 'version', default = None, required = True,
@@ -27,16 +30,16 @@ parser.add_argument('-v', '--version',
 )
 parser.add_argument('-m', '--mode',
   type = str, dest = 'mode', metavar = 'mode', default = None, required = True,
-  choices = ['all', 'forBDTtraining_only', 'forBDTtraining_except'],
-  help = 'R|Analysis type',
+  choices = mode_choices,
+  help = 'R|Analysis type (choices: %s)' % ', '.join(map(lambda choice: "'%s'" % choice, mode_choices)),
 )
 parser.add_argument('-e', '--era',
-  type = str, dest = 'era', metavar = 'era', choices = ['2017'], default = None, required = True,
-  help = 'R|Era of data/MC',
+  type = str, dest = 'era', metavar = 'era', choices = era_choices, default = None, required = True,
+  help = 'R|Era of data/MC (choices: %s)' % ', '.join(map(lambda choice: "'%s'" % choice, era_choices)),
 )
 parser.add_argument('-p', '--disable-preselection',
   dest = 'disable_preselection', action = 'store_false', default = True,
-  help = 'R|Enable preselection (read this script for the list of cuts)',
+  help = 'R|Disable preselection (read this script for the list of cuts)',
 )
 parser.add_argument('-n', '--disable-nanoaod-preprocess',
   dest = 'disable_nanoaod_preprocess', action = 'store_false', default = True,
