@@ -13,10 +13,10 @@ class analyzeConfig_Zctrl(analyzeConfig):
 
   """
   def __init__(self, outputDir, executable_analyze, samples, central_or_shifts,
-               max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs, 
+               max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,
                histograms_to_fit, select_rle_output = False, executable_prep_dcard="prepareDatacard"):
     analyzeConfig.__init__(self, outputDir, executable_analyze, "Zctrl", central_or_shifts,
-      max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs, 
+      max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,
       histograms_to_fit)
 
     self.samples = samples
@@ -25,22 +25,22 @@ class analyzeConfig_Zctrl(analyzeConfig):
       if not sample_info["use_it"] or sample_info["sample_category"] in [ "additional_signal_overlap", "background_data_estimate" ]:
         continue
       process_name = sample_info["process_name_specific"]
-      key_dir = getKey(sample_name)  
+      key_dir = getKey(sample_name)
       for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_DCRD ]:
         initDict(self.dirs, [ key_dir, dir_type ])
         self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel,
           process_name)
     ##print "self.dirs = ", self.dirs
 
-    self.cfgFile_analyze_original = os.path.join(self.workingDir, "analyze_Zctrl_cfg.py")
+    self.cfgFile_analyze_original = os.path.join(self.template_dir, "analyze_Zctrl_cfg.py")
     self.histogramDir_prep_dcard = "Zctrl"
     self.prep_dcard_processesToCopy = [ "data_obs", "TT", "TTW", "EWK", "Rares", "ttH_hww", "ttH_hzz", "ttH_htt" ]
     self.prep_dcard_signals = [ "DYJets" ]
     self.make_plots_backgrounds = [ "TTZ", "TTW", "EWK", "Rares", "TT" ]
     self.make_plots_signal = "signal"
     self.select_rle_output = select_rle_output
-    
-  def createCfg_analyze(self, inputFiles, outputFile, sample_category, era, triggers, 
+
+  def createCfg_analyze(self, inputFiles, outputFile, sample_category, era, triggers,
                         is_mc, central_or_shift, lumi_scale, apply_trigger_bits, cfgFile_modified, rle_output_file):
     """Create python configuration file for the analyze_ttZctrl executable (analysis code)
 
@@ -51,7 +51,7 @@ class analyzeConfig_Zctrl(analyzeConfig):
       is_mc: flag indicating whether job runs on MC (True) or data (False)
       lumi_scale: event weight (= xsection * luminosity / number of events)
       central_or_shift: either 'central' or one of the systematic uncertainties defined in $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/bin/analyze_ttZctrl.cc
-    """  
+    """
     lines = []
     ##lines.append("process.fwliteInput.fileNames = cms.vstring(%s)" % [ os.path.basename(inputFile) for inputFile in inputFiles ])
     lines.append("process.fwliteInput.fileNames = cms.vstring(%s)" % inputFiles)
@@ -79,7 +79,7 @@ class analyzeConfig_Zctrl(analyzeConfig):
     """Fills the template of python configuration file for making control plots
 
     Args:
-      histogramFile: name of the input ROOT file 
+      histogramFile: name of the input ROOT file
     """
     lines = []
     lines.append("process.fwliteInput.fileNames = cms.vstring('%s')" % self.histogramFile_hadd_stage2)
@@ -108,7 +108,7 @@ class analyzeConfig_Zctrl(analyzeConfig):
       process_name = sample_info["process_name_specific"]
       inputFiles_sample = []
       for central_or_shift in self.central_or_shifts:
-        inputFiles_jobIds = []                  
+        inputFiles_jobIds = []
         for jobId in range(len(self.inputFileIds[sample_name])):
           key_file = getKey(sample_name, central_or_shift, jobId)
           if key_file in self.histogramFiles.keys():
@@ -143,7 +143,7 @@ class analyzeConfig_Zctrl(analyzeConfig):
     for key in self.dirs.keys():
       for dir_type in self.dirs[key].keys():
         create_if_not_exists(self.dirs[key][dir_type])
-  
+
     self.inputFileIds = {}
     for sample_name, sample_info in self.samples.items():
       if not sample_info["use_it"] or sample_info["sample_category"] in [ "additional_signal_overlap", "background_data_estimate" ]:
@@ -151,7 +151,7 @@ class analyzeConfig_Zctrl(analyzeConfig):
 
       process_name = sample_info["process_name_specific"]
 
-      logging.info("Creating configuration files to run '%s' for sample %s" % (self.executable_analyze, process_name))  
+      logging.info("Creating configuration files to run '%s' for sample %s" % (self.executable_analyze, process_name))
 
       ( secondary_files, primary_store, secondary_store ) = self.initializeInputFileIds(sample_name, sample_info)
 

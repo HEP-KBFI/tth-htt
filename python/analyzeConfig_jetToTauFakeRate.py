@@ -7,23 +7,23 @@ from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg
 class analyzeConfig_jetToTauFakeRate(analyzeConfig):
   """
   Configuration metadata needed to run analysis in a single go.
-  
+
   Sets up a folder structure by defining full path names; no directory creation is delegated here.
-  
+
   Args specific to analyzeConfig_jetToTauFakeRate:
     charge_selection: either `OS` or `SS` (opposite-sign or same-sign of the electron+muon pair)
     hadTau_selections: list of tau ID discriminators to check
 
   See $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/python/analyzeConfig.py
   for documentation of further Args.
-  
+
   """
   def __init__(self, configDir, outputDir, executable_analyze, samples, charge_selections,
                jet_minPt, jet_maxPt, jet_minAbsEta, jet_maxAbsEta, hadTau_selection_denominator, hadTau_selections_numerator, absEtaBins, ptBins, central_or_shifts,
                max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,
                executable_comp_jetToTauFakeRate):
     analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "jetToTauFakeRate", central_or_shifts,
-      max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs, 
+      max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,
       [])
 
     self.samples = samples
@@ -37,18 +37,18 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
 
     self.hadTau_selection_denominator = hadTau_selection_denominator
     self.hadTau_selections_numerator = hadTau_selections_numerator
-        
+
     self.absEtaBins = absEtaBins
     self.ptBins = ptBins
 
     self.executable_comp_jetToTauFakeRate = executable_comp_jetToTauFakeRate
-    
-    self.cfgFile_analyze = os.path.join(self.workingDir, "analyze_jetToTauFakeRate_cfg.py")
-    self.cfgFile_comp_jetToTauFakeRate = os.path.join(self.workingDir, "comp_jetToTauFakeRate_cfg.py")
+
+    self.cfgFile_analyze = os.path.join(self.template_dir, "analyze_jetToTauFakeRate_cfg.py")
+    self.cfgFile_comp_jetToTauFakeRate = os.path.join(self.template_dir, "comp_jetToTauFakeRate_cfg.py")
     self.jobOptions_comp_jetToTauFakeRate = {}
-    self.cfgFile_make_plots = os.path.join(self.workingDir, "makePlots_jetToTauFakeRate_cfg.py")
-    self.cfgFile_make_plots_denominator = os.path.join(self.workingDir, "makePlots_jetToTauFakeRate_denominator_cfg.py")
-    
+    self.cfgFile_make_plots = os.path.join(self.template_dir, "makePlots_jetToTauFakeRate_cfg.py")
+    self.cfgFile_make_plots_denominator = os.path.join(self.template_dir, "makePlots_jetToTauFakeRate_denominator_cfg.py")
+
   def createCfg_analyze(self, jobOptions):
     """Create python configuration file for the analyze_jetToTauFakeRate executable (analysis code)
 
@@ -59,7 +59,7 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
       is_mc: flag indicating whether job runs on MC (True) or data (False)
       lumi_scale: event weight (= xsection * luminosity / number of events)
       central_or_shift: either 'central' or one of the systematic uncertainties defined in $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/bin/analyze_jetToTauFakeRate.cc
-    """  
+    """
     lines = []
     ##lines.append("process.fwliteInput.fileNames = cms.vstring(%s)" % [ os.path.basename(inputFile) for inputFile in inputFiles ])
     lines.append("process.fwliteInput.fileNames = cms.vstring(%s)" % jobOptions['ntupleFiles'])
@@ -108,7 +108,7 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
       lines.append("process.comp_jetToTauFakeRate.processesToSubtract = cms.vstring(")
       lines.append("    'TTt', 'TTl',")
       lines.append("    'EWKt', 'EWKl',")
-      lines.append("    'Rarest', 'Raresl',")      
+      lines.append("    'Rarest', 'Raresl',")
       lines.append("    'TTWt', 'TTWl', ")
       lines.append("    'TTZt', 'TTZl', ")
       lines.append("    'signalt', 'signall'")
@@ -117,12 +117,12 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
       lines.append("process.comp_jetToTauFakeRate.absEtaBins = cms.vdouble(%s)" % jobOptions['absEtaBins'])
       lines.append("process.comp_jetToTauFakeRate.ptBins = cms.vdouble(%s)" % jobOptions['ptBins'])
       create_cfg(self.cfgFile_comp_jetToTauFakeRate, jobOptions['cfgFile_modified'], lines)
-    
+
   def addToMakefile_comp_jetToTauFakeRate(self, lines_makefile):
     if self.is_sbatch:
       lines_makefile.append("sbatch_comp_jetToTauFakeRate: %s" % " ".join([ jobOptions['inputFile'] for jobOptions in self.jobOptions_comp_jetToTauFakeRate.values() ]))
       lines_makefile.append("\t%s %s" % ("python", self.sbatchFile_comp_jetToTauFakeRate))
-      lines_makefile.append("")      
+      lines_makefile.append("")
     for jobOptions in self.jobOptions_comp_jetToTauFakeRate.values():
       if self.is_makefile:
         lines_makefile.append("%s: %s" % (jobOptions['outputFile'], jobOptions['inputFile']))
@@ -131,7 +131,7 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
       elif self.is_sbatch:
         lines_makefile.append("%s: %s" % (jobOptions['outputFile'], "sbatch_comp_jetToTauFakeRate"))
         lines_makefile.append("\t%s" % ":") # CV: null command
-        lines_makefile.append("")  
+        lines_makefile.append("")
       self.filesToClean.append(jobOptions['outputFile'])
 
   def create(self):
@@ -173,7 +173,7 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
         continue
       logging.info("Checking input files for sample %s" % sample_info["process_name_specific"])
       inputFileLists[sample_name] = generateInputFileList(sample_name, sample_info, self.max_files_per_job, self.debug)
-  
+
     self.inputFileIds = {}
     for sample_name, sample_info in self.samples.items():
       if not sample_info["use_it"] or sample_info["sample_category"] in [ "additional_signal_overlap", "background_data_estimate" ]:
@@ -181,7 +181,7 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
 
       process_name = sample_info["process_name_specific"]
 
-      logging.info("Creating configuration files to run '%s' for sample %s" % (self.executable_analyze, process_name))  
+      logging.info("Creating configuration files to run '%s' for sample %s" % (self.executable_analyze, process_name))
 
       is_mc = (sample_info["type"] == "mc")
       lumi_scale = 1. if not (self.use_lumi and is_mc) else sample_info["xsection"] * self.lumi / sample_info["nof_events"]
@@ -340,6 +340,6 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
     self.addToMakefile_comp_jetToTauFakeRate(lines_makefile)
     self.addToMakefile_make_plots(lines_makefile)
     self.createMakefile(lines_makefile)
-  
+
     logging.info("Done")
 

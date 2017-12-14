@@ -60,6 +60,10 @@ class prodNtupleConfig:
 
         self.workingDir = os.getcwd()
         logging.info("Working directory is: %s" % self.workingDir)
+        self.template_dir = os.path.join(
+            os.getenv('CMSSW_BASE'), 'src', 'tthAnalysis', 'HiggsToTauTau', 'test', 'templates'
+        )
+        logging.info("Templates directory is: %s" % self.template_dir)
 
         self.version = version
         self.samples = samples
@@ -72,8 +76,8 @@ class prodNtupleConfig:
             self.stdout_file_path, self.stderr_file_path,
         ))
 
-        self.cfgFile_prodNtuple_original = os.path.join(self.workingDir, cfgFile_prodNtuple)
-        self.sbatchFile_prodNtuple       = os.path.join(self.configDir, "sbatch_prodNtuple.py")
+        self.cfgFile_prodNtuple_original = os.path.join(self.template_dir, cfgFile_prodNtuple)
+        self.sbatchFile_prodNtuple       = os.path.join(self.template_dir, "sbatch_prodNtuple.py")
         self.cfgFiles_prodNtuple_modified = {}
         self.logFiles_prodNtuple          = {}
 

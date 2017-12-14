@@ -151,8 +151,8 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     self.executable_prep_dcard = executable_prep_dcard
     self.executable_comp_LeptonFakeRate = executable_comp_LeptonFakeRate
     self.fillGenEvtHistograms = fillGenEvtHistograms
-    self.cfgFile_analyze = os.path.join(self.workingDir, "analyze_LeptonFakeRate_cfg.py")
-    self.cfgFile_addBackgrounds_LeptonFakeRate = os.path.join(self.workingDir, "addBackground_LeptonFakeRate_cfg.py")
+    self.cfgFile_analyze = os.path.join(self.template_dir, "analyze_LeptonFakeRate_cfg.py")
+    self.cfgFile_addBackgrounds_LeptonFakeRate = os.path.join(self.template_dir, "addBackground_LeptonFakeRate_cfg.py")
     self.prep_dcard_processesToCopy = ["data_obs","TTW","TTZ","TT","Rares","EWK","signal", "TTWW", "tH","ttH_hbb", "fakes_data"]
     self.prep_dcard_signals = ["signal"]
 
@@ -162,10 +162,10 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     self.jobOptions_combine = {}
 
 #    self.executable_comp_LeptonFakeRate = executable_comp_LeptonFakeRate                           ## TO BE INCLUDED LATER
-#    self.cfgFile_comp_LeptonFakeRate = os.path.join(self.workingDir, "comp_LeptonFakeRate_cfg.py") ## TO BE INCLUDED LATER
+#    self.cfgFile_comp_LeptonFakeRate = os.path.join(self.template_dir, "comp_LeptonFakeRate_cfg.py") ## TO BE INCLUDED LATER
 #    self.jobOptions_comp_LeptonFakeRate = {}
-#    self.cfgFile_make_plots = os.path.join(self.workingDir, "makePlots_LeptonFakeRate_cfg.py")                         ## TO BE INCLUDED LATER
-#    self.cfgFile_make_plots_denominator = os.path.join(self.workingDir, "makePlots_LeptonFakeRate_denominator_cfg.py") ## TO BE INCLUDED LATER
+#    self.cfgFile_make_plots = os.path.join(self.template_dir, "makePlots_LeptonFakeRate_cfg.py")                         ## TO BE INCLUDED LATER
+#    self.cfgFile_make_plots_denominator = os.path.join(self.template_dir, "makePlots_LeptonFakeRate_denominator_cfg.py") ## TO BE INCLUDED LATER
 
 #    self.charge_selections = charge_selections
 #    self.jet_minPt = jet_minPt

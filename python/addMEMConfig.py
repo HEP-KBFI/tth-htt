@@ -67,6 +67,10 @@ class addMEMConfig:
 
         self.workingDir = os.getcwd()
         logging.info("Working directory is: {workingDir}".format(workingDir = self.workingDir))
+        self.template_dir = os.path.join(
+            os.getenv('CMSSW_BASE'), 'src', 'tthAnalysis', 'HiggsToTauTau', 'test', 'templates'
+        )
+        logging.info("Templates directory is: {templateDir}".format(templateDir = self.template_dir))
 
         for dirPath in [self.outputDir, self.cfgDir]:
           create_if_not_exists(dirPath)

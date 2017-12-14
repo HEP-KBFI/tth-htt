@@ -12,7 +12,7 @@ class addMEMConfig_2lss_1tau(addMEMConfig):
                           max_files_per_job, mem_integrations_per_job, max_mem_integrations, num_parallel_jobs,
                           leptonSelection, hadTauSelection, isForBDTtraining, "2lss_1tau", pool_id)
 
-    self.cfgFile_addMEM_original = os.path.join(self.workingDir, "addMEM_2lss_1tau_cfg.py")
+    self.cfgFile_addMEM_original = os.path.join(self.template_dir, "addMEM_2lss_1tau_cfg.py")
     self.isDebug = isDebug
     self.central_or_shift = central_or_shift
 

@@ -111,12 +111,12 @@ class analyzeConfig_2los_1tau(analyzeConfig):
     self.prep_dcard_processesToCopy = [ "data_obs", "TTW", "TTZ", "TTWW", "EWK", "Rares", "tH", "fakes_data", "fakes_mc" ]
     self.make_plots_backgrounds = [ "TTW", "TTWW", "TTZ", "EWK", "Rares", "fakes_data" ]
 
-    self.cfgFile_analyze = os.path.join(self.workingDir, cfgFile_analyze)
+    self.cfgFile_analyze = os.path.join(self.template_dir, cfgFile_analyze)
     self.inputFiles_hadd_stage1_6 = []
     self.outputFile_hadd_stage1_6 = None
     self.histogramDir_prep_dcard = "2los_1tau_Tight"
-    self.cfgFile_make_plots = os.path.join(self.workingDir, "makePlots_2los_1tau_cfg.py")
-    self.cfgFile_make_plots_mcClosure = os.path.join(self.workingDir, "makePlots_mcClosure_2los_1tau_cfg.py")
+    self.cfgFile_make_plots = os.path.join(self.template_dir, "makePlots_2los_1tau_cfg.py")
+    self.cfgFile_make_plots_mcClosure = os.path.join(self.template_dir, "makePlots_mcClosure_2los_1tau_cfg.py")
 
     self.select_rle_output = select_rle_output
 

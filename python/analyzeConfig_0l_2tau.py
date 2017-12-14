@@ -82,11 +82,11 @@ class analyzeConfig_0l_2tau(analyzeConfig):
     ##self.make_plots_backgrounds = self.nonfake_backgrounds + [ "fakes_data" ]
     self.make_plots_backgrounds = [ "TTW", "TTZ", "EWK", "Rares", "fakes_data" ]
 
-    self.cfgFile_analyze = os.path.join(self.workingDir, cfgFile_analyze)
+    self.cfgFile_analyze = os.path.join(self.template_dir, cfgFile_analyze)
     self.histogramDir_prep_dcard = "0l_2tau_OS_Tight"
     self.histogramDir_prep_dcard_SS = "0l_2tau_SS_Tight"
-    self.cfgFile_make_plots = os.path.join(self.workingDir, "makePlots_0l_2tau_cfg.py")
-    self.cfgFile_make_plots_mcClosure = os.path.join(self.workingDir, "makePlots_mcClosure_0l_2tau_cfg.py")
+    self.cfgFile_make_plots = os.path.join(self.template_dir, "makePlots_0l_2tau_cfg.py")
+    self.cfgFile_make_plots_mcClosure = os.path.join(self.template_dir, "makePlots_mcClosure_0l_2tau_cfg.py")
 
     self.select_rle_output = select_rle_output
 

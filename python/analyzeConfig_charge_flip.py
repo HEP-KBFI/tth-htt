@@ -10,27 +10,27 @@ sample_process_run_s = ['DoubleEG_Run2016B_v3', 'SingleElectron_Run2016C_v1', 'D
 
 class analyzeConfig_charge_flip(analyzeConfig):
   """Configuration metadata needed to run analysis in a single go.
-  
+
   Sets up a folder structure by defining full path names; no directory creation is delegated here.
-  
+
   See $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/python/analyzeConfig.py
   for documentation of further Args.
-  
+
   """
   def __init__(self, configDir, outputDir, executable_analyze, samples, lepton_selections, central_or_shifts,
-               max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs, 
+               max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,
                histograms_to_fit = [], select_rle_output = False, executable_prep_dcard="prepareDatacard"):
     analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "charge_flip", central_or_shifts,
-      max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs, 
+      max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,
       histograms_to_fit)
 
     self.samples = samples
-    
+
     self.prep_dcard_processesToCopy = ["data_obs", "DY", "DY_fake", "WJets", "TTbar", "Singletop", "Diboson"]
     self.prep_dcard_signals = [ "DY" ]
-    
+
     self.lepton_selections = lepton_selections
-    
+
     #self.hadTau_selection = hadTau_selection
 
     for sample_name, sample_info in self.samples.items():
@@ -39,20 +39,20 @@ class analyzeConfig_charge_flip(analyzeConfig):
       process_name = sample_info["process_name_specific"]
 
 
-      # Edit Siddh ~~~~~~~~~~~~~     
+      # Edit Siddh ~~~~~~~~~~~~~
       run_process = False
       for sprocess_run in sample_process_run_s:
         if sprocess_run == process_name:
           run_process = True
-          #print "Run process: ", sprocess_run 
+          #print "Run process: ", sprocess_run
 
-      if run_process == False: 
+      if run_process == False:
         continue
-        #print "run_process:",process_name                                                                                                                                       
-      # ~~~~~~~~~~~~~~~~~~~~~~~~~~                                                                                                                                             
+        #print "run_process:",process_name
+      # ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
       for lepton_selection in self.lepton_selections:
-          key_dir = getKey(sample_name, lepton_selection)  
+          key_dir = getKey(sample_name, lepton_selection)
           for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_DCRD, DKEY_RLES  ]:
             initDict(self.dirs, [ key_dir, dir_type ])
             if dir_type in [ DKEY_CFGS, DKEY_LOGS ]:
@@ -63,8 +63,8 @@ class analyzeConfig_charge_flip(analyzeConfig):
                 "_".join([ lepton_selection ]), process_name)
     ##print "self.dirs = ", self.dirs
 
-    self.cfgFile_analyze_original = os.path.join(self.workingDir, "analyze_charge_flip_cfg.py")
-    self.cfgFile_prep_dcard_original = os.path.join(self.workingDir, "prepareDatacards_cfg.py")
+    self.cfgFile_analyze_original = os.path.join(self.template_dir, "analyze_charge_flip_cfg.py")
+    self.cfgFile_prep_dcard_original = os.path.join(self.template_dir, "prepareDatacards_cfg.py")
     #self.histogramDir_prep_dcard = "charge_flip_SS_Tight"
     self.select_rle_output = select_rle_output
 
@@ -74,11 +74,11 @@ class analyzeConfig_charge_flip(analyzeConfig):
     Args:
       inputFiles: list of input files (Ntuples)
       outputFile: output file of the job -- a ROOT file containing histogram
-      process: 
+      process:
       is_mc: flag indicating whether job runs on MC (True) or data (False)
       lumi_scale: event weight (= xsection * luminosity / number of events)
       central_or_shift: either 'central' or one of the systematic uncertainties defined in $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/bin/analyze_charge_flip.cc
-    """  
+    """
     lines = []
     ##lines.append("process.fwliteInput.fileNames = cms.vstring(%s)" % [ os.path.basename(inputFile) for inputFile in inputFiles ])
     lines.append("process.fwliteInput.fileNames = cms.vstring(%s)" % jobOptions["ntupleFiles"])
@@ -102,9 +102,9 @@ class analyzeConfig_charge_flip(analyzeConfig):
     lines.append("process.analyze_charge_flip.selEventsFileName_output = cms.string('%s')" % jobOptions["rleOutputFile"])
     lines.append("process.analyze_charge_flip.use_HIP_mitigation_mediumMuonId = cms.bool(%s)" % jobOptions["use_HIP_mitigation_mediumMuonId"])
     lines.append("process.analyze_charge_flip.applyFakeRateWeights = cms.string('%s')" % jobOptions["applyFakeRateWeights"])
-    
+
     create_cfg(self.cfgFile_analyze_original, jobOptions["cfgFile_modified"], lines)
-    
+
 
   def createCfg_prep_dcard(self, jobOptions):
       """Fills the template of python configuration file for datacard preparation
@@ -138,12 +138,12 @@ class analyzeConfig_charge_flip(analyzeConfig):
         "CMS_ttHl_electronERDown") """
       )
       create_cfg(self.cfgFile_prep_dcard, jobOptions['cfgFile_modified'], lines)
-  
-  
+
+
   def create(self):
     """Creates all necessary config files and runs the complete analysis workfow -- either locally or on the batch system
     """
-  
+
     for sample_name, sample_info in self.samples.items():
       if not sample_info["use_it"] or sample_info["sample_category"] in [ "additional_signal_overlap", "background_data_estimate" ]:
         continue
@@ -165,7 +165,7 @@ class analyzeConfig_charge_flip(analyzeConfig):
         self.dirs[dir_type] = os.path.join(self.configDir, dir_type, self.channel)
       else:
         self.dirs[dir_type] = os.path.join(self.outputDir, dir_type, self.channel)
-    ##print "self.dirs = ", self.dirs    
+    ##print "self.dirs = ", self.dirs
 
     for key in self.dirs.keys():
       if type(self.dirs[key]) == dict:
@@ -188,19 +188,19 @@ class analyzeConfig_charge_flip(analyzeConfig):
           process_name = sample_info["process_name_specific"]
 
           # Edit Siddh ~~~~~~~~~~~~~
-          run_process = False 
-          for sprocess_run in sample_process_run_s:    
-            if sprocess_run == process_name:  
-              run_process = True  
-          #print "Run process: ", sprocess_run     
-              
-          if run_process == False:   
-            continue       
-          #print "run_process:",process_name    
+          run_process = False
+          for sprocess_run in sample_process_run_s:
+            if sprocess_run == process_name:
+              run_process = True
+          #print "Run process: ", sprocess_run
+
+          if run_process == False:
+            continue
+          #print "run_process:",process_name
           # ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
           #if not ("DY" in process_name or "Muon" in process_name): continue
-          logging.info("Creating configuration files to run '%s' for sample %s" % (self.executable_analyze, process_name))  
+          logging.info("Creating configuration files to run '%s' for sample %s" % (self.executable_analyze, process_name))
           sample_category = sample_info["sample_category"]
           is_mc = (sample_info["type"] == "mc")
           is_signal = (sample_category == "signal")
@@ -210,7 +210,7 @@ class analyzeConfig_charge_flip(analyzeConfig):
               #if central_or_shift != "central" and not (lepton_and_hadTau_selection.startswith("Tight") and lepton_charge_selection == "SS"):
               #  continue
               if central_or_shift != "central" and not is_mc:
-                continue                
+                continue
 
               # build config files for executing analysis code
               key_dir = getKey(process_name, lepton_selection)
@@ -260,7 +260,7 @@ class analyzeConfig_charge_flip(analyzeConfig):
 
           #key_hadd_stage1 = getKey(process_name, lepton_selection)
           #key_hadd_stage1_5 = getKey(lepton_selection)
-          #print self.inputFiles_hadd_stage1_5 
+          #print self.inputFiles_hadd_stage1_5
           #self.inputFiles_hadd_stage1_5[key_hadd_stage1_5].append(self.outputFile_hadd_stage1[key_hadd_stage1])
 
           key_addBackgrounds_job = getKey(lepton_selection)
@@ -302,14 +302,14 @@ class analyzeConfig_charge_flip(analyzeConfig):
         'histogramDir' : self.histogramDir_prep_dcard,
         'histogramToFit' : histogramToFit,
         'label' : None
-      }                            
+      }
       self.createCfg_prep_dcard(self.jobOptions_prep_dcard[key_prep_dcard_job])
 
     if self.is_sbatch:
       logging.info("Creating script for submitting '%s' jobs to batch system" % self.executable_analyze)
       self.sbatchFile_analyze = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_analyze_%s.py" % self.channel)
       self.createScript_sbatch_analyze(self.executable_analyze, self.sbatchFile_analyze, self.jobOptions_analyze)
-      
+
 
     logging.info("Creating Makefile")
     lines_makefile = []
@@ -321,5 +321,5 @@ class analyzeConfig_charge_flip(analyzeConfig):
     #self.addToMakefile_add_syst_dcard(lines_makefile)
     #self.addToMakefile_make_plots(lines_makefile)
     self.createMakefile(lines_makefile)
-  
+
     logging.info("Done")

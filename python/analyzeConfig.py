@@ -90,7 +90,11 @@ class analyzeConfig:
         self.pool_id = pool_id if pool_id else uuid.uuid4()
 
         self.workingDir = os.getcwd()
-        print "Working directory is: " + self.workingDir
+        logging.info("Working directory is: %s" % self.workingDir)
+        self.template_dir = os.path.join(
+            os.getenv('CMSSW_BASE'), 'src', 'tthAnalysis', 'HiggsToTauTau', 'test', 'templates'
+        )
+        logging.info("Templates directory is: %s" % self.template_dir)
 
         create_if_not_exists(self.outputDir)
         self.stdout_file = codecs.open(os.path.join(
@@ -115,13 +119,13 @@ class analyzeConfig:
             self.outputDir, DKEY_HIST, "histograms_harvested_stage2_%s.root" % self.channel)
         self.datacardFiles = {}
         self.cfgFile_prep_dcard_original = os.path.join(
-            self.workingDir, "prepareDatacards_cfg.py")
+            self.template_dir, "prepareDatacards_cfg.py")
         self.cfgFile_prep_dcard_modified = {}
         self.histogramDir_prep_dcard = None
         self.make_plots_backgrounds = ["TT", "TTW", "TTZ", "EWK", "Rares"]
         self.make_plots_signal = "signal"
         self.cfgFile_make_plots_original = os.path.join(
-            self.workingDir, "makePlots_cfg.py")
+            self.template_dir, "makePlots_cfg.py")
         self.cfgFiles_make_plots_modified = []
         self.filesToClean = []
         self.rleOutputFiles = {}
@@ -275,7 +279,7 @@ class analyzeConfig:
                                       "selection"].split(","))
         self.inputFileIds[sample_name] = generate_file_ids(
             nof_inputFiles, self.max_files_per_job, blacklist)
-        return (secondary_files, primary_store, secondary_store)    
+        return (secondary_files, primary_store, secondary_store)
 
     def createScript_sbatch(self):
         """Creates the python script necessary to submit the analysis jobs to the batch system
@@ -403,7 +407,7 @@ class analyzeConfig:
 
     def createMakefile(self, lines_makefile):
         """Creates Makefile that runs the complete analysis workfow.
-        """        
+        """
         targets = []
         targets.extend(self.datacardFiles.values())
         if self.rootOutputAux:

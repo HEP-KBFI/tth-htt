@@ -101,6 +101,10 @@ class analyzeConfig:
 
         self.workingDir = os.getcwd()
         logging.info("Working directory is: %s" % self.workingDir)
+        self.template_dir = os.path.join(
+            os.getenv('CMSSW_BASE'), 'src', 'tthAnalysis', 'HiggsToTauTau', 'test', 'templates'
+        )
+        logging.info("Templates directory is: %s" % self.template_dir)
 
         create_if_not_exists(self.configDir)
         create_if_not_exists(self.outputDir)
@@ -117,23 +121,23 @@ class analyzeConfig:
         self.jobOptions_analyze = {}
         self.inputFiles_hadd_stage1 = {}
         self.outputFile_hadd_stage1 = {}
-        self.cfgFile_addBackgrounds = os.path.join(self.workingDir, "addBackgrounds_cfg.py")
+        self.cfgFile_addBackgrounds = os.path.join(self.template_dir, "addBackgrounds_cfg.py")
         self.jobOptions_addBackgrounds = {}
         self.jobOptions_addBackgrounds_sum = {}
         self.inputFiles_hadd_stage1_5 = {}
         self.outputFile_hadd_stage1_5 = {}
-        self.cfgFile_addFakes = os.path.join(self.workingDir, "addBackgroundLeptonFakes_cfg.py")
+        self.cfgFile_addFakes = os.path.join(self.template_dir, "addBackgroundLeptonFakes_cfg.py")
         self.jobOptions_addFakes = {}
         self.inputFiles_hadd_stage2 = {}
         self.outputFile_hadd_stage2 = {}
-        self.cfgFile_prep_dcard = os.path.join(self.workingDir, "prepareDatacards_cfg.py")
+        self.cfgFile_prep_dcard = os.path.join(self.template_dir, "prepareDatacards_cfg.py")
         self.jobOptions_prep_dcard = {}
         self.histogramDir_prep_dcard = None
-        self.cfgFile_add_syst_dcard = os.path.join(self.workingDir, "addSystDatacards_cfg.py")
+        self.cfgFile_add_syst_dcard = os.path.join(self.template_dir, "addSystDatacards_cfg.py")
         self.jobOptions_add_syst_dcard = {}
         self.make_plots_backgrounds = [ "TT", "TTW", "TTZ", "EWK", "Rares" ]
         self.make_plots_signal = "signal"
-        self.cfgFile_make_plots = os.path.join(self.workingDir, "makePlots_cfg.py")
+        self.cfgFile_make_plots = os.path.join(self.template_dir, "makePlots_cfg.py")
         self.jobOptions_make_plots = {}
         self.filesToClean = []
         self.phoniesToAdd = []

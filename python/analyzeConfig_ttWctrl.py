@@ -14,11 +14,11 @@ class analyzeConfig_ttWctrl(analyzeConfig):
 
   """
   def __init__(self, configDir, outputDir, executable_analyze, cfgFile_analyze, samples, hadTau_selection, central_or_shifts,
-               max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs, 
+               max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,
                histograms_to_fit, select_rle_output = False,
                executable_prep_dcard="prepareDatacards"):
     analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "ttWctrl", central_or_shifts,
-      max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs, 
+      max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,
       histograms_to_fit,
       executable_prep_dcard = executable_prep_dcard)
 
@@ -30,13 +30,13 @@ class analyzeConfig_ttWctrl(analyzeConfig):
     self.make_plots_backgrounds = [ "TT", "TTZ", "signal", "EWK", "Rares" ]
     self.make_plots_signal = "TTW"
 
-    self.cfgFile_analyze = os.path.join(self.workingDir, cfgFile_analyze)
+    self.cfgFile_analyze = os.path.join(self.template_dir, cfgFile_analyze)
     self.histogramDir_prep_dcard = "ttWctrl"
     self.evtSelections = [ "2lepton", "3lepton", "2lepton_1tau" ]
-    self.cfgFile_make_plots = os.path.join(self.workingDir, "makePlots_ttWctrl_cfg.py")    
+    self.cfgFile_make_plots = os.path.join(self.template_dir, "makePlots_ttWctrl_cfg.py")
 
     self.select_rle_output = select_rle_output
-    
+
   def createCfg_analyze(self, jobOptions):
     """Create python configuration file for the analyze_ttWctrl executable (analysis code)
 
@@ -47,7 +47,7 @@ class analyzeConfig_ttWctrl(analyzeConfig):
       is_mc: flag indicating whether job runs on MC (True) or data (False)
       lumi_scale: event weight (= xsection * luminosity / number of events)
       central_or_shift: either 'central' or one of the systematic uncertainties defined in $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/bin/analyze_ttWctrl.cc
-    """  
+    """
     lines = []
     ##lines.append("process.fwliteInput.fileNames = cms.vstring(%s)" % [ os.path.basename(inputFile) for inputFile in jobOptions['ntupleFiles'] ])
     lines.append("process.fwliteInput.fileNames = cms.vstring(%s)" % jobOptions['ntupleFiles'])
@@ -114,8 +114,8 @@ class analyzeConfig_ttWctrl(analyzeConfig):
       if not sample_info["use_it"] or sample_info["sample_category"] in [ "additional_signal_overlap", "background_data_estimate" ]:
         continue
       process_name = sample_info["process_name_specific"]
-      logging.info("Creating configuration files to run '%s' for sample %s" % (self.executable_analyze, process_name))  
-            
+      logging.info("Creating configuration files to run '%s' for sample %s" % (self.executable_analyze, process_name))
+
       sample_category = sample_info["sample_category"]
       is_mc = (sample_info["type"] == "mc")
       is_signal = (sample_category == "signal")
@@ -170,10 +170,10 @@ class analyzeConfig_ttWctrl(analyzeConfig):
           self.inputFiles_hadd_stage1[key_hadd_stage1].append(self.jobOptions_analyze[key_analyze_job]['histogramFile'])
           self.outputFile_hadd_stage1[key_hadd_stage1] = os.path.join(self.dirs[DKEY_HIST], "histograms_harvested_stage1_%s_%s.root" % \
             (self.channel, process_name))
-    
+
       # initialize input and output file names for hadd_stage2
       key_hadd_stage1 = getKey(process_name)
-      key_hadd_stage2 = getKey("all")          
+      key_hadd_stage2 = getKey("all")
       if not key_hadd_stage2 in self.inputFiles_hadd_stage2.keys():
         self.inputFiles_hadd_stage2[key_hadd_stage2] = []
       self.inputFiles_hadd_stage2[key_hadd_stage2].append(self.outputFile_hadd_stage1[key_hadd_stage1])
@@ -184,7 +184,7 @@ class analyzeConfig_ttWctrl(analyzeConfig):
     for evtSelection in self.evtSelections:
       for histogramToFit in self.histograms_to_fit:
         key_prep_dcard_job = getKey(evtSelection, histogramToFit)
-        key_hadd_stage2 = getKey("all")                      
+        key_hadd_stage2 = getKey("all")
         self.jobOptions_prep_dcard[key_prep_dcard_job] = {
           'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2],
           'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "prepareDatacards_%s_%s_%s_cfg.py" % (self.channel, evtSelection, histogramToFit)),
@@ -192,13 +192,13 @@ class analyzeConfig_ttWctrl(analyzeConfig):
           'histogramDir' : "_".join([ self.histogramDir_prep_dcard, evtSelection ]),
           'histogramToFit' : histogramToFit,
           'label' : None
-        }                            
+        }
         self.createCfg_prep_dcard(self.jobOptions_prep_dcard[key_prep_dcard_job])
 
     logging.info("Creating configuration files to run 'makePlots'")
     for evtSelection in self.evtSelections:
       key_makePlots_job = getKey(evtSelection)
-      key_hadd_stage2 = getKey("all")                            
+      key_hadd_stage2 = getKey("all")
       self.jobOptions_make_plots[key_makePlots_job] = {
         'executable' : self.executable_make_plots,
         'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2],
@@ -223,6 +223,6 @@ class analyzeConfig_ttWctrl(analyzeConfig):
     self.addToMakefile_prep_dcard(lines_makefile)
     self.addToMakefile_make_plots(lines_makefile)
     self.createMakefile(lines_makefile)
-  
+
     logging.info("Done")
-  
+

@@ -3,29 +3,29 @@ import logging
 from tthAnalysis.HiggsToTauTau.analyzeConfig_new import *
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists
 from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg, createFile, generateInputFileList
-  
+
 class analyzeConfig_hadTopTagger(analyzeConfig):
   """Configuration metadata needed to run analysis in a single go.
-  
+
   Sets up a folder structure by defining full path names; no directory creation is delegated here.
-  
+
   See $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/python/analyzeConfig.py
   for documentation of further Args.
-  
+
   """
-  def __init__(self, configDir, outputDir, executable_analyze, cfgFile_analyze, samples, changeBranchNames, 
+  def __init__(self, configDir, outputDir, executable_analyze, cfgFile_analyze, samples, changeBranchNames,
                hadTau_selection,
                max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs):
     analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "hadTopTagger", [ "central" ],
-      max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs, 
+      max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,
       [])
 
     self.samples = samples
     self.changeBranchNames = changeBranchNames
 
     self.hadTau_selection = hadTau_selection
-    
-    self.cfgFile_analyze = os.path.join(self.workingDir, cfgFile_analyze)    
+
+    self.cfgFile_analyze = os.path.join(self.template_dir, cfgFile_analyze)
 
   def createCfg_analyze(self, jobOptions):
     """Create python configuration file for the analyze_hadTopTagger executable (analysis code)
@@ -33,7 +33,7 @@ class analyzeConfig_hadTopTagger(analyzeConfig):
     Args:
       inputFiles: list of input files (Ntuples)
       outputFile: output file of the job -- a ROOT file containing histogram
-    """  
+    """
     lines = []
     ##lines.append("process.fwliteInput.fileNames = cms.vstring(%s)" % [ os.path.basename(inputFile) for inputFile in jobOptions['ntupleFiles'] ])
     lines.append("process.fwliteInput.fileNames = cms.vstring(%s)" % jobOptions['ntupleFiles'])
@@ -57,7 +57,7 @@ class analyzeConfig_hadTopTagger(analyzeConfig):
       lines.append("process.analyze_hadTopTagger.branchName_genJets = cms.string('GenJet')")
       lines.append("process.analyze_hadTopTagger.redoGenMatching = cms.bool(False)")
     create_cfg(self.cfgFile_analyze, jobOptions['cfgFile_modified'], lines)
-    
+
   def create(self):
     """Creates all necessary config files and runs the complete analysis workfow -- either locally or on the batch system
     """
@@ -66,7 +66,7 @@ class analyzeConfig_hadTopTagger(analyzeConfig):
       if not sample_info["use_it"] or sample_info["sample_category"] in [ "additional_signal_overlap", "background_data_estimate" ]:
         continue
       process_name = sample_info["process_name_specific"]
-      key_dir = getKey(process_name)  
+      key_dir = getKey(process_name)
       for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_RLES ]:
         initDict(self.dirs, [ key_dir, dir_type ])
         if dir_type in [ DKEY_CFGS, DKEY_LOGS ]:
@@ -76,9 +76,9 @@ class analyzeConfig_hadTopTagger(analyzeConfig):
     for dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_HIST, DKEY_LOGS, DKEY_DCRD, DKEY_PLOT, DKEY_HADD_RT ]:
       initDict(self.dirs, [ dir_type ])
       if dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_LOGS, DKEY_DCRD, DKEY_PLOT, DKEY_HADD_RT ]:
-        self.dirs[dir_type] = os.path.join(self.configDir, dir_type, self.channel)   
+        self.dirs[dir_type] = os.path.join(self.configDir, dir_type, self.channel)
       else:
-        self.dirs[dir_type] = os.path.join(self.outputDir, dir_type, self.channel)          
+        self.dirs[dir_type] = os.path.join(self.outputDir, dir_type, self.channel)
     ##print "self.dirs = ", self.dirs
 
     for key in self.dirs.keys():
@@ -101,7 +101,7 @@ class analyzeConfig_hadTopTagger(analyzeConfig):
       process_name = sample_info["process_name_specific"]
       logging.info("Creating configuration files to run '%s' for sample %s" % (self.executable_analyze, process_name))
 
-      sample_category = sample_info["sample_category"]            
+      sample_category = sample_info["sample_category"]
       is_mc = (sample_info["type"] == "mc")
 
       inputFileList = inputFileLists[sample_name]
@@ -143,18 +143,18 @@ class analyzeConfig_hadTopTagger(analyzeConfig):
         self.outputFile_hadd_stage1[key_hadd_stage1] = os.path.join(self.dirs[DKEY_HIST], "histograms_harvested_stage1_%s_%s.root" % \
           (self.channel, process_name))
         self.targets.append(self.outputFile_hadd_stage1[key_hadd_stage1])
-                
+
     if self.is_sbatch:
       logging.info("Creating script for submitting '%s' jobs to batch system" % self.executable_analyze)
       self.sbatchFile_analyze = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_analyze_%s.py" % self.channel)
       self.createScript_sbatch_analyze(self.executable_analyze, self.sbatchFile_analyze, self.jobOptions_analyze)
-            
+
     logging.info("Creating Makefile")
     lines_makefile = []
     self.addToMakefile_analyze(lines_makefile)
     self.addToMakefile_hadd_stage1(lines_makefile)
     self.createMakefile(lines_makefile)
-  
+
     logging.info("Done")
 
     return self.num_jobs
