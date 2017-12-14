@@ -63,7 +63,8 @@ class analyzeConfig:
                  executable_add_syst_dcard = "addSystDatacards",
                  executable_make_plots = "makePlots",
                  executable_make_plots_mcClosure = "makePlots_mcClosure",
-                 verbose = False):
+                 verbose = False,
+                 dry_run = False):
 
         self.configDir = configDir
         self.outputDir = outputDir
@@ -96,6 +97,7 @@ class analyzeConfig:
         self.executable_make_plots = executable_make_plots
         self.executable_make_plots_mcClosure = executable_make_plots_mcClosure
         self.verbose = verbose
+        self.dry_run = dry_run
 
         self.workingDir = os.getcwd()
         logging.info("Working directory is: %s" % self.workingDir)
@@ -342,6 +344,7 @@ class analyzeConfig:
             cvmfs_error_log = self.cvmfs_error_log,
             pool_id = uuid.uuid4(),
             verbose = self.verbose,
+            dry_run = self.dry_run,
         )
         return num_jobs
 
@@ -369,7 +372,7 @@ class analyzeConfig:
         sbatch_hadd_dir = os.path.join(self.dirs[DKEY_HADD_RT], self.channel, hadd_stage_name) if self.dirs[DKEY_HADD_RT] else ''
         self.num_jobs['hadd'] += tools_createScript_sbatch_hadd(
             sbatch_hadd_file, inputFiles, outputFile, scriptFile, logFile, self.workingDir, auxDirName = sbatch_hadd_dir,
-            pool_id = uuid.uuid4(), verbose = self.verbose,
+            pool_id = uuid.uuid4(), verbose = self.verbose, dry_run = self.dry_run,
         )
         return sbatch_hadd_file
 

@@ -169,6 +169,7 @@ if __name__ == '__main__':
       ],
       select_rle_output                     = True,
       verbose                               = idx_job_resubmission > 0,
+      dry_run                               = args.dry_run,
     )
 
     job_statistics = analysis.create()

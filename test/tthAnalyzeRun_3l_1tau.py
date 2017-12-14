@@ -239,6 +239,7 @@ if __name__ == '__main__':
       select_rle_output                     = True,
       select_root_output                    = False,
       verbose                               = idx_job_resubmission > 0,
+      dry_run                               = args.dry_run,
     )
 
     if mode.find("forBDTtraining") != -1:

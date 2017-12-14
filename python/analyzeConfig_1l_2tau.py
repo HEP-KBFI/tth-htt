@@ -44,10 +44,11 @@ class analyzeConfig_1l_2tau(analyzeConfig):
                hadTau_selection, hadTau_charge_selections, applyFakeRateWeights, central_or_shifts,
                max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,
                executable_addBackgrounds, executable_addBackgroundJetToTauFakes, histograms_to_fit,
-               select_rle_output = False, executable_prep_dcard="prepareDatacard", verbose = False):
+               select_rle_output = False, executable_prep_dcard="prepareDatacard", verbose = False,
+               dry_run = False):
     analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "1l_2tau", central_or_shifts,
       max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,
-      histograms_to_fit, verbose = verbose)
+      histograms_to_fit, verbose = verbose, dry_run = dry_run)
 
     self.samples = samples
     self.changeBranchNames = changeBranchNames
