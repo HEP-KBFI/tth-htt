@@ -74,12 +74,6 @@ class analyzeConfig_0l_2tau(analyzeConfig):
     else:
       raise ValueError("Invalid Configuration parameter 'applyFakeRateWeights' = %s !!" % applyFakeRateWeights)
 
-    if era == '2016':
-      self.triggers_2tau = [
-        "HLT_BIT_HLT_DoubleMediumIsoPFTau35_Trk1_eta2p1_Reg_v",
-        "HLT_BIT_HLT_DoubleMediumCombinedIsoPFTau35_Trk1_eta2p1_Reg_v"
-      ]
-
     self.executable_addBackgrounds = executable_addBackgrounds
     self.executable_addFakes = executable_addBackgroundJetToTauFakes
 

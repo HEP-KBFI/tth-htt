@@ -86,16 +86,15 @@ class analyzeConfig_1l_1tau(analyzeConfig):
     else:
       raise ValueError("Invalid Configuration parameter 'applyFakeRateWeights' = %s !!" % applyFakeRateWeights)
 
-    if era == '2016':
+    if era == '2017':
       self.triggers_1mu = [
-        'HLT_BIT_HLT_IsoMu22_v',
-        'HLT_BIT_HLT_IsoTkMu22_v',
-        'HLT_BIT_HLT_IsoMu22_eta2p1_v',
-        'HLT_BIT_HLT_IsoTkMu22_eta2p1_v'
+        # available in 2016 but not in 2017 nano: 'HLT_BIT_HLT_IsoMu22_v',
+        # available in 2016 but not in 2017 nano: 'HLT_BIT_HLT_IsoTkMu22_v',
+        # available in 2016 but not in 2017 nano: 'HLT_BIT_HLT_IsoMu22_eta2p1_v',
+        # available in 2016 but not in 2017 nano: 'HLT_BIT_HLT_IsoTkMu22_eta2p1_v',
       ]
       self.triggers_1e = [
-        'HLT_BIT_HLT_Ele25_eta2p1_WPTight_Gsf_v',
-        ##'HLT_BIT_HLT_Ele45_WPLoose_Gsf_L1JetTauSeeded_v'
+        # available in 2016 but not in 2017 nano: 'HLT_BIT_HLT_Ele25_eta2p1_WPTight_Gsf_v',
       ]
 
     self.chargeSumSelections = chargeSumSelections
