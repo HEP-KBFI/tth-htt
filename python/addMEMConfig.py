@@ -391,7 +391,7 @@ class addMEMConfig:
                 fileset_id = memEvtRangeDict[jobId]['fileset_id']
                 hadd_output_dir = os.path.join(
                     self.dirs[key_dir][DKEY_FINAL_NTUPLES],
-                    str('%04d' % fileset_id // 1000)
+                    '%04d' % (fileset_id // 1000)
                 )
                 if not os.path.exists(hadd_output_dir):
                     os.makedirs(hadd_output_dir)
