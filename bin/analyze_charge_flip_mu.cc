@@ -181,7 +181,7 @@ int main(int argc, char* argv[])
 	  jetPt_option = RecoJetReader::kJetPt_jecDown;
 	  met_option = RecoMEtReader::kMEt_shifted_JetEnDown;
 	} else assert(0);
-      } else cms::Exception("analyze_2lss_1tau")
+      } else throw cms::Exception("analyze_charge_flip_mu")
 	  << "Configuration parameter 'central_or_shift' = " << central_or_shift << " not supported for data !!\n";
     } else if ( central_or_shift_tstring.BeginsWith("CMS_ttHl_JER") ) {
       if ( central_or_shift_tstring.EndsWith("Up") ) met_option = RecoMEtReader::kMEt_shifted_JetResUp;
