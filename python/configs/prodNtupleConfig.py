@@ -169,7 +169,7 @@ class prodNtupleConfig:
             cvmfs_error_log         = self.cvmfs_error_log,
             pool_id                 = self.pool_id,
             verbose                 = self.verbose,
-            job_template_file       = 'sbatch-node.template.produce.sh',
+            job_template_file       = 'sbatch-node.produce.sh.template',
             dry_run                 = self.dry_run,
         )
         return num_jobs

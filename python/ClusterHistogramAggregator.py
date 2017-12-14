@@ -127,7 +127,7 @@ class ClusterHistogramAggregator:
         output_and_input_files.append(os.path.basename(output_file))
         output_and_input_files.extend(input_files)
         ##print "output_and_input_files = ", output_and_input_files
-        
+
         self.sbatch_manager.submitJob(
             inputFiles = input_files,
             executable = "hadd -cachesize 1GiB", # CV: use 1 Gb of cache memory to reduce random disk access
@@ -137,5 +137,5 @@ class ClusterHistogramAggregator:
             scriptFile = script_file,
             logFile = log_file,
             skipIfOutputFileExists = True,
-            job_template_file = 'sbatch-node.template.hadd.sh'
+            job_template_file = 'sbatch-node.hadd.sh.template'
         )

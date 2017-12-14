@@ -19,7 +19,7 @@ def createScript_sbatch(
     pool_id           = '',
     cmssw_base_dir    = None,
     verbose           = False,
-    job_template_file = 'sbatch-node.template.sh',
+    job_template_file = 'sbatch-node.sh.template',
     dry_run           = False,
   ):
     """Creates the python script necessary to submit analysis and/or Ntuple production jobs to the batch system
@@ -64,7 +64,7 @@ def generate_sbatch_lines(
     pool_id           = '',
     cmssw_base_dir    = None,
     verbose           = False,
-    job_template_file = 'sbatch-node.template.sh',
+    job_template_file = 'sbatch-node.sh.template',
     dry_run           = False,
   ):
     if not pool_id:
@@ -115,7 +115,7 @@ def generate_sbatch_line(
     log_file_name     = None,
     cvmfs_error_log   = None,
     min_file_size     = 20000,
-    job_template_file = 'sbatch-node.template.sh',
+    job_template_file = 'sbatch-node.sh.template',
   ):
     if output_file_name and os.path.exists(output_file_name):
         command = "%s %s" % (executable_rm, output_file_name)

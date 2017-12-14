@@ -1,5 +1,5 @@
 #!/bin/bash
-# File: sbatch-node.template.produce.sh
+# File: sbatch-node.sh.template
 # Version: 0.2
 
 # unset JAVA_HOME, because hadoop commands might not work
@@ -10,7 +10,9 @@ unset JAVA_HOME
 # This value is provided by sbatchManager.py that creates sbatch scripts based this template
 echo 'Running script {{ script_file }} (created from template {{ job_template_file }})'
 
+
 RUNNING_COMMAND="{{ RUNNING_COMMAND }}"
+
 
 # Runs executable, wrapped into failure wrapper
 
@@ -19,6 +21,7 @@ main() {
     EXIT_CODE=$?
     return $EXIT_CODE
 }
+
 
 # Executed on node, checks that CVMFS is mounted to this cluster node, or redirects task
 
@@ -46,6 +49,7 @@ run_failure_wrapped_executable() {
     return $EXIT_CODE
 }
 
+
 # Creates scratch dir on cluster node or a directory under $HOME and runs the executable
 
 run_wrapped_executable() {
@@ -56,7 +60,6 @@ run_wrapped_executable() {
     TEMPORARY_EXECUTABLE_LOG_DIR="$JOB_DIR/$EXECUTABLE_LOG_DIR/"
     TEMPORARY_EXECUTABLE_LOG_FILE="$TEMPORARY_EXECUTABLE_LOG_DIR/$EXECUTABLE_LOG_FILE_NAME"
     RANDOM_SLEEP={{ random_sleep }}
-    CMSSW_SEARCH_PATH="$JOB_DIR:$CMSSW_SEARCH_PATH"
 
     echo "Time is: `date`"
     echo "Hostname: `hostname`"
@@ -78,6 +81,16 @@ run_wrapped_executable() {
     cd $JOB_DIR
 
     echo "Time is: `date`"
+
+    if [[ "$JOB_DIR" =~ ^/scratch* ]]; then
+      echo "Copying contents of 'tthAnalysis/HiggsToTauTau/data' directory to Scratch: cp -rL $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/data/* $JOB_DIR/tthAnalysis/HiggsToTauTau/data"
+      mkdir -p tthAnalysis/HiggsToTauTau/data
+      cp -rL $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/data/* $JOB_DIR/tthAnalysis/HiggsToTauTau/data
+    fi
+
+    echo "Time is: `date`"
+
+    CMSSW_SEARCH_PATH="$JOB_DIR:{{ cmssw_base_dir }}/src"
 
     echo "Execute command: {{ exec_name }} {{ command_line_parameter }} &> $TEMPORARY_EXECUTABLE_LOG_FILE"
     {{ exec_name }} {{ command_line_parameter }} &> $TEMPORARY_EXECUTABLE_LOG_FILE
@@ -150,11 +163,12 @@ run_wrapped_executable() {
 
     echo "End time is: `date`"
 
-    echo "Waiting for 10 seconds before returning" # Karl: why do we sleep?
+    echo "Waiting for 10 seconds before returning"
     sleep 10
 
     return $EXIT_CODE
 }
+
 
 # Calls main method
 

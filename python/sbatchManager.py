@@ -4,7 +4,9 @@ from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd, ge
 
 # Template for wrapper that is ran on cluster node
 
-current_dir = os.path.dirname(os.path.realpath(__file__))
+jinja_template_dir = os.path.join(
+  os.getenv('CMSSW_BASE'), 'src', 'tthAnalysis', 'HiggsToTauTau', 'python', 'templates'
+)
 
 # Define error classes
 
@@ -287,13 +289,13 @@ class sbatchManager:
         return job_id
 
     def submitJob(self, inputFiles, executable, command_line_parameter, outputFilePath, outputFiles,
-                  scriptFile, logFile = None, skipIfOutputFileExists = False, job_template_file = 'sbatch-node.template.sh'):
+                  scriptFile, logFile = None, skipIfOutputFileExists = False, job_template_file = 'sbatch-node.sh.template'):
         """Waits for all sbatch jobs submitted by this instance of sbatchManager to finish processing
         """
 
         logging.debug("<sbatchManager::submitJob>: job_template_file = '%s'" % job_template_file)
 
-        job_template_file = os.path.join(current_dir, job_template_file)
+        job_template_file = os.path.join(jinja_template_dir, job_template_file)
         job_template = open(job_template_file, 'r').read()
 
         # raise if logfile missing

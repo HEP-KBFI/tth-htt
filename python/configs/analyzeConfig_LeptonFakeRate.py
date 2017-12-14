@@ -4,7 +4,9 @@ from tthAnalysis.HiggsToTauTau.configs.analyzeConfig_new import *
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, add_chmodX
 from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg, createFile, generateInputFileList
 
-current_dir = os.path.dirname(os.path.realpath(__file__))
+jinja_template_dir = os.path.join(
+  os.getenv('CMSSW_BASE'), 'src', 'tthAnalysis', 'HiggsToTauTau', 'python', 'templates'
+)
 DKEY_COMBINE_OUTPUT="combine_output"
 
 def getBinName(label, minValue, maxValue):
@@ -601,7 +603,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
         self.createCfg_prep_dcard_LeptonFakeRate(self.jobOptions_prep_dcard[key_prep_dcard_job])
 
       # Create setupDatacards_LeptonFakeRate.py script from the template
-      setup_dcards_template_file = os.path.join(current_dir, 'setupDatacards_LeptonFakeRate.py.template')
+      setup_dcards_template_file = os.path.join(jinja_template_dir, 'setupDatacards_LeptonFakeRate.py.template')
       setup_dcards_template = open(setup_dcards_template_file, 'r').read()
       setup_dcards_script = jinja2.Template(setup_dcards_template).render(leptons = lepton_bins_merged)
       setup_dcards_script_path = os.path.join(self.dirs[DKEY_SCRIPTS], 'setupDatacards_LeptonFakeRate.py')
@@ -618,7 +620,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
       # Create run_postFit.sh script from the template
       combine_output_dir = os.path.join(self.dirs[DKEY_COMBINE_OUTPUT], 'output')
       fit_value_file     = os.path.join(combine_output_dir, 'fit_values.txt')
-      postfit_template_file = os.path.join(current_dir, 'run_postFit.sh.template')
+      postfit_template_file = os.path.join(jinja_template_dir, 'run_postFit.sh.template')
       postfit_template = open(postfit_template_file, 'r').read()
       postfit_script = jinja2.Template(postfit_template).render(
         new_cmssw_base         = self.cmssw_base_dir_combine,

@@ -1,5 +1,5 @@
 #!/bin/bash
-# File: sbatch-node.template.sh
+# File: sbatch-node.hadd.sh.template
 # Version: 0.2
 
 # unset JAVA_HOME, because hadoop commands might not work
@@ -12,7 +12,7 @@ echo 'Running script {{ script_file }} (created from template {{ job_template_fi
 
 
 RUNNING_COMMAND="{{ RUNNING_COMMAND }}"
-
+JOB_DIR="{{ job_dir }}/$SLURM_JOBID"
 
 # Runs executable, wrapped into failure wrapper
 
@@ -46,14 +46,17 @@ run_failure_wrapped_executable() {
             echo "Maximum tries reached, will not try to resubmit any more. GL & HF"
         fi
     fi
+
+    echo "Delete job directory: rm -r $JOB_DIR"
+    rm -r $JOB_DIR
+
     return $EXIT_CODE
 }
 
 
-# Creates scratch dir on cluster node or a directory under $HOME and runs the executable
+# Creates scratch dir on cluster node or on /home and runs executable
 
 run_wrapped_executable() {
-    export JOB_DIR="{{ job_dir }}/$SLURM_JOBID"
     EXECUTABLE_LOG_FILE="{{ executable_log_file }}"
     EXECUTABLE_LOG_DIR="`dirname $EXECUTABLE_LOG_FILE`"
     EXECUTABLE_LOG_FILE_NAME="`basename $EXECUTABLE_LOG_FILE`"
@@ -68,6 +71,16 @@ run_wrapped_executable() {
     echo "Sleeping for $RANDOM_SLEEP seconds"
     sleep $RANDOM_SLEEP
 
+    # Check that input histograms are ok on /home
+    export SCRIPTS_DIR="$CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/scripts"
+    python $SCRIPTS_DIR/check_that_histograms_are_valid.py {{ inputFiles }}
+    check_that_histograms_are_valid_exit_status=$?
+
+    if [[ $check_that_histograms_are_valid_exit_status -ne 0 ]]; then
+	echo "ERROR: Some of the input histograms are not valid. Will stop execution."
+	return 1
+    fi
+
     echo "Create job directory: mkdir -p $JOB_DIR"
     mkdir -p $JOB_DIR
 
@@ -77,43 +90,78 @@ run_wrapped_executable() {
     echo "Create final log directory: mkdir -p $EXECUTABLE_LOG_DIR"
     mkdir -p $EXECUTABLE_LOG_DIR
 
-    cd {{ working_dir }}
     cd $JOB_DIR
-
-    echo "Time is: `date`"
-
-    if [[ "$JOB_DIR" =~ ^/scratch* ]]; then
-      echo "Copying contents of 'tthAnalysis/HiggsToTauTau/data' directory to Scratch: cp -rL $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/data/* $JOB_DIR/tthAnalysis/HiggsToTauTau/data"
-      mkdir -p tthAnalysis/HiggsToTauTau/data
-      cp -rL $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/data/* $JOB_DIR/tthAnalysis/HiggsToTauTau/data
-    fi
 
     echo "Time is: `date`"
 
     CMSSW_SEARCH_PATH="$JOB_DIR:{{ cmssw_base_dir }}/src"
 
     echo "Execute command: {{ exec_name }} {{ command_line_parameter }} &> $TEMPORARY_EXECUTABLE_LOG_FILE"
+    # CV: use newer hadd version that supports increasing cachesize, to reduce random disk access
+    OLD_PATH=$PATH
+    export PATH="/cvmfs/cms.cern.ch/share/overrides/bin:\
+/cvmfs/cms.cern.ch/slc6_amd64_gcc630/cms/cmssw/CMSSW_9_4_0_pre3/bin/slc6_amd64_gcc630:\
+/cvmfs/cms.cern.ch/slc6_amd64_gcc630/cms/cmssw/CMSSW_9_4_0_pre3/external/slc6_amd64_gcc630/bin:\
+/cvmfs/cms.cern.ch/slc6_amd64_gcc630/external/llvm/4.0.1/bin:\
+/cvmfs/cms.cern.ch/slc6_amd64_gcc630/external/gcc/6.3.0/bin:\
+/cvmfs/cms.cern.ch/common:\
+/cvmfs/cms.cern.ch/bin:\
+/usr/lib64/qt-3.3/bin:\
+/usr/local/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/sbin"
+    echo "Set PATH = '$PATH'"
+    OLD_LD_LIBRARY_PATH=$LD_LIBRARY_PATH
+    export LD_LIBRARY_PATH="/cvmfs/cms.cern.ch/slc6_amd64_gcc630/cms/cmssw/CMSSW_9_4_0_pre3/biglib/slc6_amd64_gcc630:\
+/cvmfs/cms.cern.ch/slc6_amd64_gcc630/cms/cmssw/CMSSW_9_4_0_pre3/lib/slc6_amd64_gcc630:\
+/cvmfs/cms.cern.ch/slc6_amd64_gcc630/cms/cmssw/CMSSW_9_4_0_pre3/external/slc6_amd64_gcc630/lib:\
+/cvmfs/cms.cern.ch/slc6_amd64_gcc630/external/llvm/4.0.1/lib64:\
+/cvmfs/cms.cern.ch/slc6_amd64_gcc630/external/gcc/6.3.0/lib64:\
+/cvmfs/cms.cern.ch/slc6_amd64_gcc630/external/gcc/6.3.0/lib"
+    echo "Set LD_LIBRARY_PATH = '$LD_LIBRARY_PATH'"
     {{ exec_name }} {{ command_line_parameter }} &> $TEMPORARY_EXECUTABLE_LOG_FILE
-    EXIT_CODE=$?
-    echo "Command {{ exec_name }} exited with code $EXIT_CODE"
+    HADD_EXIT_CODE=$?
+    echo "Restoring old PATH and LD_LIBRARY_PATH"
+    export PATH=$OLD_PATH
+    export LD_LIBRARY_PATH=$OLD_LD_LIBRARY_PATH
+    echo "Command {{ exec_name }} exited with code $HADD_EXIT_CODE"
 
     echo "Time is: `date`"
 
-    echo "Listing of current directory:"
-    ls -l
+    if [[ $HADD_EXIT_CODE -ne 0 ]]; then
+	echo 'ERROR: hadd exited w/ non-zero return code. Will stop execution.'
+	return 1
+    fi
+
+    echo "Contents of temporary job dir: ls -laR $JOB_DIR"
+    ls -laR $JOB_DIR
 
     OUTPUT_FILES="{{ outputFiles }}"
     echo "Copying output files: {{ outputFiles }}"
     for OUTPUT_FILE in $OUTPUT_FILES
     do
+      # Create metadata file for output histogram in the job directory
+      #python $SCRIPTS_DIR/create_histogram_metadata.py $OUTPUT_FILE
+
+      # Check that input histograms are equal to output histogram
+      python $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/scripts/check_that_histograms_are_equal.py $OUTPUT_FILE {{ inputFiles }}
+      CHECK_THAT_HISTOGRAMS_ARE_EQUAL_EXIT_CODE=$?
+
+      if [[ $CHECK_THAT_HISTOGRAMS_ARE_EQUAL_EXIT_CODE -ne 0 ]]; then
+	  echo 'ERROR: Input histograms do not equal output histogram. Will stop execution.'
+	  return 1
+      fi
+
       OUTPUT_DIR="{{ outputDir }}"
-      if [[ "$OUTPUT_DIR" =~ ^/hdfs* && ( ! -z $(which hadoop) ) ]]; then
+      if [[ "$OUTPUT_DIR" =~ ^/hdfs* && ( ! -z $(which hadoop 2>/dev/null) ) ]]; then
+        echo "Hadoop commands available"
         cp_cmd="hadoop fs -copyFromLocal";
         st_cmd="hadoop fs -stat '%b'"
+        ls_cmd="hadoop fs -ls"
         OUTPUT_DIR=${OUTPUT_DIR#/hdfs}
       else
+        echo "Hadoop commands not available; resorting to POSIX commands"
         cp_cmd=cp;
         st_cmd="stat --printf='%s'"
+        ls_cmd="ls -l"
       fi
       cp_cmd="$cp_cmd -f"
 
@@ -141,6 +189,8 @@ run_wrapped_executable() {
 
         if [ ! $COPIED ]; then
           EXIT_CODE=1;
+        else
+          $ls_cmd $OUTPUT_DIR/$OUTPUT_FILE
         fi
 
       else
@@ -158,15 +208,12 @@ run_wrapped_executable() {
     echo "Copy from temporary output dir to output dir: cp -a $TEMPORARY_EXECUTABLE_LOG_DIR/* $EXECUTABLE_LOG_DIR/"
     cp -a $TEMPORARY_EXECUTABLE_LOG_DIR/* $EXECUTABLE_LOG_DIR/
 
-    echo "Delete job directory: rm -r $JOB_DIR"
-    rm -r $JOB_DIR
-
     echo "End time is: `date`"
 
     echo "Waiting for 10 seconds before returning"
     sleep 10
 
-    return $EXIT_CODE
+    return $HADD_EXIT_CODE
 }
 
 
