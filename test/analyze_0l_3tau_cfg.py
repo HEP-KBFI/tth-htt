@@ -1,12 +1,12 @@
 import FWCore.ParameterSet.Config as cms
 
 import os
-  
+
 process = cms.PSet()
-  
+
 process.fwliteInput = cms.PSet(
     ##fileNames = cms.vstring('/afs/cern.ch/user/v/veelken/scratch0/VHbbNtuples_7_6_x/CMSSW_7_6_3/src/VHbbAnalysis/Heppy/test/latest_Loop/tree.root'),
-    fileNames = cms.vstring('/afs/cern.ch/user/k/kaehatah/public/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/VHBB_HEPPY_V12_ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_Py8_mWCutfix__fall15MAv2-pu25ns15v1_76r2as_v12-v1/160330_172426/0000/tree_1.root'),
+    fileNames = cms.vstring(''),
     maxEvents = cms.int32(-1),
     outputEvery = cms.uint32(100000)
 )
@@ -22,11 +22,11 @@ process.analyze_0l_3tau = cms.PSet(
 
     histogramDir = cms.string('0l_3tau_OS_Tight'),
 
-    era = cms.string('2015'),
+    era = cms.string('2017'),
 
     triggers_2tau = cms.vstring(""),
-    use_triggers_2tau = cms.bool(True),   
-        
+    use_triggers_2tau = cms.bool(True),
+
     hadTauSelection = cms.string('Tight|dR03mvaTight'),
     hadTauChargeSelection = cms.string('OS'),
     apply_hadTauGenMatching = cms.bool(False),
@@ -60,7 +60,7 @@ process.analyze_0l_3tau = cms.PSet(
     triggerSF_2tau = cms.PSet(),
 
     use_HIP_mitigation_mediumMuonId = cms.bool(False),
-        
+
     isMC = cms.bool(False),
     central_or_shift = cms.string('central'),
     lumiScale = cms.double(1.),
@@ -68,17 +68,17 @@ process.analyze_0l_3tau = cms.PSet(
 
     fillGenEvtHistograms = cms.bool(False),
 
-    branchName_electrons = cms.string('selLeptons'),
-    branchName_muons = cms.string('selLeptons'),
-    branchName_hadTaus = cms.string('TauGood'),
+    branchName_electrons = cms.string('Electron'),
+    branchName_muons = cms.string('Muon'),
+    branchName_hadTaus = cms.string('Tau'),
     branchName_jets = cms.string('Jet'),
-    branchName_met = cms.string('met'),
+    branchName_met = cms.string('MET'),
 
     branchName_genLeptons1 = cms.string('GenLep'),
-    branchName_genLeptons2 = cms.string('GenLepFromTau'),
-    branchName_genHadTaus = cms.string('GenHadTaus'),
+    branchName_genLeptons2 = cms.string(''),
+    branchName_genHadTaus = cms.string('GenVisTau'),
     branchName_genJets = cms.string('GenJet'),
-    
+
     selEventsFileName_input = cms.string(''),
     selEventsFileName_output = cms.string(''),
     selectBDT = cms.bool(False),

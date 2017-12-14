@@ -5,7 +5,7 @@ import os
 process = cms.PSet()
 
 process.fwliteInput = cms.PSet(
-  fileNames = cms.vstring('/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau/MC/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/VHBB_HEPPY_V25tthtautau_ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_Py8_mWCutfix__RunIISummer16MAv2-PUMoriond17_80r2as_2016_TrancheIV_v6_ext1-v1/170207_122849/0000/tree_1.root'),
+  fileNames = cms.vstring(''),
   maxEvents = cms.int32(-1),
   outputEvery = cms.uint32(100000)
 )
@@ -21,7 +21,7 @@ process.analyze_1l_2tau = cms.PSet(
 
   histogramDir = cms.string('1l_2tau_OS_Tight'),
 
-  era = cms.string('2016'),
+  era = cms.string('2017'),
 
   triggers_1e = cms.vstring("HLT_BIT_HLT_Ele23_WPLoose_Gsf_v"),
   use_triggers_1e = cms.bool(True),
@@ -77,19 +77,19 @@ process.analyze_1l_2tau = cms.PSet(
   apply_genWeight = cms.bool(True),
   apply_trigger_bits = cms.bool(True),
   apply_hadTauFakeRateSF = cms.bool(False),
-  isBDTtraining = cms.bool(False), 
+  isBDTtraining = cms.bool(False),
 
   fillGenEvtHistograms = cms.bool(False),
 
-  branchName_electrons = cms.string('selLeptons'),
-  branchName_muons = cms.string('selLeptons'),
-  branchName_hadTaus = cms.string('TauGood'),
+  branchName_electrons = cms.string('Electron'),
+  branchName_muons = cms.string('Muon'),
+  branchName_hadTaus = cms.string('Tau'),
   branchName_jets = cms.string('Jet'),
-  branchName_met = cms.string('met'),
+  branchName_met = cms.string('MET'),
 
   branchName_genLeptons1 = cms.string('GenLep'),
-  branchName_genLeptons2 = cms.string('GenLepFromTau'),
-  branchName_genHadTaus = cms.string('GenHadTaus'),
+  branchName_genLeptons2 = cms.string(''),
+  branchName_genHadTaus = cms.string('GenVisTau'),
   branchName_genJets = cms.string('GenJet'),
   redoGenMatching = cms.bool(True),
 
