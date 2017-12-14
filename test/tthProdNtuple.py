@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import os, logging, sys, getpass, argparse, datetime
 
-from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2017_test import samples_2017
+from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_test import samples_2017
 from tthAnalysis.HiggsToTauTau.configs.prodNtupleConfig import prodNtupleConfig
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 

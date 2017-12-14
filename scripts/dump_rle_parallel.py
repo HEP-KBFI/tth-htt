@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import logging, argparse, os, sys, getpass, jinja2, subprocess, stat, re, io, ROOT
-from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016 import samples_2016 as samples
+from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016 import samples_2016 as samples
 
 dumPy = """#!/usr/bin/env python
 

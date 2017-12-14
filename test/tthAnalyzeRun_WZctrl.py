@@ -1,7 +1,7 @@
 import os, logging, sys, getpass
 
-from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_WZctrl_2015 import samples_2015
-from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_WZctrl_2016 import samples_2016
+from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_WZctrl_2015 import samples_2015
+from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_WZctrl_2016 import samples_2016
 from tthAnalysis.HiggsToTauTau.configs.analyzeConfig_WZctrl import analyzeConfig_WZctrl
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 

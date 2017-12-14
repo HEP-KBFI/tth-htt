@@ -1,7 +1,7 @@
 import os, logging, sys, getpass
 
-#from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_chargeflip_2015 import samples_2015
-from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_chargeflip_2016 import samples_2016
+#from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_chargeflip_2015 import samples_2015
+from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_chargeflip_2016 import samples_2016
 from tthAnalysis.HiggsToTauTau.configs.analyzeConfig_charge_flip import analyzeConfig_charge_flip
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 

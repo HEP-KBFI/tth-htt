@@ -1,7 +1,7 @@
 import os, logging, sys, getpass
 
-#from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_hadTopTagger_2015 import samples_2015
-from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_hadTopTagger_2016 import samples_2016
+#from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_hadTopTagger_2015 import samples_2015
+from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_hadTopTagger_2016 import samples_2016
 from tthAnalysis.HiggsToTauTau.configs.analyzeConfig_hadTopTagger import analyzeConfig_hadTopTagger
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 

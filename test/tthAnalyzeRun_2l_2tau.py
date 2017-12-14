@@ -86,16 +86,16 @@ if mode != "VHbb":
 
 if mode == "VHbb":
   if use_prod_ntuples:
-    from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_prodNtuples_2017_test import samples_2017
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_prodNtuples_2017_test import samples_2017
   else:
-    from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2017_test import samples_2017
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_test import samples_2017
   hadTau_selection     = "dR03mvaVTight"
   applyFakeRateWeights = "4L"
 elif mode == "forBDTtraining":
 #  if use_prod_ntuples:
-#    from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_prodNtuples_2017_FastSim import samples_2017
+#    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_prodNtuples_2017_FastSim import samples_2017
 #  else:
-#    from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2017_FastSim import samples_2017
+#    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_FastSim import samples_2017
   hadTau_selection         = "dR03mvaVTight"
   hadTau_selection_relaxed = "dR03mvaLoose"
   applyFakeRateWeights     = "4L"

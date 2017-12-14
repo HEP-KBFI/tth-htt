@@ -92,9 +92,9 @@ if mode != "VHbb":
 
 if mode == "VHbb":
   if use_prod_ntuples:
-    from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_prodNtuples_2017_test import samples_2017
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_prodNtuples_2017_test import samples_2017
   else:
-    from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2017_test import samples_2017
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_test import samples_2017
 
   for sample_name, sample_info in samples_2017.items():
     if sample_name in [
@@ -105,21 +105,21 @@ if mode == "VHbb":
   hadTau_selection     = "dR03mvaMedium"
   applyFakeRateWeights = "2lepton"
 elif mode == "addMEM":
-#  from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2017_2lss1tau_addMEM import samples_2017
+#  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_2lss1tau_addMEM import samples_2017
   changeBranchNames    = True
   MEMbranch            = 'memObjects_2lss_1tau_lepFakeable_tauTight_dR03mvaMedium'
   hadTau_selection     = "dR03mvaMedium"
   applyFakeRateWeights = "3L"
 elif mode == "forBDTtraining_beforeAddMEM":
 #  if use_prod_ntuples:
-#    from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_prodNtuples_2017_FastSim import samples_2017
+#    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_prodNtuples_2017_FastSim import samples_2017
 #  else:
-#    from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2017_FastSim import samples_2017
+#    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_FastSim import samples_2017
   hadTau_selection         = "dR03mvaMedium"
   hadTau_selection_relaxed = "dR03mvaMedium"
   applyFakeRateWeights     = "2lepton"
 elif mode == "forBDTtraining_afterAddMEM":
-#  from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2017_2lss1tau_addMEM import samples_2017
+#  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_2lss1tau_addMEM import samples_2017
   changeBranchNames        = True
   MEMbranch                = 'memObjects_2lss_1tau_lepLoose_tauTight_dR03mvaLoose'
   hadTau_selection         = "dR03mvaMedium"

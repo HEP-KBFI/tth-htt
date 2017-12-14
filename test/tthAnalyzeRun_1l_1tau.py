@@ -74,9 +74,9 @@ applyFakeRateWeights = "2L"
 max_files_per_job    = 10 if use_prod_ntuples else 100
 
 if use_prod_ntuples:
-  from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_prodNtuples_2017_test import samples_2017
+  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_prodNtuples_2017_test import samples_2017
 else:
-  from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2017_test import samples_2017
+  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_test import samples_2017
 
 for sample_name, sample_info in samples_2017.items():
   if sample_info["type"] == "mc":

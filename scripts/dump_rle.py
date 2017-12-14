@@ -113,7 +113,7 @@ if __name__ == '__main__':
 
   else:
 
-    from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016 import samples_2016 as samples
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016 import samples_2016 as samples
 
     output_dir = output
     if not check_dir(output_dir, use_force):

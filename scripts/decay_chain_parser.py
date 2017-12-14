@@ -230,7 +230,7 @@ import argparse, logging, sys, subprocess, os, re, jinja2, codecs, copy, itertoo
 
 try:
   __import__('imp').find_module('tthAnalysis')
-  from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016 import samples_2016
+  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2016 import samples_2016
 except ImportError:
   sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'python'))
   from tthAnalyzeSamples_2016 import samples_2016

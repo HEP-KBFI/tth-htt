@@ -2,8 +2,8 @@ import os, logging, sys, getpass
 
 from tthAnalysis.HiggsToTauTau.configs.analyzeConfig_charge_flip_mu import analyzeConfig_charge_flip_mu
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
-#from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_chargeflip_2015 import samples_2015
-from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_chargeflip_mu_2016 import samples_2016
+#from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_chargeflip_2015 import samples_2015
+from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_chargeflip_mu_2016 import samples_2016
 
 #ERA = "2015"
 ERA = "2016"

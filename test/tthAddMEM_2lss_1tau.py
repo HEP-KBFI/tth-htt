@@ -23,11 +23,11 @@ central_or_shift = [
 # CV: run Ntuple production jobs also for high statistics background samples
 #     not used in the analysis, but used for BDT training by Arun
 if isForBDTtraining:
-  from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_prodNtuples_2016_FastSim import samples_2016 as samples
+  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_prodNtuples_2016_FastSim import samples_2016 as samples
   leptonSelection = "Loose"
   hadTauSelection = "Tight|dR03mvaLoose"
 else:
-  from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_prodNtuples_2016 import samples_2016 as samples
+  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_prodNtuples_2016 import samples_2016 as samples
   leptonSelection = "Fakeable"
   hadTauSelection = "Tight|dR03mvaMedium"
 
