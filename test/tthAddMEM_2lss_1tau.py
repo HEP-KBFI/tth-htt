@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import os, logging, sys, getpass
 
-from tthAnalysis.HiggsToTauTau.addMEMConfig_2lss_1tau import addMEMConfig_2lss_1tau
+from tthAnalysis.HiggsToTauTau.configs.addMEMConfig_2lss_1tau import addMEMConfig_2lss_1tau
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 
 version          = "2017Nov05"

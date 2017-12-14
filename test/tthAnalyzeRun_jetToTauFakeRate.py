@@ -2,7 +2,7 @@ import os, logging, sys, getpass
 
 from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_jetToTauFakeRate_2015 import samples_2015
 from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_jetToTauFakeRate_2016 import samples_2016
-from tthAnalysis.HiggsToTauTau.analyzeConfig_jetToTauFakeRate import analyzeConfig_jetToTauFakeRate
+from tthAnalysis.HiggsToTauTau.configs.analyzeConfig_jetToTauFakeRate import analyzeConfig_jetToTauFakeRate
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 
 #ERA = "2015"
@@ -37,8 +37,8 @@ if __name__ == '__main__':
     jet_maxPt = 1.e+6,
     jet_minAbsEta = -1.,
     jet_maxAbsEta = 2.3,
-    hadTau_selection_denominator = "dR03mvaVVLoose", 
-    hadTau_selections_numerator = [      
+    hadTau_selection_denominator = "dR03mvaVVLoose",
+    hadTau_selections_numerator = [
       "dR03mvaVLoose",
       "dR03mvaLoose",
       "dR03mvaMedium",
@@ -48,19 +48,19 @@ if __name__ == '__main__':
     ],
     absEtaBins = [ -1., 1.479, 9.9 ],
     ptBins = [ 20., 25., 30., 35., 40., 45., 50., 60., 70., 80., 100., 200. ],
-    central_or_shifts = [ 
+    central_or_shifts = [
       "central",
-##       "CMS_ttHl_btag_HFUp", 
-##       "CMS_ttHl_btag_HFDown",	
-##       "CMS_ttHl_btag_HFStats1Up", 
+##       "CMS_ttHl_btag_HFUp",
+##       "CMS_ttHl_btag_HFDown",
+##       "CMS_ttHl_btag_HFStats1Up",
 ##       "CMS_ttHl_btag_HFStats1Down",
-##       "CMS_ttHl_btag_HFStats2Up", 
+##       "CMS_ttHl_btag_HFStats2Up",
 ##       "CMS_ttHl_btag_HFStats2Down",
-##       "CMS_ttHl_btag_LFUp", 
-##       "CMS_ttHl_btag_LFDown",	
-##       "CMS_ttHl_btag_LFStats1Up", 
+##       "CMS_ttHl_btag_LFUp",
+##       "CMS_ttHl_btag_LFDown",
+##       "CMS_ttHl_btag_LFStats1Up",
 ##       "CMS_ttHl_btag_LFStats1Down",
-##       "CMS_ttHl_btag_LFStats2Up", 
+##       "CMS_ttHl_btag_LFStats2Up",
 ##       "CMS_ttHl_btag_LFStats2Down",
 ##       "CMS_ttHl_btag_cErr1Up",
 ##       "CMS_ttHl_btag_cErr1Down",
@@ -74,9 +74,9 @@ if __name__ == '__main__':
 ##       "CMS_ttHl_FRet_shiftDown",
 ##       "CMS_ttHl_FRmt_shiftUp",
 ##       "CMS_ttHl_FRmt_shiftDown",
-##       "CMS_ttHl_thu_shape_ttH_x1Up",  
+##       "CMS_ttHl_thu_shape_ttH_x1Up",
 ##       "CMS_ttHl_thu_shape_ttH_x1Down",
-##       "CMS_ttHl_thu_shape_ttH_y1Up",   
+##       "CMS_ttHl_thu_shape_ttH_y1Up",
 ##       "CMS_ttHl_thu_shape_ttH_y1Down",
 ##       "CMS_ttHl_thu_shape_ttW_x1Up",
 ##       "CMS_ttHl_thu_shape_ttW_x1Down",
@@ -85,8 +85,8 @@ if __name__ == '__main__':
 ##       "CMS_ttHl_thu_shape_ttZ_x1Up",
 ##       "CMS_ttHl_thu_shape_ttZ_x1Down",
 ##       "CMS_ttHl_thu_shape_ttZ_y1Up",
-##       "CMS_ttHl_thu_shape_ttZ_y1Down"  
-      
+##       "CMS_ttHl_thu_shape_ttZ_y1Down"
+
     ],
     max_files_per_job = 100,
     era = ERA, use_lumi = True, lumi = LUMI,

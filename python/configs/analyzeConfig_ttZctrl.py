@@ -1,10 +1,10 @@
 import logging
 
-from tthAnalysis.HiggsToTauTau.analyzeConfig_new import *
+from tthAnalysis.HiggsToTauTau.configs.analyzeConfig_new import *
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists
 from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg, createFile, generateInputFileList
 
-class analyzeConfig_WZctrl(analyzeConfig):
+class analyzeConfig_ttZctrl(analyzeConfig):
   """Configuration metadata needed to run analysis in a single go.
 
   Sets up a folder structure by defining full path names; no directory creation is delegated here.
@@ -17,7 +17,7 @@ class analyzeConfig_WZctrl(analyzeConfig):
                max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,
                histograms_to_fit, select_rle_output = False,
                executable_prep_dcard="prepareDatacards"):
-    analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "WZctrl", central_or_shifts,
+    analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "ttZctrl", central_or_shifts,
       max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,
       histograms_to_fit,
       executable_prep_dcard = executable_prep_dcard)
@@ -26,51 +26,51 @@ class analyzeConfig_WZctrl(analyzeConfig):
 
     self.hadTau_selection_part2 = hadTau_selection
 
-    self.prep_dcard_processesToCopy = [ "data_obs", "TT", "TTW", "TTZ", "WZ", "EWK", "Rares" ]
-    self.make_plots_backgrounds = [ "TT", "TTW", "TTZ", "signal", "EWK", "Rares" ]
-    self.make_plots_signal = "WZ"
+    self.prep_dcard_processesToCopy = [ "data_obs", "TT", "TTW", "TTZ", "EWK", "Rares" ]
+    self.make_plots_backgrounds = [ "TT", "TTW", "signal", "EWK", "Rares" ]
+    self.make_plots_signal = "TTZ"
 
     self.cfgFile_analyze = os.path.join(self.template_dir, cfgFile_analyze)
-    self.histogramDir_prep_dcard = "WZctrl"
+    self.histogramDir_prep_dcard = "ttZctrl"
     self.evtSelections = [ "2lepton", "3lepton", "2lepton_1tau" ]
-    self.cfgFile_make_plots = os.path.join(self.template_dir, "makePlots_WZctrl_cfg.py")
+    self.cfgFile_make_plots = os.path.join(self.template_dir, "makePlots_ttZctrl_cfg.py")
 
     self.select_rle_output = select_rle_output
 
   def createCfg_analyze(self, jobOptions):
-    """Create python configuration file for the analyze_WZctrl executable (analysis code)
+    """Create python configuration file for the analyze_ttZctrl executable (analysis code)
 
     Args:
       inputFiles: list of input files (Ntuples)
       outputFile: output file of the job -- a ROOT file containing histogram
-      process: either `TT`, `TTW`, `TTZ`, `WZ`, `EWK`, `Rares`, `data_obs`, `ttH_hww`, `ttH_hzz` or `ttH_htt`
+      process: either `TT`, `TTW`, `TTZ`, `EWK`, `Rares`, `data_obs`, `ttH_hww`, `ttH_hzz` or `ttH_htt`
       is_mc: flag indicating whether job runs on MC (True) or data (False)
       lumi_scale: event weight (= xsection * luminosity / number of events)
-      central_or_shift: either 'central' or one of the systematic uncertainties defined in $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/bin/analyze_WZctrl.cc
+      central_or_shift: either 'central' or one of the systematic uncertainties defined in $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/bin/analyze_ttZctrl.cc
     """
     lines = []
     ##lines.append("process.fwliteInput.fileNames = cms.vstring(%s)" % [ os.path.basename(inputFile) for inputFile in jobOptions['ntupleFiles'] ])
     lines.append("process.fwliteInput.fileNames = cms.vstring(%s)" % jobOptions['ntupleFiles'])
     lines.append("process.fwliteOutput.fileName = cms.string('%s')" % os.path.basename(jobOptions['histogramFile']))
-    lines.append("process.analyze_WZctrl.process = cms.string('%s')" % jobOptions['sample_category'])
-    lines.append("process.analyze_WZctrl.era = cms.string('%s')" % self.era)
-    lines.append("process.analyze_WZctrl.triggers_1e = cms.vstring(%s)" % self.triggers_1e)
-    lines.append("process.analyze_WZctrl.use_triggers_1e = cms.bool(%s)" % ("1e" in jobOptions['triggers']))
-    lines.append("process.analyze_WZctrl.triggers_2e = cms.vstring(%s)" % self.triggers_2e)
-    lines.append("process.analyze_WZctrl.use_triggers_2e = cms.bool(%s)" % ("2e" in jobOptions['triggers']))
-    lines.append("process.analyze_WZctrl.triggers_1mu = cms.vstring(%s)" % self.triggers_1mu)
-    lines.append("process.analyze_WZctrl.use_triggers_1mu = cms.bool(%s)" % ("1mu" in jobOptions['triggers']))
-    lines.append("process.analyze_WZctrl.triggers_2mu = cms.vstring(%s)" % self.triggers_2mu)
-    lines.append("process.analyze_WZctrl.use_triggers_2mu = cms.bool(%s)" % ("2mu" in jobOptions['triggers']))
-    lines.append("process.analyze_WZctrl.triggers_1e1mu = cms.vstring(%s)" % self.triggers_1e1mu)
-    lines.append("process.analyze_WZctrl.use_triggers_1e1mu = cms.bool(%s)" % ("1e1mu" in jobOptions['triggers']))
-    lines.append("process.analyze_WZctrl.hadTauSelection = cms.string('Tight|%s')" % jobOptions['hadTau_selection'])
-    lines.append("process.analyze_WZctrl.use_HIP_mitigation_mediumMuonId = cms.bool(%s)" % jobOptions['use_HIP_mitigation_mediumMuonId'])
-    lines.append("process.analyze_WZctrl.isMC = cms.bool(%s)" % jobOptions['is_mc'])
-    lines.append("process.analyze_WZctrl.central_or_shift = cms.string('%s')" % jobOptions['central_or_shift'])
-    lines.append("process.analyze_WZctrl.lumiScale = cms.double(%f)" % jobOptions['lumi_scale'])
-    lines.append("process.analyze_WZctrl.apply_trigger_bits = cms.bool(%s)" % jobOptions['apply_trigger_bits'])
-    lines.append("process.analyze_WZctrl.selEventsFileName_output = cms.string('%s')" % jobOptions['rleOutputFile'])
+    lines.append("process.analyze_ttZctrl.process = cms.string('%s')" % jobOptions['sample_category'])
+    lines.append("process.analyze_ttZctrl.era = cms.string('%s')" % self.era)
+    lines.append("process.analyze_ttZctrl.triggers_1e = cms.vstring(%s)" % self.triggers_1e)
+    lines.append("process.analyze_ttZctrl.use_triggers_1e = cms.bool(%s)" % ("1e" in jobOptions['triggers']))
+    lines.append("process.analyze_ttZctrl.triggers_2e = cms.vstring(%s)" % self.triggers_2e)
+    lines.append("process.analyze_ttZctrl.use_triggers_2e = cms.bool(%s)" % ("2e" in jobOptions['triggers']))
+    lines.append("process.analyze_ttZctrl.triggers_1mu = cms.vstring(%s)" % self.triggers_1mu)
+    lines.append("process.analyze_ttZctrl.use_triggers_1mu = cms.bool(%s)" % ("1mu" in jobOptions['triggers']))
+    lines.append("process.analyze_ttZctrl.triggers_2mu = cms.vstring(%s)" % self.triggers_2mu)
+    lines.append("process.analyze_ttZctrl.use_triggers_2mu = cms.bool(%s)" % ("2mu" in jobOptions['triggers']))
+    lines.append("process.analyze_ttZctrl.triggers_1e1mu = cms.vstring(%s)" % self.triggers_1e1mu)
+    lines.append("process.analyze_ttZctrl.use_triggers_1e1mu = cms.bool(%s)" % ("1e1mu" in jobOptions['triggers']))
+    lines.append("process.analyze_ttZctrl.hadTauSelection = cms.string('Tight|%s')" % jobOptions['hadTau_selection'])
+    lines.append("process.analyze_ttZctrl.use_HIP_mitigation_mediumMuonId = cms.bool(%s)" % jobOptions['use_HIP_mitigation_mediumMuonId'])
+    lines.append("process.analyze_ttZctrl.isMC = cms.bool(%s)" % jobOptions['is_mc'])
+    lines.append("process.analyze_ttZctrl.central_or_shift = cms.string('%s')" % jobOptions['central_or_shift'])
+    lines.append("process.analyze_ttZctrl.lumiScale = cms.double(%f)" % jobOptions['lumi_scale'])
+    lines.append("process.analyze_ttZctrl.apply_trigger_bits = cms.bool(%s)" % jobOptions['apply_trigger_bits'])
+    lines.append("process.analyze_ttZctrl.selEventsFileName_output = cms.string('%s')" % jobOptions['rleOutputFile'])
     create_cfg(self.cfgFile_analyze, jobOptions['cfgFile_modified'], lines)
 
   def create(self):

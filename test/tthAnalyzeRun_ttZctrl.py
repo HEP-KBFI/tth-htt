@@ -2,7 +2,7 @@ import os, logging, sys, getpass
 
 from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_ttZctrl_2015 import samples_2015
 from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_ttZctrl_2016 import samples_2016
-from tthAnalysis.HiggsToTauTau.analyzeConfig_ttZctrl import analyzeConfig_ttZctrl
+from tthAnalysis.HiggsToTauTau.configs.analyzeConfig_ttZctrl import analyzeConfig_ttZctrl
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 
 #ERA = "2015"
@@ -34,19 +34,19 @@ if __name__ == '__main__':
     executable_analyze = "analyze_ttZctrl", cfgFile_analyze = "analyze_ttZctrl_cfg.py",
     samples = samples,
     hadTau_selection = "dR03mvaLoose",
-    central_or_shifts = [ 
+    central_or_shifts = [
       "central",
-##       "CMS_ttHl_btag_HFUp", 
-##       "CMS_ttHl_btag_HFDown",	
-##       "CMS_ttHl_btag_HFStats1Up", 
+##       "CMS_ttHl_btag_HFUp",
+##       "CMS_ttHl_btag_HFDown",
+##       "CMS_ttHl_btag_HFStats1Up",
 ##       "CMS_ttHl_btag_HFStats1Down",
-##       "CMS_ttHl_btag_HFStats2Up", 
+##       "CMS_ttHl_btag_HFStats2Up",
 ##       "CMS_ttHl_btag_HFStats2Down",
-##       "CMS_ttHl_btag_LFUp", 
-##       "CMS_ttHl_btag_LFDown",	
-##       "CMS_ttHl_btag_LFStats1Up", 
+##       "CMS_ttHl_btag_LFUp",
+##       "CMS_ttHl_btag_LFDown",
+##       "CMS_ttHl_btag_LFStats1Up",
 ##       "CMS_ttHl_btag_LFStats1Down",
-##       "CMS_ttHl_btag_LFStats2Up", 
+##       "CMS_ttHl_btag_LFStats2Up",
 ##       "CMS_ttHl_btag_LFStats2Down",
 ##       "CMS_ttHl_btag_cErr1Up",
 ##       "CMS_ttHl_btag_cErr1Down",
@@ -54,9 +54,9 @@ if __name__ == '__main__':
 ##       "CMS_ttHl_btag_cErr2Down",
 ##       "CMS_ttHl_JESUp",
 ##       "CMS_ttHl_JESDown",
-##       "CMS_ttHl_thu_shape_ttH_x1Up",  
+##       "CMS_ttHl_thu_shape_ttH_x1Up",
 ##       "CMS_ttHl_thu_shape_ttH_x1Down",
-##       "CMS_ttHl_thu_shape_ttH_y1Up",   
+##       "CMS_ttHl_thu_shape_ttH_y1Up",
 ##       "CMS_ttHl_thu_shape_ttH_y1Down",
 ##       "CMS_ttHl_thu_shape_ttW_x1Up",
 ##       "CMS_ttHl_thu_shape_ttW_x1Down",
@@ -65,7 +65,7 @@ if __name__ == '__main__':
 ##       "CMS_ttHl_thu_shape_ttZ_x1Up",
 ##       "CMS_ttHl_thu_shape_ttZ_x1Down",
 ##       "CMS_ttHl_thu_shape_ttZ_y1Up",
-##       "CMS_ttHl_thu_shape_ttZ_y1Down" 
+##       "CMS_ttHl_thu_shape_ttZ_y1Down"
     ],
     max_files_per_job = 100,
     era = ERA, use_lumi = True, lumi = LUMI,

@@ -1,4 +1,4 @@
-import codecs, os, logging, ROOT, array, uuid
+import os, logging, ROOT, array, uuid
 
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd, get_log_version
 from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg, generateInputFileList

@@ -2,7 +2,7 @@
 import os, logging, sys, getpass
 
 from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_jetToTauFakeRate_2016 import samples_2016
-from tthAnalysis.HiggsToTauTau.analyzeConfig_LeptonFakeRate import analyzeConfig_LeptonFakeRate
+from tthAnalysis.HiggsToTauTau.configs.analyzeConfig_LeptonFakeRate import analyzeConfig_LeptonFakeRate
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 
 ERA                    = "2016"

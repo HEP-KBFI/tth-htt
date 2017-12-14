@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import os, logging, sys, getpass, argparse, datetime
-from tthAnalysis.HiggsToTauTau.analyzeConfig_0l_2tau import analyzeConfig_0l_2tau
+from tthAnalysis.HiggsToTauTau.configs.analyzeConfig_0l_2tau import analyzeConfig_0l_2tau
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 
 # E.g.: ./tthAnalyzeRun_0l_2tau.py -v 2017Dec13 -mode VHbb -e 2017 --use-prod-ntuples

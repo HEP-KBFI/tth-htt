@@ -1,6 +1,6 @@
 import os, logging, sys, getpass
 
-from tthAnalysis.HiggsToTauTau.analyzeConfig_charge_flip_mu import analyzeConfig_charge_flip_mu
+from tthAnalysis.HiggsToTauTau.configs.analyzeConfig_charge_flip_mu import analyzeConfig_charge_flip_mu
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 #from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_chargeflip_2015 import samples_2015
 from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_chargeflip_mu_2016 import samples_2016
@@ -26,7 +26,7 @@ if __name__ == '__main__':
       stream = sys.stdout,
       level = logging.INFO,
       format = '%(asctime)s - %(levelname)s: %(message)s')
-  
+
   analysis = analyzeConfig_charge_flip_mu(
     configDir = os.path.join("/home", getpass.getuser(), "ttHAnalysis", ERA, version),
     outputDir = os.path.join("/hdfs/local/ttH_2tau", getpass.getuser(), "ttHAnalysis", ERA, version),
@@ -35,7 +35,7 @@ if __name__ == '__main__':
     samples = samples_2016,
     lepton_selections = [ "Tight"],
     #hadTau_selection = "dR03mvaTight",
-    central_or_shifts = [ 
+    central_or_shifts = [
       "central",
        #"CMS_ttHl_muonERUp",
        #"CMS_ttHl_muonERDown",

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import os, logging, sys, getpass, argparse, datetime
-from tthAnalysis.HiggsToTauTau.analyzeConfig_2lss_1tau import analyzeConfig_2lss_1tau
+from tthAnalysis.HiggsToTauTau.configs.analyzeConfig_2lss_1tau import analyzeConfig_2lss_1tau
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 
 #--------------------------------------------------------------------------------

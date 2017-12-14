@@ -2,7 +2,7 @@ import os, logging, sys, getpass
 
 #from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_chargeflip_2015 import samples_2015
 from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_chargeflip_2016 import samples_2016
-from tthAnalysis.HiggsToTauTau.analyzeConfig_charge_flip import analyzeConfig_charge_flip
+from tthAnalysis.HiggsToTauTau.configs.analyzeConfig_charge_flip import analyzeConfig_charge_flip
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 
 #ERA = "2015"
@@ -35,19 +35,19 @@ if __name__ == '__main__':
     samples = samples,
     lepton_selections = [ "Tight"],
     #hadTau_selection = "dR03mvaTight",
-    central_or_shifts = [ 
+    central_or_shifts = [
       "central",
-       #"CMS_ttHl_btag_HFUp", 
-       #"CMS_ttHl_btag_HFDown",	
-       #"CMS_ttHl_btag_HFStats1Up", 
+       #"CMS_ttHl_btag_HFUp",
+       #"CMS_ttHl_btag_HFDown",
+       #"CMS_ttHl_btag_HFStats1Up",
        #"CMS_ttHl_btag_HFStats1Down",
-       #"CMS_ttHl_btag_HFStats2Up", 
+       #"CMS_ttHl_btag_HFStats2Up",
        #"CMS_ttHl_btag_HFStats2Down",
-       #"CMS_ttHl_btag_LFUp", 
-       #"CMS_ttHl_btag_LFDown",	
-       #"CMS_ttHl_btag_LFStats1Up", 
+       #"CMS_ttHl_btag_LFUp",
+       #"CMS_ttHl_btag_LFDown",
+       #"CMS_ttHl_btag_LFStats1Up",
        #"CMS_ttHl_btag_LFStats1Down",
-       #"CMS_ttHl_btag_LFStats2Up", 
+       #"CMS_ttHl_btag_LFStats2Up",
        #"CMS_ttHl_btag_LFStats2Down",
        #"CMS_ttHl_btag_cErr1Up",
        #"CMS_ttHl_btag_cErr1Down",
@@ -91,6 +91,6 @@ if __name__ == '__main__':
   analysis.run()
   logging.info("Running jobs are done. \n\nBye...\n")
   #'''
-  #logging.info("Jobs will not run.. Terminating..") 
+  #logging.info("Jobs will not run.. Terminating..")
 
-               
+

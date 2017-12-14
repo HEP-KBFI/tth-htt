@@ -1,6 +1,6 @@
 import logging
 
-from tthAnalysis.HiggsToTauTau.analyzeConfig import *
+from tthAnalysis.HiggsToTauTau.configs.analyzeConfig import *
 from tthAnalysis.HiggsToTauTau.analyzeConfig_charge_flip import *
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists
 from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg, createFile, generateInputFileList
