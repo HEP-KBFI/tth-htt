@@ -41,7 +41,7 @@
 #include <string>
 #include <vector>
 #include <assert.h>
-
+#include <fstream>
 typedef std::vector<std::string> vstring;
 typedef std::vector<double> vdouble;
 
@@ -663,6 +663,16 @@ void Make2DHisto(TGraphAsymmErrors* graph, TH2* histo, double absEtaMax = 0.){
   }
 }
 
+void Fill2DHisto(TH2* histo, double value = 0., double err_value = 0., double PtMax = 0., double absEtaMax = 0.){
+
+    int x_index = GetBinIndex(PtMax, histo, true);
+    int y_index = GetBinIndex(absEtaMax, histo, false);
+    std::cout<< "x_index "<< x_index << " y_index " << y_index << " BinContent " << value <<  std::endl;
+    histo->SetBinContent(x_index, y_index, value);
+    histo->SetBinError(x_index, y_index, err_value);
+}
+
+
 
 
 void compFakeRate(double nPass, double nPassErr, double nFail, double nFailErr, double& avFakeRate, double& avFakeRateErrUp, double& avFakeRateErrDown, bool& errorFlag)
@@ -840,6 +850,41 @@ TGraphAsymmErrors* compRatioGraph(const std::string& ratioGraphName, const TGrap
   return graphRatio;
 }
 
+
+double FileNameMatch(const vdouble& PtBins, const vdouble& EtaBins, const std::string& filename, const std::string& lepton_type, bool isNum, bool getPt, bool getMin){
+  int numEtaBins  = EtaBins.size() - 1;
+  int numPtBins   = PtBins.size() - 1;
+  
+  std::string name = "";
+  for(int idxEtaBin = 0; idxEtaBin < numEtaBins; ++idxEtaBin) { // ETA LOOP
+    double minAbsEta = std::abs(EtaBins[idxEtaBin]);
+    double maxAbsEta = std::abs(EtaBins[idxEtaBin + 1]);                                                                                                     
+    for(int idxPtBin = 0; idxPtBin < numPtBins; ++idxPtBin) { // PT LOOP                                                                                     
+      double minPt = PtBins[idxPtBin];
+      double maxPt = PtBins[idxPtBin + 1];                                                                                                     
+
+      if(isNum) name = Form("fit_results_num_%s_tight_%s_%s.txt", lepton_type.data(), (getEtaBin(minAbsEta, maxAbsEta)).data(), (getPtBin(minPt, maxPt)).data());
+      if(!isNum) name = Form("fit_results_den_%s_fakeable_%s_%s.txt", lepton_type.data(), (getEtaBin(minAbsEta, maxAbsEta)).data(), (getPtBin(minPt, maxPt)).data());
+      
+      std::cout<< "name " << name << std::endl;
+      
+      if(name == filename){
+	//	std::cout<< "Matched eta bin " << "(" << minAbsEta << " , " << maxAbsEta  << ")" << std::endl;
+	//      std::cout<< "Matched pT bin " << "(" << minPt << " , " << maxPt  << ")" << std::endl;
+        if(getPt && getMin) return minPt;
+	if(!getPt && getMin) return minAbsEta;
+        if(getPt && !getMin) return maxPt;
+	if(!getPt && !getMin) return maxAbsEta;
+      }
+    }
+  }
+
+  return -1.;
+}
+
+
+
+
 int main(int argc, char* argv[]) 
 {
 //--- throw an exception in case ROOT encounters an error
@@ -863,409 +908,126 @@ int main(int argc, char* argv[])
       << "No ParameterSet 'process' found in configuration file = " << argv[1] << " !!\n";
 
   edm::ParameterSet cfg = edm::readPSetsFrom(argv[1])->getParameter<edm::ParameterSet>("process");
+  edm::ParameterSet cfg_comp_LeptonFakeRate = cfg.getParameter<edm::ParameterSet>("comp_LeptonFakeRate");
 
-  edm::ParameterSet cfg_comp = cfg.getParameter<edm::ParameterSet>("comp_LeptonFakeRate");
-  std::string looseRegion_mu    = cfg_comp.getParameter<std::string>("looseRegion_mu");
-  std::string tightRegion_mu    = cfg_comp.getParameter<std::string>("tightRegion_mu");
-  std::string looseRegion_e    = cfg_comp.getParameter<std::string>("looseRegion_e");
-  std::string tightRegion_e    = cfg_comp.getParameter<std::string>("tightRegion_e");
+  edm::VParameterSet cfg_inputfiles = cfg_comp_LeptonFakeRate.getParameter<edm::VParameterSet>("inputfiles");
 
-
-  std::string process        = cfg_comp.getParameter<std::string>("process");
-
-  vdouble EtaBins_e = cfg_comp.getParameter<vdouble>("absEtaBins_e");
-  vdouble PtBins_e = cfg_comp.getParameter<vdouble>("absPtBins_e");
-  vdouble EtaBins_mu = cfg_comp.getParameter<vdouble>("absEtaBins_mu");
-  vdouble PtBins_mu = cfg_comp.getParameter<vdouble>("absPtBins_mu");
-  std::string histogramName = cfg_comp.getParameter<std::string>("histogramName");
-  vstring processesToSubtract = cfg_comp.getParameter<vstring>("processesToSubtract");
-
-
-
-  // std::string processData = cfg_comp.getParameter<std::string>("processData");
-  
-  // std::string processMC = cfg_comp.getParameter<std::string>("processMC");
-
-  //  vstring hadTauSelections = cfg_comp.getParameter<vstring>("hadTauSelections");
-  // vdouble absEtaBins = cfg_comp.getParameter<vdouble>("absEtaBins");
-
-  /*
-  if ( absEtaBins.size() < 2 ) throw cms::Exception("comp_jetToTauFakeRate") 
-    << "Invalid Configuration parameter 'absEtaBins' !!\n";
-  vdouble ptBins = cfg_comp.getParameter<vdouble>("ptBins");
-  TArrayD ptBins_array = convertToTArrayD(ptBins);
-  */
-
-
-  /*
-  vstring histogramsToFit = cfg_comp.getParameter<vstring>("histogramsToFit");
-
-  std::string fitFunction_formula = cfg_comp.getParameter<std::string>("fitFunction");
-  std::cout << "fitFunction_formula = " << fitFunction_formula << std::endl;
-  std::map<std::string, double> initialParameters; // key = fitParameterName
-  if ( cfg_comp.exists("initialParameters") ) {
-    edm::ParameterSet cfgInitialParameters = cfg_comp.getParameter<edm::ParameterSet>("initialParameters");
-    vstring fitParameterNames = cfgInitialParameters.getParameterNamesForType<double>();
-    for ( vstring::const_iterator fitParameterName = fitParameterNames.begin();
-	  fitParameterName != fitParameterNames.end(); ++fitParameterName ) {
-      double initialParameter_value = cfgInitialParameters.getParameter<double>(*fitParameterName);
-      initialParameters[*fitParameterName] = initialParameter_value;
-    }
-  }
-  double xMin = cfg_comp.getParameter<double>("xMin");
-  double xMax = cfg_comp.getParameter<double>("xMax");
-  std::cout << "xMin = " << xMin << ", xMax = " << xMax << std::endl;
-  */
-
-
-
-  fwlite::InputSource inputFiles(cfg); 
-  if ( !(inputFiles.files().size() == 1) )
-    throw cms::Exception("comp_LeptonFakeRate") 
-      << "Exactly one input file expected !!\n";
-  TFile* inputFile = new TFile(inputFiles.files().front().data());
-
-  inputFile->ls(); 
-
+  vdouble EtaBins_e = cfg_comp_LeptonFakeRate.getParameter<vdouble>("absEtaBins_e");
+  vdouble PtBins_e = cfg_comp_LeptonFakeRate.getParameter<vdouble>("absPtBins_e");
+  vdouble EtaBins_mu = cfg_comp_LeptonFakeRate.getParameter<vdouble>("absEtaBins_mu");
+  vdouble PtBins_mu = cfg_comp_LeptonFakeRate.getParameter<vdouble>("absPtBins_mu");
 
   fwlite::OutputFiles outputFile(cfg);
   fwlite::TFileService fs = fwlite::TFileService(outputFile.file().data());
-
-  /*
-  TDirectory* inputDir_loose = getDirectory(inputFile, looseRegion, true);
-  assert(inputDir_loose);
-  std::cout << "inputDir_loose = " << inputDir_loose << ": name = " << inputDir_loose->GetName() << std::endl;
-  TDirectory* inputDir_tight = getDirectory(inputFile, tightRegion, true);
-  assert(inputDir_tight);
-  std::cout << "inputDir_tight = " << inputDir_tight << ": name = " << inputDir_tight->GetName() << std::endl;
-  */
-
-  int numEtaBins_mu = EtaBins_mu.size() - 1;
-  int numPtBins_mu  = PtBins_mu.size() - 1;
-  int numEtaBins_e  = EtaBins_e.size() - 1;
-  int numPtBins_e   = PtBins_e.size() - 1;
-
-  TDirectory* outputDir_mu2 = createSubdirectory_recursively(fs, "LeptonFakeRate_shapes/muons");
-  outputDir_mu2->cd();
-  TH2F* h2d_mu = new TH2F("h2d_mu", "Muon 2-dim. Histo", 20, 0., 200., 2, 0., 3.0);
-
-  // ---------------- MUON BLOCK ----------------
-  for(int idxPtBin_mu = 0; idxPtBin_mu < numPtBins_mu; ++idxPtBin_mu){
-           double minPt_mu      = PtBins_mu[idxPtBin_mu];
-           double maxPt_mu      = PtBins_mu[idxPtBin_mu + 1];
-           std::string PtBin_mu = getPtBin(minPt_mu, maxPt_mu);
-           std::cout<< "Pt Bin mu " <<  PtBin_mu << std::endl;
-     for(int idxEtaBin_mu = 0; idxEtaBin_mu < numEtaBins_mu; ++idxEtaBin_mu){
-           double minAbsEta_mu   = EtaBins_mu[idxEtaBin_mu];
-           double maxAbsEta_mu   = EtaBins_mu[idxEtaBin_mu + 1];
-           std::string etaBin_mu = getEtaBin(minAbsEta_mu, maxAbsEta_mu);
-           std::cout<< "Eta Bin mu " <<  etaBin_mu << std::endl;
-          
-	   std::string denominator_mu = looseRegion_mu;
-	   std::string numerator_mu   = tightRegion_mu;
-	   std::cout<< numerator_mu << std::endl;
-           std::cout<< denominator_mu << std::endl;
-
-           TDirectory* outputDir_mu = createSubdirectory_recursively(fs, Form("LeptonFakeRate_shapes/muons/%s/%s", etaBin_mu.data(), PtBin_mu.data()));
-           outputDir_mu->cd();
-
-           TDirectory* inputDir_den_mu = getDirectory(inputFile, denominator_mu, true);
-           // inputDir_den_mu->ls();
-
-           TDirectory* inputDir_num_mu = getDirectory(inputFile, numerator_mu, true);
-           // inputDir_num_mu->ls();
-
-	   std::pair<TH1*, TH1*> histogram_mu_loose_and_tight =	getHistogramsLoose_and_Tight_LeptonFakeRate(inputDir_den_mu, looseRegion_mu, inputDir_num_mu, tightRegion_mu, 
-                                                                                                            process, processesToSubtract, etaBin_mu, PtBin_mu, histogramName);
-	   TH1* histogram_mu_loose = histogram_mu_loose_and_tight.first;                                                                                                                  
-	   std::cout << "histogram_mu_loose:" << std::endl; 
-	   // dumpHistogram(histogram_mu_loose);
-	   // TH1* histogram_mu_loose_rebinned = getRebinnedHistogram1d(histogram_mu_loose, ptBins_array.GetSize() - 1, ptBins_array);
-	   // std::cout << "histogram_mu_loose_rebinned:" << std::endl;
-	   TH1* histogram_mu_loose_rebinned = histogram_mu_loose;
-	   // dumpHistogram(histogram_mu_loose_rebinned);
-
-	   TH1* histogram_mu_tight = histogram_mu_loose_and_tight.second;
-	   std::cout << "histogram_mu_tight:" << std::endl;
-	   // dumpHistogram(histogram_mu_tight);
-	   // TH1* histogram_mu_tight_rebinned = getRebinnedHistogram1d(histogram_mu_tight, ptBins_array.GetSize() - 1, ptBins_array);
-	   // std::cout << "histogram_mu_tight_rebinned:" << std::endl;
-           TH1* histogram_mu_tight_rebinned = histogram_mu_tight;
-	   // dumpHistogram(histogram_mu_tight_rebinned);
-	   std::string graphName_mu_LeptonFakeRate = Form("LeptonFakeRate_mu_%s", TString(histogramName.data()).ReplaceAll("/", "_").Data());
-	   TGraphAsymmErrors* graph_mu_LeptonFakeRate = getGraph_jetToTauFakeRate(histogram_mu_loose_rebinned, histogram_mu_tight_rebinned, graphName_mu_LeptonFakeRate);
-	   std::cout<< "maxAbsEta_mu " << maxAbsEta_mu << std::endl;
-	   Make2DHisto(graph_mu_LeptonFakeRate, h2d_mu, maxAbsEta_mu);
-	   graph_mu_LeptonFakeRate->Write();
-
-     }
-  }
+ 
 
 
-  h2d_mu->Write();
-
-
-  // $$$$$$$$$$$ INCL $$$$$$$$$$$$$$
-  TDirectory* outputDir_mu_incl = createSubdirectory_recursively(fs, "LeptonFakeRate_shapes/muons/incl");
-  outputDir_mu_incl->cd();
-
-  TDirectory* inputDir_den_mu_incl = getDirectory(inputFile, looseRegion_mu, true);
-  // inputDir_den_mu_incl->ls();
-
-  TDirectory* inputDir_num_mu_incl = getDirectory(inputFile, tightRegion_mu, true);
-  // inputDir_num_mu_incl->ls();
-
-  std::pair<TH1*, TH1*> histogram_mu_loose_and_tight_incl  =  getHistogramsLoose_and_Tight_LeptonFakeRate(inputDir_den_mu_incl, looseRegion_mu, inputDir_num_mu_incl, tightRegion_mu,                                                                                                             process, processesToSubtract, "", "", histogramName);
-  TH1* histogram_mu_loose_incl = histogram_mu_loose_and_tight_incl.first;                                                                                                                  
-  TH1* histogram_mu_tight_incl = histogram_mu_loose_and_tight_incl.second;
-  std::string graphName_mu_LeptonFakeRate_incl = Form("LeptonFakeRate_mu_incl_%s", TString(histogramName.data()).ReplaceAll("/", "_").Data());
-  TGraphAsymmErrors* graph_mu_LeptonFakeRate_incl = getGraph_jetToTauFakeRate(histogram_mu_loose_incl, histogram_mu_tight_incl, graphName_mu_LeptonFakeRate_incl);
-  graph_mu_LeptonFakeRate_incl->Write();
-  // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+  TH2F* h2d_e = new TH2F("h2d_electron", "Electron 2-dim. Histo", 20, 0., 200., 2, 0., 3.0);
+  TH2F* h2d_mu = new TH2F("h2d_muon", "Muon 2-dim. Histo", 20, 0., 200., 2, 0., 3.0);
 
 
 
-  // --------------------------------------------
+
+  //  float x,y;
+  // double a = 0.;
+  // std::vector<double> fake_rate_vec, fake_rate_err_vec;
+  TString X,Y ;
+
+  for(edm::VParameterSet::const_iterator cfgInputfile = cfg_inputfiles.begin(); 
+      cfgInputfile != cfg_inputfiles.end(); cfgInputfile++){ // inputfile loop
+
+    std::string num_file = (*cfgInputfile).getParameter<std::string>("num_file");
+    std::string den_file = (*cfgInputfile).getParameter<std::string>("den_file");
+
+    std::cout<< num_file << std::endl;
+    std::cout<< den_file << std::endl;
+ 
+    std::ifstream mynumfile;
+    std::ifstream mydenfile;
+
+    mynumfile.open(num_file);
+    mydenfile.open(den_file);
+
+    // while(!mynumfile.eof()){ mynumfile >> x >> y;}
+    // std::cout<< x << " " << y << std::endl;
+
+    X.Resize(0);
+    X.ReadFile(mynumfile);
+    mynumfile.close();    
+
+    Y.Resize(0);
+    Y.ReadFile(mydenfile);
+    mydenfile.close();    
+
+    TObjArray *tx = X.Tokenize(" ");
+    TObjArray *ty = Y.Tokenize(" ");
 
 
-  TDirectory* outputDir_e2 = createSubdirectory_recursively(fs, "LeptonFakeRate_shapes/electrons");
-  outputDir_e2->cd();
-  TH2F* h2d_e = new TH2F("h2d_e", "Electron 2-dim. Histo", 20, 0., 200., 2, 0., 3.0);
+    // tx->Print();
+    // ty->Print();
 
-  // @@@@@@@@@@@@@@@ ELECTRON BLOCK @@@@@@@@@@@@@@
-  for(int idxPtBin_e = 0; idxPtBin_e < numPtBins_e; ++idxPtBin_e){
-           double minPt_e      = PtBins_e[idxPtBin_e];
-           double maxPt_e      = PtBins_e[idxPtBin_e + 1];
-           std::string PtBin_e = getPtBin(minPt_e, maxPt_e);
-           std::cout<< "Pt Bin e" <<  PtBin_e << std::endl;
-     for(int idxEtaBin_e = 0; idxEtaBin_e < numEtaBins_e; ++idxEtaBin_e){
-           double minAbsEta_e   = EtaBins_e[idxEtaBin_e];
-           double maxAbsEta_e   = EtaBins_e[idxEtaBin_e + 1];
-           std::string etaBin_e = getEtaBin(minAbsEta_e, maxAbsEta_e);
-           std::cout<< "Eta Bin e" <<  etaBin_e << std::endl;
+    std::cout << " Num. Array size " << tx->GetEntries() << std::endl;
+    std::cout << "Den. Array size " << ty->GetEntries() << std::endl;
 
-	   std::string denominator_e = looseRegion_e;
-	   std::string numerator_e   = tightRegion_e;
-	   std::cout<< numerator_e << std::endl;
-           std::cout<< denominator_e << std::endl;
-
-           TDirectory* outputDir_e = createSubdirectory_recursively(fs, Form("LeptonFakeRate_shapes/electrons/%s/%s", etaBin_e.data(), PtBin_e.data()));
-           outputDir_e->cd();
-
-           TDirectory* inputDir_den_e = getDirectory(inputFile, denominator_e, true);
-           // inputDir_den_e->ls();
-
-           TDirectory* inputDir_num_e = getDirectory(inputFile, numerator_e, true);
-           // inputDir_num_e->ls();
-
-	   std::pair<TH1*, TH1*> histogram_e_loose_and_tight =	getHistogramsLoose_and_Tight_LeptonFakeRate(inputDir_den_e, looseRegion_e, inputDir_num_e, tightRegion_e, 
-                                                                                                            process, processesToSubtract, etaBin_e, PtBin_e, histogramName);
-	   TH1* histogram_e_loose = histogram_e_loose_and_tight.first;                                                                                                                  
-	   std::cout << "histogram_e_loose:" << std::endl; 
-	   // dumpHistogram(histogram_e_loose);
-
-	   // TH1* histogram_e_loose_rebinned = getRebinnedHistogram1d(histogram_e_loose, ptBins_array.GetSize() - 1, ptBins_array);
-	   // std::cout << "histogram_e_loose_rebinned:" << std::endl;
-	   TH1* histogram_e_loose_rebinned = histogram_e_loose;
-	   // dumpHistogram(histogram_e_loose_rebinned);
-
-	   TH1* histogram_e_tight = histogram_e_loose_and_tight.second;
-	   std::cout << "histogram_e_tight:" << std::endl;
-	   // dumpHistogram(histogram_e_tight);
-	   // TH1* histogram_e_tight_rebinned = getRebinnedHistogram1d(histogram_e_tight, ptBins_array.GetSize() - 1, ptBins_array);
-	   // std::cout << "histogram_e_tight_rebinned:" << std::endl;
-           TH1* histogram_e_tight_rebinned = histogram_e_tight;
-	   // dumpHistogram(histogram_e_tight_rebinned);
-	   std::string graphName_e_LeptonFakeRate = Form("LeptonFakeRate_e_%s", TString(histogramName.data()).ReplaceAll("/", "_").Data());
-	   TGraphAsymmErrors* graph_e_LeptonFakeRate = getGraph_jetToTauFakeRate(histogram_e_loose_rebinned, histogram_e_tight_rebinned, graphName_e_LeptonFakeRate);
-	   std::cout<< "maxAbsEta_e " << maxAbsEta_e << std::endl;
-	   Make2DHisto(graph_e_LeptonFakeRate, h2d_e, maxAbsEta_e);
-	   graph_e_LeptonFakeRate->Write();
-     }
-  }
-
-  
-  h2d_e->Write();
-
-  // $$$$$$$$$$$ INCL $$$$$$$$$$$$$$
-  TDirectory* outputDir_e_incl = createSubdirectory_recursively(fs, "LeptonFakeRate_shapes/electrons/incl");
-  outputDir_e_incl->cd();
-
-  TDirectory* inputDir_den_e_incl = getDirectory(inputFile, looseRegion_e, true);
-  // inputDir_den_e_incl->ls();
-
-  TDirectory* inputDir_num_e_incl = getDirectory(inputFile, tightRegion_e, true);
-  // inputDir_num_e_incl->ls();
-
-  std::pair<TH1*, TH1*> histogram_e_loose_and_tight_incl  =  getHistogramsLoose_and_Tight_LeptonFakeRate(inputDir_den_e_incl, looseRegion_e, inputDir_num_e_incl, tightRegion_e,                                                                                                             process, processesToSubtract, "", "", histogramName);
-  TH1* histogram_e_loose_incl = histogram_e_loose_and_tight_incl.first;                                                                                                                  
-  TH1* histogram_e_tight_incl = histogram_e_loose_and_tight_incl.second;
-  std::string graphName_e_LeptonFakeRate_incl = Form("LeptonFakeRate_e_incl_%s", TString(histogramName.data()).ReplaceAll("/", "_").Data());
-  TGraphAsymmErrors* graph_e_LeptonFakeRate_incl = getGraph_jetToTauFakeRate(histogram_e_loose_incl, histogram_e_tight_incl, graphName_e_LeptonFakeRate_incl);
-  graph_e_LeptonFakeRate_incl->Write();
-  // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-
-
-  // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-
-
-
-/*
-// ################## DEF BLOCKS BEGINS ###############
-
-  int numEtaBins = absEtaBins.size() - 1;
-  for ( int idxEtaBin = 0; idxEtaBin < numEtaBins; ++idxEtaBin ) {
-    double minAbsEta = absEtaBins[idxEtaBin];
-    double maxAbsEta = absEtaBins[idxEtaBin + 1];
-    std::string etaBin = getEtaBin(minAbsEta, maxAbsEta);
-    
-    for ( vstring::const_iterator hadTauSelection = hadTauSelections.begin();
-	  hadTauSelection != hadTauSelections.end(); ++hadTauSelection ) {
-      std::cout << "processing hadTauSelection = " << (*hadTauSelection) << std::endl;
-
-      TDirectory* outputDir = createSubdirectory_recursively(fs, Form("jetToTauFakeRate/%s/%s", hadTauSelection->data(), etaBin.data()));
-      outputDir->cd();
-
-      for ( vstring::const_iterator histogramToFit = histogramsToFit.begin();
-	    histogramToFit != histogramsToFit.end(); ++histogramToFit ) {
-	std::cout << "fitting " << (*histogramToFit) << ":" << std::endl;
-
-        std::pair<TH1*, TH1*> histogram_data_loose_and_tight = getHistogramsLoose_and_Tight(
-          inputDir_loose, looseRegion, inputDir_tight, tightRegion, 
-          processData, processesToSubtract, 
-	  etaBin, *hadTauSelection, *histogramToFit);
-	TH1* histogram_data_loose = histogram_data_loose_and_tight.first;
-	std::cout << "histogram_data_loose:" << std::endl;
-	dumpHistogram(histogram_data_loose);
-	TH1* histogram_data_loose_rebinned = getRebinnedHistogram1d(histogram_data_loose, ptBins_array.GetSize() - 1, ptBins_array);
-	std::cout << "histogram_data_loose_rebinned:" << std::endl;
-	dumpHistogram(histogram_data_loose_rebinned);
-	TH1* histogram_data_tight = histogram_data_loose_and_tight.second;
-	std::cout << "histogram_data_tight:" << std::endl;
-	dumpHistogram(histogram_data_tight);
-	TH1* histogram_data_tight_rebinned = getRebinnedHistogram1d(histogram_data_tight, ptBins_array.GetSize() - 1, ptBins_array);
-	std::cout << "histogram_data_tight_rebinned:" << std::endl;
-	dumpHistogram(histogram_data_tight_rebinned);
-	std::string graphName_data_jetToTauFakeRate = Form("jetToTauFakeRate_data_%s", TString(histogramToFit->data()).ReplaceAll("/", "_").Data());
-	TGraphAsymmErrors* graph_data_jetToTauFakeRate = getGraph_jetToTauFakeRate(histogram_data_loose_rebinned, histogram_data_tight_rebinned, graphName_data_jetToTauFakeRate);
-
-	std::pair<TH1*, TH1*> histogram_mc_loose_and_tight = getHistogramsLoose_and_Tight(
-          inputDir_loose, looseRegion, inputDir_tight, tightRegion, 
-          processMC, {}, 
-	  etaBin, *hadTauSelection, *histogramToFit);
-	TH1* histogram_mc_loose = histogram_mc_loose_and_tight.first;
-	std::cout << "histogram_mc_loose:" << std::endl;
-	dumpHistogram(histogram_mc_loose);
-	TH1* histogram_mc_loose_rebinned = getRebinnedHistogram1d(histogram_mc_loose, ptBins_array.GetSize() - 1, ptBins_array);
-	std::cout << "histogram_mc_loose_rebinned:" << std::endl;
-	dumpHistogram(histogram_mc_loose_rebinned);
-	TH1* histogram_mc_tight = histogram_mc_loose_and_tight.second;
-	std::cout << "histogram_mc_tight:" << std::endl;
-	dumpHistogram(histogram_mc_tight);
-	TH1* histogram_mc_tight_rebinned = getRebinnedHistogram1d(histogram_mc_tight, ptBins_array.GetSize() - 1, ptBins_array);
-	std::cout << "histogram_mc_tight_rebinned:" << std::endl;
-	dumpHistogram(histogram_mc_tight_rebinned);
-	std::string graphName_mc_jetToTauFakeRate = Form("jetToTauFakeRate_mc_%s", TString(histogramToFit->data()).ReplaceAll("/", "_").Data());
-	TGraphAsymmErrors* graph_mc_jetToTauFakeRate = getGraph_jetToTauFakeRate(histogram_mc_loose_rebinned, histogram_mc_tight_rebinned, graphName_mc_jetToTauFakeRate);
-
-	if ( !(graph_mc_jetToTauFakeRate->GetN() == graph_data_jetToTauFakeRate->GetN()) ) {
-	  std::cout << "MC: graph = " << graph_mc_jetToTauFakeRate->GetName() << ", #points = " << graph_mc_jetToTauFakeRate->GetN() << std::endl;
-	  std::cout << "Data: graph = " << graph_data_jetToTauFakeRate->GetName() << ", #points = " << graph_data_jetToTauFakeRate->GetN() << std::endl;
-	  throw cms::Exception("comp_jetToTauFakeRate")
-	    << "Graphs for MC and data do not have same number of points !!\n";
-	}
-
-	graph_data_jetToTauFakeRate->Write();
-	graph_mc_jetToTauFakeRate->Write();
-	
-	std::string graphName_data_div_mc_jetToTauFakeRate = Form("jetToTauFakeRate_data_div_mc_%s", TString(histogramToFit->data()).ReplaceAll("/", "_").Data());
-	TGraphAsymmErrors* graph_data_div_mc_jetToTauFakeRate = compRatioGraph(graphName_data_div_mc_jetToTauFakeRate, graph_data_jetToTauFakeRate, graph_mc_jetToTauFakeRate);
-
-	graph_data_div_mc_jetToTauFakeRate->Write();
-
-	std::string controlPlotFileName_suffix = Form("_%s_%s_%s.png", hadTauSelection->data(), etaBin.data(), histogramToFit->data());
-	controlPlotFileName_suffix = TString(controlPlotFileName_suffix.data()).ReplaceAll("/", "_").Data();
-	std::string controlPlotFileName = TString(outputFile.file().data()).ReplaceAll(".root", controlPlotFileName_suffix.data()).Data();
-	makeControlPlot(graph_data_jetToTauFakeRate, "Data",
-			graph_mc_jetToTauFakeRate, "MC",
-			graph_data_div_mc_jetToTauFakeRate, 
-			xMin, xMax, "p_{T} [GeV]", true, 1.e-2, 1.e0, controlPlotFileName);
-
-	std::string fitFunctionName = Form("fitFunction_data_div_mc_%s", TString(histogramToFit->data()).ReplaceAll("/", "_").Data());
-	double x0 = 0.5*(histogram_data_loose->GetMean() + histogram_mc_loose->GetMean());
-	std::string fitFunction_formula_wrt_x0 = TString(fitFunction_formula.data()).ReplaceAll("x", Form("(x - %f)", x0)).Data();
-	std::cout << "fitFunction = " << fitFunction_formula_wrt_x0 << std::endl;
-	TF1* fitFunction = new TF1(fitFunctionName.data(), fitFunction_formula_wrt_x0.data(), xMin, xMax);
-	int numFitParameter = fitFunction->GetNpar();
-	for ( int idxFitParameter = 0; idxFitParameter < numFitParameter; ++idxFitParameter ) {
-	  std::string fitParameterName = Form("p%i", idxFitParameter);
-	  if ( initialParameters.find(fitParameterName) != initialParameters.end() ) {
-	    double initialParameter_value = initialParameters[fitParameterName];
-	    std::cout << "initializing fitParameter #" << idxFitParameter << " = " << initialParameter_value << std::endl;
-	    fitFunction->SetParameter(idxFitParameter, initialParameter_value);
-	  }
-	}
-	
-	TFitResultPtr fitResult = graph_data_div_mc_jetToTauFakeRate->Fit(fitFunction, "ERNS");
-	std::vector<fitFunction_and_legendEntry> fitFunctions_sysShifts;
-	if ( fitResult->IsValid() ) {
-	  fitFunction->Write();
-	  TMatrixD cov = fitResult->GetCovarianceMatrix();
-	  std::vector<EigenVector_and_Value> eigenVectors_and_Values = compEigenVectors_and_Values(cov);
-	  size_t dimension = fitFunction->GetNpar();
-	  assert(eigenVectors_and_Values.size() == dimension);
-	  int idxPar = 1;
-	  for ( std::vector<EigenVector_and_Value>::const_iterator eigenVector_and_Value = eigenVectors_and_Values.begin();
-		eigenVector_and_Value != eigenVectors_and_Values.end(); ++eigenVector_and_Value ) {
-	    assert(eigenVector_and_Value->eigenVector_.GetNrows() == (int)dimension);
-	    std::cout << "EigenVector #" << idxPar << ":" << std::endl;
-	    eigenVector_and_Value->eigenVector_.Print();
-	    std::cout << "EigenValue #" << idxPar << " = " << eigenVector_and_Value->eigenValue_ << std::endl;
-	    assert(eigenVector_and_Value->eigenValue_ >= 0.);
-	    std::string fitFunctionParUpName = Form("%s_par%iUp", fitFunctionName.data(), idxPar);
-	    TF1* fitFunctionParUp = new TF1(fitFunctionParUpName.data(), fitFunction_formula_wrt_x0.data(), xMin, xMax);
-	    for ( size_t idxComponent = 0; idxComponent < dimension; ++idxComponent ) {    
-	      fitFunctionParUp->SetParameter(
-		idxComponent, 
-		fitFunction->GetParameter(idxComponent) + TMath::Sqrt(eigenVector_and_Value->eigenValue_)*eigenVector_and_Value->eigenVector_(idxComponent));
-	    }
-	    fitFunctions_sysShifts.push_back(fitFunction_and_legendEntry(fitFunctionParUp, Form("EigenVec #%i", idxPar)));
-	    fitFunctionParUp->Write();
-	    std::string fitFunctionParDownName = Form("%s_par%iDown", fitFunctionName.data(), idxPar);
-	    TF1* fitFunctionParDown = new TF1(fitFunctionParDownName.data(), fitFunction_formula_wrt_x0.data(), xMin, xMax);
-	    for ( size_t idxComponent = 0; idxComponent < dimension; ++idxComponent ) {    
-	      fitFunctionParDown->SetParameter(
-		idxComponent, 
-		fitFunction->GetParameter(idxComponent) - TMath::Sqrt(eigenVector_and_Value->eigenValue_)*eigenVector_and_Value->eigenVector_(idxComponent));
-	    }
-	    fitFunctions_sysShifts.push_back(fitFunction_and_legendEntry(fitFunctionParDown, Form("EigenVec #%i", idxPar)));
-	    fitFunctionParDown->Write();
-	    ++idxPar;
-	  }    
-	} else {
-	  std::cerr << "Warning: Fit failed to converge --> setting fitFunction to constant value !!" << std::endl;
-	  delete fitFunction;
-	  fitFunction = new TF1(fitFunctionName.data(), "1.0", xMin, xMax);
-	  fitFunction->Write();
-	}
-	std::string controlPlotFileName_fit_suffix = Form("_%s_%s_%s_fit.png", hadTauSelection->data(), etaBin.data(), histogramToFit->data());
-	controlPlotFileName_fit_suffix = TString(controlPlotFileName_fit_suffix.data()).ReplaceAll("/", "_").Data();
-	std::string controlPlotFileName_fit = TString(outputFile.file().data()).ReplaceAll(".root", controlPlotFileName_fit_suffix.data()).Data();
-	makeControlPlot_fit(graph_data_div_mc_jetToTauFakeRate, 
-			    fitFunction, fitFunctions_sysShifts, xMin, xMax, "p_{T} [GeV]", false, -1.5, +1.5, controlPlotFileName_fit);
-      }
+    double x = 0.;
+    double x_err = 0.;
+    if(tx->GetEntries() == 2){
+      x = (((TObjString *)(tx->At(0)))->String()).Atof();
+      x_err = (((TObjString *)(tx->At(1)))->String()).Atof();
+      std::cout<< "num yield " << x << " +/- " << x_err << std::endl; 
+      // std::cout << (((TObjString *)(tx->At(0)))->String()).Atof()  << std::endl;
+      // std::cout << (((TObjString *)(tx->At(1)))->String()).Atof()  << std::endl;
     }
-  }
-// ################# DEF BLOCK ENDS ##############
 
-  */
+    double y = 0.;
+    double y_err = 0.;
+    if(ty->GetEntries() == 2){ 
+      y = (((TObjString *)(ty->At(0)))->String()).Atof();
+      y_err = (((TObjString *)(ty->At(1)))->String()).Atof();
+      std::cout<< "den. yield " << y << " +/- " << y_err << std::endl; 
+      // std::cout << (((TObjString *)(ty->At(0)))->String()).Atof()  << std::endl;
+      // std::cout << (((TObjString *)(ty->At(1)))->String()).Atof()  << std::endl;
+    }
+
+    double fake_rate = 0.;
+    if(y != 0.){
+      fake_rate = x/y;
+    }else{
+      fake_rate = 0.;
+    }
+
+    double fake_rate_err = 0.;
+    if(y != 0. && x != 0.){
+      fake_rate_err = TMath::Sqrt( TMath::Power((x_err/x), 2.) + TMath::Power((y_err/y), 2. ) ) * fake_rate;
+    }else{
+      fake_rate_err = 0.;
+    } 
 
 
+    double PtMax_e = -1.;
+    double absEtaMax_e = -1.;
+    PtMax_e = FileNameMatch(PtBins_e, EtaBins_e, num_file, "e", true, true, false);
+    absEtaMax_e = FileNameMatch(PtBins_e, EtaBins_e, num_file, "e", true, false, false);
 
 
-  delete inputFile;
+    if(PtMax_e != -1. && absEtaMax_e != -1.){ Fill2DHisto(h2d_e, fake_rate, fake_rate_err, PtMax_e, absEtaMax_e); }
 
-  clock.Show("comp_LeptonFakeRate");
+    double PtMax_mu = -1.;
+    double absEtaMax_mu = -1.;
+    PtMax_mu = FileNameMatch(PtBins_mu, EtaBins_mu, num_file, "mu", true, true, false);
+    absEtaMax_mu = FileNameMatch(PtBins_mu, EtaBins_mu, num_file, "mu", true, false, false);
+
+    if(PtMax_mu != -1. && absEtaMax_mu != -1.){ Fill2DHisto(h2d_mu, fake_rate, fake_rate_err, PtMax_mu, absEtaMax_mu); }
+
+    // fake_rate_vec.push_back(fake_rate);
+    // fake_rate_err_vec.push_back(fake_rate_err);
+
+  } // input file loop ends
+
+
+    // std::cout<< "Fake rate: " << fake_rate_vec[0] << " +/- " << fake_rate_err_vec[0] << std::endl;
+  
+    clock.Show("comp_LeptonFakeRate");
 
   return 0;
 }
