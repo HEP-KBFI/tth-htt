@@ -19,12 +19,13 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
 
   """
   def __init__(self, configDir, outputDir, executable_analyze, samples, charge_selections,
-               jet_minPt, jet_maxPt, jet_minAbsEta, jet_maxAbsEta, hadTau_selection_denominator, hadTau_selections_numerator, absEtaBins, ptBins, central_or_shifts,
+               jet_minPt, jet_maxPt, jet_minAbsEta, jet_maxAbsEta, hadTau_selection_denominator,
+               hadTau_selections_numerator, absEtaBins, ptBins, central_or_shifts,
                max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,
-               executable_comp_jetToTauFakeRate):
+               executable_comp_jetToTauFakeRate, verbose = False, dry_run = False):
     analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "jetToTauFakeRate", central_or_shifts,
       max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,
-      [])
+      [], verbose = verbose, dry_run = dry_run)
 
     self.samples = samples
 
@@ -343,3 +344,4 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
 
     logging.info("Done")
 
+    return self.num_jobs
