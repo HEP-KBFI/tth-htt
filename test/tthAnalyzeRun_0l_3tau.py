@@ -86,6 +86,12 @@ if era == "2017":
 else:
   raise ValueError("Invalid Configuration parameter 'era' = %s !!" % era)
 
+for sample_name, sample_info in samples.items():
+  if sample_info["type"] == "mc":
+    sample_info["triggers"] = [ "2tau" ]
+  if sample_name.startswith(("/DoubleEG/", "/DoubleMuon/", "/MuonEG/", "/SingleElectron/", "/SingleMuon/")):
+    sample_info["use_it"] = False
+
 if __name__ == '__main__':
   logging.basicConfig(
     stream = sys.stdout,
