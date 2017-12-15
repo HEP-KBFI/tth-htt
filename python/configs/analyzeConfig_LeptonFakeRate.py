@@ -121,13 +121,11 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
                absEtaBins_e, absPtBins_e, absEtaBins_mu, absPtBins_mu, fillGenEvtHistograms, central_or_shifts,
                max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs, prep_dcard,
                numerator_histogram, denominator_histogram, executable_addBackgrounds_LeptonFakeRate,
-               executable_prep_dcard, executable_comp_LeptonFakeRate):
-               # charge_selections, jet_minPt, jet_maxPt, jet_minAbsEta, jet_maxAbsEta, hadTau_selections,
-               # executable_comp_LeptonFakeRate):
+               executable_prep_dcard, executable_comp_LeptonFakeRate, verbose = False, dry_run = False):
     analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "LeptonFakeRate", central_or_shifts,
       max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs, prep_dcard,
       [numerator_histogram, denominator_histogram], executable_addBackgrounds_LeptonFakeRate,
-      executable_prep_dcard)
+      executable_prep_dcard, verbose = verbose, dry_run = dry_run)
 
     self.cmssw_base_dir_combine = cmssw_base_dir_combine
     if not os.path.isdir(os.path.join(cmssw_base_dir_combine, 'src', 'CombineHarvester')) or \
@@ -139,8 +137,8 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     self.absEtaBins_mu = absEtaBins_mu
     self.absPtBins_e = absPtBins_e
     self.absPtBins_mu = absPtBins_mu
-    self.cfgFile_prep_dcard = "prepareDatacards_LeptonFakeRate_cfg.py"
-    self.cfgFile_prep_compLeptonFakeRate = "comp_LeptonFakeRate_cfg.py"
+    self.cfgFile_prep_dcard = os.path.join(self.template_dir, "prepareDatacards_LeptonFakeRate_cfg.py")
+    self.cfgFile_prep_compLeptonFakeRate = os.path.join(self.template_dir, "comp_LeptonFakeRate_cfg.py")
     self.prep_dcard = prep_dcard
 
     self.numerator_histogram = numerator_histogram[0]
@@ -242,34 +240,6 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
         logging.info("self.cfgFile_addBackgrounds_LeptonFakeRate => %s" % self.cfgFile_addBackgrounds_LeptonFakeRate)
         logging.info("jobOptions['cfgFile_modified'] => %s" % jobOptions['cfgFile_modified'])
         create_cfg(self.cfgFile_addBackgrounds_LeptonFakeRate, jobOptions['cfgFile_modified'], lines)
-
-
-  def createCfg_comp_jetToTauFakeRate(self, jobOptions):
-    """Create python configuration file for the comp_jetToTauFakeRate executable
-
-    Args:
-      inputFiles: input file (the ROOT file produced by hadd_stage1)
-      outputFile: output file of the job
-    """
-    for charge_selection in self.charge_selections:
-      lines = []
-      lines.append("process.fwliteInput.fileNames = cms.vstring('%s')" % jobOptions['inputFile'])
-      lines.append("process.fwliteOutput.fileName = cms.string('%s')" % jobOptions['outputFile'])
-      lines.append("process.comp_jetToTauFakeRate.looseRegion = cms.string('%s')" % jobOptions['looseRegion'])
-      lines.append("process.comp_jetToTauFakeRate.tightRegion = cms.string('%s')" % jobOptions['tightRegion'])
-      lines.append("process.comp_jetToTauFakeRate.processData = cms.string('data_obs')")
-      lines.append("process.comp_jetToTauFakeRate.processesToSubtract = cms.vstring(")
-      lines.append("    'TTt', 'TTl',")
-      lines.append("    'EWKt', 'EWKl',")
-      lines.append("    'Rarest', 'Raresl',")
-      lines.append("    'TTWt', 'TTWl', ")
-      lines.append("    'TTZt', 'TTZl', ")
-      lines.append("    'signalt', 'signall'")
-      lines.append(")")
-      lines.append("process.comp_jetToTauFakeRate.processMC = cms.string('TTj')")
-      lines.append("process.comp_jetToTauFakeRate.absEtaBins = cms.vdouble(%s)" % jobOptions['absEtaBins'])
-      lines.append("process.comp_jetToTauFakeRate.ptBins = cms.vdouble(%s)" % jobOptions['ptBins'])
-      create_cfg(self.cfgFile_comp_jetToTauFakeRate, jobOptions['cfgFile_modified'], lines)
 
   def addToMakefile_addBackgrounds_LeptonFakeRate(self, lines_makefile):
         if self.is_sbatch:
@@ -678,79 +648,6 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
 #      self.sbatchFile_comp_jetToTauFakeRate = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_comp_jetToTauFakeRate.py")
 #      self.createScript_sbatch(self.executable_comp_jetToTauFakeRate, self.sbatchFile_comp_jetToTauFakeRate, self.jobOptions_comp_jetToTauFakeRate)
 
-
-
-
-
-#### FAKE RATE COMP BLOCK COMMENTED OUT ########################
-
-#    logging.info("Creating configuration files for executing 'comp_jetToTauFakeRate'")
-#    for charge_selection in self.charge_selections:
-#      key_comp_jetToTauFakeRate_job = getKey(charge_selection)
-#      key_hadd_stage2 = getKey(charge_selection)
-#      self.jobOptions_comp_jetToTauFakeRate[key_comp_jetToTauFakeRate_job] = {
-#        'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2],
-#        'cfgFile_modified' : os.path.join(
-#          self.dirs[DKEY_CFGS], "comp_jetToTauFakeRate_%s_cfg.py" % charge_selection),
-#        'outputFile' : os.path.join(
-#          self.dirs[DKEY_HIST], "comp_jetToTauFakeRate_%s.root" % charge_selection),
-#        'looseRegion' : "jetToTauFakeRate_%s/denominator/" % charge_selection,
-#        'tightRegion' : "jetToTauFakeRate_%s/numerator/" % charge_selection,
-#        'absEtaBins' : self.absEtaBins,
-#        'ptBins' : self.ptBins
-#      }
-#      self.createCfg_comp_jetToTauFakeRate(self.jobOptions_comp_jetToTauFakeRate[key_comp_jetToTauFakeRate_job])
-#      self.targets.append(self.jobOptions_comp_jetToTauFakeRate[key_comp_jetToTauFakeRate_job]['outputFile'])
-
-#    logging.info("Creating configuration files to run 'makePlots'")
-#    for charge_selection in self.charge_selections:
-#      key_makePlots_job = getKey(charge_selection)
-#      key_hadd_stage2 = getKey(charge_selection)
-#      self.jobOptions_make_plots[key_makePlots_job] = {
-#        'executable' : self.executable_make_plots,
-#        'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2],
-#        'cfgFile_modified' : os.path.join(
-#          self.dirs[DKEY_CFGS], "makePlots_%s_cfg.py" % self.channel),
-#        'outputFile' : os.path.join(
-#          self.dirs[DKEY_PLOT], "makePlots_%s.png" % self.channel),
-#        'histogramDir' : "jetToTauFakeRate_%s" % charge_selection,
-#        'label' : None,
-#        'make_plots_backgrounds' : [ "TT", "TTW", "TTZ", "EWK", "Rares" ],
-#      }
-#      self.createCfg_makePlots(self.jobOptions_make_plots[key_makePlots_job])
-#      self.cfgFile_make_plots = self.cfgFile_make_plots_denominator
-#      for absEtaBin in [ "absEtaLt1_5", "absEta1_5to9_9" ]:
-#        key_makePlots_job = getKey(charge_selection, absEtaBin, "denominator")
-#        key_hadd_stage2 = getKey(charge_selection)
-#        self.jobOptions_make_plots[key_makePlots_job] = {
-#          'executable' : self.executable_make_plots,
-#          'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2],
-#          'cfgFile_modified' : os.path.join(
-#            self.dirs[DKEY_CFGS], "makePlots_%s_%s_denominator_%s_cfg.py" % (self.channel, charge_selection, absEtaBin)),
-#          'outputFile' : os.path.join(
-#            self.dirs[DKEY_PLOT], "makePlots_%s_%s_denominator_%s.png" % (self.channel, charge_selection, absEtaBin)),
-#          'histogramDir' : "jetToTauFakeRate_%s/denominator/%s" % (charge_selection, absEtaBin),
-#          'label' : None,
-#          'make_plots_backgrounds' : [ "TT", "TTW", "TTZ", "EWK", "Rares" ],
-#        }
-#        self.createCfg_makePlots(self.jobOptions_make_plots[key_makePlots_job])
-#        for hadTau_selection in self.hadTau_selections:
-#          key_makePlots_job = getKey(charge_selection, absEtaBin, "numerator", hadTau_selection)
-#          key_hadd_stage2 = getKey(charge_selection)
-#          self.jobOptions_make_plots[key_makePlots_job] = {
-#            'executable' : self.executable_make_plots,
-#            'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2],
-#            'cfgFile_modified' : os.path.join(
-#              self.dirs[DKEY_CFGS], "makePlots_%s_%s_numerator_%s_%s_cfg.py" % (self.channel, charge_selection, hadTau_selection, absEtaBin)),
-#            'outputFile' : os.path.join(
-#              self.dirs[DKEY_PLOT], "makePlots_%s_%s_numerator_%s_%s.png" % (self.channel, charge_selection, hadTau_selection, absEtaBin)),
-#            'histogramDir' : "jetToTauFakeRate_%s/numerator/%s/%s" % (charge_selection, hadTau_selection, absEtaBin),
-#            'label' : None,
-#            'make_plots_backgrounds' : [ "TT", "TTW", "TTZ", "EWK", "Rares" ],
-#          }
-#          self.createCfg_makePlots(self.jobOptions_make_plots[key_makePlots_job])
-#########################################################
-
     lines_makefile = []
     self.addToMakefile_analyze(lines_makefile)
     self.addToMakefile_hadd_stage1(lines_makefile)
@@ -765,3 +662,4 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
 
     logging.info("Done")
 
+    return self.num_jobs
