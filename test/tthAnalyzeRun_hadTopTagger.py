@@ -1,11 +1,10 @@
 #!/usr/bin/env python
 import os, logging, sys, getpass, argparse, datetime
 
-from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_FastSim import samples_2017
 from tthAnalysis.HiggsToTauTau.configs.analyzeConfig_hadTopTagger import analyzeConfig_hadTopTagger
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 
-# E.g.: ./tthAnalyzeRun_3l_1tau.py -v 2017Dec13 -mode VHbb -e 2017 --use-prod-ntuples
+# E.g.: ./tthAnalyzeRun_hadTopTagger.py -v 2017Dec13 -e 2017
 
 #TODO: needs actual Ntuples
 #TODO: needs an updated value of integrated luminosity for 2017 data
@@ -61,8 +60,8 @@ max_job_resubmission = args.resubmission_limit if resubmit else 1
 max_files_per_job    = args.max_files_per_job
 
 if era == "2017":
-  samples = samples_2017
-  lumi    = 35.9e+3 # 1/pb
+  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_FastSim import samples_2017 as samples
+  lumi = 35.9e+3 # 1/pb
   # TODO: update lumi
 else:
   raise ValueError("Invalid Configuration parameter 'era' = %s !!" % era)
@@ -92,7 +91,7 @@ if __name__ == '__main__':
       samples            = samples,
       changeBranchNames  = False,
       hadTau_selection   = "Tight|dR03mvaMedium",
-      max_files_per_job  = 3,
+      max_files_per_job  = max_files_per_job,
       era                = era,
       use_lumi           = True,
       lumi               = lumi,
