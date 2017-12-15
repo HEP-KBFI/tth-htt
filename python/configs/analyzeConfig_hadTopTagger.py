@@ -14,11 +14,11 @@ class analyzeConfig_hadTopTagger(analyzeConfig):
 
   """
   def __init__(self, configDir, outputDir, executable_analyze, cfgFile_analyze, samples, changeBranchNames,
-               hadTau_selection,
-               max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs):
+               hadTau_selection, max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,
+               verbose = False, dry_run = False):
     analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "hadTopTagger", [ "central" ],
       max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,
-      [])
+      [], verbose = verbose, dry_run = dry_run)
 
     self.samples = samples
     self.changeBranchNames = changeBranchNames
