@@ -15,12 +15,12 @@ class analyzeConfig_WZctrl(analyzeConfig):
   """
   def __init__(self, configDir, outputDir, executable_analyze, cfgFile_analyze, samples, hadTau_selection, central_or_shifts,
                max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,
-               histograms_to_fit, select_rle_output = False,
-               executable_prep_dcard="prepareDatacards"):
+               histograms_to_fit, select_rle_output = False, executable_prep_dcard="prepareDatacards",
+               verbose = False, dry_run = False):
     analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "WZctrl", central_or_shifts,
       max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,
-      histograms_to_fit,
-      executable_prep_dcard = executable_prep_dcard)
+      histograms_to_fit, executable_prep_dcard = executable_prep_dcard, verbose = verbose,
+      dry_run = dry_run)
 
     self.samples = samples
 
@@ -88,7 +88,7 @@ class analyzeConfig_WZctrl(analyzeConfig):
           self.dirs[key_dir][dir_type] = os.path.join(self.configDir, dir_type, self.channel, "", process_name)
         else:
           self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel, "", process_name)
-    for dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_HIST, DKEY_DCRD, DKEY_PLOT, DKEY_HADD_RT ]:
+    for dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_HIST, DKEY_LOGS, DKEY_DCRD, DKEY_PLOT, DKEY_HADD_RT ]:
       initDict(self.dirs, [ dir_type ])
       if dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_LOGS, DKEY_HADD_RT ]:
         self.dirs[dir_type] = os.path.join(self.configDir, dir_type, self.channel)
@@ -213,7 +213,11 @@ class analyzeConfig_WZctrl(analyzeConfig):
     if self.is_sbatch:
       logging.info("Creating script for submitting '%s' jobs to batch system" % self.executable_analyze)
       self.sbatchFile_analyze = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_analyze_%s.py" % self.channel)
-      self.createScript_sbatch()
+      self.createScript_sbatch_analyze(
+        executable = self.executable_analyze,
+        sbatchFile = self.sbatchFile_analyze,
+        jobOptions = self.jobOptions_analyze,
+      )
 
     logging.info("Creating Makefile")
     lines_makefile = []
@@ -226,3 +230,4 @@ class analyzeConfig_WZctrl(analyzeConfig):
 
     logging.info("Done")
 
+    return self.num_jobs
