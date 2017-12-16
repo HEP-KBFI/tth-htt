@@ -60,7 +60,7 @@ max_job_resubmission = args.resubmission_limit if resubmit else 1
 max_files_per_job    = args.max_files_per_job
 
 if era == "2017":
-  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_test import samples_2017 as samples
+  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017 as samples
   lumi = 35.9e+3 # 1/pb
   # TODO: update lumi
 else:
