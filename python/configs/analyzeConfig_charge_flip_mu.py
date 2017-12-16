@@ -1,8 +1,4 @@
-import logging
-
-from tthAnalysis.HiggsToTauTau.configs.analyzeConfig import *
-from tthAnalysis.HiggsToTauTau.analyzeConfig_charge_flip import *
-from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists
+from tthAnalysis.HiggsToTauTau.configs.analyzeConfig_charge_flip import *
 from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg, createFile, generateInputFileList
 
 class analyzeConfig_charge_flip_mu(analyzeConfig_charge_flip):
@@ -16,10 +12,11 @@ class analyzeConfig_charge_flip_mu(analyzeConfig_charge_flip):
   """
   def __init__(self, configDir, outputDir, executable_analyze, samples, lepton_selections, central_or_shifts,
                max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,
-               histograms_to_fit = [], select_rle_output = False, executable_prep_dcard="prepareDatacard"):
+               histograms_to_fit = [], select_rle_output = False, executable_prep_dcard="prepareDatacard",
+               verbose = False, dry_run = False):
     analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "charge_flip", central_or_shifts,
       max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,
-      histograms_to_fit)
+      histograms_to_fit, verbose = verbose, dry_run = dry_run)
 
     self.samples = samples
 
@@ -67,7 +64,12 @@ class analyzeConfig_charge_flip_mu(analyzeConfig_charge_flip):
     lines.append("process.prepareDatacards.makeSubDir = cms.bool(True)")
     lines.append("process.prepareDatacards.categories = cms.VPSet(")
     for charge in ["OS", "SS"]:
-      for ptEtaBin in ["BB_LL", "BB_ML", "BB_MM", "BB_HL", "BB_HM", "BB_HH", "EE_LL", "EE_ML", "EE_MM", "EE_HL", "EE_HM", "EE_HH", "BE_LL", "BE_ML", "EB_ML","BE_MM",  "BE_HL", "EB_HL", "BE_HM", "EB_HM", "BE_HH", "total"]:
+      for ptEtaBin in [
+          "BB_LL", "BB_ML", "BB_MM", "BB_HL", "BB_HM", "BB_HH",
+          "EE_LL", "EE_ML", "EE_MM", "EE_HL", "EE_HM", "EE_HH",
+          "BE_LL", "BE_ML", "EB_ML","BE_MM",  "BE_HL", "EB_HL",
+          "BE_HM", "EB_HM", "BE_HH", "total",
+        ]:
         lines.append("    cms.PSet(")
         lines.append("        input = cms.string('%s/%s')," % (charge, ptEtaBin))
         lines.append("        output = cms.string('ttH_%s_%s_%s')" % (self.channel, charge, ptEtaBin))
@@ -91,5 +93,5 @@ class analyzeConfig_charge_flip_mu(analyzeConfig_charge_flip):
 
 
   def create(self):
-    analyzeConfig_charge_flip.create(self)
+    return analyzeConfig_charge_flip.create(self)
 
