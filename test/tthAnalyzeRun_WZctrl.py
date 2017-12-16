@@ -78,8 +78,8 @@ if __name__ == '__main__':
   )
 
   job_statistics_summary = {}
-  run_analysis = False
-  is_last_resubmission = False
+  run_analysis           = False
+  is_last_resubmission   = False
 
   for idx_job_resubmission in range(max_job_resubmission):
     if is_last_resubmission:
