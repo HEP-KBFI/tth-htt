@@ -91,7 +91,7 @@ if mode != "VHbb":
 
 if mode == "VHbb":
   if use_prod_ntuples:
-    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_prodNtuples_2017_test import samples_2017
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_prodNtuples_test import samples_2017
   else:
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_test import samples_2017
 
@@ -111,7 +111,7 @@ elif mode == "addMEM":
   MEMbranch            = 'memObjects_3l_1tau_lepFakeable_tauTight_dR03mvaMedium'
 elif mode == "forBDTtraining_beforeAddMEM":
 #  if use_prod_ntuples:
-#    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_prodNtuples_2017_FastSim import samples_2017
+#    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_prodNtuples_FastSim import samples_2017
 #  else:
 #    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_FastSim import samples_2017
   applyFakeRateWeights     = "4L"
