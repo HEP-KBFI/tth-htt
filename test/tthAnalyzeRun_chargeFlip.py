@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 import os, logging, sys, getpass, argparse, datetime
 
-from tthAnalysis.HiggsToTauTau.configs.analyzeConfig_ttWctrl import analyzeConfig_ttWctrl
+from tthAnalysis.HiggsToTauTau.configs.analyzeConfig_charge_flip import analyzeConfig_charge_flip
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 
-# E.g.: ./tthAnalyzeRun_ttWctrl.py -v 2017Dec13 -e 2017
+# E.g.: ./tthAnalyzeRun_chargeFlip.py -v 2017Dec13 -e 2017
 
 #TODO: needs actual Ntuples
 #TODO: needs an updated value of integrated luminosity for 2017 data
@@ -62,9 +62,29 @@ max_files_per_job    = args.max_files_per_job
 if era == "2017":
   from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017 as samples
   lumi = 35.9e+3 # 1/pb
-  # TODO: update lumi
 else:
   raise ValueError("Invalid Configuration parameter 'era' = %s !!" % era)
+
+for sample_name, sample_info in samples.items():
+  if sample_info["use_it"] == False: continue
+  if sample_info["type"] == "mc":
+    sample_info["triggers"] = [ "1e", "2e" ]
+  if sample_info["process_name_specific"].startswith("DYJetsToLL"):
+    sample_info["sample_category"] = "DY"
+  elif "TTJets" in sample_name:
+    sample_info["sample_category"] = "TTbar"
+  elif sample_info["process_name_specific"] == "WJetsToLNu":
+    sample_info["sample_category"] = "WJets"
+  elif sample_info["process_name_specific"].startswith("ST_"):
+    sample_info["sample_category"] = "Singletop"
+  elif sample_info["process_name_specific"] in ["WWTo2L2Nu", "WZTo3LNu", "ZZTo4L"]:
+    sample_info["sample_category"] = "Diboson"
+  elif "Muon" in sample_name or "Tau" in sample_name:
+      sample_info["use_it"] = False
+  elif sample_info["sample_category"] == "data_obs":
+    sample_info["use_it"] = True
+  else:
+    sample_info["use_it"] = False
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -81,55 +101,52 @@ if __name__ == '__main__':
     if is_last_resubmission:
       continue
 
-    analysis = analyzeConfig_ttWctrl(
+    analysis = analyzeConfig_charge_flip(
       configDir = os.path.join("/home",       getpass.getuser(), "ttHAnalysis", era, version),
       outputDir = os.path.join("/hdfs/local", getpass.getuser(), "ttHAnalysis", era, version),
-      executable_analyze = "analyze_ttWctrl",
-      cfgFile_analyze    = "analyze_ttWctrl_cfg.py",
+      executable_analyze = "analyze_charge_flip",
       samples            = samples,
-      hadTau_selection   = "dR03mvaLoose",
+      lepton_selections  = [ "Tight"],
       central_or_shifts  = [
         "central",
-  ##       "CMS_ttHl_btag_HFUp",
-  ##       "CMS_ttHl_btag_HFDown",
-  ##       "CMS_ttHl_btag_HFStats1Up",
-  ##       "CMS_ttHl_btag_HFStats1Down",
-  ##       "CMS_ttHl_btag_HFStats2Up",
-  ##       "CMS_ttHl_btag_HFStats2Down",
-  ##       "CMS_ttHl_btag_LFUp",
-  ##       "CMS_ttHl_btag_LFDown",
-  ##       "CMS_ttHl_btag_LFStats1Up",
-  ##       "CMS_ttHl_btag_LFStats1Down",
-  ##       "CMS_ttHl_btag_LFStats2Up",
-  ##       "CMS_ttHl_btag_LFStats2Down",
-  ##       "CMS_ttHl_btag_cErr1Up",
-  ##       "CMS_ttHl_btag_cErr1Down",
-  ##       "CMS_ttHl_btag_cErr2Up",
-  ##       "CMS_ttHl_btag_cErr2Down",
-  ##       "CMS_ttHl_JESUp",
-  ##       "CMS_ttHl_JESDown",
-  ##       "CMS_ttHl_thu_shape_ttH_x1Up",
-  ##       "CMS_ttHl_thu_shape_ttH_x1Down",
-  ##       "CMS_ttHl_thu_shape_ttH_y1Up",
-  ##       "CMS_ttHl_thu_shape_ttH_y1Down",
-  ##       "CMS_ttHl_thu_shape_ttW_x1Up",
-  ##       "CMS_ttHl_thu_shape_ttW_x1Down",
-  ##       "CMS_ttHl_thu_shape_ttW_y1Up",
-  ##       "CMS_ttHl_thu_shape_ttW_y1Down",
-  ##       "CMS_ttHl_thu_shape_ttZ_x1Up",
-  ##       "CMS_ttHl_thu_shape_ttZ_x1Down",
-  ##       "CMS_ttHl_thu_shape_ttZ_y1Up",
-  ##       "CMS_ttHl_thu_shape_ttZ_y1Down",
-      ],
+         # "CMS_ttHl_btag_HFUp",
+         # "CMS_ttHl_btag_HFDown",
+         # "CMS_ttHl_btag_HFStats1Up",
+         # "CMS_ttHl_btag_HFStats1Down",
+         # "CMS_ttHl_btag_HFStats2Up",
+         # "CMS_ttHl_btag_HFStats2Down",
+         # "CMS_ttHl_btag_LFUp",
+         # "CMS_ttHl_btag_LFDown",
+         # "CMS_ttHl_btag_LFStats1Up",
+         # "CMS_ttHl_btag_LFStats1Down",
+         # "CMS_ttHl_btag_LFStats2Up",
+         # "CMS_ttHl_btag_LFStats2Down",
+         # "CMS_ttHl_btag_cErr1Up",
+         # "CMS_ttHl_btag_cErr1Down",
+         # "CMS_ttHl_btag_cErr2Up",
+         # "CMS_ttHl_btag_cErr2Down",
+         # "CMS_ttHl_JESUp",
+         # "CMS_ttHl_JESDown",
+         # "CMS_ttHl_tauESUp",
+         # "CMS_ttHl_tauESDown",
+         # "CMS_ttHl_electronESUp",
+         # "CMS_ttHl_electronESDown",
+         # "CMS_ttHl_electronERUp", ###
+         # "CMS_ttHl_electronERDown",
+         # "CMS_ttHl_electronESEndcapUp",
+         # "CMS_ttHl_electronESEndcapDown",
+         # "CMS_ttHl_electronESBarrelUp",
+         # "CMS_ttHl_electronESBarrelDown"
+        ],
       max_files_per_job = max_files_per_job,
       era               = era,
       use_lumi          = True,
       lumi              = lumi,
       debug             = False,
       running_method    = "sbatch",
-      num_parallel_jobs = 8,
-      histograms_to_fit = [ "EventCounter", "numJets" ],
-      select_rle_output = True,
+      num_parallel_jobs = 4,
+      histograms_to_fit = [ "mass_ll" ],
+      select_rle_output = False,
       verbose           = idx_job_resubmission > 0,
       dry_run           = args.dry_run,
     )

@@ -5,7 +5,14 @@ from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists
 from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg, createFile, generateInputFileList
 
 
-sample_process_run_s = ['DoubleEG_Run2016B_v3', 'SingleElectron_Run2016C_v1', 'DYJetsToLL_M-50_ext1', 'TTJets_SingleLeptFromT_ext1', 'ST_t-channel_top_4f_inclusiveDecays', 'ZZTo4L']
+sample_process_run_s = [
+  'DoubleEG_Run2016B_v3',
+  'SingleElectron_Run2016C_v1',
+  'DYJetsToLL_M-50_ext1',
+  'TTJets_SingleLeptFromT_ext1',
+  'ST_t-channel_top_4f_inclusiveDecays',
+  'ZZTo4L',
+]
 
 
 class analyzeConfig_charge_flip(analyzeConfig):
@@ -19,10 +26,11 @@ class analyzeConfig_charge_flip(analyzeConfig):
   """
   def __init__(self, configDir, outputDir, executable_analyze, samples, lepton_selections, central_or_shifts,
                max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,
-               histograms_to_fit = [], select_rle_output = False, executable_prep_dcard="prepareDatacard"):
+               histograms_to_fit = [], select_rle_output = False, executable_prep_dcard="prepareDatacard",
+               verbose = False, dry_run = True):
     analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "charge_flip", central_or_shifts,
       max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,
-      histograms_to_fit)
+      histograms_to_fit, verbose = verbose, dry_run = dry_run)
 
     self.samples = samples
 
@@ -277,7 +285,7 @@ class analyzeConfig_charge_flip(analyzeConfig):
           #  self.inputFiles_hadd_stage2[key_hadd_stage2].append(self.jobOptions_addBackgrounds[key_addBackgrounds_job]['outputFile'])
           #key_hadd_stage1_5 = getKey(lepton_and_hadTau_selection_and_frWeight)
           self.inputFiles_hadd_stage2[key_hadd_stage2].append(self.outputFile_hadd_stage1[key_hadd_stage1])
-        self.outputFile_hadd_stage2[key_hadd_stage2] = os.path.join(self.dirs[DKEY_HIST], "histograms_harvested_stage2_%s_%s.root" % \
+          self.outputFile_hadd_stage2[key_hadd_stage2] = os.path.join(self.dirs[DKEY_HIST], "histograms_harvested_stage2_%s_%s.root" % \
             (self.channel, lepton_selection))
 
     key_hadd_stage2 = getKey(lepton_selection)
@@ -323,3 +331,5 @@ class analyzeConfig_charge_flip(analyzeConfig):
     self.createMakefile(lines_makefile)
 
     logging.info("Done")
+
+    return self.num_jobs
