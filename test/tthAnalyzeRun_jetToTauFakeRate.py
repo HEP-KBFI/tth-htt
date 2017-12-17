@@ -11,7 +11,6 @@ from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 
 era_choices                = ['2017']
 default_resubmission_limit = 4
-max_files_per_job          = 100
 
 class SmartFormatter(argparse.HelpFormatter):
   def _split_lines(self, text, width):
@@ -29,10 +28,6 @@ parser.add_argument('-v', '--version',
 parser.add_argument('-e', '--era',
   type = str, dest = 'era', metavar = 'era', choices = era_choices, default = None, required = True,
   help = 'R|Era of data/MC (choices: %s)' % ', '.join(map(lambda choice: "'%s'" % choice, era_choices)),
-)
-parser.add_argument('-n', '--max-files-per-job',
-  type = int, dest = 'max_files_per_job', metavar = 'integer', default = max_files_per_job, required = False,
-  help = 'R|Maximum number of input files per one job (default: %i)' % max_files_per_job
 )
 parser.add_argument('-d', '--dry-run',
   dest = 'dry_run', action = 'store_true', default = False,
@@ -57,10 +52,10 @@ era                  = args.era
 version              = args.version
 resubmit             = args.disable_resubmission
 max_job_resubmission = args.resubmission_limit if resubmit else 1
-max_files_per_job    = args.max_files_per_job
 
 if era == "2017":
   from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_jetToTauFRorLeptonFR import samples_2017 as samples
+  max_files_per_job = 100
   lumi = 35.9e+3 # 1/pb
   # TODO: update lumi
 else:

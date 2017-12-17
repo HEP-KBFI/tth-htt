@@ -65,13 +65,9 @@ version              = args.version
 resubmit             = args.disable_resubmission
 max_job_resubmission = args.resubmission_limit if resubmit else 1
 max_files_per_job    = 10 if use_prod_ntuples else 100
-
-samples              = None
-lumi                 = None
 changeBranchNames    = use_prod_ntuples
 hadTau_selection     = "dR03mvaVTight"
 applyFakeRateWeights = "2tau"
-max_files_per_job    = 10 if use_prod_ntuples else 100
 
 if use_prod_ntuples:
   # TODO: the sample must have a different preselection from the usual minimum of 1l and 1tau
@@ -159,7 +155,7 @@ if __name__ == '__main__':
   ##      "CMS_ttHl_thu_shape_ttZ_y1Up",
   ##      "CMS_ttHl_thu_shape_ttZ_y1Down",
       ],
-      max_files_per_job                     = 100,
+      max_files_per_job                     = max_files_per_job,
       era                                   = era,
       use_lumi                              = True,
       lumi                                  = lumi,
