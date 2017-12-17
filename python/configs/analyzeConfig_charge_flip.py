@@ -4,17 +4,6 @@ from tthAnalysis.HiggsToTauTau.configs.analyzeConfig import *
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists
 from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg, createFile, generateInputFileList
 
-
-sample_process_run_s = [
-  'DoubleEG_Run2016B_v3',
-  'SingleElectron_Run2016C_v1',
-  'DYJetsToLL_M-50_ext1',
-  'TTJets_SingleLeptFromT_ext1',
-  'ST_t-channel_top_4f_inclusiveDecays',
-  'ZZTo4L',
-]
-
-
 class analyzeConfig_charge_flip(analyzeConfig):
   """Configuration metadata needed to run analysis in a single go.
 
@@ -45,19 +34,6 @@ class analyzeConfig_charge_flip(analyzeConfig):
       if not sample_info["use_it"] or sample_info["sample_category"] in [ "additional_signal_overlap", "background_data_estimate" ]:
         continue
       process_name = sample_info["process_name_specific"]
-
-
-      # Edit Siddh ~~~~~~~~~~~~~
-      run_process = False
-      for sprocess_run in sample_process_run_s:
-        if sprocess_run == process_name:
-          run_process = True
-          #print "Run process: ", sprocess_run
-
-      if run_process == False:
-        continue
-        #print "run_process:",process_name
-      # ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
       for lepton_selection in self.lepton_selections:
           key_dir = getKey(sample_name, lepton_selection)
@@ -249,7 +225,7 @@ class analyzeConfig_charge_flip(analyzeConfig):
                 'central_or_shift' : central_or_shift,
                 'lumi_scale' : 1. if not (self.use_lumi and is_mc) else sample_info["xsection"] * self.lumi / sample_info["nof_events"],
                 'apply_genWeight' : sample_info["genWeight"] if (is_mc and "genWeight" in sample_info.keys()) else False,
-                'apply_trigger_bits' : (is_mc and (self.era == "2015" or (self.era == "2016" and sample_info["reHLT"]))) or not is_mc
+                'apply_trigger_bits' : (is_mc and sample_info["reHLT"]) or not is_mc,
               }
 
               #applyFakeRateWeights = self.applyFakeRateWeights

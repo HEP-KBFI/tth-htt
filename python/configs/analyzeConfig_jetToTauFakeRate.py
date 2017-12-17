@@ -189,7 +189,6 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
       apply_genWeight = sample_info["apply_genWeight"] if (is_mc and "apply_genWeight" in sample_info.keys()) else False
       sample_category = sample_info["sample_category"]
       triggers = sample_info["triggers"]
-      apply_trigger_bits = (is_mc and (self.era == "2015" or (self.era == "2016" and sample_info["reHLT"]))) or not is_mc
 
       for charge_selection in self.charge_selections:
         for central_or_shift in self.central_or_shifts:
@@ -237,7 +236,7 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
               'central_or_shift' : central_or_shift,
               'lumi_scale' : 1. if not (self.use_lumi and is_mc) else sample_info["xsection"] * self.lumi / sample_info["nof_events"],
               'apply_genWeight' : sample_info["genWeight"] if (is_mc and "genWeight" in sample_info.keys()) else False,
-              'apply_trigger_bits' : (is_mc and (self.era == "2015" or (self.era == "2016" and sample_info["reHLT"]))) or not is_mc,
+              'apply_trigger_bits' : (is_mc and sample_info["reHLT"]) or not is_mc,
             }
             self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job])
 
