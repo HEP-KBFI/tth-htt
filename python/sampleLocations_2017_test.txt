@@ -1,0 +1,2 @@
+/hdfs/local/karl/nanoAOD/92X_upgrade2017_realistic_v10_ext1-v1
+
