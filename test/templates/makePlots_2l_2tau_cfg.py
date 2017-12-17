@@ -2,7 +2,7 @@ import FWCore.ParameterSet.Config as cms
 
 import os
 
-from tthAnalysis.HiggsToTauTau.makePlots_cfi import process
+from tthAnalysis.HiggsToTauTau.configs.makePlots_cfi import process
 
 process.makePlots.processesBackground = cms.vstring(
     ##"TT",

@@ -2,7 +2,7 @@ import FWCore.ParameterSet.Config as cms
 
 import os
 
-from tthAnalysis.HiggsToTauTau.makePlots_LeptonFakeRate_cfi import process
+from tthAnalysis.HiggsToTauTau.configs.makePlots_LeptonFakeRate_cfi import process
 
 process.fwliteInput = cms.PSet(
     fileNames = cms.vstring("/hdfs/local/ram/ttHAnalysis_LeptonFakeRate_trial_2017Sep19/2016/2017Sep19/histograms/LeptonFakeRate/histograms_harvested_stage2_LeptonFakeRate.root")
