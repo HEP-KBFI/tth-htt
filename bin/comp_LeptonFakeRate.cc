@@ -85,7 +85,12 @@ struct fitResultType
       maxPt_ = readFloat(items->At(7), parseError);
       key_ = Form("%s_%s", getPtBin(minPt_, maxPt_).data(), getEtaBin(minAbsEta_, maxAbsEta_).data());
       norm_ = readFloat(items->At(10), parseError);
-      normErr_ = readFloat(items->At(11), parseError);
+      std::string normErr_string = readString(items->At(11), parseError);
+      if ( normErr_string != "nan" ) {
+	normErr_ = readFloat(items->At(11), parseError);
+      } else {
+	normErr_ = norm_;
+      }
     } else parseError = true;
     if ( parseError ) {
       throw cms::Exception("fitResultType") 
@@ -145,7 +150,7 @@ namespace
 	    histogram->SetBinError(idxBinX, idxBinY, avFakeRateErr);
 	  } else {
 	    throw cms::Exception("fillHistogram") 
-	      << "Failed to compute fake rate for " << minPt << " < pT < " << maxPt << " && " << minAbsEta << "abs(eta)" << maxAbsEta 
+	      << "Failed to compute fake rate for " << minPt << " < pT < " << maxPt << " && " << minAbsEta << " < abs(eta) < " << maxAbsEta 
 	    << " (nPass = " << nPass << " +/- " << nPassErr << ", nFail = " << nFail << " +/- " << nFailErr << ") !!\n";
 	  }
 	} else {
@@ -323,7 +328,9 @@ int main(int argc, char* argv[])
   if ( !(inputFiles.files().size() == 1) )
     throw cms::Exception("comp_LeptonFakeRate") 
       << "Exactly one input file expected !!\n";
-  std::ifstream* inputFile = new std::ifstream(inputFiles.files().front());
+  std::string inputFileName = inputFiles.files().front();
+  std::ifstream* inputFile = new std::ifstream(inputFileName);
+  std::cout << "opening inputFile = '" << inputFileName << "'" << std::endl;
   if ( inputFile->is_open() ) {
     std::string line;
     while ( getline(*inputFile, line) ) {
@@ -335,15 +342,15 @@ int main(int argc, char* argv[])
 	fitResults_e_fail[fitResult->key_]  = fitResult;
       } else if ( fitResult->lepton_type_ == fitResultType::kMuon     && fitResult->pass_or_fail_ == fitResultType::kPass ) {
 	fitResults_mu_pass[fitResult->key_] = fitResult;
-      } else if ( fitResult->lepton_type_ == fitResultType::kElectron && fitResult->pass_or_fail_ == fitResultType::kFail ) {
+      } else if ( fitResult->lepton_type_ == fitResultType::kMuon     && fitResult->pass_or_fail_ == fitResultType::kFail ) {
 	fitResults_mu_fail[fitResult->key_] = fitResult;
       } else assert(0);
     }
-    inputFile->close();
   } else {
     throw cms::Exception("comp_LeptonFakeRate") 
       << "Failed to open input file !!\n";
   }
+  std::cout << "closing inputFile = '" << inputFileName << "'" << std::endl;
   delete inputFile;
 
   fwlite::OutputFiles outputFile(cfg);
