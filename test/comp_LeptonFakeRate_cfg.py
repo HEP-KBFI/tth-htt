@@ -16,7 +16,7 @@ process.comp_LeptonFakeRate = cms.PSet(
 
     histogramName_e = cms.string("FR_mva075_el_data_comb"),
     absEtaBins_e = cms.vdouble(0., 1.479, 9.9),
-    ptBins_e = cms.vdouble( 15., 20., 30., 45., 65., 100000.),
+    ptBins_e = cms.vdouble(15., 20., 30., 45., 65., 100000.),
 
     histogramName_mu = cms.string("FR_mva075_mu_data_comb"),
     absEtaBins_mu = cms.vdouble(0., 1.479, 9.9),

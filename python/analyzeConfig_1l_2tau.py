@@ -124,7 +124,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
     """
     self.lepton_and_hadTau_selections       = [ "forBDTtraining" ]
     self.lepton_and_hadTau_frWeights        = [ "disabled" ]
-    self.hadTau_selection_relaxed           = hadTau_selection_relaxed
+    self.hadTau_selection_relaxed           =  hadTau_selection_relaxed
     self.hadTauFakeRateWeight_inputFileName = hadTauFakeRateWeight_inputFileName
     self.isBDTtraining                      = True
 
@@ -304,7 +304,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
       hadTau_selection = "|".join([ lepton_and_hadTau_selection, self.hadTau_selection_part2 ])
 
       if lepton_and_hadTau_selection == "forBDTtraining":
-        lepton_selection = "Loose"
+        lepton_selection = "Tight"  #"Loose"
         hadTau_selection = "Tight|%s" % self.hadTau_selection_relaxed
 
       for lepton_and_hadTau_frWeight in self.lepton_and_hadTau_frWeights:

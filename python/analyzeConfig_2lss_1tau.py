@@ -198,13 +198,13 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
     if jobOptions['hadTau_selection'].find("mcClosure") != -1:
       lines.append("process.analyze_2lss_1tau.hadTauFakeRateWeight.applyFitFunction_lead = cms.bool(False)")
       lines.append("process.analyze_2lss_1tau.hadTauFakeRateWeight.applyFitFunction_sublead = cms.bool(False)")
-    if jobOptions['hadTau_selection'].find("Tight") != -1 and self.applyFakeRateWeights not in [ "3L", "1tau" ] and not self.isBDTtraining:
+    if jobOptions['hadTau_selection'].find("Tight") != -1 and self.applyFakeRateWeights not in [ "3L", "1tau" ] : # and not self.isBDTtraining: Xanda: we are using the same tau ID of analysis selections for BDT training as well
       lines.append("process.analyze_2lss_1tau.hadTauFakeRateWeight.applyGraph_lead = cms.bool(False)")
       lines.append("process.analyze_2lss_1tau.hadTauFakeRateWeight.applyFitFunction_lead = cms.bool(True)")
       lines.append("process.analyze_2lss_1tau.hadTauFakeRateWeight.applyGraph_sublead = cms.bool(False)")
       lines.append("process.analyze_2lss_1tau.hadTauFakeRateWeight.applyFitFunction_sublead = cms.bool(True)")
       lines.append("process.analyze_2lss_1tau.apply_hadTauFakeRateSF = cms.bool(True)")
-    if self.isBDTtraining:
+    elif self.isBDTtraining :
       lines.append("process.analyze_2lss_1tau.hadTauFakeRateWeight.inputFileName = cms.string('%s')" % self.hadTauFakeRateWeight_inputFileName)
       lines.append("process.analyze_2lss_1tau.hadTauFakeRateWeight.lead.graphName = cms.string('jetToTauFakeRate/%s/$etaBin/jetToTauFakeRate_mc_hadTaus_pt')" % self.hadTau_selection_part2)
       lines.append("process.analyze_2lss_1tau.hadTauFakeRateWeight.lead.fitFunctionName = cms.string('jetToTauFakeRate/%s/$etaBin/fitFunction_data_div_mc_hadTaus_pt')" % self.hadTau_selection_part2)
@@ -360,11 +360,13 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
       hadTau_selection = lepton_and_hadTau_selection
       if self.applyFakeRateWeights == "2lepton":
         hadTau_selection = "Tight"
-      hadTau_selection = "|".join([ hadTau_selection, self.hadTau_selection_part2 ])
+        hadTau_selection = "|".join([ hadTau_selection, self.hadTau_selection_part2 ])
 
       if lepton_and_hadTau_selection == "forBDTtraining":
-        lepton_selection = "Loose"
-        hadTau_selection = "Tight|%s" % self.hadTau_selection_relaxed
+        lepton_selection = "Loose" # "Fakeable" ## "Tight" ## Xanda
+        if not self.applyFakeRateWeights == "2lepton":
+            hadTau_selection = "Tight|%s" % self.hadTau_selection_relaxed
+            # hadTau ID it is the same level of analysis if applyFakeRateWeights == "2lepton"
 
       for lepton_and_hadTau_frWeight in self.lepton_and_hadTau_frWeights:
         if lepton_and_hadTau_frWeight == "enabled" and not lepton_and_hadTau_selection.startswith("Fakeable"):
@@ -419,7 +421,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
                   key_analyze_job = getKey(process_name, lepton_and_hadTau_selection_and_frWeight, lepton_charge_selection, chargeSumSelection, central_or_shift, jobId)
                   ntupleFiles = inputFileList[jobId]
                   if len(ntupleFiles) == 0:
-                    logging.warning("ntupleFiles['%s'] = %s --> skipping job !!" % (key_job, ntupleFiles))
+                    logging.warning("No input ntuples for %s --> skipping job !!" % (key_analyze_job))
                     continue
                   self.jobOptions_analyze[key_analyze_job] = {
                     'ntupleFiles' : ntupleFiles,
