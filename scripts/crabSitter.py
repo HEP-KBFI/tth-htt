@@ -6,10 +6,10 @@ import json
 import os
 import re
 import signal
-import sys
 import subprocess
 import shlex
 import time
+import argparse
 
 #--------------------------------------------------------------------------------
 # Check status of crab jobs and resubmit jobs that have failed.
@@ -18,84 +18,65 @@ import time
 #
 # Author: Christian Veelken (Tallinn)
 #
-# NOTE: The following variables need to be updated before running the script
-#        o crabFilePath
-#        o heppyFilePath
-#        o jobName_regex
-#        o samples
-#        o force_resubmit
+# NOTE: The following variables need to be reviewed before running the script
+#        o SAMPLES
 #
 # Examples:
-# 
-# ./crabSitter.py 
+#
+# $ crabSitter.py -h
+#
+# usage: crabSitter.py [-h] [-c path] [-p pattern] [-w name] [-f]
+#
+# optional arguments:
+#  -h, --help                      show this help message and exit
+#  -c path, --crab-file path       Path to the parent directory of crab log directories (and crabSitter.json) (default: ~/crab_projects)
+#  -p pattern, --prefix pattern    Prefix of the CRAB log directories (default: crab_NanoAOD_2017_v1)
+#  -w name, --whitelist-tier name  Whitelist a tier (e.g. 'T2_EE_Estonia') (default: None)
+#  -f, --force-resubmit            Use production Ntuples (default: False)
 #
 #--------------------------------------------------------------------------------
 
-print("<crabSitter>:")
-
-crabFilePath = '/scratch/veelken/crab_sub/crab_projects_VHBB_V25tthtautau/'
-
-statusFileName = 'crabSitter.json'
-
-heppyFilePath = '/home/veelken/CMSSW_8_0_21/src/VHbbAnalysis/Heppy/test/crab'
-if not os.path.isdir(heppyFilePath):
-    raise ValueError("Invalid heppyFilePath = '%s' !!" % heppyFilePath)
-currentDir = os.getcwd()
-os.chdir(heppyFilePath)
-
-jobName_regex = r'crab_VHBB_V25tthtautau_(?P<sample>[a-zA-Z0-9_-]+)'
-jobName_matcher = re.compile(jobName_regex)
-
-samples = [
-    # leave empty to check all samples
-    "DoubleEG__Run2016C-23Sep2016-v1",
-    "DoubleMuon__Run2016C-23Sep2016-v1",
-    "DoubleMuon__Run2016G-23Sep2016-v1",
-    "MuonEG__Run2016C-23Sep2016-v1",
-    "MuonEG__Run2016G-23Sep2016-v1",
-    "SingleElectron__Run2016C-23Sep2016-v1",
-    "SingleElectron__Run2016G-23Sep2016-v1",
-    "SingleMuon__Run2016C-23Sep2016-v1",
-    "SingleMuon__Run2016G-23Sep2016-v1",
-    "Tau__Run2016C-23Sep2016-v1",
-    "Tau__Run2016G-23Sep2016-v1",
+SAMPLES = [
+    # leave empty to check all samples; otherwise loops over all CRAB log directories; e.g.:
+    #'TT_TuneCUETP8M2T4_13TeV-powheg-pythia8__RunIISummer17MiniAOD-92X_upgrade2010_ext1-v1',
+    #'ttHToNonbb_M125_TuneCUETP8M2_13TeV-powheg-pythia8__RunIISummer17MiniAOD-NZtic_v10-v1',
 ]
+STATUSFILENAME      = 'crabSitter.json'
+OUTPUTFILEPATH_BASE = '/hdfs/cms/'
 
-outputFilePath_base = '/hdfs/cms/'
+EXECUTABLE_LS   = 'ls'
+EXECUTABLE_RM   = 'rm'
+EXECUTABLE_CRAB = 'crab'
+EXECUTABLE_TAR  = 'tar'
 
-executable_ls = 'ls'
-executable_rm = 'rm'
-executable_crab = 'crab'
-executable_tar = 'tar'
+KEY_VALUE_PAIR_REGEX   = r'(?P<key>[a-zA-Z0-9_.]+)\s*=\s*(?P<value>.+)\s*'
+KEY_VALUE_PAIR_MATCHER = re.compile(KEY_VALUE_PAIR_REGEX)
 
-force_resubmit = False
-##force_resubmit = True
+ATTRIBUTE_REQUESTNAME    = 'config.General.requestName'
+ATTRIBUTE_INPUTFILENAME  = 'config.Data.inputDataset'
+ATTRIBUTE_LUMIMASK       = 'config.Data.lumiMask'
+ATTRIBUTE_OUTPUTFILENAME = 'config.Data.outputDatasetTag'
+ATTRIBUTE_OUTPUTFILEPATH = 'config.Data.outLFNDirBase'
+ATTRIBUTE_WHITELIST      = 'config.Site.whitelist'
 
-whitelist_when_force_resubmit = None # do not use whitelist
-##whitelist_when_force_resubmit = [ 'T2_EE_Estonia' ] # run job on Tallinn T2
+CRABJOBSUMMARY_REGEX   = r'\s*Jobs status:\s*[a-zA-Z_]+\s*[0-9.%]+\s*\([0-9]+\s*/\s*(?P<numJobs>[0-9]+)\)\s*'
+CRABJOBSUMMARY_MATCHER = re.compile(CRABJOBSUMMARY_REGEX)
+CRABJOBSUMMARY_HEADER  = ' Job State        Most Recent Site        Runtime   Mem (MB)      CPU %    ' \
+                         'Retries   Restarts      Waste       Exit Code'
+CRABJOBSTATUS_REGEX    = r'\s*(?P<jobId>[0-9]+)\s+(?P<State>[a-zA-Z_]+)\s+[a-zA-Z0-9_]+\s+[0-9:]+' \
+                          '\s+[0-9]+\s+[0-9]+\s+(?P<Retries>[0-9]+)\s+[0-9]+\s+[0-9:]+\s+[a-zA-Z0-9_ ]+\s*'
+CRABJOBSTATUS_MATCHER  = re.compile(CRABJOBSTATUS_REGEX)
+
+TIME_LIMIT = 60 * 60 * 24
 
 def runCommand(commandLine):
     print(commandLine)
     args = shlex.split(commandLine)
     retVal = subprocess.Popen(args, stdout = subprocess.PIPE)
-    #retVal.wait()
     return retVal.stdout.readlines()
 
-whoami = runCommand('whoami')
-if len(whoami) != 1:
-    raise ValueError("Failed to identify userName !!")
-userName = whoami[0].strip()
-print("userName = %s" % userName)
-
-# CV: check that crab environment is set
-which_crab = runCommand('which crab')
-if len(which_crab) != 1:
-    raise ValueError("crab environment not set !!")
-
-# delete crabSitter.json file to reset all time-stamps
-#runCommand('%s %s' % (executable_rm, statusFileName))
-
-def runCommand_via_shell(commandLine, tmpShellScriptFileName = 'crabSitter_tmp.sh', tmpOutputFileName = 'crabSitter_tmp.out'):
+def runCommand_via_shell(commandLine, tmpShellScriptFileName = 'crabSitter_tmp.sh',
+                         tmpOutputFileName = 'crabSitter_tmp.out'):
     # CV: crab is implemented in python and seems to cause problem when called directly from python;
     #     wrap 'crab -status' command into simple shell script
     print(commandLine)
@@ -112,16 +93,17 @@ def runCommand_via_shell(commandLine, tmpShellScriptFileName = 'crabSitter_tmp.s
     subprocess.call('rm %s' % tmpOutputFileName, shell = True)
     return retVal
 
-def runCommand_via_shell_with_timeout(commandLine, tmpShellScriptFileName = 'crabSitter_tmp.sh', tmpOutputFileName = 'crabSitter_tmp.out', timeout = 30):
+def runCommand_via_shell_with_timeout(commandLine, tmpShellScriptFileName = 'crabSitter_tmp.sh',
+                                      tmpOutputFileName = 'crabSitter_tmp.out', timeout = 30):
 
-    print "<runCommand_via_shell_with_timeout (timeout = %1.0fs)>:" % timeout 
-    
+    print("<runCommand_via_shell_with_timeout (timeout = %1.0fs)>:" % timeout)
+
     class TimeoutException(Exception): pass
 
     @contextmanager
-    def time_limit(seconds):
+    def time_limit_func(seconds):
         def signal_handler(signum, frame):
-            raise TimeoutException, "Timed out!"
+            raise TimeoutException("Timed out!")
         signal.signal(signal.SIGALRM, signal_handler)
         signal.alarm(seconds)
         try:
@@ -130,10 +112,13 @@ def runCommand_via_shell_with_timeout(commandLine, tmpShellScriptFileName = 'cra
             signal.alarm(0)
 
     try:
-        with time_limit(timeout):
-            return runCommand_via_shell(commandLine, tmpShellScriptFileName = tmpShellScriptFileName, tmpOutputFileName = tmpOutputFileName)
-    except TimeoutException, msg:
-        print "Timed out!"
+        with time_limit_func(timeout):
+            return runCommand_via_shell(
+                commandLine, tmpShellScriptFileName = tmpShellScriptFileName,
+                tmpOutputFileName = tmpOutputFileName
+            )
+    except TimeoutException as msg:
+        print("Timed out!")
 
 def removeLeadingSlash(filePath):
     retVal = filePath
@@ -142,25 +127,18 @@ def removeLeadingSlash(filePath):
     return retVal
 
 def getOutputFilePaths(outputFilePath):
-    #print "<getOutputFilePaths>:"
-    #print "outputFilePath = '%s'" % outputFilePath
     outputFilePaths = []
-    file_or_directoryNames = runCommand('%s %s' % (executable_ls, outputFilePath))
+    file_or_directoryNames = runCommand('%s %s' % (EXECUTABLE_LS, outputFilePath))
     for file_or_directoryName in file_or_directoryNames:
         file_or_directoryName = file_or_directoryName.replace("\n", "")
         file_or_directoryName = os.path.join(outputFilePath, file_or_directoryName)
-        #print "file_or_directoryName = '%s'" % file_or_directoryName
         if os.path.isdir(file_or_directoryName):
             outputFilePaths.append(file_or_directoryName)
             outputFilePaths.extend(getOutputFilePaths(file_or_directoryName))
     return outputFilePaths
 
 def checkOutputFiles(outputFileInfos, jobId, jobIds_force_resubmit):
-
-    #print "<checkOutputFiles>:"
-    #print "jobId = %i" % jobId
-
-    outputFileName_regex = 'tree_(?P<jobId>\d+).root'
+    outputFileName_regex   = 'tree_(?P<jobId>\d+).root'
     outputFileName_matcher = re.compile(outputFileName_regex)
 
     resubmit_job = False
@@ -172,11 +150,12 @@ def checkOutputFiles(outputFileInfos, jobId, jobIds_force_resubmit):
             outputFile_jobId = int(outputFileName_match.group('jobId'))
             if outputFile_jobId == jobId:
                 outputFileInfos_matched.append(outputFileInfo)
-    #print " found %i copies." % len(outputFileInfos_matched)
     if len(outputFileInfos_matched) == 0:
         resubmit_job = True
     elif len(outputFileInfos_matched) > 1:
-        print("Warning: jobId = %i produced multiple output files = %s !!" (jobId, [ outputFileInfo['file'] for outputFileInfo in outputFileInfos_matched ]))
+        print("Warning: jobId = %i produced multiple output files = %s !!" % \
+              (jobId, [ outputFileInfo['file'] for outputFileInfo in outputFileInfos_matched ])
+        )
         # keep file with maximum size;
         # in case multiple files have the same size, keep the newest one
         outputFileName_keep = None
@@ -192,334 +171,358 @@ def checkOutputFiles(outputFileInfos, jobId, jobIds_force_resubmit):
                 outputFileName_keep = outputFileName
                 fileSize_keep = fileSize
                 date_and_time_keep = date_and_time
-        for outputFileInfo in outputFileInfos_matched:                                    
+        for outputFileInfo in outputFileInfos_matched:
             if outputFileInfo['file'] != outputFileName_keep:
-                print "--> deleting copy = %s" % outputFileInfo['path'] 
+                print("--> deleting copy = %s" % outputFileInfo['path'])
                 outputFiles_to_delete.append(outputFileInfo['path'])
-        ##for outputFileName in outputFiles_to_delete:
-        ##    commandLine = 'rm %s' % outputFileName
-        ##    shellScriptCommands.append(commandLine)         
 
     if resubmit_job:
         print("Info: jobId = %i produced no output file(s) --> resubmitting it" % jobId)
         jobIds_force_resubmit.append(jobId)
-    
-jobStatus_dict = {}
-if os.path.exists(statusFileName):
-    if os.path.isfile(statusFileName):
-        print("Loading previous status of crab jobs from file '%s'" % statusFileName)
-        statusFile = open(statusFileName, "r")
-        jobStatus_dict = json.load(statusFile)
-        #print(jobStatus_dict)
-        statusFile.close()
+
+if __name__ == '__main__':
+
+    class SmartFormatter(argparse.ArgumentDefaultsHelpFormatter):
+        def _split_lines(self, text, width):
+            if text.startswith('R|'):
+                return text[2:].splitlines()
+            return argparse.ArgumentDefaultsHelpFormatter._split_lines(self, text, width)
+
+    parser = argparse.ArgumentParser(
+        formatter_class = lambda prog: SmartFormatter(prog, max_help_position = 45)
+    )
+    parser.add_argument('-c', '--crab-file',
+        type = str, dest = 'crab_file', metavar = 'path',
+        default = os.path.join(os.path.expanduser('~'), 'crab_projects'), required = False,
+        help = 'R|Path to the parent directory of crab log directories (and %s)' % STATUSFILENAME,
+    )
+    parser.add_argument('-p', '--prefix',
+        type = str, dest = 'prefix', metavar = 'pattern',
+        default = 'crab_NanoAOD_2017_v1', required = False,
+        help = 'R|Prefix of the CRAB log directories',
+    )
+    parser.add_argument('-w', '--whitelist-tier',
+        type = str, dest = 'whitelist_tier', metavar = 'name', default = None, required = False,
+        help = "R|Whitelist a tier (e.g. 'T2_EE_Estonia')",
+    )
+    parser.add_argument('-f', '--force-resubmit',
+        dest = 'force_resubmit', action = 'store_true', default = False, required = False,
+        help = 'R|Use production Ntuples',
+    )
+    args = parser.parse_args()
+
+    crabFilePath                  = args.crab_file
+    prefix                        = args.prefix
+    force_resubmit                = args.force_resubmit
+    whitelist_when_force_resubmit = None if not args.whitelist_tier else [args.whitelist_tier]
+
+    crabJobPath = crabFilePath
+    if not os.path.isdir(crabJobPath):
+        raise ValueError("Invalid crabJobPath = '%s' !!" % crabJobPath)
+    currentDir = os.getcwd()
+    os.chdir(crabJobPath)
+
+    # CV: check that crab environment is set
+    which_crab = runCommand('which %s' % EXECUTABLE_CRAB)
+    if len(which_crab) != 1:
+        raise ValueError("crab environment not set !!")
+
+    print("<crabSitter>:")
+
+    jobName_regex = r'%s_(?P<sample>[a-zA-Z0-9_-]+)' % prefix
+    jobName_matcher = re.compile(jobName_regex)
+
+    jobStatus_dict = {}
+    if os.path.exists(STATUSFILENAME):
+        if os.path.isfile(STATUSFILENAME):
+            print("Loading previous status of crab jobs from file '%s'" % STATUSFILENAME)
+            statusFile = open(STATUSFILENAME, "r")
+            jobStatus_dict = json.load(statusFile)
+            statusFile.close()
+        else:
+            raise ValueError("File '%s' exists, but is a directory !!" % STATUSFILENAME)
     else:
-        raise ValueError("File '%s' exists, but is a directory !!" % statusFileName)
-else:
-    print("File '%s' does not yet exist...creating it." % statusFileName)
-jobStatus_dict_updated = copy.deepcopy(jobStatus_dict)
+        print("File '%s' does not yet exist...creating it." % STATUSFILENAME)
+    jobStatus_dict_updated = copy.deepcopy(jobStatus_dict)
 
-key_value_pair_regex   = r'(?P<key>[a-zA-Z0-9_.]+)\s*=\s*(?P<value>.+)\s*'
-key_value_pair_matcher = re.compile(key_value_pair_regex)
+    current_time = time.time()
+    print("current time = %s" % time.asctime(time.gmtime(current_time)))
 
-attribute_requestName = 'config.General.requestName'
-attribute_inputFileName = 'config.Data.inputDataset'
-attribute_lumiMask = 'config.Data.lumiMask'
-attribute_outputFileName = 'config.Data.outputDatasetTag'
-attribute_outputFilePath = 'config.Data.outLFNDirBase'
-attribute_whitelist = 'config.Site.whitelist'
+    # CV: define maximum time (default is one day = 24*60*60 seconds) for which crab jobs are allowed to
+    #     stay in same 'State' and with same number of 'Retries' before they they get automatically
+    #     resubmitted as a new crab task
+    checkJobOutputFiles = True
+    shellScriptCommands = []
 
-crabJobSummary_regex = r'\s*Jobs status:\s*[a-zA-Z_]+\s*[0-9.%]+\s*\([0-9]+\s*/\s*(?P<numJobs>[0-9]+)\)\s*'
-crabJobSummary_matcher = re.compile(crabJobSummary_regex)
-crabJobStatus_header = ' Job State        Most Recent Site        Runtime   Mem (MB)      CPU %    Retries   Restarts      Waste       Exit Code'
-crabJobStatus_regex = r'\s*(?P<jobId>[0-9]+)\s+(?P<State>[a-zA-Z_]+)\s+[a-zA-Z0-9_]+\s+[0-9:]+\s+[0-9]+\s+[0-9]+\s+(?P<Retries>[0-9]+)\s+[0-9]+\s+[0-9:]+\s+[a-zA-Z0-9_ ]+\s*'
-crabJobStatus_matcher = re.compile(crabJobStatus_regex)
-
-current_time = time.time()
-print("current time = %s" % time.asctime(time.gmtime(current_time)))
-
-# CV: define maximum time (default is one day = 24*60*60 seconds) for which crab jobs are allowed to stay in same 'State' and with same number of 'Retries'
-#     before they they get automatically resubmitted as a new crab task
-time_limit = 60*60*24
-
-checkJobOutputFiles = True
-#checkJobOutputFiles = False
-
-shellScriptCommands = []
-
-crabJobs = runCommand('%s %s' % (executable_ls, crabFilePath))
-for crabJob in crabJobs:
-    crabJob = crabJob.replace('\n', '')
-    print("processing Task = '%s'" % crabJob)
-    crabJob_match = jobName_matcher.match(crabJob)
-    if crabJob_match:
-        print("checking directory/file = '%s'" % crabJob)
-        crabDir = os.path.join(crabFilePath, crabJob)
-        if not os.path.isdir(crabDir):
-            print(" not a crab directory --> skipping")
-            continue
-        
+    crabJobs = runCommand('%s %s' % (EXECUTABLE_LS, crabFilePath))
+    for crabJob in crabJobs:
         crabJob = crabJob.replace('\n', '')
-        print(" matched.")
-        if not jobStatus_dict.has_key(crabJob):
-            jobStatus_dict[crabJob] = {}
-            
-        sample = crabJob_match.group('sample')
-        if len(samples) > 0 and not sample in samples:
-            print("sample = '%s' not in list of samples = %s --> skipping" % (sample, samples))
-            continue
-        #print("sample = %s" % sample)
-
-        # unpack tar-ball that contains crab config file
-        if not os.path.isdir(os.path.join(crabFilePath, crabJob, "debug")):
-            crabConfigFileName_tarball = os.path.join(crabFilePath, crabJob, "inputs/debugFiles.tgz")
-            print "unpacking crab config file from tar-ball '%s'" % crabConfigFileName_tarball            
-            runCommand("%s -xzvf %s --directory %s" % (executable_tar, crabConfigFileName_tarball, crabDir))
-
-        # run 'crab status' command (abort after 5 minutes = 300 seconds)
-        crabStatus_lines = runCommand_via_shell_with_timeout('%s status -d %s --long' % (executable_crab, crabDir), timeout = 300)
-        ##crabStatus_lines = []
-        ##crabStatus_lines.append("Jobs status:			failed         56.4% (3692/6542)")
-        ##crabStatus_lines.append(" Job State        Most Recent Site        Runtime   Mem (MB)      CPU %    Retries   Restarts      Waste       Exit Code")
-        ##crabStatus_lines.append("   1 failed       Unknown                 0:00:00          0          0          1          0    0:05:25  Postprocessing failed")
-        ##crabStatus_lines.append("   6 finished     T2_PL_Swierk            5:17:50       1832         97          0          0    0:00:00               0")
-        ##crabStatus_lines.append("6405 failed       T2_PL_Swierk            4:16:13       1690         99          0          0    0:00:00  Postprocessing failed")
-        ##crabStatus_lines.append("6406 failed       T1_UK_RAL               2:40:29       1837         91          0          0    0:00:00  Postprocessing failed")
-        if not crabStatus_lines:
-            print "Failed to run 'crab -status' command for sample = '%s' --> skipping" % sample
-            continue
-
-        # open crab config file and read path and name of output file
-        crabConfigFileName = os.path.join(crabDir, 'debug/crabConfig.py')
-        crabConfigFile = open(crabConfigFileName, "r")
-        crabConfig_lines = crabConfigFile.readlines()
-        requestName = None
-        inputFileName = None
-        lumiMask = None
-        outputFileName = None
-        outputFilePath = None
-        whitelist = None
-        for crabConfig_line in crabConfig_lines:
-            crabConfig_line = crabConfig_line.replace("\n", "")
-            #print "parsing line = '%s'" % crabConfig_line
-            key_value_pair_match = key_value_pair_matcher.match(crabConfig_line)
-            if key_value_pair_match:
-                key = key_value_pair_match.group('key')
-                #print("key = %s" % key)
-                value = key_value_pair_match.group('value')
-                value = value.replace("'", "") # CV: remove apostrophes that enclose strings
-                #print("value = %s" % value)
-                if key == attribute_requestName:
-                    requestName = value
-                elif key == attribute_inputFileName:
-                    inputFileName = value
-                elif key == attribute_lumiMask:
-                    lumiMask = value    
-                elif key == attribute_outputFileName:
-                    outputFileName = value
-                elif key == attribute_outputFilePath:
-                    outputFilePath = value
-                elif key == attribute_whitelist:
-                    whitelist = value
-        crabConfigFile.close()
-        if not (requestName and inputFileName and outputFileName and outputFilePath):
-            raise ValueError("Failed to parse crab config file = '%s' !!" % crabConfigFileName)        
-        outputFilePath_part1 = outputFilePath_base
-        #print "outputFilePath_part1 = '%s'" % outputFilePath_part1
-        outputFilePath_part2 = removeLeadingSlash(outputFilePath)
-        #print "outputFilePath_part2 = '%s'" % outputFilePath_part2
-        pos = inputFileName.find("/")
-        if pos == 0:
-            pos = inputFileName.find("/", 1)
-        if pos == -1:
-            raise ValueError("Failed to parse attribute '%s' = '%s' !!" % (attribute_inputFileName, inputFileName))
-        outputFilePath_part3 = removeLeadingSlash(inputFileName[:pos])
-        #print "outputFilePath_part3 = '%s'" % outputFilePath_part3
-        outputFilePath_part4 = removeLeadingSlash(outputFileName)
-        #print "outputFilePath_part4 = '%s'" % outputFilePath_part4
-        outputFilePath_sample = os.path.join(outputFilePath_part1, outputFilePath_part2, outputFilePath_part3, outputFilePath_part4)
-        #print "outputFilePath_sample = '%s'" % outputFilePath_sample
-        outputFilePaths_sample = getOutputFilePaths(outputFilePath_sample)
-        #print "outputFilePaths_sample = %s" % outputFilePaths_sample
-
-        # read list of files existing in output file path
-        if checkJobOutputFiles:
-            outputFileInfos = []
-            for outputFilePath_sample in outputFilePaths_sample:
-                file_or_directoryNames = runCommand('%s %s' % (executable_ls, outputFilePath_sample))
-                for file_or_directoryName in file_or_directoryNames:
-                    file_or_directoryName = file_or_directoryName.replace("\n", "")
-                    file_or_directoryName = os.path.join(outputFilePath_sample, file_or_directoryName)
-                    if os.path.isfile(file_or_directoryName) and file_or_directoryName.find(".root") != -1:
-                        outputFileInfo = {
-                            'file' : os.path.basename(file_or_directoryName),
-                            'path' : file_or_directoryName,
-                            'size' : os.path.basename(file_or_directoryName),                            
-                            'time' : os.path.basename(file_or_directoryName)
-                        }
-                        outputFileInfos.append(outputFileInfo)
-        print "outputFileInfos:"
-        print [ outputFileInfo['file'] for outputFileInfo in outputFileInfos ]
-            
-        # parse job status information returned by executing 'crab status' command
-        numJobs = None
-        foundStart = False
-        foundEnd = False
-        isCrabFailure = False
-        jobStatus_summary = {}
-        jobIds_resubmit = []
-        jobIds_force_resubmit = []
-        for crabStatus_line in crabStatus_lines:
-            crabStatus_line = crabStatus_line.replace("\n", "")
-            #print "crabStatus_line = '%s'" % crabStatus_line 
-            # CV: check if job status cannot be determined,
-            #     due to crab internal error
-            if isCrabFailure:
-                continue    
-            if crabStatus_line.find("Traceback (most recent call last):") != -1:
-                print("Failed to execute 'crab status' command --> checking output files:")
-                for jobId in range(1, numJobs):
-                    checkOutputFiles(outputFileInfos, jobId, jobIds_force_resubmit)                            
-                    isCrabFailure = True
-                crabJobStatus_regex
-            crabJobSummary_match = crabJobSummary_matcher.match(crabStatus_line)
-            if crabJobSummary_match:
-                numJobs = crabJobSummary_match.group('numJobs')
-                print "Task = '%s' has %s jobs." % (crabJob, numJobs)
+        print("processing Task = '%s'" % crabJob)
+        crabJob_match = jobName_matcher.match(crabJob)
+        if crabJob_match:
+            print("checking directory/file = '%s'" % crabJob)
+            crabDir = os.path.join(crabFilePath, crabJob)
+            if not os.path.isdir(crabDir):
+                print(" not a crab directory --> skipping")
                 continue
-            if crabStatus_line == crabJobStatus_header:
-                foundStart = True
+
+            crabJob = crabJob.replace('\n', '')
+            print(" matched.")
+            if not jobStatus_dict.has_key(crabJob):
+                jobStatus_dict[crabJob] = {}
+
+            sample = crabJob_match.group('sample')
+            if len(SAMPLES) > 0 and not sample in SAMPLES:
+                print("sample = '%s' not in list of samples = %s --> skipping" % (sample, SAMPLES))
                 continue
-            if not foundStart or foundEnd:
+
+            # unpack tar-ball that contains crab config file
+            if not os.path.isdir(os.path.join(crabFilePath, crabJob, "debug")):
+                crabConfigFileName_tarball = os.path.join(crabFilePath, crabJob, "inputs/debugFiles.tgz")
+                print("unpacking crab config file from tar-ball '%s'" % crabConfigFileName_tarball)
+                runCommand("%s -xzvf %s --directory %s" % (EXECUTABLE_TAR, crabConfigFileName_tarball, crabDir))
+
+            # run 'crab status' command (abort after 5 minutes = 300 seconds)
+            crabStatus_lines = runCommand_via_shell_with_timeout(
+                '%s status -d %s --long' % (EXECUTABLE_CRAB, crabDir), timeout = 300
+            )
+            if not crabStatus_lines:
+                print("Failed to run 'crab -status' command for sample = '%s' --> skipping" % sample)
                 continue
-            jobId = None
-            State = None
-            Retries = None            
-            crabJobStatus_match = crabJobStatus_matcher.match(crabStatus_line)
-            if crabJobStatus_match:
-                jobStatus_entry = None
-                if not crabJob in jobStatus_dict_updated.keys():
-                    jobStatus_dict_updated[crabJob] = {}
-                jobId = int(crabJobStatus_match.group('jobId'))
-                if not jobId in jobStatus_dict_updated[crabJob]:
-                    jobStatus_dict_updated[crabJob][jobId] = {}
-                jobStatus_entry = jobStatus_dict_updated[crabJob][jobId] 
-                State = crabJobStatus_match.group('State')
-                jobStatus_entry['State'] = State
-                if not State in jobStatus_summary.keys():
-                    jobStatus_summary[State] = 0
-                jobStatus_summary[State] = jobStatus_summary[State] + 1
-                Retries = int(crabJobStatus_match.group('Retries'))
-                jobStatus_entry['Retries'] = Retries
-            else:
-                foundEnd = True
-            if jobId and State and Retries is not None:
-                print "jobId = %i: State = '%s', Retries = %i" % (jobId, State, Retries)
-                if State in [ "finished" ] or force_resubmit:
-                    checkOutputFiles(outputFileInfos, jobId, jobIds_force_resubmit)    
-                elif State in [ "failed", "transferring" ]:
-                    # CV: check if job remained in this state for more than one day;
-                    #     if so, assume that crab job got "stuck" and create a new crab task with this job
-                    if crabJob in jobStatus_dict.keys() and jobId in jobStatus_dict[crabJob].keys():
-                        if Retries == jobStatus_dict[crabJob][jobId]['Retries'] and (current_time - jobStatus_dict[crabJob]['lastUpdate']) > time_limit:
-                            print("Info: jobId = %i got stuck in state '%s' --> creating a new crab task with this job !!" % (jobId, State))
-                            jobIds_force_resubmit.append(jobId)
-                    elif State in [ "failed" ]:
-                        print("Info: jobId = %i failed --> resubmitting it" % jobId)
-                        jobIds_resubmit.append(jobId)
 
-        print "Job summary:"
-        for jobStatus, numJobs_status in jobStatus_summary.items():
-            print " %i Jobs in status = '%s'" % (numJobs_status, jobStatus)
-
-        # sort jobIds in ascending order
-        jobIds_resubmit.sort()
-        jobIds_force_resubmit.sort()
-
-        # make sure each jobId is contained in list at most once
-        jobIds_resubmit_unique = []
-        for jobId in jobIds_resubmit:
-            if not jobId in jobIds_resubmit_unique:
-                jobIds_resubmit_unique.append(jobId)
-        jobIds_force_resubmit_unique = []
-        for jobId in jobIds_force_resubmit:
-            if not jobId in jobIds_force_resubmit_unique:
-                jobIds_force_resubmit_unique.append(jobId)
-
-        # resubmit jobs that that failed
-        print("jobIds_resubmit = %s" % jobIds_resubmit_unique)
-        print("(%i jobs)" % len(jobIds_resubmit_unique))
-        if len(jobIds_resubmit_unique) > 0:
-            # resubmit crab jobs in groups of 500 jobs
-            numJobsPerResubmit = 500
-            for jobIndex in range(len(jobIds_resubmit_unique)/numJobsPerResubmit + 1):
-                firstJob = jobIndex*numJobsPerResubmit
-                print "firstJob = %i" % firstJob
-                lastJob = (jobIndex + 1)*numJobsPerResubmit - 1
-                print "lastJob = %i" % lastJob
-                jobIds_resubmit_string = ",".join([ "%i" % jobId for jobId in jobIds_resubmit_unique[firstJob:lastJob] ])
-                print "jobIds_resubmit_string = '%s'" % jobIds_resubmit_string
-                commandLine = '%s resubmit -d %s --jobids %s' % (executable_crab, crabDir, jobIds_resubmit_string)
-                print "commandLine = '%s'" % commandLine
-                runCommand_via_shell(commandLine)
-
-        # create new crab task with jobs that remained in 'failed' or 'transferring' state for more than one day
-        print("jobIds_force_resubmit = %s" % jobIds_force_resubmit_unique)
-        print("(%i jobs)" % len(jobIds_force_resubmit_unique))
-        if len(jobIds_force_resubmit_unique) > 0:
-            crabReportFileName = os.path.join(crabDir, "results/notFinishedLumis.json")
-            if not os.path.isfile(crabReportFileName):
-                commandLine = '%s report -d %s' % (executable_crab, crabDir)
-                runCommand_via_shell(commandLine)
-            if not 'forceResubmissions' in jobStatus_dict_updated[crabJob].keys():
-                jobStatus_dict_updated[crabJob]['forceResubmissions'] = 1
-            jobStatus_dict_updated[crabJob]['forceResubmissions'] = jobStatus_dict_updated[crabJob]['forceResubmissions'] + 1
-            # write new crab config file
-            crabConfigFileName_new = os.path.join(crabFilePath, 'crabConfig_%s_forceResubmit%i.py' % (crabJob, jobStatus_dict_updated[crabJob]['forceResubmissions']))
-            crabConfigFile_new = open(crabConfigFileName_new, "w")
-            value_lumiMask = "'%s'" % crabReportFileName
-            print "value_lumiMask = %s" % value_lumiMask
-            isSet_lumiMask = False
-            value_whitelist = "%s" % whitelist_when_force_resubmit
-            print "value_whitelist = %s" % value_whitelist
-            isSet_whitelist = False
+            # open crab config file and read path and name of output file
+            crabConfigFileName = os.path.join(crabDir, 'debug/crabConfig.py')
+            crabConfigFile = open(crabConfigFileName, "r")
+            crabConfig_lines = crabConfigFile.readlines()
+            requestName = None
+            inputFileName = None
+            lumiMask = None
+            outputFileName = None
+            outputFilePath = None
+            whitelist = None
             for crabConfig_line in crabConfig_lines:
-                key_value_pair_match = key_value_pair_matcher.match(crabConfig_line)                                
-                crabConfig_line_new = crabConfig_line
+                crabConfig_line = crabConfig_line.replace("\n", "")
+                key_value_pair_match = KEY_VALUE_PAIR_MATCHER.match(crabConfig_line)
                 if key_value_pair_match:
                     key = key_value_pair_match.group('key')
                     value = key_value_pair_match.group('value')
-                    if key == attribute_requestName:
-                        value = "'%s_forceResubmit%i'" % (value.replace("'", ""), jobStatus_dict_updated[crabJob]['forceResubmissions'])                        
-                    elif key == attribute_lumiMask:
-                        value = value_lumiMask
-                        isSet_lumiMask = True
-                    elif key == attribute_outputFileName:
-                        value = "'%s_forceResubmit%i'" % (value.replace("'", ""), jobStatus_dict_updated[crabJob]['forceResubmissions'])
-                    elif key == attribute_whitelist:
-                        if whitelist_when_force_resubmit:
-                            value = value_whitelist
-                        isSet_whitelist = True                    
-                    crabConfig_line_new = "%s = %s\n" % (key, value)
-                crabConfigFile_new.write(crabConfig_line_new)
-            if not isSet_lumiMask:
-                crabConfig_line_new = "%s = %s\n" % (attribute_lumiMask, value_lumiMask)
-                crabConfigFile_new.write(crabConfig_line_new)
-            if not isSet_whitelist and whitelist_when_force_resubmit:
-                crabConfig_line_new = "%s = %s\n" % (attribute_whitelist, value_whitelist)
-                crabConfigFile_new.write(crabConfig_line_new)
-            crabConfigFile_new.close()
-            commandLine = '%s submit -c %s' % (executable_crab, crabConfigFileName_new)
-            print "commandLine = '%s'" % commandLine
-            runCommand_via_shell(commandLine)
+                    value = value.replace("'", "") # CV: remove apostrophes that enclose strings
+                    if key == ATTRIBUTE_REQUESTNAME:
+                        requestName = value
+                    elif key == ATTRIBUTE_INPUTFILENAME:
+                        inputFileName = value
+                    elif key == ATTRIBUTE_LUMIMASK:
+                        lumiMask = value
+                    elif key == ATTRIBUTE_OUTPUTFILENAME:
+                        outputFileName = value
+                    elif key == ATTRIBUTE_OUTPUTFILEPATH:
+                        outputFilePath = value
+                    elif key == ATTRIBUTE_WHITELIST:
+                        whitelist = value
+            crabConfigFile.close()
+            if not (requestName and inputFileName and outputFileName and outputFilePath):
+                raise ValueError("Failed to parse crab config file = '%s' !!" % crabConfigFileName)
+            outputFilePath_part1 = OUTPUTFILEPATH_BASE
+            outputFilePath_part2 = removeLeadingSlash(outputFilePath)
+            pos = inputFileName.find("/")
+            if pos == 0:
+                pos = inputFileName.find("/", 1)
+            if pos == -1:
+                raise ValueError("Failed to parse attribute '%s' = '%s' !!" % (ATTRIBUTE_INPUTFILENAME, inputFileName))
+            outputFilePath_part3 = removeLeadingSlash(inputFileName[:pos])
+            outputFilePath_part4 = removeLeadingSlash(outputFileName)
+            outputFilePath_sample = os.path.join(
+                outputFilePath_part1, outputFilePath_part2, outputFilePath_part3, outputFilePath_part4
+            )
+            outputFilePaths_sample = getOutputFilePaths(outputFilePath_sample)
 
-        print("")
+            # read list of files existing in output file path
+            if checkJobOutputFiles:
+                outputFileInfos = []
+                for outputFilePath_sample in outputFilePaths_sample:
+                    file_or_directoryNames = runCommand('%s %s' % (EXECUTABLE_LS, outputFilePath_sample))
+                    for file_or_directoryName in file_or_directoryNames:
+                        file_or_directoryName = file_or_directoryName.replace("\n", "")
+                        file_or_directoryName = os.path.join(outputFilePath_sample, file_or_directoryName)
+                        if os.path.isfile(file_or_directoryName) and file_or_directoryName.find(".root") != -1:
+                            outputFileInfo = {
+                                'file' : os.path.basename(file_or_directoryName),
+                                'path' : file_or_directoryName,
+                                'size' : os.path.basename(file_or_directoryName),
+                                'time' : os.path.basename(file_or_directoryName)
+                            }
+                            outputFileInfos.append(outputFileInfo)
+            print("outputFileInfos:")
+            print([ outputFileInfo['file'] for outputFileInfo in outputFileInfos ])
 
-#print(jobStatus_dict_updated)
+            # parse job status information returned by executing 'crab status' command
+            numJobs = None
+            foundStart = False
+            foundEnd = False
+            isCrabFailure = False
+            jobStatus_summary = {}
+            jobIds_resubmit = []
+            jobIds_force_resubmit = []
+            for crabStatus_line in crabStatus_lines:
+                crabStatus_line = crabStatus_line.replace("\n", "")
+                # CV: check if job status cannot be determined,
+                #     due to crab internal error
+                if isCrabFailure:
+                    continue
+                if crabStatus_line.find("Traceback (most recent call last):") != -1:
+                    print("Failed to execute 'crab status' command --> checking output files:")
+                    for jobId in range(1, numJobs):
+                        checkOutputFiles(outputFileInfos, jobId, jobIds_force_resubmit)
+                        isCrabFailure = True
+                    CRABJOBSTATUS_REGEX
+                crabJobSummary_match = CRABJOBSUMMARY_MATCHER.match(crabStatus_line)
+                if crabJobSummary_match:
+                    numJobs = crabJobSummary_match.group('numJobs')
+                    print("Task = '%s' has %s jobs." % (crabJob, numJobs))
+                    continue
+                if crabStatus_line == CRABJOBSUMMARY_HEADER:
+                    foundStart = True
+                    continue
+                if not foundStart or foundEnd:
+                    continue
+                jobId = None
+                State = None
+                Retries = None
+                crabJobStatus_match = CRABJOBSTATUS_MATCHER.match(crabStatus_line)
+                if crabJobStatus_match:
+                    jobStatus_entry = None
+                    if not crabJob in jobStatus_dict_updated.keys():
+                        jobStatus_dict_updated[crabJob] = {}
+                    jobId = int(crabJobStatus_match.group('jobId'))
+                    if not jobId in jobStatus_dict_updated[crabJob]:
+                        jobStatus_dict_updated[crabJob][jobId] = {}
+                    jobStatus_entry = jobStatus_dict_updated[crabJob][jobId]
+                    State = crabJobStatus_match.group('State')
+                    jobStatus_entry['State'] = State
+                    if not State in jobStatus_summary.keys():
+                        jobStatus_summary[State] = 0
+                    jobStatus_summary[State] = jobStatus_summary[State] + 1
+                    Retries = int(crabJobStatus_match.group('Retries'))
+                    jobStatus_entry['Retries'] = Retries
+                else:
+                    foundEnd = True
+                if jobId and State and Retries is not None:
+                    print("jobId = %i: State = '%s', Retries = %i" % (jobId, State, Retries))
+                    if State in [ "finished" ] or force_resubmit:
+                        checkOutputFiles(outputFileInfos, jobId, jobIds_force_resubmit)
+                    elif State in [ "failed", "transferring" ]:
+                        # CV: check if job remained in this state for more than one day;
+                        #     if so, assume that crab job got "stuck" and create a new crab task with this job
+                        if crabJob in jobStatus_dict.keys() and jobId in jobStatus_dict[crabJob].keys():
+                            if Retries == jobStatus_dict[crabJob][jobId]['Retries'] and \
+                                  (current_time - jobStatus_dict[crabJob]['lastUpdate']) > TIME_LIMIT:
+                                print(
+                                    "Info: jobId = %i got stuck in state '%s' --> " \
+                                    "creating a new crab task with this job !!" % (jobId, State)
+                                )
+                                jobIds_force_resubmit.append(jobId)
+                        elif State in [ "failed" ]:
+                            print("Info: jobId = %i failed --> resubmitting it" % jobId)
+                            jobIds_resubmit.append(jobId)
 
-statusFile = open(statusFileName, "w")
-json.dump(jobStatus_dict_updated, statusFile)
-statusFile.close()
+            print("Job summary:")
+            for jobStatus, numJobs_status in jobStatus_summary.items():
+                print(" %i Jobs in status = '%s'" % (numJobs_status, jobStatus))
 
-os.chdir(currentDir)
+            # sort jobIds in ascending order
+            jobIds_resubmit.sort()
+            jobIds_force_resubmit.sort()
 
-print("Finished running 'crabSitter.py'.")
+            # make sure each jobId is contained in list at most once
+            jobIds_resubmit_unique = []
+            for jobId in jobIds_resubmit:
+                if not jobId in jobIds_resubmit_unique:
+                    jobIds_resubmit_unique.append(jobId)
+            jobIds_force_resubmit_unique = []
+            for jobId in jobIds_force_resubmit:
+                if not jobId in jobIds_force_resubmit_unique:
+                    jobIds_force_resubmit_unique.append(jobId)
+
+            # resubmit jobs that that failed
+            print("jobIds_resubmit = %s" % jobIds_resubmit_unique)
+            print("(%i jobs)" % len(jobIds_resubmit_unique))
+            if len(jobIds_resubmit_unique) > 0:
+                # resubmit crab jobs in groups of 500 jobs
+                numJobsPerResubmit = 500
+                for jobIndex in range(len(jobIds_resubmit_unique)/numJobsPerResubmit + 1):
+                    firstJob = jobIndex*numJobsPerResubmit
+                    print("firstJob = %i" % firstJob)
+                    lastJob = (jobIndex + 1)*numJobsPerResubmit - 1
+                    print("lastJob = %i" % lastJob)
+                    jobIds_resubmit_string = ",".join([
+                        "%i" % jobId for jobId in jobIds_resubmit_unique[firstJob:lastJob]
+                    ])
+                    print("jobIds_resubmit_string = '%s'" % jobIds_resubmit_string)
+                    commandLine = '%s resubmit -d %s --jobids %s' % (EXECUTABLE_CRAB, crabDir, jobIds_resubmit_string)
+                    print("commandLine = '%s'" % commandLine)
+                    runCommand_via_shell(commandLine)
+
+            # create new crab task with jobs that remained in 'failed' or 'transferring' state for more than one day
+            print("jobIds_force_resubmit = %s" % jobIds_force_resubmit_unique)
+            print("(%i jobs)" % len(jobIds_force_resubmit_unique))
+            if len(jobIds_force_resubmit_unique) > 0:
+                crabReportFileName = os.path.join(crabDir, "results/notFinishedLumis.json")
+                if not os.path.isfile(crabReportFileName):
+                    commandLine = '%s report -d %s' % (EXECUTABLE_CRAB, crabDir)
+                    runCommand_via_shell(commandLine)
+                if not 'forceResubmissions' in jobStatus_dict_updated[crabJob].keys():
+                    jobStatus_dict_updated[crabJob]['forceResubmissions'] = 1
+                jobStatus_dict_updated[crabJob]['forceResubmissions'] = jobStatus_dict_updated[crabJob]['forceResubmissions'] + 1
+                # write new crab config file
+                crabConfigFileName_new = os.path.join(
+                    crabFilePath, 'crabConfig_%s_forceResubmit%i.py' % \
+                    (crabJob, jobStatus_dict_updated[crabJob]['forceResubmissions'])
+                )
+                crabConfigFile_new = open(crabConfigFileName_new, "w")
+                value_lumiMask = "'%s'" % crabReportFileName
+                print("value_lumiMask = %s" % value_lumiMask)
+                isSet_lumiMask = False
+                value_whitelist = "%s" % whitelist_when_force_resubmit
+                print("value_whitelist = %s" % value_whitelist)
+                isSet_whitelist = False
+                for crabConfig_line in crabConfig_lines:
+                    key_value_pair_match = KEY_VALUE_PAIR_MATCHER.match(crabConfig_line)
+                    crabConfig_line_new = crabConfig_line
+                    if key_value_pair_match:
+                        key = key_value_pair_match.group('key')
+                        value = key_value_pair_match.group('value')
+                        if key == ATTRIBUTE_REQUESTNAME:
+                            value = "'%s_forceResubmit%i'" % \
+                                    (value.replace("'", ""), jobStatus_dict_updated[crabJob]['forceResubmissions'])
+                        elif key == ATTRIBUTE_LUMIMASK:
+                            value = value_lumiMask
+                            isSet_lumiMask = True
+                        elif key == ATTRIBUTE_OUTPUTFILENAME:
+                            value = "'%s_forceResubmit%i'" % \
+                                    (value.replace("'", ""), jobStatus_dict_updated[crabJob]['forceResubmissions'])
+                        elif key == ATTRIBUTE_WHITELIST:
+                            if whitelist_when_force_resubmit:
+                                value = value_whitelist
+                            isSet_whitelist = True
+                        crabConfig_line_new = "%s = %s\n" % (key, value)
+                    crabConfigFile_new.write(crabConfig_line_new)
+                if not isSet_lumiMask:
+                    crabConfig_line_new = "%s = %s\n" % (ATTRIBUTE_LUMIMASK, value_lumiMask)
+                    crabConfigFile_new.write(crabConfig_line_new)
+                if not isSet_whitelist and whitelist_when_force_resubmit:
+                    crabConfig_line_new = "%s = %s\n" % (ATTRIBUTE_WHITELIST, value_whitelist)
+                    crabConfigFile_new.write(crabConfig_line_new)
+                crabConfigFile_new.close()
+                commandLine = '%s submit -c %s' % (EXECUTABLE_CRAB, crabConfigFileName_new)
+                print("commandLine = '%s'" % commandLine)
+                runCommand_via_shell(commandLine)
+
+            print("")
+
+    statusFile = open(STATUSFILENAME, "w")
+    json.dump(jobStatus_dict_updated, statusFile, indent = 2)
+    statusFile.close()
+
+    os.chdir(currentDir)
+
+    print("Finished running 'crabSitter.py'.")
