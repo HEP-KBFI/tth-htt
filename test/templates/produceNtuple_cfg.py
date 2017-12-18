@@ -81,6 +81,7 @@ process.produceNtuple = cms.PSet(
         "keep rho*",
         "keep puWeight*",
         "keep genWeight*",
+        "keep lheWeightSM",
         "keep btagWeight*",
         ##"keep *GenLep*",
         ##"keep *GenLepFromTau*",
