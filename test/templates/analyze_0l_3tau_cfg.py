@@ -16,7 +16,7 @@ process.fwliteOutput = cms.PSet(
 )
 
 process.analyze_0l_3tau = cms.PSet(
-    treeName = cms.string('tree'),
+    treeName = cms.string('Events'),
 
     process = cms.string('ttH'),
 

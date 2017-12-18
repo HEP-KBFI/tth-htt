@@ -1,9 +1,9 @@
 import FWCore.ParameterSet.Config as cms
 
 import os
-  
+
 process = cms.PSet()
-  
+
 process.fwliteInput = cms.PSet(
     ##fileNames = cms.vstring('/afs/cern.ch/user/v/veelken/scratch0/VHbbNtuples_7_6_x/CMSSW_7_6_3/src/VHbbAnalysis/Heppy/test/latest_Loop/tree.root'),
     fileNames = cms.vstring('/afs/cern.ch/user/k/kaehatah/public/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/VHBB_HEPPY_V12_ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_Py8_mWCutfix__fall15MAv2-pu25ns15v1_76r2as_v12-v1/160330_172426/0000/tree_1.root'),
@@ -16,13 +16,13 @@ process.fwliteOutput = cms.PSet(
 )
 
 process.analyze_hadTopTagger = cms.PSet(
-    treeName = cms.string('tree'),
+    treeName = cms.string('Events'),
 
     process = cms.string('signal'),
 
     histogramDir = cms.string('analyze_hadTopTagger'),
 
-    era = cms.string('2016'),
+    era = cms.string('2017'),
 
     hadTauSelection = cms.string('Tight|dR03mvaMedium'),
 
@@ -41,7 +41,7 @@ process.analyze_hadTopTagger = cms.PSet(
     branchName_genBJets = cms.string('GenBQuarkFromTop'),
     branchName_genWBosons = cms.string('GenVbosons'),
     branchName_genWJets = cms.string('GenWZQuark'),
-    
+
     selEventsFileName_input = cms.string(''),
     selectBDT = cms.bool(True)
 )

@@ -15,7 +15,7 @@ process.fwliteOutput = cms.PSet(
 )
 
 process.analyze_2lss_1tau = cms.PSet(
-    treeName = cms.string('tree'),
+    treeName = cms.string('Events'),
 
     process = cms.string('ttH'),
 

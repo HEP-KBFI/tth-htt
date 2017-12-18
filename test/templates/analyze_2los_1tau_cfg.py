@@ -15,13 +15,13 @@ process.fwliteOutput = cms.PSet(
 )
 
 process.analyze_2los_1tau = cms.PSet(
-    treeName = cms.string('tree'),
+    treeName = cms.string('Events'),
 
     process = cms.string('ttH'),
 
     histogramDir = cms.string('2los_1tau_Tight'),
 
-    era = cms.string('2016'),
+    era = cms.string('2017'),
 
     triggers_1e = cms.vstring('HLT_BIT_HLT_Ele25_WPTight_Gsf_v', 'HLT_BIT_HLT_Ele27_eta2p1_WPLoose_Gsf_v'),
     use_triggers_1e = cms.bool(True),

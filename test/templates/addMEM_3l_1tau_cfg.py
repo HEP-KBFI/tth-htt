@@ -14,9 +14,9 @@ process.fwliteOutput = cms.PSet(
 )
 
 process.addMEM_3l_1tau = cms.PSet(
-    treeName = cms.string('tree'),
+    treeName = cms.string('Events'),
 
-    era = cms.string('2016'),
+    era = cms.string('2017'),
 
     leptonSelection = cms.string('Fakeable'),
 
