@@ -704,7 +704,9 @@ int main(int argc, char* argv[])
     throw cms::Exception("comp_jetToTauFakeRate") 
       << "Exactly one input file expected !!\n";
   TFile* inputFile = new TFile(inputFiles.files().front().data());
-
+  if ( !inputFile ) throw cms::Exception("comp_jetToTauFakeRate") 
+    << "Failed to open input file = '" << inputFiles.files().front() << "' !!\n";
+   
   fwlite::OutputFiles outputFile(cfg);
   fwlite::TFileService fs = fwlite::TFileService(outputFile.file().data());
 

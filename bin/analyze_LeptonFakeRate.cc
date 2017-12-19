@@ -396,9 +396,9 @@ int main(int argc, char* argv[])
   // bool apply_trigger_bits = cfg_analyze.getParameter<bool>("apply_trigger_bits"); // NOT NEEDED FROM NOW ON
 
   vdouble etaBins_e = cfg_analyze.getParameter<vdouble>("absEtaBins_e");
-  vdouble ptBins_e = cfg_analyze.getParameter<vdouble>("absPtBins_e"); 
+  vdouble ptBins_e = cfg_analyze.getParameter<vdouble>("ptBins_e"); 
   vdouble etaBins_mu = cfg_analyze.getParameter<vdouble>("absEtaBins_mu");
-  vdouble ptBins_mu = cfg_analyze.getParameter<vdouble>("absPtBins_mu");
+  vdouble ptBins_mu = cfg_analyze.getParameter<vdouble>("ptBins_mu");
 
   double minPt_e = cfg_analyze.getParameter<double>("minPt_e");   // NEWLY ADDED
   double minPt_mu = cfg_analyze.getParameter<double>("minPt_mu"); // NEWLY ADDED

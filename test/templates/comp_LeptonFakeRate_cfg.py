@@ -3,7 +3,7 @@ import FWCore.ParameterSet.Config as cms
 process = cms.PSet()
 
 process.fwliteInput = cms.PSet(
-    fileNames = cms.vstring('/home/veelken/VHbbNtuples_8_0_x/CMSSW_8_0_19/src/tthAnalysis/HiggsToTauTau/test/DEBUG/fit_values.txt'),
+    fileNames = cms.vstring('/hdfs/local/karl/ttHAnalysis/2016/2017Dec05/histograms/LeptonFakeRate/histograms_harvested_stage2.root', '/home/veelken/VHbbNtuples_8_0_x/CMSSW_8_0_19/src/tthAnalysis/HiggsToTauTau/test/DEBUG/fit_values.txt'),
     maxEvents = cms.int32(-1),
     outputEvery = cms.uint32(100000)
 )
