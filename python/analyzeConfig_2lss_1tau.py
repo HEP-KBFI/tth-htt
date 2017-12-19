@@ -47,8 +47,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
       histograms_to_fit,
       executable_prep_dcard = executable_prep_dcard,
       executable_add_syst_dcard = executable_add_syst_dcard,
-      verbose = verbose,
-    )
+      verbose = verbose)
 
     self.samples = samples
     self.changeBranchNames = changeBranchNames
