@@ -3,7 +3,7 @@
 test_exit_code () {
   EXIT_CODE=$1;
   echo "Last command finished at `date` with exit code: $EXIT_CODE";
-  if [ "$EXIT_CODE" -ne "0" ]; then
+  if [ "$EXIT_CODE" != "0" ]; then
     exit $EXIT_CODE; # Fail as early as possible
   fi
 }
