@@ -74,7 +74,7 @@ void RecoLeptonWriter::setBranchNames()
   branchName_sip3d_ = Form("%s_%s", branchName_obj_.data(), "sip3d");
   branchName_mvaRawTTH_ = Form("%s_%s", branchName_obj_.data(), "mvaTTH");
   branchName_jetPtRatio_ = Form("%s_%s", branchName_obj_.data(), "jetPtRatio");
-  branchName_jetBtagCSV_ = Form("%s_%s", branchName_obj_.data(), "jetBtagCSV");
+  branchName_jetBtagCSV_ = Form("%s_%s", branchName_obj_.data(), "jetBtag_csvv2");
   branchName_tightCharge_ = Form("%s_%s", branchName_obj_.data(), "tightCharge");
   branchName_charge_ = Form("%s_%s", branchName_obj_.data(), "charge");
 }

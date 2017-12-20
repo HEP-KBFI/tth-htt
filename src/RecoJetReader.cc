@@ -105,7 +105,7 @@ void RecoJetReader::setBranchNames()
     branchName_jecUncertTotal_ = Form("%s_%s", branchName_obj_.data(), "jecUncertTotal");
     branchName_BtagCSV_ = Form("%s_%s", branchName_obj_.data(), "btagCSVV2");
     branchName_QGDiscr_ = Form("%s_%s", branchName_obj_.data(), "qgl");
-    branchName_BtagWeight_ = Form("%s_%s", branchName_obj_.data(), "btagSF");
+    branchName_BtagWeight_ = Form("%s_%s", branchName_obj_.data(), "btagSF_csvv2");
     for ( int idxShift = kBtag_hfUp; idxShift <= kBtag_jesDown; ++idxShift ) {
       std::string branchName_BtagWeight = TString(getBranchName_bTagWeight(era_, idxShift)).ReplaceAll("Jet_", Form("%s_", branchName_obj_.data())).Data();
       branchNames_BtagWeight_systematics_[idxShift] = branchName_BtagWeight;
