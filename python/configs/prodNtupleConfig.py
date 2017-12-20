@@ -77,7 +77,7 @@ class prodNtupleConfig:
         ))
 
         self.cfgFile_prodNtuple_original = os.path.join(self.template_dir, cfgFile_prodNtuple)
-        self.sbatchFile_prodNtuple       = os.path.join(self.template_dir, "sbatch_prodNtuple.py")
+        self.sbatchFile_prodNtuple       = os.path.join(self.configDir, "sbatch_prodNtuple.py")
         self.cfgFiles_prodNtuple_modified = {}
         self.logFiles_prodNtuple          = {}
 

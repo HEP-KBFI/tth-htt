@@ -23,6 +23,9 @@ class SmartFormatter(argparse.HelpFormatter):
       return text[2:].splitlines()
     return argparse.HelpFormatter._split_lines(self, text, width)
 
+def cat_choices(choices):
+  return ', '.join(map(lambda choice: "'%s'" % choice, choices))
+
 parser = argparse.ArgumentParser(
   formatter_class = lambda prog: SmartFormatter(prog, max_help_position = 45)
 )
@@ -33,11 +36,11 @@ parser.add_argument('-v', '--version',
 parser.add_argument('-m', '--mode',
   type = str, dest = 'mode', metavar = 'mode', default = None, required = True,
   choices = mode_choices,
-  help = 'R|Analysis type (choices: %s)' % ', '.join(map(lambda choice: "'%s'" % choice, mode_choices)),
+  help = 'R|Analysis type (choices: %s)' % cat_choices(mode_choices),
 )
 parser.add_argument('-e', '--era',
   type = str, dest = 'era', metavar = 'era', choices = era_choices, default = None, required = True,
-  help = 'R|Era of data/MC (choices: %s)' % ', '.join(map(lambda choice: "'%s'" % choice, era_choices)),
+  help = 'R|Era of data/MC (choices: %s)' % cat_choices(era_choices),
 )
 parser.add_argument('-p', '--disable-preselection',
   dest = 'disable_preselection', action = 'store_false', default = True,
@@ -130,8 +133,9 @@ else:
 if __name__ == '__main__':
   logging.basicConfig(
     stream = sys.stdout,
-    level = logging.INFO,
-    format = '%(asctime)s - %(levelname)s: %(message)s')
+    level  = logging.INFO,
+    format = '%(asctime)s - %(levelname)s: %(message)s'
+  )
 
   for resubmission_idx in range(resubmission_limit):
     logging.info("Submission attempt #%i" % (resubmission_idx + 1))
