@@ -367,9 +367,15 @@ TH1* getHistogram(const TDirectory* dir, const std::string& process, const std::
 
 TDirectory* createSubdirectory(TDirectory* dir, const std::string& subdirName)
 {
+  std::cout << "<createSubdirectory>:" << std::endl;
+  std::cout << " dir = " << dir << ": name = '" << dir->GetName() << "'" << std::endl;
+  std::cout << " subdirName = '" << subdirName << "'" << std::endl;
   dir->cd();
   if ( !dir->Get(subdirName.data()) ) {
+    std::cout << "--> creating subdir = '" << subdirName << "' !!" << std::endl;
     dir->mkdir(subdirName.data());
+  } else { 
+    std::cout << "--> subdir = '" << subdirName << "' already exists --> skipping !!" << std::endl;
   }
   TDirectory* subdir = dynamic_cast<TDirectory*>(dir->Get(subdirName.data()));
   assert(subdir);
@@ -378,6 +384,9 @@ TDirectory* createSubdirectory(TDirectory* dir, const std::string& subdirName)
 
 TDirectory* createSubdirectory_recursively(TFileDirectory& dir, const std::string& fullSubdirName)
 {
+  std::cout << "<createSubdirectory_recursively>:" << std::endl;
+  std::cout << " dir = " << &dir << ": name = '" << dir.getBareDirectory()->GetName() << "'" << std::endl;
+  std::cout << " fullSubdirName = '" << fullSubdirName << "'" << std::endl;
   TString fullSubdirName_tstring = fullSubdirName.data();
   TObjArray* subdirNames = fullSubdirName_tstring.Tokenize("/");
   int numSubdirectories = subdirNames->GetEntries();
