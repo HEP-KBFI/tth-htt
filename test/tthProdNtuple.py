@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 import os, logging, sys, getpass, argparse, datetime
 
-from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_test import samples_2017
 from tthAnalysis.HiggsToTauTau.configs.prodNtupleConfig import prodNtupleConfig
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 
@@ -67,21 +66,26 @@ parser.add_argument('-V', '--verbose',
 )
 args = parser.parse_args()
 
+sub_o = lambda var: ("" if var else "o")
+
 era                = args.era
 mode               = args.mode
 preselection       = args.disable_preselection
 nanoaod_prep       = args.disable_nanoaod_preprocess
 resubmit           = args.disable_resubmission
 resubmission_limit = args.resubmission_limit if resubmit else 1 # submit only once
-version            = "%s_w%sPreselection_%s" % (args.version, ("" if preselection else "o"), mode)
+version            = "%s_w%sNanoPrep_w%sPresel_%s" % (
+  args.version, sub_o(nanoaod_prep), sub_o(preselection), mode
+)
 verbose            = args.verbose
 dry_run            = args.dry_run
 
-samples         = None
-leptonSelection = None
-hadTauSelection = None
+if era == "2017":
+  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_test import samples_2017 as samples
+else:
+  raise ValueError("Invalid Configuration parameter 'era' = %s !!" % era)
 
-for sample_key, sample_entry in samples_2017.items():
+for sample_key, sample_entry in samples.items():
   if mode == "all":
     sample_entry['use_it'] = True
   elif mode in ["forBDTtraining_only", "forBDTtraining_except"]:
@@ -102,11 +106,6 @@ else:
   leptonSelection   = 'Loose'
   hadTauSelection   = 'Loose|dR03mvaVVLoose'
   max_files_per_job = 50
-
-if era == "2017":
-  samples = samples_2017
-else:
-  raise ValueError("Invalid Configuration parameter 'era' = %s !!" % era)
 
 preselection_cuts = None
 if preselection:
