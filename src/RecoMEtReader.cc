@@ -67,18 +67,9 @@ void RecoMEtReader::setBranchAddresses(TTree* tree)
       tree->SetBranchAddress(branchName_pt_[met_option].data(),  &met_.systematics_[met_option].pt_);
       tree->SetBranchAddress(branchName_phi_[met_option].data(), &met_.systematics_[met_option].phi_);
     }
-    if(era_ == kEra_2015)
-    { // CV: branch does not exist in VHbb Ntuples v12 produced by Karl for 2015 data
-      met_.covXX_ = 400.;       //     assume 20 GeV MET resolution independently in x-direction and in y-direction
-      met_.covXY_ =   0.;       //    (cf. Fig. 11 in arXiv:1411.0511)
-      met_.covYY_ = 400.;
-    }
-    else
-    {
-      tree->SetBranchAddress(branchName_covXX_.data(), &met_.covXX_);
-      tree->SetBranchAddress(branchName_covXY_.data(), &met_.covXY_);
-      tree->SetBranchAddress(branchName_covYY_.data(), &met_.covYY_);
-    }
+    tree->SetBranchAddress(branchName_covXX_.data(), &met_.covXX_);
+    tree->SetBranchAddress(branchName_covXY_.data(), &met_.covXY_);
+    tree->SetBranchAddress(branchName_covYY_.data(), &met_.covYY_);
   }
 }
 
