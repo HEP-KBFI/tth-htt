@@ -13,4 +13,4 @@ void check_mvaInputs(std::map<std::string, double>& mvaInputs, const EventInfo& 
 
 std::vector<std::string> get_mvaInputVariables(const std::vector<std::string>& mvaInputVariables_ttV, const std::vector<std::string>& mvaInputVariables_ttbar);
 
-#endif
+#endif // tthAnalysis_HiggsToTauTau_mvaAuxFunctions_h
