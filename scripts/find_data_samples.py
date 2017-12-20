@@ -90,8 +90,11 @@ MAX_DATA_SAMPLE_LEN       = max(map(len, DATA_SAMPLES))
 def convert_date(date):
   return datetime.datetime.fromtimestamp(int(date)).strftime('%Y-%m-%d %H:%M:%S')
 
-def convert_cmssw_versions(cmssw_str):
-  return ','.join(set([re.match(r'.*\"(?P<ver>.*)\".*', s).group('ver')[len('CMSSW')+1:] for s in cmssw_str.split(',')]))
+def convert_cmssw_versions(cmssw_list):
+  return ','.join(set([
+    re.match(r'.*\"(?P<ver>.*)\".*', cmssw_ver).group('ver')[len('CMSSW')+1:]
+    for cmssw_ver in cmssw_list.split(',')
+  ]))
 
 def id_(x): # identity function
   return x
