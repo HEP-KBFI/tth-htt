@@ -90,9 +90,9 @@ namespace
 	std::cout << "histogram = " << (*histogram) << std::endl;
 	for ( vstring::const_iterator central_or_shift = central_or_shifts.begin();
 	      central_or_shift != central_or_shifts.end(); ++central_or_shift ) {
-	  /*
+	  
 	  int verbosity = ( histogram->find("EventCounter") != std::string::npos && ((*central_or_shift) == "" || (*central_or_shift) == "central") ) ? 1 : 0;
-	  */
+	  
 	  std::vector<TH1*> histograms_input;
 	  for ( vstring::const_iterator process_input = processes_input.begin();
 		process_input != processes_input.end(); ++process_input ) {
