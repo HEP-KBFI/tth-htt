@@ -42,7 +42,7 @@ typedef std::vector<std::string> vstring;
 
 namespace
 {
-  void processSubdirectory_recursively(TFileDirectory& fs, const TDirectory* dir, const std::string& dirName, const vstring& processes_input, const std::string& process_output, const vstring& central_or_shifts)
+  void processSubdirectory_recursively(TFileDirectory& fs, const TDirectory* dir, const std::string& dirName, const vstring& processes_input, const std::string& process_output, const vstring& histogramsToCopy, const vstring& central_or_shifts)
   {
     std::cout << "<processSubdirectory_recursively>:" << std::endl;
     std::cout << " dir = '" << dirName << "'" << std::endl;
@@ -78,6 +78,16 @@ namespace
 	  }
 	}
 	if ( histogramName.Contains("CMS_") ) continue;
+	bool isHistogramToCopy = false;
+	if ( histogramsToCopy.size() > 0 ) {
+	  for ( vstring::const_iterator histogramToCopy = histogramsToCopy.begin();
+		histogramToCopy != histogramsToCopy.end(); ++histogramToCopy ) {
+	    if ( (*histogramToCopy) == histogramName.Data() ) isHistogramToCopy = true;
+	  }
+	} else {
+	  isHistogramToCopy = true;
+	}
+	if ( !isHistogramToCopy ) continue;
 	if ( histograms.find(histogramName.Data()) == histograms.end() ) {
 	  std::cout << "adding histogram = " << histogramName.Data() << std::endl;
 	  histograms.insert(histogramName.Data());
@@ -121,7 +131,7 @@ namespace
     std::vector<const TDirectory*> subdirs = getSubdirectories(dir);
     for ( std::vector<const TDirectory*>::iterator subdir = subdirs.begin();
 	  subdir != subdirs.end(); ++subdir ) {
-      processSubdirectory_recursively(fs, *subdir, dirName + "/" + (*subdir)->GetName(), processes_input, process_output, central_or_shifts);
+      processSubdirectory_recursively(fs, *subdir, dirName + "/" + (*subdir)->GetName(), processes_input, process_output, histogramsToCopy, central_or_shifts);
     }
   }
 }
@@ -157,6 +167,8 @@ int main(int argc, char* argv[])
   vstring processes_input = cfgAddBackgrounds.getParameter<vstring>("processes_input");
   std::string process_output = cfgAddBackgrounds.getParameter<std::string>("process_output");
 
+  vstring histogramsToCopy = cfgAddBackgrounds.getParameter<vstring>("histogramsToCopy");
+
   vstring central_or_shifts = cfgAddBackgrounds.getParameter<vstring>("sysShifts");
   central_or_shifts.push_back(""); // CV: add central value
   
@@ -184,7 +196,7 @@ int main(int argc, char* argv[])
 
     std::cout << "processing category = " << (*category) << std::endl;
 	
-    processSubdirectory_recursively(fs, dir, *category, processes_input, process_output, central_or_shifts);
+    processSubdirectory_recursively(fs, dir, *category, processes_input, process_output, histogramsToCopy, central_or_shifts);
   }
 
   //---------------------------------------------------------------------------------------------------

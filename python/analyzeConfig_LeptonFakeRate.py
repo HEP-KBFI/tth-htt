@@ -417,7 +417,9 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
           "LeptonFakeRate/denominator/muons_fakeable"
         ],
         'processes_input' : processes_input,
-        'process_output' : "fakes_mc"
+        'process_output' : "fakes_mc",        
+        'histogramsToCopy' : self.histograms_to_fit,
+        'sysShifts' : []
       }
       self.createCfg_addBackgrounds(self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job])
 
@@ -531,13 +533,13 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
         key_prep_dcard_job = getKey(histogramToFit)
         datacard = os.path.join(self.dirs[DKEY_DCRD], "prepareDatacards_%s.root" % (histogramToFit))
         self.jobOptions_prep_dcard[key_prep_dcard_job] = {
-        'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2],
-        'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "prepareDatacards_LeptonFakeRate_%s_cfg.py" % (histogramToFit)),
-        'datacardFile' : datacard,
-        'histogramDir' : (self.histogramDir_prep_dcard),
-        'histogramToFit' : histogramToFit,
-        'label' : None,
-        'categories' : categories,
+          'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2],
+          'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "prepareDatacards_LeptonFakeRate_%s_cfg.py" % (histogramToFit)),
+          'datacardFile' : datacard,
+          'histogramDir' : (self.histogramDir_prep_dcard),
+          'histogramToFit' : histogramToFit,
+          'label' : None,
+          'categories' : categories,
         }
         datacards.append(datacard)
         self.createCfg_prep_dcard_LeptonFakeRate(self.jobOptions_prep_dcard[key_prep_dcard_job])
