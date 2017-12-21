@@ -217,10 +217,10 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
     if jobOptions['changeBranchNames']:
       lines.append("process.analyze_2lss_1tau.branchName_electrons = cms.string('Electron')")
       lines.append("process.analyze_2lss_1tau.branchName_muons = cms.string('Muon')")
-      lines.append("process.analyze_2lss_1tau.branchName_hadTaus = cms.string('HadTau')")
+      lines.append("process.analyze_2lss_1tau.branchName_hadTaus = cms.string('Tau')")
       lines.append("process.analyze_2lss_1tau.branchName_genLeptons1 = cms.string('GenLep')")
       lines.append("process.analyze_2lss_1tau.branchName_genLeptons2 = cms.string('')")
-      lines.append("process.analyze_2lss_1tau.branchName_genHadTaus = cms.string('GenHadTaus')")
+      lines.append("process.analyze_2lss_1tau.branchName_genHadTaus = cms.string('GenVisTau')")
       lines.append("process.analyze_2lss_1tau.branchName_genJets = cms.string('GenJet')")
       lines.append("process.analyze_2lss_1tau.redoGenMatching = cms.bool(False)")
       lines.append("process.analyze_2lss_1tau.fillGenEvtHistograms = cms.bool(True)")
