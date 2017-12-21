@@ -140,6 +140,16 @@ if __name__ == '__main__':
       continue
     logging.info("Job submission #%i:" % (idx_job_resubmission + 1))
 
+    # do histograms for 2D bin optimizations
+    nbinsTarget=[5,6,7,8,9,10,11,12,20];
+    nbinsStart=[8,15,20];
+    hist_HTT=[[None]*int(len(nbinsTarget))]*len(nbinsStart)
+    hist_noHTT=[[None]*int(len(nbinsTarget))]*len(nbinsStart)
+    for nbinsStartN in range(0,len(nbinsStart)) :
+      for nbinsTargetN in range(0,len(nbinsTarget)) :
+        hist_HTT[nbinsStartN][nbinsTargetN]="HTT_from"+str(nbinsStart[nbinsStartN])+"_to_"+str(nbinsTarget[nbinsTargetN])
+        hist_noHTT[nbinsStartN][nbinsTargetN]="noHTT_from"+str(nbinsStart[nbinsStartN])+"_to_"+str(nbinsTarget[nbinsTargetN])
+
     analysis = analyzeConfig_2lss_1tau(
       configDir                 = configDir,
       outputDir                 = outputDir,
@@ -231,7 +241,16 @@ if __name__ == '__main__':
         "mTauTauVis",
         "memOutput_LR_type0",
         "memOutput_LR_type1",
-      ],
+        ##
+        "mvaOutput_2lss_oldVar_tt",
+        "mvaOutput_2lss_1tau_ttV",
+        "mvaOutput_2lss_HTT_tt",
+        "mvaOutput_2lss_noHTT_tt",
+        "mvaOutput_2lss_noHTT_ttV",
+        "mvaOutput_2lss_HTT_LepID_tt",
+        "oldVar_from20_to_12",
+        "oldVar_from20_to_7"
+      ]+ hist_HTT +hist_noHTT,
       select_rle_output         = True,
       verbose                   = idx_job_resubmission > 0,
     )

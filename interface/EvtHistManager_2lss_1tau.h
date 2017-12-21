@@ -13,6 +13,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/HistManagerBase.h" // HistManagerBase
 
 #include "tthAnalysis/HiggsToTauTau/interface/MEMInterface_2lss_1tau.h" // MEMOutput_2lss_1tau
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h"
 
 class EvtHistManager_2lss_1tau
   : public HistManagerBase
@@ -24,13 +25,24 @@ class EvtHistManager_2lss_1tau
   /// book and fill histograms
   void bookHistograms(TFileDirectory& dir);
   void fillHistograms(int numElectrons, int numMuons, int numHadTaus, int numJets, int numBJets_loose, int numBJets_medium,
-		      double mvaOutput_2lss_ttV, double mvaOutput_2lss_ttbar, double mvaDiscr_2lss, 
+		      double mvaOutput_2lss_ttV, double mvaOutput_2lss_ttbar, double mvaDiscr_2lss,
 		      double mvaOutput_2lss_1tau_ttV, double mvaOutput_2lss_1tau_ttbar, double mvaDiscr_2lss_1tau,
 		      double mvaOutput_2lss_1tau_ttV_wMEM, double mvaOutput_2lss_1tau_ttbar_wMEM, double mvaDiscr_2lss_1tau_wMEM,
 		      double mvaOutput_Hj_tagger, double mvaOutput_Hjj_tagger,
-		      double mTauTauVis1, double mTauTauVis2, 
-		      const MEMOutput_2lss_1tau* memOutput_2lss_1tau, double memDiscr, double evtWeight);
-  
+		      double mTauTauVis1, double mTauTauVis2,
+		      const MEMOutput_2lss_1tau* memOutput_2lss_1tau, double memDiscr, double evtWeight,
+          double mvaOutput_2lss_oldVar_tt,
+          double mvaOutput_2lss_oldVar_ttV,
+          double mvaOutput_2lss_HTT_tt,
+          double mvaOutput_2lss_noHTT_tt,
+          double mvaOutput_2lss_noHTT_ttV,
+          double mvaOutput_2lss_HTT_LepID_tt,
+          double oldVar_from20_to_12,
+          double oldVar_from20_to_7,
+          double HTT_2D[9][3],
+          double noHTT_2D[9][3]
+        );
+
   const TH1* getHistogram_EventCounter() const { return histogram_EventCounter_; }
 
  private:
@@ -79,6 +91,20 @@ class EvtHistManager_2lss_1tau
   TH1* histogram_mem_logRealTime_;
 
   TH1* histogram_EventCounter_;
+
+  TH1* histogram_mvaOutput_2lss_oldVar_tt_;
+  TH1* histogram_mvaOutput_2lss_oldVar_ttV_;
+  TH1* histogram_mvaOutput_2lss_HTT_tt_;
+  TH1* histogram_mvaOutput_2lss_noHTT_tt_;
+  TH1* histogram_mvaOutput_2lss_noHTT_ttV_;
+  TH1* histogram_mvaOutput_2lss_HTT_LepID_tt_;
+
+  TH1* hist_oldVar_from20_to_12_;
+  TH1* hist_oldVar_from20_to_7_;
+  //std::vector<std::vector<TH1*>> hist_HTT_2D_(int 3, int 9); // nbinsStart.size()
+  //std::vector<std::vector<TH1*>> hist_noHTT_2D_(int 3, int 9);
+  TH1* hist_HTT_2D_[9][3];
+  TH1* hist_noHTT_2D_[9][3];
 
   std::vector<TH1*> histograms_;
 };
