@@ -26,9 +26,9 @@ process.addMEM_2lss_1tau = cms.PSet(
 
     branchName_electrons = cms.string('Electron'),
     branchName_muons = cms.string('Muon'),
-    branchName_hadTaus = cms.string('HadTau'),
+    branchName_hadTaus = cms.string('Tau'),
     branchName_jets = cms.string('Jet'),
-    branchName_met = cms.string('met'),
+    branchName_met = cms.string('MET'),
 
     copy_all_branches = cms.bool(True),
 

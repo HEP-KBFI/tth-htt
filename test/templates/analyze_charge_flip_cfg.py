@@ -67,11 +67,11 @@ process.analyze_charge_flip = cms.PSet(
     apply_trigger_bits = cms.bool(True),
     apply_hadTauFakeRateSF = cms.bool(True),
 
-    branchName_electrons = cms.string('selLeptons'),
-    branchName_muons = cms.string('selLeptons'),
-    branchName_hadTaus = cms.string('TauGood'),
+    branchName_electrons = cms.string('Electron'),
+    branchName_muons = cms.string('Muon'),
+    branchName_hadTaus = cms.string('Tau'),
     branchName_jets = cms.string('Jet'),
-    #branchName_met = cms.string('met'),
+    branchName_met = cms.string('MET'),
 
     fillGenEvtHistograms = cms.bool(False),
 

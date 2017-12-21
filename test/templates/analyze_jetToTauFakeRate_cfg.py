@@ -64,15 +64,15 @@ process.analyze_jetToTauFakeRate = cms.PSet(
 
     fillGenEvtHistograms = cms.bool(False),
 
-    branchName_electrons = cms.string('selLeptons'),
-    branchName_muons = cms.string('selLeptons'),
-    branchName_hadTaus = cms.string('TauGood'),
+    branchName_electrons = cms.string('Electron'),
+    branchName_muons = cms.string('Muon'),
+    branchName_hadTaus = cms.string('Tau'),
     branchName_jets = cms.string('Jet'),
-    branchName_met = cms.string('met'),
+    branchName_met = cms.string('MET'),
 
     branchName_genLeptons1 = cms.string('GenLep'),
     branchName_genLeptons2 = cms.string('GenLepFromTau'),
-    branchName_genHadTaus = cms.string('GenHadTaus'),
+    branchName_genHadTaus = cms.string('GenVisTau'),
     branchName_genJets = cms.string('GenJet'),
     redoGenMatching = cms.bool(True),
 
