@@ -25,7 +25,7 @@ RecoJetWriter::RecoJetWriter(int era, bool isMC)
   , jet_QGDiscr_(0)
 {
   genLeptonWriter_ = new GenParticleWriter(Form("%s_genLepton", branchName_num_.data()), Form("%s_genLepton", branchName_obj_.data()));
-  genHadTauWriter_ = new GenParticleWriter(Form("%s_genHadTau", branchName_num_.data()), Form("%s_genHadTau", branchName_obj_.data()));
+  genHadTauWriter_ = new GenParticleWriter(Form("%s_genTau", branchName_num_.data()), Form("%s_genTau", branchName_obj_.data()));
   genJetWriter_ = new GenParticleWriter(Form("%s_genJet", branchName_num_.data()), Form("%s_genJet", branchName_obj_.data()));
   setBranchNames();
 }
@@ -49,7 +49,7 @@ RecoJetWriter::RecoJetWriter(int era, bool isMC, const std::string& branchName_n
   , jet_QGDiscr_(0)
 {
   genLeptonWriter_ = new GenParticleWriter(Form("%s_genLepton", branchName_num_.data()), Form("%s_genLepton", branchName_obj_.data()));
-  genHadTauWriter_ = new GenParticleWriter(Form("%s_genHadTau", branchName_num_.data()), Form("%s_genHadTau", branchName_obj_.data()));
+  genHadTauWriter_ = new GenParticleWriter(Form("%s_genTau", branchName_num_.data()), Form("%s_genTau", branchName_obj_.data()));
   genJetWriter_ = new GenParticleWriter(Form("%s_genJet", branchName_num_.data()), Form("%s_genJet", branchName_obj_.data()));
   setBranchNames();
 }

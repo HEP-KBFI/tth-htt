@@ -32,7 +32,7 @@ RecoJetReader::RecoJetReader(int era, bool isMC, bool readGenMatching)
 {
   if ( readGenMatching_ ) {
     genLeptonReader_ = new GenLeptonReader(Form("%s_genLepton", branchName_num_.data()), Form("%s_genLepton", branchName_obj_.data()));
-    genHadTauReader_ = new GenHadTauReader(Form("%s_genHadTau", branchName_num_.data()), Form("%s_genHadTau", branchName_obj_.data()));
+    genHadTauReader_ = new GenHadTauReader(Form("%s_genTau", branchName_num_.data()), Form("%s_genTau", branchName_obj_.data()));
     genJetReader_ = new GenJetReader(Form("%s_genJet", branchName_num_.data()), Form("%s_genJet", branchName_obj_.data()));
   }
   setBranchNames();
@@ -62,7 +62,7 @@ RecoJetReader::RecoJetReader(int era, bool isMC, const std::string& branchName_n
 {
   if ( readGenMatching_ ) {
     genLeptonReader_ = new GenLeptonReader(Form("%s_genLepton", branchName_num_.data()), Form("%s_genLepton", branchName_obj_.data()));
-    genHadTauReader_ = new GenHadTauReader(Form("%s_genHadTau", branchName_num_.data()), Form("%s_genHadTau", branchName_obj_.data()));
+    genHadTauReader_ = new GenHadTauReader(Form("%s_genTau", branchName_num_.data()), Form("%s_genTau", branchName_obj_.data()));
     genJetReader_ = new GenJetReader(Form("%s_genJet", branchName_num_.data()), Form("%s_genJet", branchName_obj_.data()));
   }
   setBranchNames();

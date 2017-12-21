@@ -38,7 +38,7 @@ RecoHadTauWriter::RecoHadTauWriter(int era)
   , hadTau_idAgainstMu_(0)
 {
   genLeptonWriter_ = new GenParticleWriter(Form("%s_genLepton", branchName_num_.data()), Form("%s_genLepton", branchName_obj_.data()));
-  genHadTauWriter_ = new GenParticleWriter(Form("%s_genHadTau", branchName_num_.data()), Form("%s_genHadTau", branchName_obj_.data()));
+  genHadTauWriter_ = new GenParticleWriter(Form("%s_genTau", branchName_num_.data()), Form("%s_genTau", branchName_obj_.data()));
   genJetWriter_ = new GenParticleWriter(Form("%s_genJet", branchName_num_.data()), Form("%s_genJet", branchName_obj_.data()));
   setBranchNames();
 }
@@ -73,7 +73,7 @@ RecoHadTauWriter::RecoHadTauWriter(int era, const std::string& branchName_num, c
   , hadTau_idAgainstMu_(0)
 {
   genLeptonWriter_ = new GenParticleWriter(Form("%s_genLepton", branchName_num_.data()), Form("%s_genLepton", branchName_obj_.data()));
-  genHadTauWriter_ = new GenParticleWriter(Form("%s_genHadTau", branchName_num_.data()), Form("%s_genHadTau", branchName_obj_.data()));
+  genHadTauWriter_ = new GenParticleWriter(Form("%s_genTau", branchName_num_.data()), Form("%s_genTau", branchName_obj_.data()));
   genJetWriter_ = new GenParticleWriter(Form("%s_genJet", branchName_num_.data()), Form("%s_genJet", branchName_obj_.data()));
   setBranchNames();
 }
