@@ -86,7 +86,7 @@ struct fitResultType
       minAbsEta_ = readFloat(items->At(4), parseError);
       maxAbsEta_ = readFloat(items->At(5), parseError);
       minPt_ = readFloat(items->At(6), parseError);
-      maxPt_ = readFloat(items->At(7), parseError);
+      maxPt_ = readFloat(items->At(7), parseError);      
       key_ = Form("%s_%s", getPtBin(minPt_, maxPt_).data(), getEtaBin(minAbsEta_, maxAbsEta_).data());
       norm_postfit_ = readFloat(items->At(10), parseError);
       std::string normErr_string = readString(items->At(11), parseError);
@@ -121,14 +121,19 @@ void readPrefit(TFile* inputFile, std::map<std::string, fitResultType*>& fitResu
 {
   for ( std::map<std::string, fitResultType*>::iterator fitResult = fitResults.begin();
 	fitResult != fitResults.end(); ++fitResult ) {
-    std::string histogramName = "LeptonFakeRate/";
+    std::cout << "pT: min = " << fitResult->second->minPt_ << ", max = " << fitResult->second->maxPt_ << std::endl;
+    std::cout << "abs(eta): min = " << fitResult->second->minAbsEta_ << ", max = " << fitResult->second->maxAbsEta_ << std::endl;
+    // CV: skip inclusive pT and abs(eta) selection
+    if ( fitResult->second->minPt_ == -1. && fitResult->second->maxPt_ == -1. ) continue;
+    if ( fitResult->second->minAbsEta_ == -1. && fitResult->second->maxAbsEta_ == -1. ) continue;
+    std::string histogramName = "LeptonFakeRate";
     histogramName.append("/");
     if      ( fitResult->second->pass_or_fail_ == fitResultType::kPass ) histogramName.append("numerator");
     else if ( fitResult->second->pass_or_fail_ == fitResultType::kFail ) histogramName.append("denominator"); 
     else assert(0);
     histogramName.append("/");
-    if      ( fitResult->second->lepton_type_ == fitResultType::kElectron ) histogramName.append("electron");
-    else if ( fitResult->second->lepton_type_ == fitResultType::kMuon     ) histogramName.append("muon"); 
+    if      ( fitResult->second->lepton_type_ == fitResultType::kElectron ) histogramName.append("electrons");
+    else if ( fitResult->second->lepton_type_ == fitResultType::kMuon     ) histogramName.append("muons"); 
     else assert(0);
     histogramName.append("_");
     if      ( fitResult->second->pass_or_fail_ == fitResultType::kPass ) histogramName.append("tight");
@@ -142,6 +147,7 @@ void readPrefit(TFile* inputFile, std::map<std::string, fitResultType*>& fitResu
     histogramName.append("fakes_mc");
     histogramName.append("/");
     histogramName.append("EventCounter");
+    std::cout << "loading histogram = '" << histogramName << "'" << std::endl;
     TH1* histogram = dynamic_cast<TH1*>(inputFile->Get(histogramName.data()));
     if ( !histogram ) throw cms::Exception("fillHistogram") 
       << "Failed to load histogram = '" << histogramName << "' from file = '" << inputFile->GetName() << "' !!\n";
@@ -208,7 +214,7 @@ void fillHistogram(TH2* histogram, const std::map<std::string, fitResultType*>& 
 	}
       } else {
 	throw cms::Exception("fillHistogram") 
-	  << "Failed to find fitResult for " << minPt << " < pT < " << maxPt << " && " << minAbsEta << "abs(eta)" << maxAbsEta << " !!\n";
+	  << "Failed to find fitResult for " << minPt << " < pT < " << maxPt << " && " << minAbsEta << " < abs(eta) < " << maxAbsEta << " !!\n";
       }
     }
   }
@@ -235,7 +241,8 @@ void fillGraph(TGraphAsymmErrors* graph, TH2* histogram, double absEta)
   for ( int idxBinX = 1; idxBinX <= xAxis->GetNbins(); ++idxBinX ) {
     double minPt = xAxis->GetBinLowEdge(idxBinX);
     double maxPt = xAxis->GetBinUpEdge(idxBinX);
-    double pt = xAxis->GetBinCenter(idxBinX); 
+    if ( maxPt > 100. ) maxPt = 100.;
+    double pt = 0.5*(minPt + maxPt);
     
     double binContent = histogram->GetBinContent(idxBinX, idxBinY);
     double binError = histogram->GetBinError(idxBinX, idxBinY);
@@ -259,7 +266,8 @@ void makeControlPlot(TGraphAsymmErrors* graph_data, TGraphAsymmErrors* graph_mc,
   canvas->SetGridx();
   canvas->SetGridy();
   
-  TH1* dummyHistogram = new TH1D("dummyHistogram", "dummyHistogram", ptBins.GetSize() - 1, ptBins.GetArray());
+  //TH1* dummyHistogram = new TH1D("dummyHistogram", "dummyHistogram", ptBins.GetSize() - 1, ptBins.GetArray());
+  TH1* dummyHistogram = new TH1D("dummyHistogram", "dummyHistogram", 10, 0., 100.);
   dummyHistogram->SetTitle("");
   dummyHistogram->SetStats(false);
   dummyHistogram->SetMaximum(0.20);
@@ -382,6 +390,7 @@ int main(int argc, char* argv[])
   if ( ptBins_e.size() < 2 ) throw cms::Exception("comp_LeptonFakeRate") 
     << "Invalid Configuration parameter 'ptBins_e' !!\n";
   TArrayD ptBins_e_array = convertToTArrayD(ptBins_e);
+  //if ( ptBins_e_array[ptBins_e_array.GetSize() - 1] > 100. ) ptBins_e_array[ptBins_e_array.GetSize() - 1] = 100.;
   
   std::string histogramName_mu = cfg_comp.getParameter<std::string>("histogramName_mu");
   vdouble absEtaBins_mu = cfg_comp.getParameter<vdouble>("absEtaBins_mu");
@@ -392,6 +401,7 @@ int main(int argc, char* argv[])
   if ( ptBins_mu.size() < 2 ) throw cms::Exception("comp_LeptonFakeRate") 
     << "Invalid Configuration parameter 'ptBins_mu' !!\n";
   TArrayD ptBins_mu_array = convertToTArrayD(ptBins_mu);
+  //if ( ptBins_mu_array[ptBins_mu_array.GetSize() - 1] > 100. ) ptBins_mu_array[ptBins_mu_array.GetSize() - 1] = 100.;
   
   std::string outputFileName = cfg_comp.getParameter<std::string>("outputFileName"); // for control plots
 
@@ -418,8 +428,8 @@ int main(int argc, char* argv[])
   std::map<std::string, fitResultType*> fitResults_mu_fail; // key = pT and eta bin
 
   // read fake-rates measured in data
-  std::ifstream* inputFile_data = new std::ifstream(inputFileName_data);
   std::cout << "opening inputFile = '" << inputFileName_data << "'" << std::endl;
+  std::ifstream* inputFile_data = new std::ifstream(inputFileName_data);
   if ( inputFile_data->is_open() ) {
     std::string line;
     while ( getline(*inputFile_data, line) ) {
@@ -441,6 +451,7 @@ int main(int argc, char* argv[])
   delete inputFile_data;
 
   // read fake-rates expected from MC simulation
+  std::cout << "opening inputFile = '" << inputFileName_mc << "'" << std::endl;
   TFile* inputFile_mc = new TFile(inputFileName_mc.data());
   if ( !inputFile_mc ) throw cms::Exception("comp_LeptonFakeRate") 
     << "Failed to open input file = '" << inputFileName_mc << "' !!\n";
@@ -448,6 +459,7 @@ int main(int argc, char* argv[])
   readPrefit(inputFile_mc, fitResults_e_fail);
   readPrefit(inputFile_mc, fitResults_mu_pass);
   readPrefit(inputFile_mc, fitResults_mu_fail);
+  std::cout << "closing inputFile = '" << inputFileName_mc << "'" << std::endl;
   delete inputFile_mc;
   
   fwlite::OutputFiles outputFile(cfg);
@@ -458,7 +470,7 @@ int main(int argc, char* argv[])
   TH2* histogram_e_mc = bookHistogram(fs, Form("%s_prefit", histogramName_e.data()), ptBins_e_array, absEtaBins_e_array);
   fillHistogram(histogram_e_mc, fitResults_e_pass, fitResults_e_fail, kPrefit);
   TAxis* yAxis_e = histogram_e_data->GetYaxis();
-  for ( int idxBinY = 1; idxBinY < yAxis_e->GetNbins(); ++idxBinY ) {
+  for ( int idxBinY = 1; idxBinY <= yAxis_e->GetNbins(); ++idxBinY ) {
     double minAbsEta = yAxis_e->GetBinLowEdge(idxBinY);
     double maxAbsEta = yAxis_e->GetBinUpEdge(idxBinY);
     double absEta = 0.5*(minAbsEta + maxAbsEta);
@@ -478,7 +490,7 @@ int main(int argc, char* argv[])
   TH2* histogram_mu_mc = bookHistogram(fs, Form("%s_prefit", histogramName_mu.data()), ptBins_mu_array, absEtaBins_mu_array);
   fillHistogram(histogram_mu_mc, fitResults_mu_pass, fitResults_mu_fail, kPrefit);
   TAxis* yAxis_mu = histogram_mu_data->GetYaxis();
-  for ( int idxBinY = 1; idxBinY < yAxis_mu->GetNbins(); ++idxBinY ) {
+  for ( int idxBinY = 1; idxBinY <= yAxis_mu->GetNbins(); ++idxBinY ) {
     double minAbsEta = yAxis_mu->GetBinLowEdge(idxBinY);
     double maxAbsEta = yAxis_mu->GetBinUpEdge(idxBinY);
     double absEta = 0.5*(minAbsEta + maxAbsEta);

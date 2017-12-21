@@ -233,6 +233,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     lines.append("process.comp_LeptonFakeRate.ptBins_e = cms.vdouble(%s)" % jobOptions['ptBins_e'])
     lines.append("process.comp_LeptonFakeRate.absEtaBins_mu = cms.vdouble(%s)" % jobOptions['absEtaBins_mu'])
     lines.append("process.comp_LeptonFakeRate.ptBins_mu = cms.vdouble(%s)" % jobOptions['ptBins_mu'])
+    lines.append("process.comp_LeptonFakeRate.outputFileName = cms.string('%s')" % jobOptions['plots_outputFileName'])
     create_cfg(self.cfgFile_comp_LeptonFakeRate, jobOptions['cfgFile_modified'], lines)
 
   def createCfg_prep_dcard_LeptonFakeRate(self, jobOptions):
@@ -602,14 +603,15 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
       key_comp_LeptonFakeRate = getKey('')
       leptonFR_final_output = os.path.join(combine_output_dir, 'leptonFakeRates.root')
       self.jobOptions_comp_LeptonFakeRate[key_comp_LeptonFakeRate] = {
-        'inputFile'        : [ fit_value_file, self.outputFile_hadd_stage2[key_hadd_stage2] ],
-        'outputFile'       : leptonFR_final_output,
-        'absEtaBins_e'     : self.absEtaBins_e,
-        'ptBins_e'         : self.ptBins_e,
-        'absEtaBins_mu'    : self.absEtaBins_mu,
-        'ptBins_mu'        : self.ptBins_mu,
-        'logFile'          : os.path.join(self.dirs[DKEY_LOGS], os.path.basename(self.cfgFile_comp_LeptonFakeRate).replace('_cfg.py', '.log')),
-        'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], os.path.basename(self.cfgFile_comp_LeptonFakeRate)),
+        'inputFile'            : [ fit_value_file, self.outputFile_hadd_stage2[key_hadd_stage2] ],
+        'outputFile'           : leptonFR_final_output,
+        'absEtaBins_e'         : self.absEtaBins_e,
+        'ptBins_e'             : self.ptBins_e,
+        'absEtaBins_mu'        : self.absEtaBins_mu,
+        'ptBins_mu'            : self.ptBins_mu,
+        'logFile'              : os.path.join(self.dirs[DKEY_LOGS], os.path.basename(self.cfgFile_comp_LeptonFakeRate).replace('_cfg.py', '.log')),
+        'cfgFile_modified'     : os.path.join(self.dirs[DKEY_CFGS], os.path.basename(self.cfgFile_comp_LeptonFakeRate)),
+        'plots_outputFileName' : os.path.join(self.dirs[DKEY_PLOT], "comp_LeptonFakeRate.png")
       }
       self.createCfg_comp_LeptonFakeRate(self.jobOptions_comp_LeptonFakeRate[key_comp_LeptonFakeRate])
       self.targets.append(self.jobOptions_comp_LeptonFakeRate[key_comp_LeptonFakeRate]['outputFile'])
@@ -619,7 +621,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
       self.sbatchFile_analyze = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_analyze_LeptonFakeRate.py")
       self.createScript_sbatch_analyze(self.executable_analyze, self.sbatchFile_analyze, self.jobOptions_analyze)
       self.sbatchFile_addBackgrounds_sum = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_addBackgrounds_sum_LeptonFakeRate.py")
-      self.createScript_sbatch(self.executable_addBackgrounds, self.sbatchFile_addBackgrounds_sum, self.jobOptions_addBackgrounds_sum)
+      self.createScript_sbatch(self.executable_addBackgrounds_recursively, self.sbatchFile_addBackgrounds_sum, self.jobOptions_addBackgrounds_sum)
       self.sbatchFile_addBackgrounds_LeptonFakeRate = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_addBackgrounds_LeptonFakeRate.py")
       self.createScript_sbatch(self.executable_addBackgrounds_LeptonFakeRate, self.sbatchFile_addBackgrounds_LeptonFakeRate, self.jobOptions_addBackgrounds_LeptonFakeRate)
       logging.info("Creating script for submitting '%s' jobs to batch system" % self.executable_comp_LeptonFakeRate)
