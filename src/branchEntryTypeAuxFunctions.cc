@@ -151,7 +151,7 @@ void copyBranches_vectorType(TTree* inputTree, TTree* outputTree, std::map<std::
 	throw cms::Exception("produceNtuple_2lss_1tau") 
 	  << "Failed to identify Branch = '" << branchName_n << "' that specifies number of elements in Branch = '" << branchName << "' !!\n";
       const branchEntryBaseType* branch_nElements = outputTree_branches[branchName_n];
-      int max_nElements = ( branchName.find("LHE") != std::string::npos ) ? 102 : 32;
+      int max_nElements = ( branchName.find("LHE") != std::string::npos ) ? 102 : 48;
 
       branchEntryBaseType* outputTree_branch = 0;
       if      ( branchType == "Float_t"   ) outputTree_branch = new branchEntryTypeVFVF(branch_nElements, max_nElements, branchName, "F", branchName, "F");
