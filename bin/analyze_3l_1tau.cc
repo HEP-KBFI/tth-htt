@@ -240,7 +240,7 @@ int main(int argc, char* argv[])
 
   std::string jet_btagWeight_branch;
   if ( isMC ) {
-    if ( era == kEra_2017 ) jet_btagWeight_branch = "Jet_btagSF";
+    if ( era == kEra_2017 ) jet_btagWeight_branch = "Jet_btagSF_csvv2";
     else assert(0);
   }
 
