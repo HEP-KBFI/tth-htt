@@ -3,7 +3,14 @@
 #include "tthAnalysis/HiggsToTauTau/interface/histogramAuxFunctions.h" // fillWithOverFlow, fillWithOverFlow2d, getLogWeight
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2015, kEra_2016
 
-#include <TMath.h>
+#include <iostream> // std::cerr, std::fixed
+#include <iomanip> // std::setprecision(), std::setw()
+#include <string> // std::string
+#include <vector> // std::vector<>
+#include <cstdlib> // EXIT_SUCCESS, EXIT_FAILURE
+#include <algorithm> // std::sort
+#include <fstream> // std::ofstream
+#include <assert.h> // assert
 
 EvtHistManager_2lss_1tau::EvtHistManager_2lss_1tau(const edm::ParameterSet& cfg)
   : HistManagerBase(cfg)
@@ -64,9 +71,8 @@ void EvtHistManager_2lss_1tau::bookHistograms(TFileDirectory& dir)
 
   histogram_EventCounter_ = book1D(dir, "EventCounter", "EventCounter", 1, -0.5, +0.5);
 
-
   histogram_mvaOutput_2lss_oldVar_tt_= book1D(dir, "mvaOutput_2lss_oldVar_tt", "mvaOutput_2lss_oldVar_tt", 600, 0., +1.);
-  histogram_mvaOutput_2lss_1tau_ttV_= book1D(dir, "mvaOutput_2lss_oldVar_ttV", "mvaOutput_2lss_oldVar_ttV",    600, 0., +1.);
+  histogram_mvaOutput_2lss_oldVar_ttV_= book1D(dir, "mvaOutput_2lss_oldVar_ttV", "mvaOutput_2lss_oldVar_ttV",    600, 0., +1.);
   histogram_mvaOutput_2lss_HTT_tt_= book1D(dir, "mvaOutput_2lss_HTT_tt", "mvaOutput_2lss_HTT_tt",          600, 0., +1.);
   histogram_mvaOutput_2lss_noHTT_tt_= book1D(dir, "mvaOutput_2lss_noHTT_tt", "mvaOutput_2lss_noHTT_tt",    600, 0., +1.);
   histogram_mvaOutput_2lss_noHTT_ttV_= book1D(dir, "mvaOutput_2lss_noHTT_ttV", "mvaOutput_2lss_noHTT_ttV", 600, 0., +1.);
@@ -77,8 +83,8 @@ void EvtHistManager_2lss_1tau::bookHistograms(TFileDirectory& dir)
 
   for (int nbinsStartN=0 ; nbinsStartN<3 ; nbinsStartN++ ) {
     for (int nbinsTargetN=0 ; nbinsTargetN<9 ; nbinsTargetN++ ) {
-      std::cout<<"internal declaring histos "<<nbinsStartN<<" "<<nbinsTargetN
-      << "HTT_from"<<nbinsStart[nbinsStartN]<<"_to_"<<nbinsTarget[nbinsTargetN]<<std::endl;
+      //std::cout<<"internal declaring histos "<<nbinsStartN<<" "<<nbinsTargetN
+      //    << " HTT_from"<<nbinsStart[nbinsStartN]<<"_to_"<<nbinsTarget[nbinsTargetN]<<std::endl;
       std::stringstream ss2;
       ss2 << "HTT_from"<<nbinsStart[nbinsStartN]<<"_to_"<<nbinsTarget[nbinsTargetN];
       hist_HTT_2D_[nbinsStartN][nbinsTargetN]=book1D(dir, ss2.str(), ss2.str(),
@@ -94,14 +100,14 @@ void EvtHistManager_2lss_1tau::bookHistograms(TFileDirectory& dir)
 
 }
 
-void EvtHistManager_2lss_1tau::fillHistograms(int numElectrons, int numMuons, int numHadTaus, int numJets, int numBJets_loose, int numBJets_medium,
+void EvtHistManager_2lss_1tau::fillHistograms(
+                int numElectrons, int numMuons, int numHadTaus, int numJets, int numBJets_loose, int numBJets_medium,
 					      double mvaOutput_2lss_ttV, double mvaOutput_2lss_ttbar, double mvaDiscr_2lss,
 					      double mvaOutput_2lss_1tau_ttV, double mvaOutput_2lss_1tau_ttbar, double mvaDiscr_2lss_1tau,
 					      double mvaOutput_2lss_1tau_ttV_wMEM, double mvaOutput_2lss_1tau_ttbar_wMEM, double mvaDiscr_2lss_1tau_wMEM,
 					      double mvaOutput_Hj_tagger, double mvaOutput_Hjj_tagger,
 					      double mTauTauVis1, double mTauTauVis2,
 					      const MEMOutput_2lss_1tau* memOutput_2lss_1tau, double memDiscr, double evtWeight,
-                //
                 double mvaOutput_2lss_oldVar_tt,
                 double mvaOutput_2lss_oldVar_ttV,
                 double mvaOutput_2lss_HTT_tt,
@@ -110,10 +116,12 @@ void EvtHistManager_2lss_1tau::fillHistograms(int numElectrons, int numMuons, in
                 double mvaOutput_2lss_HTT_LepID_tt,
                 double oldVar_from20_to_12,
                 double oldVar_from20_to_7,
-                double HTT_2D[9][3],
-                double noHTT_2D[9][3]
+                Double_t  (&HTT_2D)[3][9],
+                Double_t  (&noHTT_2D)[3][9]
               )
 {
+  //std::vector<std::vector<Double_t>>& HTT_2D,
+  //std::vector<std::vector<Double_t>>& noHTT_2D
   double evtWeightErr = 0.;
 
   fillWithOverFlow(histogram_numElectrons_, numElectrons, evtWeight, evtWeightErr);
@@ -139,21 +147,21 @@ void EvtHistManager_2lss_1tau::fillHistograms(int numElectrons, int numMuons, in
 
   fillWithOverFlow(histogram_mvaOutput_Hj_tagger_, mvaOutput_Hj_tagger, evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_mvaOutput_Hjj_tagger_, mvaOutput_Hjj_tagger, evtWeight, evtWeightErr);
-
   fillWithOverFlow(histogram_mvaOutput_2lss_oldVar_tt_, mvaOutput_2lss_oldVar_tt, evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_mvaOutput_2lss_oldVar_ttV_, mvaOutput_2lss_oldVar_ttV, evtWeight, evtWeightErr);
+
   fillWithOverFlow(histogram_mvaOutput_2lss_HTT_tt_, mvaOutput_2lss_HTT_tt, evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_mvaOutput_2lss_noHTT_tt_, mvaOutput_2lss_noHTT_tt, evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_mvaOutput_2lss_noHTT_ttV_, mvaOutput_2lss_noHTT_ttV, evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_mvaOutput_2lss_HTT_LepID_tt_, mvaOutput_2lss_HTT_LepID_tt, evtWeight, evtWeightErr);
 
   fillWithOverFlow(hist_oldVar_from20_to_12_, oldVar_from20_to_12, evtWeight, evtWeightErr);
-  fillWithOverFlow(hist_oldVar_from20_to_7_, oldVar_from20_to_7, evtWeight, evtWeightErr);
+  fillWithOverFlow(hist_oldVar_from20_to_7_, oldVar_from20_to_7, evtWeight, evtWeightErr);  
 
   for (int nbinsStartN=0 ; nbinsStartN<3 ; nbinsStartN++ ) {
     for (int nbinsTargetN=0 ; nbinsTargetN<9 ; nbinsTargetN++ ) {
-      std::cout<<"internal filling histos "<<HTT_2D[nbinsStartN][nbinsTargetN]<<" "<< noHTT_2D[nbinsStartN][nbinsTargetN]<<std::endl;
-      fillWithOverFlow(hist_HTT_2D_[nbinsStartN][nbinsTargetN],HTT_2D[nbinsStartN][nbinsTargetN], evtWeight, evtWeightErr);
+      //std::cout<<"internal filling histos "<<HTT_2D[nbinsStartN][nbinsTargetN]<<" "<< noHTT_2D[nbinsStartN][nbinsTargetN]<<std::endl;
+      fillWithOverFlow(hist_HTT_2D_[nbinsStartN][nbinsTargetN], HTT_2D[nbinsStartN][nbinsTargetN], evtWeight, evtWeightErr);
       fillWithOverFlow(hist_noHTT_2D_[nbinsStartN][nbinsTargetN], noHTT_2D[nbinsStartN][nbinsTargetN], evtWeight, evtWeightErr);
     }
   }

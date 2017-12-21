@@ -39,8 +39,8 @@ class EvtHistManager_2lss_1tau
           double mvaOutput_2lss_HTT_LepID_tt,
           double oldVar_from20_to_12,
           double oldVar_from20_to_7,
-          double HTT_2D[9][3],
-          double noHTT_2D[9][3]
+          Double_t  (&HTT_2D)[3][9],
+          Double_t  (&noHTT_2D)[3][9]
         );
 
   const TH1* getHistogram_EventCounter() const { return histogram_EventCounter_; }
@@ -103,8 +103,8 @@ class EvtHistManager_2lss_1tau
   TH1* hist_oldVar_from20_to_7_;
   //std::vector<std::vector<TH1*>> hist_HTT_2D_(int 3, int 9); // nbinsStart.size()
   //std::vector<std::vector<TH1*>> hist_noHTT_2D_(int 3, int 9);
-  TH1* hist_HTT_2D_[9][3];
-  TH1* hist_noHTT_2D_[9][3];
+  TH1* hist_HTT_2D_[3][9];
+  TH1* hist_noHTT_2D_[3][9];
 
   std::vector<TH1*> histograms_;
 };

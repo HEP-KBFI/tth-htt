@@ -562,29 +562,23 @@ int main(int argc, char* argv[])
   TH2* BDT_mapping_oldVar_from20_to_12 = loadTH2(BDT_mapping_oldVar_from20_to_12_file, "hTargetBinning");
   std::cout<<"loaded file "<<BDT_mapping_oldVarName_from20_to_7_name<<std::endl;
   //
-  std::vector<std::vector<TH2*>> HTT(3); //"_to_"; HTT_from
-  std::vector<std::vector<TH2*>> noHTT(3); //="HTT_from20_to_";
+  //std::vector<std::vector<TH2*>> HTT(3); //"_to_"; HTT_from
+  //std::vector<std::vector<TH2*>> noHTT(3); //="HTT_from20_to_";
+  TH2* HTT[3][9]; //"_to_"; HTT_from
+  TH2* noHTT[3][9]; //="HTT_from20_to_";
   for (unsigned int nbinsStartN=0 ; nbinsStartN<3 ; nbinsStartN++ ) {
     for (unsigned int nbinsTargetN=0 ; nbinsTargetN<9 ; nbinsTargetN++ ) {
-      std::stringstream ss3;
-      ss3 << binOptSource << "/bin_opt/HTT_from"<<nbinsStart[nbinsStartN]<<"_to_"<<nbinsTarget[nbinsTargetN]<< binOptSourceEnd;
-      std::string BDT_mapping_HTT_name = ss3.str();
-      TFile* BDT_mapping_HTT_file = TFile::Open(BDT_mapping_HTT_name.c_str());
-      TH2* BDT_mapping_HTT = loadTH2(BDT_mapping_HTT_file, "hTargetBinning");
-      HTT[nbinsStartN].push_back(BDT_mapping_HTT);
-      std::cout<<"loaded file "<<BDT_mapping_HTT_name <<std::endl;
-      delete BDT_mapping_HTT;
-      delete BDT_mapping_HTT_file;
-      //
-      std::stringstream ss4;
-      ss4 << binOptSource << "/bin_opt/noHTT_from"<<nbinsStart[nbinsStartN]<<"_to_"<<nbinsTarget[nbinsTargetN]<< binOptSourceEnd;
-      std::string BDT_mapping_noHTT_name = ss4.str();
-      TFile* BDT_mapping_noHTT_file = TFile::Open(BDT_mapping_noHTT_name.c_str());
-      TH2* BDT_mapping_noHTT = loadTH2(BDT_mapping_noHTT_file, "hTargetBinning");
-      noHTT[nbinsStartN].push_back(BDT_mapping_noHTT);
-      std::cout<<"loaded file "<<BDT_mapping_noHTT_name <<std::endl;
-      delete BDT_mapping_noHTT;
-      delete BDT_mapping_noHTT_file;
+      std::stringstream BDT_mapping_HTT_name;
+      BDT_mapping_HTT_name << binOptSource << "/bin_opt/HTT_from"<<nbinsStart[nbinsStartN]<<"_to_"<<nbinsTarget[nbinsTargetN]<< binOptSourceEnd;
+      //std::string BDT_mapping_HTT_name = ss3.str();
+      HTT[nbinsStartN][nbinsTargetN]=loadTH2(TFile::Open(BDT_mapping_HTT_name.str().c_str()), "hTargetBinning");
+      std::cout<<"loaded file "<<BDT_mapping_HTT_name.str() <<std::endl;
+      // //////////////// // /////////////////
+      std::stringstream BDT_mapping_noHTT_name;
+      BDT_mapping_noHTT_name << binOptSource << "/bin_opt/noHTT_from"<<nbinsStart[nbinsStartN]<<"_to_"<<nbinsTarget[nbinsTargetN]<< binOptSourceEnd;
+      //std::string BDT_mapping_noHTT_name = ss4.str();
+      noHTT[nbinsStartN][nbinsTargetN]=loadTH2(TFile::Open(BDT_mapping_noHTT_name.str().c_str()), "hTargetBinning");
+      std::cout<<"loaded file "<<BDT_mapping_noHTT_name.str() <<std::endl;
     }
   }
   //
@@ -689,7 +683,7 @@ int main(int argc, char* argv[])
     "mTauTauVis1", "mTauTauVis2", "mindr_lep1_jet", "mindr_lep2_jet",
     "mindr_tau_jet", "ptmiss", "tau_pt"
   };
-  XGBInterface mva_2lss_noHTT_ttV(mvaFileName_oldVar_tt, mvaInputVariables_noHTT_ttVSort);
+  XGBInterface mva_2lss_noHTT_ttV(mvaFileName_noHTT_ttV, mvaInputVariables_noHTT_ttVSort);
 
   /*
 	if BDTvar=="oldVar" : ttV_file=basepkl+"/2lss_1tau_XGB_oldVar_evtLevelTTV_TTH_7Var.pkl"
@@ -1441,19 +1435,10 @@ int main(int argc, char* argv[])
     double mTauTauVis2_presel = (preselLepton_sublead->p4() + selHadTau->p4()).mass();
 
 //--- fill histograms with events passing preselection
-    std::cout<<"loading histos "<<std::endl;
     preselHistManagerType* preselHistManager = preselHistManagers[idxPreselLepton_genMatch][idxSelHadTau_genMatch];
     assert(preselHistManager != 0);
-    /*
-    std::vector<std::vector<Double_t>> dumbVec(3);
-    for (unsigned int nbinsStartN=0 ; nbinsStartN<3 ; nbinsStartN++ ) {
-      //dumbVec.push_back({});
-      for (unsigned int nbinsTargetN=0 ; nbinsTargetN<9 ; nbinsTargetN++ ) {
-        dumbVec[nbinsStartN].push_back(1.0);
-      }
-    }
-    */
-    double dumbVec[9][3];
+
+    double dumbVec[3][9]={ {0.0} };
     preselHistManager->electrons_->fillHistograms(preselElectrons, 1.);
     preselHistManager->muons_->fillHistograms(preselMuons, 1.);
     preselHistManager->hadTaus_->fillHistograms(selHadTaus, 1.);
@@ -1467,10 +1452,9 @@ int main(int argc, char* argv[])
       -1., -1., -1., -1., -1., -1., -1., -1., -1., -1., -1.,
       mTauTauVis1_presel, mTauTauVis2_presel,
       0, -1., 1.,
-      -1., -1., -1., -1., -1., -1., -1., -1.,
-      dumbVec,dumbVec
+      1., 1., 1., 1., 1., 1., 1., 1.,
+      dumbVec, dumbVec
     );
-    std::cout<<"loaded histos "<<std::endl;
 
     cutFlowTable.update(">= 2 sel leptons", 1.);
     cutFlowHistManager->fillHistograms(">= 2 sel leptons", 1.);
@@ -2058,6 +2042,7 @@ int main(int argc, char* argv[])
     }
 
     //--- compute output of BDTs used to discriminate ttH vs. ttV and ttH vs. ttbar -- Xanda
+    //std::cout<<"filling BDTs olVar_tt"<<std::endl;
     std::map<std::string, double> mvaInputVariables_oldVar_tt;
     mvaInputVariables_oldVar_tt["max_lep_eta"]=max_lep_eta;
     mvaInputVariables_oldVar_tt["nJet25_Recl"]=nJet25_Recl;
@@ -2068,6 +2053,7 @@ int main(int argc, char* argv[])
     mvaInputVariables_oldVar_tt["MT_met_lep1"]=MT_met_lep1;
     double mvaOutput_2lss_oldVar_tt=mva_2lss_oldVar_tt(mvaInputVariables_oldVar_tt);
 
+    //std::cout<<"filling BDTs olVar_ttV"<<std::endl;
     std::map<std::string, double> mvaInputVariables_oldVar_ttV;
     mvaInputVariables_oldVar_ttV["max_lep_eta"]=max_lep_eta;
     mvaInputVariables_oldVar_ttV["MT_met_lep1"]=MT_met_lep1;
@@ -2078,6 +2064,7 @@ int main(int argc, char* argv[])
     mvaInputVariables_oldVar_ttV["lep2_conePt"]=lep2_conePt;
     double mvaOutput_2lss_oldVar_ttV=mva_2lss_oldVar_ttV(mvaInputVariables_oldVar_ttV);
 
+    //std::cout<<"filling BDTs HTT_tt"<<std::endl;
     std::map<std::string, double>  mvaInputVariables_HTT_tt;
     mvaInputVariables_HTT_tt["dr_lep1_tau"]=dr_lep1_tau;
     mvaInputVariables_HTT_tt["dr_lep2_tau"]=dr_lep2_tau;
@@ -2098,6 +2085,7 @@ int main(int argc, char* argv[])
     mvaInputVariables_HTT_tt["avg_dr_jet"]=avg_dr_jet;
     double mvaOutput_2lss_HTT_tt=mva_2lss_HTT_tt(mvaInputVariables_HTT_tt);
 
+    //std::cout<<"filling BDTs HTT_LepID_tt"<<std::endl;
     std::map<std::string, double> mvaInputVariables_HTT_LepID_tt;
     mvaInputVariables_HTT_LepID_tt["mTauTauVis1"]=mTauTauVis1_sel;
     mvaInputVariables_HTT_LepID_tt["mTauTauVis2"]=mTauTauVis2_sel;
@@ -2107,6 +2095,7 @@ int main(int argc, char* argv[])
     mvaInputVariables_HTT_LepID_tt["lep2_tth_mva"]=selLepton_sublead -> mvaRawTTH();
     double mvaOutput_2lss_HTT_LepID_tt=mva_2lss_HTT_LepID_tt(mvaInputVariables_HTT_LepID_tt);
 
+    //std::cout<<"filling BDTs noHTT_tt"<<std::endl;
     std::map<std::string, double> mvaInputVariables_noHTT_tt;
     mvaInputVariables_noHTT_tt["avg_dr_jet"]=avg_dr_jet;
     mvaInputVariables_noHTT_tt["dr_lep1_tau"]=dr_lep1_tau;
@@ -2128,6 +2117,7 @@ int main(int argc, char* argv[])
     mvaInputVariables_noHTT_tt["tau_pt"]=tau_pt;
     double mvaOutput_2lss_noHTT_tt =mva_2lss_noHTT_tt(mvaInputVariables_noHTT_tt);
 
+    //std::cout<<"filling BDTs noHTT_ttV"<<std::endl;
     std::map<std::string, double>  mvaInputVariables_noHTT_ttV;
     mvaInputVariables_noHTT_ttV["avg_dr_jet"]=avg_dr_jet;
     mvaInputVariables_noHTT_ttV["dr_lep1_tau"]=dr_lep1_tau;
@@ -2146,19 +2136,36 @@ int main(int argc, char* argv[])
     mvaInputVariables_noHTT_ttV["tau_pt"]=tau_pt;
     double mvaOutput_2lss_noHTT_ttV=mva_2lss_noHTT_ttV(mvaInputVariables_noHTT_ttV);
 
-    double HTT_2D[9][3]; //"_to_"; HTT_from
-    double noHTT_2D[9][3]; //="HTT_from20_to_";
+    //std::vector<std::vector<Double_t>> HTT_2D; //"_to_"; HTT_from
+    //std::vector<std::vector<Double_t>> noHTT_2D; //="HTT_from20_to_";
+
+    Double_t HTT_2D[3][9]={{-1.0}}; //
+    Double_t noHTT_2D[3][9]={{-1.0}}; //
+    //std::cout<<"start filling "<<std::endl;
     for (unsigned int nbinsStartN=0 ; nbinsStartN<3 ; nbinsStartN++ ) {
+      //HTT_2D.push_back({});
+      //noHTT_2D.push_back({});
       for (unsigned int nbinsTargetN=0 ; nbinsTargetN<9 ; nbinsTargetN++ ) {
-        std::cout<<"counting "<<nbinsStartN<<" "<<nbinsTargetN<<std::endl;
-        HTT_2D[nbinsStartN][nbinsTargetN]=getSF_from_TH2(
+
+        /*
+        HTT_2D[nbinsStartN].push_back(getSF_from_TH2(
                                                     HTT[nbinsStartN][nbinsTargetN],
                                                     mvaOutput_2lss_HTT_tt,
-                                                    mvaOutput_2lss_noHTT_ttV);  //+ 1.
-        noHTT_2D[nbinsStartN][nbinsTargetN]=getSF_from_TH2(
+                                                    mvaOutput_2lss_noHTT_ttV));  //+ 1.
+        noHTT_2D[nbinsStartN].push_back(getSF_from_TH2(
                                                     noHTT[nbinsStartN][nbinsTargetN],
                                                     mvaOutput_2lss_HTT_tt,
-                                                    mvaOutput_2lss_oldVar_ttV); //+ 1.
+                                                    mvaOutput_2lss_oldVar_ttV)); //+ 1.
+        */
+        HTT_2D[nbinsStartN][nbinsTargetN]=getSF_from_TH2(
+                              HTT[nbinsStartN][nbinsTargetN],
+                              mvaOutput_2lss_HTT_tt,
+                              mvaOutput_2lss_noHTT_ttV);
+        noHTT_2D[nbinsStartN][nbinsTargetN]=getSF_from_TH2(
+                              noHTT[nbinsStartN][nbinsTargetN],
+                              mvaOutput_2lss_HTT_tt,
+                              mvaOutput_2lss_oldVar_ttV);
+        //std::cout<<"counting "<<nbinsTarget[nbinsTargetN]<<" "<<nbinsStartN<<" "<<nbinsTargetN<<" "<<HTT_2D[nbinsStartN][nbinsTargetN]<<" "<<noHTT_2D[nbinsStartN][nbinsTargetN]<<std::endl;
       }
     }
     Double_t oldVar_from20_to_12 = getSF_from_TH2(
@@ -2234,7 +2241,6 @@ int main(int argc, char* argv[])
       memOutput_2lss_1tau_matched.is_initialized() ? &memOutput_2lss_1tau_matched : nullptr,
       memDiscr,
       evtWeight,
-      //
       mvaOutput_2lss_oldVar_tt,
       mvaOutput_2lss_oldVar_ttV,
       mvaOutput_2lss_HTT_tt,
