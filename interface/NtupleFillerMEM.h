@@ -96,15 +96,6 @@ struct NtupleFillerMEM // only for 3l1tau analysis
   ~NtupleFillerMEM();
 
   /**
-   * @brief Basically, tell the class to use generator lvl info
-   * @param use2016 Use true, if you want to use gen lvl info
-   *
-   * @note Use this function before setFileName() !!!
-   */
-  void
-  use2016(bool use2016);
-
-  /**
    * @brief Creates the file and initializes the tree
    * @param fileName
    */
@@ -223,7 +214,6 @@ protected:
   TFile * file_;
   TTree * tree_;
 
-  bool use2016_;
   bool isSignal_b_;
 
   const std::map<std::string, std::string> mvaMap_ = {
@@ -254,7 +244,7 @@ protected:
   std::array<RecoJetFiller<double>, NOF_RECO_JETS> jets_f_;
   RecoHadTauFiller<double> hTau_f_;
 
-  /* generator level, enabled only if use2016_ is true */
+  /* generator level */
   std::array<GenTauFiller<double>, 2>    genTaus_f_;
   std::array<GenParticleFiller<double>, 2> genLepFromTop_f_,
                                          genW_f_,

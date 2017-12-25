@@ -31,7 +31,6 @@ typedef math::PtEtaPhiMLorentzVector LV;
 NtupleFillerMEM::NtupleFillerMEM()
   : file_(0)
   , tree_(0)
-  , use2016_(false)
   , met_f_(false)
   , selHadTau_(0)
   , errCode_(NTUPLE_ERR_OK)
@@ -41,13 +40,6 @@ NtupleFillerMEM::NtupleFillerMEM()
 NtupleFillerMEM::~NtupleFillerMEM()
 {
   close();
-}
-
-void
-NtupleFillerMEM::use2016(bool use2016)
-{
-  use2016_ = use2016;
-  met_f_ = METFiller<double>(use2016_);
 }
 
 void
@@ -87,44 +79,41 @@ NtupleFillerMEM::setFileName(const std::string & fileName)
   ttV_f_.initBranch(tree_);
   ttbar_f_.initBranch(tree_);
 
-  /* generator level, enabled only if use2016_ is true */
-  if(use2016_)
+  for(std::size_t i = 0; i < 2; ++i)
   {
-    for(std::size_t i = 0; i < 2; ++i)
-    {
-      genTaus_f_[i].setBranchName(Form("genTau%lu", i + 1));
-      genLepFromTop_f_[i].setBranchName(Form("genLepFromTop%lu", i + 1));
-      genBQuark_f_[i].setBranchName(Form("genBQuarkFromTop%lu", i + 1));
-      genNuFromTop_f_[i].setBranchName(Form("genNuFromTop%lu", i + 1));
+    genTaus_f_[i].setBranchName(Form("genTau%lu", i + 1));
+    genLepFromTop_f_[i].setBranchName(Form("genLepFromTop%lu", i + 1));
+    genBQuark_f_[i].setBranchName(Form("genBQuarkFromTop%lu", i + 1));
+    genNuFromTop_f_[i].setBranchName(Form("genNuFromTop%lu", i + 1));
 
-      genW_f_[i].setBranchName(Form("genW%lu", i + 1));
-      genT_f_[i].setBranchName(Form("genTop%lu", i + 1));
+    genW_f_[i].setBranchName(Form("genW%lu", i + 1));
+    genT_f_[i].setBranchName(Form("genTop%lu", i + 1));
 
-      genTaus_f_[i].initBranches(tree_);
-      genLepFromTop_f_[i].initBranches(tree_);
-      genBQuark_f_[i].initBranches(tree_);
-      genNuFromTop_f_[i].initBranches(tree_);
+    genTaus_f_[i].initBranches(tree_);
+    genLepFromTop_f_[i].initBranches(tree_);
+    genBQuark_f_[i].initBranches(tree_);
+    genNuFromTop_f_[i].initBranches(tree_);
 
-      genW_f_[i].initBranches(tree_);
-      genT_f_[i].initBranches(tree_);
-    }
-
-    genHtau_f_.setBranchName("genHtau");
-    genLepFromTau_f_.setBranchName("genLepFromTau");
-    genNuLepFromTau_f_.setBranchName("genNuLepFromTau");
-    genNuFromHTau_f_.setBranchName("genNuFromHtau");
-    genNuFromLTau_f_.setBranchName("genNuFromLtau");
-
-    genHZ_f_.setBranchName("genHorZ");
-
-    genHtau_f_.initBranches(tree_);
-    genLepFromTau_f_.initBranches(tree_);
-    genNuLepFromTau_f_.initBranches(tree_);
-    genNuFromHTau_f_.initBranches(tree_);
-    genNuFromLTau_f_.initBranches(tree_);
-
-    genHZ_f_.initBranches(tree_);
+    genW_f_[i].initBranches(tree_);
+    genT_f_[i].initBranches(tree_);
   }
+
+  genHtau_f_.setBranchName("genHtau");
+  genLepFromTau_f_.setBranchName("genLepFromTau");
+  genNuLepFromTau_f_.setBranchName("genNuLepFromTau");
+  genNuFromHTau_f_.setBranchName("genNuFromHtau");
+  genNuFromLTau_f_.setBranchName("genNuFromLtau");
+
+  genHZ_f_.setBranchName("genHorZ");
+
+  genHtau_f_.initBranches(tree_);
+  genLepFromTau_f_.initBranches(tree_);
+  genNuLepFromTau_f_.initBranches(tree_);
+  genNuFromHTau_f_.initBranches(tree_);
+  genNuFromLTau_f_.initBranches(tree_);
+
+  genHZ_f_.initBranches(tree_);
+
   genMultiplicity_f_[N_GENHADTAU_IDX    ].setBranchName("nGenHadTau");
   genMultiplicity_f_[N_GENBQUARK_IDX    ].setBranchName("nGenBQuarkFromTop");
   genMultiplicity_f_[N_GENLEPFROMTAU_IDX].setBranchName("nGenLepFromTau");

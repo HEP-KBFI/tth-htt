@@ -399,7 +399,6 @@ int main(int argc, char* argv[])
 //--- create output root file from selected events if needed
   NtupleFillerMEM mem;
   if ( writeSelEventsFile ) {
-    mem.use2016(era == kEra_2017); // TODO: CHANGE THIS MEMBER FUNCTION!
     mem.isSignal(isSignal);
     mem.setFileName(selEventsTFileName);
   }
