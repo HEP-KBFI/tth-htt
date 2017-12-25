@@ -2,7 +2,7 @@
 
 #include "FWCore/Utilities/interface/Exception.h" // cms::Exception
 
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2015, kEra_2016
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2017
 
 #include <TString.h>
 
@@ -49,7 +49,7 @@ Data_to_MC_CorrectionInterface_0l_2tau_trigger::Data_to_MC_CorrectionInterface_0
   , hadTau2_decayMode_(-1)
 {
   std::string era_string = cfg.getParameter<std::string>("era");
-  if ( era_string == "2016" ) era_ = kEra_2016;
+  if ( era_string == "2017" ) era_ = kEra_2017;
   else throw cms::Exception("Data_to_MC_CorrectionInterface_0l_2tau_trigger") 
     << "Invalid Configuration parameter 'era' = " << era_string << " !!\n";
 
