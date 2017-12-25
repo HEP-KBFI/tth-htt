@@ -2,7 +2,7 @@
 
 #include "FWCore/Utilities/interface/Exception.h" // cms::Exception
 
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2015, kEra_2016
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2017
 
 #include <TString.h>
 
@@ -53,7 +53,7 @@ Data_to_MC_CorrectionInterface_0l_3tau_trigger::Data_to_MC_CorrectionInterface_0
   , hadTau3_decayMode_(-1)
 {
   std::string era_string = cfg.getParameter<std::string>("era");
-  if ( era_string == "2016" ) era_ = kEra_2016;
+  if ( era_string == "2017" ) era_ = kEra_2017;
   else throw cms::Exception("Data_to_MC_CorrectionInterface_0l_3tau_trigger") 
     << "Invalid Configuration parameter 'era' = " << era_string << " !!\n";
 
@@ -76,7 +76,7 @@ Data_to_MC_CorrectionInterface_0l_3tau_trigger::Data_to_MC_CorrectionInterface_0
   std::string hadTauSelectionLabel = getHadTauSelectionLabel(hadTauSelection_);
   std::vector<int> hadTauDecayModes_2tau_perLeg = { 0, 1, 2, 10 };
   for ( std::vector<int>::const_iterator hadTauDecayMode = hadTauDecayModes_2tau_perLeg.begin();
-	hadTauDecayMode != hadTauDecayModes_2tau_perLeg.end(); ++hadTauDecayMode ) {
+        hadTauDecayMode != hadTauDecayModes_2tau_perLeg.end(); ++hadTauDecayMode ) {
     std::string hadTauDecayModeLabel = getHadTauDecayModeLabel(*hadTauDecayMode);
 
     std::string fitName_2tau_data_gentau = Form("data_genuine_%s_%s", hadTauSelectionLabel.data(), hadTauDecayModeLabel.data());
@@ -108,10 +108,10 @@ namespace
   void clearCollection(std::map<int, std::vector<lutWrapperBase*> >& collection)
   {
     for ( std::map<int, std::vector<lutWrapperBase*> >::iterator it1 = collection.begin();
-	  it1 != collection.end(); ++it1 ) {
+          it1 != collection.end(); ++it1 ) {
       for ( std::vector<lutWrapperBase*>::iterator it2 = it1->second.begin();
-	    it2 != it1->second.end(); ++it2 ) {
-	delete (*it2);
+            it2 != it1->second.end(); ++it2 ) {
+        delete (*it2);
       }
       it1->second.clear();
     }
@@ -132,8 +132,8 @@ void Data_to_MC_CorrectionInterface_0l_3tau_trigger::setTriggerBits(bool isTrigg
 }
 
 void Data_to_MC_CorrectionInterface_0l_3tau_trigger::setHadTaus(int hadTau1_genPdgId, double hadTau1_pt, double hadTau1_eta, int hadTau1_decayMode,
-								int hadTau2_genPdgId, double hadTau2_pt, double hadTau2_eta, int hadTau2_decayMode,
-								int hadTau3_genPdgId, double hadTau3_pt, double hadTau3_eta, int hadTau3_decayMode)
+                                                                int hadTau2_genPdgId, double hadTau2_pt, double hadTau2_eta, int hadTau2_decayMode,
+                                                                int hadTau3_genPdgId, double hadTau3_pt, double hadTau3_eta, int hadTau3_decayMode)
 {
   hadTau1_genPdgId_ = hadTau1_genPdgId;
   hadTau1_pt_ = hadTau1_pt;
@@ -158,7 +158,7 @@ namespace
     if ( correction != corrections.end() ) {
       sf = get_from_lut(correction->second, hadTau_pt, hadTau_eta, isDEBUG);
     } else throw cms::Exception("get_from_lut")
-	<< "Invalid parameter 'hadTauDecayMode' = " << hadTau_decayMode << " !!\n";      
+        << "Invalid parameter 'hadTauDecayMode' = " << hadTau_decayMode << " !!\n";
     return sf;
   }
   
