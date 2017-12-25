@@ -32,8 +32,8 @@ HadTopTagger::HadTopTagger(
   : kinFit_(0),
     mva_(0),
     mvaOutput_(-1.),
-    mva_hadTopTagger_xgb_(0),
-    mva_hadTopTagger_xgb_2_(0),
+    mva_hadTopTagger_xgb_withKinFit(0),
+    mva_hadTopTagger_xgb_noKinFit_(0),
     mva_hadTopTagger_tmva_(0)
 
 {
@@ -47,7 +47,7 @@ HadTopTagger::HadTopTagger(
   mvaInputsWithKinFitSort.push_back("pT_b_o_kinFit_pT_b");
   mvaInputsWithKinFitSort.push_back("pT_Wj2");
   mvaInputVariables_=mvaInputsWithKinFitSort;
-  mva_hadTopTagger_xgb_ = new XGBInterface(mvaFileNameWithKinFit,mvaInputsWithKinFitSort);
+  mva_hadTopTagger_xgb_withKinFit = new XGBInterface(mvaFileNameWithKinFit,mvaInputsWithKinFitSort);
   // order IS important - I will fix that
   // ['CSV_b', 'qg_Wj2', 'pT_bWj1Wj2', 'm_Wj1Wj2', 'nllKinFit', 'pT_b_o_kinFit_pT_b', 'pT_Wj2']
   //char* pklpath=(char*) mvaFileNameWithKinFitRead;
@@ -63,7 +63,7 @@ HadTopTagger::HadTopTagger(
   mvaFileNameNoKinFitSort.push_back("pT_bWj1Wj2");
   mvaFileNameNoKinFitSort.push_back("m_Wj1Wj2");
   mvaFileNameNoKinFitSort.push_back("pT_Wj2");
-  mva_hadTopTagger_xgb_2_ = new XGBInterface(mvaFileNameWithKinFit,mvaFileNameNoKinFitSort);
+  mva_hadTopTagger_xgb_noKinFit_ = new XGBInterface(mvaFileNameNoKinFit,mvaFileNameNoKinFitSort);
 
 }
 
@@ -71,8 +71,8 @@ HadTopTagger::~HadTopTagger()
 {
   delete kinFit_;
   delete mva_;
-  delete mva_hadTopTagger_xgb_;
-  delete mva_hadTopTagger_xgb_2_;
+  delete mva_hadTopTagger_xgb_withKinFit;
+  delete mva_hadTopTagger_xgb_noKinFit_;
   delete mva_hadTopTagger_tmva_;
 }
 
@@ -89,12 +89,7 @@ bool HadTopTagger::operator()(const RecoJet& recBJet, const RecoJet& recWJet1, c
   mvaInputsWithKinFit["nllKinFit"]              = kinFit_->nll();
   mvaInputsWithKinFit["pT_b_o_kinFit_pT_b"]     = recBJet.pt()/kinFit_->fittedBJet().pt();
   mvaInputsWithKinFit["pT_Wj2"]                 = recWJet2.pt();
-  // functuion way to read pkl - please leave this template here by now
-  //std::string mvaFileName_hadTopTaggerWithKinFitR = "all_HadTopTagger_sklearnV0o17o1_HypOpt_XGB_ntrees_1000_deph_3_lr_0o01_CSV_sort_withKinFit.pkl";
-  //const char* mvaFileNameWithKinFitRead= mvaFileName_hadTopTaggerWithKinFitR.c_str(); // to remove
-  //char* pklpathWithKinFit=(char*) mvaFileNameWithKinFitRead;
-  //double mvaOutputNoKinFit=XGBReader( mvaInputsWithKinFit , mvaInputsWithKinFitSort , pklpathWithKinFit );
-  double HTT_WithKin_xgb= (*mva_hadTopTagger_xgb_)(mvaInputsWithKinFit);
+  double HTT_WithKin_xgb= (*mva_hadTopTagger_xgb_withKinFit)(mvaInputsWithKinFit);
   result[0]=HTT_WithKin_xgb;
   //result[1]=mvaOutputNoKinFit;
 
@@ -110,7 +105,7 @@ bool HadTopTagger::operator()(const RecoJet& recBJet, const RecoJet& recWJet1, c
   mvaInputsNoKinFit["m_Wj1Wj2"]               = p4_Wj1Wj2.mass();
   mvaInputsNoKinFit["pT_Wj2"]                 = recWJet2.pt();
 
-  double HTT_NoKin_xgb=(*mva_hadTopTagger_xgb_2_)(mvaInputsNoKinFit);
+  double HTT_NoKin_xgb=(*mva_hadTopTagger_xgb_noKinFit_)(mvaInputsNoKinFit);
   result[2]=HTT_NoKin_xgb;
   return 1;
 }

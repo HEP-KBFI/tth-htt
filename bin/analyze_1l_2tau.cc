@@ -75,7 +75,6 @@
 #include "tthAnalysis/HiggsToTauTau/interface/hadTopTaggerAuxFunctions.h" // isGenMatchedJetTriplet
 #include "tthAnalysis/HiggsToTauTau/interface/TTreeWrapper.h" // TTreeWrapper
 
-#include "tthAnalysis/HiggsToTauTau/interface/XGBReader.h" // XGBReader
 #include "tthAnalysis/HiggsToTauTau/interface/GenParticle.h" // GenParticle
 #include "tthAnalysis/HiggsToTauTau/interface/GenParticleReader.h" // GenParticleReader
 #include "TLorentzVector.h"
@@ -1661,7 +1660,7 @@ int main(int argc, char* argv[])
     mvaInputs["dr_lep_tau_lead"]             = deltaR(selLepton->p4(), selHadTau_lead->p4());
     mvaInputs["costS_tau"]             = cosThetaS_hadTau;
     double mvaOutput_1l_2tau_ttbar=mva_1l_2tau_ttbar(mvaInputs);
-    //XGBReader(mvaInputs , mvaInputsSort , (char*) pklpath.c_str() );
+
     ////////////////////////////////////////////////////////////////////////
     std::map<std::string, double> mvaInputsHTTWithKinFit;
     mvaInputsHTTWithKinFit["avg_dr_jet"]                  = comp_avg_dr_jet(selJets);

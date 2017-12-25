@@ -52,8 +52,8 @@ class HadTopTagger
   TMVAInterface* mva_;
   double mvaOutput_;
   //XGBInterface* xgb_;
-  XGBInterface* mva_hadTopTagger_xgb_;
-  XGBInterface* mva_hadTopTagger_xgb_2_;
+  XGBInterface* mva_hadTopTagger_xgb_withKinFit;
+  XGBInterface* mva_hadTopTagger_xgb_noKinFit_;
   TMVAInterface* mva_hadTopTagger_tmva_;
 
 

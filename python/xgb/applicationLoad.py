@@ -27,7 +27,7 @@ def load(pklfile):
   try:
     f = open(pklfile,'rb')
   except IOError as e:
-    print('Couldnt open or write to file (%s).' % e)
+    print('Couldnt open or read from file (%s).' % e)
   else:
       try:
         pkldata = pickle.load(f)
@@ -41,11 +41,14 @@ def load(pklfile):
   return pkldata
 
 def evaluate(vec, vec2, pkldata):
-	new_dict = collections.OrderedDict(itertools.izip(vec2,vec))
-	data = pandas.DataFrame(columns = list(new_dict.keys()))
-	data=data.append(new_dict, ignore_index = True)
-	result=-20
-	try: proba = pkldata.predict_proba(data[data.columns.values.tolist()].values  )
-	except : print('Oops!',sys.exc_info()[0],'occured.')
-	else: result = proba[:,1][0]
-	return result
+  new_dict = collections.OrderedDict(itertools.izip(vec2,vec))
+  data = pandas.DataFrame(columns = list(new_dict.keys()))
+  data = data.append(new_dict, ignore_index = True)
+  result = -20
+  try:
+    proba = pkldata.predict_proba(data[data.columns.values.tolist()].values  )
+  except:
+    print('Oops!',sys.exc_info()[0],'occured.')
+  else:
+    result = proba[:,1][0]
+  return result
