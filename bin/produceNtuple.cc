@@ -126,9 +126,7 @@ int main(int argc, char* argv[])
 
   std::string era_string = cfg_produceNtuple.getParameter<std::string>("era");
   int era = -1;
-  if      ( era_string == "2015" ) era = kEra_2015;
-  else if ( era_string == "2016" ) era = kEra_2016;
-  else if ( era_string == "2017" ) era = kEra_2017;
+  if ( era_string == "2017" ) era = kEra_2017;
   else throw cms::Exception("produceNtuple") 
     << "Invalid Configuration parameter 'era' = " << era_string << " !!\n";
 
@@ -515,7 +513,7 @@ int main(int argc, char* argv[])
           minPt_lead = 23.;
         }
         else {
-          minPt_lead = 18.;
+          throw cms::Exception("produceNtuple") << "Unsupported era = " << era;
         }
       }
       else assert(0);
