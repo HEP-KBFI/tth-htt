@@ -101,7 +101,7 @@ std::vector<GenParticle> GenParticleReader::read() const
   //std::cout << "<GenParticleReader::read()>:" << std::endl;
   GenParticleReader* gInstance = instances_[branchName_particles_];
   assert(gInstance);
-  Int_t nParticles = gInstance->nParticles_;
+  UInt_t nParticles = gInstance->nParticles_;
   //std::cout << "nParticles = " << nParticles << std::endl;
   if ( nParticles > max_nParticles_ ) {
     throw cms::Exception("GenParticleReader") 
@@ -111,7 +111,7 @@ std::vector<GenParticle> GenParticleReader::read() const
   std::vector<GenParticle> particles;
   if ( nParticles > 0 ) {
     particles.reserve(nParticles);
-    for ( Int_t idxParticle = 0; idxParticle < nParticles; ++idxParticle ) {
+    for ( UInt_t idxParticle = 0; idxParticle < nParticles; ++idxParticle ) {
       particles.push_back(GenParticle({ 
         gInstance->particle_pt_[idxParticle],
         gInstance->particle_eta_[idxParticle],

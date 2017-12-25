@@ -36,7 +36,7 @@ class GenParticleReader
    */
   void setBranchNames();
 
-  const int max_nParticles_;
+  const unsigned int max_nParticles_;
   std::string branchName_nParticles_;
   std::string branchName_particles_;
 
@@ -47,7 +47,7 @@ class GenParticleReader
   std::string branchName_particle_pdgId_;
   std::string branchName_particle_charge_;
 
-  Int_t nParticles_;
+  UInt_t nParticles_;
   Float_t* particle_pt_;
   Float_t* particle_eta_;
   Float_t* particle_phi_;
