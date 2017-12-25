@@ -47,7 +47,7 @@ process.produceNtuple = cms.PSet(
     # CV: Copy additional branches from input to output tree
     #     Note that branches that are accessed by
     #      - RecoElectron, RecoMuon, RecoHadTau, RecoJet, RecoMEt
-    #      - GenLepton, GenHadTau, GenJet (if MC)
+    #      - GenLep, GenVisTau, GenJet (if MC)
     #     reader classes must *not* appear in the outputCommands,
     #     as ROOT cannot handle accesses from multiple places in the code to the same branch
     #TODO: Karl: record the branch names to be read inside the *Reader classes and put "keep *" here
@@ -67,10 +67,12 @@ process.produceNtuple = cms.PSet(
         "keep *Rho*",
         "keep *Weight*",
         "keep gen*",
-        "keep *Gen*",
-        "drop *GenVisTau*",
-        "drop *GenLep*",
-        "drop *GenJet*",
+        "keep *GenHiggs*",
+        "keep *GenNu*",
+        "keep *Gen*Quark*",
+        "keep *Gen*boson*",
+        "keep *GenTau*",
+        "keep *Gen*Top*",
         "drop *Recovered*",
     ),
     #----------------------------------------------------------------------------
