@@ -4,7 +4,7 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/lutAuxFunctions.h" // lutWrapperBase, openFile, loadTH1/TH2, get_sf_from_TH1/TH2 
 #include "tthAnalysis/HiggsToTauTau/interface/leptonTypes.h" // kElectron, kMuon
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2015, kEra_2016
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2017
 
 #include <TString.h>
 
@@ -68,7 +68,7 @@ Data_to_MC_CorrectionInterface_1l_2tau_trigger::Data_to_MC_CorrectionInterface_1
   , hadTau2_decayMode_(-1)
 {
   std::string era_string = cfg.getParameter<std::string>("era");
-  if ( era_string == "2016" ) era_ = kEra_2016;
+  if ( era_string == "2017" ) era_ = kEra_2017;
   else throw cms::Exception("Data_to_MC_CorrectionInterface_1l_2tau_trigger") 
     << "Invalid Configuration parameter 'era' = " << era_string << " !!\n";
 
@@ -87,7 +87,7 @@ Data_to_MC_CorrectionInterface_1l_2tau_trigger::Data_to_MC_CorrectionInterface_1
 
   isDEBUG_ = ( cfg.exists("isDEBUG") ) ? cfg.getParameter<bool>("isDEBUG") : false; 
 
-  if ( era_ == kEra_2016 ) {
+  if ( era_ == kEra_2017 ) {
     std::vector<double> etaBinEdges_1e = { -1., 1.48, 2.1 }; 
     int numEtaBins_1e = etaBinEdges_1e.size() - 1;
     for ( int idxEtaBin = 0; idxEtaBin < numEtaBins_1e; ++idxEtaBin ) {
@@ -128,28 +128,28 @@ Data_to_MC_CorrectionInterface_1l_2tau_trigger::Data_to_MC_CorrectionInterface_1
       std::string hadTauSelectionLabel = getHadTauSelectionLabel(hadTauSelection_);
       std::vector<int> hadTauDecayModes_1e1tau_tauLeg = { 0, 1, 2, 10 };
       for ( std::vector<int>::const_iterator hadTauDecayMode = hadTauDecayModes_1e1tau_tauLeg.begin();
-	    hadTauDecayMode != hadTauDecayModes_1e1tau_tauLeg.end(); ++hadTauDecayMode ) {
-	std::string hadTauDecayModeLabel = getHadTauDecayModeLabel(*hadTauDecayMode);
-	effTrigger_1e1tau_tauLeg_data_gentau_[*hadTauDecayMode].push_back(new lutWrapperTGraph(
+            hadTauDecayMode != hadTauDecayModes_1e1tau_tauLeg.end(); ++hadTauDecayMode ) {
+        std::string hadTauDecayModeLabel = getHadTauDecayModeLabel(*hadTauDecayMode);
+        effTrigger_1e1tau_tauLeg_data_gentau_[*hadTauDecayMode].push_back(new lutWrapperTGraph(
           inputFiles_, "tthAnalysis/HiggsToTauTau/data/triggerSF/2016/trigger_sf_et.root", 
-	  Form("data_genuine_%s_%s_%s", etaBinLabel.data(), hadTauSelectionLabel.data(), hadTauDecayModeLabel.data()),
+          Form("data_genuine_%s_%s_%s", etaBinLabel.data(), hadTauSelectionLabel.data(), hadTauDecayModeLabel.data()),
           lut::kXptYabsEta, 0., 150., etaMin, etaMax));     
-	effTrigger_1e1tau_tauLeg_data_faketau_[*hadTauDecayMode].push_back(new lutWrapperTGraph(
+        effTrigger_1e1tau_tauLeg_data_faketau_[*hadTauDecayMode].push_back(new lutWrapperTGraph(
           inputFiles_, "tthAnalysis/HiggsToTauTau/data/triggerSF/2016/trigger_sf_et.root", 
-	  Form("data_fake_%s_%s_%s", etaBinLabel.data(), hadTauSelectionLabel.data(), hadTauDecayModeLabel.data()),
+          Form("data_fake_%s_%s_%s", etaBinLabel.data(), hadTauSelectionLabel.data(), hadTauDecayModeLabel.data()),
           lut::kXptYabsEta, 0., 150., etaMin, etaMax));
-	//---------------------------------------------------------------------------------------------------------------
-	// CV: need work-around for MC, because we do not have all e+tau cross triggers stored in VHbb Ntuples V25
-	//    (only HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau30_v*)
-	effTrigger_1e1tau_tauLeg_mc_gentau_[*hadTauDecayMode].push_back(new lutWrapperTGraph(
+        //---------------------------------------------------------------------------------------------------------------
+        // CV: need work-around for MC, because we do not have all e+tau cross triggers stored in VHbb Ntuples V25
+        //    (only HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau30_v*)
+        effTrigger_1e1tau_tauLeg_mc_gentau_[*hadTauDecayMode].push_back(new lutWrapperTGraph(
           inputFiles_, "tthAnalysis/HiggsToTauTau/data/triggerSF/2016/tauleg_of_lepton_plus_tau_real_taus_skim_mc_v2.root", 
-	  Form("%s_lowmt_zmass_sub_%s_%s_HLT_LooseIso30_L1iso26/tau_pt", etaBinLabel.data(), hadTauSelectionLabel.data(), hadTauDecayModeLabel.data()),
+          Form("%s_lowmt_zmass_sub_%s_%s_HLT_LooseIso30_L1iso26/tau_pt", etaBinLabel.data(), hadTauSelectionLabel.data(), hadTauDecayModeLabel.data()),
           lut::kXptYabsEta, 0., 150., etaMin, etaMax));     
-	effTrigger_1e1tau_tauLeg_mc_faketau_[*hadTauDecayMode].push_back(new lutWrapperTGraph(
+        effTrigger_1e1tau_tauLeg_mc_faketau_[*hadTauDecayMode].push_back(new lutWrapperTGraph(
           inputFiles_, "tthAnalysis/HiggsToTauTau/data/triggerSF/2016/tauleg_of_lepton_plus_tau_real_taus_skim_mc_v2.root", 
-	  Form("%s_highmt_os_%s_%s_HLT_LooseIso30_L1iso26/tau_pt", etaBinLabel.data(), hadTauSelectionLabel.data(), hadTauDecayModeLabel.data()),
+          Form("%s_highmt_os_%s_%s_HLT_LooseIso30_L1iso26/tau_pt", etaBinLabel.data(), hadTauSelectionLabel.data(), hadTauDecayModeLabel.data()),
           lut::kXptYabsEta, 0., 150., etaMin, etaMax));
-	//---------------------------------------------------------------------------------------------------------------
+        //---------------------------------------------------------------------------------------------------------------
       }
     }
 
@@ -197,7 +197,7 @@ Data_to_MC_CorrectionInterface_1l_2tau_trigger::Data_to_MC_CorrectionInterface_1
         lut::kXptYabsEta, 0., 150., etaMin, etaMax));     
       effTrigger_1m1tau_tauLeg_data_faketau_.push_back(new lutWrapperTGraph(
         inputFiles_, "tthAnalysis/HiggsToTauTau/data/triggerSF/2016/trigger_sf_mt.root", 
-	Form("data_fake_%s_%s", etaBinLabel.data(), hadTauSelectionLabel.data()),
+        Form("data_fake_%s_%s", etaBinLabel.data(), hadTauSelectionLabel.data()),
         lut::kXptYabsEta, 0., 150., etaMin, etaMax));
       effTrigger_1m1tau_tauLeg_mc_gentau_.push_back(new lutWrapperTGraph(
         inputFiles_, "tthAnalysis/HiggsToTauTau/data/triggerSF/2016/trigger_sf_mt.root",
@@ -205,7 +205,7 @@ Data_to_MC_CorrectionInterface_1l_2tau_trigger::Data_to_MC_CorrectionInterface_1
         lut::kXptYabsEta, 0., 150., etaMin, etaMax));     
       effTrigger_1m1tau_tauLeg_mc_faketau_.push_back(new lutWrapperTGraph(
         inputFiles_, "tthAnalysis/HiggsToTauTau/data/triggerSF/2016/trigger_sf_mt.root",
-	Form("mc_fake_%s_%s", etaBinLabel.data(), hadTauSelectionLabel.data()),
+        Form("mc_fake_%s_%s", etaBinLabel.data(), hadTauSelectionLabel.data()),
         lut::kXptYabsEta, 0., 150., etaMin, etaMax));
     }
   } else assert(0);
@@ -216,7 +216,7 @@ namespace
   void clearCollection(std::vector<lutWrapperBase*>& collection)
   {
     for ( std::vector<lutWrapperBase*>::iterator it = collection.begin();
-	  it != collection.end(); ++it ) {
+          it != collection.end(); ++it ) {
       delete (*it);
     }
     collection.clear();
@@ -225,10 +225,10 @@ namespace
   void clearCollection(std::map<int, std::vector<lutWrapperBase*> >& collection)
   {
     for ( std::map<int, std::vector<lutWrapperBase*> >::iterator it1 = collection.begin();
-	  it1 != collection.end(); ++it1 ) {
+          it1 != collection.end(); ++it1 ) {
       for ( std::vector<lutWrapperBase*>::iterator it2 = it1->second.begin();
-	    it2 != it1->second.end(); ++it2 ) {
-	delete (*it2);
+            it2 != it1->second.end(); ++it2 ) {
+        delete (*it2);
       }
       it1->second.clear();
     }
@@ -272,7 +272,7 @@ void Data_to_MC_CorrectionInterface_1l_2tau_trigger::setLeptons(int lepton_type,
 }
 
 void Data_to_MC_CorrectionInterface_1l_2tau_trigger::setHadTaus(int hadTau1_genPdgId, double hadTau1_pt, double hadTau1_eta, int hadTau1_decayMode,
-								int hadTau2_genPdgId, double hadTau2_pt, double hadTau2_eta, int hadTau2_decayMode)
+                                                                int hadTau2_genPdgId, double hadTau2_pt, double hadTau2_eta, int hadTau2_decayMode)
 {
   hadTau1_genPdgId_ = hadTau1_genPdgId;
   hadTau1_pt_ = hadTau1_pt;
@@ -293,7 +293,7 @@ namespace
     if ( correction != corrections.end() ) {
       sf = get_from_lut(correction->second, hadTau_pt, hadTau_eta, isDEBUG);
     } else throw cms::Exception("get_from_lut")
-	<< "Invalid parameter 'hadTauDecayMode' = " << hadTau_decayMode << " !!\n";      
+        << "Invalid parameter 'hadTauDecayMode' = " << hadTau_decayMode << " !!\n";
     return sf;
   }
   
@@ -311,7 +311,7 @@ double Data_to_MC_CorrectionInterface_1l_2tau_trigger::getSF_triggerEff() const
     std::cout << "<Data_to_MC_CorrectionInterface_1l_2tau_trigger::getSF_triggerEff>:" << std::endl;
   }
   double sf = 1.;
-  if ( era_ == kEra_2016 ) {
+  if ( era_ == kEra_2017 ) {
     double eff_1l_data = 0.;
     double eff_1l_mc = 0.;
     double eff_1l1tau_lepLeg_data = 0.;
@@ -326,49 +326,49 @@ double Data_to_MC_CorrectionInterface_1l_2tau_trigger::getSF_triggerEff() const
     bool hadTau2_isGenTau = (hadTau2_genPdgId_ == 11 || hadTau2_genPdgId_ == 13 || hadTau2_genPdgId_ == 15);
     if ( lepton_type_ == kElectron ) {
       if ( isDEBUG_ ) {
-	std::cout << "electron: pT = " << lepton_pt_ << ", eta = " << lepton_eta_ << std::endl;
+        std::cout << "electron: pT = " << lepton_pt_ << ", eta = " << lepton_eta_ << std::endl;
       }
       eff_1l_data = get_from_lut(effTrigger_1e_data_, lepton_pt_, lepton_eta_, isDEBUG_);
       eff_1l_mc = get_from_lut(effTrigger_1e_mc_, lepton_pt_, lepton_eta_);
       eff_1l1tau_lepLeg_data = get_from_lut(effTrigger_1e1tau_lepLeg_data_, lepton_pt_, lepton_eta_, isDEBUG_);
       eff_1l1tau_lepLeg_mc = get_from_lut(effTrigger_1e1tau_lepLeg_mc_, lepton_pt_, lepton_eta_, isDEBUG_);
       if ( hadTau1_isGenTau ) {
-	eff_1l1tau_tauLeg1_data = get_from_lut(effTrigger_1e1tau_tauLeg_data_gentau_, hadTau1_pt_, hadTau1_eta_, hadTau1_decayMode_, isDEBUG_);
-	eff_1l1tau_tauLeg1_mc = get_from_lut(effTrigger_1e1tau_tauLeg_mc_gentau_, hadTau1_pt_, hadTau1_eta_, hadTau1_decayMode_, isDEBUG_);
+        eff_1l1tau_tauLeg1_data = get_from_lut(effTrigger_1e1tau_tauLeg_data_gentau_, hadTau1_pt_, hadTau1_eta_, hadTau1_decayMode_, isDEBUG_);
+        eff_1l1tau_tauLeg1_mc = get_from_lut(effTrigger_1e1tau_tauLeg_mc_gentau_, hadTau1_pt_, hadTau1_eta_, hadTau1_decayMode_, isDEBUG_);
       } else {
-	eff_1l1tau_tauLeg1_data = get_from_lut(effTrigger_1e1tau_tauLeg_data_faketau_, hadTau1_pt_, hadTau1_eta_, hadTau1_decayMode_, isDEBUG_);
-	eff_1l1tau_tauLeg1_mc = get_from_lut(effTrigger_1e1tau_tauLeg_mc_faketau_, hadTau1_pt_, hadTau1_eta_, hadTau1_decayMode_, isDEBUG_);
+        eff_1l1tau_tauLeg1_data = get_from_lut(effTrigger_1e1tau_tauLeg_data_faketau_, hadTau1_pt_, hadTau1_eta_, hadTau1_decayMode_, isDEBUG_);
+        eff_1l1tau_tauLeg1_mc = get_from_lut(effTrigger_1e1tau_tauLeg_mc_faketau_, hadTau1_pt_, hadTau1_eta_, hadTau1_decayMode_, isDEBUG_);
       }
       if ( hadTau2_isGenTau ) {
-	eff_1l1tau_tauLeg2_data = get_from_lut(effTrigger_1e1tau_tauLeg_data_gentau_, hadTau2_pt_, hadTau2_eta_, hadTau2_decayMode_, isDEBUG_);
-	eff_1l1tau_tauLeg2_mc = get_from_lut(effTrigger_1e1tau_tauLeg_mc_gentau_, hadTau2_pt_, hadTau2_eta_, hadTau2_decayMode_, isDEBUG_);
+        eff_1l1tau_tauLeg2_data = get_from_lut(effTrigger_1e1tau_tauLeg_data_gentau_, hadTau2_pt_, hadTau2_eta_, hadTau2_decayMode_, isDEBUG_);
+        eff_1l1tau_tauLeg2_mc = get_from_lut(effTrigger_1e1tau_tauLeg_mc_gentau_, hadTau2_pt_, hadTau2_eta_, hadTau2_decayMode_, isDEBUG_);
       } else {
-	eff_1l1tau_tauLeg2_data = get_from_lut(effTrigger_1e1tau_tauLeg_data_faketau_, hadTau2_pt_, hadTau2_eta_, hadTau2_decayMode_, isDEBUG_);
-	eff_1l1tau_tauLeg2_mc = get_from_lut(effTrigger_1e1tau_tauLeg_mc_faketau_, hadTau2_pt_, hadTau2_eta_, hadTau2_decayMode_, isDEBUG_);
+        eff_1l1tau_tauLeg2_data = get_from_lut(effTrigger_1e1tau_tauLeg_data_faketau_, hadTau2_pt_, hadTau2_eta_, hadTau2_decayMode_, isDEBUG_);
+        eff_1l1tau_tauLeg2_mc = get_from_lut(effTrigger_1e1tau_tauLeg_mc_faketau_, hadTau2_pt_, hadTau2_eta_, hadTau2_decayMode_, isDEBUG_);
       }
       isTriggered_1l = isTriggered_1e_;
       isTriggered_1l1tau = isTriggered_1e1tau_;
     } else if ( lepton_type_ == kMuon ) {
       if ( isDEBUG_ ) {
-	std::cout << "muon: pT = " << lepton_pt_ << ", eta = " << lepton_eta_ << std::endl;
+        std::cout << "muon: pT = " << lepton_pt_ << ", eta = " << lepton_eta_ << std::endl;
       }
       eff_1l_data = get_from_lut(effTrigger_1m_data_, lepton_pt_, lepton_eta_, isDEBUG_);
       eff_1l_mc = get_from_lut(effTrigger_1m_mc_, lepton_pt_, lepton_eta_, isDEBUG_);
       eff_1l1tau_lepLeg_data = get_from_lut(effTrigger_1m1tau_lepLeg_data_, lepton_pt_, lepton_eta_, isDEBUG_);
       eff_1l1tau_lepLeg_mc = get_from_lut(effTrigger_1m1tau_lepLeg_mc_, lepton_pt_, lepton_eta_);
       if ( hadTau1_isGenTau ) {
-	eff_1l1tau_tauLeg1_data = get_from_lut(effTrigger_1m1tau_tauLeg_data_gentau_, hadTau1_pt_, hadTau1_eta_, isDEBUG_);
-	eff_1l1tau_tauLeg1_mc = get_from_lut(effTrigger_1m1tau_tauLeg_mc_gentau_, hadTau1_pt_, hadTau1_eta_, isDEBUG_);
+        eff_1l1tau_tauLeg1_data = get_from_lut(effTrigger_1m1tau_tauLeg_data_gentau_, hadTau1_pt_, hadTau1_eta_, isDEBUG_);
+        eff_1l1tau_tauLeg1_mc = get_from_lut(effTrigger_1m1tau_tauLeg_mc_gentau_, hadTau1_pt_, hadTau1_eta_, isDEBUG_);
       } else {
-	eff_1l1tau_tauLeg1_data = get_from_lut(effTrigger_1m1tau_tauLeg_data_faketau_, hadTau1_pt_, hadTau1_eta_, isDEBUG_);
-	eff_1l1tau_tauLeg1_mc = get_from_lut(effTrigger_1m1tau_tauLeg_mc_faketau_, hadTau1_pt_, hadTau1_eta_, isDEBUG_);
+        eff_1l1tau_tauLeg1_data = get_from_lut(effTrigger_1m1tau_tauLeg_data_faketau_, hadTau1_pt_, hadTau1_eta_, isDEBUG_);
+        eff_1l1tau_tauLeg1_mc = get_from_lut(effTrigger_1m1tau_tauLeg_mc_faketau_, hadTau1_pt_, hadTau1_eta_, isDEBUG_);
       }
       if ( hadTau2_isGenTau ) {
-	eff_1l1tau_tauLeg2_data = get_from_lut(effTrigger_1m1tau_tauLeg_data_gentau_, hadTau2_pt_, hadTau2_eta_, isDEBUG_);
-	eff_1l1tau_tauLeg2_mc = get_from_lut(effTrigger_1m1tau_tauLeg_mc_gentau_, hadTau2_pt_, hadTau2_eta_, isDEBUG_);
+        eff_1l1tau_tauLeg2_data = get_from_lut(effTrigger_1m1tau_tauLeg_data_gentau_, hadTau2_pt_, hadTau2_eta_, isDEBUG_);
+        eff_1l1tau_tauLeg2_mc = get_from_lut(effTrigger_1m1tau_tauLeg_mc_gentau_, hadTau2_pt_, hadTau2_eta_, isDEBUG_);
       } else {
-	eff_1l1tau_tauLeg2_data = get_from_lut(effTrigger_1m1tau_tauLeg_data_faketau_, hadTau2_pt_, hadTau2_eta_, isDEBUG_);
-	eff_1l1tau_tauLeg2_mc = get_from_lut(effTrigger_1m1tau_tauLeg_mc_faketau_, hadTau2_pt_, hadTau2_eta_, isDEBUG_);
+        eff_1l1tau_tauLeg2_data = get_from_lut(effTrigger_1m1tau_tauLeg_data_faketau_, hadTau2_pt_, hadTau2_eta_, isDEBUG_);
+        eff_1l1tau_tauLeg2_mc = get_from_lut(effTrigger_1m1tau_tauLeg_mc_faketau_, hadTau2_pt_, hadTau2_eta_, isDEBUG_);
       }
       isTriggered_1l = isTriggered_1m_;
       isTriggered_1l1tau = isTriggered_1m1tau_;
@@ -392,30 +392,30 @@ double Data_to_MC_CorrectionInterface_1l_2tau_trigger::getSF_triggerEff() const
       double eff_mc = TMath::Min(eff_1l_mc, eff_1l1tau_lepLeg_mc)*eff_1l1tau_tauLegs_mc;      
       sf = compSF(eff_data, eff_mc);
       if ( isDEBUG_ ) {
-	std::cout << "case 4: both single lepton trigger and lepton+tau cross trigger fire" << std::endl;
-	std::cout << " eff: data = " << eff_data << ", MC = " << eff_mc << " --> SF = " << sf << std::endl;
+        std::cout << "case 4: both single lepton trigger and lepton+tau cross trigger fire" << std::endl;
+        std::cout << " eff: data = " << eff_data << ", MC = " << eff_mc << " --> SF = " << sf << std::endl;
       }
     } else if ( isTriggered_1l1tau ) {            // case 3: lepton+tau cross trigger fires, single lepton trigger doesn't fire
       double eff_data = TMath::Max(1.e-2, (eff_1l1tau_lepLeg_data - eff_1l_data)*eff_1l1tau_tauLegs_data);
       double eff_mc = TMath::Max(1.e-2, (eff_1l1tau_lepLeg_mc - eff_1l_mc)*eff_1l1tau_tauLegs_mc);
       sf = compSF(eff_data, eff_mc);
       if ( isDEBUG_ ) {
-	std::cout << "case 3: lepton+tau cross trigger fires, single lepton trigger doesn't fire" << std::endl;
-	std::cout << " eff: data = " << eff_data << ", MC = " << eff_mc << " --> SF = " << sf << std::endl;
+        std::cout << "case 3: lepton+tau cross trigger fires, single lepton trigger doesn't fire" << std::endl;
+        std::cout << " eff: data = " << eff_data << ", MC = " << eff_mc << " --> SF = " << sf << std::endl;
       }
     } else if ( isTriggered_1l ) {                // case 2: single lepton trigger fires, lepton+tau cross trigger doesn't fire
       double eff_data = TMath::Max(1.e-2, eff_1l_data - eff_1l1tau_tauLegs_data*TMath::Min(eff_1l_data, eff_1l1tau_lepLeg_data));
       double eff_mc = TMath::Max(1.e-2, eff_1l_mc - eff_1l1tau_tauLegs_mc*TMath::Min(eff_1l_mc, eff_1l1tau_lepLeg_mc));
       sf = compSF(eff_data, eff_mc);
       if ( isDEBUG_ ) {
-	std::cout << "case 2: single lepton trigger fires, lepton+tau cross trigger doesn't fire" << std::endl;
-	std::cout << " eff: data = " << eff_data << ", MC = " << eff_mc << " --> SF = " << sf << std::endl;
+        std::cout << "case 2: single lepton trigger fires, lepton+tau cross trigger doesn't fire" << std::endl;
+        std::cout << " eff: data = " << eff_data << ", MC = " << eff_mc << " --> SF = " << sf << std::endl;
       }
     } else {                                      // case 1: neither single lepton trigger nor lepton+tau cross trigger fires (SF doesn't matter, as event does not pass event selection)
       sf = 0.;
       if ( isDEBUG_ ) {
-	std::cout << "case 1: neither single lepton trigger nor lepton+tau cross trigger fires" << std::endl;
-	std::cout << "--> setting SF = " << sf << std::endl;
+        std::cout << "case 1: neither single lepton trigger nor lepton+tau cross trigger fires" << std::endl;
+        std::cout << "--> setting SF = " << sf << std::endl;
       }      
     }
     //-------------------------------------------------------------------------------------------------------------------

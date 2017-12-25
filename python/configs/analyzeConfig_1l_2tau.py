@@ -160,7 +160,9 @@ class analyzeConfig_1l_2tau(analyzeConfig):
     if (jobOptions['is_mc'] == False and jobOptions['process_name_specific'].startswith("Tau_")):
       lines.append("process.analyze_1l_2tau.triggers_1e1tau = cms.vstring(%s)" % self.triggers_1e1tau)
     else:
-      lines.append("process.analyze_1l_2tau.triggers_1e1tau = cms.vstring(%s)" % [ 'HLT_BIT_HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau30_v', ])
+      lines.append("process.analyze_1l_2tau.triggers_1e1tau = cms.vstring(%s)" % [
+        # available in 2016 but not in 2017 nano: 'HLT_BIT_HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau30_v',
+      ])
     #---------------------------------------------------------------------------------------------------------------
     lines.append("process.analyze_1l_2tau.use_triggers_1e1tau = cms.bool(%s)" % ("1e1tau" in jobOptions['triggers']))
     lines.append("process.analyze_1l_2tau.triggers_1mu = cms.vstring(%s)" % self.triggers_1mu)
