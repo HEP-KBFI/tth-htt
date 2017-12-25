@@ -21,32 +21,42 @@ XGBInterface::XGBInterface(const std::string& mvaFileName, const std::vector<std
   moduleMainString_ = PyString_FromString("__main__");
   moduleMain_ = PyImport_Import(moduleMainString_);
   PyRun_SimpleString(
-  "import sys \n"
-  "sys.path.insert(0, '/cvmfs/cms.cern.ch/slc6_amd64_gcc530/external/py2-scikit-learn/0.17.1-ikhhed/lib/python2.7/site-packages')\n"
-  "import sklearn\n"
-  "sys.path.insert(0, '/cvmfs/cms.cern.ch/slc6_amd64_gcc530/external/py2-pandas/0.17.1-ikhhed/lib/python2.7/site-packages/pandas-0.17.1-py2.7-linux-x86_64.egg')\n"
+  "import imp \n"
+  "import os \n"
+  "import sklearn \n"
   "import pandas \n"
   "import cPickle as pickle \n"
-  "sys.path.insert(0, '/cvmfs/cms.cern.ch/slc6_amd64_gcc530/external/py2-pippkgs_depscipy/3.0-njopjo7/lib/python2.7/site-packages') \n"
-  "import xgboost as xgb \n"
+  "try: \n"
+  "  imp.find_module('xgboost') \n"
+  "  found_xgboost = True \n"
+  "except: \n"
+  "  found_xgboost = False \n"
+  "if found_xgboost:\n"
+  "  import xgboost \n"
+  "else: \n"
+  "  xgb_path = os.path.join('/cvmfs/cms.cern.ch', os.environ['SCRAM_ARCH'] ,'external/py2-pippkgs_depscipy/3.0-njopjo7/lib/python2.7/site-packages') \n"
+  "  if not os.path.isdir(xgb_path): \n"
+  "    raise ValueError('Cannot import xgboost') \n"
+  "  sys.path.insert(0, xgb_path) \n"
+  "  import xgboost as xgb \n"
   "def load(pklfile): \n"
-  "	f = None \n"
-  "	pkldata = None \n"
-  "	try: \n"
-  "		f = open(pklfile,'rb') \n"
-  "	except IOError as e: \n"
-  "		print('Couldnt open or write to file (%s).' % e) \n"
-  "	else: \n"
-  "			try: \n"
-  "				pkldata = pickle.load(f) \n"
-  "			except pickle.UnpicklingError as e: # normal, somewhat expected \n"
-  "			  try: \n"
-  "				  model = pkldata.booster().get_dump() \n" // this only tests load was ok
-  "			  except (AttributeError,  EOFError, ImportError, IndexError) as e: \n"
-  "				  print(traceback.format_exc(e)) \n"
-  "			  except Exception as e: print(traceback.format_exc(e)) \n"
-  "			f.close() \n"
-  "	return pkldata \n");
+  "  f = None \n"
+  "  pkldata = None \n"
+  "  try: \n"
+  "    f = open(pklfile,'rb') \n"
+  "  except IOError as e: \n"
+  "    print('Couldnt open or write to file (%s).' % e) \n"
+  "  else: \n"
+  "      try: \n"
+  "        pkldata = pickle.load(f) \n"
+  "      except pickle.UnpicklingError as e: # normal, somewhat expected \n"
+  "        try: \n"
+  "          model = pkldata.booster().get_dump() \n" // this only tests load was ok
+  "        except (AttributeError,  EOFError, ImportError, IndexError) as e: \n"
+  "          print(traceback.format_exc(e)) \n"
+  "        except Exception as e: print(traceback.format_exc(e)) \n"
+  "      f.close() \n"
+  "  return pkldata \n");
   PyObject* func = PyObject_GetAttrString(moduleMain_, "load");
   PyObject* args = PyTuple_Pack(1, PyString_FromString(mvaFileName_.data()));
   pkldata_ = PyObject_CallObject(func, args);
@@ -56,14 +66,14 @@ XGBInterface::XGBInterface(const std::string& mvaFileName, const std::vector<std
   "from itertools import izip \n"
   "from collections import OrderedDict \n"
   "def evaluate(vec, vec2, pkldata): \n"
-  "	new_dict = OrderedDict(izip(vec2,vec)) \n"
-  "	data = pandas.DataFrame(columns = list(new_dict.keys())) \n"
-  "	data=data.append(new_dict, ignore_index = True) \n"
-  "	result=-20 \n"
-  "	try: proba = pkldata.predict_proba(data[data.columns.values.tolist()].values  ) \n"
-  "	except : print('Oops!',sys.exc_info()[0],'occured.') \n"
-  "	else: result = proba[:,1][0] \n"
-  "	return result \n");
+  "  new_dict = OrderedDict(izip(vec2,vec)) \n"
+  "  data = pandas.DataFrame(columns = list(new_dict.keys())) \n"
+  "  data=data.append(new_dict, ignore_index = True) \n"
+  "  result=-20 \n"
+  "  try: proba = pkldata.predict_proba(data[data.columns.values.tolist()].values  ) \n"
+  "  except : print('Oops!',sys.exc_info()[0],'occured.') \n"
+  "  else: result = proba[:,1][0] \n"
+  "  return result \n");
 }
 
 XGBInterface::~XGBInterface()
@@ -79,8 +89,8 @@ namespace
     for ( unsigned int i = 0; i < data.size(); i++ ) {
       PyObject* num = PyFloat_FromDouble((double)data[i]);
       if ( !num ) {
-	Py_DECREF(tuple);
-	throw cms::Exception("vectorToTuple_Float") << "Unable to allocate memory for Python tuple !!\n";
+  Py_DECREF(tuple);
+  throw cms::Exception("vectorToTuple_Float") << "Unable to allocate memory for Python tuple !!\n";
       }
       PyTuple_SET_ITEM(tuple, i, num);
     }
@@ -94,8 +104,8 @@ namespace
     for (unsigned int i = 0; i < data.size(); i++ ) {
       PyObject* num = PyString_FromString((char*)data[i].c_str());
       if ( !num ) {
-	Py_DECREF(tuple);
-	throw cms::Exception("vectorToTuple_String") << "Unable to allocate memory for Python tuple !!\n";
+  Py_DECREF(tuple);
+  throw cms::Exception("vectorToTuple_String") << "Unable to allocate memory for Python tuple !!\n";
       }
       PyTuple_SET_ITEM(tuple, i, num);
     }
@@ -112,14 +122,14 @@ XGBInterface::operator()(const std::map<std::string, double>& mvaInputs) const
   std::vector<std::basic_string<char>> vectorNamesVec;
 
   for ( std::vector<std::string>::const_iterator mvaInputVariable = mvaInputVariables_.begin();
-	mvaInputVariable != mvaInputVariables_.end(); ++mvaInputVariable ) {
+  mvaInputVariable != mvaInputVariables_.end(); ++mvaInputVariable ) {
     if ( mvaInputs.find(*mvaInputVariable) != mvaInputs.end() ) {
       //std::cout << " " << (*mvaInputVariable) << " = " << mvaInputs.find(*mvaInputVariable)->second << std::endl;
       vectorValuesVec.push_back(mvaInputs.find(*mvaInputVariable)->second);
       vectorNamesVec.push_back(*mvaInputVariable);
     } else {
       throw cms::Exception("XGBInterface::operator()")
-	<< "Missing value for MVA input variable = '" << (*mvaInputVariable) << "' !!\n";
+  << "Missing value for MVA input variable = '" << (*mvaInputVariable) << "' !!\n";
     }
   }
   PyObject* func = PyObject_GetAttrString(moduleMain_, "evaluate");
