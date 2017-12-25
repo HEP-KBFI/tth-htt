@@ -41,7 +41,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMEtWriter.h" // RecoMEtWriter
 #include "tthAnalysis/HiggsToTauTau/interface/EventInfoWriter.h" // EventInfoWriter
 #include "tthAnalysis/HiggsToTauTau/interface/MEMPermutationWriter.h" // MEMPermutationWriter::get_maxPermutations_addMEM_pattern()
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // selectObjects(), get_selection(), get_era(), kEra_2015, kEra_2016, kLoose, kFakeable, kTight
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // selectObjects(), get_selection(), get_era(), kLoose, kFakeable, kTight
 #include "tthAnalysis/HiggsToTauTau/interface/memAuxFunctions.h" // get_addMEM_systematics(), get_memObjectBranchName(), get_memPermutationBranchName()
 #include "tthAnalysis/HiggsToTauTau/interface/cutFlowTable.h" // cutFlowTableType
 #include "tthAnalysis/HiggsToTauTau/interface/histogramAuxFunctions.h" // createSubdirectory_recursively()
