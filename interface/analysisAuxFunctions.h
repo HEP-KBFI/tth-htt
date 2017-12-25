@@ -21,7 +21,7 @@ const double met_coef =  0.00397;
 const double mht_coef =  0.00265;
 
 //--- declare data-taking periods
-enum { kEra_2015, kEra_2016, kEra_2017 };
+enum { kEra_2017 };
 
 //--- declare systematic uncertainties on data/MC corrections for b-tagging efficiency and mistag rates
 enum { kBtag_central, 

@@ -2,7 +2,7 @@
 
 #include "FWCore/Utilities/interface/Exception.h"
 
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2015, kEra_2016
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2017
 
 #include <TString.h> // Form
 

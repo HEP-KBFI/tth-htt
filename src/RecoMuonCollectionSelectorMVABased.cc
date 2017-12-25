@@ -1,6 +1,6 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorMVABased.h" // RecoMuonSelectorMVABased
 
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2015, kEra_2016
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2017
 
 #include <FWCore/Utilities/interface/Exception.h> // cms::Exception
 
@@ -13,11 +13,7 @@ RecoMuonSelectorMVABased::RecoMuonSelectorMVABased(int era, int index, bool debu
 {
   switch(era_)
   {
-    case kEra_2015:
-      max_jetBtagCSV_ = 0.89;
-      apply_tightCharge_ = true;
-      break;
-    case kEra_2016:
+    case kEra_2017:
       max_jetBtagCSV_ = 0.80;
       apply_tightCharge_ = false; // no thight charge requirement in 2016 sync?
       break;

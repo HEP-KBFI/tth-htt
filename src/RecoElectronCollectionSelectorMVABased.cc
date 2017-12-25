@@ -1,6 +1,6 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorMVABased.h" // RecoElectronSelectorMVABased
 
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2015, kEra_2016
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2017
 
 #include <FWCore/Utilities/interface/Exception.h> // cms::Exception
 
@@ -19,13 +19,7 @@ RecoElectronSelectorMVABased::RecoElectronSelectorMVABased(int era, int index, b
 {
   switch(era_)
   {
-    case kEra_2015:
-      max_nLostHits_ = 0;
-      max_jetBtagCSV_ = 0.89;
-      apply_tightCharge_ = true;
-      apply_conversionVeto_ = true;
-      break;
-    case kEra_2016:
+    case kEra_2017:
       max_nLostHits_ = 1;
       max_jetBtagCSV_ = 0.80;
       apply_tightCharge_ = false;

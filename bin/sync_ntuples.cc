@@ -106,8 +106,7 @@ int main(int argc, char* argv[])
 //--- declare data-taking period
   const int era = [&era_string, &argv]() -> int
   {
-    if     (era_string == "2015") return kEra_2015;
-    else if(era_string == "2016") return kEra_2016;
+    if(era_string == "2017") return kEra_2017;
     else
       throw cms::Exception(argv[0])
         << "Invalid configuration parameter 'era' = " << era_string << '\n';
@@ -306,8 +305,7 @@ int main(int argc, char* argv[])
   std::string jet_btagWeight_branch;
   bool isMC = true; //cfg_analyze.getParameter<bool>("isMC");
   if ( isMC ) {
-    if      ( era == kEra_2015 ) jet_btagWeight_branch = "Jet_bTagWeight";
-    else if ( era == kEra_2016 ) jet_btagWeight_branch = "Jet_btagWeightCSV";
+    if ( era == kEra_2017 ) jet_btagWeight_branch = "Jet_btagSF_csvv2";
     else assert(0);
   }
   
@@ -590,9 +588,7 @@ int main(int argc, char* argv[])
     std::vector<const RecoJet*> jet_ptrs = convert_to_ptrs(jets);
     std::vector<const RecoJet*> cleanedJets = [&]()
     {
-      if     (era == kEra_2015)
-        return jetCleaner(jet_ptrs, selMuons, selElectrons, selHadTaus);
-      else if(era == kEra_2016)
+      if(era == kEra_2017)
         return jetCleaner(jet_ptrs, fakeableMuons, fakeableElectrons, selHadTaus);
       else
         throw cms::Exception(argv[0]) << "Invalid era = " << era;
@@ -636,25 +632,19 @@ int main(int argc, char* argv[])
     
     const RecoLepton * const lepton_lead = [&]()
     {
-      if(era == kEra_2015 && preselLeptons.size() > 0)
-        return preselLeptons[0];
-      if(era == kEra_2016 && fakeableLeptons.size() > 0)
+      if(era == kEra_2017 && fakeableLeptons.size() > 0)
         return fakeableLeptons[0];
       return static_cast<const RecoLepton * const>(0);
     }();
     const RecoLepton * const lepton_sublead = [&]()
     {
-      if(era == kEra_2015 && preselLeptons.size() > 1)
-        return preselLeptons[1];
-      if(era == kEra_2016 && fakeableLeptons.size() > 1)
+      if(era == kEra_2017 && fakeableLeptons.size() > 1)
         return fakeableLeptons[1];
       return static_cast<const RecoLepton * const>(0);
     }();
     const RecoLepton * const lepton3 = [&]()
     {
-      if(era == kEra_2015 && preselLeptons.size() > 2)
-        return preselLeptons[2];
-      if(era == kEra_2016 && fakeableLeptons.size() > 2)
+      if(era == kEra_2017 && fakeableLeptons.size() > 2)
         return fakeableLeptons[2];
       return static_cast<const RecoLepton * const>(0);
     }();
@@ -795,14 +785,7 @@ int main(int argc, char* argv[])
 //--- compute integer discriminant based on both BDT outputs,
 //    as defined in Table 16 () of AN-2015/321 (AN-2016/211) for analysis of 2015 (2016) data
     Double_t mvaDiscr_2lss = -1;
-    if ( era == kEra_2015 ) {
-      if      ( mvaOutput_2lss_ttbar > +0.3 && mvaOutput_2lss_ttV >  -0.1 ) mvaDiscr_2lss = 6.;
-      else if ( mvaOutput_2lss_ttbar > +0.3 && mvaOutput_2lss_ttV <= -0.1 ) mvaDiscr_2lss = 5.;
-      else if ( mvaOutput_2lss_ttbar > -0.2 && mvaOutput_2lss_ttV >  -0.1 ) mvaDiscr_2lss = 4.;
-      else if ( mvaOutput_2lss_ttbar > -0.2 && mvaOutput_2lss_ttV <= -0.1 ) mvaDiscr_2lss = 3.;
-      else if (                                mvaOutput_2lss_ttV >  -0.1 ) mvaDiscr_2lss = 2.;
-      else                                                                  mvaDiscr_2lss = 1.;
-    } else if ( era == kEra_2016 ) {
+    if ( era == kEra_2017 ) {
       if      ( mvaOutput_2lss_ttbar > +0.4 && mvaOutput_2lss_ttV >  +0.4 ) mvaDiscr_2lss = 7.;
       else if ( mvaOutput_2lss_ttbar > +0.4 && mvaOutput_2lss_ttV >  +0.1 ) mvaDiscr_2lss = 6.;
       else if ( mvaOutput_2lss_ttbar > +0.4 && mvaOutput_2lss_ttV <= +0.1 ) mvaDiscr_2lss = 5.;

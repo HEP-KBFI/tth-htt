@@ -118,8 +118,7 @@ int main(int argc, char* argv[])
 
   std::string era_string = cfg_analyze.getParameter<std::string>("era");
   int era = -1;
-  if      ( era_string == "2015" ) era = kEra_2015;
-  else if ( era_string == "2016" ) era = kEra_2016;
+  if ( era_string == "2017" ) era = kEra_2017;
   else throw cms::Exception("analyze_Zctrl") 
     << "Invalid Configuration parameter 'era' = " << era_string << " !!\n";
 
@@ -152,8 +151,7 @@ int main(int argc, char* argv[])
 
   std::string jet_btagWeight_branch;
   if ( isMC ) {
-    if      ( era == kEra_2015 ) jet_btagWeight_branch = "Jet_bTagWeight";
-    else if ( era == kEra_2016 ) jet_btagWeight_branch = "Jet_btagWeightCSV";
+    if ( era == kEra_2017 ) jet_btagWeight_branch = "Jet_btagSF_csvv2";
     else assert(0);
   }
 

@@ -1,5 +1,5 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorLoose.h" // RecoMuonSelectorLoose
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2015, kEra_2016
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2017
 #include <cmath> // fabs
 
 RecoMuonSelectorLoose::RecoMuonSelectorLoose(int era, int index, bool debug, bool set_selection_flags)

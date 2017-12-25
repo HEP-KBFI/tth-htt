@@ -41,7 +41,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RunLumiEventSelector.h" // RunLumiEventSelector
 #include "tthAnalysis/HiggsToTauTau/interface/MVAInputVarHistManager.h" // MVAInputVarHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/CutFlowTableHistManager_gen.h" // CutFlowTableHistManager_gen
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2015, kEra_2016
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2017
 #include "tthAnalysis/HiggsToTauTau/interface/histogramAuxFunctions.h" // createSubdirectory_recursively
 #include "tthAnalysis/HiggsToTauTau/interface/cutFlowTable.h" // cutFlowTableType
 #include "tthAnalysis/HiggsToTauTau/interface/NtupleFillerBDT.h" // NtupleFillerBDT
@@ -159,8 +159,7 @@ int main(int argc, char* argv[])
 
   std::string era_string = cfg_analyze.getParameter<std::string>("era");
   int era = -1;
-  if      ( era_string == "2015" ) era = kEra_2015;
-  else if ( era_string == "2016" ) era = kEra_2016;
+  if ( era_string == "2017" ) era = kEra_2017;
   else throw cms::Exception("analyze_hadTopTagger")
     << "Invalid Configuration parameter 'era' = " << era_string << " !!\n";
 

@@ -13,8 +13,7 @@ RecoElectronSelectorCutBased::RecoElectronSelectorCutBased(int era, int index, b
   , max_nLostHits_(0)
 {
   /*
-  if      ( era_ == kEra_2015 ) max_jetBtagCSV_ = 0.89;
-  else if ( era_ == kEra_2016 ) max_jetBtagCSV_ = 0.80;
+  if ( era_ == kEra_2017 ) max_jetBtagCSV_ = 0.80;
   else assert(0);
    */
   assert(min_mvaRawPOG_vlow_.size() == 3);

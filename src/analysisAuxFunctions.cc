@@ -36,8 +36,7 @@ get_selection(const std::string & selectionString)
 int
 get_era(const std::string & eraString)
 {
-  if(eraString == "2015") return kEra_2015;
-  if(eraString == "2016") return kEra_2016;
+  if(eraString == "2017") return kEra_2017;
   std::cerr  << "Invalid Configuration parameter 'era' = " << eraString << " !!\n";
   throw 1;
 }
