@@ -121,10 +121,11 @@ elif mode == "forBDTtraining_beforeAddMEM":
 elif mode == "forBDTtraining_afterAddMEM":
 #  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_2lss1tau_addMEM import samples_2017
   changeBranchNames        = True
-  MEMbranch                = 'memObjects_2lss_1tau_lepLoose_tauTight_dR03mvaLoose'
+  MEMbranch                = 'memObjects_2lss_1tau_lepLoose_tauTight_dR03mvaMedium'
   hadTau_selection         = "dR03mvaMedium"
   hadTau_selection_relaxed = "dR03mvaMedium"
   applyFakeRateWeights     =  "2lepton"
+  max_files_per_job    = 10
 else:
   raise ValueError("Invalid Configuration parameter 'mode' = %s !!" % mode)
 

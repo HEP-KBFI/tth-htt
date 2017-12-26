@@ -69,7 +69,7 @@ if bdt_training:
   else:
     raise ValueError("Invalid era for FastSim samples: '%s'" % era)
   leptonSelection = "Loose"
-  hadTauSelection = "Tight|dR03mvaLoose"
+  hadTauSelection = "Tight|dR03mvaMedium"
 else:
   if era == "2017":
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_prodNtuples import samples_2017 as samples

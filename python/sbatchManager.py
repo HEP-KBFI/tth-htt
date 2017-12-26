@@ -373,18 +373,11 @@ class sbatchManager:
             'log_exec' : executable_log_file,
         }
 
-    def get_job_dir(self, use_home = False):
+    def get_job_dir(self, use_home = True):
         if use_home:
             prefix = os.path.join('/home', getpass.getuser(), 'jobs')
         else:
             prefix = os.path.join('/scratch2', getpass.getuser())
-        if not os.path.exists(prefix):
-            logging.info("Directory '%s' does not yet exist, creating it !!" % prefix)
-            try:
-                os.makedirs(prefix)
-            except IOError as err:
-                logging.error("Could not created directory '%s' because: %s" % (prefix, err))
-                sys.exit(1)
         job_dir = os.path.join(
             prefix, "%s_%s" % (self.analysisName, datetime.date.today().isoformat()),
         )
