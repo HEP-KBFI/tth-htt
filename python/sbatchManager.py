@@ -367,14 +367,11 @@ class sbatchManager:
             'log_exec' : executable_log_file,
         }
 
-    def get_job_dir(self, use_home = False):
+    def get_job_dir(self, use_home = True):
         if use_home:
             prefix = os.path.join('/home', getpass.getuser(), 'jobs')
         else:
-            prefix = os.path.join('/scratch', getpass.getuser())
-        if not use_home and not os.path.exists(prefix):
-            logging.info("Directory '%s' does not yet exist, creating it !!" % prefix)
-            run_cmd(command_create_scratchDir)
+            prefix = os.path.join('/scratch2', getpass.getuser())
         job_dir = os.path.join(
             prefix, "%s_%s" % (self.analysisName, datetime.date.today().isoformat()),
         )
