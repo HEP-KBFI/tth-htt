@@ -55,7 +55,7 @@ void RecoMuonWriter::setBranchNames()
 void RecoMuonWriter::setBranches(TTree *tree)
 {
   leptonWriter_->setBranches(tree);
-  int max_nLeptons = leptonWriter_->max_nLeptons_;
+  unsigned int max_nLeptons = leptonWriter_->max_nLeptons_;
   looseIdPOG_ = new Bool_t[max_nLeptons];
   setBranch(tree, looseIdPOG_, branchName_looseIdPOG_, branchName_num_);
   mediumIdPOG_ = new Bool_t[max_nLeptons];

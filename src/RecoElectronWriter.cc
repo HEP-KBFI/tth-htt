@@ -72,7 +72,7 @@ void RecoElectronWriter::setBranchNames()
 void RecoElectronWriter::setBranches(TTree *tree)
 {
   leptonWriter_->setBranches(tree);
-  int max_nLeptons = leptonWriter_->max_nLeptons_;
+  unsigned int max_nLeptons = leptonWriter_->max_nLeptons_;
   mvaRawPOG_GP_ = new Float_t[max_nLeptons];
   setBranch(tree, mvaRawPOG_GP_, branchName_mvaRawPOG_GP_, branchName_num_);
   mvaRawPOG_HZZ_ = new Float_t[max_nLeptons];

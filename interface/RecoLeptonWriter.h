@@ -92,7 +92,7 @@ class RecoLeptonWriter
    */
   void setBranchNames();
 
-  const int max_nLeptons_;
+  const unsigned int max_nLeptons_;
   std::string branchName_num_;
   std::string branchName_obj_;
 

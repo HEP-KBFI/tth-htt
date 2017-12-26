@@ -31,7 +31,7 @@ class GenParticleWriter
    */
   void setBranchNames();
 
-  const int max_nParticles_;
+  const unsigned int max_nParticles_;
   std::string branchName_num_;
   std::string branchName_obj_;
 

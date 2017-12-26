@@ -96,7 +96,7 @@ void RecoElectronReader::setBranchAddresses(TTree *tree)
 {
   if ( instances_[branchName_obj_] == this ) {
     leptonReader_->setBranchAddresses(tree);
-    int max_nLeptons = leptonReader_->max_nLeptons_;
+    unsigned int max_nLeptons = leptonReader_->max_nLeptons_;
     mvaRawPOG_GP_ = new Float_t[max_nLeptons];
     tree->SetBranchAddress(branchName_mvaRawPOG_GP_.data(), mvaRawPOG_GP_);
     mvaRawPOG_HZZ_ = new Float_t[max_nLeptons];
@@ -127,7 +127,7 @@ std::vector<RecoElectron> RecoElectronReader::read() const
   RecoElectronReader* gElectronReader = instances_[branchName_obj_];
   assert(gElectronReader);
   std::vector<RecoElectron> electrons;
-  Int_t nLeptons = gLeptonReader->nLeptons_;
+  UInt_t nLeptons = gLeptonReader->nLeptons_;
 
   if ( nLeptons > leptonReader_->max_nLeptons_ ) {
     throw cms::Exception("RecoElectronReader")
@@ -135,7 +135,7 @@ std::vector<RecoElectron> RecoElectronReader::read() const
   }
   if ( nLeptons > 0 ) {
     electrons.reserve(nLeptons);
-    for ( Int_t idxLepton = 0; idxLepton < nLeptons; ++idxLepton ) {
+    for ( UInt_t idxLepton = 0; idxLepton < nLeptons; ++idxLepton ) {
       if ( std::abs(gLeptonReader->pdgId_[idxLepton]) == 11 ) {
         electrons.push_back(RecoElectron({
           gLeptonReader->pt_[idxLepton],

@@ -70,7 +70,7 @@ void RecoMuonReader::setBranchAddresses(TTree *tree)
 {
   if ( instances_[branchName_obj_] == this ) {
     leptonReader_->setBranchAddresses(tree);
-    int max_nLeptons = leptonReader_->max_nLeptons_;
+    unsigned int max_nLeptons = leptonReader_->max_nLeptons_;
     mediumIdPOG_ = new Bool_t[max_nLeptons];
     tree->SetBranchAddress(branchName_mediumIdPOG_.data(), mediumIdPOG_);
     segmentCompatibility_ = new Float_t[max_nLeptons];
@@ -85,7 +85,7 @@ std::vector<RecoMuon> RecoMuonReader::read() const
   RecoMuonReader* gMuonReader = instances_[branchName_obj_];
   assert(gMuonReader);
   std::vector<RecoMuon> muons;
-  Int_t nLeptons = gLeptonReader->nLeptons_;
+  UInt_t nLeptons = gLeptonReader->nLeptons_;
   
   if ( nLeptons > leptonReader_->max_nLeptons_ ) {
     throw cms::Exception("RecoMuonReader")
@@ -93,7 +93,7 @@ std::vector<RecoMuon> RecoMuonReader::read() const
   }
   if ( nLeptons > 0 ) {
     muons.reserve(nLeptons);
-    for ( Int_t idxLepton = 0; idxLepton < nLeptons; ++idxLepton ) {
+    for ( UInt_t idxLepton = 0; idxLepton < nLeptons; ++idxLepton ) {
       if ( std::abs(gLeptonReader->pdgId_[idxLepton]) == 13 ) {
         muons.push_back(RecoMuon({
           gLeptonReader->pt_[idxLepton],
