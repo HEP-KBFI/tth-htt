@@ -280,6 +280,10 @@ class analyzeConfig:
         lines.append("process.addBackgrounds.categories = cms.vstring(%s)" % jobOptions['categories'])
         lines.append("process.addBackgrounds.processes_input = cms.vstring(%s)" % jobOptions['processes_input'])
         lines.append("process.addBackgrounds.process_output = cms.string('%s')" % jobOptions['process_output'])
+        if 'histogramsToCopy' in jobOptions.keys():
+            lines.append("process.addBackgrounds.histogramsToCopy = cms.vstring(%s)" % jobOptions['histogramsToCopy'])
+        if 'sysShifts' in jobOptions.keys():
+            lines.append("process.addBackgrounds.sysShifts = cms.vstring(%s)" % jobOptions['sysShifts'])
         create_cfg(self.cfgFile_addBackgrounds, jobOptions['cfgFile_modified'], lines)
 
     def createCfg_addFakes(self, jobOptions):

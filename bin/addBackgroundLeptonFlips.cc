@@ -17,6 +17,7 @@
 #include "DataFormats/FWLite/interface/OutputFiles.h"
 
 #include "tthAnalysis/HiggsToTauTau/interface/histogramAuxFunctions.h"
+#include "tthAnalysis/HiggsToTauTau/interface/addBackgroundsAuxFunctions.h" // getSubdirectories
 
 #include <TFile.h>
 #include <TH1.h>
@@ -50,20 +51,6 @@ namespace
     std::string signal_;
     std::string sideband_;
   };
-
-  std::vector<TDirectory*> getSubdirectories(TDirectory* dir)
-  {
-    std::vector<TDirectory*> subdirectories;
-    TList* list = dir->GetListOfKeys();
-    TIter next(list);
-    TKey* key = 0;
-    while ( (key = dynamic_cast<TKey*>(next())) ) {
-      TObject* object = key->ReadObj();
-      TDirectory* subdirectory = dynamic_cast<TDirectory*>(object);
-      if ( subdirectory ) subdirectories.push_back(subdirectory);
-    }
-    return subdirectories;
-  }
 }
 
 int main(int argc, char* argv[]) 
@@ -128,15 +115,15 @@ int main(int argc, char* argv[])
     TDirectory* dir_sideband = getDirectory(inputFile, (*category)->sideband_, true);
     assert(dir_sideband); 	
 
-    std::vector<TDirectory*> subdirs_sideband_level1 = getSubdirectories(dir_sideband);
-    for ( std::vector<TDirectory*>::iterator subdir_sideband_level1 = subdirs_sideband_level1.begin();
+    std::vector<const TDirectory*> subdirs_sideband_level1 = getSubdirectories(dir_sideband);
+    for ( std::vector<const TDirectory*>::iterator subdir_sideband_level1 = subdirs_sideband_level1.begin();
 	  subdir_sideband_level1 != subdirs_sideband_level1.end(); ++subdir_sideband_level1 ) {
-      std::vector<TDirectory*> subdirs_sideband_level2 = getSubdirectories(*subdir_sideband_level1);
-      for ( std::vector<TDirectory*>::iterator subdir_sideband_level2 = subdirs_sideband_level2.begin();
+      std::vector<const TDirectory*> subdirs_sideband_level2 = getSubdirectories(*subdir_sideband_level1);
+      for ( std::vector<const TDirectory*>::iterator subdir_sideband_level2 = subdirs_sideband_level2.begin();
 	    subdir_sideband_level2 != subdirs_sideband_level2.end(); ++subdir_sideband_level2 ) {
 	std::cout << " processing directory = " << Form("%s/%s", (*subdir_sideband_level1)->GetName(), (*subdir_sideband_level2)->GetName()) << std::endl;
 	
-        TDirectory* dirData = dynamic_cast<TDirectory*>((*subdir_sideband_level2)->Get(processData.data()));
+        const TDirectory* dirData = dynamic_cast<TDirectory*>((const_cast<TDirectory*>(*subdir_sideband_level2))->Get(processData.data()));
         if ( !dirData ) {
 	  std::cout << "Failed to find subdirectory = " << processData << " within directory = " << (*subdir_sideband_level2)->GetName() << " --> skipping !!";
 	  continue;

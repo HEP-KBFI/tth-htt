@@ -365,19 +365,40 @@ TH1* getHistogram(const TDirectory* dir, const std::string& process, const std::
   return histogram;
 }
 
-TDirectory* createSubdirectory(TDirectory* dir, const std::string& subdirName)
+TDirectory* createSubdirectory(TDirectory* dir, const std::string& subdirName, bool verbose)
 {
+  if(verbose)
+  {
+    std::cout << "<createSubdirectory>:" << std::endl;
+    std::cout << " dir = " << dir << ": name = '" << dir->GetName() << "'" << std::endl;
+    std::cout << " subdirName = '" << subdirName << "'" << std::endl;
+  }
   dir->cd();
   if ( !dir->Get(subdirName.data()) ) {
+    if(verbose)
+    {
+      std::cout << "--> creating subdir = '" << subdirName << "' !!" << std::endl;
+    }
     dir->mkdir(subdirName.data());
+  } else {
+    if(verbose)
+    {
+      std::cout << "--> subdir = '" << subdirName << "' already exists --> skipping !!" << std::endl;
+    }
   }
   TDirectory* subdir = dynamic_cast<TDirectory*>(dir->Get(subdirName.data()));
   assert(subdir);
   return subdir;
 }
 
-TDirectory* createSubdirectory_recursively(TFileDirectory& dir, const std::string& fullSubdirName)
+TDirectory* createSubdirectory_recursively(TFileDirectory& dir, const std::string& fullSubdirName, bool verbose)
 {
+  if(verbose)
+  {
+    std::cout << "<createSubdirectory_recursively>:" << std::endl;
+    std::cout << " dir = " << &dir << ": name = '" << dir.getBareDirectory()->GetName() << "'" << std::endl;
+    std::cout << " fullSubdirName = '" << fullSubdirName << "'" << std::endl;
+  }
   TString fullSubdirName_tstring = fullSubdirName.data();
   TObjArray* subdirNames = fullSubdirName_tstring.Tokenize("/");
   int numSubdirectories = subdirNames->GetEntries();
@@ -385,7 +406,7 @@ TDirectory* createSubdirectory_recursively(TFileDirectory& dir, const std::strin
   for ( int iSubdirectory = 0; iSubdirectory < numSubdirectories; ++iSubdirectory ) {
     const TObjString* subdirName = dynamic_cast<TObjString*>(subdirNames->At(iSubdirectory));
     assert(subdirName);
-    TDirectory* subdir = createSubdirectory(parent, subdirName->GetString().Data());
+    TDirectory* subdir = createSubdirectory(parent, subdirName->GetString().Data(), verbose);
     parent = subdir;
   }
   return parent;

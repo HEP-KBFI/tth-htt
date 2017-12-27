@@ -17,6 +17,7 @@
 #include "DataFormats/FWLite/interface/OutputFiles.h"
 
 #include "tthAnalysis/HiggsToTauTau/interface/histogramAuxFunctions.h"
+#include "tthAnalysis/HiggsToTauTau/interface/addBackgroundsAuxFunctions.h" // getSubdirectories, getSubdirectoryNames
 
 #include <TFile.h>
 #include <TH1.h>
@@ -37,34 +38,6 @@
 #include <assert.h>
 
 typedef std::vector<std::string> vstring;
-
-namespace
-{
-  std::vector<TDirectory*> getSubdirectories(TDirectory* dir)
-  {
-    std::vector<TDirectory*> subdirectories;
-    TList* list = dir->GetListOfKeys();
-    TIter next(list);
-    TKey* key = 0;
-    while ( (key = dynamic_cast<TKey*>(next())) ) {
-      TObject* object = key->ReadObj();
-      TDirectory* subdirectory = dynamic_cast<TDirectory*>(object);
-      if ( subdirectory ) subdirectories.push_back(subdirectory);
-    }
-    return subdirectories;
-  }
-
-  vstring getSubdirectoryNames(TDirectory* dir)
-  {
-    std::vector<TDirectory*> subdirectories = getSubdirectories(dir);
-    vstring subdirectoryNames;
-    for ( std::vector<TDirectory*>::const_iterator subdirectory = subdirectories.begin();
-	  subdirectory != subdirectories.end(); ++subdirectory ) {
-      subdirectoryNames.push_back((*subdirectory)->GetName());
-    }
-    return subdirectoryNames;
-  }
-}
 
 int main(int argc, char* argv[]) 
 {
@@ -119,19 +92,19 @@ int main(int argc, char* argv[])
 
     std::cout << "processing category = " << (*category) << std::endl;
 	
-    std::vector<TDirectory*> subdirs_level1 = getSubdirectories(dir);
-    for ( std::vector<TDirectory*>::iterator subdir_level1 = subdirs_level1.begin();
+    std::vector<const TDirectory*> subdirs_level1 = getSubdirectories(dir);
+    for ( std::vector<const TDirectory*>::iterator subdir_level1 = subdirs_level1.begin();
 	  subdir_level1 != subdirs_level1.end(); ++subdir_level1 ) {
 
-      std::vector<TDirectory*> subdirs_level2 = getSubdirectories(*subdir_level1);
-      for ( std::vector<TDirectory*>::iterator subdir_level2 = subdirs_level2.begin();
+      std::vector<const TDirectory*> subdirs_level2 = getSubdirectories(*subdir_level1);
+      for ( std::vector<const TDirectory*>::iterator subdir_level2 = subdirs_level2.begin();
 	  subdir_level2 != subdirs_level2.end(); ++subdir_level2 ) {
 
 	std::cout << " processing directory = " << Form("%s/%s", (*subdir_level1)->GetName(), (*subdir_level2)->GetName()) << std::endl;
 
 	std::string the_process_input = processes_input.front();
 
-        TDirectory* dir_input = dynamic_cast<TDirectory*>((*subdir_level2)->Get(the_process_input.data()));
+        TDirectory* dir_input = dynamic_cast<TDirectory*>((const_cast<TDirectory*>(*subdir_level2))->Get(the_process_input.data()));
         if ( !dir_input ) {
           if ( the_process_input.find("ttH_htt") != std::string::npos ||
                the_process_input.find("ttH_hww") != std::string::npos ||

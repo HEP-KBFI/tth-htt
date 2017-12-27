@@ -16,6 +16,7 @@
 #include "DataFormats/FWLite/interface/OutputFiles.h"
 
 #include "tthAnalysis/HiggsToTauTau/interface/histogramAuxFunctions.h"
+#include "tthAnalysis/HiggsToTauTau/interface/addBackgroundsAuxFunctions.h" // getSubdirectories
 
 #include <TFile.h>
 #include <TH1.h>
@@ -99,10 +100,6 @@ void makeBinContentsPositive_LeptonFakeRate(TH1* histogram, TH1* histogram_data,
   }
 }
 
-
-
-
-
 namespace
 {
   struct categoryEntryType
@@ -118,22 +115,7 @@ namespace
     std::string denominator_;
     std::string lepton_;
   };
-
-  std::vector<TDirectory*> getSubdirectories(const TDirectory* dir)
-  {
-    std::vector<TDirectory*> subdirectories;
-    TList* list = dir->GetListOfKeys();
-    TIter next(list);
-    TKey* key = 0;
-    while ( (key = dynamic_cast<TKey*>(next())) ) {
-      TObject* object = key->ReadObj();
-      TDirectory* subdirectory = dynamic_cast<TDirectory*>(object);
-      if ( subdirectory ) subdirectories.push_back(subdirectory);
-    }
-    return subdirectories;
-  }
 }
-
 
 void processHistogram(const TFile* inputFile, const TDirectory* dir_den, const TDirectory* dir_num, const std::string& processData, const std::string& processLeptonFakes, 
        const vstring& processesToSubtract, const vstring& central_or_shifts, fwlite::TFileService& fs, const std::string& cat_num){
@@ -353,8 +335,8 @@ void processDirectory(const TFile* inputFile, const TDirectory* den, const TDire
  
         processHistogram(inputFile, den, num, processData, processLeptonFakes, processesToSubtract, central_or_shifts, fs, cat_num);   
 
-  std::vector<TDirectory*> subdirs_denominator = getSubdirectories(den);  
-  for(std::vector<TDirectory*>::iterator subdir_denominator = subdirs_denominator.begin();
+  std::vector<const TDirectory*> subdirs_denominator = getSubdirectories(den);  
+  for(std::vector<const TDirectory*>::iterator subdir_denominator = subdirs_denominator.begin();
       subdir_denominator != subdirs_denominator.end(); ++subdir_denominator){ 
       TString subdirName_num = TString((*subdir_denominator)->GetPath()).ReplaceAll("denominator", "numerator"); 
       subdirName_num = subdirName_num.ReplaceAll("fakeable", "tight"); 
