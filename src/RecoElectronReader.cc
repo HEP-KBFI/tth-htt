@@ -10,22 +10,8 @@ std::map<std::string, int> RecoElectronReader::numInstances_;
 std::map<std::string, RecoElectronReader *> RecoElectronReader::instances_;
 
 RecoElectronReader::RecoElectronReader(int era, bool readGenMatching)
-  : branchName_num_("nselLeptons")
-  , branchName_obj_("selLeptons")
-  , leptonReader_(0)
-  , mvaRawPOG_GP_(0)
-  , mvaRawPOG_HZZ_(0)
-  , sigmaEtaEta_(0)
-  , HoE_(0)
-  , deltaEta_(0)
-  , deltaPhi_(0)
-  , OoEminusOoP_(0)
-  , lostHits_(0)
-  , conversionVeto_(0)
-{
-  leptonReader_ = new RecoLeptonReader(branchName_num_, branchName_obj_, readGenMatching);
-  setBranchNames();
-}
+  : RecoElectronReader(era, "nselLeptons", "selLeptons", readGenMatching)
+{}
 
 RecoElectronReader::RecoElectronReader(int era, const std::string& branchName_num, const std::string& branchName_obj, bool readGenMatching)
   : branchName_num_(branchName_num)
@@ -84,9 +70,10 @@ void RecoElectronReader::setBranchNames()
   } else {
     if ( branchName_num_ != instances_[branchName_obj_]->branchName_num_ ) {
       throw cms::Exception("RecoElectronReader")
-	<< "Association between configuration parameters 'branchName_num' and 'branchName_obj' must be unique:"
-	<< " present association 'branchName_num' = " << branchName_num_ << " with 'branchName_obj' = " << branchName_obj_
-	<< " does not match previous association 'branchName_num' = " << instances_[branchName_obj_]->branchName_num_ << " with 'branchName_obj' = " << instances_[branchName_obj_]->branchName_obj_ << " !!\n";
+        << "Association between configuration parameters 'branchName_num' and 'branchName_obj' must be unique:"
+        << " present association 'branchName_num' = " << branchName_num_ << " with 'branchName_obj' = " << branchName_obj_
+        << " does not match previous association 'branchName_num' = " << instances_[branchName_obj_]->branchName_num_
+        << " with 'branchName_obj' = " << instances_[branchName_obj_]->branchName_obj_ << " !!\n";
     }
   }
   ++numInstances_[branchName_obj_];
@@ -145,9 +132,10 @@ std::vector<RecoElectron> RecoElectronReader::read() const
           gLeptonReader->pdgId_[idxLepton],
           gLeptonReader->dxy_[idxLepton],
           gLeptonReader->dz_[idxLepton],
-          gLeptonReader->relIso_[idxLepton],
-          gLeptonReader->chargedHadRelIso03_[idxLepton],
-          gLeptonReader->miniRelIsoCharged_[idxLepton],
+          gLeptonReader->relIso_all_[idxLepton],
+          gLeptonReader->hadRelIso03_chg_[idxLepton],
+          gLeptonReader->absIso_chg_[idxLepton],
+          gLeptonReader->absIso_neu_[idxLepton],
           gLeptonReader->sip3d_[idxLepton],
           gLeptonReader->mvaRawTTH_[idxLepton],
           gLeptonReader->jetPtRatio_[idxLepton],

@@ -10,17 +10,8 @@ std::map<std::string, int> RecoMuonReader::numInstances_;
 std::map<std::string, RecoMuonReader *> RecoMuonReader::instances_;
 
 RecoMuonReader::RecoMuonReader(int era, bool readGenMatching)
-  : era_(era)
-  , use_HIP_mitigation_(true)
-  , branchName_num_("nselLeptons")
-  , branchName_obj_("selLeptons")
-  , leptonReader_(0)
-  , mediumIdPOG_(0)
-  , segmentCompatibility_(0)
-{
-  leptonReader_ = new RecoLeptonReader(branchName_num_, branchName_obj_, readGenMatching);
-  setBranchNames();
-}
+  : RecoMuonReader(era, "nselLeptons", "selLeptons", readGenMatching)
+{}
 
 RecoMuonReader::RecoMuonReader(int era, const std::string& branchName_num, const std::string& branchName_obj, bool readGenMatching)
   : era_(era)
@@ -58,9 +49,10 @@ void RecoMuonReader::setBranchNames()
   } else {
     if (branchName_num_ != instances_[branchName_obj_]->branchName_num_) {
       throw cms::Exception("RecoMuonReader")
-	<< "Association between configuration parameters 'branchName_num' and 'branchName_obj' must be unique:"
-	<< " present association 'branchName_num' = " << branchName_num_ << " with 'branchName_obj' = " << branchName_obj_
-	<< " does not match previous association 'branchName_num' = " << instances_[branchName_obj_]->branchName_num_ << " with 'branchName_obj' = " << instances_[branchName_obj_]->branchName_obj_ << " !!\n";
+        << "Association between configuration parameters 'branchName_num' and 'branchName_obj' must be unique:"
+        << " present association 'branchName_num' = " << branchName_num_ << " with 'branchName_obj' = " << branchName_obj_
+        << " does not match previous association 'branchName_num' = " << instances_[branchName_obj_]->branchName_num_
+        << " with 'branchName_obj' = " << instances_[branchName_obj_]->branchName_obj_ << " !!\n";
     }
   }
   ++numInstances_[branchName_obj_];
@@ -103,9 +95,10 @@ std::vector<RecoMuon> RecoMuonReader::read() const
           gLeptonReader->pdgId_[idxLepton],
           gLeptonReader->dxy_[idxLepton],
           gLeptonReader->dz_[idxLepton],
-          gLeptonReader->relIso_[idxLepton],
-          gLeptonReader->chargedHadRelIso03_[idxLepton],
-          gLeptonReader->miniRelIsoCharged_[idxLepton],
+          gLeptonReader->relIso_all_[idxLepton],
+          gLeptonReader->hadRelIso03_chg_[idxLepton],
+          gLeptonReader->absIso_chg_[idxLepton],
+          gLeptonReader->absIso_neu_[idxLepton],
           gLeptonReader->sip3d_[idxLepton],
           gLeptonReader->mvaRawTTH_[idxLepton],
           gLeptonReader->jetPtRatio_[idxLepton],

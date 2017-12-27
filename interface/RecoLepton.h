@@ -22,7 +22,8 @@ class RecoLepton
 	     Double_t dz,
 	     Double_t relIso,
 	     Double_t chargedHadRelIso03,
-       Double_t miniRelIsoCharged,
+       Double_t miniIsoCharged,
+       Double_t miniIsoNeutral,
 	     Double_t sip3d,
 	     Double_t mvaRawTTH,
 	     Double_t jetPtRatio,
@@ -87,9 +88,7 @@ class RecoLepton
   Double_t relIso() const { return relIso_; }
   Double_t chargedHadRelIso03() const { return chargedHadRelIso03_; }
   Double_t miniIsoCharged() const { return miniIsoCharged_; }
-  Double_t miniRelIsoCharged() const { return miniRelIsoCharged_; }
   Double_t miniIsoNeutral() const { return miniIsoNeutral_; }
-  Double_t miniRelIsoNeutral() const { return miniRelIsoNeutral_; }
   Double_t sip3d() const { return sip3d_; }
   Double_t mvaRawTTH() const { return mvaRawTTH_; }
   Double_t jetPtRatio() const { return jetPtRatio_; }
@@ -119,12 +118,10 @@ class RecoLepton
 //--- common observables for electrons and muons
   Double_t dxy_;                        ///< d_{xy}, distance in the transverse plane w.r.t PV
   Double_t dz_;                         ///< d_{z}, distance on the z axis w.r.t PV
-  Double_t relIso_;                     ///< relative isolation
-  Double_t chargedHadRelIso03_;
-  Double_t miniRelIsoCharged_;          ///< relative charged isolation
-  Double_t miniRelIsoNeutral_;          ///< relative neutral isolation (PU corrected)
-  Double_t miniIsoCharged_;             ///< absolute charged isolation
-  Double_t miniIsoNeutral_;             ///< absolute neutral isolation (PU corrected)
+  Double_t relIso_;                     ///< relative mini-isolation
+  Double_t chargedHadRelIso03_;         ///< PF relative isolation dR=0.3, charged component
+  Double_t miniIsoCharged_;             ///< absolute charged mini-isolation
+  Double_t miniIsoNeutral_;             ///< absolute neutral mini-isolation (PU corrected)
   Double_t sip3d_;                      ///< significance of IP
   Double_t mvaRawTTH_;                  ///< raw output of lepton MVA of ttH multilepton analysis
   Double_t jetPtRatio_;                 ///< ratio of lepton pT to pT of nearby jet

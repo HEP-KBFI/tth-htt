@@ -20,9 +20,10 @@ RecoLeptonWriter::RecoLeptonWriter(const std::string& branchName_num, const std:
   , pdgId_(0)
   , dxy_(0)
   , dz_(0)
-  , relIso_(0)
-  , chargedHadRelIso03_(0)
-  , miniRelIsoCharged_(0)
+  , relIso_all_(0)
+  , hadRelIso03_chg_(0)
+  , absIso_chg_(0)
+  , absIso_neu_(0)
   , sip3d_(0)
   , mvaRawTTH_(0)
   , jetPtRatio_(0)
@@ -48,9 +49,10 @@ RecoLeptonWriter::~RecoLeptonWriter()
   delete pdgId_;
   delete dxy_;
   delete dz_;
-  delete relIso_;
-  delete chargedHadRelIso03_;
-  delete miniRelIsoCharged_;
+  delete relIso_all_;
+  delete hadRelIso03_chg_;
+  delete absIso_chg_;
+  delete absIso_neu_;
   delete sip3d_;
   delete mvaRawTTH_;
   delete jetPtRatio_;
@@ -68,9 +70,10 @@ void RecoLeptonWriter::setBranchNames()
   branchName_pdgId_ = Form("%s_%s", branchName_obj_.data(), "pdgId");
   branchName_dxy_ = Form("%s_%s", branchName_obj_.data(), "dxy");
   branchName_dz_ = Form("%s_%s", branchName_obj_.data(), "dz");
-  branchName_relIso_ = Form("%s_%s", branchName_obj_.data(), "miniPFRelIso_all");
-  branchName_chargedHadRelIso03_ = Form("%s_%s", branchName_obj_.data(), "pfRelIso03_chg");
-  branchName_miniRelIsoCharged_ = Form("%s_%s", branchName_obj_.data(), "miniPFRelIso_chg");
+  branchName_relIso_all_ = Form("%s_%s", branchName_obj_.data(), "miniPFRelIso_all");
+  branchName_hadRelIso03_chg_ = Form("%s_%s", branchName_obj_.data(), "pfRelIso03_chg");
+  branchName_absIso_chg_ = Form("%s_%s", branchName_obj_.data(), "miniPFAbsIso_chg");
+  branchName_absIso_neu_ = Form("%s_%s", branchName_obj_.data(), "miniPFAbsIso_neu");
   branchName_sip3d_ = Form("%s_%s", branchName_obj_.data(), "sip3d");
   branchName_mvaRawTTH_ = Form("%s_%s", branchName_obj_.data(), "mvaTTH");
   branchName_jetPtRatio_ = Form("%s_%s", branchName_obj_.data(), "jetPtRatio");
@@ -99,12 +102,14 @@ void RecoLeptonWriter::setBranches(TTree *tree)
   setBranchVF(tree, branchName_dxy_, branchName_num_, dxy_);
   dz_ = new Float_t[max_nLeptons_];
   setBranchVF(tree, branchName_dz_, branchName_num_, dz_);
-  relIso_ = new Float_t[max_nLeptons_];
-  setBranchVF(tree, branchName_relIso_, branchName_num_, relIso_);
-  chargedHadRelIso03_ = new Float_t[max_nLeptons_];
-  setBranchVF(tree, branchName_chargedHadRelIso03_, branchName_num_, chargedHadRelIso03_);
-  miniRelIsoCharged_ = new Float_t[max_nLeptons_];
-  setBranchVF(tree, branchName_miniRelIsoCharged_, branchName_num_, miniRelIsoCharged_);
+  relIso_all_ = new Float_t[max_nLeptons_];
+  setBranchVF(tree, branchName_relIso_all_, branchName_num_, relIso_all_);
+  hadRelIso03_chg_ = new Float_t[max_nLeptons_];
+  setBranchVF(tree, branchName_hadRelIso03_chg_, branchName_num_, hadRelIso03_chg_);
+  absIso_chg_ = new Float_t[max_nLeptons_];
+  setBranchVF(tree, branchName_absIso_chg_, branchName_num_, absIso_chg_);
+  absIso_neu_ = new Float_t[max_nLeptons_];
+  setBranchVF(tree, branchName_absIso_neu_, branchName_num_, absIso_neu_);
   sip3d_ = new Float_t[max_nLeptons_];
   setBranchVF(tree, branchName_sip3d_, branchName_num_, sip3d_);
   mvaRawTTH_ = new Float_t[max_nLeptons_];

@@ -8,37 +8,8 @@ std::map<std::string, int> RecoLeptonReader::numInstances_;
 std::map<std::string, RecoLeptonReader *> RecoLeptonReader::instances_;
 
 RecoLeptonReader::RecoLeptonReader(bool readGenMatching)
-  : max_nLeptons_(32)
-  , branchName_num_("nselLeptons")
-  , branchName_obj_("selLeptons")
-  , genLeptonReader_(0)
-  , genHadTauReader_(0)
-  , genJetReader_(0)
-  , readGenMatching_(readGenMatching)
-  , pt_(0)
-  , eta_(0)
-  , phi_(0)
-  , mass_(0)
-  , pdgId_(0)
-  , dxy_(0)
-  , dz_(0)
-  , relIso_(0)
-  , chargedHadRelIso03_(0)
-  , miniRelIsoCharged_(0)
-  , sip3d_(0)
-  , mvaRawTTH_(0)
-  , jetPtRatio_(0)
-  , jetBtagCSV_(0)
-  , tightCharge_(0)
-  , charge_(0)
-{
-  if ( readGenMatching_ ) {
-    genLeptonReader_ = new GenLeptonReader(Form("%s_genLepton", branchName_num_.data()), Form("%s_genLepton", branchName_obj_.data()));
-    genHadTauReader_ = new GenHadTauReader(Form("%s_genTau", branchName_num_.data()), Form("%s_genTau", branchName_obj_.data()));
-    genJetReader_ = new GenJetReader(Form("%s_genJet", branchName_num_.data()), Form("%s_genJet", branchName_obj_.data()));
-  }
-  setBranchNames();
-}
+  : RecoLeptonReader("nselLeptons", "selLeptons", readGenMatching)
+{}
 
 RecoLeptonReader::RecoLeptonReader(const std::string& branchName_num, const std::string& branchName_obj, bool readGenMatching)
   : max_nLeptons_(32)
@@ -55,9 +26,10 @@ RecoLeptonReader::RecoLeptonReader(const std::string& branchName_num, const std:
   , pdgId_(0)
   , dxy_(0)
   , dz_(0)
-  , relIso_(0)
-  , chargedHadRelIso03_(0)
-  , miniRelIsoCharged_(0)
+  , relIso_all_(0)
+  , hadRelIso03_chg_(0)
+  , absIso_chg_(0)
+  , absIso_neu_(0)
   , sip3d_(0)
   , mvaRawTTH_(0)
   , jetPtRatio_(0)
@@ -91,9 +63,10 @@ RecoLeptonReader::~RecoLeptonReader()
     delete gInstance->pdgId_;
     delete gInstance->dxy_;
     delete gInstance->dz_;
-    delete gInstance->relIso_;
-    delete gInstance->chargedHadRelIso03_;
-    delete gInstance->miniRelIsoCharged_;
+    delete gInstance->relIso_all_;
+    delete gInstance->hadRelIso03_chg_;
+    delete gInstance->absIso_chg_;
+    delete gInstance->absIso_neu_;
     delete gInstance->sip3d_;
     delete gInstance->mvaRawTTH_;
     delete gInstance->jetPtRatio_;
@@ -114,9 +87,10 @@ void RecoLeptonReader::setBranchNames()
     branchName_pdgId_ = Form("%s_%s", branchName_obj_.data(), "pdgId");
     branchName_dxy_ = Form("%s_%s", branchName_obj_.data(), "dxy");
     branchName_dz_ = Form("%s_%s", branchName_obj_.data(), "dz");
-    branchName_relIso_ = Form("%s_%s", branchName_obj_.data(), "miniPFRelIso_all");
-    branchName_chargedHadRelIso03_ = Form("%s_%s", branchName_obj_.data(), "pfRelIso03_chg");
-    branchName_miniRelIsoCharged_ = Form("%s_%s", branchName_obj_.data(), "miniPFRelIso_chg");
+    branchName_relIso_all_ = Form("%s_%s", branchName_obj_.data(), "miniPFRelIso_all");
+    branchName_hadRelIso03_chg_ = Form("%s_%s", branchName_obj_.data(), "pfRelIso03_chg");
+    branchName_absIso_chg_ = Form("%s_%s", branchName_obj_.data(), "miniPFAbsIso_chg");
+    branchName_absIso_neu_ = Form("%s_%s", branchName_obj_.data(), "miniPFAbsIso_neu");
     branchName_sip3d_ = Form("%s_%s", branchName_obj_.data(), "sip3d");
     branchName_mvaRawTTH_ = Form("%s_%s", branchName_obj_.data(), "mvaTTH");
     branchName_jetPtRatio_ = Form("%s_%s", branchName_obj_.data(), "jetPtRatio");
@@ -127,9 +101,10 @@ void RecoLeptonReader::setBranchNames()
   } else {
     if ( branchName_num_ != instances_[branchName_obj_]->branchName_num_ ) {
       throw cms::Exception("RecoLeptonReader")
-	<< "Association between configuration parameters 'branchName_num' and 'branchName_obj' must be unique:"
-	<< " present association 'branchName_num' = " << branchName_num_ << " with 'branchName_obj' = " << branchName_obj_
-	<< " does not match previous association 'branchName_num' = " << instances_[branchName_obj_]->branchName_num_ << " with 'branchName_obj' = " << instances_[branchName_obj_]->branchName_obj_ << " !!\n";
+        << "Association between configuration parameters 'branchName_num' and 'branchName_obj' must be unique:"
+        << " present association 'branchName_num' = " << branchName_num_ << " with 'branchName_obj' = " << branchName_obj_
+        << " does not match previous association 'branchName_num' = " << instances_[branchName_obj_]->branchName_num_
+        << " with 'branchName_obj' = " << instances_[branchName_obj_]->branchName_obj_ << " !!\n";
     }
   }
   ++numInstances_[branchName_obj_];
@@ -158,12 +133,14 @@ void RecoLeptonReader::setBranchAddresses(TTree *tree)
     tree->SetBranchAddress(branchName_dxy_.data(), dxy_);
     dz_ = new Float_t[max_nLeptons_];
     tree->SetBranchAddress(branchName_dz_.data(), dz_);
-    relIso_ = new Float_t[max_nLeptons_];
-    tree->SetBranchAddress(branchName_relIso_.data(), relIso_);
-    chargedHadRelIso03_ = new Float_t[max_nLeptons_];
-    tree->SetBranchAddress(branchName_chargedHadRelIso03_.data(), chargedHadRelIso03_);
-    miniRelIsoCharged_ = new Float_t[max_nLeptons_];
-    tree->SetBranchAddress(branchName_miniRelIsoCharged_.data(), miniRelIsoCharged_);
+    hadRelIso03_chg_ = new Float_t[max_nLeptons_];
+    tree->SetBranchAddress(branchName_hadRelIso03_chg_.data(), hadRelIso03_chg_);
+    relIso_all_ = new Float_t[max_nLeptons_];
+    tree->SetBranchAddress(branchName_relIso_all_.data(), relIso_all_);
+    absIso_chg_ = new Float_t[max_nLeptons_];
+    tree->SetBranchAddress(branchName_absIso_chg_.data(), absIso_chg_);
+    absIso_neu_ = new Float_t[max_nLeptons_];
+    tree->SetBranchAddress(branchName_absIso_neu_.data(), absIso_neu_);
     sip3d_ = new Float_t[max_nLeptons_];
     tree->SetBranchAddress(branchName_sip3d_.data(), sip3d_);
     mvaRawTTH_ = new Float_t[max_nLeptons_];

@@ -11,7 +11,8 @@ RecoLepton::RecoLepton(Double_t pt,
                        Double_t dz,
                        Double_t relIso,
                        Double_t chargedHadRelIso03,
-                       Double_t miniRelIsoCharged,
+                       Double_t miniIsoCharged,
+                       Double_t miniIsoNeutral,
                        Double_t sip3d,
                        Double_t mvaRawTTH,
                        Double_t jetPtRatio,
@@ -23,10 +24,8 @@ RecoLepton::RecoLepton(Double_t pt,
   , dz_(dz)
   , relIso_(relIso)
   , chargedHadRelIso03_(chargedHadRelIso03)
-  , miniRelIsoCharged_(miniRelIsoCharged)
-  , miniRelIsoNeutral_(relIso_ - miniRelIsoCharged_)
-  , miniIsoCharged_(pt_ * miniRelIsoCharged_)
-  , miniIsoNeutral_(pt_ * miniRelIsoNeutral_)
+  , miniIsoCharged_(miniIsoCharged)
+  , miniIsoNeutral_(miniIsoNeutral)
   , sip3d_(sip3d)
   , mvaRawTTH_(mvaRawTTH)
   , jetPtRatio_(jetPtRatio)
