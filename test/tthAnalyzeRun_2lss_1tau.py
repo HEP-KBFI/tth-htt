@@ -149,6 +149,9 @@ if __name__ == '__main__':
       for nbinsTargetN in range(0,len(nbinsTarget)) :
         hist_HTT[nbinsStartN][nbinsTargetN]="HTT_from"+str(nbinsStart[nbinsStartN])+"_to_"+str(nbinsTarget[nbinsTargetN])
         hist_noHTT[nbinsStartN][nbinsTargetN]="noHTT_from"+str(nbinsStart[nbinsStartN])+"_to_"+str(nbinsTarget[nbinsTargetN])
+    print list(hist_HTT)[0]
+    print list(hist_noHTT)[0]
+
 
     analysis = analyzeConfig_2lss_1tau(
       configDir                 = configDir,
@@ -250,7 +253,7 @@ if __name__ == '__main__':
         "mvaOutput_2lss_HTT_LepID_tt",
         "oldVar_from20_to_12",
         "oldVar_from20_to_7"
-      ]+ hist_HTT +hist_noHTT,
+      ]+ list(hist_HTT)[0] +list(hist_noHTT)[0],
       select_rle_output         = True,
       verbose                   = idx_job_resubmission > 0,
     )
