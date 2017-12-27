@@ -508,15 +508,14 @@ int main(int argc, char* argv[])
       //     with respect to thresholds applied on analysis level
       //     to allow for e-ES and mu-ES uncertainties to be estimated
       double minPt_lead = -1.;
-      if ( era == kEra_2017 ) { // to accommodate 1l_2tau cuts
-        if (selLepton_lead -> is_electron()) {
-          minPt_lead = 23.;
-        }
-        else {
-          throw cms::Exception("produceNtuple") << "Unsupported era = " << era;
-        }
+      if ( era == kEra_2017 )
+      {
+        minPt_lead = selLepton_lead -> is_electron() ? 23. : 18.;
       }
-      else assert(0);
+      else
+      {
+        throw cms::Exception("produceNtuple") << "Unsupported era = " << era;
+      }
       if ( !(selLepton_lead->pt() > minPt_lead) ) {
         if ( run_lumi_eventSelector ) {
           std::cout << "event FAILS lepton pT selection." << std::endl;
