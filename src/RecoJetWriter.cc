@@ -91,10 +91,7 @@ void RecoJetWriter::setBranches(TTree * tree)
   bai.setBranch(jet_BtagWeight_, branchName_BtagWeight_);
   for(int idxShift = kBtag_hfUp; idxShift <= kBtag_jesDown; ++idxShift)
   {
-    jet_BtagWeights_systematics_[idxShift] = new std::remove_pointer<
-        decltype(jet_BtagWeights_systematics_)::mapped_type
-      >::type[max_nJets_];
-    bai.setBranch(jet_BtagWeights_systematics_[idxShift], branchNames_BtagWeight_systematics_[idxShift], true);
+    bai.setBranch(jet_BtagWeights_systematics_[idxShift], branchNames_BtagWeight_systematics_[idxShift]);
   }
   bai.setBranch(jet_QGDiscr_, branchName_QGDiscr_);
 }

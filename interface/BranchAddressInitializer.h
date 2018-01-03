@@ -31,10 +31,9 @@ struct BranchAddressInitializer
            typename = std::enable_if<std::is_scalar<T>::value>>
   void
   setBranch(T * & address,
-            const std::string & branchName,
-            bool disable_array_init = false)
+            const std::string & branchName)
   {
-    if(lenVar_ > 0 && !disable_array_init)
+    if(lenVar_ > 0)
     {
       address = new T[lenVar_];
     }
