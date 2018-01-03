@@ -3,27 +3,28 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/GenParticle.h" // GenParticle
 
-#include <Rtypes.h> // Int_t, Double_t
-#include <TTree.h> // TTree
+#include <string> // std::string
+#include <vector> // std::vector<>
 
-#include <string>
-#include <vector>
+// forward declaration
+class TTree;
 
 class GenParticleWriter
 {
  public:
-  GenParticleWriter(const std::string& branchName_num, const std::string& branchName_obj);
+  GenParticleWriter(const std::string & branchName_num,
+                    const std::string & branchName_obj);
   ~GenParticleWriter();
 
   /**
    * @brief Call tree->Branch for all GenParticle branches
    */
-  void setBranches(TTree* tree);
+  void setBranches(TTree * tree);
 
   /**
    * @brief Write collection of GenParticle objects to tree
    */
-  void write(const std::vector<GenParticle>& particles);
+  void write(const std::vector<GenParticle> & particles);
   
  protected: 
  /**
@@ -43,12 +44,12 @@ class GenParticleWriter
   std::string branchName_pdgId_;
 
   UInt_t nParticles_;
-  Float_t* particle_pt_;
-  Float_t* particle_eta_;
-  Float_t* particle_phi_;
-  Float_t* particle_mass_;
-  Int_t* particle_charge_;
-  Int_t* particle_pdgId_;
+  Float_t * particle_pt_;
+  Float_t * particle_eta_;
+  Float_t * particle_phi_;
+  Float_t * particle_mass_;
+  Int_t * particle_charge_;
+  Int_t * particle_pdgId_;
 };
 
 #endif // tthAnalysis_HiggsToTauTau_GenParticleWriter_h

@@ -1,10 +1,7 @@
 #ifndef tthAnalysis_HiggsToTauTau_RecoMEtWriter_h
 #define tthAnalysis_HiggsToTauTau_RecoMEtWriter_h
 
-#include "tthAnalysis/HiggsToTauTau/interface/RecoMEt.h" // RecoMEt
-#include "tthAnalysis/HiggsToTauTau/interface/RecoMEtReader.h" // RecoMEtReader::kMEt_central, RecoMEtReader::kMEt_shifted_JetEnUp...
-
-#include <Rtypes.h> // Int_t, Double_t
+#include "tthAnalysis/HiggsToTauTau/interface/RecoMEt.h" // RecoMEt, *_t
 
 #include <string> // std::string
 #include <map> // std::map<,>
@@ -16,18 +13,19 @@ class RecoMEtWriter
 {
  public:
   RecoMEtWriter(int era);
-  RecoMEtWriter(int era, const std::string& branchName_obj); 
+  RecoMEtWriter(int era,
+                const std::string & branchName_obj);
   ~RecoMEtWriter();
 
   /**
    * @brief Call tree->Branch for all RecoMEt branches
    */
-  void setBranches(TTree* tree);
+  void setBranches(TTree * tree);
 
   /**
    * @brief Write RecoMEt object to tree
    */
-  void write(const RecoMEt& met);
+  void write(const RecoMEt & met);
   
  protected: 
  /**

@@ -1,37 +1,24 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonWriter.h" // RecoMuonWriter
 
-#include "FWCore/Utilities/interface/Exception.h"
-
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2017
-#include "tthAnalysis/HiggsToTauTau/interface/writerAuxFunctions.h" // setBranchI, setBranchVI, setBranchVF
-
-#include <TString.h> // Form
+#include "tthAnalysis/HiggsToTauTau/interface/RecoLeptonWriter.h" // RecoLeptonWriter
+#include "tthAnalysis/HiggsToTauTau/interface/RecoMuon.h" // RecoMuon
+#include "tthAnalysis/HiggsToTauTau/interface/BranchAddressInitializer.h" // BranchAddressInitializer, TTree, Form()
 
 RecoMuonWriter::RecoMuonWriter(int era)
-  : era_(era)
-  , branchName_num_("nMuons")
-  , branchName_obj_("Muons")
-  , leptonWriter_(0)
-  , looseIdPOG_(0)
-  , mediumIdPOG_(0)
-  , segmentCompatibility_(0)
-{
-  leptonWriter_ = new RecoLeptonWriter(branchName_num_, branchName_obj_);
-  setBranchNames();
-}
+  : RecoMuonWriter(era, "nMuon", "Muon")
+{}
 
 RecoMuonWriter::RecoMuonWriter(int era,
-                               const std::string& branchName_num,
-                               const std::string& branchName_obj)
+                               const std::string & branchName_num,
+                               const std::string & branchName_obj)
   : era_(era)
   , branchName_num_(branchName_num)
   , branchName_obj_(branchName_obj)
-  , leptonWriter_(0)
-  , looseIdPOG_(0)
-  , mediumIdPOG_(0)
-  , segmentCompatibility_(0)
+  , leptonWriter_(new RecoLeptonWriter(branchName_num_, branchName_obj_))
+  , looseIdPOG_(nullptr)
+  , mediumIdPOG_(nullptr)
+  , segmentCompatibility_(nullptr)
 {
-  leptonWriter_ = new RecoLeptonWriter(branchName_num_, branchName_obj_);
   setBranchNames();
 }
 
@@ -52,24 +39,23 @@ void RecoMuonWriter::setBranchNames()
   branchName_segmentCompatibility_ = Form("%s_%s", branchName_obj_.data(), "segmentComp");
 }
 
-void RecoMuonWriter::setBranches(TTree *tree)
+void RecoMuonWriter::setBranches(TTree * tree)
 {
   leptonWriter_->setBranches(tree);
-  unsigned int max_nLeptons = leptonWriter_->max_nLeptons_;
-  looseIdPOG_ = new Bool_t[max_nLeptons];
-  setBranch(tree, looseIdPOG_, branchName_looseIdPOG_, branchName_num_);
-  mediumIdPOG_ = new Bool_t[max_nLeptons];
-  setBranch(tree, mediumIdPOG_, branchName_mediumIdPOG_, branchName_num_);
-  segmentCompatibility_ = new Float_t[max_nLeptons];
-  setBranch(tree, segmentCompatibility_, branchName_segmentCompatibility_, branchName_num_);
+  const unsigned int max_nLeptons = leptonWriter_->max_nLeptons_;
+  BranchAddressInitializer bai(tree, branchName_num_, max_nLeptons);
+  bai.setBranch(looseIdPOG_, branchName_looseIdPOG_);
+  bai.setBranch(mediumIdPOG_, branchName_mediumIdPOG_);
+  bai.setBranch(segmentCompatibility_, branchName_segmentCompatibility_);
 }
 
-void RecoMuonWriter::write(const std::vector<const RecoMuon*>& leptons) 
+void RecoMuonWriter::write(const std::vector<const RecoMuon *> & leptons)
 {
   leptonWriter_->write(leptons);
-  Int_t nLeptons = leptons.size();
-  for ( Int_t idxLepton = 0; idxLepton < nLeptons; ++idxLepton ) {
-    const RecoMuon* lepton = leptons[idxLepton];
+  const Int_t nLeptons = leptons.size();
+  for(Int_t idxLepton = 0; idxLepton < nLeptons; ++idxLepton)
+  {
+    const RecoMuon * lepton = leptons[idxLepton];
     assert(lepton);
     looseIdPOG_[idxLepton] = lepton->passesLooseIdPOG();
     mediumIdPOG_[idxLepton] = lepton->passesMediumIdPOG();

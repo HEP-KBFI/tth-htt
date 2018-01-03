@@ -17,10 +17,10 @@ class RecoLepton;
 class RecoJet;
 
 typedef std::function<
-    int(const std::vector<const RecoLepton*> & /*selLeptons*/,
-        const std::vector<const RecoHadTau*> & /*selHadTaus*/,
-        const std::vector<const RecoJet*> & /*selBJets_loose*/,
-        const std::vector<const RecoJet*> & /*selBJets_medium*/,
+    int(const std::vector<const RecoLepton *> & /*selLeptons*/,
+        const std::vector<const RecoHadTau *> & /*selHadTaus*/,
+        const std::vector<const RecoJet *> & /*selBJets_loose*/,
+        const std::vector<const RecoJet *> & /*selBJets_medium*/,
         bool /*failsZbosonMassVeto*/)
   > MEMPremutationCondition;
 
@@ -58,9 +58,9 @@ public:
                  bool verbose = false);
 
   void
-  write(const std::array<const std::vector<const RecoLepton*>, 3> & leptons,
-        const std::array<const std::vector<const RecoJet*>, 2> & selBJets,
-        const std::vector<const RecoHadTau*> & cleanedHadTaus);
+  write(const std::array<const std::vector<const RecoLepton *>, 3> & leptons,
+        const std::array<const std::vector<const RecoJet *>, 2> & selBJets,
+        const std::vector<const RecoHadTau *> & cleanedHadTaus);
 
 private:
   int minLepSelection_;

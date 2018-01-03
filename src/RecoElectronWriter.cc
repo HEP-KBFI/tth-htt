@@ -1,42 +1,28 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronWriter.h" // RecoElectronWriter
 
-#include "FWCore/Utilities/interface/Exception.h"
-
-#include "tthAnalysis/HiggsToTauTau/interface/writerAuxFunctions.h" // setBranchVI, setBranchVF
-
-#include <TString.h> // Form
+#include "tthAnalysis/HiggsToTauTau/interface/RecoLeptonWriter.h" // RecoLeptonWriter
+#include "tthAnalysis/HiggsToTauTau/interface/RecoElectron.h" // RecoElectron
+#include "tthAnalysis/HiggsToTauTau/interface/BranchAddressInitializer.h" // BranchAddressInitializer, TTree, Form()
 
 RecoElectronWriter::RecoElectronWriter(int era)
-  : branchName_num_("nElectrons")
-  , branchName_obj_("Electrons")
-  , leptonWriter_(0)
-  , mvaRawPOG_GP_(0)
-  , mvaRawPOG_HZZ_(0)
-  , sigmaEtaEta_(0)
-  , HoE_(0)
-  , deltaEta_(0)
-  , deltaPhi_(0)
-  , OoEminusOoP_(0)
-  , lostHits_(0)
-  , conversionVeto_(0)
-{
-  leptonWriter_ = new RecoLeptonWriter(branchName_num_, branchName_obj_);
-  setBranchNames();
-}
+  : RecoElectronWriter(era, "nElectron", "Electron")
+{}
 
-RecoElectronWriter::RecoElectronWriter(int era, const std::string& branchName_num, const std::string& branchName_obj)
+RecoElectronWriter::RecoElectronWriter(int era,
+                                       const std::string & branchName_num,
+                                       const std::string & branchName_obj)
   : branchName_num_(branchName_num)
   , branchName_obj_(branchName_obj)
-  , leptonWriter_(0)
-  , mvaRawPOG_GP_(0)
-  , mvaRawPOG_HZZ_(0)
-  , sigmaEtaEta_(0)
-  , HoE_(0)
-  , deltaEta_(0)
-  , deltaPhi_(0)
-  , OoEminusOoP_(0)
-  , lostHits_(0)
-  , conversionVeto_(0)
+  , leptonWriter_(nullptr)
+  , mvaRawPOG_GP_(nullptr)
+  , mvaRawPOG_HZZ_(nullptr)
+  , sigmaEtaEta_(nullptr)
+  , HoE_(nullptr)
+  , deltaEta_(nullptr)
+  , deltaPhi_(nullptr)
+  , OoEminusOoP_(nullptr)
+  , lostHits_(nullptr)
+  , conversionVeto_(nullptr)
 {
   leptonWriter_ = new RecoLeptonWriter(branchName_num_, branchName_obj_);
   setBranchNames();
@@ -73,32 +59,25 @@ void RecoElectronWriter::setBranches(TTree *tree)
 {
   leptonWriter_->setBranches(tree);
   unsigned int max_nLeptons = leptonWriter_->max_nLeptons_;
-  mvaRawPOG_GP_ = new Float_t[max_nLeptons];
-  setBranch(tree, mvaRawPOG_GP_, branchName_mvaRawPOG_GP_, branchName_num_);
-  mvaRawPOG_HZZ_ = new Float_t[max_nLeptons];
-  setBranch(tree, mvaRawPOG_HZZ_, branchName_mvaRawPOG_HZZ_, branchName_num_);
-  sigmaEtaEta_ = new Float_t[max_nLeptons];
-  setBranch(tree, sigmaEtaEta_, branchName_sigmaEtaEta_, branchName_num_);
-  HoE_ = new Float_t[max_nLeptons];
-  setBranch(tree, HoE_, branchName_HoE_, branchName_num_);
-  deltaEta_ = new Float_t[max_nLeptons];
-  setBranch(tree, deltaEta_, branchName_deltaEta_, branchName_num_);
-  deltaPhi_ = new Float_t[max_nLeptons];
-  setBranch(tree, deltaPhi_, branchName_deltaPhi_, branchName_num_);
-  OoEminusOoP_ = new Float_t[max_nLeptons];
-  setBranch(tree, OoEminusOoP_, branchName_OoEminusOoP_, branchName_num_);
-  lostHits_ = new UChar_t[max_nLeptons];
-  setBranch(tree, lostHits_, branchName_lostHits_, branchName_num_);
-  conversionVeto_ = new Bool_t[max_nLeptons];
-  setBranch(tree, conversionVeto_, branchName_conversionVeto_, branchName_num_);
+  BranchAddressInitializer bai(tree, branchName_num_, max_nLeptons);
+  bai.setBranch(mvaRawPOG_GP_, branchName_mvaRawPOG_GP_);
+  bai.setBranch(mvaRawPOG_HZZ_, branchName_mvaRawPOG_HZZ_);
+  bai.setBranch(sigmaEtaEta_, branchName_sigmaEtaEta_);
+  bai.setBranch(HoE_, branchName_HoE_);
+  bai.setBranch(deltaEta_, branchName_deltaEta_);
+  bai.setBranch(deltaPhi_, branchName_deltaPhi_);
+  bai.setBranch(OoEminusOoP_, branchName_OoEminusOoP_);
+  bai.setBranch(lostHits_, branchName_lostHits_);
+  bai.setBranch(conversionVeto_, branchName_conversionVeto_);
 }
 
-void RecoElectronWriter::write(const std::vector<const RecoElectron*>& leptons) 
+void RecoElectronWriter::write(const std::vector<const RecoElectron *> & leptons)
 {
   leptonWriter_->write(leptons);
   Int_t nLeptons = leptons.size();
-  for ( Int_t idxLepton = 0; idxLepton < nLeptons; ++idxLepton ) {
-    const RecoElectron* lepton = leptons[idxLepton];
+  for(Int_t idxLepton = 0; idxLepton < nLeptons; ++idxLepton)
+  {
+    const RecoElectron * lepton = leptons[idxLepton];
     assert(lepton);
     mvaRawPOG_GP_[idxLepton] = lepton->mvaRawPOG_GP();
     mvaRawPOG_HZZ_[idxLepton] = lepton->mvaRawPOG_HZZ();

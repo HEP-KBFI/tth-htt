@@ -1,21 +1,15 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMEtWriter.h" // RecoMEtWriter
 
+#include "tthAnalysis/HiggsToTauTau/interface/RecoMEtReader.h" // RecoMEtReader::kMEt_*
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // getBranchName_MEt()
-#include "tthAnalysis/HiggsToTauTau/interface/writerAuxFunctions.h" // setBranch()
-
-#include <FWCore/Utilities/interface/Exception.h>
-
-#include <TTree.h> // TTree
-#include <TString.h> // Form()
+#include "tthAnalysis/HiggsToTauTau/interface/BranchAddressInitializer.h" // BranchAddressInitializer, TTree, Form()
 
 RecoMEtWriter::RecoMEtWriter(int era)
-  : era_(era)
-  , branchName_obj_("met")
-{
-  setBranchNames();
-}
+  : RecoMEtWriter(era, "MET")
+{}
 
-RecoMEtWriter::RecoMEtWriter(int era, const std::string& branchName_obj)
+RecoMEtWriter::RecoMEtWriter(int era,
+                             const std::string & branchName_obj)
   : era_(era)
   , branchName_obj_(branchName_obj)
 {
@@ -39,19 +33,20 @@ void RecoMEtWriter::setBranchNames()
   branchName_covYY_ = Form("%s_%s", branchName_obj_.data(), "covYY");
 }
 
-void RecoMEtWriter::setBranches(TTree* tree)
+void RecoMEtWriter::setBranches(TTree * tree)
 {
+  BranchAddressInitializer bai(tree);
   for(int met_option = RecoMEtReader::kMEt_central; met_option <= RecoMEtReader::kMEt_shifted_UnclusteredEnDown; ++met_option)
   {
-    setBranch(tree, &met_.systematics_[met_option].pt_,  branchName_pt_[met_option]);
-    setBranch(tree, &met_.systematics_[met_option].phi_, branchName_phi_[met_option]);
+    bai.setBranch(met_.systematics_[met_option].pt_,  branchName_pt_[met_option]);
+    bai.setBranch(met_.systematics_[met_option].phi_, branchName_phi_[met_option]);
   }
-  setBranch(tree, &met_.covXX_, branchName_covXX_);
-  setBranch(tree, &met_.covXY_, branchName_covXY_);
-  setBranch(tree, &met_.covYY_, branchName_covYY_);
+  bai.setBranch(met_.covXX_, branchName_covXX_);
+  bai.setBranch(met_.covXY_, branchName_covXY_);
+  bai.setBranch(met_.covYY_, branchName_covYY_);
 }
 
-void RecoMEtWriter::write(const RecoMEt& met)
+void RecoMEtWriter::write(const RecoMEt & met)
 {
   met_ = met;
 }

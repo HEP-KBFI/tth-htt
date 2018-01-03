@@ -3,27 +3,27 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/MEMOutput_2lss_1tau.h" // MEMOutput_2lss_1tau
 
-#include <Rtypes.h> // Int_t, Double_t
-#include <TTree.h> // TTree
+#include <vector> // std::vector<>
 
-#include <string>
-#include <vector>
+// forward declaration
+class TTree;
 
 class MEMOutputWriter_2lss_1tau
 {
  public:
-  MEMOutputWriter_2lss_1tau(const std::string& branchName_num, const std::string& branchName_obj);
+  MEMOutputWriter_2lss_1tau(const std::string & branchName_num,
+                            const std::string & branchName_obj);
   ~MEMOutputWriter_2lss_1tau();
 
   /**
    * @brief Call tree->Branch for all MEMOutputWriter_2lss_1tau branches
    */
-  void setBranches(TTree* tree);
+  void setBranches(TTree * tree);
 
   /**
    * @brief Write collection of MEMOutputWriter_2lss_1tau objects to tree
    */
-  void write(const std::vector<MEMOutput_2lss_1tau>& memOutputs);
+  void write(const std::vector<MEMOutput_2lss_1tau> & memOutputs);
   
  protected: 
  /**
@@ -56,25 +56,25 @@ class MEMOutputWriter_2lss_1tau
   std::string branchName_errorFlag_;
 
   Int_t nMEMOutputs_;
-  RUN_TYPE* run_;
-  LUMI_TYPE* lumi_;
-  EVT_TYPE* evt_;
-  Float_t* leadLepton_eta_;
-  Float_t* leadLepton_phi_;
-  Float_t* subleadLepton_eta_;
-  Float_t* subleadLepton_phi_;
-  Float_t* hadTau_eta_;
-  Float_t* hadTau_phi_;
-  Int_t* type_;
-  Float_t* weight_ttH_;
-  Float_t* weight_ttZ_;
-  Float_t* weight_ttZ_Zll_;
-  Float_t* weight_tt_;
-  Float_t* LR_;
-  Float_t* cpuTime_;
-  Float_t* realTime_;
-  Int_t* isValid_;
-  Int_t* errorFlag_;
+  UInt_t * run_;
+  UInt_t * lumi_;
+  ULong64_t * evt_;
+  Float_t * leadLepton_eta_;
+  Float_t * leadLepton_phi_;
+  Float_t * subleadLepton_eta_;
+  Float_t * subleadLepton_phi_;
+  Float_t * hadTau_eta_;
+  Float_t * hadTau_phi_;
+  Int_t * type_;
+  Float_t * weight_ttH_;
+  Float_t * weight_ttZ_;
+  Float_t * weight_ttZ_Zll_;
+  Float_t * weight_tt_;
+  Float_t * LR_;
+  Float_t * cpuTime_;
+  Float_t * realTime_;
+  Int_t * isValid_;
+  Int_t * errorFlag_;
 };
 
 #endif // tthAnalysis_HiggsToTauTau_MEMOutputWriter_2lss_1tau_h

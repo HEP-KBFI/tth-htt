@@ -1,56 +1,39 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetWriter.h" // RecoJetWriter
 
-#include "FWCore/Utilities/interface/Exception.h"
+#include "tthAnalysis/HiggsToTauTau/interface/GenParticleWriter.h" // GenParticleWriter
+#include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h" // RecoJet, GenLepton, GenHadTau, GenJet
+#include "tthAnalysis/HiggsToTauTau/interface/BranchAddressInitializer.h" // BranchAddressInitializer, TTree, Form()
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kBtag_*
 
-#include "tthAnalysis/HiggsToTauTau/interface/writerAuxFunctions.h" // setBranchI, setBranchVF
+RecoJetWriter::RecoJetWriter(int era,
+                             bool isMC)
+  : RecoJetWriter(era, isMC, "nJet", "Jet")
+{}
 
-#include <TString.h> // Form
-
-RecoJetWriter::RecoJetWriter(int era, bool isMC)
-  : era_(era)
-  , isMC_(isMC)
-  , max_nJets_(32)
-  , branchName_num_("nJets")
-  , branchName_obj_("Jets")
-  , genLeptonWriter_(0)
-  , genHadTauWriter_(0)
-  , genJetWriter_(0)
-  , jet_pt_(0)
-  , jet_eta_(0)
-  , jet_phi_(0)
-  , jet_mass_(0)
-  , jet_jecUncertTotal_(0)
-  , jet_BtagCSV_(0)
-  , jet_BtagWeight_(0)
-  , jet_QGDiscr_(0)
-{
-  genLeptonWriter_ = new GenParticleWriter(Form("%s_genLepton", branchName_num_.data()), Form("%s_genLepton", branchName_obj_.data()));
-  genHadTauWriter_ = new GenParticleWriter(Form("%s_genTau", branchName_num_.data()), Form("%s_genTau", branchName_obj_.data()));
-  genJetWriter_ = new GenParticleWriter(Form("%s_genJet", branchName_num_.data()), Form("%s_genJet", branchName_obj_.data()));
-  setBranchNames();
-}
-
-RecoJetWriter::RecoJetWriter(int era, bool isMC, const std::string& branchName_num, const std::string& branchName_obj)
+RecoJetWriter::RecoJetWriter(int era,
+                             bool isMC,
+                             const std::string & branchName_num,
+                             const std::string & branchName_obj)
   : era_(era)
   , isMC_(isMC)
   , max_nJets_(32)
   , branchName_num_(branchName_num)
   , branchName_obj_(branchName_obj)
-  , genLeptonWriter_(0)
-  , genHadTauWriter_(0)
-  , genJetWriter_(0)
-  , jet_pt_(0)
-  , jet_eta_(0)
-  , jet_phi_(0)
-  , jet_mass_(0)
-  , jet_jecUncertTotal_(0)
-  , jet_BtagCSV_(0)
-  , jet_BtagWeight_(0)
-  , jet_QGDiscr_(0)
+  , genLeptonWriter_(nullptr)
+  , genHadTauWriter_(nullptr)
+  , genJetWriter_(nullptr)
+  , jet_pt_(nullptr)
+  , jet_eta_(nullptr)
+  , jet_phi_(nullptr)
+  , jet_mass_(nullptr)
+  , jet_jecUncertTotal_(nullptr)
+  , jet_BtagCSV_(nullptr)
+  , jet_BtagWeight_(nullptr)
+  , jet_QGDiscr_(nullptr)
 {
   genLeptonWriter_ = new GenParticleWriter(Form("%s_genLepton", branchName_num_.data()), Form("%s_genLepton", branchName_obj_.data()));
-  genHadTauWriter_ = new GenParticleWriter(Form("%s_genTau", branchName_num_.data()), Form("%s_genTau", branchName_obj_.data()));
-  genJetWriter_ = new GenParticleWriter(Form("%s_genJet", branchName_num_.data()), Form("%s_genJet", branchName_obj_.data()));
+  genHadTauWriter_ = new GenParticleWriter(Form("%s_genTau",    branchName_num_.data()), Form("%s_genTau",    branchName_obj_.data()));
+  genJetWriter_    = new GenParticleWriter(Form("%s_genJet",    branchName_num_.data()), Form("%s_genJet",    branchName_obj_.data()));
   setBranchNames();
 }
 
@@ -67,9 +50,9 @@ RecoJetWriter::~RecoJetWriter()
   delete[] jet_BtagCSV_;
   delete[] jet_BtagWeight_;
   delete[] jet_QGDiscr_;
-  for ( std::map<int, Float_t*>::iterator it = jet_BtagWeights_systematics_.begin();
-	it != jet_BtagWeights_systematics_.end(); ++it ) {
-    delete[] it->second;
+  for(auto & kv: jet_BtagWeights_systematics_)
+  {
+    delete[] kv.second;
   }
 }
 
@@ -83,47 +66,45 @@ void RecoJetWriter::setBranchNames()
   branchName_BtagCSV_ = Form("%s_%s", branchName_obj_.data(), "btagCSVV2");
   branchName_QGDiscr_ = Form("%s_%s", branchName_obj_.data(), "qgl");
   branchName_BtagWeight_ = Form("%s_%s", branchName_obj_.data(), "btagSF_csvv2");
-  for ( int idxShift = kBtag_hfUp; idxShift <= kBtag_jesDown; ++idxShift ) {
-    std::string branchName_BtagWeight = TString(getBranchName_bTagWeight(era_, idxShift)).ReplaceAll("Jet_", Form("%s_", branchName_obj_.data())).Data();
-    branchNames_BtagWeight_systematics_[idxShift] = branchName_BtagWeight;
+  for(int idxShift = kBtag_hfUp; idxShift <= kBtag_jesDown; ++idxShift)
+  {
+    branchNames_BtagWeight_systematics_[idxShift] = TString(getBranchName_bTagWeight(era_, idxShift))
+      .ReplaceAll("Jet_", Form("%s_", branchName_obj_.data())).Data()
+    ;
   }
 }
 
-void RecoJetWriter::setBranches(TTree* tree)
+void RecoJetWriter::setBranches(TTree * tree)
 {
   genLeptonWriter_->setBranches(tree);
   genHadTauWriter_->setBranches(tree);
   genJetWriter_->setBranches(tree);
-  setBranch(tree, &nJets_, branchName_num_);
-  jet_pt_ = new Float_t[max_nJets_];
-  setBranchVF(tree, branchName_pt_, branchName_num_, jet_pt_);
-  jet_eta_ = new Float_t[max_nJets_];
-  setBranchVF(tree, branchName_eta_, branchName_num_, jet_eta_);
-  jet_phi_ = new Float_t[max_nJets_];
-  setBranchVF(tree, branchName_phi_, branchName_num_, jet_phi_);
-  jet_mass_ = new Float_t[max_nJets_];
-  setBranchVF(tree, branchName_mass_, branchName_num_, jet_mass_);
-  jet_jecUncertTotal_ = new Float_t[max_nJets_];
-  setBranchVF(tree, branchName_jecUncertTotal_, branchName_num_, jet_jecUncertTotal_);
-  jet_BtagCSV_ = new Float_t[max_nJets_];
-  setBranchVF(tree, branchName_BtagCSV_, branchName_num_, jet_BtagCSV_);
-  jet_BtagWeight_ = new Float_t[max_nJets_];
-  setBranchVF(tree, branchName_BtagWeight_, branchName_num_, jet_BtagWeight_);
-  for ( int idxShift = kBtag_hfUp; idxShift <= kBtag_jesDown; ++idxShift ) {
-    jet_BtagWeights_systematics_[idxShift] = new Float_t[max_nJets_];
-    setBranchVF(tree, branchNames_BtagWeight_systematics_[idxShift], branchName_num_, jet_BtagWeights_systematics_[idxShift]);
+
+  BranchAddressInitializer bai(tree, branchName_num_, max_nJets_);
+  bai.setBranch(nJets_, branchName_num_);
+  bai.setBranch(jet_pt_, branchName_pt_);
+  bai.setBranch(jet_eta_, branchName_eta_);
+  bai.setBranch(jet_phi_, branchName_phi_);
+  bai.setBranch(jet_mass_, branchName_mass_);
+  bai.setBranch(jet_jecUncertTotal_, branchName_jecUncertTotal_);
+  bai.setBranch(jet_BtagCSV_, branchName_BtagCSV_);
+  bai.setBranch(jet_BtagWeight_, branchName_BtagWeight_);
+  for(int idxShift = kBtag_hfUp; idxShift <= kBtag_jesDown; ++idxShift)
+  {
+    jet_BtagWeights_systematics_[idxShift] = new std::remove_pointer<
+        decltype(jet_BtagWeights_systematics_)::mapped_type
+      >::type[max_nJets_];
+    bai.setBranch(jet_BtagWeights_systematics_[idxShift], branchNames_BtagWeight_systematics_[idxShift], true);
   }
-  jet_QGDiscr_ = new Float_t[max_nJets_];
-  if(branchName_QGDiscr_ != "") {
-    setBranchVF(tree, branchName_QGDiscr_, branchName_num_, jet_QGDiscr_);
-  }
+  bai.setBranch(jet_QGDiscr_, branchName_QGDiscr_);
 }
 
-void RecoJetWriter::write(const std::vector<const RecoJet*>& jets) 
+void RecoJetWriter::write(const std::vector<const RecoJet *> & jets)
 {
   nJets_ = jets.size();
-  for ( UInt_t idxJet = 0; idxJet < nJets_; ++idxJet ) {
-    const RecoJet* jet = jets[idxJet];
+  for(UInt_t idxJet = 0; idxJet < nJets_; ++idxJet)
+  {
+    const RecoJet * jet = jets[idxJet];
     assert(jet);
     jet_pt_[idxJet] = jet->pt();
     jet_eta_[idxJet] = jet->eta();
@@ -132,12 +113,15 @@ void RecoJetWriter::write(const std::vector<const RecoJet*>& jets)
     jet_jecUncertTotal_[idxJet] = jet->jecUncertTotal();
     jet_BtagCSV_[idxJet] = jet->BtagCSV_;
     jet_BtagWeight_[idxJet] = jet->BtagWeight();
-    for ( int idxShift = kBtag_hfUp; idxShift <= kBtag_jesDown; ++idxShift ) {
-      std::map<int, Double_t>::const_iterator jet_BtagWeight_systematics_iter = jet->BtagWeight_systematics_.find(idxShift);
-      if ( jet_BtagWeight_systematics_iter != jet->BtagWeight_systematics_.end() ) {
-	jet_BtagWeights_systematics_[idxShift][idxJet] = jet_BtagWeight_systematics_iter->second;
-      } else {
-	jet_BtagWeights_systematics_[idxShift][idxJet] = 1.;
+    for(int idxShift = kBtag_hfUp; idxShift <= kBtag_jesDown; ++idxShift)
+    {
+      if(jet->BtagWeight_systematics_.count(idxShift))
+      {
+        jet_BtagWeights_systematics_[idxShift][idxJet] = jet->BtagWeight_systematics_.at(idxShift);
+      }
+      else
+      {
+        jet_BtagWeights_systematics_[idxShift][idxJet] = 1.;
       }
     }
     jet_QGDiscr_[idxJet] = jet->QGDiscr();
@@ -145,24 +129,27 @@ void RecoJetWriter::write(const std::vector<const RecoJet*>& jets)
   writeGenMatching(jets);
 }
 
-void RecoJetWriter::writeGenMatching(const std::vector<const RecoJet*>& jets) 
+void RecoJetWriter::writeGenMatching(const std::vector<const RecoJet *> & jets)
 {
   std::vector<GenParticle> matched_genLeptons;
   std::vector<GenParticle> matched_genHadTaus;
   std::vector<GenParticle> matched_genJets;
+
   assert(nJets_ == jets.size());
-  for ( UInt_t idxJet = 0; idxJet < nJets_; ++idxJet ) {
-    const RecoJet* jet = jets[idxJet];
+  for(const RecoJet * jet: jets)
+  {
     assert(jet);
-    const GenLepton* matched_genLepton = jet->genLepton();
-    if ( matched_genLepton ) matched_genLeptons.push_back(static_cast<GenParticle>(*matched_genLepton));
-    else matched_genLeptons.push_back(dummyGenParticle_);
-    const GenHadTau* matched_genHadTau = jet->genHadTau();
-    if ( matched_genHadTau ) matched_genHadTaus.push_back(static_cast<GenParticle>(*matched_genHadTau));
-    else matched_genHadTaus.push_back(dummyGenParticle_);
-    const GenJet* matched_genJet = jet->genJet();
-    if ( matched_genJet ) matched_genJets.push_back(static_cast<GenParticle>(*matched_genJet));
-    else matched_genJets.push_back(dummyGenParticle_);
+    const GenLepton * matched_genLepton = jet->genLepton();
+    if(matched_genLepton) matched_genLeptons.push_back(static_cast<GenParticle>(*matched_genLepton));
+    else                  matched_genLeptons.push_back(dummyGenParticle_);
+
+    const GenHadTau * matched_genHadTau = jet->genHadTau();
+    if(matched_genHadTau) matched_genHadTaus.push_back(static_cast<GenParticle>(*matched_genHadTau));
+    else                  matched_genHadTaus.push_back(dummyGenParticle_);
+
+    const GenJet * matched_genJet = jet->genJet();
+    if(matched_genJet) matched_genJets.push_back(static_cast<GenParticle>(*matched_genJet));
+    else               matched_genJets.push_back(dummyGenParticle_);
   }
   genLeptonWriter_->write(matched_genLeptons);
   genHadTauWriter_->write(matched_genHadTaus);

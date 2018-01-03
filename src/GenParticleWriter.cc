@@ -1,21 +1,18 @@
 #include "tthAnalysis/HiggsToTauTau/interface/GenParticleWriter.h" // GenParticleWriter
 
-#include "FWCore/Utilities/interface/Exception.h"
+#include "tthAnalysis/HiggsToTauTau/interface/BranchAddressInitializer.h" // BranchAddressInitializer, TTree, Form()
 
-#include "tthAnalysis/HiggsToTauTau/interface/writerAuxFunctions.h" // setBranchI, setBranchVI, setBranchVF
-
-#include <TString.h> // Form
-
-GenParticleWriter::GenParticleWriter(const std::string& branchName_num, const std::string& branchName_obj)
+GenParticleWriter::GenParticleWriter(const std::string & branchName_num,
+                                     const std::string & branchName_obj)
   : max_nParticles_(32)
   , branchName_num_(branchName_num)
   , branchName_obj_(branchName_obj)
-  , particle_pt_(0)
-  , particle_eta_(0)
-  , particle_phi_(0)
-  , particle_mass_(0)
-  , particle_charge_(0)
-  , particle_pdgId_(0)
+  , particle_pt_(nullptr)
+  , particle_eta_(nullptr)
+  , particle_phi_(nullptr)
+  , particle_mass_(nullptr)
+  , particle_charge_(nullptr)
+  , particle_pdgId_(nullptr)
 {
   setBranchNames();
 }
@@ -40,28 +37,24 @@ void GenParticleWriter::setBranchNames()
   branchName_pdgId_ = Form("%s_%s", branchName_obj_.data(), "pdgId");
 }
 
-void GenParticleWriter::setBranches(TTree* tree)
+void GenParticleWriter::setBranches(TTree * tree)
 {
-  setBranch(tree, &nParticles_, branchName_num_);
-  particle_pt_ = new Float_t[max_nParticles_];
-  setBranchVF(tree, branchName_pt_, branchName_num_, particle_pt_);
-  particle_eta_ = new Float_t[max_nParticles_];
-  setBranchVF(tree, branchName_eta_, branchName_num_, particle_eta_); 
-  particle_phi_ = new Float_t[max_nParticles_];
-  setBranchVF(tree, branchName_phi_, branchName_num_, particle_phi_); 
-  particle_mass_ = new Float_t[max_nParticles_];
-  setBranchVF(tree, branchName_mass_, branchName_num_, particle_mass_); 
-  particle_charge_ = new Int_t[max_nParticles_];
-  setBranch(tree, particle_charge_, branchName_charge_, branchName_num_);
-  particle_pdgId_ = new Int_t[max_nParticles_];
-  setBranchVI(tree, branchName_pdgId_, branchName_num_, particle_pdgId_); 
+  BranchAddressInitializer bai(tree, branchName_num_, max_nParticles_);
+  bai.setBranch(nParticles_, branchName_num_);
+  bai.setBranch(particle_pt_, branchName_pt_);
+  bai.setBranch(particle_eta_, branchName_eta_);
+  bai.setBranch(particle_phi_, branchName_phi_);
+  bai.setBranch(particle_mass_, branchName_mass_);
+  bai.setBranch(particle_charge_, branchName_charge_);
+  bai.setBranch(particle_pdgId_, branchName_pdgId_);
 }
 
-void GenParticleWriter::write(const std::vector<GenParticle>& particles)
+void GenParticleWriter::write(const std::vector<GenParticle> & particles)
 {
   nParticles_ = particles.size();
-  for ( UInt_t idxParticle = 0; idxParticle < nParticles_; ++idxParticle ) {
-    const GenParticle& particle = particles[idxParticle];
+  for(UInt_t idxParticle = 0; idxParticle < nParticles_; ++idxParticle)
+  {
+    const GenParticle & particle = particles[idxParticle];
     particle_pt_[idxParticle] = particle.pt();
     particle_eta_[idxParticle] = particle.eta();
     particle_phi_[idxParticle] = particle.phi();

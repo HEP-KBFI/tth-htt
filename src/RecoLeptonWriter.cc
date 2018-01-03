@@ -1,39 +1,36 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoLeptonWriter.h" // RecoLeptonWriter
 
-#include "FWCore/Utilities/interface/Exception.h"
+#include "tthAnalysis/HiggsToTauTau/interface/BranchAddressInitializer.h" // BranchAddressInitializer, TTree, Form()
 
-#include "tthAnalysis/HiggsToTauTau/interface/writerAuxFunctions.h" // setBranchI, setBranchVI, setBranchVF
-
-#include <TString.h> // Form
-
-RecoLeptonWriter::RecoLeptonWriter(const std::string& branchName_num, const std::string& branchName_obj)
+RecoLeptonWriter::RecoLeptonWriter(const std::string & branchName_num,
+                                   const std::string & branchName_obj)
   : max_nLeptons_(32)
   , branchName_num_(branchName_num)
   , branchName_obj_(branchName_obj)
-  , genLeptonWriter_(0)
-  , genHadTauWriter_(0)
-  , genJetWriter_(0)
-  , pt_(0)
-  , eta_(0)
-  , phi_(0)
-  , mass_(0)
-  , pdgId_(0)
-  , dxy_(0)
-  , dz_(0)
-  , relIso_all_(0)
-  , hadRelIso03_chg_(0)
-  , absIso_chg_(0)
-  , absIso_neu_(0)
-  , sip3d_(0)
-  , mvaRawTTH_(0)
-  , jetPtRatio_(0)
-  , jetBtagCSV_(0)
-  , tightCharge_(0)
-  , charge_(0)
+  , genLeptonWriter_(nullptr)
+  , genHadTauWriter_(nullptr)
+  , genJetWriter_(nullptr)
+  , pt_(nullptr)
+  , eta_(nullptr)
+  , phi_(nullptr)
+  , mass_(nullptr)
+  , pdgId_(nullptr)
+  , dxy_(nullptr)
+  , dz_(nullptr)
+  , relIso_all_(nullptr)
+  , hadRelIso03_chg_(nullptr)
+  , absIso_chg_(nullptr)
+  , absIso_neu_(nullptr)
+  , sip3d_(nullptr)
+  , mvaRawTTH_(nullptr)
+  , jetPtRatio_(nullptr)
+  , jetBtagCSV_(nullptr)
+  , tightCharge_(nullptr)
+  , charge_(nullptr)
 {
   genLeptonWriter_ = new GenParticleWriter(Form("%s_genLepton", branchName_num_.data()), Form("%s_genLepton", branchName_obj_.data()));
-  genHadTauWriter_ = new GenParticleWriter(Form("%s_genTau", branchName_num_.data()), Form("%s_genTau", branchName_obj_.data()));
-  genJetWriter_ = new GenParticleWriter(Form("%s_genJet", branchName_num_.data()), Form("%s_genJet", branchName_obj_.data()));
+  genHadTauWriter_ = new GenParticleWriter(Form("%s_genTau",    branchName_num_.data()), Form("%s_genTau",    branchName_obj_.data()));
+  genJetWriter_    = new GenParticleWriter(Form("%s_genJet",    branchName_num_.data()), Form("%s_genJet",    branchName_obj_.data()));
   setBranchNames();
 }
 
@@ -82,45 +79,28 @@ void RecoLeptonWriter::setBranchNames()
   branchName_charge_ = Form("%s_%s", branchName_obj_.data(), "charge");
 }
 
-void RecoLeptonWriter::setBranches(TTree *tree)
+void RecoLeptonWriter::setBranches(TTree * tree)
 {
   genLeptonWriter_->setBranches(tree);
   genHadTauWriter_->setBranches(tree);
   genJetWriter_->setBranches(tree);
-  setBranch(tree, &nLeptons_, branchName_num_);
-  pt_ = new Float_t[max_nLeptons_];
-  setBranchVF(tree, branchName_pt_, branchName_num_, pt_);
-  eta_ = new Float_t[max_nLeptons_];
-  setBranchVF(tree, branchName_eta_, branchName_num_, eta_);
-  phi_ = new Float_t[max_nLeptons_];
-  setBranchVF(tree, branchName_phi_, branchName_num_, phi_);
-  mass_ = new Float_t[max_nLeptons_];
-  setBranchVF(tree, branchName_mass_, branchName_num_, mass_);
-  pdgId_ = new Int_t[max_nLeptons_];
-  setBranchVI(tree, branchName_pdgId_, branchName_num_, pdgId_);
-  dxy_ = new Float_t[max_nLeptons_];
-  setBranchVF(tree, branchName_dxy_, branchName_num_, dxy_);
-  dz_ = new Float_t[max_nLeptons_];
-  setBranchVF(tree, branchName_dz_, branchName_num_, dz_);
-  relIso_all_ = new Float_t[max_nLeptons_];
-  setBranchVF(tree, branchName_relIso_all_, branchName_num_, relIso_all_);
-  hadRelIso03_chg_ = new Float_t[max_nLeptons_];
-  setBranchVF(tree, branchName_hadRelIso03_chg_, branchName_num_, hadRelIso03_chg_);
-  absIso_chg_ = new Float_t[max_nLeptons_];
-  setBranchVF(tree, branchName_absIso_chg_, branchName_num_, absIso_chg_);
-  absIso_neu_ = new Float_t[max_nLeptons_];
-  setBranchVF(tree, branchName_absIso_neu_, branchName_num_, absIso_neu_);
-  sip3d_ = new Float_t[max_nLeptons_];
-  setBranchVF(tree, branchName_sip3d_, branchName_num_, sip3d_);
-  mvaRawTTH_ = new Float_t[max_nLeptons_];
-  setBranchVF(tree, branchName_mvaRawTTH_, branchName_num_, mvaRawTTH_);
-  jetPtRatio_ = new Float_t[max_nLeptons_];
-  setBranchVF(tree, branchName_jetPtRatio_, branchName_num_, jetPtRatio_);
-  jetBtagCSV_ = new Float_t[max_nLeptons_];
-  setBranchVF(tree, branchName_jetBtagCSV_, branchName_num_, jetBtagCSV_);
-  tightCharge_ = new Int_t[max_nLeptons_];
-  setBranchVI(tree, branchName_tightCharge_, branchName_num_, tightCharge_);
-  charge_ = new Int_t[max_nLeptons_];
-  setBranchVI(tree, branchName_charge_, branchName_num_, charge_);
+  BranchAddressInitializer bai(tree, branchName_num_, max_nLeptons_);
+  bai.setBranch(nLeptons_, branchName_num_);
+  bai.setBranch(pt_, branchName_pt_);
+  bai.setBranch(eta_, branchName_eta_);
+  bai.setBranch(phi_, branchName_phi_);
+  bai.setBranch(mass_, branchName_mass_);
+  bai.setBranch(pdgId_, branchName_pdgId_);
+  bai.setBranch(dxy_, branchName_dxy_);
+  bai.setBranch(dz_, branchName_dz_);
+  bai.setBranch(relIso_all_, branchName_relIso_all_);
+  bai.setBranch(hadRelIso03_chg_, branchName_hadRelIso03_chg_);
+  bai.setBranch(absIso_chg_, branchName_absIso_chg_);
+  bai.setBranch(absIso_neu_, branchName_absIso_neu_);
+  bai.setBranch(sip3d_, branchName_sip3d_);
+  bai.setBranch(mvaRawTTH_, branchName_mvaRawTTH_);
+  bai.setBranch(jetPtRatio_, branchName_jetPtRatio_);
+  bai.setBranch(jetBtagCSV_, branchName_jetBtagCSV_);
+  bai.setBranch(tightCharge_, branchName_tightCharge_);
+  bai.setBranch(charge_, branchName_charge_);
 }
-

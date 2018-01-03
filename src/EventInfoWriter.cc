@@ -1,6 +1,6 @@
 #include "tthAnalysis/HiggsToTauTau/interface/EventInfoWriter.h"
 
-#include "tthAnalysis/HiggsToTauTau/interface/writerAuxFunctions.h" //
+#include "tthAnalysis/HiggsToTauTau/interface/BranchAddressInitializer.h" // BranchAddressInitializer, TTree, Form()
 
 EventInfoWriter::EventInfoWriter()
   : EventInfoWriter(false, false, false, "")
@@ -25,24 +25,26 @@ EventInfoWriter::EventInfoWriter(bool is_signal,
 void
 EventInfoWriter::setBranches(TTree * tree)
 {
-  setBranch(tree, &eventInfo_.run, branchName_run_);
-  setBranch(tree, &eventInfo_.lumi, branchName_lumi_);
-  setBranch(tree, &eventInfo_.event, branchName_event_);
+  BranchAddressInitializer bai(tree);
+
+  bai.setBranch(eventInfo_.run, branchName_run_);
+  bai.setBranch(eventInfo_.lumi, branchName_lumi_);
+  bai.setBranch(eventInfo_.event, branchName_event_);
   if(! branchName_genHiggsDecayMode_.empty())
   {
-    setBranch(tree, &eventInfo_.genHiggsDecayMode, branchName_genHiggsDecayMode_);
+    bai.setBranch(eventInfo_.genHiggsDecayMode, branchName_genHiggsDecayMode_);
   }
   if(! branchName_genWeight_.empty())
   {
-    setBranch(tree, &eventInfo_.genWeight, branchName_genWeight_);
+    bai.setBranch(eventInfo_.genWeight, branchName_genWeight_);
   }
   if(! branchName_genWeight_tH_.empty())
   {
-    setBranch(tree, &eventInfo_.genWeight_tH, branchName_genWeight_tH_);
+    bai.setBranch(eventInfo_.genWeight_tH, branchName_genWeight_tH_);
   }
   if(! branchName_pileupWeight_.empty())
   {
-    setBranch(tree, &eventInfo_.pileupWeight, branchName_pileupWeight_);
+    bai.setBranch(eventInfo_.pileupWeight, branchName_pileupWeight_);
   }
 }
 
