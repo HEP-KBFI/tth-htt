@@ -1,12 +1,9 @@
 #ifndef tthAnalysis_HiggsToTauTau_RecoMEtReader_h
 #define tthAnalysis_HiggsToTauTau_RecoMEtReader_h
 
-#include "tthAnalysis/HiggsToTauTau/interface/RecoMEt.h" // RecoMEt
 #include "tthAnalysis/HiggsToTauTau/interface/ReaderBase.h" // ReaderBase
+#include "tthAnalysis/HiggsToTauTau/interface/RecoMEt.h" // RecoMEt
 
-#include <Rtypes.h> // Int_t, Double_t
-
-#include <string> // std::string
 #include <map> // std::map<,>
 
 // forward declarations
@@ -17,7 +14,9 @@ class RecoMEtReader
 {
  public:
   RecoMEtReader(int era);
-  RecoMEtReader(int era, const std::string& branchName_obj, const std::string& branchName_cov = "");
+  RecoMEtReader(int era,
+                const std::string & branchName_obj,
+                const std::string & branchName_cov = "");
   ~RecoMEtReader();
 
   enum {
@@ -26,12 +25,12 @@ class RecoMEtReader
     kMEt_shifted_JetResUp, kMEt_shifted_JetResDown,
     kMEt_shifted_UnclusteredEnUp, kMEt_shifted_UnclusteredEnDown
   };
-  void setMEt_central_or_shift(int met_option) { met_option_ = met_option; }
+  void setMEt_central_or_shift(int met_option);
 
   /**
    * @brief Call tree->SetBranchAddress for all RecoMEt branches
    */
-  void setBranchAddresses(TTree* tree) override;
+  void setBranchAddresses(TTree * tree) override;
 
   /**
    * @brief Read branches from tree and use information to fill RecoMEt object
@@ -62,8 +61,7 @@ class RecoMEtReader
   // CV: make sure that only one RecoMEtReader instance exists for a given branchName,
   //     as ROOT cannot handle multiple TTree::SetBranchAddress calls for the same branch.
   static std::map<std::string, int> numInstances_;
-  static std::map<std::string, RecoMEtReader*> instances_;
+  static std::map<std::string, RecoMEtReader *> instances_;
 };
 
 #endif // tthAnalysis_HiggsToTauTau_RecoMEtReader_h
-

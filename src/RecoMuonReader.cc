@@ -1,28 +1,31 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonReader.h" // RecoMuonReader
 
-#include "FWCore/Utilities/interface/Exception.h"
+#include "tthAnalysis/HiggsToTauTau/interface/RecoLeptonReader.h" // RecoLeptonReader
+#include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2017
-
-#include <TString.h> // Form
+#include <TString.h> // Form()
+#include <TTree.h> // TTree
 
 std::map<std::string, int> RecoMuonReader::numInstances_;
 std::map<std::string, RecoMuonReader *> RecoMuonReader::instances_;
 
-RecoMuonReader::RecoMuonReader(int era, bool readGenMatching)
-  : RecoMuonReader(era, "nselLeptons", "selLeptons", readGenMatching)
+RecoMuonReader::RecoMuonReader(int era,
+                               bool readGenMatching)
+  : RecoMuonReader(era, "nMuon", "Muon", readGenMatching)
 {}
 
-RecoMuonReader::RecoMuonReader(int era, const std::string& branchName_num, const std::string& branchName_obj, bool readGenMatching)
+RecoMuonReader::RecoMuonReader(int era,
+                               const std::string & branchName_num,
+                               const std::string & branchName_obj,
+                               bool readGenMatching)
   : era_(era)
   , use_HIP_mitigation_(true)
   , branchName_num_(branchName_num)
   , branchName_obj_(branchName_obj)
-  , leptonReader_(0)
-  , mediumIdPOG_(0)
-  , segmentCompatibility_(0)
+  , leptonReader_(new RecoLeptonReader(branchName_num_, branchName_obj_, readGenMatching))
+  , mediumIdPOG_(nullptr)
+  , segmentCompatibility_(nullptr)
 {
-  leptonReader_ = new RecoLeptonReader(branchName_num_, branchName_obj_, readGenMatching);
   setBranchNames();
 }
 
@@ -31,24 +34,39 @@ RecoMuonReader::~RecoMuonReader()
   --numInstances_[branchName_obj_];
   assert(numInstances_[branchName_obj_] >= 0);
 
-  if (numInstances_[branchName_obj_] == 0) {
-    RecoMuonReader *gInstance = instances_[branchName_obj_];
+  if(numInstances_[branchName_obj_] == 0)
+  {
+    RecoMuonReader * gInstance = instances_[branchName_obj_];
     assert(gInstance);
     delete[] gInstance->mediumIdPOG_;
     delete[] gInstance->segmentCompatibility_;
-    instances_[branchName_obj_] = 0;
+    instances_[branchName_obj_] = nullptr;
   }
 }
 
-void RecoMuonReader::setBranchNames()
+void
+RecoMuonReader::set_HIP_mitigation(bool use_HIP_mitigation)
 {
-  if ( numInstances_[branchName_obj_] == 0 ) {
-    branchName_mediumIdPOG_ = Form("%s_%s", branchName_obj_.data(), "mediumId"); // Karl: already includes HIP mitigation for 2016 B-F
+  std::cout << "<RecoMuonReader::set_HIP_mitigation> = "
+            << std::boolalpha << use_HIP_mitigation << '\n';
+  use_HIP_mitigation_ = use_HIP_mitigation;
+}
+
+void
+RecoMuonReader::setBranchNames()
+{
+  if(numInstances_[branchName_obj_] == 0)
+  {
+    // Karl: already includes HIP mitigation for 2016 B-F
+    branchName_mediumIdPOG_ = Form("%s_%s", branchName_obj_.data(), "mediumId");
     branchName_segmentCompatibility_ = Form("%s_%s", branchName_obj_.data(), "segmentComp");
     instances_[branchName_obj_] = this;
-  } else {
-    if (branchName_num_ != instances_[branchName_obj_]->branchName_num_) {
-      throw cms::Exception("RecoMuonReader")
+  }
+  else
+  {
+    if(branchName_num_ != instances_[branchName_obj_]->branchName_num_)
+    {
+      throw cmsException(this)
         << "Association between configuration parameters 'branchName_num' and 'branchName_obj' must be unique:"
         << " present association 'branchName_num' = " << branchName_num_ << " with 'branchName_obj' = " << branchName_obj_
         << " does not match previous association 'branchName_num' = " << instances_[branchName_obj_]->branchName_num_
@@ -58,9 +76,11 @@ void RecoMuonReader::setBranchNames()
   ++numInstances_[branchName_obj_];
 }
 
-void RecoMuonReader::setBranchAddresses(TTree *tree)
+void
+RecoMuonReader::setBranchAddresses(TTree * tree)
 {
-  if ( instances_[branchName_obj_] == this ) {
+  if(instances_[branchName_obj_] == this)
+  {
     leptonReader_->setBranchAddresses(tree);
     unsigned int max_nLeptons = leptonReader_->max_nLeptons_;
     mediumIdPOG_ = new Bool_t[max_nLeptons];
@@ -70,23 +90,29 @@ void RecoMuonReader::setBranchAddresses(TTree *tree)
   }
 }
 
-std::vector<RecoMuon> RecoMuonReader::read() const
+std::vector<RecoMuon>
+RecoMuonReader::read() const
 {
-  RecoLeptonReader* gLeptonReader = leptonReader_->instances_[branchName_obj_];
+  const RecoLeptonReader * const gLeptonReader = leptonReader_->instances_[branchName_obj_];
   assert(gLeptonReader);
-  RecoMuonReader* gMuonReader = instances_[branchName_obj_];
+  const RecoMuonReader * const gMuonReader = instances_[branchName_obj_];
   assert(gMuonReader);
   std::vector<RecoMuon> muons;
-  UInt_t nLeptons = gLeptonReader->nLeptons_;
+  const UInt_t nLeptons = gLeptonReader->nLeptons_;
   
-  if ( nLeptons > leptonReader_->max_nLeptons_ ) {
-    throw cms::Exception("RecoMuonReader")
-      << "Number of leptons stored in Ntuple = " << nLeptons << ", exceeds max_nLeptons = " << leptonReader_->max_nLeptons_ << " !!\n";
+  if(nLeptons > leptonReader_->max_nLeptons_)
+  {
+    throw cmsException(this)
+      << "Number of leptons stored in Ntuple = " << nLeptons << ", exceeds max_nLeptons = "
+      << leptonReader_->max_nLeptons_;
   }
-  if ( nLeptons > 0 ) {
+  if(nLeptons > 0)
+  {
     muons.reserve(nLeptons);
-    for ( UInt_t idxLepton = 0; idxLepton < nLeptons; ++idxLepton ) {
-      if ( std::abs(gLeptonReader->pdgId_[idxLepton]) == 13 ) {
+    for(UInt_t idxLepton = 0; idxLepton < nLeptons; ++idxLepton)
+    {
+      if(std::abs(gLeptonReader->pdgId_[idxLepton]) == 13)
+      {
         muons.push_back(RecoMuon({
           gLeptonReader->pt_[idxLepton],
           gLeptonReader->eta_[idxLepton],

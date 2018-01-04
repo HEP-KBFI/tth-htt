@@ -12,9 +12,9 @@ class Particle
 
   Particle();
   Particle(Double_t pt,
-	   Double_t eta,
-	   Double_t phi,
-	   Double_t mass);
+           Double_t eta,
+           Double_t phi,
+           Double_t mass);
   Particle(const Particle::LorentzVector & p4);
 
   virtual ~Particle() {}
@@ -35,7 +35,7 @@ class Particle
 
   bool isValid() const;
 
-  virtual const Particle::LorentzVector& p4() const { return p4_; }
+  virtual const Particle::LorentzVector & p4() const { return p4_; }
 
  protected:
   Double_t pt_;   ///< pT of the particle
@@ -50,6 +50,8 @@ class Particle
   bool isValid_; ///< true if the particle is physical (meaning that its pT > 0)
 };
 
-std::ostream& operator<<(std::ostream& stream, const Particle& particle);
+std::ostream &
+operator<<(std::ostream & stream,
+           const Particle & particle);
 
 #endif // tthAnalysis_HiggsToTauTau_Particle_h

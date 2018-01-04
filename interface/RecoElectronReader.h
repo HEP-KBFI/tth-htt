@@ -1,16 +1,14 @@
 #ifndef tthAnalysis_HiggsToTauTau_RecoElectronReader_h
 #define tthAnalysis_HiggsToTauTau_RecoElectronReader_h
 
-#include "tthAnalysis/HiggsToTauTau/interface/RecoElectron.h" // RecoElectron
-#include "tthAnalysis/HiggsToTauTau/interface/RecoLeptonReader.h" // RecoLeptonReader
 #include "tthAnalysis/HiggsToTauTau/interface/ReaderBase.h" // ReaderBase
+#include "tthAnalysis/HiggsToTauTau/interface/RecoElectron.h" // RecoElectron
 
-#include <Rtypes.h> // Int_t, Float_t
-#include <TTree.h> // TTree
+#include <map> // std::map<,>
 
-#include <string>
-#include <vector>
-#include <map>
+// forward declarations
+class TTree;
+class RecoLeptonReader;
 
 class RecoElectronReader
   : public ReaderBase

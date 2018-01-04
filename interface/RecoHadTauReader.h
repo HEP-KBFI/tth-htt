@@ -1,40 +1,39 @@
 #ifndef tthAnalysis_HiggsToTauTau_RecoHadTauReader_h
 #define tthAnalysis_HiggsToTauTau_RecoHadTauReader_h
 
-#include "tthAnalysis/HiggsToTauTau/interface/RecoHadTau.h" // RecoHadTau
-#include "tthAnalysis/HiggsToTauTau/interface/GenLeptonReader.h" // GenLeptonReader
-#include "tthAnalysis/HiggsToTauTau/interface/GenLepton.h" // GenLepton
-#include "tthAnalysis/HiggsToTauTau/interface/GenHadTauReader.h" // GenHadTauReader
-#include "tthAnalysis/HiggsToTauTau/interface/GenHadTau.h" // GenHadTau
-#include "tthAnalysis/HiggsToTauTau/interface/GenJetReader.h" // GenJetReader
-#include "tthAnalysis/HiggsToTauTau/interface/GenJet.h" // GenJet
 #include "tthAnalysis/HiggsToTauTau/interface/ReaderBase.h" // ReaderBase
+#include "tthAnalysis/HiggsToTauTau/interface/RecoHadTau.h" // RecoHadTau
 
-#include <Rtypes.h> // Int_t, Float_t
-#include <TTree.h> // TTree
-#include <TFile.h> // TFile
-#include <TGraph.h> // TGraph
-#include <TFormula.h> // TFormula
+#include <map> // std::map<,>
 
-#include <string>
-#include <vector>
-#include <map>
+// forward declarations
+class TFile;
+class TGraph;
+class TFormula;
+class TTree;
+class GenLeptonReader;
+class GenHadTauReader;
+class GenJetReader;
 
 class RecoHadTauReader
   : public ReaderBase
 {
  public:
-  RecoHadTauReader(int era, bool readGenMatching = false);
-  RecoHadTauReader(int era, const std::string& branchName_num, const std::string& branchName_obj, bool readGenMatching = false);
+  RecoHadTauReader(int era,
+                   bool readGenMatching = false);
+  RecoHadTauReader(int era,
+                   const std::string & branchName_num,
+                   const std::string & branchName_obj,
+                   bool readGenMatching = false);
   ~RecoHadTauReader();
 
   enum { kHadTauPt_central, kHadTauPt_shiftUp, kHadTauPt_shiftDown };
-  void setHadTauPt_central_or_shift(int hadTauPt_option) { hadTauPt_option_ = hadTauPt_option; }
+  void setHadTauPt_central_or_shift(int hadTauPt_option);
 
   /**
    * @brief Call tree->SetBranchAddress for all RecoHadTau branches
    */
-  void setBranchAddresses(TTree* tree) override;
+  void setBranchAddresses(TTree * tree) override;
 
   /**
    * @brief Read branches from tree and use information to fill collection of RecoHadTau objects
@@ -50,9 +49,9 @@ class RecoHadTauReader
 
   void readDBdR03oldDMwLTEff95();
 
-  TFile* tauIdMVArun2dR03DB_wpFile_;
-  TGraph* DBdR03oldDMwLTEff95_;
-  TFormula* mvaOutput_normalization_DBdR03oldDMwLT_;
+  TFile * tauIdMVArun2dR03DB_wpFile_;
+  TGraph * DBdR03oldDMwLTEff95_;
+  TFormula * mvaOutput_normalization_DBdR03oldDMwLT_;
 
   /**
    * @brief Initialize names of branches to be read from tree
@@ -71,9 +70,9 @@ class RecoHadTauReader
    */
   void readGenMatching(std::vector<RecoHadTau>& hadTaus) const;
 
-  GenLeptonReader* genLeptonReader_;
-  GenHadTauReader* genHadTauReader_;
-  GenJetReader* genJetReader_;
+  GenLeptonReader * genLeptonReader_;
+  GenHadTauReader * genHadTauReader_;
+  GenJetReader * genJetReader_;
   bool readGenMatching_;
 
   std::string branchName_pt_;
@@ -101,31 +100,31 @@ class RecoHadTauReader
   int hadTauPt_option_;
 
   UInt_t nHadTaus_;
-  Float_t* hadTau_pt_;
-  Float_t* hadTau_eta_;
-  Float_t* hadTau_phi_;
-  Float_t* hadTau_mass_;
-  Int_t* hadTau_charge_;
-  Float_t* hadTau_dxy_;
-  Float_t* hadTau_dz_;
-  Int_t* hadTau_decayMode_;
-  Bool_t* hadTau_idDecayMode_;
-  Bool_t* hadTau_idDecayModeNewDMs_;
-  Int_t* hadTau_idMVA_dR03_;
-  Float_t* hadTau_rawMVA_dR03_;
-  Int_t* hadTau_idMVA_dR05_;
-  Float_t* hadTau_rawMVA_dR05_;
-  Int_t* hadTau_idCombIso_dR03_;
-  Float_t* hadTau_rawCombIso_dR03_;
-  Int_t* hadTau_idCombIso_dR05_;
-  Float_t* hadTau_rawCombIso_dR05_;
-  Int_t* hadTau_idAgainstElec_;
-  Int_t* hadTau_idAgainstMu_;
+  Float_t * hadTau_pt_;
+  Float_t * hadTau_eta_;
+  Float_t * hadTau_phi_;
+  Float_t * hadTau_mass_;
+  Int_t * hadTau_charge_;
+  Float_t * hadTau_dxy_;
+  Float_t * hadTau_dz_;
+  Int_t * hadTau_decayMode_;
+  Bool_t * hadTau_idDecayMode_;
+  Bool_t * hadTau_idDecayModeNewDMs_;
+  Int_t * hadTau_idMVA_dR03_;
+  Float_t * hadTau_rawMVA_dR03_;
+  Int_t * hadTau_idMVA_dR05_;
+  Float_t * hadTau_rawMVA_dR05_;
+  Int_t * hadTau_idCombIso_dR03_;
+  Float_t * hadTau_rawCombIso_dR03_;
+  Int_t * hadTau_idCombIso_dR05_;
+  Float_t * hadTau_rawCombIso_dR05_;
+  Int_t * hadTau_idAgainstElec_;
+  Int_t * hadTau_idAgainstMu_;
 
   // CV: make sure that only one RecoHadronicTauReader instance exists for a given branchName,
   //     as ROOT cannot handle multiple TTree::SetBranchAddress calls for the same branch.
   static std::map<std::string, int> numInstances_;
-  static std::map<std::string, RecoHadTauReader*> instances_;
+  static std::map<std::string, RecoHadTauReader *> instances_;
 };
 
 #endif // tthAnalysis_HiggsToTauTau_RecoHadTauReader_h

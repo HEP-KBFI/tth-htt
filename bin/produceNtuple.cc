@@ -227,8 +227,7 @@ int main(int argc, char* argv[])
 
 //--- declare particle collections
   RecoMuonReader* muonReader = new RecoMuonReader(era, Form("n%s", branchName_muons_in.c_str()), branchName_muons_in);
-  if ( use_HIP_mitigation_mediumMuonId ) muonReader->enable_HIP_mitigation();
-  else muonReader->disable_HIP_mitigation();
+  muonReader->set_HIP_mitigation(use_HIP_mitigation_mediumMuonId);
   muonReader->setBranchAddresses(inputTree);
   RecoMuonCollectionGenMatcher muonGenMatcher;
   RecoMuonCollectionSelectorLoose preselMuonSelector(era);

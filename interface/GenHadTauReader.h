@@ -4,25 +4,24 @@
 #include "tthAnalysis/HiggsToTauTau/interface/GenHadTau.h" // GenHadTau
 #include "tthAnalysis/HiggsToTauTau/interface/ReaderBase.h" // ReaderBase
 
-#include <Rtypes.h> // Int_t, Float_t
-#include <TTree.h> // TTree
+#include <map> // std::map<,>
 
-#include <string>
-#include <vector>
-#include <map>
+// forward declarations
+class TTree;
 
 class GenHadTauReader
   : public ReaderBase
 {
  public:
   GenHadTauReader();
-  GenHadTauReader(const std::string& branchName_num, const std::string& branchName_obj);
+  GenHadTauReader(const std::string & branchName_num,
+                  const std::string & branchName_obj);
   ~GenHadTauReader();
 
   /**
    * @brief Call tree->SetBranchAddress for all GenHadTau branches
    */
-  void setBranchAddresses(TTree* tree) override;
+  void setBranchAddresses(TTree * tree) override;
 
   /**
    * @brief Read branches from tree and use information to fill collection of GenHadTau objects
@@ -47,11 +46,11 @@ class GenHadTauReader
   std::string branchName_charge_;
 
   UInt_t nHadTaus_;
-  Float_t* hadTau_pt_;
-  Float_t* hadTau_eta_;
-  Float_t* hadTau_phi_;
-  Float_t* hadTau_mass_;
-  Int_t* hadTau_charge_;
+  Float_t * hadTau_pt_;
+  Float_t * hadTau_eta_;
+  Float_t * hadTau_phi_;
+  Float_t * hadTau_mass_;
+  Int_t * hadTau_charge_;
 
   // CV: make sure that only one GenHadTauReader instance exists for a given branchName,
   //     as ROOT cannot handle multiple TTree::SetBranchAddress calls for the same branch.

@@ -1,28 +1,27 @@
 #ifndef tthAnalysis_HiggsToTauTau_GenParticleReader_h
 #define tthAnalysis_HiggsToTauTau_GenParticleReader_h
 
-#include "tthAnalysis/HiggsToTauTau/interface/GenParticle.h" // GenParticle
 #include "tthAnalysis/HiggsToTauTau/interface/ReaderBase.h" // ReaderBase
+#include "tthAnalysis/HiggsToTauTau/interface/GenParticle.h" // GenParticle
 
-#include <Rtypes.h> // Int_t, Double_t
-#include <TTree.h> // TTree
+#include <map> // std::map<,>
 
-#include <string>
-#include <vector>
-#include <map>
+// forward declarations
+class TTree;
 
 class GenParticleReader
   : public ReaderBase
 {
  public:
   GenParticleReader();
-  GenParticleReader(const std::string& branchName_nParticles, const std::string& branchName_particles);
+  GenParticleReader(const std::string & branchName_nParticles,
+                    const std::string & branchName_particles);
   ~GenParticleReader();
 
   /**
    * @brief Call tree->SetBranchAddress for all GenParticle branches
    */
-  void setBranchAddresses(TTree* tree) override;
+  void setBranchAddresses(TTree * tree) override;
 
   /**
    * @brief Read branches from tree and use information to fill collection of GenParticle objects
@@ -48,12 +47,12 @@ class GenParticleReader
   std::string branchName_particle_charge_;
 
   UInt_t nParticles_;
-  Float_t* particle_pt_;
-  Float_t* particle_eta_;
-  Float_t* particle_phi_;
-  Float_t* particle_mass_;
-  Int_t* particle_pdgId_;
-  Int_t* particle_charge_;
+  Float_t * particle_pt_;
+  Float_t * particle_eta_;
+  Float_t * particle_phi_;
+  Float_t * particle_mass_;
+  Int_t * particle_pdgId_;
+  Int_t * particle_charge_;
 
   // CV: make sure that only one GenParticleReader instance exists for a given branchName,
   //     as ROOT cannot handle multiple TTree::SetBranchAddress calls for the same branch.

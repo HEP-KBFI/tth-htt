@@ -1,16 +1,17 @@
 #include "tthAnalysis/HiggsToTauTau/interface/MEMOutputReader_2lss_1tau.h" // MEMOutputReader_2lss_1tau
 
-#include "FWCore/Utilities/interface/Exception.h"
+#include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 
-#include <TString.h> // Form
+#include <TString.h> // Form()
+#include <TTree.h> // TTree
 
-#include <assert.h> // assert
+#include <cassert> // assert()
 
 std::map<std::string, int> MEMOutputReader_2lss_1tau::numInstances_;
-std::map<std::string, MEMOutputReader_2lss_1tau*> MEMOutputReader_2lss_1tau::instances_;
+std::map<std::string, MEMOutputReader_2lss_1tau *> MEMOutputReader_2lss_1tau::instances_;
 
-MEMOutputReader_2lss_1tau::MEMOutputReader_2lss_1tau(const std::string& branchName_num,
-                                                     const std::string& branchName_obj)
+MEMOutputReader_2lss_1tau::MEMOutputReader_2lss_1tau(const std::string & branchName_num,
+                                                     const std::string & branchName_obj)
   : max_nMEMOutputs_(100)
   , branchName_num_(branchName_num)
   , branchName_obj_(branchName_obj)
@@ -97,11 +98,11 @@ void MEMOutputReader_2lss_1tau::setBranchNames()
   {
     if(branchName_num_ != instances_[branchName_obj_]->branchName_num_)
     {
-      throw cms::Exception("MEMOutputReader_2lss_1tau")
-              << "Association between configuration parameters 'branchName_num' and 'branchName_obj' must be unique:"
-                 " present association 'branchName_num' = " << branchName_num_ << " with 'branchName_obj' = " << branchName_obj_
-              << " does not match previous association 'branchName_num' = " << instances_[branchName_obj_] -> branchName_num_
-              << " with 'branchName_obj' = " << instances_[branchName_obj_] -> branchName_obj_ << " !!\n";
+      throw cmsException(this)
+        << "Association between configuration parameters 'branchName_num' and 'branchName_obj' must be unique:"
+           " present association 'branchName_num' = " << branchName_num_ << " with 'branchName_obj' = " << branchName_obj_
+        << " does not match previous association 'branchName_num' = " << instances_[branchName_obj_] -> branchName_num_
+        << " with 'branchName_obj' = " << instances_[branchName_obj_] -> branchName_obj_ << " !!\n";
     }
   }
   ++numInstances_[branchName_obj_];
@@ -109,7 +110,7 @@ void MEMOutputReader_2lss_1tau::setBranchNames()
 
 
 
-void MEMOutputReader_2lss_1tau::setBranchAddresses(TTree* tree)
+void MEMOutputReader_2lss_1tau::setBranchAddresses(TTree * tree)
 {
   if(instances_[branchName_obj_] == this)
   {
@@ -155,14 +156,15 @@ void MEMOutputReader_2lss_1tau::setBranchAddresses(TTree* tree)
   }
 }
 
-std::vector<MEMOutput_2lss_1tau> MEMOutputReader_2lss_1tau::read() const
+std::vector<MEMOutput_2lss_1tau>
+MEMOutputReader_2lss_1tau::read() const
 {
   MEMOutputReader_2lss_1tau* gInstance = instances_[branchName_obj_];
   assert(gInstance);
   Int_t nMEMOutputs = gInstance -> nMEMOutputs_;
   if(nMEMOutputs > max_nMEMOutputs_)
   {
-    throw cms::Exception("MEMOutputReader_2lss_1tau")
+    throw cmsException(this)
       << "Number of MEMOutputs stored in Ntuple = " << nMEMOutputs << ", "
          "exceeds max_nMEMOutputs = " << max_nMEMOutputs_ << " !!\n";
   }

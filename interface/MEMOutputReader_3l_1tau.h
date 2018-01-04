@@ -1,29 +1,24 @@
 #ifndef tthAnalysis_HiggsToTauTau_MEMOutputReader_3l_1tau_h
 #define tthAnalysis_HiggsToTauTau_MEMOutputReader_3l_1tau_h
 
-#include "tthAnalysis/HiggsToTauTau/interface/MEMOutput_3l_1tau.h" // MEMOutput_3l_1tau
-#include "tthAnalysis/HiggsToTauTau/interface/KeyTypes.h" // RUN_TYPE, LUMI_TYPE, EVT_TYPE
 #include "tthAnalysis/HiggsToTauTau/interface/ReaderBase.h" // ReaderBase
+#include "tthAnalysis/HiggsToTauTau/interface/MEMOutput_3l_1tau.h" // MEMOutput_3l_1tau
 
-#include <Rtypes.h> // Int_t, Double_t
-#include <TTree.h> // TTree
-
-#include <string>
-#include <vector>
-#include <map>
+// forward declarations
+class TTree;
 
 class MEMOutputReader_3l_1tau
   : public ReaderBase
 {
  public:
-  MEMOutputReader_3l_1tau(const std::string& branchName_num,
-                          const std::string& branchName_obj);
+  MEMOutputReader_3l_1tau(const std::string & branchName_num,
+                          const std::string & branchName_obj);
   ~MEMOutputReader_3l_1tau();
 
   /**
    * @brief Call tree->SetBranchAddress for all GenParticle branches
    */
-  void setBranchAddresses(TTree* tree) override;
+  void setBranchAddresses(TTree * tree) override;
 
   /**
    * @brief Read branches from tree and use information to fill collection of MEMOutput_3l_1tau objects
@@ -62,30 +57,30 @@ class MEMOutputReader_3l_1tau
   std::string branchName_errorFlag_;
 
   Int_t nMEMOutputs_;
-  RUN_TYPE* run_;
-  LUMI_TYPE* lumi_;
-  EVT_TYPE* evt_;
-  Float_t* leadLepton_eta_;
-  Float_t* leadLepton_phi_;
-  Float_t* subleadLepton_eta_;
-  Float_t* subleadLepton_phi_;
-  Float_t* thirdLepton_eta_;
-  Float_t* thirdLepton_phi_;
-  Float_t* hadTau_eta_;
-  Float_t* hadTau_phi_;
-  Float_t* weight_ttH_;
-  Float_t* weight_ttZ_;
-  Float_t* weight_ttH_hww_;
-  Float_t* LR_;
-  Float_t* cpuTime_;
-  Float_t* realTime_;
-  Int_t* isValid_;
-  Int_t* errorFlag_;
+  UInt_t * run_;
+  UInt_t * lumi_;
+  ULong64_t * evt_;
+  Float_t * leadLepton_eta_;
+  Float_t * leadLepton_phi_;
+  Float_t * subleadLepton_eta_;
+  Float_t * subleadLepton_phi_;
+  Float_t * thirdLepton_eta_;
+  Float_t * thirdLepton_phi_;
+  Float_t * hadTau_eta_;
+  Float_t * hadTau_phi_;
+  Float_t * weight_ttH_;
+  Float_t * weight_ttZ_;
+  Float_t * weight_ttH_hww_;
+  Float_t * LR_;
+  Float_t * cpuTime_;
+  Float_t * realTime_;
+  Int_t * isValid_;
+  Int_t * errorFlag_;
 
   // CV: make sure that only one MEMOutputReader_3l_1tau instance exists for a given branchName,
   //     as ROOT cannot handle multiple TTree::SetBranchAddress calls for the same branch.
   static std::map<std::string, int> numInstances_;
-  static std::map<std::string, MEMOutputReader_3l_1tau*> instances_;
+  static std::map<std::string, MEMOutputReader_3l_1tau *> instances_;
 };
 
 #endif // tthAnalysis_HiggsToTauTau_GenParticleReader_h

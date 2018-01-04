@@ -3,7 +3,8 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/GenParticle.h" // GenParticle
 
-class GenLepton : public GenParticle
+class GenLepton
+  : public GenParticle
 {
  public:
   GenLepton() = default;
@@ -21,11 +22,13 @@ class GenLepton : public GenParticle
   GenLepton(const math::PtEtaPhiMLorentzVector & p4,
             Int_t pdgId);
 
-  virtual ~GenLepton() {};
+  virtual ~GenLepton() {}
 
   operator GenParticle() const;
 };
 
-std::ostream& operator<<(std::ostream& stream, const GenLepton& lepton);
+std::ostream &
+operator<<(std::ostream & stream,
+           const GenLepton & lepton);
 
 #endif // tthAnalysis_HiggsToTauTau_GenLepton_h

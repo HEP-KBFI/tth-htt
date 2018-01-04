@@ -1,46 +1,50 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoLeptonReader.h" // RecoLeptonReader
 
-#include "FWCore/Utilities/interface/Exception.h"
+#include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 
-#include <TString.h> // Form
+#include <TString.h> // Form()
+#include <TTree.h> // TTree
 
 std::map<std::string, int> RecoLeptonReader::numInstances_;
 std::map<std::string, RecoLeptonReader *> RecoLeptonReader::instances_;
 
 RecoLeptonReader::RecoLeptonReader(bool readGenMatching)
-  : RecoLeptonReader("nselLeptons", "selLeptons", readGenMatching)
+  : RecoLeptonReader("nLepton", "Lepton", readGenMatching)
 {}
 
-RecoLeptonReader::RecoLeptonReader(const std::string& branchName_num, const std::string& branchName_obj, bool readGenMatching)
+RecoLeptonReader::RecoLeptonReader(const std::string & branchName_num,
+                                   const std::string & branchName_obj,
+                                   bool readGenMatching)
   : max_nLeptons_(32)
   , branchName_num_(branchName_num)
   , branchName_obj_(branchName_obj)
-  , genLeptonReader_(0)
-  , genHadTauReader_(0)
-  , genJetReader_(0)
+  , genLeptonReader_(nullptr)
+  , genHadTauReader_(nullptr)
+  , genJetReader_(nullptr)
   , readGenMatching_(readGenMatching)
-  , pt_(0)
-  , eta_(0)
-  , phi_(0)
-  , mass_(0)
-  , pdgId_(0)
-  , dxy_(0)
-  , dz_(0)
-  , relIso_all_(0)
-  , hadRelIso03_chg_(0)
-  , absIso_chg_(0)
-  , absIso_neu_(0)
-  , sip3d_(0)
-  , mvaRawTTH_(0)
-  , jetPtRatio_(0)
-  , jetBtagCSV_(0)
-  , tightCharge_(0)
-  , charge_(0)
+  , pt_(nullptr)
+  , eta_(nullptr)
+  , phi_(nullptr)
+  , mass_(nullptr)
+  , pdgId_(nullptr)
+  , dxy_(nullptr)
+  , dz_(nullptr)
+  , relIso_all_(nullptr)
+  , hadRelIso03_chg_(nullptr)
+  , absIso_chg_(nullptr)
+  , absIso_neu_(nullptr)
+  , sip3d_(nullptr)
+  , mvaRawTTH_(nullptr)
+  , jetPtRatio_(nullptr)
+  , jetBtagCSV_(nullptr)
+  , tightCharge_(nullptr)
+  , charge_(nullptr)
 {
-  if ( readGenMatching_ ) {
+  if(readGenMatching_)
+  {
     genLeptonReader_ = new GenLeptonReader(Form("%s_genLepton", branchName_num_.data()), Form("%s_genLepton", branchName_obj_.data()));
-    genHadTauReader_ = new GenHadTauReader(Form("%s_genTau", branchName_num_.data()), Form("%s_genTau", branchName_obj_.data()));
-    genJetReader_ = new GenJetReader(Form("%s_genJet", branchName_num_.data()), Form("%s_genJet", branchName_obj_.data()));
+    genHadTauReader_ = new GenHadTauReader(Form("%s_genTau",    branchName_num_.data()), Form("%s_genTau",    branchName_obj_.data()));
+    genJetReader_    = new GenJetReader   (Form("%s_genJet",    branchName_num_.data()), Form("%s_genJet",    branchName_obj_.data()));
   }
   setBranchNames();
 }
@@ -50,8 +54,9 @@ RecoLeptonReader::~RecoLeptonReader()
   --numInstances_[branchName_obj_];
   assert(numInstances_[branchName_obj_] >= 0);
 
-  if ( numInstances_[branchName_obj_] == 0 ) {
-    RecoLeptonReader* gInstance = instances_[branchName_obj_];
+  if(numInstances_[branchName_obj_] == 0)
+  {
+    RecoLeptonReader * const gInstance = instances_[branchName_obj_];
     assert(gInstance);
     delete gInstance->genLeptonReader_;
     delete gInstance->genHadTauReader_;
@@ -73,13 +78,15 @@ RecoLeptonReader::~RecoLeptonReader()
     delete gInstance->jetBtagCSV_;
     delete gInstance->tightCharge_;
     delete gInstance->charge_;
-    instances_[branchName_obj_] = 0;
+    instances_[branchName_obj_] = nullptr;
   }
 }
 
-void RecoLeptonReader::setBranchNames()
+void
+RecoLeptonReader::setBranchNames()
 {
-  if ( numInstances_[branchName_obj_] == 0 ) {
+  if(numInstances_[branchName_obj_] == 0)
+  {
     branchName_pt_ = Form("%s_%s", branchName_obj_.data(), "pt");
     branchName_eta_ = Form("%s_%s", branchName_obj_.data(), "eta");
     branchName_phi_ = Form("%s_%s", branchName_obj_.data(), "phi");
@@ -98,9 +105,12 @@ void RecoLeptonReader::setBranchNames()
     branchName_tightCharge_ = Form("%s_%s", branchName_obj_.data(), "tightCharge");
     branchName_charge_ = Form("%s_%s", branchName_obj_.data(), "charge");
     instances_[branchName_obj_] = this;
-  } else {
-    if ( branchName_num_ != instances_[branchName_obj_]->branchName_num_ ) {
-      throw cms::Exception("RecoLeptonReader")
+  }
+  else
+  {
+    if(branchName_num_ != instances_[branchName_obj_]->branchName_num_)
+    {
+      throw cmsException(this)
         << "Association between configuration parameters 'branchName_num' and 'branchName_obj' must be unique:"
         << " present association 'branchName_num' = " << branchName_num_ << " with 'branchName_obj' = " << branchName_obj_
         << " does not match previous association 'branchName_num' = " << instances_[branchName_obj_]->branchName_num_
@@ -110,10 +120,13 @@ void RecoLeptonReader::setBranchNames()
   ++numInstances_[branchName_obj_];
 }
 
-void RecoLeptonReader::setBranchAddresses(TTree *tree)
+void
+RecoLeptonReader::setBranchAddresses(TTree * tree)
 {
-  if ( instances_[branchName_obj_] == this ) {
-    if ( readGenMatching_ ) {
+  if(instances_[branchName_obj_] == this)
+  {
+    if(readGenMatching_)
+    {
       genLeptonReader_->setBranchAddresses(tree);
       genHadTauReader_->setBranchAddresses(tree);
       genJetReader_->setBranchAddresses(tree);  

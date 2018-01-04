@@ -1,42 +1,41 @@
 #ifndef tthAnalysis_HiggsToTauTau_RecoJetReader_h
 #define tthAnalysis_HiggsToTauTau_RecoJetReader_h
 
-#include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h" // RecoJet
-#include "tthAnalysis/HiggsToTauTau/interface/GenLeptonReader.h" // GenLeptonReader
-#include "tthAnalysis/HiggsToTauTau/interface/GenLepton.h" // GenLepton
-#include "tthAnalysis/HiggsToTauTau/interface/GenHadTauReader.h" // GenHadTauReader
-#include "tthAnalysis/HiggsToTauTau/interface/GenHadTau.h" // GenHadTau
-#include "tthAnalysis/HiggsToTauTau/interface/GenJetReader.h" // GenJetReader
-#include "tthAnalysis/HiggsToTauTau/interface/GenJet.h" // GenJet
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2017
 #include "tthAnalysis/HiggsToTauTau/interface/ReaderBase.h" // ReaderBase
+#include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h" // RecoJet
 
-#include <Rtypes.h> // Int_t, Float_t
-#include <TTree.h> // TTree
+#include <map> // std::map<,>
 
-#include <string>
-#include <vector>
-#include <map>
+// forward declarations
+class TTree;
+class GenLeptonReader;
+class GenHadTauReader;
+class GenJetReader;
 
 class RecoJetReader
   : public ReaderBase
 {
  public:
-  RecoJetReader(int era, bool isMC, bool readGenMatching = false);
-  RecoJetReader(int era, bool isMC, const std::string& branchName_num, const std::string& branchName_obj, bool readGenMatching = false);
+  RecoJetReader(int era,
+                bool isMC,
+                bool readGenMatching = false);
+  RecoJetReader(int era,
+                bool isMC,
+                const std::string & branchName_num,
+                const std::string & branchName_obj,
+                bool readGenMatching = false);
   ~RecoJetReader();
 
   enum { kJetPt_central, kJetPt_jecUp, kJetPt_jecDown };
-  void setJetPt_central_or_shift(int jetPt_option) { jetPt_option_ = jetPt_option; }
 
-  void setBranchName_BtagWeight(const std::string& branchName_BtagWeight) { branchName_BtagWeight_ = branchName_BtagWeight; }
-
-  void read_BtagWeight_systematics(bool flag) { read_BtagWeight_systematics_ = flag; }
+  void setJetPt_central_or_shift(int jetPt_option);
+  void setBranchName_BtagWeight(const std::string & branchName_BtagWeight);
+  void read_BtagWeight_systematics(bool flag);
 
   /**
    * @brief Call tree->SetBranchAddress for all RecoJet branches
    */
-  void setBranchAddresses(TTree* tree) override;
+  void setBranchAddresses(TTree * tree) override;
 
   /**
    * @brief Read branches from tree and use information to fill collection of RecoJet objects
@@ -63,9 +62,9 @@ class RecoJetReader
    */
   void readGenMatching(std::vector<RecoJet>& jets) const;
 
-  GenLeptonReader* genLeptonReader_;
-  GenHadTauReader* genHadTauReader_;
-  GenJetReader* genJetReader_;
+  GenLeptonReader * genLeptonReader_;
+  GenHadTauReader * genHadTauReader_;
+  GenJetReader * genJetReader_;
   bool readGenMatching_;
  
   std::string branchName_pt_;
@@ -85,22 +84,22 @@ class RecoJetReader
   bool read_BtagWeight_systematics_;
 
   UInt_t nJets_;
-  Float_t* jet_pt_;
-  Float_t* jet_eta_;
-  Float_t* jet_phi_;
-  Float_t* jet_mass_;
-  Float_t* jet_jecUncertTotal_;
-  Float_t* jet_BtagCSV_;
-  Float_t* jet_BtagWeight_;
-  Float_t* jet_QGDiscr_;
-  Int_t* jet_heppyFlavour_;
+  Float_t * jet_pt_;
+  Float_t * jet_eta_;
+  Float_t * jet_phi_;
+  Float_t * jet_mass_;
+  Float_t * jet_jecUncertTotal_;
+  Float_t * jet_BtagCSV_;
+  Float_t * jet_BtagWeight_;
+  Float_t * jet_QGDiscr_;
+  Int_t * jet_heppyFlavour_;
 
-  std::map<int, Float_t*> jet_BtagWeights_systematics_; // CV: needed by RecoJetWriter
+  std::map<int, Float_t *> jet_BtagWeights_systematics_; // CV: needed by RecoJetWriter
 
   // CV: make sure that only one RecoJetReader instance exists for a given branchName,
   //     as ROOT cannot handle multiple TTree::SetBranchAddress calls for the same branch.
   static std::map<std::string, int> numInstances_;
-  static std::map<std::string, RecoJetReader*> instances_;
+  static std::map<std::string, RecoJetReader *> instances_;
 };
 
 #endif // tthAnalysis_HiggsToTauTau_RecoJetReader_h

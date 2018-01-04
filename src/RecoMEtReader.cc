@@ -1,24 +1,21 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMEtReader.h" // RecoMEtReader
 
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // getBranchName_MEt()
+#include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 
-#include <FWCore/Utilities/interface/Exception.h>
-
-#include <TString.h> // Form
+#include <TString.h> // Form()
 #include <TTree.h> // TTree
 
 std::map<std::string, int> RecoMEtReader::numInstances_;
-std::map<std::string, RecoMEtReader*> RecoMEtReader::instances_;
+std::map<std::string, RecoMEtReader *> RecoMEtReader::instances_;
 
 RecoMEtReader::RecoMEtReader(int era)
-  : era_(era)
-  , branchName_obj_("MET")
-  , met_option_(kMEt_central)
-{
-  setBranchNames();
-}
+  : RecoMEtReader(era, "MET")
+{}
 
-RecoMEtReader::RecoMEtReader(int era, const std::string& branchName_obj, const std::string& branchName_cov)
+RecoMEtReader::RecoMEtReader(int era,
+                             const std::string & branchName_obj,
+                             const std::string & branchName_cov)
   : era_(era)
   , branchName_obj_(branchName_obj)
   , branchName_cov_(branchName_cov.empty() ? branchName_obj_ : branchName_cov)
@@ -31,14 +28,22 @@ RecoMEtReader::~RecoMEtReader()
 {
   --numInstances_[branchName_obj_];
   assert(numInstances_[branchName_obj_] >= 0);
-  if ( numInstances_[branchName_obj_] == 0 ) {
-    RecoMEtReader* gInstance = instances_[branchName_obj_];
+  if(numInstances_[branchName_obj_] == 0)
+  {
+    RecoMEtReader * const gInstance = instances_[branchName_obj_];
     assert(gInstance);
-    instances_[branchName_obj_] = 0;
+    instances_[branchName_obj_] = nullptr;
   }
 }
 
-void RecoMEtReader::setBranchNames()
+void
+RecoMEtReader::setMEt_central_or_shift(int met_option)
+{
+  met_option_ = met_option;
+}
+
+void
+RecoMEtReader::setBranchNames()
 {
   if(numInstances_[branchName_obj_] == 0)
   {
@@ -57,7 +62,8 @@ void RecoMEtReader::setBranchNames()
   ++numInstances_[branchName_obj_];
 }
 
-void RecoMEtReader::setBranchAddresses(TTree* tree)
+void
+RecoMEtReader::setBranchAddresses(TTree * tree)
 {
   if(instances_[branchName_obj_] == this)
   {
@@ -73,9 +79,10 @@ void RecoMEtReader::setBranchAddresses(TTree* tree)
   }
 }
 
-RecoMEt RecoMEtReader::read() const
+RecoMEt
+RecoMEtReader::read() const
 {
-  RecoMEtReader* gInstance = instances_[branchName_obj_];
+  const RecoMEtReader * const gInstance = instances_[branchName_obj_];
   assert(gInstance);
   RecoMEt met = met_;
   met.default_ = met.systematics_[met_option_];

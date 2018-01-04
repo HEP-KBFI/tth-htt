@@ -1,29 +1,29 @@
 #ifndef tthAnalysis_HiggsToTauTau_GenLeptonReader_h
 #define tthAnalysis_HiggsToTauTau_GenLeptonReader_h
 
-#include "tthAnalysis/HiggsToTauTau/interface/GenLepton.h" // GenLepton
 #include "tthAnalysis/HiggsToTauTau/interface/ReaderBase.h" // ReaderBase
+#include "tthAnalysis/HiggsToTauTau/interface/GenLepton.h" // GenLepton
 
-#include <Rtypes.h> // Int_t, Double_t
-#include <TTree.h> // TTree
+#include <map> // std::map<,>
 
-#include <string>
-#include <vector>
-#include <map>
+// forward declarations
+class TTree;
 
 class GenLeptonReader
   : public ReaderBase
 {
  public:
   GenLeptonReader();
-  GenLeptonReader(const std::string& branchName_nPromptLeptons, const std::string& branchName_promptLeptons,
-          const std::string& branchName_nLeptonsFromTau= "", const std::string& branchName_leptonsFromTau= "");
+  GenLeptonReader(const std::string & branchName_nPromptLeptons,
+                  const std::string & branchName_promptLeptons,
+                  const std::string & branchName_nLeptonsFromTau = "",
+                  const std::string & branchName_leptonsFromTau = "");
   ~GenLeptonReader();
 
   /**
    * @brief Call tree->SetBranchAddress for all GenLepton branches
    */
-  void setBranchAddresses(TTree* tree) override;
+  void setBranchAddresses(TTree * tree) override;
 
   /**
    * @brief Read branches from tree and use information to fill collection of GenLepton objects
@@ -56,11 +56,11 @@ class GenLeptonReader
   std::string branchName_promptLepton_pdgId_;
 
   UInt_t nPromptLeptons_;
-  Float_t* promptLepton_pt_;
-  Float_t* promptLepton_eta_;
-  Float_t* promptLepton_phi_;
-  Float_t* promptLepton_mass_;
-  Int_t* promptLepton_pdgId_;
+  Float_t * promptLepton_pt_;
+  Float_t * promptLepton_eta_;
+  Float_t * promptLepton_phi_;
+  Float_t * promptLepton_mass_;
+  Int_t * promptLepton_pdgId_;
 
   std::string branchName_leptonFromTau_pt_;
   std::string branchName_leptonFromTau_eta_;
@@ -69,16 +69,16 @@ class GenLeptonReader
   std::string branchName_leptonFromTau_pdgId_;
 
   UInt_t nLeptonsFromTau_;
-  Float_t* leptonFromTau_pt_;
-  Float_t* leptonFromTau_eta_;
-  Float_t* leptonFromTau_phi_;
-  Float_t* leptonFromTau_mass_;
-  Int_t* leptonFromTau_pdgId_;
+  Float_t * leptonFromTau_pt_;
+  Float_t * leptonFromTau_eta_;
+  Float_t * leptonFromTau_phi_;
+  Float_t * leptonFromTau_mass_;
+  Int_t * leptonFromTau_pdgId_;
 
   // CV: make sure that only one GenLeptonReader instance exists for a given branchName,
   //     as ROOT cannot handle multiple TTree::SetBranchAddress calls for the same branch.
   static std::map<std::string, int> numInstances_;
-  static std::map<std::string, GenLeptonReader*> instances_;
+  static std::map<std::string, GenLeptonReader *> instances_;
 };
 
 #endif // tthAnalysis_HiggsToTauTau_GenLeptonReader_h
