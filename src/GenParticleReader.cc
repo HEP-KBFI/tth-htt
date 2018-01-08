@@ -1,9 +1,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/GenParticleReader.h" // GenParticleReader
 
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
-
-#include <TString.h> // Form()
-#include <TTree.h> // TTree
+#include "tthAnalysis/HiggsToTauTau/interface/BranchAddressInitializer.h" // BranchAddressInitializer, TTree, Form()
 
 std::map<std::string, int> GenParticleReader::numInstances_;
 std::map<std::string, GenParticleReader *> GenParticleReader::instances_;
@@ -46,7 +44,8 @@ GenParticleReader::~GenParticleReader()
   }
 }
 
-void GenParticleReader::setBranchNames()
+void
+GenParticleReader::setBranchNames()
 {
   if(numInstances_[branchName_particles_] == 0)
   {
@@ -75,25 +74,23 @@ void GenParticleReader::setBranchNames()
   ++numInstances_[branchName_particles_];
 }
 
-void
+std::vector<std::string>
 GenParticleReader::setBranchAddresses(TTree * tree)
 {
+  std::vector<std::string> branchNames;
   if(instances_[branchName_particles_] == this)
   {
-    tree->SetBranchAddress(branchName_nParticles_.data(), &nParticles_);   
-    particle_pt_ = new Float_t[max_nParticles_];
-    tree->SetBranchAddress(branchName_particle_pt_.data(), particle_pt_); 
-    particle_eta_ = new Float_t[max_nParticles_];
-    tree->SetBranchAddress(branchName_particle_eta_.data(), particle_eta_); 
-    particle_phi_ = new Float_t[max_nParticles_];
-    tree->SetBranchAddress(branchName_particle_phi_.data(), particle_phi_); 
-    particle_mass_ = new Float_t[max_nParticles_];
-    tree->SetBranchAddress(branchName_particle_mass_.data(), particle_mass_); 
-    particle_pdgId_ = new Int_t[max_nParticles_];
-    tree->SetBranchAddress(branchName_particle_pdgId_.data(), particle_pdgId_); 
-    particle_charge_ = new Int_t[max_nParticles_];
-    tree->SetBranchAddress(branchName_particle_charge_.data(), particle_charge_); 
+    BranchAddressInitializer bai(tree, max_nParticles_);
+    bai.setBranchAddress(nParticles_, branchName_nParticles_);
+    bai.setBranchAddress(particle_pt_, branchName_particle_pt_);
+    bai.setBranchAddress(particle_eta_, branchName_particle_eta_);
+    bai.setBranchAddress(particle_phi_, branchName_particle_phi_);
+    bai.setBranchAddress(particle_mass_, branchName_particle_mass_);
+    bai.setBranchAddress(particle_pdgId_, branchName_particle_pdgId_);
+    bai.setBranchAddress(particle_charge_, branchName_particle_charge_);
+    bai.mergeBranchNames(branchNames);
   }
+  return branchNames;
 }
 
 std::vector<GenParticle>
@@ -106,7 +103,7 @@ GenParticleReader::read() const
   if ( nParticles > max_nParticles_ ) {
     throw cmsException(this)
       << "Number of particles stored in Ntuple = " << nParticles << "," 
-      << " exceeds max_nParticles = " << max_nParticles_ << " !!\n";
+         " exceeds max_nParticles = " << max_nParticles_ << " !!\n";
   }
 
   std::vector<GenParticle> particles;

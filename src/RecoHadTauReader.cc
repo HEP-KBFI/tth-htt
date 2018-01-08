@@ -6,9 +6,8 @@
 #include "tthAnalysis/HiggsToTauTau/interface/LocalFileInPath.h" // LocalFileInPath
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // setValue_int(), setValue_float()
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
+#include "tthAnalysis/HiggsToTauTau/interface/BranchAddressInitializer.h" // BranchAddressInitializer, TTree, Form()
 
-#include <TString.h> // Form()
-#include <TTree.h> // TTree
 #include <TFile.h> // TFile
 #include <TGraph.h> // TGraph
 #include <TFormula.h> // TFormula
@@ -121,7 +120,8 @@ RecoHadTauReader::setHadTauPt_central_or_shift(int hadTauPt_option)
   hadTauPt_option_ = hadTauPt_option;
 }
 
-void RecoHadTauReader::readDBdR03oldDMwLTEff95()
+void
+RecoHadTauReader::readDBdR03oldDMwLTEff95()
 {
   RecoHadTauReader * gInstance = instances_.begin()->second;
   assert(gInstance);
@@ -141,7 +141,8 @@ void RecoHadTauReader::readDBdR03oldDMwLTEff95()
   );
 }
 
-void RecoHadTauReader::setBranchNames()
+void
+RecoHadTauReader::setBranchNames()
 {
   if(numInstances_[branchName_obj_] == 0)
   {
@@ -181,61 +182,43 @@ void RecoHadTauReader::setBranchNames()
   ++numInstances_[branchName_obj_];
 }
 
-void
+std::vector<std::string>
 RecoHadTauReader::setBranchAddresses(TTree * tree)
 {
+  std::vector<std::string> branchNames;
   if(instances_[branchName_obj_] == this)
   {
     if(readGenMatching_)
     {
-      genLeptonReader_->setBranchAddresses(tree);
-      genHadTauReader_->setBranchAddresses(tree);
-      genJetReader_->setBranchAddresses(tree);  
+      BranchAddressInitializer::mergeBranchNames(genLeptonReader_->setBranchAddresses(tree), branchNames);
+      BranchAddressInitializer::mergeBranchNames(genHadTauReader_->setBranchAddresses(tree), branchNames);
+      BranchAddressInitializer::mergeBranchNames(genJetReader_->setBranchAddresses(tree), branchNames);
     }
-    tree->SetBranchAddress(branchName_num_.data(), &nHadTaus_);   
-    hadTau_pt_ = new Float_t[max_nHadTaus_];
-    tree->SetBranchAddress(branchName_pt_.data(), hadTau_pt_); 
-    hadTau_eta_ = new Float_t[max_nHadTaus_];
-    tree->SetBranchAddress(branchName_eta_.data(), hadTau_eta_); 
-    hadTau_phi_ = new Float_t[max_nHadTaus_];
-    tree->SetBranchAddress(branchName_phi_.data(), hadTau_phi_); 
-    hadTau_mass_ = new Float_t[max_nHadTaus_];
-    tree->SetBranchAddress(branchName_mass_.data(), hadTau_mass_); 
-    hadTau_charge_ = new Int_t[max_nHadTaus_];
-    tree->SetBranchAddress(branchName_charge_.data(), hadTau_charge_); 
-    hadTau_dxy_ = new Float_t[max_nHadTaus_];
-    tree->SetBranchAddress(branchName_dxy_.data(), hadTau_dxy_);
-    hadTau_dz_ = new Float_t[max_nHadTaus_];
-    tree->SetBranchAddress(branchName_dz_.data(), hadTau_dz_);
-    hadTau_decayMode_ = new Int_t[max_nHadTaus_];
-    tree->SetBranchAddress(branchName_decayMode_.data(), hadTau_decayMode_);
-    hadTau_idDecayMode_ = new Bool_t[max_nHadTaus_];
-    tree->SetBranchAddress(branchName_idDecayMode_.data(), hadTau_idDecayMode_);
-    hadTau_idDecayModeNewDMs_ = new Bool_t[max_nHadTaus_];
-    tree->SetBranchAddress(branchName_idDecayModeNewDMs_.data(), hadTau_idDecayModeNewDMs_);
-    hadTau_idMVA_dR03_ = new Int_t[max_nHadTaus_];
-    tree->SetBranchAddress(branchName_idMVA_dR03_.data(), hadTau_idMVA_dR03_); 
-    hadTau_rawMVA_dR03_ = new Float_t[max_nHadTaus_];
-    tree->SetBranchAddress(branchName_rawMVA_dR03_.data(), hadTau_rawMVA_dR03_); 
-    hadTau_idMVA_dR05_ = new Int_t[max_nHadTaus_];
-    tree->SetBranchAddress(branchName_idMVA_dR05_.data(), hadTau_idMVA_dR05_);
-    hadTau_rawMVA_dR05_ = new Float_t[max_nHadTaus_];
-    tree->SetBranchAddress(branchName_rawMVA_dR05_.data(), hadTau_rawMVA_dR05_); 
-//--- Karl: the following tau ID (fallback) variables missing in nanoAOD
-    hadTau_idCombIso_dR03_ = new Int_t[max_nHadTaus_];
-    setValue_int(hadTau_idCombIso_dR03_, max_nHadTaus_, -1);
-    hadTau_rawCombIso_dR03_ = new Float_t[max_nHadTaus_];
-    setValue_float(hadTau_rawCombIso_dR03_, max_nHadTaus_, -1.);
-    hadTau_idCombIso_dR05_ = new Int_t[max_nHadTaus_];
-    setValue_int(hadTau_idCombIso_dR05_, max_nHadTaus_, -1);
-    hadTau_rawCombIso_dR05_ = new Float_t[max_nHadTaus_];
-    setValue_float(hadTau_rawCombIso_dR05_, max_nHadTaus_, -1.);
-//--- end
-    hadTau_idAgainstElec_ = new Int_t[max_nHadTaus_];
-    tree->SetBranchAddress(branchName_idAgainstElec_.data(), hadTau_idAgainstElec_); 
-    hadTau_idAgainstMu_ = new Int_t[max_nHadTaus_];
-    tree->SetBranchAddress(branchName_idAgainstMu_.data(), hadTau_idAgainstMu_);
+    BranchAddressInitializer bai(tree, max_nHadTaus_);
+    bai.setBranchAddress(nHadTaus_, branchName_num_);
+    bai.setBranchAddress(hadTau_pt_, branchName_pt_);
+    bai.setBranchAddress(hadTau_eta_, branchName_eta_);
+    bai.setBranchAddress(hadTau_phi_, branchName_phi_);
+    bai.setBranchAddress(hadTau_mass_, branchName_mass_);
+    bai.setBranchAddress(hadTau_charge_, branchName_charge_);
+    bai.setBranchAddress(hadTau_dxy_, branchName_dxy_);
+    bai.setBranchAddress(hadTau_dz_, branchName_dz_);
+    bai.setBranchAddress(hadTau_decayMode_, branchName_decayMode_);
+    bai.setBranchAddress(hadTau_idDecayMode_, branchName_idDecayMode_);
+    bai.setBranchAddress(hadTau_idDecayModeNewDMs_, branchName_idDecayModeNewDMs_);
+    bai.setBranchAddress(hadTau_idMVA_dR03_, branchName_idMVA_dR03_);
+    bai.setBranchAddress(hadTau_rawMVA_dR03_, branchName_rawMVA_dR03_);
+    bai.setBranchAddress(hadTau_idMVA_dR05_, branchName_idMVA_dR05_);
+    bai.setBranchAddress(hadTau_rawMVA_dR05_, branchName_rawMVA_dR05_);
+    bai.setBranchAddress(hadTau_idCombIso_dR03_, "", -1);
+    bai.setBranchAddress(hadTau_rawCombIso_dR03_, "", -1.);
+    bai.setBranchAddress(hadTau_idCombIso_dR05_, "", -1);
+    bai.setBranchAddress(hadTau_rawCombIso_dR05_, "", -1.);
+    bai.setBranchAddress(hadTau_idAgainstElec_, branchName_idAgainstElec_);
+    bai.setBranchAddress(hadTau_idAgainstMu_, branchName_idAgainstMu_);
+    bai.mergeBranchNames(branchNames);
   }
+  return branchNames;
 }
 
 std::vector<RecoHadTau>

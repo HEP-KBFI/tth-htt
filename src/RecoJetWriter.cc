@@ -80,7 +80,7 @@ void RecoJetWriter::setBranches(TTree * tree)
   genHadTauWriter_->setBranches(tree);
   genJetWriter_->setBranches(tree);
 
-  BranchAddressInitializer bai(tree, branchName_num_, max_nJets_);
+  BranchAddressInitializer bai(tree, max_nJets_, branchName_num_);
   bai.setBranch(nJets_, branchName_num_);
   bai.setBranch(jet_pt_, branchName_pt_);
   bai.setBranch(jet_eta_, branchName_eta_);

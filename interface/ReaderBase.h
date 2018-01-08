@@ -3,13 +3,16 @@
 
 class TTree; // forward declaration
 
+#include <vector> // std::vector<>
+#include <string> // std::string
+
 class ReaderBase
 {
 public:
   ReaderBase() = default;
   virtual ~ReaderBase() {}
 
-  virtual void
+  virtual std::vector<std::string>
   setBranchAddresses(TTree * tree) = 0;
 };
 

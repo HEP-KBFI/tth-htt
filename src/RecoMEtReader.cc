@@ -2,9 +2,7 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // getBranchName_MEt()
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
-
-#include <TString.h> // Form()
-#include <TTree.h> // TTree
+#include "tthAnalysis/HiggsToTauTau/interface/BranchAddressInitializer.h" // BranchAddressInitializer, TTree, Form()
 
 std::map<std::string, int> RecoMEtReader::numInstances_;
 std::map<std::string, RecoMEtReader *> RecoMEtReader::instances_;
@@ -62,21 +60,25 @@ RecoMEtReader::setBranchNames()
   ++numInstances_[branchName_obj_];
 }
 
-void
+std::vector<std::string>
 RecoMEtReader::setBranchAddresses(TTree * tree)
 {
+  std::vector<std::string> branchNames;
   if(instances_[branchName_obj_] == this)
   {
+    BranchAddressInitializer bai(tree);
     for(int met_option = kMEt_central; met_option <= kMEt_shifted_UnclusteredEnDown; ++met_option)
     {
       met_.systematics_[met_option] = {0., 0.};
-      tree->SetBranchAddress(branchName_pt_[met_option].data(),  &met_.systematics_[met_option].pt_);
-      tree->SetBranchAddress(branchName_phi_[met_option].data(), &met_.systematics_[met_option].phi_);
+      bai.setBranchAddress(met_.systematics_[met_option].pt_, branchName_pt_[met_option]);
+      bai.setBranchAddress(met_.systematics_[met_option].phi_, branchName_phi_[met_option]);
     }
-    tree->SetBranchAddress(branchName_covXX_.data(), &met_.covXX_);
-    tree->SetBranchAddress(branchName_covXY_.data(), &met_.covXY_);
-    tree->SetBranchAddress(branchName_covYY_.data(), &met_.covYY_);
+    bai.setBranchAddress(met_.covXX_, branchName_covXX_);
+    bai.setBranchAddress(met_.covXY_, branchName_covXY_);
+    bai.setBranchAddress(met_.covYY_, branchName_covYY_);
+    bai.mergeBranchNames(branchNames);
   }
+  return branchNames;
 }
 
 RecoMEt

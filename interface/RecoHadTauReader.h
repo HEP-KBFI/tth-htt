@@ -33,7 +33,7 @@ class RecoHadTauReader
   /**
    * @brief Call tree->SetBranchAddress for all RecoHadTau branches
    */
-  void setBranchAddresses(TTree * tree) override;
+  std::vector<std::string> setBranchAddresses(TTree * tree) override;
 
   /**
    * @brief Read branches from tree and use information to fill collection of RecoHadTau objects

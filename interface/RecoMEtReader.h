@@ -30,7 +30,7 @@ class RecoMEtReader
   /**
    * @brief Call tree->SetBranchAddress for all RecoMEt branches
    */
-  void setBranchAddresses(TTree * tree) override;
+  std::vector<std::string> setBranchAddresses(TTree * tree) override;
 
   /**
    * @brief Read branches from tree and use information to fill RecoMEt object

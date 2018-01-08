@@ -6,9 +6,7 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kBtag_*
-
-#include <TString.h> // Form()
-#include <TTree.h> // TTree
+#include "tthAnalysis/HiggsToTauTau/interface/BranchAddressInitializer.h" // BranchAddressInitializer, TTree, Form()
 
 std::map<std::string, int> RecoJetReader::numInstances_;
 std::map<std::string, RecoJetReader *> RecoJetReader::instances_;
@@ -134,70 +132,39 @@ void RecoJetReader::setBranchNames()
   ++numInstances_[branchName_obj_];
 }
 
-void
+std::vector<std::string>
 RecoJetReader::setBranchAddresses(TTree * tree)
 {
+  std::vector<std::string> branchNames;
   if(instances_[branchName_obj_] == this)
   {
+    BranchAddressInitializer bai(tree, max_nJets_);
     if(readGenMatching_)
     {
-      genLeptonReader_->setBranchAddresses(tree);
-      genHadTauReader_->setBranchAddresses(tree);
-      genJetReader_->setBranchAddresses(tree);
+      BranchAddressInitializer::mergeBranchNames(genLeptonReader_->setBranchAddresses(tree), branchNames);
+      BranchAddressInitializer::mergeBranchNames(genHadTauReader_->setBranchAddresses(tree), branchNames);
+      BranchAddressInitializer::mergeBranchNames(genJetReader_->setBranchAddresses(tree), branchNames);
     }
-    tree->SetBranchAddress(branchName_num_.data(), &nJets_);
-    jet_pt_ = new Float_t[max_nJets_];
-    tree->SetBranchAddress(branchName_pt_.data(), jet_pt_); 
-    jet_eta_ = new Float_t[max_nJets_];
-    tree->SetBranchAddress(branchName_eta_.data(), jet_eta_); 
-    jet_phi_ = new Float_t[max_nJets_];
-    tree->SetBranchAddress(branchName_phi_.data(), jet_phi_); 
-    jet_mass_ = new Float_t[max_nJets_];
-    tree->SetBranchAddress(branchName_mass_.data(), jet_mass_); 
-    jet_jecUncertTotal_ = new Float_t[max_nJets_];
-    tree->SetBranchAddress(branchName_jecUncertTotal_.data(), jet_jecUncertTotal_);
-    jet_BtagCSV_ = new Float_t[max_nJets_];
-    tree->SetBranchAddress(branchName_BtagCSV_.data(), jet_BtagCSV_); 
-    jet_BtagWeight_ = new Float_t[max_nJets_];
-
-    if(! branchName_BtagWeight_.empty())
-    {
-      tree->SetBranchAddress(branchName_BtagWeight_.data(), jet_BtagWeight_); 
-    }
-    else
-    {
-      setValue_float(jet_BtagWeight_, max_nJets_, 1.);
-    }
-
+    bai.setBranchAddress(nJets_, branchName_num_);
+    bai.setBranchAddress(jet_pt_, branchName_pt_);
+    bai.setBranchAddress(jet_eta_, branchName_eta_);
+    bai.setBranchAddress(jet_phi_, branchName_phi_);
+    bai.setBranchAddress(jet_mass_, branchName_mass_);
+    bai.setBranchAddress(jet_jecUncertTotal_, branchName_jecUncertTotal_);
+    bai.setBranchAddress(jet_BtagCSV_, branchName_BtagCSV_);
+    bai.setBranchAddress(jet_BtagWeight_, branchName_BtagWeight_, 1.);
     if(read_BtagWeight_systematics_)
     {
       for(int idxShift = kBtag_hfUp; idxShift <= kBtag_jesDown; ++idxShift)
       {
-        jet_BtagWeights_systematics_[idxShift] = new Float_t[max_nJets_];
-        tree->SetBranchAddress(branchNames_BtagWeight_systematics_[idxShift].data(), jet_BtagWeights_systematics_[idxShift]);
+        bai.setBranchAddress(jet_BtagWeights_systematics_[idxShift], branchNames_BtagWeight_systematics_[idxShift]);
       }
     }
-
-    jet_QGDiscr_ = new Float_t[max_nJets_];
-    if(! branchName_QGDiscr_.empty())
-    {
-      tree->SetBranchAddress(branchName_QGDiscr_.data(), jet_QGDiscr_); 
-    }
-    else
-    {
-      setValue_float(jet_QGDiscr_, max_nJets_, 1.);
-    }
-
-    jet_heppyFlavour_ = new Int_t[max_nJets_];
-    if(branchName_heppyFlavour_ != "")
-    {
-      tree->SetBranchAddress(branchName_heppyFlavour_.data(), jet_heppyFlavour_); 
-    }
-    else
-    {
-      setValue_int(jet_heppyFlavour_, max_nJets_, -1);
-    }
+    bai.setBranchAddress(jet_QGDiscr_, branchName_QGDiscr_, 1.);
+    bai.setBranchAddress(jet_heppyFlavour_, branchName_heppyFlavour_, -1);
+    bai.mergeBranchNames(branchNames);
   }
+  return branchNames;
 }
 
 std::vector<RecoJet>

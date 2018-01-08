@@ -21,7 +21,7 @@ class RecoElectronReader
   /**
    * @brief Call tree->SetBranchAddress for all lepton branches specific to RecoElectrons
    */
-  void setBranchAddresses(TTree* tree) override;
+  std::vector<std::string> setBranchAddresses(TTree* tree) override;
 
   /**
    * @brief Read branches from tree and use information to fill collection of RecoElectron objects

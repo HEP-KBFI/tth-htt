@@ -59,7 +59,7 @@ void RecoElectronWriter::setBranches(TTree *tree)
 {
   leptonWriter_->setBranches(tree);
   unsigned int max_nLeptons = leptonWriter_->max_nLeptons_;
-  BranchAddressInitializer bai(tree, branchName_num_, max_nLeptons);
+  BranchAddressInitializer bai(tree, max_nLeptons, branchName_num_);
   bai.setBranch(mvaRawPOG_GP_, branchName_mvaRawPOG_GP_);
   bai.setBranch(mvaRawPOG_HZZ_, branchName_mvaRawPOG_HZZ_);
   bai.setBranch(sigmaEtaEta_, branchName_sigmaEtaEta_);

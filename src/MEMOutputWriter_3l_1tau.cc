@@ -78,7 +78,7 @@ void MEMOutputWriter_3l_1tau::setBranchNames()
 
 void MEMOutputWriter_3l_1tau::setBranches(TTree * tree)
 {
-  BranchAddressInitializer bai(tree, branchName_num_, max_nMEMOutputs_);
+  BranchAddressInitializer bai(tree, max_nMEMOutputs_, branchName_num_);
   bai.setBranch(nMEMOutputs_, branchName_num_);
   bai.setBranch(run_, branchName_run_);
   bai.setBranch(lumi_, branchName_lumi_);

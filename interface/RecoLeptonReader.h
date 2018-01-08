@@ -19,7 +19,7 @@ class RecoLeptonReader
   /**
    * @brief Call tree->SetBranchAddress for all lepton branches common to RecoElectrons and RecoMuons
    */
-  void setBranchAddresses(TTree * tree) override;
+  std::vector<std::string> setBranchAddresses(TTree * tree) override;
 
   friend class RecoElectronReader;
   friend class RecoMuonReader;

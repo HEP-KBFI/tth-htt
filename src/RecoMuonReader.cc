@@ -2,9 +2,7 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/RecoLeptonReader.h" // RecoLeptonReader
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
-
-#include <TString.h> // Form()
-#include <TTree.h> // TTree
+#include "tthAnalysis/HiggsToTauTau/interface/BranchAddressInitializer.h" // BranchAddressInitializer, TTree, Form()
 
 std::map<std::string, int> RecoMuonReader::numInstances_;
 std::map<std::string, RecoMuonReader *> RecoMuonReader::instances_;
@@ -76,18 +74,21 @@ RecoMuonReader::setBranchNames()
   ++numInstances_[branchName_obj_];
 }
 
-void
+std::vector<std::string>
 RecoMuonReader::setBranchAddresses(TTree * tree)
 {
+  std::vector<std::string> branchNames;
   if(instances_[branchName_obj_] == this)
   {
-    leptonReader_->setBranchAddresses(tree);
-    unsigned int max_nLeptons = leptonReader_->max_nLeptons_;
-    mediumIdPOG_ = new Bool_t[max_nLeptons];
-    tree->SetBranchAddress(branchName_mediumIdPOG_.data(), mediumIdPOG_);
-    segmentCompatibility_ = new Float_t[max_nLeptons];
-    tree->SetBranchAddress(branchName_segmentCompatibility_.data(), segmentCompatibility_);
+    BranchAddressInitializer::mergeBranchNames(leptonReader_->setBranchAddresses(tree), branchNames);
+
+    const unsigned int max_nLeptons = leptonReader_->max_nLeptons_;
+    BranchAddressInitializer bai(tree, max_nLeptons);
+    bai.setBranchAddress(mediumIdPOG_, branchName_mediumIdPOG_);
+    bai.setBranchAddress(segmentCompatibility_, branchName_segmentCompatibility_);
+    bai.mergeBranchNames(branchNames);
   }
+  return branchNames;
 }
 
 std::vector<RecoMuon>

@@ -1,8 +1,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/LHEInfoReader.h" // LHEInfoReader
 
-#include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException
-
-#include <TTree.h> // TTree
+#include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
+#include "tthAnalysis/HiggsToTauTau/interface/BranchAddressInitializer.h" // BranchAddressInitializer, TTree, Form()
 
 #include <cassert> // assert()
 
@@ -64,18 +63,20 @@ LHEInfoReader::setBranchNames()
   ++numInstances_[branchName_scale_weights_];
 }
 
-void
+std::vector<std::string>
 LHEInfoReader::setBranchAddresses(TTree * tree)
 {
+  std::vector<std::string> branchNames;
   if(instances_[branchName_scale_weights_] == this)
   {
-    tree->SetBranchAddress(branchName_scale_nWeights_.data(), &scale_nWeights_);
-    scale_weights_ = new Float_t[max_scale_nWeights_];
-    tree->SetBranchAddress(branchName_scale_weights_.data(), scale_weights_); 
-    tree->SetBranchAddress(branchName_pdf_nWeights_.data(), &pdf_nWeights_);
-    pdf_weights_ = new Float_t[max_pdf_nWeights_];
-    tree->SetBranchAddress(branchName_pdf_weights_.data(), pdf_weights_); 
+    BranchAddressInitializer bai(tree);
+    bai.setBranchAddress(scale_nWeights_, branchName_scale_nWeights_);
+    bai.setBranchAddress(pdf_nWeights_, branchName_pdf_nWeights_);
+    bai.setLenVar(max_scale_nWeights_).setBranchAddress(scale_weights_, branchName_scale_weights_);
+    bai.setLenVar(max_pdf_nWeights_).setBranchAddress(pdf_weights_, branchName_pdf_weights_);
+    bai.mergeBranchNames(branchNames);
   }
+  return branchNames;
 }
 
 void

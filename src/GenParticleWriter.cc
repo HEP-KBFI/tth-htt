@@ -39,7 +39,7 @@ void GenParticleWriter::setBranchNames()
 
 void GenParticleWriter::setBranches(TTree * tree)
 {
-  BranchAddressInitializer bai(tree, branchName_num_, max_nParticles_);
+  BranchAddressInitializer bai(tree, max_nParticles_, branchName_num_);
   bai.setBranch(nParticles_, branchName_num_);
   bai.setBranch(particle_pt_, branchName_pt_);
   bai.setBranch(particle_eta_, branchName_eta_);

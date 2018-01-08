@@ -1,8 +1,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/GenLeptonReader.h" // GenLeptonReader
 
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
-
-#include <TTree.h> // TTree
+#include "tthAnalysis/HiggsToTauTau/interface/BranchAddressInitializer.h" // BranchAddressInitializer, TTree, Form()
 
 std::map<std::string, int> GenLeptonReader::numInstances_;
 std::map<std::string, GenLeptonReader *> GenLeptonReader::instances_;
@@ -101,43 +100,39 @@ GenLeptonReader::setBranchNames()
   ++numInstances_[branchName_promptLeptons_];
 }
 
-void
+std::vector<std::string>
 GenLeptonReader::setBranchAddresses(TTree * tree)
 {
+  std::vector<std::string> branchNames;
   if(instances_[branchName_promptLeptons_] == this)
   {
     if(read_promptLeptons_)
     {
       std::cout << "setting branch addresses for PromptLeptons: " << branchName_promptLeptons_ << '\n';
-      tree->SetBranchAddress(branchName_nPromptLeptons_.data(), &nPromptLeptons_);
-      promptLepton_pt_ = new Float_t[max_nPromptLeptons_];
-      tree->SetBranchAddress(branchName_promptLepton_pt_.data(), promptLepton_pt_); 
-      promptLepton_eta_ = new Float_t[max_nPromptLeptons_];
-      tree->SetBranchAddress(branchName_promptLepton_eta_.data(), promptLepton_eta_); 
-      promptLepton_phi_ = new Float_t[max_nPromptLeptons_];
-      tree->SetBranchAddress(branchName_promptLepton_phi_.data(), promptLepton_phi_); 
-      promptLepton_mass_ = new Float_t[max_nPromptLeptons_];
-      tree->SetBranchAddress(branchName_promptLepton_mass_.data(), promptLepton_mass_); 
-      promptLepton_pdgId_ = new Int_t[max_nPromptLeptons_];
-      tree->SetBranchAddress(branchName_promptLepton_pdgId_.data(), promptLepton_pdgId_); 
+      BranchAddressInitializer bai(tree, max_nPromptLeptons_);
+      bai.setBranchAddress(nPromptLeptons_, branchName_nPromptLeptons_);
+      bai.setBranchAddress(promptLepton_pt_, branchName_promptLepton_pt_);
+      bai.setBranchAddress(promptLepton_eta_, branchName_promptLepton_eta_);
+      bai.setBranchAddress(promptLepton_phi_, branchName_promptLepton_phi_);
+      bai.setBranchAddress(promptLepton_mass_, branchName_promptLepton_mass_);
+      bai.setBranchAddress(promptLepton_pdgId_, branchName_promptLepton_pdgId_);
+      bai.mergeBranchNames(branchNames);
     }
 
     if(read_leptonsFromTau_)
     {
       std::cout << "setting branch addresses for LeptonsFromTau\n";
-      tree->SetBranchAddress(branchName_nLeptonsFromTau_.data(), &nLeptonsFromTau_);   
-      leptonFromTau_pt_ = new Float_t[max_nLeptonsFromTau_];
-      tree->SetBranchAddress(branchName_leptonFromTau_pt_.data(), leptonFromTau_pt_); 
-      leptonFromTau_eta_ = new Float_t[max_nLeptonsFromTau_];
-      tree->SetBranchAddress(branchName_leptonFromTau_eta_.data(), leptonFromTau_eta_); 
-      leptonFromTau_phi_ = new Float_t[max_nLeptonsFromTau_];
-      tree->SetBranchAddress(branchName_leptonFromTau_phi_.data(), leptonFromTau_phi_); 
-      leptonFromTau_mass_ = new Float_t[max_nLeptonsFromTau_];
-      tree->SetBranchAddress(branchName_leptonFromTau_mass_.data(), leptonFromTau_mass_); 
-      leptonFromTau_pdgId_ = new Int_t[max_nLeptonsFromTau_];
-      tree->SetBranchAddress(branchName_leptonFromTau_pdgId_.data(), leptonFromTau_pdgId_); 
+      BranchAddressInitializer bai(tree, max_nLeptonsFromTau_);
+      bai.setBranchAddress(nLeptonsFromTau_, branchName_nLeptonsFromTau_);
+      bai.setBranchAddress(leptonFromTau_pt_, branchName_leptonFromTau_pt_);
+      bai.setBranchAddress(leptonFromTau_eta_, branchName_leptonFromTau_eta_);
+      bai.setBranchAddress(leptonFromTau_phi_, branchName_leptonFromTau_phi_);
+      bai.setBranchAddress(leptonFromTau_mass_, branchName_leptonFromTau_mass_);
+      bai.setBranchAddress(leptonFromTau_pdgId_, branchName_leptonFromTau_pdgId_);
+      bai.mergeBranchNames(branchNames);
     }
   }
+  return branchNames;
 }
 
 std::vector<GenLepton>

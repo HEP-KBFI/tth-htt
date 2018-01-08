@@ -3,9 +3,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoLeptonReader.h" // RecoLeptonReader
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // setValue_float()
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
-
-#include <TString.h> // Form()
-#include <TTree.h> // TTree
+#include "tthAnalysis/HiggsToTauTau/interface/BranchAddressInitializer.h" // BranchAddressInitializer, TTree, Form()
 
 std::map<std::string, int> RecoElectronReader::numInstances_;
 std::map<std::string, RecoElectronReader *> RecoElectronReader::instances_;
@@ -89,34 +87,28 @@ RecoElectronReader::setBranchNames()
   ++numInstances_[branchName_obj_];
 }
 
-void
+std::vector<std::string>
 RecoElectronReader::setBranchAddresses(TTree * tree)
 {
+  std::vector<std::string> branchNames;
   if(instances_[branchName_obj_] == this)
   {
-    leptonReader_->setBranchAddresses(tree);
-    unsigned int max_nLeptons = leptonReader_->max_nLeptons_;
-    mvaRawPOG_GP_ = new Float_t[max_nLeptons];
-    tree->SetBranchAddress(branchName_mvaRawPOG_GP_.data(), mvaRawPOG_GP_);
-    mvaRawPOG_HZZ_ = new Float_t[max_nLeptons];
-    tree->SetBranchAddress(branchName_mvaRawPOG_HZZ_.data(), mvaRawPOG_HZZ_);
-    sigmaEtaEta_ = new Float_t[max_nLeptons];
-    tree->SetBranchAddress(branchName_sigmaEtaEta_.data(), sigmaEtaEta_);
-    HoE_ = new Float_t[max_nLeptons];
-    tree->SetBranchAddress(branchName_HoE_.data(), HoE_);
-//--- Karl: ECAL-related variables missing in nanoAOD
-    deltaEta_ = new Float_t[max_nLeptons];
-    setValue_float(deltaEta_, max_nLeptons, 0.);
-    deltaPhi_ = new Float_t[max_nLeptons];
-    setValue_float(deltaPhi_, max_nLeptons, 0.);
-//--- end
-    OoEminusOoP_ = new Float_t[max_nLeptons];
-    tree->SetBranchAddress(branchName_OoEminusOoP_.data(), OoEminusOoP_);
-    lostHits_ = new UChar_t[max_nLeptons];
-    tree->SetBranchAddress(branchName_lostHits_.data(), lostHits_);
-    conversionVeto_ = new Bool_t[max_nLeptons];
-    tree->SetBranchAddress(branchName_conversionVeto_.data(), conversionVeto_);
+    BranchAddressInitializer::mergeBranchNames(leptonReader_->setBranchAddresses(tree), branchNames);
+    const unsigned int max_nLeptons = leptonReader_->max_nLeptons_;
+
+    BranchAddressInitializer bai(tree, max_nLeptons);
+    bai.setBranchAddress(mvaRawPOG_GP_, branchName_mvaRawPOG_GP_);
+    bai.setBranchAddress(mvaRawPOG_HZZ_, branchName_mvaRawPOG_HZZ_);
+    bai.setBranchAddress(sigmaEtaEta_, branchName_sigmaEtaEta_);
+    bai.setBranchAddress(HoE_, branchName_HoE_);
+    bai.setBranchAddress(deltaEta_, ""); // Karl: ECAL-related variables missing in nanoAOD
+    bai.setBranchAddress(deltaPhi_, ""); // Karl: ECAL-related variables missing in nanoAOD
+    bai.setBranchAddress(OoEminusOoP_, branchName_OoEminusOoP_);
+    bai.setBranchAddress(lostHits_, branchName_lostHits_);
+    bai.setBranchAddress(conversionVeto_, branchName_conversionVeto_);
+    bai.mergeBranchNames(branchNames);
   }
+  return branchNames;
 }
 
 std::vector<RecoElectron>

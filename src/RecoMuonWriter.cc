@@ -43,7 +43,7 @@ void RecoMuonWriter::setBranches(TTree * tree)
 {
   leptonWriter_->setBranches(tree);
   const unsigned int max_nLeptons = leptonWriter_->max_nLeptons_;
-  BranchAddressInitializer bai(tree, branchName_num_, max_nLeptons);
+  BranchAddressInitializer bai(tree, max_nLeptons, branchName_num_);
   bai.setBranch(looseIdPOG_, branchName_looseIdPOG_);
   bai.setBranch(mediumIdPOG_, branchName_mediumIdPOG_);
   bai.setBranch(segmentCompatibility_, branchName_segmentCompatibility_);

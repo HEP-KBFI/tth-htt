@@ -1,9 +1,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/GenJetReader.h" // GenJetReader
 
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
-
-#include <TString.h> // Form()
-#include <TTree.h> // TTree
+#include "tthAnalysis/HiggsToTauTau/interface/BranchAddressInitializer.h" // BranchAddressInitializer, TTree, Form()
 
 std::map<std::string, int> GenJetReader::numInstances_;
 std::map<std::string, GenJetReader *> GenJetReader::instances_;
@@ -66,21 +64,21 @@ GenJetReader::setBranchNames()
   ++numInstances_[branchName_obj_];
 }
 
-void
+std::vector<std::string>
 GenJetReader::setBranchAddresses(TTree * tree)
 {
+  std::vector<std::string> branchNames;
   if(instances_[branchName_obj_] == this)
   {
-    tree->SetBranchAddress(branchName_num_.data(), &nJets_);
-    jet_pt_ = new Float_t[max_nJets_];
-    tree->SetBranchAddress(branchName_pt_.data(), jet_pt_); 
-    jet_eta_ = new Float_t[max_nJets_];
-    tree->SetBranchAddress(branchName_eta_.data(), jet_eta_); 
-    jet_phi_ = new Float_t[max_nJets_];
-    tree->SetBranchAddress(branchName_phi_.data(), jet_phi_); 
-    jet_mass_ = new Float_t[max_nJets_];
-    tree->SetBranchAddress(branchName_mass_.data(), jet_mass_); 
+    BranchAddressInitializer bai(tree, max_nJets_);
+    bai.setBranchAddress(nJets_, branchName_num_);
+    bai.setBranchAddress(jet_pt_, branchName_pt_);
+    bai.setBranchAddress(jet_eta_, branchName_eta_);
+    bai.setBranchAddress(jet_phi_, branchName_phi_);
+    bai.setBranchAddress(jet_mass_, branchName_mass_);
+    bai.mergeBranchNames(branchNames);
   }
+  return branchNames;
 }
 
 std::vector<GenJet> GenJetReader::read() const

@@ -23,7 +23,7 @@ class GenLeptonReader
   /**
    * @brief Call tree->SetBranchAddress for all GenLepton branches
    */
-  void setBranchAddresses(TTree * tree) override;
+  std::vector<std::string> setBranchAddresses(TTree * tree) override;
 
   /**
    * @brief Read branches from tree and use information to fill collection of GenLepton objects

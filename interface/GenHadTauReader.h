@@ -21,7 +21,7 @@ class GenHadTauReader
   /**
    * @brief Call tree->SetBranchAddress for all GenHadTau branches
    */
-  void setBranchAddresses(TTree * tree) override;
+  std::vector<std::string> setBranchAddresses(TTree * tree) override;
 
   /**
    * @brief Read branches from tree and use information to fill collection of GenHadTau objects

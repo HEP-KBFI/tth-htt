@@ -1,8 +1,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/GenHadTauReader.h" // GenHadTauReader
 
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
-
-#include <TTree.h> // TTree
+#include "tthAnalysis/HiggsToTauTau/interface/BranchAddressInitializer.h" // BranchAddressInitializer, TTree, Form()
 
 std::map<std::string, int> GenHadTauReader::numInstances_;
 std::map<std::string, GenHadTauReader *> GenHadTauReader::instances_;
@@ -68,23 +67,22 @@ GenHadTauReader::setBranchNames()
   ++numInstances_[branchName_obj_];
 }
 
-void
+std::vector<std::string>
 GenHadTauReader::setBranchAddresses(TTree * tree)
 {
+  std::vector<std::string> branchNames;
   if(instances_[branchName_obj_] == this)
   {
-    tree->SetBranchAddress(branchName_num_.data(), &nHadTaus_);   
-    hadTau_pt_ = new Float_t[max_nHadTaus_];
-    tree->SetBranchAddress(branchName_pt_.data(), hadTau_pt_); 
-    hadTau_eta_ = new Float_t[max_nHadTaus_];
-    tree->SetBranchAddress(branchName_eta_.data(), hadTau_eta_); 
-    hadTau_phi_ = new Float_t[max_nHadTaus_];
-    tree->SetBranchAddress(branchName_phi_.data(), hadTau_phi_); 
-    hadTau_mass_ = new Float_t[max_nHadTaus_];
-    tree->SetBranchAddress(branchName_mass_.data(), hadTau_mass_); 
-    hadTau_charge_ = new Int_t[max_nHadTaus_];
-    tree->SetBranchAddress(branchName_charge_.data(), hadTau_charge_);
+    BranchAddressInitializer bai(tree, max_nHadTaus_);
+    bai.setBranchAddress(nHadTaus_, branchName_num_);
+    bai.setBranchAddress(hadTau_pt_, branchName_pt_);
+    bai.setBranchAddress(hadTau_eta_, branchName_eta_);
+    bai.setBranchAddress(hadTau_phi_, branchName_phi_);
+    bai.setBranchAddress(hadTau_mass_, branchName_mass_);
+    bai.setBranchAddress(hadTau_charge_, branchName_charge_);
+    bai.mergeBranchNames(branchNames);
   }
+  return branchNames;
 }
 
 std::vector<GenHadTau>

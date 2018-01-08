@@ -1,47 +1,107 @@
 #include "tthAnalysis/HiggsToTauTau/interface/hltPath.h"
 
-std::vector<hltPath*> create_hltPaths(const std::vector<std::string>& branchNames)
+#include <TTree.h> // TTree
+
+#include <algorithm> // std::any_of()
+#include <cassert> // assert()
+
+hltPath::hltPath(const std::string & branchName,
+                 double minPt,
+                 double maxPt)
+  : branchName_(branchName)
+  , value_(-1)
+  , minPt_(minPt)
+  , maxPt_(maxPt)
+{}
+
+std::vector<std::string>
+hltPath::setBranchAddress(TTree * tree)
 {
-  std::vector<hltPath*> hltPaths;
-  for ( std::vector<std::string>::const_iterator branchName = branchNames.begin();
-	branchName != branchNames.end(); ++branchName ) {
-    hltPaths.push_back(new hltPath(*branchName));
+  tree->SetBranchAddress(branchName_.data(), &value_);
+  return { branchName_ };
+}
+
+std::vector<std::string>
+hltPath::setBranchAddresses(TTree * tree)
+{
+  return setBranchAddress(tree);
+}
+
+const std::string &
+hltPath::getBranchName() const
+{
+  return branchName_;
+}
+
+Int_t
+hltPath::getValue() const
+{
+  assert(value_ == 0 || value_ == 1);
+  return value_;
+}
+
+double
+hltPath::getMinPt() const
+{
+  return minPt_;
+}
+
+double
+hltPath::getMaxPt() const
+{
+  return maxPt_;
+}
+
+std::vector<hltPath *>
+create_hltPaths(const std::vector<std::string> & branchNames)
+{
+  std::vector<hltPath *> hltPaths;
+  for(const std::string & branchName: branchNames)
+  {
+    hltPaths.push_back(new hltPath(branchName));
   }
   return hltPaths;
 }
 
-void hltPaths_setBranchAddresses(TTree* tree, const std::vector<hltPath*>& hltPaths)
+void
+hltPaths_setBranchAddresses(TTree * tree,
+                            const std::vector<hltPath *> & hltPaths)
 {
-  for ( std::vector<hltPath*>::const_iterator hltPath_iter = hltPaths.begin();
-	hltPath_iter != hltPaths.end(); ++hltPath_iter ) {
-    (*hltPath_iter)->setBranchAddress(tree);
+  for(hltPath * const & path: hltPaths)
+  {
+    path->setBranchAddress(tree);
   }
 }
 
-bool hltPaths_isTriggered(const std::vector<hltPath*>& hltPaths)
+bool
+hltPaths_isTriggered(const std::vector<hltPath *> & hltPaths)
 {
-  bool retVal = false;
-  for ( std::vector<hltPath*>::const_iterator hltPath_iter = hltPaths.begin();
-	hltPath_iter != hltPaths.end(); ++hltPath_iter ) {
-    if ( (*hltPath_iter)->getValue() >= 1 ) {
-      retVal = true;
-      break;
+  return std::any_of(
+    hltPaths.cbegin(), hltPaths.cend(),
+    [](hltPath * const & path) -> bool
+    {
+      return path->getValue() >= 1;
     }
-  }
-  return retVal;
+  );
 }
 
-void hltPaths_delete(const std::vector<hltPath*>& hltPaths)
+void
+hltPaths_delete(const std::vector<hltPath *> & hltPaths)
 {
-  for ( std::vector<hltPath*>::const_iterator hltPath_iter = hltPaths.begin();
-	hltPath_iter != hltPaths.end(); ++hltPath_iter ) {
-    delete (*hltPath_iter);
+  for(hltPath * path: hltPaths)
+  {
+    delete path;
+    path = nullptr;
   }
 }
 
-std::ostream& operator<<(std::ostream& stream, const hltPath& hltPath_iter)
+std::ostream &
+operator<<(std::ostream & stream,
+           const hltPath & hltPath_iter)
 {
-  stream << "hltPath = " << hltPath_iter.getBranchName() << ": value = " << hltPath_iter.getValue() 
-	 << " (minPt = " << hltPath_iter.getMinPt() << ", maxPt = " << hltPath_iter.getMaxPt() << ")" << std::endl;
+  stream << "hltPath = " << hltPath_iter.getBranchName() << ": "
+            "value = "   << hltPath_iter.getValue()
+         << " (minPt = " << hltPath_iter.getMinPt() << ", "
+              "maxPt = " << hltPath_iter.getMaxPt() << ")\n";
   return stream;
 }

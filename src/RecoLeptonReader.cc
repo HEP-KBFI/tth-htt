@@ -1,9 +1,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoLeptonReader.h" // RecoLeptonReader
 
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
-
-#include <TString.h> // Form()
-#include <TTree.h> // TTree
+#include "tthAnalysis/HiggsToTauTau/interface/BranchAddressInitializer.h" // BranchAddressInitializer, TTree, Form()
 
 std::map<std::string, int> RecoLeptonReader::numInstances_;
 std::map<std::string, RecoLeptonReader *> RecoLeptonReader::instances_;
@@ -120,52 +118,39 @@ RecoLeptonReader::setBranchNames()
   ++numInstances_[branchName_obj_];
 }
 
-void
+std::vector<std::string>
 RecoLeptonReader::setBranchAddresses(TTree * tree)
 {
+  std::vector<std::string> branchNames;
   if(instances_[branchName_obj_] == this)
   {
     if(readGenMatching_)
     {
-      genLeptonReader_->setBranchAddresses(tree);
-      genHadTauReader_->setBranchAddresses(tree);
-      genJetReader_->setBranchAddresses(tree);  
+      BranchAddressInitializer::mergeBranchNames(genLeptonReader_->setBranchAddresses(tree), branchNames);
+      BranchAddressInitializer::mergeBranchNames(genHadTauReader_->setBranchAddresses(tree), branchNames);
+      BranchAddressInitializer::mergeBranchNames(genJetReader_->setBranchAddresses(tree), branchNames);
     }
-    tree->SetBranchAddress(branchName_num_.data(), &nLeptons_);
-    pt_ = new Float_t[max_nLeptons_];
-    tree->SetBranchAddress(branchName_pt_.data(), pt_);
-    eta_ = new Float_t[max_nLeptons_];
-    tree->SetBranchAddress(branchName_eta_.data(), eta_);
-    phi_ = new Float_t[max_nLeptons_];
-    tree->SetBranchAddress(branchName_phi_.data(), phi_);
-    mass_ = new Float_t[max_nLeptons_];
-    tree->SetBranchAddress(branchName_mass_.data(), mass_);
-    pdgId_ = new Int_t[max_nLeptons_];
-    tree->SetBranchAddress(branchName_pdgId_.data(), pdgId_);
-    dxy_ = new Float_t[max_nLeptons_];
-    tree->SetBranchAddress(branchName_dxy_.data(), dxy_);
-    dz_ = new Float_t[max_nLeptons_];
-    tree->SetBranchAddress(branchName_dz_.data(), dz_);
-    hadRelIso03_chg_ = new Float_t[max_nLeptons_];
-    tree->SetBranchAddress(branchName_hadRelIso03_chg_.data(), hadRelIso03_chg_);
-    relIso_all_ = new Float_t[max_nLeptons_];
-    tree->SetBranchAddress(branchName_relIso_all_.data(), relIso_all_);
-    absIso_chg_ = new Float_t[max_nLeptons_];
-    tree->SetBranchAddress(branchName_absIso_chg_.data(), absIso_chg_);
-    absIso_neu_ = new Float_t[max_nLeptons_];
-    tree->SetBranchAddress(branchName_absIso_neu_.data(), absIso_neu_);
-    sip3d_ = new Float_t[max_nLeptons_];
-    tree->SetBranchAddress(branchName_sip3d_.data(), sip3d_);
-    mvaRawTTH_ = new Float_t[max_nLeptons_];
-    tree->SetBranchAddress(branchName_mvaRawTTH_.data(), mvaRawTTH_);
-    jetPtRatio_ = new Float_t[max_nLeptons_];
-    tree->SetBranchAddress(branchName_jetPtRatio_.data(), jetPtRatio_);
-    jetBtagCSV_ = new Float_t[max_nLeptons_];
-    tree->SetBranchAddress(branchName_jetBtagCSV_.data(), jetBtagCSV_);
-    tightCharge_ = new Int_t[max_nLeptons_];
-    tree->SetBranchAddress(branchName_tightCharge_.data(), tightCharge_);
-    charge_ = new Int_t[max_nLeptons_];
-    tree->SetBranchAddress(branchName_charge_.data(), charge_);
+    BranchAddressInitializer bai(tree, max_nLeptons_);
+    bai.setBranchAddress(nLeptons_, branchName_num_);
+    bai.setBranchAddress(pt_, branchName_pt_);
+    bai.setBranchAddress(eta_, branchName_eta_);
+    bai.setBranchAddress(phi_, branchName_phi_);
+    bai.setBranchAddress(mass_, branchName_mass_);
+    bai.setBranchAddress(pdgId_, branchName_pdgId_);
+    bai.setBranchAddress(dxy_, branchName_dxy_);
+    bai.setBranchAddress(dz_, branchName_dz_);
+    bai.setBranchAddress(hadRelIso03_chg_, branchName_hadRelIso03_chg_);
+    bai.setBranchAddress(relIso_all_, branchName_relIso_all_);
+    bai.setBranchAddress(absIso_chg_, branchName_absIso_chg_);
+    bai.setBranchAddress(absIso_neu_, branchName_absIso_neu_);
+    bai.setBranchAddress(sip3d_, branchName_sip3d_);
+    bai.setBranchAddress(mvaRawTTH_, branchName_mvaRawTTH_);
+    bai.setBranchAddress(jetPtRatio_, branchName_jetPtRatio_);
+    bai.setBranchAddress(jetBtagCSV_, branchName_jetBtagCSV_);
+    bai.setBranchAddress(tightCharge_, branchName_tightCharge_);
+    bai.setBranchAddress(charge_, branchName_charge_);
+    bai.mergeBranchNames(branchNames);
   }
+  return branchNames;
 }
 

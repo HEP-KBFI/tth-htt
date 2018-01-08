@@ -1,9 +1,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/MEMOutputReader_2lss_1tau.h" // MEMOutputReader_2lss_1tau
 
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
-
-#include <TString.h> // Form()
-#include <TTree.h> // TTree
+#include "tthAnalysis/HiggsToTauTau/interface/BranchAddressInitializer.h" // BranchAddressInitializer, TTree, Form()
 
 #include <cassert> // assert()
 
@@ -69,7 +67,8 @@ MEMOutputReader_2lss_1tau::~MEMOutputReader_2lss_1tau()
   }
 }
 
-void MEMOutputReader_2lss_1tau::setBranchNames()
+void
+MEMOutputReader_2lss_1tau::setBranchNames()
 {
   if(numInstances_[branchName_obj_] == 0)
   {
@@ -108,52 +107,36 @@ void MEMOutputReader_2lss_1tau::setBranchNames()
   ++numInstances_[branchName_obj_];
 }
 
-
-
-void MEMOutputReader_2lss_1tau::setBranchAddresses(TTree * tree)
+std::vector<std::string>
+MEMOutputReader_2lss_1tau::setBranchAddresses(TTree * tree)
 {
+  std::vector<std::string> branchNames;
   if(instances_[branchName_obj_] == this)
   {
-    tree -> SetBranchAddress(branchName_num_.data(), &nMEMOutputs_);
-    run_ = new RUN_TYPE[max_nMEMOutputs_];
-    tree -> SetBranchAddress(branchName_run_.data(), run_);
-    lumi_ = new LUMI_TYPE[max_nMEMOutputs_];
-    tree -> SetBranchAddress(branchName_lumi_.data(), lumi_);
-    evt_ = new EVT_TYPE[max_nMEMOutputs_];
-    tree -> SetBranchAddress(branchName_evt_.data(), evt_);
-    leadLepton_eta_ = new Float_t[max_nMEMOutputs_];
-    tree -> SetBranchAddress(branchName_leadLepton_eta_.data(), leadLepton_eta_);
-    leadLepton_phi_ = new Float_t[max_nMEMOutputs_];
-    tree -> SetBranchAddress(branchName_leadLepton_phi_.data(), leadLepton_phi_);
-    subleadLepton_eta_ = new Float_t[max_nMEMOutputs_];
-    tree -> SetBranchAddress(branchName_subleadLepton_eta_.data(), subleadLepton_eta_);
-    subleadLepton_phi_ = new Float_t[max_nMEMOutputs_];
-    tree -> SetBranchAddress(branchName_subleadLepton_phi_.data(), subleadLepton_phi_);
-    hadTau_eta_ = new Float_t[max_nMEMOutputs_];
-    tree -> SetBranchAddress(branchName_hadTau_eta_.data(), hadTau_eta_);
-    hadTau_phi_ = new Float_t[max_nMEMOutputs_];
-    tree -> SetBranchAddress(branchName_hadTau_phi_.data(), hadTau_phi_);
-    type_ = new Int_t[max_nMEMOutputs_];
-    tree -> SetBranchAddress(branchName_type_.data(), type_);
-    weight_ttH_ = new Float_t[max_nMEMOutputs_];
-    tree -> SetBranchAddress(branchName_weight_ttH_.data(), weight_ttH_);
-    weight_ttZ_ = new Float_t[max_nMEMOutputs_];
-    tree -> SetBranchAddress(branchName_weight_ttZ_.data(), weight_ttZ_);
-    weight_ttZ_Zll_ = new Float_t[max_nMEMOutputs_];
-    tree -> SetBranchAddress(branchName_weight_ttZ_Zll_.data(), weight_ttZ_Zll_);
-    weight_tt_ = new Float_t[max_nMEMOutputs_];
-    tree -> SetBranchAddress(branchName_weight_tt_.data(), weight_tt_);
-    LR_ = new Float_t[max_nMEMOutputs_];
-    tree -> SetBranchAddress(branchName_LR_.data(), LR_);
-    cpuTime_ = new Float_t[max_nMEMOutputs_];
-    tree -> SetBranchAddress(branchName_cpuTime_.data(), cpuTime_);
-    realTime_ = new Float_t[max_nMEMOutputs_];
-    tree -> SetBranchAddress(branchName_realTime_.data(), realTime_);
-    errorFlag_ = new Int_t[max_nMEMOutputs_];
-    tree -> SetBranchAddress(branchName_errorFlag_.data(), errorFlag_);
-    isValid_ = new Int_t[max_nMEMOutputs_];
-    tree -> SetBranchAddress(branchName_isValid_.data(), isValid_);
+    BranchAddressInitializer bai(tree, max_nMEMOutputs_);
+    bai.setBranchAddress(nMEMOutputs_, branchName_num_);
+    bai.setBranchAddress(run_, branchName_run_);
+    bai.setBranchAddress(lumi_, branchName_lumi_);
+    bai.setBranchAddress(evt_, branchName_evt_);
+    bai.setBranchAddress(leadLepton_eta_, branchName_leadLepton_eta_);
+    bai.setBranchAddress(leadLepton_phi_, branchName_leadLepton_phi_);
+    bai.setBranchAddress(subleadLepton_eta_, branchName_subleadLepton_eta_);
+    bai.setBranchAddress(subleadLepton_phi_, branchName_subleadLepton_phi_);
+    bai.setBranchAddress(hadTau_eta_, branchName_hadTau_eta_);
+    bai.setBranchAddress(hadTau_phi_, branchName_hadTau_phi_);
+    bai.setBranchAddress(type_, branchName_type_);
+    bai.setBranchAddress(weight_ttH_, branchName_weight_ttH_);
+    bai.setBranchAddress(weight_ttZ_, branchName_weight_ttZ_);
+    bai.setBranchAddress(weight_ttZ_Zll_, branchName_weight_ttZ_Zll_);
+    bai.setBranchAddress(weight_tt_, branchName_weight_tt_);
+    bai.setBranchAddress(LR_, branchName_LR_);
+    bai.setBranchAddress(cpuTime_, branchName_cpuTime_);
+    bai.setBranchAddress(realTime_, branchName_realTime_);
+    bai.setBranchAddress(errorFlag_, branchName_errorFlag_);
+    bai.setBranchAddress(isValid_, branchName_isValid_);
+    bai.mergeBranchNames(branchNames);
   }
+  return branchNames;
 }
 
 std::vector<MEMOutput_2lss_1tau>

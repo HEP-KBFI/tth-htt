@@ -21,7 +21,7 @@ class LHEInfoReader
   /**
    * @brief Call tree->SetBranchAddress for all branches containing LHE (scale and PDF) information
    */
-  void setBranchAddresses(TTree * tree) override;
+  std::vector<std::string> setBranchAddresses(TTree * tree) override;
 
   /**
    * @brief Read branches from tree and return values

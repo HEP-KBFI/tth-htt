@@ -18,7 +18,7 @@ class MEMOutputReader_3l_1tau
   /**
    * @brief Call tree->SetBranchAddress for all GenParticle branches
    */
-  void setBranchAddresses(TTree * tree) override;
+  std::vector<std::string> setBranchAddresses(TTree * tree) override;
 
   /**
    * @brief Read branches from tree and use information to fill collection of MEMOutput_3l_1tau objects

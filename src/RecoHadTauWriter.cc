@@ -101,7 +101,7 @@ void RecoHadTauWriter::setBranches(TTree * tree)
   genLeptonWriter_->setBranches(tree);
   genHadTauWriter_->setBranches(tree);
   genJetWriter_->setBranches(tree);
-  BranchAddressInitializer bai(tree, branchName_num_, max_nHadTaus_);
+  BranchAddressInitializer bai(tree, max_nHadTaus_, branchName_num_);
   bai.setBranch(nHadTaus_, branchName_num_);
   bai.setBranch(hadTau_pt_, branchName_pt_);
   bai.setBranch(hadTau_eta_, branchName_eta_);
