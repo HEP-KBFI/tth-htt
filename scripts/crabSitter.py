@@ -207,7 +207,7 @@ if __name__ == '__main__':
     )
     parser.add_argument('-f', '--force-resubmit',
         dest = 'force_resubmit', action = 'store_true', default = False, required = False,
-        help = 'R|Use production Ntuples',
+        help = 'R|Force resubmission',
     )
     args = parser.parse_args()
 
