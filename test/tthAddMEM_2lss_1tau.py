@@ -4,9 +4,9 @@ import os, logging, sys, getpass
 from tthAnalysis.HiggsToTauTau.addMEMConfig_2lss_1tau import addMEMConfig_2lss_1tau
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 
-version          = "2017Nov05"
+version          = "2017Dec17_FastSim"
 ERA              = "2016"
-isForBDTtraining = False
+isForBDTtraining = True
 central_or_shift = [
   "central",
   # "CMS_ttHl_JESUp",
@@ -25,7 +25,7 @@ central_or_shift = [
 if isForBDTtraining:
   from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_prodNtuples_2016_FastSim import samples_2016 as samples
   leptonSelection = "Loose"
-  hadTauSelection = "Tight|dR03mvaLoose"
+  hadTauSelection = "Tight|dR03mvaMedium"
 else:
   from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_prodNtuples_2016 import samples_2016 as samples
   leptonSelection = "Fakeable"
@@ -52,7 +52,7 @@ if __name__ == '__main__':
     num_parallel_jobs        = 16,
     leptonSelection          = leptonSelection,
     hadTauSelection          = hadTauSelection,
-    isForBDTtraining         = False, # if False, use full integration points
+    isForBDTtraining         = True, # if False, use full integration points
     isDebug                  = True,
     central_or_shift         = central_or_shift,
   )

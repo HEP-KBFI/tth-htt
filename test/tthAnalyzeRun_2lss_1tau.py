@@ -38,9 +38,12 @@ applyFakeRateWeights               = None
 MEMbranch                          = ''
 hadTauFakeRateWeight_inputFileName = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016.root"
 
-# Karl: temporarily disable other modes until we've proper Ntuples
-if use_prod_ntuples and mode not in ["VHbb", "forBDTtraining_beforeAddMEM"]:
-  raise ValueError("No production Ntuples for %s" % mode)
+# Karl: temporarily disable addMEM mode until we've proper Ntuples
+if mode in ["addMEM"]:
+  raise ValueError("No production Ntuples available for %s" % mode)
+
+if use_prod_ntuples and mode in ["addMEM", "forBDTtraining_afterAddMEM"]:
+  logging.warning("The samples for the mode '%s' are already derived from production Ntuples" % mode)
 
 if use_prod_ntuples and ERA == "2015":
   raise ValueError("No production Ntuples for 2015 data & MC")
@@ -84,12 +87,15 @@ elif mode == "forBDTtraining_beforeAddMEM":
   hadTau_selection_relaxed = "dR03mvaMedium" ## "dR03mvaLoose"
   applyFakeRateWeights = "2lepton"
 elif mode == "forBDTtraining_afterAddMEM":
-  from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_2lss1tau_addMEM import samples_2016
+  # the samples used here are derived from production Ntuples anyways, since the possible number of
+  # MEM scores per event is computed only at the production Ntuple step
+  from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_FastSim_addMEM_2lss1tau import samples_2016
   changeBranchNames        = True
-  MEMbranch                = 'memObjects_2lss_1tau_lepLoose_tauTight_dR03mvaLoose'
+  MEMbranch                = 'memObjects_2lss_1tau_lepLoose_tauTight_dR03mvaMedium'
   hadTau_selection         = "dR03mvaMedium"  ## "dR03mvaVTight"
   hadTau_selection_relaxed = "dR03mvaMedium"
   applyFakeRateWeights =  "2lepton"
+  max_files_per_job    = 10
 
   for sample_name, sample_info in samples_2016.items():
     if sample_info['process_name_specific'] in [
