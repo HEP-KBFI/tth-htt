@@ -552,7 +552,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
           continue
         systematic_name = systematic.replace('Up', '').replace('Down', '')
         if systematic_name not in systematics:
-          systematics.append(systematic)
+          systematics.append(systematic_name)
       setup_dcards_template_file = os.path.join(current_dir, 'setupDatacards_LeptonFakeRate.py.template')
       setup_dcards_template = open(setup_dcards_template_file, 'r').read()
       setup_dcards_script = jinja2.Template(setup_dcards_template).render(
