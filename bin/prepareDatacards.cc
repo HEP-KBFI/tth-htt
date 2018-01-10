@@ -76,7 +76,7 @@ namespace
   
   TH1* rebinHistogram(const std::vector<double>& histogramBinning, const TH1* histogram)
   {
-    std::cout << "<rebinHistogram>:" << std::endl;
+    std::cout << "<rebinHistogram>: " << histogram->GetName() << std::endl;
     std::cout << "integral(histogram) = " << compIntegral(histogram, false, false) << std::endl;
 
     TArrayF histogramBinning_array(histogramBinning.size());
@@ -86,7 +86,7 @@ namespace
       histogramBinning_array[idx] = (*binEdge);
       ++idx;
     }
-    std::string histogramName = Form("%s_rebinned", histogram->GetName());
+    std::string histogramName = histogram->GetName();
     std::string histogramTitle = histogram->GetTitle();
     int numBins_rebinned = histogramBinning_array.GetSize() - 1;
     std::cout << "numBins_rebinned = " << numBins_rebinned << std::endl;
@@ -379,6 +379,8 @@ int main(int argc, char* argv[])
     }
 
     if ( apply_automatic_rebinning ) {
+      TDirectory* subsubdir_output = createSubdirectory_recursively(fs, Form("%s/rebinned", category->output_.c_str()));
+      subsubdir_output->cd();
       // rebin histograms to avoid bins with zero background
       assert(histogramBackgroundSum);
       std::vector<double> histogramBinning = compBinning(histogramBackgroundSum, minEvents_automatic_rebinning);

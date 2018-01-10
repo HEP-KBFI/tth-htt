@@ -3,14 +3,6 @@ import CombineHarvester.CombineTools.ch as ch
 import argparse
 import os
 
-# Need this later
-def RenameSyst(cmb, syst, old, new):
-    if old in syst.name():
-        oldname = syst.name()
-        syst.set_name(new)
-        # Should change the ch::Parameter names too
-        cmb.RenameParameter(oldname, new)
-
 parser = argparse.ArgumentParser()
 parser.add_argument('--output',     '-o', dest = 'output',     required = True, help = 'Output directory')
 parser.add_argument('--input',      '-i', dest = 'input',      required = True, help = 'Input shapes file')
@@ -25,6 +17,7 @@ cb         = ch.CombineHarvester()
 ##########################################################################
 sig_procs     = ['fakes_data']
 bkg_procs_arr = ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'signal']
+all_procs     = bkg_procs_arr + sig_procs
 
 bkg_procs = { {% for lepton in leptons %}
   '{{ lepton[0] }}' : bkg_procs_arr,{% endfor %}
@@ -108,20 +101,12 @@ cb.cp().AddSyst( ## Correl. across $CHANNEL and $BIN
 
 ################### Shape systematics #############################
 
+{% for central_or_shift in central_or_shifts %}
 cb.cp().AddSyst(  ## CORREL ACROSS $CHANNEL, CORREL ACROSS $BIN
-    cb, 'CMS_ttHl_JES', 'shape', ch.SystMap('channel', 'process')
-    (channels, ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'signal','data_fakes'], 1.00)
+    cb, '{{ central_or_shift }}', 'shape', ch.SystMap('channel', 'process')
+    (channels, all_procs, 1.00)
 )
-
-cb.cp().AddSyst(  ## CORREL ACROSS $CHANNEL, CORREL ACROSS $BIN
-    cb, 'CMS_ttHl_JER', 'shape', ch.SystMap('channel', 'process')
-    (channels, ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'signal','data_fakes'], 1.00)
-)
-
-cb.cp().AddSyst(  ## CORREL ACROSS $CHANNEL, CORREL ACROSS $BIN
-    cb, 'CMS_ttHl_UnclusteredEn', 'shape', ch.SystMap('channel', 'process')
-    (channels, ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'signal','data_fakes'], 1.00)
-)
+{% endfor %}
 
 ##########################################################################
 # Load the shapes
@@ -129,7 +114,7 @@ cb.cp().AddSyst(  ## CORREL ACROSS $CHANNEL, CORREL ACROSS $BIN
 for chn in channels:
     cb.cp().channel([chn]).ExtractShapes(
         '%s/%s/%s' % (shapes_dir, inputs[chn], files[chn]),
-        '$BIN/$PROCESS', '$BIN/$PROCESS_$SYSTEMATIC'
+        '$BIN/rebinned/$PROCESS', '$BIN/rebinned/$PROCESS_$SYSTEMATIC'
     )
 
 ##########################################################################

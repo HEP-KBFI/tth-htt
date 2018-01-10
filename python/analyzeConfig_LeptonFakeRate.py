@@ -546,9 +546,19 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
         self.createCfg_prep_dcard_LeptonFakeRate(self.jobOptions_prep_dcard[key_prep_dcard_job])
 
       # Create setupDatacards_LeptonFakeRate.py script from the template
+      systematics = []
+      for systematic in self.central_or_shifts:
+        if systematic == 'central':
+          continue
+        systematic_name = systematic.replace('Up', '').replace('Down', '')
+        if systematic_name not in systematics:
+          systematics.append(systematic)
       setup_dcards_template_file = os.path.join(current_dir, 'setupDatacards_LeptonFakeRate.py.template')
       setup_dcards_template = open(setup_dcards_template_file, 'r').read()
-      setup_dcards_script = jinja2.Template(setup_dcards_template).render(leptons = lepton_bins_merged)
+      setup_dcards_script = jinja2.Template(setup_dcards_template).render(
+        leptons           = lepton_bins_merged,
+        central_or_shifts = systematics,
+      )
       setup_dcards_script_path = os.path.join(self.dirs[DKEY_SCRIPTS], 'setupDatacards_LeptonFakeRate.py')
       logging.debug("writing setupDatacards_LeptonFakeRate script file = '%s'" % setup_dcards_script_path)
       with codecs.open(setup_dcards_script_path, "w", "utf-8") as setup_dcards_script_file:
