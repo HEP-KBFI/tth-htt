@@ -27,62 +27,62 @@ def getPtBin(minPt, maxPt):
 fit_param_range_map = {
   'electron' : {
     'tight' : {
-      'incl'                            : '-10.0,15.0',
-      'absEtaLt1_5_Pt15_0to20_0'        : '-10.0,10.0',
-      'absEtaLt1_5_Pt20_0to30_0'        : '-10.0,10.0',
-      'absEtaLt1_5_Pt30_0to45_0'        : '-10.0,20.0',
-      'absEtaLt1_5_Pt45_0to65_0'        : '-10.0,10.0',
-      'absEtaLt1_5_Pt65_0to100000_0'    : '-10.0,10.0',
-      'absEta1_5to9_9_Pt15_0to20_0'     : '-100.0,100.0',
-      'absEta1_5to9_9_Pt20_0to30_0'     : '-5.0,13.0',
-      'absEta1_5to9_9_Pt30_0to45_0'     : '-5.0,20.0',
-      'absEta1_5to9_9_Pt45_0to65_0'     : '-100.0,100.0',
-      'absEta1_5to9_9_Pt65_0to100000_0' : '-100.0,100.0',
+      'incl'                            : '', #'-10.0,15.0',
+      'absEtaLt1_5_Pt15_0to20_0'        : '', #'-10.0,10.0',
+      'absEtaLt1_5_Pt20_0to30_0'        : '', #'-10.0,10.0',
+      'absEtaLt1_5_Pt30_0to45_0'        : '', #'-10.0,20.0',
+      'absEtaLt1_5_Pt45_0to65_0'        : '', #'-10.0,10.0',
+      'absEtaLt1_5_Pt65_0to100000_0'    : '', #'-10.0,10.0',
+      'absEta1_5to9_9_Pt15_0to20_0'     : '', #'-100.0,100.0',
+      'absEta1_5to9_9_Pt20_0to30_0'     : '', #'-5.0,13.0',
+      'absEta1_5to9_9_Pt30_0to45_0'     : '', #'-5.0,20.0',
+      'absEta1_5to9_9_Pt45_0to65_0'     : '', #'-100.0,100.0',
+      'absEta1_5to9_9_Pt65_0to100000_0' : '', #'-100.0,100.0',
     },
     'fakeable' : {
-      'incl'                            : '-100.0,100.0',
-      'absEtaLt1_5_Pt15_0to20_0'        : '-100.0,100.0',
-      'absEtaLt1_5_Pt20_0to30_0'        : '-100.0,100.0',
-      'absEtaLt1_5_Pt30_0to45_0'        : '-100.0,100.0',
-      'absEtaLt1_5_Pt45_0to65_0'        : '-100.0,100.0',
-      'absEtaLt1_5_Pt65_0to100000_0'    : '-100.0,100.0',
-      'absEta1_5to9_9_Pt15_0to20_0'     : '-100.0,100.0',
-      'absEta1_5to9_9_Pt20_0to30_0'     : '-100.0,100.0',
-      'absEta1_5to9_9_Pt30_0to45_0'     : '-100.0,100.0',
-      'absEta1_5to9_9_Pt45_0to65_0'     : '-100.0,100.0',
-      'absEta1_5to9_9_Pt65_0to100000_0' : '-100.0,100.0',
+      'incl'                            : '', #'-100.0,100.0',
+      'absEtaLt1_5_Pt15_0to20_0'        : '', #'-100.0,100.0',
+      'absEtaLt1_5_Pt20_0to30_0'        : '', #'-100.0,100.0',
+      'absEtaLt1_5_Pt30_0to45_0'        : '', #'-100.0,100.0',
+      'absEtaLt1_5_Pt45_0to65_0'        : '', #'-100.0,100.0',
+      'absEtaLt1_5_Pt65_0to100000_0'    : '', #'-100.0,100.0',
+      'absEta1_5to9_9_Pt15_0to20_0'     : '', #'-100.0,100.0',
+      'absEta1_5to9_9_Pt20_0to30_0'     : '', #'-100.0,100.0',
+      'absEta1_5to9_9_Pt30_0to45_0'     : '', #'-100.0,100.0',
+      'absEta1_5to9_9_Pt45_0to65_0'     : '', #'-100.0,100.0',
+      'absEta1_5to9_9_Pt65_0to100000_0' : '', #'-100.0,100.0',
     },
   },
   'muon' : {
     'tight' : {
-      'incl'                            : '-100.0,100.0',
-      'absEtaLt1_5_Pt10_0to15_0'        : '-100.0,100.0',
-      'absEtaLt1_5_Pt15_0to20_0'        : '-100.0,100.0',
-      'absEtaLt1_5_Pt20_0to30_0'        : '-100.0,100.0',
-      'absEtaLt1_5_Pt30_0to45_0'        : '-100.0,100.0',
-      'absEtaLt1_5_Pt45_0to65_0'        : '-10.0,10.0',
-      'absEtaLt1_5_Pt65_0to100000_0'    : '-100.0,100.0',
-      'absEta1_5to9_9_Pt10_0to15_0'     : '-5.0,5.0',
-      'absEta1_5to9_9_Pt15_0to20_0'     : '-100.0,100.0',
-      'absEta1_5to9_9_Pt20_0to30_0'     : '-15.0,15.0',
-      'absEta1_5to9_9_Pt30_0to45_0'     : '-50.0,50.0',
-      'absEta1_5to9_9_Pt45_0to65_0'     : '-50.0,50.0',
-      'absEta1_5to9_9_Pt65_0to100000_0' : '-20.0,20.0',
+      'incl'                            : '', #'-100.0,100.0',
+      'absEtaLt1_5_Pt10_0to15_0'        : '', #'-100.0,100.0',
+      'absEtaLt1_5_Pt15_0to20_0'        : '', #'-100.0,100.0',
+      'absEtaLt1_5_Pt20_0to30_0'        : '', #'-100.0,100.0',
+      'absEtaLt1_5_Pt30_0to45_0'        : '', #'-100.0,100.0',
+      'absEtaLt1_5_Pt45_0to65_0'        : '', #'-10.0,10.0',
+      'absEtaLt1_5_Pt65_0to100000_0'    : '', #'-100.0,100.0',
+      'absEta1_5to9_9_Pt10_0to15_0'     : '', #'-5.0,5.0',
+      'absEta1_5to9_9_Pt15_0to20_0'     : '', #'-100.0,100.0',
+      'absEta1_5to9_9_Pt20_0to30_0'     : '', #'-15.0,15.0',
+      'absEta1_5to9_9_Pt30_0to45_0'     : '', #'-50.0,50.0',
+      'absEta1_5to9_9_Pt45_0to65_0'     : '', #'-50.0,50.0',
+      'absEta1_5to9_9_Pt65_0to100000_0' : '', #'-20.0,20.0',
     },
     'fakeable' : {
-      'incl'                            : '-100.0,100.0',
-      'absEtaLt1_5_Pt10_0to15_0'        : '-100.0,100.0',
-      'absEtaLt1_5_Pt15_0to20_0'        : '-100.0,100.0',
-      'absEtaLt1_5_Pt20_0to30_0'        : '-100.0,100.0',
-      'absEtaLt1_5_Pt30_0to45_0'        : '-100.0,100.0',
-      'absEtaLt1_5_Pt45_0to65_0'        : '-10.0,10.0',
-      'absEtaLt1_5_Pt65_0to100000_0'    : '-100.0,100.0',
-      'absEta1_5to9_9_Pt10_0to15_0'     : '-5.0,5.0',
-      'absEta1_5to9_9_Pt15_0to20_0'     : '-100.0,100.0',
-      'absEta1_5to9_9_Pt20_0to30_0'     : '-15.0,15.0',
-      'absEta1_5to9_9_Pt30_0to45_0'     : '-50.0,50.0',
-      'absEta1_5to9_9_Pt45_0to65_0'     : '-50.0,50.0',
-      'absEta1_5to9_9_Pt65_0to100000_0' : '-20.0,20.0',
+      'incl'                            : '', #'-100.0,100.0',
+      'absEtaLt1_5_Pt10_0to15_0'        : '', #'-100.0,100.0',
+      'absEtaLt1_5_Pt15_0to20_0'        : '', #'-100.0,100.0',
+      'absEtaLt1_5_Pt20_0to30_0'        : '', #'-100.0,100.0',
+      'absEtaLt1_5_Pt30_0to45_0'        : '', #'-100.0,100.0',
+      'absEtaLt1_5_Pt45_0to65_0'        : '', #'-10.0,10.0',
+      'absEtaLt1_5_Pt65_0to100000_0'    : '', #'-100.0,100.0',
+      'absEta1_5to9_9_Pt10_0to15_0'     : '', #'-5.0,5.0',
+      'absEta1_5to9_9_Pt15_0to20_0'     : '', #'-100.0,100.0',
+      'absEta1_5to9_9_Pt20_0to30_0'     : '', #'-15.0,15.0',
+      'absEta1_5to9_9_Pt30_0to45_0'     : '', #'-50.0,50.0',
+      'absEta1_5to9_9_Pt45_0to65_0'     : '', #'-50.0,50.0',
+      'absEta1_5to9_9_Pt65_0to100000_0' : '', #'-20.0,20.0',
     }
   }
 }
@@ -116,9 +116,9 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
 
   """
   def __init__(self, configDir, outputDir, cmssw_base_dir_combine, executable_analyze, samples,
-               absEtaBins_e, ptBins_e, absEtaBins_mu, ptBins_mu, fillGenEvtHistograms, central_or_shifts,
+               absEtaBins_e, absEtaBins_mu, ptBins_e, ptBins_mu, fillGenEvtHistograms, central_or_shifts,
                numerator_histogram, denominator_histogram, prep_dcard,
-               max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,               
+               max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,
                executable_addBackgrounds, executable_addBackgrounds_recursively, executable_addBackgrounds_LeptonFakeRate,
                executable_prep_dcard, executable_comp_LeptonFakeRate,
                verbose = False):
@@ -134,13 +134,13 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
       raise ValueError('CMSSW path for combine not valid: %s' % self.cmssw_base_dir_combine)
 
     self.samples = samples
-    
+
     self.absEtaBins_e = absEtaBins_e
     self.ptBins_e = ptBins_e
     self.absEtaBins_mu = absEtaBins_mu
     self.ptBins_mu = ptBins_mu
 
-    self.cfgFile_analyze = os.path.join(self.workingDir, "analyze_LeptonFakeRate_cfg.py")    
+    self.cfgFile_analyze = os.path.join(self.workingDir, "analyze_LeptonFakeRate_cfg.py")
     self.fillGenEvtHistograms = fillGenEvtHistograms
 
     self.executable_addBackgrounds = executable_addBackgrounds
@@ -148,7 +148,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     self.executable_addBackgrounds_LeptonFakeRate = executable_addBackgrounds_LeptonFakeRate
     self.cfgFile_addBackgrounds_LeptonFakeRate = os.path.join(self.workingDir, "addBackground_LeptonFakeRate_cfg.py")
     self.jobOptions_addBackgrounds_LeptonFakeRate = {}
-    
+
     self.executable_prep_dcard = executable_prep_dcard
     self.cfgFile_prep_dcard = "prepareDatacards_LeptonFakeRate_cfg.py"
     self.executable_comp_LeptonFakeRate = executable_comp_LeptonFakeRate
@@ -261,7 +261,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     self.addToMakefile_hadd_stage1_5(lines_makefile)
     self.addToMakefile_addBackgrounds(lines_makefile, "sbatch_addBackgrounds_sum", self.sbatchFile_addBackgrounds_sum, self.jobOptions_addBackgrounds_sum)
     self.addToMakefile_addBackgrounds(lines_makefile, "sbatch_addBackgrounds_LeptonFakeRate", self.sbatchFile_addBackgrounds_LeptonFakeRate, self.jobOptions_addBackgrounds_LeptonFakeRate)
-    
+
   def addToMakefile_combine(self, lines_makefile):
     jobOptions = self.jobOptions_combine
     lines_makefile.append("%s: %s" % (jobOptions['outputFile'], jobOptions['inputFile']))
@@ -274,7 +274,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     if self.is_sbatch:
       lines_makefile.append("sbatch_comp_LeptonFakeRate: %s" % " ".join([ " ".join(jobOptions['inputFile']) for jobOptions in self.jobOptions_comp_LeptonFakeRate.values() ]))
       lines_makefile.append("\t%s %s" % ("python", self.sbatchFile_comp_LeptonFakeRate))
-      lines_makefile.append("")      
+      lines_makefile.append("")
     for jobOptions in self.jobOptions_comp_LeptonFakeRate.values():
       if self.is_makefile:
         lines_makefile.append("%s: %s" % (jobOptions['outputFile'], " ".join(jobOptions['inputFile'])))
@@ -283,7 +283,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
       elif self.is_sbatch:
         lines_makefile.append("%s: %s" % (jobOptions['outputFile'], "sbatch_comp_LeptonFakeRate"))
         lines_makefile.append("\t%s" % ":") # CV: null command
-        lines_makefile.append("")  
+        lines_makefile.append("")
       self.filesToClean.append(jobOptions['outputFile'])
 
   def create(self):
@@ -395,7 +395,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     for key_hadd_stage1 in self.outputFile_hadd_stage1.keys():
       self.inputFiles_hadd_stage1_5[key_hadd_stage1_5].append(self.outputFile_hadd_stage1[key_hadd_stage1])
     self.outputFile_hadd_stage1_5[key_hadd_stage1_5] = os.path.join(self.dirs[DKEY_HIST], "histograms_harvested_stage1_5.root" )
-      
+
     # sum fake contributions for the total of all MC samples
     # input processes: TTj,...
     # output process: fakes_mc
@@ -418,7 +418,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
           "LeptonFakeRate/denominator/muons_fakeable"
         ],
         'processes_input' : processes_input,
-        'process_output' : "fakes_mc",        
+        'process_output' : "fakes_mc",
         'histogramsToCopy' : self.histograms_to_fit,
         'sysShifts' : []
       }
@@ -626,7 +626,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
       logging.info("Creating script for submitting '%s' jobs to batch system" % self.executable_comp_LeptonFakeRate)
       self.sbatchFile_comp_LeptonFakeRate = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_comp_LeptonFakeRate.py")
       self.createScript_sbatch(self.executable_comp_LeptonFakeRate, self.sbatchFile_comp_LeptonFakeRate, self.jobOptions_comp_LeptonFakeRate)
-      
+
     lines_makefile = []
     self.addToMakefile_analyze(lines_makefile)
     self.addToMakefile_hadd_stage1(lines_makefile)

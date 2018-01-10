@@ -1,6 +1,7 @@
 #!/bin/bash
 
 EXIT_WHEN_FAIL=false
+VERBOSITY_LEVEL=3
 
 # Replace the file containing the r-values
 FIT_VALUE_FILE="{{ fit_value_file }}"
@@ -65,20 +66,40 @@ echo " ---------- Running scripts for Electrons Numerator ------- "
 {% for e_array, e_range, e_sub_dir, e_eta_low, e_eta_high, e_pt_low, e_pt_high, e_is_inclusive in etights %}
 
 echo "Making Workspace for $OUTPUT_DIR_NUM/{{ e_array }}/datacard.txt"
-combineTool.py -M T2W -o wsp.root -i $OUTPUT_DIR_NUM/{{ e_array }}/datacard.txt \
+combineTool.py                                  \
+  -M T2W                                        \
+  -o wsp.root                                   \
+  -i $OUTPUT_DIR_NUM/{{ e_array }}/datacard.txt \
+  -v $VERBOSITY_LEVEL                           \
+  --parallel 8                                  \
   &> "$OUTPUT_DIR_NUM/{{ e_array }}/combine.log"
 
 echo "Running MaxLikelihood Fit on {{ e_array }}"
-combineTool.py -M MaxLikelihoodFit -m 125 --robustFit 1 --minimizerAlgoForMinos Minuit2,Migrad  \
-  -d $OUTPUT_DIR_NUM/{{ e_array }}/datacard.txt --skipBOnlyFit --setPhysicsModelParameterRanges \
-  r={{ e_range }} --there -n {{ e_array }} &> "$OUTPUT_DIR_NUM/{{ e_array }}/combineTool.log"
+combineTool.py                                     \
+  -M MaxLikelihoodFit                              \
+  -m 125                                           \
+  --robustFit 1                                    \
+  --minimizerAlgoForMinos Minuit2,Migrad           \
+  -d $OUTPUT_DIR_NUM/{{ e_array }}/datacard.txt    \
+  --skipBOnlyFit                                   \
+{% if e_range %}  --setPhysicsModelParameterRanges r={{ e_range }} {% endif %} \
+  --there                                          \
+  -n {{ e_array }}                                 \
+  -v $VERBOSITY_LEVEL                              \
+  &> "$OUTPUT_DIR_NUM/{{ e_array }}/combineTool.log"
 
 NAME='{{ e_array }}_mlfit_shapes.root'
 echo "Extracting PostFit shapes from the mlfit: $NAME"
 MLFIT_OUTPUT='mlfit{{ e_array }}.root'
-PostFitShapesFromWorkspace -w $OUTPUT_DIR_NUM/{{ e_array }}/wsp.root \
-  -d $OUTPUT_DIR_NUM/{{ e_array }}/datacard.txt -o $OUTPUT_DIR_NUM/{{ e_array }}/$NAME \
-  -f $OUTPUT_DIR_NUM/{{ e_array }}/$MLFIT_OUTPUT:fit_s -m 90 --postfit  --sampling --print \
+PostFitShapesFromWorkspace                             \
+  -w $OUTPUT_DIR_NUM/{{ e_array }}/wsp.root            \
+  -d $OUTPUT_DIR_NUM/{{ e_array }}/datacard.txt        \
+  -o $OUTPUT_DIR_NUM/{{ e_array }}/$NAME               \
+  -f $OUTPUT_DIR_NUM/{{ e_array }}/$MLFIT_OUTPUT:fit_s \
+  -m 90                                                \
+  --postfit                                            \
+  --sampling                                           \
+  --print                                              \
   &> "$OUTPUT_DIR_NUM/{{ e_array }}/PostFitShapesFromWorkspace.log"
 
 LABEL={{ e_array }}
@@ -105,9 +126,9 @@ then
       -o $OUTLABEL4 &> "$OUTPUT_DIR_NUM/{{ e_array }}/plot_shapes_postfit_log.log"
 
     FIT_RESULTS="$OUTPUT_DIR_NUM/{{ e_array }}/fit_results2_{{ e_array }}.txt"
-    python $YIELDTABLE $OUTPUT_DIR_NUM/{{ e_array }}/wsp.root \
+    python $YIELDTABLE $OUTPUT_DIR_NUM/{{ e_array }}/wsp.root              \
       $OUTPUT_DIR_NUM/{{ e_array }}/$MLFIT_OUTPUT "{{ e_sub_dir }}_shapes" \
-      1> $FIT_RESULTS \
+      1> $FIT_RESULTS                                                      \
       2> $OUTPUT_DIR_NUM/{{ e_array }}/fit_results2_{{ e_array }}_errors.log
 
     PREFIT_VALUES=`grep "Pre-fit fakes_data" $FIT_RESULTS | awk '{print $4" "$6}'`
@@ -141,20 +162,40 @@ echo " ---------- Running scripts for Electrons Denominator ------- "
 {% for e_array, e_range, e_sub_dir, e_eta_low, e_eta_high, e_pt_low, e_pt_high, e_is_inclusive in efakes %}
 
 echo "Making Workspace for $OUTPUT_DIR_DEN/{{ e_array }}/datacard.txt"
-combineTool.py -M T2W -o wsp.root -i $OUTPUT_DIR_DEN/{{ e_array }}/datacard.txt \
+combineTool.py                                  \
+  -M T2W                                        \
+  -o wsp.root                                   \
+  -i $OUTPUT_DIR_DEN/{{ e_array }}/datacard.txt \
+  -v $VERBOSITY_LEVEL                           \
+  --parallel 8                                  \
   &> "$OUTPUT_DIR_DEN/{{ e_array }}/combine.log"
 
 echo "Running MaxLikelihood Fit on {{ e_array }}"
-combineTool.py -M MaxLikelihoodFit -m 125 --robustFit 1 --minimizerAlgoForMinos Minuit2,Migrad \
-  -d $OUTPUT_DIR_DEN/{{ e_array }}/datacard.txt --skipBOnlyFit --setPhysicsModelParameterRanges \
-  r={{ e_range }} --there -n {{ e_array }} &> "$OUTPUT_DIR_DEN/{{ e_array }}/combineTool.log"
+combineTool.py                                     \
+  -M MaxLikelihoodFit                              \
+  -m 125                                           \
+  --robustFit 1                                    \
+  --minimizerAlgoForMinos Minuit2,Migrad           \
+  -d $OUTPUT_DIR_DEN/{{ e_array }}/datacard.txt    \
+  --skipBOnlyFit                                   \
+{% if e_range %}  --setPhysicsModelParameterRanges r={{ e_range }} {% endif %} \
+  --there                                          \
+  -n {{ e_array }}                                 \
+  -v $VERBOSITY_LEVEL                              \
+  &> "$OUTPUT_DIR_DEN/{{ e_array }}/combineTool.log"
 
 NAME='{{ e_array }}_mlfit_shapes.root'
 echo "Extracting PostFit shapes from the mlfit: $NAME"
 MLFIT_OUTPUT='mlfit{{ e_array }}.root'
-PostFitShapesFromWorkspace -w $OUTPUT_DIR_DEN/{{ e_array }}/wsp.root \
-  -d $OUTPUT_DIR_DEN/{{ e_array }}/datacard.txt -o $OUTPUT_DIR_DEN/{{ e_array }}/$NAME \
-  -f $OUTPUT_DIR_DEN/{{ e_array }}/$MLFIT_OUTPUT:fit_s -m 90 --postfit  --sampling --print \
+PostFitShapesFromWorkspace                             \
+  -w $OUTPUT_DIR_DEN/{{ e_array }}/wsp.root            \
+  -d $OUTPUT_DIR_DEN/{{ e_array }}/datacard.txt        \
+  -o $OUTPUT_DIR_DEN/{{ e_array }}/$NAME               \
+  -f $OUTPUT_DIR_DEN/{{ e_array }}/$MLFIT_OUTPUT:fit_s \
+  -m 90                                                \
+  --postfit                                            \
+  --sampling                                           \
+  --print                                              \
   &> "$OUTPUT_DIR_DEN/{{ e_array }}/PostFitShapesFromWorkspace.log"
 
 LABEL={{ e_array }}
@@ -182,9 +223,9 @@ then
 #      -o $OUTLABEL4 &> "$OUTPUT_DIR_DEN/{{ e_array }}/plot_shapes_postfit_log.log"
 #####################################################
     FIT_RESULTS="$OUTPUT_DIR_DEN/{{ e_array }}/fit_results2_{{ e_array }}.txt"
-    python $YIELDTABLE $OUTPUT_DIR_DEN/{{ e_array }}/wsp.root \
+    python $YIELDTABLE $OUTPUT_DIR_DEN/{{ e_array }}/wsp.root              \
       $OUTPUT_DIR_DEN/{{ e_array }}/$MLFIT_OUTPUT "{{ e_sub_dir }}_shapes" \
-      1> $FIT_RESULTS \
+      1> $FIT_RESULTS                                                      \
       2> $OUTPUT_DIR_DEN/{{ e_array }}/fit_results2_den_{{ e_array }}_errors.log
 
     PREFIT_VALUES=`grep "Pre-fit fakes_data" $FIT_RESULTS | awk '{print $4" "$6}'`
@@ -218,20 +259,40 @@ echo " -------- Running scripts for Muons Numerator--------- "
 {% for mu_array, mu_range, mu_sub_dir, mu_eta_low, mu_eta_high, mu_pt_low, mu_pt_high, mu_is_inclusive in mtights %}
 
 echo "Making Workspace for $OUTPUT_DIR_NUM/{{ mu_array }}/datacard.txt"
-combineTool.py -M T2W -o wsp.root -i $OUTPUT_DIR_NUM/{{ mu_array }}/datacard.txt \
+combineTool.py                                   \
+  -M T2W                                         \
+  -o wsp.root                                    \
+  -i $OUTPUT_DIR_NUM/{{ mu_array }}/datacard.txt \
+  -v $VERBOSITY_LEVEL                            \
+  --parallel 8                                   \
   &> "$OUTPUT_DIR_NUM/{{ mu_array }}/combine.log"
 
 echo "Running MaxLikelihood Fit on {{mu_array }}"
-combineTool.py -M MaxLikelihoodFit -m 125 --robustFit 1 --minimizerAlgoForMinos Minuit2,Migrad \
-  -d $OUTPUT_DIR_NUM/{{ mu_array }}/datacard.txt --skipBOnlyFit --setPhysicsModelParameterRanges \
-  r={{ mu_range }} --there -n {{ mu_array }} &> "$OUTPUT_DIR_NUM/{{ mu_array }}/combineTool.log"
+combineTool.py                                      \
+  -M MaxLikelihoodFit                               \
+  -m 125                                            \
+  --robustFit 1                                     \
+  --minimizerAlgoForMinos Minuit2,Migrad            \
+  -d $OUTPUT_DIR_NUM/{{ mu_array }}/datacard.txt    \
+  --skipBOnlyFit                                    \
+{% if mu_range %}  --setPhysicsModelParameterRanges r={{ mu_range }} {% endif %} \
+  --there                                           \
+  -n {{ mu_array }}                                 \
+  -v $VERBOSITY_LEVEL                               \
+  &> "$OUTPUT_DIR_NUM/{{ mu_array }}/combineTool.log"
 
 NAME='{{ mu_array }}_mlfit_shapes.root'
 echo "Extracting PostFit shapes from the mlfit: $NAME"
 MLFIT_OUTPUT='mlfit{{ mu_array }}.root'
-PostFitShapesFromWorkspace -w $OUTPUT_DIR_NUM/{{ mu_array }}/wsp.root \
-  -d $OUTPUT_DIR_NUM/{{ mu_array }}/datacard.txt -o $OUTPUT_DIR_NUM/{{ mu_array }}/$NAME \
-  -f $OUTPUT_DIR_NUM/{{ mu_array }}/$MLFIT_OUTPUT:fit_s -m 90 --postfit  --sampling --print \
+PostFitShapesFromWorkspace                              \
+  -w $OUTPUT_DIR_NUM/{{ mu_array }}/wsp.root            \
+  -d $OUTPUT_DIR_NUM/{{ mu_array }}/datacard.txt        \
+  -o $OUTPUT_DIR_NUM/{{ mu_array }}/$NAME               \
+  -f $OUTPUT_DIR_NUM/{{ mu_array }}/$MLFIT_OUTPUT:fit_s \
+  -m 90                                                 \
+  --postfit                                             \
+  --sampling                                            \
+  --print                                               \
   &> "$OUTPUT_DIR_NUM/{{ mu_array }}/PostFitShapesFromWorkspace.log"
 
 LABEL={{ mu_array }}
@@ -258,9 +319,9 @@ then
       -o $OUTLABEL4 &> "$OUTPUT_DIR_NUM/{{ mu_array }}/plot_shapes_postfit_log.log"
 
     FIT_RESULTS="$OUTPUT_DIR_NUM/{{ mu_array }}/fit_results2_{{ mu_array }}.txt"
-    python $YIELDTABLE $OUTPUT_DIR_NUM/{{ mu_array }}/wsp.root \
+    python $YIELDTABLE $OUTPUT_DIR_NUM/{{ mu_array }}/wsp.root               \
       $OUTPUT_DIR_NUM/{{ mu_array }}/$MLFIT_OUTPUT "{{ mu_sub_dir }}_shapes" \
-      1> $FIT_RESULTS \
+      1> $FIT_RESULTS                                                        \
       2> $OUTPUT_DIR_NUM/{{ mu_array }}/fit_results2_{{ mu_array }}_errors.log
 
     PREFIT_VALUES=`grep "Pre-fit fakes_data" $FIT_RESULTS | awk '{print $4" "$6}'`
@@ -293,22 +354,42 @@ echo " -------- Running scripts for Muons Denominator--------- "
 {% for mu_array, mu_range, mu_sub_dir, mu_eta_low, mu_eta_high, mu_pt_low, mu_pt_high, mu_is_inclusive in mfakes %}
 
 echo "Making Workspace for $OUTPUT_DIR_DEN/{{ mu_array }}/datacard.txt"
-combineTool.py -M T2W -o wsp.root -i $OUTPUT_DIR_DEN/{{ mu_array }}/datacard.txt \
+combineTool.py                                   \
+  -M T2W                                         \
+  -o wsp.root                                    \
+  -i $OUTPUT_DIR_DEN/{{ mu_array }}/datacard.txt \
+  -v $VERBOSITY_LEVEL                            \
+  --parallel 8                                   \
   &> "$OUTPUT_DIR_DEN/{{ mu_array }}/combine.log"
 
 echo "Running MaxLikelihood Fit on {{ mu_array }}"
-combineTool.py -M MaxLikelihoodFit -m 125 --robustFit 1 --minimizerAlgoForMinos Minuit2,Migrad \
-  -d $OUTPUT_DIR_DEN/{{ mu_array }}/datacard.txt --skipBOnlyFit --setPhysicsModelParameterRanges \
-  r={{ mu_range }} --there -n {{ mu_array }} &> "$OUTPUT_DIR_DEN/{{ mu_array }}/combineTool.log"
+combineTool.py                                      \
+  -M MaxLikelihoodFit                               \
+  -m 125                                            \
+  --robustFit 1                                     \
+  --minimizerAlgoForMinos Minuit2,Migrad            \
+  -d $OUTPUT_DIR_DEN/{{ mu_array }}/datacard.txt    \
+  --skipBOnlyFit                                    \
+{% if mu_range %}  --setPhysicsModelParameterRanges r={{ mu_range }} {% endif %} \
+  --there                                           \
+  -n {{ mu_array }}                                 \
+  -v $VERBOSITY_LEVEL                               \
+  &> "$OUTPUT_DIR_DEN/{{ mu_array }}/combineTool.log"
 
 
 NAME='{{ mu_array }}_mlfit_shapes.root'
 echo "Extracting PostFit shapes from the mlfit: $NAME"
 MLFIT_OUTPUT='mlfit{{ mu_array }}.root'
 
-PostFitShapesFromWorkspace -w $OUTPUT_DIR_DEN/{{ mu_array }}/wsp.root \
-  -d $OUTPUT_DIR_DEN/{{ mu_array }}/datacard.txt -o $OUTPUT_DIR_DEN/{{ mu_array }}/$NAME \
-  -f $OUTPUT_DIR_DEN/{{ mu_array }}/$MLFIT_OUTPUT:fit_s -m 90 --postfit  --sampling --print \
+PostFitShapesFromWorkspace                              \
+  -w $OUTPUT_DIR_DEN/{{ mu_array }}/wsp.root            \
+  -d $OUTPUT_DIR_DEN/{{ mu_array }}/datacard.txt        \
+  -o $OUTPUT_DIR_DEN/{{ mu_array }}/$NAME               \
+  -f $OUTPUT_DIR_DEN/{{ mu_array }}/$MLFIT_OUTPUT:fit_s \
+  -m 90                                                 \
+  --postfit                                             \
+  --sampling                                            \
+  --print                                               \
   &> "$OUTPUT_DIR_DEN/{{ mu_array }}/PostFitShapesFromWorkspace.log"
 
 LABEL={{ mu_array }}
@@ -336,9 +417,9 @@ then
 #      -o $OUTLABEL4 &> "$OUTPUT_DIR_DEN/{{ e_array }}/plot_shapes_postfit_log.log"
 
     FIT_RESULTS="$OUTPUT_DIR_DEN/{{ mu_array }}/fit_results2_{{ mu_array }}.txt"
-    python $YIELDTABLE $OUTPUT_DIR_DEN/{{ mu_array }}/wsp.root \
+    python $YIELDTABLE $OUTPUT_DIR_DEN/{{ mu_array }}/wsp.root               \
       $OUTPUT_DIR_DEN/{{ mu_array }}/$MLFIT_OUTPUT "{{ mu_sub_dir }}_shapes" \
-      1> $FIT_RESULTS \
+      1> $FIT_RESULTS                                                        \
       2> $OUTPUT_DIR_DEN/{{ mu_array }}/fit_results2_{{ mu_array }}_errors.log
 
     PREFIT_VALUES=`grep "Pre-fit fakes_data" $FIT_RESULTS | awk '{print $4" "$6}'`
