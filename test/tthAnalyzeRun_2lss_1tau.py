@@ -27,7 +27,7 @@ mode                 = options.mode #"VHbb"
 ERA                  = options.ERA #"2016"
 version              = options.version #"2017Oct24"
 max_job_resubmission = 3
-max_files_per_job    = 10 if use_prod_ntuples else 100
+max_files_per_job    = 10 #if use_prod_ntuples else 100
 
 samples                            = None
 LUMI                               = None
@@ -40,10 +40,10 @@ hadTauFakeRateWeight_inputFileName = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016
 
 # Karl: temporarily disable addMEM mode until we've proper Ntuples
 if mode in ["addMEM"]:
-  raise ValueError("No production Ntuples available for %s" % mode)
+    raise ValueError("No production Ntuples available for %s" % mode)
 
 if use_prod_ntuples and mode in ["addMEM", "forBDTtraining_afterAddMEM"]:
-  logging.warning("The samples for the mode '%s' are already derived from production Ntuples" % mode)
+    logging.warning("The samples for the mode '%s' are already derived from production Ntuples" % mode)
 
 if use_prod_ntuples and ERA == "2015":
   raise ValueError("No production Ntuples for 2015 data & MC")
@@ -75,7 +75,7 @@ if mode == "VHbb":
 elif mode == "addMEM":
   from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_2lss1tau_addMEM import samples_2016
   changeBranchNames    = True
-  MEMbranch            = 'memObjects_2lss_1tau_lepFakeable_tauTight_dR03mvaMedium'
+  MEMbranch                = 'memObjects_2lss_1tau_lepLoose_tauTight_dR03mvaMedium'
   hadTau_selection     = "dR03mvaMedium"
   applyFakeRateWeights = "3L"
 elif mode == "forBDTtraining_beforeAddMEM":
@@ -95,7 +95,6 @@ elif mode == "forBDTtraining_afterAddMEM":
   hadTau_selection         = "dR03mvaMedium"  ## "dR03mvaVTight"
   hadTau_selection_relaxed = "dR03mvaMedium"
   applyFakeRateWeights =  "2lepton"
-  max_files_per_job    = 10
 
   for sample_name, sample_info in samples_2016.items():
     if sample_info['process_name_specific'] in [
@@ -115,6 +114,15 @@ elif mode == "forBDTtraining_afterAddMEM":
       sample_info["use_it"] = True
     else:
       sample_info["use_it"] = False
+elif mode == "forBDTtraining_VHbb":
+      # the samples used here are derived from production Ntuples anyways, since the possible number of
+      # MEM scores per event is computed only at the production Ntuple step
+      from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_prodNtuples_2016_toBDT import samples_2016
+      changeBranchNames        = True
+      MEMbranch                = '' #'memObjects_2lss_1tau_lepLoose_tauTight_dR03mvaMedium'
+      hadTau_selection         = "dR03mvaMedium"  ## "dR03mvaVTight"
+      hadTau_selection_relaxed = "dR03mvaLoose" #"dR03mvaMedium"
+      applyFakeRateWeights =  "3L" #"2lepton"
 else:
   raise ValueError("Invalid Configuration parameter 'mode' = %s !!" % mode)
 
@@ -147,14 +155,18 @@ if __name__ == '__main__':
     logging.info("Job submission #%i:" % (idx_job_resubmission + 1))
 
     # do histograms for 2D bin optimizations
-    nbinsTarget=[5,6,7,8,9,10,11,12,20];
-    nbinsStart=[8,15,20];
+    nbinsTarget=[5,6,7,8,9,10];
+    nbinsStart=[15,20];
     hist_HTT=[[None]*int(len(nbinsTarget))]*len(nbinsStart)
     hist_noHTT=[[None]*int(len(nbinsTarget))]*len(nbinsStart)
+    hist_HTTMEM=[[None]*int(len(nbinsTarget))]*len(nbinsStart)
+    hist_oldVarA=[[None]*int(len(nbinsTarget))]*len(nbinsStart)
     for nbinsStartN in range(0,len(nbinsStart)) :
       for nbinsTargetN in range(0,len(nbinsTarget)) :
         hist_HTT[nbinsStartN][nbinsTargetN]="HTT_from"+str(nbinsStart[nbinsStartN])+"_to_"+str(nbinsTarget[nbinsTargetN])
         hist_noHTT[nbinsStartN][nbinsTargetN]="noHTT_from"+str(nbinsStart[nbinsStartN])+"_to_"+str(nbinsTarget[nbinsTargetN])
+        hist_HTTMEM[nbinsStartN][nbinsTargetN]="HTTMEM_from"+str(nbinsStart[nbinsStartN])+"_to_"+str(nbinsTarget[nbinsTargetN])
+        hist_oldVarA[nbinsStartN][nbinsTargetN]="oldVarA_from"+str(nbinsStart[nbinsStartN])+"_to_"+str(nbinsTarget[nbinsTargetN])
     print list(hist_HTT)[0]
     print list(hist_noHTT)[0]
 
@@ -243,23 +255,39 @@ if __name__ == '__main__':
       histograms_to_fit         = [
         "EventCounter",
         "numJets",
+        "mvaOutput_2lss_ttV",
+        "mvaOutput_2lss_ttbar",
         "mvaDiscr_2lss",
-        "mvaDiscr_2lss_1tau",
-        "mvaDiscr_2lss_1tau_wMEM",
-        #"mvaDiscr_2lss_1tau_wMEMsepLR",
-        "mTauTauVis",
-        "memOutput_LR_type0",
-        "memOutput_LR_type1",
-        ##
-        "mvaOutput_2lss_oldVar_tt",
         "mvaOutput_2lss_1tau_ttV",
-        "mvaOutput_2lss_HTT_tt",
+        "mvaOutput_2lss_1tau_ttbar",
+        "mvaDiscr_2lss_1tau",
+        "mvaOutput_2lss_1tau_ttV_wMEM",
+        "mvaOutput_2lss_1tau_ttbar_wMEM",
+        "mvaDiscr_2lss_1tau_wMEM",
+        "mvaOutput_Hj_tagger",
+        "mvaOutput_Hjj_tagger",
+        "mTauTauVis1_sel",
+        "mTauTauVis2_sel",
+        "memOutput_LR",
+        "memDiscr",
+        #
+        "mvaOutput_2lss_oldVarA_tt",
+        "mvaOutput_2lss_oldVarA_ttV",
         "mvaOutput_2lss_noHTT_tt",
         "mvaOutput_2lss_noHTT_ttV",
+        "mvaOutput_2lss_HTT_tt",
+        "mvaOutput_2lss_HTTMEM_tt",
+        "mvaOutput_2lss_HTTMEM_ttV",
         "mvaOutput_2lss_HTT_LepID_tt",
-        "oldVar_from20_to_12",
-        "oldVar_from20_to_7"
-      ]+ list(hist_HTT)[0] +list(hist_noHTT)[0],
+        #
+        "mvaOutput_2lss_HTTMEM_1B",
+        "mvaOutput_2lss_HTT_1B",
+        "mvaOutput_2lss_noHTT_1B",
+        "mvaOutput_2lss_oldVarA_1B",
+        "mvaOutput_2lss_oldVarA_2MEM",
+        "mvaOutput_2lss_noHTT_2MEM",
+        "mvaOutput_2lss_noHTT_2HTT"
+      ] + list(hist_HTTMEM)[0] + list(hist_oldVarA)[0]  + list(hist_HTT)[0] +list(hist_noHTT)[0],
       select_rle_output         = True,
       verbose                   = idx_job_resubmission > 0,
     )

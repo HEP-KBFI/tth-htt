@@ -546,39 +546,55 @@ int main(int argc, char* argv[])
   TH2* mem_mapping = loadTH2(inputFile_mem_mapping, "hTargetBinning");
   // for bin optimization do a vector of TFile
   std::string binOptSource="/hdfs/local/acaan/ttHAnalysis/2016/2lss_1tau_opt1";
-  std::string binOptSourceEnd="bins_relLepIDTrue_CumulativeBins.root";
+  std::string binOptSourceEndTrue="bins_relLepIDTrue_CumulativeBins.root";
+  std::string binOptSourceEndFalse="bins_relLepIDFalse_CumulativeBins.root";
   //
+  /*
   std::stringstream ss;
-  ss << binOptSource << "/bin_opt/oldVar_from"<<20<<"_to_"<<7<< binOptSourceEnd;
+  ss << binOptSource << "/bin_opt/oldVarA_from"<<20<<"_to_"<<7<< binOptSourceEnd;
   std::string BDT_mapping_oldVarName_from20_to_7_name = ss.str();
   TFile* BDT_mapping_oldVar_from20_to_7_file = TFile::Open(BDT_mapping_oldVarName_from20_to_7_name.c_str());
   TH2* BDT_mapping_oldVar_from20_to_7 = loadTH2(BDT_mapping_oldVar_from20_to_7_file, "hTargetBinning");
   std::cout<<"loaded file "<<BDT_mapping_oldVarName_from20_to_7_name<<std::endl;
-  //
+  // oldVarA_from10_to_7bins_relLepIDTrue_CumulativeBins.root
   std::stringstream ss2;
-  ss2 << binOptSource << "/bin_opt/oldVar_from"<<20<<"_to_"<<12<< binOptSourceEnd;
+  ss2 << binOptSource << "/bin_opt/oldVarA_from"<<20<<"_to_"<<12<<binOptSourceEnd;
   std::string BDT_mapping_oldVarName_from20_to_12_name = ss2.str();
   TFile* BDT_mapping_oldVar_from20_to_12_file = TFile::Open(BDT_mapping_oldVarName_from20_to_12_name.c_str());
   TH2* BDT_mapping_oldVar_from20_to_12 = loadTH2(BDT_mapping_oldVar_from20_to_12_file, "hTargetBinning");
   std::cout<<"loaded file "<<BDT_mapping_oldVarName_from20_to_7_name<<std::endl;
+  */
   //
   //std::vector<std::vector<TH2*>> HTT(3); //"_to_"; HTT_from
   //std::vector<std::vector<TH2*>> noHTT(3); //="HTT_from20_to_";
-  TH2* HTT[3][9]; //"_to_"; HTT_from
-  TH2* noHTT[3][9]; //="HTT_from20_to_";
-  for (unsigned int nbinsStartN=0 ; nbinsStartN<3 ; nbinsStartN++ ) {
-    for (unsigned int nbinsTargetN=0 ; nbinsTargetN<9 ; nbinsTargetN++ ) {
+  const int nstart =2;
+  const int ntarget =6;
+  TH2* HTT[nstart][ntarget];
+  TH2* noHTT[nstart][ntarget];
+  TH2* HTTMEM[nstart][ntarget];
+  TH2* oldVarA[nstart][ntarget];
+  // HTTMEM_from15_to_10bins_relLepIDTrue_CumulativeBins.root
+  for (unsigned int nbinsStartN=0 ; nbinsStartN<nstart ; nbinsStartN++ ) {
+    for (unsigned int nbinsTargetN=0 ; nbinsTargetN<ntarget ; nbinsTargetN++ ) {
       std::stringstream BDT_mapping_HTT_name;
-      BDT_mapping_HTT_name << binOptSource << "/bin_opt/HTT_from"<<nbinsStart[nbinsStartN]<<"_to_"<<nbinsTarget[nbinsTargetN]<< binOptSourceEnd;
-      //std::string BDT_mapping_HTT_name = ss3.str();
+      BDT_mapping_HTT_name << binOptSource << "/bin_opt/HTT_from"<<nbinsStart[nbinsStartN]<<"_to_"<<nbinsTarget[nbinsTargetN]<< binOptSourceEndTrue;
       HTT[nbinsStartN][nbinsTargetN]=loadTH2(TFile::Open(BDT_mapping_HTT_name.str().c_str()), "hTargetBinning");
       std::cout<<"loaded file "<<BDT_mapping_HTT_name.str() <<std::endl;
       // //////////////// // /////////////////
       std::stringstream BDT_mapping_noHTT_name;
-      BDT_mapping_noHTT_name << binOptSource << "/bin_opt/noHTT_from"<<nbinsStart[nbinsStartN]<<"_to_"<<nbinsTarget[nbinsTargetN]<< binOptSourceEnd;
-      //std::string BDT_mapping_noHTT_name = ss4.str();
+      BDT_mapping_noHTT_name << binOptSource << "/bin_opt/noHTT_from"<<nbinsStart[nbinsStartN]<<"_to_"<<nbinsTarget[nbinsTargetN]<< binOptSourceEndTrue;
       noHTT[nbinsStartN][nbinsTargetN]=loadTH2(TFile::Open(BDT_mapping_noHTT_name.str().c_str()), "hTargetBinning");
       std::cout<<"loaded file "<<BDT_mapping_noHTT_name.str() <<std::endl;
+      // //////////////// // /////////////////
+      std::stringstream BDT_mapping_HTTMEM_name;
+      BDT_mapping_HTTMEM_name << binOptSource << "/bin_opt/HTTMEM_from"<<nbinsStart[nbinsStartN]<<"_to_"<<nbinsTarget[nbinsTargetN]<< binOptSourceEndTrue;
+      HTTMEM[nbinsStartN][nbinsTargetN]=loadTH2(TFile::Open(BDT_mapping_HTTMEM_name.str().c_str()), "hTargetBinning");
+      std::cout<<"loaded file "<<BDT_mapping_HTTMEM_name.str() <<std::endl;
+      // //////////////// // /////////////////
+      std::stringstream BDT_mapping_oldVarA_name;
+      BDT_mapping_oldVarA_name << binOptSource << "/bin_opt/oldVarA_from"<<nbinsStart[nbinsStartN]<<"_to_"<<nbinsTarget[nbinsTargetN]<< binOptSourceEndFalse;
+      oldVarA[nbinsStartN][nbinsTargetN]=loadTH2(TFile::Open(BDT_mapping_oldVarA_name.str().c_str()), "hTargetBinning");
+      std::cout<<"loaded file "<<BDT_mapping_oldVarA_name.str() <<std::endl;
     }
   }
   //
@@ -619,6 +635,7 @@ int main(int argc, char* argv[])
 	  inputTree -> registerReader(genWJetReader);
   }
 
+  double evtWeightSum=0; // to devbug
   //--- initialize hadronic top tagger BDT
   //std::string mvaFileName_hadTopTagger = "tthAnalysis/HiggsToTauTau/data/hadTopTagger_BDTG_2017Oct10_opt2.xml";
   std::string mvaFileName_hadTopTaggerWithKinFit = "tthAnalysis/HiggsToTauTau/data/all_HadTopTagger_sklearnV0o17o1_HypOpt_XGB_ntrees_1000_deph_3_lr_0o01_CSV_sort_withKinFit.pkl";
@@ -634,17 +651,17 @@ int main(int argc, char* argv[])
   // you can find the variav=bles (and order) to each BDT if you substitute .pkl => _pkl.log and look on the file
   // c++ does keep order in vectors
   //std::string mvaFileName_oldVar_tt =binOptSource; mvaFileName_oldVar_tt.append("/2lss_1tau_XGB_oldVar_evtLevelTT_TTH_7Var.pkl");
-  std::string mvaFileName_oldVar_tt ="tthAnalysis/HiggsToTauTau/data/2lss_1tau_opt1/2lss_1tau_XGB_oldVar_evtLevelTT_TTH_7Var.pkl";
+  std::string mvaFileName_oldVar_tt ="tthAnalysis/HiggsToTauTau/data/2lss_1tau_opt1/2lss_1tau_XGB_oldVarA_evtLevelTT_TTH_8Var.pkl";
   std::cout<<mvaFileName_oldVar_tt<<std::endl;
   std::vector<std::string> mvaInputVariables_oldVar_ttVSort={
-    "max_lep_eta", "nJet25_Recl", "mindr_lep1_jet", "mindr_lep2_jet", "min(met_pt,400)", "avg_dr_jet", "MT_met_lep1"
+    "nJet", "mindr_lep1_jet", "avg_dr_jet", "max_lep_eta", "lep2_conePt", "dr_leps", "tau_pt", "dr_lep1_tau"
   };
   XGBInterface mva_2lss_oldVar_tt(mvaFileName_oldVar_tt, mvaInputVariables_oldVar_ttVSort);
 
   //std::string mvaFileName_oldVar_ttV =binOptSource; mvaFileName_oldVar_ttV.append("/2lss_1tau_XGB_oldVar_evtLevelTTV_TTH_7Var.pkl");
-  std::string mvaFileName_oldVar_ttV = "tthAnalysis/HiggsToTauTau/data/2lss_1tau_opt1/2lss_1tau_XGB_oldVar_evtLevelTTV_TTH_7Var.pkl";
+  std::string mvaFileName_oldVar_ttV = "tthAnalysis/HiggsToTauTau/data/2lss_1tau_opt1/2lss_1tau_XGB_oldVarA_evtLevelTTV_TTH_10Var.pkl";
   std::vector<std::string> mvaInputVariables_oldVar_ttVVSort={
-    "max_lep_eta", "MT_met_lep1", "nJet25_Recl", "mindr_lep1_jet", "mindr_lep2_jet", "lep1_conePt", "lep2_conePt"
+    "mindr_lep1_jet", "mindr_lep2_jet", "avg_dr_jet", "max_lep_eta", "lep1_conePt", "lep2_conePt", "mT_lep1", "dr_leps", "mTauTauVis1", "mTauTauVis2"
   };
   XGBInterface mva_2lss_oldVar_ttV(mvaFileName_oldVar_ttV, mvaInputVariables_oldVar_ttVVSort);
 
@@ -684,6 +701,79 @@ int main(int argc, char* argv[])
     "mindr_tau_jet", "ptmiss", "tau_pt"
   };
   XGBInterface mva_2lss_noHTT_ttV(mvaFileName_noHTT_ttV, mvaInputVariables_noHTT_ttVSort);
+
+
+  ///hdfs/local/acaan/ttHAnalysis/2016/2lss_1tau_opt1/2lss_1tau_XGB_HTTMEM_evtLevelTTV_TTH_19Var.pkl
+  ///hdfs/local/acaan/ttHAnalysis/2016/2lss_1tau_opt1/2lss_1tau_XGB_HTTMEM_evtLevelTTV_TTH_19Var_pkl.log
+  std::string mvaFileName_HTTMEM_ttV ="tthAnalysis/HiggsToTauTau/data/2lss_1tau_opt1/2lss_1tau_XGB_HTTMEM_evtLevelTTV_TTH_18Var.pkl";
+  std::vector<std::string> mvaInputVariables_HTTMEM_ttVSort = {
+    "avg_dr_jet", "dr_lep1_tau", "dr_lep2_tau", "dr_leps", "lep1_conePt", "lep2_conePt", "mT_lep1", "mT_lep2",
+    "mTauTauVis1", "mTauTauVis2", "mindr_lep1_jet", "mindr_lep2_jet", "mindr_tau_jet", "ptmiss",
+    "tau_pt", "mvaOutput_hadTopTaggerWithKinFit", "mvaOutput_Hj_tagger", "memOutput_LR"
+  };
+  XGBInterface mva_2lss_HTTMEM_ttV(mvaFileName_HTTMEM_ttV, mvaInputVariables_HTTMEM_ttVSort);
+
+
+  // /hdfs/local/acaan/ttHAnalysis/2016/2lss_1tau_opt1/2lss_1tau_XGB_HTTMEM_evtLevelTT_TTH_18Var.pkl
+  ///hdfs/local/acaan/ttHAnalysis/2016/2lss_1tau_opt1/2lss_1tau_XGB_HTTMEM_evtLevelTT_TTH_18Var_pkl.log
+  std::string mvaFileName_HTTMEM_tt ="tthAnalysis/HiggsToTauTau/data/2lss_1tau_opt1/2lss_1tau_XGB_HTTMEM_evtLevelTT_TTH_18Var.pkl";
+  std::vector<std::string> mvaInputVariables_HTTMEM_ttSort = {
+    "dr_lep1_tau", "memOutput_LR", "dr_lep2_tau", "dr_leps", "mT_lep1", "mT_lep2",
+    "mTauTauVis1","mTauTauVis2", "mindr_lep1_jet", "mindr_lep2_jet", "mindr_tau_jet", "ptmiss",
+    "tau_pt", "mvaOutput_hadTopTaggerWithKinFit", "mvaOutput_Hj_tagger", "unfittedHadTop_pt", "nJet25_Recl", "avg_dr_jet"
+  };
+  XGBInterface mva_2lss_HTTMEM_tt(mvaFileName_HTTMEM_tt, mvaInputVariables_HTTMEM_ttSort);
+
+  //////////////////
+  // Joint 1B
+  std::vector<std::string> mvaInputVariables_1BSort = {"BDTtt", "BDTttV"};
+  //2lss_1tau/2lss_1tau_XGB_JointBDT_HTTMEM_1B.pkl
+  //2lss_1tau/2lss_1tau_XGB_JointBDT_HTTMEM_1B_pkl.log
+  //2lss_1tau/2lss_1tau_XGB_JointBDT_noHTT_1B.pkl
+  //2lss_1tau/2lss_1tau_XGB_JointBDT_noHTT_1B_pkl.log
+  //2lss_1tau/2lss_1tau_XGB_JointBDT_oldVarA_1B.pkl
+  //2lss_1tau/2lss_1tau_XGB_JointBDT_oldVarA_1B_pkl.log
+  std::string mvaFileName_HTTMEM_1B ="tthAnalysis/HiggsToTauTau/data/2lss_1tau_opt1/2lss_1tau_XGB_JointBDT_HTTMEM_1B_pkl";
+  XGBInterface mva_2lss_HTTMEM_1B(mvaFileName_HTTMEM_1B, mvaInputVariables_1BSort);
+  std::string mvaFileName_noHTT_1B ="tthAnalysis/HiggsToTauTau/data/2lss_1tau_opt1/2lss_1tau_XGB_JointBDT_noHTT_1B_pkl";
+  XGBInterface mva_2lss_noHTT_1B(mvaFileName_noHTT_1B, mvaInputVariables_1BSort);
+  std::string mvaFileName_oldVarA_1B ="tthAnalysis/HiggsToTauTau/data/2lss_1tau_opt1/2lss_1tau_XGB_JointBDT_oldVarA_1B_pkl";
+  XGBInterface mva_2lss_oldVarA_1B(mvaFileName_oldVarA_1B, mvaInputVariables_1BSort);
+  std::string mvaFileName_HTT_1B ="tthAnalysis/HiggsToTauTau/data/2lss_1tau_opt1/2lss_1tau_XGB_JointBDT_HTT_1B_pkl";
+  XGBInterface mva_2lss_HTT_1B(mvaFileName_HTT_1B, mvaInputVariables_1BSort);
+
+  ///////
+  // 2MEM
+  //2lss_1tau/2lss_1tau_XGB_JointBDT_oldVarA_2MEM.pkl
+  //2lss_1tau/2lss_1tau_XGB_JointBDT_oldVarA_2MEM_pkl.log
+  //2lss_1tau/2lss_1tau_XGB_JointBDT_noHTT_2MEM.pkl
+  //2lss_1tau/2lss_1tau_XGB_JointBDT_noHTT_2MEM_pkl.log
+  std::vector<std::string> mvaInputVariables_2MEMSort = {
+    "BDTtt", "BDTttV", "mvaOutput_hadTopTaggerWithKinFit", "mvaOutput_Hj_tagger", "unfittedHadTop_pt", "memOutput_LR"};
+  std::string mvaFileName_oldVarA_2MEM ="tthAnalysis/HiggsToTauTau/data/2lss_1tau_opt1/2lss_1tau_XGB_JointBDT_oldVarA_2MEM_pkl";
+  XGBInterface mva_2lss_oldVarA_2MEM(mvaFileName_oldVarA_2MEM, mvaInputVariables_2MEMSort);
+  std::string mvaFileName_noHTT_2MEM ="tthAnalysis/HiggsToTauTau/data/2lss_1tau_opt1/2lss_1tau_XGB_JointBDT_noHTT_2MEM_pkl";
+  XGBInterface mva_2lss_noHTT_2MEM(mvaFileName_noHTT_2MEM, mvaInputVariables_2MEMSort);
+
+  std::vector<std::string> mvaInputVariables_2HTTSort = {
+    "BDTtt", "BDTttV", "mvaOutput_hadTopTaggerWithKinFit", "mvaOutput_Hj_tagger", "unfittedHadTop_pt"};
+  std::string mvaFileName_noHTT_2HTT ="tthAnalysis/HiggsToTauTau/data/2lss_1tau_opt1/2lss_1tau_XGB_JointBDT_noHTT_2HTT_pkl";
+  //('max data Joint/TT/TTV', 0.75491208, 0.81014323, 0.99629968)
+  //('min data Joint/TT/TTV', 0.026170442, 0.0066790595, 0.022887703)
+  XGBInterface mva_2lss_noHTT_2HTT(mvaFileName_noHTT_2HTT, mvaInputVariables_2HTTSort);
+
+  ///////
+  // 2MEM
+  //2lss_1tau/2lss_1tau_XGB_JointBDT_oldVarA_noMEM.pkl
+  //2lss_1tau/2lss_1tau_XGB_JointBDT_oldVarA_noMEM_pkl.log
+  //2lss_1tau/2lss_1tau_XGB_JointBDT_noHTT_noMEM.pkl
+  //2lss_1tau/2lss_1tau_XGB_JointBDT_noHTT_noMEM_pkl.log
+  //std::vector<std::string> mvaInputVariables_noMEMSort = {
+  //  "BDTtt", "BDTttV", "mvaOutput_hadTopTaggerWithKinFit", "mvaOutput_Hj_tagger", "unfittedHadTop_pt"};
+  //std::string mvaFileName_oldVarA_noMEM ="tthAnalysis/HiggsToTauTau/data/2lss_1tau_opt1/2lss_1tau_XGB_JointBDT_oldVarA_noMEM_pkl";
+  //XGBInterface mva_2lss_oldVarA_noMEM(mvaFileName_oldVarA_2MEM, mvaInputVariables_noMEMSort);
+  //std::string mvaFileName_noHTT_noMEM ="tthAnalysis/HiggsToTauTau/data/2lss_1tau_opt1/2lss_1tau_XGB_JointBDT_noHTT_2MEM_pkl";
+  //XGBInterface mva_2lss_noHTT_noMEM(mvaFileName_noHTT_noMEM, mvaInputVariables_noMEMSort);
 
   /*
 	if BDTvar=="oldVar" : ttV_file=basepkl+"/2lss_1tau_XGB_oldVar_evtLevelTTV_TTH_7Var.pkl"
@@ -807,8 +897,6 @@ int main(int argc, char* argv[])
   mvaInputVariables_Hj_tagger.push_back("Jet_pt");
   TMVAInterface mva_Hj_tagger(mvaFileName_Hj_tagger, mvaInputVariables_Hj_tagger);
 
-  std::map<std::string, double> mvaInputs_Hj_tagger;
-
   std::string mvaFileName_Hjj_tagger = "tthAnalysis/HiggsToTauTau/data/Hjj_csv_BDTG.weights.xml";
   std::vector<std::string> mvaInputVariables_Hjj_tagger;
   mvaInputVariables_Hjj_tagger.push_back("bdtJetPair_minlepmass");
@@ -818,8 +906,6 @@ int main(int argc, char* argv[])
   mvaInputVariables_Hjj_tagger.push_back("bdtJetPair_mass");
   mvaInputVariables_Hjj_tagger.push_back("bdtJetPair_minjOvermaxjdr");
   TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagger);
-
-  std::map<std::string, double> mvaInputs_Hjj_tagger;
 
 //--- open output file containing run:lumi:event numbers of events passing final event selection criteria
   std::ostream* selEventsFile = ( selEventsFileName_output != "" ) ? new std::ofstream(selEventsFileName_output.data(), std::ios::out) : 0;
@@ -1014,7 +1100,7 @@ int main(int argc, char* argv[])
   NtupleFillerBDT<float, int>* bdt_filler = nullptr;
   typedef std::remove_pointer<decltype(bdt_filler)>::type::float_type float_type;
   typedef std::remove_pointer<decltype(bdt_filler)>::type::int_type int_type;
-  if ( selectBDT ) {
+  if ( 1>0 ) { // Xanda if ( selectBDT ) {
     bdt_filler = new std::remove_pointer<decltype(bdt_filler)>::type(
       makeHistManager_cfg(process_string, Form("%s/sel/evtntuple", histogramDir.data()), central_or_shift)
     );
@@ -1036,6 +1122,8 @@ int main(int argc, char* argv[])
       "fittedHadTop_pt", "fittedHadTop_eta", "unfittedHadTop_pt",
       "unfittedHadTop_eta","fitHTptoHTpt" , "fitHTptoHTmass",
       "dr_lep1_HTfitted", "dr_lep2_HTfitted", "dr_tau_HTfitted", "mass_lep1_HTfitted", "mass_lep2_HTfitted",  "dr_lep1_HTunfitted", "dr_lep2_HTunfitted", "dr_tau_HTunfitted",
+      "mvaOutput_2lss_1tau_ttbar", "mvaOutput_2lss_1tau_ttV", "mvaDiscr_2lss_1tau", "oldVar_from20_to_12", "oldVar_from20_to_7",
+      "mvaOutput_2lss_1tau_ttV_wMEM", "mvaOutput_2lss_1tau_ttbar_wMEM",
       "lumiScale", "genWeight", "evtWeight",
       "mvaOutput_hadTopTaggerWithKinFit", "mvaOutput_hadTopTagger",
       "bWj1Wj2_isGenMatched", "bWj1Wj2_isGenMatchedWithKinFit",
@@ -1438,7 +1526,7 @@ int main(int argc, char* argv[])
     preselHistManagerType* preselHistManager = preselHistManagers[idxPreselLepton_genMatch][idxSelHadTau_genMatch];
     assert(preselHistManager != 0);
 
-    double dumbVec[3][9]={ {0.0} };
+    double dumbVec[nstart][ntarget]={ {0.0} };
     preselHistManager->electrons_->fillHistograms(preselElectrons, 1.);
     preselHistManager->muons_->fillHistograms(preselMuons, 1.);
     preselHistManager->hadTaus_->fillHistograms(selHadTaus, 1.);
@@ -1447,14 +1535,25 @@ int main(int argc, char* argv[])
     preselHistManager->BJets_medium_->fillHistograms(selBJets_medium, 1.);
     preselHistManager->met_->fillHistograms(met, mht_p4, met_LD, 1.);
     preselHistManager->evt_->fillHistograms(
+      0.0, // evtWeight is first to be sure of not being loosing counting
       preselElectrons.size(), preselMuons.size(), selHadTaus.size(),
       selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
+      //1,1,1,
+      //1,1,1,
+      // old Training
       -1., -1., -1., -1., -1., -1., -1., -1., -1., -1., -1.,
       mTauTauVis1_presel, mTauTauVis2_presel,
-      0, -1., 1.,
-      1., 1., 1., 1., 1., 1., 1., 1.,
-      dumbVec, dumbVec
+      -1., -1.,
+      // XGB training 1D
+      -1., -1., -1., -1., -1., -1., -1., -1.,
+      // 2D mapppings
+      dumbVec, dumbVec, dumbVec, dumbVec,
+      // XGB training, joint
+      -1., -1., -1., -1., -1., -1., -1.
     );
+
+
+
 
     cutFlowTable.update(">= 2 sel leptons", 1.);
     cutFlowHistManager->fillHistograms(">= 2 sel leptons", 1.);
@@ -1607,7 +1706,7 @@ int main(int argc, char* argv[])
 	}
 	evtWeight *= weight_data_to_MC_correction_hadTau;
       }
-    }
+    } // end if !selectBDT
     if ( isDEBUG ) {
       std::cout << "evtWeight = " << evtWeight << std::endl;
     }
@@ -1730,7 +1829,8 @@ int main(int argc, char* argv[])
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS tight lepton charge requirement." << std::endl;
       }
-      if (!selectBDT) continue;
+      //if (!selectBDT)
+      continue;
     }
     cutFlowTable.update("tight lepton charge", evtWeight);
     cutFlowHistManager->fillHistograms("tight lepton charge", evtWeight);
@@ -1859,13 +1959,13 @@ int main(int argc, char* argv[])
     double lep1_conePt=comp_lep1_conePt(*selLepton_lead);
     double lep2_conePt=comp_lep2_conePt(*selLepton_sublead);
     double minMET400=std::min(met.pt(), (Double_t)400.);
-    double MT_met_lep1 = comp_MT_met_lep1(selLepton_lead->cone_p4(), met.pt(), met.phi());
+    //double MT_met_lep1 = MT_met_lep1;
     double mindr_tau_jet = TMath::Min(10., comp_mindr_hadTau1_jet(*selHadTau, selJets));
 
 //--- compute output of BDTs used to discriminate ttH vs. ttV and ttH vs. ttbar
 //    in 2lss_1tau category of ttH multilepton analysis
     mvaInputs_2lss["max(abs(LepGood_eta[iF_Recl[0]]),abs(LepGood_eta[iF_Recl[1]]))"] = std::max(std::fabs(selLepton_lead->eta()), std::fabs(selLepton_sublead->eta()));
-    mvaInputs_2lss["MT_met_lep1"]                = comp_MT_met_lep1(selLepton_lead->cone_p4(), met.pt(), met.phi());
+    mvaInputs_2lss["MT_met_lep1"]                = comp_MT_met_lep1(selLepton_lead->p4(), met.pt(), met.phi());
     mvaInputs_2lss["nJet25_Recl"]                = nJet25_Recl;
     mvaInputs_2lss["mindr_lep1_jet"]             = mindr_lep1_jet;
     mvaInputs_2lss["mindr_lep2_jet"]             = mindr_lep2_jet;
@@ -1953,7 +2053,7 @@ int main(int argc, char* argv[])
     double memOutput_ttZ_LR = ( memOutput_2lss_1tau_matched.isValid_ttZ_LR() && !memOutput_2lss_1tau_matched.errorFlag_ttZ_LR() ) ? memOutput_2lss_1tau_matched.ttZ_LR() : -1.;
     double memOutput_ttbar_LR = ( memOutput_2lss_1tau_matched.isValid_ttbar_LR() && !memOutput_2lss_1tau_matched.errorFlag_ttbar_LR() ) ? memOutput_2lss_1tau_matched.LR() : -1.;
 
-    Double_t memDiscr = getSF_from_TH2(mem_mapping, memOutput_ttbar_LR, memOutput_ttZ_LR);
+    Double_t memDiscr = getSF_from_TH2(mem_mapping, memOutput_ttbar_LR, memOutput_ttZ_LR)+ 1;
 
     //--- build collections of generator level particles
     std::vector<GenParticle> genTopQuarks;
@@ -1976,6 +2076,9 @@ int main(int argc, char* argv[])
     bool hadtruth = false;
     int ncombo=0;
     double genTopPt=-10;
+    double positionJet1=-1;
+    double positionJet2=-1;
+    double positionJet3=-1;
     std::vector<double> bdtResult;
     bdtResult.push_back(-1.); // XGB with kinfit
     bdtResult.push_back(-1.); // TMVA with kin fit
@@ -2007,6 +2110,9 @@ int main(int argc, char* argv[])
     	    max_mvaOutput_hadTopTaggerWithKinFit = bdtResult[0];
     	    fittedHadTopP4 = hadTopTagger->kinFit()->fittedTop();
     	    unfittedHadTopP4 = (*selBJet)->p4() + (*selWJet1)->p4() + (*selWJet2)->p4();
+          positionJet1=(*selBJet)->pt();
+          positionJet2=(*selWJet1)->pt();
+          positionJet3=(*selWJet2)->pt();
     	  }
     	  if ( bdtResult[2] > max_mvaOutput_hadTopTagger ) { // hadTopTaggerNoKinFit
     	    max_truth_hadTopTagger = isGenMatched;
@@ -2017,9 +2123,11 @@ int main(int argc, char* argv[])
           }
     }
 
+    std::map<std::string, double> mvaInputs_Hj_tagger;
     double mvaOutput_Hj_tagger = -1.;
     for ( std::vector<const RecoJet*>::const_iterator selJet = selJets.begin();
 	  selJet != selJets.end(); ++selJet ) {
+      if ((*selJet)->pt()==positionJet1 || (*selJet)->pt()==positionJet2 || (*selJet)->pt()==positionJet3) continue;
       double mvaOutput = comp_mvaOutput_Hj_tagger(
         *selJet, fakeableLeptons,
 	mvaInputs_Hj_tagger, mva_Hj_tagger,
@@ -2027,11 +2135,14 @@ int main(int argc, char* argv[])
       if ( mvaOutput > mvaOutput_Hj_tagger ) mvaOutput_Hj_tagger = mvaOutput;
     }
 
+    std::map<std::string, double> mvaInputs_Hjj_tagger;
     double mvaOutput_Hjj_tagger = -1.;
     for ( std::vector<const RecoJet*>::const_iterator selJet1 = selJets.begin();
 	  selJet1 != selJets.end(); ++selJet1 ) {
+      if ((*selJet1)->pt()==positionJet1 || (*selJet1)->pt()==positionJet2 || (*selJet1)->pt()==positionJet3) continue;
       for ( std::vector<const RecoJet*>::const_iterator selJet2 = selJet1 + 1;
 	    selJet2 != selJets.end(); ++selJet2 ) {
+        if ((*selJet2)->pt()==positionJet1 || (*selJet2)->pt()==positionJet2 || (*selJet2)->pt()==positionJet3) continue;
 	double mvaOutput = comp_mvaOutput_Hjj_tagger(
 	  *selJet1, *selJet2, selJets, fakeableLeptons,
 	  mvaInputs_Hjj_tagger, mva_Hjj_tagger,
@@ -2043,26 +2154,34 @@ int main(int argc, char* argv[])
 
     //--- compute output of BDTs used to discriminate ttH vs. ttV and ttH vs. ttbar -- Xanda
     //std::cout<<"filling BDTs olVar_tt"<<std::endl;
-    std::map<std::string, double> mvaInputVariables_oldVar_tt;
-    mvaInputVariables_oldVar_tt["max_lep_eta"]=max_lep_eta;
-    mvaInputVariables_oldVar_tt["nJet25_Recl"]=nJet25_Recl;
-    mvaInputVariables_oldVar_tt["mindr_lep1_jet"]=mindr_lep1_jet;
-    mvaInputVariables_oldVar_tt["mindr_lep2_jet"]=mindr_lep2_jet;
-    mvaInputVariables_oldVar_tt["min(met_pt,400)"]=minMET400;
-    mvaInputVariables_oldVar_tt["avg_dr_jet"]=avg_dr_jet;
-    mvaInputVariables_oldVar_tt["MT_met_lep1"]=MT_met_lep1;
-    double mvaOutput_2lss_oldVar_tt=mva_2lss_oldVar_tt(mvaInputVariables_oldVar_tt);
-
-    //std::cout<<"filling BDTs olVar_ttV"<<std::endl;
     std::map<std::string, double> mvaInputVariables_oldVar_ttV;
-    mvaInputVariables_oldVar_ttV["max_lep_eta"]=max_lep_eta;
-    mvaInputVariables_oldVar_ttV["MT_met_lep1"]=MT_met_lep1;
-    mvaInputVariables_oldVar_ttV["nJet25_Recl"]= nJet25_Recl;
+    //'mindr_lep1_jet', 'mindr_lep2_jet', 'avg_dr_jet', 'max_lep_eta', 'lep1_conePt', 'lep2_conePt', 'mT_lep1', 'dr_leps', 'mTauTauVis1', 'mTauTauVis2'
+    // 'mindr_lep1_jet', 'mindr_lep2_jet', 'avg_dr_jet', 'max_lep_eta', 'lep1_conePt', 'lep2_conePt', 'mT_lep1', 'dr_leps', 'mTauTauVis1', 'mTauTauVis2'
     mvaInputVariables_oldVar_ttV["mindr_lep1_jet"]=mindr_lep1_jet;
     mvaInputVariables_oldVar_ttV["mindr_lep2_jet"]=mindr_lep2_jet;
+    mvaInputVariables_oldVar_ttV["avg_dr_jet"]=avg_dr_jet;
+    mvaInputVariables_oldVar_ttV["max_lep_eta"]=max_lep_eta;
     mvaInputVariables_oldVar_ttV["lep1_conePt"]=lep1_conePt;
     mvaInputVariables_oldVar_ttV["lep2_conePt"]=lep2_conePt;
-    double mvaOutput_2lss_oldVar_ttV=mva_2lss_oldVar_ttV(mvaInputVariables_oldVar_ttV);
+    mvaInputVariables_oldVar_ttV["mT_lep1"]=mT_lep1;
+    mvaInputVariables_oldVar_ttV["dr_leps"]=dr_leps;
+    mvaInputVariables_oldVar_ttV["mTauTauVis1"]=mTauTauVis1_sel;
+    mvaInputVariables_oldVar_ttV["mTauTauVis2"]=mTauTauVis2_sel;
+    double mvaOutput_2lss_oldVarA_ttV=mva_2lss_oldVar_ttV(mvaInputVariables_oldVar_ttV);
+
+    //std::cout<<"filling BDTs olVar_ttV"<<std::endl;
+    std::map<std::string, double> mvaInputVariables_oldVar_tt;
+    // 'nJet', 'mindr_lep1_jet', 'avg_dr_jet', 'max_lep_eta', 'lep2_conePt', 'dr_leps', 'tau_pt', 'dr_lep1_tau'
+    // nJet', 'mindr_lep1_jet', 'avg_dr_jet', 'max_lep_eta', 'lep2_conePt', 'dr_leps', 'tau_pt', 'dr_lep1_tau'
+    mvaInputVariables_oldVar_tt["nJet"]= selJets.size();
+    mvaInputVariables_oldVar_tt["mindr_lep1_jet"]=mindr_lep1_jet;
+    mvaInputVariables_oldVar_tt["avg_dr_jet"]=avg_dr_jet;
+    mvaInputVariables_oldVar_tt["max_lep_eta"]=max_lep_eta;
+    mvaInputVariables_oldVar_tt["lep2_conePt"]=lep2_conePt;
+    mvaInputVariables_oldVar_tt["dr_leps"]=dr_leps;
+    mvaInputVariables_oldVar_tt["tau_pt"]=tau_pt;
+    mvaInputVariables_oldVar_tt["dr_lep1_tau"]=dr_lep1_tau;
+    double mvaOutput_2lss_oldVarA_tt=mva_2lss_oldVar_tt(mvaInputVariables_oldVar_tt);
 
     //std::cout<<"filling BDTs HTT_tt"<<std::endl;
     std::map<std::string, double>  mvaInputVariables_HTT_tt;
@@ -2136,16 +2255,118 @@ int main(int argc, char* argv[])
     mvaInputVariables_noHTT_ttV["tau_pt"]=tau_pt;
     double mvaOutput_2lss_noHTT_ttV=mva_2lss_noHTT_ttV(mvaInputVariables_noHTT_ttV);
 
+   //std::cout<<"filling BDTs HTTMEM_ttV"<<std::endl;
+   std::map<std::string, double>  mvaInputVariables_HTTMEM_ttV;
+   mvaInputVariables_HTTMEM_ttV["avg_dr_jet"]=avg_dr_jet;
+   mvaInputVariables_HTTMEM_ttV["dr_lep1_tau"]=dr_lep1_tau;
+   mvaInputVariables_HTTMEM_ttV["dr_lep2_tau"]=dr_lep2_tau;
+   mvaInputVariables_HTTMEM_ttV["dr_leps"]=dr_leps;
+   mvaInputVariables_HTTMEM_ttV["lep1_conePt"]=lep1_conePt;
+   mvaInputVariables_HTTMEM_ttV["lep2_conePt"]=lep2_conePt;
+   mvaInputVariables_HTTMEM_ttV["mT_lep1"]=mT_lep1;
+   mvaInputVariables_HTTMEM_ttV["mT_lep2"]=mT_lep2;
+   mvaInputVariables_HTTMEM_ttV["mTauTauVis1"]=mTauTauVis1_sel;
+   mvaInputVariables_HTTMEM_ttV["mTauTauVis2"]=mTauTauVis2_sel;
+   mvaInputVariables_HTTMEM_ttV["mindr_lep1_jet"]=mindr_lep1_jet;
+   mvaInputVariables_HTTMEM_ttV["mindr_lep2_jet"]=mindr_lep2_jet;
+   mvaInputVariables_HTTMEM_ttV["mindr_tau_jet"]=mindr_tau_jet;
+   mvaInputVariables_HTTMEM_ttV["ptmiss"]=ptmiss;
+   mvaInputVariables_HTTMEM_ttV["tau_pt"]=tau_pt;
+   mvaInputVariables_HTTMEM_ttV["mvaOutput_hadTopTaggerWithKinFit"]=max_mvaOutput_hadTopTaggerWithKinFit;
+   mvaInputVariables_HTTMEM_ttV["mvaOutput_Hj_tagger"]=mvaOutput_Hjj_tagger;
+   mvaInputVariables_HTTMEM_ttV["memOutput_LR"]=memOutput_LR;
+   double mvaOutput_2lss_HTTMEM_ttV=mva_2lss_HTTMEM_ttV(mvaInputVariables_HTTMEM_ttV);
+
+   //std::cout<<"filling BDTs HTTMEM_tt"<<std::endl;
+   std::map<std::string, double> mvaInputVariables_HTTMEM_tt;
+   mvaInputVariables_HTTMEM_tt["dr_lep1_tau"]=dr_lep1_tau;
+   mvaInputVariables_HTTMEM_tt["memOutput_LR"]=memOutput_LR;
+   mvaInputVariables_HTTMEM_tt["dr_lep2_tau"]=dr_lep2_tau;
+   mvaInputVariables_HTTMEM_tt["dr_leps"]=dr_leps;
+   mvaInputVariables_HTTMEM_tt["mT_lep1"]=mT_lep1;
+   mvaInputVariables_HTTMEM_tt["mT_lep2"]=mT_lep2;
+   mvaInputVariables_HTTMEM_tt["mTauTauVis1"]=mTauTauVis1_sel;
+   mvaInputVariables_HTTMEM_tt["mTauTauVis2"]=mTauTauVis2_sel;
+   mvaInputVariables_HTTMEM_tt["mindr_lep1_jet"]=mindr_lep1_jet;
+   mvaInputVariables_HTTMEM_tt["mindr_lep2_jet"]=mindr_lep2_jet;
+   mvaInputVariables_HTTMEM_tt["mindr_tau_jet"]=mindr_tau_jet;
+   mvaInputVariables_HTTMEM_tt["ptmiss"]=ptmiss;
+   mvaInputVariables_HTTMEM_tt["tau_pt"]=tau_pt;
+   mvaInputVariables_HTTMEM_tt["mvaOutput_hadTopTaggerWithKinFit"]=max_mvaOutput_hadTopTaggerWithKinFit;
+   mvaInputVariables_HTTMEM_tt["mvaOutput_Hj_tagger"]=mvaOutput_Hjj_tagger;
+   mvaInputVariables_HTTMEM_tt["unfittedHadTop_pt"]=unfittedHadTopP4.pt();
+   mvaInputVariables_HTTMEM_tt["nJet25_Recl"]= nJet25_Recl;
+   mvaInputVariables_HTTMEM_tt["avg_dr_jet"]=avg_dr_jet;
+   double mvaOutput_2lss_HTTMEM_tt =mva_2lss_HTTMEM_tt(mvaInputVariables_HTTMEM_tt);
+
+   /*
+   std::vector<std::string> mvaInputVariables_1BSort = {"BDTtt", "BDTttV"};
+   */
+   //std::cout<<"filling BDTs HTTMEM_1B"<<std::endl;
+   std::map<std::string, double> mvaInputVariables_HTTMEM_1B;
+   mvaInputVariables_HTTMEM_1B["BDTtt"]=mvaOutput_2lss_HTTMEM_tt;
+   mvaInputVariables_HTTMEM_1B["BDTttV"]=mvaOutput_2lss_HTTMEM_ttV;
+   double mvaOutput_2lss_HTTMEM_1B =mva_2lss_HTTMEM_1B(mvaInputVariables_HTTMEM_1B);
+   //std::cout<<"filling BDTs HTT_1B"<<std::endl;
+   std::map<std::string, double> mvaInputVariables_HTT_1B;
+   mvaInputVariables_HTT_1B["BDTtt"]=mvaOutput_2lss_HTT_tt;
+   mvaInputVariables_HTT_1B["BDTttV"]=mvaOutput_2lss_noHTT_ttV;
+   double mvaOutput_2lss_HTT_1B =mva_2lss_HTT_1B(mvaInputVariables_HTT_1B);
+   //std::cout<<"filling BDTs noHTT_1B"<<std::endl;
+   std::map<std::string, double> mvaInputVariables_noHTT_1B;
+   mvaInputVariables_noHTT_1B["BDTtt"]=mvaOutput_2lss_noHTT_tt;
+   mvaInputVariables_noHTT_1B["BDTttV"]=mvaOutput_2lss_noHTT_ttV;
+   double mvaOutput_2lss_noHTT_1B =mva_2lss_noHTT_1B(mvaInputVariables_noHTT_1B);
+   //std::cout<<"filling BDTs oldVarA_1B"<<std::endl;
+   std::map<std::string, double> mvaInputVariables_oldVarA_1B;
+   mvaInputVariables_oldVarA_1B["BDTtt"]=mvaOutput_2lss_oldVarA_tt; // Xanda check that are Arun's one
+   mvaInputVariables_oldVarA_1B["BDTttV"]=mvaOutput_2lss_oldVarA_ttV;
+   double mvaOutput_2lss_oldVarA_1B =mva_2lss_oldVarA_1B(mvaInputVariables_oldVarA_1B);
+
+   /*
+   std::vector<std::string> mvaInputVariables_2MEMSort = {
+     "BDTtt", "BDTttV", "mvaOutput_hadTopTaggerWithKinFit", "mvaOutput_Hj_tagger", "unfittedHadTop_pt", "memOutput_LR"};
+   */
+   //std::cout<<"filling BDTs oldVarA_2MEM"<<std::endl;
+   std::map<std::string, double> mvaInputVariables_oldVarA_2MEM;
+   mvaInputVariables_oldVarA_2MEM["BDTtt"]=mvaOutput_2lss_oldVarA_tt; // Xanda check that are Arun's one
+   mvaInputVariables_oldVarA_2MEM["BDTttV"]=mvaOutput_2lss_oldVarA_ttV;
+   mvaInputVariables_oldVarA_2MEM["mvaOutput_hadTopTaggerWithKinFit"]=max_mvaOutput_hadTopTaggerWithKinFit;
+   mvaInputVariables_oldVarA_2MEM["mvaOutput_Hj_tagger"]=mvaOutput_Hj_tagger;
+   mvaInputVariables_oldVarA_2MEM["unfittedHadTop_pt"]=unfittedHadTopP4.pt();
+   mvaInputVariables_oldVarA_2MEM["memOutput_LR"]=memOutput_LR;
+   double mvaOutput_2lss_oldVarA_2MEM =mva_2lss_oldVarA_2MEM(mvaInputVariables_oldVarA_2MEM);
+   //std::cout<<"filling BDTs oldVarA_2MEM"<<std::endl;
+   std::map<std::string, double> mvaInputVariables_noHTT_2MEM;
+   mvaInputVariables_noHTT_2MEM["BDTtt"]=mvaOutput_2lss_noHTT_tt; // Xanda check that are Arun's one
+   mvaInputVariables_noHTT_2MEM["BDTttV"]=mvaOutput_2lss_noHTT_ttV;
+   mvaInputVariables_noHTT_2MEM["mvaOutput_hadTopTaggerWithKinFit"]=max_mvaOutput_hadTopTaggerWithKinFit;
+   mvaInputVariables_noHTT_2MEM["mvaOutput_Hj_tagger"]=mvaOutput_Hj_tagger;
+   mvaInputVariables_noHTT_2MEM["unfittedHadTop_pt"]=unfittedHadTopP4.pt();
+   mvaInputVariables_noHTT_2MEM["memOutput_LR"]=memOutput_LR;
+   double mvaOutput_2lss_noHTT_2MEM =mva_2lss_noHTT_2MEM(mvaInputVariables_noHTT_2MEM);
+
+   //std::cout<<"filling BDTs oldVarA_2HTT"<<std::endl;
+   std::map<std::string, double> mvaInputVariables_noHTT_2HTT;
+   mvaInputVariables_noHTT_2HTT["BDTtt"]=mvaOutput_2lss_noHTT_tt; // Xanda check that are Arun's one
+   mvaInputVariables_noHTT_2HTT["BDTttV"]=mvaOutput_2lss_noHTT_ttV;
+   mvaInputVariables_noHTT_2HTT["mvaOutput_hadTopTaggerWithKinFit"]=max_mvaOutput_hadTopTaggerWithKinFit;
+   mvaInputVariables_noHTT_2HTT["mvaOutput_Hj_tagger"]=mvaOutput_Hj_tagger;
+   mvaInputVariables_noHTT_2HTT["unfittedHadTop_pt"]=unfittedHadTopP4.pt();
+   double mvaOutput_2lss_noHTT_2HTT =mva_2lss_noHTT_2HTT(mvaInputVariables_noHTT_2HTT);
+
     //std::vector<std::vector<Double_t>> HTT_2D; //"_to_"; HTT_from
     //std::vector<std::vector<Double_t>> noHTT_2D; //="HTT_from20_to_";
 
-    Double_t HTT_2D[3][9]={{-1.0}}; //
-    Double_t noHTT_2D[3][9]={{-1.0}}; //
+    Double_t HTT_2D[nstart][ntarget]={{-1.0}}; // 2 starting choices, 5 targets
+    Double_t noHTT_2D[nstart][ntarget]={{-1.0}}; //
+    Double_t oldVarA_2D[nstart][ntarget]={{-1.0}}; //
+    Double_t HTTMEM_2D[nstart][ntarget]={{-1.0}};
     //std::cout<<"start filling "<<std::endl;
-    for (unsigned int nbinsStartN=0 ; nbinsStartN<3 ; nbinsStartN++ ) {
+    for (unsigned int nbinsStartN=0 ; nbinsStartN<nstart ; nbinsStartN++ ) {
       //HTT_2D.push_back({});
       //noHTT_2D.push_back({});
-      for (unsigned int nbinsTargetN=0 ; nbinsTargetN<9 ; nbinsTargetN++ ) {
+      for (unsigned int nbinsTargetN=0 ; nbinsTargetN<ntarget ; nbinsTargetN++ ) {
 
         /*
         HTT_2D[nbinsStartN].push_back(getSF_from_TH2(
@@ -2157,28 +2378,38 @@ int main(int argc, char* argv[])
                                                     mvaOutput_2lss_HTT_tt,
                                                     mvaOutput_2lss_oldVar_ttV)); //+ 1.
         */
+        HTTMEM_2D[nbinsStartN][nbinsTargetN]=getSF_from_TH2(
+                              HTTMEM[nbinsStartN][nbinsTargetN],
+                              mvaOutput_2lss_HTTMEM_tt,
+                              mvaOutput_2lss_HTTMEM_ttV)+ 1;
         HTT_2D[nbinsStartN][nbinsTargetN]=getSF_from_TH2(
                               HTT[nbinsStartN][nbinsTargetN],
                               mvaOutput_2lss_HTT_tt,
-                              mvaOutput_2lss_noHTT_ttV);
+                              mvaOutput_2lss_noHTT_ttV)+ 1;
         noHTT_2D[nbinsStartN][nbinsTargetN]=getSF_from_TH2(
                               noHTT[nbinsStartN][nbinsTargetN],
-                              mvaOutput_2lss_HTT_tt,
-                              mvaOutput_2lss_oldVar_ttV);
+                              mvaOutput_2lss_noHTT_tt,
+                              mvaOutput_2lss_noHTT_ttV)+ 1;
+        oldVarA_2D[nbinsStartN][nbinsTargetN]=getSF_from_TH2(
+                              oldVarA[nbinsStartN][nbinsTargetN],
+                              mvaOutput_2lss_oldVarA_tt,
+                              mvaOutput_2lss_oldVarA_ttV)+ 1;
         //std::cout<<"counting "<<nbinsTarget[nbinsTargetN]<<" "<<nbinsStartN<<" "<<nbinsTargetN<<" "<<HTT_2D[nbinsStartN][nbinsTargetN]<<" "<<noHTT_2D[nbinsStartN][nbinsTargetN]<<std::endl;
       }
     }
+    /*
     Double_t oldVar_from20_to_12 = getSF_from_TH2(
                                         BDT_mapping_oldVar_from20_to_12,
                                         mvaOutput_2lss_oldVar_tt,
                                         mvaOutput_2lss_oldVar_ttV
-                                      );
+                                      )+ 1;
     Double_t oldVar_from20_to_7 = getSF_from_TH2(
                                         BDT_mapping_oldVar_from20_to_7,
                                         mvaOutput_2lss_oldVar_tt,
                                         mvaOutput_2lss_oldVar_ttV
-                                      );
-
+                                      )+ 1;
+    */
+    //std::cout<<"Nbin "<<oldVar_from20_to_12<<" "<<oldVar_from20_to_7<<std::endl;
     //--- compute output of BDTs used to discriminate ttH vs. ttV and ttH vs. ttbar trained by Arun for 2lss_1tau category
     mvaInputs_2lss_1tau["avg_dr_jet"]           = comp_avg_dr_jet(selJets);
     mvaInputs_2lss_1tau["dr_leps"]              = deltaR(selLepton_lead->p4(), selLepton_sublead->p4());
@@ -2207,6 +2438,7 @@ int main(int argc, char* argv[])
     Double_t mvaDiscr_2lss_1tau_wMEM = getSF_from_TH2(mva_mapping_2lss_1tau_wMEM, mvaOutput_2lss_1tau_ttbar_wMEM, mvaOutput_2lss_1tau_ttV_wMEM) + 1.;
 
 //--- fill histograms with events passing final selection
+    evtWeightSum=evtWeightSum+evtWeight;
     selHistManagerType* selHistManager = selHistManagers[idxSelLepton_genMatch][idxSelHadTau_genMatch];
     assert(selHistManager != 0);
     selHistManager->electrons_->fillHistograms(selElectrons, evtWeight);
@@ -2223,8 +2455,14 @@ int main(int argc, char* argv[])
     selHistManager->mvaInputVariables_2lss_->fillHistograms(mvaInputs_2lss, evtWeight);
     selHistManager->mvaInputVariables_2lss_1tau_->fillHistograms(mvaInputs_2lss_1tau, evtWeight);
     selHistManager->evt_->fillHistograms(
-      selElectrons.size(), selMuons.size(), selHadTaus.size(),
-      selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
+      evtWeight,
+      selElectrons.size(),
+      selMuons.size(),
+      selHadTaus.size(),
+      selJets.size(),
+      selBJets_loose.size(),
+      selBJets_medium.size(),
+      //
       mvaOutput_2lss_ttV,
       mvaOutput_2lss_ttbar,
       mvaDiscr_2lss,
@@ -2238,25 +2476,37 @@ int main(int argc, char* argv[])
       mvaOutput_Hjj_tagger,
       mTauTauVis1_sel,
       mTauTauVis2_sel,
-      memOutput_2lss_1tau_matched.is_initialized() ? &memOutput_2lss_1tau_matched : nullptr,
+      memOutput_LR, //memOutput_2lss_1tau_matched.is_initialized() ? &memOutput_2lss_1tau_matched : nullptr,
       memDiscr,
-      evtWeight,
-      mvaOutput_2lss_oldVar_tt,
-      mvaOutput_2lss_oldVar_ttV,
-      mvaOutput_2lss_HTT_tt,
+      // XGB training 1D
+      mvaOutput_2lss_oldVarA_tt,
+      mvaOutput_2lss_oldVarA_ttV,
       mvaOutput_2lss_noHTT_tt,
       mvaOutput_2lss_noHTT_ttV,
+      mvaOutput_2lss_HTT_tt,
+      mvaOutput_2lss_HTTMEM_tt,
+      mvaOutput_2lss_HTTMEM_ttV,
       mvaOutput_2lss_HTT_LepID_tt,
-      oldVar_from20_to_12,
-      oldVar_from20_to_7,
+      // 2D mapppings
+      oldVarA_2D,
       HTT_2D,
-      noHTT_2D
+      HTTMEM_2D,
+      noHTT_2D,
+      // XGB training, joint
+      mvaOutput_2lss_HTTMEM_1B,
+      mvaOutput_2lss_HTT_1B,
+      mvaOutput_2lss_noHTT_1B,
+      mvaOutput_2lss_oldVarA_1B,
+      mvaOutput_2lss_oldVarA_2MEM,
+      mvaOutput_2lss_noHTT_2MEM,
+      mvaOutput_2lss_noHTT_2HTT
     );
     if ( isSignal ) {
       const std::string decayModeStr = eventInfo.getDecayModeString();
       if(! decayModeStr.empty())
       {
         selHistManager->evt_in_decayModes_[decayModeStr]->fillHistograms(
+          evtWeight,
           selElectrons.size(),
           selMuons.size(),
           selHadTaus.size(),
@@ -2274,21 +2524,32 @@ int main(int argc, char* argv[])
           mvaDiscr_2lss_1tau_wMEM,
           mvaOutput_Hj_tagger,
           mvaOutput_Hjj_tagger,
-          mTauTauVis1_sel, mTauTauVis2_sel,
-          memOutput_2lss_1tau_matched.is_initialized() ? &memOutput_2lss_1tau_matched : nullptr,
+          mTauTauVis1_sel,
+          mTauTauVis2_sel,
+          memOutput_LR, //memOutput_2lss_1tau_matched.is_initialized() ? &memOutput_2lss_1tau_matched : nullptr,
           memDiscr,
-          evtWeight,
-          //
-          mvaOutput_2lss_oldVar_tt,
-          mvaOutput_2lss_oldVar_ttV,
-          mvaOutput_2lss_HTT_tt,
+          // XGB training 1D
+          mvaOutput_2lss_oldVarA_tt,
+          mvaOutput_2lss_oldVarA_ttV,
           mvaOutput_2lss_noHTT_tt,
           mvaOutput_2lss_noHTT_ttV,
+          mvaOutput_2lss_HTT_tt,
+          mvaOutput_2lss_HTTMEM_tt,
+          mvaOutput_2lss_HTTMEM_ttV,
           mvaOutput_2lss_HTT_LepID_tt,
-          oldVar_from20_to_12,
-          oldVar_from20_to_7,
+          // 2D mapppings
+          oldVarA_2D,
           HTT_2D,
-          noHTT_2D
+          HTTMEM_2D,
+          noHTT_2D,
+          // XGB training, joint
+          mvaOutput_2lss_HTTMEM_1B,
+          mvaOutput_2lss_HTT_1B,
+          mvaOutput_2lss_noHTT_1B,
+          mvaOutput_2lss_oldVarA_1B,
+          mvaOutput_2lss_oldVarA_2MEM,
+          mvaOutput_2lss_noHTT_2MEM,
+          mvaOutput_2lss_noHTT_2HTT
         );
       }
     }
@@ -2411,6 +2672,14 @@ int main(int argc, char* argv[])
           ("dr_lep2_HTunfitted",        deltaR(selLepton_sublead -> p4(), unfittedHadTopP4) )
           ("dr_tau_HTunfitted",         deltaR(selHadTau -> p4(), unfittedHadTopP4))
 
+          ("mvaOutput_2lss_1tau_ttbar", mvaOutput_2lss_1tau_ttbar)
+          ("mvaOutput_2lss_1tau_ttV",   mvaOutput_2lss_1tau_ttV)
+          ("mvaDiscr_2lss_1tau",        mvaDiscr_2lss_1tau)
+          ("oldVar_from20_to_12",       1.0)
+          ("oldVar_from20_to_7",        1.0)
+          ("mvaOutput_2lss_1tau_ttV_wMEM", mvaOutput_2lss_1tau_ttV_wMEM)
+          ("mvaOutput_2lss_1tau_ttbar_wMEM", mvaOutput_2lss_1tau_ttbar_wMEM)
+
           ("lumiScale",              lumiScale)
           ("genWeight",              eventInfo.genWeight)
           ("evtWeight",              evtWeight)
@@ -2476,6 +2745,7 @@ int main(int argc, char* argv[])
     }
   }
   std::cout << std::endl;
+  std::cout << "Sum of weihghts "<< evtWeightSum << std::endl;
 
   delete dataToMCcorrectionInterface;
 
