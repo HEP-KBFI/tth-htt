@@ -245,16 +245,20 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
       category_output += "_%s" % jobOptions['label']
     lines = []
     lines.append("process.fwliteInput.fileNames = cms.vstring('%s')" % jobOptions['inputFile'])
-    lines.append("process.fwliteOutput.fileName = cms.string('%s')" % jobOptions['datacardFile'])  ## DEF LINE
+    lines.append("process.fwliteOutput.fileName = cms.string('%s')" % jobOptions['datacardFile'])
+    lines.append("process.prepareDatacards.histogramToFit = cms.string('%s')" % jobOptions['histogramToFit'])
+    if jobOptions['histogramToFit'] == "mT_fix_L":
+      lines.append("process.prepareDatacards.xMin = cms.double(0.)")
+      lines.append("process.prepareDatacards.xMax = cms.double(150.)")
+      lines.append("process.prepareDatacards.minEvents_automatic_rebinning = cms.double(10.)")
     category_entries = jinja2.Template(category_template).render(categories = jobOptions['categories'])
+    lines.append(
+      "process.prepareDatacards.categories = cms.VPSet(%s\n)" % category_entries
+    )
     lines.append(
       "process.prepareDatacards.sysShifts = cms.vstring(\n  %s,\n)" % \
       ',\n  '.join(map(lambda central_or_shift: "'%s'" % central_or_shift, self.central_or_shifts))
     )
-    lines.append(
-      "process.prepareDatacards.categories = cms.VPSet(%s\n)" % category_entries
-    )
-    lines.append("process.prepareDatacards.histogramToFit = cms.string('%s')" % jobOptions['histogramToFit'])
     create_cfg(self.cfgFile_prep_dcard, jobOptions['cfgFile_modified'], lines)
 
   def addToMakefile_backgrounds_from_data(self, lines_makefile):

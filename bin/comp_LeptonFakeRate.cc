@@ -256,11 +256,11 @@ void fillGraph(TGraphAsymmErrors* graph, TH2* histogram, double absEta)
 
 void makeControlPlot(TGraphAsymmErrors* graph_data, TGraphAsymmErrors* graph_mc, const TArrayD& ptBins, double minAbsEta, double maxAbsEta, const std::string& outputFileName)
 {
-  TCanvas* canvas = new TCanvas("canvas", "canvas", 1200, 1050);
+  TCanvas* canvas = new TCanvas("canvas", "canvas", 1200, 900);
   canvas->SetFillColor(10);
   canvas->SetBorderSize(2);
   canvas->SetTopMargin(0.04);
-  canvas->SetLeftMargin(0.15);
+  canvas->SetLeftMargin(0.19);
   canvas->SetBottomMargin(0.17);
   canvas->SetRightMargin(0.04);
   canvas->SetGridx();
@@ -275,7 +275,7 @@ void makeControlPlot(TGraphAsymmErrors* graph_data, TGraphAsymmErrors* graph_mc,
   
   TAxis* xAxis = dummyHistogram->GetXaxis();
   xAxis->SetTitle("p_{T} [GeV]");
-  xAxis->SetTitleOffset(1.2);
+  xAxis->SetTitleOffset(1.3);
   xAxis->SetTitleSize(0.06);
   xAxis->SetLabelOffset(0.02);
   xAxis->SetLabelSize(0.06);
@@ -284,7 +284,7 @@ void makeControlPlot(TGraphAsymmErrors* graph_data, TGraphAsymmErrors* graph_mc,
   
   TAxis* yAxis = dummyHistogram->GetYaxis();
   yAxis->SetTitle("Fake rate");
-  yAxis->SetTitleOffset(1.2);
+  yAxis->SetTitleOffset(1.45);
   yAxis->SetTitleSize(0.06);
   yAxis->SetLabelOffset(0.02);
   yAxis->SetLabelSize(0.06);
