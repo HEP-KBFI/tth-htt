@@ -66,6 +66,8 @@
 #include "tthAnalysis/HiggsToTauTau/interface/LHEInfoHistManager.h" // LHEInfoHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/leptonTypes.h" // getLeptonType, kElectron, kMuon
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // getBranchName_bTagWeight, getHadTau_genPdgId, isHigherPt, isMatched
+#include "tthAnalysis/HiggsToTauTau/interface/HistManagerBase.h" // HistManagerBase
+#include "tthAnalysis/HiggsToTauTau/interface/histogramAuxFunctions.h" // fillWithOverFlow2d
 #include "tthAnalysis/HiggsToTauTau/interface/hadTopTaggerAuxFunctions.h" // isGenMatchedJetTriplet
 #include "tthAnalysis/HiggsToTauTau/interface/leptonGenMatchingAuxFunctions.h" // getLeptonGenMatch_definitions_1lepton, getLeptonGenMatch_string, getLeptonGenMatch_int
 #include "tthAnalysis/HiggsToTauTau/interface/hadTauGenMatchingAuxFunctions.h" // getHadTauGenMatch_definitions_1tau, getHadTauGenMatch_string, getHadTauGenMatch_int
@@ -545,9 +547,6 @@ int main(int argc, char* argv[])
   TFile* inputFile_mem_mapping = openFile(LocalFileInPath(inputFileName_mem_mapping));
   TH2* mem_mapping = loadTH2(inputFile_mem_mapping, "hTargetBinning");
   // for bin optimization do a vector of TFile
-  std::string binOptSource="/hdfs/local/acaan/ttHAnalysis/2016/2lss_1tau_opt1";
-  std::string binOptSourceEndTrue="bins_relLepIDTrue_CumulativeBins.root";
-  std::string binOptSourceEndFalse="bins_relLepIDFalse_CumulativeBins.root";
   //
   /*
   std::stringstream ss;
@@ -564,40 +563,46 @@ int main(int argc, char* argv[])
   TH2* BDT_mapping_oldVar_from20_to_12 = loadTH2(BDT_mapping_oldVar_from20_to_12_file, "hTargetBinning");
   std::cout<<"loaded file "<<BDT_mapping_oldVarName_from20_to_7_name<<std::endl;
   */
-  //
-  //std::vector<std::vector<TH2*>> HTT(3); //"_to_"; HTT_from
-  //std::vector<std::vector<TH2*>> noHTT(3); //="HTT_from20_to_";
-  const int nstart =2;
-  const int ntarget =6;
-  TH2* HTT[nstart][ntarget];
-  TH2* noHTT[nstart][ntarget];
-  TH2* HTTMEM[nstart][ntarget];
-  TH2* oldVarA[nstart][ntarget];
-  // HTTMEM_from15_to_10bins_relLepIDTrue_CumulativeBins.root
+
+  ///* DO 2D
+  const Int_t nstart =2;
+  const Int_t ntarget =6;
+  std::string binOptSource="/hdfs/local/acaan/ttHAnalysis/2016/2lss_1tau_opt1";
+  std::string binOptSourceEndTrue="bins_relLepIDTrue_CumulativeBins.root";
+  std::string binOptSourceEndFalse="bins_relLepIDFalse_CumulativeBins.root";
+  const Int_t  nbinsTarget[9]={5,6,7,8,9,10};
+  const Int_t  nbinsStart[3]={15,20};
+  //TH2* oldVarA[nstart][ntarget];
+  std::vector<TH2*> oldVarA;
+  std::vector<TH2*> HTT;
+  std::vector<TH2*> noHTT;
+  std::vector<TH2*> HTTMEM;
+  // this could be inside EvtHistManager, but we would need to load this 6 times (the numbers this class is called
   for (unsigned int nbinsStartN=0 ; nbinsStartN<nstart ; nbinsStartN++ ) {
     for (unsigned int nbinsTargetN=0 ; nbinsTargetN<ntarget ; nbinsTargetN++ ) {
       std::stringstream BDT_mapping_HTT_name;
       BDT_mapping_HTT_name << binOptSource << "/bin_opt/HTT_from"<<nbinsStart[nbinsStartN]<<"_to_"<<nbinsTarget[nbinsTargetN]<< binOptSourceEndTrue;
-      HTT[nbinsStartN][nbinsTargetN]=loadTH2(TFile::Open(BDT_mapping_HTT_name.str().c_str()), "hTargetBinning");
+      HTT.push_back (loadTH2(TFile::Open(BDT_mapping_HTT_name.str().c_str()), "hTargetBinning"));
       std::cout<<"loaded file "<<BDT_mapping_HTT_name.str() <<std::endl;
       // //////////////// // /////////////////
       std::stringstream BDT_mapping_noHTT_name;
       BDT_mapping_noHTT_name << binOptSource << "/bin_opt/noHTT_from"<<nbinsStart[nbinsStartN]<<"_to_"<<nbinsTarget[nbinsTargetN]<< binOptSourceEndTrue;
-      noHTT[nbinsStartN][nbinsTargetN]=loadTH2(TFile::Open(BDT_mapping_noHTT_name.str().c_str()), "hTargetBinning");
+      noHTT.push_back (loadTH2(TFile::Open(BDT_mapping_noHTT_name.str().c_str()), "hTargetBinning"));
       std::cout<<"loaded file "<<BDT_mapping_noHTT_name.str() <<std::endl;
       // //////////////// // /////////////////
       std::stringstream BDT_mapping_HTTMEM_name;
       BDT_mapping_HTTMEM_name << binOptSource << "/bin_opt/HTTMEM_from"<<nbinsStart[nbinsStartN]<<"_to_"<<nbinsTarget[nbinsTargetN]<< binOptSourceEndTrue;
-      HTTMEM[nbinsStartN][nbinsTargetN]=loadTH2(TFile::Open(BDT_mapping_HTTMEM_name.str().c_str()), "hTargetBinning");
+      HTTMEM.push_back( loadTH2(TFile::Open(BDT_mapping_HTTMEM_name.str().c_str()), "hTargetBinning"));
       std::cout<<"loaded file "<<BDT_mapping_HTTMEM_name.str() <<std::endl;
       // //////////////// // /////////////////
       std::stringstream BDT_mapping_oldVarA_name;
       BDT_mapping_oldVarA_name << binOptSource << "/bin_opt/oldVarA_from"<<nbinsStart[nbinsStartN]<<"_to_"<<nbinsTarget[nbinsTargetN]<< binOptSourceEndFalse;
-      oldVarA[nbinsStartN][nbinsTargetN]=loadTH2(TFile::Open(BDT_mapping_oldVarA_name.str().c_str()), "hTargetBinning");
+      //oldVarA[nbinsStartN][nbinsTargetN]=loadTH2(TFile::Open(BDT_mapping_oldVarA_name.str().c_str()), "hTargetBinning");
+      oldVarA.push_back( loadTH2(TFile::Open(BDT_mapping_oldVarA_name.str().c_str()), "hTargetBinning"));
       std::cout<<"loaded file "<<BDT_mapping_oldVarA_name.str() <<std::endl;
     }
   }
-  //
+  //*/
 
 //--- declare generator level information
   GenLeptonReader* genLeptonReader = 0;
@@ -733,13 +738,13 @@ int main(int argc, char* argv[])
   //2lss_1tau/2lss_1tau_XGB_JointBDT_noHTT_1B_pkl.log
   //2lss_1tau/2lss_1tau_XGB_JointBDT_oldVarA_1B.pkl
   //2lss_1tau/2lss_1tau_XGB_JointBDT_oldVarA_1B_pkl.log
-  std::string mvaFileName_HTTMEM_1B ="tthAnalysis/HiggsToTauTau/data/2lss_1tau_opt1/2lss_1tau_XGB_JointBDT_HTTMEM_1B_pkl";
+  std::string mvaFileName_HTTMEM_1B ="tthAnalysis/HiggsToTauTau/data/2lss_1tau_opt1/2lss_1tau_XGB_JointBDT_HTTMEM_1B.pkl";
   XGBInterface mva_2lss_HTTMEM_1B(mvaFileName_HTTMEM_1B, mvaInputVariables_1BSort);
-  std::string mvaFileName_noHTT_1B ="tthAnalysis/HiggsToTauTau/data/2lss_1tau_opt1/2lss_1tau_XGB_JointBDT_noHTT_1B_pkl";
+  std::string mvaFileName_noHTT_1B ="tthAnalysis/HiggsToTauTau/data/2lss_1tau_opt1/2lss_1tau_XGB_JointBDT_noHTT_1B.pkl";
   XGBInterface mva_2lss_noHTT_1B(mvaFileName_noHTT_1B, mvaInputVariables_1BSort);
-  std::string mvaFileName_oldVarA_1B ="tthAnalysis/HiggsToTauTau/data/2lss_1tau_opt1/2lss_1tau_XGB_JointBDT_oldVarA_1B_pkl";
+  std::string mvaFileName_oldVarA_1B ="tthAnalysis/HiggsToTauTau/data/2lss_1tau_opt1/2lss_1tau_XGB_JointBDT_oldVarA_1B.pkl";
   XGBInterface mva_2lss_oldVarA_1B(mvaFileName_oldVarA_1B, mvaInputVariables_1BSort);
-  std::string mvaFileName_HTT_1B ="tthAnalysis/HiggsToTauTau/data/2lss_1tau_opt1/2lss_1tau_XGB_JointBDT_HTT_1B_pkl";
+  std::string mvaFileName_HTT_1B ="tthAnalysis/HiggsToTauTau/data/2lss_1tau_opt1/2lss_1tau_XGB_JointBDT_HTT_1B.pkl";
   XGBInterface mva_2lss_HTT_1B(mvaFileName_HTT_1B, mvaInputVariables_1BSort);
 
   ///////
@@ -750,14 +755,14 @@ int main(int argc, char* argv[])
   //2lss_1tau/2lss_1tau_XGB_JointBDT_noHTT_2MEM_pkl.log
   std::vector<std::string> mvaInputVariables_2MEMSort = {
     "BDTtt", "BDTttV", "mvaOutput_hadTopTaggerWithKinFit", "mvaOutput_Hj_tagger", "unfittedHadTop_pt", "memOutput_LR"};
-  std::string mvaFileName_oldVarA_2MEM ="tthAnalysis/HiggsToTauTau/data/2lss_1tau_opt1/2lss_1tau_XGB_JointBDT_oldVarA_2MEM_pkl";
+  std::string mvaFileName_oldVarA_2MEM ="tthAnalysis/HiggsToTauTau/data/2lss_1tau_opt1/2lss_1tau_XGB_JointBDT_oldVarA_2MEM.pkl";
   XGBInterface mva_2lss_oldVarA_2MEM(mvaFileName_oldVarA_2MEM, mvaInputVariables_2MEMSort);
-  std::string mvaFileName_noHTT_2MEM ="tthAnalysis/HiggsToTauTau/data/2lss_1tau_opt1/2lss_1tau_XGB_JointBDT_noHTT_2MEM_pkl";
+  std::string mvaFileName_noHTT_2MEM ="tthAnalysis/HiggsToTauTau/data/2lss_1tau_opt1/2lss_1tau_XGB_JointBDT_noHTT_2MEM.pkl";
   XGBInterface mva_2lss_noHTT_2MEM(mvaFileName_noHTT_2MEM, mvaInputVariables_2MEMSort);
 
   std::vector<std::string> mvaInputVariables_2HTTSort = {
     "BDTtt", "BDTttV", "mvaOutput_hadTopTaggerWithKinFit", "mvaOutput_Hj_tagger", "unfittedHadTop_pt"};
-  std::string mvaFileName_noHTT_2HTT ="tthAnalysis/HiggsToTauTau/data/2lss_1tau_opt1/2lss_1tau_XGB_JointBDT_noHTT_2HTT_pkl";
+  std::string mvaFileName_noHTT_2HTT ="tthAnalysis/HiggsToTauTau/data/2lss_1tau_opt1/2lss_1tau_XGB_JointBDT_noHTT_2HTT.pkl";
   //('max data Joint/TT/TTV', 0.75491208, 0.81014323, 0.99629968)
   //('min data Joint/TT/TTV', 0.026170442, 0.0066790595, 0.022887703)
   XGBInterface mva_2lss_noHTT_2HTT(mvaFileName_noHTT_2HTT, mvaInputVariables_2HTTSort);
@@ -774,19 +779,6 @@ int main(int argc, char* argv[])
   //XGBInterface mva_2lss_oldVarA_noMEM(mvaFileName_oldVarA_2MEM, mvaInputVariables_noMEMSort);
   //std::string mvaFileName_noHTT_noMEM ="tthAnalysis/HiggsToTauTau/data/2lss_1tau_opt1/2lss_1tau_XGB_JointBDT_noHTT_2MEM_pkl";
   //XGBInterface mva_2lss_noHTT_noMEM(mvaFileName_noHTT_noMEM, mvaInputVariables_noMEMSort);
-
-  /*
-	if BDTvar=="oldVar" : ttV_file=basepkl+"/2lss_1tau_XGB_oldVar_evtLevelTTV_TTH_7Var.pkl"
-  if BDTvar=="HTT_LepID" : ttV_file=basepkl+"/2lss_1tau_XGB_noHTT_evtLevelTTV_TTH_15Var.pkl"
-  if BDTvar=="HTT" : ttV_file=basepkl+"/2lss_1tau_XGB_noHTT_evtLevelTTV_TTH_15Var.pkl"
-  if BDTvar=="noHTT" : ttV_file=basepkl+"/2lss_1tau_XGB_noHTT_evtLevelTTV_TTH_15Var.pkl"
-
-  if BDTvar=="oldVar" : tt_file=basepkl+"/2lss_1tau_XGB_oldVar_evtLevelTT_TTH_7Var.pkl"
-  if BDTvar=="HTT_LepID" : tt_file=basepkl+"/2lss_1tau_XGB_HTT_LepID_evtLevelTT_TTH_6Var.pkl"
-  if BDTvar=="HTT" : tt_file=basepkl+"/2lss_1tau_XGB_HTT_evtLevelTT_TTH_17Var.pkl"
-  if BDTvar=="noHTT" : tt_file=basepkl+"/2lss_1tau_XGB_noHTT_evtLevelTT_TTH_18Var.pkl"
-
-  */
 
 //--- initialize BDTs used to discriminate ttH vs. ttV and ttH vs. ttbar
 //    in 2lss_1tau category of ttH multilepton analysis
@@ -960,6 +952,12 @@ int main(int argc, char* argv[])
   typedef std::map<int, selHistManagerType*> int_to_selHistManagerMap;
   std::map<int, int_to_selHistManagerMap> selHistManagers;
 
+  //std::vector<TH1*> hist_HTT_2D;
+  //std::vector<TH1*> hist_noHTT_2D;
+  //std::vector<TH1*> hist_HTTMEM_2D;
+  //std::vector<TH1D>
+  //TH1D *hist_oldVarA_2D[nstart][ntarget];
+
   for ( std::vector<leptonGenMatchEntry>::const_iterator leptonGenMatch_definition = leptonGenMatch_definitions.begin();
 	leptonGenMatch_definition != leptonGenMatch_definitions.end(); ++leptonGenMatch_definition ) {
     for ( std::vector<hadTauGenMatchEntry>::const_iterator hadTauGenMatch_definition = hadTauGenMatch_definitions.begin();
@@ -1001,6 +999,7 @@ int main(int argc, char* argv[])
       preselHistManagers[idxLepton][idxHadTau] = preselHistManager;
 
       selHistManagerType* selHistManager = new selHistManagerType();
+      //selHistManager->evt_->LoadMaps(nstart, ntarget);
       selHistManager->electrons_ = new ElectronHistManager(makeHistManager_cfg(process_and_genMatch,
         Form("%s/sel/electrons", histogramDir.data()), central_or_shift));
       selHistManager->electrons_->bookHistograms(fs);
@@ -1078,6 +1077,12 @@ int main(int argc, char* argv[])
         Form("%s/sel/weights", histogramDir.data()), central_or_shift));
       selHistManager->weights_->bookHistograms(fs, { "genWeight", "pileupWeight", "triggerWeight", "data_to_MC_correction", "fakeRate" });
       selHistManagers[idxLepton][idxHadTau] = selHistManager;
+      // /* DO 2D
+      for (int nbinsStartN=0 ; nbinsStartN<nstart ; nbinsStartN++ ) {
+        for (int nbinsTargetN=0 ; nbinsTargetN<ntarget ; nbinsTargetN++ ) {
+          selHistManager->evt_->bookHistogramsMap(fs,nbinsStart[nbinsStartN],nbinsTarget[nbinsTargetN]);
+        }
+      }
     }
   }
 
@@ -1100,7 +1105,7 @@ int main(int argc, char* argv[])
   NtupleFillerBDT<float, int>* bdt_filler = nullptr;
   typedef std::remove_pointer<decltype(bdt_filler)>::type::float_type float_type;
   typedef std::remove_pointer<decltype(bdt_filler)>::type::int_type int_type;
-  if ( 1>0 ) { // Xanda if ( selectBDT ) {
+  if ( selectBDT ) { // if ( 1>0 ) { // Xanda  doTree
     bdt_filler = new std::remove_pointer<decltype(bdt_filler)>::type(
       makeHistManager_cfg(process_string, Form("%s/sel/evtntuple", histogramDir.data()), central_or_shift)
     );
@@ -1526,7 +1531,7 @@ int main(int argc, char* argv[])
     preselHistManagerType* preselHistManager = preselHistManagers[idxPreselLepton_genMatch][idxSelHadTau_genMatch];
     assert(preselHistManager != 0);
 
-    double dumbVec[nstart][ntarget]={ {0.0} };
+    // double dumbVec[nstart][ntarget]={ {0.0} };
     preselHistManager->electrons_->fillHistograms(preselElectrons, 1.);
     preselHistManager->muons_->fillHistograms(preselMuons, 1.);
     preselHistManager->hadTaus_->fillHistograms(selHadTaus, 1.);
@@ -1535,7 +1540,7 @@ int main(int argc, char* argv[])
     preselHistManager->BJets_medium_->fillHistograms(selBJets_medium, 1.);
     preselHistManager->met_->fillHistograms(met, mht_p4, met_LD, 1.);
     preselHistManager->evt_->fillHistograms(
-      0.0, // evtWeight is first to be sure of not being loosing counting
+      1.0, // evtWeight is first to be sure of not being loosing counting
       preselElectrons.size(), preselMuons.size(), selHadTaus.size(),
       selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
       //1,1,1,
@@ -1546,8 +1551,8 @@ int main(int argc, char* argv[])
       -1., -1.,
       // XGB training 1D
       -1., -1., -1., -1., -1., -1., -1., -1.,
-      // 2D mapppings
-      dumbVec, dumbVec, dumbVec, dumbVec,
+      // // 2D mapppings
+      // dumbVec, dumbVec, dumbVec, dumbVec,
       // XGB training, joint
       -1., -1., -1., -1., -1., -1., -1.
     );
@@ -2049,9 +2054,9 @@ int main(int argc, char* argv[])
 	}
       }
     }
-    double memOutput_LR = ( memOutput_2lss_1tau_matched.isValid() && !memOutput_2lss_1tau_matched.errorFlag() ) ? memOutput_2lss_1tau_matched.LR() : -1.;
-    double memOutput_ttZ_LR = ( memOutput_2lss_1tau_matched.isValid_ttZ_LR() && !memOutput_2lss_1tau_matched.errorFlag_ttZ_LR() ) ? memOutput_2lss_1tau_matched.ttZ_LR() : -1.;
-    double memOutput_ttbar_LR = ( memOutput_2lss_1tau_matched.isValid_ttbar_LR() && !memOutput_2lss_1tau_matched.errorFlag_ttbar_LR() ) ? memOutput_2lss_1tau_matched.LR() : -1.;
+    double memOutput_LR = ( memOutput_2lss_1tau_matched.isValid() ) ? memOutput_2lss_1tau_matched.LR() : -1.;
+    double memOutput_ttZ_LR = ( memOutput_2lss_1tau_matched.isValid_ttZ_LR() ) ? memOutput_2lss_1tau_matched.ttZ_LR() : -1.;
+    double memOutput_ttbar_LR = ( memOutput_2lss_1tau_matched.isValid_ttbar_LR()  ) ? memOutput_2lss_1tau_matched.LR() : -1.;
 
     Double_t memDiscr = getSF_from_TH2(mem_mapping, memOutput_ttbar_LR, memOutput_ttZ_LR)+ 1;
 
@@ -2355,9 +2360,9 @@ int main(int argc, char* argv[])
    mvaInputVariables_noHTT_2HTT["unfittedHadTop_pt"]=unfittedHadTopP4.pt();
    double mvaOutput_2lss_noHTT_2HTT =mva_2lss_noHTT_2HTT(mvaInputVariables_noHTT_2HTT);
 
-    //std::vector<std::vector<Double_t>> HTT_2D; //"_to_"; HTT_from
-    //std::vector<std::vector<Double_t>> noHTT_2D; //="HTT_from20_to_";
 
+
+    /*
     Double_t HTT_2D[nstart][ntarget]={{-1.0}}; // 2 starting choices, 5 targets
     Double_t noHTT_2D[nstart][ntarget]={{-1.0}}; //
     Double_t oldVarA_2D[nstart][ntarget]={{-1.0}}; //
@@ -2368,7 +2373,7 @@ int main(int argc, char* argv[])
       //noHTT_2D.push_back({});
       for (unsigned int nbinsTargetN=0 ; nbinsTargetN<ntarget ; nbinsTargetN++ ) {
 
-        /*
+
         HTT_2D[nbinsStartN].push_back(getSF_from_TH2(
                                                     HTT[nbinsStartN][nbinsTargetN],
                                                     mvaOutput_2lss_HTT_tt,
@@ -2377,7 +2382,7 @@ int main(int argc, char* argv[])
                                                     noHTT[nbinsStartN][nbinsTargetN],
                                                     mvaOutput_2lss_HTT_tt,
                                                     mvaOutput_2lss_oldVar_ttV)); //+ 1.
-        */
+
         HTTMEM_2D[nbinsStartN][nbinsTargetN]=getSF_from_TH2(
                               HTTMEM[nbinsStartN][nbinsTargetN],
                               mvaOutput_2lss_HTTMEM_tt,
@@ -2394,9 +2399,11 @@ int main(int argc, char* argv[])
                               oldVarA[nbinsStartN][nbinsTargetN],
                               mvaOutput_2lss_oldVarA_tt,
                               mvaOutput_2lss_oldVarA_ttV)+ 1;
+        fillWithOverFlow(histogram_mva_hadTopTagger, bdtResult[0], bdtResult[1], 1.); // xanda test
         //std::cout<<"counting "<<nbinsTarget[nbinsTargetN]<<" "<<nbinsStartN<<" "<<nbinsTargetN<<" "<<HTT_2D[nbinsStartN][nbinsTargetN]<<" "<<noHTT_2D[nbinsStartN][nbinsTargetN]<<std::endl;
       }
     }
+    //*/
     /*
     Double_t oldVar_from20_to_12 = getSF_from_TH2(
                                         BDT_mapping_oldVar_from20_to_12,
@@ -2487,11 +2494,11 @@ int main(int argc, char* argv[])
       mvaOutput_2lss_HTTMEM_tt,
       mvaOutput_2lss_HTTMEM_ttV,
       mvaOutput_2lss_HTT_LepID_tt,
-      // 2D mapppings
-      oldVarA_2D,
-      HTT_2D,
-      HTTMEM_2D,
-      noHTT_2D,
+      // // 2D mapppings
+      // oldVarA_2D,
+      // HTT_2D,
+      // HTTMEM_2D,
+      // noHTT_2D,
       // XGB training, joint
       mvaOutput_2lss_HTTMEM_1B,
       mvaOutput_2lss_HTT_1B,
@@ -2537,11 +2544,11 @@ int main(int argc, char* argv[])
           mvaOutput_2lss_HTTMEM_tt,
           mvaOutput_2lss_HTTMEM_ttV,
           mvaOutput_2lss_HTT_LepID_tt,
-          // 2D mapppings
-          oldVarA_2D,
-          HTT_2D,
-          HTTMEM_2D,
-          noHTT_2D,
+          // // 2D mapppings
+          // oldVarA_2D,
+          // HTT_2D,
+          // HTTMEM_2D,
+           // noHTT_2D,
           // XGB training, joint
           mvaOutput_2lss_HTTMEM_1B,
           mvaOutput_2lss_HTT_1B,
@@ -2558,6 +2565,28 @@ int main(int argc, char* argv[])
     selHistManager->weights_->fillHistograms("triggerWeight", triggerWeight);
     selHistManager->weights_->fillHistograms("data_to_MC_correction", weight_data_to_MC_correction);
     selHistManager->weights_->fillHistograms("fakeRate", weight_fakeRate);
+
+    //std::vector<std::vector<Double_t>> HTT_2D; //"_to_"; HTT_from
+    //std::vector<std::vector<Double_t>> noHTT_2D; //="HTT_from20_to_";
+    ///* DO 2D
+    //std::cout<<"filling with 2D maps"<<std::endl;
+    int countHist=0;
+    for (int nbinsStartN=0 ; nbinsStartN<nstart ; nbinsStartN++ ) {
+      for (int nbinsTargetN=0 ; nbinsTargetN<ntarget ; nbinsTargetN++ ) {
+        selHistManager->evt_->fillHistogramsMap(countHist, evtWeight,
+                                                &oldVarA,
+                                                &HTT,
+                                                &noHTT,
+                                                &HTTMEM,
+                                                mvaOutput_2lss_oldVarA_tt, mvaOutput_2lss_oldVarA_ttV,
+                                                mvaOutput_2lss_noHTT_tt,mvaOutput_2lss_noHTT_ttV,
+                                                mvaOutput_2lss_HTT_tt,
+                                                mvaOutput_2lss_HTTMEM_tt, mvaOutput_2lss_HTTMEM_ttV
+                                                );
+        countHist++;
+      }
+    }
+    //*/
 
     if ( isMC ) {
       genEvtHistManager_afterCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genJets);
