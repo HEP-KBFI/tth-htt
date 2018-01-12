@@ -39,8 +39,8 @@ MEMbranch                          = ''
 hadTauFakeRateWeight_inputFileName = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016.root"
 
 # Karl: temporarily disable addMEM mode until we've proper Ntuples
-if mode in ["addMEM"]:
-    raise ValueError("No production Ntuples available for %s" % mode)
+#if mode in ["addMEM"]:
+#    raise ValueError("No production Ntuples available for %s" % mode)
 
 if use_prod_ntuples and mode in ["addMEM", "forBDTtraining_afterAddMEM"]:
     logging.warning("The samples for the mode '%s' are already derived from production Ntuples" % mode)
@@ -57,27 +57,14 @@ if mode == "VHbb":
   else:
     from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2015 import samples_2015
     from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016 import samples_2016
-
-  for sample_name, sample_info in samples_2016.items():
-    if sample_name in [
-      "/Tau/Run2016B-23Sep2016-v3/MINIAOD",
-      "/Tau/Run2016C-23Sep2016-v1/MINIAOD",
-      "/Tau/Run2016D-23Sep2016-v1/MINIAOD",
-      "/Tau/Run2016E-23Sep2016-v1/MINIAOD",
-      "/Tau/Run2016F-23Sep2016-v1/MINIAOD",
-      "/Tau/Run2016G-23Sep2016-v1/MINIAOD",
-      "/Tau/Run2016H-PromptReco-v2/MINIAOD",
-      "/Tau/Run2016H-PromptReco-v3/MINIAOD"]:
-      sample_info["use_it"] = False
-
   hadTau_selection     = "dR03mvaMedium"
   applyFakeRateWeights = "2lepton"
 elif mode == "addMEM":
   from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_2lss1tau_addMEM import samples_2016
   changeBranchNames    = True
-  MEMbranch                = 'memObjects_2lss_1tau_lepLoose_tauTight_dR03mvaMedium'
+  MEMbranch                = 'memObjects_2lss_1tau_lepFakeable_tauTight_dR03mvaMedium' #'memObjects_2lss_1tau_lepLoose_tauTight_dR03mvaMedium'
   hadTau_selection     = "dR03mvaMedium"
-  applyFakeRateWeights = "3L"
+  applyFakeRateWeights = "2lepton"
 elif mode == "forBDTtraining_beforeAddMEM":
   if use_prod_ntuples:
     from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_prodNtuples_2016_FastSim import samples_2016
@@ -126,6 +113,19 @@ elif mode == "forBDTtraining_VHbb":
 else:
   raise ValueError("Invalid Configuration parameter 'mode' = %s !!" % mode)
 
+if mode == "VHbb" or mode == "addMEM" :
+  for sample_name, sample_info in samples_2016.items():
+    if sample_name in [
+      "/Tau/Run2016B-23Sep2016-v3/MINIAOD",
+      "/Tau/Run2016C-23Sep2016-v1/MINIAOD",
+      "/Tau/Run2016D-23Sep2016-v1/MINIAOD",
+      "/Tau/Run2016E-23Sep2016-v1/MINIAOD",
+      "/Tau/Run2016F-23Sep2016-v1/MINIAOD",
+      "/Tau/Run2016G-23Sep2016-v1/MINIAOD",
+      "/Tau/Run2016H-PromptReco-v2/MINIAOD",
+      "/Tau/Run2016H-PromptReco-v3/MINIAOD"]:
+      sample_info["use_it"] = False
+
 if ERA == "2015":
   samples = samples_2015
   LUMI    = 2.3e+3 # 1/pb
@@ -169,6 +169,8 @@ if __name__ == '__main__':
         hist_oldVarA[nbinsStartN][nbinsTargetN]="oldVarA_from"+str(nbinsStart[nbinsStartN])+"_to_"+str(nbinsTarget[nbinsTargetN])
     print list(hist_HTT)[0]
     print list(hist_noHTT)[0]
+    print list(hist_HTTMEM)[0]
+    print list(hist_oldVarA)[0]
 
 
     analysis = analyzeConfig_2lss_1tau(

@@ -362,7 +362,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
         hadTau_selection = "|".join([ hadTau_selection, self.hadTau_selection_part2 ])
 
       if lepton_and_hadTau_selection == "forBDTtraining":
-        lepton_selection = "Loose" # "Fakeable" ## "Tight" ## Xanda
+        lepton_selection = "Loose" # "Tight" ## "Fakeable" ## Xanda
         if not self.applyFakeRateWeights == "2lepton":
             hadTau_selection = "Tight|%s" % self.hadTau_selection_relaxed
             # hadTau ID it is the same level of analysis if applyFakeRateWeights == "2lepton"

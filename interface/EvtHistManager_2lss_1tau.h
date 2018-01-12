@@ -23,7 +23,23 @@ class EvtHistManager_2lss_1tau
   ~EvtHistManager_2lss_1tau() {}
 
   /// book and fill histograms
+  //std::vector<TH2*> oldVarA_;
+  //void LoadMaps(int nstart, int ntarget);
+  void bookHistogramsMap(TFileDirectory& dir , int , int);
+  void fillHistogramsMap(int counter, double evtWeight,
+                                                   std::vector<TH2*>* oldVarA,
+                                                   std::vector<TH2*>* HTT,
+                                                   std::vector<TH2*>* noHTT,
+                                                   std::vector<TH2*>* HTTMEM,
+                                                   double mvaOutput_2lss_oldVarA_tt, double mvaOutput_2lss_oldVarA_ttV,
+                                                   double mvaOutput_2lss_noHTT_tt, double mvaOutput_2lss_noHTT_ttV,
+                                                   double mvaOutput_2lss_HTT_tt,
+                                                   double mvaOutput_2lss_HTTMEM_tt, double mvaOutput_2lss_HTTMEM_ttV
+                       );
+
+
   void bookHistograms(TFileDirectory& dir);
+  void integralHistograms(TFileDirectory& dir);
   void fillHistograms(
     double evtWeight,
     int numElectrons,
@@ -63,10 +79,10 @@ class EvtHistManager_2lss_1tau
     Double_t  (&HTTMEM_2D)[2][6],
     Double_t  (&noHTT_2D)[2][6],
     */
-    double  oldVarA_2D[2][6],
-    double  HTT_2D[2][6],
-    double  HTTMEM_2D[2][6],
-    double  noHTT_2D[2][6],
+    //double  oldVarA_2D[2][6],
+    //double  HTT_2D[2][6],
+    //double  HTTMEM_2D[2][6],
+    //double  noHTT_2D[2][6],
     // XGB training, joint
     double mvaOutput_2lss_HTTMEM_1B,
     double mvaOutput_2lss_HTT_1B,
@@ -147,10 +163,10 @@ class EvtHistManager_2lss_1tau
 
   //const int & nstart =2;
   //const int & ntarget =6;
-  TH1* hist_HTT_2D_[2][6];
-  TH1* hist_noHTT_2D_[2][6];
-  TH1* hist_HTTMEM_2D_[2][6];
-  TH1* hist_oldVarA_2D_[2][6];
+  //TH1* hist_HTT_2D_[2][6];
+  //TH1* hist_noHTT_2D_[2][6];
+  //TH1* hist_HTTMEM_2D_[2][6];
+  //TH1* hist_oldVarA_2D_[2][6];
 
   TH1* histogram_mvaOutput_2lss_HTTMEM_1B_;
   TH1* histogram_mvaOutput_2lss_HTT_1B_;
@@ -159,6 +175,11 @@ class EvtHistManager_2lss_1tau
   TH1* histogram_mvaOutput_2lss_oldVarA_2MEM_;
   TH1* histogram_mvaOutput_2lss_noHTT_2MEM_;
   TH1* histogram_mvaOutput_2lss_noHTT_2HTT_;
+
+  std::vector<TH1*> hist_oldVarA_2D_;
+  std::vector<TH1*> hist_HTT_2D_;
+  std::vector<TH1*> hist_HTTMEM_2D_;
+  std::vector<TH1*> hist_noHTT_2D_;
 
   std::vector<TH1*> histograms_;
 };

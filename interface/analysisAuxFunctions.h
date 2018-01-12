@@ -20,9 +20,6 @@ const double z_window = 10.;
 const double met_coef =  0.00397;
 const double mht_coef =  0.00265;
 
-
-const int  nbinsTarget[9]={5,6,7,8,9,10,11,12,20};
-const int  nbinsStart[3]={8,15,20};
 //--- declare data-taking periods
 enum { kEra_2015, kEra_2016, kEra_2017 };
 
