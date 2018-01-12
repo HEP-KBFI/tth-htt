@@ -416,16 +416,24 @@ TDirectory* createSubdirectory_recursively(TFileDirectory& dir, const std::strin
 //-------------------------------------------------------------------------------
 //
 
-TArrayD getBinning(const TH1* histogram)
+TArrayD getBinning(const TH1* histogram, double xMin, double xMax)
 {
   const TAxis* xAxis = histogram->GetXaxis();
   int numBins = xAxis->GetNbins();
-  TArrayD binning(numBins + 1);
-  for ( int iBin = 1; iBin <= numBins; ++iBin ) {
-    binning[iBin - 1] = xAxis->GetBinLowEdge(iBin);
-    binning[iBin] = xAxis->GetBinUpEdge(iBin);
+  std::vector<double> binning;
+  for ( int idxBin = 1; idxBin <= numBins; ++idxBin ) {
+    double binCenter = xAxis->GetBinCenter(idxBin);
+    if ( (xMin == -1. || binCenter > xMin) && (xMax == -1. || binCenter < xMax) ) {
+      if ( binning.size() == 0 ) binning.push_back(xAxis->GetBinLowEdge(idxBin));
+      binning.push_back(xAxis->GetBinUpEdge(idxBin));
+    }
   }
-  return binning;
+  assert(binning.size() >= 2);
+  TArrayD binning_tarray(binning.size());
+  for ( int idxBin = 0; idxBin < (int)binning.size(); ++idxBin ) {
+    binning_tarray[idxBin] = binning[idxBin];
+  }
+  return binning_tarray;
 }
 
 TH1* getRebinnedHistogram1d(const TH1* histoOriginal, 

@@ -245,16 +245,20 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
       category_output += "_%s" % jobOptions['label']
     lines = []
     lines.append("process.fwliteInput.fileNames = cms.vstring('%s')" % jobOptions['inputFile'])
-    lines.append("process.fwliteOutput.fileName = cms.string('%s')" % jobOptions['datacardFile'])  ## DEF LINE
+    lines.append("process.fwliteOutput.fileName = cms.string('%s')" % jobOptions['datacardFile'])
+    lines.append("process.prepareDatacards.histogramToFit = cms.string('%s')" % jobOptions['histogramToFit'])
+    if jobOptions['histogramToFit'] == "mT_fix_L":
+      lines.append("process.prepareDatacards.xMin = cms.double(0.)")
+      lines.append("process.prepareDatacards.xMax = cms.double(150.)")
+      lines.append("process.prepareDatacards.minEvents_automatic_rebinning = cms.double(10.)")
     category_entries = jinja2.Template(category_template).render(categories = jobOptions['categories'])
+    lines.append(
+      "process.prepareDatacards.categories = cms.VPSet(%s\n)" % category_entries
+    )
     lines.append(
       "process.prepareDatacards.sysShifts = cms.vstring(\n  %s,\n)" % \
       ',\n  '.join(map(lambda central_or_shift: "'%s'" % central_or_shift, self.central_or_shifts))
     )
-    lines.append(
-      "process.prepareDatacards.categories = cms.VPSet(%s\n)" % category_entries
-    )
-    lines.append("process.prepareDatacards.histogramToFit = cms.string('%s')" % jobOptions['histogramToFit'])
     create_cfg(self.cfgFile_prep_dcard, jobOptions['cfgFile_modified'], lines)
 
   def addToMakefile_backgrounds_from_data(self, lines_makefile):
@@ -546,9 +550,19 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
         self.createCfg_prep_dcard_LeptonFakeRate(self.jobOptions_prep_dcard[key_prep_dcard_job])
 
       # Create setupDatacards_LeptonFakeRate.py script from the template
+      systematics = []
+      for systematic in self.central_or_shifts:
+        if systematic == 'central':
+          continue
+        systematic_name = systematic.replace('Up', '').replace('Down', '')
+        if systematic_name not in systematics:
+          systematics.append(systematic_name)
       setup_dcards_template_file = os.path.join(current_dir, 'setupDatacards_LeptonFakeRate.py.template')
       setup_dcards_template = open(setup_dcards_template_file, 'r').read()
-      setup_dcards_script = jinja2.Template(setup_dcards_template).render(leptons = lepton_bins_merged)
+      setup_dcards_script = jinja2.Template(setup_dcards_template).render(
+        leptons           = lepton_bins_merged,
+        central_or_shifts = systematics,
+      )
       setup_dcards_script_path = os.path.join(self.dirs[DKEY_SCRIPTS], 'setupDatacards_LeptonFakeRate.py')
       logging.debug("writing setupDatacards_LeptonFakeRate script file = '%s'" % setup_dcards_script_path)
       with codecs.open(setup_dcards_script_path, "w", "utf-8") as setup_dcards_script_file:

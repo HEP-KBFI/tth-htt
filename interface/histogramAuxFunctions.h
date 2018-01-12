@@ -40,7 +40,7 @@ TH1* getHistogram(const TDirectory*, const std::string&, const std::string&, con
 TDirectory* createSubdirectory(TDirectory*, const std::string&, bool verbose = true);
 TDirectory* createSubdirectory_recursively(TFileDirectory&, const std::string&, bool verbose = true);
 
-TArrayD getBinning(const TH1*);
+TArrayD getBinning(const TH1*, double xMin = -1., double xMax = -1.);
 TH1* getRebinnedHistogram1d(const TH1*, unsigned, const TArrayD&);
 TH2* getRebinnedHistogram2d(const TH1*, unsigned, const TArrayD&, unsigned, const TArrayD&);
 

@@ -1,16 +1,33 @@
 #!/usr/bin/env python
 import os, logging, sys, getpass
 
-from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_jetToTauFakeRate_2016 import samples_2016
+from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016 import samples_2016
 from tthAnalysis.HiggsToTauTau.analyzeConfig_LeptonFakeRate import analyzeConfig_LeptonFakeRate
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 
 ERA                    = "2016"
-version                = "2017Dec05"
+version                = "2017Dec07"
 cmssw_base_dir_combine = os.path.expanduser('~/CMSSW_7_4_7') # immediate parent dir to src folder
 
 if ERA == "2016":
   samples = samples_2016
+  for sample_name, sample_info in samples_2016.items():
+    if sample_info["type"] == "mc":
+      sample_info["triggers"] = [ "1e", "1mu", "2e", "2mu" ]
+    if sample_name in [
+      "/MuonEG/Run2016B-PromptReco-v2/MINIAOD",
+      "/MuonEG/Run2016C-PromptReco-v2/MINIAOD",
+      "/MuonEG/Run2016D-PromptReco-v2/MINIAOD",
+      "/MuonEG/Run2016E-PromptReco-v2/MINIAOD",
+      "/MuonEG/Run2016F-PromptReco-v1/MINIAOD",
+      "/MuonEG/Run2016G-PromptReco-v1/MINIAOD",
+      "/Tau/Run2016B-PromptReco-v2/MINIAOD",
+      "/Tau/Run2016C-PromptReco-v2/MINIAOD",
+      "/Tau/Run2016D-PromptReco-v2/MINIAOD",
+      "/Tau/Run2016E-PromptReco-v2/MINIAOD",
+      "/Tau/Run2016F-PromptReco-v1/MINIAOD",
+      "/Tau/Run2016G-PromptReco-v1/MINIAOD" ]:
+      sample_info["use_it"] = False
   LUMI = 35.9e+3 # 1/pb
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
@@ -28,9 +45,9 @@ if __name__ == '__main__':
     executable_analyze     = "analyze_LeptonFakeRate",
     samples                = samples,
     absEtaBins_e           = [ 0., 1.479, 9.9 ],
+    ptBins_e               = [ 15., 20., 30., 45., 65., 100000. ],
     absEtaBins_mu          = [ 0., 1.479, 9.9 ],
-    absPtBins_e            = [ 15., 20., 30., 45., 65., 100000. ],
-    absPtBins_mu           = [ 10., 15., 20., 30., 45., 65., 100000. ],
+    ptBins_mu              = [ 10., 15., 20., 30., 45., 65., 100000. ],
     fillGenEvtHistograms   = False,
     central_or_shifts      = [
       "central",
@@ -77,24 +94,27 @@ if __name__ == '__main__':
 ##       "CMS_ttHl_thu_shape_ttZ_y1Up",
 ##       "CMS_ttHl_thu_shape_ttZ_y1Down",
     ],
-    numerator_histogram                      = ("mT_fix_L",     "m_{T}^{fix}"), # or ("pt", "p_{T}"),
+    numerator_histogram                      = ("mT_fix_L", "m_{T}^{fix}"), # or ("pt", "p_{T}"),
     denominator_histogram                    = ("EventCounter", "Number of events"),
     prep_dcard                               = True,
     max_files_per_job                        = 100,
     era                                      = ERA,
     use_lumi                                 = True,
     lumi                                     = LUMI,
-    debug                                    = False,
+    debug                                    = False,    
     running_method                           = "sbatch",
+    num_parallel_jobs                        = 100, # KE: run up to 100 'hadd' jobs in parallel on batch system
+    executable_addBackgrounds                = "addBackgrounds",
+    executable_addBackgrounds_recursively    = "addBackgrounds_recursively",
     executable_addBackgrounds_LeptonFakeRate = "addBackground_LeptonFakeRate",
     executable_prep_dcard                    = "prepareDatacards",
     executable_comp_LeptonFakeRate           = "comp_LeptonFakeRate",
-    num_parallel_jobs                        = 8,
   )
 
   analysis.create()
 
-  run_analysis = query_yes_no("Start jobs ?")
+  ##run_analysis = query_yes_no("Start jobs ?")
+  run_analysis = True
   if run_analysis:
     analysis.run()
   else:
