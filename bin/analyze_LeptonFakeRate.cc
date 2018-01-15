@@ -270,10 +270,10 @@ struct numerator_and_denominatorHistManagers
       } else assert(0);
       evtHistManager_LeptonFakeRate_->fillHistograms(met, mT, mT_fix, evtWeight);
       if ( isMC_ ) {
-	evtHistManager_LeptonFakeRate_genHadTau_->fillHistograms(met, mT, mT_fix, evtWeight);
-	evtHistManager_LeptonFakeRate_genLepton_->fillHistograms(met, mT, mT_fix, evtWeight);
-	evtHistManager_LeptonFakeRate_genHadTauOrLepton_->fillHistograms(met, mT, mT_fix, evtWeight);
-	evtHistManager_LeptonFakeRate_genJet_->fillHistograms(met, mT, mT_fix, evtWeight);
+	if ( lepton.genHadTau() ) evtHistManager_LeptonFakeRate_genHadTau_->fillHistograms(met, mT, mT_fix, evtWeight);
+	if ( lepton.genLepton() ) evtHistManager_LeptonFakeRate_genLepton_->fillHistograms(met, mT, mT_fix, evtWeight);
+	if ( lepton.genHadTau() || lepton.genLepton() ) evtHistManager_LeptonFakeRate_genHadTauOrLepton_->fillHistograms(met, mT, mT_fix, evtWeight);
+	else evtHistManager_LeptonFakeRate_genJet_->fillHistograms(met, mT, mT_fix, evtWeight);
       }
       if ( cutFlowTable ) {
 	cutFlowTable->update(label_, evtWeight);
