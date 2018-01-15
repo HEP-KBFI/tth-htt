@@ -54,12 +54,19 @@ resubmit             = args.disable_resubmission
 max_job_resubmission = args.resubmission_limit if resubmit else 1
 
 if era == "2017":
-  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_jetToTauFRorLeptonFR import samples_2017 as samples
+  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017 as samples
   max_files_per_job = 100
   lumi = 35.9e+3 # 1/pb
   # TODO: update lumi
 else:
   raise ValueError("Invalid Configuration parameter 'era' = %s !!" % era)
+
+for sample_name, sample_info in samples.items():
+  if sample_info["type"] == "mc":
+    sample_info["triggers"] = [ "1e", "1mu", "1e1mu" ]
+  if sample_name.startswith(("/DoubleMuon/", "/DoubleEG/", "/Tau/")) and sample_name.find("PromptReco-v3") == -1:
+    #TODO: taken from 2016 samples config, needs a review
+    sample_info["use_it"] = False
 
 if __name__ == '__main__':
   logging.basicConfig(

@@ -331,7 +331,7 @@ int main(int argc, char* argv[])
     Form("charge_flip_%s/presel/electrons", charge_and_leptonSelectionOS.data()), central_or_shift.data()));
   preselElectronHistManagerOS.bookHistograms(fs);
 
-  vstring categories_etapt = {  //B-barrel, E-endcap, L-low pT (10 <= pT < 25), M-med pT (25 <= pT < 50), H-high pT (pT > 50)
+  vstring categories_etapt = {  //B-barrel, E-endcap, L-low pT (10 <= pT < 25), M-med pT (25 <= pT < 50), H-high pT (pT >= 50)
     "BB_LL", "BB_ML", "BB_MM", "BB_HL", "BB_HM", "BB_HH", "EE_LL", "EE_ML", "EE_MM", "EE_HL", "EE_HM", "EE_HH", "BE_LL", "BE_ML", "EB_ML", "BE_MM", "BE_HL", "EB_HL", "BE_HM", "EB_HM", "BE_HH", "total"
   };
   vstring categories_charge = {
@@ -953,12 +953,12 @@ int main(int argc, char* argv[])
         if (std::fabs(gp->eta()) > 1.479) transfer_bin += 3;
         if (gp->pt() >= 15 && gp->pt() < 25) transfer_bin += 1;
         else if (gp->pt() >= 25 && gp->pt() < 50) transfer_bin += 2;
-        else if (gp->pt() > 50) transfer_bin += 3;        
+        else if (gp->pt() >= 50) transfer_bin += 3;        
         else transfer_bin = 0;
         if (std::fabs(preselElectrons[i]->eta()) > 1.479) rec_bin += 3;
         if (preselElectrons[i]->pt() >= 15 && preselElectrons[i]->pt() < 25) rec_bin += 1;
         else if (preselElectrons[i]->pt() >= 25 && preselElectrons[i]->pt() < 50) rec_bin += 2;
-        else if (preselElectrons[i]->pt() > 50) rec_bin += 3;
+        else if (preselElectrons[i]->pt() >= 50) rec_bin += 3;
         else rec_bin = 0;
         transfer_matrix->Fill(transfer_bin, rec_bin, evtWeight);
         if (preselElectrons[i]->charge() != gp->charge())
@@ -1000,10 +1000,10 @@ int main(int argc, char* argv[])
       assert(gp0->pt() >= gp1->pt());
       if (gp0->pt() >= 10 && gp0->pt() < 25) stLeadPtGen = "L";
       else if (gp0->pt() >= 25 && gp0->pt() < 50) stLeadPtGen = "M";
-      else if (gp0->pt() > 50) stLeadPtGen = "H";
+      else if (gp0->pt() >= 50) stLeadPtGen = "H";
       if (gp1->pt() >= 10 && gp1->pt() < 25) stSubPtGen = "L";
       else if (gp1->pt() >= 25 && gp1->pt() < 50) stSubPtGen = "M";
-      else if (gp1->pt() > 50) stSubPtGen = "H";
+      else if (gp1->pt() >= 50) stSubPtGen = "H";
       else{
         std::cout << "PT<10 " << gp0->pt() << " " << gp1->pt() << std::endl; 
         stSubPtGen = "L";

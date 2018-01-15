@@ -96,12 +96,6 @@ if mode == "VHbb":
   else:
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_test import samples_2017
 
-  for sample_name, sample_info in samples_2017.items():
-    if sample_name in [
-        #TODO list of samples collected with tau triggers?
-      ]:
-      sample_info["use_it"] = False
-
   hadTau_selection     = "dR03mvaMedium"
   applyFakeRateWeights = "2lepton"
 elif mode == "addMEM":
@@ -109,7 +103,7 @@ elif mode == "addMEM":
   changeBranchNames    = True
   MEMbranch            = 'memObjects_2lss_1tau_lepFakeable_tauTight_dR03mvaMedium'
   hadTau_selection     = "dR03mvaMedium"
-  applyFakeRateWeights = "3L"
+  applyFakeRateWeights = "2lepton"
 elif mode == "forBDTtraining_beforeAddMEM":
 #  if use_prod_ntuples:
 #    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_prodNtuples_FastSim import samples_2017
@@ -119,13 +113,13 @@ elif mode == "forBDTtraining_beforeAddMEM":
   hadTau_selection_relaxed = "dR03mvaMedium"
   applyFakeRateWeights     = "2lepton"
 elif mode == "forBDTtraining_afterAddMEM":
-#  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_2lss1tau_addMEM import samples_2017
+#  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_addMEM_2lss1tau import samples_2017
   changeBranchNames        = True
   MEMbranch                = 'memObjects_2lss_1tau_lepLoose_tauTight_dR03mvaMedium'
   hadTau_selection         = "dR03mvaMedium"
   hadTau_selection_relaxed = "dR03mvaMedium"
   applyFakeRateWeights     =  "2lepton"
-  max_files_per_job    = 10
+  max_files_per_job        = 10
 else:
   raise ValueError("Invalid Configuration parameter 'mode' = %s !!" % mode)
 
@@ -135,6 +129,10 @@ if era == "2017":
   # TODO: update lumi
 else:
   raise ValueError("Invalid Configuration parameter 'era' = %s !!" % era)
+
+for sample_name, sample_info in samples.items():
+  if sample_name.startswith('/Tau/Run'):
+    sample_info["use_it"] = False
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -154,6 +152,14 @@ if __name__ == '__main__':
     if is_last_resubmission:
       continue
     logging.info("Job submission #%i:" % (idx_job_resubmission + 1))
+
+    # histograms for 2D bin optimization
+    listOfHistNames = [
+      '%s_from%i_to_%i' % (varName, nbinsStart, nbinsTarget)
+        for varName     in ['HTT', 'noHTT', 'HTTMEM', 'oldVarA']
+        for nbinsStart  in [15, 20]
+        for nbinsTarget in range(5, 11)
+    ]
 
     analysis = analyzeConfig_2lss_1tau(
       configDir                 = configDir,
@@ -239,14 +245,39 @@ if __name__ == '__main__':
       histograms_to_fit         = [
         "EventCounter",
         "numJets",
+        "mvaOutput_2lss_ttV",
+        "mvaOutput_2lss_ttbar",
         "mvaDiscr_2lss",
+        "mvaOutput_2lss_1tau_ttV",
+        "mvaOutput_2lss_1tau_ttbar",
         "mvaDiscr_2lss_1tau",
+        "mvaOutput_2lss_1tau_ttV_wMEM",
+        "mvaOutput_2lss_1tau_ttbar_wMEM",
         "mvaDiscr_2lss_1tau_wMEM",
-        #"mvaDiscr_2lss_1tau_wMEMsepLR",
-        "mTauTauVis",
-        "memOutput_LR_type0",
-        "memOutput_LR_type1",
-      ],
+        "mvaOutput_Hj_tagger",
+        "mvaOutput_Hjj_tagger",
+        "mTauTauVis1_sel",
+        "mTauTauVis2_sel",
+        "memOutput_LR",
+        "memDiscr",
+        #
+        "mvaOutput_2lss_oldVarA_tt",
+        "mvaOutput_2lss_oldVarA_ttV",
+        "mvaOutput_2lss_noHTT_tt",
+        "mvaOutput_2lss_noHTT_ttV",
+        "mvaOutput_2lss_HTT_tt",
+        "mvaOutput_2lss_HTTMEM_tt",
+        "mvaOutput_2lss_HTTMEM_ttV",
+        "mvaOutput_2lss_HTT_LepID_tt",
+        #
+        "mvaOutput_2lss_HTTMEM_1B",
+        "mvaOutput_2lss_HTT_1B",
+        "mvaOutput_2lss_noHTT_1B",
+        "mvaOutput_2lss_oldVarA_1B",
+        "mvaOutput_2lss_oldVarA_2MEM",
+        "mvaOutput_2lss_noHTT_2MEM",
+        "mvaOutput_2lss_noHTT_2HTT",
+      ] + listOfHistNames,
       select_rle_output         = True,
       verbose                   = idx_job_resubmission > 0,
       dry_run                   = args.dry_run,

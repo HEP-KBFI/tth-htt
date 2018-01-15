@@ -37,9 +37,10 @@ process.prepareDatacards = cms.PSet(
     makeSubDir = cms.bool(True),
 
     histogramToFit = cms.string("mT_fix_L"),
+    histogramToFit_xMin = cms.double(-1.),
+    histogramToFit_xMax = cms.double(-1.),
     histogramToFit_rebin = cms.int32(1),
     histogramToFit_makeBinContentsPositive = cms.bool(True),
-    setBinsToZeroBelow = cms.double(-1.),
 
     sysShifts = cms.vstring(
       "central",

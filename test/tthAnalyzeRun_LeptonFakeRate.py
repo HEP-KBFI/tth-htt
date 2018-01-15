@@ -55,12 +55,18 @@ resubmit             = args.disable_resubmission
 max_job_resubmission = args.resubmission_limit if resubmit else 1
 
 if era == "2017":
-  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_jetToTauFRorLeptonFR import samples_2017 as samples
+  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017 as samples
   max_files_per_job = 100
   lumi = 35.9e+3 # 1/pb
   # TODO: update lumi
 else:
   raise ValueError("Invalid Configuration parameter 'era' = %s !!" % era)
+
+for sample_name, sample_info in samples_2016.items():
+  if sample_info["type"] == "mc":
+    sample_info["triggers"] = [ "1e", "1mu", "2e", "2mu" ]
+  if sample_name.startswith(('/MuonEG/Run', '/Tau/Run')):
+      sample_info["use_it"] = False
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -85,8 +91,8 @@ if __name__ == '__main__':
       samples                = samples,
       absEtaBins_e           = [ 0., 1.479, 9.9 ],
       absEtaBins_mu          = [ 0., 1.479, 9.9 ],
-      absPtBins_e            = [ 15., 20., 30., 45., 65., 100000. ],
-      absPtBins_mu           = [ 10., 15., 20., 30., 45., 65., 100000. ],
+      ptBins_e               = [ 15., 20., 30., 45., 65., 100000. ],
+      ptBins_mu              = [ 10., 15., 20., 30., 45., 65., 100000. ],
       fillGenEvtHistograms   = False,
       central_or_shifts      = [
         "central",
@@ -142,10 +148,12 @@ if __name__ == '__main__':
       lumi                                     = lumi,
       debug                                    = False,
       running_method                           = "sbatch",
+      executable_addBackgrounds                = "addBackgrounds",
+      executable_addBackgrounds_recursively    = "addBackgrounds_recursively",
       executable_addBackgrounds_LeptonFakeRate = "addBackground_LeptonFakeRate",
       executable_prep_dcard                    = "prepareDatacards",
       executable_comp_LeptonFakeRate           = "comp_LeptonFakeRate",
-      num_parallel_jobs                        = 8,
+      num_parallel_jobs                        = 100,
       verbose                                  = idx_job_resubmission > 0,
       dry_run                                  = args.dry_run,
     )
