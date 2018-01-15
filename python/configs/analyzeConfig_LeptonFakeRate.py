@@ -441,14 +441,14 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     self.createCfg_addBackgrounds_LeptonFakeRate(self.jobOptions_addBackgrounds_LeptonFakeRate[key_addBackgrounds_job])
 
     # initialize input and output file names for hadd_stage2
-    key_hadd_stage2 = getKey('')
-    if not key_hadd_stage2 in self.inputFiles_hadd_stage2:
-      self.inputFiles_hadd_stage2[key_hadd_stage2] = []
-    for key_hadd_stage1_5 in self.outputFile_hadd_stage1_5.keys():
-      self.inputFiles_hadd_stage2[key_hadd_stage2].append(self.outputFile_hadd_stage1_5[key_hadd_stage1_5])
-    self.inputFiles_hadd_stage2[key_hadd_stage2].append(self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job]['outputFile'])
-    self.inputFiles_hadd_stage2[key_hadd_stage2].append(self.jobOptions_addBackgrounds_LeptonFakeRate[key_addBackgrounds_job]['outputFile'])
-    self.outputFile_hadd_stage2[key_hadd_stage2] = os.path.join(self.dirs[DKEY_HIST], "histograms_harvested_stage2.root")
+    ##key_hadd_stage2 = getKey('')
+    ##if not key_hadd_stage2 in self.inputFiles_hadd_stage2:
+    ##  self.inputFiles_hadd_stage2[key_hadd_stage2] = []
+    ##for key_hadd_stage1_5 in self.outputFile_hadd_stage1_5.keys():
+    ##  self.inputFiles_hadd_stage2[key_hadd_stage2].append(self.outputFile_hadd_stage1_5[key_hadd_stage1_5])
+    ##self.inputFiles_hadd_stage2[key_hadd_stage2].append(self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job]['outputFile'])
+    ##self.inputFiles_hadd_stage2[key_hadd_stage2].append(self.jobOptions_addBackgrounds_LeptonFakeRate[key_addBackgrounds_job]['outputFile'])
+    ##self.outputFile_hadd_stage2[key_hadd_stage2] = os.path.join(self.dirs[DKEY_HIST], "histograms_harvested_stage2.root")
 
     # We need to generate the eta and pt bins for electrons and muons
     lepton_bins = {}
@@ -540,7 +540,8 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
         key_prep_dcard_job = getKey(histogramToFit)
         datacard = os.path.join(self.dirs[DKEY_DCRD], "prepareDatacards_%s.root" % (histogramToFit))
         self.jobOptions_prep_dcard[key_prep_dcard_job] = {
-          'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2],
+          ##'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2],
+          'inputFile' : self.jobOptions_addBackgrounds_LeptonFakeRate[key_addBackgrounds_job]['outputFile'],
           'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "prepareDatacards_LeptonFakeRate_%s_cfg.py" % (histogramToFit)),
           'datacardFile' : datacard,
           'histogramDir' : (self.histogramDir_prep_dcard),
@@ -618,7 +619,8 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
       key_comp_LeptonFakeRate = getKey('')
       leptonFR_final_output = os.path.join(combine_output_dir, 'leptonFakeRates.root')
       self.jobOptions_comp_LeptonFakeRate[key_comp_LeptonFakeRate] = {
-        'inputFile'            : [ fit_value_file, self.outputFile_hadd_stage2[key_hadd_stage2] ],
+        ##'inputFile'            : [ fit_value_file, self.outputFile_hadd_stage2[key_hadd_stage2] ],
+        'inputFile'            : [ fit_value_file, self.jobOptions_addBackgrounds_LeptonFakeRate[key_addBackgrounds_job]['outputFile'] ],
         'outputFile'           : leptonFR_final_output,
         'absEtaBins_e'         : self.absEtaBins_e,
         'ptBins_e'             : self.ptBins_e,
@@ -647,7 +649,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     self.addToMakefile_analyze(lines_makefile)
     self.addToMakefile_hadd_stage1(lines_makefile)
     self.addToMakefile_backgrounds_from_data(lines_makefile)
-    self.addToMakefile_hadd_stage2(lines_makefile)
+    ##self.addToMakefile_hadd_stage2(lines_makefile)
     self.addToMakefile_prep_dcard(lines_makefile)
     self.addToMakefile_combine(lines_makefile)
     self.addToMakefile_comp_LeptonFakeRate(lines_makefile)

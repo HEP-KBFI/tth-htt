@@ -121,9 +121,9 @@ process.analyze_LeptonFakeRate = cms.PSet(
 #    apply_offline_e_trigger_cuts_1mu = cms.bool(True), ## NOT NEEDED ANYMORE
 
     absEtaBins_e = cms.vdouble(0., 1.479, 9.9),
+    ptBins_e = cms.vdouble(15., 20., 30., 45., 65., 100000.),
     absEtaBins_mu = cms.vdouble(0., 1.479, 9.9),
-    absPtBins_e = cms.vdouble(15., 20., 30., 45., 65., 100000.),
-    absPtBins_mu = cms.vdouble(10., 15., 20., 30., 45., 65., 100000.),
+    ptBins_mu = cms.vdouble(10., 15., 20., 30., 45., 65., 100000.),
 
     minPt_e = cms.double(15), ## NEWLY ADDED
     minPt_mu = cms.double(10), ## NEWLY ADDED
