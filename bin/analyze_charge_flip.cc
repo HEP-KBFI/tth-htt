@@ -1003,10 +1003,10 @@ int main(int argc, char* argv[])
       assert(gp0->pt() >= gp1->pt());
       if (gp0->pt() >= 10 && gp0->pt() < 25) stLeadPtGen = "L";
       else if (gp0->pt() >= 25 && gp0->pt() < 50) stLeadPtGen = "M";
-      else if (gp0->pt() > 50) stLeadPtGen = "H";
+      else if (gp0->pt() >= 50) stLeadPtGen = "H";
       if (gp1->pt() >= 10 && gp1->pt() < 25) stSubPtGen = "L";
       else if (gp1->pt() >= 25 && gp1->pt() < 50) stSubPtGen = "M";
-      else if (gp1->pt() > 50) stSubPtGen = "H";
+      else if (gp1->pt() >= 50) stSubPtGen = "H";
       else{
         std::cout << "PT<10 " << gp0->pt() << " " << gp1->pt() << std::endl; 
         stSubPtGen = "L";
