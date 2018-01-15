@@ -59,22 +59,26 @@ namespace
   };
 }
 
-TH1* copyHistogram(const TH1* histogram_input, const std::string& histogramName_output)
+TH1* copyHistogram(const TH1* histogram_input, const std::string& histogramName_output, bool verbose)
 {
-  std::cout << "<copyHistogram>:" << std::endl;
-  std::cout << " histogram_input = " << histogram_input << ": name = " << histogram_input->GetName() << std::endl;
-  std::cout << " histogramName_output = " << histogramName_output << std::endl;
+  if ( verbose ) {
+    std::cout << "<copyHistogram>:" << std::endl;
+    std::cout << " histogram_input = " << histogram_input << ": name = " << histogram_input->GetName() << std::endl;
+    std::cout << " histogramName_output = " << histogramName_output << std::endl;
+  }
   TH1* histogram_output = 0;
   const TAxis* xAxis = histogram_input->GetXaxis();
   int numBins = xAxis->GetNbins();
   TArrayD binning = getBinning(histogram_input);
-  std::cout << " nBins = " << xAxis->GetNbins() << ",";
-  std::cout << " binning = { ";
-  for ( int idxBin = 0; idxBin < binning.GetSize(); ++idxBin ) {
-    if ( idxBin > 0 ) std::cout << ", ";
-    std::cout << binning[idxBin];
+  if ( verbose ) {
+    std::cout << " nBins = " << xAxis->GetNbins() << ",";
+    std::cout << " binning = { ";
+    for ( int idxBin = 0; idxBin < binning.GetSize(); ++idxBin ) {
+      if ( idxBin > 0 ) std::cout << ", ";
+      std::cout << binning[idxBin];
+    }
+    std::cout << " } " << std::endl;
   }
-  std::cout << " } " << std::endl;
   histogram_output = new TH1D(histogramName_output.data(), histogram_input->GetTitle(), numBins, binning.GetArray());
   for ( int idxBin = 0; idxBin <= (numBins + 1); ++idxBin ) {
     double binContent = histogram_input->GetBinContent(idxBin);
@@ -138,7 +142,8 @@ void processHistogram(
     for ( vstring::const_iterator central_or_shift = central_or_shifts.begin();
 	  central_or_shift != central_or_shifts.end(); ++central_or_shift ) {     
       
-      int verbosity = ( histogram->find("EventCounter") != std::string::npos && ((*central_or_shift) == "" || (*central_or_shift) == "central") ) ? 1 : 0;
+      //int verbosity = ( histogram->find("EventCounter") != std::string::npos && ((*central_or_shift) == "" || (*central_or_shift) == "central") ) ? 1 : 0;
+      int verbosity = 0;
       
       TH1* histogramData_den = getHistogram(dir_den, processData, *histogram, *central_or_shift, false);  
       bool histogramData_den_isSubstitute = false;
@@ -203,7 +208,7 @@ void processHistogram(
       //-------- compute fakes_data histogram for denominator 
       //        (= data_obs - sum(prompt MC) histograms for fakeable lepton selection)
       std::string subdirLeptonFakesName_output_den = Form("%s/%s", subdirName_den.data(), processLeptonFakes.data());       
-      std::cout << " subdirLeptonFakesName_output_den = '" << subdirLeptonFakesName_output_den << "'" << std::endl;
+      //std::cout << " subdirLeptonFakesName_output_den = '" << subdirLeptonFakesName_output_den << "'" << std::endl;
       TDirectory* subdirLeptonFakes_output_den = createSubdirectory_recursively(fs, subdirLeptonFakesName_output_den);
       subdirLeptonFakes_output_den->cd();                                                                                                                                             
                  
@@ -224,7 +229,7 @@ void processHistogram(
       //         in case the difference data_obs - sum(prompt MC) is below 10% times data_obs, normalize the fakes_data histogram for the numerator to 10% times data_obs
       //         and rescale the histograms for the prompt MC "backgrounds" such that the sum(prompt MC) + fakes_data = data_obs)
       std::string subdirLeptonFakesName_output_num = Form("%s/%s", subdirName_num.data(), processLeptonFakes.data());        
-      std::cout<< " subdirLeptonFakesName_output_num = '" << subdirLeptonFakesName_output_num << "'" << std::endl;
+      //std::cout<< " subdirLeptonFakesName_output_num = '" << subdirLeptonFakesName_output_num << "'" << std::endl;
       TDirectory* subdirLeptonFakes_output_num = createSubdirectory_recursively(fs, subdirLeptonFakesName_output_num);
       subdirLeptonFakes_output_num->cd();   
 
@@ -264,50 +269,66 @@ void processHistogram(
       //-------- copy histograms for data_obs and prompt MC to output file
       if ( !histogramData_den_isSubstitute ) {
 	std::string subdirDataName_output_den = Form("%s/%s", subdirName_den.data(), processData.data());        
-	std::cout<< " subdirDataName_output_den = '" << subdirDataName_output_den << "'" << std::endl;
+	if ( verbosity ) { 
+	  std::cout << " subdirDataName_output_den = '" << subdirDataName_output_den << "'" << std::endl;
+	}
 	TDirectory* subdirData_output_den = createSubdirectory_recursively(fs, subdirDataName_output_den);
 	subdirData_output_den->cd(); 
 
-	TH1* histogramData_den_copied = copyHistogram(histogramData_den, histogramData_den->GetName());
-	std::cout << " Den. integral(" << processData << ") = " << histogramData_den_copied->Integral() << std::endl;
+	TH1* histogramData_den_copied = copyHistogram(histogramData_den, histogramData_den->GetName(), verbosity);
+	if ( verbosity ) { 
+	  std::cout << " Den. integral(" << processData << ") = " << histogramData_den_copied->Integral() << std::endl;
+	}
 	//histogramData_den_copied->Write();
       }
 
       for ( std::vector<histogramEntryType*>::const_iterator histogram_and_processToSubtract_den = histograms_and_processesToSubtract_den.begin();
 	    histogram_and_processToSubtract_den != histograms_and_processesToSubtract_den.end(); ++histogram_and_processToSubtract_den ) {
 	std::string subdirPromptBgName_output_den = Form("%s/%s", subdirName_den.data(), (*histogram_and_processToSubtract_den)->process_.data());        
-	std::cout<< " subdirPromptBgName_output_den = '" << subdirPromptBgName_output_den << "'" << std::endl;
+	if ( verbosity ) { 
+	  std::cout << " subdirPromptBgName_output_den = '" << subdirPromptBgName_output_den << "'" << std::endl;
+	}
 	TDirectory* subdirPromptBg_output_den = createSubdirectory_recursively(fs, subdirPromptBgName_output_den);
 	subdirPromptBg_output_den->cd(); 
 
-	TH1* histogramPromptBg_den_copied = copyHistogram((*histogram_and_processToSubtract_den)->histogram_, (*histogram_and_processToSubtract_den)->histogram_->GetName());
-	std::cout << " Den. integral(" << (*histogram_and_processToSubtract_den)->process_ << ") = " << histogramPromptBg_den_copied->Integral() << std::endl;
+	TH1* histogramPromptBg_den_copied = copyHistogram((*histogram_and_processToSubtract_den)->histogram_, (*histogram_and_processToSubtract_den)->histogram_->GetName(), verbosity);
+	if ( verbosity ) { 
+	  std::cout << " Den. integral(" << (*histogram_and_processToSubtract_den)->process_ << ") = " << histogramPromptBg_den_copied->Integral() << std::endl;
+	}
 	//histogramPromptBg_den_copied->Write();
       }
 
       if ( !histogramData_num_isSubstitute ) {
 	std::string subdirDataName_output_num = Form("%s/%s", subdirName_num.data(), processData.data());        
-	std::cout<< " subdirDataName_output_num = '" << subdirDataName_output_num << "'" << std::endl;
+	if ( verbosity ) { 
+	  std::cout << " subdirDataName_output_num = '" << subdirDataName_output_num << "'" << std::endl;
+	}
 	TDirectory* subdirData_output_num = createSubdirectory_recursively(fs, subdirDataName_output_num);
 	subdirData_output_num->cd(); 
 
-	TH1* histogramData_num_copied = copyHistogram(histogramData_num, histogramData_num->GetName());
-	std::cout << " Num. integral(" << processData << ") = " << histogramData_num_copied->Integral() << std::endl;
+	TH1* histogramData_num_copied = copyHistogram(histogramData_num, histogramData_num->GetName(), verbosity);
+	if ( verbosity ) { 
+	  std::cout << " Num. integral(" << processData << ") = " << histogramData_num_copied->Integral() << std::endl;
+	}
 	//histogramData_num_copied->Write();
       }
 
       for ( std::vector<histogramEntryType*>::const_iterator histogram_and_processToSubtract_num = histograms_and_processesToSubtract_num.begin();
 	    histogram_and_processToSubtract_num != histograms_and_processesToSubtract_num.end(); ++histogram_and_processToSubtract_num ) {
 	std::string subdirPromptBgName_output_num = Form("%s/%s", subdirName_num.data(), (*histogram_and_processToSubtract_num)->process_.data());        
-	std::cout<< " subdirPromptBgName_output_num = '" << subdirPromptBgName_output_num << "'" << std::endl;
+	if ( verbosity ) { 
+	  std::cout << " subdirPromptBgName_output_num = '" << subdirPromptBgName_output_num << "'" << std::endl;
+	}
 	TDirectory* subdirPromptBg_output_num = createSubdirectory_recursively(fs, subdirPromptBgName_output_num);
 	subdirPromptBg_output_num->cd(); 
 
-	TH1* histogramPromptBg_num_copied = copyHistogram((*histogram_and_processToSubtract_num)->histogram_, (*histogram_and_processToSubtract_num)->histogram_->GetName());
+	TH1* histogramPromptBg_num_copied = copyHistogram((*histogram_and_processToSubtract_num)->histogram_, (*histogram_and_processToSubtract_num)->histogram_->GetName(), verbosity);
 	if ( sfPromptBg_num != 1. ) {
 	  histogramPromptBg_num_copied->Scale(sfPromptBg_num);
 	}
-	std::cout << " Num. integral(" << (*histogram_and_processToSubtract_num)->process_ << ") = " << histogramPromptBg_num_copied->Integral() << std::endl;
+	if ( verbosity ) { 
+	  std::cout << " Num. integral(" << (*histogram_and_processToSubtract_num)->process_ << ") = " << histogramPromptBg_num_copied->Integral() << std::endl;
+	}
 	//histogramPromptBg_num_copied->Write();
       }
       //--------
