@@ -201,6 +201,7 @@ namespace
       }
       if ( idxBin_input >= 1 && idxBin_input <= numBins_input ) {	
 	double binCenter_input = xAxis_input->GetBinCenter(idxBin_input);
+	if ( !((xMin == -1. || binCenter_input > xMin) && (xMax == -1. || binCenter_input < xMax)) ) continue;
 	int idxBin_output = xAxis_output->FindBin(binCenter_input);
 	if ( idxBin_output >= 1 && idxBin_output <= numBins_output ) {
 	  histogram_output->SetBinContent(idxBin_output, binContent_input);
@@ -208,7 +209,7 @@ namespace
 	} else if ( idxBin_output == 0 ) { // "regular" bin of input histogram, which corresponds to underflow bin of output histogram
 	  binContent_output_underflow += binContent_input;
 	  binErr2_output_underflow += square(binError_input);
-	} else if ( idxBin_input == (numBins_input + 1) ) { // "regular" bin of input histogram, which corresponds to overflow bin of output histogram
+	} else if ( idxBin_output == (numBins_input + 1) ) { // "regular" bin of input histogram, which corresponds to overflow bin of output histogram
 	  binContent_output_overflow += binContent_input;
 	  binErr2_output_overflow += square(binError_input);
 	} else assert(0);
@@ -223,12 +224,12 @@ namespace
     // CV: set underflow and overflow bins to zero
     //histogram_output->SetBinContent(0, binContent_output_underflow);
     //histogram_output->SetBinError(0, TMath::Sqrt(binErr2_output_underflow));
-    //histogram_output->SetBinContent(numBins_output, binContent_output_overflow);
-    //histogram_output->SetBinError(numBins_output, TMath::Sqrt(binErr2_output_overflow));
+    //histogram_output->SetBinContent(numBins_output + 1, binContent_output_overflow);
+    //histogram_output->SetBinError(numBins_output + 1, TMath::Sqrt(binErr2_output_overflow));
     histogram_output->SetBinContent(0, 0.);
     histogram_output->SetBinError(0, 0.);
-    histogram_output->SetBinContent(numBins_output, 0.);
-    histogram_output->SetBinError(numBins_output, 0.);
+    histogram_output->SetBinContent(numBins_output + 1, 0.);
+    histogram_output->SetBinError(numBins_output + 1, 0.);
         
     if ( rebin > 1 ) {
       if ( (numBins_output % rebin) != 0 )
