@@ -488,7 +488,7 @@ combineTool.py                           \
   -d "$OUTPUT_DIR_NUM_MU/wsp.root"       \
   -m 125                                 \
   --minimizerAlgoForMinos Minuit2,Migrad \
-  -n {{ e_array }}                       \
+  -n {{ mu_array }}                      \
   --robustFit 1                          \
   --doInitialFit                         \
   --parallel 16                          \
@@ -500,7 +500,7 @@ combineTool.py                           \
   -d "$OUTPUT_DIR_NUM_MU/wsp.root"       \
   -m 125                                 \
   --minimizerAlgoForMinos Minuit2,Migrad \
-  -n {{ e_array }}                       \
+  -n {{ mu_array }}                      \
   --robustFit 1                          \
   --doFits                               \
   --parallel 16
@@ -512,7 +512,7 @@ combineTool.py                                        \
   -d "$OUTPUT_DIR_NUM_MU/wsp.root"                    \
   -m 125                                              \
   --minimizerAlgoForMinos Minuit2,Migrad              \
-  -n {{ e_array }}                                    \
+  -n {{ mu_array }}                                   \
   --parallel 16                                       \
   -o "$OUTPUT_DIR_NUM_MU/impacts_{{ mu_array }}.json" \
   &> "$OUTPUT_DIR_NUM_MU/impacts_json.log"
@@ -650,7 +650,7 @@ combineTool.py                           \
   -d "$OUTPUT_DIR_DEN_MU/wsp.root"       \
   -m 125                                 \
   --minimizerAlgoForMinos Minuit2,Migrad \
-  -n {{ e_array }}                       \
+  -n {{ mu_array }}                      \
   --robustFit 1                          \
   --doInitialFit                         \
   --parallel 16                          \
@@ -662,7 +662,7 @@ combineTool.py                           \
   -d "$OUTPUT_DIR_DEN_MU/wsp.root"       \
   -m 125                                 \
   --minimizerAlgoForMinos Minuit2,Migrad \
-  -n {{ e_array }}                       \
+  -n {{ mu_array }}                      \
   --robustFit 1                          \
   --doFits                               \
   --parallel 16                          \
@@ -674,7 +674,7 @@ combineTool.py                                        \
   -d "$OUTPUT_DIR_DEN_MU/wsp.root"                    \
   -m 125                                              \
   --minimizerAlgoForMinos Minuit2,Migrad              \
-  -n {{ e_array }}                                    \
+  -n {{ mu_array }}                                   \
   --parallel 16                                       \
   -o "$OUTPUT_DIR_DEN_MU/impacts_{{ mu_array }}.json" \
   &> "$OUTPUT_DIR_DEN_MU/impacts_json.log"
