@@ -246,7 +246,7 @@ struct numerator_and_denominatorHistManagers
 
   void fillHistograms(const RecoLepton& lepton, double met, double mT, double mT_fix, double evtWeight, cutFlowTableType* cutFlowTable = 0)
   {
-    if ( isInclusive_ || (lepton.absEta() >= minAbsEta_ && lepton.absEta() < maxAbsEta_ && lepton.pt() >= minPt_ && lepton.pt() < maxPt_) ) {
+    if ( isInclusive_ || (lepton.absEta() >= minAbsEta_ && lepton.absEta() < maxAbsEta_ && lepton.cone_pt() >= minPt_ && lepton.cone_pt() < maxPt_) ) {
       if ( lepton_type_ == kElectron ) {
 	const RecoElectron* electron = dynamic_cast<const RecoElectron*>(&lepton);
 	assert(electron);
@@ -904,7 +904,7 @@ int main(int argc, char* argv[])
 	   (use_triggers_2e && (*hltPath_iter)->is_trigger_2e()) ) {
 	for ( std::vector<const RecoElectron*>::const_iterator fakeableElectron = fakeableElectrons.begin();
 	      fakeableElectron != fakeableElectrons.end(); ++fakeableElectron ) {
-	  if ( !((*fakeableElectron)->pt() > minPt_e) ) continue;
+	  if ( !((*fakeableElectron)->cone_pt() > minPt_e) ) continue;
 	  bool isGoodElectronJetPair = false;
 	  for ( std::vector<const RecoJet*>::const_iterator selJet = selJets_dR07.begin();
 		selJet != selJets_dR07.end(); ++selJet ) {
@@ -969,7 +969,7 @@ int main(int argc, char* argv[])
 	   (use_triggers_2mu && (*hltPath_iter)->is_trigger_2mu()) ) {
 	for ( std::vector<const RecoMuon*>::const_iterator fakeableMuon = fakeableMuons.begin();
 	      fakeableMuon != fakeableMuons.end(); ++fakeableMuon ) {
-	  if ( !((*fakeableMuon)->pt() > minPt_mu) ) continue;
+	  if ( !((*fakeableMuon)->cone_pt() > minPt_mu) ) continue;
 	  bool isGoodMuonJetPair = false;
 	  for ( std::vector<const RecoJet*>::const_iterator selJet = selJets_dR07.begin();
 		selJet != selJets_dR07.end(); ++selJet ) {
