@@ -254,7 +254,7 @@ void fillGraph(TGraphAsymmErrors* graph, TH2* histogram, double absEta)
   }
 }
 
-void makeControlPlot(TGraphAsymmErrors* graph_data, TGraphAsymmErrors* graph_mc, const TArrayD& ptBins, double minAbsEta, double maxAbsEta, const std::string& outputFileName)
+void makeControlPlot(TGraphAsymmErrors* graph_data, TGraphAsymmErrors* graph_mc, const TArrayD& ptBins, double minAbsEta, double maxAbsEta, bool useLogScale, const std::string& outputFileName)
 {
   TCanvas* canvas = new TCanvas("canvas", "canvas", 1200, 900);
   canvas->SetFillColor(10);
@@ -265,13 +265,22 @@ void makeControlPlot(TGraphAsymmErrors* graph_data, TGraphAsymmErrors* graph_mc,
   canvas->SetRightMargin(0.04);
   canvas->SetGridx();
   canvas->SetGridy();
+  canvas->SetLogy(useLogScale);
   
   //TH1* dummyHistogram = new TH1D("dummyHistogram", "dummyHistogram", ptBins.GetSize() - 1, ptBins.GetArray());
   TH1* dummyHistogram = new TH1D("dummyHistogram", "dummyHistogram", 10, 0., 100.);
   dummyHistogram->SetTitle("");
   dummyHistogram->SetStats(false);
-  dummyHistogram->SetMaximum(0.20);
-  dummyHistogram->SetMinimum(0.00);
+  double yMin, yMax;
+  if ( useLogScale ) {
+    yMin = 1.e-3;
+    yMax = 1.e+1;
+  } else {
+    yMin = 0.;
+    yMax = 0.20;
+  }
+  dummyHistogram->SetMinimum(yMin);
+  dummyHistogram->SetMaximum(yMax);
   
   TAxis* xAxis = dummyHistogram->GetXaxis();
   xAxis->SetTitle("p_{T} [GeV]");
@@ -284,7 +293,7 @@ void makeControlPlot(TGraphAsymmErrors* graph_data, TGraphAsymmErrors* graph_mc,
   
   TAxis* yAxis = dummyHistogram->GetYaxis();
   yAxis->SetTitle("Fake rate");
-  yAxis->SetTitleOffset(1.45);
+  yAxis->SetTitleOffset(1.60);
   yAxis->SetTitleSize(0.06);
   yAxis->SetLabelOffset(0.02);
   yAxis->SetLabelSize(0.06);
@@ -313,7 +322,7 @@ void makeControlPlot(TGraphAsymmErrors* graph_data, TGraphAsymmErrors* graph_mc,
 
   TLegend* legend = 0;
   if ( graph_mc ) {
-    TLegend* legend = new TLegend(0.73, 0.76, 0.88, 0.88, NULL, "brNDC");
+    TLegend* legend = new TLegend(0.73, 0.76, 0.88, 0.91, NULL, "brNDC");
     legend->SetFillStyle(0);
     legend->SetBorderSize(0);
     legend->SetFillColor(10);
@@ -340,10 +349,12 @@ void makeControlPlot(TGraphAsymmErrors* graph_data, TGraphAsymmErrors* graph_mc,
     label->SetTextSize(0.050);
     label->Draw();
   }
-  
+
   canvas->Update();
   size_t idx = outputFileName.find_last_of('.');
   std::string outputFileName_plot = std::string(outputFileName, 0, idx);
+  if ( useLogScale ) outputFileName_plot.append("_log");
+  else outputFileName_plot.append("_linear");
   if ( idx != std::string::npos ) canvas->Print(std::string(outputFileName_plot).append(std::string(outputFileName, idx)).data());
   canvas->Print(std::string(outputFileName_plot).append(".png").data());
   canvas->Print(std::string(outputFileName_plot).append(".pdf").data());
@@ -482,7 +493,8 @@ int main(int argc, char* argv[])
     fillGraph(graph_mc, histogram_e_mc, absEta);
     std::string outputFileName_plot = std::string(outputFileName, 0, outputFileName.find_last_of('.'));
     outputFileName_plot.append(Form("_e_%s.png", getEtaBin(minAbsEta, maxAbsEta).data()));
-    makeControlPlot(graph_data, graph_mc, ptBins_e_array, minAbsEta, maxAbsEta, outputFileName_plot);
+    makeControlPlot(graph_data, graph_mc, ptBins_e_array, minAbsEta, maxAbsEta, true, outputFileName_plot);
+    makeControlPlot(graph_data, graph_mc, ptBins_e_array, minAbsEta, maxAbsEta, false, outputFileName_plot);
   }
 
   TH2* histogram_mu_data = bookHistogram(fs, histogramName_mu, ptBins_mu_array, absEtaBins_mu_array);
@@ -502,7 +514,8 @@ int main(int argc, char* argv[])
     fillGraph(graph_mc, histogram_mu_mc, absEta);
     std::string outputFileName_plot = std::string(outputFileName, 0, outputFileName.find_last_of('.'));
     outputFileName_plot.append(Form("_mu_%s.png", getEtaBin(minAbsEta, maxAbsEta).data()));
-    makeControlPlot(graph_data, graph_mc, ptBins_mu_array, minAbsEta, maxAbsEta, outputFileName_plot);
+    makeControlPlot(graph_data, graph_mc, ptBins_mu_array, minAbsEta, maxAbsEta, true, outputFileName_plot);
+    makeControlPlot(graph_data, graph_mc, ptBins_mu_array, minAbsEta, maxAbsEta, false, outputFileName_plot);
   }
 
   clock.Show("comp_LeptonFakeRate");
