@@ -35,55 +35,55 @@ LAYOUTS1 = { ## FOR tt
         }
         ),
         ('Rares', {
-            'entries': ['Rares'],
+            'entries': ['Raresl_plus_t'],
             'legend': 'Rares',
             'color': ROOT.TColor.GetColor(0,255,0)
         }
         ),
         ('TT', {
-            'entries': ['TT'],
+            'entries': ['TTl_plus_t'],
             'legend': 't#bar{t}',
             'color': ROOT.TColor.GetColor(155, 152, 204)
         }
         ),
         ('EWK', {
-            'entries': ['EWK'],
+            'entries': ['EWKl_plus_t'],
             'legend': 'Electroweak',
             'color': ROOT.TColor.GetColor(222, 90, 106)
         }
         ),
         ('TTW', {                    
-            'entries': ['TTW'],
+            'entries': ['TTWl_plus_t'],
             'legend': 't#bar{t}W',
             'color': ROOT.TColor.GetColor(0, 0, 255)
         }
         ),
         ('TTZ', {                    
-            'entries': ['TTZ'],
+            'entries': ['TTZl_plus_t'],
             'legend': 't#bar{t}Z',
             'color': ROOT.TColor.GetColor(0, 202, 255)
         }
         ),
         ('TTWW', {                    
-            'entries': ['TTWW'],
+            'entries': ['TTWWl_plus_t'],
             'legend': 't#bar{t}WW',
             'color': ROOT.TColor.GetColor(222, 0, 255)
         }
         ),
         ('tH', {                    
-            'entries': ['tH'],
+            'entries': ['tHl_plus_t'],
             'legend': 'tH',
             'color': ROOT.TColor.GetColor(255, 0, 0)
         }
         ),
         ('ttH_hbb', {
-            'entries': ['ttH_hbb'],
+            'entries': ['ttH_hbbl_plus_t'],
             'legend': 't#bar{t}H,H#rightarrow#bar{b}b',
             'color': ROOT.TColor.GetColor(250, 202, 255)
         }
         ),
         ('signal', {
-            'entries': ['signal'],
+            'entries': ['signall_plus_t'],
             'legend': 't#bar{t}H,H#rightarrow#tau#tau',
             'color': ROOT.TColor.GetColor(248, 206, 104)
         }
@@ -308,7 +308,7 @@ pads[0].RedrawAxis()
 
 # CMS logo
 plot.DrawCMSLogo(pads[0], 'CMS', 'Preliminary', 11, 0.045, 0.05, 1.0, '', 1.0)
-plot.DrawTitle(pads[0], '35 fb^{-1} (13 TeV)', 3)
+plot.DrawTitle(pads[0], '35.9 fb^{-1} (13 TeV)', 3)
 
 # latex = ROOT.TLatex()
 # plot.Set(latex, NDC=None, TextFont=42, TextSize=0.08)
