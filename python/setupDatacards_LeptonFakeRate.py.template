@@ -18,7 +18,11 @@ cb         = ch.CombineHarvester()
 SUFFIX_GEN_MATCH = "l_plus_t"
 
 sig_procs     = ['fakes_data']
-bkg_procs_arr = ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'signal']
+
+# bkg_procs_arr = ['EWK', 'TT', 'TTW','TTZ','Rares','tH', 'TTWW', 'ttH_hbb', 'signal']
+bkg_procs_arr = ['EWK', 'TT', 'Rares']
+
+
 # use MC templates that contain only gen-matched leptons
 bkg_procs_arr = list(map(lambda proc: '%s%s' % (proc, SUFFIX_GEN_MATCH), bkg_procs_arr))
 all_procs     = bkg_procs_arr + sig_procs
@@ -70,18 +74,22 @@ cb.cp().AddSyst( ## Correl. across $CHANNEL and $BIN
     cb, 'EWK_unc', 'lnN', ch.SystMap('channel', 'process')
         (channels, ['EWK%s' % SUFFIX_GEN_MATCH], 1.3) ## reduced from 50% following christian's suggestions
 )
+
 cb.cp().AddSyst( ## Correl. across $CHANNEL and $BIN
     cb, 'TT_unc', 'lnN', ch.SystMap('channel', 'process')
         (channels, ['TT%s' % SUFFIX_GEN_MATCH], 1.3) ## reduced from 50% following christian's suggestions
 )
-cb.cp().AddSyst( ## Correl. across $CHANNEL and $BIN
-    cb, 'TTW_unc', 'lnN', ch.SystMap('channel', 'process')
-        (channels, ['TTW%s' % SUFFIX_GEN_MATCH], 1.2)
-)
-cb.cp().AddSyst( ## Correl. across $CHANNEL and $BIN
-    cb, 'TTZ_unc', 'lnN', ch.SystMap('channel', 'process')
-        (channels, ['TTZ%s' % SUFFIX_GEN_MATCH], 1.2)
-)
+
+# cb.cp().AddSyst( ## Correl. across $CHANNEL and $BIN
+#    cb, 'TTW_unc', 'lnN', ch.SystMap('channel', 'process')
+#        (channels, ['TTW%s' % SUFFIX_GEN_MATCH], 1.2)
+#)
+
+# cb.cp().AddSyst( ## Correl. across $CHANNEL and $BIN
+#    cb, 'TTZ_unc', 'lnN', ch.SystMap('channel', 'process')
+#        (channels, ['TTZ%s' % SUFFIX_GEN_MATCH], 1.2)
+#)
+
 #cb.cp().AddSyst( ## Correl. across $CHANNEL and $BIN
 #    cb, 'signal_unc', 'lnN', ch.SystMap('channel', 'process')
 #        (channels, ['signal%s' % SUFFIX_GEN_MATCH], 2.0)
@@ -106,18 +114,20 @@ cb.cp().AddSyst( ## Correl. across $CHANNEL and $BIN
 
 
 
-cb.cp().AddSyst( ## Correl. across $CHANNEL and $BIN
-    cb, 'tH_unc', 'lnN', ch.SystMap('channel', 'process')
-        (channels, ['tH%s' % SUFFIX_GEN_MATCH], 2.0)
-)
-cb.cp().AddSyst( ## Correl. across $CHANNEL and $BIN
-    cb, 'TTWW_unc', 'lnN', ch.SystMap('channel', 'process')
-        (channels, ['TTWW%s' % SUFFIX_GEN_MATCH], 1.5)
-)
-cb.cp().AddSyst( ## Correl. across $CHANNEL and $BIN
-    cb, 'ttH_hbb_unc', 'lnN', ch.SystMap('channel', 'process')
-        (channels, ['ttH_hbb%s' % SUFFIX_GEN_MATCH], 2.0)
-)
+# cb.cp().AddSyst( ## Correl. across $CHANNEL and $BIN
+#    cb, 'tH_unc', 'lnN', ch.SystMap('channel', 'process')
+#        (channels, ['tH%s' % SUFFIX_GEN_MATCH], 2.0)
+#)
+
+# cb.cp().AddSyst( ## Correl. across $CHANNEL and $BIN
+#    cb, 'TTWW_unc', 'lnN', ch.SystMap('channel', 'process')
+#        (channels, ['TTWW%s' % SUFFIX_GEN_MATCH], 1.5)
+#)
+
+# cb.cp().AddSyst( ## Correl. across $CHANNEL and $BIN
+#    cb, 'ttH_hbb_unc', 'lnN', ch.SystMap('channel', 'process')
+#        (channels, ['ttH_hbb%s' % SUFFIX_GEN_MATCH], 2.0)
+#)
 
 ################### Shape systematics #############################
 
