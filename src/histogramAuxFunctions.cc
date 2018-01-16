@@ -303,9 +303,9 @@ void dumpHistogram(const TH1* histogram)
 
 TDirectory* getDirectory(const TFile* inputFile, const std::string& dirName, bool enableException)
 {
-  std::cout << "<getDirectory>:" << std::endl;
-  std::cout << " inputFile = " << inputFile->GetName() << std::endl;
-  std::cout << " dirName = " << dirName << std::endl;
+  //std::cout << "<getDirectory>:" << std::endl;
+  //std::cout << " inputFile = " << inputFile->GetName() << std::endl;
+  //std::cout << " dirName = " << dirName << std::endl;
   //std::cout << " enableException = " << enableException << std::endl;
   std::string dirName_tmp = ( dirName.find_last_of('/') == (dirName.length() - 1) ) ? std::string(dirName, 0, dirName.length() - 1) : dirName;
   TDirectory* dir = dynamic_cast<TDirectory*>((const_cast<TFile*>(inputFile))->Get(dirName_tmp.data()));
@@ -321,18 +321,18 @@ TDirectory* getDirectory(const TFile* inputFile, const std::string& dirName, boo
 
 TDirectory* getSubdirectory(const TDirectory* dir, const std::string& subdirName, bool enableException)
 {
-  std::cout << "<getSubdirectory>:" << std::endl;
-  std::cout << " dir = " << dir->GetName() << std::endl;
-  std::cout << " subdirName = " << subdirName << std::endl;
-  std::cout << " enableException = " << enableException << std::endl;
+  //std::cout << "<getSubdirectory>:" << std::endl;
+  //std::cout << " dir = " << dir->GetName() << std::endl;
+  //std::cout << " subdirName = " << subdirName << std::endl;
+  //std::cout << " enableException = " << enableException << std::endl;
   std::string subdirName_tmp = ( subdirName.find_last_of('/') == (subdirName.length() - 1) ) ? std::string(subdirName, 0, subdirName.length() - 1) : subdirName;
-  std::cout<< " subdirName_tmp "<< subdirName_tmp << std::endl;
+  //std::cout<< " subdirName_tmp "<< subdirName_tmp << std::endl;
   TDirectory* subdir = dynamic_cast<TDirectory*>((const_cast<TDirectory*>(dir))->Get(subdirName_tmp.data()));
-        std::cout << "--> returning subdir = " << subdir << ": name = '" << subdirName << "'" << std::endl;    
+  std::cout << "--> returning subdir = " << subdir << ": name = '" << subdirName << "'" << std::endl;    
   if ( subdir ) {
-        std::cout << "--> returning subdir = " << subdir << ": name = '" << subdir->GetName() << "'" << std::endl;    
+    std::cout << "--> returning subdir = " << subdir << ": name = '" << subdir->GetName() << "'" << std::endl;    
   } else if ( enableException ) {
-        std::cout << "--> returning subdir = " << subdir << ": name = '" << subdir->GetName() << "'" << std::endl;    
+    std::cout << "--> returning subdir = " << subdir << ": name = '" << subdir->GetName() << "'" << std::endl;    
     dir->ls();
     throw cms::Exception("getSubdirectory") 
       << "Failed to find subdirectory = '" << subdirName << "' in directory = " << dir << ": name = '" << dir->GetName() << "' !!\n";    
@@ -367,22 +367,19 @@ TH1* getHistogram(const TDirectory* dir, const std::string& process, const std::
 
 TDirectory* createSubdirectory(TDirectory* dir, const std::string& subdirName, bool verbose)
 {
-  if(verbose)
-  {
+  if ( verbose ) {
     std::cout << "<createSubdirectory>:" << std::endl;
     std::cout << " dir = " << dir << ": name = '" << dir->GetName() << "'" << std::endl;
     std::cout << " subdirName = '" << subdirName << "'" << std::endl;
   }
   dir->cd();
   if ( !dir->Get(subdirName.data()) ) {
-    if(verbose)
-    {
+    if ( verbose ) {
       std::cout << "--> creating subdir = '" << subdirName << "' !!" << std::endl;
     }
     dir->mkdir(subdirName.data());
   } else {
-    if(verbose)
-    {
+    if ( verbose ) {
       std::cout << "--> subdir = '" << subdirName << "' already exists --> skipping !!" << std::endl;
     }
   }
@@ -393,8 +390,7 @@ TDirectory* createSubdirectory(TDirectory* dir, const std::string& subdirName, b
 
 TDirectory* createSubdirectory_recursively(TFileDirectory& dir, const std::string& fullSubdirName, bool verbose)
 {
-  if(verbose)
-  {
+  if ( verbose ) {
     std::cout << "<createSubdirectory_recursively>:" << std::endl;
     std::cout << " dir = " << &dir << ": name = '" << dir.getBareDirectory()->GetName() << "'" << std::endl;
     std::cout << " fullSubdirName = '" << fullSubdirName << "'" << std::endl;

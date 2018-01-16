@@ -250,8 +250,8 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     lines.append("process.fwliteOutput.fileName = cms.string('%s')" % jobOptions['datacardFile'])
     lines.append("process.prepareDatacards.histogramToFit = cms.string('%s')" % jobOptions['histogramToFit'])
     if jobOptions['histogramToFit'] == "mT_fix_L":
-      lines.append("process.prepareDatacards.xMin = cms.double(0.)")
-      lines.append("process.prepareDatacards.xMax = cms.double(150.)")
+      lines.append("process.prepareDatacards.histogramToFit_xMin = cms.double(0.)")
+      lines.append("process.prepareDatacards.histogramToFit_xMax = cms.double(150.)")
       lines.append("process.prepareDatacards.minEvents_automatic_rebinning = cms.double(10.)")
     category_entries = jinja2.Template(category_template).render(categories = jobOptions['categories'])
     lines.append(
