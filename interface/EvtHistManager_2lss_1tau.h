@@ -27,15 +27,15 @@ class EvtHistManager_2lss_1tau
   //void LoadMaps(int nstart, int ntarget);
   void bookHistogramsMap(TFileDirectory& dir , int , int);
   void fillHistogramsMap(int counter, double evtWeight,
-                                                   std::vector<TH2*>* oldVarA,
-                                                   std::vector<TH2*>* HTT,
-                                                   std::vector<TH2*>* noHTT,
-                                                   std::vector<TH2*>* HTTMEM,
-                                                   double mvaOutput_2lss_oldVarA_tt, double mvaOutput_2lss_oldVarA_ttV,
-                                                   double mvaOutput_2lss_noHTT_tt, double mvaOutput_2lss_noHTT_ttV,
-                                                   double mvaOutput_2lss_HTT_tt,
-                                                   double mvaOutput_2lss_HTTMEM_tt, double mvaOutput_2lss_HTTMEM_ttV
-                       );
+     std::vector<TH2*>* oldVarA,
+     std::vector<TH2*>* HTT,
+     std::vector<TH2*>* noHTT,
+     std::vector<TH2*>* HTTMEM,
+     double mvaOutput_2lss_oldVarA_tt, double mvaOutput_2lss_oldVarA_ttV,
+     double mvaOutput_2lss_noHTT_tt, double mvaOutput_2lss_noHTT_ttV,
+     double mvaOutput_2lss_HTT_tt,
+     double mvaOutput_2lss_HTTMEM_tt, double mvaOutput_2lss_HTTMEM_ttV
+     );
 
 
   void bookHistograms(TFileDirectory& dir);
@@ -123,6 +123,7 @@ class EvtHistManager_2lss_1tau
   TH1* histogram_mvaOutput_Hjj_tagger_;
 
   TH1* histogram_mTauTauVis1_;
+  TH1* histogram_mTauTauVis_;
   TH1* histogram_mTauTauVis2_;
   TH1* histogram_memOutput_LR_;
   TH1* histogram_memDiscr_;

@@ -1054,6 +1054,13 @@ int main(int argc, char* argv[])
       selHistManager->evt_ = new EvtHistManager_2lss_1tau(makeHistManager_cfg(process_and_genMatch,
         Form("%s/sel/evt", histogramDir.data()), era_string, central_or_shift));
       selHistManager->evt_->bookHistograms(fs);
+      // /* DO 2D
+      for (int nbinsStartN=0 ; nbinsStartN<nstart ; nbinsStartN++ ) {
+        for (int nbinsTargetN=0 ; nbinsTargetN<ntarget ; nbinsTargetN++ ) {
+          selHistManager->evt_->bookHistogramsMap(fs,nbinsStart[nbinsStartN],nbinsTarget[nbinsTargetN]);
+        }
+      }
+
       const vstring decayModes_evt = eventInfo.getDecayModes();
       if(isSignal)
       {
@@ -1071,18 +1078,19 @@ int main(int argc, char* argv[])
             central_or_shift
           ));
           selHistManager -> evt_in_decayModes_[decayMode_evt] -> bookHistograms(fs);
+          // /* DO 2D
+          for (int nbinsStartN=0 ; nbinsStartN<nstart ; nbinsStartN++ ) {
+            for (int nbinsTargetN=0 ; nbinsTargetN<ntarget ; nbinsTargetN++ ) {
+              selHistManager->evt_in_decayModes_[decayMode_evt]->bookHistogramsMap(fs,nbinsStart[nbinsStartN],nbinsTarget[nbinsTargetN]);
+            }
+          }
         }
       }
       selHistManager->weights_ = new WeightHistManager(makeHistManager_cfg(process_and_genMatch,
         Form("%s/sel/weights", histogramDir.data()), central_or_shift));
       selHistManager->weights_->bookHistograms(fs, { "genWeight", "pileupWeight", "triggerWeight", "data_to_MC_correction", "fakeRate" });
       selHistManagers[idxLepton][idxHadTau] = selHistManager;
-      // /* DO 2D
-      for (int nbinsStartN=0 ; nbinsStartN<nstart ; nbinsStartN++ ) {
-        for (int nbinsTargetN=0 ; nbinsTargetN<ntarget ; nbinsTargetN++ ) {
-          selHistManager->evt_->bookHistogramsMap(fs,nbinsStart[nbinsStartN],nbinsTarget[nbinsTargetN]);
-        }
-      }
+
     }
   }
 
@@ -2558,7 +2566,25 @@ int main(int argc, char* argv[])
           mvaOutput_2lss_noHTT_2MEM,
           mvaOutput_2lss_noHTT_2HTT
         );
+        ///* DO 2D
+        //std::cout<<"filling with 2D maps"<<std::endl;
+        int countHist2=0;
+        for (int nbinsStartN=0 ; nbinsStartN<nstart ; nbinsStartN++ ) {
+          for (int nbinsTargetN=0 ; nbinsTargetN<ntarget ; nbinsTargetN++ ) {
+            selHistManager->evt_in_decayModes_[decayModeStr]->fillHistogramsMap(countHist2, evtWeight,
+                                                    &oldVarA,
+                                                    &HTT,
+                                                    &noHTT,
+                                                    &HTTMEM,
+                                                    mvaOutput_2lss_oldVarA_tt, mvaOutput_2lss_oldVarA_ttV,
+                                                    mvaOutput_2lss_noHTT_tt,mvaOutput_2lss_noHTT_ttV,
+                                                    mvaOutput_2lss_HTT_tt,
+                                                    mvaOutput_2lss_HTTMEM_tt, mvaOutput_2lss_HTTMEM_ttV
+                                                    );
+            countHist2++;
+          }
       }
+    }
     }
     selHistManager->weights_->fillHistograms("genWeight", eventInfo.genWeight);
     selHistManager->weights_->fillHistograms("pileupWeight", eventInfo.pileupWeight);
