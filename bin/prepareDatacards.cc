@@ -83,13 +83,20 @@ namespace
     std::cout << "<rebinHistogram>: " << histogram->GetName() << std::endl;
     std::cout << "integral(histogram) = " << compIntegral(histogram, false, false) << std::endl;
 
-    TArrayF histogramBinning_array(histogramBinning.size());
+    TArrayD histogramBinning_array(histogramBinning.size());
     int idx = 0;
     for ( std::vector<double>::const_iterator binEdge = histogramBinning.begin();
 	  binEdge != histogramBinning.end(); ++binEdge ) {
       histogramBinning_array[idx] = (*binEdge);
       ++idx;
     }
+    std::cout << " nBins = " << histogramBinning_array.GetSize() - 1 << ",";
+    std::cout << " binning = { ";
+    for ( int idxBin = 0; idxBin < histogramBinning_array.GetSize(); ++idxBin ) {
+      if ( idxBin > 0 ) std::cout << ", ";
+      std::cout << histogramBinning_array[idxBin];
+    }
+    std::cout << " } " << std::endl;
     std::string histogramName = histogram->GetName();
     std::string histogramTitle = histogram->GetTitle();
     int numBins_rebinned = histogramBinning_array.GetSize() - 1;
@@ -101,29 +108,29 @@ namespace
     const TAxis* xAxis_rebinned = histogram_rebinned->GetXaxis();
     double binContentSum = 0.;
     double binError2Sum = 0.;
-    int iBin_rebinned = 1;
-    for ( int iBin = 1; iBin <= numBins; ++iBin ) {
-      double binContent = histogram->GetBinContent(iBin);
+    int idxBin_rebinned = 1;
+    for ( int idxBin = 1; idxBin <= numBins; ++idxBin ) {
+      double binContent = histogram->GetBinContent(idxBin);
       binContentSum += binContent;
-      double binError = histogram->GetBinError(iBin);
+      double binError = histogram->GetBinError(idxBin);
       binError2Sum += (binError*binError);
       bool isNextBin_rebinned = false;
-      if ( iBin == numBins ) {
+      if ( idxBin == numBins ) {
 	isNextBin_rebinned = true;
       } else {
-	if ( xAxis->GetBinCenter(iBin + 1) > xAxis_rebinned->GetBinLowEdge(iBin_rebinned + 1) ) {
+	if ( xAxis->GetBinCenter(idxBin + 1) > xAxis_rebinned->GetBinLowEdge(idxBin_rebinned + 1) ) {
 	  isNextBin_rebinned = true;
 	}
       }
       if ( isNextBin_rebinned ) {
-	assert(iBin_rebinned <= numBins_rebinned);
-	histogram_rebinned->SetBinContent(iBin_rebinned, binContentSum);
-	histogram_rebinned->SetBinError(iBin_rebinned, TMath::Sqrt(binError2Sum));
+	assert(idxBin_rebinned <= numBins_rebinned);
+	histogram_rebinned->SetBinContent(idxBin_rebinned, binContentSum);
+	histogram_rebinned->SetBinError(idxBin_rebinned, TMath::Sqrt(binError2Sum));
 	binContentSum = 0.;
 	binError2Sum = 0.;
-	++iBin_rebinned;
+	++idxBin_rebinned;
       }
-      //std::cout << "binCenter = " << binCenter << ": iBin = " << iBin << ", iBin_rebinned = " << iBin_rebinned << std::endl;
+      //std::cout << "binCenter = " << binCenter << ": idxBin = " << idxBin << ", idxBin_rebinned = " << idxBin_rebinned << std::endl;
     }
     std::cout << "integral(histogram_rebinned) = " << compIntegral(histogram_rebinned, false, false) << std::endl;
     return histogram_rebinned;
@@ -194,6 +201,7 @@ namespace
       }
       if ( idxBin_input >= 1 && idxBin_input <= numBins_input ) {	
 	double binCenter_input = xAxis_input->GetBinCenter(idxBin_input);
+	if ( !((xMin == -1. || binCenter_input > xMin) && (xMax == -1. || binCenter_input < xMax)) ) continue;
 	int idxBin_output = xAxis_output->FindBin(binCenter_input);
 	if ( idxBin_output >= 1 && idxBin_output <= numBins_output ) {
 	  histogram_output->SetBinContent(idxBin_output, binContent_input);
@@ -201,7 +209,7 @@ namespace
 	} else if ( idxBin_output == 0 ) { // "regular" bin of input histogram, which corresponds to underflow bin of output histogram
 	  binContent_output_underflow += binContent_input;
 	  binErr2_output_underflow += square(binError_input);
-	} else if ( idxBin_input == (numBins_input + 1) ) { // "regular" bin of input histogram, which corresponds to overflow bin of output histogram
+	} else if ( idxBin_output == (numBins_input + 1) ) { // "regular" bin of input histogram, which corresponds to overflow bin of output histogram
 	  binContent_output_overflow += binContent_input;
 	  binErr2_output_overflow += square(binError_input);
 	} else assert(0);
@@ -216,12 +224,12 @@ namespace
     // CV: set underflow and overflow bins to zero
     //histogram_output->SetBinContent(0, binContent_output_underflow);
     //histogram_output->SetBinError(0, TMath::Sqrt(binErr2_output_underflow));
-    //histogram_output->SetBinContent(numBins_output, binContent_output_overflow);
-    //histogram_output->SetBinError(numBins_output, TMath::Sqrt(binErr2_output_overflow));
+    //histogram_output->SetBinContent(numBins_output + 1, binContent_output_overflow);
+    //histogram_output->SetBinError(numBins_output + 1, TMath::Sqrt(binErr2_output_overflow));
     histogram_output->SetBinContent(0, 0.);
     histogram_output->SetBinError(0, 0.);
-    histogram_output->SetBinContent(numBins_output, 0.);
-    histogram_output->SetBinError(numBins_output, 0.);
+    histogram_output->SetBinContent(numBins_output + 1, 0.);
+    histogram_output->SetBinError(numBins_output + 1, 0.);
         
     if ( rebin > 1 ) {
       if ( (numBins_output % rebin) != 0 )
@@ -407,6 +415,7 @@ int main(int argc, char* argv[])
 	  if ( !histogram ) continue;
 	  bool isData = compMatch(subdir->GetName(), data);
 	  if ( !(isData || isSignal) ) {
+	    std::cout << "adding background = '" << subdir->GetName() << "'" << std::endl;
 	    if   ( !histogramBackgroundSum ) histogramBackgroundSum = (TH1*)histogram->Clone(Form("%s_BackgroundSum", category->input_.data()));
 	    else                             histogramBackgroundSum->Add(histogram);  	    
 	  }

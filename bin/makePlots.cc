@@ -553,7 +553,7 @@ namespace
     }
 
     canvas->Update();
-    size_t idx = outputFileName.find(".");
+    size_t idx = outputFileName.find_last_of('.');
     std::string outputFileName_plot(outputFileName, 0, idx);
     if ( useLogScale ) outputFileName_plot.append("_log");
     else outputFileName_plot.append("_linear");

@@ -27,62 +27,62 @@ def getPtBin(minPt, maxPt):
 fit_param_range_map = {
   'electron' : {
     'tight' : {
-      'incl'                            : '', #'-10.0,15.0',
-      'absEtaLt1_5_Pt15_0to20_0'        : '', #'-10.0,10.0',
-      'absEtaLt1_5_Pt20_0to30_0'        : '', #'-10.0,10.0',
-      'absEtaLt1_5_Pt30_0to45_0'        : '', #'-10.0,20.0',
-      'absEtaLt1_5_Pt45_0to65_0'        : '', #'-10.0,10.0',
-      'absEtaLt1_5_Pt65_0to100000_0'    : '', #'-10.0,10.0',
-      'absEta1_5to9_9_Pt15_0to20_0'     : '', #'-100.0,100.0',
-      'absEta1_5to9_9_Pt20_0to30_0'     : '', #'-5.0,13.0',
-      'absEta1_5to9_9_Pt30_0to45_0'     : '', #'-5.0,20.0',
-      'absEta1_5to9_9_Pt45_0to65_0'     : '', #'-100.0,100.0',
-      'absEta1_5to9_9_Pt65_0to100000_0' : '', #'-100.0,100.0',
+      'incl'                            : '0.01,10.0', 
+      'absEtaLt1_5_Pt15_0to20_0'        : '0.01,10.0', 
+      'absEtaLt1_5_Pt20_0to30_0'        : '0.01,10.0', 
+      'absEtaLt1_5_Pt30_0to45_0'        : '0.01,10.0', 
+      'absEtaLt1_5_Pt45_0to65_0'        : '0.01,10.0', 
+      'absEtaLt1_5_Pt65_0to100000_0'    : '0.01,10.0', 
+      'absEta1_5to9_9_Pt15_0to20_0'     : '0.01,10.0', 
+      'absEta1_5to9_9_Pt20_0to30_0'     : '0.01,10.0', 
+      'absEta1_5to9_9_Pt30_0to45_0'     : '0.01,10.0', 
+      'absEta1_5to9_9_Pt45_0to65_0'     : '0.01,10.0', 
+      'absEta1_5to9_9_Pt65_0to100000_0' : '0.01,10.0', 
     },
     'fakeable' : {
-      'incl'                            : '', #'-100.0,100.0',
-      'absEtaLt1_5_Pt15_0to20_0'        : '', #'-100.0,100.0',
-      'absEtaLt1_5_Pt20_0to30_0'        : '', #'-100.0,100.0',
-      'absEtaLt1_5_Pt30_0to45_0'        : '', #'-100.0,100.0',
-      'absEtaLt1_5_Pt45_0to65_0'        : '', #'-100.0,100.0',
-      'absEtaLt1_5_Pt65_0to100000_0'    : '', #'-100.0,100.0',
-      'absEta1_5to9_9_Pt15_0to20_0'     : '', #'-100.0,100.0',
-      'absEta1_5to9_9_Pt20_0to30_0'     : '', #'-100.0,100.0',
-      'absEta1_5to9_9_Pt30_0to45_0'     : '', #'-100.0,100.0',
-      'absEta1_5to9_9_Pt45_0to65_0'     : '', #'-100.0,100.0',
-      'absEta1_5to9_9_Pt65_0to100000_0' : '', #'-100.0,100.0',
+      'incl'                            : '0.01,10.0', 
+      'absEtaLt1_5_Pt15_0to20_0'        : '0.01,10.0', 
+      'absEtaLt1_5_Pt20_0to30_0'        : '0.01,10.0', 
+      'absEtaLt1_5_Pt30_0to45_0'        : '0.01,10.0', 
+      'absEtaLt1_5_Pt45_0to65_0'        : '0.01,10.0', 
+      'absEtaLt1_5_Pt65_0to100000_0'    : '0.01,10.0', 
+      'absEta1_5to9_9_Pt15_0to20_0'     : '0.01,10.0', 
+      'absEta1_5to9_9_Pt20_0to30_0'     : '0.01,10.0', 
+      'absEta1_5to9_9_Pt30_0to45_0'     : '0.01,10.0', 
+      'absEta1_5to9_9_Pt45_0to65_0'     : '0.01,10.0', 
+      'absEta1_5to9_9_Pt65_0to100000_0' : '0.01,10.0', 
     },
   },
   'muon' : {
     'tight' : {
-      'incl'                            : '', #'-100.0,100.0',
-      'absEtaLt1_5_Pt10_0to15_0'        : '', #'-100.0,100.0',
-      'absEtaLt1_5_Pt15_0to20_0'        : '', #'-100.0,100.0',
-      'absEtaLt1_5_Pt20_0to30_0'        : '', #'-100.0,100.0',
-      'absEtaLt1_5_Pt30_0to45_0'        : '', #'-100.0,100.0',
-      'absEtaLt1_5_Pt45_0to65_0'        : '', #'-10.0,10.0',
-      'absEtaLt1_5_Pt65_0to100000_0'    : '', #'-100.0,100.0',
-      'absEta1_5to9_9_Pt10_0to15_0'     : '', #'-5.0,5.0',
-      'absEta1_5to9_9_Pt15_0to20_0'     : '', #'-100.0,100.0',
-      'absEta1_5to9_9_Pt20_0to30_0'     : '', #'-15.0,15.0',
-      'absEta1_5to9_9_Pt30_0to45_0'     : '', #'-50.0,50.0',
-      'absEta1_5to9_9_Pt45_0to65_0'     : '', #'-50.0,50.0',
-      'absEta1_5to9_9_Pt65_0to100000_0' : '', #'-20.0,20.0',
+      'incl'                            : '0.01,10.0', 
+      'absEtaLt1_5_Pt10_0to15_0'        : '0.01,10.0', 
+      'absEtaLt1_5_Pt15_0to20_0'        : '0.01,10.0', 
+      'absEtaLt1_5_Pt20_0to30_0'        : '0.01,10.0', 
+      'absEtaLt1_5_Pt30_0to45_0'        : '0.01,10.0',
+      'absEtaLt1_5_Pt45_0to65_0'        : '0.01,10.0',
+      'absEtaLt1_5_Pt65_0to100000_0'    : '0.01,10.0', 
+      'absEta1_5to9_9_Pt10_0to15_0'     : '0.01,10.0', 
+      'absEta1_5to9_9_Pt15_0to20_0'     : '0.01,10.0', 
+      'absEta1_5to9_9_Pt20_0to30_0'     : '0.01,10.0', 
+      'absEta1_5to9_9_Pt30_0to45_0'     : '0.01,10.0', 
+      'absEta1_5to9_9_Pt45_0to65_0'     : '0.01,10.0', 
+      'absEta1_5to9_9_Pt65_0to100000_0' : '0.01,10.0', 
     },
     'fakeable' : {
-      'incl'                            : '', #'-100.0,100.0',
-      'absEtaLt1_5_Pt10_0to15_0'        : '', #'-100.0,100.0',
-      'absEtaLt1_5_Pt15_0to20_0'        : '', #'-100.0,100.0',
-      'absEtaLt1_5_Pt20_0to30_0'        : '', #'-100.0,100.0',
-      'absEtaLt1_5_Pt30_0to45_0'        : '', #'-100.0,100.0',
-      'absEtaLt1_5_Pt45_0to65_0'        : '', #'-10.0,10.0',
-      'absEtaLt1_5_Pt65_0to100000_0'    : '', #'-100.0,100.0',
-      'absEta1_5to9_9_Pt10_0to15_0'     : '', #'-5.0,5.0',
-      'absEta1_5to9_9_Pt15_0to20_0'     : '', #'-100.0,100.0',
-      'absEta1_5to9_9_Pt20_0to30_0'     : '', #'-15.0,15.0',
-      'absEta1_5to9_9_Pt30_0to45_0'     : '', #'-50.0,50.0',
-      'absEta1_5to9_9_Pt45_0to65_0'     : '', #'-50.0,50.0',
-      'absEta1_5to9_9_Pt65_0to100000_0' : '', #'-20.0,20.0',
+      'incl'                            : '0.01,10.0', 
+      'absEtaLt1_5_Pt10_0to15_0'        : '0.01,10.0', 
+      'absEtaLt1_5_Pt15_0to20_0'        : '0.01,10.0', 
+      'absEtaLt1_5_Pt20_0to30_0'        : '0.01,10.0', 
+      'absEtaLt1_5_Pt30_0to45_0'        : '0.01,10.0', 
+      'absEtaLt1_5_Pt45_0to65_0'        : '0.01,10.0', 
+      'absEtaLt1_5_Pt65_0to100000_0'    : '0.01,10.0', 
+      'absEta1_5to9_9_Pt10_0to15_0'     : '0.01,10.0', 
+      'absEta1_5to9_9_Pt15_0to20_0'     : '0.01,10.0', 
+      'absEta1_5to9_9_Pt20_0to30_0'     : '0.01,10.0', 
+      'absEta1_5to9_9_Pt30_0to45_0'     : '0.01,10.0', 
+      'absEta1_5to9_9_Pt45_0to65_0'     : '0.01,10.0', 
+      'absEta1_5to9_9_Pt65_0to100000_0' : '0.01,10.0', 
     }
   }
 }
@@ -247,9 +247,9 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     lines.append("process.fwliteInput.fileNames = cms.vstring('%s')" % jobOptions['inputFile'])
     lines.append("process.fwliteOutput.fileName = cms.string('%s')" % jobOptions['datacardFile'])
     lines.append("process.prepareDatacards.histogramToFit = cms.string('%s')" % jobOptions['histogramToFit'])
-    if jobOptions['histogramToFit'] == "mT_fix_L":
-      lines.append("process.prepareDatacards.xMin = cms.double(0.)")
-      lines.append("process.prepareDatacards.xMax = cms.double(150.)")
+    if jobOptions['histogramToFit'] in [ "mT_fix_L" ]:
+      lines.append("process.prepareDatacards.histogramToFit_xMin = cms.double(0.)")
+      lines.append("process.prepareDatacards.histogramToFit_xMax = cms.double(150.)")
       lines.append("process.prepareDatacards.minEvents_automatic_rebinning = cms.double(10.)")
     category_entries = jinja2.Template(category_template).render(categories = jobOptions['categories'])
     lines.append(
@@ -307,7 +307,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
           self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel, process_name)
     for dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_LOGS, DKEY_HIST, DKEY_DCRD, DKEY_PLOT, DKEY_HADD_RT, DKEY_COMBINE_OUTPUT ]:
       initDict(self.dirs, [ dir_type ])
-      if dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_LOGS, DKEY_DCRD, DKEY_HADD_RT, DKEY_COMBINE_OUTPUT ]:  ## DKEY_PLOT TO BE ADDED LATER
+      if dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_LOGS, DKEY_DCRD, DKEY_HADD_RT, DKEY_PLOT, DKEY_COMBINE_OUTPUT ]:
         self.dirs[dir_type] = os.path.join(self.configDir, dir_type, self.channel)
       else:
         self.dirs[dir_type] = os.path.join(self.outputDir, dir_type, self.channel)
@@ -442,8 +442,10 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     key_hadd_stage2 = getKey('')
     if not key_hadd_stage2 in self.inputFiles_hadd_stage2:
       self.inputFiles_hadd_stage2[key_hadd_stage2] = []
-    for key_hadd_stage1_5 in self.outputFile_hadd_stage1_5.keys():
-      self.inputFiles_hadd_stage2[key_hadd_stage2].append(self.outputFile_hadd_stage1_5[key_hadd_stage1_5])
+    # CV: hadd_stage_1_5 output file does not need to be added as input for hadd_stage_2,
+    #     as addBackgrounds_LeptonFakeRate output file contains all histograms except fakes_mc 
+    ##for key_hadd_stage1_5 in self.outputFile_hadd_stage1_5.keys():
+    ##  self.inputFiles_hadd_stage2[key_hadd_stage2].append(self.outputFile_hadd_stage1_5[key_hadd_stage1_5])
     self.inputFiles_hadd_stage2[key_hadd_stage2].append(self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job]['outputFile'])
     self.inputFiles_hadd_stage2[key_hadd_stage2].append(self.jobOptions_addBackgrounds_LeptonFakeRate[key_addBackgrounds_job]['outputFile'])
     self.outputFile_hadd_stage2[key_hadd_stage2] = os.path.join(self.dirs[DKEY_HIST], "histograms_harvested_stage2.root")
@@ -539,6 +541,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
         datacard = os.path.join(self.dirs[DKEY_DCRD], "prepareDatacards_%s.root" % (histogramToFit))
         self.jobOptions_prep_dcard[key_prep_dcard_job] = {
           'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2],
+          ##'inputFile' : self.jobOptions_addBackgrounds_LeptonFakeRate[key_addBackgrounds_job]['outputFile'],
           'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "prepareDatacards_LeptonFakeRate_%s_cfg.py" % (histogramToFit)),
           'datacardFile' : datacard,
           'histogramDir' : (self.histogramDir_prep_dcard),
@@ -617,6 +620,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
       leptonFR_final_output = os.path.join(combine_output_dir, 'leptonFakeRates.root')
       self.jobOptions_comp_LeptonFakeRate[key_comp_LeptonFakeRate] = {
         'inputFile'            : [ fit_value_file, self.outputFile_hadd_stage2[key_hadd_stage2] ],
+        ##'inputFile'            : [ fit_value_file, self.jobOptions_addBackgrounds_LeptonFakeRate[key_addBackgrounds_job]['outputFile'] ],
         'outputFile'           : leptonFR_final_output,
         'absEtaBins_e'         : self.absEtaBins_e,
         'ptBins_e'             : self.ptBins_e,

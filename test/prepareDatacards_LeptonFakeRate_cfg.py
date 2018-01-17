@@ -13,15 +13,16 @@ process.fwliteOutput = cms.PSet(
 process.prepareDatacards = cms.PSet(
     processesToCopy = cms.vstring(
         "data_obs",
-        "TTW",
-        "TTZ",
-        "TT",
-        "Rares",
         "fakes_data",
-        "EWK",
-        "tH",
-        "TTWW",
-        "ttH_hbb"
+#        "TTWl_plus_t",
+#        "TTZl_plus_t",
+        "TTl_plus_t",
+        "Raresl_plus_t",
+        "EWKl_plus_t",
+#        "TTWWl_plus_t",
+#        "tHl_plus_t",
+#        "ttH_hbbl_plus_t",
+#        "signall_plus_t"
     ),
 
     sf_signal = cms.double(1.),
