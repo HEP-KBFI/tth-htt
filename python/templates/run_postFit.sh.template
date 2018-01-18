@@ -86,7 +86,7 @@ then
         {% for pre_or_post in [ 'prefit', 'postfit' ] %}
           {% for log_or_linear in [ 'log', 'linear' ] %}
         python $POSTFITPLOT -i $MLFIT_FILE:"{{ l_sub_dir }}_shapes_{{ pre_or_post }}" \
-          -c e --x-title '$PLOT_LABEL'                                                \
+          -c e --x-title "$PLOT_LABEL"                                                \
           {% if log_or_linear == 'log' %}--logy {% endif %}                           \
           -o "{{ l_array }}_num_{{ pre_or_post }}_{{ log_or_linear }}"                \
           &> "$OUTPUT_DIR_JOB/plot_shapes_{{ pre_or_post }}_{{ log_or_linear }}.log"
