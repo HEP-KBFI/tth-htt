@@ -1385,9 +1385,9 @@ int main(int argc, char* argv[])
         std::sort(selLeptons.begin(), selLeptons.end(), isHigherPt);
         if ( !(selLeptons.size() >= 2) ) {
           if ( run_lumi_eventSelector ) {
-    	std::cout << "event FAILS selLeptons selection." << std::endl;
-    	printLeptonCollection("selLeptons", selLeptons);
-    	//printLeptonCollection("preselLeptons", preselLeptons);
+	    std::cout << "event FAILS selLeptons selection." << std::endl;
+	    printLeptonCollection("selLeptons", selLeptons);
+	    //printLeptonCollection("preselLeptons", preselLeptons);
           }
           continue;
         }
@@ -1945,7 +1945,7 @@ int main(int argc, char* argv[])
     double mTauTauVis2_sel = (selLepton_sublead->p4() + selHadTau->p4()).mass();
 
 
-    //--- compute variables BDTs used to discriminate ttH vs. ttV and ttH vs. ttba -- they will be used more than once -- Xanda
+    //--- compute variables BDTs used to discriminate ttH vs. ttV and ttH vs. ttbar -- they will be used more than once -- Xanda
 
     double mindr_lep1_jet=TMath::Min(10., comp_mindr_lep1_jet(*selLepton_lead, selJets));
     double mindr_lep2_jet=TMath::Min(10., comp_mindr_lep1_jet(*selLepton_lead, selJets));
@@ -2098,14 +2098,14 @@ int main(int argc, char* argv[])
     	  bool isGenMatched = false;
     	  if ( isMC && selectBDT && mvaOutput_hadTopTagger ) {
     	    if ( genWJets.size() >= 2 && genBJets.size() >= 1 && genTopQuarks.size() >= 1 && genWBosons.size() >= 1 ){
-            double genTopPtProbeTop=-10;
-            double genTopPtProbeAntiTop=-10;
+	      double genTopPtProbeTop=-10;
+	      double genTopPtProbeAntiTop=-10;
     	      std::vector<bool> genMatchingTop = isGenMatchedJetTriplet(**selBJet, **selWJet1, **selWJet2, genTopQuarks, genBJets, genWBosons, genWJets, kGenTop, genTopPtProbeTop);
     	      std::vector<bool> genMatchingAntiTop = isGenMatchedJetTriplet(**selBJet, **selWJet1, **selWJet2, genTopQuarks, genBJets, genWBosons, genWJets, kGenAntiTop, genTopPtProbeAntiTop);
-            if(genMatchingTop[kGenMatchedTriplet]) genTopPt=genTopPtProbeTop;
-            if(genMatchingAntiTop[kGenMatchedTriplet]) genTopPt=genTopPtProbeAntiTop;
-    	      isGenMatched = (genMatchingTop[kGenMatchedTriplet] || genMatchingAntiTop[kGenMatchedTriplet]);
-    	      if ( isGenMatched ) hadtruth = true;
+	      if ( genMatchingTop[kGenMatchedTriplet]     ) genTopPt = genTopPtProbeTop;
+	      if ( genMatchingAntiTop[kGenMatchedTriplet] ) genTopPt = genTopPtProbeAntiTop;
+	      isGenMatched = (genMatchingTop[kGenMatchedTriplet] || genMatchingAntiTop[kGenMatchedTriplet]);
+	      if ( isGenMatched ) hadtruth = true;
     	    }
     	  }
     	  if ( bdtResult[0] > max_mvaOutput_hadTopTaggerWithKinFit ) { // hadTopTaggerWithKinFit
@@ -2113,9 +2113,9 @@ int main(int argc, char* argv[])
     	    max_mvaOutput_hadTopTaggerWithKinFit = bdtResult[0];
     	    fittedHadTopP4 = hadTopTagger->kinFit()->fittedTop();
     	    unfittedHadTopP4 = (*selBJet)->p4() + (*selWJet1)->p4() + (*selWJet2)->p4();
-          positionJet1=(*selBJet)->pt();
-          positionJet2=(*selWJet1)->pt();
-          positionJet3=(*selWJet2)->pt();
+	    positionJet1 = (*selBJet)->pt();
+	    positionJet2 = (*selWJet1)->pt();
+	    positionJet3 = (*selWJet2)->pt();
     	  }
     	  if ( bdtResult[2] > max_mvaOutput_hadTopTagger ) { // hadTopTaggerNoKinFit
     	    max_truth_hadTopTagger = isGenMatched;
