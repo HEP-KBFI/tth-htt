@@ -310,7 +310,6 @@ class analyzeConfig_charge_flip(analyzeConfig):
       self.sbatchFile_analyze = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_analyze_%s.py" % self.channel)
       self.createScript_sbatch_analyze(self.executable_analyze, self.sbatchFile_analyze, self.jobOptions_analyze)
       
-
     logging.info("Creating Makefile")
     lines_makefile = []
     self.addToMakefile_analyze(lines_makefile)
@@ -323,3 +322,5 @@ class analyzeConfig_charge_flip(analyzeConfig):
     self.createMakefile(lines_makefile)
   
     logging.info("Done")
+
+    return self.num_jobs

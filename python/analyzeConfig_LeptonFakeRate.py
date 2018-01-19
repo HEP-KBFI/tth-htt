@@ -7,6 +7,8 @@ from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg
 current_dir = os.path.dirname(os.path.realpath(__file__))
 DKEY_COMBINE_OUTPUT="combine_output"
 
+jinja2.filters.FILTERS['os.path.basename'] = os.path.basename
+
 def getBinName(label, minValue, maxValue):
   binName = ''
   if minValue > 0. and maxValue > 0.:
@@ -27,62 +29,62 @@ def getPtBin(minPt, maxPt):
 fit_param_range_map = {
   'electron' : {
     'tight' : {
-      'incl'                            : '0.01,10.0', 
-      'absEtaLt1_5_Pt15_0to20_0'        : '0.01,10.0', 
-      'absEtaLt1_5_Pt20_0to30_0'        : '0.01,10.0', 
-      'absEtaLt1_5_Pt30_0to45_0'        : '0.01,10.0', 
-      'absEtaLt1_5_Pt45_0to65_0'        : '0.01,10.0', 
-      'absEtaLt1_5_Pt65_0to100000_0'    : '0.01,10.0', 
-      'absEta1_5to9_9_Pt15_0to20_0'     : '0.01,10.0', 
-      'absEta1_5to9_9_Pt20_0to30_0'     : '0.01,10.0', 
-      'absEta1_5to9_9_Pt30_0to45_0'     : '0.01,10.0', 
-      'absEta1_5to9_9_Pt45_0to65_0'     : '0.01,10.0', 
-      'absEta1_5to9_9_Pt65_0to100000_0' : '0.01,10.0', 
+      'incl'                            : '0.01,10.0',
+      'absEtaLt1_5_Pt15_0to20_0'        : '0.01,10.0',
+      'absEtaLt1_5_Pt20_0to30_0'        : '0.01,10.0',
+      'absEtaLt1_5_Pt30_0to45_0'        : '0.01,10.0',
+      'absEtaLt1_5_Pt45_0to65_0'        : '0.01,10.0',
+      'absEtaLt1_5_Pt65_0to100000_0'    : '0.01,10.0',
+      'absEta1_5to9_9_Pt15_0to20_0'     : '0.01,10.0',
+      'absEta1_5to9_9_Pt20_0to30_0'     : '0.01,10.0',
+      'absEta1_5to9_9_Pt30_0to45_0'     : '0.01,10.0',
+      'absEta1_5to9_9_Pt45_0to65_0'     : '0.01,10.0',
+      'absEta1_5to9_9_Pt65_0to100000_0' : '0.01,10.0',
     },
     'fakeable' : {
-      'incl'                            : '0.01,10.0', 
-      'absEtaLt1_5_Pt15_0to20_0'        : '0.01,10.0', 
-      'absEtaLt1_5_Pt20_0to30_0'        : '0.01,10.0', 
-      'absEtaLt1_5_Pt30_0to45_0'        : '0.01,10.0', 
-      'absEtaLt1_5_Pt45_0to65_0'        : '0.01,10.0', 
-      'absEtaLt1_5_Pt65_0to100000_0'    : '0.01,10.0', 
-      'absEta1_5to9_9_Pt15_0to20_0'     : '0.01,10.0', 
-      'absEta1_5to9_9_Pt20_0to30_0'     : '0.01,10.0', 
-      'absEta1_5to9_9_Pt30_0to45_0'     : '0.01,10.0', 
-      'absEta1_5to9_9_Pt45_0to65_0'     : '0.01,10.0', 
-      'absEta1_5to9_9_Pt65_0to100000_0' : '0.01,10.0', 
+      'incl'                            : '0.01,10.0',
+      'absEtaLt1_5_Pt15_0to20_0'        : '0.01,10.0',
+      'absEtaLt1_5_Pt20_0to30_0'        : '0.01,10.0',
+      'absEtaLt1_5_Pt30_0to45_0'        : '0.01,10.0',
+      'absEtaLt1_5_Pt45_0to65_0'        : '0.01,10.0',
+      'absEtaLt1_5_Pt65_0to100000_0'    : '0.01,10.0',
+      'absEta1_5to9_9_Pt15_0to20_0'     : '0.01,10.0',
+      'absEta1_5to9_9_Pt20_0to30_0'     : '0.01,10.0',
+      'absEta1_5to9_9_Pt30_0to45_0'     : '0.01,10.0',
+      'absEta1_5to9_9_Pt45_0to65_0'     : '0.01,10.0',
+      'absEta1_5to9_9_Pt65_0to100000_0' : '0.01,10.0',
     },
   },
   'muon' : {
     'tight' : {
-      'incl'                            : '0.01,10.0', 
-      'absEtaLt1_5_Pt10_0to15_0'        : '0.01,10.0', 
-      'absEtaLt1_5_Pt15_0to20_0'        : '0.01,10.0', 
-      'absEtaLt1_5_Pt20_0to30_0'        : '0.01,10.0', 
+      'incl'                            : '0.01,10.0',
+      'absEtaLt1_5_Pt10_0to15_0'        : '0.01,10.0',
+      'absEtaLt1_5_Pt15_0to20_0'        : '0.01,10.0',
+      'absEtaLt1_5_Pt20_0to30_0'        : '0.01,10.0',
       'absEtaLt1_5_Pt30_0to45_0'        : '0.01,10.0',
       'absEtaLt1_5_Pt45_0to65_0'        : '0.01,10.0',
-      'absEtaLt1_5_Pt65_0to100000_0'    : '0.01,10.0', 
-      'absEta1_5to9_9_Pt10_0to15_0'     : '0.01,10.0', 
-      'absEta1_5to9_9_Pt15_0to20_0'     : '0.01,10.0', 
-      'absEta1_5to9_9_Pt20_0to30_0'     : '0.01,10.0', 
-      'absEta1_5to9_9_Pt30_0to45_0'     : '0.01,10.0', 
-      'absEta1_5to9_9_Pt45_0to65_0'     : '0.01,10.0', 
-      'absEta1_5to9_9_Pt65_0to100000_0' : '0.01,10.0', 
+      'absEtaLt1_5_Pt65_0to100000_0'    : '0.01,10.0',
+      'absEta1_5to9_9_Pt10_0to15_0'     : '0.01,10.0',
+      'absEta1_5to9_9_Pt15_0to20_0'     : '0.01,10.0',
+      'absEta1_5to9_9_Pt20_0to30_0'     : '0.01,10.0',
+      'absEta1_5to9_9_Pt30_0to45_0'     : '0.01,10.0',
+      'absEta1_5to9_9_Pt45_0to65_0'     : '0.01,10.0',
+      'absEta1_5to9_9_Pt65_0to100000_0' : '0.01,10.0',
     },
     'fakeable' : {
-      'incl'                            : '0.01,10.0', 
-      'absEtaLt1_5_Pt10_0to15_0'        : '0.01,10.0', 
-      'absEtaLt1_5_Pt15_0to20_0'        : '0.01,10.0', 
-      'absEtaLt1_5_Pt20_0to30_0'        : '0.01,10.0', 
-      'absEtaLt1_5_Pt30_0to45_0'        : '0.01,10.0', 
-      'absEtaLt1_5_Pt45_0to65_0'        : '0.01,10.0', 
-      'absEtaLt1_5_Pt65_0to100000_0'    : '0.01,10.0', 
-      'absEta1_5to9_9_Pt10_0to15_0'     : '0.01,10.0', 
-      'absEta1_5to9_9_Pt15_0to20_0'     : '0.01,10.0', 
-      'absEta1_5to9_9_Pt20_0to30_0'     : '0.01,10.0', 
-      'absEta1_5to9_9_Pt30_0to45_0'     : '0.01,10.0', 
-      'absEta1_5to9_9_Pt45_0to65_0'     : '0.01,10.0', 
-      'absEta1_5to9_9_Pt65_0to100000_0' : '0.01,10.0', 
+      'incl'                            : '0.01,10.0',
+      'absEtaLt1_5_Pt10_0to15_0'        : '0.01,10.0',
+      'absEtaLt1_5_Pt15_0to20_0'        : '0.01,10.0',
+      'absEtaLt1_5_Pt20_0to30_0'        : '0.01,10.0',
+      'absEtaLt1_5_Pt30_0to45_0'        : '0.01,10.0',
+      'absEtaLt1_5_Pt45_0to65_0'        : '0.01,10.0',
+      'absEtaLt1_5_Pt65_0to100000_0'    : '0.01,10.0',
+      'absEta1_5to9_9_Pt10_0to15_0'     : '0.01,10.0',
+      'absEta1_5to9_9_Pt15_0to20_0'     : '0.01,10.0',
+      'absEta1_5to9_9_Pt20_0to30_0'     : '0.01,10.0',
+      'absEta1_5to9_9_Pt30_0to45_0'     : '0.01,10.0',
+      'absEta1_5to9_9_Pt45_0to65_0'     : '0.01,10.0',
+      'absEta1_5to9_9_Pt65_0to100000_0' : '0.01,10.0',
     }
   }
 }
@@ -269,8 +271,8 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
   def addToMakefile_combine(self, lines_makefile):
     jobOptions = self.jobOptions_combine
     lines_makefile.append("%s: %s" % (jobOptions['outputFile'], jobOptions['inputFile']))
-    lines_makefile.append("\trm -rf %s" % jobOptions['combineOutputDir'])
-    lines_makefile.append("\t%s &> %s" % (jobOptions['postFitScript'], jobOptions['logFile']))
+    lines_makefile.append("\tmake -f %s clean" % jobOptions['makefile_path'])
+    lines_makefile.append("\tmake -f %s -j16 &> %s" % (jobOptions['makefile_path'], jobOptions['logFile']))
     lines_makefile.append("")
     self.filesToClean.append(jobOptions['outputFile'])
 
@@ -443,7 +445,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     if not key_hadd_stage2 in self.inputFiles_hadd_stage2:
       self.inputFiles_hadd_stage2[key_hadd_stage2] = []
     # CV: hadd_stage_1_5 output file does not need to be added as input for hadd_stage_2,
-    #     as addBackgrounds_LeptonFakeRate output file contains all histograms except fakes_mc 
+    #     as addBackgrounds_LeptonFakeRate output file contains all histograms except fakes_mc
     ##for key_hadd_stage1_5 in self.outputFile_hadd_stage1_5.keys():
     ##  self.inputFiles_hadd_stage2[key_hadd_stage2].append(self.outputFile_hadd_stage1_5[key_hadd_stage1_5])
     self.inputFiles_hadd_stage2[key_hadd_stage2].append(self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job]['outputFile'])
@@ -579,41 +581,76 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
 
       # Create run_postFit.sh script from the template
       combine_output_dir = os.path.join(self.dirs[DKEY_COMBINE_OUTPUT], 'output')
-      fit_value_file     = os.path.join(combine_output_dir, 'fit_values.txt')
+
       postfit_template_file = os.path.join(current_dir, 'run_postFit.sh.template')
       postfit_template = open(postfit_template_file, 'r').read()
-      postfit_script = jinja2.Template(postfit_template).render(
-        new_cmssw_base         = self.cmssw_base_dir_combine,
-        setup_dcards_script    = setup_dcards_script_path,
-        postfit_plot_script    = postfit_plot_script_path,
-        yieldtable_script      = yieldtable_script_path,
-        numerator_datacard     = os.path.join(self.dirs[DKEY_DCRD], "prepareDatacards_%s.root" % self.numerator_histogram),
-        denominator_datacard   = os.path.join(self.dirs[DKEY_DCRD], "prepareDatacards_%s.root" % self.denominator_histogram),
-        output_dir             = combine_output_dir,
-        numerator_output_dir   = os.path.join(combine_output_dir, 'mlfit_LeptonFakeRate_%s' % self.numerator_histogram),
+      for lepton in ['electron', 'muon']:
+        for selection in ['fakeable', 'tight']:
+          is_num = selection == 'tight'
+          for params in lepton_bins[lepton][selection]:
+            l_array, l_range, l_sub_dir, l_eta_low, l_eta_high, l_pt_low, l_pt_high, l_is_inclusive = params
+            postfit_script = jinja2.Template(postfit_template).render(
+              new_cmssw_base         = self.cmssw_base_dir_combine,
+              setup_dcards_script    = setup_dcards_script_path,
+              postfit_plot_script    = postfit_plot_script_path,
+              yieldtable_script      = yieldtable_script_path,
+              output_dir             = combine_output_dir,
+              numerator_plotLabel    = self.numerator_plotLabel,
+              denominator_plotLabel  = self.denominator_plotLabel,
+              l_array                = l_array,
+              l_range                = l_range,
+              l_sub_dir              = l_sub_dir,
+              l_eta_low              = l_eta_low,
+              l_eta_high             = l_eta_high,
+              l_pt_low               = l_pt_low,
+              l_pt_high              = l_pt_high,
+              l_is_inclusive         = l_is_inclusive,
+              is_num                 = is_num,
+              numerator_output_dir   = os.path.join(combine_output_dir, 'mlfit_LeptonFakeRate_%s' % self.numerator_histogram),
+              denominator_output_dir = os.path.join(combine_output_dir, 'mlfit_LeptonFakeRate_%s' % self.denominator_histogram),
+              selection              = selection,
+              lepton_letter          = 'e' if lepton == 'electron' else 'mu',
+            )
+            postfit_script_path = os.path.join(
+              self.dirs[DKEY_SCRIPTS],
+              'mlfit_%s_%s.sh' % (self.numerator_histogram if is_num else self.denominator_histogram, l_array)
+            )
+            logging.debug("Writing run_postFit script file = '%s'" % postfit_script_path)
+            with codecs.open(postfit_script_path, "w", "utf-8") as postfit_script_file:
+              postfit_script_file.write(postfit_script)
+              postfit_script_file.flush()
+              os.fsync(postfit_script_file.fileno())
+            add_chmodX(postfit_script_path)
+
+      fit_value_file = os.path.join(combine_output_dir, 'fit_values.txt')
+      makefile_template_file = os.path.join(current_dir, 'Makefile_postFit.template')
+      makefile_template = open(makefile_template_file, 'r').read()
+      makefile_templatized = jinja2.Template(makefile_template).render(
+        new_cmssw_base = self.cmssw_base_dir_combine,
+        setup_dcards_script = setup_dcards_script_path,
+        numerator_histogram = self.numerator_histogram,
+        denominator_histogram = self.denominator_histogram,
+        scripts_dir = self.dirs[DKEY_SCRIPTS],
+        numerator_datacard = os.path.join(self.dirs[DKEY_DCRD], "prepareDatacards_%s.root" % self.numerator_histogram),
+        denominator_datacard = os.path.join(self.dirs[DKEY_DCRD], "prepareDatacards_%s.root" % self.denominator_histogram),
+        output_dir = combine_output_dir,
+        numerator_output_dir = os.path.join(combine_output_dir, 'mlfit_LeptonFakeRate_%s' % self.numerator_histogram),
         denominator_output_dir = os.path.join(combine_output_dir, 'mlfit_LeptonFakeRate_%s' % self.denominator_histogram),
-        numerator_plotLabel    = self.numerator_plotLabel,
-        denominator_plotLabel  = self.denominator_plotLabel,
-        etights                = lepton_bins['electron']['tight'],
-        efakes                 = lepton_bins['electron']['fakeable'],
-        mtights                = lepton_bins['muon']['tight'],
-        mfakes                 = lepton_bins['muon']['fakeable'],
-        fit_value_file         = fit_value_file,
+        lepton_bins = lepton_bins,
+        fit_values = fit_value_file,
       )
-      postfit_script_path = os.path.join(self.dirs[DKEY_SCRIPTS], 'run_postFit.sh')
-      logging.debug("Writing run_postFit script file = '%s'" % postfit_script_path)
-      with codecs.open(postfit_script_path, "w", "utf-8") as postfit_script_file:
-        postfit_script_file.write(postfit_script)
-        postfit_script_file.flush()
-        os.fsync(postfit_script_file.fileno())
-      add_chmodX(postfit_script_path)
+      makefile_path = os.path.join(self.dirs[DKEY_SCRIPTS], 'Makefile_postFit')
+      logging.debug("Writing run_postFit script file = '%s'" % makefile_path)
+      with codecs.open(makefile_path, "w", "utf-8") as makefile_path_file:
+        makefile_path_file.write(makefile_templatized)
+        makefile_path_file.flush()
+        os.fsync(makefile_path_file.fileno())
 
       self.jobOptions_combine = {
         'inputFile'       : ' '.join(datacards),
         'outputFile'      : fit_value_file,
-        'combineOutputDir': combine_output_dir,
-        'postFitScript'   : postfit_script_path,
-        'logFile'         : os.path.join(self.dirs[DKEY_LOGS], os.path.basename(postfit_script_path).replace('.sh', '.log')),
+        'makefile_path'   : makefile_path,
+        'logFile'         : os.path.join(self.dirs[DKEY_LOGS], 'postFit.log'),
       }
 
       key_comp_LeptonFakeRate = getKey('')
