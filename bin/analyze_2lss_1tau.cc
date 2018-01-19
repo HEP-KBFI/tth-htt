@@ -1052,12 +1052,13 @@ int main(int argc, char* argv[])
       selHistManager->evt_ = new EvtHistManager_2lss_1tau(makeHistManager_cfg(process_and_genMatch,
         Form("%s/sel/evt", histogramDir.data()), era_string, central_or_shift));
       selHistManager->evt_->bookHistograms(fs);
-      // /* DO 2D
+      /* DO 2D
       for (int nbinsStartN=0 ; nbinsStartN<nstart ; nbinsStartN++ ) {
         for (int nbinsTargetN=0 ; nbinsTargetN<ntarget ; nbinsTargetN++ ) {
           selHistManager->evt_->bookHistogramsMap(fs,nbinsStart[nbinsStartN],nbinsTarget[nbinsTargetN]);
         }
       }
+      */
 
       const vstring decayModes_evt = eventInfo.getDecayModes();
       if(isSignal)
@@ -1076,12 +1077,13 @@ int main(int argc, char* argv[])
             central_or_shift
           ));
           selHistManager -> evt_in_decayModes_[decayMode_evt] -> bookHistograms(fs);
-          // /* DO 2D
+          /* DO 2D
           for (int nbinsStartN=0 ; nbinsStartN<nstart ; nbinsStartN++ ) {
             for (int nbinsTargetN=0 ; nbinsTargetN<ntarget ; nbinsTargetN++ ) {
               selHistManager->evt_in_decayModes_[decayMode_evt]->bookHistogramsMap(fs,nbinsStart[nbinsStartN],nbinsTarget[nbinsTargetN]);
             }
           }
+          */
         }
       }
       selHistManager->weights_ = new WeightHistManager(makeHistManager_cfg(process_and_genMatch,
@@ -1160,8 +1162,19 @@ int main(int argc, char* argv[])
     Form("%s/sel/cutFlow", histogramDir.data()), central_or_shift));
   cutFlowHistManager->bookHistograms(fs);
 
+  std::vector<TH2*> dumbVec; // to pretend to fill with array of 2D to preseselection histogram filling
+  for (unsigned int nbinsStartN=0 ; nbinsStartN<nstart ; nbinsStartN++ ) {
+    for (unsigned int nbinsTargetN=0 ; nbinsTargetN<ntarget ; nbinsTargetN++ ) {
+      std::stringstream dumbName;
+      dumbName<<"cpp_is_dumb"<<nbinsStart[nbinsStartN]<<"_to_"<<nbinsTarget[nbinsTargetN];
+      TH2* dumbHist = fs.make<TH2D>(dumbName.str().c_str(), dumbName.str().c_str(),nbinsTarget[nbinsTargetN],0.0,1.0,nbinsTarget[nbinsTargetN],0.0,1.0);
+      dumbVec.push_back (dumbHist);
+      // std::cout<<"loaded file "<<BDT_mapping_HTT_name.str() <<std::endl;
+
+    }
+  }
   while(inputTree -> hasNextEvent() && (! run_lumi_eventSelector || (run_lumi_eventSelector && ! run_lumi_eventSelector -> areWeDone())))
-  {
+  { // xanda
     if(inputTree -> canReport(reportEvery))
     {
       std::cout << "processing Entry " << inputTree -> getCurrentMaxEventIdx()
@@ -1537,7 +1550,6 @@ int main(int argc, char* argv[])
     preselHistManagerType* preselHistManager = preselHistManagers[idxPreselLepton_genMatch][idxSelHadTau_genMatch];
     assert(preselHistManager != 0);
 
-    // double dumbVec[nstart][ntarget]={ {0.0} };
     preselHistManager->electrons_->fillHistograms(preselElectrons, 1.);
     preselHistManager->muons_->fillHistograms(preselMuons, 1.);
     preselHistManager->hadTaus_->fillHistograms(selHadTaus, 1.);
@@ -1546,9 +1558,11 @@ int main(int argc, char* argv[])
     preselHistManager->BJets_medium_->fillHistograms(selBJets_medium, 1.);
     preselHistManager->met_->fillHistograms(met, mht_p4, met_LD, 1.);
     preselHistManager->evt_->fillHistograms(
-      1.0, // evtWeight is first to be sure of not being loosing counting
       preselElectrons.size(), preselMuons.size(), selHadTaus.size(),
       selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
+      &dumbVec,&dumbVec,&dumbVec,&dumbVec,
+      0,
+      1.0, // evtWeight is first to be sure of not being loosing counting
       //1,1,1,
       //1,1,1,
       // old Training
@@ -1562,9 +1576,6 @@ int main(int argc, char* argv[])
       // XGB training, joint
       -1., -1., -1., -1., -1., -1., -1.
     );
-
-
-
 
     cutFlowTable.update(">= 2 sel leptons", 1.);
     cutFlowHistManager->fillHistograms(">= 2 sel leptons", 1.);
@@ -2330,7 +2341,7 @@ int main(int argc, char* argv[])
    double mvaOutput_2lss_noHTT_1B =mva_2lss_noHTT_1B(mvaInputVariables_noHTT_1B);
    //std::cout<<"filling BDTs oldVarA_1B"<<std::endl;
    std::map<std::string, double> mvaInputVariables_oldVarA_1B;
-   mvaInputVariables_oldVarA_1B["BDTtt"]=mvaOutput_2lss_oldVarA_tt; // Xanda check that are Arun's one
+   mvaInputVariables_oldVarA_1B["BDTtt"]=mvaOutput_2lss_oldVarA_tt;
    mvaInputVariables_oldVarA_1B["BDTttV"]=mvaOutput_2lss_oldVarA_ttV;
    double mvaOutput_2lss_oldVarA_1B =mva_2lss_oldVarA_1B(mvaInputVariables_oldVarA_1B);
 
@@ -2340,7 +2351,7 @@ int main(int argc, char* argv[])
    */
    //std::cout<<"filling BDTs oldVarA_2MEM"<<std::endl;
    std::map<std::string, double> mvaInputVariables_oldVarA_2MEM;
-   mvaInputVariables_oldVarA_2MEM["BDTtt"]=mvaOutput_2lss_oldVarA_tt; // Xanda check that are Arun's one
+   mvaInputVariables_oldVarA_2MEM["BDTtt"]=mvaOutput_2lss_oldVarA_tt;
    mvaInputVariables_oldVarA_2MEM["BDTttV"]=mvaOutput_2lss_oldVarA_ttV;
    mvaInputVariables_oldVarA_2MEM["mvaOutput_hadTopTaggerWithKinFit"]=max_mvaOutput_hadTopTaggerWithKinFit;
    mvaInputVariables_oldVarA_2MEM["mvaOutput_Hj_tagger"]=mvaOutput_Hj_tagger;
@@ -2349,7 +2360,7 @@ int main(int argc, char* argv[])
    double mvaOutput_2lss_oldVarA_2MEM =mva_2lss_oldVarA_2MEM(mvaInputVariables_oldVarA_2MEM);
    //std::cout<<"filling BDTs oldVarA_2MEM"<<std::endl;
    std::map<std::string, double> mvaInputVariables_noHTT_2MEM;
-   mvaInputVariables_noHTT_2MEM["BDTtt"]=mvaOutput_2lss_noHTT_tt; // Xanda check that are Arun's one
+   mvaInputVariables_noHTT_2MEM["BDTtt"]=mvaOutput_2lss_noHTT_tt;
    mvaInputVariables_noHTT_2MEM["BDTttV"]=mvaOutput_2lss_noHTT_ttV;
    mvaInputVariables_noHTT_2MEM["mvaOutput_hadTopTaggerWithKinFit"]=max_mvaOutput_hadTopTaggerWithKinFit;
    mvaInputVariables_noHTT_2MEM["mvaOutput_Hj_tagger"]=mvaOutput_Hj_tagger;
@@ -2359,7 +2370,7 @@ int main(int argc, char* argv[])
 
    //std::cout<<"filling BDTs oldVarA_2HTT"<<std::endl;
    std::map<std::string, double> mvaInputVariables_noHTT_2HTT;
-   mvaInputVariables_noHTT_2HTT["BDTtt"]=mvaOutput_2lss_noHTT_tt; // Xanda check that are Arun's one
+   mvaInputVariables_noHTT_2HTT["BDTtt"]=mvaOutput_2lss_noHTT_tt;
    mvaInputVariables_noHTT_2HTT["BDTttV"]=mvaOutput_2lss_noHTT_ttV;
    mvaInputVariables_noHTT_2HTT["mvaOutput_hadTopTaggerWithKinFit"]=max_mvaOutput_hadTopTaggerWithKinFit;
    mvaInputVariables_noHTT_2HTT["mvaOutput_Hj_tagger"]=mvaOutput_Hj_tagger;
@@ -2468,13 +2479,18 @@ int main(int argc, char* argv[])
     selHistManager->mvaInputVariables_2lss_->fillHistograms(mvaInputs_2lss, evtWeight);
     selHistManager->mvaInputVariables_2lss_1tau_->fillHistograms(mvaInputs_2lss_1tau, evtWeight);
     selHistManager->evt_->fillHistograms(
-      evtWeight,
       selElectrons.size(),
       selMuons.size(),
       selHadTaus.size(),
       selJets.size(),
       selBJets_loose.size(),
       selBJets_medium.size(),
+      &oldVarA,
+      &HTT,
+      &noHTT,
+      &HTTMEM,
+      1,
+      evtWeight,
       //
       mvaOutput_2lss_ttV,
       mvaOutput_2lss_ttbar,
@@ -2519,13 +2535,18 @@ int main(int argc, char* argv[])
       if(! decayModeStr.empty())
       {
         selHistManager->evt_in_decayModes_[decayModeStr]->fillHistograms(
-          evtWeight,
           selElectrons.size(),
           selMuons.size(),
           selHadTaus.size(),
           selJets.size(),
           selBJets_loose.size(),
           selBJets_medium.size(),
+          &oldVarA,
+          &HTT,
+          &noHTT,
+          &HTTMEM,
+          1,
+          evtWeight,
           mvaOutput_2lss_ttV,
           mvaOutput_2lss_ttbar,
           mvaDiscr_2lss,
@@ -2564,7 +2585,8 @@ int main(int argc, char* argv[])
           mvaOutput_2lss_noHTT_2MEM,
           mvaOutput_2lss_noHTT_2HTT
         );
-        ///* DO 2D
+        /*
+        // DO 2D
         //std::cout<<"filling with 2D maps"<<std::endl;
         int countHist2=0;
         for (int nbinsStartN=0 ; nbinsStartN<nstart ; nbinsStartN++ ) {
@@ -2582,6 +2604,7 @@ int main(int argc, char* argv[])
             countHist2++;
           }
       }
+      */
     }
     }
     selHistManager->weights_->fillHistograms("genWeight", eventInfo.genWeight);
@@ -2594,6 +2617,7 @@ int main(int argc, char* argv[])
     //std::vector<std::vector<Double_t>> noHTT_2D; //="HTT_from20_to_";
     ///* DO 2D
     //std::cout<<"filling with 2D maps"<<std::endl;
+    /*
     int countHist=0;
     for (int nbinsStartN=0 ; nbinsStartN<nstart ; nbinsStartN++ ) {
       for (int nbinsTargetN=0 ; nbinsTargetN<ntarget ; nbinsTargetN++ ) {
@@ -2806,9 +2830,12 @@ int main(int argc, char* argv[])
   delete jetToTauFakeRateInterface;
 
   delete run_lumi_eventSelector;
+  std::cout << " delete 1"<< std::endl;
 
   delete inputFile_mva_mapping_2lss_1tau;
   delete inputFile_mva_mapping_2lss_1tau_wMEM;
+
+  std::cout << " delete 2"<< std::endl;
 
   delete selEventsFile;
 
@@ -2822,8 +2849,10 @@ int main(int argc, char* argv[])
   delete genHadTauReader;
   delete genJetReader;
   delete lheInfoReader;
+  std::cout << " delete 3"<< std::endl;
 
-  //delete hadTopTagger;
+  delete hadTopTagger;
+  std::cout << " delete 3"<< std::endl;
 
   delete genEvtHistManager_beforeCuts;
   delete genEvtHistManager_afterCuts;
