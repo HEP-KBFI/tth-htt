@@ -52,42 +52,6 @@ LAYOUTS1 = { ## FOR tt
             'color': ROOT.TColor.GetColor(222, 90, 106)
         }
         ),
-        ('TTW', {                    
-            'entries': ['TTWl_plus_t'],
-            'legend': 't#bar{t}W',
-            'color': ROOT.TColor.GetColor(0, 0, 255)
-        }
-        ),
-        ('TTZ', {                    
-            'entries': ['TTZl_plus_t'],
-            'legend': 't#bar{t}Z',
-            'color': ROOT.TColor.GetColor(0, 202, 255)
-        }
-        ),
-        ('TTWW', {                    
-            'entries': ['TTWWl_plus_t'],
-            'legend': 't#bar{t}WW',
-            'color': ROOT.TColor.GetColor(222, 0, 255)
-        }
-        ),
-        ('tH', {                    
-            'entries': ['tHl_plus_t'],
-            'legend': 'tH',
-            'color': ROOT.TColor.GetColor(255, 0, 0)
-        }
-        ),
-        ('ttH_hbb', {
-            'entries': ['ttH_hbbl_plus_t'],
-            'legend': 't#bar{t}H,H#rightarrow#bar{b}b',
-            'color': ROOT.TColor.GetColor(250, 202, 255)
-        }
-        ),
-        ('signal', {
-            'entries': ['signall_plus_t'],
-            'legend': 't#bar{t}H,H#rightarrow#tau#tau',
-            'color': ROOT.TColor.GetColor(248, 206, 104)
-        }
-        )
     ]
 }
 

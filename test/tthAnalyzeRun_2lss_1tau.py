@@ -157,20 +157,21 @@ if __name__ == '__main__':
     # do histograms for 2D bin optimizations
     nbinsTarget=[5,6,7,8,9,10];
     nbinsStart=[15,20];
-    hist_HTT=[[None]*int(len(nbinsTarget))]*len(nbinsStart)
-    hist_noHTT=[[None]*int(len(nbinsTarget))]*len(nbinsStart)
-    hist_HTTMEM=[[None]*int(len(nbinsTarget))]*len(nbinsStart)
-    hist_oldVarA=[[None]*int(len(nbinsTarget))]*len(nbinsStart)
+    hist_HTT=[] # [[None]*int(len(nbinsTarget))]*len(nbinsStart)
+    hist_noHTT=[] # [[None]*int(len(nbinsTarget))]*len(nbinsStart)
+    hist_HTTMEM=[] # [[None]*int(len(nbinsTarget))]*len(nbinsStart)
+    hist_oldVarA=[] # [[None]*int(len(nbinsTarget))]*len(nbinsStart)
     for nbinsStartN in range(0,len(nbinsStart)) :
       for nbinsTargetN in range(0,len(nbinsTarget)) :
-        hist_HTT[nbinsStartN][nbinsTargetN]="HTT_from"+str(nbinsStart[nbinsStartN])+"_to_"+str(nbinsTarget[nbinsTargetN])
-        hist_noHTT[nbinsStartN][nbinsTargetN]="noHTT_from"+str(nbinsStart[nbinsStartN])+"_to_"+str(nbinsTarget[nbinsTargetN])
-        hist_HTTMEM[nbinsStartN][nbinsTargetN]="HTTMEM_from"+str(nbinsStart[nbinsStartN])+"_to_"+str(nbinsTarget[nbinsTargetN])
-        hist_oldVarA[nbinsStartN][nbinsTargetN]="oldVarA_from"+str(nbinsStart[nbinsStartN])+"_to_"+str(nbinsTarget[nbinsTargetN])
-    print list(hist_HTT)[0]
-    print list(hist_noHTT)[0]
-    print list(hist_HTTMEM)[0]
-    print list(hist_oldVarA)[0]
+        hist_HTT.append("HTT_from"+str(nbinsStart[nbinsStartN])+"_to_"+str(nbinsTarget[nbinsTargetN]))
+        hist_noHTT.append("noHTT_from"+str(nbinsStart[nbinsStartN])+"_to_"+str(nbinsTarget[nbinsTargetN]))
+        hist_HTTMEM.append("HTTMEM_from"+str(nbinsStart[nbinsStartN])+"_to_"+str(nbinsTarget[nbinsTargetN]))
+        hist_oldVarA.append("oldVarA_from"+str(nbinsStart[nbinsStartN])+"_to_"+str(nbinsTarget[nbinsTargetN]))
+    print list(hist_HTT)
+    print list(hist_noHTT)
+    print list(hist_HTTMEM)
+    print list(hist_oldVarA)
+
 
 
     analysis = analyzeConfig_2lss_1tau(
@@ -289,7 +290,7 @@ if __name__ == '__main__':
         "mvaOutput_2lss_oldVarA_2MEM",
         "mvaOutput_2lss_noHTT_2MEM",
         "mvaOutput_2lss_noHTT_2HTT"
-      ] + list(hist_HTTMEM)[0] + list(hist_oldVarA)[0]  + list(hist_HTT)[0] +list(hist_noHTT)[0],
+      ] + list(hist_HTTMEM) + list(hist_oldVarA)  + list(hist_HTT) +list(hist_noHTT),
       select_rle_output         = True,
       verbose                   = idx_job_resubmission > 0,
     )

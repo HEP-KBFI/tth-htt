@@ -111,9 +111,10 @@ void EvtHistManager_2lss_1tau::bookHistograms(TFileDirectory& dir)
   histogram_mvaOutput_Hj_tagger_ = book1D(dir, "mvaOutput_Hj_tagger", "mvaOutput_Hj_tagger", 20, -1., +1.);
   histogram_mvaOutput_Hjj_tagger_ = book1D(dir, "mvaOutput_Hjj_tagger", "mvaOutput_Hjj_tagger", 20, -1., +1.);
 
+  histogram_mTauTauVis1_ = book1D(dir, "mTauTauVis", "mTauTauVis", 20, 0., 200.);
   histogram_mTauTauVis1_ = book1D(dir, "mTauTauVis1", "mTauTauVis1", 20, 0., 200.);
   histogram_mTauTauVis2_ = book1D(dir, "mTauTauVis2", "mTauTauVis2", 20, 0., 200.);
-  histogram_memOutput_LR_ = book1D(dir, "memOutput_LR", "memOutput_LR", 100, 0., 1.);
+  histogram_memOutput_LR_ = book1D(dir, "memOutput_LR", "memOutput_LR", 600, 0., 1.);
 
 
 
@@ -138,80 +139,80 @@ void EvtHistManager_2lss_1tau::bookHistograms(TFileDirectory& dir)
   histogram_memDiscr_ = book1D(dir, "memDiscr", "memDiscr", 8, 0.5, 8.5);
   histogram_EventCounter_ = book1D(dir, "EventCounter", "EventCounter", 1, -0.5, +0.5);
 
-  histogram_mvaOutput_2lss_oldVarA_tt_= book1D(dir, "mvaOutput_2lss_oldVarA_tt", "mvaOutput_2lss_oldVarA_tt", 100, 0., +1.);
-  histogram_mvaOutput_2lss_oldVarA_ttV_= book1D(dir, "mvaOutput_2lss_oldVarA_ttV", "mvaOutput_2lss_oldVarA_ttV",    100, 0., +1.);
-  histogram_mvaOutput_2lss_HTT_tt_= book1D(dir, "mvaOutput_2lss_HTT_tt", "mvaOutput_2lss_HTT_tt",          100, 0., +1.);
-  histogram_mvaOutput_2lss_noHTT_tt_= book1D(dir, "mvaOutput_2lss_noHTT_tt", "mvaOutput_2lss_noHTT_tt",    100, 0., +1.);
-  histogram_mvaOutput_2lss_noHTT_ttV_= book1D(dir, "mvaOutput_2lss_noHTT_ttV", "mvaOutput_2lss_noHTT_ttV", 100, 0., +1.);
-  histogram_mvaOutput_2lss_HTTMEM_tt_= book1D(dir, "mvaOutput_2lss_HTTMEM_tt", "mvaOutput_2lss_HTTMEM_tt",    100, 0., +1.);
-  histogram_mvaOutput_2lss_HTTMEM_ttV_= book1D(dir, "mvaOutput_2lss_HTTMEM_ttV", "mvaOutput_2lss_HTTMEM_ttV", 100, 0., +1.);
-  histogram_mvaOutput_2lss_HTT_LepID_tt_= book1D(dir, "mvaOutput_2lss_HTT_LepID_tt", "mvaOutput_2lss_HTT_LepID_tt", 100, 0., +1.);
+  histogram_mvaOutput_2lss_oldVarA_tt_= book1D(dir, "mvaOutput_2lss_oldVarA_tt", "mvaOutput_2lss_oldVarA_tt", 600, 0., +1.);
+  histogram_mvaOutput_2lss_oldVarA_ttV_= book1D(dir, "mvaOutput_2lss_oldVarA_ttV", "mvaOutput_2lss_oldVarA_ttV",    600, 0., +1.);
+  histogram_mvaOutput_2lss_HTT_tt_= book1D(dir, "mvaOutput_2lss_HTT_tt", "mvaOutput_2lss_HTT_tt",          600, 0., +1.);
+  histogram_mvaOutput_2lss_noHTT_tt_= book1D(dir, "mvaOutput_2lss_noHTT_tt", "mvaOutput_2lss_noHTT_tt",    600, 0., +1.);
+  histogram_mvaOutput_2lss_noHTT_ttV_= book1D(dir, "mvaOutput_2lss_noHTT_ttV", "mvaOutput_2lss_noHTT_ttV", 600, 0., +1.);
+  histogram_mvaOutput_2lss_HTTMEM_tt_= book1D(dir, "mvaOutput_2lss_HTTMEM_tt", "mvaOutput_2lss_HTTMEM_tt",    600, 0., +1.);
+  histogram_mvaOutput_2lss_HTTMEM_ttV_= book1D(dir, "mvaOutput_2lss_HTTMEM_ttV", "mvaOutput_2lss_HTTMEM_ttV", 600, 0., +1.);
+  histogram_mvaOutput_2lss_HTT_LepID_tt_= book1D(dir, "mvaOutput_2lss_HTT_LepID_tt", "mvaOutput_2lss_HTT_LepID_tt", 600, 0., +1.);
 
   //hist_oldVar_from20_to_12_ = book1D(dir, "oldVar_from20_to_12", "oldVar_from20_to_12", 12, -0.5, 12+0.5);
   //hist_oldVar_from20_to_7_ = book1D(dir, "oldVar_from20_to_7", "oldVar_from20_to_7", 7, -0.5, 7+0.5);
 
-  histogram_mvaOutput_2lss_HTTMEM_1B_= book1D(dir, "mvaOutput_2lss_HTTMEM_1B", "mvaOutput_2lss_HTTMEM_1B", 100, 0., +1.);
-  histogram_mvaOutput_2lss_HTT_1B_= book1D(dir, "mvaOutput_2lss_HTT_1B", "mvaOutput_2lss_HTT_1B",    100, 0., +1.);
-  histogram_mvaOutput_2lss_noHTT_1B_= book1D(dir, "mvaOutput_2lss_noHTT_1B", "mvaOutput_2lss_noHTT_1B",          100, 0., +1.);
-  histogram_mvaOutput_2lss_oldVarA_1B_= book1D(dir, "mvaOutput_2lss_oldVarA_1B", "mvaOutput_2lss_oldVarA_1B",    100, 0., +1.);
-  histogram_mvaOutput_2lss_oldVarA_2MEM_= book1D(dir, "mvaOutput_2lss_oldVarA_2MEM", "mvaOutput_2lss_oldVarA_2MEM", 100, 0., +1.);
-  histogram_mvaOutput_2lss_noHTT_2MEM_= book1D(dir, "mvaOutput_2lss_noHTT_2MEM", "mvaOutput_2lss_noHTT_2MEM",    100, 0., +1.);
-  histogram_mvaOutput_2lss_noHTT_2HTT_= book1D(dir, "mvaOutput_2lss_noHTT_2HTT", "mvaOutput_2lss_noHTT_2HTT", 100, 0., +1.);
+  histogram_mvaOutput_2lss_HTTMEM_1B_= book1D(dir, "mvaOutput_2lss_HTTMEM_1B", "mvaOutput_2lss_HTTMEM_1B", 600, 0., +1.);
+  histogram_mvaOutput_2lss_HTT_1B_= book1D(dir, "mvaOutput_2lss_HTT_1B", "mvaOutput_2lss_HTT_1B",    600, 0., +1.);
+  histogram_mvaOutput_2lss_noHTT_1B_= book1D(dir, "mvaOutput_2lss_noHTT_1B", "mvaOutput_2lss_noHTT_1B",          600, 0., +1.);
+  histogram_mvaOutput_2lss_oldVarA_1B_= book1D(dir, "mvaOutput_2lss_oldVarA_1B", "mvaOutput_2lss_oldVarA_1B",    600, 0., +1.);
+  histogram_mvaOutput_2lss_oldVarA_2MEM_= book1D(dir, "mvaOutput_2lss_oldVarA_2MEM", "mvaOutput_2lss_oldVarA_2MEM", 600, 0., +1.);
+  histogram_mvaOutput_2lss_noHTT_2MEM_= book1D(dir, "mvaOutput_2lss_noHTT_2MEM", "mvaOutput_2lss_noHTT_2MEM",    600, 0., +1.);
+  histogram_mvaOutput_2lss_noHTT_2HTT_= book1D(dir, "mvaOutput_2lss_noHTT_2HTT", "mvaOutput_2lss_noHTT_2HTT", 600, 0., +1.);
 
 }
 
 void EvtHistManager_2lss_1tau::fillHistograms(
-                double evtWeight,
-                int numElectrons,
-                int numMuons,
-                int numHadTaus,
-                int numJets,
-                int numBJets_loose,
-                int numBJets_medium,
-					      double mvaOutput_2lss_ttV,
-                double mvaOutput_2lss_ttbar,
-                double mvaDiscr_2lss,
-					      double mvaOutput_2lss_1tau_ttV,
-                double mvaOutput_2lss_1tau_ttbar,
-                double mvaDiscr_2lss_1tau,
-					      double mvaOutput_2lss_1tau_ttV_wMEM,
-                double mvaOutput_2lss_1tau_ttbar_wMEM,
-                double mvaDiscr_2lss_1tau_wMEM,
-					      double mvaOutput_Hj_tagger,
-                double mvaOutput_Hjj_tagger,
-					      double mTauTauVis1,
-                double mTauTauVis2,
-					      double memOutput_LR, //const MEMOutput_2lss_1tau* memOutput_2lss_1tau,
-                double memDiscr,
-                // XGB training 1D
-                double mvaOutput_2lss_oldVarA_tt,
-                double mvaOutput_2lss_oldVarA_ttV,
-                double mvaOutput_2lss_noHTT_tt,
-                double mvaOutput_2lss_noHTT_ttV,
-                double mvaOutput_2lss_HTT_tt,
-                double mvaOutput_2lss_HTTMEM_tt,
-                double mvaOutput_2lss_HTTMEM_ttV,
-                double mvaOutput_2lss_HTT_LepID_tt,
-                // 2D mapppings [nstart][ntarget]
-                /*
-                Double_t  (&oldVarA_2D)[2][6],
-                Double_t  (&HTT_2D)[2][6],
-                Double_t  (&HTTMEM_2D)[2][6],
-                Double_t  (&noHTT_2D)[2][6],
-                */
-                //double  oldVarA_2D[2][6],
-                //double  HTT_2D[2][6],
-                //double  HTTMEM_2D[2][6],
-                //double  noHTT_2D[2][6],
-                // XGB training, joint
-                double mvaOutput_2lss_HTTMEM_1B,
-                double mvaOutput_2lss_HTT_1B,
-                double mvaOutput_2lss_noHTT_1B,
-                double mvaOutput_2lss_oldVarA_1B,
-                double mvaOutput_2lss_oldVarA_2MEM,
-                double mvaOutput_2lss_noHTT_2MEM,
-                double mvaOutput_2lss_noHTT_2HTT
-              )
+      double evtWeight,
+      int numElectrons,
+      int numMuons,
+      int numHadTaus,
+      int numJets,
+      int numBJets_loose,
+      int numBJets_medium,
+      double mvaOutput_2lss_ttV,
+      double mvaOutput_2lss_ttbar,
+      double mvaDiscr_2lss,
+      double mvaOutput_2lss_1tau_ttV,
+      double mvaOutput_2lss_1tau_ttbar,
+      double mvaDiscr_2lss_1tau,
+      double mvaOutput_2lss_1tau_ttV_wMEM,
+      double mvaOutput_2lss_1tau_ttbar_wMEM,
+      double mvaDiscr_2lss_1tau_wMEM,
+      double mvaOutput_Hj_tagger,
+      double mvaOutput_Hjj_tagger,
+      double mTauTauVis1,
+      double mTauTauVis2,
+      double memOutput_LR, //const MEMOutput_2lss_1tau* memOutput_2lss_1tau,
+      double memDiscr,
+      // XGB training 1D
+      double mvaOutput_2lss_oldVarA_tt,
+      double mvaOutput_2lss_oldVarA_ttV,
+      double mvaOutput_2lss_noHTT_tt,
+      double mvaOutput_2lss_noHTT_ttV,
+      double mvaOutput_2lss_HTT_tt,
+      double mvaOutput_2lss_HTTMEM_tt,
+      double mvaOutput_2lss_HTTMEM_ttV,
+      double mvaOutput_2lss_HTT_LepID_tt,
+      // 2D mapppings [nstart][ntarget]
+      /*
+      Double_t  (&oldVarA_2D)[2][6],
+      Double_t  (&HTT_2D)[2][6],
+      Double_t  (&HTTMEM_2D)[2][6],
+      Double_t  (&noHTT_2D)[2][6],
+      */
+      //double  oldVarA_2D[2][6],
+      //double  HTT_2D[2][6],
+      //double  HTTMEM_2D[2][6],
+      //double  noHTT_2D[2][6],
+      // XGB training, joint
+      double mvaOutput_2lss_HTTMEM_1B,
+      double mvaOutput_2lss_HTT_1B,
+      double mvaOutput_2lss_noHTT_1B,
+      double mvaOutput_2lss_oldVarA_1B,
+      double mvaOutput_2lss_oldVarA_2MEM,
+      double mvaOutput_2lss_noHTT_2MEM,
+      double mvaOutput_2lss_noHTT_2HTT
+    )
 {
   //std::vector<std::vector<Double_t>>& HTT_2D,
   //std::vector<std::vector<Double_t>>& noHTT_2D
@@ -241,6 +242,7 @@ void EvtHistManager_2lss_1tau::fillHistograms(
   fillWithOverFlow(histogram_mvaOutput_Hj_tagger_, mvaOutput_Hj_tagger, evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_mvaOutput_Hjj_tagger_, mvaOutput_Hjj_tagger, evtWeight, evtWeightErr);
 
+  fillWithOverFlow(histogram_mTauTauVis1_, mTauTauVis1, evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_mTauTauVis1_, mTauTauVis1, evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_mTauTauVis2_, mTauTauVis2, evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_memOutput_LR_, memOutput_LR, evtWeight, evtWeightErr);
