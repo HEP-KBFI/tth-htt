@@ -20,6 +20,7 @@ void EvtHistManager_charge_flip::bookHistograms(TFileDirectory& dir)
   for ( std::vector<std::string>::const_iterator category_eta_and_pT = categories_eta_and_pT.begin();
 	category_eta_and_pT != categories_eta_and_pT.end(); ++category_eta_and_pT ) {
     std::string subdirName_SS = Form("SS/%s/%s", category_eta_and_pT->data(), process_.data());
+    if ( category_ != "" ) subdirName_SS += Form("/%s", category_.data());
     TDirectory* subdir_SS = createSubdirectory_recursively(dir, subdirName_SS, false);
     subdir_SS->cd();
     TH1* histogram_m_ee_SS = new TH1D(getHistogramName("mass_ll").data(), "m_{ll}", 60,  60., 120. );
@@ -27,6 +28,7 @@ void EvtHistManager_charge_flip::bookHistograms(TFileDirectory& dir)
     histograms_m_ee_SS_[*category_eta_and_pT] = histogram_m_ee_SS;
 
     std::string subdirName_OS = Form("OS/%s/%s", category_eta_and_pT->data(), process_.data());
+    if ( category_ != "" ) subdirName_OS += Form("/%s", category_.data());
     TDirectory* subdir_OS = createSubdirectory_recursively(dir, subdirName_OS, false);
     subdir_OS->cd();
     TH1* histogram_m_ee_OS = new TH1D(getHistogramName("mass_ll").data(), "m_{ll}", 60,  60., 120. );
@@ -62,6 +64,10 @@ void EvtHistManager_charge_flip::fillHistograms(const math::PtEtaPhiMLorentzVect
 						const math::PtEtaPhiMLorentzVector& selElectron_sublead_p4, 
 						double m_ee, bool isCharge_SS, double evtWeight)
 {
+  //std::cout << "<EvtHistManager_charge_flip::fillHistograms>:" << std::endl;
+  //std::cout << " selElectron_lead_p4: pT = " << selElectron_lead_p4.pt() << ", eta = " << selElectron_lead_p4.eta() << ", phi = " << selElectron_lead_p4.phi() << std::endl;
+  //std::cout << " selElectron_sublead_p4: pT = " << selElectron_sublead_p4.pt() << ", eta = " << selElectron_sublead_p4.eta() << ", phi = " << selElectron_sublead_p4.phi() << std::endl;
+
   double evtWeightErr = 0.;
 
   std::map<std::string, TH1*>* histograms_m_ee = 0;
