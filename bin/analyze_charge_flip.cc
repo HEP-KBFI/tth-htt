@@ -234,7 +234,6 @@ int main(int argc, char* argv[])
 
   std::string branchName_electrons = cfg_analyze.getParameter<std::string>("branchName_electrons");
   std::string branchName_muons = cfg_analyze.getParameter<std::string>("branchName_muons");
-  std::string branchName_hadTaus = cfg_analyze.getParameter<std::string>("branchName_hadTaus");
   std::string branchName_jets = cfg_analyze.getParameter<std::string>("branchName_jets");
 
   std::string branchName_genLeptons1 = cfg_analyze.getParameter<std::string>("branchName_genLeptons1");
@@ -365,6 +364,8 @@ int main(int argc, char* argv[])
     subdir_gen->cd();
     histogram_gen_OS = new TH2D("pt_eta_OS", "pt_eta_OS", numBins_pT, binning_pT, numBins_absEta, binning_absEta);
     histogram_gen_OS->Sumw2();
+    histogram_gen_SS = new TH2D("pt_eta_SS", "pt_eta_SS", numBins_pT, binning_pT, numBins_absEta, binning_absEta);
+    histogram_gen_SS->Sumw2();
     histogram_prob_charge_flip_gen = new TEfficiency("pt_eta_DY", "pt_eta;pT;#eta;charge_misID", numBins_pT, binning_pT, numBins_absEta, binning_absEta);
     histogram_prob_charge_flip_gen->SetUseWeightedEvents();
     histogram_prob_charge_flip_gen->SetStatisticOption(TEfficiency::kFNormal);
@@ -640,8 +641,8 @@ int main(int argc, char* argv[])
     cutFlowHistManager->fillHistograms("sel electron trigger match", evtWeight);
 
     const RecoElectron* selElectron_lead = selElectrons[0];
-    const GenLepton* genElectron_lead = 0;
-    if ( selElectron_lead->genLepton() && abs(genElectron_lead->pdgId()) == 11 ) {
+    const GenLepton* genElectron_lead = selElectron_lead->genLepton();
+    if ( selElectron_lead->genLepton() && abs(selElectron_lead->genLepton()->pdgId()) == 11 ) {
       genElectron_lead = selElectron_lead->genLepton();
     }
     double selElectron_lead_pT = selElectron_lead->pt();
@@ -651,7 +652,7 @@ int main(int argc, char* argv[])
     double selElectron_lead_mass = selElectron_lead->mass();
     const RecoElectron* selElectron_sublead = selElectrons[1];
     const GenLepton* genElectron_sublead = 0;
-    if ( selElectron_sublead->genLepton() && abs(genElectron_sublead->pdgId()) == 11 ) {
+    if ( selElectron_sublead->genLepton() && abs(selElectron_sublead->genLepton()->pdgId()) == 11 ) {
       genElectron_sublead = selElectron_sublead->genLepton();
     }
     double selElectron_sublead_pT = selElectron_sublead->pt();
@@ -659,7 +660,7 @@ int main(int argc, char* argv[])
     double selElectron_sublead_absEta = std::fabs(selElectron_sublead_eta);
     double selElectron_sublead_phi = selElectron_sublead->phi();
     double selElectron_sublead_mass = selElectron_sublead->mass();
-    
+
     if ( electronPt_option == kElectronPt_scaleUp_barrel ) {
       if ( selElectron_lead_absEta    < 1.479 ) selElectron_lead_pT *= 1.01;
       if ( selElectron_sublead_absEta < 1.479 ) selElectron_sublead_pT *= 1.01;
@@ -702,7 +703,8 @@ int main(int argc, char* argv[])
       genElectron_sublead_tmp = genElectron_sublead;
     }
     double selElectron_lead_charge = selElectron_lead_tmp->charge();
-    Particle::LorentzVector genElectron_lead_p4;
+    Particle::LorentzVector genElectron_lead_p4; // generator-level electron associated to the reconstructed electron of higher pT 
+                                                 // (not necessarily the generator-level electron of higher pT!)
     double genElectron_lead_charge = 0.;
     bool isGenElectron_lead = false;
     if ( genElectron_lead_tmp ) {
@@ -711,7 +713,8 @@ int main(int argc, char* argv[])
       isGenElectron_lead = true;
     }
     double selElectron_sublead_charge = selElectron_sublead_tmp->charge();
-    Particle::LorentzVector genElectron_sublead_p4;
+    Particle::LorentzVector genElectron_sublead_p4; // generator-level electron associated to the reconstructed electron of lower pT 
+                                                    // (not necessarily the generator-level electron of lower pT!)
     double genElectron_sublead_charge = 0.;
     bool isGenElectron_sublead = false;
     if ( genElectron_sublead_tmp ) {
@@ -799,31 +802,35 @@ int main(int argc, char* argv[])
         evtWeight *= weight_fakeRate;
       }
     }
-    
+
 //--- fill histograms with events passing final selection
     evtHistManager.fillHistograms(selElectron_lead_p4, selElectron_sublead_p4, m_ee, isCharge_SS, evtWeight);
     if ( isZee ) {    
       bool isDY = (isGenElectron_lead && isGenElectron_sublead);
       if ( isDY ) {
-	evtHistManager_DY_genCategory->fillHistograms(genElectron_lead_p4, genElectron_sublead_p4, m_ee, isCharge_SS, evtWeight);
+	if ( genElectron_lead_p4.pt() > genElectron_sublead_p4.pt() ) {
+	  evtHistManager_DY_genCategory->fillHistograms(genElectron_lead_p4, genElectron_sublead_p4, m_ee, isCharge_SS, evtWeight);
+	} else {
+	  evtHistManager_DY_genCategory->fillHistograms(genElectron_sublead_p4, genElectron_lead_p4, m_ee, isCharge_SS, evtWeight);
+	}
 	evtHistManager_DY_recCategory->fillHistograms(selElectron_lead_p4, selElectron_sublead_p4, m_ee, isCharge_SS, evtWeight);
 
 	TH1* histogram_gen = 0;
 	if      ( isCharge_SS ) histogram_gen = histogram_gen_SS;
 	else if ( isCharge_OS ) histogram_gen = histogram_gen_OS;
-	else assert(0);
+        else assert(0);
 	double genElectron_lead_absEta = std::fabs(genElectron_lead_p4.eta());
 	fillWithOverFlow(histogram_gen, genElectron_lead_p4.pt(), genElectron_lead_absEta, evtWeight);
 	double genElectron_sublead_absEta = std::fabs(genElectron_sublead_p4.eta());
 	fillWithOverFlow(histogram_gen, genElectron_sublead_p4.pt(), genElectron_sublead_absEta, evtWeight);
-	
+
 	histogram_prob_charge_flip_gen->FillWeighted(selElectron_lead_charge != genElectron_lead_charge, evtWeight, genElectron_lead_p4.pt(), genElectron_lead_absEta);
 	histogram_prob_charge_flip_gen->FillWeighted(selElectron_sublead_charge != genElectron_sublead_charge, evtWeight, genElectron_sublead_p4.pt(), genElectron_sublead_absEta);
 	double selElectron_lead_absEta = std::fabs(selElectron_lead_p4.eta());
 	histogram_prob_charge_flip_gen_rec->FillWeighted(selElectron_lead_charge != genElectron_lead_charge, evtWeight, selElectron_lead_p4.pt(), selElectron_lead_absEta);
 	double selElectron_sublead_absEta = std::fabs(selElectron_sublead_p4.eta());
 	histogram_prob_charge_flip_gen_rec->FillWeighted(selElectron_sublead_charge != genElectron_sublead_charge, evtWeight, selElectron_sublead_p4.pt(), selElectron_sublead_absEta);
-	
+
 	int idxBin_lead_gen = getBinIdx_pT_and_absEta(genElectron_lead_p4.pt(), genElectron_lead_absEta);
 	int idxBin_lead_rec = getBinIdx_pT_and_absEta(selElectron_lead_p4.pt(), selElectron_lead_absEta);      
 	histogram_idxBin_pT_and_eta_rec_vs_gen->Fill(idxBin_lead_gen, idxBin_lead_rec, evtWeight);
@@ -836,15 +843,15 @@ int main(int argc, char* argv[])
 	else if ( isCharge_OS ) histogram_idxBin_pT_and_eta_rec_vs_gen_OS->Fill(idxBin_sublead_gen, idxBin_sublead_rec, evtWeight);
       }
     }
-      
+
     if      ( isCharge_SS ) preselElectronHistManagerSS.fillHistograms(preselElectrons, evtWeight);
     else if ( isCharge_OS ) preselElectronHistManagerOS.fillHistograms(preselElectrons, evtWeight);
-    
+
     if ( isMC ) {
       genEvtHistManager_afterCuts->fillHistograms(genElectrons, genMuons, genHadTaus, genJets);
       lheInfoHistManager->fillHistograms(*lheInfoReader, evtWeight);
     }
-    
+
     (*selEventsFile) << eventInfo.run << ':' << eventInfo.lumi << ':' << eventInfo.event << '\n';
     
     ++selectedEntries;
