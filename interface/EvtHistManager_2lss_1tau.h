@@ -22,9 +22,15 @@ class EvtHistManager_2lss_1tau
   EvtHistManager_2lss_1tau(edm::ParameterSet const& cfg);
   ~EvtHistManager_2lss_1tau() {}
 
+  const Int_t  nbinsTarget[9]={5,6,7,8,9,10};
+  const Int_t  nbinsStart[3]={15,20};
+  const Int_t nstart =2;
+  const Int_t ntarget =6;
+
   /// book and fill histograms
   //std::vector<TH2*> oldVarA_;
   //void LoadMaps(int nstart, int ntarget);
+  /*
   void bookHistogramsMap(TFileDirectory& dir , int , int);
   void fillHistogramsMap(int counter, double evtWeight,
      std::vector<TH2*>* oldVarA,
@@ -36,18 +42,25 @@ class EvtHistManager_2lss_1tau
      double mvaOutput_2lss_HTT_tt,
      double mvaOutput_2lss_HTTMEM_tt, double mvaOutput_2lss_HTTMEM_ttV
      );
+     */
 
 
   void bookHistograms(TFileDirectory& dir);
   void integralHistograms(TFileDirectory& dir);
   void fillHistograms(
+    std::vector<const RecoElectron*>::size_type numElectrons,
+    std::vector<const RecoMuon*>::size_type numMuons,
+    std::vector<const RecoHadTau*>::size_type numHadTaus,
+    std::vector<const RecoJet*>::size_type numJets,
+    std::vector<const RecoJet*>::size_type numBJets_loose,
+    std::vector<const RecoJet*>::size_type numBJets_medium,
+    std::vector<TH2*>* oldVarA,
+    std::vector<TH2*>* HTT,
+    std::vector<TH2*>* noHTT,
+    std::vector<TH2*>* HTTMEM,
+    int sel,
     double evtWeight,
-    int numElectrons,
-    int numMuons,
-    int numHadTaus,
-    int numJets,
-    int numBJets_loose,
-    int numBJets_medium,
+    //
     double mvaOutput_2lss_ttV,
     double mvaOutput_2lss_ttbar,
     double mvaDiscr_2lss,

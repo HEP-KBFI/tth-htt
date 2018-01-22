@@ -58,7 +58,9 @@ TH2* HistManagerBase::book2D(TFileDirectory& dir,
 
 TDirectory* HistManagerBase::createHistogramSubdirectory(TFileDirectory& dir)
 {
-  std::string fullSubdirName = Form("%s/%s", category_.data(), process_.data());
+  std::string fullSubdirName;
+  if ( category_ != "" ) fullSubdirName = Form("%s/%s", category_.data(), process_.data());
+  else fullSubdirName = Form("%s", process_.data());
   TDirectory* subdir = createSubdirectory_recursively(dir, fullSubdirName, false);
   return subdir;
 }
