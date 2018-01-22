@@ -47,7 +47,8 @@ namespace
     if      ( pT >= 10. && pT < 25. ) category = "L";
     else if ( pT >= 25. && pT < 50. ) category = "M";
     else if ( pT >= 50.             ) category = "H";
-    else assert(0);
+    else category = "out-of-range"; // CV: this can happen in case generator-level electron 
+                                    //     has significantly lower pT than reconstructed electron
     return category;
   }
 
@@ -75,8 +76,10 @@ void EvtHistManager_charge_flip::fillHistograms(const math::PtEtaPhiMLorentzVect
   else histograms_m_ee = &histograms_m_ee_OS_;
   std::string categoryLabel_absEta_lead = getCategoryLabel_absEta(std::fabs(selElectron_lead_p4.eta()));
   std::string categoryLabel_pT_lead = getCategoryLabel_pT(selElectron_lead_p4.pt());
+  if ( categoryLabel_pT_lead == "out-of-range" ) return;
   std::string categoryLabel_absEta_sublead = getCategoryLabel_absEta(std::fabs(selElectron_sublead_p4.eta()));
   std::string categoryLabel_pT_sublead = getCategoryLabel_pT(selElectron_sublead_p4.pt());
+  if ( categoryLabel_pT_sublead == "out-of-range" ) return;
   std::string category;
   if ( categoryLabel_pT_lead == categoryLabel_pT_sublead ) { // symmetric case
     if ( categoryLabel_absEta_lead == "E" && categoryLabel_absEta_sublead == "B" ) category = Form("BE_%s%s", categoryLabel_pT_lead.data(), categoryLabel_pT_sublead.data());
