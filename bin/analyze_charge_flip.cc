@@ -638,7 +638,7 @@ int main(int argc, char* argv[])
     cutFlowHistManager->fillHistograms("sel electron trigger match", evtWeight);
 
     const RecoElectron* selElectron_lead = selElectrons[0];
-    const GenLepton* genElectron_lead = selElectron_lead->genLepton();
+    const GenLepton* genElectron_lead = 0;
     if ( selElectron_lead->genLepton() && abs(selElectron_lead->genLepton()->pdgId()) == 11 ) {
       genElectron_lead = selElectron_lead->genLepton();
     }
@@ -647,6 +647,7 @@ int main(int argc, char* argv[])
     double selElectron_lead_absEta = std::fabs(selElectron_lead_eta);
     double selElectron_lead_phi = selElectron_lead->phi();
     double selElectron_lead_mass = selElectron_lead->mass();
+
     const RecoElectron* selElectron_sublead = selElectrons[1];
     const GenLepton* genElectron_sublead = 0;
     if ( selElectron_sublead->genLepton() && abs(selElectron_sublead->genLepton()->pdgId()) == 11 ) {
@@ -672,7 +673,7 @@ int main(int argc, char* argv[])
       if ( selElectron_sublead_absEta > 1.479 ) selElectron_sublead_pT *= 0.99;
     } else if ( electronPt_option == kElectronPt_resUp ) {
       if ( genElectron_lead    ) selElectron_lead_pT += 0.25*(selElectron_lead_pT - genElectron_lead->pt());
-      if ( genElectron_sublead ) selElectron_sublead_pT += 0.25*(selElectron_sublead_pT - genElectron_lead->pt());
+      if ( genElectron_sublead ) selElectron_sublead_pT += 0.25*(selElectron_sublead_pT - genElectron_sublead->pt());
     } else if ( electronPt_option == kElectronPt_resDown ) {
       if ( genElectron_lead    ) selElectron_lead_pT -= 0.25*(selElectron_lead_pT - genElectron_lead->pt());
       if ( genElectron_sublead ) selElectron_sublead_pT -= 0.25*(selElectron_sublead_pT - genElectron_sublead->pt());
