@@ -2084,7 +2084,7 @@ samples_2016["/THQ_Hincl_13TeV-madgraph-pythia8_TuneCUETP8M1/RunIISummer16MiniAO
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/THQ"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Dec18_wPreselection_all/ntuples/THQ"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -2108,7 +2108,7 @@ samples_2016["/THW_Hincl_13TeV-madgraph-pythia8_TuneCUETP8M1/RunIISummer16MiniAO
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Nov28_wPreselection_all/ntuples/THW"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2017Dec18_wPreselection_all/ntuples/THW"),
         ("selection", "*"),
         ("blacklist", []),
       ]),

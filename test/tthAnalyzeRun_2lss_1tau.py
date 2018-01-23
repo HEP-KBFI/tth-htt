@@ -27,7 +27,7 @@ mode                 = options.mode #"VHbb"
 ERA                  = options.ERA #"2016"
 version              = options.version #"2017Oct24"
 max_job_resubmission = 3
-max_files_per_job    = 10 if use_prod_ntuples else 100
+max_files_per_job    = 10 #if use_prod_ntuples else 100
 
 samples                            = None
 LUMI                               = None
@@ -38,9 +38,12 @@ applyFakeRateWeights               = None
 MEMbranch                          = ''
 hadTauFakeRateWeight_inputFileName = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016.root"
 
-# Karl: temporarily disable other modes until we've proper Ntuples
-if use_prod_ntuples and mode not in ["VHbb", "forBDTtraining_beforeAddMEM"]:
-  raise ValueError("No production Ntuples for %s" % mode)
+# Karl: temporarily disable addMEM mode until we've proper Ntuples
+#if mode in ["addMEM"]:
+#    raise ValueError("No production Ntuples available for %s" % mode)
+
+if use_prod_ntuples and mode in ["addMEM", "forBDTtraining_afterAddMEM"]:
+    logging.warning("The samples for the mode '%s' are already derived from production Ntuples" % mode)
 
 if use_prod_ntuples and ERA == "2015":
   raise ValueError("No production Ntuples for 2015 data & MC")
@@ -54,25 +57,12 @@ if mode == "VHbb":
   else:
     from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2015 import samples_2015
     from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016 import samples_2016
-
-  for sample_name, sample_info in samples_2016.items():
-    if sample_name in [
-      "/Tau/Run2016B-23Sep2016-v3/MINIAOD",
-      "/Tau/Run2016C-23Sep2016-v1/MINIAOD",
-      "/Tau/Run2016D-23Sep2016-v1/MINIAOD",
-      "/Tau/Run2016E-23Sep2016-v1/MINIAOD",
-      "/Tau/Run2016F-23Sep2016-v1/MINIAOD",
-      "/Tau/Run2016G-23Sep2016-v1/MINIAOD",
-      "/Tau/Run2016H-PromptReco-v2/MINIAOD",
-      "/Tau/Run2016H-PromptReco-v3/MINIAOD"]:
-      sample_info["use_it"] = False
-
   hadTau_selection     = "dR03mvaMedium"
   applyFakeRateWeights = "2lepton"
 elif mode == "addMEM":
   from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_2lss1tau_addMEM import samples_2016
   changeBranchNames    = True
-  MEMbranch            = 'memObjects_2lss_1tau_lepFakeable_tauTight_dR03mvaMedium'
+  MEMbranch                = 'memObjects_2lss_1tau_lepFakeable_tauTight_dR03mvaMedium' #'memObjects_2lss_1tau_lepLoose_tauTight_dR03mvaMedium'
   hadTau_selection     = "dR03mvaMedium"
   applyFakeRateWeights = "2lepton"
 elif mode == "forBDTtraining_beforeAddMEM":
@@ -80,16 +70,18 @@ elif mode == "forBDTtraining_beforeAddMEM":
     from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_prodNtuples_2016_FastSim import samples_2016
   else:
     from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_FastSim import samples_2016
-  hadTau_selection         = "dR03mvaVTight"
-  hadTau_selection_relaxed = "dR03mvaLoose"
-  applyFakeRateWeights     = "3L"
+  hadTau_selection         = "dR03mvaMedium" ## "dR03mvaVTight"
+  hadTau_selection_relaxed = "dR03mvaMedium" ## "dR03mvaLoose"
+  applyFakeRateWeights = "2lepton"
 elif mode == "forBDTtraining_afterAddMEM":
-  from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_2lss1tau_addMEM import samples_2016
+  # the samples used here are derived from production Ntuples anyways, since the possible number of
+  # MEM scores per event is computed only at the production Ntuple step
+  from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_FastSim_addMEM_2lss1tau import samples_2016
   changeBranchNames        = True
-  MEMbranch                = 'memObjects_2lss_1tau_lepLoose_tauTight_dR03mvaLoose'
-  hadTau_selection         = "dR03mvaVTight"
-  hadTau_selection_relaxed = "dR03mvaLoose"
-  applyFakeRateWeights     = "3L"
+  MEMbranch                = 'memObjects_2lss_1tau_lepLoose_tauTight_dR03mvaMedium'
+  hadTau_selection         = "dR03mvaMedium"  ## "dR03mvaVTight"
+  hadTau_selection_relaxed = "dR03mvaMedium"
+  applyFakeRateWeights =  "2lepton"
 
   for sample_name, sample_info in samples_2016.items():
     if sample_info['process_name_specific'] in [
@@ -109,8 +101,30 @@ elif mode == "forBDTtraining_afterAddMEM":
       sample_info["use_it"] = True
     else:
       sample_info["use_it"] = False
+elif mode == "forBDTtraining_VHbb":
+      # the samples used here are derived from production Ntuples anyways, since the possible number of
+      # MEM scores per event is computed only at the production Ntuple step
+      from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_prodNtuples_2016_toBDT import samples_2016
+      changeBranchNames        = True
+      MEMbranch                = '' #'memObjects_2lss_1tau_lepLoose_tauTight_dR03mvaMedium'
+      hadTau_selection         = "dR03mvaMedium"  ## "dR03mvaVTight"
+      hadTau_selection_relaxed = "dR03mvaLoose" #"dR03mvaMedium"
+      applyFakeRateWeights =  "3L" #"2lepton"
 else:
   raise ValueError("Invalid Configuration parameter 'mode' = %s !!" % mode)
+
+if mode == "VHbb" or mode == "addMEM" :
+  for sample_name, sample_info in samples_2016.items():
+    if sample_name in [
+      "/Tau/Run2016B-23Sep2016-v3/MINIAOD",
+      "/Tau/Run2016C-23Sep2016-v1/MINIAOD",
+      "/Tau/Run2016D-23Sep2016-v1/MINIAOD",
+      "/Tau/Run2016E-23Sep2016-v1/MINIAOD",
+      "/Tau/Run2016F-23Sep2016-v1/MINIAOD",
+      "/Tau/Run2016G-23Sep2016-v1/MINIAOD",
+      "/Tau/Run2016H-PromptReco-v2/MINIAOD",
+      "/Tau/Run2016H-PromptReco-v3/MINIAOD"]:
+      sample_info["use_it"] = False
 
 if ERA == "2015":
   samples = samples_2015
@@ -140,6 +154,26 @@ if __name__ == '__main__':
       continue
     logging.info("Job submission #%i:" % (idx_job_resubmission + 1))
 
+    # do histograms for 2D bin optimizations
+    nbinsTarget=[5,6,7,8,9,10];
+    nbinsStart=[15,20];
+    hist_HTT=[] # [[None]*int(len(nbinsTarget))]*len(nbinsStart)
+    hist_noHTT=[] # [[None]*int(len(nbinsTarget))]*len(nbinsStart)
+    hist_HTTMEM=[] # [[None]*int(len(nbinsTarget))]*len(nbinsStart)
+    hist_oldVarA=[] # [[None]*int(len(nbinsTarget))]*len(nbinsStart)
+    for nbinsStartN in range(0,len(nbinsStart)) :
+      for nbinsTargetN in range(0,len(nbinsTarget)) :
+        hist_HTT.append("HTT_from"+str(nbinsStart[nbinsStartN])+"_to_"+str(nbinsTarget[nbinsTargetN]))
+        hist_noHTT.append("noHTT_from"+str(nbinsStart[nbinsStartN])+"_to_"+str(nbinsTarget[nbinsTargetN]))
+        hist_HTTMEM.append("HTTMEM_from"+str(nbinsStart[nbinsStartN])+"_to_"+str(nbinsTarget[nbinsTargetN]))
+        hist_oldVarA.append("oldVarA_from"+str(nbinsStart[nbinsStartN])+"_to_"+str(nbinsTarget[nbinsTargetN]))
+    print list(hist_HTT)
+    print list(hist_noHTT)
+    print list(hist_HTTMEM)
+    print list(hist_oldVarA)
+
+
+
     analysis = analyzeConfig_2lss_1tau(
       configDir                 = configDir,
       outputDir                 = outputDir,
@@ -148,12 +182,12 @@ if __name__ == '__main__':
       samples                   = samples,
       changeBranchNames         = changeBranchNames,
       MEMbranch                 = MEMbranch,
-      lepton_charge_selections  = [ "OS", "SS" ],
+      lepton_charge_selections  = [ "SS" ] if mode.find("forBDTtraining") != -1 else [ "OS", "SS" ],
       hadTau_selection          = hadTau_selection,
       # CV: apply "fake" background estimation to leptons only and not to hadronic taus, as discussed on slide 10 of
       #     https://indico.cern.ch/event/597028/contributions/2413742/attachments/1391684/2120220/16.12.22_ttH_Htautau_-_Review_of_systematics.pdf
       applyFakeRateWeights      = applyFakeRateWeights,
-      chargeSumSelections       = [ "OS", "SS" ],
+      chargeSumSelections       = [ "OS"] if mode.find("forBDTtraining") != -1 else [ "OS", "SS" ],
       central_or_shifts         = [
         "central",
 ##         "CMS_ttHl_btag_HFUp",
@@ -224,14 +258,39 @@ if __name__ == '__main__':
       histograms_to_fit         = [
         "EventCounter",
         "numJets",
+        "mvaOutput_2lss_ttV",
+        "mvaOutput_2lss_ttbar",
         "mvaDiscr_2lss",
+        "mvaOutput_2lss_1tau_ttV",
+        "mvaOutput_2lss_1tau_ttbar",
         "mvaDiscr_2lss_1tau",
+        "mvaOutput_2lss_1tau_ttV_wMEM",
+        "mvaOutput_2lss_1tau_ttbar_wMEM",
         "mvaDiscr_2lss_1tau_wMEM",
-        #"mvaDiscr_2lss_1tau_wMEMsepLR",
-        "mTauTauVis",
-        "memOutput_LR_type0",
-        "memOutput_LR_type1",
-      ],
+        "mvaOutput_Hj_tagger",
+        "mvaOutput_Hjj_tagger",
+        "mTauTauVis1_sel",
+        "mTauTauVis2_sel",
+        "memOutput_LR",
+        "memDiscr",
+        #
+        "mvaOutput_2lss_oldVarA_tt",
+        "mvaOutput_2lss_oldVarA_ttV",
+        "mvaOutput_2lss_noHTT_tt",
+        "mvaOutput_2lss_noHTT_ttV",
+        "mvaOutput_2lss_HTT_tt",
+        "mvaOutput_2lss_HTTMEM_tt",
+        "mvaOutput_2lss_HTTMEM_ttV",
+        "mvaOutput_2lss_HTT_LepID_tt",
+        #
+        "mvaOutput_2lss_HTTMEM_1B",
+        "mvaOutput_2lss_HTT_1B",
+        "mvaOutput_2lss_noHTT_1B",
+        "mvaOutput_2lss_oldVarA_1B",
+        "mvaOutput_2lss_oldVarA_2MEM",
+        "mvaOutput_2lss_noHTT_2MEM",
+        "mvaOutput_2lss_noHTT_2HTT"
+      ] + list(hist_HTTMEM) + list(hist_oldVarA)  + list(hist_HTT) +list(hist_noHTT),
       select_rle_output         = True,
       verbose                   = idx_job_resubmission > 0,
     )
@@ -258,4 +317,3 @@ if __name__ == '__main__':
     logging.info("Job submission #%i:" % (idx_job_resubmission + 1))
     for job_type, num_jobs in job_statistics_summary[idx_job_resubmission].items():
       logging.info(" #jobs of type '%s' = %i" % (job_type, num_jobs))
-

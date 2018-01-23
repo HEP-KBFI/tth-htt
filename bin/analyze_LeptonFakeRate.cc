@@ -246,7 +246,7 @@ struct numerator_and_denominatorHistManagers
 
   void fillHistograms(const RecoLepton& lepton, double met, double mT, double mT_fix, double evtWeight, cutFlowTableType* cutFlowTable = 0)
   {
-    if ( isInclusive_ || (lepton.absEta() >= minAbsEta_ && lepton.absEta() < maxAbsEta_ && lepton.pt() >= minPt_ && lepton.pt() < maxPt_) ) {
+    if ( isInclusive_ || (lepton.absEta() >= minAbsEta_ && lepton.absEta() < maxAbsEta_ && lepton.cone_pt() >= minPt_ && lepton.cone_pt() < maxPt_) ) {
       if ( lepton_type_ == kElectron ) {
 	const RecoElectron* electron = dynamic_cast<const RecoElectron*>(&lepton);
 	assert(electron);
@@ -270,10 +270,10 @@ struct numerator_and_denominatorHistManagers
       } else assert(0);
       evtHistManager_LeptonFakeRate_->fillHistograms(met, mT, mT_fix, evtWeight);
       if ( isMC_ ) {
-	evtHistManager_LeptonFakeRate_genHadTau_->fillHistograms(met, mT, mT_fix, evtWeight);
-	evtHistManager_LeptonFakeRate_genLepton_->fillHistograms(met, mT, mT_fix, evtWeight);
-	evtHistManager_LeptonFakeRate_genHadTauOrLepton_->fillHistograms(met, mT, mT_fix, evtWeight);
-	evtHistManager_LeptonFakeRate_genJet_->fillHistograms(met, mT, mT_fix, evtWeight);
+	if ( lepton.genHadTau() ) evtHistManager_LeptonFakeRate_genHadTau_->fillHistograms(met, mT, mT_fix, evtWeight);
+	if ( lepton.genLepton() ) evtHistManager_LeptonFakeRate_genLepton_->fillHistograms(met, mT, mT_fix, evtWeight);
+	if ( lepton.genHadTau() || lepton.genLepton() ) evtHistManager_LeptonFakeRate_genHadTauOrLepton_->fillHistograms(met, mT, mT_fix, evtWeight);
+	else evtHistManager_LeptonFakeRate_genJet_->fillHistograms(met, mT, mT_fix, evtWeight);
       }
       if ( cutFlowTable ) {
 	cutFlowTable->update(label_, evtWeight);
@@ -320,7 +320,7 @@ void fillHistograms(std::vector<numerator_and_denominatorHistManagers*>& histogr
 
 void initializeCutFlowTable(cutFlowTableType& cutFlowTable, const std::string& cut)
 {
-  cutFlowTable.update(cut, 0.); // do not increase event counts in cut-flow table, just register cut
+  cutFlowTable.update(cut, -1.); // do not increase event counts in cut-flow table, just register cut
 }
 
 void initializeCutFlowTable(cutFlowTableType& cutFlowTable, std::vector<numerator_and_denominatorHistManagers*>& histograms)
@@ -396,9 +396,9 @@ int main(int argc, char* argv[])
   // bool apply_trigger_bits = cfg_analyze.getParameter<bool>("apply_trigger_bits"); // NOT NEEDED FROM NOW ON
 
   vdouble etaBins_e = cfg_analyze.getParameter<vdouble>("absEtaBins_e");
-  vdouble ptBins_e = cfg_analyze.getParameter<vdouble>("absPtBins_e"); 
+  vdouble ptBins_e = cfg_analyze.getParameter<vdouble>("ptBins_e"); 
   vdouble etaBins_mu = cfg_analyze.getParameter<vdouble>("absEtaBins_mu");
-  vdouble ptBins_mu = cfg_analyze.getParameter<vdouble>("absPtBins_mu");
+  vdouble ptBins_mu = cfg_analyze.getParameter<vdouble>("ptBins_mu");
 
   double minPt_e = cfg_analyze.getParameter<double>("minPt_e");   // NEWLY ADDED
   double minPt_mu = cfg_analyze.getParameter<double>("minPt_mu"); // NEWLY ADDED
@@ -503,7 +503,7 @@ int main(int argc, char* argv[])
   std::cout << "Loaded " << inputTree -> getFileCount() << " file(s).\n";
 
 //--- declare event-level variables
-  EventInfo eventInfo(isSignal, isMC);
+  EventInfo eventInfo(isSignal, isMC, isMC_tH);
   EventInfoReader eventInfoReader(&eventInfo);
   inputTree->registerReader(&eventInfoReader);
 
@@ -710,26 +710,30 @@ int main(int argc, char* argv[])
   }
 
 //--- book additional event level histograms
-  TH1* histogram_met_pt = fs.make<TH1D>("met_pt", "met_pt", 40, 0., 200.);                                                                                                 
+  TH1* histogram_met_pt = fs.make<TH1D>("met_pt", "met_pt", 40, 0., 200.);                                                                 
   TH1* histogram_met_phi = fs.make<TH1D>("met_phi", "met_phi", 36, -TMath::Pi(), +TMath::Pi());
+  TH1* histogram_rnd_e = fs.make<TH1D>("rnd_e", "rnd_e", 100, 0., 1.);
+  TH1* histogram_rnd_mu = fs.make<TH1D>("rnd_mu", "rnd_mu", 100, 0., 1.);
 
   int analyzedEntries = 0;
   int selectedEntries = 0;
   double selectedEntries_weighted = 0.;
   TH1* histogram_analyzedEntries = fs.make<TH1D>("analyzedEntries", "analyzedEntries", 1, -0.5, +0.5);
   TH1* histogram_selectedEntries = fs.make<TH1D>("selectedEntries", "selectedEntries", 1, -0.5, +0.5);
-  cutFlowTableType cutFlowTable_e;
+  cutFlowTableType cutFlowTable_e(isDEBUG);
   // define order in which rows are printed in cut-flow table
   initializeCutFlowTable(cutFlowTable_e, ">= 1 fakeable electron");
-  initializeCutFlowTable(cutFlowTable_e, "electron+jet pair passing trigger");
+  initializeCutFlowTable(cutFlowTable_e, "electron+jet pair passing trigger bit");
+  initializeCutFlowTable(cutFlowTable_e, "electron+jet pair passing trigger bit && prescale");
   initializeCutFlowTable(cutFlowTable_e, histograms_e_numerator_binned_beforeCuts);
   initializeCutFlowTable(cutFlowTable_e, histograms_e_denominator_binned_beforeCuts);
   initializeCutFlowTable(cutFlowTable_e, "mT_fix(electron, MET) < 15 GeV");
   initializeCutFlowTable(cutFlowTable_e, histograms_e_numerator_binned_afterCuts);
   initializeCutFlowTable(cutFlowTable_e, histograms_e_denominator_binned_afterCuts);
-  cutFlowTableType cutFlowTable_mu;
+  cutFlowTableType cutFlowTable_mu(isDEBUG);
   initializeCutFlowTable(cutFlowTable_mu, ">= 1 fakeable muon");
-  initializeCutFlowTable(cutFlowTable_mu, "muon+jet pair passing trigger");
+  initializeCutFlowTable(cutFlowTable_mu, "muon+jet pair passing trigger bit");
+  initializeCutFlowTable(cutFlowTable_mu, "muon+jet pair passing trigger bit && prescale");
   initializeCutFlowTable(cutFlowTable_mu, histograms_mu_numerator_binned_beforeCuts);
   initializeCutFlowTable(cutFlowTable_mu, histograms_mu_denominator_binned_beforeCuts);
   initializeCutFlowTable(cutFlowTable_mu, "mT_fix(muon, MET) < 15 GeV");
@@ -900,7 +904,7 @@ int main(int argc, char* argv[])
 	   (use_triggers_2e && (*hltPath_iter)->is_trigger_2e()) ) {
 	for ( std::vector<const RecoElectron*>::const_iterator fakeableElectron = fakeableElectrons.begin();
 	      fakeableElectron != fakeableElectrons.end(); ++fakeableElectron ) {
-	  if ( !((*fakeableElectron)->pt() > minPt_e) ) continue;
+	  if ( !((*fakeableElectron)->cone_pt() > minPt_e) ) continue;
 	  bool isGoodElectronJetPair = false;
 	  for ( std::vector<const RecoJet*>::const_iterator selJet = selJets_dR07.begin();
 		selJet != selJets_dR07.end(); ++selJet ) {
@@ -910,20 +914,26 @@ int main(int argc, char* argv[])
 	      isGoodElectronJetPair = true;
 	    }
 	  }
-	  if ( !isGoodElectronJetPair ) continue;	 
+	  if ( !isGoodElectronJetPair ) continue;
+	  cutFlowTable_e.update("electron+jet pair passing trigger bit", evtWeight);
+	  //std::cout << "evtWeight = " << evtWeight << std::endl;
 	  double mT = comp_mT(**fakeableElectron, met.pt(), met.phi());
 	  double mT_fix = comp_mT_fix(**fakeableElectron, met.pt(), met.phi());
 	  double evtWeight_LepJetPair = evtWeight; // copying evtWeight
+	  std::cout << (**hltPath_iter);
 	  if ( isMC ) {
 	    if ( (*hltPath_iter)->getPrescale_rand_mc() > 1. ){
-	      double u = rand.Rndm(); // returns uniformly distributed random number between 0 and 1      
+	      double u = rand.Rndm(); // returns uniformly distributed random number between 0 and 1  
+	      //std::cout << "u = " << u << std::endl;
+	      fillWithOverFlow(histogram_rnd_e, u, 1.);
 	      if ( u > (1./(*hltPath_iter)->getPrescale_rand_mc()) ) continue;
 	      evtWeight_LepJetPair *= (*hltPath_iter)->getPrescale_rand_mc()/(*hltPath_iter)->getPrescale();
 	    } else {
 	      evtWeight_LepJetPair *= 1./(*hltPath_iter)->getPrescale();              
 	    }
 	  }
-	  cutFlowTable_e.update("electron+jet pair passing trigger", evtWeight_LepJetPair);	  
+	  cutFlowTable_e.update("electron+jet pair passing trigger bit && prescale", evtWeight_LepJetPair);
+	  //std::cout << "evtWeight_LepJetPair = " << evtWeight_LepJetPair << std::endl;
 	  isGoodLeptonJetPair = true;
 	  numerator_and_denominatorHistManagers* histograms_incl_beforeCuts = 0;
 	  numerator_and_denominatorHistManagers* histograms_incl_afterCuts = 0;
@@ -959,7 +969,7 @@ int main(int argc, char* argv[])
 	   (use_triggers_2mu && (*hltPath_iter)->is_trigger_2mu()) ) {
 	for ( std::vector<const RecoMuon*>::const_iterator fakeableMuon = fakeableMuons.begin();
 	      fakeableMuon != fakeableMuons.end(); ++fakeableMuon ) {
-	  if ( !((*fakeableMuon)->pt() > minPt_mu) ) continue;
+	  if ( !((*fakeableMuon)->cone_pt() > minPt_mu) ) continue;
 	  bool isGoodMuonJetPair = false;
 	  for ( std::vector<const RecoJet*>::const_iterator selJet = selJets_dR07.begin();
 		selJet != selJets_dR07.end(); ++selJet ) {
@@ -971,20 +981,26 @@ int main(int argc, char* argv[])
 	      }
 	    }
 	  }
-	  if ( !isGoodMuonJetPair ) continue;	  
+	  if ( !isGoodMuonJetPair ) continue;	 
+	  cutFlowTable_mu.update("muon+jet pair passing trigger bit", evtWeight);
+	  //std::cout << "evtWeight = " << evtWeight << std::endl;
 	  double mT = comp_mT(**fakeableMuon, met.pt(), met.phi());
 	  double mT_fix = comp_mT_fix(**fakeableMuon, met.pt(), met.phi());
 	  double evtWeight_LepJetPair = evtWeight; // copying evtWeight
+	  std::cout << (**hltPath_iter);
 	  if ( isMC ) {
 	    if ( (*hltPath_iter)->getPrescale_rand_mc() > 1. ){
-	      double u = rand.Rndm(); // returns uniformly distributed random number between 0 and 1      
+	      double u = rand.Rndm(); // returns uniformly distributed random number between 0 and 1
+	      //std::cout << "u = " << u << std::endl;
+	      fillWithOverFlow(histogram_rnd_mu, u, 1.);
 	      if ( u > (1./(*hltPath_iter)->getPrescale_rand_mc()) ) continue;
 	      evtWeight_LepJetPair *= (*hltPath_iter)->getPrescale_rand_mc()/(*hltPath_iter)->getPrescale();
 	    } else {
 	      evtWeight_LepJetPair *= 1./(*hltPath_iter)->getPrescale();              
 	    }
 	  }
-	  cutFlowTable_mu.update("muon+jet pair passing trigger", evtWeight_LepJetPair);
+	  cutFlowTable_mu.update("muon+jet pair passing trigger bit && prescale", evtWeight_LepJetPair);
+	  //std::cout << "evtWeight_LepJetPair = " << evtWeight_LepJetPair << std::endl;
 	  isGoodLeptonJetPair = true;
 	  numerator_and_denominatorHistManagers* histograms_incl_beforeCuts = 0;
 	  numerator_and_denominatorHistManagers* histograms_incl_afterCuts = 0;

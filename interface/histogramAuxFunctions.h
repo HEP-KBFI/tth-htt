@@ -26,7 +26,7 @@ TH1* addHistograms(const std::string&, const std::vector<TH1*>&, int = 0);
 TH1* subtractHistograms(const std::string&, const TH1*, const TH1*, int = 0);
 TH1* subtractHistograms(const std::string&, const TH1*, const std::vector<TH1*>&, int = 0);
 
-double compIntegral(TH1*, bool, bool);
+double compIntegral(const TH1*, bool, bool);
 
 void makeBinContentsPositive(TH1*, int = 0);
 
@@ -37,10 +37,10 @@ TDirectory* getSubdirectory(const TDirectory*, const std::string&, bool);
 
 TH1* getHistogram(const TDirectory*, const std::string&, const std::string&, const std::string&, bool);
 
-TDirectory* createSubdirectory(TDirectory*, const std::string&);
-TDirectory* createSubdirectory_recursively(TFileDirectory&, const std::string&);
+TDirectory* createSubdirectory(TDirectory*, const std::string&, bool verbose = true);
+TDirectory* createSubdirectory_recursively(TFileDirectory&, const std::string&, bool verbose = true);
 
-TArrayD getBinning(const TH1*);
+TArrayD getBinning(const TH1*, double xMin = -1., double xMax = -1.);
 TH1* getRebinnedHistogram1d(const TH1*, unsigned, const TArrayD&);
 TH2* getRebinnedHistogram2d(const TH1*, unsigned, const TArrayD&, unsigned, const TArrayD&);
 

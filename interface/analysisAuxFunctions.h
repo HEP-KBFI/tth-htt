@@ -24,10 +24,10 @@ const double mht_coef =  0.00265;
 enum { kEra_2015, kEra_2016, kEra_2017 };
 
 //--- declare systematic uncertainties on data/MC corrections for b-tagging efficiency and mistag rates
-enum { kBtag_central, 
+enum { kBtag_central,
        kBtag_hfUp, kBtag_hfDown, kBtag_hfStats1Up, kBtag_hfStats1Down, kBtag_hfStats2Up, kBtag_hfStats2Down,
        kBtag_lfUp, kBtag_lfDown, kBtag_lfStats1Up, kBtag_lfStats1Down, kBtag_lfStats2Up, kBtag_lfStats2Down,
-       kBtag_cErr1Up, kBtag_cErr1Down, kBtag_cErr2Up, kBtag_cErr2Down, 
+       kBtag_cErr1Up, kBtag_cErr1Down, kBtag_cErr2Up, kBtag_cErr2Down,
        kBtag_jesUp, kBtag_jesDown };
 
 //--- declare selection criteria for leptons and hadronic taus
@@ -197,8 +197,8 @@ void printJetCollection(const std::string& collection_name, const std::vector<co
  * @brief Compute sign of value given as function parameter
  * @return +1 if val > 0, 0 if val = 0, -1 of val < 0
  */
-template <typename T> 
-int sgn(T val) 
+template <typename T>
+int sgn(T val)
 {
   if      ( val > 0 ) return +1;
   else if ( val < 0 ) return -1;

@@ -97,6 +97,7 @@ class analyzeConfig_charge_flip(analyzeConfig):
     lines.append("process.analyze_charge_flip.isMC = cms.bool(%s)" % jobOptions["is_mc"])
     lines.append("process.analyze_charge_flip.central_or_shift = cms.string('%s')" % jobOptions["central_or_shift"])
     lines.append("process.analyze_charge_flip.lumiScale = cms.double(%f)" % jobOptions["lumi_scale"])
+    lines.append("process.analyze_charge_flip.apply_genWeight = cms.bool(%s)" % jobOptions['apply_genWeight'])
     lines.append("process.analyze_charge_flip.apply_trigger_bits = cms.bool(%s)" % jobOptions["apply_trigger_bits"])
     lines.append("process.analyze_charge_flip.selEventsFileName_output = cms.string('%s')" % jobOptions["rleOutputFile"])
     lines.append("process.analyze_charge_flip.use_HIP_mitigation_mediumMuonId = cms.bool(%s)" % jobOptions["use_HIP_mitigation_mediumMuonId"])
@@ -309,7 +310,6 @@ class analyzeConfig_charge_flip(analyzeConfig):
       self.sbatchFile_analyze = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_analyze_%s.py" % self.channel)
       self.createScript_sbatch_analyze(self.executable_analyze, self.sbatchFile_analyze, self.jobOptions_analyze)
       
-
     logging.info("Creating Makefile")
     lines_makefile = []
     self.addToMakefile_analyze(lines_makefile)
@@ -322,3 +322,5 @@ class analyzeConfig_charge_flip(analyzeConfig):
     self.createMakefile(lines_makefile)
   
     logging.info("Done")
+
+    return self.num_jobs

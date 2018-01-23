@@ -40,10 +40,10 @@ process.prepareDatacards = cms.PSet(
     makeSubDir = cms.bool(False),
 
     histogramToFit = cms.string("mvaDiscr_2lss"),
+    histogramToFit_xMin = cms.double(-1.),
+    histogramToFit_xMax = cms.double(-1.),
     histogramToFit_rebin = cms.int32(1),
     histogramToFit_makeBinContentsPositive = cms.bool(True),
-
-    setBinsToZeroBelow = cms.double(-1.),
 
     sysShifts = cms.vstring(
         "CMS_ttHl_btag_HFUp",
