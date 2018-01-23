@@ -448,7 +448,7 @@ int main(int argc, char* argv[])
   tightHadTauSelector.set_min_antiElectron(hadTauSelection_antiElectron);
   tightHadTauSelector.set_min_antiMuon(hadTauSelection_antiMuon);
   RecoHadTauSelectorTight tightHadTauFilter(era);
-  tightHadTauFilter.set("dR03mvaMedium");
+  tightHadTauFilter.set("dR03mvaVTight");
   tightHadTauFilter.set_min_antiElectron(hadTauSelection_antiElectron);
   tightHadTauFilter.set_min_antiMuon(hadTauSelection_antiMuon);
   
@@ -691,8 +691,8 @@ int main(int argc, char* argv[])
       "mindr_tau1_jet", "mindr_tau2_jet", "avg_dr_jet", "ptmiss",  "htmiss", "tau1_mva", "tau1_pt", "tau1_eta", "tau2_mva", "tau2_pt", "tau2_eta", "dr_leps", "dr_taus",
       "mTauTauVis", "leptonPairCharge", "hadTauPairCharge", "lumiScale", "genWeight", "evtWeight",
       "lep1_genLepPt", "lep2_genLepPt", "tau1_genTauPt", "tau2_genTauPt", 
-      "lep1_fake_prob", "lep2_fake_prob", "tau1_fake_prob", "tau2_fake_prob",
-      "mvaOutput_2l_ttV", "mvaOutput_2l_ttbar", "mvaDiscr_2l"
+      "lep1_fake_prob", "lep2_fake_prob", "tau1_fake_prob", "tau2_fake_prob"
+      //"mvaOutput_2l_ttV", "mvaOutput_2l_ttbar", "mvaDiscr_2l"
     );
     bdt_filler -> register_variable<int_type>(
       "nJet", "nBJetLoose", "nBJetMedium", "lep1_isTight", "lep2_isTight", "tau1_isTight", "tau2_isTight"
