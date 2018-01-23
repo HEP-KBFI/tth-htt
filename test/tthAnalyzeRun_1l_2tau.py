@@ -97,9 +97,9 @@ elif mode == "forBDTtraining":
 	#from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_hadTopTagger_2016 import samples_2016
   else:
     from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_FastSim import samples_2016
-	#from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_hadTopTagger_2016 import samples_2016
+	#from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_hadTopTagger_2016 import samples_2016 
   hadTau_selection                   = "dR03mvaVTight"
-  hadTau_selection_relaxed           = "dR03mvaLoose"
+  hadTau_selection_relaxed           = "dR03mvaLoose" ## "dR03mvaVTight" # "dR03mvaMedium" # xanda read if there is such #
   applyFakeRateWeights               = "3L"
 else:
   raise ValueError("Invalid Configuration parameter 'mode' = %s !!" % mode)
