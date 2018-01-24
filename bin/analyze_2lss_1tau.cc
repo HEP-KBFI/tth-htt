@@ -2822,7 +2822,7 @@ int main(int argc, char* argv[])
     }
   }
   std::cout << std::endl;
-  std::cout << "Sum of weihghts "<< evtWeightSum << std::endl;
+  std::cout << "Sum of weights "<< evtWeightSum << std::endl;
 
   delete dataToMCcorrectionInterface;
 
@@ -2830,12 +2830,9 @@ int main(int argc, char* argv[])
   delete jetToTauFakeRateInterface;
 
   delete run_lumi_eventSelector;
-  std::cout << " delete 1"<< std::endl;
 
   delete inputFile_mva_mapping_2lss_1tau;
   delete inputFile_mva_mapping_2lss_1tau_wMEM;
-
-  std::cout << " delete 2"<< std::endl;
 
   delete selEventsFile;
 
@@ -2849,10 +2846,8 @@ int main(int argc, char* argv[])
   delete genHadTauReader;
   delete genJetReader;
   delete lheInfoReader;
-  std::cout << " delete 3"<< std::endl;
 
   delete hadTopTagger;
-  std::cout << " delete 3"<< std::endl;
 
   delete genEvtHistManager_beforeCuts;
   delete genEvtHistManager_afterCuts;
