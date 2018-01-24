@@ -56,9 +56,6 @@ run_wrapped_executable() {
     export JOB_DIR="{{ job_dir }}/$SLURM_JOBID"
     EXECUTABLE_LOG_FILE="{{ executable_log_file }}"
     EXECUTABLE_LOG_DIR="`dirname $EXECUTABLE_LOG_FILE`"
-    EXECUTABLE_LOG_FILE_NAME="`basename $EXECUTABLE_LOG_FILE`"
-    TEMPORARY_EXECUTABLE_LOG_DIR="$JOB_DIR/$EXECUTABLE_LOG_DIR/"
-    TEMPORARY_EXECUTABLE_LOG_FILE="$TEMPORARY_EXECUTABLE_LOG_DIR/$EXECUTABLE_LOG_FILE_NAME"
     RANDOM_SLEEP={{ random_sleep }}
 
     echo "Time is: `date`"
@@ -70,9 +67,6 @@ run_wrapped_executable() {
 
     echo "Create job directory: mkdir -p $JOB_DIR"
     mkdir -p $JOB_DIR
-
-    echo "Create temporary log directory: mkdir -p $TEMPORARY_EXECUTABLE_LOG_DIR"
-    mkdir -p $TEMPORARY_EXECUTABLE_LOG_DIR
 
     echo "Create final log directory: mkdir -p $EXECUTABLE_LOG_DIR"
     mkdir -p $EXECUTABLE_LOG_DIR
@@ -92,8 +86,8 @@ run_wrapped_executable() {
 
     CMSSW_SEARCH_PATH="$JOB_DIR:{{ cmssw_base_dir }}/src"
 
-    echo "Execute command: {{ exec_name }} {{ command_line_parameter }} &> $TEMPORARY_EXECUTABLE_LOG_FILE"
-    {{ exec_name }} {{ command_line_parameter }} &> $TEMPORARY_EXECUTABLE_LOG_FILE
+    echo "Execute command: {{ exec_name }} {{ command_line_parameter }} &> $EXECUTABLE_LOG_FILE"
+    {{ exec_name }} {{ command_line_parameter }} &> $EXECUTABLE_LOG_FILE
     EXIT_CODE=$?
     echo "Command {{ exec_name }} exited with code $EXIT_CODE"
 
@@ -151,12 +145,6 @@ run_wrapped_executable() {
     done
 
     echo "Time is: `date`"
-
-    echo "Contents of temporary log dir: ls -laR $TEMPORARY_EXECUTABLE_LOG_DIR"
-    ls -laR $TEMPORARY_EXECUTABLE_LOG_DIR
-
-    echo "Copy from temporary output dir to output dir: cp -a $TEMPORARY_EXECUTABLE_LOG_DIR/* $EXECUTABLE_LOG_DIR/"
-    cp -a $TEMPORARY_EXECUTABLE_LOG_DIR/* $EXECUTABLE_LOG_DIR/
 
     echo "Delete job directory: rm -r $JOB_DIR"
     rm -r $JOB_DIR
