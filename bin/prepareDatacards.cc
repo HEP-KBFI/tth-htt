@@ -168,7 +168,7 @@ namespace
       if ( histogram_central->GetEntries() > 0 ) {
 	histogram_input = histogram_central;
 	isSystematicFromCentral = true;
-      } else return 0;
+      } 
     }
 
     TArrayD histogramBinning_input = getBinning(histogram_input);

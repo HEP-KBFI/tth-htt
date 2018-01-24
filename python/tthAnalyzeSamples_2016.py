@@ -484,7 +484,7 @@ samples_2016["/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISumme
   ("use_HIP_mitigation_bTag",         False),
   ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                          True),
-  ("xsection",                        6025.2),
+  ("xsection",                        5765.4),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("reHLT",                           True),
@@ -508,7 +508,7 @@ samples_2016["/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISumme
   ("use_HIP_mitigation_bTag",         False),
   ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                          True),
-  ("xsection",                        6025.2),
+  ("xsection",                        5765.4),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("reHLT",                           True),
@@ -2338,3 +2338,7 @@ samples_2016["/SingleElectron/Run2016G-23Sep2016-v1/MINIAOD"] = OD([
     ]
   ),
 ])
+
+
+
+
