@@ -6,9 +6,9 @@ from tthAnalysis.HiggsToTauTau.analyzeConfig_LeptonFakeRate import analyzeConfig
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 
 ERA                    = "2016"
-version                = "2017Dec07"
-cmssw_base_dir_combine = os.path.expanduser('~/CMSSW_7_4_7') # immediate parent dir to src folder
-
+version                = "2018Jan22_RED_BGS_ALL_LEPTON_PT_TIGHT_FAKE_EXCLUSIVE_LOGIC_CORR"
+## cmssw_base_dir_combine = os.path.expanduser('~/CMSSW_7_4_7') # immediate parent dir to src folder
+cmssw_base_dir_combine = os.path.expanduser('~/VHBB_NTUPLES_2017/CMSSW_7_4_7_CombineHarvestor') # immediate parent dir to src folder                                                                      
 if ERA == "2016":
   samples = samples_2016
   for sample_name, sample_info in samples_2016.items():
@@ -31,6 +31,11 @@ if ERA == "2016":
   LUMI = 35.9e+3 # 1/pb
 else:
   raise ValueError("Invalid Configuration parameter 'ERA' = %s !!" % ERA)
+
+### FOR DEBUGGING ONLY (W/O CHANGING PT AND ETA BINS) ###
+#for sample_key, sample_value in samples.items():
+#  sample_value["use_it"] = False
+###########################
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -113,8 +118,8 @@ if __name__ == '__main__':
 
   analysis.create()
 
-  ##run_analysis = query_yes_no("Start jobs ?")
-  run_analysis = True
+  run_analysis = query_yes_no("Start jobs ?")
+  ## run_analysis = False
   if run_analysis:
     analysis.run()
   else:

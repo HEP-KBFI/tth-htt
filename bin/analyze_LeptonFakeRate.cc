@@ -526,7 +526,7 @@ int main(int argc, char* argv[])
   RecoElectronReader* electronReader = new RecoElectronReader(era, Form("n%s", branchName_electrons.data()), branchName_electrons, readGenObjects);
   inputTree->registerReader(electronReader);
   RecoElectronCollectionGenMatcher electronGenMatcher;
-  RecoElectronCollectionCleaner electronCleaner(0.3);
+  RecoElectronCollectionCleaner electronCleaner(0.3); // DEF VALUE 0.3
   RecoElectronCollectionSelectorLoose preselElectronSelector(era);
   RecoElectronCollectionSelectorFakeable fakeableElectronSelector(era);
   fakeableElectronSelector.enable_offline_e_trigger_cuts();
@@ -784,21 +784,25 @@ int main(int argc, char* argv[])
     std::vector<const RecoMuon*> muon_ptrs = convert_to_ptrs(muons);
     std::vector<const RecoMuon*> cleanedMuons = muon_ptrs; // CV: no cleaning needed for muons, as they have the highest priority in the overlap removal
     std::vector<const RecoMuon*> preselMuons = preselMuonSelector(cleanedMuons); 
-    std::vector<const RecoMuon*> fakeableMuons = fakeableMuonSelector(preselMuons); 
+    std::vector<const RecoMuon*> fakeableMuons = fakeableMuonSelector(preselMuons); // DEF LINE 
+    // std::vector<const RecoMuon*> fakeableMuons_tmp = fakeableMuonSelector(preselMuons); 
     // define muon collection for numerator    
-    std::vector<const RecoMuon*> tightMuons = tightMuonSelector(preselMuons);
+    // std::vector<const RecoMuon*> tightMuons = tightMuonSelector(preselMuons); // DEF LINE
+    std::vector<const RecoMuon*> tightMuons = tightMuonSelector(fakeableMuons);
     // define muon collection for denominator (excluding muons that pass numerator)
-    //std::vector<const RecoMuon*> fakeable_and_notTightMuons = muonCleaner(fakeableMuons, tightMuons);
+    // std::vector<const RecoMuon*> fakeableMuons = muonCleaner(fakeableMuons_tmp, tightMuons);
 
     std::vector<RecoElectron> electrons = electronReader->read();
     std::vector<const RecoElectron*> electron_ptrs = convert_to_ptrs(electrons);
     std::vector<const RecoElectron*> cleanedElectrons = electronCleaner(electron_ptrs, preselMuons);  
     std::vector<const RecoElectron*> preselElectrons = preselElectronSelector(cleanedElectrons); 
-    std::vector<const RecoElectron*> fakeableElectrons = fakeableElectronSelector(preselElectrons); 
+    std::vector<const RecoElectron*> fakeableElectrons = fakeableElectronSelector(preselElectrons); // DEF LINE 
+    // std::vector<const RecoElectron*> fakeableElectrons_tmp = fakeableElectronSelector(preselElectrons); 
     // define electron collection for numerator    
-    std::vector<const RecoElectron*> tightElectrons = tightElectronSelector(preselElectrons);
+    // std::vector<const RecoElectron*> tightElectrons = tightElectronSelector(preselElectrons); // DEF LINE
+    std::vector<const RecoElectron*> tightElectrons = tightElectronSelector(fakeableElectrons);
     // define electron collection for denominator (excluding electrons that pass numerator)
-    //std::vector<const RecoElectron*> fakeable_and_notTightElectrons = electronCleaner(fakeableElectrons, tightElectrons);
+    // std::vector<const RecoElectron*> fakeableElectrons = electronCleaner(fakeableElectrons_tmp, tightElectrons);
 
     //std::vector<RecoHadTau> hadTaus = hadTauReader->read();
     //std::vector<const RecoHadTau*> hadTau_ptrs = convert_to_ptrs(hadTaus);
@@ -812,7 +816,7 @@ int main(int argc, char* argv[])
     std::vector<const RecoJet*> cleanedJets_dR04 = jetCleaner_dR04(jet_ptrs, preselMuons, preselElectrons); 
     std::vector<const RecoJet*> selJets_dR04 = jetSelector(cleanedJets_dR04);
     std::vector<const RecoJet*> selBJets_loose_dR04 = jetSelectorBtagLoose(cleanedJets_dR04);
-    std::vector<const RecoJet*> cleanedJets_dR07 = jetCleaner_dR04(jet_ptrs, preselMuons, preselElectrons); 
+    std::vector<const RecoJet*> cleanedJets_dR07 = jetCleaner_dR07(jet_ptrs, preselMuons, preselElectrons); 
     std::vector<const RecoJet*> selJets_dR07 = jetSelector(cleanedJets_dR07);
     std::vector<const RecoJet*> selBJets_loose_dR07 = jetSelectorBtagLoose(cleanedJets_dR07);
 
@@ -944,7 +948,7 @@ int main(int argc, char* argv[])
 	    histograms_incl_afterCuts = histograms_e_numerator_incl_afterCuts;
 	    histograms_binned_beforeCuts = &histograms_e_numerator_binned_beforeCuts;
 	    histograms_binned_afterCuts = &histograms_e_numerator_binned_afterCuts;
-	  } else { // electron enters denominator
+	  } else if ( (*fakeableElectron)->isFakeable() ) { // electron enters denominator (fakeable but not tight)
 	    histograms_incl_beforeCuts = histograms_e_denominator_incl_beforeCuts;
 	    histograms_incl_afterCuts = histograms_e_denominator_incl_afterCuts;
 	    histograms_binned_beforeCuts = &histograms_e_denominator_binned_beforeCuts;
@@ -1011,7 +1015,7 @@ int main(int argc, char* argv[])
 	    histograms_incl_afterCuts = histograms_mu_numerator_incl_afterCuts;
 	    histograms_binned_beforeCuts = &histograms_mu_numerator_binned_beforeCuts;
 	    histograms_binned_afterCuts = &histograms_mu_numerator_binned_afterCuts;
-	  } else { // muon enters denominator
+	  } else if ( (*fakeableMuon)->isFakeable() ) { // muon enters denominator (fakeable but not tight)
 	    histograms_incl_beforeCuts = histograms_mu_denominator_incl_beforeCuts;
 	    histograms_incl_afterCuts = histograms_mu_denominator_incl_afterCuts;
 	    histograms_binned_beforeCuts = &histograms_mu_denominator_binned_beforeCuts;

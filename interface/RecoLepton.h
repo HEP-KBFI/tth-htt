@@ -101,13 +101,15 @@ class RecoLepton
   Int_t charge() const { return charge_; }
   Double_t cone_pt() const 
   { 
-    if ( isFakeable_ && !isTight_ ) return cone_pt_;
-    else return pt_;
+    // if(isFakeable_ && !isTight_) return cone_pt_; // DEF LINES
+    // else return pt_;                              // DEF LINES
+    return pt_;  // making cone_pt = cone_pt for both tight and fakeable
   }
   const Particle::LorentzVector& cone_p4() const 
   { 
-    if ( isFakeable_ && !isTight_ ) return cone_p4_;
-    else return p4_;
+    // if (isFakeable_ && !isTight_) return cone_p4_; // DEF LINES
+    // else return p4_;                               // DEF LINES
+    return p4_; // making cone_pt = cone_pt for both tight and fakeable
   }
   
   const GenLepton* genLepton() const { return genLepton_; }
