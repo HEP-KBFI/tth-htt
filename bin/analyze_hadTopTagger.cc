@@ -259,15 +259,12 @@ int main(int argc, char* argv[])
   }
 
 //--- declare particle collections
-  std::cout << "Here before RecoMuonReader" << std::endl;
   RecoMuonReader* muonReader = new RecoMuonReader(era, Form("n%s", branchName_muons.data()), branchName_muons);
   muonReader->set_HIP_mitigation(use_HIP_mitigation_mediumMuonId);
-  std::cout << "Here before RecoMuonReader read tree" << std::endl;
   muonReader->setBranchAddresses(inputTree);
   RecoMuonCollectionGenMatcher muonGenMatcher;
   RecoMuonCollectionSelectorLoose preselMuonSelector(era);
   RecoMuonCollectionSelectorFakeable fakeableMuonSelector(era);
-  std::cout << "Here after RecoMuonReader" << std::endl;
 
   RecoElectronReader* electronReader = new RecoElectronReader(era, Form("n%s", branchName_electrons.data()), branchName_electrons);
   electronReader->setBranchAddresses(inputTree);
@@ -383,7 +380,6 @@ int main(int argc, char* argv[])
     bdt_filler->bookTree(fs);
 
   }
-  std::cout << "Here after bdt filler" << std::endl;
 
   int numEntries = inputTree->GetEntries();
   int analyzedEntries = 0;

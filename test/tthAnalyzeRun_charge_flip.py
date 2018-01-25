@@ -67,7 +67,7 @@ if __name__ == '__main__':
       era = ERA, use_lumi = True, lumi = LUMI,
       debug = False,
       running_method = "sbatch",
-      num_parallel_jobs = 4,
+      num_parallel_jobs = 100, # KE: run up to 100 'hadd' jobs in parallel on batch system
       #sel_events_file = '',#os.path.join(os.environ["CMSSW_BASE"] , "src/tthAnalysis/HiggsToTauTau/data/eventlist_diff.txt"),
       histograms_to_fit = [ "mass_ll" ],
       select_rle_output = False

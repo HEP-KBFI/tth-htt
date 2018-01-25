@@ -56,7 +56,7 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
     Args:
       inputFiles: list of input files (Ntuples)
       outputFile: output file of the job -- a ROOT file containing histogram
-      process: either `TT`, `TTW`, `TTZ`, `EWK`, `Rares`, `data_obs`, `ttH_hww`, `ttH_hzz` or `ttH_htt`
+      process: either `TT`, `TTW`, `TTWW`, `TTZ`, `EWK`, `Rares`, `data_obs`, `ttH_hww`, `ttH_hzz` or `ttH_htt`
       is_mc: flag indicating whether job runs on MC (True) or data (False)
       lumi_scale: event weight (= xsection * luminosity / number of events)
       central_or_shift: either 'central' or one of the systematic uncertainties defined in $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/bin/analyze_jetToTauFakeRate.cc
@@ -111,6 +111,7 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
       lines.append("    'EWKt', 'EWKl',")
       lines.append("    'Rarest', 'Raresl',")
       lines.append("    'TTWt', 'TTWl', ")
+      lines.append("    'TTWWt', 'TTWWl', ")
       lines.append("    'TTZt', 'TTZl', ")
       lines.append("    'signalt', 'signall'")
       lines.append(")")
@@ -290,7 +291,7 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
           self.dirs[DKEY_PLOT], "makePlots_%s.png" % self.channel),
         'histogramDir' : "jetToTauFakeRate_%s" % charge_selection,
         'label' : None,
-        'make_plots_backgrounds' : [ "TT", "TTW", "TTZ", "EWK", "Rares" ],
+        'make_plots_backgrounds' : [ "TT", "TTW", "TTWW", "TTZ", "EWK", "Rares" ],
       }
       self.createCfg_makePlots(self.jobOptions_make_plots[key_makePlots_job])
       self.cfgFile_make_plots = self.cfgFile_make_plots_denominator
@@ -306,7 +307,7 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
             self.dirs[DKEY_PLOT], "makePlots_%s_%s_denominator_%s.png" % (self.channel, charge_selection, absEtaBin)),
           'histogramDir' : "jetToTauFakeRate_%s/denominator/%s" % (charge_selection, absEtaBin),
           'label' : None,
-          'make_plots_backgrounds' : [ "TT", "TTW", "TTZ", "EWK", "Rares" ],
+          'make_plots_backgrounds' : [ "TT", "TTW", "TTWW", "TTZ", "EWK", "Rares" ],
         }
         self.createCfg_makePlots(self.jobOptions_make_plots[key_makePlots_job])
         for hadTau_selection_numerator in self.hadTau_selections_numerator:
@@ -321,7 +322,7 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
               self.dirs[DKEY_PLOT], "makePlots_%s_%s_numerator_%s_%s.png" % (self.channel, charge_selection, hadTau_selection_numerator, absEtaBin)),
             'histogramDir' : "jetToTauFakeRate_%s/numerator/%s/%s" % (charge_selection, hadTau_selection_numerator, absEtaBin),
             'label' : None,
-            'make_plots_backgrounds' : [ "TT", "TTW", "TTZ", "EWK", "Rares" ],
+            'make_plots_backgrounds' : [ "TT", "TTW", "TTWW", "TTZ", "EWK", "Rares" ],
           }
           self.createCfg_makePlots(self.jobOptions_make_plots[key_makePlots_job])
 
