@@ -129,6 +129,8 @@ class analyzeConfig_charge_flip(analyzeConfig):
           lines.append("    ),")
       lines.append(")")
       lines.append("process.prepareDatacards.histogramToFit = cms.string('%s')" % jobOptions['histogramToFit'])
+      lines.append("process.prepareDatacards.apply_automatic_rebinning = cms.bool(True)")
+      lines.append("process.prepareDatacards.minEvents_automatic_rebinning = cms.double(1.0)")
       lines.append("""process.prepareDatacards.sysShifts = cms.vstring(
           "CMS_ttHl_electronESBarrelUp",
       	"CMS_ttHl_electronESBarrelDown",

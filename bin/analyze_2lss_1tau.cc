@@ -1362,6 +1362,12 @@ int main(int argc, char* argv[])
       }
     }
 
+    std::vector<const RecoLepton*> selLeptons;
+    selLeptons.reserve(selElectrons.size() + selMuons.size());
+    selLeptons.insert(selLeptons.end(), selElectrons.begin(), selElectrons.end());
+    selLeptons.insert(selLeptons.end(), selMuons.begin(), selMuons.end());
+    std::sort(selLeptons.begin(), selLeptons.end(), isHigherPt);
+
     std::vector<RecoHadTau> hadTaus = hadTauReader->read();
     std::vector<const RecoHadTau*> hadTau_ptrs = convert_to_ptrs(hadTaus);
     std::vector<const RecoHadTau*> cleanedHadTaus = hadTauCleaner(hadTau_ptrs, preselMuons, preselElectrons);
@@ -1397,29 +1403,12 @@ int main(int argc, char* argv[])
         }
       }
     }
-
-    //--- apply final event selection
-        std::vector<const RecoLepton*> selLeptons;
-        selLeptons.reserve(selElectrons.size() + selMuons.size());
-        selLeptons.insert(selLeptons.end(), selElectrons.begin(), selElectrons.end());
-        selLeptons.insert(selLeptons.end(), selMuons.begin(), selMuons.end());
-        std::sort(selLeptons.begin(), selLeptons.end(), isHigherPt);
-        if ( !(selLeptons.size() >= 2) ) {
-          if ( run_lumi_eventSelector ) {
-	    std::cout << "event FAILS selLeptons selection." << std::endl;
-	    printLeptonCollection("selLeptons", selLeptons);
-	    //printLeptonCollection("preselLeptons", preselLeptons);
-          }
-          continue;
-        }
-
-    std::vector<const RecoJet*> cleanedJets=jetCleaner(jet_ptrs, selHadTaus, selLeptons, fakeableElectrons, fakeableMuons);
+    std::vector<const RecoJet*> cleanedJets = jetCleaner(jet_ptrs, selHadTaus, selLeptons, fakeableElectrons, fakeableMuons);
     // selLeptons for BDT training is loose, and loose>fakeable
     // this has no effect on datacards making as there selLeptons are tight and tight<fakeable
     std::vector<const RecoJet*> selJets = jetSelector(cleanedJets);
     std::vector<const RecoJet*> selBJets_loose = jetSelectorBtagLoose(cleanedJets);
     std::vector<const RecoJet*> selBJets_medium = jetSelectorBtagMedium(cleanedJets);
-
 
 //--- build collections of generator level particles (after some cuts are applied, to safe computing time)
     if ( isMC && redoGenMatching && !fillGenEvtHistograms ) {
@@ -1577,6 +1566,15 @@ int main(int argc, char* argv[])
       -1., -1., -1., -1., -1., -1., -1.
     );
 
+//--- apply final event selection
+    if ( !(selLeptons.size() >= 2) ) {
+      if ( run_lumi_eventSelector ) {
+	std::cout << "event FAILS selLeptons selection." << std::endl;
+	printLeptonCollection("selLeptons", selLeptons);
+	//printLeptonCollection("preselLeptons", preselLeptons);
+      }
+      continue;
+    }
     cutFlowTable.update(">= 2 sel leptons", 1.);
     cutFlowHistManager->fillHistograms(">= 2 sel leptons", 1.);
     const RecoLepton* selLepton_lead = selLeptons[0];
@@ -2822,7 +2820,7 @@ int main(int argc, char* argv[])
     }
   }
   std::cout << std::endl;
-  std::cout << "Sum of weihghts "<< evtWeightSum << std::endl;
+  std::cout << "Sum of weights "<< evtWeightSum << std::endl;
 
   delete dataToMCcorrectionInterface;
 
@@ -2830,12 +2828,9 @@ int main(int argc, char* argv[])
   delete jetToTauFakeRateInterface;
 
   delete run_lumi_eventSelector;
-  std::cout << " delete 1"<< std::endl;
 
   delete inputFile_mva_mapping_2lss_1tau;
   delete inputFile_mva_mapping_2lss_1tau_wMEM;
-
-  std::cout << " delete 2"<< std::endl;
 
   delete selEventsFile;
 
@@ -2849,10 +2844,8 @@ int main(int argc, char* argv[])
   delete genHadTauReader;
   delete genJetReader;
   delete lheInfoReader;
-  std::cout << " delete 3"<< std::endl;
 
   delete hadTopTagger;
-  std::cout << " delete 3"<< std::endl;
 
   delete genEvtHistManager_beforeCuts;
   delete genEvtHistManager_afterCuts;
