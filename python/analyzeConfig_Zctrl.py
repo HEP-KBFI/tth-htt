@@ -193,7 +193,8 @@ class analyzeConfig_Zctrl(analyzeConfig):
 
     if self.is_sbatch:
       logging.info("Creating script for submitting '%s' jobs to batch system" % self.executable_analyze)
-      self.createScript_sbatch()
+      self.sbatchFile_analyze = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_analyze_%s.py" % self.channel)
+      self.createScript_sbatch(self.executable_analyze, self.sbatchFile_analyze, self.jobOptions_analyze)
 
     logging.info("Creating configuration files for executing 'prepareDatacards'")
     for histogramToFit in self.histograms_to_fit:
@@ -215,4 +216,6 @@ class analyzeConfig_Zctrl(analyzeConfig):
     self.createMakefile(lines_makefile)
 
     logging.info("Done")
+
+    return self.num_jobs
 
