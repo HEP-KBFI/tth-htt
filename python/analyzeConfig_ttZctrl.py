@@ -26,8 +26,8 @@ class analyzeConfig_ttZctrl(analyzeConfig):
 
     self.hadTau_selection_part2 = hadTau_selection
 
-    self.prep_dcard_processesToCopy = [ "data_obs", "TT", "TTW", "TTZ", "EWK", "Rares" ]
-    self.make_plots_backgrounds = [ "TT", "TTW", "signal", "EWK", "Rares" ]
+    self.prep_dcard_processesToCopy = [ "data_obs", "TT", "TTW", "TTWW", "TTZ", "EWK", "Rares" ]
+    self.make_plots_backgrounds = [ "TT", "TTW", "TTWW", "signal", "EWK", "Rares" ]
     self.make_plots_signal = "TTZ"
 
     self.cfgFile_analyze = os.path.join(self.workingDir, cfgFile_analyze)
@@ -43,7 +43,7 @@ class analyzeConfig_ttZctrl(analyzeConfig):
     Args:
       inputFiles: list of input files (Ntuples)
       outputFile: output file of the job -- a ROOT file containing histogram
-      process: either `TT`, `TTW`, `TTZ`, `EWK`, `Rares`, `data_obs`, `ttH_hww`, `ttH_hzz` or `ttH_htt`
+      process: either `TT`, `TTW`, `TTWW`, `TTZ`, `EWK`, `Rares`, `data_obs`, `ttH_hww`, `ttH_hzz` or `ttH_htt`
       is_mc: flag indicating whether job runs on MC (True) or data (False)
       lumi_scale: event weight (= xsection * luminosity / number of events)
       central_or_shift: either 'central' or one of the systematic uncertainties defined in $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/bin/analyze_ttZctrl.cc
