@@ -52,6 +52,8 @@ namespace
     double sumEvents = 0.;
     int numBins = xAxis->GetNbins();
     for ( int idxBin = 1; idxBin <= numBins; ++idxBin ) {
+      std::cout << "bin #" << idxBin << " (x=" << xAxis->GetBinLowEdge(idxBin) << ".." << xAxis->GetBinUpEdge(idxBin) << "):"
+		<< " binContent = " << histogram->GetBinContent(idxBin) << " +/- " << histogram->GetBinError(idxBin) << std::endl;
       sumEvents += histogram->GetBinContent(idxBin);
       if ( sumEvents >= minEvents ) {
 	histogramBinning.push_back(xAxis->GetBinUpEdge(idxBin));

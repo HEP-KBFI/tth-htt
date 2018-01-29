@@ -75,6 +75,7 @@ if __name__ == '__main__':
   for idx_job_resubmission in range(max_job_resubmission):
     if is_last_resubmission:
       continue
+    logging.info("Job submission #%i:" % (idx_job_resubmission + 1))
 
     analysis = analyzeConfig_ttWctrl(
       configDir = os.path.join("/home",       getpass.getuser(), "ttHAnalysis", era, version),

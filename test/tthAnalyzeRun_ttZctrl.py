@@ -75,6 +75,7 @@ if __name__ == '__main__':
   for idx_job_resubmission in range(max_job_resubmission):
     if is_last_resubmission:
       continue
+    logging.info("Job submission #%i:" % (idx_job_resubmission + 1))
 
     analysis = analyzeConfig_ttZctrl(
       configDir = os.path.join("/home",       getpass.getuser(), "ttHAnalysis", era, version),
@@ -85,22 +86,6 @@ if __name__ == '__main__':
       hadTau_selection   = "dR03mvaLoose",
       central_or_shifts  = [
         "central",
-  ##       "CMS_ttHl_btag_HFUp",
-  ##       "CMS_ttHl_btag_HFDown",
-  ##       "CMS_ttHl_btag_HFStats1Up",
-  ##       "CMS_ttHl_btag_HFStats1Down",
-  ##       "CMS_ttHl_btag_HFStats2Up",
-  ##       "CMS_ttHl_btag_HFStats2Down",
-  ##       "CMS_ttHl_btag_LFUp",
-  ##       "CMS_ttHl_btag_LFDown",
-  ##       "CMS_ttHl_btag_LFStats1Up",
-  ##       "CMS_ttHl_btag_LFStats1Down",
-  ##       "CMS_ttHl_btag_LFStats2Up",
-  ##       "CMS_ttHl_btag_LFStats2Down",
-  ##       "CMS_ttHl_btag_cErr1Up",
-  ##       "CMS_ttHl_btag_cErr1Down",
-  ##       "CMS_ttHl_btag_cErr2Up",
-  ##       "CMS_ttHl_btag_cErr2Down",
   ##       "CMS_ttHl_JESUp",
   ##       "CMS_ttHl_JESDown",
   ##       "CMS_ttHl_thu_shape_ttH_x1Up",

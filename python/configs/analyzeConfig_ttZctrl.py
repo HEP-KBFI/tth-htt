@@ -214,9 +214,11 @@ class analyzeConfig_ttZctrl(analyzeConfig):
       logging.info("Creating script for submitting '%s' jobs to batch system" % self.executable_analyze)
       self.sbatchFile_analyze = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_analyze_%s.py" % self.channel)
       self.createScript_sbatch_analyze(
-        executable = self.executable_analyze,
-        sbatchFile = self.sbatchFile_analyze,
-        jobOptions = self.jobOptions_analyze,
+        executable      = self.executable_analyze,
+        sbatchFile      = self.sbatchFile_analyze,
+        jobOptions      = self.jobOptions_analyze,
+        key_input_file  = 'ntupleFiles', 
+        key_output_file = 'histogramFile',
       )
 
     logging.info("Creating Makefile")
