@@ -10,6 +10,36 @@ sum_events = {
 
 ### DATA
 
+meta_dictionary["/SingleElectron/Run2017B-17Nov2017-v1/MINIAOD"] =  OD([
+  ("crab_string",           ""),
+  ("sample_category",       "data_obs"),
+  ("process_name_specific", "SingleElectron_Run2017B_17Nov2017_v1"),
+  ("nof_db_events",         60537490),
+  ("xsection",              None),
+  ("use_it",                True),
+  ("genWeight",             False),
+])
+
+meta_dictionary["/SingleElectron/Run2017D-17Nov2017-v1/MINIAOD"] =  OD([
+  ("crab_string",           ""),
+  ("sample_category",       "data_obs"),
+  ("process_name_specific", "SingleElectron_Run2017D_17Nov2017_v1"),
+  ("nof_db_events",         51526710),
+  ("xsection",              None),
+  ("use_it",                True),
+  ("genWeight",             False),
+])
+
+meta_dictionary["/SingleElectron/Run2017F-17Nov2017-v1/MINIAOD"] =  OD([
+  ("crab_string",           ""),
+  ("sample_category",       "data_obs"),
+  ("process_name_specific", "SingleElectron_Run2017F_17Nov2017_v1"),
+  ("nof_db_events",         128467223),
+  ("xsection",              None),
+  ("use_it",                True),
+  ("genWeight",             False),
+])
+
 meta_dictionary["/SingleMuon/Run2017B-17Nov2017-v1/MINIAOD"] =  OD([
   ("crab_string",           ""),
   ("sample_category",       "data_obs"),
@@ -30,11 +60,51 @@ meta_dictionary["/SingleMuon/Run2017C-17Nov2017-v1/MINIAOD"] =  OD([
   ("genWeight",             False),
 ])
 
+meta_dictionary["/SingleMuon/Run2017D-17Nov2017-v1/MINIAOD"] =  OD([
+  ("crab_string",           ""),
+  ("sample_category",       "data_obs"),
+  ("process_name_specific", "SingleMuon_Run2017D_17Nov2017_v1"),
+  ("nof_db_events",         70361660),
+  ("xsection",              None),
+  ("use_it",                True),
+  ("genWeight",             False),
+])
+
+meta_dictionary["/SingleMuon/Run2017E-17Nov2017-v1/MINIAOD"] =  OD([
+  ("crab_string",           ""),
+  ("sample_category",       "data_obs"),
+  ("process_name_specific", "SingleMuon_Run2017E_17Nov2017_v1"),
+  ("nof_db_events",         154630534),
+  ("xsection",              None),
+  ("use_it",                True),
+  ("genWeight",             False),
+])
+
+meta_dictionary["/SingleMuon/Run2017F-17Nov2017-v1/MINIAOD"] =  OD([
+  ("crab_string",           ""),
+  ("sample_category",       "data_obs"),
+  ("process_name_specific", "SingleMuon_Run2017F_17Nov2017_v1"),
+  ("nof_db_events",         242140980),
+  ("xsection",              None),
+  ("use_it",                True),
+  ("genWeight",             False),
+])
+
 meta_dictionary["/DoubleEG/Run2017B-17Nov2017-v1/MINIAOD"] =  OD([
   ("crab_string",           ""),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "DoubleEG_Run2017B_17Nov2017_v1"),
   ("nof_db_events",         58088760),
+  ("xsection",              None),
+  ("use_it",                True),
+  ("genWeight",             False),
+])
+
+meta_dictionary["/DoubleEG/Run2017C-17Nov2017-v1/MINIAOD"] =  OD([
+  ("crab_string",           ""),
+  ("sample_category",       "data_obs"),
+  ("process_name_specific", "DoubleEG_Run2017C_17Nov2017_v1"),
+  ("nof_db_events",         65181125),
   ("xsection",              None),
   ("use_it",                True),
   ("genWeight",             False),
@@ -55,6 +125,16 @@ meta_dictionary["/DoubleEG/Run2017E-17Nov2017-v1/MINIAOD"] =  OD([
   ("sample_category",       "data_obs"),
   ("process_name_specific", "DoubleEG_Run2017E_17Nov2017_v1"),
   ("nof_db_events",         56235775),
+  ("xsection",              None),
+  ("use_it",                True),
+  ("genWeight",             False),
+])
+
+meta_dictionary["/DoubleEG/Run2017F-17Nov2017-v1/MINIAOD"] =  OD([
+  ("crab_string",           ""),
+  ("sample_category",       "data_obs"),
+  ("process_name_specific", "DoubleEG_Run2017F_17Nov2017_v1"),
+  ("nof_db_events",         74344288),
   ("xsection",              None),
   ("use_it",                True),
   ("genWeight",             False),
@@ -110,11 +190,101 @@ meta_dictionary["/DoubleMuon/Run2017F-17Nov2017-v1/MINIAOD"] =  OD([
   ("genWeight",             False),
 ])
 
+meta_dictionary["/MuonEG/Run2017B-17Nov2017-v1/MINIAOD"] =  OD([
+  ("crab_string",           ""),
+  ("sample_category",       "data_obs"),
+  ("process_name_specific", "MuonEG_Run2017B_17Nov2017_v1"),
+  ("nof_db_events",         4453465),
+  ("xsection",              None),
+  ("use_it",                True),
+  ("genWeight",             False),
+])
+
+meta_dictionary["/MuonEG/Run2017C-17Nov2017-v1/MINIAOD"] =  OD([
+  ("crab_string",           ""),
+  ("sample_category",       "data_obs"),
+  ("process_name_specific", "MuonEG_Run2017C_17Nov2017_v1"),
+  ("nof_db_events",         15595214),
+  ("xsection",              None),
+  ("use_it",                True),
+  ("genWeight",             False),
+])
+
+meta_dictionary["/MuonEG/Run2017D-17Nov2017-v1/MINIAOD"] =  OD([
+  ("crab_string",           ""),
+  ("sample_category",       "data_obs"),
+  ("process_name_specific", "MuonEG_Run2017D_17Nov2017_v1"),
+  ("nof_db_events",         9164365),
+  ("xsection",              None),
+  ("use_it",                True),
+  ("genWeight",             False),
+])
+
+meta_dictionary["/MuonEG/Run2017E-17Nov2017-v1/MINIAOD"] =  OD([
+  ("crab_string",           ""),
+  ("sample_category",       "data_obs"),
+  ("process_name_specific", "MuonEG_Run2017E_17Nov2017_v1"),
+  ("nof_db_events",         19043421),
+  ("xsection",              None),
+  ("use_it",                True),
+  ("genWeight",             False),
+])
+
+meta_dictionary["/MuonEG/Run2017F-17Nov2017-v1/MINIAOD"] =  OD([
+  ("crab_string",           ""),
+  ("sample_category",       "data_obs"),
+  ("process_name_specific", "MuonEG_Run2017F_17Nov2017_v1"),
+  ("nof_db_events",         25776363),
+  ("xsection",              None),
+  ("use_it",                True),
+  ("genWeight",             False),
+])
+
 meta_dictionary["/Tau/Run2017B-17Nov2017-v1/MINIAOD"] =  OD([
   ("crab_string",           ""),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "Tau_Run2017B_17Nov2017_v1"),
   ("nof_db_events",         38158216),
+  ("xsection",              None),
+  ("use_it",                True),
+  ("genWeight",             False),
+])
+
+meta_dictionary["/Tau/Run2017C-17Nov2017-v1/MINIAOD"] =  OD([
+  ("crab_string",           ""),
+  ("sample_category",       "data_obs"),
+  ("process_name_specific", "Tau_Run2017C_17Nov2017_v1"),
+  ("nof_db_events",         55416425),
+  ("xsection",              None),
+  ("use_it",                True),
+  ("genWeight",             False),
+])
+
+meta_dictionary["/Tau/Run2017D-17Nov2017-v1/MINIAOD"] =  OD([
+  ("crab_string",           ""),
+  ("sample_category",       "data_obs"),
+  ("process_name_specific", "Tau_Run2017D_17Nov2017_v1"),
+  ("nof_db_events",         20530776),
+  ("xsection",              None),
+  ("use_it",                True),
+  ("genWeight",             False),
+])
+
+meta_dictionary["/Tau/Run2017E-17Nov2017-v1/MINIAOD"] =  OD([
+  ("crab_string",           ""),
+  ("sample_category",       "data_obs"),
+  ("process_name_specific", "Tau_Run2017E_17Nov2017_v1"),
+  ("nof_db_events",         44318231),
+  ("xsection",              None),
+  ("use_it",                True),
+  ("genWeight",             False),
+])
+
+meta_dictionary["/Tau/Run2017F-17Nov2017-v1/MINIAOD"] =  OD([
+  ("crab_string",           ""),
+  ("sample_category",       "data_obs"),
+  ("process_name_specific", "Tau_Run2017F_17Nov2017_v1"),
+  ("nof_db_events",         88506372),
   ("xsection",              None),
   ("use_it",                True),
   ("genWeight",             False),
