@@ -20,6 +20,10 @@ void EvtHistManager_2l_2tau::bookHistograms(TFileDirectory& dir)
   histogram_numBJets_loose_vs_numJets_ = book2D(dir, "numBJets_loose_vs_numJets", "numBJets_loose_vs_numJets", 8, -0.5, +7.5, 6, -0.5, +5.5);
   histogram_numBJets_medium_vs_numJets_ = book2D(dir, "numBJets_medium_vs_numJets", "numBJets_medium_vs_numJets", 8, -0.5, +7.5, 6, -0.5, +5.5);
 
+  histogram_mvaOutput_2l_2tau_ttV_ = book1D(dir, "mvaOutput_2l_2tau__ttV", "mvaOutput_2l_2tau__ttV", 40, -1., +1.);
+  histogram_mvaOutput_2l_2tau_ttbar_ = book1D(dir, "mvaOutput_2l_2tau__ttbar", "mvaOutput_2l_2tau__ttbar", 40, -1., +1.);
+  histogram_mvaDiscr_2l_2tau_  = book1D(dir, "mvaDiscr_2l_2tau_", "mvaDiscr_2l_2tau_", 6, 0.5, 6.5);
+
   histogram_mTauTauVis_ = book1D(dir, "mTauTauVis", "mTauTauVis", 40, 0., 200.);
   histogram_leptonPairCharge_ = book1D(dir, "leptonPairCharge", "leptonPairCharge", 5, -2.5, +2.5);
   histogram_hadTauPairCharge_ = book1D(dir, "hadTauPairCharge", "hadTauPairCharge", 5, -2.5, +2.5);
@@ -28,6 +32,7 @@ void EvtHistManager_2l_2tau::bookHistograms(TFileDirectory& dir)
 }
 
 void EvtHistManager_2l_2tau::fillHistograms(int numElectrons, int numMuons, int numHadTaus, int numJets, int numBJets_loose, int numBJets_medium,
+					    double mvaOutput_2l_2tau_ttV, double mvaOutput_2l_2tau_ttbar, double mvaDiscr_2l_2tau, 
 					    double mTauTauVis, double leptonPairCharge, double hadTauPairCharge, double evtWeight)
 {
   double evtWeightErr = 0.;
@@ -41,6 +46,10 @@ void EvtHistManager_2l_2tau::fillHistograms(int numElectrons, int numMuons, int 
 
   fillWithOverFlow2d(histogram_numBJets_loose_vs_numJets_, numJets, numBJets_loose, evtWeight, evtWeightErr);
   fillWithOverFlow2d(histogram_numBJets_medium_vs_numJets_, numJets, numBJets_medium, evtWeight, evtWeightErr);
+
+  fillWithOverFlow(histogram_mvaOutput_2l_2tau_ttV_, mvaOutput_2l_2tau_ttV, evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_mvaOutput_2l_2tau_ttbar_, mvaOutput_2l_2tau_ttbar, evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_mvaDiscr_2l_2tau_, mvaDiscr_2l_2tau, evtWeight, evtWeightErr);
 
   fillWithOverFlow(histogram_mTauTauVis_, mTauTauVis, evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_leptonPairCharge_, leptonPairCharge, evtWeight, evtWeightErr);
