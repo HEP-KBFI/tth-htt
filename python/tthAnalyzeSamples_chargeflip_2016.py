@@ -22,7 +22,7 @@ for sample_name, sample_info in samples_2016.items():
       "/ZZTo4L_13TeV_powheg_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"]:
     sample_info["sample_category"] = "Diboson"
   elif "Muon" in sample_name or "Tau" in sample_name:
-      sample_info["use_it"] = False
+    sample_info["use_it"] = False
   elif sample_info["sample_category"] == "data_obs":
     sample_info["use_it"] = True
   else:
