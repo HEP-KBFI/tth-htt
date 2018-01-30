@@ -20,9 +20,9 @@ void EvtHistManager_2l_2tau::bookHistograms(TFileDirectory& dir)
   histogram_numBJets_loose_vs_numJets_ = book2D(dir, "numBJets_loose_vs_numJets", "numBJets_loose_vs_numJets", 8, -0.5, +7.5, 6, -0.5, +5.5);
   histogram_numBJets_medium_vs_numJets_ = book2D(dir, "numBJets_medium_vs_numJets", "numBJets_medium_vs_numJets", 8, -0.5, +7.5, 6, -0.5, +5.5);
 
-  histogram_mvaOutput_2l_2tau_ttV_ = book1D(dir, "mvaOutput_2l_2tau__ttV", "mvaOutput_2l_2tau__ttV", 40, -1., +1.);
-  histogram_mvaOutput_2l_2tau_ttbar_ = book1D(dir, "mvaOutput_2l_2tau__ttbar", "mvaOutput_2l_2tau__ttbar", 40, -1., +1.);
-  histogram_mvaDiscr_2l_2tau_  = book1D(dir, "mvaDiscr_2l_2tau_", "mvaDiscr_2l_2tau_", 6, 0.5, 6.5);
+  histogram_mvaOutput_2l_2tau_ttV_ = book1D(dir, "mvaOutput_2l_2tau_ttV", "mvaOutput_2l_2tau_ttV", 40, -1., +1.);
+  histogram_mvaOutput_2l_2tau_ttbar_ = book1D(dir, "mvaOutput_2l_2tau_ttbar", "mvaOutput_2l_2tau_ttbar", 40, -1., +1.);
+  histogram_mvaDiscr_2l_2tau_  = book1D(dir, "mvaDiscr_2l_2tau", "mvaDiscr_2l_2tau", 6, 0.5, 6.5);
 
   histogram_mTauTauVis_ = book1D(dir, "mTauTauVis", "mTauTauVis", 40, 0., 200.);
   histogram_leptonPairCharge_ = book1D(dir, "leptonPairCharge", "leptonPairCharge", 5, -2.5, +2.5);
