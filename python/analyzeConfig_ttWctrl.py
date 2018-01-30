@@ -26,8 +26,8 @@ class analyzeConfig_ttWctrl(analyzeConfig):
 
     self.hadTau_selection_part2 = hadTau_selection
 
-    self.prep_dcard_processesToCopy = [ "data_obs", "TT", "TTW", "TTZ", "EWK", "Rares" ]
-    self.make_plots_backgrounds = [ "TT", "TTZ", "signal", "EWK", "Rares" ]
+    self.prep_dcard_processesToCopy = [ "data_obs", "TT", "TTW", "TTWW", "TTZ", "EWK", "Rares" ]
+    self.make_plots_backgrounds = [ "TT", "TTWW", "TTZ", "signal", "EWK", "Rares" ]
     self.make_plots_signal = "TTW"
 
     self.cfgFile_analyze = os.path.join(self.workingDir, cfgFile_analyze)
@@ -90,7 +90,7 @@ class analyzeConfig_ttWctrl(analyzeConfig):
           self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel, "", process_name)
     for dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_HIST, DKEY_LOGS, DKEY_DCRD, DKEY_PLOT, DKEY_HADD_RT ]:
       initDict(self.dirs, [ dir_type ])
-      if dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_LOGS, DKEY_HADD_RT ]:
+      if dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_LOGS, DKEY_DCRD, DKEY_PLOT, DKEY_HADD_RT ]:
         self.dirs[dir_type] = os.path.join(self.configDir, dir_type, self.channel)
       else:
         self.dirs[dir_type] = os.path.join(self.outputDir, dir_type, self.channel)
