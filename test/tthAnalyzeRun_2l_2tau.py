@@ -152,6 +152,7 @@ if __name__ == '__main__':
         "EventCounter",
         "numJets",
         "mTauTauVis",
+        "mvaDiscr_2l_2tau"
       ],
       select_rle_output                     = True,
       verbose                               = idx_job_resubmission > 0,
