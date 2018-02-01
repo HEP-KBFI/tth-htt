@@ -27,10 +27,8 @@ class EvtHistManager_2lss_1tau
   const Int_t nstart =2;
   const Int_t ntarget =6;
 
-  /// book and fill histograms
-  //std::vector<TH2*> oldVarA_;
   //void LoadMaps(int nstart, int ntarget);
-  /*
+  ///*
   void bookHistogramsMap(TFileDirectory& dir , int , int);
   void fillHistogramsMap(int counter, double evtWeight,
      std::vector<TH2*>* oldVarA,
@@ -42,7 +40,7 @@ class EvtHistManager_2lss_1tau
      double mvaOutput_2lss_HTT_tt,
      double mvaOutput_2lss_HTTMEM_tt, double mvaOutput_2lss_HTTMEM_ttV
      );
-     */
+     //*/
 
 
   void bookHistograms(TFileDirectory& dir);
@@ -54,11 +52,11 @@ class EvtHistManager_2lss_1tau
     std::vector<const RecoJet*>::size_type numJets,
     std::vector<const RecoJet*>::size_type numBJets_loose,
     std::vector<const RecoJet*>::size_type numBJets_medium,
-    std::vector<TH2*>* oldVarA,
-    std::vector<TH2*>* HTT,
-    std::vector<TH2*>* noHTT,
-    std::vector<TH2*>* HTTMEM,
-    int sel,
+    //std::vector<TH2*>* oldVarA,
+    //std::vector<TH2*>* HTT,
+    //std::vector<TH2*>* noHTT,
+    //std::vector<TH2*>* HTTMEM,
+    //int sel,
     double evtWeight,
     //
     double mvaOutput_2lss_ttV,

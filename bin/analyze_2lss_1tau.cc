@@ -546,23 +546,6 @@ int main(int argc, char* argv[])
   std::string inputFileName_mem_mapping = "tthAnalysis/HiggsToTauTau/data/2lss_1tau_MEM_mapping_likelihood.root";
   TFile* inputFile_mem_mapping = openFile(LocalFileInPath(inputFileName_mem_mapping));
   TH2* mem_mapping = loadTH2(inputFile_mem_mapping, "hTargetBinning");
-  // for bin optimization do a vector of TFile
-  //
-  /*
-  std::stringstream ss;
-  ss << binOptSource << "/bin_opt/oldVarA_from"<<20<<"_to_"<<7<< binOptSourceEnd;
-  std::string BDT_mapping_oldVarName_from20_to_7_name = ss.str();
-  TFile* BDT_mapping_oldVar_from20_to_7_file = TFile::Open(BDT_mapping_oldVarName_from20_to_7_name.c_str());
-  TH2* BDT_mapping_oldVar_from20_to_7 = loadTH2(BDT_mapping_oldVar_from20_to_7_file, "hTargetBinning");
-  std::cout<<"loaded file "<<BDT_mapping_oldVarName_from20_to_7_name<<std::endl;
-  // oldVarA_from10_to_7bins_relLepIDTrue_CumulativeBins.root
-  std::stringstream ss2;
-  ss2 << binOptSource << "/bin_opt/oldVarA_from"<<20<<"_to_"<<12<<binOptSourceEnd;
-  std::string BDT_mapping_oldVarName_from20_to_12_name = ss2.str();
-  TFile* BDT_mapping_oldVar_from20_to_12_file = TFile::Open(BDT_mapping_oldVarName_from20_to_12_name.c_str());
-  TH2* BDT_mapping_oldVar_from20_to_12 = loadTH2(BDT_mapping_oldVar_from20_to_12_file, "hTargetBinning");
-  std::cout<<"loaded file "<<BDT_mapping_oldVarName_from20_to_7_name<<std::endl;
-  */
 
   ///* DO 2D
   const Int_t nstart =2;
@@ -655,7 +638,6 @@ int main(int argc, char* argv[])
   // the order IS important if you use XGBReader
   // you can find the variav=bles (and order) to each BDT if you substitute .pkl => _pkl.log and look on the file
   // c++ does keep order in vectors
-  //std::string mvaFileName_oldVar_tt =binOptSource; mvaFileName_oldVar_tt.append("/2lss_1tau_XGB_oldVar_evtLevelTT_TTH_7Var.pkl");
   std::string mvaFileName_oldVar_tt ="tthAnalysis/HiggsToTauTau/data/2lss_1tau_opt1/2lss_1tau_XGB_oldVarA_evtLevelTT_TTH_8Var.pkl";
   std::cout<<mvaFileName_oldVar_tt<<std::endl;
   std::vector<std::string> mvaInputVariables_oldVar_ttVSort={
@@ -1052,13 +1034,13 @@ int main(int argc, char* argv[])
       selHistManager->evt_ = new EvtHistManager_2lss_1tau(makeHistManager_cfg(process_and_genMatch,
         Form("%s/sel/evt", histogramDir.data()), era_string, central_or_shift));
       selHistManager->evt_->bookHistograms(fs);
-      /* DO 2D
+      ///* DO 2D
       for (int nbinsStartN=0 ; nbinsStartN<nstart ; nbinsStartN++ ) {
         for (int nbinsTargetN=0 ; nbinsTargetN<ntarget ; nbinsTargetN++ ) {
           selHistManager->evt_->bookHistogramsMap(fs,nbinsStart[nbinsStartN],nbinsTarget[nbinsTargetN]);
         }
       }
-      */
+      //*/
 
       const vstring decayModes_evt = eventInfo.getDecayModes();
       if(isSignal)
@@ -1077,13 +1059,13 @@ int main(int argc, char* argv[])
             central_or_shift
           ));
           selHistManager -> evt_in_decayModes_[decayMode_evt] -> bookHistograms(fs);
-          /* DO 2D
+          ///* DO 2D
           for (int nbinsStartN=0 ; nbinsStartN<nstart ; nbinsStartN++ ) {
             for (int nbinsTargetN=0 ; nbinsTargetN<ntarget ; nbinsTargetN++ ) {
               selHistManager->evt_in_decayModes_[decayMode_evt]->bookHistogramsMap(fs,nbinsStart[nbinsStartN],nbinsTarget[nbinsTargetN]);
             }
           }
-          */
+          //*/
         }
       }
       selHistManager->weights_ = new WeightHistManager(makeHistManager_cfg(process_and_genMatch,
@@ -1113,6 +1095,11 @@ int main(int argc, char* argv[])
   NtupleFillerBDT<float, int>* bdt_filler = nullptr;
   typedef std::remove_pointer<decltype(bdt_filler)>::type::float_type float_type;
   typedef std::remove_pointer<decltype(bdt_filler)>::type::int_type int_type;
+
+  NtupleFillerBDT<float, int>* bdt_filler_gen = nullptr;
+  typedef std::remove_pointer<decltype(bdt_filler_gen)>::type::float_type float_type;
+  typedef std::remove_pointer<decltype(bdt_filler_gen)>::type::int_type   int_type;
+
   if ( selectBDT ) { // if ( 1>0 ) { // Xanda  doTree
     bdt_filler = new std::remove_pointer<decltype(bdt_filler)>::type(
       makeHistManager_cfg(process_string, Form("%s/sel/evtntuple", histogramDir.data()), central_or_shift)
@@ -1146,9 +1133,29 @@ int main(int argc, char* argv[])
     );
     bdt_filler->register_variable<int_type>(
       "nJet", "nBJetLoose", "nBJetMedium", "nLep","nTau",
-      "lep1_isTight", "lep2_isTight", "tau_isTight","failsTightChargeCut"
+      "lep1_isTight", "lep2_isTight", "tau_isTight","failsTightChargeCut",
+      "run","evt","lumi"
     );
     bdt_filler->bookTree(fs);
+    ///////////////////////////////////////
+    bdt_filler_gen = new std::remove_pointer<decltype(bdt_filler_gen)>::type(
+      makeHistManager_cfg(process_string, Form("%s/sel/evtntupleGen", histogramDir.data()), central_or_shift)
+    );
+    bdt_filler_gen -> register_variable<float_type>(
+      "genPtTop",  "genPtTopB",  "genPtTopW",  "genPtTopWj1",  "genPtTopWj2",
+      "genEtaTop",  "genEtaTopB",  "genEtaTopW",  "genEtaTopWj1",  "genEtaTopWj2",
+      "genPhiTopB",  "genPhiTopWj1",  "genPhiTopWj2",
+      "genMTopB",  "genMTopWj1",  "genMTopWj2",
+      "genPtAntiTop",  "genPtAntiTopB",  "genPtAntiTopW",  "genPtAntiTopWj1",  "genPtAntiTopWj2",
+      "genEtaAntiTop",  "genEtaAntiTopB",  "genEtaAntiTopW",  "genEtaAntiTopWj1",  "genEtaAntiTopWj2",
+      "genPhiAntiTopB",  "genPhiAntiTopWj1",  "genPhiAntiTopWj2",
+      "genMAntiTopB",  "genMAntiTopWj1",  "genMAntiTopWj2"
+    );
+    bdt_filler_gen -> register_variable<int_type>(
+      "gencount","gencountHad","passtrigger","run","evt","lumi"
+    );
+    bdt_filler_gen -> bookTree(fs);
+
   }
 
 
@@ -1162,6 +1169,7 @@ int main(int argc, char* argv[])
     Form("%s/sel/cutFlow", histogramDir.data()), central_or_shift));
   cutFlowHistManager->bookHistograms(fs);
 
+  /*
   std::vector<TH2*> dumbVec; // to pretend to fill with array of 2D to preseselection histogram filling
   for (unsigned int nbinsStartN=0 ; nbinsStartN<nstart ; nbinsStartN++ ) {
     for (unsigned int nbinsTargetN=0 ; nbinsTargetN<ntarget ; nbinsTargetN++ ) {
@@ -1173,6 +1181,7 @@ int main(int argc, char* argv[])
 
     }
   }
+  */
   while(inputTree -> hasNextEvent() && (! run_lumi_eventSelector || (run_lumi_eventSelector && ! run_lumi_eventSelector -> areWeDone())))
   { // xanda
     if(inputTree -> canReport(reportEvery))
@@ -1185,6 +1194,7 @@ int main(int argc, char* argv[])
     }
     ++analyzedEntries;
     histogram_analyzedEntries->Fill(0.);
+
 
     if ( isDEBUG ) {
       std::cout << "event #" << inputTree -> getCurrentMaxEventIdx() << ' ' << eventInfo << '\n';
@@ -1246,6 +1256,151 @@ int main(int argc, char* argv[])
     bool selTrigger_1mu = use_triggers_1mu && isTriggered_1mu;
     bool selTrigger_2mu = use_triggers_2mu && isTriggered_2mu;
     bool selTrigger_1e1mu = use_triggers_1e1mu && isTriggered_1e1mu;
+
+    //--- build collections of generator level particles
+    //std::cout << "built gen variable" << std::endl;
+    std::vector<GenParticle> genTopQuarks;
+    std::vector<GenParticle> genBJets;
+    std::vector<GenParticle> genWBosons;
+    std::vector<GenParticle> genWJets;
+    int gencount = 0;
+    int gencountHad = 0;
+    double genPtTop = -1;
+    double genPtTopB = -1;
+    double genPtTopW = -1;
+    double genPtTopWj1 = -1;
+    double genPtTopWj2 = -1;
+    double genEtaTop = -100;
+    double genEtaTopB = -100;
+    double genEtaTopW = -100;
+    double genEtaTopWj1 = -100;
+    double genEtaTopWj2 = -100;
+    double genPhiTopB = -100;
+    double genPhiTopWj1 = -100;
+    double genPhiTopWj2 = -100;
+    double genMTopB = -100;
+    double genMTopWj1 = -100;
+    double genMTopWj2 = -100;
+
+    double genPtAntiTop = -1;
+    double genPtAntiTopB = -1;
+    double genPtAntiTopW = -1;
+    double genPtAntiTopWj1 = -1;
+    double genPtAntiTopWj2 = -1;
+    double genEtaAntiTop = -1;
+    double genEtaAntiTopB = -1;
+    double genEtaAntiTopW = -1;
+    double genEtaAntiTopWj1 = -1;
+    double genEtaAntiTopWj2 = -1;
+    double genPhiAntiTopB = -100;
+    double genPhiAntiTopWj1 = -100;
+    double genPhiAntiTopWj2 = -100;
+    double genMAntiTopB = -100;
+    double genMAntiTopWj1 = -100;
+    double genMAntiTopWj2 = -100;
+
+    if ( isMC ) {
+      //std::cout << "readGen" << std::endl;
+      genTopQuarks = genTopQuarkReader->read();
+      genBJets = genBJetReader->read();
+      genWBosons = genWBosonReader->read();
+      genWJets = genWJetReader->read();
+      ///////////////////
+      /// to test
+      // no cut
+      // pt 25
+      // eta < 5
+      // eta < 2.5 for bjet
+      // dr betweem jets
+      //std::cout << "calculate gen match" << std::endl;
+      std::vector<float> genMatchingTopVar = isGenMatchedJetTripletVar(genTopQuarks, genBJets, genWBosons, genWJets, kGenTop);
+      std::vector<float> genMatchingAntiTopVar = isGenMatchedJetTripletVar(genTopQuarks, genBJets, genWBosons, genWJets, kGenAntiTop);
+      //std::cout << "reading gen match" << std::endl;
+
+      genPtTop = genMatchingTopVar[kGenPtTop];
+      genPtTopB = genMatchingTopVar[kGenPtTopB];
+      genPtTopW = genMatchingTopVar[kGenPtTopW];
+      genPtTopWj1 = genMatchingTopVar[kGenPtTopWj1];
+      genPtTopWj2 = genMatchingTopVar[kGenPtTopWj2];
+      genEtaTop = genMatchingTopVar[kGenEtaTop];
+      genEtaTopB = genMatchingTopVar[kGenEtaTopB];
+      genEtaTopW = genMatchingTopVar[kGenEtaTopW];
+      genEtaTopWj1 = genMatchingTopVar[kGenEtaTopWj1];
+      genEtaTopWj2 = genMatchingTopVar[kGenEtaTopWj2];
+      genPhiTopB = genMatchingTopVar[kGenPhiTopB];
+      genPhiTopWj1 = genMatchingTopVar[kGenPhiTopWj1];
+      genPhiTopWj2 = genMatchingTopVar[kGenPhiTopWj2];
+      genMTopB = genMatchingTopVar[kGenMTopB];
+      genMTopWj1 = genMatchingTopVar[kGenMTopWj1];
+      genMTopWj2 = genMatchingTopVar[kGenMTopWj2];
+
+      genPtAntiTop = genMatchingAntiTopVar[kGenPtTop];
+      genPtAntiTopB = genMatchingAntiTopVar[kGenPtTopB];
+      genPtAntiTopW = genMatchingAntiTopVar[kGenPtTopW];
+      genPtAntiTopWj1 = genMatchingAntiTopVar[kGenPtTopWj1];
+      genPtAntiTopWj2 = genMatchingAntiTopVar[kGenPtTopWj2];
+      genEtaAntiTop = genMatchingAntiTopVar[kGenEtaTop];
+      genEtaAntiTopB = genMatchingAntiTopVar[kGenEtaTopB];
+      genEtaAntiTopW = genMatchingAntiTopVar[kGenEtaTopW];
+      genEtaAntiTopWj1 = genMatchingAntiTopVar[kGenEtaTopWj1];
+      genEtaAntiTopWj2 = genMatchingAntiTopVar[kGenEtaTopWj2];
+      genPhiAntiTopB = genMatchingAntiTopVar[kGenPhiTopB];
+      genPhiAntiTopWj1 = genMatchingAntiTopVar[kGenPhiTopWj1];
+      genPhiAntiTopWj2 = genMatchingAntiTopVar[kGenPhiTopWj2];
+      genMAntiTopB = genMatchingAntiTopVar[kGenMTopB];
+      genMAntiTopWj1 = genMatchingAntiTopVar[kGenMTopWj1];
+      genMAntiTopWj2 = genMatchingAntiTopVar[kGenMTopWj2];
+      if (genPtTop>0 && genPtAntiTop>0) gencount = 2;
+      else if (genPtTop>0 || genPtAntiTop>0) gencount = 1;
+      if (genMTopWj1>0 && genMAntiTopWj1>0) gencountHad = 2;
+      else if (genMTopWj1>0 || genMAntiTopWj1>0) gencountHad = 1;
+      //std::cout << "read gen match" << std::endl;
+    }
+    //std::cout << "fill gen var" << std::endl;
+    //std::cout << "genPtTop "<<genPtTop << std::endl;
+    if ( bdt_filler_gen ) {
+      bdt_filler_gen -> operator()({ eventInfo.run, eventInfo.lumi, eventInfo.event })
+          ("genPtTop",        genPtTop)
+          ("genPtTopB",       genPtTopB)
+          ("genPtTopW",       genPtTopW)
+          ("genPtTopWj1",     genPtTopWj1)
+          ("genPtTopWj2",     genPtTopWj2)
+          ("genEtaTop",       genEtaTop)
+          ("genEtaTopB",      genEtaTopB)
+          ("genEtaTopW",      genEtaTopW)
+          ("genEtaTopWj1",    genEtaTopWj1)
+          ("genEtaTopWj2",    genEtaTopWj2)
+          ("genPhiTopB",      genPhiTopB)
+          ("genPhiTopWj1",    genPhiTopWj1)
+          ("genPhiTopWj2",    genPhiTopWj2)
+          ("genMTopB",        genMTopB)
+          ("genMTopWj1",      genMTopWj1)
+          ("genMTopWj2",      genMTopWj2)
+          ("genPtAntiTop",    genPtAntiTop)
+          ("genPtAntiTopB",   genPtAntiTopB)
+          ("genPtAntiTopW",   genPtAntiTopW)
+          ("genPtAntiTopWj1", genPtAntiTopWj1)
+          ("genPtAntiTopWj2", genPtAntiTopWj2)
+          ("genEtaAntiTop",   genEtaAntiTop)
+          ("genEtaAntiTopB",  genEtaAntiTopB)
+          ("genEtaAntiTopW",  genEtaAntiTopW)
+          ("genEtaAntiTopWj1", genEtaAntiTopWj1)
+          ("genEtaAntiTopWj2", genEtaAntiTopWj2)
+          ("genPhiAntiTopB",   genPhiAntiTopB)
+          ("genPhiAntiTopWj1", genPhiAntiTopWj1)
+          ("genPhiAntiTopWj2", genPhiAntiTopWj2)
+          ("genMAntiTopB",     genMAntiTopB)
+          ("genMAntiTopWj1",   genMAntiTopWj1)
+          ("genMAntiTopWj2",   genMAntiTopWj2)
+          ("gencount",         gencount)
+          ("gencountHad",      gencountHad)
+          ("passtrigger",      (selTrigger_1e || selTrigger_2e || selTrigger_1mu || selTrigger_2mu || selTrigger_1e1mu))
+          ("run", eventInfo.run)
+          ("lumi", eventInfo.lumi)
+          ("evt", eventInfo.event)
+        .fill();
+    }
+
     if ( !(selTrigger_1e || selTrigger_2e || selTrigger_1mu || selTrigger_2mu || selTrigger_1e1mu) ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS trigger selection." << std::endl;
@@ -1406,9 +1561,9 @@ int main(int argc, char* argv[])
         std::sort(selLeptons.begin(), selLeptons.end(), isHigherPt);
         if ( !(selLeptons.size() >= 2) ) {
           if ( run_lumi_eventSelector ) {
-	    std::cout << "event FAILS selLeptons selection." << std::endl;
-	    printLeptonCollection("selLeptons", selLeptons);
-	    //printLeptonCollection("preselLeptons", preselLeptons);
+    	std::cout << "event FAILS selLeptons selection." << std::endl;
+    	printLeptonCollection("selLeptons", selLeptons);
+    	//printLeptonCollection("preselLeptons", preselLeptons);
           }
           continue;
         }
@@ -1560,8 +1715,8 @@ int main(int argc, char* argv[])
     preselHistManager->evt_->fillHistograms(
       preselElectrons.size(), preselMuons.size(), selHadTaus.size(),
       selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
-      &dumbVec,&dumbVec,&dumbVec,&dumbVec,
-      0,
+      //&dumbVec,&dumbVec,&dumbVec,&dumbVec,
+      //0,
       1.0, // evtWeight is first to be sure of not being loosing counting
       //1,1,1,
       //1,1,1,
@@ -1964,7 +2119,7 @@ int main(int argc, char* argv[])
     double mTauTauVis2_sel = (selLepton_sublead->p4() + selHadTau->p4()).mass();
 
 
-    //--- compute variables BDTs used to discriminate ttH vs. ttV and ttH vs. ttbar -- they will be used more than once -- Xanda
+    //--- compute variables BDTs used to discriminate ttH vs. ttV and ttH vs. ttba -- they will be used more than once -- Xanda
 
     double mindr_lep1_jet=TMath::Min(10., comp_mindr_lep1_jet(*selLepton_lead, selJets));
     double mindr_lep2_jet=TMath::Min(10., comp_mindr_lep1_jet(*selLepton_lead, selJets));
@@ -2077,17 +2232,6 @@ int main(int argc, char* argv[])
 
     Double_t memDiscr = getSF_from_TH2(mem_mapping, memOutput_ttbar_LR, memOutput_ttZ_LR)+ 1;
 
-    //--- build collections of generator level particles
-    std::vector<GenParticle> genTopQuarks;
-    std::vector<GenParticle> genBJets;
-    std::vector<GenParticle> genWBosons;
-    std::vector<GenParticle> genWJets;
-    if ( isMC ) {
-      genTopQuarks = genTopQuarkReader->read();
-      genBJets = genBJetReader->read();
-      genWBosons = genWBosonReader->read();
-      genWJets = genWJetReader->read();
-    }
     //--- compute output of hadronic top tagger BDT
     //TH2* histogram_mva_hadTopTagger = fs.make<TH2D>("mva_hadTopTagger", "mva_hadTopTagger", 200, -1., +1., 200, -1., +1.);
     //double max_mvaOutput_hadTopTagger = -1.;
@@ -2117,14 +2261,14 @@ int main(int argc, char* argv[])
     	  bool isGenMatched = false;
     	  if ( isMC && selectBDT && mvaOutput_hadTopTagger ) {
     	    if ( genWJets.size() >= 2 && genBJets.size() >= 1 && genTopQuarks.size() >= 1 && genWBosons.size() >= 1 ){
-	      double genTopPtProbeTop=-10;
-	      double genTopPtProbeAntiTop=-10;
+            double genTopPtProbeTop=-10;
+            double genTopPtProbeAntiTop=-10;
     	      std::vector<bool> genMatchingTop = isGenMatchedJetTriplet(**selBJet, **selWJet1, **selWJet2, genTopQuarks, genBJets, genWBosons, genWJets, kGenTop, genTopPtProbeTop);
     	      std::vector<bool> genMatchingAntiTop = isGenMatchedJetTriplet(**selBJet, **selWJet1, **selWJet2, genTopQuarks, genBJets, genWBosons, genWJets, kGenAntiTop, genTopPtProbeAntiTop);
-	      if ( genMatchingTop[kGenMatchedTriplet]     ) genTopPt = genTopPtProbeTop;
-	      if ( genMatchingAntiTop[kGenMatchedTriplet] ) genTopPt = genTopPtProbeAntiTop;
-	      isGenMatched = (genMatchingTop[kGenMatchedTriplet] || genMatchingAntiTop[kGenMatchedTriplet]);
-	      if ( isGenMatched ) hadtruth = true;
+            if(genMatchingTop[kGenMatchedTriplet]) genTopPt=genTopPtProbeTop;
+            if(genMatchingAntiTop[kGenMatchedTriplet]) genTopPt=genTopPtProbeAntiTop;
+    	      isGenMatched = (genMatchingTop[kGenMatchedTriplet] || genMatchingAntiTop[kGenMatchedTriplet]);
+    	      if ( isGenMatched ) hadtruth = true;
     	    }
     	  }
     	  if ( bdtResult[0] > max_mvaOutput_hadTopTaggerWithKinFit ) { // hadTopTaggerWithKinFit
@@ -2132,9 +2276,9 @@ int main(int argc, char* argv[])
     	    max_mvaOutput_hadTopTaggerWithKinFit = bdtResult[0];
     	    fittedHadTopP4 = hadTopTagger->kinFit()->fittedTop();
     	    unfittedHadTopP4 = (*selBJet)->p4() + (*selWJet1)->p4() + (*selWJet2)->p4();
-	    positionJet1 = (*selBJet)->pt();
-	    positionJet2 = (*selWJet1)->pt();
-	    positionJet3 = (*selWJet2)->pt();
+          positionJet1=(*selBJet)->pt();
+          positionJet2=(*selWJet1)->pt();
+          positionJet3=(*selWJet2)->pt();
     	  }
     	  if ( bdtResult[2] > max_mvaOutput_hadTopTagger ) { // hadTopTaggerNoKinFit
     	    max_truth_hadTopTagger = isGenMatched;
@@ -2485,11 +2629,11 @@ int main(int argc, char* argv[])
       selJets.size(),
       selBJets_loose.size(),
       selBJets_medium.size(),
-      &oldVarA,
-      &HTT,
-      &noHTT,
-      &HTTMEM,
-      1,
+      //&oldVarA,
+      //&HTT,
+      //&noHTT,
+      //&HTTMEM,
+      //1,
       evtWeight,
       //
       mvaOutput_2lss_ttV,
@@ -2541,11 +2685,11 @@ int main(int argc, char* argv[])
           selJets.size(),
           selBJets_loose.size(),
           selBJets_medium.size(),
-          &oldVarA,
-          &HTT,
-          &noHTT,
-          &HTTMEM,
-          1,
+          //&oldVarA,
+          //&HTT,
+          //&noHTT,
+          //&HTTMEM,
+          //1,
           evtWeight,
           mvaOutput_2lss_ttV,
           mvaOutput_2lss_ttbar,
@@ -2585,7 +2729,7 @@ int main(int argc, char* argv[])
           mvaOutput_2lss_noHTT_2MEM,
           mvaOutput_2lss_noHTT_2HTT
         );
-        /*
+        ///*
         // DO 2D
         //std::cout<<"filling with 2D maps"<<std::endl;
         int countHist2=0;
@@ -2604,7 +2748,7 @@ int main(int argc, char* argv[])
             countHist2++;
           }
       }
-      */
+      //*/
     }
     }
     selHistManager->weights_->fillHistograms("genWeight", eventInfo.genWeight);
@@ -2617,7 +2761,7 @@ int main(int argc, char* argv[])
     //std::vector<std::vector<Double_t>> noHTT_2D; //="HTT_from20_to_";
     ///* DO 2D
     //std::cout<<"filling with 2D maps"<<std::endl;
-    /*
+    ///*
     int countHist=0;
     for (int nbinsStartN=0 ; nbinsStartN<nstart ; nbinsStartN++ ) {
       for (int nbinsTargetN=0 ; nbinsTargetN<ntarget ; nbinsTargetN++ ) {
@@ -2650,22 +2794,21 @@ int main(int argc, char* argv[])
     double prob_fake_lepton_sublead = 1.;
     if ( bdt_filler ) {
       //FR weights for bdt ntuple
-      if(leptonFakeRateInterface)
-      {
+      if(leptonFakeRateInterface) {
         if      ( std::abs(selLepton_lead->pdgId()) == 11 ) prob_fake_lepton_lead = leptonFakeRateInterface->getWeight_e(selLepton_lead->cone_pt(), selLepton_lead->absEta());
         else if ( std::abs(selLepton_lead->pdgId()) == 13 ) prob_fake_lepton_lead = leptonFakeRateInterface->getWeight_mu(selLepton_lead->cone_pt(), selLepton_lead->absEta());
       }
 
-      if(leptonFakeRateInterface)
-      {
+      if(leptonFakeRateInterface) {
         if      ( std::abs(selLepton_sublead->pdgId()) == 11 ) prob_fake_lepton_sublead = leptonFakeRateInterface->getWeight_e(selLepton_sublead->cone_pt(), selLepton_sublead->absEta());
         else if ( std::abs(selLepton_sublead->pdgId()) == 13 ) prob_fake_lepton_sublead = leptonFakeRateInterface->getWeight_mu(selLepton_sublead->cone_pt(), selLepton_sublead->absEta());
+      }
 
-        if(jetToTauFakeRateInterface){
+        if(jetToTauFakeRateInterface) {
           tau_fake_prob= jetToTauFakeRateInterface->getWeight_lead(selHadTau->pt(), selHadTau->absEta());
         }
 
-      }
+
       // I am going to use those in bdt sooner or later
       double memOutput_type=memOutput_2lss_1tau_matched.is_initialized() ? memOutput_2lss_1tau_matched.type() : -100.;
       double memOutput_ttH=memOutput_2lss_1tau_matched.is_initialized() ? memOutput_2lss_1tau_matched.weight_ttH()     : -100.;
@@ -2738,17 +2881,14 @@ int main(int argc, char* argv[])
           ("unfittedHadTop_eta",     std::abs(unfittedHadTopP4.eta()))
           ("fitHTptoHTpt",           fittedHadTopP4.pt()/unfittedHadTopP4.pt())
           ("fitHTptoHTmass",           fittedHadTopP4.mass()/unfittedHadTopP4.mass())
-
           ("dr_lep1_HTfitted",        deltaR(selLepton_lead -> p4(), fittedHadTopP4) )
           ("dr_lep2_HTfitted",        deltaR(selLepton_sublead -> p4(), fittedHadTopP4) )
           ("dr_tau_HTfitted",         deltaR(selHadTau -> p4(), fittedHadTopP4))
           ("mass_lep1_HTfitted",        (selLepton_lead -> p4() + fittedHadTopP4).mass() )
           ("mass_lep2_HTfitted",        (selLepton_sublead -> p4() + fittedHadTopP4).mass() )
-
           ("dr_lep1_HTunfitted",        deltaR(selLepton_lead -> p4(), unfittedHadTopP4) )
           ("dr_lep2_HTunfitted",        deltaR(selLepton_sublead -> p4(), unfittedHadTopP4) )
           ("dr_tau_HTunfitted",         deltaR(selHadTau -> p4(), unfittedHadTopP4))
-
           ("mvaOutput_2lss_1tau_ttbar", mvaOutput_2lss_1tau_ttbar)
           ("mvaOutput_2lss_1tau_ttV",   mvaOutput_2lss_1tau_ttV)
           ("mvaDiscr_2lss_1tau",        mvaDiscr_2lss_1tau)
@@ -2756,7 +2896,6 @@ int main(int argc, char* argv[])
           ("oldVar_from20_to_7",        1.0)
           ("mvaOutput_2lss_1tau_ttV_wMEM", mvaOutput_2lss_1tau_ttV_wMEM)
           ("mvaOutput_2lss_1tau_ttbar_wMEM", mvaOutput_2lss_1tau_ttbar_wMEM)
-
           ("lumiScale",              lumiScale)
           ("genWeight",              eventInfo.genWeight)
           ("evtWeight",              evtWeight)
@@ -2783,11 +2922,15 @@ int main(int argc, char* argv[])
           ("mbb_loose",       selBJets_loose.size()>1 ?  (selBJets_loose[0]->p4()+selBJets_loose[1]->p4()).mass() : -1000  )
           ("ptbb_loose",       selBJets_loose.size()>1 ?  (selBJets_loose[0]->p4()+selBJets_loose[1]->p4()).pt() : -1000  )
           ("failsTightChargeCut",          failsTightChargeCut)
+          ("run", eventInfo.run)
+          ("lumi", eventInfo.lumi)
+          ("evt", eventInfo.event)
           // add kinematical variables between HadTop and leptons/taus
           // min/max dr
         .fill()
       ;
     }
+
     ++selectedEntries;
     selectedEntries_weighted += evtWeight;
     histogram_selectedEntries->Fill(0.);
