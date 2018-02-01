@@ -1,10 +1,14 @@
 #ifndef tthAnalysis_HiggsToTauTau_jetToTauFakeRateAuxFunctions_h
 #define tthAnalysis_HiggsToTauTau_jetToTauFakeRateAuxFunctions_h
 
-#include <string>
+#include <string> // std::string
 
-std::string getEtaBin(double minAbsEta, double maxAbsEta);
+std::string
+getEtaBin(double minAbsEta,
+          double maxAbsEta);
 
-std::string getPtBin(double minPt, double maxPt); 
+std::string
+getPtBin(double minPt,
+         double maxPt);
 
 #endif // tthAnalysis_HiggsToTauTau_jetToTauFakeRateAuxFunctions_h
