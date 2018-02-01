@@ -89,7 +89,7 @@ if mode == "VHbb":
       "/Tau/Run2016G-PromptReco-v1/MINIAOD"]:
       sample_info["use_it"] = False
 
-  hadTau_selection         = "dR03mvaVTight"
+  hadTau_selection         = "dR03mvaVTight" #"dR03mvaTight" # "dR03mvaLoose" ## "dR03mvaMedium" # "dR03mvaTight" #
   applyFakeRateWeights     = "3L"
 elif mode == "forBDTtraining":
   if use_prod_ntuples:
@@ -97,9 +97,9 @@ elif mode == "forBDTtraining":
 	#from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_hadTopTagger_2016 import samples_2016
   else:
     from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_FastSim import samples_2016
-	#from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_hadTopTagger_2016 import samples_2016 
-  hadTau_selection                   = "dR03mvaVTight"
-  hadTau_selection_relaxed           = "dR03mvaLoose" ## "dR03mvaVTight" # "dR03mvaMedium" # xanda read if there is such #
+	#from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_hadTopTagger_2016 import samples_2016
+  hadTau_selection                   = "dR03mvaTight" # "dR03mvaVTight"
+  hadTau_selection_relaxed           = "dR03mvaMedium" # "dR03mvaTight" # "dR03mvaLoose" ## "dR05isoLoose" #   "dR03mvaVTight" # "dR03mvaMedium" # xanda read if there is such #
   applyFakeRateWeights               = "3L"
 else:
   raise ValueError("Invalid Configuration parameter 'mode' = %s !!" % mode)
@@ -123,6 +123,18 @@ if __name__ == '__main__':
   job_statistics_summary = {}
   run_analysis           = False
   is_last_resubmission   = False
+
+  # do histograms for 2D bin optimizations
+  nbinsTarget=[4,5,6,7,8,9,10];
+  nbinsStart=[15,10,8];
+  hist_HTT=[] # [[None]*int(len(nbinsTarget))]*len(nbinsStart)
+  hist_noHTT=[] # [[None]*int(len(nbinsTarget))]*len(nbinsStart)
+  for nbinsStartN in range(0,len(nbinsStart)) :
+    for nbinsTargetN in range(0,len(nbinsTarget)) :
+      hist_HTT.append("HTT_from"+str(nbinsStart[nbinsStartN])+"_to_"+str(nbinsTarget[nbinsTargetN]))
+      hist_noHTT.append("noHTT_from"+str(nbinsStart[nbinsStartN])+"_to_"+str(nbinsTarget[nbinsTargetN]))
+  print list(hist_HTT)
+  print list(hist_noHTT)
 
   for idx_job_resubmission in range(max_job_resubmission):
     if is_last_resubmission:
@@ -206,8 +218,15 @@ if __name__ == '__main__':
 #       "mvaOutput_1l_2tau_ttbar_baseline",
 #       "mvaOutput_1l_2tau_ttbar_baseline_HTTbase",
 #       "mvaDiscr_1l_2tau",
+        "mvaOutput_ttbar_HTT",
+        "mvaOutput_ttbar_noHTT",
+        "mvaOutput_ttV_noHTT",
+        "mvaOutput_ttV_HTT",
+        "mvaOutput_ttbar_OldVar",
+        "mvaOutput_1B_HTT",
+        "mvaOutput_1B_noHTT",
         "mTauTauVis"
-      ],
+      ] + list(hist_HTT) +list(hist_noHTT),
       select_rle_output                     = True,
       verbose                               = idx_job_resubmission > 0,
     )
