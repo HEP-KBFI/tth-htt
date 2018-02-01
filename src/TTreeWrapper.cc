@@ -2,10 +2,11 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/TFileOpenWrapper.h" // TFileOpenWrapper::
 #include "tthAnalysis/HiggsToTauTau/interface/ReaderBase.h" // ReaderBase
-
-#include <FWCore/Utilities/interface/Exception.h> // cms::Exception
+#include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 
 #include <TTree.h> // TTree
+#include <TFile.h> // TFile
+
 #include <iostream> // std::cout
 
 TTreeWrapper::TTreeWrapper()
@@ -34,7 +35,7 @@ TTreeWrapper::TTreeWrapper(const std::string & treeName,
   }
   else
   {
-    throw cms::Exception("TTreeWrapper") << "Empty input TTree name given\n";
+    throw cmsException(this) << "Empty input TTree name given";
   }
   if(fileCount_)
   {
@@ -45,7 +46,7 @@ TTreeWrapper::TTreeWrapper(const std::string & treeName,
   }
   else
   {
-    throw cms::Exception("TTreeWrapper") << "No input files given\n";
+    throw cmsException(this) << "No input files given";
   }
 }
 
@@ -133,13 +134,13 @@ TTreeWrapper::hasNextEvent()
 
     if(! isOpen())
     {
-      throw cms::Exception("TTreeWrapper")
-        << "The file '" << fileNames_[currentFileIdx_] << "' failed to open\n";
+      throw cmsException(this, __func__)
+        << "The file '" << fileNames_[currentFileIdx_] << "' failed to open";
     }
     if(currentFilePtr_ -> IsZombie())
     {
-      throw cms::Exception("TTreeWrapper")
-        << "The file '" << fileNames_[currentFileIdx_] << "' appears to be corrupted\n";
+      throw cmsException(this, __func__)
+        << "The file '" << fileNames_[currentFileIdx_] << "' appears to be corrupted";
     }
   }
 
@@ -151,9 +152,9 @@ TTreeWrapper::hasNextEvent()
 
     if(! currentTreePtr_)
     {
-      throw cms::Exception("TTreeWrapper")
+      throw cmsException(this, __func__)
         << "The file '" << fileNames_[currentFileIdx_] << "' does not have a TTree named "
-        << treeName_ << '\n';
+        << treeName_;
     }
 
     // set the branch addresses
@@ -222,18 +223,18 @@ TTreeWrapper::getEventCount() const
       TFile * filePtr = TFileOpenWrapper::Open(fileName.c_str(), "READ");
       if(! filePtr)
       {
-        throw cms::Exception("TTreeWrapper") << "Could not open file " << fileName << '\n';
+        throw cmsException(this, __func__) << "Could not open file " << fileName;
       }
       if(filePtr -> IsZombie())
       {
-        throw cms::Exception("TTreeWrapper")
-          << "The file '" << fileName << "' appears to be a zombie\n";
+        throw cmsException(this, __func__)
+          << "The file '" << fileName << "' appears to be a zombie";
       }
       TTree * treePtr = static_cast<TTree *>(filePtr -> Get(treeName_.c_str()));
       if(! treePtr)
       {
-        throw cms::Exception("TTreeWrapper")
-          << "The file '" << fileName << "' does not have a TTree named " << treeName_ << '\n';
+        throw cmsException(this, __func__)
+          << "The file '" << fileName << "' does not have a TTree named " << treeName_;
       }
       totalNofEvents += treePtr -> GetEntries();
 
