@@ -1,30 +1,40 @@
 #include "tthAnalysis/HiggsToTauTau/interface/JetToTauFakeRateInterface.h"
 
-#include "FWCore/Utilities/interface/Exception.h" // cms::Exception
+#include "tthAnalysis/HiggsToTauTau/interface/lutAuxFunctions.h" // openFile()
+#include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 
-#include "tthAnalysis/HiggsToTauTau/interface/lutAuxFunctions.h" // openFile
+#include <TFile.h> // TFile
 
-#include <assert.h> // assert
+#include <cassert> // assert()
 
 typedef std::vector<double> vdouble;
 
 namespace
 {
-  void initializeJetToTauFakeRateWeights(TFile* inputFile, const std::string& hadTauSelection, const edm::ParameterSet& cfg, int central_or_shift,
-					 std::vector<JetToTauFakeRateWeightEntry*>& jetToTauFakeRateWeights, bool& isInitialized)
+  void
+  initializeJetToTauFakeRateWeights(TFile * inputFile,
+                                    const std::string & hadTauSelection,
+                                    const edm::ParameterSet & cfg,
+                                    int central_or_shift,
+                                    std::vector<JetToTauFakeRateWeightEntry *> & jetToTauFakeRateWeights,
+                                    bool & isInitialized)
   {
-    vdouble absEtaBins = cfg.getParameter<vdouble>("absEtaBins");
-    int numAbsEtaBins = absEtaBins.size() - 1;
-    if ( !(numAbsEtaBins >= 1) ) throw cms::Exception("JetToTauFakeRateInterface") 
-      << "Invalid Configuration parameter 'absEtaBins' !!\n";
-    
-    for ( int idxBin = 0; idxBin < numAbsEtaBins; ++idxBin ) {
-      double absEtaMin = absEtaBins[idxBin];
-      double absEtaMax = absEtaBins[idxBin + 1];
+    const vdouble absEtaBins = cfg.getParameter<vdouble>("absEtaBins");
+    const int numAbsEtaBins = absEtaBins.size() - 1;
+    if(numAbsEtaBins < 1)
+    {
+      throw cmsException(__func__)
+        << "Invalid Configuration parameter 'absEtaBins' !!\n";
+    }
+
+    for(int idxBin = 0; idxBin < numAbsEtaBins; ++idxBin)
+    {
+      const double absEtaMin = absEtaBins[idxBin];
+      const double absEtaMax = absEtaBins[idxBin + 1];
       
-      JetToTauFakeRateWeightEntry* jetToTauFakeRateWeight = new JetToTauFakeRateWeightEntry(
-        absEtaMin, absEtaMax, hadTauSelection,
-        inputFile, cfg, central_or_shift);
+      JetToTauFakeRateWeightEntry * jetToTauFakeRateWeight = new JetToTauFakeRateWeightEntry(
+        absEtaMin, absEtaMax, hadTauSelection, inputFile, cfg, central_or_shift
+      );
       jetToTauFakeRateWeights.push_back(jetToTauFakeRateWeight);
     }
 
@@ -32,123 +42,136 @@ namespace
   }
 }
 
-JetToTauFakeRateInterface::JetToTauFakeRateInterface(const edm::ParameterSet& cfg, int central_or_shift)
-  : inputFile_(0),
+JetToTauFakeRateInterface::JetToTauFakeRateInterface(const edm::ParameterSet & cfg,
+                                                     int central_or_shift)
+  : inputFile_(nullptr),
     isInitialized_lead_(false),
     isInitialized_sublead_(false),
     isInitialized_third_(false)
 {
-  std::string inputFileName = cfg.getParameter<std::string>("inputFileName");
+  const std::string inputFileName = cfg.getParameter<std::string>("inputFileName");
   inputFile_ = openFile(LocalFileInPath(inputFileName));
 
-  std::string hadTauSelection = cfg.getParameter<std::string>("hadTauSelection");
+  const std::string hadTauSelection = cfg.getParameter<std::string>("hadTauSelection");
 
-  if ( cfg.exists("lead") ) {
-    edm::ParameterSet cfg_lead = cfg.getParameter<edm::ParameterSet>("lead");
-    initializeJetToTauFakeRateWeights(inputFile_, hadTauSelection, cfg_lead, central_or_shift, jetToTauFakeRateWeights_lead_, isInitialized_lead_);
+  const auto initializeJetToTauFRWeights = [&, this](const edm::ParameterSet & cfg_prio,
+                                                     std::vector<JetToTauFakeRateWeightEntry *> & jetToTauFakeRateWeights_prio,
+                                                     bool & isInitialized) -> void
+  {
+    initializeJetToTauFakeRateWeights(
+      inputFile_, hadTauSelection, cfg_prio, central_or_shift, jetToTauFakeRateWeights_prio, isInitialized
+    );
+  };
+
+  if(cfg.exists("lead"))
+  {
+    const edm::ParameterSet cfg_lead = cfg.getParameter<edm::ParameterSet>("lead");
+    initializeJetToTauFRWeights(cfg_lead, jetToTauFakeRateWeights_lead_, isInitialized_lead_);
   }
-  if ( cfg.exists("sublead") ) {
-    edm::ParameterSet cfg_sublead = cfg.getParameter<edm::ParameterSet>("sublead");
-    initializeJetToTauFakeRateWeights(inputFile_, hadTauSelection, cfg_sublead, central_or_shift, jetToTauFakeRateWeights_sublead_, isInitialized_sublead_);
+  if(cfg.exists("sublead"))
+  {
+    const edm::ParameterSet cfg_sublead = cfg.getParameter<edm::ParameterSet>("sublead");
+    initializeJetToTauFRWeights(cfg_sublead, jetToTauFakeRateWeights_sublead_, isInitialized_sublead_);
   }
-  if ( cfg.exists("third") ) {
-    edm::ParameterSet cfg_third = cfg.getParameter<edm::ParameterSet>("third");
-    initializeJetToTauFakeRateWeights(inputFile_, hadTauSelection, cfg_third, central_or_shift, jetToTauFakeRateWeights_third_, isInitialized_third_);
+  if(cfg.exists("third"))
+  {
+    const edm::ParameterSet cfg_third = cfg.getParameter<edm::ParameterSet>("third");
+    initializeJetToTauFRWeights(cfg_third, jetToTauFakeRateWeights_third_, isInitialized_third_);
   }
 }
 
 JetToTauFakeRateInterface::~JetToTauFakeRateInterface()
 {
-  for ( std::vector<JetToTauFakeRateWeightEntry*>::iterator it = jetToTauFakeRateWeights_lead_.begin();
-	it != jetToTauFakeRateWeights_lead_.end(); ++it ) {
-    delete (*it);
+  for(JetToTauFakeRateWeightEntry * & it: jetToTauFakeRateWeights_lead_)
+  {
+    delete it;
   }
-  for ( std::vector<JetToTauFakeRateWeightEntry*>::iterator it = jetToTauFakeRateWeights_sublead_.begin();
-	it != jetToTauFakeRateWeights_sublead_.end(); ++it ) {
-    delete (*it);
+  for(JetToTauFakeRateWeightEntry * & it: jetToTauFakeRateWeights_sublead_)
+  {
+    delete it;
   }
-  for ( std::vector<JetToTauFakeRateWeightEntry*>::iterator it = jetToTauFakeRateWeights_third_.begin();
-	it != jetToTauFakeRateWeights_third_.end(); ++it ) {
-    delete (*it);
+  for(JetToTauFakeRateWeightEntry * & it: jetToTauFakeRateWeights_third_)
+  {
+    delete it;
   }
   delete inputFile_;
 }
 
-double JetToTauFakeRateInterface::getWeight_lead(double hadTauPt_lead, double hadTauAbsEta_lead) const
+double
+JetToTauFakeRateInterface::getWeight_lead(double hadTauPt_lead,
+                                          double hadTauAbsEta_lead) const
 {
-  return getWeight_or_SF_lead(hadTauPt_lead, hadTauAbsEta_lead, kWeight);
+  return getWeight_or_SF(hadTauPt_lead, hadTauAbsEta_lead, kWeight, 0);
 }
 
-double JetToTauFakeRateInterface::getWeight_sublead(double hadTauPt_sublead, double hadTauAbsEta_sublead) const
+double
+JetToTauFakeRateInterface::getWeight_sublead(double hadTauPt_sublead,
+                                             double hadTauAbsEta_sublead) const
 {
-  return getWeight_or_SF_sublead(hadTauPt_sublead, hadTauAbsEta_sublead, kWeight);
+  return getWeight_or_SF(hadTauPt_sublead, hadTauAbsEta_sublead, kWeight, 1);
 }
 
-double JetToTauFakeRateInterface::getWeight_third(double hadTauPt_third, double hadTauAbsEta_third) const
+double
+JetToTauFakeRateInterface::getWeight_third(double hadTauPt_third,
+                                           double hadTauAbsEta_third) const
 {
-  return getWeight_or_SF_third(hadTauPt_third, hadTauAbsEta_third, kWeight);
+  return getWeight_or_SF(hadTauPt_third, hadTauAbsEta_third, kWeight, 2);
 }
 
-double JetToTauFakeRateInterface::getSF_lead(double hadTauPt_lead, double hadTauAbsEta_lead) const
+double
+JetToTauFakeRateInterface::getSF_lead(double hadTauPt_lead,
+                                      double hadTauAbsEta_lead) const
 {
-  return getWeight_or_SF_lead(hadTauPt_lead, hadTauAbsEta_lead, kSF);
+  return getWeight_or_SF(hadTauPt_lead, hadTauAbsEta_lead, kSF, 0);
 }
 
-double JetToTauFakeRateInterface::getSF_sublead(double hadTauPt_sublead, double hadTauAbsEta_sublead) const
+double
+JetToTauFakeRateInterface::getSF_sublead(double hadTauPt_sublead,
+                                         double hadTauAbsEta_sublead) const
 {
-  return getWeight_or_SF_sublead(hadTauPt_sublead, hadTauAbsEta_sublead, kSF);
+  return getWeight_or_SF(hadTauPt_sublead, hadTauAbsEta_sublead, kSF, 1);
 }
 
-double JetToTauFakeRateInterface::getSF_third(double hadTauPt_third, double hadTauAbsEta_third) const
+double
+JetToTauFakeRateInterface::getSF_third(double hadTauPt_third,
+                                       double hadTauAbsEta_third) const
 {
-  return getWeight_or_SF_third(hadTauPt_third, hadTauAbsEta_third, kSF);
+  return getWeight_or_SF(hadTauPt_third, hadTauAbsEta_third, kSF, 2);
 }
 
-double JetToTauFakeRateInterface::getWeight_or_SF_lead(double hadTauPt_lead, double hadTauAbsEta_lead, int mode) const
+double
+JetToTauFakeRateInterface::getWeight_or_SF(double hadTauPt,
+                                           double hadTauAbsEta,
+                                           int mode,
+                                           int order) const
 {
-  if ( !isInitialized_lead_ ) throw cms::Exception("JetToTauFakeRateInterface") 
-    << "Jet->tau fake-rate weights for 'leading' tau requested, but not initialized !!\n"; 
-  double weight = 1.;
-  for ( std::vector<JetToTauFakeRateWeightEntry*>::const_iterator jetToTauFakeRateWeightEntry = jetToTauFakeRateWeights_lead_.begin();
-	jetToTauFakeRateWeightEntry != jetToTauFakeRateWeights_lead_.end(); ++jetToTauFakeRateWeightEntry ) {
-    if ( hadTauAbsEta_lead >= (*jetToTauFakeRateWeightEntry)->absEtaMin() && hadTauAbsEta_lead < (*jetToTauFakeRateWeightEntry)->absEtaMax() ) {
-      if      ( mode == kWeight ) weight *= (*jetToTauFakeRateWeightEntry)->getWeight(hadTauPt_lead);
-      else if ( mode == kSF     ) weight *= (*jetToTauFakeRateWeightEntry)->getSF(hadTauPt_lead);
-      else assert(0);
-      break;
-    }
+  std::string name;
+  bool isInitialized = false;
+  std::vector<JetToTauFakeRateWeightEntry *> j2tFRweights;
+  switch(order)
+  {
+    case 0: name = "leading";    isInitialized = isInitialized_lead_;    j2tFRweights = jetToTauFakeRateWeights_lead_;    break;
+    case 1: name = "subleading"; isInitialized = isInitialized_sublead_; j2tFRweights = jetToTauFakeRateWeights_sublead_; break;
+    case 2: name = "third";      isInitialized = isInitialized_third_;   j2tFRweights = jetToTauFakeRateWeights_third_;   break;
+    default: assert(0);
   }
-  return weight;
-}
 
-double JetToTauFakeRateInterface::getWeight_or_SF_sublead(double hadTauPt_sublead, double hadTauAbsEta_sublead, int mode) const
-{
-  if ( !isInitialized_sublead_ ) throw cms::Exception("JetToTauFakeRateInterface") 
-    << "Jet->tau fake-rate weights for 'subleading' tau requested, but not initialized !!\n"; 
-  double weight = 1.;
-  for ( std::vector<JetToTauFakeRateWeightEntry*>::const_iterator jetToTauFakeRateWeightEntry = jetToTauFakeRateWeights_sublead_.begin();
-	jetToTauFakeRateWeightEntry != jetToTauFakeRateWeights_sublead_.end(); ++jetToTauFakeRateWeightEntry ) {
-    if ( hadTauAbsEta_sublead >= (*jetToTauFakeRateWeightEntry)->absEtaMin() && hadTauAbsEta_sublead < (*jetToTauFakeRateWeightEntry)->absEtaMax() ) {
-      if      ( mode == kWeight ) weight *= (*jetToTauFakeRateWeightEntry)->getWeight(hadTauPt_sublead);
-      else if ( mode == kSF     ) weight *= (*jetToTauFakeRateWeightEntry)->getSF(hadTauPt_sublead);
-      else assert(0);
-      break;
-    }
-  }
-  return weight;
-}
+  if(! isInitialized )
+    throw cmsException(this, __func__)
+      << "Jet->tau fake-rate weights for '" << name << "' tau requested, but not initialized";
 
-double JetToTauFakeRateInterface::getWeight_or_SF_third(double hadTauPt_third, double hadTauAbsEta_third, int mode) const
-{
-  if ( !isInitialized_third_ ) throw cms::Exception("JetToTauFakeRateInterface") 
-    << "Jet->tau fake-rate weights for 'third' tau requested, but not initialized !!\n"; 
   double weight = 1.;
-  for ( std::vector<JetToTauFakeRateWeightEntry*>::const_iterator jetToTauFakeRateWeightEntry = jetToTauFakeRateWeights_third_.begin();
-	jetToTauFakeRateWeightEntry != jetToTauFakeRateWeights_third_.end(); ++jetToTauFakeRateWeightEntry ) {
-    if ( hadTauAbsEta_third >= (*jetToTauFakeRateWeightEntry)->absEtaMin() && hadTauAbsEta_third < (*jetToTauFakeRateWeightEntry)->absEtaMax() ) {
-      if      ( mode == kWeight ) weight *= (*jetToTauFakeRateWeightEntry)->getWeight(hadTauPt_third);
-      else if ( mode == kSF     ) weight *= (*jetToTauFakeRateWeightEntry)->getSF(hadTauPt_third);
-      else assert(0);
+  for(const JetToTauFakeRateWeightEntry * const jetToTauFakeRateWeightEntry: j2tFRweights)
+  {
+    if(hadTauAbsEta >= jetToTauFakeRateWeightEntry->absEtaMin() &&
+       hadTauAbsEta < jetToTauFakeRateWeightEntry->absEtaMax())
+    {
+      switch(mode)
+      {
+        case kWeight: weight *= jetToTauFakeRateWeightEntry->getWeight(hadTauPt); break;
+        case kSF:     weight *= jetToTauFakeRateWeightEntry->getSF(hadTauPt);     break;
+        default: assert(0);
+      }
       break;
     }
   }
