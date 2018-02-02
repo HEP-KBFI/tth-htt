@@ -12,52 +12,56 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/EventInfo.h" // EventInfo
 
-#include <FWCore/Framework/interface/EDFilter.h>
-#include <FWCore/Framework/interface/Event.h>
-#include <FWCore/Framework/interface/EventSetup.h>
-#include <FWCore/ParameterSet/interface/ParameterSet.h>
+#include <FWCore/ParameterSet/interface/ParameterSet.h> // edm::ParameterSet
 
-#include <TObject.h>
-
-#include <string>
-#include <map>
+#include <set> // std::set<>
 
 class RunLumiEventSelector 
 {
- public:
+public:
+
   // constructor 
-  explicit RunLumiEventSelector(const edm::ParameterSet&);
-    
+  explicit RunLumiEventSelector(const edm::ParameterSet & cfg);
+  explicit RunLumiEventSelector(const std::string & inputFileName,
+                                const std::string & separator = ":");
+
   // destructor
   virtual ~RunLumiEventSelector();
-    
-  bool operator()(ULong_t, ULong_t, ULong_t) const;
-  bool operator()(const EventInfo & info) const;
 
-  bool areWeDone() const;
+  bool
+  operator()(ULong_t run,
+             ULong_t ls,
+             ULong_t event) const;
 
- private:
+  bool
+  operator()(const EventInfo & info) const;
+
+  bool
+  areWeDone() const;
+
+private:
 
 //--- read ASCII file containing run and event numbers
   void readInputFile();
   
   std::string inputFileName_;
-
   std::string separator_;
 
-  typedef std::set<ULong_t> eventNumberSet;
-  typedef std::map<ULong_t, eventNumberSet> lumiSectionEventNumberMap;
-  std::map<ULong_t, lumiSectionEventNumberMap> runLumiSectionEventNumbers_;
+  typedef ULong_t   RunType;
+  typedef ULong_t   LumiSectionType;
+  typedef ULong64_t EventType;
+
+  typedef std::set<EventType> eventNumberSet;
+  typedef std::map<LumiSectionType, eventNumberSet> lumiSectionEventNumberMap;
+  std::map<RunType, lumiSectionEventNumberMap> runLumiSectionEventNumbers_;
   
-  typedef std::map<ULong_t, int> matchedEventNumbersMap;
-  typedef std::map<ULong_t, matchedEventNumbersMap> matchedLumiSectionEventNumberMap;
-  mutable std::map<ULong_t, matchedLumiSectionEventNumberMap> matchedRunLumiSectionEventNumbers_;
+  typedef std::map<EventType, int> matchedEventNumbersMap;
+  typedef std::map<LumiSectionType, matchedEventNumbersMap> matchedLumiSectionEventNumberMap;
+  mutable std::map<RunType, matchedLumiSectionEventNumberMap> matchedRunLumiSectionEventNumbers_;
 
   mutable long numEventsProcessed_;
   mutable long numEventsToBeSelected_;
   mutable long numEventsSelected_;
 };
-
-RunLumiEventSelector* makeRunLumiEventSelector(const std::string& inputFileName);
 
 #endif // tthAnalysis_HiggsToTauTau_RunLumiEventSelector_h

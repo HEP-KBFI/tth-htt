@@ -1,199 +1,206 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RunLumiEventSelector.h"
 
-#include <TPRegexp.h>
-#include <TObjArray.h>
-#include <TObjString.h>
-#include <TString.h>
+#include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 
-#include <iostream>
-#include <fstream>
+#include <boost/lexical_cast.hpp> // boost::lexical_cast<>()
+#include <boost/algorithm/string/join.hpp> // boost::algorithm::join()
 
-const int noMatchRequired = -1;
+#include <fstream> // std::ifstream
+#include <regex> // std::regex, std::regex_search(), std::smatch
 
-RunLumiEventSelector::RunLumiEventSelector(const edm::ParameterSet& cfg)
+RunLumiEventSelector::RunLumiEventSelector(const std::string & inputFileName,
+                                           const std::string & separator)
+  : inputFileName_(inputFileName)
+  , separator_(separator)
+  , numEventsProcessed_(0)
+  , numEventsToBeSelected_(0)
+  , numEventsSelected_(0)
 {
-  //std::cout << "<RunLumiEventSelector::RunLumiEventSelector>:" << std::endl;
-
-  inputFileName_ = cfg.getParameter<std::string>("inputFileName");
-
-  separator_ = cfg.exists("separator") ? 
-    cfg.getParameter<std::string>("separator") : "[[:space:]]+";
-  //std::cout << " separator = '" << separator_ << "'" << std::endl;
-  
-  if ( inputFileName_ == "" ) {
-    std::cerr << "<RunLumiEventSelector::RunLumiSectionEventNumberFilter>: Invalid Configuration Parameter 'inputFileName' = " << inputFileName_ << " !!";
-    assert(0);
+  if(inputFileName_.empty())
+  {
+    throw cmsException(this) << "inputFileName empty";
   }
-  readInputFile();
 
-  numEventsProcessed_ = 0;
-  numEventsSelected_ = 0;
+  readInputFile();
 }
+
+RunLumiEventSelector::RunLumiEventSelector(const edm::ParameterSet & cfg)
+  : RunLumiEventSelector(cfg.getParameter<std::string>("inputFileName"),
+                         cfg.exists("separator") ? cfg.getParameter<std::string>("separator") : "[[:space:]]+")
+{}
 
 RunLumiEventSelector::~RunLumiEventSelector()
 {
-  std::string matchRemark = ( numEventsSelected_ == numEventsToBeSelected_ ) ? "matches" : "does NOT match";
+  const std::string matchRemark = numEventsSelected_ == numEventsToBeSelected_ ? "matches" : "does NOT match";
   std::cout << "<RunLumiEventSelector::~RunLumiEventSelector>:" 
-	    << " Number of Events processed = " << numEventsProcessed_ << std::endl
-	    << " Number of Events selected = " << numEventsSelected_ << ","
-	    << " " << matchRemark << " Number of Events to be selected = " << numEventsToBeSelected_ << "." << std::endl;
+               " Number of Events processed = " << numEventsProcessed_ << "\n"
+               " Number of Events selected = " << numEventsSelected_ << ", " << matchRemark
+            << " Number of Events to be selected = " << numEventsToBeSelected_ << '\n';
  
 //--- check for events specified by run + event number in ASCII file
 //    and not found in EDM input .root file
   int numRunLumiSectionEventNumbersUnmatched = 0;
-  for ( std::map<ULong_t, matchedLumiSectionEventNumberMap>::const_iterator run = matchedRunLumiSectionEventNumbers_.begin();
-	run != matchedRunLumiSectionEventNumbers_.end(); ++run ) {
-    for ( matchedLumiSectionEventNumberMap::const_iterator lumiSection = run->second.begin();
-	  lumiSection != run->second.end(); ++lumiSection ) {
-      for ( matchedEventNumbersMap::const_iterator event = lumiSection->second.begin();
-	    event != lumiSection->second.end(); ++event ) {
-	if ( event->second < 1 ) {
-	  if ( numRunLumiSectionEventNumbersUnmatched == 0 ) {
-	    std::cout << "Events not found:" << std::endl;
-	  }
-	  std::cout << " run# = " << run->first << ", ls# " << lumiSection->first << ", event# " << event->first << std::endl;
-	  ++numRunLumiSectionEventNumbersUnmatched;
-	}
-      }
-    }
-  }
+  for(const auto & run: matchedRunLumiSectionEventNumbers_)
+  {
+    for(const auto & lumiSection: run.second)
+    {
+      for(const auto & event: lumiSection.second)
+      {
+        if(event.second < 1)
+        {
+          if(numRunLumiSectionEventNumbersUnmatched == 0)
+          {
+            std::cout << "Events not found:\n";
+          }
+          std::cout << " run# = " << run.first << ","
+                       " ls# "    << lumiSection.first << ","
+                       " event# " << event.first << '\n';
+          ++numRunLumiSectionEventNumbersUnmatched;
+        } // if(event.second < 1)
+      } // event
+    } // lumiSection
+  } // run
 
-  if ( numRunLumiSectionEventNumbersUnmatched > 0 ) {
-    std::cout << "--> Number of unmatched Events = " << numRunLumiSectionEventNumbersUnmatched << std::endl;
+  if(numRunLumiSectionEventNumbersUnmatched > 0)
+  {
+    std::cout << "--> Number of unmatched Events = "
+              << numRunLumiSectionEventNumbersUnmatched << '\n';
   }
 
 //--- check for events specified by run + event number in ASCII file
 //    and found more than once in EDM input .root file
   int numRunLumiSectionEventNumbersAmbiguousMatch = 0;
-  for ( std::map<ULong_t, matchedLumiSectionEventNumberMap>::const_iterator run = matchedRunLumiSectionEventNumbers_.begin();
-	run != matchedRunLumiSectionEventNumbers_.end(); ++run ) {
-    for ( matchedLumiSectionEventNumberMap::const_iterator lumiSection = run->second.begin();
-	  lumiSection != run->second.end(); ++lumiSection ) {
-      for ( matchedEventNumbersMap::const_iterator event = lumiSection->second.begin();
-	    event != lumiSection->second.end(); ++event ) {
-	if ( event->second > 1 ) {
-	  if ( numRunLumiSectionEventNumbersAmbiguousMatch == 0 ) {
-	    std::cout << "Events found more than once:" << std::endl;
-	  }
-	  std::cout << " run# = " << run->first << ", ls# " << lumiSection->first << ", event# " << event->first << std::endl;
-	  ++numRunLumiSectionEventNumbersAmbiguousMatch;
-	}
-      }
-    }
-  }
-  
-  if ( numRunLumiSectionEventNumbersAmbiguousMatch > 0 ) {
-    std::cout << "--> Number of ambiguously matched Events = " << numRunLumiSectionEventNumbersAmbiguousMatch << std::endl;
+  for(const auto & run: matchedRunLumiSectionEventNumbers_)
+  {
+    for(const auto & lumiSection: run.second)
+    {
+      for(const auto & event: lumiSection.second)
+      {
+        if(event.second > 1)
+        {
+          if(numRunLumiSectionEventNumbersAmbiguousMatch == 0)
+          {
+            std::cout << "Events found more than once:\n";
+          }
+          std::cout << " run# = " << run.first << ","
+                       " ls# "    << lumiSection.first << ","
+                       " event# " << event.first << '\n';
+          ++numRunLumiSectionEventNumbersAmbiguousMatch;
+        } // if(event.second > 1)
+      } // event
+    } // lumiSection
+  } // run
+
+  if(numRunLumiSectionEventNumbersAmbiguousMatch > 0)
+  {
+    std::cout << "--> Number of ambiguously matched Events = "
+              << numRunLumiSectionEventNumbersAmbiguousMatch << '\n';
   }
 }
 
-void RunLumiEventSelector::readInputFile()
+void
+RunLumiEventSelector::readInputFile()
 {
 //--- read run + luminosity section + event number pairs from ASCII file
+  std::ifstream inputFile(inputFileName_);
+  if(inputFile)
+  {
+    const std::regex pattern(boost::algorithm::join(std::vector<std::string>(3, "([[:digit:]]+)"), separator_));
+    std::smatch match;
+    int iLine = 0;
 
-  std::string regexpParser_threeColumnLine_string = std::string("\\s*[[:digit:]]+\\s*");
-  regexpParser_threeColumnLine_string.append(separator_).append("\\s*[[:digit:]]+\\s*").append(separator_).append("\\s*[[:digit:]]+\\s*");
-  TPRegexp regexpParser_threeColumnLine(regexpParser_threeColumnLine_string.data());
-  std::string regexpParser_threeColumnNumber_string = std::string("\\s*([[:digit:]]+)\\s*");
-  regexpParser_threeColumnNumber_string.append(separator_).append("\\s*([[:digit:]]+)\\s*").append(separator_).append("\\s*([[:digit:]]+)\\s*");
-  TPRegexp regexpParser_threeColumnNumber(regexpParser_threeColumnNumber_string.data());
+    for(std::string line; std::getline(inputFile, line); )
+    {
+      ++iLine;
+      if(line.empty()) continue;
 
-  std::ifstream inputFile(inputFileName_.data());
-  int iLine = 0;
-  numEventsToBeSelected_ = 0;
-  while ( !(inputFile.eof() || inputFile.bad()) ) {
-    std::string line;
-    getline(inputFile, line);
-    ++iLine;
+      bool parseError = false;
+      try
+      {
+        if(std::regex_search(line, match, pattern))
+        {
+          const RunType         runNumber         = boost::lexical_cast<RunType>        (match[1]);
+          const LumiSectionType lumiSectionNumber = boost::lexical_cast<LumiSectionType>(match[2]);
+          const EventType       eventNumber       = boost::lexical_cast<EventType>      (match[3]);
+          std::cout << "--> adding "
+                       "run# = " << runNumber         << ", "
+                       "ls# "    << lumiSectionNumber << ", "
+                       "event# " << eventNumber       << '\n';
 
-//--- skip empty lines
-    if ( line == "" ) continue;
-
-    //std::cout << " line = '" << line << "'" << std::endl;
-
-    bool parseError = false;
-
-    TString line_tstring = line.data();
-//--- check if line matches three column format;
-//    in which case require four matches (first match refers to entire line)
-//    and match individually run, event and luminosity section numbers
-    if ( regexpParser_threeColumnLine.Match(line_tstring) == 1 ) {
-      TObjArray* subStrings = regexpParser_threeColumnNumber.MatchS(line_tstring);
-      if ( subStrings->GetEntries() == 4 ) {
-	//std::cout << " runNumber_string = " << ((TObjString*)subStrings->At(1))->GetString() << std::endl;
-	ULong_t runNumber = ((TObjString*)subStrings->At(1))->GetString().Atoll();
-	//std::cout << " lumiSectionNumber_string = " << ((TObjString*)subStrings->At(2))->GetString() << std::endl;
-	ULong_t lumiSectionNumber = ((TObjString*)subStrings->At(2))->GetString().Atoll();
-	//std::cout << " eventNumber_string = " << ((TObjString*)subStrings->At(3))->GetString() << std::endl;
-	ULong_t eventNumber = ((TObjString*)subStrings->At(3))->GetString().Atoll();
-
-	std::cout << "--> adding run# = " << runNumber << ", ls# " << lumiSectionNumber << ", event# " << eventNumber << std::endl;
-
-	runLumiSectionEventNumbers_[runNumber][lumiSectionNumber].insert(eventNumber);
-	matchedRunLumiSectionEventNumbers_[runNumber][lumiSectionNumber][eventNumber] = 0;
-	++numEventsToBeSelected_;
-      } else {
-	parseError = true;
+          runLumiSectionEventNumbers_[runNumber][lumiSectionNumber].insert(eventNumber);
+          matchedRunLumiSectionEventNumbers_[runNumber][lumiSectionNumber][eventNumber] = 0;
+          ++numEventsToBeSelected_;
+        }
+        else
+        {
+          parseError = true;
+        }
       }
-      
-      delete subStrings;
-    } else {
-      parseError = true;
-    }
+      catch(const boost::bad_lexical_cast & e)
+      {
+        parseError = true;
+      }
 
-    if ( parseError ) {
-      std::cerr << "<RunLumiEventSelector::readInputFile>: Error in parsing line " << iLine << " = '" << line << "'" << " of input file = " << inputFileName_ << " !!" << std::endl;
-      //assert(0);
-    }
+      if(parseError)
+      {
+        std::cerr << "<RunLumiEventSelector::readInputFile>: Error in parsing line "
+                  << iLine << " = '" << line << "'" << " of input file = " << inputFileName_ << '\n';
+      }
+    } // line
+  } // if(inputFile)
+  else
+  {
+    throw cmsException(this, __func__) << "Could not open file " << inputFileName_ << " for reading";
   }
 
-  if ( numEventsToBeSelected_ == 0 ) {
-    std::cerr << "<RunLumiEventSelector::readInputFile>: Failed to read any run+ls+event numbers from input file = " << inputFileName_ << " !!" << std::endl;
-    assert(0);
+  if(numEventsToBeSelected_ == 0)
+  {
+    throw cmsException(this, __func__)
+      << "Failed to read any run, lumi and event numbers from input file " << inputFileName_;
   }
 }
 
-bool RunLumiEventSelector::operator()(ULong_t run, ULong_t ls, ULong_t event) const
+bool
+RunLumiEventSelector::operator()(ULong_t run,
+                                 ULong_t ls,
+                                 ULong_t event) const
 {
 //--- check if run number matches any of the runs containing events to be selected
   bool isSelected = false;
-  if ( runLumiSectionEventNumbers_.find(run) != runLumiSectionEventNumbers_.end() ) {
-    const lumiSectionEventNumberMap& lumiSectionEventNumbers = runLumiSectionEventNumbers_.find(run)->second;
-    if ( lumiSectionEventNumbers.find(ls) != lumiSectionEventNumbers.end() ) {
-      const eventNumberSet& eventNumbers = lumiSectionEventNumbers.find(ls)->second;
-      if ( eventNumbers.find(event) != eventNumbers.end() ) isSelected = true;
+  if(runLumiSectionEventNumbers_.count(run))
+  {
+    const lumiSectionEventNumberMap & lumiSectionEventNumbers = runLumiSectionEventNumbers_.at(run);
+    if(lumiSectionEventNumbers.count(ls))
+    {
+      const eventNumberSet & eventNumbers = lumiSectionEventNumbers.at(ls);
+      if(eventNumbers.count(event))
+      {
+        isSelected = true;
+      }
     }
   }
 
   ++numEventsProcessed_;
-  if ( isSelected ) {
-    std::cout << "<RunLumiEventSelector::operator>: selecting run# = " << run << ", ls# " << ls << ", event# " << event << std::endl;
+  if(isSelected)
+  {
+    std::cout << "<RunLumiEventSelector::operator>: selecting "
+                 "run# = " << run << ", ls# " << ls << ", event# " << event << '\n';
     ++matchedRunLumiSectionEventNumbers_[run][ls][event];
     ++numEventsSelected_;
     return true;
-  } else {
-    return false;
   }
+
+  return false;
 }
 
-bool RunLumiEventSelector::areWeDone() const
+bool
+RunLumiEventSelector::areWeDone() const
 {
   return numEventsToBeSelected_ == numEventsSelected_;
 }
 
-bool RunLumiEventSelector::operator()(const EventInfo & info) const
+bool
+RunLumiEventSelector::operator()(const EventInfo & info) const
 {
   return RunLumiEventSelector::operator()(info.run, info.lumi, info.event);
-}
-
-RunLumiEventSelector* makeRunLumiEventSelector(const std::string& inputFileName)
-{
-  RunLumiEventSelector* run_lumi_eventSelector = 0;
-  if ( inputFileName != "" ) {
-    edm::ParameterSet cfgRunLumiEventSelector;
-    cfgRunLumiEventSelector.addParameter<std::string>("inputFileName", inputFileName);
-    cfgRunLumiEventSelector.addParameter<std::string>("separator", ":");
-    run_lumi_eventSelector = new RunLumiEventSelector(cfgRunLumiEventSelector);
-  }
-  return run_lumi_eventSelector;
 }
