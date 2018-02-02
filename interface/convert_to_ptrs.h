@@ -6,12 +6,13 @@
  * @return std::vector of const pointers to particles in collection given as function argument
  */
 template <typename T> 
-std::vector<const T*> convert_to_ptrs(const std::vector<T>& particles)
+std::vector<const T*>
+convert_to_ptrs(const std::vector<T> & particles)
 {
-  std::vector<const T*> particle_ptrs;
-  for ( typename std::vector<T>::const_iterator particle = particles.begin();
-	particle != particles.end(); ++particle ) {
-    particle_ptrs.push_back(&(*particle));
+  std::vector<const T *> particle_ptrs;
+  for(const T & particle: particles)
+  {
+    particle_ptrs.push_back(&particle);
   }
   return particle_ptrs;
 }
