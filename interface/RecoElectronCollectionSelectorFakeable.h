@@ -1,36 +1,34 @@
 #ifndef tthAnalysis_HiggsToTauTau_RecoElectronCollectionSelectorFakeable_h
 #define tthAnalysis_HiggsToTauTau_RecoElectronCollectionSelectorFakeable_h
 
-#include "tthAnalysis/HiggsToTauTau/interface/RecoElectron.h" // RecoElectron
-#include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorTight.h" // RecoElectronSelectorTight
-
-#include <Rtypes.h> // Int_t, Double_t
-
-#include <string>
-#include <map>
+#include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorTight.h" // RecoElectronSelectorTight, RecoElectron
 
 class RecoElectronSelectorFakeable
 {
- public:
-  explicit RecoElectronSelectorFakeable(int era, int index = -1, bool debug = false, bool set_selection_flags = true);
-  ~RecoElectronSelectorFakeable();
+public:
+  explicit
+  RecoElectronSelectorFakeable(int era,
+                               int index = -1,
+                               bool debug = false,
+                               bool set_selection_flags = true);
+  ~RecoElectronSelectorFakeable() {}
 
   // enable/disable cuts on electron ID variables to mimic electron ID cuts applied by single electron trigger 
-  void enable_offline_e_trigger_cuts()  { apply_offline_e_trigger_cuts_ = true; }
-  void disable_offline_e_trigger_cuts() { apply_offline_e_trigger_cuts_ = false; }
+  void enable_offline_e_trigger_cuts();
+  void disable_offline_e_trigger_cuts();
 
   /**
    * @brief Check if electron given as function argument passes "tight" electron selection, defined in Table 13 of AN-2015/321
    * @return True if electron passes selection; false otherwise
    */
-  bool operator()(const RecoElectron& electron) const;
+  bool operator()(const RecoElectron & electron) const;
 
- protected: 
+protected:
   int era_;
   bool set_selection_flags_;
   bool apply_offline_e_trigger_cuts_;
 
-  RecoElectronSelectorTight* tightElectronSelector_;
+  RecoElectronSelectorTight tightElectronSelector_;
 
   Double_t min_pt_;                   ///< lower cut threshold on pT
   Double_t max_absEta_;               ///< upper cut threshold on absolute value of eta
@@ -41,9 +39,9 @@ class RecoElectronSelectorFakeable
 //--- define cuts that dependent on eta
 //    format: central region (|eta| < 0.8) / transition region (0.8 < |eta| < 1.479) / forward region (|eta| > 1.479)
   typedef std::vector<Double_t> vDouble_t;
-  vDouble_t min_mvaRawPOG_vlow_;           ///< upper cut threshold on EGamma POG electron MVA value
-  vDouble_t min_mvaRawPOG_low_;           ///< upper cut threshold on EGamma POG electron MVA value
-  vDouble_t min_mvaRawPOG_high_;           ///< upper cut threshold on EGamma POG electron MVA value
+  vDouble_t min_mvaRawPOG_vlow_;      ///< upper cut threshold on EGamma POG electron MVA value
+  vDouble_t min_mvaRawPOG_low_;       ///< upper cut threshold on EGamma POG electron MVA value
+  vDouble_t min_mvaRawPOG_high_;      ///< upper cut threshold on EGamma POG electron MVA value
   vDouble_t binning_absEta_;          ///< eta values separating central, transition and forward region (0.8, 1.479)
   Double_t min_pt_trig_;              ///< lower pT threshold for applying shower shape cuts (to mimic selection applied on trigger level)
   vDouble_t max_sigmaEtaEta_trig_;    ///< upper cut threshold on second shower moment in eta-direction 
@@ -65,33 +63,21 @@ class RecoElectronSelectorFakeable
 
 class RecoElectronCollectionSelectorFakeable
 {
- public:
-  explicit RecoElectronCollectionSelectorFakeable(int era, int index = -1, bool debug = false, bool set_selection_flags = true)
-    : selIndex_(index)
-    , selector_(era, index, debug, set_selection_flags)
-  {}
+public:
+  explicit
+  RecoElectronCollectionSelectorFakeable(int era,
+                                         int index = -1,
+                                         bool debug = false,
+                                         bool set_selection_flags = true);
   ~RecoElectronCollectionSelectorFakeable() {}
 
-  void enable_offline_e_trigger_cuts() { selector_.enable_offline_e_trigger_cuts(); }
-  void disable_offline_e_trigger_cuts() { selector_.disable_offline_e_trigger_cuts(); }
+  void enable_offline_e_trigger_cuts();
+  void disable_offline_e_trigger_cuts();
 
-  std::vector<const RecoElectron*> operator()(const std::vector<const RecoElectron*>& electrons) const
-  {
-    std::vector<const RecoElectron*> selElectrons;
-    int idx = 0;
-    for ( typename std::vector<const RecoElectron*>::const_iterator electron = electrons.begin();
-	  electron != electrons.end(); ++electron ) {
-      if ( selector_(**electron) ) {
-	if ( idx == selIndex_ || selIndex_ == -1 ) {
-	  selElectrons.push_back(*electron);
-	}
-	++idx;
-      }
-    }
-    return selElectrons;
-  }
-  
- protected: 
+  std::vector<const RecoElectron *>
+  operator()(const std::vector<const RecoElectron * > & electrons) const;
+
+protected:
   int selIndex_;
   RecoElectronSelectorFakeable selector_;
 };

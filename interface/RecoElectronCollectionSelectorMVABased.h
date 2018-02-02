@@ -1,17 +1,16 @@
 #ifndef RECOELECTRONCOLLECTIONSELECTORMVABASED_H
 #define RECOELECTRONCOLLECTIONSELECTORMVABASED_H
 
-#include "tthAnalysis/HiggsToTauTau/interface/RecoElectron.h" // RecoElectron
 #include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionSelector.h" // ParticleCollectionSelector
-
-#include <Rtypes.h> // Int_t, Double_t
-
-#include <vector> // std::vector<>
+#include "tthAnalysis/HiggsToTauTau/interface/RecoElectron.h" // RecoElectron
 
 class RecoElectronSelectorMVABased
 {
- public:
-  explicit RecoElectronSelectorMVABased(int era, int index = -1, bool debug = false);
+public:
+  explicit
+  RecoElectronSelectorMVABased(int era,
+                               int index = -1,
+                               bool debug = false);
   ~RecoElectronSelectorMVABased() {}
 
   /**
@@ -19,9 +18,9 @@ class RecoElectronSelectorMVABased
    *        defined in https://twiki.cern.ch/twiki/bin/viewauth/CMS/TTHtautauFor13TeV#mva_based_selection_AN1
    * @return True if electron passes selection; false otherwise
    */
-  bool operator()(const RecoElectron& electron) const;
+  bool operator()(const RecoElectron & electron) const;
 
- protected:
+protected:
   int era_;
 
   Double_t min_pt_;                   ///< lower cut threshold on pT
@@ -37,8 +36,8 @@ class RecoElectronSelectorMVABased
   Double_t min_OoEminusOoP_trig_;     ///< lower cut threshold on difference between calorimeter energy and track momentum (1/E - 1/P)
   vDouble_t max_OoEminusOoP_trig_;    ///< upper cut threshold on difference between calorimeter energy and track momentum (1/E - 1/P)
 //-------------------------------------------------------------------------------
-  Double_t min_mvaTTH_;     ///< lower cut threshold on lepton MVA of ttH multilepton analysis
-  Double_t max_jetBtagCSV_; ///< upper cut threshold on CSV b-tagging discriminator value of nearby jet
+  Double_t min_mvaTTH_;               ///< lower cut threshold on lepton MVA of ttH multilepton analysis
+  Double_t max_jetBtagCSV_;           ///< upper cut threshold on CSV b-tagging discriminator value of nearby jet
   bool apply_tightCharge_;            ///< apply (True) or do not apply (False) tight charge cut
   bool apply_conversionVeto_;         ///< apply (True) or do not apply (False) conversion veto
   Int_t max_nLostHits_;               ///< upper cut threshold on lost hits in the innermost layer of the tracker (electrons with lost_hits equal to cut threshold pass)

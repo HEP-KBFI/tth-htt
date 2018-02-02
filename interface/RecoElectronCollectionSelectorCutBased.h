@@ -1,17 +1,16 @@
 #ifndef RECOELECTRONCOLLECTIONSELECTORCUTBASED_H
 #define RECOELECTRONCOLLECTIONSELECTORCUTBASED_H
 
-#include "tthAnalysis/HiggsToTauTau/interface/RecoElectron.h" // RecoElectron
 #include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionSelector.h" // ParticleCollectionSelector
-
-#include <Rtypes.h> // Int_t, Double_t
-
-#include <vector> // std::vector<>
+#include "tthAnalysis/HiggsToTauTau/interface/RecoElectron.h" // RecoElectron
 
 class RecoElectronSelectorCutBased
 {
- public:
-  explicit RecoElectronSelectorCutBased(int era, int index = -1, bool debug = false);
+public:
+  explicit
+  RecoElectronSelectorCutBased(int era,
+                               int index = -1,
+                               bool debug = false);
   ~RecoElectronSelectorCutBased() {}
 
   /**
@@ -20,9 +19,9 @@ class RecoElectronSelectorCutBased
    *        Assumes that a given muon has passed preselection cuts
    * @return True if electron passes selection; false otherwise
    */
-  bool operator()(const RecoElectron& electron) const;
+  bool operator()(const RecoElectron & electron) const;
 
- protected:
+protected:
   Double_t min_pt_;                   ///< lower cut threshold on pT
   Double_t max_relIso_;               ///< upper cut threshold on relative isolation
   Double_t max_sip3d_;                ///< upper cut threshold on significance of IP
