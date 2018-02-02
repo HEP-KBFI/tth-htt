@@ -6,7 +6,7 @@
 class GenParticle
   : public Particle
 {
- public:
+public:
   GenParticle();
   GenParticle(Double_t pt,
               Double_t eta,
@@ -17,21 +17,22 @@ class GenParticle
   GenParticle(const math::PtEtaPhiMLorentzVector & p4,
               Int_t pdgId,
               Int_t charge);
+  virtual ~GenParticle() {}
 
   /**
    * @brief Funtions to access data-members
    * @return Values of data-members
    */
-  Int_t pdgId() const { return pdgId_; }
-  Int_t charge() const { return charge_; }
+  Int_t pdgId() const;
+  Int_t charge() const;
 
- protected:
+protected:
   Int_t pdgId_;  ///< PDG id of the particle (signed)
   Int_t charge_; ///< charge of particle
 };
 
 std::ostream &
 operator<<(std::ostream & stream,
-           const GenParticle & lepton);
+           const GenParticle & particle);
 
 #endif // tthAnalysis_HiggsToTauTau_GenParticle_h
