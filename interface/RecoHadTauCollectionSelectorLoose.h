@@ -1,24 +1,24 @@
 #ifndef tthAnalysis_HiggsToTauTau_RecoHadTauCollectionSelectorLoose_h
 #define tthAnalysis_HiggsToTauTau_RecoHadTauCollectionSelectorLoose_h
 
-#include "tthAnalysis/HiggsToTauTau/interface/RecoHadTau.h" // RecoHadTau
-#include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelectorBase.h" // RecoHadTauSelectorBase, RecoHadTauCollectionSelector
+#include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauSelectorBase.h" // RecoHadTauSelectorBase, RecoHadTau
+#include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelector.h" // RecoHadTauCollectionSelector
 
-#include <Rtypes.h> // Int_t, Double_t
-
-#include <string>
-#include <map>
-
-class RecoHadTauSelectorLoose : public RecoHadTauSelectorBase
+class RecoHadTauSelectorLoose
+  : public RecoHadTauSelectorBase
 {
- public:
-  explicit RecoHadTauSelectorLoose(int era, int index = -1, bool debug = false, bool set_selection_flags = true);
+public:
+  explicit
+  RecoHadTauSelectorLoose(int era,
+                          int index = -1,
+                          bool debug = false,
+                          bool set_selection_flags = true);
   ~RecoHadTauSelectorLoose() {}
 
   friend class RecoHadTauCollectionSelector<RecoHadTauSelectorLoose>;
 
- protected:
-  void set_selection_flags(const RecoHadTau& hadTau) const { hadTau.set_isLoose(); }
+protected:
+  void set_selection_flags(const RecoHadTau & hadTau) const;
 };
 
 typedef RecoHadTauCollectionSelector<RecoHadTauSelectorLoose> RecoHadTauCollectionSelectorLoose;
