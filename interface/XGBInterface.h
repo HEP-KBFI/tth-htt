@@ -8,7 +8,7 @@
 
 class XGBInterface
 {
- public:
+public:
   XGBInterface(const std::string & mvaFileName,
                const std::vector<std::string> & mvaInputVariables);
   ~XGBInterface();
@@ -21,7 +21,7 @@ class XGBInterface
   double
   operator()(const std::map<std::string, double> & mvaInputs) const;
 
- private:
+private:
   std::string mvaFileName_;
 
   std::vector<std::string> mvaInputVariables_; // list of MVA input variables
