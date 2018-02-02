@@ -1,21 +1,23 @@
 #ifndef GENJET_H
 #define GENJET_H
 
-#include "tthAnalysis/HiggsToTauTau/interface/Particle.h" // Particle
 #include "tthAnalysis/HiggsToTauTau/interface/GenParticle.h" // GenParticle
 
-class GenJet : public Particle
+class GenJet
+  : public GenParticle
 {
- public:
+public:
   GenJet() = default;
-  GenJet(Double_t _pt,
-         Double_t _eta,
-         Double_t _phi,
-         Double_t _mass);
+  GenJet(Double_t pt,
+         Double_t eta,
+         Double_t phi,
+         Double_t mass);
 
-  virtual ~GenJet() {};
-
-  operator GenParticle() const;  
+  virtual ~GenJet() {}
 };
+
+std::ostream &
+operator<<(std::ostream & stream,
+           const GenJet & genJet);
 
 #endif // GENJET_H

@@ -1,13 +1,16 @@
-#include "tthAnalysis/HiggsToTauTau/interface/GenJet.h" // GenJet, GenParticleBase
+#include "tthAnalysis/HiggsToTauTau/interface/GenJet.h" // GenJet, GenParticle
 
 GenJet::GenJet(Double_t pt,
                Double_t eta,
                Double_t phi,
                Double_t mass)
-  : Particle(pt, eta, phi, mass)
+  : GenParticle(pt, eta, phi, mass, 0, 0)
 {}
 
-GenJet::operator GenParticle() const
+std::ostream &
+operator<<(std::ostream & stream,
+           const GenJet & genJet)
 {
-  return GenParticle(pt_, eta_, phi_, mass_, 0, 0);
+  stream << static_cast<const GenParticle &>(genJet);
+  return stream;
 }
