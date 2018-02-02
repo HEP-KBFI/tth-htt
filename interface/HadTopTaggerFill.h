@@ -2,14 +2,15 @@
 #define tthAnalysis_HiggsToTauTau_HadTopTaggerFill_h
 
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h" // RecoJet
-#include "tthAnalysis/HiggsToTauTau/interface/HadTopKinFit.h" // HadTopKinFit
-#include "tthAnalysis/HiggsToTauTau/interface/TMVAInterface.h" // TMVAInterface
-#include "tthAnalysis/HiggsToTauTau/interface/MVAInputVarHistManager.h" // MVAInputVarHistManager
+
+// forward declarations
+class HadTopKinFit;
+class MVAInputVarHistManager;
 
 class HadTopTaggerFill
 {
- public:
-  HadTopTaggerFill(const std::string& mvaFileName = "");
+public:
+  HadTopTaggerFill();
   ~HadTopTaggerFill();
 
   /**
@@ -18,33 +19,57 @@ class HadTopTaggerFill
    * @return          MVA output
    */
   double
-  operator()(const RecoJet& recBJet, const RecoJet& recWJet1, const RecoJet& recWJet2);
+  operator()(const RecoJet & recBJet,
+             const RecoJet & recWJet1,
+             const RecoJet & recWJet2);
 
-  std::vector<bool> isTruth(const RecoJet& recBJet, const RecoJet& recWJet1, const RecoJet& recWJet2,\
-					//std::vector<const RecoJet*> selJets,
-					std::vector<GenParticle> genTopQuarks, std::vector<GenParticle> genBJets,\
-					std::vector<GenParticle> genWBosons);
-					
-  std::vector<bool> isTruth3Jet(const RecoJet& recBJet, const RecoJet& recWJet1, const RecoJet& recWJet2,\
-					//std::vector<const RecoJet*> selJets,
-					std::vector<GenParticle> genTopQuarks, std::vector<GenParticle> genBJets,std::vector<GenParticle> genWBosons,\
-					std::vector<GenParticle> genWJets);
-										
-  void DefineHist(MVAInputVarHistManager* mvaInputHistManager);
+  std::vector<bool>
+  isTruth(const RecoJet & recBJet,
+          const RecoJet & recWJet1,
+          const RecoJet & recWJet2,
+          const std::vector<GenParticle> & genTopQuarks,
+          const std::vector<GenParticle> & genBJets,
+          const std::vector<GenParticle> & genWBosons);
 
-  const std::vector<std::string>& mvaInputVariables() const;
+  std::vector<bool>
+  isTruth3Jet(const RecoJet & recBJet,
+              const RecoJet & recWJet1,
+              const RecoJet & recWJet2,
+              const std::vector<GenParticle> & genTopQuarks,
+              const std::vector<GenParticle> & genBJets,
+              const std::vector<GenParticle> & genWBosons,
+              const std::vector<GenParticle> & genWJets);
 
-  const std::map<std::string, double>& mvaInputs() const;
+  const std::vector<std::string> &
+  defineBinnings(MVAInputVarHistManager * mvaInputHistManager);
 
-  const HadTopKinFit* kinFit() const;
-  
- protected:
-  HadTopKinFit* kinFit_;
+  const std::map<std::string, double> &
+  mvaInputs() const;
 
+  const HadTopKinFit *
+  kinFit() const;
+
+protected:
+  HadTopKinFit * kinFit_;
   std::vector<std::string> mvaInputVariables_;
-  //TMVAInterface* mva_;
   std::map<std::string, double> mvaInputs_;
-  //double mvaOutput_;
+
+private:
+
+  struct MVAInputVarHistManagerWrapper
+  {
+    MVAInputVarHistManagerWrapper(HadTopTaggerFill * outer,
+                                  MVAInputVarHistManager * mvaInputHistManager);
+
+    void
+    defineBinning(const std::string & histogramName,
+                  int numBinsX,
+                  double xMin,
+                  double xMax);
+    HadTopTaggerFill * outer_;
+    MVAInputVarHistManager * mvaInputHistManager_;
+  };
+
 };
 
 #endif // tthAnalysis_HiggsToTauTau_HadTopTagger_h
