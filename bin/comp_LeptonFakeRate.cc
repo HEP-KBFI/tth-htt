@@ -35,6 +35,7 @@
 #include <TObjString.h>
 #include <TRandom3.h>
 #include <TString.h>
+#include <TH2.h>
 
 #include <iostream>
 #include <fstream>
