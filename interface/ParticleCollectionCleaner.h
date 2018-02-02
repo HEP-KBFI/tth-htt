@@ -17,14 +17,14 @@ public:
    * @return Collection of non-overlapping particles
    */
   template <typename Toverlap>
-  std::vector<const T*> operator()(const std::vector<const T*>& particles,
-                                   const std::vector<const Toverlap*>& overlaps) const
+  std::vector<const T *> operator()(const std::vector<const T *> & particles,
+                                    const std::vector<const Toverlap *> & overlaps) const
   {
-    std::vector<const T*> cleanedParticles;
-    for(const T* particle: particles)
+    std::vector<const T *> cleanedParticles;
+    for(const T * particle: particles)
     {
       bool isOverlap = false;
-      for(const Toverlap* overlap: overlaps)
+      for(const Toverlap * overlap: overlaps)
       {
         const double dRoverlap = deltaR(particle->eta(), particle->phi(), overlap->eta(), overlap->phi());
         if(dRoverlap < dR_)
@@ -43,28 +43,12 @@ public:
 
   template <typename Toverlap,
             typename... Args>
-  std::vector<const T*> operator()(const std::vector<const T*>& particles,
-                                   const std::vector<const Toverlap*>& overlaps, Args... args) const
+  std::vector<const T *> operator()(const std::vector<const T *> & particles,
+                                    const std::vector<const Toverlap *> & overlaps,
+                                    Args... args) const
   {
-    std::vector<const T*> cleanedParticles;
-    for(const T* particle: particles)
-    {
-      bool isOverlap = false;
-      for(const Toverlap* overlap: overlaps)
-      {
-        const double dRoverlap = deltaR(particle->eta(), particle->phi(), overlap->eta(), overlap->phi());
-        if(dRoverlap < dR_)
-        {
-          isOverlap = true;
-          break;
-        }
-      }
-      if(! isOverlap)
-      {
-        cleanedParticles.push_back(particle);
-      }
-    }
-    return this->operator()(cleanedParticles, args...);
+    std::vector<const T *> cleanedParticles = (*this)(particles, overlaps);
+    return (*this)(cleanedParticles, args...);
   }
 
 protected:
