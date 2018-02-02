@@ -164,20 +164,20 @@ void RecoHadTauWriter::writeGenMatching(const std::vector<const RecoHadTau *> & 
   std::vector<GenParticle> matched_genHadTaus;
   std::vector<GenParticle> matched_genJets;
   assert(nHadTaus_ == hadTaus.size());
-  for(const RecoHadTau* hadTau: hadTaus)
+  for(const RecoHadTau * hadTau: hadTaus)
   {
     assert(hadTau);
 
     const GenLepton * matched_genLepton = hadTau->genLepton();
-    if(matched_genLepton) matched_genLeptons.push_back(static_cast<GenParticle>(*matched_genLepton));
+    if(matched_genLepton) matched_genLeptons.push_back(*reinterpret_cast<const GenParticle *>(matched_genLepton));
     else                  matched_genLeptons.push_back(dummyGenParticle_);
 
     const GenHadTau * matched_genHadTau = hadTau->genHadTau();
-    if(matched_genHadTau) matched_genHadTaus.push_back(static_cast<GenParticle>(*matched_genHadTau));
+    if(matched_genHadTau) matched_genHadTaus.push_back(*reinterpret_cast<const GenParticle *>(matched_genHadTau));
     else                  matched_genHadTaus.push_back(dummyGenParticle_);
 
     const GenJet * matched_genJet = hadTau->genJet();
-    if(matched_genJet) matched_genJets.push_back(static_cast<GenParticle>(*matched_genJet));
+    if(matched_genJet) matched_genJets.push_back(*reinterpret_cast<const GenParticle *>(matched_genJet));
     else               matched_genJets.push_back(dummyGenParticle_);
   }
   genLeptonWriter_->write(matched_genLeptons);

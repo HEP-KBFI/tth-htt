@@ -272,11 +272,13 @@ RecoHadTauReader::read() const
       } // hadTau_idMVA_dR03 >= 1
 
       hadTaus.push_back({
-        hadTau_pt,
-        gInstance->hadTau_eta_[idxHadTau],
-        gInstance->hadTau_phi_[idxHadTau],
-        gInstance->hadTau_mass_[idxHadTau],
-        gInstance->hadTau_charge_[idxHadTau],
+        {
+          hadTau_pt,
+          gInstance->hadTau_eta_[idxHadTau],
+          gInstance->hadTau_phi_[idxHadTau],
+          gInstance->hadTau_mass_[idxHadTau],
+          gInstance->hadTau_charge_[idxHadTau]
+        },
         gInstance->hadTau_dxy_[idxHadTau],
         gInstance->hadTau_dz_[idxHadTau],
         gInstance->hadTau_decayMode_[idxHadTau],

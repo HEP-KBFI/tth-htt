@@ -13,7 +13,7 @@ class GenParticleWriter;
 
 class RecoHadTauWriter
 {
- public:
+public:
   RecoHadTauWriter(int era);
   RecoHadTauWriter(int era,
                    const std::string & branchName_num,
@@ -36,7 +36,7 @@ class RecoHadTauWriter
    */
   void writeGenMatching(const std::vector<const RecoHadTau *> & hadTaus);
 
- protected: 
+protected:
  /**
    * @brief Initialize names of branches to be read from tree
    */
