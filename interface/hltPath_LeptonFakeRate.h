@@ -1,7 +1,7 @@
 #ifndef tthAnalysis_HiggsToTauTau_hltPath_LeptonFakeRate_h
 #define tthAnalysis_HiggsToTauTau_hltPath_LeptonFakeRate_h
 
-#include "FWCore/ParameterSet/interface/ParameterSet.h" // edm::ParameterSet
+#include <FWCore/ParameterSet/interface/ParameterSet.h> // edm::ParameterSet
 
 #include "tthAnalysis/HiggsToTauTau/interface/hltPath.h"
 

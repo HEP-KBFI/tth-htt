@@ -1,5 +1,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/hltPath_LeptonFakeRate.h"
 
+#include <iostream> // std::ostream
+
 hltPath_LeptonFakeRate::hltPath_LeptonFakeRate(const std::string & branchName,
                                                bool is_trigger_1mu,
                                                bool is_trigger_2mu,

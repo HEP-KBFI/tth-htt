@@ -2,6 +2,7 @@
 
 #include <TTree.h> // TTree
 
+#include <iostream> // std::ostream
 #include <algorithm> // std::any_of()
 #include <cassert> // assert()
 

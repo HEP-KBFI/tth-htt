@@ -5,7 +5,7 @@
 
 #include <Rtypes.h> // Int_t
 
-#include <iostream> // std::ostream
+#include <iosfwd> // std::ostream
 
 /**
  * @brief Auxiliary data structure for handling trigger information
