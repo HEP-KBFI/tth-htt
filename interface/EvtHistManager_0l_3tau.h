@@ -6,7 +6,7 @@
  * Book and fill histograms for event-level quantities in ttH, H->tautau analysis
  * in 0l_3tau category
  *
- * \author Christian Veelken, Tallin
+ * \author Christian Veelken, Tallinn
  *
  */
 
@@ -15,33 +15,45 @@
 class EvtHistManager_0l_3tau
   : public HistManagerBase
 {
- public:
-  EvtHistManager_0l_3tau(edm::ParameterSet const& cfg);
+public:
+  EvtHistManager_0l_3tau(const edm::ParameterSet & cfg);
   ~EvtHistManager_0l_3tau() {}
 
   /// book and fill histograms
-  void bookHistograms(TFileDirectory& dir);
-  void fillHistograms(int numElectrons, int numMuons, int numHadTaus, int numJets, int numBJets_loose, int numBJets_medium,
-		      double mTauTauVis1, double mTauTauVis2, double evtWeight);
+  void
+  bookHistograms(TFileDirectory & dir) override;
 
-  const TH1* getHistogram_EventCounter() const { return histogram_EventCounter_; }
+  void
+  fillHistograms(int numElectrons,
+                 int numMuons,
+                 int numHadTaus,
+                 int numJets,
+                 int numBJets_loose,
+                 int numBJets_medium,
+                 double mTauTauVis1,
+                 double mTauTauVis2,
+                 double evtWeight);
 
- private:
-  TH1* histogram_numElectrons_;
-  TH1* histogram_numMuons_;
-  TH1* histogram_numHadTaus_;
-  TH1* histogram_numJets_;
-  TH1* histogram_numBJets_loose_;
-  TH1* histogram_numBJets_medium_;
+  const TH1 *
+  getHistogram_EventCounter() const;
 
-  TH2* histogram_numBJets_loose_vs_numJets_;  // CV: used to check loss in signal efficiency in case events with high jet and b-jet multiplicity are vetoed
-  TH2* histogram_numBJets_medium_vs_numJets_; //     to avoid overlap with ttH, H->bb analysis (alternative: ttH, H->bb analysis adds hadronic tau veto)
+private:
+  TH1 * histogram_numElectrons_;
+  TH1 * histogram_numMuons_;
+  TH1 * histogram_numHadTaus_;
+  TH1 * histogram_numJets_;
+  TH1 * histogram_numBJets_loose_;
+  TH1 * histogram_numBJets_medium_;
 
-  TH1* histogram_mTauTauVis_;
+  // CV: used to check loss in signal efficiency in case events with
+  // high jet and b-jet multiplicity are vetoed to avoid overlap with ttH, H->bb analysis
+  // (alternative: ttH, H->bb analysis adds hadronic tau veto)
+  TH2 * histogram_numBJets_loose_vs_numJets_;
+  TH2 * histogram_numBJets_medium_vs_numJets_;
 
-  TH1* histogram_EventCounter_;
+  TH1 * histogram_mTauTauVis_;
 
-  std::vector<TH1*> histograms_;
+  TH1 * histogram_EventCounter_;
 };
 
 #endif
