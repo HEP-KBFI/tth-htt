@@ -15,34 +15,41 @@
 class HadTauHistManager
   : public HistManagerBase
 {
- public:
-  HadTauHistManager(edm::ParameterSet const& cfg);
+public:
+  HadTauHistManager(const edm::ParameterSet & cfg);
   ~HadTauHistManager() {}
 
   /// book and fill histograms
-  void bookHistograms(TFileDirectory& dir);
-  void fillHistograms(const RecoHadTau& hadTau, double evtWeight);
-  void fillHistograms(const std::vector<const RecoHadTau*>& hadTau_ptrs, double evtWeight);
+  void
+  bookHistograms(TFileDirectory & dir) override;
 
- private:
-  TH1* histogram_pt_;
-  TH1* histogram_eta_;
-  TH1* histogram_phi_;
-  TH1* histogram_mass_;
-  TH1* histogram_charge_;
+  void
+  fillHistograms(const RecoHadTau & hadTau,
+                 double evtWeight);
 
-  TH1* histogram_dz_; 
-  TH1* histogram_decayModeFinding_;
-  TH1* histogram_id_mva_dR03_;     
-  TH1* histogram_id_mva_dR05_;  
-  TH1* histogram_id_cut_dR03_;   
-  TH1* histogram_id_cut_dR05_;   
-  TH1* histogram_antiElectron_;
-  TH1* histogram_antiMuon_;   
+  void
+  fillHistograms(const std::vector<const RecoHadTau *> & hadTau_ptrs,
+                 double evtWeight);
 
-  TH1* histogram_abs_genPdgId_;
+private:
+  TH1 * histogram_pt_;
+  TH1 * histogram_eta_;
+  TH1 * histogram_phi_;
+  TH1 * histogram_mass_;
+  TH1 * histogram_charge_;
 
-  std::vector<TH1*> histograms_;
+  TH1 * histogram_dz_;
+  TH1 * histogram_decayModeFinding_;
+  TH1 * histogram_id_mva_dR03_;
+  TH1 * histogram_id_mva_dR05_;
+  TH1 * histogram_id_cut_dR03_;
+  TH1 * histogram_id_cut_dR05_;
+  TH1 * histogram_antiElectron_;
+  TH1 * histogram_antiMuon_;
+
+  TH1 * histogram_abs_genPdgId_;
+
+  std::vector<TH1 *> histograms_;
 
   int idx_; // flag to select leading or subleading hadronic tau (set idx to -1 to make plots for all hadronic taus)
 };
