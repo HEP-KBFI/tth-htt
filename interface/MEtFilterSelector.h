@@ -10,34 +10,20 @@
  *
  */
 
-#include "tthAnalysis/HiggsToTauTau/interface/EventInfo.h" // EventInfo
+#include "tthAnalysis/HiggsToTauTau/interface/MEtFilter.h"
 
-#include "tthAnalysis/HiggsToTauTau/interface/MEtFilter.h" // NEW !
-
-
-#include <FWCore/Framework/interface/EDFilter.h>
-#include <FWCore/Framework/interface/Event.h>
-#include <FWCore/Framework/interface/EventSetup.h>
-#include <FWCore/ParameterSet/interface/ParameterSet.h>
-
-#include <TObject.h>
-
-#include <string>
-#include <map>
+#include <FWCore/ParameterSet/interface/ParameterSet.h> // edm::ParameterSet
 
 class MEtFilterSelector 
 {
  public:
-  // constructor 
-  explicit MEtFilterSelector(const edm::ParameterSet&);
-    
-  // destructor
-  virtual ~MEtFilterSelector();
+  explicit MEtFilterSelector(const edm::ParameterSet & cfg);
+
+  virtual ~MEtFilterSelector() {}
 
   // Returns value true if the event passes all the filters that are applied 
-  bool operator()(const MEtFilter& metFilter) const;
-  
-
+  bool
+  operator()(const MEtFilter & metFilter) const;
 
  protected: 
   // Following JetMEt POG Recipe "Moriond 2017" 
