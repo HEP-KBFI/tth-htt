@@ -14,7 +14,7 @@ enum { kLHE_scale_central, kLHE_scale_xUp, kLHE_scale_xDown, kLHE_scale_yUp, kLH
 class LHEInfoReader
   : public ReaderBase
 {
- public:
+public:
   LHEInfoReader();
   ~LHEInfoReader();
 
@@ -37,7 +37,7 @@ class LHEInfoReader
   int getNumWeights_pdf() const;
   double getWeight_pdf(unsigned int idx) const;
 
- protected:
+protected:
  /**
    * @brief Initialize names of branches to be read from tree
    */
