@@ -12,7 +12,7 @@ class TTree;
 class GenParticleReader
   : public ReaderBase
 {
- public:
+public:
   GenParticleReader();
   GenParticleReader(const std::string & branchName_nParticles,
                     const std::string & branchName_particles);
@@ -29,7 +29,7 @@ class GenParticleReader
    */
   std::vector<GenParticle> read() const;
 
- protected:
+protected:
  /**
    * @brief Initialize names of branches to be read from tree
    */

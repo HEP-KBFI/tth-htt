@@ -12,7 +12,7 @@ class TTree;
 class GenJetReader
   : public ReaderBase
 {
- public:
+public:
   GenJetReader();
   GenJetReader(const std::string & branchName_num,
                const std::string & branchName_obj);
@@ -29,7 +29,7 @@ class GenJetReader
    */
   std::vector<GenJet> read() const;
 
- protected:
+protected:
  /**
    * @brief Initialize names of branches to be read from tree
    */

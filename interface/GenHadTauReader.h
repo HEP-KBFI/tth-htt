@@ -12,7 +12,7 @@ class TTree;
 class GenHadTauReader
   : public ReaderBase
 {
- public:
+public:
   GenHadTauReader();
   GenHadTauReader(const std::string & branchName_num,
                   const std::string & branchName_obj);
@@ -29,7 +29,7 @@ class GenHadTauReader
    */
   std::vector<GenHadTau> read() const;
 
- protected:
+protected:
  /**
    * @brief Initialize names of branches to be read from tree
    */

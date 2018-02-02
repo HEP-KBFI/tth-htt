@@ -12,7 +12,7 @@ class TTree;
 class GenLeptonReader
   : public ReaderBase
 {
- public:
+public:
   GenLeptonReader();
   GenLeptonReader(const std::string & branchName_nPromptLeptons,
                   const std::string & branchName_promptLeptons,
@@ -31,7 +31,7 @@ class GenLeptonReader
    */
   std::vector<GenLepton> read() const;
 
- protected:
+protected:
  /**
    * @brief Initialize names of branches to be read from tree
    */
