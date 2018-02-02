@@ -5,7 +5,6 @@
 #include "tthAnalysis/HiggsToTauTau/interface/GenParticle.h" // GenParticle
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTau.h" // RecoHadTau
 #include "tthAnalysis/HiggsToTauTau/interface/TypeTraits.h" // Traits<>
-#include "tthAnalysis/HiggsToTauTau/interface/KeyTypes.h" // RUN_*, LUMI_*, EVT_*
 
 #include <Rtypes.h> // *_t types
 #include <TTree.h> // TTree
@@ -37,9 +36,9 @@ struct RLEUnit
     , lumi_(0)
     , evt_(0)
   {}
-  RLEUnit(RUN_TYPE  run,
-          LUMI_TYPE lumi,
-          EVT_TYPE  evt)
+  RLEUnit(UInt_t  run,
+          UInt_t lumi,
+          ULong64_t  evt)
     : run_(run)
     , lumi_(lumi)
     , evt_(evt)
@@ -53,9 +52,9 @@ struct RLEUnit
     return ss.str();
   }
 
-  RUN_TYPE  run_;
-  LUMI_TYPE lumi_;
-  EVT_TYPE  evt_;
+  UInt_t  run_;
+  UInt_t lumi_;
+  ULong64_t  evt_;
 };
 
 /**
@@ -188,9 +187,9 @@ struct RLEFiller
   int
   initBranches(TTree * tree)
   {
-    run_ = BasicFiller<RUN_TYPE>(RUN_KEY);
-    lumi_ = BasicFiller<LUMI_TYPE>(LUMI_KEY);
-    evt_ = BasicFiller<EVT_TYPE>(EVT_KEY);
+    run_ = BasicFiller<UInt_t>("run");
+    lumi_ = BasicFiller<UInt_t>("luminosityBlock");
+    evt_ = BasicFiller<ULong64_t>("event");
     if(unitPtr_)
     {
       run_.setValuePtr(unitPtr_ -> run_);
@@ -218,9 +217,9 @@ struct RLEFiller
     unitPtr_ = unitPtr;
   }
 
-  BasicFiller<RUN_TYPE>  run_;
-  BasicFiller<LUMI_TYPE> lumi_;
-  BasicFiller<EVT_TYPE>  evt_;
+  BasicFiller<UInt_t>  run_;
+  BasicFiller<UInt_t> lumi_;
+  BasicFiller<ULong64_t>  evt_;
 
   RLEUnit * unitPtr_;
 };
