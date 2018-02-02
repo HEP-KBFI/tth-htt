@@ -10,6 +10,8 @@
 #include <TString.h> // TString, Form
 #include <TEfficiency.h>
 #include <TError.h> // gErrorAbortLevel, kError
+#include <TMath.h> // TMath::
+#include <TH2.h> // TH2
 
 #include "tthAnalysis/HiggsToTauTau/interface/RecoLepton.h" // RecoLepton
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTau.h" // RecoHadTau
@@ -44,7 +46,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelectorBtag.h" // RecoJetCollectionSelectorBtagLoose, RecoJetCollectionSelectorBtagMedium
 #include "tthAnalysis/HiggsToTauTau/interface/RunLumiEventSelector.h" // RunLumiEventSelector
 #include "tthAnalysis/HiggsToTauTau/interface/ElectronHistManager.h" // ElectronHistManager
-#include "tthAnalysis/HiggsToTauTau/interface/CutFlowTableHistManager_charge_flip.h" // CutFlowTableHistManager_charge_flip
+#include "tthAnalysis/HiggsToTauTau/interface/CutFlowTableHistManager.h" // CutFlowTableHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/EvtHistManager_charge_flip.h" // EvtHistManager_charge_flip
 #include "tthAnalysis/HiggsToTauTau/interface/GenEvtHistManager.h" // GenEvtHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/LHEInfoHistManager.h" // LHEInfoHistManager
@@ -58,6 +60,8 @@
 #include "tthAnalysis/HiggsToTauTau/interface/fakeBackgroundAuxFunctions.h" // getWeight_2L, getWeight_3L
 #include "tthAnalysis/HiggsToTauTau/interface/cutFlowTable.h" // cutFlowTableType
 #include "tthAnalysis/HiggsToTauTau/interface/TTreeWrapper.h" // TTreeWrapper
+
+#include <boost/math/special_functions/sign.hpp> // boost::math::sign()
 
 #include <iostream> // std::cerr, std::fixed
 #include <cstring> // std::strncpm
@@ -398,8 +402,22 @@ int main(int argc, char* argv[])
   TH1* histogram_analyzedEntries = fs.make<TH1D>("analyzedEntries", "analyzedEntries", 1, -0.5, +0.5);
   TH1* histogram_selectedEntries = fs.make<TH1D>("selectedEntries", "selectedEntries", 1, -0.5, +0.5);
   cutFlowTableType cutFlowTable;
-  CutFlowTableHistManager_charge_flip* cutFlowHistManager = new CutFlowTableHistManager_charge_flip(makeHistManager_cfg(process_string,
-    Form("charge_flip_%s/sel/cutFlow", charge_and_leptonSelectionSS.data()), central_or_shift));
+  const edm::ParameterSet cutFlowTableCfg = makeHistManager_cfg(
+    process_string, Form("charge_flip_%s/sel/cutFlow", charge_and_leptonSelectionSS.data()), central_or_shift
+  );
+  const std::vector<std::string> cuts = {
+    "run:ls:event selection",
+    "trigger",
+    "= 2 presel electrons",
+    "presel electron trigger match",
+    "= 0 presel muons",
+    "= 2 sel electrons",
+    "sel electron trigger match",
+    "lead electron pT > 25 GeV && sublead electron pT > 15 GeV",
+    "tight electron charge",
+    "60 < m(ee) < 120 GeV",
+  };
+  CutFlowTableHistManager * cutFlowHistManager = new CutFlowTableHistManager(cutFlowTableCfg, cuts);
   cutFlowHistManager->bookHistograms(fs);
 
   while ( inputTree->hasNextEvent() && (!run_lumi_eventSelector || (run_lumi_eventSelector && !run_lumi_eventSelector->areWeDone())) ) {
@@ -589,7 +607,7 @@ int main(int argc, char* argv[])
     double evtWeight = 1.;
     if ( isMC ) {
       evtWeight *= lumiScale;
-      if ( apply_genWeight ) evtWeight *= sgn(eventInfo.genWeight);
+      if ( apply_genWeight ) evtWeight *= boost::math::sign(eventInfo.genWeight);
       evtWeight *= eventInfo.pileupWeight;
       if ( lheScale_option != kLHE_scale_central ) {	
 	if      ( lheScale_option == kLHE_scale_xDown ) evtWeight *= lheInfoReader->getWeight_scale_xDown();
