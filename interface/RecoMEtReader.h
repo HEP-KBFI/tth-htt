@@ -12,7 +12,7 @@ class TTree;
 class RecoMEtReader
   : public ReaderBase
 {
- public:
+public:
   RecoMEtReader(int era);
   RecoMEtReader(int era,
                 const std::string & branchName_obj,
@@ -38,7 +38,7 @@ class RecoMEtReader
    */
   RecoMEt read() const;
 
- protected:
+protected:
  /**
    * @brief Initialize names of branches to be read from tree
    */

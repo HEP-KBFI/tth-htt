@@ -11,7 +11,7 @@ class TTree;
 
 class RecoMEtWriter
 {
- public:
+public:
   RecoMEtWriter(int era);
   RecoMEtWriter(int era,
                 const std::string & branchName_obj);
@@ -27,7 +27,7 @@ class RecoMEtWriter
    */
   void write(const RecoMEt & met);
   
- protected: 
+protected:
  /**
    * @brief Initialize names of branches to be read from tree
    */
