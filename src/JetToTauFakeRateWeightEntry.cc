@@ -1,55 +1,95 @@
 #include "tthAnalysis/HiggsToTauTau/interface/JetToTauFakeRateWeightEntry.h"
 
-#include "FWCore/Utilities/interface/Exception.h" // cms::Exception
+#include "tthAnalysis/HiggsToTauTau/interface/jetToTauFakeRateAuxFunctions.h" // getEtaBin()
+#include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 
-#include "tthAnalysis/HiggsToTauTau/interface/jetToTauFakeRateAuxFunctions.h"
+#include <TFile.h> // TFile
+#include <TGraphAsymmErrors.h> // TGraphAsymmErrors
+#include <TF1.h> // TF1
+
+#include <boost/algorithm/string/replace.hpp> // boost::replace_all_copy()
 
 namespace
 {
-  TGraphAsymmErrors* loadGraph(TFile* inputFile, const std::string& graphName, const std::string& etaBin, const std::string& hadTauSelection)
+  std::string
+  getEtaHadTauSelectionName(const std::string & pattern,
+                            const std::string & etaBin,
+                            const std::string & hadTauSelection)
   {
-    std::string graphName_etaBin = TString(graphName.data()).ReplaceAll("$etaBin", etaBin.data()).ReplaceAll("$hadTauSelection", hadTauSelection.data()).Data();
-    TGraphAsymmErrors* graph = dynamic_cast<TGraphAsymmErrors*>(inputFile->Get(graphName_etaBin.data()));
-    if ( !graph ) throw cms::Exception("JetToTauFakeRateWeightEntry") 
-      << "Failed to load graph = " << graphName_etaBin << " from file = " << inputFile->GetName() << " !!\n";
-    TGraphAsymmErrors* graph_cloned = (TGraphAsymmErrors*)graph->Clone();
+    return boost::replace_all_copy(
+      boost::replace_all_copy(pattern,
+         "$etaBin",          etaBin
+      ), "$hadTauSelection", hadTauSelection
+    );
+  }
+
+  TGraphAsymmErrors *
+  loadGraph(TFile * inputFile,
+            const std::string & graphName,
+            const std::string & etaBin,
+            const std::string & hadTauSelection)
+  {
+    const std::string graphName_etaBin = getEtaHadTauSelectionName(graphName, etaBin, hadTauSelection);
+    const TGraphAsymmErrors * const graph = dynamic_cast<const TGraphAsymmErrors * const>(
+      inputFile->Get(graphName_etaBin.data())
+    );
+    if(! graph)
+    {
+      throw cmsException(__func__, __LINE__)
+        << "Failed to load graph = " << graphName_etaBin << " from file = " << inputFile->GetName();
+    }
+    TGraphAsymmErrors * graph_cloned = static_cast<TGraphAsymmErrors *>(graph->Clone());
     return graph_cloned;
   }
-  
-  TF1* loadFitFunction(TFile* inputFile, const std::string& fitFunctionName, const std::string& etaBin, const std::string& hadTauSelection)
+
+  TF1 *
+  loadFitFunction(TFile * inputFile,
+                  const std::string & fitFunctionName,
+                  const std::string & etaBin,
+                  const std::string & hadTauSelection)
   {
-    std::string fitFunctionName_etaBin = TString(fitFunctionName.data()).ReplaceAll("$etaBin", etaBin.data()).ReplaceAll("$hadTauSelection", hadTauSelection.data()).Data();
-    TF1* fitFunction = dynamic_cast<TF1*>(inputFile->Get(fitFunctionName_etaBin.data()));
-    if ( !fitFunction ) throw cms::Exception("JetToTauFakeRateWeightEntry") 
-      << "Failed to load fitFunction = " << fitFunctionName_etaBin << " from file = " << inputFile->GetName() << " !!\n";
-    TF1* fitFunction_cloned = (TF1*)fitFunction->Clone();
+    const std::string fitFunctionName_etaBin = getEtaHadTauSelectionName(fitFunctionName, etaBin, hadTauSelection);
+    const TF1 * const fitFunction = dynamic_cast<const TF1 * const>(inputFile->Get(fitFunctionName_etaBin.data()));
+    if(! fitFunction)
+    {
+      throw cmsException(__func__, __LINE__)
+        << "Failed to load fitFunction = " << fitFunctionName_etaBin << " from file = " << inputFile->GetName();
+    }
+    TF1 * fitFunction_cloned = static_cast<TF1 *>(fitFunction->Clone());
     return fitFunction_cloned;
   }
 }
 
-JetToTauFakeRateWeightEntry::JetToTauFakeRateWeightEntry(
-  double absEtaMin, double absEtaMax, const std::string& hadTauSelection,
-  TFile* inputFile, const edm::ParameterSet& cfg, int central_or_shift)
-  : absEtaMin_(absEtaMin),
-    absEtaMax_(absEtaMax),
-    hadTauSelection_(hadTauSelection),
-    graph_(0),
-    fitFunction_(0)
+JetToTauFakeRateWeightEntry::JetToTauFakeRateWeightEntry(double absEtaMin,
+                                                         double absEtaMax,
+                                                         const std::string & hadTauSelection,
+                                                         TFile * inputFile,
+                                                         const edm::ParameterSet & cfg,
+                                                         int central_or_shift)
+  : absEtaMin_(absEtaMin)
+  , absEtaMax_(absEtaMax)
+  , hadTauSelection_(hadTauSelection)
+  , graphName_(cfg.getParameter<std::string>("graphName"))
+  , graph_(nullptr)
+  , applyGraph_(cfg.getParameter<bool>("applyGraph"))
+  , fitFunction_(nullptr)
+  , applyFitFunction_(cfg.getParameter<bool>("applyFitFunction"))
 {
-  std::string etaBin = getEtaBin(absEtaMin_, absEtaMax_);
-  graphName_ = cfg.getParameter<std::string>("graphName");
+  const std::string etaBin = getEtaBin(absEtaMin_, absEtaMax_);
   graph_ = loadGraph(inputFile, graphName_, etaBin, hadTauSelection_);
-  applyGraph_ = cfg.getParameter<bool>("applyGraph");
-  std::string fitFunctionName = cfg.getParameter<std::string>("fitFunctionName");
-  if      ( central_or_shift == kFRjt_central   ) fitFunctionName_ = fitFunctionName;
-  else if ( central_or_shift == kFRjt_normUp    ) fitFunctionName_ = Form("%s_par1Up", fitFunctionName.data());
-  else if ( central_or_shift == kFRjt_normDown  ) fitFunctionName_ = Form("%s_par1Down", fitFunctionName.data());
-  else if ( central_or_shift == kFRjt_shapeUp   ) fitFunctionName_ = Form("%s_par2Up", fitFunctionName.data());
-  else if ( central_or_shift == kFRjt_shapeDown ) fitFunctionName_ = Form("%s_par2Down", fitFunctionName.data());
-  else throw cms::Exception("JetToTauFakeRateWeightEntry")
-	 << "Invalid Configuration parameter 'central_or_shift' = " << central_or_shift << " !!\n";
+
+  const std::string fitFunctionName = cfg.getParameter<std::string>("fitFunctionName");
+  switch(central_or_shift)
+  {
+    case kFRjt_central:   fitFunctionName_ = fitFunctionName;                             break;
+    case kFRjt_normUp:    fitFunctionName_ = Form("%s_par1Up",   fitFunctionName.data()); break;
+    case kFRjt_normDown:  fitFunctionName_ = Form("%s_par1Down", fitFunctionName.data()); break;
+    case kFRjt_shapeUp:   fitFunctionName_ = Form("%s_par2Up",   fitFunctionName.data()); break;
+    case kFRjt_shapeDown: fitFunctionName_ = Form("%s_par2Down", fitFunctionName.data()); break;
+    default: throw cmsException(this)
+               << "Invalid Configuration parameter 'central_or_shift' = " << central_or_shift;
+  }
   fitFunction_ = loadFitFunction(inputFile, fitFunctionName_, etaBin, hadTauSelection_);
-  applyFitFunction_ = cfg.getParameter<bool>("applyFitFunction");
 }
 
 JetToTauFakeRateWeightEntry::~JetToTauFakeRateWeightEntry()
@@ -58,30 +98,40 @@ JetToTauFakeRateWeightEntry::~JetToTauFakeRateWeightEntry()
   delete fitFunction_;
 }
 
-double JetToTauFakeRateWeightEntry::getWeight(double pt) const
+double
+JetToTauFakeRateWeightEntry::absEtaMin() const
 {
-  //std::cout << "<JetToTauFakeRateWeightEntry::getWeight>:" << std::endl;
+  return absEtaMin_;
+}
+
+double
+JetToTauFakeRateWeightEntry::absEtaMax() const
+{
+  return absEtaMax_;
+}
+
+double
+JetToTauFakeRateWeightEntry::getWeight(double pt) const
+{
   double weight = 1.;
-  if ( applyGraph_ ) {
-    //std::cout << " graph = " << graph_->GetName() << ": weight = " << graph_->Eval(pt) << std::endl;
+  if(applyGraph_)
+  {
     weight *= graph_->Eval(pt);
   }
-  if ( applyFitFunction_ ) {
-    //std::cout << " fitFunction = " << fitFunction_->GetName() << ": weight = " << fitFunction_->Eval(pt) << std::endl;
+  if(applyFitFunction_)
+  {
     weight *= fitFunction_->Eval(pt);
   }
-  //std::cout << "returning weight = " << weight << std::endl;
   return weight;
 }
 
-double JetToTauFakeRateWeightEntry::getSF(double pt) const
+double
+JetToTauFakeRateWeightEntry::getSF(double pt) const
 {
-  //std::cout << "<JetToTauFakeRateWeightEntry::getSF>:" << std::endl;
   double sf = 1.;
-  if ( applyFitFunction_ ) {
-    //std::cout << " fitFunction = " << fitFunction_->GetName() << ": weight = " << fitFunction_->Eval(pt) << std::endl;
+  if(applyFitFunction_)
+  {
     sf *= fitFunction_->Eval(pt);
   }
-  //std::cout << "returning SF = " << sf << std::endl;
   return sf;
 }
