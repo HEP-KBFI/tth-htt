@@ -10,7 +10,7 @@ class TTree;
 class MEMOutputReader_3l_1tau
   : public ReaderBase
 {
- public:
+public:
   MEMOutputReader_3l_1tau(const std::string & branchName_num,
                           const std::string & branchName_obj);
   ~MEMOutputReader_3l_1tau();
@@ -26,7 +26,7 @@ class MEMOutputReader_3l_1tau
    */
   std::vector<MEMOutput_3l_1tau> read() const;
 
- protected:
+protected:
  /**
    * @brief Initialize names of branches to be read from tree
    */

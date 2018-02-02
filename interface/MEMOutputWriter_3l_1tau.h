@@ -10,7 +10,7 @@ class TTree;
 
 class MEMOutputWriter_3l_1tau
 {
- public:
+public:
   MEMOutputWriter_3l_1tau(const std::string & branchName_num,
                           const std::string & branchName_obj);
   ~MEMOutputWriter_3l_1tau();
@@ -24,8 +24,8 @@ class MEMOutputWriter_3l_1tau
    * @brief Write collection of MEMOutputWriter_3l_1tau objects to tree
    */
   void write(const std::vector<MEMOutput_3l_1tau> & memOutputs);
-  
- protected: 
+
+protected:
  /**
    * @brief Initialize names of branches to be read from tree
    */
