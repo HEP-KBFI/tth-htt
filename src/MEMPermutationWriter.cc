@@ -2,8 +2,9 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // z_mass, z_window, kLoose, kMedium, kTight, id_mva_dr0*_map
 #include "tthAnalysis/HiggsToTauTau/interface/memAuxFunctions.h" // get_memPermutationBranchName()
-
-#include "FWCore/Utilities/interface/Exception.h" // cms::Exception
+#include "tthAnalysis/HiggsToTauTau/interface/RecoLepton.h" // RecoLepton
+#include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h" // RecoJet
+#include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 
 #include <TTree.h> // TTree
 
@@ -72,7 +73,7 @@ MEMPermutationWriter::addCondition(const std::string & channel,
 {
   if(conditions_.count(channel))
   {
-    throw cms::Exception("MEMPermutationWriter") << "Channel '" << channel << "' already supplied";
+    throw cmsException(this, __func__) << "Channel '" << channel << "' already supplied";
   }
   conditions_[channel] = condition;
   return *this;
@@ -88,10 +89,10 @@ MEMPermutationWriter::addCondition(const std::string & channel,
   const MEMPremutationCondition condition = [
       minSelLeptons, minSelHadTaus, minSelBJets_loose, minSelBJets_medium
     ](
-      const std::vector<const RecoLepton*> & selLeptons,
-      const std::vector<const RecoHadTau*> & selHadTaus,
-      const std::vector<const RecoJet*> & selBJets_loose,
-      const std::vector<const RecoJet*> & selBJets_medium,
+      const std::vector<const RecoLepton *> & selLeptons,
+      const std::vector<const RecoHadTau *> & selHadTaus,
+      const std::vector<const RecoJet *> & selBJets_loose,
+      const std::vector<const RecoJet *> & selBJets_medium,
       bool failsZbosonMassVeto
     ) -> int
   {
@@ -190,18 +191,18 @@ MEMPermutationWriter::write(const std::array<const std::vector<const RecoLepton*
   } // lepton1_idx
 
   // get the b jets
-  const std::vector<const RecoJet*> & selBJets_loose  = selBJets.at(0);
-  const std::vector<const RecoJet*> & selBJets_medium = selBJets.at(1);
+  const std::vector<const RecoJet *> & selBJets_loose  = selBJets.at(0);
+  const std::vector<const RecoJet *> & selBJets_medium = selBJets.at(1);
 
   // loop over the lepton, had tau and had tau wp branches
   for(int leptonSelection_idx = minLepSelection_; leptonSelection_idx <= maxLepSelection_; ++leptonSelection_idx)
   {
-    const std::vector<const RecoLepton*> & selLeptons = leptons.at(leptonSelection_idx);
+    const std::vector<const RecoLepton *> & selLeptons = leptons.at(leptonSelection_idx);
     for(int hadTauSelection_idx = minHadTauSelection_; hadTauSelection_idx <= maxHadTauSelection_; ++hadTauSelection_idx)
     {
       for(const std::string & hadTauWorkingPoint: hadTauWorkingPoints_)
       {
-        const std::vector<const RecoHadTau*> selHadTaus = [&]()
+        const std::vector<const RecoHadTau *> selHadTaus = [&]()
         {
           // pick the had tau selector
           switch(hadTauSelection_idx)
@@ -209,8 +210,7 @@ MEMPermutationWriter::write(const std::array<const std::vector<const RecoLepton*
             case kLoose:    return (*hadTauSelectorsLoose_   [hadTauWorkingPoint])(cleanedHadTaus);
             case kFakeable: return (*hadTauSelectorsFakeable_[hadTauWorkingPoint])(cleanedHadTaus);
             case kTight:    return (*hadTauSelectorsTight_   [hadTauWorkingPoint])(cleanedHadTaus);
-            default:        throw cms::Exception("MEMPermutationWriter")
-                              << "Unexpected had tau selection: " << hadTauSelection_idx;
+            default:        throw cmsException(this, __func__) << "Unexpected had tau selection: " << hadTauSelection_idx;
           }
         }(); // selHadTaus
 
@@ -233,5 +233,5 @@ MEMPermutationWriter::find_selection_str(int selection_idx)
   if(selection_idx == kLoose)    return "Loose";
   if(selection_idx == kFakeable) return "Fakeable";
   if(selection_idx == kTight)    return "Tight";
-  throw cms::Exception("MEMPermutationWriter") << "Invalid index: " << selection_idx;
+  throw cmsException(this, __func__) << "Invalid index: " << selection_idx;
 }
