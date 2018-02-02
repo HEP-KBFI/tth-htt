@@ -15,7 +15,7 @@ class GenJetReader;
 class RecoJetReader
   : public ReaderBase
 {
- public:
+public:
   RecoJetReader(int era,
                 bool isMC,
                 bool readGenMatching = false);
@@ -43,7 +43,7 @@ class RecoJetReader
    */
   std::vector<RecoJet> read() const;
 
- protected:
+protected:
  /**
    * @brief Initialize names of branches to be read from tree
    */
