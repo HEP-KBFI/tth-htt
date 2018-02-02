@@ -9,45 +9,83 @@
  *
  */
 
-#include "FWCore/ParameterSet/interface/ParameterSet.h" // edm::ParameterSet
+#include <FWCore/ParameterSet/interface/ParameterSet.h> // edm::ParameterSet
 
-#include "CommonTools/Utils/interface/TFileDirectory.h" // TFileDirectory
+#include <CommonTools/Utils/interface/TFileDirectory.h> // TFileDirectory, TH1
 
-#include <TH1.h> // TH1D
-#include <TH2.h> // TH2D
-#include <TString.h> // Form
-#include <TMath.h>
-
-#include <string> // std::string
-#include <vector> // std::vector
+// forward declarations
+class TH2;
 
 class HistManagerBase
 {
- public:
-  HistManagerBase(const edm::ParameterSet& cfg);
+public:
+  HistManagerBase(const edm::ParameterSet & cfg);
   virtual ~HistManagerBase() {}
 
   /// book and fill histograms
-  virtual void bookHistograms(TFileDirectory& dir) = 0;
-  
- protected:
-  TH1* book1D(TFileDirectory& dir, const std::string& distribution, const std::string& title, int numBins, double min, double max);
-  TH1* book1D(TFileDirectory& dir, const std::string& distribution, const std::string& title, int numBins, float* binning);
-  TH2* book2D(TFileDirectory& dir, const std::string& distribution, const std::string& title, int numBinsX, double xMin, double xMax, int numBinsY, double yMin, double yMax);
-  TH2* book2D(TFileDirectory& dir, const std::string& distribution, const std::string& title, int numBinsX, float* binningX, int numBinsY, float* binningY);
+  virtual void
+  bookHistograms(TFileDirectory & dir) = 0;
 
-  TDirectory* createHistogramSubdirectory(TFileDirectory&);
+protected:
+  TH1 *
+  book1D(TFileDirectory & dir,
+         const std::string & distribution,
+         const std::string & title,
+         int numBins,
+         double min,
+         double max);
 
-  std::string getHistogramName(const std::string&) const;
+  TH1 *
+  book1D(TFileDirectory & dir,
+         const std::string & distribution,
+         const std::string & title,
+         int numBins,
+         float * binning);
+
+  TH2 *
+  book2D(TFileDirectory & dir,
+         const std::string & distribution,
+         const std::string & title,
+         int numBinsX,
+         double xMin,
+         double xMax,
+         int numBinsY,
+         double yMin,
+         double yMax);
+
+  TH2 *
+  book2D(TFileDirectory & dir,
+         const std::string & distribution,
+         const std::string & title,
+         int numBinsX,
+         float * binningX,
+         int numBinsY,
+         float * binningY);
+
+  TDirectory *
+  createHistogramSubdirectory(TFileDirectory & dir);
+
+  std::string
+  getHistogramName(const std::string & distribution) const;
 
   std::string process_;
   std::string category_;
   std::string central_or_shift_;
 
-  std::vector<TH1*> histograms_;
+  std::vector<TH1 *> histograms_;
 };
 
-edm::ParameterSet makeHistManager_cfg(const std::string& process, const std::string& category, const std::string& central_or_shift, int idx = -1);
-edm::ParameterSet makeHistManager_cfg(const std::string& process, const std::string& category, const std::string& era, const std::string& central_or_shift, int idx = -1);
+edm::ParameterSet
+makeHistManager_cfg(const std::string & process,
+                    const std::string & category,
+                    const std::string & central_or_shift,
+                    int idx = -1);
+
+edm::ParameterSet
+makeHistManager_cfg(const std::string & process,
+                    const std::string & category,
+                    const std::string & era,
+                    const std::string & central_or_shift,
+                    int idx = -1);
 
 #endif // tthAnalysis_HiggsToTauTau_HistManagerBase_h
