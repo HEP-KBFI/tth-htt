@@ -4,7 +4,7 @@
 template <typename T>
 struct Traits
 {
-static const char * TYPE_NAME;
+  static const char * TYPE_NAME;
 };
 
 #endif // TYPETRAITS_H
