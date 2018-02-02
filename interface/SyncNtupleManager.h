@@ -1,22 +1,39 @@
 #ifndef SYNCNTUPLEMANAGER_H
 #define SYNCNTUPLEMANAGER_H
 
-#include <string> // std::string
-#include <vector> // std::vector<>
-#include <map> // std::map<,>
+#include "tthAnalysis/HiggsToTauTau/interface/TypeTraits.h" // Traits<>
+#include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 
-#include <TFile.h> // TFile
 #include <TTree.h> // TTree
-#include <Rtypes.h> // Float_t, Int_t
 
-#include "tthAnalysis/HiggsToTauTau/interface/RecoMuon.h"
-#include "tthAnalysis/HiggsToTauTau/interface/RecoElectron.h"
-#include "tthAnalysis/HiggsToTauTau/interface/RecoHadTau.h"
-#include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h"
-#include "tthAnalysis/HiggsToTauTau/interface/TypeTraits.h"
-#include "tthAnalysis/HiggsToTauTau/interface/hltPath.h" // hltPath
+#include <type_traits> // std::enable_if<,>, std::is_arithmetic<>
 
-enum FloatVariableType { PFMET, PFMETphi, MHT, metLD, mvaOutput_ttV, mvaOutput_ttbar, MC_weight, FR_weight, triggerSF_weight, leptonSF_weight, bTagSF_weight, PU_weight, hadTauSF_weight, genWeight, lumiScale };
+// forward declarations
+class TFile;
+class RecoMuon;
+class RecoElectron;
+class RecoHadTau;
+class RecoJet;
+class hltPath;
+
+enum FloatVariableType
+{
+  PFMET,
+  PFMETphi,
+  MHT,
+  metLD,
+  mvaOutput_ttV,
+  mvaOutput_ttbar,
+  MC_weight,
+  FR_weight,
+  triggerSF_weight,
+  leptonSF_weight,
+  bTagSF_weight,
+  PU_weight,
+  hadTauSF_weight,
+  genWeight,
+  lumiScale
+};
 
 class SyncNtupleManager
 {
@@ -46,7 +63,118 @@ public:
   void read(const std::vector<std::vector<hltPath *>> & hltPaths);
   void fill();
   void write();
+
 private:
+  template<typename T,
+           typename = std::enable_if<std::is_arithmetic<T>::value>>
+  void
+  setBranches(const std::string & infix,
+              int count,
+              T * & var,
+              const std::string & label)
+  {
+    if(count > 0)
+    {
+      var = new T[count];
+      for(int i = 0; i < count; ++i)
+      {
+        const std::string branchName = Form("%s%d_%s", infix.c_str(), i, label.c_str());
+        outputTree -> Branch(branchName.c_str(), &(var[i]), Form("%s/%s", branchName.c_str(), Traits<T>::TYPE_NAME));
+      }
+    }
+    else
+    {
+      throw cmsException(this, __func__)
+        << "Invalid array size = " << count << " for variable " << label << " with infix = " << infix;
+    }
+  }
+
+  template<typename T,
+           typename... Args,
+           typename = std::enable_if<std::is_arithmetic<T>::value>>
+  void
+  setBranches(const std::string & infix,
+              int count,
+              T * & var,
+              const std::string & label,
+              Args... remainingVars)
+  {
+    if(! outputTree)
+    {
+      throw cmsException(this, __func__) << "Input tree uninitialized";
+    }
+    setBranches(infix, count, var, label);
+    setBranches(infix, count, remainingVars...);
+  }
+
+  template<typename T,
+           typename = std::enable_if<std::is_arithmetic<T>::value>>
+  void
+  setBranches(T & var,
+              const std::string & label)
+  {
+    outputTree -> Branch(label.c_str(), &var, Form("%s/%s", label.c_str(), Traits<T>::TYPE_NAME));
+  }
+
+  template<typename T,
+           typename... Args,
+           typename = std::enable_if<std::is_arithmetic<T>::value>>
+  void
+  setBranches(T & var,
+              const std::string & label,
+              Args... remainingVars)
+  {
+    if(! outputTree)
+    {
+      throw cmsException(this, __func__) << "Input tree uninitialized";
+    }
+    setBranches(var, label);
+    setBranches(remainingVars...);
+  }
+
+  template<typename T,
+           typename = std::enable_if<std::is_arithmetic<T>::value>>
+  void
+  reset(int count,
+        T * & var)
+  {
+    for(int i = 0; i < count; ++i)
+    {
+      var[i] = placeholder_value;
+    }
+  }
+
+  template<typename T,
+           typename... Args,
+           typename = std::enable_if<std::is_arithmetic<T>::value>>
+  void
+  reset(int count,
+        T * & var,
+        Args... remainingVars)
+  {
+    reset(count, var);
+    reset(count, remainingVars...);
+  }
+
+  template<typename T,
+           typename = std::enable_if<std::is_arithmetic<T>::value>>
+  void
+  reset(T & var)
+  {
+    var = placeholder_value;
+  }
+
+  template<typename T,
+           typename... Args,
+           typename = std::enable_if<std::is_arithmetic<T>::value>>
+  void
+  reset(T & var,
+        Args... remainingVars)
+  {
+    reset(var);
+    reset(remainingVars...);
+  }
+
   void reset(bool is_initializing);
   std::string hltMangle(const std::string & hltBranchName) const;
 
@@ -152,11 +280,6 @@ private:
   Float_t * jet_CSV;
   Float_t * jet_heppyFlavour;
 
-  Float_t PFMET;
-  Float_t PFMETphi;
-  Float_t MHT;
-  Float_t metLD;
-
   std::map<std::string, Int_t> hltMap;
 
   Float_t lep0_conept;
@@ -166,18 +289,8 @@ private:
   Float_t MT_met_lep0;
   Float_t avg_dr_jet;
   Float_t n_jet25_recl;
-  Float_t MVA_2lss_ttV;
-  Float_t MVA_2lss_ttbar;
-  
-  Float_t MC_weight;
-  Float_t FR_weight;
-  Float_t triggerSF_weight;
-  Float_t leptonSF_weight;
-  Float_t bTagSF_weight;
-  Float_t PU_weight;
-  Float_t hadTauSF_weight;
-  Float_t genWeight;
-  Float_t lumiScale;
+
+  std::map<FloatVariableType, Float_t> floatMap;
 };
 
 #endif // SYNCNTUPLEMANAGER_H
