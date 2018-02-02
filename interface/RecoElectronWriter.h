@@ -13,7 +13,7 @@ class RecoLeptonWriter;
 
 class RecoElectronWriter
 {
- public:
+public:
   RecoElectronWriter(int era);
   RecoElectronWriter(int era,
                      const std::string & branchName_num,
@@ -29,8 +29,8 @@ class RecoElectronWriter
    * @brief Write branches specific to RecoElectrons to tree
    */
   void write(const std::vector<const RecoElectron *>& leptons);
-  
- protected: 
+
+protected:
  /**
    * @brief Initialize names of branches to be read from tree
    */
