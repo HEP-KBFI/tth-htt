@@ -3,9 +3,17 @@
 
 #include <TArrayD.h> // TArrayD
 
-TArrayD convertToTArrayD(const std::vector<double>& binEdges);
+TArrayD
+convertToTArrayD(const std::vector<double> & binEdges);
 
-void compFakeRate(double nPass, double nPassErr, double nFail, double nFailErr, 
-		  double& avFakeRate, double& avFakeRateErrUp, double& avFakeRateErrDown, bool& errorFlag);
+void
+compFakeRate(double nPass,
+             double nPassErr,
+             double nFail,
+             double nFailErr,
+             double & avFakeRate,
+             double & avFakeRateErrUp,
+             double & avFakeRateErrDown,
+             bool & errorFlag);
 
 #endif // tthAnalysis_HiggsToTauTau_compFakeRateAuxFunctions_h
