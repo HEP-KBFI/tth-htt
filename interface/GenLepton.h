@@ -6,7 +6,7 @@
 class GenLepton
   : public GenParticle
 {
- public:
+public:
   GenLepton() = default;
   GenLepton(Double_t pt,
             Double_t eta,
@@ -23,8 +23,6 @@ class GenLepton
             Int_t pdgId);
 
   virtual ~GenLepton() {}
-
-  operator GenParticle() const;
 };
 
 std::ostream &
