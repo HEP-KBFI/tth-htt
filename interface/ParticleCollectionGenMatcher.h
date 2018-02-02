@@ -1,7 +1,7 @@
 #ifndef tthAnalysis_HiggsToTauTau_ParticleCollectionGenMatcher_h
 #define tthAnalysis_HiggsToTauTau_ParticleCollectionGenMatcher_h
 
-#include "DataFormats/Math/interface/deltaR.h" // deltaR
+#include <DataFormats/Math/interface/deltaR.h> // deltaR()
 
 #include "tthAnalysis/HiggsToTauTau/interface/GenLepton.h"
 #include "tthAnalysis/HiggsToTauTau/interface/GenHadTau.h"
@@ -10,14 +10,17 @@
 template <typename Trec>
 class ParticleCollectionGenMatcher
 {
- public:
+public:
   ParticleCollectionGenMatcher() {}
   ~ParticleCollectionGenMatcher() {}
 
   /**
    * @brief Match reconstructed particles to generator level electrons and muons by dR
    */
-  void addGenLeptonMatch(std::vector<const Trec*>& recParticles, const std::vector<GenLepton>& genLeptons, double dRmax)
+  void
+  addGenLeptonMatch(std::vector<const Trec *> & recParticles,
+                    const std::vector<GenLepton> & genLeptons,
+                    double dRmax)
   {
     return addGenMatch<GenLepton, GenLeptonLinker>(recParticles, genLeptons, dRmax, genLeptonLinker_);
   }
@@ -25,7 +28,10 @@ class ParticleCollectionGenMatcher
   /**
    * @brief Match reconstructed particles to generator level hadronic tau decays by dR
    */
-  void addGenHadTauMatch(std::vector<const Trec*>& recParticles, const std::vector<GenHadTau>& genHadTaus, double dRmax)
+  void
+  addGenHadTauMatch(std::vector<const Trec *> & recParticles,
+                    const std::vector<GenHadTau> & genHadTaus,
+                    double dRmax)
   {
     return addGenMatch<GenHadTau, GenHadTauLinker>(recParticles, genHadTaus, dRmax, genHadTauLinker_);
   }
@@ -33,49 +39,66 @@ class ParticleCollectionGenMatcher
   /**
    * @brief Match reconstructed particles to generator level jets by dR
    */
-  void addGenJetMatch(std::vector<const Trec*>& recParticles, const std::vector<GenJet>& genJets, double dRmax)
+  void
+  addGenJetMatch(std::vector<const Trec *> & recParticles,
+                 const std::vector<GenJet> & genJets,
+                 double dRmax)
   {
     return addGenMatch<GenJet, GenJetLinker>(recParticles, genJets, dRmax, genJetLinker_);
   }
-  
- protected:
+
+protected:
   /**
    * @brief Match reconstructed particles to generator level particles by dR
    */
-  template <typename Tgen, typename Tlinker>
-  void addGenMatch(std::vector<const Trec*>& recParticles, const std::vector<Tgen>& genParticles, double dRmax, const Tlinker& linker)
+  template <typename Tgen,
+            typename Tlinker>
+  void
+  addGenMatch(std::vector<const Trec *> & recParticles,
+              const std::vector<Tgen> & genParticles,
+              double dRmax,
+              const Tlinker & linker)
   {
-    for ( typename std::vector<const Trec*>::const_iterator recParticle = recParticles.begin();
-	  recParticle != recParticles.end(); ++recParticle ) {
-      const Tgen* bestMatch = 0;
+    for(const Trec * recParticle: recParticles)
+    {
+      const Tgen * bestMatch = nullptr;
       double dR_bestMatch = 1.e+3;
-      for ( typename std::vector<Tgen>::const_iterator genParticle = genParticles.begin();
-	    genParticle != genParticles.end(); ++genParticle ) {
-	double dR = deltaR((*recParticle)->eta(), (*recParticle)->phi(), genParticle->eta(), genParticle->phi());
-	if ( dR < dRmax && dR < dR_bestMatch ) {
-	  bestMatch = &(*genParticle);
-	  dR_bestMatch = dR;
-	}
+
+      for (const Tgen & genParticle: genParticles)
+      {
+        const double dR = deltaR(
+          recParticle->eta(), recParticle->phi(), genParticle.eta(), genParticle.phi()
+        );
+        if(dR < dRmax && dR < dR_bestMatch)
+        {
+          bestMatch = &genParticle;
+          dR_bestMatch = dR;
+        }
       }
-      if ( bestMatch ) {
-	Trec* recParticle_nonconst = const_cast<Trec*>(*recParticle);
-	linker(*recParticle_nonconst, bestMatch);
+
+      if(bestMatch)
+      {
+        Trec * recParticle_nonconst = const_cast<Trec *>(recParticle);
+        linker(*recParticle_nonconst, bestMatch);
       }
     }
   }
-  
+
   struct GenLeptonLinker
   {
-    void operator()(Trec& recParticle, const GenLepton* genLepton) const
+    void
+    operator()(Trec & recParticle,
+               const GenLepton * genLepton) const
     {
       recParticle.set_genLepton(genLepton);
     }
-  }; 
+  };
   GenLeptonLinker genLeptonLinker_;
-  
+
   struct GenHadTauLinker
   {
-    void operator()(Trec& recParticle, const GenHadTau* genHadTau) const
+    void operator()(Trec & recParticle,
+                    const GenHadTau * genHadTau) const
     {
       recParticle.set_genHadTau(genHadTau);
     }
@@ -84,9 +107,10 @@ class ParticleCollectionGenMatcher
 
   struct GenJetLinker
   {
-    void operator()(Trec& recParticle, const GenJet* genJet) const
+    void operator()(Trec & recParticle,
+                    const GenJet * genJet) const
     {
-      recParticle.set_genJet(genJet);    
+      recParticle.set_genJet(genJet);
     }
   };
   GenJetLinker genJetLinker_;
