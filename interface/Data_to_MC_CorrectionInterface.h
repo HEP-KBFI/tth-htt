@@ -1,65 +1,76 @@
 #ifndef tthAnalysis_HiggsToTauTau_Data_to_MC_CorrectionInterface_h
 #define tthAnalysis_HiggsToTauTau_Data_to_MC_CorrectionInterface_h
 
-#include "FWCore/ParameterSet/interface/ParameterSet.h" // edm::ParameterSet
+#include <FWCore/ParameterSet/interface/ParameterSet.h> // edm::ParameterSet
 
-#include "tthAnalysis/HiggsToTauTau/interface/lutAuxFunctions.h" // lutWrapperBase
-
-#include <string>
-#include <map>
-
-enum { kFRet_central, kFRet_shiftUp, kFRet_shiftDown };
-enum { kFRmt_central, kFRmt_shiftUp, kFRmt_shiftDown };
+// forward declarations
+class TFile;
+class lutWrapperBase;
 
 class Data_to_MC_CorrectionInterface
 {
- public:
-  Data_to_MC_CorrectionInterface(const edm::ParameterSet& cfg);
+public:
+  Data_to_MC_CorrectionInterface(const edm::ParameterSet & cfg);
   ~Data_to_MC_CorrectionInterface();
 
   //-----------------------------------------------------------------------------
   // overwrite configuration parameters (needed by analyze_jetToTauFakeRate.cc)
-  void setHadTauSelection(const std::string& hadTauSelection);
+  void setHadTauSelection(const std::string & hadTauSelection);
   //-----------------------------------------------------------------------------
 
   //-----------------------------------------------------------------------------
   // set lepton type, pT and eta
   // (to be called once per event, before calling any of the getSF.. functions)
-  void setLeptons(int lepton1_type, double lepton1_pt, double lepton1_eta,
-		  int lepton2_type = -1, double lepton2_pt = 0., double lepton2_eta = 0., 
-		  int lepton3_type = -1, double lepton3_pt = 0., double lepton3_eta = 0.);
+  void
+  setLeptons(int lepton1_type,      double lepton1_pt,      double lepton1_eta,
+             int lepton2_type = -1, double lepton2_pt = 0., double lepton2_eta = 0.,
+             int lepton3_type = -1, double lepton3_pt = 0., double lepton3_eta = 0.);
 
-  void setHadTaus(int hadTau1_genPdgId, double hadTau1_pt, double hadTau1_eta, 
-		  int hadTau2_genPdgId = -1, double hadTau2_pt = 0., double hadTau2_eta = 0.,
-		  int hadTau3_genPdgId = -1, double hadTau3_pt = 0., double hadTau3_eta = 0.);
+  void
+  setHadTaus(int hadTau1_genPdgId,      double hadTau1_pt,      double hadTau1_eta,
+             int hadTau2_genPdgId = -1, double hadTau2_pt = 0., double hadTau2_eta = 0.,
+             int hadTau3_genPdgId = -1, double hadTau3_pt = 0., double hadTau3_eta = 0.);
   //-----------------------------------------------------------------------------
   
   //-----------------------------------------------------------------------------
   // trigger efficiency turn-on curves for Spring16 non-reHLT MC
-  double getWeight_leptonTriggerEff() const;
+  double
+  getWeight_leptonTriggerEff() const;
   //-----------------------------------------------------------------------------
 
   //-----------------------------------------------------------------------------
   // data/MC correction for electron and muon trigger efficiency
-  double getSF_leptonTriggerEff() const;
+  double
+  getSF_leptonTriggerEff() const;
   //-----------------------------------------------------------------------------
 
   //-----------------------------------------------------------------------------
   // data/MC corrections for electron and muon identification and isolation efficiency,
   // including the cut on the ttH multilepton MVA
-  double getSF_leptonID_and_Iso_loose() const;
-  double getSF_leptonID_and_Iso_fakeable_to_loose() const;
-  double getSF_leptonID_and_Iso_tight_to_loose_woTightCharge() const;
-  double getSF_leptonID_and_Iso_tight_to_loose_wTightCharge() const;
+  double
+  getSF_leptonID_and_Iso_loose() const;
+
+  double
+  getSF_leptonID_and_Iso_fakeable_to_loose() const;
+
+  double
+  getSF_leptonID_and_Iso_tight_to_loose_woTightCharge() const;
+
+  double
+  getSF_leptonID_and_Iso_tight_to_loose_wTightCharge() const;
   //-----------------------------------------------------------------------------
 
   //-----------------------------------------------------------------------------
   // data/MC corrections for hadronic tau identification efficiency,
   // and for e->tau and mu->tau misidentification rates
-  double getSF_hadTauID_and_Iso() const;
+  double
+  getSF_hadTauID_and_Iso() const;
   
-  double getSF_eToTauFakeRate() const;
-  double getSF_muToTauFakeRate() const;
+  double
+  getSF_eToTauFakeRate() const;
+
+  double
+  getSF_muToTauFakeRate() const;
   //-----------------------------------------------------------------------------
 
  private:
@@ -68,34 +79,34 @@ class Data_to_MC_CorrectionInterface
   // including the cut on the ttH multilepton MVA
 
   // loose muon selection (RecoMuonSelectorLoose)
-  vLutWrapperBase sfElectronID_and_Iso_loose_;
+  std::vector<lutWrapperBase *> sfElectronID_and_Iso_loose_;
   // tight muon selection used in all channels except 2lss_1tau (RecoMuonSelectorTight with tightCharge_cut disabled)
-  vLutWrapperBase sfElectronID_and_Iso_tight_to_loose_woTightCharge_;
+  std::vector<lutWrapperBase *> sfElectronID_and_Iso_tight_to_loose_woTightCharge_;
   // tight muon selection specific to 2lss_1tau channel (RecoMuonSelectorTight with tightCharge_cut enabled)
-  vLutWrapperBase sfElectronID_and_Iso_tight_to_loose_wTightCharge_; 
+  std::vector<lutWrapperBase *> sfElectronID_and_Iso_tight_to_loose_wTightCharge_;
 
   // loose muon selection (RecoMuonSelectorLoose)
-  vLutWrapperBase sfMuonID_and_Iso_loose_; 
+  std::vector<lutWrapperBase *> sfMuonID_and_Iso_loose_;
   // tight muon selection used in all channels except 2lss_1tau (RecoMuonSelectorTight with tightCharge_cut disabled)
-  vLutWrapperBase sfMuonID_and_Iso_tight_to_loose_woTightCharge_; 
+  std::vector<lutWrapperBase *> sfMuonID_and_Iso_tight_to_loose_woTightCharge_;
   // tight muon selection specific to 2lss_1tau channel (RecoMuonSelectorTight with tightCharge_cut enabled)
-  vLutWrapperBase sfMuonID_and_Iso_tight_to_loose_wTightCharge_; 
+  std::vector<lutWrapperBase *> sfMuonID_and_Iso_tight_to_loose_wTightCharge_;
   //-----------------------------------------------------------------------------
 
   //-----------------------------------------------------------------------------
   // data/MC corrections for trigger efficiencies in 2016 data
-  lutWrapperBase* effTrigger_ee_;
-  lutWrapperBase* effTrigger_em_;
-  lutWrapperBase* effTrigger_mm_;
-  lutWrapperBase* effTrigger_3l_;
+  lutWrapperBase * effTrigger_ee_;
+  lutWrapperBase * effTrigger_em_;
+  lutWrapperBase * effTrigger_mm_;
+  lutWrapperBase * effTrigger_3l_;
 
-  vLutWrapperBase effTrigger_1e_data_;
-  vLutWrapperBase effTrigger_1e_mc_;
-  vLutWrapperBase effTrigger_1m_data_;
-  vLutWrapperBase effTrigger_1m_mc_;
+  std::vector<lutWrapperBase *> effTrigger_1e_data_;
+  std::vector<lutWrapperBase *> effTrigger_1e_mc_;
+  std::vector<lutWrapperBase *> effTrigger_1m_data_;
+  std::vector<lutWrapperBase *> effTrigger_1m_mc_;
   //-----------------------------------------------------------------------------
 
-  std::map<std::string, TFile*> inputFiles_;
+  std::map<std::string, TFile *> inputFiles_;
 
   int era_;
   int hadTauSelection_; // 1: VVLoose, 2: VLoose, 3: Loose, 4: Medium, 5: Tight, 6: VTight
