@@ -1,25 +1,30 @@
 #ifndef tthAnalysis_HiggsToTauTau_TMVAInterface_h
-#define tthAnalysis_HiggsToTauTau_TMVAInterface_h
+#define tthAnalysis_HiggsToTauTau_TMVAInterface_h 
 
-#include "tthAnalysis/HiggsToTauTau/interface/KeyTypes.h" // RUN_TYPE, LUMI_TYPE, EVT_TYPE  
+#include <Rtypes.h> // Float_t
 
-#include "TMVA/Reader.h"
-#include <TROOT.h> // for Float_t
-#include <TMath.h> 
+#include <string> // std::string
+#include <vector> // std::vector<>
+#include <map> // std::map<,>
 
-#include <vector>
-#include <string>
+// forward declarations
+namespace TMVA
+{
+  class Reader;
+}
 
 class TMVAInterface
 {
- public:
-  TMVAInterface(const std::string& mvaFileName, const std::vector<std::string>& mvaInputVariables, const std::vector<std::string>& spectators = {});
+public:
+  TMVAInterface(const std::string & mvaFileName,
+                const std::vector<std::string> & mvaInputVariables,
+                const std::vector<std::string> & spectators = {});
   ~TMVAInterface();
 
   // CV: call enableBDTTransform if using XML files converted from xgboost trainings,
   //     call disableBDTTransform if using XML files trained with TMVA
-  void enableBDTTransform() { isBDTTransform_ = true; }
-  void disableBDTTransform() { isBDTTransform_ = false; }
+  void enableBDTTransform();
+  void disableBDTTransform();
 
   /**
    * @brief Calculates MVA output.
@@ -27,17 +32,17 @@ class TMVAInterface
    * @return          MVA output
    */
   double
-  operator()(const std::map<std::string, double>& mvaInputs) const;
-  
- private:
+  operator()(const std::map<std::string, double> & mvaInputs) const;
+
+private:
   std::string mvaFileName_;
-
-  TMVA::Reader* mva_;
-
+  TMVA::Reader * mva_;
   bool isBDTTransform_;
 
   mutable std::map<std::string, Float_t> mvaInputVariables_; // key = MVA input variable name
-  mutable std::map<std::string, Float_t> spectators_; // we do not really care about variables declared as "spectators" during TMVA training, but TMVA requires that we keep track of these variables...
+  // we do not really care about variables declared as "spectators" during TMVA training,
+  // but TMVA requires that we keep track of these variables...
+  mutable std::map<std::string, Float_t> spectators_;
 };
 
 #endif // TMVAInterface_h

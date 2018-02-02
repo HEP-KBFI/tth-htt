@@ -1,27 +1,32 @@
 #include "tthAnalysis/HiggsToTauTau/interface/TMVAInterface.h" 
 
-#include "FWCore/Utilities/interface/Exception.h"
-#include "tthAnalysis/HiggsToTauTau/interface/LocalFileInPath.h"
+#include "tthAnalysis/HiggsToTauTau/interface/LocalFileInPath.h" // LocalFileInPath
+#include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 
-#include "TMVA/Factory.h"
-#include "TMVA/Tools.h"
+#include <TMVA/Tools.h> // TMVA::Tools::Instance()
+#include <TMVA/Reader.h> // TMVA::Reader
 
-TMVAInterface::TMVAInterface(const std::string& mvaFileName, const std::vector<std::string>& mvaInputVariables, const std::vector<std::string>& spectators)
-  : mva_(0)
+TMVAInterface::TMVAInterface(const std::string & mvaFileName,
+                             const std::vector<std::string> & mvaInputVariables,
+                             const std::vector<std::string> & spectators)
+  : mva_(nullptr)
   , isBDTTransform_(false) 
 {
-  LocalFileInPath mvaFileName_fip(mvaFileName);
+  const LocalFileInPath mvaFileName_fip(mvaFileName);
   mvaFileName_ = mvaFileName_fip.fullPath();
+
   TMVA::Tools::Instance();
   mva_ = new TMVA::Reader("!V:!Silent");
-  for ( std::vector<std::string>::const_iterator mvaInputVariable = mvaInputVariables.begin();
-	mvaInputVariable != mvaInputVariables.end(); ++mvaInputVariable ) {
-    mvaInputVariables_[*mvaInputVariable] = -1.;
-    mva_->AddVariable(*mvaInputVariable, &mvaInputVariables_[*mvaInputVariable]);
+
+  for(const std::string & mvaInputVariable: mvaInputVariables)
+  {
+    mvaInputVariables_[mvaInputVariable] = -1.;
+    mva_->AddVariable(mvaInputVariable, &mvaInputVariables_[mvaInputVariable]);
   }
-  for ( std::vector<std::string>::const_iterator spectator = spectators.begin();
-	spectator != spectators.end(); ++spectator ) {
-    mva_->AddSpectator(*spectator, &spectators_[*spectator]);
+
+  for(const std::string & spectator: spectators)
+  {
+    mva_->AddSpectator(spectator, &spectators_[spectator]);
   }
   mva_->BookMVA("BDTG", mvaFileName_);
 }
@@ -31,29 +36,39 @@ TMVAInterface::~TMVAInterface()
   delete mva_;
 }
 
-double
-TMVAInterface::operator()(const std::map<std::string, double>& mvaInputs) const
+void
+TMVAInterface::enableBDTTransform()
 {
-  //std::cout << "<TMVAInterface::operator()>:" << std::endl;
-  //std::cout << "mvaFileName = " << mvaFileName_ << std::endl;
-  for ( std::map<std::string, Float_t>::iterator mvaInputVariable = mvaInputVariables_.begin();
-	mvaInputVariable != mvaInputVariables_.end(); ++mvaInputVariable ) {
-    std::map<std::string, double>::const_iterator mvaInput = mvaInputs.find(mvaInputVariable->first);
-    if ( mvaInput != mvaInputs.end() ) {
-      mvaInputVariable->second = mvaInput->second;
-      //std::cout << " " << mvaInputVariable->first << " = " << mvaInputVariable->second << std::endl;
-    } else {
-      throw cms::Exception("TMVAInterface::operator()")
-	<< "Missing value for MVA input variable = '" << mvaInputVariable->first << "' !!\n";
+  isBDTTransform_ = true;
+}
+
+void
+TMVAInterface::disableBDTTransform()
+{
+  isBDTTransform_ = false;
+}
+
+double
+TMVAInterface::operator()(const std::map<std::string, double> & mvaInputs) const
+{
+  for(auto & mvaInputVariable: mvaInputVariables_)
+  {
+    if(mvaInputs.count(mvaInputVariable.first))
+    {
+      mvaInputVariable.second = mvaInputs.at(mvaInputVariable.first);
+    }
+    else
+    {
+      throw cmsException(this, __func__)
+        << "Missing value for MVA input variable = '" << mvaInputVariable.first << "' !!\n";
     }
   }
 
   double mvaOutput = mva_->EvaluateMVA("BDTG");
-  if ( isBDTTransform_ ) {
-    mvaOutput = 1./(1. + sqrt((1. - mvaOutput)/(1. + mvaOutput)));
+  if(isBDTTransform_)
+  {
+    mvaOutput = 1. / (1. + std::sqrt((1. - mvaOutput) / (1. + mvaOutput)));
   }
-  //std::cout << "mvaOutput = " << mvaOutput << std::endl;
 
   return mvaOutput;
 }
-
