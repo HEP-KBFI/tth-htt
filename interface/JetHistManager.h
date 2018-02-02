@@ -15,26 +15,33 @@
 class JetHistManager
   : public HistManagerBase
 {
- public:
-  JetHistManager(edm::ParameterSet const& cfg);
+public:
+  JetHistManager(const edm::ParameterSet & cfg);
   ~JetHistManager() {}
 
   /// book and fill histograms
-  void bookHistograms(TFileDirectory& dir);
-  void fillHistograms(const RecoJet& jet, double evtWeight);
-  void fillHistograms(const std::vector<const RecoJet*>& jets, double evtWeight);
+  void
+  bookHistograms(TFileDirectory & dir) override;
 
- private:
-  TH1* histogram_pt_;
-  TH1* histogram_eta_;
-  TH1* histogram_phi_;
-  TH1* histogram_mass_;
+  void
+  fillHistograms(const RecoJet & jet,
+                 double evtWeight);
 
-  TH1* histogram_BtagCSV_; 
+  void
+  fillHistograms(const std::vector<const RecoJet *> & jets,
+                 double evtWeight);
 
-  TH1* histogram_abs_genPdgId_;
+private:
+  TH1 * histogram_pt_;
+  TH1 * histogram_eta_;
+  TH1 * histogram_phi_;
+  TH1 * histogram_mass_;
 
-  std::vector<TH1*> histograms_;
+  TH1 * histogram_BtagCSV_;
+
+  TH1 * histogram_abs_genPdgId_;
+
+  std::vector<TH1 *> histograms_;
 
   int idx_; // flag to select leading or subleading jet (set idx to -1 to make plots for all jets)
 };
