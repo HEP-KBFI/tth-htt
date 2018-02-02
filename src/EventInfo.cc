@@ -9,11 +9,11 @@
 
 #define EPS 1E-2
 
-const std::map<std::string, GENHIGGSDECAYMODE_TYPE> EventInfo::decayMode_idString =
+const std::map<std::string, Float_t> EventInfo::decayMode_idString =
 {
-  { "ttH_hww", static_cast<GENHIGGSDECAYMODE_TYPE>(24) },
-  { "ttH_hzz", static_cast<GENHIGGSDECAYMODE_TYPE>(23) },
-  { "ttH_htt", static_cast<GENHIGGSDECAYMODE_TYPE>(15) }
+  { "ttH_hww", static_cast<Float_t>(24) },
+  { "ttH_hzz", static_cast<Float_t>(23) },
+  { "ttH_htt", static_cast<Float_t>(15) }
 };
 
 EventInfo::EventInfo()

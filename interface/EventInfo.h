@@ -1,7 +1,7 @@
 #ifndef EventInfo_H
 #define EventInfo_H
 
-#include "tthAnalysis/HiggsToTauTau/interface/KeyTypes.h" // *_TYPE, *_KEY
+#include <Rtypes.h> // *_t
 
 #include <iostream> // std::ostream
 #include <string> // std::string
@@ -18,13 +18,13 @@ public:
   EventInfo &
   operator=(const EventInfo & eventInfo);
 
-  RUN_TYPE               run;               ///< run number
-  LUMI_TYPE              lumi;              ///< luminosity
-  EVT_TYPE               event;             ///< event number
-  GENHIGGSDECAYMODE_TYPE genHiggsDecayMode; ///< Higgs decay mode (only if MC signal)
-  GENWEIGHT_TYPE         genWeight;         ///< generator-level weight (only if MC)
-  GENWEIGHTTH_TYPE       genWeight_tH;      ///< reweight tH MC sample from kappa=-1 to kappa=+1 (SM) case
-  PUWEIGHT_TYPE          pileupWeight;      ///< pile-up weight (only if MC)
+  UInt_t    run;               ///< run number
+  UInt_t    lumi;              ///< luminosity
+  ULong64_t event;             ///< event number
+  Float_t   genHiggsDecayMode; ///< Higgs decay mode (only if MC signal)
+  Float_t   genWeight;         ///< generator-level weight (only if MC)
+  Float_t   genWeight_tH;      ///< reweight tH MC sample from kappa=-1 to kappa=+1 (SM) case
+  Float_t   pileupWeight;      ///< pile-up weight (only if MC)
 
   bool
   is_signal() const;
@@ -55,7 +55,7 @@ private:
   bool is_mc_;
   bool is_mc_th_;
 
-  static const std::map<std::string, GENHIGGSDECAYMODE_TYPE> decayMode_idString;
+  static const std::map<std::string, Float_t> decayMode_idString;
 };
 
 #endif // EventInfo_H
