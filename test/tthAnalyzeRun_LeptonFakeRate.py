@@ -6,7 +6,7 @@ from tthAnalysis.HiggsToTauTau.analyzeConfig_LeptonFakeRate import analyzeConfig
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 
 ERA                    = "2016"
-version                = "2018Jan22_RED_BGS_ALL_LEPTON_PT_TIGHT_FAKE_EXCLUSIVE_LOGIC_CORR"
+version                = "2018Jan24_RED_BGS_ALL_CONE_PT_TIGHT_FAKE_EXCLUSIVE_LOGIC_CORR"
 ## cmssw_base_dir_combine = os.path.expanduser('~/CMSSW_7_4_7') # immediate parent dir to src folder
 cmssw_base_dir_combine = os.path.expanduser('~/VHBB_NTUPLES_2017/CMSSW_7_4_7_CombineHarvestor') # immediate parent dir to src folder                                                                      
 if ERA == "2016":

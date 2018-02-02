@@ -1,8 +1,10 @@
 import FWCore.ParameterSet.Config as cms
 import os
+
+from tthAnalysis.HiggsToTauTau.recommendedMEtFilters_cfi import recommendedMEtFilters
   
 process = cms.PSet()
-  
+
 process.fwliteInput = cms.PSet(
     ##fileNames = cms.vstring('/afs/cern.ch/user/v/veelken/scratch0/VHbbNtuples_7_6_x/CMSSW_7_6_3/src/VHbbAnalysis/Heppy/test/latest_Loop/tree.root'),
     fileNames = cms.vstring('/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau/MC/ZZTo4L_13TeV_powheg_pythia8/VHBB_HEPPY_V25tthtautau_ZZTo4L_13TeV_powheg_Py8__RunIISummer16MAv2-PUMoriond17_80r2as_2016_TrancheIV_v6-v1/170207_125252/0000/tree_1.root',
@@ -149,6 +151,8 @@ process.analyze_LeptonFakeRate = cms.PSet(
     redoGenMatching = cms.bool(True),
 
     selEventsFileName_input = cms.string(''),
-    selEventsFileName_output = cms.string('')
+    selEventsFileName_output = cms.string(''),
+    ### NEWLY ADDED
+    cfgMEtFilter = recommendedMEtFilters
 )
 

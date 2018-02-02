@@ -36,6 +36,9 @@
 #include "tthAnalysis/HiggsToTauTau/interface/GenJetReader.h" // GenJetReader
 #include "tthAnalysis/HiggsToTauTau/interface/LHEInfoReader.h" // LHEInfoReader
 #include "tthAnalysis/HiggsToTauTau/interface/EventInfoReader.h" // EventInfoReader, EventInfo
+#include "tthAnalysis/HiggsToTauTau/interface/MEtFilterReader.h" // MEtFilterReader
+#include "tthAnalysis/HiggsToTauTau/interface/MEtFilterSelector.h" // MEtFilterSelector
+#include "tthAnalysis/HiggsToTauTau/interface/MEtFilterHistManager.h" // MEtFilterHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/convert_to_ptrs.h" // convert_to_ptrs
 #include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionCleaner.h" // RecoElectronCollectionCleaner, RecoMuonCollectionCleaner, RecoHadTauCollectionCleaner, RecoJetCollectionCleaner
 #include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionGenMatcher.h" // RecoElectronCollectionGenMatcher, RecoMuonCollectionGenMatcher, RecoHadTauCollectionGenMatcher, RecoJetCollectionGenMatcher
@@ -71,6 +74,9 @@
 #include "tthAnalysis/HiggsToTauTau/interface/Data_to_MC_CorrectionInterface.h" // Data_to_MC_CorrectionInterface
 #include "tthAnalysis/HiggsToTauTau/interface/cutFlowTable.h" // cutFlowTableType
 #include "tthAnalysis/HiggsToTauTau/interface/TTreeWrapper.h" // TTreeWrapper
+
+
+
 
 #include <iostream> // std::cerr, std::fixed
 #include <iomanip> // std::setprecision(), std::setw()
@@ -426,6 +432,11 @@ int main(int argc, char* argv[])
   std::string branchName_genJets = cfg_analyze.getParameter<std::string>("branchName_genJets");
   bool redoGenMatching = cfg_analyze.getParameter<bool>("redoGenMatching");
 
+  edm::ParameterSet cfgMEtFilter = cfg_analyze.getParameter<edm::ParameterSet>("cfgMEtFilter");
+  MEtFilterSelector metFilterSelector(cfgMEtFilter);
+
+
+
   bool isDEBUG = ( cfg_analyze.exists("isDEBUG") ) ? cfg_analyze.getParameter<bool>("isDEBUG") : false;
  
   std::string jet_btagWeight_branch;
@@ -562,10 +573,19 @@ int main(int argc, char* argv[])
   RecoJetCollectionSelectorBtagLoose jetSelectorBtagLoose(era);
   RecoJetCollectionSelectorBtagMedium jetSelectorBtagMedium(era);
 
-//--- declare missing transverse energy
+// --- declare missing transverse energy
   RecoMEtReader* metReader = new RecoMEtReader(era, branchName_met);
   metReader->setMEt_central_or_shift(met_option);
   inputTree->registerReader(metReader);
+
+
+  MEtFilter metFilter;  
+  MEtFilterReader* metFilterReader = new MEtFilterReader(&metFilter);
+  inputTree->registerReader(metFilterReader);
+
+// --- Setting up the Met Filter Hist Manager ----
+  MEtFilterHistManager* metFilterHistManager = new MEtFilterHistManager(makeHistManager_cfg(process_string, "LeptonFakeRate/met_filters", central_or_shift));
+  metFilterHistManager->bookHistograms(fs);
 
 //--- declare generator level information
   GenLeptonReader* genLeptonReader = 0;
@@ -723,6 +743,7 @@ int main(int argc, char* argv[])
   cutFlowTableType cutFlowTable_e(isDEBUG);
   // define order in which rows are printed in cut-flow table
   initializeCutFlowTable(cutFlowTable_e, ">= 1 fakeable electron");
+  initializeCutFlowTable(cutFlowTable_e, "MEt filter");
   initializeCutFlowTable(cutFlowTable_e, "electron+jet pair passing trigger bit");
   initializeCutFlowTable(cutFlowTable_e, "electron+jet pair passing trigger bit && prescale");
   initializeCutFlowTable(cutFlowTable_e, histograms_e_numerator_binned_beforeCuts);
@@ -732,6 +753,7 @@ int main(int argc, char* argv[])
   initializeCutFlowTable(cutFlowTable_e, histograms_e_denominator_binned_afterCuts);
   cutFlowTableType cutFlowTable_mu(isDEBUG);
   initializeCutFlowTable(cutFlowTable_mu, ">= 1 fakeable muon");
+  initializeCutFlowTable(cutFlowTable_mu, "MEt filter");
   initializeCutFlowTable(cutFlowTable_mu, "muon+jet pair passing trigger bit");
   initializeCutFlowTable(cutFlowTable_mu, "muon+jet pair passing trigger bit && prescale");
   initializeCutFlowTable(cutFlowTable_mu, histograms_mu_numerator_binned_beforeCuts);
@@ -897,6 +919,14 @@ int main(int argc, char* argv[])
     }        
     if ( fakeableElectrons.size() >= 1 ) cutFlowTable_e.update(">= 1 fakeable electron", evtWeight);
     if ( fakeableMuons.size()     >= 1 ) cutFlowTable_mu.update(">= 1 fakeable muon", evtWeight);
+
+    metFilterHistManager->fillHistograms(metFilter, evtWeight);
+
+    if ( !metFilterSelector(metFilter) ) {
+      continue;
+    }
+    cutFlowTable_e.update("MEt filter", evtWeight);
+    cutFlowTable_mu.update("MEt filter", evtWeight);
 
     bool isGoodLeptonJetPair = false; // set to true if at least one electron+jet or one muon+jet combination passes trigger requirements
 
@@ -1072,10 +1102,12 @@ int main(int argc, char* argv[])
   delete genHadTauReader;
   delete genJetReader;
   delete lheInfoReader;
+  delete metFilterReader;
 
   delete genEvtHistManager_beforeCuts;
   delete genEvtHistManager_afterCuts;
   delete lheInfoHistManager;
+  delete metFilterHistManager;
 
   hltPaths_LeptonFakeRate_delete(triggers_e);
   hltPaths_LeptonFakeRate_delete(triggers_mu);
