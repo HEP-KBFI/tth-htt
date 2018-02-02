@@ -56,7 +56,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/MEtHistManager.h" // MEtHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/MVAInputVarHistManager.h" // MVAInputVarHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/EvtHistManager_2los_1tau.h" // EvtHistManager_2los_1tau
-#include "tthAnalysis/HiggsToTauTau/interface/CutFlowTableHistManager_2los_1tau.h" // CutFlowTableHistManager_2los_1tau
+#include "tthAnalysis/HiggsToTauTau/interface/CutFlowTableHistManager.h" // CutFlowTableHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/WeightHistManager.h" // WeightHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/GenEvtHistManager.h" // GenEvtHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/LHEInfoHistManager.h" // LHEInfoHistManager
@@ -72,6 +72,8 @@
 #include "tthAnalysis/HiggsToTauTau/interface/cutFlowTable.h" // cutFlowTableType
 #include "tthAnalysis/HiggsToTauTau/interface/NtupleFillerBDT.h" // NtupleFillerBDT
 #include "tthAnalysis/HiggsToTauTau/interface/TTreeWrapper.h" // TTreeWrapper
+
+#include <boost/math/special_functions/sign.hpp> // boost::math::sign()
 
 #include <iostream> // std::cerr, std::fixed
 #include <iomanip> // std::setprecision(), std::setw()
@@ -727,8 +729,32 @@ int main(int argc, char* argv[])
   TH1* histogram_analyzedEntries = fs.make<TH1D>("analyzedEntries", "analyzedEntries", 1, -0.5, +0.5);
   TH1* histogram_selectedEntries = fs.make<TH1D>("selectedEntries", "selectedEntries", 1, -0.5, +0.5);
   cutFlowTableType cutFlowTable;
-  CutFlowTableHistManager_2los_1tau* cutFlowHistManager = new CutFlowTableHistManager_2los_1tau(makeHistManager_cfg(process_string, 
-    Form("%s/sel/cutFlow", histogramDir.data()), central_or_shift));
+  const edm::ParameterSet cutFlowTableCfg = makeHistManager_cfg(
+    process_string, Form("%s/sel/cutFlow", histogramDir.data()), central_or_shift
+  );
+  const std::vector<std::string> cuts = {
+    "run:ls:event selection",
+    "trigger",
+    ">= 2 presel leptons",
+    "presel lepton trigger match",
+    ">= 2 jets",
+    ">= 2 loose b-jets || 1 medium b-jet (1)",
+    ">= 1 sel tau (1)",
+    ">= 2 sel leptons",
+    "<= 2 tight leptons",
+    "sel lepton trigger match",
+    ">= 3 jets",
+    ">= 2 loose b-jets || 1 medium b-jet (2)",
+    ">= 1 sel tau (2)",
+    "m(ll) > 12 GeV",
+    "lead lepton pT > 25 GeV && sublead lepton pT > 15(e)/10(mu) GeV",
+    "tight lepton charge",
+    "sel lepton-pair OS charge",
+    "Z-boson mass veto",
+    "met LD > 0.2",
+    "signal region veto",
+  };
+  CutFlowTableHistManager * cutFlowHistManager = new CutFlowTableHistManager(cutFlowTableCfg, cuts);
   cutFlowHistManager->bookHistograms(fs);
 
   while(inputTree -> hasNextEvent() && (! run_lumi_eventSelector || (run_lumi_eventSelector && ! run_lumi_eventSelector -> areWeDone())))
@@ -1007,7 +1033,7 @@ int main(int argc, char* argv[])
     if ( !(preselLeptons.size() >= 2) ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS preselLeptons selection." << std::endl;
-	printLeptonCollection("preselLeptons", preselLeptons);
+  printCollection("preselLeptons", preselLeptons);
       }
       continue;
     }
@@ -1043,7 +1069,7 @@ int main(int argc, char* argv[])
     if ( !(selJets.size() >= 2) ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS selJets selection (1)." << std::endl;
-	printJetCollection("selJets", selJets);
+  printCollection("selJets", selJets);
       }
       continue;
     }
@@ -1052,9 +1078,9 @@ int main(int argc, char* argv[])
     if ( !(selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS selBJets selection (1)." << std::endl;
-	printJetCollection("selJets", selJets);
-	printJetCollection("selBJets_loose", selBJets_loose);
-	printJetCollection("selBJets_medium", selBJets_medium);
+  printCollection("selJets", selJets);
+  printCollection("selBJets_loose", selBJets_loose);
+  printCollection("selBJets_medium", selBJets_medium);
       }
       continue;
     }
@@ -1063,7 +1089,7 @@ int main(int argc, char* argv[])
     if ( !(selHadTaus.size() >= 1) ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS selHadTaus selection." << std::endl;
-	printHadTauCollection("selHadTaus", selHadTaus);
+  printCollection("selHadTaus", selHadTaus);
       }
       continue;
     }
@@ -1117,8 +1143,8 @@ int main(int argc, char* argv[])
     if ( !(selLeptons.size() >= 2) ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS selLeptons selection." << std::endl;
-	printLeptonCollection("selLeptons", selLeptons);
-	//printLeptonCollection("preselLeptons", preselLeptons);
+  printCollection("selLeptons", selLeptons);
+  //printCollection("preselLeptons", preselLeptons);
       }
       continue;
     }
@@ -1143,7 +1169,7 @@ int main(int argc, char* argv[])
     double evtWeight = 1.;
     if ( isMC ) {
       evtWeight *= lumiScale;
-      if ( apply_genWeight ) evtWeight *= sgn(eventInfo.genWeight);
+      if ( apply_genWeight ) evtWeight *= boost::math::sign(eventInfo.genWeight);
       if ( isMC_tH ) evtWeight *= eventInfo.genWeight_tH;
       evtWeight *= eventInfo.pileupWeight;
       if ( lheScale_option != kLHE_scale_central ) {	
@@ -1160,7 +1186,7 @@ int main(int argc, char* argv[])
       evtWeight *= btagWeight;
       if ( isDEBUG ) {
 	std::cout << "lumiScale = " << lumiScale << std::endl;
-  if ( apply_genWeight ) std::cout << "genWeight = " << sgn(eventInfo.genWeight) << std::endl;
+  if ( apply_genWeight ) std::cout << "genWeight = " << boost::math::sign(eventInfo.genWeight) << std::endl;
   std::cout << "pileupWeight = " << eventInfo.pileupWeight << std::endl;
 	std::cout << "btagWeight = " << btagWeight << std::endl;
       }
@@ -1286,7 +1312,7 @@ int main(int argc, char* argv[])
     if ( !(tightLeptons.size() <= 2) ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS tightLeptons selection." << std::endl;
-	printLeptonCollection("tightLeptons", tightLeptons);
+  printCollection("tightLeptons", tightLeptons);
       }
       continue;
     }
@@ -1316,7 +1342,7 @@ int main(int argc, char* argv[])
     if ( !(selJets.size() >= 3) ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS selJets selection (2)." << std::endl;
-	printJetCollection("selJets", selJets);
+  printCollection("selJets", selJets);
       }
       continue;
     }
@@ -1326,9 +1352,9 @@ int main(int argc, char* argv[])
     if ( !(selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS selBJets selection (2)." << std::endl;
-	printJetCollection("selJets", selJets);
-	printJetCollection("selBJets_loose", selBJets_loose);
-	printJetCollection("selBJets_medium", selBJets_medium);
+  printCollection("selJets", selJets);
+  printCollection("selBJets_loose", selBJets_loose);
+  printCollection("selBJets_medium", selBJets_medium);
       }
       continue;
     }
@@ -1338,7 +1364,7 @@ int main(int argc, char* argv[])
     if ( !(selHadTaus.size() >= 1) ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS selHadTaus selection." << std::endl;
-	printHadTauCollection("selHadTaus", selHadTaus);
+  printCollection("selHadTaus", selHadTaus);
       }
       continue;
     }
