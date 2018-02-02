@@ -14,7 +14,7 @@ class TTree;
 
 class RecoLeptonWriter
 {
- public:
+public:
   RecoLeptonWriter(const std::string & branchName_num,
                    const std::string & branchName_obj);
   ~RecoLeptonWriter();
@@ -90,7 +90,7 @@ class RecoLeptonWriter
   friend class RecoElectronWriter;
   friend class RecoMuonWriter;
 
- protected:
+protected:
  /**
    * @brief Initialize names of branches to be read from tree
    */
