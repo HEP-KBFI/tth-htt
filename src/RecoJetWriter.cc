@@ -137,15 +137,15 @@ void RecoJetWriter::writeGenMatching(const std::vector<const RecoJet *> & jets)
   {
     assert(jet);
     const GenLepton * matched_genLepton = jet->genLepton();
-    if(matched_genLepton) matched_genLeptons.push_back(static_cast<GenParticle>(*matched_genLepton));
+    if(matched_genLepton) matched_genLeptons.push_back(*reinterpret_cast<const GenParticle *>(matched_genLepton));
     else                  matched_genLeptons.push_back(dummyGenParticle_);
 
     const GenHadTau * matched_genHadTau = jet->genHadTau();
-    if(matched_genHadTau) matched_genHadTaus.push_back(static_cast<GenParticle>(*matched_genHadTau));
+    if(matched_genHadTau) matched_genHadTaus.push_back(*reinterpret_cast<const GenParticle *>(matched_genHadTau));
     else                  matched_genHadTaus.push_back(dummyGenParticle_);
 
     const GenJet * matched_genJet = jet->genJet();
-    if(matched_genJet) matched_genJets.push_back(static_cast<GenParticle>(*matched_genJet));
+    if(matched_genJet) matched_genJets.push_back(*reinterpret_cast<const GenParticle *>(matched_genJet));
     else               matched_genJets.push_back(dummyGenParticle_);
   }
   genLeptonWriter_->write(matched_genLeptons);

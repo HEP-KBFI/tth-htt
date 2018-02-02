@@ -14,7 +14,7 @@ class GenParticleWriter;
 
 class RecoJetWriter
 {
- public:
+public:
   RecoJetWriter(int era,
                 bool isMC);
   RecoJetWriter(int era,
@@ -39,7 +39,7 @@ class RecoJetWriter
    */
   void writeGenMatching(const std::vector<const RecoJet *> & jets);
 
- protected: 
+protected:
  /**
    * @brief Initialize names of branches to be read from tree
    */
