@@ -1,15 +1,18 @@
 #include "tthAnalysis/HiggsToTauTau/interface/GenHadTau.h" // GenHadTau, GenParticleBase
 
 GenHadTau::GenHadTau(Double_t pt,
-		     Double_t eta,
-		     Double_t phi,
-		     Double_t mass,
-		     Int_t charge)
-  : Particle(pt, eta, phi, mass)
-  , charge_(charge)
+                     Double_t eta,
+                     Double_t phi,
+                     Double_t mass,
+                     Int_t charge)
+  : GenParticle(pt, eta, phi, mass, 0, charge)
 {}
 
-GenHadTau::operator GenParticle() const
+std::ostream &
+operator<<(std::ostream & stream,
+           const GenHadTau & hadTau)
 {
-  return GenParticle(pt_, eta_, phi_, mass_, 0, charge_);
+  stream << static_cast<const Particle &>(hadTau) << ","
+            " charge = " << hadTau.charge();
+  return stream;
 }
