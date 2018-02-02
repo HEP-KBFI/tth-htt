@@ -22,11 +22,12 @@
 #include "tthAnalysis/HiggsToTauTau/interface/TMVAInterface.h" // TMVAInterface
 #include "tthAnalysis/HiggsToTauTau/interface/mvaAuxFunctions.h" // check_mvaInputs, get_mvaInputVariables
 #include "tthAnalysis/HiggsToTauTau/interface/mvaInputVariables.h" // auxiliary functions for computing input variables of the MVA used for signal extraction in the 2lss_1tau category 
-#include "tthAnalysis/HiggsToTauTau/interface/KeyTypes.h" // LUMI_*, EVT_*, RUN_*, MET_*_*
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronReader.h" // RecoElectronReader
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonReader.h" // RecoMuonReader
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauReader.h" // RecoHadTauReader
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetReader.h" // RecoJetReader
+#include "tthAnalysis/HiggsToTauTau/interface/RecoMEtReader.h" // RecoMEtReader
+#include "tthAnalysis/HiggsToTauTau/interface/EventInfoReader.h" // EventInfoReader, EventInfo
 #include "tthAnalysis/HiggsToTauTau/interface/convert_to_ptrs.h" // convert_to_ptrs
 #include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionCleaner.h" // Reco*CollectionCleaner
 #include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionGenMatcher.h" // Reco*CollectionGenMatcher
@@ -50,6 +51,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/hltPath.h" // hltPath, create_hltPaths, hltPaths_*
 #include "tthAnalysis/HiggsToTauTau/interface/SyncNtupleManager.h" // SyncNtupleManager
 #include "tthAnalysis/HiggsToTauTau/interface/Data_to_MC_CorrectionInterface_1l_2tau_trigger.h"
+#include "tthAnalysis/HiggsToTauTau/interface/TTreeWrapper.h" // TTreeWrapper
 
 #include "tthAnalysis/HiggsToTauTau/interface/LeptonFakeRateInterface.h" // LeptonFakeRateInterface
 #include "tthAnalysis/HiggsToTauTau/interface/JetToTauFakeRateInterface.h" // JetToTauFakeRateInterface
@@ -62,8 +64,10 @@
 #include "tthAnalysis/HiggsToTauTau/interface/GenJetReader.h" // GenJetReader
 #include "tthAnalysis/HiggsToTauTau/interface/LHEInfoReader.h" // LHEInfoReader
 
+#include <boost/math/special_functions/sign.hpp> // boost::math::sign()
 
 #include <iostream> // std::cout
+#include <fstream> // std::ofstream
 
 typedef math::PtEtaPhiMLorentzVector LV;
 typedef std::vector<std::string> vstring;
@@ -119,6 +123,13 @@ int main(int argc, char* argv[])
   else if ( leptonSelection_string == "Tight"                                                      ) leptonSelection = kTight;
   else throw cms::Exception("sync_ntuples") 
     << "Invalid Configuration parameter 'leptonSelection' = " << leptonSelection_string << " !!\n";
+
+  std::string jet_btagWeight_branch;
+  bool isMC = true; //cfg_analyze.getParameter<bool>("isMC");
+  if ( isMC ) {
+    if ( era == kEra_2017 ) jet_btagWeight_branch = "Jet_btagSF_csvv2";
+    else assert(0);
+  }
 
   const int jetPt_option = RecoJetReader::kJetPt_central;
   //int hadTauPt_option = RecoHadTauReader::kHadTauPt_central;
@@ -214,56 +225,31 @@ int main(int argc, char* argv[])
   fwlite::OutputFiles outputFile(cfg);
   const std::string outputFileName = outputFile.file();
 
-  TChain* inputTree = new TChain(treeName.data());
-  for(const std::string & inputFileName: inputFiles.files())
-  {
-    std::cout << "input Tree: adding file = " << inputFileName << '\n';
-    inputTree -> AddFile(inputFileName.c_str());
-  }
-  
-  if ( !(inputTree->GetListOfFiles()->GetEntries() >= 1) ) {
-    throw cms::Exception(argv[0]) << "Failed to identify input Tree !!\n";
-  }
-  
-  // CV: need to call TChain::LoadTree before processing first event 
-  //     in order to prevent ROOT causing a segmentation violation,
-  //     cf. http://root.cern.ch/phpBB3/viewtopic.php?t=10062
-  inputTree->LoadTree(0);
+  TTreeWrapper * inputTree = new TTreeWrapper(treeName.data(), inputFiles.files(), maxEvents);
 
-  std::cout << "input Tree contains " << inputTree->GetEntries() << " Entries in "
-            << inputTree->GetListOfFiles()->GetEntries() << " files.\n";
+  std::cout << "Loaded " << inputTree -> getFileCount() << " file(s).\n";
 
 //--- declare event-level variables
-  RUN_TYPE run;
-  inputTree->SetBranchAddress(RUN_KEY, &run);
-  LUMI_TYPE lumi;
-  inputTree->SetBranchAddress(LUMI_KEY, &lumi);
-  EVT_TYPE event;
-  inputTree->SetBranchAddress(EVT_KEY, &event);
+  EventInfo eventInfo(false, isMC, false);
+  EventInfoReader eventInfoReader(&eventInfo);
+  inputTree -> registerReader(&eventInfoReader);
 
-  hltPaths_setBranchAddresses(inputTree, triggers_1e);
-  hltPaths_setBranchAddresses(inputTree, triggers_2e);
-  hltPaths_setBranchAddresses(inputTree, triggers_1mu);
-  hltPaths_setBranchAddresses(inputTree, triggers_2mu);
-  hltPaths_setBranchAddresses(inputTree, triggers_1e1mu);
-  hltPaths_setBranchAddresses(inputTree, triggers_1e1tau);
-  hltPaths_setBranchAddresses(inputTree, triggers_1mu1tau);
-  hltPaths_setBranchAddresses(inputTree, triggers_3e);
-  hltPaths_setBranchAddresses(inputTree, triggers_2e1mu);
-  hltPaths_setBranchAddresses(inputTree, triggers_1e2mu);
-  hltPaths_setBranchAddresses(inputTree, triggers_3mu);
+  for(const std::vector<hltPath*> hltPaths: {
+       triggers_1e, triggers_2e, triggers_1mu, triggers_2mu, triggers_1e1mu, triggers_1e1tau, triggers_1mu1tau,
+       triggers_3e, triggers_2e1mu, triggers_1e2mu, triggers_3mu
+     })
+  {
+    inputTree -> registerReader(hltPaths);
+  }
   
-  MET_PT_TYPE met_pt;
-  inputTree->SetBranchAddress(MET_PT_KEY, &met_pt);
-  MET_ETA_TYPE met_eta;
-  inputTree->SetBranchAddress(MET_ETA_KEY, &met_eta);
-  MET_PHI_TYPE met_phi;
-  inputTree->SetBranchAddress(MET_PHI_KEY, &met_phi);
+  RecoMEtReader* metReader = new RecoMEtReader(era, "MET");
+  metReader->setMEt_central_or_shift(RecoMEtReader::kMEt_central);
+  inputTree -> registerReader(metReader);
 
 //--- declare particle collections
-  RecoMuonReader* muonReader = new RecoMuonReader(era, "nselLeptons", "selLeptons");
+  RecoMuonReader* muonReader = new RecoMuonReader(era, "nMuon", "Muon");
   muonReader->set_HIP_mitigation(use_HIP_mitigation_mediumMuonId);
-  muonReader->setBranchAddresses(inputTree);
+  inputTree -> registerReader(muonReader);
   RecoMuonCollectionGenMatcher muonGenMatcher;
   RecoMuonCollectionSelectorLoose preselMuonSelector(era);
   RecoMuonCollectionSelectorFakeable fakeableMuonSelector(era);
@@ -271,8 +257,8 @@ int main(int argc, char* argv[])
   RecoMuonCollectionSelectorMVABased mvaBasedSelector(era);
   RecoMuonCollectionSelectorTight tightMuonSelector(era, -1, run_lumi_eventSelector != 0);
 
-  RecoElectronReader* electronReader = new RecoElectronReader(era, "nselLeptons", "selLeptons");
-  electronReader->setBranchAddresses(inputTree);
+  RecoElectronReader* electronReader = new RecoElectronReader(era, "nElectron", "Electron");
+  inputTree -> registerReader(electronReader);
   RecoElectronCollectionGenMatcher electronGenMatcher;
   RecoElectronCollectionCleaner electronCleaner(0.05); // NB! in analysis we have 0.3
   RecoElectronCollectionSelectorLoose preselElectronSelector(era, -1, debug);
@@ -281,8 +267,8 @@ int main(int argc, char* argv[])
   RecoElectronCollectionSelectorMVABased mvaBasedElectronSelector(era);
   RecoElectronCollectionSelectorTight tightElectronSelector(era, -1, run_lumi_eventSelector != 0);
 
-  RecoHadTauReader* hadTauReader = new RecoHadTauReader(era, "nTauGood", "TauGood");
-  hadTauReader->setBranchAddresses(inputTree);
+  RecoHadTauReader* hadTauReader = new RecoHadTauReader(era, "nTau", "Tau");
+  inputTree -> registerReader(hadTauReader);
   RecoHadTauCollectionGenMatcher hadTauGenMatcher;
   RecoHadTauCollectionCleaner hadTauCleaner(0.4); // NB! in analysis we have 0.3
   RecoHadTauCollectionSelectorLoose hadTauSelector(era); // KE: Tight -> Loose
@@ -299,14 +285,6 @@ int main(int argc, char* argv[])
   if ( hadTauSelection_part2 != "" ) tightHadTauSelector.set(hadTauSelection_part2);
   tightHadTauSelector.set_min_antiElectron(hadTauSelection_antiElectron);
   tightHadTauSelector.set_min_antiMuon(hadTauSelection_antiMuon);
-  
-  
-  std::string jet_btagWeight_branch;
-  bool isMC = true; //cfg_analyze.getParameter<bool>("isMC");
-  if ( isMC ) {
-    if ( era == kEra_2017 ) jet_btagWeight_branch = "Jet_btagSF_csvv2";
-    else assert(0);
-  }
   
   bool apply_hadTauFakeRateSF = cfg_analyze.getParameter<bool>("apply_hadTauFakeRateSF");
   //std::string central_or_shift = cfg_analyze.getParameter<std::string>("central_or_shift");
@@ -335,21 +313,11 @@ int main(int argc, char* argv[])
     cfg_hadTauFakeRateWeight.addParameter<std::string>("hadTauSelection", hadTauSelection_part2);
     jetToTauFakeRateInterface = new JetToTauFakeRateInterface(cfg_hadTauFakeRateWeight, jetToTauFakeRate_option);
   }
-  
-  
-  
-  PUWEIGHT_TYPE pileupWeight;
-  GENWEIGHT_TYPE genWeight = 1.;
-  
-  if ( isMC ) {
-    inputTree->SetBranchAddress(GENWEIGHT_KEY, &genWeight);
-    inputTree->SetBranchAddress(PUWEIGHT_KEY, &pileupWeight);
-  }
 
   RecoJetReader* jetReader = new RecoJetReader(era, isMC, "nJet", "Jet");
   jetReader->setJetPt_central_or_shift(jetPt_option);
   jetReader->setBranchName_BtagWeight(jet_btagWeight_branch);
-  jetReader->setBranchAddresses(inputTree);
+  inputTree -> registerReader(jetReader);
   RecoJetCollectionGenMatcher jetGenMatcher;
   RecoJetCollectionCleaner jetCleaner(0.4); // NB! in analysis we *had* 0.5
   RecoJetCollectionSelector jetSelector(era);  
@@ -360,14 +328,14 @@ int main(int argc, char* argv[])
   GenJetReader* genJetReader = 0;
   LHEInfoReader* lheInfoReader = 0;
   if ( isMC ) {
-    genLeptonReader = new GenLeptonReader("nGenLep", "GenLep", "nGenLepFromTau", "GenLepFromTau");
-    genLeptonReader->setBranchAddresses(inputTree);
-    genHadTauReader = new GenHadTauReader("nGenHadTaus", "GenHadTaus");
-    genHadTauReader->setBranchAddresses(inputTree);
+    genLeptonReader = new GenLeptonReader("nGenLep", "GenLep");
+    inputTree -> registerReader(genLeptonReader);
+    genHadTauReader = new GenHadTauReader("nGenVisTau", "GenVisTau");
+    inputTree -> registerReader(genHadTauReader);
     genJetReader = new GenJetReader("nGenJet", "GenJet");
-    genJetReader->setBranchAddresses(inputTree);
+    inputTree -> registerReader(genJetReader);
     lheInfoReader = new LHEInfoReader();
-    lheInfoReader->setBranchAddresses(inputTree);    
+    inputTree -> registerReader(lheInfoReader);
   }
 
 
@@ -514,19 +482,26 @@ int main(int argc, char* argv[])
   snm.initializeBranches();
   snm.initializeHLTBranches({triggers_1e, triggers_1mu, triggers_2e, triggers_2mu, triggers_1e1mu});
 
-  const int numEntries = inputTree->GetEntries();
   int analyzedEntries = 0;
   int selectedEntries = 0;
 
-  for ( int idxEntry = 0; idxEntry < numEntries && (maxEvents == -1 || idxEntry < maxEvents); ++idxEntry ) {
-    if ( idxEntry > 0 && (idxEntry % reportEvery) == 0) {
-      std::cout << "processing Entry " << idxEntry << " (" << selectedEntries << " Entries selected)\n";
+  while(inputTree -> hasNextEvent() && (! run_lumi_eventSelector || (run_lumi_eventSelector && ! run_lumi_eventSelector -> areWeDone())))
+  {
+    if(inputTree -> canReport(reportEvery))
+    {
+      std::cout << "processing Entry " << inputTree -> getCurrentMaxEventIdx()
+                << " or " << inputTree -> getCurrentEventIdx() << " entry in #"
+                << (inputTree -> getProcessedFileCount() - 1)
+                << " (" << eventInfo
+                << ") file (" << selectedEntries << " Entries selected)\n";
     }
-    ++analyzedEntries;    
-    inputTree->GetEntry(idxEntry);
+    ++analyzedEntries;
 
-    if ( run_lumi_eventSelector && !(*run_lumi_eventSelector)(run, lumi, event) ) continue;
-    snm.readRunLumiEvent(run, lumi, event);
+    if(run_lumi_eventSelector && !(*run_lumi_eventSelector)(eventInfo))
+    {
+      continue;
+    }
+    snm.readRunLumiEvent(eventInfo.run, eventInfo.lumi, eventInfo.event);
 
 //--- build collections of generator level particles (before any cuts are applied, to check distributions in unbiased event samples)
     std::vector<GenLepton> genLeptons;
@@ -595,6 +570,8 @@ int main(int argc, char* argv[])
     std::vector<const RecoJet*> selJets = jetSelector(cleanedJets);
     std::sort(selJets.begin(), selJets.end(), isHigherPt);
     snm.read(selJets);
+
+    RecoMEt met = metReader->read();
 
 
     if ( true/*isMC*/ ) {
@@ -732,11 +709,10 @@ int main(int argc, char* argv[])
     for(const RecoJet * & jet: selJets)             mht_p4 += jet -> p4();
     for(const RecoLepton * & lepton: preselLeptons) mht_p4 += lepton -> p4();
     for(const RecoHadTau * & hadTau: selHadTaus)    mht_p4 += hadTau -> p4();
-    const LV met_p4(met_pt, met_eta, met_phi, 0.);
-    const Double_t met_LD = met_coef*met_p4.pt() + mht_coef*mht_p4.pt();
+    const Double_t met_LD = met_coef*met.p4().pt() + mht_coef*mht_p4.pt();
 
-    snm.read(met_pt,      FloatVariableType::PFMET);
-    snm.read(met_phi,     FloatVariableType::PFMETphi);
+    snm.read(met.pt(),      FloatVariableType::PFMET);
+    snm.read(0.,     FloatVariableType::PFMETphi);
     snm.read(mht_p4.pt(), FloatVariableType::MHT);
     snm.read(met_LD,      FloatVariableType::metLD);
     snm.read({triggers_1e, triggers_1mu, triggers_2e, triggers_2mu, triggers_1e1mu});
@@ -758,15 +734,15 @@ int main(int argc, char* argv[])
       std::cout << "asi" <<std::endl;
     }
     if(lepton_lead !=0){
-      mvaInputs_2lss["MT_met_lep1"]                = comp_MT_met_lep1(lepton_lead->cone_p4(), met_pt, met_phi);
+      mvaInputs_2lss["MT_met_lep1"]                = comp_MT_met_lep1(lepton_lead->cone_p4(), met.pt(), met.phi());
       mvaInputs_2lss["mindr_lep1_jet"]             = comp_mindr_lep1_jet(*lepton_lead, selJets);
       mvaInputs_2lss["LepGood_conePt[iF_Recl[0]]"] = comp_lep1_conePt(*lepton_lead);
     }  
     mvaInputs_2lss["nJet25_Recl"]                = comp_n_jet25_recl(selJets);
-    mvaInputs_2lss["min(met_pt,400)"]            = std::min((Double_t)met_pt, 400.);
+    mvaInputs_2lss["min(met_pt,400)"]            = std::min((Double_t)met.pt(), 400.);
     mvaInputs_2lss["avg_dr_jet"]                 = comp_avg_dr_jet(selJets);
     
-    check_mvaInputs(mvaInputs_2lss, run, lumi, event);
+    check_mvaInputs(mvaInputs_2lss, eventInfo.run, eventInfo.lumi, eventInfo.event);
     //for ( std::map<std::string, double>::const_iterator mvaInput = mvaInputs_2lss.begin();
     //	    mvaInput != mvaInputs_2lss.end(); ++mvaInput ) {
     //  std::cout << " " << mvaInput->first << " = " << mvaInput->second << std::endl;
@@ -879,7 +855,7 @@ int main(int argc, char* argv[])
       if(selHadTaus.size() > 0)
         mvaInputs_2lss_1tau["dr_lep1_tau"]                                           = deltaR(lepton_lead->p4(), selHadTaus[0]->p4());
       mvaInputs_2lss_1tau["mindr_lep1_jet"]                                        = TMath::Min(10., comp_mindr_lep1_jet(*lepton_lead, selJets));
-      mvaInputs_2lss_1tau["mT_lep1"]                                               = comp_MT_met_lep1(lepton_lead->p4(), met_pt, met_phi);
+      mvaInputs_2lss_1tau["mT_lep1"]                                               = comp_MT_met_lep1(lepton_lead->p4(), met.pt(), met.phi());
     }
     if(selHadTaus.size() > 0)
       mvaInputs_2lss_1tau["tau_pt"]                                                = selHadTaus[0]->pt();
@@ -887,7 +863,7 @@ int main(int argc, char* argv[])
 
     Double_t mvaDiscr_2lss_1tau = -1.;
     if (lepton_sublead !=0){
-      check_mvaInputs(mvaInputs_2lss_1tau, run, lumi, event);
+      check_mvaInputs(mvaInputs_2lss_1tau, eventInfo.run, eventInfo.lumi, eventInfo.event);
       //for ( std::map<std::string, double>::const_iterator mvaInput = mvaInputs_2lss.begin();
       //	    mvaInput != mvaInputs_2lss.end(); ++mvaInput ) {
       //  std::cout << " " << mvaInput->first << " = " << mvaInput->second << std::endl;
@@ -1118,23 +1094,27 @@ int main(int argc, char* argv[])
     }
     //double MC_weight = pileupWeight * triggerSF_weight * leptonSF_weight * weight_btag * hadTauSF_weight * genWeight;
 
-    snm.read(sgn(genWeight),   FloatVariableType::MC_weight);
+    snm.read(boost::math::sign(eventInfo.genWeight),   FloatVariableType::MC_weight);
     snm.read(weight_fakeRate,   FloatVariableType::FR_weight);
     snm.read(triggerSF_weight,   FloatVariableType::triggerSF_weight);
     snm.read(leptonSF_weight,   FloatVariableType::leptonSF_weight);
     snm.read(weight_btag,   FloatVariableType::bTagSF_weight);
-    snm.read(pileupWeight,   FloatVariableType::PU_weight);
+    snm.read(eventInfo.pileupWeight,   FloatVariableType::PU_weight);
     snm.read(hadTauSF_weight,   FloatVariableType::hadTauSF_weight);
     snm.read(lumiScale,   FloatVariableType::lumiScale);
     //snm.read(genWeight,   FloatVariableType::genWeight);
     snm.fill();
     
-    (*selEventsFile) << run << ':' << lumi << ':' << event << '\n';
+    (*selEventsFile) << eventInfo.run << ':' << eventInfo.lumi << ':' << eventInfo.event << '\n';
     ++selectedEntries;    
   }
   snm.write();
-  std::cout << "num. Entries = " << numEntries << "\n analyzed = " << analyzedEntries << '\n'
-            << "Wrote file = " << outputFileName << '\n';
+  std::cout << "max num. Entries = " << inputTree -> getCumulativeMaxEventCount()
+            << " (limited by " << maxEvents << ") processed in "
+            << inputTree -> getProcessedFileCount() << " file(s) (out of "
+            << inputTree -> getFileCount() << ")\n"
+            << " analyzed = " << analyzedEntries << '\n'
+            << " selected = " << selectedEntries << '\n';
 
   delete run_lumi_eventSelector;
   delete selEventsFile;
@@ -1142,6 +1122,9 @@ int main(int argc, char* argv[])
   delete electronReader;
   delete hadTauReader;
   delete jetReader;
+  delete genLeptonReader;
+  delete genHadTauReader;
+  delete genJetReader;
 
   hltPaths_delete(triggers_1e);
   hltPaths_delete(triggers_2e);
@@ -1154,6 +1137,8 @@ int main(int argc, char* argv[])
   hltPaths_delete(triggers_2e1mu);
   hltPaths_delete(triggers_1e2mu);
   hltPaths_delete(triggers_3mu);
+
+  delete inputTree;
 
   clock.Show(argv[0]);
 
