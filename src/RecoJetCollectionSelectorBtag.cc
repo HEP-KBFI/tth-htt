@@ -1,33 +1,87 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelectorBtag.h" // RecoJetSelector
 
-#include <cmath> // fabs
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2017
+#include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 
-RecoJetSelectorBtag::RecoJetSelectorBtag(int era, int index, bool debug)
+RecoJetSelectorBtag::RecoJetSelectorBtag(int era,
+                                         int index,
+                                         bool debug)
   : era_(era)
   , debug_(debug)
   , min_pt_(25.)
   , max_absEta_(2.4)
-  , min_BtagCSV_(-1.e+3)  
+  , min_BtagCSV_(-1.e+3)
 {}
 
-bool RecoJetSelectorBtag::operator()(const RecoJet& jet) const
+RecoJetSelectorBtagLoose::RecoJetSelectorBtagLoose(int era,
+                                                   int index,
+                                                   bool debug)
+  : RecoJetSelectorBtag(era, index, debug)
 {
-  if ( debug_ ) {
-    std::cout << "<RecoJetSelectorBtag::operator()>:" << std::endl;
-    std::cout << " jet: pT = " << jet.pt() << ", eta = " << jet.eta() << ", phi = " << jet.phi() << ", CSV = " << jet.BtagCSV() << std::endl;
+  // NB! no btag CSVv2 WPs for 2017, yet!
+  switch(era_)
+  {
+    case kEra_2017:
+    {
+      // CSV loose WP, cf. https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation80XReReco
+      min_BtagCSV_ = 0.5426;
+      break;
+    }
+    default: throw cmsException(this) << "Invalid era = " << era_;
   }
-  if ( jet.pt() < min_pt_ ) {
-    if ( debug_ ) std::cout << "FAILS pT cut." << std::endl;
+}
+
+RecoJetSelectorBtagMedium::RecoJetSelectorBtagMedium(int era,
+                                                     int index,
+                                                     bool debug)
+  : RecoJetSelectorBtag(era, index, debug)
+{
+  // NB! no btag CSVv2 WPs for 2017, yet!
+  switch(era_)
+  {
+    case kEra_2017:
+    {
+      // CSV medium WP, cf. https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation80XReReco
+      min_BtagCSV_ = 0.8484;
+      break;
+    }
+    default: throw cmsException(this) << "Invalid era = " << era_;
+  }
+}
+
+bool
+RecoJetSelectorBtag::operator()(const RecoJet & jet) const
+{
+  if(debug_)
+  {
+    std::cout << "<RecoJetSelectorBtag::operator()>:\n jet: " << jet << '\n';
+  }
+
+  if(jet.pt() < min_pt_)
+  {
+    if(debug_)
+    {
+      std::cout << "FAILS pT >= " << min_pt_ << " cut\n";
+    }
     return false;
   }
-  if ( jet.absEta() > max_absEta_ ) {
-    if ( debug_ ) std::cout << "FAILS eta cut." << std::endl;
+  if(jet.absEta() > max_absEta_)
+  {
+    if(debug_)
+    {
+      std::cout << "FAILS abs(eta) <= " << max_absEta_ << " cut\n";
+    }
     return false;
   }
-  if ( jet.BtagCSV() < min_BtagCSV_ ) {
-    if ( debug_ ) std::cout << "FAILS CSV cut (" << min_BtagCSV_ << ")." << std::endl;
+  if(jet.BtagCSV() < min_BtagCSV_)
+  {
+    if(debug_)
+    {
+      std::cout << "FAILS b-tagging CSV >= " << min_BtagCSV_ << " cut\n";
+    }
     return false;
   }
+
   // jet passes all cuts
   return true;
 }

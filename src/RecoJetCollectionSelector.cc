@@ -1,22 +1,45 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelector.h" // RecoJetSelector
 
-#include <cmath> // fabs
-
-RecoJetSelector::RecoJetSelector(int era, int index, bool debug)
+RecoJetSelector::RecoJetSelector(int era,
+                                 int index,
+                                 bool debug)
   : min_pt_(25.)
   , max_absEta_(2.4)
   , debug_(debug)
 {}
 
-bool RecoJetSelector::operator()(const RecoJet& jet) const
+void
+RecoJetSelector::set_min_pt(double min_pt)
 {
-  if ( debug_ ) {
-    std::cout << "<RecoJetSelector::operator()>:" << std::endl;
-    std::cout << (jet.pt() >= min_pt_ && jet.absEta() <= max_absEta_) << " jet: pT = " << jet.pt() << ", eta = " << jet.eta() << ", phi = " << jet.phi() << ", CSV = " << jet.BtagCSV() << std::endl;
+  min_pt_ = min_pt;
+}
+
+void
+RecoJetSelector::set_max_absEta(double max_absEta)
+{
+  max_absEta_ = max_absEta;
+}
+
+double
+RecoJetSelector::get_min_pt() const
+{
+  return min_pt_;
+}
+
+double
+RecoJetSelector::get_max_absEta() const
+{
+  return max_absEta_;
+}
+
+bool
+RecoJetSelector::operator()(const RecoJet & jet) const
+{
+  const bool passes = jet.pt() >= min_pt_ && jet.absEta() <= max_absEta_;
+  if(debug_)
+  {
+    std::cout << "<RecoJetSelector::operator()>:\n jet: " << jet << " "
+                 "(" << (passes ? "passes" : "fails") << ")\n";
   }
-  if ( jet.pt() >= min_pt_ &&
-       jet.absEta() <= max_absEta_ ) {
-    return true;
-  } 
-  return false;
+  return passes;
 }
