@@ -2,10 +2,10 @@
 #define EventInfoReader_H
 
 #include "tthAnalysis/HiggsToTauTau/interface/ReaderBase.h" // ReaderBase
-#include "tthAnalysis/HiggsToTauTau/interface/EventInfo.h" // EventInfo
 
 // forward declarations
 class TTree;
+class EventInfo;
 
 class EventInfoReader
   : public ReaderBase
