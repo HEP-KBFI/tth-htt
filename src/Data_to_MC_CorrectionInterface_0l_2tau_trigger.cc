@@ -1,45 +1,20 @@
 #include "tthAnalysis/HiggsToTauTau/interface/Data_to_MC_CorrectionInterface_0l_2tau_trigger.h"
 
-#include "FWCore/Utilities/interface/Exception.h" // cms::Exception
-
+#include "tthAnalysis/HiggsToTauTau/interface/leptonTypes.h" // kElectron, kMuon
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2017
+#include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
+#include "tthAnalysis/HiggsToTauTau/interface/data_to_MC_corrections_auxFunctions.h" // aux::
 
-#include <TString.h>
+#include <TString.h> // Form()
 
-#include <algorithm> // std::sort()
-#include <assert.h> // assert
+#include <boost/algorithm/string/predicate.hpp> // boost::ends_with()
 
-namespace
-{
-  std::string getHadTauSelectionLabel(const std::string& hadTauSelection)
-  {
-    std::string hadTauSelectionLabel;
-    if      ( hadTauSelection == "dR03mvaVVLoose" ) hadTauSelectionLabel = "VLooseIso"; // CV: custom WP for which no trigger efficiency turn-on curve has been measured
-    else if ( hadTauSelection == "dR03mvaVLoose"  ) hadTauSelectionLabel = "VLooseIso";
-    else if ( hadTauSelection == "dR03mvaLoose"   ) hadTauSelectionLabel = "LooseIso"; 
-    else if ( hadTauSelection == "dR03mvaMedium"  ) hadTauSelectionLabel = "MediumIso";
-    else if ( hadTauSelection == "dR03mvaTight"   ) hadTauSelectionLabel = "TightIso"; 
-    else if ( hadTauSelection == "dR03mvaVTight"  ) hadTauSelectionLabel = "VTightIso";
-    else if ( hadTauSelection == "dR03mvaVVTight" ) hadTauSelectionLabel = "VVTightIso";
-    else throw cms::Exception("Data_to_MC_CorrectionInterface_0l_2tau_trigger")
-      << "Invalid Configuration parameter 'hadTauSelection' = " << hadTauSelection << " !!\n";
-    return hadTauSelectionLabel;
-  }
-  
-  std::string getHadTauDecayModeLabel(int hadTauDecayMode)
-  {
-    std::string hadTauDecayModeLabel;
-    if      ( hadTauDecayMode ==  0                         ) hadTauDecayModeLabel = "dm0";  // 1-prong without pi0s
-    else if ( hadTauDecayMode ==  1 || hadTauDecayMode == 2 ) hadTauDecayModeLabel = "dm1";  // 1-prong with pi0s
-    else if ( hadTauDecayMode == 10                         ) hadTauDecayModeLabel = "dm10"; // 3-prong
-    else throw cms::Exception("Data_to_MC_CorrectionInterface_0l_2tau_trigger")
-      << "Invalid Configuration parameter 'hadTauDecayMode' = " << hadTauDecayMode << " !!\n";
-    return hadTauDecayModeLabel;
-  }
-}
+#include <cassert> // assert()
 
-Data_to_MC_CorrectionInterface_0l_2tau_trigger::Data_to_MC_CorrectionInterface_0l_2tau_trigger(const edm::ParameterSet& cfg)
-  : hadTau1_genPdgId_(-1)
+Data_to_MC_CorrectionInterface_0l_2tau_trigger::Data_to_MC_CorrectionInterface_0l_2tau_trigger(const edm::ParameterSet & cfg)
+  : hadTauSelection_(cfg.getParameter<std::string>("hadTauSelection"))
+  , isDEBUG_(cfg.exists("isDEBUG") ? cfg.getParameter<bool>("isDEBUG") : false)
+  , hadTau1_genPdgId_(-1)
   , hadTau1_pt_(0.)
   , hadTau1_eta_(0.)
   , hadTau1_decayMode_(-1)
@@ -48,163 +23,176 @@ Data_to_MC_CorrectionInterface_0l_2tau_trigger::Data_to_MC_CorrectionInterface_0
   , hadTau2_eta_(0.)
   , hadTau2_decayMode_(-1)
 {
-  std::string era_string = cfg.getParameter<std::string>("era");
-  if ( era_string == "2017" ) era_ = kEra_2017;
-  else throw cms::Exception("Data_to_MC_CorrectionInterface_0l_2tau_trigger") 
-    << "Invalid Configuration parameter 'era' = " << era_string << " !!\n";
-
-  hadTauSelection_ = cfg.getParameter<std::string>("hadTauSelection");
-
-  std::string central_or_shift = cfg.getParameter<std::string>("central_or_shift");
-  if ( central_or_shift != "central" ) {
-    TString central_or_shift_tstring = central_or_shift.data();
-    std::string shiftUp_or_Down = "";
-    if      ( central_or_shift_tstring.EndsWith("Up")   ) shiftUp_or_Down = "Up";
-    else if ( central_or_shift_tstring.EndsWith("Down") ) shiftUp_or_Down = "Down";
-    else throw cms::Exception("Data_to_MC_CorrectionInterface_0l_2tau_trigger")
-      << "Invalid Configuration parameter 'central_or_shift' = " << central_or_shift << " !!\n";
-    // CV: no systematic uncertainties on data/MC corrections for trigger efficiency in 0l_2tau category defined yet
-  }
-
-  isDEBUG_ = ( cfg.exists("isDEBUG") ) ? cfg.getParameter<bool>("isDEBUG") : false; 
-
-  edm::ParameterSet cfg_triggerSF_2tau = cfg.getParameter<edm::ParameterSet>("triggerSF_2tau");
-  std::string hadTauSelectionLabel = getHadTauSelectionLabel(hadTauSelection_);
-  std::vector<int> hadTauDecayModes_2tau_perLeg = { 0, 1, 2, 10 };
-  for ( std::vector<int>::const_iterator hadTauDecayMode = hadTauDecayModes_2tau_perLeg.begin();
-	hadTauDecayMode != hadTauDecayModes_2tau_perLeg.end(); ++hadTauDecayMode ) {
-    std::string hadTauDecayModeLabel = getHadTauDecayModeLabel(*hadTauDecayMode);
-
-    std::string fitName_2tau_data_gentau = Form("data_genuine_%s_%s", hadTauSelectionLabel.data(), hadTauDecayModeLabel.data());
-    edm::ParameterSet cfg_fit_2tau_data_gentau = cfg_triggerSF_2tau.getParameter<edm::ParameterSet>(fitName_2tau_data_gentau);
-    effTrigger_2tau_perLeg_data_gentau_[*hadTauDecayMode].push_back(new lutWrapperCrystalBall(
-      fitName_2tau_data_gentau, cfg_fit_2tau_data_gentau,
-      lut::kXpt, 20., 170.));
-    std::string fitName_2tau_data_faketau = Form("data_fake_%s_%s", hadTauSelectionLabel.data(), hadTauDecayModeLabel.data());
-    edm::ParameterSet cfg_fit_2tau_data_faketau = cfg_triggerSF_2tau.getParameter<edm::ParameterSet>(fitName_2tau_data_faketau);
-    effTrigger_2tau_perLeg_data_faketau_[*hadTauDecayMode].push_back(new lutWrapperCrystalBall(
-      fitName_2tau_data_faketau, cfg_fit_2tau_data_faketau,
-      lut::kXpt, 20., 170.));
-
-    std::string fitName_2tau_mc_gentau = Form("mc_genuine_%s_%s", hadTauSelectionLabel.data(), hadTauDecayModeLabel.data());
-    edm::ParameterSet cfg_fit_2tau_mc_gentau = cfg_triggerSF_2tau.getParameter<edm::ParameterSet>(fitName_2tau_mc_gentau);
-    effTrigger_2tau_perLeg_mc_gentau_[*hadTauDecayMode].push_back(new lutWrapperCrystalBall(
-      fitName_2tau_mc_gentau, cfg_fit_2tau_mc_gentau,
-      lut::kXpt, 20., 170.));
-    std::string fitName_2tau_mc_faketau = Form("mc_fake_%s_%s", hadTauSelectionLabel.data(), hadTauDecayModeLabel.data());
-    edm::ParameterSet cfg_fit_2tau_mc_faketau = cfg_triggerSF_2tau.getParameter<edm::ParameterSet>(fitName_2tau_mc_faketau);
-    effTrigger_2tau_perLeg_mc_faketau_[*hadTauDecayMode].push_back(new lutWrapperCrystalBall(
-      fitName_2tau_mc_faketau, cfg_fit_2tau_mc_faketau,
-      lut::kXpt, 20., 170.));
-  }
-}
- 
-namespace
-{
-  void clearCollection(std::map<int, std::vector<lutWrapperBase*> >& collection)
+  const std::string era_string = cfg.getParameter<std::string>("era");
+  if(era_string == "2017")
   {
-    for ( std::map<int, std::vector<lutWrapperBase*> >::iterator it1 = collection.begin();
-	  it1 != collection.end(); ++it1 ) {
-      for ( std::vector<lutWrapperBase*>::iterator it2 = it1->second.begin();
-	    it2 != it1->second.end(); ++it2 ) {
-	delete (*it2);
-      }
-      it1->second.clear();
+    era_ = kEra_2017;
+  }
+  else
+  {
+    throw cmsException(this) << "Invalid Configuration parameter 'era' = " << era_string;
+  }
+
+  const std::string central_or_shift = cfg.getParameter<std::string>("central_or_shift");
+  if(central_or_shift != "central" )
+  {
+    std::string shiftUp_or_Down;
+    if(boost::ends_with(central_or_shift, "Up"))
+    {
+      shiftUp_or_Down = "Up";
     }
+    else if(boost::ends_with(central_or_shift, "Down"))
+    {
+      shiftUp_or_Down = "Down";
+    }
+    else
+    {
+      throw cmsException(this)
+              << "Invalid Configuration parameter 'central_or_shift' = " << central_or_shift;
+    }
+    // CV: no systematic uncertainties on data/MC corrections for trigger efficiency in 1l_2tau category defined yet
+  }
+
+  const edm::ParameterSet cfg_triggerSF_2tau = cfg.getParameter<edm::ParameterSet>("triggerSF_2tau");
+  const std::string hadTauSelectionLabel_str = aux::getHadTauSelectionLabel(hadTauSelection_);
+  const char * hadTauSelectionLabel = hadTauSelectionLabel_str.data();
+
+  const std::vector<int> hadTauDecayModes_2tau_perLeg = { 0, 1, 2, 10 };
+
+  for(int hadTauDecayMode: hadTauDecayModes_2tau_perLeg)
+  {
+    const std::string hadTauDecayModeLabel_str = aux::getHadTauDecayModeLabel(hadTauDecayMode);
+    const char * hadTauDecayModeLabel = hadTauDecayModeLabel_str.data();
+
+    const std::string fitName_2tau_data_gentau = Form("data_genuine_%s_%s", hadTauSelectionLabel, hadTauDecayModeLabel);
+    const edm::ParameterSet cfg_fit_2tau_data_gentau = cfg_triggerSF_2tau.getParameter<edm::ParameterSet>(fitName_2tau_data_gentau);
+
+    effTrigger_2tau_perLeg_data_gentau_[hadTauDecayMode].push_back(new lutWrapperCrystalBall(
+      fitName_2tau_data_gentau, cfg_fit_2tau_data_gentau, lut::kXpt, 20., 170.
+    ));
+
+    const std::string fitName_2tau_data_faketau = Form("data_fake_%s_%s", hadTauSelectionLabel, hadTauDecayModeLabel);
+    const edm::ParameterSet cfg_fit_2tau_data_faketau = cfg_triggerSF_2tau.getParameter<edm::ParameterSet>(fitName_2tau_data_faketau);
+
+    effTrigger_2tau_perLeg_data_faketau_[hadTauDecayMode].push_back(new lutWrapperCrystalBall(
+      fitName_2tau_data_faketau, cfg_fit_2tau_data_faketau, lut::kXpt, 20., 170.
+    ));
+
+    const std::string fitName_2tau_mc_gentau = Form("mc_genuine_%s_%s", hadTauSelectionLabel, hadTauDecayModeLabel);
+    const edm::ParameterSet cfg_fit_2tau_mc_gentau = cfg_triggerSF_2tau.getParameter<edm::ParameterSet>(fitName_2tau_mc_gentau);
+
+    effTrigger_2tau_perLeg_mc_gentau_[hadTauDecayMode].push_back(new lutWrapperCrystalBall(
+      fitName_2tau_mc_gentau, cfg_fit_2tau_mc_gentau, lut::kXpt, 20., 170.
+    ));
+
+    const std::string fitName_2tau_mc_faketau = Form("mc_fake_%s_%s", hadTauSelectionLabel, hadTauDecayModeLabel);
+    const edm::ParameterSet cfg_fit_2tau_mc_faketau = cfg_triggerSF_2tau.getParameter<edm::ParameterSet>(fitName_2tau_mc_faketau);
+
+    effTrigger_2tau_perLeg_mc_faketau_[hadTauDecayMode].push_back(new lutWrapperCrystalBall(
+      fitName_2tau_mc_faketau, cfg_fit_2tau_mc_faketau, lut::kXpt, 20., 170.
+    ));
   }
 }
 
 Data_to_MC_CorrectionInterface_0l_2tau_trigger::~Data_to_MC_CorrectionInterface_0l_2tau_trigger()
 {
-  clearCollection(effTrigger_2tau_perLeg_data_gentau_);
-  clearCollection(effTrigger_2tau_perLeg_data_faketau_);
-  clearCollection(effTrigger_2tau_perLeg_mc_gentau_);
-  clearCollection(effTrigger_2tau_perLeg_mc_faketau_);  
+  aux::clearCollection(effTrigger_2tau_perLeg_data_gentau_);
+  aux::clearCollection(effTrigger_2tau_perLeg_data_faketau_);
+  aux::clearCollection(effTrigger_2tau_perLeg_mc_gentau_);
+  aux::clearCollection(effTrigger_2tau_perLeg_mc_faketau_);
 }
 
-void Data_to_MC_CorrectionInterface_0l_2tau_trigger::setTriggerBits(bool isTriggered_2tau)
+void
+Data_to_MC_CorrectionInterface_0l_2tau_trigger::setTriggerBits(bool isTriggered_2tau)
 {
   isTriggered_2tau_ = isTriggered_2tau;
 }
 
-void Data_to_MC_CorrectionInterface_0l_2tau_trigger::setHadTaus(int hadTau1_genPdgId, double hadTau1_pt, double hadTau1_eta, int hadTau1_decayMode,
-								int hadTau2_genPdgId, double hadTau2_pt, double hadTau2_eta, int hadTau2_decayMode)
+void
+Data_to_MC_CorrectionInterface_0l_2tau_trigger::setHadTaus(int hadTau1_genPdgId, double hadTau1_pt, double hadTau1_eta, int hadTau1_decayMode,
+                                                           int hadTau2_genPdgId, double hadTau2_pt, double hadTau2_eta, int hadTau2_decayMode)
 {
-  hadTau1_genPdgId_ = hadTau1_genPdgId;
-  hadTau1_pt_ = hadTau1_pt;
-  hadTau1_eta_ = hadTau1_eta;
+  hadTau1_genPdgId_  = hadTau1_genPdgId;
+  hadTau1_pt_        = hadTau1_pt;
+  hadTau1_eta_       = hadTau1_eta;
   hadTau1_decayMode_ = hadTau1_decayMode;
-  hadTau2_genPdgId_ = hadTau2_genPdgId;
-  hadTau2_pt_ = hadTau2_pt;
-  hadTau2_eta_ = hadTau2_eta;
+
+  hadTau2_genPdgId_  = hadTau2_genPdgId;
+  hadTau2_pt_        = hadTau2_pt;
+  hadTau2_eta_       = hadTau2_eta;
   hadTau2_decayMode_ = hadTau2_decayMode;
 }
 
-namespace
+double
+Data_to_MC_CorrectionInterface_0l_2tau_trigger::getWeight_triggerEff() const
 {
-  double get_from_lut(const std::map<int, vLutWrapperBase>& corrections, double hadTau_pt, double hadTau_eta, int hadTau_decayMode, bool isDEBUG)
-  {
-    double sf = 1.;
-    std::map<int, vLutWrapperBase>::const_iterator correction = corrections.find(hadTau_decayMode);
-    if ( correction != corrections.end() ) {
-      sf = get_from_lut(correction->second, hadTau_pt, hadTau_eta, isDEBUG);
-    } else throw cms::Exception("get_from_lut")
-	<< "Invalid parameter 'hadTauDecayMode' = " << hadTau_decayMode << " !!\n";      
-    return sf;
-  }
-  
-  double compSF(double eff_data, double eff_mc)
-  {
-    double sf = eff_data/TMath::Max(1.e-6, eff_mc);
-    if ( sf > 1.e+1 ) sf = 1.e+1; 
-    return sf;
-  }
+  assert(0);
 }
 
 double Data_to_MC_CorrectionInterface_0l_2tau_trigger::getSF_triggerEff() const
 {
-  if ( isDEBUG_ ) {
-    std::cout << "<Data_to_MC_CorrectionInterface_0l_2tau_trigger::getSF_triggerEff>:" << std::endl;
+  if(isDEBUG_)
+  {
+    std::cout << "<Data_to_MC_CorrectionInterface_0l_2tau_trigger::getSF_triggerEff>:\n";
   }
+
   double eff_2tau_leg1_data = 0.;
-  double eff_2tau_leg1_mc = 0.;
+  double eff_2tau_leg1_mc   = 0.;
   double eff_2tau_leg2_data = 0.;
-  double eff_2tau_leg2_mc = 0.;
-  bool hadTau1_isGenTau = (hadTau1_genPdgId_ == 11 || hadTau1_genPdgId_ == 13 || hadTau1_genPdgId_ == 15);
-  bool hadTau2_isGenTau = (hadTau2_genPdgId_ == 11 || hadTau2_genPdgId_ == 13 || hadTau2_genPdgId_ == 15);
-  if ( hadTau1_isGenTau ) {
-    eff_2tau_leg1_data = get_from_lut(effTrigger_2tau_perLeg_data_gentau_, hadTau1_pt_, hadTau1_eta_, hadTau1_decayMode_, isDEBUG_);
-    eff_2tau_leg1_mc = get_from_lut(effTrigger_2tau_perLeg_mc_gentau_, hadTau1_pt_, hadTau1_eta_, hadTau1_decayMode_, isDEBUG_);
-  } else {
-    eff_2tau_leg1_data = get_from_lut(effTrigger_2tau_perLeg_data_faketau_, hadTau1_pt_, hadTau1_eta_, hadTau1_decayMode_, isDEBUG_);
-    eff_2tau_leg1_mc = get_from_lut(effTrigger_2tau_perLeg_mc_faketau_, hadTau1_pt_, hadTau1_eta_, hadTau1_decayMode_, isDEBUG_);
+  double eff_2tau_leg2_mc   = 0.;
+
+  const bool hadTau1_isGenTau = (hadTau1_genPdgId_ == 11 || hadTau1_genPdgId_ == 13 || hadTau1_genPdgId_ == 15);
+  const bool hadTau2_isGenTau = (hadTau2_genPdgId_ == 11 || hadTau2_genPdgId_ == 13 || hadTau2_genPdgId_ == 15);
+
+  if(hadTau1_isGenTau)
+  {
+    eff_2tau_leg1_data = aux::get_from_lut(effTrigger_2tau_perLeg_data_gentau_, hadTau1_pt_, hadTau1_eta_, hadTau1_decayMode_, isDEBUG_);
+    eff_2tau_leg1_mc   = aux::get_from_lut(effTrigger_2tau_perLeg_mc_gentau_,   hadTau1_pt_, hadTau1_eta_, hadTau1_decayMode_, isDEBUG_);
   }
-  if ( hadTau2_isGenTau ) {
-    eff_2tau_leg2_data = get_from_lut(effTrigger_2tau_perLeg_data_gentau_, hadTau2_pt_, hadTau2_eta_, hadTau2_decayMode_, isDEBUG_);
-    eff_2tau_leg2_mc = get_from_lut(effTrigger_2tau_perLeg_mc_gentau_, hadTau2_pt_, hadTau2_eta_, hadTau2_decayMode_, isDEBUG_);
-  } else {
-    eff_2tau_leg2_data = get_from_lut(effTrigger_2tau_perLeg_data_faketau_, hadTau2_pt_, hadTau2_eta_, hadTau2_decayMode_, isDEBUG_);
-    eff_2tau_leg2_mc = get_from_lut(effTrigger_2tau_perLeg_mc_faketau_, hadTau2_pt_, hadTau2_eta_, hadTau2_decayMode_, isDEBUG_);
+  else
+  {
+    eff_2tau_leg1_data = aux::get_from_lut(effTrigger_2tau_perLeg_data_faketau_, hadTau1_pt_, hadTau1_eta_, hadTau1_decayMode_, isDEBUG_);
+    eff_2tau_leg1_mc   = aux::get_from_lut(effTrigger_2tau_perLeg_mc_faketau_,   hadTau1_pt_, hadTau1_eta_, hadTau1_decayMode_, isDEBUG_);
   }
-  double eff_2tau_data = eff_2tau_leg1_data*eff_2tau_leg2_data;
-  double eff_2tau_mc = eff_2tau_leg1_mc*eff_2tau_leg2_mc;
-  if ( isDEBUG_ ) {
-    std::cout << "hadTau (lead): pT = " << hadTau1_pt_ << ", eta = " << hadTau1_eta_ << std::endl;
-    std::cout << "hadTau (sublead): pT = " << hadTau2_pt_ << ", eta = " << hadTau2_eta_ << std::endl;    
+
+  if(hadTau2_isGenTau)
+  {
+    eff_2tau_leg2_data = aux::get_from_lut(effTrigger_2tau_perLeg_data_gentau_, hadTau2_pt_, hadTau2_eta_, hadTau2_decayMode_, isDEBUG_);
+    eff_2tau_leg2_mc   = aux::get_from_lut(effTrigger_2tau_perLeg_mc_gentau_,   hadTau2_pt_, hadTau2_eta_, hadTau2_decayMode_, isDEBUG_);
   }
+  else
+  {
+    eff_2tau_leg2_data = aux::get_from_lut(effTrigger_2tau_perLeg_data_faketau_, hadTau2_pt_, hadTau2_eta_, hadTau2_decayMode_, isDEBUG_);
+    eff_2tau_leg2_mc   = aux::get_from_lut(effTrigger_2tau_perLeg_mc_faketau_,   hadTau2_pt_, hadTau2_eta_, hadTau2_decayMode_, isDEBUG_);
+  }
+
+  const double eff_2tau_data = eff_2tau_leg1_data * eff_2tau_leg2_data;
+  const double eff_2tau_mc   = eff_2tau_leg1_mc   * eff_2tau_leg2_mc;
+
+  if(isDEBUG_)
+  {
+    std::cout << "hadTau (lead):    pT = " << hadTau1_pt_ << ", eta = " << hadTau1_eta_ << "\n"
+                 "hadTau (sublead): pT = " << hadTau2_pt_ << ", eta = " << hadTau2_eta_ << '\n';
+  }
+
   double sf = 1.;
-  if ( isTriggered_2tau_ ) {
-    sf = compSF(eff_2tau_data, eff_2tau_mc);
-    if ( isDEBUG_ ) {
-      std::cout << " eff: data = " << eff_2tau_data << ", MC = " << eff_2tau_mc << " --> SF = " << sf << std::endl;
+  if(isTriggered_2tau_)
+  {
+    sf = aux::compSF(eff_2tau_data, eff_2tau_mc);
+    if(isDEBUG_)
+    {
+      std::cout << " eff: data = " << eff_2tau_data << ", MC = " << eff_2tau_mc << " --> SF = " << sf << '\n';
     }
-  } else { 
-    sf = 0.;
-    if ( isDEBUG_ ) {
-      std::cout << "neither single lepton trigger nor lepton+tau cross trigger fires" << std::endl;
-      std::cout << "--> setting SF = " << sf << std::endl;
-    }      
   }
-  //std::cout << "<Data_to_MC_CorrectionInterface::getSF_triggerEff>: sf = " << sf << std::endl;
+  else
+  {
+    sf = 0.;
+    if(isDEBUG_)
+    {
+      std::cout << "neither single lepton trigger nor lepton+tau cross trigger fires\n"
+                   "--> setting SF = " << sf << '\n';
+    }
+  }
+
   return sf;
 }

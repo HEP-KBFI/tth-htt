@@ -1,45 +1,52 @@
 #ifndef tthAnalysis_HiggsToTauTau_Data_to_MC_CorrectionInterface_1l_1tau_trigger_h
 #define tthAnalysis_HiggsToTauTau_Data_to_MC_CorrectionInterface_1l_1tau_trigger_h
 
-#include "FWCore/ParameterSet/interface/ParameterSet.h" // edm::ParameterSet
-
 #include "tthAnalysis/HiggsToTauTau/interface/lutAuxFunctions.h" // lutWrapperBase, vLutWrapperBase
-
-#include <string>
-#include <map>
-#include <assert.h> // assert
 
 class Data_to_MC_CorrectionInterface_1l_1tau_trigger
 {
- public:
-  Data_to_MC_CorrectionInterface_1l_1tau_trigger(const edm::ParameterSet& cfg);
+public:
+  Data_to_MC_CorrectionInterface_1l_1tau_trigger(const edm::ParameterSet & cfg);
   ~Data_to_MC_CorrectionInterface_1l_1tau_trigger();
 
   //-----------------------------------------------------------------------------
   // set HLT trigger bits
   // (to be called once per event, before calling any of the getSF.. functions)
-  void setTriggerBits(bool isTriggered_1e, bool isTriggered_1e1tau, bool isTriggered_1m, bool isTriggered_1m1tau);
+  void
+  setTriggerBits(bool isTriggered_1e,
+                 bool isTriggered_1e1tau,
+                 bool isTriggered_1m,
+                 bool isTriggered_1m1tau);
   //-----------------------------------------------------------------------------
 
   //-----------------------------------------------------------------------------
   // set lepton type, pT and eta as well as hadTau pT, eta and decay mode
   // (to be called once per event, before calling any of the getSF.. functions)
-  void setLeptons(int lepton_type, double lepton_pt, double lepton_eta);
+  void
+  setLeptons(int lepton_type,
+             double lepton_pt,
+             double lepton_eta);
 
-  void setHadTaus(int hadTau_genPdgId, double hadTau_pt, double hadTau_eta, int hadTau_decayMode);
+  void
+  setHadTaus(int hadTau_genPdgId,
+             double hadTau_pt,
+             double hadTau_eta,
+             int hadTau_decayMode);
   //-----------------------------------------------------------------------------
 
   //-----------------------------------------------------------------------------
   // trigger efficiency turn-on curves for Spring16 non-reHLT MC (not yet implemented)
-  double getWeight_triggerEff() const { assert(0); }
+  double
+  getWeight_triggerEff() const;
   //-----------------------------------------------------------------------------
 
   //-----------------------------------------------------------------------------
   // data/MC correction for trigger efficiency 
-  double getSF_triggerEff() const;
+  double
+  getSF_triggerEff() const;
   //-----------------------------------------------------------------------------
 
- private:
+private:
 
   //-----------------------------------------------------------------------------
   // data/MC corrections for trigger efficiencies in 2016 ReReco data and Summer16 MC
