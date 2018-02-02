@@ -3,6 +3,8 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/TypeTraits.h" // Traits<>
 
+#include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
+
 #include <TTree.h> // TTree
 
 #include <type_traits> // std::enable_if<,>, std::is_arithmetic<>
@@ -17,7 +19,12 @@ struct BranchAddressInitializer
     : tree_(tree)
     , lenVar_(lenVar)
     , branchName_n_(branchName_n)
-  {}
+  {
+    if(! tree_)
+    {
+      throw cmsException(this) << "No TTree provided!";
+    }
+  }
 
   template<typename T,
            typename = std::enable_if<std::is_arithmetic<T>::value>>
