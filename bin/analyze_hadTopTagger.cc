@@ -22,11 +22,11 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTau.h" // RecoHadTau
 #include "tthAnalysis/HiggsToTauTau/interface/GenParticle.h" // GenParticle
 #include "tthAnalysis/HiggsToTauTau/interface/GenParticleReader.h" // GenParticleReader
-#include "tthAnalysis/HiggsToTauTau/interface/KeyTypes.h" // RUN_TYPE, LUMI_TYPE, EVT_TYPE
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronReader.h" // RecoElectronReader
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonReader.h" // RecoMuonReader
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauReader.h" // RecoHadTauReader
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetReader.h" // RecoJetReader
+#include "tthAnalysis/HiggsToTauTau/interface/EventInfoReader.h" // EventInfoReader, EventInfo
 #include "tthAnalysis/HiggsToTauTau/interface/convert_to_ptrs.h" // convert_to_ptrs
 #include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionCleaner.h" // RecoElectronCollectionCleaner, RecoMuonCollectionCleaner, RecoHadTauCollectionCleaner, RecoJetCollectionCleaner
 #include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionGenMatcher.h" // RecoElectronCollectionGenMatcher, RecoMuonCollectionGenMatcher, RecoHadTauCollectionGenMatcher, RecoJetCollectionGenMatcher
@@ -40,17 +40,19 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelector.h" // RecoJetCollectionSelector
 #include "tthAnalysis/HiggsToTauTau/interface/RunLumiEventSelector.h" // RunLumiEventSelector
 #include "tthAnalysis/HiggsToTauTau/interface/MVAInputVarHistManager.h" // MVAInputVarHistManager
-#include "tthAnalysis/HiggsToTauTau/interface/CutFlowTableHistManager_gen.h" // CutFlowTableHistManager_gen
+#include "tthAnalysis/HiggsToTauTau/interface/CutFlowTableHistManager.h" // CutFlowTableHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2017
 #include "tthAnalysis/HiggsToTauTau/interface/histogramAuxFunctions.h" // createSubdirectory_recursively
 #include "tthAnalysis/HiggsToTauTau/interface/cutFlowTable.h" // cutFlowTableType
 #include "tthAnalysis/HiggsToTauTau/interface/NtupleFillerBDT.h" // NtupleFillerBDT
+#include "tthAnalysis/HiggsToTauTau/interface/TTreeWrapper.h" // TTreeWrapper
 
 //#include "tthAnalysis/HiggsToTauTau/interface/HadTopTagger.h" // HadTopTagger
 #include "tthAnalysis/HiggsToTauTau/interface/HadTopTaggerFill.h" // HadTopTaggerFill
 
 #include <boost/range/algorithm/copy.hpp> // boost::copy()
 #include <boost/range/adaptor/map.hpp> // boost::adaptors::map_keys
+#include <boost/math/special_functions/sign.hpp> // boost::math::sign()
 
 #include <iostream> // std::cerr, std::fixed
 #include <iomanip> // std::setprecision(), std::setw()
@@ -65,8 +67,6 @@
 #include <boost/python.hpp>
 #include <boost/python/suite/indexing/vector_indexing_suite.hpp>
 using namespace boost::python;
-
-#define EPS 1E-2
 
 typedef math::PtEtaPhiMLorentzVector LV;
 typedef std::vector<std::string> vstring;
@@ -224,57 +224,32 @@ int main(int argc, char* argv[])
   fwlite::OutputFiles outputFile(cfg);
   fwlite::TFileService fs = fwlite::TFileService(outputFile.file().data());
 
-  TChain* inputTree = new TChain(treeName.data());
-  for ( std::vector<std::string>::const_iterator inputFileName = inputFiles.files().begin();
-	inputFileName != inputFiles.files().end(); ++inputFileName ) {
-    std::cout << "input Tree: adding file = " << (*inputFileName) << std::endl;
-	//std::cout <<inputFileName->data()->GetEntries() << std::endl;
-    inputTree->AddFile(inputFileName->data());
-  }
+  TTreeWrapper * inputTree = new TTreeWrapper(treeName.data(), inputFiles.files(), maxEvents);
 
-  if ( !(inputTree->GetListOfFiles()->GetEntries() >= 1) ) {
-    throw cms::Exception("analyze_hadTopTagger")
-      << "Failed to identify input Tree !!\n";
-  }
-
-  std::cout << "input Tree contains " << inputTree->GetEntries() << " Entries in " << inputTree->GetListOfFiles()->GetEntries() << " files." << std::endl;
+  std::cout << "Loaded " << inputTree -> getFileCount() << " file(s).\n";
 
 //--- declare event-level variables
-  RUN_TYPE run;
-  inputTree->SetBranchAddress(RUN_KEY, &run);
-  LUMI_TYPE lumi;
-  inputTree->SetBranchAddress(LUMI_KEY, &lumi);
-  EVT_TYPE event;
-  inputTree->SetBranchAddress(EVT_KEY, &event);
-  GENHIGGSDECAYMODE_TYPE genHiggsDecayMode;
-  if ( isSignal ) {
-    inputTree->SetBranchAddress(GENHIGGSDECAYMODE_KEY, &genHiggsDecayMode);
-  }
-
-  GENWEIGHT_TYPE genWeight = 1.;
-  PUWEIGHT_TYPE pileupWeight = 1.;
-  if ( isMC ) {
-    inputTree->SetBranchAddress(GENWEIGHT_KEY, &genWeight);
-    inputTree->SetBranchAddress(PUWEIGHT_KEY, &pileupWeight);
-  }
+  EventInfo eventInfo(isSignal, isMC, false);
+  EventInfoReader eventInfoReader(&eventInfo);
+  inputTree -> registerReader(&eventInfoReader);
 
 //--- declare particle collections
   RecoMuonReader* muonReader = new RecoMuonReader(era, Form("n%s", branchName_muons.data()), branchName_muons);
   muonReader->set_HIP_mitigation(use_HIP_mitigation_mediumMuonId);
-  muonReader->setBranchAddresses(inputTree);
+  inputTree -> registerReader(muonReader);
   RecoMuonCollectionGenMatcher muonGenMatcher;
   RecoMuonCollectionSelectorLoose preselMuonSelector(era);
   RecoMuonCollectionSelectorFakeable fakeableMuonSelector(era);
 
   RecoElectronReader* electronReader = new RecoElectronReader(era, Form("n%s", branchName_electrons.data()), branchName_electrons);
-  electronReader->setBranchAddresses(inputTree);
+  inputTree -> registerReader(electronReader);
   RecoElectronCollectionGenMatcher electronGenMatcher;
   RecoElectronCollectionCleaner electronCleaner(0.3);
   RecoElectronCollectionSelectorLoose preselElectronSelector(era);
   RecoElectronCollectionSelectorFakeable fakeableElectronSelector(era);
 
   RecoHadTauReader* hadTauReader = new RecoHadTauReader(era, Form("n%s", branchName_hadTaus.data()), branchName_hadTaus);
-  hadTauReader->setBranchAddresses(inputTree);
+  inputTree -> registerReader(hadTauReader);
   RecoHadTauCollectionGenMatcher hadTauGenMatcher;
   RecoHadTauCollectionCleaner hadTauCleaner(0.3);
   RecoHadTauCollectionSelectorLoose preselHadTauSelector(era);
@@ -289,19 +264,19 @@ int main(int argc, char* argv[])
   tightHadTauSelector.set_min_antiMuon(hadTauSelection_antiMuon);
 
   RecoJetReader* jetReader = new RecoJetReader(era, isMC, Form("n%s", branchName_jets.data()), branchName_jets);
-  jetReader->setBranchAddresses(inputTree);
+  inputTree -> registerReader(jetReader);
   RecoJetCollectionGenMatcher jetGenMatcher;
   RecoJetCollectionCleaner jetCleaner(0.4);
   RecoJetCollectionSelector jetSelector(era);
 
   GenParticleReader* genTopQuarkReader = new GenParticleReader(Form("n%s", branchName_genTopQuarks.data()), branchName_genTopQuarks);
-  genTopQuarkReader->setBranchAddresses(inputTree);
+  inputTree -> registerReader(genTopQuarkReader);
   GenParticleReader* genBJetReader = new GenParticleReader(Form("n%s", branchName_genBJets.data()), branchName_genBJets);
-  genBJetReader->setBranchAddresses(inputTree);
+  inputTree -> registerReader(genBJetReader);
   GenParticleReader* genWBosonReader = new GenParticleReader(Form("n%s", branchName_genWBosons.data()), branchName_genWBosons);
-  genWBosonReader->setBranchAddresses(inputTree);
+  inputTree -> registerReader(genWBosonReader);
   GenParticleReader* genWJetReader = new GenParticleReader(Form("n%s", branchName_genWJets.data()), branchName_genWJets);
-  genWJetReader->setBranchAddresses(inputTree);
+  inputTree -> registerReader(genWJetReader);
 
   //HadTopTagger* hadTopTagger = new HadTopTagger();
   HadTopTaggerFill* hadTopTaggerFill = new HadTopTaggerFill();
@@ -327,8 +302,7 @@ int main(int argc, char* argv[])
     MVAInputVarHistManager* mvaInputHistManager = new MVAInputVarHistManager(makeHistManager_cfg(process_string,
       Form("%s/%s/mvaInputs", histogramDir.data(), genMatch.data()), "central"));
 	if (DoHist) {
-		hadTopTaggerFill->DefineHist(mvaInputHistManager);
-	    mvaInputHistManager->bookHistograms(fs, hadTopTaggerFill->mvaInputVariables());
+      mvaInputHistManager->bookHistograms(fs, hadTopTaggerFill->defineBinnings(mvaInputHistManager));
 		mvaInputHistManagers[idxGenMatch] = mvaInputHistManager;
 		TH1* histogram_mvaOutput = book1D("mvaOutput", "mvaOutput", 200, -1., +1.);
 		mvaOutputHistManagers[idxGenMatch] = histogram_mvaOutput;
@@ -339,7 +313,7 @@ int main(int argc, char* argv[])
 
 
   }
-  std::cout << "Here before bdt filler" << std::endl;
+
   NtupleFillerBDT<float, int>* bdt_filler = nullptr;
   typedef std::remove_pointer<decltype(bdt_filler)>::type::float_type float_type;
   typedef std::remove_pointer<decltype(bdt_filler)>::type::int_type int_type;
@@ -381,37 +355,58 @@ int main(int argc, char* argv[])
 
   }
 
-  int numEntries = inputTree->GetEntries();
   int analyzedEntries = 0;
   int selectedEntries = 0;
   double selectedEntries_weighted = 0.;
   TH1* histogram_analyzedEntries = fs.make<TH1D>("analyzedEntries", "analyzedEntries", 1, -0.5, +0.5);
   TH1* histogram_selectedEntries = fs.make<TH1D>("selectedEntries", "selectedEntries", 1, -0.5, +0.5);
   cutFlowTableType cutFlowTable;
-  CutFlowTableHistManager_gen* cutFlowHistManager = new CutFlowTableHistManager_gen(makeHistManager_cfg(process_string,
-    Form("%s/cutFlow", histogramDir.data()), "central"));
+  const edm::ParameterSet cutFlowTableCfg = makeHistManager_cfg(
+    process_string, Form("%s/cutFlow", histogramDir.data()), "central"
+  );
+  const std::vector<std::string> cuts = {
+    "run:ls:event selection",
+    "2 genTopQuarks",
+    "2 genBJets",
+    "4 genWJets",
+    "1 genHiggBoson",
+    "2 genTaus",
+    "genTopQuark && genAntiTopQuark",
+    "genBJetFromTop && genBJetFromAntiTop",
+    "genWBosonFromTop && genWBosonFromAntiTop",
+    "genTopQuark mass",
+    "genAntiTopQuark mass",
+    "2 genWJetsFromTop && 2 genWJetsFromAntiTop",
+    "genWBosonFromTop mass",
+    "genWBosonFromAntiTop mass",
+    "lead genTau pT > 30 GeV && abs(eta) < 2.5",
+    "sublead genTau pT > 30 GeV && abs(eta) < 2.5",
+  };
+  CutFlowTableHistManager * cutFlowHistManager = new CutFlowTableHistManager(cutFlowTableCfg, cuts);
   cutFlowHistManager->bookHistograms(fs);
-  for ( int idxEntry = 0; idxEntry < numEntries && (maxEvents == -1 || idxEntry < maxEvents); ++idxEntry ) {
-    if ( idxEntry > 0 && (idxEntry % reportEvery) == 0 ) {
-      std::cout << "processing Entry " << idxEntry << " (" << selectedEntries << " Entries selected)" << std::endl;
-    }
-    if(run_lumi_eventSelector && run_lumi_eventSelector -> areWeDone())
+  while(inputTree -> hasNextEvent() && (! run_lumi_eventSelector || (run_lumi_eventSelector && ! run_lumi_eventSelector -> areWeDone())))
+  {
+    if(inputTree -> canReport(reportEvery))
     {
-      break;
+      std::cout << "processing Entry " << inputTree -> getCurrentMaxEventIdx()
+                << " or " << inputTree -> getCurrentEventIdx() << " entry in #"
+                << (inputTree -> getProcessedFileCount() - 1)
+                << " (" << eventInfo
+                << ") file (" << selectedEntries << " Entries selected)\n";
     }
     ++analyzedEntries;
     histogram_analyzedEntries->Fill(0.);
 
-    inputTree->GetEntry(idxEntry);
+    if (run_lumi_eventSelector && !(*run_lumi_eventSelector)(eventInfo))
+    {
+      continue;
+    }
 
-    if ( run_lumi_eventSelector && !(*run_lumi_eventSelector)(run, lumi, event) ) continue;
     cutFlowTable.update("run:ls:event selection");
     cutFlowHistManager->fillHistograms("run:ls:event selection");
 
     if ( isDEBUG ) {
-      std::cout << "processing Entry " << idxEntry << ":"
-		<< " run = " << run << ", lumi = " << lumi << ", event = " << event << std::endl;
-      if ( inputTree->GetFile() ) std::cout << "input File = " << inputTree->GetFile()->GetName() << std::endl;
+      std::cout << "event #" << inputTree -> getCurrentMaxEventIdx() << ' ' << eventInfo << '\n';
     }
 
 //--- build collections of electrons, muons and hadronic taus;
@@ -596,8 +591,8 @@ int main(int argc, char* argv[])
     double evtWeight = 1.;
     if ( isMC ) {
       evtWeight *= lumiScale;
-      if ( apply_genWeight ) evtWeight *= sgn(genWeight);
-      evtWeight *= pileupWeight;
+      if ( apply_genWeight ) evtWeight *= boost::math::sign(eventInfo.genWeight);
+      evtWeight *= eventInfo.pileupWeight;
     }
 
     for ( std::vector<const RecoJet*>::const_iterator selBJet = selJets.begin(); selBJet != selJets.end(); ++selBJet ) {
@@ -632,7 +627,7 @@ int main(int argc, char* argv[])
 						mvaInputHistManagers[idxGenMatch_top]->fillHistograms(mvaInputs, evtWeight);
 						//fillWithOverFlow(mvaOutputHistManagers[idxGenMatch_top], mvaOutput[0], evtWeight);
 					}
-					bdt_filler->operator()({ run, lumi, event });
+          bdt_filler->operator()({ eventInfo.run, eventInfo.lumi, eventInfo.event });
 					for ( std::map<std::string, double>::const_iterator mvaInput = mvaInputs.begin();
 						mvaInput != mvaInputs.end(); ++mvaInput ) {
 						bdt_filler->operator()(mvaInput->first, mvaInput->second);
@@ -705,12 +700,13 @@ int main(int argc, char* argv[])
     histogram_selectedEntries->Fill(0.);
   }
 
-  std::cout << "num. Entries = " << numEntries << std::endl;
-  std::cout << " analyzed = " << analyzedEntries << std::endl;
-  std::cout << " selected = " << selectedEntries << " (weighted = " << selectedEntries_weighted << ")" << std::endl;
-  std::cout << std::endl;
-
-  std::cout << "cut-flow table" << std::endl;
+  std::cout << "max num. Entries = " << inputTree -> getCumulativeMaxEventCount()
+            << " (limited by " << maxEvents << ") processed in "
+            << inputTree -> getProcessedFileCount() << " file(s) (out of "
+            << inputTree -> getFileCount() << ")\n"
+            << " analyzed = " << analyzedEntries << '\n'
+            << " selected = " << selectedEntries << " (weighted = " << selectedEntries_weighted << ")\n\n"
+            << "cut-flow table" << std::endl;
   cutFlowTable.print(std::cout);
   std::cout << std::endl;
 
@@ -727,6 +723,8 @@ int main(int argc, char* argv[])
   delete genWJetReader;
 
   delete hadTopTaggerFill;
+
+  delete inputTree;
 
   clock.Show("analyze_hadTopTagger");
 
