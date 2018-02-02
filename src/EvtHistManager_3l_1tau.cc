@@ -1,103 +1,140 @@
 #include "tthAnalysis/HiggsToTauTau/interface/EvtHistManager_3l_1tau.h"
 
-#include "tthAnalysis/HiggsToTauTau/interface/histogramAuxFunctions.h" // fillWithOverFlow, fillWithOverFlow2d, getLogWeight
+#include "tthAnalysis/HiggsToTauTau/interface/histogramAuxFunctions.h" // fillWithOverFlow(), getLogWeight()
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2017
+#include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 
-#include <TMath.h>
-
-EvtHistManager_3l_1tau::EvtHistManager_3l_1tau(const edm::ParameterSet& cfg)
+EvtHistManager_3l_1tau::EvtHistManager_3l_1tau(const edm::ParameterSet & cfg)
   : HistManagerBase(cfg)
+  , era_(-1)
 {
-  std::string era_string = cfg.getParameter<std::string>("era");
-  era_ = -1;
-  if ( era_string == "2017" ) era_ = kEra_2017;
-  else throw cms::Exception("EvtHistManager_3l_1tau") 
-    << "Invalid Configuration parameter 'era' = " << era_string << " !!\n";
+  const std::string era_string = cfg.getParameter<std::string>("era");
+  if(era_string == "2017" )
+  {
+    era_ = kEra_2017;
+  }
+  else
+  {
+    throw cmsException(this)
+      << "Invalid Configuration parameter 'era' = " << era_string;
+  }
 }
 
-void EvtHistManager_3l_1tau::bookHistograms(TFileDirectory& dir)
+const TH1 *
+EvtHistManager_3l_1tau::getHistogram_EventCounter() const
 {
-  histogram_numElectrons_ = book1D(dir, "numElectrons", "numElectrons", 5, -0.5, +4.5);
-  histogram_numMuons_ = book1D(dir, "numMuons", "numMuons", 5, -0.5, +4.5);
-  histogram_numHadTaus_ = book1D(dir, "numHadTaus", "numHadTaus", 5, -0.5, +4.5);
-  histogram_numJets_ = book1D(dir, "numJets", "numJets", 20, -0.5, +19.5);
-  histogram_numBJets_loose_ = book1D(dir, "numBJets_loose", "numBJets_loose", 10, -0.5, +9.5);
-  histogram_numBJets_medium_ = book1D(dir, "numBJets_medium", "numBJets_medium", 10, -0.5, +9.5);
+  return histogram_EventCounter_;
+}
 
-  histogram_numBJets_loose_vs_numJets_ = book2D(dir, "numBJets_loose_vs_numJets", "numBJets_loose_vs_numJets", 8, -0.5, +7.5, 6, -0.5, +5.5);
+void
+EvtHistManager_3l_1tau::bookHistograms(TFileDirectory & dir)
+{
+  histogram_numElectrons_    = book1D(dir, "numElectrons",    "numElectrons",     5, -0.5,  +4.5);
+  histogram_numMuons_        = book1D(dir, "numMuons",        "numMuons",         5, -0.5,  +4.5);
+  histogram_numHadTaus_      = book1D(dir, "numHadTaus",      "numHadTaus",       5, -0.5,  +4.5);
+  histogram_numJets_         = book1D(dir, "numJets",         "numJets",         20, -0.5, +19.5);
+  histogram_numBJets_loose_  = book1D(dir, "numBJets_loose",  "numBJets_loose",  10, -0.5,  +9.5);
+  histogram_numBJets_medium_ = book1D(dir, "numBJets_medium", "numBJets_medium", 10, -0.5,  +9.5);
+
+  histogram_numBJets_loose_vs_numJets_  = book2D(dir, "numBJets_loose_vs_numJets",  "numBJets_loose_vs_numJets",  8, -0.5, +7.5, 6, -0.5, +5.5);
   histogram_numBJets_medium_vs_numJets_ = book2D(dir, "numBJets_medium_vs_numJets", "numBJets_medium_vs_numJets", 8, -0.5, +7.5, 6, -0.5, +5.5);
 
-  histogram_mvaOutput_3l_ttV_ = book1D(dir, "mvaOutput_3l_ttV", "mvaOutput_3l_ttV", 40, -1., +1.);
+  histogram_mvaOutput_3l_ttV_   = book1D(dir, "mvaOutput_3l_ttV",   "mvaOutput_3l_ttV",   40, -1., +1.);
   histogram_mvaOutput_3l_ttbar_ = book1D(dir, "mvaOutput_3l_ttbar", "mvaOutput_3l_ttbar", 40, -1., +1.);
-  if ( era_ == kEra_2017 ) histogram_mvaDiscr_3l_  = book1D(dir, "mvaDiscr_3l", "mvaDiscr_3l", 5, 0.5, 5.5);
-  else assert(0);
+  switch(era_)
+  {
+    case kEra_2017: histogram_mvaDiscr_3l_  = book1D(dir, "mvaDiscr_3l", "mvaDiscr_3l", 5, 0.5, 5.5); break;
+    default:        assert(0);
+  }
 
-  histogram_mvaOutput_3l_1tau_ttV_ = book1D(dir, "mvaOutput_3l_1tau_ttV", "mvaOutput_3l_1tau_ttV", 40, -1., +1.);
+  histogram_mvaOutput_3l_1tau_ttV_   = book1D(dir, "mvaOutput_3l_1tau_ttV",   "mvaOutput_3l_1tau_ttV",   40, -1., +1.);
   histogram_mvaOutput_3l_1tau_ttbar_ = book1D(dir, "mvaOutput_3l_1tau_ttbar", "mvaOutput_3l_1tau_ttbar", 40, -1., +1.);
-  histogram_mvaDiscr_3l_1tau_ = book1D(dir, "mvaDiscr_3l_1tau", "mvaDiscr_3l_1tau", 8, 0.5, 8.5);
+  histogram_mvaDiscr_3l_1tau_        = book1D(dir, "mvaDiscr_3l_1tau",        "mvaDiscr_3l_1tau",         8,  0.5, 8.5);
 
   histogram_mTauTauVis_ = book1D(dir, "mTauTauVis", "mTauTauVis", 20, 0., 200.);
 
-  histogram_memOutput_isValid_ = book1D(dir, "memOutput_isValid", "memOutput_isValid", 3, -1.5, +1.5);
-  histogram_memOutput_errorFlag_ = book1D(dir, "memOutput_errorFlag", "memOutput_errorFlag", 2, -0.5, +1.5);
-  histogram_memOutput_logWeight_ttH_ = book1D(dir, "memOutput_logWeight_ttH", "memOutput_logWeight_ttH", 100, -20., +20.);
-  histogram_memOutput_logWeight_ttZ_ = book1D(dir, "memOutput_logWeight_ttZ", "memOutput_logWeight_ttZ", 100, -20., +20.);
-  histogram_memOutput_logWeight_ttH_hww_ =book1D(dir, "memOutput_logWeight_ttH_hww", "memOutput_logWeight_ttH_hww", 100, -20., +20.);
-  histogram_memOutput_LR_ = book1D(dir, "memOutput_LR", "memOutput_LR", 40, 0., 1.);
-  histogram_mem_logCPUTime_ = book1D(dir, "mem_logCPUTime", "mem_logCPUTime", 400, -20., +20.);
-  histogram_mem_logRealTime_ = book1D(dir, "mem_logRealTime", "mem_logRealTime", 400, -20., +20.);
+  histogram_memOutput_isValid_           = book1D(dir, "memOutput_isValid",           "memOutput_isValid",             3,  -1.5, +1.5);
+  histogram_memOutput_errorFlag_         = book1D(dir, "memOutput_errorFlag",         "memOutput_errorFlag",           2,  -0.5, +1.5);
+  histogram_memOutput_logWeight_ttH_     = book1D(dir, "memOutput_logWeight_ttH",     "memOutput_logWeight_ttH",     100, -20., +20.);
+  histogram_memOutput_logWeight_ttZ_     = book1D(dir, "memOutput_logWeight_ttZ",     "memOutput_logWeight_ttZ",     100, -20., +20.);
+  histogram_memOutput_logWeight_ttH_hww_ = book1D(dir, "memOutput_logWeight_ttH_hww", "memOutput_logWeight_ttH_hww", 100, -20., +20.);
+  histogram_memOutput_LR_                = book1D(dir, "memOutput_LR",                "memOutput_LR",                 40,   0.,   1.);
+  histogram_mem_logCPUTime_              = book1D(dir, "mem_logCPUTime",              "mem_logCPUTime",              400, -20., +20.);
+  histogram_mem_logRealTime_             = book1D(dir, "mem_logRealTime",             "mem_logRealTime",             400, -20., +20.);
 
   histogram_EventCounter_ = book1D(dir, "EventCounter", "EventCounter", 1, -0.5, +0.5);
 }
 
-void EvtHistManager_3l_1tau::fillHistograms(int numElectrons, int numMuons, int numHadTaus, int numJets, int numBJets_loose, int numBJets_medium, 
-					    double mvaOutput_3l_ttV, double mvaOutput_3l_ttbar, double mvaDiscr_3l, 
-					    double mvaOutput_3l_1tau_ttV, double mvaOutput_3l_1tau_ttbar, double mvaDiscr_3l_1tau, 
-					    double mTauTauVis1, double mTauTauVis2, 
-					    const MEMOutput_3l_1tau* memOutput_3l_1tau, double evtWeight)
+void
+EvtHistManager_3l_1tau::fillHistograms(int numElectrons,
+                                       int numMuons,
+                                       int numHadTaus,
+                                       int numJets,
+                                       int numBJets_loose,
+                                       int numBJets_medium,
+                                       double mvaOutput_3l_ttV,
+                                       double mvaOutput_3l_ttbar,
+                                       double mvaDiscr_3l,
+                                       double mvaOutput_3l_1tau_ttV,
+                                       double mvaOutput_3l_1tau_ttbar,
+                                       double mvaDiscr_3l_1tau,
+                                       double mTauTauVis1,
+                                       double mTauTauVis2,
+                                       const MEMOutput_3l_1tau * memOutput_3l_1tau,
+                                       double evtWeight)
 {
-  double evtWeightErr = 0.;
+  const double evtWeightErr = 0.;
 
-  fillWithOverFlow(histogram_numElectrons_, numElectrons, evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_numMuons_, numMuons, evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_numHadTaus_, numHadTaus, evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_numJets_, numJets, evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_numBJets_loose_, numBJets_loose, evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_numElectrons_,    numElectrons,    evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_numMuons_,        numMuons,        evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_numHadTaus_,      numHadTaus,      evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_numJets_,         numJets,         evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_numBJets_loose_,  numBJets_loose,  evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_numBJets_medium_, numBJets_medium, evtWeight, evtWeightErr);
 
-  fillWithOverFlow2d(histogram_numBJets_loose_vs_numJets_, numJets, numBJets_loose, evtWeight, evtWeightErr);
+  fillWithOverFlow2d(histogram_numBJets_loose_vs_numJets_,  numJets, numBJets_loose,  evtWeight, evtWeightErr);
   fillWithOverFlow2d(histogram_numBJets_medium_vs_numJets_, numJets, numBJets_medium, evtWeight, evtWeightErr);
 
-  fillWithOverFlow(histogram_mvaOutput_3l_ttV_, mvaOutput_3l_ttV, evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_mvaOutput_3l_ttV_,   mvaOutput_3l_ttV,   evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_mvaOutput_3l_ttbar_, mvaOutput_3l_ttbar, evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_mvaDiscr_3l_, mvaDiscr_3l, evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_mvaDiscr_3l_,        mvaDiscr_3l,        evtWeight, evtWeightErr);
 
-  fillWithOverFlow(histogram_mvaOutput_3l_1tau_ttV_, mvaOutput_3l_1tau_ttV, evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_mvaOutput_3l_1tau_ttV_,   mvaOutput_3l_1tau_ttV,   evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_mvaOutput_3l_1tau_ttbar_, mvaOutput_3l_1tau_ttbar, evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_mvaDiscr_3l_1tau_, mvaDiscr_3l_1tau, evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_mvaDiscr_3l_1tau_,        mvaDiscr_3l_1tau,        evtWeight, evtWeightErr);
 
-  double mTauTauVisSF = ( mTauTauVis1 > 0. && mTauTauVis2 > 0. ) ? 0.5 : 1.;
-  if ( mTauTauVis1 > 0. ) {
-    fillWithOverFlow(histogram_mTauTauVis_, mTauTauVis1, mTauTauVisSF*evtWeight, mTauTauVisSF*evtWeightErr);
+  const double mTauTauVisSF = mTauTauVis1 > 0. && mTauTauVis2 > 0. ? 0.5 : 1.;
+  if(mTauTauVis1 > 0.)
+  {
+    fillWithOverFlow(histogram_mTauTauVis_, mTauTauVis1, mTauTauVisSF * evtWeight, mTauTauVisSF * evtWeightErr);
   }
-  if ( mTauTauVis2 > 0. ) {
-    fillWithOverFlow(histogram_mTauTauVis_, mTauTauVis2, mTauTauVisSF*evtWeight, mTauTauVisSF*evtWeightErr);
+  if(mTauTauVis2 > 0.)
+  {
+    fillWithOverFlow(histogram_mTauTauVis_, mTauTauVis2, mTauTauVisSF * evtWeight, mTauTauVisSF * evtWeightErr);
   }
-  
-  if ( memOutput_3l_1tau ) {
+
+  if(memOutput_3l_1tau)
+  {
     fillWithOverFlow(histogram_memOutput_isValid_, memOutput_3l_1tau->isValid(), evtWeight, evtWeightErr);
-    if ( memOutput_3l_1tau->isValid() ) {
+
+    if(memOutput_3l_1tau->isValid())
+    {
       fillWithOverFlow(histogram_memOutput_errorFlag_, memOutput_3l_1tau->errorFlag(), evtWeight, evtWeightErr);
-      if ( memOutput_3l_1tau->errorFlag() == 0 ) {
-	fillWithOverFlow(histogram_memOutput_logWeight_ttH_, getLogWeight(memOutput_3l_1tau->weight_ttH()), evtWeight, evtWeightErr);
-	fillWithOverFlow(histogram_memOutput_logWeight_ttZ_, getLogWeight(memOutput_3l_1tau->weight_ttZ()), evtWeight, evtWeightErr);
-	fillWithOverFlow(histogram_memOutput_logWeight_ttH_hww_, getLogWeight(memOutput_3l_1tau->weight_ttH_hww()), evtWeight, evtWeightErr);
-	fillWithOverFlow(histogram_memOutput_LR_, memOutput_3l_1tau->LR(), evtWeight, evtWeightErr);
-	fillWithOverFlow(histogram_mem_logCPUTime_, TMath::Log(TMath::Max((Float_t)1.e-21, memOutput_3l_1tau->cpuTime())), evtWeight, evtWeightErr);
-	fillWithOverFlow(histogram_mem_logRealTime_, TMath::Log(TMath::Max((Float_t)1.e-21, memOutput_3l_1tau->realTime())), evtWeight, evtWeightErr);
+
+      if(memOutput_3l_1tau->errorFlag() == 0)
+      {
+        fillWithOverFlow(histogram_memOutput_logWeight_ttH_,     getLogWeight(memOutput_3l_1tau->weight_ttH()), evtWeight, evtWeightErr);
+        fillWithOverFlow(histogram_memOutput_logWeight_ttZ_,     getLogWeight(memOutput_3l_1tau->weight_ttZ()), evtWeight, evtWeightErr);
+        fillWithOverFlow(histogram_memOutput_logWeight_ttH_hww_, getLogWeight(memOutput_3l_1tau->weight_ttH_hww()), evtWeight, evtWeightErr);
+        fillWithOverFlow(histogram_memOutput_LR_,                memOutput_3l_1tau->LR(), evtWeight, evtWeightErr);
+
+        fillWithOverFlow(histogram_mem_logCPUTime_,  std::log(std::max(1.e-21f, memOutput_3l_1tau->cpuTime())),  evtWeight, evtWeightErr);
+        fillWithOverFlow(histogram_mem_logRealTime_, std::log(std::max(1.e-21f, memOutput_3l_1tau->realTime())), evtWeight, evtWeightErr);
       }
     }
-  } else {
+  }
+  else
+  {
     fillWithOverFlow(histogram_memOutput_isValid_, -1, evtWeight, evtWeightErr);
   }
 
