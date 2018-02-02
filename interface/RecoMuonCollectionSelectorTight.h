@@ -2,26 +2,24 @@
 #define tthAnalysis_HiggsToTauTau_RecoMuonCollectionSelectorTight_h
 
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuon.h" // RecoMuon
-#include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionSelector.h" // ParticleCollectionSelector
-
-#include <Rtypes.h> // Int_t, Double_t
-
-#include <string>
-#include <map>
 
 class RecoMuonSelectorTight
 {
- public:
-  explicit RecoMuonSelectorTight(int era, int index = -1, bool debug = false, bool set_selection_flags = true);
-  ~RecoMuonSelectorTight() {}
+public:
+  explicit
+  RecoMuonSelectorTight(int era,
+                        int index = -1,
+                        bool debug = false,
+                        bool set_selection_flags = true);
 
   /**
    * @brief Check if muon given as function argument passes "tight" muon selection, defined in Table 12 of AN-2015/321
    * @return True if muon passes selection; false otherwise
    */
-  bool operator()(const RecoMuon& muon) const;
+  bool
+  operator()(const RecoMuon & muon) const;
 
- protected: 
+protected:
   int era_;
   bool set_selection_flags_;
   int index_;
@@ -41,33 +39,19 @@ class RecoMuonSelectorTight
 
 class RecoMuonCollectionSelectorTight
 {
- public:
-  explicit RecoMuonCollectionSelectorTight(int era, int index = -1, bool debug = false)
-    : selIndex_(index)
-    , selector_(era, index, debug)
-  {}
-  ~RecoMuonCollectionSelectorTight() {}
+public:
+  explicit
+  RecoMuonCollectionSelectorTight(int era,
+                                  int index = -1,
+                                  bool debug = false);
+  ~RecoMuonCollectionSelectorTight(){}
 
-  std::vector<const RecoMuon*> operator()(const std::vector<const RecoMuon*>& muons) const
-  {
-    std::vector<const RecoMuon*> selMuons;
-    int idx = 0;
-    for ( typename std::vector<const RecoMuon*>::const_iterator muon = muons.begin();
-	  muon != muons.end(); ++muon ) {
-      if ( selector_(**muon) ) {
-	if ( idx == selIndex_ || selIndex_ == -1 ) {
-	  selMuons.push_back(*muon);
-	}
-	++idx;
-      }
-    }
-    return selMuons;
-  }
-  
- protected: 
+  std::vector<const RecoMuon *>
+  operator()(const std::vector<const RecoMuon *> & muons) const;
+
+protected:
   int selIndex_;
   RecoMuonSelectorTight selector_;
 };
 
 #endif // tthAnalysis_HiggsToTauTau_RecoMuonCollectionSelectorTight_h
-

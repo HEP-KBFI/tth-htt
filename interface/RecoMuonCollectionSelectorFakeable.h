@@ -1,32 +1,32 @@
 #ifndef tthAnalysis_HiggsToTauTau_RecoMuonCollectionSelectorFakeable_h
 #define tthAnalysis_HiggsToTauTau_RecoMuonCollectionSelectorFakeable_h
 
-#include "tthAnalysis/HiggsToTauTau/interface/RecoMuon.h" // RecoMuon
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorTight.h" // RecoMuonSelectorTight
-#include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionSelector.h" // ParticleCollectionSelector
 
-#include <Rtypes.h> // Int_t, Double_t
-
-#include <string>
-#include <map>
+// forward declarations
+class RecoMuonSelectorTight;
 
 class RecoMuonSelectorFakeable
 {
- public:
-  explicit RecoMuonSelectorFakeable(int era, int index = -1, bool debug = false, bool set_selection_flags = true);
-  ~RecoMuonSelectorFakeable();
+public:
+  explicit
+  RecoMuonSelectorFakeable(int era,
+                           int index = -1,
+                           bool debug = false,
+                           bool set_selection_flags = true);
 
   /**
    * @brief Check if muon given as function argument passes "fakeable" muon selection, defined in Table 12 of AN-2015/321
    * @return True if muon passes selection; false otherwise
    */
-  bool operator()(const RecoMuon& muon) const;
+  bool
+  operator()(const RecoMuon & muon) const;
 
- protected: 
+protected:
   int era_;
   bool set_selection_flags_;
 
-  RecoMuonSelectorTight* tightMuonSelector_;
+  RecoMuonSelectorTight tightMuonSelector_;
 
   Double_t min_pt_;         ///< lower cut threshold on pT
   Double_t max_absEta_;     ///< upper cut threshold on absolute value of eta
@@ -48,30 +48,17 @@ class RecoMuonSelectorFakeable
 
 class RecoMuonCollectionSelectorFakeable
 {
- public:
-  explicit RecoMuonCollectionSelectorFakeable(int era, int index = -1, bool debug = false, bool set_selection_flags = true)
-    : selIndex_(index)
-    , selector_(era, index, debug, set_selection_flags)
-  {}
-  ~RecoMuonCollectionSelectorFakeable() {}
+public:
+  explicit
+  RecoMuonCollectionSelectorFakeable(int era,
+                                     int index = -1,
+                                     bool debug = false,
+                                     bool set_selection_flags = true);
 
-  std::vector<const RecoMuon*> operator()(const std::vector<const RecoMuon*>& muons) const
-  {
-    std::vector<const RecoMuon*> selMuons;
-    int idx = 0;
-    for ( typename std::vector<const RecoMuon*>::const_iterator muon = muons.begin();
-	  muon != muons.end(); ++muon ) {
-      if ( selector_(**muon) ) {
-	if ( idx == selIndex_ || selIndex_ == -1 ) {
-	  selMuons.push_back(*muon);
-	}
-	++idx;
-      }
-    }
-    return selMuons;
-  }
-  
- protected: 
+  std::vector<const RecoMuon *>
+  operator()(const std::vector<const RecoMuon *> & muons) const;
+
+protected:
   int selIndex_;
   RecoMuonSelectorFakeable selector_;
 };
