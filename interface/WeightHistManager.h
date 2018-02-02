@@ -13,42 +13,41 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/HistManagerBase.h" // HistManagerBase
 
-#include <string> // std::string
-#include <map> // std::map
-#include <assert.h> // assert
-
 class WeightHistManager
   : public HistManagerBase
 {
- public:
-  WeightHistManager(edm::ParameterSet const& cfg);
+public:
+  WeightHistManager(const edm::ParameterSet & cfg);
   ~WeightHistManager();
 
   /// book and fill histograms
-  void bookHistograms(TFileDirectory& dir, const std::vector<std::string>& weight_names);
-  void bookHistograms(TFileDirectory& dir) { assert (0); } // call bookHistograms(TFileDirectory& dir, const std::vector<std::string>& weight_names) instead !!
-  void fillHistograms(const std::string& weight_name, double weight_value);
+  void
+  bookHistograms(TFileDirectory & dir,
+                 const std::vector<std::string> & weight_names);
 
- private:
+  void
+  fillHistograms(const std::string & weight_name,
+                 double weight_value);
+
+  void
+  bookHistograms(TFileDirectory & dir) override;
+
+private:
   struct binningOptionType
   {
-    binningOptionType(const std::string& histogramName, int numBinsX, double xMin, double xMax)
-      : histogramName_(histogramName),
-	numBinsX_(numBinsX),
-	xMin_(xMin),
-	xMax_(xMax)
-    {}
-    ~binningOptionType() {}
+    binningOptionType(const std::string & histogramName,
+                      int numBinsX,
+                      double xMin,
+                      double xMax);
     std::string histogramName_;
     int numBinsX_;
     double xMin_;
     double xMax_;
   };
-  std::map<std::string, binningOptionType*> binningOptions_;
 
-  std::map<std::string, TH1*> histograms_weights_; // key = weight_name
-
-  std::vector<TH1*> histograms_;
+  std::map<std::string, binningOptionType *> binningOptions_;
+  std::map<std::string, TH1 *> histograms_weights_; // key = weight_name
+  std::vector<TH1 *> histograms_;
 };
 
 #endif
