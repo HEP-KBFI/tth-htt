@@ -11,6 +11,7 @@
 #include <TString.h> // TString, Form
 #include <TError.h> // gErrorAbortLevel, kError
 #include <TRandom3.h> // TRandom3
+#include <TH2.h> // TH2
 
 #include "tthAnalysis/HiggsToTauTau/interface/RecoLepton.h" // RecoLepton
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h" // RecoJet
@@ -56,7 +57,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/MEtHistManager.h" // MEtHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/MVAInputVarHistManager.h" // MVAInputVarHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/EvtHistManager_1l_2tau.h" // EvtHistManager_1l_2tau
-#include "tthAnalysis/HiggsToTauTau/interface/CutFlowTableHistManager_1l_2tau.h" // CutFlowTableHistManager_1l_2tau
+#include "tthAnalysis/HiggsToTauTau/interface/CutFlowTableHistManager.h" // CutFlowTableHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/WeightHistManager.h" // WeightHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/GenEvtHistManager.h" // GenEvtHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/LHEInfoHistManager.h" // LHEInfoHistManager
@@ -72,12 +73,15 @@
 #include "tthAnalysis/HiggsToTauTau/interface/cutFlowTable.h" // cutFlowTableType
 #include "tthAnalysis/HiggsToTauTau/interface/NtupleFillerBDT.h" // NtupleFillerBDT
 #include "tthAnalysis/HiggsToTauTau/interface/HadTopTagger.h" // HadTopTagger
+#include "tthAnalysis/HiggsToTauTau/interface/HadTopKinFit.h" // HadTopKinFit
 #include "tthAnalysis/HiggsToTauTau/interface/hadTopTaggerAuxFunctions.h" // isGenMatchedJetTriplet
 #include "tthAnalysis/HiggsToTauTau/interface/TTreeWrapper.h" // TTreeWrapper
 
 #include "tthAnalysis/HiggsToTauTau/interface/GenParticle.h" // GenParticle
 #include "tthAnalysis/HiggsToTauTau/interface/GenParticleReader.h" // GenParticleReader
 #include "TLorentzVector.h"
+
+#include <boost/math/special_functions/sign.hpp> // boost::math::sign()
 
 #include <iostream> // std::cerr, std::fixed
 #include <iomanip> // std::setprecision(), std::setw()
@@ -984,8 +988,32 @@ int main(int argc, char* argv[])
   TH1* histogram_selectedEntries = fs.make<TH1D>("selectedEntries", "selectedEntries", 1, -0.5, +0.5);
   TH2* histogram_mva_hadTopTagger = fs.make<TH2D>("mva_hadTopTagger", "mva_hadTopTagger", 200, -1., +1., 200, -1., +1.);
   cutFlowTableType cutFlowTable;
-  CutFlowTableHistManager_1l_2tau* cutFlowHistManager = new CutFlowTableHistManager_1l_2tau(makeHistManager_cfg(process_string,
-    Form("%s/sel/cutFlow", histogramDir.data()), central_or_shift));
+  const edm::ParameterSet cutFlowTableCfg = makeHistManager_cfg(
+    process_string, Form("%s/sel/cutFlow", histogramDir.data()), central_or_shift
+  );
+  const std::vector<std::string> cuts = {
+    "run:ls:event selection",
+    "trigger",
+    "1 presel lepton",
+    "presel lepton trigger match",
+    ">= 2 presel taus",
+    ">= 2 jets",
+    ">= 2 loose b-jets || 1 medium b-jet (1)",
+    "1 sel lepton",
+    "<= 1 tight leptons",
+    "sel lepton trigger match",
+    ">= 2 sel taus",
+    ">= 3 jets",
+    ">= 2 loose b-jets || 1 medium b-jet (2)",
+    "m(ll) > 12 GeV",
+    "sel lepton pT > 25(e)/20(mu) GeV",
+    "sel lepton abs(eta) < 2.1",
+    "sel hadTau pT > 30 GeV",
+    "tau-pair OS/SS charge",
+    "lepton+tau charge",
+    "signal region veto",
+  };
+  CutFlowTableHistManager * cutFlowHistManager = new CutFlowTableHistManager(cutFlowTableCfg, cuts);
   cutFlowHistManager->bookHistograms(fs);
 
   while(inputTree -> hasNextEvent() && (! run_lumi_eventSelector || (run_lumi_eventSelector && ! run_lumi_eventSelector -> areWeDone())))
@@ -1113,8 +1141,8 @@ int main(int argc, char* argv[])
       // eta < 2.5 for bjet
       // dr betweem jets
       //std::cout << "calculate gen match" << std::endl;
-      std::vector<float> genMatchingTopVar = isGenMatchedJetTripletVar(genTopQuarks, genBJets, genWBosons, genWJets, kGenTop);
-      std::vector<float> genMatchingAntiTopVar = isGenMatchedJetTripletVar(genTopQuarks, genBJets, genWBosons, genWJets, kGenAntiTop);
+      std::map<int, double> genMatchingTopVar = isGenMatchedJetTripletVar(genTopQuarks, genBJets, genWBosons, genWJets, kGenTop);
+      std::map<int, double> genMatchingAntiTopVar = isGenMatchedJetTripletVar(genTopQuarks, genBJets, genWBosons, genWJets, kGenAntiTop);
       //std::cout << "reading gen match" << std::endl;
 
       genPtTop = genMatchingTopVar[kGenPtTop];
@@ -1460,7 +1488,7 @@ int main(int argc, char* argv[])
     double evtWeight = 1.;
     if ( isMC ) {
       evtWeight *= lumiScale;
-      if ( apply_genWeight ) evtWeight *= sgn(eventInfo.genWeight);
+      if ( apply_genWeight ) evtWeight *= boost::math::sign(eventInfo.genWeight);
       evtWeight *= eventInfo.pileupWeight;
       if ( lheScale_option != kLHE_scale_central ) {
         if      ( lheScale_option == kLHE_scale_xDown ) evtWeight *= lheInfoReader->getWeight_scale_xDown();
@@ -1476,7 +1504,7 @@ int main(int argc, char* argv[])
       evtWeight *= btagWeight;
       if ( isDEBUG ) {
         std::cout << "lumiScale = " << lumiScale << std::endl;
-	if ( apply_genWeight ) std::cout << "genWeight = " << sgn(eventInfo.genWeight) << std::endl;
+  if ( apply_genWeight ) std::cout << "genWeight = " << boost::math::sign(eventInfo.genWeight) << std::endl;
 	std::cout << "pileupWeight = " << eventInfo.pileupWeight << std::endl;
         std::cout << "btagWeight = " << btagWeight << std::endl;
       }
@@ -1491,7 +1519,7 @@ int main(int argc, char* argv[])
     if ( !(tightLeptons.size() <= 1) ) {
       if ( run_lumi_eventSelector ) {
         std::cout << "event FAILS tightLeptons selection." << std::endl;
-        printLeptonCollection("tightLeptons", tightLeptons);
+        printCollection("tightLeptons", tightLeptons);
       }
       continue;
     }
@@ -1752,10 +1780,6 @@ int main(int argc, char* argv[])
     bool hadtruth = false;
     int ncombo=0;
     //double genTopPt=-10;
-    std::vector<double> bdtResult;
-    bdtResult.push_back(-1.); // XGB with kinfit
-    bdtResult.push_back(-1.); // TMVA with kin fit
-    bdtResult.push_back(-1.); // XGB althernative
     Particle::LorentzVector unfittedHadTopP4, fittedHadTopP4;
     for ( std::vector<const RecoJet*>::const_iterator selBJet = selJets.begin(); selBJet != selJets.end(); ++selBJet ) {
       for ( std::vector<const RecoJet*>::const_iterator selWJet1 = selJets.begin(); selWJet1 != selJets.end(); ++selWJet1 ) {
@@ -1764,31 +1788,31 @@ int main(int argc, char* argv[])
 	  if ( &(*selWJet2) == &(*selBJet) ) continue;
 	  if ( &(*selWJet2) == &(*selWJet1) ) continue;
     ncombo++;
-	  bool mvaOutput_hadTopTagger = (*hadTopTagger)(**selBJet, **selWJet1, **selWJet2, bdtResult);
+    const std::map<int, double> bdtResult = (*hadTopTagger)(**selBJet, **selWJet1, **selWJet2);
 	  bool isGenMatched = false;
-	  if ( isMC && isBDTtraining && mvaOutput_hadTopTagger ) {
+    if ( isMC && isBDTtraining ) {
 	    if ( genWJets.size() >= 2 && genBJets.size() >= 1 && genTopQuarks.size() >= 1 && genWBosons.size() >= 1 ){
         double genTopPtProbeTop=-10;
         double genTopPtProbeAntiTop=-10;
-	      std::vector<bool> genMatchingTop = isGenMatchedJetTriplet(**selBJet, **selWJet1, **selWJet2, genTopQuarks, genBJets, genWBosons, genWJets, kGenTop, genTopPtProbeTop);
-	      std::vector<bool> genMatchingAntiTop = isGenMatchedJetTriplet(**selBJet, **selWJet1, **selWJet2, genTopQuarks, genBJets, genWBosons, genWJets, kGenAntiTop, genTopPtProbeAntiTop);
+        std::map<int, bool> genMatchingTop = isGenMatchedJetTriplet(**selBJet, **selWJet1, **selWJet2, genTopQuarks, genBJets, genWBosons, genWJets, kGenTop, genTopPtProbeTop);
+        std::map<int, bool> genMatchingAntiTop = isGenMatchedJetTriplet(**selBJet, **selWJet1, **selWJet2, genTopQuarks, genBJets, genWBosons, genWJets, kGenAntiTop, genTopPtProbeAntiTop);
         //if(genMatchingTop[kGenMatchedTriplet]) genTopPt=genTopPtProbeTop;
         //if(genMatchingAntiTop[kGenMatchedTriplet]) genTopPt=genTopPtProbeAntiTop;
 	      isGenMatched = (genMatchingTop[kGenMatchedTriplet] || genMatchingAntiTop[kGenMatchedTriplet]);
 	      if ( isGenMatched ) hadtruth = true;
 	    }
 	  }
-	  if ( bdtResult[0] > max_mvaOutput_hadTopTaggerWithKinFit ) { // hadTopTaggerWithKinFit
+    if ( bdtResult.at(kXGB_with_kinFit) > max_mvaOutput_hadTopTaggerWithKinFit ) { // hadTopTaggerWithKinFit
 	    max_truth_hadTopTaggerWithKinFit = isGenMatched;
-	    max_mvaOutput_hadTopTaggerWithKinFit = bdtResult[0];
+      max_mvaOutput_hadTopTaggerWithKinFit = bdtResult.at(kXGB_with_kinFit);
 	    fittedHadTopP4 = hadTopTagger->kinFit()->fittedTop();
 	    unfittedHadTopP4 = (*selBJet)->p4() + (*selWJet1)->p4() + (*selWJet2)->p4();
 	  }
-	  if ( bdtResult[2] > max_mvaOutput_hadTopTagger ) { // hadTopTaggerNoKinFit
+    if ( bdtResult.at(kXGB_no_kinFit) > max_mvaOutput_hadTopTagger ) { // hadTopTaggerNoKinFit
 	    max_truth_hadTopTagger = isGenMatched;
-	    max_mvaOutput_hadTopTagger = bdtResult[0];
+      max_mvaOutput_hadTopTagger = bdtResult.at(kXGB_with_kinFit);
 	  }
-	  fillWithOverFlow2d(histogram_mva_hadTopTagger, bdtResult[0], bdtResult[1], 1.);
+    fillWithOverFlow2d(histogram_mva_hadTopTagger, bdtResult.at(kXGB_with_kinFit), bdtResult.at(kTMVA_with_kinFit), 1.);
 	}
       }
     }
