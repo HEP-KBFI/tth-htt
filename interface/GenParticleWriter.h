@@ -11,7 +11,7 @@ class TTree;
 
 class GenParticleWriter
 {
- public:
+public:
   GenParticleWriter(const std::string & branchName_num,
                     const std::string & branchName_obj);
   ~GenParticleWriter();
@@ -25,8 +25,8 @@ class GenParticleWriter
    * @brief Write collection of GenParticle objects to tree
    */
   void write(const std::vector<GenParticle> & particles);
-  
- protected: 
+
+protected:
  /**
    * @brief Initialize names of branches to be read from tree
    */
