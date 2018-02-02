@@ -9,30 +9,35 @@
  *
  */
 
-#include "CommonTools/Utils/interface/TFileDirectory.h" // TFileDirectory
-
-#include "tthAnalysis/HiggsToTauTau/interface/HistManagerBase.h" // HistManagerBase
-
+#include "tthAnalysis/HiggsToTauTau/interface/HistManagerBase.h" // HistManagerBase, TFileDirectory, edm::ParameterSet
 #include "tthAnalysis/HiggsToTauTau/interface/LHEInfoReader.h" // LHEInfoReader
 
-class LHEInfoHistManager : public HistManagerBase
+// forward declarations
+class TH1;
+
+class LHEInfoHistManager
+  : public HistManagerBase
 {
- public:
-  LHEInfoHistManager(edm::ParameterSet const& cfg);
+public:
+  LHEInfoHistManager(const edm::ParameterSet & cfg);
   ~LHEInfoHistManager() {}
 
   /// book and fill histograms
-  void bookHistograms(TFileDirectory& dir);
-  void fillHistograms(const LHEInfoReader& lheInfoReader, double evtWeight = 1.);
+  void
+  bookHistograms(TFileDirectory & dir) override;
 
- private:
-  TH1* histogram_scaleWeights_;
-  TH1* histogram_pdfWeights_;
-  TFileDirectory* dir_;
+  void
+  fillHistograms(const LHEInfoReader & lheInfoReader,
+                 double evtWeight = 1.);
 
-  TH1* histogram_EventCounter_;
+private:
+  TFileDirectory * dir_;
 
-  std::vector<TH1*> histograms_;
+  TH1 * histogram_scaleWeights_;
+  TH1 * histogram_pdfWeights_;
+  TH1 * histogram_EventCounter_;
+
+  std::vector<TH1 *> histograms_;
 };
 
 #endif
