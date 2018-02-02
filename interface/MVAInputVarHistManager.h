@@ -13,45 +13,51 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/HistManagerBase.h" // HistManagerBase
 
-#include <string> // std::string
-#include <map> // std::map
-#include <assert.h> // assert
+#include <cassert> // assert()
 
 class MVAInputVarHistManager
   : public HistManagerBase
 {
- public:
-  MVAInputVarHistManager(edm::ParameterSet const& cfg);
+public:
+  MVAInputVarHistManager(const edm::ParameterSet & cfg);
   ~MVAInputVarHistManager();
 
   /// define binning options
-  void defineBinningOption(const std::string& histogramName, int numBinsX, double xMin, double xMax);
+  void
+  defineBinningOption(const std::string & histogramName,
+                      int numBinsX,
+                      double xMin,
+                      double xMax);
 
   /// book and fill histograms
-  void bookHistograms(TFileDirectory& dir, const std::vector<std::string>& mvaInputVariables);
-  void bookHistograms(TFileDirectory& dir) { assert (0); } // call bookHistograms(TFileDirectory& dir, const std::vector<std::string>& mvaInputVariables) instead !!
-  void fillHistograms(const std::map<std::string, double>& mvaInputs, double evtWeight);
+  void bookHistograms(TFileDirectory & dir,
+                      const std::vector<std::string> & mvaInputVariables);
 
- private:
+  // call bookHistograms(TFileDirectory& dir, const std::vector<std::string>& mvaInputVariables) instead !!
+  void bookHistograms(TFileDirectory &) override { assert (0); }
+
+  void
+  fillHistograms(const std::map<std::string, double> & mvaInputs,
+                 double evtWeight);
+
+private:
   struct binningOptionType
   {
-    binningOptionType(const std::string& histogramName, int numBinsX, double xMin, double xMax)
-      : histogramName_(histogramName),
-	numBinsX_(numBinsX),
-	xMin_(xMin),
-	xMax_(xMax)
-    {}
+    binningOptionType(const std::string & histogramName,
+                      int numBinsX,
+                      double xMin,
+                      double xMax);
     ~binningOptionType() {}
     std::string histogramName_;
     int numBinsX_;
     double xMin_;
     double xMax_;
   };
-  std::map<std::string, binningOptionType*> binningOptions_;
+  std::map<std::string, binningOptionType *> binningOptions_;
 
-  std::map<std::string, TH1*> histograms_mvaInputVariables_; // key = mvaInputVariable
+  std::map<std::string, TH1 *> histograms_mvaInputVariables_; // key = mvaInputVariable
 
-  std::vector<TH1*> histograms_;
+  std::vector<TH1 *> histograms_;
 };
 
 #endif
