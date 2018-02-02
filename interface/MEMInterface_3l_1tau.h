@@ -20,7 +20,7 @@ class TBenchmark;
  */
 class MEMInterface_3l_1tau
 {
- public:
+public:
   MEMInterface_3l_1tau();
   ~MEMInterface_3l_1tau();
 
@@ -42,10 +42,10 @@ class MEMInterface_3l_1tau
              const RecoMEt & met,
              const std::vector<const RecoJet *> & selJets);
 
- private:
+private:
   std::unique_ptr<MEMInterface_3l1tau> mem_;
 
-  TBenchmark* clock_;
+  TBenchmark * clock_;
 };
 
 #endif // tthAnalysis_HiggsToTauTau_MEMInterface_3l_1tau_h
