@@ -1,31 +1,37 @@
 #include "tthAnalysis/HiggsToTauTau/interface/MEMInterface_2lss_1tau.h" 
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // isHigherCSV()
 
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // isHigherCSV()
+#include "tthAnalysis/HiggsToTauTau/interface/RecoLepton.h" // RecoLepton
+#include "tthAnalysis/HiggsToTauTau/interface/RecoHadTau.h" // RecoHadTau
+#include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h" // RecoJet
+
+#include "ttH_Htautau_MEM_Analysis/MEMAlgo/interface/RunConfig.h" // RunConfig
 #include "ttH_Htautau_MEM_Analysis/MEMAlgo/interface/ThreadScheduler.h" // ThreadScheduler
 #include "ttH_Htautau_MEM_Analysis/MEMAlgo/interface/NodeScheduler.h" // NodeScheduler
 #include "ttH_Htautau_MEM_Analysis/MEMAlgo/interface/MGIntegration.h" // IntegrationMsg_t
 
-#include <TMath.h> 
+#include <TMath.h>
+#include <TBenchmark.h> // TBenchmark
 
 #include <algorithm> // std::sort()
 
-MEMInterface_2lss_1tau::MEMInterface_2lss_1tau(const std::string& configFileName)
-  : config_(0)
-  , clock_(0)
+MEMInterface_2lss_1tau::MEMInterface_2lss_1tau(const std::string & configFileName)
+  : config_(nullptr)
+  , clock_(nullptr)
 {
   std::cout << "<MEMInterface_2lss_1tau>:\n";
 
   // remove ".py"
   std::string configFileName_tmp = configFileName;
   const std::size_t pos = configFileName_tmp.find(".py");
-  if(pos != string::npos)
+  if(pos != std::string::npos)
   {
     configFileName_tmp = std::string(configFileName_tmp, 0, pos);
   }
   std::cout << "configFileName = " << configFileName_tmp << '\n';
 
   config_ = new RunConfig(configFileName_tmp.data());
-  clock_ = new TBenchmark();
+  clock_  = new TBenchmark();
 }
 
 MEMInterface_2lss_1tau::~MEMInterface_2lss_1tau()
@@ -35,11 +41,11 @@ MEMInterface_2lss_1tau::~MEMInterface_2lss_1tau()
 }
 
 MEMOutput_2lss_1tau
-MEMInterface_2lss_1tau::operator()(const RecoLepton* selLepton_lead,
-                                   const RecoLepton* selLepton_sublead,
-                                   const RecoHadTau* selHadTau,
-                                   const RecoMEt& met,
-                                   const std::vector<const RecoJet*> & selJets) const
+MEMInterface_2lss_1tau::operator()(const RecoLepton * selLepton_lead,
+                                   const RecoLepton * selLepton_sublead,
+                                   const RecoHadTau * selHadTau,
+                                   const RecoMEt & met,
+                                   const std::vector<const RecoJet *> & selJets) const
 {
   MEMOutput_2lss_1tau result;
 
@@ -70,10 +76,10 @@ MEMInterface_2lss_1tau::operator()(const RecoLepton* selLepton_lead,
   inputs[0].evHadSys_Tau_4P_[3] = selHadTau->p4().energy();
   inputs[0].HadtauDecayMode_ = selHadTau->decayMode();
 
-  std::vector<const RecoJet*> selJets_sortedByBtagCSV = selJets;
+  std::vector<const RecoJet *> selJets_sortedByBtagCSV = selJets;
   std::sort(selJets_sortedByBtagCSV.begin(), selJets_sortedByBtagCSV.end(), isHigherCSV);
-  const RecoJet* selBJet1 = selJets_sortedByBtagCSV[0];
-  const RecoJet* selBJet2 = selJets_sortedByBtagCSV[1];
+  const RecoJet * selBJet1 = selJets_sortedByBtagCSV[0];
+  const RecoJet * selBJet2 = selJets_sortedByBtagCSV[1];
   inputs[0].evBJet1_4P_[0] = selBJet1->p4().px();
   inputs[0].evBJet1_4P_[1] = selBJet1->p4().py();
   inputs[0].evBJet1_4P_[2] = selBJet1->p4().pz();
@@ -83,13 +89,13 @@ MEMInterface_2lss_1tau::operator()(const RecoLepton* selLepton_lead,
   inputs[0].evBJet2_4P_[2] = selBJet2->p4().pz();
   inputs[0].evBJet2_4P_[3] = selBJet2->p4().energy();
   
-  const RecoJet* selJet1_w = nullptr;
-  const RecoJet* selJet2_w = nullptr;
+  const RecoJet * selJet1_w = nullptr;
+  const RecoJet * selJet2_w = nullptr;
   const double mJetJet_w = 1.e+3;
   const double mW        = 80.4;
   for(std::size_t selJet1_idx = 0; selJet1_idx < selJets.size(); ++selJet1_idx)
   {
-    const RecoJet* selJet1 = selJets[selJet1_idx];
+    const RecoJet * selJet1 = selJets[selJet1_idx];
     if(selJet1 == selBJet1 || selJet1 == selBJet2)
     {
       continue;
@@ -136,11 +142,11 @@ MEMInterface_2lss_1tau::operator()(const RecoLepton* selLepton_lead,
     inputs[0].evJet2_4P_[0] = 0.;
     inputs[0].evJet2_4P_[1] = 0.;
     inputs[0].evJet2_4P_[2] = 0.;
-    inputs[0].evJet2_4P_[3] = 0.;    
+    inputs[0].evJet2_4P_[3] = 0.;
   }
 
-  std::vector<const RecoJet*> selJets_untagged;
-  for(const RecoJet* selJet: selJets)
+  std::vector<const RecoJet *> selJets_untagged;
+  for(const RecoJet * selJet: selJets)
   {
     if(selJet == selBJet1 || selJet == selBJet2)
     {
@@ -166,7 +172,7 @@ MEMInterface_2lss_1tau::operator()(const RecoLepton* selLepton_lead,
       inputs[0].evJets_4P_[idxJet][0] = 0.;
       inputs[0].evJets_4P_[idxJet][1] = 0.;
       inputs[0].evJets_4P_[idxJet][2] = 0.;
-      inputs[0].evJets_4P_[idxJet][3] = 0.;      
+      inputs[0].evJets_4P_[idxJet][3] = 0.;
     }
   } // idxJet
 
@@ -187,7 +193,8 @@ MEMInterface_2lss_1tau::operator()(const RecoLepton* selLepton_lead,
   }
   else
   {
-    std::cerr << "Warning in <MEMInterface_2lss_1tau::operator(): Failed to invert MET covariance matrix (det=0) !!\n";
+    std::cerr << "Warning in <MEMInterface_2lss_1tau::operator(): "
+                 "Failed to invert MET covariance matrix (det=0) !!\n";
     result.errorFlag_ = 1;
     return result;
   }
@@ -222,12 +229,12 @@ MEMInterface_2lss_1tau::operator()(const RecoLepton* selLepton_lead,
   double k_tt      = 0.;
   switch(inputs[0].integration_type_)
   {
-    case 0 :
+    case 0:
       k_ttZ     = 1.e-1;
       k_ttZ_Zll = 2.e-1;
       k_tt      = 1.e-18;
       break;
-    case 1 :
+    case 1:
       k_ttZ     = 5.e-2;
       k_ttZ_Zll = 5.e-1;
       k_tt      = 5.e-15;
