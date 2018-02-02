@@ -13,9 +13,13 @@ class RecoLeptonReader;
 class RecoElectronReader
   : public ReaderBase
 {
- public:
-  RecoElectronReader(int era, bool readGenMatching = false);
-  RecoElectronReader(int era, const std::string& branchName_num, const std::string& branchName_obj, bool readGenMatching = false);
+public:
+  RecoElectronReader(int era,
+                     bool readGenMatching = false);
+  RecoElectronReader(int era,
+                     const std::string & branchName_num,
+                     const std::string & branchName_obj,
+                     bool readGenMatching = false);
   ~RecoElectronReader();
 
   /**
@@ -29,7 +33,7 @@ class RecoElectronReader
    */
   std::vector<RecoElectron> read() const;
 
- protected:
+protected:
  /**
    * @brief Initialize names of branches to be read from tree
    */

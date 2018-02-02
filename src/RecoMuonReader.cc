@@ -115,23 +115,27 @@ RecoMuonReader::read() const
       if(std::abs(gLeptonReader->pdgId_[idxLepton]) == 13)
       {
         muons.push_back(RecoMuon({
-          gLeptonReader->pt_[idxLepton],
-          gLeptonReader->eta_[idxLepton],
-          gLeptonReader->phi_[idxLepton],
-          gLeptonReader->mass_[idxLepton],
-          gLeptonReader->pdgId_[idxLepton],
-          gLeptonReader->dxy_[idxLepton],
-          gLeptonReader->dz_[idxLepton],
-          gLeptonReader->relIso_all_[idxLepton],
-          gLeptonReader->hadRelIso03_chg_[idxLepton],
-          gLeptonReader->absIso_chg_[idxLepton],
-          gLeptonReader->absIso_neu_[idxLepton],
-          gLeptonReader->sip3d_[idxLepton],
-          gLeptonReader->mvaRawTTH_[idxLepton],
-          gLeptonReader->jetPtRatio_[idxLepton],
-          gLeptonReader->jetBtagCSV_[idxLepton],
-          gLeptonReader->tightCharge_[idxLepton],
-          gLeptonReader->charge_[idxLepton],
+          {
+            {
+              gLeptonReader->pt_[idxLepton],
+              gLeptonReader->eta_[idxLepton],
+              gLeptonReader->phi_[idxLepton],
+              gLeptonReader->mass_[idxLepton],
+              gLeptonReader->pdgId_[idxLepton]
+            },
+            gLeptonReader->dxy_[idxLepton],
+            gLeptonReader->dz_[idxLepton],
+            gLeptonReader->relIso_all_[idxLepton],
+            gLeptonReader->hadRelIso03_chg_[idxLepton],
+            gLeptonReader->absIso_chg_[idxLepton],
+            gLeptonReader->absIso_neu_[idxLepton],
+            gLeptonReader->sip3d_[idxLepton],
+            gLeptonReader->mvaRawTTH_[idxLepton],
+            gLeptonReader->jetPtRatio_[idxLepton],
+            gLeptonReader->jetBtagCSV_[idxLepton],
+            gLeptonReader->tightCharge_[idxLepton],
+            gLeptonReader->charge_[idxLepton]
+          },
           true, // Karl: all muon objects pass Muon POG's loose definition at the nanoAOD prodction level
           gMuonReader->mediumIdPOG_[idxLepton],
           gMuonReader->segmentCompatibility_[idxLepton]

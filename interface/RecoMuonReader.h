@@ -12,7 +12,7 @@ class RecoLeptonReader;
 class RecoMuonReader
   : public ReaderBase
 {
- public:
+public:
   RecoMuonReader(int era,
                  bool readGenMatching = false);
   RecoMuonReader(int era,
@@ -34,7 +34,7 @@ class RecoMuonReader
    */
   std::vector<RecoMuon> read() const;
 
- protected:
+protected:
  /**
    * @brief Initialize names of branches to be read from tree
    */

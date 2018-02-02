@@ -3,67 +3,47 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/RecoLepton.h" // RecoLepton
 
-#include <ostream>
-
 class RecoElectron
   : public RecoLepton
 {
- public:
+public:
   RecoElectron() = default;
-  RecoElectron(Double_t pt,
-	       Double_t eta,
-	       Double_t phi,
-	       Double_t mass,
-	       Int_t pdgId,
-	       Double_t dxy,
-	       Double_t dz,
-         Double_t miniPFRelIso_all,
-         Double_t pfRelIso03_chg,
-         Double_t miniPFAbsIso_chg,
-         Double_t miniPFAbsIso_neu,
-	       Double_t sip3d,
-	       Double_t mvaRawTTH,
-	       Double_t jetPtRatio,
-	       Double_t jetBtagCSV,
-	       Int_t passesTightCharge,
-	       Int_t charge,
-	       Double_t mvaRawPOG_GP,
-	       Double_t mvaRawPOG_HZZ,
-	       Double_t sigmaEtaEta,
-	       Double_t HoE,
-	       Double_t deltaEta,
-	       Double_t deltaPhi,
-	       Double_t OoEminusOoP,
-	       Int_t nLostHits,
-         Bool_t passesConversionVeto);
+  RecoElectron(const RecoLepton & lepton,
+               Double_t mvaRawPOG_GP,
+               Double_t mvaRawPOG_HZZ,
+               Double_t sigmaEtaEta,
+               Double_t HoE,
+               Double_t deltaEta,
+               Double_t deltaPhi,
+               Double_t OoEminusOoP,
+               Int_t nLostHits,
+               Bool_t passesConversionVeto);
 
   /**
    * @brief Funtions to access data-members
    * @return Values of data-members
    */
-  Double_t mvaRawPOG_GP() const { return mvaRawPOG_GP_; }
-  Double_t mvaRawPOG_HZZ() const { return mvaRawPOG_HZZ_; }
-  Double_t sigmaEtaEta() const { return sigmaEtaEta_; }
-  Double_t HoE() const { return HoE_; }
-  Double_t deltaEta() const { return deltaEta_; }
-  Double_t deltaPhi() const { return deltaPhi_; }
-  Double_t OoEminusOoP() const { return OoEminusOoP_; }
-  Int_t nLostHits() const { return nLostHits_; }
-  Bool_t passesConversionVeto() const { return passesConversionVeto_; }
+  Double_t mvaRawPOG_GP() const;
+  Double_t mvaRawPOG_HZZ() const;
+  Double_t sigmaEtaEta() const;
+  Double_t HoE() const;
+  Double_t deltaEta() const;
+  Double_t deltaPhi() const;
+  Double_t OoEminusOoP() const;
+  Int_t nLostHits() const;
+  Bool_t passesConversionVeto() const;
 
   /**
    * @brief Checks whether a given lepton is an electron by its PDG id
    * @return True if it is an electron; false otherwise
    */
-  bool
-  is_electron() const { return true; }
+  bool is_electron() const override;
 
   /**
    * @brief Checks whether a given lepton is a muon by its PDG id
    * @return True if it is a muon; false otherwise
    */
-  bool
-  is_muon() const { return false; }
+  bool is_muon() const override;
 
 //--- observables specific to electrons
   Double_t mvaRawPOG_GP_;       ///< raw output value of EGamma POG electron id MVA, General Purpose (pt>10)
@@ -77,6 +57,8 @@ class RecoElectron
   Bool_t passesConversionVeto_; ///< Flag indicating if electron passes (true) or fails (false) photon conversion veto
 };
 
-std::ostream& operator<<(std::ostream& stream, const RecoElectron& electron);
+std::ostream &
+operator<<(std::ostream & stream,
+           const RecoElectron & electron);
 
 #endif // tthAnalysis_HiggsToTauTau_RecoElectron_h

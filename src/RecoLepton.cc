@@ -1,12 +1,8 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoLepton.h" // RecoLepton, GenLepton
+#include "tthAnalysis/HiggsToTauTau/interface/GenHadTau.h" // GenHadTau
+#include "tthAnalysis/HiggsToTauTau/interface/GenJet.h" // GenJet
 
-#include <iomanip>
-
-RecoLepton::RecoLepton(Double_t pt,
-                       Double_t eta,
-                       Double_t phi,
-                       Double_t mass,
-                       Int_t    pdgId,
+RecoLepton::RecoLepton(const GenLepton & lepton,
                        Double_t dxy,
                        Double_t dz,
                        Double_t relIso,
@@ -19,7 +15,7 @@ RecoLepton::RecoLepton(Double_t pt,
                        Double_t jetBtagCSV,
                        Int_t    tightCharge,
                        Int_t    charge)
-  : GenLepton(pt, eta, phi, mass, pdgId)
+  : GenLepton(lepton)
   , dxy_(dxy)
   , dz_(dz)
   , relIso_(relIso)
@@ -33,42 +29,270 @@ RecoLepton::RecoLepton(Double_t pt,
   , tightCharge_(tightCharge)
   , charge_(charge)
   , cone_pt_(0.)
-  , genLepton_(0)
+  , genLepton_(nullptr)
   , genLepton_isOwner_(false)
-  , genHadTau_(0)
+  , genHadTau_(nullptr)
   , genHadTau_isOwner_(false)
-  , genJet_(0)
+  , genJet_(nullptr)
   , genJet_isOwner_(false)
   , isLoose_(false)
   , isFakeable_(false)
   , isTight_(false)
 {
-  double cone_pt = ( jetPtRatio_ > 1.e-3 ) ? 0.85*pt_/jetPtRatio_ : pt_;
+  const double cone_pt = jetPtRatio_ > 1.e-3 ? 0.85 * pt_ / jetPtRatio_ : pt_;
   set_cone_pt(cone_pt);
 }
 
 RecoLepton::~RecoLepton()
 {
-  if ( genLepton_isOwner_ ) delete genLepton_;
-  if ( genHadTau_isOwner_ ) delete genHadTau_;
-  if ( genJet_isOwner_    ) delete genJet_;
+  if(genLepton_isOwner_ && genLepton_)
+  {
+    delete genLepton_;
+  }
+  if(genHadTau_isOwner_ && genHadTau_)
+  {
+    delete genHadTau_;
+  }
+  if(genJet_isOwner_ && genJet_)
+  {
+    delete genJet_;
+  }
 }
 
-std::ostream& operator<<(std::ostream& stream, const RecoLepton& lepton)
+void
+RecoLepton::set_isLoose() const
 {
-  stream << " pT = " << lepton.lepton_pt() << " (cone_pT = " << lepton.cone_pt() << ") ,"
-         << " eta = " << lepton.eta() << ","
-         << " phi = " << lepton.phi() << ","
-         << " pdgId = " << lepton.pdgId() << std::endl;
-  stream << " dxy = " << lepton.dxy() << ", dz = " << lepton.dz() << ", sip3d = " << lepton.sip3d() << std::endl;
-  stream << " relIso = " << lepton.relIso() << std::endl;
-  stream << " chargedHadRelIso03 = " << lepton.chargedHadRelIso03() << std::endl;
-  stream << " tightCharge = " << lepton.tightCharge() << std::endl;
-  stream << " jetBtagCSV = " << lepton.jetBtagCSV() << std::endl;
-  stream << " mvaRawTTH = " << lepton.mvaRawTTH() << std::endl;
-  stream << "gen. matching:" 
-	 << " lepton = " << lepton.genLepton() << "," 
-	 << " hadTau = " << lepton.genHadTau() << "," 
-	 << " jet = " << lepton.genJet() << std::endl;
+  isLoose_ = true;
+}
+
+void
+RecoLepton::set_isFakeable() const
+{
+  isFakeable_ = true;
+}
+
+void
+RecoLepton::set_isTight() const
+{
+  isTight_ = true;
+}
+
+void
+RecoLepton::set_cone_pt(Double_t cone_pt)
+{
+  cone_pt_ = cone_pt;
+  cone_p4_ = Particle::LorentzVector(cone_pt, eta_, phi_, mass_);
+}
+
+void
+RecoLepton::set_genLepton(const GenLepton * genLepton,
+                          bool isOwner)
+{
+  genLepton_ = genLepton;
+  genLepton_isOwner_ = isOwner;
+}
+
+void
+RecoLepton::set_genHadTau(const GenHadTau * genHadTau,
+                          bool isOwner)
+{
+  genHadTau_ = genHadTau;
+  genHadTau_isOwner_ = isOwner;
+}
+
+void
+RecoLepton::set_genJet(const GenJet * genJet,
+                       bool isOwner)
+{
+  genJet_ = genJet;
+  genJet_isOwner_ = isOwner;
+}
+
+bool
+RecoLepton::is_electron() const
+{
+  return false;
+}
+
+bool
+RecoLepton::is_muon() const
+{
+  return false;
+}
+
+Double_t
+RecoLepton::lepton_pt() const
+{
+  return pt_;
+}
+
+const Particle::LorentzVector &
+RecoLepton::lepton_p4() const
+{
+  return p4_;
+}
+
+Double_t
+RecoLepton::pt() const
+{
+  return pt_;
+}
+
+const Particle::LorentzVector &
+RecoLepton::p4() const
+{
+  return p4_;
+}
+
+Double_t
+RecoLepton::dxy() const
+{
+  return dxy_;
+}
+
+Double_t
+RecoLepton::dz() const
+{
+  return dz_;
+}
+
+Double_t
+RecoLepton::relIso() const
+{
+  return relIso_;
+}
+
+Double_t
+RecoLepton::chargedHadRelIso03() const
+{
+  return chargedHadRelIso03_;
+}
+
+Double_t
+RecoLepton::miniIsoCharged() const
+{
+  return miniIsoCharged_;
+}
+
+Double_t
+RecoLepton::miniIsoNeutral() const
+{
+  return miniIsoNeutral_;
+}
+
+Double_t
+RecoLepton::sip3d() const
+{
+  return sip3d_;
+}
+
+Double_t
+RecoLepton::mvaRawTTH() const
+{
+  return mvaRawTTH_;
+}
+
+Double_t
+RecoLepton::jetPtRatio() const
+{
+  return jetPtRatio_;
+}
+
+Double_t
+RecoLepton::jetBtagCSV() const
+{
+  return jetBtagCSV_;
+}
+
+Int_t
+RecoLepton::tightCharge() const
+{
+  return tightCharge_;
+}
+
+Int_t
+RecoLepton::charge() const
+{
+  return charge_;
+}
+
+Double_t
+RecoLepton::cone_pt() const
+{
+  return isFakeable_ && ! isTight_ ? cone_pt_ : pt_;
+}
+
+const Particle::LorentzVector &
+RecoLepton::cone_p4() const
+{
+  return isFakeable_ && ! isTight_ ? cone_p4_ : p4_;
+}
+
+const GenLepton *
+RecoLepton::genLepton() const
+{
+  return genLepton_;
+}
+
+const GenHadTau *
+RecoLepton::genHadTau() const
+{
+  return genHadTau_;
+}
+
+const GenJet *
+RecoLepton::genJet() const
+{
+  return genJet_;
+}
+
+bool
+RecoLepton::isLoose() const
+{
+  return isLoose_;
+}
+
+bool
+RecoLepton::isFakeable() const
+{
+  return isFakeable_;
+}
+
+bool
+RecoLepton::isTight() const
+{
+  return isTight_;
+}
+
+std::ostream &
+operator<<(std::ostream & stream,
+           const RecoLepton & lepton)
+{
+  stream << static_cast<const GenLepton &>(lepton)                  << "\n,"
+            " cone_pT = "            << lepton.cone_pt()            << ","
+            " dxy = "                << lepton.dxy()                << ","
+            " dz = "                 << lepton.dz()                 << ",\n"
+            " sip3d = "              << lepton.sip3d()              << ","
+            " relIso = "             << lepton.relIso()             << ","
+            " chargedHadRelIso03 = " << lepton.chargedHadRelIso03() << ",\n"
+            " tightCharge = "        << lepton.tightCharge()        << ","
+            " jetBtagCSV = "         << lepton.jetBtagCSV()         << ","
+            " mvaRawTTH = "          << lepton.mvaRawTTH()          << ",\n"
+            " gen. matching:";
+  stream << ",\n  lepton = " << lepton.genLepton();
+  if(lepton.genLepton())
+  {
+    stream << ": " << *(lepton.genLepton());
+  }
+  stream << ",\n  hadTau = " << lepton.genHadTau();
+  if(lepton.genHadTau())
+  {
+    stream << ": " << *(lepton.genHadTau());
+  }
+  stream << ",\n  jet    = " << lepton.genJet();
+  if(lepton.genJet())
+  {
+    stream << ": " << *(lepton.genJet());
+  }
   return stream;
 }
