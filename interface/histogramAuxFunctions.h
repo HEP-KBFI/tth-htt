@@ -1,47 +1,121 @@
 #ifndef tthAnalysis_HiggsToTauTau_histogramAuxFunctions_h
 #define tthAnalysis_HiggsToTauTau_histogramAuxFunctions_h
 
-#include "CommonTools/Utils/interface/TFileDirectory.h"
+#include <CommonTools/Utils/interface/TFileDirectory.h> // TFile, TH1, TDirectory, TFileDirectory
 
-#include <TH1.h>
-#include <TH2.h>
-#include <TFile.h>
-#include <TDirectory.h>
+// forward declarations
+class TH2;
 
-#include <vector>
-#include <string>
+void
+fill(TH1 * histogram,
+     double x,
+     double evtWeight,
+     double evtWeightErr = 0.);
 
-void fill(TH1*, double, double, double = 0.);
-void fillWithOverFlow(TH1*, double, double, double = 0.);
-void fill2d(TH2*, double, double, double, double = 0.);
-void fillWithOverFlow2d(TH2*, double, double, double, double = 0.);
+void
+fillWithOverFlow(TH1 * histogram,
+                 double x,
+                 double evtWeight,
+                 double evtWeightErr = 0.);
 
-double getLogWeight(double weight);
+void
+fill2d(TH2 * histogram,
+       double x,
+       double y,
+       double evtWeight,
+       double evtWeightErr = 0.);
 
-void checkCompatibleBinning(const TH1*, const TH1*);
+void
+fillWithOverFlow2d(TH2 * histogram,
+                   double x,
+                   double y,
+                   double evtWeight,
+                   double evtWeightErr = 0.);
 
-TH1* addHistograms(const std::string&, const TH1*, const TH1*, int = 0);
-TH1* addHistograms(const std::string&, const std::vector<TH1*>&, int = 0);
+double
+getLogWeight(double weight);
 
-TH1* subtractHistograms(const std::string&, const TH1*, const TH1*, int = 0);
-TH1* subtractHistograms(const std::string&, const TH1*, const std::vector<TH1*>&, int = 0);
+void
+checkCompatibleBinning(const TH1 * histogram1,
+                       const TH1 * histogram2);
 
-double compIntegral(const TH1*, bool, bool);
+TH1 *
+addHistograms(const std::string & newHistogramName,
+              const TH1* histogram1,
+              const TH1* histogram2,
+              int verbosity = 0);
 
-void makeBinContentsPositive(TH1*, int = 0);
+TH1 *
+addHistograms(const std::string & newHistogramName,
+              const std::vector<TH1 *> & histogramsToAdd,
+              int verbosity = 0);
 
-void dumpHistogram(const TH1*);
+TH1 *
+subtractHistograms(const std::string & newHistogramName,
+                   const TH1 * histogramMinuend,
+                   const TH1 * histogramSubtrahend,
+                   int verbosity = 0);
 
-TDirectory* getDirectory(const TFile*, const std::string&, bool);
-TDirectory* getSubdirectory(const TDirectory*, const std::string&, bool);
+TH1 *
+subtractHistograms(const std::string & newHistogramName,
+                   const TH1* histogram,
+                   const std::vector<TH1 *> & histogramsToSubtract,
+                   int verbosity = 0);
 
-TH1* getHistogram(const TDirectory*, const std::string&, const std::string&, const std::string&, bool);
+double
+compIntegral(const TH1 * histogram,
+             bool includeUnderflowBin,
+             bool includeOverflowBin);
 
-TDirectory* createSubdirectory(TDirectory*, const std::string&, bool verbose = true);
-TDirectory* createSubdirectory_recursively(TFileDirectory&, const std::string&, bool verbose = true);
+void
+makeBinContentsPositive(TH1 * histogram,
+                        int verbosity = 0);
 
-TArrayD getBinning(const TH1*, double xMin = -1., double xMax = -1.);
-TH1* getRebinnedHistogram1d(const TH1*, unsigned, const TArrayD&);
-TH2* getRebinnedHistogram2d(const TH1*, unsigned, const TArrayD&, unsigned, const TArrayD&);
+void
+dumpHistogram(const TH1 * histogram);
+
+TDirectory *
+getDirectory(const TFile * inputFile,
+             const std::string & dirName,
+             bool enableException);
+
+TDirectory *
+getSubdirectory(const TDirectory * dir,
+                const std::string & subdirName,
+                bool enableException);
+
+TH1 *
+getHistogram(const TDirectory * dir,
+             const std::string & process,
+             const std::string & histogramName,
+             const std::string & central_or_shift,
+             bool enableException);
+
+TDirectory *
+createSubdirectory(TDirectory * dir,
+                   const std::string & subdirName,
+                   bool verbose = true);
+
+TDirectory *
+createSubdirectory_recursively(TFileDirectory & dir,
+                               const std::string & fullSubdirName,
+                               bool verbose = true);
+
+TArrayD
+getBinning(const TH1 * histogram,
+           double xMin = -1.,
+           double xMax = -1.);
+
+TH1 *
+getRebinnedHistogram1d(const TH1 * histoOriginal,
+                       unsigned numBins_rebinned,
+                       const TArrayD & binEdges_rebinned);
+
+TH2 *
+getRebinnedHistogram2d(const TH1 * histoOriginal,
+                       unsigned numBinsX_rebinned,
+                       const TArrayD & binEdgesX_rebinned,
+                       unsigned numBinsY_rebinned,
+                       const TArrayD & binEdgesY_rebinned);
 
 #endif // tthAnalysis_HiggsToTauTau_histogramAuxFunctions_h
