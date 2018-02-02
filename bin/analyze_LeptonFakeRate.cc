@@ -23,9 +23,9 @@
 #include "tthAnalysis/HiggsToTauTau/interface/GenLepton.h" // GenLepton
 #include "tthAnalysis/HiggsToTauTau/interface/GenJet.h" // GenJet
 #include "tthAnalysis/HiggsToTauTau/interface/GenHadTau.h" // GenHadTau
-#include "tthAnalysis/HiggsToTauTau/interface/EventInfo.h" // EventInfo
 #include "tthAnalysis/HiggsToTauTau/interface/TMVAInterface.h" // TMVAInterface
 #include "tthAnalysis/HiggsToTauTau/interface/mvaInputVariables.h" // auxiliary functions for computing input variables of the MVA used for signal extraction in the 2los_1tau category 
+#include "tthAnalysis/HiggsToTauTau/interface/KeyTypes.h" // RUN_TYPE, LUMI_TYPE, EVT_TYPE 
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronReader.h" // RecoElectronReader
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonReader.h" // RecoMuonReader
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauReader.h" // RecoHadTauReader
@@ -35,7 +35,10 @@
 #include "tthAnalysis/HiggsToTauTau/interface/GenHadTauReader.h" // GenHadTauReader
 #include "tthAnalysis/HiggsToTauTau/interface/GenJetReader.h" // GenJetReader
 #include "tthAnalysis/HiggsToTauTau/interface/LHEInfoReader.h" // LHEInfoReader
-#include "tthAnalysis/HiggsToTauTau/interface/EventInfoReader.h" // EventInfoReader
+#include "tthAnalysis/HiggsToTauTau/interface/EventInfoReader.h" // EventInfoReader, EventInfo
+#include "tthAnalysis/HiggsToTauTau/interface/MEtFilterReader.h" // MEtFilterReader
+#include "tthAnalysis/HiggsToTauTau/interface/MEtFilterSelector.h" // MEtFilterSelector
+#include "tthAnalysis/HiggsToTauTau/interface/MEtFilterHistManager.h" // MEtFilterHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/convert_to_ptrs.h" // convert_to_ptrs
 #include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionCleaner.h" // RecoElectronCollectionCleaner, RecoMuonCollectionCleaner, RecoHadTauCollectionCleaner, RecoJetCollectionCleaner
 #include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionGenMatcher.h" // RecoElectronCollectionGenMatcher, RecoMuonCollectionGenMatcher, RecoHadTauCollectionGenMatcher, RecoJetCollectionGenMatcher
@@ -427,6 +430,11 @@ int main(int argc, char* argv[])
   std::string branchName_genJets = cfg_analyze.getParameter<std::string>("branchName_genJets");
   bool redoGenMatching = cfg_analyze.getParameter<bool>("redoGenMatching");
 
+  edm::ParameterSet cfgMEtFilter = cfg_analyze.getParameter<edm::ParameterSet>("cfgMEtFilter");
+  MEtFilterSelector metFilterSelector(cfgMEtFilter);
+
+
+
   bool isDEBUG = ( cfg_analyze.exists("isDEBUG") ) ? cfg_analyze.getParameter<bool>("isDEBUG") : false;
  
   std::string jet_btagWeight_branch;
@@ -525,7 +533,7 @@ int main(int argc, char* argv[])
   RecoElectronReader* electronReader = new RecoElectronReader(era, Form("n%s", branchName_electrons.data()), branchName_electrons, readGenObjects);
   inputTree->registerReader(electronReader);
   RecoElectronCollectionGenMatcher electronGenMatcher;
-  RecoElectronCollectionCleaner electronCleaner(0.3);
+  RecoElectronCollectionCleaner electronCleaner(0.3); // DEF VALUE 0.3
   RecoElectronCollectionSelectorLoose preselElectronSelector(era);
   RecoElectronCollectionSelectorFakeable fakeableElectronSelector(era);
   fakeableElectronSelector.enable_offline_e_trigger_cuts();
@@ -539,6 +547,7 @@ int main(int argc, char* argv[])
   RecoHadTauCollectionCleaner hadTauCleaner(0.3);
   RecoHadTauCollectionSelectorLoose preselHadTauSelector(era);
   preselHadTauSelector.set_min_id_cut_dR05(-1000);
+  preselHadTauSelector.set_max_raw_cut_dR05(1.e+6);
   preselHadTauSelector.set_min_antiElectron(hadTauSelection_antiElectron);
   preselHadTauSelector.set_min_antiMuon(hadTauSelection_antiMuon);
   RecoHadTauCollectionSelectorFakeable fakeableHadTauSelector(era);
@@ -564,6 +573,15 @@ int main(int argc, char* argv[])
   RecoMEtReader* metReader = new RecoMEtReader(era, branchName_met);
   metReader->setMEt_central_or_shift(met_option);
   inputTree->registerReader(metReader);
+
+
+  MEtFilter metFilter;  
+  MEtFilterReader* metFilterReader = new MEtFilterReader(&metFilter);
+  inputTree->registerReader(metFilterReader);
+
+// --- Setting up the Met Filter Hist Manager ----
+  MEtFilterHistManager* metFilterHistManager = new MEtFilterHistManager(makeHistManager_cfg(process_string, "LeptonFakeRate/met_filters", central_or_shift));
+  metFilterHistManager->bookHistograms(fs);
 
 //--- declare generator level information
   GenLeptonReader* genLeptonReader = 0;
@@ -721,6 +739,7 @@ int main(int argc, char* argv[])
   cutFlowTableType cutFlowTable_e(isDEBUG);
   // define order in which rows are printed in cut-flow table
   initializeCutFlowTable(cutFlowTable_e, ">= 1 fakeable electron");
+  initializeCutFlowTable(cutFlowTable_e, "MEt filter");
   initializeCutFlowTable(cutFlowTable_e, "electron+jet pair passing trigger bit");
   initializeCutFlowTable(cutFlowTable_e, "electron+jet pair passing trigger bit && prescale");
   initializeCutFlowTable(cutFlowTable_e, histograms_e_numerator_binned_beforeCuts);
@@ -730,6 +749,7 @@ int main(int argc, char* argv[])
   initializeCutFlowTable(cutFlowTable_e, histograms_e_denominator_binned_afterCuts);
   cutFlowTableType cutFlowTable_mu(isDEBUG);
   initializeCutFlowTable(cutFlowTable_mu, ">= 1 fakeable muon");
+  initializeCutFlowTable(cutFlowTable_mu, "MEt filter");
   initializeCutFlowTable(cutFlowTable_mu, "muon+jet pair passing trigger bit");
   initializeCutFlowTable(cutFlowTable_mu, "muon+jet pair passing trigger bit && prescale");
   initializeCutFlowTable(cutFlowTable_mu, histograms_mu_numerator_binned_beforeCuts);
@@ -782,21 +802,25 @@ int main(int argc, char* argv[])
     std::vector<const RecoMuon*> muon_ptrs = convert_to_ptrs(muons);
     std::vector<const RecoMuon*> cleanedMuons = muon_ptrs; // CV: no cleaning needed for muons, as they have the highest priority in the overlap removal
     std::vector<const RecoMuon*> preselMuons = preselMuonSelector(cleanedMuons); 
-    std::vector<const RecoMuon*> fakeableMuons = fakeableMuonSelector(preselMuons); 
+    std::vector<const RecoMuon*> fakeableMuons = fakeableMuonSelector(preselMuons); // DEF LINE 
+    // std::vector<const RecoMuon*> fakeableMuons_tmp = fakeableMuonSelector(preselMuons); 
     // define muon collection for numerator    
-    std::vector<const RecoMuon*> tightMuons = tightMuonSelector(preselMuons);
+    // std::vector<const RecoMuon*> tightMuons = tightMuonSelector(preselMuons); // DEF LINE
+    std::vector<const RecoMuon*> tightMuons = tightMuonSelector(fakeableMuons);
     // define muon collection for denominator (excluding muons that pass numerator)
-    //std::vector<const RecoMuon*> fakeable_and_notTightMuons = muonCleaner(fakeableMuons, tightMuons);
+    // std::vector<const RecoMuon*> fakeableMuons = muonCleaner(fakeableMuons_tmp, tightMuons);
 
     std::vector<RecoElectron> electrons = electronReader->read();
     std::vector<const RecoElectron*> electron_ptrs = convert_to_ptrs(electrons);
     std::vector<const RecoElectron*> cleanedElectrons = electronCleaner(electron_ptrs, preselMuons);  
     std::vector<const RecoElectron*> preselElectrons = preselElectronSelector(cleanedElectrons); 
-    std::vector<const RecoElectron*> fakeableElectrons = fakeableElectronSelector(preselElectrons); 
+    std::vector<const RecoElectron*> fakeableElectrons = fakeableElectronSelector(preselElectrons); // DEF LINE 
+    // std::vector<const RecoElectron*> fakeableElectrons_tmp = fakeableElectronSelector(preselElectrons); 
     // define electron collection for numerator    
-    std::vector<const RecoElectron*> tightElectrons = tightElectronSelector(preselElectrons);
+    // std::vector<const RecoElectron*> tightElectrons = tightElectronSelector(preselElectrons); // DEF LINE
+    std::vector<const RecoElectron*> tightElectrons = tightElectronSelector(fakeableElectrons);
     // define electron collection for denominator (excluding electrons that pass numerator)
-    //std::vector<const RecoElectron*> fakeable_and_notTightElectrons = electronCleaner(fakeableElectrons, tightElectrons);
+    // std::vector<const RecoElectron*> fakeableElectrons = electronCleaner(fakeableElectrons_tmp, tightElectrons);
 
     //std::vector<RecoHadTau> hadTaus = hadTauReader->read();
     //std::vector<const RecoHadTau*> hadTau_ptrs = convert_to_ptrs(hadTaus);
@@ -810,7 +834,7 @@ int main(int argc, char* argv[])
     std::vector<const RecoJet*> cleanedJets_dR04 = jetCleaner_dR04(jet_ptrs, preselMuons, preselElectrons); 
     std::vector<const RecoJet*> selJets_dR04 = jetSelector(cleanedJets_dR04);
     std::vector<const RecoJet*> selBJets_loose_dR04 = jetSelectorBtagLoose(cleanedJets_dR04);
-    std::vector<const RecoJet*> cleanedJets_dR07 = jetCleaner_dR04(jet_ptrs, preselMuons, preselElectrons); 
+    std::vector<const RecoJet*> cleanedJets_dR07 = jetCleaner_dR07(jet_ptrs, preselMuons, preselElectrons); 
     std::vector<const RecoJet*> selJets_dR07 = jetSelector(cleanedJets_dR07);
     std::vector<const RecoJet*> selBJets_loose_dR07 = jetSelectorBtagLoose(cleanedJets_dR07);
 
@@ -884,13 +908,21 @@ int main(int argc, char* argv[])
       evtWeight *= btagWeight;
       if ( isDEBUG ) {
 	std::cout << "lumiScale = " << lumiScale << std::endl;
-  if ( apply_genWeight ) std::cout << "genWeight = " << boost::math::sign(eventInfo.genWeight) << std::endl;
+	if ( apply_genWeight ) std::cout << "genWeight = " << boost::math::sign(eventInfo.genWeight) << std::endl;
 	std::cout << "pileupWeight = " << eventInfo.pileupWeight << std::endl;
 	std::cout << "btagWeight = " << btagWeight << std::endl;
       }
     }        
     if ( fakeableElectrons.size() >= 1 ) cutFlowTable_e.update(">= 1 fakeable electron", evtWeight);
     if ( fakeableMuons.size()     >= 1 ) cutFlowTable_mu.update(">= 1 fakeable muon", evtWeight);
+
+    metFilterHistManager->fillHistograms(metFilter, evtWeight);
+
+    if ( !metFilterSelector(metFilter) ) {
+      continue;
+    }
+    cutFlowTable_e.update("MEt filter", evtWeight);
+    cutFlowTable_mu.update("MEt filter", evtWeight);
 
     bool isGoodLeptonJetPair = false; // set to true if at least one electron+jet or one muon+jet combination passes trigger requirements
 
@@ -942,7 +974,7 @@ int main(int argc, char* argv[])
 	    histograms_incl_afterCuts = histograms_e_numerator_incl_afterCuts;
 	    histograms_binned_beforeCuts = &histograms_e_numerator_binned_beforeCuts;
 	    histograms_binned_afterCuts = &histograms_e_numerator_binned_afterCuts;
-	  } else { // electron enters denominator
+	  } else if ( (*fakeableElectron)->isFakeable() ) { // electron enters denominator (fakeable but not tight)
 	    histograms_incl_beforeCuts = histograms_e_denominator_incl_beforeCuts;
 	    histograms_incl_afterCuts = histograms_e_denominator_incl_afterCuts;
 	    histograms_binned_beforeCuts = &histograms_e_denominator_binned_beforeCuts;
@@ -1009,7 +1041,7 @@ int main(int argc, char* argv[])
 	    histograms_incl_afterCuts = histograms_mu_numerator_incl_afterCuts;
 	    histograms_binned_beforeCuts = &histograms_mu_numerator_binned_beforeCuts;
 	    histograms_binned_afterCuts = &histograms_mu_numerator_binned_afterCuts;
-	  } else { // muon enters denominator
+	  } else if ( (*fakeableMuon)->isFakeable() ) { // muon enters denominator (fakeable but not tight)
 	    histograms_incl_beforeCuts = histograms_mu_denominator_incl_beforeCuts;
 	    histograms_incl_afterCuts = histograms_mu_denominator_incl_afterCuts;
 	    histograms_binned_beforeCuts = &histograms_mu_denominator_binned_beforeCuts;
@@ -1066,10 +1098,12 @@ int main(int argc, char* argv[])
   delete genHadTauReader;
   delete genJetReader;
   delete lheInfoReader;
+  delete metFilterReader;
 
   delete genEvtHistManager_beforeCuts;
   delete genEvtHistManager_afterCuts;
   delete lheInfoHistManager;
+  delete metFilterHistManager;
 
   hltPaths_LeptonFakeRate_delete(triggers_e);
   hltPaths_LeptonFakeRate_delete(triggers_mu);

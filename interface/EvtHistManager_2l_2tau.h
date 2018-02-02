@@ -28,6 +28,9 @@ public:
                  int numJets,
                  int numBJets_loose,
                  int numBJets_medium,
+                 double mvaOutput_2l_2tau_ttV, 
+                 double mvaOutput_2l_2tau_ttbar, 
+                 double mvaDiscr_2l_2tau,
                  double mTauTauVis,
                  double leptonPairCharge,
                  double hadTauPairCharge,
@@ -48,6 +51,10 @@ private:
   // (alternative: ttH, H->bb analysis adds hadronic tau veto)
   TH2 * histogram_numBJets_loose_vs_numJets_;
   TH2 * histogram_numBJets_medium_vs_numJets_;
+
+  TH1 * histogram_mvaOutput_2l_2tau_ttV_;
+  TH1 * histogram_mvaOutput_2l_2tau_ttbar_;
+  TH1 * histogram_mvaDiscr_2l_2tau_;
 
   TH1 * histogram_leptonPairCharge_;
   TH1 * histogram_hadTauPairCharge_;

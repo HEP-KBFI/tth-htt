@@ -168,103 +168,83 @@ class analyzeConfig_charge_flip(analyzeConfig):
       inputFileLists[sample_name] = generateInputFileList(sample_name, sample_info, self.max_files_per_job, self.debug)
 
     for lepton_selection in self.lepton_selections:
-        for sample_name, sample_info in self.samples.items():
-          if not sample_info["use_it"] or sample_info["sample_category"] in [ "additional_signal_overlap", "background_data_estimate" ]:
-            continue
-          process_name = sample_info["process_name_specific"]
+      for sample_name, sample_info in self.samples.items():
+        if not sample_info["use_it"] or sample_info["sample_category"] in [ "additional_signal_overlap", "background_data_estimate" ]:
+          continue
+        process_name = sample_info["process_name_specific"]
 
-          # Edit Siddh ~~~~~~~~~~~~~
-          run_process = False
-          for sprocess_run in sample_process_run_s:
-            if sprocess_run == process_name:
-              run_process = True
-          #print "Run process: ", sprocess_run
+        logging.info("Creating configuration files to run '%s' for sample %s" % (self.executable_analyze, process_name))  
+        sample_category = sample_info["sample_category"]
+        is_mc = (sample_info["type"] == "mc")
+        is_signal = (sample_category == "signal")
+        inputFileList = inputFileLists[sample_name]
+        for central_or_shift in self.central_or_shifts:
+          for jobId in inputFileList.keys():
+            #if central_or_shift != "central" and not (lepton_and_hadTau_selection.startswith("Tight") and lepton_charge_selection == "SS"):
+            #  continue
+            if central_or_shift != "central" and not is_mc:
+              continue                
 
-          if run_process == False:
-            continue
-          #print "run_process:",process_name
-          # ~~~~~~~~~~~~~~~~~~~~~~~~~~
+            # build config files for executing analysis code
+            key_dir = getKey(process_name, lepton_selection)
+            key_analyze_job = getKey(process_name, lepton_selection, central_or_shift, jobId)
+            ntupleFiles = inputFileList[jobId]
+            if len(ntupleFiles) == 0:
+              print "Warning: ntupleFiles['%s'] = %s --> skipping job !!" % (key_job, ntupleFiles)
+              continue
+            self.jobOptions_analyze[key_analyze_job] = {
+              'ntupleFiles' : ntupleFiles,
+              'cfgFile_modified' : os.path.join(self.dirs[key_dir][DKEY_CFGS], "analyze_%s_%s_%s_%s_%i_cfg.py" % \
+                (self.channel, process_name, lepton_selection, central_or_shift, jobId)),
+              'histogramFile' : os.path.join(self.dirs[key_dir][DKEY_HIST], "%s_%s_%s_%i.root" % \
+                (process_name, lepton_selection, central_or_shift, jobId)),
+              'logFile' : os.path.join(self.dirs[key_dir][DKEY_LOGS], "analyze_%s_%s_%s_%s_%i.log" % \
+                (self.channel, process_name, lepton_selection, central_or_shift, jobId)),
+              'rleOutputFile' : os.path.join(self.dirs[key_dir][DKEY_RLES], "rle_%s_%s_%s_%s_%i.txt" % \
+                (self.channel, process_name, lepton_selection, central_or_shift, jobId)) if self.select_rle_output else "",
+              'sample_category' : sample_category,
+              'triggers' : sample_info["triggers"],
+              'lepton_selection' : lepton_selection,
+              #'apply_leptonGenMatching' : self.apply_leptonGenMatching,
+              #'apply_hadTauGenMatching' : self.apply_hadTauGenMatching,
+              #'applyFakeRateWeights' : self.applyFakeRateWeights if not (lepton_selection == "Tight" and hadTau_selection.find("Tight") != -1) else "disabled",
+              'applyFakeRateWeights' : "disabled",
+              'use_HIP_mitigation_mediumMuonId' : True,
+              'is_mc' : is_mc,
+              'central_or_shift' : central_or_shift,
+              'lumi_scale' : 1. if not (self.use_lumi and is_mc) else sample_info["xsection"] * self.lumi / sample_info["nof_events"],
+              'apply_genWeight' : sample_info["genWeight"] if (is_mc and "genWeight" in sample_info.keys()) else False,
+              'apply_trigger_bits' : (is_mc and sample_info["reHLT"]) or not is_mc
+            }
 
-          #if not ("DY" in process_name or "Muon" in process_name): continue
-          logging.info("Creating configuration files to run '%s' for sample %s" % (self.executable_analyze, process_name))
-          sample_category = sample_info["sample_category"]
-          is_mc = (sample_info["type"] == "mc")
-          is_signal = (sample_category == "signal")
-          inputFileList = inputFileLists[sample_name]
-          for central_or_shift in self.central_or_shifts:
-            for jobId in inputFileList.keys():
-              #if central_or_shift != "central" and not (lepton_and_hadTau_selection.startswith("Tight") and lepton_charge_selection == "SS"):
-              #  continue
-              if central_or_shift != "central" and not is_mc:
-                continue
+            #applyFakeRateWeights = self.applyFakeRateWeights
+            #if lepton_and_hadTau_frWeight == "disabled":
+            #  applyFakeRateWeights = "disabled"
+            self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job])
 
-              # build config files for executing analysis code
-              key_dir = getKey(process_name, lepton_selection)
-              key_analyze_job = getKey(process_name, lepton_selection, central_or_shift, jobId)
-              ntupleFiles = inputFileList[jobId]
-              if len(ntupleFiles) == 0:
-                print "Warning: ntupleFiles['%s'] = %s --> skipping job !!" % (key_job, ntupleFiles)
-                continue
-              self.jobOptions_analyze[key_analyze_job] = {
-                'ntupleFiles' : ntupleFiles,
-                'cfgFile_modified' : os.path.join(self.dirs[key_dir][DKEY_CFGS], "analyze_%s_%s_%s_%s_%i_cfg.py" % \
-                  (self.channel, process_name, lepton_selection, central_or_shift, jobId)),
-                'histogramFile' : os.path.join(self.dirs[key_dir][DKEY_HIST], "%s_%s_%s_%i.root" % \
-                  (process_name, lepton_selection, central_or_shift, jobId)),
-                'logFile' : os.path.join(self.dirs[key_dir][DKEY_LOGS], "analyze_%s_%s_%s_%s_%i.log" % \
-                  (self.channel, process_name, lepton_selection, central_or_shift, jobId)),
-                'rleOutputFile' : os.path.join(self.dirs[key_dir][DKEY_RLES], "rle_%s_%s_%s_%s_%i.txt" % \
-                  (self.channel, process_name, lepton_selection, central_or_shift, jobId)) if self.select_rle_output else "",
-                'sample_category' : sample_category,
-                'triggers' : sample_info["triggers"],
-                'lepton_selection' : lepton_selection,
-                #'apply_leptonGenMatching' : self.apply_leptonGenMatching,
-                #'apply_hadTauGenMatching' : self.apply_hadTauGenMatching,
-                #'applyFakeRateWeights' : self.applyFakeRateWeights if not (lepton_selection == "Tight" and hadTau_selection.find("Tight") != -1) else "disabled",
-                'applyFakeRateWeights' : "disabled",
-                'use_HIP_mitigation_mediumMuonId' : True,
-                'is_mc' : is_mc,
-                'central_or_shift' : central_or_shift,
-                'lumi_scale' : 1. if not (self.use_lumi and is_mc) else sample_info["xsection"] * self.lumi / sample_info["nof_events"],
-                'apply_genWeight' : sample_info["genWeight"] if (is_mc and "genWeight" in sample_info.keys()) else False,
-                'apply_trigger_bits' : (is_mc and sample_info["reHLT"]) or not is_mc,
-              }
+            # initialize input and output file names for hadd_stage1
+            key_hadd_stage1 = getKey(process_name, lepton_selection)
+            if not key_hadd_stage1 in self.inputFiles_hadd_stage1.keys():
+              self.inputFiles_hadd_stage1[key_hadd_stage1] = []
+            self.inputFiles_hadd_stage1[key_hadd_stage1].append(self.jobOptions_analyze[key_analyze_job]['histogramFile'])
+            self.outputFile_hadd_stage1[key_hadd_stage1] = os.path.join(self.dirs[DKEY_HIST], "histograms_harvested_stage1_%s_%s_%s.root" % \
+              (self.channel, process_name, lepton_selection))
 
-              #applyFakeRateWeights = self.applyFakeRateWeights
-              #if lepton_and_hadTau_frWeight == "disabled":
-              #  applyFakeRateWeights = "disabled"
-              self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job])
+        key_addBackgrounds_job = getKey(lepton_selection)
+        sample_categories = []
+        sample_categories.extend([ "signal" ])
+        processes_input = []
 
-              # initialize input and output file names for hadd_stage1
-              key_hadd_stage1 = getKey(process_name, lepton_selection)
-              if not key_hadd_stage1 in self.inputFiles_hadd_stage1.keys():
-                self.inputFiles_hadd_stage1[key_hadd_stage1] = []
-              self.inputFiles_hadd_stage1[key_hadd_stage1].append(self.jobOptions_analyze[key_analyze_job]['histogramFile'])
-              self.outputFile_hadd_stage1[key_hadd_stage1] = os.path.join(self.dirs[DKEY_HIST], "histograms_harvested_stage1_%s_%s_%s.root" % \
-                  (self.channel, process_name, lepton_selection))
-          print key_hadd_stage1, self.channel, process_name, lepton_selection, self.outputFile_hadd_stage1[key_hadd_stage1]
-
-          #key_hadd_stage1 = getKey(process_name, lepton_selection)
-          #key_hadd_stage1_5 = getKey(lepton_selection)
-          #print self.inputFiles_hadd_stage1_5
-          #self.inputFiles_hadd_stage1_5[key_hadd_stage1_5].append(self.outputFile_hadd_stage1[key_hadd_stage1])
-
-          key_addBackgrounds_job = getKey(lepton_selection)
-          sample_categories = []
-          sample_categories.extend([ "signal" ])
-          processes_input = []
-
-
-          # initialize input and output file names for hadd_stage2
-          key_hadd_stage2 = getKey(lepton_selection)
-          if not key_hadd_stage2 in self.inputFiles_hadd_stage2.keys():
-            self.inputFiles_hadd_stage2[key_hadd_stage2] = []
-          #if lepton_selection == "Tight":
-          #  self.inputFiles_hadd_stage2[key_hadd_stage2].append(self.jobOptions_addBackgrounds[key_addBackgrounds_job]['outputFile'])
-          #key_hadd_stage1_5 = getKey(lepton_and_hadTau_selection_and_frWeight)
-          self.inputFiles_hadd_stage2[key_hadd_stage2].append(self.outputFile_hadd_stage1[key_hadd_stage1])
-          self.outputFile_hadd_stage2[key_hadd_stage2] = os.path.join(self.dirs[DKEY_HIST], "histograms_harvested_stage2_%s_%s.root" % \
-            (self.channel, lepton_selection))
+        # initialize input and output file names for hadd_stage2
+        key_hadd_stage2 = getKey(lepton_selection)
+        if not key_hadd_stage2 in self.inputFiles_hadd_stage2.keys():
+          self.inputFiles_hadd_stage2[key_hadd_stage2] = []
+        #if lepton_selection == "Tight":
+        #  self.inputFiles_hadd_stage2[key_hadd_stage2].append(self.jobOptions_addBackgrounds[key_addBackgrounds_job]['outputFile'])
+        #key_hadd_stage1_5 = getKey(lepton_and_hadTau_selection_and_frWeight)
+        self.inputFiles_hadd_stage2[key_hadd_stage2].append(self.outputFile_hadd_stage1[key_hadd_stage1])
+        self.outputFile_hadd_stage2[key_hadd_stage2] = os.path.join(self.dirs[DKEY_HIST], "histograms_harvested_stage2_%s_%s.root" % \
+          (self.channel, lepton_selection))
 
     key_hadd_stage2 = getKey(lepton_selection)
     #self.inputFiles_hadd_stage2[key_hadd_stage2].append(self.jobOptions_addFlips[key_addFlips_job]['outputFile'])

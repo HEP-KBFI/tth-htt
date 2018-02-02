@@ -1,6 +1,8 @@
 import FWCore.ParameterSet.Config as cms
 import os
 
+from tthAnalysis.HiggsToTauTau.recommendedMEtFilters_cfi import recommendedMEtFilters
+
 process = cms.PSet()
 
 process.fwliteInput = cms.PSet(
@@ -149,6 +151,7 @@ process.analyze_LeptonFakeRate = cms.PSet(
     redoGenMatching = cms.bool(True),
 
     selEventsFileName_input = cms.string(''),
-    selEventsFileName_output = cms.string('')
+    selEventsFileName_output = cms.string(''),
+    cfgMEtFilter = recommendedMEtFilters,
 )
 
