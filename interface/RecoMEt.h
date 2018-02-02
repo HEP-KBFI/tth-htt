@@ -3,9 +3,6 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/GenParticle.h" // Particle::LorentzVector
 
-#include <DataFormats/Math/interface/deltaR.h> // deltaR()
-
-#include <Rtypes.h> // Int_t, Long64_t, Float_t
 #include <TMatrixD.h> // TMatrixD
 
 #include <map> // std::map<,>
@@ -14,13 +11,16 @@ class RecoMEt
 {
 public:
   RecoMEt();
+
   RecoMEt(Float_t pt,
           Float_t phi,
           Float_t covXX,
           Float_t covXY,
           Float_t covYY);
+
   RecoMEt(const math::PtEtaPhiMLorentzVector & p4,
           const TMatrixD& cov);
+
   RecoMEt &
   operator=(const RecoMEt & other);
 
@@ -28,16 +28,14 @@ public:
    * @brief Funtions to access data-members
    * @return Values of data-members
    */
-  Double_t pt() const { return static_cast<Double_t>(default_.pt_); }
-  Double_t phi() const { return static_cast<Double_t>(default_.phi_); }
+  Double_t pt() const;
+  Double_t phi() const;
+  Double_t covXX() const;
+  Double_t covXY() const;
+  Double_t covYY() const;
 
-  Double_t covXX() const { return static_cast<Double_t>(covXX_); }
-  Double_t covXY() const { return static_cast<Double_t>(covXY_); }
-  Double_t covYY() const { return static_cast<Double_t>(covYY_); }
-  
-  const Particle::LorentzVector& p4() const { return p4_; }
-
-  const TMatrixD& cov() const { return cov_; }
+  const Particle::LorentzVector & p4() const;
+  const TMatrixD & cov() const;
 
   friend class RecoMEtReader;
   friend class RecoMEtWriter;
@@ -46,22 +44,14 @@ protected:
 
   struct MEt
   {
-    MEt()
-     : pt_(0.)
-     , phi_(0.)
-    {}
+    MEt();
+
     MEt(Float_t pt,
-        Float_t phi)
-      : pt_(pt)
-      , phi_(phi)
-    {}
+        Float_t phi);
+
     MEt &
-    operator=(const MEt & other)
-    {
-      pt_ = other.pt_;
-      phi_ = other.phi_;
-      return *this;
-    }
+    operator=(const MEt & other);
+
     Float_t pt_;  ///< pT of missing transverse momentum vector
     Float_t phi_; ///< phi of missing transverse momentum vector
   };

@@ -73,6 +73,48 @@ RecoMEt::update_cov()
   cov_(1,1) = static_cast<Double_t>(covYY_);
 }
 
+Double_t
+RecoMEt::pt() const
+{
+  return static_cast<Double_t>(default_.pt_);
+}
+
+Double_t
+RecoMEt::phi() const
+{
+  return static_cast<Double_t>(default_.phi_);
+}
+
+Double_t
+RecoMEt::covXX() const
+{
+  return static_cast<Double_t>(covXX_);
+}
+
+Double_t
+RecoMEt::covXY() const
+{
+  return static_cast<Double_t>(covXY_);
+}
+
+Double_t
+RecoMEt::covYY() const
+{
+  return static_cast<Double_t>(covYY_);
+}
+
+const Particle::LorentzVector &
+RecoMEt::p4() const
+{
+  return p4_;
+}
+
+const TMatrixD &
+RecoMEt::cov() const
+{
+  return cov_;
+}
+
 std::ostream& operator<<(std::ostream& stream,
                          const RecoMEt& met)
 {
@@ -81,4 +123,22 @@ std::ostream& operator<<(std::ostream& stream,
             " cov:\n";
   met.cov().Print();
   return stream;
+}
+
+RecoMEt::MEt::MEt(Float_t pt, Float_t phi)
+  : pt_(pt)
+  , phi_(phi)
+{}
+
+RecoMEt::MEt::MEt()
+  : pt_(0.)
+  , phi_(0.)
+{}
+
+RecoMEt::MEt &
+RecoMEt::MEt::operator=(const RecoMEt::MEt & other)
+{
+  pt_ = other.pt_;
+  phi_ = other.phi_;
+  return *this;
 }
