@@ -12,14 +12,14 @@ EventInfoWriter::EventInfoWriter(bool is_signal,
                                  const std::string & prefix)
 {
   const std::string pattern = prefix.empty() ? "%s" : prefix + "_%s";
-  branchName_run_   = Form(pattern.data(), RUN_KEY);
-  branchName_lumi_  = Form(pattern.data(), LUMI_KEY);
-  branchName_event_ = Form(pattern.data(), EVT_KEY);
+  branchName_run_   = Form(pattern.data(), "run");
+  branchName_lumi_  = Form(pattern.data(), "luminosityBlock");
+  branchName_event_ = Form(pattern.data(), "event");
 
-  branchName_genHiggsDecayMode_ = is_signal ? Form(pattern.data(), GENHIGGSDECAYMODE_KEY) : "";
-  branchName_genWeight_         = is_mc     ? Form(pattern.data(), GENWEIGHT_KEY)         : "";
-  branchName_genWeight_tH_      = is_mc_th  ? Form(pattern.data(), GENWEIGHTTH_KEY)       : "";
-  branchName_pileupWeight_      = is_mc     ? Form(pattern.data(), PUWEIGHT_KEY)          : "";
+  branchName_genHiggsDecayMode_ = is_signal ? Form(pattern.data(), "genHiggsDecayMode") : "";
+  branchName_genWeight_         = is_mc     ? Form(pattern.data(), "genWeight")         : "";
+  branchName_genWeight_tH_      = is_mc_th  ? Form(pattern.data(), "lheWeightSM")       : "";
+  branchName_pileupWeight_      = is_mc     ? Form(pattern.data(), "puWeight")          : "";
 }
 
 void
