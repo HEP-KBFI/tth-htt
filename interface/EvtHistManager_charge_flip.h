@@ -11,28 +11,31 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/HistManagerBase.h" // HistManagerBase
 
-#include "DataFormats/Math/interface/LorentzVector.h" // math::PtEtaPhiMLorentzVector
-
-#include <map> // std::map
+#include <DataFormats/Math/interface/LorentzVector.h> // math::PtEtaPhiMLorentzVector
 
 class EvtHistManager_charge_flip
   : public HistManagerBase
 {
- public:
-  EvtHistManager_charge_flip(edm::ParameterSet const& cfg);
+public:
+  EvtHistManager_charge_flip(const edm::ParameterSet & cfg);
   ~EvtHistManager_charge_flip() {}
 
   /// book and fill histograms
-  void bookHistograms(TFileDirectory& dir);
-  void fillHistograms(const math::PtEtaPhiMLorentzVector& selElectron_lead_p4, const math::PtEtaPhiMLorentzVector& selElectron_sublead_p4, double m_ee, bool isCharge_SS, double evtWeight);
+  void
+  bookHistograms(TFileDirectory & dir) override;
 
- private:
-  std::map<std::string, TH1*> histograms_m_ee_SS_; // key = event category, based on pT and eta of the two electrons
-  std::map<std::string, TH1*> histograms_m_ee_OS_; // key = event category, based on pT and eta of the two electrons
-  
-  TH1* histogram_EventCounter_;
+  void
+  fillHistograms(const math::PtEtaPhiMLorentzVector & selElectron_lead_p4,
+                 const math::PtEtaPhiMLorentzVector & selElectron_sublead_p4,
+                 double m_ee,
+                 bool isCharge_SS,
+                 double evtWeight);
 
-  std::vector<TH1*> histograms_;
+private:
+  std::map<std::string, TH1 *> histograms_m_ee_SS_; // key = event category, based on pT and eta of the two electrons
+  std::map<std::string, TH1 *> histograms_m_ee_OS_; // key = event category, based on pT and eta of the two electrons
+
+  TH1 * histogram_EventCounter_;
 };
 
 #endif
