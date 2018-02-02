@@ -6,7 +6,7 @@
  * Book and fill histograms for event-level quantities in the control region 
  * used to measure the jet->tau fake-rate in the ttH, H->tautau analysis
  *
- * \author Christian Veelken, Tallin
+ * \author Christian Veelken, Tallinn
  *
  */
 
@@ -15,30 +15,40 @@
 class EvtHistManager_jetToTauFakeRate
   : public HistManagerBase
 {
- public:
-  EvtHistManager_jetToTauFakeRate(edm::ParameterSet const& cfg);
+public:
+  EvtHistManager_jetToTauFakeRate(const edm::ParameterSet & cfg);
   ~EvtHistManager_jetToTauFakeRate() {}
 
   /// book and fill histograms
-  void bookHistograms(TFileDirectory& dir);
-  void fillHistograms(int numElectrons, int numMuons, int numHadTaus, int numJets, int numBJets_loose, int numBJets_medium, double mLL, double mT_e, double mT_mu, double evtWeight);
+  void
+  bookHistograms(TFileDirectory & dir) override;
 
- private:
-  TH1* histogram_numElectrons_;
-  TH1* histogram_numMuons_;
-  TH1* histogram_numHadTaus_;
-  TH1* histogram_numJets_;
-  TH1* histogram_numBJets_loose_;
-  TH1* histogram_numBJets_medium_;
+  void
+  fillHistograms(int numElectrons,
+                 int numMuons,
+                 int numHadTaus,
+                 int numJets,
+                 int numBJets_loose,
+                 int numBJets_medium,
+                 double mLL,
+                 double mT_e,
+                 double mT_mu,
+                 double evtWeight);
 
-  TH1* histogram_mLL_;
+private:
+  TH1 * histogram_numElectrons_;
+  TH1 * histogram_numMuons_;
+  TH1 * histogram_numHadTaus_;
+  TH1 * histogram_numJets_;
+  TH1 * histogram_numBJets_loose_;
+  TH1 * histogram_numBJets_medium_;
 
-  TH1* histogram_mT_e_;
-  TH1* histogram_mT_mu_;
+  TH1 * histogram_mLL_;
 
-  TH1* histogram_EventCounter_;
+  TH1 * histogram_mT_e_;
+  TH1 * histogram_mT_mu_;
 
-  std::vector<TH1*> histograms_;
+  TH1 * histogram_EventCounter_;
 };
 
 #endif
