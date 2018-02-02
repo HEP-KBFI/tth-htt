@@ -13,7 +13,6 @@
 #include <TError.h> // gErrorAbortLevel, kError
 
 #include "tthAnalysis/HiggsToTauTau/interface/MEMOutput_2lss_1tau.h" // MEMOutput_2lss_1tau
-#include "tthAnalysis/HiggsToTauTau/interface/KeyTypes.h"
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronReader.h" // RecoElectronReader
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonReader.h" // RecoMuonReader
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauReader.h" // RecoHadTauReader
@@ -46,6 +45,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/cutFlowTable.h" // cutFlowTableType
 #include "tthAnalysis/HiggsToTauTau/interface/histogramAuxFunctions.h" // createSubdirectory_recursively()
 #include "tthAnalysis/HiggsToTauTau/interface/branchEntryTypeAuxFunctions.h" // copyBranches_singleType(), copyBranches_vectorType()
+#include "tthAnalysis/HiggsToTauTau/interface/branchEntryType.h" // branchEntryBaseType
 
 #include <boost/algorithm/string/predicate.hpp> // boost::algorithm::starts_with(), boost::algorithm::ends_with()
 
@@ -282,9 +282,9 @@ int main(int argc,
 
     vstring outputCommands_string = {
       "keep *",
-      Form("drop %s", RUN_KEY),
-      Form("drop %s", LUMI_KEY),
-      Form("drop %s", EVT_KEY),
+      "drop run",
+      "drop luminosityBlock",
+      "drop event",
       Form("drop *%s*", branchName_muons.data()),
       Form("drop *%s*", branchName_electrons.data()),
       Form("drop *%s*", branchName_hadTaus.data()),
