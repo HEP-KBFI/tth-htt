@@ -11,6 +11,8 @@
 #include <TString.h> // TString, Form
 #include <TMatrixD.h> // TMatrixD
 #include <TError.h> // gErrorAbortLevel, kError
+#include <TMath.h> // TMath::
+#include <TH2.h> // TH2
 
 #include "tthAnalysis/HiggsToTauTau/interface/RecoLepton.h" // RecoLepton
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h" // RecoJet
@@ -25,7 +27,6 @@
 #include "tthAnalysis/HiggsToTauTau/interface/mvaInputVariables.h" // auxiliary functions for computing input variables of the MVA used for signal extraction in the 2lss_1tau category
 #include "tthAnalysis/HiggsToTauTau/interface/LeptonFakeRateInterface.h" // LeptonFakeRateInterface
 #include "tthAnalysis/HiggsToTauTau/interface/JetToTauFakeRateInterface.h" // JetToTauFakeRateInterface
-#include "tthAnalysis/HiggsToTauTau/interface/KeyTypes.h" // RUN_TYPE, LUMI_TYPE, EVT_TYPE
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronReader.h" // RecoElectronReader
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonReader.h" // RecoMuonReader
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauReader.h" // RecoHadTauReader
@@ -60,7 +61,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/MEtHistManager.h" // MEtHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/MVAInputVarHistManager.h" // MVAInputVarHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/EvtHistManager_2lss_1tau.h" // EvtHistManager_2lss_1tau
-#include "tthAnalysis/HiggsToTauTau/interface/CutFlowTableHistManager_2lss_1tau.h" // CutFlowTableHistManager_2lss_1tau
+#include "tthAnalysis/HiggsToTauTau/interface/CutFlowTableHistManager.h" // CutFlowTableHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/WeightHistManager.h" // WeightHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/GenEvtHistManager.h" // GenEvtHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/LHEInfoHistManager.h" // LHEInfoHistManager
@@ -79,7 +80,11 @@
 #include "tthAnalysis/HiggsToTauTau/interface/cutFlowTable.h" // cutFlowTableType
 #include "tthAnalysis/HiggsToTauTau/interface/NtupleFillerBDT.h" // NtupleFillerBDT
 #include "tthAnalysis/HiggsToTauTau/interface/HadTopTagger.h" // HadTopTagger
+#include "tthAnalysis/HiggsToTauTau/interface/XGBInterface.h" // XGBInterface
+#include "tthAnalysis/HiggsToTauTau/interface/HadTopKinFit.h" // HadTopKinFit
 #include "tthAnalysis/HiggsToTauTau/interface/TTreeWrapper.h" // TTreeWrapper
+
+#include <boost/math/special_functions/sign.hpp> // boost::math::sign()
 
 #include <iostream> // std::cerr, std::fixed
 #include <iomanip> // std::setprecision(), std::setw()
@@ -1155,8 +1160,33 @@ int main(int argc, char* argv[])
   TH1* histogram_analyzedEntries = fs.make<TH1D>("analyzedEntries", "analyzedEntries", 1, -0.5, +0.5);
   TH1* histogram_selectedEntries = fs.make<TH1D>("selectedEntries", "selectedEntries", 1, -0.5, +0.5);
   cutFlowTableType cutFlowTable;
-  CutFlowTableHistManager_2lss_1tau* cutFlowHistManager = new CutFlowTableHistManager_2lss_1tau(makeHistManager_cfg(process_string,
-    Form("%s/sel/cutFlow", histogramDir.data()), central_or_shift));
+  const edm::ParameterSet cutFlowTableCfg = makeHistManager_cfg(
+    process_string, Form("%s/sel/cutFlow", histogramDir.data()), central_or_shift
+  );
+  const std::vector<std::string> cuts = {
+    "run:ls:event selection",
+    "trigger",
+    ">= 2 presel leptons",
+    "presel lepton trigger match",
+    ">= 2 jets",
+    ">= 2 loose b-jets || 1 medium b-jet (1)",
+    ">= 1 sel tau (1)",
+    ">= 2 sel leptons",
+    "<= 2 tight leptons",
+    "sel lepton trigger match",
+    ">= 3 jets",
+    ">= 2 loose b-jets || 1 medium b-jet (2)",
+    ">= 1 sel tau (2)",
+    "m(ll) > 12 GeV",
+    "lead lepton pT > 25 GeV && sublead lepton pT > 15(e)/10(mu) GeV",
+    "tight lepton charge",
+    "sel lepton-pair OS/SS charge",
+    "sel lepton+tau charge",
+    "Z-boson mass veto",
+    "met LD > 0.2",
+    "signal region veto",
+  };
+  CutFlowTableHistManager * cutFlowHistManager = new CutFlowTableHistManager(cutFlowTableCfg, cuts);
   cutFlowHistManager->bookHistograms(fs);
 
   std::vector<TH2*> dumbVec; // to pretend to fill with array of 2D to preseselection histogram filling
@@ -1455,7 +1485,7 @@ int main(int argc, char* argv[])
     if ( !(preselLeptons.size() >= 2) ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS preselLeptons selection." << std::endl;
-	printLeptonCollection("preselLeptons", preselLeptons);
+  printCollection("preselLeptons", preselLeptons);
       }
       continue;
     }
@@ -1491,7 +1521,7 @@ int main(int argc, char* argv[])
     if ( !(selJets.size() >= 2) ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS selJets selection (1)." << std::endl;
-	printJetCollection("selJets", selJets);
+  printCollection("selJets", selJets);
       }
       continue;
     }
@@ -1500,9 +1530,9 @@ int main(int argc, char* argv[])
     if ( !(selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS selBJets selection (1)." << std::endl;
-	printJetCollection("selJets", selJets);
-	printJetCollection("selBJets_loose", selBJets_loose);
-	printJetCollection("selBJets_medium", selBJets_medium);
+  printCollection("selJets", selJets);
+  printCollection("selBJets_loose", selBJets_loose);
+  printCollection("selBJets_medium", selBJets_medium);
       }
       continue;
     }
@@ -1512,7 +1542,7 @@ int main(int argc, char* argv[])
     if ( !(selHadTaus.size() >= 1) ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS selHadTaus selection." << std::endl;
-	printHadTauCollection("selHadTaus", selHadTaus);
+  printCollection("selHadTaus", selHadTaus);
       }
       continue;
     }
@@ -1546,19 +1576,14 @@ int main(int argc, char* argv[])
     preselHistManager->evt_->fillHistograms(
       preselElectrons.size(), preselMuons.size(), selHadTaus.size(),
       selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
-      &dumbVec,&dumbVec,&dumbVec,&dumbVec,
-      0,
+      dumbVec, dumbVec, dumbVec, dumbVec,
       1.0, // evtWeight is first to be sure of not being loosing counting
-      //1,1,1,
-      //1,1,1,
       // old Training
       -1., -1., -1., -1., -1., -1., -1., -1., -1., -1., -1.,
       mTauTauVis1_presel, mTauTauVis2_presel,
       -1., -1.,
       // XGB training 1D
       -1., -1., -1., -1., -1., -1., -1., -1.,
-      // // 2D mapppings
-      // dumbVec, dumbVec, dumbVec, dumbVec,
       // XGB training, joint
       -1., -1., -1., -1., -1., -1., -1.
     );
@@ -1567,8 +1592,8 @@ int main(int argc, char* argv[])
     if ( !(selLeptons.size() >= 2) ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS selLeptons selection." << std::endl;
-	printLeptonCollection("selLeptons", selLeptons);
-	//printLeptonCollection("preselLeptons", preselLeptons);
+  printCollection("selLeptons", selLeptons);
+  //printCollection("preselLeptons", preselLeptons);
       }
       continue;
     }
@@ -1593,7 +1618,7 @@ int main(int argc, char* argv[])
     double evtWeight = 1.;
     if ( isMC ) {
       evtWeight *= lumiScale;
-      if ( apply_genWeight ) evtWeight *= sgn(eventInfo.genWeight);
+      if ( apply_genWeight ) evtWeight *= boost::math::sign(eventInfo.genWeight);
       if ( isMC_tH ) evtWeight *= eventInfo.genWeight_tH;
       evtWeight *= eventInfo.pileupWeight;
       if ( lheScale_option != kLHE_scale_central ) {
@@ -1610,7 +1635,7 @@ int main(int argc, char* argv[])
       evtWeight *= btagWeight;
       if ( isDEBUG ) {
 	std::cout << "lumiScale = " << lumiScale << std::endl;
-	if ( apply_genWeight ) std::cout << "genWeight = " << sgn(eventInfo.genWeight) << std::endl;
+  if ( apply_genWeight ) std::cout << "genWeight = " << boost::math::sign(eventInfo.genWeight) << std::endl;
 	std::cout << "pileupWeight = " << eventInfo.pileupWeight << std::endl;
 	std::cout << "btagWeight = " << btagWeight << std::endl;
       }
@@ -1736,7 +1761,7 @@ int main(int argc, char* argv[])
     if ( !(tightLeptons.size() <= 2) ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS tightLeptons selection." << std::endl;
-	printLeptonCollection("tightLeptons", tightLeptons);
+  printCollection("tightLeptons", tightLeptons);
       }
       continue;
     }
@@ -1764,7 +1789,7 @@ int main(int argc, char* argv[])
     if ( !(selJets.size() >= 3) ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS selJets selection (2)." << std::endl;
-	printJetCollection("selJets", selJets);
+  printCollection("selJets", selJets);
       }
       continue;
     }
@@ -1773,9 +1798,9 @@ int main(int argc, char* argv[])
     if ( !(selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS selBJets selection (2)." << std::endl;
-	printJetCollection("selJets", selJets);
-	printJetCollection("selBJets_loose", selBJets_loose);
-	printJetCollection("selBJets_medium", selBJets_medium);
+  printCollection("selJets", selJets);
+  printCollection("selBJets_loose", selBJets_loose);
+  printCollection("selBJets_medium", selBJets_medium);
       }
       continue;
     }
@@ -1785,7 +1810,7 @@ int main(int argc, char* argv[])
     if ( !(selHadTaus.size() >= 1) ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS selHadTaus selection." << std::endl;
-	printHadTauCollection("selHadTaus", selHadTaus);
+  printCollection("selHadTaus", selHadTaus);
       }
       continue;
     }
@@ -2088,10 +2113,7 @@ int main(int argc, char* argv[])
     double positionJet1=-1;
     double positionJet2=-1;
     double positionJet3=-1;
-    std::vector<double> bdtResult;
-    bdtResult.push_back(-1.); // XGB with kinfit
-    bdtResult.push_back(-1.); // TMVA with kin fit
-    bdtResult.push_back(-1.); // XGB althernative
+
     Particle::LorentzVector unfittedHadTopP4, fittedHadTopP4;
     for ( std::vector<const RecoJet*>::const_iterator selBJet = selJets.begin(); selBJet != selJets.end(); ++selBJet ) {
           for ( std::vector<const RecoJet*>::const_iterator selWJet1 = selJets.begin(); selWJet1 != selJets.end(); ++selWJet1 ) {
@@ -2100,34 +2122,34 @@ int main(int argc, char* argv[])
     	  if ( &(*selWJet2) == &(*selBJet) ) continue;
     	  if ( &(*selWJet2) == &(*selWJet1) ) continue;
         ncombo++;
-    	  bool mvaOutput_hadTopTagger = (*hadTopTagger)(**selBJet, **selWJet1, **selWJet2, bdtResult);
+        const std::map<int, double> bdtResult = (*hadTopTagger)(**selBJet, **selWJet1, **selWJet2);
     	  bool isGenMatched = false;
-    	  if ( isMC && selectBDT && mvaOutput_hadTopTagger ) {
+        if ( isMC && selectBDT ) {
     	    if ( genWJets.size() >= 2 && genBJets.size() >= 1 && genTopQuarks.size() >= 1 && genWBosons.size() >= 1 ){
 	      double genTopPtProbeTop=-10;
 	      double genTopPtProbeAntiTop=-10;
-    	      std::vector<bool> genMatchingTop = isGenMatchedJetTriplet(**selBJet, **selWJet1, **selWJet2, genTopQuarks, genBJets, genWBosons, genWJets, kGenTop, genTopPtProbeTop);
-    	      std::vector<bool> genMatchingAntiTop = isGenMatchedJetTriplet(**selBJet, **selWJet1, **selWJet2, genTopQuarks, genBJets, genWBosons, genWJets, kGenAntiTop, genTopPtProbeAntiTop);
+            std::map<int, bool> genMatchingTop = isGenMatchedJetTriplet(**selBJet, **selWJet1, **selWJet2, genTopQuarks, genBJets, genWBosons, genWJets, kGenTop, genTopPtProbeTop);
+            std::map<int, bool> genMatchingAntiTop = isGenMatchedJetTriplet(**selBJet, **selWJet1, **selWJet2, genTopQuarks, genBJets, genWBosons, genWJets, kGenAntiTop, genTopPtProbeAntiTop);
 	      if ( genMatchingTop[kGenMatchedTriplet]     ) genTopPt = genTopPtProbeTop;
 	      if ( genMatchingAntiTop[kGenMatchedTriplet] ) genTopPt = genTopPtProbeAntiTop;
 	      isGenMatched = (genMatchingTop[kGenMatchedTriplet] || genMatchingAntiTop[kGenMatchedTriplet]);
 	      if ( isGenMatched ) hadtruth = true;
     	    }
     	  }
-    	  if ( bdtResult[0] > max_mvaOutput_hadTopTaggerWithKinFit ) { // hadTopTaggerWithKinFit
+        if ( bdtResult.at(kXGB_with_kinFit) > max_mvaOutput_hadTopTaggerWithKinFit ) { // hadTopTaggerWithKinFit
     	    max_truth_hadTopTaggerWithKinFit = isGenMatched;
-    	    max_mvaOutput_hadTopTaggerWithKinFit = bdtResult[0];
+          max_mvaOutput_hadTopTaggerWithKinFit = bdtResult.at(kXGB_with_kinFit);
     	    fittedHadTopP4 = hadTopTagger->kinFit()->fittedTop();
     	    unfittedHadTopP4 = (*selBJet)->p4() + (*selWJet1)->p4() + (*selWJet2)->p4();
 	    positionJet1 = (*selBJet)->pt();
 	    positionJet2 = (*selWJet1)->pt();
 	    positionJet3 = (*selWJet2)->pt();
     	  }
-    	  if ( bdtResult[2] > max_mvaOutput_hadTopTagger ) { // hadTopTaggerNoKinFit
+        if ( bdtResult.at(kXGB_no_kinFit) > max_mvaOutput_hadTopTagger ) { // hadTopTaggerNoKinFit
     	    max_truth_hadTopTagger = isGenMatched;
-    	    max_mvaOutput_hadTopTagger = bdtResult[0];
+          max_mvaOutput_hadTopTagger = bdtResult.at(kXGB_with_kinFit);
     	  }
-    	  //fillWithOverFlow2d(histogram_mva_hadTopTagger, bdtResult[0], bdtResult[1], 1.);
+        //fillWithOverFlow2d(histogram_mva_hadTopTagger, bdtResult.at(kXGB_with_kinFit), bdtResult.at(kTMVA_with_kinFitnFit), 1.);
     	}
           }
     }
@@ -2403,7 +2425,7 @@ int main(int argc, char* argv[])
                               oldVarA[nbinsStartN][nbinsTargetN],
                               mvaOutput_2lss_oldVarA_tt,
                               mvaOutput_2lss_oldVarA_ttV)+ 1;
-        fillWithOverFlow(histogram_mva_hadTopTagger, bdtResult[0], bdtResult[1], 1.); // xanda test
+        fillWithOverFlow(histogram_mva_hadTopTagger, bdtResult[kXGB_with_kinFit], bdtResult[kTMVA_with_kinFitnFit], 1.); // xanda test
         //std::cout<<"counting "<<nbinsTarget[nbinsTargetN]<<" "<<nbinsStartN<<" "<<nbinsTargetN<<" "<<HTT_2D[nbinsStartN][nbinsTargetN]<<" "<<noHTT_2D[nbinsStartN][nbinsTargetN]<<std::endl;
       }
     }
@@ -2472,11 +2494,10 @@ int main(int argc, char* argv[])
       selJets.size(),
       selBJets_loose.size(),
       selBJets_medium.size(),
-      &oldVarA,
-      &HTT,
-      &noHTT,
-      &HTTMEM,
-      1,
+      oldVarA,
+      HTT,
+      noHTT,
+      HTTMEM,
       evtWeight,
       //
       mvaOutput_2lss_ttV,
@@ -2528,11 +2549,10 @@ int main(int argc, char* argv[])
           selJets.size(),
           selBJets_loose.size(),
           selBJets_medium.size(),
-          &oldVarA,
-          &HTT,
-          &noHTT,
-          &HTTMEM,
-          1,
+          oldVarA,
+          HTT,
+          noHTT,
+          HTTMEM,
           evtWeight,
           mvaOutput_2lss_ttV,
           mvaOutput_2lss_ttbar,
