@@ -1,7 +1,10 @@
 #ifndef TFILEOPENWRAPPER_H
 #define TFILEOPENWRAPPER_H
 
-#include <TFile.h> // TFile, Option_t, Int_t
+#include <Rtypes.h> // Option_t, Int_t
+
+// forward declarations
+class TFile;
 
 /**
  * Workaround to the problem that CMSSW workspace doesn't ship with HDFS support.

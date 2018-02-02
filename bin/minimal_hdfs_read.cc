@@ -1,9 +1,10 @@
-#include "tthAnalysis/HiggsToTauTau/interface/TFileOpenWrapper.h" // TFileOpenWrapper::, TFile
+#include "tthAnalysis/HiggsToTauTau/interface/TFileOpenWrapper.h" // TFileOpenWrapper::
 #include "tthAnalysis/HiggsToTauTau/interface/TTreeWrapper.h" // TTreeWrapper
 
-#include <TTree.h>
+#include <TTree.h> // TTree
+#include <TFile.h> // TFile
 
-#include <iostream>
+#include <iostream> // std::cout
 
 /* in order to run this piece of code you must set environment variables in your current shell session as follows:
 

@@ -1,8 +1,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/TFileOpenWrapper.h" // TFileOpenWrapper::, TFile, TString
 
-#include "FWCore/Utilities/interface/Exception.h" // cms::Exception
-
 #include <TPRegexp.h> // TPRegexp
+#include <TFile.h> // TFile
 
 #include <iostream> // std::cout
 #include <cstring> // std::strcmp()
