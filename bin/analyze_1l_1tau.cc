@@ -55,7 +55,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/MEtHistManager.h" // MEtHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/MVAInputVarHistManager.h" // MVAInputVarHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/EvtHistManager_1l_1tau.h" // EvtHistManager_1l_1tau
-#include "tthAnalysis/HiggsToTauTau/interface/CutFlowTableHistManager_1l_1tau.h" // CutFlowTableHistManager_1l_1tau
+#include "tthAnalysis/HiggsToTauTau/interface/CutFlowTableHistManager.h" // CutFlowTableHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/WeightHistManager.h" // WeightHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/GenEvtHistManager.h" // GenEvtHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/LHEInfoHistManager.h" // LHEInfoHistManager
@@ -75,6 +75,8 @@
 #include "TauAnalysis/ClassicSVfit/interface/MeasuredTauLepton.h"
 #include "TauAnalysis/ClassicSVfit/interface/svFitHistogramAdapter.h"
 #include "TauAnalysis/ClassicSVfit/interface/svFitAuxFunctions.h"
+
+#include <boost/math/special_functions/sign.hpp> // boost::math::sign()
 
 #include <iostream> // std::cerr, std::fixed
 #include <iomanip> // std::setprecision(), std::setw()
@@ -712,8 +714,33 @@ int main(int argc, char* argv[])
   TH1* histogram_analyzedEntries = fs.make<TH1D>("analyzedEntries", "analyzedEntries", 1, -0.5, +0.5);
   TH1* histogram_selectedEntries = fs.make<TH1D>("selectedEntries", "selectedEntries", 1, -0.5, +0.5);
   cutFlowTableType cutFlowTable;
-  CutFlowTableHistManager_1l_1tau* cutFlowHistManager = new CutFlowTableHistManager_1l_1tau(makeHistManager_cfg(process_string, 
-    Form("%s/sel/cutFlow", histogramDir.data()), central_or_shift));
+
+  const std::vector<std::string> cuts = {
+    "run:ls:event selection",
+    "trigger",
+    "1 presel lepton",
+    "presel lepton trigger match",
+    ">= 1 presel taus",
+    ">= 2 jets",
+    ">= 2 loose b-jets || 1 medium b-jet (1)",
+    "1 sel lepton",
+    "<= 1 tight leptons",
+    "sel lepton trigger match",
+    ">= 1 sel taus",
+    "<= 1 tight taus",
+    ">= 4 jets",
+    ">= 2 loose b-jets || 1 medium b-jet (2)",
+    "m(ll) > 12 GeV",
+    "sel lepton pT > 25(e)/20(mu) GeV",
+    "sel lepton abs(eta) < 2.1",
+    "sel hadTau pT > 30 GeV",
+    "lepton+tau charge",
+    "signal region veto",
+  };
+  const edm::ParameterSet cutFlowTableCfg = makeHistManager_cfg(
+    process_string, Form("%s/sel/cutFlow", histogramDir.data()), central_or_shift
+  );
+  CutFlowTableHistManager * cutFlowHistManager = new CutFlowTableHistManager(cutFlowTableCfg, cuts);
   cutFlowHistManager->bookHistograms(fs);
 
   while(inputTree -> hasNextEvent() && (! run_lumi_eventSelector || (run_lumi_eventSelector && ! run_lumi_eventSelector -> areWeDone())))
@@ -1030,7 +1057,7 @@ int main(int argc, char* argv[])
     double evtWeight = 1.;
     if ( isMC ) {
       evtWeight *= lumiScale;
-      if ( apply_genWeight ) evtWeight *= sgn(eventInfo.genWeight);
+      if ( apply_genWeight ) evtWeight *= boost::math::sign(eventInfo.genWeight);
       evtWeight *= eventInfo.pileupWeight;
       if ( lheScale_option != kLHE_scale_central ) {	
 	if      ( lheScale_option == kLHE_scale_xDown ) evtWeight *= lheInfoReader->getWeight_scale_xDown();
@@ -1046,7 +1073,7 @@ int main(int argc, char* argv[])
       evtWeight *= btagWeight;
       if ( isDEBUG ) {
 	std::cout << "lumiScale = " << lumiScale << std::endl;
-  if ( apply_genWeight ) std::cout << "genWeight = " << sgn(eventInfo.genWeight) << std::endl;
+  if ( apply_genWeight ) std::cout << "genWeight = " << boost::math::sign(eventInfo.genWeight) << std::endl;
   std::cout << "pileupWeight = " << eventInfo.pileupWeight << std::endl;
 	std::cout << "btagWeight = " << btagWeight << std::endl;
       }
@@ -1061,7 +1088,7 @@ int main(int argc, char* argv[])
     if ( !(tightLeptons.size() <= 1) ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS tightLeptons selection." << std::endl;
-	printLeptonCollection("tightLeptons", tightLeptons);
+  printCollection("tightLeptons", tightLeptons);
       }
       continue;
     }
@@ -1190,7 +1217,7 @@ int main(int argc, char* argv[])
     if ( !(tightHadTaus.size() <= 1) ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS tightHadTaus selection." << std::endl;
-	printHadTauCollection("tightHadTaus", tightHadTaus);
+  printCollection("tightHadTaus", tightHadTaus);
       }
       continue;
     }
