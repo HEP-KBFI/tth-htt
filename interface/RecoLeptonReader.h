@@ -9,7 +9,7 @@
 class RecoLeptonReader
   : public ReaderBase
 {
- public:
+public:
   RecoLeptonReader(bool readGenMatching = false);
   RecoLeptonReader(const std::string & branchName_num,
                    const std::string & branchName_obj,
@@ -24,7 +24,7 @@ class RecoLeptonReader
   friend class RecoElectronReader;
   friend class RecoMuonReader;
 
- protected:
+protected:
  /**
    * @brief Initialize names of branches to be read from tree
    */
