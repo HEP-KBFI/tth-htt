@@ -10,7 +10,7 @@ enum
   kFlag_hcalLaserEventFilter,
   kFlag_muonBadTrackFilter,
   kFlag_trkPOGFilters,
-  kFlag_trackingFailureFilter,
+//  kFlag_trackingFailureFilter, // Karl: missing in nanoAOD
   kFlag_CSCTightHaloFilter,
   kFlag_HBHENoiseFilter,
   kFlag_chargedHadronTrackResolutionFilter,
@@ -38,7 +38,7 @@ void MEtFilterHistManager::bookHistograms(TFileDirectory& dir)
   histogram_MEtFilterCounter_->GetXaxis()->SetBinLabel(kFlag_hcalLaserEventFilter,               "Flag_hcalLaserEventFilter");
   histogram_MEtFilterCounter_->GetXaxis()->SetBinLabel(kFlag_muonBadTrackFilter,                 "Flag_muonBadTrackFilter");
   histogram_MEtFilterCounter_->GetXaxis()->SetBinLabel(kFlag_trkPOGFilters,                      "Flag_trkPOGFilters");
-  histogram_MEtFilterCounter_->GetXaxis()->SetBinLabel(kFlag_trackingFailureFilter,              "Flag_trackingFailureFilter");
+//  histogram_MEtFilterCounter_->GetXaxis()->SetBinLabel(kFlag_trackingFailureFilter,              "Flag_trackingFailureFilter"); // Karl: missing in nanoAOD
   histogram_MEtFilterCounter_->GetXaxis()->SetBinLabel(kFlag_CSCTightHaloFilter,                 "Flag_CSCTightHaloFilter");
   histogram_MEtFilterCounter_->GetXaxis()->SetBinLabel(kFlag_HBHENoiseFilter,                    "Flag_HBHENoiseFilter");
   histogram_MEtFilterCounter_->GetXaxis()->SetBinLabel(kFlag_chargedHadronTrackResolutionFilter, "Flag_chargedHadronTrackResolutionFilter");
@@ -75,7 +75,7 @@ MEtFilterHistManager::fillHistograms(const MEtFilter & metFilter,
   conditionalFill(histogram_MEtFilterCounter_, kFlag_hcalLaserEventFilter,               metFilter.getFlag_hcalLaserEventFilter());
   conditionalFill(histogram_MEtFilterCounter_, kFlag_muonBadTrackFilter,                 metFilter.getFlag_muonBadTrackFilter());
   conditionalFill(histogram_MEtFilterCounter_, kFlag_trkPOGFilters,                      metFilter.getFlag_trkPOGFilters());
-  conditionalFill(histogram_MEtFilterCounter_, kFlag_trackingFailureFilter,              metFilter.getFlag_trackingFailureFilter());
+//  conditionalFill(histogram_MEtFilterCounter_, kFlag_trackingFailureFilter,              metFilter.getFlag_trackingFailureFilter()); // Karl: missing in nanoAOD
   conditionalFill(histogram_MEtFilterCounter_, kFlag_CSCTightHaloFilter,                 metFilter.getFlag_CSCTightHaloFilter());
   conditionalFill(histogram_MEtFilterCounter_, kFlag_HBHENoiseFilter,                    metFilter.getFlag_HBHENoiseFilter());
   conditionalFill(histogram_MEtFilterCounter_, kFlag_chargedHadronTrackResolutionFilter, metFilter.getFlag_chargedHadronTrackResolutionFilter());

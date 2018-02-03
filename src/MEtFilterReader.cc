@@ -15,7 +15,7 @@ MEtFilterReader::MEtFilterReader(MEtFilter * metFilter)
   , branchNameFlag_hcalLaserEventFilter_("Flag_hcalLaserEventFilter")
   , branchNameFlag_muonBadTrackFilter_("Flag_muonBadTrackFilter")
   , branchNameFlag_trkPOGFilters_("Flag_trkPOGFilters")
-  , branchNameFlag_trackingFailureFilter_("Flag_trackingFailureFilter")
+//  , branchNameFlag_trackingFailureFilter_("Flag_trackingFailureFilter") // Karl: missing in nanoAOD
   , branchNameFlag_CSCTightHaloFilter_("Flag_CSCTightHaloFilter")
   , branchNameFlag_HBHENoiseFilter_("Flag_HBHENoiseFilter")
   , branchNameFlag_chargedHadronTrackResolutionFilter_("Flag_chargedHadronTrackResolutionFilter")
@@ -64,7 +64,7 @@ MEtFilterReader::setBranchAddresses(TTree * tree)
     bai.setBranchAddress(metFilter_->Flag_hcalLaserEventFilter_,               branchNameFlag_hcalLaserEventFilter_);
     bai.setBranchAddress(metFilter_->Flag_muonBadTrackFilter_,                 branchNameFlag_muonBadTrackFilter_);
     bai.setBranchAddress(metFilter_->Flag_trkPOGFilters_,                      branchNameFlag_trkPOGFilters_);
-    bai.setBranchAddress(metFilter_->Flag_trackingFailureFilter_,              branchNameFlag_trackingFailureFilter_);
+//    bai.setBranchAddress(metFilter_->Flag_trackingFailureFilter_,              branchNameFlag_trackingFailureFilter_); // Karl: missing in nanoAOD
     bai.setBranchAddress(metFilter_->Flag_CSCTightHaloFilter_,                 branchNameFlag_CSCTightHaloFilter_);
     bai.setBranchAddress(metFilter_->Flag_HBHENoiseFilter_,                    branchNameFlag_HBHENoiseFilter_);
     bai.setBranchAddress(metFilter_->Flag_chargedHadronTrackResolutionFilter_, branchNameFlag_chargedHadronTrackResolutionFilter_);

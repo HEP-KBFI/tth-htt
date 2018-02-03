@@ -41,7 +41,7 @@ class MEtFilterSelector
   // FIlters not recommended in Moriond 2017 recipe but are present inside the VHBB 2016 Ntuples   
   bool apply_Flag_hcalLaserEventFilter_;
   bool apply_Flag_trkPOGFilters_;
-  bool apply_Flag_trackingFailureFilter_;
+//  bool apply_Flag_trackingFailureFilter_; // Karl: missing in nanoAOD
   bool apply_Flag_CSCTightHaloFilter_;
   bool apply_Flag_METFilters_;
   bool apply_Flag_CSCTightHalo2015Filter_;

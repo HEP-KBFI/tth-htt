@@ -29,7 +29,7 @@ protected:
   std::string branchNameFlag_hcalLaserEventFilter_;
   std::string branchNameFlag_muonBadTrackFilter_;
   std::string branchNameFlag_trkPOGFilters_;
-  std::string branchNameFlag_trackingFailureFilter_;
+//  std::string branchNameFlag_trackingFailureFilter_; // Karl: missing in nanoAOD
   std::string branchNameFlag_CSCTightHaloFilter_;
   std::string branchNameFlag_HBHENoiseFilter_;
   std::string branchNameFlag_chargedHadronTrackResolutionFilter_;

@@ -12,7 +12,7 @@ public:
   bool getFlag_hcalLaserEventFilter() const;
   bool getFlag_muonBadTrackFilter() const;
   bool getFlag_trkPOGFilters() const;
-  bool getFlag_trackingFailureFilter() const;
+//  bool getFlag_trackingFailureFilter() const; // Karl: missing in nanoAOD
   bool getFlag_CSCTightHaloFilter() const;
   bool getFlag_HBHENoiseFilter() const;
   bool getFlag_chargedHadronTrackResolutionFilter() const;
@@ -28,24 +28,24 @@ public:
   friend class MEtFilterReader;
 
 protected:
-  int Flag_HBHENoiseIsoFilter_;
-  int Flag_EcalDeadCellTriggerPrimitiveFilter_;
-  int Flag_ecalLaserCorrFilter_;
-  int Flag_hcalLaserEventFilter_;
-  int Flag_muonBadTrackFilter_;
-  int Flag_trkPOGFilters_;
-  int Flag_trackingFailureFilter_;
-  int Flag_CSCTightHaloFilter_;
-  int Flag_HBHENoiseFilter_;
-  int Flag_chargedHadronTrackResolutionFilter_;
-  int Flag_GlobalTightHalo2016Filter_;
-  int Flag_METFilters_;
-  int Flag_CSCTightHalo2015Filter_;
-  int Flag_eeBadScFilter_;
-  int Flag_trkPOG_manystripclus53X_;
-  int Flag_trkPOG_toomanystripclus53X_;
-  int Flag_trkPOG_logErrorTooManyClusters_;
-  int Flag_goodVertices_;
+  bool Flag_HBHENoiseIsoFilter_;
+  bool Flag_EcalDeadCellTriggerPrimitiveFilter_;
+  bool Flag_ecalLaserCorrFilter_;
+  bool Flag_hcalLaserEventFilter_;
+  bool Flag_muonBadTrackFilter_;
+  bool Flag_trkPOGFilters_;
+//  bool Flag_trackingFailureFilter_; // Karl: missing in nanoAOD
+  bool Flag_CSCTightHaloFilter_;
+  bool Flag_HBHENoiseFilter_;
+  bool Flag_chargedHadronTrackResolutionFilter_;
+  bool Flag_GlobalTightHalo2016Filter_;
+  bool Flag_METFilters_;
+  bool Flag_CSCTightHalo2015Filter_;
+  bool Flag_eeBadScFilter_;
+  bool Flag_trkPOG_manystripclus53X_;
+  bool Flag_trkPOG_toomanystripclus53X_;
+  bool Flag_trkPOG_logErrorTooManyClusters_;
+  bool Flag_goodVertices_;
 };
 
 #endif // MEtFilter_H

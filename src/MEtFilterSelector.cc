@@ -13,7 +13,7 @@ MEtFilterSelector::MEtFilterSelector(const edm::ParameterSet & cfg)
 // ---- Flags not recommended in Moriond 2017 recipe but are present inside VHBB 2016 Ntuples ----
   , apply_Flag_hcalLaserEventFilter_              (cfg.getParameter<bool>("apply_Flag_hcalLaserEventFilter"))
   , apply_Flag_trkPOGFilters_                     (cfg.getParameter<bool>("apply_Flag_trkPOGFilters"))
-  , apply_Flag_trackingFailureFilter_             (cfg.getParameter<bool>("apply_Flag_trackingFailureFilter"))
+//  , apply_Flag_trackingFailureFilter_             (cfg.getParameter<bool>("apply_Flag_trackingFailureFilter")) // Karl: missing in nanoAOD
   , apply_Flag_CSCTightHaloFilter_                (cfg.getParameter<bool>("apply_Flag_CSCTightHaloFilter"))
   , apply_Flag_METFilters_                        (cfg.getParameter<bool>("apply_Flag_METFilters"))
   , apply_Flag_CSCTightHalo2015Filter_            (cfg.getParameter<bool>("apply_Flag_CSCTightHalo2015Filter"))
@@ -38,7 +38,7 @@ MEtFilterSelector::operator()(const MEtFilter & metFilter) const
   // ---- Flags not recommended in Moriond 2017 recipe but are present inside VHBB 2016 Ntuples ----
   if(apply_Flag_hcalLaserEventFilter_           && ! metFilter.getFlag_hcalLaserEventFilter())           return false;
   if(apply_Flag_trkPOGFilters_                  && ! metFilter.getFlag_trkPOGFilters())                  return false;
-  if(apply_Flag_trackingFailureFilter_          && ! metFilter.getFlag_trackingFailureFilter())          return false;
+//  if(apply_Flag_trackingFailureFilter_          && ! metFilter.getFlag_trackingFailureFilter())          return false; // Karl: missing in nanoAOD
   if(apply_Flag_CSCTightHaloFilter_             && ! metFilter.getFlag_CSCTightHaloFilter())             return false;
   if(apply_Flag_METFilters_                     && ! metFilter.getFlag_METFilters())                     return false;
   if(apply_Flag_CSCTightHalo2015Filter_         && ! metFilter.getFlag_CSCTightHalo2015Filter())         return false;
