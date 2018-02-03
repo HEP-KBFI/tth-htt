@@ -100,10 +100,9 @@ GenLeptonReader::setBranchNames()
   ++numInstances_[branchName_promptLeptons_];
 }
 
-std::vector<std::string>
+void
 GenLeptonReader::setBranchAddresses(TTree * tree)
 {
-  std::vector<std::string> branchNames;
   if(instances_[branchName_promptLeptons_] == this)
   {
     if(read_promptLeptons_)
@@ -116,7 +115,6 @@ GenLeptonReader::setBranchAddresses(TTree * tree)
       bai.setBranchAddress(promptLepton_phi_, branchName_promptLepton_phi_);
       bai.setBranchAddress(promptLepton_mass_, branchName_promptLepton_mass_);
       bai.setBranchAddress(promptLepton_pdgId_, branchName_promptLepton_pdgId_);
-      bai.mergeBranchNames(branchNames);
     }
 
     if(read_leptonsFromTau_)
@@ -129,10 +127,8 @@ GenLeptonReader::setBranchAddresses(TTree * tree)
       bai.setBranchAddress(leptonFromTau_phi_, branchName_leptonFromTau_phi_);
       bai.setBranchAddress(leptonFromTau_mass_, branchName_leptonFromTau_mass_);
       bai.setBranchAddress(leptonFromTau_pdgId_, branchName_leptonFromTau_pdgId_);
-      bai.mergeBranchNames(branchNames);
     }
   }
-  return branchNames;
 }
 
 std::vector<GenLepton>

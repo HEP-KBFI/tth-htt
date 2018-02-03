@@ -21,24 +21,28 @@ public:
                  bool readGenMatching = false);
   ~RecoMuonReader();
 
-  void set_HIP_mitigation(bool use_HIP_mitigation);
+  void
+  set_HIP_mitigation(bool use_HIP_mitigation);
 
   /**
    * @brief Call tree->SetBranchAddress for all lepton branches specific to RecoMuons
    */
-  std::vector<std::string> setBranchAddresses(TTree * tree) override;
+  void
+  setBranchAddresses(TTree * tree) override;
 
   /**
    * @brief Read branches from tree and use information to fill collection of RecoMuon objects
    * @return Collection of RecoMuon objects
    */
-  std::vector<RecoMuon> read() const;
+  std::vector<RecoMuon>
+  read() const;
 
 protected:
  /**
    * @brief Initialize names of branches to be read from tree
    */
-  void setBranchNames();
+  void
+  setBranchNames();
 
   int era_;
   bool use_HIP_mitigation_;

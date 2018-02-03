@@ -12,7 +12,7 @@ public:
   ReaderBase() = default;
   virtual ~ReaderBase() {}
 
-  virtual std::vector<std::string>
+  virtual void
   setBranchAddresses(TTree * tree) = 0;
 };
 

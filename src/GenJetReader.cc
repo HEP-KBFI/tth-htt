@@ -64,10 +64,9 @@ GenJetReader::setBranchNames()
   ++numInstances_[branchName_obj_];
 }
 
-std::vector<std::string>
+void
 GenJetReader::setBranchAddresses(TTree * tree)
 {
-  std::vector<std::string> branchNames;
   if(instances_[branchName_obj_] == this)
   {
     BranchAddressInitializer bai(tree, max_nJets_);
@@ -76,9 +75,7 @@ GenJetReader::setBranchAddresses(TTree * tree)
     bai.setBranchAddress(jet_eta_, branchName_eta_);
     bai.setBranchAddress(jet_phi_, branchName_phi_);
     bai.setBranchAddress(jet_mass_, branchName_mass_);
-    bai.mergeBranchNames(branchNames);
   }
-  return branchNames;
 }
 
 std::vector<GenJet> GenJetReader::read() const

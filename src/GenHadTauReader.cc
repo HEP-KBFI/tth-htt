@@ -67,10 +67,9 @@ GenHadTauReader::setBranchNames()
   ++numInstances_[branchName_obj_];
 }
 
-std::vector<std::string>
+void
 GenHadTauReader::setBranchAddresses(TTree * tree)
 {
-  std::vector<std::string> branchNames;
   if(instances_[branchName_obj_] == this)
   {
     BranchAddressInitializer bai(tree, max_nHadTaus_);
@@ -80,9 +79,7 @@ GenHadTauReader::setBranchAddresses(TTree * tree)
     bai.setBranchAddress(hadTau_phi_, branchName_phi_);
     bai.setBranchAddress(hadTau_mass_, branchName_mass_);
     bai.setBranchAddress(hadTau_charge_, branchName_charge_);
-    bai.mergeBranchNames(branchNames);
   }
-  return branchNames;
 }
 
 std::vector<GenHadTau>

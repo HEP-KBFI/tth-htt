@@ -25,13 +25,15 @@ public:
   /**
    * @brief Call tree->SetBranchAddress for all lepton branches specific to RecoElectrons
    */
-  std::vector<std::string> setBranchAddresses(TTree* tree) override;
+  void
+  setBranchAddresses(TTree * tree) override;
 
   /**
    * @brief Read branches from tree and use information to fill collection of RecoElectron objects
    * @return Collection of RecoElectron objects
    */
-  std::vector<RecoElectron> read() const;
+  std::vector<RecoElectron>
+  read() const;
 
 protected:
  /**
@@ -42,7 +44,7 @@ protected:
   std::string branchName_num_;
   std::string branchName_obj_;
 
-  RecoLeptonReader* leptonReader_;
+  RecoLeptonReader * leptonReader_;
 
   std::string branchName_mvaRawPOG_GP_;
   std::string branchName_mvaRawPOG_HZZ_;
@@ -54,15 +56,15 @@ protected:
   std::string branchName_lostHits_;
   std::string branchName_conversionVeto_;
 
-  Float_t* mvaRawPOG_GP_;
-  Float_t* mvaRawPOG_HZZ_;
-  Float_t* sigmaEtaEta_;
-  Float_t* HoE_;
-  Float_t* deltaEta_;
-  Float_t* deltaPhi_;
-  Float_t* OoEminusOoP_;
-  UChar_t* lostHits_;
-  Bool_t* conversionVeto_;
+  Float_t * mvaRawPOG_GP_;
+  Float_t * mvaRawPOG_HZZ_;
+  Float_t * sigmaEtaEta_;
+  Float_t * HoE_;
+  Float_t * deltaEta_;
+  Float_t * deltaPhi_;
+  Float_t * OoEminusOoP_;
+  UChar_t * lostHits_;
+  Bool_t * conversionVeto_;
 
   // CV: make sure that only one RecoElectronReader instance exists for a given branchName,
   //     as ROOT cannot handle multiple TTree::SetBranchAddress calls for the same branch.

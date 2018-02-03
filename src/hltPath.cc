@@ -15,14 +15,13 @@ hltPath::hltPath(const std::string & branchName,
   , maxPt_(maxPt)
 {}
 
-std::vector<std::string>
+void
 hltPath::setBranchAddress(TTree * tree)
 {
   tree->SetBranchAddress(branchName_.data(), &value_);
-  return { branchName_ };
 }
 
-std::vector<std::string>
+void
 hltPath::setBranchAddresses(TTree * tree)
 {
   return setBranchAddress(tree);

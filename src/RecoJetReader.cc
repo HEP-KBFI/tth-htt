@@ -132,18 +132,17 @@ void RecoJetReader::setBranchNames()
   ++numInstances_[branchName_obj_];
 }
 
-std::vector<std::string>
+void
 RecoJetReader::setBranchAddresses(TTree * tree)
 {
-  std::vector<std::string> branchNames;
   if(instances_[branchName_obj_] == this)
   {
     BranchAddressInitializer bai(tree, max_nJets_);
     if(readGenMatching_)
     {
-      BranchAddressInitializer::mergeBranchNames(genLeptonReader_->setBranchAddresses(tree), branchNames);
-      BranchAddressInitializer::mergeBranchNames(genHadTauReader_->setBranchAddresses(tree), branchNames);
-      BranchAddressInitializer::mergeBranchNames(genJetReader_->setBranchAddresses(tree), branchNames);
+      genLeptonReader_->setBranchAddresses(tree);
+      genHadTauReader_->setBranchAddresses(tree);
+      genJetReader_->setBranchAddresses(tree);
     }
     bai.setBranchAddress(nJets_, branchName_num_);
     bai.setBranchAddress(jet_pt_, branchName_pt_);
@@ -162,9 +161,7 @@ RecoJetReader::setBranchAddresses(TTree * tree)
     }
     bai.setBranchAddress(jet_QGDiscr_, branchName_QGDiscr_, 1.);
     bai.setBranchAddress(jet_heppyFlavour_, branchName_heppyFlavour_, -1);
-    bai.mergeBranchNames(branchNames);
   }
-  return branchNames;
 }
 
 std::vector<RecoJet>

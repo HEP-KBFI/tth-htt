@@ -18,19 +18,22 @@ public:
   /**
    * @brief Call tree->SetBranchAddress for all GenParticle branches
    */
-  std::vector<std::string> setBranchAddresses(TTree * tree) override;
+  void
+  setBranchAddresses(TTree * tree) override;
 
   /**
    * @brief Read branches from tree and use information to fill collection of MEMOutput_3l_1tau objects
    * @return Collection of MEMOutput_3l_1tau objects
    */
-  std::vector<MEMOutput_3l_1tau> read() const;
+  std::vector<MEMOutput_3l_1tau>
+  read() const;
 
 protected:
  /**
    * @brief Initialize names of branches to be read from tree
    */
-  void setBranchNames();
+  void
+  setBranchNames();
 
   const int max_nMEMOutputs_;
   std::string branchName_num_;

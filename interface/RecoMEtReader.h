@@ -25,18 +25,21 @@ public:
     kMEt_shifted_JetResUp, kMEt_shifted_JetResDown,
     kMEt_shifted_UnclusteredEnUp, kMEt_shifted_UnclusteredEnDown
   };
-  void setMEt_central_or_shift(int met_option);
+  void
+  setMEt_central_or_shift(int met_option);
 
   /**
    * @brief Call tree->SetBranchAddress for all RecoMEt branches
    */
-  std::vector<std::string> setBranchAddresses(TTree * tree) override;
+  void
+  setBranchAddresses(TTree * tree) override;
 
   /**
    * @brief Read branches from tree and use information to fill RecoMEt object
    * @return RecoMEt object
    */
-  RecoMEt read() const;
+  RecoMEt
+  read() const;
 
 protected:
  /**

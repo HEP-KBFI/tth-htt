@@ -28,18 +28,22 @@ public:
   ~RecoHadTauReader();
 
   enum { kHadTauPt_central, kHadTauPt_shiftUp, kHadTauPt_shiftDown };
-  void setHadTauPt_central_or_shift(int hadTauPt_option);
+
+  void
+  setHadTauPt_central_or_shift(int hadTauPt_option);
 
   /**
    * @brief Call tree->SetBranchAddress for all RecoHadTau branches
    */
-  std::vector<std::string> setBranchAddresses(TTree * tree) override;
+  void
+  setBranchAddresses(TTree * tree) override;
 
   /**
    * @brief Read branches from tree and use information to fill collection of RecoHadTau objects
    * @return Collection of RecoHadTau objects
    */
-  std::vector<RecoHadTau> read() const;
+  std::vector<RecoHadTau>
+  read() const;
 
 protected:
   /**
@@ -47,7 +51,8 @@ protected:
    *        used to enhance background event statistics for training of event-level MVAs that separate ttH signal from backgrounds
    */
 
-  void readDBdR03oldDMwLTEff95();
+  void
+  readDBdR03oldDMwLTEff95();
 
   TFile * tauIdMVArun2dR03DB_wpFile_;
   TGraph * DBdR03oldDMwLTEff95_;
@@ -56,7 +61,8 @@ protected:
   /**
    * @brief Initialize names of branches to be read from tree
    */
-  void setBranchNames();
+  void
+  setBranchNames();
 
   int era_;
   const int max_nHadTaus_;

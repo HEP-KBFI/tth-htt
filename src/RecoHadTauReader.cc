@@ -182,17 +182,16 @@ RecoHadTauReader::setBranchNames()
   ++numInstances_[branchName_obj_];
 }
 
-std::vector<std::string>
+void
 RecoHadTauReader::setBranchAddresses(TTree * tree)
 {
-  std::vector<std::string> branchNames;
   if(instances_[branchName_obj_] == this)
   {
     if(readGenMatching_)
     {
-      BranchAddressInitializer::mergeBranchNames(genLeptonReader_->setBranchAddresses(tree), branchNames);
-      BranchAddressInitializer::mergeBranchNames(genHadTauReader_->setBranchAddresses(tree), branchNames);
-      BranchAddressInitializer::mergeBranchNames(genJetReader_->setBranchAddresses(tree), branchNames);
+      genLeptonReader_->setBranchAddresses(tree);
+      genHadTauReader_->setBranchAddresses(tree);
+      genJetReader_->setBranchAddresses(tree);
     }
     BranchAddressInitializer bai(tree, max_nHadTaus_);
     bai.setBranchAddress(nHadTaus_, branchName_num_);
@@ -216,9 +215,7 @@ RecoHadTauReader::setBranchAddresses(TTree * tree)
     bai.setBranchAddress(hadTau_rawCombIso_dR05_, "", -1.);
     bai.setBranchAddress(hadTau_idAgainstElec_, branchName_idAgainstElec_);
     bai.setBranchAddress(hadTau_idAgainstMu_, branchName_idAgainstMu_);
-    bai.mergeBranchNames(branchNames);
   }
-  return branchNames;
 }
 
 std::vector<RecoHadTau>

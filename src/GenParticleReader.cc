@@ -74,10 +74,9 @@ GenParticleReader::setBranchNames()
   ++numInstances_[branchName_particles_];
 }
 
-std::vector<std::string>
+void
 GenParticleReader::setBranchAddresses(TTree * tree)
 {
-  std::vector<std::string> branchNames;
   if(instances_[branchName_particles_] == this)
   {
     BranchAddressInitializer bai(tree, max_nParticles_);
@@ -88,9 +87,7 @@ GenParticleReader::setBranchAddresses(TTree * tree)
     bai.setBranchAddress(particle_mass_, branchName_particle_mass_);
     bai.setBranchAddress(particle_pdgId_, branchName_particle_pdgId_);
     bai.setBranchAddress(particle_charge_, branchName_particle_charge_);
-    bai.mergeBranchNames(branchNames);
   }
-  return branchNames;
 }
 
 std::vector<GenParticle>

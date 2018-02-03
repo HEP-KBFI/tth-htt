@@ -21,13 +21,15 @@ public:
   /**
    * @brief Call tree->SetBranchAddress for all branches containing LHE (scale and PDF) information
    */
-  std::vector<std::string> setBranchAddresses(TTree * tree) override;
+  void
+  setBranchAddresses(TTree * tree) override;
 
   /**
    * @brief Read branches from tree and return values
    * @return Weights for estimating systematic uncertainties related to scale and PDF variations
    */
-  void read() const;
+  void
+  read() const;
 
   double getWeight_scale_xUp() const;
   double getWeight_scale_xDown() const;
@@ -41,7 +43,8 @@ protected:
  /**
    * @brief Initialize names of branches to be read from tree
    */
-  void setBranchNames();
+  void
+  setBranchNames();
 
   const unsigned int max_scale_nWeights_;
   std::string branchName_scale_nWeights_;

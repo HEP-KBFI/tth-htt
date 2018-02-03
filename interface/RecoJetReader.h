@@ -28,26 +28,34 @@ public:
 
   enum { kJetPt_central, kJetPt_jecUp, kJetPt_jecDown };
 
-  void setJetPt_central_or_shift(int jetPt_option);
-  void setBranchName_BtagWeight(const std::string & branchName_BtagWeight);
-  void read_BtagWeight_systematics(bool flag);
+  void
+  setJetPt_central_or_shift(int jetPt_option);
+
+  void
+  setBranchName_BtagWeight(const std::string & branchName_BtagWeight);
+
+  void
+  read_BtagWeight_systematics(bool flag);
 
   /**
    * @brief Call tree->SetBranchAddress for all RecoJet branches
    */
-  std::vector<std::string> setBranchAddresses(TTree * tree) override;
+  void
+  setBranchAddresses(TTree * tree) override;
 
   /**
    * @brief Read branches from tree and use information to fill collection of RecoJet objects
    * @return Collection of RecoJet objects
    */
-  std::vector<RecoJet> read() const;
+  std::vector<RecoJet>
+  read() const;
 
 protected:
  /**
    * @brief Initialize names of branches to be read from tree
    */
-  void setBranchNames();
+  void
+  setBranchNames();
 
   int era_;
   bool isMC_;
@@ -60,7 +68,8 @@ protected:
    *        to generator level electrons, muons, hadronic taus, and jets from tree
    *        and add this information to collection of RecoJet objects given as function argument
    */
-  void readGenMatching(std::vector<RecoJet>& jets) const;
+  void
+  readGenMatching(std::vector<RecoJet> & jets) const;
 
   GenLeptonReader * genLeptonReader_;
   GenHadTauReader * genHadTauReader_;

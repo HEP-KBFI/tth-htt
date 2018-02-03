@@ -118,17 +118,16 @@ RecoLeptonReader::setBranchNames()
   ++numInstances_[branchName_obj_];
 }
 
-std::vector<std::string>
+void
 RecoLeptonReader::setBranchAddresses(TTree * tree)
 {
-  std::vector<std::string> branchNames;
   if(instances_[branchName_obj_] == this)
   {
     if(readGenMatching_)
     {
-      BranchAddressInitializer::mergeBranchNames(genLeptonReader_->setBranchAddresses(tree), branchNames);
-      BranchAddressInitializer::mergeBranchNames(genHadTauReader_->setBranchAddresses(tree), branchNames);
-      BranchAddressInitializer::mergeBranchNames(genJetReader_->setBranchAddresses(tree), branchNames);
+      genLeptonReader_->setBranchAddresses(tree);
+      genHadTauReader_->setBranchAddresses(tree);
+      genJetReader_->setBranchAddresses(tree);
     }
     BranchAddressInitializer bai(tree, max_nLeptons_);
     bai.setBranchAddress(nLeptons_, branchName_num_);
@@ -149,8 +148,5 @@ RecoLeptonReader::setBranchAddresses(TTree * tree)
     bai.setBranchAddress(jetBtagCSV_, branchName_jetBtagCSV_);
     bai.setBranchAddress(tightCharge_, branchName_tightCharge_);
     bai.setBranchAddress(charge_, branchName_charge_);
-    bai.mergeBranchNames(branchNames);
   }
-  return branchNames;
 }
-

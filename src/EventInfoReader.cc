@@ -11,7 +11,7 @@ EventInfoReader::EventInfoReader(EventInfo * info)
   : info_(info)
 {}
 
-std::vector<std::string>
+void
 EventInfoReader::setBranchAddresses(TTree * tree)
 {
   BranchAddressInitializer bai(tree);
@@ -31,7 +31,6 @@ EventInfoReader::setBranchAddresses(TTree * tree)
   {
     bai.setBranchAddress(info_ -> genWeight_tH, "lheWeightSM");
   }
-  return bai.branchNames;
 }
 
 void

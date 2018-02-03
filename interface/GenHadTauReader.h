@@ -21,19 +21,22 @@ public:
   /**
    * @brief Call tree->SetBranchAddress for all GenHadTau branches
    */
-  std::vector<std::string> setBranchAddresses(TTree * tree) override;
+  void
+  setBranchAddresses(TTree * tree) override;
 
   /**
    * @brief Read branches from tree and use information to fill collection of GenHadTau objects
    * @return Collection of GenHadTau objects
    */
-  std::vector<GenHadTau> read() const;
+  std::vector<GenHadTau>
+  read() const;
 
 protected:
  /**
    * @brief Initialize names of branches to be read from tree
    */
-  void setBranchNames();
+  void
+  setBranchNames();
 
   const unsigned int max_nHadTaus_;
   std::string branchName_num_;

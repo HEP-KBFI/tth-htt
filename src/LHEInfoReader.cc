@@ -63,10 +63,9 @@ LHEInfoReader::setBranchNames()
   ++numInstances_[branchName_scale_weights_];
 }
 
-std::vector<std::string>
+void
 LHEInfoReader::setBranchAddresses(TTree * tree)
 {
-  std::vector<std::string> branchNames;
   if(instances_[branchName_scale_weights_] == this)
   {
     BranchAddressInitializer bai(tree);
@@ -74,9 +73,7 @@ LHEInfoReader::setBranchAddresses(TTree * tree)
     bai.setBranchAddress(pdf_nWeights_, branchName_pdf_nWeights_);
     bai.setLenVar(max_scale_nWeights_).setBranchAddress(scale_weights_, branchName_scale_weights_);
     bai.setLenVar(max_pdf_nWeights_).setBranchAddress(pdf_weights_, branchName_pdf_weights_);
-    bai.mergeBranchNames(branchNames);
   }
-  return branchNames;
 }
 
 void

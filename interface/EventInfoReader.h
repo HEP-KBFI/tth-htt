@@ -15,7 +15,7 @@ public:
   EventInfoReader(EventInfo * info);
   ~EventInfoReader() {}
 
-  std::vector<std::string>
+  void
   setBranchAddresses(TTree * tree) override;
 
   void

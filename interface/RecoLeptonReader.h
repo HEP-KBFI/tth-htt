@@ -19,7 +19,8 @@ public:
   /**
    * @brief Call tree->SetBranchAddress for all lepton branches common to RecoElectrons and RecoMuons
    */
-  std::vector<std::string> setBranchAddresses(TTree * tree) override;
+  void
+  setBranchAddresses(TTree * tree) override;
 
   friend class RecoElectronReader;
   friend class RecoMuonReader;
@@ -28,7 +29,8 @@ protected:
  /**
    * @brief Initialize names of branches to be read from tree
    */
-  void setBranchNames();
+  void
+  setBranchNames();
 
   const unsigned int max_nLeptons_;
   std::string branchName_num_;
@@ -41,7 +43,8 @@ protected:
    */
   template<typename T,
            typename = std::enable_if<std::is_base_of<RecoLepton, T>::value>>
-  void readGenMatching(std::vector<T> & leptons) const
+  void
+  readGenMatching(std::vector<T> & leptons) const
   {
     if(readGenMatching_)
     {

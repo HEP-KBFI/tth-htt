@@ -19,16 +19,23 @@ class hltPath
          double maxPt = -1.);
   ~hltPath() {}
 
-  std::vector<std::string>
+  void
   setBranchAddress(TTree * tree);
 
-  std::vector<std::string>
+  void
   setBranchAddresses(TTree * tree) override;
 
-  const std::string & getBranchName() const;
-  Int_t getValue() const;
-  double getMinPt() const;
-  double getMaxPt() const;
+  const std::string &
+  getBranchName() const;
+
+  Int_t
+  getValue() const;
+
+  double
+  getMinPt() const;
+
+  double
+  getMaxPt() const;
 
  private:
   std::string branchName_;

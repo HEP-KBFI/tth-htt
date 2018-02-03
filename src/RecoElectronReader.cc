@@ -87,13 +87,12 @@ RecoElectronReader::setBranchNames()
   ++numInstances_[branchName_obj_];
 }
 
-std::vector<std::string>
+void
 RecoElectronReader::setBranchAddresses(TTree * tree)
 {
-  std::vector<std::string> branchNames;
   if(instances_[branchName_obj_] == this)
   {
-    BranchAddressInitializer::mergeBranchNames(leptonReader_->setBranchAddresses(tree), branchNames);
+    leptonReader_->setBranchAddresses(tree);
     const unsigned int max_nLeptons = leptonReader_->max_nLeptons_;
 
     BranchAddressInitializer bai(tree, max_nLeptons);
@@ -106,9 +105,7 @@ RecoElectronReader::setBranchAddresses(TTree * tree)
     bai.setBranchAddress(OoEminusOoP_, branchName_OoEminusOoP_);
     bai.setBranchAddress(lostHits_, branchName_lostHits_);
     bai.setBranchAddress(conversionVeto_, branchName_conversionVeto_);
-    bai.mergeBranchNames(branchNames);
   }
-  return branchNames;
 }
 
 std::vector<RecoElectron>

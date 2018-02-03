@@ -23,19 +23,22 @@ public:
   /**
    * @brief Call tree->SetBranchAddress for all GenLepton branches
    */
-  std::vector<std::string> setBranchAddresses(TTree * tree) override;
+  void
+  setBranchAddresses(TTree * tree) override;
 
   /**
    * @brief Read branches from tree and use information to fill collection of GenLepton objects
    * @return Collection of GenLepton objects
    */
-  std::vector<GenLepton> read() const;
+  std::vector<GenLepton>
+  read() const;
 
 protected:
  /**
    * @brief Initialize names of branches to be read from tree
    */
-  void setBranchNames();
+  void
+  setBranchNames();
 
   // electrons and muons from W and Z boson decays
   const unsigned int max_nPromptLeptons_;

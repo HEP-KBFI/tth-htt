@@ -13,11 +13,8 @@ public:
   MEtFilterReader(MEtFilter * metFilter);
   ~MEtFilterReader();
 
-  std::vector<std::string>
-  setBranchAddresses(TTree * tree) override;
-
   void
-  read() const;
+  setBranchAddresses(TTree * tree) override;
 
 protected:
  /**

@@ -52,10 +52,9 @@ MEtFilterReader::setBranchNames()
   ++numInstances_;
 }
 
-std::vector<std::string>
+void
 MEtFilterReader::setBranchAddresses(TTree * tree)
 {
-  std::vector<std::string> branchNames;
   if(instance_ == this)
   {
     BranchAddressInitializer bai(tree);
@@ -77,11 +76,5 @@ MEtFilterReader::setBranchAddresses(TTree * tree)
     bai.setBranchAddress(metFilter_->Flag_trkPOG_toomanystripclus53X_,         branchNameFlag_trkPOG_toomanystripclus53X_);
     bai.setBranchAddress(metFilter_->Flag_trkPOG_logErrorTooManyClusters_,     branchNameFlag_trkPOG_logErrorTooManyClusters_);
     bai.setBranchAddress(metFilter_->Flag_goodVertices_,                       branchNameFlag_goodVertices_);
-    bai.mergeBranchNames(branchNames);
   }
-  return branchNames;
 }
-
-void
-MEtFilterReader::read() const
-{}
