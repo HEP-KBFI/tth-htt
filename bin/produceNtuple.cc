@@ -184,8 +184,7 @@ int main(int argc, char* argv[])
     run_lumi_eventSelector = new RunLumiEventSelector(selEventsFileName_input);
   }
 
-  vstring outputCommands_string = cfg_produceNtuple.getParameter<vstring>("outputCommands");
-  std::vector<outputCommandEntry> outputCommands = getOutputCommands(outputCommands_string);
+//  vstring outputCommands_string = cfg_produceNtuple.getParameter<vstring>("outputCommands");
 
   vstring copy_histograms = cfg_produceNtuple.getParameter<vstring>("copy_histograms");
 
@@ -218,7 +217,7 @@ int main(int argc, char* argv[])
   std::cout << "input Tree contains " << inputTree->GetEntries() << " Entries in " << inputTree->GetListOfFiles()->GetEntries() << " files." << std::endl;
   
 //--- declare event-level variables
-  EventInfo eventInfo(false, isMC, false);
+  EventInfo eventInfo(false, false, false);
   EventInfoReader eventInfoReader(&eventInfo);
   eventInfoReader.setBranchAddresses(inputTree);
 
@@ -285,10 +284,7 @@ int main(int argc, char* argv[])
   GenHadTauReader* genHadTauReader = 0;
   GenJetReader* genJetReader = 0;
   if ( isMC ) {
-    genLeptonReader = new GenLeptonReader(
-                                            Form("n%s", branchName_genLeptons1_in.c_str()),      branchName_genLeptons1_in,
-      ! branchName_genLeptons2_in.empty() ? Form("n%s", branchName_genLeptons2_in.c_str()) : "", branchName_genLeptons2_in
-    );
+    genLeptonReader = new GenLeptonReader(Form("n%s", branchName_genLeptons1_in.c_str()), branchName_genLeptons1_in);
     genLeptonReader->setBranchAddresses(inputTree);
     genHadTauReader = new GenHadTauReader(Form("n%s", branchName_genHadTaus_in.c_str()), branchName_genHadTaus_in);
     genHadTauReader->setBranchAddresses(inputTree);
@@ -312,9 +308,9 @@ int main(int argc, char* argv[])
   TTree* outputTree = new TTree(outputTreeName.data(), outputTreeName.data());
 
   BranchAddressInitializer bai(inputTree);
-  bai.setBranch(eventInfo.run, "run");
-  bai.setBranch(eventInfo.lumi, "luminosityBlock");
-  bai.setBranch(eventInfo.event, "event");
+  bai.setBranch(eventInfo.run, eventInfoReader.branchName_event);
+  bai.setBranch(eventInfo.lumi, eventInfoReader.branchName_lumi);
+  bai.setBranch(eventInfo.event, eventInfoReader.branchName_event);
 
   std::string branchName_muons = branchName_muons_in;
   RecoMuonWriter* muonWriter = new RecoMuonWriter(era, Form("n%s", branchName_muons.data()), branchName_muons);
@@ -360,17 +356,7 @@ int main(int argc, char* argv[])
     genJetWriter->setBranches(outputTree);
     std::cout << "writing GenJet objects to branch = '" << branchName_genJets << "'" << std::endl;
   }
-
-  std::map<std::string, bool> isBranchToKeep = getBranchesToKeep(inputTree, outputCommands); // key = branchName
-  std::map<std::string, branchEntryBaseType*> branchesToKeep; // key = branchName
-  copyBranches_singleType(inputTree, outputTree, isBranchToKeep, branchesToKeep);
-  copyBranches_vectorType(inputTree, outputTree, isBranchToKeep, branchesToKeep);
   
-  std::cout << "keeping branches:" << std::endl;
-  for ( std::map<std::string, branchEntryBaseType*>::const_iterator branchEntry = branchesToKeep.begin();
-        branchEntry != branchesToKeep.end(); ++branchEntry ) {
-    std::cout << " " << branchEntry->second->outputBranchName_ << " (type = " << branchEntry->second->outputBranchType_string_ << ")" << std::endl;
-  }
 
   // define the writer class for the nof MEM permutations
   MEMPermutationWriter memPermutationWriter;
@@ -386,6 +372,38 @@ int main(int argc, char* argv[])
     .addCondition("3l_1tau",   3, 1)
   ;
   memPermutationWriter.setBranchNames(outputTree, era, true);
+
+  const std::vector<std::string> outputCommands_string = {
+    "keep *",
+    Form("drop n%s", branchName_muons_in.data()),
+    Form("drop %s_*", branchName_muons_in.data()),
+    Form("drop n%s", branchName_electrons_in.data()),
+    Form("drop %s_*", branchName_electrons_in.data()),
+    Form("drop n%s", branchName_hadTaus_in.data()),
+    Form("drop %s_*", branchName_hadTaus_in.data()),
+    Form("drop n%s", branchName_jets_in.data()),
+    Form("drop %s_*", branchName_jets_in.data()),
+    Form("drop %s_*", branchName_met_in.data()),
+    Form("drop n%s", branchName_genLeptons1_in.data()),
+    Form("drop %s_*", branchName_genLeptons1_in.data()),
+    Form("drop n%s", branchName_genHadTaus_in.data()),
+    Form("drop %s_*", branchName_genHadTaus_in.data()),
+    Form("drop n%s", branchName_genJets_in.data()),
+    Form("drop %s_*", branchName_genJets_in.data()),
+    Form("drop maxPermutations_*"),
+  };
+
+  std::vector<outputCommandEntry> outputCommands = getOutputCommands(outputCommands_string);
+  std::map<std::string, bool> isBranchToKeep = getBranchesToKeep(inputTree, outputCommands); // key = branchName
+  std::map<std::string, branchEntryBaseType*> branchesToKeep; // key = branchName
+  copyBranches_singleType(inputTree, outputTree, isBranchToKeep, branchesToKeep);
+  copyBranches_vectorType(inputTree, outputTree, isBranchToKeep, branchesToKeep);
+
+  std::cout << "keeping branches:" << std::endl;
+  for ( std::map<std::string, branchEntryBaseType*>::const_iterator branchEntry = branchesToKeep.begin();
+        branchEntry != branchesToKeep.end(); ++branchEntry ) {
+    std::cout << " " << branchEntry->second->outputBranchName_ << " (type = " << branchEntry->second->outputBranchType_string_ << ")" << std::endl;
+  }
 
   int numEntries = inputTree->GetEntries();
   int analyzedEntries = 0;
