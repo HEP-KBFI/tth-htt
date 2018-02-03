@@ -33,7 +33,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/GenLeptonReader.h" // GenLeptonReader
 #include "tthAnalysis/HiggsToTauTau/interface/GenHadTauReader.h" // GenHadTauReader
 #include "tthAnalysis/HiggsToTauTau/interface/GenJetReader.h" // GenJetReader
-#include "tthAnalysis/HiggsToTauTau/interface/EventInfoReader.h" // EventInfoReader, EventInfo
+#include "tthAnalysis/HiggsToTauTau/interface/EventInfoReader.h" // EventInfoReader
 #include "tthAnalysis/HiggsToTauTau/interface/convert_to_ptrs.h" // convert_to_ptrs
 #include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionCleaner.h" // RecoElectronCollectionCleaner, RecoMuonCollectionCleaner, RecoHadTauCollectionCleaner, RecoJetCollectionCleaner
 #include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionGenMatcher.h" // RecoElectronCollectionGenMatcher, RecoMuonCollectionGenMatcher, RecoHadTauCollectionGenMatcher, RecoJetCollectionGenMatcher
@@ -55,7 +55,6 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMEtWriter.h" // RecoMEtWriter
 #include "tthAnalysis/HiggsToTauTau/interface/GenParticleWriter.h" // GenParticleWriter
 #include "tthAnalysis/HiggsToTauTau/interface/MEMPermutationWriter.h" // MEMPermutationWriter
-#include "tthAnalysis/HiggsToTauTau/interface/EventInfoWriter.h" // EventInfoWriter
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // isHigherPt, random_start
 #include "tthAnalysis/HiggsToTauTau/interface/RunLumiEventSelector.h" // RunLumiEventSelector
 #include "tthAnalysis/HiggsToTauTau/interface/cutFlowTable.h" // cutFlowTableType
@@ -63,7 +62,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // z_mass, z_window
 #include "tthAnalysis/HiggsToTauTau/interface/branchEntryType.h"
 #include "tthAnalysis/HiggsToTauTau/interface/branchEntryTypeAuxFunctions.h"
-#include "tthAnalysis/HiggsToTauTau/interface/TTreeWrapper.h" // TTreeWrapper
+#include "tthAnalysis/HiggsToTauTau/interface/BranchAddressInitializer.h"
 
 #include <boost/algorithm/string/predicate.hpp> // boost::starts_with()
 
@@ -176,11 +175,7 @@ int main(int argc, char* argv[])
   bool use_HIP_mitigation_mediumMuonId = cfg_produceNtuple.getParameter<bool>("use_HIP_mitigation_mediumMuonId"); 
   std::cout << "use_HIP_mitigation_mediumMuonId = " << use_HIP_mitigation_mediumMuonId << std::endl;
 
-
-  std::string process_string = cfg_produceNtuple.getParameter<std::string>("process");
-  bool isSignal = ( process_string == "signal" ) ? true : false;
-  bool isMC_tH = ( process_string == "tH" ) ? true : false;
-  bool isMC = cfg_produceNtuple.getParameter<bool>("isMC");
+  bool isMC = cfg_produceNtuple.getParameter<bool>("isMC"); 
 
   std::string selEventsFileName_input = cfg_produceNtuple.getParameter<std::string>("selEventsFileName_input");
   std::cout << "selEventsFileName_input = " << selEventsFileName_input << std::endl;
@@ -208,26 +203,36 @@ int main(int argc, char* argv[])
   fwlite::OutputFiles outputFile(cfg);
   fwlite::TFileService fs = fwlite::TFileService(outputFile.file().data());
 
-  TTreeWrapper * inputTree = new TTreeWrapper(treeName.data(), inputFiles.files(), maxEvents);
+  TChain* inputTree = new TChain(treeName.data());
+  for ( std::vector<std::string>::const_iterator inputFileName = inputFiles.files().begin();
+        inputFileName != inputFiles.files().end(); ++inputFileName ) {
+    std::cout << "input Tree: adding file = " << (*inputFileName) << std::endl;
+    inputTree->AddFile(inputFileName->data());
+  }
+  
+  if ( !(inputTree->GetListOfFiles()->GetEntries() >= 1) ) {
+    throw cms::Exception("produceNtuple") 
+      << "Failed to identify input Tree !!\n";
+  }
 
-  std::cout << "Loaded " << inputTree -> getFileCount() << " file(s).\n";
+  std::cout << "input Tree contains " << inputTree->GetEntries() << " Entries in " << inputTree->GetListOfFiles()->GetEntries() << " files." << std::endl;
   
 //--- declare event-level variables
-  EventInfo eventInfo(isSignal, isMC, isMC_tH);
+  EventInfo eventInfo(false, isMC, false);
   EventInfoReader eventInfoReader(&eventInfo);
-  inputTree -> registerReader(&eventInfoReader);
+  eventInfoReader.setBranchAddresses(inputTree);
 
 //--- declare particle collections
   RecoMuonReader* muonReader = new RecoMuonReader(era, Form("n%s", branchName_muons_in.c_str()), branchName_muons_in);
   muonReader->set_HIP_mitigation(use_HIP_mitigation_mediumMuonId);
-  inputTree -> registerReader(muonReader);
+  muonReader->setBranchAddresses(inputTree);
   RecoMuonCollectionGenMatcher muonGenMatcher;
   RecoMuonCollectionSelectorLoose preselMuonSelector(era);
   RecoMuonCollectionSelectorFakeable fakeableMuonSelector(era);
   RecoMuonCollectionSelectorTight tightMuonSelector(era);
   
   RecoElectronReader* electronReader = new RecoElectronReader(era, Form("n%s", branchName_electrons_in.c_str()), branchName_electrons_in);
-  inputTree -> registerReader(electronReader);
+  electronReader->setBranchAddresses(inputTree);
   RecoElectronCollectionGenMatcher electronGenMatcher;
   RecoElectronCollectionCleaner electronCleaner(0.3);
   RecoElectronCollectionSelectorLoose preselElectronSelector(era);
@@ -235,7 +240,7 @@ int main(int argc, char* argv[])
   RecoElectronCollectionSelectorTight tightElectronSelector(era);
 
   RecoHadTauReader* hadTauReader = new RecoHadTauReader(era, Form("n%s", branchName_hadTaus_in.c_str()), branchName_hadTaus_in);
-  inputTree -> registerReader(hadTauReader);
+  hadTauReader->setBranchAddresses(inputTree);
   RecoHadTauCollectionGenMatcher hadTauGenMatcher;
   RecoHadTauCollectionCleaner hadTauCleaner(0.3);
   std::cout << "Setting preselHadTauSelector\n";
@@ -264,7 +269,7 @@ int main(int argc, char* argv[])
   RecoJetReader* jetReader = new RecoJetReader(era, isMC, Form("n%s", branchName_jets_in.c_str()), branchName_jets_in);
   jetReader->setJetPt_central_or_shift(RecoJetReader::kJetPt_central); 
   jetReader->read_BtagWeight_systematics(isMC);
-  inputTree -> registerReader(jetReader);
+  jetReader->setBranchAddresses(inputTree);
   RecoJetCollectionGenMatcher jetGenMatcher;
   RecoJetCollectionCleaner jetCleaner(0.4);
   RecoJetSelector jetSelector(era);  
@@ -273,7 +278,7 @@ int main(int argc, char* argv[])
 
 //--- declare missing transverse energy
   RecoMEtReader* metReader = new RecoMEtReader(era, branchName_met_in);
-  inputTree -> registerReader(metReader);
+  metReader->setBranchAddresses(inputTree);  
 
 //--- declare generator level information
   GenLeptonReader* genLeptonReader = 0;
@@ -284,11 +289,11 @@ int main(int argc, char* argv[])
                                             Form("n%s", branchName_genLeptons1_in.c_str()),      branchName_genLeptons1_in,
       ! branchName_genLeptons2_in.empty() ? Form("n%s", branchName_genLeptons2_in.c_str()) : "", branchName_genLeptons2_in
     );
-    inputTree -> registerReader(genLeptonReader);
+    genLeptonReader->setBranchAddresses(inputTree);
     genHadTauReader = new GenHadTauReader(Form("n%s", branchName_genHadTaus_in.c_str()), branchName_genHadTaus_in);
-    inputTree -> registerReader(genHadTauReader);
+    genHadTauReader->setBranchAddresses(inputTree);
     genJetReader = new GenJetReader(Form("n%s", branchName_genJets_in.c_str()), branchName_genJets_in);
-    inputTree -> registerReader(genJetReader);
+    genJetReader->setBranchAddresses(inputTree);
   }
 
   std::string outputTreeName = treeName;
@@ -306,8 +311,10 @@ int main(int argc, char* argv[])
   }
   TTree* outputTree = new TTree(outputTreeName.data(), outputTreeName.data());
 
-  EventInfoWriter * eventInfoWriter = new EventInfoWriter(isSignal, isMC, isMC_tH);
-  eventInfoWriter->setBranches(outputTree);
+  BranchAddressInitializer bai(inputTree);
+  bai.setBranch(eventInfo.run, "run");
+  bai.setBranch(eventInfo.lumi, "luminosityBlock");
+  bai.setBranch(eventInfo.event, "event");
 
   std::string branchName_muons = branchName_muons_in;
   RecoMuonWriter* muonWriter = new RecoMuonWriter(era, Form("n%s", branchName_muons.data()), branchName_muons);
@@ -354,8 +361,6 @@ int main(int argc, char* argv[])
     std::cout << "writing GenJet objects to branch = '" << branchName_genJets << "'" << std::endl;
   }
 
-  /* Disabling the functionality of keeping and dropping extra branches from the input file
-   *
   std::map<std::string, bool> isBranchToKeep = getBranchesToKeep(inputTree, outputCommands); // key = branchName
   std::map<std::string, branchEntryBaseType*> branchesToKeep; // key = branchName
   copyBranches_singleType(inputTree, outputTree, isBranchToKeep, branchesToKeep);
@@ -366,7 +371,6 @@ int main(int argc, char* argv[])
         branchEntry != branchesToKeep.end(); ++branchEntry ) {
     std::cout << " " << branchEntry->second->outputBranchName_ << " (type = " << branchEntry->second->outputBranchType_string_ << ")" << std::endl;
   }
-  */
 
   // define the writer class for the nof MEM permutations
   MEMPermutationWriter memPermutationWriter;
@@ -383,36 +387,28 @@ int main(int argc, char* argv[])
   ;
   memPermutationWriter.setBranchNames(outputTree, era, true);
 
+  int numEntries = inputTree->GetEntries();
   int analyzedEntries = 0;
   int selectedEntries = 0;
   cutFlowTableType cutFlowTable;
-  while(inputTree -> hasNextEvent() && (! run_lumi_eventSelector || (run_lumi_eventSelector && ! run_lumi_eventSelector -> areWeDone())))
-  {
-    if(inputTree -> canReport(reportEvery))
-    {
-      std::cout << "processing Entry " << inputTree -> getCurrentMaxEventIdx()
-                << " or " << inputTree -> getCurrentEventIdx() << " entry in #"
-                << (inputTree -> getProcessedFileCount() - 1)
-                << " (" << eventInfo
-                << ") file (" << selectedEntries << " Entries selected)\n";
+  for ( int idxEntry = 0; idxEntry < numEntries && (maxEvents == -1 || idxEntry < maxEvents); ++idxEntry ) {
+    
+    inputTree->GetEntry(idxEntry);
+
+    if ( idxEntry > 0 && (idxEntry % reportEvery) == 0 ) {
+      std::cout << "processing Entry " << idxEntry << ':' << eventInfo
+                << " (" << selectedEntries << " Entries selected)\n";
     }
     ++analyzedEntries;
     
     cutFlowTable.update("read from file");
 
-    if (run_lumi_eventSelector && !(*run_lumi_eventSelector)(eventInfo))
-    {
-      continue;
-    }
+    if ( run_lumi_eventSelector && !(*run_lumi_eventSelector)(eventInfo) ) continue;
     cutFlowTable.update("run:ls:event selection");
 
-    if(run_lumi_eventSelector)
-    {
-      std::cout << "processing Entry " << inputTree -> getCurrentMaxEventIdx() << ": " << eventInfo << '\n';
-      if(inputTree -> isOpen())
-      {
-        std::cout << "input File = " << inputTree -> getCurrentFileName() << '\n';
-      }
+    if ( run_lumi_eventSelector ) {
+      std::cout << "processing Entry " << idxEntry << ':' << eventInfo << '\n';
+      if ( inputTree->GetFile() ) std::cout << "input File = " << inputTree->GetFile()->GetName() << std::endl;
     }
 
 //--- build collections of electrons, muons and hadronic taus;
@@ -628,7 +624,6 @@ int main(int argc, char* argv[])
       {{preselLeptons, fakeableLeptons, tightLeptons}}, {{selBJets_loose, selBJets_medium}}, cleanedHadTaus
     );
 
-    eventInfoWriter->write(eventInfo);
     muonWriter->write(preselMuons);
     electronWriter->write(preselElectrons);
     hadTauWriter->write(fakeableHadTaus);
@@ -642,26 +637,22 @@ int main(int argc, char* argv[])
     }
 
     //std::cout << "copying branches:" << std::endl;
-    /*
     for ( std::map<std::string, branchEntryBaseType*>::const_iterator branchEntry = branchesToKeep.begin();
           branchEntry != branchesToKeep.end(); ++branchEntry ) {
       //std::cout << branchEntry->second->outputBranchName_ << std::endl;
       branchEntry->second->copyBranch();
     }
-    */
 
     outputTree->Fill();
 
     ++selectedEntries;
   }
 
-  std::cout << "max num. Entries = " << inputTree -> getCumulativeMaxEventCount()
-            << " (limited by " << maxEvents << ") processed in "
-            << inputTree -> getProcessedFileCount() << " file(s) (out of "
-            << inputTree -> getFileCount() << ")\n"
-            << " analyzed = " << analyzedEntries << '\n'
-            << " selected = " << selectedEntries
-            << "cut-flow table" << std::endl;
+  std::cout << "num. Entries = " << numEntries << std::endl;
+  std::cout << " analyzed = " << analyzedEntries << std::endl;
+  std::cout << " selected = " << selectedEntries << std::endl;
+
+  std::cout << "cut-flow table" << std::endl;
   cutFlowTable.print(std::cout);
   std::cout << std::endl;
 
