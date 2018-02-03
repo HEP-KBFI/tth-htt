@@ -23,6 +23,15 @@ public:
 
 protected:
   EventInfo * info_;
+
+public:
+  const std::string branchName_run;
+  const std::string branchName_lumi;
+  const std::string branchName_event;
+  const std::string branchName_genHiggsDecayMode;
+  const std::string branchName_genWeight;
+  const std::string branchName_puWeight;
+  const std::string branchName_lheWeightSM;
 };
 
 #endif // EventInfoReader_H
