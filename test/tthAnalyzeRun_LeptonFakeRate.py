@@ -62,7 +62,7 @@ if era == "2017":
 else:
   raise ValueError("Invalid Configuration parameter 'era' = %s !!" % era)
 
-for sample_name, sample_info in samples_2016.items():
+for sample_name, sample_info in samples.items():
   if sample_info["type"] == "mc":
     sample_info["triggers"] = [ "1e", "1mu", "2e", "2mu" ]
   if sample_name.startswith(('/MuonEG/Run', '/Tau/Run')):
@@ -102,42 +102,6 @@ if __name__ == '__main__':
         "CMS_ttHl_JERDown",
         "CMS_ttHl_UnclusteredEnUp",
         "CMS_ttHl_UnclusteredEnDown",
-  ##       "CMS_ttHl_btag_HFUp",
-  ##       "CMS_ttHl_btag_HFDown",
-  ##       "CMS_ttHl_btag_HFStats1Up",
-  ##       "CMS_ttHl_btag_HFStats1Down",
-  ##       "CMS_ttHl_btag_HFStats2Up",
-  ##       "CMS_ttHl_btag_HFStats2Down",
-  ##       "CMS_ttHl_btag_LFUp",
-  ##       "CMS_ttHl_btag_LFDown",
-  ##       "CMS_ttHl_btag_LFStats1Up",
-  ##       "CMS_ttHl_btag_LFStats1Down",
-  ##       "CMS_ttHl_btag_LFStats2Up",
-  ##       "CMS_ttHl_btag_LFStats2Down",
-  ##       "CMS_ttHl_btag_cErr1Up",
-  ##       "CMS_ttHl_btag_cErr1Down",
-  ##       "CMS_ttHl_btag_cErr2Up",
-  ##       "CMS_ttHl_btag_cErr2Down",
-  ##       "CMS_ttHl_JESUp",
-  ##       "CMS_ttHl_JESDown",
-  ##       "CMS_ttHl_tauESUp",
-  ##       "CMS_ttHl_tauESDown",
-  ##       "CMS_ttHl_FRet_shiftUp",
-  ##       "CMS_ttHl_FRet_shiftDown",
-  ##       "CMS_ttHl_FRmt_shiftUp",
-  ##       "CMS_ttHl_FRmt_shiftDown",
-  ##       "CMS_ttHl_thu_shape_ttH_x1Up",
-  ##       "CMS_ttHl_thu_shape_ttH_x1Down",
-  ##       "CMS_ttHl_thu_shape_ttH_y1Up",
-  ##       "CMS_ttHl_thu_shape_ttH_y1Down",
-  ##       "CMS_ttHl_thu_shape_ttW_x1Up",
-  ##       "CMS_ttHl_thu_shape_ttW_x1Down",
-  ##       "CMS_ttHl_thu_shape_ttW_y1Up",
-  ##       "CMS_ttHl_thu_shape_ttW_y1Down",
-  ##       "CMS_ttHl_thu_shape_ttZ_x1Up",
-  ##       "CMS_ttHl_thu_shape_ttZ_x1Down",
-  ##       "CMS_ttHl_thu_shape_ttZ_y1Up",
-  ##       "CMS_ttHl_thu_shape_ttZ_y1Down",
       ],
       numerator_histogram                      = ("mT_fix_L",     "m_{T}^{fix}"), # or ("pt", "p_{T}"),
       denominator_histogram                    = ("EventCounter", "Number of events"),
