@@ -40,7 +40,7 @@ RecoMEtReader::~RecoMEtReader()
 void
 RecoMEtReader::setMEt_central_or_shift(int met_option)
 {
-  if(! isMC_ && ! met_option != kMEt_central)
+  if(! isMC_ && met_option != kMEt_central)
   {
     throw cmsException(this, __func__) << "Invalid met systematics for data: " << met_option;
   }
