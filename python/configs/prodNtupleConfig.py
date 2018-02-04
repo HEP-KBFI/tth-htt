@@ -144,6 +144,7 @@ class prodNtupleConfig:
                 "process.fwliteInput.fileNames                         = cms.vstring(%s)"  % inputFiles_prepended,
                 "inputFiles = %s"   % jobOptions['inputFiles'],
                 "executable = '%s'" % self.executable_prodNtuple,
+                "isMC = %s" % str(jobOptions['is_mc']),
             ])
         else:
             lines.extend([
