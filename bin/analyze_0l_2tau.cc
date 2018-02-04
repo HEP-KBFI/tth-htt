@@ -395,7 +395,7 @@ int main(int argc, char* argv[])
   RecoJetCollectionSelectorBtagMedium jetSelectorBtagMedium(era);
 
 //--- declare missing transverse energy
-  RecoMEtReader* metReader = new RecoMEtReader(era, branchName_met);
+  RecoMEtReader* metReader = new RecoMEtReader(era, isMC, branchName_met);
   inputTree -> registerReader(metReader);
 
   GenLeptonReader* genLeptonReader = 0;

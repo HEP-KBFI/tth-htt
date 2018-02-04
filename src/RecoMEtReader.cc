@@ -7,14 +7,17 @@
 std::map<std::string, int> RecoMEtReader::numInstances_;
 std::map<std::string, RecoMEtReader *> RecoMEtReader::instances_;
 
-RecoMEtReader::RecoMEtReader(int era)
-  : RecoMEtReader(era, "MET")
+RecoMEtReader::RecoMEtReader(int era,
+                             bool isMC)
+  : RecoMEtReader(era, isMC, "MET")
 {}
 
 RecoMEtReader::RecoMEtReader(int era,
+                             bool isMC,
                              const std::string & branchName_obj,
                              const std::string & branchName_cov)
   : era_(era)
+  , isMC_(isMC)
   , branchName_obj_(branchName_obj)
   , branchName_cov_(branchName_cov.empty() ? branchName_obj_ : branchName_cov)
   , met_option_(kMEt_central)
@@ -37,6 +40,10 @@ RecoMEtReader::~RecoMEtReader()
 void
 RecoMEtReader::setMEt_central_or_shift(int met_option)
 {
+  if(! isMC_ && ! met_option != kMEt_central)
+  {
+    throw cmsException(this, __func__) << "Invalid met systematics for data: " << met_option;
+  }
   met_option_ = met_option;
 }
 
@@ -47,7 +54,8 @@ RecoMEtReader::setBranchNames()
   {
     const std::string branchName_obj_pt  = Form("%s_pt",  branchName_obj_.data());
     const std::string branchName_obj_phi = Form("%s_phi", branchName_obj_.data());
-    for(int met_option = kMEt_central; met_option <= kMEt_shifted_UnclusteredEnDown; ++met_option)
+    const int met_option_limit = isMC_ ? kMEt_shifted_UnclusteredEnDown : kMEt_central;
+    for(int met_option = kMEt_central; met_option <= met_option_limit; ++met_option)
     {
       branchName_pt_[met_option]  = getBranchName_MEt(era_, branchName_obj_pt,  met_option);
       branchName_phi_[met_option] = getBranchName_MEt(era_, branchName_obj_phi, met_option);
@@ -66,7 +74,8 @@ RecoMEtReader::setBranchAddresses(TTree * tree)
   if(instances_[branchName_obj_] == this)
   {
     BranchAddressInitializer bai(tree);
-    for(int met_option = kMEt_central; met_option <= kMEt_shifted_UnclusteredEnDown; ++met_option)
+    const int met_option_limit = isMC_ ? kMEt_shifted_UnclusteredEnDown : kMEt_central;
+    for(int met_option = kMEt_central; met_option <= met_option_limit; ++met_option)
     {
       met_.systematics_[met_option] = {0., 0.};
       bai.setBranchAddress(met_.systematics_[met_option].pt_, branchName_pt_[met_option]);

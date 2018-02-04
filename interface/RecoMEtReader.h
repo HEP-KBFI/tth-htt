@@ -13,8 +13,10 @@ class RecoMEtReader
   : public ReaderBase
 {
 public:
-  RecoMEtReader(int era);
   RecoMEtReader(int era,
+                bool isMC);
+  RecoMEtReader(int era,
+                bool isMC,
                 const std::string & branchName_obj,
                 const std::string & branchName_cov = "");
   ~RecoMEtReader();
@@ -45,9 +47,11 @@ protected:
  /**
    * @brief Initialize names of branches to be read from tree
    */
-  void setBranchNames();
+  void
+  setBranchNames();
 
   int era_;
+  bool isMC_;
   std::string branchName_obj_;
   std::string branchName_cov_;
 

@@ -12,28 +12,34 @@ class TTree;
 class RecoMEtWriter
 {
 public:
-  RecoMEtWriter(int era);
   RecoMEtWriter(int era,
+                bool isMC);
+  RecoMEtWriter(int era,
+                bool isMC,
                 const std::string & branchName_obj);
   ~RecoMEtWriter();
 
   /**
    * @brief Call tree->Branch for all RecoMEt branches
    */
-  void setBranches(TTree * tree);
+  void
+  setBranches(TTree * tree);
 
   /**
    * @brief Write RecoMEt object to tree
    */
-  void write(const RecoMEt & met);
-  
+  void
+  write(const RecoMEt & met);
+
 protected:
  /**
    * @brief Initialize names of branches to be read from tree
    */
-  void setBranchNames();
+  void
+  setBranchNames();
 
   int era_;
+  bool isMC_;
   std::string branchName_obj_;
 
   std::map<int, std::string> branchName_pt_;

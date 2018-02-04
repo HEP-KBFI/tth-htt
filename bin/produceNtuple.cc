@@ -276,7 +276,7 @@ int main(int argc, char* argv[])
   RecoJetCollectionSelectorBtagMedium jetSelectorBtagMedium(era);
 
 //--- declare missing transverse energy
-  RecoMEtReader* metReader = new RecoMEtReader(era, branchName_met_in);
+  RecoMEtReader* metReader = new RecoMEtReader(era, isMC, branchName_met_in);
   metReader->setBranchAddresses(inputTree);  
 
 //--- declare generator level information
@@ -333,7 +333,7 @@ int main(int argc, char* argv[])
   std::cout << "writing RecoJet objects to branch = '" << branchName_jets << "'" << std::endl;
 
   std::string branchName_met = branchName_met_in;
-  RecoMEtWriter* metWriter = new RecoMEtWriter(era, branchName_met);
+  RecoMEtWriter* metWriter = new RecoMEtWriter(era, isMC, branchName_met);
   metWriter->setBranches(outputTree);
   std::cout << "writing RecoMEt object to branch = '" << branchName_met << "'" << std::endl;
 

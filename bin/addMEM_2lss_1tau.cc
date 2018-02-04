@@ -233,7 +233,7 @@ int main(int argc,
   const RecoJetCollectionSelector jetSelector(era);
 
 //--- declare missing transverse energy
-  RecoMEtReader* metReader = new RecoMEtReader(era, branchName_met);
+  RecoMEtReader* metReader = new RecoMEtReader(era, isMC, branchName_met);
   metReader->setMEt_central_or_shift(RecoMEtReader::kMEt_central);
   metReader->setBranchAddresses(inputTree);
 
@@ -277,7 +277,7 @@ int main(int argc,
     hadTauWriter->setBranches(outputTree);
     jetWriter = new RecoJetWriter(era, isMC, Form("n%s", branchName_jets.data()), branchName_jets);
     jetWriter->setBranches(outputTree);
-    metWriter = new RecoMEtWriter(era, branchName_met);
+    metWriter = new RecoMEtWriter(era, isMC, branchName_met);
     metWriter->setBranches(outputTree);
 
     vstring outputCommands_string = {

@@ -242,7 +242,7 @@ int main(int argc, char* argv[])
     inputTree -> registerReader(hltPaths);
   }
   
-  RecoMEtReader* metReader = new RecoMEtReader(era, "MET");
+  RecoMEtReader* metReader = new RecoMEtReader(era, isMC, "MET");
   metReader->setMEt_central_or_shift(RecoMEtReader::kMEt_central);
   inputTree -> registerReader(metReader);
 
