@@ -476,30 +476,35 @@ def traverse_single(hdfs_system, meta_dict, path_obj, key, check_every_event,
           path           = subentry_file.name_fuse,
         ))
         # Using a fallback solution
-        if RUN_TREE not in root_file.GetListOfKeys():
-          raise ValueError("Tree of the name {tree_name} is not in file {path}".format(
-            tree_name = RUN_TREE,
-            path      = subentry_file.name_fuse,
-          ))
-        tree_run = root_file.Get(RUN_TREE)
-        branches_run = [branch.GetName() for branch in tree_run.GetListOfBranches()]
-        requested_branch = BRANCH_COUNT if is_data else BRANCH_COUNTWEIGHTED
-        if requested_branch not in branches_run:
-          raise ValueError("No branch named {branch} in tree named {tree} in file {path}".format(
-            branch = requested_branch,
-            tree   = RUN_TREE,
-            path   = subentry_file.name_fuse,
-          ))
+        if is_data:
+          # in case of data, the Runs tree contains only runs branch and nothing else
+          index_entry[HISTOGRAM_COUNT_KEY] = index_entry[TREE_COUNT_KEY]
+        else:
+          if RUN_TREE not in root_file.GetListOfKeys():
+            raise ValueError("Tree of the name {tree_name} is not in file {path}".format(
+              tree_name = RUN_TREE,
+              path      = subentry_file.name_fuse,
+            ))
+          tree_run = root_file.Get(RUN_TREE)
+          branches_run = [branch.GetName() for branch in tree_run.GetListOfBranches()]
+          requested_branch = BRANCH_COUNTWEIGHTED
+          if requested_branch not in branches_run:
+            raise ValueError("No branch named {branch} in tree named {tree} in file {path}".format(
+              branch = requested_branch,
+              tree   = RUN_TREE,
+              path   = subentry_file.name_fuse,
+            ))
 
-        array_str, array_lst = get_array_type(tree_run, requested_branch, 1)
-        run_count = array.array(array_str, array_lst)
-        tree_run.SetBranchAddress(requested_branch, run_count)
-        run_entries = tree_run.GetEntries()
-        nof_run_events = 0
-        for run_idx in range(run_entries):
-          tree_run.GetEntry(run_idx)
-          nof_run_events += run_count[0]
-        del tree_run
+          array_str, array_lst = get_array_type(tree_run, requested_branch, 1)
+          run_count = array.array(array_str, array_lst)
+          tree_run.SetBranchAddress(requested_branch, run_count)
+          run_entries = tree_run.GetEntries()
+          nof_run_events = 0
+          for run_idx in range(run_entries):
+            tree_run.GetEntry(run_idx)
+            nof_run_events += run_count[0]
+          del tree_run
+          index_entry[HISTOGRAM_COUNT_KEY] = nof_run_events
       else:
         histogram = root_file.Get(histogram_name)
         if not histogram:
