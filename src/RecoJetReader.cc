@@ -151,12 +151,15 @@ RecoJetReader::setBranchAddresses(TTree * tree)
     bai.setBranchAddress(jet_mass_, branchName_mass_);
     bai.setBranchAddress(jet_jecUncertTotal_, branchName_jecUncertTotal_);
     bai.setBranchAddress(jet_BtagCSV_, branchName_BtagCSV_);
-    bai.setBranchAddress(jet_BtagWeight_, branchName_BtagWeight_, 1.);
-    if(read_BtagWeight_systematics_)
+    if(isMC_)
     {
-      for(int idxShift = kBtag_hfUp; idxShift <= kBtag_jesDown; ++idxShift)
+      bai.setBranchAddress(jet_BtagWeight_, branchName_BtagWeight_, 1.);
+      if(read_BtagWeight_systematics_)
       {
-        bai.setBranchAddress(jet_BtagWeights_systematics_[idxShift], branchNames_BtagWeight_systematics_[idxShift]);
+        for(int idxShift = kBtag_hfUp; idxShift <= kBtag_jesDown; ++idxShift)
+        {
+          bai.setBranchAddress(jet_BtagWeights_systematics_[idxShift], branchNames_BtagWeight_systematics_[idxShift]);
+        }
       }
     }
     bai.setBranchAddress(jet_QGDiscr_, branchName_QGDiscr_, 1.);
@@ -201,25 +204,29 @@ RecoJetReader::read() const
         },
         gInstance->jet_jecUncertTotal_[idxJet],
         gInstance->jet_BtagCSV_[idxJet],
-        gInstance->jet_BtagWeight_[idxJet],
+        isMC_ ? gInstance->jet_BtagWeight_[idxJet] : 1.,
         gInstance->jet_QGDiscr_[idxJet],
         gInstance->jet_heppyFlavour_[idxJet],
         static_cast<Int_t>(idxJet)
       });
-      RecoJet & jet = jets.back();
 
-      jet.BtagCSV_ = gInstance->jet_BtagCSV_[idxJet];
-      if(read_BtagWeight_systematics_)
+      if(isMC_)
       {
-        for(int idxShift = kBtag_hfUp; idxShift <= kBtag_jesDown; ++idxShift)
+        RecoJet & jet = jets.back();
+
+        if(read_BtagWeight_systematics_)
         {
-          if(jet_BtagWeights_systematics_.count(idxShift))
+          for(int idxShift = kBtag_hfUp; idxShift <= kBtag_jesDown; ++idxShift)
           {
-            jet.BtagWeight_systematics_[idxShift] = jet_BtagWeights_systematics_.at(idxShift)[idxJet];
-          }
-        } // idxShift
-      } // read_BtagWeight_systematics_
+            if(jet_BtagWeights_systematics_.count(idxShift))
+            {
+              jet.BtagWeight_systematics_[idxShift] = jet_BtagWeights_systematics_.at(idxShift)[idxJet];
+            }
+          } // idxShift
+        } // read_BtagWeight_systematics_
+      } // isMC_
     } // idxJet
+
     readGenMatching(jets);
   } // nJets > 0
   return jets;

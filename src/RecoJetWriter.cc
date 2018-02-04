@@ -65,12 +65,15 @@ void RecoJetWriter::setBranchNames()
   branchName_jecUncertTotal_ = Form("%s_%s", branchName_obj_.data(), "jecUncertTotal");
   branchName_BtagCSV_ = Form("%s_%s", branchName_obj_.data(), "btagCSVV2");
   branchName_QGDiscr_ = Form("%s_%s", branchName_obj_.data(), "qgl");
-  branchName_BtagWeight_ = Form("%s_%s", branchName_obj_.data(), "btagSF_csvv2");
-  for(int idxShift = kBtag_hfUp; idxShift <= kBtag_jesDown; ++idxShift)
+  if(isMC_)
   {
-    branchNames_BtagWeight_systematics_[idxShift] = TString(getBranchName_bTagWeight(era_, idxShift))
-      .ReplaceAll("Jet_", Form("%s_", branchName_obj_.data())).Data()
-    ;
+    branchName_BtagWeight_ = Form("%s_%s", branchName_obj_.data(), "btagSF_csvv2");
+    for(int idxShift = kBtag_hfUp; idxShift <= kBtag_jesDown; ++idxShift)
+    {
+      branchNames_BtagWeight_systematics_[idxShift] = TString(getBranchName_bTagWeight(era_, idxShift))
+        .ReplaceAll("Jet_", Form("%s_", branchName_obj_.data())).Data()
+      ;
+    }
   }
 }
 
@@ -88,10 +91,13 @@ void RecoJetWriter::setBranches(TTree * tree)
   bai.setBranch(jet_mass_, branchName_mass_);
   bai.setBranch(jet_jecUncertTotal_, branchName_jecUncertTotal_);
   bai.setBranch(jet_BtagCSV_, branchName_BtagCSV_);
-  bai.setBranch(jet_BtagWeight_, branchName_BtagWeight_);
-  for(int idxShift = kBtag_hfUp; idxShift <= kBtag_jesDown; ++idxShift)
+  if(isMC_)
   {
-    bai.setBranch(jet_BtagWeights_systematics_[idxShift], branchNames_BtagWeight_systematics_[idxShift]);
+    bai.setBranch(jet_BtagWeight_, branchName_BtagWeight_);
+    for(int idxShift = kBtag_hfUp; idxShift <= kBtag_jesDown; ++idxShift)
+    {
+      bai.setBranch(jet_BtagWeights_systematics_[idxShift], branchNames_BtagWeight_systematics_[idxShift]);
+    }
   }
   bai.setBranch(jet_QGDiscr_, branchName_QGDiscr_);
 }
@@ -109,16 +115,19 @@ void RecoJetWriter::write(const std::vector<const RecoJet *> & jets)
     jet_mass_[idxJet] = jet->mass();
     jet_jecUncertTotal_[idxJet] = jet->jecUncertTotal();
     jet_BtagCSV_[idxJet] = jet->BtagCSV_;
-    jet_BtagWeight_[idxJet] = jet->BtagWeight();
-    for(int idxShift = kBtag_hfUp; idxShift <= kBtag_jesDown; ++idxShift)
+    if(isMC_)
     {
-      if(jet->BtagWeight_systematics_.count(idxShift))
+      jet_BtagWeight_[idxJet] = jet->BtagWeight();
+      for(int idxShift = kBtag_hfUp; idxShift <= kBtag_jesDown; ++idxShift)
       {
-        jet_BtagWeights_systematics_[idxShift][idxJet] = jet->BtagWeight_systematics_.at(idxShift);
-      }
-      else
-      {
-        jet_BtagWeights_systematics_[idxShift][idxJet] = 1.;
+        if(jet->BtagWeight_systematics_.count(idxShift))
+        {
+          jet_BtagWeights_systematics_[idxShift][idxJet] = jet->BtagWeight_systematics_.at(idxShift);
+        }
+        else
+        {
+          jet_BtagWeights_systematics_[idxShift][idxJet] = 1.;
+        }
       }
     }
     jet_QGDiscr_[idxJet] = jet->QGDiscr();
