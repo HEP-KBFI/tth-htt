@@ -375,13 +375,13 @@ int main(int argc, char* argv[])
 
   const std::vector<std::string> outputCommands_string = {
     "keep *",
-    Form("drop n%s", branchName_muons_in.data()),
+    Form("drop n%s*", branchName_muons_in.data()),
     Form("drop %s_*", branchName_muons_in.data()),
-    Form("drop n%s", branchName_electrons_in.data()),
+    Form("drop n%s*", branchName_electrons_in.data()),
     Form("drop %s_*", branchName_electrons_in.data()),
-    Form("drop n%s", branchName_hadTaus_in.data()),
+    Form("drop n%s*", branchName_hadTaus_in.data()),
     Form("drop %s_*", branchName_hadTaus_in.data()),
-    Form("drop n%s", branchName_jets_in.data()),
+    Form("drop n%s*", branchName_jets_in.data()),
     Form("drop %s_*", branchName_jets_in.data()),
     Form("drop %s_*", branchName_met_in.data()),
     Form("drop n%s", branchName_genLeptons1_in.data()),
