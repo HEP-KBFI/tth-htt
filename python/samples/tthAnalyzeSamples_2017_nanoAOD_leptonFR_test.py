@@ -22,7 +22,7 @@ samples_2017["/SingleMuon/Run2017E-17Nov2017-v1/MINIAOD"] = OD([
       OD([
         ("path",      "/hdfs/cms/store/user/kaehatah/NanoAOD_2017/SingleMuon/NanoAOD_2017_v5_SingleMuon__Run2017E-17Nov2017-v1/180130_140806"),
         ("selection", "*"),
-        ("blacklist", [276]),
+        ("blacklist", [276,3104]),
       ]),
     ]
   ),
