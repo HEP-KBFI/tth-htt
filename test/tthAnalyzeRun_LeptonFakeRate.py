@@ -9,7 +9,7 @@ from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 #TODO: needs actual Ntuples
 #TODO: needs an updated value of integrated luminosity for 2017 data
 
-cmssw_base_dir_combine     = os.path.expanduser('~/CMSSW_7_4_7') # immediate parent dir to src folder
+cmssw_base_dir_combine     = os.path.expanduser('~/VHBB_NTUPLES_2017/CMSSW_7_4_7_CombineHarvestor') # immediate parent dir to src folder
 era_choices                = ['2017']
 default_resubmission_limit = 4
 

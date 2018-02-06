@@ -42,7 +42,7 @@ process.analyze_LeptonFakeRate = cms.PSet(
             cone_maxPt = cms.double(100000.),
             jet_minPt = cms.double(30.),
 #            pufile    = cms.FileInPath(""), ## PU file to be implemented later
-            average_prescale = cms.double(143),
+            average_prescale = cms.double(225), ## 2016 VALUE: 143
             prescale_rand_mc = cms.double(5.),
             is_trigger_1mu = cms.bool(True),
             is_trigger_2mu = cms.bool(False),
@@ -55,7 +55,7 @@ process.analyze_LeptonFakeRate = cms.PSet(
             cone_maxPt = cms.double(100000.),
             jet_minPt = cms.double(30.),
 #            pufile    = cms.FileInPath(""), ## PU file to be implemented later
-            average_prescale = cms.double(126),
+            average_prescale = cms.double(594), ## 2016 VALUE: 126
             prescale_rand_mc = cms.double(5.),
             is_trigger_1mu = cms.bool(False),
             is_trigger_2mu = cms.bool(True),
@@ -68,7 +68,7 @@ process.analyze_LeptonFakeRate = cms.PSet(
             cone_maxPt = cms.double(45.),
             jet_minPt = cms.double(30.),
 #            pufile    = cms.FileInPath(""), ## PU file to be implemented later
-            average_prescale = cms.double(9072),
+            average_prescale = cms.double(15948), ## 2016 VALUE: 9072
             prescale_rand_mc = cms.double(100.),
             is_trigger_1mu = cms.bool(False),
             is_trigger_2mu = cms.bool(True),
@@ -81,7 +81,7 @@ process.analyze_LeptonFakeRate = cms.PSet(
             cone_maxPt = cms.double(30.),
             jet_minPt = cms.double(40.),
 #            pufile    = cms.FileInPath(""), ## PU file to be implemented later
-            average_prescale = cms.double(4841),
+            average_prescale = cms.double(8992), ## 2016 VALUE: 4841
             prescale_rand_mc = cms.double(50.),
             is_trigger_1mu = cms.bool(False),
             is_trigger_2mu = cms.bool(True),
@@ -89,29 +89,54 @@ process.analyze_LeptonFakeRate = cms.PSet(
             is_trigger_2e = cms.bool(False)
          )
     ),
-
     triggers_e = cms.VPSet(
         cms.PSet(
-            path = cms.vstring("HLT_BIT_HLT_Ele17_CaloIdM_TrackIdM_PFJet30_v"),
-            cone_minPt = cms.double(30.),
-            cone_maxPt = cms.double(100000.),
+            path = cms.vstring("HLT_BIT_HLT_Ele8_CaloIdM_TrackIdM_PFJet30_v"),
+            cone_minPt = cms.double(15.), 
+            cone_maxPt = cms.double(20.), 
             jet_minPt = cms.double(30.),
 #            pufile    = cms.FileInPath(""), ## PU file to be implemented later
-            average_prescale = cms.double(569),
-            prescale_rand_mc = cms.double(10.),
+            average_prescale = cms.double(11365), 
+            prescale_rand_mc = cms.double(10.), ## WHAT VALUE ?
             is_trigger_1mu = cms.bool(False),
             is_trigger_2mu = cms.bool(False),
             is_trigger_1e = cms.bool(False),
             is_trigger_2e = cms.bool(True)
         ),
+#        cms.PSet(
+#            path = cms.vstring("HLT_BIT_HLT_Ele12_CaloIdM_TrackIdM_PFJet30_v"), ## --> doesnot exist in 2017 data
+#            cone_minPt = cms.double(20.),
+#            cone_maxPt = cms.double(30.),
+#            jet_minPt = cms.double(30.),
+##            pufile    = cms.FileInPath(""), ## PU file to be implemented later
+#            average_prescale = cms.double(2021), ## <---- 2016 VALUE 
+#            prescale_rand_mc = cms.double(25.),
+#            is_trigger_1mu = cms.bool(False),
+#            is_trigger_2mu = cms.bool(False),
+#            is_trigger_1e = cms.bool(False),
+#            is_trigger_2e = cms.bool(True)
+#        ),
+#        cms.PSet( ## --> Removed as Ele17 covers the rest of the phase space
+#            path = cms.vstring("HLT_BIT_HLT_Ele23_CaloIdM_TrackIdM_PFJet30_v"),
+#            cone_minPt = cms.double(20.), ## IS THIS CORRECT ?
+#            cone_maxPt = cms.double(30.), ## IS THIS CORRECT ?
+#            jet_minPt = cms.double(30.),
+##            pufile    = cms.FileInPath(""), ## PU file to be implemented later
+#            average_prescale = cms.double(1086),
+#            prescale_rand_mc = cms.double(25.),
+#            is_trigger_1mu = cms.bool(False),
+#            is_trigger_2mu = cms.bool(False),
+#            is_trigger_1e = cms.bool(False),
+#            is_trigger_2e = cms.bool(True)
+#        ),
         cms.PSet(
-            path = cms.vstring("HLT_BIT_HLT_Ele12_CaloIdM_TrackIdM_PFJet30_v"),
-            cone_minPt = cms.double(20.),
-            cone_maxPt = cms.double(30.),
+            path = cms.vstring("HLT_BIT_HLT_Ele17_CaloIdM_TrackIdM_PFJet30_v"), 
+            cone_minPt = cms.double(30.),
+            cone_maxPt = cms.double(100000.),
             jet_minPt = cms.double(30.),
 #            pufile    = cms.FileInPath(""), ## PU file to be implemented later
-            average_prescale = cms.double(2021),
-            prescale_rand_mc = cms.double(25.),
+            average_prescale = cms.double(1167), ## 2016 VALUE: 569 
+            prescale_rand_mc = cms.double(10.),
             is_trigger_1mu = cms.bool(False),
             is_trigger_2mu = cms.bool(False),
             is_trigger_1e = cms.bool(False),
