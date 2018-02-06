@@ -3,7 +3,6 @@
 
 class TTree; // forward declaration
 
-#include <vector> // std::vector<>
 #include <string> // std::string
 
 class ReaderBase
