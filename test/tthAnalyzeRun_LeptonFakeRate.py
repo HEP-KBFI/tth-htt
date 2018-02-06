@@ -9,7 +9,7 @@ from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 #TODO: needs actual Ntuples
 #TODO: needs an updated value of integrated luminosity for 2017 data
 
-cmssw_base_dir_combine     = os.path.expanduser('~/VHBB_NTUPLES_2017/CMSSW_7_4_7_CombineHarvestor') # immediate parent dir to src folder
+cmssw_base_dir_combine     = os.path.expanduser('~/CMSSW_7_4_7') # immediate parent dir to src folder
 era_choices                = ['2017']
 default_resubmission_limit = 4
 
@@ -55,9 +55,9 @@ resubmit             = args.disable_resubmission
 max_job_resubmission = args.resubmission_limit if resubmit else 1
 
 if era == "2017":
-  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017 as samples
-  max_files_per_job = 100
-  lumi = 35.9e+3 # 1/pb
+  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_leptonFR_test import samples_2017 as samples
+  max_files_per_job = 1 # set it to 1 temporarily
+  lumi = 41.96e+3 # 1/pb
   # TODO: update lumi
 else:
   raise ValueError("Invalid Configuration parameter 'era' = %s !!" % era)
