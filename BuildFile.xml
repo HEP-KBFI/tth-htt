@@ -7,7 +7,7 @@
 <use   name="root"/>
 <use   name="roottmva"/>
 <use   name="boost" />
-<Flags CXXFLAGS="-O3 -fPIC" />
+<Flags CXXFLAGS="-O3 -fPIC -Wswitch -Wswitch-enum -Werror -Wno-error=bool-compare" />
 <export>
   <lib   name="1"/>
 </export>

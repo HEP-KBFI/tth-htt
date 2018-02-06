@@ -12,7 +12,6 @@
 #include "tthAnalysis/HiggsToTauTau/interface/HistManagerBase.h" // HistManagerBase
 #include "tthAnalysis/HiggsToTauTau/interface/MEtFilter.h" // MEtFilter
 
-
 class MEtFilterHistManager
   : public HistManagerBase
 {
