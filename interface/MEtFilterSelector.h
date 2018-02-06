@@ -28,31 +28,24 @@ class MEtFilterSelector
  protected: 
   // Following JetMEt POG Recipe "Moriond 2017" 
   // https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETOptionalFiltersRun2#Moriond_2018
-  bool apply_Flag_goodVertices_; 
-  bool apply_Flag_globalSuperTightHalo2016Filter_;
-  bool apply_Flag_HBHENoiseFilter_;
+  bool apply_Flag_goodVertices_;
   bool apply_Flag_HBHENoiseIsoFilter_;
   bool apply_Flag_EcalDeadCellTriggerPrimitiveFilter_;
+  bool apply_Flag_ecalLaserCorrFilter_;
+  bool apply_Flag_muonBadTrackFilter_;
+  bool apply_Flag_HBHENoiseFilter_;
+  bool apply_Flag_chargedHadronTrackResolutionFilter_;
   bool apply_Flag_eeBadScFilter_;
-  bool apply_Flag_BadPFMuonFilter_;  
-  bool apply_Flag_BadChargedCandidateFilter_; 
+// ---- Flags not recommended in Moriond 2017 recipe but are present inside VHBB 2016 Ntuples ----
   bool apply_Flag_hcalLaserEventFilter_;
   bool apply_Flag_trkPOGFilters_;
   bool apply_Flag_CSCTightHaloFilter_;
+  bool apply_Flag_METFilters_;
+  bool apply_Flag_CSCTightHalo2015Filter_;
   bool apply_Flag_trkPOG_manystripclus53X_;
   bool apply_Flag_trkPOG_toomanystripclus53X_;
   bool apply_Flag_trkPOG_logErrorTooManyClusters_;
-  bool apply_Flag_CSCTightHalo2015Filter_;            
-  bool apply_Flag_BadChargedCandidateSummer16Filter_; 
-  bool apply_Flag_BadPFMuonSummer16Filter_;           
-  bool apply_Flag_CSCTightHaloTrkMuUnvetoFilter_;     
-  bool apply_Flag_EcalDeadCellBoundaryEnergyFilter_;  
-  bool apply_Flag_HcalStripHaloFilter_;                
-  bool apply_Flag_METFilters_;                        
-  bool apply_Flag_chargedHadronTrackResolutionFilter_; 
-  bool apply_Flag_ecalBadCalibFilter_;                 
-  bool apply_Flag_ecalLaserCorrFilter_;                
-  bool apply_Flag_muonBadTrackFilter_;
+
 };
 
 #endif // tthAnalysis_HiggsToTauTau_MEtFilterSelector_h
