@@ -144,13 +144,13 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     self.absEtaBins_mu = absEtaBins_mu
     self.ptBins_mu = ptBins_mu
 
-    self.cfgFile_analyze = os.path.join(self.workingDir, "analyze_LeptonFakeRate_cfg.py")
+    self.cfgFile_analyze = os.path.join(self.template_dir, "analyze_LeptonFakeRate_cfg.py")
     self.fillGenEvtHistograms = fillGenEvtHistograms
 
     self.executable_addBackgrounds = executable_addBackgrounds
     self.executable_addBackgrounds_recursively = executable_addBackgrounds_recursively
     self.executable_addBackgrounds_LeptonFakeRate = executable_addBackgrounds_LeptonFakeRate
-    self.cfgFile_addBackgrounds_LeptonFakeRate = os.path.join(self.workingDir, "addBackground_LeptonFakeRate_cfg.py")
+    self.cfgFile_addBackgrounds_LeptonFakeRate = os.path.join(self.template_dir, "addBackground_LeptonFakeRate_cfg.py")
     self.jobOptions_addBackgrounds_LeptonFakeRate = {}
 
     self.executable_prep_dcard = executable_prep_dcard
