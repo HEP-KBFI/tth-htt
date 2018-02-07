@@ -27,7 +27,7 @@ MEtFilterHistManager::fillHistograms(const MEtFilter & metFilter,
     if(! metFilter.getFlag(static_cast<MEtFilterFlag>(flag)))
     {
       // CV: fill histogram if filter has failed
-      fill(histogram_MEtFilterCounter_, flag, evtWeight, evtWeightErr);
+      fill(histogram_MEtFilterCounter_, flag + 1, evtWeight, evtWeightErr);
     }
   }
 }
