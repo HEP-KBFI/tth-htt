@@ -36,7 +36,7 @@ fit_param_range_map = {
       'absEtaLt1_5_Pt45_0to65_0'        : '0.01,10.0',
       'absEtaLt1_5_Pt65_0to100000_0'    : '0.01,10.0',
       'absEta1_5to9_9_Pt15_0to20_0'     : '0.01,10.0',
-      'absEta1_5to9_9_Pt20_0to30_0'     : '0.01,10.0',
+      'absEta1_5to9_9_Pt20_0to30_0'     : '0.0,10.0',  ## CHANGED TO MAKE FIT CONVERGE
       'absEta1_5to9_9_Pt30_0to45_0'     : '0.01,10.0',
       'absEta1_5to9_9_Pt45_0to65_0'     : '0.01,10.0',
       'absEta1_5to9_9_Pt65_0to100000_0' : '0.01,10.0',
