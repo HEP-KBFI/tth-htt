@@ -9,7 +9,7 @@ MEtFilterHistManager::MEtFilterHistManager(const edm::ParameterSet & cfg)
 void
 MEtFilterHistManager::bookHistograms(TFileDirectory & dir)
 {
-  histogram_MEtFilterCounter_ = book1D(dir, "MEtFilterCounter", "MEtFilterCounter", MEtFilterFlag::LAST, 1., MEtFilterFlag::LAST);
+  histogram_MEtFilterCounter_ = book1D(dir, "MEtFilterCounter", "MEtFilterCounter", MEtFilterFlag::LAST, 1., MEtFilterFlag::LAST + 1);
   for(int flag = 0; flag < MEtFilterFlag::LAST; ++flag)
   {
     histogram_MEtFilterCounter_->GetXaxis()->SetBinLabel(flag + 1, getMEtFilterFlagString(static_cast<MEtFilterFlag>(flag)));
