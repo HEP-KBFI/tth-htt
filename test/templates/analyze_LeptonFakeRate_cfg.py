@@ -86,7 +86,7 @@ process.analyze_LeptonFakeRate = cms.PSet(
         cms.PSet(
             path = cms.vstring("HLT_Ele8_CaloIdM_TrackIdM_PFJet30"),
             cone_minPt = cms.double(15.),
-            cone_maxPt = cms.double(20.),
+            cone_maxPt = cms.double(30.),
             jet_minPt = cms.double(30.),
 #            pufile    = cms.FileInPath(""), ## PU file to be implemented later
             average_prescale = cms.double(11365),
@@ -96,19 +96,19 @@ process.analyze_LeptonFakeRate = cms.PSet(
             is_trigger_1e = cms.bool(False),
             is_trigger_2e = cms.bool(True)
         ),
-        cms.PSet(
-            path = cms.vstring("HLT_Ele12_CaloIdL_TrackIdL_IsoVL_PFJet30"),
-            cone_minPt = cms.double(20.),
-            cone_maxPt = cms.double(30.),
-            jet_minPt = cms.double(30.),
-#            pufile    = cms.FileInPath(""), ## PU file to be implemented later
-            average_prescale = cms.double(1086), #TODO: update
-            prescale_rand_mc = cms.double(25.),
-            is_trigger_1mu = cms.bool(False),
-            is_trigger_2mu = cms.bool(False),
-            is_trigger_1e = cms.bool(False),
-            is_trigger_2e = cms.bool(True)
-        ),
+#        cms.PSet(
+#            path = cms.vstring("HLT_Ele12_CaloIdL_TrackIdL_IsoVL_PFJet30"),
+#            cone_minPt = cms.double(20.),
+#            cone_maxPt = cms.double(30.),
+#            jet_minPt = cms.double(30.),
+##            pufile    = cms.FileInPath(""), ## PU file to be implemented later
+#            average_prescale = cms.double(1086), #TODO: update
+#            prescale_rand_mc = cms.double(25.),
+#            is_trigger_1mu = cms.bool(False),
+#            is_trigger_2mu = cms.bool(False),
+#            is_trigger_1e = cms.bool(False),
+#            is_trigger_2e = cms.bool(True)
+#        ),
         cms.PSet(
             path = cms.vstring("HLT_Ele17_CaloIdM_TrackIdM_PFJet30"),
             cone_minPt = cms.double(30.),
@@ -121,7 +121,7 @@ process.analyze_LeptonFakeRate = cms.PSet(
             is_trigger_2mu = cms.bool(False),
             is_trigger_1e = cms.bool(False),
             is_trigger_2e = cms.bool(True)
-        ),
+        )
     ),
 
     absEtaBins_e = cms.vdouble(0., 1.479, 9.9),
