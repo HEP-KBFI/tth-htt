@@ -13,11 +13,16 @@ MVAInputVarHistManager::MVAInputVarHistManager(const edm::ParameterSet& cfg)
   binningOptions_["dr_lep_tau_os"] = new binningOptionType("dr_lep_tau_os", 50, 0., 5.);
   binningOptions_["dr_lep_tau_ss"] = new binningOptionType("dr_lep_tau_ss", 50, 0., 5.);
   binningOptions_["dr_lep1_tau"] = new binningOptionType("dr_lep1_tau", 50, 0., 5.);
+  binningOptions_["dr_lep1_tau1"] = new binningOptionType("dr_lep1_tau1", 50, 0., 5.);
+  binningOptions_["dr_lep1_tau2"] = new binningOptionType("dr_lep1_tau2", 50, 0., 5.);
   binningOptions_["dr_lep2_tau"] = new binningOptionType("dr_lep2_tau", 50, 0., 5.);
+  binningOptions_["dr_lep2_tau1"] = new binningOptionType("dr_lep2_tau1", 50, 0., 5.);
+  binningOptions_["dr_lep2_tau2"] = new binningOptionType("dr_lep2_tau2", 50, 0., 5.);
   binningOptions_["dr_lep3_tau"] = new binningOptionType("dr_lep3_tau", 50, 0., 5.);
   binningOptions_["dr_leps"] = new binningOptionType("dr_leps", 50, 0., 5.);
   binningOptions_["dr_tau_lep"] = new binningOptionType("dr_tau_lep", 50, 0., 5.);
   binningOptions_["dr_taus"] = new binningOptionType("dr_taus", 50, 0., 5.);
+  binningOptions_["hadTauPairCharge"] = new binningOptionType("hadTauPairCharge", 5, -2.5, +2.5);
   binningOptions_["ht"] = new binningOptionType("ht", 40, 0., 400.);
   binningOptions_["htmiss"] = new binningOptionType("htmiss", 40, 0., 200.);
   binningOptions_["TMath::Min(htmiss,500)"] = new binningOptionType("htmiss", 40, 0., 200.);
@@ -41,6 +46,7 @@ MVAInputVarHistManager::MVAInputVarHistManager(const edm::ParameterSet& cfg)
   binningOptions_["LepGood_conePt[iF_Recl[0]]"] = new binningOptionType("LepGood_conePt[iF_Recl[0]]", 40, 0., 200.);
   binningOptions_["LepGood_conePt[iF_Recl[1]]"] = new binningOptionType("LepGood_conePt[iF_Recl[1]]", 40, 0., 200.);
   binningOptions_["LepGood_conePt[iF_Recl[2]]"] = new binningOptionType("LepGood_conePt[iF_Recl[2]]", 40, 0., 200.);
+  binningOptions_["leptonPairCharge"] = new binningOptionType("leptonPairCharge", 5, -2.5, +2.5);
   binningOptions_["max(abs(LepGood_eta[iF_Recl[0]]),abs(LepGood_eta[iF_Recl[1]]))"] = new binningOptionType("max(abs(LepGood_eta[iF_Recl[0]]),abs(LepGood_eta[iF_Recl[1]]))", 50, -2.5, +2.5);
   binningOptions_["max_lep_eta"] = new binningOptionType("max_lep_eta", 50, -2.5, +2.5);
   binningOptions_["memOutput_LR"] = new binningOptionType("memOutput_LR", 20, 0., 1.);

@@ -63,6 +63,8 @@ void EvtHistManager_1l_2tau::bookHistograms(TFileDirectory& dir)
   histogram_mvaOutput_1l_2tau_ttbar_HTTWithKinFit_MVAonly_ = book1D(dir, "mvaOutput_1l_2tau_ttbar_HTTWithKinFit_MVAonly", "mvaOutput_1l_2tau_ttbar_HTTWithKinFit_MVAonly", 600, 0., 1.);
   histogram_mvaOutput_1l_2tau_ttbar_HTTWithKinFit_ = book1D(dir, "mvaOutput_1l_2tau_ttbar_HTTWithKinFit", "mvaOutput_1l_2tau_ttbar_HTTWithKinFit", 600, 0., 1.);
   histogram_mvaOutput_1l_2tau_ttbar_Old_ = book1D(dir, "mvaOutput_1l_2tau_ttbar_Old", "mvaOutput_1l_2tau_ttbar_Old", 600, -1., 1.);
+  histogram_mvaOutput_1l_2tau_ttbar_Old_5bins_ = book1D(dir, "mvaOutput_1l_2tau_ttbar_Old_5bins", "mvaOutput_1l_2tau_ttbar_Old_5bins", 5, -1., 1.);
+
   histogram_mvaOutput_1l_2tau_ttbar_HTTLepID_ = book1D(dir, "mvaOutput_1l_2tau_ttbar_HTTLepID", "mvaOutput_1l_2tau_ttbar_HTTLepID", 600, 0., 1.);
   histogram_mvaOutput_1l_2tau_ttbar_OldVar_ = book1D(dir, "mvaOutput_1l_2tau_ttbar_OldVar", "mvaOutput_1l_2tau_ttbar_OldVar", 600, 0., 1.);
   histogram_mvaOutput_1l_2tau_ttbar_OldVarHTT_ = book1D(dir, "mvaOutput_1l_2tau_ttbar_OldVarHTT", "mvaOutput_1l_2tau_ttbar_OldVarHTT", 600, 0., 1.);
@@ -112,6 +114,9 @@ void EvtHistManager_1l_2tau::fillHistograms(int numElectrons, int numMuons, int 
   fillWithOverFlow(histogram_mvaOutput_ttV_HTT_, mvaOutput_ttV_HTT, evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_mvaOutput_ttbar_OldVar_, mvaOutput_ttbar_OldVar, evtWeight, evtWeightErr);
 
+  fillWithOverFlow(histogram_mvaOutput_1B_HTT_, mvaOutput_1B_HTT, evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_mvaOutput_1B_noHTT_, mvaOutput_1B_noHTT, evtWeight, evtWeightErr);
+
   fillWithOverFlow(histogram_numElectrons_, numElectrons, evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_numMuons_, numMuons, evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_numHadTaus_, numHadTaus, evtWeight, evtWeightErr);
@@ -123,7 +128,10 @@ void EvtHistManager_1l_2tau::fillHistograms(int numElectrons, int numMuons, int 
   fillWithOverFlow2d(histogram_numBJets_medium_vs_numJets_, numJets, numBJets_medium, evtWeight, evtWeightErr);
 
   fillWithOverFlow(histogram_mvaOutput_1l_2tau_ttbar_, mvaOutput_1l_2tau_ttbar, evtWeight, evtWeightErr);
+
   fillWithOverFlow(histogram_mvaOutput_1l_2tau_ttbar_Old_, mvaOutput_1l_2tau_ttbar_Old, evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_mvaOutput_1l_2tau_ttbar_Old_5bins_, mvaOutput_1l_2tau_ttbar_Old, evtWeight, evtWeightErr);
+
   fillWithOverFlow(histogram_mvaOutput_1l_2tau_ttbar_HTTWithKinFit_MVAonly_, mvaOutput_1l_2tau_ttbar_HTTWithKinFit_MVAonly, evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_mvaOutput_1l_2tau_ttbar_HTTWithKinFit_, mvaOutput_1l_2tau_ttbar_HTTWithKinFit, evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_mvaOutput_1l_2tau_ttbar_HTTLepID_, mvaOutput_1l_2tau_ttbar_HTTLepID, evtWeight, evtWeightErr);

@@ -26,8 +26,8 @@ class analyzeConfig_ttZctrl(analyzeConfig):
 
     self.hadTau_selection_part2 = hadTau_selection
 
-    self.prep_dcard_processesToCopy = [ "data_obs", "TT", "TTW", "TTZ", "EWK", "Rares" ]
-    self.make_plots_backgrounds = [ "TT", "TTW", "signal", "EWK", "Rares" ]
+    self.prep_dcard_processesToCopy = [ "data_obs", "TT", "TTW", "TTWW", "TTZ", "EWK", "Rares" ]
+    self.make_plots_backgrounds = [ "TT", "TTW", "TTWW", "signal", "EWK", "Rares" ]
     self.make_plots_signal = "TTZ"
 
     self.cfgFile_analyze = os.path.join(self.workingDir, cfgFile_analyze)
@@ -43,7 +43,7 @@ class analyzeConfig_ttZctrl(analyzeConfig):
     Args:
       inputFiles: list of input files (Ntuples)
       outputFile: output file of the job -- a ROOT file containing histogram
-      process: either `TT`, `TTW`, `TTZ`, `EWK`, `Rares`, `data_obs`, `ttH_hww`, `ttH_hzz` or `ttH_htt`
+      process: either `TT`, `TTW`, `TTWW`, `TTZ`, `EWK`, `Rares`, `data_obs`, `ttH_hww`, `ttH_hzz` or `ttH_htt`
       is_mc: flag indicating whether job runs on MC (True) or data (False)
       lumi_scale: event weight (= xsection * luminosity / number of events)
       central_or_shift: either 'central' or one of the systematic uncertainties defined in $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/bin/analyze_ttZctrl.cc
@@ -88,9 +88,9 @@ class analyzeConfig_ttZctrl(analyzeConfig):
           self.dirs[key_dir][dir_type] = os.path.join(self.configDir, dir_type, self.channel, "", process_name)
         else:
           self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel, "", process_name)
-    for dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_HIST, DKEY_DCRD, DKEY_PLOT, DKEY_HADD_RT ]:
+    for dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_HIST, DKEY_LOGS, DKEY_DCRD, DKEY_PLOT, DKEY_HADD_RT ]:
       initDict(self.dirs, [ dir_type ])
-      if dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_LOGS, DKEY_HADD_RT ]:
+      if dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_LOGS, DKEY_DCRD, DKEY_PLOT, DKEY_HADD_RT ]:
         self.dirs[dir_type] = os.path.join(self.configDir, dir_type, self.channel)
       else:
         self.dirs[dir_type] = os.path.join(self.outputDir, dir_type, self.channel)
@@ -213,7 +213,7 @@ class analyzeConfig_ttZctrl(analyzeConfig):
     if self.is_sbatch:
       logging.info("Creating script for submitting '%s' jobs to batch system" % self.executable_analyze)
       self.sbatchFile_analyze = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_analyze_%s.py" % self.channel)
-      self.createScript_sbatch()
+      self.createScript_sbatch(self.executable_analyze, self.sbatchFile_analyze, self.jobOptions_analyze, key_input_file = 'ntupleFiles', key_output_file = 'histogramFile')
 
     logging.info("Creating Makefile")
     lines_makefile = []
@@ -225,4 +225,5 @@ class analyzeConfig_ttZctrl(analyzeConfig):
     self.createMakefile(lines_makefile)
   
     logging.info("Done")
-  
+
+    return self.num_jobs

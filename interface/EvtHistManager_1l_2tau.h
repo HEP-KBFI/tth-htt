@@ -20,10 +20,11 @@ class EvtHistManager_1l_2tau
   EvtHistManager_1l_2tau(edm::ParameterSet const& cfg);
   ~EvtHistManager_1l_2tau() {}
 
-  const Int_t  nbinsTarget[7]={4,5,6,7,8,9,10};
-  const Int_t  nbinsStart[3]={15,10,8};
-  const Int_t nstart =3;
-  const Int_t ntarget =7;
+  const Int_t  nbinsTarget[13]= {4,5,6,7,8,9,10,11,12,13,
+                                18,20,27};//{4,5,6,7,8,9,10};
+  const Int_t  nbinsStart[2]={15,20};
+  const Int_t nstart =2;
+  const Int_t ntarget =13;
 
   //void LoadMaps(int nstart, int ntarget);
   ///*
@@ -77,6 +78,7 @@ class EvtHistManager_1l_2tau
   TH1* histogram_mvaOutput_1l_2tau_ttbar_HTTWithKinFit_MVAonly_;
   TH1* histogram_mvaOutput_1l_2tau_ttbar_HTTWithKinFit_;
   TH1* histogram_mvaOutput_1l_2tau_ttbar_Old_;
+  TH1* histogram_mvaOutput_1l_2tau_ttbar_Old_5bins_;
   TH1* histogram_mvaOutput_1l_2tau_ttbar_HTTLepID_;
   TH1* histogram_mvaOutput_1l_2tau_ttbar_OldVar_;
   TH1* histogram_mvaOutput_1l_2tau_ttbar_OldVarHTT_;

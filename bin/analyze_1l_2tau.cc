@@ -600,10 +600,15 @@ int main(int argc, char* argv[])
   std::string binOptSource="/hdfs/local/acaan/ttHAnalysis/2016/1l_2tau_opt1";
   //std::string binOptSourceEndTrue="bins_relLepIDTrue_CumulativeBins.root";
   std::string binOptSourceEndFalse="bins_relLepIDFalse_CumulativeBins.root";
-  const Int_t  nbinsTarget[7]={4,5,6,7,8,9,10};
-  const Int_t  nbinsStart[3]={15,10,8};
-  const Int_t nstart =3;
-  const Int_t ntarget =7;
+  const Int_t  nbinsTarget[13]={4,5,6,7,8,9,10,11,12,13,
+                                18,20,27};//{4,5,6,7,8,9,10};
+  const Int_t  nbinsStart[2]={15,20};
+  const Int_t nstart =2;
+  const Int_t ntarget =13;
+  //const Int_t  nbinsTarget[7]={4,5,6,7,8,9,10};
+  //const Int_t  nbinsStart[3]={15,10,8};
+  //const Int_t nstart =3;
+  //const Int_t ntarget =7;
   //TH2* oldVarA[nstart][ntarget];
   std::vector<TH2*> HTT;
   std::vector<TH2*> noHTT;

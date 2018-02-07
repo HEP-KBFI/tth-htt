@@ -8,7 +8,7 @@ samples_2016 = OD()
 samples_2016["/TT_TuneCUETP8M2T4_13TeV-powheg-pythia8/RunIISummer17MiniAOD-92X_upgrade2017_realistic_v10_ext1-v1/MINIAODSIM"] = OD([
   ("type",                            "mc"),
   ("sample_category",                 "TT"),
-  ("process_name_specific",           "TT"),
+  ("process_name_specific",           "TT_TuneCUETP8M2T4_13TeV-powheg-pythia8"),
   ("nof_files",                       1),
   ("nof_events",                      10000),
   ("use_HIP_mitigation_bTag",         False),

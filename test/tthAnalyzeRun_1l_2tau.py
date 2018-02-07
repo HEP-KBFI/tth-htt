@@ -89,7 +89,7 @@ if mode == "VHbb":
       "/Tau/Run2016G-PromptReco-v1/MINIAOD"]:
       sample_info["use_it"] = False
 
-  hadTau_selection         = "dR03mvaVTight" #"dR03mvaTight" # "dR03mvaLoose" ## "dR03mvaMedium" # "dR03mvaTight" #
+  hadTau_selection         = "dR03mvaTight" #  "dR03mvaVTight" #"dR03mvaLoose" ## "dR03mvaMedium" # "dR03mvaTight" #
   applyFakeRateWeights     = "3L"
 elif mode == "forBDTtraining":
   if use_prod_ntuples:
@@ -125,8 +125,8 @@ if __name__ == '__main__':
   is_last_resubmission   = False
 
   # do histograms for 2D bin optimizations
-  nbinsTarget=[4,5,6,7,8,9,10];
-  nbinsStart=[15,10,8];
+  nbinsTarget=[4,5,6,7,8,9,10,11,12,13,18,20,27];
+  nbinsStart=[15,20];
   hist_HTT=[] # [[None]*int(len(nbinsTarget))]*len(nbinsStart)
   hist_noHTT=[] # [[None]*int(len(nbinsTarget))]*len(nbinsStart)
   for nbinsStartN in range(0,len(nbinsStart)) :
@@ -211,6 +211,7 @@ if __name__ == '__main__':
         "mvaOutput_1l_2tau_ttbar",
         "mvaOutput_1l_2tau_ttbar_Old",
         "mvaOutput_1l_2tau_ttbar_OldVar",
+        "mvaOutput_1l_2tau_ttbar_Old_5bins",
         "mvaOutput_1l_2tau_ttbar_OldVarHTT",
         "mvaOutput_1l_2tau_ttbar_HTTLepID",
 #       "mvaOutput_1l_2tau_ttbar_withLepID",
