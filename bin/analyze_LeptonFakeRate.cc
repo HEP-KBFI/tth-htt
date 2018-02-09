@@ -461,7 +461,7 @@ main(int argc,
   const std::string branchName_jets      = cfg_analyze.getParameter<std::string>("branchName_jets");
   const std::string branchName_met       = cfg_analyze.getParameter<std::string>("branchName_met");
 
-  const std::string branchName_genLeptons = cfg_analyze.getParameter<std::string>("branchName_genLeptons1");
+  const std::string branchName_genLeptons = cfg_analyze.getParameter<std::string>("branchName_genLeptons");
   const std::string branchName_genHadTaus = cfg_analyze.getParameter<std::string>("branchName_genHadTaus");
   const std::string branchName_genJets    = cfg_analyze.getParameter<std::string>("branchName_genJets");
 
