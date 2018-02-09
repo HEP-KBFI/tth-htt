@@ -15,6 +15,7 @@ class TTree;
 class RecoLeptonWriter
 {
 public:
+  RecoLeptonWriter(const std::string & branchName_obj);
   RecoLeptonWriter(const std::string & branchName_num,
                    const std::string & branchName_obj);
   ~RecoLeptonWriter();

@@ -5,7 +5,12 @@
 #include "tthAnalysis/HiggsToTauTau/interface/BranchAddressInitializer.h" // BranchAddressInitializer, TTree, Form()
 
 RecoMuonWriter::RecoMuonWriter(int era)
-  : RecoMuonWriter(era, "nMuon", "Muon")
+  : RecoMuonWriter(era, "Muon")
+{}
+
+RecoMuonWriter::RecoMuonWriter(int era,
+                               const std::string & branchName_obj)
+  : RecoMuonWriter(era, Form("n%s", branchName_obj.data()), branchName_obj)
 {}
 
 RecoMuonWriter::RecoMuonWriter(int era,

@@ -16,6 +16,8 @@ class RecoElectronWriter
 public:
   RecoElectronWriter(int era);
   RecoElectronWriter(int era,
+                     const std::string & branchName_obj);
+  RecoElectronWriter(int era,
                      const std::string & branchName_num,
                      const std::string & branchName_obj);
   ~RecoElectronWriter();

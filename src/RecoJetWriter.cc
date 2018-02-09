@@ -7,7 +7,13 @@
 
 RecoJetWriter::RecoJetWriter(int era,
                              bool isMC)
-  : RecoJetWriter(era, isMC, "nJet", "Jet")
+  : RecoJetWriter(era, isMC, "Jet")
+{}
+
+RecoJetWriter::RecoJetWriter(int era,
+                             bool isMC,
+                             const std::string & branchName_obj)
+  : RecoJetWriter(era, isMC, Form("n%s", branchName_obj.data()), branchName_obj)
 {}
 
 RecoJetWriter::RecoJetWriter(int era,

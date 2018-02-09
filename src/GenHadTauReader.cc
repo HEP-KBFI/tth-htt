@@ -7,7 +7,11 @@ std::map<std::string, int> GenHadTauReader::numInstances_;
 std::map<std::string, GenHadTauReader *> GenHadTauReader::instances_;
 
 GenHadTauReader::GenHadTauReader()
-  : GenHadTauReader("nGenHadTaus", "GenHadTaus")
+  : GenHadTauReader("GenHadTaus")
+{}
+
+GenHadTauReader::GenHadTauReader(const std::string & branchName_obj)
+  : GenHadTauReader(Form("n%s", branchName_obj.data()), branchName_obj)
 {}
 
 GenHadTauReader::GenHadTauReader(const std::string & branchName_num,

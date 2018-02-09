@@ -7,7 +7,12 @@ std::map<std::string, int> RecoLeptonReader::numInstances_;
 std::map<std::string, RecoLeptonReader *> RecoLeptonReader::instances_;
 
 RecoLeptonReader::RecoLeptonReader(bool readGenMatching)
-  : RecoLeptonReader("nLepton", "Lepton", readGenMatching)
+  : RecoLeptonReader("Lepton", readGenMatching)
+{}
+
+RecoLeptonReader::RecoLeptonReader(const std::string & branchName_obj,
+                                   bool readGenMatching)
+  : RecoLeptonReader(Form("n%s", branchName_obj.data()), branchName_obj, readGenMatching)
 {}
 
 RecoLeptonReader::RecoLeptonReader(const std::string & branchName_num,

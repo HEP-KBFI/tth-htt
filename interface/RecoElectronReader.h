@@ -17,6 +17,9 @@ public:
   RecoElectronReader(int era,
                      bool readGenMatching = false);
   RecoElectronReader(int era,
+                     const std::string & branchName_obj,
+                     bool readGenMatching = false);
+  RecoElectronReader(int era,
                      const std::string & branchName_num,
                      const std::string & branchName_obj,
                      bool readGenMatching = false);

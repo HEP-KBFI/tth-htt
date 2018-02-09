@@ -19,6 +19,9 @@ public:
                 bool isMC);
   RecoJetWriter(int era,
                 bool isMC,
+                const std::string & branchName_obj);
+  RecoJetWriter(int era,
+                bool isMC,
                 const std::string & branchName_num,
                 const std::string & branchName_obj);
   ~RecoJetWriter();

@@ -7,7 +7,11 @@ std::map<std::string, int> GenParticleReader::numInstances_;
 std::map<std::string, GenParticleReader *> GenParticleReader::instances_;
 
 GenParticleReader::GenParticleReader()
-  : GenParticleReader("nGenPart", "GenPart")
+  : GenParticleReader("GenPart")
+{}
+
+GenParticleReader::GenParticleReader(const std::string & branchName_particles)
+  : GenParticleReader(Form("n%s", branchName_particles.data()), branchName_particles)
 {}
 
 GenParticleReader::GenParticleReader(const std::string & branchName_nParticles,

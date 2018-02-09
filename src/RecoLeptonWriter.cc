@@ -2,6 +2,10 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/BranchAddressInitializer.h" // BranchAddressInitializer, TTree, Form()
 
+RecoLeptonWriter::RecoLeptonWriter(const std::string & branchName_obj)
+  : RecoLeptonWriter(Form("n%s", branchName_obj.data()), branchName_obj)
+{}
+
 RecoLeptonWriter::RecoLeptonWriter(const std::string & branchName_num,
                                    const std::string & branchName_obj)
   : max_nLeptons_(32)

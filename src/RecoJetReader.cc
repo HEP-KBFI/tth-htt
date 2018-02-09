@@ -14,7 +14,14 @@ std::map<std::string, RecoJetReader *> RecoJetReader::instances_;
 RecoJetReader::RecoJetReader(int era,
                              bool isMC,
                              bool readGenMatching)
-  : RecoJetReader(era, isMC, "nJet", "Jet", readGenMatching)
+  : RecoJetReader(era, isMC, "Jet", readGenMatching)
+{}
+
+RecoJetReader::RecoJetReader(int era,
+                             bool isMC,
+                             const std::string & branchName_obj,
+                             bool readGenMatching)
+  : RecoJetReader(era, isMC, Form("n%s", branchName_obj.data()), branchName_obj, readGenMatching)
 {}
 
 RecoJetReader::RecoJetReader(int era,

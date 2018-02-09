@@ -7,7 +7,11 @@ std::map<std::string, int> GenJetReader::numInstances_;
 std::map<std::string, GenJetReader *> GenJetReader::instances_;
 
 GenJetReader::GenJetReader()
-  : GenJetReader("nGenJet", "GenJet")
+  : GenJetReader("GenJet")
+{}
+
+GenJetReader::GenJetReader(const std::string & branchName_obj)
+  : GenJetReader(Form("n%s", branchName_obj.data()), branchName_obj)
 {}
 
 GenJetReader::GenJetReader(const std::string & branchName_num,

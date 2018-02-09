@@ -5,7 +5,12 @@
 #include "tthAnalysis/HiggsToTauTau/interface/BranchAddressInitializer.h" // BranchAddressInitializer, TTree, Form()
 
 RecoHadTauWriter::RecoHadTauWriter(int era)
-  : RecoHadTauWriter(era, "nTau", "Tau")
+  : RecoHadTauWriter(era, "Tau")
+{}
+
+RecoHadTauWriter::RecoHadTauWriter(int era,
+                                   const std::string & branchName_obj)
+  : RecoHadTauWriter(era, Form("n%s", branchName_obj.data()), branchName_obj)
 {}
 
 RecoHadTauWriter::RecoHadTauWriter(int era,

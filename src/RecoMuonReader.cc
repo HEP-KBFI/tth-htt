@@ -9,7 +9,13 @@ std::map<std::string, RecoMuonReader *> RecoMuonReader::instances_;
 
 RecoMuonReader::RecoMuonReader(int era,
                                bool readGenMatching)
-  : RecoMuonReader(era, "nMuon", "Muon", readGenMatching)
+  : RecoMuonReader(era, "Muon", readGenMatching)
+{}
+
+RecoMuonReader::RecoMuonReader(int era,
+                               const std::string & branchName_obj,
+                               bool readGenMatching)
+  : RecoMuonReader(era, Form("n%s", branchName_obj.data()), branchName_obj, readGenMatching)
 {}
 
 RecoMuonReader::RecoMuonReader(int era,

@@ -5,7 +5,12 @@
 #include "tthAnalysis/HiggsToTauTau/interface/BranchAddressInitializer.h" // BranchAddressInitializer, TTree, Form()
 
 RecoElectronWriter::RecoElectronWriter(int era)
-  : RecoElectronWriter(era, "nElectron", "Electron")
+  : RecoElectronWriter(era, "Electron")
+{}
+
+RecoElectronWriter::RecoElectronWriter(int era,
+                                       const std::string & branchName_obj)
+  : RecoElectronWriter(era, Form("n%s", branchName_obj.data()), branchName_obj)
 {}
 
 RecoElectronWriter::RecoElectronWriter(int era,
