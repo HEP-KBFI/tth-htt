@@ -15,8 +15,6 @@ class GenHadTauReader
 public:
   GenHadTauReader();
   GenHadTauReader(const std::string & branchName_obj);
-  GenHadTauReader(const std::string & branchName_num,
-                  const std::string & branchName_obj);
   ~GenHadTauReader();
 
   /**

@@ -15,18 +15,11 @@ RecoMuonReader::RecoMuonReader(int era,
 RecoMuonReader::RecoMuonReader(int era,
                                const std::string & branchName_obj,
                                bool readGenMatching)
-  : RecoMuonReader(era, Form("n%s", branchName_obj.data()), branchName_obj, readGenMatching)
-{}
-
-RecoMuonReader::RecoMuonReader(int era,
-                               const std::string & branchName_num,
-                               const std::string & branchName_obj,
-                               bool readGenMatching)
   : era_(era)
   , use_HIP_mitigation_(true)
-  , branchName_num_(branchName_num)
+  , branchName_num_(Form("n%s", branchName_obj.data()))
   , branchName_obj_(branchName_obj)
-  , leptonReader_(new RecoLeptonReader(branchName_num_, branchName_obj_, readGenMatching))
+  , leptonReader_(new RecoLeptonReader(branchName_obj_, readGenMatching))
   , mediumIdPOG_(nullptr)
   , segmentCompatibility_(nullptr)
 {

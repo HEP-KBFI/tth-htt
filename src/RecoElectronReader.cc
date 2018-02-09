@@ -16,16 +16,9 @@ RecoElectronReader::RecoElectronReader(int era,
 RecoElectronReader::RecoElectronReader(int era,
                                        const std::string & branchName_obj,
                                        bool readGenMatching)
-  : RecoElectronReader(era, Form("n%s", branchName_obj.data()), branchName_obj, readGenMatching)
-{}
-
-RecoElectronReader::RecoElectronReader(int era,
-                                       const std::string & branchName_num,
-                                       const std::string & branchName_obj,
-                                       bool readGenMatching)
-  : branchName_num_(branchName_num)
+  : branchName_num_(Form("n%s", branchName_obj.data()))
   , branchName_obj_(branchName_obj)
-  , leptonReader_( new RecoLeptonReader(branchName_num_, branchName_obj_, readGenMatching))
+  , leptonReader_(new RecoLeptonReader(branchName_obj_, readGenMatching))
   , mvaRawPOG_GP_(nullptr)
   , mvaRawPOG_HZZ_(nullptr)
   , sigmaEtaEta_(nullptr)

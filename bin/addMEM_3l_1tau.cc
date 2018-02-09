@@ -167,20 +167,20 @@ int main(int argc,
   inputTree->SetBranchAddress(branchName_maxPermutations_addMEM.c_str(), &maxPermutations_addMEM_3l_1tau);
 
 //--- declare particle collections
-  RecoMuonReader* muonReader = new RecoMuonReader(era, Form("n%s", branchName_muons.data()), branchName_muons, readGenObjects);
+  RecoMuonReader* muonReader = new RecoMuonReader(era, branchName_muons, readGenObjects);
   muonReader->setBranchAddresses(inputTree);
   const RecoMuonCollectionSelectorLoose    preselMuonSelector  (era);
   const RecoMuonCollectionSelectorFakeable fakeableMuonSelector(era);
   const RecoMuonCollectionSelectorTight    tightMuonSelector   (era);
 
-  RecoElectronReader* electronReader = new RecoElectronReader(era, Form("n%s", branchName_electrons.data()), branchName_electrons, readGenObjects);
+  RecoElectronReader* electronReader = new RecoElectronReader(era, branchName_electrons, readGenObjects);
   electronReader->setBranchAddresses(inputTree);
   const RecoElectronCollectionCleaner electronCleaner(0.3);
   const RecoElectronCollectionSelectorLoose    preselElectronSelector  (era);
   const RecoElectronCollectionSelectorFakeable fakeableElectronSelector(era);
   const RecoElectronCollectionSelectorTight    tightElectronSelector   (era);
 
-  RecoHadTauReader* hadTauReader = new RecoHadTauReader(era, Form("n%s", branchName_hadTaus.data()), branchName_hadTaus, readGenObjects);
+  RecoHadTauReader* hadTauReader = new RecoHadTauReader(era, branchName_hadTaus, readGenObjects);
   hadTauReader->setHadTauPt_central_or_shift(RecoHadTauReader::kHadTauPt_central);
   hadTauReader->setBranchAddresses(inputTree);
   const RecoHadTauCollectionCleaner hadTauCleaner(0.3);
@@ -208,7 +208,7 @@ int main(int argc,
   fakeableHadTauSelector.set_min_pt(18.);
   tightHadTauSelector.set_min_pt(18.);
   
-  RecoJetReader* jetReader = new RecoJetReader(era, isMC, Form("n%s", branchName_jets.data()), branchName_jets, readGenObjects);
+  RecoJetReader* jetReader = new RecoJetReader(era, isMC, branchName_jets, readGenObjects);
   // CV: apply jet pT cut on JEC upward shift, to make sure pT cut is loose enough
   //     to allow systematic uncertainty on JEC to be estimated on analysis level 
   jetReader->setJetPt_central_or_shift(RecoJetReader::kJetPt_central); 

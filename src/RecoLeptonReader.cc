@@ -12,14 +12,8 @@ RecoLeptonReader::RecoLeptonReader(bool readGenMatching)
 
 RecoLeptonReader::RecoLeptonReader(const std::string & branchName_obj,
                                    bool readGenMatching)
-  : RecoLeptonReader(Form("n%s", branchName_obj.data()), branchName_obj, readGenMatching)
-{}
-
-RecoLeptonReader::RecoLeptonReader(const std::string & branchName_num,
-                                   const std::string & branchName_obj,
-                                   bool readGenMatching)
   : max_nLeptons_(32)
-  , branchName_num_(branchName_num)
+  , branchName_num_(Form("n%s", branchName_obj.data()))
   , branchName_obj_(branchName_obj)
   , genLeptonReader_(nullptr)
   , genHadTauReader_(nullptr)
@@ -45,9 +39,9 @@ RecoLeptonReader::RecoLeptonReader(const std::string & branchName_num,
 {
   if(readGenMatching_)
   {
-    genLeptonReader_ = new GenLeptonReader(Form("%s_genLepton", branchName_num_.data()), Form("%s_genLepton", branchName_obj_.data()));
-    genHadTauReader_ = new GenHadTauReader(Form("%s_genTau",    branchName_num_.data()), Form("%s_genTau",    branchName_obj_.data()));
-    genJetReader_    = new GenJetReader   (Form("%s_genJet",    branchName_num_.data()), Form("%s_genJet",    branchName_obj_.data()));
+    genLeptonReader_ = new GenLeptonReader(Form("%s_genLepton", branchName_obj_.data()));
+    genHadTauReader_ = new GenHadTauReader(Form("%s_genTau",    branchName_obj_.data()));
+    genJetReader_    = new GenJetReader   (Form("%s_genJet",    branchName_obj_.data()));
   }
   setBranchNames();
 }

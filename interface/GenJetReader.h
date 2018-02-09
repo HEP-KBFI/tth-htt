@@ -15,8 +15,6 @@ class GenJetReader
 public:
   GenJetReader();
   GenJetReader(const std::string & branchName_obj);
-  GenJetReader(const std::string & branchName_num,
-               const std::string & branchName_obj);
   ~GenJetReader();
 
   /**

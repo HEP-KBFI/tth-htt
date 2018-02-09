@@ -13,9 +13,6 @@ public:
   RecoLeptonReader(bool readGenMatching = false);
   RecoLeptonReader(const std::string & branchName_obj,
                    bool readGenMatching = false);
-  RecoLeptonReader(const std::string & branchName_num,
-                   const std::string & branchName_obj,
-                   bool readGenMatching = false);
   ~RecoLeptonReader();
 
   /**

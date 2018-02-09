@@ -24,10 +24,6 @@ public:
   RecoHadTauReader(int era,
                    const std::string & branchName_obj,
                    bool readGenMatching = false);
-  RecoHadTauReader(int era,
-                   const std::string & branchName_num,
-                   const std::string & branchName_obj,
-                   bool readGenMatching = false);
   ~RecoHadTauReader();
 
   enum { kHadTauPt_central, kHadTauPt_shiftUp, kHadTauPt_shiftDown };

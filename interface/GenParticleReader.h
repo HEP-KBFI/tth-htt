@@ -15,8 +15,6 @@ class GenParticleReader
 public:
   GenParticleReader();
   GenParticleReader(const std::string & branchName_particles);
-  GenParticleReader(const std::string & branchName_nParticles,
-                    const std::string & branchName_particles);
   ~GenParticleReader();
 
   /**

@@ -26,19 +26,12 @@ RecoHadTauReader::RecoHadTauReader(int era,
 RecoHadTauReader::RecoHadTauReader(int era,
                                    const std::string & branchName_obj,
                                    bool readGenMatching)
-  : RecoHadTauReader(era, Form("n%s", branchName_obj.data()), branchName_obj, readGenMatching)
-{}
-
-RecoHadTauReader::RecoHadTauReader(int era,
-                                   const std::string & branchName_num,
-                                   const std::string & branchName_obj,
-                                   bool readGenMatching)
   : tauIdMVArun2dR03DB_wpFile_(nullptr)
   , DBdR03oldDMwLTEff95_(nullptr)
   , mvaOutput_normalization_DBdR03oldDMwLT_(nullptr)
   , era_(era)
   , max_nHadTaus_(32)
-  , branchName_num_(branchName_num)
+  , branchName_num_(Form("n%s", branchName_obj.data()))
   , branchName_obj_(branchName_obj)
   , genLeptonReader_(nullptr)
   , genHadTauReader_(nullptr)
@@ -65,10 +58,11 @@ RecoHadTauReader::RecoHadTauReader(int era,
   , hadTau_idAgainstElec_(nullptr)
   , hadTau_idAgainstMu_(nullptr)
 {
-  if ( readGenMatching_ ) {
-    genLeptonReader_ = new GenLeptonReader(Form("%s_genLepton", branchName_num_.data()), Form("%s_genLepton", branchName_obj_.data()));
-    genHadTauReader_ = new GenHadTauReader(Form("%s_genTau",    branchName_num_.data()), Form("%s_genTau",    branchName_obj_.data()));
-    genJetReader_    = new GenJetReader   (Form("%s_genJet",    branchName_num_.data()), Form("%s_genJet",    branchName_obj_.data()));
+  if(readGenMatching_)
+  {
+    genLeptonReader_ = new GenLeptonReader(Form("%s_genLepton", branchName_obj_.data()));
+    genHadTauReader_ = new GenHadTauReader(Form("%s_genTau",    branchName_obj_.data()));
+    genJetReader_    = new GenJetReader   (Form("%s_genJet",    branchName_obj_.data()));
   }
   setBranchNames();
   readDBdR03oldDMwLTEff95();
