@@ -10,60 +10,16 @@ RecoJet::RecoJet(const GenJet & jet,
                  Double_t QGDiscr,
                  Int_t heppyFlavour,
                  Int_t idx)
-  : GenJet(jet)
+  : RecoJetBase(jet, idx)
   , jecUncertTotal_(jecUncertTotal)
   , BtagCSV_(BtagCSV)
   , BtagWeight_(BtagWeight)
   , QGDiscr_(QGDiscr)
   , heppyFlavour_(heppyFlavour)
-  , idx_(idx)
-  , genLepton_(nullptr)
-  , genLepton_isOwner_(false)
-  , genHadTau_(nullptr)
-  , genHadTau_isOwner_(false)
-  , genJet_(nullptr)
-  , genJet_isOwner_(false)
 {}
 
 RecoJet::~RecoJet()
-{
-  if(genLepton_isOwner_ && genLepton_)
-  {
-    delete genLepton_;
-  }
-  if(genHadTau_isOwner_ && genHadTau_)
-  {
-    delete genHadTau_;
-  }
-  if(genJet_isOwner_ && genJet_)
-  {
-    delete genJet_;
-  }
-}
-
-void
-RecoJet::set_genLepton(const GenLepton * genLepton,
-                       bool isOwner)
-{
-  genLepton_ = genLepton;
-  genLepton_isOwner_ = isOwner;
-}
-
-void
-RecoJet::set_genHadTau(const GenHadTau*  genHadTau,
-                       bool isOwner)
-{
-  genHadTau_ = genHadTau;
-  genHadTau_isOwner_ = isOwner;
-}
-
-void
-RecoJet::set_genJet(const GenJet * genJet,
-                    bool isOwner)
-{
-  genJet_ = genJet;
-  genJet_isOwner_ = isOwner;
-}
+{}
 
 Double_t
 RecoJet::jecUncertTotal() const
@@ -93,30 +49,6 @@ Int_t
 RecoJet::heppyFlavour() const
 {
   return heppyFlavour_;
-}
-
-Int_t
-RecoJet::idx() const
-{
-  return idx_;
-}
-
-const GenLepton *
-RecoJet::genLepton() const
-{
-  return genLepton_;
-}
-
-const GenHadTau *
-RecoJet::genHadTau() const
-{
-  return genHadTau_;
-}
-
-const GenJet *
-RecoJet::genJet() const
-{
-  return genJet_;
 }
 
 std::ostream &
