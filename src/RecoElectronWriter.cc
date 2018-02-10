@@ -5,7 +5,12 @@
 #include "tthAnalysis/HiggsToTauTau/interface/BranchAddressInitializer.h" // BranchAddressInitializer, TTree, Form()
 
 RecoElectronWriter::RecoElectronWriter(int era)
-  : RecoElectronWriter(era, "nElectron", "Electron")
+  : RecoElectronWriter(era, "Electron")
+{}
+
+RecoElectronWriter::RecoElectronWriter(int era,
+                                       const std::string & branchName_obj)
+  : RecoElectronWriter(era, Form("n%s", branchName_obj.data()), branchName_obj)
 {}
 
 RecoElectronWriter::RecoElectronWriter(int era,
@@ -24,7 +29,7 @@ RecoElectronWriter::RecoElectronWriter(int era,
   , lostHits_(nullptr)
   , conversionVeto_(nullptr)
 {
-  leptonWriter_ = new RecoLeptonWriter(branchName_num_, branchName_obj_);
+  leptonWriter_ = new RecoLeptonWriter(branchName_obj_);
   setBranchNames();
 }
 
@@ -42,7 +47,8 @@ RecoElectronWriter::~RecoElectronWriter()
   delete[] conversionVeto_;
 }
 
-void RecoElectronWriter::setBranchNames()
+void
+RecoElectronWriter::setBranchNames()
 {
   branchName_mvaRawPOG_GP_ = Form("%s_%s", branchName_obj_.data(), "mvaSpring16GP");
   branchName_mvaRawPOG_HZZ_ = Form("%s_%s", branchName_obj_.data(), "mvaSpring16HZZ");
@@ -55,7 +61,8 @@ void RecoElectronWriter::setBranchNames()
   branchName_conversionVeto_ = Form("%s_%s", branchName_obj_.data(), "convVeto");
 }
 
-void RecoElectronWriter::setBranches(TTree *tree)
+void
+RecoElectronWriter::setBranches(TTree * tree)
 {
   leptonWriter_->setBranches(tree);
   unsigned int max_nLeptons = leptonWriter_->max_nLeptons_;
@@ -71,7 +78,8 @@ void RecoElectronWriter::setBranches(TTree *tree)
   bai.setBranch(conversionVeto_, branchName_conversionVeto_);
 }
 
-void RecoElectronWriter::write(const std::vector<const RecoElectron *> & leptons)
+void
+RecoElectronWriter::write(const std::vector<const RecoElectron *> & leptons)
 {
   leptonWriter_->write(leptons);
   Int_t nLeptons = leptons.size();

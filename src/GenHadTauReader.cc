@@ -7,13 +7,12 @@ std::map<std::string, int> GenHadTauReader::numInstances_;
 std::map<std::string, GenHadTauReader *> GenHadTauReader::instances_;
 
 GenHadTauReader::GenHadTauReader()
-  : GenHadTauReader("nGenHadTaus", "GenHadTaus")
+  : GenHadTauReader("GenVisTau")
 {}
 
-GenHadTauReader::GenHadTauReader(const std::string & branchName_num,
-                                 const std::string & branchName_obj)
+GenHadTauReader::GenHadTauReader(const std::string & branchName_obj)
   : max_nHadTaus_(32)
-  , branchName_num_(branchName_num)
+  , branchName_num_(Form("n%s", branchName_obj.data()))
   , branchName_obj_(branchName_obj)
   , hadTau_pt_(nullptr)
   , hadTau_eta_(nullptr)
@@ -88,7 +87,6 @@ GenHadTauReader::read() const
   const GenHadTauReader * const gInstance = instances_[branchName_obj_];
   assert(gInstance);
 
-  std::vector<GenHadTau> hadTaus;
   const UInt_t nHadTaus = gInstance->nHadTaus_;
   if(nHadTaus > max_nHadTaus_)
   {
@@ -97,6 +95,7 @@ GenHadTauReader::read() const
          "exceeds max_nHadTaus = " << max_nHadTaus_ << " !!\n";
   }
 
+  std::vector<GenHadTau> hadTaus;
   if(nHadTaus > 0)
   {
     hadTaus.reserve(nHadTaus);

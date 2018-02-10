@@ -7,13 +7,12 @@ std::map<std::string, int> GenParticleReader::numInstances_;
 std::map<std::string, GenParticleReader *> GenParticleReader::instances_;
 
 GenParticleReader::GenParticleReader()
-  : GenParticleReader("nGenPart", "GenPart")
+  : GenParticleReader("GenPart")
 {}
 
-GenParticleReader::GenParticleReader(const std::string & branchName_nParticles,
-                                     const std::string & branchName_particles)
+GenParticleReader::GenParticleReader(const std::string & branchName_particles)
   : max_nParticles_(32)
-  , branchName_nParticles_(branchName_nParticles)
+  , branchName_nParticles_(Form("n%s", branchName_particles.data()))
   , branchName_particles_(branchName_particles)
   , particle_pt_(nullptr)
   , particle_eta_(nullptr)

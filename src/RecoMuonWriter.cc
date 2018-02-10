@@ -5,7 +5,12 @@
 #include "tthAnalysis/HiggsToTauTau/interface/BranchAddressInitializer.h" // BranchAddressInitializer, TTree, Form()
 
 RecoMuonWriter::RecoMuonWriter(int era)
-  : RecoMuonWriter(era, "nMuon", "Muon")
+  : RecoMuonWriter(era, "Muon")
+{}
+
+RecoMuonWriter::RecoMuonWriter(int era,
+                               const std::string & branchName_obj)
+  : RecoMuonWriter(era, Form("n%s", branchName_obj.data()), branchName_obj)
 {}
 
 RecoMuonWriter::RecoMuonWriter(int era,
@@ -14,7 +19,7 @@ RecoMuonWriter::RecoMuonWriter(int era,
   : era_(era)
   , branchName_num_(branchName_num)
   , branchName_obj_(branchName_obj)
-  , leptonWriter_(new RecoLeptonWriter(branchName_num_, branchName_obj_))
+  , leptonWriter_(new RecoLeptonWriter(branchName_obj_))
   , looseIdPOG_(nullptr)
   , mediumIdPOG_(nullptr)
   , segmentCompatibility_(nullptr)
@@ -30,7 +35,8 @@ RecoMuonWriter::~RecoMuonWriter()
   delete[] segmentCompatibility_;
 }
 
-void RecoMuonWriter::setBranchNames()
+void
+RecoMuonWriter::setBranchNames()
 {
   // Karl: let's write the looseIdPOG branch even though we aren't going to read it
   //       in the first place
@@ -39,7 +45,8 @@ void RecoMuonWriter::setBranchNames()
   branchName_segmentCompatibility_ = Form("%s_%s", branchName_obj_.data(), "segmentComp");
 }
 
-void RecoMuonWriter::setBranches(TTree * tree)
+void
+RecoMuonWriter::setBranches(TTree * tree)
 {
   leptonWriter_->setBranches(tree);
   const unsigned int max_nLeptons = leptonWriter_->max_nLeptons_;
@@ -49,7 +56,8 @@ void RecoMuonWriter::setBranches(TTree * tree)
   bai.setBranch(segmentCompatibility_, branchName_segmentCompatibility_);
 }
 
-void RecoMuonWriter::write(const std::vector<const RecoMuon *> & leptons)
+void
+RecoMuonWriter::write(const std::vector<const RecoMuon *> & leptons)
 {
   leptonWriter_->write(leptons);
   const Int_t nLeptons = leptons.size();

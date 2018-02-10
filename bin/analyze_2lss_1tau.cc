@@ -435,7 +435,7 @@ int main(int argc, char* argv[])
   std::string branchName_met = cfg_analyze.getParameter<std::string>("branchName_met");
   std::string branchName_memOutput = cfg_analyze.getParameter<std::string>("branchName_memOutput");
 
-  std::string branchName_genLeptons1 = cfg_analyze.getParameter<std::string>("branchName_genLeptons1");
+  std::string branchName_genLeptons = cfg_analyze.getParameter<std::string>("branchName_genLeptons1");
   std::string branchName_genLeptons2 = cfg_analyze.getParameter<std::string>("branchName_genLeptons2");
   std::string branchName_genHadTaus = cfg_analyze.getParameter<std::string>("branchName_genHadTaus");
   std::string branchName_genJets = cfg_analyze.getParameter<std::string>("branchName_genJets");
@@ -484,7 +484,7 @@ int main(int argc, char* argv[])
 
 //--- declare particle collections
   const bool readGenObjects = isMC && !redoGenMatching;
-  RecoMuonReader* muonReader = new RecoMuonReader(era, Form("n%s", branchName_muons.data()), branchName_muons, readGenObjects);
+  RecoMuonReader* muonReader = new RecoMuonReader(era, branchName_muons, readGenObjects);
   muonReader->set_HIP_mitigation(use_HIP_mitigation_mediumMuonId);
   inputTree -> registerReader(muonReader);
   RecoMuonCollectionGenMatcher muonGenMatcher;
@@ -492,7 +492,7 @@ int main(int argc, char* argv[])
   RecoMuonCollectionSelectorFakeable fakeableMuonSelector(era);
   RecoMuonCollectionSelectorTight tightMuonSelector(era);
 
-  RecoElectronReader* electronReader = new RecoElectronReader(era, Form("n%s", branchName_electrons.data()), branchName_electrons, readGenObjects);
+  RecoElectronReader* electronReader = new RecoElectronReader(era, branchName_electrons, readGenObjects);
   inputTree -> registerReader(electronReader);
   RecoElectronCollectionGenMatcher electronGenMatcher;
   RecoElectronCollectionCleaner electronCleaner(0.3);
@@ -500,7 +500,7 @@ int main(int argc, char* argv[])
   RecoElectronCollectionSelectorFakeable fakeableElectronSelector(era);
   RecoElectronCollectionSelectorTight tightElectronSelector(era);
 
-  RecoHadTauReader* hadTauReader = new RecoHadTauReader(era, Form("n%s", branchName_hadTaus.data()), branchName_hadTaus, readGenObjects);
+  RecoHadTauReader* hadTauReader = new RecoHadTauReader(era, branchName_hadTaus, readGenObjects);
   hadTauReader->setHadTauPt_central_or_shift(hadTauPt_option);
   inputTree -> registerReader(hadTauReader);
   RecoHadTauCollectionGenMatcher hadTauGenMatcher;
@@ -522,7 +522,7 @@ int main(int argc, char* argv[])
   tightHadTauFilter.set_min_antiElectron(hadTauSelection_antiElectron);
   tightHadTauFilter.set_min_antiMuon(hadTauSelection_antiMuon);
 
-  RecoJetReader* jetReader = new RecoJetReader(era, isMC, Form("n%s", branchName_jets.data()), branchName_jets, readGenObjects);
+  RecoJetReader* jetReader = new RecoJetReader(era, isMC, branchName_jets, readGenObjects);
   jetReader->setJetPt_central_or_shift(jetPt_option);
   jetReader->setBranchName_BtagWeight(jet_btagWeight_branch);
   inputTree -> registerReader(jetReader);
@@ -613,16 +613,16 @@ int main(int argc, char* argv[])
   LHEInfoReader* lheInfoReader = 0;
   if ( isMC ) {
     if ( !readGenObjects ) {
-      if ( branchName_genLeptons1 != "" || branchName_genLeptons2 != "" ) {
-        genLeptonReader = new GenLeptonReader(Form("n%s", branchName_genLeptons1.data()), branchName_genLeptons1, Form("n%s", branchName_genLeptons2.data()), branchName_genLeptons2);
+      if ( branchName_genLeptons != "" ) {
+        genLeptonReader = new GenLeptonReader(branchName_genLeptons);
         inputTree -> registerReader(genLeptonReader);
       }
       if ( branchName_genHadTaus != "" ) {
-        genHadTauReader = new GenHadTauReader(Form("n%s", branchName_genHadTaus.data()), branchName_genHadTaus);
+        genHadTauReader = new GenHadTauReader(branchName_genHadTaus);
         inputTree -> registerReader(genHadTauReader);
       }
       if ( branchName_genJets != "" ) {
-        genJetReader = new GenJetReader(Form("n%s", branchName_genJets.data()), branchName_genJets);
+        genJetReader = new GenJetReader(branchName_genJets);
         inputTree -> registerReader(genJetReader);
       }
     }
@@ -630,10 +630,10 @@ int main(int argc, char* argv[])
     inputTree -> registerReader(lheInfoReader);
   }
 
-  GenParticleReader* genTopQuarkReader = new GenParticleReader(Form("n%s", branchName_genTopQuarks.data()), branchName_genTopQuarks);
-  GenParticleReader* genBJetReader = new GenParticleReader(Form("n%s", branchName_genBJets.data()), branchName_genBJets);
-  GenParticleReader* genWBosonReader = new GenParticleReader(Form("n%s", branchName_genWBosons.data()), branchName_genWBosons);
-  GenParticleReader* genWJetReader = new GenParticleReader(Form("n%s", branchName_genWJets.data()), branchName_genWJets);
+  GenParticleReader* genTopQuarkReader = new GenParticleReader(branchName_genTopQuarks);
+  GenParticleReader* genBJetReader = new GenParticleReader(branchName_genBJets);
+  GenParticleReader* genWBosonReader = new GenParticleReader(branchName_genWBosons);
+  GenParticleReader* genWJetReader = new GenParticleReader(branchName_genWJets);
 
   if ( isMC ) {
 	  inputTree -> registerReader(genTopQuarkReader);

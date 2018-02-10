@@ -16,7 +16,6 @@ public:
   RecoMuonReader(int era,
                  bool readGenMatching = false);
   RecoMuonReader(int era,
-                 const std::string & branchName_num,
                  const std::string & branchName_obj,
                  bool readGenMatching = false);
   ~RecoMuonReader();

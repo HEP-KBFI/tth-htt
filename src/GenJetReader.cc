@@ -7,13 +7,12 @@ std::map<std::string, int> GenJetReader::numInstances_;
 std::map<std::string, GenJetReader *> GenJetReader::instances_;
 
 GenJetReader::GenJetReader()
-  : GenJetReader("nGenJet", "GenJet")
+  : GenJetReader("GenJet")
 {}
 
-GenJetReader::GenJetReader(const std::string & branchName_num,
-                           const std::string & branchName_obj)
+GenJetReader::GenJetReader(const std::string & branchName_obj)
   : max_nJets_(32)
-  , branchName_num_(branchName_num)
+  , branchName_num_(Form("n%s", branchName_obj.data()))
   , branchName_obj_(branchName_obj)
   , jet_pt_(nullptr)
   , jet_eta_(nullptr)
@@ -83,7 +82,6 @@ std::vector<GenJet> GenJetReader::read() const
   const GenJetReader * const gInstance = instances_[branchName_obj_];
   assert(gInstance);
 
-  std::vector<GenJet> jets;
   const UInt_t nJets = gInstance->nJets_;
   if(nJets > max_nJets_)
   {
@@ -91,6 +89,7 @@ std::vector<GenJet> GenJetReader::read() const
       << "Number of jets stored in Ntuple = " << nJets << ", exceeds max_nJets = " << max_nJets_ << " !!\n";
   }
 
+  std::vector<GenJet> jets;
   if(nJets > 0)
   {
     jets.reserve(nJets);

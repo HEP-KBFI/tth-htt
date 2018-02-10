@@ -10,16 +10,15 @@ std::map<std::string, RecoElectronReader *> RecoElectronReader::instances_;
 
 RecoElectronReader::RecoElectronReader(int era,
                                        bool readGenMatching)
-  : RecoElectronReader(era, "nselLeptons", "selLeptons", readGenMatching)
+  : RecoElectronReader(era, "Electron", readGenMatching)
 {}
 
 RecoElectronReader::RecoElectronReader(int era,
-                                       const std::string & branchName_num,
                                        const std::string & branchName_obj,
                                        bool readGenMatching)
-  : branchName_num_(branchName_num)
+  : branchName_num_(Form("n%s", branchName_obj.data()))
   , branchName_obj_(branchName_obj)
-  , leptonReader_( new RecoLeptonReader(branchName_num_, branchName_obj_, readGenMatching))
+  , leptonReader_(new RecoLeptonReader(branchName_obj_, readGenMatching))
   , mvaRawPOG_GP_(nullptr)
   , mvaRawPOG_HZZ_(nullptr)
   , sigmaEtaEta_(nullptr)

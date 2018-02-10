@@ -21,7 +21,6 @@ public:
                 bool readGenMatching = false);
   RecoJetReader(int era,
                 bool isMC,
-                const std::string & branchName_num,
                 const std::string & branchName_obj,
                 bool readGenMatching = false);
   ~RecoJetReader();
@@ -112,4 +111,3 @@ protected:
 };
 
 #endif // tthAnalysis_HiggsToTauTau_RecoJetReader_h
-

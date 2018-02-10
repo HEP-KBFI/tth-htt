@@ -234,21 +234,21 @@ int main(int argc, char* argv[])
   inputTree -> registerReader(&eventInfoReader);
 
 //--- declare particle collections
-  RecoMuonReader* muonReader = new RecoMuonReader(era, Form("n%s", branchName_muons.data()), branchName_muons);
+  RecoMuonReader* muonReader = new RecoMuonReader(era, branchName_muons);
   muonReader->set_HIP_mitigation(use_HIP_mitigation_mediumMuonId);
   inputTree -> registerReader(muonReader);
   RecoMuonCollectionGenMatcher muonGenMatcher;
   RecoMuonCollectionSelectorLoose preselMuonSelector(era);
   RecoMuonCollectionSelectorFakeable fakeableMuonSelector(era);
 
-  RecoElectronReader* electronReader = new RecoElectronReader(era, Form("n%s", branchName_electrons.data()), branchName_electrons);
+  RecoElectronReader* electronReader = new RecoElectronReader(era, branchName_electrons);
   inputTree -> registerReader(electronReader);
   RecoElectronCollectionGenMatcher electronGenMatcher;
   RecoElectronCollectionCleaner electronCleaner(0.3);
   RecoElectronCollectionSelectorLoose preselElectronSelector(era);
   RecoElectronCollectionSelectorFakeable fakeableElectronSelector(era);
 
-  RecoHadTauReader* hadTauReader = new RecoHadTauReader(era, Form("n%s", branchName_hadTaus.data()), branchName_hadTaus);
+  RecoHadTauReader* hadTauReader = new RecoHadTauReader(era, branchName_hadTaus);
   inputTree -> registerReader(hadTauReader);
   RecoHadTauCollectionGenMatcher hadTauGenMatcher;
   RecoHadTauCollectionCleaner hadTauCleaner(0.3);
@@ -263,19 +263,19 @@ int main(int argc, char* argv[])
   tightHadTauSelector.set_min_antiElectron(hadTauSelection_antiElectron);
   tightHadTauSelector.set_min_antiMuon(hadTauSelection_antiMuon);
 
-  RecoJetReader* jetReader = new RecoJetReader(era, isMC, Form("n%s", branchName_jets.data()), branchName_jets);
+  RecoJetReader* jetReader = new RecoJetReader(era, isMC, branchName_jets);
   inputTree -> registerReader(jetReader);
   RecoJetCollectionGenMatcher jetGenMatcher;
   RecoJetCollectionCleaner jetCleaner(0.4);
   RecoJetCollectionSelector jetSelector(era);
 
-  GenParticleReader* genTopQuarkReader = new GenParticleReader(Form("n%s", branchName_genTopQuarks.data()), branchName_genTopQuarks);
+  GenParticleReader* genTopQuarkReader = new GenParticleReader(branchName_genTopQuarks);
   inputTree -> registerReader(genTopQuarkReader);
-  GenParticleReader* genBJetReader = new GenParticleReader(Form("n%s", branchName_genBJets.data()), branchName_genBJets);
+  GenParticleReader* genBJetReader = new GenParticleReader(branchName_genBJets);
   inputTree -> registerReader(genBJetReader);
-  GenParticleReader* genWBosonReader = new GenParticleReader(Form("n%s", branchName_genWBosons.data()), branchName_genWBosons);
+  GenParticleReader* genWBosonReader = new GenParticleReader(branchName_genWBosons);
   inputTree -> registerReader(genWBosonReader);
-  GenParticleReader* genWJetReader = new GenParticleReader(Form("n%s", branchName_genWJets.data()), branchName_genWJets);
+  GenParticleReader* genWJetReader = new GenParticleReader(branchName_genWJets);
   inputTree -> registerReader(genWJetReader);
 
   //HadTopTagger* hadTopTagger = new HadTopTagger();

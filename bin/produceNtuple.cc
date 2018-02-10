@@ -158,7 +158,7 @@ int main(int argc, char* argv[])
   const std::string branchName_hadTaus_in     = cfg_produceNtuple.getParameter<std::string>("branchName_hadTaus");
   const std::string branchName_jets_in        = cfg_produceNtuple.getParameter<std::string>("branchName_jets");
   const std::string branchName_met_in         = cfg_produceNtuple.getParameter<std::string>("branchName_met");
-  const std::string branchName_genLeptons1_in = cfg_produceNtuple.getParameter<std::string>("branchName_genLeptons1");
+  const std::string branchName_genLeptons_in = cfg_produceNtuple.getParameter<std::string>("branchName_genLeptons1");
   const std::string branchName_genLeptons2_in = cfg_produceNtuple.getParameter<std::string>("branchName_genLeptons2");
   const std::string branchName_genHadTaus_in  = cfg_produceNtuple.getParameter<std::string>("branchName_genHadTaus");
   const std::string branchName_genJets_in     = cfg_produceNtuple.getParameter<std::string>("branchName_genJets");
@@ -222,7 +222,7 @@ int main(int argc, char* argv[])
   eventInfoReader.setBranchAddresses(inputTree);
 
 //--- declare particle collections
-  RecoMuonReader* muonReader = new RecoMuonReader(era, Form("n%s", branchName_muons_in.c_str()), branchName_muons_in);
+  RecoMuonReader* muonReader = new RecoMuonReader(era, branchName_muons_in);
   muonReader->set_HIP_mitigation(use_HIP_mitigation_mediumMuonId);
   muonReader->setBranchAddresses(inputTree);
   RecoMuonCollectionGenMatcher muonGenMatcher;
@@ -230,7 +230,7 @@ int main(int argc, char* argv[])
   RecoMuonCollectionSelectorFakeable fakeableMuonSelector(era);
   RecoMuonCollectionSelectorTight tightMuonSelector(era);
   
-  RecoElectronReader* electronReader = new RecoElectronReader(era, Form("n%s", branchName_electrons_in.c_str()), branchName_electrons_in);
+  RecoElectronReader* electronReader = new RecoElectronReader(era, branchName_electrons_in);
   electronReader->setBranchAddresses(inputTree);
   RecoElectronCollectionGenMatcher electronGenMatcher;
   RecoElectronCollectionCleaner electronCleaner(0.3);
@@ -238,7 +238,7 @@ int main(int argc, char* argv[])
   RecoElectronCollectionSelectorFakeable fakeableElectronSelector(era);
   RecoElectronCollectionSelectorTight tightElectronSelector(era);
 
-  RecoHadTauReader* hadTauReader = new RecoHadTauReader(era, Form("n%s", branchName_hadTaus_in.c_str()), branchName_hadTaus_in);
+  RecoHadTauReader* hadTauReader = new RecoHadTauReader(era, branchName_hadTaus_in);
   hadTauReader->setBranchAddresses(inputTree);
   RecoHadTauCollectionGenMatcher hadTauGenMatcher;
   RecoHadTauCollectionCleaner hadTauCleaner(0.3);
@@ -265,7 +265,7 @@ int main(int argc, char* argv[])
   tightHadTauSelector.set_min_pt(18.);
   std::cout << hadTauSelection_part2 <<'\n';
 
-  RecoJetReader* jetReader = new RecoJetReader(era, isMC, Form("n%s", branchName_jets_in.c_str()), branchName_jets_in);
+  RecoJetReader* jetReader = new RecoJetReader(era, isMC, branchName_jets_in);
   jetReader->setJetPt_central_or_shift(RecoJetReader::kJetPt_central); 
   jetReader->read_BtagWeight_systematics(isMC);
   jetReader->setBranchAddresses(inputTree);
@@ -284,11 +284,11 @@ int main(int argc, char* argv[])
   GenHadTauReader* genHadTauReader = 0;
   GenJetReader* genJetReader = 0;
   if ( isMC ) {
-    genLeptonReader = new GenLeptonReader(Form("n%s", branchName_genLeptons1_in.c_str()), branchName_genLeptons1_in);
+    genLeptonReader = new GenLeptonReader(branchName_genLeptons_in);
     genLeptonReader->setBranchAddresses(inputTree);
-    genHadTauReader = new GenHadTauReader(Form("n%s", branchName_genHadTaus_in.c_str()), branchName_genHadTaus_in);
+    genHadTauReader = new GenHadTauReader(branchName_genHadTaus_in);
     genHadTauReader->setBranchAddresses(inputTree);
-    genJetReader = new GenJetReader(Form("n%s", branchName_genJets_in.c_str()), branchName_genJets_in);
+    genJetReader = new GenJetReader(branchName_genJets_in);
     genJetReader->setBranchAddresses(inputTree);
   }
 
@@ -341,7 +341,7 @@ int main(int argc, char* argv[])
   GenParticleWriter* genHadTauWriter = 0;
   GenParticleWriter* genJetWriter = 0;
   if ( isMC ) {
-    std::string branchName_genLeptons = branchName_genLeptons1_in;
+    std::string branchName_genLeptons = branchName_genLeptons_in;
     genLeptonWriter = new GenParticleWriter(Form("n%s", branchName_genLeptons.data()), branchName_genLeptons);
     genLeptonWriter->setBranches(outputTree);
     std::cout << "writing GenLepton objects to branch = '" << branchName_genLeptons << "'" << std::endl;
@@ -384,8 +384,8 @@ int main(int argc, char* argv[])
     Form("drop n%s*", branchName_jets_in.data()),
     Form("drop %s_*", branchName_jets_in.data()),
     Form("drop %s_*", branchName_met_in.data()),
-    Form("drop n%s", branchName_genLeptons1_in.data()),
-    Form("drop %s_*", branchName_genLeptons1_in.data()),
+    Form("drop n%s", branchName_genLeptons_in.data()),
+    Form("drop %s_*", branchName_genLeptons_in.data()),
     Form("drop n%s", branchName_genHadTaus_in.data()),
     Form("drop %s_*", branchName_genHadTaus_in.data()),
     Form("drop n%s", branchName_genJets_in.data()),

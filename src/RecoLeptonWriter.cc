@@ -2,6 +2,10 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/BranchAddressInitializer.h" // BranchAddressInitializer, TTree, Form()
 
+RecoLeptonWriter::RecoLeptonWriter(const std::string & branchName_obj)
+  : RecoLeptonWriter(Form("n%s", branchName_obj.data()), branchName_obj)
+{}
+
 RecoLeptonWriter::RecoLeptonWriter(const std::string & branchName_num,
                                    const std::string & branchName_obj)
   : max_nLeptons_(32)
@@ -28,9 +32,9 @@ RecoLeptonWriter::RecoLeptonWriter(const std::string & branchName_num,
   , tightCharge_(nullptr)
   , charge_(nullptr)
 {
-  genLeptonWriter_ = new GenParticleWriter(Form("%s_genLepton", branchName_num_.data()), Form("%s_genLepton", branchName_obj_.data()));
-  genHadTauWriter_ = new GenParticleWriter(Form("%s_genTau",    branchName_num_.data()), Form("%s_genTau",    branchName_obj_.data()));
-  genJetWriter_    = new GenParticleWriter(Form("%s_genJet",    branchName_num_.data()), Form("%s_genJet",    branchName_obj_.data()));
+  genLeptonWriter_ = new GenParticleWriter(Form("%s_genLepton", branchName_obj_.data()));
+  genHadTauWriter_ = new GenParticleWriter(Form("%s_genTau",    branchName_obj_.data()));
+  genJetWriter_    = new GenParticleWriter(Form("%s_genJet",    branchName_obj_.data()));
   setBranchNames();
 }
 
