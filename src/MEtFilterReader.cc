@@ -26,7 +26,7 @@ MEtFilterReader::MEtFilterReader(MEtFilter* metFilter) // NEW !
   , branchNameFlag_trkPOG_toomanystripclus53X_("Flag_trkPOG_toomanystripclus53X")
   , branchNameFlag_trkPOG_logErrorTooManyClusters_("Flag_trkPOG_logErrorTooManyClusters")
   , branchNameFlag_goodVertices_("Flag_goodVertices")
-  , metFilter_(metFilter) // NEW !
+  , metFilter_(metFilter) 
 {
   setBranchNames();
 }
@@ -75,27 +75,6 @@ void MEtFilterReader::setBranchAddresses(TTree* tree)
 void MEtFilterReader::read() const
 {}
 
-// NEW ! 
-/* 
-bool MEtFilterReader::getFlag_HBHENoiseIsoFilter() const {  return ( Flag_HBHENoiseIsoFilter_ > 0 ) ? true : false ; }
-bool MEtFilterReader::getFlag_EcalDeadCellTriggerPrimitiveFilter() const {  return ( Flag_EcalDeadCellTriggerPrimitiveFilter_ > 0 ) ? true : false ; }
-bool MEtFilterReader::getFlag_ecalLaserCorrFilter() const {  return ( Flag_ecalLaserCorrFilter_ > 0 ) ? true : false ; }
-bool MEtFilterReader::getFlag_hcalLaserEventFilter() const {  return ( Flag_hcalLaserEventFilter_ > 0 ) ? true : false ; }
-bool MEtFilterReader::getFlag_muonBadTrackFilter() const {  return ( Flag_muonBadTrackFilter_ > 0 ) ? true : false ; }
-bool MEtFilterReader::getFlag_trkPOGFilters() const {  return ( Flag_trkPOGFilters_ > 0 ) ? true : false ; }
-bool MEtFilterReader::getFlag_trackingFailureFilter() const {  return ( Flag_trackingFailureFilter_ > 0 ) ? true : false ; }
-bool MEtFilterReader::getFlag_CSCTightHaloFilter() const {  return ( Flag_CSCTightHaloFilter_ > 0 ) ? true : false ; }
-bool MEtFilterReader::getFlag_HBHENoiseFilter() const {  return ( Flag_HBHENoiseFilter_ > 0 ) ? true : false ; }
-bool MEtFilterReader::getFlag_chargedHadronTrackResolutionFilter() const {  return ( Flag_chargedHadronTrackResolutionFilter_ > 0 ) ? true : false ; }
-bool MEtFilterReader::getFlag_GlobalTightHalo2016Filter() const {  return ( Flag_GlobalTightHalo2016Filter_ > 0 ) ? true : false ; }
-bool MEtFilterReader::getFlag_METFilters() const {  return ( Flag_METFilters_ > 0 ) ? true : false ; }
-bool MEtFilterReader::getFlag_CSCTightHalo2015Filter() const {  return ( Flag_CSCTightHalo2015Filter_ > 0 ) ? true : false ; }
-bool MEtFilterReader::getFlag_eeBadScFilter() const {  return ( Flag_eeBadScFilter_ > 0 ) ? true : false ; }
-bool MEtFilterReader::getFlag_trkPOG_manystripclus53X() const {  return ( Flag_trkPOG_manystripclus53X_ > 0 ) ? true : false ; }
-bool MEtFilterReader::getFlag_trkPOG_toomanystripclus53X() const {  return ( Flag_trkPOG_toomanystripclus53X_ > 0 ) ? true : false ; }
-bool MEtFilterReader::getFlag_trkPOG_logErrorTooManyClusters() const {  return ( Flag_trkPOG_logErrorTooManyClusters_ > 0 ) ? true : false ; }
-bool MEtFilterReader::getFlag_goodVertices() const {  return ( Flag_goodVertices_ > 0 ) ? true : false ; }
-*/
 
 
 
