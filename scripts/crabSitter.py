@@ -58,6 +58,7 @@ ATTRIBUTE_LUMIMASK       = 'config.Data.lumiMask'
 ATTRIBUTE_OUTPUTFILENAME = 'config.Data.outputDatasetTag'
 ATTRIBUTE_OUTPUTFILEPATH = 'config.Data.outLFNDirBase'
 ATTRIBUTE_WHITELIST      = 'config.Site.whitelist'
+ATTRIBUTE_BLACKLIST      = 'config.Site.blacklist'
 
 CRABJOBSUMMARY_REGEX   = r'\s*Jobs status:\s*[a-zA-Z_]+\s*[0-9.%]+\s*\([0-9]+\s*/\s*(?P<numJobs>[0-9]+)\)\s*'
 CRABJOBSUMMARY_MATCHER = re.compile(CRABJOBSUMMARY_REGEX)
@@ -202,8 +203,12 @@ if __name__ == '__main__':
         help = 'R|Prefix of the CRAB log directories',
     )
     parser.add_argument('-w', '--whitelist-tier',
-        type = str, dest = 'whitelist_tier', metavar = 'name', default = None, required = False,
-        help = "R|Whitelist a tier (e.g. 'T2_EE_Estonia')",
+        type = str, dest = 'whitelist_tier', metavar = 'name', default = '', required = False,
+        help = "R|Whitelist tier(s) (e.g. 'T2_EE_Estonia'); separate multiple tiers by a comma",
+    )
+    parser.add_argument('-b', '--blacklist-tier',
+        type = str, dest = 'blacklist_tier', metavar = 'name', default = '', required = False,
+        help = "R|Blacklist tier(s); separate multpiple tiers by a comma",
     )
     parser.add_argument('-f', '--force-resubmit',
         dest = 'force_resubmit', action = 'store_true', default = False, required = False,
@@ -211,10 +216,11 @@ if __name__ == '__main__':
     )
     args = parser.parse_args()
 
-    crabFilePath                  = args.crab_file
-    prefix                        = args.prefix
-    force_resubmit                = args.force_resubmit
-    whitelist_when_force_resubmit = None if not args.whitelist_tier else [args.whitelist_tier]
+    crabFilePath   = args.crab_file
+    prefix         = args.prefix
+    force_resubmit = args.force_resubmit
+    blacklist_tier = args.blacklist_tier
+    whitelist_tier = args.whitelist_tier
 
     crabJobPath = crabFilePath
     if not os.path.isdir(crabJobPath):
@@ -459,6 +465,10 @@ if __name__ == '__main__':
                     ])
                     print("jobIds_resubmit_string = '%s'" % jobIds_resubmit_string)
                     commandLine = '%s resubmit -d %s --jobids %s' % (EXECUTABLE_CRAB, crabDir, jobIds_resubmit_string)
+                    if whitelist_tier:
+                        commandLine += " --sitewhitelist=%s" % whitelist_tier
+                    if blacklist_tier:
+                        commandLine += " --siteblacklist=%s" % blacklist_tier
                     print("commandLine = '%s'" % commandLine)
                     runCommand_via_shell(commandLine)
 
@@ -482,9 +492,12 @@ if __name__ == '__main__':
                 value_lumiMask = "'%s'" % crabReportFileName
                 print("value_lumiMask = %s" % value_lumiMask)
                 isSet_lumiMask = False
-                value_whitelist = "%s" % whitelist_when_force_resubmit
+                value_whitelist = "%s" % whitelist_tier.split(',')
                 print("value_whitelist = %s" % value_whitelist)
                 isSet_whitelist = False
+                value_blacklist = "%s" % blacklist_tier.split(',')
+                print("value_blacklist = %s" % value_blacklist)
+                isSet_blacklist = False
                 for crabConfig_line in crabConfig_lines:
                     key_value_pair_match = KEY_VALUE_PAIR_MATCHER.match(crabConfig_line)
                     crabConfig_line_new = crabConfig_line
@@ -501,16 +514,23 @@ if __name__ == '__main__':
                             value = "'%s_forceResubmit%i'" % \
                                     (value.replace("'", ""), jobStatus_dict_updated[crabJob]['forceResubmissions'])
                         elif key == ATTRIBUTE_WHITELIST:
-                            if whitelist_when_force_resubmit:
+                            if whitelist_tier:
                                 value = value_whitelist
                             isSet_whitelist = True
+                        elif key == ATTRIBUTE_BLACKLIST:
+                            if blacklist_tier:
+                                value = value_blacklist
+                            isSet_blacklist = True
                         crabConfig_line_new = "%s = %s\n" % (key, value)
                     crabConfigFile_new.write(crabConfig_line_new)
                 if not isSet_lumiMask:
                     crabConfig_line_new = "%s = %s\n" % (ATTRIBUTE_LUMIMASK, value_lumiMask)
                     crabConfigFile_new.write(crabConfig_line_new)
-                if not isSet_whitelist and whitelist_when_force_resubmit:
+                if not isSet_whitelist and whitelist_tier:
                     crabConfig_line_new = "%s = %s\n" % (ATTRIBUTE_WHITELIST, value_whitelist)
+                    crabConfigFile_new.write(crabConfig_line_new)
+                if not isSet_blacklist and blacklist_tier:
+                    crabConfig_line_new = "%s = %s\n" % (ATTRIBUTE_BLACKLIST, value_blacklist)
                     crabConfigFile_new.write(crabConfig_line_new)
                 crabConfigFile_new.close()
                 commandLine = '%s submit -c %s' % (EXECUTABLE_CRAB, crabConfigFileName_new)
