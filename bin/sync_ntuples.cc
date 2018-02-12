@@ -1051,8 +1051,8 @@ int main(int argc, char* argv[])
       
       dataToMCcorrectionInterface_1l_2tau_trigger->setLeptons(lepton_lead_type, lepton_lead_pt, lepton_lead_eta);
       dataToMCcorrectionInterface_1l_2tau_trigger->setHadTaus(
-        tau_lead_type, selHadTaus[0]->pt(), selHadTaus[0]->eta(), selHadTaus[0]->decayMode(),
-        tau_sublead_type, selHadTaus[1]->pt(), selHadTaus[1]->eta(), selHadTaus[1]->decayMode());
+        selHadTaus[0]->pt(), selHadTaus[0]->eta(), selHadTaus[0]->phi(),
+        selHadTaus[1]->pt(), selHadTaus[1]->eta(), selHadTaus[1]->phi());
       dataToMCcorrectionInterface_1l_2tau_trigger->setTriggerBits(isTriggered_1e, isTriggered_1e1tau, isTriggered_1mu, isTriggered_1mu1tau);
       triggerSF_weight *= dataToMCcorrectionInterface_1l_2tau_trigger->getSF_triggerEff();
     }

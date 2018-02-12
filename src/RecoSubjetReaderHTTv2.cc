@@ -8,15 +8,14 @@ std::map<std::string, int> RecoSubjetReaderHTTv2::numInstances_;
 std::map<std::string, RecoSubjetReaderHTTv2 *> RecoSubjetReaderHTTv2::instances_;
 
 RecoSubjetReaderHTTv2::RecoSubjetReaderHTTv2(int era)
-  : RecoSubjetReaderHTTv2(era, "nHTTV2Subjets", "HTTV2Subjets")
+  : RecoSubjetReaderHTTv2(era, "HTTV2Subjets")
 {}
 
 RecoSubjetReaderHTTv2::RecoSubjetReaderHTTv2(int era,
-					     const std::string & branchName_num,
 					     const std::string & branchName_obj)
   : era_(era)
   , max_nJets_(128)
-  , branchName_num_(branchName_num)
+  , branchName_num_(Form("n%s", branchName_obj.data()))
   , branchName_obj_(branchName_obj)
   , jet_pt_(nullptr)
   , jet_eta_(nullptr)

@@ -15,7 +15,6 @@ class RecoSubjetReaderHTTv2
 public:
   RecoSubjetReaderHTTv2(int era);
   RecoSubjetReaderHTTv2(int era,
-			const std::string & branchName_num,
 			const std::string & branchName_obj);
   ~RecoSubjetReaderHTTv2();
 

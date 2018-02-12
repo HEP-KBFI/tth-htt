@@ -1,7 +1,7 @@
 #ifndef tthAnalysis_HiggsToTauTau_JetHistManager_h
 #define tthAnalysis_HiggsToTauTau_JetHistManager_h
 
-/** \class HadTauHistManager
+/** \class JetHistManager
  *
  * Book and fill histograms for jets (b-tagged and non-b-tagged) in ttH, H->tautau analysis
  *
