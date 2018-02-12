@@ -1,7 +1,7 @@
 #ifndef tthAnalysis_HiggsToTauTau_RecoJetHTTv2_h
 #define tthAnalysis_HiggsToTauTau_RecoJetHTTv2_h
 
-/** \class RecoJet
+/** \class RecoJetHTTv2
  *
  * Class to access information for jets reconstructed by hep-top-tagger (HTTv2) algorithm,
  * used for reconstruction of boosted hadronic tops

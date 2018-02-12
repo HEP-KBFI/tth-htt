@@ -10,15 +10,15 @@ std::map<std::string, int> RecoJetReaderHTTv2::numInstances_;
 std::map<std::string, RecoJetReaderHTTv2 *> RecoJetReaderHTTv2::instances_;
 
 RecoJetReaderHTTv2::RecoJetReaderHTTv2(int era)
-  : RecoJetReaderHTTv2(era, "HTTV2")
+  : RecoJetReaderHTTv2(era, "HTTV2", "HTTV2Subjets")
 {}
 
 RecoJetReaderHTTv2::RecoJetReaderHTTv2(int era,
-				       const std::string & branchName_obj)
+				       const std::string & branchName_jet, const std::string & branchName_subjet)
   : era_(era)
   , max_nJets_(32)
-  , branchName_num_(Form("n%s", branchName_obj.data()))
-  , branchName_obj_(branchName_obj)
+  , branchName_num_(Form("n%s", branchName_jet.data()))
+  , branchName_obj_(branchName_jet)
   , subjetReader_(nullptr)
   , jet_pt_(nullptr)
   , jet_eta_(nullptr)
@@ -33,6 +33,7 @@ RecoJetReaderHTTv2::RecoJetReaderHTTv2(int era,
   , jet_RoptCalc_(nullptr)
   , jet_ptForRoptCalc_(nullptr)
 {
+  subjetReader_ = new RecoSubjetReaderHTTv2(era, branchName_subjet);
   setBranchNames();
 }
 
@@ -44,6 +45,7 @@ RecoJetReaderHTTv2::~RecoJetReaderHTTv2()
   {
     RecoJetReaderHTTv2 * const gInstance = instances_[branchName_obj_];
     assert(gInstance);
+    delete gInstance->subjetReader_;
     delete[] gInstance->jet_pt_;
     delete[] gInstance->jet_eta_;
     delete[] gInstance->jet_phi_;

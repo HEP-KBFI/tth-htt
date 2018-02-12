@@ -1,8 +1,5 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetHTTv2.h"
 
-#include "tthAnalysis/HiggsToTauTau/interface/GenLepton.h" // GenLepton
-#include "tthAnalysis/HiggsToTauTau/interface/GenHadTau.h" // GenHadTau
-
 RecoJetHTTv2::RecoJetHTTv2(const GenJet & jet,
 			   Double_t area,
 			   const RecoSubjetHTTv2* subJet1,
