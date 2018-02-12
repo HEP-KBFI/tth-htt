@@ -111,6 +111,14 @@ EventInfo::getDecayModes()
   return decayModes;
 }
 
+std::string
+EventInfo::str() const
+{
+  std::stringstream ss;
+  ss << run << ':' << lumi << ':' << event;
+  return ss.str();
+}
+
 std::ostream &
 operator<<(std::ostream & os,
            const EventInfo & info)
