@@ -44,6 +44,9 @@ public:
   static std::vector<std::string>
   getDecayModes();
 
+  std::string
+  str() const;
+
   friend std::ostream &
   operator<<(std::ostream & os,
              const EventInfo & info);
