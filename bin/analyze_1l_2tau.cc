@@ -866,6 +866,30 @@ int main(int argc, char* argv[])
   std::string mvaFileName_HTT_1B ="tthAnalysis/HiggsToTauTau/data/1l_2tau_opt1/1l_2tau_XGB_JointBDT_HTT_1B.pkl";
   XGBInterface mva_2lss_HTT_1B(mvaFileName_HTT_1B, mvaInputVariables_1BSort);
 
+  //////////////////////
+  // SUM-BDT
+  // 1l_2tau_XGB_HTT_evtLevelSUM_TTH_18Var*pkl*
+  std::string mvaFileName_HTT_sum ="tthAnalysis/HiggsToTauTau/data/1l_2tau_opt1/1l_2tau_XGB_HTT_evtLevelSUM_TTH_18Var.pkl";
+  std::cout<<mvaFileName_HTT_sum<<std::endl;
+  std::vector<std::string> mvaInputVariables_HTT_sumSort={
+    "avg_dr_jet", "dr_taus", "ptmiss", "lep_conePt", "mT_lep", "mTauTauVis", "mindr_lep_jet",
+    "mindr_tau1_jet", "mindr_tau2_jet", "dr_lep_tau_ss", "dr_lep_tau_lead",
+    "costS_tau", "nBJetLoose", "tau1_pt",
+    "tau2_pt", "mvaOutput_hadTopTaggerWithKinFit", "HadTop_pt", "mvaOutput_Hj_tagger"
+  };
+  XGBInterface mva_HTT_sum(mvaFileName_HTT_sum, mvaInputVariables_HTT_sumSort);
+
+  // 1l_2tau_XGB_noHTT_evtLevelSUM_TTH_16Var*pkl*
+  std::string mvaFileName_noHTT_sum ="tthAnalysis/HiggsToTauTau/data/1l_2tau_opt1/1l_2tau_XGB_noHTT_evtLevelSUM_TTH_16Var.pkl";
+  std::cout<<mvaFileName_noHTT_sum<<std::endl;
+  std::vector<std::string> mvaInputVariables_noHTT_sumSort={
+    "avg_dr_jet", "dr_taus", "ptmiss", "lep_conePt", "mT_lep", "mTauTauVis", "mindr_lep_jet", "mindr_tau1_jet",
+    "mindr_tau2_jet", "nJet", "dr_lep_tau_ss", "dr_lep_tau_lead",
+    "costS_tau", "nBJetLoose", "tau1_pt", "tau2_pt"
+  };
+  XGBInterface mva_noHTT_sum(mvaFileName_noHTT_sum, mvaInputVariables_noHTT_sumSort);
+
+
   //--- open output file containing run:lumi:event numbers of events passing final event selection criteria
   std::ostream* selEventsFile = ( selEventsFileName_output != "" ) ? new std::ofstream(selEventsFileName_output.data(), std::ios::out) : 0;
 
@@ -1211,7 +1235,6 @@ int main(int argc, char* argv[])
     }
     ++analyzedEntries;
     histogram_analyzedEntries->Fill(0.);
-    // xanda here
 
     if ( isDEBUG ) {
       std::cout << "event #" << inputTree -> getCurrentMaxEventIdx() << ' ' << eventInfo << '\n';
@@ -1651,6 +1674,7 @@ int main(int argc, char* argv[])
       selBJets_medium.size(),
       -1., -1.,  -1.,  -1., -1.,  -1., -1., -1., -1.,
       mTauTauVis_presel,
+      -1.,-1.,
       -1., -1.,  -1.,  -1., -1.,-1.0,-1.0,
       1.);
 
@@ -2278,6 +2302,57 @@ int main(int argc, char* argv[])
     mvaInputVariables_noHTT_1B["BDTttV"]=mvaOutput_ttbar_noHTT;
     double mvaOutput_1B_noHTT =mva_2lss_noHTT_1B(mvaInputVariables_noHTT_1B);
 
+    std::map<std::string, double> mvaInputsHTT_sum;
+    mvaInputsHTT_sum["avg_dr_jet"]             = comp_avg_dr_jet(selJets);
+    mvaInputsHTT_sum["dr_taus"]                = deltaR(selHadTau_lead -> p4(), selHadTau_sublead -> p4());
+    mvaInputsHTT_sum["ptmiss"]                 = mht_p4.pt();
+    mvaInputsHTT_sum["lep_conePt"]             = selLepton -> cone_pt();
+    mvaInputsHTT_sum["mT_lep"]                 = comp_MT_met_lep1(*selLepton, met.pt(), met.phi());
+    mvaInputsHTT_sum["mTauTauVis"]             = mTauTauVis;
+    mvaInputsHTT_sum["mindr_lep_jet"]          = TMath::Min(10., comp_mindr_lep1_jet(*selLepton, selJets));
+    mvaInputsHTT_sum["mindr_tau1_jet"]         = TMath::Min(10., comp_mindr_hadTau1_jet(*selHadTau_lead, selJets));
+    mvaInputsHTT_sum["mindr_tau2_jet"]         = TMath::Min(10., comp_mindr_hadTau1_jet(*selHadTau_sublead, selJets));
+    mvaInputsHTT_sum["dr_lep_tau_ss"]          = deltaR(selLepton->p4(), selHadTau_SS->p4());
+    mvaInputsHTT_sum["dr_lep_tau_lead"]        = deltaR(selLepton->p4(), selHadTau_sublead->p4());
+    mvaInputsHTT_sum["costS_tau"]              = std::abs(cosThetaS_hadTau);
+    mvaInputsHTT_sum["nBJetLoose"]             = selBJets_loose.size();
+    mvaInputsHTT_sum["tau1_pt"]                = selHadTau_lead->pt();
+    mvaInputsHTT_sum["tau2_pt"]                = selHadTau_sublead->pt();
+    mvaInputsHTT_sum["mvaOutput_hadTopTaggerWithKinFit"]         = max_mvaOutput_hadTopTaggerWithKinFit;
+    mvaInputsHTT_sum["HadTop_pt"]               = fittedHadTopP4.pt();
+    mvaInputsHTT_sum["mvaOutput_Hj_tagger"]     = mvaOutput_Hj_tagger;
+    double mvaOutput_sum_HTT = mva_HTT_sum(mvaInputsHTT_sum);
+
+    // 1l_2tau_XGB_noHTT_evtLevelSUM_TTH_16Var*pkl*
+    std::string mvaFileName_noHTT_sum ="tthAnalysis/HiggsToTauTau/data/1l_2tau_opt1/1l_2tau_XGB_noHTT_evtLevelSUM_TTH_16Var.pkl";
+    std::cout<<mvaFileName_noHTT_sum<<std::endl;
+    std::vector<std::string> mvaInputVariables_noHTT_sumSort={
+      "avg_dr_jet", "dr_taus", "ptmiss", "lep_conePt", "mT_lep", "mTauTauVis", "mindr_lep_jet", "mindr_tau1_jet",
+      "mindr_tau2_jet", "nJet", "dr_lep_tau_ss", "dr_lep_tau_lead",
+      "costS_tau", "nBJetLoose", "tau1_pt", "tau2_pt"
+    };
+    XGBInterface mva_noHTT_sum(mvaFileName_noHTT_sum, mvaInputVariables_noHTT_sumSort);
+
+    std::map<std::string, double> mvaInputsnoHTT_sum;
+    mvaInputsnoHTT_sum["avg_dr_jet"]             = comp_avg_dr_jet(selJets);
+    mvaInputsnoHTT_sum["dr_taus"]                = deltaR(selHadTau_lead -> p4(), selHadTau_sublead -> p4());
+    mvaInputsnoHTT_sum["ptmiss"]                 = mht_p4.pt();
+    mvaInputsnoHTT_sum["lep_conePt"]             = selLepton -> cone_pt();
+    mvaInputsnoHTT_sum["mT_lep"]                 = comp_MT_met_lep1(*selLepton, met.pt(), met.phi());
+    mvaInputsnoHTT_sum["mTauTauVis"]             = mTauTauVis;
+    mvaInputsnoHTT_sum["mindr_lep_jet"]          = TMath::Min(10., comp_mindr_lep1_jet(*selLepton, selJets));
+    mvaInputsnoHTT_sum["mindr_tau1_jet"]         = TMath::Min(10., comp_mindr_hadTau1_jet(*selHadTau_lead, selJets));
+    mvaInputsnoHTT_sum["mindr_tau2_jet"]         = TMath::Min(10., comp_mindr_hadTau1_jet(*selHadTau_sublead, selJets));
+    mvaInputsnoHTT_sum["nJet"]                   = selJets.size();
+    mvaInputsnoHTT_sum["dr_lep_tau_ss"]          = deltaR(selLepton->p4(), selHadTau_SS->p4());
+    mvaInputsnoHTT_sum["dr_lep_tau_lead"]        = deltaR(selLepton->p4(), selHadTau_sublead->p4());
+    mvaInputsnoHTT_sum["costS_tau"]              = std::abs(cosThetaS_hadTau);
+    mvaInputsnoHTT_sum["nBJetLoose"]             = selBJets_loose.size();
+    mvaInputsnoHTT_sum["tau1_pt"]                = selHadTau_lead->pt();
+    mvaInputsnoHTT_sum["tau2_pt"]                = selHadTau_sublead->pt();
+    double mvaOutput_sum_noHTT = mva_noHTT_sum(mvaInputsnoHTT_sum);
+
+
 //--- fill histograms with events passing final selection
     selHistManagerType* selHistManager = selHistManagers[idxSelLepton_genMatch][idxSelHadTau_genMatch];
     assert(selHistManager != 0);
@@ -2313,6 +2388,9 @@ int main(int argc, char* argv[])
       mvaOutput_1l_2tau_ttV,
       mvaDiscr_1l_2tau,
       mTauTauVis,
+      //////////////
+      mvaOutput_sum_HTT,
+      mvaOutput_sum_noHTT,
       /////////////
       mvaOutput_ttbar_HTT,
       mvaOutput_ttbar_noHTT,
@@ -2361,6 +2439,9 @@ int main(int argc, char* argv[])
           mvaOutput_1l_2tau_ttV,
           mvaDiscr_1l_2tau,
           mTauTauVis,
+          //////////////
+          mvaOutput_sum_HTT,
+          mvaOutput_sum_noHTT,
           /////////////
           mvaOutput_ttbar_HTT,
           mvaOutput_ttbar_noHTT,
@@ -2430,6 +2511,9 @@ int main(int argc, char* argv[])
       mvaOutput_1l_2tau_ttV,
       mvaDiscr_1l_2tau,
       mTauTauVis,
+      //////////////
+      mvaOutput_sum_HTT,
+      mvaOutput_sum_noHTT,
       /////////////
       mvaOutput_ttbar_HTT,
       mvaOutput_ttbar_noHTT,
@@ -2455,6 +2539,10 @@ int main(int argc, char* argv[])
     double tau_fake_prob_sublead = 1.0;
 
     if ( bdt_filler ) {
+
+      double lep_genLepPt = (selLepton->genLepton() != 0)  ? selLepton->genLepton()->pt() : 0. ;
+      double tau1_genTauPt = (selHadTau_lead->genHadTau() != 0)  ? selHadTau_lead->genHadTau()->pt() : 0. ;
+      double tau2_genTauPt = (selHadTau_sublead->genHadTau() != 0) ? selHadTau_sublead->genHadTau()->pt() : 0. ;
 
       //FR weights for bdt ntuple
       if(leptonFakeRateInterface) {
@@ -2560,9 +2648,9 @@ int main(int argc, char* argv[])
           ("genMAntiTopWj2",   genMAntiTopWj2)
           ("gencount", gencount)
           ("gencountHad", gencountHad)
-          ("prob_fake_lepton", prob_fake_lepton)
-          ("tau_fake_prob_lead", tau_fake_prob_lead)
-          ("tau_fake_prob_sublead", tau_fake_prob_sublead)
+          ("prob_fake_lepton",      lep_genLepPt > 0 ? 1.0 : prob_fake_lepton)
+          ("tau_fake_prob_lead",    tau1_genTauPt > 0 ? 1.0 : tau_fake_prob_lead)
+          ("tau_fake_prob_sublead", tau2_genTauPt > 0 ? 1.0 : tau_fake_prob_sublead)
           //("run", eventInfo.run)
           //("lumi", eventInfo.lumi)
           //("evt", eventInfo.event)
