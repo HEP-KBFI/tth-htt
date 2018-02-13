@@ -32,7 +32,7 @@ LUMI                               = None
 hadTau_selection                   = None
 hadTau_selection_relaxed           = None
 applyFakeRateWeights               = None
-hadTauFakeRateWeight_inputFileName = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016_vvLoosePresel.root" # "tthAnalysis/HiggsToTauTau/data/FR_tau_2016.root" #
+hadTauFakeRateWeight_inputFileName = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016_vvLoosePresel.root"
 
 if use_prod_ntuples and ERA == "2015":
   raise ValueError("No production Ntuples for 2015 data & MC")
@@ -46,7 +46,7 @@ if mode == "VHbb":
   else:
     from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2015 import samples_2015
     from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016 import samples_2016
-  hadTau_selection     = "dR03mvaMedium" # "dR03mvaTight"
+  hadTau_selection     = "dR03mvaMedium"
   applyFakeRateWeights = "4L"
 elif mode == "forBDTtraining":
   if use_prod_ntuples:
@@ -54,11 +54,7 @@ elif mode == "forBDTtraining":
   else:
     from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_FastSim import samples_2016
   hadTau_selection         = "dR03mvaVTight"
-  hadTau_selection_relaxed = "dR03mvaVVLoose" #"dR03mvaMedium" #  "dR03mvaTight" #  "dR03mvaLoose" # "dR03mvaVTight" # "dR03mvaLoose"
-  # KEY: TDirectoryFile	 dR03mvaMedium;1	dR03mvaMedium
-  # KEY: TDirectoryFile	dR03mvaTight;1	dR03mvaTight
-  # KEY: TDirectoryFile	dR03mvaVTight;1	dR03mvaVTight
-  # KEY: TDirectoryFile	dR03mvaVVTight;1	dR03mvaVVTight
+  hadTau_selection_relaxed = "dR03mvaVVLoose"
   applyFakeRateWeights     = "4L"
 else:
   raise ValueError("Invalid Configuration parameter 'mode' = %s !!" % mode)
