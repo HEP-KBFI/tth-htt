@@ -151,6 +151,7 @@ class analyzeConfig:
             ]
             self.triggers_1e2mu = [
                 'HLT_DiMu9_Ele9_CaloIdL_TrackIdL',
+                'HLT_DiMu9_Ele9_CaloIdL_TrackIdL_DZ',
             ]
             self.triggers_2e1mu = [
                 'HLT_Mu8_DiEle12_CaloIdL_TrackIdL',
@@ -159,44 +160,39 @@ class analyzeConfig:
                 'HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL',
             ]
             self.triggers_2mu = [
+                'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL',
                 'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ',
-                # available in 2016 but not in 2017 nano: 'HLT_BIT_HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v'
             ]
             self.triggers_1e1mu = [
                 'HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL',
-                'HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL',
+                'HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ',
+                'HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ',
             ]
             self.triggers_2e = [
                 'HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ',
             ]
             self.triggers_1mu = [
-                # available in 2016 but not in 2017 nano: 'HLT_BIT_HLT_IsoMu22_v'
-                # available in 2016 but not in 2017 nano: 'HLT_BIT_HLT_IsoTkMu22_v'
-                # available in 2016 but not in 2017 nano: 'HLT_BIT_HLT_IsoMu22_eta2p1_v'
-                # available in 2016 but not in 2017 nano: 'HLT_BIT_HLT_IsoTkMu22_eta2p1_v'
                 'HLT_IsoMu24',
-                # available in 2016 but not in 2017 nano: 'HLT_BIT_HLT_IsoTkMu24_v'
+                'HLT_IsoMu27',
             ]
             self.triggers_1e = [
-                # available in 2016 but not in 2017 nano: 'HLT_BIT_HLT_Ele25_WPTight_Gsf_v'
-                'HLT_Ele27_WPTight_Gsf',
-                # available in 2016 but not in 2017 nano: 'HLT_BIT_HLT_Ele25_eta2p1_WPTight_Gsf_v'
-                # available in 2016 but not in 2017 nano: 'HLT_BIT_HLT_Ele27_eta2p1_WPLoose_Gsf_v'
+                'HLT_Ele32_WPTight_Gsf',
+                'HLT_Ele35_WPTight_Gsf',
             ]
+            # CV: tau trigger paths taken from slide 6 of presentation given by Hale Sert at HTT workshop in December 2017
+            #    (https://indico.cern.ch/event/684622/contributions/2807071/attachments/1575421/2487940/141217_triggerStatusPlans_hsert.pdf)
             self.triggers_1mu1tau = [
-                # available in 2016 but not in 2017 nano: 'HLT_BIT_HLT_IsoMu19_eta2p1_LooseIsoPFTau20_SingleL1_v'
-                # alternatives:
-                # 'HLT_IsoMu24_eta2p1_LooseChargedIsoPFTau20_SingleL1',
+                'HLT_IsoMu24_eta2p1_LooseChargedIsoPFTau20_eta2p1_SingleL1_v*',
+                'HLT_IsoMu20_eta2p1_LooseChargedIsoPFTau27_eta2p1_CrossL1_v*',
             ]
             self.triggers_1e1tau = [
-                # available in 2016 but not in 2017 nano: 'HLT_BIT_HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau30_v',
-                # alternatives:
-                # 'HLT_Ele24_eta2p1_WPTight_Gsf_LooseChargedIsoPFTau30_eta2p1_CrossL1',
-                # 'HLT_Ele24_eta2p1_WPTight_Gsf_LooseChargedIsoPFTau30_eta2p1_TightID_CrossL1',
+                'HLT_Ele24_eta2p1_WPTight_Gsf_LooseChargedIsoPFTau30_eta2p1_CrossL1',
             ]
             self.triggers_2tau = [
                 'HLT_DoubleMediumChargedIsoPFTau35_Trk1_eta2p1_Reg',
-                'HLT_DoubleMediumChargedIsoPFTau35_Trk1_eta2p1_Reg',
+                'HLT_DoubleTightChargedIsoPFTau35_Trk1_TightID_eta2p1_Reg',
+                'HLT_DoubleMediumChargedIsoPFTau40_Trk1_TightID_eta2p1_Reg',
+                'HLT_DoubleTightChargedIsoPFTau40_Trk1_eta2p1_Reg',
             ]
         else:
             raise ValueError("Invalid Configuration parameter 'era' = %s !!" % era)
