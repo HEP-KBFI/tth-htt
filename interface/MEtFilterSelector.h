@@ -6,7 +6,7 @@
  * Select events based on run + luminosity section + event number pairs
  * written (a three columns separated by white-space character) into an ASCII file
  * 
- * \author Christian Veelken, Tallinn
+ * \author Ram Krishna Dewanjee, Tallinn
  *
  */
 
