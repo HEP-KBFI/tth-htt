@@ -1559,7 +1559,7 @@ int main(int argc, char* argv[])
       }
     }
 
-    std::vector<const RecoJet*> cleanedJets = jetCleaner(jet_ptrs, selHadTaus, selLeptons, fakeableElectrons, fakeableMuons);
+    std::vector<const RecoJet*> cleanedJets = jetCleaner(jet_ptrs, selHadTaus, selLeptons, fakeableElectrons, fakeableMuons, selHadTaus); // jet_ptrs, fakeableMuons, fakeableElectrons, selHadTaus
 
     // selLeptons for BDT training is loose, and loose>fakeable
     // this has no effect on datacards making as there selLeptons are tight and tight<fakeable
@@ -2797,9 +2797,7 @@ int main(int argc, char* argv[])
       if(leptonFakeRateInterface) {
         if      ( std::abs(selLepton_lead->pdgId()) == 11 ) prob_fake_lepton_lead = leptonFakeRateInterface->getWeight_e(selLepton_lead->cone_pt(), selLepton_lead->absEta());
         else if ( std::abs(selLepton_lead->pdgId()) == 13 ) prob_fake_lepton_lead = leptonFakeRateInterface->getWeight_mu(selLepton_lead->cone_pt(), selLepton_lead->absEta());
-      }
 
-      if(leptonFakeRateInterface) {
         if      ( std::abs(selLepton_sublead->pdgId()) == 11 ) prob_fake_lepton_sublead = leptonFakeRateInterface->getWeight_e(selLepton_sublead->cone_pt(), selLepton_sublead->absEta());
         else if ( std::abs(selLepton_sublead->pdgId()) == 13 ) prob_fake_lepton_sublead = leptonFakeRateInterface->getWeight_mu(selLepton_sublead->cone_pt(), selLepton_sublead->absEta());
       }
@@ -2808,8 +2806,6 @@ int main(int argc, char* argv[])
           tau_fake_prob= jetToTauFakeRateInterface->getWeight_lead(selHadTau->pt(), selHadTau->absEta());
         }
 
-
-      // I am going to use those in bdt sooner or later
       double memOutput_type=memOutput_2lss_1tau_matched.is_initialized() ? memOutput_2lss_1tau_matched.type() : -100.;
       double memOutput_ttH=memOutput_2lss_1tau_matched.is_initialized() ? memOutput_2lss_1tau_matched.weight_ttH()     : -100.;
       double memOutput_tt=memOutput_2lss_1tau_matched.is_initialized() ? memOutput_2lss_1tau_matched.weight_tt()      : -100.;
