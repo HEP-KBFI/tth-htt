@@ -94,7 +94,7 @@ elif mode == "forBDTtraining_afterAddMEM":
   changeBranchNames        = True
   applyFakeRateWeights     = "4L"
   hadTau_selection         = "dR03mvaVTight"
-  hadTau_selection_relaxed = "dR03mvaVLoose"
+  hadTau_selection_relaxed = "dR03mvaVVLoose"
   MEMbranch                = 'memObjects_2lss_1tau_lepLoose_tauTight_dR03mvaVVLoose'
 else:
   raise ValueError("Invalid Configuration parameter 'mode' = %s !!" % mode)
