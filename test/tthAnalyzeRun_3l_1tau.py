@@ -39,7 +39,7 @@ hadTau_selection_relaxed           = None
 changeBranchNames                  = use_prod_ntuples
 applyFakeRateWeights               = None
 MEMbranch                          = ''
-hadTauFakeRateWeight_inputFileName = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016_vLoosePresel.root" # "tthAnalysis/HiggsToTauTau/data/FR_tau_2016.root" #
+hadTauFakeRateWeight_inputFileName = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016_vvLoosePresel.root" # "tthAnalysis/HiggsToTauTau/data/FR_tau_2016.root" #
 
 # Karl: temporarily disable other modes until we've proper Ntuples
 if mode not in ["VHbb", "forBDTtraining_beforeAddMEM"]:
