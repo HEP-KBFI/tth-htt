@@ -217,7 +217,7 @@ if __name__ == '__main__':
 
     for dataset in das_query_results:
       for das_key in das_keys:
-        mc_query_str = DASGOCLIENT_QUERY_COMMON % (line_stripped, das_key) if das_key != 'release' \
+        mc_query_str = DASGOCLIENT_QUERY_COMMON % (dataset, das_key) if das_key != 'release' \
                        else DASGOCLIENT_QUERY_RELEASE % dataset
         mc_query_out, mc_query_err = run_cmd(mc_query_str)
         if not mc_query_out or mc_query_err:
