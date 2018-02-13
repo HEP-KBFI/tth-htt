@@ -3,6 +3,7 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/TypeTraits.h" // Traits<>
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
+#include "tthAnalysis/HiggsToTauTau/interface/EventInfo.h" // EventInfo
 
 #include <TTree.h> // TTree
 
@@ -47,16 +48,17 @@ public:
   void readRunLumiEvent(UInt_t run,
                         UInt_t lumi,
                         ULong64_t event);
-  void read(std::vector<const RecoMuon *> & muons,
-            std::vector<const RecoMuon *> & fakeable_muons,
-            std::vector<const RecoMuon *> & cutbased_muons,
-            std::vector<const RecoMuon *> & mvabased_muons);
-  void read(std::vector<const RecoElectron *> & electrons,
-            std::vector<const RecoElectron *> & fakeable_electrons,
-            std::vector<const RecoElectron *> & cutbased_electrons,
-            std::vector<const RecoElectron *> & mvabased_electrons);
-  void read(std::vector<const RecoHadTau *> & hadtaus);
-  void read(std::vector<const RecoJet *> & jets);
+  void readRunLumiEvent(const EventInfo & eventInfo);
+  void read(const std::vector<const RecoMuon *> & muons,
+            const std::vector<const RecoMuon *> & fakeable_muons,
+            const std::vector<const RecoMuon *> & cutbased_muons,
+            const std::vector<const RecoMuon *> & mvabased_muons);
+  void read(const std::vector<const RecoElectron *> & electrons,
+            const std::vector<const RecoElectron *> & fakeable_electrons,
+            const std::vector<const RecoElectron *> & cutbased_electrons,
+            const std::vector<const RecoElectron *> & mvabased_electrons);
+  void read(const std::vector<const RecoHadTau *> & hadtaus);
+  void read(const std::vector<const RecoJet *> & jets);
   void read(const std::map<std::string, Double_t> & mvaInputs);
   void read(Float_t value,
             FloatVariableType type);

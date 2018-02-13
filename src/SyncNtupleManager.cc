@@ -205,10 +205,16 @@ SyncNtupleManager::readRunLumiEvent(UInt_t run_,
 }
 
 void
-SyncNtupleManager::read(std::vector<const RecoMuon *> & muons,
-                        std::vector<const RecoMuon *> & fakeable_muons,
-                        std::vector<const RecoMuon *> & cutbased_muons,
-                        std::vector<const RecoMuon *> & mvabased_muons)
+SyncNtupleManager::readRunLumiEvent(const EventInfo & eventInfo)
+{
+  return readRunLumiEvent(eventInfo.run, eventInfo.lumi, eventInfo.event);
+}
+
+void
+SyncNtupleManager::read(const std::vector<const RecoMuon *> & muons,
+                        const std::vector<const RecoMuon *> & fakeable_muons,
+                        const std::vector<const RecoMuon *> & cutbased_muons,
+                        const std::vector<const RecoMuon *> & mvabased_muons)
 {
   n_presel_mu = muons.size();
   n_fakeablesel_mu = fakeable_muons.size();
@@ -268,10 +274,10 @@ SyncNtupleManager::read(std::vector<const RecoMuon *> & muons,
 }
 
 void
-SyncNtupleManager::read(std::vector<const RecoElectron *> & electrons,
-                        std::vector<const RecoElectron *> & fakeable_electrons,
-                        std::vector<const RecoElectron *> & cutbased_electrons,
-                        std::vector<const RecoElectron *> & mvabased_electrons)
+SyncNtupleManager::read(const std::vector<const RecoElectron *> & electrons,
+                        const std::vector<const RecoElectron *> & fakeable_electrons,
+                        const std::vector<const RecoElectron *> & cutbased_electrons,
+                        const std::vector<const RecoElectron *> & mvabased_electrons)
 {
   n_presel_ele = electrons.size();
   n_fakeablesel_ele = fakeable_electrons.size();
@@ -333,7 +339,7 @@ SyncNtupleManager::read(std::vector<const RecoElectron *> & electrons,
 }
 
 void
-SyncNtupleManager::read(std::vector<const RecoHadTau *> & hadtaus)
+SyncNtupleManager::read(const std::vector<const RecoHadTau *> & hadtaus)
 {
   n_presel_tau = hadtaus.size();
   const Int_t nof_iterations = std::min(n_presel_tau, nof_taus);
@@ -380,7 +386,7 @@ SyncNtupleManager::read(std::vector<const RecoHadTau *> & hadtaus)
 }
 
 void
-SyncNtupleManager::read(std::vector<const RecoJet *> & jets)
+SyncNtupleManager::read(const std::vector<const RecoJet *> & jets)
 {
   n_presel_jet = jets.size();
   const Int_t nof_iterations = std::min(n_presel_jet, nof_jets);
