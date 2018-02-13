@@ -774,7 +774,7 @@ int main(int argc, char* argv[])
   NtupleFillerBDT<float, int> * bdt_filler = nullptr;
   typedef std::remove_pointer<decltype(bdt_filler)>::type::float_type float_type;
   typedef std::remove_pointer<decltype(bdt_filler)>::type::int_type   int_type;
-  if ( selectBDT ) {  
+  if ( selectBDT ) {
     bdt_filler = new std::remove_pointer<decltype(bdt_filler)>::type(
       makeHistManager_cfg(process_string, Form("%s/sel/evtntuple", histogramDir.data()), central_or_shift)
     );
@@ -1870,11 +1870,10 @@ int main(int argc, char* argv[])
       double dr_los1=-1.0;
       double dr_los2=-1.0;
       // it does not assume mis-charge identification
-      if (TMath::Sign(1,selLepton_lead->charge()) == TMath::Sign(1,selLepton_sublead->charge())){
+      if (selLepton_lead->charge()*selLepton_sublead->charge() > 0){
         dr_lss=deltaR(selLepton_sublead -> p4(), selLepton_lead -> p4());
         dr_los1=deltaR(selLepton_third -> p4(), selLepton_lead -> p4());
         dr_los2=deltaR(selLepton_third  -> p4(), selLepton_sublead -> p4());
-
         dr_lss=deltaR(selHadTau -> p4(), selLepton_third -> p4());
         dr_los2=deltaR(selHadTau -> p4(), selLepton_sublead -> p4());
         dr_los1=deltaR(selHadTau  -> p4(), selLepton_lead -> p4());
@@ -1882,7 +1881,6 @@ int main(int argc, char* argv[])
         dr_lss=deltaR(selLepton_third -> p4(), selLepton_lead -> p4());
         dr_los1=deltaR(selLepton_sublead -> p4(), selLepton_third -> p4());
         dr_los2=deltaR(selLepton_sublead  -> p4(), selLepton_lead -> p4());
-
         dr_los1=deltaR(selHadTau -> p4(), selLepton_third -> p4());
         dr_los2=deltaR(selHadTau -> p4(), selLepton_lead -> p4());
         dr_lss=deltaR(selHadTau  -> p4(), selLepton_sublead -> p4());
@@ -1920,12 +1918,6 @@ int main(int argc, char* argv[])
           ("dr_leps",             deltaR(selLepton_lead -> p4(), selLepton_sublead -> p4()))
           ("mTauTauVis1",         mTauTauVis1_sel)
           ("mTauTauVis2",         mTauTauVis2_sel)
-          //("memOutput_isValid",   memOutput_3l_1tau_matched.is_initialized() ? memOutput_3l_1tau_matched.isValid()        : -100.)
-          //("memOutput_errorFlag", memOutput_3l_1tau_matched.is_initialized() ? memOutput_3l_1tau_matched.errorFlag()      : -100.)
-          //("memOutput_ttH",       memOutput_3l_1tau_matched.is_initialized() ? memOutput_3l_1tau_matched.weight_ttH()     : -100.)
-          //("memOutput_ttZ",       memOutput_3l_1tau_matched.is_initialized() ? memOutput_3l_1tau_matched.weight_ttZ()     : -100.)
-          //("memOutput_ttH_Hww",   memOutput_3l_1tau_matched.is_initialized() ? memOutput_3l_1tau_matched.weight_ttH_hww() : -100.)
-          //("memOutput_LR",        memOutput_3l_1tau_matched.is_initialized() ? memOutput_3l_1tau_matched.LR()             : -100.)
           ("lep1_genLepPt",       (selLepton_lead->genLepton() != 0) ? selLepton_lead->genLepton()->pt() : 0.)
           ("lep2_genLepPt",       (selLepton_sublead->genLepton() != 0) ? selLepton_sublead->genLepton() ->pt() : 0.)
           ("lep3_genLepPt",       (selLepton_third->genLepton() != 0) ? selLepton_third->genLepton() ->pt() : 0.)
