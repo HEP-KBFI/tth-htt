@@ -89,7 +89,7 @@ if mode == "VHbb":
       "/Tau/Run2016G-PromptReco-v1/MINIAOD"]:
       sample_info["use_it"] = False
 
-  hadTau_selection         = "dR03mvaTight" #  "dR03mvaVTight" #"dR03mvaLoose" ## "dR03mvaMedium" # "dR03mvaTight" #
+  hadTau_selection         = "dR03mvaVTight"
   applyFakeRateWeights     = "3L"
 elif mode == "forBDTtraining":
   if use_prod_ntuples:
@@ -98,8 +98,8 @@ elif mode == "forBDTtraining":
   else:
     from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_FastSim import samples_2016
 	#from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_hadTopTagger_2016 import samples_2016
-  hadTau_selection                   = "dR03mvaTight" # "dR03mvaVTight"
-  hadTau_selection_relaxed           = "dR03mvaMedium" # "dR03mvaTight" # "dR03mvaLoose" ## "dR05isoLoose" #   "dR03mvaVTight" # "dR03mvaMedium" # xanda read if there is such #
+  hadTau_selection                   = "dR03mvaTight"
+  hadTau_selection_relaxed           = "dR03mvaMedium"
   applyFakeRateWeights               = "3L"
 else:
   raise ValueError("Invalid Configuration parameter 'mode' = %s !!" % mode)
@@ -123,18 +123,6 @@ if __name__ == '__main__':
   job_statistics_summary = {}
   run_analysis           = False
   is_last_resubmission   = False
-
-  # do histograms for 2D bin optimizations
-  nbinsTarget=[4,5,6,7,8,9,10,11,12,13,18,20,27];
-  nbinsStart=[15,20];
-  hist_HTT=[] # [[None]*int(len(nbinsTarget))]*len(nbinsStart)
-  hist_noHTT=[] # [[None]*int(len(nbinsTarget))]*len(nbinsStart)
-  for nbinsStartN in range(0,len(nbinsStart)) :
-    for nbinsTargetN in range(0,len(nbinsTarget)) :
-      hist_HTT.append("HTT_from"+str(nbinsStart[nbinsStartN])+"_to_"+str(nbinsTarget[nbinsTargetN]))
-      hist_noHTT.append("noHTT_from"+str(nbinsStart[nbinsStartN])+"_to_"+str(nbinsTarget[nbinsTargetN]))
-  print list(hist_HTT)
-  print list(hist_noHTT)
 
   for idx_job_resubmission in range(max_job_resubmission):
     if is_last_resubmission:
@@ -206,89 +194,14 @@ if __name__ == '__main__':
       histograms_to_fit                     = [
         "EventCounter",
         "numJets",
-        "mvaOutput_1l_2tau_ttbar_HTTWithKinFit_MVAonly",
-        "mvaOutput_1l_2tau_ttbar_HTTWithKinFit",
-        "mvaOutput_1l_2tau_ttbar",
         "mvaOutput_1l_2tau_ttbar_Old",
-        "mvaOutput_1l_2tau_ttbar_OldVar",
         "mvaOutput_1l_2tau_ttbar_Old_5bins",
-        "mvaOutput_1l_2tau_ttbar_OldVarHTT",
-        "mvaOutput_1l_2tau_ttbar_HTTLepID",
-        #
-        "mvaOutput_ttbar_HTT_4bins",
-        "mvaOutput_ttbar_HTT_5bins",
-        "mvaOutput_ttbar_HTT_6bins",
-        "mvaOutput_ttbar_HTT_7bins",
-        "mvaOutput_ttbar_HTT_8bins",
-        "mvaOutput_ttbar_HTT_9bins",
-        "mvaOutput_ttbar_HTT_10bins",
-        "mvaOutput_ttbar_HTT_11bins",
-        "mvaOutput_ttbar_HTT_12bins",
-        "mvaOutput_ttbar_HTT_14bins",
-        "mvaOutput_ttbar_noHTT_4bins",
-        "mvaOutput_ttbar_noHTT_5bins",
-        "mvaOutput_ttbar_noHTT_6bins",
-        "mvaOutput_ttbar_noHTT_7bins",
-        "mvaOutput_ttbar_noHTT_8bins",
-        "mvaOutput_ttbar_noHTT_9bins",
-        "mvaOutput_ttbar_noHTT_10bins",
-        "mvaOutput_ttbar_noHTT_11bins",
-        "mvaOutput_ttbar_noHTT_15bins",
-        "mvaOutput_ttbar_noHTT_16bins",
-        #
         "mvaOutput_sum_HTT_4bins",
-        "mvaOutput_sum_HTT_5bins",
-        "mvaOutput_sum_HTT_6bins",
-        "mvaOutput_sum_HTT_7bins",
-        "mvaOutput_sum_HTT_8bins",
-        "mvaOutput_sum_HTT_9bins",
-        "mvaOutput_sum_HTT_10bins",
-        "mvaOutput_sum_HTT_11bins",
-        "mvaOutput_sum_HTT_12bins",
-        "mvaOutput_sum_HTT_14bins",
-        "mvaOutput_sum_noHTT_4bins",
-        "mvaOutput_sum_noHTT_5bins",
-        "mvaOutput_sum_noHTT_6bins",
-        "mvaOutput_sum_noHTT_7bins",
-        "mvaOutput_sum_noHTT_8bins",
-        "mvaOutput_sum_noHTT_9bins",
-        "mvaOutput_sum_noHTT_10bins",
-        "mvaOutput_sum_noHTT_11bins",
-        "mvaOutput_sum_noHTT_15bins",
-        "mvaOutput_sum_noHTT_16bins",
-        #
         "mvaOutput_1B_HTT_4bins",
-        "mvaOutput_1B_HTT_5bins",
-        "mvaOutput_1B_HTT_6bins",
-        "mvaOutput_1B_HTT_7bins",
-        "mvaOutput_1B_HTT_8bins",
-        "mvaOutput_1B_HTT_9bins",
-        "mvaOutput_1B_HTT_10bins",
-        "mvaOutput_1B_HTT_11bins",
-        "mvaOutput_1B_HTT_12bins",
-        "mvaOutput_1B_HTT_14bins",
-        "mvaOutput_1B_noHTT_4bins",
-        "mvaOutput_1B_noHTT_5bins",
-        "mvaOutput_1B_noHTT_6bins",
-        "mvaOutput_1B_noHTT_7bins",
-        "mvaOutput_1B_noHTT_8bins",
-        "mvaOutput_1B_noHTT_9bins",
-        "mvaOutput_1B_noHTT_10bins",
-        "mvaOutput_1B_noHTT_11bins",
-        "mvaOutput_1B_noHTT_15bins",
-        "mvaOutput_1B_noHTT_16bins",
-#       "mvaOutput_1l_2tau_ttbar_withLepID",
-#       "mvaOutput_1l_2tau_ttbar_withLepID_HTTbase",
-#       "mvaOutput_1l_2tau_ttbar_baseline",
-#       "mvaOutput_1l_2tau_ttbar_baseline_HTTbase",
-#       "mvaDiscr_1l_2tau",
         "mvaOutput_ttbar_HTT",
-        "mvaOutput_ttbar_noHTT",
-        "mvaOutput_ttV_noHTT",
         "mvaOutput_ttV_HTT",
-        "mvaOutput_ttbar_OldVar",
+        "mvaDiscr_1l_2tau",
         "mvaOutput_1B_HTT",
-        "mvaOutput_1B_noHTT",
         "mTauTauVis"
       ] + list(hist_HTT) +list(hist_noHTT),
       select_rle_output                     = True,

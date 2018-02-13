@@ -20,47 +20,19 @@ class EvtHistManager_1l_2tau
   EvtHistManager_1l_2tau(edm::ParameterSet const& cfg);
   ~EvtHistManager_1l_2tau() {}
 
-  const Int_t  nbinsTarget[13]= {4,5,6,7,8,9,10,11,12,13,
-                                18,20,27};//{4,5,6,7,8,9,10};
-  const Int_t  nbinsStart[2]={15,20};
-  const Int_t nstart =2;
-  const Int_t ntarget =13;
-
-  //void LoadMaps(int nstart, int ntarget);
-  ///*
-  void bookHistogramsMap(TFileDirectory& dir , int , int);
-  void fillHistogramsMap(int counter, double evtWeight,
-     std::vector<TH2*>* HTT,
-     std::vector<TH2*>* noHTT,
-     double mvaOutput_ttbar_HTT,
-     double mvaOutput_ttbar_noHTT,
-     double mvaOutput_ttV_noHTT,
-     double mvaOutput_ttV_HTT
-     );
-     //*/
-
   /// book and fill histograms
   void bookHistograms(TFileDirectory& dir);
   void fillHistograms(int numElectrons, int numMuons, int numHadTaus, int numJets, int numBJets_loose, int numBJets_medium,
     double mvaOutput_1l_2tau_ttbar,
-    double mvaOutput_1l_2tau_ttbar_HTTWithKinFit_MVAonly,
-    double mvaOutput_1l_2tau_ttbar_HTTNoKinFit_MVAonly,
     double mvaOutput_1l_2tau_ttbar_Old,
-    double mvaOutput_1l_2tau_ttbar_HTTLepID,
-    double mvaOutput_1l_2tau_ttbar_OldVar,
-    double mvaOutput_1l_2tau_ttbar_OldVarHTT,
-    double mvaOutput_1l_2tau_ttV, double mvaDiscr_1l_2tau, double mTauTauVis,
+    double mvaOutput_1l_2tau_ttV,
+    double mvaDiscr_1l_2tau,
+    double mTauTauVis,
     //////////////
     double mvaOutput_sum_HTT,
-    double mvaOutput_sum_noHTT,
-    /////////////
     double mvaOutput_ttbar_HTT,
-    double mvaOutput_ttbar_noHTT,
-    double mvaOutput_ttV_noHTT,
     double mvaOutput_ttV_HTT,
-    double mvaOutput_ttbar_OldVar,
     double mvaOutput_1B_HTT,
-    double mvaOutput_1B_noHTT,
     /////////////
     double evtWeight);
 
@@ -78,93 +50,13 @@ class EvtHistManager_1l_2tau
   TH2* histogram_numBJets_medium_vs_numJets_; //     to avoid overlap with ttH, H->bb analysis (alternative: ttH, H->bb analysis adds hadronic tau veto)
 
   TH1* histogram_mvaOutput_1l_2tau_ttbar_;
-  TH1* histogram_mvaOutput_1l_2tau_ttbar_HTTWithKinFit_MVAonly_;
-  TH1* histogram_mvaOutput_1l_2tau_ttbar_HTTWithKinFit_;
   TH1* histogram_mvaOutput_1l_2tau_ttbar_Old_;
   TH1* histogram_mvaOutput_1l_2tau_ttbar_Old_5bins_;
-  TH1* histogram_mvaOutput_1l_2tau_ttbar_HTTLepID_;
-  TH1* histogram_mvaOutput_1l_2tau_ttbar_OldVar_;
-  TH1* histogram_mvaOutput_1l_2tau_ttbar_OldVarHTT_;
 
-  /////////////
   TH1* histogram_mvaOutput_ttbar_HTT_;
-  TH1* histogram_mvaOutput_ttbar_HTT_4bins_;
-  TH1* histogram_mvaOutput_ttbar_HTT_5bins_;
-  TH1* histogram_mvaOutput_ttbar_HTT_6bins_;
-  TH1* histogram_mvaOutput_ttbar_HTT_7bins_;
-  TH1* histogram_mvaOutput_ttbar_HTT_8bins_;
-  TH1* histogram_mvaOutput_ttbar_HTT_9bins_;
-  TH1* histogram_mvaOutput_ttbar_HTT_10bins_;
-  TH1* histogram_mvaOutput_ttbar_HTT_11bins_;
-  TH1* histogram_mvaOutput_ttbar_HTT_12bins_;
-  TH1* histogram_mvaOutput_ttbar_HTT_14bins_;
-
-  TH1* histogram_mvaOutput_ttbar_noHTT_;
-  TH1* histogram_mvaOutput_ttbar_noHTT_4bins_;
-  TH1* histogram_mvaOutput_ttbar_noHTT_5bins_;
-  TH1* histogram_mvaOutput_ttbar_noHTT_6bins_;
-  TH1* histogram_mvaOutput_ttbar_noHTT_7bins_;
-  TH1* histogram_mvaOutput_ttbar_noHTT_8bins_;
-  TH1* histogram_mvaOutput_ttbar_noHTT_9bins_;
-  TH1* histogram_mvaOutput_ttbar_noHTT_10bins_;
-  TH1* histogram_mvaOutput_ttbar_noHTT_11bins_;
-  TH1* histogram_mvaOutput_ttbar_noHTT_15bins_;
-  TH1* histogram_mvaOutput_ttbar_noHTT_16bins_;
-
-  /////////////
   TH1* histogram_mvaOutput_sum_HTT_;
-  TH1* histogram_mvaOutput_sum_HTT_4bins_;
-  TH1* histogram_mvaOutput_sum_HTT_5bins_;
-  TH1* histogram_mvaOutput_sum_HTT_6bins_;
-  TH1* histogram_mvaOutput_sum_HTT_7bins_;
-  TH1* histogram_mvaOutput_sum_HTT_8bins_;
-  TH1* histogram_mvaOutput_sum_HTT_9bins_;
-  TH1* histogram_mvaOutput_sum_HTT_10bins_;
-  TH1* histogram_mvaOutput_sum_HTT_11bins_;
-  TH1* histogram_mvaOutput_sum_HTT_12bins_;
-  TH1* histogram_mvaOutput_sum_HTT_14bins_;
-
-  TH1* histogram_mvaOutput_sum_noHTT_;
-  TH1* histogram_mvaOutput_sum_noHTT_4bins_;
-  TH1* histogram_mvaOutput_sum_noHTT_5bins_;
-  TH1* histogram_mvaOutput_sum_noHTT_6bins_;
-  TH1* histogram_mvaOutput_sum_noHTT_7bins_;
-  TH1* histogram_mvaOutput_sum_noHTT_8bins_;
-  TH1* histogram_mvaOutput_sum_noHTT_9bins_;
-  TH1* histogram_mvaOutput_sum_noHTT_10bins_;
-  TH1* histogram_mvaOutput_sum_noHTT_11bins_;
-  TH1* histogram_mvaOutput_sum_noHTT_15bins_;
-  TH1* histogram_mvaOutput_sum_noHTT_16bins_;
-
-
-  TH1* histogram_mvaOutput_ttV_noHTT_;
   TH1* histogram_mvaOutput_ttV_HTT_;
-  TH1* histogram_mvaOutput_ttbar_OldVar_;
-
   TH1* histogram_mvaOutput_1B_HTT_;
-  TH1* histogram_mvaOutput_1B_HTT_4bins_;
-  TH1* histogram_mvaOutput_1B_HTT_5bins_;
-  TH1* histogram_mvaOutput_1B_HTT_6bins_;
-  TH1* histogram_mvaOutput_1B_HTT_7bins_;
-  TH1* histogram_mvaOutput_1B_HTT_8bins_;
-  TH1* histogram_mvaOutput_1B_HTT_9bins_;
-  TH1* histogram_mvaOutput_1B_HTT_10bins_;
-  TH1* histogram_mvaOutput_1B_HTT_11bins_;
-  TH1* histogram_mvaOutput_1B_HTT_12bins_;
-  TH1* histogram_mvaOutput_1B_HTT_14bins_;
-
-  TH1* histogram_mvaOutput_1B_noHTT_;
-  TH1* histogram_mvaOutput_1B_noHTT_4bins_;
-  TH1* histogram_mvaOutput_1B_noHTT_5bins_;
-  TH1* histogram_mvaOutput_1B_noHTT_6bins_;
-  TH1* histogram_mvaOutput_1B_noHTT_7bins_;
-  TH1* histogram_mvaOutput_1B_noHTT_8bins_;
-  TH1* histogram_mvaOutput_1B_noHTT_9bins_;
-  TH1* histogram_mvaOutput_1B_noHTT_10bins_;
-  TH1* histogram_mvaOutput_1B_noHTT_11bins_;
-  TH1* histogram_mvaOutput_1B_noHTT_15bins_;
-  TH1* histogram_mvaOutput_1B_noHTT_16bins_;
-  /////////////
 
   TH1* histogram_mvaOutput_1l_2tau_ttV_;
   TH1* histogram_mvaDiscr_1l_2tau_;
@@ -173,10 +65,6 @@ class EvtHistManager_1l_2tau
 
   TH1* histogram_EventCounter_;
 
-  std::vector<TH1*> hist_HTT_2D_;
-  std::vector<TH1*> hist_noHTT_2D_;
-
-  std::vector<TH1*> histograms_;
 };
 
 #endif
