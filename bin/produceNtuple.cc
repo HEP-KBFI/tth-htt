@@ -516,7 +516,7 @@ int main(int argc, char* argv[])
     }
     cutFlowTable.update(Form(">= %i sel leptons", minNumLeptons));
 
-    if ( selLeptons.size() >= 1 ) {
+    if ( minNumLeptons > 0 && selLeptons.size() >= 1 ) {
       const RecoLepton* selLepton_lead = selLeptons[0];
       // CV: lower threshold on leading lepton by 2 GeV 
       //     with respect to thresholds applied on analysis level
@@ -537,7 +537,7 @@ int main(int argc, char* argv[])
         }
         continue;
       }
-      cutFlowTable.update(Form("lead lepton pT > %1.0f GeV", minPt_lead));
+      cutFlowTable.update("lead lepton pT > 23 (electron) / 18 (muon) GeV");
     }
 
     if ( !((int)selHadTaus.size() >= minNumHadTaus) ) {
