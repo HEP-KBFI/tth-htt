@@ -1,1 +1,0 @@
-['avg_dr_jet', 'dr_lep1_tau', 'dr_lep2_tau', 'dr_leps', 'lep1_conePt', 'lep2_conePt', 'mT_lep1', 'mT_lep2', 'mTauTauVis1', 'mTauTauVis2', 'mindr_lep1_jet', 'mindr_lep2_jet', 'mindr_tau_jet', 'ptmiss', 'tau_pt', 'mvaOutput_hadTopTaggerWithKinFit', 'mvaOutput_Hj_tagger', 'memOutput_LR']
