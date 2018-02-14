@@ -675,6 +675,9 @@ int main(int argc, char* argv[])
   TMVAInterface mva_1l_2tau_ttbar_Old(mvaFileName_1l_2tau_ttbar_Old, mvaInputVariables_1l_2tau_ttbar);
 
   /////// second round of optimizations - Xanda
+  // the order of declaration of variables IS important if you use XGBInteface
+  // you can find the variables (and order) to each BDT if you substitute .pkl => _pkl.log and look on the file
+  // c++ does keep order in vectors
   std::string mvaFileName_HTT_ttV ="tthAnalysis/HiggsToTauTau/data/1l_2tau_opt1/1l_2tau_XGB_HTT_evtLevelTTV_TTH_14Var.pkl";
   std::cout<<mvaFileName_HTT_ttV<<std::endl;
   std::vector<std::string> mvaInputVariables_HTT_ttVSort={
