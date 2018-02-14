@@ -47,11 +47,7 @@ class EvtHistManager_2lss_1tau
     double mTauTauVis1,
     double mTauTauVis2,
     double memOutput_LR,
-    double memDiscr,
-    // XGB training 1D
-    double mvaOutput_2lss_noHTT_ttV,
-    double mvaOutput_2lss_HTT_tt,
-    double mvaOutput_2lss_HTT_1B
+    double memDiscr
     );
 
   const TH1* getHistogram_EventCounter() const { return histogram_EventCounter_; }
@@ -91,9 +87,6 @@ class EvtHistManager_2lss_1tau
 
   TH1* histogram_EventCounter_;
 
-  TH1* histogram_mvaOutput_2lss_noHTT_ttV_;
-  TH1* histogram_mvaOutput_2lss_HTT_tt_;
-  TH1* histogram_mvaOutput_2lss_HTT_1B_;
 };
 
 #endif

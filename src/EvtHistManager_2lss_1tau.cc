@@ -61,10 +61,6 @@ void EvtHistManager_2lss_1tau::bookHistograms(TFileDirectory& dir)
   histogram_memDiscr_ = book1D(dir, "memDiscr", "memDiscr", 8, 0.5, 8.5);
   histogram_EventCounter_ = book1D(dir, "EventCounter", "EventCounter", 1, -0.5, +0.5);
 
-  histogram_mvaOutput_2lss_HTT_tt_= book1D(dir, "mvaOutput_2lss_HTT_tt", "mvaOutput_2lss_HTT_tt",          600, 0., +1.);
-  histogram_mvaOutput_2lss_noHTT_ttV_= book1D(dir, "mvaOutput_2lss_noHTT_ttV", "mvaOutput_2lss_noHTT_ttV", 600, 0., +1.);
-  histogram_mvaOutput_2lss_HTT_1B_= book1D(dir, "mvaOutput_2lss_HTT_1B", "mvaOutput_2lss_HTT_1B",    600, 0., +1.);
-
 }
 
 void EvtHistManager_2lss_1tau::fillHistograms(
@@ -89,11 +85,7 @@ void EvtHistManager_2lss_1tau::fillHistograms(
       double mTauTauVis1,
       double mTauTauVis2,
       double memOutput_LR,
-      double memDiscr,
-      // XGB training 1D
-      double mvaOutput_2lss_noHTT_ttV,
-      double mvaOutput_2lss_HTT_tt,
-      double mvaOutput_2lss_HTT_1B
+      double memDiscr
     )
 {
   double evtWeightErr = 0.;
@@ -128,14 +120,10 @@ void EvtHistManager_2lss_1tau::fillHistograms(
   fillWithOverFlow(histogram_memOutput_LR_, memOutput_LR, evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_memDiscr_, memDiscr , evtWeight, evtWeightErr);
 
-  fillWithOverFlow(histogram_mvaOutput_2lss_HTT_tt_, mvaOutput_2lss_HTT_tt, evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_mvaOutput_2lss_noHTT_ttV_, mvaOutput_2lss_noHTT_ttV, evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_mvaOutput_2lss_HTT_1B_, mvaOutput_2lss_HTT_1B, evtWeight, evtWeightErr);
-
   fillWithOverFlow(histogram_EventCounter_, 0., evtWeight, evtWeightErr);
 }
 
 void EvtHistManager_2lss_1tau::integralHistograms(TFileDirectory& dir)
 {
-  std::cout<<"Integral of histogram "<< histogram_mvaOutput_2lss_HTT_tt_->Integral() <<std::endl;
+  std::cout<<"Integral of histogram "<< histogram_mTauTauVis_->Integral() <<std::endl;
 }

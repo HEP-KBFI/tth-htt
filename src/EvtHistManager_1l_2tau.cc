@@ -40,11 +40,6 @@ void EvtHistManager_1l_2tau::bookHistograms(TFileDirectory& dir)
 
   histogram_mTauTauVis_ = book1D(dir, "mTauTauVis", "mTauTauVis", 20, 0., 200.);
 
-  histogram_mvaOutput_sum_HTT_ = book1D(dir, "mvaOutput_sum_HTT", "mvaOutput_sum_HTT", 600, 0., 1.);
-  histogram_mvaOutput_ttbar_HTT_ = book1D(dir, "mvaOutput_ttbar_HTT", "mvaOutput_ttbar_HTT", 600, 0., 1.);
-  histogram_mvaOutput_ttV_HTT_ = book1D(dir, "mvaOutput_ttV_HTT", "mvaOutput_ttV_HTT", 600, 0., 1.);
-  histogram_mvaOutput_1B_HTT_= book1D(dir, "mvaOutput_1B_HTT", "mvaOutput_1B_HTT", 600, 0., 1.); // Joint-BDT
-
   histogram_EventCounter_ = book1D(dir, "EventCounter", "EventCounter", 1, -0.5, +0.5);
 }
 
@@ -54,20 +49,9 @@ void EvtHistManager_1l_2tau::fillHistograms(int numElectrons, int numMuons, int 
   double mvaOutput_1l_2tau_ttV,
   double mvaDiscr_1l_2tau,
   double mTauTauVis,
-  //////////////
-  double mvaOutput_sum_HTT,
-  double mvaOutput_ttbar_HTT,
-  double mvaOutput_ttV_HTT,
-  double mvaOutput_1B_HTT,
-  /////////////
   double evtWeight)
 {
   double evtWeightErr = 0.;
-
-  fillWithOverFlow(histogram_mvaOutput_ttbar_HTT_, mvaOutput_ttbar_HTT, evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_mvaOutput_sum_HTT_, mvaOutput_sum_HTT, evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_mvaOutput_ttV_HTT_, mvaOutput_ttV_HTT, evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_mvaOutput_1B_HTT_, mvaOutput_1B_HTT, evtWeight, evtWeightErr);
 
   fillWithOverFlow(histogram_numElectrons_, numElectrons, evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_numMuons_, numMuons, evtWeight, evtWeightErr);

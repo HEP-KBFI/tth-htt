@@ -28,12 +28,6 @@ class EvtHistManager_1l_2tau
     double mvaOutput_1l_2tau_ttV,
     double mvaDiscr_1l_2tau,
     double mTauTauVis,
-    //////////////
-    double mvaOutput_sum_HTT,
-    double mvaOutput_ttbar_HTT,
-    double mvaOutput_ttV_HTT,
-    double mvaOutput_1B_HTT,
-    /////////////
     double evtWeight);
 
   const TH1* getHistogram_EventCounter() const { return histogram_EventCounter_; }
@@ -52,11 +46,6 @@ class EvtHistManager_1l_2tau
   TH1* histogram_mvaOutput_1l_2tau_ttbar_;
   TH1* histogram_mvaOutput_1l_2tau_ttbar_Old_;
   TH1* histogram_mvaOutput_1l_2tau_ttbar_Old_5bins_;
-
-  TH1* histogram_mvaOutput_ttbar_HTT_;
-  TH1* histogram_mvaOutput_sum_HTT_;
-  TH1* histogram_mvaOutput_ttV_HTT_;
-  TH1* histogram_mvaOutput_1B_HTT_;
 
   TH1* histogram_mvaOutput_1l_2tau_ttV_;
   TH1* histogram_mvaDiscr_1l_2tau_;
