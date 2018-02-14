@@ -913,7 +913,7 @@ int main(int argc, char* argv[])
   typedef std::remove_pointer<decltype(bdt_filler_gen)>::type::float_type float_type;
   typedef std::remove_pointer<decltype(bdt_filler_gen)>::type::int_type   int_type;
 
-  if ( selectBDT ) { // if ( 1>0 ) { // Xanda  doTree
+  if ( selectBDT ) {
     bdt_filler = new std::remove_pointer<decltype(bdt_filler)>::type(
       makeHistManager_cfg(process_string, Form("%s/sel/evtntuple", histogramDir.data()), central_or_shift)
     );
@@ -982,7 +982,7 @@ int main(int argc, char* argv[])
   cutFlowHistManager->bookHistograms(fs);
 
   while(inputTree -> hasNextEvent() && (! run_lumi_eventSelector || (run_lumi_eventSelector && ! run_lumi_eventSelector -> areWeDone())))
-  { // xanda
+  {
     if(inputTree -> canReport(reportEvery))
     {
       std::cout << "processing Entry " << inputTree -> getCurrentMaxEventIdx()
