@@ -40,6 +40,9 @@ private:
   TH1 * histogram_fRec_;
   TH1 * histogram_deltaRopt_;
   TH1 * histogram_maxSubjetBtagCSV_;
+
+  TH1 * histogram_tau21_;
+  TH1 * histogram_tau32_;
   
   std::vector<TH1 *> histograms_;
 

@@ -30,34 +30,18 @@ RecoLepton::RecoLepton(const GenLepton & lepton,
   , charge_(charge)
   , cone_pt_(0.)
   , genLepton_(nullptr)
-  , genLepton_isOwner_(false)
   , genHadTau_(nullptr)
-  , genHadTau_isOwner_(false)
   , genJet_(nullptr)
-  , genJet_isOwner_(false)
   , isLoose_(false)
   , isFakeable_(false)
   , isTight_(false)
 {
-  const double cone_pt = jetPtRatio_ > 1.e-3 ? 0.85 * pt_ / jetPtRatio_ : pt_;
+  const double cone_pt = ( jetPtRatio_ > 1.e-3 ) ? 0.85*pt_/jetPtRatio_ : pt_;
   set_cone_pt(cone_pt);
 }
 
 RecoLepton::~RecoLepton()
-{
-  if(genLepton_isOwner_ && genLepton_)
-  {
-    delete genLepton_;
-  }
-  if(genHadTau_isOwner_ && genHadTau_)
-  {
-    delete genHadTau_;
-  }
-  if(genJet_isOwner_ && genJet_)
-  {
-    delete genJet_;
-  }
-}
+{}
 
 void
 RecoLepton::set_isLoose() const
@@ -85,27 +69,21 @@ RecoLepton::set_cone_pt(Double_t cone_pt)
 }
 
 void
-RecoLepton::set_genLepton(const GenLepton * genLepton,
-                          bool isOwner)
+RecoLepton::set_genLepton(const GenLepton * genLepton)
 {
-  genLepton_ = genLepton;
-  genLepton_isOwner_ = isOwner;
+  genLepton_.reset(genLepton);
 }
 
 void
-RecoLepton::set_genHadTau(const GenHadTau * genHadTau,
-                          bool isOwner)
+RecoLepton::set_genHadTau(const GenHadTau * genHadTau)
 {
-  genHadTau_ = genHadTau;
-  genHadTau_isOwner_ = isOwner;
+  genHadTau_.reset(genHadTau);
 }
 
 void
-RecoLepton::set_genJet(const GenJet * genJet,
-                       bool isOwner)
+RecoLepton::set_genJet(const GenJet * genJet)
 {
-  genJet_ = genJet;
-  genJet_isOwner_ = isOwner;
+  genJet_.reset(genJet);
 }
 
 bool
@@ -231,19 +209,19 @@ RecoLepton::cone_p4() const
 const GenLepton *
 RecoLepton::genLepton() const
 {
-  return genLepton_;
+  return genLepton_.get();
 }
 
 const GenHadTau *
 RecoLepton::genHadTau() const
 {
-  return genHadTau_;
+  return genHadTau_.get();
 }
 
 const GenJet *
 RecoLepton::genJet() const
 {
-  return genJet_;
+  return genJet_.get();
 }
 
 bool

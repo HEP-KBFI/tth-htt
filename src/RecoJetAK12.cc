@@ -71,13 +71,13 @@ RecoJetAK12::msoftdrop() const
 const RecoSubjetAK12* 
 RecoJetAK12::subJet1() const
 {
-  return subJet1_;
+  return subJet1_.get();
 }
  
 const RecoSubjetAK12* 
 RecoJetAK12::subJet2() const
 {
-  return subJet2_;
+  return subJet2_.get();
 }
  
 Double_t 
@@ -113,7 +113,8 @@ operator<<(std::ostream & stream,
             " QjetVolatility = " << jet.QjetVolatility() << ","
             " msoftdrop = " << jet.msoftdrop()           << ","
             " tau1 = " << jet.tau1()                     << ","
-            " tau2 = " << jet.tau2()                     << ",\n"
+            " tau2 = " << jet.tau2()                     << ","
+            " tau3 = " << jet.tau3()                     << ",\n"
             " subjets:";
   stream << ",\n  idx1 = " << jet.subJet1();
   if(jet.subJet1())

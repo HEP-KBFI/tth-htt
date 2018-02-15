@@ -114,7 +114,7 @@ RecoJetReader::setBranchNames()
     branchName_eta_ = Form("%s_%s", branchName_obj_.data(), "eta");
     branchName_phi_ = Form("%s_%s", branchName_obj_.data(), "phi");
     branchName_mass_ = Form("%s_%s", branchName_obj_.data(), "mass");
-    branchName_jetCharge_ = Form("%s_%s", branchName_obj_.data(), "charge");
+    branchName_jetCharge_ = Form("%s_%s", branchName_obj_.data(), "jetCharge");
     branchName_jecUncertTotal_ = Form("%s_%s", branchName_obj_.data(), "jecUncertTotal");
     branchName_BtagCSV_ = Form("%s_%s", branchName_obj_.data(), "btagCSVV2");
     branchName_QGDiscr_ = Form("%s_%s", branchName_obj_.data(), "qgl");

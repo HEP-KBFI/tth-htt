@@ -7,6 +7,8 @@
 class GenHadTau;
 class GenJet;
 
+#include <memory> // std::shared_ptr
+
 class RecoLepton
   : public GenLepton
 {
@@ -44,9 +46,9 @@ public:
   /**
    * @brief Set links to generator level particles (matched by dR)
    */
-  void set_genLepton(const GenLepton * genLepton, bool isOwner = false);
-  void set_genHadTau(const GenHadTau * genHadTau, bool isOwner = false);
-  void set_genJet(const GenJet * genJet, bool isOwner = false);
+  void set_genLepton(const GenLepton * genLepton);
+  void set_genHadTau(const GenHadTau * genHadTau);
+  void set_genJet(const GenJet * genJet);
 
   /**
    * @brief Checks whether a given lepton is an electron by its PDG id
@@ -116,12 +118,9 @@ protected:
   Particle::LorentzVector cone_p4_;
 
 //--- matching to generator level particles
-  const GenLepton * genLepton_;
-  bool genLepton_isOwner_;
-  const GenHadTau * genHadTau_;
-  bool genHadTau_isOwner_;
-  const GenJet * genJet_;
-  bool genJet_isOwner_;
+  std::shared_ptr<const GenLepton> genLepton_;
+  std::shared_ptr<const GenHadTau> genHadTau_;
+  std::shared_ptr<const GenJet> genJet_;
 
 //--- flags indicating whether or not lepton passes loose, fakeable and/or tight selection criteria
   mutable bool isLoose_;

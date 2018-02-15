@@ -138,7 +138,7 @@ namespace
 {
   const RecoSubjetAK12* getSubjet(const std::vector<RecoSubjetAK12>& subjets, int idx)
   {
-    if ( idx == -1 ) return 0;
+    if ( idx == -1 ) return nullptr;
     else if (idx >= 0 && idx < (int)subjets.size() ) return &subjets[idx];
     else throw cmsException("<getSubjet>:")
       << "Invalid subjet index = " << idx << ", given number of subjets = " << subjets.size() << " !!\n";
@@ -180,8 +180,8 @@ RecoJetReaderAK12::read() const
 	gInstance->jet_pullMag_[idxJet],
 	gInstance->jet_QjetVolatility_[idxJet],
 	gInstance->jet_msoftdrop_[idxJet],
-	subJet1,
-	subJet2,
+        ( subJet1 != nullptr ) ? new RecoSubjetAK12(*subJet1) : nullptr,
+	( subJet2 != nullptr ) ? new RecoSubjetAK12(*subJet2) : nullptr,
 	gInstance->jet_tau1_[idxJet],
 	gInstance->jet_tau2_[idxJet],
 	gInstance->jet_tau3_[idxJet],

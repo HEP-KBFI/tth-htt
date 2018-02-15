@@ -13,6 +13,8 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetBase.h" // RecoJetBase
 #include "tthAnalysis/HiggsToTauTau/interface/RecoSubjetAK12.h" // RecoSubjetAK12
 
+#include <memory> // std::shared_ptr
+
 class RecoJetAK12
   : public RecoJetBase
 {
@@ -59,8 +61,8 @@ protected:
   Double_t pullMag_;
   Double_t QjetVolatility_;
   Double_t msoftdrop_;
-  const RecoSubjetAK12* subJet1_;
-  const RecoSubjetAK12* subJet2_;
+  std::shared_ptr<const RecoSubjetAK12> subJet1_;
+  std::shared_ptr<const RecoSubjetAK12> subJet2_;
   Double_t tau1_;
   Double_t tau2_;
   Double_t tau3_;

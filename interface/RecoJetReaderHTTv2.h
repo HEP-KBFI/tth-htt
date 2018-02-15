@@ -58,6 +58,9 @@ protected:
   std::string branchName_Ropt_;
   std::string branchName_RoptCalc_;
   std::string branchName_ptForRoptCalc_;
+  std::string branchName_tau1_;
+  std::string branchName_tau2_;
+  std::string branchName_tau3_;
 
   UInt_t nJets_;
   Float_t * jet_pt_;
@@ -72,6 +75,9 @@ protected:
   Float_t * jet_Ropt_;
   Float_t * jet_RoptCalc_;
   Float_t * jet_ptForRoptCalc_;
+  Float_t * jet_tau1_;
+  Float_t * jet_tau2_;
+  Float_t * jet_tau3_;
 
   // CV: make sure that only one RecoJetReaderHTTv2 instance exists for a given branchName,
   //     as ROOT cannot handle multiple TTree::SetBranchAddress calls for the same branch.
