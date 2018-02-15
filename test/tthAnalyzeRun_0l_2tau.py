@@ -6,7 +6,6 @@ from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 # E.g.: ./tthAnalyzeRun_0l_2tau.py -v 2017Dec13 -mode VHbb -e 2017 --use-prod-ntuples
 
 #TODO: needs actual Ntuples
-#TODO: needs an updated value of integrated luminosity for 2017 data
 
 mode_choices               = ['VHbb']
 era_choices                = ['2017']
@@ -76,9 +75,8 @@ else:
   from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_test import samples_2017
 
 if era == "2017":
+  from tthAnalysis.HiggsToTauTau.analysisSettings import lumi_2017 as lumi
   samples = samples_2017
-  lumi    = 35.9e+3 # 1/pb
-  # TODO: update lumi
 else:
   raise ValueError("Invalid Configuration parameter 'era' = %s !!" % era)
 

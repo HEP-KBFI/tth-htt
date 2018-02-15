@@ -7,7 +7,6 @@ from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 # E.g.: ./tthAnalyzeRun_jetToTauFakeRate.py -v 2017Dec13 -e 2017
 
 #TODO: needs actual Ntuples
-#TODO: needs an updated value of integrated luminosity for 2017 data
 
 era_choices                = ['2017']
 default_resubmission_limit = 4
@@ -55,9 +54,8 @@ max_job_resubmission = args.resubmission_limit if resubmit else 1
 
 if era == "2017":
   from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017 as samples
+  from tthAnalysis.HiggsToTauTau.analysisSettings import lumi_2017 as lumi
   max_files_per_job = 100
-  lumi = 35.9e+3 # 1/pb
-  # TODO: update lumi
 else:
   raise ValueError("Invalid Configuration parameter 'era' = %s !!" % era)
 
