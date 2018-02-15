@@ -1551,8 +1551,8 @@ int main(int argc, char* argv[])
 
       dataToMCcorrectionInterface_1l_2tau_trigger->setLeptons(selLepton_type, selLepton->pt(), selLepton->eta());
       dataToMCcorrectionInterface_1l_2tau_trigger->setHadTaus(
-        selHadTau_lead_genPdgId, selHadTau_lead->pt(), selHadTau_lead->eta(), selHadTau_lead->decayMode(),
-        selHadTau_sublead_genPdgId, selHadTau_sublead->pt(), selHadTau_sublead->eta(), selHadTau_sublead->decayMode());
+        selHadTau_lead->pt(), selHadTau_lead->eta(), selHadTau_lead->phi(),
+        selHadTau_sublead->pt(), selHadTau_sublead->eta(), selHadTau_sublead->phi());
       dataToMCcorrectionInterface_1l_2tau_trigger->setTriggerBits(isTriggered_1e, isTriggered_1e1tau, isTriggered_1mu, isTriggered_1mu1tau);
 
 //--- apply trigger efficiency turn-on curves to Spring16 non-reHLT MC

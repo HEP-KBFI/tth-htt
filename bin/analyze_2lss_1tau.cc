@@ -1130,8 +1130,8 @@ int main(int argc, char* argv[])
       genBJets = genBJetReader->read();
       genWBosons = genWBosonReader->read();
       genWJets = genWJetReader->read();
-      std::vector<float> genMatchingTopVar = isGenMatchedJetTripletVar(genTopQuarks, genBJets, genWBosons, genWJets, kGenTop);
-      std::vector<float> genMatchingAntiTopVar = isGenMatchedJetTripletVar(genTopQuarks, genBJets, genWBosons, genWJets, kGenAntiTop);
+      std::map<int, double> genMatchingTopVar = isGenMatchedJetTripletVar(genTopQuarks, genBJets, genWBosons, genWJets, kGenTop);
+      std::map<int, double> genMatchingAntiTopVar = isGenMatchedJetTripletVar(genTopQuarks, genBJets, genWBosons, genWJets, kGenAntiTop);
       genPtTop = genMatchingTopVar[kGenPtTop];
       genPtTopB = genMatchingTopVar[kGenPtTopB];
       genPtTopW = genMatchingTopVar[kGenPtTopW];
