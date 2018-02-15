@@ -14,6 +14,8 @@ from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 #                                   with a relaxed event selection, to increase the BDT training statistics
 #--------------------------------------------------------------------------------
 
+# python tthAnalyzeRun_3l_1tau.py --version "3l_1tau_2018Feb13_BDT_mMEM_LLepVVLTau" --mode "forBDTtraining_beforeAddMEM" --use_prod_ntuples
+# /home/acaan/ttHAnalysis/2016/3l_1tau_2018Feb13_BDT_mMEM_LLepVLTau
 # E.g. to run: python tthAnalyzeRun_3l_1tau.py --version "2017Oct24" --mode "VHbb" --use_prod_ntuples
 from optparse import OptionParser
 parser = OptionParser()
@@ -37,7 +39,7 @@ hadTau_selection_relaxed           = None
 changeBranchNames                  = use_prod_ntuples
 applyFakeRateWeights               = None
 MEMbranch                          = ''
-hadTauFakeRateWeight_inputFileName = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016.root"
+hadTauFakeRateWeight_inputFileName = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016_vvLoosePresel.root" # "tthAnalysis/HiggsToTauTau/data/FR_tau_2016.root" #
 
 # Karl: temporarily disable other modes until we've proper Ntuples
 if mode not in ["VHbb", "forBDTtraining_beforeAddMEM"]:
@@ -134,7 +136,7 @@ if __name__ == '__main__':
       # CV: apply "fake" background estimation to leptons only and not to hadronic taus, as discussed on slide 10 of
       #     https://indico.cern.ch/event/597028/contributions/2413742/attachments/1391684/2120220/16.12.22_ttH_Htautau_-_Review_of_systematics.pdf
       applyFakeRateWeights = applyFakeRateWeights,
-      chargeSumSelections  = [ "OS", "SS" ],
+      chargeSumSelections  = [ "OS" ] if "forBDTtraining" in mode else [ "OS", "SS" ],
       central_or_shifts    = [
         "central",
 ##         "CMS_ttHl_btag_HFUp",
@@ -235,4 +237,3 @@ if __name__ == '__main__':
     logging.info("Job submission #%i:" % (idx_job_resubmission + 1))
     for job_type, num_jobs in job_statistics_summary[idx_job_resubmission].items():
       logging.info(" #jobs of type '%s' = %i" % (job_type, num_jobs))
-

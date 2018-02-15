@@ -97,9 +97,9 @@ elif mode == "forBDTtraining":
 	#from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_hadTopTagger_2016 import samples_2016
   else:
     from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_FastSim import samples_2016
-	#from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_hadTopTagger_2016 import samples_2016 
-  hadTau_selection                   = "dR03mvaVTight"
-  hadTau_selection_relaxed           = "dR03mvaLoose" ## "dR03mvaVTight" # "dR03mvaMedium" # xanda read if there is such #
+	#from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_hadTopTagger_2016 import samples_2016
+  hadTau_selection                   = "dR03mvaTight"
+  hadTau_selection_relaxed           = "dR03mvaMedium"
   applyFakeRateWeights               = "3L"
 else:
   raise ValueError("Invalid Configuration parameter 'mode' = %s !!" % mode)
@@ -194,20 +194,16 @@ if __name__ == '__main__':
       histograms_to_fit                     = [
         "EventCounter",
         "numJets",
-        "mvaOutput_1l_2tau_ttbar_HTTWithKinFit_MVAonly",
-        "mvaOutput_1l_2tau_ttbar_HTTWithKinFit",
-        "mvaOutput_1l_2tau_ttbar",
         "mvaOutput_1l_2tau_ttbar_Old",
-        "mvaOutput_1l_2tau_ttbar_OldVar",
-        "mvaOutput_1l_2tau_ttbar_OldVarHTT",
-        "mvaOutput_1l_2tau_ttbar_HTTLepID",
-#       "mvaOutput_1l_2tau_ttbar_withLepID",
-#       "mvaOutput_1l_2tau_ttbar_withLepID_HTTbase",
-#       "mvaOutput_1l_2tau_ttbar_baseline",
-#       "mvaOutput_1l_2tau_ttbar_baseline_HTTbase",
-#       "mvaDiscr_1l_2tau",
+        "mvaOutput_1l_2tau_ttbar_Old_5bins",
+        "mvaOutput_sum_HTT_4bins",
+        "mvaOutput_1B_HTT_4bins",
+        "mvaOutput_ttbar_HTT",
+        "mvaOutput_ttV_HTT",
+        "mvaDiscr_1l_2tau",
+        "mvaOutput_1B_HTT",
         "mTauTauVis"
-      ],
+      ] + list(hist_HTT) +list(hist_noHTT),
       select_rle_output                     = True,
       verbose                               = idx_job_resubmission > 0,
     )

@@ -96,7 +96,7 @@ void dumpEventYields()
   background_processes["1l_2tau"] = background_processes["0l_2tau"];
   background_processes["2lss_1tau"].push_back("TTW");
   background_processes["2lss_1tau"].push_back("TTZ");
-  background_processes["2lss_1tau"].push_back("WZ");
+  //background_processes["2lss_1tau"].push_back("WZ");
   background_processes["2lss_1tau"].push_back("Rares");
   background_processes["2lss_1tau"].push_back("fakes_data");
   background_processes["2lss_1tau"].push_back("flips_data");
@@ -118,8 +118,9 @@ void dumpEventYields()
     std::cout << "channel = " << (*channel) << std::endl;
 
     TString inputFileName_full = inputFilePath.data();
-    if ( !inputFileName_full.EndsWith("/") ) inputFileName_full.Append("/");
-    inputFileName_full.Append(inputFileNames[*channel].data());
+    //if ( !inputFileName_full.EndsWith("/") ) inputFileName_full.Append("/");
+    // sinputFileName_full.Append(inputFileNames[*channel].data());
+    std::cout << "channel = " << inputFileName_full.Data() << std::endl;
     TFile* inputFile = new TFile(inputFileName_full.Data());
     if ( !inputFile ) {
       std::cerr << "Failed to open input file = " << inputFileName_full.Data() << " !!" << std::endl;
@@ -131,16 +132,25 @@ void dumpEventYields()
       std::string histogramName = Form("%s", signal_process->data());
       TH1* histogram = loadHistogram(inputFile, histogramName);
       histogram->Scale(lumi_SF);
-      std::cout << " " << (*signal_process) << ": " << histogram->Integral() << std::endl;
+      //std::cout << " " << (*signal_process) << ": " << histogram->Integral() << std::endl;
+      std::cout << " " << (*signal_process) << ": " << histogram->GetBinError(histogram->GetNbinsX())/histogram->GetBinContent(histogram->GetNbinsX()) << std::endl;
     }
-
+    //std::string histogramNameTTW = "TTW";
+    TH1* histTTW=loadHistogram(inputFile, "TTW");
+    histTTW->Scale(lumi_SF);
+    TH1* hSum = (TH1F*) histTTW->Clone();
     for ( vstring::const_iterator background_process = background_processes[*channel].begin();
 	  background_process != background_processes[*channel].end(); ++background_process ) {
       std::string histogramName = Form("%s", background_process->data());
       TH1* histogram = loadHistogram(inputFile, histogramName);
       histogram->Scale(lumi_SF);
-      std::cout << " " << (*background_process) << ": " << histogram->Integral() << std::endl;
+      if (histogramName != "TTW" and histogramName != "Rares") hSum->Add(histogram);
+      //std::cout << " " << (*background_process) << ": " << histogram->Integral() << std::endl;
+      std::cout << " " << (*background_process) << ": " << histogram->GetBinError(histogram->GetNbinsX())/histogram->GetBinContent(histogram->GetNbinsX()) << std::endl;
+      //
     }
+    hSum->Sumw2();
+    std::cout << "Sum BKG " << hSum->GetBinError(hSum->GetNbinsX())/hSum->GetBinContent(hSum->GetNbinsX()) << std::endl;
 
     std::string histogramName = "data_obs";
     TH1* histogram = loadHistogram(inputFile, histogramName);
@@ -152,4 +162,3 @@ void dumpEventYields()
     delete inputFile;
   }
 }
-

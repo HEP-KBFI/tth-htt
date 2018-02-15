@@ -10,7 +10,7 @@ from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 #   'forBDTtraining' : to run the analysis on the VHbb Ntuples, with a relaxed event selection,
 #                      to increase the BDT training statistics
 #--------------------------------------------------------------------------------
-# E.g. to run: python tthAnalyzeRun_2l_2tau.py --version "2017Oct24" --mode "VHbb" --use_prod_ntuples 
+# E.g. to run: python tthAnalyzeRun_2l_2tau.py --version "2l_2tau_2018Feb07_BDT_LLepVLTau" --mode "forBDTtraining" --use_prod_ntuples
 from optparse import OptionParser
 parser = OptionParser()
 parser.add_option("--version ", type="string", dest="version", help="Name of output reository with results\n Trees will be stored in /hdfs/local/USER/ttHAnalysis/2016/VERSION/", default='dumb')
@@ -32,7 +32,7 @@ LUMI                               = None
 hadTau_selection                   = None
 hadTau_selection_relaxed           = None
 applyFakeRateWeights               = None
-hadTauFakeRateWeight_inputFileName = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016.root"
+hadTauFakeRateWeight_inputFileName = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016_vvLoosePresel.root"
 
 if use_prod_ntuples and ERA == "2015":
   raise ValueError("No production Ntuples for 2015 data & MC")
@@ -46,7 +46,7 @@ if mode == "VHbb":
   else:
     from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2015 import samples_2015
     from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016 import samples_2016
-  hadTau_selection     = "dR03mvaVTight"
+  hadTau_selection     = "dR03mvaMedium"
   applyFakeRateWeights = "4L"
 elif mode == "forBDTtraining":
   if use_prod_ntuples:
@@ -54,7 +54,7 @@ elif mode == "forBDTtraining":
   else:
     from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_FastSim import samples_2016
   hadTau_selection         = "dR03mvaVTight"
-  hadTau_selection_relaxed = "dR03mvaLoose"
+  hadTau_selection_relaxed = "dR03mvaVVLoose"
   applyFakeRateWeights     = "4L"
 else:
   raise ValueError("Invalid Configuration parameter 'mode' = %s !!" % mode)
@@ -95,7 +95,7 @@ if __name__ == '__main__':
       hadTau_selection         = hadTau_selection,
       hadTau_charge_selections = [ "disabled" ],
       applyFakeRateWeights     = applyFakeRateWeights,
-      chargeSumSelections      = [ "OS", "SS" ],
+      chargeSumSelections      = [ "OS"] if mode == "forBDTtraining" else [ "OS", "SS" ],  #[ "OS", "SS" ],
       central_or_shifts        = [
         "central",
 ##         "CMS_ttHl_btag_HFUp",

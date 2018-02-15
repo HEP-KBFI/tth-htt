@@ -11,6 +11,7 @@
  */
 
 #include "tthAnalysis/HiggsToTauTau/interface/HistManagerBase.h" // HistManagerBase
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h"
 
 class EvtHistManager_1l_2tau
   : public HistManagerBase
@@ -23,13 +24,11 @@ class EvtHistManager_1l_2tau
   void bookHistograms(TFileDirectory& dir);
   void fillHistograms(int numElectrons, int numMuons, int numHadTaus, int numJets, int numBJets_loose, int numBJets_medium,
     double mvaOutput_1l_2tau_ttbar,
-    double mvaOutput_1l_2tau_ttbar_HTTWithKinFit_MVAonly,
-    double mvaOutput_1l_2tau_ttbar_HTTNoKinFit_MVAonly,
     double mvaOutput_1l_2tau_ttbar_Old,
-    double mvaOutput_1l_2tau_ttbar_HTTLepID,
-    double mvaOutput_1l_2tau_ttbar_OldVar,
-    double mvaOutput_1l_2tau_ttbar_OldVarHTT,
-    double mvaOutput_1l_2tau_ttV, double mvaDiscr_1l_2tau, double mTauTauVis, double evtWeight);
+    double mvaOutput_1l_2tau_ttV,
+    double mvaDiscr_1l_2tau,
+    double mTauTauVis,
+    double evtWeight);
 
   const TH1* getHistogram_EventCounter() const { return histogram_EventCounter_; }
 
@@ -45,12 +44,8 @@ class EvtHistManager_1l_2tau
   TH2* histogram_numBJets_medium_vs_numJets_; //     to avoid overlap with ttH, H->bb analysis (alternative: ttH, H->bb analysis adds hadronic tau veto)
 
   TH1* histogram_mvaOutput_1l_2tau_ttbar_;
-  TH1* histogram_mvaOutput_1l_2tau_ttbar_HTTWithKinFit_MVAonly_;
-  TH1* histogram_mvaOutput_1l_2tau_ttbar_HTTWithKinFit_;
   TH1* histogram_mvaOutput_1l_2tau_ttbar_Old_;
-  TH1* histogram_mvaOutput_1l_2tau_ttbar_HTTLepID_;
-  TH1* histogram_mvaOutput_1l_2tau_ttbar_OldVar_;
-  TH1* histogram_mvaOutput_1l_2tau_ttbar_OldVarHTT_;
+  TH1* histogram_mvaOutput_1l_2tau_ttbar_Old_5bins_;
 
   TH1* histogram_mvaOutput_1l_2tau_ttV_;
   TH1* histogram_mvaDiscr_1l_2tau_;
@@ -59,7 +54,6 @@ class EvtHistManager_1l_2tau
 
   TH1* histogram_EventCounter_;
 
-  std::vector<TH1*> histograms_;
 };
 
 #endif

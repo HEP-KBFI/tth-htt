@@ -32,6 +32,11 @@ process.makePlots.distributions.extend([
         histogramName = cms.string("sel/evt/$PROCESS/mvaDiscr_2lss_1tau"),
         xAxisTitle = cms.string("MVA Discriminant"),
         yAxisTitle = cms.string("N")
+    ),
+    cms.PSet(
+        histogramName = cms.string("sel/evt/$PROCESS/mTauTauVis"),
+        xAxisTitle = cms.string("m_{#tau#tau}^{vis} [GeV]"),
+        yAxisTitle = cms.string("dN/dm_{#tau#tau}^{vis} [1/GeV]")
     )
 ])
 

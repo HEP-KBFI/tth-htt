@@ -149,28 +149,30 @@ if __name__ == '__main__':
   run_analysis           = False
   is_last_resubmission   = False
 
+  # do histograms for 2D bin optimizations
+  nbinsTarget=[5,6,7,8,9,10];
+  nbinsStart=[15,20];
+  hist_HTT=[] # [[None]*int(len(nbinsTarget))]*len(nbinsStart)
+  hist_noHTT=[] # [[None]*int(len(nbinsTarget))]*len(nbinsStart)
+  hist_HTTMEM=[] # [[None]*int(len(nbinsTarget))]*len(nbinsStart)
+  hist_oldVarA=[] # [[None]*int(len(nbinsTarget))]*len(nbinsStart)
+  for nbinsStartN in range(0,len(nbinsStart)) :
+    for nbinsTargetN in range(0,len(nbinsTarget)) :
+      hist_HTT.append("HTT_from"+str(nbinsStart[nbinsStartN])+"_to_"+str(nbinsTarget[nbinsTargetN]))
+      hist_noHTT.append("noHTT_from"+str(nbinsStart[nbinsStartN])+"_to_"+str(nbinsTarget[nbinsTargetN]))
+      hist_HTTMEM.append("HTTMEM_from"+str(nbinsStart[nbinsStartN])+"_to_"+str(nbinsTarget[nbinsTargetN]))
+      hist_oldVarA.append("oldVarA_from"+str(nbinsStart[nbinsStartN])+"_to_"+str(nbinsTarget[nbinsTargetN]))
+  print list(hist_HTT)
+  print list(hist_noHTT)
+  print list(hist_HTTMEM)
+  print list(hist_oldVarA)
+
   for idx_job_resubmission in range(max_job_resubmission):
     if is_last_resubmission:
       continue
     logging.info("Job submission #%i:" % (idx_job_resubmission + 1))
 
-    # do histograms for 2D bin optimizations
-    nbinsTarget=[5,6,7,8,9,10];
-    nbinsStart=[15,20];
-    hist_HTT=[] # [[None]*int(len(nbinsTarget))]*len(nbinsStart)
-    hist_noHTT=[] # [[None]*int(len(nbinsTarget))]*len(nbinsStart)
-    hist_HTTMEM=[] # [[None]*int(len(nbinsTarget))]*len(nbinsStart)
-    hist_oldVarA=[] # [[None]*int(len(nbinsTarget))]*len(nbinsStart)
-    for nbinsStartN in range(0,len(nbinsStart)) :
-      for nbinsTargetN in range(0,len(nbinsTarget)) :
-        hist_HTT.append("HTT_from"+str(nbinsStart[nbinsStartN])+"_to_"+str(nbinsTarget[nbinsTargetN]))
-        hist_noHTT.append("noHTT_from"+str(nbinsStart[nbinsStartN])+"_to_"+str(nbinsTarget[nbinsTargetN]))
-        hist_HTTMEM.append("HTTMEM_from"+str(nbinsStart[nbinsStartN])+"_to_"+str(nbinsTarget[nbinsTargetN]))
-        hist_oldVarA.append("oldVarA_from"+str(nbinsStart[nbinsStartN])+"_to_"+str(nbinsTarget[nbinsTargetN]))
-    print list(hist_HTT)
-    print list(hist_noHTT)
-    print list(hist_HTTMEM)
-    print list(hist_oldVarA)
+
 
 
 
