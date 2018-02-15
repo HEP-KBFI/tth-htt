@@ -114,7 +114,7 @@ RecoJetReader::setBranchNames()
     branchName_eta_ = Form("%s_%s", branchName_obj_.data(), "eta");
     branchName_phi_ = Form("%s_%s", branchName_obj_.data(), "phi");
     branchName_mass_ = Form("%s_%s", branchName_obj_.data(), "mass");
-    branchName_jetCharge_ = Form("%s_%s", branchName_obj_.data(), "charge");
+    branchName_jetCharge_ = Form("%s_%s", branchName_obj_.data(), "jetCharge");
     branchName_jecUncertTotal_ = Form("%s_%s", branchName_obj_.data(), "jecUncertTotal");
     branchName_BtagCSV_ = Form("%s_%s", branchName_obj_.data(), "btagCSVV2");
     branchName_QGDiscr_ = Form("%s_%s", branchName_obj_.data(), "qgl");
@@ -214,8 +214,8 @@ RecoJetReader::read() const
           gInstance->jet_eta_[idxJet],
           gInstance->jet_phi_[idxJet],
           gInstance->jet_mass_[idxJet]
-	},
-	gInstance->jet_charge_[idxJet],  
+        },
+        gInstance->jet_charge_[idxJet],
         gInstance->jet_jecUncertTotal_[idxJet],
         gInstance->jet_BtagCSV_[idxJet],
         gInstance->jet_BtagWeight_[idxJet],
