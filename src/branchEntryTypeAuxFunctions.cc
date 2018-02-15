@@ -9,6 +9,8 @@
 
 #include <boost/algorithm/string/replace.hpp> // boost::replace_all_copy()
 
+#include <iostream> // std::cout
+
 std::vector<outputCommandEntry>
 getOutputCommands(const std::vector<std::string> & outputCommands_string)
 {
