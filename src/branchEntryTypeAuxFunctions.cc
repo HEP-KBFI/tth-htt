@@ -100,7 +100,13 @@ copyBranches_singleType(TTree * inputTree,
   {
     const TBranch * const inputTree_branch = dynamic_cast<const TBranch * const>(inputTree_branches->At(idxBranch));
     assert(inputTree_branch);
+
     const std::string branchName = inputTree_branch->GetName();
+    if(outputTree_branches.count(branchName))
+    {
+      std::cout << "Warning: detected a duplicate branch of the name: " << branchName << '\n';
+      continue;
+    }
 
     if(isBranchToKeep.at(branchName))
     {
@@ -155,6 +161,12 @@ copyBranches_vectorType(TTree * inputTree,
     assert(inputTree_branch);
 
     const std::string branchName = inputTree_branch->GetName();
+    if(outputTree_branches.count(branchName))
+    {
+      std::cout << "Warning: detected a duplicate branch of the name: " << branchName << '\n';
+      continue;
+    }
+
     if(isBranchToKeep.at(branchName))
     {
       const TLeaf * const inputTree_leaf = inputTree_branch->GetLeaf(branchName.data());
