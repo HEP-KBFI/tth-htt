@@ -44,6 +44,9 @@ private:
   TH1 * histogram_QjetVolatility_;
   TH1 * histogram_msoftdrop_;
   
+  TH1 * histogram_tau21_;
+  TH1 * histogram_tau32_;
+
   std::vector<TH1 *> histograms_;
 
   int idx_; // flag to select leading or subleading jet (set idx to -1 to make plots for all jets)

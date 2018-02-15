@@ -482,6 +482,7 @@ int main(int argc, char* argv[])
 
   JetHistManagerHTTv2* histManager_jetsHTTv2 = new JetHistManagerHTTv2(makeHistManager_cfg(process_string,
     Form("%s/sel/jetsHTTv2", histogramDir.data()), central_or_shift));
+  histManager_jetsHTTv2->bookHistograms(fs);
   TH1* histogram_HTTv2_W_ptRec_div_ptGen = fs.make<TH1D>("HTTv2_W_ptRec_div_ptGen", "HTTv2_W_ptRec_div_ptGen", 200, 0., 2.);
   TH1* histogram_HTTv2_mW = fs.make<TH1D>("HTTv2_mW", "HTTv2_mW", 200, 0., 200.);
   TH1* histogram_HTTv2_Top_ptRec_div_ptGen = fs.make<TH1D>("HTTv2_Top_ptRec_div_ptGen", "HTTv2_Top_ptRec_div_ptGen", 200, 0., 2.);
@@ -495,8 +496,10 @@ int main(int argc, char* argv[])
   
   JetHistManagerAK12* histManager_jetsAK12 = new JetHistManagerAK12(makeHistManager_cfg(process_string,
     Form("%s/sel/jetsAK12", histogramDir.data()), central_or_shift));
+  histManager_jetsAK12->bookHistograms(fs);
   JetHistManagerAK12* histManager_jetsAK12_notHTTv2 = new JetHistManagerAK12(makeHistManager_cfg(process_string,
     Form("%s/sel/jetsAK12_notHTTv2", histogramDir.data()), central_or_shift));
+  histManager_jetsAK12_notHTTv2->bookHistograms(fs);
   TH1* histogram_AK12_W_ptRec_div_ptGen = fs.make<TH1D>("AK12_W_ptRec_div_ptGen", "AK12_W_ptRec_div_ptGen", 200, 0., 2.);
   TH1* histogram_AK12_mW = fs.make<TH1D>("AK12_mW", "AK12_mW", 200, 0., 200.);
   TH1* histogram_AK12_WJet1_ptRec_div_ptGen = fs.make<TH1D>("AK12_WJet1_ptRec_div_ptGen", "AK12_WJet1_ptRec_div_ptGen", 200, 0., 2.);
@@ -1059,7 +1062,7 @@ int main(int argc, char* argv[])
     }
     if ( failsWbosonMassVeto_antiTop ) continue;
     cutFlowTable_2lss_1tau.update("genWBosonFromAntiTop mass");
-    
+
     if ( isDEBUG ) {
       std::cout << "top:" << (*genTopQuark);
       std::cout << " b:" << (*genBJetFromTop);
@@ -1114,6 +1117,8 @@ int main(int argc, char* argv[])
     // case 1: all three jets contained within dR=1.5 "fat" jet, 
     //         reconstructed by hep-top-tagger (HTTv2) algorithm
 
+    cutFlowTable_2lss_1tau_HTTv2.update("genJet triplet");
+
     bool isHTTv2FromTop = false;
     bool isHTTv2FromAntiTop = false;
 
@@ -1150,7 +1155,7 @@ int main(int argc, char* argv[])
 		  deltaR(genAntiTopP4, genWJetFromAntiTop_lead->p4())                   < 1.5 && 
 		  deltaR(genAntiTopP4, genWJetFromAntiTop_sublead->p4())                < 1.5) ) {
 	      cutFlowTable_2lss_1tau_HTTv2.update("dR(genBJet, genWJet1, genWJet2) < 1.5");
-	      
+
 	      const RecoJetHTTv2* recTop = 0;
 	      const RecoJetHTTv2* recAntiTop = 0;
 	      for ( std::vector<const RecoJetHTTv2*>::const_iterator jetHTTv2 = jet_ptrsHTTv2.begin();
@@ -1355,12 +1360,14 @@ int main(int argc, char* argv[])
     //         while b-jet from top decay is resolved as separate jets, 
     //         reconstructed by anti-kT algorithm with dR=0.4 (AK4)
 
+    cutFlowTable_2lss_1tau_AK12.update("genJet triplet");
+    
     if ( (genBJetFromTop                                        && genBJetFromTop->pt()         >  20. && 
 	  genWJetFromTop_lead && genWJetFromTop_sublead         && genWBosonFromTopP4.pt()      > 100.) ||
 	 (genBJetFromAntiTop                                    && genBJetFromAntiTop->pt()     >  20. && 
 	  genWJetFromAntiTop_lead && genWJetFromAntiTop_sublead && genWBosonFromAntiTopP4.pt()  > 100.) ) {
       cutFlowTable_2lss_1tau_AK12.update("genBJet passes pT > 20 GeV && genW passes pT > 100 GeV");
-      
+
       if ( (genBJetFromTop             && genBJetFromTop->absEta()          < 5.0 && 
 	    genWJetFromTop_lead        && genWJetFromTop_lead->absEta()     < 5.0 &&
 	    genWJetFromTop_sublead     && genWJetFromTop_lead->absEta()     < 5.0) ||
@@ -1412,7 +1419,7 @@ int main(int argc, char* argv[])
 	      if ( recWBosonFromTop && recWBosonFromTop->subJet1() && recWBosonFromTop->subJet2() ) {		
 		const RecoSubjetAK12* recWJetFromTop_lead = 0;
 		const RecoSubjetAK12* recWJetFromTop_sublead = 0;
-		double dR_lead_1 = deltaR(genWJetFromTop_lead->p4(), recWBosonFromTop->subJet1()->p4());
+  		double dR_lead_1 = deltaR(genWJetFromTop_lead->p4(), recWBosonFromTop->subJet1()->p4());  
 		double dR_lead_2 = deltaR(genWJetFromTop_lead->p4(), recWBosonFromTop->subJet2()->p4());
 		double dR_sublead_1 = deltaR(genWJetFromTop_sublead->p4(), recWBosonFromTop->subJet1()->p4());
 		double dR_sublead_2 = deltaR(genWJetFromTop_sublead->p4(), recWBosonFromTop->subJet2()->p4());
@@ -1427,9 +1434,9 @@ int main(int argc, char* argv[])
 		    recWJetFromTop_sublead = recWBosonFromTop->subJet1();
 		  }
 		}
-		if ( recWJetFromTop_lead && recWJetFromTop_sublead ) {
+                if ( recWJetFromTop_lead && recWJetFromTop_sublead ) {
 		  Particle::LorentzVector recWBosonFromTopP4 = recWJetFromTop_lead->p4() + recWJetFromTop_sublead->p4();
-		  if ( genWBosonFromTopP4.pt() > 100. ) {
+                  if ( genWBosonFromTopP4.pt() > 100. ) {
 		    fillWithOverFlow(histogram_AK12_W_ptRec_div_ptGen, recWBosonFromTopP4.pt()/genWBosonFromTopP4.pt(), evtWeight);
 		  }
 		  fillWithOverFlow(histogram_AK12_mW, recWBosonFromTopP4.mass(), evtWeight);
@@ -1565,7 +1572,7 @@ int main(int argc, char* argv[])
 		fillWithOverFlow(histogram_ptB, genBJetFromAntiTop->pt(), evtWeight);
 		fillWithOverFlow(histogram_etaB, genBJetFromAntiTop->eta(), evtWeight);
 	      }
-	      
+
 	      if ( (genBJetFromTop                                                                && 
 		    genWJetFromTop_lead                                                           && 
 		    genWJetFromTop_sublead                                                        &&
@@ -1578,7 +1585,7 @@ int main(int argc, char* argv[])
 		    deltaR(genBJetFromAntiTop->p4(),      genWJetFromAntiTop_lead->p4())    > 0.4 && 
 		    deltaR(genBJetFromAntiTop->p4(),      genWJetFromAntiTop_sublead->p4()) > 0.4 && 
 		    deltaR(genWJetFromAntiTop_lead->p4(), genWJetFromAntiTop_sublead->p4()) > 0.4) ) {
-		cutFlowTable_2lss_1tau.update("dR(jet1,jet2) > 0.4 for any pair of genJets in triplet");
+		cutFlowTable_2lss_1tau_resolved.update("dR(jet1,jet2) > 0.4 for any pair of genJets in triplet");
 
 		const RecoJet* selBJetFromTop = 0;
 		double dRmin_selBJetFromTop = 1.e+3;
@@ -1646,8 +1653,8 @@ int main(int argc, char* argv[])
 		      selWJetFromAntiTop_sublead) ) {
 		  continue;
 		}
-		cutFlowTable_2lss_1tau.update("selJet triplet");
-		
+		cutFlowTable_2lss_1tau_resolved.update("selJet triplet");
+
 		if ( (selBJetFromTop                                                                && 
 		      selWJetFromTop_lead                                                           && 
 		      selWJetFromTop_sublead                                                        &&
@@ -1660,7 +1667,7 @@ int main(int argc, char* argv[])
 		      deltaR(selBJetFromAntiTop->p4(),      selWJetFromAntiTop_lead->p4())    > 0.3 && 
 		      deltaR(selBJetFromAntiTop->p4(),      selWJetFromAntiTop_sublead->p4()) > 0.3 && 
 		      deltaR(selWJetFromAntiTop_lead->p4(), selWJetFromAntiTop_sublead->p4()) > 0.3) ) {
-		  cutFlowTable_2lss_1tau.update("dR(jet1,jet2) > 0.3 for any pair of selJets in triplet");
+		  cutFlowTable_2lss_1tau_resolved.update("dR(jet1,jet2) > 0.3 for any pair of selJets in triplet");
 
 		  bool selBJetFromTop_passesLoose = false;
 		  bool selBJetFromAntiTop_passesLoose = false;
@@ -1676,7 +1683,7 @@ int main(int argc, char* argv[])
 		  if ( !(selBJetFromTop_passesLoose || selBJetFromAntiTop_passesLoose) ) {
 		    continue;
 		  }
-		  cutFlowTable_2lss_1tau.update(">= 1 selBJet passes loose b-tagging working-point");
+		  cutFlowTable_2lss_1tau_resolved.update(">= 1 selBJet passes loose b-tagging working-point");
 		}
 	      }
 	    }
@@ -1699,8 +1706,11 @@ int main(int argc, char* argv[])
             << " selected = " << selectedEntries << " (weighted = " << selectedEntries_weighted << ")\n\n"
             << "cut-flow table" << std::endl;
   cutFlowTable_2lss_1tau.print(std::cout);
+  std::cout << "HTTv2:" << std::endl;
   cutFlowTable_2lss_1tau_HTTv2.print(std::cout);
+  std::cout << "AK12:" << std::endl;
   cutFlowTable_2lss_1tau_AK12.print(std::cout);
+  std::cout << "resolved:" << std::endl;
   cutFlowTable_2lss_1tau_resolved.print(std::cout);
   std::cout << std::endl;
 

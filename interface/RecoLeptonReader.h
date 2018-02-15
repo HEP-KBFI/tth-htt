@@ -62,13 +62,13 @@ protected:
         T & lepton = leptons[idxLepton];
 
         const GenLepton & matched_genLepton = matched_genLeptons[idxLepton];
-        if(matched_genLepton.isValid()) lepton.set_genLepton(new GenLepton(matched_genLepton), true);
+        if(matched_genLepton.isValid()) lepton.set_genLepton(new GenLepton(matched_genLepton));
 
         const GenHadTau & matched_genHadTau = matched_genHadTaus[idxLepton];
-        if(matched_genHadTau.isValid()) lepton.set_genHadTau(new GenHadTau(matched_genHadTau), true);
+        if(matched_genHadTau.isValid()) lepton.set_genHadTau(new GenHadTau(matched_genHadTau));
 
         const GenJet & matched_genJet = matched_genJets[idxLepton];
-        if(matched_genJet.isValid()) lepton.set_genJet(new GenJet(matched_genJet), true);
+        if(matched_genJet.isValid()) lepton.set_genJet(new GenJet(matched_genJet));
       }
     }
   }

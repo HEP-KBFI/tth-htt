@@ -70,7 +70,7 @@ process.analyze_hadTopTagger_gen = cms.PSet(
     branchName_subjetsAK12 = cms.string('SubJetAK12'),
     branchName_met = cms.string('MET'),
 
-    branchName_genLeptons1 = cms.string('GenDressedLepton'),
+    branchName_genLeptons1 = cms.string('GenLep'),
     branchName_genLeptons2 = cms.string(''),
     branchName_genHadTaus = cms.string('GenVisTau'),
     branchName_genJets = cms.string('GenJet'),
@@ -82,7 +82,27 @@ process.analyze_hadTopTagger_gen = cms.PSet(
     branchName_genWJets = cms.string('GenWZQuark'),
 )
 
-process.fwliteInput.fileNames = cms.vstring(['/hdfs/cms/store/user/kaehatah/NanoAOD_2017/ttH_HToZZ_4LFilter_M125_13TeV_powheg2_JHUGenV7011_pythia8/NanoAOD_jetSubstrcutre_v8_ttH_HToZZ_4LFilter_M125_13TeV_powheg2_JHUGenV7011_pythia8__RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1/180208_134952/0000/tree_13.root', '/hdfs/cms/store/user/kaehatah/NanoAOD_2017/ttH_HToZZ_4LFilter_M125_13TeV_powheg2_JHUGenV7011_pythia8/NanoAOD_jetSubstrcutre_v8_ttH_HToZZ_4LFilter_M125_13TeV_powheg2_JHUGenV7011_pythia8__RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1/180208_134952/0000/tree_14.root', '/hdfs/cms/store/user/kaehatah/NanoAOD_2017/ttH_HToZZ_4LFilter_M125_13TeV_powheg2_JHUGenV7011_pythia8/NanoAOD_jetSubstrcutre_v8_ttH_HToZZ_4LFilter_M125_13TeV_powheg2_JHUGenV7011_pythia8__RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1/180208_134952/0000/tree_15.root', '/hdfs/cms/store/user/kaehatah/NanoAOD_2017/ttH_HToZZ_4LFilter_M125_13TeV_powheg2_JHUGenV7011_pythia8/NanoAOD_jetSubstrcutre_v8_ttH_HToZZ_4LFilter_M125_13TeV_powheg2_JHUGenV7011_pythia8__RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1/180208_134952/0000/tree_16.root', '/hdfs/cms/store/user/kaehatah/NanoAOD_2017/ttH_HToZZ_4LFilter_M125_13TeV_powheg2_JHUGenV7011_pythia8/NanoAOD_jetSubstrcutre_v8_ttH_HToZZ_4LFilter_M125_13TeV_powheg2_JHUGenV7011_pythia8__RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1/180208_134952/0000/tree_17.root', '/hdfs/cms/store/user/kaehatah/NanoAOD_2017/ttH_HToZZ_4LFilter_M125_13TeV_powheg2_JHUGenV7011_pythia8/NanoAOD_jetSubstrcutre_v8_ttH_HToZZ_4LFilter_M125_13TeV_powheg2_JHUGenV7011_pythia8__RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1/180208_134952/0000/tree_18.root', '/hdfs/cms/store/user/kaehatah/NanoAOD_2017/ttH_HToZZ_4LFilter_M125_13TeV_powheg2_JHUGenV7011_pythia8/NanoAOD_jetSubstrcutre_v8_ttH_HToZZ_4LFilter_M125_13TeV_powheg2_JHUGenV7011_pythia8__RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1/180208_134952/0000/tree_19.root', '/hdfs/cms/store/user/kaehatah/NanoAOD_2017/ttH_HToZZ_4LFilter_M125_13TeV_powheg2_JHUGenV7011_pythia8/NanoAOD_jetSubstrcutre_v8_ttH_HToZZ_4LFilter_M125_13TeV_powheg2_JHUGenV7011_pythia8__RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1/180208_134952/0000/tree_2.root', '/hdfs/cms/store/user/kaehatah/NanoAOD_2017/ttH_HToZZ_4LFilter_M125_13TeV_powheg2_JHUGenV7011_pythia8/NanoAOD_jetSubstrcutre_v8_ttH_HToZZ_4LFilter_M125_13TeV_powheg2_JHUGenV7011_pythia8__RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1/180208_134952/0000/tree_21.root', '/hdfs/cms/store/user/kaehatah/NanoAOD_2017/ttH_HToZZ_4LFilter_M125_13TeV_powheg2_JHUGenV7011_pythia8/NanoAOD_jetSubstrcutre_v8_ttH_HToZZ_4LFilter_M125_13TeV_powheg2_JHUGenV7011_pythia8__RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1/180208_134952/0000/tree_22.root', '/hdfs/cms/store/user/kaehatah/NanoAOD_2017/ttH_HToZZ_4LFilter_M125_13TeV_powheg2_JHUGenV7011_pythia8/NanoAOD_jetSubstrcutre_v8_ttH_HToZZ_4LFilter_M125_13TeV_powheg2_JHUGenV7011_pythia8__RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1/180208_134952/0000/tree_3.root', '/hdfs/cms/store/user/kaehatah/NanoAOD_2017/ttH_HToZZ_4LFilter_M125_13TeV_powheg2_JHUGenV7011_pythia8/NanoAOD_jetSubstrcutre_v8_ttH_HToZZ_4LFilter_M125_13TeV_powheg2_JHUGenV7011_pythia8__RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1/180208_134952/0000/tree_4.root', '/hdfs/cms/store/user/kaehatah/NanoAOD_2017/ttH_HToZZ_4LFilter_M125_13TeV_powheg2_JHUGenV7011_pythia8/NanoAOD_jetSubstrcutre_v8_ttH_HToZZ_4LFilter_M125_13TeV_powheg2_JHUGenV7011_pythia8__RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1/180208_134952/0000/tree_5.root', '/hdfs/cms/store/user/kaehatah/NanoAOD_2017/ttH_HToZZ_4LFilter_M125_13TeV_powheg2_JHUGenV7011_pythia8/NanoAOD_jetSubstrcutre_v8_ttH_HToZZ_4LFilter_M125_13TeV_powheg2_JHUGenV7011_pythia8__RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1/180208_134952/0000/tree_6.root', '/hdfs/cms/store/user/kaehatah/NanoAOD_2017/ttH_HToZZ_4LFilter_M125_13TeV_powheg2_JHUGenV7011_pythia8/NanoAOD_jetSubstrcutre_v8_ttH_HToZZ_4LFilter_M125_13TeV_powheg2_JHUGenV7011_pythia8__RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1/180208_134952/0000/tree_7.root', '/hdfs/cms/store/user/kaehatah/NanoAOD_2017/ttH_HToZZ_4LFilter_M125_13TeV_powheg2_JHUGenV7011_pythia8/NanoAOD_jetSubstrcutre_v8_ttH_HToZZ_4LFilter_M125_13TeV_powheg2_JHUGenV7011_pythia8__RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1/180208_134952/0000/tree_8.root'])
+inputFilePath = "/hdfs/local/karl/ttHNtupleProduction/2017/2018Feb15_1to1_wNanoPrep_woPresel_all/ntuples/ttHJetToNonbb_M125_amcatnlo/0000/"
+maxInputFiles = 50
+zombie_files = [ "tree_110.root", ]
+import os
+def getInputFiles(inputFilePath):
+    inputFiles = []
+    files_and_subdirectories = os.listdir(inputFilePath)
+    for file_or_subdirectory in files_and_subdirectories:
+        if file_or_subdirectory in zombie_files:
+            continue
+        file_or_subdirectory = os.path.join(inputFilePath, file_or_subdirectory)
+        if os.path.isfile(file_or_subdirectory):
+            if file_or_subdirectory.endswith(".root"):
+                inputFiles.append(file_or_subdirectory)
+        if os.path.isdir(file_or_subdirectory):
+            inputFiles.extend(getInputFiles(file_or_subdirectory))
+    return inputFiles
+inputFiles = getInputFiles(inputFilePath)
+process.fwliteInput.fileNames = cms.vstring(inputFiles[0:maxInputFiles])
+print "inputFiles = ", process.fwliteInput.fileNames
+
 process.fwliteOutput.fileName = cms.string('analyze_hadTopTagger_gen.root')
 process.analyze_hadTopTagger_gen.process = cms.string('signal')
 process.analyze_hadTopTagger_gen.era = cms.string('2017')

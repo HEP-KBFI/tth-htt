@@ -32,6 +32,9 @@ RecoJetReaderHTTv2::RecoJetReaderHTTv2(int era,
   , jet_Ropt_(nullptr)
   , jet_RoptCalc_(nullptr)
   , jet_ptForRoptCalc_(nullptr)
+  , jet_tau1_(nullptr)
+  , jet_tau2_(nullptr)
+  , jet_tau3_(nullptr)
 {
   subjetReader_ = new RecoSubjetReaderHTTv2(era, branchName_subjet);
   setBranchNames();
@@ -58,6 +61,9 @@ RecoJetReaderHTTv2::~RecoJetReaderHTTv2()
     delete[] gInstance->jet_Ropt_;
     delete[] gInstance->jet_RoptCalc_;
     delete[] gInstance->jet_ptForRoptCalc_;
+    delete[] gInstance->jet_tau1_;
+    delete[] gInstance->jet_tau2_;
+    delete[] gInstance->jet_tau3_;    
     instances_[branchName_obj_] = nullptr;
   }
 }
@@ -72,13 +78,16 @@ RecoJetReaderHTTv2::setBranchNames()
     branchName_phi_ = Form("%s_%s", branchName_obj_.data(), "phi");
     branchName_mass_ = Form("%s_%s", branchName_obj_.data(), "mass");
     branchName_area_ = Form("%s_%s", branchName_obj_.data(), "area");
-    branchName_subjetIdx1_ = Form("%s_%s", branchName_obj_.data(), "subjetIdx1");
-    branchName_subjetIdx2_ = Form("%s_%s", branchName_obj_.data(), "subjetIdx2");
-    branchName_subjetIdx3_ = Form("%s_%s", branchName_obj_.data(), "subjetIdx3");
+    branchName_subjetIdx1_ = Form("%s_%s", branchName_obj_.data(), "subJetIdx1");
+    branchName_subjetIdx2_ = Form("%s_%s", branchName_obj_.data(), "subJetIdx2");
+    branchName_subjetIdx3_ = Form("%s_%s", branchName_obj_.data(), "subJetIdx3");
     branchName_fRec_ = Form("%s_%s", branchName_obj_.data(), "fRec");
     branchName_Ropt_ = Form("%s_%s", branchName_obj_.data(), "Ropt");
     branchName_RoptCalc_ = Form("%s_%s", branchName_obj_.data(), "RoptCalc");
     branchName_ptForRoptCalc_ = Form("%s_%s", branchName_obj_.data(), "ptForRoptCalc");
+    branchName_tau1_ = Form("%s_%s", branchName_obj_.data(), "tau1");
+    branchName_tau2_ = Form("%s_%s", branchName_obj_.data(), "tau2");
+    branchName_tau3_ = Form("%s_%s", branchName_obj_.data(), "tau3");
     instances_[branchName_obj_] = this;
   }
   else
@@ -115,6 +124,9 @@ RecoJetReaderHTTv2::setBranchAddresses(TTree * tree)
     bai.setBranchAddress(jet_Ropt_, branchName_Ropt_);
     bai.setBranchAddress(jet_RoptCalc_, branchName_RoptCalc_);
     bai.setBranchAddress(jet_ptForRoptCalc_, branchName_ptForRoptCalc_);
+    bai.setBranchAddress(jet_tau1_, branchName_tau1_);
+    bai.setBranchAddress(jet_tau2_, branchName_tau2_);
+    bai.setBranchAddress(jet_tau3_, branchName_tau3_);
   }
 }
 
@@ -122,7 +134,7 @@ namespace
 {
   const RecoSubjetHTTv2* getSubjet(const std::vector<RecoSubjetHTTv2>& subjets, int idx)
   {
-    if ( idx == -1 ) return 0;
+    if ( idx == -1 ) return nullptr;
     else if (idx >= 0 && idx < (int)subjets.size() ) return &subjets[idx];
     else throw cmsException("<getSubjet>:")
       << "Invalid subjet index = " << idx << ", given number of subjets = " << subjets.size() << " !!\n";
@@ -160,13 +172,16 @@ RecoJetReaderHTTv2::read() const
           gInstance->jet_mass_[idxJet]
         },
 	gInstance->jet_area_[idxJet],
-	subJet1,
-	subJet2,
-	subJet3,
+	( subJet1 != nullptr ) ? new RecoSubjetHTTv2(*subJet1) : nullptr,
+	( subJet2 != nullptr ) ? new RecoSubjetHTTv2(*subJet2) : nullptr,
+	( subJet3 != nullptr ) ? new RecoSubjetHTTv2(*subJet3) : nullptr,
 	gInstance->jet_fRec_[idxJet],
         gInstance->jet_Ropt_[idxJet],
         gInstance->jet_RoptCalc_[idxJet],
 	gInstance->jet_ptForRoptCalc_[idxJet],
+	gInstance->jet_tau1_[idxJet],  
+	gInstance->jet_tau2_[idxJet],  
+	gInstance->jet_tau3_[idxJet],  
         static_cast<Int_t>(idxJet)
       });
     } // idxJet

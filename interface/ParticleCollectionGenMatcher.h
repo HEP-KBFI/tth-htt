@@ -90,7 +90,7 @@ protected:
     operator()(Trec & recParticle,
                const GenLepton * genLepton) const
     {
-      recParticle.set_genLepton(genLepton);
+      recParticle.set_genLepton(new GenLepton(*genLepton));
     }
   };
   GenLeptonLinker genLeptonLinker_;
@@ -100,7 +100,7 @@ protected:
     void operator()(Trec & recParticle,
                     const GenHadTau * genHadTau) const
     {
-      recParticle.set_genHadTau(genHadTau);
+      recParticle.set_genHadTau(new GenHadTau(*genHadTau));
     }
   };
   GenHadTauLinker genHadTauLinker_;
@@ -110,7 +110,7 @@ protected:
     void operator()(Trec & recParticle,
                     const GenJet * genJet) const
     {
-      recParticle.set_genJet(genJet);
+      recParticle.set_genJet(new GenJet(*genJet));
     }
   };
   GenJetLinker genJetLinker_;
