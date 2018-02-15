@@ -483,7 +483,7 @@ int main(int argc, char* argv[])
   GenHadTauReader* genHadTauReader = 0;
   GenJetReader* genJetReader = 0;
   //-----------------------------------------------------------------------------
-  // CV: functionality temporarily disabled, 
+  // CV: functionality temporarily disabled,
   //     as all generator level information is stored in RecoLepton, RecoHadTau and RecoJet branches in case tthProdNtuple workflow is used
   //GenParticleReader* genNuFromTauReader = 0;
   //GenParticleReader* genTauReader = 0;
@@ -514,7 +514,7 @@ int main(int argc, char* argv[])
     inputTree -> registerReader(lheInfoReader);
 
     //---------------------------------------------------------------------------
-    // CV: functionality temporarily disabled, 
+    // CV: functionality temporarily disabled,
     //     as all generator level information is stored in RecoLepton, RecoHadTau and RecoJet branches in case tthProdNtuple workflow is used
     //if ( writeSelEventsFile && era == kEra_2017 ){
     //  genNuFromTauReader = new GenParticleReader("nGenNuFromTau", "GenNuFromTau");
@@ -786,7 +786,10 @@ int main(int argc, char* argv[])
       //"memOutput_ttH_Hww"
       "lep1_genLepPt", "lep2_genLepPt", "lep3_genLepPt", "tau_genTauPt",
       "lep1_fake_prob", "lep2_fake_prob", "lep3_fake_prob", "tau_fake_prob",
-      "mvaOutput_3l_ttV", "mvaOutput_3l_ttbar", "mvaDiscr_3l"
+      "lep1_frWeight", "lep2_frWeight",  "lep3_frWeight",  "tau_frWeight",
+      "mvaOutput_3l_ttV", "mvaOutput_3l_ttbar", "mvaDiscr_3l",
+      "mbb_loose","mbb_medium",
+      "dr_tau_los1", "dr_tau_los2",  "dr_tau_lss", "dr_lss", "dr_los1", "dr_los2"
     );
     bdt_filler -> register_variable<int_type>(
       "nJet", "nBJetLoose", "nBJetMedium", "lep1_isTight", "lep2_isTight", "lep3_isTight", "tau_isTight"
@@ -890,7 +893,7 @@ int main(int argc, char* argv[])
     }
 
     //---------------------------------------------------------------------------
-    // CV: functionality temporarily disabled, 
+    // CV: functionality temporarily disabled,
     //     as all generator level information is stored in RecoLepton, RecoHadTau and RecoJet branches in case tthProdNtuple workflow is used
     //std::vector<GenParticle> genNuFromTau;
     //std::vector<GenParticle> genTau;
@@ -1855,6 +1858,16 @@ int main(int argc, char* argv[])
     }
 
     if ( bdt_filler ) {
+
+
+      double lep1_genLepPt=( selLepton_lead->genLepton() != 0 ) ? selLepton_lead->genLepton()->pt() : 0.;
+      double lep2_genLepPt=( selLepton_sublead->genLepton() != 0 ) ? selLepton_sublead->genLepton()->pt() : 0.;
+      double lep3_genLepPt=( selLepton_sublead->genLepton() != 0 ) ? selLepton_sublead->genLepton()->pt() : 0.;
+      double tau_genTauPt=( selHadTau->genHadTau() != 0 ) ? selHadTau->genHadTau()->pt() : 0.;
+
+      double tau_fake_prob=1.;
+      if(jetToTauFakeRateInterface) tau_fake_prob= jetToTauFakeRateInterface->getWeight_lead(selHadTau->pt(), selHadTau->absEta());
+
       //FR weights for bdt ntuple
       double prob_fake_lepton_lead = 1.;
       if      ( std::abs(selLepton_lead->pdgId()) == 11 ) prob_fake_lepton_lead = leptonFakeRateInterface->getWeight_e(selLepton_lead->cone_pt(), selLepton_lead->absEta());
@@ -1865,6 +1878,30 @@ int main(int argc, char* argv[])
       double prob_fake_lepton_third = 1.;
       if      ( std::abs(selLepton_third->pdgId()) == 11 ) prob_fake_lepton_third = leptonFakeRateInterface->getWeight_e(selLepton_third->cone_pt(), selLepton_third->absEta());
       else if ( std::abs(selLepton_third->pdgId()) == 13 ) prob_fake_lepton_third = leptonFakeRateInterface->getWeight_mu(selLepton_third->cone_pt(), selLepton_third->absEta());
+
+      double dr_tau_los1=-1.;
+      double dr_tau_los2=-1.;
+      double dr_tau_lss=-1.;
+      double dr_lss=-1.0;
+      double dr_los1=-1.0;
+      double dr_los2=-1.0;
+      // it does not assume mis-charge identification
+      if (selLepton_lead->charge()*selLepton_sublead->charge() > 0){
+        dr_lss=deltaR(selLepton_sublead -> p4(), selLepton_lead -> p4());
+        dr_los1=deltaR(selLepton_third -> p4(), selLepton_lead -> p4());
+        dr_los2=deltaR(selLepton_third  -> p4(), selLepton_sublead -> p4());
+        dr_lss=deltaR(selHadTau -> p4(), selLepton_third -> p4());
+        dr_los2=deltaR(selHadTau -> p4(), selLepton_sublead -> p4());
+        dr_los1=deltaR(selHadTau  -> p4(), selLepton_lead -> p4());
+      } else {
+        dr_lss=deltaR(selLepton_third -> p4(), selLepton_lead -> p4());
+        dr_los1=deltaR(selLepton_sublead -> p4(), selLepton_third -> p4());
+        dr_los2=deltaR(selLepton_sublead  -> p4(), selLepton_lead -> p4());
+        dr_los1=deltaR(selHadTau -> p4(), selLepton_third -> p4());
+        dr_los2=deltaR(selHadTau -> p4(), selLepton_lead -> p4());
+        dr_lss=deltaR(selHadTau  -> p4(), selLepton_sublead -> p4());
+      }
+
       bdt_filler -> operator()({ eventInfo.run, eventInfo.lumi, eventInfo.event })
           ("lep1_pt",             selLepton_lead -> pt())
           ("lep1_conePt",         comp_lep1_conePt(*selLepton_lead))
@@ -1897,16 +1934,14 @@ int main(int argc, char* argv[])
           ("dr_leps",             deltaR(selLepton_lead -> p4(), selLepton_sublead -> p4()))
           ("mTauTauVis1",         mTauTauVis1_sel)
           ("mTauTauVis2",         mTauTauVis2_sel)
-//          ("memOutput_isValid",   memOutput_3l_1tau_matched.is_initialized() ? memOutput_3l_1tau_matched.isValid()        : -100.)
-//          ("memOutput_errorFlag", memOutput_3l_1tau_matched.is_initialized() ? memOutput_3l_1tau_matched.errorFlag()      : -100.)
-//          ("memOutput_ttH",       memOutput_3l_1tau_matched.is_initialized() ? memOutput_3l_1tau_matched.weight_ttH()     : -100.)
-//          ("memOutput_ttZ",       memOutput_3l_1tau_matched.is_initialized() ? memOutput_3l_1tau_matched.weight_ttZ()     : -100.)
-//          ("memOutput_ttH_Hww",   memOutput_3l_1tau_matched.is_initialized() ? memOutput_3l_1tau_matched.weight_ttH_hww() : -100.)
-//          ("memOutput_LR",        memOutput_3l_1tau_matched.is_initialized() ? memOutput_3l_1tau_matched.LR()             : -100.)
           ("lep1_genLepPt",       (selLepton_lead->genLepton() != 0) ? selLepton_lead->genLepton()->pt() : 0.)
           ("lep2_genLepPt",       (selLepton_sublead->genLepton() != 0) ? selLepton_sublead->genLepton() ->pt() : 0.)
           ("lep3_genLepPt",       (selLepton_third->genLepton() != 0) ? selLepton_third->genLepton() ->pt() : 0.)
           ("tau_genTauPt",        (selHadTau->genHadTau() != 0) ? selHadTau->genHadTau()->pt() : 0.)
+          ("lep1_frWeight",          lep1_genLepPt > 0 ? 1.0 : prob_fake_lepton_lead)
+          ("lep2_frWeight",          lep2_genLepPt > 0 ? 1.0 : prob_fake_lepton_sublead)
+          ("lep3_frWeight",          lep3_genLepPt > 0 ? 1.0 : prob_fake_lepton_third)
+          ("tau_frWeight",           tau_genTauPt > 0 ? 1.0 : tau_fake_prob)
           ("lep1_fake_prob",      prob_fake_lepton_lead)
           ("lep2_fake_prob",      prob_fake_lepton_sublead)
           ("lep3_fake_prob",      prob_fake_lepton_third)
@@ -1917,6 +1952,8 @@ int main(int argc, char* argv[])
           ("lumiScale",           lumiScale)
           ("genWeight",           eventInfo.genWeight)
           ("evtWeight",           evtWeight)
+          ("mbb_loose",           selBJets_loose.size()>1 ?  (selBJets_loose[0]->p4()+selBJets_loose[1]->p4()).mass() : -1000 )
+          ("mbb_medium",          selBJets_medium.size()>1 ?  (selBJets_medium[0]->p4()+selBJets_medium[1]->p4()).mass() : -1000 )
           ("nJet",                selJets.size())
           ("nBJetLoose",          selBJets_loose.size())
           ("nBJetMedium",         selBJets_medium.size())
@@ -1924,6 +1961,12 @@ int main(int argc, char* argv[])
           ("lep2_isTight",        int(selLepton_sublead -> isTight()))
           ("lep3_isTight",        int(selLepton_third -> isTight()))
           ("tau_isTight",         int(tightHadTauFilter(*selHadTau)))
+          ("dr_tau_los1", dr_tau_los1)
+          ("dr_tau_los2", dr_tau_los2)
+          ("dr_tau_lss", dr_tau_lss)
+          ("dr_lss", dr_lss)
+          ("dr_los1", dr_los1)
+          ("dr_los2", dr_los2)
         .fill()
       ;
     }

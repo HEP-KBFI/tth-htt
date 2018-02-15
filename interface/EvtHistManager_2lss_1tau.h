@@ -34,11 +34,8 @@ class EvtHistManager_2lss_1tau
                  int numJets,
                  int numBJets_loose,
                  int numBJets_medium,
-                 const std::vector<TH2 *> & oldVarA,
-                 const std::vector<TH2 *> & HTT,
-                 const std::vector<TH2 *> & noHTT,
-                 const std::vector<TH2 *> & HTTMEM,
                  double evtWeight,
+                 //
                  double mvaOutput_2lss_ttV,
                  double mvaOutput_2lss_ttbar,
                  double mvaDiscr_2lss,
@@ -53,33 +50,13 @@ class EvtHistManager_2lss_1tau
                  double mTauTauVis1,
                  double mTauTauVis2,
                  double memOutput_LR,
-                 double memDiscr,
-                 // XGB training 1D
-                 double mvaOutput_2lss_oldVarA_tt,
-                 double mvaOutput_2lss_oldVarA_ttV,
-                 double mvaOutput_2lss_noHTT_tt,
-                 double mvaOutput_2lss_noHTT_ttV,
-                 double mvaOutput_2lss_HTT_tt,
-                 double mvaOutput_2lss_HTTMEM_tt,
-                 double mvaOutput_2lss_HTTMEM_ttV,
-                 double mvaOutput_2lss_HTT_LepID_tt,
-                 // XGB training, joint
-                 double mvaOutput_2lss_HTTMEM_1B,
-                 double mvaOutput_2lss_HTT_1B,
-                 double mvaOutput_2lss_noHTT_1B,
-                 double mvaOutput_2lss_oldVarA_1B,
-                 double mvaOutput_2lss_oldVarA_2MEM,
-                 double mvaOutput_2lss_noHTT_2MEM,
-                 double mvaOutput_2lss_noHTT_2HTT);
+                 double memDiscr);
 
   const TH1 *
   getHistogram_EventCounter() const;
 
  private:
   int era_;
-
-  const std::array<Int_t, 6> nbinsTarget_;
-  const std::array<Int_t, 2> nbinsStart_;
 
   TH1 * histogram_numElectrons_;
   TH1 * histogram_numMuons_;
@@ -116,27 +93,6 @@ class EvtHistManager_2lss_1tau
 
   TH1 * histogram_EventCounter_;
 
-  TH1 * histogram_mvaOutput_2lss_oldVarA_tt_;
-  TH1 * histogram_mvaOutput_2lss_oldVarA_ttV_;
-  TH1 * histogram_mvaOutput_2lss_noHTT_tt_;
-  TH1 * histogram_mvaOutput_2lss_noHTT_ttV_;
-  TH1 * histogram_mvaOutput_2lss_HTT_tt_;
-  TH1 * histogram_mvaOutput_2lss_HTTMEM_tt_;
-  TH1 * histogram_mvaOutput_2lss_HTTMEM_ttV_;
-  TH1 * histogram_mvaOutput_2lss_HTT_LepID_tt_;
-
-  TH1 * histogram_mvaOutput_2lss_HTTMEM_1B_;
-  TH1 * histogram_mvaOutput_2lss_HTT_1B_;
-  TH1 * histogram_mvaOutput_2lss_noHTT_1B_;
-  TH1 * histogram_mvaOutput_2lss_oldVarA_1B_;
-  TH1 * histogram_mvaOutput_2lss_oldVarA_2MEM_;
-  TH1 * histogram_mvaOutput_2lss_noHTT_2MEM_;
-  TH1 * histogram_mvaOutput_2lss_noHTT_2HTT_;
-
-  std::vector<TH1 *> hist_oldVarA_2D_;
-  std::vector<TH1 *> hist_HTT_2D_;
-  std::vector<TH1 *> hist_HTTMEM_2D_;
-  std::vector<TH1 *> hist_noHTT_2D_;
 };
 
 #endif

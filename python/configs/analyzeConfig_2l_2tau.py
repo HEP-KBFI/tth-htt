@@ -321,8 +321,8 @@ class analyzeConfig_2l_2tau(analyzeConfig):
           hadTau_selection = "|".join([ hadTau_selection, self.hadTau_selection_part2 ])
 
           if lepton_and_hadTau_selection == "forBDTtraining":
-            lepton_selection = "Loose"
-            hadTau_selection = "Tight|dR03mvaLoose"
+            lepton_selection = "Loose" #"Tight" #
+            hadTau_selection = "Tight|%s" % self.hadTau_selection_relaxed
 
           for lepton_and_hadTau_frWeight in self.lepton_and_hadTau_frWeights:
             if lepton_and_hadTau_frWeight == "enabled" and not lepton_and_hadTau_selection.startswith("Fakeable"):
@@ -775,4 +775,3 @@ class analyzeConfig_2l_2tau(analyzeConfig):
     logging.info("Done")
 
     return self.num_jobs
-

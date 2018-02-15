@@ -105,8 +105,8 @@ elif mode == "forBDTtraining":
 #    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_prodNtuples_FastSim import samples_2017
 #  else:
 #    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_FastSim import samples_2017
-  hadTau_selection                   = "dR03mvaVTight"
-  hadTau_selection_relaxed           = "dR03mvaLoose"
+  hadTau_selection                   = "dR03mvaTight"
+  hadTau_selection_relaxed           = "dR03mvaMedium"
   applyFakeRateWeights               = "3L"
 else:
   raise ValueError("Invalid Configuration parameter 'mode' = %s !!" % mode)
@@ -199,18 +199,14 @@ if __name__ == '__main__':
       histograms_to_fit                     = [
         "EventCounter",
         "numJets",
-        "mvaOutput_1l_2tau_ttbar_HTTWithKinFit_MVAonly",
-        "mvaOutput_1l_2tau_ttbar_HTTWithKinFit",
-        "mvaOutput_1l_2tau_ttbar",
         "mvaOutput_1l_2tau_ttbar_Old",
-        "mvaOutput_1l_2tau_ttbar_OldVar",
-        "mvaOutput_1l_2tau_ttbar_OldVarHTT",
-        "mvaOutput_1l_2tau_ttbar_HTTLepID",
-#       "mvaOutput_1l_2tau_ttbar_withLepID",
-#       "mvaOutput_1l_2tau_ttbar_withLepID_HTTbase",
-#       "mvaOutput_1l_2tau_ttbar_baseline",
-#       "mvaOutput_1l_2tau_ttbar_baseline_HTTbase",
-#       "mvaDiscr_1l_2tau",
+        "mvaOutput_1l_2tau_ttbar_Old_5bins",
+        "mvaOutput_sum_HTT_4bins",
+        "mvaOutput_1B_HTT_4bins",
+        "mvaOutput_ttbar_HTT",
+        "mvaOutput_ttV_HTT",
+        "mvaDiscr_1l_2tau",
+        "mvaOutput_1B_HTT",
         "mTauTauVis"
       ],
       select_rle_output                     = True,

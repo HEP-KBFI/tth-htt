@@ -55,6 +55,30 @@ namespace
     std::string name_;
     std::string label_;
   };
+  std::vector<pdouble> GetBlindedRanges(TH1* histogramData, std::vector<histogramEntryType*>& histogramsBackground, TH1* histogramSignal){
+    std::vector<pdouble> range;
+    TH1* histogramBackgroundSum = 0;
+    for ( std::vector<histogramEntryType*>::iterator histogramBackground_entry = histogramsBackground.begin();
+          histogramBackground_entry != histogramsBackground.end(); ++histogramBackground_entry ) {
+      TH1* histogramBackground = (*histogramBackground_entry)->histogram_;
+      checkCompatibleBinning(histogramSignal, histogramBackground);
+      if(!histogramBackgroundSum) histogramBackgroundSum = (TH1*) histogramBackground->Clone("histogramBackgroundSum");
+      histogramBackgroundSum->Add(histogramBackground);
+    }
+    int numBins = histogramData->GetNbinsX();
+    for ( int iBin = 1; iBin <= numBins; ++iBin ) {
+      double x = histogramData->GetBinCenter(iBin);
+      double w = histogramData->GetBinWidth(iBin);
+      double s = histogramSignal->GetBinContent(iBin);
+      double b = histogramBackgroundSum->GetBinContent(iBin);
+      if((s/sqrt(b+pow(0.09*b, 2))) >= 0.5){
+	double xmin = x - 0.5*w;
+	double xmax = x + 0.5*w;
+	range.push_back(pdouble(xmin, xmax));
+      }
+    }
+    return range;
+  }
   
   TH1* blindHistogram(TH1* histogram, const std::vector<pdouble>& keepBlinded)
   {
@@ -73,7 +97,7 @@ namespace
 	  break;
 	}
       }
-      //std::cout << "x = " << x << ": isBlinded = " << isBlinded << std::endl;
+      //      std::cout << "BinCenter = " << x << ": isBlinded = " << isBlinded << std::endl;
       if ( isBlinded ) {
 	blindedHistogram->SetBinContent(iBin, -10.);
 	blindedHistogram->SetBinError(iBin, 0.);
@@ -138,8 +162,8 @@ namespace
 	  histogramBackground_entry != histogramsBackground.end(); ++histogramBackground_entry ) {
       TH1* histogramBackground = (*histogramBackground_entry)->histogram_;
       const std::string& process = (*histogramBackground_entry)->process_;
-      std::cout << "process = " << process << ": histogramBackground = " << histogramBackground << std::endl;
-      printHistogram(histogramBackground);
+      //      std::cout << "process = " << process << ": histogramBackground = " << histogramBackground << std::endl;
+      //printHistogram(histogramBackground);
       checkCompatibleBinning(histogramBackground, histogramData);
       TH1* histogramBackground_density = divideHistogramByBinWidth(histogramBackground); 
       if ( process.find("TTWW") != std::string::npos ) {
@@ -178,9 +202,9 @@ namespace
       }
       histogramsBackground_density.push_back(histogramBackground_density);
     }
-    std::cout << "histogramTTW_density = " << histogramTTW_density << std::endl;
-    std::cout << "histogramTTWW_density = " << histogramTTWW_density << std::endl;
-    std::cout << "histogramTTZ_density = " << histogramTTZ_density << std::endl;
+    //    std::cout << "histogramTTW_density = " << histogramTTW_density << std::endl;
+    //    std::cout << "histogramTTWW_density = " << histogramTTWW_density << std::endl;
+    //    std::cout << "histogramTTZ_density = " << histogramTTZ_density << std::endl;
 
     TH1* histogramSignal_density = 0;
     if ( histogramSignal ) {
@@ -277,7 +301,7 @@ namespace
 	yMin = 0.;
       }
     }
-    std::cout << "yMin = " << yMin << ", yMax = " << yMax << std::endl;
+    //    std::cout << "yMin = " << yMin << ", yMax = " << yMax << std::endl;
 
     if ( histogramData_blinded_density ) {
       histogramData_blinded_density->SetTitle("");
@@ -627,7 +651,7 @@ int main(int argc, char* argv[])
     categories.push_back(category);
     categoryNames.push_back(category->name_);
   }
-
+  bool applyAutoBlinding  = cfgMakePlots.getParameter<bool>("applyAutoBlinding");
   std::string processData  = cfgMakePlots.getParameter<std::string>("processData");
   vstring processesBackground = cfgMakePlots.getParameter<vstring>("processesBackground");
   std::string processSignal = cfgMakePlots.getParameter<std::string>("processSignal");
@@ -662,11 +686,8 @@ int main(int argc, char* argv[])
 	  distribution != distributions.end(); ++distribution ) {
 
       TH1* histogramData = 0;
-      TH1* histogramData_blinded = 0;
       if ( processData != "" ) {
 	histogramData = getHistogram_wrapper(dir, processData, (*distribution)->histogramName_, "central", true);
-	if ( (*distribution)->keepBlinded_.size() >= 1 ) histogramData_blinded = blindHistogram(histogramData, (*distribution)->keepBlinded_);
-	else histogramData_blinded = histogramData; 
       }
 
       histogramManager.setDirectory(dir);
@@ -682,7 +703,14 @@ int main(int argc, char* argv[])
       }
       
       TH1* histogramSignal = histogramManager.getHistogramPrefit(processSignal, true);
-      
+
+      std::vector<pdouble> keepBlinded =GetBlindedRanges(histogramData, histogramsBackground, histogramSignal);
+      TH1* histogramData_blinded = 0;
+      if ( processData != "" ) {
+	if ( keepBlinded.size() >= 1 && applyAutoBlinding) histogramData_blinded = blindHistogram(histogramData, keepBlinded);
+	else histogramData_blinded = histogramData;
+      }
+
       TH1* histogramUncertainty = 0;
       if ( showUncertainty ) {
 	histogramUncertainty = histogramManager.getHistogramUncertainty();

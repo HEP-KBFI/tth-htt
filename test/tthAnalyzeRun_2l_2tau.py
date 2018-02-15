@@ -89,7 +89,7 @@ if mode == "VHbb":
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_prodNtuples_test import samples_2017
   else:
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_test import samples_2017
-  hadTau_selection     = "dR03mvaVTight"
+  hadTau_selection     = "dR03mvaMedium"
   applyFakeRateWeights = "4L"
 elif mode == "forBDTtraining":
 #  if use_prod_ntuples:
@@ -97,7 +97,7 @@ elif mode == "forBDTtraining":
 #  else:
 #    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_FastSim import samples_2017
   hadTau_selection         = "dR03mvaVTight"
-  hadTau_selection_relaxed = "dR03mvaLoose"
+  hadTau_selection_relaxed = "dR03mvaVVLoose"
   applyFakeRateWeights     = "4L"
 else:
   raise ValueError("Invalid Configuration parameter 'mode' = %s !!" % mode)
@@ -136,7 +136,7 @@ if __name__ == '__main__':
       hadTau_selection         = hadTau_selection,
       hadTau_charge_selections = [ "disabled" ],
       applyFakeRateWeights     = applyFakeRateWeights,
-      chargeSumSelections      = [ "OS", "SS" ],
+      chargeSumSelections      = [ "OS"] if mode == "forBDTtraining" else [ "OS", "SS" ],
       central_or_shifts        = [
         "central",
 ##         "CMS_ttHl_btag_HFUp",
