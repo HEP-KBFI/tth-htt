@@ -102,13 +102,7 @@ copyBranches_singleType(TTree * inputTree,
   {
     const TBranch * const inputTree_branch = dynamic_cast<const TBranch * const>(inputTree_branches->At(idxBranch));
     assert(inputTree_branch);
-
     const std::string branchName = inputTree_branch->GetName();
-    if(outputTree_branches.count(branchName))
-    {
-      std::cout << "Warning: detected a duplicate branch of the name: " << branchName << '\n';
-      continue;
-    }
 
     if(isBranchToKeep.at(branchName))
     {
@@ -125,6 +119,12 @@ copyBranches_singleType(TTree * inputTree,
       if(branchInfo.find("[") != std::string::npos && branchInfo.find("]") != std::string::npos)
       {
         continue; // skip branches of "vector" type
+      }
+
+      if(outputTree_branches.count(branchName))
+      {
+        std::cout << "Warning: copyBranches_singleType: detected a duplicate branch of the name: " << branchName << '\n';
+        continue;
       }
 
       branchEntryBaseType * outputTree_branch = nullptr;
@@ -161,13 +161,7 @@ copyBranches_vectorType(TTree * inputTree,
   {
     const TBranch * const inputTree_branch = dynamic_cast<const TBranch * const>(inputTree_branches->At(idxBranch));
     assert(inputTree_branch);
-
     const std::string branchName = inputTree_branch->GetName();
-    if(outputTree_branches.count(branchName))
-    {
-      std::cout << "Warning: detected a duplicate branch of the name: " << branchName << '\n';
-      continue;
-    }
 
     if(isBranchToKeep.at(branchName))
     {
@@ -184,6 +178,12 @@ copyBranches_vectorType(TTree * inputTree,
       if(! (branchInfo.find("[") != std::string::npos && branchInfo.find("]") != std::string::npos))
       {
         continue; // skip branches of "simple" type
+      }
+
+      if(outputTree_branches.count(branchName))
+      {
+        std::cout << "Warning: copyBranches_vectorType: detected a duplicate branch of the name: " << branchName << '\n';
+        continue;
       }
 
       const int pos1 = branchInfo.find_last_of("[");
