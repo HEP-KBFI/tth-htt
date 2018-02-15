@@ -52,10 +52,14 @@ RecoJetWriter::~RecoJetWriter()
   delete[] jet_eta_;
   delete[] jet_phi_;
   delete[] jet_mass_;
+  delete[] jet_charge_;
   delete[] jet_jecUncertTotal_;
   delete[] jet_BtagCSV_;
   delete[] jet_BtagWeight_;
   delete[] jet_QGDiscr_;
+  delete[] jet_pullEta_;
+  delete[] jet_pullPhi_;
+  delete[] jet_pullMag_;
   for(auto & kv: jet_BtagWeights_systematics_)
   {
     delete[] kv.second;
@@ -69,9 +73,13 @@ RecoJetWriter::setBranchNames()
   branchName_eta_ = Form("%s_%s", branchName_obj_.data(), "eta");
   branchName_phi_ = Form("%s_%s", branchName_obj_.data(), "phi");
   branchName_mass_ = Form("%s_%s", branchName_obj_.data(), "mass");
+  branchName_jetCharge_ = Form("%s_%s", branchName_obj_.data(), "jetCharge");
   branchName_jecUncertTotal_ = Form("%s_%s", branchName_obj_.data(), "jecUncertTotal");
   branchName_BtagCSV_ = Form("%s_%s", branchName_obj_.data(), "btagCSVV2");
   branchName_QGDiscr_ = Form("%s_%s", branchName_obj_.data(), "qgl");
+  branchName_pullEta_ = Form("%s_%s", branchName_obj_.data(), "pullEta");
+  branchName_pullPhi_ = Form("%s_%s", branchName_obj_.data(), "pullPhi");
+  branchName_pullMag_ = Form("%s_%s", branchName_obj_.data(), "pullMag");
   branchName_BtagWeight_ = Form("%s_%s", branchName_obj_.data(), "btagSF_csvv2");
   for(int idxShift = kBtag_hfUp; idxShift <= kBtag_jesDown; ++idxShift)
   {
@@ -94,9 +102,13 @@ RecoJetWriter::setBranches(TTree * tree)
   bai.setBranch(jet_eta_, branchName_eta_);
   bai.setBranch(jet_phi_, branchName_phi_);
   bai.setBranch(jet_mass_, branchName_mass_);
+  bai.setBranch(jet_charge_, branchName_jetCharge_);
   bai.setBranch(jet_jecUncertTotal_, branchName_jecUncertTotal_);
   bai.setBranch(jet_BtagCSV_, branchName_BtagCSV_);
   bai.setBranch(jet_BtagWeight_, branchName_BtagWeight_);
+  bai.setBranch(jet_pullEta_, branchName_pullEta_);
+  bai.setBranch(jet_pullPhi_, branchName_pullPhi_);
+  bai.setBranch(jet_pullMag_, branchName_pullMag_);
   for(int idxShift = kBtag_hfUp; idxShift <= kBtag_jesDown; ++idxShift)
   {
     bai.setBranch(jet_BtagWeights_systematics_[idxShift], branchNames_BtagWeight_systematics_[idxShift]);
@@ -116,9 +128,13 @@ RecoJetWriter::write(const std::vector<const RecoJet *> & jets)
     jet_eta_[idxJet] = jet->eta();
     jet_phi_[idxJet] = jet->phi();
     jet_mass_[idxJet] = jet->mass();
+    jet_charge_[idxJet] = jet->charge();
     jet_jecUncertTotal_[idxJet] = jet->jecUncertTotal();
     jet_BtagCSV_[idxJet] = jet->BtagCSV_;
     jet_BtagWeight_[idxJet] = jet->BtagWeight();
+    jet_pullEta_[idxJet] = jet->pullEta();
+    jet_pullPhi_[idxJet] = jet->pullPhi();
+    jet_pullMag_[idxJet] = jet->pullMag();
     for(int idxShift = kBtag_hfUp; idxShift <= kBtag_jesDown; ++idxShift)
     {
       if(jet->BtagWeight_systematics_.count(idxShift))

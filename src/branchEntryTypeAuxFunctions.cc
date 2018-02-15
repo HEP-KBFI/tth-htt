@@ -9,6 +9,8 @@
 
 #include <boost/algorithm/string/replace.hpp> // boost::replace_all_copy()
 
+#include <iostream> // std::cout
+
 std::vector<outputCommandEntry>
 getOutputCommands(const std::vector<std::string> & outputCommands_string)
 {
@@ -119,6 +121,12 @@ copyBranches_singleType(TTree * inputTree,
         continue; // skip branches of "vector" type
       }
 
+      if(outputTree_branches.count(branchName))
+      {
+        std::cout << "Warning: copyBranches_singleType: detected a duplicate branch of the name: " << branchName << '\n';
+        continue;
+      }
+
       branchEntryBaseType * outputTree_branch = nullptr;
       if     (branchType == "Float_t"  ) outputTree_branch = new branchEntryTypeFF  (branchName, "F", branchName, "F");
       else if(branchType == "Double_t" ) outputTree_branch = new branchEntryTypeDD  (branchName, "D", branchName, "D");
@@ -153,8 +161,8 @@ copyBranches_vectorType(TTree * inputTree,
   {
     const TBranch * const inputTree_branch = dynamic_cast<const TBranch * const>(inputTree_branches->At(idxBranch));
     assert(inputTree_branch);
-
     const std::string branchName = inputTree_branch->GetName();
+
     if(isBranchToKeep.at(branchName))
     {
       const TLeaf * const inputTree_leaf = inputTree_branch->GetLeaf(branchName.data());
@@ -170,6 +178,12 @@ copyBranches_vectorType(TTree * inputTree,
       if(! (branchInfo.find("[") != std::string::npos && branchInfo.find("]") != std::string::npos))
       {
         continue; // skip branches of "simple" type
+      }
+
+      if(outputTree_branches.count(branchName))
+      {
+        std::cout << "Warning: copyBranches_vectorType: detected a duplicate branch of the name: " << branchName << '\n';
+        continue;
       }
 
       const int pos1 = branchInfo.find_last_of("[");
@@ -194,6 +208,10 @@ copyBranches_vectorType(TTree * inputTree,
       else if(branchType == "Int_t")
       {
         outputTree_branch = new branchEntryTypeVIVI(branch_nElements, max_nElements, branchName, "I", branchName, "I");
+      }
+      else if(branchType == "UChar_t")
+      {
+        outputTree_branch = new branchEntryTypeVCVC(branch_nElements, max_nElements, branchName, "b", branchName, "b");
       }
       else
       {

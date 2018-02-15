@@ -214,8 +214,8 @@ RecoJetReader::read() const
           gInstance->jet_eta_[idxJet],
           gInstance->jet_phi_[idxJet],
           gInstance->jet_mass_[idxJet]
-	},
-	gInstance->jet_charge_[idxJet],  
+        },
+        gInstance->jet_charge_[idxJet],
         gInstance->jet_jecUncertTotal_[idxJet],
         gInstance->jet_BtagCSV_[idxJet],
         gInstance->jet_BtagWeight_[idxJet],

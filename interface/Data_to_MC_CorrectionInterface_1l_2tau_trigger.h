@@ -30,12 +30,8 @@ public:
              double lepton_eta);
 
   void
-  setHadTaus(double hadTau1_pt,
-             double hadTau1_eta,
-	     double hadTau1_phi,
-             double hadTau2_pt,
-             double hadTau2_eta,
-	     double hadTau2_phi);
+  setHadTaus(double hadTau1_pt, double hadTau1_eta, double hadTau1_phi,
+             double hadTau2_pt, double hadTau2_eta, double hadTau2_phi);
   //-----------------------------------------------------------------------------
 
   //-----------------------------------------------------------------------------

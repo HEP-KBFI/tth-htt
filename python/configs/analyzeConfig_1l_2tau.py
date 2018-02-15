@@ -302,7 +302,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
       hadTau_selection = "|".join([ lepton_and_hadTau_selection, self.hadTau_selection_part2 ])
 
       if lepton_and_hadTau_selection == "forBDTtraining":
-        lepton_selection = "Tight"  #"Loose"
+        lepton_selection = "Loose" 
         hadTau_selection = "Tight|%s" % self.hadTau_selection_relaxed
 
       for lepton_and_hadTau_frWeight in self.lepton_and_hadTau_frWeights:

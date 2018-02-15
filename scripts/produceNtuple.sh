@@ -44,7 +44,7 @@ if [[ -z $(which "$EXECUTABLE" 2>/dev/null) ]]; then
   exit 2;
 fi
 
-NANO_MODULES_DATA="lepJetVarBTagAll,absIso,jecUncert_cpp,tauIDLog"
+NANO_MODULES_DATA="lepJetVarBTagAll,absIso,jecUncert_cpp,tauIDLog,jetSubstructureObservablesHTTv2"
 NANO_MODULES_MC="$NANO_MODULES_DATA,genHiggsDecayMode,genAll,btagSF_csvv2,btagSF_cmva,puWeight,jetmetUncertainties"
 
 if [ "$IS_MC" == "True" ]; then

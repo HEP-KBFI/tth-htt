@@ -315,6 +315,7 @@ typedef branchEntryFormulaType<Double_t> branchEntryFormulaTypeD;
 typedef branchEntryVType<Float_t,   Float_t> branchEntryTypeVFVF;
 typedef branchEntryVType<Double_t, Double_t> branchEntryTypeVDVD;
 typedef branchEntryVType<Int_t,       Int_t> branchEntryTypeVIVI;
+typedef branchEntryVType<UChar_t,   UChar_t> branchEntryTypeVCVC;
 
 branchEntryBaseType *
 addBranch(std::vector<branchEntryBaseType *> &,

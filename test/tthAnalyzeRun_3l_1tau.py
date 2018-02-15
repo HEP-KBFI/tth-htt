@@ -162,7 +162,7 @@ if __name__ == '__main__':
       # CV: apply "fake" background estimation to leptons only and not to hadronic taus, as discussed on slide 10 of
       #     https://indico.cern.ch/event/597028/contributions/2413742/attachments/1391684/2120220/16.12.22_ttH_Htautau_-_Review_of_systematics.pdf
       applyFakeRateWeights = applyFakeRateWeights,
-      chargeSumSelections  = [ "OS", "SS" ],
+      chargeSumSelections  = [ "OS" ] if "forBDTtraining" in mode else [ "OS", "SS" ],
       central_or_shifts    = [
         "central",
 ##         "CMS_ttHl_btag_HFUp",
