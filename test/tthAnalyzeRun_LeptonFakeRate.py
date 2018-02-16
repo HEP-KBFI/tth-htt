@@ -3,6 +3,7 @@ import os, logging, sys, getpass, argparse, datetime
 
 from tthAnalysis.HiggsToTauTau.configs.analyzeConfig_LeptonFakeRate import analyzeConfig_LeptonFakeRate
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
+from tthAnalysis.HiggsToTauTau.analysisSettings import systematics
 
 # E.g.: ./tthAnalyzeRun_LeptonFakeRate.py -v 2017Dec13 -e 2017
 
@@ -10,7 +11,9 @@ from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 
 cmssw_base_dir_combine     = os.path.expanduser('~/CMSSW_7_4_7') # immediate parent dir to src folder
 era_choices                = ['2017']
+sys_choices                = [ 'central', 'full' ]
 default_resubmission_limit = 4
+systematics.full           = systematics.an_leptonFR
 
 class SmartFormatter(argparse.HelpFormatter):
   def _split_lines(self, text, width):
@@ -28,6 +31,11 @@ parser.add_argument('-v', '--version',
 parser.add_argument('-e', '--era',
   type = str, dest = 'era', metavar = 'era', choices = era_choices, default = None, required = True,
   help = 'R|Era of data/MC (choices: %s)' % ', '.join(map(lambda choice: "'%s'" % choice, era_choices)),
+)
+parser.add_argument('-s', '--systematics',
+  type = str, dest = 'systematics', metavar = 'mode', choices = sys_choices,
+  default = 'central', required = False,
+  help = 'R|Systematic uncertainties (choices: %s)' % ', '.join(map(lambda choice: "'%s'" % choice, sys_choices)),
 )
 parser.add_argument('-d', '--dry-run',
   dest = 'dry_run', action = 'store_true', default = False,
@@ -52,6 +60,7 @@ era                  = args.era
 version              = args.version
 resubmit             = args.disable_resubmission
 max_job_resubmission = args.resubmission_limit if resubmit else 1
+central_or_shift     = getattr(systematics, args.systematics)
 
 if era == "2017":
   from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_leptonFR_test import samples_2017 as samples
@@ -73,6 +82,11 @@ if __name__ == '__main__':
     format = '%(asctime)s - %(levelname)s: %(message)s'
   )
 
+  logging.info(
+    "Running the jobs with the following systematic uncertainties enabled: %s" % \
+    ', '.join(central_or_shift)
+  )
+
   job_statistics_summary = {}
   run_analysis           = False
   is_last_resubmission   = False
@@ -84,23 +98,15 @@ if __name__ == '__main__':
     analysis = analyzeConfig_LeptonFakeRate(
       configDir = os.path.join("/home",       getpass.getuser(), "ttHAnalysis", era, version),
       outputDir = os.path.join("/hdfs/local", getpass.getuser(), "ttHAnalysis", era, version),
-      cmssw_base_dir_combine = cmssw_base_dir_combine,
-      executable_analyze     = "analyze_LeptonFakeRate",
-      samples                = samples,
-      absEtaBins_e           = [ 0., 1.479, 9.9 ],
-      absEtaBins_mu          = [ 0., 1.479, 9.9 ],
-      ptBins_e               = [ 15., 20., 30., 45., 65., 100000. ],
-      ptBins_mu              = [ 10., 15., 20., 30., 45., 65., 100000. ],
-      fillGenEvtHistograms   = False,
-      central_or_shifts      = [
-        "central",
-        "CMS_ttHl_JESUp",
-        "CMS_ttHl_JESDown",
-        "CMS_ttHl_JERUp",
-        "CMS_ttHl_JERDown",
-        "CMS_ttHl_UnclusteredEnUp",
-        "CMS_ttHl_UnclusteredEnDown",
-      ],
+      cmssw_base_dir_combine                   = cmssw_base_dir_combine,
+      executable_analyze                       = "analyze_LeptonFakeRate",
+      samples                                  = samples,
+      absEtaBins_e                             = [ 0., 1.479, 9.9 ],
+      absEtaBins_mu                            = [ 0., 1.479, 9.9 ],
+      ptBins_e                                 = [ 15., 20., 30., 45., 65., 100000. ],
+      ptBins_mu                                = [ 10., 15., 20., 30., 45., 65., 100000. ],
+      fillGenEvtHistograms                     = False,
+      central_or_shifts                        = central_or_shift,
       numerator_histogram                      = ("mT_fix_L",     "m_{T}^{fix}"), # or ("pt", "p_{T}"),
       denominator_histogram                    = ("EventCounter", "Number of events"),
       prep_dcard                               = True,
