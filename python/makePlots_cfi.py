@@ -8,6 +8,7 @@ process.fwliteInput = cms.PSet(
 
 process.makePlots = cms.PSet(
 
+    applyAutoBlinding = cms.bool(False),
     processData = cms.string("data_obs"),
     processesBackground = cms.vstring(
         ##"TT",
@@ -228,7 +229,7 @@ process.makePlots = cms.PSet(
     showUncertainty = cms.bool(False),
 
     labelOnTop = cms.string("CMS Preliminary; ttH, H #rightarrow #tau#tau; %1.1f fb^{-1} at #sqrt{s} = 13 TeV"),    
-    intLumiData = cms.double(12.9), # in units of fb^-1
+    intLumiData = cms.double(35.9), # in units of fb^-1
 
     outputFileName = cms.string("plots/makePlots.png")
 )
