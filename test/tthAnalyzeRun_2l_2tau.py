@@ -7,7 +7,9 @@ from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 #--------------------------------------------------------------------------------
 # NOTE: set mode flag to
 #   'VHbb'           : to run the analysis on the VHbb Ntuples, with the nominal event selection
-#   'forBDTtraining' : to run the analysis on the VHbb Ntuples, with a relaxed event selection,
+#   'forBDTtraining' : to run the analysis on the Fastsim Ntuples, with a relaxed event selection,
+#                      to increase the BDT training statistics
+#   'forBDTtraining_VHbb' : to run the analysis on the VHbb Ntuples, with a relaxed event selection,
 #                      to increase the BDT training statistics
 #--------------------------------------------------------------------------------
 # E.g. to run: python tthAnalyzeRun_2l_2tau.py --version "2l_2tau_2018Feb07_BDT_LLepVLTau" --mode "forBDTtraining" --use_prod_ntuples
@@ -32,12 +34,12 @@ LUMI                               = None
 hadTau_selection                   = None
 hadTau_selection_relaxed           = None
 applyFakeRateWeights               = None
-hadTauFakeRateWeight_inputFileName = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016_vvLoosePresel.root"
+hadTauFakeRateWeight_inputFileName = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016.root" #
 
 if use_prod_ntuples and ERA == "2015":
   raise ValueError("No production Ntuples for 2015 data & MC")
 
-if mode == "forBDTtraining" and ERA == "2015":
+if mode.find("forBDTtraining") != -1 and ERA == "2015":
   raise ValueError("No fastsim samples for 2015")
 
 if mode == "VHbb":
@@ -46,15 +48,21 @@ if mode == "VHbb":
   else:
     from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2015 import samples_2015
     from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016 import samples_2016
-  hadTau_selection     = "dR03mvaMedium"
+  hadTau_selection     =  "dR03mvaVTight" # "dR03mvaMedium" #
   applyFakeRateWeights = "4L"
-elif mode == "forBDTtraining":
-  if use_prod_ntuples:
-    from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_prodNtuples_2016_FastSim import samples_2016
-  else:
-    from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_FastSim import samples_2016
+elif mode.find("forBDTtraining") != -1 :
+  if mode == "forBDTtraining" :
+      if use_prod_ntuples:
+        from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_prodNtuples_2016_FastSim import samples_2016
+      else:
+        from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_FastSim import samples_2016
+  if mode == "forBDTtraining_VHbb" : from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_prodNtuples_2016 import samples_2016
   hadTau_selection         = "dR03mvaVTight"
   hadTau_selection_relaxed = "dR03mvaVVLoose"
+  # "dR03mvaMedium" # "dR03mvaTight" # "dR03mvaVTight" # "dR03mvaLoose" #
+  if hadTau_selection_relaxed=="dR03mvaVVLoose" : hadTauFakeRateWeight_inputFileName = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016_vvLoosePresel.root"
+  elif hadTau_selection_relaxed=="dR03mvaVLoose" : hadTauFakeRateWeight_inputFileName = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016_vLoosePresel.root"
+  else : hadTauFakeRateWeight_inputFileName = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016.root"
   applyFakeRateWeights     = "4L"
 else:
   raise ValueError("Invalid Configuration parameter 'mode' = %s !!" % mode)
@@ -95,7 +103,7 @@ if __name__ == '__main__':
       hadTau_selection         = hadTau_selection,
       hadTau_charge_selections = [ "disabled" ],
       applyFakeRateWeights     = applyFakeRateWeights,
-      chargeSumSelections      = [ "OS"] if mode == "forBDTtraining" else [ "OS", "SS" ],  #[ "OS", "SS" ],
+      chargeSumSelections      = [ "OS"] if mode.find("forBDTtraining") != -1 else [ "OS", "SS" ],  #[ "OS", "SS" ],
       central_or_shifts        = [
         "central",
 ##         "CMS_ttHl_btag_HFUp",
