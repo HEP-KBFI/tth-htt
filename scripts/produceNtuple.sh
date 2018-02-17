@@ -73,5 +73,5 @@ echo "Finished nanoAOD pre-processing at `date`"
 # Run the Ntuple production
 echo "Starting Ntuple production"
 $EXECUTABLE $SCRIPT
-test_exit_code
+test_exit_code $?
 echo "Finished Ntuple production"
