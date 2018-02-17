@@ -84,7 +84,6 @@ hadTau_selection                   = None
 hadTau_selection_relaxed           = None
 changeBranchNames                  = use_prod_ntuples
 applyFakeRateWeights               = None
-hadTauFakeRateWeight_inputFileName = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016.root" #TODO update
 
 if mode != "VHbb":
   raise ValueError("Only VHbb mode available")
@@ -94,7 +93,7 @@ if mode == "VHbb":
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_prodNtuples_test import samples_2017
   else:
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_test import samples_2017
-  hadTau_selection     = "dR03mvaMedium"
+  hadTau_selection     = "dR03mvaVTight"
   applyFakeRateWeights = "4L"
 elif mode == "forBDTtraining":
 #  if use_prod_ntuples:
@@ -106,6 +105,13 @@ elif mode == "forBDTtraining":
   applyFakeRateWeights     = "4L"
 else:
   raise ValueError("Invalid Configuration parameter 'mode' = %s !!" % mode)
+
+if hadTau_selection_relaxed=="dR03mvaVVLoose":
+  hadTauFakeRateWeight_inputFileName = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016_vvLoosePresel.root"
+elif hadTau_selection_relaxed=="dR03mvaVLoose":
+  hadTauFakeRateWeight_inputFileName = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016_vLoosePresel.root"
+else:
+  hadTauFakeRateWeight_inputFileName = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016.root"
 
 if era == "2017":
   from tthAnalysis.HiggsToTauTau.analysisSettings import lumi_2017 as lumi
@@ -145,7 +151,7 @@ if __name__ == '__main__':
       hadTau_selection                      = hadTau_selection,
       hadTau_charge_selections              = [ "disabled" ],
       applyFakeRateWeights                  = applyFakeRateWeights,
-      chargeSumSelections                   = [ "OS"] if mode == "forBDTtraining" else [ "OS", "SS" ],
+      chargeSumSelections                   = [ "OS" ] if mode.find("forBDTtraining") != -1 else [ "OS", "SS" ],
       central_or_shifts                     = central_or_shift,
       max_files_per_job                     = max_files_per_job,
       era                                   = era,
