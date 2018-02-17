@@ -22,7 +22,7 @@ RecoJetWriter::RecoJetWriter(int era,
                              const std::string & branchName_obj)
   : era_(era)
   , isMC_(isMC)
-  , max_nJets_(32)
+  , max_nJets_(64)
   , branchName_num_(branchName_num)
   , branchName_obj_(branchName_obj)
   , genLeptonWriter_(nullptr)

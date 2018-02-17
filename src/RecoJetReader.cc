@@ -23,7 +23,7 @@ RecoJetReader::RecoJetReader(int era,
                              bool readGenMatching)
   : era_(era)
   , isMC_(isMC)
-  , max_nJets_(128)
+  , max_nJets_(256)
   , branchName_num_(Form("n%s", branchName_obj.data()))
   , branchName_obj_(branchName_obj)
   , genLeptonReader_(nullptr)
