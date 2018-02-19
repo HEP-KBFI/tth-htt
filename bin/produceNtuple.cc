@@ -645,6 +645,13 @@ int main(int argc, char* argv[])
       {{preselLeptons, fakeableLeptons, tightLeptons}}, {{selBJets_loose, selBJets_medium}}, cleanedHadTaus
     );
 
+//--- sort the collections by their pT so that if we hit the limit of maximum number of objects
+//--- in the Writer classes, we will drop the softer objects
+    std::sort(preselMuons.begin(),     preselMuons.end(),     isHigherPt);
+    std::sort(preselElectrons.begin(), preselElectrons.end(), isHigherPt);
+    std::sort(fakeableHadTaus.begin(), fakeableHadTaus.end(), isHigherPt);
+    std::sort(selJets.begin(),         selJets.end(),         isHigherPt);
+
     eventInfoWriter.write(eventInfo);
     muonWriter->write(preselMuons);
     electronWriter->write(preselElectrons);
