@@ -13,7 +13,7 @@ JetHistManagerAK12::JetHistManagerAK12(const edm::ParameterSet & cfg)
 void
 JetHistManagerAK12::bookHistograms(TFileDirectory & dir)
 {
-  histogram_pt_             = book1D(dir, "pt",             "pt",              40,  0.,  200.);
+  histogram_pt_             = book1D(dir, "pt",             "pt",              50,  0.,  500.);
   histogram_eta_            = book1D(dir, "eta",            "eta",             46, -2.3,  +2.3);
   histogram_phi_            = book1D(dir, "phi",            "phi",             36, -TMath::Pi(), +TMath::Pi());
   histogram_mass_           = book1D(dir, "mass",           "mass",            40,  0.,    2.);
