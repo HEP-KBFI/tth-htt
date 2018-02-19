@@ -22,7 +22,7 @@ RecoJetWriter::RecoJetWriter(int era,
                              const std::string & branchName_obj)
   : era_(era)
   , isMC_(isMC)
-  , max_nJets_(64)
+  , max_nJets_(32)
   , branchName_num_(branchName_num)
   , branchName_obj_(branchName_obj)
   , genLeptonWriter_(nullptr)
@@ -122,8 +122,20 @@ RecoJetWriter::write(const std::vector<const RecoJet *> & jets)
   nJets_ = jets.size();
   if(nJets_ > max_nJets_)
   {
-    throw cmsException(this, __func__, __LINE__)
-      << "Number of jets to be written " << nJets_ << " exceeds the maximum number of jets " << max_nJets_;
+    std::cout << "Warning: limiting the number of jets to be written from " << nJets_
+              << " jets to " << max_nJets_ << " jets\n"
+              << "Dropping the following jets:\n"
+    ;
+    nJets_ = max_nJets_;
+    for(unsigned idxJet = nJets_ + 1; idxJet < jets.size(); ++idxJet)
+    {
+      std::cout << '#' << idxJet << " jet: " << *(jets[idxJet]) << '\n';
+    }
+    std::cout << "But keeping these jets:\n";
+    for(unsigned idxJet = 0; idxJet < nJets_; ++idxJet)
+    {
+      std::cout << '#' << idxJet << " jet: " << *(jets[idxJet]) << '\n';
+    }
   }
   for(UInt_t idxJet = 0; idxJet < nJets_; ++idxJet)
   {
@@ -163,9 +175,9 @@ RecoJetWriter::writeGenMatching(const std::vector<const RecoJet *> & jets)
   std::vector<GenParticle> matched_genHadTaus;
   std::vector<GenParticle> matched_genJets;
 
-  assert(nJets_ == jets.size());
-  for(const RecoJet * jet: jets)
+  for(unsigned idxJet = 0; idxJet < nJets_; ++idxJet)
   {
+    const RecoJet * const jet = jets[idxJet];
     assert(jet);
     const GenLepton * matched_genLepton = jet->genLepton();
     if(matched_genLepton) matched_genLeptons.push_back(*reinterpret_cast<const GenParticle *>(matched_genLepton));
