@@ -55,6 +55,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMEtWriter.h" // RecoMEtWriter
 #include "tthAnalysis/HiggsToTauTau/interface/GenParticleWriter.h" // GenParticleWriter
 #include "tthAnalysis/HiggsToTauTau/interface/MEMPermutationWriter.h" // MEMPermutationWriter
+#include "tthAnalysis/HiggsToTauTau/interface/EventInfoWriter.h" // EventInfoWriter
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // isHigherPt, random_start
 #include "tthAnalysis/HiggsToTauTau/interface/RunLumiEventSelector.h" // RunLumiEventSelector
 #include "tthAnalysis/HiggsToTauTau/interface/cutFlowTable.h" // cutFlowTableType
@@ -308,10 +309,8 @@ int main(int argc, char* argv[])
   }
   TTree* outputTree = new TTree(outputTreeName.data(), outputTreeName.data());
 
-  BranchAddressInitializer bai(inputTree);
-  bai.setBranch(eventInfo.run, eventInfoReader.branchName_event);
-  bai.setBranch(eventInfo.lumi, eventInfoReader.branchName_lumi);
-  bai.setBranch(eventInfo.event, eventInfoReader.branchName_event);
+  EventInfoWriter eventInfoWriter(false, false, false);
+  eventInfoWriter.setBranches(outputTree);
 
   std::string branchName_muons = branchName_muons_in;
   RecoMuonWriter* muonWriter = new RecoMuonWriter(era, Form("n%s", branchName_muons.data()), branchName_muons);
@@ -376,6 +375,9 @@ int main(int argc, char* argv[])
 
   const std::vector<std::string> outputCommands_string = {
     "keep *",
+    Form("drop %s", eventInfoWriter.getBranchName_run().data()),
+    Form("drop %s", eventInfoWriter.getBranchName_lumi().data()),
+    Form("drop %s", eventInfoWriter.getBranchName_event().data()),
     Form("drop n%s*", branchName_muons_in.data()),
     Form("drop %s_*", branchName_muons_in.data()),
     Form("drop n%s*", branchName_electrons_in.data()),
@@ -643,6 +645,7 @@ int main(int argc, char* argv[])
       {{preselLeptons, fakeableLeptons, tightLeptons}}, {{selBJets_loose, selBJets_medium}}, cleanedHadTaus
     );
 
+    eventInfoWriter.write(eventInfo);
     muonWriter->write(preselMuons);
     electronWriter->write(preselElectrons);
     hadTauWriter->write(fakeableHadTaus);
