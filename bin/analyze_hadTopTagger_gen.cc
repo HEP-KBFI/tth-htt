@@ -107,8 +107,9 @@ const int hadTauSelection_antiMuon = -1; // not applied
 void dumpGenParticles(const std::string& label, const std::vector<GenParticle>& particles)
 {
   for ( size_t idxParticle = 0; idxParticle < particles.size(); ++idxParticle ) {
-    std::cout << label << " #" << idxParticle << ":" << std::endl;
+    std::cout << label << " #" << idxParticle << ":" << " ";
     std::cout << particles[idxParticle];
+    std::cout << std::endl;
   }
 }
 
@@ -341,6 +342,18 @@ int main(int argc, char* argv[])
 
   bool redoGenMatching = cfg_analyze.getParameter<bool>("redoGenMatching");
 
+  std::string selEventsFileName_input = cfg_analyze.getParameter<std::string>("selEventsFileName_input");
+  std::cout << "selEventsFileName_input = " << selEventsFileName_input << std::endl;
+  RunLumiEventSelector* run_lumi_eventSelector = 0;
+  if ( selEventsFileName_input != "" ) {
+    edm::ParameterSet cfgRunLumiEventSelector;
+    cfgRunLumiEventSelector.addParameter<std::string>("inputFileName", selEventsFileName_input);
+    cfgRunLumiEventSelector.addParameter<std::string>("separator", ":");
+    run_lumi_eventSelector = new RunLumiEventSelector(cfgRunLumiEventSelector);
+  }
+
+  std::string selEventsFileName_output = cfg_analyze.getParameter<std::string>("selEventsFileName_output");
+
   fwlite::InputSource inputFiles(cfg);
   int maxEvents = inputFiles.maxEvents();
   std::cout << " maxEvents = " << maxEvents << std::endl;
@@ -507,8 +520,16 @@ int main(int argc, char* argv[])
   TH1* histogram_AK12_WJet2_ptRec_div_ptGen = fs.make<TH1D>("AK12_WJet2_ptRec_div_ptGen", "AK12_WJet2_ptRec_div_ptGen", 200, 0., 2.);
   TH1* histogram_AK12_WJet2_dRmatch = fs.make<TH1D>("AK12_WJet2_dRmatch", "AK12_WJet2_dRmatch", 100, 0., 1.);
   
-  while ( inputTree -> hasNextEvent() )
+//--- open output file containing run:lumi:event numbers of events passing final event selection criteria
+  std::ostream* selEventsFile = ( selEventsFileName_output != "" ) ? new std::ofstream(selEventsFileName_output.data(), std::ios::out) : 0;
+  std::cout << "selEventsFileName_output = " << selEventsFileName_output << std::endl;
+
+  while(inputTree -> hasNextEvent() && (! run_lumi_eventSelector || (run_lumi_eventSelector && ! run_lumi_eventSelector -> areWeDone())))
   {
+    if ( isDEBUG ) {
+      std::cout << "processing run = " << eventInfo.run << ", ls = " << eventInfo.lumi << ", event = " << eventInfo.event << std::endl;
+    }
+
     if(inputTree -> canReport(reportEvery))
     {
       std::cout << "processing Entry " << inputTree -> getCurrentMaxEventIdx()
@@ -519,6 +540,11 @@ int main(int argc, char* argv[])
     }
     ++analyzedEntries;
     histogram_analyzedEntries->Fill(0.);
+
+    if (run_lumi_eventSelector && !(*run_lumi_eventSelector)(eventInfo))
+    {
+      continue;
+    }
 
     bool isTriggered_1e = hltPaths_isTriggered(triggers_1e) || (isMC && !apply_trigger_bits);
     bool isTriggered_2e = hltPaths_isTriggered(triggers_2e) || (isMC && !apply_trigger_bits);
@@ -579,16 +605,16 @@ int main(int argc, char* argv[])
     else if ( leptonSelection == kFakeable ) selMuons = fakeableMuons;
     else if ( leptonSelection == kTight    ) selMuons = tightMuons;
     else assert(0);
-    if ( isDEBUG ) {
-      for ( size_t idxPreselMuon = 0; idxPreselMuon < preselMuons.size(); ++idxPreselMuon ) {
-        std::cout << "preselMuon #" << idxPreselMuon << ":" << std::endl;
-        std::cout << (*preselMuons[idxPreselMuon]);
-      }
-      for ( size_t idxSelMuon = 0; idxSelMuon < selMuons.size(); ++idxSelMuon ) {
-        std::cout << "selMuon #" << idxSelMuon << ":" << std::endl;
-        std::cout << (*selMuons[idxSelMuon]);
-      }
-    }
+    //if ( isDEBUG ) {
+    //  for ( size_t idxPreselMuon = 0; idxPreselMuon < preselMuons.size(); ++idxPreselMuon ) {
+    //    std::cout << "preselMuon #" << idxPreselMuon << ":" << std::endl;
+    //    std::cout << (*preselMuons[idxPreselMuon]);
+    //  }
+    //  for ( size_t idxSelMuon = 0; idxSelMuon < selMuons.size(); ++idxSelMuon ) {
+    //    std::cout << "selMuon #" << idxSelMuon << ":" << std::endl;
+    //    std::cout << (*selMuons[idxSelMuon]);
+    //  }
+    //}
 
     std::vector<RecoElectron> electrons = electronReader->read();
     std::vector<const RecoElectron*> electron_ptrs = convert_to_ptrs(electrons);
@@ -601,16 +627,16 @@ int main(int argc, char* argv[])
     else if ( leptonSelection == kFakeable ) selElectrons = fakeableElectrons;
     else if ( leptonSelection == kTight    ) selElectrons = tightElectrons;
     else assert(0);
-    if ( isDEBUG ) {
-      for ( size_t idxPreselElectron = 0; idxPreselElectron < preselElectrons.size(); ++idxPreselElectron ) {
-        std::cout << "preselElectron #" << idxPreselElectron << ":" << std::endl;
-        std::cout << (*preselElectrons[idxPreselElectron]);
-      }
-      for ( size_t idxSelElectron = 0; idxSelElectron < selElectrons.size(); ++idxSelElectron ) {
-        std::cout << "selElectron #" << idxSelElectron << ":" << std::endl;
-        std::cout << (*selElectrons[idxSelElectron]);
-      }
-    }
+    //if ( isDEBUG ) {
+    //  for ( size_t idxPreselElectron = 0; idxPreselElectron < preselElectrons.size(); ++idxPreselElectron ) {
+    //    std::cout << "preselElectron #" << idxPreselElectron << ":" << std::endl;
+    //    std::cout << (*preselElectrons[idxPreselElectron]);
+    //  }
+    //  for ( size_t idxSelElectron = 0; idxSelElectron < selElectrons.size(); ++idxSelElectron ) {
+    //    std::cout << "selElectron #" << idxSelElectron << ":" << std::endl;
+    //    std::cout << (*selElectrons[idxSelElectron]);
+    //  }
+    //}
 
     std::vector<const RecoLepton*> selLeptons;
     selLeptons.reserve(selElectrons.size() + selMuons.size());
@@ -628,16 +654,16 @@ int main(int argc, char* argv[])
     else if ( hadTauSelection == kFakeable ) selHadTaus = fakeableHadTaus;
     else if ( hadTauSelection == kTight    ) selHadTaus = tightHadTaus;
     else assert(0);
-    if ( isDEBUG ) {
-      for ( size_t idxPreselHadTau = 0; idxPreselHadTau < preselHadTaus.size(); ++idxPreselHadTau ) {
-        std::cout << "preselHadTau #" << idxPreselHadTau << ":" << std::endl;
-        std::cout << (*preselHadTaus[idxPreselHadTau]);
-      }
-      for ( size_t idxSelHadTau = 0; idxSelHadTau < selHadTaus.size(); ++idxSelHadTau ) {
-        std::cout << "selHadTau #" << idxSelHadTau << ":" << std::endl;
-        std::cout << (*selHadTaus[idxSelHadTau]);
-      }
-    }
+    //if ( isDEBUG ) {
+    //  for ( size_t idxPreselHadTau = 0; idxPreselHadTau < preselHadTaus.size(); ++idxPreselHadTau ) {
+    //    std::cout << "preselHadTau #" << idxPreselHadTau << ":" << std::endl;
+    //    std::cout << (*preselHadTaus[idxPreselHadTau]);
+    //  }
+    //  for ( size_t idxSelHadTau = 0; idxSelHadTau < selHadTaus.size(); ++idxSelHadTau ) {
+    //    std::cout << "selHadTau #" << idxSelHadTau << ":" << std::endl;
+    //    std::cout << (*selHadTaus[idxSelHadTau]);
+    //  }
+    //}
     selHadTaus = pickFirstNobjects(selHadTaus, 1);
 
 //--- build collections of jets and select subset of jets passing b-tagging criteria
@@ -952,6 +978,10 @@ int main(int argc, char* argv[])
     }
     cutFlowTable_2lss_1tau.update("met LD > 0.2", evtWeight);
 
+    if ( selEventsFile ) {
+      (*selEventsFile) << eventInfo.run << ':' << eventInfo.lumi << ':' << eventInfo.event << '\n';
+    }
+
 //--- build collections of generator level particles
     std::vector<GenParticle> genTopQuarks = genTopQuarkReader->read();
     std::vector<GenParticle> genBJets = genBJetReader->read();
@@ -963,16 +993,28 @@ int main(int argc, char* argv[])
       dumpGenParticles("genBJet", genBJets);
       dumpGenParticles("genWBoson", genWBosons);
       dumpGenParticles("genWJet", genWJets);
-      std::cout << std::endl;
     }
 
-    if ( !(genTopQuarks.size() == 2) ) continue;
+    if ( !(genTopQuarks.size() == 2) ) {
+      if ( isDEBUG ) std::cout << "FAILS '2 genTopQuarks' cut !!" << std::endl;
+      continue;      
+    }
     cutFlowTable_2lss_1tau.update("2 genTopQuarks");
-    if ( !(genBJets.size() == 2) ) continue;
+    if ( !(genBJets.size() == 2) ) {
+      if ( isDEBUG ) std::cout << "FAILS '2 genBJets' cut !!" << std::endl;
+      continue;
+    }
     cutFlowTable_2lss_1tau.update("2 genBJets");
-    if ( !(genWBosons.size() >= 2) ) continue; // CV: do not veto events in which Higgs boson decays into W bosons
+    if ( !(genWBosons.size() >= 2) ) { // CV: do not veto events in which Higgs boson decays into W bosons
+      if ( isDEBUG ) std::cout << "FAILS '>= 2 genWBosons' cut !!" << std::endl;
+      continue; 
+    }
     cutFlowTable_2lss_1tau.update(">= 2 genWBosons");
-    if ( !(genWJets.size() >= 2) ) continue;
+    std::cout << "#genWJets = " << genWJets.size() << std::endl;
+    if ( !(genWJets.size() >= 2) ) {
+      if ( isDEBUG ) std::cout << "FAILS '>= 2 genWJets' cut !!" << std::endl;
+      continue;    
+    }
     cutFlowTable_2lss_1tau.update(">= 2 genWJets");
 
     const GenParticle* genTopQuark = 0;
@@ -982,31 +1024,97 @@ int main(int argc, char* argv[])
       if ( it->pdgId() == +6 && !genTopQuark     ) genTopQuark = &(*it);
       if ( it->pdgId() == -6 && !genAntiTopQuark ) genAntiTopQuark = &(*it);
     }
-    if ( !(genTopQuark && genAntiTopQuark) ) continue;
+    if ( !(genTopQuark && genAntiTopQuark) ) {
+      if ( isDEBUG ) std::cout << "FAILS 'genTopQuark && genAntiTopQuark' cut !!" << std::endl;
+      continue;
+    }
     cutFlowTable_2lss_1tau.update("genTopQuark && genAntiTopQuark");
     
-    const GenParticle* genBJetFromTop = 0;
-    const GenParticle* genBJetFromAntiTop = 0;
+    std::vector<const GenParticle*> genBJetsFromTop;
+    std::vector<const GenParticle*> genBJetsFromAntiTop;
     for ( std::vector<GenParticle>::const_iterator it = genBJets.begin();
 	  it != genBJets.end(); ++it ) {
-      if ( it->pdgId() == +5 && !genBJetFromTop     ) genBJetFromTop = &(*it);
-      if ( it->pdgId() == -5 && !genBJetFromAntiTop ) genBJetFromAntiTop = &(*it);
+      if ( it->pdgId() == +5 ) genBJetsFromTop.push_back(&(*it));
+      if ( it->pdgId() == -5 ) genBJetsFromAntiTop.push_back(&(*it));
     }
-    if ( !(genBJetFromTop && genBJetFromAntiTop) ) continue;
+    if ( !(genBJetsFromTop.size() >= 1 && genBJetsFromAntiTop.size() >= 1) ) {
+      if ( isDEBUG ) std::cout << "FAILS 'genBJetFromTop && genBJetFromAntiTop' cut !!" << std::endl;
+      continue;
+    }
     cutFlowTable_2lss_1tau.update("genBJetFromTop && genBJetFromAntiTop");
-    
-    const GenParticle* genWBosonFromTop = 0;
-    const GenParticle* genWBosonFromAntiTop = 0;
+
+    std::vector<const GenParticle*> genWBosonsFromTop;
+    std::vector<const GenParticle*> genWBosonsFromAntiTop;
     for ( std::vector<GenParticle>::const_iterator it = genWBosons.begin();
 	  it != genWBosons.end(); ++it ) {
-      if ( it->pdgId() == +24 && !genWBosonFromTop     ) genWBosonFromTop = &(*it);
-      if ( it->pdgId() == -24 && !genWBosonFromAntiTop ) genWBosonFromAntiTop = &(*it);
+      if ( it->pdgId() == +24 ) genWBosonsFromTop.push_back(&(*it));
+      if ( it->pdgId() == -24 ) genWBosonsFromAntiTop.push_back(&(*it));
     }
-    if ( !(genWBosonFromTop && genWBosonFromAntiTop) ) continue;
+    if ( !(genWBosonsFromTop.size() >= 1 && genWBosonsFromAntiTop.size() >= 1) ) {
+      if ( isDEBUG ) std::cout << "FAILS 'genWBosonFromTop && genWBosonFromAntiTop' cut !!" << std::endl;
+      continue;
+    }
     cutFlowTable_2lss_1tau.update("genWBosonFromTop && genWBosonFromAntiTop");
-    if ( !(std::fabs((genBJetFromTop->p4() + genWBosonFromTop->p4()).mass() - genTopQuark->mass()) < 15.) ) continue;
+    
+    const GenParticle* genBJetFromTop = 0;
+    const GenParticle* genWBosonFromTop = 0;
+    double genBJet_plus_WBosonMassFromTop = -1.;
+    for ( std::vector<const GenParticle*>::const_iterator genBJet = genBJetsFromTop.begin();
+	  genBJet != genBJetsFromTop.end(); ++genBJet ) {
+      for ( std::vector<const GenParticle*>::const_iterator genWBoson = genWBosonsFromTop.begin();
+	    genWBoson != genWBosonsFromTop.end(); ++genWBoson ) {
+	double genBJet_plus_WBosonMass = ((*genBJet)->p4() + (*genWBoson)->p4()).mass();
+	if ( std::fabs(genBJet_plus_WBosonMass - genTopQuark->mass()) < std::fabs(genBJet_plus_WBosonMassFromTop - genTopQuark->mass())  ||
+	     !(genBJetFromTop && genWBosonFromTop) ) {
+	  genBJetFromTop = (*genBJet);
+	  genWBosonFromTop = (*genWBoson);
+	  genBJet_plus_WBosonMassFromTop = genBJet_plus_WBosonMass;
+	}
+      }
+    }
+    if ( !(std::fabs((genBJetFromTop->p4() + genWBosonFromTop->p4()).mass() - genTopQuark->mass()) < 15.) ) {
+      if ( isDEBUG ) {
+	std::cout << "FAILS 'genTopQuark mass' cut !!" << std::endl;
+	//std::cout << "genTopQuark: pT = " << genTopQuark->pt() << ", eta = " << genTopQuark->eta() << "," 
+	//	    << " phi = " << genTopQuark->phi() << ", mass = " << genTopQuark->mass() << std::endl;
+	//std::cout << "genBJetFromTop: pT = " << genBJetFromTop->pt() << ", eta = " << genBJetFromTop->eta() << "," 
+	//	    << " phi = " << genBJetFromTop->phi() << ", mass = " << genBJetFromTop->mass() << std::endl;
+	//std::cout << "genWBosonFromTop: pT = " << genWBosonFromTop->pt() << ", eta = " << genWBosonFromTop->eta() << "," 
+	//	    << " phi = " << genWBosonFromTop->phi() << ", mass = " << genWBosonFromTop->mass() << std::endl;
+	//std::cout << "(mass of genBJetFromTop + genWBosonFromTop = " << (genBJetFromTop->p4() + genWBosonFromTop->p4()).mass() << ")" << std::endl;
+      }
+      continue;
+    }
     cutFlowTable_2lss_1tau.update("genTopQuark mass");
-    if ( !(std::fabs((genBJetFromAntiTop->p4() + genWBosonFromAntiTop->p4()).mass() - genAntiTopQuark->mass()) < 15.) ) continue;
+    const GenParticle* genBJetFromAntiTop = 0;
+    const GenParticle* genWBosonFromAntiTop = 0;
+    double genBJet_plus_WBosonMassFromAntiTop = -1.;
+    for ( std::vector<const GenParticle*>::const_iterator genBJet = genBJetsFromAntiTop.begin();
+	  genBJet != genBJetsFromAntiTop.end(); ++genBJet ) {
+      for ( std::vector<const GenParticle*>::const_iterator genWBoson = genWBosonsFromAntiTop.begin();
+	    genWBoson != genWBosonsFromAntiTop.end(); ++genWBoson ) {
+	double genBJet_plus_WBosonMass = ((*genBJet)->p4() + (*genWBoson)->p4()).mass();
+	if ( std::fabs(genBJet_plus_WBosonMass - genAntiTopQuark->mass()) < std::fabs(genBJet_plus_WBosonMassFromAntiTop - genAntiTopQuark->mass())  ||
+	     !(genBJetFromAntiTop && genWBosonFromAntiTop) ) {
+	  genBJetFromAntiTop = (*genBJet);
+	  genWBosonFromAntiTop = (*genWBoson);
+	  genBJet_plus_WBosonMassFromAntiTop = genBJet_plus_WBosonMass;
+	}
+      }
+    }
+    if ( !(std::fabs((genBJetFromAntiTop->p4() + genWBosonFromAntiTop->p4()).mass() - genAntiTopQuark->mass()) < 15.) ) {
+      if ( isDEBUG ) {
+	std::cout << "FAILS 'genAntiTopQuark mass' cut !!" << std::endl;
+	//std::cout << "genAntiTopQuark: pT = " << genAntiTopQuark->pt() << ", eta = " << genAntiTopQuark->eta() << "," 
+	//	    << " phi = " << genAntiTopQuark->phi() << ", mass = " << genAntiTopQuark->mass() << std::endl;
+	//std::cout << "genBJetFromAntiTop: pT = " << genBJetFromAntiTop->pt() << ", eta = " << genBJetFromAntiTop->eta() << "," 
+	//	    << " phi = " << genBJetFromAntiTop->phi() << ", mass = " << genBJetFromAntiTop->mass() << std::endl;
+	//std::cout << "genWBosonFromAntiTop: pT = " << genWBosonFromAntiTop->pt() << ", eta = " << genWBosonFromAntiTop->eta() << "," 
+	//	    << " phi = " << genWBosonFromAntiTop->phi() << ", mass = " << genWBosonFromAntiTop->mass() << std::endl;
+	//std::cout << "(mass of genBJetFromAntiTop + genWBosonFromAntiTop = " << (genBJetFromAntiTop->p4() + genWBosonFromAntiTop->p4()).mass() << ")" << std::endl;
+      }
+      continue;
+    }
     cutFlowTable_2lss_1tau.update("genAntiTopQuark mass");
 
     std::vector<const GenParticle*> genWJetsFromTop;
@@ -1016,27 +1124,46 @@ int main(int argc, char* argv[])
     for ( std::vector<GenParticle>::const_iterator it1 = genWJets.begin(); it1 != genWJets.end(); ++it1 ) {
       for ( std::vector<GenParticle>::const_iterator it2 = it1 + 1;
 	    it2 != genWJets.end(); ++it2 ) {
-	if ( ((it1->charge() + it2->charge()) - genWBosonFromTop->charge()) < 1.e-2 ) {
-	  if ( genWJetsFromTop_mass == -1. ||
-	       std::fabs((it1->p4() + it2->p4()).mass() - genWBosonFromTop->mass()) < std::fabs(genWJetsFromTop_mass - genWBosonFromTop->mass()) ) {
+	double genDijetMass = (it1->p4() + it2->p4()).mass();
+	// CV: Matching the generator-level charge of the two quarks to the generator-level charge of the W boson is a bit cumbersome,
+	//     because charge of Particles is stored as integer in Ntuple, 
+	//     so only sign of charge is well defined for quarks (fractional charge is not supported!)
+	// 
+	//     For W->jj decays, the sign of the charge of both jets is equal to the sign of the charge of the W boson, 
+	//     i.e. the W boson decays either via
+	//       W+ -> up-type-quark (q = +2/3) + anti-down-type-quark (+1/3)
+	//     or via
+	//       W- -> anti-up-type-quark (q = -2/3) + down-type-quark (-1/3)
+	if ( boost::math::sign(it1->charge()) == boost::math::sign(genWBosonFromTop->charge()) && 
+	     boost::math::sign(it2->charge()) == boost::math::sign(genWBosonFromTop->charge()) ) {
+	  if ( std::fabs(genDijetMass - genWBosonFromTop->mass()) < 15. &&
+	       (genWJetsFromTop_mass == -1. ||
+		std::fabs(genDijetMass - genWBosonFromTop->mass()) < std::fabs(genWJetsFromTop_mass - genWBosonFromTop->mass())) ) {
 	    genWJetsFromTop.clear();
 	    genWJetsFromTop.push_back(&(*it1));
 	    genWJetsFromTop.push_back(&(*it2));
-	    genWJetsFromTop_mass = (it1->p4() + it2->p4()).mass();
+	    genWJetsFromTop_mass = genDijetMass;
 	  }
 	}
-	if ( ((it1->charge() + it2->charge()) - genWBosonFromAntiTop->charge()) < 1.e-2 ) {
-	  if ( genWJetsFromAntiTop_mass == -1. ||
-	       std::fabs((it1->p4() + it2->p4()).mass() - genWBosonFromAntiTop->mass()) < std::fabs(genWJetsFromAntiTop_mass - genWBosonFromAntiTop->mass()) ) {
+	if ( boost::math::sign(it1->charge()) == boost::math::sign(genWBosonFromAntiTop->charge()) && 
+	     boost::math::sign(it2->charge()) == boost::math::sign(genWBosonFromAntiTop->charge()) ) {
+	  if ( std::fabs(genDijetMass - genWBosonFromAntiTop->mass()) < 15. &&
+	       (genWJetsFromAntiTop_mass == -1. ||
+		std::fabs(genDijetMass - genWBosonFromAntiTop->mass()) < std::fabs(genWJetsFromAntiTop_mass - genWBosonFromAntiTop->mass())) ) {
 	    genWJetsFromAntiTop.clear();
 	    genWJetsFromAntiTop.push_back(&(*it1));
 	    genWJetsFromAntiTop.push_back(&(*it2));
-	    genWJetsFromAntiTop_mass = (it1->p4() + it2->p4()).mass();
+	    genWJetsFromAntiTop_mass = genDijetMass;
 	  }
 	}
       }
     }
-    if ( !(genWJetsFromTop.size() == 2 || genWJetsFromAntiTop.size() == 2) ) continue;
+    std::cout << "#genWJetsFromTop = " << genWJetsFromTop.size() << " (mass = " << genWJetsFromTop_mass << ")" << std::endl;
+    std::cout << "#genWJetsFromAntiTop = " << genWJetsFromAntiTop.size() << " (mass = " << genWJetsFromAntiTop_mass << ")" << std::endl;
+    if ( !(genWJetsFromTop.size() == 2 || genWJetsFromAntiTop.size() == 2) ) {
+      if ( isDEBUG ) std::cout << "FAILS '2 genWJetsFromTop || 2 genWJetsFromAntiTop' cut !!" << std::endl;
+      continue;
+    }
     cutFlowTable_2lss_1tau.update("2 genWJetsFromTop || 2 genWJetsFromAntiTop");
 
     const GenParticle* genWJetFromTop_lead = 0;
@@ -1048,7 +1175,16 @@ int main(int argc, char* argv[])
       genWJetFromTop_sublead = genWJetsFromTop[1];
       if ( !(std::fabs((genWJetFromTop_lead->p4() + genWJetFromTop_sublead->p4()).mass() - genWBosonFromTop->mass()) < 15.) ) failsWbosonMassVeto_top = true;
     }
-    if ( failsWbosonMassVeto_top ) continue;
+    std::cout << "genWBosonFromTop: mass = " << genWBosonFromTop->mass();
+    if ( genWJetFromTop_lead && genWJetFromTop_sublead ) {
+      std::cout << "," ;
+      std::cout << " mass of genWJetsFromTop = " << (genWJetFromTop_lead->p4() + genWJetFromTop_sublead->p4()).mass();
+    }
+    std::cout << std::endl;
+    if ( failsWbosonMassVeto_top ) {
+      if ( isDEBUG ) std::cout << "FAILS 'genWBosonFromTop mass' cut !!" << std::endl;
+      continue;
+    }
     cutFlowTable_2lss_1tau.update("genWBosonFromTop mass");
 
     const GenParticle* genWJetFromAntiTop_lead = 0;
@@ -1060,25 +1196,34 @@ int main(int argc, char* argv[])
       genWJetFromAntiTop_sublead = genWJetsFromAntiTop[1];
       if ( !(std::fabs((genWJetFromAntiTop_lead->p4() + genWJetFromAntiTop_sublead->p4()).mass() - genWBosonFromAntiTop->mass()) < 15.) ) failsWbosonMassVeto_antiTop = true;
     }
-    if ( failsWbosonMassVeto_antiTop ) continue;
+    std::cout << "genWBosonFromAntiTop: mass = " << genWBosonFromAntiTop->mass();
+    if ( genWJetFromAntiTop_lead && genWJetFromAntiTop_sublead ) {
+      std::cout << "," ;
+      std::cout << " mass of genWJetsFromAntiTop = " << (genWJetFromAntiTop_lead->p4() + genWJetFromAntiTop_sublead->p4()).mass();
+    }
+    std::cout << std::endl;
+    if ( failsWbosonMassVeto_antiTop ) {
+      if ( isDEBUG ) std::cout << "FAILS 'genWBosonFromAntiTop mass' cut !!" << std::endl;
+      continue;
+    }
     cutFlowTable_2lss_1tau.update("genWBosonFromAntiTop mass");
 
     if ( isDEBUG ) {
-      std::cout << "top:" << (*genTopQuark);
-      std::cout << " b:" << (*genBJetFromTop);
-      std::cout << " W:" << (*genWBosonFromTop);
+      std::cout << "top:" << (*genTopQuark) << std::endl;
+      std::cout << " b:" << (*genBJetFromTop) << std::endl;
+      std::cout << " W:" << (*genWBosonFromTop) << std::endl;
       if ( genWJetFromTop_lead && genWJetFromTop_sublead ) {
-	std::cout << " Wj1:" << (*genWJetFromTop_lead);
-	std::cout << " Wj2:" << (*genWJetFromTop_sublead);
+	std::cout << " Wj1:" << (*genWJetFromTop_lead) << std::endl;
+	std::cout << " Wj2:" << (*genWJetFromTop_sublead) << std::endl;
       } else {
 	std::cout << "(leptonic W decay)" << std::endl;
       }
-      std::cout << "anti-top:" << (*genAntiTopQuark);
-      std::cout << " b:" << (*genBJetFromAntiTop);
-      std::cout << " W:" << (*genWBosonFromAntiTop);
+      std::cout << "anti-top:" << (*genAntiTopQuark) << std::endl;
+      std::cout << " b:" << (*genBJetFromAntiTop) << std::endl;
+      std::cout << " W:" << (*genWBosonFromAntiTop) << std::endl;
       if ( genWJetFromAntiTop_lead && genWJetFromAntiTop_sublead ) {
-	std::cout << " Wj1:" << (*genWJetFromAntiTop_lead);
-	std::cout << " Wj2:" << (*genWJetFromAntiTop_sublead);
+	std::cout << " Wj1:" << (*genWJetFromAntiTop_lead) << std::endl;
+	std::cout << " Wj2:" << (*genWJetFromAntiTop_sublead) << std::endl;
       } else {
 	std::cout << "(leptonic W decay)" << std::endl;
       }
@@ -1091,6 +1236,7 @@ int main(int argc, char* argv[])
 	   (genBJetFromAntiTop         && 
 	    genWJetFromAntiTop_lead    && 
 	    genWJetFromAntiTop_sublead)) ) {
+      if ( isDEBUG ) std::cout << "FAILS 'genJet triplet' cut !!" << std::endl;
       continue;
     }
     cutFlowTable_2lss_1tau.update("genJet triplet");
@@ -1274,7 +1420,7 @@ int main(int argc, char* argv[])
 		double dR_sublead_3 = deltaR(genWJetFromAntiTop_sublead->p4(), recAntiTop->subJet3()->p4());
 		double dR2min = 1.e+3;
 		if ( (square(dR_b_1) + square(dR_lead_2) + square(dR_sublead_3)) < dR2min ) {
-		  if ( dR_b_1 < 0.1 && dR_lead_2 < 0.1 && dR_sublead_3 < 0.1 ) {
+		  if ( dR_b_1 < 0.2 && dR_lead_2 < 0.2 && dR_sublead_3 < 0.2 ) {
 		    recBJetFromAntiTop         = recAntiTop->subJet1();
 		    recWJetFromAntiTop_lead    = recAntiTop->subJet2();
 		    recWJetFromAntiTop_sublead = recAntiTop->subJet3();
@@ -1282,7 +1428,7 @@ int main(int argc, char* argv[])
 		  }
 		}
 		if ( (square(dR_b_1) + square(dR_lead_3) + square(dR_sublead_2)) < dR2min ) {
-		  if ( dR_b_1 < 0.1 && dR_lead_3 < 0.1 && dR_sublead_2 < 0.1 ) {
+		  if ( dR_b_1 < 0.2 && dR_lead_3 < 0.2 && dR_sublead_2 < 0.2 ) {
 		    recBJetFromAntiTop         = recAntiTop->subJet1();
 		    recWJetFromAntiTop_lead    = recAntiTop->subJet3();
 		    recWJetFromAntiTop_sublead = recAntiTop->subJet2();
@@ -1290,7 +1436,7 @@ int main(int argc, char* argv[])
 		  }
 		}
 		if ( (square(dR_b_2) + square(dR_lead_1) + square(dR_sublead_3)) < dR2min ) {
-		  if ( dR_b_2 < 0.1 && dR_lead_1 < 0.1 && dR_sublead_3 < 0.1 ) {
+		  if ( dR_b_2 < 0.2 && dR_lead_1 < 0.2 && dR_sublead_3 < 0.2 ) {
 		    recBJetFromAntiTop         = recAntiTop->subJet2();
 		    recWJetFromAntiTop_lead    = recAntiTop->subJet1();
 		    recWJetFromAntiTop_sublead = recAntiTop->subJet3();
@@ -1298,7 +1444,7 @@ int main(int argc, char* argv[])
 		  }
 		}
 		if ( (square(dR_b_2) + square(dR_lead_3) + square(dR_sublead_1)) < dR2min ) {
-		  if ( dR_b_2 < 0.1 && dR_lead_3 < 0.1 && dR_sublead_1 < 0.1 ) {
+		  if ( dR_b_2 < 0.2 && dR_lead_3 < 0.2 && dR_sublead_1 < 0.2 ) {
 		    recBJetFromAntiTop         = recAntiTop->subJet2();
 		    recWJetFromAntiTop_lead    = recAntiTop->subJet3();
 		    recWJetFromAntiTop_sublead = recAntiTop->subJet1();
@@ -1306,7 +1452,7 @@ int main(int argc, char* argv[])
 		  }
 		}
 		if ( (square(dR_b_3) + square(dR_lead_1) + square(dR_sublead_2)) < dR2min ) {
-		  if ( dR_b_3 < 0.1 && dR_lead_1 < 0.1 && dR_sublead_2 < 0.1 ) {
+		  if ( dR_b_3 < 0.2 && dR_lead_1 < 0.2 && dR_sublead_2 < 0.2 ) {
 		    recBJetFromAntiTop         = recAntiTop->subJet3();
 		    recWJetFromAntiTop_lead    = recAntiTop->subJet1();
 		    recWJetFromAntiTop_sublead = recAntiTop->subJet2();
@@ -1314,7 +1460,7 @@ int main(int argc, char* argv[])
 		  }
 		}
 		if ( (square(dR_b_3) + square(dR_lead_2) + square(dR_sublead_1)) < dR2min ) {
-		  if ( dR_b_3 < 0.1 && dR_lead_2 < 0.1 && dR_sublead_1 < 0.1 ) {
+		  if ( dR_b_3 < 0.2 && dR_lead_2 < 0.2 && dR_sublead_1 < 0.2 ) {
 		    recBJetFromAntiTop         = recAntiTop->subJet3();
 		    recWJetFromAntiTop_lead    = recAntiTop->subJet2();
 		    recWJetFromAntiTop_sublead = recAntiTop->subJet1();
@@ -1352,6 +1498,10 @@ int main(int argc, char* argv[])
 	}
       }
     }
+    
+    if ( isHTTv2FromTop || isHTTv2FromAntiTop ) {
+      cutFlowTable_2lss_1tau_HTTv2.update("rec HTTv2");
+    }
     //-------------------------------------------------------------------------------------------------------------------
     
     //-------------------------------------------------------------------------------------------------------------------
@@ -1362,6 +1512,9 @@ int main(int argc, char* argv[])
 
     cutFlowTable_2lss_1tau_AK12.update("genJet triplet");
     
+    bool isAK12FromTop = false;
+    bool isAK12FromAntiTop = false;
+
     if ( (genBJetFromTop                                        && genBJetFromTop->pt()         >  20. && 
 	  genWJetFromTop_lead && genWJetFromTop_sublead         && genWBosonFromTopP4.pt()      > 100.) ||
 	 (genBJetFromAntiTop                                    && genBJetFromAntiTop->pt()     >  20. && 
@@ -1424,12 +1577,12 @@ int main(int argc, char* argv[])
 		double dR_sublead_1 = deltaR(genWJetFromTop_sublead->p4(), recWBosonFromTop->subJet1()->p4());
 		double dR_sublead_2 = deltaR(genWJetFromTop_sublead->p4(), recWBosonFromTop->subJet2()->p4());
 		if ( (square(dR_lead_1) + square(dR_sublead_2)) < (square(dR_lead_2) + square(dR_sublead_1)) ) {
-		  if ( dR_lead_1 < 0.1 && dR_lead_2 < 0.1 ) {
+		  if ( dR_lead_1 < 0.2 && dR_sublead_2 < 0.2 ) {
 		    recWJetFromTop_lead = recWBosonFromTop->subJet1();
 		    recWJetFromTop_sublead = recWBosonFromTop->subJet2();
 		  }
 		} else {
-		  if ( dR_lead_2 < 0.1 && dR_lead_1 < 0.1 ) {
+		  if ( dR_lead_2 < 0.2 && dR_sublead_1 < 0.2 ) {
 		    recWJetFromTop_lead = recWBosonFromTop->subJet2();
 		    recWJetFromTop_sublead = recWBosonFromTop->subJet1();
 		  }
@@ -1448,6 +1601,7 @@ int main(int argc, char* argv[])
 		    fillWithOverFlow(histogram_AK12_WJet2_ptRec_div_ptGen, recWJetFromTop_sublead->pt()/genWJetFromTop_sublead->pt(), evtWeight);
 		    fillWithOverFlow(histogram_AK12_WJet2_dRmatch, deltaR(recWJetFromTop_sublead->p4(), genWJetFromTop_sublead->p4()), evtWeight);
 		  }
+		  isAK12FromTop = true;
 		}
 	      }
 
@@ -1459,12 +1613,12 @@ int main(int argc, char* argv[])
 		double dR_sublead_1 = deltaR(genWJetFromAntiTop_sublead->p4(), recWBosonFromAntiTop->subJet1()->p4());
 		double dR_sublead_2 = deltaR(genWJetFromAntiTop_sublead->p4(), recWBosonFromAntiTop->subJet2()->p4());
 		if ( (square(dR_lead_1) + square(dR_sublead_2)) < (square(dR_lead_2) + square(dR_sublead_1)) ) {
-		  if ( dR_lead_1 < 0.1 && dR_lead_2 < 0.1 ) {
+		  if ( dR_lead_1 < 0.2 && dR_sublead_2 < 0.2 ) {
 		    recWJetFromAntiTop_lead = recWBosonFromAntiTop->subJet1();
 		    recWJetFromAntiTop_sublead = recWBosonFromAntiTop->subJet2();
 		  }
 		} else {
-		  if ( dR_lead_2 < 0.1 && dR_lead_1 < 0.1 ) {
+		  if ( dR_lead_2 < 0.2 && dR_sublead_1 < 0.2 ) {
 		    recWJetFromAntiTop_lead = recWBosonFromAntiTop->subJet2();
 		    recWJetFromAntiTop_sublead = recWBosonFromAntiTop->subJet1();
 		  }
@@ -1483,11 +1637,19 @@ int main(int argc, char* argv[])
 		    fillWithOverFlow(histogram_AK12_WJet2_ptRec_div_ptGen, recWJetFromAntiTop_sublead->pt()/genWJetFromAntiTop_sublead->pt(), evtWeight);
 		    fillWithOverFlow(histogram_AK12_WJet2_dRmatch, deltaR(recWJetFromAntiTop_sublead->p4(), genWJetFromAntiTop_sublead->p4()), evtWeight);
 		  }
+		  isAK12FromAntiTop = true;
 		}
 	      }
 	    }
 	  }
 	}
+      }
+    }
+
+    if ( isAK12FromTop || isAK12FromAntiTop ) {
+      cutFlowTable_2lss_1tau_AK12.update("rec AK12");
+      if ( !(isHTTv2FromTop || isHTTv2FromAntiTop) ) {
+	cutFlowTable_2lss_1tau_AK12.update("rec AK12 && !HTTv2");
       }
     }
     //-------------------------------------------------------------------------------------------------------------------
@@ -1497,6 +1659,8 @@ int main(int argc, char* argv[])
     //         reconstructed by anti-kT algorithm with dR=0.4 (AK4)
 
     cutFlowTable_2lss_1tau_resolved.update("genJet triplet");
+
+    bool isResolved = false;
 
     if ( (genBJetFromTop             && genBJetFromTop->pt()          > 20. && 
 	  genWJetFromTop_lead        && genWJetFromTop_lead->pt()     > 20. &&
@@ -1651,43 +1815,53 @@ int main(int argc, char* argv[])
 		     (selBJetFromAntiTop         && 
 		      selWJetFromAntiTop_lead    && 
 		      selWJetFromAntiTop_sublead) ) {
-		  continue;
-		}
-		cutFlowTable_2lss_1tau_resolved.update("selJet triplet");
-
-		if ( (selBJetFromTop                                                                && 
-		      selWJetFromTop_lead                                                           && 
-		      selWJetFromTop_sublead                                                        &&
-		      deltaR(selBJetFromTop->p4(),          selWJetFromTop_lead->p4())        > 0.3 && 
-		      deltaR(selBJetFromTop->p4(),          selWJetFromTop_sublead->p4())     > 0.3 && 
-		      deltaR(selWJetFromTop_lead->p4(),     selWJetFromTop_sublead->p4())     > 0.3) ||
-		     (selBJetFromAntiTop                                                            && 
-		      selWJetFromAntiTop_lead                                                       && 
-		      selWJetFromAntiTop_sublead                                                    &&
-		      deltaR(selBJetFromAntiTop->p4(),      selWJetFromAntiTop_lead->p4())    > 0.3 && 
-		      deltaR(selBJetFromAntiTop->p4(),      selWJetFromAntiTop_sublead->p4()) > 0.3 && 
-		      deltaR(selWJetFromAntiTop_lead->p4(), selWJetFromAntiTop_sublead->p4()) > 0.3) ) {
-		  cutFlowTable_2lss_1tau_resolved.update("dR(jet1,jet2) > 0.3 for any pair of selJets in triplet");
-
-		  bool selBJetFromTop_passesLoose = false;
-		  bool selBJetFromAntiTop_passesLoose = false;
-		  for ( std::vector<const RecoJet*>::const_iterator selBJet_loose = selBJets_loose.begin();
-			selBJet_loose != selBJets_loose.end(); ++selBJet_loose ) {
-		    if ( selBJetFromTop && deltaR(selBJetFromTop->p4(), (*selBJet_loose)->p4()) < 0.3 ) {
-		      selBJetFromTop_passesLoose = true;
+		  cutFlowTable_2lss_1tau_resolved.update("selJet triplet");
+		  
+		  if ( (selBJetFromTop                                                                && 
+			selWJetFromTop_lead                                                           && 
+			selWJetFromTop_sublead                                                        &&
+			deltaR(selBJetFromTop->p4(),          selWJetFromTop_lead->p4())        > 0.3 && 
+			deltaR(selBJetFromTop->p4(),          selWJetFromTop_sublead->p4())     > 0.3 && 
+			deltaR(selWJetFromTop_lead->p4(),     selWJetFromTop_sublead->p4())     > 0.3) ||
+		       (selBJetFromAntiTop                                                            && 
+			selWJetFromAntiTop_lead                                                       && 
+			selWJetFromAntiTop_sublead                                                    &&
+			deltaR(selBJetFromAntiTop->p4(),      selWJetFromAntiTop_lead->p4())    > 0.3 && 
+			deltaR(selBJetFromAntiTop->p4(),      selWJetFromAntiTop_sublead->p4()) > 0.3 && 
+			deltaR(selWJetFromAntiTop_lead->p4(), selWJetFromAntiTop_sublead->p4()) > 0.3) ) {
+		    cutFlowTable_2lss_1tau_resolved.update("dR(jet1,jet2) > 0.3 for any pair of selJets in triplet");
+		    
+		    bool selBJetFromTop_passesLoose = false;
+		    bool selBJetFromAntiTop_passesLoose = false;
+		    for ( std::vector<const RecoJet*>::const_iterator selBJet_loose = selBJets_loose.begin();
+			  selBJet_loose != selBJets_loose.end(); ++selBJet_loose ) {
+		      if ( selBJetFromTop && deltaR(selBJetFromTop->p4(), (*selBJet_loose)->p4()) < 0.3 ) {
+			selBJetFromTop_passesLoose = true;
+		      }
+		      if ( selBJetFromAntiTop && deltaR(selBJetFromAntiTop->p4(), (*selBJet_loose)->p4()) < 0.3 ) {
+			selBJetFromAntiTop_passesLoose = true;
+		      }
 		    }
-		    if ( selBJetFromAntiTop && deltaR(selBJetFromAntiTop->p4(), (*selBJet_loose)->p4()) < 0.3 ) {
-		      selBJetFromAntiTop_passesLoose = true;
+		    if ( selBJetFromTop_passesLoose || selBJetFromAntiTop_passesLoose ) {
+		      cutFlowTable_2lss_1tau_resolved.update(">= 1 selBJet passes loose b-tagging working-point");
+		      
+		      isResolved = true;
 		    }
 		  }
-		  if ( !(selBJetFromTop_passesLoose || selBJetFromAntiTop_passesLoose) ) {
-		    continue;
-		  }
-		  cutFlowTable_2lss_1tau_resolved.update(">= 1 selBJet passes loose b-tagging working-point");
 		}
 	      }
 	    }
 	  }
+	}
+      }
+    }
+
+    if ( isResolved ) {
+      cutFlowTable_2lss_1tau_resolved.update("rec resolved");
+      if ( !(isHTTv2FromTop || isHTTv2FromAntiTop) ) {
+	cutFlowTable_2lss_1tau_resolved.update("rec resolved && !HTTv2");
+	if ( !(isAK12FromTop || isAK12FromAntiTop) ) {
+	  cutFlowTable_2lss_1tau_resolved.update("rec resolved && !HTTv2 && !AK12");
 	}
       }
     }
