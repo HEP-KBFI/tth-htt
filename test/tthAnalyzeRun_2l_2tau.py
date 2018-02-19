@@ -48,7 +48,7 @@ if mode == "VHbb":
   else:
     from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2015 import samples_2015
     from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016 import samples_2016
-  hadTau_selection     =  "dR03mvaVTight" # "dR03mvaMedium" #
+  hadTau_selection     =  "dR03mvaVTight" # "dR03mvaVVLoose" #  "dR03mvaMedium" #
   applyFakeRateWeights = "4L"
 elif mode.find("forBDTtraining") != -1 :
   if mode == "forBDTtraining" :
