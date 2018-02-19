@@ -21,6 +21,27 @@ public:
   void
   write(const EventInfo & eventInfo);
 
+  std::string
+  getBranchName_run() const;
+
+  std::string
+  getBranchName_lumi() const;
+
+  std::string
+  getBranchName_event() const;
+
+  std::string
+  getBranchName_genHiggsDecayMode() const;
+
+  std::string
+  getBranchName_genWeight() const;
+
+  std::string
+  getBranchName_genWeight_tH() const;
+
+  std::string
+  getBranchName_pileupWeight() const;
+
 protected:
   std::string branchName_run_;
   std::string branchName_lumi_;
