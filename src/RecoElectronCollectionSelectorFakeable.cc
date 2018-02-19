@@ -11,15 +11,14 @@ RecoElectronSelectorFakeable::RecoElectronSelectorFakeable(int era,
   , set_selection_flags_(set_selection_flags)
   , apply_offline_e_trigger_cuts_(true)
   , tightElectronSelector_(era_, index, debug, false)
-  , min_pt_(10.)
+  , min_cone_pt_(10.)
+  , min_lepton_pt_(7.)
   , max_absEta_(2.5)
   , max_dxy_(0.05)
   , max_dz_(0.1)
   , max_relIso_(0.4)
   , max_sip3d_(8.)
-  , min_mvaRawPOG_vlow_({ -0.30,-0.46,-0.63 })
-  , min_mvaRawPOG_low_({ -0.86,-0.85,-0.81 })
-  , min_mvaRawPOG_high_({ -0.96,-0.96,-0.95 })
+  , min_mvaRawPOG_({ 0.0, 0.0, 0.7 })
   , binning_absEta_({ 0.8, 1.479 })
   , min_pt_trig_(30.)
   , max_sigmaEtaEta_trig_({ 0.011, 0.011, 0.030 })
@@ -42,9 +41,7 @@ RecoElectronSelectorFakeable::RecoElectronSelectorFakeable(int era,
     }
     default: throw cms::Exception("RecoElectronSelectorFakeable") << "Invalid era: " << era_;
   }
-  assert(min_mvaRawPOG_vlow_.size() == 3);
-  assert(min_mvaRawPOG_low_.size() == 3);
-  assert(min_mvaRawPOG_high_.size() == 3);
+  assert(min_mvaRawPOG_.size() == 3);
   assert(binning_absEta_.size() == 2);
   assert(max_sigmaEtaEta_trig_.size() == 3);
   assert(max_HoE_trig_.size() == 3);
@@ -71,11 +68,8 @@ RecoElectronSelectorFakeable::disable_offline_e_trigger_cuts()
 bool
 RecoElectronSelectorFakeable::operator()(const RecoElectron & electron) const
 {
-  // CV: use original lepton pT instead of mixing lepton pT and cone_pT, as discussed on slide 2 of 
-  //     https://indico.cern.ch/event/597028/contributions/2413742/attachments/1391684/2120220/16.12.22_ttH_Htautau_-_Review_of_systematics.pdf
-  const double pt = electron.pt();
-
-  if(pt >= min_pt_                                              &&
+  if(electron.cone_pt() >= min_cone_pt_                         &&
+     electron.lepton_pt() >= min_lepton_pt_                     &&
      electron.absEta() <= max_absEta_                           &&
      std::fabs(electron.dxy()) <= max_dxy_                      &&
      std::fabs(electron.dz()) <= max_dz_                        &&
@@ -88,23 +82,8 @@ RecoElectronSelectorFakeable::operator()(const RecoElectron & electron) const
                              (electron.absEta() <= binning_absEta_[1] ? 1 : 2)
     ;
 
-    double mvaRawPOGCut = -1;
-    double mvaRawPOG = -1;
-    if(electron.pt() <= 10)
-    {
-      mvaRawPOG = electron.mvaRawPOG_HZZ();
-      mvaRawPOGCut = min_mvaRawPOG_vlow_[idxBin_absEta];
-    }
-    else
-    {
-      const double a = min_mvaRawPOG_low_[idxBin_absEta];
-      const double b = min_mvaRawPOG_high_[idxBin_absEta];
-      const double c = (a - b) / 10;
-
-      // warning: the _high WP must be looser than the _low one
-      mvaRawPOGCut = std::min(a, std::max(b, a - c * (electron.pt() - 15)));
-      mvaRawPOG = electron.mvaRawPOG_GP();
-    }
+    double mvaRawPOG = electron.mvaRawPOG_HZZ();;
+    double mvaRawPOGCut = min_mvaRawPOG_[idxBin_absEta];
 
     if(mvaRawPOG >= mvaRawPOGCut)
     {
@@ -114,7 +93,7 @@ RecoElectronSelectorFakeable::operator()(const RecoElectron & electron) const
          electron.jetBtagCSV() <= max_jetBtagCSV_[idxBin_mvaTTH])
       {
         const bool isTight = tightElectronSelector_(electron);
-        if(pt <= min_pt_trig_ || ! apply_offline_e_trigger_cuts_)
+        if(electron.cone_pt() <= min_pt_trig_ || ! apply_offline_e_trigger_cuts_)
         {
           if(set_selection_flags_)
           {

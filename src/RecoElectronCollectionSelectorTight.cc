@@ -11,15 +11,13 @@ RecoElectronSelectorTight::RecoElectronSelectorTight(int era,
   , set_selection_flags_(set_selection_flags)
   , apply_offline_e_trigger_cuts_(true)
   , debug_(debug)
-  , min_pt_(10.) // 15 GeV for 2lss channel, 10 GeV for 3l channel (cf. Table 13 of AN-2015/321)
+  , min_pt_(7.)
   , max_absEta_(2.5)
   , max_dxy_(0.05)
   , max_dz_(0.1)
   , max_relIso_(0.4)
   , max_sip3d_(8.)
-  , min_mvaRawPOG_vlow_({ -0.30,-0.46,-0.63 })
-  , min_mvaRawPOG_low_({ -0.86,-0.85,-0.81 })
-  , min_mvaRawPOG_high_({ -0.96,-0.96,-0.95 })
+  , min_mvaRawPOG_({ 0.0, 0.0, 0.7 })
   , binning_absEta_({ 0.8, 1.479 })
   , min_pt_trig_(30.)
   , max_sigmaEtaEta_trig_({ 0.011, 0.011, 0.030 })
@@ -41,9 +39,7 @@ RecoElectronSelectorTight::RecoElectronSelectorTight(int era,
     }
     default: throw cmsException(this) << "Invalid era: " << era_;
   }
-  assert(min_mvaRawPOG_vlow_.size() == 3);
-  assert(min_mvaRawPOG_low_.size() == 3);
-  assert(min_mvaRawPOG_high_.size() == 3);
+  assert(min_mvaRawPOG_.size() == 3);
   assert(binning_absEta_.size() == 2);
   assert(max_sigmaEtaEta_trig_.size() == 3);
   assert(max_HoE_trig_.size() == 3);
@@ -170,33 +166,13 @@ RecoElectronSelectorTight::operator()(const RecoElectron & electron) const
                     (electron.absEta() <= binning_absEta_[1] ? 1 : 2)
   ;
 
-  if(electron.pt() <= 10)
+  if(electron.mvaRawPOG_HZZ() < min_mvaRawPOG_[idxBin])
   {
-    if(electron.mvaRawPOG_HZZ() < min_mvaRawPOG_vlow_[idxBin])
+    if(debug_)
     {
-      if(debug_)
-      {
-        std::cout << "FAILS mvaPOG HZZ >= " << min_mvaRawPOG_vlow_[idxBin] << " tight cut\n";
-      }
-      return false;
+      std::cout << "FAILS mvaPOG HZZ >= " << min_mvaRawPOG_[idxBin] << " tight cut\n";
     }
-  }
-  else
-  {
-    const double a = min_mvaRawPOG_low_[idxBin];
-    const double b = min_mvaRawPOG_high_[idxBin];
-    const double c = (a - b) / 10;
-
-    // warning: the _high WP must be looser than the _low one
-    const double cut = std::min(a, std::max(b, a - c * (electron.pt() - 15)));
-    if(electron.mvaRawPOG_GP() < cut)
-    {
-      if(debug_)
-      {
-        std::cout << "FAILS mvaPOG GP >= " << cut << " tight cut\n";
-      }
-      return false;
-    }
+    return false;
   }
   
   // extra cuts for electrons passing pT threshold of single electron trigger,

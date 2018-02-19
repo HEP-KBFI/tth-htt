@@ -10,7 +10,7 @@ RecoMuonSelectorTight::RecoMuonSelectorTight(int era,
   : era_(era)
   , set_selection_flags_(set_selection_flags)
   , debug_(debug)
-  , min_pt_(10.) // 15 GeV for 2lss channel, 10 GeV for 3l channel (cf. Table 13 of AN-2015/321)
+  , min_pt_(5.)
   , max_absEta_(2.4)
   , max_dxy_(0.05)
   , max_dz_(0.1)

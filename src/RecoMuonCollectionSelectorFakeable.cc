@@ -7,7 +7,8 @@ RecoMuonSelectorFakeable::RecoMuonSelectorFakeable(int era, int index, bool debu
   : era_(era)
   , set_selection_flags_(set_selection_flags)
   , tightMuonSelector_(era_, index, debug, false)
-  , min_pt_(10.)
+  , min_cone_pt_(10.)
+  , min_lepton_pt_(5.)
   , max_absEta_(2.4)
   , max_dxy_(0.05)
   , max_dz_(0.1)
@@ -32,9 +33,8 @@ RecoMuonSelectorFakeable::RecoMuonSelectorFakeable(int era, int index, bool debu
 bool
 RecoMuonSelectorFakeable::operator()(const RecoMuon & muon) const
 {
-  // CV: use original lepton pT instead of mixing lepton pT and cone_pT, as discussed on slide 2 of 
-  //     https://indico.cern.ch/event/597028/contributions/2413742/attachments/1391684/2120220/16.12.22_ttH_Htautau_-_Review_of_systematics.pdf
-  if(muon.pt()             >= min_pt_                 &&
+  if(muon.cone_pt()        >= min_cone_pt_            &&
+     muon.lepton_pt()      >= min_lepton_pt_          &&
      muon.absEta()         <= max_absEta_             &&
      std::fabs(muon.dxy()) <= max_dxy_                &&
      std::fabs(muon.dz())  <= max_dz_                 &&

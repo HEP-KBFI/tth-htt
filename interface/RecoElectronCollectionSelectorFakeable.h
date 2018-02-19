@@ -30,7 +30,8 @@ protected:
 
   RecoElectronSelectorTight tightElectronSelector_;
 
-  Double_t min_pt_;                   ///< lower cut threshold on pT
+  Double_t min_cone_pt_;              ///< lower cut threshold on cone pT
+  Double_t min_lepton_pt_;            ///< lower cut threshold on "raw" lepton pT
   Double_t max_absEta_;               ///< upper cut threshold on absolute value of eta
   Double_t max_dxy_;                  ///< upper cut threshold on d_{xy}, distance in the transverse plane w.r.t PV
   Double_t max_dz_;                   ///< upper cut threshold on d_{z}, distance on the z axis w.r.t PV
@@ -39,9 +40,7 @@ protected:
 //--- define cuts that dependent on eta
 //    format: central region (|eta| < 0.8) / transition region (0.8 < |eta| < 1.479) / forward region (|eta| > 1.479)
   typedef std::vector<Double_t> vDouble_t;
-  vDouble_t min_mvaRawPOG_vlow_;      ///< upper cut threshold on EGamma POG electron MVA value
-  vDouble_t min_mvaRawPOG_low_;       ///< upper cut threshold on EGamma POG electron MVA value
-  vDouble_t min_mvaRawPOG_high_;      ///< upper cut threshold on EGamma POG electron MVA value
+  vDouble_t min_mvaRawPOG_;           ///< upper cut threshold on EGamma POG electron MVA value
   vDouble_t binning_absEta_;          ///< eta values separating central, transition and forward region (0.8, 1.479)
   Double_t min_pt_trig_;              ///< lower pT threshold for applying shower shape cuts (to mimic selection applied on trigger level)
   vDouble_t max_sigmaEtaEta_trig_;    ///< upper cut threshold on second shower moment in eta-direction 
