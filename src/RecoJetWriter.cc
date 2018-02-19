@@ -120,6 +120,11 @@ void
 RecoJetWriter::write(const std::vector<const RecoJet *> & jets)
 {
   nJets_ = jets.size();
+  if(nJets_ > max_nJets_)
+  {
+    throw cmsException(this, __func__, __LINE__)
+      << "Number of jets to be written " << nJets_ << " exceeds the maximum number of jets " << max_nJets_;
+  }
   for(UInt_t idxJet = 0; idxJet < nJets_; ++idxJet)
   {
     const RecoJet * jet = jets[idxJet];

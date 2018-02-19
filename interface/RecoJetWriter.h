@@ -54,7 +54,7 @@ protected:
 
   int era_;
   bool isMC_;
-  const int max_nJets_;
+  const unsigned int max_nJets_;
   std::string branchName_num_;
   std::string branchName_obj_;
 
