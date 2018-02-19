@@ -3,14 +3,16 @@ import os, logging, sys, getpass, argparse, datetime
 
 from tthAnalysis.HiggsToTauTau.configs.analyzeConfig_jetToTauFakeRate import analyzeConfig_jetToTauFakeRate
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
+from tthAnalysis.HiggsToTauTau.analysisSettings import systematics
 
 # E.g.: ./tthAnalyzeRun_jetToTauFakeRate.py -v 2017Dec13 -e 2017
 
 #TODO: needs actual Ntuples
-#TODO: needs an updated value of integrated luminosity for 2017 data
 
 era_choices                = ['2017']
+sys_choices                = [ 'central', 'full' ]
 default_resubmission_limit = 4
+systematics.full           = systematics.an_jetToTauFR
 
 class SmartFormatter(argparse.HelpFormatter):
   def _split_lines(self, text, width):
@@ -28,6 +30,11 @@ parser.add_argument('-v', '--version',
 parser.add_argument('-e', '--era',
   type = str, dest = 'era', metavar = 'era', choices = era_choices, default = None, required = True,
   help = 'R|Era of data/MC (choices: %s)' % ', '.join(map(lambda choice: "'%s'" % choice, era_choices)),
+)
+parser.add_argument('-s', '--systematics',
+  type = str, dest = 'systematics', metavar = 'mode', choices = sys_choices,
+  default = 'central', required = False,
+  help = 'R|Systematic uncertainties (choices: %s)' % ', '.join(map(lambda choice: "'%s'" % choice, sys_choices)),
 )
 parser.add_argument('-d', '--dry-run',
   dest = 'dry_run', action = 'store_true', default = False,
@@ -52,12 +59,12 @@ era                  = args.era
 version              = args.version
 resubmit             = args.disable_resubmission
 max_job_resubmission = args.resubmission_limit if resubmit else 1
+central_or_shift     = getattr(systematics, args.systematics)
 
 if era == "2017":
   from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017 as samples
+  from tthAnalysis.HiggsToTauTau.analysisSettings import lumi_2017 as lumi
   max_files_per_job = 100
-  lumi = 35.9e+3 # 1/pb
-  # TODO: update lumi
 else:
   raise ValueError("Invalid Configuration parameter 'era' = %s !!" % era)
 
@@ -75,6 +82,11 @@ if __name__ == '__main__':
     format = '%(asctime)s - %(levelname)s: %(message)s'
   )
 
+  logging.info(
+    "Running the jobs with the following systematic uncertainties enabled: %s" % \
+    ', '.join(central_or_shift)
+  )
+
   job_statistics_summary = {}
   run_analysis           = False
   is_last_resubmission   = False
@@ -84,17 +96,17 @@ if __name__ == '__main__':
       continue
 
     analysis = analyzeConfig_jetToTauFakeRate(
-      configDir          = os.path.join("/home",       getpass.getuser(), "ttHAnalysis", era, version),
-      outputDir          = os.path.join("/hdfs/local", getpass.getuser(), "ttHAnalysis", era, version),
-      executable_analyze           = "analyze_jetToTauFakeRate",
-      samples                      = samples,
-      charge_selections            = [ "OS" ],
-      jet_minPt                    = 20.,
-      jet_maxPt                    = 1.e+6,
-      jet_minAbsEta                = -1.,
-      jet_maxAbsEta                = 2.3,
-      hadTau_selection_denominator = "dR03mvaVVLoose",
-      hadTau_selections_numerator  = [
+      configDir = os.path.join("/home",       getpass.getuser(), "ttHAnalysis", era, version),
+      outputDir = os.path.join("/hdfs/local", getpass.getuser(), "ttHAnalysis", era, version),
+      executable_analyze               = "analyze_jetToTauFakeRate",
+      samples                          = samples,
+      charge_selections                = [ "OS" ],
+      jet_minPt                        = 20.,
+      jet_maxPt                        = 1.e+6,
+      jet_minAbsEta                    = -1.,
+      jet_maxAbsEta                    = 2.3,
+      hadTau_selection_denominator     = "dR03mvaVVLoose",
+      hadTau_selections_numerator      = [
         ##"dR03mvaVLoose",
         "dR03mvaLoose",
         "dR03mvaMedium",
@@ -102,15 +114,9 @@ if __name__ == '__main__':
         "dR03mvaVTight",
         "dR03mvaVVTight",
       ],
-      absEtaBins        = [ -1., 1.479, 9.9 ],
-      ptBins            = [ 20., 25., 30., 35., 40., 45., 50., 60., 70., 80., 100., 200. ],
-      central_or_shifts = [
-        "central",
-  ##       "CMS_ttHl_JESUp",
-  ##       "CMS_ttHl_JESDown",
-  ##       "CMS_ttHl_tauESUp",
-  ##       "CMS_ttHl_tauESDown",
-      ],
+      absEtaBins                       = [ -1., 1.479, 9.9 ],
+      ptBins                           = [ 20., 25., 30., 35., 40., 45., 50., 60., 70., 80., 100., 200. ],
+      central_or_shifts                = central_or_shift,
       max_files_per_job                = max_files_per_job,
       era                              = era,
       use_lumi                         = True,

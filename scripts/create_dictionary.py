@@ -716,7 +716,7 @@ if __name__ == '__main__':
   meta_dict = load_dict(args.meta_dictionary, "meta_dictionary")
   sum_events = load_dict(args.meta_dictionary, "sum_events")
   process_names = { entry['process_name_specific'] : dbs_name for dbs_name, entry in meta_dict.items() }
-  crab_strings  = { entry['crab_string']           : dbs_name for dbs_name, entry in meta_dict.items() }
+  crab_strings  = { entry['crab_string']           : dbs_name for dbs_name, entry in meta_dict.items() if entry['crab_string'] != "" }
   for key, entry in meta_dict.items():
     entry['located'] = False
   for key_arr in sum_events:

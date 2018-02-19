@@ -53,3 +53,45 @@ EventInfoWriter::write(const EventInfo & eventInfo)
 {
   eventInfo_ = eventInfo;
 }
+
+std::string
+EventInfoWriter::getBranchName_run() const
+{
+  return branchName_run_;
+}
+
+std::string
+EventInfoWriter::getBranchName_lumi() const
+{
+  return branchName_lumi_;
+}
+
+std::string
+EventInfoWriter::getBranchName_event() const
+{
+  return branchName_event_;
+}
+
+std::string
+EventInfoWriter::getBranchName_genHiggsDecayMode() const
+{
+  return branchName_genHiggsDecayMode_;
+}
+
+std::string
+EventInfoWriter::getBranchName_genWeight() const
+{
+  return branchName_genWeight_;
+}
+
+std::string
+EventInfoWriter::getBranchName_genWeight_tH() const
+{
+  return branchName_genWeight_tH_;
+}
+
+std::string
+EventInfoWriter::getBranchName_pileupWeight() const
+{
+  return branchName_pileupWeight_;
+}

@@ -2,6 +2,7 @@
 import os, logging, sys, getpass, argparse, datetime
 from tthAnalysis.HiggsToTauTau.configs.analyzeConfig_2lss_1tau import analyzeConfig_2lss_1tau
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
+from tthAnalysis.HiggsToTauTau.analysisSettings import systematics
 
 #--------------------------------------------------------------------------------
 # NOTE: set mode flag to
@@ -17,11 +18,13 @@ from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 # E.g. to run: ./tthAnalyzeRun_2lss_1tau.py -v 2017Dec13 -mode VHbb -e 2017 --use-prod-ntuples
 
 #TODO: needs actual Ntuples
-#TODO: needs an updated value of integrated luminosity for 2017 data
 
 mode_choices               = ['VHbb', 'addMEM', 'forBDTtraining_beforeAddMEM', 'forBDTtraining_afterAddMEM']
 era_choices                = ['2017']
+sys_choices                = [ 'central', 'full', 'extended' ]
 default_resubmission_limit = 4
+systematics.full           = systematics.an_common
+systematics.extended       = systematics.an_extended
 
 class SmartFormatter(argparse.HelpFormatter):
   def _split_lines(self, text, width):
@@ -45,8 +48,12 @@ parser.add_argument('-e', '--era',
   type = str, dest = 'era', metavar = 'era', choices = era_choices, default = None, required = True,
   help = 'R|Era of data/MC (choices: %s)' % ', '.join(map(lambda choice: "'%s'" % choice, era_choices)),
 )
-parser.add_argument(
-  '-p', '--use-production-ntuples',
+parser.add_argument('-s', '--systematics',
+  type = str, dest = 'systematics', metavar = 'mode', choices = sys_choices,
+  default = 'central', required = False,
+  help = 'R|Systematic uncertainties (choices: %s)' % ', '.join(map(lambda choice: "'%s'" % choice, sys_choices)),
+)
+parser.add_argument('-p', '--use-production-ntuples',
   dest = 'use_production_ntuples', action = 'store_true', default = False,
   help = 'R|Use production Ntuples'
 )
@@ -76,9 +83,8 @@ version              = args.version
 resubmit             = args.disable_resubmission
 max_job_resubmission = args.resubmission_limit if resubmit else 1
 max_files_per_job    = 10 if use_prod_ntuples else 100
+central_or_shift     = getattr(systematics, args.systematics)
 
-samples                            = None
-lumi                               = None
 hadTau_selection                   = None
 hadTau_selection_relaxed           = None
 changeBranchNames                  = use_prod_ntuples
@@ -124,9 +130,8 @@ else:
   raise ValueError("Invalid Configuration parameter 'mode' = %s !!" % mode)
 
 if era == "2017":
+  from tthAnalysis.HiggsToTauTau.analysisSettings import lumi_2017 as lumi
   samples = samples_2017
-  lumi    = 35.9e+3 # 1/pb
-  # TODO: update lumi
 else:
   raise ValueError("Invalid Configuration parameter 'era' = %s !!" % era)
 
@@ -139,6 +144,11 @@ if __name__ == '__main__':
     stream = sys.stdout,
     level  = logging.INFO,
     format = '%(asctime)s - %(levelname)s: %(message)s',
+  )
+
+  logging.info(
+    "Running the jobs with the following systematic uncertainties enabled: %s" % \
+    ', '.join(central_or_shift)
   )
 
   configDir = os.path.join("/home",       getpass.getuser(), "ttHAnalysis", era, version)
@@ -175,63 +185,7 @@ if __name__ == '__main__':
       #     https://indico.cern.ch/event/597028/contributions/2413742/attachments/1391684/2120220/16.12.22_ttH_Htautau_-_Review_of_systematics.pdf
       applyFakeRateWeights      = applyFakeRateWeights,
       chargeSumSelections       = [ "OS"] if mode.find("forBDTtraining") != -1 else [ "OS", "SS" ],
-      central_or_shifts         = [
-        "central",
-##         "CMS_ttHl_btag_HFUp",
-##         "CMS_ttHl_btag_HFDown",
-##         "CMS_ttHl_btag_HFStats1Up",
-##         "CMS_ttHl_btag_HFStats1Down",
-##         "CMS_ttHl_btag_HFStats2Up",
-##         "CMS_ttHl_btag_HFStats2Down",
-##         "CMS_ttHl_btag_LFUp",
-##         "CMS_ttHl_btag_LFDown",
-##         "CMS_ttHl_btag_LFStats1Up",
-##         "CMS_ttHl_btag_LFStats1Down",
-##         "CMS_ttHl_btag_LFStats2Up",
-##         "CMS_ttHl_btag_LFStats2Down",
-##         "CMS_ttHl_btag_cErr1Up",
-##         "CMS_ttHl_btag_cErr1Down",
-##         "CMS_ttHl_btag_cErr2Up",
-##         "CMS_ttHl_btag_cErr2Down",
-##         "CMS_ttHl_JESUp",
-##         "CMS_ttHl_JESDown",
-        #------------------------------------------------------
-        # CV: enable the CMS_ttHl_FRe_shape and CMS_ttHl_FRm_shape only
-        #     if you plan to run compShapeSyst 1!
-##         "CMS_ttHl_FRe_shape_ptUp",
-##         "CMS_ttHl_FRe_shape_ptDown",
-##         "CMS_ttHl_FRe_shape_etaUp",
-##         "CMS_ttHl_FRe_shape_etaDown",
-##         "CMS_ttHl_FRe_shape_eta_barrelUp",
-##         "CMS_ttHl_FRe_shape_eta_barrelDown",
-##         "CMS_ttHl_FRm_shape_ptUp",
-##         "CMS_ttHl_FRm_shape_ptDown",
-##         "CMS_ttHl_FRm_shape_etaUp",
-##         "CMS_ttHl_FRm_shape_etaDown",
-        #------------------------------------------------------
-##         "CMS_ttHl_tauESUp",
-##         "CMS_ttHl_tauESDown",
-##         "CMS_ttHl_FRjt_normUp",
-##         "CMS_ttHl_FRjt_normDown",
-##         "CMS_ttHl_FRjt_shapeUp",
-##         "CMS_ttHl_FRjt_shapeDown",
-##         "CMS_ttHl_FRet_shiftUp",
-##         "CMS_ttHl_FRet_shiftDown",
-##         "CMS_ttHl_FRmt_shiftUp",
-##         "CMS_ttHl_FRmt_shiftDown",
-##         "CMS_ttHl_thu_shape_ttH_x1Up",
-##         "CMS_ttHl_thu_shape_ttH_x1Down",
-##         "CMS_ttHl_thu_shape_ttH_y1Up",
-##         "CMS_ttHl_thu_shape_ttH_y1Down",
-##         "CMS_ttHl_thu_shape_ttW_x1Up",
-##         "CMS_ttHl_thu_shape_ttW_x1Down",
-##         "CMS_ttHl_thu_shape_ttW_y1Up",
-##         "CMS_ttHl_thu_shape_ttW_y1Down",
-##         "CMS_ttHl_thu_shape_ttZ_x1Up",
-##         "CMS_ttHl_thu_shape_ttZ_x1Down",
-##         "CMS_ttHl_thu_shape_ttZ_y1Up",
-##         "CMS_ttHl_thu_shape_ttZ_y1Down",
-      ],
+      central_or_shifts         = central_or_shift,
       max_files_per_job         = max_files_per_job,
       era                       = era,
       use_lumi                  = True,

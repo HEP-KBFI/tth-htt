@@ -12,7 +12,7 @@ RecoLeptonReader::RecoLeptonReader(bool readGenMatching)
 
 RecoLeptonReader::RecoLeptonReader(const std::string & branchName_obj,
                                    bool readGenMatching)
-  : max_nLeptons_(32)
+  : max_nLeptons_(64)
   , branchName_num_(Form("n%s", branchName_obj.data()))
   , branchName_obj_(branchName_obj)
   , genLeptonReader_(nullptr)

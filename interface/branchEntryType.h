@@ -245,7 +245,12 @@ struct branchEntryVType
     const_cast<branchEntryBaseType *>(branch_nElements_)->copyBranch();
 
     const int numElements = branch_nElements_->getValue_int();
-    assert(numElements <= max_nElements_);
+    if(numElements > max_nElements_)
+    {
+      throw cmsException(this, __func__, __LINE__)
+        << "The number of elements in branch " << inputBranchName_ << " is " << numElements
+        << " which exceeds the limit " << max_nElements_;
+    }
 
     for(int idxElement = 0; idxElement < numElements; ++idxElement)
     {

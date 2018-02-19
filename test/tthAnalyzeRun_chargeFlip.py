@@ -3,14 +3,16 @@ import os, logging, sys, getpass, argparse, datetime
 
 from tthAnalysis.HiggsToTauTau.configs.analyzeConfig_charge_flip import analyzeConfig_charge_flip
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
+from tthAnalysis.HiggsToTauTau.analysisSettings import systematics
 
 # E.g.: ./tthAnalyzeRun_chargeFlip.py -v 2017Dec13 -e 2017
 
 #TODO: needs actual Ntuples
-#TODO: needs an updated value of integrated luminosity for 2017 data
 
 era_choices                = ['2017']
+sys_choices                = [ 'central', 'full' ]
 default_resubmission_limit = 4
+systematics.full           = systematics.an_chargeFlip_e
 
 class SmartFormatter(argparse.HelpFormatter):
   def _split_lines(self, text, width):
@@ -28,6 +30,11 @@ parser.add_argument('-v', '--version',
 parser.add_argument('-e', '--era',
   type = str, dest = 'era', metavar = 'era', choices = era_choices, default = None, required = True,
   help = 'R|Era of data/MC (choices: %s)' % ', '.join(map(lambda choice: "'%s'" % choice, era_choices)),
+)
+parser.add_argument('-s', '--systematics',
+  type = str, dest = 'systematics', metavar = 'mode', choices = sys_choices,
+  default = 'central', required = False,
+  help = 'R|Systematic uncertainties (choices: %s)' % ', '.join(map(lambda choice: "'%s'" % choice, sys_choices)),
 )
 parser.add_argument('-d', '--dry-run',
   dest = 'dry_run', action = 'store_true', default = False,
@@ -52,12 +59,12 @@ era                  = args.era
 version              = args.version
 resubmit             = args.disable_resubmission
 max_job_resubmission = args.resubmission_limit if resubmit else 1
+central_or_shift     = getattr(systematics, args.systematics)
 
 if era == "2017":
   from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017 as samples
+  from tthAnalysis.HiggsToTauTau.analysisSettings import lumi_2017 as lumi
   max_files_per_job = 100
-  lumi = 35.9e+3 # 1/pb
-  # TODO: update lumi
 else:
   raise ValueError("Invalid Configuration parameter 'era' = %s !!" % era)
 
@@ -89,6 +96,11 @@ if __name__ == '__main__':
     format = '%(asctime)s - %(levelname)s: %(message)s'
   )
 
+  logging.info(
+    "Running the jobs with the following systematic uncertainties enabled: %s" % \
+    ', '.join(central_or_shift)
+  )
+
   job_statistics_summary = {}
   run_analysis           = False
   is_last_resubmission   = False
@@ -103,48 +115,18 @@ if __name__ == '__main__':
       executable_analyze = "analyze_charge_flip",
       samples            = samples,
       lepton_selections  = [ "Tight"],
-      central_or_shifts  = [
-        "central",
-         # "CMS_ttHl_btag_HFUp",
-         # "CMS_ttHl_btag_HFDown",
-         # "CMS_ttHl_btag_HFStats1Up",
-         # "CMS_ttHl_btag_HFStats1Down",
-         # "CMS_ttHl_btag_HFStats2Up",
-         # "CMS_ttHl_btag_HFStats2Down",
-         # "CMS_ttHl_btag_LFUp",
-         # "CMS_ttHl_btag_LFDown",
-         # "CMS_ttHl_btag_LFStats1Up",
-         # "CMS_ttHl_btag_LFStats1Down",
-         # "CMS_ttHl_btag_LFStats2Up",
-         # "CMS_ttHl_btag_LFStats2Down",
-         # "CMS_ttHl_btag_cErr1Up",
-         # "CMS_ttHl_btag_cErr1Down",
-         # "CMS_ttHl_btag_cErr2Up",
-         # "CMS_ttHl_btag_cErr2Down",
-         # "CMS_ttHl_JESUp",
-         # "CMS_ttHl_JESDown",
-         # "CMS_ttHl_tauESUp",
-         # "CMS_ttHl_tauESDown",
-         # "CMS_ttHl_electronESUp",
-         # "CMS_ttHl_electronESDown",
-         # "CMS_ttHl_electronERUp", ###
-         # "CMS_ttHl_electronERDown",
-         # "CMS_ttHl_electronESEndcapUp",
-         # "CMS_ttHl_electronESEndcapDown",
-         # "CMS_ttHl_electronESBarrelUp",
-         # "CMS_ttHl_electronESBarrelDown"
-        ],
-      max_files_per_job = max_files_per_job,
-      era               = era,
-      use_lumi          = True,
-      lumi              = lumi,
-      debug             = False,
-      running_method    = "sbatch",
-      num_parallel_jobs = 4,
-      histograms_to_fit = [ "mass_ll" ],
-      select_rle_output = False,
-      verbose           = idx_job_resubmission > 0,
-      dry_run           = args.dry_run,
+      central_or_shifts  = central_or_shift,
+      max_files_per_job  = max_files_per_job,
+      era                = era,
+      use_lumi           = True,
+      lumi               = lumi,
+      debug              = False,
+      running_method     = "sbatch",
+      num_parallel_jobs  = 100,
+      histograms_to_fit  = [ "mass_ll" ],
+      select_rle_output  = False,
+      verbose            = idx_job_resubmission > 0,
+      dry_run            = args.dry_run,
     )
 
     job_statistics = analysis.create()

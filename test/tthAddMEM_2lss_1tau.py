@@ -3,10 +3,13 @@ import os, logging, sys, getpass, argparse, datetime
 
 from tthAnalysis.HiggsToTauTau.configs.addMEMConfig_2lss_1tau import addMEMConfig_2lss_1tau
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
+from tthAnalysis.HiggsToTauTau.analysisSettings import systematics
 
 era_choices                = ['2017']
+sys_choices                = [ 'central', 'full' ]
 default_resubmission_limit = 4
 max_mem_integrations       = 20000
+systematics.full           = systematics.an_addMEM
 
 class SmartFormatter(argparse.HelpFormatter):
   def _split_lines(self, text, width):
@@ -15,7 +18,7 @@ class SmartFormatter(argparse.HelpFormatter):
     return argparse.HelpFormatter._split_lines(self, text, width)
 
 parser = argparse.ArgumentParser(
-  formatter_class = lambda prog: SmartFormatter(prog, max_help_position = 45)
+  formatter_class = lambda prog: SmartFormatter(prog, max_help_position = 50)
 )
 parser.add_argument('-v', '--version',
   type = str, dest = 'version', metavar = 'version', default = None, required = True,
@@ -24,6 +27,11 @@ parser.add_argument('-v', '--version',
 parser.add_argument('-e', '--era',
   type = str, dest = 'era', metavar = 'era', choices = era_choices, default = None, required = True,
   help = 'R|Era of data/MC (choices: %s)' % ', '.join(map(lambda choice: "'%s'" % choice, era_choices)),
+)
+parser.add_argument('-s', '--systematics',
+  type = str, dest = 'systematics', metavar = 'mode', choices = sys_choices,
+  default = 'central', required = False,
+  help = 'R|Systematic uncertainties (choices: %s)' % ', '.join(map(lambda choice: "'%s'" % choice, sys_choices)),
 )
 parser.add_argument('-b', '--bdt-training',
   dest = 'bdt_training', action = 'store_true', default = False,
@@ -50,18 +58,7 @@ resubmit             = args.disable_resubmission
 max_job_resubmission = args.resubmission_limit if resubmit else 1
 max_mem_integrations = args.max_mem_integrations
 bdt_training         = args.bdt_training
-
-central_or_shift = [
-  "central",
-  # "CMS_ttHl_JESUp",
-  # "CMS_ttHl_JESDown",
-  # "CMS_ttHl_tauESUp",
-  # "CMS_ttHl_tauESDown",
-  # "CMS_ttHl_JERUp",
-  # "CMS_ttHl_JERDown",
-  # "CMS_ttHl_UnclusteredEnUp",
-  # "CMS_ttHl_UnclusteredEnDown",
-]
+central_or_shift     = getattr(systematics, args.systematics)
 
 if bdt_training:
   if era == "2017":
@@ -83,6 +80,11 @@ if __name__ == '__main__':
     stream = sys.stdout,
     level  = logging.DEBUG,
     format = '%(asctime)s - %(levelname)s: %(message)s'
+  )
+
+  logging.info(
+    "Running the jobs with the following systematic uncertainties enabled: %s" % \
+    ', '.join(central_or_shift)
   )
 
   addMEMProduction = addMEMConfig_2lss_1tau(

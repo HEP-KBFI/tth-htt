@@ -55,6 +55,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMEtWriter.h" // RecoMEtWriter
 #include "tthAnalysis/HiggsToTauTau/interface/GenParticleWriter.h" // GenParticleWriter
 #include "tthAnalysis/HiggsToTauTau/interface/MEMPermutationWriter.h" // MEMPermutationWriter
+#include "tthAnalysis/HiggsToTauTau/interface/EventInfoWriter.h" // EventInfoWriter
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // isHigherPt, random_start
 #include "tthAnalysis/HiggsToTauTau/interface/RunLumiEventSelector.h" // RunLumiEventSelector
 #include "tthAnalysis/HiggsToTauTau/interface/cutFlowTable.h" // cutFlowTableType
@@ -176,6 +177,7 @@ int main(int argc, char* argv[])
   std::cout << "use_HIP_mitigation_mediumMuonId = " << use_HIP_mitigation_mediumMuonId << std::endl;
 
   bool isMC = cfg_produceNtuple.getParameter<bool>("isMC"); 
+  const bool isDEBUG = cfg_produceNtuple.exists("isDEBUG") ? cfg_produceNtuple.getParameter<bool>("isDEBUG") : false;
 
   std::string selEventsFileName_input = cfg_produceNtuple.getParameter<std::string>("selEventsFileName_input");
   std::cout << "selEventsFileName_input = " << selEventsFileName_input << std::endl;
@@ -307,10 +309,8 @@ int main(int argc, char* argv[])
   }
   TTree* outputTree = new TTree(outputTreeName.data(), outputTreeName.data());
 
-  BranchAddressInitializer bai(inputTree);
-  bai.setBranch(eventInfo.run, eventInfoReader.branchName_event);
-  bai.setBranch(eventInfo.lumi, eventInfoReader.branchName_lumi);
-  bai.setBranch(eventInfo.event, eventInfoReader.branchName_event);
+  EventInfoWriter eventInfoWriter(false, false, false);
+  eventInfoWriter.setBranches(outputTree);
 
   std::string branchName_muons = branchName_muons_in;
   RecoMuonWriter* muonWriter = new RecoMuonWriter(era, Form("n%s", branchName_muons.data()), branchName_muons);
@@ -375,6 +375,9 @@ int main(int argc, char* argv[])
 
   const std::vector<std::string> outputCommands_string = {
     "keep *",
+    Form("drop %s", eventInfoWriter.getBranchName_run().data()),
+    Form("drop %s", eventInfoWriter.getBranchName_lumi().data()),
+    Form("drop %s", eventInfoWriter.getBranchName_event().data()),
     Form("drop n%s*", branchName_muons_in.data()),
     Form("drop %s_*", branchName_muons_in.data()),
     Form("drop n%s*", branchName_electrons_in.data()),
@@ -424,7 +427,7 @@ int main(int argc, char* argv[])
     if ( run_lumi_eventSelector && !(*run_lumi_eventSelector)(eventInfo) ) continue;
     cutFlowTable.update("run:ls:event selection");
 
-    if ( run_lumi_eventSelector ) {
+    if ( run_lumi_eventSelector || isDEBUG ) {
       std::cout << "processing Entry " << idxEntry << ':' << eventInfo << '\n';
       if ( inputTree->GetFile() ) std::cout << "input File = " << inputTree->GetFile()->GetName() << std::endl;
     }
@@ -499,7 +502,7 @@ int main(int argc, char* argv[])
 
 //--- apply preselection
     if ( !((int)selLeptons.size() >= minNumLeptons) ) {
-      if ( run_lumi_eventSelector ) {
+      if ( run_lumi_eventSelector || isDEBUG ) {
         std::cout << "event FAILS selLeptons selection." << std::endl;
         std::cout << " (#preselLeptons = " << preselLeptons.size() << ")" << std::endl;
         for ( size_t idxPreselLepton = 0; idxPreselLepton < preselLeptons.size(); ++idxPreselLepton ) {
@@ -531,7 +534,7 @@ int main(int argc, char* argv[])
         throw cms::Exception("produceNtuple") << "Unsupported era = " << era;
       }
       if ( !(selLepton_lead->pt() > minPt_lead) ) {
-        if ( run_lumi_eventSelector ) {
+        if ( run_lumi_eventSelector || isDEBUG ) {
           std::cout << "event FAILS lepton pT selection." << std::endl;
           std::cout << " (leading selLepton pT = " << selLepton_lead->pt() << ", minPt_lead = " << minPt_lead << ")" << std::endl;
         }
@@ -541,7 +544,7 @@ int main(int argc, char* argv[])
     }
 
     if ( !((int)selHadTaus.size() >= minNumHadTaus) ) {
-      if ( run_lumi_eventSelector ) {
+      if ( run_lumi_eventSelector || isDEBUG ) {
         std::cout << "event FAILS selHadTaus selection." << std::endl;
         std::cout << " (#preselHadTaus = " << preselHadTaus.size() << ")" << std::endl;
         for ( size_t idxPreselHadTau = 0; idxPreselHadTau < preselHadTaus.size(); ++idxPreselHadTau ) {
@@ -565,7 +568,7 @@ int main(int argc, char* argv[])
 
     // apply requirement on jets 
     if ( !((int)selJets.size() >= minNumJets) ) {
-      if ( run_lumi_eventSelector ) {
+      if ( run_lumi_eventSelector || isDEBUG ) {
         std::cout << "event FAILS selJets selection." << std::endl;
         std::cout << " (#selJets = " << selJets.size() << ")" << std::endl;
         for ( size_t idxSelJet = 0; idxSelJet < selJets.size(); ++idxSelJet ) {
@@ -579,7 +582,7 @@ int main(int argc, char* argv[])
 
     // apply requirement on b-jets 
     if ( !((int)selBJets_loose.size() >= minNumBJets_loose || (int)selBJets_medium.size() >= minNumBJets_medium) ) {
-      if ( run_lumi_eventSelector ) {
+      if ( run_lumi_eventSelector || isDEBUG ) {
         std::cout << "event FAILS selBJets selection." << std::endl;
         std::cout << " (#selJets = " << selJets.size() << ")" << std::endl;
         for ( size_t idxSelJet = 0; idxSelJet < selJets.size(); ++idxSelJet ) {
@@ -642,6 +645,7 @@ int main(int argc, char* argv[])
       {{preselLeptons, fakeableLeptons, tightLeptons}}, {{selBJets_loose, selBJets_medium}}, cleanedHadTaus
     );
 
+    eventInfoWriter.write(eventInfo);
     muonWriter->write(preselMuons);
     electronWriter->write(preselElectrons);
     hadTauWriter->write(fakeableHadTaus);

@@ -3,14 +3,16 @@ import os, logging, sys, getpass, argparse, datetime
 
 from tthAnalysis.HiggsToTauTau.configs.analyzeConfig_WZctrl import analyzeConfig_WZctrl
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
+from tthAnalysis.HiggsToTauTau.analysisSettings import systematics
 
 # E.g.: ./tthAnalyzeRun_WZctrl.py -v 2017Dec13 -e 2017
 
 #TODO: needs actual Ntuples
-#TODO: needs an updated value of integrated luminosity for 2017 data
 
 era_choices                = ['2017']
+sys_choices                = [ 'central', 'full' ]
 default_resubmission_limit = 4
+systematics.full           = systematics.an_ctrl
 
 class SmartFormatter(argparse.HelpFormatter):
   def _split_lines(self, text, width):
@@ -28,6 +30,11 @@ parser.add_argument('-v', '--version',
 parser.add_argument('-e', '--era',
   type = str, dest = 'era', metavar = 'era', choices = era_choices, default = None, required = True,
   help = 'R|Era of data/MC (choices: %s)' % ', '.join(map(lambda choice: "'%s'" % choice, era_choices)),
+)
+parser.add_argument('-s', '--systematics',
+  type = str, dest = 'systematics', metavar = 'mode', choices = sys_choices,
+  default = 'central', required = False,
+  help = 'R|Systematic uncertainties (choices: %s)' % ', '.join(map(lambda choice: "'%s'" % choice, sys_choices)),
 )
 parser.add_argument('-d', '--dry-run',
   dest = 'dry_run', action = 'store_true', default = False,
@@ -52,12 +59,12 @@ era                  = args.era
 version              = args.version
 resubmit             = args.disable_resubmission
 max_job_resubmission = args.resubmission_limit if resubmit else 1
+central_or_shift     = getattr(systematics, args.systematics)
 
 if era == "2017":
   from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017 as samples
+  from tthAnalysis.HiggsToTauTau.analysisSettings import lumi_2017 as lumi
   max_files_per_job = 100
-  lumi = 35.9e+3 # 1/pb
-  # TODO: update lumi
 else:
   raise ValueError("Invalid Configuration parameter 'era' = %s !!" % era)
 
@@ -70,6 +77,11 @@ if __name__ == '__main__':
     stream = sys.stdout,
     level  = logging.INFO,
     format = '%(asctime)s - %(levelname)s: %(message)s'
+  )
+
+  logging.info(
+    "Running the jobs with the following systematic uncertainties enabled: %s" % \
+    ', '.join(central_or_shift)
   )
 
   job_statistics_summary = {}
@@ -88,39 +100,23 @@ if __name__ == '__main__':
       cfgFile_analyze    = "analyze_WZctrl_cfg.py",
       samples            = samples,
       hadTau_selection   = "dR03mvaLoose",
-      central_or_shifts  = [
-        "central",
-##        "CMS_ttHl_JESUp",
-##        "CMS_ttHl_JESDown",
-##        "CMS_ttHl_thu_shape_ttH_x1Up",
-##        "CMS_ttHl_thu_shape_ttH_x1Down",
-##        "CMS_ttHl_thu_shape_ttH_y1Up",
-##        "CMS_ttHl_thu_shape_ttH_y1Down",
-##        "CMS_ttHl_thu_shape_ttW_x1Up",
-##        "CMS_ttHl_thu_shape_ttW_x1Down",
-##        "CMS_ttHl_thu_shape_ttW_y1Up",
-##        "CMS_ttHl_thu_shape_ttW_y1Down",
-##        "CMS_ttHl_thu_shape_ttZ_x1Up",
-##        "CMS_ttHl_thu_shape_ttZ_x1Down",
-##        "CMS_ttHl_thu_shape_ttZ_y1Up",
-##        "CMS_ttHl_thu_shape_ttZ_y1Down",
-      ],
-      max_files_per_job = max_files_per_job,
-      era               = era,
-      use_lumi          = True,
-      lumi              = lumi,
-      debug             = False,
-      running_method    = "sbatch",
-      num_parallel_jobs = 8,
-      histograms_to_fit = [
+      central_or_shifts  = central_or_shift,
+      max_files_per_job  = max_files_per_job,
+      era                = era,
+      use_lumi           = True,
+      lumi               = lumi,
+      debug              = False,
+      running_method     = "sbatch",
+      num_parallel_jobs  = 8,
+      histograms_to_fit  = [
         "EventCounter",
         "numJets",
         "mLL",
         "mT",
       ],
-      select_rle_output = True,
-      verbose           = idx_job_resubmission > 0,
-      dry_run           = args.dry_run,
+      select_rle_output  = True,
+      verbose            = idx_job_resubmission > 0,
+      dry_run            = args.dry_run,
     )
 
     job_statistics = analysis.create()

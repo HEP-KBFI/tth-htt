@@ -2,6 +2,7 @@
 import os, logging, sys, getpass, argparse, datetime
 from tthAnalysis.HiggsToTauTau.configs.analyzeConfig_2l_2tau import analyzeConfig_2l_2tau
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
+from tthAnalysis.HiggsToTauTau.analysisSettings import systematics
 
 #--------------------------------------------------------------------------------
 # NOTE: set mode flag to
@@ -13,11 +14,12 @@ from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 # E.g.: ./tthAnalyzeRun_2l_2tau.py -v 2017Dec13 -mode VHbb -e 2017 --use-prod-ntuples
 
 #TODO: needs actual Ntuples
-#TODO: needs an updated value of integrated luminosity for 2017 data
 
 mode_choices               = ['VHbb', 'forBDTtraining']
 era_choices                = ['2017']
+sys_choices                = [ 'central', 'full' ]
 default_resubmission_limit = 4
+systematics.full           = systematics.an_common
 
 class SmartFormatter(argparse.HelpFormatter):
   def _split_lines(self, text, width):
@@ -41,8 +43,12 @@ parser.add_argument('-e', '--era',
   type = str, dest = 'era', metavar = 'era', choices = era_choices, default = None, required = True,
   help = 'R|Era of data/MC (choices: %s)' % ', '.join(map(lambda choice: "'%s'" % choice, era_choices)),
 )
-parser.add_argument(
-  '-p', '--use-production-ntuples',
+parser.add_argument('-s', '--systematics',
+  type = str, dest = 'systematics', metavar = 'mode', choices = sys_choices,
+  default = 'central', required = False,
+  help = 'R|Systematic uncertainties (choices: %s)' % ', '.join(map(lambda choice: "'%s'" % choice, sys_choices)),
+)
+parser.add_argument('-p', '--use-production-ntuples',
   dest = 'use_production_ntuples', action = 'store_true', default = False,
   help = 'R|Use production Ntuples'
 )
@@ -72,14 +78,12 @@ version              = args.version
 resubmit             = args.disable_resubmission
 max_job_resubmission = args.resubmission_limit if resubmit else 1
 max_files_per_job    = 10 if use_prod_ntuples else 100
+central_or_shift     = getattr(systematics, args.systematics)
 
-samples                            = None
-lumi                               = None
 hadTau_selection                   = None
 hadTau_selection_relaxed           = None
 changeBranchNames                  = use_prod_ntuples
 applyFakeRateWeights               = None
-hadTauFakeRateWeight_inputFileName = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016.root" #TODO update
 
 if mode != "VHbb":
   raise ValueError("Only VHbb mode available")
@@ -89,7 +93,7 @@ if mode == "VHbb":
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_prodNtuples_test import samples_2017
   else:
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_test import samples_2017
-  hadTau_selection     = "dR03mvaMedium"
+  hadTau_selection     = "dR03mvaVTight"
   applyFakeRateWeights = "4L"
 elif mode == "forBDTtraining":
 #  if use_prod_ntuples:
@@ -102,10 +106,16 @@ elif mode == "forBDTtraining":
 else:
   raise ValueError("Invalid Configuration parameter 'mode' = %s !!" % mode)
 
+if hadTau_selection_relaxed=="dR03mvaVVLoose":
+  hadTauFakeRateWeight_inputFileName = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016_vvLoosePresel.root"
+elif hadTau_selection_relaxed=="dR03mvaVLoose":
+  hadTauFakeRateWeight_inputFileName = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016_vLoosePresel.root"
+else:
+  hadTauFakeRateWeight_inputFileName = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016.root"
+
 if era == "2017":
+  from tthAnalysis.HiggsToTauTau.analysisSettings import lumi_2017 as lumi
   samples = samples_2017
-  lumi    = 35.9e+3 # 1/pb
-  # TODO: update lumi
 else:
   raise ValueError("Invalid Configuration parameter 'era' = %s !!" % era)
 
@@ -114,6 +124,11 @@ if __name__ == '__main__':
     stream = sys.stdout,
     level  = logging.INFO,
     format = '%(asctime)s - %(levelname)s: %(message)s',
+  )
+
+  logging.info(
+    "Running the jobs with the following systematic uncertainties enabled: %s" % \
+    ', '.join(central_or_shift)
   )
 
   job_statistics_summary = {}
@@ -126,60 +141,18 @@ if __name__ == '__main__':
     logging.info("Job submission #%i:" % (idx_job_resubmission + 1))
 
     analysis = analyzeConfig_2l_2tau(
-      configDir          = os.path.join("/home",       getpass.getuser(), "ttHAnalysis", era, version),
-      outputDir          = os.path.join("/hdfs/local", getpass.getuser(), "ttHAnalysis", era, version),
-      executable_analyze       = "analyze_2l_2tau",
-      cfgFile_analyze          = "analyze_2l_2tau_cfg.py",
-      samples                  = samples,
-      changeBranchNames        = changeBranchNames,
-      lepton_charge_selections = [ "disabled" ],
-      hadTau_selection         = hadTau_selection,
-      hadTau_charge_selections = [ "disabled" ],
-      applyFakeRateWeights     = applyFakeRateWeights,
-      chargeSumSelections      = [ "OS"] if mode == "forBDTtraining" else [ "OS", "SS" ],
-      central_or_shifts        = [
-        "central",
-##         "CMS_ttHl_btag_HFUp",
-##         "CMS_ttHl_btag_HFDown",
-##         "CMS_ttHl_btag_HFStats1Up",
-##         "CMS_ttHl_btag_HFStats1Down",
-##         "CMS_ttHl_btag_HFStats2Up",
-##         "CMS_ttHl_btag_HFStats2Down",
-##         "CMS_ttHl_btag_LFUp",
-##         "CMS_ttHl_btag_LFDown",
-##         "CMS_ttHl_btag_LFStats1Up",
-##         "CMS_ttHl_btag_LFStats1Down",
-##         "CMS_ttHl_btag_LFStats2Up",
-##         "CMS_ttHl_btag_LFStats2Down",
-##         "CMS_ttHl_btag_cErr1Up",
-##         "CMS_ttHl_btag_cErr1Down",
-##         "CMS_ttHl_btag_cErr2Up",
-##         "CMS_ttHl_btag_cErr2Down",
-##         "CMS_ttHl_JESUp",
-##         "CMS_ttHl_JESDown",
-##         "CMS_ttHl_tauESUp",
-##         "CMS_ttHl_tauESDown",
-##         "CMS_ttHl_FRjt_normUp",
-##         "CMS_ttHl_FRjt_normDown",
-##         "CMS_ttHl_FRjt_shapeUp",
-##         "CMS_ttHl_FRjt_shapeDown",
-##         "CMS_ttHl_FRet_shiftUp",
-##         "CMS_ttHl_FRet_shiftDown",
-##         "CMS_ttHl_FRmt_shiftUp",
-##         "CMS_ttHl_FRmt_shiftDown",
-##         "CMS_ttHl_thu_shape_ttH_x1Up",
-##         "CMS_ttHl_thu_shape_ttH_x1Down",
-##         "CMS_ttHl_thu_shape_ttH_y1Up",
-##         "CMS_ttHl_thu_shape_ttH_y1Down",
-##         "CMS_ttHl_thu_shape_ttW_x1Up",
-##         "CMS_ttHl_thu_shape_ttW_x1Down",
-##         "CMS_ttHl_thu_shape_ttW_y1Up",
-##         "CMS_ttHl_thu_shape_ttW_y1Down",
-##         "CMS_ttHl_thu_shape_ttZ_x1Up",
-##         "CMS_ttHl_thu_shape_ttZ_x1Down",
-##         "CMS_ttHl_thu_shape_ttZ_y1Up",
-##         "CMS_ttHl_thu_shape_ttZ_y1Down",
-      ],
+      configDir = os.path.join("/home",       getpass.getuser(), "ttHAnalysis", era, version),
+      outputDir = os.path.join("/hdfs/local", getpass.getuser(), "ttHAnalysis", era, version),
+      executable_analyze                    = "analyze_2l_2tau",
+      cfgFile_analyze                       = "analyze_2l_2tau_cfg.py",
+      samples                               = samples,
+      changeBranchNames                     = changeBranchNames,
+      lepton_charge_selections              = [ "disabled" ],
+      hadTau_selection                      = hadTau_selection,
+      hadTau_charge_selections              = [ "disabled" ],
+      applyFakeRateWeights                  = applyFakeRateWeights,
+      chargeSumSelections                   = [ "OS" ] if mode.find("forBDTtraining") != -1 else [ "OS", "SS" ],
+      central_or_shifts                     = central_or_shift,
       max_files_per_job                     = max_files_per_job,
       era                                   = era,
       use_lumi                              = True,
@@ -188,7 +161,8 @@ if __name__ == '__main__':
       running_method                        = "sbatch",
       num_parallel_jobs                     = 100, # KE: run up to 100 'hadd' jobs in parallel on batch system
       executable_addBackgrounds             = "addBackgrounds",
-      executable_addBackgroundJetToTauFakes = "addBackgroundLeptonFakes", # CV: use common executable for estimating jet->lepton and jet->tau_h fake background
+      # CV: use common executable for estimating jet->lepton and jet->tau_h fake background
+      executable_addBackgroundJetToTauFakes = "addBackgroundLeptonFakes",
       histograms_to_fit                     = [
         "EventCounter",
         "numJets",
