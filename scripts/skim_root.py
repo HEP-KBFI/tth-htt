@@ -105,8 +105,8 @@ def get_rle(in_filename, tree_name = "tree"):
   evt  = array.array('L', [0])
 
   t_in.SetBranchAddress("run", run)
-  t_in.SetBranchAddress("lumi", lumi)
-  t_in.SetBranchAddress("evt", evt)
+  t_in.SetBranchAddress("luminosityBlock", lumi)
+  t_in.SetBranchAddress("event", evt)
 
   nof_entries = t_in.GetEntries()
   for i in range(nof_entries):
