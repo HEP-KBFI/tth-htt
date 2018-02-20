@@ -1289,8 +1289,11 @@ int main(int argc, char* argv[])
     std::vector<const RecoMuon*> muon_ptrs = convert_to_ptrs(muons);
     std::vector<const RecoMuon*> cleanedMuons = muon_ptrs; // CV: no cleaning needed for muons, as they have the highest priority in the overlap removal
     std::vector<const RecoMuon*> preselMuons = preselMuonSelector(cleanedMuons);
+    std::sort(preselMuons.begin(), preselMuons.end(), isHigherPt);
     std::vector<const RecoMuon*> fakeableMuons = fakeableMuonSelector(preselMuons);
+    std::sort(fakeableMuons.begin(), fakeableMuons.end(), isHigherConePt);
     std::vector<const RecoMuon*> tightMuons = tightMuonSelector(preselMuons);
+    std::sort(tightMuons.begin(), tightMuons.end(), isHigherPt);
     std::vector<const RecoMuon*> selMuons;
     if      ( leptonSelection == kLoose    ) selMuons = preselMuons;
     else if ( leptonSelection == kFakeable ) selMuons = fakeableMuons;
@@ -1311,8 +1314,11 @@ int main(int argc, char* argv[])
     std::vector<const RecoElectron*> electron_ptrs = convert_to_ptrs(electrons);
     std::vector<const RecoElectron*> cleanedElectrons = electronCleaner(electron_ptrs, selMuons);
     std::vector<const RecoElectron*> preselElectrons = preselElectronSelector(cleanedElectrons);
+    std::sort(preselElectrons.begin(), preselElectrons.end(), isHigherPt);
     std::vector<const RecoElectron*> fakeableElectrons = fakeableElectronSelector(preselElectrons);
+    std::sort(fakeableElectrons.begin(), fakeableElectrons.end(), isHigherConePt);
     std::vector<const RecoElectron*> tightElectrons = tightElectronSelector(preselElectrons);
+    std::sort(tightElectrons.begin(), tightElectrons.end(), isHigherPt);
     std::vector<const RecoElectron*> selElectrons;
     if      ( leptonSelection == kLoose    ) selElectrons = preselElectrons;
     else if ( leptonSelection == kFakeable ) selElectrons = fakeableElectrons;
@@ -1338,6 +1344,7 @@ int main(int argc, char* argv[])
     std::vector<RecoHadTau> hadTaus = hadTauReader->read();
     std::vector<const RecoHadTau*> hadTau_ptrs = convert_to_ptrs(hadTaus);
     std::vector<const RecoHadTau*> cleanedHadTaus = hadTauCleaner(hadTau_ptrs, preselMuons, preselElectrons);
+    std::sort(cleanedHadTaus.begin(), cleanedHadTaus.end(), isHigherPt);
     std::vector<const RecoHadTau*> preselHadTaus = preselHadTauSelector(cleanedHadTaus);
     std::vector<const RecoHadTau*> fakeableHadTaus = fakeableHadTauSelector(cleanedHadTaus);
     std::vector<const RecoHadTau*> tightHadTaus = tightHadTauSelector(cleanedHadTaus);
@@ -1370,11 +1377,8 @@ int main(int argc, char* argv[])
         }
       }
     }
-
-    std::vector<const RecoJet*> cleanedJets = jetCleaner(jet_ptrs, selHadTaus, selLeptons, fakeableElectrons, fakeableMuons, selHadTaus); // jet_ptrs, fakeableMuons, fakeableElectrons, selHadTaus
-
-    // selLeptons for BDT training is loose, and loose>fakeable
-    // this has no effect on datacards making as there selLeptons are tight and tight<fakeable
+    std::vector<const RecoJet*> cleanedJets = jetCleaner(jet_ptrs, fakeableElectrons, tightElectrons, fakeableMuons, tightMuons, fakeableHadTaus);
+    std::sort(cleanedJets.begin(), cleanedJets.end(), isHigherPt);
     std::vector<const RecoJet*> selJets = jetSelector(cleanedJets);
     std::vector<const RecoJet*> selBJets_loose = jetSelectorBtagLoose(cleanedJets);
     std::vector<const RecoJet*> selBJets_medium = jetSelectorBtagMedium(cleanedJets);
