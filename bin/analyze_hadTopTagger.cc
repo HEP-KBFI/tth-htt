@@ -32,8 +32,10 @@
 #include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionGenMatcher.h" // RecoElectronCollectionGenMatcher, RecoMuonCollectionGenMatcher, RecoHadTauCollectionGenMatcher, RecoJetCollectionGenMatcher
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorLoose.h" // RecoElectronCollectionSelectorLoose
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorFakeable.h" // RecoElectronCollectionSelectorFakeable
+#include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorTight.h" // RecoElectronCollectionSelectorTight
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorLoose.h" // RecoMuonCollectionSelectorLoose
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorFakeable.h" // RecoMuonCollectionSelectorFakeable
+#include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorTight.h" // RecoMuonCollectionSelectorTight
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelectorLoose.h" // RecoHadTauCollectionSelectorLoose
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelectorFakeable.h" // RecoHadTauCollectionSelectorFakeable
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelectorTight.h" // RecoHadTauCollectionSelectorTight
@@ -240,6 +242,7 @@ int main(int argc, char* argv[])
   RecoMuonCollectionGenMatcher muonGenMatcher;
   RecoMuonCollectionSelectorLoose preselMuonSelector(era);
   RecoMuonCollectionSelectorFakeable fakeableMuonSelector(era);
+  RecoMuonCollectionSelectorTight tightMuonSelector(era);
 
   RecoElectronReader* electronReader = new RecoElectronReader(era, branchName_electrons);
   inputTree -> registerReader(electronReader);
@@ -247,6 +250,7 @@ int main(int argc, char* argv[])
   RecoElectronCollectionCleaner electronCleaner(0.3);
   RecoElectronCollectionSelectorLoose preselElectronSelector(era);
   RecoElectronCollectionSelectorFakeable fakeableElectronSelector(era);
+  RecoElectronCollectionSelectorTight tightElectronSelector(era);
 
   RecoHadTauReader* hadTauReader = new RecoHadTauReader(era, branchName_hadTaus);
   inputTree -> registerReader(hadTauReader);
@@ -415,17 +419,25 @@ int main(int argc, char* argv[])
     std::vector<const RecoMuon*> muon_ptrs = convert_to_ptrs(muons);
     std::vector<const RecoMuon*> cleanedMuons = muon_ptrs; // CV: no cleaning needed for muons, as they have the highest priority in the overlap removal
     std::vector<const RecoMuon*> preselMuons = preselMuonSelector(cleanedMuons);
+    std::sort(preselMuons.begin(), preselMuons.end(), isHigherPt);
     std::vector<const RecoMuon*> fakeableMuons = fakeableMuonSelector(preselMuons);
+    std::sort(fakeableMuons.begin(), fakeableMuons.end(), isHigherConePt);
+    std::vector<const RecoMuon*> tightMuons = tightMuonSelector(preselMuons);
+    std::sort(tightMuons.begin(), tightMuons.end(), isHigherPt);
 
     std::vector<RecoElectron> electrons = electronReader->read();
     std::vector<const RecoElectron*> electron_ptrs = convert_to_ptrs(electrons);
     std::vector<const RecoElectron*> cleanedElectrons = electronCleaner(electron_ptrs, fakeableMuons);
     std::vector<const RecoElectron*> preselElectrons = preselElectronSelector(cleanedElectrons);
     std::vector<const RecoElectron*> fakeableElectrons = fakeableElectronSelector(preselElectrons);
+    std::sort(fakeableElectrons.begin(), fakeableElectrons.end(), isHigherConePt);
+    std::vector<const RecoElectron*> tightElectrons = tightElectronSelector(preselElectrons);
+    std::sort(tightElectrons.begin(), tightElectrons.end(), isHigherPt);
 
     std::vector<RecoHadTau> hadTaus = hadTauReader->read();
     std::vector<const RecoHadTau*> hadTau_ptrs = convert_to_ptrs(hadTaus);
     std::vector<const RecoHadTau*> cleanedHadTaus = hadTauCleaner(hadTau_ptrs, preselMuons, preselElectrons);
+    std::sort(cleanedHadTaus.begin(), cleanedHadTaus.end(), isHigherPt);
     std::vector<const RecoHadTau*> preselHadTaus = preselHadTauSelector(cleanedHadTaus);
     std::vector<const RecoHadTau*> fakeableHadTaus = fakeableHadTauSelector(cleanedHadTaus);
     std::vector<const RecoHadTau*> tightHadTaus = tightHadTauSelector(cleanedHadTaus);
@@ -438,7 +450,8 @@ int main(int argc, char* argv[])
 //--- build collections of jets and select subset of jets passing b-tagging criteria
     std::vector<RecoJet> jets = jetReader->read();
     std::vector<const RecoJet*> jet_ptrs = convert_to_ptrs(jets);
-    std::vector<const RecoJet*> cleanedJets = jetCleaner(jet_ptrs, fakeableMuons, fakeableElectrons, selHadTaus);
+    std::vector<const RecoJet*> cleanedJets = jetCleaner(jet_ptrs, fakeableElectrons, tightElectrons, fakeableMuons, tightMuons, fakeableHadTaus);
+    std::sort(cleanedJets.begin(), cleanedJets.end(), isHigherPt);
     std::vector<const RecoJet*> selJets = jetSelector(cleanedJets);
 
 	//--- build collections of generator level particles

@@ -17,17 +17,13 @@ RecoElectronSelectorLoose::RecoElectronSelectorLoose(int era,
   , max_dz_(0.1)
   , max_relIso_(0.4)
   , max_sip3d_(8.)
-  , min_mvaRawPOG_vlow_({ -0.30,-0.46,-0.63 })
-  , min_mvaRawPOG_low_({ -0.86,-0.85,-0.81 })
-  , min_mvaRawPOG_high_({ -0.96,-0.96,-0.95 })
+  , min_mvaRawPOG_({ 0.0, 0.0, 0.7 })
   , binning_absEta_({ 0.8, 1.479 })
   , apply_tightCharge_(false)
   , apply_conversionVeto_(false)
   , max_nLostHits_(1)
 {
-  assert(min_mvaRawPOG_vlow_.size() == 3);
-  assert(min_mvaRawPOG_low_.size() == 3);
-  assert(min_mvaRawPOG_high_.size() == 3);
+  assert(min_mvaRawPOG_.size() == 3);
   assert(binning_absEta_.size() == 2);
 }
 
@@ -116,33 +112,13 @@ RecoElectronSelectorLoose::operator()(const RecoElectron & electron) const
                     (electron.absEta() <= binning_absEta_[1] ? 1 : 2)
   ;
 
-  if(electron.pt() <= 10)
+  if(electron.mvaRawPOG_HZZ() < min_mvaRawPOG_[idxBin])
   {
-    if(electron.mvaRawPOG_HZZ() < min_mvaRawPOG_vlow_[idxBin])
+    if(debug_)
     {
-      if(debug_)
-      {
-        std::cout << "FAILS mvaPOG HZZ >= " << min_mvaRawPOG_vlow_[idxBin] << " loose cut\n";
-      }
-      return false;
+      std::cout << "FAILS mvaPOG HZZ >= " << min_mvaRawPOG_[idxBin] << " loose cut\n";
     }
-  }
-  else
-  {
-    const double a = min_mvaRawPOG_low_[idxBin];
-    const double b = min_mvaRawPOG_high_[idxBin];
-    const double c = (a - b) / 10;
-
-    // warning: the _high WP must be looser than the _low one
-    const double cut = std::min(a, std::max(b, a - c * (electron.pt() - 15)));
-    if(electron.mvaRawPOG_GP() < cut)
-    {
-      if(debug_)
-      {
-        std::cout << "FAILS mvaPOG GP >= " << cut << " loose cut\n";
-      }
-      return false;
-    }
+    return false;
   }
 
   if(set_selection_flags_)
