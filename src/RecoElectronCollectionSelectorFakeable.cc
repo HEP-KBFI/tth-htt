@@ -27,8 +27,8 @@ RecoElectronSelectorFakeable::RecoElectronSelectorFakeable(int era,
   , max_deltaPhi_trig_({ 0.04, 0.04, 0.07 })
   , min_OoEminusOoP_trig_(-0.05)
   , max_OoEminusOoP_trig_({ 0.010, 0.010, 0.005 })
-  , binning_mvaTTH_({ 0.75 })
-  , min_jetPtRatio_({ 0.30, -1.e+3 })
+  , binning_mvaTTH_({ 0.90 })
+  , min_jetPtRatio_({ 0.50, -1.e+3 })
   , apply_conversionVeto_(true)
   , max_nLostHits_(0)
 {
@@ -36,7 +36,7 @@ RecoElectronSelectorFakeable::RecoElectronSelectorFakeable(int era,
   {
     case kEra_2017:
     {
-      max_jetBtagCSV_ = { 0.5426, 0.8484 };
+      max_jetBtagCSV_ = { 0.3, 0.8484 };
       break;
     }
     default: throw cms::Exception("RecoElectronSelectorFakeable") << "Invalid era: " << era_;
@@ -82,7 +82,7 @@ RecoElectronSelectorFakeable::operator()(const RecoElectron & electron) const
                              (electron.absEta() <= binning_absEta_[1] ? 1 : 2)
     ;
 
-    double mvaRawPOG = electron.mvaRawPOG_HZZ();;
+    double mvaRawPOG = electron.mvaRawPOG_HZZ();
     double mvaRawPOGCut = min_mvaRawPOG_[idxBin_absEta];
 
     if(mvaRawPOG >= mvaRawPOGCut)

@@ -15,15 +15,16 @@ RecoMuonSelectorFakeable::RecoMuonSelectorFakeable(int era, int index, bool debu
   , max_relIso_(0.4)
   , max_sip3d_(8.)
   , apply_looseIdPOG_(true)
-  , binning_mvaTTH_({ 0.75 })
-  , min_jetPtRatio_({ 0.30, -1.e+3 })
+  , binning_mvaTTH_({ 0.90 })
+  , min_jetPtRatio_({ 0.50, -1.e+3 })
   , apply_mediumIdPOG_(false)
+  , min_segmentCompatibility_({0.3, -1.e+3})
 {
   switch(era_)
   {
     case kEra_2017:
     {
-      max_jetBtagCSV_ = { 0.5426, 0.8484 };
+      max_jetBtagCSV_ = { 0.3, 0.8484 };
       break;
     }
     default: throw cmsException(this) << "Invalid era: " << era_;
@@ -45,7 +46,8 @@ RecoMuonSelectorFakeable::operator()(const RecoMuon & muon) const
   {
     const int idxBin = muon.mvaRawTTH() <= binning_mvaTTH_[0] ? 0 : 1;
     if(muon.jetPtRatio() >= min_jetPtRatio_[idxBin] &&
-       muon.jetBtagCSV() <= max_jetBtagCSV_[idxBin])
+       muon.jetBtagCSV() <= max_jetBtagCSV_[idxBin] &&
+       muon.segmentCompatibility() > min_segmentCompatibility_[idxBin])
     {
       if(set_selection_flags_)
       {
