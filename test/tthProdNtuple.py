@@ -84,7 +84,7 @@ verbose            = args.verbose
 dry_run            = args.dry_run
 
 if era == "2017":
-  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_test import samples_2017 as samples
+  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_nanoAOD import samples_2017 as samples
 else:
   raise ValueError("Invalid Configuration parameter 'era' = %s !!" % era)
 
@@ -104,11 +104,11 @@ for sample_key, sample_entry in samples.items():
 if mode in ["all", "forBDTtraining_except"]:
   leptonSelection   = 'Fakeable'
   hadTauSelection   = 'Fakeable|dR03mvaMedium'
-  max_files_per_job = 200
+  max_files_per_job = 1
 else:
   leptonSelection   = 'Loose'
   hadTauSelection   = 'Loose|dR03mvaVVLoose'
-  max_files_per_job = 50
+  max_files_per_job = 1
 
 preselection_cuts = None
 if preselection:
