@@ -11,6 +11,7 @@
 #include <TString.h> // TString, Form
 #include <TMatrixD.h> // TMatrixD
 #include <TError.h> // gErrorAbortLevel, kError
+#include <TMath.h> // TMath::Pi()
 
 #include "tthAnalysis/HiggsToTauTau/interface/RecoLepton.h" // RecoLepton
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h" // RecoJet
@@ -93,6 +94,7 @@
 #include <vector> // std::vector<>
 #include <cstdlib> // EXIT_SUCCESS, EXIT_FAILURE
 #include <algorithm> // std::sort
+#include <math.h> // acos, sqrt
 #include <fstream> // std::ofstream
 #include <assert.h> // assert
 
@@ -116,6 +118,23 @@ void dumpGenParticles(const std::string& label, const std::vector<GenParticle>& 
 double square(double x)
 {
   return x*x;
+}
+
+double comp_theta_t(const Particle::LorentzVector& jet1_p4, double jet1_pullEta, double jet1_pullPhi, const Particle::LorentzVector& jet2_p4)
+{
+  double dEta1 = jet1_pullEta - jet1_p4.eta();
+  double dPhi1 = jet1_pullPhi - jet1_p4.phi();
+  double dEta2 = jet2_p4.eta() - jet1_p4.eta();
+  double dPhi2 = jet2_p4.phi() - jet1_p4.phi();
+  double dR1 = sqrt(square(dEta1) + square(dPhi1));
+  double dR2 = sqrt(square(dEta2) + square(dPhi2));
+  if ( dR1*dR2 > 0. ) {
+    double cos_theta_t = (dEta1*dEta2 + dPhi1*dPhi2)/(dR1*dR2);
+    assert(cos_theta_t >= -1. && cos_theta_t <= +1.);
+    return acos(cos_theta_t);
+  } else {
+    return -1.;
+  }
 }
 
 /**
@@ -519,7 +538,12 @@ int main(int argc, char* argv[])
   TH1* histogram_AK12_WJet1_dRmatch = fs.make<TH1D>("AK12_WJet1_dRmatch", "AK12_WJet1_dRmatch", 100, 0., 1.);
   TH1* histogram_AK12_WJet2_ptRec_div_ptGen = fs.make<TH1D>("AK12_WJet2_ptRec_div_ptGen", "AK12_WJet2_ptRec_div_ptGen", 200, 0., 2.);
   TH1* histogram_AK12_WJet2_dRmatch = fs.make<TH1D>("AK12_WJet2_dRmatch", "AK12_WJet2_dRmatch", 100, 0., 1.);
-  
+  TH1* histogram_AK12_theta_t_lead = fs.make<TH1D>("AK12_theta_t_lead", "AK12_theta_t_lead", 36, 0., TMath::Pi());
+  TH1* histogram_AK12_theta_t_sublead = fs.make<TH1D>("AK12_theta_t_sublead", "AK12_theta_t_sublead", 36, 0., TMath::Pi());
+
+  TH1* histogram_resolved_theta_t_lead = fs.make<TH1D>("resolved_theta_t_lead", "resolved_theta_t_lead", 36, 0., TMath::Pi());
+  TH1* histogram_resolved_theta_t_sublead = fs.make<TH1D>("resolved_theta_t_sublead", "resolved_theta_t_sublead", 36, 0., TMath::Pi());
+
 //--- open output file containing run:lumi:event numbers of events passing final event selection criteria
   std::ostream* selEventsFile = ( selEventsFileName_output != "" ) ? new std::ofstream(selEventsFileName_output.data(), std::ios::out) : 0;
   std::cout << "selEventsFileName_output = " << selEventsFileName_output << std::endl;
@@ -1601,6 +1625,14 @@ int main(int argc, char* argv[])
 		    fillWithOverFlow(histogram_AK12_WJet2_ptRec_div_ptGen, recWJetFromTop_sublead->pt()/genWJetFromTop_sublead->pt(), evtWeight);
 		    fillWithOverFlow(histogram_AK12_WJet2_dRmatch, deltaR(recWJetFromTop_sublead->p4(), genWJetFromTop_sublead->p4()), evtWeight);
 		  }
+		  double theta_t_lead = comp_theta_t(
+                    recWJetFromTop_lead->p4(), recWBosonFromTop->pullEta(), recWBosonFromTop->pullPhi(), 
+		    recWJetFromTop_sublead->p4());
+		  fillWithOverFlow(histogram_AK12_theta_t_lead, theta_t_lead, evtWeight);
+		  double theta_t_sublead = comp_theta_t(
+                    recWJetFromTop_sublead->p4(), recWBosonFromTop->pullEta(), recWBosonFromTop->pullPhi(), 
+		    recWJetFromTop_lead->p4());
+		  fillWithOverFlow(histogram_AK12_theta_t_sublead, theta_t_sublead, evtWeight);
 		  isAK12FromTop = true;
 		}
 	      }
@@ -1637,6 +1669,14 @@ int main(int argc, char* argv[])
 		    fillWithOverFlow(histogram_AK12_WJet2_ptRec_div_ptGen, recWJetFromAntiTop_sublead->pt()/genWJetFromAntiTop_sublead->pt(), evtWeight);
 		    fillWithOverFlow(histogram_AK12_WJet2_dRmatch, deltaR(recWJetFromAntiTop_sublead->p4(), genWJetFromAntiTop_sublead->p4()), evtWeight);
 		  }
+		  double theta_t_lead = comp_theta_t(
+                    recWJetFromAntiTop_lead->p4(), recWBosonFromAntiTop->pullEta(), recWBosonFromAntiTop->pullPhi(), 
+		    recWJetFromAntiTop_sublead->p4());
+		  fillWithOverFlow(histogram_AK12_theta_t_lead, theta_t_lead, evtWeight);
+		  double theta_t_sublead = comp_theta_t(
+                    recWJetFromAntiTop_sublead->p4(), recWBosonFromAntiTop->pullEta(), recWBosonFromAntiTop->pullPhi(), 
+		    recWJetFromAntiTop_lead->p4());
+		  fillWithOverFlow(histogram_AK12_theta_t_sublead, theta_t_sublead, evtWeight);
 		  isAK12FromAntiTop = true;
 		}
 	      }
@@ -1830,7 +1870,28 @@ int main(int argc, char* argv[])
 			deltaR(selBJetFromAntiTop->p4(),      selWJetFromAntiTop_sublead->p4()) > 0.3 && 
 			deltaR(selWJetFromAntiTop_lead->p4(), selWJetFromAntiTop_sublead->p4()) > 0.3) ) {
 		    cutFlowTable_2lss_1tau_resolved.update("dR(jet1,jet2) > 0.3 for any pair of selJets in triplet");
-		    
+
+		    if ( selWJetFromTop_lead && selWJetFromTop_sublead ) {
+		      double theta_t_lead = comp_theta_t(
+                        selWJetFromTop_lead->p4(), selWJetFromTop_lead->pullEta(), selWJetFromTop_lead->pullPhi(), 
+			selWJetFromTop_sublead->p4());
+		      fillWithOverFlow(histogram_resolved_theta_t_lead, theta_t_lead, evtWeight);
+		      double theta_t_sublead = comp_theta_t(
+                        selWJetFromTop_sublead->p4(), selWJetFromTop_sublead->pullEta(), selWJetFromTop_sublead->pullPhi(), 
+			selWJetFromTop_lead->p4());
+		      fillWithOverFlow(histogram_resolved_theta_t_sublead, theta_t_sublead, evtWeight);
+		    }
+		    if ( selWJetFromAntiTop_lead && selWJetFromAntiTop_sublead ) {
+		      double theta_t_lead = comp_theta_t(
+                        selWJetFromAntiTop_lead->p4(), selWJetFromAntiTop_lead->pullEta(), selWJetFromAntiTop_lead->pullPhi(), 
+			selWJetFromAntiTop_sublead->p4());
+		      fillWithOverFlow(histogram_resolved_theta_t_lead, theta_t_lead, evtWeight);
+		      double theta_t_sublead = comp_theta_t(
+                        selWJetFromAntiTop_sublead->p4(), selWJetFromAntiTop_sublead->pullEta(), selWJetFromAntiTop_sublead->pullPhi(), 
+			selWJetFromAntiTop_lead->p4());
+		      fillWithOverFlow(histogram_resolved_theta_t_sublead, theta_t_sublead, evtWeight);
+		    }
+
 		    bool selBJetFromTop_passesLoose = false;
 		    bool selBJetFromAntiTop_passesLoose = false;
 		    for ( std::vector<const RecoJet*>::const_iterator selBJet_loose = selBJets_loose.begin();
