@@ -182,8 +182,8 @@ class analyzeConfig:
             # CV: tau trigger paths taken from slide 6 of presentation given by Hale Sert at HTT workshop in December 2017
             #    (https://indico.cern.ch/event/684622/contributions/2807071/attachments/1575421/2487940/141217_triggerStatusPlans_hsert.pdf)
             self.triggers_1mu1tau = [
-                'HLT_IsoMu24_eta2p1_LooseChargedIsoPFTau20_eta2p1_SingleL1_v*',
-                'HLT_IsoMu20_eta2p1_LooseChargedIsoPFTau27_eta2p1_CrossL1_v*',
+                'HLT_IsoMu24_eta2p1_LooseChargedIsoPFTau20_SingleL1',
+                'HLT_IsoMu20_eta2p1_LooseChargedIsoPFTau27_eta2p1_CrossL1',
             ]
             self.triggers_1e1tau = [
                 'HLT_Ele24_eta2p1_WPTight_Gsf_LooseChargedIsoPFTau30_eta2p1_CrossL1',
