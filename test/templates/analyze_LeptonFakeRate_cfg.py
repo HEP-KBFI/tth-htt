@@ -76,8 +76,8 @@ process.analyze_LeptonFakeRate = cms.PSet(
 #            pufile    = cms.FileInPath(""), ## PU file to be implemented later
             average_prescale = cms.double(8992), ## 2016 VALUE: 4841
             prescale_rand_mc = cms.double(50.),
-            is_trigger_1mu = cms.bool(False),
-            is_trigger_2mu = cms.bool(True),
+            is_trigger_1mu = cms.bool(True),
+            is_trigger_2mu = cms.bool(False),
             is_trigger_1e = cms.bool(False),
             is_trigger_2e = cms.bool(False)
          )
@@ -93,8 +93,8 @@ process.analyze_LeptonFakeRate = cms.PSet(
             prescale_rand_mc = cms.double(10.),
             is_trigger_1mu = cms.bool(False),
             is_trigger_2mu = cms.bool(False),
-            is_trigger_1e = cms.bool(False),
-            is_trigger_2e = cms.bool(True)
+            is_trigger_1e = cms.bool(True),
+            is_trigger_2e = cms.bool(False)
         ),
 #        cms.PSet(
 #            path = cms.vstring("HLT_Ele12_CaloIdL_TrackIdL_IsoVL_PFJet30"),
@@ -106,8 +106,8 @@ process.analyze_LeptonFakeRate = cms.PSet(
 #            prescale_rand_mc = cms.double(25.),
 #            is_trigger_1mu = cms.bool(False),
 #            is_trigger_2mu = cms.bool(False),
-#            is_trigger_1e = cms.bool(False),
-#            is_trigger_2e = cms.bool(True)
+#            is_trigger_1e = cms.bool(True),
+#            is_trigger_2e = cms.bool(False)
 #        ),
         cms.PSet(
             path = cms.vstring("HLT_Ele17_CaloIdM_TrackIdM_PFJet30"),
@@ -119,8 +119,8 @@ process.analyze_LeptonFakeRate = cms.PSet(
             prescale_rand_mc = cms.double(10.),
             is_trigger_1mu = cms.bool(False),
             is_trigger_2mu = cms.bool(False),
-            is_trigger_1e = cms.bool(False),
-            is_trigger_2e = cms.bool(True)
+            is_trigger_1e = cms.bool(True),
+            is_trigger_2e = cms.bool(False)
         )
     ),
 
