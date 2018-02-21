@@ -1390,6 +1390,18 @@ main(int argc,
 
   delete inputTree;
 
+  for(auto & kv: outputFiles)
+  {
+    for(auto & kv2: kv.second)
+    {
+      if(kv2.second)
+      {
+        *kv2.second << std::flush;
+        delete kv2.second;
+      }
+    }
+  }
+
   clock.Show(argv[0]);
 
   return EXIT_SUCCESS;
