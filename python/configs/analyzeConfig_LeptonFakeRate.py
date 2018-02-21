@@ -124,7 +124,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
                numerator_histogram, denominator_histogram, prep_dcard,
                max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,
                executable_addBackgrounds, executable_addBackgrounds_recursively, executable_addBackgrounds_LeptonFakeRate,
-               executable_prep_dcard, executable_comp_LeptonFakeRate,
+               executable_prep_dcard, executable_comp_LeptonFakeRate, select_rle_output = False,
                verbose = False, dry_run = False):
     analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "LeptonFakeRate", central_or_shifts,
       max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,
@@ -170,6 +170,8 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     self.numerator_plotLabel = numerator_histogram[1]
     self.denominator_plotLabel = denominator_histogram[1]
 
+    self.select_rle_output = select_rle_output
+
     self.jobOptions_combine = {}
 
   def createCfg_analyze(self, jobOptions):
@@ -203,6 +205,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     lines.append("process.analyze_LeptonFakeRate.lumiScale = cms.double(%f)" % jobOptions['lumi_scale'])
     lines.append("process.analyze_LeptonFakeRate.apply_genWeight = cms.bool(%s)" % jobOptions['apply_genWeight'])
     lines.append("process.analyze_LeptonFakeRate.fillGenEvtHistograms = cms.bool(%s)" % self.fillGenEvtHistograms)
+    lines.append("process.analyze_LeptonFakeRate.selEventsFileName_output = cms.string('%s')" % jobOptions['rleOutputFile'])
     create_cfg(self.cfgFile_analyze, jobOptions['cfgFile_modified'], lines)
 
   def createCfg_addBackgrounds_LeptonFakeRate(self, jobOptions):
@@ -364,6 +367,16 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
           if len(ntupleFiles) == 0:
             logging.warning("ntupleFiles['%s'] = %s --> skipping job !!" % (key_job, ntupleFiles))
             continue
+
+          rleOutputFile = os.path.join(
+            self.dirs[key_dir][DKEY_RLES],
+          "rle_{channel}_{process_name}_{central_or_shift}_{jobId}_%s_%s.txt".format(
+            channel          = self.channel,
+            process_name     = process_name,
+            central_or_shift = central_or_shift,
+            jobId            = jobId,
+          )) if self.select_rle_output else ""
+
           self.jobOptions_analyze[key_analyze_job] = {
             'ntupleFiles' : ntupleFiles,
             'cfgFile_modified' : os.path.join(self.dirs[key_dir][DKEY_CFGS], "analyze_%s_%s_%s_%i_cfg.py" % \
@@ -385,6 +398,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
             'lumi_scale' : 1. if not (self.use_lumi and is_mc) else sample_info["xsection"] * self.lumi / sample_info["nof_events"],
             'apply_genWeight' : sample_info["genWeight"] if (is_mc and "genWeight" in sample_info.keys()) else False,
             'apply_trigger_bits' : apply_trigger_bits,
+            'rleOutputFile' : rleOutputFile,
           }
           self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job])
 

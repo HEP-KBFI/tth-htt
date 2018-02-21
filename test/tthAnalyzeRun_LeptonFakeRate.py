@@ -122,6 +122,7 @@ if __name__ == '__main__':
       executable_prep_dcard                    = "prepareDatacards",
       executable_comp_LeptonFakeRate           = "comp_LeptonFakeRate",
       num_parallel_jobs                        = 100,
+      select_rle_output                        = True,
       verbose                                  = idx_job_resubmission > 0,
       dry_run                                  = args.dry_run,
     )
