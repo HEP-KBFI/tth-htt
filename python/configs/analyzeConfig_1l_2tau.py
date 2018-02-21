@@ -88,17 +88,6 @@ class analyzeConfig_1l_2tau(analyzeConfig):
     else:
       raise ValueError("Invalid Configuration parameter 'applyFakeRateWeights' = %s !!" % applyFakeRateWeights)
 
-    if era == '2017':
-      self.triggers_1mu = [
-        # available in 2016 but not in 2017 nano: 'HLT_BIT_HLT_IsoMu22_v',
-        # available in 2016 but not in 2017 nano: 'HLT_BIT_HLT_IsoTkMu22_v',
-        # available in 2016 but not in 2017 nano: 'HLT_BIT_HLT_IsoMu22_eta2p1_v',
-        # available in 2016 but not in 2017 nano: 'HLT_BIT_HLT_IsoTkMu22_eta2p1_v'
-      ]
-      self.triggers_1e = [
-        # available in 2016 but not in 2017 nano: 'HLT_BIT_HLT_Ele25_eta2p1_WPTight_Gsf_v',
-      ]
-
     self.executable_addBackgrounds = executable_addBackgrounds
     self.executable_addFakes = executable_addBackgroundJetToTauFakes
 
@@ -302,7 +291,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
       hadTau_selection = "|".join([ lepton_and_hadTau_selection, self.hadTau_selection_part2 ])
 
       if lepton_and_hadTau_selection == "forBDTtraining":
-        lepton_selection = "Loose" 
+        lepton_selection = "Loose"
         hadTau_selection = "Tight|%s" % self.hadTau_selection_relaxed
 
       for lepton_and_hadTau_frWeight in self.lepton_and_hadTau_frWeights:
