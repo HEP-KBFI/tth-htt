@@ -53,6 +53,8 @@
 #include <boost/math/special_functions/sign.hpp> // boost::math::sign()
 #include <boost/algorithm/string/predicate.hpp> // boost::starts_with(), boost::ends_with()
 
+#include <fstream> // std::ofstream
+
 typedef std::vector<std::string> vstring;
 typedef std::vector<double> vdouble;
 
@@ -479,6 +481,20 @@ main(int argc,
     cfgRunLumiEventSelector.addParameter<std::string>("inputFileName", selEventsFileName_input);
     cfgRunLumiEventSelector.addParameter<std::string>("separator",     ":");
     run_lumi_eventSelector = new RunLumiEventSelector(cfgRunLumiEventSelector);
+  }
+
+  const std::string selEventsFileName_output = cfg_analyze.getParameter<std::string>("selEventsFileName_output");
+  const bool writeTo_selEventsFileOut = ! selEventsFileName_output.empty();
+  std::map<std::string, std::map<std::string, std::ofstream *>> outputFiles;
+  for(const std::string & emu_str: { "e", "mu" })
+  {
+    for(const std::string & numden_str: { "num", "den" })
+    {
+      outputFiles[emu_str][numden_str] = writeTo_selEventsFileOut ?
+        new std::ofstream(Form(selEventsFileName_output.data(), emu_str.data(), numden_str.data())) :
+        nullptr
+      ;
+    }
   }
 
   std::string jet_btagWeight_branch;
@@ -1132,6 +1148,10 @@ main(int argc,
             histograms_incl_afterCuts  = histograms_e_numerator_incl_afterCuts;
             histograms_binned_beforeCuts = &histograms_e_numerator_binned_beforeCuts;
             histograms_binned_afterCuts  = &histograms_e_numerator_binned_afterCuts;
+            if(writeTo_selEventsFileOut)
+            {
+              *(outputFiles["e"]["num"]) << eventInfo.str() << '\n';
+            }
           }
           else if(fakeableElectron.isFakeable())
           {
@@ -1140,6 +1160,10 @@ main(int argc,
             histograms_incl_afterCuts  = histograms_e_denominator_incl_afterCuts;
             histograms_binned_beforeCuts = &histograms_e_denominator_binned_beforeCuts;
             histograms_binned_afterCuts  = &histograms_e_denominator_binned_afterCuts;
+            if(writeTo_selEventsFileOut)
+            {
+              *(outputFiles["e"]["den"]) << eventInfo.str() << '\n';
+            }
           }
           else
           {
@@ -1248,6 +1272,10 @@ main(int argc,
             histograms_incl_afterCuts  = histograms_mu_numerator_incl_afterCuts;
             histograms_binned_beforeCuts = &histograms_mu_numerator_binned_beforeCuts;
             histograms_binned_afterCuts  = &histograms_mu_numerator_binned_afterCuts;
+            if(writeTo_selEventsFileOut)
+            {
+              *(outputFiles["mu"]["num"]) << eventInfo.str() << '\n';
+            }
           }
           else if(fakeableMuon.isFakeable())
           {
@@ -1256,6 +1284,10 @@ main(int argc,
             histograms_incl_afterCuts  = histograms_mu_denominator_incl_afterCuts;
             histograms_binned_beforeCuts = &histograms_mu_denominator_binned_beforeCuts;
             histograms_binned_afterCuts  = &histograms_mu_denominator_binned_afterCuts;
+            if(writeTo_selEventsFileOut)
+            {
+              *(outputFiles["mu"]["den"]) << eventInfo.str() << '\n';
+            }
           }
           else
           {
@@ -1357,6 +1389,18 @@ main(int argc,
   }
 
   delete inputTree;
+
+  for(auto & kv: outputFiles)
+  {
+    for(auto & kv2: kv.second)
+    {
+      if(kv2.second)
+      {
+        *kv2.second << std::flush;
+        delete kv2.second;
+      }
+    }
+  }
 
   clock.Show(argv[0]);
 

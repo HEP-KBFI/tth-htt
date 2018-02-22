@@ -5,7 +5,7 @@ meta_dictionary = OD()
 ### event sums
 
 sum_events = {
-  ("DYJetsToLL_M-50_v1", "DYJetsToLL_M-50_v2"),
+#  ("DYJetsToLL_M-50_v1", "DYJetsToLL_M-50_v2"),
 }
 
 ### DATA
