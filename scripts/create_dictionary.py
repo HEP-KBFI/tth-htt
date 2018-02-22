@@ -5,9 +5,6 @@ from tthAnalysis.HiggsToTauTau.jobTools import run_cmd
 HISTOGRAM_COUNT         = 'Count'
 HISTOGRAM_COUNTWEIGHTED = 'CountWeighted'
 EVENTS_TREE             = 'Events'
-RUN_TREE                = 'Runs'
-BRANCH_COUNT            = 'genEventCount'
-BRANCH_COUNTWEIGHTED    = 'genEventSumw'
 
 HISTOGRAM_COUNT_KEY = 'histogram_count'
 TREE_COUNT_KEY      = 'tree_count'
@@ -477,34 +474,13 @@ def traverse_single(hdfs_system, meta_dict, path_obj, key, check_every_event,
         ))
         # Using a fallback solution
         if is_data:
-          # in case of data, the Runs tree contains only runs branch and nothing else
+          # It is safe to use the nnumber of TTree events
           index_entry[HISTOGRAM_COUNT_KEY] = index_entry[TREE_COUNT_KEY]
         else:
-          if RUN_TREE not in root_file.GetListOfKeys():
-            raise ValueError("Tree of the name {tree_name} is not in file {path}".format(
-              tree_name = RUN_TREE,
-              path      = subentry_file.name_fuse,
-            ))
-          tree_run = root_file.Get(RUN_TREE)
-          branches_run = [branch.GetName() for branch in tree_run.GetListOfBranches()]
-          requested_branch = BRANCH_COUNTWEIGHTED
-          if requested_branch not in branches_run:
-            raise ValueError("No branch named {branch} in tree named {tree} in file {path}".format(
-              branch = requested_branch,
-              tree   = RUN_TREE,
-              path   = subentry_file.name_fuse,
-            ))
-
-          array_str, array_lst = get_array_type(tree_run, requested_branch, 1)
-          run_count = array.array(array_str, array_lst)
-          tree_run.SetBranchAddress(requested_branch, run_count)
-          run_entries = tree_run.GetEntries()
-          nof_run_events = 0
-          for run_idx in range(run_entries):
-            tree_run.GetEntry(run_idx)
-            nof_run_events += run_count[0]
-          del tree_run
-          index_entry[HISTOGRAM_COUNT_KEY] = nof_run_events
+          # We have no option but set it to 0 since the PU weight branches are not available
+          # In practice this figure doesn't matter at all since the number of events is not used
+          # anywhere in nanoAOD post-processing step nor by produceNtuple code
+          index_entry[HISTOGRAM_COUNT_KEY] = 0
       else:
         histogram = root_file.Get(histogram_name)
         if not histogram:
@@ -517,6 +493,13 @@ def traverse_single(hdfs_system, meta_dict, path_obj, key, check_every_event,
 
       # this was probably a success: record the results
       indices[matched_idx] = index_entry
+      logging.debug(
+        "Found {nof_events} ({nof_tree_events} tree) events in file {filename}".format(
+          nof_events      = index_entry[HISTOGRAM_COUNT_KEY],
+          nof_tree_events = index_entry[TREE_COUNT_KEY],
+          filename        = subentry_file,
+        )
+      )
 
       root_file.Close()
       del tree
@@ -526,8 +509,8 @@ def traverse_single(hdfs_system, meta_dict, path_obj, key, check_every_event,
     logging.debug("Path {path} contains no ROOT files".format(path = path_obj.name_fuse))
     return
 
-  logging.debug("Found {nof_events} ({nof_tree_events} tree) events in {nof_files} files in {path} " \
-                "for entry {key}".format(
+  logging.debug("Found total {nof_events} ({nof_tree_events} tree) events in {nof_files} files in "
+                "{path} for entry {key}".format(
     nof_events      = sum([index_entry[HISTOGRAM_COUNT_KEY] for index_entry in indices.values()]),
     nof_tree_events = sum([index_entry[TREE_COUNT_KEY] for index_entry in indices.values()]),
     nof_files       = len(indices.keys()),
