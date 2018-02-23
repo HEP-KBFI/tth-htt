@@ -41,7 +41,6 @@ RecoJetReader::RecoJetReader(int era,
   , jet_BtagCSV_(nullptr)
   , jet_BtagWeight_(nullptr)
   , jet_QGDiscr_(nullptr)
-  , jet_heppyFlavour_(nullptr)
   , jet_pullEta_(nullptr)
   , jet_pullPhi_(nullptr)
   , jet_pullMag_(nullptr)
@@ -75,7 +74,6 @@ RecoJetReader::~RecoJetReader()
     delete[] gInstance->jet_BtagCSV_;
     delete[] gInstance->jet_BtagWeight_;
     delete[] gInstance->jet_QGDiscr_;
-    delete[] gInstance->jet_heppyFlavour_;
     delete[] gInstance->jet_pullEta_;
     delete[] gInstance->jet_pullPhi_;
     delete[] gInstance->jet_pullMag_;
@@ -173,7 +171,6 @@ RecoJetReader::setBranchAddresses(TTree * tree)
       }
     }
     bai.setBranchAddress(jet_QGDiscr_, branchName_QGDiscr_, 1.);
-    bai.setBranchAddress(jet_heppyFlavour_, branchName_heppyFlavour_, -1);
     bai.setBranchAddress(jet_pullEta_, branchName_pullEta_);
     bai.setBranchAddress(jet_pullPhi_, branchName_pullPhi_);
     bai.setBranchAddress(jet_pullMag_, branchName_pullMag_);
@@ -220,7 +217,6 @@ RecoJetReader::read() const
         gInstance->jet_BtagCSV_[idxJet],
         gInstance->jet_BtagWeight_[idxJet],
         gInstance->jet_QGDiscr_[idxJet],
-        gInstance->jet_heppyFlavour_[idxJet],
         gInstance->jet_pullEta_[idxJet], 
         gInstance->jet_pullPhi_[idxJet], 
         gInstance->jet_pullMag_[idxJet], 

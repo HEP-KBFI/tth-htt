@@ -666,8 +666,6 @@ int main(int argc, char* argv[])
       for ( std::vector<const RecoJet*>::const_iterator jet = selJets.begin();
 	          jet != selJets.end(); ++jet ) {
 	      weight_btag *= (*jet)->BtagWeight();
-	      //std::cout << "jet " << (*jet)->pt() << " " << (*jet)->eta()  << ", flavour " << (*jet)->genJet()->pdgId() << ", weight " << (*jet)->BtagWeight() << std::endl;
-	      //std::cout << run << ':' << lumi << ':' << event << ", jet " << (*jet)->pt() << " " << (*jet)->eta()  << ", CSV " << (*jet)->BtagCSV() << ", flavour " << (*jet)->heppyFlavour() << ", weight " << (*jet)->BtagWeight() << ", leptons: " << lepton_lead_type << " "<< lepton_lead_pt << " " << lepton_lead_eta << " " << lepton_lead->mvaRawTTH() << " " << lepton_lead->isTight() << " " << lepton_lead->cone_pt() << " " << lepton_sublead_type<< " " << lepton_sublead_pt << " " << lepton_sublead_eta << " " << lepton_sublead->mvaRawTTH() << " " << lepton_sublead->isTight() << " " << lepton_sublead->cone_pt() << std::endl;
 	      
       }
     }

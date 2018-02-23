@@ -182,8 +182,7 @@ SyncNtupleManager::initializeBranches()
     jet_eta,          "eta",
     jet_phi,          "phi",
     jet_E,            "E",
-    jet_CSV,          "CSV",
-    jet_heppyFlavour, "heppyFlavour"
+    jet_CSV,          "CSV"
   );
 
   reset(true);
@@ -409,7 +408,6 @@ SyncNtupleManager::read(const std::vector<const RecoJet *> & jets)
     jet_phi[i] = jet -> phi();
     jet_E[i] = (jet -> p4()).E();
     jet_CSV[i] = jet -> BtagCSV();
-    jet_heppyFlavour[i] = jet -> heppyFlavour();
   }
 }
 
@@ -568,8 +566,7 @@ SyncNtupleManager::reset(bool is_initializing)
     jet_eta,
     jet_phi,
     jet_E,
-    jet_CSV,
-    jet_heppyFlavour
+    jet_CSV
   );
 
   for(auto & kv: hltMap)

@@ -281,7 +281,6 @@ private:
   Float_t * jet_phi;
   Float_t * jet_E;
   Float_t * jet_CSV;
-  Float_t * jet_heppyFlavour;
 
   std::map<std::string, Int_t> hltMap;
 

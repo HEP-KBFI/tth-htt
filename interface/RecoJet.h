@@ -20,15 +20,14 @@ class RecoJet
 public:
   RecoJet() = default;
   RecoJet(const GenJet & particle,
-	  Double_t charge,
+          Double_t charge,
           Double_t jecUncertTotal,
           Double_t BtagCSV,
           Double_t BtagWeight,
           Double_t QGDiscr,
-          Int_t heppyFlavour,
-	  Double_t pullEta,
-	  Double_t pullPhi,
-	  Double_t pullMag,
+          Double_t pullEta,
+          Double_t pullPhi,
+          Double_t pullMag,
           Int_t idx);
 
   virtual ~RecoJet();
@@ -42,7 +41,6 @@ public:
   Double_t BtagCSV() const;
   Double_t BtagWeight() const;
   Double_t QGDiscr() const;
-  Int_t heppyFlavour() const;
   Double_t pullEta() const;
   Double_t pullPhi() const;
   Double_t pullMag() const;
@@ -56,7 +54,6 @@ protected:
   Double_t BtagCSV_;      ///< CSV b-tagging discriminator value
   Double_t BtagWeight_;   ///< weight for data/MC correction of b-tagging efficiency and mistag rate
   Double_t QGDiscr_;      ///< quark/gluon discriminator
-  Int_t heppyFlavour_;    ///< Jet heppy flavour
   Double_t pullEta_;      ///< eta component of pull vector, computed according to arXiv:1001.5027
   Double_t pullPhi_;      ///< phi component of pull vector, computed according to arXiv:1001.5027
   Double_t pullMag_;      ///< magnitude of pull vector, computed according to arXiv:1001.5027

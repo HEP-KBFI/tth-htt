@@ -84,7 +84,6 @@ protected:
   std::string branchName_BtagCSV_;
   std::string branchName_BtagWeight_;
   std::string branchName_QGDiscr_;
-  std::string branchName_heppyFlavour_;
   std::string branchName_pullEta_;
   std::string branchName_pullPhi_;
   std::string branchName_pullMag_;
@@ -105,7 +104,6 @@ protected:
   Float_t * jet_BtagCSV_;
   Float_t * jet_BtagWeight_;
   Float_t * jet_QGDiscr_;
-  Int_t * jet_heppyFlavour_;
   Float_t * jet_pullEta_;
   Float_t * jet_pullPhi_;
   Float_t * jet_pullMag_;
