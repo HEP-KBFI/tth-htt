@@ -180,7 +180,6 @@ private:
   }
 
   void reset(bool is_initializing);
-  std::string hltMangle(const std::string & hltBranchName) const;
 
   TFile * outputFile;
   TTree * outputTree;

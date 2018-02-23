@@ -201,7 +201,7 @@ SyncNtupleManager::initializeHLTBranches(const std::vector<std::vector<hltPath *
   }
   for(auto & kv: hltMap)
   {
-    setBranches(hltMap[kv.first], hltMangle(kv.first));
+    setBranches(hltMap[kv.first], kv.first);
   }
 }
 
@@ -576,17 +576,6 @@ SyncNtupleManager::reset(bool is_initializing)
   {
     hltMap[kv.first] = -1;
   }
-}
-
-std::string
-SyncNtupleManager::hltMangle(const std::string & hltBranchName) const
-{
-  if(! boost::starts_with(hltBranchName, "HLT_"))
-  {
-    throw cmsException(this, __func__)
-      << "Invalid HLT branch name: " << hltBranchName;
-  }
-  return hltBranchName.substr(8);
 }
 
 void
