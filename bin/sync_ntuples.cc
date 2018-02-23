@@ -247,7 +247,7 @@ int main(int argc, char* argv[])
   inputTree -> registerReader(metReader);
 
 //--- declare particle collections
-  RecoMuonReader* muonReader = new RecoMuonReader(era, "Muon");
+  RecoMuonReader* muonReader = new RecoMuonReader(era, "Muon", false);
   muonReader->set_HIP_mitigation(use_HIP_mitigation_mediumMuonId);
   inputTree -> registerReader(muonReader);
   RecoMuonCollectionGenMatcher muonGenMatcher;
@@ -257,7 +257,7 @@ int main(int argc, char* argv[])
   RecoMuonCollectionSelectorMVABased mvaBasedSelector(era);
   RecoMuonCollectionSelectorTight tightMuonSelector(era, -1, run_lumi_eventSelector != 0);
 
-  RecoElectronReader* electronReader = new RecoElectronReader(era, "nElectron", "Electron");
+  RecoElectronReader* electronReader = new RecoElectronReader(era, "Electron", false);
   inputTree -> registerReader(electronReader);
   RecoElectronCollectionGenMatcher electronGenMatcher;
   RecoElectronCollectionCleaner electronCleaner(0.05); // NB! in analysis we have 0.3
@@ -267,7 +267,7 @@ int main(int argc, char* argv[])
   RecoElectronCollectionSelectorMVABased mvaBasedElectronSelector(era);
   RecoElectronCollectionSelectorTight tightElectronSelector(era, -1, run_lumi_eventSelector != 0);
 
-  RecoHadTauReader* hadTauReader = new RecoHadTauReader(era, "Tau");
+  RecoHadTauReader* hadTauReader = new RecoHadTauReader(era, "Tau", false);
   inputTree -> registerReader(hadTauReader);
   RecoHadTauCollectionGenMatcher hadTauGenMatcher;
   RecoHadTauCollectionCleaner hadTauCleaner(0.4); // NB! in analysis we have 0.3
@@ -314,7 +314,7 @@ int main(int argc, char* argv[])
     jetToTauFakeRateInterface = new JetToTauFakeRateInterface(cfg_hadTauFakeRateWeight, jetToTauFakeRate_option);
   }
 
-  RecoJetReader* jetReader = new RecoJetReader(era, isMC, "Jet");
+  RecoJetReader* jetReader = new RecoJetReader(era, isMC, "Jet", false);
   jetReader->setJetPt_central_or_shift(jetPt_option);
   jetReader->setBranchName_BtagWeight(jet_btagWeight_branch);
   inputTree -> registerReader(jetReader);
