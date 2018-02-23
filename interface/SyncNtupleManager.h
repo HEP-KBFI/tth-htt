@@ -68,7 +68,7 @@ public:
 
 private:
   template<typename T,
-           typename = std::enable_if<std::is_arithmetic<T>::value>>
+           typename = std::enable_if<std::is_arithmetic<T>::value && ! std::is_pointer<T>::value>>
   void
   setBranches(const std::string & infix,
               int count,
@@ -80,6 +80,7 @@ private:
       var = new T[count];
       for(int i = 0; i < count; ++i)
       {
+        var[i] = placeholder_value;
         const std::string branchName = Form("%s%d_%s", infix.c_str(), i, label.c_str());
         outputTree -> Branch(branchName.c_str(), &(var[i]), Form("%s/%s", branchName.c_str(), Traits<T>::TYPE_NAME));
       }
@@ -93,13 +94,13 @@ private:
 
   template<typename T,
            typename... Args,
-           typename = std::enable_if<std::is_arithmetic<T>::value>>
+           typename = std::enable_if<std::is_arithmetic<T>::value && ! std::is_pointer<T>::value>>
   void
   setBranches(const std::string & infix,
               int count,
               T * & var,
               const std::string & label,
-              Args... remainingVars)
+              Args & ... remainingVars)
   {
     if(! outputTree)
     {
@@ -110,21 +111,22 @@ private:
   }
 
   template<typename T,
-           typename = std::enable_if<std::is_arithmetic<T>::value>>
+           typename = std::enable_if<std::is_arithmetic<T>::value && ! std::is_pointer<T>::value>>
   void
   setBranches(T & var,
               const std::string & label)
   {
+    var = placeholder_value;
     outputTree -> Branch(label.c_str(), &var, Form("%s/%s", label.c_str(), Traits<T>::TYPE_NAME));
   }
 
   template<typename T,
            typename... Args,
-           typename = std::enable_if<std::is_arithmetic<T>::value>>
+           typename = std::enable_if<std::is_arithmetic<T>::value && ! std::is_pointer<T>::value>>
   void
   setBranches(T & var,
               const std::string & label,
-              Args... remainingVars)
+              Args & ... remainingVars)
   {
     if(! outputTree)
     {
@@ -135,7 +137,7 @@ private:
   }
 
   template<typename T,
-           typename = std::enable_if<std::is_arithmetic<T>::value>>
+           typename = std::enable_if<std::is_arithmetic<T>::value && ! std::is_pointer<T>::value>>
   void
   reset(int count,
         T * & var)
@@ -148,18 +150,18 @@ private:
 
   template<typename T,
            typename... Args,
-           typename = std::enable_if<std::is_arithmetic<T>::value>>
+           typename = std::enable_if<std::is_arithmetic<T>::value && ! std::is_pointer<T>::value>>
   void
   reset(int count,
         T * & var,
-        Args... remainingVars)
+        Args & ... remainingVars)
   {
     reset(count, var);
     reset(count, remainingVars...);
   }
 
   template<typename T,
-           typename = std::enable_if<std::is_arithmetic<T>::value>>
+           typename = std::enable_if<std::is_arithmetic<T>::value && ! std::is_pointer<T>::value>>
   void
   reset(T & var)
   {
@@ -168,10 +170,10 @@ private:
 
   template<typename T,
            typename... Args,
-           typename = std::enable_if<std::is_arithmetic<T>::value>>
+           typename = std::enable_if<std::is_arithmetic<T>::value && ! std::is_pointer<T>::value>>
   void
   reset(T & var,
-        Args... remainingVars)
+        Args & ... remainingVars)
   {
     reset(var);
     reset(remainingVars...);
