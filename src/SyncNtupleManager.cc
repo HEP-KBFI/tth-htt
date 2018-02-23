@@ -46,20 +46,31 @@ SyncNtupleManager::initializeBranches()
   const char * tstr = "tau";
   const char * jstr = "jet";
 
+  const std::string n_presel_mu_str       = Form("n_presel_%s",      mstr);
+  const std::string n_fakeablesel_mu_str  = Form("n_fakeablesel_%s", mstr);
+  const std::string n_cutsel_mu_str       = Form("n_cutsel_%s",      mstr);
+  const std::string n_mvasel_mu_str       = Form("n_mvasel_%s",      mstr);
+  const std::string n_presel_ele_str      = Form("n_presel_%s",      estr);
+  const std::string n_fakeablesel_ele_str = Form("n_fakeablesel_%s", estr);
+  const std::string n_cutsel_ele_str      = Form("n_cutsel_%s",      estr);
+  const std::string n_mvasel_ele_str      = Form("n_mvasel_%s",      estr);
+  const std::string n_presel_tau_str      = Form("n_presel_%s",      tstr);
+  const std::string n_presel_jet_str      = Form("n_presel_%s",      jstr);
+
   setBranches(
     nEvent,            "nEvent",
     ls,                "ls",
     run,               "run",
-    n_presel_mu,       Form("n_presel_%s",      mstr),
-    n_fakeablesel_mu,  Form("n_fakeablesel_%s", mstr),
-    n_cutsel_mu,       Form("n_cutsel_%s",      mstr),
-    n_mvasel_mu,       Form("n_mvasel_%s",      mstr),
-    n_presel_ele,      Form("n_presel_%s",      estr),
-    n_fakeablesel_ele, Form("n_fakeablesel_%s", estr),
-    n_cutsel_ele,      Form("n_cutsel_%s",      estr),
-    n_mvasel_ele,      Form("n_mvasel_%s",      estr),
-    n_presel_tau,      Form("n_presel_%s",      tstr),
-    n_presel_jet,      Form("n_presel_%s",      jstr),
+    n_presel_mu,       n_presel_mu_str,
+    n_fakeablesel_mu,  n_fakeablesel_mu_str,
+    n_cutsel_mu,       n_cutsel_mu_str,
+    n_mvasel_mu,       n_mvasel_mu_str,
+    n_presel_ele,      n_presel_ele_str,
+    n_fakeablesel_ele, n_fakeablesel_ele_str,
+    n_cutsel_ele,      n_cutsel_ele_str,
+    n_mvasel_ele,      n_mvasel_ele_str,
+    n_presel_tau,      n_presel_tau_str,
+    n_presel_jet,      n_presel_jet_str,
     floatMap[FloatVariableType::PFMET],            "PFMET",
     floatMap[FloatVariableType::PFMETphi],         "PFMETphi",
     floatMap[FloatVariableType::MHT],              "MHT",
