@@ -492,7 +492,7 @@ def traverse_single(hdfs_system, meta_dict, path_obj, key, check_every_event,
         del histogram
 
       # this was probably a success: record the results
-      indices[matched_idx] = index_entry
+      indices[matched_idx] = copy.deepcopy(index_entry)
       logging.debug(
         "Found {nof_events} ({nof_tree_events} tree) events in file {filename}".format(
           nof_events      = index_entry[HISTOGRAM_COUNT_KEY],
