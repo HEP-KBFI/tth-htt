@@ -31,7 +31,7 @@ public:
   setJetPt_central_or_shift(int jetPt_option);
 
   void
-  setBranchName_BtagWeight(const std::string & branchName_BtagWeight);
+  setBranchName_BtagWeight(int central_or_shift);
 
   void
   read_BtagWeight_systematics(bool flag);
@@ -91,6 +91,7 @@ protected:
   std::map<int, std::string> branchNames_BtagWeight_systematics_;
 
   int jetPt_option_;
+  int btagSF_option_;
 
   bool read_BtagWeight_systematics_;
 

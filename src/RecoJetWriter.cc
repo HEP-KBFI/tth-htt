@@ -80,12 +80,10 @@ RecoJetWriter::setBranchNames()
   branchName_pullEta_ = Form("%s_%s", branchName_obj_.data(), "pullEta");
   branchName_pullPhi_ = Form("%s_%s", branchName_obj_.data(), "pullPhi");
   branchName_pullMag_ = Form("%s_%s", branchName_obj_.data(), "pullMag");
-  branchName_BtagWeight_ = Form("%s_%s", branchName_obj_.data(), "btagSF_csvv2");
+  branchName_BtagWeight_ = getBranchName_bTagWeight(branchName_obj_, era_, kBtag_central);
   for(int idxShift = kBtag_hfUp; idxShift <= kBtag_jesDown; ++idxShift)
   {
-    branchNames_BtagWeight_systematics_[idxShift] = TString(getBranchName_bTagWeight(era_, idxShift))
-      .ReplaceAll("Jet_", Form("%s_", branchName_obj_.data())).Data()
-    ;
+    branchNames_BtagWeight_systematics_[idxShift] = getBranchName_bTagWeight(branchName_obj_, era_, idxShift);
   }
 }
 

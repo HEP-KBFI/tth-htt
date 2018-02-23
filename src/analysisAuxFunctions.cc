@@ -47,10 +47,8 @@ get_era(const std::string & eraString)
   throw cmsException(__func__) << "Invalid Configuration parameter 'era' = " << eraString;
 }
 
-
-std::string
-getBranchName_bTagWeight(int era,
-                         const std::string & central_or_shift)
+int
+getBTagWeight_option(const std::string & central_or_shift)
 {
   int central_or_shift_int = kBtag_central;
   if     (central_or_shift == "CMS_ttHl_btag_HFUp"        ) central_or_shift_int = kBtag_hfUp;
@@ -71,17 +69,18 @@ getBranchName_bTagWeight(int era,
   else if(central_or_shift == "CMS_ttHl_btag_cErr2Down"   ) central_or_shift_int = kBtag_cErr2Down;
   else if(central_or_shift == "CMS_ttHl_JESUp"            ) central_or_shift_int = kBtag_jesUp;
   else if(central_or_shift == "CMS_ttHl_JESDown"          ) central_or_shift_int = kBtag_jesDown;
-  return getBranchName_bTagWeight(era, central_or_shift_int);
+  return central_or_shift_int;
 }
 
 std::string
-getBranchName_bTagWeight(int era,
+getBranchName_bTagWeight(const std::string & default_collectionName,
+                         int era,
                          int central_or_shift)
 {
   std::map<int, std::string> branchNames_bTagWeight;
   if(era == kEra_2017)
   {
-    branchNames_bTagWeight[kBtag_central]      = "Jet_btagSF_csvv2";
+    branchNames_bTagWeight[kBtag_central]      = Form("%s_btagSF_csvv2", default_collectionName.data());
     branchNames_bTagWeight[kBtag_hfUp]         = branchNames_bTagWeight[kBtag_central] + "_shape_up_hf";
     branchNames_bTagWeight[kBtag_hfDown]       = branchNames_bTagWeight[kBtag_central] + "_shape_down_hf";
     branchNames_bTagWeight[kBtag_hfStats1Up]   = branchNames_bTagWeight[kBtag_central] + "_shape_up_hfstats1";
@@ -103,7 +102,8 @@ getBranchName_bTagWeight(int era,
   }
   else
   {
-    assert(0);
+    throw cmsException(__func__, __LINE__)
+      << "Invalid era = " << era;
   }
   assert(branchNames_bTagWeight.count(central_or_shift));
   return branchNames_bTagWeight.at(central_or_shift);

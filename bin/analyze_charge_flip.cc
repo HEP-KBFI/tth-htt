@@ -51,7 +51,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/GenEvtHistManager.h" // GenEvtHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/LHEInfoHistManager.h" // LHEInfoHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/leptonTypes.h" // getLeptonType, kElectron, kMuon
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // getBranchName_bTagWeight, isHigherPt, isMatched
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // getBTagWeight_option, isHigherPt, isMatched
 #include "tthAnalysis/HiggsToTauTau/interface/histogramAuxFunctions.h" // createSubdirectory_recursively
 #include "tthAnalysis/HiggsToTauTau/interface/hltPath.h" // hltPath, create_hltPaths, hltPaths_setBranchAddresses, hltPaths_isTriggered, hltPaths_delete
 #include "tthAnalysis/HiggsToTauTau/interface/Data_to_MC_CorrectionInterface.h" // Data_to_MC_CorrectionInterface.h
@@ -165,13 +165,12 @@ int main(int argc, char* argv[])
 
   bool use_HIP_mitigation_mediumMuonId = cfg_analyze.getParameter<bool>("use_HIP_mitigation_mediumMuonId"); 
   std::cout << "use_HIP_mitigation_mediumMuonId = " << use_HIP_mitigation_mediumMuonId << std::endl;
-
-  std::string jet_btagWeight_branch = getBranchName_bTagWeight(era, kBtag_central);
   
   int electronPt_option = kElectronPt_central;
   int jetPt_option = RecoJetReader::kJetPt_central;
   int jetToLeptonFakeRate_option = kFRl_central;
   int lheScale_option = kLHE_scale_central;
+  int jetBtagSF_option = kBtag_central;
   TString central_or_shift_tstring = central_or_shift.data();
   if ( isMC && central_or_shift != "central" ) {
     std::string shiftUp_or_Down = "";
@@ -192,9 +191,9 @@ int main(int argc, char* argv[])
       else if ( shiftUp_or_Down == "Down" ) electronPt_option = kElectronPt_resDown;
       else assert(0);
     } else if ( central_or_shift_tstring.BeginsWith("CMS_ttHl_btag") ) {
-      jet_btagWeight_branch = getBranchName_bTagWeight(era, central_or_shift);
+      jetBtagSF_option = getBTagWeight_option(central_or_shift);
     } else if ( central_or_shift_tstring.BeginsWith("CMS_ttHl_JES") ) {
-      jet_btagWeight_branch = getBranchName_bTagWeight(era, central_or_shift);
+      jetBtagSF_option = getBTagWeight_option(central_or_shift);
       if      ( shiftUp_or_Down == "Up"   ) jetPt_option = RecoJetReader::kJetPt_jecUp;
       else if ( shiftUp_or_Down == "Down" ) jetPt_option = RecoJetReader::kJetPt_jecDown;
       else assert(0);
@@ -290,7 +289,7 @@ int main(int argc, char* argv[])
   
   RecoJetReader* jetReader = new RecoJetReader(era, isMC, branchName_jets);
   jetReader->setJetPt_central_or_shift(jetPt_option);
-  jetReader->setBranchName_BtagWeight(jet_btagWeight_branch);
+  jetReader->setBranchName_BtagWeight(jetBtagSF_option);
   inputTree->registerReader(jetReader);
   RecoJetCollectionCleaner jetCleaner(0.4);
   RecoJetCollectionSelector jetSelector(era);

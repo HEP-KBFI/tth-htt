@@ -6,7 +6,7 @@
  * Class to access information for "resolved" jets, 
  * reconstructed by anti-kT algorithm with dR=0.4
  *
- * \author Christian Veelken, Tallin
+ * \author Christian Veelken, Tallinn
  *
  */
 

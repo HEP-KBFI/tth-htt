@@ -92,9 +92,9 @@ RecoJetReader::setJetPt_central_or_shift(int jetPt_option)
 }
 
 void
-RecoJetReader::setBranchName_BtagWeight(const std::string & branchName_BtagWeight)
+RecoJetReader::setBranchName_BtagWeight(int central_or_shift)
 {
-  branchName_BtagWeight_ = branchName_BtagWeight;
+  branchName_BtagWeight_ = getBranchName_bTagWeight(branchName_obj_, era_, central_or_shift);
 }
 
 void
@@ -116,16 +116,14 @@ RecoJetReader::setBranchNames()
     branchName_jecUncertTotal_ = Form("%s_%s", branchName_obj_.data(), "jecUncertTotal");
     branchName_BtagCSV_ = Form("%s_%s", branchName_obj_.data(), "btagCSVV2");
     branchName_QGDiscr_ = Form("%s_%s", branchName_obj_.data(), "qgl");
-    branchName_BtagWeight_ = Form("%s_%s", branchName_obj_.data(), "btagSF_csvv2");
+    branchName_BtagWeight_ = getBranchName_bTagWeight(branchName_obj_, era_, kBtag_central);
     for(int idxShift = kBtag_hfUp; idxShift <= kBtag_jesDown; ++idxShift)
     {
-      branchNames_BtagWeight_systematics_[idxShift] = TString(getBranchName_bTagWeight(era_, idxShift))
-        .ReplaceAll("Jet_", Form("%s_", branchName_obj_.data())).Data()
-      ;
+      branchNames_BtagWeight_systematics_[idxShift] = getBranchName_bTagWeight(branchName_obj_, era_, idxShift);
     }
     branchName_pullEta_ = Form("%s_%s", branchName_obj_.data(), "pullEta");
     branchName_pullPhi_ = Form("%s_%s", branchName_obj_.data(), "pullPhi");
-    branchName_pullMag_ = Form("%s_%s", branchName_obj_.data(), "pullMag");    
+    branchName_pullMag_ = Form("%s_%s", branchName_obj_.data(), "pullMag");
     instances_[branchName_obj_] = this;
   }
   else

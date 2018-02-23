@@ -124,7 +124,6 @@ int main(int argc, char* argv[])
   else throw cms::Exception("sync_ntuples") 
     << "Invalid Configuration parameter 'leptonSelection' = " << leptonSelection_string << " !!\n";
 
-  std::string jet_btagWeight_branch = getBranchName_bTagWeight(era, kBtag_central);
   bool isMC = true; //cfg_analyze.getParameter<bool>("isMC");
 
   const int jetPt_option = RecoJetReader::kJetPt_central;
@@ -312,7 +311,7 @@ int main(int argc, char* argv[])
 
   RecoJetReader* jetReader = new RecoJetReader(era, isMC, "Jet", false);
   jetReader->setJetPt_central_or_shift(jetPt_option);
-  jetReader->setBranchName_BtagWeight(jet_btagWeight_branch);
+  jetReader->setBranchName_BtagWeight(kBtag_central);
   inputTree -> registerReader(jetReader);
   RecoJetCollectionGenMatcher jetGenMatcher;
   RecoJetCollectionCleaner jetCleaner(0.4); // NB! in analysis we *had* 0.5

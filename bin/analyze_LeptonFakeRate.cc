@@ -34,7 +34,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RunLumiEventSelector.h" // RunLumiEventSelector
 
 #include "tthAnalysis/HiggsToTauTau/interface/convert_to_ptrs.h" // convert_to_ptrs()
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2017, getBranchName_bTagWeight()
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2017, getBTagWeight_option()
 #include "tthAnalysis/HiggsToTauTau/interface/histogramAuxFunctions.h" // fillWithOverflow
 #include "tthAnalysis/HiggsToTauTau/interface/hltPath_LeptonFakeRate.h" // hltPath_LeptonFakeRate, create_hltPaths_LeptonFakeRate(), hltPaths_LeptonFakeRate_delete()
 #include "tthAnalysis/HiggsToTauTau/interface/jetToTauFakeRateAuxFunctions.h" // getEtaBin(), getPtBin()
@@ -497,11 +497,10 @@ main(int argc,
     }
   }
 
-  std::string jet_btagWeight_branch = getBranchName_bTagWeight(era, kBtag_central);
-
-  int jetPt_option    = RecoJetReader::kJetPt_central;
-  int met_option      = RecoMEtReader::kMEt_central;
-  int lheScale_option = kLHE_scale_central;
+  int jetPt_option     = RecoJetReader::kJetPt_central;
+  int met_option       = RecoMEtReader::kMEt_central;
+  int lheScale_option  = kLHE_scale_central;
+  int jetBtagSF_option = kBtag_central;
 
   if(isMC && central_or_shift != "central")
   {
@@ -514,11 +513,11 @@ main(int argc,
 
     if(boost::starts_with(central_or_shift, "CMS_ttHl_btag"))
     {
-      jet_btagWeight_branch = getBranchName_bTagWeight(era, central_or_shift);
+      jetBtagSF_option = getBTagWeight_option(central_or_shift);
     }
     else if(boost::starts_with(central_or_shift, "CMS_ttHl_JES"))
     {
-      jet_btagWeight_branch = getBranchName_bTagWeight(era, central_or_shift);
+      jetBtagSF_option = getBTagWeight_option(central_or_shift);
       switch(shiftUp_or_Down)
       {
         case kUp:
@@ -609,7 +608,7 @@ main(int argc,
 
   RecoJetReader * jetReader = new RecoJetReader(era, isMC, branchName_jets, readGenObjects);
   jetReader->setJetPt_central_or_shift(jetPt_option);
-  jetReader->setBranchName_BtagWeight(jet_btagWeight_branch);
+  jetReader->setBranchName_BtagWeight(jetBtagSF_option);
   inputTree->registerReader(jetReader);
   RecoJetCollectionGenMatcher jetGenMatcher;
   RecoJetCollectionCleaner jetCleaner_dR04(0.4);
