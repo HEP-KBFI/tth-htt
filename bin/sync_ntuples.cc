@@ -124,12 +124,8 @@ int main(int argc, char* argv[])
   else throw cms::Exception("sync_ntuples") 
     << "Invalid Configuration parameter 'leptonSelection' = " << leptonSelection_string << " !!\n";
 
-  std::string jet_btagWeight_branch;
+  std::string jet_btagWeight_branch = getBranchName_bTagWeight(era, kBtag_central);
   bool isMC = true; //cfg_analyze.getParameter<bool>("isMC");
-  if ( isMC ) {
-    if ( era == kEra_2017 ) jet_btagWeight_branch = "Jet_btagSF_csvv2";
-    else assert(0);
-  }
 
   const int jetPt_option = RecoJetReader::kJetPt_central;
   //int hadTauPt_option = RecoHadTauReader::kHadTauPt_central;

@@ -166,11 +166,7 @@ int main(int argc, char* argv[])
   bool use_HIP_mitigation_mediumMuonId = cfg_analyze.getParameter<bool>("use_HIP_mitigation_mediumMuonId"); 
   std::cout << "use_HIP_mitigation_mediumMuonId = " << use_HIP_mitigation_mediumMuonId << std::endl;
 
-  std::string jet_btagWeight_branch;
-  if ( isMC ) {
-    if ( era == kEra_2017 ) jet_btagWeight_branch = "Jet_btagSF_csvv2";
-    else assert(0);
-  }
+  std::string jet_btagWeight_branch = getBranchName_bTagWeight(era, kBtag_central);
   
   int electronPt_option = kElectronPt_central;
   int jetPt_option = RecoJetReader::kJetPt_central;

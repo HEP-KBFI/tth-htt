@@ -233,11 +233,7 @@ int main(int argc, char* argv[])
   bool apply_genWeight = cfg_analyze.getParameter<bool>("apply_genWeight"); 
   bool apply_trigger_bits = cfg_analyze.getParameter<bool>("apply_trigger_bits"); 
 
-  std::string jet_btagWeight_branch;
-  if ( isMC ) {
-    if ( era == kEra_2017 ) jet_btagWeight_branch = "Jet_btagSF_csvv2";
-    else assert(0);
-  }
+  std::string jet_btagWeight_branch = getBranchName_bTagWeight(era, kBtag_central);
 
   int jetPt_option = RecoJetReader::kJetPt_central;
   int hadTauPt_option = RecoHadTauReader::kHadTauPt_central;

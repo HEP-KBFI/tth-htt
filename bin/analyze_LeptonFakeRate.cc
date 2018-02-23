@@ -497,15 +497,7 @@ main(int argc,
     }
   }
 
-  std::string jet_btagWeight_branch;
-  if(isMC)
-  {
-    switch(era)
-    {
-      case kEra_2017: jet_btagWeight_branch = "Jet_btagSF_csvv2"; break;
-      default:        assert(0);
-    }
-  }
+  std::string jet_btagWeight_branch = getBranchName_bTagWeight(era, kBtag_central);
 
   int jetPt_option    = RecoJetReader::kJetPt_central;
   int met_option      = RecoMEtReader::kMEt_central;
