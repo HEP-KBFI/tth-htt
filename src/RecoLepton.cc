@@ -36,7 +36,7 @@ RecoLepton::RecoLepton(const GenLepton & lepton,
   , isFakeable_(false)
   , isTight_(false)
 {
-  const double cone_pt = ( jetPtRatio_ > 1.e-3 ) ? 0.85*pt_/jetPtRatio_ : pt_;
+  const double cone_pt = ( jetPtRatio_ > 1.e-3 ) ? 0.90*pt_/jetPtRatio_ : pt_;
   set_cone_pt(cone_pt);
 }
 
