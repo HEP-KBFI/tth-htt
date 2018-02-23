@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import argparse, os.path, sys, logging, imp, jinja2, ROOT, re, ctypes, copy, itertools, time, shutil, array
+import argparse, os.path, sys, logging, imp, jinja2, ROOT, re, ctypes, copy, itertools, time, shutil
 from tthAnalysis.HiggsToTauTau.jobTools import run_cmd
 
 HISTOGRAM_COUNT         = 'Count'
