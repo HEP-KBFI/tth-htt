@@ -207,8 +207,8 @@ void comp_cosThetaS(const Particle::LorentzVector& hadTauP4_lead, const Particle
   TLorentzVector hadTopBoost = hadTopP4tlv;
   hadTauBoost.Boost(-diTauP4.BoostVector());
   hadTopBoost.Boost(-diTauP4.BoostVector());
-  cosThetaS_hadTau = std::abs(hadTauBoost.CosTheta());
-  cosThetaS_hadTop = std::abs(hadTopBoost.CosTheta());
+  cosThetaS_hadTau = std::fabs(hadTauBoost.CosTheta());
+  cosThetaS_hadTop = std::fabs(hadTopBoost.CosTheta());
 }
 
 /**
