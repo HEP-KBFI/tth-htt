@@ -113,7 +113,7 @@ void comp_cosThetaS(const Particle::LorentzVector& hadTauP4_lead, const Particle
   TLorentzVector hadTauP4tlv_sublead;
   hadTauP4tlv_sublead.SetPtEtaPhiM(hadTauP4_sublead.pt(), hadTauP4_sublead.eta(), hadTauP4_sublead.phi(), hadTauP4_sublead.mass());
   TLorentzVector hadTauBoost = hadTauP4tlv_lead;
-  cosThetaS_hadTau = std::abs(hadTauBoost.CosTheta());
+  cosThetaS_hadTau = std::fabs(hadTauBoost.CosTheta());
 }
 
 

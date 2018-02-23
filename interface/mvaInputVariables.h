@@ -42,4 +42,6 @@ double compHT(const std::vector<const RecoLepton *> & leptons,
               const std::vector<const RecoHadTau *> & hadTaus,
               const std::vector<const RecoJet *> & jets_cleaned);
 
+double comp_cosThetaStar(const Particle::LorentzVector & daughterP4, const Particle::LorentzVector & motherP4);
+
 #endif // mvaInputVariables_h
