@@ -165,6 +165,7 @@ RecoJetReader::setBranchAddresses(TTree * tree)
     bai.setBranchAddress(jet_BtagWeight_, isMC_ ? branchName_BtagWeight_ : "", 1.);
     if(read_BtagWeight_systematics_)
     {
+      assert(isMC_);
       for(int idxShift = kBtag_hfUp; idxShift <= kBtag_jesDown; ++idxShift)
       {
         bai.setBranchAddress(jet_BtagWeights_systematics_[idxShift], isMC_ ? branchNames_BtagWeight_systematics_[idxShift] : "", 1.);
