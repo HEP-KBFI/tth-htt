@@ -61,6 +61,7 @@ protected:
   const unsigned int max_nJets_;
   std::string branchName_num_;
   std::string branchName_obj_;
+  std::string branchName_btag_;
 
   /**
    * @brief Read branches containing information on matching of RecoJet objects

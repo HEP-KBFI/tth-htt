@@ -57,6 +57,7 @@ protected:
   const unsigned int max_nJets_;
   std::string branchName_num_;
   std::string branchName_obj_;
+  std::string branchName_btag_;
 
   GenParticleWriter * genLeptonWriter_;
   GenParticleWriter * genHadTauWriter_;

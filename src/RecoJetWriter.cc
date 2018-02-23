@@ -25,6 +25,7 @@ RecoJetWriter::RecoJetWriter(int era,
   , max_nJets_(32)
   , branchName_num_(branchName_num)
   , branchName_obj_(branchName_obj)
+  , branchName_btag_(! RecoJet::useDeepCSV ? "CSVV2" : "DeepB")
   , genLeptonWriter_(nullptr)
   , genHadTauWriter_(nullptr)
   , genJetWriter_(nullptr)
@@ -75,7 +76,7 @@ RecoJetWriter::setBranchNames()
   branchName_mass_ = Form("%s_%s", branchName_obj_.data(), "mass");
   branchName_jetCharge_ = Form("%s_%s", branchName_obj_.data(), "jetCharge");
   branchName_jecUncertTotal_ = Form("%s_%s", branchName_obj_.data(), "jecUncertTotal");
-  branchName_BtagCSV_ = Form("%s_%s", branchName_obj_.data(), "btagCSVV2");
+  branchName_BtagCSV_ = Form("%s_%s", branchName_obj_.data(), Form("btag%s", branchName_btag_.data()));
   branchName_QGDiscr_ = Form("%s_%s", branchName_obj_.data(), "qgl");
   branchName_pullEta_ = Form("%s_%s", branchName_obj_.data(), "pullEta");
   branchName_pullPhi_ = Form("%s_%s", branchName_obj_.data(), "pullPhi");

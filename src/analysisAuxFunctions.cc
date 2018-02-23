@@ -80,7 +80,9 @@ getBranchName_bTagWeight(const std::string & default_collectionName,
   std::map<int, std::string> branchNames_bTagWeight;
   if(era == kEra_2017)
   {
-    branchNames_bTagWeight[kBtag_central]      = Form("%s_btagSF_csvv2", default_collectionName.data());
+    branchNames_bTagWeight[kBtag_central]      = Form(
+      "%s_btagSF_%s", default_collectionName.data(), ! RecoJet::useDeepCSV ? "csvv2" : "deepcsv"
+    );
     branchNames_bTagWeight[kBtag_hfUp]         = branchNames_bTagWeight[kBtag_central] + "_shape_up_hf";
     branchNames_bTagWeight[kBtag_hfDown]       = branchNames_bTagWeight[kBtag_central] + "_shape_down_hf";
     branchNames_bTagWeight[kBtag_hfStats1Up]   = branchNames_bTagWeight[kBtag_central] + "_shape_up_hfstats1";
