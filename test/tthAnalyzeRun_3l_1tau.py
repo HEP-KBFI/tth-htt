@@ -35,6 +35,7 @@ class SmartFormatter(argparse.HelpFormatter):
 parser = argparse.ArgumentParser(
   formatter_class = lambda prog: SmartFormatter(prog, max_help_position = 45)
 )
+run_parser = parser.add_mutually_exclusive_group()
 parser.add_argument('-v', '--version',
   type = str, dest = 'version', metavar = 'version', default = None, required = True,
   help = 'R|Analysis version (e.g. %s)' % datetime.date.today().strftime('%Y%b%d'),
@@ -70,6 +71,14 @@ parser.add_argument('-R', '--disable-resubmission',
   dest = 'disable_resubmission', action = 'store_false', default = True,
   help = 'R|Disable resubmission (overwrites option -r/--resubmission-limit)'
 )
+run_parser.add_argument('-E', '--no-exec',
+  dest = 'no_exec', action = 'store_true', default = False,
+  help = 'R|Do not submit the jobs (ignore prompt)',
+)
+run_parser.add_argument('-A', '--auto-exec',
+  dest = 'auto_exec', action = 'store_true', default = False,
+  help = 'R|Automatically submit the jobs (ignore prompt)',
+)
 parser.add_argument('-V', '--verbose',
   dest = 'verbose', action = 'store_true', default = False,
   help = 'R|Increase verbosity level in sbatchManager'
@@ -81,10 +90,11 @@ mode                 = args.mode
 era                  = args.era
 version              = args.version
 resubmit             = args.disable_resubmission
+no_exec              = args.no_exec
+auto_exec            = args.auto_exec
 max_job_resubmission = args.resubmission_limit if resubmit else 1
 max_files_per_job    = 10 if use_prod_ntuples else 100
 central_or_shift     = getattr(systematics, args.systematics)
-
 hadTau_selection                   = None
 hadTau_selection_relaxed           = None
 changeBranchNames                  = use_prod_ntuples
@@ -206,7 +216,12 @@ if __name__ == '__main__':
     job_statistics_summary[idx_job_resubmission] = job_statistics
 
     if idx_job_resubmission == 0:
-      run_analysis = query_yes_no("Start jobs ?")
+      if auto_exec:
+        run_analysis = True
+      elif no_exec:
+        run_analysis = False
+      else:
+        run_analysis = query_yes_no("Start jobs ?")
     if run_analysis:
       analysis.run()
     else:
