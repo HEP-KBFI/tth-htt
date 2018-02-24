@@ -496,7 +496,7 @@ int main(int argc, char* argv[])
     {
       continue;
     }
-    snm.readRunLumiEvent(eventInfo.run, eventInfo.lumi, eventInfo.event);
+
 
 //--- build collections of generator level particles (before any cuts are applied, to check distributions in unbiased event samples)
     std::vector<GenLepton> genLeptons;
@@ -530,7 +530,7 @@ int main(int argc, char* argv[])
     std::vector<const RecoMuon*> tightMuons = tightMuonSelector(preselMuons);
     std::vector<const RecoMuon*> selMuons = preselMuons;
     std::sort(preselMuons.begin(), preselMuons.end(), isHigherConePt);
-    snm.read(preselMuons, fakeableMuons, cutBasedMuons, mvaBasedMuons);
+
 
     std::vector<RecoElectron> electrons = electronReader->read();
     std::vector<const RecoElectron*> electron_ptrs = convert_to_ptrs(electrons);
@@ -542,7 +542,7 @@ int main(int argc, char* argv[])
     std::vector<const RecoElectron*> tightElectrons = tightElectronSelector(preselElectrons);
     std::vector<const RecoElectron*> selElectrons = preselElectrons;
     std::sort(preselElectrons.begin(), preselElectrons.end(), isHigherConePt);
-    snm.read(preselElectrons, fakeableElectrons, cutBasedElectrons, mvaBasedElectrons);
+
 
     std::vector<RecoHadTau> hadTaus = hadTauReader->read();
     std::vector<const RecoHadTau*> hadTau_ptrs = convert_to_ptrs(hadTaus);
@@ -550,7 +550,7 @@ int main(int argc, char* argv[])
     std::vector<const RecoHadTau*> selHadTaus = hadTauSelector(cleanedHadTaus);
     std::vector<const RecoHadTau*> tightHadTaus = tightHadTauSelector(cleanedHadTaus);
     std::sort(selHadTaus.begin(), selHadTaus.end(), isHigherPt);
-    snm.read(selHadTaus);
+
     
 //--- build collections of jets and select subset of jets passing b-tagging criteria
     std::vector<RecoJet> jets = jetReader->read();
@@ -564,7 +564,7 @@ int main(int argc, char* argv[])
     }();
     std::vector<const RecoJet*> selJets = jetSelector(cleanedJets);
     std::sort(selJets.begin(), selJets.end(), isHigherPt);
-    snm.read(selJets);
+
 
     RecoMEt met = metReader->read();
 
@@ -704,11 +704,7 @@ int main(int argc, char* argv[])
     for(const RecoHadTau * & hadTau: selHadTaus)    mht_p4 += hadTau -> p4();
     const Double_t met_LD = met_coef*met.p4().pt() + mht_coef*mht_p4.pt();
 
-    snm.read(met.pt(),      FloatVariableType::PFMET);
-    snm.read(0.,     FloatVariableType::PFMETphi);
-    snm.read(mht_p4.pt(), FloatVariableType::MHT);
-    snm.read(met_LD,      FloatVariableType::metLD);
-    snm.read({triggers_1e, triggers_1mu, triggers_2e, triggers_2mu, triggers_1e1mu});
+
 
     double mTauTauVis1_sel = -99;
     double mTauTauVis2_sel = -99;
@@ -883,9 +879,6 @@ int main(int argc, char* argv[])
     double mvaOutput_2lss_1tau_ttbar_wMEMsepLR = mva_2lss_1tau_ttbar_wMEMsepLR(mvaInputs_2lss_1tau_wMEMsepLR); 
     Double_t mvaDiscr_2lss_1tau_wMEMsepLR = getSF_from_TH2(mva_mapping_2lss_1tau_wMEMsepLR, mvaOutput_2lss_1tau_ttbar_wMEMsepLR, mvaOutput_2lss_1tau_ttV_wMEMsepLR) + 1.;
     */
-    
-    snm.read(mvaInputs_2lss_1tau);
-    mvaInputs_2lss_1tau.clear();
     
     //selHistManagerType* selHistManager = selHistManagers[idxSelLepton_genMatch][idxSelHadTau_genMatch];
     //assert(selHistManager != 0);
@@ -1087,6 +1080,17 @@ int main(int argc, char* argv[])
     }
     //double MC_weight = pileupWeight * triggerSF_weight * leptonSF_weight * weight_btag * hadTauSF_weight * genWeight;
 
+    snm.read(eventInfo);
+    snm.read(preselMuons, fakeableMuons, cutBasedMuons, mvaBasedMuons);
+    snm.read(preselElectrons, fakeableElectrons, cutBasedElectrons, mvaBasedElectrons);
+    snm.read(selHadTaus);
+    snm.read(selJets);
+    snm.read(met.pt(),      FloatVariableType::PFMET);
+    snm.read(0.,     FloatVariableType::PFMETphi);
+    snm.read(mht_p4.pt(), FloatVariableType::MHT);
+    snm.read(met_LD,      FloatVariableType::metLD);
+    snm.read({triggers_1e, triggers_1mu, triggers_2e, triggers_2mu, triggers_1e1mu});
+    snm.read(mvaInputs_2lss_1tau);
     snm.read(boost::math::sign(eventInfo.genWeight),   FloatVariableType::MC_weight);
     snm.read(weight_fakeRate,   FloatVariableType::FR_weight);
     snm.read(triggerSF_weight,   FloatVariableType::triggerSF_weight);
@@ -1095,7 +1099,8 @@ int main(int argc, char* argv[])
     snm.read(eventInfo.pileupWeight,   FloatVariableType::PU_weight);
     snm.read(hadTauSF_weight,   FloatVariableType::hadTauSF_weight);
     snm.read(lumiScale,   FloatVariableType::lumiScale);
-    //snm.read(genWeight,   FloatVariableType::genWeight);
+    snm.read(eventInfo.genWeight,   FloatVariableType::genWeight);
+    mvaInputs_2lss_1tau.clear();
     snm.fill();
     
     (*selEventsFile) << eventInfo.run << ':' << eventInfo.lumi << ':' << eventInfo.event << '\n';

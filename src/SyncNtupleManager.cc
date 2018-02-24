@@ -205,19 +205,11 @@ SyncNtupleManager::initializeHLTBranches(const std::vector<std::vector<hltPath *
 }
 
 void
-SyncNtupleManager::readRunLumiEvent(UInt_t run_,
-                                    UInt_t lumi_,
-                                    ULong64_t event_)
+SyncNtupleManager::read(const EventInfo & eventInfo)
 {
-  nEvent = event_;
-  ls = lumi_;
-  run = run_;
-}
-
-void
-SyncNtupleManager::readRunLumiEvent(const EventInfo & eventInfo)
-{
-  return readRunLumiEvent(eventInfo.run, eventInfo.lumi, eventInfo.event);
+  run = eventInfo.run;
+  ls = eventInfo.lumi;
+  nEvent = eventInfo.event;
 }
 
 void
