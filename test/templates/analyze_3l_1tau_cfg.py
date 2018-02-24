@@ -111,4 +111,9 @@ process.analyze_3l_1tau = cms.PSet(
     selEventsFileName_output = cms.string(''),
     selEventsTFileName = cms.string(''),
     selectBDT = cms.bool(False),
+
+    syncNtuple = cms.PSet(
+        tree = cms.string(''),
+        output = cms.string(''),
+    ),
 )
