@@ -13,7 +13,7 @@ from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 
 # E.g.: ./tthProdNtuple.py -v 2017Dec13 -m all -e 2017 -V -r 2
 
-mode_choices               = ['all', 'forBDTtraining_only', 'forBDTtraining_except']
+mode_choices               = ['all', 'forBDTtraining_only', 'forBDTtraining_except', 'sync']
 era_choices                = ['2017']
 default_resubmission_limit = 4
 
@@ -95,7 +95,10 @@ verbose            = args.verbose
 dry_run            = args.dry_run
 
 if era == "2017":
-  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_nanoAOD import samples_2017 as samples
+  if mode == 'sync':
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_nanoAOD_sync import samples_2017 as samples
+  else:
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_nanoAOD import samples_2017 as samples
 else:
   raise ValueError("Invalid Configuration parameter 'era' = %s !!" % era)
 
@@ -109,10 +112,12 @@ for sample_key, sample_entry in samples.items():
       sample_entry["use_it"] = mode == "forBDTtraining_only"
     else:
       sample_entry["use_it"] = mode != "forBDTtraining_only"
+  elif mode == 'sync':
+    pass
   else:
     raise ValueError("Invalid mode: %s" % mode)
 
-if mode in ["all", "forBDTtraining_except"]:
+if mode in ["all", "forBDTtraining_except", "sync"]:
   leptonSelection   = 'Fakeable'
   hadTauSelection   = 'Fakeable|dR03mvaMedium'
   max_files_per_job = 1
