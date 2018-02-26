@@ -12,21 +12,23 @@ MuonHistManager::MuonHistManager(const edm::ParameterSet & cfg)
 void
 MuonHistManager::bookHistograms(TFileDirectory & dir)
 {
-  histogram_pt_     = book1D(dir, "pt",     "pt",     40,  0.,  200.);
-  histogram_eta_    = book1D(dir, "eta",    "eta",    48, -2.4,  +2.4);
-  histogram_phi_    = book1D(dir, "phi",    "phi",    36, -TMath::Pi(), +TMath::Pi());
-  histogram_charge_ = book1D(dir, "charge", "charge",  3, -1.5,  +1.5);
+  histogram_pt_                  = book1D(dir, "pt",                  "pt",                  40,  0.,  200.);
+  histogram_cone_pt_             = book1D(dir, "cone_pt",             "cone_pt",             40,  0., 200.);
+  histogram_assocJet_pt_         = book1D(dir, "assocJet_pt",         "assocJet_pt",         40,  0., 200.);
+  histogram_eta_                 = book1D(dir, "eta",                 "eta",                 48, -2.4,  +2.4);
+  histogram_phi_                 = book1D(dir, "phi",                 "phi",                 36, -TMath::Pi(), +TMath::Pi());
+  histogram_charge_              = book1D(dir, "charge",              "charge",               3, -1.5,  +1.5);
 
-  histogram_dxy_               = book1D(dir, "dxy",               "dxy",               40, -0.05, +0.05);
-  histogram_dz_                = book1D(dir, "dz",                "dz",                40, -0.2,  +0.2);
-  histogram_relIso_            = book1D(dir, "relIso",            "relIso",            40,  0.,    0.40);
-  histogram_sip3d_             = book1D(dir, "sip3d",             "sip3d",             40,  0.,    8.);
-  histogram_mvaRawTTH_         = book1D(dir, "mvaRawTTH",         "mvaRawTTH",         40, -1.,   +1.);
-  histogram_jetPtRatio_        = book1D(dir, "jetPtRatio",        "jetPtRatio",        24,  0.,    1.2);
-  histogram_jetBtagCSV_        = book1D(dir, "jetBtagCSV",        "jetBtagCSV",        40,  0.,    1.);
-  histogram_tightCharge_       = book1D(dir, "tightCharge",       "tightCharge",        3, -0.5,  +2.5);
-  histogram_passesLooseIdPOG_  = book1D(dir, "passesLooseIdPOG",  "passesLooseIdPOG",   2, -0.5,  +1.5);
-  histogram_passesMediumIdPOG_ = book1D(dir, "passesMediumIdPOG", "passesMediumIdPOG",  2, -0.5,  +1.5);
+  histogram_dxy_                 = book1D(dir, "dxy",                 "dxy",                 40, -0.05, +0.05);
+  histogram_dz_                  = book1D(dir, "dz",                  "dz",                  40, -0.2,  +0.2);
+  histogram_relIso_              = book1D(dir, "relIso",              "relIso",              40,  0.,    0.40);
+  histogram_sip3d_               = book1D(dir, "sip3d",               "sip3d",               40,  0.,    8.);
+  histogram_mvaRawTTH_           = book1D(dir, "mvaRawTTH",           "mvaRawTTH",           40, -1.,   +1.);
+  histogram_jetPtRatio_          = book1D(dir, "jetPtRatio",          "jetPtRatio",          24,  0.,    1.2);
+  histogram_jetBtagCSV_          = book1D(dir, "jetBtagCSV",          "jetBtagCSV",          40,  0.,    1.);
+  histogram_tightCharge_         = book1D(dir, "tightCharge",         "tightCharge",          3, -0.5,  +2.5);
+  histogram_passesLooseIdPOG_    = book1D(dir, "passesLooseIdPOG",    "passesLooseIdPOG",     2, -0.5,  +1.5);
+  histogram_passesMediumIdPOG_   = book1D(dir, "passesMediumIdPOG",   "passesMediumIdPOG",    2, -0.5,  +1.5);
 
   histogram_abs_genPdgId_        = book1D(dir, "abs_genPdgId",        "abs_genPdgId",        22, -0.5, +21.5);
   histogram_gen_times_recCharge_ = book1D(dir, "gen_times_recCharge", "gen_times_recCharge",  3, -1.5,  +1.5);
@@ -38,10 +40,12 @@ MuonHistManager::fillHistograms(const RecoMuon & muon,
 {
   const double evtWeightErr = 0.;
   
-  fillWithOverFlow(histogram_pt_,     muon.pt(),     evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_eta_,    muon.eta(),    evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_phi_,    muon.phi(),    evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_charge_, muon.charge(), evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_pt_,          muon.pt(),          evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_cone_pt_,     muon.cone_pt(),     evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_assocJet_pt_, muon.assocJet_pt(), evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_eta_,         muon.eta(),         evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_phi_,         muon.phi(),         evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_charge_,      muon.charge(),      evtWeight, evtWeightErr);
 
   fillWithOverFlow(histogram_dxy_,         muon.dxy(),         evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_dz_,          muon.dz(),          evtWeight, evtWeightErr);

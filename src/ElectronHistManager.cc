@@ -12,10 +12,12 @@ ElectronHistManager::ElectronHistManager(const edm::ParameterSet & cfg)
 void
 ElectronHistManager::bookHistograms(TFileDirectory & dir)
 {
-  histogram_pt_     = book1D(dir, "pt",     "pt",    40,  0., 200.);
-  histogram_eta_    = book1D(dir, "eta",    "eta",   50, -2.5, +2.5);
-  histogram_phi_    = book1D(dir, "phi",    "phi",   36, -TMath::Pi(), +TMath::Pi());
-  histogram_charge_ = book1D(dir, "charge", "charge", 3, -1.5, +1.5);
+  histogram_pt_                   = book1D(dir, "pt",                   "pt",                  40,  0., 200.);
+  histogram_cone_pt_              = book1D(dir, "cone_pt",              "cone_pt",             40,  0., 200.);
+  histogram_assocJet_pt_          = book1D(dir, "assocJet_pt",          "assocJet_pt",         40,  0., 200.);
+  histogram_eta_                  = book1D(dir, "eta",                  "eta",                 50, -2.5, +2.5);
+  histogram_phi_                  = book1D(dir, "phi",                  "phi",                 36, -TMath::Pi(), +TMath::Pi());
+  histogram_charge_               = book1D(dir, "charge",               "charge",               3, -1.5, +1.5);
 
   histogram_dxy_                  = book1D(dir, "dxy",                  "dxy",                  40, -0.05, +0.05);
   histogram_dz_                   = book1D(dir, "dz",                   "dz",                   40, -0.2,  +0.2);
@@ -35,8 +37,8 @@ ElectronHistManager::bookHistograms(TFileDirectory & dir)
   histogram_nLostHits_            = book1D(dir, "nLostHits",            "nLostHits",             2, -0.5,  +1.5);
   histogram_passesConversionVeto_ = book1D(dir, "passesConversionVeto", "passesConversionVeto",  3, -0.5,  +2.5);
 
-  histogram_abs_genPdgId_        = book1D(dir, "abs_genPdgId",        "abs_genPdgId",       22, -0.5, +21.5);
-  histogram_gen_times_recCharge_ = book1D(dir, "gen_times_recCharge", "gen_times_recCharge", 3, -1.5,  +1.5);
+  histogram_abs_genPdgId_         = book1D(dir, "abs_genPdgId",         "abs_genPdgId",         22, -0.5, +21.5);
+  histogram_gen_times_recCharge_  = book1D(dir, "gen_times_recCharge",  "gen_times_recCharge",   3, -1.5,  +1.5);
 }
 
 void
@@ -45,10 +47,12 @@ ElectronHistManager::fillHistograms(const RecoElectron & electron,
 {
   const double evtWeightErr = 0.;
 
-  fillWithOverFlow(histogram_pt_,     electron.pt(),     evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_eta_,    electron.eta(),    evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_phi_,    electron.phi(),    evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_charge_, electron.charge(), evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_pt_,            electron.pt(),            evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_cone_pt_,       electron.cone_pt(),       evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_assocJet_pt_,   electron.assocJet_pt(),   evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_eta_,           electron.eta(),           evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_phi_,           electron.phi(),           evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_charge_,        electron.charge(),        evtWeight, evtWeightErr);
 
   fillWithOverFlow(histogram_dxy_,           electron.dxy(),           evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_dz_,            electron.dz(),            evtWeight, evtWeightErr);
