@@ -1,5 +1,6 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoLeptonReader.h" // RecoLeptonReader
 
+#include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h" // RecoJet::useDeepCSV
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 #include "tthAnalysis/HiggsToTauTau/interface/BranchAddressInitializer.h" // BranchAddressInitializer, TTree, Form()
 
@@ -15,6 +16,7 @@ RecoLeptonReader::RecoLeptonReader(const std::string & branchName_obj,
   : max_nLeptons_(64)
   , branchName_num_(Form("n%s", branchName_obj.data()))
   , branchName_obj_(branchName_obj)
+  , branchName_btag_(! RecoJet::useDeepCSV ? "csvv2" : "deep")
   , genLeptonReader_(nullptr)
   , genHadTauReader_(nullptr)
   , genJetReader_(nullptr)
@@ -98,7 +100,7 @@ RecoLeptonReader::setBranchNames()
     branchName_sip3d_ = Form("%s_%s", branchName_obj_.data(), "sip3d");
     branchName_mvaRawTTH_ = Form("%s_%s", branchName_obj_.data(), "mvaTTH");
     branchName_jetPtRatio_ = Form("%s_%s", branchName_obj_.data(), "jetPtRatio");
-    branchName_jetBtagCSV_ = Form("%s_%s", branchName_obj_.data(), "jetBtag_csvv2");
+    branchName_jetBtagCSV_ = Form("%s_%s", branchName_obj_.data(), Form("jetBtag_%s", branchName_btag_.data()));
     branchName_tightCharge_ = Form("%s_%s", branchName_obj_.data(), "tightCharge");
     branchName_charge_ = Form("%s_%s", branchName_obj_.data(), "charge");
     instances_[branchName_obj_] = this;

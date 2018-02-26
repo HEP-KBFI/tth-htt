@@ -44,9 +44,13 @@
 #include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionGenMatcher.h" // RecoElectronCollectionGenMatcher, RecoMuonCollectionGenMatcher, RecoHadTauCollectionGenMatcher, RecoJetCollectionGenMatcher
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorLoose.h" // RecoElectronCollectionSelectorLoose
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorFakeable.h" // RecoElectronCollectionSelectorFakeable
+#include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorCutBased.h" // RecoElectronCollectionSelectorCutBased
+#include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorMVABased.h" // RecoElectronCollectionSelectorMVABased
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorTight.h" // RecoElectronCollectionSelectorTight
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorLoose.h" // RecoMuonCollectionSelectorLoose
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorFakeable.h" // RecoMuonCollectionSelectorFakeable
+#include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorCutBased.h" // RecoMuonCollectionSelectorCutBased
+#include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorMVABased.h" // RecoMuonCollectionSelectorMVABased
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorTight.h" // RecoMuonCollectionSelectorTight
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelectorLoose.h" // RecoHadTauCollectionSelectorLoose
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelectorFakeable.h" // RecoHadTauCollectionSelectorFakeable
@@ -66,7 +70,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/GenEvtHistManager.h" // GenEvtHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/LHEInfoHistManager.h" // LHEInfoHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/leptonTypes.h" // getLeptonType, kElectron, kMuon
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // getBranchName_bTagWeight, getHadTau_genPdgId, isHigherPt, isMatched
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // getBTagWeight_option, getHadTau_genPdgId, isHigherPt, isMatched
 #include "tthAnalysis/HiggsToTauTau/interface/HistManagerBase.h" // HistManagerBase
 #include "tthAnalysis/HiggsToTauTau/interface/histogramAuxFunctions.h" // fillWithOverFlow2d
 #include "tthAnalysis/HiggsToTauTau/interface/hadTopTaggerAuxFunctions.h" // isGenMatchedJetTriplet
@@ -83,6 +87,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/XGBInterface.h" // XGBInterface
 #include "tthAnalysis/HiggsToTauTau/interface/HadTopKinFit.h" // HadTopKinFit
 #include "tthAnalysis/HiggsToTauTau/interface/TTreeWrapper.h" // TTreeWrapper
+#include "tthAnalysis/HiggsToTauTau/interface/SyncNtupleManager.h" // SyncNtupleManager
 
 #include <boost/math/special_functions/sign.hpp> // boost::math::sign()
 
@@ -309,18 +314,13 @@ int main(int argc, char* argv[])
   bool isDEBUG = ( cfg_analyze.exists("isDEBUG") ) ? cfg_analyze.getParameter<bool>("isDEBUG") : false;
   if ( isDEBUG ) std::cout << "Warning: DEBUG mode enabled -> trigger selection will not be applied for data !!" << std::endl;
 
-  std::string jet_btagWeight_branch;
-  if ( isMC ) {
-    if ( era == kEra_2017 ) jet_btagWeight_branch = "Jet_btagSF_csvv2";
-    else assert(0);
-  }
-
   int jetPt_option = RecoJetReader::kJetPt_central;
   int jetToLeptonFakeRate_option = kFRl_central;
   int met_option = RecoMEtReader::kMEt_central;
   int hadTauPt_option = RecoHadTauReader::kHadTauPt_central;
   int jetToTauFakeRate_option = kFRjt_central;
   int lheScale_option = kLHE_scale_central;
+  int jetBtagSF_option = kBtag_central;
   if ( central_or_shift != "central" ) {
     TString central_or_shift_tstring = central_or_shift.data();
     std::string shiftUp_or_Down = "";
@@ -329,12 +329,12 @@ int main(int argc, char* argv[])
     else throw cms::Exception("analyze_2lss_1tau")
       << "Invalid Configuration parameter 'central_or_shift' = " << central_or_shift << " !!\n";
     if ( central_or_shift_tstring.BeginsWith("CMS_ttHl_btag") ) {
-      if ( isMC ) jet_btagWeight_branch = getBranchName_bTagWeight(era, central_or_shift);
+      if ( isMC ) jetBtagSF_option = getBTagWeight_option(central_or_shift);
       else throw cms::Exception("analyze_2lss_1tau")
 	<< "Configuration parameter 'central_or_shift' = " << central_or_shift << " not supported for data !!\n";
     } else if ( central_or_shift_tstring.BeginsWith("CMS_ttHl_JES") ) {
       if ( isMC ) {
-	jet_btagWeight_branch = getBranchName_bTagWeight(era, central_or_shift);
+  jetBtagSF_option = getBTagWeight_option(central_or_shift);
 	if      ( shiftUp_or_Down == "Up"   ) {
 	  jetPt_option = RecoJetReader::kJetPt_jecUp;
 	  met_option = RecoMEtReader::kMEt_shifted_JetEnUp;
@@ -473,6 +473,18 @@ int main(int argc, char* argv[])
 
   std::cout << "Loaded " << inputTree -> getFileCount() << " file(s).\n";
 
+//--- prepare sync Ntuple
+  SyncNtupleManager * snm = nullptr;
+  const edm::ParameterSet syncNtuple_cfg = cfg_analyze.getParameter<edm::ParameterSet>("syncNtuple");
+  const std::string syncNtuple_tree = syncNtuple_cfg.getParameter<std::string>("tree");
+  const std::string syncNtuple_output = syncNtuple_cfg.getParameter<std::string>("output");
+  if(! syncNtuple_tree.empty() && ! syncNtuple_output.empty())
+  {
+    snm = new SyncNtupleManager(syncNtuple_output, syncNtuple_tree);
+    snm->initializeBranches();
+    snm->initializeHLTBranches({ triggers_1e, triggers_2e, triggers_1mu, triggers_2mu, triggers_1e1mu });
+  }
+
 //--- declare event-level variables
   EventInfo eventInfo(isSignal, isMC, isMC_tH);
   EventInfoReader eventInfoReader(&eventInfo);
@@ -490,6 +502,8 @@ int main(int argc, char* argv[])
   RecoMuonCollectionGenMatcher muonGenMatcher;
   RecoMuonCollectionSelectorLoose preselMuonSelector(era);
   RecoMuonCollectionSelectorFakeable fakeableMuonSelector(era);
+  RecoMuonCollectionSelectorCutBased cutBasedMuonSelector(era); // needed for sync
+  RecoMuonCollectionSelectorMVABased mvaBasedMuonSelector(era); // needed for sync
   RecoMuonCollectionSelectorTight tightMuonSelector(era);
 
   RecoElectronReader* electronReader = new RecoElectronReader(era, branchName_electrons, readGenObjects);
@@ -498,6 +512,8 @@ int main(int argc, char* argv[])
   RecoElectronCollectionCleaner electronCleaner(0.3);
   RecoElectronCollectionSelectorLoose preselElectronSelector(era);
   RecoElectronCollectionSelectorFakeable fakeableElectronSelector(era);
+  RecoElectronCollectionSelectorCutBased cutBasedElectronSelector(era); // needed for sync
+  RecoElectronCollectionSelectorMVABased mvaBasedElectronSelector(era); // needed for sync
   RecoElectronCollectionSelectorTight tightElectronSelector(era);
 
   RecoHadTauReader* hadTauReader = new RecoHadTauReader(era, branchName_hadTaus, readGenObjects);
@@ -524,7 +540,7 @@ int main(int argc, char* argv[])
 
   RecoJetReader* jetReader = new RecoJetReader(era, isMC, branchName_jets, readGenObjects);
   jetReader->setJetPt_central_or_shift(jetPt_option);
-  jetReader->setBranchName_BtagWeight(jet_btagWeight_branch);
+  jetReader->setBranchName_BtagWeight(jetBtagSF_option);
   inputTree -> registerReader(jetReader);
   RecoJetCollectionGenMatcher jetGenMatcher;
   RecoJetCollectionCleaner jetCleaner(0.4);
@@ -1555,6 +1571,7 @@ int main(int argc, char* argv[])
 //   (using the method "Event reweighting using scale factors calculated with a tag and probe method",
 //    described on the BTV POG twiki https://twiki.cern.ch/twiki/bin/view/CMS/BTagShapeCalibration )
     double evtWeight = 1.;
+    double btagWeight = 1.;
     if ( isMC ) {
       evtWeight *= lumiScale;
       if ( apply_genWeight ) evtWeight *= boost::math::sign(eventInfo.genWeight);
@@ -1566,7 +1583,6 @@ int main(int argc, char* argv[])
 	else if ( lheScale_option == kLHE_scale_yDown ) evtWeight *= lheInfoReader->getWeight_scale_yDown();
 	else if ( lheScale_option == kLHE_scale_yUp   ) evtWeight *= lheInfoReader->getWeight_scale_yUp();
       }
-      double btagWeight = 1.;
       for ( std::vector<const RecoJet*>::const_iterator jet = selJets.begin();
 	    jet != selJets.end(); ++jet ) {
 	btagWeight *= (*jet)->BtagWeight();
@@ -2357,9 +2373,47 @@ int main(int argc, char* argv[])
       ;
     }
 
+    if(snm)
+    {
+      std::vector<const RecoMuon *> cutBasedMuons = cutBasedMuonSelector(preselMuons);
+      std::vector<const RecoMuon *> mvaBasedMuons = mvaBasedMuonSelector(preselMuons);
+      std::vector<const RecoElectron *> cutBasedElectrons = cutBasedElectronSelector(preselElectrons);
+      std::vector<const RecoElectron *> mvaBasedElectrons = mvaBasedElectronSelector(preselElectrons);
+
+      snm->read(eventInfo);
+      snm->read(preselMuons,     fakeableMuons,     cutBasedMuons,     mvaBasedMuons);
+      snm->read(preselElectrons, fakeableElectrons, cutBasedElectrons, mvaBasedElectrons);
+      snm->read(selHadTaus);
+      snm->read(selJets);
+
+      snm->read({ triggers_1e, triggers_2e, triggers_1mu, triggers_2mu, triggers_1e1mu });
+      snm->read(mvaInputs_2lss_1tau);
+
+      snm->read(boost::math::sign(eventInfo.genWeight),   FloatVariableType::MC_weight);
+      snm->read(met.pt(),                                 FloatVariableType::PFMET);
+      snm->read(met.phi(),                                FloatVariableType::PFMETphi);
+      snm->read(mht_p4.pt(),                              FloatVariableType::MHT);
+      snm->read(met_LD,                                   FloatVariableType::metLD);
+      snm->read(weight_fakeRate,                          FloatVariableType::FR_weight);
+      snm->read(triggerSF_weight,                         FloatVariableType::triggerSF_weight);
+      snm->read(leptonSF_weight,                          FloatVariableType::leptonSF_weight);
+      snm->read(btagWeight,                               FloatVariableType::bTagSF_weight);
+      snm->read(eventInfo.pileupWeight,                   FloatVariableType::PU_weight);
+      snm->read(hadTauSF_weight,                          FloatVariableType::hadTauSF_weight);
+      snm->read(lumiScale,                                FloatVariableType::lumiScale);
+      snm->read(eventInfo.genWeight,                      FloatVariableType::genWeight);
+
+      snm->fill();
+    }
+
     ++selectedEntries;
     selectedEntries_weighted += evtWeight;
     histogram_selectedEntries->Fill(0.);
+  }
+
+  if(snm)
+  {
+    snm->write();
   }
 
   std::cout << "max num. Entries = " << inputTree -> getCumulativeMaxEventCount()
@@ -2424,6 +2478,7 @@ int main(int argc, char* argv[])
   delete cutFlowHistManager;
 
   delete inputTree;
+  delete snm;
 
   clock.Show("analyze_2lss_1tau");
 

@@ -45,10 +45,7 @@ public:
 
   void initializeBranches();
   void initializeHLTBranches(const std::vector<std::vector<hltPath *>> & hltPaths);
-  void readRunLumiEvent(UInt_t run,
-                        UInt_t lumi,
-                        ULong64_t event);
-  void readRunLumiEvent(const EventInfo & eventInfo);
+  void read(const EventInfo & eventInfo);
   void read(const std::vector<const RecoMuon *> & muons,
             const std::vector<const RecoMuon *> & fakeable_muons,
             const std::vector<const RecoMuon *> & cutbased_muons,
@@ -180,7 +177,6 @@ private:
   }
 
   void reset(bool is_initializing);
-  std::string hltMangle(const std::string & hltBranchName) const;
 
   TFile * outputFile;
   TTree * outputTree;
@@ -282,7 +278,6 @@ private:
   Float_t * jet_phi;
   Float_t * jet_E;
   Float_t * jet_CSV;
-  Float_t * jet_heppyFlavour;
 
   std::map<std::string, Int_t> hltMap;
 

@@ -13,7 +13,7 @@ from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 
 # E.g.: ./tthProdNtuple.py -v 2017Dec13 -m all -e 2017 -V -r 2
 
-mode_choices               = ['all', 'forBDTtraining_only', 'forBDTtraining_except']
+mode_choices               = ['all', 'forBDTtraining_only', 'forBDTtraining_except', 'sync']
 era_choices                = ['2017']
 default_resubmission_limit = 4
 
@@ -29,6 +29,7 @@ def cat_choices(choices):
 parser = argparse.ArgumentParser(
   formatter_class = lambda prog: SmartFormatter(prog, max_help_position = 45)
 )
+run_parser = parser.add_mutually_exclusive_group()
 parser.add_argument('-v', '--version',
   type = str, dest = 'version', metavar = 'version', default = None, required = True,
   help = 'R|Analysis version (e.g. %s)' % datetime.date.today().strftime('%Y%b%d'),
@@ -63,6 +64,14 @@ parser.add_argument('-R', '--disable-resubmission',
   dest = 'disable_resubmission', action = 'store_false', default = True,
   help = 'R|Disable resubmission (overwrites option -r/--resubmission-limit)'
 )
+run_parser.add_argument('-E', '--no-exec',
+  dest = 'no_exec', action = 'store_true', default = False,
+  help = 'R|Do not submit the jobs (ignore prompt)',
+)
+run_parser.add_argument('-A', '--auto-exec',
+  dest = 'auto_exec', action = 'store_true', default = False,
+  help = 'R|Automatically submit the jobs (ignore prompt)',
+)
 parser.add_argument('-V', '--verbose',
   dest = 'verbose', action = 'store_true', default = False,
   help = 'R|Increase verbosity level in sbatchManager'
@@ -76,6 +85,8 @@ mode               = args.mode
 preselection       = args.disable_preselection
 nanoaod_prep       = args.disable_nanoaod_preprocess
 resubmit           = args.disable_resubmission
+no_exec            = args.no_exec
+auto_exec          = args.auto_exec
 resubmission_limit = args.resubmission_limit if resubmit else 1 # submit only once
 version            = "%s_w%sNanoPrep_w%sPresel_%s" % (
   args.version, sub_o(nanoaod_prep), sub_o(preselection), mode
@@ -84,7 +95,10 @@ verbose            = args.verbose
 dry_run            = args.dry_run
 
 if era == "2017":
-  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_nanoAOD import samples_2017 as samples
+  if mode == 'sync':
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_nanoAOD_sync import samples_2017 as samples
+  else:
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_nanoAOD import samples_2017 as samples
 else:
   raise ValueError("Invalid Configuration parameter 'era' = %s !!" % era)
 
@@ -98,10 +112,12 @@ for sample_key, sample_entry in samples.items():
       sample_entry["use_it"] = mode == "forBDTtraining_only"
     else:
       sample_entry["use_it"] = mode != "forBDTtraining_only"
+  elif mode == 'sync':
+    pass
   else:
     raise ValueError("Invalid mode: %s" % mode)
 
-if mode in ["all", "forBDTtraining_except"]:
+if mode in ["all", "forBDTtraining_except", "sync"]:
   leptonSelection   = 'Fakeable'
   hadTauSelection   = 'Fakeable|dR03mvaMedium'
   max_files_per_job = 1
@@ -137,6 +153,8 @@ if __name__ == '__main__':
     format = '%(asctime)s - %(levelname)s: %(message)s'
   )
 
+  run_ntupleProduction = False
+
   for resubmission_idx in range(resubmission_limit):
     logging.info("Submission attempt #%i" % (resubmission_idx + 1))
     ntupleProduction = prodNtupleConfig(
@@ -163,7 +181,13 @@ if __name__ == '__main__':
     num_jobs = ntupleProduction.create()
 
     if num_jobs > 0:
-      run_ntupleProduction = query_yes_no("Start jobs ?") if resubmission_idx == 0 else True
+      if resubmission_idx == 0:
+        if auto_exec:
+          run_ntupleProduction = True
+        elif no_exec:
+          run_ntupleProduction = False
+        else:
+          run_ntupleProduction = query_yes_no("Start jobs ?")
       if run_ntupleProduction:
         ntupleProduction.run()
       else:

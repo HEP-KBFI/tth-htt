@@ -210,6 +210,10 @@ if __name__ == '__main__':
         type = str, dest = 'blacklist_tier', metavar = 'name', default = '', required = False,
         help = "R|Blacklist tier(s); separate multpiple tiers by a comma",
     )
+    parser.add_argument('-r', '--maxjobruntime',
+        type = int, dest = 'maxjobruntime', metavar = 'minutes', default = 1315, required = False,
+        help = 'R|Maximum job runtime in minutes',
+    )
     parser.add_argument('-f', '--force-resubmit',
         dest = 'force_resubmit', action = 'store_true', default = False, required = False,
         help = 'R|Force resubmission',
@@ -221,6 +225,8 @@ if __name__ == '__main__':
     force_resubmit = args.force_resubmit
     blacklist_tier = args.blacklist_tier
     whitelist_tier = args.whitelist_tier
+    maxjobruntime  = args.maxjobruntime
+    assert(maxjobruntime > 0)
 
     crabJobPath = crabFilePath
     if not os.path.isdir(crabJobPath):
@@ -469,6 +475,7 @@ if __name__ == '__main__':
                         commandLine += " --sitewhitelist=%s" % whitelist_tier
                     if blacklist_tier:
                         commandLine += " --siteblacklist=%s" % blacklist_tier
+                    commandLine += " --maxjobruntime=%d" % maxjobruntime
                     print("commandLine = '%s'" % commandLine)
                     runCommand_via_shell(commandLine)
 

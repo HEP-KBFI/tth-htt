@@ -26,6 +26,7 @@ RecoJetReader::RecoJetReader(int era,
   , max_nJets_(256)
   , branchName_num_(Form("n%s", branchName_obj.data()))
   , branchName_obj_(branchName_obj)
+  , branchName_btag_(! RecoJet::useDeepCSV ? "CSVV2" : "DeepB")
   , genLeptonReader_(nullptr)
   , genHadTauReader_(nullptr)
   , genJetReader_(nullptr)
@@ -41,7 +42,6 @@ RecoJetReader::RecoJetReader(int era,
   , jet_BtagCSV_(nullptr)
   , jet_BtagWeight_(nullptr)
   , jet_QGDiscr_(nullptr)
-  , jet_heppyFlavour_(nullptr)
   , jet_pullEta_(nullptr)
   , jet_pullPhi_(nullptr)
   , jet_pullMag_(nullptr)
@@ -75,7 +75,6 @@ RecoJetReader::~RecoJetReader()
     delete[] gInstance->jet_BtagCSV_;
     delete[] gInstance->jet_BtagWeight_;
     delete[] gInstance->jet_QGDiscr_;
-    delete[] gInstance->jet_heppyFlavour_;
     delete[] gInstance->jet_pullEta_;
     delete[] gInstance->jet_pullPhi_;
     delete[] gInstance->jet_pullMag_;
@@ -94,9 +93,9 @@ RecoJetReader::setJetPt_central_or_shift(int jetPt_option)
 }
 
 void
-RecoJetReader::setBranchName_BtagWeight(const std::string & branchName_BtagWeight)
+RecoJetReader::setBranchName_BtagWeight(int central_or_shift)
 {
-  branchName_BtagWeight_ = branchName_BtagWeight;
+  branchName_BtagWeight_ = getBranchName_bTagWeight(branchName_obj_, era_, central_or_shift);
 }
 
 void
@@ -116,18 +115,16 @@ RecoJetReader::setBranchNames()
     branchName_mass_ = Form("%s_%s", branchName_obj_.data(), "mass");
     branchName_jetCharge_ = Form("%s_%s", branchName_obj_.data(), "jetCharge");
     branchName_jecUncertTotal_ = Form("%s_%s", branchName_obj_.data(), "jecUncertTotal");
-    branchName_BtagCSV_ = Form("%s_%s", branchName_obj_.data(), "btagCSVV2");
+    branchName_BtagCSV_ = Form("%s_%s", branchName_obj_.data(), Form("btag%s", branchName_btag_.data()));
     branchName_QGDiscr_ = Form("%s_%s", branchName_obj_.data(), "qgl");
-    branchName_BtagWeight_ = Form("%s_%s", branchName_obj_.data(), "btagSF_csvv2");
+    branchName_BtagWeight_ = getBranchName_bTagWeight(branchName_obj_, era_, kBtag_central);
     for(int idxShift = kBtag_hfUp; idxShift <= kBtag_jesDown; ++idxShift)
     {
-      branchNames_BtagWeight_systematics_[idxShift] = TString(getBranchName_bTagWeight(era_, idxShift))
-        .ReplaceAll("Jet_", Form("%s_", branchName_obj_.data())).Data()
-      ;
+      branchNames_BtagWeight_systematics_[idxShift] = getBranchName_bTagWeight(branchName_obj_, era_, idxShift);
     }
     branchName_pullEta_ = Form("%s_%s", branchName_obj_.data(), "pullEta");
     branchName_pullPhi_ = Form("%s_%s", branchName_obj_.data(), "pullPhi");
-    branchName_pullMag_ = Form("%s_%s", branchName_obj_.data(), "pullMag");    
+    branchName_pullMag_ = Form("%s_%s", branchName_obj_.data(), "pullMag");
     instances_[branchName_obj_] = this;
   }
   else
@@ -173,7 +170,6 @@ RecoJetReader::setBranchAddresses(TTree * tree)
       }
     }
     bai.setBranchAddress(jet_QGDiscr_, branchName_QGDiscr_, 1.);
-    bai.setBranchAddress(jet_heppyFlavour_, branchName_heppyFlavour_, -1);
     bai.setBranchAddress(jet_pullEta_, branchName_pullEta_);
     bai.setBranchAddress(jet_pullPhi_, branchName_pullPhi_);
     bai.setBranchAddress(jet_pullMag_, branchName_pullMag_);
@@ -220,7 +216,6 @@ RecoJetReader::read() const
         gInstance->jet_BtagCSV_[idxJet],
         gInstance->jet_BtagWeight_[idxJet],
         gInstance->jet_QGDiscr_[idxJet],
-        gInstance->jet_heppyFlavour_[idxJet],
         gInstance->jet_pullEta_[idxJet], 
         gInstance->jet_pullPhi_[idxJet], 
         gInstance->jet_pullMag_[idxJet], 

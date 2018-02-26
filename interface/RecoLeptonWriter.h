@@ -100,6 +100,7 @@ protected:
   const unsigned int max_nLeptons_;
   std::string branchName_num_;
   std::string branchName_obj_;
+  std::string branchName_btag_;
 
   GenParticleWriter * genLeptonWriter_;
   GenParticleWriter * genHadTauWriter_;

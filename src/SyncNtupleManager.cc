@@ -182,8 +182,7 @@ SyncNtupleManager::initializeBranches()
     jet_eta,          "eta",
     jet_phi,          "phi",
     jet_E,            "E",
-    jet_CSV,          "CSV",
-    jet_heppyFlavour, "heppyFlavour"
+    jet_CSV,          "CSV"
   );
 
   reset(true);
@@ -201,24 +200,16 @@ SyncNtupleManager::initializeHLTBranches(const std::vector<std::vector<hltPath *
   }
   for(auto & kv: hltMap)
   {
-    setBranches(hltMap[kv.first], hltMangle(kv.first));
+    setBranches(hltMap[kv.first], kv.first);
   }
 }
 
 void
-SyncNtupleManager::readRunLumiEvent(UInt_t run_,
-                                    UInt_t lumi_,
-                                    ULong64_t event_)
+SyncNtupleManager::read(const EventInfo & eventInfo)
 {
-  nEvent = event_;
-  ls = lumi_;
-  run = run_;
-}
-
-void
-SyncNtupleManager::readRunLumiEvent(const EventInfo & eventInfo)
-{
-  return readRunLumiEvent(eventInfo.run, eventInfo.lumi, eventInfo.event);
+  run = eventInfo.run;
+  ls = eventInfo.lumi;
+  nEvent = eventInfo.event;
 }
 
 void
@@ -409,7 +400,6 @@ SyncNtupleManager::read(const std::vector<const RecoJet *> & jets)
     jet_phi[i] = jet -> phi();
     jet_E[i] = (jet -> p4()).E();
     jet_CSV[i] = jet -> BtagCSV();
-    jet_heppyFlavour[i] = jet -> heppyFlavour();
   }
 }
 
@@ -568,25 +558,13 @@ SyncNtupleManager::reset(bool is_initializing)
     jet_eta,
     jet_phi,
     jet_E,
-    jet_CSV,
-    jet_heppyFlavour
+    jet_CSV
   );
 
   for(auto & kv: hltMap)
   {
     hltMap[kv.first] = -1;
   }
-}
-
-std::string
-SyncNtupleManager::hltMangle(const std::string & hltBranchName) const
-{
-  if(! boost::starts_with(hltBranchName, "HLT_"))
-  {
-    throw cmsException(this, __func__)
-      << "Invalid HLT branch name: " << hltBranchName;
-  }
-  return hltBranchName.substr(8);
 }
 
 void

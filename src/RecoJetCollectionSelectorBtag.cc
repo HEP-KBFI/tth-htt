@@ -18,13 +18,12 @@ RecoJetSelectorBtagLoose::RecoJetSelectorBtagLoose(int era,
                                                    bool debug)
   : RecoJetSelectorBtag(era, index, debug)
 {
-  // NB! no btag CSVv2 WPs for 2017, yet!
   switch(era_)
   {
     case kEra_2017:
     {
-      // CSV loose WP, cf. https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation80XReReco
-      min_BtagCSV_ = 0.5426;
+      // Karl: CSV loose WP, cf. https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation94X
+      min_BtagCSV_ = ! RecoJet::useDeepCSV ? 0.5803 : 0.1522;
       break;
     }
     default: throw cmsException(this) << "Invalid era = " << era_;
@@ -36,13 +35,12 @@ RecoJetSelectorBtagMedium::RecoJetSelectorBtagMedium(int era,
                                                      bool debug)
   : RecoJetSelectorBtag(era, index, debug)
 {
-  // NB! no btag CSVv2 WPs for 2017, yet!
   switch(era_)
   {
     case kEra_2017:
     {
-      // CSV medium WP, cf. https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation80XReReco
-      min_BtagCSV_ = 0.8484;
+      // Karl: CSV medium WP, cf. https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation94X
+      min_BtagCSV_ = ! RecoJet::useDeepCSV ? 0.8838 : 0.4941;
       break;
     }
     default: throw cmsException(this) << "Invalid era = " << era_;

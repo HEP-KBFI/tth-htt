@@ -100,5 +100,10 @@ process.analyze_2lss_1tau = cms.PSet(
 
     selEventsFileName_input = cms.string(''),
     selEventsFileName_output = cms.string(''),
-    selectBDT = cms.bool(False)
+    selectBDT = cms.bool(False),
+
+    syncNtuple = cms.PSet(
+        tree = cms.string(''),
+        output = cms.string(''),
+    ),
 )

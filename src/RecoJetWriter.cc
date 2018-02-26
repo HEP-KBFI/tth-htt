@@ -25,6 +25,7 @@ RecoJetWriter::RecoJetWriter(int era,
   , max_nJets_(32)
   , branchName_num_(branchName_num)
   , branchName_obj_(branchName_obj)
+  , branchName_btag_(! RecoJet::useDeepCSV ? "CSVV2" : "DeepB")
   , genLeptonWriter_(nullptr)
   , genHadTauWriter_(nullptr)
   , genJetWriter_(nullptr)
@@ -75,17 +76,15 @@ RecoJetWriter::setBranchNames()
   branchName_mass_ = Form("%s_%s", branchName_obj_.data(), "mass");
   branchName_jetCharge_ = Form("%s_%s", branchName_obj_.data(), "jetCharge");
   branchName_jecUncertTotal_ = Form("%s_%s", branchName_obj_.data(), "jecUncertTotal");
-  branchName_BtagCSV_ = Form("%s_%s", branchName_obj_.data(), "btagCSVV2");
+  branchName_BtagCSV_ = Form("%s_%s", branchName_obj_.data(), Form("btag%s", branchName_btag_.data()));
   branchName_QGDiscr_ = Form("%s_%s", branchName_obj_.data(), "qgl");
   branchName_pullEta_ = Form("%s_%s", branchName_obj_.data(), "pullEta");
   branchName_pullPhi_ = Form("%s_%s", branchName_obj_.data(), "pullPhi");
   branchName_pullMag_ = Form("%s_%s", branchName_obj_.data(), "pullMag");
-  branchName_BtagWeight_ = Form("%s_%s", branchName_obj_.data(), "btagSF_csvv2");
+  branchName_BtagWeight_ = getBranchName_bTagWeight(branchName_obj_, era_, kBtag_central);
   for(int idxShift = kBtag_hfUp; idxShift <= kBtag_jesDown; ++idxShift)
   {
-    branchNames_BtagWeight_systematics_[idxShift] = TString(getBranchName_bTagWeight(era_, idxShift))
-      .ReplaceAll("Jet_", Form("%s_", branchName_obj_.data())).Data()
-    ;
+    branchNames_BtagWeight_systematics_[idxShift] = getBranchName_bTagWeight(branchName_obj_, era_, idxShift);
   }
 }
 

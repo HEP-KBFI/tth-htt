@@ -151,12 +151,12 @@ isMatched(const Tfakeable & fakeableLepton,
  * @brief Return branchName to read weights that need to be applied, per jet, to MC events
  *       in order to correct for data/MC differences in b-tagging efficiency and mistag rates
  */
-std::string
-getBranchName_bTagWeight(int era,
-                         const std::string & central_or_shift);
+int
+getBTagWeight_option(const std::string & central_or_shift);
 
 std::string
-getBranchName_bTagWeight(int era,
+getBranchName_bTagWeight(const std::string & default_collectionName,
+                         int era,
                          int central_or_shift);
 
 /**
@@ -164,7 +164,7 @@ getBranchName_bTagWeight(int era,
  */
 std::string
 getBranchName_MEt(int era,
-                  const std::string & defaul_branchName,
+                  const std::string & default_branchName,
                   int central_or_shift);
 
 /**

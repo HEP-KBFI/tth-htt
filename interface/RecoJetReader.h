@@ -31,7 +31,7 @@ public:
   setJetPt_central_or_shift(int jetPt_option);
 
   void
-  setBranchName_BtagWeight(const std::string & branchName_BtagWeight);
+  setBranchName_BtagWeight(int central_or_shift);
 
   void
   read_BtagWeight_systematics(bool flag);
@@ -61,6 +61,7 @@ protected:
   const unsigned int max_nJets_;
   std::string branchName_num_;
   std::string branchName_obj_;
+  std::string branchName_btag_;
 
   /**
    * @brief Read branches containing information on matching of RecoJet objects
@@ -84,7 +85,6 @@ protected:
   std::string branchName_BtagCSV_;
   std::string branchName_BtagWeight_;
   std::string branchName_QGDiscr_;
-  std::string branchName_heppyFlavour_;
   std::string branchName_pullEta_;
   std::string branchName_pullPhi_;
   std::string branchName_pullMag_;
@@ -92,6 +92,7 @@ protected:
   std::map<int, std::string> branchNames_BtagWeight_systematics_;
 
   int jetPt_option_;
+  int btagSF_option_;
 
   bool read_BtagWeight_systematics_;
 
@@ -105,7 +106,6 @@ protected:
   Float_t * jet_BtagCSV_;
   Float_t * jet_BtagWeight_;
   Float_t * jet_QGDiscr_;
-  Int_t * jet_heppyFlavour_;
   Float_t * jet_pullEta_;
   Float_t * jet_pullPhi_;
   Float_t * jet_pullMag_;
