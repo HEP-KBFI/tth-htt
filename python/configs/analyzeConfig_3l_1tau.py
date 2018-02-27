@@ -44,12 +44,13 @@ class analyzeConfig_3l_1tau(analyzeConfig):
                max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,
                executable_addBackgrounds, executable_addBackgroundJetToTauFakes, histograms_to_fit, select_rle_output = False,
                executable_prep_dcard="prepareDatacards", executable_add_syst_dcard = "addSystDatacards",
-               select_root_output = False, verbose = False, dry_run = False):
+               select_root_output = False, do_sync = False, verbose = False, dry_run = False):
     analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "3l_1tau", central_or_shifts,
       max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,
       histograms_to_fit,
       executable_prep_dcard = executable_prep_dcard,
       executable_add_syst_dcard = executable_add_syst_dcard,
+      do_sync = do_sync,
       verbose = verbose,
       dry_run = dry_run,
     )
@@ -233,6 +234,9 @@ class analyzeConfig_3l_1tau(analyzeConfig):
 #          self.get_addMEM_systematics(jobOptions['central_or_shift'])
         )
       )
+    if self.do_sync:
+      lines.append("process.analyze_3l_1tau.syncNtuple.tree   = cms.string('%s')" % jobOptions['syncTree'])
+      lines.append("process.analyze_3l_1tau.syncNtuple.output = cms.string('%s')" % os.path.basename(jobOptions['syncOutput']))
     create_cfg(self.cfgFile_analyze, jobOptions['cfgFile_modified'], lines)
 
   def createCfg_makePlots_mcClosure(self, jobOptions):
@@ -270,7 +274,7 @@ class analyzeConfig_3l_1tau(analyzeConfig):
           lepton_and_hadTau_selection_and_frWeight = get_lepton_and_hadTau_selection_and_frWeight(lepton_and_hadTau_selection, lepton_and_hadTau_frWeight)
           for chargeSumSelection in self.chargeSumSelections:
             key_dir = getKey(process_name, lepton_and_hadTau_selection_and_frWeight, chargeSumSelection)
-            for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_ROOT, DKEY_RLES ]:
+            for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_ROOT, DKEY_RLES, DKEY_SYNC ]:
               initDict(self.dirs, [ key_dir, dir_type ])
               if dir_type in [ DKEY_CFGS, DKEY_LOGS ]:
                 self.dirs[key_dir][dir_type] = os.path.join(self.configDir, dir_type, self.channel,
@@ -278,7 +282,7 @@ class analyzeConfig_3l_1tau(analyzeConfig):
               else:
                 self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel,
                   "_".join([ lepton_and_hadTau_selection_and_frWeight, chargeSumSelection ]), process_name)
-    for dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_HIST, DKEY_LOGS, DKEY_DCRD, DKEY_PLOT, DKEY_HADD_RT ]:
+    for dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_HIST, DKEY_LOGS, DKEY_DCRD, DKEY_PLOT, DKEY_HADD_RT, DKEY_SYNC ]:
       initDict(self.dirs, [ dir_type ])
       if dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_LOGS, DKEY_DCRD, DKEY_PLOT, DKEY_HADD_RT ]:
         self.dirs[dir_type] = os.path.join(self.configDir, dir_type, self.channel)
@@ -373,6 +377,20 @@ class analyzeConfig_3l_1tau(analyzeConfig):
                   if key_file_woJobId not in self.rootOutputAux:
                     self.rootOutputAux[key_file_woJobId] = [ re.sub('_\d+\.root', '.root', rootOutputFile),
                                                              re.sub('\d+\.root', '*.root', rootOutputFile) ]
+
+                syncOutput = ''
+                syncTree = ''
+                if self.do_sync:
+                  if lepton_and_hadTau_selection_and_frWeight == 'Tight' and chargeSumSelection == 'OS':
+                    syncOutput = os.path.join(self.dirs[key_dir][DKEY_SYNC], '%s_SR.root' % self.channel)
+                    syncTree   = 'syncTree_%s_SR' % self.channel.replace('_', '')
+                  elif lepton_and_hadTau_selection_and_frWeight == 'Fakeable_wFakeRateWeights' and chargeSumSelection == 'OS':
+                    syncOutput = os.path.join(self.dirs[key_dir][DKEY_SYNC], '%s_Fake.root' % self.channel)
+                    syncTree   = 'syncTree_%s_Fake' % self.channel.replace('_', '')
+                  else:
+                    continue
+                  self.inputFiles_sync['sync'].append(syncOutput)
+
                 self.jobOptions_analyze[key_analyze_job] = {
                   'ntupleFiles' : ntupleFiles,
                   'cfgFile_modified' : os.path.join(self.dirs[key_dir][DKEY_CFGS], "analyze_%s_%s_%s_%s_%s_%i_cfg.py" % \
@@ -402,6 +420,8 @@ class analyzeConfig_3l_1tau(analyzeConfig):
                   'selectBDT': self.isBDTtraining,
                   'changeBranchNames': self.changeBranchNames,
                   'MEMbranch' : self.MEMbranch,
+                  'syncOutput': syncOutput,
+                  'syncTree'  : syncTree,
                 }
                 self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job])
 
@@ -413,7 +433,7 @@ class analyzeConfig_3l_1tau(analyzeConfig):
                 self.outputFile_hadd_stage1[key_hadd_stage1] = os.path.join(self.dirs[DKEY_HIST], "histograms_harvested_stage1_%s_%s_%s_%s.root" % \
                   (self.channel, process_name, lepton_and_hadTau_selection_and_frWeight, chargeSumSelection))
 
-            if self.isBDTtraining:
+            if self.isBDTtraining or self.do_sync:
               continue
 
             if is_mc:
@@ -539,7 +559,7 @@ class analyzeConfig_3l_1tau(analyzeConfig):
                     self.outputFile_hadd_stage1_5[key_hadd_stage1_5] = os.path.join(self.dirs[DKEY_HIST], "histograms_harvested_stage1_5_%s_%s_%s.root" % \
                      (self.channel, lepton_and_hadTau_selection_and_frWeight, chargeSumSelection))
 
-            if self.isBDTtraining:
+            if self.isBDTtraining or self.do_sync:
               continue
 
             # add output files of hadd_stage1 for data to list of input files for hadd_stage1_5
@@ -550,7 +570,7 @@ class analyzeConfig_3l_1tau(analyzeConfig):
                 self.inputFiles_hadd_stage1_5[key_hadd_stage1_5] = []
               self.inputFiles_hadd_stage1_5[key_hadd_stage1_5].append(self.outputFile_hadd_stage1[key_hadd_stage1])
 
-          if self.isBDTtraining:
+          if self.isBDTtraining or self.do_sync:
             continue
 
           # sum fake contributions for the total of all MC sample
@@ -588,15 +608,27 @@ class analyzeConfig_3l_1tau(analyzeConfig):
           self.outputFile_hadd_stage2[key_hadd_stage2] = os.path.join(self.dirs[DKEY_HIST], "histograms_harvested_stage2_%s_%s_%s.root" % \
             (self.channel, lepton_and_hadTau_selection_and_frWeight, chargeSumSelection))
 
-    if self.isBDTtraining:
+    if self.isBDTtraining or self.do_sync:
       if self.is_sbatch:
         logging.info("Creating script for submitting '%s' jobs to batch system" % self.executable_analyze)
         self.sbatchFile_analyze = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_analyze_%s.py" % self.channel)
-        self.createScript_sbatch_analyze(self.executable_analyze, self.sbatchFile_analyze, self.jobOptions_analyze)
+        if self.isBDTtraining:
+          self.createScript_sbatch_analyze(self.executable_analyze, self.sbatchFile_analyze, self.jobOptions_analyze)
+        elif self.do_sync:
+          self.createScript_sbatch_syncNtuple(self.executable_analyze, self.sbatchFile_analyze, self.jobOptions_analyze)
       logging.info("Creating Makefile")
       lines_makefile = []
-      self.addToMakefile_analyze(lines_makefile)
-      self.addToMakefile_hadd_stage1(lines_makefile)
+      if self.isBDTtraining:
+        self.addToMakefile_analyze(lines_makefile)
+        self.addToMakefile_hadd_stage1(lines_makefile)
+      elif self.do_sync:
+        self.addToMakefile_syncNtuple(lines_makefile)
+        outputFile_sync_path = os.path.join(self.outputDir, DKEY_SYNC, '%s.root' % self.channel)
+        self.outputFile_sync['sync'] = outputFile_sync_path
+        self.targets.append(outputFile_sync_path)
+        self.addToMakefile_hadd_sync(lines_makefile)
+      else:
+        raise ValueError("Internal logic error")
       self.createMakefile(lines_makefile)
       logging.info("Done")
       return self.num_jobs
