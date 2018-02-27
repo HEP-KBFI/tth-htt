@@ -15,7 +15,7 @@ from tthAnalysis.HiggsToTauTau.analysisSettings import systematics
 
 #TODO: needs actual Ntuples
 
-mode_choices               = ['VHbb', 'forBDTtraining']
+mode_choices               = ['VHbb', 'forBDTtraining', 'sync']
 era_choices                = ['2017']
 sys_choices                = [ 'central', 'full' ]
 default_resubmission_limit = 4
@@ -97,14 +97,14 @@ changeBranchNames                  = use_prod_ntuples
 applyFakeRateWeights               = None
 hadTauFakeRateWeight_inputFileName = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016.root" #TODO update
 
-if mode != "VHbb":
-  raise ValueError("Only VHbb mode available")
+if mode not in ['VHbb', 'sync']:
+  raise ValueError("Only VHbb and sync mode available")
 
 if mode == "VHbb":
   if use_prod_ntuples:
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_prodNtuples_test import samples_2017
   else:
-    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_test import samples_2017
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017
 
   for sample_name, sample_info in samples_2017.items():
     if sample_info["type"] == "mc":
@@ -124,6 +124,11 @@ elif mode == "forBDTtraining":
   hadTau_selection                   = "dR03mvaTight"
   hadTau_selection_relaxed           = "dR03mvaMedium"
   applyFakeRateWeights               = "3L"
+elif mode == "sync":
+  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync import samples_2017
+
+  hadTau_selection     = "dR03mvaVTight"
+  applyFakeRateWeights = "3L"
 else:
   raise ValueError("Invalid Configuration parameter 'mode' = %s !!" % mode)
 
@@ -170,7 +175,7 @@ if __name__ == '__main__':
       use_lumi                              = True,
       lumi                                  = lumi,
       debug                                 = False,
-      running_method                        = "sbatch",
+      running_method                        = 'sbatch',
       num_parallel_jobs                     = 100,
       executable_addBackgrounds             = "addBackgrounds",
       # CV: use common executable for estimating jet->lepton and jet->tau_h fake background
@@ -191,6 +196,7 @@ if __name__ == '__main__':
       select_rle_output                     = True,
       verbose                               = idx_job_resubmission > 0,
       dry_run                               = args.dry_run,
+      do_sync                               = mode == 'sync',
     )
 
     if mode == "forBDTtraining" :
