@@ -17,10 +17,11 @@ DKEY_DCRD = "datacards"   # dir for the datacard
 DKEY_RLES = "output_rle"  # dir for the selected run:lumi:event numbers
 DKEY_ROOT = "output_root" # dir for the selected events dumped into a root file
 DKEY_HADD_RT = "hadd_cfg_rt" # dir for hadd cfg files generated during the runtime
+DKEY_SYNC = 'sync_ntuple' # dir for storing sync Ntuples
 
 executable_rm = 'rm'
 
-DIRLIST = [ DKEY_CFGS, DKEY_DCRD, DKEY_HIST, DKEY_PLOT, DKEY_SCRIPTS, DKEY_LOGS, DKEY_RLES, DKEY_ROOT, DKEY_HADD_RT ]
+DIRLIST = [ DKEY_CFGS, DKEY_DCRD, DKEY_HIST, DKEY_PLOT, DKEY_SCRIPTS, DKEY_LOGS, DKEY_RLES, DKEY_ROOT, DKEY_HADD_RT, DKEY_SYNC ]
 
 class analyzeConfig:
     """Configuration metadata needed to run analysis in a single go.
@@ -63,6 +64,7 @@ class analyzeConfig:
                  executable_add_syst_dcard = "addSystDatacards",
                  executable_make_plots = "makePlots",
                  executable_make_plots_mcClosure = "makePlots_mcClosure",
+                 do_sync = False,
                  verbose = False,
                  dry_run = False):
 
@@ -144,6 +146,12 @@ class analyzeConfig:
         self.rleOutputFiles = {}
         self.rootOutputFiles = {}
         self.rootOutputAux = {}
+
+        self.do_sync = do_sync
+        self.inputFiles_sync = {}
+        self.outputFile_sync = {}
+        if self.do_sync:
+            self.inputFiles_sync['sync'] = []
 
         if era == '2017':
             self.triggers_3mu = [
@@ -352,6 +360,13 @@ class analyzeConfig:
         )
         return num_jobs
 
+    def createScript_sbatch_syncNtuple(self, executable, sbatchFile, jobOptions):
+        """Creates the python script necessary to submit the analysis jobs to the batch system
+        """
+        self.num_jobs['analyze'] += self.createScript_sbatch(executable, sbatchFile, jobOptions,
+                                                             'cfgFile_modified', 'ntupleFiles', 'syncOutput', 'logFile')
+
+
     def createScript_sbatch_analyze(self, executable, sbatchFile, jobOptions):
         """Creates the python script necessary to submit the analysis jobs to the batch system
         """
@@ -398,6 +413,24 @@ class analyzeConfig:
                 lines_makefile.append("")
             self.filesToClean.append(jobOptions['histogramFile'])
 
+    def addToMakefile_syncNtuple(self, lines_makefile):
+        """Adds the commands to Makefile that are necessary for running the analysis code on the Ntuple and filling the histograms
+        """
+        if self.is_sbatch:
+            lines_makefile.append("sbatch_analyze:")
+            lines_makefile.append("\t%s %s" % ("python", self.sbatchFile_analyze))
+            lines_makefile.append("")
+        for jobOptions in self.jobOptions_analyze.values():
+            if self.is_makefile:
+                lines_makefile.append("%s:" % jobOptions['syncOutput'])
+                lines_makefile.append("\t%s %s &> %s" % (self.executable_analyze, jobOptions['cfgFile_modified'], jobOptions['logFile']))
+                lines_makefile.append("")
+            elif self.is_sbatch:
+                lines_makefile.append("%s: %s" % (jobOptions['syncOutput'], "sbatch_analyze"))
+                lines_makefile.append("\t%s" % ":") # CV: null command
+                lines_makefile.append("")
+            self.filesToClean.append(jobOptions['syncOutput'])
+
     def addToMakefile_hadd(self, lines_makefile, inputFiles, outputFiles, label):
         scriptFiles = {}
         jobOptions = {}
@@ -434,6 +467,9 @@ class analyzeConfig:
 
     def addToMakefile_hadd_stage1(self, lines_makefile):
         self.addToMakefile_hadd(lines_makefile, self.inputFiles_hadd_stage1, self.outputFile_hadd_stage1, "stage1")
+
+    def addToMakefile_hadd_sync(self, lines_makefile):
+        self.addToMakefile_hadd(lines_makefile, self.inputFiles_sync, self.outputFile_sync, "sync")
 
     def addToMakefile_addBackgrounds(self, lines_makefile, sbatchTarget, sbatchFile, jobOptions):
         if self.is_sbatch:
