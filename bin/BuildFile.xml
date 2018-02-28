@@ -300,20 +300,6 @@
   <use   name="root"/>
   <use   name="roottmva"/>
 </bin>
-<bin file="sync_ntuples.cc" name="sync_ntuples">
-  <!--  <Flags CppDefines="DEBUG=1"/> -->
-  <use   name="FWCore/FWLite"/>
-  <use   name="FWCore/ParameterSet"/>
-  <use   name="FWCore/PythonParameterSet"/>
-  <use   name="FWCore/Utilities"/>
-  <use   name="DataFormats/FWLite"/>
-  <use   name="DataFormats/Math"/>
-  <use   name="PhysicsTools/FWLite"/>
-  <use   name="tthAnalysis/HiggsToTauTau"/>
-  <use   name="root"/>
-  <use   name="roottmva"/>
-  <use   name="boost"/>
-</bin>
 <bin file="analyze_charge_flip.cc" name="analyze_charge_flip">
   <use   name="FWCore/FWLite"/>
   <use   name="FWCore/ParameterSet"/>

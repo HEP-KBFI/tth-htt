@@ -1,9 +1,0 @@
-rm sync_ntuples_split.root
-sync_ntuples sync_ntuples_1l_2tau_OS_cfg.py
-#sync_ntuples sync_ntuples_2lss_1tau_OS_cfg.py
-#sync_ntuples sync_ntuples_2lss_1tau_fakeable_cfg.py
-#sync_ntuples sync_ntuples_3l_1tau_fakeable_cfg.py
-#sync_ntuples sync_ntuples_1l_2tau_fakeable_cfg.py
-sync_ntuples sync_ntuples_2lss_1tau_SS_cfg.py
-sync_ntuples sync_ntuples_3l_1tau_OS_cfg.py
-hadd sync_ntuples_split.root ntuple/*.root
