@@ -38,10 +38,11 @@ class syncNtupleConfig:
     project_dir = os.path.join(os.getenv('CMSSW_BASE'), 'src', 'tthAnalysis', 'HiggsToTauTau')
     executable_pattern = os.path.join(project_dir, 'test', 'tthAnalyzeRun_%s.py')
 
-    hadd_script_dir_path = os.path.join(config_dir, DKEY_SCRIPTS)
-    hadd_log_dir_path    = os.path.join(config_dir, DKEY_LOGS)
-    self.hadd_script_path     = os.path.join(hadd_script_dir_path, DKEY_SYNC, 'hadd_sync.py')
-    self.hadd_log_path        = os.path.join(hadd_log_dir_path,    DKEY_SYNC, 'hadd_sync.log')
+    self.hadd_script_dir_path = os.path.join(config_dir, DKEY_SCRIPTS)
+    self.hadd_log_dir_path    = os.path.join(config_dir, DKEY_LOGS)
+    self.hadd_script_path         = os.path.join(self.hadd_script_dir_path, DKEY_SYNC, 'hadd_sync.py')
+    self.hadd_log_wrapper_path    = os.path.join(self.hadd_log_dir_path,    DKEY_SYNC, 'hadd_sync_wrapper.log')
+    self.hadd_log_executable_path = os.path.join(self.hadd_log_dir_path,    DKEY_SYNC, 'hadd_sync_executable.log')
 
     final_output_dir = os.path.join(output_dir, DKEY_SYNC)
     self.final_output_file = os.path.join(final_output_dir, output_filename)
@@ -81,15 +82,15 @@ class syncNtupleConfig:
     self.makefile_path = os.path.join(config_dir, 'Makefile_sync')
 
   def create(self):
-    create_if_not_exists(os.path.dirname(self.hadd_script_path))
-    create_if_not_exists(os.path.dirname(self.hadd_log_path))
+    create_if_not_exists(self.hadd_script_dir_path)
+    create_if_not_exists(self.hadd_log_dir_path)
 
     createScript_sbatch_hadd(
       sbatch_script_file_name = self.hadd_script_path,
       input_file_names        = list(self.channel_info.keys()),
       output_file_name        = self.final_output_file,
       script_file_name        = self.hadd_script_path.replace('.py', '.sh'),
-      log_file_name           = None,
+      log_file_name           = self.hadd_log_executable_path, # the basename will be replaced anyways?
       working_dir             = None,
       waitForJobs             = True,
       auxDirName              = '',
@@ -104,7 +105,7 @@ class syncNtupleConfig:
         output_file      = self.final_output_file,
         channel_info     = self.channel_info,
         hadd_script      = self.hadd_script_path,
-        hadd_wrapper_log = self.hadd_log_path,
+        hadd_wrapper_log = self.hadd_log_wrapper_path,
       )
       makefile.write(makeFileContents)
     logging.info("Created the makefile: %s" % self.makefile_path)
