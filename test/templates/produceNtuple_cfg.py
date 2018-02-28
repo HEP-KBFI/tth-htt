@@ -43,40 +43,6 @@ process.produceNtuple = cms.PSet(
 
     selEventsFileName_input = cms.string(''),
 
-    #----------------------------------------------------------------------------
-    # CV: Copy additional branches from input to output tree
-    #     Note that branches that are accessed by
-    #      - RecoElectron, RecoMuon, RecoHadTau, RecoJet, RecoMEt
-    #      - GenLep, GenVisTau, GenJet (if MC)
-    #     reader classes must *not* appear in the outputCommands,
-    #     as ROOT cannot handle accesses from multiple places in the code to the same branch
-    #TODO: Karl: record the branch names to be read inside the *Reader classes and put "keep *" here
-    outputCommands = cms.vstring(
-        "drop *",
-        "keep *l1*",
-        "keep HLT_*Ele*",
-        "keep HLT_*Mu*",
-        "keep HLT_*Tau*",
-        "keep *TrigObj*",
-        "keep Flag_*",
-        "keep PuppiMET_*",
-        "keep TkMET_*",
-        "keep *LHE*",
-        "keep Pileup_*",
-        "keep PV_*",
-        "keep *Rho*",
-        "keep *Weight*",
-        "keep gen*",
-        "keep *GenHiggs*",
-        "keep *GenNu*",
-        "keep *Gen*Quark*",
-        "keep *Gen*boson*",
-        "keep *GenTau*",
-        "keep *Gen*Top*",
-        "drop *Recovered*",
-    ),
-    #----------------------------------------------------------------------------
-
     copy_histograms = cms.vstring(
         "Count",
         "CountFullWeighted",

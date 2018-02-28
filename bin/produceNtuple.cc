@@ -186,8 +186,6 @@ int main(int argc, char* argv[])
     run_lumi_eventSelector = new RunLumiEventSelector(selEventsFileName_input);
   }
 
-//  vstring outputCommands_string = cfg_produceNtuple.getParameter<vstring>("outputCommands");
-
   vstring copy_histograms = cfg_produceNtuple.getParameter<vstring>("copy_histograms");
 
   // CV: delay start by random time, to avoid that multiple analysis jobs
