@@ -29,18 +29,25 @@
 # $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/python/samples/tthAnalyzeSamples_$ERA_nanoAOD_sync.py
 # to /hdfs/local/$USER/sync_ntuples/nanoAODproduction/$VERSION/ttHJetToNonbb_M125_amcatnlo
 #
-# 4) Run
+# 4) Rebuild (i.e. clean and then build) this project with SYNC_NTUPLE definition enabled:
+#
+# scram b clean -j8 && scram b -j8 USER_CXXFLAGS="-DSYNC_NTUPLE"
+#
+# This enables the reading of some branches that otherwise are not enabled (e.g. muon's pT error,
+# and electron's and muon's jetPtRel variables) since they're not used in the analysis in any way.
+#
+# 5) Run
 #
 # tthProdNtuple.py -m sync -e $ERA -v $VERSION -p
 #
 # to add missing branches nanoAOD-tools modules and perform basic
 # object-level selection.
 #
-# 5) Update the value of samples_$ERA[sync_key]['local_paths'][0]['path'] in file
+# 6) Update the value of samples_$ERA[sync_key]['local_paths'][0]['path'] in file
 # $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/python/samples/tthAnalyzeSamples_$ERA_sync.py to
 # /hdfs/local/$USER/ttHNtupleProduction/$ERA/$VERSION_wNanoPrep_woPresel_sync/ntuples/ttHJetToNonbb_M125_amcatnlo
 #
-# 6) Now you're ready to run this script
+# 7) Now you're ready to run this script
 #
 # WHAT THIS SCRIPT DOES
 #

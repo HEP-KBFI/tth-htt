@@ -12,6 +12,7 @@ RecoLepton::RecoLepton(const GenLepton & lepton,
                        Double_t sip3d,
                        Double_t mvaRawTTH,
                        Double_t jetPtRatio,
+                       Double_t jetPtRel,
                        Double_t jetBtagCSV,
                        Int_t    tightCharge,
                        Int_t    charge)
@@ -25,6 +26,7 @@ RecoLepton::RecoLepton(const GenLepton & lepton,
   , sip3d_(sip3d)
   , mvaRawTTH_(mvaRawTTH)
   , jetPtRatio_(jetPtRatio)
+  , jetPtRel_(jetPtRel)
   , jetBtagCSV_(jetBtagCSV)
   , tightCharge_(tightCharge)
   , charge_(charge)
@@ -194,6 +196,12 @@ RecoLepton::jetPtRatio() const
 }
 
 Double_t
+RecoLepton::jetPtRel() const
+{
+  return jetPtRel_;
+}
+
+Double_t
 RecoLepton::jetBtagCSV() const
 {
   return jetBtagCSV_;
@@ -260,6 +268,8 @@ operator<<(std::ostream & stream,
             " chargedHadRelIso03 = " << lepton.chargedHadRelIso03() << ",\n"
             " tightCharge = "        << lepton.tightCharge()        << ","
             " jetBtagCSV = "         << lepton.jetBtagCSV()         << ","
+            " jetPtRatio = "         << lepton.jetPtRatio()         << ",\n"
+            " jetPtRel = "           << lepton.jetPtRel()           << ","
             " mvaRawTTH = "          << lepton.mvaRawTTH()          << ",\n"
             " gen. matching:";
   stream << ",\n  lepton = " << lepton.genLepton();
