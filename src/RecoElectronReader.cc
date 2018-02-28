@@ -149,6 +149,7 @@ RecoElectronReader::read() const
             gLeptonReader->sip3d_[idxLepton],
             gLeptonReader->mvaRawTTH_[idxLepton],
             gLeptonReader->jetPtRatio_[idxLepton],
+            gLeptonReader->jetPtRel_[idxLepton],
             gLeptonReader->jetBtagCSV_[idxLepton],
             gLeptonReader->tightCharge_[idxLepton],
             gLeptonReader->charge_[idxLepton]

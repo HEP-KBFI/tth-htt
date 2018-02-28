@@ -19,7 +19,7 @@ from tthAnalysis.HiggsToTauTau.analysisSettings import systematics
 
 #TODO: needs actual Ntuples
 
-mode_choices               = ['VHbb', 'addMEM', 'forBDTtraining_beforeAddMEM', 'forBDTtraining_afterAddMEM']
+mode_choices               = ['VHbb', 'addMEM', 'forBDTtraining_beforeAddMEM', 'forBDTtraining_afterAddMEM', 'sync']
 era_choices                = ['2017']
 sys_choices                = [ 'central', 'full', 'extended' ]
 default_resubmission_limit = 4
@@ -104,14 +104,14 @@ MEMbranch                          = ''
 hadTauFakeRateWeight_inputFileName = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016.root" #TODO update
 
 # Karl: temporarily disable other modes until we've proper Ntuples
-if mode != "VHbb":
-  raise ValueError("Only VHbb mode available")
+if mode not in ['VHbb', 'sync']:
+  raise ValueError("Only VHbb and sync mode available")
 
 if mode == "VHbb":
   if use_prod_ntuples:
-    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_prodNtuples_test import samples_2017
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_prodNtuples import samples_2017
   else:
-    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_test import samples_2017
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017
 
   hadTau_selection     = "dR03mvaMedium"
   applyFakeRateWeights = "2lepton"
@@ -137,6 +137,11 @@ elif mode == "forBDTtraining_afterAddMEM":
   hadTau_selection_relaxed = "dR03mvaMedium"
   applyFakeRateWeights     =  "2lepton"
   max_files_per_job        = 10
+elif mode == "sync":
+  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync import samples_2017
+
+  hadTau_selection     = "dR03mvaMedium"
+  applyFakeRateWeights = "2lepton"
 else:
   raise ValueError("Invalid Configuration parameter 'mode' = %s !!" % mode)
 
@@ -246,6 +251,7 @@ if __name__ == '__main__':
       select_rle_output         = True,
       verbose                   = idx_job_resubmission > 0,
       dry_run                   = args.dry_run,
+      do_sync                   = mode == 'sync',
     )
 
     if mode.find("forBDTtraining") != -1:

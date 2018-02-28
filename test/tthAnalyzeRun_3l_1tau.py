@@ -19,7 +19,7 @@ from tthAnalysis.HiggsToTauTau.analysisSettings import systematics
 
 #TODO: needs actual Ntuples
 
-mode_choices               = ['VHbb', 'addMEM', 'forBDTtraining_beforeAddMEM', 'forBDTtraining_afterAddMEM']
+mode_choices               = ['VHbb', 'addMEM', 'forBDTtraining_beforeAddMEM', 'forBDTtraining_afterAddMEM', 'sync']
 era_choices                = ['2017']
 sys_choices                = [ 'central', 'full', 'extended' ]
 default_resubmission_limit = 4
@@ -95,6 +95,7 @@ auto_exec            = args.auto_exec
 max_job_resubmission = args.resubmission_limit if resubmit else 1
 max_files_per_job    = 10 if use_prod_ntuples else 100
 central_or_shift     = getattr(systematics, args.systematics)
+
 hadTau_selection                   = None
 hadTau_selection_relaxed           = None
 changeBranchNames                  = use_prod_ntuples
@@ -102,14 +103,14 @@ applyFakeRateWeights               = None
 MEMbranch                          = ''
 hadTauFakeRateWeight_inputFileName = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016.root" #TODO update
 
-if mode != "VHbb":
-  raise ValueError("Only VHbb mode available")
+if mode not in ['VHbb', 'sync']:
+  raise ValueError("Only VHbb and sync mode available")
 
 if mode == "VHbb":
   if use_prod_ntuples:
-    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_prodNtuples_test import samples_2017
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_prodNtuples import samples_2017
   else:
-    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_test import samples_2017
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017
 
   for sample_name, sample_info in samples_2017.items():
     if sample_name in [
@@ -117,7 +118,7 @@ if mode == "VHbb":
       ]:
       sample_info["use_it"] = False
 
-  hadTau_selection = "dR03mvaMedium"
+  hadTau_selection     = "dR03mvaMedium"
   applyFakeRateWeights = "3lepton"
 elif mode == "addMEM":
 #  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_3l1tau_addMEM import samples_2017
@@ -140,6 +141,11 @@ elif mode == "forBDTtraining_afterAddMEM":
   hadTau_selection         = "dR03mvaVTight"
   hadTau_selection_relaxed = "dR03mvaVVLoose"
   MEMbranch                = 'memObjects_3l_1tau_lepLoose_tauTight_dR03mvaVVLoose'
+elif mode == "sync":
+  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync import samples_2017
+
+  hadTau_selection     = "dR03mvaMedium"
+  applyFakeRateWeights = "3lepton"
 else:
   raise ValueError("Invalid Configuration parameter 'mode' = %s!" % mode)
 
@@ -205,6 +211,7 @@ if __name__ == '__main__':
       select_root_output                    = False,
       verbose                               = idx_job_resubmission > 0,
       dry_run                               = args.dry_run,
+      do_sync                               = mode == 'sync',
     )
 
     if mode.find("forBDTtraining") != -1:

@@ -24,6 +24,7 @@ public:
              Double_t sip3d,
              Double_t mvaRawTTH,
              Double_t jetPtRatio,
+             Double_t jetPtRel,
              Double_t jetBtagCSV,
              Int_t tightCharge,
              Int_t charge);
@@ -107,6 +108,7 @@ public:
   Double_t sip3d() const;
   Double_t mvaRawTTH() const;
   Double_t jetPtRatio() const;
+  Double_t jetPtRel() const;
   Double_t jetBtagCSV() const;
   Int_t tightCharge() const;
   Int_t charge() const;
@@ -130,6 +132,7 @@ protected:
   Double_t sip3d_;                      ///< significance of IP
   Double_t mvaRawTTH_;                  ///< raw output of lepton MVA of ttH multilepton analysis
   Double_t jetPtRatio_;                 ///< ratio of lepton pT to pT of nearby jet
+  Double_t jetPtRel_;                   ///< perpendicular component of the distance vector between lepton and its jet pT vectors
   Double_t jetBtagCSV_;                 ///< CSV b-tagging discriminator value of nearby jet
   Int_t tightCharge_;                   ///< Flag indicating if lepton passes (>= 2) or fails (< 2) tight charge requirement
   Int_t charge_;                        ///< lepton charge

@@ -22,6 +22,7 @@ RecoMuonReader::RecoMuonReader(int era,
   , leptonReader_(new RecoLeptonReader(branchName_obj_, readGenMatching))
   , mediumIdPOG_(nullptr)
   , segmentCompatibility_(nullptr)
+  , ptErr_(nullptr)
 {
   setBranchNames();
 }
@@ -37,6 +38,7 @@ RecoMuonReader::~RecoMuonReader()
     assert(gInstance);
     delete[] gInstance->mediumIdPOG_;
     delete[] gInstance->segmentCompatibility_;
+    delete[] gInstance->ptErr_;
     instances_[branchName_obj_] = nullptr;
   }
 }
@@ -57,6 +59,12 @@ RecoMuonReader::setBranchNames()
     // Karl: already includes HIP mitigation for 2016 B-F
     branchName_mediumIdPOG_ = Form("%s_%s", branchName_obj_.data(), "mediumId");
     branchName_segmentCompatibility_ = Form("%s_%s", branchName_obj_.data(), "segmentComp");
+#ifdef SYNC_NTUPLE
+#pragma message "Compiling in sync Ntuple mode: enabling ptErr branch"
+    branchName_ptErr_ = Form("%s_%s", branchName_obj_.data(), "ptErr");
+#else
+#pragma message "Compiling regular mode: ptErr branch remains disabled"
+#endif
     instances_[branchName_obj_] = this;
   }
   else
@@ -84,6 +92,7 @@ RecoMuonReader::setBranchAddresses(TTree * tree)
     BranchAddressInitializer bai(tree, max_nLeptons);
     bai.setBranchAddress(mediumIdPOG_, branchName_mediumIdPOG_);
     bai.setBranchAddress(segmentCompatibility_, branchName_segmentCompatibility_);
+    bai.setBranchAddress(ptErr_, branchName_ptErr_, -1.);
   }
 }
 
@@ -128,13 +137,15 @@ RecoMuonReader::read() const
             gLeptonReader->sip3d_[idxLepton],
             gLeptonReader->mvaRawTTH_[idxLepton],
             gLeptonReader->jetPtRatio_[idxLepton],
+            gLeptonReader->jetPtRel_[idxLepton],
             gLeptonReader->jetBtagCSV_[idxLepton],
             gLeptonReader->tightCharge_[idxLepton],
             gLeptonReader->charge_[idxLepton]
           },
           true, // Karl: all muon objects pass Muon POG's loose definition at the nanoAOD prodction level
           gMuonReader->mediumIdPOG_[idxLepton],
-          gMuonReader->segmentCompatibility_[idxLepton]
+          gMuonReader->segmentCompatibility_[idxLepton],
+          gMuonReader->ptErr_[idxLepton]
         }));
       }
     }
