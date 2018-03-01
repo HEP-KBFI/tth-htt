@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import subprocess, re, datetime, collections, jinja2, argparse, os.path, math
+import subprocess, re, datetime, collections, jinja2, argparse, os.path, math, sys
 
 class SmartFormatter(argparse.ArgumentDefaultsHelpFormatter):
   def _split_lines(self, text, width):
@@ -48,6 +48,9 @@ class Version:
 
 METADICT_HEADER = '''from collections import OrderedDict as OD
 
+# file generated with the following command:
+# {{ command }}
+
 meta_dictionary = OD()
 
 ### event sums
@@ -63,6 +66,9 @@ METADICT_TEMPLATE_DATA = '''meta_dictionary["{{ dataset_name }}"] =  OD([
   ("sample_category",       "data_obs"),
   ("process_name_specific", "{{ process_name_specific }}"),
   ("nof_db_events",         {{ nof_db_events }}),
+  ("nof_db_files",          {{ nof_db_files }}),
+  ("fsize_db",              {{ fsize_db }}),
+  ("fsize_db_human",        "{{ fsize_db_human }}"),
   ("xsection",              None),
   ("use_it",                True),
   ("genWeight",             False),
@@ -76,7 +82,8 @@ METADICT_TEMPLATE_MC = '''meta_dictionary["{{ dataset_name }}"] =  OD([
   ("process_name_specific", ""),
   ("nof_db_events",         {{ nof_db_events }}),
   ("nof_db_files",          {{ nof_db_files }}),
-  ("fsize_db",              "{{ fsize_db }}"),
+  ("fsize_db",              {{ fsize_db }}),
+  ("fsize_db_human",        "{{ fsize_db_human }}"),
   ("xsection",              None),
   ("use_it",                True),
   ("genWeight",             True),
@@ -148,7 +155,7 @@ if __name__ == '__main__':
     formatter_class = lambda prog: SmartFormatter(prog, max_help_position = 45)
   )
   parser.add_argument('-i', '--input',
-    type = str, dest = 'input', metavar = 'path', default = '', required = False,
+    type = str, dest = 'input', metavar = 'path', required = False,
     help = 'R|Input file containing MC DBS names (one per line)',
   )
   parser.add_argument('-m', '--metadict',
@@ -189,8 +196,6 @@ if __name__ == '__main__':
   required_cmssw_version_str = args.version
   required_cmssw_version = Version(required_cmssw_version_str)
 
-
-
   if mc_input:
     if not os.path.isfile(mc_input):
       raise ValueError("No such file: %s" % mc_input)
@@ -201,8 +206,8 @@ if __name__ == '__main__':
       ('acquisition_era_name',   {'colname' : 'Acq. era name',   'func' : id_}),
       ('primary_ds_type',        {'colname' : 'Primary DS type', 'func' : id_}),
       ('last_modification_date', {'colname' : 'Last modified',   'func' : convert_date}),
-      ('size',                   {'colname' : 'Size',            'func' : human_size}),
-      ('nfiles',                 {'colname':  'Nof files',       'func' : id_}),
+      ('size',                   {'colname' : 'Size',            'func' : id_}),
+      ('nfiles',                 {'colname' : 'Nof files',       'func' : id_}),
       ('nevents',                {'colname' : 'Nof events',      'func' : id_}),
       ('release',                {'colname' : 'CMSSW release',   'func' : convert_cmssw_versions}),
     ])
@@ -264,14 +269,15 @@ if __name__ == '__main__':
     for dataset in das_query_results:
       entry = das_query_results[dataset]
       meta_dictionary_entries.append(jinja2.Template(METADICT_TEMPLATE_MC).render(
-        dataset_name  = entry['name'],
-        nof_db_events = entry['nevents'],
-        nof_db_files  = entry['nfiles'],
-        fsize_db      = entry['size'],
+        dataset_name   = entry['name'],
+        nof_db_events  = entry['nevents'],
+        nof_db_files   = entry['nfiles'],
+        fsize_db       = entry['size'],
+        fsize_db_human = human_size(entry['size']),
       ))
 
     with open(args.metadict, 'w+') as f:
-      f.write(METADICT_HEADER)
+      f.write(jinja2.Template(METADICT_HEADER).render(command = ' '.join(sys.argv)))
       f.write('\n'.join(meta_dictionary_entries))
       f.write('\n')
 
@@ -316,6 +322,8 @@ if __name__ == '__main__':
       ('last_modification_date', {'colname' : 'Last modified',   'func' : convert_date}),
       ('nevents',                {'colname' : 'Nof events',      'func' : id_}),
       ('processing_version',     {'colname' : 'Processing ver.', 'func' : id_}),
+      ('size',                   {'colname' : 'Size',            'func' : id_}),
+      ('nfiles',                 {'colname' : 'Nof files',       'func' : id_}),
       ('release',                {'colname' : 'CMSSW release',   'func' : convert_cmssw_versions}),
     ])
 
@@ -426,13 +434,16 @@ if __name__ == '__main__':
             dataset_name          = selection['name'],
             process_name_specific = '_'.join(selection['name'].split('/')[1:-1]).replace('-', '_'),
             nof_db_events         = selection['nevents'],
+            nof_db_files          = selection['nfiles'],
+            fsize_db              = selection['size'],
+            fsize_db_human        = human_size(selection['size']),
           ))
           dataset_list.append(selection['name'])
         else:
           print('  %s, %s%s -> missing' % (dataset.rjust(MAX_DATA_SAMPLE_LEN), era, acquisition_era))
 
     with open(args.metadict, 'w+') as f:
-      f.write(METADICT_HEADER)
+      f.write(jinja2.Template(METADICT_HEADER).render(command = ' '.join(sys.argv)))
       f.write('\n'.join(meta_dictionary_entries))
       f.write('\n')
 
