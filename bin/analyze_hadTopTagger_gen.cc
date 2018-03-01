@@ -1035,7 +1035,7 @@ int main(int argc, char* argv[])
       continue; 
     }
     cutFlowTable_2lss_1tau.update(">= 2 genWBosons");
-    std::cout << "#genWJets = " << genWJets.size() << std::endl;
+    //std::cout << "#genWJets = " << genWJets.size() << std::endl;
     if ( !(genWJets.size() >= 2) ) {
       if ( isDEBUG ) std::cout << "FAILS '>= 2 genWJets' cut !!" << std::endl;
       continue;    
@@ -1183,8 +1183,8 @@ int main(int argc, char* argv[])
 	}
       }
     }
-    std::cout << "#genWJetsFromTop = " << genWJetsFromTop.size() << " (mass = " << genWJetsFromTop_mass << ")" << std::endl;
-    std::cout << "#genWJetsFromAntiTop = " << genWJetsFromAntiTop.size() << " (mass = " << genWJetsFromAntiTop_mass << ")" << std::endl;
+    //std::cout << "#genWJetsFromTop = " << genWJetsFromTop.size() << " (mass = " << genWJetsFromTop_mass << ")" << std::endl;
+    //std::cout << "#genWJetsFromAntiTop = " << genWJetsFromAntiTop.size() << " (mass = " << genWJetsFromAntiTop_mass << ")" << std::endl;
     if ( !(genWJetsFromTop.size() == 2 || genWJetsFromAntiTop.size() == 2) ) {
       if ( isDEBUG ) std::cout << "FAILS '2 genWJetsFromTop || 2 genWJetsFromAntiTop' cut !!" << std::endl;
       continue;
@@ -1200,12 +1200,12 @@ int main(int argc, char* argv[])
       genWJetFromTop_sublead = genWJetsFromTop[1];
       if ( !(std::fabs((genWJetFromTop_lead->p4() + genWJetFromTop_sublead->p4()).mass() - genWBosonFromTop->mass()) < 15.) ) failsWbosonMassVeto_top = true;
     }
-    std::cout << "genWBosonFromTop: mass = " << genWBosonFromTop->mass();
-    if ( genWJetFromTop_lead && genWJetFromTop_sublead ) {
-      std::cout << "," ;
-      std::cout << " mass of genWJetsFromTop = " << (genWJetFromTop_lead->p4() + genWJetFromTop_sublead->p4()).mass();
-    }
-    std::cout << std::endl;
+    //std::cout << "genWBosonFromTop: mass = " << genWBosonFromTop->mass();
+    //if ( genWJetFromTop_lead && genWJetFromTop_sublead ) {
+    //  std::cout << "," ;
+    //  std::cout << " mass of genWJetsFromTop = " << (genWJetFromTop_lead->p4() + genWJetFromTop_sublead->p4()).mass();
+    //}
+    //std::cout << std::endl;
     if ( failsWbosonMassVeto_top ) {
       if ( isDEBUG ) std::cout << "FAILS 'genWBosonFromTop mass' cut !!" << std::endl;
       continue;
@@ -1221,12 +1221,12 @@ int main(int argc, char* argv[])
       genWJetFromAntiTop_sublead = genWJetsFromAntiTop[1];
       if ( !(std::fabs((genWJetFromAntiTop_lead->p4() + genWJetFromAntiTop_sublead->p4()).mass() - genWBosonFromAntiTop->mass()) < 15.) ) failsWbosonMassVeto_antiTop = true;
     }
-    std::cout << "genWBosonFromAntiTop: mass = " << genWBosonFromAntiTop->mass();
-    if ( genWJetFromAntiTop_lead && genWJetFromAntiTop_sublead ) {
-      std::cout << "," ;
-      std::cout << " mass of genWJetsFromAntiTop = " << (genWJetFromAntiTop_lead->p4() + genWJetFromAntiTop_sublead->p4()).mass();
-    }
-    std::cout << std::endl;
+    //std::cout << "genWBosonFromAntiTop: mass = " << genWBosonFromAntiTop->mass();
+    //if ( genWJetFromAntiTop_lead && genWJetFromAntiTop_sublead ) {
+    //  std::cout << "," ;
+    //  std::cout << " mass of genWJetsFromAntiTop = " << (genWJetFromAntiTop_lead->p4() + genWJetFromAntiTop_sublead->p4()).mass();
+    //}
+    //std::cout << std::endl;
     if ( failsWbosonMassVeto_antiTop ) {
       if ( isDEBUG ) std::cout << "FAILS 'genWBosonFromAntiTop mass' cut !!" << std::endl;
       continue;
