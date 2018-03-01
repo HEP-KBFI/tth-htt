@@ -411,7 +411,7 @@ class analyzeConfig_3l_1tau(analyzeConfig):
                   'chargeSumSelection' : chargeSumSelection,
                   'applyFakeRateWeights' : self.applyFakeRateWeights if not (lepton_selection == "Tight" and hadTau_selection.find("Tight") != -1) else "disabled",
                   ##'use_HIP_mitigation_mediumMuonId' : sample_info["use_HIP_mitigation_mediumMuonId"],
-                  'use_HIP_mitigation_mediumMuonId' : True,
+                  'use_HIP_mitigation_mediumMuonId' : False,
                   'is_mc' : is_mc,
                   'central_or_shift' : central_or_shift,
                   'lumi_scale' : 1. if not (self.use_lumi and is_mc) else sample_info["xsection"] * self.lumi / sample_info["nof_events"],
