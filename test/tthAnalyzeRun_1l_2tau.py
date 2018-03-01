@@ -125,7 +125,7 @@ elif mode == "forBDTtraining":
   hadTau_selection_relaxed           = "dR03mvaMedium"
   applyFakeRateWeights               = "3L"
 elif mode == "sync":
-  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync import samples_2017
+  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_addMEM_sync import samples_2017
 
   hadTau_selection     = "dR03mvaVTight"
   applyFakeRateWeights = "3L"
