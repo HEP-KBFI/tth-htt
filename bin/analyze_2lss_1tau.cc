@@ -21,9 +21,11 @@
 #include "tthAnalysis/HiggsToTauTau/interface/GenJet.h" // GenJet
 #include "tthAnalysis/HiggsToTauTau/interface/GenHadTau.h" // GenHadTau
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMEt.h" // RecoMEt
+#include "tthAnalysis/HiggsToTauTau/interface/EventInfo.h" // EventInfo
 #include "tthAnalysis/HiggsToTauTau/interface/MEMOutput_2lss_1tau.h" // MEMOutput_2lss_1tau
 #include "tthAnalysis/HiggsToTauTau/interface/TMVAInterface.h" // TMVAInterface
 #include "tthAnalysis/HiggsToTauTau/interface/mvaAuxFunctions.h" // check_mvaInputs, get_mvaInputVariables
+#include "tthAnalysis/HiggsToTauTau/interface/mvaAuxFunctions_Hj_and_Hjj_taggers.h" // comp_mvaOutput_Hj_tagger, comp_mvaOutput_Hjj_tagger
 #include "tthAnalysis/HiggsToTauTau/interface/mvaInputVariables.h" // auxiliary functions for computing input variables of the MVA used for signal extraction in the 2lss_1tau category
 #include "tthAnalysis/HiggsToTauTau/interface/LeptonFakeRateInterface.h" // LeptonFakeRateInterface
 #include "tthAnalysis/HiggsToTauTau/interface/JetToTauFakeRateInterface.h" // JetToTauFakeRateInterface
@@ -38,7 +40,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/GenJetReader.h" // GenJetReader
 #include "tthAnalysis/HiggsToTauTau/interface/GenParticleReader.h" // GenParticleReader
 #include "tthAnalysis/HiggsToTauTau/interface/LHEInfoReader.h" // LHEInfoReader
-#include "tthAnalysis/HiggsToTauTau/interface/EventInfoReader.h" // EventInfoReader, EventInfo
+#include "tthAnalysis/HiggsToTauTau/interface/EventInfoReader.h" // EventInfoReader
 #include "tthAnalysis/HiggsToTauTau/interface/convert_to_ptrs.h" // convert_to_ptrs
 #include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionCleaner.h" // RecoElectronCollectionCleaner, RecoMuonCollectionCleaner, RecoHadTauCollectionCleaner, RecoJetCollectionCleaner
 #include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionGenMatcher.h" // RecoElectronCollectionGenMatcher, RecoMuonCollectionGenMatcher, RecoHadTauCollectionGenMatcher, RecoJetCollectionGenMatcher
@@ -109,80 +111,6 @@ enum { kFR_disabled, kFR_2lepton, kFR_3L, kFR_1tau };
 //const int hadTauSelection_antiMuon = 1; // Loose
 const int hadTauSelection_antiElectron = -1; // not applied
 const int hadTauSelection_antiMuon = -1; // not applied
-
-double comp_mvaOutput_Hj_tagger(const RecoJet* jet,
-                                const std::vector<const RecoLepton*>& leptons,
-                                std::map<std::string, double>& mvaInputs_Hj_tagger,
-                                TMVAInterface& mva_Hj_tagger,
-                                const EventInfo & eventInfo)
-{
-  double dRmin_lepton = -1.;
-  double dRmax_lepton = -1.;
-  for ( std::vector<const RecoLepton*>::const_iterator lepton = leptons.begin();
-	lepton != leptons.end(); ++lepton ) {
-    double dR = deltaR(jet->eta(), jet->phi(), (*lepton)->eta(), (*lepton)->phi());
-    if ( dRmin_lepton == -1. || dR < dRmin_lepton ) dRmin_lepton = dR;
-    if ( dRmax_lepton == -1. || dR > dRmax_lepton ) dRmax_lepton = dR;
-  }
-
-  mvaInputs_Hj_tagger["Jet_lepdrmin"] = dRmin_lepton;
-  mvaInputs_Hj_tagger["max(Jet_pfCombinedInclusiveSecondaryVertexV2BJetTags,0.)"] = std::max(0., jet->BtagCSV());
-  mvaInputs_Hj_tagger["max(Jet_qg,0.)"] = std::max(0., jet->QGDiscr());
-  mvaInputs_Hj_tagger["Jet_lepdrmax"] = dRmax_lepton;
-  mvaInputs_Hj_tagger["Jet_pt"] = jet->pt();
-
-  check_mvaInputs(mvaInputs_Hj_tagger, eventInfo);
-
-  double mvaOutput_Hj_tagger = mva_Hj_tagger(mvaInputs_Hj_tagger);
-  return mvaOutput_Hj_tagger;
-}
-
-double comp_mvaOutput_Hjj_tagger(const RecoJet* jet1, const RecoJet* jet2, const std::vector<const RecoJet*>& jets,
-				 const std::vector<const RecoLepton*>& leptons,
-				 std::map<std::string, double>& mvaInputs_Hjj_tagger, TMVAInterface& mva_Hjj_tagger,
-				 std::map<std::string, double>& mvaInputs_Hj_tagger, TMVAInterface& mva_Hj_tagger,
-                 const EventInfo & eventInfo)
-{
-  double jet1_mvaOutput_Hj_tagger = comp_mvaOutput_Hj_tagger(
-    jet1, leptons,
-    mvaInputs_Hj_tagger, mva_Hj_tagger,
-    eventInfo);
-  double jet2_mvaOutput_Hj_tagger = comp_mvaOutput_Hj_tagger(
-    jet2, leptons,
-    mvaInputs_Hj_tagger, mva_Hj_tagger,
-    eventInfo);
-  Particle::LorentzVector dijetP4 = jet1->p4() + jet2->p4();
-  const RecoLepton* lepton_nearest = 0;
-  double dRmin_lepton = -1.;
-  for ( std::vector<const RecoLepton*>::const_iterator lepton = leptons.begin();
-	lepton != leptons.end(); ++lepton ) {
-    double dR = deltaR(dijetP4.eta(), dijetP4.phi(), (*lepton)->eta(), (*lepton)->phi());
-    if ( dRmin_lepton == -1. || dR < dRmin_lepton ) {
-      lepton_nearest = (*lepton);
-      dRmin_lepton = dR;
-    }
-  }
-  double dRmin_jet_other = -1.;
-  double dRmax_jet_other = -1.;
-  for ( std::vector<const RecoJet*>::const_iterator jet_other = jets.begin();
-	jet_other != jets.end(); ++jet_other ) {
-    if ( (*jet_other) == jet1 || (*jet_other) == jet2 ) continue;
-    double dR = deltaR(dijetP4.eta(), dijetP4.phi(), (*jet_other)->eta(), (*jet_other)->phi());
-    if ( dRmin_jet_other == -1. || dR < dRmin_jet_other ) dRmin_jet_other = dR;
-    if ( dRmax_jet_other == -1. || dR > dRmax_jet_other ) dRmax_jet_other = dR;
-  }
-  mvaInputs_Hjj_tagger["bdtJetPair_minlepmass"] = ( lepton_nearest ) ? (dijetP4 + lepton_nearest->p4()).mass() : 0.;
-  mvaInputs_Hjj_tagger["bdtJetPair_sumbdt"] = jet1_mvaOutput_Hj_tagger + jet2_mvaOutput_Hj_tagger;
-  mvaInputs_Hjj_tagger["bdtJetPair_dr"] = deltaR(jet1->eta(), jet1->phi(), jet2->eta(), jet2->phi());
-  mvaInputs_Hjj_tagger["bdtJetPair_minjdr"] = dRmin_jet_other;
-  mvaInputs_Hjj_tagger["bdtJetPair_mass"] = dijetP4.mass();
-  mvaInputs_Hjj_tagger["bdtJetPair_minjOvermaxjdr"] = ( dRmax_jet_other > 0. ) ? dRmin_jet_other/dRmax_jet_other : 1.;
-
-  check_mvaInputs(mvaInputs_Hjj_tagger, eventInfo);
-
-  double mvaOutput_Hjj_tagger = mva_Hjj_tagger(mvaInputs_Hjj_tagger);
-  return mvaOutput_Hjj_tagger;
-}
 
 /**
  * @brief Produce datacard and control plots for 2lss_1tau categories.
@@ -334,7 +262,7 @@ int main(int argc, char* argv[])
 	<< "Configuration parameter 'central_or_shift' = " << central_or_shift << " not supported for data !!\n";
     } else if ( central_or_shift_tstring.BeginsWith("CMS_ttHl_JES") ) {
       if ( isMC ) {
-  jetBtagSF_option = getBTagWeight_option(central_or_shift);
+	jetBtagSF_option = getBTagWeight_option(central_or_shift);
 	if      ( shiftUp_or_Down == "Up"   ) {
 	  jetPt_option = RecoJetReader::kJetPt_jecUp;
 	  met_option = RecoMEtReader::kMEt_shifted_JetEnUp;
@@ -753,17 +681,11 @@ int main(int argc, char* argv[])
   struct selHistManagerType
   {
     ElectronHistManager* electrons_;
-    std::map<std::string, ElectronHistManager*> electrons_in_categories_;
     ElectronHistManager* leadElectron_;
-    std::map<std::string, ElectronHistManager*> leadElectron_in_categories_;
     ElectronHistManager* subleadElectron_;
-    std::map<std::string, ElectronHistManager*> subleadElectron_in_categories_;
     MuonHistManager* muons_;
-    std::map<std::string, MuonHistManager*> muons_in_categories_;
     MuonHistManager* leadMuon_;
-    std::map<std::string, MuonHistManager*> leadMuon_in_categories_;
     MuonHistManager* subleadMuon_;
-    std::map<std::string, MuonHistManager*> subleadMuon_in_categories_;
     HadTauHistManager* hadTaus_;
     JetHistManager* jets_;
     JetHistManager* leadJet_;
@@ -777,7 +699,6 @@ int main(int argc, char* argv[])
     MVAInputVarHistManager* mvaInputVariables_2lss_1tau_;
     EvtHistManager_2lss_1tau* evt_;
     std::map<std::string, EvtHistManager_2lss_1tau*> evt_in_decayModes_;
-    std::map<std::string, EvtHistManager_2lss_1tau*> evt_in_categories_;
     WeightHistManager* weights_;
   };
   typedef std::map<int, selHistManagerType*> int_to_selHistManagerMap;
