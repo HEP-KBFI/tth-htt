@@ -75,8 +75,8 @@ class addMEMConfig:
         for dirPath in [self.outputDir, self.cfgDir]:
           create_if_not_exists(dirPath)
 
-        self.stdout_file_path = os.path.join(self.configDir, "stdout_%s.log" % self.channel)
-        self.stderr_file_path = os.path.join(self.configDir, "stderr_%s.log" % self.channel)
+        self.stdout_file_path = os.path.join(self.cfgDir, "stdout_%s.log" % self.channel)
+        self.stderr_file_path = os.path.join(self.cfgDir, "stderr_%s.log" % self.channel)
         self.stdout_file_path, self.stderr_file_path = get_log_version((
             self.stdout_file_path, self.stderr_file_path,
         ))
@@ -177,7 +177,7 @@ class addMEMConfig:
                 input_file_names        = hadd_in_files,
                 output_file_name        = hadd_out,
                 script_file_name        = sbatch_hadd_shFile,
-                log_file_name           = sbatch_hadd_logFile,
+                log_file_name           = sbatch_hadd_logFile[0],
                 working_dir             = self.workingDir,
                 waitForJobs             = False,
                 auxDirName              = sbatch_hadd_dir,
@@ -379,7 +379,7 @@ class addMEMConfig:
                 self.logFiles_addMEM[key_file] = os.path.join(
                     self.dirs[key_dir][DKEY_LOGS], "addMEM_%s_%s_%i.log" % (self.channel, process_name, jobId)
                 )
-                self.logFiles_addMEM[key_file] = get_log_version((self.logFiles_addMEM[key_file],))
+                self.logFiles_addMEM[key_file] = get_log_version((self.logFiles_addMEM[key_file],))[0]
                 self.createCfg_addMEM(
                     self.inputFiles[key_file],
                     memEvtRangeDict[jobId]['event_range'][0],
