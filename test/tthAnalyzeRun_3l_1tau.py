@@ -142,7 +142,7 @@ elif mode == "forBDTtraining_afterAddMEM":
   hadTau_selection_relaxed = "dR03mvaVVLoose"
   MEMbranch                = 'memObjects_3l_1tau_lepLoose_tauTight_dR03mvaVVLoose'
 elif mode == "sync":
-  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync import samples_2017
+  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_addMEM_sync import samples_2017
 
   hadTau_selection     = "dR03mvaMedium"
   applyFakeRateWeights = "3lepton"

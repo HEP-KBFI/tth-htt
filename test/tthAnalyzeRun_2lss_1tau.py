@@ -138,8 +138,10 @@ elif mode == "forBDTtraining_afterAddMEM":
   applyFakeRateWeights     =  "2lepton"
   max_files_per_job        = 10
 elif mode == "sync":
-  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync import samples_2017
+  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_addMEM_sync import samples_2017
 
+  changeBranchNames    = True
+  MEMbranch            = 'memObjects_2lss_1tau_lepFakeable_tauTight_dR03mvaMedium'
   hadTau_selection     = "dR03mvaMedium"
   applyFakeRateWeights = "2lepton"
 else:
