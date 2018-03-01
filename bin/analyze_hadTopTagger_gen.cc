@@ -1627,6 +1627,13 @@ int main(int argc, char* argv[])
 		}
 	      }
 
+	      if ( selBJetFromTop ) {
+		isBJetFromTop = true;
+	      }
+	      if ( selBJetFromAntiTop ) {
+		isBJetFromAntiTop = true;
+	      }
+
 	      for ( std::vector<const RecoJet*>::const_iterator selBJet_loose = selBJets_loose.begin();
 		    selBJet_loose != selBJets_loose.end(); ++selBJet_loose ) {
 		if ( selBJetFromTop && deltaR(selBJetFromTop->p4(), (*selBJet_loose)->p4()) < 0.3 ) {
