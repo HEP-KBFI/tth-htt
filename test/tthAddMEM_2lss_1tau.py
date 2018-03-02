@@ -89,6 +89,10 @@ mode                 = args.mode
 integration_points   = integration_point_choices[args.integration_points] if args.integration_points \
                        else integration_point_choices[mode_choices[mode]]
 
+# modify version string to include more information so that we don't have to look at the generated
+# config files afterwards when debugging
+version = "%s_%s_%s" % (version, mode, 'small' if integration_points else 'full')
+
 if mode == 'default':
   from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017 as samples
 
