@@ -19,21 +19,66 @@ class hltPath;
 
 enum FloatVariableType
 {
+//--- MET/MHT
   PFMET,
   PFMETphi,
-  MHT,
+  MHT,                      ///< vectorial sum of preselected leptons (including taus) + jets
   metLD,
-  mvaOutput_ttV,
-  mvaOutput_ttbar,
-  MC_weight,
-  FR_weight,
-  triggerSF_weight,
-  leptonSF_weight,
-  bTagSF_weight,
-  PU_weight,
-  hadTauSF_weight,
-  genWeight,
-  lumiScale
+//--- Additional event-level MVA variables
+  lep0_conept,              ///< cone pT of leading lepton : if the lepton is fakeable, 0.85*pT(jet) with JECLepAware, else pT(lep)
+  lep1_conept,              ///< cone pT of subleading lepton : if the lepton is fakeable, 0.85*pT(jet) with JECLepAware, else pT(lep)
+  mindr_lep0_jet,           ///< min dR between leading lepton and preselected jets
+  mindr_lep1_jet,           ///< min dR between subleading lepton and preselected jets
+  mindr_lep2_jet,           ///< min dR between trailing lepton and preselected jets
+  mindr_tau_jet,            ///< min dR between tau and preselected jets
+  MT_met_lep0,              ///< transverse mass of leading lepton and MET (using lep0_conept)
+  avg_dr_jet,               ///< average dR between all the pairs of preselected jets
+  MVA_2lss_ttV,             ///< ttH vs ttV MVA for 2lss
+  MVA_2lss_ttbar,           ///< ttH vs ttbar MVA for 2lss
+  tt_deltaR,                ///< deltaR between 2 selected taus
+  ntags,                    ///< number of medium b-tagged jets
+  ntags_loose,              ///< number of loose b-tagged jets
+  tt_mvis,                  ///< visible mass of the 2 selected taus
+  tt_pt,                    ///< pT of the di-tau pair
+  max_dr_jet,               ///< maximum dR between preselected jets
+  HT,                       ///< linear sum of preselected leptons (including taus) + jet pT
+  MVA_1l2tau_ttbar,         ///< ttH vs ttbar MVA for 1l2tau
+  MVA_1l2tau_ttbar_v2,      ///< ttH vs ttbar MVA for 1l2tau v2
+  MVA_1l2tau_ttZ_v2,        ///< ttH vs ttZ MVA for 1l2tau v2
+  MVA_1l2tau_2Dbin_v2,      ///< 2D bin ttH vs ttbar/ttZ MVA for 1l2tau v2
+  mvis_l1tau,               ///< visible mass of subleading lepton and tau
+  dR_l0tau,                 ///< deltaR between leading lepton and tau
+  dR_l1tau,                 ///< deltaR between subleading lepton and tau
+  dR_l2tau,                 ///< deltaR between trailing lepton and tau
+  MT_met_lep2,              ///< transverse mass of trailing lepton and MET (using cone pt)
+  MVA_3l1tau_ttbar,         ///< ttH vs ttbar MVA for 3l1tau
+  MVA_3l1tau_ttV,           ///< ttH vs ttV MVA for 3l1tau
+  MVA_3l1tau_2Dbin,         ///< 2D bin ttH vs ttbar/ttZ MVA for 3l1tau
+//--- Event weights
+  FR_weight,                ///< weight used for fake rate reweighting
+  triggerSF_weight,         ///< scale factor for trigger
+  leptonSF_weight,          ///< scale factor for lepton ID
+  tauSF_weight,             ///< scale factor for tau ID
+  bTagSF_weight,            ///< scale factor for b-tagging
+  PU_weight,                ///< PU weight
+  MC_weight,                ///< MC weight
+//--- MEM variables
+  Integral_ttH,             ///< ttH weight
+  Integral_ttZ,             ///< ttZ (Ztautau) weight
+  Integral_ttZ_Zll,         ///< ttZ Z->ll weight
+  Integral_ttbar,           ///< ttbar weight
+  integration_type,
+  MEM_LR,
+  dR_leps,                  ///< deltaR between two leading leptons
+  mvis_l0tau,               ///< visible mass of leading lepton and tau
+  MVA_2lSS1tau_noMEM_ttbar, ///< ttH vs ttbar MVA for 2lSS1tau w/o MEM LR as input
+  MVA_2lSS1tau_noMEM_ttV,   ///< ttH vs ttV MVA for 2lSS1tau w/o MEM LR as input
+  MVA_2lSS1tau_noMEM_2Dbin, ///< 2D bin ttH vs ttbar/ttZ MVA for 2lSS1tau w/o MEM LR as input
+  MVA_2lSS1tau_MEM_ttbar,   ///< ttH vs ttbar MVA for 2lSS1tau w/ MEM LR as input
+  MVA_2lSS1tau_MEM_ttV,     ///< ttH vs ttV MVA for 2lSS1tau w/ MEM LR as input
+  MVA_2lSS1tau_MEM_2Dbin,   ///< 2D bin ttH vs ttbar/ttZ MVA for 2lSS1tau w/ MEM LR as input
+//--- custom additional branches (not necessary in sync)
+  genWeight
 };
 
 class SyncNtupleManager
@@ -56,10 +101,10 @@ public:
             const std::vector<const RecoElectron *> & mvabased_electrons);
   void read(const std::vector<const RecoHadTau *> & hadtaus);
   void read(const std::vector<const RecoJet *> & jets);
-  void read(const std::map<std::string, Double_t> & mvaInputs);
   void read(Float_t value,
             FloatVariableType type);
   void read(const std::vector<std::vector<hltPath *>> & hltPaths);
+  void read(bool is_genMatched);
   void fill();
   void write();
 
@@ -195,7 +240,19 @@ private:
   Int_t n_fakeablesel_mu;
   Int_t n_cutsel_mu;
   Int_t n_mvasel_mu;
+
+  Int_t n_presel_ele;
+  Int_t n_fakeablesel_ele;
+  Int_t n_cutsel_ele;
+  Int_t n_mvasel_ele;
+
+  Int_t n_presel_tau;
+  Int_t n_presel_jet;
+
+  Int_t isGenMatched; ///< flag to indicate whether lepton(s) + tau(s) are all gen matched
+
   Float_t * mu_pt;
+  Float_t * mu_conept;
   Float_t * mu_eta;
   Float_t * mu_phi;
   Float_t * mu_E;
@@ -203,6 +260,8 @@ private:
   Float_t * mu_miniRelIso;
   Float_t * mu_miniIsoCharged;
   Float_t * mu_miniIsoNeutral;
+  Int_t * mu_jetNDauChargedMVASel;
+  Float_t * mu_jetPtRel;
   Float_t * mu_jetPtRatio;
   Float_t * mu_jetCSV;
   Float_t * mu_sip3D;
@@ -210,17 +269,14 @@ private:
   Float_t * mu_dz;
   Float_t * mu_segmentCompatibility;
   Float_t * mu_leptonMVA;
-  Float_t * mu_conept;
   Bool_t * mu_mediumID;
+  Float_t * mu_dpt_div_pt;
   Int_t * mu_isfakeablesel;
   Int_t * mu_iscutsel;
   Int_t * mu_ismvasel;
 
-  Int_t n_presel_ele;
-  Int_t n_fakeablesel_ele;
-  Int_t n_cutsel_ele;
-  Int_t n_mvasel_ele;
   Float_t * ele_pt;
+  Float_t * ele_conept;
   Float_t * ele_eta;
   Float_t * ele_phi;
   Float_t * ele_E;
@@ -228,6 +284,8 @@ private:
   Float_t * ele_miniRelIso;
   Float_t * ele_miniIsoCharged;
   Float_t * ele_miniIsoNeutral;
+  Int_t * ele_jetNDauChargedMVASel;
+  Float_t * ele_jetPtRel;
   Float_t * ele_jetPtRatio;
   Float_t * ele_jetCSV;
   Float_t * ele_sip3D;
@@ -235,7 +293,6 @@ private:
   Float_t * ele_dz;
   Float_t * ele_ntMVAeleID;
   Float_t * ele_leptonMVA;
-  Float_t * ele_conept;
   Int_t * ele_isChargeConsistent;
   Bool_t * ele_passesConversionVeto;
   Int_t * ele_nMissingHits;
@@ -243,7 +300,6 @@ private:
   Int_t * ele_iscutsel;
   Int_t * ele_ismvasel;
 
-  Int_t n_presel_tau;
   Float_t * tau_pt;
   Float_t * tau_eta;
   Float_t * tau_phi;
@@ -251,6 +307,7 @@ private:
   Int_t * tau_charge;
   Float_t * tau_dxy;
   Float_t * tau_dz;
+  Int_t * tau_decayMode;
   Bool_t * tau_decayModeFindingOldDMs;
   Bool_t * tau_decayModeFindingNewDMs;
   Float_t * tau_byCombinedIsolationDeltaBetaCorr3Hits;
@@ -272,7 +329,6 @@ private:
   Int_t * tau_againstElectronTightMVA6;
   Int_t * tau_againstElectronVTightMVA6;
 
-  Int_t n_presel_jet;
   Float_t * jet_pt;
   Float_t * jet_eta;
   Float_t * jet_phi;
@@ -280,14 +336,6 @@ private:
   Float_t * jet_CSV;
 
   std::map<std::string, Int_t> hltMap;
-
-  Float_t lep0_conept;
-  Float_t lep1_conept;
-  Float_t mindr_lep0_jet;
-  Float_t mindr_lep1_jet;
-  Float_t MT_met_lep0;
-  Float_t avg_dr_jet;
-  Float_t n_jet25_recl;
 
   std::map<FloatVariableType, Float_t> floatMap;
 };
