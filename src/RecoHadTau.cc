@@ -213,6 +213,12 @@ RecoHadTau::genJet() const
 }
 
 bool
+RecoHadTau::isGenMatched() const
+{
+  return ! genHadTau_;
+}
+
+bool
 RecoHadTau::isLoose() const
 {
   return isLoose_;

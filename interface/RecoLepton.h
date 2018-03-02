@@ -85,14 +85,29 @@ public:
    *     i.e. regardless of whether leptons pass or fail the "tight" lepton selection criteria.
    */
 
-  Double_t lepton_pt() const;
-  const Particle::LorentzVector & lepton_p4() const;
-  virtual Double_t pt() const;
-  virtual const Particle::LorentzVector & p4() const;
-  Double_t cone_pt() const;
-  const Particle::LorentzVector & cone_p4() const;
-  Double_t assocJet_pt() const;
-  const Particle::LorentzVector & assocJet_p4() const;
+  Double_t
+  lepton_pt() const;
+
+  const Particle::LorentzVector &
+  lepton_p4() const;
+
+  virtual Double_t
+  pt() const;
+
+  virtual const Particle::LorentzVector &
+  p4() const;
+
+  Double_t
+  cone_pt() const;
+
+  const Particle::LorentzVector &
+  cone_p4() const;
+
+  Double_t
+  assocJet_pt() const;
+
+  const Particle::LorentzVector &
+  assocJet_p4() const;
 
   /**
    * @brief Funtions to access other data-members
@@ -116,6 +131,8 @@ public:
   const GenLepton * genLepton() const;
   const GenHadTau * genHadTau() const;
   const GenJet * genJet() const;
+
+  bool isGenMatched() const;
 
   bool isLoose() const;
   bool isFakeable() const;

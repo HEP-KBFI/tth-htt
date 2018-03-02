@@ -238,6 +238,12 @@ RecoLepton::genJet() const
 }
 
 bool
+RecoLepton::isGenMatched() const
+{
+  return ! genLepton_;
+}
+
+bool
 RecoLepton::isLoose() const
 {
   return isLoose_;
