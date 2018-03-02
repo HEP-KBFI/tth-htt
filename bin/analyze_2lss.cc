@@ -1400,6 +1400,7 @@ int main(int argc, char* argv[])
 
     double weight_data_to_MC_correction = 1.;
     double triggerWeight = 1.;
+    double leptonSF_weight = 1.;
     if ( isMC ) {
       dataToMCcorrectionInterface->setLeptons(
         selLepton_lead_type, selLepton_lead->pt(), selLepton_lead->eta(),
@@ -1423,15 +1424,16 @@ int main(int argc, char* argv[])
       weight_data_to_MC_correction *= sf_triggerEff;
 
 //--- apply data/MC corrections for efficiencies for lepton to pass loose identification and isolation criteria
-      weight_data_to_MC_correction *= dataToMCcorrectionInterface->getSF_leptonID_and_Iso_loose();
+      leptonSF_weight *= dataToMCcorrectionInterface->getSF_leptonID_and_Iso_loose();
 
 //--- apply data/MC corrections for efficiencies of leptons passing the loose identification and isolation criteria
 //    to also pass the tight identification and isolation criteria
       if ( leptonSelection == kFakeable ) {
-        weight_data_to_MC_correction *= dataToMCcorrectionInterface->getSF_leptonID_and_Iso_fakeable_to_loose();
+        leptonSF_weight *= dataToMCcorrectionInterface->getSF_leptonID_and_Iso_fakeable_to_loose();
       } else if ( leptonSelection == kTight ) {
-        weight_data_to_MC_correction *= dataToMCcorrectionInterface->getSF_leptonID_and_Iso_tight_to_loose_wTightCharge();
+        leptonSF_weight *= dataToMCcorrectionInterface->getSF_leptonID_and_Iso_tight_to_loose_wTightCharge();
       }
+      weight_data_to_MC_correction *= leptonSF_weight;
 
       evtWeight *= weight_data_to_MC_correction;
     }
@@ -2058,9 +2060,9 @@ int main(int argc, char* argv[])
       // MVA_3l1tau_ttV not filled
       // MVA_3l1tau_2Dbin not filled
 
-      snm->read(1.,                                     FloatVariableType::FR_weight);
-      snm->read(1.,                                     FloatVariableType::triggerSF_weight);
-      snm->read(1.,                                     FloatVariableType::leptonSF_weight);
+      snm->read(weight_fakeRate,                        FloatVariableType::FR_weight);
+      snm->read(triggerWeight,                          FloatVariableType::triggerSF_weight);
+      snm->read(leptonSF_weight,                        FloatVariableType::leptonSF_weight);
       // tauSF_weight not filled
       snm->read(btagWeight,                             FloatVariableType::bTagSF_weight);
       snm->read(eventInfo.pileupWeight,                 FloatVariableType::PU_weight);
