@@ -38,11 +38,11 @@ class syncNtupleConfig:
     project_dir = os.path.join(os.getenv('CMSSW_BASE'), 'src', 'tthAnalysis', 'HiggsToTauTau')
     executable_pattern = os.path.join(project_dir, 'test', 'tthAnalyzeRun_%s.py')
 
-    self.hadd_script_dir_path = os.path.join(config_dir, DKEY_SCRIPTS)
-    self.hadd_log_dir_path    = os.path.join(config_dir, DKEY_LOGS)
-    self.hadd_script_path         = os.path.join(self.hadd_script_dir_path, DKEY_SYNC, 'hadd_sync.py')
-    self.hadd_log_wrapper_path    = os.path.join(self.hadd_log_dir_path,    DKEY_SYNC, 'hadd_sync_wrapper.log')
-    self.hadd_log_executable_path = os.path.join(self.hadd_log_dir_path,    DKEY_SYNC, 'hadd_sync_executable.log')
+    self.hadd_script_dir_path = os.path.join(config_dir, DKEY_SCRIPTS, DKEY_SYNC)
+    self.hadd_log_dir_path    = os.path.join(config_dir, DKEY_LOGS,    DKEY_SYNC,)
+    self.hadd_script_path         = os.path.join(self.hadd_script_dir_path, 'hadd_sync.py')
+    self.hadd_log_wrapper_path    = os.path.join(self.hadd_log_dir_path,    'hadd_sync_wrapper.log')
+    self.hadd_log_executable_path = os.path.join(self.hadd_log_dir_path,    'hadd_sync_executable.log')
 
     final_output_dir = os.path.join(output_dir, DKEY_SYNC)
     self.final_output_file = os.path.join(final_output_dir, output_filename)

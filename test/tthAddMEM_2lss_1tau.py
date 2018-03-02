@@ -10,6 +10,15 @@ sys_choices                = [ 'central', 'full' ]
 default_resubmission_limit = 4
 max_mem_integrations       = 20000
 systematics.full           = systematics.an_addMEM
+integration_point_choices  = {
+  'small' : True,
+  'full'  : False,
+}
+mode_choices = {
+  'default' : 'full',
+  'bdt'     : 'small',
+  'sync'    : 'full',
+}
 
 class SmartFormatter(argparse.HelpFormatter):
   def _split_lines(self, text, width):
@@ -25,6 +34,11 @@ parser.add_argument('-v', '--version',
   type = str, dest = 'version', metavar = 'version', default = None, required = True,
   help = 'R|Analysis version (e.g. %s)' % datetime.date.today().strftime('%Y%b%d'),
 )
+parser.add_argument('-m', '--mode',
+  type = str, dest = 'mode', metavar = 'mode', default = None, required = True,
+  choices = mode_choices.keys(),
+  help = 'R|Analysis type (choices: %s)' % ', '.join(map(lambda choice: "'%s'" % choice, mode_choices.keys())),
+)
 parser.add_argument('-e', '--era',
   type = str, dest = 'era', metavar = 'era', choices = era_choices, default = None, required = True,
   help = 'R|Era of data/MC (choices: %s)' % ', '.join(map(lambda choice: "'%s'" % choice, era_choices)),
@@ -34,9 +48,11 @@ parser.add_argument('-s', '--systematics',
   default = 'central', required = False,
   help = 'R|Systematic uncertainties (choices: %s)' % ', '.join(map(lambda choice: "'%s'" % choice, sys_choices)),
 )
-parser.add_argument('-b', '--bdt-training',
-  dest = 'bdt_training', action = 'store_true', default = False,
-  help = 'R|Run for BDT training (uses smaller nof integration points on FastSim samples)'
+parser.add_argument('-i', '--integration-points',
+  type = str, dest = 'integration_points', metavar = 'choice', choices = integration_point_choices.keys(),
+  default = None, required = False,
+  help = 'R|Number of integration points to use, default depends on mode (choices: %s)' % \
+         ', '.join(map(lambda choice: "'%s'" % choice, integration_point_choices.keys()))
 )
 parser.add_argument('-n', '--max-mem-integrations',
   type = int, dest = 'max_mem_integrations', metavar = 'integer', default = max_mem_integrations, required = False,
@@ -68,23 +84,32 @@ max_job_resubmission = args.resubmission_limit if resubmit else 1
 no_exec              = args.no_exec
 auto_exec            = args.auto_exec
 max_mem_integrations = args.max_mem_integrations
-bdt_training         = args.bdt_training
 central_or_shift     = getattr(systematics, args.systematics)
+mode                 = args.mode
+integration_points   = integration_point_choices[args.integration_points] if args.integration_points \
+                       else integration_point_choices[mode_choices[mode]]
 
-if bdt_training:
-  if era == "2017":
-    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_prodNtuples_FastSim import samples_2017 as samples
-  else:
-    raise ValueError("Invalid era for FastSim samples: '%s'" % era)
-  leptonSelection = "Loose"
-  hadTauSelection = "Tight|dR03mvaMedium"
-else:
-  if era == "2017":
-    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_prodNtuples import samples_2017 as samples
-  else:
-    raise ValueError("Invalid era for FullSim samples: '%s'" % era)
+# modify version string to include more information so that we don't have to look at the generated
+# config files afterwards when debugging
+version = "%s_%s_%s" % (version, mode, 'small' if integration_points else 'full')
+
+if mode == 'default':
+  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017 as samples
+
   leptonSelection = "Fakeable"
   hadTauSelection = "Tight|dR03mvaMedium"
+elif mode == 'bdt':
+  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_FastSim import samples_2017 as samples
+
+  leptonSelection = "Loose"
+  hadTauSelection = "Tight|dR03mvaMedium"
+elif mode == 'sync':
+  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync import samples_2017 as samples
+
+  leptonSelection = "Fakeable"
+  hadTauSelection = "Tight|dR03mvaMedium"
+else:
+  raise ValueError("Internal logic error")
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -113,7 +138,7 @@ if __name__ == '__main__':
     num_parallel_jobs        = 16,
     leptonSelection          = leptonSelection,
     hadTauSelection          = hadTauSelection,
-    isForBDTtraining         = bdt_training, # if False, use full integration points
+    lowIntegrationPoints     = integration_points, # if False, use full integration points
     isDebug                  = True,
     central_or_shift         = central_or_shift,
   )

@@ -27,15 +27,14 @@ process.produceNtuple = cms.PSet(
     minNumBJets_loose         = cms.int32(2),
     minNumBJets_medium        = cms.int32(1),
 
-    branchName_electrons   = cms.string('Electron'),
-    branchName_muons       = cms.string('Muon'),
-    branchName_hadTaus     = cms.string('Tau'),
-    branchName_jets        = cms.string('Jet'),
-    branchName_met         = cms.string('MET'),
-    branchName_genLeptons1 = cms.string('GenLep'),
-    branchName_genLeptons2 = cms.string(''),
-    branchName_genHadTaus  = cms.string('GenVisTau'),
-    branchName_genJets     = cms.string('GenJet'),
+    branchName_electrons  = cms.string('Electron'),
+    branchName_muons      = cms.string('Muon'),
+    branchName_hadTaus    = cms.string('Tau'),
+    branchName_jets       = cms.string('Jet'),
+    branchName_met        = cms.string('MET'),
+    branchName_genLeptons = cms.string('GenLep'),
+    branchName_genHadTaus = cms.string('GenVisTau'),
+    branchName_genJets    = cms.string('GenJet'),
 
     use_HIP_mitigation_mediumMuonId = cms.bool(False),
 

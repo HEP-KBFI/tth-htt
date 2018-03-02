@@ -5,7 +5,6 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTau.h" // RecoHadTau
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h" // RecoJet
 #include "tthAnalysis/HiggsToTauTau/interface/hltPath.h" // hltPath
-#include "tthAnalysis/HiggsToTauTau/interface/mvaInputVariables.h" // comp_lep*_conePt()
 
 #include <TFile.h> // TFile
 
@@ -24,7 +23,7 @@ SyncNtupleManager::SyncNtupleManager(const std::string & outputFileName,
   , nof_taus(2)
   , nof_jets(4)
 {
-  for(int var = FloatVariableType::PFMET; var <= FloatVariableType::lumiScale; ++var)
+  for(int var = FloatVariableType::PFMET; var <= FloatVariableType::genWeight; ++var)
   {
     floatMap[static_cast<FloatVariableType>(var)] = placeholder_value;
   }
@@ -71,33 +70,73 @@ SyncNtupleManager::initializeBranches()
     n_mvasel_ele,      n_mvasel_ele_str,
     n_presel_tau,      n_presel_tau_str,
     n_presel_jet,      n_presel_jet_str,
-    floatMap[FloatVariableType::PFMET],            "PFMET",
-    floatMap[FloatVariableType::PFMETphi],         "PFMETphi",
-    floatMap[FloatVariableType::MHT],              "MHT",
-    floatMap[FloatVariableType::metLD],            "metLD",
-    floatMap[FloatVariableType::mvaOutput_ttV],    "MVA_2lss_ttV",
-    floatMap[FloatVariableType::mvaOutput_ttbar],  "MVA_2lss_ttbar",
-    floatMap[FloatVariableType::MC_weight],        "MC_weight",
-    floatMap[FloatVariableType::FR_weight],        "FR_weight",
-    floatMap[FloatVariableType::triggerSF_weight], "triggerSF_weight",
-    floatMap[FloatVariableType::leptonSF_weight],  "leptonSF_weight",
-    floatMap[FloatVariableType::bTagSF_weight],    "bTagSF_weight",
-    floatMap[FloatVariableType::PU_weight],        "PU_weight",
-    floatMap[FloatVariableType::hadTauSF_weight],  "hadTauSF_weight",
-    floatMap[FloatVariableType::genWeight],        "genWeight",
-    floatMap[FloatVariableType::lumiScale],        "lumiScale",
-    lep0_conept,       "lep0_conept",
-    lep1_conept,       "lep1_conept",
-    mindr_lep0_jet,    "mindr_lep0_jet",
-    mindr_lep1_jet,    "mindr_lep1_jet",
-    MT_met_lep0,       "MT_met_lep0",
-    avg_dr_jet,        "avg_dr_jet",
-    n_jet25_recl,      "n_jet25_recl"
+//--- MET/MHT
+    floatMap[FloatVariableType::PFMET],                    "PFMET",
+    floatMap[FloatVariableType::PFMETphi],                 "PFMETphi",
+    floatMap[FloatVariableType::MHT],                      "MHT",
+    floatMap[FloatVariableType::metLD],                    "metLD",
+//--- Additional event-level MVA variables
+    isGenMatched,                                          "isGenMatched",
+    floatMap[FloatVariableType::lep0_conept],              "lep0_conept",
+    floatMap[FloatVariableType::lep1_conept],              "lep1_conept",
+    floatMap[FloatVariableType::mindr_lep0_jet],           "mindr_lep0_jet",
+    floatMap[FloatVariableType::mindr_lep1_jet],           "mindr_lep1_jet",
+    floatMap[FloatVariableType::mindr_lep2_jet],           "mindr_lep2_jet",
+    floatMap[FloatVariableType::mindr_tau_jet],            "mindr_tau_jet",
+    floatMap[FloatVariableType::MT_met_lep0],              "MT_met_lep0",
+    floatMap[FloatVariableType::avg_dr_jet],               "avg_dr_jet",
+    floatMap[FloatVariableType::MVA_2lss_ttV],             "MVA_2lss_ttV",
+    floatMap[FloatVariableType::MVA_2lss_ttbar],           "MVA_2lss_ttbar",
+    floatMap[FloatVariableType::tt_deltaR],                "tt_deltaR",
+    floatMap[FloatVariableType::ntags],                    "ntags",
+    floatMap[FloatVariableType::ntags_loose],              "ntags_loose",
+    floatMap[FloatVariableType::tt_mvis],                  "tt_mvis",
+    floatMap[FloatVariableType::tt_pt],                    "tt_pt",
+    floatMap[FloatVariableType::max_dr_jet],               "max_dr_jet",
+    floatMap[FloatVariableType::HT],                       "HT",
+    floatMap[FloatVariableType::MVA_1l2tau_ttbar],         "MVA_1l2tau_ttbar",
+    floatMap[FloatVariableType::MVA_1l2tau_ttbar_v2],      "MVA_1l2tau_ttbar_v2",
+    floatMap[FloatVariableType::MVA_1l2tau_ttZ_v2],        "MVA_1l2tau_ttZ_v2",
+    floatMap[FloatVariableType::MVA_1l2tau_2Dbin_v2],      "MVA_1l2tau_2Dbin_v2",
+    floatMap[FloatVariableType::mvis_l1tau],               "mvis_l1tau",
+    floatMap[FloatVariableType::dR_l0tau],                 "dR_l0tau",
+    floatMap[FloatVariableType::dR_l1tau],                 "dR_l1tau",
+    floatMap[FloatVariableType::dR_l2tau],                 "dR_l2tau",
+    floatMap[FloatVariableType::MT_met_lep2],              "MT_met_lep2",
+    floatMap[FloatVariableType::MVA_3l1tau_ttbar],         "MVA_3l1tau_ttbar",
+    floatMap[FloatVariableType::MVA_3l1tau_ttV],           "MVA_3l1tau_ttV",
+    floatMap[FloatVariableType::MVA_3l1tau_2Dbin],         "MVA_3l1tau_2Dbin",
+//--- Event weights
+    floatMap[FloatVariableType::FR_weight],                "FR_weight",
+    floatMap[FloatVariableType::triggerSF_weight],         "triggerSF_weight",
+    floatMap[FloatVariableType::leptonSF_weight],          "leptonSF_weight",
+    floatMap[FloatVariableType::tauSF_weight],             "tauSF_weight",
+    floatMap[FloatVariableType::bTagSF_weight],            "bTagSF_weight",
+    floatMap[FloatVariableType::PU_weight],                "PU_weight",
+    floatMap[FloatVariableType::MC_weight],                "MC_weight",
+//--- MEM variables
+    floatMap[FloatVariableType::Integral_ttH],             "Integral_ttH",
+    floatMap[FloatVariableType::Integral_ttZ],             "Integral_ttZ",
+    floatMap[FloatVariableType::Integral_ttZ_Zll],         "Integral_ttZ_Zll",
+    floatMap[FloatVariableType::Integral_ttbar],           "Integral_ttbar",
+    floatMap[FloatVariableType::integration_type],         "integration_type",
+    floatMap[FloatVariableType::MEM_LR],                   "MEM_LR",
+    floatMap[FloatVariableType::dR_leps],                  "dR_leps",
+    floatMap[FloatVariableType::mvis_l0tau],               "mvis_l0tau",
+    floatMap[FloatVariableType::MVA_2lSS1tau_noMEM_ttbar], "MVA_2lSS1tau_noMEM_ttbar",
+    floatMap[FloatVariableType::MVA_2lSS1tau_noMEM_ttV],   "MVA_2lSS1tau_noMEM_ttV",
+    floatMap[FloatVariableType::MVA_2lSS1tau_noMEM_2Dbin], "MVA_2lSS1tau_noMEM_2Dbin",
+    floatMap[FloatVariableType::MVA_2lSS1tau_MEM_ttbar],   "MVA_2lSS1tau_MEM_ttbar",
+    floatMap[FloatVariableType::MVA_2lSS1tau_MEM_ttV],     "MVA_2lSS1tau_MEM_ttV",
+    floatMap[FloatVariableType::MVA_2lSS1tau_MEM_2Dbin],   "MVA_2lSS1tau_MEM_2Dbin",
+//--- custom additional branches (not necessary in sync)
+    floatMap[FloatVariableType::genWeight],                "genWeight"
   );
 
   setBranches(
     mstr, nof_mus,
     mu_pt,                   "pt",
+    mu_conept,               "conept",
     mu_eta,                  "eta",
     mu_phi,                  "phi",
     mu_E,                    "E",
@@ -105,6 +144,8 @@ SyncNtupleManager::initializeBranches()
     mu_miniRelIso,           "miniRelIso",
     mu_miniIsoCharged,       "miniIsoCharged",
     mu_miniIsoNeutral,       "miniIsoNeutral",
+    mu_jetNDauChargedMVASel, "jetNDauChargedMVASel",
+    mu_jetPtRel,             "jetPtRel",
     mu_jetPtRatio,           "jetPtRatio",
     mu_jetCSV,               "jetCSV",
     mu_sip3D,                "sip3D",
@@ -112,8 +153,8 @@ SyncNtupleManager::initializeBranches()
     mu_dz,                   "dz",
     mu_segmentCompatibility, "segmentCompatibility",
     mu_leptonMVA,            "leptonMVA",
-    mu_conept,               "conept",
     mu_mediumID,             "mediumID",
+    mu_dpt_div_pt,           "dpt_div_pt",
     mu_isfakeablesel,        "isfakeablesel",
     mu_iscutsel,             "iscutsel",
     mu_ismvasel,             "ismvasel"
@@ -122,6 +163,7 @@ SyncNtupleManager::initializeBranches()
   setBranches(
     estr, nof_eles,
     ele_pt,                   "pt",
+    ele_conept,               "conept",
     ele_eta,                  "eta",
     ele_phi,                  "phi",
     ele_E,                    "E",
@@ -129,6 +171,8 @@ SyncNtupleManager::initializeBranches()
     ele_miniRelIso,           "miniRelIso",
     ele_miniIsoCharged,       "miniIsoCharged",
     ele_miniIsoNeutral,       "miniIsoNeutral",
+    ele_jetNDauChargedMVASel, "jetNDauChargedMVASel",
+    ele_jetPtRel,             "jetPtRel",
     ele_jetPtRatio,           "jetPtRatio",
     ele_jetCSV,               "jetCSV",
     ele_sip3D,                "sip3D",
@@ -136,7 +180,6 @@ SyncNtupleManager::initializeBranches()
     ele_dz,                   "dz",
     ele_ntMVAeleID,           "ntMVAeleID",
     ele_leptonMVA,            "leptonMVA",
-    ele_conept,               "conept",
     ele_isChargeConsistent,   "isChargeConsistent",
     ele_passesConversionVeto, "passesConversionVeto",
     ele_nMissingHits,         "nMissingHits",
@@ -154,6 +197,7 @@ SyncNtupleManager::initializeBranches()
     tau_charge,                                          "charge",
     tau_dxy,                                             "dxy",
     tau_dz,                                              "dz",
+    tau_decayMode,                                       "decayMode",
     tau_decayModeFindingOldDMs,                          "decayModeFindingOldDMs",
     tau_decayModeFindingNewDMs,                          "decayModeFindingNewDMs",
     tau_byCombinedIsolationDeltaBetaCorr3Hits,           "byCombinedIsolationDeltaBetaCorr3Hits",
@@ -228,6 +272,7 @@ SyncNtupleManager::read(const std::vector<const RecoMuon *> & muons,
   {
     const RecoMuon * const muon = muons[i];
     mu_pt[i] = muon -> pt();
+    mu_conept[i] = muon -> cone_pt();
     mu_eta[i] = muon -> eta();
     mu_phi[i] = muon -> phi();
     mu_E[i] = (muon -> p4()).E();
@@ -235,6 +280,8 @@ SyncNtupleManager::read(const std::vector<const RecoMuon *> & muons,
     mu_miniRelIso[i] = muon -> relIso();
     mu_miniIsoCharged[i] = muon -> miniIsoCharged();
     mu_miniIsoNeutral[i] = muon -> miniIsoNeutral();
+    mu_jetNDauChargedMVASel[i] = -1; //TODO: implement jetNDauChargedMVASel() in RecoLepton
+    mu_jetPtRel[i] = muon -> jetPtRel();
     mu_jetPtRatio[i] = muon -> jetPtRatio();
     mu_jetCSV[i] = muon -> jetBtagCSV();
     mu_sip3D[i] = muon -> sip3d();
@@ -242,8 +289,8 @@ SyncNtupleManager::read(const std::vector<const RecoMuon *> & muons,
     mu_dz[i] = muon -> dz();
     mu_segmentCompatibility[i] = muon -> segmentCompatibility();
     mu_leptonMVA[i] = muon -> mvaRawTTH();
-    mu_conept[i] = comp_lep1_conePt(*muon);
     mu_mediumID[i] = muon -> passesMediumIdPOG();
+    mu_dpt_div_pt[i] = muon -> dpt_div_pt();
 
     mu_isfakeablesel[i] = 0;
     for(const auto & fakeable_muon: fakeable_muons)
@@ -291,6 +338,7 @@ SyncNtupleManager::read(const std::vector<const RecoElectron *> & electrons,
   {
     const RecoElectron * const electron = electrons[i];
     ele_pt[i] = electron -> pt();
+    ele_conept[i] = electron -> cone_pt();
     ele_eta[i] = electron -> eta();
     ele_phi[i] = electron -> phi();
     ele_E[i] = (electron -> p4()).E();
@@ -298,6 +346,8 @@ SyncNtupleManager::read(const std::vector<const RecoElectron *> & electrons,
     ele_miniRelIso[i] = electron -> relIso();
     ele_miniIsoCharged[i] = electron -> miniIsoCharged();
     ele_miniIsoNeutral[i] = electron -> miniIsoNeutral();
+    ele_jetNDauChargedMVASel[i] = -1; //TODO: implement jetNDauChargedMVASel() in RecoLepton
+    ele_jetPtRel[i] = electron -> jetPtRel();
     ele_jetPtRatio[i] = electron -> jetPtRatio();
     ele_jetCSV[i] = electron -> jetBtagCSV();
     ele_sip3D[i] = electron -> sip3d();
@@ -305,7 +355,6 @@ SyncNtupleManager::read(const std::vector<const RecoElectron *> & electrons,
     ele_dz[i] = electron -> dz();
     ele_ntMVAeleID[i] = electron -> mvaRawPOG_HZZ();
     ele_leptonMVA[i] = electron -> mvaRawTTH();
-    ele_conept[i] = comp_lep1_conePt(*electron);
     ele_isChargeConsistent[i] = electron -> tightCharge() == 2 ? 1 : 0;
     ele_passesConversionVeto[i] = electron -> passesConversionVeto();
     ele_nMissingHits[i] = electron -> nLostHits();
@@ -355,6 +404,7 @@ SyncNtupleManager::read(const std::vector<const RecoHadTau *> & hadtaus)
     tau_charge[i] = hadtau -> charge();
     tau_dxy[i] = hadtau -> dxy();
     tau_dz[i] = hadtau -> dz();
+    tau_decayMode[i] = hadtau -> decayMode();
     tau_decayModeFindingOldDMs[i] = hadtau -> decayModeFinding();
     tau_decayModeFindingNewDMs[i] = hadtau -> decayModeFindingNew();
 
@@ -404,18 +454,6 @@ SyncNtupleManager::read(const std::vector<const RecoJet *> & jets)
 }
 
 void
-SyncNtupleManager::read(const std::map<std::string, Double_t> & mvaInputs)
-{
-  if(mvaInputs.find("LepGood_conePt[iF_Recl[0]]") != mvaInputs.end()) lep0_conept    = static_cast<decltype(lep0_conept)>   (mvaInputs.at("LepGood_conePt[iF_Recl[0]]"));
-  if(mvaInputs.find("LepGood_conePt[iF_Recl[1]]") != mvaInputs.end()) lep1_conept    = static_cast<decltype(lep1_conept)>   (mvaInputs.at("LepGood_conePt[iF_Recl[1]]"));
-  if(mvaInputs.find("mindr_lep1_jet")             != mvaInputs.end()) mindr_lep0_jet = static_cast<decltype(mindr_lep0_jet)>(mvaInputs.at("mindr_lep1_jet"));
-  if(mvaInputs.find("mindr_lep2_jet")             != mvaInputs.end()) mindr_lep1_jet = static_cast<decltype(mindr_lep1_jet)>(mvaInputs.at("mindr_lep2_jet"));
-  if(mvaInputs.find("MT_met_lep1")                != mvaInputs.end()) MT_met_lep0    = static_cast<decltype(MT_met_lep0)>   (mvaInputs.at("MT_met_lep1"));
-  if(mvaInputs.find("avg_dr_jet")                 != mvaInputs.end()) avg_dr_jet     = static_cast<decltype(avg_dr_jet)>    (mvaInputs.at("avg_dr_jet"));
-  if(mvaInputs.find("nJet25_Recl")                != mvaInputs.end()) n_jet25_recl   = static_cast<decltype(n_jet25_recl)>  (mvaInputs.at("nJet25_Recl"));
-}
-
-void
 SyncNtupleManager::read(Float_t value,
                         FloatVariableType type)
 {
@@ -435,6 +473,12 @@ SyncNtupleManager::read(const std::vector<std::vector<hltPath *>> & hltPaths)
 }
 
 void
+SyncNtupleManager::read(bool is_genMatched)
+{
+  isGenMatched = is_genMatched;
+}
+
+void
 SyncNtupleManager::reset(bool is_initializing)
 {
   nEvent = 0;
@@ -451,15 +495,10 @@ SyncNtupleManager::reset(bool is_initializing)
     n_cutsel_ele,
     n_mvasel_ele,
     n_presel_tau,
-    n_presel_jet,
-    lep0_conept,
-    lep1_conept,
-    mindr_lep0_jet,
-    mindr_lep1_jet,
-    MT_met_lep0,
-    avg_dr_jet,
-    n_jet25_recl
+    n_presel_jet
   );
+
+  isGenMatched = placeholder_value;
 
   for(auto & kv: floatMap)
   {
@@ -470,6 +509,7 @@ SyncNtupleManager::reset(bool is_initializing)
   reset(
     nof_mu_iterations,
     mu_pt,
+    mu_conept,
     mu_eta,
     mu_phi,
     mu_E,
@@ -477,6 +517,8 @@ SyncNtupleManager::reset(bool is_initializing)
     mu_miniRelIso,
     mu_miniIsoCharged,
     mu_miniIsoNeutral,
+    mu_jetNDauChargedMVASel,
+    mu_jetPtRel,
     mu_jetPtRatio,
     mu_jetCSV,
     mu_sip3D,
@@ -484,8 +526,8 @@ SyncNtupleManager::reset(bool is_initializing)
     mu_dz,
     mu_segmentCompatibility,
     mu_leptonMVA,
-    mu_conept,
     mu_mediumID,
+    mu_dpt_div_pt,
     mu_isfakeablesel,
     mu_iscutsel,
     mu_ismvasel
@@ -495,6 +537,7 @@ SyncNtupleManager::reset(bool is_initializing)
   reset(
     nof_ele_iterations,
     ele_pt,
+    ele_conept,
     ele_eta,
     ele_phi,
     ele_E,
@@ -502,6 +545,8 @@ SyncNtupleManager::reset(bool is_initializing)
     ele_miniRelIso,
     ele_miniIsoCharged,
     ele_miniIsoNeutral,
+    ele_jetNDauChargedMVASel,
+    ele_jetPtRel,
     ele_jetPtRatio,
     ele_jetCSV,
     ele_sip3D,
@@ -509,7 +554,6 @@ SyncNtupleManager::reset(bool is_initializing)
     ele_dz,
     ele_ntMVAeleID,
     ele_leptonMVA,
-    ele_conept,
     ele_isChargeConsistent,
     ele_passesConversionVeto,
     ele_nMissingHits,
@@ -528,6 +572,7 @@ SyncNtupleManager::reset(bool is_initializing)
     tau_charge,
     tau_dxy,
     tau_dz,
+    tau_decayMode,
     tau_decayModeFindingOldDMs,
     tau_decayModeFindingNewDMs,
     tau_byCombinedIsolationDeltaBetaCorr3Hits,

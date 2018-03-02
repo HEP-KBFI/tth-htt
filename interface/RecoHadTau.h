@@ -69,6 +69,8 @@ public:
   const GenHadTau * genHadTau() const;
   const GenJet * genJet() const;
 
+  bool isGenMatched() const;
+
   bool isLoose() const;
   bool isFakeable() const;
   bool isTight() const;
