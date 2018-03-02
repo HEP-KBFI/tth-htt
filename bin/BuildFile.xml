@@ -52,7 +52,7 @@
   <use   name="roottmva"/>
   <use   name="boost"/>
 </bin>
-<bin file="analyze_2lss.cc" name="analyze_2lss">
+<bin file="produceNtuple.cc" name="produceNtuple">
   <use   name="FWCore/FWLite"/>
   <use   name="FWCore/ParameterSet"/>
   <use   name="FWCore/PythonParameterSet"/>
@@ -65,7 +65,7 @@
   <use   name="roottmva"/>
   <use   name="boost"/>
 </bin>
-<bin file="produceNtuple.cc" name="produceNtuple">
+<bin file="analyze_2lss.cc" name="analyze_2lss">
   <use   name="FWCore/FWLite"/>
   <use   name="FWCore/ParameterSet"/>
   <use   name="FWCore/PythonParameterSet"/>
@@ -105,6 +105,19 @@
   <use   name="boost"/>
 </bin>
 <bin file="analyze_2los_1tau.cc" name="analyze_2los_1tau">
+  <use   name="FWCore/FWLite"/>
+  <use   name="FWCore/ParameterSet"/>
+  <use   name="FWCore/PythonParameterSet"/>
+  <use   name="FWCore/Utilities"/>
+  <use   name="DataFormats/FWLite"/>
+  <use   name="DataFormats/Math"/>
+  <use   name="PhysicsTools/FWLite"/>
+  <use   name="tthAnalysis/HiggsToTauTau"/>
+  <use   name="root"/>
+  <use   name="roottmva"/>
+  <use   name="boost"/>
+</bin>
+<bin file="analyze_3l.cc" name="analyze_3l">
   <use   name="FWCore/FWLite"/>
   <use   name="FWCore/ParameterSet"/>
   <use   name="FWCore/PythonParameterSet"/>
