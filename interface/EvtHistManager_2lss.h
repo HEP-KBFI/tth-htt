@@ -3,7 +3,7 @@
 
 /** \class EvtHistManager_2lss
  *
- * Book and fill histograms for event-level quantities in ttH, H->tautau analysis
+ * Book and fill histograms for event-level quantities in ttH multilepton analysis
  * in 2lss category
  *
  * \author Christian Veelken, Tallin

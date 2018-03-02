@@ -37,7 +37,7 @@ class analyzeConfig_2lss(analyzeConfig):
 
   """
   def __init__(self, configDir, outputDir, executable_analyze, cfgFile_analyze, samples, changeBranchNames,
-               lepton_charge_selections, hadTauVeto_selection, applyFakeRateWeights, central_or_shifts,
+               MEMbranch, lepton_charge_selections, hadTauVeto_selection, applyFakeRateWeights, central_or_shifts,
                max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,
                executable_addBackgrounds, executable_addFakes, executable_addFlips, histograms_to_fit, select_rle_output = False,
                executable_prep_dcard = "prepareDatacards", executable_add_syst_dcard = "addSystDatacards",
@@ -54,6 +54,7 @@ class analyzeConfig_2lss(analyzeConfig):
 
     self.samples = samples
     self.changeBranchNames = changeBranchNames
+    self.MEMbranch = MEMbranch
     
     ##self.lepton_selections = [ "Tight", "Fakeable", "Fakeable_mcClosure" ]
     self.lepton_selections = [ "Tight", "Fakeable" ]
@@ -166,6 +167,14 @@ class analyzeConfig_2lss(analyzeConfig):
       lines.append("process.analyze_2lss.branchName_genJets = cms.string('GenJet')")
       lines.append("process.analyze_2lss.redoGenMatching = cms.bool(False)")
       lines.append("process.analyze_2lss.fillGenEvtHistograms = cms.bool(True)")
+    if jobOptions['MEMbranch']:
+      lines.append(
+        "process.analyze_2lss.branchName_memOutput = cms.string('%s_%s')" % (
+          jobOptions['MEMbranch'],
+          'central',
+#          self.get_addMEM_systematics(jobOptions['central_or_shift'])
+        )
+      )      
     if self.do_sync:
       lines.append("process.analyze_2lss.syncNtuple.tree   = cms.string('%s')" % jobOptions['syncTree'])
       lines.append("process.analyze_2lss.syncNtuple.output = cms.string('%s')" % os.path.basename(jobOptions['syncOutput']))
@@ -392,6 +401,7 @@ class analyzeConfig_2lss(analyzeConfig):
                   'apply_trigger_bits' : (is_mc and sample_info["reHLT"]) or not is_mc,
                   'selectBDT' : self.isBDTtraining,
                   'changeBranchNames' : self.changeBranchNames,
+                  'MEMbranch' : self.MEMbranch,
                   'syncOutput': syncOutput,
                   'syncTree'  : syncTree,
                 }

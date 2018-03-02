@@ -212,6 +212,7 @@ if __name__ == '__main__':
       running_method            = "sbatch",
       num_parallel_jobs         = 100, # KE: run up to 100 'hadd' jobs in parallel on batch system
       executable_addBackgrounds = "addBackgrounds",
+      # CV: use common executable for estimating jet->lepton and jet->tau_h fake background
       executable_addFakes       = "addBackgroundLeptonFakes",
       executable_addFlips       = "addBackgroundLeptonFlips",
       histograms_to_fit         = [

@@ -418,10 +418,6 @@ int main(int argc, char* argv[])
   if ( hadTauSelection_part2 != "" ) tightHadTauSelector.set(hadTauSelection_part2);
   tightHadTauSelector.set_min_antiElectron(hadTauSelection_antiElectron);
   tightHadTauSelector.set_min_antiMuon(hadTauSelection_antiMuon);
-  RecoHadTauSelectorTight tightHadTauFilter(era);
-  tightHadTauFilter.set("dR03mvaMedium");
-  tightHadTauFilter.set_min_antiElectron(hadTauSelection_antiElectron);
-  tightHadTauFilter.set_min_antiMuon(hadTauSelection_antiMuon);
 
   RecoJetReader* jetReader = new RecoJetReader(era, isMC, branchName_jets, readGenObjects);
   jetReader->setJetPt_central_or_shift(jetPt_option);
@@ -556,16 +552,8 @@ int main(int argc, char* argv[])
   {
     ElectronHistManager* electrons_;
     std::map<std::string, ElectronHistManager*> electrons_in_categories_;
-    ElectronHistManager* leadElectron_;
-    std::map<std::string, ElectronHistManager*> leadElectron_in_categories_;
-    ElectronHistManager* subleadElectron_;
-    std::map<std::string, ElectronHistManager*> subleadElectron_in_categories_;
     MuonHistManager* muons_;
     std::map<std::string, MuonHistManager*> muons_in_categories_;
-    MuonHistManager* leadMuon_;
-    std::map<std::string, MuonHistManager*> leadMuon_in_categories_;
-    MuonHistManager* subleadMuon_;
-    std::map<std::string, MuonHistManager*> subleadMuon_in_categories_;
     HadTauHistManager* hadTaus_;
     JetHistManager* jets_;
     JetHistManager* leadJet_;
@@ -629,12 +617,6 @@ int main(int argc, char* argv[])
     selHistManager->electrons_ = new ElectronHistManager(makeHistManager_cfg(process_and_genMatch,
       Form("%s/sel/electrons", histogramDir.data()), central_or_shift));
     selHistManager->electrons_->bookHistograms(fs);
-    selHistManager->leadElectron_ = new ElectronHistManager(makeHistManager_cfg(process_and_genMatch,
-      Form("%s/sel/leadElectron", histogramDir.data()), central_or_shift, 0));
-    selHistManager->leadElectron_->bookHistograms(fs);
-    selHistManager->subleadElectron_ = new ElectronHistManager(makeHistManager_cfg(process_and_genMatch,
-      Form("%s/sel/subleadElectron", histogramDir.data()), central_or_shift, 1));
-    selHistManager->subleadElectron_->bookHistograms(fs);
     for ( vstring::const_iterator category = categories.begin();
 	    category != categories.end(); ++category ) {
       TString histogramDir_category = histogramDir.data();
@@ -642,22 +624,10 @@ int main(int argc, char* argv[])
       selHistManager->electrons_in_categories_[*category] = new ElectronHistManager(makeHistManager_cfg(process_and_genMatch, 
         Form("%s/sel/electrons", histogramDir_category.Data()), central_or_shift));	
       selHistManager->electrons_in_categories_[*category]->bookHistograms(fs);
-      selHistManager->leadElectron_in_categories_[*category] = new ElectronHistManager(makeHistManager_cfg(process_and_genMatch, 
-        Form("%s/sel/leadElectron", histogramDir_category.Data()), central_or_shift, 0));
-      selHistManager->leadElectron_in_categories_[*category]->bookHistograms(fs);
-      selHistManager->subleadElectron_in_categories_[*category] = new ElectronHistManager(makeHistManager_cfg(process_and_genMatch, 
-        Form("%s/sel/subleadElectron", histogramDir_category.Data()), central_or_shift, 1));
-      selHistManager->subleadElectron_in_categories_[*category]->bookHistograms(fs);
     }
     selHistManager->muons_ = new MuonHistManager(makeHistManager_cfg(process_and_genMatch,
       Form("%s/sel/muons", histogramDir.data()), central_or_shift));
     selHistManager->muons_->bookHistograms(fs);
-    selHistManager->leadMuon_ = new MuonHistManager(makeHistManager_cfg(process_and_genMatch,
-      Form("%s/sel/leadMuon", histogramDir.data()), central_or_shift, 0));
-    selHistManager->leadMuon_->bookHistograms(fs);
-    selHistManager->subleadMuon_ = new MuonHistManager(makeHistManager_cfg(process_and_genMatch,
-      Form("%s/sel/subleadMuon", histogramDir.data()), central_or_shift, 1));
-    selHistManager->subleadMuon_->bookHistograms(fs);
     for ( vstring::const_iterator category = categories.begin();
 	  category != categories.end(); ++category ) {
       TString histogramDir_category = histogramDir.data();
@@ -665,12 +635,6 @@ int main(int argc, char* argv[])
       selHistManager->muons_in_categories_[*category] = new MuonHistManager(makeHistManager_cfg(process_and_genMatch, 
         Form("%s/sel/muons", histogramDir_category.Data()), central_or_shift));	
       selHistManager->muons_in_categories_[*category]->bookHistograms(fs);
-      selHistManager->leadMuon_in_categories_[*category] = new MuonHistManager(makeHistManager_cfg(process_and_genMatch, 
-	Form("%s/sel/leadMuon", histogramDir_category.Data()), central_or_shift, 0));
-      selHistManager->leadMuon_in_categories_[*category]->bookHistograms(fs);
-      selHistManager->subleadMuon_in_categories_[*category] = new MuonHistManager(makeHistManager_cfg(process_and_genMatch, 
-	Form("%s/sel/subleadMuon", histogramDir_category.Data()), central_or_shift, 1));
-      selHistManager->subleadMuon_in_categories_[*category]->bookHistograms(fs);
     }
     selHistManager->hadTaus_ = new HadTauHistManager(makeHistManager_cfg(process_and_genMatch,
       Form("%s/sel/hadTaus", histogramDir.data()), central_or_shift));
@@ -1213,7 +1177,7 @@ int main(int argc, char* argv[])
         }
       }
     }
-    std::vector<const RecoJet*> cleanedJets = jetCleaner(jet_ptrs, fakeableElectrons, tightElectrons, fakeableMuons, tightMuons, selHadTaus);
+    std::vector<const RecoJet*> cleanedJets = jetCleaner(jet_ptrs, fakeableElectrons, tightElectrons, fakeableMuons, tightMuons);
     std::sort(cleanedJets.begin(), cleanedJets.end(), isHigherPt);
     std::vector<const RecoJet*> selJets = jetSelector(cleanedJets);
     std::vector<const RecoJet*> selBJets_loose = jetSelectorBtagLoose(cleanedJets);
@@ -1784,12 +1748,40 @@ int main(int argc, char* argv[])
       }
     }
 
+    evtWeightSum += evtWeight;
+
 //--- fill histograms with events passing final selection
-    evtWeightSum=evtWeightSum+evtWeight;
+    std::string category;
+    if        (  selLepton_lead_type == kElectron && selLepton_sublead_type == kElectron  ) {
+      category += "ee";
+      if      ( selLepton_lead->charge() < 0 && selLepton_sublead->charge() < 0 ) category += "_neg";
+      else if ( selLepton_lead->charge() > 0 && selLepton_sublead->charge() > 0 ) category += "_pos";
+    } else if (  selLepton_lead_type == kMuon     && selLepton_sublead_type == kMuon      ) { 
+      category += "mm";
+      if ( selBJets_medium.size() >= 2 ) category += "_bt";
+      else category += "_bl";
+      if      ( selLepton_lead->charge() < 0 && selLepton_sublead->charge() < 0 ) category += "_neg";
+      else if ( selLepton_lead->charge() > 0 && selLepton_sublead->charge() > 0 ) category += "_pos";
+    } else if ( (selLepton_lead_type == kElectron && selLepton_sublead_type == kMuon    ) ||
+		(selLepton_lead_type == kMuon     && selLepton_sublead_type == kElectron) ) {
+      category += "em";
+      if ( selBJets_medium.size() >= 2 ) category += "_bt";
+      else category += "_bl";
+      if      ( selLepton_lead->charge() < 0 && selLepton_sublead->charge() < 0 ) category += "_neg";
+      else if ( selLepton_lead->charge() > 0 && selLepton_sublead->charge() > 0 ) category += "_pos";
+    } else assert(0);
     selHistManagerType* selHistManager = selHistManagers[idxSelLepton_genMatch];
     assert(selHistManager != 0);
     selHistManager->electrons_->fillHistograms(selElectrons, evtWeight);
+    ElectronHistManager* selHistManager_electrons_category = selHistManager->electrons_in_categories_[category];
+    if ( selHistManager_electrons_category ) {
+      selHistManager_electrons_category->fillHistograms(selElectrons, evtWeight);
+    }
     selHistManager->muons_->fillHistograms(selMuons, evtWeight);
+    MuonHistManager* selHistManager_muons_category = selHistManager->muons_in_categories_[category];
+    if ( selHistManager_muons_category ) {
+      selHistManager_muons_category->fillHistograms(selMuons, evtWeight);
+    }
     selHistManager->hadTaus_->fillHistograms(selHadTaus, evtWeight);
     selHistManager->jets_->fillHistograms(selJets, evtWeight);
     selHistManager->leadJet_->fillHistograms(selJets, evtWeight);
@@ -1815,25 +1807,6 @@ int main(int argc, char* argv[])
       mvaOutput_Hj_tagger,
       mvaOutput_Hjj_tagger
     );
-    std::string category;
-    if        (  selLepton_lead_type == kElectron && selLepton_sublead_type == kElectron  ) {
-      category += "ee";
-      if      ( selLepton_lead->charge() < 0 && selLepton_sublead->charge() < 0 ) category += "_neg";
-      else if ( selLepton_lead->charge() > 0 && selLepton_sublead->charge() > 0 ) category += "_pos";
-    } else if (  selLepton_lead_type == kMuon     && selLepton_sublead_type == kMuon      ) { 
-      category += "mm";
-      if ( selBJets_medium.size() >= 2 ) category += "_bt";
-      else category += "_bl";
-      if      ( selLepton_lead->charge() < 0 && selLepton_sublead->charge() < 0 ) category += "_neg";
-      else if ( selLepton_lead->charge() > 0 && selLepton_sublead->charge() > 0 ) category += "_pos";
-    } else if ( (selLepton_lead_type == kElectron && selLepton_sublead_type == kMuon    ) ||
-		(selLepton_lead_type == kMuon     && selLepton_sublead_type == kElectron) ) {
-      category += "em";
-      if ( selBJets_medium.size() >= 2 ) category += "_bt";
-      else category += "_bl";
-      if      ( selLepton_lead->charge() < 0 && selLepton_sublead->charge() < 0 ) category += "_neg";
-      else if ( selLepton_lead->charge() > 0 && selLepton_sublead->charge() > 0 ) category += "_pos";
-    } else assert(0);
     EvtHistManager_2lss* selHistManager_evt_category = selHistManager->evt_in_categories_[category];
     if ( selHistManager_evt_category ) { // CV: pointer is zero when running on OS control region to estimate "charge_flip" background
       selHistManager_evt_category->fillHistograms(

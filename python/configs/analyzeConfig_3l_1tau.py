@@ -14,16 +14,16 @@ def get_lepton_and_hadTau_selection_and_frWeight(lepton_and_hadTau_selection, le
   lepton_and_hadTau_selection_and_frWeight = lepton_and_hadTau_selection_and_frWeight.replace("|", "_")
   return lepton_and_hadTau_selection_and_frWeight
 
-def getHistogramDir(lepton_selection, hadTau_selection, hadTau_frWeight, chargeSumSelection):
+def getHistogramDir(lepton_selection, hadTau_selection, lepton_and_hadTau_frWeight, chargeSumSelection):
   hadTau_selection_part1 = hadTau_selection
   for separator in [ "|" ]:
     if hadTau_selection_part1.find(separator) != -1:
       hadTau_selection_part1 = hadTau_selection_part1[:hadTau_selection_part1.find(separator)]
   histogramDir = "3l_1tau_%s_lep%s_tau%s" % (chargeSumSelection, lepton_selection, hadTau_selection_part1)
-  if hadTau_selection_part1.find("Fakeable") != -1:
-    if hadTau_frWeight == "enabled":
+  if lepton_selection.find("Fakeable") != -1 or hadTau_selection.find("Fakeable") != -1:
+    if lepton_and_hadTau_frWeight == "enabled":
       histogramDir += "_wFakeRateWeights"
-    elif hadTau_frWeight == "disabled":
+    elif lepton_and_hadTau_frWeight == "disabled":
       histogramDir += "_woFakeRateWeights"
   return histogramDir
 
@@ -155,12 +155,12 @@ class analyzeConfig_3l_1tau(analyzeConfig):
     lines.append("process.fwliteInput.fileNames = cms.vstring(%s)" % jobOptions['ntupleFiles'])
     lines.append("process.fwliteOutput.fileName = cms.string('%s')" % os.path.basename(jobOptions['histogramFile']))
     lines.append("process.analyze_3l_1tau.process = cms.string('%s')" % jobOptions['sample_category'])
-    hadTau_frWeight = None
+    lepton_and_hadTau_frWeight = None
     if jobOptions['applyFakeRateWeights'] == "disabled":
-      hadTau_frWeight = "disabled"
+      lepton_and_hadTau_frWeight = "disabled"
     else:
-      hadTau_frWeight = "enabled"
-    histogramDir = getHistogramDir(jobOptions['lepton_selection'], jobOptions['hadTau_selection'], hadTau_frWeight, jobOptions['chargeSumSelection'])
+      lepton_and_hadTau_frWeight = "enabled"
+    histogramDir = getHistogramDir(jobOptions['lepton_selection'], jobOptions['hadTau_selection'], lepton_and_hadTau_frWeight, jobOptions['chargeSumSelection'])
     lines.append("process.analyze_3l_1tau.histogramDir = cms.string('%s')" % histogramDir)
     lines.append("process.analyze_3l_1tau.era = cms.string('%s')" % self.era)
     lines.append("process.analyze_3l_1tau.triggers_1e = cms.vstring(%s)" % self.triggers_1e)

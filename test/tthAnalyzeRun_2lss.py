@@ -91,10 +91,9 @@ max_job_resubmission = args.resubmission_limit if resubmit else 1
 max_files_per_job    = 10 if use_prod_ntuples else 100
 central_or_shift     = getattr(systematics, args.systematics)
 
-hadTauVeto_selection = None
 changeBranchNames    = use_prod_ntuples
 applyFakeRateWeights = "2lepton"
-hadTauVeto_selection = "dR03mvaVTight" # veto events containing taus that pass tau ID WP applied in 2l+2tau channel
+hadTauVeto_selection = "dR03mvaMedium" # veto events containing taus that pass tau ID WP applied in 2lss+1tau channel
 
 # Karl: temporarily disable other modes until we've proper Ntuples
 if mode not in [ 'VHbb', 'sync' ]:
@@ -158,6 +157,7 @@ if __name__ == '__main__':
       cfgFile_analyze           = "analyze_2lss_cfg.py",
       samples                   = samples,
       changeBranchNames         = changeBranchNames,
+      MEMbranch                 = None, # CV: MEM not implemented for 2lss channel yet
       lepton_charge_selections  = [ "SS" ] if mode.find("forBDTtraining") != -1 else [ "OS", "SS" ],
       hadTauVeto_selection      = hadTauVeto_selection,
       applyFakeRateWeights      = applyFakeRateWeights,

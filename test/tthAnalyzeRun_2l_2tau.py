@@ -91,10 +91,10 @@ max_job_resubmission = args.resubmission_limit if resubmit else 1
 max_files_per_job    = 10 if use_prod_ntuples else 100
 central_or_shift     = getattr(systematics, args.systematics)
 
-hadTau_selection                   = None
-hadTau_selection_relaxed           = None
-changeBranchNames                  = use_prod_ntuples
-applyFakeRateWeights               = None
+hadTau_selection         = None
+hadTau_selection_relaxed = None
+changeBranchNames        = use_prod_ntuples
+applyFakeRateWeights     = None
 
 if mode != "VHbb":
   raise ValueError("Only VHbb mode available")

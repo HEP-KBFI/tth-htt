@@ -43,7 +43,7 @@ EvtHistManager_3l_1tau::bookHistograms(TFileDirectory & dir)
   histogram_mvaOutput_3l_ttbar_ = book1D(dir, "mvaOutput_3l_ttbar", "mvaOutput_3l_ttbar", 40, -1., +1.);
   switch(era_)
   {
-    case kEra_2017: histogram_mvaDiscr_3l_  = book1D(dir, "mvaDiscr_3l", "mvaDiscr_3l", 5, 0.5, 5.5); break;
+    case kEra_2017: histogram_mvaDiscr_3l_ = book1D(dir, "mvaDiscr_3l", "mvaDiscr_3l", 5, 0.5, 5.5); break;
     default:        assert(0);
   }
 

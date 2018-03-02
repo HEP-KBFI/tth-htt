@@ -167,7 +167,7 @@ if __name__ == '__main__':
       samples                               = samples,
       changeBranchNames                     = changeBranchNames,
       hadTau_selection                      = hadTau_selection,
-      hadTau_charge_selections              =  [ "OS"] if mode == "forBDTtraining" else [ "OS", "SS" ],
+      hadTau_charge_selections              = [ "OS"] if mode == "forBDTtraining" else [ "OS", "SS" ],
       applyFakeRateWeights                  = applyFakeRateWeights,
       central_or_shifts                     = central_or_shift,
       max_files_per_job                     = max_files_per_job,
