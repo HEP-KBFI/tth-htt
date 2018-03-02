@@ -30,7 +30,7 @@ class addMEMConfig:
     """
     def __init__(self, treeName, outputDir, cfgDir, executable_addMEM, samples, era, debug, running_method,
                  max_files_per_job, mem_integrations_per_job, max_mem_integrations, num_parallel_jobs,
-                 leptonSelection, hadTauSelection, isForBDTtraining, channel, pool_id = ''):
+                 leptonSelection, hadTauSelection, lowIntegrationPoints, channel, pool_id = ''):
 
         self.treeName = treeName
         self.outputDir = outputDir
@@ -50,7 +50,10 @@ class addMEMConfig:
         self.maxPermutations_branchName = "maxPermutations_addMEM_%s_lep%s_tau%s_%s" % (
             self.channel, self.leptonSelection, self.hadTauDefinition, self.hadTauWorkingPoint,
         )
-        self.isForBDTtraining = isForBDTtraining
+        self.lowIntegrationPoints = lowIntegrationPoints
+        logging.info(
+            "Using %s number of integration points" % ("low" if self.lowIntegrationPoints else "full")
+        )
         if running_method.lower() not in ["sbatch", "makefile"]:
             raise ValueError("Invalid running method: %s" % running_method)
         self.running_method = running_method

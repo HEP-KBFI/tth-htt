@@ -91,7 +91,7 @@ int main(int argc,
   const std::string selEventsFileName_input = cfg_addMEM.getParameter<std::string>("selEventsFileName_input");
   const bool isMC                           = cfg_addMEM.getParameter<bool>("isMC");
   const bool isDEBUG                        = cfg_addMEM.getParameter<bool>("isDEBUG");
-  const bool isForBDTtraining               = cfg_addMEM.getParameter<bool>("isForBDTtraining");
+  const bool lowIntegrationPoints           = cfg_addMEM.getParameter<bool>("lowIntegrationPoints");
   const bool copy_all_branches              = cfg_addMEM.getParameter<bool>("copy_all_branches");
   const bool readGenObjects                 = cfg_addMEM.getParameter<bool>("readGenObjects");
 
@@ -111,7 +111,7 @@ int main(int argc,
   }
 
   const std::string memPythonConfigFile =
-    isForBDTtraining                                         ?
+    lowIntegrationPoints                                     ?
     "ttH_Htautau_MEM_Analysis/MEM/small_lowpoints_122016.py" :
     "ttH_Htautau_MEM_Analysis/MEM/small_nomin_122016.py"
   ;
