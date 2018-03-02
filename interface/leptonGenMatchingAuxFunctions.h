@@ -11,6 +11,7 @@ class RecoLepton;
 enum { kGen_LeptonUndefined1, kGen_LeptonAll1, kGen_1l0j, kGen_0l1j };
 enum { kGen_LeptonUndefined2, kGen_LeptonAll2, kGen_2l0j, kGen_1l1j, kGen_0l2j };
 enum { kGen_LeptonUndefined3, kGen_LeptonAll3, kGen_3l0j, kGen_2l1j, kGen_1l2j, kGen_0l3j };
+enum { kGen_LeptonUndefined4, kGen_LeptonAll4, kGen_4l0j, kGen_3l1j, kGen_2l2j, kGen_1l3j, kGen_0l4j };
 
 struct leptonGenMatchEntry
 {
@@ -28,6 +29,7 @@ struct leptonGenMatchEntry
 std::vector<leptonGenMatchEntry> getLeptonGenMatch_definitions_1lepton(bool apply_leptonGenMatching);
 std::vector<leptonGenMatchEntry> getLeptonGenMatch_definitions_2lepton(bool apply_leptonGenMatching);
 std::vector<leptonGenMatchEntry> getLeptonGenMatch_definitions_3lepton(bool apply_leptonGenMatching);
+std::vector<leptonGenMatchEntry> getLeptonGenMatch_definitions_4lepton(bool apply_leptonGenMatching);
 
 std::string
 getLeptonGenMatch_string(const std::vector<leptonGenMatchEntry> & leptonGenMatch_definitions,
@@ -41,7 +43,8 @@ const leptonGenMatchEntry &
 getLeptonGenMatch(const std::vector<leptonGenMatchEntry> & leptonGenMatch_definitions,
                   const RecoLepton * lepton_lead,
                   const RecoLepton * lepton_sublead = nullptr,
-                  const RecoLepton * lepton_third = nullptr);
+                  const RecoLepton * lepton_third = nullptr,
+                  const RecoLepton * lepton_fourth = nullptr);
 
 std::ostream &
 operator<<(std::ostream & stream,

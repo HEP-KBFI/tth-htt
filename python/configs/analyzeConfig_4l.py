@@ -15,7 +15,7 @@ def get_lepton_selection_and_frWeight(lepton_selection, lepton_frWeight):
   return lepton_selection_and_frWeight
 
 def getHistogramDir(lepton_selection, lepton_frWeight, chargeSumSelection):
-  histogramDir = "3l_%s_%s" % (chargeSumSelection, lepton_selection)
+  histogramDir = "4l_%s_%s" % (chargeSumSelection, lepton_selection)
   if lepton_selection.find("Fakeable") != -1:
     if lepton_frWeight == "enabled":
       histogramDir += "_wFakeRateWeights"
@@ -23,12 +23,12 @@ def getHistogramDir(lepton_selection, lepton_frWeight, chargeSumSelection):
       histogramDir += "_woFakeRateWeights"
   return histogramDir
 
-class analyzeConfig_3l(analyzeConfig):
+class analyzeConfig_4l(analyzeConfig):
   """Configuration metadata needed to run analysis in a single go.
 
   Sets up a folder structure by defining full path names; no directory creation is delegated here.
 
-  Args specific to analyzeConfig_3l:
+  Args specific to analyzeConfig_4l:
     lepton_selection: either `Tight`, `Loose` or `Fakeable`
 
   See $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/python/analyzeConfig.py
@@ -36,12 +36,12 @@ class analyzeConfig_3l(analyzeConfig):
 
   """
   def __init__(self, configDir, outputDir, executable_analyze, cfgFile_analyze, samples, changeBranchNames,
-               MEMbranch, hadTauVeto_selection, applyFakeRateWeights, chargeSumSelections, central_or_shifts,
+               applyFakeRateWeights, chargeSumSelections, central_or_shifts,
                max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,
                executable_addBackgrounds, executable_addBackgroundJetToTauFakes, histograms_to_fit, select_rle_output = False,
                executable_prep_dcard="prepareDatacards", executable_add_syst_dcard = "addSystDatacards",
                select_root_output = False, do_sync = False, verbose = False, dry_run = False):
-    analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "3l", central_or_shifts,
+    analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "4l", central_or_shifts,
       max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,
       histograms_to_fit,
       executable_prep_dcard = executable_prep_dcard,
@@ -53,20 +53,18 @@ class analyzeConfig_3l(analyzeConfig):
 
     self.samples = samples
     self.changeBranchNames = changeBranchNames
-    self.MEMbranch = MEMbranch
 
     ##self.lepton_selections = [ "Tight", "Fakeable", "Fakeable_mcClosure" ]
     self.lepton_selections = [ "Tight", "Fakeable" ]
     self.lepton_frWeights = [ "enabled", "disabled" ]
-    self.hadTauVeto_selection_part2 = hadTauVeto_selection
     self.applyFakeRateWeights = applyFakeRateWeights
 
-    self.lepton_genMatches = [ "3l0j", "2l1j", "1l2j", "0l3j" ]
+    self.lepton_genMatches = [ "4l0j", "3l1j", "2l2j", "1l3j", "0l4j" ]
 
     self.apply_leptonGenMatching = None
     self.lepton_genMatches_nonfakes = []
     self.lepton_genMatches_fakes = []
-    if applyFakeRateWeights == "3lepton":
+    if applyFakeRateWeights == "4lepton":
       self.apply_leptonGenMatching = True
       for lepton_genMatch in self.lepton_genMatches:
         if lepton_genMatch.endswith("0j"):
@@ -85,11 +83,11 @@ class analyzeConfig_3l(analyzeConfig):
 
     self.cfgFile_analyze = os.path.join(self.template_dir, cfgFile_analyze)
     self.prep_dcard_processesToCopy = [ "data_obs" ] + self.nonfake_backgrounds + [ "fakes_data", "fakes_mc" ]
-    self.histogramDir_prep_dcard = "3l_OS_Tight"
-    self.histogramDir_prep_dcard_SS = "3l_SS_Tight"
+    self.histogramDir_prep_dcard = "4l_OS_Tight"
+    self.histogramDir_prep_dcard_SS = "4l_SS_Tight"
     self.make_plots_backgrounds = [ "TTW", "TTZ", "EWK", "Rares", "fakes_data" ]
-    self.cfgFile_make_plots = os.path.join(self.template_dir, "makePlots_3l_cfg.py")
-    self.cfgFile_make_plots_mcClosure = os.path.join(self.template_dir, "makePlots_mcClosure_3l_cfg.py")
+    self.cfgFile_make_plots = os.path.join(self.template_dir, "makePlots_4l_cfg.py")
+    self.cfgFile_make_plots_mcClosure = os.path.join(self.template_dir, "makePlots_mcClosure_4l_cfg.py")
 
     self.select_rle_output = select_rle_output
     self.select_root_output = select_root_output
@@ -105,7 +103,7 @@ class analyzeConfig_3l(analyzeConfig):
     self.isBDTtraining     = True
 
   def createCfg_analyze(self, jobOptions):
-    """Create python configuration file for the analyze_3l executable (analysis code)
+    """Create python configuration file for the analyze_4l executable (analysis code)
 
     Args:
       inputFiles: list of input files (Ntuples)
@@ -113,75 +111,65 @@ class analyzeConfig_3l(analyzeConfig):
       process: either `TT`, `TTW`, `TTZ`, `EWK`, `Rares`, `data_obs`, `ttH_hww`, `ttH_hzz` or `ttH_htt`
       is_mc: flag indicating whether job runs on MC (True) or data (False)
       lumi_scale: event weight (= xsection * luminosity / number of events)
-      central_or_shift: either 'central' or one of the systematic uncertainties defined in $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/bin/analyze_3l.cc
+      central_or_shift: either 'central' or one of the systematic uncertainties defined in $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/bin/analyze_4l.cc
     """
     lines = []
     ##lines.append("process.fwliteInput.fileNames = cms.vstring(%s)" % [ os.path.basename(inputFile) for inputFile in jobOptions['ntupleFiles'] ])
     lines.append("process.fwliteInput.fileNames = cms.vstring(%s)" % jobOptions['ntupleFiles'])
     lines.append("process.fwliteOutput.fileName = cms.string('%s')" % os.path.basename(jobOptions['histogramFile']))
-    lines.append("process.analyze_3l.process = cms.string('%s')" % jobOptions['sample_category'])
+    lines.append("process.analyze_4l.process = cms.string('%s')" % jobOptions['sample_category'])
     lepton_frWeight = None
     if jobOptions['applyFakeRateWeights'] == "disabled":
       lepton_frWeight = "disabled"
     else:
       lepton_frWeight = "enabled"
     histogramDir = getHistogramDir(jobOptions['lepton_selection'], lepton_frWeight, jobOptions['chargeSumSelection'])
-    lines.append("process.analyze_3l.histogramDir = cms.string('%s')" % histogramDir)
-    lines.append("process.analyze_3l.era = cms.string('%s')" % self.era)
-    lines.append("process.analyze_3l.triggers_1e = cms.vstring(%s)" % self.triggers_1e)
-    lines.append("process.analyze_3l.use_triggers_1e = cms.bool(%s)" % ("1e" in jobOptions['triggers']))
-    lines.append("process.analyze_3l.triggers_1mu = cms.vstring(%s)" % self.triggers_1mu)
-    lines.append("process.analyze_3l.use_triggers_1mu = cms.bool(%s)" % ("1mu" in jobOptions['triggers']))
-    lines.append("process.analyze_3l.triggers_2e = cms.vstring(%s)" % self.triggers_2e)
-    lines.append("process.analyze_3l.use_triggers_2e = cms.bool(%s)" % ("2e" in jobOptions['triggers']))
-    lines.append("process.analyze_3l.triggers_1e1mu = cms.vstring(%s)" % self.triggers_1e1mu)
-    lines.append("process.analyze_3l.use_triggers_1e1mu = cms.bool(%s)" % ("1e1mu" in jobOptions['triggers']))
-    lines.append("process.analyze_3l.triggers_2mu = cms.vstring(%s)" % self.triggers_2mu)
-    lines.append("process.analyze_3l.use_triggers_2mu = cms.bool(%s)" % ("2mu" in jobOptions['triggers']))
-    lines.append("process.analyze_3l.triggers_3e = cms.vstring(%s)" % self.triggers_3e)
-    lines.append("process.analyze_3l.use_triggers_3e = cms.bool(%s)" % ("3e" in jobOptions['triggers']))
-    lines.append("process.analyze_3l.triggers_2e1mu = cms.vstring(%s)" % self.triggers_2e1mu)
-    lines.append("process.analyze_3l.use_triggers_2e1mu = cms.bool(%s)" % ("2e1mu" in jobOptions['triggers']))
-    lines.append("process.analyze_3l.triggers_1e2mu = cms.vstring(%s)" % self.triggers_1e2mu)
-    lines.append("process.analyze_3l.use_triggers_1e2mu = cms.bool(%s)" % ("1e2mu" in jobOptions['triggers']))
-    lines.append("process.analyze_3l.triggers_3mu = cms.vstring(%s)" % self.triggers_3mu)
-    lines.append("process.analyze_3l.use_triggers_3mu = cms.bool(%s)" % ("3mu" in jobOptions['triggers']))
-    lines.append("process.analyze_3l.leptonSelection = cms.string('%s')" % jobOptions['lepton_selection'])
-    lines.append("process.analyze_3l.apply_leptonGenMatching = cms.bool(%s)" % (jobOptions['apply_leptonGenMatching'] and jobOptions['is_mc']))
-    lines.append("process.analyze_3l.apply_leptonGenMatching_ttZ_workaround = cms.bool(%s)" % (jobOptions['sample_category'] in [ "TTZ", "TTW", "signal" ]))
-    lines.append("process.analyze_3l.hadTauSelection = cms.string('%s')" % jobOptions['hadTauVeto_selection'])
-    lines.append("process.analyze_3l.applyFakeRateWeights = cms.string('%s')" % jobOptions['applyFakeRateWeights'])
-    lines.append("process.analyze_3l.chargeSumSelection = cms.string('%s')" % jobOptions['chargeSumSelection'])
-    lines.append("process.analyze_3l.use_HIP_mitigation_mediumMuonId = cms.bool(%s)" % jobOptions['use_HIP_mitigation_mediumMuonId'])
-    lines.append("process.analyze_3l.isMC = cms.bool(%s)" % jobOptions['is_mc'])
-    lines.append("process.analyze_3l.central_or_shift = cms.string('%s')" % jobOptions['central_or_shift'])
-    lines.append("process.analyze_3l.lumiScale = cms.double(%f)" % jobOptions['lumi_scale'])
-    lines.append("process.analyze_3l.apply_genWeight = cms.bool(%s)" % jobOptions['apply_genWeight'])
-    lines.append("process.analyze_3l.apply_trigger_bits = cms.bool(%s)" % jobOptions['apply_trigger_bits'])
-    lines.append("process.analyze_3l.selEventsFileName_output = cms.string('%s')" % jobOptions['rleOutputFile'])
-    lines.append("process.analyze_3l.selEventsTFileName = cms.string('%s')" % jobOptions['rootOutputFile'])
-    lines.append("process.analyze_3l.selectBDT = cms.bool(%s)" % str(jobOptions['selectBDT']))
+    lines.append("process.analyze_4l.histogramDir = cms.string('%s')" % histogramDir)
+    lines.append("process.analyze_4l.era = cms.string('%s')" % self.era)
+    lines.append("process.analyze_4l.triggers_1e = cms.vstring(%s)" % self.triggers_1e)
+    lines.append("process.analyze_4l.use_triggers_1e = cms.bool(%s)" % ("1e" in jobOptions['triggers']))
+    lines.append("process.analyze_4l.triggers_1mu = cms.vstring(%s)" % self.triggers_1mu)
+    lines.append("process.analyze_4l.use_triggers_1mu = cms.bool(%s)" % ("1mu" in jobOptions['triggers']))
+    lines.append("process.analyze_4l.triggers_2e = cms.vstring(%s)" % self.triggers_2e)
+    lines.append("process.analyze_4l.use_triggers_2e = cms.bool(%s)" % ("2e" in jobOptions['triggers']))
+    lines.append("process.analyze_4l.triggers_1e1mu = cms.vstring(%s)" % self.triggers_1e1mu)
+    lines.append("process.analyze_4l.use_triggers_1e1mu = cms.bool(%s)" % ("1e1mu" in jobOptions['triggers']))
+    lines.append("process.analyze_4l.triggers_2mu = cms.vstring(%s)" % self.triggers_2mu)
+    lines.append("process.analyze_4l.use_triggers_2mu = cms.bool(%s)" % ("2mu" in jobOptions['triggers']))
+    lines.append("process.analyze_4l.triggers_3e = cms.vstring(%s)" % self.triggers_3e)
+    lines.append("process.analyze_4l.use_triggers_3e = cms.bool(%s)" % ("3e" in jobOptions['triggers']))
+    lines.append("process.analyze_4l.triggers_2e1mu = cms.vstring(%s)" % self.triggers_2e1mu)
+    lines.append("process.analyze_4l.use_triggers_2e1mu = cms.bool(%s)" % ("2e1mu" in jobOptions['triggers']))
+    lines.append("process.analyze_4l.triggers_1e2mu = cms.vstring(%s)" % self.triggers_1e2mu)
+    lines.append("process.analyze_4l.use_triggers_1e2mu = cms.bool(%s)" % ("1e2mu" in jobOptions['triggers']))
+    lines.append("process.analyze_4l.triggers_3mu = cms.vstring(%s)" % self.triggers_3mu)
+    lines.append("process.analyze_4l.use_triggers_3mu = cms.bool(%s)" % ("3mu" in jobOptions['triggers']))
+    lines.append("process.analyze_4l.leptonSelection = cms.string('%s')" % jobOptions['lepton_selection'])
+    lines.append("process.analyze_4l.apply_leptonGenMatching = cms.bool(%s)" % (jobOptions['apply_leptonGenMatching'] and jobOptions['is_mc']))
+    lines.append("process.analyze_4l.apply_leptonGenMatching_ttZ_workaround = cms.bool(%s)" % (jobOptions['sample_category'] in [ "TTZ", "TTW", "signal" ]))
+    lines.append("process.analyze_4l.applyFakeRateWeights = cms.string('%s')" % jobOptions['applyFakeRateWeights'])
+    lines.append("process.analyze_4l.chargeSumSelection = cms.string('%s')" % jobOptions['chargeSumSelection'])
+    lines.append("process.analyze_4l.use_HIP_mitigation_mediumMuonId = cms.bool(%s)" % jobOptions['use_HIP_mitigation_mediumMuonId'])
+    lines.append("process.analyze_4l.isMC = cms.bool(%s)" % jobOptions['is_mc'])
+    lines.append("process.analyze_4l.central_or_shift = cms.string('%s')" % jobOptions['central_or_shift'])
+    lines.append("process.analyze_4l.lumiScale = cms.double(%f)" % jobOptions['lumi_scale'])
+    lines.append("process.analyze_4l.apply_genWeight = cms.bool(%s)" % jobOptions['apply_genWeight'])
+    lines.append("process.analyze_4l.apply_trigger_bits = cms.bool(%s)" % jobOptions['apply_trigger_bits'])
+    lines.append("process.analyze_4l.selEventsFileName_output = cms.string('%s')" % jobOptions['rleOutputFile'])
+    lines.append("process.analyze_4l.selEventsTFileName = cms.string('%s')" % jobOptions['rootOutputFile'])
+    lines.append("process.analyze_4l.selectBDT = cms.bool(%s)" % str(jobOptions['selectBDT']))
     if jobOptions['changeBranchNames']:
-      lines.append("process.analyze_3l.branchName_electrons = cms.string('Electron')")
-      lines.append("process.analyze_3l.branchName_muons = cms.string('Muon')")
-      lines.append("process.analyze_3l.branchName_hadTaus = cms.string('Tau')")
-      lines.append("process.analyze_3l.branchName_genLeptons1 = cms.string('GenLep')")
-      lines.append("process.analyze_3l.branchName_genLeptons2 = cms.string('')")
-      lines.append("process.analyze_3l.branchName_genHadTaus = cms.string('GenVisTau')")
-      lines.append("process.analyze_3l.branchName_genJets = cms.string('GenJet')")
-      lines.append("process.analyze_3l.redoGenMatching = cms.bool(False)")
-      lines.append("process.analyze_3l.fillGenEvtHistograms = cms.bool(True)")
-    if jobOptions['MEMbranch']:
-      lines.append(
-        "process.analyze_3l.branchName_memOutput = cms.string('%s_%s')" % (
-          jobOptions['MEMbranch'],
-          'central',
-#          self.get_addMEM_systematics(jobOptions['central_or_shift'])
-        )
-      )
+      lines.append("process.analyze_4l.branchName_electrons = cms.string('Electron')")
+      lines.append("process.analyze_4l.branchName_muons = cms.string('Muon')")
+      lines.append("process.analyze_4l.branchName_genLeptons1 = cms.string('GenLep')")
+      lines.append("process.analyze_4l.branchName_genLeptons2 = cms.string('')")
+      lines.append("process.analyze_4l.branchName_genHadTaus = cms.string('GenVisTau')")
+      lines.append("process.analyze_4l.branchName_genJets = cms.string('GenJet')")
+      lines.append("process.analyze_4l.redoGenMatching = cms.bool(False)")
+      lines.append("process.analyze_4l.fillGenEvtHistograms = cms.bool(True)")
     if self.do_sync:
-      lines.append("process.analyze_3l.syncNtuple.tree   = cms.string('%s')" % jobOptions['syncTree'])
-      lines.append("process.analyze_3l.syncNtuple.output = cms.string('%s')" % os.path.basename(jobOptions['syncOutput']))
+      lines.append("process.analyze_4l.syncNtuple.tree   = cms.string('%s')" % jobOptions['syncTree'])
+      lines.append("process.analyze_4l.syncNtuple.output = cms.string('%s')" % os.path.basename(jobOptions['syncOutput']))
     create_cfg(self.cfgFile_analyze, jobOptions['cfgFile_modified'], lines)
 
   def createCfg_makePlots_mcClosure(self, jobOptions):
@@ -250,8 +238,6 @@ class analyzeConfig_3l(analyzeConfig):
       inputFileLists[sample_name] = generateInputFileList(sample_name, sample_info, self.max_files_per_job, self.debug)
 
     for lepton_selection in self.lepton_selections:
-      hadTauVeto_selection = "Tight"
-      hadTauVeto_selection = "|".join([ hadTauVeto_selection, self.hadTauVeto_selection_part2 ])
       
       if lepton_selection == "forBDTtraining":
         lepton_selection = "Loose" # "Tight" ## "Fakeable" ## Xanda
@@ -345,7 +331,6 @@ class analyzeConfig_3l(analyzeConfig):
                   'triggers' : sample_info["triggers"],
                   'lepton_selection' : lepton_selection,
                   'apply_leptonGenMatching' : self.apply_leptonGenMatching,
-                  'hadTauVeto_selection' : hadTauVeto_selection,
                   'chargeSumSelection' : chargeSumSelection,
                   'applyFakeRateWeights' : self.applyFakeRateWeights if not lepton_selection == "Tight" else "disabled",
                   ##'use_HIP_mitigation_mediumMuonId' : sample_info["use_HIP_mitigation_mediumMuonId"],
@@ -357,7 +342,6 @@ class analyzeConfig_3l(analyzeConfig):
                   'apply_trigger_bits' : (is_mc and sample_info["reHLT"]) or not is_mc,
                   'selectBDT': self.isBDTtraining,
                   'changeBranchNames': self.changeBranchNames,
-                  'MEMbranch' : self.MEMbranch,
                   'syncOutput': syncOutput,
                   'syncTree'  : syncTree,
                 }
@@ -393,7 +377,7 @@ class analyzeConfig_3l(analyzeConfig):
                   outputFile = None
                   if genMatch_category == "nonfake":
                     # sum non-fake contributions for each MC sample separately
-                    # input processes: TT3l0j,...
+                    # input processes: TT4l0j,...
                     # output processes: TT; ...
                     if sample_category in [ "signal" ]:
                       lepton_genMatches = []
@@ -531,7 +515,7 @@ class analyzeConfig_3l(analyzeConfig):
     for chargeSumSelection in self.chargeSumSelections:
       key_addFakes_job = getKey("fakes_data", chargeSumSelection)
       key_hadd_stage1_5 = getKey(get_lepton_selection_and_frWeight("Fakeable", "enabled"), chargeSumSelection)
-      category_sideband = "3l_%s_Fakeable" % chargeSumSelection
+      category_sideband = "4l_%s_Fakeable" % chargeSumSelection
       self.jobOptions_addFakes[key_addFakes_job] = {
         'inputFile' : self.outputFile_hadd_stage1_5[key_hadd_stage1_5],
         'cfgFile_modified' : os.path.join(self.dirs[DKEY_CFGS], "addBackgroundLeptonFakes_%s_%s_cfg.py" % \
@@ -540,7 +524,7 @@ class analyzeConfig_3l(analyzeConfig):
           (self.channel, chargeSumSelection)),
         'logFile' : os.path.join(self.dirs[DKEY_LOGS], "addBackgroundLeptonFakes_%s_%s.log" % \
           (self.channel, chargeSumSelection)),
-        'category_signal' : "3l_%s_Tight" % chargeSumSelection,
+        'category_signal' : "4l_%s_Tight" % chargeSumSelection,
         'category_sideband' : category_sideband
       }
       self.createCfg_addFakes(self.jobOptions_addFakes[key_addFakes_job])

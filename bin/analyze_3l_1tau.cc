@@ -806,10 +806,10 @@ int main(int argc, char* argv[])
       //"memOutput_ttH_Hww"
       "lep1_genLepPt", "lep2_genLepPt", "lep3_genLepPt", "tau_genTauPt",
       "lep1_fake_prob", "lep2_fake_prob", "lep3_fake_prob", "tau_fake_prob",
-      "lep1_frWeight", "lep2_frWeight",  "lep3_frWeight",  "tau_frWeight",
+      "lep1_frWeight", "lep2_frWeight", "lep3_frWeight", "tau_frWeight",
       "mvaOutput_3l_ttV", "mvaOutput_3l_ttbar", "mvaDiscr_3l",
-      "mbb_loose","mbb_medium",
-      "dr_tau_los1", "dr_tau_los2",  "dr_tau_lss", "dr_lss", "dr_los1", "dr_los2"
+      "mbb_loose", "mbb_medium",
+      "dr_tau_los1", "dr_tau_los2", "dr_tau_lss", "dr_lss", "dr_los1", "dr_los2"
     );
     bdt_filler -> register_variable<int_type>(
       "nJet", "nBJetLoose", "nBJetMedium", "lep1_isTight", "lep2_isTight", "lep3_isTight", "tau_isTight"
@@ -1548,7 +1548,7 @@ int main(int argc, char* argv[])
     if ( !((int)selJets.size() >= minNumJets) ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS selJets selection." << std::endl;
-  printCollection("selJets", selJets);
+	printCollection("selJets", selJets);
       }
       continue;
     }
@@ -1557,9 +1557,9 @@ int main(int argc, char* argv[])
     if ( !(selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1)) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS selBJets selection." << std::endl;
-  printCollection("selJets", selJets);
-  printCollection("selBJets_loose", selBJets_loose);
-  printCollection("selBJets_medium", selBJets_medium);
+	printCollection("selJets", selJets);
+	printCollection("selBJets_loose", selBJets_loose);
+	printCollection("selBJets_medium", selBJets_medium);
       }
       continue;
     }
@@ -1568,7 +1568,7 @@ int main(int argc, char* argv[])
     if ( !(selHadTaus.size() >= 1) ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS selHadTaus selection." << std::endl;
-  printCollection("selHadTaus", selHadTaus);
+	printCollection("selHadTaus", selHadTaus);
       }
       continue;
     }

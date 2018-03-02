@@ -810,7 +810,7 @@ int main(int argc, char* argv[])
     ">= 2 loose b-jets || 1 medium b-jet (2)",
     "sel tau veto",
     "m(ll) > 12 GeV",
-    "lead lepton pT > 25 GeV && sublead lepton pT > 15(e)/10(mu) GeV",
+    "lead lepton pT > 25 GeV && sublead lepton pT > 15 GeV",
     "tight lepton charge",
     "sel lepton-pair OS/SS charge",
     "Z-boson mass veto",
@@ -1515,8 +1515,12 @@ int main(int argc, char* argv[])
     double minPt_lead = -1.;
     if ( era == kEra_2017 ) minPt_lead = 25.; // CV: increase minimum lepton pT cut to 25 GeV to keep-up with higher trigger thresholds in 2016 data
     else assert(0);
-    double minPt_sublead = selLepton_sublead->is_electron() ? 15. : 10.;
-    if ( !(selLepton_lead->pt() > minPt_lead && selLepton_sublead->pt() > minPt_sublead) ) {
+    double minPt_sublead = 15.;
+    // CV: according to Giovanni, the pT cuts should be applied on cone_pt
+    //    (combined efficiency of single lepton and double lepton triggers assumed to be high,
+    //     even if one or two leptons and fakes and hence cone_pt may be significantly smaller than lepton_pt,
+    //     on which pT cuts are applied on trigger level)
+    if ( !(selLepton_lead->cone_pt() > minPt_lead && selLepton_sublead->cone_pt() > minPt_sublead) ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS lepton pT selection." << std::endl;
 	std::cout << " (leading selLepton pT = " << selLepton_lead->pt() << ", minPt_lead = " << minPt_lead
@@ -1524,8 +1528,8 @@ int main(int argc, char* argv[])
       }
       continue;
     }
-    cutFlowTable.update("lead lepton pT > 25 GeV && sublead lepton pT > 15(e)/10(mu) GeV", evtWeight);
-    cutFlowHistManager->fillHistograms("lead lepton pT > 25 GeV && sublead lepton pT > 15(e)/10(mu) GeV", evtWeight);
+    cutFlowTable.update("lead lepton pT > 25 GeV && sublead lepton pT > 15 GeV", evtWeight);
+    cutFlowHistManager->fillHistograms("lead lepton pT > 25 GeV && sublead lepton pT > 15 GeV", evtWeight);
 
     bool failsTightChargeCut = false;
     for ( std::vector<const RecoLepton*>::const_iterator lepton = selLeptons.begin();
