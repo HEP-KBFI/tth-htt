@@ -265,7 +265,7 @@ std::ostream &
 operator<<(std::ostream & stream,
            const RecoLepton & lepton)
 {
-  stream << static_cast<const GenLepton &>(lepton)                  << "\n,"
+  stream << static_cast<const GenLepton &>(lepton)                  << ",\n"
             " cone_pT = "            << lepton.cone_pt()            << ","
             " dxy = "                << lepton.dxy()                << ","
             " dz = "                 << lepton.dz()                 << ",\n"
