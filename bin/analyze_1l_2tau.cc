@@ -2162,10 +2162,10 @@ int main(int argc, char* argv[])
       // MVA_3l1tau_ttV not filled
       // MVA_3l1tau_2Dbin not filled
 
-      snm->read(1.,                                     FloatVariableType::FR_weight);
-      snm->read(1.,                                     FloatVariableType::triggerSF_weight);
-      snm->read(1.,                                     FloatVariableType::leptonSF_weight);
-      snm->read(1.,                                     FloatVariableType::tauSF_weight);
+      snm->read(weight_fakeRate,                        FloatVariableType::FR_weight);
+      snm->read(triggerWeight,                          FloatVariableType::triggerSF_weight);
+      snm->read(weight_leptonEff,                       FloatVariableType::leptonSF_weight);
+      snm->read(weight_hadTauEff,                       FloatVariableType::tauSF_weight);
       snm->read(btagWeight,                             FloatVariableType::bTagSF_weight);
       snm->read(eventInfo.pileupWeight,                 FloatVariableType::PU_weight);
       snm->read(boost::math::sign(eventInfo.genWeight), FloatVariableType::MC_weight);
