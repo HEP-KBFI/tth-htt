@@ -163,8 +163,6 @@ int main(int argc,
   const std::string branchName_maxPermutations_addMEM = get_memPermutationBranchName(
     "3l_1tau", leptonSelection_string, hadTauSelection_part1, hadTauSelection_part2
   );
-  Int_t maxPermutations_addMEM_3l_1tau;
-  inputTree->SetBranchAddress(branchName_maxPermutations_addMEM.c_str(), &maxPermutations_addMEM_3l_1tau);
 
 //--- declare particle collections
   RecoMuonReader* muonReader = new RecoMuonReader(era, branchName_muons, readGenObjects);
@@ -279,12 +277,17 @@ int main(int argc,
       Form("drop n%s*", branchName_jets.data()),
       Form("drop %s_*", branchName_jets.data()),
       Form("drop *%s*", branchName_met.data()),
-//      Form("drop %s",   get_memPermutationBranchName("*", "*", "*", "*").c_str()),
     };
     std::vector<outputCommandEntry> outputCommands = getOutputCommands(outputCommands_string);
     std::map<std::string, bool>     isBranchToKeep = getBranchesToKeep(inputTree, outputCommands);
     copyBranches_singleType(inputTree, outputTree, isBranchToKeep, branchesToKeep);
     copyBranches_vectorType(inputTree, outputTree, isBranchToKeep, branchesToKeep);
+  }
+
+  if(! branchesToKeep.count(branchName_maxPermutations_addMEM))
+  {
+    throw cmsException(__func__, __LINE__)
+      << "No such branch: " << branchName_maxPermutations_addMEM;
   }
 
   const std::string branchName_memOutput = get_memObjectBranchName(
@@ -419,6 +422,11 @@ int main(int argc,
     } // copy_all_branches
 
 //--- compute MEM values
+    const Int_t maxPermutations_addMEM_3l_1tau = branchesToKeep.at(branchName_maxPermutations_addMEM)->getValue_int();
+    if(isDEBUG)
+    {
+      std::cout << "Found " << maxPermutations_addMEM_3l_1tau << " possible combination(s) to compute MEM\n";
+    }
     if(maxPermutations_addMEM_3l_1tau >= 1)
     {
       const std::vector<const RecoLepton*> selLeptons = mergeLeptonCollections(selElectrons, selMuons);
