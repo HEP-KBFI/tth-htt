@@ -176,7 +176,7 @@ int main(int argc, char* argv[])
   std::cout << "use_HIP_mitigation_mediumMuonId = " << use_HIP_mitigation_mediumMuonId << std::endl;
 
   bool isMC = cfg_produceNtuple.getParameter<bool>("isMC"); 
-  const bool isDEBUG = cfg_produceNtuple.exists("isDEBUG") ? cfg_produceNtuple.getParameter<bool>("isDEBUG") : false;
+  const bool isDEBUG = cfg_produceNtuple.getParameter<bool>("isDEBUG");
 
   std::string selEventsFileName_input = cfg_produceNtuple.getParameter<std::string>("selEventsFileName_input");
   std::cout << "selEventsFileName_input = " << selEventsFileName_input << std::endl;
