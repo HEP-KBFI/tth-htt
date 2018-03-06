@@ -55,10 +55,12 @@ meta_dictionary = OD()
 
 ### event sums
 
+{% if is_mc %}
 sum_events = { {% for sum_event_arr in sum_events %}
   ("{{ sum_event_arr|join('", "') }}"),
 {%- endfor %}
 }
+{% endif %}
 
 
 '''
@@ -70,10 +72,10 @@ METADICT_TEMPLATE_DATA = '''meta_dictionary["{{ dataset_name }}"] =  OD([
   ("nof_db_events",         {{ nof_db_events }}),
   ("nof_db_files",          {{ nof_db_files }}),
   ("fsize_db",              {{ fsize_db }}),
-  ("fsize_db_human",        "{{ fsize_db_human }}"),
   ("xsection",              None),
   ("use_it",                True),
   ("genWeight",             False),
+  ("comment",               {{ comment }}),
 ])
 
 '''
@@ -93,7 +95,7 @@ METADICT_TEMPLATE_MC = '''meta_dictionary["{{ dataset_name }}"] =  OD([
 
 '''
 
-DATA_SAMPLES = [
+DATA_SAMPLES_ALL = [
   'SingleElectron',
   'SingleMuon',
   'DoubleEG',
@@ -101,21 +103,17 @@ DATA_SAMPLES = [
   'MuonEG',
   'Tau',
 ]
+DATA_SAMPLES_DEFAULT = [ data_sample for data_sample in DATA_SAMPLES_ALL if data_sample != 'Tau' ]
+
 DATA_TIER     = 'MINIAOD'
 MC_TIER       = '%sSIM' % DATA_TIER
 AQC_KEY       = 'cat'
 PDS_KEY       = 'data'
-DATA_GREP_STR = '\\|'.join(map(lambda sample: '^/%s/' % sample, DATA_SAMPLES))
-DATA_PIPED    = '|'.join(DATA_SAMPLES)
+
 DASGOCLIENT_QUERY_COMMON     = "dasgoclient -query='        dataset=%s          | grep dataset.%s' -unique | grep -v '^\\['"
 DASGOCLIENT_QUERY_ANY_STATUS = "dasgoclient -query='dataset dataset=%s status=* | grep dataset.%s' -unique | grep -v '^\\['"
 DASGOCLIENT_QUERY_RELEASE    = "dasgoclient -query='release dataset=%s' -unique"
-MAX_DATA_SAMPLE_LEN          = max(map(len, DATA_SAMPLES))
 
-DATA_QUERY = "dasgoclient -query='dataset dataset=/*/*%s*/{data_tier}' | grep '{data_str}' | sort".format(
-  data_tier = DATA_TIER,
-  data_str  = DATA_GREP_STR,
-)
 MC_REGEX = re.compile(r'/[\w\d_-]+/[\w\d_-]+/%s' % MC_TIER)
 
 def convert_date(date):
@@ -155,7 +153,7 @@ def run_cmd(cmd_str, return_stderr = True):
 if __name__ == '__main__':
 
   parser = argparse.ArgumentParser(
-    formatter_class = lambda prog: SmartFormatter(prog, max_help_position = 45)
+    formatter_class = lambda prog: SmartFormatter(prog, max_help_position = 55)
   )
   parser.add_argument('-i', '--input',
     type = str, dest = 'input', metavar = 'path', required = False,
@@ -172,6 +170,12 @@ if __name__ == '__main__':
   parser.add_argument('-r', '--run',
     type = str, dest = 'run', metavar = 'run', default = '2017', required = False,
     help = 'R|Data collection period',
+  )
+  parser.add_argument('-p', '--primary-datasets',
+    type = str, nargs = '+', dest = 'primary_datasets', metavar = 'PD', choices = DATA_SAMPLES_ALL,
+    default = DATA_SAMPLES_DEFAULT, required = False,
+    help = 'R|List of PDs to be considered (choices: %s)' % \
+           (', '.join(map(lambda choice: "'%s'" % choice, DATA_SAMPLES_ALL))),
   )
   parser.add_argument('-v', '--cmssw-version',
     type = str, dest = 'version', metavar = 'version', default = '9_4_0', required = False,
@@ -203,6 +207,15 @@ if __name__ == '__main__':
   required_cmssw_version_str = args.version
   required_cmssw_version = Version(required_cmssw_version_str)
   verbose = args.verbose
+
+  primary_datasets = args.primary_datasets
+  DATA_GREP_STR = '\\|'.join(map(lambda sample: '^/%s/' % sample, primary_datasets))
+  DATA_PIPED = '|'.join(primary_datasets)
+  MAX_DATA_SAMPLE_LEN = max(map(len, primary_datasets))
+  DATA_QUERY = "dasgoclient -query='dataset dataset=/*/*%s*/{data_tier}' | grep '{data_str}' | sort".format(
+    data_tier = DATA_TIER,
+    data_str  = DATA_GREP_STR,
+  )
 
   if mc_input:
     if not os.path.isfile(mc_input):
@@ -349,6 +362,7 @@ if __name__ == '__main__':
         command    = ' '.join([os.path.basename(__file__)] + sys.argv[1:]),
         date       = '{date:%Y-%m-%d %H:%M:%S}'.format(date = datetime.datetime.now()),
         sum_events = sum_events_flattened,
+        is_mc      = True,
       ))
       f.write('\n'.join(meta_dictionary_entries))
       f.write('\n')
@@ -359,7 +373,7 @@ if __name__ == '__main__':
     data_query_out, data_query_err = run_cmd(data_query_str)
 
     data_samples_list = data_query_out.rstrip('\n').split('\n')
-    data_samples_aggr = {data_sample : {} for data_sample in DATA_SAMPLES}
+    data_samples_aggr = {data_sample : {} for data_sample in primary_datasets}
 
     collection_regex = re.compile(r'/(?P<%s>\b(%s)\b)/%s(?P<%s>[A-Z]{1}).+/%s' % \
                                   (PDS_KEY, DATA_PIPED, era, AQC_KEY, DATA_TIER))
@@ -372,7 +386,7 @@ if __name__ == '__main__':
 
       if primary_dataset not in data_samples_aggr:
         raise ValueError(
-          "Data sample '%s' not in any of those: " % (primary_dataset, ', '.join(DATA_SAMPLES))
+          "Data sample '%s' not in any of those: " % (primary_dataset, ', '.join(primary_datasets))
         )
       if aqcuisition_period not in data_samples_aggr[primary_dataset]:
         data_samples_aggr[primary_dataset][aqcuisition_period] = []
@@ -386,7 +400,7 @@ if __name__ == '__main__':
 
     das_keys = collections.OrderedDict([
       ('name',                   {'colname' : 'Name',            'func' : id_}),
-      ('status',                 {'colname' : 'Status',          'func' : id_}),
+      ('dataset_access_type',    {'colname' : 'Status',          'func' : id_}),
       ('acquisition_era_name',   {'colname' : 'Acq. era name',   'func' : id_}),
       ('primary_ds_name',        {'colname' : 'Primary DS name', 'func' : id_}),
       ('primary_ds_type',        {'colname' : 'Primary DS type', 'func' : id_}),
@@ -400,7 +414,7 @@ if __name__ == '__main__':
     ])
 
     data_sample_selection = {}
-    for data_sample in DATA_SAMPLES:
+    for data_sample in primary_datasets:
       if data_sample not in data_samples_aggr:
         continue
       if data_sample not in data_sample_selection:
@@ -422,7 +436,7 @@ if __name__ == '__main__':
             das_parser = das_keys[das_key]['func']
             das_query_results[dataset][das_key] = das_parser(dasgoclient_query_out.rstrip('\n')).strip()
 
-          if das_query_results[dataset]['status'] != 'VALID':
+          if das_query_results[dataset]['dataset_access_type'] != 'VALID':
             del das_query_results[dataset]
 
         col_widths = {
@@ -494,7 +508,7 @@ if __name__ == '__main__':
 
     print("%s\nSummary:" % ('-' * 120))
     meta_dictionary_entries, dataset_list = [], []
-    for dataset in DATA_SAMPLES:
+    for dataset in primary_datasets:
       if dataset not in data_sample_selection:
         continue
 
@@ -508,14 +522,23 @@ if __name__ == '__main__':
             nof_db_events         = selection['nevents'],
             nof_db_files          = selection['nfiles'],
             fsize_db              = selection['size'],
-            fsize_db_human        = human_size(selection['size']),
+            comment               = "status: %s; size: %s; nevents: %s; release: %s; last modified: %s" % (
+              selection['dataset_access_type'],
+              human_size(selection['size']),
+              human_size(selection['nevents'], use_si = True, byte_suffix = ''),
+              selection['release'],
+              selection['last_modification_date'],
+            ),
           ))
           dataset_list.append(selection['name'])
         else:
           print('  %s, %s%s -> missing' % (dataset.rjust(MAX_DATA_SAMPLE_LEN), era, acquisition_era))
 
     with open(args.metadict, 'w+') as f:
-      f.write(jinja2.Template(METADICT_HEADER).render(command = ' '.join(sys.argv)))
+      f.write(jinja2.Template(METADICT_HEADER).render(
+        command = ' '.join([os.path.basename(__file__)] + sys.argv[1:]),
+        is_mc   = False,
+      ))
       f.write('\n'.join(meta_dictionary_entries))
       f.write('\n')
 
