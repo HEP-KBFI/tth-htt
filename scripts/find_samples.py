@@ -83,10 +83,10 @@ METADICT_TEMPLATE_MC = '''meta_dictionary["{{ dataset_name }}"] =  OD([
   ("nof_db_events",         {{ nof_db_events }}),
   ("nof_db_files",          {{ nof_db_files }}),
   ("fsize_db",              {{ fsize_db }}),
-  ("fsize_db_human",        "{{ fsize_db_human }}"),
   ("xsection",              {{ xs }}),
-  ("use_it",                True),
+  ("use_it",                {% if status != 'INVALID' %}True{% else %}False{% endif %}),
   ("genWeight",             True),
+  ("comment",               "{{ comment }}"),
 ])
 
 '''
@@ -118,14 +118,14 @@ MC_REGEX = re.compile(r'/[\w\d_-]+/[\w\d_-]+/%s' % MC_TIER)
 def convert_date(date):
   return datetime.datetime.fromtimestamp(int(date)).strftime('%Y-%m-%d %H:%M:%S')
 
-def human_size(fsize, use_si = True):
+def human_size(fsize, use_si = True, byte_suffix = 'B'):
   if use_si:
     multiplier = 1000.
     units = ['', 'k', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y']
   else:
     multiplier = 1024.
     units = ['', 'Ki', 'Mi', 'Gi', 'Ti', 'Pi', 'Ei', 'Zi', 'Yi']
-  units = list(map(lambda unit: '%sB' % unit, units))
+  units = list(map(lambda unit: '%s%s' % (unit, byte_suffix), units))
   fsize_int = int(fsize)
   unit_idx = min(int(math.log(fsize_int, multiplier)), len(units) - 1) if fsize_int else 0
   if unit_idx > 0:
@@ -300,10 +300,16 @@ if __name__ == '__main__':
         nof_db_events   = entry['nevents'],
         nof_db_files    = entry['nfiles'],
         fsize_db        = entry['size'],
-        fsize_db_human  = human_size(entry['size']),
         sample_category = entry['sample_category'],
         xs              = entry['xs'],
         specific_name   = entry['specific_name'],
+        status          = entry['dataset_access_type'],
+        comment         = "Status: %s; size: %s; nevents: %s; last modified: %s" % (
+          entry['dataset_access_type'],
+          human_size(entry['size']),
+          human_size(entry['nevents'], use_si = True, byte_suffix = ''),
+          entry['last_modification_date'],
+        ),
       ))
 
     with open(args.metadict, 'w+') as f:
