@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import subprocess, re, datetime, collections, jinja2, argparse, os.path, math, sys
+import subprocess, re, datetime, collections, jinja2, argparse, os.path, math, sys, _collections
 
 class SmartFormatter(argparse.ArgumentDefaultsHelpFormatter):
   def _split_lines(self, text, width):
@@ -220,7 +220,7 @@ if __name__ == '__main__':
       ('release',                {'colname' : 'CMSSW release',   'func' : convert_cmssw_versions}),
     ])
 
-    das_query_results = {}
+    das_query_results = collections.OrderedDict()
     with open(mc_input) as mc_file:
       for line in mc_file:
         line_stripped = line.rstrip('\n')
