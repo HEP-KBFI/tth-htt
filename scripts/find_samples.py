@@ -78,13 +78,13 @@ METADICT_TEMPLATE_DATA = '''meta_dictionary["{{ dataset_name }}"] =  OD([
 
 METADICT_TEMPLATE_MC = '''meta_dictionary["{{ dataset_name }}"] =  OD([
   ("crab_string",           ""),
-  ("sample_category",       ""),
-  ("process_name_specific", ""),
+  ("sample_category",       "{{ sample_category }}"),
+  ("process_name_specific", "{{ specific_name }}"),
   ("nof_db_events",         {{ nof_db_events }}),
   ("nof_db_files",          {{ nof_db_files }}),
   ("fsize_db",              {{ fsize_db }}),
   ("fsize_db_human",        "{{ fsize_db_human }}"),
-  ("xsection",              None),
+  ("xsection",              {{ xs }}),
   ("use_it",                True),
   ("genWeight",             True),
 ])
@@ -174,6 +174,10 @@ if __name__ == '__main__':
     type = str, dest = 'version', metavar = 'version', default = '9_4_0', required = False,
     help = 'R|Minimum required CMSSW version',
   )
+  parser.add_argument('-V', '--verbose',
+    dest = 'verbose', action = 'store_true', default = False, required = False,
+    help = 'R|Verbose output',
+  )
   args = parser.parse_args()
 
   has_dasgoclient = run_cmd('which dasgoclient 2>/dev/null | wc -l', False)
@@ -195,6 +199,7 @@ if __name__ == '__main__':
   mc_input = args.input
   required_cmssw_version_str = args.version
   required_cmssw_version = Version(required_cmssw_version_str)
+  verbose = args.verbose
 
   if mc_input:
     if not os.path.isfile(mc_input):
@@ -216,12 +221,34 @@ if __name__ == '__main__':
     with open(mc_input) as mc_file:
       for line in mc_file:
         line_stripped = line.rstrip('\n')
-        if not MC_REGEX.match(line_stripped):
-          raise ValueError("Warning: line '%s' does not correspond to proper DBS name" % line_stripped)
-        das_query_results[line_stripped] = {}
+        field_str = line_stripped.split('#')[0].strip()
+        if not field_str:
+          # probably a comment or an empty line
+          continue
+        fields = field_str.split()
+        if len(fields) != 4:
+          raise ValueError("Unparseable line in file %s: %s" % (line_stripped, mc_input))
+
+        das_name        = fields[0]
+        sample_category = fields[1]
+        specific_name   = fields[2]
+        xs              = float(fields[3]) # let it fail
+
+        if not MC_REGEX.match(das_name):
+          raise ValueError("Error: line '%s' does not correspond to proper DBS name" % das_name)
+        das_query_results[das_name] = {
+          'sample_category' : sample_category,
+          'specific_name'   : specific_name,
+          'xs'              : xs,
+        }
 
     for dataset in das_query_results:
-      for das_key in das_keys:
+      if verbose:
+        sys.stdout.write("Querying sample: %s;" % dataset)
+      for das_key_idx, das_key in enumerate(das_keys):
+        if verbose:
+          sys.stdout.write(" %s%s" % (das_key, (',' if das_key_idx != len(das_keys) - 1 else '\n')))
+          sys.stdout.flush()
         mc_query_str = DASGOCLIENT_QUERY_COMMON % (dataset, das_key) if das_key != 'release' \
                        else DASGOCLIENT_QUERY_RELEASE % dataset
         mc_query_out, mc_query_err = run_cmd(mc_query_str)
@@ -269,11 +296,14 @@ if __name__ == '__main__':
     for dataset in das_query_results:
       entry = das_query_results[dataset]
       meta_dictionary_entries.append(jinja2.Template(METADICT_TEMPLATE_MC).render(
-        dataset_name   = entry['name'],
-        nof_db_events  = entry['nevents'],
-        nof_db_files   = entry['nfiles'],
-        fsize_db       = entry['size'],
-        fsize_db_human = human_size(entry['size']),
+        dataset_name    = entry['name'],
+        nof_db_events   = entry['nevents'],
+        nof_db_files    = entry['nfiles'],
+        fsize_db        = entry['size'],
+        fsize_db_human  = human_size(entry['size']),
+        sample_category = entry['sample_category'],
+        xs              = entry['xs'],
+        specific_name   = entry['specific_name'],
       ))
 
     with open(args.metadict, 'w+') as f:
