@@ -48,16 +48,18 @@ class Version:
 
 METADICT_HEADER = '''from collections import OrderedDict as OD
 
-# file generated with the following command:
+# file generated at {{ date }} with the following command:
 # {{ command }}
 
 meta_dictionary = OD()
 
 ### event sums
 
-sum_events = {
-  #("", ""),
+sum_events = { {% for sum_event_arr in sum_events %}
+  ("{{ sum_event_arr|join('", "') }}"),
+{%- endfor %}
 }
+
 
 '''
 
@@ -84,7 +86,7 @@ METADICT_TEMPLATE_MC = '''meta_dictionary["{{ dataset_name }}"] =  OD([
   ("nof_db_files",          {{ nof_db_files }}),
   ("fsize_db",              {{ fsize_db }}),
   ("xsection",              {{ xs }}),
-  ("use_it",                {% if status != 'INVALID' %}True{% else %}False{% endif %}),
+  ("use_it",                {{ use_it }}),
   ("genWeight",             True),
   ("comment",               "{{ comment }}"),
 ])
@@ -242,9 +244,11 @@ if __name__ == '__main__':
           'xs'              : xs,
         }
 
-    for dataset in das_query_results:
+    for dataset_idx, dataset in enumerate(das_query_results):
       if verbose:
-        sys.stdout.write("Querying sample: %s;" % dataset)
+        sys.stdout.write(
+          "Querying sample (%d/%d): %s;" % (dataset_idx + 1, len(das_query_results), dataset)
+        )
       for das_key_idx, das_key in enumerate(das_keys):
         if verbose:
           sys.stdout.write(" %s%s" % (das_key, (',' if das_key_idx != len(das_keys) - 1 else '\n')))
@@ -303,17 +307,37 @@ if __name__ == '__main__':
         sample_category = entry['sample_category'],
         xs              = entry['xs'],
         specific_name   = entry['specific_name'],
-        status          = entry['dataset_access_type'],
-        comment         = "Status: %s; size: %s; nevents: %s; last modified: %s" % (
+        use_it          = entry['dataset_access_type'] != 'INVALID' and entry['release_pass'],
+        comment         = "status: %s; size: %s; nevents: %s; release: %s; last modified: %s" % (
           entry['dataset_access_type'],
           human_size(entry['size']),
           human_size(entry['nevents'], use_si = True, byte_suffix = ''),
+          entry['release'],
           entry['last_modification_date'],
         ),
       ))
 
+    sum_suffixes = ['_PSweights$', '_ext[1-9]{1}$']
+    specific_names = [ dataset_entry['specific_name'] for dataset_entry in das_query_results.values() ]
+    sum_events = {}
+    for specific_name_ref in specific_names:
+      for specific_name_test in specific_names:
+        for sum_suffix in sum_suffixes:
+          if re.match('^' + specific_name_ref + sum_suffix, specific_name_test):
+            if specific_name_ref not in sum_events:
+              sum_events[specific_name_ref] = []
+            sum_events[specific_name_ref].append(specific_name_test)
+    sum_events_flattened = [
+      [ specific_name_ref] + specific_name_tests \
+      for specific_name_ref, specific_name_tests in sum_events.items()
+    ]
+
     with open(args.metadict, 'w+') as f:
-      f.write(jinja2.Template(METADICT_HEADER).render(command = ' '.join(sys.argv)))
+      f.write(jinja2.Template(METADICT_HEADER).render(
+        command    = ' '.join([os.path.basename(__file__)] + sys.argv[1:]),
+        date       = '{date:%Y-%m-%d %H:%M:%S}'.format(date = datetime.datetime.now()),
+        sum_events = sum_events_flattened,
+      ))
       f.write('\n'.join(meta_dictionary_entries))
       f.write('\n')
 
