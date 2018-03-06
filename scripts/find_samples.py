@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import subprocess, re, datetime, collections, jinja2, argparse, os.path, math, sys, _collections
+import subprocess, re, datetime, collections, jinja2, argparse, os, math, sys, json, itertools, ast, copy
 
 class SmartFormatter(argparse.ArgumentDefaultsHelpFormatter):
   def _split_lines(self, text, width):
@@ -53,16 +53,16 @@ METADICT_HEADER = '''from collections import OrderedDict as OD
 
 meta_dictionary = OD()
 
+{% if is_mc %}
 ### event sums
 
-{% if is_mc %}
 sum_events = { {% for sum_event_arr in sum_events %}
   ("{{ sum_event_arr|join('", "') }}"),
 {%- endfor %}
 }
+
+
 {% endif %}
-
-
 '''
 
 METADICT_TEMPLATE_DATA = '''meta_dictionary["{{ dataset_name }}"] =  OD([
@@ -75,7 +75,9 @@ METADICT_TEMPLATE_DATA = '''meta_dictionary["{{ dataset_name }}"] =  OD([
   ("xsection",              None),
   ("use_it",                True),
   ("genWeight",             False),
-  ("comment",               {{ comment }}),
+  ("run_range",             {{ run_range }}),
+  ("golden_run_range",      {{ golden_run_range }}),
+  ("comment",               "{{ comment }}"),
 ])
 
 '''
@@ -113,6 +115,7 @@ PDS_KEY       = 'data'
 DASGOCLIENT_QUERY_COMMON     = "dasgoclient -query='        dataset=%s          | grep dataset.%s' -unique | grep -v '^\\['"
 DASGOCLIENT_QUERY_ANY_STATUS = "dasgoclient -query='dataset dataset=%s status=* | grep dataset.%s' -unique | grep -v '^\\['"
 DASGOCLIENT_QUERY_RELEASE    = "dasgoclient -query='release dataset=%s' -unique"
+DASGOCLIENT_QUERY_RUNLUMI    = "dasgoclient -query='run,lumi dataset=%s' -unique"
 
 MC_REGEX = re.compile(r'/[\w\d_-]+/[\w\d_-]+/%s' % MC_TIER)
 
@@ -150,6 +153,60 @@ def run_cmd(cmd_str, return_stderr = True):
     return stdout, stderr
   return stdout
 
+def get_golden_runlumi(lumimask_location):
+  with open(lumimask_location, 'r') as lumimask_file:
+    try:
+      golden_runlumi_json = json.load(lumimask_file)
+    except json.decoder.JSONDecodeError:
+      raise ValueError("File %s is not a JSON file" % lumimask_file)
+  if not golden_runlumi_json:
+    raise ValueError("No JSON-formatted infromation was loaded from %s" % lumimask_file)
+
+  golden_runlumi = collections.OrderedDict(
+    (
+      int(run),
+      list(itertools.chain(*[
+        # Expand the luminosity ranges
+        # For instance, if the luminosity ranges are
+        # [[1, 7], [40, 45]]
+        # then this is expanded and flattened into
+        # [1, 2, 3, 4, 5, 6, 7, 40, 41, 42, 43, 44, 45]
+        # We assume that both endpoints of the luminosity range are included
+        list(range(lumi_range[0], lumi_range[-1] + 1)) for lumi_range in lumi_ranges
+      ]))
+    ) for run, lumi_ranges in golden_runlumi_json.items()
+  )
+  return golden_runlumi
+
+def get_runlumi_data(runlumi_query_out):
+  lines = runlumi_query_out.rstrip('\n').split('\n')
+  lines_split = [ line.split() for line in lines ]
+  runlumi_data = collections.OrderedDict()
+  for line in lines_split:
+    run = int(line[0])
+    lumis = list(sorted(ast.literal_eval(line[1])))
+    runlumi_data[run] = lumis
+  return runlumi_data
+
+def get_data_golden(runlumi_data, golden_runlumi):
+  data_runs   = set(runlumi_data.keys())
+  golden_runs = set(golden_runlumi.keys())
+  common_runs = list(sorted(list(data_runs & golden_runs)))
+
+  # We want to check the intersection of each individual common run, because it might be the case
+  # that the first or last run do not have any common luminosity blocks and is therefore not
+  # part of the golden run. For instance, if a common run, say 304199 has golden range of [10, 18]
+  # and the PD also contains run 304199 but only the luminosity blocks [2, 5], then this run should
+  # be excluded from the golden runs since there's no overlap in their luminosity range.
+  # If such runs happen to be first and/or last in the common runs, then the golden run range will
+  # be different from the case where we only find the common run ranges.
+  golden_data_runs = collections.OrderedDict()
+  for run in common_runs:
+    lumi_range_intersection = list(sorted(list(set(runlumi_data[run]) & set(golden_runlumi[run]))))
+    if lumi_range_intersection:
+      golden_data_runs[run] = copy.deepcopy(lumi_range_intersection)
+  return golden_data_runs
+
 if __name__ == '__main__':
 
   parser = argparse.ArgumentParser(
@@ -176,6 +233,14 @@ if __name__ == '__main__':
     default = DATA_SAMPLES_DEFAULT, required = False,
     help = 'R|List of PDs to be considered (choices: %s)' % \
            (', '.join(map(lambda choice: "'%s'" % choice, DATA_SAMPLES_ALL))),
+  )
+  parser.add_argument('-g', '--golden-json',
+    type = str, dest = 'golden_json', metavar = 'file', required = False,
+    default = os.path.join(
+      os.environ['CMSSW_BASE'], 'src', 'tthAnalysis', 'NanoAOD', 'data',
+      'Cert_294927-306462_13TeV_EOY2017ReReco_Collisions17_JSON.txt'
+    ),
+    help = 'R|Path to the golden lumimask file in JSON format',
   )
   parser.add_argument('-v', '--cmssw-version',
     type = str, dest = 'version', metavar = 'version', default = '9_4_0', required = False,
@@ -216,6 +281,14 @@ if __name__ == '__main__':
     data_tier = DATA_TIER,
     data_str  = DATA_GREP_STR,
   )
+
+  lumimask_location = args.golden_json
+  if not os.path.isfile(lumimask_location):
+    raise ValueError("No such file: %s" % lumimask_location)
+  golden_runlumi = get_golden_runlumi(lumimask_location)
+
+  execution_datetime = '{date:%Y-%m-%d %H:%M:%S}'.format(date = datetime.datetime.now())
+  execution_command  = ' '.join([os.path.basename(__file__)] + sys.argv[1:])
 
   if mc_input:
     if not os.path.isfile(mc_input):
@@ -359,8 +432,8 @@ if __name__ == '__main__':
 
     with open(args.metadict, 'w+') as f:
       f.write(jinja2.Template(METADICT_HEADER).render(
-        command    = ' '.join([os.path.basename(__file__)] + sys.argv[1:]),
-        date       = '{date:%Y-%m-%d %H:%M:%S}'.format(date = datetime.datetime.now()),
+        command    = execution_command,
+        date       = execution_datetime,
         sum_events = sum_events_flattened,
         is_mc      = True,
       ))
@@ -507,41 +580,98 @@ if __name__ == '__main__':
           data_sample_selection[data_sample][acq_era] = selection_list[selected_dataset]
 
     print("%s\nSummary:" % ('-' * 120))
-    meta_dictionary_entries, dataset_list = [], []
+    meta_dictionary_entries = []
+    dataset_list = collections.OrderedDict()
     for dataset in primary_datasets:
       if dataset not in data_sample_selection:
         continue
 
       for acquisition_era in sorted(data_sample_selection[dataset]):
         selection = data_sample_selection[dataset][acquisition_era]
+
         if selection:
-          print('  %s, %s%s -> %s' % (dataset.rjust(MAX_DATA_SAMPLE_LEN), era, acquisition_era, selection['name']))
-          meta_dictionary_entries.append(jinja2.Template(METADICT_TEMPLATE_DATA).render(
-            dataset_name          = selection['name'],
-            process_name_specific = '_'.join(selection['name'].split('/')[1:-1]).replace('-', '_'),
-            nof_db_events         = selection['nevents'],
-            nof_db_files          = selection['nfiles'],
-            fsize_db              = selection['size'],
-            comment               = "status: %s; size: %s; nevents: %s; release: %s; last modified: %s" % (
-              selection['dataset_access_type'],
-              human_size(selection['size']),
-              human_size(selection['nevents'], use_si = True, byte_suffix = ''),
-              selection['release'],
-              selection['last_modification_date'],
-            ),
-          ))
-          dataset_list.append(selection['name'])
+          # Query the run and luminosity ranges, figure out the golden range (for documentation purposes).
+          # Exclude the whole sample if the data sample is not in the golden range.
+          # We don't want to query the run and luminosity ranges earlier in the code because we only
+          # pick a single sample out of multiple from the same PD & acquisition era combination.
+          # Otherwise, we would spend a lot of time on querying and matching the run and luminosity ranges.
+
+          runlumi_query = DASGOCLIENT_QUERY_RUNLUMI % selection['name']
+          runlumi_query_out, runlumi_query_err = run_cmd(runlumi_query)
+          if not runlumi_query_out or runlumi_query_err:
+            raise ValueError(
+              "Was not able to fetch run and lumi ranges for the sample: %s" % selection['name']
+            )
+
+          runlumi_data = get_runlumi_data(runlumi_query_out)
+          runlumi_data_golden = get_data_golden(runlumi_data, golden_runlumi)
+
+          if runlumi_data_golden:
+            # Let's find the min/max (golden) run ranges
+            minmax_runlumi_data        = [ min(runlumi_data.keys()), max(runlumi_data.keys())               ]
+            minmax_runlumi_data_golden = [ min(runlumi_data_golden.keys()), max(runlumi_data_golden.keys()) ]
+
+            print('  %s, %s%s -> %s' % (dataset.rjust(MAX_DATA_SAMPLE_LEN), era, acquisition_era, selection['name']))
+            meta_dictionary_entries.append(jinja2.Template(METADICT_TEMPLATE_DATA).render(
+              dataset_name          = selection['name'],
+              process_name_specific = '_'.join(selection['name'].split('/')[1:-1]).replace('-', '_'),
+              nof_db_events         = selection['nevents'],
+              nof_db_files          = selection['nfiles'],
+              fsize_db              = selection['size'],
+              run_range             = minmax_runlumi_data,
+              golden_run_range      = minmax_runlumi_data_golden,
+              comment               = "status: %s; size: %s; nevents: %s; release: %s; last modified: %s" % (
+                selection['dataset_access_type'],
+                human_size(selection['size']),
+                human_size(selection['nevents'], use_si = True, byte_suffix = ''),
+                selection['release'],
+                selection['last_modification_date'],
+              ),
+            ))
+            dataset_list[selection['name']] = {
+              'run_range'        : '%d-%d' % tuple(minmax_runlumi_data),
+              'golden_run_range' : '%d-%d' % tuple(minmax_runlumi_data_golden),
+            }
+          else:
+            print(
+              '  %s, %s%s -> excluded only because no golden run range' % \
+              (dataset.rjust(MAX_DATA_SAMPLE_LEN), era, acquisition_era)
+            )
         else:
           print('  %s, %s%s -> missing' % (dataset.rjust(MAX_DATA_SAMPLE_LEN), era, acquisition_era))
 
     with open(args.metadict, 'w+') as f:
       f.write(jinja2.Template(METADICT_HEADER).render(
-        command = ' '.join([os.path.basename(__file__)] + sys.argv[1:]),
+        command = execution_command,
+        date    = execution_datetime,
         is_mc   = False,
       ))
       f.write('\n'.join(meta_dictionary_entries))
       f.write('\n')
 
     with open(args.dataset, 'w+') as f:
-      f.write('\n'.join(dataset_list))
-      f.write('\n')
+      max_dataset_name_len     = max(map(len, dataset_list.keys()))
+      max_run_range_len        = max(map(lambda d: len(d['run_range']),        dataset_list.values()))
+      max_golden_run_range_len = max(map(lambda d: len(d['golden_run_range']), dataset_list.values()))
+      dataset_format = "%s   %s   %s\n"
+      f.write(
+        dataset_format % \
+        (
+          "# DAS name".ljust(max_dataset_name_len),
+          "run range".ljust(max_run_range_len),
+          "golden run range".ljust(max_golden_run_range_len),
+        )
+      )
+      for dataset_name, run_dict in dataset_list.items():
+        f.write(
+          dataset_format % \
+          (
+            dataset_name.ljust(max_dataset_name_len),
+            run_dict['run_range'].ljust(max_run_range_len),
+            run_dict['golden_run_range'].ljust(max_golden_run_range_len),
+          )
+        )
+      f.write(
+        "\n# file generated at %s with the following command:\n# %s\n" % \
+        (execution_datetime, execution_command)
+      )
