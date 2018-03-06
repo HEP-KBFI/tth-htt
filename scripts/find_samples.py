@@ -107,9 +107,10 @@ AQC_KEY       = 'cat'
 PDS_KEY       = 'data'
 DATA_GREP_STR = '\\|'.join(map(lambda sample: '^/%s/' % sample, DATA_SAMPLES))
 DATA_PIPED    = '|'.join(DATA_SAMPLES)
-DASGOCLIENT_QUERY_COMMON  = "dasgoclient -query='dataset=%s | grep dataset.%s' -unique | grep -v '^\\['"
-DASGOCLIENT_QUERY_RELEASE = "dasgoclient -query='release dataset=%s' -unique"
-MAX_DATA_SAMPLE_LEN       = max(map(len, DATA_SAMPLES))
+DASGOCLIENT_QUERY_COMMON     = "dasgoclient -query='        dataset=%s          | grep dataset.%s' -unique | grep -v '^\\['"
+DASGOCLIENT_QUERY_ANY_STATUS = "dasgoclient -query='dataset dataset=%s status=* | grep dataset.%s' -unique | grep -v '^\\['"
+DASGOCLIENT_QUERY_RELEASE    = "dasgoclient -query='release dataset=%s' -unique"
+MAX_DATA_SAMPLE_LEN          = max(map(len, DATA_SAMPLES))
 
 DATA_QUERY = "dasgoclient -query='dataset dataset=/*/*%s*/{data_tier}' | grep '{data_str}' | sort".format(
   data_tier = DATA_TIER,
@@ -257,8 +258,19 @@ if __name__ == '__main__':
                        else DASGOCLIENT_QUERY_RELEASE % dataset
         mc_query_out, mc_query_err = run_cmd(mc_query_str)
         if not mc_query_out or mc_query_err:
-          raise ValueError("Query to DAS resulted in an empty output or an error:"
-                           "\nstdout = '%s'\nstderr = '%s'" % (mc_query_out, mc_query_err))
+          # this may happen if a sample is in PRODUCTION stage and the dasgoclient script
+          # returns nonsense; let's try again with status=*
+          query_fail = False
+          if das_key != 'release':
+            mc_query_str = DASGOCLIENT_QUERY_ANY_STATUS % (dataset, das_key)
+            mc_query_out, mc_query_err = run_cmd(mc_query_str)
+            if not mc_query_out or mc_query_err:
+              query_fail = True
+          else:
+            query_fail = True
+          if query_fail:
+            raise ValueError("Query to DAS resulted in an empty output or an error:"
+                             "\nstdout = '%s'\nstderr = '%s'" % (mc_query_out, mc_query_err))
 
         das_parser = das_keys[das_key]['func']
         das_query_results[dataset][das_key] = das_parser(mc_query_out.rstrip('\n')).strip()
