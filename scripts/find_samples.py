@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
-import subprocess, re, datetime, collections, jinja2, argparse, os, math, sys, json, itertools, ast, copy
+from tthAnalysis.HiggsToTauTau.jobTools import run_cmd, human_size
+
+import re, datetime, collections, jinja2, argparse, os, math, sys, json, itertools, ast, copy
 
 class SmartFormatter(argparse.ArgumentDefaultsHelpFormatter):
   def _split_lines(self, text, width):
@@ -122,21 +124,6 @@ MC_REGEX = re.compile(r'/[\w\d_-]+/[\w\d_-]+/%s' % MC_TIER)
 def convert_date(date):
   return datetime.datetime.fromtimestamp(int(date)).strftime('%Y-%m-%d %H:%M:%S')
 
-def human_size(fsize, use_si = True, byte_suffix = 'B'):
-  if use_si:
-    multiplier = 1000.
-    units = ['', 'k', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y']
-  else:
-    multiplier = 1024.
-    units = ['', 'Ki', 'Mi', 'Gi', 'Ti', 'Pi', 'Ei', 'Zi', 'Yi']
-  units = list(map(lambda unit: '%s%s' % (unit, byte_suffix), units))
-  fsize_int = int(fsize)
-  unit_idx = min(int(math.log(fsize_int, multiplier)), len(units) - 1) if fsize_int else 0
-  if unit_idx > 0:
-    return '%.2f%s' % ((fsize_int / multiplier ** unit_idx), units[unit_idx])
-  else:
-    return '%d%s' % (fsize_int, units[unit_idx])
-
 def convert_cmssw_versions(cmssw_list):
   return ','.join(set([
     re.match(r'.*\"(?P<ver>.*)\".*', cmssw_ver).group('ver')[len('CMSSW')+1:]
@@ -145,13 +132,6 @@ def convert_cmssw_versions(cmssw_list):
 
 def id_(x): # identity function
   return x
-
-def run_cmd(cmd_str, return_stderr = True):
-  cmd = subprocess.Popen(cmd_str, stdout = subprocess.PIPE, stderr = subprocess.PIPE, shell = True)
-  stdout, stderr = cmd.communicate()
-  if return_stderr:
-    return stdout, stderr
-  return stdout
 
 def get_golden_runlumi(lumimask_location):
   with open(lumimask_location, 'r') as lumimask_file:
@@ -252,15 +232,21 @@ if __name__ == '__main__':
   )
   args = parser.parse_args()
 
-  has_dasgoclient = run_cmd('which dasgoclient 2>/dev/null | wc -l', False)
+  has_dasgoclient = run_cmd(
+    'which dasgoclient 2>/dev/null | wc -l', do_not_log = True, return_stderr = False
+  )
   if has_dasgoclient.rstrip('\n') != "1":
     raise ValueError("dasgoclient not available! Set up your 94x environment")
-  has_voms_proxy = run_cmd('which voms-proxy-info 2>/dev/null | wc -l', False)
+  has_voms_proxy = run_cmd(
+    'which voms-proxy-info 2>/dev/null | wc -l', do_not_log = True, return_stderr = False
+  )
   if has_voms_proxy.rstrip('\n') != "1":
     raise ValueError("voms-proxy-* not available! Set up your 94x environment")
 
   min_voms_proxy_timeleft_minutes = 30
-  voms_proxy_timeleft = int(run_cmd('voms-proxy-info --timeleft', False).rstrip('\n'))
+  voms_proxy_timeleft = int(run_cmd(
+    'voms-proxy-info --timeleft', do_not_log = True, return_stderr = False
+  ).rstrip('\n'))
   if voms_proxy_timeleft < 60 * min_voms_proxy_timeleft_minutes:
     raise ValueError(
       "proxy not open at least %i minutes to run this script; "         \
@@ -342,14 +328,14 @@ if __name__ == '__main__':
           sys.stdout.flush()
         mc_query_str = DASGOCLIENT_QUERY_COMMON % (dataset, das_key) if das_key != 'release' \
                        else DASGOCLIENT_QUERY_RELEASE % dataset
-        mc_query_out, mc_query_err = run_cmd(mc_query_str)
+        mc_query_out, mc_query_err = run_cmd(mc_query_str, do_not_log = True, return_stderr = True)
         if not mc_query_out or mc_query_err:
           # this may happen if a sample is in PRODUCTION stage and the dasgoclient script
           # returns nonsense; let's try again with status=*
           query_fail = False
           if das_key != 'release':
             mc_query_str = DASGOCLIENT_QUERY_ANY_STATUS % (dataset, das_key)
-            mc_query_out, mc_query_err = run_cmd(mc_query_str)
+            mc_query_out, mc_query_err = run_cmd(mc_query_str, do_not_log = True, return_stderr = True)
             if not mc_query_out or mc_query_err:
               query_fail = True
           else:
@@ -443,7 +429,7 @@ if __name__ == '__main__':
   else:
     era = 'Run{year}'.format(year = args.run)
     data_query_str = DATA_QUERY % era
-    data_query_out, data_query_err = run_cmd(data_query_str)
+    data_query_out, data_query_err = run_cmd(data_query_str, do_not_log = True, return_stderr = True)
 
     data_samples_list = data_query_out.rstrip('\n').split('\n')
     data_samples_aggr = {data_sample : {} for data_sample in primary_datasets}
@@ -505,7 +491,9 @@ if __name__ == '__main__':
             dasgoclient_query = DASGOCLIENT_QUERY_COMMON %                 \
                                 (dataset, das_key) if das_key != 'release' \
                                 else DASGOCLIENT_QUERY_RELEASE % dataset
-            dasgoclient_query_out, dasgoclient_query_err = run_cmd(dasgoclient_query)
+            dasgoclient_query_out, dasgoclient_query_err = run_cmd(
+              dasgoclient_query, do_not_log = True, return_stderr = True
+            )
             das_parser = das_keys[das_key]['func']
             das_query_results[dataset][das_key] = das_parser(dasgoclient_query_out.rstrip('\n')).strip()
 
@@ -597,7 +585,9 @@ if __name__ == '__main__':
           # Otherwise, we would spend a lot of time on querying and matching the run and luminosity ranges.
 
           runlumi_query = DASGOCLIENT_QUERY_RUNLUMI % selection['name']
-          runlumi_query_out, runlumi_query_err = run_cmd(runlumi_query)
+          runlumi_query_out, runlumi_query_err = run_cmd(
+            runlumi_query, do_not_log = True, return_stderr = True
+          )
           if not runlumi_query_out or runlumi_query_err:
             raise ValueError(
               "Was not able to fetch run and lumi ranges for the sample: %s" % selection['name']
