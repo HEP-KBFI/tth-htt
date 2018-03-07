@@ -1,6 +1,6 @@
 from collections import OrderedDict as OD
 
-# file generated with the following command:
+# file generated at 2018-03-07 13:21:35 with the following command:
 # create_dictionary.py -v -m python/samples/metaDict_2017.py -p python/samples/sampleLocations_2017.txt -Z zeroes.txt -z zombies.txt -N samples_2017 -E 2017 -o python/samples -g tthAnalyzeSamples_2017_nanoAOD.py
 
 samples_2017 = OD()
@@ -13,8 +13,8 @@ samples_2017["/ttHJetToNonbb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8/Run
   ("nof_events",                      0),
   ("nof_tree_events",                 9650032),
   ("nof_db_events",                   9650032),
-  ("fsize_local",                     32511600477), # 32.51GB
-  ("fsize_db",                        603282930374), # 603.28GB
+  ("fsize_local",                     32511600477), # 32.51GB, avg file size 154.08MB
+  ("fsize_db",                        603282930374), # 603.28GB, avg file size 2.13GB
   ("use_HIP_mitigation_bTag",         False),
   ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                          True),
@@ -42,8 +42,8 @@ samples_2017["/TTZToLLNuNu_M-10_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17MiniAO
   ("nof_events",                      0),
   ("nof_tree_events",                 7514610),
   ("nof_db_events",                   7563490),
-  ("fsize_local",                     22570685043), # 22.57GB
-  ("fsize_db",                        444833969271), # 444.83GB
+  ("fsize_local",                     22570685043), # 22.57GB, avg file size 147.52MB
+  ("fsize_db",                        444833969271), # 444.83GB, avg file size 2.24GB
   ("use_HIP_mitigation_bTag",         False),
   ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                          True),
@@ -71,8 +71,8 @@ samples_2017["/TTWJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/RunIIFall
   ("nof_events",                      0),
   ("nof_tree_events",                 4925829),
   ("nof_db_events",                   4925829),
-  ("fsize_local",                     15159970782), # 15.16GB
-  ("fsize_db",                        292280765632), # 292.28GB
+  ("fsize_local",                     15159970782), # 15.16GB, avg file size 151.60MB
+  ("fsize_db",                        292280765632), # 292.28GB, avg file size 2.68GB
   ("use_HIP_mitigation_bTag",         False),
   ("use_HIP_mitigation_mediumMuonId", False),
   ("use_it",                          True),

@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import argparse, os.path, sys, logging, imp, jinja2, ROOT, re, ctypes, copy, itertools, time, shutil
+import argparse, os.path, sys, logging, imp, jinja2, ROOT, re, ctypes, copy, itertools, time, shutil, datetime
 from tthAnalysis.HiggsToTauTau.jobTools import run_cmd, human_size
 
 HISTOGRAM_COUNT         = 'Count'
@@ -176,7 +176,7 @@ def load_dict(path, name):
 
 header_str = """from collections import OrderedDict as OD
 
-# file generated with the following command:
+# file generated at {{ date }} with the following command:
 # {{ command }}
 
 {{ dict_name }} = OD()
@@ -192,8 +192,8 @@ dictionary_entry_str = """{{ dict_name }}["{{ dbs_name }}"] = OD([
   ("nof_events",                      {{ nof_events }}),
   ("nof_tree_events",                 {{ nof_tree_events }}),
   ("nof_db_events",                   {{ nof_db_events }}),
-  ("fsize_local",                     {{ fsize_local }}), # {{ fsize_local_human }}
-  ("fsize_db",                        {{ fsize_db }}), # {{ fsize_db_human }}
+  ("fsize_local",                     {{ fsize_local }}), # {{ fsize_local_human }}, avg file size {{ avg_fsize_local_human }}
+  ("fsize_db",                        {{ fsize_db }}), # {{ fsize_db_human }}, avg file size {{ avg_fsize_db_human }}
   ("use_HIP_mitigation_bTag",         {{ use_HIP_mitigation_bTag }}),
   ("use_HIP_mitigation_mediumMuonId", {{ use_HIP_mitigation_mediumMuonId }}),
   ("use_it",                          {{ use_it }}),{% if sample_type == "mc" %}
@@ -784,7 +784,8 @@ if __name__ == '__main__':
           paths.append(entry)
 
   output = jinja2.Template(header_str).render(
-    command = ' '.join([os.path.basename(__file__)] + sys.argv[1:]),
+    command   = ' '.join([os.path.basename(__file__)] + sys.argv[1:]),
+    date      = '{date:%Y-%m-%d %H:%M:%S}'.format(date = datetime.datetime.now()),
     dict_name = args.output_dict_name,
   ) if not args.skip_header else ''
 
@@ -955,8 +956,10 @@ if __name__ == '__main__':
           nof_db_files                    = meta_dict[key]['nof_db_files'],
           fsize_db                        = meta_dict[key]['fsize_db'],
           fsize_db_human                  = human_size(meta_dict[key]['fsize_db']),
+          avg_fsize_db_human              = human_size(float(meta_dict[key]['fsize_db']) / meta_dict[key]['nof_db_files']),
           fsize_local                     = meta_dict[key]['fsize_local'],
           fsize_local_human               = human_size(meta_dict[key]['fsize_local']),
+          avg_fsize_local_human           = human_size(float(meta_dict[key]['fsize_local']) / meta_dict[key]['nof_files']),
           use_HIP_mitigation_bTag         = meta_dict[key]['use_HIP_mitigation_bTag'],
           use_HIP_mitigation_mediumMuonId = meta_dict[key]['use_HIP_mitigation_mediumMuonId'],
           use_it                          = meta_dict[key]['use_it'],
