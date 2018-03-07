@@ -7,7 +7,7 @@ meta_dictionary = OD()
 
 ### event sums
 
-sum_events = { 
+sum_events = {
   ("DYJetsToLL_M-50", "DYJetsToLL_M-50_ext1"),
   ("TTToSemiLeptonic", "TTToSemiLeptonic_PSweights"),
   ("TTWJetsToLNu", "TTWJetsToLNu_PSweights"),
@@ -16,7 +16,7 @@ sum_events = {
 }
 
 meta_dictionary["/ttHJetToNonbb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1/MINIAODSIM"] =  OD([
-  ("crab_string",           ""),
+  ("crab_string",           "NanoAOD_v1_ttHJetToNonbb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8__RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1"),
   ("sample_category",       "signal"),
   ("process_name_specific", "ttHJetToNonbb_M125_amcatnlo"),
   ("nof_db_events",         9650032),
@@ -55,7 +55,7 @@ meta_dictionary["/GluGluHToZZTo4L_M125_13TeV_powheg2_JHUGenV7011_pythia8/RunIIFa
 ])
 
 meta_dictionary["/TTZToLLNuNu_M-10_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1/MINIAODSIM"] =  OD([
-  ("crab_string",           ""),
+  ("crab_string",           "NanoAOD_v1_TTZToLLNuNu_M-10_TuneCP5_13TeV-amcatnlo-pythia8__RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1"),
   ("sample_category",       "TTZ"),
   ("process_name_specific", "TTZToLL_M10"),
   ("nof_db_events",         7563490),
@@ -81,7 +81,7 @@ meta_dictionary["/TTZToLL_M-1to10_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17Mini
 ])
 
 meta_dictionary["/TTWJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v2/MINIAODSIM"] =  OD([
-  ("crab_string",           ""),
+  ("crab_string",           "NanoAOD_v1_TTWJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8__RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v2"),
   ("sample_category",       "TTW"),
   ("process_name_specific", "TTWJetsToLNu"),
   ("nof_db_events",         4925829),
