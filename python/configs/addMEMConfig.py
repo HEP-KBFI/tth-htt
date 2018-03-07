@@ -348,7 +348,7 @@ class addMEMConfig:
             logging.info("Creating configuration files to run '%s' for sample %s" % (self.executable_addMEM, process_name))
             is_mc = (sample_info["type"] == "mc")
 
-            inputFileList = generateInputFileList(sample_name, sample_info, self.max_files_per_job, self.debug)
+            inputFileList = generateInputFileList(sample_info, self.max_files_per_job, self.debug)
             # typically, the analysis ends here and starts looping b/c the smallest unit of work processes
             # at least one file; we need, however, to split the file into event ranges in such a way that
             # each job performs mem_integrations_per_job MEM integrations

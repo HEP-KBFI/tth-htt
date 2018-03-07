@@ -235,20 +235,20 @@ class analyzeConfig_4l(analyzeConfig):
       if not sample_info["use_it"] or sample_info["sample_category"] in [ "additional_signal_overlap", "background_data_estimate" ]:
         continue
       logging.info("Checking input files for sample %s" % sample_info["process_name_specific"])
-      inputFileLists[sample_name] = generateInputFileList(sample_name, sample_info, self.max_files_per_job, self.debug)
+      inputFileLists[sample_name] = generateInputFileList(sample_info, self.max_files_per_job, self.debug)
 
     for lepton_selection in self.lepton_selections:
-      
+
       if lepton_selection == "forBDTtraining":
         lepton_selection = "Loose" # "Tight" ## "Fakeable" ## Xanda
-        
+
       for lepton_frWeight in self.lepton_frWeights:
         if lepton_frWeight == "enabled" and not lepton_selection.startswith("Fakeable"):
           continue
         if lepton_frWeight == "disabled" and not lepton_selection in [ "Tight", "forBDTtraining" ]:
           continue
         lepton_selection_and_frWeight = get_lepton_selection_and_frWeight(lepton_selection, lepton_frWeight)
-        
+
         for chargeSumSelection in self.chargeSumSelections:
 
           for sample_name, sample_info in self.samples.items():
