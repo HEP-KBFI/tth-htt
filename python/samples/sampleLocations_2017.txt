@@ -1,1 +1,1 @@
-/hdfs/cms/store/user/kaehatah/NanoAOD_2017
+/hdfs/cms/store/user/kaehatah/NanoAOD_2017_v2
