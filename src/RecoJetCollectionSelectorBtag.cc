@@ -13,6 +13,30 @@ RecoJetSelectorBtag::RecoJetSelectorBtag(int era,
   , min_BtagCSV_(-1.e+3)
 {}
 
+void
+RecoJetSelectorBtag::set_min_pt(double min_pt)
+{
+  min_pt_ = min_pt;
+}
+
+void
+RecoJetSelectorBtag::set_max_absEta(double max_absEta)
+{
+  max_absEta_ = max_absEta;
+}
+
+double
+RecoJetSelectorBtag::get_min_pt() const
+{
+  return min_pt_;
+}
+
+double
+RecoJetSelectorBtag::get_max_absEta() const
+{
+  return max_absEta_;
+}
+
 RecoJetSelectorBtagLoose::RecoJetSelectorBtagLoose(int era,
                                                    int index,
                                                    bool debug)
@@ -52,7 +76,7 @@ RecoJetSelectorBtag::operator()(const RecoJet & jet) const
 {
   if(debug_)
   {
-    std::cout << "<RecoJetSelectorBtag::operator()>:\n jet: " << jet << '\n';
+    std::cout << __func__ << ":\n jet: " << jet << '\n';
   }
 
   if(jet.pt() < min_pt_)

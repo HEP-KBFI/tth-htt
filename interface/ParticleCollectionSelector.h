@@ -38,7 +38,13 @@ public:
     }
     return selParticles;
   }
-  
+
+  Tsel &
+  getSelector()
+  {
+    return selector_;
+  }
+
 protected:
   int selIndex_;
   Tsel selector_;
