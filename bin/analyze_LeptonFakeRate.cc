@@ -621,7 +621,6 @@ main(int argc,
   RecoJetCollectionSelector jetSelector(era);
   jetSelector.getSelector().set_min_pt(30.);
   RecoJetCollectionSelectorBtagLoose jetSelectorBtagLoose(era);
-  jetSelectorBtagLoose.getSelector().set_min_pt(30.);
 
 //--- declare missing transverse energy
   RecoMEtReader * metReader = new RecoMEtReader(era, isMC, branchName_met);
