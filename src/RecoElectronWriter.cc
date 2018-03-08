@@ -28,8 +28,6 @@ RecoElectronWriter::RecoElectronWriter(int era,
   , OoEminusOoP_(nullptr)
   , lostHits_(nullptr)
   , conversionVeto_(nullptr)
-    //  , deltaEta_trackatVtx_(nullptr)
-    //  , deltaPhi_trackatVtx_(nullptr)
   , cutbasedID_HLT_(nullptr)
 {
   leptonWriter_ = new RecoLeptonWriter(branchName_obj_);
@@ -48,8 +46,6 @@ RecoElectronWriter::~RecoElectronWriter()
   delete[] OoEminusOoP_;
   delete[] lostHits_;
   delete[] conversionVeto_;
-  // delete[] deltaEta_trackatVtx_;
-  // delete[] deltaPhi_trackatVtx_;
   delete[] cutbasedID_HLT_;
 }
 
@@ -60,15 +56,11 @@ RecoElectronWriter::setBranchNames()
   branchName_mvaRawPOG_HZZ_ = Form("%s_%s", branchName_obj_.data(), "mvaSpring16HZZ");
   branchName_sigmaEtaEta_ = Form("%s_%s", branchName_obj_.data(), "sieie");
   branchName_HoE_ = Form("%s_%s", branchName_obj_.data(), "hoe");
-  // branchName_deltaEta_ = Form("%s_%s", branchName_obj_.data(), "eleDEta"); // Old Value
-  // branchName_deltaPhi_ = Form("%s_%s", branchName_obj_.data(), "eleDPhi"); // Old Value
   branchName_deltaEta_ = Form("%s_%s", branchName_obj_.data(), "deltaEtaSC_trackatVtx");
   branchName_deltaPhi_ = Form("%s_%s", branchName_obj_.data(), "deltaPhiSC_trackatVtx");
   branchName_OoEminusOoP_ = Form("%s_%s", branchName_obj_.data(), "eInvMinusPInv");
   branchName_lostHits_ = Form("%s_%s", branchName_obj_.data(), "lostHits");
   branchName_conversionVeto_ = Form("%s_%s", branchName_obj_.data(), "convVeto");
-  // branchName_deltaEta_trackatVtx_ = Form("%s_%s", branchName_obj_.data(), "deltaEtaSC_trackatVtx");
-  // branchName_deltaPhi_trackatVtx_ = Form("%s_%s", branchName_obj_.data(), "deltaPhiSC_trackatVtx");
   branchName_cutbasedID_HLT_ = Form("%s_%s", branchName_obj_.data(), "cutBased_HLTPreSel");
 }
 
@@ -87,8 +79,6 @@ RecoElectronWriter::setBranches(TTree * tree)
   bai.setBranch(OoEminusOoP_, branchName_OoEminusOoP_);
   bai.setBranch(lostHits_, branchName_lostHits_);
   bai.setBranch(conversionVeto_, branchName_conversionVeto_);
-  //  bai.setBranch(deltaEta_trackatVtx_, branchName_deltaEta_trackatVtx_);
-  //  bai.setBranch(deltaPhi_trackatVtx_, branchName_deltaPhi_trackatVtx_);
   bai.setBranch(cutbasedID_HLT_, branchName_cutbasedID_HLT_);
 }
 
@@ -105,10 +95,8 @@ RecoElectronWriter::write(const std::vector<const RecoElectron *> & leptons)
     mvaRawPOG_HZZ_[idxLepton] = lepton->mvaRawPOG_HZZ();
     sigmaEtaEta_[idxLepton] = lepton->sigmaEtaEta();
     HoE_[idxLepton] = lepton->HoE();
-    deltaEta_[idxLepton] = lepton->deltaEta(); // Old Value
-    deltaPhi_[idxLepton] = lepton->deltaPhi(); // Old Value
-    // deltaEta_trackatVtx_[idxLepton] = lepton->deltaEta();
-    // deltaPhi_trackatVtx_[idxLepton] = lepton->deltaPhi();
+    deltaEta_[idxLepton] = lepton->deltaEta();
+    deltaPhi_[idxLepton] = lepton->deltaPhi();
     OoEminusOoP_[idxLepton] = lepton->OoEminusOoP();
     lostHits_[idxLepton] = lepton->nLostHits(); 
     conversionVeto_[idxLepton] = lepton->passesConversionVeto();

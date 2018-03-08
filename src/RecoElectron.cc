@@ -10,7 +10,7 @@ RecoElectron::RecoElectron(const RecoLepton & lepton,
                            Double_t OoEminusOoP,
                            Int_t    nLostHits,
                            Bool_t   passesConversionVeto,
-			   Int_t cutbasedID_HLT)
+                           Int_t cutbasedID_HLT)
   : RecoLepton(lepton)
   , mvaRawPOG_GP_(mvaRawPOG_GP)
   , mvaRawPOG_HZZ_(mvaRawPOG_HZZ)
@@ -109,7 +109,8 @@ operator<<(std::ostream & stream,
             "deltaEta = "             << electron.deltaEta()             << ",\n "
             "deltaPhi = "             << electron.deltaPhi()             << ", "
             "HoE = "                  << electron.HoE()                  << ", "
-            "OoEminusOoP = "          << electron.OoEminusOoP()          << ", "
-            "cutbasedID_HLT = "       << electron.cutbasedID_HLT()       << ",\n ";
+            "OoEminusOoP = "          << electron.OoEminusOoP()          << ",\n"
+            "cutbasedID_HLT = "       << electron.cutbasedID_HLT()       << '\n'
+  ;
   return stream;
 }
