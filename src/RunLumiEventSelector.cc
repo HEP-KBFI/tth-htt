@@ -183,8 +183,9 @@ RunLumiEventSelector::operator()(ULong_t run,
   ++numEventsProcessed_;
   if(isSelected)
   {
-    std::cout << "<RunLumiEventSelector::operator>: selecting "
-                 "run# = " << run << ", ls# " << ls << ", event# " << event << '\n';
+        std::cout << "<RunLumiEventSelector::operator>: selecting "
+	"run# = " << run << ", ls# " << ls << ", event# " << event << '\n';
+
     ++matchedRunLumiSectionEventNumbers_[run][ls][event];
     ++numEventsSelected_;
     return true;

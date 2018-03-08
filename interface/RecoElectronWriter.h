@@ -52,6 +52,9 @@ protected:
   std::string branchName_OoEminusOoP_;
   std::string branchName_lostHits_;
   std::string branchName_conversionVeto_;
+  //  std::string branchName_deltaEta_trackatVtx_;
+  //  std::string branchName_deltaPhi_trackatVtx_;
+  std::string branchName_cutbasedID_HLT_;
 
   Float_t * mvaRawPOG_GP_;
   Float_t * mvaRawPOG_HZZ_;
@@ -62,6 +65,9 @@ protected:
   Float_t * OoEminusOoP_;
   UChar_t * lostHits_;
   Bool_t * conversionVeto_;
+  // Float_t * deltaEta_trackatVtx_;
+  // Float_t * deltaPhi_trackatVtx_;
+  Int_t * cutbasedID_HLT_;
 };
 
 #endif // tthAnalysis_HiggsToTauTau_RecoElectronWriter_h

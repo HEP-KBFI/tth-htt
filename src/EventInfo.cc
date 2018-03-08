@@ -115,7 +115,8 @@ std::string
 EventInfo::str() const
 {
   std::stringstream ss;
-  ss << run << ':' << lumi << ':' << event;
+  // ss << run << ':' << lumi << ':' << event; // Karl's format
+  ss << "run " << run << " lumi " << lumi << " evt " << event; // Giovanni's format
   return ss.str();
 }
 
@@ -123,6 +124,7 @@ std::ostream &
 operator<<(std::ostream & os,
            const EventInfo & info)
 {
-  os << "run = " << info.run << ", ls = " << info.lumi << ", event = " << info.event;
+  // os << "run = " << info.run << ", ls = " << info.lumi << ", event = " << info.event; // Karl's format
+  os << "run " << info.run << " lumi " << info.lumi << " evt " << info.event; // Giovanni's format
   return os;
 }

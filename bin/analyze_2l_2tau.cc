@@ -8,6 +8,7 @@
 #include "DataFormats/Math/interface/deltaR.h" // deltaR
 
 #include <TLorentzVector.h> // TLorentzVector
+#include <TVector3.h>
 #include <TBenchmark.h> // TBenchmark
 #include <TString.h> // TString, Form
 #include <TError.h> // gErrorAbortLevel, kError
@@ -1708,6 +1709,7 @@ int main(int argc, char* argv[])
 
       double cosThetaS_hadTau=-100;
       comp_cosThetaS(selHadTau_lead->p4(), selHadTau_sublead->p4(), cosThetaS_hadTau);
+      std::cout << "cosThetaS_hadTau " << cosThetaS_hadTau << std::endl;  
 
       double cosThetaS_GenTau=-4;
       if (selHadTau_lead->genHadTau() != 0 && selHadTau_sublead->genHadTau() != 0)  comp_cosThetaS(selHadTau_lead->p4(), selHadTau_sublead->p4(), cosThetaS_GenTau);

@@ -1,6 +1,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/MEtFilterSelector.h"
 
 #include <TString.h> // Form()
+#include <iostream>
 
 MEtFilterSelector::MEtFilterSelector(const edm::ParameterSet & cfg)
 {
@@ -18,8 +19,11 @@ MEtFilterSelector::operator()(const MEtFilter & metFilter) const
   {
     if(apply_.at(flag) && ! metFilter.getFlag(static_cast<MEtFilterFlag>(flag)))
     {
+      std::cout << "Failed MEt Filter " << static_cast<MEtFilterFlag>(flag) << std::endl;
+      std::cout << getMEtFilterFlagString(static_cast<MEtFilterFlag>(flag)) << std::endl;
       return false;
     }
   }
   return true;
 }
+

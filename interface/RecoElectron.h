@@ -17,7 +17,8 @@ public:
                Double_t deltaPhi,
                Double_t OoEminusOoP,
                Int_t nLostHits,
-               Bool_t passesConversionVeto);
+               Bool_t passesConversionVeto,
+               Int_t cutbasedID_HLT);
 
   /**
    * @brief Funtions to access data-members
@@ -32,6 +33,7 @@ public:
   Double_t OoEminusOoP() const;
   Int_t nLostHits() const;
   Bool_t passesConversionVeto() const;
+  Int_t cutbasedID_HLT() const;
 
   /**
    * @brief Checks whether a given lepton is an electron by its PDG id
@@ -55,6 +57,7 @@ public:
   Double_t OoEminusOoP_;        ///< difference between calorimeter energy and track momentum (1/E - 1/P)
   Int_t nLostHits_;             ///< number of operational tracker layers between interaction point and innermost hit on track
   Bool_t passesConversionVeto_; ///< Flag indicating if electron passes (true) or fails (false) photon conversion veto
+  Int_t cutbasedID_HLT_;        ///< Cut based HLT electron ID
 };
 
 std::ostream &

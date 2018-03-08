@@ -3,7 +3,7 @@
 RecoJetSelector::RecoJetSelector(int era,
                                  int index,
                                  bool debug)
-  : min_pt_(25.)
+  : min_pt_(30.)
   , max_absEta_(2.4)
   , debug_(debug)
 {}

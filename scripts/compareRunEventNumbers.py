@@ -20,8 +20,9 @@ import json
 #inputFile_test = '/home/veelken/VHbbNtuples_8_0_x/CMSSW_8_0_19/src/tthAnalysis/HiggsToTauTau/test/sync_2017Mar08/selEvents_3l_1tau_SR_TTZToLL_M10_ext2_Tallinn.txt'
 #inputFile_ref = '/home/veelken/VHbbNtuples_8_0_x/CMSSW_8_0_19/src/tthAnalysis/HiggsToTauTau/test/sync_2017Mar17/2lss1tau_SR.txt'
 #inputFile_test = '/home/veelken/VHbbNtuples_8_0_x/CMSSW_8_0_19/src/tthAnalysis/HiggsToTauTau/test/sync_2017Mar17/selEvents_2lss_1tau_Data.txt'
-inputFile_ref = '/home/veelken/VHbbNtuples_8_0_x/CMSSW_8_0_19/src/tthAnalysis/HiggsToTauTau/test/sync_2017Apr30/selEvents_1l_2tau_Tallinn_ttH_vvTight.txt'
-inputFile_test = '/home/veelken/VHbbNtuples_8_0_x/CMSSW_8_0_19/src/tthAnalysis/HiggsToTauTau/test/sync_2017Apr30/selEvents_1l_2tau_ND_ttH_vvTight.txt'
+## inputFile_ref = '/home/karl/public/e_den_ours.txt'
+inputFile_ref = 'e_den_Giovanni.txt'
+inputFile_test = '/home/ram/VHBB_NTUPLES_2017/NANO_AOD_DEV/CMSSW_9_4_4_Feb19_2018_Latest_After_boosted_code_bugfix/src/tthAnalysis/HiggsToTauTau/test/rle_LeptonFakeRate_SingleElectron_Run2017E_17Nov2017_v1_central_20_e_den.txt'
 
 matcher_ref = re.compile('(?P<run>\d*):(?P<lumi>\d*):(?P<evt>\d*)')
 #matcher_test = re.compile('\*(?P<garbage>[0-9 ]+)\*(?P<run>[0-9 ]+)\*(?P<lumi>[0-9 ]+)\*(?P<evt>[0-9 ]+)\*')
@@ -51,7 +52,7 @@ print "======= COMMON events (%i) ========" % len(common)
 for event in common:
     print ":".join(map(str, event))
     
-common_file = open('selEvents_2lss_1tau_Data_common.txt', 'w')
+common_file = open('selEvents_e_den_Giovanni_Ram_common_iter7_with_assocJetPt_wo_e_trig_dep_cone_pt_cuts_file_20_only.txt', 'w')
 for event in common:
     common_file.write(":".join(map(str, event)) + "\n")
 
@@ -65,16 +66,16 @@ print "======= TEST only events (%i) ========" % len(only_test)
 for event in only_test:
     print ":".join(map(str, event))
 
-output_file_ref = open('events_REF.txt', 'w')
+output_file_ref = open('events_REF_iter7_with_assocJetPt_wo_e_trig_dep_cone_pt_cuts_file_20_only.txt', 'w')
 for event in events_ref:
     output_file_ref.write(":".join(map(str, event)) + "\n")
 
 ##only_file_ref = open('events_exclREF.txt', 'w')
-only_file_ref = open('selEvents_2lss_1tau_Data_onlyLLR.txt', 'w')
+only_file_ref = open('selEvents_den_e_Giovanni_notRam_iter7_with_assocJetPt_wo_e_trig_dep_cone_pt_cuts_file_20_only.txt', 'w')
 for event in only_ref:
     only_file_ref.write(":".join(map(str, event)) + "\n")
 
-only_file_test = open('selEvents_2lss_1tau_Data_onlyTallinn.txt', 'w')
+only_file_test = open('selEvents_den_e_Ram_notGiovanni_iter7_with_assocJetPt_wo_e_trig_dep_cone_pt_cuts_file_20_only.txt', 'w')
 for event in only_test:
     only_file_test.write(":".join(map(str, event)) + "\n")
 
