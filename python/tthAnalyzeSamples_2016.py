@@ -5,29 +5,6 @@ from collections import OrderedDict as OD
 
 samples_2016 = OD()
 
-samples_2016["/TT_TuneCUETP8M2T4_13TeV-powheg-pythia8/RunIISummer17MiniAOD-92X_upgrade2017_realistic_v10_ext1-v1/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "TT"),
-  ("process_name_specific",           "TT_TuneCUETP8M2T4_13TeV-powheg-pythia8"),
-  ("nof_files",                       1),
-  ("nof_events",                      10000),
-  ("use_HIP_mitigation_bTag",         False),
-  ("use_HIP_mitigation_mediumMuonId", False),
-  ("use_it",                          True),
-  ("xsection",                        87.3),
-  ("triggers",                        [ "1e", "1mu", "2e", "1e1mu", "2mu", "3e", "2e1mu", "1e2mu", "3mu", "1e1tau", "1mu1tau", "2tau" ]),
-  ("reHLT",                           True),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/local/karl/nanoAOD/92X_upgrade2017_realistic_v10_ext1-v1/TT/0000"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-])
-
 samples_2016["/TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM"] = OD([
   ("type",                            "mc"),
   ("sample_category",                 "TT"),
