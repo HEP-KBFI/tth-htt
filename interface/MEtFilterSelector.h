@@ -8,7 +8,8 @@
 class MEtFilterSelector 
 {
 public:
-  explicit MEtFilterSelector(const edm::ParameterSet & cfg);
+  explicit MEtFilterSelector(const edm::ParameterSet & cfg,
+                             bool verbose = true);
 
   virtual ~MEtFilterSelector() {}
 
@@ -18,6 +19,7 @@ public:
 
 protected:
   std::array<bool, MEtFilterFlag::LAST> apply_;
+  bool verbose_;
 };
 
 #endif // tthAnalysis_HiggsToTauTau_MEtFilterSelector_h
