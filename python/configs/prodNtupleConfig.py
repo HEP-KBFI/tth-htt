@@ -131,8 +131,7 @@ class prodNtupleConfig:
             "process.produceNtuple.branchName_hadTaus              = cms.string('Tau')",
             "process.produceNtuple.branchName_jets                 = cms.string('Jet')",
             "process.produceNtuple.branchName_met                  = cms.string('MET')",
-            "process.produceNtuple.branchName_genLeptons1          = cms.string('GenLep')",
-            "process.produceNtuple.branchName_genLeptons2          = cms.string('')",
+            "process.produceNtuple.branchName_genLeptons           = cms.string('GenLep')",
             "process.produceNtuple.branchName_genHadTaus           = cms.string('GenVisTau')",
             "process.produceNtuple.branchName_genJets              = cms.string('GenJet')",
         ]
@@ -234,7 +233,7 @@ class prodNtupleConfig:
 
             logging.info("Creating configuration files to run '%s' for sample %s" % (self.executable, process_name))
 
-            inputFileList = generateInputFileList(sample_name, sample_info, self.max_files_per_job, self.debug)
+            inputFileList = generateInputFileList(sample_info, self.max_files_per_job, self.debug)
             key_dir = getKey(sample_name)
             subDirs = list(map(
                 lambda y: os.path.join(self.dirs[key_dir][DKEY_NTUPLES], '%04d' % y),

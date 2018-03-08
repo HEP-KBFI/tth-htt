@@ -27,15 +27,15 @@ Data_to_MC_CorrectionInterface::Data_to_MC_CorrectionInterface(const edm::Parame
   , eToTauFakeRate_option_(kFRet_central)
   , muToTauFakeRate_option_(kFRmt_central)
   , numLeptons_(0)
-  , lepton_type_(3)
-  , lepton_pt_(3)
-  , lepton_eta_(3)
+  , lepton_type_(4)
+  , lepton_pt_(4)
+  , lepton_eta_(4)
   , numElectrons_(0)
-  , electron_pt_(3)
-  , electron_eta_(3)
+  , electron_pt_(4)
+  , electron_eta_(4)
   , numMuons_(0)
-  , muon_pt_(3)
-  , muon_eta_(3)
+  , muon_pt_(4)
+  , muon_eta_(4)
   , numHadTaus_(0)
   , hadTau_genPdgId_(3)
   , hadTau_pt_(3)
@@ -325,7 +325,8 @@ Data_to_MC_CorrectionInterface::setHadTauSelection(const std::string& hadTauSele
 void
 Data_to_MC_CorrectionInterface::setLeptons(int lepton1_type, double lepton1_pt, double lepton1_eta,
                                            int lepton2_type, double lepton2_pt, double lepton2_eta,
-                                           int lepton3_type, double lepton3_pt, double lepton3_eta)
+                                           int lepton3_type, double lepton3_pt, double lepton3_eta,
+                                           int lepton4_type, double lepton4_pt, double lepton4_eta)
 {
   numElectrons_ = 0;
   if(lepton1_type == kElectron)
@@ -346,6 +347,12 @@ Data_to_MC_CorrectionInterface::setLeptons(int lepton1_type, double lepton1_pt, 
     electron_eta_[numElectrons_] = lepton3_eta;
     ++numElectrons_;
   }
+  if(lepton4_type == kElectron)
+  {
+    electron_pt_[numElectrons_] = lepton4_pt;
+    electron_eta_[numElectrons_] = lepton4_eta;
+    ++numElectrons_;
+  }
 
   numMuons_ = 0;
   if(lepton1_type == kMuon)
@@ -364,6 +371,12 @@ Data_to_MC_CorrectionInterface::setLeptons(int lepton1_type, double lepton1_pt, 
   {
     muon_pt_[numMuons_] = lepton3_pt;
     muon_eta_[numMuons_] = lepton3_eta;
+    ++numMuons_;
+  }
+  if(lepton4_type == kMuon)
+  {
+    muon_pt_[numMuons_] = lepton4_pt;
+    muon_eta_[numMuons_] = lepton4_eta;
     ++numMuons_;
   }
 
@@ -467,6 +480,7 @@ namespace
                      int lepton1_type, double lepton1_pt, double lepton1_eta,
                      int lepton2_type, double lepton2_pt, double lepton2_eta, // unused
                      int lepton3_type, double lepton3_pt, double lepton3_eta, // unused
+		     int lepton4_type, double lepton4_pt, double lepton4_eta, // unused
                      const std::vector<lutWrapperBase *> & effTrigger_1e_data,
                      const std::vector<lutWrapperBase *> & effTrigger_1e_mc,
                      const std::vector<lutWrapperBase *> & effTrigger_1m_data,
@@ -515,6 +529,7 @@ Data_to_MC_CorrectionInterface::getSF_leptonTriggerEff() const
       lepton_type_[0], lepton_pt_[0], lepton_eta_[0],
       lepton_type_[1], lepton_pt_[1], lepton_eta_[1],
       lepton_type_[2], lepton_pt_[2], lepton_eta_[2],
+      lepton_type_[3], lepton_pt_[3], lepton_eta_[3],
       effTrigger_1e_data_, effTrigger_1e_mc_, 
       effTrigger_1m_data_, effTrigger_1m_mc_
     );

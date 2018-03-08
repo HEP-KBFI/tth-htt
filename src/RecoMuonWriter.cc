@@ -23,6 +23,7 @@ RecoMuonWriter::RecoMuonWriter(int era,
   , looseIdPOG_(nullptr)
   , mediumIdPOG_(nullptr)
   , segmentCompatibility_(nullptr)
+  , ptErr_(nullptr)
 {
   setBranchNames();
 }
@@ -33,6 +34,7 @@ RecoMuonWriter::~RecoMuonWriter()
   delete[] looseIdPOG_;
   delete[] mediumIdPOG_;
   delete[] segmentCompatibility_;
+  delete[] ptErr_;
 }
 
 void
@@ -43,6 +45,7 @@ RecoMuonWriter::setBranchNames()
   branchName_looseIdPOG_ = Form("%s_%s", branchName_obj_.data(), "looseIdPOG");
   branchName_mediumIdPOG_ = Form("%s_%s", branchName_obj_.data(), "mediumId");
   branchName_segmentCompatibility_ = Form("%s_%s", branchName_obj_.data(), "segmentComp");
+  branchName_ptErr_ = Form("%s_%s", branchName_obj_.data(), "ptErr");
 }
 
 void
@@ -54,6 +57,7 @@ RecoMuonWriter::setBranches(TTree * tree)
   bai.setBranch(looseIdPOG_, branchName_looseIdPOG_);
   bai.setBranch(mediumIdPOG_, branchName_mediumIdPOG_);
   bai.setBranch(segmentCompatibility_, branchName_segmentCompatibility_);
+  bai.setBranch(ptErr_, branchName_ptErr_);
 }
 
 void
@@ -68,5 +72,6 @@ RecoMuonWriter::write(const std::vector<const RecoMuon *> & leptons)
     looseIdPOG_[idxLepton] = lepton->passesLooseIdPOG();
     mediumIdPOG_[idxLepton] = lepton->passesMediumIdPOG();
     segmentCompatibility_[idxLepton] = lepton->segmentCompatibility();
+    ptErr_[idxLepton] = lepton->ptErr();
   }
 }

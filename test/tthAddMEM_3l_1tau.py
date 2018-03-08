@@ -113,7 +113,7 @@ if __name__ == '__main__':
     num_parallel_jobs        = 16,
     leptonSelection          = leptonSelection,
     hadTauSelection          = hadTauSelection,
-    isForBDTtraining         = bdt_training,
+    lowIntegrationPoints     = False, # has no effect in 3l1tau MEM, the nof integration points fixed
     isDebug                  = False,
     central_or_shift         = central_or_shift,
   )

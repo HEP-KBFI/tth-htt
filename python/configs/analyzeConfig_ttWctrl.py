@@ -108,7 +108,7 @@ class analyzeConfig_ttWctrl(analyzeConfig):
       if not sample_info["use_it"] or sample_info["sample_category"] in [ "additional_signal_overlap", "background_data_estimate" ]:
         continue
       logging.info("Checking input files for sample %s" % sample_info["process_name_specific"])
-      inputFileLists[sample_name] = generateInputFileList(sample_name, sample_info, self.max_files_per_job, self.debug)
+      inputFileLists[sample_name] = generateInputFileList(sample_info, self.max_files_per_job, self.debug)
 
     for sample_name, sample_info in self.samples.items():
       if not sample_info["use_it"] or sample_info["sample_category"] in [ "additional_signal_overlap", "background_data_estimate" ]:
@@ -217,7 +217,7 @@ class analyzeConfig_ttWctrl(analyzeConfig):
         executable      = self.executable_analyze,
         sbatchFile      = self.sbatchFile_analyze,
         jobOptions      = self.jobOptions_analyze,
-        key_input_file  = 'ntupleFiles', 
+        key_input_file  = 'ntupleFiles',
         key_output_file = 'histogramFile',
       )
 

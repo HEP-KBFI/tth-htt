@@ -25,9 +25,6 @@ class EvtHistManager_2lss_1tau
   bookHistograms(TFileDirectory & dir) override;
 
   void
-  integralHistograms() const;
-
-  void
   fillHistograms(int numElectrons,
                  int numMuons,
                  int numHadTaus,
@@ -92,7 +89,6 @@ class EvtHistManager_2lss_1tau
   TH1 * histogram_memDiscr_;
 
   TH1 * histogram_EventCounter_;
-
 };
 
 #endif

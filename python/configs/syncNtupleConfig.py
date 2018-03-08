@@ -1,0 +1,129 @@
+from tthAnalysis.HiggsToTauTau.configs.analyzeConfig import DKEY_SCRIPTS, DKEY_LOGS, DKEY_SYNC
+from tthAnalysis.HiggsToTauTau.jobTools import get_log_version, run_cmd, create_if_not_exists
+from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch_hadd
+import os, jinja2, uuid, logging, sys
+
+makeFileTemplate = '''
+.DEFAULT_GOAL := all
+SHELL := /bin/bash
+
+all: {{ output_file }}
+
+{{ output_file }}:{% for channel_output in channel_info %} {{channel_output}}{% endfor %}
+\trm -f {{ output_file }}
+\tpython {{ hadd_script }} &> {{ hadd_wrapper_log }}
+
+{% for channel_output, channel_cmd in channel_info.items() %}
+{{ channel_output }}:
+\trm -f {{ channel_output }}
+\t{{ channel_cmd['run'] }}
+{% endfor %}
+
+clean:
+{%- for channel_output, channel_cmd in channel_info.items() %}
+\t{{ channel_cmd['clean'] }}{% endfor %}
+\trm -f {{ output_file }}
+
+.PHONY: clean
+
+'''
+
+class syncNtupleConfig:
+
+  def __init__(self, config_dir, output_dir, output_filename,
+               version, era, channels, dry_run, resubmission_limit, disable_resubmission, verbose):
+
+    self.dry_run = dry_run
+    self.verbose = verbose
+    project_dir = os.path.join(os.getenv('CMSSW_BASE'), 'src', 'tthAnalysis', 'HiggsToTauTau')
+    executable_pattern = os.path.join(project_dir, 'test', 'tthAnalyzeRun_%s.py')
+
+    self.hadd_script_dir_path = os.path.join(config_dir, DKEY_SCRIPTS, DKEY_SYNC)
+    self.hadd_log_dir_path    = os.path.join(config_dir, DKEY_LOGS,    DKEY_SYNC,)
+    self.hadd_script_path         = os.path.join(self.hadd_script_dir_path, 'hadd_sync.py')
+    self.hadd_log_wrapper_path    = os.path.join(self.hadd_log_dir_path,    'hadd_sync_wrapper.log')
+    self.hadd_log_executable_path = os.path.join(self.hadd_log_dir_path,    'hadd_sync_executable.log')
+
+    final_output_dir = os.path.join(output_dir, DKEY_SYNC)
+    self.final_output_file = os.path.join(final_output_dir, output_filename)
+
+    common_args = "-m sync -v %s -e %s -r %d -A" % \
+      (version, era, resubmission_limit)
+    if self.dry_run:
+      common_args += " -d"
+    if disable_resubmission:
+      common_args += " -R"
+    if self.verbose:
+      common_args += " -V"
+
+    self.channel_info = {}
+    for channel in channels:
+      input_file = os.path.join(final_output_dir, '%s.root' % channel)
+      channel_script = executable_pattern % channel
+
+      channel_makefile = os.path.join(config_dir, 'Makefile_%s' % channel)
+      channel_outlog   = os.path.join(config_dir, 'stdout_sync_%s.log' % channel)
+      channel_errlog   = os.path.join(config_dir, 'stderr_sync_%s.log' % channel)
+      channel_outlog, channel_errlog = get_log_version((channel_outlog, channel_errlog))
+
+      channel_cmd_run = '%s %s 2>%s 1>%s' % \
+                        (channel_script, common_args, channel_errlog, channel_outlog)
+      channel_cmd_clean = 'make -f %s clean' % channel_makefile
+      self.channel_info[input_file] = {
+        'run'   : channel_cmd_run,
+        'clean' : channel_cmd_clean,
+      }
+
+    self.stdout_file_path = os.path.join(config_dir, "stdout_sync.log")
+    self.stderr_file_path = os.path.join(config_dir, "stderr_sync.log")
+    self.stdout_file_path, self.stderr_file_path = get_log_version((
+      self.stdout_file_path, self.stderr_file_path,
+    ))
+    self.makefile_path = os.path.join(config_dir, 'Makefile_sync')
+
+  def create(self):
+    create_if_not_exists(self.hadd_script_dir_path)
+    create_if_not_exists(self.hadd_log_dir_path)
+
+    createScript_sbatch_hadd(
+      sbatch_script_file_name = self.hadd_script_path,
+      input_file_names        = list(self.channel_info.keys()),
+      output_file_name        = self.final_output_file,
+      script_file_name        = self.hadd_script_path.replace('.py', '.sh'),
+      log_file_name           = self.hadd_log_executable_path, # the basename will be replaced anyways?
+      working_dir             = None,
+      waitForJobs             = True,
+      auxDirName              = '',
+      pool_id                 = uuid.uuid4(),
+      verbose                 = self.verbose,
+      dry_run                 = self.dry_run,
+    )
+    logging.info("Generated hadd config file: %s" % self.hadd_script_path)
+
+    with open(self.makefile_path, 'w') as makefile:
+      makeFileContents = jinja2.Template(makeFileTemplate).render(
+        output_file      = self.final_output_file,
+        channel_info     = self.channel_info,
+        hadd_script      = self.hadd_script_path,
+        hadd_wrapper_log = self.hadd_log_wrapper_path,
+      )
+      makefile.write(makeFileContents)
+    logging.info("Created the makefile: %s" % self.makefile_path)
+
+  def run(self, clean):
+    target = 'all'
+    if clean:
+      if not os.path.isfile(self.makefile_path):
+        logging.error(
+          "The makefile %s is missing and therefore it's not possible to clean anything; "
+          "run sync Ntuple production first!" % self.makefile_path
+        )
+        sys.exit(1)
+      target = 'clean'
+
+    nof_parallel_jobs = len(self.channel_info)
+    make_cmd          = "make -f %s -j %d %s 2>%s 1>%s" % \
+      (self.makefile_path, nof_parallel_jobs, target, self.stderr_file_path, self.stdout_file_path)
+    logging.info("Running the make command: %s" % make_cmd)
+    run_cmd(make_cmd)
+    logging.info("All done")

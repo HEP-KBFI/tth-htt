@@ -91,10 +91,10 @@ max_job_resubmission = args.resubmission_limit if resubmit else 1
 max_files_per_job    = 10 if use_prod_ntuples else 100
 central_or_shift     = getattr(systematics, args.systematics)
 
-hadTau_selection                   = None
-hadTau_selection_relaxed           = None
-changeBranchNames                  = use_prod_ntuples
-applyFakeRateWeights               = None
+hadTau_selection         = None
+hadTau_selection_relaxed = None
+changeBranchNames        = use_prod_ntuples
+applyFakeRateWeights     = None
 
 if mode != "VHbb":
   raise ValueError("Only VHbb mode available")
@@ -103,7 +103,7 @@ if mode == "VHbb":
   if use_prod_ntuples:
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_prodNtuples_test import samples_2017
   else:
-    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_test import samples_2017
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017
   hadTau_selection     = "dR03mvaVTight"
   applyFakeRateWeights = "4L"
 elif mode == "forBDTtraining":

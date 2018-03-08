@@ -91,7 +91,7 @@ if use_prod_ntuples:
   # TODO: the sample must have a different preselection from the usual minimum of 1l and 1tau
   from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_prodNtuples_test import samples_2017
 else:
-  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_test import samples_2017
+  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017
 
 if era == "2017":
   from tthAnalysis.HiggsToTauTau.analysisSettings import lumi_2017 as lumi

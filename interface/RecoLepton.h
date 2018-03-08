@@ -24,6 +24,7 @@ public:
              Double_t sip3d,
              Double_t mvaRawTTH,
              Double_t jetPtRatio,
+             Double_t jetPtRel,
              Double_t jetBtagCSV,
              Int_t tightCharge,
              Int_t charge);
@@ -84,14 +85,29 @@ public:
    *     i.e. regardless of whether leptons pass or fail the "tight" lepton selection criteria.
    */
 
-  Double_t lepton_pt() const;
-  const Particle::LorentzVector & lepton_p4() const;
-  virtual Double_t pt() const;
-  virtual const Particle::LorentzVector & p4() const;
-  Double_t cone_pt() const;
-  const Particle::LorentzVector & cone_p4() const;
-  Double_t assocJet_pt() const;
-  const Particle::LorentzVector & assocJet_p4() const;
+  Double_t
+  lepton_pt() const;
+
+  const Particle::LorentzVector &
+  lepton_p4() const;
+
+  virtual Double_t
+  pt() const;
+
+  virtual const Particle::LorentzVector &
+  p4() const;
+
+  Double_t
+  cone_pt() const;
+
+  const Particle::LorentzVector &
+  cone_p4() const;
+
+  Double_t
+  assocJet_pt() const;
+
+  const Particle::LorentzVector &
+  assocJet_p4() const;
 
   /**
    * @brief Funtions to access other data-members
@@ -107,6 +123,7 @@ public:
   Double_t sip3d() const;
   Double_t mvaRawTTH() const;
   Double_t jetPtRatio() const;
+  Double_t jetPtRel() const;
   Double_t jetBtagCSV() const;
   Int_t tightCharge() const;
   Int_t charge() const;
@@ -114,6 +131,8 @@ public:
   const GenLepton * genLepton() const;
   const GenHadTau * genHadTau() const;
   const GenJet * genJet() const;
+
+  bool isGenMatched() const;
 
   bool isLoose() const;
   bool isFakeable() const;
@@ -130,6 +149,7 @@ protected:
   Double_t sip3d_;                      ///< significance of IP
   Double_t mvaRawTTH_;                  ///< raw output of lepton MVA of ttH multilepton analysis
   Double_t jetPtRatio_;                 ///< ratio of lepton pT to pT of nearby jet
+  Double_t jetPtRel_;                   ///< perpendicular component of the distance vector between lepton and its jet pT vectors
   Double_t jetBtagCSV_;                 ///< CSV b-tagging discriminator value of nearby jet
   Int_t tightCharge_;                   ///< Flag indicating if lepton passes (>= 2) or fails (< 2) tight charge requirement
   Int_t charge_;                        ///< lepton charge

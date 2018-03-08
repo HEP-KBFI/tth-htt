@@ -154,15 +154,14 @@ int main(int argc, char* argv[])
   std::string hadTauSelection_part2 = ( hadTauSelection_parts->GetEntries() == 2 ) ? (dynamic_cast<TObjString*>(hadTauSelection_parts->At(1)))->GetString().Data() : "";
   delete hadTauSelection_parts;
 
-  const std::string branchName_electrons_in   = cfg_produceNtuple.getParameter<std::string>("branchName_electrons");
-  const std::string branchName_muons_in       = cfg_produceNtuple.getParameter<std::string>("branchName_muons");
-  const std::string branchName_hadTaus_in     = cfg_produceNtuple.getParameter<std::string>("branchName_hadTaus");
-  const std::string branchName_jets_in        = cfg_produceNtuple.getParameter<std::string>("branchName_jets");
-  const std::string branchName_met_in         = cfg_produceNtuple.getParameter<std::string>("branchName_met");
-  const std::string branchName_genLeptons_in = cfg_produceNtuple.getParameter<std::string>("branchName_genLeptons1");
-  const std::string branchName_genLeptons2_in = cfg_produceNtuple.getParameter<std::string>("branchName_genLeptons2");
-  const std::string branchName_genHadTaus_in  = cfg_produceNtuple.getParameter<std::string>("branchName_genHadTaus");
-  const std::string branchName_genJets_in     = cfg_produceNtuple.getParameter<std::string>("branchName_genJets");
+  const std::string branchName_electrons_in  = cfg_produceNtuple.getParameter<std::string>("branchName_electrons");
+  const std::string branchName_muons_in      = cfg_produceNtuple.getParameter<std::string>("branchName_muons");
+  const std::string branchName_hadTaus_in    = cfg_produceNtuple.getParameter<std::string>("branchName_hadTaus");
+  const std::string branchName_jets_in       = cfg_produceNtuple.getParameter<std::string>("branchName_jets");
+  const std::string branchName_met_in        = cfg_produceNtuple.getParameter<std::string>("branchName_met");
+  const std::string branchName_genLeptons_in = cfg_produceNtuple.getParameter<std::string>("branchName_genLeptons");
+  const std::string branchName_genHadTaus_in = cfg_produceNtuple.getParameter<std::string>("branchName_genHadTaus");
+  const std::string branchName_genJets_in    = cfg_produceNtuple.getParameter<std::string>("branchName_genJets");
 
   int minNumHadTaus = cfg_produceNtuple.getParameter<int>("minNumHadTaus");
 
@@ -177,7 +176,7 @@ int main(int argc, char* argv[])
   std::cout << "use_HIP_mitigation_mediumMuonId = " << use_HIP_mitigation_mediumMuonId << std::endl;
 
   bool isMC = cfg_produceNtuple.getParameter<bool>("isMC"); 
-  const bool isDEBUG = cfg_produceNtuple.exists("isDEBUG") ? cfg_produceNtuple.getParameter<bool>("isDEBUG") : false;
+  const bool isDEBUG = cfg_produceNtuple.getParameter<bool>("isDEBUG");
 
   std::string selEventsFileName_input = cfg_produceNtuple.getParameter<std::string>("selEventsFileName_input");
   std::cout << "selEventsFileName_input = " << selEventsFileName_input << std::endl;
@@ -185,8 +184,6 @@ int main(int argc, char* argv[])
   if ( selEventsFileName_input != "" ) {
     run_lumi_eventSelector = new RunLumiEventSelector(selEventsFileName_input);
   }
-
-//  vstring outputCommands_string = cfg_produceNtuple.getParameter<vstring>("outputCommands");
 
   vstring copy_histograms = cfg_produceNtuple.getParameter<vstring>("copy_histograms");
 

@@ -68,13 +68,13 @@ Data_to_MC_CorrectionInterface_1l_2tau_trigger::Data_to_MC_CorrectionInterface_1
 
       effTrigger_1e_data_.push_back(new lutWrapperTGraph(
         inputFiles_,
-        "tthAnalysis/HiggsToTauTau/data/triggerSF/2016/Electron_Ele25WPTight_eff.root",
+        "tthAnalysis/HiggsToTauTau/data/triggerSF/2017/Electron_Ele32orEle35_eff.root",
         Form("ZMassEta%s_Data", etaBinLabel.data()),
         lut::kXptYabsEta, -1., -1., etaMin, etaMax
       ));
       effTrigger_1e_mc_.push_back(new lutWrapperTGraph(
         inputFiles_,
-        "tthAnalysis/HiggsToTauTau/data/triggerSF/2016/Electron_Ele25WPTight_eff.root",
+        "tthAnalysis/HiggsToTauTau/data/triggerSF/2017/Electron_Ele32orEle35_eff.root",
         Form("ZMassEta%s_MC", etaBinLabel.data()),
         lut::kXptYabsEta, -1., -1., etaMin, etaMax
       ));
@@ -91,13 +91,13 @@ Data_to_MC_CorrectionInterface_1l_2tau_trigger::Data_to_MC_CorrectionInterface_1
 
       effTrigger_1e1tau_lepLeg_data_.push_back(new lutWrapperTGraph(
         inputFiles_,
-        "tthAnalysis/HiggsToTauTau/data/triggerSF/2016/Electron_Ele24_eff.root",
+        "tthAnalysis/HiggsToTauTau/data/triggerSF/2017/Electron_EleTau_Ele24_eff.root",
         Form("ZMassEta%s_Data", etaBinLabel.data()),
         lut::kXptYabsEta, -1., -1., etaMin, etaMax
       ));
       effTrigger_1e1tau_lepLeg_mc_.push_back(new lutWrapperTGraph(
         inputFiles_,
-        "tthAnalysis/HiggsToTauTau/data/triggerSF/2016/Electron_Ele24_eff.root",
+        "tthAnalysis/HiggsToTauTau/data/triggerSF/2017/Electron_EleTau_Ele24_eff.root",
         Form("ZMassEta%s_MC", etaBinLabel.data()),
         lut::kXptYabsEta, -1., -1., etaMin, etaMax
       ));
@@ -114,13 +114,13 @@ Data_to_MC_CorrectionInterface_1l_2tau_trigger::Data_to_MC_CorrectionInterface_1
 
       effTrigger_1m_data_.push_back(new lutWrapperTGraph(
         inputFiles_,
-        "tthAnalysis/HiggsToTauTau/data/triggerSF/2016/Muon_Mu22OR_eta2p1_eff.root",
+        "tthAnalysis/HiggsToTauTau/data/triggerSF/2017/Muon_IsoMu24orIsoMu27_eff.root",
         Form("ZMassEta%s_Data", etaBinLabel.data()),
         lut::kXptYabsEta, -1., -1., etaMin, etaMax
       ));
       effTrigger_1m_mc_.push_back(new lutWrapperTGraph(
         inputFiles_,
-        "tthAnalysis/HiggsToTauTau/data/triggerSF/2016/Muon_Mu22OR_eta2p1_eff.root",
+        "tthAnalysis/HiggsToTauTau/data/triggerSF/2017/Muon_IsoMu24orIsoMu27_eff.root",
         Form("ZMassEta%s_MC", etaBinLabel.data()),
         lut::kXptYabsEta, -1., -1., etaMin, etaMax
       ));
@@ -137,13 +137,13 @@ Data_to_MC_CorrectionInterface_1l_2tau_trigger::Data_to_MC_CorrectionInterface_1
 
       effTrigger_1m1tau_lepLeg_data_.push_back(new lutWrapperTGraph(
         inputFiles_,
-        "tthAnalysis/HiggsToTauTau/data/triggerSF/2016/Muon_Mu19leg_2016BtoH_eff.root",
+        "tthAnalysis/HiggsToTauTau/data/triggerSF/2017/Muon_MuTau_IsoMu20_eff.root",
         Form("ZMassEta%s_Data", etaBinLabel.data()),
         lut::kXptYabsEta, -1., -1., etaMin, etaMax
       ));
       effTrigger_1m1tau_lepLeg_mc_.push_back(new lutWrapperTGraph(
         inputFiles_,
-        "tthAnalysis/HiggsToTauTau/data/triggerSF/2016/Muon_Mu19leg_2016BtoH_eff.root",
+        "tthAnalysis/HiggsToTauTau/data/triggerSF/2017/Muon_MuTau_IsoMu20_eff.root",
         Form("ZMassEta%s_MC", etaBinLabel.data()),
         lut::kXptYabsEta, -1., -1., etaMin, etaMax
       ));

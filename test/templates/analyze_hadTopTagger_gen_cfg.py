@@ -87,9 +87,9 @@ process.analyze_hadTopTagger_gen = cms.PSet(
     selEventsFileName_output = cms.string('/home/veelken/CMSSW_9_4_4/src/tthAnalysis/HiggsToTauTau/test/selEvents_hadTopTagger_gen.txt')
 )
 
-inputFilePath = "/hdfs/local/karl/ttHNtupleProduction/2017/2018Feb15_1to1_wNanoPrep_woPresel_all/ntuples/ttHJetToNonbb_M125_amcatnlo/0000/"
+inputFilePath = "/hdfs/local/karl/ttHNtupleProduction/2017/2018Feb28_wNanoPrep_woPresel_all/ntuples/ttHJetToNonbb_M125_amcatnlo/0000/"
 maxInputFiles = 50
-zombie_files = [ "tree_110.root", ]
+zombie_files = []
 import os
 def getInputFiles(inputFilePath):
     inputFiles = []

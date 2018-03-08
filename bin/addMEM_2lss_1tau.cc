@@ -91,7 +91,7 @@ int main(int argc,
   const std::string selEventsFileName_input = cfg_addMEM.getParameter<std::string>("selEventsFileName_input");
   const bool isMC                           = cfg_addMEM.getParameter<bool>("isMC");
   const bool isDEBUG                        = cfg_addMEM.getParameter<bool>("isDEBUG");
-  const bool isForBDTtraining               = cfg_addMEM.getParameter<bool>("isForBDTtraining");
+  const bool lowIntegrationPoints           = cfg_addMEM.getParameter<bool>("lowIntegrationPoints");
   const bool copy_all_branches              = cfg_addMEM.getParameter<bool>("copy_all_branches");
   const bool readGenObjects                 = cfg_addMEM.getParameter<bool>("readGenObjects");
 
@@ -111,7 +111,7 @@ int main(int argc,
   }
 
   const std::string memPythonConfigFile =
-    isForBDTtraining                                         ?
+    lowIntegrationPoints                                     ?
     "ttH_Htautau_MEM_Analysis/MEM/small_lowpoints_122016.py" :
     "ttH_Htautau_MEM_Analysis/MEM/small_nomin_122016.py"
   ;
@@ -177,9 +177,6 @@ int main(int argc,
   const std::string branchName_maxPermutations_addMEM = get_memPermutationBranchName(
     "2lss_1tau", leptonSelection_string, hadTauSelection_part1, hadTauSelection_part2
   );
-  Int_t maxPermutations_addMEM_2lss_1tau = -1;
-  inputTree->SetBranchAddress(branchName_maxPermutations_addMEM.c_str(), &maxPermutations_addMEM_2lss_1tau);
-  std::cout << "Setting branch maxPermutations_addMEM_2lss_1tau = " << branchName_maxPermutations_addMEM << '\n';
 
 //--- declare particle collections
   RecoMuonReader* muonReader = new RecoMuonReader(era, branchName_muons, readGenObjects);
@@ -282,24 +279,29 @@ int main(int argc,
 
     vstring outputCommands_string = {
       "keep *",
-      "drop run",
-      "drop luminosityBlock",
-      "drop event",
-      Form("drop *%s*", branchName_muons.data()),
-      Form("drop *%s*", branchName_electrons.data()),
-      Form("drop *%s*", branchName_hadTaus.data()),
-      Form("drop *%s*", branchName_jets.data()),
+      Form("drop %s", eventInfoWriter->getBranchName_run().data()),
+      Form("drop %s", eventInfoWriter->getBranchName_lumi().data()),
+      Form("drop %s", eventInfoWriter->getBranchName_event().data()),
+      Form("drop n%s*", branchName_muons.data()),
+      Form("drop %s_*", branchName_muons.data()),
+      Form("drop n%s*", branchName_electrons.data()),
+      Form("drop %s_*", branchName_electrons.data()),
+      Form("drop n%s*", branchName_hadTaus.data()),
+      Form("drop %s_*", branchName_hadTaus.data()),
+      Form("drop n%s*", branchName_jets.data()),
+      Form("drop %s_*", branchName_jets.data()),
       Form("drop *%s*", branchName_met.data()),
-      Form("drop %s",   get_memPermutationBranchName("*", "*", "*", "*").c_str()),
-      "keep *metPuppi*",
-      "keep HLT_BIT_HLT_*",
-      "keep *l1*",
-      "keep *Gen*"
     };
     std::vector<outputCommandEntry> outputCommands = getOutputCommands(outputCommands_string);
     std::map<std::string, bool> isBranchToKeep = getBranchesToKeep(inputTree, outputCommands);
     copyBranches_singleType(inputTree, outputTree, isBranchToKeep, branchesToKeep);
     copyBranches_vectorType(inputTree, outputTree, isBranchToKeep, branchesToKeep);
+  }
+
+  if(! branchesToKeep.count(branchName_maxPermutations_addMEM))
+  {
+    throw cmsException(__func__, __LINE__)
+      << "No such branch: " << branchName_maxPermutations_addMEM;
   }
 
   const std::string branchName_memOutput = get_memObjectBranchName(
@@ -441,12 +443,13 @@ int main(int argc,
       }
     }
 
+    const Int_t maxPermutations_addMEM_2lss_1tau = branchesToKeep.at(branchName_maxPermutations_addMEM)->getValue_int();
+    if(isDEBUG)
+    {
+      std::cout << "Found " << maxPermutations_addMEM_2lss_1tau << " possible combination(s) to compute MEM\n";
+    }
     if(maxPermutations_addMEM_2lss_1tau >= 1)
     {
-      if(isDEBUG)
-      {
-        std::cout << "Found " << maxPermutations_addMEM_2lss_1tau << " possible combinations to compute MEM\n";
-      }
       const std::vector<const RecoLepton*> selLeptons = mergeLeptonCollections(selElectrons, selMuons);
       for(std::size_t selLepton_lead_idx = 0; selLepton_lead_idx < selLeptons.size(); ++selLepton_lead_idx)
       {

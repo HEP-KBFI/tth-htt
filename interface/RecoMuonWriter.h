@@ -25,18 +25,21 @@ public:
   /**
    * @brief Call tree->Branch for all lepton branches specific to RecoMuons
    */
-  void setBranches(TTree * tree);
+  void
+  setBranches(TTree * tree);
 
   /**
    * @brief Write branches specific to RecoMuons to tree
    */
-  void write(const std::vector<const RecoMuon *> & leptons);
+  void
+  write(const std::vector<const RecoMuon *> & leptons);
 
 protected:
  /**
    * @brief Initialize names of branches to be read from tree
    */
-  void setBranchNames();
+  void
+  setBranchNames();
 
   int era_;
   std::string branchName_num_;
@@ -47,10 +50,12 @@ protected:
   std::string branchName_looseIdPOG_; 
   std::string branchName_mediumIdPOG_;
   std::string branchName_segmentCompatibility_;
+  std::string branchName_ptErr_;
 
   Bool_t * looseIdPOG_;
   Bool_t * mediumIdPOG_;
   Float_t * segmentCompatibility_;
+  Float_t * ptErr_;
 };
 
 #endif // tthAnalysis_HiggsToTauTau_RecoMuonWriter_h

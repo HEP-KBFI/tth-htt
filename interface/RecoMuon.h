@@ -11,7 +11,8 @@ public:
   RecoMuon(const RecoLepton & lepton,
            Bool_t passesLooseIdPOG,
            Bool_t passesMediumIdPOG,
-           Float_t segmentCompatibility);
+           Float_t segmentCompatibility,
+           Float_t ptErr);
 
   /**
    * @brief Funtions to access data-members
@@ -25,6 +26,12 @@ public:
 
   Float_t
   segmentCompatibility() const;
+
+  Float_t
+  ptErr() const;
+
+  Float_t
+  dpt_div_pt() const;
 
   /**
    * @brief Checks whether a given lepton is an electron by its PDG id
@@ -44,6 +51,7 @@ public:
   Bool_t passesLooseIdPOG_;      ///< flag indicating if muon passes (true) or fails (false) loose PFMuon id
   Bool_t passesMediumIdPOG_;     ///< flag indicating if muon passes (true) or fails (false) medium PFMuon id
   Float_t segmentCompatibility_; ///< muon segment compatibility
+  Float_t ptErr_;                ///< pT error of the muon track
 };
 
 std::ostream &
