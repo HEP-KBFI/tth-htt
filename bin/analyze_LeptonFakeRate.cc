@@ -1005,8 +1005,9 @@ main(int argc,
       lheInfoReader->read();
     }
 
-    if(run_lumi_eventSelector){
-      std::cout << "Event Particle Collection Info " << std::endl;
+    if(run_lumi_eventSelector)
+    {
+      std::cout << "Event Particle Collection Info\n";
       printCollection("preselElectrons", preselElectrons);
       printCollection("preselMuons", preselMuons);
       printCollection("selJets_dR07", selJets_dR07);
@@ -1016,8 +1017,9 @@ main(int argc,
     // if((fakeableElectrons.size() + fakeableMuons.size()) != 1)
     if((preselElectrons.size() + preselMuons.size()) != 1) // Giovanni's pre-selection
     {
-      if(run_lumi_eventSelector){
-        std::cout<< "event FAILS (presel.e + presel.mu != 1) cut " << std::endl;
+      if(run_lumi_eventSelector)
+      {
+        std::cout << "event FAILS (presel.e + presel.mu != 1) cut\n";
       }
       continue;
     }
@@ -1072,8 +1074,9 @@ main(int argc,
 
     if(! metFilterSelector(metFilter))
     {
-       if(run_lumi_eventSelector){
-        std::cout<< "event FAILS MEtFilter " << std::endl;
+      if(run_lumi_eventSelector)
+      {
+        std::cout << "event FAILS MEtFilter\n";
       }
       continue;
     }
@@ -1089,19 +1092,20 @@ main(int argc,
     {
       if(! (hltPath_iter->getValue() >= 1))
       {
-       if(run_lumi_eventSelector){
-        std::cout<< "event FAILS this e trigger" << std::endl;
-        std::cout<< "HLT Path name " << *hltPath_iter << std::endl;
-        std::cout<< "Trigger bit value " << hltPath_iter->getValue() << std::endl;
-       }
+        if(run_lumi_eventSelector)
+        {
+          std::cout << "event FAILS this e trigger"                        "\n"
+                       "HLT Path name "     << *hltPath_iter            << "\n"
+                       "Trigger bit value " << hltPath_iter->getValue() << '\n';
+        }
         continue; // require trigger to fire
       }
 
       hltpath_passed = hltPath_iter->getPathName();
       hltpath_trigger_bit = true;
-      std::cout<< "event PASSES this e trigger" << std::endl;
-      std::cout<< "HLT Path name " << *hltPath_iter << std::endl;
-      std::cout<< "Trigger bit value " << hltPath_iter->getValue() << std::endl;
+      std::cout << "event PASSES this e trigger"                       "\n"
+                   "HLT Path name "     << *hltPath_iter            << "\n"
+                   "Trigger bit value " << hltPath_iter->getValue() << '\n';
 
       if((use_triggers_1e && hltPath_iter->is_trigger_1e()) ||
          (use_triggers_2e && hltPath_iter->is_trigger_2e())  )
@@ -1111,44 +1115,38 @@ main(int argc,
           const RecoElectron & preselElectron = *preselElectron_ptr;
           if(!(preselElectron.cone_pt() > minConePt_global_e && preselElectron.pt() > minRecoPt_global_e)) // Giovanni's selection
           {
-            if(run_lumi_eventSelector){
-              std::cout<< "presel Electron FAILS global reco pt and cone pt cuts " << std::endl;
-              std::cout<< "minConePt_global_e " << minConePt_global_e << " minRecoPt_global_e " << minRecoPt_global_e << std::endl;
+            if(run_lumi_eventSelector)
+            {
+              std::cout << "presel Electron FAILS global reco pt and cone pt cuts\n"
+                           "minConePt_global_e " << minConePt_global_e << " "
+                           "minRecoPt_global_e " << minRecoPt_global_e << '\n';
             }
             continue;
           }
-
-          /*
-          if(!(preselElectron.cone_pt() >= hltPath_iter->getMinPt() && preselElectron.cone_pt()  < hltPath_iter->getMaxPt()))
-          {
-            if(run_lumi_eventSelector){
-              std::cout<< "presel Electron FAILS trigger path based cone_pt window cuts " << std::endl;
-            }
-            continue;
-          }
-          */
 
           bool isGoodElectronJetPair = false;
           double sel_Jet_pt_e = 0.;
           double sel_Jet_eta_e = 0.;
-          // int jet_counter = 0;
           for(const RecoJet * selJet: selJets_dR07)
           {
             if(deltaR(preselElectron.p4(), selJet->p4()) <= 1.0)
             {
-              if(run_lumi_eventSelector){
-                std::cout<< "jet FAILS deltaR(presel. e, sel-jet) > 1.0 cut " << std::endl;
-                std::cout << "deltaR(preselElectron.p4(), selJet->p4()) " << deltaR(preselElectron.p4(), selJet->p4()) << std::endl;
+              if(run_lumi_eventSelector)
+              {
+                std::cout << "jet FAILS deltaR(presel. e, sel-jet) > 1.0 cut\n"
+                             "deltaR(preselElectron.p4(), selJet->p4()) " << deltaR(preselElectron.p4(), selJet->p4())
+                          << '\n';
                 continue;
               }
             }
 
             if( !(selJet->pt() > hltPath_iter->getMinJetPt()) )
             {
-              if(run_lumi_eventSelector){
-                std::cout<< "jet FAILS trigger dep. Jet Pt cut " << std::endl;
-                std::cout << "selJet->pt() " << selJet->pt() << std::endl;
-                std::cout << "Trigger Min. Jet pT " << hltPath_iter->getMinJetPt() << std::endl;
+              if(run_lumi_eventSelector)
+              {
+                std::cout << "jet FAILS trigger dep. Jet Pt cut"                      "\n"
+                             "selJet->pt() "        << selJet->pt()                << "\n"
+                             "Trigger Min. Jet pT " << hltPath_iter->getMinJetPt() << '\n';
               }
               continue;
             }else{
@@ -1157,24 +1155,18 @@ main(int argc,
               isGoodElectronJetPair = true;
               break;
             }
-            // jet_counter++;
           }
-
-          // std::cout<< "Jet Counter " << jet_counter << std::endl;
-          // if(jet_counter == 1){isGoodElectronJetPair = true;}
 
           if(! isGoodElectronJetPair)
           {
-            if(run_lumi_eventSelector){
-                std::cout<< "event FAILS ""trigger path dep. Jet pT cuts"" " << std::endl;
-                // std::cout<< "e cone pt " << preselElectron.cone_pt() << " e reco pt " << preselElectron.pt() << " e eta " << preselElectron.eta() << std::endl;
-                // std::cout<< "Paired Jet pt " << sel_Jet_pt_e << " Paired Jet eta " << sel_Jet_eta_e << std::endl;
-               }
+            if(run_lumi_eventSelector)
+            {
+              std::cout << "event FAILS ""trigger path dep. Jet pT cuts\n";
+            }
             continue;
           }
 
           cutFlowTable_e.update("electron+jet pair passing trigger bit", evtWeight);
-          // std::cout << *hltPath_iter;
 
           const double mT     = comp_mT    (preselElectron, met.pt(), met.phi());
           const double mT_fix = comp_mT_fix(preselElectron, met.pt(), met.phi());
@@ -1209,7 +1201,7 @@ main(int argc,
           std::vector<numerator_and_denominatorHistManagers *> * histograms_binned_afterCuts  = nullptr;
           if(preselElectron.isTight())
           {
-            std::cout<< "numerator filled"<< std::endl;
+            std::cout << "numerator filled\n";
             // electron enters numerator
             histograms_incl_beforeCuts = histograms_e_numerator_incl_beforeCuts;
             histograms_incl_afterCuts  = histograms_e_numerator_incl_afterCuts;
@@ -1255,7 +1247,7 @@ main(int argc,
           }
           else if(preselElectron.isFakeable())
           {
-            std::cout<< "denominator filled"<< std::endl;
+            std::cout << "denominator filled\n";
             // electron enters denominator (fakeable but not tight)
             histograms_incl_beforeCuts = histograms_e_denominator_incl_beforeCuts;
             histograms_incl_afterCuts  = histograms_e_denominator_incl_afterCuts;
@@ -1298,10 +1290,6 @@ main(int argc,
 
             }
           }
-          //  else
-          //{ // No longer needed since we are looping over preselected leptons
-          //  assert(0);
-          //}
           if(histograms_incl_beforeCuts != nullptr && histograms_incl_afterCuts != nullptr &&
              histograms_binned_beforeCuts != nullptr && histograms_binned_afterCuts != nullptr)
           {
@@ -1330,17 +1318,18 @@ main(int argc,
     {
       if(! (hltPath_iter->getValue() >= 1))
       {
-       if(run_lumi_eventSelector){
-        std::cout<< "event FAILS this mu trigger" << std::endl;
-        std::cout<< "HLT Path name " << *hltPath_iter << std::endl;
-        std::cout<< "Trigger bit value " << hltPath_iter->getValue() << std::endl;
+       if(run_lumi_eventSelector)
+       {
+        std::cout << "event FAILS this mu trigger"                       "\n"
+                     "HLT Path name "     << *hltPath_iter            << "\n"
+                     "Trigger bit value " << hltPath_iter->getValue() << '\n';
        }
         continue; // require trigger to fire
       }
 
-              std::cout<< "event PASSES this mu trigger" << std::endl;
-        std::cout<< "HLT Path name " << *hltPath_iter << std::endl;
-        std::cout<< "Trigger bit value " << hltPath_iter->getValue() << std::endl;
+        std::cout << "event PASSES this mu trigger"                      "\n"
+                     "HLT Path name "     << *hltPath_iter            << "\n"
+                     "Trigger bit value " << hltPath_iter->getValue() << '\n';
 
       if((use_triggers_1mu && hltPath_iter->is_trigger_1mu()) ||
          (use_triggers_2mu && hltPath_iter->is_trigger_2mu())  )
@@ -1350,8 +1339,9 @@ main(int argc,
           const RecoMuon & preselMuon = *preselMuon_ptr;
           if(!(preselMuon.cone_pt() > minConePt_global_mu && preselMuon.pt() > minRecoPt_global_mu)) // Giovanni's selection
           {
-             if(run_lumi_eventSelector){
-               std::cout<< "event FAILS global muon cone and reco pt cuts" << std::endl;
+             if(run_lumi_eventSelector)
+             {
+               std::cout << "event FAILS global muon cone and reco pt cuts\n";
              }
             continue;
           }
@@ -1363,8 +1353,9 @@ main(int argc,
           {
             if(deltaR(preselMuon.p4(), selJet->p4()) < 1.0)
             {
-             if(run_lumi_eventSelector){
-               std::cout<< "event FAILS deltaR(presel. mu, sel-jet) > 1.0 cut" << std::endl;
+             if(run_lumi_eventSelector)
+             {
+               std::cout << "event FAILS deltaR(presel. mu, sel-jet) > 1.0 cut\n";
              }
               continue;
             }
@@ -1385,12 +1376,18 @@ main(int argc,
 
           if(!isGoodMuonJetPair)
           {
-            if(run_lumi_eventSelector){
-                std::cout<< "event FAILS ""trigger path dep. cone pt and selJet pT cuts"" " << std::endl;
-                std::cout<< "event FAILS ""trigger path dep. cone pt and selJet pT cuts"" && ""(bjet_loose.size != 0 &&  muon cone pt < 30) || (muon cone pt >= 30)"" " << std::endl;
-                std::cout<< "mu cone pt " << preselMuon.cone_pt() << " mu reco pt " << preselMuon.pt() << " mu eta " << preselMuon.eta() << std::endl;
-                std::cout<< "Paired Jet pt " << sel_Jet_pt_mu << " Paired Jet eta " << sel_Jet_eta_mu << std::endl;
-               }
+            if(run_lumi_eventSelector)
+            {
+              std::cout << "event FAILS ""trigger path dep. cone pt and selJet pT cuts\n"
+                           "event FAILS ""trigger path dep. cone pt and selJet pT cuts && "
+                           "(bjet_loose.size != 0 &&  muon cone pt < 30) || (muon cone pt >= 30)\n"
+                           "mu cone pt " << preselMuon.cone_pt() << " "
+                           "mu reco pt " << preselMuon.pt()      << " "
+                           "mu eta " << preselMuon.eta()         << "\n"
+                           "Paired Jet pt " << sel_Jet_pt_mu     << " "
+                           "Paired Jet eta " << sel_Jet_eta_mu   << '\n'
+               ;
+            }
             continue;
           }
 
@@ -1476,8 +1473,9 @@ main(int argc,
 
     if(! isGoodLeptonJetPair)
     {
-      if(run_lumi_eventSelector){
-        std::cout<< "event FAILS as there is no presel.lepton+Jet pair in the event satisfying all requirements " << std::endl;
+      if(run_lumi_eventSelector)
+      {
+        std::cout << "event FAILS as there is no presel.lepton+Jet pair in the event satisfying all requirements\n";
       }
       continue;
     }
