@@ -938,7 +938,7 @@ main(int argc,
     std::vector<const RecoMuon *> preselMuons = preselMuonSelector(cleanedMuons); // Loose muons
     std::vector<const RecoMuon *> fakeableMuons = fakeableMuonSelector(preselMuons);
     std::vector<const RecoMuon *> tightMuons = tightMuonSelector(preselMuons);
-    
+
     std::vector<RecoElectron> electrons = electronReader->read();
     std::vector<const RecoElectron *> electron_ptrs = convert_to_ptrs(electrons);
     std::vector<const RecoElectron *> cleanedElectrons = electronCleaner(electron_ptrs, preselMuons);
@@ -1017,7 +1017,7 @@ main(int argc,
     if((preselElectrons.size() + preselMuons.size()) != 1) // Giovanni's pre-selection
     {
       if(run_lumi_eventSelector){
-	std::cout<< "event FAILS (presel.e + presel.mu != 1) cut " << std::endl;
+        std::cout<< "event FAILS (presel.e + presel.mu != 1) cut " << std::endl;
       }
       continue;
     }
@@ -1073,7 +1073,7 @@ main(int argc,
     if(! metFilterSelector(metFilter))
     {
        if(run_lumi_eventSelector){
-	std::cout<< "event FAILS MEtFilter " << std::endl;
+        std::cout<< "event FAILS MEtFilter " << std::endl;
       }
       continue;
     }
@@ -1090,9 +1090,9 @@ main(int argc,
       if(! (hltPath_iter->getValue() >= 1))
       {
        if(run_lumi_eventSelector){
-	std::cout<< "event FAILS this e trigger" << std::endl;
-	std::cout<< "HLT Path name " << *hltPath_iter << std::endl;
-	std::cout<< "Trigger bit value " << hltPath_iter->getValue() << std::endl;
+        std::cout<< "event FAILS this e trigger" << std::endl;
+        std::cout<< "HLT Path name " << *hltPath_iter << std::endl;
+        std::cout<< "Trigger bit value " << hltPath_iter->getValue() << std::endl;
        }
         continue; // require trigger to fire
       }
@@ -1111,69 +1111,69 @@ main(int argc,
           const RecoElectron & preselElectron = *preselElectron_ptr;
           if(!(preselElectron.cone_pt() > minConePt_global_e && preselElectron.pt() > minRecoPt_global_e)) // Giovanni's selection
           {
-	    if(run_lumi_eventSelector){
-	      std::cout<< "presel Electron FAILS global reco pt and cone pt cuts " << std::endl;
-	      std::cout<< "minConePt_global_e " << minConePt_global_e << " minRecoPt_global_e " << minRecoPt_global_e << std::endl;
-	    }
+            if(run_lumi_eventSelector){
+              std::cout<< "presel Electron FAILS global reco pt and cone pt cuts " << std::endl;
+              std::cout<< "minConePt_global_e " << minConePt_global_e << " minRecoPt_global_e " << minRecoPt_global_e << std::endl;
+            }
             continue;
           }
 
-	  /*
+          /*
           if(!(preselElectron.cone_pt() >= hltPath_iter->getMinPt() && preselElectron.cone_pt()  < hltPath_iter->getMaxPt()))
           {
-	    if(run_lumi_eventSelector){
-	      std::cout<< "presel Electron FAILS trigger path based cone_pt window cuts " << std::endl;
-	    }
-	    continue;
-	  }
-	  */
+            if(run_lumi_eventSelector){
+              std::cout<< "presel Electron FAILS trigger path based cone_pt window cuts " << std::endl;
+            }
+            continue;
+          }
+          */
 
           bool isGoodElectronJetPair = false;
           double sel_Jet_pt_e = 0.;
-          double sel_Jet_eta_e = 0.; 
+          double sel_Jet_eta_e = 0.;
           // int jet_counter = 0;
           for(const RecoJet * selJet: selJets_dR07)
           {
             if(deltaR(preselElectron.p4(), selJet->p4()) <= 1.0)
-	    {
-	      if(run_lumi_eventSelector){
-		std::cout<< "jet FAILS deltaR(presel. e, sel-jet) > 1.0 cut " << std::endl;
-		std::cout << "deltaR(preselElectron.p4(), selJet->p4()) " << deltaR(preselElectron.p4(), selJet->p4()) << std::endl;
-		continue;
-	      }
-	    }
-	 
+            {
+              if(run_lumi_eventSelector){
+                std::cout<< "jet FAILS deltaR(presel. e, sel-jet) > 1.0 cut " << std::endl;
+                std::cout << "deltaR(preselElectron.p4(), selJet->p4()) " << deltaR(preselElectron.p4(), selJet->p4()) << std::endl;
+                continue;
+              }
+            }
+
             if( !(selJet->pt() > hltPath_iter->getMinJetPt()) )
             {
-	      if(run_lumi_eventSelector){
-		std::cout<< "jet FAILS trigger dep. Jet Pt cut " << std::endl;
-		std::cout << "selJet->pt() " << selJet->pt() << std::endl;
-		std::cout << "Trigger Min. Jet pT " << hltPath_iter->getMinJetPt() << std::endl;
-	      }
-	      continue; 
-	    }else{
-	      sel_Jet_eta_e = selJet->eta();
-	      sel_Jet_pt_e  = selJet->pt();
+              if(run_lumi_eventSelector){
+                std::cout<< "jet FAILS trigger dep. Jet Pt cut " << std::endl;
+                std::cout << "selJet->pt() " << selJet->pt() << std::endl;
+                std::cout << "Trigger Min. Jet pT " << hltPath_iter->getMinJetPt() << std::endl;
+              }
+              continue;
+            }else{
+              sel_Jet_eta_e = selJet->eta();
+              sel_Jet_pt_e  = selJet->pt();
               isGoodElectronJetPair = true;
               break;
-	    }
-            // jet_counter++; 
-	  }
+            }
+            // jet_counter++;
+          }
 
-	  // std::cout<< "Jet Counter " << jet_counter << std::endl;
-          // if(jet_counter == 1){isGoodElectronJetPair = true;}       
- 
+          // std::cout<< "Jet Counter " << jet_counter << std::endl;
+          // if(jet_counter == 1){isGoodElectronJetPair = true;}
+
           if(! isGoodElectronJetPair)
           {
-	    if(run_lumi_eventSelector){
-	        std::cout<< "event FAILS ""trigger path dep. Jet pT cuts"" " << std::endl;
-		// std::cout<< "e cone pt " << preselElectron.cone_pt() << " e reco pt " << preselElectron.pt() << " e eta " << preselElectron.eta() << std::endl;
-		// std::cout<< "Paired Jet pt " << sel_Jet_pt_e << " Paired Jet eta " << sel_Jet_eta_e << std::endl;
- 	      }
+            if(run_lumi_eventSelector){
+                std::cout<< "event FAILS ""trigger path dep. Jet pT cuts"" " << std::endl;
+                // std::cout<< "e cone pt " << preselElectron.cone_pt() << " e reco pt " << preselElectron.pt() << " e eta " << preselElectron.eta() << std::endl;
+                // std::cout<< "Paired Jet pt " << sel_Jet_pt_e << " Paired Jet eta " << sel_Jet_eta_e << std::endl;
+               }
             continue;
           }
-	    
-	  cutFlowTable_e.update("electron+jet pair passing trigger bit", evtWeight);
+
+          cutFlowTable_e.update("electron+jet pair passing trigger bit", evtWeight);
           // std::cout << *hltPath_iter;
 
           const double mT     = comp_mT    (preselElectron, met.pt(), met.phi());
@@ -1209,7 +1209,7 @@ main(int argc,
           std::vector<numerator_and_denominatorHistManagers *> * histograms_binned_afterCuts  = nullptr;
           if(preselElectron.isTight())
           {
-	    std::cout<< "numerator filled"<< std::endl;
+            std::cout<< "numerator filled"<< std::endl;
             // electron enters numerator
             histograms_incl_beforeCuts = histograms_e_numerator_incl_beforeCuts;
             histograms_incl_afterCuts  = histograms_e_numerator_incl_afterCuts;
@@ -1217,45 +1217,45 @@ main(int argc,
             histograms_binned_afterCuts  = &histograms_e_numerator_binned_afterCuts;
             if(writeTo_selEventsFileOut)
             {
-	      *(outputFiles["e"]["num"]) << eventInfo.str() << 
-	        " lep pt() " << preselElectron.pt() << 
-		" eta " << preselElectron.eta() << 
-		" phi "  << preselElectron.phi() <<   
+              *(outputFiles["e"]["num"]) << eventInfo.str() <<
+                " lep pt() " << preselElectron.pt() <<
+                " eta " << preselElectron.eta() <<
+                " phi "  << preselElectron.phi() <<
                 " mva " << preselElectron.mvaRawTTH() <<
                 " ptRatio " << preselElectron.jetPtRatio() <<
-		" deltaEta " << preselElectron.deltaEta() << 
-                " deltaPhi " << preselElectron.deltaPhi() << 
+                " deltaEta " << preselElectron.deltaEta() <<
+                " deltaPhi " << preselElectron.deltaPhi() <<
                 " away jet pt " << sel_Jet_pt_e <<
                 " eta " << sel_Jet_eta_e <<
                 " met pt " << met.pt() <<
                 " phi " << met.phi() <<
-                " HLT passed " <<  hltpath_passed <<     
-	        " " << hltpath_trigger_bit <<
-		
-		
-		" lep cone_pt() " << preselElectron.cone_pt() << 
-	        " lep assocJet_pt() " << preselElectron.assocJet_pt() << 
-	        " lep dxy() " << preselElectron.dxy() << 
-	        " lep dz() " << preselElectron.dz() << 
-		" lep sip3d() " << preselElectron.sip3d() << 
-	        " lep relIso() " << preselElectron.relIso() << 
-	        " lep chargedHadRelIso03() " << preselElectron.chargedHadRelIso03() << 
-	        " lep miniIsoNeutral() " << preselElectron.miniIsoNeutral() << 
-		" lep miniIsoCharged() " << preselElectron.miniIsoCharged() << 
-		
-		" e mvaRawPOG_GP " << preselElectron.mvaRawPOG_GP() << 
-		" e mvaRawPOG_HZZ() " << preselElectron.mvaRawPOG_HZZ() << 
-		" e sigmaEtaEta() " << preselElectron.sigmaEtaEta() << 
-		" e HoE() " << preselElectron.HoE() << 
-		" e OoEminusOoP() " << preselElectron.OoEminusOoP() << 
-		" e nLostHits() " << preselElectron.nLostHits() << 
-		" e passesConversionVeto() " << preselElectron.passesConversionVeto() << '\n';
-		
-	    }
+                " HLT passed " <<  hltpath_passed <<
+                " " << hltpath_trigger_bit <<
+
+
+                " lep cone_pt() " << preselElectron.cone_pt() <<
+                " lep assocJet_pt() " << preselElectron.assocJet_pt() <<
+                " lep dxy() " << preselElectron.dxy() <<
+                " lep dz() " << preselElectron.dz() <<
+                " lep sip3d() " << preselElectron.sip3d() <<
+                " lep relIso() " << preselElectron.relIso() <<
+                " lep chargedHadRelIso03() " << preselElectron.chargedHadRelIso03() <<
+                " lep miniIsoNeutral() " << preselElectron.miniIsoNeutral() <<
+                " lep miniIsoCharged() " << preselElectron.miniIsoCharged() <<
+
+                " e mvaRawPOG_GP " << preselElectron.mvaRawPOG_GP() <<
+                " e mvaRawPOG_HZZ() " << preselElectron.mvaRawPOG_HZZ() <<
+                " e sigmaEtaEta() " << preselElectron.sigmaEtaEta() <<
+                " e HoE() " << preselElectron.HoE() <<
+                " e OoEminusOoP() " << preselElectron.OoEminusOoP() <<
+                " e nLostHits() " << preselElectron.nLostHits() <<
+                " e passesConversionVeto() " << preselElectron.passesConversionVeto() << '\n';
+
+            }
           }
           else if(preselElectron.isFakeable())
           {
-	    std::cout<< "denominator filled"<< std::endl;
+            std::cout<< "denominator filled"<< std::endl;
             // electron enters denominator (fakeable but not tight)
             histograms_incl_beforeCuts = histograms_e_denominator_incl_beforeCuts;
             histograms_incl_afterCuts  = histograms_e_denominator_incl_afterCuts;
@@ -1264,47 +1264,47 @@ main(int argc,
             if(writeTo_selEventsFileOut)
             {
               *(outputFiles["e"]["den"]) << eventInfo.str() <<
-		" lep pt() " << preselElectron.pt() << 
-		" eta " << preselElectron.eta() << 
-		" phi "  << preselElectron.phi() <<   
+                " lep pt() " << preselElectron.pt() <<
+                " eta " << preselElectron.eta() <<
+                " phi "  << preselElectron.phi() <<
                 " mva " << preselElectron.mvaRawTTH() <<
                 " ptRatio " << preselElectron.jetPtRatio() <<
-                " deltaEta " << preselElectron.deltaEta() << 
-                " deltaPhi " << preselElectron.deltaPhi() << 
+                " deltaEta " << preselElectron.deltaEta() <<
+                " deltaPhi " << preselElectron.deltaPhi() <<
                 " away jet pt " << sel_Jet_pt_e <<
                 " eta " << sel_Jet_eta_e <<
                 " met pt " << met.pt() <<
                 " phi " << met.phi() <<
                 " HLT passed " <<  hltpath_passed <<
-	        " " << hltpath_trigger_bit << 
-	      
-		" lep cone_pt() " << preselElectron.cone_pt() <<
-		" lep assocJet_pt() " << preselElectron.assocJet_pt() <<
-		" lep dxy() " << preselElectron.dxy() <<
-		" lep dz() " << preselElectron.dz() <<
-		" lep sip3d() " << preselElectron.sip3d() <<
-		" lep relIso() " << preselElectron.relIso() <<
-		" lep chargedHadRelIso03() " << preselElectron.chargedHadRelIso03() <<
-		" lep miniIsoNeutral() " << preselElectron.miniIsoNeutral() <<
-		" lep miniIsoCharged() " << preselElectron.miniIsoCharged() <<
+                " " << hltpath_trigger_bit <<
 
-		" e mvaRawPOG_GP " << preselElectron.mvaRawPOG_GP() <<
-		" e mvaRawPOG_HZZ() " << preselElectron.mvaRawPOG_HZZ() <<
-		" e sigmaEtaEta() " << preselElectron.sigmaEtaEta() <<
-		" e HoE() " << preselElectron.HoE() <<
-		" e OoEminusOoP() " << preselElectron.OoEminusOoP() <<
-		" e nLostHits() " << preselElectron.nLostHits() <<
-		" e passesConversionVeto() " << preselElectron.passesConversionVeto() << '\n';
-		
+                " lep cone_pt() " << preselElectron.cone_pt() <<
+                " lep assocJet_pt() " << preselElectron.assocJet_pt() <<
+                " lep dxy() " << preselElectron.dxy() <<
+                " lep dz() " << preselElectron.dz() <<
+                " lep sip3d() " << preselElectron.sip3d() <<
+                " lep relIso() " << preselElectron.relIso() <<
+                " lep chargedHadRelIso03() " << preselElectron.chargedHadRelIso03() <<
+                " lep miniIsoNeutral() " << preselElectron.miniIsoNeutral() <<
+                " lep miniIsoCharged() " << preselElectron.miniIsoCharged() <<
+
+                " e mvaRawPOG_GP " << preselElectron.mvaRawPOG_GP() <<
+                " e mvaRawPOG_HZZ() " << preselElectron.mvaRawPOG_HZZ() <<
+                " e sigmaEtaEta() " << preselElectron.sigmaEtaEta() <<
+                " e HoE() " << preselElectron.HoE() <<
+                " e OoEminusOoP() " << preselElectron.OoEminusOoP() <<
+                " e nLostHits() " << preselElectron.nLostHits() <<
+                " e passesConversionVeto() " << preselElectron.passesConversionVeto() << '\n';
+
             }
           }
-	  //  else
+          //  else
           //{ // No longer needed since we are looping over preselected leptons
           //  assert(0);
           //}
-          if(histograms_incl_beforeCuts != nullptr && histograms_incl_afterCuts != nullptr && 
-             histograms_binned_beforeCuts != nullptr && histograms_binned_afterCuts != nullptr) 
-	  {    
+          if(histograms_incl_beforeCuts != nullptr && histograms_incl_afterCuts != nullptr &&
+             histograms_binned_beforeCuts != nullptr && histograms_binned_afterCuts != nullptr)
+          {
            histograms_incl_beforeCuts->fillHistograms(preselElectron, met.pt(), mT, mT_fix, evtWeight_LepJetPair);
            fillHistograms(
              *histograms_binned_beforeCuts, preselElectron, met.pt(), mT, mT_fix, evtWeight_LepJetPair, &cutFlowTable_e
@@ -1319,10 +1319,10 @@ main(int argc,
                *histograms_binned_afterCuts, preselElectron, met.pt(), mT, mT_fix, evtWeight_LepJetPair, &cutFlowTable_e
              );
            }
-	  }
+          }
 
         } // preselElectron
-      } // !(1e || 2e) 
+      } // !(1e || 2e)
     } // hltPath_iter in triggers_e
 
 //--- fill muon histograms (numerator and denominator)
@@ -1331,16 +1331,16 @@ main(int argc,
       if(! (hltPath_iter->getValue() >= 1))
       {
        if(run_lumi_eventSelector){
-	std::cout<< "event FAILS this mu trigger" << std::endl;
-	std::cout<< "HLT Path name " << *hltPath_iter << std::endl;
-	std::cout<< "Trigger bit value " << hltPath_iter->getValue() << std::endl;
+        std::cout<< "event FAILS this mu trigger" << std::endl;
+        std::cout<< "HLT Path name " << *hltPath_iter << std::endl;
+        std::cout<< "Trigger bit value " << hltPath_iter->getValue() << std::endl;
        }
         continue; // require trigger to fire
       }
 
-      	std::cout<< "event PASSES this mu trigger" << std::endl;
-	std::cout<< "HLT Path name " << *hltPath_iter << std::endl;
-	std::cout<< "Trigger bit value " << hltPath_iter->getValue() << std::endl;
+              std::cout<< "event PASSES this mu trigger" << std::endl;
+        std::cout<< "HLT Path name " << *hltPath_iter << std::endl;
+        std::cout<< "Trigger bit value " << hltPath_iter->getValue() << std::endl;
 
       if((use_triggers_1mu && hltPath_iter->is_trigger_1mu()) ||
          (use_triggers_2mu && hltPath_iter->is_trigger_2mu())  )
@@ -1350,22 +1350,22 @@ main(int argc,
           const RecoMuon & preselMuon = *preselMuon_ptr;
           if(!(preselMuon.cone_pt() > minConePt_global_mu && preselMuon.pt() > minRecoPt_global_mu)) // Giovanni's selection
           {
-	     if(run_lumi_eventSelector){
-	       std::cout<< "event FAILS global muon cone and reco pt cuts" << std::endl;
-	     }
+             if(run_lumi_eventSelector){
+               std::cout<< "event FAILS global muon cone and reco pt cuts" << std::endl;
+             }
             continue;
           }
 
           bool isGoodMuonJetPair = false;
           double sel_Jet_eta_mu = 0.;
-	  double sel_Jet_pt_mu  = 0.;
+          double sel_Jet_pt_mu  = 0.;
           for(const RecoJet * const selJet: selJets_dR07)
           {
             if(deltaR(preselMuon.p4(), selJet->p4()) < 1.0)
             {
-	     if(run_lumi_eventSelector){
-	       std::cout<< "event FAILS deltaR(presel. mu, sel-jet) > 1.0 cut" << std::endl;
-	     }
+             if(run_lumi_eventSelector){
+               std::cout<< "event FAILS deltaR(presel. mu, sel-jet) > 1.0 cut" << std::endl;
+             }
               continue;
             }
 
@@ -1377,20 +1377,20 @@ main(int argc,
                  selJet->pt()            > hltPath_iter->getMinJetPt())
               {
                 isGoodMuonJetPair = true;
-	      }
+              }
             }
-	    sel_Jet_eta_mu = selJet->eta();
-	    sel_Jet_pt_mu  = selJet->pt();
+            sel_Jet_eta_mu = selJet->eta();
+            sel_Jet_pt_mu  = selJet->pt();
           }
 
           if(!isGoodMuonJetPair)
           {
-	    if(run_lumi_eventSelector){
-	        std::cout<< "event FAILS ""trigger path dep. cone pt and selJet pT cuts"" " << std::endl;
-                std::cout<< "event FAILS ""trigger path dep. cone pt and selJet pT cuts"" && ""(bjet_loose.size != 0 &&  muon cone pt < 30) || (muon cone pt >= 30)"" " << std::endl;	
-	        std::cout<< "mu cone pt " << preselMuon.cone_pt() << " mu reco pt " << preselMuon.pt() << " mu eta " << preselMuon.eta() << std::endl;
-		std::cout<< "Paired Jet pt " << sel_Jet_pt_mu << " Paired Jet eta " << sel_Jet_eta_mu << std::endl;
- 	      }
+            if(run_lumi_eventSelector){
+                std::cout<< "event FAILS ""trigger path dep. cone pt and selJet pT cuts"" " << std::endl;
+                std::cout<< "event FAILS ""trigger path dep. cone pt and selJet pT cuts"" && ""(bjet_loose.size != 0 &&  muon cone pt < 30) || (muon cone pt >= 30)"" " << std::endl;
+                std::cout<< "mu cone pt " << preselMuon.cone_pt() << " mu reco pt " << preselMuon.pt() << " mu eta " << preselMuon.eta() << std::endl;
+                std::cout<< "Paired Jet pt " << sel_Jet_pt_mu << " Paired Jet eta " << sel_Jet_eta_mu << std::endl;
+               }
             continue;
           }
 
@@ -1436,7 +1436,7 @@ main(int argc,
             histograms_binned_afterCuts  = &histograms_mu_numerator_binned_afterCuts;
             if(writeTo_selEventsFileOut)
             {
-	      *(outputFiles["mu"]["num"]) << eventInfo.str() << '\n' ;
+              *(outputFiles["mu"]["num"]) << eventInfo.str() << '\n' ;
             }
           }
           else if(preselMuon.isFakeable())
@@ -1450,14 +1450,10 @@ main(int argc,
             {
               *(outputFiles["mu"]["den"]) << eventInfo.str() << '\n';
             }
-          } 
-	  //      else
-          //{  // No longer needed since we are looping over preselected leptons
-          //  assert(0);
-          //}
-          if(histograms_incl_beforeCuts != nullptr && histograms_incl_afterCuts != nullptr && 
-             histograms_binned_beforeCuts != nullptr && histograms_binned_afterCuts != nullptr) 
-	  {    
+          }
+          if(histograms_incl_beforeCuts != nullptr && histograms_incl_afterCuts != nullptr &&
+             histograms_binned_beforeCuts != nullptr && histograms_binned_afterCuts != nullptr)
+          {
            histograms_incl_beforeCuts->fillHistograms(preselMuon, met.pt(), mT, mT_fix, evtWeight_LepJetPair);
            fillHistograms(
              *histograms_binned_beforeCuts, preselMuon, met.pt(), mT, mT_fix, evtWeight_LepJetPair, &cutFlowTable_mu
@@ -1466,13 +1462,13 @@ main(int argc,
            if(mT_fix < 15.)
            {
              cutFlowTable_mu.update("mT_fix(muon, MET) < 15 GeV", evtWeight_LepJetPair);
- 
+
              histograms_incl_afterCuts->fillHistograms(preselMuon, met.pt(), mT, mT_fix, evtWeight_LepJetPair);
              fillHistograms(
                *histograms_binned_afterCuts, preselMuon, met.pt(), mT, mT_fix, evtWeight_LepJetPair, &cutFlowTable_mu
              );
            }
-	  }
+          }
 
         } // preselMuon
       } // 1mu || 2mu
@@ -1481,7 +1477,7 @@ main(int argc,
     if(! isGoodLeptonJetPair)
     {
       if(run_lumi_eventSelector){
-	std::cout<< "event FAILS as there is no presel.lepton+Jet pair in the event satisfying all requirements " << std::endl;
+        std::cout<< "event FAILS as there is no presel.lepton+Jet pair in the event satisfying all requirements " << std::endl;
       }
       continue;
     }
