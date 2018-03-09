@@ -1,8 +1,37 @@
 #!/usr/bin/env python
 
-from tthAnalysis.HiggsToTauTau.jobTools import run_cmd, human_size
+# In order to compute the integrated luminosity, follow these links:
+#
+# https://cms-service-lumi.web.cern.ch/cms-service-lumi/brilwsdoc.html
+# https://github.com/CMS-LUMI-POG/Normtags
+#
+# To summarize, in order to find integrated luminosity of datasets, triggers, and whatnot, direct
+# access to CERN servers is needed. These numbers can be gathered from off-site servers as well,
+# but this requires the off-site user to set up a python environment called brilconda (a derivative
+# of anaconda framework that supports BRIL tools) and maintain a live ssh session while calling any
+# of the BRIL tools. The second component is the normtag file, which is enables to use calibration
+# information / apply correction functions on the measured instantaneous luminosity, which of course
+# depends on the choice of the luminometer. The recommended normtag for 2017 data is
+# normtag_PHYSICS.json: https://twiki.cern.ch/twiki/bin/viewauth/CMS/TWikiLUM
+#
+# At the time of writing this comment, both ReReco and PromptReco golden JSONs w/ normtag_PHYSICS.json
+# reproduce the same results as reported in https://hypernews.cern.ch/HyperNews/CMS/get/luminosity/761.html:
+#
+# > with golden JSON:   43.925/fb delivered, 41.298/fb recorded
+# > ...
+# > The associated uncertainty on the luminosity is *2.4%*. [..]
+#
+# The recorded integrated luminosity coincides with the advertised figure of preliminary validated
+# *offline* integrated luminosity of 41.30/fb (https://twiki.cern.ch/twiki/bin/view/CMS/DataQuality);
+# dropping the normtag reproduces the advertised figure of preliminary validated *online* integrated
+# luminosity of 41.86/fb which coincides with the recorded integrated luminosity for both ReReco and
+# PromptReco golden JSONs. Both figures (taken from plots) quoted on this page are referred to as
+# ,,certified as good for physics analysis during stable beams'' and ,,the operational losses [..]
+# are accounted separately''.
 
-import re, datetime, collections, jinja2, argparse, os, math, sys, json, itertools, ast, copy
+from tthAnalysis.HiggsToTauTau.jobTools import run_cmd, human_size, create_if_not_exists
+
+import re, datetime, collections, jinja2, argparse, os, sys, json, itertools, ast, getpass, multiprocessing, signal
 
 class SmartFormatter(argparse.ArgumentDefaultsHelpFormatter):
   def _split_lines(self, text, width):
@@ -109,6 +138,8 @@ DATA_SAMPLES_ALL = [
 ]
 DATA_SAMPLES_DEFAULT = [ data_sample for data_sample in DATA_SAMPLES_ALL if data_sample != 'Tau' ]
 
+LUMI_UNITS = [ '/fb', '/pb', '/nb', '/ub' ]
+
 DATA_TIER     = 'MINIAOD'
 MC_TIER       = '%sSIM' % DATA_TIER
 AQC_KEY       = 'cat'
@@ -152,7 +183,7 @@ def get_golden_runlumi(lumimask_location):
         # then this is expanded and flattened into
         # [1, 2, 3, 4, 5, 6, 7, 40, 41, 42, 43, 44, 45]
         # We assume that both endpoints of the luminosity range are included
-        list(range(lumi_range[0], lumi_range[-1] + 1)) for lumi_range in lumi_ranges
+        list(range(lumi_range[0], lumi_range[1] + 1)) for lumi_range in lumi_ranges
       ]))
     ) for run, lumi_ranges in golden_runlumi_json.items()
   )
@@ -167,6 +198,41 @@ def get_runlumi_data(runlumi_query_out):
     lumis = list(sorted(ast.literal_eval(line[1])))
     runlumi_data[run] = lumis
   return runlumi_data
+
+def split_into_ranges(flat_list):
+  # The input is a list of numbers, e.g. [4, 5, 6, 10, 11, 13, 14, 15]
+  # which is split into lists that represent sub-ranges, which in our example should be
+  # [[4, 6], [10, 11], [13, 14, 15]]
+  # Notice that we assume that the endpoints of both ranges are included (which I hope is the case
+  # in the gloden JSON files)
+
+  # First, let's find at which points in the list the sequentiality is broken
+  # In our example, the program below should return [2, 4], b/c the 3rd and 4th (5th and 6th)
+  # element in the list differ by more than one
+  split_indices = [ i for i in range(len(flat_list) - 1) if flat_list[i + 1] != flat_list[i] + 1 ]
+
+  # No let's construct the sub-range format by going through the break points one-by-one:
+  # prev_idx = 0, curr_idx = 2,
+  # prev_idx = 3, curr_idx = 4
+  prev_idx = 0
+  split_ranges = []
+  for curr_idx in split_indices:
+    split_ranges.append([flat_list[prev_idx],flat_list[curr_idx]])
+    prev_idx = curr_idx + 1
+  # Here we have to consider the final ,,tail'', which spans the index range 5..7 (included)
+  # Notice that if the input list is fully sequential, the split_ranges variable remains empty,
+  # and prev_idx remains 0, which means that the full range is concentrated into a single range here
+  split_ranges.append([flat_list[prev_idx],flat_list[len(flat_list) - 1]])
+
+  # Make sure that we can recover the full flat input list from split_ranges
+  # (cf. get_golden_runlumi for more)
+  flat_list_to_test = list(itertools.chain(
+    *[list(range(split_range[0], split_range[1] + 1)) for split_range in split_ranges]
+  ))
+  if flat_list_to_test != flat_list:
+    assert(0)
+
+  return split_ranges
 
 def get_data_golden(runlumi_data, golden_runlumi):
   data_runs   = set(runlumi_data.keys())
@@ -184,8 +250,51 @@ def get_data_golden(runlumi_data, golden_runlumi):
   for run in common_runs:
     lumi_range_intersection = list(sorted(list(set(runlumi_data[run]) & set(golden_runlumi[run]))))
     if lumi_range_intersection:
-      golden_data_runs[run] = copy.deepcopy(lumi_range_intersection)
+      golden_data_runs[run] = split_into_ranges(lumi_range_intersection)
   return golden_data_runs
+
+def get_integrated_lumi(dataset_name, data_golden, brilcalc_path, normtag, units, tmp_filename):
+  if data_golden:
+    with open(tmp_filename, 'w') as f:
+      f.write(json.dumps(data_golden))
+
+  brilcalc_cmd = '{brilcalc_path} lumi -c offsite -i {golden_json} {normtag} -u {units} --output-style=csv'.format(
+    brilcalc_path = brilcalc_path,
+    golden_json   = tmp_filename,
+    normtag       = '--normtag %s' % normtag if normtag else '',
+    units         = units,
+  )
+  brilcalc_out, brilcalc_err = run_cmd(brilcalc_cmd, do_not_log = True, return_stderr = True)
+  if brilcalc_err:
+    raise ValueError("brilcalc return an error: %s" % brilcalc_err)
+
+  brilcalc_out_split = brilcalc_out.rstrip('\n').split('\n')
+  summary_idx = brilcalc_out_split.index('#Summary:')
+  if summary_idx < 0:
+    raise ValueError("brilcalc didn't return any summary: %s" % brilcalc_out)
+
+  # We only need two lines in this summary: the header and the actual values in the table
+  lines = [line.lstrip('#').split(',') for line in brilcalc_out_split[summary_idx + 1:summary_idx + 3]]
+
+  # Make sure that both lines contain the same amount of columns (split by a comma)
+  nof_cols_first  = len(lines[0])
+  nof_cols_second = len(lines[1])
+  if nof_cols_first != nof_cols_second:
+    raise ValueError("brilcalc returned uneven amount of columns in the summary: %s" % brilcalc_out)
+
+  results = { lines[0][i] : lines[1][i] for i in range(nof_cols_first) }
+
+  # Cleanup
+  if data_golden:
+    if os.path.isfile(tmp_filename):
+      os.remove(tmp_filename)
+
+  return dataset_name, results
+
+lumi_results = {}
+
+def update_lumi_results(results):
+  lumi_results[results[0]] = results[1]
 
 if __name__ == '__main__':
 
@@ -222,9 +331,39 @@ if __name__ == '__main__':
     ),
     help = 'R|Path to the golden lumimask file in JSON format',
   )
+  parser.add_argument('-n', '--normtag',
+    type = str, dest = 'normtag', metavar = 'file', required = False,
+    default = 'normtag_PHYSICS.json',
+    help = 'R|Normtag to be used (use empty string if no normtag needed)',
+  )
+  parser.add_argument('-N', '--normtag-dir',
+    type = str, dest = 'normtag_dir', metavar = 'path', required = False,
+    default = os.path.join(os.path.expanduser('~'), 'Normtags'),
+    help = 'R|Path to the normtag repository',
+  )
+  parser.add_argument('-B', '--brilconda-dir',
+    type = str, dest = 'brilconda_dir', metavar = 'path', required = False,
+    default = os.path.join(os.path.expanduser('~'), 'brilconda'),
+    help = 'R|Root directory of the brilconda setup',
+  )
+  parser.add_argument('-u', '--units',
+    type = str, dest = 'units', metavar = 'unit', choices = LUMI_UNITS, required = False,
+    default = '/fb',
+    help = 'R|Units of the integrated luminosity (choices: %s)' % \
+           (', '.join(map(lambda choice: "'%s'" % choice, LUMI_UNITS))),
+  )
   parser.add_argument('-v', '--cmssw-version',
     type = str, dest = 'version', metavar = 'version', default = '9_4_0', required = False,
     help = 'R|Minimum required CMSSW version',
+  )
+  parser.add_argument('-t', '--tmp-dir',
+    type = str, dest = 'tmp_dir', metavar = 'path', required = False,
+    default = os.path.join('/tmp', getpass.getuser()),
+    help = 'R|Directory where the golden era run & lumisections are temporarily stored',
+  )
+  parser.add_argument('-l', '--luminosity',
+    dest = 'luminosity', action = 'store_true', default = False, required = False,
+    help = 'R|Compute integrated luminosity for each selected PD',
   )
   parser.add_argument('-V', '--verbose',
     dest = 'verbose', action = 'store_true', default = False, required = False,
@@ -272,6 +411,33 @@ if __name__ == '__main__':
   if not os.path.isfile(lumimask_location):
     raise ValueError("No such file: %s" % lumimask_location)
   golden_runlumi = get_golden_runlumi(lumimask_location)
+
+  compute_lumi = args.luminosity
+  normtag = args.normtag
+  normtag_path = os.path.join(args.normtag_dir, normtag) if normtag else ''
+  brilcalc_path = os.path.join(args.brilconda_dir, 'bin', 'brilcalc')
+  units = args.units
+  tmp_dir = args.tmp_dir
+  lumi_pool = None
+
+  if compute_lumi:
+    # Check if the brilconda package has been installed
+    if not os.path.isfile(brilcalc_path):
+      raise ValueError("brilcalc not available in %s" % brilcalc_path)
+
+    # Check if the user requested to run with normtag or not; if the user has requested to
+    # use a normtag, then we have to make sure that the normtag is available
+    if normtag_path:
+      if not os.path.isfile(normtag_path):
+        raise ValueError("normtag not found in %s" % normtag_path)
+
+    # Create the temporary directory only when it's needed
+    # In principle we could create the directory in individual processes, but experience shows that
+    # this might cause some unwanted behavior, so we'll do it once here instead of concurrently
+    create_if_not_exists(tmp_dir)
+
+    # Print a message to remind the user what needs to be done before brilcalc can be run remotely
+    print("NB! Make sure that you've created an SSH tunnel in order to access BRIL tools!")
 
   execution_datetime = '{date:%Y-%m-%d %H:%M:%S}'.format(date = datetime.datetime.now())
   execution_command  = ' '.join([os.path.basename(__file__)] + sys.argv[1:])
@@ -445,7 +611,7 @@ if __name__ == '__main__':
 
       if primary_dataset not in data_samples_aggr:
         raise ValueError(
-          "Data sample '%s' not in any of those: " % (primary_dataset, ', '.join(primary_datasets))
+          "Data sample '%s' not in any of those: %s" % (primary_dataset, ', '.join(primary_datasets))
         )
       if aqcuisition_period not in data_samples_aggr[primary_dataset]:
         data_samples_aggr[primary_dataset][aqcuisition_period] = []
@@ -570,6 +736,21 @@ if __name__ == '__main__':
     print("%s\nSummary:" % ('-' * 120))
     meta_dictionary_entries = []
     dataset_list = collections.OrderedDict()
+
+    if compute_lumi:
+      # Initialize the thread pool in which the processes find the integrated luminosity for
+      # each dataset
+      original_sigint_handler = signal.signal(signal.SIGINT, signal.SIG_IGN)
+      lumi_pool = multiprocessing.Pool(8)
+      signal.signal(signal.SIGINT, original_sigint_handler)
+
+      # Compute the total luminosity as well
+      lumi_pool.apply_async(
+        get_integrated_lumi,
+        args     = ('total', None, brilcalc_path, normtag_path, units, lumimask_location),
+        callback = update_lumi_results,
+      )
+
     for dataset in primary_datasets:
       if dataset not in data_sample_selection:
         continue
@@ -593,18 +774,19 @@ if __name__ == '__main__':
               "Was not able to fetch run and lumi ranges for the sample: %s" % selection['name']
             )
 
-          runlumi_data = get_runlumi_data(runlumi_query_out)
+          runlumi_data        = get_runlumi_data(runlumi_query_out)
           runlumi_data_golden = get_data_golden(runlumi_data, golden_runlumi)
 
           if runlumi_data_golden:
             # Let's find the min/max (golden) run ranges
-            minmax_runlumi_data        = [ min(runlumi_data.keys()), max(runlumi_data.keys())               ]
+            minmax_runlumi_data        = [ min(runlumi_data.keys()),        max(runlumi_data.keys())        ]
             minmax_runlumi_data_golden = [ min(runlumi_data_golden.keys()), max(runlumi_data_golden.keys()) ]
 
             print('  %s, %s%s -> %s' % (dataset.rjust(MAX_DATA_SAMPLE_LEN), era, acquisition_era, selection['name']))
+            selection['specific_name'] = '_'.join(selection['name'].split('/')[1:-1]).replace('-', '_')
             meta_dictionary_entries.append(jinja2.Template(METADICT_TEMPLATE_DATA).render(
               dataset_name          = selection['name'],
-              process_name_specific = '_'.join(selection['name'].split('/')[1:-1]).replace('-', '_'),
+              process_name_specific = selection['specific_name'],
               nof_db_events         = selection['nevents'],
               nof_db_files          = selection['nfiles'],
               fsize_db              = selection['size'],
@@ -622,6 +804,19 @@ if __name__ == '__main__':
               'run_range'        : '%d-%d' % tuple(minmax_runlumi_data),
               'golden_run_range' : '%d-%d' % tuple(minmax_runlumi_data_golden),
             }
+
+            # Retrieve the integrated luminosity for this sample
+            try:
+              tmp_file = os.path.join(tmp_dir, '%s.json' % selection['specific_name'])
+              lumi_pool.apply_async(
+                get_integrated_lumi,
+                args     = (selection['name'], runlumi_data_golden, brilcalc_path, normtag_path, units, tmp_file),
+                callback = update_lumi_results,
+              )
+            except KeyboardInterrupt:
+              lumi_pool.terminate()
+              sys.exit(1)
+
           else:
             print(
               '  %s, %s%s -> excluded only because no golden run range' % \
@@ -629,6 +824,11 @@ if __name__ == '__main__':
             )
         else:
           print('  %s, %s%s -> missing' % (dataset.rjust(MAX_DATA_SAMPLE_LEN), era, acquisition_era))
+
+    if compute_lumi:
+      # Wait until we've all integrated luminosities before we start writing any files
+      lumi_pool.close()
+      lumi_pool.join()
 
     with open(args.metadict, 'w+') as f:
       f.write(jinja2.Template(METADICT_HEADER).render(
@@ -639,29 +839,55 @@ if __name__ == '__main__':
       f.write('\n'.join(meta_dictionary_entries))
       f.write('\n')
 
+    if compute_lumi:
+      totdelivered_colname = 'totdelivered(%s)' % units
+      totrecorded_colname  = 'totrecorded(%s)' % units
+
     with open(args.dataset, 'w+') as f:
-      max_dataset_name_len     = max(map(len, dataset_list.keys()))
-      max_run_range_len        = max(map(lambda d: len(d['run_range']),        dataset_list.values()))
-      max_golden_run_range_len = max(map(lambda d: len(d['golden_run_range']), dataset_list.values()))
-      dataset_format = "%s   %s   %s\n"
-      f.write(
-        dataset_format % \
-        (
-          "# DAS name".ljust(max_dataset_name_len),
-          "run range".ljust(max_run_range_len),
-          "golden run range".ljust(max_golden_run_range_len),
-        )
-      )
+      nof_cols = 5 if compute_lumi else 3
+      dataset_format = '  '.join(['%s'] * nof_cols) + '\n'
+
+      header = [
+        "# DAS name",
+        "run range",
+        "golden run range",
+      ]
+      if compute_lumi:
+        header += [
+          totdelivered_colname,
+          totrecorded_colname,
+        ]
+
+      col_widths = [
+        max(max(map(len,                                  dataset_list.keys())),   len(header[0])),
+        max(max(map(lambda d: len(d['run_range']),        dataset_list.values())), len(header[1])),
+        max(max(map(lambda d: len(d['golden_run_range']), dataset_list.values())), len(header[2]))
+      ]
+      if compute_lumi:
+        col_widths += [
+          max(max(map(lambda d: len(d[header[3]]), lumi_results.values())), len(header[3])),
+          max(max(map(lambda d: len(d[header[4]]), lumi_results.values())), len(header[4])),
+        ]
+
+      f.write(dataset_format % tuple([header[i].ljust(col_widths[i]) for i in range(nof_cols)]))
       for dataset_name, run_dict in dataset_list.items():
-        f.write(
-          dataset_format % \
-          (
-            dataset_name.ljust(max_dataset_name_len),
-            run_dict['run_range'].ljust(max_run_range_len),
-            run_dict['golden_run_range'].ljust(max_golden_run_range_len),
-          )
-        )
+        values = [
+          dataset_name,
+          run_dict['run_range'],
+          run_dict['golden_run_range'],
+        ]
+        if compute_lumi:
+          values += [
+            lumi_results[dataset_name][header[3]],
+            lumi_results[dataset_name][header[4]],
+          ]
+        f.write(dataset_format % tuple([values[i].ljust(col_widths[i]) for i in range(nof_cols)]))
       f.write(
         "\n# file generated at %s with the following command:\n# %s\n" % \
         (execution_datetime, execution_command)
       )
+      f.write("# golden JSON: %s\n" % os.path.basename(lumimask_location))
+      if compute_lumi:
+        f.write("# normtag: %s\n" % normtag if normtag else 'none')
+        f.write("# %s: %s\n" % (totdelivered_colname, lumi_results['total'][totdelivered_colname]))
+        f.write("# %s: %s\n" % (totrecorded_colname,  lumi_results['total'][totrecorded_colname]))
