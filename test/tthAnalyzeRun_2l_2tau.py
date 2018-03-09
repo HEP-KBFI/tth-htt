@@ -178,7 +178,11 @@ if __name__ == '__main__':
         "EventCounter",
         "numJets",
         "mTauTauVis",
-        "mvaDiscr_2l_2tau"
+        "mvaDiscr_2l_2tau",
+        "mvaOutput_noHTT_tt",
+        "mvaOutput_noHTT_ttV",
+        "mvaOutput_noHTT_SUM_VT",
+        "mvaOutput_noHTT_1B_VT",
       ],
       select_rle_output                     = True,
       verbose                               = idx_job_resubmission > 0,
