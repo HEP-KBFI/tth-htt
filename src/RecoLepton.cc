@@ -14,6 +14,7 @@ RecoLepton::RecoLepton(const GenLepton & lepton,
                        Double_t jetPtRatio,
                        Double_t jetPtRel,
                        Double_t jetBtagCSV,
+                       Int_t    jetNDauChargedMVASel,
                        Int_t    tightCharge,
                        Int_t    charge)
   : GenLepton(lepton)
@@ -28,6 +29,7 @@ RecoLepton::RecoLepton(const GenLepton & lepton,
   , jetPtRatio_(jetPtRatio)
   , jetPtRel_(jetPtRel)
   , jetBtagCSV_(jetBtagCSV)
+  , jetNDauChargedMVASel_(jetNDauChargedMVASel)
   , tightCharge_(tightCharge)
   , charge_(charge)
   , assocJet_pt_(jetPtRatio_ > 1.e-3 ? 0.90 * pt_ / jetPtRatio_ : pt_)
@@ -203,6 +205,12 @@ Double_t
 RecoLepton::jetBtagCSV() const
 {
   return jetBtagCSV_;
+}
+
+Int_t
+RecoLepton::jetNDauChargedMVASel() const
+{
+  return jetNDauChargedMVASel_;
 }
 
 Int_t
