@@ -1285,8 +1285,9 @@ int main(int argc, char* argv[])
       } else if ( leptonSelection == kTight ) {
         leptonSF_weight *= dataToMCcorrectionInterface->getSF_leptonID_and_Iso_tight_to_loose_woTightCharge();
       }
+      weight_data_to_MC_correction *= leptonSF_weight;
 
-      evtWeight *= leptonSF_weight;
+      evtWeight *= weight_data_to_MC_correction;
     }
 
     double weight_fakeRate = 1.;
