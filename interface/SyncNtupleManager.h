@@ -82,7 +82,7 @@ enum FloatVariableType
   lep3_conept,              ///< cone pT of fourth lepton : if the lepton is fakeable, 0.90*pT(jet) with JECLepAware, else pT(lep)
   mindr_lep3_jet,           ///< min dR between fourth lepton and preselected jets
   MT_met_lep1,              ///< transverse mass of subleading lepton and MET (using cone pt)
-  MT_met_lep3,              ///< transverse mass of third lepton and MET (using cone pt)
+  MT_met_lep3,              ///< transverse mass of fourth lepton and MET (using cone pt)
   genWeight
 };
 
