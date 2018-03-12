@@ -70,6 +70,22 @@ comp_MT_met_lep3(const Particle & lepton,
 }
 
 double
+comp_MT_met_lep4(const Particle::LorentzVector & leptonP4,
+                 double met_pt,
+                 double met_phi)
+{
+  return comp_MT_met_lep1(leptonP4, met_pt, met_phi);
+}
+
+double
+comp_MT_met_lep4(const Particle & lepton,
+                 double met_pt,
+                 double met_phi)
+{
+  return comp_MT_met_lep4(lepton.p4(), met_pt, met_phi);
+}
+
+double
 comp_MT_met_hadTau1(const Particle & hadTau,
                     double met_pt,
                     double met_phi)
@@ -133,6 +149,13 @@ comp_mindr_lep3_jet(const Particle & lepton,
 }
 
 double
+comp_mindr_lep4_jet(const Particle & lepton,
+                    const std::vector<const RecoJet *> & jets_cleaned)
+{
+  return comp_mindr_lep1_jet(lepton, jets_cleaned);
+}
+
+double
 comp_mindr_hadTau1_jet(const Particle & hadTau,
                        const std::vector<const RecoJet *> & jets_cleaned)
 {
@@ -167,6 +190,12 @@ comp_lep2_conePt(const RecoLepton & lepton)
 
 double
 comp_lep3_conePt(const RecoLepton & lepton)
+{
+  return comp_lep1_conePt(lepton);
+}
+
+double
+comp_lep4_conePt(const RecoLepton & lepton)
 {
   return comp_lep1_conePt(lepton);
 }
