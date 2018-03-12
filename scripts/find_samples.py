@@ -96,6 +96,15 @@ sum_events = { {% for sum_event_arr in sum_events %}
 {% endif %}
 '''
 
+METADICT_FOOTER = '''
+
+# event statistics by sample category:
+{%- for sample_category, event_count in event_statistics.items() %}
+# {{ sample_category }} {{ event_count }}
+{%- endfor %}
+
+'''
+
 METADICT_TEMPLATE_DATA = '''meta_dictionary["{{ dataset_name }}"] =  OD([
   ("crab_string",           ""),
   ("sample_category",       "data_obs"),
@@ -582,6 +591,23 @@ if __name__ == '__main__':
       for specific_name_ref, specific_name_tests in sum_events.items()
     ]
 
+    # Let's get the total event counts in each sample category; we want to maintain the original
+    # order of sample categories they were declared
+    sample_categories = list(collections.OrderedDict.fromkeys(
+      [ dataset_entry['sample_category'] for dataset_entry in das_query_results.values() ]
+    ))
+    # Give the sample categories the same column width by left-padding their names
+    max_sample_category_len = max(map(len, sample_categories)) + 1
+    event_statistics = collections.OrderedDict(
+      (
+        ('%s:' % sample_category).ljust(max_sample_category_len),
+        human_size(sum(
+          int(dataset_entry['nevents']) for dataset_entry in das_query_results.values() \
+          if dataset_entry['sample_category'] == sample_category
+        ), byte_suffix = '')
+      ) for sample_category in sample_categories
+    )
+
     with open(args.metadict, 'w+') as f:
       f.write(jinja2.Template(METADICT_HEADER).render(
         command    = execution_command,
@@ -590,6 +616,7 @@ if __name__ == '__main__':
         is_mc      = True,
       ))
       f.write('\n'.join(meta_dictionary_entries))
+      f.write(jinja2.Template(METADICT_FOOTER).render(event_statistics = event_statistics))
       f.write('\n')
 
   else:
