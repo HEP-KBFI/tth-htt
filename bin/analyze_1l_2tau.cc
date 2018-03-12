@@ -2185,6 +2185,11 @@ int main(int argc, char* argv[])
       // MVA_2lSS1tau_MEM_ttV not filled
       // MVA_2lSS1tau_MEM_2Dbin not filled
 
+      // lep2_conept not filled
+      // lep3_conept not filled
+      // mindr_lep4_jet not filled
+      // MT_met_lep1 not filled
+      // MT_met_lep3 not filled
       snm->read(eventInfo.genWeight,                    FloatVariableType::genWeight);
 
       snm->fill();
