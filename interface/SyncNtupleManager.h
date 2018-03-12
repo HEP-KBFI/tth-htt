@@ -25,11 +25,11 @@ enum FloatVariableType
   MHT,                      ///< vectorial sum of preselected leptons (including taus) + jets
   metLD,
 //--- Additional event-level MVA variables
-  lep0_conept,              ///< cone pT of leading lepton : if the lepton is fakeable, 0.85*pT(jet) with JECLepAware, else pT(lep)
-  lep1_conept,              ///< cone pT of subleading lepton : if the lepton is fakeable, 0.85*pT(jet) with JECLepAware, else pT(lep)
+  lep0_conept,              ///< cone pT of leading lepton : if the lepton is fakeable, 0.90*pT(jet) with JECLepAware, else pT(lep)
+  lep1_conept,              ///< cone pT of subleading lepton : if the lepton is fakeable, 0.90*pT(jet) with JECLepAware, else pT(lep)
   mindr_lep0_jet,           ///< min dR between leading lepton and preselected jets
   mindr_lep1_jet,           ///< min dR between subleading lepton and preselected jets
-  mindr_lep2_jet,           ///< min dR between trailing lepton and preselected jets
+  mindr_lep2_jet,           ///< min dR between third lepton and preselected jets
   mindr_tau_jet,            ///< min dR between tau and preselected jets
   MT_met_lep0,              ///< transverse mass of leading lepton and MET (using lep0_conept)
   avg_dr_jet,               ///< average dR between all the pairs of preselected jets
@@ -78,6 +78,11 @@ enum FloatVariableType
   MVA_2lSS1tau_MEM_ttV,     ///< ttH vs ttV MVA for 2lSS1tau w/ MEM LR as input
   MVA_2lSS1tau_MEM_2Dbin,   ///< 2D bin ttH vs ttbar/ttZ MVA for 2lSS1tau w/ MEM LR as input
 //--- custom additional branches (not necessary in sync)
+  lep2_conept,              ///< cone pT of third lepton : if the lepton is fakeable, 0.90*pT(jet) with JECLepAware, else pT(lep)
+  lep3_conept,              ///< cone pT of fourth lepton : if the lepton is fakeable, 0.90*pT(jet) with JECLepAware, else pT(lep)
+  mindr_lep3_jet,           ///< min dR between fourth lepton and preselected jets
+  MT_met_lep1,              ///< transverse mass of subleading lepton and MET (using cone pt)
+  MT_met_lep3,              ///< transverse mass of third lepton and MET (using cone pt)
   genWeight
 };
 

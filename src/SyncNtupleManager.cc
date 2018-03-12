@@ -130,6 +130,11 @@ SyncNtupleManager::initializeBranches()
     floatMap[FloatVariableType::MVA_2lSS1tau_MEM_ttV],     "MVA_2lSS1tau_MEM_ttV",
     floatMap[FloatVariableType::MVA_2lSS1tau_MEM_2Dbin],   "MVA_2lSS1tau_MEM_2Dbin",
 //--- custom additional branches (not necessary in sync)
+    floatMap[FloatVariableType::lep2_conept],              "lep2_conept",
+    floatMap[FloatVariableType::lep3_conept],              "lep3_conept",
+    floatMap[FloatVariableType::mindr_lep3_jet],           "mindr_lep3_jet",
+    floatMap[FloatVariableType::MT_met_lep1],              "MT_met_lep1",
+    floatMap[FloatVariableType::MT_met_lep3],              "MT_met_lep3",
     floatMap[FloatVariableType::genWeight],                "genWeight"
   );
 
