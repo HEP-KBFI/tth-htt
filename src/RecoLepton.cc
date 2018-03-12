@@ -30,17 +30,15 @@ RecoLepton::RecoLepton(const GenLepton & lepton,
   , jetBtagCSV_(jetBtagCSV)
   , tightCharge_(tightCharge)
   , charge_(charge)
-  , assocJet_pt_(0.)
+  , assocJet_pt_(jetPtRatio_ > 1.e-3 ? 0.90 * pt_ / jetPtRatio_ : pt_)
+  , assocJet_p4_(assocJet_pt_, eta_, phi_, mass_)
   , genLepton_(nullptr)
   , genHadTau_(nullptr)
   , genJet_(nullptr)
   , isLoose_(false)
   , isFakeable_(false)
   , isTight_(false)
-{
-  assocJet_pt_ = ( jetPtRatio_ > 1.e-3 ) ? 0.90*pt_/jetPtRatio_ : pt_;
-  assocJet_p4_ = Particle::LorentzVector(assocJet_pt_, eta_, phi_, mass_);
-}
+{}
 
 RecoLepton::~RecoLepton()
 {}
@@ -120,13 +118,13 @@ RecoLepton::p4() const
 Double_t
 RecoLepton::cone_pt() const
 {
-  return ( !isTight_ ) ? assocJet_pt_ : pt_;
+  return ! isTight_ ? assocJet_pt_ : pt_;
 }
 
 const Particle::LorentzVector &
 RecoLepton::cone_p4() const
 {
-  return ( !isTight_ ) ? assocJet_p4_ : p4_;
+  return ! isTight_ ? assocJet_p4_ : p4_;
 }
 
 Double_t
