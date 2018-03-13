@@ -2107,6 +2107,7 @@ int main(int argc, char* argv[])
       const double ht              = compHT(preselLeptons, preselHadTaus, selJets);
       const double MT_met_lep0     = comp_MT_met_lep1(selLepton->cone_p4(), met.pt(), met.phi());
       const double dR_l0tau        = deltaR(selLepton->p4(), selHadTau_lead->p4());
+      const double mindr_lep1_jet  = comp_mindr_lep1_jet(*selLepton, selJets);
       const double max_dr_jet      = comp_max_dr_jet(selJets);
       const double mTauTauVis1_sel = (selLepton->p4() + selHadTau_lead->p4()).mass();
       const double mindr_tau_jet   = comp_mindr_hadTau1_jet(*selHadTau_lead, selJets);
@@ -2125,7 +2126,7 @@ int main(int argc, char* argv[])
       snm->read(selJets);
 
       snm->read({ triggers_1e, triggers_1e1tau, triggers_1mu, triggers_1mu1tau });
-      snm->read(isGenMatched);
+      snm->read(isGenMatched, selBJets_medium.size(), selBJets_loose.size());
 
       snm->read(met.pt(),                               FloatVariableType::PFMET);
       snm->read(met.phi(),                              FloatVariableType::PFMETphi);
@@ -2143,8 +2144,6 @@ int main(int argc, char* argv[])
       // MVA_2lss_ttV not filled
       // MVA_2lss_ttbar not filled
       // tt_deltaR not filled
-      snm->read(selBJets_medium.size(),                 FloatVariableType::ntags);
-      snm->read(selBJets_loose.size(),                  FloatVariableType::ntags_loose);
       // tt_mvis not filled
       // tt_pt not filled
       snm->read(max_dr_jet,                             FloatVariableType::max_dr_jet);

@@ -2327,7 +2327,7 @@ int main(int argc, char* argv[])
       snm->read(selJets);
 
       snm->read({ triggers_1e, triggers_2e, triggers_1mu, triggers_2mu, triggers_1e1mu });
-      snm->read(isGenMatched);
+      snm->read(isGenMatched, selBJets_medium.size(), selBJets_loose.size());
 
       snm->read(met.pt(),                               FloatVariableType::PFMET);
       snm->read(met.phi(),                              FloatVariableType::PFMETphi);
@@ -2345,8 +2345,6 @@ int main(int argc, char* argv[])
       snm->read(mvaOutput_2lss_ttV,                     FloatVariableType::MVA_2lss_ttV);
       snm->read(mvaOutput_2lss_ttbar,                   FloatVariableType::MVA_2lss_ttbar);
       // tt_deltaR not filled
-      snm->read(selBJets_medium.size(),                 FloatVariableType::ntags);
-      snm->read(selBJets_loose.size(),                  FloatVariableType::ntags_loose);
       // tt_mvis not filled
       // tt_pt not filled
       snm->read(max_dr_jet,                             FloatVariableType::max_dr_jet);

@@ -88,8 +88,8 @@ SyncNtupleManager::initializeBranches()
     floatMap[FloatVariableType::MVA_2lss_ttV],             "MVA_2lss_ttV",
     floatMap[FloatVariableType::MVA_2lss_ttbar],           "MVA_2lss_ttbar",
     floatMap[FloatVariableType::tt_deltaR],                "tt_deltaR",
-    floatMap[FloatVariableType::ntags],                    "ntags",
-    floatMap[FloatVariableType::ntags_loose],              "ntags_loose",
+    ntags,                                                 "ntags",
+    ntags_loose,                                           "ntags_loose",
     floatMap[FloatVariableType::tt_mvis],                  "tt_mvis",
     floatMap[FloatVariableType::tt_pt],                    "tt_pt",
     floatMap[FloatVariableType::max_dr_jet],               "max_dr_jet",
@@ -478,9 +478,13 @@ SyncNtupleManager::read(const std::vector<std::vector<hltPath *>> & hltPaths)
 }
 
 void
-SyncNtupleManager::read(bool is_genMatched)
+SyncNtupleManager::read(bool is_genMatched,
+                        int n_tags,
+                        int n_tags_loose)
 {
   isGenMatched = is_genMatched;
+  ntags        = n_tags;
+  ntags_loose  = n_tags_loose;
 }
 
 void
@@ -503,7 +507,9 @@ SyncNtupleManager::reset(bool is_initializing)
     n_presel_jet
   );
 
-  isGenMatched = placeholder_value;
+  isGenMatched = false;
+  ntags        = placeholder_value;
+  ntags_loose  = placeholder_value;
 
   for(auto & kv: floatMap)
   {
