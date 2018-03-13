@@ -246,7 +246,7 @@ RecoLepton::genJet() const
 bool
 RecoLepton::isGenMatched() const
 {
-  return ! genLepton_;
+  return !! genLepton_;
 }
 
 bool
