@@ -288,7 +288,7 @@ int main(int argc, char* argv[])
   std::string applyFakeRateWeights_string = cfg_analyze.getParameter<std::string>("applyFakeRateWeights");
   int applyFakeRateWeights = -1;
   if      ( applyFakeRateWeights_string == "disabled" ) applyFakeRateWeights = kFR_disabled;
-  else if ( applyFakeRateWeights_string == "3lepton"  ) applyFakeRateWeights = kFR_4lepton;
+  else if ( applyFakeRateWeights_string == "4lepton"  ) applyFakeRateWeights = kFR_4lepton;
   else throw cms::Exception("analyze_4l")
     << "Invalid Configuration parameter 'applyFakeRateWeights' = " << applyFakeRateWeights_string << " !!\n";
 
