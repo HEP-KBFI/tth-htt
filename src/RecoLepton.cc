@@ -250,6 +250,12 @@ RecoLepton::isGenMatched() const
 }
 
 bool
+RecoLepton::hasAnyGenMatch() const
+{
+  return !! genLepton_ || !! genHadTau_ || !! genJet_;
+}
+
+bool
 RecoLepton::isLoose() const
 {
   return isLoose_;

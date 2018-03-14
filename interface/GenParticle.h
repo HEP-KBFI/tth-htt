@@ -26,9 +26,26 @@ public:
   Int_t pdgId() const;
   Int_t charge() const;
 
+  /**
+   * @brief Sets the variable isMatchedToReco_ to true, indicating that
+   *        the gen lvl object is now matched to a reco object
+   */
+  void
+  setMatchedToReco();
+
+  /**
+   * @brief Check if the gen lvl object is already matched to a reco object
+   * @return true, if the gen lvl object is matched to a reco object;
+   *         false otherwise
+   */
+  bool
+  isMatchedToReco() const;
+
 protected:
   Int_t pdgId_;  ///< PDG id of the particle (signed)
   Int_t charge_; ///< charge of particle
+
+  bool isMatchedToReco_; ///< true, if the gen object is already matched to a reco object
 };
 
 std::ostream &

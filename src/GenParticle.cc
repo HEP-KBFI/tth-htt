@@ -13,6 +13,7 @@ GenParticle::GenParticle(Double_t pt,
   : Particle(pt, eta, phi, mass)
   , pdgId_(pdgId)
   , charge_(charge)
+  , isMatchedToReco_(false)
 {}
 
 GenParticle::GenParticle(const math::PtEtaPhiMLorentzVector & p4,
@@ -21,6 +22,7 @@ GenParticle::GenParticle(const math::PtEtaPhiMLorentzVector & p4,
   : Particle(p4)
   , pdgId_(pdgId)
   , charge_(charge)
+  , isMatchedToReco_(false)
 {}
 
 Int_t
@@ -35,12 +37,27 @@ GenParticle::charge() const
   return charge_;
 }
 
+void
+GenParticle::setMatchedToReco()
+{
+  isMatchedToReco_ = true;
+}
+
+bool
+GenParticle::isMatchedToReco() const
+{
+  return isMatchedToReco_;
+}
+
 std::ostream &
 operator<<(std::ostream & stream,
            const GenParticle & particle)
 {
   stream << static_cast<const Particle &>(particle) << ","
             " pdgId = "   << particle.pdgId()
-         << " (charge = " << particle.charge() << ')';
+         << " (charge = " << particle.charge() << "),"
+            " reco-matched = " << (particle.isMatchedToReco() ? "yes" : "no")
+         << '\n'
+  ;
   return stream;
 }

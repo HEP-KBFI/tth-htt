@@ -219,6 +219,12 @@ RecoHadTau::isGenMatched() const
 }
 
 bool
+RecoHadTau::hasAnyGenMatch() const
+{
+  return !! genLepton_ || !! genHadTau_ || !! genJet_;
+}
+
+bool
 RecoHadTau::isLoose() const
 {
   return isLoose_;

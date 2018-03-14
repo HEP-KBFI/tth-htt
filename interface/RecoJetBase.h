@@ -28,7 +28,7 @@ class RecoJetBase
 public:
   RecoJetBase() = default;
   RecoJetBase(const GenJet & particle,
-	      Int_t idx);
+              Int_t idx);
 
   virtual ~RecoJetBase();
 
@@ -48,6 +48,9 @@ public:
   const GenLepton * genLepton() const;
   const GenHadTau * genHadTau() const;
   const GenJet * genJet() const;
+
+  bool isGenMatched() const;
+  bool hasAnyGenMatch() const;
 
 protected:
   Int_t idx_;             ///< index of jet in the ntuple

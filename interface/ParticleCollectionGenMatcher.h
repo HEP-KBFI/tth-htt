@@ -65,7 +65,12 @@ protected:
   {
     for(const Trec * recParticle: recParticles)
     {
-      const Tgen * bestMatch = nullptr;
+      if(recParticle->hasAnyGenMatch())
+      {
+        // the reco particle has already been matched to a gen particle
+        continue;
+      }
+      Tgen * bestMatch = nullptr;
       double dR_bestMatch = 1.e+3;
 
       for (const Tgen & genParticle: genParticles)
@@ -76,13 +81,15 @@ protected:
         const bool passesPtConstraint = genParticle.pt() / recParticle->pt() > minPtRel;
         if(dR < dRmax && dR < dR_bestMatch && passesPtConstraint)
         {
-          bestMatch = &genParticle;
+          bestMatch = const_cast<Tgen *>(&genParticle);
           dR_bestMatch = dR;
         }
       }
 
       if(bestMatch)
       {
+        // forbid the same gen particle to be matched to another reco particle
+        bestMatch->setMatchedToReco();
         Trec * recParticle_nonconst = const_cast<Trec *>(recParticle);
         linker(*recParticle_nonconst, bestMatch);
       }

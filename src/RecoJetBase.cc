@@ -4,7 +4,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/GenHadTau.h" // GenHadTau
 
 RecoJetBase::RecoJetBase(const GenJet & jet,
-			 Int_t idx)
+                         Int_t idx)
   : GenJet(jet)
   , idx_(idx)
   , genLepton_(nullptr)
@@ -77,5 +77,17 @@ const GenJet *
 RecoJetBase::genJet() const
 {
   return genJet_;
+}
+
+bool
+RecoJetBase::isGenMatched() const
+{
+  return !! genJet_;
+}
+
+bool
+RecoJetBase::hasAnyGenMatch() const
+{
+  return !! genLepton_ || !! genHadTau_ || !! genJet_;
 }
 
