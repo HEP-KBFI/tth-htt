@@ -44,7 +44,10 @@ process.prepareDatacards = cms.PSet(
     histogramToFit_xMax = cms.double(-1.),
     histogramToFit_rebin = cms.int32(1),
     histogramToFit_makeBinContentsPositive = cms.bool(True),
-
+    apply_automatic_rebinning = cms.bool(False),
+    minEvents_automatic_rebinning = cms.double(0.1),
+    apply_quantile_rebinning = cms.bool(False),
+    nbin_quantile_rebinning = cms.int32(4),
     sysShifts = cms.vstring(
         "CMS_ttHl_btag_HFUp",
         "CMS_ttHl_btag_HFDown",
@@ -83,7 +86,4 @@ process.prepareDatacards = cms.PSet(
         "CMS_ttHl_thu_shape_ttZ_y1Up",
         "CMS_ttHl_thu_shape_ttZ_y1Down"
     ),
-
-    apply_automatic_rebinning = cms.bool(False),
-    minEvents_automatic_rebinning = cms.double(0.1)
 )

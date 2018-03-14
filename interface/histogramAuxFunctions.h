@@ -118,4 +118,6 @@ getRebinnedHistogram2d(const TH1 * histoOriginal,
                        unsigned numBinsY_rebinned,
                        const TArrayD & binEdgesY_rebinned);
 
+TArrayD getRebinnedBinning(TH1*, double);
+
 #endif // tthAnalysis_HiggsToTauTau_histogramAuxFunctions_h

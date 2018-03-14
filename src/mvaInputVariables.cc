@@ -280,6 +280,6 @@ comp_cosThetaStar(const Particle::LorentzVector & daughterP4, const Particle::Lo
   TLorentzVector motherP4_lv;
   motherP4_lv.SetPtEtaPhiM(motherP4.pt(), motherP4.eta(), motherP4.phi(), motherP4.mass());
   daughterP4_lv.Boost(-motherP4_lv.BoostVector());
-  double cosThetaStar = std::fabs(daughterP4_lv.CosTheta());
+  const double cosThetaStar = std::fabs(daughterP4_lv.CosTheta());
   return cosThetaStar;
 }
