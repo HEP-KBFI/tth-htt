@@ -63,7 +63,7 @@ from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 import argparse, datetime, logging, sys, getpass, os.path
 
 era_choices                = ['2017']
-channel_choices            = ['1l_2tau', '2lss', '2lss_1tau', '3l_1tau']
+channel_choices            = ['1l_2tau', '2lss', '2lss_1tau', '3l', '3l_1tau', '4l']
 default_resubmission_limit = 4
 
 class SmartFormatter(argparse.HelpFormatter):

@@ -2017,8 +2017,9 @@ int main(int argc, char* argv[])
       const std::vector<const RecoElectron *> mvaBasedElectrons = mvaBasedElectronSelector(preselElectrons);
 
       const double ht          = compHT(preselLeptons, preselHadTaus, selJets);
-      const double MT_met_lep0 = comp_MT_met_lep1(selLepton_lead->cone_p4(),  met.pt(), met.phi());
-      const double MT_met_lep2 = comp_MT_met_lep3(selLepton_third->cone_p4(), met.pt(), met.phi());
+      const double MT_met_lep0 = comp_MT_met_lep1(selLepton_lead->cone_p4(),    met.pt(), met.phi());
+      const double MT_met_lep1 = comp_MT_met_lep2(selLepton_sublead->cone_p4(), met.pt(), met.phi());
+      const double MT_met_lep2 = comp_MT_met_lep3(selLepton_third->cone_p4(),   met.pt(), met.phi());
       const double dR_l0tau    = deltaR(selLepton_lead->p4(),    selHadTau->p4());
       const double dR_l1tau    = deltaR(selLepton_sublead->p4(), selHadTau->p4());
       const double dR_l2tau    = deltaR(selLepton_third->p4(),   selHadTau->p4());
@@ -2042,7 +2043,7 @@ int main(int argc, char* argv[])
         triggers_1e, triggers_1mu, triggers_2e, triggers_1e1mu, triggers_2mu,
         triggers_3e, triggers_2e1mu, triggers_1e2mu, triggers_3mu
       });
-      snm->read(isGenMatched);
+      snm->read(isGenMatched, selBJets_medium.size(), selBJets_loose.size());
 
       snm->read(met.pt(),                               FloatVariableType::PFMET);
       snm->read(met.phi(),                              FloatVariableType::PFMETphi);
@@ -2060,8 +2061,6 @@ int main(int argc, char* argv[])
       // MVA_2lss_ttV not filled
       // MVA_2lss_ttbar not filled
       // tt_deltaR not filled
-      snm->read(selBJets_medium.size(),                 FloatVariableType::ntags);
-      snm->read(selBJets_loose.size(),                  FloatVariableType::ntags_loose);
       // tt_mvis not filled
       // tt_pt not filled
       snm->read(max_dr_jet,                             FloatVariableType::max_dr_jet);
@@ -2102,6 +2101,11 @@ int main(int argc, char* argv[])
       // MVA_2lSS1tau_MEM_ttV not filled
       // MVA_2lSS1tau_MEM_2Dbin not filled
 
+      snm->read(lep3_conePt,                            FloatVariableType::lep2_conept);
+      // lep3_conept not filled
+      // mindr_lep4_jet not filled
+      snm->read(MT_met_lep1,                            FloatVariableType::MT_met_lep1);
+      // MT_met_lep3 not filled
       snm->read(eventInfo.genWeight,                    FloatVariableType::genWeight);
 
       snm->fill();

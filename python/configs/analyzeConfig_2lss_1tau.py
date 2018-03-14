@@ -433,13 +433,13 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
                     if lepton_and_hadTau_selection_and_frWeight == 'Tight':
                       if lepton_charge_selection == 'SS':
                         syncOutput = os.path.join(self.dirs[key_dir][DKEY_SYNC], '%s_SR.root' % self.channel)
-                        syncTree   = 'syncTree_%s_SR' % self.channel.replace('_', '')
+                        syncTree   = 'syncTree_%s_SR' % self.channel.replace('_', '').replace('ss', 'SS')
                       elif lepton_charge_selection == 'OS':
                         syncOutput = os.path.join(self.dirs[key_dir][DKEY_SYNC], '%s_Flip.root' % self.channel)
-                        syncTree   = 'syncTree_%s_Flip' % self.channel.replace('_', '')
+                        syncTree   = 'syncTree_%s_Flip' % self.channel.replace('_', '').replace('ss', 'SS')
                     elif lepton_and_hadTau_selection_and_frWeight == 'Fakeable_wFakeRateWeights' and lepton_charge_selection == 'SS':
                       syncOutput = os.path.join(self.dirs[key_dir][DKEY_SYNC], '%s_Fake.root' % self.channel)
-                      syncTree   = 'syncTree_%s_Fake' % self.channel.replace('_', '')
+                      syncTree   = 'syncTree_%s_Fake' % self.channel.replace('_', '').replace('ss', 'SS')
                     else:
                       continue
                     self.inputFiles_sync['sync'].append(syncOutput)

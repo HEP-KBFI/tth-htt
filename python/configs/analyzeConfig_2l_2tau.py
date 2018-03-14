@@ -400,7 +400,7 @@ class analyzeConfig_2l_2tau(analyzeConfig):
                       'hadTau_selection' : hadTau_selection,
                       'apply_hadTauGenMatching' : self.apply_hadTauGenMatching,
                       'chargeSumSelection' : chargeSumSelection,
-                      'applyFakeRateWeights' : self.applyFakeRateWeights  if self.isBDTtraining or not (lepton_selection == "Tight" and hadTau_selection.find("Tight") != -1) else "disabled", # Xanda planted bug
+                      'applyFakeRateWeights' : self.applyFakeRateWeights  if self.isBDTtraining or not (lepton_selection == "Tight" and hadTau_selection.find("Tight") != -1) else "disabled",
                       ##'use_HIP_mitigation_mediumMuonId' : sample_info["use_HIP_mitigation_mediumMuonId"],
                       'use_HIP_mitigation_mediumMuonId' : True,
                       'is_mc' : is_mc,

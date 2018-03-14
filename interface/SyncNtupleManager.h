@@ -25,19 +25,17 @@ enum FloatVariableType
   MHT,                      ///< vectorial sum of preselected leptons (including taus) + jets
   metLD,
 //--- Additional event-level MVA variables
-  lep0_conept,              ///< cone pT of leading lepton : if the lepton is fakeable, 0.85*pT(jet) with JECLepAware, else pT(lep)
-  lep1_conept,              ///< cone pT of subleading lepton : if the lepton is fakeable, 0.85*pT(jet) with JECLepAware, else pT(lep)
+  lep0_conept,              ///< cone pT of leading lepton : if the lepton is fakeable, 0.90*pT(jet) with JECLepAware, else pT(lep)
+  lep1_conept,              ///< cone pT of subleading lepton : if the lepton is fakeable, 0.90*pT(jet) with JECLepAware, else pT(lep)
   mindr_lep0_jet,           ///< min dR between leading lepton and preselected jets
   mindr_lep1_jet,           ///< min dR between subleading lepton and preselected jets
-  mindr_lep2_jet,           ///< min dR between trailing lepton and preselected jets
+  mindr_lep2_jet,           ///< min dR between third lepton and preselected jets
   mindr_tau_jet,            ///< min dR between tau and preselected jets
   MT_met_lep0,              ///< transverse mass of leading lepton and MET (using lep0_conept)
   avg_dr_jet,               ///< average dR between all the pairs of preselected jets
   MVA_2lss_ttV,             ///< ttH vs ttV MVA for 2lss
   MVA_2lss_ttbar,           ///< ttH vs ttbar MVA for 2lss
   tt_deltaR,                ///< deltaR between 2 selected taus
-  ntags,                    ///< number of medium b-tagged jets
-  ntags_loose,              ///< number of loose b-tagged jets
   tt_mvis,                  ///< visible mass of the 2 selected taus
   tt_pt,                    ///< pT of the di-tau pair
   max_dr_jet,               ///< maximum dR between preselected jets
@@ -78,6 +76,11 @@ enum FloatVariableType
   MVA_2lSS1tau_MEM_ttV,     ///< ttH vs ttV MVA for 2lSS1tau w/ MEM LR as input
   MVA_2lSS1tau_MEM_2Dbin,   ///< 2D bin ttH vs ttbar/ttZ MVA for 2lSS1tau w/ MEM LR as input
 //--- custom additional branches (not necessary in sync)
+  lep2_conept,              ///< cone pT of third lepton : if the lepton is fakeable, 0.90*pT(jet) with JECLepAware, else pT(lep)
+  lep3_conept,              ///< cone pT of fourth lepton : if the lepton is fakeable, 0.90*pT(jet) with JECLepAware, else pT(lep)
+  mindr_lep3_jet,           ///< min dR between fourth lepton and preselected jets
+  MT_met_lep1,              ///< transverse mass of subleading lepton and MET (using cone pt)
+  MT_met_lep3,              ///< transverse mass of fourth lepton and MET (using cone pt)
   genWeight
 };
 
@@ -104,7 +107,7 @@ public:
   void read(Float_t value,
             FloatVariableType type);
   void read(const std::vector<std::vector<hltPath *>> & hltPaths);
-  void read(bool is_genMatched);
+  void read(bool is_genMatched, int n_tags, int n_tags_loose);
   void fill();
   void write();
 
@@ -232,9 +235,9 @@ private:
   const Int_t nof_taus;
   const Int_t nof_jets;
 
-  ULong64_t nEvent;
-  UInt_t ls;
-  UInt_t run;
+  Long64_t nEvent;
+  Int_t ls;
+  Int_t run;
 
   Int_t n_presel_mu;
   Int_t n_fakeablesel_mu;
@@ -249,7 +252,9 @@ private:
   Int_t n_presel_tau;
   Int_t n_presel_jet;
 
-  Int_t isGenMatched; ///< flag to indicate whether lepton(s) + tau(s) are all gen matched
+  Bool_t isGenMatched; ///< flag to indicate whether lepton(s) + tau(s) are all gen matched
+  Int_t ntags;         ///< number of medium b-tagged jets
+  Int_t ntags_loose;   ///< number of loose b-tagged jets
 
   Float_t * mu_pt;
   Float_t * mu_conept;
@@ -271,9 +276,9 @@ private:
   Float_t * mu_leptonMVA;
   Bool_t * mu_mediumID;
   Float_t * mu_dpt_div_pt;
-  Int_t * mu_isfakeablesel;
-  Int_t * mu_iscutsel;
-  Int_t * mu_ismvasel;
+  Bool_t * mu_isfakeablesel;
+  Bool_t * mu_iscutsel;
+  Bool_t * mu_ismvasel;
 
   Float_t * ele_pt;
   Float_t * ele_conept;
@@ -293,12 +298,12 @@ private:
   Float_t * ele_dz;
   Float_t * ele_ntMVAeleID;
   Float_t * ele_leptonMVA;
-  Int_t * ele_isChargeConsistent;
+  Bool_t * ele_isChargeConsistent;
   Bool_t * ele_passesConversionVeto;
   Int_t * ele_nMissingHits;
-  Int_t * ele_isfakeablesel;
-  Int_t * ele_iscutsel;
-  Int_t * ele_ismvasel;
+  Bool_t * ele_isfakeablesel;
+  Bool_t * ele_iscutsel;
+  Bool_t * ele_ismvasel;
 
   Float_t * tau_pt;
   Float_t * tau_eta;
@@ -308,8 +313,8 @@ private:
   Float_t * tau_dxy;
   Float_t * tau_dz;
   Int_t * tau_decayMode;
-  Bool_t * tau_decayModeFindingOldDMs;
-  Bool_t * tau_decayModeFindingNewDMs;
+  Int_t * tau_decayModeFindingOldDMs;
+  Int_t * tau_decayModeFindingNewDMs;
   Float_t * tau_byCombinedIsolationDeltaBetaCorr3Hits;
   Int_t * tau_byLooseCombinedIsolationDeltaBetaCorr3Hits;
   Int_t * tau_byMediumCombinedIsolationDeltaBetaCorr3Hits;

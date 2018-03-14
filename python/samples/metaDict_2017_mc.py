@@ -1,9 +1,10 @@
 from collections import OrderedDict as OD
 
-# file generated at 2018-03-06 14:49:38 with the following command:
+# file generated at 2018-03-12 13:27:47 with the following command:
 # find_samples.py -i ../NanoAOD/test/datasets_mc.txt -V -m python/samples/metaDict_2017_mc.py
 
 meta_dictionary = OD()
+
 
 ### event sums
 
@@ -14,6 +15,7 @@ sum_events = {
   ("ZZTo4L", "ZZTo4L_ext1"),
   ("TTTo2L2Nu", "TTTo2L2Nu_PSweights"),
 }
+
 
 meta_dictionary["/ttHJetToNonbb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1/MINIAODSIM"] =  OD([
   ("crab_string",           "NanoAOD_v1_ttHJetToNonbb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8__RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v1"),
@@ -113,7 +115,7 @@ meta_dictionary["/TTWW_TuneCP5_13TeV-madgraph-pythia8/RunIIFall17MiniAOD-94X_mc2
   ("nof_db_events",         200000),
   ("nof_db_files",          11),
   ("fsize_db",              13111885203),
-  ("xsection",              0.002302),
+  ("xsection",              0.007834),
   ("use_it",                True),
   ("genWeight",             True),
   ("comment",               "status: VALID; size: 13.11GB; nevents: 200.00k; release: 9_4_0_patch1; last modified: 2018-03-03 05:02:52"),
@@ -191,10 +193,23 @@ meta_dictionary["/TTJets_SingleLeptFromT_TuneCP5_13TeV-madgraphMLM-pythia8/RunII
   ("nof_db_events",         61597324),
   ("nof_db_files",          1226),
   ("fsize_db",              3375503002723),
-  ("xsection",              182.18),
+  ("xsection",              182.76),
   ("use_it",                True),
   ("genWeight",             True),
   ("comment",               "status: VALID; size: 3.38TB; nevents: 61.60M; release: 9_4_0_patch1; last modified: 2018-02-17 13:35:43"),
+])
+
+meta_dictionary["/TTJets_SingleLeptFromTbar_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v11-v1/MINIAODSIM"] =  OD([
+  ("crab_string",           ""),
+  ("sample_category",       "TT"),
+  ("process_name_specific", "TTJets_SingleLeptFromTbar"),
+  ("nof_db_events",         3800083),
+  ("nof_db_files",          102),
+  ("fsize_db",              210229144667),
+  ("xsection",              182.76),
+  ("use_it",                True),
+  ("genWeight",             True),
+  ("comment",               "status: PRODUCTION; size: 210.23GB; nevents: 3.80M; release: 9_4_0_patch1; last modified: 2018-03-06 14:53:15"),
 ])
 
 meta_dictionary["/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v10-v2/MINIAODSIM"] =  OD([
@@ -396,13 +411,13 @@ meta_dictionary["/WWTo2L2Nu_DoubleScattering_13TeV-herwigpp/RunIIFall17MiniAOD-9
   ("crab_string",           ""),
   ("sample_category",       "Rares"),
   ("process_name_specific", "WWTo2L2Nu_DoubleScattering"),
-  ("nof_db_events",         390068),
-  ("nof_db_files",          6),
-  ("fsize_db",              16718636769),
+  ("nof_db_events",         850747),
+  ("nof_db_files",          15),
+  ("fsize_db",              36449825583),
   ("xsection",              0.1743),
   ("use_it",                True),
   ("genWeight",             True),
-  ("comment",               "status: PRODUCTION; size: 16.72GB; nevents: 390.07k; release: 9_4_0_patch1; last modified: 2018-03-03 19:25:57"),
+  ("comment",               "status: PRODUCTION; size: 36.45GB; nevents: 850.75k; release: 9_4_0_patch1; last modified: 2018-03-03 19:25:57"),
 ])
 
 meta_dictionary["/WWW_4F_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17MiniAOD-94X_mc2017_realistic_v11-v1/MINIAODSIM"] =  OD([
@@ -435,12 +450,23 @@ meta_dictionary["/ZZZ_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17MiniAOD-94X_mc20
   ("crab_string",           ""),
   ("sample_category",       "Rares"),
   ("process_name_specific", "ZZZ"),
-  ("nof_db_events",         77298),
-  ("nof_db_files",          3),
-  ("fsize_db",              3614447706),
+  ("nof_db_events",         199610),
+  ("nof_db_files",          14),
+  ("fsize_db",              9492868999),
   ("xsection",              0.01398),
   ("use_it",                True),
   ("genWeight",             True),
-  ("comment",               "status: PRODUCTION; size: 3.61GB; nevents: 77.30k; release: 9_4_0_patch1; last modified: 2018-03-02 00:26:40"),
+  ("comment",               "status: PRODUCTION; size: 9.49GB; nevents: 199.61k; release: 9_4_0_patch1; last modified: 2018-03-02 00:26:40"),
 ])
+
+
+# event statistics by sample category:
+# signal:                    17.32M
+# additional_signal_overlap: 934.24k
+# TTZ:                       7.81M
+# TTW:                       9.82M
+# TTWW:                      200.00k
+# TT:                        330.87M
+# EWK:                       390.24M
+# Rares:                     20.40M
 
