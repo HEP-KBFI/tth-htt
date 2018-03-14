@@ -33,5 +33,5 @@ double comp_lep3_conePt(const RecoLepton& lepton);
 double comp_avg_dr_jet(const std::vector<const RecoJet*>& jets_cleaned);
 double comp_max_dr_jet(const std::vector<const RecoJet*>& jets_cleaned);
 double compHT(const std::vector<const RecoLepton*>& leptons, const std::vector<const RecoHadTau*>& hadTaus, const std::vector<const RecoJet*>& jets_cleaned);
-
+double comp_cosThetaStar(const Particle::LorentzVector & daughterP4, const Particle::LorentzVector & motherP4);
 #endif // mvaInputVariables_h

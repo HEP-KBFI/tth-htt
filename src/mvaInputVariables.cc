@@ -180,3 +180,18 @@ double compHT(const std::vector<const RecoLepton*>& leptons, const std::vector<c
   }
   return ht;
 }
+
+double 
+comp_cosThetaStar(const Particle::LorentzVector & daughterP4, const Particle::LorentzVector & motherP4)
+{
+  // CV: compute "helicity angle" between momentum vectors of daughter and mother particle
+  //     in the rest-frame of the mother particle
+  //    (cf. Section 2.6.2 and Fig. 59 of AN-2015/001)
+  TLorentzVector daughterP4_lv;
+  daughterP4_lv.SetPtEtaPhiM(daughterP4.pt(), daughterP4.eta(), daughterP4.phi(), daughterP4.mass());
+  TLorentzVector motherP4_lv;
+  motherP4_lv.SetPtEtaPhiM(motherP4.pt(), motherP4.eta(), motherP4.phi(), motherP4.mass());
+  daughterP4_lv.Boost(-motherP4_lv.BoostVector());
+  double cosThetaStar = std::fabs(daughterP4_lv.CosTheta());
+  return cosThetaStar;
+}

@@ -44,4 +44,6 @@ TArrayD getBinning(const TH1*, double xMin = -1., double xMax = -1.);
 TH1* getRebinnedHistogram1d(const TH1*, unsigned, const TArrayD&);
 TH2* getRebinnedHistogram2d(const TH1*, unsigned, const TArrayD&, unsigned, const TArrayD&);
 
+TArrayD getRebinnedBinning(TH1*, double);
+
 #endif // tthAnalysis_HiggsToTauTau_histogramAuxFunctions_h
