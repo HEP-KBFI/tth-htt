@@ -619,7 +619,8 @@ main(int argc,
   RecoJetCollectionCleaner jetCleaner_dR04(0.4);
   RecoJetCollectionCleaner jetCleaner_dR07(0.7); // Christian's suggestion
   RecoJetCollectionSelector jetSelector(era);
-  jetSelector.getSelector().set_min_pt(30.);
+  jetSelector.getSelector().set_min_pt(30.); // Setting the min. pt of the jets for Lepton FR analysis
+  jetSelector.getSelector().set_max_absEta(2.4); // Setting the max. |eta| of the jets for Lepton FR analysis
   RecoJetCollectionSelectorBtagLoose jetSelectorBtagLoose(era);
 
 //--- declare missing transverse energy
@@ -1086,7 +1087,7 @@ main(int argc,
     // set to true if at least one electron+jet or one muon+jet combination passes trigger requirements
     bool isGoodLeptonJetPair = false;
     std::string hltpath_passed = "";
-    bool hltpath_trigger_bit = false;
+    // bool hltpath_trigger_bit = false;
 //--- fill electron histograms (numerator and denominator)
     for(const hltPath_LeptonFakeRate * const hltPath_iter: triggers_e)
     {
@@ -1102,7 +1103,7 @@ main(int argc,
       }
 
       hltpath_passed = hltPath_iter->getPathName();
-      hltpath_trigger_bit = true;
+      // hltpath_trigger_bit = true;
       std::cout << "event PASSES this e trigger"                       "\n"
                    "HLT Path name "     << *hltPath_iter            << "\n"
                    "Trigger bit value " << hltPath_iter->getValue() << '\n';
@@ -1125,8 +1126,8 @@ main(int argc,
           }
 
           bool isGoodElectronJetPair = false;
-          double sel_Jet_pt_e = 0.;
-          double sel_Jet_eta_e = 0.;
+          // double sel_Jet_pt_e = 0.;
+          // double sel_Jet_eta_e = 0.;
           for(const RecoJet * selJet: selJets_dR07)
           {
             if(deltaR(preselElectron.p4(), selJet->p4()) <= 1.0)
@@ -1150,8 +1151,8 @@ main(int argc,
               }
               continue;
             }else{
-              sel_Jet_eta_e = selJet->eta();
-              sel_Jet_pt_e  = selJet->pt();
+              // sel_Jet_eta_e = selJet->eta();
+              // sel_Jet_pt_e  = selJet->pt();
               isGoodElectronJetPair = true;
               break;
             }
@@ -1199,9 +1200,12 @@ main(int argc,
           numerator_and_denominatorHistManagers * histograms_incl_afterCuts  = nullptr;
           std::vector<numerator_and_denominatorHistManagers *> * histograms_binned_beforeCuts = nullptr;
           std::vector<numerator_and_denominatorHistManagers *> * histograms_binned_afterCuts  = nullptr;
+          // if(preselElectron.isTight()){std::cout << "Tight electron " << std::endl;}          
+	  // if(preselElectron.isFakeable()){std::cout << "Fakeable electron " << std::endl;}          
+
           if(preselElectron.isTight())
           {
-            std::cout << "numerator filled\n";
+            std::cout << "numerator filled " << "\n";
             // electron enters numerator
             histograms_incl_beforeCuts = histograms_e_numerator_incl_beforeCuts;
             histograms_incl_afterCuts  = histograms_e_numerator_incl_afterCuts;
@@ -1209,7 +1213,8 @@ main(int argc,
             histograms_binned_afterCuts  = &histograms_e_numerator_binned_afterCuts;
             if(writeTo_selEventsFileOut)
             {
-              *(outputFiles["e"]["num"]) << eventInfo.str() <<
+              *(outputFiles["e"]["num"]) << eventInfo.str() << '\n'; 
+		/*
                 " lep pt() " << preselElectron.pt() <<
                 " eta " << preselElectron.eta() <<
                 " phi "  << preselElectron.phi() <<
@@ -1242,12 +1247,12 @@ main(int argc,
                 " e OoEminusOoP() " << preselElectron.OoEminusOoP() <<
                 " e nLostHits() " << preselElectron.nLostHits() <<
                 " e passesConversionVeto() " << preselElectron.passesConversionVeto() << '\n';
-
+		*/
             }
           }
           else if(preselElectron.isFakeable())
           {
-            std::cout << "denominator filled\n";
+            std::cout << "denominator filled " << "\n";
             // electron enters denominator (fakeable but not tight)
             histograms_incl_beforeCuts = histograms_e_denominator_incl_beforeCuts;
             histograms_incl_afterCuts  = histograms_e_denominator_incl_afterCuts;
@@ -1255,7 +1260,8 @@ main(int argc,
             histograms_binned_afterCuts  = &histograms_e_denominator_binned_afterCuts;
             if(writeTo_selEventsFileOut)
             {
-              *(outputFiles["e"]["den"]) << eventInfo.str() <<
+              *(outputFiles["e"]["den"]) << eventInfo.str() << '\n'; 
+	      /*
                 " lep pt() " << preselElectron.pt() <<
                 " eta " << preselElectron.eta() <<
                 " phi "  << preselElectron.phi() <<
@@ -1287,7 +1293,7 @@ main(int argc,
                 " e OoEminusOoP() " << preselElectron.OoEminusOoP() <<
                 " e nLostHits() " << preselElectron.nLostHits() <<
                 " e passesConversionVeto() " << preselElectron.passesConversionVeto() << '\n';
-
+	      */
             }
           }
           if(histograms_incl_beforeCuts != nullptr && histograms_incl_afterCuts != nullptr &&

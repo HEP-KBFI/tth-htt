@@ -102,8 +102,8 @@ RecoElectronReader::setBranchAddresses(TTree * tree)
     bai.setBranchAddress(mvaRawPOG_HZZ_, branchName_mvaRawPOG_HZZ_);
     bai.setBranchAddress(sigmaEtaEta_, branchName_sigmaEtaEta_);
     bai.setBranchAddress(HoE_, branchName_HoE_);
-    bai.setBranchAddress(deltaEta_, ""); // use branchName_deltaEta_
-    bai.setBranchAddress(deltaPhi_, ""); // use branchName_deltaPhi_
+    bai.setBranchAddress(deltaEta_, branchName_deltaEta_); 
+    bai.setBranchAddress(deltaPhi_, branchName_deltaPhi_); 
     bai.setBranchAddress(OoEminusOoP_, branchName_OoEminusOoP_);
     bai.setBranchAddress(lostHits_, branchName_lostHits_);
     bai.setBranchAddress(conversionVeto_, branchName_conversionVeto_);
