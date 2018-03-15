@@ -73,6 +73,12 @@ RecoElectronSelectorTight::disable_conversionVeto()
   apply_conversionVeto_ = false;
 }
 
+void
+RecoElectronSelectorTight::set_selection_flags(bool selection_flag)
+{
+  set_selection_flags_ = selection_flag;
+}
+
 bool
 RecoElectronSelectorTight::operator()(const RecoElectron & electron) const
 {
@@ -233,10 +239,12 @@ RecoElectronSelectorTight::operator()(const RecoElectron & electron) const
 
 RecoElectronCollectionSelectorTight::RecoElectronCollectionSelectorTight(int era,
                                                                          int index,
-                                                                         bool debug)
-  : selIndex_(index)
-  , selector_(era, index, debug)
-{}
+                                                                         bool debug,
+                                                                         bool set_selection_flags)
+  : ParticleCollectionSelector<RecoElectron, RecoElectronSelectorTight>(era, index, debug)
+{
+  selector_.set_selection_flags(set_selection_flags);
+}
 
 void
 RecoElectronCollectionSelectorTight::enable_offline_e_trigger_cuts()
@@ -261,23 +269,4 @@ void
 RecoElectronCollectionSelectorTight::disable_conversionVeto()
 {
   selector_.disable_conversionVeto();
-}
-
-std::vector<const RecoElectron *>
-RecoElectronCollectionSelectorTight::operator()(const std::vector<const RecoElectron *> & electrons) const
-{
-  std::vector<const RecoElectron *> selElectrons;
-  int idx = 0;
-  for(const RecoElectron * electron: electrons)
-  {
-    if(selector_(*electron))
-    {
-      if(idx == selIndex_ || selIndex_ == -1)
-      {
-        selElectrons.push_back(electron);
-      }
-      ++idx;
-    }
-  }
-  return selElectrons;
 }

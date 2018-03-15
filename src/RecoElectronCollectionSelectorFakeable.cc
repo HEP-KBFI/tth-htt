@@ -65,6 +65,12 @@ RecoElectronSelectorFakeable::disable_offline_e_trigger_cuts()
   apply_offline_e_trigger_cuts_ = false;
 }
 
+void
+RecoElectronSelectorFakeable::set_selection_flags(bool selection_flags)
+{
+  set_selection_flags_ = selection_flags;
+}
+
 bool
 RecoElectronSelectorFakeable::operator()(const RecoElectron & electron) const
 {
@@ -121,9 +127,10 @@ RecoElectronCollectionSelectorFakeable::RecoElectronCollectionSelectorFakeable(i
                                                                                int index,
                                                                                bool debug,
                                                                                bool set_selection_flags)
-  : selIndex_(index)
-  , selector_(era, index, debug, set_selection_flags)
-{}
+  : ParticleCollectionSelector<RecoElectron, RecoElectronSelectorFakeable>(era, index, debug)
+{
+  selector_.set_selection_flags(set_selection_flags);
+}
 
 void
 RecoElectronCollectionSelectorFakeable::enable_offline_e_trigger_cuts()
@@ -135,23 +142,4 @@ void
 RecoElectronCollectionSelectorFakeable::disable_offline_e_trigger_cuts()
 {
   selector_.disable_offline_e_trigger_cuts();
-}
-
-std::vector<const RecoElectron *>
-RecoElectronCollectionSelectorFakeable::operator()(const std::vector<const RecoElectron * > & electrons) const
-{
-  std::vector<const RecoElectron *> selElectrons;
-  int idx = 0;
-  for(const RecoElectron * electron: electrons)
-  {
-    if(selector_(*electron))
-    {
-      if(idx == selIndex_ || selIndex_ == -1)
-      {
-        selElectrons.push_back(electron);
-      }
-      ++idx;
-    }
-  }
-  return selElectrons;
 }
