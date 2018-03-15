@@ -75,7 +75,6 @@
 #include <string> // std::string
 #include <vector> // std::vector<>
 #include <cstdlib> // EXIT_SUCCESS, EXIT_FAILURE
-#include <algorithm> // std::sort
 #include <fstream> // std::ofstream
 #include <assert.h> // assert
 
@@ -758,11 +757,7 @@ int main(int argc, char* argv[])
     }
   
 //--- apply preselection
-    std::vector<const RecoLepton*> preselLeptons;    
-    preselLeptons.reserve(preselElectrons.size() + preselMuons.size());
-    preselLeptons.insert(preselLeptons.end(), preselElectrons.begin(), preselElectrons.end());
-    preselLeptons.insert(preselLeptons.end(), preselMuons.begin(), preselMuons.end());
-    std::sort(preselLeptons.begin(), preselLeptons.end(), isHigherPt);
+    std::vector<const RecoLepton*> preselLeptons = mergeLeptonCollections(preselElectrons, preselMuons, isHigherPt);
     // require two or more leptons passing loose preselection criteria 
     if ( !(preselLeptons.size() >= 2) ) {
       if ( run_lumi_eventSelector ) {
@@ -829,11 +824,7 @@ int main(int argc, char* argv[])
       -1., -1., 1.);
   
 //--- apply final event selection 
-    std::vector<const RecoLepton*> selLeptons;    
-    selLeptons.reserve(selElectrons.size() + selMuons.size());
-    selLeptons.insert(selLeptons.end(), selElectrons.begin(), selElectrons.end());
-    selLeptons.insert(selLeptons.end(), selMuons.begin(), selMuons.end());
-    std::sort(selLeptons.begin(), selLeptons.end(), isHigherPt);
+    std::vector<const RecoLepton*> selLeptons = mergeLeptonCollections(selElectrons, selMuons, isHigherPt);
     // require two or more leptons passing tight selection criteria of final event selection 
     if ( !(selLeptons.size() >= 2) ) {
       if ( run_lumi_eventSelector ) {
@@ -867,12 +858,8 @@ int main(int argc, char* argv[])
         dataToMCcorrectionInterface, apply_trigger_bits,
 	selLepton_lead, selLepton_sublead, 0, 0, selJets);
     }
-  
-    std::vector<const RecoLepton*> tightLeptons;    
-    tightLeptons.reserve(tightElectrons.size() + tightMuons.size());
-    tightLeptons.insert(tightLeptons.end(), tightElectrons.begin(), tightElectrons.end());
-    tightLeptons.insert(tightLeptons.end(), tightMuons.begin(), tightMuons.end());
-    std::sort(tightLeptons.begin(), tightLeptons.end(), isHigherPt);
+
+    std::vector<const RecoLepton*> tightLeptons = mergeLeptonCollections(tightElectrons, tightMuons, isHigherPt);
     if ( !(tightLeptons.size() <= 3) ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS tightLeptons selection." << std::endl;
