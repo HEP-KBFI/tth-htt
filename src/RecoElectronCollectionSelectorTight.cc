@@ -174,7 +174,7 @@ RecoElectronSelectorTight::operator()(const RecoElectron & electron) const
     }
     return false;
   }
-  
+
   // extra cuts for electrons passing pT threshold of single electron trigger,
   // as explained in section 3.3.4 of AN-2015/321
   if(apply_offline_e_trigger_cuts_ && electron.pt() >= min_pt_trig_)

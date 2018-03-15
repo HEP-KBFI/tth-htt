@@ -1201,11 +1201,11 @@ main(int argc,
           std::vector<numerator_and_denominatorHistManagers *> * histograms_binned_beforeCuts = nullptr;
           std::vector<numerator_and_denominatorHistManagers *> * histograms_binned_afterCuts  = nullptr;
           // if(preselElectron.isTight()){std::cout << "Tight electron " << std::endl;}          
-	  // if(preselElectron.isFakeable()){std::cout << "Fakeable electron " << std::endl;}          
+          // if(preselElectron.isFakeable()){std::cout << "Fakeable electron " << std::endl;}
 
           if(preselElectron.isTight())
           {
-            std::cout << "numerator filled " << "\n";
+            std::cout << "numerator filled\n";
             // electron enters numerator
             histograms_incl_beforeCuts = histograms_e_numerator_incl_beforeCuts;
             histograms_incl_afterCuts  = histograms_e_numerator_incl_afterCuts;
@@ -1214,7 +1214,7 @@ main(int argc,
             if(writeTo_selEventsFileOut)
             {
               *(outputFiles["e"]["num"]) << eventInfo.str() << '\n'; 
-		/*
+                /*
                 " lep pt() " << preselElectron.pt() <<
                 " eta " << preselElectron.eta() <<
                 " phi "  << preselElectron.phi() <<
@@ -1247,12 +1247,12 @@ main(int argc,
                 " e OoEminusOoP() " << preselElectron.OoEminusOoP() <<
                 " e nLostHits() " << preselElectron.nLostHits() <<
                 " e passesConversionVeto() " << preselElectron.passesConversionVeto() << '\n';
-		*/
+                */
             }
           }
           else if(preselElectron.isFakeable())
           {
-            std::cout << "denominator filled " << "\n";
+            std::cout << "denominator filled\n";
             // electron enters denominator (fakeable but not tight)
             histograms_incl_beforeCuts = histograms_e_denominator_incl_beforeCuts;
             histograms_incl_afterCuts  = histograms_e_denominator_incl_afterCuts;
@@ -1261,7 +1261,7 @@ main(int argc,
             if(writeTo_selEventsFileOut)
             {
               *(outputFiles["e"]["den"]) << eventInfo.str() << '\n'; 
-	      /*
+              /*
                 " lep pt() " << preselElectron.pt() <<
                 " eta " << preselElectron.eta() <<
                 " phi "  << preselElectron.phi() <<
@@ -1293,7 +1293,7 @@ main(int argc,
                 " e OoEminusOoP() " << preselElectron.OoEminusOoP() <<
                 " e nLostHits() " << preselElectron.nLostHits() <<
                 " e passesConversionVeto() " << preselElectron.passesConversionVeto() << '\n';
-	      */
+              */
             }
           }
           if(histograms_incl_beforeCuts != nullptr && histograms_incl_afterCuts != nullptr &&

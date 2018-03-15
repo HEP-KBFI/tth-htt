@@ -39,7 +39,7 @@ RecoElectronSelectorFakeable::RecoElectronSelectorFakeable(int era,
       max_jetBtagCSV_ = { 0.3, 0.8484 };
       break;
     }
-    default: throw cms::Exception("RecoElectronSelectorFakeable") << "Invalid era: " << era_;
+    default: throw cmsException(this) << "Invalid era: " << era_;
   }
   assert(min_mvaRawPOG_.size() == 3);
   assert(binning_absEta_.size() == 2);
@@ -78,52 +78,42 @@ RecoElectronSelectorFakeable::operator()(const RecoElectron & electron) const
      electron.nLostHits() <= max_nLostHits_                     &&
      (electron.passesConversionVeto() || ! apply_conversionVeto_))
   {
-    std::cout<< "Passed cone_pT, lepton_pT, eta, dxy, dz  cuts "  << std::endl;
     const int idxBin_absEta = electron.absEta() <= binning_absEta_[0] ? 0 :
                              (electron.absEta() <= binning_absEta_[1] ? 1 : 2)
     ;
 
-    double mvaRawPOG = electron.mvaRawPOG_HZZ();
-    double mvaRawPOGCut = min_mvaRawPOG_[idxBin_absEta];
+    const double mvaRawPOG = electron.mvaRawPOG_HZZ();
+    const double mvaRawPOGCut = min_mvaRawPOG_[idxBin_absEta];
+    const int idxBin_mvaTTH = electron.mvaRawTTH() <= binning_mvaTTH_[0] ? 0 : 1;
 
-    if(mvaRawPOG >= mvaRawPOGCut)
+    if(mvaRawPOG >= mvaRawPOGCut                                               &&
+       electron.jetPtRatio() >= min_jetPtRatio_[idxBin_mvaTTH]                 &&
+       electron.jetBtagCSV() <= max_jetBtagCSV_[idxBin_mvaTTH]                 &&
+       (
+         (electron.cone_pt() <= min_pt_trig_ || ! apply_offline_e_trigger_cuts_) ||
+          (
+            electron.cone_pt() > min_pt_trig_                                   &&
+            electron.sigmaEtaEta() <= max_sigmaEtaEta_trig_[idxBin_absEta]      &&
+            electron.HoE() <= max_HoE_trig_[idxBin_absEta]                      &&
+            std::fabs(electron.deltaEta()) <= max_deltaEta_trig_[idxBin_absEta] &&
+            std::fabs(electron.deltaPhi()) <= max_deltaPhi_trig_[idxBin_absEta] &&
+            electron.OoEminusOoP() >= min_OoEminusOoP_trig_                     &&
+            electron.OoEminusOoP() <= max_OoEminusOoP_trig_[idxBin_absEta]
+          )
+        )
+      )
     {
-      std::cout<< "Passed mvaRawPOG cut " << std::endl;
-      const int idxBin_mvaTTH = electron.mvaRawTTH() <= binning_mvaTTH_[0] ? 0 : 1;
-
-      if(electron.jetPtRatio() >= min_jetPtRatio_[idxBin_mvaTTH] &&
-         electron.jetBtagCSV() <= max_jetBtagCSV_[idxBin_mvaTTH])
+      if(set_selection_flags_)
       {
-        if((electron.cone_pt() <= min_pt_trig_ || ! apply_offline_e_trigger_cuts_) || 
-	   (electron.cone_pt() > min_pt_trig_ && 
-	    electron.sigmaEtaEta() <= max_sigmaEtaEta_trig_[idxBin_absEta] &&
-	    electron.HoE() <= max_HoE_trig_[idxBin_absEta]                 &&
-	    std::fabs(electron.deltaEta()) <= max_deltaEta_trig_[idxBin_absEta] &&
-	    std::fabs(electron.deltaPhi()) <= max_deltaPhi_trig_[idxBin_absEta] &&
-	    electron.OoEminusOoP() >= min_OoEminusOoP_trig_  &&
-            electron.OoEminusOoP() <= max_OoEminusOoP_trig_[idxBin_absEta]))
-	{
-	  if(set_selection_flags_)
-	  {
-            electron.set_isFakeable();
-	    std::cout<< "Passed sigmaEtaEta(), HoE(), OoEminusOoP(), deltaEta(), deltaPhi() cuts "  << std::endl;
-	    // std::cout<< "std::fabs(electron.deltaEta()) " << std::fabs(electron.deltaEta()) << " max_deltaEta_trig_[idxBin_absEta] " << max_deltaEta_trig_[idxBin_absEta] << std::endl;
-	    // std::cout<< "std::fabs(electron.deltaPhi()) " << std::fabs(electron.deltaPhi()) << " max_deltaPhi_trig_[idxBin_absEta] " << max_deltaPhi_trig_[idxBin_absEta] << std::endl;
-	    if(tightElectronSelector_(electron))
-            {
-              electron.set_isTight();
-            }
-          }
-	  // std::cout<< "set_selection_flags_ = " << set_selection_flags_ << std::endl;
-          return true;
-        } else {
-	   std::cout<< "Failed sigmaEtaEta(), HoE(), OoEminusOoP(), deltaEta(), deltaPhi() cuts "  << std::endl;
-	   // std::cout<< "std::fabs(electron.deltaEta()) " << std::fabs(electron.deltaEta()) << " max_deltaEta_trig_[idxBin_absEta] " << max_deltaEta_trig_[idxBin_absEta] << std::endl;
-	   // std::cout<< "std::fabs(electron.deltaPhi()) " << std::fabs(electron.deltaPhi()) << " max_deltaPhi_trig_[idxBin_absEta] " << max_deltaPhi_trig_[idxBin_absEta] << std::endl;
-        }  
+        electron.set_isFakeable();
+        if(tightElectronSelector_(electron))
+        {
+          electron.set_isTight();
+        }
       }
-    } // mvaRawPOG >= mvaRawPOGCut
-  } else {std::cout<< "Failed cone_pT, lepton_pT, eta, dxy, dz  cuts "  << std::endl;}
+      return true;
+    }
+  }
   return false;
 }
 
