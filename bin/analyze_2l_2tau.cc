@@ -1393,10 +1393,10 @@ int main(int argc, char* argv[])
 	double weight_data_to_MC_correction_hadTau_lead = 1.;
 	double weight_data_to_MC_correction_hadTau_sublead = 1.;
 	if ( isMC && apply_hadTauFakeRateSF && hadTauSelection == kTight ) {
-	if ( !(selHadTau_lead->genHadTau() || selHadTau_lead->genLepton()) ) {
+	if ( !(selHadTau_lead->genHadTau() || selHadTau_lead->genLepton()) && jetToTauFakeRateInterface ) {
 	  weight_data_to_MC_correction_hadTau_lead = jetToTauFakeRateInterface->getSF_lead(selHadTau_lead->pt(), selHadTau_lead->absEta());
 	}
-	if ( !(selHadTau_sublead->genHadTau() || selHadTau_sublead->genLepton()) ) {
+	if ( !(selHadTau_sublead->genHadTau() || selHadTau_sublead->genLepton()) && jetToTauFakeRateInterface ) {
 	  weight_data_to_MC_correction_hadTau_sublead = jetToTauFakeRateInterface->getSF_sublead(selHadTau_sublead->pt(), selHadTau_sublead->absEta());
 	}
 	if ( isDEBUG ) {
