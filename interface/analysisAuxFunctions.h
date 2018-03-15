@@ -223,8 +223,23 @@ set_selection_flags(std::vector<const T *> & leptons,
  * @brief Build collection of selected leptons by merging collections of selected electrons and selected muons
  */
 std::vector<const RecoLepton *>
+mergeLeptonCollectionsNoSort(const std::vector<const RecoElectron *> & electrons,
+                             const std::vector<const RecoMuon *> & muons);
+
+std::vector<const RecoLepton *>
 mergeLeptonCollections(const std::vector<const RecoElectron *> & electrons,
                        const std::vector<const RecoMuon *> & muons);
+
+template <typename T>
+std::vector<const RecoLepton *>
+mergeLeptonCollections(const std::vector<const RecoElectron *> & electrons,
+                       const std::vector<const RecoMuon *> & muons,
+                       bool (*sortFunction)(const T *, const T *))
+{
+  std::vector<const RecoLepton *> leptons = mergeLeptonCollectionsNoSort(electrons, muons);
+  std::sort(leptons.begin(), leptons.end(), sortFunction);
+  return leptons;
+}
 
 template <typename T,
           typename = typename std::enable_if<! std::is_pointer<T>::value>>

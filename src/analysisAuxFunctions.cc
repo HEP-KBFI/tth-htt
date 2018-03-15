@@ -173,9 +173,9 @@ compMEt_LD(const Particle::LorentzVector & met_p4,
 }
 
 std::vector<const RecoLepton *>
-mergeLeptonCollections(const std::vector<const RecoElectron *> & electrons,
-                       const std::vector<const RecoMuon *> & muons)
-{ 
+mergeLeptonCollectionsNoSort(const std::vector<const RecoElectron *> & electrons,
+                             const std::vector<const RecoMuon *> & muons)
+{
   std::vector<const RecoLepton *> leptons;
   const std::size_t nLeptons = electrons.size() + muons.size();
   if(nLeptons > 0)
@@ -183,9 +183,15 @@ mergeLeptonCollections(const std::vector<const RecoElectron *> & electrons,
     leptons.reserve(nLeptons);
     leptons.insert(leptons.end(), electrons.begin(), electrons.end());
     leptons.insert(leptons.end(), muons.begin(), muons.end());
-    std::sort(leptons.begin(), leptons.end(), isHigherPt);
   }
   return leptons;
+}
+
+std::vector<const RecoLepton *>
+mergeLeptonCollections(const std::vector<const RecoElectron *> & electrons,
+                       const std::vector<const RecoMuon *> & muons)
+{
+  return mergeLeptonCollections(electrons, muons, isHigherPt);
 }
 
 template<>
