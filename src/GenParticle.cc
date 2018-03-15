@@ -55,9 +55,7 @@ operator<<(std::ostream & stream,
 {
   stream << static_cast<const Particle &>(particle) << ","
             " pdgId = "   << particle.pdgId()
-         << " (charge = " << particle.charge() << "),"
-            " reco-matched = " << (particle.isMatchedToReco() ? "yes" : "no")
-         << '\n'
+         << " (charge = " << particle.charge() << ')'
   ;
   return stream;
 }
