@@ -10,13 +10,14 @@ from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 #                      to increase the BDT training statistics
 #--------------------------------------------------------------------------------
 
-# E.g. to run: python tthAnalyzeRun_2lss_1tau.py --version "2017Oct24" --mode "forBDTtraining_afterAddMEM" --use_prod_ntuples 
+# E.g. to run: python tthAnalyzeRun_2lss_1tau.py --version "2017Oct24" --mode "forBDTtraining_afterAddMEM" --use_prod_ntuples
 from optparse import OptionParser
 parser = OptionParser()
 parser.add_option("--version ", type="string", dest="version", help="Name of output reository with results\n Trees will be stored in /hdfs/local/USER/ttHAnalysis/2016/VERSION/", default='dumb')
 parser.add_option("--mode", type="string", dest="mode", help="Set the mode flag, read the script for options", default="VHbb")
 parser.add_option("--ERA", type="string", dest="ERA", help="Era of data", default='2016')
 parser.add_option("--use_prod_ntuples", action="store_true", dest="use_prod_ntuples", help="Production flag", default=False)
+parser.add_option("--tauWP", type="string", dest="tauWP", help="Set the mode flag, read the script for options", default="dR03mvaMedium")
 (options, args) = parser.parse_args()
 
 use_prod_ntuples     = options.use_prod_ntuples #True
@@ -57,7 +58,7 @@ if mode == "VHbb":
       "/Tau/Run2016G-PromptReco-v1/MINIAOD"]:
       sample_info["use_it"] = False
 
-  hadTau_selection = "dR03mvaMedium"
+  hadTau_selection = options.tauWP
   applyFakeRateWeights = "3L"
 
 elif mode == "forBDTtraining":
@@ -66,7 +67,7 @@ elif mode == "forBDTtraining":
   else:
     from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_FastSim import samples_2016
   hadTau_selection         = "dR03mvaVTight"
-  hadTau_selection_relaxed = "dR03mvaLoose"
+  hadTau_selection_relaxed = options.tauWP
   applyFakeRateWeights     = "3L"
 else:
   raise ValueError("Invalid Configuration parameter 'mode' = %s !!" % mode)
@@ -184,6 +185,9 @@ if __name__ == '__main__':
     )
 
     if mode.find("forBDTtraining") != -1:
+      if hadTau_selection_relaxed=="dR03mvaVVLoose" : hadTauFakeRateWeight_inputFileName = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016_vvLoosePresel.root"
+      elif hadTau_selection_relaxed=="dR03mvaVLoose" : hadTauFakeRateWeight_inputFileName = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016_vLoosePresel.root"
+      else : hadTauFakeRateWeight_inputFileName = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016.root"
       analysis.set_BDT_training(hadTau_selection_relaxed, hadTauFakeRateWeight_inputFileName)
 
     job_statistics = analysis.create()
@@ -191,12 +195,13 @@ if __name__ == '__main__':
       logging.info(" #jobs of type '%s' = %i" % (job_type, num_jobs))
     job_statistics_summary[idx_job_resubmission] = job_statistics
 
-    if idx_job_resubmission == 0:
-      run_analysis = query_yes_no("Start jobs ?")
-    if run_analysis:
-      analysis.run()
-    else:
-      sys.exit(0)
+    #if idx_job_resubmission == 0:
+    #  run_analysis = query_yes_no("Start jobs ?")
+    #if run_analysis:
+    #  analysis.run()
+    #else:
+    #  sys.exit(0)
+    analysis.run()
 
     if job_statistics['analyze'] == 0:
       is_last_resubmission = True
