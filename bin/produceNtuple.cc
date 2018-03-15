@@ -274,6 +274,21 @@ int main(int argc, char* argv[])
   RecoJetCollectionSelectorBtagLoose jetSelectorBtagLoose(era);
   RecoJetCollectionSelectorBtagMedium jetSelectorBtagMedium(era);
 
+//--- save the default settings of jetSelector
+  const double min_jetSelector_pT = jetSelector.get_min_pt();
+  const double max_jetSelector_absEta = jetSelector.get_max_absEta();
+
+//--- Disable pT cuts on the loose and medium b-tag selectors because we have to consider the effects
+//    due to JECs: the jet pT may fluctuate up or down, and because of this the jet may fail pT requirement
+//    depending on the choice of systematic uncertainties. The solution is to find maximum upwards
+//    fluctuation in pT due to JEC and select only such cleaned jets that pass the pT cut in any systematic
+//    setting. However, these jets that pass the pT cut due to JEC but otherwise wouldn't, would still be
+//    cut out by the loose and medium b-tag selectors (they also employ the pT cut on top of b-tagging
+//    requirements). The solution is to remove the pT cut in b-tagging selectors because the input jet
+//    collection all already passes the pT cut in at least one choice of systematic uncertainties.
+  jetSelectorBtagLoose.getSelector().set_min_pt(-1.);
+  jetSelectorBtagMedium.getSelector().set_min_pt(-1.);
+
 //--- declare missing transverse energy
   RecoMEtReader* metReader = new RecoMEtReader(era, isMC, branchName_met_in);
   metReader->setBranchAddresses(inputTree);  
@@ -474,16 +489,14 @@ int main(int argc, char* argv[])
     //       we are better off if we keep a bit more jets per event
     std::vector<const RecoJet*> cleanedJets = jetCleaner(jet_ptrs, fakeableMuons, fakeableElectrons);
     std::vector<const RecoJet*> selJets;
-    for ( std::vector<const RecoJet*>::const_iterator cleanedJet = cleanedJets.begin();
-          cleanedJet != cleanedJets.end(); ++cleanedJet ) {
-      double cleanedJet_pt = (*cleanedJet)->pt();
-      double cleanedJet_pt_JECUp = cleanedJet_pt*(1. + (*cleanedJet)->jecUncertTotal());
-      double cleanedJet_pt_JECDown = cleanedJet_pt*(1. - (*cleanedJet)->jecUncertTotal());
-      double cleanedJet_absEta = (*cleanedJet)->absEta();
-      double min_pT = jetSelector.get_min_pt();
-      double max_absEta = jetSelector.get_max_absEta();
-      if ( (cleanedJet_pt >= min_pT || cleanedJet_pt_JECUp >= min_pT || cleanedJet_pt_JECDown >= min_pT ) && cleanedJet_absEta < max_absEta ) {
-        selJets.push_back(*cleanedJet);
+    for(const RecoJet * cleanedJet: cleanedJets)
+    {
+      const double cleanedJet_maxPtCorr = std::max(0., std::fabs(cleanedJet->jecUncertTotal()));
+      const double cleanedJet_absEta = cleanedJet->absEta();
+      const double cleanedJet_pt_max = cleanedJet->pt() * (1. + cleanedJet_maxPtCorr);
+      if(cleanedJet_pt_max >= min_jetSelector_pT && cleanedJet_absEta < max_jetSelector_absEta)
+      {
+        selJets.push_back(cleanedJet);
       }
     }
 
