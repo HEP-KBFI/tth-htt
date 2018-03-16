@@ -1854,9 +1854,10 @@ int main(int argc, char* argv[])
     double mvaOutput_1l_2tau_ttbar=mva_1l_2tau_ttbar(mvaInputs);
 
     //--- compute output of BDTs used to discriminate ttH vs. ttbar trained by Matthias for 1l_2tau category
+    const double tt_deltaR = deltaR(selHadTau_lead->p4(), selHadTau_sublead->p4());
     std::map<std::string, double> mvaInputs_ttbarOld;
     mvaInputs_ttbarOld["ht"]              = compHT(fakeableLeptons, selHadTaus, selJets);
-    mvaInputs_ttbarOld["tt_deltaR"]       = deltaR(selHadTau_lead->p4(), selHadTau_sublead->p4());
+    mvaInputs_ttbarOld["tt_deltaR"]       = tt_deltaR;
     mvaInputs_ttbarOld["tt_visiblemass"]  = mTauTauVis;
     mvaInputs_ttbarOld["tau1_pt"]         = selHadTau_lead->pt();
     mvaInputs_ttbarOld["tau2_pt"]         = selHadTau_sublead->pt();
@@ -2090,6 +2091,8 @@ int main(int argc, char* argv[])
       const double mTauTauVis1_sel = (selLepton->p4() + selHadTau_lead->p4()).mass();
       const double mindr_tau_jet   = comp_mindr_hadTau1_jet(*selHadTau_lead, selJets);
       const double lep1_conePt     = comp_lep1_conePt(*selLepton);
+      const double tt_mvis         = (selHadTau_lead->p4() + selHadTau_sublead->p4()).mass();
+      const double tt_pt           = (selHadTau_lead->p4() + selHadTau_sublead->p4()).pt();
 
       const bool isGenMatched =
         selLepton->isGenMatched()         &&
@@ -2121,9 +2124,9 @@ int main(int argc, char* argv[])
       snm->read(avg_dr_jet,                             FloatVariableType::avg_dr_jet);
       // MVA_2lss_ttV not filled
       // MVA_2lss_ttbar not filled
-      // tt_deltaR not filled
-      // tt_mvis not filled
-      // tt_pt not filled
+      snm->read(tt_deltaR,                              FloatVariableType::tt_deltaR);
+      snm->read(tt_mvis,                                FloatVariableType::tt_mvis);
+      snm->read(tt_pt,                                  FloatVariableType::tt_pt);
       snm->read(max_dr_jet,                             FloatVariableType::max_dr_jet);
       snm->read(ht,                                     FloatVariableType::HT);
       snm->read(mvaOutput_1l_2tau_ttbar_Old,            FloatVariableType::MVA_1l2tau_ttbar);
