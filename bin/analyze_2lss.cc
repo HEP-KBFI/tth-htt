@@ -1602,8 +1602,8 @@ int main(int argc, char* argv[])
     }
 
 //--- compute variables BDTs used to discriminate ttH vs. ttV and ttH vs. ttbar -- they will be used more than once -- Xanda
-    double mindr_lep1_jet=TMath::Min(10., comp_mindr_lep1_jet(*selLepton_lead, selJets));
-    double mindr_lep2_jet=TMath::Min(10., comp_mindr_lep2_jet(*selLepton_sublead, selJets));
+    double mindr_lep1_jet=comp_mindr_lep1_jet(*selLepton_lead, selJets);
+    double mindr_lep2_jet=comp_mindr_lep2_jet(*selLepton_sublead, selJets);
     //double max_lep_eta=TMath::Max(std::abs(selLepton_lead -> eta()), std::abs(selLepton_sublead -> eta()));
     //double ptmiss=met.pt();
     //double dr_leps=deltaR(selLepton_lead -> p4(), selLepton_sublead -> p4());
@@ -1623,8 +1623,8 @@ int main(int argc, char* argv[])
     mvaInputs_2lss["max(abs(LepGood_eta[iF_Recl[0]]),abs(LepGood_eta[iF_Recl[1]]))"] = std::max(std::fabs(selLepton_lead->eta()), std::fabs(selLepton_sublead->eta()));
     mvaInputs_2lss["MT_met_lep1"]                = comp_MT_met_lep1(selLepton_lead->p4(), met.pt(), met.phi());
     mvaInputs_2lss["nJet25_Recl"]                = nJet25_Recl;
-    mvaInputs_2lss["mindr_lep1_jet"]             = mindr_lep1_jet;
-    mvaInputs_2lss["mindr_lep2_jet"]             = mindr_lep2_jet;
+    mvaInputs_2lss["mindr_lep1_jet"]             = TMath::Min(10., mindr_lep1_jet);
+    mvaInputs_2lss["mindr_lep2_jet"]             = TMath::Min(10., mindr_lep2_jet);
     mvaInputs_2lss["LepGood_conePt[iF_Recl[0]]"] = lep1_conePt;
     mvaInputs_2lss["LepGood_conePt[iF_Recl[1]]"] = lep2_conePt;
     mvaInputs_2lss["min(met_pt,400)"]            = minMET400;
@@ -1886,8 +1886,8 @@ int main(int argc, char* argv[])
           ("lep1_conePt",            comp_lep1_conePt(*selLepton_lead))
           ("lep1_eta",               std::abs(selLepton_lead -> eta()))
           ("lep1_tth_mva",           selLepton_lead -> mvaRawTTH())
-          ("mindr_lep1_jet",         TMath::Min(10., comp_mindr_lep1_jet(*selLepton_lead, selJets)) )
-          ("mindr_lep2_jet",         TMath::Min(10., comp_mindr_lep2_jet(*selLepton_sublead, selJets)) )
+          ("mindr_lep1_jet",         TMath::Min(10., mindr_lep1_jet) )
+          ("mindr_lep2_jet",         TMath::Min(10., mindr_lep2_jet) )
           ("mT_lep1",                comp_MT_met_lep1(*selLepton_lead, met.pt(), met.phi()))
           ("MT_met_lep1",            comp_MT_met_lep1(selLepton_lead->cone_p4(), met.pt(), met.phi()))
           ("lep2_pt",                selLepton_sublead -> pt())
