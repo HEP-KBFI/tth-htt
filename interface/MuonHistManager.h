@@ -32,10 +32,12 @@ public:
                  double evtWeight);
 
 private:
-  TH1* histogram_pt_;
-  TH1* histogram_eta_;
-  TH1* histogram_phi_;
-  TH1* histogram_charge_;
+  TH1 * histogram_pt_;
+  TH1 * histogram_cone_pt_;
+  TH1 * histogram_assocJet_pt_;
+  TH1 * histogram_eta_;
+  TH1 * histogram_phi_;
+  TH1 * histogram_charge_;
 
   TH1 * histogram_dxy_;
   TH1 * histogram_dz_;

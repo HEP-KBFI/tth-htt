@@ -185,6 +185,7 @@ RunLumiEventSelector::operator()(ULong_t run,
   {
     std::cout << "<RunLumiEventSelector::operator>: selecting "
                  "run# = " << run << ", ls# " << ls << ", event# " << event << '\n';
+
     ++matchedRunLumiSectionEventNumbers_[run][ls][event];
     ++numEventsSelected_;
     return true;

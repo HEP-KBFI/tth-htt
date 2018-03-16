@@ -1,7 +1,6 @@
 #include "tthAnalysis/HiggsToTauTau/interface/EvtHistManager_2lss_1tau.h"
 
 #include "tthAnalysis/HiggsToTauTau/interface/histogramAuxFunctions.h" // fillWithOverFlow()
-#include "tthAnalysis/HiggsToTauTau/interface/lutAuxFunctions.h" // getSF_from_TH2()
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2017
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 
@@ -60,8 +59,8 @@ void EvtHistManager_2lss_1tau::bookHistograms(TFileDirectory & dir)
   histogram_mTauTauVis1_  = book1D(dir, "mTauTauVis1",  "mTauTauVis1",   20, 0., 200.);
   histogram_mTauTauVis2_  = book1D(dir, "mTauTauVis2",  "mTauTauVis2",   20, 0., 200.);
   histogram_memOutput_LR_ = book1D(dir, "memOutput_LR", "memOutput_LR", 600, 0.,   1.);
-
   histogram_memDiscr_     = book1D(dir, "memDiscr",     "memDiscr",     8,  0.5,  8.5);
+
   histogram_EventCounter_ = book1D(dir, "EventCounter", "EventCounter", 1, -0.5, +0.5);
 }
 
@@ -122,10 +121,4 @@ EvtHistManager_2lss_1tau::fillHistograms(int numElectrons,
   fillWithOverFlow(histogram_memDiscr_,     memDiscr ,    evtWeight, evtWeightErr);
 
   fillWithOverFlow(histogram_EventCounter_, 0., evtWeight, evtWeightErr);
-}
-
-void
-EvtHistManager_2lss_1tau::integralHistograms() const
-{
-  std::cout << "Integral of histogram " << histogram_mTauTauVis_->Integral() << '\n';
 }

@@ -3,9 +3,6 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorTight.h" // RecoMuonSelectorTight
 
-// forward declarations
-class RecoMuonSelectorTight;
-
 class RecoMuonSelectorFakeable
 {
 public:
@@ -21,6 +18,9 @@ public:
    */
   bool
   operator()(const RecoMuon & muon) const;
+
+  void
+  set_selection_flags(bool selection_flags);
 
 protected:
   int era_;
@@ -50,6 +50,7 @@ protected:
 };
 
 class RecoMuonCollectionSelectorFakeable
+  : public ParticleCollectionSelector<RecoMuon, RecoMuonSelectorFakeable>
 {
 public:
   explicit
@@ -57,13 +58,7 @@ public:
                                      int index = -1,
                                      bool debug = false,
                                      bool set_selection_flags = true);
-
-  std::vector<const RecoMuon *>
-  operator()(const std::vector<const RecoMuon *> & muons) const;
-
-protected:
-  int selIndex_;
-  RecoMuonSelectorFakeable selector_;
+  ~RecoMuonCollectionSelectorFakeable() {}
 };
 
 #endif // tthAnalysis_HiggsToTauTau_RecoMuonCollectionSelectorFakeable_h

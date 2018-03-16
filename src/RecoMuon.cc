@@ -3,11 +3,13 @@
 RecoMuon::RecoMuon(const RecoLepton & lepton,
                    Bool_t passesLooseIdPOG,
                    Bool_t passesMediumIdPOG,
-                   Float_t segmentCompatibility)
+                   Float_t segmentCompatibility,
+                   Float_t ptErr)
   : RecoLepton(lepton)
   , passesLooseIdPOG_(passesLooseIdPOG)
   , passesMediumIdPOG_(passesMediumIdPOG)
   , segmentCompatibility_(segmentCompatibility)
+  , ptErr_(ptErr)
 {}
 
 Bool_t
@@ -26,6 +28,18 @@ Float_t
 RecoMuon::segmentCompatibility() const
 {
   return segmentCompatibility_;
+}
+
+Float_t
+RecoMuon::ptErr() const
+{
+  return ptErr_;
+}
+
+Float_t
+RecoMuon::dpt_div_pt() const
+{
+  return ptErr() >= 0. ? ptErr() / pt() : -1.;
 }
 
 bool
@@ -47,6 +61,8 @@ operator<<(std::ostream & stream,
   stream << static_cast<const RecoLepton &>(muon) << ",\n "
             "passesLooseIdPOG = "     << muon.passesLooseIdPOG()  << ", "
             "passesMediumIdPOG = "    << muon.passesMediumIdPOG() << ", "
-            "segmentCompatibility = " << muon.segmentCompatibility() << '\n';
+            "segmentCompatibility = " << muon.segmentCompatibility() << ", "
+            "ptErr = "                << muon.ptErr() << '\n'
+  ;
   return stream;
 }

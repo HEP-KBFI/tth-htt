@@ -3,7 +3,10 @@
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2017
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 
-RecoMuonSelectorFakeable::RecoMuonSelectorFakeable(int era, int index, bool debug, bool set_selection_flags)
+RecoMuonSelectorFakeable::RecoMuonSelectorFakeable(int era,
+                                                   int index,
+                                                   bool debug,
+                                                   bool set_selection_flags)
   : era_(era)
   , set_selection_flags_(set_selection_flags)
   , tightMuonSelector_(era_, index, debug, false)
@@ -63,29 +66,17 @@ RecoMuonSelectorFakeable::operator()(const RecoMuon & muon) const
   return false;
 }
 
+void
+RecoMuonSelectorFakeable::set_selection_flags(bool selection_flags)
+{
+  set_selection_flags_ = selection_flags;
+}
+
 RecoMuonCollectionSelectorFakeable::RecoMuonCollectionSelectorFakeable(int era,
                                                                        int index,
                                                                        bool debug,
                                                                        bool set_selection_flags)
-  : selIndex_(index)
-  , selector_(era, index, debug, set_selection_flags)
-{}
-
-std::vector<const RecoMuon *>
-RecoMuonCollectionSelectorFakeable::operator()(const std::vector<const RecoMuon *> & muons) const
+  : ParticleCollectionSelector<RecoMuon, RecoMuonSelectorFakeable>(era, index, debug)
 {
-  std::vector<const RecoMuon *> selMuons;
-  int idx = 0;
-  for(const RecoMuon * const & muon: muons)
-  {
-    if(selector_(*muon))
-    {
-      if(idx == selIndex_ || selIndex_ == -1)
-      {
-        selMuons.push_back(muon);
-      }
-      ++idx;
-    }
-  }
-  return selMuons;
+  selector_.set_selection_flags(set_selection_flags);
 }

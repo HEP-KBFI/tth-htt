@@ -151,12 +151,12 @@ isMatched(const Tfakeable & fakeableLepton,
  * @brief Return branchName to read weights that need to be applied, per jet, to MC events
  *       in order to correct for data/MC differences in b-tagging efficiency and mistag rates
  */
-std::string
-getBranchName_bTagWeight(int era,
-                         const std::string & central_or_shift);
+int
+getBTagWeight_option(const std::string & central_or_shift);
 
 std::string
-getBranchName_bTagWeight(int era,
+getBranchName_bTagWeight(const std::string & default_collectionName,
+                         int era,
                          int central_or_shift);
 
 /**
@@ -164,7 +164,7 @@ getBranchName_bTagWeight(int era,
  */
 std::string
 getBranchName_MEt(int era,
-                  const std::string & defaul_branchName,
+                  const std::string & default_branchName,
                   int central_or_shift);
 
 /**
@@ -223,8 +223,23 @@ set_selection_flags(std::vector<const T *> & leptons,
  * @brief Build collection of selected leptons by merging collections of selected electrons and selected muons
  */
 std::vector<const RecoLepton *>
+mergeLeptonCollectionsNoSort(const std::vector<const RecoElectron *> & electrons,
+                             const std::vector<const RecoMuon *> & muons);
+
+std::vector<const RecoLepton *>
 mergeLeptonCollections(const std::vector<const RecoElectron *> & electrons,
                        const std::vector<const RecoMuon *> & muons);
+
+template <typename T>
+std::vector<const RecoLepton *>
+mergeLeptonCollections(const std::vector<const RecoElectron *> & electrons,
+                       const std::vector<const RecoMuon *> & muons,
+                       bool (*sortFunction)(const T *, const T *))
+{
+  std::vector<const RecoLepton *> leptons = mergeLeptonCollectionsNoSort(electrons, muons);
+  std::sort(leptons.begin(), leptons.end(), sortFunction);
+  return leptons;
+}
 
 template <typename T,
           typename = typename std::enable_if<! std::is_pointer<T>::value>>

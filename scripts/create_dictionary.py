@@ -1,16 +1,14 @@
 #!/usr/bin/env python
-import argparse, os.path, sys, logging, imp, jinja2, ROOT, re, ctypes, copy, itertools, time, shutil, array
-from tthAnalysis.HiggsToTauTau.jobTools import run_cmd
+import argparse, os.path, sys, logging, imp, jinja2, ROOT, re, ctypes, copy, itertools, time, shutil, datetime
+from tthAnalysis.HiggsToTauTau.jobTools import run_cmd, human_size
 
 HISTOGRAM_COUNT         = 'Count'
 HISTOGRAM_COUNTWEIGHTED = 'CountWeighted'
 EVENTS_TREE             = 'Events'
-RUN_TREE                = 'Runs'
-BRANCH_COUNT            = 'genEventCount'
-BRANCH_COUNTWEIGHTED    = 'genEventSumw'
 
 HISTOGRAM_COUNT_KEY = 'histogram_count'
 TREE_COUNT_KEY      = 'tree_count'
+FSIZE_KEY           = 'fsize'
 
 try:
     from urllib.parse import urlparse
@@ -178,7 +176,7 @@ def load_dict(path, name):
 
 header_str = """from collections import OrderedDict as OD
 
-# file generated with the following command:
+# file generated at {{ date }} with the following command:
 # {{ command }}
 
 {{ dict_name }} = OD()
@@ -190,9 +188,12 @@ dictionary_entry_str = """{{ dict_name }}["{{ dbs_name }}"] = OD([
   ("sample_category",                 "{{ sample_category }}"),
   ("process_name_specific",           "{{ process_name_specific }}"),
   ("nof_files",                       {{ nof_files }}),
+  ("nof_db_files",                    {{ nof_db_files }}),
   ("nof_events",                      {{ nof_events }}),
   ("nof_tree_events",                 {{ nof_tree_events }}),
   ("nof_db_events",                   {{ nof_db_events }}),
+  ("fsize_local",                     {{ fsize_local }}), # {{ fsize_local_human }}, avg file size {{ avg_fsize_local_human }}
+  ("fsize_db",                        {{ fsize_db }}), # {{ fsize_db_human }}, avg file size {{ avg_fsize_db_human }}
   ("use_HIP_mitigation_bTag",         {{ use_HIP_mitigation_bTag }}),
   ("use_HIP_mitigation_mediumMuonId", {{ use_HIP_mitigation_mediumMuonId }}),
   ("use_it",                          {{ use_it }}),{% if sample_type == "mc" %}
@@ -226,6 +227,7 @@ class PathEntry:
     self.indices         = indices
     self.nof_events      = sum(index_entry[HISTOGRAM_COUNT_KEY] for index_entry in self.indices.values())
     self.nof_tree_events = sum(index_entry[TREE_COUNT_KEY]      for index_entry in self.indices.values())
+    self.fsize           = sum(index_entry[FSIZE_KEY]           for index_entry in self.indices.values())
     self.nof_files       = max(self.indices.keys())
     self.blacklist       = []
     self.selection       = [] # if empty, select all
@@ -320,9 +322,11 @@ def process_paths(meta_dict, key):
     # let's compute the number of files, events and the list of blacklisted files
     nof_events      = sum(index_entry[HISTOGRAM_COUNT_KEY] for index_entry in local_paths_sorted[0].indices.values())
     nof_tree_events = sum(index_entry[TREE_COUNT_KEY]      for index_entry in local_paths_sorted[0].indices.values())
+    fsize           = sum(index_entry[FSIZE_KEY]           for index_entry in local_paths_sorted[0].indices.values())
 
     meta_dict[key]['nof_events']      = nof_events
     meta_dict[key]['nof_tree_events'] = nof_tree_events
+    meta_dict[key]['fsize_local']     = fsize
     meta_dict[key]['local_paths'] = [{
       'path'      : local_paths_sorted[0].path,
       'selection' : '*',
@@ -348,8 +352,13 @@ def process_paths(meta_dict, key):
         local_paths_sorted[1].indices[sel_idx][TREE_COUNT_KEY]
         for sel_idx in local_paths_sorted[1].selection
       )
+      sum_of_fsize = local_paths_sorted[0].fsize + sum(
+        local_paths_sorted[1].indices[sel_idx][FSIZE_KEY]
+        for sel_idx in local_paths_sorted[1].selection
+      )
       meta_dict[key]['nof_events']      = sum_of_events
       meta_dict[key]['nof_tree_events'] = sum_of_tree_events
+      meta_dict[key]['fsize_local']     = sum_of_fsize
 
       # do not print out the blacklist of the secondary storage since it might include many-many files
       local_paths_sorted[1].blacklist = []
@@ -407,6 +416,7 @@ def traverse_single(hdfs_system, meta_dict, path_obj, key, check_every_event,
     index_entry = {
       HISTOGRAM_COUNT_KEY : -1,
       TREE_COUNT_KEY      : -1,
+      FSIZE_KEY           : -1,
     }
 
     subentries = hdfs_system.get_dir_entries(entry)
@@ -424,6 +434,8 @@ def traverse_single(hdfs_system, meta_dict, path_obj, key, check_every_event,
         logging.debug("File {path} has a file size of 0".format(path = subentry_file.name_fuse))
         filetracker.zero_file_size.append(subentry_file.name_fuse)
         continue
+      index_entry[FSIZE_KEY] = subentry_file.size
+
       logging.debug("Opening file {path}".format(path = subentry_file.name_fuse))
       root_file = ROOT.TFile.Open(subentry_file.name_fuse, "read")
       if not root_file:
@@ -477,34 +489,13 @@ def traverse_single(hdfs_system, meta_dict, path_obj, key, check_every_event,
         ))
         # Using a fallback solution
         if is_data:
-          # in case of data, the Runs tree contains only runs branch and nothing else
+          # It is safe to use the nnumber of TTree events
           index_entry[HISTOGRAM_COUNT_KEY] = index_entry[TREE_COUNT_KEY]
         else:
-          if RUN_TREE not in root_file.GetListOfKeys():
-            raise ValueError("Tree of the name {tree_name} is not in file {path}".format(
-              tree_name = RUN_TREE,
-              path      = subentry_file.name_fuse,
-            ))
-          tree_run = root_file.Get(RUN_TREE)
-          branches_run = [branch.GetName() for branch in tree_run.GetListOfBranches()]
-          requested_branch = BRANCH_COUNTWEIGHTED
-          if requested_branch not in branches_run:
-            raise ValueError("No branch named {branch} in tree named {tree} in file {path}".format(
-              branch = requested_branch,
-              tree   = RUN_TREE,
-              path   = subentry_file.name_fuse,
-            ))
-
-          array_str, array_lst = get_array_type(tree_run, requested_branch, 1)
-          run_count = array.array(array_str, array_lst)
-          tree_run.SetBranchAddress(requested_branch, run_count)
-          run_entries = tree_run.GetEntries()
-          nof_run_events = 0
-          for run_idx in range(run_entries):
-            tree_run.GetEntry(run_idx)
-            nof_run_events += run_count[0]
-          del tree_run
-          index_entry[HISTOGRAM_COUNT_KEY] = nof_run_events
+          # We have no option but set it to 0 since the PU weight branches are not available
+          # In practice this figure doesn't matter at all since the number of events is not used
+          # anywhere in nanoAOD post-processing step nor by produceNtuple code
+          index_entry[HISTOGRAM_COUNT_KEY] = 0
       else:
         histogram = root_file.Get(histogram_name)
         if not histogram:
@@ -516,7 +507,14 @@ def traverse_single(hdfs_system, meta_dict, path_obj, key, check_every_event,
         del histogram
 
       # this was probably a success: record the results
-      indices[matched_idx] = index_entry
+      indices[matched_idx] = copy.deepcopy(index_entry)
+      logging.debug(
+        "Found {nof_events} ({nof_tree_events} tree) events in file {filename}".format(
+          nof_events      = index_entry[HISTOGRAM_COUNT_KEY],
+          nof_tree_events = index_entry[TREE_COUNT_KEY],
+          filename        = subentry_file,
+        )
+      )
 
       root_file.Close()
       del tree
@@ -526,8 +524,8 @@ def traverse_single(hdfs_system, meta_dict, path_obj, key, check_every_event,
     logging.debug("Path {path} contains no ROOT files".format(path = path_obj.name_fuse))
     return
 
-  logging.debug("Found {nof_events} ({nof_tree_events} tree) events in {nof_files} files in {path} " \
-                "for entry {key}".format(
+  logging.debug("Found total {nof_events} ({nof_tree_events} tree) events in {nof_files} files in "
+                "{path} for entry {key}".format(
     nof_events      = sum([index_entry[HISTOGRAM_COUNT_KEY] for index_entry in indices.values()]),
     nof_tree_events = sum([index_entry[TREE_COUNT_KEY] for index_entry in indices.values()]),
     nof_files       = len(indices.keys()),
@@ -786,7 +784,8 @@ if __name__ == '__main__':
           paths.append(entry)
 
   output = jinja2.Template(header_str).render(
-    command = ' '.join(sys.argv),
+    command   = ' '.join([os.path.basename(__file__)] + sys.argv[1:]),
+    date      = '{date:%Y-%m-%d %H:%M:%S}'.format(date = datetime.datetime.now()),
     dict_name = args.output_dict_name,
   ) if not args.skip_header else ''
 
@@ -925,8 +924,9 @@ if __name__ == '__main__':
           else:
             event_sum += meta_entry['nof_events']
       if 0 < len(missing_keys) < len(key_arr):
-        raise ValueError("Could not find all samples to compute the number of events: %s" % \
-                         ', '.join(missing_keys))
+        logging.warning(
+          "Could not find all samples to compute the number of events: %s" % ', '.join(missing_keys)
+        )
       for meta_key, meta_entry in meta_dict.items():
         if meta_entry['process_name_specific'] in key_arr:
           meta_entry['nof_events'] = event_sum
@@ -953,6 +953,13 @@ if __name__ == '__main__':
           nof_events                      = int(meta_dict[key]['nof_events']),
           nof_tree_events                 = meta_dict[key]['nof_tree_events'],
           nof_db_events                   = meta_dict[key]['nof_db_events'],
+          nof_db_files                    = meta_dict[key]['nof_db_files'],
+          fsize_db                        = meta_dict[key]['fsize_db'],
+          fsize_db_human                  = human_size(meta_dict[key]['fsize_db']),
+          avg_fsize_db_human              = human_size(float(meta_dict[key]['fsize_db']) / meta_dict[key]['nof_db_files']),
+          fsize_local                     = meta_dict[key]['fsize_local'],
+          fsize_local_human               = human_size(meta_dict[key]['fsize_local']),
+          avg_fsize_local_human           = human_size(float(meta_dict[key]['fsize_local']) / meta_dict[key]['nof_files']),
           use_HIP_mitigation_bTag         = meta_dict[key]['use_HIP_mitigation_bTag'],
           use_HIP_mitigation_mediumMuonId = meta_dict[key]['use_HIP_mitigation_mediumMuonId'],
           use_it                          = meta_dict[key]['use_it'],

@@ -128,28 +128,17 @@ RecoMuonSelectorTight::operator()(const RecoMuon & muon) const
   return true;
 }
 
+void
+RecoMuonSelectorTight::set_selection_flags(bool selection_flags)
+{
+  set_selection_flags_ = selection_flags;
+}
+
 RecoMuonCollectionSelectorTight::RecoMuonCollectionSelectorTight(int era,
                                                                  int index,
-                                                                 bool debug)
-  : selIndex_(index)
-  , selector_(era, index, debug)
-{}
-
-std::vector<const RecoMuon *>
-RecoMuonCollectionSelectorTight::operator()(const std::vector<const RecoMuon *> & muons) const
+                                                                 bool debug,
+                                                                 bool set_selection_flags)
+  : ParticleCollectionSelector<RecoMuon, RecoMuonSelectorTight>(era, index, debug)
 {
-  std::vector<const RecoMuon *> selMuons;
-  int idx = 0;
-  for(const RecoMuon * const & muon: muons)
-  {
-    if(selector_(*muon))
-    {
-      if(idx == selIndex_ || selIndex_ == -1)
-      {
-        selMuons.push_back(muon);
-      }
-      ++idx;
-    }
-  }
-  return selMuons;
+  selector_.set_selection_flags(set_selection_flags);
 }

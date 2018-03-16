@@ -129,8 +129,10 @@ process.analyze_LeptonFakeRate = cms.PSet(
     absEtaBins_mu = cms.vdouble(0., 1.479, 9.9),
     ptBins_mu = cms.vdouble(10., 15., 20., 30., 45., 65., 100000.),
 
-    minPt_e = cms.double(15),
-    minPt_mu = cms.double(10),
+    minConePt_global_e = cms.double(10),  
+    minRecoPt_global_e = cms.double(7),  
+    minConePt_global_mu = cms.double(10), 
+    minRecoPt_global_mu = cms.double(5), 
 
     use_HIP_mitigation_mediumMuonId = cms.bool(False),
 

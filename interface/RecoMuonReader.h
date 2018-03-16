@@ -52,9 +52,11 @@ protected:
 
   std::string branchName_mediumIdPOG_;
   std::string branchName_segmentCompatibility_;
+  std::string branchName_ptErr_;
 
   Bool_t  * mediumIdPOG_;
   Float_t * segmentCompatibility_;
+  Float_t * ptErr_;
 
   // CV: make sure that only one RecoMuonReader instance exists for a given branchName,
   //     as ROOT cannot handle multiple TTree::SetBranchAddress calls for the same branch.

@@ -47,10 +47,8 @@ get_era(const std::string & eraString)
   throw cmsException(__func__) << "Invalid Configuration parameter 'era' = " << eraString;
 }
 
-
-std::string
-getBranchName_bTagWeight(int era,
-                         const std::string & central_or_shift)
+int
+getBTagWeight_option(const std::string & central_or_shift)
 {
   int central_or_shift_int = kBtag_central;
   if     (central_or_shift == "CMS_ttHl_btag_HFUp"        ) central_or_shift_int = kBtag_hfUp;
@@ -71,39 +69,43 @@ getBranchName_bTagWeight(int era,
   else if(central_or_shift == "CMS_ttHl_btag_cErr2Down"   ) central_or_shift_int = kBtag_cErr2Down;
   else if(central_or_shift == "CMS_ttHl_JESUp"            ) central_or_shift_int = kBtag_jesUp;
   else if(central_or_shift == "CMS_ttHl_JESDown"          ) central_or_shift_int = kBtag_jesDown;
-  return getBranchName_bTagWeight(era, central_or_shift_int);
+  return central_or_shift_int;
 }
 
 std::string
-getBranchName_bTagWeight(int era,
+getBranchName_bTagWeight(const std::string & default_collectionName,
+                         int era,
                          int central_or_shift)
 {
   std::map<int, std::string> branchNames_bTagWeight;
   if(era == kEra_2017)
   {
-    branchNames_bTagWeight[kBtag_central]      = "Jet_btagSF_csvv2_shape";
-    branchNames_bTagWeight[kBtag_hfUp]         = branchNames_bTagWeight[kBtag_central] + "_up_hf";
-    branchNames_bTagWeight[kBtag_hfDown]       = branchNames_bTagWeight[kBtag_central] + "_down_hf";
-    branchNames_bTagWeight[kBtag_hfStats1Up]   = branchNames_bTagWeight[kBtag_central] + "_up_hfstats1";
-    branchNames_bTagWeight[kBtag_hfStats1Down] = branchNames_bTagWeight[kBtag_central] + "_down_hfstats1";
-    branchNames_bTagWeight[kBtag_hfStats2Up]   = branchNames_bTagWeight[kBtag_central] + "_up_hfstats2";
-    branchNames_bTagWeight[kBtag_hfStats2Down] = branchNames_bTagWeight[kBtag_central] + "_down_hfstats2";
-    branchNames_bTagWeight[kBtag_lfUp]         = branchNames_bTagWeight[kBtag_central] + "_up_lf";
-    branchNames_bTagWeight[kBtag_lfDown]       = branchNames_bTagWeight[kBtag_central] + "_down_lf";
-    branchNames_bTagWeight[kBtag_lfStats1Up]   = branchNames_bTagWeight[kBtag_central] + "_up_lfstats1";
-    branchNames_bTagWeight[kBtag_lfStats1Down] = branchNames_bTagWeight[kBtag_central] + "_down_lfstats1";
-    branchNames_bTagWeight[kBtag_lfStats2Up]   = branchNames_bTagWeight[kBtag_central] + "_up_lfstats2";
-    branchNames_bTagWeight[kBtag_lfStats2Down] = branchNames_bTagWeight[kBtag_central] + "_down_lfstats2";
-    branchNames_bTagWeight[kBtag_cErr1Up]      = branchNames_bTagWeight[kBtag_central] + "_up_cferr1";
-    branchNames_bTagWeight[kBtag_cErr1Down]    = branchNames_bTagWeight[kBtag_central] + "_down_cferr1";
-    branchNames_bTagWeight[kBtag_cErr2Up]      = branchNames_bTagWeight[kBtag_central] + "_up_cferr2";
-    branchNames_bTagWeight[kBtag_cErr2Down]    = branchNames_bTagWeight[kBtag_central] + "_down_cferr2";
-    branchNames_bTagWeight[kBtag_jesUp]        = branchNames_bTagWeight[kBtag_central] + "_up_jes";
-    branchNames_bTagWeight[kBtag_jesDown]      = branchNames_bTagWeight[kBtag_central] + "_down_jes";
+    branchNames_bTagWeight[kBtag_central]      = Form(
+      "%s_btagSF_%s", default_collectionName.data(), ! RecoJet::useDeepCSV ? "csvv2" : "deepcsv"
+    );
+    branchNames_bTagWeight[kBtag_hfUp]         = branchNames_bTagWeight[kBtag_central] + "_shape_up_hf";
+    branchNames_bTagWeight[kBtag_hfDown]       = branchNames_bTagWeight[kBtag_central] + "_shape_down_hf";
+    branchNames_bTagWeight[kBtag_hfStats1Up]   = branchNames_bTagWeight[kBtag_central] + "_shape_up_hfstats1";
+    branchNames_bTagWeight[kBtag_hfStats1Down] = branchNames_bTagWeight[kBtag_central] + "_shape_down_hfstats1";
+    branchNames_bTagWeight[kBtag_hfStats2Up]   = branchNames_bTagWeight[kBtag_central] + "_shape_up_hfstats2";
+    branchNames_bTagWeight[kBtag_hfStats2Down] = branchNames_bTagWeight[kBtag_central] + "_shape_down_hfstats2";
+    branchNames_bTagWeight[kBtag_lfUp]         = branchNames_bTagWeight[kBtag_central] + "_shape_up_lf";
+    branchNames_bTagWeight[kBtag_lfDown]       = branchNames_bTagWeight[kBtag_central] + "_shape_down_lf";
+    branchNames_bTagWeight[kBtag_lfStats1Up]   = branchNames_bTagWeight[kBtag_central] + "_shape_up_lfstats1";
+    branchNames_bTagWeight[kBtag_lfStats1Down] = branchNames_bTagWeight[kBtag_central] + "_shape_down_lfstats1";
+    branchNames_bTagWeight[kBtag_lfStats2Up]   = branchNames_bTagWeight[kBtag_central] + "_shape_up_lfstats2";
+    branchNames_bTagWeight[kBtag_lfStats2Down] = branchNames_bTagWeight[kBtag_central] + "_shape_down_lfstats2";
+    branchNames_bTagWeight[kBtag_cErr1Up]      = branchNames_bTagWeight[kBtag_central] + "_shape_up_cferr1";
+    branchNames_bTagWeight[kBtag_cErr1Down]    = branchNames_bTagWeight[kBtag_central] + "_shape_down_cferr1";
+    branchNames_bTagWeight[kBtag_cErr2Up]      = branchNames_bTagWeight[kBtag_central] + "_shape_up_cferr2";
+    branchNames_bTagWeight[kBtag_cErr2Down]    = branchNames_bTagWeight[kBtag_central] + "_shape_down_cferr2";
+    branchNames_bTagWeight[kBtag_jesUp]        = branchNames_bTagWeight[kBtag_central] + "_shape_up_jes";
+    branchNames_bTagWeight[kBtag_jesDown]      = branchNames_bTagWeight[kBtag_central] + "_shape_down_jes";
   }
   else
   {
-    assert(0);
+    throw cmsException(__func__, __LINE__)
+      << "Invalid era = " << era;
   }
   assert(branchNames_bTagWeight.count(central_or_shift));
   return branchNames_bTagWeight.at(central_or_shift);
@@ -171,9 +173,9 @@ compMEt_LD(const Particle::LorentzVector & met_p4,
 }
 
 std::vector<const RecoLepton *>
-mergeLeptonCollections(const std::vector<const RecoElectron *> & electrons,
-                       const std::vector<const RecoMuon *> & muons)
-{ 
+mergeLeptonCollectionsNoSort(const std::vector<const RecoElectron *> & electrons,
+                             const std::vector<const RecoMuon *> & muons)
+{
   std::vector<const RecoLepton *> leptons;
   const std::size_t nLeptons = electrons.size() + muons.size();
   if(nLeptons > 0)
@@ -181,9 +183,15 @@ mergeLeptonCollections(const std::vector<const RecoElectron *> & electrons,
     leptons.reserve(nLeptons);
     leptons.insert(leptons.end(), electrons.begin(), electrons.end());
     leptons.insert(leptons.end(), muons.begin(), muons.end());
-    std::sort(leptons.begin(), leptons.end(), isHigherPt);
   }
   return leptons;
+}
+
+std::vector<const RecoLepton *>
+mergeLeptonCollections(const std::vector<const RecoElectron *> & electrons,
+                       const std::vector<const RecoMuon *> & muons)
+{
+  return mergeLeptonCollections(electrons, muons, isHigherPt);
 }
 
 template<>

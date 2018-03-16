@@ -2,6 +2,8 @@
 #define tthAnalysis_HiggsToTauTau_ParticleCollectionSelector_h
 
 #include <vector> // std::vector<>
+#include <algorithm> // std::sort()
+#include <type_traits> // std::enable_if<>, std::is_base_of<>
 
 template <typename Tobj,
           typename Tsel>
@@ -38,7 +40,24 @@ public:
     }
     return selParticles;
   }
-  
+
+  template <typename T,
+            typename = typename std::enable_if<std::is_base_of<T, Tobj>::value>::type>
+  std::vector<const Tobj *>
+  operator()(const std::vector<const Tobj *> & particles,
+             bool (*sortFunction)(const T *, const T *)) const
+  {
+    std::vector<const Tobj *> selParticles = (*this)(particles);
+    std::sort(selParticles.begin(), selParticles.end(), sortFunction);
+    return selParticles;
+  }
+
+  Tsel &
+  getSelector()
+  {
+    return selector_;
+  }
+
 protected:
   int selIndex_;
   Tsel selector_;

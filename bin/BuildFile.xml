@@ -65,6 +65,19 @@
   <use   name="roottmva"/>
   <use   name="boost"/>
 </bin>
+<bin file="analyze_2lss.cc" name="analyze_2lss">
+  <use   name="FWCore/FWLite"/>
+  <use   name="FWCore/ParameterSet"/>
+  <use   name="FWCore/PythonParameterSet"/>
+  <use   name="FWCore/Utilities"/>
+  <use   name="DataFormats/FWLite"/>
+  <use   name="DataFormats/Math"/>
+  <use   name="PhysicsTools/FWLite"/>
+  <use   name="tthAnalysis/HiggsToTauTau"/>
+  <use   name="root"/>
+  <use   name="roottmva"/>
+  <use   name="boost"/>
+</bin>
 <bin file="addMEM_2lss_1tau.cc" name="addMEM_2lss_1tau">
   <use   name="FWCore/FWLite"/>
   <use   name="FWCore/ParameterSet"/>
@@ -92,6 +105,19 @@
   <use   name="boost"/>
 </bin>
 <bin file="analyze_2los_1tau.cc" name="analyze_2los_1tau">
+  <use   name="FWCore/FWLite"/>
+  <use   name="FWCore/ParameterSet"/>
+  <use   name="FWCore/PythonParameterSet"/>
+  <use   name="FWCore/Utilities"/>
+  <use   name="DataFormats/FWLite"/>
+  <use   name="DataFormats/Math"/>
+  <use   name="PhysicsTools/FWLite"/>
+  <use   name="tthAnalysis/HiggsToTauTau"/>
+  <use   name="root"/>
+  <use   name="roottmva"/>
+  <use   name="boost"/>
+</bin>
+<bin file="analyze_3l.cc" name="analyze_3l">
   <use   name="FWCore/FWLite"/>
   <use   name="FWCore/ParameterSet"/>
   <use   name="FWCore/PythonParameterSet"/>
@@ -141,6 +167,28 @@
   <use   name="tthAnalysis/HiggsToTauTau"/>
   <use   name="root"/>
   <use   name="roottmva"/>
+  <use   name="boost"/>
+</bin>
+<bin file="analyze_4l.cc" name="analyze_4l">
+  <use   name="FWCore/FWLite"/>
+  <use   name="FWCore/ParameterSet"/>
+  <use   name="FWCore/PythonParameterSet"/>
+  <use   name="FWCore/Utilities"/>
+  <use   name="DataFormats/FWLite"/>
+  <use   name="DataFormats/Math"/>
+  <use   name="PhysicsTools/FWLite"/>
+  <use   name="tthAnalysis/HiggsToTauTau"/>
+  <use   name="root"/>
+  <use   name="roottmva"/>
+  <use   name="boost"/>
+</bin>
+<bin file="analyze_inclusive.cc" name="analyze_inclusive">
+  <use   name="FWCore/ParameterSet"/>
+  <use   name="FWCore/PythonParameterSet"/>
+  <use   name="DataFormats/FWLite"/>
+  <use   name="DataFormats/Math"/>
+  <use   name="tthAnalysis/HiggsToTauTau"/>
+  <use   name="root"/>
   <use   name="boost"/>
 </bin>
 <bin file="addBackground_LeptonFakeRate.cc" name="addBackground_LeptonFakeRate">
@@ -299,20 +347,6 @@
   <use   name="tthAnalysis/HiggsToTauTau"/>
   <use   name="root"/>
   <use   name="roottmva"/>
-</bin>
-<bin file="sync_ntuples.cc" name="sync_ntuples">
-  <!--  <Flags CppDefines="DEBUG=1"/> -->
-  <use   name="FWCore/FWLite"/>
-  <use   name="FWCore/ParameterSet"/>
-  <use   name="FWCore/PythonParameterSet"/>
-  <use   name="FWCore/Utilities"/>
-  <use   name="DataFormats/FWLite"/>
-  <use   name="DataFormats/Math"/>
-  <use   name="PhysicsTools/FWLite"/>
-  <use   name="tthAnalysis/HiggsToTauTau"/>
-  <use   name="root"/>
-  <use   name="roottmva"/>
-  <use   name="boost"/>
 </bin>
 <bin file="analyze_charge_flip.cc" name="analyze_charge_flip">
   <use   name="FWCore/FWLite"/>

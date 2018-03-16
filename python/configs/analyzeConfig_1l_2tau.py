@@ -44,11 +44,10 @@ class analyzeConfig_1l_2tau(analyzeConfig):
                hadTau_selection, hadTau_charge_selections, applyFakeRateWeights, central_or_shifts,
                max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,
                executable_addBackgrounds, executable_addBackgroundJetToTauFakes, histograms_to_fit,
-               select_rle_output = False, executable_prep_dcard="prepareDatacard", verbose = False,
-               dry_run = False):
+               select_rle_output = False, do_sync = False, verbose = False, dry_run = False):
     analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "1l_2tau", central_or_shifts,
       max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,
-      histograms_to_fit, verbose = verbose, dry_run = dry_run)
+      histograms_to_fit, do_sync = do_sync, verbose = verbose, dry_run = dry_run)
 
     self.samples = samples
     self.changeBranchNames = changeBranchNames
@@ -143,16 +142,6 @@ class analyzeConfig_1l_2tau(analyzeConfig):
     lines.append("process.analyze_1l_2tau.era = cms.string('%s')" % self.era)
     lines.append("process.analyze_1l_2tau.triggers_1e = cms.vstring(%s)" % self.triggers_1e)
     lines.append("process.analyze_1l_2tau.use_triggers_1e = cms.bool(%s)" % ("1e" in jobOptions['triggers']))
-    #---------------------------------------------------------------------------------------------------------------
-    # CV: need work-around for MC, because we do not have all e+tau cross triggers stored in VHbb Ntuples V25
-    #    (only HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau30_v*)
-    if (jobOptions['is_mc'] == False and jobOptions['process_name_specific'].startswith("Tau_")):
-      lines.append("process.analyze_1l_2tau.triggers_1e1tau = cms.vstring(%s)" % self.triggers_1e1tau)
-    else:
-      lines.append("process.analyze_1l_2tau.triggers_1e1tau = cms.vstring(%s)" % [
-        # available in 2016 but not in 2017 nano: 'HLT_BIT_HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau30_v',
-      ])
-    #---------------------------------------------------------------------------------------------------------------
     lines.append("process.analyze_1l_2tau.use_triggers_1e1tau = cms.bool(%s)" % ("1e1tau" in jobOptions['triggers']))
     lines.append("process.analyze_1l_2tau.triggers_1mu = cms.vstring(%s)" % self.triggers_1mu)
     lines.append("process.analyze_1l_2tau.use_triggers_1mu = cms.bool(%s)" % ("1mu" in jobOptions['triggers']))
@@ -191,7 +180,6 @@ class analyzeConfig_1l_2tau(analyzeConfig):
       lines.append("process.analyze_1l_2tau.hadTauFakeRateWeight.lead.fitFunctionName = cms.string('jetToTauFakeRate/%s/$etaBin/fitFunction_data_div_mc_hadTaus_pt')" % self.hadTau_selection_part2)
       lines.append("process.analyze_1l_2tau.hadTauFakeRateWeight.sublead.graphName = cms.string('jetToTauFakeRate/%s/$etaBin/jetToTauFakeRate_mc_hadTaus_pt')" % self.hadTau_selection_part2)
       lines.append("process.analyze_1l_2tau.hadTauFakeRateWeight.sublead.fitFunctionName = cms.string('jetToTauFakeRate/%s/$etaBin/fitFunction_data_div_mc_hadTaus_pt')" % self.hadTau_selection_part2)
-    lines.append("process.analyze_1l_2tau.use_HIP_mitigation_bTag = cms.bool(%s)" % jobOptions['use_HIP_mitigation_bTag'])
     lines.append("process.analyze_1l_2tau.use_HIP_mitigation_mediumMuonId = cms.bool(%s)" % jobOptions['use_HIP_mitigation_mediumMuonId'])
     lines.append("process.analyze_1l_2tau.isMC = cms.bool(%s)" % jobOptions['is_mc'])
     lines.append("process.analyze_1l_2tau.central_or_shift = cms.string('%s')" % jobOptions['central_or_shift'])
@@ -211,6 +199,9 @@ class analyzeConfig_1l_2tau(analyzeConfig):
       lines.append("process.analyze_1l_2tau.branchName_genWJets = cms.string('GenWZQuark')")
       lines.append("process.analyze_1l_2tau.redoGenMatching = cms.bool(False)")
       lines.append("process.analyze_1l_2tau.fillGenEvtHistograms = cms.bool(True)")
+    if self.do_sync:
+      lines.append("process.analyze_1l_2tau.syncNtuple.tree   = cms.string('%s')" % jobOptions['syncTree'])
+      lines.append("process.analyze_1l_2tau.syncNtuple.output = cms.string('%s')" % os.path.basename(jobOptions['syncOutput']))
     create_cfg(self.cfgFile_analyze, jobOptions['cfgFile_modified'], lines)
 
   def createCfg_makePlots_mcClosure(self, jobOptions):
@@ -254,7 +245,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
           lepton_and_hadTau_selection_and_frWeight = get_lepton_and_hadTau_selection_and_frWeight(lepton_and_hadTau_selection, lepton_and_hadTau_frWeight)
           for hadTau_charge_selection in self.hadTau_charge_selections:
             key_dir = getKey(process_name, lepton_and_hadTau_selection_and_frWeight, hadTau_charge_selection)
-            for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_RLES ]:
+            for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_RLES, DKEY_SYNC ]:
               initDict(self.dirs, [ key_dir, dir_type ])
               if dir_type in [ DKEY_CFGS, DKEY_LOGS ]:
                 self.dirs[key_dir][dir_type] = os.path.join(self.configDir, dir_type, self.channel,
@@ -262,7 +253,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
               else:
                 self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel,
                   "_".join([ lepton_and_hadTau_selection_and_frWeight, hadTau_charge_selection ]), process_name)
-    for dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_HIST, DKEY_LOGS, DKEY_DCRD, DKEY_PLOT, DKEY_HADD_RT ]:
+    for dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_HIST, DKEY_LOGS, DKEY_DCRD, DKEY_PLOT, DKEY_HADD_RT, DKEY_SYNC ]:
       initDict(self.dirs, [ dir_type ])
       if dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_LOGS, DKEY_DCRD, DKEY_PLOT, DKEY_HADD_RT ]:
         self.dirs[dir_type] = os.path.join(self.configDir, dir_type, self.channel)
@@ -282,7 +273,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
       if not sample_info["use_it"] or sample_info["sample_category"] in [ "additional_signal_overlap", "background_data_estimate" ]:
         continue
       logging.info("Checking input files for sample %s" % sample_info["process_name_specific"])
-      inputFileLists[sample_name] = generateInputFileList(sample_name, sample_info, self.max_files_per_job, self.debug)
+      inputFileLists[sample_name] = generateInputFileList(sample_info, self.max_files_per_job, self.debug)
 
     for lepton_and_hadTau_selection in self.lepton_and_hadTau_selections:
       lepton_selection = lepton_and_hadTau_selection
@@ -347,6 +338,19 @@ class analyzeConfig_1l_2tau(analyzeConfig):
                   print "Warning: ntupleFiles['%s'] = %s --> skipping job !!" % (key_file, ntupleFiles)
                   continue
 
+                syncOutput = ''
+                syncTree = ''
+                if self.do_sync:
+                  if lepton_and_hadTau_selection_and_frWeight == 'Tight' and hadTau_charge_selection == 'OS':
+                    syncOutput = os.path.join(self.dirs[key_dir][DKEY_SYNC], '%s_SR.root' % self.channel)
+                    syncTree   = 'syncTree_%s_SR' % self.channel.replace('_', '')
+                  elif lepton_and_hadTau_selection_and_frWeight == 'Fakeable_wFakeRateWeights' and hadTau_charge_selection == 'OS':
+                    syncOutput = os.path.join(self.dirs[key_dir][DKEY_SYNC], '%s_Fake.root' % self.channel)
+                    syncTree   = 'syncTree_%s_Fake' % self.channel.replace('_', '')
+                  else:
+                    continue
+                  self.inputFiles_sync['sync'].append(syncOutput)
+
                 self.jobOptions_analyze[key_analyze_job] = {
                   'ntupleFiles' : ntupleFiles,
                   'cfgFile_modified' : os.path.join(self.dirs[key_dir][DKEY_CFGS], "analyze_%s_%s_%s_%s_%s_%i_cfg.py" % \
@@ -366,17 +370,17 @@ class analyzeConfig_1l_2tau(analyzeConfig):
                   'apply_hadTauGenMatching' : self.apply_hadTauGenMatching,
                   'hadTau_charge_selection' : hadTau_charge_selection,
                   'applyFakeRateWeights' : self.applyFakeRateWeights if not (lepton_selection == "Tight" and hadTau_selection.find("Tight") != -1) else "disabled",
-                  ##'use_HIP_mitigation_bTag' : sample_info["use_HIP_mitigation_bTag"],
                   ##'use_HIP_mitigation_mediumMuonId' : sample_info["use_HIP_mitigation_mediumMuonId"],
-                  'use_HIP_mitigation_bTag' : True,
-                  'use_HIP_mitigation_mediumMuonId' : True,
+                  'use_HIP_mitigation_mediumMuonId' : False,
                   'is_mc' : is_mc,
                   'central_or_shift' : central_or_shift,
                   'lumi_scale' : 1. if not (self.use_lumi and is_mc) else sample_info["xsection"] * self.lumi / sample_info["nof_events"],
                   'apply_genWeight' : sample_info["genWeight"] if (is_mc and "genWeight" in sample_info) else False,
                   'apply_trigger_bits' : (is_mc and sample_info["reHLT"]) or not is_mc,
                   'selectBDT': self.isBDTtraining,
-                  'changeBranchNames' : self.changeBranchNames
+                  'changeBranchNames' : self.changeBranchNames,
+                  'syncOutput' : syncOutput,
+                  'syncTree' : syncTree,
                 }
                 self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job])
 
@@ -388,7 +392,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
                 self.outputFile_hadd_stage1[key_hadd_stage1] = os.path.join(self.dirs[DKEY_HIST], "histograms_harvested_stage1_%s_%s_%s_%s.root" % \
                     (self.channel, process_name, lepton_and_hadTau_selection_and_frWeight, hadTau_charge_selection))
 
-            if self.isBDTtraining:
+            if self.isBDTtraining or self.do_sync:
               continue
 
             if is_mc:
@@ -477,7 +481,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
                   self.outputFile_hadd_stage1_5[key_hadd_stage1_5] = os.path.join(self.dirs[DKEY_HIST], "histograms_harvested_stage1_5_%s_%s_%s.root" % \
                     (self.channel, lepton_and_hadTau_selection_and_frWeight, hadTau_charge_selection))
 
-            if self.isBDTtraining:
+            if self.isBDTtraining or self.do_sync:
               continue
 
             # add output files of hadd_stage1 for data to list of input files for hadd_stage1_5
@@ -488,7 +492,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
                 self.inputFiles_hadd_stage1_5[key_hadd_stage1_5] = []
               self.inputFiles_hadd_stage1_5[key_hadd_stage1_5].append(self.outputFile_hadd_stage1[key_hadd_stage1])
 
-          if self.isBDTtraining:
+          if self.isBDTtraining or self.do_sync:
             continue
 
           # sum fake contributions for the total of all MC sample
@@ -526,15 +530,27 @@ class analyzeConfig_1l_2tau(analyzeConfig):
           self.outputFile_hadd_stage2[key_hadd_stage2] = os.path.join(self.dirs[DKEY_HIST], "histograms_harvested_stage2_%s_%s_%s.root" % \
             (self.channel, lepton_and_hadTau_selection_and_frWeight, hadTau_charge_selection))
 
-    if self.isBDTtraining:
+    if self.isBDTtraining or self.do_sync:
       if self.is_sbatch:
         logging.info("Creating script for submitting '%s' jobs to batch system" % self.executable_analyze)
         self.sbatchFile_analyze = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_analyze_%s.py" % self.channel)
-        self.createScript_sbatch_analyze(self.executable_analyze, self.sbatchFile_analyze, self.jobOptions_analyze)
+        if self.isBDTtraining:
+          self.createScript_sbatch_analyze(self.executable_analyze, self.sbatchFile_analyze, self.jobOptions_analyze)
+        elif self.do_sync:
+          self.createScript_sbatch_syncNtuple(self.executable_analyze, self.sbatchFile_analyze, self.jobOptions_analyze)
       logging.info("Creating Makefile")
       lines_makefile = []
-      self.addToMakefile_analyze(lines_makefile)
-      self.addToMakefile_hadd_stage1(lines_makefile)
+      if self.isBDTtraining:
+        self.addToMakefile_analyze(lines_makefile)
+        self.addToMakefile_hadd_stage1(lines_makefile)
+      elif self.do_sync:
+        self.addToMakefile_syncNtuple(lines_makefile)
+        outputFile_sync_path = os.path.join(self.outputDir, DKEY_SYNC, '%s.root' % self.channel)
+        self.outputFile_sync['sync'] = outputFile_sync_path
+        self.targets.append(outputFile_sync_path)
+        self.addToMakefile_hadd_sync(lines_makefile)
+      else:
+        raise ValueError("Internal logic error")
       self.createMakefile(lines_makefile)
       logging.info("Done")
       return self.num_jobs

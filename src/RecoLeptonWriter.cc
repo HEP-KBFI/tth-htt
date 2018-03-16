@@ -1,5 +1,6 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoLeptonWriter.h" // RecoLeptonWriter
 
+#include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h" // RecoJet::useDeepCSV
 #include "tthAnalysis/HiggsToTauTau/interface/BranchAddressInitializer.h" // BranchAddressInitializer, TTree, Form()
 
 RecoLeptonWriter::RecoLeptonWriter(const std::string & branchName_obj)
@@ -11,6 +12,7 @@ RecoLeptonWriter::RecoLeptonWriter(const std::string & branchName_num,
   : max_nLeptons_(32)
   , branchName_num_(branchName_num)
   , branchName_obj_(branchName_obj)
+  , branchName_btag_(! RecoJet::useDeepCSV ? "csvv2" : "deep")
   , genLeptonWriter_(nullptr)
   , genHadTauWriter_(nullptr)
   , genJetWriter_(nullptr)
@@ -28,7 +30,9 @@ RecoLeptonWriter::RecoLeptonWriter(const std::string & branchName_num,
   , sip3d_(nullptr)
   , mvaRawTTH_(nullptr)
   , jetPtRatio_(nullptr)
+  , jetPtRel_(nullptr)
   , jetBtagCSV_(nullptr)
+  , jetNDauChargedMVASel_(nullptr)
   , tightCharge_(nullptr)
   , charge_(nullptr)
 {
@@ -57,7 +61,9 @@ RecoLeptonWriter::~RecoLeptonWriter()
   delete sip3d_;
   delete mvaRawTTH_;
   delete jetPtRatio_;
+  delete jetPtRel_;
   delete jetBtagCSV_;
+  delete jetNDauChargedMVASel_;
   delete tightCharge_;
   delete charge_;
 }
@@ -78,7 +84,9 @@ void RecoLeptonWriter::setBranchNames()
   branchName_sip3d_ = Form("%s_%s", branchName_obj_.data(), "sip3d");
   branchName_mvaRawTTH_ = Form("%s_%s", branchName_obj_.data(), "mvaTTH");
   branchName_jetPtRatio_ = Form("%s_%s", branchName_obj_.data(), "jetPtRatio");
-  branchName_jetBtagCSV_ = Form("%s_%s", branchName_obj_.data(), "jetBtag_csvv2");
+  branchName_jetPtRel_ = Form("%s_%s", branchName_obj_.data(), "jetPtRelv2");
+  branchName_jetBtagCSV_ = Form("%s_%s", branchName_obj_.data(), Form("jetBtag_%s", branchName_btag_.data()));
+  branchName_jetNDauChargedMVASel_ = Form("%s_%s", branchName_obj_.data(), "jetNDauChargedMVASel");
   branchName_tightCharge_ = Form("%s_%s", branchName_obj_.data(), "tightCharge");
   branchName_charge_ = Form("%s_%s", branchName_obj_.data(), "charge");
 }
@@ -104,7 +112,9 @@ void RecoLeptonWriter::setBranches(TTree * tree)
   bai.setBranch(sip3d_, branchName_sip3d_);
   bai.setBranch(mvaRawTTH_, branchName_mvaRawTTH_);
   bai.setBranch(jetPtRatio_, branchName_jetPtRatio_);
+  bai.setBranch(jetPtRel_, branchName_jetPtRel_);
   bai.setBranch(jetBtagCSV_, branchName_jetBtagCSV_);
+  bai.setBranch(jetNDauChargedMVASel_, branchName_jetNDauChargedMVASel_);
   bai.setBranch(tightCharge_, branchName_tightCharge_);
   bai.setBranch(charge_, branchName_charge_);
 }

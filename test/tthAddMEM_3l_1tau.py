@@ -20,6 +20,7 @@ class SmartFormatter(argparse.HelpFormatter):
 parser = argparse.ArgumentParser(
   formatter_class = lambda prog: SmartFormatter(prog, max_help_position = 50)
 )
+run_parser = parser.add_mutually_exclusive_group()
 parser.add_argument('-v', '--version',
   type = str, dest = 'version', metavar = 'version', default = None, required = True,
   help = 'R|Analysis version (e.g. %s)' % datetime.date.today().strftime('%Y%b%d'),
@@ -50,12 +51,22 @@ parser.add_argument('-R', '--disable-resubmission',
   dest = 'disable_resubmission', action = 'store_false', default = True,
   help = 'R|Disable resubmission (overwrites option -r/--resubmission-limit)'
 )
+run_parser.add_argument('-E', '--no-exec',
+  dest = 'no_exec', action = 'store_true', default = False,
+  help = 'R|Do not submit the jobs (ignore prompt)',
+)
+run_parser.add_argument('-A', '--auto-exec',
+  dest = 'auto_exec', action = 'store_true', default = False,
+  help = 'R|Automatically submit the jobs (ignore prompt)',
+)
 args = parser.parse_args()
 
 era                  = args.era
 version              = args.version
 resubmit             = args.disable_resubmission
 max_job_resubmission = args.resubmission_limit if resubmit else 1
+no_exec              = args.no_exec
+auto_exec            = args.auto_exec
 max_mem_integrations = args.max_mem_integrations
 bdt_training         = args.bdt_training
 central_or_shift     = getattr(systematics, args.systematics)
@@ -102,7 +113,7 @@ if __name__ == '__main__':
     num_parallel_jobs        = 16,
     leptonSelection          = leptonSelection,
     hadTauSelection          = hadTauSelection,
-    isForBDTtraining         = bdt_training,
+    lowIntegrationPoints     = False, # has no effect in 3l1tau MEM, the nof integration points fixed
     isDebug                  = False,
     central_or_shift         = central_or_shift,
   )
@@ -110,7 +121,12 @@ if __name__ == '__main__':
   goodToGo = addMEMProduction.create()
 
   if goodToGo:
-    run_addMEMProduction = query_yes_no("Start jobs ?")
+    if auto_exec:
+      run_addMEMProduction = True
+    elif no_exec:
+      run_addMEMProduction = False
+    else:
+      run_addMEMProduction = query_yes_no("Start jobs ?")
     if run_addMEMProduction:
       for resubmission_idx in range(max_job_resubmission):
         logging.info("Submission attempt #%i" % (resubmission_idx + 1))

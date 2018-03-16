@@ -51,6 +51,7 @@ public:
       mvaRawTTH_[idxLepton] = lepton->mvaRawTTH();
       jetPtRatio_[idxLepton] = lepton->jetPtRatio();
       jetBtagCSV_[idxLepton] = lepton->jetBtagCSV();
+      jetNDauChargedMVASel_[idxLepton] = lepton->jetNDauChargedMVASel();
       tightCharge_[idxLepton] = lepton->tightCharge();
       charge_[idxLepton] = lepton->charge();
     }
@@ -95,11 +96,13 @@ protected:
  /**
    * @brief Initialize names of branches to be read from tree
    */
-  void setBranchNames();
+  void
+  setBranchNames();
 
   const unsigned int max_nLeptons_;
   std::string branchName_num_;
   std::string branchName_obj_;
+  std::string branchName_btag_;
 
   GenParticleWriter * genLeptonWriter_;
   GenParticleWriter * genHadTauWriter_;
@@ -120,7 +123,9 @@ protected:
   std::string branchName_sip3d_;
   std::string branchName_mvaRawTTH_;
   std::string branchName_jetPtRatio_;
+  std::string branchName_jetPtRel_;
   std::string branchName_jetBtagCSV_;
+  std::string branchName_jetNDauChargedMVASel_;
   std::string branchName_tightCharge_;
   std::string branchName_charge_;
 
@@ -139,7 +144,9 @@ protected:
   Float_t * sip3d_;
   Float_t * mvaRawTTH_;
   Float_t * jetPtRatio_;
+  Float_t * jetPtRel_;
   Float_t * jetBtagCSV_;
+  Int_t * jetNDauChargedMVASel_;
   Int_t * tightCharge_;
   Int_t * charge_;
 };

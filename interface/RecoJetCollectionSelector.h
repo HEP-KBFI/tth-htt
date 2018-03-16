@@ -7,20 +7,20 @@
 class RecoJetSelector
 {
 public:
-  explicit RecoJetSelector(int era, int index = -1, bool debug = false);
+  explicit RecoJetSelector(int era,
+                           int index = -1,
+                           bool debug = false);
   ~RecoJetSelector() {}
 
   /**
    * @brief Set cut thresholds
    */
-
   void set_min_pt(double min_pt);
   void set_max_absEta(double max_absEta);
 
   /**
    * @brief Get cut thresholds
    */
-
   double get_min_pt() const;
   double get_max_absEta() const;
 
@@ -28,7 +28,7 @@ public:
    * @brief Check if jet given as function argument passes pT and eta cuts (pT > 25 GeV and |eta| < 2.4, cf. Section 3.1 of AN-2015/321)
    * @return True if jet passes selection; false otherwise
    */
-  bool operator()(const RecoJet& jet) const;
+  bool operator()(const RecoJet & jet) const;
 
 protected:
   Double_t min_pt_;     ///< lower cut threshold on pT

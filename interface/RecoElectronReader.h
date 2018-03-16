@@ -54,6 +54,7 @@ protected:
   std::string branchName_OoEminusOoP_;
   std::string branchName_lostHits_;
   std::string branchName_conversionVeto_;
+  std::string branchName_cutbasedID_HLT_;
 
   Float_t * mvaRawPOG_GP_;
   Float_t * mvaRawPOG_HZZ_;
@@ -64,6 +65,7 @@ protected:
   Float_t * OoEminusOoP_;
   UChar_t * lostHits_;
   Bool_t * conversionVeto_;
+  Int_t * cutbasedID_HLT_;
 
   // CV: make sure that only one RecoElectronReader instance exists for a given branchName,
   //     as ROOT cannot handle multiple TTree::SetBranchAddress calls for the same branch.

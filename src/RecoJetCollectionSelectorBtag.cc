@@ -13,18 +13,41 @@ RecoJetSelectorBtag::RecoJetSelectorBtag(int era,
   , min_BtagCSV_(-1.e+3)
 {}
 
+void
+RecoJetSelectorBtag::set_min_pt(double min_pt)
+{
+  min_pt_ = min_pt;
+}
+
+void
+RecoJetSelectorBtag::set_max_absEta(double max_absEta)
+{
+  max_absEta_ = max_absEta;
+}
+
+double
+RecoJetSelectorBtag::get_min_pt() const
+{
+  return min_pt_;
+}
+
+double
+RecoJetSelectorBtag::get_max_absEta() const
+{
+  return max_absEta_;
+}
+
 RecoJetSelectorBtagLoose::RecoJetSelectorBtagLoose(int era,
                                                    int index,
                                                    bool debug)
   : RecoJetSelectorBtag(era, index, debug)
 {
-  // NB! no btag CSVv2 WPs for 2017, yet!
   switch(era_)
   {
     case kEra_2017:
     {
-      // CSV loose WP, cf. https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation80XReReco
-      min_BtagCSV_ = 0.5426;
+      // Karl: CSV loose WP, cf. https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation94X
+      min_BtagCSV_ = ! RecoJet::useDeepCSV ? 0.5803 : 0.1522;
       break;
     }
     default: throw cmsException(this) << "Invalid era = " << era_;
@@ -36,13 +59,12 @@ RecoJetSelectorBtagMedium::RecoJetSelectorBtagMedium(int era,
                                                      bool debug)
   : RecoJetSelectorBtag(era, index, debug)
 {
-  // NB! no btag CSVv2 WPs for 2017, yet!
   switch(era_)
   {
     case kEra_2017:
     {
-      // CSV medium WP, cf. https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation80XReReco
-      min_BtagCSV_ = 0.8484;
+      // Karl: CSV medium WP, cf. https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation94X
+      min_BtagCSV_ = ! RecoJet::useDeepCSV ? 0.8838 : 0.4941;
       break;
     }
     default: throw cmsException(this) << "Invalid era = " << era_;
@@ -54,7 +76,7 @@ RecoJetSelectorBtag::operator()(const RecoJet & jet) const
 {
   if(debug_)
   {
-    std::cout << "<RecoJetSelectorBtag::operator()>:\n jet: " << jet << '\n';
+    std::cout << __func__ << ":\n jet: " << jet << '\n';
   }
 
   if(jet.pt() < min_pt_)

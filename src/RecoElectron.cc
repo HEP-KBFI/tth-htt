@@ -9,17 +9,19 @@ RecoElectron::RecoElectron(const RecoLepton & lepton,
                            Double_t deltaPhi,
                            Double_t OoEminusOoP,
                            Int_t    nLostHits,
-                           Bool_t   passesConversionVeto)
+                           Bool_t   passesConversionVeto,
+                           Int_t cutbasedID_HLT)
   : RecoLepton(lepton)
   , mvaRawPOG_GP_(mvaRawPOG_GP)
   , mvaRawPOG_HZZ_(mvaRawPOG_HZZ)
   , sigmaEtaEta_(sigmaEtaEta)
   , HoE_(HoE)
-  , deltaEta_(deltaEta)
-  , deltaPhi_(deltaPhi)
+  , deltaEta_(deltaEta) 
+  , deltaPhi_(deltaPhi) 
   , OoEminusOoP_(OoEminusOoP)
   , nLostHits_(nLostHits)
   , passesConversionVeto_(passesConversionVeto)
+  , cutbasedID_HLT_(cutbasedID_HLT)
 {}
 
 Double_t
@@ -49,13 +51,13 @@ RecoElectron::HoE() const
 Double_t
 RecoElectron::deltaEta() const
 {
-  return deltaEta_;
+  return deltaEta_; 
 }
 
 Double_t
 RecoElectron::deltaPhi() const
 {
-  return deltaPhi_;
+  return deltaPhi_; 
 }
 
 Double_t
@@ -74,6 +76,12 @@ Bool_t
 RecoElectron::passesConversionVeto() const
 {
   return passesConversionVeto_;
+}
+
+Int_t
+RecoElectron::cutbasedID_HLT() const
+{
+  return cutbasedID_HLT_;
 }
 
 bool
@@ -101,6 +109,8 @@ operator<<(std::ostream & stream,
             "deltaEta = "             << electron.deltaEta()             << ",\n "
             "deltaPhi = "             << electron.deltaPhi()             << ", "
             "HoE = "                  << electron.HoE()                  << ", "
-            "OoEminusOoP = "          << electron.OoEminusOoP()          << '\n';
+            "OoEminusOoP = "          << electron.OoEminusOoP()          << ",\n"
+            "cutbasedID_HLT = "       << electron.cutbasedID_HLT()       << '\n'
+  ;
   return stream;
 }

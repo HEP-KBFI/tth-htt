@@ -24,9 +24,11 @@ public:
              Double_t sip3d,
              Double_t mvaRawTTH,
              Double_t jetPtRatio,
+             Double_t jetPtRel,
              Double_t jetBtagCSV,
-             Int_t tightCharge,
-             Int_t charge);
+             Int_t    jetNDauChargedMVASel,
+             Int_t    tightCharge,
+             Int_t    charge);
 
   virtual ~RecoLepton();
 
@@ -36,12 +38,6 @@ public:
   void set_isLoose() const;
   void set_isFakeable() const;
   void set_isTight() const;
-
-  /**
-   * @brief Set "cone pT" for leptons that pass the "fakeable" lepton selection, but fail the "tight" lepton selection, 
-   *        as described in lines 304-306 of AN-2016/211
-   */
-  void set_cone_pt(Double_t cone_pt);
 
   /**
    * @brief Set links to generator level particles (matched by dR)
@@ -65,16 +61,59 @@ public:
   is_muon() const;
 
   /**
-   * @brief Funtions to access data-members
+   * @brief Funtions to access pT and four-momenta
+   * @return Values of data-members
+   *
+   * CV: note that leptons have different pT values, 
+   *     depending on whether or not they pass the "tight" lepton selection criteria
+   *    (cf. lines 304-306 of AN-2016/211 v4)
+   *     The factor 0.85 has been updated to 0.90 for the analysis of 2017 data.
+   *     The different pT definitions are as follows:
+   *       - The lepton_pt() and pt() functions always return the pT of the reco lepton
+   *       - The cone_pt() function returns the pT of the reco lepton if the lepton passes the "tight" lepton selection criteria,
+   *         otherwise 0.90*jet pT is returned
+   *       - The assocJet_pt() function always returns 0.90*jet pT
+   *     Giovanni clarified via email on 02/23/2018 that the cone_pt() function is to be used everywhere in the analysis:
+   *       - for sorting the leptons by decreasing pT
+   *       - for evaluating the event level BDTs
+   *       - for applying fake-rates in the analysis 
+   *        (Note: fake-rates are only applied to leptons passing "fakeable" and failing "tight" lepton selection,
+   *               for leptons passing the "tight" selection criteria the fake-rate weight is unity)
+   *       - for applying pT cuts in the analysis (e.g. 25/15 GeV for leading/subleading lepton)
+   *     The assocJet_pt() function is used only for the purpose of filling the numerator and denominator histograms
+   *     in the code that computes the fake-rates (using the assocJet_pt() instead of the cone_pt() function guarantees
+   *     that the same pT definition is used in the numerator and denominator histograms, 
+   *     i.e. regardless of whether leptons pass or fail the "tight" lepton selection criteria.
+   */
+
+  Double_t
+  lepton_pt() const;
+
+  const Particle::LorentzVector &
+  lepton_p4() const;
+
+  virtual Double_t
+  pt() const;
+
+  virtual const Particle::LorentzVector &
+  p4() const;
+
+  Double_t
+  cone_pt() const;
+
+  const Particle::LorentzVector &
+  cone_p4() const;
+
+  Double_t
+  assocJet_pt() const;
+
+  const Particle::LorentzVector &
+  assocJet_p4() const;
+
+  /**
+   * @brief Funtions to access other data-members
    * @return Values of data-members
    */
-  Double_t lepton_pt() const;
-  const Particle::LorentzVector & lepton_p4() const;
-
-  // CV: use original lepton pT instead of mixing lepton pT and cone_pT, as discussed on slide 2 of 
-  //     https://indico.cern.ch/event/597028/contributions/2413742/attachments/1391684/2120220/16.12.22_ttH_Htautau_-_Review_of_systematics.pdf
-  virtual Double_t pt() const;
-  virtual const Particle::LorentzVector & p4() const;
 
   Double_t dxy() const;
   Double_t dz() const;
@@ -85,15 +124,18 @@ public:
   Double_t sip3d() const;
   Double_t mvaRawTTH() const;
   Double_t jetPtRatio() const;
+  Double_t jetPtRel() const;
   Double_t jetBtagCSV() const;
+  Int_t jetNDauChargedMVASel() const;
   Int_t tightCharge() const;
   Int_t charge() const;
-  Double_t cone_pt() const;
-  const Particle::LorentzVector& cone_p4() const;
   
   const GenLepton * genLepton() const;
   const GenHadTau * genHadTau() const;
   const GenJet * genJet() const;
+
+  bool isGenMatched() const;
+  bool hasAnyGenMatch() const;
 
   bool isLoose() const;
   bool isFakeable() const;
@@ -110,12 +152,14 @@ protected:
   Double_t sip3d_;                      ///< significance of IP
   Double_t mvaRawTTH_;                  ///< raw output of lepton MVA of ttH multilepton analysis
   Double_t jetPtRatio_;                 ///< ratio of lepton pT to pT of nearby jet
+  Double_t jetPtRel_;                   ///< perpendicular component of the distance vector between lepton and its jet pT vectors
   Double_t jetBtagCSV_;                 ///< CSV b-tagging discriminator value of nearby jet
+  Int_t jetNDauChargedMVASel_;          ///< number of charged constituents in the nearest jet
   Int_t tightCharge_;                   ///< Flag indicating if lepton passes (>= 2) or fails (< 2) tight charge requirement
   Int_t charge_;                        ///< lepton charge
 
-  Double_t cone_pt_;
-  Particle::LorentzVector cone_p4_;
+  Double_t assocJet_pt_;
+  Particle::LorentzVector assocJet_p4_;
 
 //--- matching to generator level particles
   std::shared_ptr<const GenLepton> genLepton_;

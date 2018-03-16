@@ -1,5 +1,6 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoLeptonReader.h" // RecoLeptonReader
 
+#include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h" // RecoJet::useDeepCSV
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 #include "tthAnalysis/HiggsToTauTau/interface/BranchAddressInitializer.h" // BranchAddressInitializer, TTree, Form()
 
@@ -15,6 +16,7 @@ RecoLeptonReader::RecoLeptonReader(const std::string & branchName_obj,
   : max_nLeptons_(64)
   , branchName_num_(Form("n%s", branchName_obj.data()))
   , branchName_obj_(branchName_obj)
+  , branchName_btag_(! RecoJet::useDeepCSV ? "csvv2" : "deep")
   , genLeptonReader_(nullptr)
   , genHadTauReader_(nullptr)
   , genJetReader_(nullptr)
@@ -33,7 +35,9 @@ RecoLeptonReader::RecoLeptonReader(const std::string & branchName_obj,
   , sip3d_(nullptr)
   , mvaRawTTH_(nullptr)
   , jetPtRatio_(nullptr)
+  , jetPtRel_(nullptr)
   , jetBtagCSV_(nullptr)
+  , jetNDauChargedMVASel_(nullptr)
   , tightCharge_(nullptr)
   , charge_(nullptr)
 {
@@ -72,7 +76,9 @@ RecoLeptonReader::~RecoLeptonReader()
     delete gInstance->sip3d_;
     delete gInstance->mvaRawTTH_;
     delete gInstance->jetPtRatio_;
+    delete gInstance->jetPtRel_;
     delete gInstance->jetBtagCSV_;
+    delete gInstance->jetNDauChargedMVASel_;
     delete gInstance->tightCharge_;
     delete gInstance->charge_;
     instances_[branchName_obj_] = nullptr;
@@ -98,7 +104,14 @@ RecoLeptonReader::setBranchNames()
     branchName_sip3d_ = Form("%s_%s", branchName_obj_.data(), "sip3d");
     branchName_mvaRawTTH_ = Form("%s_%s", branchName_obj_.data(), "mvaTTH");
     branchName_jetPtRatio_ = Form("%s_%s", branchName_obj_.data(), "jetPtRatio");
-    branchName_jetBtagCSV_ = Form("%s_%s", branchName_obj_.data(), "jetBtag_csvv2");
+#ifdef SYNC_NTUPLE
+#pragma message "Compiling in sync Ntuple mode: enabling jetPtRel branch"
+    branchName_jetPtRel_ = Form("%s_%s", branchName_obj_.data(), "jetPtRelv2");
+#else
+#pragma message "Compiling regular mode: jetPtRel branch remains disabled"
+#endif
+    branchName_jetBtagCSV_ = Form("%s_%s", branchName_obj_.data(), Form("jetBtag_%s", branchName_btag_.data()));
+    branchName_jetNDauChargedMVASel_ = Form("%s_%s", branchName_obj_.data(), "jetNDauChargedMVASel");
     branchName_tightCharge_ = Form("%s_%s", branchName_obj_.data(), "tightCharge");
     branchName_charge_ = Form("%s_%s", branchName_obj_.data(), "charge");
     instances_[branchName_obj_] = this;
@@ -144,7 +157,9 @@ RecoLeptonReader::setBranchAddresses(TTree * tree)
     bai.setBranchAddress(sip3d_, branchName_sip3d_);
     bai.setBranchAddress(mvaRawTTH_, branchName_mvaRawTTH_);
     bai.setBranchAddress(jetPtRatio_, branchName_jetPtRatio_);
+    bai.setBranchAddress(jetPtRel_, branchName_jetPtRel_, -1.);
     bai.setBranchAddress(jetBtagCSV_, branchName_jetBtagCSV_);
+    bai.setBranchAddress(jetNDauChargedMVASel_, "", -1); // branchName_jetNDauChargedMVASel_
     bai.setBranchAddress(tightCharge_, branchName_tightCharge_);
     bai.setBranchAddress(charge_, branchName_charge_);
   }

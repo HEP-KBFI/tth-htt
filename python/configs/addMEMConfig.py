@@ -30,7 +30,7 @@ class addMEMConfig:
     """
     def __init__(self, treeName, outputDir, cfgDir, executable_addMEM, samples, era, debug, running_method,
                  max_files_per_job, mem_integrations_per_job, max_mem_integrations, num_parallel_jobs,
-                 leptonSelection, hadTauSelection, isForBDTtraining, channel, pool_id = ''):
+                 leptonSelection, hadTauSelection, lowIntegrationPoints, channel, pool_id = ''):
 
         self.treeName = treeName
         self.outputDir = outputDir
@@ -50,7 +50,10 @@ class addMEMConfig:
         self.maxPermutations_branchName = "maxPermutations_addMEM_%s_lep%s_tau%s_%s" % (
             self.channel, self.leptonSelection, self.hadTauDefinition, self.hadTauWorkingPoint,
         )
-        self.isForBDTtraining = isForBDTtraining
+        self.lowIntegrationPoints = lowIntegrationPoints
+        logging.info(
+            "Using %s number of integration points" % ("low" if self.lowIntegrationPoints else "full")
+        )
         if running_method.lower() not in ["sbatch", "makefile"]:
             raise ValueError("Invalid running method: %s" % running_method)
         self.running_method = running_method
@@ -75,8 +78,8 @@ class addMEMConfig:
         for dirPath in [self.outputDir, self.cfgDir]:
           create_if_not_exists(dirPath)
 
-        self.stdout_file_path = os.path.join(self.configDir, "stdout_%s.log" % self.channel)
-        self.stderr_file_path = os.path.join(self.configDir, "stderr_%s.log" % self.channel)
+        self.stdout_file_path = os.path.join(self.cfgDir, "stdout_%s.log" % self.channel)
+        self.stderr_file_path = os.path.join(self.cfgDir, "stderr_%s.log" % self.channel)
         self.stdout_file_path, self.stderr_file_path = get_log_version((
             self.stdout_file_path, self.stderr_file_path,
         ))
@@ -177,7 +180,7 @@ class addMEMConfig:
                 input_file_names        = hadd_in_files,
                 output_file_name        = hadd_out,
                 script_file_name        = sbatch_hadd_shFile,
-                log_file_name           = sbatch_hadd_logFile,
+                log_file_name           = sbatch_hadd_logFile[0],
                 working_dir             = self.workingDir,
                 waitForJobs             = False,
                 auxDirName              = sbatch_hadd_dir,
@@ -345,7 +348,7 @@ class addMEMConfig:
             logging.info("Creating configuration files to run '%s' for sample %s" % (self.executable_addMEM, process_name))
             is_mc = (sample_info["type"] == "mc")
 
-            inputFileList = generateInputFileList(sample_name, sample_info, self.max_files_per_job, self.debug)
+            inputFileList = generateInputFileList(sample_info, self.max_files_per_job, self.debug)
             # typically, the analysis ends here and starts looping b/c the smallest unit of work processes
             # at least one file; we need, however, to split the file into event ranges in such a way that
             # each job performs mem_integrations_per_job MEM integrations
@@ -379,7 +382,7 @@ class addMEMConfig:
                 self.logFiles_addMEM[key_file] = os.path.join(
                     self.dirs[key_dir][DKEY_LOGS], "addMEM_%s_%s_%i.log" % (self.channel, process_name, jobId)
                 )
-                self.logFiles_addMEM[key_file] = get_log_version((self.logFiles_addMEM[key_file],))
+                self.logFiles_addMEM[key_file] = get_log_version((self.logFiles_addMEM[key_file],))[0]
                 self.createCfg_addMEM(
                     self.inputFiles[key_file],
                     memEvtRangeDict[jobId]['event_range'][0],

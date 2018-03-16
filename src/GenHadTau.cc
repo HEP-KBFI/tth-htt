@@ -13,6 +13,7 @@ operator<<(std::ostream & stream,
            const GenHadTau & hadTau)
 {
   stream << static_cast<const Particle &>(hadTau) << ","
-            " charge = " << hadTau.charge();
+            " charge = " << hadTau.charge()
+  ;
   return stream;
 }

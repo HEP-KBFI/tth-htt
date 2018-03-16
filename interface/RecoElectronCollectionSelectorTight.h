@@ -1,6 +1,7 @@
 #ifndef tthAnalysis_HiggsToTauTau_RecoElectronCollectionSelectorTight_h
 #define tthAnalysis_HiggsToTauTau_RecoElectronCollectionSelectorTight_h
 
+#include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionSelector.h" // ParticleCollectionSelector
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectron.h" // RecoElectron
 
 class RecoElectronSelectorTight
@@ -23,6 +24,8 @@ public:
   // enable/disable photon conversion veto
   void enable_conversionVeto();
   void disable_conversionVeto();
+
+  void set_selection_flags(bool selection_flag);
 
   /**
    * @brief Check if electron given as function argument passes "tight" electron selection, defined in Table 13 of AN-2015/321
@@ -62,12 +65,14 @@ protected:
 };
 
 class RecoElectronCollectionSelectorTight
+  : public ParticleCollectionSelector<RecoElectron, RecoElectronSelectorTight>
 {
 public:
   explicit
   RecoElectronCollectionSelectorTight(int era,
                                       int index = -1,
-                                      bool debug = false);
+                                      bool debug = false,
+                                      bool set_selection_flags = true);
   ~RecoElectronCollectionSelectorTight() {}
 
   // enable/disable cuts on electron ID variables to mimic electron ID cuts applied by single electron trigger 
@@ -77,13 +82,6 @@ public:
   // enable/disable photon conversion veto
   void enable_conversionVeto();
   void disable_conversionVeto();
-
-  std::vector<const RecoElectron *>
-  operator()(const std::vector<const RecoElectron *> & electrons) const;
-
-protected:
-  int selIndex_;
-  RecoElectronSelectorTight selector_;
 };
 
 #endif // tthAnalysis_HiggsToTauTau_RecoElectronCollectionSelectorTight_h

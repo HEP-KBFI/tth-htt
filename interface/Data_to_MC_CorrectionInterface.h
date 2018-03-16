@@ -24,7 +24,8 @@ public:
   void
   setLeptons(int lepton1_type,      double lepton1_pt,      double lepton1_eta,
              int lepton2_type = -1, double lepton2_pt = 0., double lepton2_eta = 0.,
-             int lepton3_type = -1, double lepton3_pt = 0., double lepton3_eta = 0.);
+             int lepton3_type = -1, double lepton3_pt = 0., double lepton3_eta = 0.,
+             int lepton4_type = -1, double lepton4_pt = 0., double lepton4_eta = 0.);
 
   void
   setHadTaus(int hadTau1_genPdgId,      double hadTau1_pt,      double hadTau1_eta,

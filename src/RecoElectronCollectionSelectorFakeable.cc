@@ -20,7 +20,7 @@ RecoElectronSelectorFakeable::RecoElectronSelectorFakeable(int era,
   , max_sip3d_(8.)
   , min_mvaRawPOG_({ 0.0, 0.0, 0.7 })
   , binning_absEta_({ 0.8, 1.479 })
-  , min_pt_trig_(30.)
+  , min_pt_trig_(-1.) // Was = 30. (AN_2017_029_V5, Lines:237-240) Now changed following sync with Giovanni 
   , max_sigmaEtaEta_trig_({ 0.011, 0.011, 0.030 })
   , max_HoE_trig_({ 0.10, 0.10, 0.07 }) 
   , max_deltaEta_trig_({ 0.01, 0.01, 0.008 })
@@ -29,7 +29,7 @@ RecoElectronSelectorFakeable::RecoElectronSelectorFakeable(int era,
   , max_OoEminusOoP_trig_({ 0.010, 0.010, 0.005 })
   , binning_mvaTTH_({ 0.90 })
   , min_jetPtRatio_({ 0.50, -1.e+3 })
-  , apply_conversionVeto_(true)
+  , apply_conversionVeto_(false) // Was true but changed (Table-7, AN_2017_029_V5)
   , max_nLostHits_(0)
 {
   switch(era_)
@@ -39,7 +39,7 @@ RecoElectronSelectorFakeable::RecoElectronSelectorFakeable(int era,
       max_jetBtagCSV_ = { 0.3, 0.8484 };
       break;
     }
-    default: throw cms::Exception("RecoElectronSelectorFakeable") << "Invalid era: " << era_;
+    default: throw cmsException(this) << "Invalid era: " << era_;
   }
   assert(min_mvaRawPOG_.size() == 3);
   assert(binning_absEta_.size() == 2);
@@ -65,6 +65,12 @@ RecoElectronSelectorFakeable::disable_offline_e_trigger_cuts()
   apply_offline_e_trigger_cuts_ = false;
 }
 
+void
+RecoElectronSelectorFakeable::set_selection_flags(bool selection_flags)
+{
+  set_selection_flags_ = selection_flags;
+}
+
 bool
 RecoElectronSelectorFakeable::operator()(const RecoElectron & electron) const
 {
@@ -82,48 +88,37 @@ RecoElectronSelectorFakeable::operator()(const RecoElectron & electron) const
                              (electron.absEta() <= binning_absEta_[1] ? 1 : 2)
     ;
 
-    double mvaRawPOG = electron.mvaRawPOG_HZZ();
-    double mvaRawPOGCut = min_mvaRawPOG_[idxBin_absEta];
+    const double mvaRawPOG = electron.mvaRawPOG_HZZ();
+    const double mvaRawPOGCut = min_mvaRawPOG_[idxBin_absEta];
+    const int idxBin_mvaTTH = electron.mvaRawTTH() <= binning_mvaTTH_[0] ? 0 : 1;
 
-    if(mvaRawPOG >= mvaRawPOGCut)
+    if(mvaRawPOG >= mvaRawPOGCut                                               &&
+       electron.jetPtRatio() >= min_jetPtRatio_[idxBin_mvaTTH]                 &&
+       electron.jetBtagCSV() <= max_jetBtagCSV_[idxBin_mvaTTH]                 &&
+       (
+         (electron.cone_pt() <= min_pt_trig_ || ! apply_offline_e_trigger_cuts_) ||
+          (
+            electron.cone_pt() > min_pt_trig_                                   &&
+            electron.sigmaEtaEta() <= max_sigmaEtaEta_trig_[idxBin_absEta]      &&
+            electron.HoE() <= max_HoE_trig_[idxBin_absEta]                      &&
+            std::fabs(electron.deltaEta()) <= max_deltaEta_trig_[idxBin_absEta] &&
+            std::fabs(electron.deltaPhi()) <= max_deltaPhi_trig_[idxBin_absEta] &&
+            electron.OoEminusOoP() >= min_OoEminusOoP_trig_                     &&
+            electron.OoEminusOoP() <= max_OoEminusOoP_trig_[idxBin_absEta]
+          )
+        )
+      )
     {
-      const int idxBin_mvaTTH = electron.mvaRawTTH() <= binning_mvaTTH_[0] ? 0 : 1;
-
-      if(electron.jetPtRatio() >= min_jetPtRatio_[idxBin_mvaTTH] &&
-         electron.jetBtagCSV() <= max_jetBtagCSV_[idxBin_mvaTTH])
+      if(set_selection_flags_)
       {
-        const bool isTight = tightElectronSelector_(electron);
-        if(electron.cone_pt() <= min_pt_trig_ || ! apply_offline_e_trigger_cuts_)
+        electron.set_isFakeable();
+        if(tightElectronSelector_(electron))
         {
-          if(set_selection_flags_)
-          {
-            electron.set_isFakeable();
-            if(isTight)
-            {
-              electron.set_isTight();
-            }
-          }
-          return true;
-        }
-        else if(electron.sigmaEtaEta() <= max_sigmaEtaEta_trig_[idxBin_absEta] &&
-                electron.HoE() <= max_HoE_trig_[idxBin_absEta]                 &&
-                electron.deltaEta() <= max_deltaEta_trig_[idxBin_absEta]       &&
-                electron.deltaPhi() <= max_deltaPhi_trig_[idxBin_absEta]       &&
-                electron.OoEminusOoP() >= min_OoEminusOoP_trig_                &&
-                electron.OoEminusOoP() <= max_OoEminusOoP_trig_[idxBin_absEta])
-        {
-          if(set_selection_flags_)
-          {
-            electron.set_isFakeable();
-            if(isTight)
-            {
-              electron.set_isTight();
-            }
-          }
-          return true;
+          electron.set_isTight();
         }
       }
-    } // mvaRawPOG >= mvaRawPOGCut
+      return true;
+    }
   }
   return false;
 }
@@ -132,9 +127,10 @@ RecoElectronCollectionSelectorFakeable::RecoElectronCollectionSelectorFakeable(i
                                                                                int index,
                                                                                bool debug,
                                                                                bool set_selection_flags)
-  : selIndex_(index)
-  , selector_(era, index, debug, set_selection_flags)
-{}
+  : ParticleCollectionSelector<RecoElectron, RecoElectronSelectorFakeable>(era, index, debug)
+{
+  selector_.set_selection_flags(set_selection_flags);
+}
 
 void
 RecoElectronCollectionSelectorFakeable::enable_offline_e_trigger_cuts()
@@ -146,23 +142,4 @@ void
 RecoElectronCollectionSelectorFakeable::disable_offline_e_trigger_cuts()
 {
   selector_.disable_offline_e_trigger_cuts();
-}
-
-std::vector<const RecoElectron *>
-RecoElectronCollectionSelectorFakeable::operator()(const std::vector<const RecoElectron * > & electrons) const
-{
-  std::vector<const RecoElectron *> selElectrons;
-  int idx = 0;
-  for(const RecoElectron * electron: electrons)
-  {
-    if(selector_(*electron))
-    {
-      if(idx == selIndex_ || selIndex_ == -1)
-      {
-        selElectrons.push_back(electron);
-      }
-      ++idx;
-    }
-  }
-  return selElectrons;
 }

@@ -1,6 +1,7 @@
 #ifndef tthAnalysis_HiggsToTauTau_RecoMuonCollectionSelectorTight_h
 #define tthAnalysis_HiggsToTauTau_RecoMuonCollectionSelectorTight_h
 
+#include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionSelector.h" // ParticleCollectionSelector
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuon.h" // RecoMuon
 
 class RecoMuonSelectorTight
@@ -18,6 +19,9 @@ public:
    */
   bool
   operator()(const RecoMuon & muon) const;
+
+  void
+  set_selection_flags(bool selection_flags);
 
 protected:
   int era_;
@@ -38,20 +42,15 @@ protected:
 };
 
 class RecoMuonCollectionSelectorTight
+  : public ParticleCollectionSelector<RecoMuon, RecoMuonSelectorTight>
 {
 public:
   explicit
   RecoMuonCollectionSelectorTight(int era,
                                   int index = -1,
-                                  bool debug = false);
-  ~RecoMuonCollectionSelectorTight(){}
-
-  std::vector<const RecoMuon *>
-  operator()(const std::vector<const RecoMuon *> & muons) const;
-
-protected:
-  int selIndex_;
-  RecoMuonSelectorTight selector_;
+                                  bool debug = false,
+                                  bool set_selection_flags = true);
+  ~RecoMuonCollectionSelectorTight() {}
 };
 
 #endif // tthAnalysis_HiggsToTauTau_RecoMuonCollectionSelectorTight_h

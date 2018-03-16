@@ -21,6 +21,10 @@ RecoSubjetReaderAK12::RecoSubjetReaderAK12(int era,
   , jet_eta_(nullptr)
   , jet_phi_(nullptr)
   , jet_mass_(nullptr)
+  , jet_charge_(nullptr)
+  , jet_pullEta_(nullptr)
+  , jet_pullPhi_(nullptr)
+  , jet_pullMag_(nullptr)
 {
   setBranchNames();
 }
@@ -37,6 +41,10 @@ RecoSubjetReaderAK12::~RecoSubjetReaderAK12()
     delete[] gInstance->jet_eta_;
     delete[] gInstance->jet_phi_;
     delete[] gInstance->jet_mass_;
+    delete[] gInstance->jet_charge_;
+    delete[] gInstance->jet_pullEta_;
+    delete[] gInstance->jet_pullPhi_;
+    delete[] gInstance->jet_pullMag_;
     instances_[branchName_obj_] = nullptr;
   }
 }
@@ -50,6 +58,10 @@ RecoSubjetReaderAK12::setBranchNames()
     branchName_eta_ = Form("%s_%s", branchName_obj_.data(), "eta");
     branchName_phi_ = Form("%s_%s", branchName_obj_.data(), "phi");
     branchName_mass_ = Form("%s_%s", branchName_obj_.data(), "mass");
+    branchName_jetCharge_ = Form("%s_%s", branchName_obj_.data(), "jetCharge");
+    branchName_pullEta_ = Form("%s_%s", branchName_obj_.data(), "pullEta");
+    branchName_pullPhi_ = Form("%s_%s", branchName_obj_.data(), "pullPhi");
+    branchName_pullMag_ = Form("%s_%s", branchName_obj_.data(), "pullMag");
     instances_[branchName_obj_] = this;
   }
   else
@@ -77,6 +89,10 @@ RecoSubjetReaderAK12::setBranchAddresses(TTree * tree)
     bai.setBranchAddress(jet_eta_, branchName_eta_);
     bai.setBranchAddress(jet_phi_, branchName_phi_);
     bai.setBranchAddress(jet_mass_, branchName_mass_);
+    bai.setBranchAddress(jet_charge_, branchName_jetCharge_);
+    bai.setBranchAddress(jet_pullEta_, branchName_pullEta_);
+    bai.setBranchAddress(jet_pullPhi_, branchName_pullPhi_);
+    bai.setBranchAddress(jet_pullMag_, branchName_pullMag_);
   }
 }
 
@@ -104,8 +120,12 @@ RecoSubjetReaderAK12::read() const
           gInstance->jet_pt_[idxJet],
           gInstance->jet_eta_[idxJet],
           gInstance->jet_phi_[idxJet],
-          gInstance->jet_mass_[idxJet]
+          gInstance->jet_mass_[idxJet]	    
         },
+	gInstance->jet_charge_[idxJet],
+	gInstance->jet_pullEta_[idxJet],
+	gInstance->jet_pullPhi_[idxJet],
+	gInstance->jet_pullMag_[idxJet],
         static_cast<Int_t>(idxJet)
       });
     } // idxJet

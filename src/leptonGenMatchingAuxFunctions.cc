@@ -66,6 +66,25 @@ getLeptonGenMatch_definitions_3lepton(bool apply_leptonGenMatching)
   return leptonGenMatch_definitions;
 }
 
+std::vector<leptonGenMatchEntry>
+getLeptonGenMatch_definitions_4lepton(bool apply_leptonGenMatching)
+{
+  std::vector<leptonGenMatchEntry> leptonGenMatch_definitions;
+  if(apply_leptonGenMatching)
+  {
+    leptonGenMatch_definitions.push_back(leptonGenMatchEntry("4l0j", kGen_4l0j, 4, 0));
+    leptonGenMatch_definitions.push_back(leptonGenMatchEntry("3l1j", kGen_3l1j, 3, 1));
+    leptonGenMatch_definitions.push_back(leptonGenMatchEntry("2l2j", kGen_2l2j, 2, 2));
+    leptonGenMatch_definitions.push_back(leptonGenMatchEntry("1l3j", kGen_1l3j, 1, 3));
+    leptonGenMatch_definitions.push_back(leptonGenMatchEntry("0l4j", kGen_0l4j, 0, 4));
+  }
+  else
+  {
+    leptonGenMatch_definitions.push_back(leptonGenMatchEntry("all", kGen_LeptonAll4, -1, -1));
+  }
+  return leptonGenMatch_definitions;
+}
+
 std::string
 getLeptonGenMatch_string(const std::vector<leptonGenMatchEntry> & leptonGenMatch_definitions,
                          int leptonGenMatch_int)
@@ -166,7 +185,8 @@ const leptonGenMatchEntry &
 getLeptonGenMatch(const std::vector<leptonGenMatchEntry> & leptonGenMatch_definitions,
                   const RecoLepton * lepton_lead,
                   const RecoLepton * lepton_sublead,
-                  const RecoLepton * lepton_third)
+                  const RecoLepton * lepton_third,
+                  const RecoLepton * lepton_fourth)
 {
   int numGenMatchedLeptons, numGenMatchedJets;
   resetLeptonGenMatches(numGenMatchedLeptons, numGenMatchedJets);
@@ -180,6 +200,10 @@ getLeptonGenMatch(const std::vector<leptonGenMatchEntry> & leptonGenMatch_defini
   if(lepton_third)
   {
     countLeptonGenMatches(lepton_third, numGenMatchedLeptons, numGenMatchedJets);
+  }
+  if(lepton_fourth)
+  {
+    countLeptonGenMatches(lepton_fourth, numGenMatchedLeptons, numGenMatchedJets);
   }
   return getLeptonGenMatch(leptonGenMatch_definitions, numGenMatchedLeptons, numGenMatchedJets);
 }

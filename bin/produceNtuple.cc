@@ -154,15 +154,14 @@ int main(int argc, char* argv[])
   std::string hadTauSelection_part2 = ( hadTauSelection_parts->GetEntries() == 2 ) ? (dynamic_cast<TObjString*>(hadTauSelection_parts->At(1)))->GetString().Data() : "";
   delete hadTauSelection_parts;
 
-  const std::string branchName_electrons_in   = cfg_produceNtuple.getParameter<std::string>("branchName_electrons");
-  const std::string branchName_muons_in       = cfg_produceNtuple.getParameter<std::string>("branchName_muons");
-  const std::string branchName_hadTaus_in     = cfg_produceNtuple.getParameter<std::string>("branchName_hadTaus");
-  const std::string branchName_jets_in        = cfg_produceNtuple.getParameter<std::string>("branchName_jets");
-  const std::string branchName_met_in         = cfg_produceNtuple.getParameter<std::string>("branchName_met");
-  const std::string branchName_genLeptons_in = cfg_produceNtuple.getParameter<std::string>("branchName_genLeptons1");
-  const std::string branchName_genLeptons2_in = cfg_produceNtuple.getParameter<std::string>("branchName_genLeptons2");
-  const std::string branchName_genHadTaus_in  = cfg_produceNtuple.getParameter<std::string>("branchName_genHadTaus");
-  const std::string branchName_genJets_in     = cfg_produceNtuple.getParameter<std::string>("branchName_genJets");
+  const std::string branchName_electrons_in  = cfg_produceNtuple.getParameter<std::string>("branchName_electrons");
+  const std::string branchName_muons_in      = cfg_produceNtuple.getParameter<std::string>("branchName_muons");
+  const std::string branchName_hadTaus_in    = cfg_produceNtuple.getParameter<std::string>("branchName_hadTaus");
+  const std::string branchName_jets_in       = cfg_produceNtuple.getParameter<std::string>("branchName_jets");
+  const std::string branchName_met_in        = cfg_produceNtuple.getParameter<std::string>("branchName_met");
+  const std::string branchName_genLeptons_in = cfg_produceNtuple.getParameter<std::string>("branchName_genLeptons");
+  const std::string branchName_genHadTaus_in = cfg_produceNtuple.getParameter<std::string>("branchName_genHadTaus");
+  const std::string branchName_genJets_in    = cfg_produceNtuple.getParameter<std::string>("branchName_genJets");
 
   int minNumHadTaus = cfg_produceNtuple.getParameter<int>("minNumHadTaus");
 
@@ -177,7 +176,7 @@ int main(int argc, char* argv[])
   std::cout << "use_HIP_mitigation_mediumMuonId = " << use_HIP_mitigation_mediumMuonId << std::endl;
 
   bool isMC = cfg_produceNtuple.getParameter<bool>("isMC"); 
-  const bool isDEBUG = cfg_produceNtuple.exists("isDEBUG") ? cfg_produceNtuple.getParameter<bool>("isDEBUG") : false;
+  const bool isDEBUG = cfg_produceNtuple.getParameter<bool>("isDEBUG");
 
   std::string selEventsFileName_input = cfg_produceNtuple.getParameter<std::string>("selEventsFileName_input");
   std::cout << "selEventsFileName_input = " << selEventsFileName_input << std::endl;
@@ -185,8 +184,6 @@ int main(int argc, char* argv[])
   if ( selEventsFileName_input != "" ) {
     run_lumi_eventSelector = new RunLumiEventSelector(selEventsFileName_input);
   }
-
-//  vstring outputCommands_string = cfg_produceNtuple.getParameter<vstring>("outputCommands");
 
   vstring copy_histograms = cfg_produceNtuple.getParameter<vstring>("copy_histograms");
 
@@ -273,9 +270,24 @@ int main(int argc, char* argv[])
   jetReader->setBranchAddresses(inputTree);
   RecoJetCollectionGenMatcher jetGenMatcher;
   RecoJetCollectionCleaner jetCleaner(0.4);
-  RecoJetSelector jetSelector(era);  
+  RecoJetSelector jetSelector(era);
   RecoJetCollectionSelectorBtagLoose jetSelectorBtagLoose(era);
   RecoJetCollectionSelectorBtagMedium jetSelectorBtagMedium(era);
+
+//--- save the default settings of jetSelector
+  const double min_jetSelector_pT = jetSelector.get_min_pt();
+  const double max_jetSelector_absEta = jetSelector.get_max_absEta();
+
+//--- Disable pT cuts on the loose and medium b-tag selectors because we have to consider the effects
+//    due to JECs: the jet pT may fluctuate up or down, and because of this the jet may fail pT requirement
+//    depending on the choice of systematic uncertainties. The solution is to find maximum upwards
+//    fluctuation in pT due to JEC and select only such cleaned jets that pass the pT cut in any systematic
+//    setting. However, these jets that pass the pT cut due to JEC but otherwise wouldn't, would still be
+//    cut out by the loose and medium b-tag selectors (they also employ the pT cut on top of b-tagging
+//    requirements). The solution is to remove the pT cut in b-tagging selectors because the input jet
+//    collection all already passes the pT cut in at least one choice of systematic uncertainties.
+  jetSelectorBtagLoose.getSelector().set_min_pt(-1.);
+  jetSelectorBtagMedium.getSelector().set_min_pt(-1.);
 
 //--- declare missing transverse energy
   RecoMEtReader* metReader = new RecoMEtReader(era, isMC, branchName_met_in);
@@ -437,9 +449,9 @@ int main(int argc, char* argv[])
     std::vector<RecoMuon> muons = muonReader->read();
     std::vector<const RecoMuon*> muon_ptrs = convert_to_ptrs(muons);
     std::vector<const RecoMuon*> cleanedMuons = muon_ptrs; // CV: no cleaning needed for muons, as they have the highest priority in the overlap removal
-    std::vector<const RecoMuon*> preselMuons = preselMuonSelector(cleanedMuons);
-    std::vector<const RecoMuon*> fakeableMuons = fakeableMuonSelector(preselMuons);
-    std::vector<const RecoMuon*> tightMuons = tightMuonSelector(preselMuons);
+    std::vector<const RecoMuon*> preselMuons = preselMuonSelector(cleanedMuons, isHigherPt);
+    std::vector<const RecoMuon*> fakeableMuons = fakeableMuonSelector(preselMuons, isHigherPt);
+    std::vector<const RecoMuon*> tightMuons = tightMuonSelector(preselMuons, isHigherPt);
     std::vector<const RecoMuon*> selMuons;
     if      ( leptonSelection == kLoose    ) selMuons = preselMuons;
     else if ( leptonSelection == kFakeable ) selMuons = fakeableMuons;
@@ -449,9 +461,9 @@ int main(int argc, char* argv[])
     std::vector<RecoElectron> electrons = electronReader->read();
     std::vector<const RecoElectron*> electron_ptrs = convert_to_ptrs(electrons);
     std::vector<const RecoElectron*> cleanedElectrons = electronCleaner(electron_ptrs, fakeableMuons);
-    std::vector<const RecoElectron*> preselElectrons = preselElectronSelector(cleanedElectrons);
-    std::vector<const RecoElectron*> fakeableElectrons = fakeableElectronSelector(preselElectrons);
-    std::vector<const RecoElectron*> tightElectrons = tightElectronSelector(preselElectrons);
+    std::vector<const RecoElectron*> preselElectrons = preselElectronSelector(cleanedElectrons, isHigherPt);
+    std::vector<const RecoElectron*> fakeableElectrons = fakeableElectronSelector(preselElectrons, isHigherPt);
+    std::vector<const RecoElectron*> tightElectrons = tightElectronSelector(preselElectrons, isHigherPt);
     std::vector<const RecoElectron*> selElectrons;
     if      ( leptonSelection == kLoose    ) selElectrons = preselElectrons;
     else if ( leptonSelection == kFakeable ) selElectrons = fakeableElectrons;
@@ -461,9 +473,9 @@ int main(int argc, char* argv[])
     std::vector<RecoHadTau> hadTaus = hadTauReader->read();
     std::vector<const RecoHadTau*> hadTau_ptrs = convert_to_ptrs(hadTaus);
     std::vector<const RecoHadTau*> cleanedHadTaus = hadTauCleaner(hadTau_ptrs, preselMuons, preselElectrons);
-    std::vector<const RecoHadTau*> preselHadTaus = preselHadTauSelector(cleanedHadTaus);
-    std::vector<const RecoHadTau*> fakeableHadTaus = fakeableHadTauSelector(cleanedHadTaus);
-    std::vector<const RecoHadTau*> tightHadTaus = tightHadTauSelector(cleanedHadTaus);
+    std::vector<const RecoHadTau*> preselHadTaus = preselHadTauSelector(cleanedHadTaus, isHigherPt);
+    std::vector<const RecoHadTau*> fakeableHadTaus = fakeableHadTauSelector(cleanedHadTaus, isHigherPt);
+    std::vector<const RecoHadTau*> tightHadTaus = tightHadTauSelector(cleanedHadTaus, isHigherPt);
     std::vector<const RecoHadTau*> selHadTaus;
     if      ( hadTauSelection == kLoose    ) selHadTaus = preselHadTaus;
     else if ( hadTauSelection == kFakeable ) selHadTaus = fakeableHadTaus;
@@ -477,28 +489,30 @@ int main(int argc, char* argv[])
     //       we are better off if we keep a bit more jets per event
     std::vector<const RecoJet*> cleanedJets = jetCleaner(jet_ptrs, fakeableMuons, fakeableElectrons);
     std::vector<const RecoJet*> selJets;
-    for ( std::vector<const RecoJet*>::const_iterator cleanedJet = cleanedJets.begin();
-          cleanedJet != cleanedJets.end(); ++cleanedJet ) {
-      double cleanedJet_pt = (*cleanedJet)->pt();
-      double cleanedJet_pt_JECUp = cleanedJet_pt*(1. + (*cleanedJet)->jecUncertTotal());
-      double cleanedJet_pt_JECDown = cleanedJet_pt*(1. - (*cleanedJet)->jecUncertTotal());
-      double cleanedJet_absEta = (*cleanedJet)->absEta();
-      double min_pT = jetSelector.get_min_pt();
-      double max_absEta = jetSelector.get_max_absEta();
-      if ( (cleanedJet_pt >= min_pT || cleanedJet_pt_JECUp >= min_pT || cleanedJet_pt_JECDown >= min_pT ) && cleanedJet_absEta < max_absEta ) {
-        selJets.push_back(*cleanedJet);
+    for(const RecoJet * cleanedJet: cleanedJets)
+    {
+      const double cleanedJet_maxPtCorr = std::max(0., std::fabs(cleanedJet->jecUncertTotal()));
+      const double cleanedJet_absEta = cleanedJet->absEta();
+      const double cleanedJet_pt_max = cleanedJet->pt() * (1. + cleanedJet_maxPtCorr);
+      if(cleanedJet_pt_max >= min_jetSelector_pT && cleanedJet_absEta < max_jetSelector_absEta)
+      {
+        selJets.push_back(cleanedJet);
       }
     }
-    std::vector<const RecoJet*> selBJets_loose = jetSelectorBtagLoose(cleanedJets);
-    std::vector<const RecoJet*> selBJets_medium = jetSelectorBtagMedium(cleanedJets);
+
+//--- sort the collection by their pT so that if we hit the limit of maximum number of objects
+//--- in the Writer classes, we will drop the softer objects
+    std::sort(selJets.begin(), selJets.end(), isHigherPt);
+    std::vector<const RecoJet*> selBJets_loose = jetSelectorBtagLoose(cleanedJets, isHigherPt);
+    std::vector<const RecoJet*> selBJets_medium = jetSelectorBtagMedium(cleanedJets, isHigherPt);
 
     RecoMEt met = metReader->read();
 
 //--- construct the merged lepton collections
-    const std::vector<const RecoLepton*> preselLeptons   = mergeLeptonCollections(preselElectrons,   preselMuons);
-    const std::vector<const RecoLepton*> fakeableLeptons = mergeLeptonCollections(fakeableElectrons, fakeableMuons);
-    const std::vector<const RecoLepton*> tightLeptons    = mergeLeptonCollections(tightElectrons,    tightMuons);
-    const std::vector<const RecoLepton*> selLeptons      = mergeLeptonCollections(selElectrons, selMuons);
+    const std::vector<const RecoLepton*> preselLeptons   = mergeLeptonCollections(preselElectrons,   preselMuons,   isHigherPt);
+    const std::vector<const RecoLepton*> fakeableLeptons = mergeLeptonCollections(fakeableElectrons, fakeableMuons, isHigherPt);
+    const std::vector<const RecoLepton*> tightLeptons    = mergeLeptonCollections(tightElectrons,    tightMuons,    isHigherPt);
+    const std::vector<const RecoLepton*> selLeptons      = mergeLeptonCollections(selElectrons,      selMuons,      isHigherPt);
 
 //--- apply preselection
     if ( !((int)selLeptons.size() >= minNumLeptons) ) {
@@ -644,13 +658,6 @@ int main(int argc, char* argv[])
     memPermutationWriter.write(
       {{preselLeptons, fakeableLeptons, tightLeptons}}, {{selBJets_loose, selBJets_medium}}, cleanedHadTaus
     );
-
-//--- sort the collections by their pT so that if we hit the limit of maximum number of objects
-//--- in the Writer classes, we will drop the softer objects
-    std::sort(preselMuons.begin(),     preselMuons.end(),     isHigherPt);
-    std::sort(preselElectrons.begin(), preselElectrons.end(), isHigherPt);
-    std::sort(fakeableHadTaus.begin(), fakeableHadTaus.end(), isHigherPt);
-    std::sort(selJets.begin(),         selJets.end(),         isHigherPt);
 
     eventInfoWriter.write(eventInfo);
     muonWriter->write(preselMuons);

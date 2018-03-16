@@ -15,7 +15,7 @@ from tthAnalysis.HiggsToTauTau.analysisSettings import systematics
 
 #TODO: needs actual Ntuples
 
-mode_choices               = ['VHbb', 'forBDTtraining']
+mode_choices               = ['VHbb', 'forBDTtraining', 'sync']
 era_choices                = ['2017']
 sys_choices                = [ 'central', 'full' ]
 default_resubmission_limit = 4
@@ -30,6 +30,7 @@ class SmartFormatter(argparse.HelpFormatter):
 parser = argparse.ArgumentParser(
   formatter_class = lambda prog: SmartFormatter(prog, max_help_position = 45)
 )
+run_parser = parser.add_mutually_exclusive_group()
 parser.add_argument('-v', '--version',
   type = str, dest = 'version', metavar = 'version', default = None, required = True,
   help = 'R|Analysis version (e.g. %s)' % datetime.date.today().strftime('%Y%b%d'),
@@ -65,6 +66,14 @@ parser.add_argument('-R', '--disable-resubmission',
   dest = 'disable_resubmission', action = 'store_false', default = True,
   help = 'R|Disable resubmission (overwrites option -r/--resubmission-limit)'
 )
+run_parser.add_argument('-E', '--no-exec',
+  dest = 'no_exec', action = 'store_true', default = False,
+  help = 'R|Do not submit the jobs (ignore prompt)',
+)
+run_parser.add_argument('-A', '--auto-exec',
+  dest = 'auto_exec', action = 'store_true', default = False,
+  help = 'R|Automatically submit the jobs (ignore prompt)',
+)
 parser.add_argument('-V', '--verbose',
   dest = 'verbose', action = 'store_true', default = False,
   help = 'R|Increase verbosity level in sbatchManager'
@@ -76,6 +85,8 @@ mode                 = args.mode
 era                  = args.era
 version              = args.version
 resubmit             = args.disable_resubmission
+no_exec              = args.no_exec
+auto_exec            = args.auto_exec
 max_job_resubmission = args.resubmission_limit if resubmit else 1
 max_files_per_job    = 10 if use_prod_ntuples else 100
 central_or_shift     = getattr(systematics, args.systematics)
@@ -86,14 +97,14 @@ changeBranchNames                  = use_prod_ntuples
 applyFakeRateWeights               = None
 hadTauFakeRateWeight_inputFileName = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016.root" #TODO update
 
-if mode != "VHbb":
-  raise ValueError("Only VHbb mode available")
+if mode not in ['VHbb', 'sync']:
+  raise ValueError("Only VHbb and sync mode available")
 
 if mode == "VHbb":
   if use_prod_ntuples:
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_prodNtuples_test import samples_2017
   else:
-    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_test import samples_2017
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017
 
   for sample_name, sample_info in samples_2017.items():
     if sample_info["type"] == "mc":
@@ -113,6 +124,11 @@ elif mode == "forBDTtraining":
   hadTau_selection                   = "dR03mvaTight"
   hadTau_selection_relaxed           = "dR03mvaMedium"
   applyFakeRateWeights               = "3L"
+elif mode == "sync":
+  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_addMEM_sync import samples_2017
+
+  hadTau_selection     = "dR03mvaVTight"
+  applyFakeRateWeights = "3L"
 else:
   raise ValueError("Invalid Configuration parameter 'mode' = %s !!" % mode)
 
@@ -151,7 +167,7 @@ if __name__ == '__main__':
       samples                               = samples,
       changeBranchNames                     = changeBranchNames,
       hadTau_selection                      = hadTau_selection,
-      hadTau_charge_selections              =  [ "OS"] if mode == "forBDTtraining" else [ "OS", "SS" ],
+      hadTau_charge_selections              = [ "OS"] if mode == "forBDTtraining" else [ "OS", "SS" ],
       applyFakeRateWeights                  = applyFakeRateWeights,
       central_or_shifts                     = central_or_shift,
       max_files_per_job                     = max_files_per_job,
@@ -159,7 +175,7 @@ if __name__ == '__main__':
       use_lumi                              = True,
       lumi                                  = lumi,
       debug                                 = False,
-      running_method                        = "sbatch",
+      running_method                        = 'sbatch',
       num_parallel_jobs                     = 100,
       executable_addBackgrounds             = "addBackgrounds",
       # CV: use common executable for estimating jet->lepton and jet->tau_h fake background
@@ -180,6 +196,7 @@ if __name__ == '__main__':
       select_rle_output                     = True,
       verbose                               = idx_job_resubmission > 0,
       dry_run                               = args.dry_run,
+      do_sync                               = mode == 'sync',
     )
 
     if mode == "forBDTtraining" :
@@ -191,7 +208,12 @@ if __name__ == '__main__':
     job_statistics_summary[idx_job_resubmission] = job_statistics
 
     if idx_job_resubmission == 0:
-      run_analysis = query_yes_no("Start jobs ?")
+      if auto_exec:
+        run_analysis = True
+      elif no_exec:
+        run_analysis = False
+      else:
+        run_analysis = query_yes_no("Start jobs ?")
     if run_analysis:
       analysis.run()
     else:

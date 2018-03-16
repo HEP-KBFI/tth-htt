@@ -5,6 +5,7 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/hltPath.h"
 
+
 /**
  * @brief Auxiliary data structure for handling trigger information
  *
@@ -28,6 +29,7 @@ class hltPath_LeptonFakeRate
                          double prescale_rand_mc = 1.);
   ~hltPath_LeptonFakeRate() {}
 
+  std::string getPathName() const;
   double getMinJetPt() const;
   double getPrescale() const;
   double getPrescale_rand_mc() const;

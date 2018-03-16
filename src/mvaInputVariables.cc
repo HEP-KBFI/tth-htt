@@ -2,6 +2,8 @@
 
 #include <DataFormats/Math/interface/deltaR.h> // deltaR()
 
+#include <TLorentzVector.h> // TLorentzVector
+
 #include <algorithm> // std::count_if()
 
 namespace
@@ -68,6 +70,22 @@ comp_MT_met_lep3(const Particle & lepton,
 }
 
 double
+comp_MT_met_lep4(const Particle::LorentzVector & leptonP4,
+                 double met_pt,
+                 double met_phi)
+{
+  return comp_MT_met_lep1(leptonP4, met_pt, met_phi);
+}
+
+double
+comp_MT_met_lep4(const Particle & lepton,
+                 double met_pt,
+                 double met_phi)
+{
+  return comp_MT_met_lep4(lepton.p4(), met_pt, met_phi);
+}
+
+double
 comp_MT_met_hadTau1(const Particle & hadTau,
                     double met_pt,
                     double met_phi)
@@ -131,6 +149,13 @@ comp_mindr_lep3_jet(const Particle & lepton,
 }
 
 double
+comp_mindr_lep4_jet(const Particle & lepton,
+                    const std::vector<const RecoJet *> & jets_cleaned)
+{
+  return comp_mindr_lep1_jet(lepton, jets_cleaned);
+}
+
+double
 comp_mindr_hadTau1_jet(const Particle & hadTau,
                        const std::vector<const RecoJet *> & jets_cleaned)
 {
@@ -165,6 +190,12 @@ comp_lep2_conePt(const RecoLepton & lepton)
 
 double
 comp_lep3_conePt(const RecoLepton & lepton)
+{
+  return comp_lep1_conePt(lepton);
+}
+
+double
+comp_lep4_conePt(const RecoLepton & lepton)
 {
   return comp_lep1_conePt(lepton);
 }
@@ -236,4 +267,19 @@ compHT(const std::vector<const RecoLepton *> & leptons,
     ht += jet->pt();
   }
   return ht;
+}
+
+double 
+comp_cosThetaStar(const Particle::LorentzVector & daughterP4, const Particle::LorentzVector & motherP4)
+{
+  // CV: compute "helicity angle" between momentum vectors of daughter and mother particle
+  //     in the rest-frame of the mother particle
+  //    (cf. Section 2.6.2 and Fig. 59 of AN-2015/001)
+  TLorentzVector daughterP4_lv;
+  daughterP4_lv.SetPtEtaPhiM(daughterP4.pt(), daughterP4.eta(), daughterP4.phi(), daughterP4.mass());
+  TLorentzVector motherP4_lv;
+  motherP4_lv.SetPtEtaPhiM(motherP4.pt(), motherP4.eta(), motherP4.phi(), motherP4.mass());
+  daughterP4_lv.Boost(-motherP4_lv.BoostVector());
+  const double cosThetaStar = std::fabs(daughterP4_lv.CosTheta());
+  return cosThetaStar;
 }

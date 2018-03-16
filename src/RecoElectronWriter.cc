@@ -28,6 +28,7 @@ RecoElectronWriter::RecoElectronWriter(int era,
   , OoEminusOoP_(nullptr)
   , lostHits_(nullptr)
   , conversionVeto_(nullptr)
+  , cutbasedID_HLT_(nullptr)
 {
   leptonWriter_ = new RecoLeptonWriter(branchName_obj_);
   setBranchNames();
@@ -45,6 +46,7 @@ RecoElectronWriter::~RecoElectronWriter()
   delete[] OoEminusOoP_;
   delete[] lostHits_;
   delete[] conversionVeto_;
+  delete[] cutbasedID_HLT_;
 }
 
 void
@@ -54,11 +56,12 @@ RecoElectronWriter::setBranchNames()
   branchName_mvaRawPOG_HZZ_ = Form("%s_%s", branchName_obj_.data(), "mvaSpring16HZZ");
   branchName_sigmaEtaEta_ = Form("%s_%s", branchName_obj_.data(), "sieie");
   branchName_HoE_ = Form("%s_%s", branchName_obj_.data(), "hoe");
-  branchName_deltaEta_ = Form("%s_%s", branchName_obj_.data(), "eleDEta");
-  branchName_deltaPhi_ = Form("%s_%s", branchName_obj_.data(), "eleDPhi");
+  branchName_deltaEta_ = Form("%s_%s", branchName_obj_.data(), "deltaEtaSC_trackatVtx");
+  branchName_deltaPhi_ = Form("%s_%s", branchName_obj_.data(), "deltaPhiSC_trackatVtx");
   branchName_OoEminusOoP_ = Form("%s_%s", branchName_obj_.data(), "eInvMinusPInv");
   branchName_lostHits_ = Form("%s_%s", branchName_obj_.data(), "lostHits");
   branchName_conversionVeto_ = Form("%s_%s", branchName_obj_.data(), "convVeto");
+  branchName_cutbasedID_HLT_ = Form("%s_%s", branchName_obj_.data(), "cutBased_HLTPreSel");
 }
 
 void
@@ -76,6 +79,7 @@ RecoElectronWriter::setBranches(TTree * tree)
   bai.setBranch(OoEminusOoP_, branchName_OoEminusOoP_);
   bai.setBranch(lostHits_, branchName_lostHits_);
   bai.setBranch(conversionVeto_, branchName_conversionVeto_);
+  bai.setBranch(cutbasedID_HLT_, branchName_cutbasedID_HLT_);
 }
 
 void
@@ -96,5 +100,6 @@ RecoElectronWriter::write(const std::vector<const RecoElectron *> & leptons)
     OoEminusOoP_[idxLepton] = lepton->OoEminusOoP();
     lostHits_[idxLepton] = lepton->nLostHits(); 
     conversionVeto_[idxLepton] = lepton->passesConversionVeto();
+    cutbasedID_HLT_[idxLepton] = lepton->cutbasedID_HLT();
   }
 }

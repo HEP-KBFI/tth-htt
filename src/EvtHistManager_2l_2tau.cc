@@ -28,6 +28,11 @@ EvtHistManager_2l_2tau::bookHistograms(TFileDirectory & dir)
 
   histogram_mTauTauVis_   = book1D(dir, "mTauTauVis",   "mTauTauVis",  40,   0.,  200.);
   histogram_EventCounter_ = book1D(dir, "EventCounter", "EventCounter",  1, -0.5,  +0.5);
+
+  histogram_mvaOutput_noHTT_tt_    = book1D(dir, "mvaOutput_noHTT_tt",     "mvaOutput_noHTT_tt",     100, 0.0, 1.0);
+  histogram_mvaOutput_noHTT_ttV_   = book1D(dir, "mvaOutput_noHTT_ttV",    "mvaOutput_noHTT_ttV",    100, 0.0, 1.0);
+  histogram_mvaOutput_noHTT_SUM_VT_= book1D(dir, "mvaOutput_noHTT_SUM_VT", "mvaOutput_noHTT_SUM_VT", 100, 0.0, 1.0);
+  histogram_mvaOutput_noHTT_1B_VT_ = book1D(dir, "mvaOutput_noHTT_1B_VT",  "mvaOutput_noHTT_1B_VT",  100, 0.0, 1.0);
 }
 
 void
@@ -43,7 +48,11 @@ EvtHistManager_2l_2tau::fillHistograms(int numElectrons,
                                        double mTauTauVis,
                                        double leptonPairCharge,
                                        double hadTauPairCharge,
-                                       double evtWeight)
+                                       double evtWeight,
+                                       double mvaOutput_noHTT_tt,
+                                       double mvaOutput_noHTT_ttV,
+                                       double mvaOutput_noHTT_SUM_VT,
+                                       double mvaOutput_noHTT_1B_VT)
 {
   const double evtWeightErr = 0.;
 
@@ -66,4 +75,9 @@ EvtHistManager_2l_2tau::fillHistograms(int numElectrons,
 
   fillWithOverFlow(histogram_mTauTauVis_,   mTauTauVis, evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_EventCounter_, 0.,         evtWeight, evtWeightErr);
+
+  fillWithOverFlow(histogram_mvaOutput_noHTT_tt_,     mvaOutput_noHTT_tt,     evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_mvaOutput_noHTT_ttV_,    mvaOutput_noHTT_ttV,    evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_mvaOutput_noHTT_SUM_VT_, mvaOutput_noHTT_SUM_VT, evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_mvaOutput_noHTT_1B_VT_,  mvaOutput_noHTT_1B_VT,  evtWeight, evtWeightErr);
 }

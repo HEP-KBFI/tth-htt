@@ -1,4 +1,4 @@
-import getpass, logging, os, subprocess, sys, time, stat, errno
+import logging, os, subprocess, sys, math, stat, errno
 
 def query_yes_no(question, default = "yes"):
   """Prompts user yes/no
@@ -151,3 +151,18 @@ def get_log_version(list_of_log_files):
     else:
       # some log files already exist -> increase the version number
       version_idx += 1
+
+def human_size(fsize, use_si = True, byte_suffix = 'B'):
+  if use_si:
+    multiplier = 1000.
+    units = ['', 'k', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y']
+  else:
+    multiplier = 1024.
+    units = ['', 'Ki', 'Mi', 'Gi', 'Ti', 'Pi', 'Ei', 'Zi', 'Yi']
+  units = list(map(lambda unit: '%s%s' % (unit, byte_suffix), units))
+  fsize_int = int(fsize)
+  unit_idx = min(int(math.log(fsize_int, multiplier)), len(units) - 1) if fsize_int else 0
+  if unit_idx > 0:
+    return '%.2f%s' % ((fsize_int / multiplier ** unit_idx), units[unit_idx])
+  else:
+    return '%d%s' % (fsize_int, units[unit_idx])

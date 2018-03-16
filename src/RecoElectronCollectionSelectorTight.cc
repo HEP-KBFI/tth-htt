@@ -19,7 +19,7 @@ RecoElectronSelectorTight::RecoElectronSelectorTight(int era,
   , max_sip3d_(8.)
   , min_mvaRawPOG_({ 0.0, 0.0, 0.7 })
   , binning_absEta_({ 0.8, 1.479 })
-  , min_pt_trig_(30.)
+  , min_pt_trig_(-1.) // Was = 30. (AN_2017_029_V5, Lines:237-240) Now changed following sync with Giovanni     
   , max_sigmaEtaEta_trig_({ 0.011, 0.011, 0.030 })
   , max_HoE_trig_({ 0.10, 0.10, 0.07 })
   , max_deltaEta_trig_({ 0.01, 0.01, 0.008 })
@@ -71,6 +71,12 @@ void
 RecoElectronSelectorTight::disable_conversionVeto()
 {
   apply_conversionVeto_ = false;
+}
+
+void
+RecoElectronSelectorTight::set_selection_flags(bool selection_flag)
+{
+  set_selection_flags_ = selection_flag;
 }
 
 bool
@@ -174,7 +180,7 @@ RecoElectronSelectorTight::operator()(const RecoElectron & electron) const
     }
     return false;
   }
-  
+
   // extra cuts for electrons passing pT threshold of single electron trigger,
   // as explained in section 3.3.4 of AN-2015/321
   if(apply_offline_e_trigger_cuts_ && electron.pt() >= min_pt_trig_)
@@ -195,7 +201,7 @@ RecoElectronSelectorTight::operator()(const RecoElectron & electron) const
       }
       return false;
     }
-    if(electron.deltaEta() > max_deltaEta_trig_[idxBin])
+    if(std::fabs(electron.deltaEta()) > max_deltaEta_trig_[idxBin])
     {
       if(debug_)
       {
@@ -203,7 +209,7 @@ RecoElectronSelectorTight::operator()(const RecoElectron & electron) const
       }
       return false;
     }
-    if(electron.deltaPhi() > max_deltaPhi_trig_[idxBin])
+    if(std::fabs(electron.deltaPhi()) > max_deltaPhi_trig_[idxBin])
     {
       if(debug_)
       {
@@ -233,10 +239,12 @@ RecoElectronSelectorTight::operator()(const RecoElectron & electron) const
 
 RecoElectronCollectionSelectorTight::RecoElectronCollectionSelectorTight(int era,
                                                                          int index,
-                                                                         bool debug)
-  : selIndex_(index)
-  , selector_(era, index, debug)
-{}
+                                                                         bool debug,
+                                                                         bool set_selection_flags)
+  : ParticleCollectionSelector<RecoElectron, RecoElectronSelectorTight>(era, index, debug)
+{
+  selector_.set_selection_flags(set_selection_flags);
+}
 
 void
 RecoElectronCollectionSelectorTight::enable_offline_e_trigger_cuts()
@@ -261,23 +269,4 @@ void
 RecoElectronCollectionSelectorTight::disable_conversionVeto()
 {
   selector_.disable_conversionVeto();
-}
-
-std::vector<const RecoElectron *>
-RecoElectronCollectionSelectorTight::operator()(const std::vector<const RecoElectron *> & electrons) const
-{
-  std::vector<const RecoElectron *> selElectrons;
-  int idx = 0;
-  for(const RecoElectron * electron: electrons)
-  {
-    if(selector_(*electron))
-    {
-      if(idx == selIndex_ || selIndex_ == -1)
-      {
-        selElectrons.push_back(electron);
-      }
-      ++idx;
-    }
-  }
-  return selElectrons;
 }

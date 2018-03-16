@@ -70,7 +70,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/GenEvtHistManager.h" // GenEvtHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/LHEInfoHistManager.h" // LHEInfoHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/leptonTypes.h" // getLeptonType, kElectron, kMuon
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // getBranchName_bTagWeight, getHadTau_genPdgId, isHigherPt, isMatched
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // getBTagWeight_option, getHadTau_genPdgId, isHigherPt, isMatched
 #include "tthAnalysis/HiggsToTauTau/interface/HistManagerBase.h" // HistManagerBase
 #include "tthAnalysis/HiggsToTauTau/interface/histogramAuxFunctions.h" // fillWithOverFlow2d
 #include "tthAnalysis/HiggsToTauTau/interface/hadTopTaggerAuxFunctions.h" // isGenMatchedJetTriplet
@@ -267,16 +267,11 @@ int main(int argc, char* argv[])
   bool isDEBUG = ( cfg_analyze.exists("isDEBUG") ) ? cfg_analyze.getParameter<bool>("isDEBUG") : false;
   if ( isDEBUG ) std::cout << "Warning: DEBUG mode enabled -> trigger selection will not be applied for data !!" << std::endl;
 
-  std::string jet_btagWeight_branch;
-  if ( isMC ) {
-    if ( era == kEra_2017 ) jet_btagWeight_branch = "Jet_btagSF_csvv2";
-    else assert(0);
-  }
-
   int jetPt_option = RecoJetReader::kJetPt_central;
   int met_option = RecoMEtReader::kMEt_central;
   int hadTauPt_option = RecoHadTauReader::kHadTauPt_central;
   int lheScale_option = kLHE_scale_central;
+  int jetBtagSF_option = kBtag_central;
   if ( central_or_shift != "central" ) {
     TString central_or_shift_tstring = central_or_shift.data();
     std::string shiftUp_or_Down = "";
@@ -285,12 +280,12 @@ int main(int argc, char* argv[])
     else throw cms::Exception("analyze_hadTopTagger_gen")
       << "Invalid Configuration parameter 'central_or_shift' = " << central_or_shift << " !!\n";
     if ( central_or_shift_tstring.BeginsWith("CMS_ttHl_btag") ) {
-      if ( isMC ) jet_btagWeight_branch = getBranchName_bTagWeight(era, central_or_shift);
+      if ( isMC ) jetBtagSF_option = getBTagWeight_option(central_or_shift);
       else throw cms::Exception("analyze_hadTopTagger_gen")
 	<< "Configuration parameter 'central_or_shift' = " << central_or_shift << " not supported for data !!\n";
     } else if ( central_or_shift_tstring.BeginsWith("CMS_ttHl_JES") ) {
       if ( isMC ) {
-	jet_btagWeight_branch = getBranchName_bTagWeight(era, central_or_shift);
+  jetBtagSF_option = getBTagWeight_option(central_or_shift);
 	if      ( shiftUp_or_Down == "Up"   ) {
 	  jetPt_option = RecoJetReader::kJetPt_jecUp;
 	  met_option = RecoMEtReader::kMEt_shifted_JetEnUp;
@@ -435,7 +430,7 @@ int main(int argc, char* argv[])
 
   RecoJetReader* jetReader = new RecoJetReader(era, isMC, branchName_jets, readGenObjects);
   jetReader->setJetPt_central_or_shift(jetPt_option);
-  jetReader->setBranchName_BtagWeight(jet_btagWeight_branch);
+  jetReader->setBranchName_BtagWeight(jetBtagSF_option);
   inputTree -> registerReader(jetReader);
   RecoJetCollectionGenMatcher jetGenMatcher;
   RecoJetCollectionCleaner jetCleaner(0.4);
@@ -521,10 +516,12 @@ int main(int argc, char* argv[])
   TH1* histogram_HTTv2_mTop = fs.make<TH1D>("HTTv2_mTop", "HTTv2_mTop", 300, 0., 300.);
   TH1* histogram_HTTv2_WJet1_ptRec_div_ptGen = fs.make<TH1D>("HTTv2_WJet1_ptRec_div_ptGen", "HTTv2_WJet1_ptRec_div_ptGen", 200, 0., 2.);
   TH1* histogram_HTTv2_WJet1_dRmatch = fs.make<TH1D>("HTTv2_WJet1_dRmatch", "HTTv2_WJet1_dRmatch", 100, 0., 1.);
+  TH1* histogram_HTTv2_WJet1_cosThetaStar = fs.make<TH1D>("HTTv2_WJet1_cosThetaStar", "HTTv2_WJet1_cosThetaStar", 36, 0., TMath::Pi());
   TH1* histogram_HTTv2_WJet2_ptRec_div_ptGen = fs.make<TH1D>("HTTv2_WJet2_ptRec_div_ptGen", "HTTv2_WJet2_ptRec_div_ptGen", 200, 0., 2.);
   TH1* histogram_HTTv2_WJet2_dRmatch = fs.make<TH1D>("HTTv2_WJet2_dRmatch", "HTTv2_WJet2_dRmatch", 100, 0., 1.);
   TH1* histogram_HTTv2_BJet_ptRec_div_ptGen = fs.make<TH1D>("HTTv2_BJet_ptRec_div_ptGen", "HTTv2_BJet_ptRec_div_ptGen", 200, 0., 2.);
   TH1* histogram_HTTv2_BJet_dRmatch = fs.make<TH1D>("HTTv2_BJet_dRmatch", "HTTv2_BJet_dRmatch", 100, 0., 1.);
+  TH1* histogram_HTTv2_BJet_cosThetaStar = fs.make<TH1D>("HTTv2_BJet_cosThetaStar", "HTTv2_BJet_cosThetaStar", 36, 0., TMath::Pi());
   
   JetHistManagerAK12* histManager_jetsAK12 = new JetHistManagerAK12(makeHistManager_cfg(process_string,
     Form("%s/sel/jetsAK12", histogramDir.data()), central_or_shift));
@@ -536,11 +533,15 @@ int main(int argc, char* argv[])
   TH1* histogram_AK12_mW = fs.make<TH1D>("AK12_mW", "AK12_mW", 200, 0., 200.);
   TH1* histogram_AK12_WJet1_ptRec_div_ptGen = fs.make<TH1D>("AK12_WJet1_ptRec_div_ptGen", "AK12_WJet1_ptRec_div_ptGen", 200, 0., 2.);
   TH1* histogram_AK12_WJet1_dRmatch = fs.make<TH1D>("AK12_WJet1_dRmatch", "AK12_WJet1_dRmatch", 100, 0., 1.);
+  TH1* histogram_AK12_WJet1_cosThetaStar = fs.make<TH1D>("AK12_WJet1_cosThetaStar", "AK12_WJet1_cosThetaStar", 36, 0., TMath::Pi());
   TH1* histogram_AK12_WJet2_ptRec_div_ptGen = fs.make<TH1D>("AK12_WJet2_ptRec_div_ptGen", "AK12_WJet2_ptRec_div_ptGen", 200, 0., 2.);
   TH1* histogram_AK12_WJet2_dRmatch = fs.make<TH1D>("AK12_WJet2_dRmatch", "AK12_WJet2_dRmatch", 100, 0., 1.);
+  TH1* histogram_AK12_BJet_cosThetaStar = fs.make<TH1D>("AK12_BJet_cosThetaStar", "AK12_BJet_cosThetaStar", 36, 0., TMath::Pi());
   TH1* histogram_AK12_theta_t_lead = fs.make<TH1D>("AK12_theta_t_lead", "AK12_theta_t_lead", 36, 0., TMath::Pi());
   TH1* histogram_AK12_theta_t_sublead = fs.make<TH1D>("AK12_theta_t_sublead", "AK12_theta_t_sublead", 36, 0., TMath::Pi());
-
+  
+  TH1* histogram_resolved_WJet1_cosThetaStar = fs.make<TH1D>("resolved_WJet1_cosThetaStar", "resolved_WJet1_cosThetaStar", 36, 0., TMath::Pi());
+  TH1* histogram_resolved_BJet_cosThetaStar = fs.make<TH1D>("resolved_BJet_cosThetaStar", "resolved_BJet_cosThetaStar", 36, 0., TMath::Pi());
   TH1* histogram_resolved_theta_t_lead = fs.make<TH1D>("resolved_theta_t_lead", "resolved_theta_t_lead", 36, 0., TMath::Pi());
   TH1* histogram_resolved_theta_t_sublead = fs.make<TH1D>("resolved_theta_t_sublead", "resolved_theta_t_sublead", 36, 0., TMath::Pi());
 
@@ -662,11 +663,7 @@ int main(int argc, char* argv[])
     //  }
     //}
 
-    std::vector<const RecoLepton*> selLeptons;
-    selLeptons.reserve(selElectrons.size() + selMuons.size());
-    selLeptons.insert(selLeptons.end(), selElectrons.begin(), selElectrons.end());
-    selLeptons.insert(selLeptons.end(), selMuons.begin(), selMuons.end());
-    std::sort(selLeptons.begin(), selLeptons.end(), isHigherPt);
+    std::vector<const RecoLepton*> selLeptons = mergeLeptonCollections(selElectrons, selMuons, isHigherPt);
     std::vector<RecoHadTau> hadTaus = hadTauReader->read();
     std::vector<const RecoHadTau*> hadTau_ptrs = convert_to_ptrs(hadTaus);
     std::vector<const RecoHadTau*> cleanedHadTaus = hadTauCleaner(hadTau_ptrs, preselMuons, preselElectrons);
@@ -754,11 +751,7 @@ int main(int argc, char* argv[])
     }
 
 //--- apply preselection
-    std::vector<const RecoLepton*> preselLeptons;
-    preselLeptons.reserve(preselElectrons.size() + preselMuons.size());
-    preselLeptons.insert(preselLeptons.end(), preselElectrons.begin(), preselElectrons.end());
-    preselLeptons.insert(preselLeptons.end(), preselMuons.begin(), preselMuons.end());
-    std::sort(preselLeptons.begin(), preselLeptons.end(), isHigherConePt);
+    std::vector<const RecoLepton*> preselLeptons = mergeLeptonCollections(preselElectrons, preselMuons, isHigherConePt);
     // require at least two leptons passing loose preselection criteria
     if ( !(preselLeptons.size() >= 2) ) {
       continue;
@@ -885,11 +878,7 @@ int main(int argc, char* argv[])
     }
 
     // require exactly two leptons passing tight selection criteria, to avoid overlap with other channels
-    std::vector<const RecoLepton*> tightLeptons;
-    tightLeptons.reserve(tightElectrons.size() + tightMuons.size());
-    tightLeptons.insert(tightLeptons.end(), tightElectrons.begin(), tightElectrons.end());
-    tightLeptons.insert(tightLeptons.end(), tightMuons.begin(), tightMuons.end());
-    std::sort(tightLeptons.begin(), tightLeptons.end(), isHigherPt);
+    std::vector<const RecoLepton*> tightLeptons = mergeLeptonCollections(tightElectrons, tightMuons, isHigherPt);
     if ( !(tightLeptons.size() <= 2) ) {
       continue;
     }
@@ -1034,7 +1023,7 @@ int main(int argc, char* argv[])
       continue; 
     }
     cutFlowTable_2lss_1tau.update(">= 2 genWBosons");
-    std::cout << "#genWJets = " << genWJets.size() << std::endl;
+    //std::cout << "#genWJets = " << genWJets.size() << std::endl;
     if ( !(genWJets.size() >= 2) ) {
       if ( isDEBUG ) std::cout << "FAILS '>= 2 genWJets' cut !!" << std::endl;
       continue;    
@@ -1182,8 +1171,8 @@ int main(int argc, char* argv[])
 	}
       }
     }
-    std::cout << "#genWJetsFromTop = " << genWJetsFromTop.size() << " (mass = " << genWJetsFromTop_mass << ")" << std::endl;
-    std::cout << "#genWJetsFromAntiTop = " << genWJetsFromAntiTop.size() << " (mass = " << genWJetsFromAntiTop_mass << ")" << std::endl;
+    //std::cout << "#genWJetsFromTop = " << genWJetsFromTop.size() << " (mass = " << genWJetsFromTop_mass << ")" << std::endl;
+    //std::cout << "#genWJetsFromAntiTop = " << genWJetsFromAntiTop.size() << " (mass = " << genWJetsFromAntiTop_mass << ")" << std::endl;
     if ( !(genWJetsFromTop.size() == 2 || genWJetsFromAntiTop.size() == 2) ) {
       if ( isDEBUG ) std::cout << "FAILS '2 genWJetsFromTop || 2 genWJetsFromAntiTop' cut !!" << std::endl;
       continue;
@@ -1199,12 +1188,12 @@ int main(int argc, char* argv[])
       genWJetFromTop_sublead = genWJetsFromTop[1];
       if ( !(std::fabs((genWJetFromTop_lead->p4() + genWJetFromTop_sublead->p4()).mass() - genWBosonFromTop->mass()) < 15.) ) failsWbosonMassVeto_top = true;
     }
-    std::cout << "genWBosonFromTop: mass = " << genWBosonFromTop->mass();
-    if ( genWJetFromTop_lead && genWJetFromTop_sublead ) {
-      std::cout << "," ;
-      std::cout << " mass of genWJetsFromTop = " << (genWJetFromTop_lead->p4() + genWJetFromTop_sublead->p4()).mass();
-    }
-    std::cout << std::endl;
+    //std::cout << "genWBosonFromTop: mass = " << genWBosonFromTop->mass();
+    //if ( genWJetFromTop_lead && genWJetFromTop_sublead ) {
+    //  std::cout << "," ;
+    //  std::cout << " mass of genWJetsFromTop = " << (genWJetFromTop_lead->p4() + genWJetFromTop_sublead->p4()).mass();
+    //}
+    //std::cout << std::endl;
     if ( failsWbosonMassVeto_top ) {
       if ( isDEBUG ) std::cout << "FAILS 'genWBosonFromTop mass' cut !!" << std::endl;
       continue;
@@ -1220,12 +1209,12 @@ int main(int argc, char* argv[])
       genWJetFromAntiTop_sublead = genWJetsFromAntiTop[1];
       if ( !(std::fabs((genWJetFromAntiTop_lead->p4() + genWJetFromAntiTop_sublead->p4()).mass() - genWBosonFromAntiTop->mass()) < 15.) ) failsWbosonMassVeto_antiTop = true;
     }
-    std::cout << "genWBosonFromAntiTop: mass = " << genWBosonFromAntiTop->mass();
-    if ( genWJetFromAntiTop_lead && genWJetFromAntiTop_sublead ) {
-      std::cout << "," ;
-      std::cout << " mass of genWJetsFromAntiTop = " << (genWJetFromAntiTop_lead->p4() + genWJetFromAntiTop_sublead->p4()).mass();
-    }
-    std::cout << std::endl;
+    //std::cout << "genWBosonFromAntiTop: mass = " << genWBosonFromAntiTop->mass();
+    //if ( genWJetFromAntiTop_lead && genWJetFromAntiTop_sublead ) {
+    //  std::cout << "," ;
+    //  std::cout << " mass of genWJetsFromAntiTop = " << (genWJetFromAntiTop_lead->p4() + genWJetFromAntiTop_sublead->p4()).mass();
+    //}
+    //std::cout << std::endl;
     if ( failsWbosonMassVeto_antiTop ) {
       if ( isDEBUG ) std::cout << "FAILS 'genWBosonFromAntiTop mass' cut !!" << std::endl;
       continue;
@@ -1416,6 +1405,8 @@ int main(int argc, char* argv[])
 		  if ( genWJetFromTop_lead->pt() > 20. ) {
 		    fillWithOverFlow(histogram_HTTv2_WJet1_ptRec_div_ptGen, recWJetFromTop_lead->pt()/genWJetFromTop_lead->pt(), evtWeight);
 		    fillWithOverFlow(histogram_HTTv2_WJet1_dRmatch, deltaR(recWJetFromTop_lead->p4(), genWJetFromTop_lead->p4()), evtWeight);
+		    double cosThetaStar_WJet1 = comp_cosThetaStar(recWJetFromTop_lead->p4(), recWBosonFromTopP4);
+		    fillWithOverFlow(histogram_HTTv2_WJet1_cosThetaStar, cosThetaStar_WJet1, evtWeight);
 		  }
 		  if ( genWJetFromTop_sublead->pt() > 20. ) {
 		    fillWithOverFlow(histogram_HTTv2_WJet2_ptRec_div_ptGen, recWJetFromTop_sublead->pt()/genWJetFromTop_sublead->pt(), evtWeight);
@@ -1424,6 +1415,8 @@ int main(int argc, char* argv[])
 		  if ( genBJetFromTop->pt() > 20. ) {
 		    fillWithOverFlow(histogram_HTTv2_BJet_ptRec_div_ptGen, recBJetFromTop->pt()/genBJetFromTop->pt(), evtWeight);
 		    fillWithOverFlow(histogram_HTTv2_BJet_dRmatch, deltaR(recBJetFromTop->p4(), genBJetFromTop->p4()), evtWeight);
+		    double cosThetaStar_BJet = comp_cosThetaStar(recBJetFromTop->p4(), recTopP4);
+		    fillWithOverFlow(histogram_HTTv2_BJet_cosThetaStar, cosThetaStar_BJet, evtWeight);
 		  }
 		  isHTTv2FromTop = true;
 		}
@@ -1505,6 +1498,8 @@ int main(int argc, char* argv[])
 		  if ( genWJetFromAntiTop_lead->pt() > 20. ) {
 		    fillWithOverFlow(histogram_HTTv2_WJet1_ptRec_div_ptGen, recWJetFromAntiTop_lead->pt()/genWJetFromAntiTop_lead->pt(), evtWeight);
 		    fillWithOverFlow(histogram_HTTv2_WJet1_dRmatch, deltaR(recWJetFromAntiTop_lead->p4(), genWJetFromAntiTop_lead->p4()), evtWeight);
+		    double cosThetaStar_WJet1 = comp_cosThetaStar(recWJetFromAntiTop_lead->p4(), recWBosonFromAntiTopP4);
+		    fillWithOverFlow(histogram_HTTv2_WJet1_cosThetaStar, cosThetaStar_WJet1, evtWeight);
 		  }
 		  if ( genWJetFromAntiTop_sublead->pt() > 20. ) {
 		    fillWithOverFlow(histogram_HTTv2_WJet2_ptRec_div_ptGen, recWJetFromAntiTop_sublead->pt()/genWJetFromAntiTop_sublead->pt(), evtWeight);
@@ -1513,6 +1508,8 @@ int main(int argc, char* argv[])
 		  if ( genBJetFromAntiTop->pt() > 20. ) {
 		    fillWithOverFlow(histogram_HTTv2_BJet_ptRec_div_ptGen, recBJetFromAntiTop->pt()/genBJetFromAntiTop->pt(), evtWeight);
 		    fillWithOverFlow(histogram_HTTv2_BJet_dRmatch, deltaR(recBJetFromAntiTop->p4(), genBJetFromAntiTop->p4()), evtWeight);
+		    double cosThetaStar_BJet = comp_cosThetaStar(recBJetFromAntiTop->p4(), recAntiTopP4);
+		    fillWithOverFlow(histogram_HTTv2_BJet_cosThetaStar, cosThetaStar_BJet, evtWeight);
 		  }
 		  isHTTv2FromAntiTop = true;
 		}
@@ -1537,7 +1534,11 @@ int main(int argc, char* argv[])
     cutFlowTable_2lss_1tau_AK12.update("genJet triplet");
     
     bool isAK12FromTop = false;
+    bool isBJetFromTop = false;
+    bool selBJetFromTop_passesLoose = false;
     bool isAK12FromAntiTop = false;
+    bool isBJetFromAntiTop = false;
+    bool selBJetFromAntiTop_passesLoose = false;
 
     if ( (genBJetFromTop                                        && genBJetFromTop->pt()         >  20. && 
 	  genWJetFromTop_lead && genWJetFromTop_sublead         && genWBosonFromTopP4.pt()      > 100.) ||
@@ -1593,6 +1594,45 @@ int main(int argc, char* argv[])
 		}
 	      }
 
+	      const RecoJet* selBJetFromTop = 0;
+	      double dRmin_selBJetFromTop = 1.e+3;
+	      const RecoJet* selBJetFromAntiTop = 0;
+	      double dRmin_selBJetFromAntiTop = 1.e+3;
+	      for ( std::vector<const RecoJet*>::const_iterator selJet = selJets.begin(); selJet != selJets.end(); ++selJet ) {
+		if ( genBJetFromTop ) {
+		  double dR_selBJetFromTop = deltaR((*selJet)->p4(), genBJetFromTop->p4());
+		  if ( dR_selBJetFromTop < 0.3 && dR_selBJetFromTop < dRmin_selBJetFromTop ) {
+		    selBJetFromTop = (*selJet);
+		    dRmin_selBJetFromTop = dR_selBJetFromTop;
+		  }
+		}
+		if ( genBJetFromAntiTop ) {
+		  double dR_selBJetFromAntiTop = deltaR((*selJet)->p4(), genBJetFromAntiTop->p4());
+		  if ( dR_selBJetFromAntiTop < 0.3 && dR_selBJetFromAntiTop < dRmin_selBJetFromAntiTop ) {
+		    selBJetFromAntiTop = (*selJet);
+		    dRmin_selBJetFromAntiTop = dR_selBJetFromAntiTop;
+		  }
+		}
+	      }
+
+	      if ( selBJetFromTop ) {
+		isBJetFromTop = true;
+	      }
+	      if ( selBJetFromAntiTop ) {
+		isBJetFromAntiTop = true;
+	      }
+
+	      for ( std::vector<const RecoJet*>::const_iterator selBJet_loose = selBJets_loose.begin();
+		    selBJet_loose != selBJets_loose.end(); ++selBJet_loose ) {
+		if ( selBJetFromTop && deltaR(selBJetFromTop->p4(), (*selBJet_loose)->p4()) < 0.3 ) {
+		  selBJetFromTop_passesLoose = true;
+		}
+		if ( selBJetFromAntiTop && deltaR(selBJetFromAntiTop->p4(), (*selBJet_loose)->p4()) < 0.3 ) {
+		  selBJetFromAntiTop_passesLoose = true;
+		}
+	      }
+	     
+
 	      if ( recWBosonFromTop && recWBosonFromTop->subJet1() && recWBosonFromTop->subJet2() ) {		
 		const RecoSubjetAK12* recWJetFromTop_lead = 0;
 		const RecoSubjetAK12* recWJetFromTop_sublead = 0;
@@ -1620,10 +1660,16 @@ int main(int argc, char* argv[])
 		  if ( genWJetFromTop_lead->pt() > 20. ) {
 		    fillWithOverFlow(histogram_AK12_WJet1_ptRec_div_ptGen, recWJetFromTop_lead->pt()/genWJetFromTop_lead->pt(), evtWeight);
 		    fillWithOverFlow(histogram_AK12_WJet1_dRmatch, deltaR(recWJetFromTop_lead->p4(), genWJetFromTop_lead->p4()), evtWeight);
+		    double cosThetaStar_WJet1 = comp_cosThetaStar(recWJetFromTop_lead->p4(), recWJetFromTop_lead->p4() + recWJetFromTop_sublead->p4());
+		    fillWithOverFlow(histogram_AK12_WJet1_cosThetaStar, cosThetaStar_WJet1, evtWeight);
 		  }
 		  if ( genWJetFromTop_sublead->pt() > 20. ) {
 		    fillWithOverFlow(histogram_AK12_WJet2_ptRec_div_ptGen, recWJetFromTop_sublead->pt()/genWJetFromTop_sublead->pt(), evtWeight);
 		    fillWithOverFlow(histogram_AK12_WJet2_dRmatch, deltaR(recWJetFromTop_sublead->p4(), genWJetFromTop_sublead->p4()), evtWeight);
+		  }
+		  if ( selBJetFromTop ) {
+		    double cosThetaStar_BJet = comp_cosThetaStar(selBJetFromTop->p4(), selBJetFromTop->p4() + recWJetFromTop_lead->p4() + recWJetFromTop_sublead->p4());
+		    fillWithOverFlow(histogram_AK12_BJet_cosThetaStar, cosThetaStar_BJet, evtWeight);
 		  }
 		  double theta_t_lead = comp_theta_t(
                     recWJetFromTop_lead->p4(), recWBosonFromTop->pullEta(), recWBosonFromTop->pullPhi(), 
@@ -1664,10 +1710,16 @@ int main(int argc, char* argv[])
 		  if ( genWJetFromAntiTop_lead->pt() > 20. ) {
 		    fillWithOverFlow(histogram_AK12_WJet1_ptRec_div_ptGen, recWJetFromAntiTop_lead->pt()/genWJetFromAntiTop_lead->pt(), evtWeight);
 		    fillWithOverFlow(histogram_AK12_WJet1_dRmatch, deltaR(recWJetFromAntiTop_lead->p4(), genWJetFromAntiTop_lead->p4()), evtWeight);
+		    double cosThetaStar_WJet1 = comp_cosThetaStar(recWJetFromAntiTop_lead->p4(), recWJetFromAntiTop_lead->p4() + recWJetFromAntiTop_sublead->p4());
+		    fillWithOverFlow(histogram_AK12_WJet1_cosThetaStar, cosThetaStar_WJet1, evtWeight);
 		  }
 		  if ( genWJetFromAntiTop_sublead->pt() > 20. ) {
 		    fillWithOverFlow(histogram_AK12_WJet2_ptRec_div_ptGen, recWJetFromAntiTop_sublead->pt()/genWJetFromAntiTop_sublead->pt(), evtWeight);
 		    fillWithOverFlow(histogram_AK12_WJet2_dRmatch, deltaR(recWJetFromAntiTop_sublead->p4(), genWJetFromAntiTop_sublead->p4()), evtWeight);
+		  }
+		  if ( selBJetFromAntiTop ) {
+		    double cosThetaStar_BJet = comp_cosThetaStar(selBJetFromAntiTop->p4(), selBJetFromAntiTop->p4() + recWJetFromAntiTop_lead->p4() + recWJetFromAntiTop_sublead->p4());
+		    fillWithOverFlow(histogram_AK12_BJet_cosThetaStar, cosThetaStar_BJet, evtWeight);
 		  }
 		  double theta_t_lead = comp_theta_t(
                     recWJetFromAntiTop_lead->p4(), recWBosonFromAntiTop->pullEta(), recWBosonFromAntiTop->pullPhi(), 
@@ -1688,8 +1740,14 @@ int main(int argc, char* argv[])
 
     if ( isAK12FromTop || isAK12FromAntiTop ) {
       cutFlowTable_2lss_1tau_AK12.update("rec AK12");
-      if ( !(isHTTv2FromTop || isHTTv2FromAntiTop) ) {
-	cutFlowTable_2lss_1tau_AK12.update("rec AK12 && !HTTv2");
+      if ( isBJetFromTop || isBJetFromAntiTop ) {
+	cutFlowTable_2lss_1tau_resolved.update("rec AK12 + BJet pair");
+	if ( selBJetFromTop_passesLoose || selBJetFromAntiTop_passesLoose ) {
+	  cutFlowTable_2lss_1tau_AK12.update("rec BJet passes loose b-tagging working-point");
+	  if ( !(isHTTv2FromTop || isHTTv2FromAntiTop) ) {
+	    cutFlowTable_2lss_1tau_AK12.update("!HTTv2");
+	  }
+	}
       }
     }
     //-------------------------------------------------------------------------------------------------------------------
@@ -1755,7 +1813,7 @@ int main(int argc, char* argv[])
 		if ( dRmaxTop > 1.2 ) fillWithOverFlow(histogram_dRmaxW_dRmaxTopGt1p2, dRmaxW, evtWeight);
 		if ( dRmaxTop > 1.5 ) fillWithOverFlow(histogram_dRmaxW_dRmaxTopGt1p5, dRmaxW, evtWeight);
 		fillWithOverFlow(histogram_ptB, genBJetFromTop->pt(), evtWeight);
-		fillWithOverFlow(histogram_etaB, genBJetFromTop->eta(), evtWeight);
+		fillWithOverFlow(histogram_etaB, genBJetFromTop->eta(), evtWeight);		
 	      }
 	      if ( genAntiTopQuark && genWBosonFromAntiTop && genBJetFromAntiTop && genWJetFromAntiTop_lead && genWJetFromAntiTop_sublead ) {
 		fillWithOverFlow(histogram_ptTop, genAntiTopQuark->pt(), evtWeight);
@@ -1804,8 +1862,6 @@ int main(int argc, char* argv[])
 		const RecoJet* selWJetFromAntiTop_sublead = 0;
 		double dRmin_selWJetFromAntiTop_sublead = 1.e+3; 
 		for ( std::vector<const RecoJet*>::const_iterator selJet = selJets.begin(); selJet != selJets.end(); ++selJet ) {
-		  //for ( std::vector<const RecoJet*>::const_iterator selJet = jet_ptrs.begin(); selJet != jet_ptrs.end(); ++selJet ) {
-		  //if ( !((*selJet)->pt() > 25. && (*selJet)->absEta() < 2.4) ) continue;
 		  if ( genBJetFromTop ) {
 		    double dR_selBJetFromTop = deltaR((*selJet)->p4(), genBJetFromTop->p4());
 		    if ( dR_selBJetFromTop < 0.3 && dR_selBJetFromTop < dRmin_selBJetFromTop ) {
@@ -1872,6 +1928,10 @@ int main(int argc, char* argv[])
 		    cutFlowTable_2lss_1tau_resolved.update("dR(jet1,jet2) > 0.3 for any pair of selJets in triplet");
 
 		    if ( selWJetFromTop_lead && selWJetFromTop_sublead ) {
+		      double cosThetaStar_WJet1 = comp_cosThetaStar(selWJetFromTop_lead->p4(), selWJetFromTop_lead->p4() + selWJetFromTop_sublead->p4());
+		      fillWithOverFlow(histogram_resolved_WJet1_cosThetaStar, cosThetaStar_WJet1, evtWeight);
+		      double cosThetaStar_BJet = comp_cosThetaStar(selBJetFromTop->p4(), selBJetFromTop->p4() + selWJetFromTop_lead->p4() + selWJetFromTop_sublead->p4());
+		      fillWithOverFlow(histogram_resolved_BJet_cosThetaStar, cosThetaStar_BJet, evtWeight);
 		      double theta_t_lead = comp_theta_t(
                         selWJetFromTop_lead->p4(), selWJetFromTop_lead->pullEta(), selWJetFromTop_lead->pullPhi(), 
 			selWJetFromTop_sublead->p4());
@@ -1882,6 +1942,10 @@ int main(int argc, char* argv[])
 		      fillWithOverFlow(histogram_resolved_theta_t_sublead, theta_t_sublead, evtWeight);
 		    }
 		    if ( selWJetFromAntiTop_lead && selWJetFromAntiTop_sublead ) {
+		      double cosThetaStar_WJet1 = comp_cosThetaStar(selWJetFromAntiTop_lead->p4(), selWJetFromAntiTop_lead->p4() + selWJetFromAntiTop_sublead->p4());
+		      fillWithOverFlow(histogram_resolved_WJet1_cosThetaStar, cosThetaStar_WJet1, evtWeight);
+		      double cosThetaStar_BJet = comp_cosThetaStar(selBJetFromAntiTop->p4(), selBJetFromAntiTop->p4() + selWJetFromAntiTop_lead->p4() + selWJetFromAntiTop_sublead->p4());
+		      fillWithOverFlow(histogram_resolved_BJet_cosThetaStar, cosThetaStar_BJet, evtWeight);
 		      double theta_t_lead = comp_theta_t(
                         selWJetFromAntiTop_lead->p4(), selWJetFromAntiTop_lead->pullEta(), selWJetFromAntiTop_lead->pullPhi(), 
 			selWJetFromAntiTop_sublead->p4());
@@ -1920,9 +1984,9 @@ int main(int argc, char* argv[])
     if ( isResolved ) {
       cutFlowTable_2lss_1tau_resolved.update("rec resolved");
       if ( !(isHTTv2FromTop || isHTTv2FromAntiTop) ) {
-	cutFlowTable_2lss_1tau_resolved.update("rec resolved && !HTTv2");
+	cutFlowTable_2lss_1tau_resolved.update("!HTTv2");
 	if ( !(isAK12FromTop || isAK12FromAntiTop) ) {
-	  cutFlowTable_2lss_1tau_resolved.update("rec resolved && !HTTv2 && !AK12");
+	  cutFlowTable_2lss_1tau_resolved.update("!HTTv2 && !AK12");
 	}
       }
     }
