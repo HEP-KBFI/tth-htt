@@ -1747,7 +1747,7 @@ int main(int argc, char* argv[])
 								histogram_crosscheck1->Fill(21.);
 								
 								//std::cout << "\nTreeEntry "<<analyzedEntries << " \t Case1 " << std::endl;
-                double  mvaOutput = 0.;//(*hadTopTaggerFill)(*recBJetFromT, *recWJetFromT_lead, *recWJetFromT_sublead);
+                double  mvaOutput = (*hadTopTaggerFill)(*recBJetFromT, *recWJetFromT_lead, *recWJetFromT_sublead);
 								//std::cout << "Case1 here132 \t mvaOutput" << mvaOutput << std::endl;
 								const std::map<std::string, double>& mvaInputs =  hadTopTaggerFill->mvaInputs();
 								//std::cout << "Case1 here133 \t mvaInputs.size:" << mvaInputs.size() << std::endl;
@@ -2134,7 +2134,7 @@ int main(int argc, char* argv[])
 								
 								//std::cout << "\nTreeEntry "<<analyzedEntries << " \t Case2 " << std::endl;
 								//std::cout << "Case2 here131" << std::endl;
-                double  mvaOutput = 0.;//(*hadTopTaggerFill)(*recBJetFromT, *recWJetFromT_lead, *recWJetFromT_sublead);
+                double  mvaOutput = (*hadTopTaggerFill)(*recBJetFromT, *recWJetFromT_lead, *recWJetFromT_sublead);
 								//std::cout << "Case2 here132 \t mvaOutput" << mvaOutput << std::endl;
 								const std::map<std::string, double>& mvaInputs =  hadTopTaggerFill->mvaInputs();
 								//std::cout << "Case2 here133 \t mvaInputs.size:" << mvaInputs.size() << std::endl;
