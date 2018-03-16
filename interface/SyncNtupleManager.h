@@ -111,6 +111,8 @@ public:
   void fill();
   void write();
 
+  static const Int_t placeholder_value;
+
 private:
   template<typename T,
            typename = std::enable_if<std::is_arithmetic<T>::value && ! std::is_pointer<T>::value>>
@@ -228,7 +230,6 @@ private:
 
   TFile * outputFile;
   TTree * outputTree;
-  static const Int_t placeholder_value;
 
   const Int_t nof_mus;
   const Int_t nof_eles;
