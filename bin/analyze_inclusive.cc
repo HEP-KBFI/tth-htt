@@ -213,24 +213,24 @@ main(int argc,
   RecoMuonReader * const muonReader = new RecoMuonReader(era, branchName_muons, false);
   muonReader->set_HIP_mitigation(use_HIP_mitigation_mediumMuonId);
   inputTree->registerReader(muonReader);
-  const RecoMuonCollectionSelectorLoose preselMuonSelector(era);
-  const RecoMuonCollectionSelectorFakeable fakeableMuonSelector(era);
-  const RecoMuonCollectionSelectorCutBased cutBasedMuonSelector(era);
-  const RecoMuonCollectionSelectorMVABased mvaBasedMuonSelector(era);
+  const RecoMuonCollectionSelectorLoose preselMuonSelector(era, -1, isDEBUG);
+  const RecoMuonCollectionSelectorFakeable fakeableMuonSelector(era, -1, isDEBUG);
+  const RecoMuonCollectionSelectorCutBased cutBasedMuonSelector(era, -1, isDEBUG);
+  const RecoMuonCollectionSelectorMVABased mvaBasedMuonSelector(era, -1, isDEBUG);
 
   RecoElectronReader * const electronReader = new RecoElectronReader(era, branchName_electrons, false);
   inputTree->registerReader(electronReader);
   const RecoElectronCollectionCleaner electronCleaner(0.3);
-  const RecoElectronCollectionSelectorLoose preselElectronSelector(era);
-  RecoElectronCollectionSelectorFakeable fakeableElectronSelector(era);
-  const RecoElectronCollectionSelectorCutBased cutBasedElectronSelector(era);
-  const RecoElectronCollectionSelectorMVABased mvaBasedElectronSelector(era);
+  const RecoElectronCollectionSelectorLoose preselElectronSelector(era, -1, isDEBUG);
+  RecoElectronCollectionSelectorFakeable fakeableElectronSelector(era, -1, isDEBUG);
+  const RecoElectronCollectionSelectorCutBased cutBasedElectronSelector(era, -1, isDEBUG);
+  const RecoElectronCollectionSelectorMVABased mvaBasedElectronSelector(era, -1, isDEBUG);
 
   RecoHadTauReader * const hadTauReader = new RecoHadTauReader(era, branchName_hadTaus, false);
   hadTauReader->setHadTauPt_central_or_shift(RecoHadTauReader::kHadTauPt_central);
   inputTree->registerReader(hadTauReader);
   const RecoHadTauCollectionCleaner hadTauCleaner(0.3);
-  RecoHadTauCollectionSelectorLoose preselHadTauSelector(era);
+  RecoHadTauCollectionSelectorLoose preselHadTauSelector(era, -1, isDEBUG);
   if(hadTauSelection_tauIdWP == "dR03mvaVLoose" ||
      hadTauSelection_tauIdWP == "dR03mvaVVLoose" )
   {
@@ -244,9 +244,9 @@ main(int argc,
   jetReader->setBranchName_BtagWeight(kBtag_central);
   inputTree->registerReader(jetReader);
   const RecoJetCollectionCleaner jetCleaner(0.4);
-  const RecoJetCollectionSelector jetSelector(era);
-  const RecoJetCollectionSelectorBtagLoose jetSelectorBtagLoose(era);
-  const RecoJetCollectionSelectorBtagMedium jetSelectorBtagMedium(era);
+  const RecoJetCollectionSelector jetSelector(era, -1, isDEBUG);
+  const RecoJetCollectionSelectorBtagLoose jetSelectorBtagLoose(era, -1, isDEBUG);
+  const RecoJetCollectionSelectorBtagMedium jetSelectorBtagMedium(era, -1, isDEBUG);
 
 //--- declare missing transverse energy
   RecoMEtReader * const metReader = new RecoMEtReader(era, isMC, branchName_met);
@@ -322,17 +322,17 @@ main(int argc,
       triggers_1mu1tau, triggers_1e1tau, triggers_2tau
     });
 
-    if((selTrigger_2mu     && !apply_offline_e_trigger_cuts_2mu)     ||
-       (selTrigger_1mu     && !apply_offline_e_trigger_cuts_1mu)     ||
-       (selTrigger_2e      && !apply_offline_e_trigger_cuts_2e)      ||
-       (selTrigger_1e1mu   && !apply_offline_e_trigger_cuts_1e1mu)   ||
-       (selTrigger_1e      && !apply_offline_e_trigger_cuts_1e)      ||
-       (selTrigger_3e      && !apply_offline_e_trigger_cuts_3e)      ||
-       (selTrigger_2e1mu   && !apply_offline_e_trigger_cuts_2e1mu)   ||
-       (selTrigger_1e2mu   && !apply_offline_e_trigger_cuts_1e2mu)   ||
-       (selTrigger_3mu     && !apply_offline_e_trigger_cuts_3mu)     ||
-       (selTrigger_1mu1tau && !apply_offline_e_trigger_cuts_1mu1tau) ||
-       (selTrigger_1e1tau  && !apply_offline_e_trigger_cuts_1e1tau)
+    if((selTrigger_2mu     && ! apply_offline_e_trigger_cuts_2mu)     ||
+       (selTrigger_1mu     && ! apply_offline_e_trigger_cuts_1mu)     ||
+       (selTrigger_2e      && ! apply_offline_e_trigger_cuts_2e)      ||
+       (selTrigger_1e1mu   && ! apply_offline_e_trigger_cuts_1e1mu)   ||
+       (selTrigger_1e      && ! apply_offline_e_trigger_cuts_1e)      ||
+       (selTrigger_3e      && ! apply_offline_e_trigger_cuts_3e)      ||
+       (selTrigger_2e1mu   && ! apply_offline_e_trigger_cuts_2e1mu)   ||
+       (selTrigger_1e2mu   && ! apply_offline_e_trigger_cuts_1e2mu)   ||
+       (selTrigger_3mu     && ! apply_offline_e_trigger_cuts_3mu)     ||
+       (selTrigger_1mu1tau && ! apply_offline_e_trigger_cuts_1mu1tau) ||
+       (selTrigger_1e1tau  && ! apply_offline_e_trigger_cuts_1e1tau)
       )
     {
       fakeableElectronSelector.disable_offline_e_trigger_cuts();
@@ -350,8 +350,8 @@ main(int argc,
     const std::vector<const RecoMuon *> cleanedMuons = muon_ptrs;
     const std::vector<const RecoMuon *> preselMuons    = preselMuonSelector  (cleanedMuons, isHigherPt);
     const std::vector<const RecoMuon *> fakeableMuons  = fakeableMuonSelector(preselMuons,  isHigherConePt);
-    const std::vector<const RecoMuon *> cutBasedMuons = cutBasedMuonSelector(preselMuons,  isHigherPt);
-    const std::vector<const RecoMuon *> mvaBasedMuons = mvaBasedMuonSelector(preselMuons,  isHigherPt);
+    const std::vector<const RecoMuon *> cutBasedMuons = cutBasedMuonSelector(preselMuons,   isHigherPt);
+    const std::vector<const RecoMuon *> mvaBasedMuons = mvaBasedMuonSelector(preselMuons,   isHigherPt);
     const std::vector<const RecoMuon *> selMuons = preselMuons;
 
     snm->read(preselMuons, fakeableMuons, cutBasedMuons, mvaBasedMuons);
