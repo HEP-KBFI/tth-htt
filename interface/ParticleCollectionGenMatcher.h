@@ -18,10 +18,10 @@ public:
    * @brief Match reconstructed particles to generator level electrons and muons by dR
    */
   void
-  addGenLeptonMatch(std::vector<const Trec *> & recParticles,
+  addGenLeptonMatch(const std::vector<const Trec *> & recParticles,
                     const std::vector<GenLepton> & genLeptons,
                     double dRmax,
-                    double minPtRel = 0.25)
+                    double minPtRel = 0.25) const
   {
     return addGenMatch<GenLepton, GenLeptonLinker>(recParticles, genLeptons, dRmax, minPtRel, genLeptonLinker_);
   }
@@ -30,10 +30,10 @@ public:
    * @brief Match reconstructed particles to generator level hadronic tau decays by dR
    */
   void
-  addGenHadTauMatch(std::vector<const Trec *> & recParticles,
+  addGenHadTauMatch(const std::vector<const Trec *> & recParticles,
                     const std::vector<GenHadTau> & genHadTaus,
                     double dRmax,
-                    double minPtRel = 0.25)
+                    double minPtRel = 0.25) const
   {
     return addGenMatch<GenHadTau, GenHadTauLinker>(recParticles, genHadTaus, dRmax, minPtRel, genHadTauLinker_);
   }
@@ -42,10 +42,10 @@ public:
    * @brief Match reconstructed particles to generator level jets by dR
    */
   void
-  addGenJetMatch(std::vector<const Trec *> & recParticles,
+  addGenJetMatch(const std::vector<const Trec *> & recParticles,
                  const std::vector<GenJet> & genJets,
                  double dRmax,
-                 double minPtRel = 0.25)
+                 double minPtRel = 0.25) const
   {
     return addGenMatch<GenJet, GenJetLinker>(recParticles, genJets, dRmax, minPtRel, genJetLinker_);
   }
@@ -57,11 +57,11 @@ protected:
   template <typename Tgen,
             typename Tlinker>
   void
-  addGenMatch(std::vector<const Trec *> & recParticles,
+  addGenMatch(const std::vector<const Trec *> & recParticles,
               const std::vector<Tgen> & genParticles,
               double dRmax,
               double minPtRel,
-              const Tlinker & linker)
+              const Tlinker & linker) const
   {
     for(const Trec * recParticle: recParticles)
     {
