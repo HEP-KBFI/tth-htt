@@ -25,8 +25,8 @@ class prodNtupleConfig:
     """
     def __init__(self, configDir, outputDir, executable_prodNtuple, executable_nanoAOD,
                  cfgFile_prodNtuple, samples, max_files_per_job, era, preselection_cuts,
-                 leptonSelection, hadTauSelection, nanoaod_prep, debug, running_method, version,
-                 num_parallel_jobs, pool_id = '', verbose = False, dry_run = False):
+                 leptonSelection, hadTauSelection, nanoaod_prep, check_input_files, running_method,
+                 version, num_parallel_jobs, pool_id = '', verbose = False, dry_run = False):
 
         self.configDir             = configDir
         self.outputDir             = outputDir
@@ -40,7 +40,7 @@ class prodNtupleConfig:
         self.leptonSelection       = leptonSelection
         self.hadTauSelection       = hadTauSelection
         self.nanoaod_prep          = nanoaod_prep
-        self.debug                 = debug
+        self.check_input_files     = check_input_files
         self.verbose               = verbose
         self.dry_run               = dry_run
         if running_method.lower() not in ["sbatch", "makefile"]:
@@ -233,7 +233,7 @@ class prodNtupleConfig:
 
             logging.info("Creating configuration files to run '%s' for sample %s" % (self.executable, process_name))
 
-            inputFileList = generateInputFileList(sample_info, self.max_files_per_job, self.debug)
+            inputFileList = generateInputFileList(sample_info, self.max_files_per_job, self.check_input_files)
             key_dir = getKey(sample_name)
             subDirs = list(map(
                 lambda y: os.path.join(self.dirs[key_dir][DKEY_NTUPLES], '%04d' % y),

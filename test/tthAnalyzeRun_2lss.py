@@ -166,7 +166,7 @@ if __name__ == '__main__':
       era                       = era,
       use_lumi                  = True,
       lumi                      = lumi,
-      debug                     = False,
+      check_input_files         = False,
       running_method            = "sbatch",
       num_parallel_jobs         = 100, # KE: run up to 100 'hadd' jobs in parallel on batch system
       executable_addBackgrounds = "addBackgrounds",
@@ -187,7 +187,7 @@ if __name__ == '__main__':
 
     if mode.find("forBDTtraining") != -1:
       analysis.set_BDT_training()
-      
+
     job_statistics = analysis.create()
     for job_type, num_jobs in job_statistics.items():
       logging.info(" #jobs of type '%s' = %i" % (job_type, num_jobs))

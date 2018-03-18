@@ -76,8 +76,8 @@ central_or_shift     = getattr(systematics, args.systematics)
 if era == "2017":
 
 #  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_leptonFR_test2 import samples_2017 as samples
-  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_LeptonFakeRate_Ram_copy import samples_2017 as samples  ## MY LINE 
-#  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_LeptonFakeRate_Ram_copy_REDUCED import samples_2017 as samples  ## MY LINE 
+  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_LeptonFakeRate_Ram_copy import samples_2017 as samples  ## MY LINE
+#  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_LeptonFakeRate_Ram_copy_REDUCED import samples_2017 as samples  ## MY LINE
   from tthAnalysis.HiggsToTauTau.analysisSettings import lumi_2017 as lumi
   max_files_per_job = 1 # set it to 1 temporarily
 else:
@@ -128,7 +128,7 @@ if __name__ == '__main__':
       era                                      = era,
       use_lumi                                 = True,
       lumi                                     = lumi,
-      debug                                    = False,
+      check_input_files                        = False,
       running_method                           = "sbatch",
       executable_addBackgrounds                = "addBackgrounds",
       executable_addBackgrounds_recursively    = "addBackgrounds_recursively",

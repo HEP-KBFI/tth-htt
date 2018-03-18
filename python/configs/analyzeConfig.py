@@ -58,8 +58,8 @@ class analyzeConfig:
     """
 
     def __init__(self, configDir, outputDir, executable_analyze, channel, central_or_shifts,
-                 max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,
-                 histograms_to_fit,
+                 max_files_per_job, era, use_lumi, lumi, check_input_files, running_method,
+                 num_parallel_jobs, histograms_to_fit,
                  executable_prep_dcard = "prepareDatacards",
                  executable_add_syst_dcard = "addSystDatacards",
                  executable_make_plots = "makePlots",
@@ -78,7 +78,7 @@ class analyzeConfig:
         self.era = era
         self.use_lumi = use_lumi
         self.lumi = lumi
-        self.debug = debug
+        self.check_input_files = check_input_files
         assert(running_method.lower() in [ "sbatch", "makefile" ]), "Invalid running method: %s" % running_method
         self.running_method = running_method
         self.is_sbatch = False

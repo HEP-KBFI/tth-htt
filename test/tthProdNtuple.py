@@ -170,7 +170,7 @@ if __name__ == '__main__':
       leptonSelection       = leptonSelection,
       hadTauSelection       = hadTauSelection,
       nanoaod_prep          = nanoaod_prep,
-      debug                 = False,
+      check_input_files     = False,
       running_method        = "sbatch",
       version               = version,
       num_parallel_jobs     = 8,

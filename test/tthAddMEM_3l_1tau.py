@@ -105,7 +105,7 @@ if __name__ == '__main__':
     executable_addMEM        = "addMEM_3l_1tau",
     samples                  = samples,
     era                      = era,
-    debug                    = False,
+    check_input_files        = False,
     running_method           = "sbatch",
     max_files_per_job        = 1, # so that we'd have 1-1 correspondence b/w input and output files
     mem_integrations_per_job = 50,

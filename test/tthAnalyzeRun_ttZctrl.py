@@ -112,7 +112,7 @@ if __name__ == '__main__':
       era                = era,
       use_lumi           = True,
       lumi               = lumi,
-      debug              = False,
+      check_input_files  = False,
       running_method     = "sbatch",
       num_parallel_jobs  = 8,
       histograms_to_fit  = [
