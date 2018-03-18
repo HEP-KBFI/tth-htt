@@ -16,7 +16,7 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/GenJet.h" // GenJet
 
-#include <map> // std::map<,>
+#include <memory> // std::shared_ptr<>
 
 // forward declarations
 class GenLepton;
@@ -35,9 +35,9 @@ public:
   /**
    * @brief Set links to generator level particles (matched by dR)
    */
-  void set_genLepton(const GenLepton * genLepton, bool isOwner = false);
-  void set_genHadTau(const GenHadTau * genHadTau, bool isOwner = false);
-  void set_genJet(const GenJet * genJet, bool isOwner = false);
+  void set_genLepton(const GenLepton * genLepton);
+  void set_genHadTau(const GenHadTau * genHadTau);
+  void set_genJet(const GenJet * genJet);
 
   /**
    * @brief Funtions to access data-members
@@ -53,15 +53,12 @@ public:
   bool hasAnyGenMatch() const;
 
 protected:
-  Int_t idx_;             ///< index of jet in the ntuple
+  Int_t idx_; ///< index of jet in the ntuple
 
 //--- matching to generator level particles
-  const GenLepton * genLepton_;
-  bool genLepton_isOwner_;
-  const GenHadTau * genHadTau_;
-  bool genHadTau_isOwner_;
-  const GenJet * genJet_;
-  bool genJet_isOwner_;
+  std::shared_ptr<const GenLepton> genLepton_;
+  std::shared_ptr<const GenHadTau> genHadTau_;
+  std::shared_ptr<const GenJet> genJet_;
 };
 
 #endif // tthAnalysis_HiggsToTauTau_RecoJetBase_h

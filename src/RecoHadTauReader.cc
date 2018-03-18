@@ -321,13 +321,13 @@ RecoHadTauReader::readGenMatching(std::vector<RecoHadTau> & hadTaus) const
       RecoHadTau & hadTau = hadTaus[idxHadTau];
 
       const GenLepton & matched_genLepton = matched_genLeptons[idxHadTau];
-      if(matched_genLepton.isValid()) hadTau.set_genLepton(new GenLepton(matched_genLepton), true);
+      if(matched_genLepton.isValid()) hadTau.set_genLepton(new GenLepton(matched_genLepton));
 
       const GenHadTau & matched_genHadTau = matched_genHadTaus[idxHadTau];
-      if(matched_genHadTau.isValid()) hadTau.set_genHadTau(new GenHadTau(matched_genHadTau), true);
+      if(matched_genHadTau.isValid()) hadTau.set_genHadTau(new GenHadTau(matched_genHadTau));
 
       const GenJet & matched_genJet = matched_genJets[idxHadTau];
-      if(matched_genJet.isValid()) hadTau.set_genJet(new GenJet(matched_genJet), true);
+      if(matched_genJet.isValid()) hadTau.set_genJet(new GenJet(matched_genJet));
     }
   }
 }

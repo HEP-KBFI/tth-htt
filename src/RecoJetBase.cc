@@ -8,51 +8,29 @@ RecoJetBase::RecoJetBase(const GenJet & jet,
   : GenJet(jet)
   , idx_(idx)
   , genLepton_(nullptr)
-  , genLepton_isOwner_(false)
   , genHadTau_(nullptr)
-  , genHadTau_isOwner_(false)
   , genJet_(nullptr)
-  , genJet_isOwner_(false)
 {}
 
 RecoJetBase::~RecoJetBase()
+{}
+
+void
+RecoJetBase::set_genLepton(const GenLepton * genLepton)
 {
-  if(genLepton_isOwner_ && genLepton_)
-  {
-    delete genLepton_;
-  }
-  if(genHadTau_isOwner_ && genHadTau_)
-  {
-    delete genHadTau_;
-  }
-  if(genJet_isOwner_ && genJet_)
-  {
-    delete genJet_;
-  }
+  genLepton_.reset(genLepton);
 }
 
 void
-RecoJetBase::set_genLepton(const GenLepton * genLepton,
-                       bool isOwner)
+RecoJetBase::set_genHadTau(const GenHadTau *  genHadTau)
 {
-  genLepton_ = genLepton;
-  genLepton_isOwner_ = isOwner;
+  genHadTau_.reset(genHadTau);
 }
 
 void
-RecoJetBase::set_genHadTau(const GenHadTau*  genHadTau,
-                       bool isOwner)
+RecoJetBase::set_genJet(const GenJet * genJet)
 {
-  genHadTau_ = genHadTau;
-  genHadTau_isOwner_ = isOwner;
-}
-
-void
-RecoJetBase::set_genJet(const GenJet * genJet,
-                    bool isOwner)
-{
-  genJet_ = genJet;
-  genJet_isOwner_ = isOwner;
+  genJet_.reset(genJet);
 }
 
 Int_t
@@ -64,19 +42,19 @@ RecoJetBase::idx() const
 const GenLepton *
 RecoJetBase::genLepton() const
 {
-  return genLepton_;
+  return genLepton_.get();
 }
 
 const GenHadTau *
 RecoJetBase::genHadTau() const
 {
-  return genHadTau_;
+  return genHadTau_.get();
 }
 
 const GenJet *
 RecoJetBase::genJet() const
 {
-  return genJet_;
+  return genJet_.get();
 }
 
 bool

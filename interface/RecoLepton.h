@@ -7,7 +7,7 @@
 class GenHadTau;
 class GenJet;
 
-#include <memory> // std::shared_ptr
+#include <memory> // std::shared_ptr<>
 
 class RecoLepton
   : public GenLepton
