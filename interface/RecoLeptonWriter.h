@@ -50,6 +50,7 @@ public:
       sip3d_[idxLepton] = lepton->sip3d();
       mvaRawTTH_[idxLepton] = lepton->mvaRawTTH();
       jetPtRatio_[idxLepton] = lepton->jetPtRatio();
+      jetPtRel_[idxLepton] = lepton->jetPtRel();
       jetBtagCSV_[idxLepton] = lepton->jetBtagCSV();
       jetNDauChargedMVASel_[idxLepton] = lepton->jetNDauChargedMVASel();
       tightCharge_[idxLepton] = lepton->tightCharge();
