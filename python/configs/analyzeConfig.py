@@ -160,18 +160,19 @@ class analyzeConfig:
                 'HLT_TripleMu_12_10_5',
             ]
             self.triggers_1e2mu = [
-                'HLT_DiMu9_Ele9_CaloIdL_TrackIdL',
-                'HLT_DiMu9_Ele9_CaloIdL_TrackIdL_DZ',
+#                'HLT_DiMu9_Ele9_CaloIdL_TrackIdL', # prescale of 2
+                'HLT_DiMu9_Ele9_CaloIdL_TrackIdL_DZ', # unprescaled
             ]
             self.triggers_2e1mu = [
                 'HLT_Mu8_DiEle12_CaloIdL_TrackIdL',
             ]
             self.triggers_3e = [
-                'HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL',
+#                'HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL',
             ]
             self.triggers_2mu = [
-                'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL',
-                'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ',
+#                'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL', # heavily prescaled
+#                'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ', # heavily prescaled
+                'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8',
             ]
             self.triggers_1e1mu = [
                 'HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL',
@@ -179,6 +180,7 @@ class analyzeConfig:
                 'HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ',
             ]
             self.triggers_2e = [
+                'HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL', # higher efficiency than non-DZ
                 'HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ',
             ]
             self.triggers_1mu = [
