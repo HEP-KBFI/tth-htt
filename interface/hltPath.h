@@ -16,7 +16,8 @@ class hltPath
  public:
  hltPath(const std::string & branchName,
          double minPt = -1.,
-         double maxPt = -1.);
+         double maxPt = -1.,
+         const std::string & label = "");
   ~hltPath() {}
 
   void
@@ -37,22 +38,28 @@ class hltPath
   double
   getMaxPt() const;
 
+  const std::string &
+  getLabel() const;
+
  private:
   std::string branchName_;
   Bool_t value_;
   double minPt_;
   double maxPt_;
+  std::string label_;
 };
 
 std::vector<hltPath *>
-create_hltPaths(const std::vector<std::string> & branchNames);
+create_hltPaths(const std::vector<std::string> & branchNames,
+                const std::string & label = "");
 
 void
 hltPaths_setBranchAddresses(TTree * tree,
                             const std::vector<hltPath *> & hltPaths);
 
 bool
-hltPaths_isTriggered(const std::vector<hltPath *> & hltPaths);
+hltPaths_isTriggered(const std::vector<hltPath *> & hltPaths,
+                     bool verbose = false);
 
 void
 hltPaths_delete(const std::vector<hltPath *> & hltPaths);
