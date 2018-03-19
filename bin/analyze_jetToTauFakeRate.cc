@@ -334,7 +334,7 @@ int main(int argc, char* argv[])
   double lumiScale = ( process_string != "data_obs" ) ? cfg_analyze.getParameter<double>("lumiScale") : 1.;
   bool apply_genWeight = cfg_analyze.getParameter<bool>("apply_genWeight"); 
   bool apply_trigger_bits = cfg_analyze.getParameter<bool>("apply_trigger_bits"); 
-  bool isDEBUG = cfg_analyze.getParameter<bool>("isDEBUG");
+  bool isDEBUG __attribute__((unused)) = cfg_analyze.getParameter<bool>("isDEBUG");
 
   int jetPt_option = RecoJetReader::kJetPt_central;
   int met_option = RecoMEtReader::kMEt_central;
