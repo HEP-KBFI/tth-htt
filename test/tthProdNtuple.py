@@ -37,7 +37,6 @@ debug              = args.debug
 
 # Additional arguments
 mode              = args.mode
-systematics_label = args.systematics
 preselection      = args.disable_preselection
 
 # Use the arguments
