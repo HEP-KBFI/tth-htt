@@ -344,7 +344,9 @@ class analyzeConfig:
         create_cfg(self.cfgFile_make_plots, jobOptions['cfgFile_modified'], lines)
 
     def createScript_sbatch(self, executable, sbatchFile, jobOptions,
-                            key_cfg_file = 'cfgFile_modified', key_input_file = 'inputFile', key_output_file = 'outputFile', key_log_file = 'logFile'):
+                            key_cfg_file = 'cfgFile_modified', key_input_file = 'inputFile',
+                            key_output_file = 'outputFile', key_log_file = 'logFile',
+                            skipFileSizeCheck = False):
         """Creates the python script necessary to submit 'generic' (addBackgrounds, addBackgroundFakes/addBackgroundFlips) jobs to the batch system
         """
         num_jobs = tools_createScript_sbatch(
@@ -361,14 +363,17 @@ class analyzeConfig:
             pool_id = uuid.uuid4(),
             verbose = self.verbose,
             dry_run = self.dry_run,
+            skipFileSizeCheck = skipFileSizeCheck,
         )
         return num_jobs
 
     def createScript_sbatch_syncNtuple(self, executable, sbatchFile, jobOptions):
         """Creates the python script necessary to submit the analysis jobs to the batch system
         """
-        self.num_jobs['analyze'] += self.createScript_sbatch(executable, sbatchFile, jobOptions,
-                                                             'cfgFile_modified', 'ntupleFiles', 'syncOutput', 'logFile')
+        self.num_jobs['analyze'] += self.createScript_sbatch(
+            executable, sbatchFile, jobOptions, 'cfgFile_modified', 'ntupleFiles', 'syncOutput',
+            'logFile', skipFileSizeCheck = True,
+        )
 
 
     def createScript_sbatch_analyze(self, executable, sbatchFile, jobOptions):

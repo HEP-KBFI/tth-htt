@@ -21,6 +21,7 @@ def createScript_sbatch(
     verbose           = False,
     job_template_file = 'sbatch-node.sh.template',
     dry_run           = False,
+    skipFileSizeCheck = False,
   ):
     """Creates the python script necessary to submit analysis and/or Ntuple production jobs to the batch system
     """
@@ -47,6 +48,7 @@ def createScript_sbatch(
         verbose                 = verbose,
         job_template_file       = job_template_file,
         dry_run                 = dry_run,
+        skipFileSizeCheck       = skipFileSizeCheck,
     )
     createFile(sbatch_script_file_name, sbatch_analyze_lines)
     return num_jobs
@@ -66,6 +68,7 @@ def generate_sbatch_lines(
     verbose           = False,
     job_template_file = 'sbatch-node.sh.template',
     dry_run           = False,
+    skipFileSizeCheck = False,
   ):
     if not pool_id:
         raise ValueError('pool_id is empty')
@@ -93,6 +96,7 @@ def generate_sbatch_lines(
                 log_file_name          = log_file_name,
                 cvmfs_error_log        = cvmfs_error_log,
                 job_template_file      = job_template_file,
+                skipFileSizeCheck      = skipFileSizeCheck,
             )
             if sbatch_line:
                 lines_sbatch.append(sbatch_line)
@@ -116,12 +120,13 @@ def generate_sbatch_line(
     cvmfs_error_log   = None,
     min_file_size     = 20000,
     job_template_file = 'sbatch-node.sh.template',
+    skipFileSizeCheck = False,
   ):
     if output_file_name and os.path.exists(output_file_name):
         command = "%s %s" % (executable_rm, output_file_name)
         output_file_size = os.stat(output_file_name).st_size
         logging.info("output file %s already exists, size = %i" % (output_file_name, output_file_size))
-        if output_file_size > min_file_size:
+        if output_file_size > min_file_size or skipFileSizeCheck:
             root_tfile = ROOT.TFile(output_file_name, "read")
             if root_tfile.IsZombie():
                 logging.info("--> output file is corrupted, deleting file and resubmitting job")
