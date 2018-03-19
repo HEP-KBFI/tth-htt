@@ -1,5 +1,5 @@
 # Integrated luminosity
-lumi_2017 = 41.96e+3 # 1/pb
+lumi_2017 = 41.298e+3 # 1/pb
 
 # Systematic uncertainties
 
