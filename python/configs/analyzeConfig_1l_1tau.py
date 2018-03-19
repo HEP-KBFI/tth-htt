@@ -138,23 +138,9 @@ class analyzeConfig_1l_1tau(analyzeConfig):
     histogramDir = getHistogramDir(jobOptions['hadTau_selection'], hadTau_frWeight, jobOptions['chargeSumSelection'])
     lines.append("process.analyze_1l_1tau.histogramDir = cms.string('%s')" % histogramDir)
     lines.append("process.analyze_1l_1tau.era = cms.string('%s')" % self.era)
-    lines.append("process.analyze_1l_1tau.triggers_1e = cms.vstring(%s)" % self.triggers_1e)
-    lines.append("process.analyze_1l_1tau.use_triggers_1e = cms.bool(%s)" % ("1e" in jobOptions['triggers']))
-    #---------------------------------------------------------------------------------------------------------------
-    # CV: need work-around for MC, because we do not have all e+tau cross triggers stored in VHbb Ntuples V25
-    #    (only HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau30_v*)
-    if (jobOptions['is_mc'] == False and jobOptions['process_name_specific'].startswith("Tau_")):
-      lines.append("process.analyze_1l_1tau.triggers_1e1tau = cms.vstring(%s)" % self.triggers_1e1tau)
-    else:
-      lines.append("process.analyze_1l_1tau.triggers_1e1tau = cms.vstring(%s)" % [
-        # available in 2016 but not in 2017 nano: 'HLT_BIT_HLT_Ele24_eta2p1_WPLoose_Gsf_LooseIsoPFTau30_v',
-      ])
-    #---------------------------------------------------------------------------------------------------------------
-    lines.append("process.analyze_1l_1tau.use_triggers_1e1tau = cms.bool(%s)" % ("1e1tau" in jobOptions['triggers']))
-    lines.append("process.analyze_1l_1tau.triggers_1mu = cms.vstring(%s)" % self.triggers_1mu)
-    lines.append("process.analyze_1l_1tau.use_triggers_1mu = cms.bool(%s)" % ("1mu" in jobOptions['triggers']))
-    lines.append("process.analyze_1l_1tau.triggers_1mu1tau = cms.vstring(%s)" % self.triggers_1mu1tau)
-    lines.append("process.analyze_1l_1tau.use_triggers_1mu1tau = cms.bool(%s)" % ("1mu1tau" in jobOptions['triggers']))
+    for trigger in [ '1e', '1e1tau', '1mu', '1mu1tau' ]:
+      lines.append("process.analyze_1l_1tau.triggers_%s = cms.vstring(%s)" % (trigger, getattr(self, 'triggers_%s' % trigger)))
+      lines.append("process.analyze_1l_1tau.use_triggers_%s = cms.bool(%s)" % (trigger, trigger in jobOptions['triggers']))
     lines.append("process.analyze_1l_1tau.leptonSelection = cms.string('%s')" % jobOptions['lepton_selection'])
     lines.append("process.analyze_1l_1tau.apply_leptonGenMatching = cms.bool(%s)" % (jobOptions['apply_leptonGenMatching'] and jobOptions['is_mc']))
     lines.append("process.analyze_1l_1tau.apply_leptonGenMatching_ttZ_workaround = cms.bool(%s)" % (jobOptions['sample_category'] in [ "TTZ", "TTW", "signal" ]))

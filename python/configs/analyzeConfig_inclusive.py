@@ -30,34 +30,13 @@ class analyzeConfig_inclusive(analyzeConfig):
       "process.analyze_inclusive.isMC = cms.bool(%s)" % jobOptions['is_mc'],
       "process.analyze_inclusive.process = cms.string('%s')" % jobOptions['sample_category'],
       "process.analyze_inclusive.hadTauSelection_tauIdWP = cms.string('%s')" % self.hadTauSelection_tauIdWP,
-      "process.analyze_inclusive.triggers_1e = cms.vstring(%s)" % self.triggers_1e,
-      "process.analyze_inclusive.triggers_1mu = cms.vstring(%s)" % self.triggers_1mu,
-      "process.analyze_inclusive.triggers_2e = cms.vstring(%s)" % self.triggers_2e,
-      "process.analyze_inclusive.triggers_2mu = cms.vstring(%s)" % self.triggers_2mu,
-      "process.analyze_inclusive.triggers_1e1mu = cms.vstring(%s)" % self.triggers_1e1mu,
-      "process.analyze_inclusive.triggers_1e2mu = cms.vstring(%s)" % self.triggers_1e2mu,
-      "process.analyze_inclusive.triggers_2e1mu = cms.vstring(%s)" % self.triggers_2e1mu,
-      "process.analyze_inclusive.triggers_3e = cms.vstring(%s)" % self.triggers_3e,
-      "process.analyze_inclusive.triggers_1e1tau = cms.vstring(%s)" % self.triggers_1e1tau,
-      "process.analyze_inclusive.triggers_1mu1tau = cms.vstring(%s)" % self.triggers_1mu1tau,
-      "process.analyze_inclusive.triggers_2tau = cms.vstring(%s)" % self.triggers_2tau,
-      "process.analyze_inclusive.triggers_3mu = cms.vstring(%s)" % self.triggers_3mu,
-      "process.analyze_inclusive.use_triggers_1e = cms.bool(%s)" % ("1e" in jobOptions['triggers']),
-      "process.analyze_inclusive.use_triggers_1mu = cms.bool(%s)" % ("1mu" in jobOptions['triggers']),
-      "process.analyze_inclusive.use_triggers_2e = cms.bool(%s)" % ("2e" in jobOptions['triggers']),
-      "process.analyze_inclusive.use_triggers_2mu = cms.bool(%s)" % ("2mu" in jobOptions['triggers']),
-      "process.analyze_inclusive.use_triggers_1e1mu = cms.bool(%s)" % ("1e1mu" in jobOptions['triggers']),
-      "process.analyze_inclusive.use_triggers_1e2mu = cms.bool(%s)" % ("1e2mu" in jobOptions['triggers']),
-      "process.analyze_inclusive.use_triggers_2e1mu = cms.bool(%s)" % ("2e1mu" in jobOptions['triggers']),
-      "process.analyze_inclusive.use_triggers_3e = cms.bool(%s)" % ("3e" in jobOptions['triggers']),
-      "process.analyze_inclusive.use_triggers_1e1tau = cms.bool(%s)" % ("1e1tau" in jobOptions['triggers']),
-      "process.analyze_inclusive.use_triggers_1mu1tau = cms.bool(%s)" % ("1mu1tau" in jobOptions['triggers']),
-      "process.analyze_inclusive.use_triggers_2tau = cms.bool(%s)" % ("2tau" in jobOptions['triggers']),
-      "process.analyze_inclusive.use_triggers_3mu = cms.bool(%s)" % ("3mu" in jobOptions['triggers']),
       "process.analyze_inclusive.syncNtuple.tree   = cms.string('%s')" % jobOptions['syncTree'],
       "process.analyze_inclusive.syncNtuple.output = cms.string('%s')" % os.path.basename(jobOptions['syncOutput']),
       "process.analyze_inclusive.isDEBUG = cms.bool(%s)" % self.isDebug,
     ]
+    for trigger in [ '1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '1e2mu', '2e1mu', '1e1tau', '1mu1tau', '2tau' ]:
+      lines.append("process.analyze_inclusive.triggers_%s = cms.vstring(%s)" % (trigger, getattr(self, 'triggers_%s' % trigger)))
+      lines.append("process.analyze_inclusive.use_triggers_%s = cms.bool(%s)" % (trigger, trigger in jobOptions['triggers']))
     create_cfg(self.cfgFile_analyze, jobOptions['cfgFile_modified'], lines)
 
   def create(self):
