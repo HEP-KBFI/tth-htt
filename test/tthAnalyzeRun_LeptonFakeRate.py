@@ -4,6 +4,7 @@ import os, logging, sys, getpass
 from tthAnalysis.HiggsToTauTau.configs.analyzeConfig_LeptonFakeRate import analyzeConfig_LeptonFakeRate
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 from tthAnalysis.HiggsToTauTau.analysisSettings import systematics
+from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser
 
 # E.g.: ./tthAnalyzeRun_LeptonFakeRate.py -v 2017Dec13 -e 2017
 
@@ -34,7 +35,7 @@ max_job_resubmission = resubmission_limit if resubmit else 1
 central_or_shift     = getattr(systematics, systematics_label)
 
 if era == "2017":
-  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_leptonFR_test2 import samples_2017 as samples
+  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_leptonFR_test3 import samples_2017 as samples
   from tthAnalysis.HiggsToTauTau.analysisSettings import lumi_2017 as lumi
 else:
   raise ValueError("Invalid era: %s" % era)
