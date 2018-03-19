@@ -129,7 +129,7 @@ int main(int argc, char* argv[])
   std::string treeName = cfg_analyze.getParameter<std::string>("treeName");
   std::string process_string = cfg_analyze.getParameter<std::string>("process");
   bool isZee = (std::strncmp(process_string.data(), "DY", 2) == 0);
-  bool isDEBUG = ( cfg_analyze.exists("isDEBUG") ) ? cfg_analyze.getParameter<bool>("isDEBUG") : false;
+  bool isDEBUG = cfg_analyze.getParameter<bool>("isDEBUG");
 
   std::string era_string = cfg_analyze.getParameter<std::string>("era");
   int era = -1;
@@ -234,8 +234,7 @@ int main(int argc, char* argv[])
   std::string branchName_muons = cfg_analyze.getParameter<std::string>("branchName_muons");
   std::string branchName_jets = cfg_analyze.getParameter<std::string>("branchName_jets");
 
-  std::string branchName_genLeptons = cfg_analyze.getParameter<std::string>("branchName_genLeptons1");
-  std::string branchName_genLeptons2 = cfg_analyze.getParameter<std::string>("branchName_genLeptons2");
+  std::string branchName_genLeptons = cfg_analyze.getParameter<std::string>("branchName_genLeptons");
   std::string branchName_genHadTaus = cfg_analyze.getParameter<std::string>("branchName_genHadTaus");
   std::string branchName_genJets = cfg_analyze.getParameter<std::string>("branchName_genJets");
 

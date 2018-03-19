@@ -35,24 +35,25 @@ class analyzeConfig_4l(analyzeConfig):
   for documentation of further Args.
 
   """
-  def __init__(self, configDir, outputDir, executable_analyze, cfgFile_analyze, samples, changeBranchNames,
+  def __init__(self, configDir, outputDir, executable_analyze, cfgFile_analyze, samples,
                applyFakeRateWeights, chargeSumSelections, central_or_shifts,
-               max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,
+               max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
                executable_addBackgrounds, executable_addBackgroundJetToTauFakes, histograms_to_fit, select_rle_output = False,
                executable_prep_dcard="prepareDatacards", executable_add_syst_dcard = "addSystDatacards",
-               select_root_output = False, do_sync = False, verbose = False, dry_run = False):
+               select_root_output = False, do_sync = False, verbose = False, dry_run = False, isDebug = False,
+               rle_select = ''):
     analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "4l", central_or_shifts,
-      max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,
+      max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
       histograms_to_fit,
       executable_prep_dcard = executable_prep_dcard,
       executable_add_syst_dcard = executable_add_syst_dcard,
       do_sync = do_sync,
       verbose = verbose,
       dry_run = dry_run,
+      isDebug = isDebug,
     )
 
     self.samples = samples
-    self.changeBranchNames = changeBranchNames
 
     ##self.lepton_selections = [ "Tight", "Fakeable", "Fakeable_mcClosure" ]
     self.lepton_selections = [ "Tight", "Fakeable" ]
@@ -91,6 +92,7 @@ class analyzeConfig_4l(analyzeConfig):
 
     self.select_rle_output = select_rle_output
     self.select_root_output = select_root_output
+    self.rle_select = rle_select
 
     self.isBDTtraining = False
 
@@ -158,18 +160,13 @@ class analyzeConfig_4l(analyzeConfig):
     lines.append("process.analyze_4l.selEventsFileName_output = cms.string('%s')" % jobOptions['rleOutputFile'])
     lines.append("process.analyze_4l.selEventsTFileName = cms.string('%s')" % jobOptions['rootOutputFile'])
     lines.append("process.analyze_4l.selectBDT = cms.bool(%s)" % str(jobOptions['selectBDT']))
-    if jobOptions['changeBranchNames']:
-      lines.append("process.analyze_4l.branchName_electrons = cms.string('Electron')")
-      lines.append("process.analyze_4l.branchName_muons = cms.string('Muon')")
-      lines.append("process.analyze_4l.branchName_genLeptons1 = cms.string('GenLep')")
-      lines.append("process.analyze_4l.branchName_genLeptons2 = cms.string('')")
-      lines.append("process.analyze_4l.branchName_genHadTaus = cms.string('GenVisTau')")
-      lines.append("process.analyze_4l.branchName_genJets = cms.string('GenJet')")
-      lines.append("process.analyze_4l.redoGenMatching = cms.bool(False)")
-      lines.append("process.analyze_4l.fillGenEvtHistograms = cms.bool(True)")
+    lines.append("process.analyze_4l.redoGenMatching = cms.bool(False)")
+    lines.append("process.analyze_4l.fillGenEvtHistograms = cms.bool(True)")
     if self.do_sync:
       lines.append("process.analyze_4l.syncNtuple.tree   = cms.string('%s')" % jobOptions['syncTree'])
       lines.append("process.analyze_4l.syncNtuple.output = cms.string('%s')" % os.path.basename(jobOptions['syncOutput']))
+      lines.append("process.analyze_4l.selEventsFileName_input = cms.string('%s')" % jobOptions['syncRLE'])
+    lines.append("process.analyze_4l.isDEBUG = cms.bool(%s)" % self.isDebug)
     create_cfg(self.cfgFile_analyze, jobOptions['cfgFile_modified'], lines)
 
   def createCfg_makePlots_mcClosure(self, jobOptions):
@@ -316,6 +313,12 @@ class analyzeConfig_4l(analyzeConfig):
                     continue
                   self.inputFiles_sync['sync'].append(syncOutput)
 
+                syncRLE = ''
+                if self.do_sync and self.rle_select:
+                  syncRLE = self.rle_select % syncTree
+                  if not os.path.isfile(syncRLE):
+                    raise ValueError('Input RLE file for the sync is missing: %s' % syncRLE)
+
                 self.jobOptions_analyze[key_analyze_job] = {
                   'ntupleFiles' : ntupleFiles,
                   'cfgFile_modified' : os.path.join(self.dirs[key_dir][DKEY_CFGS], "analyze_%s_%s_%s_%s_%s_%i_cfg.py" % \
@@ -341,9 +344,9 @@ class analyzeConfig_4l(analyzeConfig):
                   'apply_genWeight' : sample_info["genWeight"] if (is_mc and "genWeight" in sample_info) else False,
                   'apply_trigger_bits' : (is_mc and sample_info["reHLT"]) or not is_mc,
                   'selectBDT': self.isBDTtraining,
-                  'changeBranchNames': self.changeBranchNames,
                   'syncOutput': syncOutput,
                   'syncTree'  : syncTree,
+                  'syncRLE'   : syncRLE,
                 }
                 self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job])
 

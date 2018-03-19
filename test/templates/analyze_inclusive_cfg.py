@@ -5,9 +5,7 @@ import os
 process = cms.PSet()
 
 process.fwliteInput = cms.PSet(
-    fileNames = cms.vstring(
-        '/hdfs/local/karl/addMEM/2017/2018Mar14_sync_small/final_ntuples/2lss_1tau/ttHJetToNonbb_M125_amcatnlo/0000/tree_1.root'
-    ),
+    fileNames = cms.vstring(''),
     maxEvents = cms.int32(-1),
     outputEvery = cms.uint32(1000)
 )

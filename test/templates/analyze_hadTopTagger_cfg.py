@@ -70,8 +70,7 @@ process.analyze_hadTopTagger = cms.PSet(
     branchName_subjetsAK12 = cms.string('SubJetAK12'),
     branchName_met = cms.string('MET'),
 
-    branchName_genLeptons1 = cms.string('GenLep'),
-    branchName_genLeptons2 = cms.string(''),
+    branchName_genLeptons = cms.string('GenLep'),
     branchName_genHadTaus = cms.string('GenVisTau'),
     branchName_genJets = cms.string('GenJet'),
     redoGenMatching = cms.bool(True),
@@ -85,7 +84,8 @@ process.analyze_hadTopTagger = cms.PSet(
     ##selEventsFileName_input = cms.string('/home/veelken/CMSSW_9_4_4/src/tthAnalysis/HiggsToTauTau/test/selEvents_hadTopTagger.txt'),
     ##selEventsFileName_output = cms.string('')
     selEventsFileName_output = cms.string('/home/ssawant/VHbbNtuples_9_4_x/CMSSW_9_4_4/src/tthAnalysis/HiggsToTauTau/test/selEvents_hadTopTagger.txt'),
-    selectBDT = cms.bool(True)
+    selectBDT = cms.bool(True),
+    isDEBUG = cms.bool(False),
 )
 
 #inputFilePath = "/hdfs/local/karl/ttHNtupleProduction/2017/2018Feb15_1to1_wNanoPrep_woPresel_all/ntuples/ttHJetToNonbb_M125_amcatnlo/0000/"
@@ -137,7 +137,4 @@ process.analyze_hadTopTagger.central_or_shift = cms.string('central')
 process.analyze_hadTopTagger.lumiScale = cms.double(0.002600)
 process.analyze_hadTopTagger.apply_genWeight = cms.bool(True)
 process.analyze_hadTopTagger.apply_trigger_bits = cms.bool(True)
-
-process.analyze_hadTopTagger.isDEBUG = cms.bool(False)
-##process.analyze_hadTopTagger.isDEBUG = cms.bool(True)
 

@@ -25,8 +25,9 @@ class prodNtupleConfig:
     """
     def __init__(self, configDir, outputDir, executable_prodNtuple, executable_nanoAOD,
                  cfgFile_prodNtuple, samples, max_files_per_job, era, preselection_cuts,
-                 leptonSelection, hadTauSelection, nanoaod_prep, check_input_files, running_method,
-                 version, num_parallel_jobs, pool_id = '', verbose = False, dry_run = False):
+                 leptonSelection, hadTauSelection, check_input_files, running_method,
+                 version, num_parallel_jobs, pool_id = '', verbose = False, dry_run = False,
+                 isDebug = False):
 
         self.configDir             = configDir
         self.outputDir             = outputDir
@@ -39,17 +40,14 @@ class prodNtupleConfig:
         self.preselection_cuts     = preselection_cuts
         self.leptonSelection       = leptonSelection
         self.hadTauSelection       = hadTauSelection
-        self.nanoaod_prep          = nanoaod_prep
         self.check_input_files     = check_input_files
         self.verbose               = verbose
         self.dry_run               = dry_run
+        self.isDebug               = isDebug
         if running_method.lower() not in ["sbatch", "makefile"]:
           raise ValueError("Invalid running method: %s" % running_method)
 
-        if self.nanoaod_prep:
-            self.executable = self.executable_nanoAOD
-        else:
-            self.executable = self.executable_prodNtuple
+        self.executable = self.executable_nanoAOD
 
         self.running_method    = running_method
         self.is_sbatch         = self.running_method.lower() == "sbatch"
@@ -134,21 +132,18 @@ class prodNtupleConfig:
             "process.produceNtuple.branchName_genLeptons           = cms.string('GenLep')",
             "process.produceNtuple.branchName_genHadTaus           = cms.string('GenVisTau')",
             "process.produceNtuple.branchName_genJets              = cms.string('GenJet')",
+            "process.produceNtuple.isDEBUG                         = cms.bool(%s)"     % self.isDebug,
         ]
-        if self.nanoaod_prep:
-            inputFiles_prepended = map(lambda path: os.path.basename('%s_ii%s' % os.path.splitext(path)), jobOptions['inputFiles'])
-            if len(inputFiles_prepended) != len(set(inputFiles_prepended)):
-                raise ValueError("Not all input files have a unique base name: %s" % ', '.join(jobOptions['inputFiles']))
-            lines.extend([
-                "process.fwliteInput.fileNames                         = cms.vstring(%s)"  % inputFiles_prepended,
-                "inputFiles = %s"   % jobOptions['inputFiles'],
-                "executable = '%s'" % self.executable_prodNtuple,
-                "isMC = %s" % str(jobOptions['is_mc']),
-            ])
-        else:
-            lines.extend([
-                "process.fwliteInput.fileNames                         = cms.vstring(%s)" % jobOptions['inputFiles'],
-            ])
+
+        inputFiles_prepended = map(lambda path: os.path.basename('%s_ii%s' % os.path.splitext(path)), jobOptions['inputFiles'])
+        if len(inputFiles_prepended) != len(set(inputFiles_prepended)):
+            raise ValueError("Not all input files have a unique base name: %s" % ', '.join(jobOptions['inputFiles']))
+        lines.extend([
+            "process.fwliteInput.fileNames                         = cms.vstring(%s)"  % inputFiles_prepended,
+            "inputFiles = %s"   % jobOptions['inputFiles'],
+            "executable = '%s'" % self.executable_prodNtuple,
+            "isMC = %s" % str(jobOptions['is_mc']),
+        ])
         create_cfg(self.cfgFile_prodNtuple_original, jobOptions['cfgFile_modified'], lines)
 
     def createScript_sbatch(self):

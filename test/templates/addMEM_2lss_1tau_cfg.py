@@ -49,5 +49,6 @@ process.addMEM_2lss_1tau = cms.PSet(
 
     central_or_shift = cms.vstring(
         "central",
-    )
+    ),
+    dryRun = cms.bool(False),
 )

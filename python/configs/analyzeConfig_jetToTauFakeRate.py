@@ -21,11 +21,11 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
   def __init__(self, configDir, outputDir, executable_analyze, samples, charge_selections,
                jet_minPt, jet_maxPt, jet_minAbsEta, jet_maxAbsEta, hadTau_selection_denominator,
                hadTau_selections_numerator, absEtaBins, ptBins, central_or_shifts,
-               max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,
-               executable_comp_jetToTauFakeRate, verbose = False, dry_run = False):
+               max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
+               executable_comp_jetToTauFakeRate, verbose = False, dry_run = False, isDebug = False):
     analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "jetToTauFakeRate", central_or_shifts,
-      max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,
-      [], verbose = verbose, dry_run = dry_run)
+      max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
+      [], verbose = verbose, dry_run = dry_run, isDebug = isDebug)
 
     self.samples = samples
 
@@ -90,6 +90,7 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
     lines.append("process.analyze_jetToTauFakeRate.lumiScale = cms.double(%f)" % jobOptions['lumi_scale'])
     lines.append("process.analyze_jetToTauFakeRate.apply_genWeight = cms.bool(%s)" % jobOptions['apply_genWeight'])
     lines.append("process.analyze_jetToTauFakeRate.apply_trigger_bits = cms.bool(%s)" % jobOptions['apply_trigger_bits'])
+    lines.append("process.analyze_jetToTauFakeRate.isDEBUG = cms.bool(%s)" % self.isDebug)
     create_cfg(self.cfgFile_analyze, jobOptions['cfgFile_modified'], lines)
 
   def createCfg_comp_jetToTauFakeRate(self, jobOptions):

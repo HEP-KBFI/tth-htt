@@ -66,7 +66,8 @@ class analyzeConfig:
                  executable_make_plots_mcClosure = "makePlots_mcClosure",
                  do_sync = False,
                  verbose = False,
-                 dry_run = False):
+                 dry_run = False,
+                 isDebug = False):
 
         self.configDir = configDir
         self.outputDir = outputDir
@@ -100,6 +101,7 @@ class analyzeConfig:
         self.executable_make_plots_mcClosure = executable_make_plots_mcClosure
         self.verbose = verbose
         self.dry_run = dry_run
+        self.isDebug = isDebug
 
         self.workingDir = os.getcwd()
         logging.info("Working directory is: %s" % self.workingDir)

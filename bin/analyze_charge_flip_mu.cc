@@ -107,7 +107,7 @@ int main(int argc, char* argv[])
   edm::ParameterSet cfg_analyze = cfg.getParameter<edm::ParameterSet>("analyze_charge_flip");
   std::string treeName = cfg_analyze.getParameter<std::string>("treeName");
   std::string process_string = cfg_analyze.getParameter<std::string>("process");
-  bool isDEBUG = ( cfg_analyze.exists("isDEBUG") ) ? cfg_analyze.getParameter<bool>("isDEBUG") : false;
+  bool isDEBUG = cfg_analyze.getParameter<bool>("isDEBUG");
 
   std::string era_string = cfg_analyze.getParameter<std::string>("era");
   int era = -1;

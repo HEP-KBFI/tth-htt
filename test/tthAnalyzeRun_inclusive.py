@@ -1,13 +1,17 @@
 #!/usr/bin/env python
 import os, logging, sys, getpass
-
-from tthAnalysis.HiggsToTauTau.configs.analyzeConfig_hadTopTagger import analyzeConfig_hadTopTagger
+from tthAnalysis.HiggsToTauTau.configs.analyzeConfig_inclusive import analyzeConfig_inclusive
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser
 
-# E.g.: ./tthAnalyzeRun_hadTopTagger.py -v 2017Dec13 -e 2017
+# E.g. to run: ./tthAnalyzeRun_inclusive.py -v 2017Dec13 -e 2017 -o inclusive.root -O syncTree
 
 parser = tthAnalyzeParser()
+parser.add_rle_select()
+parser.add_argument('-o', '--output-tree',
+  type = str, dest = 'output_tree', metavar = 'name', default = 'syncTree', required = False,
+  help = 'R|Output TTree name',
+)
 args = parser.parse_args()
 
 # Common arguments
@@ -21,12 +25,19 @@ auto_exec          = args.auto_exec
 check_input_files  = args.check_input_files
 debug              = args.debug
 
+# Additional arguments
+rle_select = os.path.expanduser(args.rle_select)
+
+# Custom arguments
+output_tree = args.output_tree
+
 # Use the arguments
 max_job_resubmission = resubmission_limit if resubmit else 1
 
+hadTauSelection_tauIdWP = 'dR03mvaMedium'
+
 if era == "2017":
-  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_FastSim import samples_2017 as samples
-  from tthAnalysis.HiggsToTauTau.analysisSettings import lumi_2017 as lumi
+  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_addMEM_sync import samples_2017 as samples
 else:
   raise ValueError("Invalid era: %s" % era)
 
@@ -34,8 +45,11 @@ if __name__ == '__main__':
   logging.basicConfig(
     stream = sys.stdout,
     level  = logging.INFO,
-    format = '%(asctime)s - %(levelname)s: %(message)s'
+    format = '%(asctime)s - %(levelname)s: %(message)s',
   )
+
+  configDir = os.path.join("/home",       getpass.getuser(), "ttHAnalysis", era, version)
+  outputDir = os.path.join("/hdfs/local", getpass.getuser(), "ttHAnalysis", era, version)
 
   job_statistics_summary = {}
   run_analysis           = False
@@ -44,26 +58,23 @@ if __name__ == '__main__':
   for idx_job_resubmission in range(max_job_resubmission):
     if is_last_resubmission:
       continue
-
     logging.info("Job submission #%i:" % (idx_job_resubmission + 1))
 
-    analysis = analyzeConfig_hadTopTagger(
-      configDir          = os.path.join("/home",       getpass.getuser(), "ttHAnalysis", era, version),
-      outputDir          = os.path.join("/hdfs/local", getpass.getuser(), "ttHAnalysis", era, version),
-      executable_analyze = "analyze_hadTopTagger",
-      cfgFile_analyze    = "analyze_hadTopTagger_cfg.py",
-      samples            = samples,
-      hadTau_selection   = "Tight|dR03mvaMedium",
-      max_files_per_job  = 1,
-      era                = era,
-      use_lumi           = True,
-      lumi               = lumi,
-      check_input_files  = check_input_files,
-      running_method     = "sbatch",
-      num_parallel_jobs  = 8,
-      verbose            = idx_job_resubmission > 0,
-      dry_run            = dry_run,
-      isDebug            = debug,
+    analysis = analyzeConfig_inclusive(
+      configDir               = configDir,
+      outputDir               = outputDir,
+      executable_analyze      = "analyze_inclusive",
+      cfgFile_analyze         = "analyze_inclusive_cfg.py",
+      samples                 = samples,
+      era                     = era,
+      output_tree             = output_tree,
+      check_input_files       = check_input_files,
+      running_method          = "sbatch",
+      verbose                 = idx_job_resubmission > 0,
+      dry_run                 = dry_run,
+      isDebug                 = debug,
+      rle_select              = rle_select,
+      hadTauSelection_tauIdWP = hadTauSelection_tauIdWP,
     )
 
     job_statistics = analysis.create()

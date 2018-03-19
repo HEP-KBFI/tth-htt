@@ -36,23 +36,23 @@ class analyzeConfig_2los_1tau(analyzeConfig):
      for documentation of further Args.
 
   """
-  def __init__(self, configDir, outputDir, executable_analyze, cfgFile_analyze, samples, changeBranchNames,
+  def __init__(self, configDir, outputDir, executable_analyze, cfgFile_analyze, samples,
                hadTau_selection, applyFakeRateWeights, central_or_shifts,
-               max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,
+               max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
                executable_addBackgrounds, executable_addFakes, histograms_to_fit, select_rle_output = False,
                executable_prep_dcard = "prepareDatacards", executable_add_syst_dcard = "addSystDatacards",
-               verbose = False, dry_run = False):
+               verbose = False, dry_run = False, isDebug = False):
     analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "2los_1tau", central_or_shifts,
-      max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,
+      max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
       histograms_to_fit,
       executable_prep_dcard = executable_prep_dcard,
       executable_add_syst_dcard = executable_add_syst_dcard,
       verbose = verbose,
       dry_run = dry_run,
+      isDebug = isDebug,
     )
 
     self.samples = samples
-    self.changeBranchNames = changeBranchNames
 
     self.lepton_and_hadTau_selections = [ "Tight", "Fakeable" ]
     self.lepton_and_hadTau_frWeights = [ "enabled", "disabled" ]
@@ -202,16 +202,9 @@ class analyzeConfig_2los_1tau(analyzeConfig):
     lines.append("process.analyze_2los_1tau.apply_trigger_bits = cms.bool(%s)" % jobOptions['apply_trigger_bits'])
     lines.append("process.analyze_2los_1tau.selEventsFileName_output = cms.string('%s')" % jobOptions['rleOutputFile'])
     lines.append("process.analyze_2los_1tau.selectBDT = cms.bool(%s)" % str(jobOptions['selectBDT']))
-    if jobOptions['changeBranchNames']:
-      lines.append("process.analyze_2los_1tau.branchName_electrons = cms.string('Electron')")
-      lines.append("process.analyze_2los_1tau.branchName_muons = cms.string('Muon')")
-      lines.append("process.analyze_2los_1tau.branchName_hadTaus = cms.string('Tau')")
-      lines.append("process.analyze_2los_1tau.branchName_genLeptons1 = cms.string('GenLep')")
-      lines.append("process.analyze_2los_1tau.branchName_genLeptons2 = cms.string('')")
-      lines.append("process.analyze_2los_1tau.branchName_genHadTaus = cms.string('GenVisTau')")
-      lines.append("process.analyze_2los_1tau.branchName_genJets = cms.string('GenJet')")
-      lines.append("process.analyze_2los_1tau.redoGenMatching = cms.bool(False)")
-      lines.append("process.analyze_2los_1tau.fillGenEvtHistograms = cms.bool(True)")
+    lines.append("process.analyze_2los_1tau.redoGenMatching = cms.bool(False)")
+    lines.append("process.analyze_2los_1tau.fillGenEvtHistograms = cms.bool(True)")
+    lines.append("process.analyze_2los_1tau.isDEBUG = cms.bool(%s)" % self.isDebug)
     create_cfg(self.cfgFile_analyze, jobOptions['cfgFile_modified'], lines)
 
   def createCfg_makePlots_mcClosure(self, jobOptions):
@@ -370,7 +363,6 @@ class analyzeConfig_2los_1tau(analyzeConfig):
                 'apply_genWeight' : sample_info["genWeight"] if (is_mc and "genWeight" in sample_info) else False,
                 'apply_trigger_bits' : (is_mc and sample_info["reHLT"]) or not is_mc,
                 'selectBDT' : self.isBDTtraining,
-                'changeBranchNames' : self.changeBranchNames
               }
               self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job])
 

@@ -422,7 +422,7 @@ main(int argc,
   const bool fillGenEvtHistograms = cfg_analyze.getParameter<bool>("fillGenEvtHistograms");
   const bool redoGenMatching      = cfg_analyze.getParameter<bool>("redoGenMatching");
   const bool readGenObjects       = isMC && ! redoGenMatching;
-  const bool isDEBUG              = cfg_analyze.exists("isDEBUG") ? cfg_analyze.getParameter<bool>("isDEBUG") : false;
+  const bool isDEBUG              = cfg_analyze.getParameter<bool>("isDEBUG");
 
   const bool use_HIP_mitigation_mediumMuonId = cfg_analyze.getParameter<bool>("use_HIP_mitigation_mediumMuonId");
   std::cout << "use_HIP_mitigation_mediumMuonId = " << use_HIP_mitigation_mediumMuonId << '\n';

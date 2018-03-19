@@ -58,74 +58,49 @@
 # The final target of this master Makefile hadd-s the individual outputs of each sync Ntuple job
 # together.
 
+import os, logging, sys, getpass
+
 from tthAnalysis.HiggsToTauTau.configs.syncNtupleConfig import syncNtupleConfig
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
-import argparse, datetime, logging, sys, getpass, os.path
+from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser
 
-era_choices                = ['2017']
-channel_choices            = ['1l_2tau', '2lss', '2lss_1tau', '3l', '3l_1tau', '4l']
-default_resubmission_limit = 4
+channel_choices = [ '1l_2tau', '2lss', '2lss_1tau', '3l', '3l_1tau', '4l', 'inclusive' ]
 
-class SmartFormatter(argparse.HelpFormatter):
-  def _split_lines(self, text, width):
-    if text.startswith('R|'):
-      return text[2:].splitlines()
-    return argparse.HelpFormatter._split_lines(self, text, width)
-
-parser = argparse.ArgumentParser(
-  formatter_class = lambda prog: SmartFormatter(prog, max_help_position = 45)
-)
-run_parser = parser.add_mutually_exclusive_group()
-parser.add_argument('-v', '--version',
-  type = str, dest = 'version', metavar = 'version', default = None, required = True,
-  help = 'R|Analysis version (e.g. %s)' % datetime.date.today().strftime('%Y%b%d'),
-)
-parser.add_argument('-e', '--era',
-  type = str, dest = 'era', metavar = 'era', choices = era_choices, default = None, required = True,
-  help = 'R|Era of data/MC (choices: %s)' % ', '.join(map(lambda choice: "'%s'" % choice, era_choices)),
-)
+parser = tthAnalyzeParser()
+parser.add_rle_select()
 parser.add_argument('-c', '--channels',
   type = str, nargs = '+', dest = 'channels', metavar = 'channel', choices = channel_choices,
   default = channel_choices, required = False,
   help = 'R|Choice of analyses for which the sync Ntuple is used (choices: %s)' % \
-          ', '.join(map(lambda choice: "'%s'" % choice, channel_choices))
+         tthAnalyzeParser.cat(channel_choices),
 )
 parser.add_argument('-o', '--output',
-  type = str, dest = 'output', metavar = 'file', default = 'sync_Tallinn.root',
+  type = str, dest = 'output', metavar = 'filename', default = 'sync_Tallinn.root',
+  help = 'R|Final output filename',
 )
-parser.add_argument('-C', '--clean',
-  dest = 'clean', action = 'store_true', default = False,
-  help = 'R|Remove all output files'
-)
-parser.add_argument('-d', '--dry-run',
-  dest = 'dry_run', action = 'store_true', default = False,
-  help = 'R|Do not submit the jobs, just generate the necessary shell scripts'
-)
-parser.add_argument('-r', '--resubmission-limit',
-  type = int, dest = 'resubmission_limit', metavar = 'number', default = default_resubmission_limit,
-  required = False,
-  help = 'R|Maximum number of resubmissions (default: %i)' % default_resubmission_limit
-)
-parser.add_argument('-R', '--disable-resubmission',
-  dest = 'disable_resubmission', action = 'store_false', default = True,
-  help = 'R|Disable resubmission (overwrites option -r/--resubmission-limit)'
-)
-run_parser.add_argument('-E', '--no-exec',
-  dest = 'no_exec', action = 'store_true', default = False,
-  help = 'R|Do not submit the jobs (ignore prompt)',
-)
-run_parser.add_argument('-A', '--auto-exec',
-  dest = 'auto_exec', action = 'store_true', default = False,
-  help = 'R|Automatically submit the jobs (ignore prompt)',
-)
-parser.add_argument('-V', '--verbose',
-  dest = 'verbose', action = 'store_true', default = False,
-  help = 'R|Increase verbosity level in sbatchManager'
+parser.add_argument('-X', '--clean',
+  dest = 'clean', action = 'store_true', default = False, help = 'R|Remove all output files',
 )
 args = parser.parse_args()
 
-no_exec   = args.no_exec
-auto_exec = args.auto_exec
+# Common arguments
+era                  = args.era
+version              = args.version
+dry_run              = args.dry_run
+resubmission_limit   = args.resubmission_limit
+disable_resubmission = args.disable_resubmission
+no_exec              = args.no_exec
+auto_exec            = args.auto_exec
+check_input_files    = args.check_input_files
+debug                = args.debug
+
+# Additional arguments
+rle_select = os.path.expanduser(args.rle_select)
+
+# Custom arguments
+channels   = args.channels
+output     = args.output
+clean      = args.clean
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -137,14 +112,16 @@ if __name__ == '__main__':
   analysis = syncNtupleConfig(
     config_dir = os.path.join("/home",       getpass.getuser(), "ttHAnalysis", args.era, args.version),
     output_dir = os.path.join("/hdfs/local", getpass.getuser(), "ttHAnalysis", args.era, args.version),
-    output_filename      = args.output,
-    version              = args.version,
-    era                  = args.era,
-    channels             = args.channels,
-    dry_run              = args.dry_run,
-    resubmission_limit   = args.resubmission_limit,
-    disable_resubmission = args.disable_resubmission,
-    verbose              = args.verbose,
+    output_filename      = output,
+    version              = version,
+    era                  = era,
+    channels             = channels,
+    dry_run              = dry_run,
+    resubmission_limit   = resubmission_limit,
+    disable_resubmission = disable_resubmission,
+    check_input_files    = check_input_files,
+    isDebug              = debug,
+    rle_select           = rle_select,
   )
 
   job_statistics = analysis.create()
@@ -156,6 +133,6 @@ if __name__ == '__main__':
   else:
     run_analysis = query_yes_no("Start jobs ?")
   if run_analysis:
-    analysis.run(args.clean)
+    analysis.run(clean)
   else:
     sys.exit(0)

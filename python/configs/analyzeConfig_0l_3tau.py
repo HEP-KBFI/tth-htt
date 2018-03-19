@@ -42,12 +42,12 @@ class analyzeConfig_0l_3tau(analyzeConfig):
   """
   def __init__(self, configDir, outputDir, executable_analyze, cfgFile_analyze, samples, hadTau_selection,
                hadTau_charge_selections, applyFakeRateWeights, central_or_shifts,
-               max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,
+               max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
                executable_addBackgrounds, executable_addBackgroundJetToTauFakes, histograms_to_fit,
-               select_rle_output = False, verbose = False, dry_run = False):
+               select_rle_output = False, verbose = False, dry_run = False, isDebug = False):
     analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "0l_3tau", central_or_shifts,
-      max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,
-      histograms_to_fit, verbose = verbose, dry_run = dry_run)
+      max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
+      histograms_to_fit, verbose = verbose, dry_run = dry_run, isDebug = isDebug)
 
     self.samples = samples
 
@@ -144,6 +144,7 @@ class analyzeConfig_0l_3tau(analyzeConfig):
     lines.append("process.analyze_0l_3tau.apply_genWeight = cms.bool(%s)" % jobOptions['apply_genWeight'])
     lines.append("process.analyze_0l_3tau.apply_trigger_bits = cms.bool(%s)" % jobOptions['apply_trigger_bits'])
     lines.append("process.analyze_0l_3tau.selEventsFileName_output = cms.string('%s')" % jobOptions['rleOutputFile'])
+    lines.append("process.analyze_0l_3tau.isDEBUG = cms.bool(%s)" % self.isDebug)
     create_cfg(self.cfgFile_analyze, jobOptions['cfgFile_modified'], lines)
 
   def createCfg_makePlots_mcClosure(self, jobOptions):

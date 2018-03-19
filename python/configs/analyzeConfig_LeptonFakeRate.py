@@ -122,15 +122,15 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
   def __init__(self, configDir, outputDir, cmssw_base_dir_combine, executable_analyze, samples,
                absEtaBins_e, absEtaBins_mu, ptBins_e, ptBins_mu, fillGenEvtHistograms, central_or_shifts,
                numerator_histogram, denominator_histogram, prep_dcard,
-               max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,
+               max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
                executable_addBackgrounds, executable_addBackgrounds_recursively, executable_addBackgrounds_LeptonFakeRate,
                executable_prep_dcard, executable_comp_LeptonFakeRate, select_rle_output = False,
-               verbose = False, dry_run = False):
+               verbose = False, dry_run = False, isDebug = False):
     analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "LeptonFakeRate", central_or_shifts,
-      max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,
+      max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
       [ numerator_histogram, denominator_histogram ],
       executable_prep_dcard = executable_prep_dcard,
-      verbose = verbose, dry_run = dry_run)
+      verbose = verbose, dry_run = dry_run, isDebug = isDebug)
 
     self.cmssw_base_dir_combine = cmssw_base_dir_combine
     if not os.path.isdir(os.path.join(cmssw_base_dir_combine, 'src', 'CombineHarvester')) or \
@@ -206,6 +206,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     lines.append("process.analyze_LeptonFakeRate.apply_genWeight = cms.bool(%s)" % jobOptions['apply_genWeight'])
     lines.append("process.analyze_LeptonFakeRate.fillGenEvtHistograms = cms.bool(%s)" % self.fillGenEvtHistograms)
     lines.append("process.analyze_LeptonFakeRate.selEventsFileName_output = cms.string('%s')" % jobOptions['rleOutputFile'])
+    lines.append("process.analyze_LeptonFakeRate.isDEBUG = cms.bool(%s)" % self.isDebug)
     create_cfg(self.cfgFile_analyze, jobOptions['cfgFile_modified'], lines)
 
   def createCfg_addBackgrounds_LeptonFakeRate(self, jobOptions):

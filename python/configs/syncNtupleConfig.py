@@ -30,11 +30,11 @@ clean:
 
 class syncNtupleConfig:
 
-  def __init__(self, config_dir, output_dir, output_filename,
-               version, era, channels, dry_run, resubmission_limit, disable_resubmission, verbose):
+  def __init__(self, config_dir, output_dir, output_filename, version, era, channels, dry_run,
+               resubmission_limit, disable_resubmission, check_input_files, isDebug, rle_select):
 
-    self.dry_run = dry_run
-    self.verbose = verbose
+    self.dry_run           = dry_run
+    self.check_input_files = check_input_files
     project_dir = os.path.join(os.getenv('CMSSW_BASE'), 'src', 'tthAnalysis', 'HiggsToTauTau')
     executable_pattern = os.path.join(project_dir, 'test', 'tthAnalyzeRun_%s.py')
 
@@ -53,8 +53,12 @@ class syncNtupleConfig:
       common_args += " -d"
     if disable_resubmission:
       common_args += " -R"
-    if self.verbose:
-      common_args += " -V"
+    if check_input_files:
+      common_args += " -C"
+    if isDebug:
+      common_args += " -D"
+    if rle_select:
+      common_args += " -S '%s'" % rle_select
 
     self.channel_info = {}
     for channel in channels:
@@ -66,8 +70,10 @@ class syncNtupleConfig:
       channel_errlog   = os.path.join(config_dir, 'stderr_sync_%s.log' % channel)
       channel_outlog, channel_errlog = get_log_version((channel_outlog, channel_errlog))
 
+      cmd_args = common_args if channel != 'inclusive' else \
+                 '-v %s -e %s -o %s.root' % (version, era, channel)
       channel_cmd_run = '%s %s 2>%s 1>%s' % \
-                        (channel_script, common_args, channel_errlog, channel_outlog)
+                        (channel_script, cmd_args, channel_errlog, channel_outlog)
       channel_cmd_clean = 'make -f %s clean' % channel_makefile
       self.channel_info[input_file] = {
         'run'   : channel_cmd_run,
@@ -95,7 +101,7 @@ class syncNtupleConfig:
       waitForJobs             = True,
       auxDirName              = '',
       pool_id                 = uuid.uuid4(),
-      verbose                 = self.verbose,
+      verbose                 = False,
       dry_run                 = self.dry_run,
     )
     logging.info("Generated hadd config file: %s" % self.hadd_script_path)

@@ -334,6 +334,7 @@ int main(int argc, char* argv[])
   double lumiScale = ( process_string != "data_obs" ) ? cfg_analyze.getParameter<double>("lumiScale") : 1.;
   bool apply_genWeight = cfg_analyze.getParameter<bool>("apply_genWeight"); 
   bool apply_trigger_bits = cfg_analyze.getParameter<bool>("apply_trigger_bits"); 
+  bool isDEBUG = cfg_analyze.getParameter<bool>("isDEBUG");
 
   int jetPt_option = RecoJetReader::kJetPt_central;
   int met_option = RecoMEtReader::kMEt_central;
@@ -402,8 +403,7 @@ int main(int argc, char* argv[])
   std::string branchName_jets = cfg_analyze.getParameter<std::string>("branchName_jets");
   std::string branchName_met = cfg_analyze.getParameter<std::string>("branchName_met");
 
-  std::string branchName_genLeptons = cfg_analyze.getParameter<std::string>("branchName_genLeptons1");
-  std::string branchName_genLeptons2 = cfg_analyze.getParameter<std::string>("branchName_genLeptons2");
+  std::string branchName_genLeptons = cfg_analyze.getParameter<std::string>("branchName_genLeptons");
   std::string branchName_genHadTaus = cfg_analyze.getParameter<std::string>("branchName_genHadTaus");
   std::string branchName_genJets = cfg_analyze.getParameter<std::string>("branchName_genJets");
   bool redoGenMatching = cfg_analyze.getParameter<bool>("redoGenMatching");

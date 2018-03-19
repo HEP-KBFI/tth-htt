@@ -30,8 +30,8 @@ class addMEMConfig:
     """
     def __init__(self, treeName, outputDir, cfgDir, executable_addMEM, samples, era, check_input_files,
                  running_method, max_files_per_job, mem_integrations_per_job, max_mem_integrations,
-                 num_parallel_jobs, leptonSelection, hadTauSelection, lowIntegrationPoints, channel,
-                 pool_id = ''):
+                 num_parallel_jobs, leptonSelection, hadTauSelection, lowIntegrationPoints, dry_run,
+                 channel, pool_id = ''):
 
         self.treeName = treeName
         self.outputDir = outputDir
@@ -67,6 +67,7 @@ class addMEMConfig:
         self.makefile = os.path.join(
           self.cfgDir, "Makefile_%s" % self.channel)
         self.num_parallel_jobs = num_parallel_jobs
+        self.dry_run = dry_run
         self.pool_id = pool_id if pool_id else uuid.uuid4()
 
         self.workingDir = os.getcwd()

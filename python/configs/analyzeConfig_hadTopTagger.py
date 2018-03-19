@@ -13,15 +13,14 @@ class analyzeConfig_hadTopTagger(analyzeConfig):
   for documentation of further Args.
 
   """
-  def __init__(self, configDir, outputDir, executable_analyze, cfgFile_analyze, samples, changeBranchNames,
-               hadTau_selection, max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,
-               verbose = False, dry_run = False):
+  def __init__(self, configDir, outputDir, executable_analyze, cfgFile_analyze, samples,
+               hadTau_selection, max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
+               verbose = False, dry_run = False, isDebug = False):
     analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "hadTopTagger", [ "central" ],
-      max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,
-      [], verbose = verbose, dry_run = dry_run)
+      max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
+      [], verbose = verbose, dry_run = dry_run, isDebug = isDebug)
 
     self.samples = samples
-    self.changeBranchNames = changeBranchNames
 
     self.hadTau_selection = hadTau_selection
 
@@ -47,15 +46,8 @@ class analyzeConfig_hadTopTagger(analyzeConfig):
     lines.append("process.analyze_hadTopTagger.lumiScale = cms.double(%f)" % jobOptions['lumi_scale'])
     lines.append("process.analyze_hadTopTagger.apply_genWeight = cms.bool(%s)" % jobOptions['apply_genWeight'])
     lines.append("process.analyze_hadTopTagger.selectBDT = cms.bool(%s)" % str(jobOptions['selectBDT']))
-    if jobOptions['changeBranchNames']:
-      lines.append("process.analyze_hadTopTagger.branchName_electrons = cms.string('Electron')")
-      lines.append("process.analyze_hadTopTagger.branchName_muons = cms.string('Muon')")
-      lines.append("process.analyze_hadTopTagger.branchName_hadTaus = cms.string('Tau')")
-      lines.append("process.analyze_hadTopTagger.branchName_genLeptons1 = cms.string('GenLep')")
-      lines.append("process.analyze_hadTopTagger.branchName_genLeptons2 = cms.string('')")
-      lines.append("process.analyze_hadTopTagger.branchName_genHadTaus = cms.string('GenVisTau')")
-      lines.append("process.analyze_hadTopTagger.branchName_genJets = cms.string('GenJet')")
-      lines.append("process.analyze_hadTopTagger.redoGenMatching = cms.bool(False)")
+    lines.append("process.analyze_hadTopTagger.redoGenMatching = cms.bool(False)")
+    lines.append("process.analyze_hadTopTagger.isDEBUG = cms.bool(%s)" % self.isDebug)
     create_cfg(self.cfgFile_analyze, jobOptions['cfgFile_modified'], lines)
 
   def create(self):
@@ -131,7 +123,6 @@ class analyzeConfig_hadTopTagger(analyzeConfig):
           'lumi_scale' : 1. if not (self.use_lumi and is_mc) else sample_info["xsection"] * self.lumi / sample_info["nof_events"],
           'apply_genWeight' : sample_info["genWeight"] if (is_mc and "genWeight" in sample_info) else False,
           'selectBDT' : True,
-          'changeBranchNames' : self.changeBranchNames
         }
         self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job])
 

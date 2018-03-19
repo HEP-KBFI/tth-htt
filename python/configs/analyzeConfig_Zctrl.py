@@ -14,12 +14,12 @@ class analyzeConfig_Zctrl(analyzeConfig):
 
   """
   def __init__(self, configDir, outputDir, executable_analyze, cfgFile_analyze, samples, hadTau_selection,
-               central_or_shifts, max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,
+               central_or_shifts, max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
                histograms_to_fit, select_rle_output = False, executable_prep_dcard="prepareDatacard",
-               verbose = False, dry_run = False):
+               verbose = False, dry_run = False, isDebug = False):
     analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "Zctrl", central_or_shifts,
-      max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,
-      histograms_to_fit, verbose = verbose, dry_run = dry_run)
+      max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
+      histograms_to_fit, verbose = verbose, dry_run = dry_run, isDebug = isDebug)
 
     self.samples = samples
     self.hadTau_selection_part2 = hadTau_selection
@@ -69,6 +69,7 @@ class analyzeConfig_Zctrl(analyzeConfig):
     lines.append("process.analyze_Zctrl.lumiScale = cms.double(%f)" % jobOptions['lumi_scale'])
     lines.append("process.analyze_Zctrl.apply_trigger_bits = cms.bool(%s)" % jobOptions['apply_trigger_bits'])
     lines.append("process.analyze_Zctrl.selEventsFileName_output = cms.string('%s')" % jobOptions['rleOutputFile'])
+    lines.append("process.analyze_Zctrl.isDEBUG = cms.bool(%s)" % self.isDebug)
     create_cfg(self.cfgFile_analyze, jobOptions['cfgFile_modified'], lines)
 
   def createCfg_makePlots(self, jobOptions):

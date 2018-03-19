@@ -14,13 +14,13 @@ class analyzeConfig_ttZctrl(analyzeConfig):
 
   """
   def __init__(self, configDir, outputDir, executable_analyze, cfgFile_analyze, samples, hadTau_selection, central_or_shifts,
-               max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,
+               max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
                histograms_to_fit, select_rle_output = False,
-               executable_prep_dcard="prepareDatacards", verbose = False, dry_run = False):
+               executable_prep_dcard="prepareDatacards", verbose = False, dry_run = False, isDebug = False):
     analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "ttZctrl", central_or_shifts,
-      max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,
+      max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
       histograms_to_fit, executable_prep_dcard = executable_prep_dcard, verbose = verbose,
-      dry_run = dry_run)
+      dry_run = dry_run, isDebug = isDebug)
 
     self.samples = samples
 
@@ -71,6 +71,7 @@ class analyzeConfig_ttZctrl(analyzeConfig):
     lines.append("process.analyze_ttZctrl.lumiScale = cms.double(%f)" % jobOptions['lumi_scale'])
     lines.append("process.analyze_ttZctrl.apply_trigger_bits = cms.bool(%s)" % jobOptions['apply_trigger_bits'])
     lines.append("process.analyze_ttZctrl.selEventsFileName_output = cms.string('%s')" % jobOptions['rleOutputFile'])
+    lines.append("process.analyze_ttZctrl.isDEBUG = cms.bool(%s)" % self.isDebug)
     create_cfg(self.cfgFile_analyze, jobOptions['cfgFile_modified'], lines)
 
   def create(self):

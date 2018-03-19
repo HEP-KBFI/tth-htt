@@ -54,8 +54,6 @@
 #include <assert.h> // assert
 
 typedef std::vector<std::string> vstring;
- 
-bool skipAddMEM = false;
 
 /**
  * @brief Compute MEM for events passing preselection in 3l_1tau channel of ttH, H->tautau analysis
@@ -91,6 +89,7 @@ int main(int argc,
   const std::string selEventsFileName_input = cfg_addMEM.getParameter<std::string>("selEventsFileName_input");
   const bool isMC                           = cfg_addMEM.getParameter<bool>("isMC");
   const bool isDEBUG                        = cfg_addMEM.getParameter<bool>("isDEBUG");
+  const bool dryRun                         = cfg_addMEM.getParameter<bool>("dryRun");
   const bool copy_all_branches              = cfg_addMEM.getParameter<bool>("copy_all_branches");
   const bool readGenObjects                 = cfg_addMEM.getParameter<bool>("readGenObjects");
 
@@ -509,7 +508,7 @@ int main(int argc,
                     }
 
                     MEMOutput_3l_1tau memOutput_3l_1tau;
-                    if(skipAddMEM)
+                    if(dryRun)
                     {
                       memOutput_3l_1tau.fillInputs(selLepton_lead, selLepton_sublead, selLepton_third, selHadTau);
                     }
