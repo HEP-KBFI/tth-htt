@@ -7,8 +7,10 @@ template <typename T>
 class ParticleCollectionCleaner
 {
 public:
-  ParticleCollectionCleaner(double dR = 0.4)
+  ParticleCollectionCleaner(double dR = 0.4,
+                            bool debug = false)
     : dR_(dR)
+    , debug_(debug)
   {}
   ~ParticleCollectionCleaner() {}
 
@@ -30,6 +32,14 @@ public:
         if(dRoverlap < dR_)
         {
           isOverlap = true;
+          if(debug_)
+          {
+            std::cout << "Removed:\n"                    << *overlap
+                      << "because it overlapped with:\n" << *particle
+                      << "within "                       << dRoverlap
+                      << '\n'
+            ;
+          }
           break;
         }
       }
@@ -53,6 +63,7 @@ public:
 
 protected:
   double dR_;
+  bool debug_;
 };
 
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectron.h"
