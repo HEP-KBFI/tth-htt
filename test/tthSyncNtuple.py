@@ -81,6 +81,9 @@ parser.add_argument('-o', '--output',
 parser.add_argument('-X', '--clean',
   dest = 'clean', action = 'store_true', default = False, help = 'R|Remove all output files',
 )
+parser.add_argument('-N', '--no-mem',
+  dest = 'no_mem', action = 'store_true', default = False, help = 'R|Use Ntuple w/o MEM included',
+)
 args = parser.parse_args()
 
 # Common arguments
@@ -98,9 +101,10 @@ debug                = args.debug
 rle_select = os.path.expanduser(args.rle_select)
 
 # Custom arguments
-channels   = args.channels
-output     = args.output
-clean      = args.clean
+channels = args.channels
+output   = args.output
+clean    = args.clean
+no_mem   = args.no_mem
 
 if __name__ == '__main__':
   logging.basicConfig(
@@ -122,6 +126,7 @@ if __name__ == '__main__':
     check_input_files    = check_input_files,
     isDebug              = debug,
     rle_select           = rle_select,
+    no_mem               = no_mem,
   )
 
   job_statistics = analysis.create()

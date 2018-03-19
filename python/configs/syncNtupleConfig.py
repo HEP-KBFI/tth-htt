@@ -31,7 +31,8 @@ clean:
 class syncNtupleConfig:
 
   def __init__(self, config_dir, output_dir, output_filename, version, era, channels, dry_run,
-               resubmission_limit, disable_resubmission, check_input_files, isDebug, rle_select):
+               resubmission_limit, disable_resubmission, check_input_files, isDebug, rle_select,
+               no_mem):
 
     self.dry_run           = dry_run
     self.check_input_files = check_input_files
@@ -47,8 +48,8 @@ class syncNtupleConfig:
     final_output_dir = os.path.join(output_dir, DKEY_SYNC)
     self.final_output_file = os.path.join(final_output_dir, output_filename)
 
-    common_args = "-m sync -v %s -e %s -r %d -A" % \
-      (version, era, resubmission_limit)
+    common_args = "-m %s -v %s -e %s -r %d -A" % \
+      ('sync_noMEM' if no_mem else 'sync',  version, era, resubmission_limit)
     if self.dry_run:
       common_args += " -d"
     if disable_resubmission:

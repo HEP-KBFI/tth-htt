@@ -13,7 +13,7 @@ from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser
 
 # E.g.: ./tthAnalyzeRun_3l.py -v 2017Dec13 -mode VHbb -e 2017
 
-mode_choices         = [ 'VHbb', 'forBDTtraining', 'sync' ]
+mode_choices         = [ 'VHbb', 'forBDTtraining', 'sync', 'sync_noMEM' ]
 sys_choices          = [ 'central', 'full', 'extended' ]
 systematics.full     = systematics.an_common
 systematics.extended = systematics.an_extended
@@ -62,6 +62,8 @@ elif mode == "forBDTtraining":
   chargeSumSelections = [ "OS" ]
 elif mode == "sync":
   from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_addMEM_sync import samples_2017
+elif mode == "sync_noMEM":
+  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync import samples_2017
 else:
   raise ValueError("Internal logic error")
 

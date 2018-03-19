@@ -18,7 +18,9 @@ from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser
 
 # E.g.: ./tthAnalyzeRun_3l_1tau.py -v 2017Dec13 -mode VHbb -e 2017
 
-mode_choices         = [ 'VHbb', 'addMEM', 'forBDTtraining_beforeAddMEM', 'forBDTtraining_afterAddMEM', 'sync' ]
+mode_choices         = [
+  'VHbb', 'addMEM', 'forBDTtraining_beforeAddMEM', 'forBDTtraining_afterAddMEM', 'sync', 'sync_noMEM'
+]
 sys_choices          = [ 'central', 'full', 'extended' ]
 systematics.full     = systematics.an_common
 systematics.extended = systematics.an_extended
@@ -72,7 +74,6 @@ if mode == "VHbb":
 elif mode == "addMEM":
   from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_addMEM_3l1tau import samples_2017
   hadTau_selection     = "dR03mvaMedium"
-  changeBranchNames    = True
   applyFakeRateWeights = "3lepton"
   MEMbranch            = 'memObjects_3l_1tau_lepFakeable_tauTight_dR03mvaMedium'
 elif mode == "forBDTtraining_beforeAddMEM":
@@ -85,13 +86,17 @@ elif mode == "forBDTtraining_beforeAddMEM":
   hadTau_selection_relaxed = "dR03mvaVVLoose"
 elif mode == "forBDTtraining_afterAddMEM":
   from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_FastSim_addMEM_3l1tau import samples_2017
-  changeBranchNames        = True
   applyFakeRateWeights     = "4L"
   hadTau_selection         = "dR03mvaVTight"
   hadTau_selection_relaxed = "dR03mvaVVLoose"
   MEMbranch                = 'memObjects_3l_1tau_lepLoose_tauTight_dR03mvaVVLoose'
-elif mode == "sync":
-  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_addMEM_sync import samples_2017
+elif mode.startswith("sync"):
+  if mode == "sync":
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_addMEM_sync import samples_2017
+  elif mode == "sync_noMEM":
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync import samples_2017
+  else:
+    raise ValueError("Internal logic error")
   hadTau_selection     = "dR03mvaMedium"
   applyFakeRateWeights = "3lepton"
 else:
