@@ -143,6 +143,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
     lines.append("process.analyze_1l_2tau.era = cms.string('%s')" % self.era)
     lines.append("process.analyze_1l_2tau.triggers_1e = cms.vstring(%s)" % self.triggers_1e)
     lines.append("process.analyze_1l_2tau.use_triggers_1e = cms.bool(%s)" % ("1e" in jobOptions['triggers']))
+    lines.append("process.analyze_1l_2tau.triggers_1e1tau = cms.vstring(%s)" % self.triggers_1e1tau)
     lines.append("process.analyze_1l_2tau.use_triggers_1e1tau = cms.bool(%s)" % ("1e1tau" in jobOptions['triggers']))
     lines.append("process.analyze_1l_2tau.triggers_1mu = cms.vstring(%s)" % self.triggers_1mu)
     lines.append("process.analyze_1l_2tau.use_triggers_1mu = cms.bool(%s)" % ("1mu" in jobOptions['triggers']))
