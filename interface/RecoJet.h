@@ -28,6 +28,7 @@ public:
           Double_t pullEta,
           Double_t pullPhi,
           Double_t pullMag,
+          Int_t jetId,
           Int_t idx);
 
   virtual ~RecoJet();
@@ -44,6 +45,7 @@ public:
   Double_t pullEta() const;
   Double_t pullPhi() const;
   Double_t pullMag() const;
+  Int_t jetId() const;
 
   friend class RecoJetReader;
   friend class RecoJetWriter;
@@ -59,6 +61,7 @@ protected:
   Double_t pullEta_;      ///< eta component of pull vector, computed according to arXiv:1001.5027
   Double_t pullPhi_;      ///< phi component of pull vector, computed according to arXiv:1001.5027
   Double_t pullMag_;      ///< magnitude of pull vector, computed according to arXiv:1001.5027
+  Int_t jetId_;           ///< jet ID, as explained in https://twiki.cern.ch/twiki/bin/view/CMS/JetID13TeVRun2017
 
   //---------------------------------------------------------
   // CV: needed by RecoJetWriter

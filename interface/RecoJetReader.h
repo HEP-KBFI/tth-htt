@@ -88,6 +88,7 @@ protected:
   std::string branchName_pullEta_;
   std::string branchName_pullPhi_;
   std::string branchName_pullMag_;
+  std::string branchName_jetId_;
 
   std::map<int, std::string> branchNames_BtagWeight_systematics_;
 
@@ -109,6 +110,7 @@ protected:
   Float_t * jet_pullEta_;
   Float_t * jet_pullPhi_;
   Float_t * jet_pullMag_;
+  Int_t * jet_jetId_;
 
   std::map<int, Float_t *> jet_BtagWeights_systematics_; // CV: needed by RecoJetWriter
 

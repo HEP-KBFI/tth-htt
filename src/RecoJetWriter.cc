@@ -37,6 +37,7 @@ RecoJetWriter::RecoJetWriter(int era,
   , jet_BtagCSV_(nullptr)
   , jet_BtagWeight_(nullptr)
   , jet_QGDiscr_(nullptr)
+  , jet_jetId_(nullptr)
 {
   genLeptonWriter_ = new GenParticleWriter(Form("%s_genLepton", branchName_obj_.data()));
   genHadTauWriter_ = new GenParticleWriter(Form("%s_genTau",    branchName_obj_.data()));
@@ -61,6 +62,7 @@ RecoJetWriter::~RecoJetWriter()
   delete[] jet_pullEta_;
   delete[] jet_pullPhi_;
   delete[] jet_pullMag_;
+  delete[] jet_jetId_;
   for(auto & kv: jet_BtagWeights_systematics_)
   {
     delete[] kv.second;
@@ -81,6 +83,7 @@ RecoJetWriter::setBranchNames()
   branchName_pullEta_ = Form("%s_%s", branchName_obj_.data(), "pullEta");
   branchName_pullPhi_ = Form("%s_%s", branchName_obj_.data(), "pullPhi");
   branchName_pullMag_ = Form("%s_%s", branchName_obj_.data(), "pullMag");
+  branchName_jetId_ = Form("%s_%s", branchName_obj_.data(), "jetId");
   branchName_BtagWeight_ = getBranchName_bTagWeight(branchName_obj_, era_, kBtag_central);
   for(int idxShift = kBtag_hfUp; idxShift <= kBtag_jesDown; ++idxShift)
   {
@@ -108,6 +111,7 @@ RecoJetWriter::setBranches(TTree * tree)
   bai.setBranch(jet_pullEta_, branchName_pullEta_);
   bai.setBranch(jet_pullPhi_, branchName_pullPhi_);
   bai.setBranch(jet_pullMag_, branchName_pullMag_);
+  bai.setBranch(jet_jetId_, branchName_jetId_);
   for(int idxShift = kBtag_hfUp; idxShift <= kBtag_jesDown; ++idxShift)
   {
     bai.setBranch(jet_BtagWeights_systematics_[idxShift], branchNames_BtagWeight_systematics_[idxShift]);
@@ -151,6 +155,7 @@ RecoJetWriter::write(const std::vector<const RecoJet *> & jets)
     jet_pullEta_[idxJet] = jet->pullEta();
     jet_pullPhi_[idxJet] = jet->pullPhi();
     jet_pullMag_[idxJet] = jet->pullMag();
+    jet_jetId_[idxJet] = jet->jetId();
     for(int idxShift = kBtag_hfUp; idxShift <= kBtag_jesDown; ++idxShift)
     {
       if(jet->BtagWeight_systematics_.count(idxShift))
