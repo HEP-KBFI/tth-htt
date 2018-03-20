@@ -175,20 +175,20 @@ class analyzeConfig:
                 'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8',
             ]
             self.triggers_1e1mu = [
-                'HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL',
+                'HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL', # not present in 2017B
                 'HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ',
                 'HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ',
             ]
             self.triggers_2e = [
-                'HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL', # higher efficiency than non-DZ
+                'HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL', # higher efficiency than non-DZ; not present in 2017B
                 'HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ',
             ]
             self.triggers_1mu = [
-                'HLT_IsoMu24',
+                'HLT_IsoMu24', # not enabled at high lumi
                 'HLT_IsoMu27',
             ]
             self.triggers_1e = [
-                'HLT_Ele32_WPTight_Gsf',
+                'HLT_Ele32_WPTight_Gsf', # not present in 2017B
                 'HLT_Ele35_WPTight_Gsf',
             ]
             # CV: tau trigger paths taken from slide 6 of presentation given by Hale Sert at HTT workshop in December 2017
