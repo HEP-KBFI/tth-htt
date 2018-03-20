@@ -20,23 +20,23 @@ RecoElectronSelectorFakeable::RecoElectronSelectorFakeable(int era,
   , max_sip3d_(8.)
   , min_mvaRawPOG_({ 0.0, 0.0, 0.7 })
   , binning_absEta_({ 0.8, 1.479 })
-  , min_pt_trig_(-1.) // Was = 30. (AN_2017_029_V5, Lines:237-240) Now changed following sync with Giovanni 
+  , min_pt_trig_(-1.) // Lines:237-240 in AN_2017_029_v5
   , max_sigmaEtaEta_trig_({ 0.011, 0.011, 0.030 })
-  , max_HoE_trig_({ 0.10, 0.10, 0.07 }) 
+  , max_HoE_trig_({ 0.10, 0.10, 0.07 })
   , max_deltaEta_trig_({ 0.01, 0.01, 0.008 })
   , max_deltaPhi_trig_({ 0.04, 0.04, 0.07 })
   , min_OoEminusOoP_trig_(-0.05)
   , max_OoEminusOoP_trig_({ 0.010, 0.010, 0.005 })
-  , binning_mvaTTH_({ 0.90 })
-  , min_jetPtRatio_({ 0.50, -1.e+3 })
-  , apply_conversionVeto_(false) // Was true but changed (Table-7, AN_2017_029_V5)
+  , binning_mvaTTH_({ 0.90 }) // Table 7 in AN2017_029_v5
+  , min_jetPtRatio_({ 0.50, -1.e+3 }) // Table 7 in AN2017_029_v5
+  , apply_conversionVeto_(false) //Table 7 in AN_2017_029_v5
   , max_nLostHits_(0)
 {
   switch(era_)
   {
     case kEra_2017:
     {
-      max_jetBtagCSV_ = { 0.3, 0.8484 };
+      max_jetBtagCSV_ = { 0.3, 0.8484 }; // Table 7 in AN2017_029_v5
       break;
     }
     default: throw cmsException(this) << "Invalid era: " << era_;

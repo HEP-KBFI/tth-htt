@@ -17,7 +17,7 @@ RecoElectronSelectorLoose::RecoElectronSelectorLoose(int era,
   , max_dz_(0.1)
   , max_relIso_(0.4)
   , max_sip3d_(8.)
-  , min_mvaRawPOG_({ 0.0, 0.0, 0.7 }) // Table 7 in AN-2017/029 v5
+  , min_mvaRawPOG_({ 0.0, 0.0, 0.7 }) // Table 7 in AN2017_029_v5
   , binning_absEta_({ 0.8, 1.479 })
   , apply_tightCharge_(false)
   , apply_conversionVeto_(false)

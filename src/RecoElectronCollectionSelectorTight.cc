@@ -28,7 +28,7 @@ RecoElectronSelectorTight::RecoElectronSelectorTight(int era,
   , max_OoEminusOoP_trig_({ 0.010, 0.010, 0.005 })
   , apply_conversionVeto_(true)
   , max_nLostHits_(0)
-  , min_mvaTTH_(0.90)
+  , min_mvaTTH_(0.90) // Table 7 in AN2017_029_v5
 {
   switch(era_)
   {

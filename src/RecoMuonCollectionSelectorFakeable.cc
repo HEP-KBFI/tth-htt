@@ -18,8 +18,8 @@ RecoMuonSelectorFakeable::RecoMuonSelectorFakeable(int era,
   , max_relIso_(0.4)
   , max_sip3d_(8.)
   , apply_looseIdPOG_(true)
-  , binning_mvaTTH_({ 0.90 })
-  , min_jetPtRatio_({ 0.50, -1.e+3 })
+  , binning_mvaTTH_({ 0.90 }) // Table 6 in AN2017_029_v5
+  , min_jetPtRatio_({ 0.50, -1.e+3 }) // Table 6 in AN2017_029_v5
   , apply_mediumIdPOG_(false)
   , min_segmentCompatibility_({0.3, -1.e+3})
 {
@@ -27,7 +27,7 @@ RecoMuonSelectorFakeable::RecoMuonSelectorFakeable(int era,
   {
     case kEra_2017:
     {
-      max_jetBtagCSV_ = { 0.3, 0.8484 };
+      max_jetBtagCSV_ = { 0.3, 0.8484 };  // Table 6 in AN2017_029_v5
       break;
     }
     default: throw cmsException(this) << "Invalid era: " << era_;

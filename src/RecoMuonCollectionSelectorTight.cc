@@ -18,7 +18,7 @@ RecoMuonSelectorTight::RecoMuonSelectorTight(int era,
   , max_sip3d_(8.)
   , apply_looseIdPOG_(true)
   , apply_mediumIdPOG_(true)
-  , min_mvaTTH_(0.90)
+  , min_mvaTTH_(0.90) // Table 6 in AN2017_029_v5
 {
   switch(era_)
   {
