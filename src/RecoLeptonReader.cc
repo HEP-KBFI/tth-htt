@@ -107,11 +107,11 @@ RecoLeptonReader::setBranchNames()
 #ifdef SYNC_NTUPLE
 #pragma message "Compiling in sync Ntuple mode: enabling jetPtRel branch"
     branchName_jetPtRel_ = Form("%s_%s", branchName_obj_.data(), "jetPtRelv2");
+    branchName_jetNDauChargedMVASel_ = Form("%s_%s", branchName_obj_.data(), "jetNDauChargedMVASel");
 #else
-#pragma message "Compiling regular mode: jetPtRel branch remains disabled"
+#pragma message "Compiling regular mode: jetPtRel and jetNDauChargedMVASel branch remains disabled"
 #endif
     branchName_jetBtagCSV_ = Form("%s_%s", branchName_obj_.data(), Form("jetBtag_%s", branchName_btag_.data()));
-    branchName_jetNDauChargedMVASel_ = Form("%s_%s", branchName_obj_.data(), "jetNDauChargedMVASel");
     branchName_tightCharge_ = Form("%s_%s", branchName_obj_.data(), "tightCharge");
     branchName_charge_ = Form("%s_%s", branchName_obj_.data(), "charge");
     instances_[branchName_obj_] = this;
@@ -159,7 +159,7 @@ RecoLeptonReader::setBranchAddresses(TTree * tree)
     bai.setBranchAddress(jetPtRatio_, branchName_jetPtRatio_);
     bai.setBranchAddress(jetPtRel_, branchName_jetPtRel_, -1.);
     bai.setBranchAddress(jetBtagCSV_, branchName_jetBtagCSV_);
-    bai.setBranchAddress(jetNDauChargedMVASel_, "", -1); // branchName_jetNDauChargedMVASel_
+    bai.setBranchAddress(jetNDauChargedMVASel_, branchName_jetNDauChargedMVASel_, -1);
     bai.setBranchAddress(tightCharge_, branchName_tightCharge_);
     bai.setBranchAddress(charge_, branchName_charge_);
   }
