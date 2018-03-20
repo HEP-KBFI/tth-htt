@@ -10,6 +10,7 @@ RecoJetSelectorBtag::RecoJetSelectorBtag(int era,
   , debug_(debug)
   , min_pt_(25.)
   , max_absEta_(2.4)
+  , min_jetId_(3) // 3 means tight (sum of loose bit + 2 * tight bit)
   , min_BtagCSV_(-1.e+3)
 {}
 
@@ -25,6 +26,12 @@ RecoJetSelectorBtag::set_max_absEta(double max_absEta)
   max_absEta_ = max_absEta;
 }
 
+void
+RecoJetSelectorBtag::set_min_jetId(int min_jetId)
+{
+  min_jetId_ = min_jetId;
+}
+
 double
 RecoJetSelectorBtag::get_min_pt() const
 {
@@ -35,6 +42,12 @@ double
 RecoJetSelectorBtag::get_max_absEta() const
 {
   return max_absEta_;
+}
+
+int
+RecoJetSelectorBtag::get_min_jetId() const
+{
+  return min_jetId_;
 }
 
 RecoJetSelectorBtagLoose::RecoJetSelectorBtagLoose(int era,
@@ -74,6 +87,14 @@ RecoJetSelectorBtag::operator()(const RecoJet & jet) const
     if(debug_)
     {
       std::cout << "FAILS abs(eta) <= " << max_absEta_ << " cut\n";
+    }
+    return false;
+  }
+  if(jet.jetId() < min_jetId_)
+  {
+    if(debug_)
+    {
+      std::cout << "FAILS jet ID >= " << min_jetId_ << " cut\n";
     }
     return false;
   }
