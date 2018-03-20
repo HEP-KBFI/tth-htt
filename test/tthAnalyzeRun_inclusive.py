@@ -12,6 +12,9 @@ parser.add_argument('-o', '--output-tree',
   type = str, dest = 'output_tree', metavar = 'name', default = 'syncTree', required = False,
   help = 'R|Output TTree name',
 )
+parser.add_argument('-N', '--no-mem',
+  dest = 'no_mem', action = 'store_true', default = False, help = 'R|Use Ntuple w/o MEM included',
+)
 args = parser.parse_args()
 
 # Common arguments
@@ -30,6 +33,7 @@ rle_select = os.path.expanduser(args.rle_select)
 
 # Custom arguments
 output_tree = args.output_tree
+no_mem      = args.no_mem
 
 # Use the arguments
 max_job_resubmission = resubmission_limit if resubmit else 1
@@ -37,7 +41,10 @@ max_job_resubmission = resubmission_limit if resubmit else 1
 hadTauSelection_tauIdWP = 'dR03mvaMedium'
 
 if era == "2017":
-  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_addMEM_sync import samples_2017 as samples
+  if no_mem:
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync import samples_2017 as samples
+  else:
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_addMEM_sync import samples_2017 as samples
 else:
   raise ValueError("Invalid era: %s" % era)
 

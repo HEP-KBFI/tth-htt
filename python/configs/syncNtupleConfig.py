@@ -61,6 +61,10 @@ class syncNtupleConfig:
     if rle_select:
       common_args += " -S '%s'" % rle_select
 
+    inclusive_args = '-v %s -e %s -o %s.root' % (version, era, 'inclusive')
+    if no_mem:
+      inclusive_args += ' -N'
+
     self.channel_info = {}
     for channel in channels:
       input_file = os.path.join(final_output_dir, '%s.root' % channel)
@@ -71,8 +75,7 @@ class syncNtupleConfig:
       channel_errlog   = os.path.join(config_dir, 'stderr_sync_%s.log' % channel)
       channel_outlog, channel_errlog = get_log_version((channel_outlog, channel_errlog))
 
-      cmd_args = common_args if channel != 'inclusive' else \
-                 '-v %s -e %s -o %s.root' % (version, era, channel)
+      cmd_args = common_args if channel != 'inclusive' else inclusive_args
       channel_cmd_run = '%s %s 2>%s 1>%s' % \
                         (channel_script, cmd_args, channel_errlog, channel_outlog)
       channel_cmd_clean = 'make -f %s clean' % channel_makefile
