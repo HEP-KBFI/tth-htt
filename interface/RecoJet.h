@@ -48,7 +48,7 @@ public:
   friend class RecoJetReader;
   friend class RecoJetWriter;
 
-  const static bool useDeepCSV = false;
+  const static bool useDeepCSV = true;
 
 protected:
   Double_t charge_;       ///< jet charge, computed according to JME-13-006
