@@ -36,7 +36,7 @@ RecoElectronSelectorFakeable::RecoElectronSelectorFakeable(int era,
   {
     case kEra_2017:
     {
-      max_jetBtagCSV_ = { 0.3, 0.8484 }; // Table 7 in AN2017_029_v5
+      max_jetBtagCSV_ = { 0.3, BtagWP_CSV_2016.at(BtagWP::kMedium) }; // Table 7 in AN2017_029_v5
       break;
     }
     default: throw cmsException(this) << "Invalid era: " << era_;

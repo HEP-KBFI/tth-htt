@@ -53,6 +53,38 @@ enum
 //--- declare selection criteria for leptons and hadronic taus
 enum { kLoose, kFakeable, kTight };
 
+//--- declare b-tagging working points
+
+enum class BtagWP { kLoose, kMedium, kTight };
+
+//--- source: https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation80XReReco
+const std::map<BtagWP, double> BtagWP_CSV_2016 =
+{
+  { BtagWP::kLoose,  0.5426 },
+  { BtagWP::kMedium, 0.8484 },
+  { BtagWP::kTight,  0.9535 },
+};
+
+//--- source: https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation94X
+const std::map<BtagWP, double> BtagWP_CSVv2_2017 =
+{
+  { BtagWP::kLoose,  0.5803 },
+  { BtagWP::kMedium, 0.8838 },
+  { BtagWP::kTight,  0.9693 },
+};
+
+//--- source: https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation94X
+const std::map<BtagWP, double> BtagWP_deepCSV_2017 =
+{
+  { BtagWP::kLoose,  0.1522 },
+  { BtagWP::kMedium, 0.4941 },
+  { BtagWP::kTight,  0.8001 },
+};
+
+double
+get_BtagWP(int era,
+           BtagWP wp);
+
 //--- selector class
 template <typename LeptonType>
 std::vector<LeptonType>

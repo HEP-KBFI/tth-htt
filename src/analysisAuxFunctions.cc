@@ -7,6 +7,14 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h" // RecoJet
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 
+double
+get_BtagWP(int era,
+           BtagWP wp)
+{
+  assert(era == kEra_2017);
+  return RecoJet::useDeepCSV ? BtagWP_deepCSV_2017.at(wp) : BtagWP_CSVv2_2017.at(wp);
+}
+
 bool
 isHigherPt(const Particle * particle1,
            const Particle * particle2)
