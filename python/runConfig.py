@@ -79,7 +79,7 @@ class tthAnalyzeParser(argparse.ArgumentParser):
 
   def add_rle_select(self):
       self.add_argument('-S', '--rle-select',
-        type = str, dest = 'rle_select', metavar = 'pattern', default = None, required = False,
+        type = str, dest = 'rle_select', metavar = 'pattern', default = '', required = False,
         help = 'R|Regular expression to the path of RLE text files',
       )
 
