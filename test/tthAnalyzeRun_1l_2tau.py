@@ -50,9 +50,6 @@ max_files_per_job    = 50 if use_preselected else 1
 hadTau_charge_selections           = [ "OS", "SS" ]
 hadTauFakeRateWeight_inputFileName = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016.root" #TODO update
 
-if mode not in ['VHbb', 'sync']:
-  raise ValueError("Only VHbb and sync mode available")
-
 if mode == "VHbb":
   if use_preselected:
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_preselected import samples_2017
