@@ -53,6 +53,7 @@ rle_select        = os.path.expanduser(args.rle_select)
 max_job_resubmission = resubmission_limit if resubmit else 1
 central_or_shift     = getattr(systematics, systematics_label)
 max_files_per_job    = 50 if use_preselected else 1
+do_sync              = mode.startswith('sync')
 
 MEMbranch                          = ''
 hadTauFakeRateWeight_inputFileName = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016.root" #TODO update
@@ -163,7 +164,7 @@ if __name__ == '__main__':
       select_root_output                    = False,
       verbose                               = idx_job_resubmission > 0,
       dry_run                               = dry_run,
-      do_sync                               = mode == 'sync',
+      do_sync                               = do_sync,
       isDebug                               = debug,
       rle_select                            = rle_select,
     )
