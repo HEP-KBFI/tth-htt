@@ -45,9 +45,9 @@ RecoLeptonWriter::RecoLeptonWriter(const std::string & branchName_num,
 
 RecoLeptonWriter::~RecoLeptonWriter()
 {
-  delete[] genLeptonWriter_;
-  delete[] genHadTauWriter_;
-  delete[] genJetWriter_;
+  delete genLeptonWriter_;
+  delete genHadTauWriter_;
+  delete genJetWriter_;
   delete[] pt_;
   delete[] eta_;
   delete[] phi_;
