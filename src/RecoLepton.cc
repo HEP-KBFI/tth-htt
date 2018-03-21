@@ -15,7 +15,6 @@ RecoLepton::RecoLepton(const GenLepton & lepton,
                        Double_t jetPtRel,
                        Double_t jetBtagCSV,
                        Int_t    jetNDauChargedMVASel,
-                       Int_t    jetBtag_csvv2_cut,
                        Int_t    tightCharge,
                        Int_t    charge)
   : GenLepton(lepton)
@@ -31,7 +30,6 @@ RecoLepton::RecoLepton(const GenLepton & lepton,
   , jetPtRel_(jetPtRel)
   , jetBtagCSV_(jetBtagCSV)
   , jetNDauChargedMVASel_(jetNDauChargedMVASel)
-  , jetBtag_csvv2_cut_(jetBtag_csvv2_cut)
   , tightCharge_(tightCharge)
   , charge_(charge)
   , assocJet_pt_(jetPtRatio_ > 1.e-3 ? 0.90 * pt_ / jetPtRatio_ : pt_)
@@ -216,12 +214,6 @@ RecoLepton::jetNDauChargedMVASel() const
 }
 
 Int_t
-RecoLepton::jetBtag_csvv2_cut() const
-{
-  return jetBtag_csvv2_cut_;
-}
-
-Int_t
 RecoLepton::tightCharge() const
 {
   return tightCharge_;
@@ -296,7 +288,6 @@ operator<<(std::ostream & stream,
             " jetBtagCSV = "         << lepton.jetBtagCSV()         << ","
             " jetPtRatio = "         << lepton.jetPtRatio()         << ",\n"
             " jetPtRel = "           << lepton.jetPtRel()           << ","
-            " jetBtag_csvv2_cut = "  << lepton.jetBtag_csvv2_cut()  << ","
             " mvaRawTTH = "          << lepton.mvaRawTTH()          << ",\n"
             " gen. matching:";
   stream << ",\n  lepton = " << lepton.genLepton();

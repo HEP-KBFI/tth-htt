@@ -24,12 +24,7 @@ RecoMuonSelectorTight::RecoMuonSelectorTight(int era,
   {
     case kEra_2017:
     {
-      // temporary encoding:
-      // 0 -- no jet nearby
-      // 1 -- jet CSVv2 < 0.3
-      // 2 -- 0.3 <= jet CSVv2 < 0.8484
-      // 3 -- jet CSVv2 >= 0.8484
-      max_jetBtagCSV_ = 2;
+      max_jetBtagCSV_ = BtagWP_CSV_2016.at(BtagWP::kMedium); // Table 6 in AN2017_029_v5
       break;
     }
     default: throw cmsException(this) << "Invalid era: " << era_;
@@ -100,7 +95,7 @@ RecoMuonSelectorTight::operator()(const RecoMuon & muon) const
     }
     return false;
   }
-  if(muon.jetBtag_csvv2_cut() > max_jetBtagCSV_)
+  if(muon.jetBtagCSV() > max_jetBtagCSV_)
   {
     if(debug_)
     {

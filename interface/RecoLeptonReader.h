@@ -96,7 +96,6 @@ protected:
   std::string branchName_jetPtRel_;
   std::string branchName_jetBtagCSV_;
   std::string branchName_jetNDauChargedMVASel_;
-  std::string branchName_jetBtag_csvv2_cut_;
   std::string branchName_tightCharge_;
   std::string branchName_charge_;
 
@@ -118,7 +117,6 @@ protected:
   Float_t * jetPtRel_;
   Float_t * jetBtagCSV_;
   Int_t * jetNDauChargedMVASel_;
-  Int_t * jetBtag_csvv2_cut_;
   Int_t * tightCharge_;
   Int_t * charge_;
 

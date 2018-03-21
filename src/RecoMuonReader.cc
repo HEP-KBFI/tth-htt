@@ -140,7 +140,6 @@ RecoMuonReader::read() const
             gLeptonReader->jetPtRel_[idxLepton],
             gLeptonReader->jetBtagCSV_[idxLepton],
             gLeptonReader->jetNDauChargedMVASel_[idxLepton],
-            gLeptonReader->jetBtag_csvv2_cut_[idxLepton],
             gLeptonReader->tightCharge_[idxLepton],
             gLeptonReader->charge_[idxLepton]
           },

@@ -16,7 +16,7 @@ RecoLeptonReader::RecoLeptonReader(const std::string & branchName_obj,
   : max_nLeptons_(64)
   , branchName_num_(Form("n%s", branchName_obj.data()))
   , branchName_obj_(branchName_obj)
-  , branchName_btag_(! RecoJet::useDeepCSV ? "csvv2" : "deep")
+  , branchName_btag_("csvv2")
   , genLeptonReader_(nullptr)
   , genHadTauReader_(nullptr)
   , genJetReader_(nullptr)
@@ -38,7 +38,6 @@ RecoLeptonReader::RecoLeptonReader(const std::string & branchName_obj,
   , jetPtRel_(nullptr)
   , jetBtagCSV_(nullptr)
   , jetNDauChargedMVASel_(nullptr)
-  , jetBtag_csvv2_cut_(nullptr)
   , tightCharge_(nullptr)
   , charge_(nullptr)
 {
@@ -80,7 +79,6 @@ RecoLeptonReader::~RecoLeptonReader()
     delete[] gInstance->jetPtRel_;
     delete[] gInstance->jetBtagCSV_;
     delete[] gInstance->jetNDauChargedMVASel_;
-    delete[] gInstance->jetBtag_csvv2_cut_;
     delete[] gInstance->tightCharge_;
     delete[] gInstance->charge_;
     instances_[branchName_obj_] = nullptr;
@@ -110,7 +108,6 @@ RecoLeptonReader::setBranchNames()
 #pragma message "Compiling in sync Ntuple mode: enabling jetPtRel and jetNDauChargedMVASel branches"
     branchName_jetPtRel_ = Form("%s_%s", branchName_obj_.data(), "jetPtRelv2");
     branchName_jetNDauChargedMVASel_ = Form("%s_%s", branchName_obj_.data(), "jetNDauChargedMVASel");
-    branchName_jetBtag_csvv2_cut_ = Form("%s_%s", branchName_obj_.data(), "jetBtag_csvv2_cut");
 #else
 #pragma message "Compiling regular mode: jetPtRel and jetNDauChargedMVASel branches remain disabled"
 #endif
@@ -162,7 +159,6 @@ RecoLeptonReader::setBranchAddresses(TTree * tree)
     bai.setBranchAddress(jetPtRatio_, branchName_jetPtRatio_);
     bai.setBranchAddress(jetPtRel_, branchName_jetPtRel_, -1.);
     bai.setBranchAddress(jetBtagCSV_, branchName_jetBtagCSV_);
-    bai.setBranchAddress(jetBtag_csvv2_cut_, branchName_jetBtag_csvv2_cut_);
     bai.setBranchAddress(jetNDauChargedMVASel_, branchName_jetNDauChargedMVASel_, -1);
     bai.setBranchAddress(tightCharge_, branchName_tightCharge_);
     bai.setBranchAddress(charge_, branchName_charge_);
