@@ -36,7 +36,12 @@ RecoElectronSelectorFakeable::RecoElectronSelectorFakeable(int era,
   {
     case kEra_2017:
     {
-      max_jetBtagCSV_ = { 0.3, BtagWP_CSV_2016.at(BtagWP::kMedium) }; // Table 7 in AN2017_029_v5
+      // temporary encoding:
+      // 0 -- no jet nearby
+      // 1 -- jet CSVv2 < 0.3
+      // 2 -- 0.3 <= jet CSVv2 < 0.8484
+      // 3 -- jet CSVv2 >= 0.8484
+      max_jetBtagCSV_ = { 1, 2 }; // Table 7 in AN2017_029_v5
       break;
     }
     default: throw cmsException(this) << "Invalid era: " << era_;
@@ -93,8 +98,8 @@ RecoElectronSelectorFakeable::operator()(const RecoElectron & electron) const
     const int idxBin_mvaTTH = electron.mvaRawTTH() <= binning_mvaTTH_[0] ? 0 : 1;
 
     if(mvaRawPOG >= mvaRawPOGCut                                               &&
-       electron.jetPtRatio() >= min_jetPtRatio_[idxBin_mvaTTH]                 &&
-       electron.jetBtagCSV() <= max_jetBtagCSV_[idxBin_mvaTTH]                 &&
+       electron.jetPtRatio()        >= min_jetPtRatio_[idxBin_mvaTTH]          &&
+       electron.jetBtag_csvv2_cut() <= max_jetBtagCSV_[idxBin_mvaTTH]          &&
        (
          (electron.cone_pt() <= min_pt_trig_ || ! apply_offline_e_trigger_cuts_) ||
           (

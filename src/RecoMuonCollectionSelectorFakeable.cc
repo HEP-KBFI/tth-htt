@@ -27,7 +27,12 @@ RecoMuonSelectorFakeable::RecoMuonSelectorFakeable(int era,
   {
     case kEra_2017:
     {
-      max_jetBtagCSV_ = { 0.3, BtagWP_CSV_2016.at(BtagWP::kMedium) };  // Table 6 in AN2017_029_v5
+      // temporary encoding:
+      // 0 -- no jet nearby
+      // 1 -- jet CSVv2 < 0.3
+      // 2 -- 0.3 <= jet CSVv2 < 0.8484
+      // 3 -- jet CSVv2 >= 0.8484
+      max_jetBtagCSV_ = { 1, 2 };  // Table 6 in AN2017_029_v5
       break;
     }
     default: throw cmsException(this) << "Invalid era: " << era_;
@@ -48,8 +53,8 @@ RecoMuonSelectorFakeable::operator()(const RecoMuon & muon) const
      (muon.passesMediumIdPOG() || ! apply_mediumIdPOG_))
   {
     const int idxBin = muon.mvaRawTTH() <= binning_mvaTTH_[0] ? 0 : 1;
-    if(muon.jetPtRatio() >= min_jetPtRatio_[idxBin] &&
-       muon.jetBtagCSV() <= max_jetBtagCSV_[idxBin] &&
+    if(muon.jetPtRatio()        >= min_jetPtRatio_[idxBin] &&
+       muon.jetBtag_csvv2_cut() <= max_jetBtagCSV_[idxBin] &&
        muon.segmentCompatibility() > min_segmentCompatibility_[idxBin])
     {
       if(set_selection_flags_)

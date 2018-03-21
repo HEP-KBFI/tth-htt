@@ -53,6 +53,7 @@ public:
       jetPtRel_[idxLepton] = lepton->jetPtRel();
       jetBtagCSV_[idxLepton] = lepton->jetBtagCSV();
       jetNDauChargedMVASel_[idxLepton] = lepton->jetNDauChargedMVASel();
+      jetBtag_csvv2_cut_[idxLepton] = lepton->jetBtag_csvv2_cut();
       tightCharge_[idxLepton] = lepton->tightCharge();
       charge_[idxLepton] = lepton->charge();
     }
@@ -127,6 +128,7 @@ protected:
   std::string branchName_jetPtRel_;
   std::string branchName_jetBtagCSV_;
   std::string branchName_jetNDauChargedMVASel_;
+  std::string branchName_jetBtag_csvv2_cut_;
   std::string branchName_tightCharge_;
   std::string branchName_charge_;
 
@@ -148,6 +150,7 @@ protected:
   Float_t * jetPtRel_;
   Float_t * jetBtagCSV_;
   Int_t * jetNDauChargedMVASel_;
+  Int_t * jetBtag_csvv2_cut_;
   Int_t * tightCharge_;
   Int_t * charge_;
 };

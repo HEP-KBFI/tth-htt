@@ -34,7 +34,12 @@ RecoElectronSelectorTight::RecoElectronSelectorTight(int era,
   {
     case kEra_2017:
     {
-      max_jetBtagCSV_ = BtagWP_CSV_2016.at(BtagWP::kMedium);
+      // temporary encoding:
+      // 0 -- no jet nearby
+      // 1 -- jet CSVv2 < 0.3
+      // 2 -- 0.3 <= jet CSVv2 < 0.8484
+      // 3 -- jet CSVv2 >= 0.8484
+      max_jetBtagCSV_ = 2;
       break;
     }
     default: throw cmsException(this) << "Invalid era: " << era_;

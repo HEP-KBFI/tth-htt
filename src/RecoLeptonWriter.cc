@@ -33,6 +33,7 @@ RecoLeptonWriter::RecoLeptonWriter(const std::string & branchName_num,
   , jetPtRel_(nullptr)
   , jetBtagCSV_(nullptr)
   , jetNDauChargedMVASel_(nullptr)
+  , jetBtag_csvv2_cut_(nullptr)
   , tightCharge_(nullptr)
   , charge_(nullptr)
 {
@@ -44,28 +45,29 @@ RecoLeptonWriter::RecoLeptonWriter(const std::string & branchName_num,
 
 RecoLeptonWriter::~RecoLeptonWriter()
 {
-  delete genLeptonWriter_;
-  delete genHadTauWriter_;
-  delete genJetWriter_;
-  delete pt_;
-  delete eta_;
-  delete phi_;
-  delete mass_;
-  delete pdgId_;
-  delete dxy_;
-  delete dz_;
-  delete relIso_all_;
-  delete hadRelIso03_chg_;
-  delete absIso_chg_;
-  delete absIso_neu_;
-  delete sip3d_;
-  delete mvaRawTTH_;
-  delete jetPtRatio_;
-  delete jetPtRel_;
-  delete jetBtagCSV_;
-  delete jetNDauChargedMVASel_;
-  delete tightCharge_;
-  delete charge_;
+  delete[] genLeptonWriter_;
+  delete[] genHadTauWriter_;
+  delete[] genJetWriter_;
+  delete[] pt_;
+  delete[] eta_;
+  delete[] phi_;
+  delete[] mass_;
+  delete[] pdgId_;
+  delete[] dxy_;
+  delete[] dz_;
+  delete[] relIso_all_;
+  delete[] hadRelIso03_chg_;
+  delete[] absIso_chg_;
+  delete[] absIso_neu_;
+  delete[] sip3d_;
+  delete[] mvaRawTTH_;
+  delete[] jetPtRatio_;
+  delete[] jetPtRel_;
+  delete[] jetBtagCSV_;
+  delete[] jetNDauChargedMVASel_;
+  delete[] jetBtag_csvv2_cut_;
+  delete[] tightCharge_;
+  delete[] charge_;
 }
 
 void RecoLeptonWriter::setBranchNames()
@@ -87,6 +89,7 @@ void RecoLeptonWriter::setBranchNames()
   branchName_jetPtRel_ = Form("%s_%s", branchName_obj_.data(), "jetPtRelv2");
   branchName_jetBtagCSV_ = Form("%s_%s", branchName_obj_.data(), Form("jetBtag_%s", branchName_btag_.data()));
   branchName_jetNDauChargedMVASel_ = Form("%s_%s", branchName_obj_.data(), "jetNDauChargedMVASel");
+  branchName_jetBtag_csvv2_cut_ = Form("%s_%s", branchName_obj_.data(), "jetBtag_csvv2_cut");
   branchName_tightCharge_ = Form("%s_%s", branchName_obj_.data(), "tightCharge");
   branchName_charge_ = Form("%s_%s", branchName_obj_.data(), "charge");
 }
@@ -115,6 +118,7 @@ void RecoLeptonWriter::setBranches(TTree * tree)
   bai.setBranch(jetPtRel_, branchName_jetPtRel_);
   bai.setBranch(jetBtagCSV_, branchName_jetBtagCSV_);
   bai.setBranch(jetNDauChargedMVASel_, branchName_jetNDauChargedMVASel_);
+  bai.setBranch(jetBtag_csvv2_cut_, branchName_jetBtag_csvv2_cut_);
   bai.setBranch(tightCharge_, branchName_tightCharge_);
   bai.setBranch(charge_, branchName_charge_);
 }
