@@ -60,9 +60,9 @@ RecoLeptonReader::~RecoLeptonReader()
   {
     RecoLeptonReader * const gInstance = instances_[branchName_obj_];
     assert(gInstance);
-    delete[] gInstance->genLeptonReader_;
-    delete[] gInstance->genHadTauReader_;
-    delete[] gInstance->genJetReader_;
+    delete gInstance->genLeptonReader_;
+    delete gInstance->genHadTauReader_;
+    delete gInstance->genJetReader_;
     delete[] gInstance->pt_;
     delete[] gInstance->eta_;
     delete[] gInstance->phi_;
