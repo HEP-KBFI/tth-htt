@@ -167,12 +167,12 @@ class analyzeConfig:
                 'HLT_Mu8_DiEle12_CaloIdL_TrackIdL',
             ]
             self.triggers_3e = [
-#                'HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL',
+                'HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL', # has PU dependence
             ]
             self.triggers_2mu = [
-#                'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL', # heavily prescaled
-#                'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ', # heavily prescaled
-                'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8',
+#                'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL', # heavily prescaled throughout 2017 data-taking period
+                'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ', # unprescaled in 2017B; heavily prescaled since 2017C
+                'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8', # introduced in 2017C
             ]
             self.triggers_1e1mu = [
                 'HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL', # not present in 2017B
@@ -188,7 +188,7 @@ class analyzeConfig:
                 'HLT_IsoMu27',
             ]
             self.triggers_1e = [
-                'HLT_Ele32_WPTight_Gsf', # not present in 2017B
+                'HLT_Ele32_WPTight_Gsf', # not present in 2017B (or, equivalently, not enabled at high lumi)
                 'HLT_Ele35_WPTight_Gsf',
             ]
             # CV: tau trigger paths taken from slide 6 of presentation given by Hale Sert at HTT workshop in December 2017
