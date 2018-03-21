@@ -162,7 +162,7 @@ RecoJetReader::setBranchAddresses(TTree * tree)
     bai.setBranchAddress(jet_phi_, branchName_phi_);
     bai.setBranchAddress(jet_mass_, branchName_mass_);
     bai.setBranchAddress(jet_charge_, branchName_jetCharge_);
-    bai.setBranchAddress(jet_jecUncertTotal_, isMC_ ? branchName_jecUncertTotal_ : "", 0.);
+    bai.setBranchAddress(jet_jecUncertTotal_, "", 0.);
     bai.setBranchAddress(jet_BtagCSV_, branchName_BtagCSV_);
     bai.setBranchAddress(jet_BtagWeight_, isMC_ ? branchName_BtagWeight_ : "", 1.);
     if(read_BtagWeight_systematics_)
