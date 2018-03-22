@@ -48,22 +48,26 @@ class syncNtupleConfig:
     final_output_dir = os.path.join(output_dir, DKEY_SYNC)
     self.final_output_file = os.path.join(final_output_dir, output_filename)
 
-    common_args = "-m %s -v %s -e %s -r %d -A" % \
+    common_args = "-m %s -v %s -e %s -r %d" % \
       ('sync_noMEM' if no_mem else 'sync',  version, era, resubmission_limit)
+    additional_args = " -A"
     if self.dry_run:
-      common_args += " -d"
+      additional_args += " -d"
     if disable_resubmission:
-      common_args += " -R"
+      additional_args += " -R"
     if check_input_files:
-      common_args += " -C"
+      additional_args += " -C"
     if isDebug:
-      common_args += " -D"
+      additional_args += " -D"
     if rle_select:
-      common_args += " -S '%s'" % rle_select
+      additional_args += " -S '%s'" % rle_select
 
-    inclusive_args = '-v %s -e %s -o %s.root' % (version, era, 'inclusive')
+    inclusive_args = '-v %s -e %s' % (version, era)
     if no_mem:
       inclusive_args += ' -N'
+
+    inclusive_args += additional_args
+    common_args    += additional_args
 
     self.channel_info = {}
     for channel in channels:
