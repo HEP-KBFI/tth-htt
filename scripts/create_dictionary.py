@@ -765,7 +765,7 @@ if __name__ == '__main__':
 
     # submit the jobs
     submit_cmds = list(map(
-      lambda job_param: 'sbatch --partition=small --output=%s %s' % job_param,
+      lambda job_param: 'sbatch --mem=1800M --partition=small --output=%s %s' % job_param,
       job_params
     ))
     squeue_codes = []

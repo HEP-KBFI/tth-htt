@@ -131,6 +131,7 @@ class sbatchManager:
         self.max_nof_greps  = 1000
         self.sbatchArgs     = ''
         self.datetime       = datetime.datetime.now().strftime('%m/%d/%y-%H:%M:%S')
+        self.max_mem        = '1800M'
 
         logging.basicConfig(
             stream = sys.stdout,
@@ -327,12 +328,14 @@ class sbatchManager:
         wrapper_log_file    = logFile.replace('.log', '_wrapper.log')
         executable_log_file = logFile.replace('.log', '_executable.log')
 
-        sbatch_command = "sbatch --partition={partition} --output={output} --comment='{comment}' {args} {cmd}".format(
+        sbatch_command = "sbatch --partition={partition} --output={output} --comment='{comment}' " \
+                         "--mem={max_mem} {args} {cmd}".format(
           partition = self.queue,
           output    = wrapper_log_file,
           comment   = self.pool_id,
           args      = self.sbatchArgs,
           cmd       = scriptFile,
+          max_mem   = self.max_mem,
         )
 
         two_pow_sixteen = 65536
