@@ -508,25 +508,16 @@ int main(int argc, char* argv[])
 //--- initialize BDTs used to discriminate ttH vs. ttV and ttH vs. ttbar
 //    in 3l category of ttH multilepton analysis
   std::string mvaFileName_3l_ttV = "tthAnalysis/HiggsToTauTau/data/3l_ttV_BDTG.weights.xml";
-  std::vector<std::string> mvaInputVariables_3l_ttV;
-  mvaInputVariables_3l_ttV.push_back("max(abs(LepGood_eta[iF_Recl[0]]),abs(LepGood_eta[iF_Recl[1]]))");
-  mvaInputVariables_3l_ttV.push_back("MT_met_lep1");
-  mvaInputVariables_3l_ttV.push_back("nJet25_Recl");
-  mvaInputVariables_3l_ttV.push_back("mindr_lep1_jet");
-  mvaInputVariables_3l_ttV.push_back("mindr_lep2_jet");
-  mvaInputVariables_3l_ttV.push_back("LepGood_conePt[iF_Recl[0]]");
-  mvaInputVariables_3l_ttV.push_back("LepGood_conePt[iF_Recl[2]]");
+  std::vector<std::string> mvaInputVariables_3l_ttV={
+    "max(abs(LepGood_eta[iF_Recl[0]]),abs(LepGood_eta[iF_Recl[1]]))", "MT_met_lep1",
+    "nJet25_Recl", "mindr_lep1_jet", "mindr_lep2_jet", "LepGood_conePt[iF_Recl[0]]",
+    "LepGood_conePt[iF_Recl[2]]"};
   TMVAInterface mva_3l_ttV(mvaFileName_3l_ttV, mvaInputVariables_3l_ttV, { "iF_Recl[0]", "iF_Recl[1]", "iF_Recl[2]" });
 
   std::string mvaFileName_3l_ttbar = "tthAnalysis/HiggsToTauTau/data/3l_ttbar_BDTG.weights.xml";
-  std::vector<std::string> mvaInputVariables_3l_ttbar;
-  mvaInputVariables_3l_ttbar.push_back("max(abs(LepGood_eta[iF_Recl[0]]),abs(LepGood_eta[iF_Recl[1]]))");
-  mvaInputVariables_3l_ttbar.push_back("MT_met_lep1");
-  mvaInputVariables_3l_ttbar.push_back("nJet25_Recl");
-  mvaInputVariables_3l_ttbar.push_back("mhtJet25_Recl");
-  mvaInputVariables_3l_ttbar.push_back("avg_dr_jet");
-  mvaInputVariables_3l_ttbar.push_back("mindr_lep1_jet");
-  mvaInputVariables_3l_ttbar.push_back("mindr_lep2_jet");
+  std::vector<std::string> mvaInputVariables_3l_ttbar={
+    "max(abs(LepGood_eta[iF_Recl[0]]),abs(LepGood_eta[iF_Recl[1]]))", "MT_met_lep1",
+    "nJet25_Recl", "mhtJet25_Recl", "avg_dr_jet", "mindr_lep1_jet", "mindr_lep2_jet"};
   TMVAInterface mva_3l_ttbar(mvaFileName_3l_ttbar, mvaInputVariables_3l_ttbar, { "iF_Recl[0]", "iF_Recl[1]", "iF_Recl[2]" });
 
   std::vector<std::string> mvaInputVariables_3l = get_mvaInputVariables(mvaInputVariables_3l_ttV, mvaInputVariables_3l_ttbar);
