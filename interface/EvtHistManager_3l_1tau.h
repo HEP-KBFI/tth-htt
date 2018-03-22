@@ -23,10 +23,19 @@ class EvtHistManager_3l_1tau
 
   /// book and fill histograms
   void bookHistograms(TFileDirectory& dir);
-  void fillHistograms(int numElectrons, int numMuons, int numHadTaus, int numJets, int numBJets_loose, int numBJets_medium, 
-		      double mvaOutput_3l_ttV, double mvaOutput_3l_ttbar, double mvaDiscr_3l, double mvaOutput_3l_1tau_ttV, double mvaOutput_3l_1tau_ttbar, double mvaDiscr_3l_1tau, 
-		      double mTauTauVis1, double mTauTauVis2, 
-		      const MEMOutput_3l_1tau* memOutput_3l_1tau, double evtWeight);
+  void fillHistograms(int numElectrons, int numMuons, int numHadTaus, int numJets, int numBJets_loose, int numBJets_medium,
+		      double mvaOutput_3l_ttV,
+          double mvaOutput_3l_ttbar,
+          double mvaDiscr_3l,
+		      double mTauTauVis1,
+          double mTauTauVis2,
+		      const MEMOutput_3l_1tau* memOutput_3l_1tau,
+          double evtWeight,
+          double mvaOutput_noHTT_tt,
+          double mvaOutput_noHTT_ttV,
+          double mvaOutput_noHTT_SUM_M,
+          double mvaOutput_noHTT_1B_M
+        );
 
   const TH1* getHistogram_EventCounter() const { return histogram_EventCounter_; }
 
@@ -47,10 +56,6 @@ class EvtHistManager_3l_1tau
   TH1* histogram_mvaOutput_3l_ttbar_;
   TH1* histogram_mvaDiscr_3l_;
 
-  TH1* histogram_mvaOutput_3l_1tau_ttV_;
-  TH1* histogram_mvaOutput_3l_1tau_ttbar_;
-  TH1* histogram_mvaDiscr_3l_1tau_;
-
   TH1* histogram_mTauTauVis_;
 
   TH1* histogram_memOutput_isValid_;
@@ -65,7 +70,11 @@ class EvtHistManager_3l_1tau
 
   TH1* histogram_EventCounter_;
 
-  std::vector<TH1*> histograms_;
+  TH1* histogram_mvaOutput_noHTT_tt_;
+  TH1* histogram_mvaOutput_noHTT_ttV_;
+  TH1* histogram_mvaOutput_noHTT_SUM_M_;
+  TH1* histogram_mvaOutput_noHTT_1B_M_;
+
 };
 
 #endif

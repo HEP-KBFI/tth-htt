@@ -31,12 +31,22 @@ void EvtHistManager_2l_2tau::bookHistograms(TFileDirectory& dir)
 
   histogram_mvaOutput_noHTT_tt_ = book1D(dir, "mvaOutput_noHTT_tt", "mvaOutput_noHTT_tt", 100, 0.0, 1.0);
   histogram_mvaOutput_noHTT_ttV_ = book1D(dir, "mvaOutput_noHTT_ttV", "mvaOutput_noHTT_ttV", 100, 0.0, 1.0);
+  histogram_mvaOutput_noHTT_SUM_M_ = book1D(dir, "mvaOutput_noHTT_SUM_M", "mvaOutput_noHTT_SUM_M", 100, 0.0, 1.0);
+  histogram_mvaOutput_noHTT_SUM_T_ = book1D(dir, "mvaOutput_noHTT_SUM_T", "mvaOutput_noHTT_SUM_T", 100, 0.0, 1.0);
   histogram_mvaOutput_noHTT_SUM_VT_= book1D(dir, "mvaOutput_noHTT_SUM_VT", "mvaOutput_noHTT_SUM_VT", 100, 0.0, 1.0);
+  histogram_mvaOutput_noHTT_1B_M_ = book1D(dir, "mvaOutput_noHTT_1B_M", "mvaOutput_noHTT_1B_M", 100, 0.0, 1.0);
+  histogram_mvaOutput_noHTT_1B_T_ = book1D(dir, "mvaOutput_noHTT_1B_T", "mvaOutput_noHTT_1B_T", 100, 0.0, 1.0);
   histogram_mvaOutput_noHTT_1B_VT_= book1D(dir, "mvaOutput_noHTT_1B_VT", "mvaOutput_noHTT_1B_VT", 100, 0.0, 1.0);
   histogram_EventCounter_ = book1D(dir, "EventCounter", "EventCounter", 1, -0.5, +0.5);
 }
 
-void EvtHistManager_2l_2tau::fillHistograms(int numElectrons, int numMuons, int numHadTaus, int numJets, int numBJets_loose, int numBJets_medium, double mvaOutput_2l_2tau_ttV, double mvaOutput_2l_2tau_ttbar, double mvaDiscr_2l_2tau, double mTauTauVis, double leptonPairCharge, double hadTauPairCharge, double evtWeight, double mvaOutput_noHTT_tt, double mvaOutput_noHTT_ttV, double mvaOutput_noHTT_SUM_VT, double mvaOutput_noHTT_1B_VT)
+void EvtHistManager_2l_2tau::fillHistograms(int numElectrons, int numMuons, int numHadTaus, int numJets, int numBJets_loose, int numBJets_medium,
+					    double mvaOutput_2l_2tau_ttV, double mvaOutput_2l_2tau_ttbar, double mvaDiscr_2l_2tau,
+					    double mTauTauVis, double leptonPairCharge, double hadTauPairCharge, double evtWeight,
+              double mvaOutput_noHTT_tt, double mvaOutput_noHTT_ttV,
+              double mvaOutput_noHTT_SUM_M, double mvaOutput_noHTT_SUM_T, double mvaOutput_noHTT_SUM_VT,
+              double mvaOutput_noHTT_1B_M, double mvaOutput_noHTT_1B_T, double mvaOutput_noHTT_1B_VT
+            )
 {
   double evtWeightErr = 0.;
 
@@ -62,6 +72,10 @@ void EvtHistManager_2l_2tau::fillHistograms(int numElectrons, int numMuons, int 
 
   fillWithOverFlow(histogram_mvaOutput_noHTT_tt_, mvaOutput_noHTT_tt, evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_mvaOutput_noHTT_ttV_, mvaOutput_noHTT_ttV, evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_mvaOutput_noHTT_SUM_M_, mvaOutput_noHTT_SUM_M, evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_mvaOutput_noHTT_SUM_T_, mvaOutput_noHTT_SUM_T, evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_mvaOutput_noHTT_SUM_VT_, mvaOutput_noHTT_SUM_VT, evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_mvaOutput_noHTT_1B_M_, mvaOutput_noHTT_1B_M, evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_mvaOutput_noHTT_1B_T_, mvaOutput_noHTT_1B_T, evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_mvaOutput_noHTT_1B_VT_, mvaOutput_noHTT_1B_VT, evtWeight, evtWeightErr);
 }

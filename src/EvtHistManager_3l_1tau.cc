@@ -12,7 +12,7 @@ EvtHistManager_3l_1tau::EvtHistManager_3l_1tau(const edm::ParameterSet& cfg)
   era_ = -1;
   if      ( era_string == "2015" ) era_ = kEra_2015;
   else if ( era_string == "2016" ) era_ = kEra_2016;
-  else throw cms::Exception("EvtHistManager_3l_1tau") 
+  else throw cms::Exception("EvtHistManager_3l_1tau")
     << "Invalid Configuration parameter 'era' = " << era_string << " !!\n";
 }
 
@@ -34,10 +34,6 @@ void EvtHistManager_3l_1tau::bookHistograms(TFileDirectory& dir)
   else if ( era_ == kEra_2016 ) histogram_mvaDiscr_3l_  = book1D(dir, "mvaDiscr_3l", "mvaDiscr_3l", 5, 0.5, 5.5);
   else assert(0);
 
-  histogram_mvaOutput_3l_1tau_ttV_ = book1D(dir, "mvaOutput_3l_1tau_ttV", "mvaOutput_3l_1tau_ttV", 40, -1., +1.);
-  histogram_mvaOutput_3l_1tau_ttbar_ = book1D(dir, "mvaOutput_3l_1tau_ttbar", "mvaOutput_3l_1tau_ttbar", 40, -1., +1.);
-  histogram_mvaDiscr_3l_1tau_ = book1D(dir, "mvaDiscr_3l_1tau", "mvaDiscr_3l_1tau", 8, 0.5, 8.5);
-
   histogram_mTauTauVis_ = book1D(dir, "mTauTauVis", "mTauTauVis", 20, 0., 200.);
 
   histogram_memOutput_isValid_ = book1D(dir, "memOutput_isValid", "memOutput_isValid", 3, -1.5, +1.5);
@@ -50,13 +46,22 @@ void EvtHistManager_3l_1tau::bookHistograms(TFileDirectory& dir)
   histogram_mem_logRealTime_ = book1D(dir, "mem_logRealTime", "mem_logRealTime", 400, -20., +20.);
 
   histogram_EventCounter_ = book1D(dir, "EventCounter", "EventCounter", 1, -0.5, +0.5);
+
+  histogram_mvaOutput_noHTT_tt_ = book1D(dir, "mvaOutput_noHTT_tt", "mvaOutput_noHTT_tt", 100, 0., 1.);
+  histogram_mvaOutput_noHTT_ttV_ = book1D(dir, "mvaOutput_noHTT_ttV", "mvaOutput_noHTT_ttV", 100, 0., 1.);
+  histogram_mvaOutput_noHTT_SUM_M_ = book1D(dir, "mvaOutput_noHTT_SUM_M", "mvaOutput_noHTT_SUM_M", 100, 0., 1.);
+  histogram_mvaOutput_noHTT_1B_M_ = book1D(dir, "mvaOutput_noHTT_1B_M", "mvaOutput_noHTT_1B_M", 100, 0., 1.);
 }
 
-void EvtHistManager_3l_1tau::fillHistograms(int numElectrons, int numMuons, int numHadTaus, int numJets, int numBJets_loose, int numBJets_medium, 
-					    double mvaOutput_3l_ttV, double mvaOutput_3l_ttbar, double mvaDiscr_3l, 
-					    double mvaOutput_3l_1tau_ttV, double mvaOutput_3l_1tau_ttbar, double mvaDiscr_3l_1tau, 
-					    double mTauTauVis1, double mTauTauVis2, 
-					    const MEMOutput_3l_1tau* memOutput_3l_1tau, double evtWeight)
+void EvtHistManager_3l_1tau::fillHistograms(int numElectrons, int numMuons, int numHadTaus, int numJets, int numBJets_loose, int numBJets_medium,
+					    double mvaOutput_3l_ttV, double mvaOutput_3l_ttbar, double mvaDiscr_3l,
+					    double mTauTauVis1, double mTauTauVis2,
+					    const MEMOutput_3l_1tau* memOutput_3l_1tau, double evtWeight,
+              double mvaOutput_noHTT_tt,
+              double mvaOutput_noHTT_ttV,
+              double mvaOutput_noHTT_SUM_M,
+              double mvaOutput_noHTT_1B_M
+            )
 {
   double evtWeightErr = 0.;
 
@@ -74,10 +79,6 @@ void EvtHistManager_3l_1tau::fillHistograms(int numElectrons, int numMuons, int 
   fillWithOverFlow(histogram_mvaOutput_3l_ttbar_, mvaOutput_3l_ttbar, evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_mvaDiscr_3l_, mvaDiscr_3l, evtWeight, evtWeightErr);
 
-  fillWithOverFlow(histogram_mvaOutput_3l_1tau_ttV_, mvaOutput_3l_1tau_ttV, evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_mvaOutput_3l_1tau_ttbar_, mvaOutput_3l_1tau_ttbar, evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_mvaDiscr_3l_1tau_, mvaDiscr_3l_1tau, evtWeight, evtWeightErr);
-
   double mTauTauVisSF = ( mTauTauVis1 > 0. && mTauTauVis2 > 0. ) ? 0.5 : 1.;
   if ( mTauTauVis1 > 0. ) {
     fillWithOverFlow(histogram_mTauTauVis_, mTauTauVis1, mTauTauVisSF*evtWeight, mTauTauVisSF*evtWeightErr);
@@ -85,7 +86,7 @@ void EvtHistManager_3l_1tau::fillHistograms(int numElectrons, int numMuons, int 
   if ( mTauTauVis2 > 0. ) {
     fillWithOverFlow(histogram_mTauTauVis_, mTauTauVis2, mTauTauVisSF*evtWeight, mTauTauVisSF*evtWeightErr);
   }
-  
+
   if ( memOutput_3l_1tau ) {
     fillWithOverFlow(histogram_memOutput_isValid_, memOutput_3l_1tau->isValid(), evtWeight, evtWeightErr);
     if ( memOutput_3l_1tau->isValid() ) {
@@ -104,4 +105,9 @@ void EvtHistManager_3l_1tau::fillHistograms(int numElectrons, int numMuons, int 
   }
 
   fillWithOverFlow(histogram_EventCounter_, 0., evtWeight, evtWeightErr);
+
+  fillWithOverFlow(histogram_mvaOutput_noHTT_tt_, mvaOutput_noHTT_tt, evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_mvaOutput_noHTT_ttV_, mvaOutput_noHTT_ttV, evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_mvaOutput_noHTT_SUM_M_, mvaOutput_noHTT_SUM_M, evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_mvaOutput_noHTT_1B_M_, mvaOutput_noHTT_1B_M, evtWeight, evtWeightErr);
 }
