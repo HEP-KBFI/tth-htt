@@ -20,6 +20,7 @@ parser.add_option("--version ", type="string", dest="version", help="Name of out
 parser.add_option("--mode", type="string", dest="mode", help="Set the mode flag, read the script for options", default="VHbb")
 parser.add_option("--ERA", type="string", dest="ERA", help="Era of data", default='2016')
 parser.add_option("--use_prod_ntuples", action="store_true", dest="use_prod_ntuples", help="Production flag", default=False)
+parser.add_option("--noQuery", action="store_true", dest="noQuery", help="run (in bkg), do not ask", default=False)
 (options, args) = parser.parse_args()
 
 use_prod_ntuples     = options.use_prod_ntuples #True
@@ -37,6 +38,7 @@ changeBranchNames                  = use_prod_ntuples
 applyFakeRateWeights               = None
 MEMbranch                          = ''
 hadTauFakeRateWeight_inputFileName = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016.root"
+doShapeSyst=False
 
 # Karl: temporarily disable addMEM mode until we've proper Ntuples
 #if mode in ["addMEM"]:
@@ -79,7 +81,7 @@ elif mode == "forBDTtraining_afterAddMEM":
   from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_FastSim_addMEM_2lss1tau import samples_2016
   changeBranchNames        = True
   MEMbranch                = 'memObjects_2lss_1tau_lepLoose_tauTight_dR03mvaMedium'
-  hadTau_selection         = "dR03mvaMedium"  ## "dR03mvaVTight"
+  hadTau_selection         = "dR03mvaMedium"
   hadTau_selection_relaxed = "dR03mvaMedium"
   applyFakeRateWeights =  "2lepton"
 
@@ -107,9 +109,9 @@ elif mode == "forBDTtraining_VHbb":
       from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_prodNtuples_2016_toBDT import samples_2016
       changeBranchNames        = True
       MEMbranch                = '' #'memObjects_2lss_1tau_lepLoose_tauTight_dR03mvaMedium'
-      hadTau_selection         = "dR03mvaMedium"  ## "dR03mvaVTight"
-      hadTau_selection_relaxed = "dR03mvaLoose" #"dR03mvaMedium"
-      applyFakeRateWeights =  "3L" #"2lepton"
+      hadTau_selection         = "dR03mvaMedium"
+      hadTau_selection_relaxed = "dR03mvaLoose"
+      applyFakeRateWeights =  "3L" 
 else:
   raise ValueError("Invalid Configuration parameter 'mode' = %s !!" % mode)
 
@@ -149,32 +151,70 @@ if __name__ == '__main__':
   run_analysis           = False
   is_last_resubmission   = False
 
-  # do histograms for 2D bin optimizations
-  nbinsTarget=[5,6,7,8,9,10];
-  nbinsStart=[15,20];
-  hist_HTT=[] # [[None]*int(len(nbinsTarget))]*len(nbinsStart)
-  hist_noHTT=[] # [[None]*int(len(nbinsTarget))]*len(nbinsStart)
-  hist_HTTMEM=[] # [[None]*int(len(nbinsTarget))]*len(nbinsStart)
-  hist_oldVarA=[] # [[None]*int(len(nbinsTarget))]*len(nbinsStart)
-  for nbinsStartN in range(0,len(nbinsStart)) :
-    for nbinsTargetN in range(0,len(nbinsTarget)) :
-      hist_HTT.append("HTT_from"+str(nbinsStart[nbinsStartN])+"_to_"+str(nbinsTarget[nbinsTargetN]))
-      hist_noHTT.append("noHTT_from"+str(nbinsStart[nbinsStartN])+"_to_"+str(nbinsTarget[nbinsTargetN]))
-      hist_HTTMEM.append("HTTMEM_from"+str(nbinsStart[nbinsStartN])+"_to_"+str(nbinsTarget[nbinsTargetN]))
-      hist_oldVarA.append("oldVarA_from"+str(nbinsStart[nbinsStartN])+"_to_"+str(nbinsTarget[nbinsTargetN]))
-  print list(hist_HTT)
-  print list(hist_noHTT)
-  print list(hist_HTTMEM)
-  print list(hist_oldVarA)
+  shapesToDo=["central"]
+  if doShapeSyst==True:
+      shapesToDo=[
+        "central",
+        "CMS_ttHl_btag_HFUp",
+        "CMS_ttHl_btag_HFDown",
+        "CMS_ttHl_btag_HFStats1Up",
+        "CMS_ttHl_btag_HFStats1Down",
+        "CMS_ttHl_btag_HFStats2Up",
+        "CMS_ttHl_btag_HFStats2Down",
+        "CMS_ttHl_btag_LFUp",
+        "CMS_ttHl_btag_LFDown",
+        "CMS_ttHl_btag_LFStats1Up",
+        "CMS_ttHl_btag_LFStats1Down",
+        "CMS_ttHl_btag_LFStats2Up",
+        "CMS_ttHl_btag_LFStats2Down",
+        "CMS_ttHl_btag_cErr1Up",
+        "CMS_ttHl_btag_cErr1Down",
+        "CMS_ttHl_btag_cErr2Up",
+        "CMS_ttHl_btag_cErr2Down",
+        "CMS_ttHl_JESUp",
+        "CMS_ttHl_JESDown",
+        #------------------------------------------------------
+        # CV: enable the CMS_ttHl_FRe_shape and CMS_ttHl_FRm_shape only
+        #     if you plan to run compShapeSyst 1!
+        "CMS_ttHl_FRe_shape_ptUp",
+        "CMS_ttHl_FRe_shape_ptDown",
+        "CMS_ttHl_FRe_shape_etaUp",
+        "CMS_ttHl_FRe_shape_etaDown",
+        "CMS_ttHl_FRe_shape_eta_barrelUp",
+        "CMS_ttHl_FRe_shape_eta_barrelDown",
+        "CMS_ttHl_FRm_shape_ptUp",
+        "CMS_ttHl_FRm_shape_ptDown",
+        "CMS_ttHl_FRm_shape_etaUp",
+        "CMS_ttHl_FRm_shape_etaDown",
+        #------------------------------------------------------
+        "CMS_ttHl_tauESUp",
+        "CMS_ttHl_tauESDown",
+        "CMS_ttHl_FRjt_normUp",
+        "CMS_ttHl_FRjt_normDown",
+        "CMS_ttHl_FRjt_shapeUp",
+        "CMS_ttHl_FRjt_shapeDown",
+        "CMS_ttHl_FRet_shiftUp",
+        "CMS_ttHl_FRet_shiftDown",
+        "CMS_ttHl_FRmt_shiftUp",
+        "CMS_ttHl_FRmt_shiftDown",
+        "CMS_ttHl_thu_shape_ttH_x1Up",
+        "CMS_ttHl_thu_shape_ttH_x1Down",
+        "CMS_ttHl_thu_shape_ttH_y1Up",
+        "CMS_ttHl_thu_shape_ttH_y1Down",
+        "CMS_ttHl_thu_shape_ttW_x1Up",
+        "CMS_ttHl_thu_shape_ttW_x1Down",
+        "CMS_ttHl_thu_shape_ttW_y1Up",
+        "CMS_ttHl_thu_shape_ttW_y1Down",
+        "CMS_ttHl_thu_shape_ttZ_x1Up",
+        "CMS_ttHl_thu_shape_ttZ_x1Down",
+        "CMS_ttHl_thu_shape_ttZ_y1Up",
+        "CMS_ttHl_thu_shape_ttZ_y1Down"
+        ]
 
   for idx_job_resubmission in range(max_job_resubmission):
     if is_last_resubmission:
       continue
     logging.info("Job submission #%i:" % (idx_job_resubmission + 1))
-
-
-
-
 
     analysis = analyzeConfig_2lss_1tau(
       configDir                 = configDir,
@@ -190,63 +230,7 @@ if __name__ == '__main__':
       #     https://indico.cern.ch/event/597028/contributions/2413742/attachments/1391684/2120220/16.12.22_ttH_Htautau_-_Review_of_systematics.pdf
       applyFakeRateWeights      = applyFakeRateWeights,
       chargeSumSelections       = [ "OS"] if mode.find("forBDTtraining") != -1 else [ "OS", "SS" ],
-      central_or_shifts         = [
-        "central",
-##         "CMS_ttHl_btag_HFUp",
-##         "CMS_ttHl_btag_HFDown",
-##         "CMS_ttHl_btag_HFStats1Up",
-##         "CMS_ttHl_btag_HFStats1Down",
-##         "CMS_ttHl_btag_HFStats2Up",
-##         "CMS_ttHl_btag_HFStats2Down",
-##         "CMS_ttHl_btag_LFUp",
-##         "CMS_ttHl_btag_LFDown",
-##         "CMS_ttHl_btag_LFStats1Up",
-##         "CMS_ttHl_btag_LFStats1Down",
-##         "CMS_ttHl_btag_LFStats2Up",
-##         "CMS_ttHl_btag_LFStats2Down",
-##         "CMS_ttHl_btag_cErr1Up",
-##         "CMS_ttHl_btag_cErr1Down",
-##         "CMS_ttHl_btag_cErr2Up",
-##         "CMS_ttHl_btag_cErr2Down",
-##         "CMS_ttHl_JESUp",
-##         "CMS_ttHl_JESDown",
-        #------------------------------------------------------
-        # CV: enable the CMS_ttHl_FRe_shape and CMS_ttHl_FRm_shape only
-        #     if you plan to run compShapeSyst 1!
-##         "CMS_ttHl_FRe_shape_ptUp",
-##         "CMS_ttHl_FRe_shape_ptDown",
-##         "CMS_ttHl_FRe_shape_etaUp",
-##         "CMS_ttHl_FRe_shape_etaDown",
-##         "CMS_ttHl_FRe_shape_eta_barrelUp",
-##         "CMS_ttHl_FRe_shape_eta_barrelDown",
-##         "CMS_ttHl_FRm_shape_ptUp",
-##         "CMS_ttHl_FRm_shape_ptDown",
-##         "CMS_ttHl_FRm_shape_etaUp",
-##         "CMS_ttHl_FRm_shape_etaDown",
-        #------------------------------------------------------
-##         "CMS_ttHl_tauESUp",
-##         "CMS_ttHl_tauESDown",
-##         "CMS_ttHl_FRjt_normUp",
-##         "CMS_ttHl_FRjt_normDown",
-##         "CMS_ttHl_FRjt_shapeUp",
-##         "CMS_ttHl_FRjt_shapeDown",
-##         "CMS_ttHl_FRet_shiftUp",
-##         "CMS_ttHl_FRet_shiftDown",
-##         "CMS_ttHl_FRmt_shiftUp",
-##         "CMS_ttHl_FRmt_shiftDown",
-##         "CMS_ttHl_thu_shape_ttH_x1Up",
-##         "CMS_ttHl_thu_shape_ttH_x1Down",
-##         "CMS_ttHl_thu_shape_ttH_y1Up",
-##         "CMS_ttHl_thu_shape_ttH_y1Down",
-##         "CMS_ttHl_thu_shape_ttW_x1Up",
-##         "CMS_ttHl_thu_shape_ttW_x1Down",
-##         "CMS_ttHl_thu_shape_ttW_y1Up",
-##         "CMS_ttHl_thu_shape_ttW_y1Down",
-##         "CMS_ttHl_thu_shape_ttZ_x1Up",
-##         "CMS_ttHl_thu_shape_ttZ_x1Down",
-##         "CMS_ttHl_thu_shape_ttZ_y1Up",
-##         "CMS_ttHl_thu_shape_ttZ_y1Down",
-      ],
+      central_or_shifts         = shapesToDo,
       max_files_per_job         = max_files_per_job,
       era                       = ERA,
       use_lumi                  = True,
@@ -261,38 +245,17 @@ if __name__ == '__main__':
         "EventCounter",
         "numJets",
         "mvaOutput_2lss_ttV",
-        "mvaOutput_2lss_ttbar",
-        "mvaDiscr_2lss",
-        "mvaOutput_2lss_1tau_ttV",
-        "mvaOutput_2lss_1tau_ttbar",
-        "mvaDiscr_2lss_1tau",
-        "mvaOutput_2lss_1tau_ttV_wMEM",
-        "mvaOutput_2lss_1tau_ttbar_wMEM",
-        "mvaDiscr_2lss_1tau_wMEM",
-        "mvaOutput_Hj_tagger",
-        "mvaOutput_Hjj_tagger",
+        "mvaOutput_2lss_tt",
+        "mvaOutput_2lss_1tau_plainKin_tt",
+        "mvaOutput_2lss_1tau_plainKin_ttV",
+        "mvaOutput_2lss_1tau_plainKin_1B_M",
+        "mvaOutput_2lss_1tau_plainKin_SUM_M",
+        "mvaOutput_2lss_1tau_HTT_SUM_M",
+        "mvaOutput_2lss_1tau_HTTMEM_SUM_M",
         "mTauTauVis1_sel",
         "mTauTauVis2_sel",
-        "memOutput_LR",
-        "memDiscr",
-        #
-        "mvaOutput_2lss_oldVarA_tt",
-        "mvaOutput_2lss_oldVarA_ttV",
-        "mvaOutput_2lss_noHTT_tt",
-        "mvaOutput_2lss_noHTT_ttV",
-        "mvaOutput_2lss_HTT_tt",
-        "mvaOutput_2lss_HTTMEM_tt",
-        "mvaOutput_2lss_HTTMEM_ttV",
-        "mvaOutput_2lss_HTT_LepID_tt",
-        #
-        "mvaOutput_2lss_HTTMEM_1B",
-        "mvaOutput_2lss_HTT_1B",
-        "mvaOutput_2lss_noHTT_1B",
-        "mvaOutput_2lss_oldVarA_1B",
-        "mvaOutput_2lss_oldVarA_2MEM",
-        "mvaOutput_2lss_noHTT_2MEM",
-        "mvaOutput_2lss_noHTT_2HTT"
-      ] + list(hist_HTTMEM) + list(hist_oldVarA)  + list(hist_HTT) +list(hist_noHTT),
+        "memOutput_LR"
+      ],
       select_rle_output         = True,
       verbose                   = idx_job_resubmission > 0,
     )
@@ -305,12 +268,14 @@ if __name__ == '__main__':
       logging.info(" #jobs of type '%s' = %i" % (job_type, num_jobs))
     job_statistics_summary[idx_job_resubmission] = job_statistics
 
-    if idx_job_resubmission == 0:
-      run_analysis = query_yes_no("Start jobs ?")
-    if run_analysis:
-      analysis.run()
-    else:
-      sys.exit(0)
+    if not options.noQuery :
+        if idx_job_resubmission == 0:
+          run_analysis = query_yes_no("Start jobs ?")
+        if run_analysis:
+          analysis.run()
+        else:
+          sys.exit(0)
+    else : analysis.run()
 
     if job_statistics['analyze'] == 0:
       is_last_resubmission = True

@@ -17,6 +17,7 @@ parser.add_option("--version ", type="string", dest="version", help="Name of out
 parser.add_option("--mode", type="string", dest="mode", help="Set the mode flag, read the script for options", default="VHbb")
 parser.add_option("--ERA", type="string", dest="ERA", help="Era of data", default='2016')
 parser.add_option("--use_prod_ntuples", action="store_true", dest="use_prod_ntuples", help="Production flag", default=False)
+parser.add_option("--noQuery", action="store_true", dest="noQuery", help="run (in bkg), do not ask", default=False)
 (options, args) = parser.parse_args()
 
 use_prod_ntuples     = options.use_prod_ntuples #True
@@ -94,10 +95,8 @@ if mode == "VHbb":
 elif mode == "forBDTtraining":
   if use_prod_ntuples:
     from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_prodNtuples_2016_FastSim import samples_2016
-	#from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_hadTopTagger_2016 import samples_2016
   else:
     from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_FastSim import samples_2016
-	#from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_hadTopTagger_2016 import samples_2016
   hadTau_selection                   = "dR03mvaTight"
   hadTau_selection_relaxed           = "dR03mvaMedium"
   applyFakeRateWeights               = "3L"
@@ -124,6 +123,53 @@ if __name__ == '__main__':
   run_analysis           = False
   is_last_resubmission   = False
 
+  doShapeSyst=True
+  shapesToDo=["central"]
+  if doShapeSyst==True:
+      shapesToDo=[
+          "central",
+          "CMS_ttHl_btag_HFUp",
+          "CMS_ttHl_btag_HFDown",
+          "CMS_ttHl_btag_HFStats1Up",
+          "CMS_ttHl_btag_HFStats1Down",
+          "CMS_ttHl_btag_HFStats2Up",
+          "CMS_ttHl_btag_HFStats2Down",
+          "CMS_ttHl_btag_LFUp",
+          "CMS_ttHl_btag_LFDown",
+          "CMS_ttHl_btag_LFStats1Up",
+          "CMS_ttHl_btag_LFStats1Down",
+          "CMS_ttHl_btag_LFStats2Up",
+          "CMS_ttHl_btag_LFStats2Down",
+          "CMS_ttHl_btag_cErr1Up",
+          "CMS_ttHl_btag_cErr1Down",
+          "CMS_ttHl_btag_cErr2Up",
+          "CMS_ttHl_btag_cErr2Down",
+          "CMS_ttHl_JESUp",
+          "CMS_ttHl_JESDown",
+          "CMS_ttHl_tauESUp",
+          "CMS_ttHl_tauESDown",
+          "CMS_ttHl_FRjt_normUp",
+          "CMS_ttHl_FRjt_normDown",
+          "CMS_ttHl_FRjt_shapeUp",
+          "CMS_ttHl_FRjt_shapeDown",
+          "CMS_ttHl_FRet_shiftUp",
+          "CMS_ttHl_FRet_shiftDown",
+          "CMS_ttHl_FRmt_shiftUp",
+          "CMS_ttHl_FRmt_shiftDown",
+          "CMS_ttHl_thu_shape_ttH_x1Up",
+          "CMS_ttHl_thu_shape_ttH_x1Down",
+          "CMS_ttHl_thu_shape_ttH_y1Up",
+          "CMS_ttHl_thu_shape_ttH_y1Down",
+          "CMS_ttHl_thu_shape_ttW_x1Up",
+          "CMS_ttHl_thu_shape_ttW_x1Down",
+          "CMS_ttHl_thu_shape_ttW_y1Up",
+          "CMS_ttHl_thu_shape_ttW_y1Down",
+          "CMS_ttHl_thu_shape_ttZ_x1Up",
+          "CMS_ttHl_thu_shape_ttZ_x1Down",
+          "CMS_ttHl_thu_shape_ttZ_y1Up",
+          "CMS_ttHl_thu_shape_ttZ_y1Down",
+      ]
+
   for idx_job_resubmission in range(max_job_resubmission):
     if is_last_resubmission:
       continue
@@ -139,49 +185,7 @@ if __name__ == '__main__':
       hadTau_selection         = hadTau_selection,
       hadTau_charge_selections =  [ "OS"] if mode == "forBDTtraining" else [ "OS", "SS" ], #
       applyFakeRateWeights     = applyFakeRateWeights,
-      central_or_shifts = [
-        "central",
-##        "CMS_ttHl_btag_HFUp",
-##        "CMS_ttHl_btag_HFDown",
-##        "CMS_ttHl_btag_HFStats1Up",
-##        "CMS_ttHl_btag_HFStats1Down",
-##        "CMS_ttHl_btag_HFStats2Up",
-##        "CMS_ttHl_btag_HFStats2Down",
-##        "CMS_ttHl_btag_LFUp",
-##        "CMS_ttHl_btag_LFDown",
-##        "CMS_ttHl_btag_LFStats1Up",
-##        "CMS_ttHl_btag_LFStats1Down",
-##        "CMS_ttHl_btag_LFStats2Up",
-##        "CMS_ttHl_btag_LFStats2Down",
-##        "CMS_ttHl_btag_cErr1Up",
-##        "CMS_ttHl_btag_cErr1Down",
-##        "CMS_ttHl_btag_cErr2Up",
-##        "CMS_ttHl_btag_cErr2Down",
-##        "CMS_ttHl_JESUp",
-##        "CMS_ttHl_JESDown",
-##        "CMS_ttHl_tauESUp",
-##        "CMS_ttHl_tauESDown",
-##        "CMS_ttHl_FRjt_normUp",
-##        "CMS_ttHl_FRjt_normDown",
-##        "CMS_ttHl_FRjt_shapeUp",
-##        "CMS_ttHl_FRjt_shapeDown",
-##        "CMS_ttHl_FRet_shiftUp",
-##        "CMS_ttHl_FRet_shiftDown",
-##        "CMS_ttHl_FRmt_shiftUp",
-##        "CMS_ttHl_FRmt_shiftDown",
-##        "CMS_ttHl_thu_shape_ttH_x1Up",
-##        "CMS_ttHl_thu_shape_ttH_x1Down",
-##        "CMS_ttHl_thu_shape_ttH_y1Up",
-##        "CMS_ttHl_thu_shape_ttH_y1Down",
-##        "CMS_ttHl_thu_shape_ttW_x1Up",
-##        "CMS_ttHl_thu_shape_ttW_x1Down",
-##        "CMS_ttHl_thu_shape_ttW_y1Up",
-##        "CMS_ttHl_thu_shape_ttW_y1Down",
-##        "CMS_ttHl_thu_shape_ttZ_x1Up",
-##        "CMS_ttHl_thu_shape_ttZ_x1Down",
-##        "CMS_ttHl_thu_shape_ttZ_y1Up",
-##        "CMS_ttHl_thu_shape_ttZ_y1Down",
-      ],
+      central_or_shifts = ,
       max_files_per_job                     = max_files_per_job,
       era                                   = ERA,
       use_lumi                              = True,
@@ -194,16 +198,12 @@ if __name__ == '__main__':
       histograms_to_fit                     = [
         "EventCounter",
         "numJets",
-        "mvaOutput_1l_2tau_ttbar_Old",
-        "mvaOutput_1l_2tau_ttbar_Old_5bins",
-        "mvaOutput_sum_HTT_4bins",
-        "mvaOutput_1B_HTT_4bins",
-        "mvaOutput_ttbar_HTT",
-        "mvaOutput_ttV_HTT",
-        "mvaDiscr_1l_2tau",
-        "mvaOutput_1B_HTT",
+        "mvaOutput_plainKin_ttV",
+        "mvaOutput_plainKin_tt",
+        "mvaOutput_plainKin_1B_VT",
+        "mvaOutput_HTT_SUM_VT",
         "mTauTauVis"
-      ] + list(hist_HTT) +list(hist_noHTT),
+      ],
       select_rle_output                     = True,
       verbose                               = idx_job_resubmission > 0,
     )
@@ -216,12 +216,14 @@ if __name__ == '__main__':
       logging.info(" #jobs of type '%s' = %i" % (job_type, num_jobs))
     job_statistics_summary[idx_job_resubmission] = job_statistics
 
-    if idx_job_resubmission == 0:
-      run_analysis = query_yes_no("Start jobs ?")
-    if run_analysis:
-      analysis.run()
-    else:
-      sys.exit(0)
+    if not options.noQuery :
+        if idx_job_resubmission == 0:
+          run_analysis = query_yes_no("Start jobs ?")
+        if run_analysis:
+          analysis.run()
+        else:
+          sys.exit(0)
+    else : analysis.run()
 
     if job_statistics['analyze'] == 0:
       is_last_resubmission = True
