@@ -5,7 +5,6 @@
 
 // forward declarations
 class HadTopKinFit;
-class XGBInterface;
 class TMVAInterface;
 
 enum {kXGB_with_kinFit};
@@ -38,7 +37,7 @@ protected:
   std::map<std::string, double> mvaInputsWithKinFit;
   std::vector<std::string> mvaInputsWithKinFitSort;
 
-  TMVAInterface * mva_hadTopTagger_xgb_withKinFit;
+  TMVAInterface * mva_hadTopTagger_xgb_withKinFit_;
 };
 
 #endif // tthAnalysis_HiggsToTauTau_HadTopTagger_h

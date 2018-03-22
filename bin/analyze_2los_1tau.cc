@@ -74,6 +74,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/NtupleFillerBDT.h" // NtupleFillerBDT
 #include "tthAnalysis/HiggsToTauTau/interface/TTreeWrapper.h" // TTreeWrapper
 #include "tthAnalysis/HiggsToTauTau/interface/HadTopTagger.h" // HadTopTagger
+#include "tthAnalysis/HiggsToTauTau/interface/HadTopKinFit.h" // HadTopKinFit
 #include "tthAnalysis/HiggsToTauTau/interface/hadTopTaggerAuxFunctions.h" // isGenMatchedJetTriplet
 
 #include <iostream> // std::cerr, std::fixed
@@ -94,6 +95,33 @@ enum { kFR_disabled, kFR_2lepton, kFR_3L, kFR_1tau };
 //const int hadTauSelection_antiMuon = 1; // Loose
 const int hadTauSelection_antiElectron = -1; // not applied
 const int hadTauSelection_antiMuon = -1; // not applied
+
+double comp_mvaOutput_Hj_tagger(const RecoJet* jet,
+                                const std::vector<const RecoLepton*>& leptons,
+                                std::map<std::string, double>& mvaInputs_Hj_tagger,
+                                TMVAInterface& mva_Hj_tagger,
+                                const EventInfo & eventInfo)
+{
+  double dRmin_lepton = -1.;
+  double dRmax_lepton = -1.;
+  for ( std::vector<const RecoLepton*>::const_iterator lepton = leptons.begin();
+	lepton != leptons.end(); ++lepton ) {
+    double dR = deltaR(jet->eta(), jet->phi(), (*lepton)->eta(), (*lepton)->phi());
+    if ( dRmin_lepton == -1. || dR < dRmin_lepton ) dRmin_lepton = dR;
+    if ( dRmax_lepton == -1. || dR > dRmax_lepton ) dRmax_lepton = dR;
+  }
+
+  mvaInputs_Hj_tagger["Jet_lepdrmin"] = dRmin_lepton;
+  mvaInputs_Hj_tagger["max(Jet_pfCombinedInclusiveSecondaryVertexV2BJetTags,0.)"] = std::max(0., jet->BtagCSV());
+  mvaInputs_Hj_tagger["max(Jet_qg,0.)"] = std::max(0., jet->QGDiscr());
+  mvaInputs_Hj_tagger["Jet_lepdrmax"] = dRmax_lepton;
+  mvaInputs_Hj_tagger["Jet_pt"] = jet->pt();
+
+  check_mvaInputs(mvaInputs_Hj_tagger, eventInfo);
+
+  double mvaOutput_Hj_tagger = mva_Hj_tagger(mvaInputs_Hj_tagger);
+  return mvaOutput_Hj_tagger;
+}
 
 /**
  * @brief Produce datacard and control plots for 2los_1tau categories.
@@ -418,14 +446,9 @@ int main(int argc, char* argv[])
   RecoMEtReader* metReader = new RecoMEtReader(era, branchName_met);
   inputTree -> registerReader(metReader);
 
-  std::string mvaFileName_hadTopTaggerWithKinFit = "tthAnalysis/HiggsToTauTau/data/all_HadTopTagger_sklearnV0o17o1_HypOpt_XGB_ntrees_1000_deph_3_lr_0o01_CSV_sort_withKinFit.pkl";
-  std::string mvaFileName_hadTopTaggerNoKinFit = "tthAnalysis/HiggsToTauTau/data/all_HadTopTagger_sklearnV0o17o1_HypOpt_XGB_ntrees_1000_deph_3_lr_0o01_CSV_sort.pkl";
-  std::string mvaFileName_hadTopTagger = "tthAnalysis/HiggsToTauTau/data/all_HadTopTagger_sklearnV0o17o1_HypOpt_XGB_ntrees_1000_deph_3_lr_0o01_CSV_sort.pkl";
-  std::string mvaFileName_hadTopTagger_tmva = "tthAnalysis/HiggsToTauTau/data/1l_2tau_HadTopTagger_BDT.weights.xml";
-  HadTopTagger* hadTopTagger = new HadTopTagger(
-          mvaFileName_hadTopTaggerWithKinFit,
-          mvaFileName_hadTopTaggerNoKinFit,
-          mvaFileName_hadTopTagger_tmva);
+  //--- initialize hadronic top tagger BDT
+  std::string mvaFileName_hadTopTaggerWithKinFit = "tthAnalysis/HiggsToTauTau/data/HadTopTagger_XGB_ntrees_CSV_sort_withKinFit.xml";
+  HadTopTagger* hadTopTagger = new HadTopTagger(mvaFileName_hadTopTaggerWithKinFit);
 
   std::string mvaFileName_Hj_tagger = "tthAnalysis/HiggsToTauTau/data/Hj_csv_BDTG.weights.xml";
   std::vector<std::string> mvaInputVariables_Hj_tagger;
@@ -762,27 +785,26 @@ int main(int argc, char* argv[])
       "lep1_pt", "lep1_conePt", "lep1_eta", "lep1_tth_mva", "mindr_lep1_jet", "mT_lep1", "dr_lep1_tau_os",
       "lep2_pt", "lep2_conePt", "lep2_eta", "lep2_tth_mva", "mindr_lep2_jet", "mT_lep2", "dr_lep2_tau_ss",
       "mindr_tau_jet", "avg_dr_jet", "ptmiss",  "htmiss", "tau_mva", "tau_pt", "tau_eta",
-      "dr_leps", "mTauTauVis", "lumiScale", "genWeight", "evtWeight",
+      "dr_leps", "mTauTauVis", "genWeight", "evtWeight",
       "lep1_genLepPt", "lep2_genLepPt",
       "tau_genTauPt",
-      "mvaOutput_2lss_ttV", "mvaOutput_2lss_ttbar", "mvaDiscr_2lss",
       "lep1_fake_prob", "lep2_fake_prob", "tau_fake_prob","dr_leps",
-      "mvaOutput_hadTopTaggerWithKinFit", "mvaOutput_hadTopTagger",
+      "mvaOutput_hadTopTaggerWithKinFit",
       "max_lep_eta", "min_lep_eta",
       "HadTop_pt", "HadTop_eta", "genTopPt", "mbb", "ptbb", "mbb_loose", "ptbb_loose",
-      "unfittedHadTop_pt", "unfittedHadTop_eta", "fitHTptoHTpt", "fitHTptoHTmass",
-      "dr_lepSS_HTfitted", "dr_lepSS_HTfitted",
-      "dr_lepOS_HTfitted", "dr_lepOS_HTfitted",
+      "fittedHadTop_pt", "fittedHadTop_eta", "fitHTptoHTpt", "fitHTptoHTmass",
+      "dr_lepSS_HTunfitted", "dr_lepSS_HTfitted",
+      "dr_lepOS_HTunfitted", "dr_lepOS_HTfitted",
       "dr_tau_HTfitted",
-      "mass_lepSS_HTfitted", "dr_lepSS_HTunfitted",
-      "mass_lepOS_HTfitted", "dr_lepOS_HTunfitted",
+      "mass_lepSS_HTfitted", "mass_lepSS_HTunfitted",
+      "mass_lepOS_HTfitted", "mass_lepOS_HTunfitted",
       "dr_tau_HTunfitted"
     );
     bdt_filler->register_variable<int_type>(
       "nJet", "nBJetLoose", "nBJetMedium", "lep1_isTight", "lep1_charge",
       "lep2_isTight", "lep2_charge", "tau_isTight",
-      "tau_charge", "lep1_tau_charge", "nLep",  "nTau", 
-      "hadtruth", "bWj1Wj2_isGenMatched", "bWj1Wj2_isGenMatchedWithKinFit"
+      "tau_charge", "lep1_tau_charge", "nLep",  "nTau",
+      "hadtruth", "bWj1Wj2_isGenMatchedWithKinFit"
     );
     bdt_filler->bookTree(fs);
   }
@@ -1544,8 +1566,6 @@ int main(int argc, char* argv[])
     //TH2* histogram_mva_hadTopTagger = fs.make<TH2D>("mva_hadTopTagger", "mva_hadTopTagger", 200, -1., +1., 200, -1., +1.);
     //double max_mvaOutput_hadTopTagger = -1.;
     double max_mvaOutput_hadTopTaggerWithKinFit = -1.;
-    double max_mvaOutput_hadTopTagger = -1.;
-    bool max_truth_hadTopTagger = false;
     bool max_truth_hadTopTaggerWithKinFit = false;
     bool hadtruth = false;
     int ncombo=0;
@@ -1553,10 +1573,6 @@ int main(int argc, char* argv[])
     double positionJet1=-1;
     double positionJet2=-1;
     double positionJet3=-1;
-    std::vector<double> bdtResult;
-    bdtResult.push_back(-1.); // XGB with kinfit
-    bdtResult.push_back(-1.); // TMVA with kin fit
-    bdtResult.push_back(-1.); // XGB althernative
     Particle::LorentzVector unfittedHadTopP4, fittedHadTopP4;
     for ( std::vector<const RecoJet*>::const_iterator selBJet = selJets.begin(); selBJet != selJets.end(); ++selBJet ) {
           for ( std::vector<const RecoJet*>::const_iterator selWJet1 = selJets.begin(); selWJet1 != selJets.end(); ++selWJet1 ) {
@@ -1565,9 +1581,9 @@ int main(int argc, char* argv[])
         if ( &(*selWJet2) == &(*selBJet) ) continue;
         if ( &(*selWJet2) == &(*selWJet1) ) continue;
         ncombo++;
-        bool mvaOutput_hadTopTagger = (*hadTopTagger)(**selBJet, **selWJet1, **selWJet2, bdtResult);
+        std::map<int, double> bdtResult = (*hadTopTagger)(**selBJet, **selWJet1, **selWJet2 );
         bool isGenMatched = false;
-        if ( isMC && selectBDT && mvaOutput_hadTopTagger ) {
+        if ( isMC && selectBDT ) {
           if ( genWJets.size() >= 2 && genBJets.size() >= 1 && genTopQuarks.size() >= 1 && genWBosons.size() >= 1 ){
             double genTopPtProbeTop=-10;
             double genTopPtProbeAntiTop=-10;
@@ -1579,18 +1595,14 @@ int main(int argc, char* argv[])
             if ( isGenMatched ) hadtruth = true;
           }
         }
-        if ( bdtResult[0] > max_mvaOutput_hadTopTaggerWithKinFit ) { // hadTopTaggerWithKinFit
+        if ( bdtResult.at(kXGB_with_kinFit) > max_mvaOutput_hadTopTaggerWithKinFit ) { // hadTopTaggerWithKinFit
           max_truth_hadTopTaggerWithKinFit = isGenMatched;
-          max_mvaOutput_hadTopTaggerWithKinFit = bdtResult[0];
+          max_mvaOutput_hadTopTaggerWithKinFit = bdtResult.at(kXGB_with_kinFit);
           fittedHadTopP4 = hadTopTagger->kinFit()->fittedTop();
           unfittedHadTopP4 = (*selBJet)->p4() + (*selWJet1)->p4() + (*selWJet2)->p4();
           positionJet1=(*selBJet)->pt();
           positionJet2=(*selWJet1)->pt();
           positionJet3=(*selWJet2)->pt();
-        }
-        if ( bdtResult[2] > max_mvaOutput_hadTopTagger ) { // hadTopTaggerNoKinFit
-          max_truth_hadTopTagger = isGenMatched;
-          max_mvaOutput_hadTopTagger = bdtResult[0];
         }
         //fillWithOverFlow2d(histogram_mva_hadTopTagger, bdtResult[0], bdtResult[1], 1.);
         // to test if XML converted file is equal to plain pkl rearing -- do not erase the example
@@ -1608,23 +1620,6 @@ int main(int argc, char* argv[])
   mvaInputs_Hj_tagger, mva_Hj_tagger,
         eventInfo);
       if ( mvaOutput > mvaOutput_Hj_tagger ) mvaOutput_Hj_tagger = mvaOutput;
-    }
-
-    std::map<std::string, double> mvaInputs_Hjj_tagger;
-    double mvaOutput_Hjj_tagger = -1.;
-    for ( std::vector<const RecoJet*>::const_iterator selJet1 = selJets.begin();
-    selJet1 != selJets.end(); ++selJet1 ) {
-      if ((*selJet1)->pt()==positionJet1 || (*selJet1)->pt()==positionJet2 || (*selJet1)->pt()==positionJet3) continue;
-      for ( std::vector<const RecoJet*>::const_iterator selJet2 = selJet1 + 1;
-      selJet2 != selJets.end(); ++selJet2 ) {
-        if ((*selJet2)->pt()==positionJet1 || (*selJet2)->pt()==positionJet2 || (*selJet2)->pt()==positionJet3) continue;
-  double mvaOutput = comp_mvaOutput_Hjj_tagger(
-    *selJet1, *selJet2, selJets, fakeableLeptons,
-    mvaInputs_Hjj_tagger, mva_Hjj_tagger,
-    mvaInputs_Hj_tagger, mva_Hj_tagger,
-      eventInfo);
-  if ( mvaOutput > mvaOutput_Hjj_tagger ) mvaOutput_Hjj_tagger = mvaOutput;
-      }
     }
 
 //--- compute output of BDTs used to discriminate ttH vs. ttbar trained by Arun for 2los_1tau category
@@ -1744,13 +1739,11 @@ int main(int argc, char* argv[])
           ("tau_pt",               selHadTau -> pt())
           ("tau_eta",              selHadTau -> eta())
           ("mvaOutput_hadTopTaggerWithKinFit", max_mvaOutput_hadTopTaggerWithKinFit)
-          ("mvaOutput_hadTopTagger", max_mvaOutput_hadTopTagger)
-          ("bWj1Wj2_isGenMatched",   max_truth_hadTopTagger)
           ("bWj1Wj2_isGenMatchedWithKinFit",   max_truth_hadTopTaggerWithKinFit)
-          ("HadTop_pt",              fittedHadTopP4.pt())
-          ("HadTop_eta",             std::abs(fittedHadTopP4.eta()))
-          ("unfittedHadTop_pt",      unfittedHadTopP4.pt())
-          ("unfittedHadTop_eta",     std::abs(unfittedHadTopP4.eta()))
+          ("HadTop_pt",              unfittedHadTopP4.pt())
+          ("HadTop_eta",             std::abs(unfittedHadTopP4.eta()))
+          ("fittedHadTop_pt",      fittedHadTopP4.pt())
+          ("fittedHadTop_eta",     std::abs(fittedHadTopP4.eta()))
           ("fitHTptoHTpt",           fittedHadTopP4.pt()/unfittedHadTopP4.pt())
           ("fitHTptoHTmass",           fittedHadTopP4.mass()/unfittedHadTopP4.mass())
           ("dr_lepSS_HTfitted",        deltaR(selLepton_lead -> p4(), fittedHadTopP4) )
@@ -1761,6 +1754,8 @@ int main(int argc, char* argv[])
           ("dr_lepSS_HTunfitted",        deltaR(selLepton_lead -> p4(), unfittedHadTopP4) )
           ("dr_lepOS_HTunfitted",        deltaR(selLepton_sublead -> p4(), unfittedHadTopP4) )
           ("dr_tau_HTunfitted",         deltaR(selHadTau -> p4(), unfittedHadTopP4))
+          ("mass_lepSS_HTunfitted",        (selLepton_lead -> p4() + unfittedHadTopP4).mass() )
+          ("mass_lepOS_HTunfitted",        (selLepton_sublead -> p4() + unfittedHadTopP4).mass() )
           ("genTopPt", genTopPt)
           ("hadtruth", hadtruth)
           ("dr_leps",              deltaR(selLepton_lead -> p4(), selLepton_sublead -> p4()))
@@ -1771,10 +1766,6 @@ int main(int argc, char* argv[])
           ("lep1_fake_prob", ( selLepton_lead->genLepton() != 0 ) ? 1.0 : prob_fake_lepton_lead )
           ("lep2_fake_prob", ( selLepton_sublead->genLepton() != 0 ) ? 1.0 : prob_fake_lepton_sublead)
           ("tau_fake_prob", ( selHadTau->genHadTau() != 0 || selHadTau->genLepton() != 0 ) ? 1.0 : prob_fake_hadTau )
-          ("mvaOutput_2lss_ttV",   mvaOutput_2lss_ttV)
-          ("mvaOutput_2lss_ttbar", mvaOutput_2lss_ttbar)
-          ("mvaDiscr_2lss",        mvaDiscr_2lss)
-          ("lumiScale",            lumiScale)
           ("genWeight",            eventInfo.genWeight)
           ("evtWeight",            evtWeight)
           ("nJet",                 selJets.size())

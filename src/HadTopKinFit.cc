@@ -1,38 +1,35 @@
 #include "tthAnalysis/HiggsToTauTau/interface/HadTopKinFit.h" // HadTopKinFit
 
-#include "FWCore/Utilities/interface/Exception.h" // cms::Exception
+#include "tthAnalysis/HiggsToTauTau/interface/lutAuxFunctions.h" // loadTF1()
+#include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 
-#include "tthAnalysis/HiggsToTauTau/interface/lutAuxFunctions.h" // loadTF1
+#include <Math/Functor.h> // ROOT::Math::Functor
+#include <Math/Factory.h> // ROOT::Math::Factory
+#include <Math/Minimizer.h> // ROOT::Math::Minimizer
+#include <TFile.h> // TFile
+#include <TF1.h> // TF1
+#include <TMath.h> // TMath::Pi(), TMath::IsNaN()
 
-//#include "Math/GSLMCIntegrator.h" // ROOT::Math::GSLMCIntegrator
-#include <gsl/gsl_rng.h> // gsl_rng
-#include <gsl/gsl_monte.h> // gsl_monte_function
-#include <gsl/gsl_monte_vegas.h> // gsl_monte_vegas_state
-#include <TMath.h> // TMath::Pi()
-
-#include <math.h> // exp, sin, sqrt
+#include <gsl/gsl_monte_vegas.h> // gsl_*
 
 using namespace hadTopKinFit;
 
 /// global pointer for interface to MINUIT
-const HadTopKinFit* HadTopKinFit::gHadTopKinFit = 0;
+const HadTopKinFit * HadTopKinFit::gHadTopKinFit = nullptr;
 
 double ObjectiveFunctionAdapterMINUIT::operator()(const double* x) const // NOTE: return value = -log(p)
 {
   //std::cout << "<ObjectiveFunctionAdapterMINUIT::operator()>:" << std::endl;
   double alpha = x[0];
   double prob = HadTopKinFit::gHadTopKinFit->comp_prob(alpha);
-  double nll;
-  if ( prob > 0. ) nll = -log(prob);
-  else nll = std::numeric_limits<float>::max();
-  //std::cout << " alpha = " << alpha << ": nll = " << nll << std::endl;
+  const double nll   = prob > 0. ? -std::log(prob) : std::numeric_limits<float>::max();
   return nll;
 }
 
 double ObjectiveFunctionAdapterVEGAS::operator()(const double* x) const // NOTE: return value = p
 {
   //std::cout << "<ObjectiveFunctionAdapterVEGAS::operator()>:" << std::endl;
-  double alpha = x[0];
+  const double alpha = x[0];
   double prob = HadTopKinFit::gHadTopKinFit->comp_prob(alpha);
   if ( TMath::IsNaN(prob) ) prob = 0.;
   //std::cout << " alpha = " << alpha << ": prob = " << prob << std::endl;
@@ -41,7 +38,7 @@ double ObjectiveFunctionAdapterVEGAS::operator()(const double* x) const // NOTE:
 
 namespace
 {
-  double square(double x)
+  constexpr double square(double x)
   {
     return x*x;
   }
@@ -57,15 +54,17 @@ namespace
 
 HadTopKinFit::HadTopKinFit(int tf_mode, const std::string& tf_fileName)
   : tf_mode_(tf_mode)
-  , tf_file_(0)
-  , tf_q_barrel_(0)
-  , tf_q_endcap_(0)
-  , tf_b_barrel_(0)
-  , tf_b_endcap_(0)
-  , max_prob_(-1.)  
+  , tf_file_(nullptr)
+  , tf_q_barrel_(nullptr)
+  , tf_q_endcap_(nullptr)
+  , tf_b_barrel_(nullptr)
+  , tf_b_endcap_(nullptr)
+  , max_prob_(-1.)
   , mTop2_(square(173.1)) // CV: particle masses taken from http://pdg.lbl.gov/2017/listings/contents_listings.html
   , mW2_(square(80.4))
   , mB2_(square(4.2))
+  //--- instantiate MINUIT
+  , minimizer_(ROOT::Math::Factory::CreateMinimizer("Minuit2", "Migrad"))
   , maxObjFunctionCalls_(10000)
   , nll_(-1.)
   , fit_status_(-1)
@@ -79,9 +78,6 @@ HadTopKinFit::HadTopKinFit(int tf_mode, const std::string& tf_fileName)
     tf_b_barrel_ = loadTF(tf_file_, "tf_b_etabin0");
     tf_b_endcap_ = loadTF(tf_file_, "tf_b_etabin1");
   }
-
-//--- instantiate MINUIT
-  minimizer_ = ROOT::Math::Factory::CreateMinimizer("Minuit2", "Migrad");
 
 //--- set global pointer to this
   gHadTopKinFit = this;
@@ -100,22 +96,22 @@ HadTopKinFit::~HadTopKinFit()
 void HadTopKinFit::fit(const Particle::LorentzVector& recBJetP4, const Particle::LorentzVector& recWJet1P4, const Particle::LorentzVector& recWJet2P4)
 {
   //std::cout << "<HadTopKinFit::fit>:" << std::endl;
-  //std::cout << " recBJetP4: pT = " << recBJetP4.pt() << ", eta = " << recBJetP4.eta() << "," 
+  //std::cout << " recBJetP4: pT = " << recBJetP4.pt() << ", eta = " << recBJetP4.eta() << ","
   //	      << " phi = " << recBJetP4.phi() << ", mass = " << recBJetP4.mass() << std::endl;
-  //std::cout << " recWJet1P4: pT = " << recWJet1P4.pt() << ", eta = " << recWJet1P4.eta() << "," 
+  //std::cout << " recWJet1P4: pT = " << recWJet1P4.pt() << ", eta = " << recWJet1P4.eta() << ","
   //	      << " phi = " << recWJet1P4.phi() << ", mass = " << recWJet1P4.mass() << std::endl;
-  //std::cout << " recWJet2P4: pT = " << recWJet2P4.pt() << ", eta = " << recWJet2P4.eta() << "," 
+  //std::cout << " recWJet2P4: pT = " << recWJet2P4.pt() << ", eta = " << recWJet2P4.eta() << ","
   //          << " phi = " << recWJet2P4.phi() << ", mass = " << recWJet2P4.mass() << std::endl;
-  //std::cout << "reconstructed masses: W = " << (recWJet1P4 + recWJet2P4).mass() << "," 
+  //std::cout << "reconstructed masses: W = " << (recWJet1P4 + recWJet2P4).mass() << ","
   //	      << " top = " << (recBJetP4 + recWJet1P4 + recWJet2P4).mass() << std::endl;
-  
+
 //--- clear minimizer
   minimizer_->Clear();
 
 //--- set verbosity level of minimizer
   minimizer_->SetPrintLevel(-1);
 
-//--- set reconstructed jet pT, eta, phi, mass 
+//--- set reconstructed jet pT, eta, phi, mass
   recBJetP4_ = recBJetP4;
   recWJet1P4_ = recWJet1P4;
   recWJet2P4_ = recWJet2P4;
@@ -135,8 +131,8 @@ void HadTopKinFit::fit(const Particle::LorentzVector& recBJetP4, const Particle:
   //std::cout << "alpha0 = " << alpha0 << ": min_nll = " << min_nll << std::endl;
 
 //--- set interface to MINUIT
-  ROOT::Math::Functor toMinimize(objectiveFunctionAdapterMINUIT_, 1);
-  minimizer_->SetFunction(toMinimize); 
+  const ROOT::Math::Functor toMinimize(objectiveFunctionAdapterMINUIT_, 1);
+  minimizer_->SetFunction(toMinimize);
   minimizer_->SetLowerLimitedVariable(0, "alpha", alpha0, 0.1, 0.);
   minimizer_->SetMaxFunctionCalls(maxObjFunctionCalls_);
   minimizer_->SetErrorDef(0.5);
@@ -150,7 +146,7 @@ void HadTopKinFit::fit(const Particle::LorentzVector& recBJetP4, const Particle:
     alpha_ = 1.;
     max_prob_ = -1.;
     minimizer_->Minimize();
-  } 
+  }
   if ( max_prob_ > 0. ) nll_ = -log(max_prob_);
   else nll_ = std::numeric_limits<float>::min();
 
@@ -163,13 +159,13 @@ void HadTopKinFit::fit(const Particle::LorentzVector& recBJetP4, const Particle:
 //       5: Any other failure
   fit_status_ = minimizer_->Status();
 
-  //std::cout << " fittedBJetP4: pT = " << fittedBJetP4_.pt() << ", eta = " << fittedBJetP4_.eta() << "," 
+  //std::cout << " fittedBJetP4: pT = " << fittedBJetP4_.pt() << ", eta = " << fittedBJetP4_.eta() << ","
   //          << " phi = " << fittedBJetP4_.phi() << ", mass = " << fittedBJetP4_.mass() << std::endl;
-  //std::cout << " fittedWJet1P4: pT = " << fittedWJet1P4_.pt() << ", eta = " << fittedWJet1P4_.eta() << "," 
+  //std::cout << " fittedWJet1P4: pT = " << fittedWJet1P4_.pt() << ", eta = " << fittedWJet1P4_.eta() << ","
   //	      << " phi = " << fittedWJet1P4_.phi() << ", mass = " << fittedWJet1P4_.mass() << std::endl;
-  //std::cout << " fittedWJet2P4: pT = " << fittedWJet2P4_.pt() << ", eta = " << fittedWJet2P4_.eta() << "," 
+  //std::cout << " fittedWJet2P4: pT = " << fittedWJet2P4_.pt() << ", eta = " << fittedWJet2P4_.eta() << ","
   //	      << " phi = " << fittedWJet2P4_.phi() << ", mass = " << fittedWJet2P4_.mass() << std::endl;
-  //std::cout << "fitted masses: W = " << (fittedWJet1P4_ + fittedWJet2P4_).mass() << "," 
+  //std::cout << "fitted masses: W = " << (fittedWJet1P4_ + fittedWJet2P4_).mass() << ","
   //          << " top = " << (fittedBJetP4_ + fittedWJet1P4_ + fittedWJet2P4_).mass() << std::endl;
   //std::cout << "(alpha = " << alpha_ << ", fit status = " << fit_status_ << ", max_prob = " << max_prob_ << ", nll = " << nll_ << ")" << std::endl;
 }
@@ -177,7 +173,7 @@ void HadTopKinFit::fit(const Particle::LorentzVector& recBJetP4, const Particle:
 double objectiveFunctionVEGAS(double* x, size_t dim, void* params)
 {
   //std::cout << "<objectiveFunctionVEGAS>:" << std::endl;
-  double alpha = x[0];
+  const double alpha = x[0];
   double prob = HadTopKinFit::gHadTopKinFit->comp_prob(alpha);
   if ( TMath::IsNaN(prob) ) prob = 0.;
   //std::cout << " alpha = " << alpha << ": prob = " << prob << std::endl;
@@ -187,14 +183,13 @@ double objectiveFunctionVEGAS(double* x, size_t dim, void* params)
 void HadTopKinFit::integrate(const Particle::LorentzVector& recBJetP4, const Particle::LorentzVector& recWJet1P4, const Particle::LorentzVector& recWJet2P4)
 {
   //std::cout << "<HadTopKinFit::integrate>:" << std::endl;
- 
+  recBJetP4_  = recBJetP4; // unused
+  recWJet1P4_ = recWJet1P4;
+  recWJet2P4_ = recWJet2P4;
+
 //--- set integration boundaries
-  double xl[1];
-  xl[0] = 1. - 5./std::max(1., TMath::Sqrt(recWJet1P4_.energy()));
-  if ( xl[0] < 0. ) xl[0] = 0.;
-  double xh[1];
-  xh[0] = 1. + 5./std::max(1., TMath::Sqrt(recWJet1P4_.energy()));
-  if ( xh[0] > 1.e+1 ) xh[0] = 1.e+1;
+  double xl[1] = { std::max(1. - 5. / std::max(1., std::sqrt(recWJet1P4_.energy())), 0.   ) };
+  double xh[1] = { std::min(1. + 5. / std::max(1., std::sqrt(recWJet1P4_.energy())), 1.e+1) };
 
   //-----------------------------------------------------------------------------
   // CV: avoid usage of ROOT::Math::GSLMCIntegrator class,
@@ -216,7 +211,7 @@ void HadTopKinFit::integrate(const Particle::LorentzVector& recBJetP4, const Par
   //vegas.SetFunction(toIntegrate);
   //p_ = vegas.Integral(xl, xh);
   //pErr_ = vegas.Error();
-  
+
 //--- run VEGAS integration directly via GSL functions
   gsl_monte_function* vegas_integrand = new gsl_monte_function;
   vegas_integrand->f = &objectiveFunctionVEGAS;
@@ -247,52 +242,52 @@ void HadTopKinFit::integrate(const Particle::LorentzVector& recBJetP4, const Par
   delete vegas_integrand;
   gsl_monte_vegas_free(vegas_workspace);
   gsl_rng_free(vegas_rnd);
-} 
+}
 
-const Particle::LorentzVector& HadTopKinFit::fittedBJet() const 
-{ 
-  if ( nll_ == -1. ) 
-    throw cms::Exception("HadTopKinFit") 
+const Particle::LorentzVector& HadTopKinFit::fittedBJet() const
+{
+  if ( nll_ == -1. )
+    throw cms::Exception("HadTopKinFit")
       << "Kinematic fit has not yet run or failed !!\n";
   return fittedBJetP4_;
 }
 
-const Particle::LorentzVector& HadTopKinFit::fittedWJet1() const 
+const Particle::LorentzVector& HadTopKinFit::fittedWJet1() const
 {
-  if ( nll_ == -1. ) 
-    throw cms::Exception("HadTopKinFit") 
+  if ( nll_ == -1. )
+    throw cms::Exception("HadTopKinFit")
       << "Kinematic fit has not yet run or failed !!\n";
   return fittedWJet1P4_;
 }
 
-const Particle::LorentzVector& HadTopKinFit::fittedWJet2() const 
+const Particle::LorentzVector& HadTopKinFit::fittedWJet2() const
 {
-  if ( nll_ == -1. ) 
-    throw cms::Exception("HadTopKinFit") 
+  if ( nll_ == -1. )
+    throw cms::Exception("HadTopKinFit")
       << "Kinematic fit has not yet run or failed !!\n";
   return fittedWJet2P4_;
 }
 
 Particle::LorentzVector HadTopKinFit::fittedTop() const
 {
-  if ( nll_ == -1. ) 
-    throw cms::Exception("HadTopKinFit") 
+  if ( nll_ == -1. )
+    throw cms::Exception("HadTopKinFit")
       << "Kinematic fit has not yet run or failed !!\n";
   return fittedBJetP4_ + fittedWJet1P4_ + fittedWJet2P4_;
 }
 
 Particle::LorentzVector HadTopKinFit::fittedW() const
 {
-  if ( nll_ == -1. ) 
-    throw cms::Exception("HadTopKinFit") 
+  if ( nll_ == -1. )
+    throw cms::Exception("HadTopKinFit")
       << "Kinematic fit has not yet run or failed !!\n";
   return fittedWJet1P4_ + fittedWJet2P4_;
 }
 
 double HadTopKinFit::alpha() const
 {
-  if ( nll_ == -1. ) 
-    throw cms::Exception("HadTopKinFit") 
+  if ( nll_ == -1. )
+    throw cms::Exception("HadTopKinFit")
       << "Kinematic fit has not yet run or failed !!\n";
   return alpha_;
 }
@@ -329,7 +324,7 @@ namespace
 
   //void dumpLorentzVector(const std::string& label, const Particle::LorentzVector& p4)
   //{
-  //  std::cout << label << ":" 
+  //  std::cout << label << ":"
   //	        << " pT = " << p4.pt() << ","
   //	        << " eta = " << p4.eta() << ","
   //	        << " phi = " << p4.phi() << ","
@@ -361,7 +356,7 @@ double HadTopKinFit::comp_prob(double alpha) const
   double fittedBJetPt = fittedBJetP*sin(recBJetP4_.theta());
   Particle::LorentzVector fittedBJetP4(fittedBJetPt, recBJetP4_.eta(), recBJetP4_.phi(), sqrt(mB2_));
   //dumpLorentzVector("fittedBJetP4", fittedBJetP4);
-  
+
   //Particle::LorentzVector fittedTopP4 = fittedWP4 + fittedBJetP4;
   //dumpLorentzVector("fittedTop", fittedTopP4);
 
@@ -407,10 +402,10 @@ double HadTopKinFit::comp_fittedP2(double fittedE1, double fittedP1, double recP
 }
 
 //---------------------------------------------------------------------------------------------------------------
-// CV: transfer functions for energy of bottom and light quark jets taken from ttH, H->bb matrix element analysis 
+// CV: transfer functions for energy of bottom and light quark jets taken from ttH, H->bb matrix element analysis
 //       https://github.com/bianchini/Code/blob/master/src/Parameters.cpp
 
-int eta_to_bin(double eta)
+int constexpr eta_to_bin(double eta)
 {
   double absEta = std::fabs(eta);
   if ( absEta < 1.0 ) return 0;
