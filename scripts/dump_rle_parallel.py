@@ -138,7 +138,7 @@ def bake_job(sh_script_path, rle_branchNames, treeName, py_script_path, sh_args,
   chmod_x(py_script_path)
 
   if submit_job:
-    submit_cmd = "sbatch --partition=short --output={logfile} {bash_script}".format(
+    submit_cmd = "sbatch --mem=1800M --partition=short --output={logfile} {bash_script}".format(
       logfile = logfile,
       bash_script = sh_script_path,
     )
