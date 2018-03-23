@@ -1,8 +1,10 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectron.h"
 
 RecoElectron::RecoElectron(const RecoLepton & lepton,
-                           Double_t mvaRawPOG_GP,
-                           Double_t mvaRawPOG_HZZ,
+                           Double_t mvaRawPOG,
+                           Int_t mvaRawPOG_WP80,
+                           Int_t mvaRawPOG_WP90,
+                           Int_t mvaRawPOG_WPL,
                            Double_t sigmaEtaEta,
                            Double_t HoE,
                            Double_t deltaEta,
@@ -12,8 +14,10 @@ RecoElectron::RecoElectron(const RecoLepton & lepton,
                            Bool_t   passesConversionVeto,
                            Int_t cutbasedID_HLT)
   : RecoLepton(lepton)
-  , mvaRawPOG_GP_(mvaRawPOG_GP)
-  , mvaRawPOG_HZZ_(mvaRawPOG_HZZ)
+  , mvaRawPOG_(mvaRawPOG)
+  , mvaRawPOG_WP80_(mvaRawPOG_WP80)
+  , mvaRawPOG_WP90_(mvaRawPOG_WP90)
+  , mvaRawPOG_WPL_(mvaRawPOG_WPL)
   , sigmaEtaEta_(sigmaEtaEta)
   , HoE_(HoE)
   , deltaEta_(deltaEta) 
@@ -25,15 +29,39 @@ RecoElectron::RecoElectron(const RecoLepton & lepton,
 {}
 
 Double_t
-RecoElectron::mvaRawPOG_GP() const
+RecoElectron::mvaRawPOG() const
 {
-  return mvaRawPOG_GP_;
+  return mvaRawPOG_;
 }
 
-Double_t
-RecoElectron::mvaRawPOG_HZZ() const
+Int_t
+RecoElectron::mvaRawPOG_WP80() const
 {
-  return mvaRawPOG_HZZ_;
+  return mvaRawPOG_WP80_;
+}
+
+Int_t
+RecoElectron::mvaRawPOG_WP90() const
+{
+  return mvaRawPOG_WP90_;
+}
+
+Int_t
+RecoElectron::mvaRawPOG_WPL() const
+{
+  return mvaRawPOG_WPL_;
+}
+
+Bool_t
+RecoElectron::mvaRawPOG_WP(EGammaPOG wp) const
+{
+  switch(wp)
+  {
+    case EGammaPOG::kWP80: return mvaRawPOG_WP80();
+    case EGammaPOG::kWP90: return mvaRawPOG_WP90();
+    case EGammaPOG::kWPL:  return mvaRawPOG_WPL();
+    default: assert(0);
+  }
 }
 
 Double_t
@@ -101,8 +129,10 @@ operator<<(std::ostream & stream,
            const RecoElectron & electron)
 {
   stream << static_cast<const RecoLepton & >(electron)                   << ",\n "
-            "mvaPOG_GP = "            << electron.mvaRawPOG_GP()         << ", "
-            "mvaPOG_HZZ = "           << electron.mvaRawPOG_HZZ()        << ", "
+            "mvaRawPOG = "            << electron.mvaRawPOG()            << " ("
+            "80/90/Loose = "          << electron.mvaRawPOG_WP80()       << '/'
+                                      << electron.mvaRawPOG_WP90()       << '/'
+                                      << electron.mvaRawPOG_WPL()        << "), "
             "nLostHits = "            << electron.nLostHits()            << ",\n "
             "passesConversionVeto = " << electron.passesConversionVeto() << ", "
             "sigmaEtaEta = "          << electron.sigmaEtaEta()          << ", "

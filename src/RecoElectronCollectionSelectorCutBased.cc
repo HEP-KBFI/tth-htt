@@ -25,37 +25,13 @@ RecoElectronSelectorCutBased::RecoElectronSelectorCutBased(int era,
 bool
 RecoElectronSelectorCutBased::operator()(const RecoElectron & electron) const
 {
-  if(electron.pt() >= min_pt_                             &&
-     electron.relIso() <= max_relIso_                     &&
-     electron.sip3d() <= max_sip3d_                       &&
-     electron.nLostHits() <= max_nLostHits_               &&
-     (electron.tightCharge() >= 2 || !apply_tightCharge_) &&
-     (electron.passesConversionVeto() || !apply_conversionVeto_))
-  {
-    const int idxBin = electron.absEta() <= binning_absEta_[0] ? 0 :
-                      (electron.absEta() <= binning_absEta_[1] ? 1 : 2)
-    ;
-
-    if(electron.pt() <= 10)
-    {
-      if(electron.mvaRawPOG_HZZ() >= min_mvaRawPOG_vlow_[idxBin])
-      {
-        return true;
-      }
-    }
-    else
-    {
-      const double a = min_mvaRawPOG_low_[idxBin];
-      const double b = min_mvaRawPOG_high_[idxBin];
-      const double c = (a - b) / 10;
-
-      // warning: the _high WP must be looser than the _low one
-      const double cut = std::min(a, std::max(b, a - c * (electron.pt() - 15)));
-      if(electron.mvaRawPOG_GP() >= cut)
-      {
-        return true;
-      }
-    }
-  }
-  return false;
+  return (
+    electron.pt() >= min_pt_                                   &&
+    electron.relIso() <= max_relIso_                           &&
+    electron.sip3d() <= max_sip3d_                             &&
+    electron.nLostHits() <= max_nLostHits_                     &&
+   (electron.tightCharge() >= 2 || !apply_tightCharge_)        &&
+   (electron.passesConversionVeto() || !apply_conversionVeto_) &&
+    electron.mvaRawPOG_WP(EGammaPOG::kWPL)
+  );
 }

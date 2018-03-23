@@ -18,7 +18,7 @@ RecoElectronSelectorFakeable::RecoElectronSelectorFakeable(int era,
   , max_dz_(0.1)
   , max_relIso_(0.4)
   , max_sip3d_(8.)
-  , min_mvaRawPOG_({ 0.0, 0.0, 0.7 })
+  , mvaPOGwp_(EGammaPOG::kWPL)
   , binning_absEta_({ 0.8, 1.479 })
   , min_pt_trig_(-1.) // Lines:237-240 in AN_2017_029_v5
   , max_sigmaEtaEta_trig_({ 0.011, 0.011, 0.030 })
@@ -41,7 +41,6 @@ RecoElectronSelectorFakeable::RecoElectronSelectorFakeable(int era,
     }
     default: throw cmsException(this) << "Invalid era: " << era_;
   }
-  assert(min_mvaRawPOG_.size() == 3);
   assert(binning_absEta_.size() == 2);
   assert(max_sigmaEtaEta_trig_.size() == 3);
   assert(max_HoE_trig_.size() == 3);
@@ -87,12 +86,9 @@ RecoElectronSelectorFakeable::operator()(const RecoElectron & electron) const
     const int idxBin_absEta = electron.absEta() <= binning_absEta_[0] ? 0 :
                              (electron.absEta() <= binning_absEta_[1] ? 1 : 2)
     ;
-
-    const double mvaRawPOG = electron.mvaRawPOG_HZZ();
-    const double mvaRawPOGCut = min_mvaRawPOG_[idxBin_absEta];
     const int idxBin_mvaTTH = electron.mvaRawTTH() <= binning_mvaTTH_[0] ? 0 : 1;
 
-    if(mvaRawPOG >= mvaRawPOGCut                               &&
+    if(electron.mvaRawPOG_WP(mvaPOGwp_)                        &&
        electron.jetPtRatio() >= min_jetPtRatio_[idxBin_mvaTTH] &&
        electron.jetBtagCSV() <= max_jetBtagCSV_[idxBin_mvaTTH] &&
        (

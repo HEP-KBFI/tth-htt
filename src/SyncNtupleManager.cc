@@ -358,7 +358,7 @@ SyncNtupleManager::read(const std::vector<const RecoElectron *> & electrons,
     ele_sip3D[i] = electron -> sip3d();
     ele_dxy[i] = electron -> dxy();
     ele_dz[i] = electron -> dz();
-    ele_ntMVAeleID[i] = electron -> mvaRawPOG_HZZ();
+    ele_ntMVAeleID[i] = electron -> mvaRawPOG();
     ele_leptonMVA[i] = electron -> mvaRawTTH();
     ele_isChargeConsistent[i] = electron -> tightCharge() == 2 ? 1 : 0;
     ele_passesConversionVeto[i] = electron -> passesConversionVeto();

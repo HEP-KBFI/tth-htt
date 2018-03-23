@@ -9,6 +9,7 @@
 #include <vector> // std::vector<>
 #include <map> // std::map<,>
 #include <algorithm> // std::copy_n()
+#include <type_traits> // std::underlying_type<>
 
 // forward declarations
 class Particle;
@@ -309,5 +310,20 @@ printCollection(const std::string & collection_name,
 int
 nCombinationsK(int n,
                int k);
+
+/**
+ * @brief Converts enum class value to corresponding integer value
+ *        which is determined by the order in which the enums are declared
+ * @param value Enum class value
+ * @return Corresponding integer value
+ *
+ * Taken from: https://stackoverflow.com/a/11421471
+ */
+template <typename Enumeration>
+auto as_integer(Enumeration const value)
+  -> typename std::underlying_type<Enumeration>::type
+{
+  return static_cast<typename std::underlying_type<Enumeration>::type>(value);
+}
 
 #endif

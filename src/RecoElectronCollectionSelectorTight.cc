@@ -17,9 +17,9 @@ RecoElectronSelectorTight::RecoElectronSelectorTight(int era,
   , max_dz_(0.1)
   , max_relIso_(0.4)
   , max_sip3d_(8.)
-  , min_mvaRawPOG_({ 0.0, 0.0, 0.7 })
+  , mvaPOGwp_(EGammaPOG::kWPL)
   , binning_absEta_({ 0.8, 1.479 })
-  , min_pt_trig_(-1.) // Was = 30. (AN_2017_029_V5, Lines:237-240) Now changed following sync with Giovanni     
+  , min_pt_trig_(-1.) // Lines:237-240 in AN_2017_029_V5
   , max_sigmaEtaEta_trig_({ 0.011, 0.011, 0.030 })
   , max_HoE_trig_({ 0.10, 0.10, 0.07 })
   , max_deltaEta_trig_({ 0.01, 0.01, 0.008 })
@@ -39,7 +39,6 @@ RecoElectronSelectorTight::RecoElectronSelectorTight(int era,
     }
     default: throw cmsException(this) << "Invalid era: " << era_;
   }
-  assert(min_mvaRawPOG_.size() == 3);
   assert(binning_absEta_.size() == 2);
   assert(max_sigmaEtaEta_trig_.size() == 3);
   assert(max_HoE_trig_.size() == 3);
@@ -168,18 +167,18 @@ RecoElectronSelectorTight::operator()(const RecoElectron & electron) const
     return false;
   }
 
-  const int idxBin = electron.absEta() <= binning_absEta_[0] ? 0 :
-                    (electron.absEta() <= binning_absEta_[1] ? 1 : 2)
-  ;
-
-  if(electron.mvaRawPOG_HZZ() < min_mvaRawPOG_[idxBin])
+  if(electron.mvaRawPOG_WP(mvaPOGwp_) < 1)
   {
     if(debug_)
     {
-      std::cout << "FAILS mvaPOG HZZ >= " << min_mvaRawPOG_[idxBin] << " tight cut\n";
+      std::cout << "FAILS mvaPOG = " << as_integer(mvaPOGwp_) << " tight cut\n";
     }
     return false;
   }
+
+  const int idxBin = electron.absEta() <= binning_absEta_[0] ? 0 :
+                    (electron.absEta() <= binning_absEta_[1] ? 1 : 2)
+  ;
 
   // extra cuts for electrons passing pT threshold of single electron trigger,
   // as explained in section 3.3.4 of AN-2015/321

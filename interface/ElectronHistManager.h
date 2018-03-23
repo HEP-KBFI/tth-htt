@@ -48,7 +48,6 @@ private:
   TH1 * histogram_jetBtagCSV_;
   TH1 * histogram_tightCharge_;
   TH1 * histogram_mvaRawPOG_;
-  TH1 * histogram_mvaRawPOG_HZZ_;
   TH1 * histogram_sigmaEtaEta_;
   TH1 * histogram_HoE_;
   TH1 * histogram_deltaEta_;

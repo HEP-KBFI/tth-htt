@@ -42,7 +42,7 @@ protected:
 //--- define cuts that dependent on eta
 //    format: central region (|eta| < 0.8) / transition region (0.8 < |eta| < 1.479) / forward region (|eta| > 1.479)
   typedef std::vector<Double_t> vDouble_t;
-  vDouble_t min_mvaRawPOG_;           ///< upper cut threshold on EGamma POG electron MVA value
+  EGammaPOG mvaPOGwp_;                ///< EGamma POG electron MVA WP ID
   vDouble_t binning_absEta_;          ///< eta values separating central, transition and forward region (0.8, 1.479)
   Double_t min_pt_trig_;              ///< lower pT threshold for applying shower shape cuts (to mimic selection applied on trigger level)
   vDouble_t max_sigmaEtaEta_trig_;    ///< upper cut threshold on second shower moment in eta-direction 

@@ -1240,8 +1240,7 @@ main(int argc,
                 " lep miniIsoNeutral() " << preselElectron.miniIsoNeutral() <<
                 " lep miniIsoCharged() " << preselElectron.miniIsoCharged() <<
 
-                " e mvaRawPOG_GP " << preselElectron.mvaRawPOG_GP() <<
-                " e mvaRawPOG_HZZ() " << preselElectron.mvaRawPOG_HZZ() <<
+                " e mvaRawPOG " << preselElectron.mvaRawPOG() <<
                 " e sigmaEtaEta() " << preselElectron.sigmaEtaEta() <<
                 " e HoE() " << preselElectron.HoE() <<
                 " e OoEminusOoP() " << preselElectron.OoEminusOoP() <<
@@ -1286,8 +1285,7 @@ main(int argc,
                 " lep miniIsoNeutral() " << preselElectron.miniIsoNeutral() <<
                 " lep miniIsoCharged() " << preselElectron.miniIsoCharged() <<
 
-                " e mvaRawPOG_GP " << preselElectron.mvaRawPOG_GP() <<
-                " e mvaRawPOG_HZZ() " << preselElectron.mvaRawPOG_HZZ() <<
+                " e mvaRawPOG " << preselElectron.mvaRawPOG() <<
                 " e sigmaEtaEta() " << preselElectron.sigmaEtaEta() <<
                 " e HoE() " << preselElectron.HoE() <<
                 " e OoEminusOoP() " << preselElectron.OoEminusOoP() <<
