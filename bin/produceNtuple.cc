@@ -114,14 +114,14 @@ main(int argc,
   const int hadTauSelection = get_selection(hadTauSelection_parts[0]);
   const std::string hadTauSelection_tauIDwp = hadTauSelection_parts[1];
 
-  const std::string branchName_electrons_in  = cfg_produceNtuple.getParameter<std::string>("branchName_electrons");
-  const std::string branchName_muons_in      = cfg_produceNtuple.getParameter<std::string>("branchName_muons");
-  const std::string branchName_hadTaus_in    = cfg_produceNtuple.getParameter<std::string>("branchName_hadTaus");
-  const std::string branchName_jets_in       = cfg_produceNtuple.getParameter<std::string>("branchName_jets");
-  const std::string branchName_met_in        = cfg_produceNtuple.getParameter<std::string>("branchName_met");
-  const std::string branchName_genLeptons_in = cfg_produceNtuple.getParameter<std::string>("branchName_genLeptons");
-  const std::string branchName_genHadTaus_in = cfg_produceNtuple.getParameter<std::string>("branchName_genHadTaus");
-  const std::string branchName_genJets_in    = cfg_produceNtuple.getParameter<std::string>("branchName_genJets");
+  const std::string branchName_electrons  = cfg_produceNtuple.getParameter<std::string>("branchName_electrons");
+  const std::string branchName_muons      = cfg_produceNtuple.getParameter<std::string>("branchName_muons");
+  const std::string branchName_hadTaus    = cfg_produceNtuple.getParameter<std::string>("branchName_hadTaus");
+  const std::string branchName_jets       = cfg_produceNtuple.getParameter<std::string>("branchName_jets");
+  const std::string branchName_met        = cfg_produceNtuple.getParameter<std::string>("branchName_met");
+  const std::string branchName_genLeptons = cfg_produceNtuple.getParameter<std::string>("branchName_genLeptons");
+  const std::string branchName_genHadTaus = cfg_produceNtuple.getParameter<std::string>("branchName_genHadTaus");
+  const std::string branchName_genJets    = cfg_produceNtuple.getParameter<std::string>("branchName_genJets");
 
   const int minNumLeptons             = cfg_produceNtuple.getParameter<int>("minNumLeptons");
   const int minNumHadTaus             = cfg_produceNtuple.getParameter<int>("minNumHadTaus");
@@ -142,12 +142,6 @@ main(int argc,
   ;
 
   const vstring copy_histograms = cfg_produceNtuple.getParameter<vstring>("copy_histograms");
-
-  // CV: delay start by random time, to avoid that multiple analysis jobs
-  //     open all Ntuples at the same time, causing high load on /hdfs file system,
-  //     when running on batch
-  //unsigned random_seed = cfg_produceNtuple.getParameter<unsigned>("random_seed");
-  //random_start(random_seed);
 
   const fwlite::InputSource inputFiles(cfg);
   const int maxEvents = inputFiles.maxEvents();
@@ -178,7 +172,7 @@ main(int argc,
   eventInfoReader.setBranchAddresses(inputTree);
 
 //--- declare particle collections
-  RecoMuonReader * const muonReader = new RecoMuonReader(era, branchName_muons_in);
+  RecoMuonReader * const muonReader = new RecoMuonReader(era, branchName_muons);
   muonReader->set_HIP_mitigation(use_HIP_mitigation_mediumMuonId);
   muonReader->setBranchAddresses(inputTree);
   const RecoMuonCollectionGenMatcher muonGenMatcher;
@@ -186,7 +180,7 @@ main(int argc,
   const RecoMuonCollectionSelectorFakeable fakeableMuonSelector(era, -1, isDEBUG);
   const RecoMuonCollectionSelectorTight tightMuonSelector(era, -1, isDEBUG);
   
-  RecoElectronReader * const electronReader = new RecoElectronReader(era, branchName_electrons_in);
+  RecoElectronReader * const electronReader = new RecoElectronReader(era, branchName_electrons);
   electronReader->setBranchAddresses(inputTree);
   const RecoElectronCollectionGenMatcher electronGenMatcher;
   const RecoElectronCollectionCleaner electronCleaner(0.3, isDEBUG);
@@ -202,7 +196,7 @@ main(int argc,
     default:        throw cmsException("produceNtuple", __LINE__) << "Unsupported era = " << era;
   }
 
-  RecoHadTauReader * const hadTauReader = new RecoHadTauReader(era, branchName_hadTaus_in);
+  RecoHadTauReader * const hadTauReader = new RecoHadTauReader(era, branchName_hadTaus);
   hadTauReader->setBranchAddresses(inputTree);
   const RecoHadTauCollectionGenMatcher hadTauGenMatcher;
   const RecoHadTauCollectionCleaner hadTauCleaner(0.3, isDEBUG);
@@ -237,7 +231,7 @@ main(int argc,
   tightHadTauSelector.set_min_pt(18.);
   std::cout << "hadTauSelection_tauIDwp = " << hadTauSelection_tauIDwp <<'\n';
 
-  RecoJetReader * const jetReader = new RecoJetReader(era, isMC, branchName_jets_in);
+  RecoJetReader * const jetReader = new RecoJetReader(era, isMC, branchName_jets);
   jetReader->setJetPt_central_or_shift(RecoJetReader::kJetPt_central); 
   jetReader->read_BtagWeight_systematics(isMC);
   jetReader->setBranchAddresses(inputTree);
@@ -263,7 +257,7 @@ main(int argc,
   jetSelectorBtagMedium.getSelector().set_min_pt(-1.);
 
 //--- declare missing transverse energy
-  RecoMEtReader * const metReader = new RecoMEtReader(era, isMC, branchName_met_in);
+  RecoMEtReader * const metReader = new RecoMEtReader(era, isMC, branchName_met);
   metReader->setBranchAddresses(inputTree);  
 
 //--- declare generator level information
@@ -272,11 +266,11 @@ main(int argc,
   GenJetReader * genJetReader = nullptr;
   if(isMC)
   {
-    genLeptonReader = new GenLeptonReader(branchName_genLeptons_in);
+    genLeptonReader = new GenLeptonReader(branchName_genLeptons);
     genLeptonReader->setBranchAddresses(inputTree);
-    genHadTauReader = new GenHadTauReader(branchName_genHadTaus_in);
+    genHadTauReader = new GenHadTauReader(branchName_genHadTaus);
     genHadTauReader->setBranchAddresses(inputTree);
-    genJetReader = new GenJetReader(branchName_genJets_in);
+    genJetReader = new GenJetReader(branchName_genJets);
     genJetReader->setBranchAddresses(inputTree);
   }
 
@@ -302,27 +296,22 @@ main(int argc,
   EventInfoWriter eventInfoWriter(false, false, false);
   eventInfoWriter.setBranches(outputTree);
 
-  const std::string branchName_muons = branchName_muons_in;
   RecoMuonWriter * const muonWriter = new RecoMuonWriter(era, branchName_muons);
   muonWriter->setBranches(outputTree);
   std::cout << "writing RecoMuon objects to branch = '" << branchName_muons << "'\n";
 
-  const std::string branchName_electrons = branchName_electrons_in;
   RecoElectronWriter * const electronWriter = new RecoElectronWriter(era, branchName_electrons);
   electronWriter->setBranches(outputTree);
   std::cout << "writing RecoElectron objects to branch = '" << branchName_electrons << "'\n";
 
-  const std::string branchName_hadTaus = branchName_hadTaus_in;
   RecoHadTauWriter * const hadTauWriter = new RecoHadTauWriter(era, branchName_hadTaus);
   hadTauWriter->setBranches(outputTree);
   std::cout << "writing RecoHadTau objects to branch = '" << branchName_hadTaus << "'\n";
 
-  const std::string branchName_jets = branchName_jets_in;
   RecoJetWriter * const jetWriter = new RecoJetWriter(era, isMC, branchName_jets);
   jetWriter->setBranches(outputTree);
   std::cout << "writing RecoJet objects to branch = '" << branchName_jets << "'\n";
 
-  const std::string branchName_met = branchName_met_in;
   RecoMEtWriter * const metWriter = new RecoMEtWriter(era, isMC, branchName_met);
   metWriter->setBranches(outputTree);
   std::cout << "writing RecoMEt object to branch = '" << branchName_met << "'\n";
@@ -331,17 +320,17 @@ main(int argc,
   GenParticleWriter * genHadTauWriter = nullptr;
   GenParticleWriter * genJetWriter = nullptr;
   if ( isMC ) {
-    const std::string branchName_genLeptons = branchName_genLeptons_in;
+    const std::string branchName_genLeptons = branchName_genLeptons;
     genLeptonWriter = new GenParticleWriter(branchName_genLeptons);
     genLeptonWriter->setBranches(outputTree);
     std::cout << "writing GenLepton objects to branch = '" << branchName_genLeptons << "'\n";
 
-    const std::string branchName_genHadTaus = branchName_genHadTaus_in;
+    const std::string branchName_genHadTaus = branchName_genHadTaus;
     genHadTauWriter = new GenParticleWriter(branchName_genHadTaus);
     genHadTauWriter->setBranches(outputTree);
     std::cout << "writing GenHadTau objects to branch = '" << branchName_genHadTaus << "'\n";
 
-    const std::string branchName_genJets = branchName_genJets_in;
+    const std::string branchName_genJets = branchName_genJets;
     genJetWriter = new GenParticleWriter(branchName_genJets);
     genJetWriter->setBranches(outputTree);
     std::cout << "writing GenJet objects to branch = '" << branchName_genJets << "'\n";
@@ -367,21 +356,21 @@ main(int argc,
     Form("drop %s", eventInfoWriter.getBranchName_run().data()),
     Form("drop %s", eventInfoWriter.getBranchName_lumi().data()),
     Form("drop %s", eventInfoWriter.getBranchName_event().data()),
-    Form("drop n%s*", branchName_muons_in.data()),
-    Form("drop %s_*", branchName_muons_in.data()),
-    Form("drop n%s*", branchName_electrons_in.data()),
-    Form("drop %s_*", branchName_electrons_in.data()),
-    Form("drop n%s*", branchName_hadTaus_in.data()),
-    Form("drop %s_*", branchName_hadTaus_in.data()),
-    Form("drop n%s*", branchName_jets_in.data()),
-    Form("drop %s_*", branchName_jets_in.data()),
-    Form("drop %s_*", branchName_met_in.data()),
-    Form("drop n%s", branchName_genLeptons_in.data()),
-    Form("drop %s_*", branchName_genLeptons_in.data()),
-    Form("drop n%s", branchName_genHadTaus_in.data()),
-    Form("drop %s_*", branchName_genHadTaus_in.data()),
-    Form("drop n%s", branchName_genJets_in.data()),
-    Form("drop %s_*", branchName_genJets_in.data()),
+    Form("drop n%s*", branchName_muons.data()),
+    Form("drop %s_*", branchName_muons.data()),
+    Form("drop n%s*", branchName_electrons.data()),
+    Form("drop %s_*", branchName_electrons.data()),
+    Form("drop n%s*", branchName_hadTaus.data()),
+    Form("drop %s_*", branchName_hadTaus.data()),
+    Form("drop n%s*", branchName_jets.data()),
+    Form("drop %s_*", branchName_jets.data()),
+    Form("drop %s_*", branchName_met.data()),
+    Form("drop n%s", branchName_genLeptons.data()),
+    Form("drop %s_*", branchName_genLeptons.data()),
+    Form("drop n%s", branchName_genHadTaus.data()),
+    Form("drop %s_*", branchName_genHadTaus.data()),
+    Form("drop n%s", branchName_genJets.data()),
+    Form("drop %s_*", branchName_genJets.data()),
     Form("drop maxPermutations_*"),
   };
 
