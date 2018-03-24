@@ -67,7 +67,7 @@ RecoElectronReader::setBranchNames()
 {
   if (numInstances_[branchName_obj_] == 0)
   {
-    const std::string mvaString = RecoElectron::useNoIso ? "mvaRawPOGnoIso" : "mvaRawPOGIso";
+    const std::string mvaString = RecoElectron::useNoIso ? "mvaFall17noIso" : "mvaFall17Iso";
     branchName_mvaRawPOG_ = Form("%s_%s", branchName_obj_.data(), mvaString.data());
     branchName_mvaRawPOG_WP80_ = Form("%s_%s", branchName_obj_.data(), Form("%s_WP80", mvaString.data()));
     branchName_mvaRawPOG_WP90_ = Form("%s_%s", branchName_obj_.data(), Form("%s_WP90", mvaString.data()));

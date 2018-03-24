@@ -14,9 +14,9 @@ public:
   RecoElectron() = default;
   RecoElectron(const RecoLepton & lepton,
                Double_t mvaRawPOG,
-               Int_t mvaRawPOG_WP80,
-               Int_t mvaRawPOG_WP90,
-               Int_t mvaRawPOG_WPL,
+               Bool_t mvaRawPOG_WP80,
+               Bool_t mvaRawPOG_WP90,
+               Bool_t mvaRawPOG_WPL,
                Double_t sigmaEtaEta,
                Double_t HoE,
                Double_t deltaEta,
@@ -31,9 +31,9 @@ public:
    * @return Values of data-members
    */
   Double_t mvaRawPOG() const;
-  Int_t mvaRawPOG_WP80() const;
-  Int_t mvaRawPOG_WP90() const;
-  Int_t mvaRawPOG_WPL() const;
+  Bool_t mvaRawPOG_WP80() const;
+  Bool_t mvaRawPOG_WP90() const;
+  Bool_t mvaRawPOG_WPL() const;
   Bool_t mvaRawPOG_WP(EGammaPOG wp) const;
   Double_t sigmaEtaEta() const;
   Double_t HoE() const;
@@ -62,9 +62,9 @@ public:
 
 //--- observables specific to electrons
   Double_t mvaRawPOG_;          ///< raw output value of EGamma POG electron id MVA (continuous range -1..+1)
-  Int_t mvaRawPOG_WP80_;        ///< ID of EGamma POG electron id MVA, corresponding to 80% efficiency WP (1 -- pass; 0 -- fail)
-  Int_t mvaRawPOG_WP90_;        ///< ID of EGamma POG electron id MVA, corresponding to 90% efficiency WP (1 -- pass; 0 -- fail)
-  Int_t mvaRawPOG_WPL_;         ///< ID of EGamma POG electron id MVA, corresponding to loose WP (1 -- pass; 0 -- fail)
+  Bool_t mvaRawPOG_WP80_;       ///< ID of EGamma POG electron id MVA, corresponding to 80% efficiency WP (1 -- pass; 0 -- fail)
+  Bool_t mvaRawPOG_WP90_;       ///< ID of EGamma POG electron id MVA, corresponding to 90% efficiency WP (1 -- pass; 0 -- fail)
+  Bool_t mvaRawPOG_WPL_;        ///< ID of EGamma POG electron id MVA, corresponding to loose WP (1 -- pass; 0 -- fail)
   Double_t sigmaEtaEta_;        ///< second shower moment in eta-direction
   Double_t HoE_;                ///< ratio of energy deposits in hadronic/electromagnetic section of calorimeter
   Double_t deltaEta_;           ///< difference in eta between impact position of track and electron cluster

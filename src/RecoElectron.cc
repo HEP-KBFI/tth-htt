@@ -2,9 +2,9 @@
 
 RecoElectron::RecoElectron(const RecoLepton & lepton,
                            Double_t mvaRawPOG,
-                           Int_t mvaRawPOG_WP80,
-                           Int_t mvaRawPOG_WP90,
-                           Int_t mvaRawPOG_WPL,
+                           Bool_t mvaRawPOG_WP80,
+                           Bool_t mvaRawPOG_WP90,
+                           Bool_t mvaRawPOG_WPL,
                            Double_t sigmaEtaEta,
                            Double_t HoE,
                            Double_t deltaEta,
@@ -34,19 +34,19 @@ RecoElectron::mvaRawPOG() const
   return mvaRawPOG_;
 }
 
-Int_t
+Bool_t
 RecoElectron::mvaRawPOG_WP80() const
 {
   return mvaRawPOG_WP80_;
 }
 
-Int_t
+Bool_t
 RecoElectron::mvaRawPOG_WP90() const
 {
   return mvaRawPOG_WP90_;
 }
 
-Int_t
+Bool_t
 RecoElectron::mvaRawPOG_WPL() const
 {
   return mvaRawPOG_WPL_;

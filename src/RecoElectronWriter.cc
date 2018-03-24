@@ -56,7 +56,7 @@ RecoElectronWriter::~RecoElectronWriter()
 void
 RecoElectronWriter::setBranchNames()
 {
-  const std::string mvaString = RecoElectron::useNoIso ? "mvaRawPOGnoIso" : "mvaRawPOGIso";
+  const std::string mvaString = RecoElectron::useNoIso ? "mvaFall17noIso" : "mvaFall17Iso";
   branchName_mvaRawPOG_ = Form("%s_%s", branchName_obj_.data(), mvaString.data());
   branchName_mvaRawPOG_WP80_ = Form("%s_%s", branchName_obj_.data(), Form("%s_WP80", mvaString.data()));
   branchName_mvaRawPOG_WP90_ = Form("%s_%s", branchName_obj_.data(), Form("%s_WP90", mvaString.data()));
@@ -77,10 +77,10 @@ RecoElectronWriter::setBranches(TTree * tree)
   leptonWriter_->setBranches(tree);
   unsigned int max_nLeptons = leptonWriter_->max_nLeptons_;
   BranchAddressInitializer bai(tree, max_nLeptons, branchName_num_);
-  bai.setBranchAddress(mvaRawPOG_, branchName_mvaRawPOG_);
-  bai.setBranchAddress(mvaRawPOG_WP80_, branchName_mvaRawPOG_WP80_);
-  bai.setBranchAddress(mvaRawPOG_WP90_, branchName_mvaRawPOG_WP90_);
-  bai.setBranchAddress(mvaRawPOG_WPL_, branchName_mvaRawPOG_WPL_);
+  bai.setBranch(mvaRawPOG_, branchName_mvaRawPOG_);
+  bai.setBranch(mvaRawPOG_WP80_, branchName_mvaRawPOG_WP80_);
+  bai.setBranch(mvaRawPOG_WP90_, branchName_mvaRawPOG_WP90_);
+  bai.setBranch(mvaRawPOG_WPL_, branchName_mvaRawPOG_WPL_);
   bai.setBranch(sigmaEtaEta_, branchName_sigmaEtaEta_);
   bai.setBranch(HoE_, branchName_HoE_);
   bai.setBranch(deltaEta_, branchName_deltaEta_);

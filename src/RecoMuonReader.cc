@@ -59,12 +59,7 @@ RecoMuonReader::setBranchNames()
     // Karl: already includes HIP mitigation for 2016 B-F
     branchName_mediumIdPOG_ = Form("%s_%s", branchName_obj_.data(), "mediumId");
     branchName_segmentCompatibility_ = Form("%s_%s", branchName_obj_.data(), "segmentComp");
-#ifdef SYNC_NTUPLE
-#pragma message "Compiling in sync Ntuple mode: enabling ptErr branch"
     branchName_ptErr_ = Form("%s_%s", branchName_obj_.data(), "ptErr");
-#else
-#pragma message "Compiling regular mode: ptErr branch remains disabled"
-#endif
     instances_[branchName_obj_] = this;
   }
   else

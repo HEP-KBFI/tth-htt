@@ -60,9 +60,9 @@ protected:
   std::string branchName_cutbasedID_HLT_;
 
   Float_t * mvaRawPOG_;
-  Int_t * mvaRawPOG_WP80_;
-  Int_t * mvaRawPOG_WP90_;
-  Int_t * mvaRawPOG_WPL_;
+  Bool_t * mvaRawPOG_WP80_;
+  Bool_t * mvaRawPOG_WP90_;
+  Bool_t * mvaRawPOG_WPL_;
   Float_t * sigmaEtaEta_;
   Float_t * HoE_;
   Float_t * deltaEta_;
