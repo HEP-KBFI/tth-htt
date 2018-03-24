@@ -319,18 +319,16 @@ main(int argc,
   GenParticleWriter * genLeptonWriter = nullptr;
   GenParticleWriter * genHadTauWriter = nullptr;
   GenParticleWriter * genJetWriter = nullptr;
-  if ( isMC ) {
-    const std::string branchName_genLeptons = branchName_genLeptons;
+  if(isMC)
+  {
     genLeptonWriter = new GenParticleWriter(branchName_genLeptons);
     genLeptonWriter->setBranches(outputTree);
     std::cout << "writing GenLepton objects to branch = '" << branchName_genLeptons << "'\n";
 
-    const std::string branchName_genHadTaus = branchName_genHadTaus;
     genHadTauWriter = new GenParticleWriter(branchName_genHadTaus);
     genHadTauWriter->setBranches(outputTree);
     std::cout << "writing GenHadTau objects to branch = '" << branchName_genHadTaus << "'\n";
 
-    const std::string branchName_genJets = branchName_genJets;
     genJetWriter = new GenParticleWriter(branchName_genJets);
     genJetWriter->setBranches(outputTree);
     std::cout << "writing GenJet objects to branch = '" << branchName_genJets << "'\n";
@@ -385,7 +383,7 @@ main(int argc,
     std::cout << "keeping branches:\n";
     for(const auto & branchEntry: branchesToKeep)
     {
-      std::cout << " " << branchEntry.second->outputBranchName_ << " (type ="
+      std::cout << ' ' << branchEntry.second->outputBranchName_ << " (type ="
                    " " << branchEntry.second->outputBranchType_string_ << ")\n"
       ;
     }
