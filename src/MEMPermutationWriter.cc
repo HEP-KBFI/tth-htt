@@ -233,5 +233,5 @@ MEMPermutationWriter::find_selection_str(int selection_idx)
   if(selection_idx == kLoose)    return "Loose";
   if(selection_idx == kFakeable) return "Fakeable";
   if(selection_idx == kTight)    return "Tight";
-  throw cmsException(this, __func__) << "Invalid index: " << selection_idx;
+  throw cmsException(__func__, __LINE__) << "Invalid index: " << selection_idx;
 }

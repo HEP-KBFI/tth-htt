@@ -182,17 +182,17 @@ main(int argc,
   muonReader->set_HIP_mitigation(use_HIP_mitigation_mediumMuonId);
   muonReader->setBranchAddresses(inputTree);
   const RecoMuonCollectionGenMatcher muonGenMatcher;
-  const RecoMuonCollectionSelectorLoose preselMuonSelector(era);
-  const RecoMuonCollectionSelectorFakeable fakeableMuonSelector(era);
-  const RecoMuonCollectionSelectorTight tightMuonSelector(era);
+  const RecoMuonCollectionSelectorLoose preselMuonSelector(era, -1, isDEBUG);
+  const RecoMuonCollectionSelectorFakeable fakeableMuonSelector(era, -1, isDEBUG);
+  const RecoMuonCollectionSelectorTight tightMuonSelector(era, -1, isDEBUG);
   
   RecoElectronReader * const electronReader = new RecoElectronReader(era, branchName_electrons_in);
   electronReader->setBranchAddresses(inputTree);
   const RecoElectronCollectionGenMatcher electronGenMatcher;
-  const RecoElectronCollectionCleaner electronCleaner(0.3);
-  const RecoElectronCollectionSelectorLoose preselElectronSelector(era);
-  const RecoElectronCollectionSelectorFakeable fakeableElectronSelector(era);
-  const RecoElectronCollectionSelectorTight tightElectronSelector(era);
+  const RecoElectronCollectionCleaner electronCleaner(0.3, isDEBUG);
+  const RecoElectronCollectionSelectorLoose preselElectronSelector(era, -1, isDEBUG);
+  const RecoElectronCollectionSelectorFakeable fakeableElectronSelector(era, -1, isDEBUG);
+  const RecoElectronCollectionSelectorTight tightElectronSelector(era, -1, isDEBUG);
 
   double minPt_ele = -1.;
   double minPt_mu  = -1.;
@@ -205,8 +205,8 @@ main(int argc,
   RecoHadTauReader * const hadTauReader = new RecoHadTauReader(era, branchName_hadTaus_in);
   hadTauReader->setBranchAddresses(inputTree);
   const RecoHadTauCollectionGenMatcher hadTauGenMatcher;
-  const RecoHadTauCollectionCleaner hadTauCleaner(0.3);
-  RecoHadTauCollectionSelectorLoose preselHadTauSelector(era);
+  const RecoHadTauCollectionCleaner hadTauCleaner(0.3, isDEBUG);
+  RecoHadTauCollectionSelectorLoose preselHadTauSelector(era, -1, isDEBUG);
   if(hadTauSelection_tauIDwp == "dR03mvaVLoose" ||
      hadTauSelection_tauIDwp == "dR03mvaVVLoose" )
   {
@@ -214,7 +214,7 @@ main(int argc,
   }
   preselHadTauSelector.set_min_antiElectron(-1);
   preselHadTauSelector.set_min_antiMuon(-1);
-  RecoHadTauCollectionSelectorFakeable fakeableHadTauSelector(era);
+  RecoHadTauCollectionSelectorFakeable fakeableHadTauSelector(era, -1, isDEBUG);
   if(hadTauSelection_tauIDwp == "dR03mvaVLoose" ||
      hadTauSelection_tauIDwp == "dR03mvaVVLoose" )
   {
@@ -222,7 +222,7 @@ main(int argc,
   }
   fakeableHadTauSelector.set_min_antiElectron(-1);
   fakeableHadTauSelector.set_min_antiMuon(-1);
-  RecoHadTauCollectionSelectorTight tightHadTauSelector(era);
+  RecoHadTauCollectionSelectorTight tightHadTauSelector(era, -1, isDEBUG);
   if(! hadTauSelection_tauIDwp.empty())
   {
     tightHadTauSelector.set(hadTauSelection_tauIDwp);
@@ -242,10 +242,10 @@ main(int argc,
   jetReader->read_BtagWeight_systematics(isMC);
   jetReader->setBranchAddresses(inputTree);
   const RecoJetCollectionGenMatcher jetGenMatcher;
-  const RecoJetCollectionCleaner jetCleaner(0.4);
+  const RecoJetCollectionCleaner jetCleaner(0.4, isDEBUG);
   const RecoJetSelector jetSelector(era);
-  RecoJetCollectionSelectorBtagLoose jetSelectorBtagLoose(era);
-  RecoJetCollectionSelectorBtagMedium jetSelectorBtagMedium(era);
+  RecoJetCollectionSelectorBtagLoose jetSelectorBtagLoose(era, -1, isDEBUG);
+  RecoJetCollectionSelectorBtagMedium jetSelectorBtagMedium(era, -1, isDEBUG);
 
 //--- save the default settings of jetSelector
   const double min_jetSelector_pT     = jetSelector.get_min_pt();
@@ -490,8 +490,8 @@ main(int argc,
 //--- sort the collection by their pT so that if we hit the limit of maximum number of objects
 //--- in the Writer classes, we will drop the softer objects
     std::sort(selJets.begin(), selJets.end(), isHigherPt);
-    const std::vector<const RecoJet *> selBJets_loose  = jetSelectorBtagLoose(cleanedJets,  isHigherPt);
-    const std::vector<const RecoJet *> selBJets_medium = jetSelectorBtagMedium(cleanedJets, isHigherPt);
+    const std::vector<const RecoJet *> selBJets_loose  = jetSelectorBtagLoose(selJets,  isHigherPt);
+    const std::vector<const RecoJet *> selBJets_medium = jetSelectorBtagMedium(selJets, isHigherPt);
 
     RecoMEt met = metReader->read();
 
@@ -732,11 +732,11 @@ main(int argc,
     {
       if(inputFiles.files().size() > 1)
       {
-        std::cout << " " << histogramName << " from input File = '" << inputFileName << "'\n";
+        std::cout << ' ' << histogramName << " from input File = '" << inputFileName << "'\n";
       }
       else
       {
-        std::cout << " " << histogramName << '\n';
+        std::cout << ' ' << histogramName << '\n';
       }
       TH1 * const histogram_input = dynamic_cast<TH1 *>(inputFile->Get(histogramName.data()));
       if(! histogram_input)

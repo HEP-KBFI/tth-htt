@@ -75,7 +75,7 @@ private:
   std::map<std::string, RecoHadTauCollectionSelectorFakeable *> hadTauSelectorsFakeable_;
   std::map<std::string, RecoHadTauCollectionSelectorTight *>    hadTauSelectorsTight_;
 
-  std::string
+  static std::string
   find_selection_str(int selection_idx);
 };
 
