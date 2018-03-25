@@ -22,6 +22,7 @@ mode_choices = {
 parser = tthAnalyzeParser(isAddMEM = True)
 parser.add_modes(mode_choices.keys())
 parser.add_sys(sys_choices)
+parser.add_nonnominal()
 parser.add_argument('-i', '--integration-points',
   type = str, dest = 'integration_points', metavar = 'choice',
   choices = integration_point_choices.keys(), default = None, required = False,
@@ -49,6 +50,7 @@ debug              = args.debug
 # Additional arguments
 mode              = args.mode
 systematics_label = args.systematics
+use_nonnominal    = args.original_central
 
 # Custom arguments
 integration_points   = args.integration_points
@@ -115,6 +117,7 @@ if __name__ == '__main__':
     isDebug                  = debug,
     central_or_shift         = central_or_shift,
     dry_run                  = dry_run,
+    use_nonnominal           = use_nonnominal,
   )
 
   goodToGo = addMEMProduction.create()

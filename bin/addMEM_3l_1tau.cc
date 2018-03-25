@@ -210,7 +210,7 @@ int main(int argc,
   RecoJetReader* jetReader = new RecoJetReader(era, isMC, branchName_jets, readGenObjects);
   // CV: apply jet pT cut on JEC upward shift, to make sure pT cut is loose enough
   //     to allow systematic uncertainty on JEC to be estimated on analysis level
-  jetReader->setPtMass_central_or_shift(kJet_central);
+  jetReader->setPtMass_central_or_shift(useNonNominal ? kJet_central_nonNominal : kJet_central);
   jetReader->read_ptMass_systematics(isMC);
   jetReader->read_BtagWeight_systematics(isMC);
   jetReader->setBranchAddresses(inputTree);
@@ -219,8 +219,9 @@ int main(int argc,
 
 //--- declare missing transverse energy
   RecoMEtReader* metReader = new RecoMEtReader(era, isMC, branchName_met);
-  metReader->setMEt_central_or_shift(kMEt_central);
-  metReader->setBranchAddresses(inputTree);  
+  metReader->setMEt_central_or_shift(useNonNominal ? kMEt_central_nonNominal : kMEt_central);
+  metReader->read_ptPhi_systematics(isMC);
+  metReader->setBranchAddresses(inputTree);
 
   std::string outputTreeName = treeName;
   std::string outputDirName = "";
@@ -266,6 +267,8 @@ int main(int argc,
     jetWriter->write_BtagWeight_systematics(isMC);
     jetWriter->setBranches(outputTree);
     metWriter = new RecoMEtWriter(era, isMC, branchName_met);
+    metWriter->setPtPhi_central_or_shift(useNonNominal ? kMEt_central_nonNominal : kMEt_central);
+    metWriter->write_ptPhi_systematics(isMC);
     metWriter->setBranches(outputTree);
 
     vstring outputCommands_string = {
@@ -344,13 +347,13 @@ int main(int argc,
 //--- build collections of electrons, muons and hadronic taus;
 //    resolve overlaps in order of priority: muon, electron,
     const std::vector<RecoMuon> muons = muonReader->read();
-    const std::vector<const RecoMuon*> muon_ptrs = convert_to_ptrs(muons);
+    const std::vector<const RecoMuon *> muon_ptrs = convert_to_ptrs(muons);
     // CV: no cleaning needed for muons, as they have the highest priority in the overlap removal
-    const std::vector<const RecoMuon*> cleanedMuons  = muon_ptrs;
-    const std::vector<const RecoMuon*> preselMuons   = preselMuonSelector  (cleanedMuons);
-    const std::vector<const RecoMuon*> fakeableMuons = fakeableMuonSelector(preselMuons);
-    const std::vector<const RecoMuon*> tightMuons    = tightMuonSelector   (preselMuons);
-    const std::vector<const RecoMuon*> selMuons      = selectObjects(
+    const std::vector<const RecoMuon *> cleanedMuons  = muon_ptrs;
+    const std::vector<const RecoMuon *> preselMuons   = preselMuonSelector  (cleanedMuons);
+    const std::vector<const RecoMuon *> fakeableMuons = fakeableMuonSelector(preselMuons);
+    const std::vector<const RecoMuon *> tightMuons    = tightMuonSelector   (preselMuons);
+    const std::vector<const RecoMuon *> selMuons      = selectObjects(
       leptonSelection, preselMuons, fakeableMuons, tightMuons
     );
     if(isDEBUG)
@@ -362,12 +365,12 @@ int main(int argc,
     }
 
     const std::vector<RecoElectron> electrons = electronReader->read();
-    const std::vector<const RecoElectron*> electron_ptrs     = convert_to_ptrs(electrons);
-    const std::vector<const RecoElectron*> cleanedElectrons  = electronCleaner(electron_ptrs, fakeableMuons);
-    const std::vector<const RecoElectron*> preselElectrons   = preselElectronSelector(cleanedElectrons);
-    const std::vector<const RecoElectron*> fakeableElectrons = fakeableElectronSelector(preselElectrons);
-    const std::vector<const RecoElectron*> tightElectrons    = tightElectronSelector(preselElectrons);
-    const std::vector<const RecoElectron*> selElectrons      = selectObjects(
+    const std::vector<const RecoElectron *> electron_ptrs     = convert_to_ptrs(electrons);
+    const std::vector<const RecoElectron *> cleanedElectrons  = electronCleaner(electron_ptrs, fakeableMuons);
+    const std::vector<const RecoElectron *> preselElectrons   = preselElectronSelector(cleanedElectrons);
+    const std::vector<const RecoElectron *> fakeableElectrons = fakeableElectronSelector(preselElectrons);
+    const std::vector<const RecoElectron *> tightElectrons    = tightElectronSelector(preselElectrons);
+    const std::vector<const RecoElectron *> selElectrons      = selectObjects(
       leptonSelection, preselElectrons, fakeableElectrons, tightElectrons
     );
     if(isDEBUG)

@@ -14,6 +14,7 @@ systematics.full     = systematics.an_addMEM
 parser = tthAnalyzeParser(isAddMEM = True)
 parser.add_modes(mode_choices)
 parser.add_sys(sys_choices)
+parser.add_nonnominal()
 
 parser.add_argument('-n', '--max-mem-integrations',
   type = int, dest = 'max_mem_integrations', metavar = 'integer', default = max_mem_integrations,
@@ -36,6 +37,7 @@ debug              = args.debug
 # Additional arguments
 mode              = args.mode
 systematics_label = args.systematics
+use_nonnominal    = args.original_central
 
 # Custom arguments
 integration_points   = args.integration_points
@@ -96,6 +98,7 @@ if __name__ == '__main__':
     isDebug                  = debug,
     central_or_shift         = central_or_shift,
     dry_run                  = dry_run,
+    use_nonnominal           = use_nonnominal,
   )
 
   goodToGo = addMEMProduction.create()

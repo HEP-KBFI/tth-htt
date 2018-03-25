@@ -224,7 +224,7 @@ int main(int argc,
   RecoJetReader* jetReader = new RecoJetReader(era, isMC, branchName_jets, readGenObjects);
   // CV: apply jet pT cut on JEC upward shift, to make sure pT cut is loose enough
   //     to allow systematic uncertainty on JEC to be estimated on analysis level
-  jetReader->setPtMass_central_or_shift(kJet_central);
+  jetReader->setPtMass_central_or_shift(useNonNominal ? kJet_central_nonNominal : kJet_central);
   jetReader->read_ptMass_systematics(isMC);
   jetReader->read_BtagWeight_systematics(isMC);
   jetReader->setBranchAddresses(inputTree);
@@ -233,7 +233,8 @@ int main(int argc,
 
 //--- declare missing transverse energy
   RecoMEtReader* metReader = new RecoMEtReader(era, isMC, branchName_met);
-  metReader->setMEt_central_or_shift(kMEt_central);
+  metReader->setMEt_central_or_shift(useNonNominal ? kMEt_central_nonNominal : kMEt_central);
+  metReader->read_ptPhi_systematics(isMC);
   metReader->setBranchAddresses(inputTree);
 
   std::string outputTreeName = treeName;
@@ -280,6 +281,8 @@ int main(int argc,
     jetWriter->write_BtagWeight_systematics(isMC);
     jetWriter->setBranches(outputTree);
     metWriter = new RecoMEtWriter(era, isMC, branchName_met);
+    metWriter->setPtPhi_central_or_shift(useNonNominal ? kMEt_central_nonNominal : kMEt_central);
+    metWriter->write_ptPhi_systematics(isMC);
     metWriter->setBranches(outputTree);
 
     vstring outputCommands_string = {
@@ -361,13 +364,13 @@ int main(int argc,
 //--- build collections of electrons, muons and hadronic taus;
 //    resolve overlaps in order of priority: muon, electron,
     const std::vector<RecoMuon> muons = muonReader->read();
-    const std::vector<const RecoMuon*> muon_ptrs = convert_to_ptrs(muons);
+    const std::vector<const RecoMuon *> muon_ptrs = convert_to_ptrs(muons);
     // CV: no cleaning needed for muons, as they have the highest priority in the overlap removal
-    const std::vector<const RecoMuon*> cleanedMuons  = muon_ptrs;
-    const std::vector<const RecoMuon*> preselMuons   = preselMuonSelector  (cleanedMuons);
-    const std::vector<const RecoMuon*> fakeableMuons = fakeableMuonSelector(preselMuons);
-    const std::vector<const RecoMuon*> tightMuons    = tightMuonSelector   (preselMuons);
-    const std::vector<const RecoMuon*> selMuons      = selectObjects(
+    const std::vector<const RecoMuon *> cleanedMuons  = muon_ptrs;
+    const std::vector<const RecoMuon *> preselMuons   = preselMuonSelector  (cleanedMuons);
+    const std::vector<const RecoMuon *> fakeableMuons = fakeableMuonSelector(preselMuons);
+    const std::vector<const RecoMuon *> tightMuons    = tightMuonSelector   (preselMuons);
+    const std::vector<const RecoMuon *> selMuons      = selectObjects(
       leptonSelection, preselMuons, fakeableMuons, tightMuons
     );
     if(isDEBUG)
@@ -379,12 +382,12 @@ int main(int argc,
     }
 
     const std::vector<RecoElectron> electrons = electronReader->read();
-    const std::vector<const RecoElectron*> electron_ptrs     = convert_to_ptrs(electrons);
-    const std::vector<const RecoElectron*> cleanedElectrons  = electronCleaner(electron_ptrs, fakeableMuons);
-    const std::vector<const RecoElectron*> preselElectrons   = preselElectronSelector(cleanedElectrons);
-    const std::vector<const RecoElectron*> fakeableElectrons = fakeableElectronSelector(preselElectrons);
-    const std::vector<const RecoElectron*> tightElectrons    = tightElectronSelector(preselElectrons);
-    const std::vector<const RecoElectron*> selElectrons      = selectObjects(
+    const std::vector<const RecoElectron *> electron_ptrs     = convert_to_ptrs(electrons);
+    const std::vector<const RecoElectron *> cleanedElectrons  = electronCleaner(electron_ptrs, fakeableMuons);
+    const std::vector<const RecoElectron *> preselElectrons   = preselElectronSelector(cleanedElectrons);
+    const std::vector<const RecoElectron *> fakeableElectrons = fakeableElectronSelector(preselElectrons);
+    const std::vector<const RecoElectron *> tightElectrons    = tightElectronSelector(preselElectrons);
+    const std::vector<const RecoElectron *> selElectrons      = selectObjects(
       leptonSelection, preselElectrons, fakeableElectrons, tightElectrons
     );
     if(isDEBUG)
@@ -396,12 +399,12 @@ int main(int argc,
     }
 
     const std::vector<RecoHadTau> hadTaus = hadTauReader->read();
-    const std::vector<const RecoHadTau*> hadTau_ptrs     = convert_to_ptrs(hadTaus);
-    const std::vector<const RecoHadTau*> cleanedHadTaus  = hadTauCleaner(hadTau_ptrs, preselMuons, preselElectrons);
-    const std::vector<const RecoHadTau*> preselHadTaus   = preselHadTauSelector(cleanedHadTaus);
-    const std::vector<const RecoHadTau*> fakeableHadTaus = fakeableHadTauSelector(cleanedHadTaus);
-    const std::vector<const RecoHadTau*> tightHadTaus    = tightHadTauSelector(cleanedHadTaus);
-    const std::vector<const RecoHadTau*> selHadTaus      = selectObjects(
+    const std::vector<const RecoHadTau *> hadTau_ptrs     = convert_to_ptrs(hadTaus);
+    const std::vector<const RecoHadTau *> cleanedHadTaus  = hadTauCleaner(hadTau_ptrs, preselMuons, preselElectrons);
+    const std::vector<const RecoHadTau *> preselHadTaus   = preselHadTauSelector(cleanedHadTaus);
+    const std::vector<const RecoHadTau *> fakeableHadTaus = fakeableHadTauSelector(cleanedHadTaus);
+    const std::vector<const RecoHadTau *> tightHadTaus    = tightHadTauSelector(cleanedHadTaus);
+    const std::vector<const RecoHadTau *> selHadTaus      = selectObjects(
       hadTauSelection, preselHadTaus, fakeableHadTaus, tightHadTaus
     );
     std::cout << "Hadronic taus:\n";
@@ -419,7 +422,7 @@ int main(int argc,
 
 //--- build collections of jets and select subset of jets passing b-tagging criteria
     const std::vector<RecoJet> jets = jetReader->read();
-    const std::vector<const RecoJet*> jet_ptrs = convert_to_ptrs(jets);
+    const std::vector<const RecoJet *> jet_ptrs = convert_to_ptrs(jets);
 
     const RecoMEt met = metReader->read();
 
@@ -487,12 +490,12 @@ int main(int argc,
 
       //--- build the jet and tau collections specifically for MEM evaluation
             const std::vector<RecoHadTau> hadTaus_mem = hadTauReader->read();
-            const std::vector<const RecoHadTau*> hadTau_ptrs_mem     = convert_to_ptrs(hadTaus_mem);
-            const std::vector<const RecoHadTau*> cleanedHadTaus_mem  = hadTauCleaner(hadTau_ptrs_mem, preselMuons, preselElectrons);
-            const std::vector<const RecoHadTau*> preselHadTaus_mem   = preselHadTauSelector(cleanedHadTaus_mem);
-            const std::vector<const RecoHadTau*> fakeableHadTaus_mem = fakeableHadTauSelector(cleanedHadTaus_mem);
-            const std::vector<const RecoHadTau*> tightHadTaus_mem    = tightHadTauSelector(cleanedHadTaus_mem);
-            const std::vector<const RecoHadTau*> selHadTaus_mem      = selectObjects(
+            const std::vector<const RecoHadTau *> hadTau_ptrs_mem     = convert_to_ptrs(hadTaus_mem);
+            const std::vector<const RecoHadTau *> cleanedHadTaus_mem  = hadTauCleaner(hadTau_ptrs_mem, preselMuons, preselElectrons);
+            const std::vector<const RecoHadTau *> preselHadTaus_mem   = preselHadTauSelector(cleanedHadTaus_mem);
+            const std::vector<const RecoHadTau *> fakeableHadTaus_mem = fakeableHadTauSelector(cleanedHadTaus_mem);
+            const std::vector<const RecoHadTau *> tightHadTaus_mem    = tightHadTauSelector(cleanedHadTaus_mem);
+            const std::vector<const RecoHadTau *> selHadTaus_mem      = selectObjects(
               hadTauSelection, preselHadTaus_mem, fakeableHadTaus_mem, tightHadTaus_mem
             );
             if(isDEBUG)
@@ -505,8 +508,8 @@ int main(int argc,
             }
 
             const std::vector<RecoJet> jets_mem = jetReader->read();
-            const std::vector<const RecoJet*> jet_ptrs_mem = convert_to_ptrs(jets_mem);
-            const std::vector<const RecoJet*> selJets_mem  = jetSelector(jet_ptrs_mem);
+            const std::vector<const RecoJet *> jet_ptrs_mem = convert_to_ptrs(jets_mem);
+            const std::vector<const RecoJet *> selJets_mem  = jetSelector(jet_ptrs_mem);
             if(isDEBUG)
             {
               std::cout << "Selected jets:\n";
@@ -524,8 +527,8 @@ int main(int argc,
             for (const RecoHadTau * selHadTau: selHadTaus_mem)
             {
               const std::vector<const RecoLepton*> selLeptons_forCleaning = { selLepton_lead, selLepton_sublead };
-              const std::vector<const RecoHadTau*> selHadTaus_forCleaning = { selHadTau };
-              const std::vector<const RecoJet*> selJets_mem_cleaned = jetCleaner(
+              const std::vector<const RecoHadTau *> selHadTaus_forCleaning = { selHadTau };
+              const std::vector<const RecoJet *> selJets_mem_cleaned = jetCleaner(
                 selJets_mem, selLeptons_forCleaning, selHadTaus_forCleaning
               );
               std::cout << "Cleaned jets:\n";
