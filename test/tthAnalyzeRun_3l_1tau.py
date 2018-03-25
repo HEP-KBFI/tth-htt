@@ -24,7 +24,7 @@ from optparse import OptionParser
 parser = OptionParser()
 parser.add_option("--version ", type="string", dest="version", help="Name of output reository with results\n Trees will be stored in /hdfs/local/USER/ttHAnalysis/2016/VERSION/", default='dumb')
 parser.add_option("--mode", type="string", dest="mode", help="Set the mode flag, read the script for options", default="VHbb")
-parser.add_option("--tauWP", type="string", dest="tauWP", help="Set the mode flag, read the script for options", default="VHbb")
+parser.add_option("--tauWP", type="string", dest="tauWP", help="Set the mode flag, read the script for options", default="dR03mvaMedium")
 parser.add_option("--ERA", type="string", dest="ERA", help="Era of data", default='2016')
 parser.add_option("--use_prod_ntuples", action="store_true", dest="use_prod_ntuples", help="Production flag", default=False)
 parser.add_option("--noQuery", action="store_true", dest="noQuery", help="run (in bkg), do not ask", default=False)
@@ -45,7 +45,7 @@ changeBranchNames                  = use_prod_ntuples
 applyFakeRateWeights               = None
 MEMbranch                          = ''
 hadTauFakeRateWeight_inputFileName = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016.root"
-doShapeSyst=False
+doShapeSyst=True
 
 # Karl: temporarily disable other modes until we've proper Ntuples
 if "afterAddMEM" in mode : #not in ["VHbb", "forBDTtraining_beforeAddMEM"]:
@@ -229,8 +229,8 @@ if __name__ == '__main__':
         "mTauTauVis",
         "mvaOutput_plainKin_tt",
         "mvaOutput_plainKin_ttV",
-        "mvaOutput_plainKin_SUM_VT",
-        "mvaOutput_plainKin_1B_VT"
+        "mvaOutput_plainKin_SUM_M",
+        "mvaOutput_plainKin_1B_M"
       ],
       select_rle_output                     = True,
       select_root_output                    = False,

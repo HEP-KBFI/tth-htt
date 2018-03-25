@@ -47,20 +47,20 @@ void EvtHistManager_3l_1tau::bookHistograms(TFileDirectory& dir)
 
   histogram_EventCounter_ = book1D(dir, "EventCounter", "EventCounter", 1, -0.5, +0.5);
 
-  histogram_mvaOutput_noHTT_tt_ = book1D(dir, "mvaOutput_noHTT_tt", "mvaOutput_noHTT_tt", 100, 0., 1.);
-  histogram_mvaOutput_noHTT_ttV_ = book1D(dir, "mvaOutput_noHTT_ttV", "mvaOutput_noHTT_ttV", 100, 0., 1.);
-  histogram_mvaOutput_noHTT_SUM_M_ = book1D(dir, "mvaOutput_noHTT_SUM_M", "mvaOutput_noHTT_SUM_M", 100, 0., 1.);
-  histogram_mvaOutput_noHTT_1B_M_ = book1D(dir, "mvaOutput_noHTT_1B_M", "mvaOutput_noHTT_1B_M", 100, 0., 1.);
+  histogram_mvaOutput_plainKin_tt_ = book1D(dir, "mvaOutput_plainKin_tt", "mvaOutput_plainKin_tt", 100, 0., 1.);
+  histogram_mvaOutput_plainKin_ttV_ = book1D(dir, "mvaOutput_plainKin_ttV", "mvaOutput_plainKin_ttV", 100, 0., 1.);
+  histogram_mvaOutput_plainKin_SUM_M_ = book1D(dir, "mvaOutput_plainKin_SUM_M", "mvaOutput_plainKin_SUM_M", 100, 0., 1.);
+  histogram_mvaOutput_plainKin_1B_M_ = book1D(dir, "mvaOutput_plainKin_1B_M", "mvaOutput_plainKin_1B_M", 100, 0., 1.);
 }
 
 void EvtHistManager_3l_1tau::fillHistograms(int numElectrons, int numMuons, int numHadTaus, int numJets, int numBJets_loose, int numBJets_medium,
 					    double mvaOutput_3l_ttV, double mvaOutput_3l_ttbar, double mvaDiscr_3l,
 					    double mTauTauVis1, double mTauTauVis2,
 					    const MEMOutput_3l_1tau* memOutput_3l_1tau, double evtWeight,
-              double mvaOutput_noHTT_tt,
-              double mvaOutput_noHTT_ttV,
-              double mvaOutput_noHTT_SUM_M,
-              double mvaOutput_noHTT_1B_M
+              double mvaOutput_plainKin_tt,
+              double mvaOutput_plainKin_ttV,
+              double mvaOutput_plainKin_SUM_M,
+              double mvaOutput_plainKin_1B_M
             )
 {
   double evtWeightErr = 0.;
@@ -106,8 +106,8 @@ void EvtHistManager_3l_1tau::fillHistograms(int numElectrons, int numMuons, int 
 
   fillWithOverFlow(histogram_EventCounter_, 0., evtWeight, evtWeightErr);
 
-  fillWithOverFlow(histogram_mvaOutput_noHTT_tt_, mvaOutput_noHTT_tt, evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_mvaOutput_noHTT_ttV_, mvaOutput_noHTT_ttV, evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_mvaOutput_noHTT_SUM_M_, mvaOutput_noHTT_SUM_M, evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_mvaOutput_noHTT_1B_M_, mvaOutput_noHTT_1B_M, evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_mvaOutput_plainKin_tt_, mvaOutput_plainKin_tt, evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_mvaOutput_plainKin_ttV_, mvaOutput_plainKin_ttV, evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_mvaOutput_plainKin_SUM_M_, mvaOutput_plainKin_SUM_M, evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_mvaOutput_plainKin_1B_M_, mvaOutput_plainKin_1B_M, evtWeight, evtWeightErr);
 }
