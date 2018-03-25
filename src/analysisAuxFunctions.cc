@@ -1,6 +1,5 @@
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h"
 
-#include "tthAnalysis/HiggsToTauTau/interface/RecoMEtReader.h" // RecoMEtReader::kMEt_*
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectron.h" // RecoElectron
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuon.h" // RecoMuon
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTau.h" // RecoHadTau
@@ -53,94 +52,6 @@ get_era(const std::string & eraString)
     return kEra_2017;
   }
   throw cmsException(__func__) << "Invalid Configuration parameter 'era' = " << eraString;
-}
-
-int
-getBTagWeight_option(const std::string & central_or_shift)
-{
-  int central_or_shift_int = kBtag_central;
-  if     (central_or_shift == "CMS_ttHl_btag_HFUp"        ) central_or_shift_int = kBtag_hfUp;
-  else if(central_or_shift == "CMS_ttHl_btag_HFDown"      ) central_or_shift_int = kBtag_hfDown;
-  else if(central_or_shift == "CMS_ttHl_btag_HFStats1Up"  ) central_or_shift_int = kBtag_hfStats1Up;
-  else if(central_or_shift == "CMS_ttHl_btag_HFStats1Down") central_or_shift_int = kBtag_hfStats1Down;
-  else if(central_or_shift == "CMS_ttHl_btag_HFStats2Up"  ) central_or_shift_int = kBtag_hfStats2Up;
-  else if(central_or_shift == "CMS_ttHl_btag_HFStats2Down") central_or_shift_int = kBtag_hfStats2Down;
-  else if(central_or_shift == "CMS_ttHl_btag_LFUp"        ) central_or_shift_int = kBtag_lfUp;
-  else if(central_or_shift == "CMS_ttHl_btag_LFDown"      ) central_or_shift_int = kBtag_lfDown;
-  else if(central_or_shift == "CMS_ttHl_btag_LFStats1Up"  ) central_or_shift_int = kBtag_lfStats1Up;
-  else if(central_or_shift == "CMS_ttHl_btag_LFStats1Down") central_or_shift_int = kBtag_lfStats1Down;
-  else if(central_or_shift == "CMS_ttHl_btag_LFStats2Up"  ) central_or_shift_int = kBtag_lfStats2Up;
-  else if(central_or_shift == "CMS_ttHl_btag_LFStats2Down") central_or_shift_int = kBtag_lfStats2Down;
-  else if(central_or_shift == "CMS_ttHl_btag_cErr1Up"     ) central_or_shift_int = kBtag_cErr1Up;
-  else if(central_or_shift == "CMS_ttHl_btag_cErr1Down"   ) central_or_shift_int = kBtag_cErr1Down;
-  else if(central_or_shift == "CMS_ttHl_btag_cErr2Up"     ) central_or_shift_int = kBtag_cErr2Up;
-  else if(central_or_shift == "CMS_ttHl_btag_cErr2Down"   ) central_or_shift_int = kBtag_cErr2Down;
-  else if(central_or_shift == "CMS_ttHl_JESUp"            ) central_or_shift_int = kBtag_jesUp;
-  else if(central_or_shift == "CMS_ttHl_JESDown"          ) central_or_shift_int = kBtag_jesDown;
-  return central_or_shift_int;
-}
-
-std::string
-getBranchName_bTagWeight(const std::string & default_collectionName,
-                         int era,
-                         int central_or_shift)
-{
-  std::map<int, std::string> branchNames_bTagWeight;
-  if(era == kEra_2017)
-  {
-    branchNames_bTagWeight[kBtag_central]      = Form(
-      "%s_btagSF_%s", default_collectionName.data(), ! RecoJet::useDeepCSV ? "csvv2" : "deepcsv"
-    );
-    branchNames_bTagWeight[kBtag_hfUp]         = branchNames_bTagWeight[kBtag_central] + "_shape_up_hf";
-    branchNames_bTagWeight[kBtag_hfDown]       = branchNames_bTagWeight[kBtag_central] + "_shape_down_hf";
-    branchNames_bTagWeight[kBtag_hfStats1Up]   = branchNames_bTagWeight[kBtag_central] + "_shape_up_hfstats1";
-    branchNames_bTagWeight[kBtag_hfStats1Down] = branchNames_bTagWeight[kBtag_central] + "_shape_down_hfstats1";
-    branchNames_bTagWeight[kBtag_hfStats2Up]   = branchNames_bTagWeight[kBtag_central] + "_shape_up_hfstats2";
-    branchNames_bTagWeight[kBtag_hfStats2Down] = branchNames_bTagWeight[kBtag_central] + "_shape_down_hfstats2";
-    branchNames_bTagWeight[kBtag_lfUp]         = branchNames_bTagWeight[kBtag_central] + "_shape_up_lf";
-    branchNames_bTagWeight[kBtag_lfDown]       = branchNames_bTagWeight[kBtag_central] + "_shape_down_lf";
-    branchNames_bTagWeight[kBtag_lfStats1Up]   = branchNames_bTagWeight[kBtag_central] + "_shape_up_lfstats1";
-    branchNames_bTagWeight[kBtag_lfStats1Down] = branchNames_bTagWeight[kBtag_central] + "_shape_down_lfstats1";
-    branchNames_bTagWeight[kBtag_lfStats2Up]   = branchNames_bTagWeight[kBtag_central] + "_shape_up_lfstats2";
-    branchNames_bTagWeight[kBtag_lfStats2Down] = branchNames_bTagWeight[kBtag_central] + "_shape_down_lfstats2";
-    branchNames_bTagWeight[kBtag_cErr1Up]      = branchNames_bTagWeight[kBtag_central] + "_shape_up_cferr1";
-    branchNames_bTagWeight[kBtag_cErr1Down]    = branchNames_bTagWeight[kBtag_central] + "_shape_down_cferr1";
-    branchNames_bTagWeight[kBtag_cErr2Up]      = branchNames_bTagWeight[kBtag_central] + "_shape_up_cferr2";
-    branchNames_bTagWeight[kBtag_cErr2Down]    = branchNames_bTagWeight[kBtag_central] + "_shape_down_cferr2";
-    branchNames_bTagWeight[kBtag_jesUp]        = branchNames_bTagWeight[kBtag_central] + "_shape_up_jes";
-    branchNames_bTagWeight[kBtag_jesDown]      = branchNames_bTagWeight[kBtag_central] + "_shape_down_jes";
-  }
-  else
-  {
-    throw cmsException(__func__, __LINE__)
-      << "Invalid era = " << era;
-  }
-  assert(branchNames_bTagWeight.count(central_or_shift));
-  return branchNames_bTagWeight.at(central_or_shift);
-}
-
-std::string
-getBranchName_MEt(int,
-                  const std::string & default_branchName,
-                  int central_or_shift)
-{
-  std::string branchName = default_branchName; // copy
-  switch(central_or_shift)
-  {
-    case RecoMEtReader::kMEt_central:                                                   break;
-    case RecoMEtReader::kMEt_shifted_JetEnUp:           branchName += "_jesTotalUp";    break; // JetEnUp
-    case RecoMEtReader::kMEt_shifted_JetEnDown:         branchName += "_jesTotalDown";  break; // JetEnDown
-    case RecoMEtReader::kMEt_shifted_JetResUp:          branchName += "_jerUp";         break;
-    case RecoMEtReader::kMEt_shifted_JetResDown:        branchName += "_jerDown";       break;
-    case RecoMEtReader::kMEt_shifted_UnclusteredEnUp:   branchName += "_unclustEnUp";   break;
-    case RecoMEtReader::kMEt_shifted_UnclusteredEnDown: branchName += "_unclustEnDown"; break;
-    default:
-    {
-      std::cerr << "Invalid met correction: " << central_or_shift << '\n';
-      throw 1;
-    }
-  }
-  return branchName;
 }
 
 int

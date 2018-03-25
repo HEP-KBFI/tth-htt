@@ -5,7 +5,6 @@
 
 RecoJet::RecoJet(const GenJet & jet,
                  Double_t charge,
-                 Double_t jecUncertTotal,
                  Double_t BtagCSV,
                  Double_t BtagWeight,
                  Double_t QGDiscr,
@@ -16,7 +15,6 @@ RecoJet::RecoJet(const GenJet & jet,
                  Int_t idx)
   : RecoJetBase(jet, idx)
   , charge_(charge)
-  , jecUncertTotal_(jecUncertTotal)
   , BtagCSV_(BtagCSV)
   , BtagWeight_(BtagWeight)
   , QGDiscr_(QGDiscr)
@@ -33,12 +31,6 @@ Double_t
 RecoJet::charge() const
 {
   return charge_;
-}
-
-Double_t
-RecoJet::jecUncertTotal() const
-{
-  return jecUncertTotal_;
 }
 
 Double_t
@@ -81,6 +73,20 @@ Int_t
 RecoJet::jetId() const
 {
   return jetId_;
+}
+
+Double_t
+RecoJet::maxPt() const
+{
+  double max_Pt = this->pt();
+  for(const auto & kv: pt_systematics_)
+  {
+    if(kv.second > max_Pt)
+    {
+      max_Pt = kv.second;
+    }
+  }
+  return max_Pt;
 }
 
 std::ostream &

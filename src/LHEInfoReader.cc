@@ -2,6 +2,7 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 #include "tthAnalysis/HiggsToTauTau/interface/BranchAddressInitializer.h" // BranchAddressInitializer, TTree, Form()
+#include "tthAnalysis/HiggsToTauTau/interface/sysUncertOptions.h" // kLHE_scale_*
 
 #include <cassert> // assert()
 
@@ -133,6 +134,21 @@ double
 LHEInfoReader::getWeight_scale_yDown() const
 { 
   return weight_scale_yDown_;
+}
+
+double
+LHEInfoReader::getWeight_scale(int central_or_shift) const
+{
+  switch(central_or_shift)
+  {
+    case kLHE_scale_central: return 1.;
+    case kLHE_scale_xDown:   return getWeight_scale_xDown();
+    case kLHE_scale_xUp:     return getWeight_scale_xUp();
+    case kLHE_scale_yDown:   return getWeight_scale_yDown();
+    case kLHE_scale_yUp:     return getWeight_scale_yUp();
+    default: throw cmsException(this, __func__, __LINE__)
+               << "Invalid LHE scale systematics option: " << central_or_shift;
+  }
 }
 
 int

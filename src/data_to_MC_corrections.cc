@@ -3,6 +3,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/leptonTypes.h" // kElectron, kMuon
 #include "tthAnalysis/HiggsToTauTau/interface/lutAuxFunctions.h" // openFile(), loadTH1(), loadTH2(), getSF_from_TH1(), getSF_from_TH2()
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // as_integer()
 
 #include <TH1.h> // TH1
 #include <TFile.h> // TFile
@@ -412,7 +413,7 @@ double
 sf_eToTauFakeRate_2017(double hadTau_pt, // unused
                        double hadTau_absEta,
                        int hadTauSelection_antiElectron,
-                       int central_or_shift)
+                       FRet central_or_shift)
 {
   double sf = 1.;
   double sfErr = 0.;
@@ -460,11 +461,11 @@ sf_eToTauFakeRate_2017(double hadTau_pt, // unused
 
   switch(central_or_shift)
   {
-    case kFRet_shiftUp:   sf += sfErr; break;
-    case kFRet_shiftDown: sf -= sfErr; break;
-    case kFRet_central:                break;
+    case FRet::shiftUp:   sf += sfErr; break;
+    case FRet::shiftDown: sf -= sfErr; break;
+    case FRet::central:                break;
     default:              throw cmsException(__func__, __LINE__)
-                            << "Invalid parameter 'central_or_shift' = " << central_or_shift;
+                            << "Invalid parameter 'central_or_shift' = " << as_integer(central_or_shift);
   }
 
   sf = std::max(sf, 0.); // CV: require e->tau fake-rates to be positive
@@ -475,7 +476,7 @@ double
 sf_muToTauFakeRate_2017(double hadTau_pt, // unused
                         double hadTau_absEta,
                         int hadTauSelection_antiMuon,
-                        int central_or_shift)
+                        FRmt central_or_shift)
 {
   double sf = 1.;
   double sfErr = 0.;
@@ -512,11 +513,11 @@ sf_muToTauFakeRate_2017(double hadTau_pt, // unused
 
   switch(central_or_shift)
   {
-    case kFRmt_shiftUp:   sf += sfErr; break;
-    case kFRmt_shiftDown: sf -= sfErr; break;
-    case kFRmt_central:                break;
+    case FRmt::shiftUp:   sf += sfErr; break;
+    case FRmt::shiftDown: sf -= sfErr; break;
+    case FRmt::central:                break;
     default:              throw cmsException(__func__, __LINE__)
-                            << "Invalid parameter 'central_or_shift' = " << central_or_shift;
+                            << "Invalid parameter 'central_or_shift' = " << as_integer(central_or_shift);
   }
 
   sf = std::max(sf, 0.); // CV: require mu->tau fake-rates to be positive

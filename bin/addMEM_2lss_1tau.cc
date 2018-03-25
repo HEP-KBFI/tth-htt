@@ -41,7 +41,8 @@
 #include "tthAnalysis/HiggsToTauTau/interface/EventInfoWriter.h" // EventInfoWriter
 #include "tthAnalysis/HiggsToTauTau/interface/MEMPermutationWriter.h" // MEMPermutationWriter::get_maxPermutations_addMEM_pattern()
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // selectObjects(), get_selection(), get_era(), kLoose, kFakeable, kTight
-#include "tthAnalysis/HiggsToTauTau/interface/memAuxFunctions.h" // get_addMEM_systematics(), get_memObjectBranchName(), get_memPermutationBranchName()
+#include "tthAnalysis/HiggsToTauTau/interface/sysUncertOptions.h" // k*_central
+#include "tthAnalysis/HiggsToTauTau/interface/memAuxFunctions.h" // get_memObjectBranchName(), get_memPermutationBranchName()
 #include "tthAnalysis/HiggsToTauTau/interface/cutFlowTable.h" // cutFlowTableType
 #include "tthAnalysis/HiggsToTauTau/interface/histogramAuxFunctions.h" // createSubdirectory_recursively()
 #include "tthAnalysis/HiggsToTauTau/interface/branchEntryTypeAuxFunctions.h" // copyBranches_singleType(), copyBranches_vectorType()
@@ -93,6 +94,7 @@ int main(int argc,
   const bool lowIntegrationPoints           = cfg_addMEM.getParameter<bool>("lowIntegrationPoints");
   const bool copy_all_branches              = cfg_addMEM.getParameter<bool>("copy_all_branches");
   const bool readGenObjects                 = cfg_addMEM.getParameter<bool>("readGenObjects");
+  const bool useNonNominal                  = cfg_addMEM.getParameter<bool>("useNonNominal");
 
   const std::string branchName_electrons = cfg_addMEM.getParameter<std::string>("branchName_electrons");
   const std::string branchName_muons     = cfg_addMEM.getParameter<std::string>("branchName_muons");
@@ -192,7 +194,7 @@ int main(int argc,
   const RecoElectronCollectionSelectorTight    tightElectronSelector   (era);
 
   RecoHadTauReader* hadTauReader = new RecoHadTauReader(era, branchName_hadTaus, readGenObjects);
-  hadTauReader->setHadTauPt_central_or_shift(RecoHadTauReader::kHadTauPt_central);
+  hadTauReader->setHadTauPt_central_or_shift(kHadTauPt_central);
   hadTauReader->setBranchAddresses(inputTree);
   const RecoHadTauCollectionCleaner hadTauCleaner(0.3);
   RecoHadTauCollectionSelectorLoose    preselHadTauSelector  (era);
@@ -221,8 +223,9 @@ int main(int argc,
   
   RecoJetReader* jetReader = new RecoJetReader(era, isMC, branchName_jets, readGenObjects);
   // CV: apply jet pT cut on JEC upward shift, to make sure pT cut is loose enough
-  //     to allow systematic uncertainty on JEC to be estimated on analysis level 
-  jetReader->setJetPt_central_or_shift(RecoJetReader::kJetPt_central); 
+  //     to allow systematic uncertainty on JEC to be estimated on analysis level
+  jetReader->setPtMass_central_or_shift(kJet_central);
+  jetReader->read_ptMass_systematics(isMC);
   jetReader->read_BtagWeight_systematics(isMC);
   jetReader->setBranchAddresses(inputTree);
   const RecoJetCollectionCleaner jetCleaner(0.4);
@@ -230,7 +233,7 @@ int main(int argc,
 
 //--- declare missing transverse energy
   RecoMEtReader* metReader = new RecoMEtReader(era, isMC, branchName_met);
-  metReader->setMEt_central_or_shift(RecoMEtReader::kMEt_central);
+  metReader->setMEt_central_or_shift(kMEt_central);
   metReader->setBranchAddresses(inputTree);
 
   std::string outputTreeName = treeName;
@@ -272,6 +275,9 @@ int main(int argc,
     hadTauWriter = new RecoHadTauWriter(era, Form("n%s", branchName_hadTaus.data()), branchName_hadTaus);
     hadTauWriter->setBranches(outputTree);
     jetWriter = new RecoJetWriter(era, isMC, Form("n%s", branchName_jets.data()), branchName_jets);
+    jetWriter->setPtMass_central_or_shift(useNonNominal ? kJet_central_nonNominal : kJet_central);
+    jetWriter->write_ptMass_systematics(isMC);
+    jetWriter->write_BtagWeight_systematics(isMC);
     jetWriter->setBranches(outputTree);
     metWriter = new RecoMEtWriter(era, isMC, branchName_met);
     metWriter->setBranches(outputTree);
@@ -458,11 +464,14 @@ int main(int argc,
           const RecoLepton * selLepton_sublead = selLeptons[selLepton_sublead_idx];
           for(const std::string central_or_shift: central_or_shifts)
           {
-            int jetPt_option    = RecoJetReader::kJetPt_central;
-            int hadTauPt_option = RecoHadTauReader::kHadTauPt_central;
-            int met_option      = RecoMEtReader::kMEt_central;
+            const int jetPt_option    = getJet_option     (central_or_shift, isMC);
+            const int hadTauPt_option = getHadTauPt_option(central_or_shift, isMC);
+            const int met_option      = getMET_option     (central_or_shift, isMC);
 
-            if(get_addMEM_systematics(central_or_shift, jetPt_option, hadTauPt_option, met_option))
+            if(jetPt_option    == kJet_central      &&
+               hadTauPt_option == kHadTauPt_central &&
+               met_option      == kMEt_central      &&
+               central_or_shift != "central")
             {
               std::cout << "Skipping systematics: " << central_or_shift << '\n';
               continue;
@@ -472,7 +481,7 @@ int main(int argc,
               std::cout << "Attempting to evaluate the MEM score for systematics: " << central_or_shift << '\n';
             }
 
-            jetReader->setJetPt_central_or_shift(jetPt_option);
+            jetReader->setPtMass_central_or_shift(jetPt_option);
             hadTauReader->setHadTauPt_central_or_shift(hadTauPt_option);
             metReader->setMEt_central_or_shift(met_option);
 

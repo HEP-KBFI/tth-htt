@@ -24,8 +24,8 @@ Data_to_MC_CorrectionInterface::Data_to_MC_CorrectionInterface(const edm::Parame
   , effTrigger_mm_(nullptr)
   , effTrigger_3l_(nullptr)
   , hadTauSelection_(-1)
-  , eToTauFakeRate_option_(kFRet_central)
-  , muToTauFakeRate_option_(kFRmt_central)
+  , eToTauFakeRate_option_(FRet::central)
+  , muToTauFakeRate_option_(FRmt::central)
   , numLeptons_(0)
   , lepton_type_(4)
   , lepton_pt_(4)
@@ -86,36 +86,9 @@ Data_to_MC_CorrectionInterface::Data_to_MC_CorrectionInterface(const edm::Parame
   }
 
   const std::string central_or_shift = cfg.getParameter<std::string>("central_or_shift");
-  if( central_or_shift != "central")
-  {
-    std::string shiftUp_or_Down;
-    if(boost::ends_with(central_or_shift, "Up"))
-    {
-      shiftUp_or_Down = "Up";
-    }
-    else if(boost::ends_with(central_or_shift, "Down"))
-    {
-      shiftUp_or_Down = "Down";
-    }
-    else
-    {
-      throw cmsException(this)
-              << "Invalid Configuration parameter 'central_or_shift' = " << central_or_shift;
-    }
 
-    if(boost::starts_with(central_or_shift, "CMS_ttHl_FRet"))
-    {
-      if     (shiftUp_or_Down == "Up"  ) eToTauFakeRate_option_ = kFRet_shiftUp;
-      else if(shiftUp_or_Down == "Down") eToTauFakeRate_option_ = kFRet_shiftDown;
-      else                               assert(0);
-    }
-    else if( boost::starts_with(central_or_shift, "CMS_ttHl_FRmt"))
-    {
-      if     (shiftUp_or_Down == "Up"  ) muToTauFakeRate_option_ = kFRmt_shiftUp;
-      else if(shiftUp_or_Down == "Down") muToTauFakeRate_option_ = kFRmt_shiftDown;
-      else                               assert(0);
-    }
-  }
+  eToTauFakeRate_option_ = getEToTauFR_option(central_or_shift, true);
+  muToTauFakeRate_option_ = getMuToTauFR_option(central_or_shift, true);
 
   if(era_ == kEra_2017)
   {

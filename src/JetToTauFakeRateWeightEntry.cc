@@ -2,6 +2,7 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/jetToTauFakeRateAuxFunctions.h" // getEtaBin()
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
+#include "tthAnalysis/HiggsToTauTau/interface/sysUncertOptions.h" // kFRjt_*
 
 #include <TFile.h> // TFile
 #include <TGraphAsymmErrors.h> // TGraphAsymmErrors

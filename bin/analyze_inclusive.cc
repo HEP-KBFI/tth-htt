@@ -23,6 +23,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RunLumiEventSelector.h" // RunLumiEventSelector
 #include "tthAnalysis/HiggsToTauTau/interface/leptonTypes.h" // kElectron, kMuon
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // isHigherPt(), mergeLeptonCollections()
+#include "tthAnalysis/HiggsToTauTau/interface/sysUncertOptions.h" // k*_central
 #include "tthAnalysis/HiggsToTauTau/interface/hltPath.h" // hltPath, create_hltPaths(), hltPaths_isTriggered()
 #include "tthAnalysis/HiggsToTauTau/interface/TTreeWrapper.h" // TTreeWrapper
 #include "tthAnalysis/HiggsToTauTau/interface/SyncNtupleManager.h" // SyncNtupleManager
@@ -227,7 +228,7 @@ main(int argc,
   const RecoElectronCollectionSelectorMVABased mvaBasedElectronSelector(era, -1, isDEBUG);
 
   RecoHadTauReader * const hadTauReader = new RecoHadTauReader(era, branchName_hadTaus, false);
-  hadTauReader->setHadTauPt_central_or_shift(RecoHadTauReader::kHadTauPt_central);
+  hadTauReader->setHadTauPt_central_or_shift(kHadTauPt_central);
   inputTree->registerReader(hadTauReader);
   const RecoHadTauCollectionCleaner hadTauCleaner(0.3);
   RecoHadTauCollectionSelectorLoose preselHadTauSelector(era, -1, isDEBUG);
@@ -240,7 +241,7 @@ main(int argc,
   preselHadTauSelector.set_min_antiMuon(-1);
 
   RecoJetReader * const jetReader = new RecoJetReader(era, isMC, branchName_jets, false);
-  jetReader->setJetPt_central_or_shift(RecoJetReader::kJetPt_central);
+  jetReader->setPtMass_central_or_shift(snm ? kJet_central_nonNominal : kJet_central);
   jetReader->setBranchName_BtagWeight(kBtag_central);
   inputTree->registerReader(jetReader);
   const RecoJetCollectionCleaner jetCleaner(0.4);
@@ -250,7 +251,7 @@ main(int argc,
 
 //--- declare missing transverse energy
   RecoMEtReader * const metReader = new RecoMEtReader(era, isMC, branchName_met);
-  metReader->setMEt_central_or_shift(RecoMEtReader::kMEt_central);
+  metReader->setMEt_central_or_shift(snm ? kMEt_central_nonNominal : kMEt_central);
   inputTree->registerReader(metReader);
 
   int analyzedEntries = 0;

@@ -21,7 +21,6 @@ public:
   RecoJet() = default;
   RecoJet(const GenJet & particle,
           Double_t charge,
-          Double_t jecUncertTotal,
           Double_t BtagCSV,
           Double_t BtagWeight,
           Double_t QGDiscr,
@@ -38,7 +37,6 @@ public:
    * @return Values of data-members
    */
   Double_t charge() const;
-  Double_t jecUncertTotal() const;
   Double_t BtagCSV() const;
   Double_t BtagWeight() const;
   Double_t QGDiscr() const;
@@ -47,25 +45,28 @@ public:
   Double_t pullMag() const;
   Int_t jetId() const;
 
+  Double_t maxPt() const;
+
   friend class RecoJetReader;
   friend class RecoJetWriter;
 
   const static bool useDeepCSV = true;
 
 protected:
-  Double_t charge_;       ///< jet charge, computed according to JME-13-006
-  Double_t jecUncertTotal_; ///< 1 sigma jet energy correction
-  Double_t BtagCSV_;      ///< CSV b-tagging discriminator value
-  Double_t BtagWeight_;   ///< weight for data/MC correction of b-tagging efficiency and mistag rate
-  Double_t QGDiscr_;      ///< quark/gluon discriminator
-  Double_t pullEta_;      ///< eta component of pull vector, computed according to arXiv:1001.5027
-  Double_t pullPhi_;      ///< phi component of pull vector, computed according to arXiv:1001.5027
-  Double_t pullMag_;      ///< magnitude of pull vector, computed according to arXiv:1001.5027
-  Int_t jetId_;           ///< jet ID, as explained in https://twiki.cern.ch/twiki/bin/view/CMS/JetID13TeVRun2017
+  Double_t charge_;     ///< jet charge, computed according to JME-13-006
+  Double_t BtagCSV_;    ///< CSV b-tagging discriminator value
+  Double_t BtagWeight_; ///< weight for data/MC correction of b-tagging efficiency and mistag rate
+  Double_t QGDiscr_;    ///< quark/gluon discriminator
+  Double_t pullEta_;    ///< eta component of pull vector, computed according to arXiv:1001.5027
+  Double_t pullPhi_;    ///< phi component of pull vector, computed according to arXiv:1001.5027
+  Double_t pullMag_;    ///< magnitude of pull vector, computed according to arXiv:1001.5027
+  Int_t jetId_;         ///< jet ID, as explained in https://twiki.cern.ch/twiki/bin/view/CMS/JetID13TeVRun2017
 
   //---------------------------------------------------------
   // CV: needed by RecoJetWriter
-  std::map<int, Double_t> BtagWeight_systematics_; 
+  std::map<int, Double_t> BtagWeight_systematics_;
+  std::map<int, Double_t> pt_systematics_;
+  std::map<int, Double_t> mass_systematics_;
   //---------------------------------------------------------
 };
 

@@ -41,7 +41,8 @@
 #include "tthAnalysis/HiggsToTauTau/interface/EventInfoWriter.h" // EventInfoWriter
 #include "tthAnalysis/HiggsToTauTau/interface/MEMPermutationWriter.h" // MEMPermutationWriter::get_maxPermutations_addMEM_pattern()
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // selectObjects(), get_selection(), get_era(), kLoose, kFakeable, kTight
-#include "tthAnalysis/HiggsToTauTau/interface/memAuxFunctions.h" // get_addMEM_systematics(), get_memObjectBranchName(), get_memPermutationBranchName()
+#include "tthAnalysis/HiggsToTauTau/interface/memAuxFunctions.h" // get_memObjectBranchName(), get_memPermutationBranchName()
+#include "tthAnalysis/HiggsToTauTau/interface/sysUncertOptions.h" // k*_central
 #include "tthAnalysis/HiggsToTauTau/interface/cutFlowTable.h" // cutFlowTableType
 #include "tthAnalysis/HiggsToTauTau/interface/histogramAuxFunctions.h" // createSubdirectory_recursively()
 #include "tthAnalysis/HiggsToTauTau/interface/branchEntryTypeAuxFunctions.h" // copyBranches_singleType(), copyBranches_vectorType()
@@ -92,6 +93,7 @@ int main(int argc,
   const bool dryRun                         = cfg_addMEM.getParameter<bool>("dryRun");
   const bool copy_all_branches              = cfg_addMEM.getParameter<bool>("copy_all_branches");
   const bool readGenObjects                 = cfg_addMEM.getParameter<bool>("readGenObjects");
+  const bool useNonNominal                  = cfg_addMEM.getParameter<bool>("useNonNominal");
 
   const std::string branchName_electrons = cfg_addMEM.getParameter<std::string>("branchName_electrons");
   const std::string branchName_muons     = cfg_addMEM.getParameter<std::string>("branchName_muons");
@@ -178,7 +180,7 @@ int main(int argc,
   const RecoElectronCollectionSelectorTight    tightElectronSelector   (era);
 
   RecoHadTauReader* hadTauReader = new RecoHadTauReader(era, branchName_hadTaus, readGenObjects);
-  hadTauReader->setHadTauPt_central_or_shift(RecoHadTauReader::kHadTauPt_central);
+  hadTauReader->setHadTauPt_central_or_shift(kHadTauPt_central);
   hadTauReader->setBranchAddresses(inputTree);
   const RecoHadTauCollectionCleaner hadTauCleaner(0.3);
   RecoHadTauCollectionSelectorLoose    preselHadTauSelector  (era);
@@ -207,8 +209,9 @@ int main(int argc,
   
   RecoJetReader* jetReader = new RecoJetReader(era, isMC, branchName_jets, readGenObjects);
   // CV: apply jet pT cut on JEC upward shift, to make sure pT cut is loose enough
-  //     to allow systematic uncertainty on JEC to be estimated on analysis level 
-  jetReader->setJetPt_central_or_shift(RecoJetReader::kJetPt_central); 
+  //     to allow systematic uncertainty on JEC to be estimated on analysis level
+  jetReader->setPtMass_central_or_shift(kJet_central);
+  jetReader->read_ptMass_systematics(isMC);
   jetReader->read_BtagWeight_systematics(isMC);
   jetReader->setBranchAddresses(inputTree);
   const RecoJetCollectionCleaner jetCleaner(0.4);
@@ -216,7 +219,7 @@ int main(int argc,
 
 //--- declare missing transverse energy
   RecoMEtReader* metReader = new RecoMEtReader(era, isMC, branchName_met);
-  metReader->setMEt_central_or_shift(RecoMEtReader::kMEt_central);
+  metReader->setMEt_central_or_shift(kMEt_central);
   metReader->setBranchAddresses(inputTree);  
 
   std::string outputTreeName = treeName;
@@ -258,6 +261,9 @@ int main(int argc,
     hadTauWriter = new RecoHadTauWriter(era, Form("n%s", branchName_hadTaus.data()), branchName_hadTaus);
     hadTauWriter->setBranches(outputTree);
     jetWriter = new RecoJetWriter(era, isMC, Form("n%s", branchName_jets.data()), branchName_jets);
+    jetWriter->setPtMass_central_or_shift(useNonNominal ? kJet_central_nonNominal : kJet_central);
+    jetWriter->write_ptMass_systematics(isMC);
+    jetWriter->write_BtagWeight_systematics(isMC);
     jetWriter->setBranches(outputTree);
     metWriter = new RecoMEtWriter(era, isMC, branchName_met);
     metWriter->setBranches(outputTree);
@@ -373,12 +379,12 @@ int main(int argc,
     }
 
     const std::vector<RecoHadTau> hadTaus = hadTauReader->read();
-    const std::vector<const RecoHadTau*> hadTau_ptrs     = convert_to_ptrs(hadTaus);
-    const std::vector<const RecoHadTau*> cleanedHadTaus  = hadTauCleaner(hadTau_ptrs, preselMuons, preselElectrons);
-    const std::vector<const RecoHadTau*> preselHadTaus   = preselHadTauSelector(cleanedHadTaus);
-    const std::vector<const RecoHadTau*> fakeableHadTaus = fakeableHadTauSelector(cleanedHadTaus);
-    const std::vector<const RecoHadTau*> tightHadTaus    = tightHadTauSelector(cleanedHadTaus);
-    const std::vector<const RecoHadTau*> selHadTaus      = selectObjects(
+    const std::vector<const RecoHadTau *> hadTau_ptrs     = convert_to_ptrs(hadTaus);
+    const std::vector<const RecoHadTau *> cleanedHadTaus  = hadTauCleaner(hadTau_ptrs, preselMuons, preselElectrons);
+    const std::vector<const RecoHadTau *> preselHadTaus   = preselHadTauSelector(cleanedHadTaus);
+    const std::vector<const RecoHadTau *> fakeableHadTaus = fakeableHadTauSelector(cleanedHadTaus);
+    const std::vector<const RecoHadTau *> tightHadTaus    = tightHadTauSelector(cleanedHadTaus);
+    const std::vector<const RecoHadTau *> selHadTaus      = selectObjects(
       hadTauSelection, preselHadTaus, fakeableHadTaus, tightHadTaus
     );
     if(isDEBUG)
@@ -391,7 +397,7 @@ int main(int argc,
     
 //--- build collections of jets and select subset of jets passing b-tagging criteria
     const std::vector<RecoJet> jets = jetReader->read();
-    const std::vector<const RecoJet*> jet_ptrs = convert_to_ptrs(jets);
+    const std::vector<const RecoJet *> jet_ptrs = convert_to_ptrs(jets);
 
     const RecoMEt met = metReader->read();
 
@@ -440,28 +446,31 @@ int main(int argc,
             const RecoLepton * selLepton_third = selLeptons[selLepton_third_idx];
             for(const std::string central_or_shift: central_or_shifts)
             {
-              int jetPt_option    = RecoJetReader::kJetPt_central;
-              int hadTauPt_option = RecoHadTauReader::kHadTauPt_central;
-              int met_option      = RecoMEtReader::kMEt_central;
+              const int jetPt_option    = getJet_option     (central_or_shift, isMC);
+              const int hadTauPt_option = getHadTauPt_option(central_or_shift, isMC);
+              const int met_option      = getMET_option     (central_or_shift, isMC);
 
-              if(get_addMEM_systematics(central_or_shift, jetPt_option, hadTauPt_option, met_option))
+              if(jetPt_option    == kJet_central      &&
+                 hadTauPt_option == kHadTauPt_central &&
+                 met_option      == kMEt_central      &&
+                 central_or_shift != "central")
               {
                 std::cout << "Skipping systematics: " << central_or_shift << '\n';
                 continue;
               }
 
-              jetReader   -> setJetPt_central_or_shift   (jetPt_option);
-              hadTauReader-> setHadTauPt_central_or_shift(hadTauPt_option);
-              metReader   -> setMEt_central_or_shift     (met_option);
+              jetReader   ->setPtMass_central_or_shift  (jetPt_option);
+              hadTauReader->setHadTauPt_central_or_shift(hadTauPt_option);
+              metReader   ->setMEt_central_or_shift     (met_option);
 
 //--- build the jet and tau collections specifically for MEM evaluation
               const std::vector<RecoHadTau> hadTaus_mem = hadTauReader->read();
-              const std::vector<const RecoHadTau*> hadTau_ptrs_mem     = convert_to_ptrs(hadTaus_mem);
-              const std::vector<const RecoHadTau*> cleanedHadTaus_mem  = hadTauCleaner(hadTau_ptrs_mem, preselMuons, preselElectrons);
-              const std::vector<const RecoHadTau*> preselHadTaus_mem   = preselHadTauSelector(cleanedHadTaus_mem);
-              const std::vector<const RecoHadTau*> fakeableHadTaus_mem = fakeableHadTauSelector(cleanedHadTaus_mem);
-              const std::vector<const RecoHadTau*> tightHadTaus_mem    = tightHadTauSelector(cleanedHadTaus_mem);
-              const std::vector<const RecoHadTau*> selHadTaus_mem      = selectObjects(
+              const std::vector<const RecoHadTau *> hadTau_ptrs_mem     = convert_to_ptrs(hadTaus_mem);
+              const std::vector<const RecoHadTau *> cleanedHadTaus_mem  = hadTauCleaner(hadTau_ptrs_mem, preselMuons, preselElectrons);
+              const std::vector<const RecoHadTau *> preselHadTaus_mem   = preselHadTauSelector(cleanedHadTaus_mem);
+              const std::vector<const RecoHadTau *> fakeableHadTaus_mem = fakeableHadTauSelector(cleanedHadTaus_mem);
+              const std::vector<const RecoHadTau *> tightHadTaus_mem    = tightHadTauSelector(cleanedHadTaus_mem);
+              const std::vector<const RecoHadTau *> selHadTaus_mem      = selectObjects(
                 hadTauSelection, preselHadTaus_mem, fakeableHadTaus_mem, tightHadTaus_mem
               );
               if(isDEBUG)
@@ -474,8 +483,8 @@ int main(int argc,
               }
 
               const std::vector<RecoJet> jets_mem = jetReader->read();
-              const std::vector<const RecoJet*> jet_ptrs_mem = convert_to_ptrs(jets_mem);
-              const std::vector<const RecoJet*> selJets_mem  = jetSelector(jet_ptrs_mem);
+              const std::vector<const RecoJet *> jet_ptrs_mem = convert_to_ptrs(jets_mem);
+              const std::vector<const RecoJet *> selJets_mem  = jetSelector(jet_ptrs_mem);
 
               const RecoMEt met_mem = metReader->read();
 
@@ -484,8 +493,8 @@ int main(int argc,
               for (const RecoHadTau * selHadTau: selHadTaus_mem)
               {
                 const std::vector<const RecoLepton*> selLeptons_forCleaning = { selLepton_lead, selLepton_sublead, selLepton_third };
-                const std::vector<const RecoHadTau*> selHadTaus_forCleaning = { selHadTau };
-                const std::vector<const RecoJet*> selJets_mem_cleaned = jetCleaner(
+                const std::vector<const RecoHadTau *> selHadTaus_forCleaning = { selHadTau };
+                const std::vector<const RecoJet *> selJets_mem_cleaned = jetCleaner(
                   selJets_mem, selLeptons_forCleaning, selHadTaus_forCleaning
                 );
                 if(selJets_mem_cleaned.size() >= 2)

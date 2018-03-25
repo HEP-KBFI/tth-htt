@@ -7,6 +7,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // setValue_int(), setValue_float()
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 #include "tthAnalysis/HiggsToTauTau/interface/BranchAddressInitializer.h" // BranchAddressInitializer, TTree, Form()
+#include "tthAnalysis/HiggsToTauTau/interface/sysUncertOptions.h" // kHadTauPt_*
 
 #include <TFile.h> // TFile
 #include <TGraph.h> // TGraph
@@ -37,7 +38,7 @@ RecoHadTauReader::RecoHadTauReader(int era,
   , genHadTauReader_(nullptr)
   , genJetReader_(nullptr)
   , readGenMatching_(readGenMatching)
-  , hadTauPt_option_(RecoHadTauReader::kHadTauPt_central)
+  , hadTauPt_option_(kHadTauPt_central)
   , hadTau_pt_(nullptr)
   , hadTau_eta_(nullptr)
   , hadTau_phi_(nullptr)
@@ -242,9 +243,9 @@ RecoHadTauReader::read() const
       Float_t hadTau_pt = -1.;
       switch(hadTauPt_option_)
       {
-        case RecoHadTauReader::kHadTauPt_central:   hadTau_pt = 1.00*gInstance->hadTau_pt_[idxHadTau]; break;
-        case RecoHadTauReader::kHadTauPt_shiftUp:   hadTau_pt = 1.03*gInstance->hadTau_pt_[idxHadTau]; break;
-        case RecoHadTauReader::kHadTauPt_shiftDown: hadTau_pt = 0.97*gInstance->hadTau_pt_[idxHadTau]; break;
+        case kHadTauPt_central:   hadTau_pt =        gInstance->hadTau_pt_[idxHadTau]; break;
+        case kHadTauPt_shiftUp:   hadTau_pt = 1.03 * gInstance->hadTau_pt_[idxHadTau]; break;
+        case kHadTauPt_shiftDown: hadTau_pt = 0.97 * gInstance->hadTau_pt_[idxHadTau]; break;
         default: throw cmsException(this) << "Invalid tau ES option: " << hadTauPt_option_;
       }
       // compute "VVLose" (95% signal efficiency) working point for tau ID MVA trained for dR=0.3 isolation cone,

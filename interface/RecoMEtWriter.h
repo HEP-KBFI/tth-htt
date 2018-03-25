@@ -19,6 +19,12 @@ public:
                 const std::string & branchName_obj);
   ~RecoMEtWriter();
 
+  void
+  setPtPhi_central_or_shift(int central_or_shift);
+
+  void
+  write_ptPhi_systematics(bool flag);
+
   /**
    * @brief Call tree->Branch for all RecoMEt branches
    */
@@ -40,6 +46,8 @@ protected:
 
   int era_;
   bool isMC_;
+  bool ptPhiOption_;
+  bool write_ptPhi_systematics_;
   std::string branchName_obj_;
 
   std::map<int, std::string> branchName_pt_;

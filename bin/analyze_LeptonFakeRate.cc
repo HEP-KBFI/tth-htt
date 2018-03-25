@@ -35,6 +35,7 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/convert_to_ptrs.h" // convert_to_ptrs()
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2017, getBTagWeight_option()
+#include "tthAnalysis/HiggsToTauTau/interface/sysUncertOptions.h" // get*_option()
 #include "tthAnalysis/HiggsToTauTau/interface/histogramAuxFunctions.h" // fillWithOverflow
 #include "tthAnalysis/HiggsToTauTau/interface/hltPath_LeptonFakeRate.h" // hltPath_LeptonFakeRate, create_hltPaths_LeptonFakeRate(), hltPaths_LeptonFakeRate_delete()
 #include "tthAnalysis/HiggsToTauTau/interface/jetToTauFakeRateAuxFunctions.h" // getEtaBin(), getPtBin()
@@ -499,78 +500,10 @@ main(int argc,
     }
   }
 
-  int jetPt_option     = RecoJetReader::kJetPt_central;
-  int met_option       = RecoMEtReader::kMEt_central;
-  int lheScale_option  = kLHE_scale_central;
-  int jetBtagSF_option = kBtag_central;
-
-  if(isMC && central_or_shift != "central")
-  {
-    enum { kUndefined, kUp, kDown };
-    int shiftUp_or_Down = kUndefined;
-    if     (boost::ends_with(central_or_shift, "Up")  ) shiftUp_or_Down = kUp;
-    else if(boost::ends_with(central_or_shift, "Down")) shiftUp_or_Down = kDown;
-    else throw cmsException(argv[0])
-           << "Invalid Configuration parameter 'central_or_shift' = " << central_or_shift;
-
-    if(boost::starts_with(central_or_shift, "CMS_ttHl_btag"))
-    {
-      jetBtagSF_option = getBTagWeight_option(central_or_shift);
-    }
-    else if(boost::starts_with(central_or_shift, "CMS_ttHl_JES"))
-    {
-      jetBtagSF_option = getBTagWeight_option(central_or_shift);
-      switch(shiftUp_or_Down)
-      {
-        case kUp:
-        {
-          jetPt_option = RecoJetReader::kJetPt_jecUp;
-          met_option   = RecoMEtReader::kMEt_shifted_JetEnUp;
-          break;
-        }
-        case kDown:
-        {
-          jetPt_option = RecoJetReader::kJetPt_jecDown;
-          met_option   = RecoMEtReader::kMEt_shifted_JetEnDown;
-          break;
-        }
-        default: assert(0);
-      }
-    }
-    else if(boost::starts_with(central_or_shift, "CMS_ttHl_JER"))
-    {
-      switch(shiftUp_or_Down)
-      {
-        case kUp:   met_option = RecoMEtReader::kMEt_shifted_JetResUp;   break;
-        case kDown: met_option = RecoMEtReader::kMEt_shifted_JetResDown; break;
-        default:    assert(0);
-      }
-    }
-    else if(boost::starts_with(central_or_shift, "CMS_ttHl_UnclusteredEn"))
-    {
-      switch(shiftUp_or_Down)
-      {
-        case kUp:   met_option = RecoMEtReader::kMEt_shifted_UnclusteredEnUp;   break;
-        case kDown: met_option = RecoMEtReader::kMEt_shifted_UnclusteredEnDown; break;
-        default:    assert(0);
-      }
-    }
-    else if(boost::starts_with(central_or_shift, "CMS_ttHl_thu_shape"))
-    {
-      if     (boost::ends_with(central_or_shift, "x1Down")) lheScale_option = kLHE_scale_xDown;
-      else if(boost::ends_with(central_or_shift, "x1Up"  )) lheScale_option = kLHE_scale_xUp;
-      else if(boost::ends_with(central_or_shift, "y1Down")) lheScale_option = kLHE_scale_yDown;
-      else if(boost::ends_with(central_or_shift, "y1Up"  )) lheScale_option = kLHE_scale_yUp;
-      else                                                  assert(0);
-    }
-    else if(! (boost::starts_with(central_or_shift, "CMS_ttHl_FRet") ||
-               boost::starts_with(central_or_shift, "CMS_ttHl_FRmt") ||
-               boost::starts_with(central_or_shift, "CMS_ttHl_tauES")))
-    {
-      throw cmsException(argv[0])
-        << "Invalid Configuration parameter 'central_or_shift' = " << central_or_shift;
-    }
-  }
+  const int jetPt_option     = getJet_option       (central_or_shift, isMC);
+  const int lheScale_option  = getLHEscale_option  (central_or_shift, isMC);
+  const int jetBtagSF_option = getBTagWeight_option(central_or_shift, isMC);
+  const int met_option       = getMET_option       (central_or_shift, isMC);
 
   fwlite::InputSource inputFiles(cfg);
   const int maxEvents        = inputFiles.maxEvents();
@@ -612,7 +545,7 @@ main(int argc,
   tightElectronSelector.enable_offline_e_trigger_cuts();
 
   RecoJetReader * jetReader = new RecoJetReader(era, isMC, branchName_jets, readGenObjects);
-  jetReader->setJetPt_central_or_shift(jetPt_option);
+  jetReader->setPtMass_central_or_shift(jetPt_option);
   jetReader->setBranchName_BtagWeight(jetBtagSF_option);
   inputTree->registerReader(jetReader);
   RecoJetCollectionGenMatcher jetGenMatcher;
@@ -1038,15 +971,7 @@ main(int argc,
       if(apply_genWeight) evtWeight *= boost::math::sign(eventInfo.genWeight);
       if(isMC_tH)         evtWeight *= eventInfo.genWeight_tH;
 
-      switch(lheScale_option)
-      {
-        case kLHE_scale_central: break;
-        case kLHE_scale_xDown:   evtWeight *= lheInfoReader->getWeight_scale_xDown(); break;
-        case kLHE_scale_xUp:     evtWeight *= lheInfoReader->getWeight_scale_xUp();   break;
-        case kLHE_scale_yDown:   evtWeight *= lheInfoReader->getWeight_scale_yDown(); break;
-        case kLHE_scale_yUp:     evtWeight *= lheInfoReader->getWeight_scale_yUp();   break;
-        default:                 assert(0);
-      }
+      evtWeight *= lheInfoReader->getWeight_scale(lheScale_option);
 
       double btagWeight = 1.;
       for(const RecoJet * const jet: selJets_dR07)

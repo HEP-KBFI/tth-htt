@@ -3,6 +3,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // getBranchName_MEt()
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 #include "tthAnalysis/HiggsToTauTau/interface/BranchAddressInitializer.h" // BranchAddressInitializer, TTree, Form()
+#include "tthAnalysis/HiggsToTauTau/interface/sysUncertOptions.h" // kMET_*
 
 std::map<std::string, int> RecoMEtReader::numInstances_;
 std::map<std::string, RecoMEtReader *> RecoMEtReader::instances_;
@@ -20,7 +21,8 @@ RecoMEtReader::RecoMEtReader(int era,
   , isMC_(isMC)
   , branchName_obj_(branchName_obj)
   , branchName_cov_(branchName_cov.empty() ? branchName_obj_ : branchName_cov)
-  , met_option_(kMEt_central)
+  , ptPhiOption_(isMC_ ? kMEt_central : kMEt_central_nonNominal)
+  , read_ptPhi_systematics_(false)
 {
   setBranchNames();
 }
@@ -38,13 +40,27 @@ RecoMEtReader::~RecoMEtReader()
 }
 
 void
-RecoMEtReader::setMEt_central_or_shift(int met_option)
+RecoMEtReader::setMEt_central_or_shift(int central_or_shift)
 {
-  if(! isMC_ && met_option != kMEt_central)
+  if(! isMC_ && central_or_shift != kMEt_central_nonNominal)
   {
-    throw cmsException(this, __func__) << "Invalid met systematics for data: " << met_option;
+    throw cmsException(this, __func__, __LINE__)
+      << "Nominal MET available only in MC"
+    ;
   }
-  met_option_ = met_option;
+  ptPhiOption_ = central_or_shift;
+}
+
+void
+RecoMEtReader::read_ptPhi_systematics(bool flag)
+{
+  if(! isMC_ && flag)
+  {
+    throw cmsException(this, __func__, __LINE__)
+      << "Cannot read MET systematics from data"
+    ;
+  }
+  read_ptPhi_systematics_ = flag;
 }
 
 void
@@ -52,13 +68,10 @@ RecoMEtReader::setBranchNames()
 {
   if(numInstances_[branchName_obj_] == 0)
   {
-    const std::string branchName_obj_pt  = Form("%s_pt",  branchName_obj_.data());
-    const std::string branchName_obj_phi = Form("%s_phi", branchName_obj_.data());
-    const int met_option_limit = isMC_ ? kMEt_shifted_UnclusteredEnDown : kMEt_central;
-    for(int met_option = kMEt_central; met_option <= met_option_limit; ++met_option)
+    for(int met_option = kMEt_central_nonNominal; met_option <= kMEt_shifted_UnclusteredEnDown; ++met_option)
     {
-      branchName_pt_[met_option]  = getBranchName_MEt(era_, branchName_obj_pt,  met_option);
-      branchName_phi_[met_option] = getBranchName_MEt(era_, branchName_obj_phi, met_option);
+      branchName_pt_[met_option]  = getBranchName_MEt(branchName_obj_, era_, met_option, true);
+      branchName_phi_[met_option] = getBranchName_MEt(branchName_obj_, era_, met_option, false);
     }
     branchName_covXX_ = Form("%s_%s", branchName_cov_.data(), "covXX");
     branchName_covXY_ = Form("%s_%s", branchName_cov_.data(), "covXY");
@@ -74,12 +87,20 @@ RecoMEtReader::setBranchAddresses(TTree * tree)
   if(instances_[branchName_obj_] == this)
   {
     BranchAddressInitializer bai(tree);
-    const int met_option_limit = isMC_ ? kMEt_shifted_UnclusteredEnDown : kMEt_central;
-    for(int met_option = kMEt_central; met_option <= met_option_limit; ++met_option)
+    bai.setBranchAddress(met_.systematics_[ptPhiOption_].pt_,  branchName_pt_[ptPhiOption_]);
+    bai.setBranchAddress(met_.systematics_[ptPhiOption_].phi_, branchName_phi_[ptPhiOption_]);
+    if(read_ptPhi_systematics_)
     {
-      met_.systematics_[met_option] = {0., 0.};
-      bai.setBranchAddress(met_.systematics_[met_option].pt_, branchName_pt_[met_option]);
-      bai.setBranchAddress(met_.systematics_[met_option].phi_, branchName_phi_[met_option]);
+      for(int met_option = kMEt_central_nonNominal; met_option <= kMEt_shifted_UnclusteredEnDown; ++met_option)
+      {
+        if(met_option == ptPhiOption_)
+        {
+          continue; // do not bind the same branch twice
+        }
+        met_.systematics_[met_option] = {0., 0.};
+        bai.setBranchAddress(met_.systematics_[met_option].pt_,  branchName_pt_[met_option]);
+        bai.setBranchAddress(met_.systematics_[met_option].phi_, branchName_phi_[met_option]);
+      }
     }
     bai.setBranchAddress(met_.covXX_, branchName_covXX_);
     bai.setBranchAddress(met_.covXY_, branchName_covXY_);
@@ -93,7 +114,7 @@ RecoMEtReader::read() const
   const RecoMEtReader * const gInstance = instances_[branchName_obj_];
   assert(gInstance);
   RecoMEt met = met_;
-  met.default_ = met.systematics_[met_option_];
+  met.default_ = met.systematics_[ptPhiOption_];
   met.update(); // update cov and p4
   return met;
 }
