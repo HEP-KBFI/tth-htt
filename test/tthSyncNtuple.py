@@ -68,6 +68,7 @@ channel_choices = [ '1l_2tau', '2lss', '2lss_1tau', '3l', '3l_1tau', '4l', 'incl
 
 parser = tthAnalyzeParser()
 parser.add_rle_select()
+parser.add_nonnominal()
 parser.add_argument('-c', '--channels',
   type = str, nargs = '+', dest = 'channels', metavar = 'channel', choices = channel_choices,
   default = channel_choices, required = False,
@@ -98,7 +99,8 @@ check_input_files    = args.check_input_files
 debug                = args.debug
 
 # Additional arguments
-rle_select = os.path.expanduser(args.rle_select)
+rle_select     = os.path.expanduser(args.rle_select)
+use_nonnominal = args.original_central
 
 # Custom arguments
 channels = args.channels
@@ -127,6 +129,7 @@ if __name__ == '__main__':
     isDebug              = debug,
     rle_select           = rle_select,
     no_mem               = no_mem,
+    use_nonnominal       = use_nonnominal,
   )
 
   job_statistics = analysis.create()
