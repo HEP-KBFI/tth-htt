@@ -78,10 +78,16 @@ class tthAnalyzeParser(argparse.ArgumentParser):
     )
 
   def add_rle_select(self):
-      self.add_argument('-S', '--rle-select',
-        type = str, dest = 'rle_select', metavar = 'pattern', default = '', required = False,
-        help = 'R|Regular expression to the path of RLE text files',
-      )
+    self.add_argument('-S', '--rle-select',
+      type = str, dest = 'rle_select', metavar = 'pattern', default = '', required = False,
+      help = 'R|Regular expression to the path of RLE text files',
+    )
+
+  def add_nonnominal(self):
+    self.add_argument('-O', '--original-central',
+      dest = 'original_central', action = 'store_true', default = False,
+      help = 'R|Use original central (i.e. non-nominal) values for jet/MET pt & mass/phi',
+    )
 
   @staticmethod
   def cat(choices):

@@ -27,7 +27,7 @@ class prodNtupleConfig:
                  cfgFile_prodNtuple, samples, max_files_per_job, era, preselection_cuts,
                  leptonSelection, hadTauSelection, check_input_files, running_method,
                  version, num_parallel_jobs, pool_id = '', verbose = False, dry_run = False,
-                 isDebug = False):
+                 isDebug = False, use_nonnominal = False):
 
         self.configDir             = configDir
         self.outputDir             = outputDir
@@ -44,6 +44,7 @@ class prodNtupleConfig:
         self.verbose               = verbose
         self.dry_run               = dry_run
         self.isDebug               = isDebug
+        self.use_nonnominal        = use_nonnominal
         if running_method.lower() not in ["sbatch", "makefile"]:
           raise ValueError("Invalid running method: %s" % running_method)
 
@@ -133,6 +134,7 @@ class prodNtupleConfig:
             "process.produceNtuple.branchName_genHadTaus           = cms.string('GenVisTau')",
             "process.produceNtuple.branchName_genJets              = cms.string('GenJet')",
             "process.produceNtuple.isDEBUG                         = cms.bool(%s)"     % self.isDebug,
+            "process.produceNtuple.useNonNominal                   = cms.bool(%s)"     % self.use_nonnominal,
         ]
 
         inputFiles_prepended = map(lambda path: os.path.basename('%s_ii%s' % os.path.splitext(path)), jobOptions['inputFiles'])

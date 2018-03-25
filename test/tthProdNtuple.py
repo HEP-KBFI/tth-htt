@@ -18,6 +18,7 @@ mode_choices = [ 'all', 'forBDTtraining_only', 'forBDTtraining_except', 'sync' ]
 
 parser = tthAnalyzeParser()
 parser.add_modes(mode_choices)
+parser.add_nonnominal()
 parser.add_argument('-p', '--disable-preselection',
   dest = 'disable_preselection', action = 'store_false', default = True,
   help = 'R|Disable preselection (read this script for the list of cuts)',
@@ -36,8 +37,11 @@ check_input_files  = args.check_input_files
 debug              = args.debug
 
 # Additional arguments
-mode              = args.mode
-preselection      = args.disable_preselection
+mode           = args.mode
+use_nonnominal = args.original_central
+
+# Custom arguments
+preselection = args.disable_preselection
 
 # Use the arguments
 max_job_resubmission = resubmission_limit if resubmit else 1
@@ -126,6 +130,7 @@ if __name__ == '__main__':
       verbose               = resubmission_idx > 0,
       dry_run               = dry_run,
       isDebug               = debug,
+      use_nonnominal        = use_nonnominal,
     )
 
     num_jobs = ntupleProduction.create()
