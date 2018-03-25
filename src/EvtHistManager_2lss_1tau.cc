@@ -40,17 +40,17 @@ void EvtHistManager_2lss_1tau::bookHistograms(TFileDirectory& dir)
   histogram_mvaOutput_2lss_ttV_ = book1D(dir, "mvaOutput_2lss_ttV", "mvaOutput_2lss_ttV", 40, -1., +1.);
   histogram_mvaOutput_2lss_tt_ = book1D(dir, "mvaOutput_2lss_tt", "mvaOutput_2lss_tt", 40, -1., +1.);
 
-  histogram_mvaOutput_2lss_1tau_plainKin_tt_ = book1D(dir, "mvaOutput_2lss_1tau_plainKin_tt", "mvaOutput_2lss_1tau_plainKin_tt", 600, -1., +1.);
-  histogram_mvaOutput_2lss_1tau_plainKin_ttV_ = book1D(dir, "mvaOutput_2lss_1tau_plainKin_ttV", "mvaOutput_2lss_1tau_plainKin_ttV", 600, -1., +1.);
-  histogram_mvaOutput_2lss_1tau_plainKin_1B_M_ = book1D(dir, "mvaOutput_2lss_1tau_plainKin_1B_M", "mvaOutput_2lss_1tau_plainKin_1B_M", 600, -1., +1.);
-  histogram_mvaOutput_2lss_1tau_plainKin_SUM_M_ = book1D(dir, "mvaOutput_2lss_1tau_plainKin_SUM_M", "mvaOutput_2lss_1tau_plainKin_SUM_M", 600, -1., +1.);
-  histogram_mvaOutput_2lss_1tau_HTT_SUM_M_ = book1D(dir, "mvaOutput_2lss_1tau_HTT_SUM_M", "mvaOutput_2lss_1tau_HTT_SUM_M", 600, -1., +1.);
-  histogram_mvaOutput_2lss_1tau_HTTMEM_SUM_M_ = book1D(dir, "mvaOutput_2lss_1tau_HTTMEM_SUM_M", "mvaOutput_2lss_1tau_HTTMEM_SUM_M", 600, -1., +1.);
+  histogram_mvaOutput_2lss_1tau_plainKin_tt_ = book1D(dir, "mvaOutput_2lss_1tau_plainKin_tt", "mvaOutput_2lss_1tau_plainKin_tt", 100, -1., +1.);
+  histogram_mvaOutput_2lss_1tau_plainKin_ttV_ = book1D(dir, "mvaOutput_2lss_1tau_plainKin_ttV", "mvaOutput_2lss_1tau_plainKin_ttV", 100, -1., +1.);
+  histogram_mvaOutput_2lss_1tau_plainKin_1B_M_ = book1D(dir, "mvaOutput_2lss_1tau_plainKin_1B_M", "mvaOutput_2lss_1tau_plainKin_1B_M", 100, -1., +1.);
+  histogram_mvaOutput_2lss_1tau_plainKin_SUM_M_ = book1D(dir, "mvaOutput_2lss_1tau_plainKin_SUM_M", "mvaOutput_2lss_1tau_plainKin_SUM_M", 100, -1., +1.);
+  histogram_mvaOutput_2lss_1tau_HTT_SUM_M_ = book1D(dir, "mvaOutput_2lss_1tau_HTT_SUM_M", "mvaOutput_2lss_1tau_HTT_SUM_M", 100, -1., +1.);
+  histogram_mvaOutput_2lss_1tau_HTTMEM_SUM_M_ = book1D(dir, "mvaOutput_2lss_1tau_HTTMEM_SUM_M", "mvaOutput_2lss_1tau_HTTMEM_SUM_M", 100, -1., +1.);
 
   histogram_mTauTauVis_ = book1D(dir, "mTauTauVis", "mTauTauVis", 20, 0., 200.);
   histogram_mTauTauVis1_ = book1D(dir, "mTauTauVis1", "mTauTauVis1", 20, 0., 200.);
   histogram_mTauTauVis2_ = book1D(dir, "mTauTauVis2", "mTauTauVis2", 20, 0., 200.);
-  histogram_memOutput_LR_ = book1D(dir, "memOutput_LR", "memOutput_LR", 600, 0., 1.);
+  histogram_memOutput_LR_ = book1D(dir, "memOutput_LR", "memOutput_LR", 100, 0., 1.);
 
   histogram_EventCounter_ = book1D(dir, "EventCounter", "EventCounter", 1, -0.5, +0.5);
 

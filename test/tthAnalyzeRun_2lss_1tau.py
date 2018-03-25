@@ -38,7 +38,7 @@ changeBranchNames                  = use_prod_ntuples
 applyFakeRateWeights               = None
 MEMbranch                          = ''
 hadTauFakeRateWeight_inputFileName = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016.root"
-doShapeSyst=False
+doShapeSyst=True
 
 # Karl: temporarily disable addMEM mode until we've proper Ntuples
 #if mode in ["addMEM"]:
@@ -111,7 +111,7 @@ elif mode == "forBDTtraining_VHbb":
       MEMbranch                = '' #'memObjects_2lss_1tau_lepLoose_tauTight_dR03mvaMedium'
       hadTau_selection         = "dR03mvaMedium"
       hadTau_selection_relaxed = "dR03mvaLoose"
-      applyFakeRateWeights =  "3L" 
+      applyFakeRateWeights =  "3L"
 else:
   raise ValueError("Invalid Configuration parameter 'mode' = %s !!" % mode)
 
@@ -252,8 +252,9 @@ if __name__ == '__main__':
         "mvaOutput_2lss_1tau_plainKin_SUM_M",
         "mvaOutput_2lss_1tau_HTT_SUM_M",
         "mvaOutput_2lss_1tau_HTTMEM_SUM_M",
-        "mTauTauVis1_sel",
-        "mTauTauVis2_sel",
+        "mTauTauVis1",
+        "mTauTauVis2",
+        "mTauTauVis",
         "memOutput_LR"
       ],
       select_rle_output         = True,
