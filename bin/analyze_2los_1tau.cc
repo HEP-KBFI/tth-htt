@@ -535,7 +535,7 @@ int main(int argc, char* argv[])
   std::vector<std::string> mvaInputVariables_2lss = get_mvaInputVariables(mvaInputVariables_2lss_ttV, mvaInputVariables_2lss_ttbar);
   std::map<std::string, double> mvaInputs_2lss;
 
-  std::string mvaFileName_2los_1tau_ttV = "tthAnalysis/HiggsToTauTau/data/2los_1tau_ttV_BDTG.weights.xml";
+  std::string mvaFileName_2los_1tau_ttV = "tthAnalysis/HiggsToTauTau/data/evtLevel_deprecated/2los_1tau_ttV_BDTG.weights.xml";
   std::vector<std::string> mvaInputVariables_2los_1tau_ttV;
   mvaInputVariables_2los_1tau_ttV.push_back("lep1_conePt");
   mvaInputVariables_2los_1tau_ttV.push_back("lep2_conePt");
@@ -552,7 +552,7 @@ int main(int argc, char* argv[])
   mvaInputVariables_2los_1tau_ttV.push_back("mTauTauVis");
   TMVAInterface mva_2los_1tau_ttV(mvaFileName_2los_1tau_ttV, mvaInputVariables_2los_1tau_ttV);
 
-  std::string mvaFileName_2los_1tau_ttbar = "tthAnalysis/HiggsToTauTau/data/2los_1tau_ttbar_BDTG.weights.xml";
+  std::string mvaFileName_2los_1tau_ttbar = "tthAnalysis/HiggsToTauTau/data/evtLevel_deprecated/2los_1tau_ttbar_BDTG.weights.xml";
   std::vector<std::string> mvaInputVariables_2los_1tau_ttbar;
   mvaInputVariables_2los_1tau_ttbar.push_back("lep1_conePt");
   mvaInputVariables_2los_1tau_ttbar.push_back("lep2_conePt");
@@ -582,7 +582,7 @@ int main(int argc, char* argv[])
   std::vector<std::string> mvaInputVariables_2los_1tau = get_mvaInputVariables(mvaInputVariables_2los_1tau_ttV, mvaInputVariables_2los_1tau_ttbar);
   std::map<std::string, double> mvaInputs_2los_1tau;
 
-  std::string inputFileName_mva_mapping_2los_1tau = "tthAnalysis/HiggsToTauTau/data/2los_1tau_BDT_mapping.root";
+  std::string inputFileName_mva_mapping_2los_1tau = "tthAnalysis/HiggsToTauTau/data/evtLevel_deprecated/2los_1tau_BDT_mapping.root";
   TFile* inputFile_mva_mapping_2los_1tau = openFile(LocalFileInPath(inputFileName_mva_mapping_2los_1tau));
   TH2* mva_mapping_2los_1tau = loadTH2(inputFile_mva_mapping_2los_1tau, "hTargetBinning");
 
