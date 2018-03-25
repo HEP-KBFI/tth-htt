@@ -46,7 +46,7 @@ max_mem_integrations = args.max_mem_integrations
 # Use the arguments
 max_job_resubmission = resubmission_limit if resubmit else 1
 central_or_shift     = getattr(systematics, systematics_label)
-version              = "%s_%s" % (version, mode)
+version              = "%s_%s_%s" % (version, mode, 'nonNom' if use_nonnominal else 'nom')
 
 if mode == 'default':
   from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_prodNtuples import samples_2017

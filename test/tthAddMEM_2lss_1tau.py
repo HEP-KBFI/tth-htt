@@ -61,7 +61,9 @@ central_or_shift     = getattr(systematics, systematics_label)
 integration_choice   = integration_point_choices[integration_points] if integration_points \
                        else integration_point_choices[mode_choices[mode]]
 max_job_resubmission = resubmission_limit if resubmit else 1
-version              = "%s_%s_%s" % (version, mode, 'small' if integration_choice else 'full')
+version              = "%s_%s_%s_%s" % (
+  version, mode, 'nonNom' if use_nonnominal else 'nom', 'small' if integration_choice else 'full'
+)
 
 if mode == 'default':
   from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017

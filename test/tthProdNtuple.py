@@ -45,7 +45,9 @@ preselection = args.disable_preselection
 
 # Use the arguments
 max_job_resubmission = resubmission_limit if resubmit else 1
-version              = "%s_w%sPresel_%s" % (version, ("" if preselection else "o"), mode)
+version              = "%s_w%sPresel_%s_%s" % (
+  version, ("" if preselection else "o"), "nonNom" if use_nonnominal else "nom", mode
+)
 
 if mode == 'sync':
   from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_nanoAOD_sync import samples_2017
