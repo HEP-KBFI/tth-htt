@@ -36,7 +36,7 @@ hadTau_selection                   = None
 hadTau_selection_relaxed           = None
 applyFakeRateWeights               = None
 hadTauFakeRateWeight_inputFileName = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016.root" #
-doShapeSyst=False
+doShapeSyst=True
 
 if use_prod_ntuples and ERA == "2015":
   raise ValueError("No production Ntuples for 2015 data & MC")

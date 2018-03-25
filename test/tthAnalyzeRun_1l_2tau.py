@@ -34,6 +34,7 @@ hadTau_selection                   = None
 hadTau_selection_relaxed           = None
 applyFakeRateWeights               = None
 hadTauFakeRateWeight_inputFileName = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016.root"
+doShapeSyst=True
 
 if use_prod_ntuples and ERA == "2015":
   raise ValueError("No production Ntuples for 2015 data & MC")
@@ -123,7 +124,6 @@ if __name__ == '__main__':
   run_analysis           = False
   is_last_resubmission   = False
 
-  doShapeSyst=True
   shapesToDo=["central"]
   if doShapeSyst==True:
       shapesToDo=[
@@ -185,7 +185,7 @@ if __name__ == '__main__':
       hadTau_selection         = hadTau_selection,
       hadTau_charge_selections =  [ "OS"] if mode == "forBDTtraining" else [ "OS", "SS" ], #
       applyFakeRateWeights     = applyFakeRateWeights,
-      central_or_shifts = ,
+      central_or_shifts = shapesToDo,
       max_files_per_job                     = max_files_per_job,
       era                                   = ERA,
       use_lumi                              = True,
