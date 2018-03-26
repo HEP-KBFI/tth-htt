@@ -182,13 +182,16 @@ void
 checkOptionValidity(const std::string & central_or_shift,
                     bool isMC)
 {
-  if(! isMC && ! (central_or_shift.empty() || central_or_shift == "central"))
+  if(! (central_or_shift.empty() || central_or_shift == "central"))
   {
-    throw cmsException(__func__, __LINE__) << "Non-empty or non-central systematics option passed to data";
-  }
-  if(isMC && ! (boost::ends_with(central_or_shift, "Up") || boost::ends_with(central_or_shift, "Down")))
-  {
-    throw cmsException(__func__, __LINE__) << "MC systematics option not ending with Up or Down";
+    if(! isMC)
+    {
+      throw cmsException(__func__, __LINE__) << "Non-empty or non-central systematics option passed to data";
+    }
+    if(isMC && ! (boost::ends_with(central_or_shift, "Up") || boost::ends_with(central_or_shift, "Down")))
+    {
+      throw cmsException(__func__, __LINE__) << "Non-central MC systematics option not ending with Up or Down";
+    }
   }
 }
 
