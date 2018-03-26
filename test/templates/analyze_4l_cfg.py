@@ -98,5 +98,6 @@ process.analyze_4l = cms.PSet(
         tree = cms.string(''),
         output = cms.string(''),
     ),
+    useNonNominal = cms.bool(False),
     isDEBUG = cms.bool(False),
 )

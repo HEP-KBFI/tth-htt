@@ -105,5 +105,6 @@ process.analyze_1l_2tau = cms.PSet(
         tree = cms.string(''),
         output = cms.string(''),
     ),
+    useNonNominal = cms.bool(False),
     isDEBUG = cms.bool(False),
 )

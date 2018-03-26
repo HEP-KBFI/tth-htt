@@ -53,5 +53,6 @@ process.produceNtuple = cms.PSet(
     ),
 
     random_seed = cms.uint32(4357),
+    useNonNominal = cms.bool(False),
     isDEBUG = cms.bool(False),
 )

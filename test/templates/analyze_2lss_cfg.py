@@ -88,5 +88,6 @@ process.analyze_2lss = cms.PSet(
         tree = cms.string(''),
         output = cms.string(''),
     ),
+    useNonNominal = cms.bool(False),
     isDEBUG = cms.bool(False),
 )

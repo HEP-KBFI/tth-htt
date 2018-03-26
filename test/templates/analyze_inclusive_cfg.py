@@ -77,6 +77,7 @@ process.analyze_inclusive = cms.PSet(
 
     selEventsFileName_input = cms.string(''),
     isDEBUG = cms.bool(False),
+    useNonNominal = cms.bool(False),
 
     syncNtuple = cms.PSet(
         tree = cms.string('syncTree'),
