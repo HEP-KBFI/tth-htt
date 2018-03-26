@@ -8,6 +8,7 @@ from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser
 
 parser = tthAnalyzeParser()
 parser.add_rle_select()
+parser.add_nonnominal()
 parser.add_argument('-o', '--output-tree',
   type = str, dest = 'output_tree', metavar = 'name', default = 'syncTree', required = False,
   help = 'R|Output TTree name',
@@ -29,7 +30,8 @@ check_input_files  = args.check_input_files
 debug              = args.debug
 
 # Additional arguments
-rle_select = os.path.expanduser(args.rle_select)
+rle_select     = os.path.expanduser(args.rle_select)
+use_nonnominal = args.original_central
 
 # Custom arguments
 output_tree = args.output_tree
@@ -82,6 +84,7 @@ if __name__ == '__main__':
       isDebug                 = debug,
       rle_select              = rle_select,
       hadTauSelection_tauIdWP = hadTauSelection_tauIdWP,
+      use_nonnominal          = use_nonnominal,
     )
 
     job_statistics = analysis.create()

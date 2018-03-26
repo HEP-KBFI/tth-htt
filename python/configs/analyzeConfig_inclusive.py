@@ -7,7 +7,7 @@ from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg
 class analyzeConfig_inclusive(analyzeConfig):
   def __init__(self, configDir, outputDir, executable_analyze, cfgFile_analyze, samples, era,
                output_tree, check_input_files, running_method, verbose, dry_run, isDebug,
-               rle_select, hadTauSelection_tauIdWP):
+               rle_select, hadTauSelection_tauIdWP, use_nonnominal = False):
     analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "inclusive", [ ],
                            1, era, False, -1., False, running_method, 1, [], verbose = verbose,
                            dry_run = dry_run, isDebug = isDebug, do_sync = True)
@@ -17,6 +17,7 @@ class analyzeConfig_inclusive(analyzeConfig):
     self.check_input_files = check_input_files
     self.rle_select = rle_select
     self.hadTauSelection_tauIdWP = hadTauSelection_tauIdWP
+    self.use_nonnominal = use_nonnominal
 
     if self.rle_select and not os.path.isfile(self.rle_select):
       raise ValueError('Input RLE file for the sync is missing: %s' % self.rle_select)
@@ -33,6 +34,7 @@ class analyzeConfig_inclusive(analyzeConfig):
       "process.analyze_inclusive.syncNtuple.tree   = cms.string('%s')" % jobOptions['syncTree'],
       "process.analyze_inclusive.syncNtuple.output = cms.string('%s')" % os.path.basename(jobOptions['syncOutput']),
       "process.analyze_inclusive.isDEBUG = cms.bool(%s)" % self.isDebug,
+      "process.analyze_inclusive.useNonNominal = cms.bool(%s)" % self.use_nonnominal,
     ]
     for trigger in [ '1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '1e2mu', '2e1mu', '1e1tau', '1mu1tau', '2tau' ]:
       lines.append("process.analyze_inclusive.triggers_%s = cms.vstring(%s)" % (trigger, getattr(self, 'triggers_%s' % trigger)))

@@ -41,7 +41,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
                max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
                executable_addBackgrounds, executable_addFakes, executable_addFlips, histograms_to_fit, select_rle_output = False,
                executable_prep_dcard = "prepareDatacards", executable_add_syst_dcard = "addSystDatacards",
-               do_sync = False, verbose = False, dry_run = False, isDebug = False, rle_select = ''):
+               do_sync = False, verbose = False, dry_run = False, isDebug = False, rle_select = '', use_nonnominal = False):
     analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "2lss_1tau", central_or_shifts,
       max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
       histograms_to_fit,
@@ -130,6 +130,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
 
     self.select_rle_output = select_rle_output
     self.rle_select = rle_select
+    self.use_nonnominal = use_nonnominal
 
     self.isBDTtraining = False
 
@@ -224,6 +225,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
       lines.append("process.analyze_2lss_1tau.syncNtuple.output = cms.string('%s')" % os.path.basename(jobOptions['syncOutput']))
       lines.append("process.analyze_2lss_1tau.selEventsFileName_input = cms.string('%s')" % jobOptions['syncRLE'])
     lines.append("process.analyze_2lss_1tau.isDEBUG = cms.bool(%s)" % self.isDebug)
+    lines.append("process.analyze_2lss_1tau.useNonNominal = cms.bool(%s)" % self.use_nonnominal)
     create_cfg(self.cfgFile_analyze, jobOptions['cfgFile_modified'], lines)
 
   def createCfg_addFlips(self, jobOptions):

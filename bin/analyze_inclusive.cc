@@ -150,6 +150,7 @@ main(int argc,
   const bool isMC_tH            = process_string == "tH";
   const bool apply_trigger_bits = cfg_analyze.getParameter<bool>("apply_trigger_bits");
   const bool isTriggered        = isMC && ! apply_trigger_bits;
+  const bool useNonNominal      = cfg_analyze.getParameter<bool>("useNonNominal") || ! isMC;
 
   const bool isDEBUG = cfg_analyze.getParameter<bool>("isDEBUG");
 
@@ -241,7 +242,7 @@ main(int argc,
   preselHadTauSelector.set_min_antiMuon(-1);
 
   RecoJetReader * const jetReader = new RecoJetReader(era, isMC, branchName_jets, false);
-  jetReader->setPtMass_central_or_shift(snm ? kJet_central_nonNominal : kJet_central);
+  jetReader->setPtMass_central_or_shift(useNonNominal ? kJet_central_nonNominal : kJet_central);
   jetReader->setBranchName_BtagWeight(kBtag_central);
   inputTree->registerReader(jetReader);
   const RecoJetCollectionCleaner jetCleaner(0.4);
@@ -251,7 +252,7 @@ main(int argc,
 
 //--- declare missing transverse energy
   RecoMEtReader * const metReader = new RecoMEtReader(era, isMC, branchName_met);
-  metReader->setMEt_central_or_shift(snm ? kMEt_central_nonNominal : kMEt_central);
+  metReader->setMEt_central_or_shift(useNonNominal ? kMEt_central_nonNominal : kMEt_central);
   inputTree->registerReader(metReader);
 
   int analyzedEntries = 0;

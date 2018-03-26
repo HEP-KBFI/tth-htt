@@ -45,7 +45,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
                max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
                executable_addBackgrounds, executable_addBackgroundJetToTauFakes, histograms_to_fit,
                select_rle_output = False, do_sync = False, verbose = False, dry_run = False, isDebug = False,
-               rle_select = ''):
+               rle_select = '', use_nonnominal = False):
     analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "1l_2tau", central_or_shifts,
       max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
       histograms_to_fit, do_sync = do_sync, verbose = verbose, dry_run = dry_run, isDebug = isDebug)
@@ -104,6 +104,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
 
     self.select_rle_output = select_rle_output
     self.rle_select = rle_select
+    self.use_nonnominal = use_nonnominal
 
     self.isBDTtraining = False
 
@@ -192,6 +193,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
       lines.append("process.analyze_1l_2tau.syncNtuple.output = cms.string('%s')" % os.path.basename(jobOptions['syncOutput']))
       lines.append("process.analyze_1l_2tau.selEventsFileName_input = cms.string('%s')" % jobOptions['syncRLE'])
     lines.append("process.analyze_1l_2tau.isDEBUG = cms.bool(%s)" % self.isDebug)
+    lines.append("process.analyze_1l_2tau.useNonNominal = cms.bool(%s)" % self.use_nonnominal)
     create_cfg(self.cfgFile_analyze, jobOptions['cfgFile_modified'], lines)
 
   def createCfg_makePlots_mcClosure(self, jobOptions):

@@ -23,6 +23,7 @@ parser.add_modes(mode_choices)
 parser.add_sys(sys_choices)
 parser.add_preselect()
 parser.add_rle_select()
+parser.add_nonnominal()
 args = parser.parse_args()
 
 # Common arguments
@@ -41,6 +42,7 @@ mode              = args.mode
 systematics_label = args.systematics
 use_preselected   = args.use_preselected
 rle_select        = os.path.expanduser(args.rle_select)
+use_nonnominal    = args.original_central
 
 # Use the arguments
 max_job_resubmission = resubmission_limit if resubmit else 1
@@ -153,6 +155,7 @@ if __name__ == '__main__':
       do_sync                               = do_sync,
       isDebug                               = debug,
       rle_select                            = rle_select,
+      use_nonnominal                        = use_nonnominal,
     )
 
     if mode == "forBDTtraining" :
