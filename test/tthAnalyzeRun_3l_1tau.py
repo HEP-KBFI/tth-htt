@@ -80,7 +80,7 @@ elif mode == "addMEM":
   applyFakeRateWeights = "3lepton"
   MEMbranch            = 'memObjects_3l_1tau_lepFakeable_tauTight_dR03mvaMedium'
 elif mode == "forBDTtraining_beforeAddMEM":
-  if use_prod_ntuples:
+  if use_preselected:
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_FastSim_preselected import samples_2017
   else:
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_FastSim import samples_2017
