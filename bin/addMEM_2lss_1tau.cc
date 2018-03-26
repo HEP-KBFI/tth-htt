@@ -94,7 +94,7 @@ int main(int argc,
   const bool lowIntegrationPoints           = cfg_addMEM.getParameter<bool>("lowIntegrationPoints");
   const bool copy_all_branches              = cfg_addMEM.getParameter<bool>("copy_all_branches");
   const bool readGenObjects                 = cfg_addMEM.getParameter<bool>("readGenObjects");
-  const bool useNonNominal                  = cfg_addMEM.getParameter<bool>("useNonNominal");
+  const bool useNonNominal                  = cfg_addMEM.getParameter<bool>("useNonNominal") || ! isMC;
 
   const std::string branchName_electrons = cfg_addMEM.getParameter<std::string>("branchName_electrons");
   const std::string branchName_muons     = cfg_addMEM.getParameter<std::string>("branchName_muons");

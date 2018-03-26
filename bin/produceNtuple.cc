@@ -134,7 +134,7 @@ main(int argc,
   const bool isMC                            = cfg_produceNtuple.getParameter<bool>("isMC");
   const bool isDEBUG                         = cfg_produceNtuple.getParameter<bool>("isDEBUG");
   const bool use_HIP_mitigation_mediumMuonId = cfg_produceNtuple.getParameter<bool>("use_HIP_mitigation_mediumMuonId");
-  const bool useNonNominal                   = cfg_produceNtuple.getParameter<bool>("useNonNominal");
+  const bool useNonNominal                   = cfg_produceNtuple.getParameter<bool>("useNonNominal") || ! isMC;
 
   const std::string selEventsFileName_input = cfg_produceNtuple.getParameter<std::string>("selEventsFileName_input");
   std::cout << "selEventsFileName_input = " << selEventsFileName_input << '\n';
