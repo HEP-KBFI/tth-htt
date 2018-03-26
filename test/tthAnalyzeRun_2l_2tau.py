@@ -14,7 +14,7 @@ from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser
 
 # E.g.: ./tthAnalyzeRun_2l_2tau.py -v 2017Dec13 -mode VHbb -e 2017
 
-mode_choices     = [ 'VHbb', 'forBDTtraining' ]
+mode_choices     = [ 'VHbb', 'forBDTtraining', 'sync', 'sync_noMEM' ]
 sys_choices      = [ 'central', 'full' ]
 systematics.full = systematics.an_common
 
@@ -22,6 +22,8 @@ parser = tthAnalyzeParser()
 parser.add_modes(mode_choices)
 parser.add_sys(sys_choices)
 parser.add_preselect()
+parser.add_rle_select()
+parser.add_nonnominal()
 args = parser.parse_args()
 
 # Common arguments
@@ -39,23 +41,27 @@ debug              = args.debug
 mode              = args.mode
 systematics_label = args.systematics
 use_preselected   = args.use_preselected
+rle_select        = os.path.expanduser(args.rle_select)
+use_nonnominal    = args.original_central
 
 # Use the arguments
 max_job_resubmission = resubmission_limit if resubmit else 1
 central_or_shift     = getattr(systematics, systematics_label)
 max_files_per_job    = 50 if use_preselected else 1
+do_sync              = mode.startswith('sync')
 
-chargeSumSelections = [ "OS", "SS" ]
+chargeSumSelections      = [ "OS", "SS" ]
+hadTau_selection_relaxed = ""
 
 if mode == "VHbb":
-  if use_prod_ntuples:
+  if use_preselected:
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_preselected import samples_2017
   else:
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017
   hadTau_selection     = "dR03mvaVTight"
   applyFakeRateWeights = "4L"
 elif mode == "forBDTtraining":
-  if use_prod_ntuples:
+  if use_preselected:
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_FastSim_preselected import samples_2017
   else:
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_FastSim import samples_2017
@@ -63,6 +69,15 @@ elif mode == "forBDTtraining":
   hadTau_selection_relaxed = "dR03mvaVVLoose"
   applyFakeRateWeights     = "4L"
   chargeSumSelections      = [ "OS" ]
+elif mode.startswith("sync"):
+  if mode == "sync":
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_addMEM_sync import samples_2017
+  elif mode == "sync_noMEM":
+    from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync import samples_2017
+  else:
+    raise ValueError("Internal logic error")
+  hadTau_selection     = "dR03mvaVTight"
+  applyFakeRateWeights = "4L"
 else:
   raise ValueError("Internal logic error")
 
@@ -110,7 +125,7 @@ if __name__ == '__main__':
       hadTau_selection                      = hadTau_selection,
       hadTau_charge_selections              = [ "disabled" ],
       applyFakeRateWeights                  = applyFakeRateWeights,
-      chargeSumSelections                   = [ "OS" ],
+      chargeSumSelections                   = chargeSumSelections,
       central_or_shifts                     = central_or_shift,
       max_files_per_job                     = max_files_per_job,
       era                                   = era,
@@ -135,7 +150,10 @@ if __name__ == '__main__':
       select_rle_output                     = True,
       verbose                               = idx_job_resubmission > 0,
       dry_run                               = dry_run,
+      do_sync                               = do_sync,
       isDebug                               = debug,
+      rle_select                            = rle_select,
+      use_nonnominal                        = use_nonnominal,
     )
 
     if mode.find("forBDTtraining") != -1:

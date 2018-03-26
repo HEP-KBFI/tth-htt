@@ -108,5 +108,10 @@ process.analyze_2l_2tau = cms.PSet(
     selEventsFileName_input = cms.string(''),
     selEventsFileName_output = cms.string('selEvents_analyze_2l_2tau.txt'),
     selectBDT = cms.bool(False),
+    syncNtuple = cms.PSet(
+        tree = cms.string(''),
+        output = cms.string(''),
+    ),
+    useNonNominal = cms.bool(False),
     isDEBUG = cms.bool(False),
 )
