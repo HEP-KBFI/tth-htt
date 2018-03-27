@@ -55,7 +55,8 @@ class analyzeConfig_ttZctrl(analyzeConfig):
     lines.append("process.analyze_ttZctrl.process = cms.string('%s')" % jobOptions['sample_category'])
     lines.append("process.analyze_ttZctrl.era = cms.string('%s')" % self.era)
     for trigger in [ '1e', '1mu', '2e', '2mu', '1e1mu' ]:
-      lines.append("process.analyze_ttZctrl.triggers_%s = cms.vstring(%s)" % (trigger, getattr(self, 'triggers_%s' % trigger)))
+      lines.append("process.analyze_ttZctrl.triggers_%s = cms.vstring(%s)" % \
+        (trigger, self.whitelist_triggers(getattr(self, 'triggers_%s' % trigger), jobOptions['process_name_specific'])))
       lines.append("process.analyze_ttZctrl.use_triggers_%s = cms.bool(%s)" % (trigger, trigger in jobOptions['triggers']))
     lines.append("process.analyze_ttZctrl.hadTauSelection = cms.string('Tight|%s')" % jobOptions['hadTau_selection'])
     lines.append("process.analyze_ttZctrl.use_HIP_mitigation_mediumMuonId = cms.bool(%s)" % jobOptions['use_HIP_mitigation_mediumMuonId'])
@@ -154,6 +155,7 @@ class analyzeConfig_ttZctrl(analyzeConfig):
             'lumi_scale' : 1. if not (self.use_lumi and is_mc) else sample_info["xsection"] * self.lumi / sample_info["nof_events"],
             'apply_genWeight' : sample_info["genWeight"] if (is_mc and "genWeight" in sample_info.keys()) else False,
             'apply_trigger_bits' : (is_mc and sample_info["reHLT"]) or not is_mc,
+            'process_name_specific': sample_info['process_name_specific'],
           }
           self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job])
 

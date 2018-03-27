@@ -115,7 +115,8 @@ class analyzeConfig_0l_2tau(analyzeConfig):
     lines.append("process.analyze_0l_2tau.histogramDir = cms.string('%s')" % histogramDir)
     lines.append("process.analyze_0l_2tau.era = cms.string('%s')" % self.era)
     for trigger in [ '2tau' ]:
-      lines.append("process.analyze_0l_2tau.triggers_%s = cms.vstring(%s)" % (trigger, getattr(self, 'triggers_%s' % trigger)))
+      lines.append("process.analyze_0l_2tau.triggers_%s = cms.vstring(%s)" % \
+        (trigger, self.whitelist_triggers(getattr(self, 'triggers_%s' % trigger), jobOptions['process_name_specific'])))
       lines.append("process.analyze_0l_2tau.use_triggers_%s = cms.bool(%s)" % (trigger, trigger in jobOptions['triggers']))
     lines.append("process.analyze_0l_2tau.hadTauSelection = cms.string('%s')" % jobOptions['hadTau_selection'])
     lines.append("process.analyze_0l_2tau.hadTauChargeSelection = cms.string('%s')" % jobOptions['hadTau_charge_selection'])

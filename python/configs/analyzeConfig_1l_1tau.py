@@ -139,7 +139,8 @@ class analyzeConfig_1l_1tau(analyzeConfig):
     lines.append("process.analyze_1l_1tau.histogramDir = cms.string('%s')" % histogramDir)
     lines.append("process.analyze_1l_1tau.era = cms.string('%s')" % self.era)
     for trigger in [ '1e', '1e1tau', '1mu', '1mu1tau' ]:
-      lines.append("process.analyze_1l_1tau.triggers_%s = cms.vstring(%s)" % (trigger, getattr(self, 'triggers_%s' % trigger)))
+      lines.append("process.analyze_1l_1tau.triggers_%s = cms.vstring(%s)" % \
+        (trigger, self.whitelist_triggers(getattr(self, 'triggers_%s' % trigger), jobOptions['process_name_specific'])))
       lines.append("process.analyze_1l_1tau.use_triggers_%s = cms.bool(%s)" % (trigger, trigger in jobOptions['triggers']))
     lines.append("process.analyze_1l_1tau.leptonSelection = cms.string('%s')" % jobOptions['lepton_selection'])
     lines.append("process.analyze_1l_1tau.apply_leptonGenMatching = cms.bool(%s)" % (jobOptions['apply_leptonGenMatching'] and jobOptions['is_mc']))

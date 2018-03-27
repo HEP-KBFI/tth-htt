@@ -137,7 +137,8 @@ class analyzeConfig_2lss(analyzeConfig):
     lines.append("process.analyze_2lss.histogramDir = cms.string('%s')" % histogramDir)
     lines.append("process.analyze_2lss.era = cms.string('%s')" % self.era)
     for trigger in [ '1e', '1mu', '2e', '2mu', '1e1mu' ]:
-      lines.append("process.analyze_2lss.triggers_%s = cms.vstring(%s)" % (trigger, getattr(self, 'triggers_%s' % trigger)))
+      lines.append("process.analyze_2lss.triggers_%s = cms.vstring(%s)" % \
+        (trigger, self.whitelist_triggers(getattr(self, 'triggers_%s' % trigger), jobOptions['process_name_specific'])))
       lines.append("process.analyze_2lss.use_triggers_%s = cms.bool(%s)" % (trigger, trigger in jobOptions['triggers']))
     lines.append("process.analyze_2lss.leptonSelection = cms.string('%s')" % jobOptions['lepton_selection'])
     lines.append("process.analyze_2lss.apply_leptonGenMatching = cms.bool(%s)" % (jobOptions['apply_leptonGenMatching'] and jobOptions['is_mc']))
@@ -401,6 +402,7 @@ class analyzeConfig_2lss(analyzeConfig):
                   'syncOutput': syncOutput,
                   'syncTree'  : syncTree,
                   'syncRLE': syncRLE,
+                  'process_name_specific' : sample_info['process_name_specific'],
                 }
                 self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job])
 

@@ -188,7 +188,7 @@ class analyzeConfig:
                 'HLT_IsoMu27',
             ]
             self.triggers_1e = [
-                'HLT_Ele32_WPTight_Gsf', # not present in 2017B (or, equivalently, not enabled at high lumi)
+                'HLT_Ele32_WPTight_Gsf', # not present in 2017BC (or, equivalently, not enabled at high lumi)
                 'HLT_Ele35_WPTight_Gsf',
             ]
             # CV: tau trigger paths taken from slide 6 of presentation given by Hale Sert at HTT workshop in December 2017
@@ -208,6 +208,14 @@ class analyzeConfig:
                 'HLT_DoubleMediumChargedIsoPFTau40_Trk1_TightID_eta2p1_Reg',
                 'HLT_DoubleTightChargedIsoPFTau40_Trk1_eta2p1_Reg',
             ]
+            self.triggers_missing_Run2017B = [
+                'HLT_Ele32_WPTight_Gsf', # 1e
+                'HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL', # 1e1mu
+                'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8', # 2mu
+            ]
+            self.triggers_missing_Run2017C = [
+                'HLT_Ele32_WPTight_Gsf', # 1e
+            ]
         else:
             raise ValueError("Invalid Configuration parameter 'era' = %s !!" % era)
 
@@ -226,6 +234,15 @@ class analyzeConfig:
             logging.error("Problem with cvmfs access: host = %s (%i jobs)" % (hostname, len(times)))
             for time in times:
                 logging.error(str(time))
+
+    def whitelist_triggers(self, triggers, process_name_specific):
+        triggers_to_blacklist = set()
+        if 'Run2017B' in process_name_specific:
+            triggers_to_blacklist = set(self.triggers_missing_Run2017B)
+        elif 'Run2017C' in process_name_specific:
+            triggers_to_blacklist = set(self.triggers_missing_Run2017C)
+        triggers = list(set(triggers) - triggers_to_blacklist)
+        return triggers
 
     def get_addMEM_systematics(self, central_or_shift):
         if central_or_shift in [

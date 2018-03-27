@@ -37,7 +37,8 @@ class analyzeConfig_inclusive(analyzeConfig):
       "process.analyze_inclusive.useNonNominal = cms.bool(%s)" % self.use_nonnominal,
     ]
     for trigger in [ '1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '1e2mu', '2e1mu', '1e1tau', '1mu1tau', '2tau' ]:
-      lines.append("process.analyze_inclusive.triggers_%s = cms.vstring(%s)" % (trigger, getattr(self, 'triggers_%s' % trigger)))
+      lines.append("process.analyze_inclusive.triggers_%s = cms.vstring(%s)" % \
+        (trigger, self.whitelist_triggers(getattr(self, 'triggers_%s' % trigger), jobOptions['process_name_specific'])))
       lines.append("process.analyze_inclusive.use_triggers_%s = cms.bool(%s)" % (trigger, trigger in jobOptions['triggers']))
     create_cfg(self.cfgFile_analyze, jobOptions['cfgFile_modified'], lines)
 
@@ -103,7 +104,7 @@ class analyzeConfig_inclusive(analyzeConfig):
           'logFile' : os.path.join(self.dirs[key_dir][DKEY_LOGS], "analyze_%s_%s_%i.log" % \
                   (self.channel, process_name, jobId)),
           'sample_category': sample_category,
-          'process_name_specific': sample_info["process_name_specific"],
+          'process_name_specific' : sample_info["process_name_specific"],
           'triggers': sample_info["triggers"],
           'is_mc': is_mc,
           'syncTree' : self.output_tree,

@@ -70,7 +70,8 @@ class analyzeConfig_charge_flip(analyzeConfig):
     lines.append("process.analyze_charge_flip.process = cms.string('%s')" % jobOptions["sample_category"])
     lines.append("process.analyze_charge_flip.era = cms.string('%s')" % self.era)
     for trigger in [ '1e', '1mu', '2e', '2mu' ]:
-      lines.append("process.analyze_charge_flip.triggers_%s = cms.vstring(%s)" % (trigger, getattr(self, 'triggers_%s' % trigger)))
+      lines.append("process.analyze_charge_flip.triggers_%s = cms.vstring(%s)" % \
+        (trigger, self.whitelist_triggers(getattr(self, 'triggers_%s' % trigger), jobOptions['process_name_specific'])))
       lines.append("process.analyze_charge_flip.use_triggers_%s = cms.bool(%s)" % (trigger, trigger in jobOptions['triggers']))
     lines.append("process.analyze_charge_flip.leptonSelection = cms.string('%s')" % jobOptions["lepton_selection"])
     lines.append("process.analyze_charge_flip.isMC = cms.bool(%s)" % jobOptions["is_mc"])
@@ -210,7 +211,8 @@ class analyzeConfig_charge_flip(analyzeConfig):
               'central_or_shift' : central_or_shift,
               'lumi_scale' : 1. if not (self.use_lumi and is_mc) else sample_info["xsection"] * self.lumi / sample_info["nof_events"],
               'apply_genWeight' : sample_info["genWeight"] if (is_mc and "genWeight" in sample_info.keys()) else False,
-              'apply_trigger_bits' : (is_mc and sample_info["reHLT"]) or not is_mc
+              'apply_trigger_bits' : (is_mc and sample_info["reHLT"]) or not is_mc,
+              'process_name_specific': sample_info['process_name_specific'],
             }
 
             #applyFakeRateWeights = self.applyFakeRateWeights
