@@ -10,7 +10,7 @@ RecoJetSelectorBtag::RecoJetSelectorBtag(int era,
   , debug_(debug)
   , min_pt_(25.)
   , max_absEta_(2.4)
-  , min_jetId_(3) // 3 means tight (sum of loose bit + 2 * tight bit)
+  , min_jetId_(2) // 2 means tight (loose jet ID deprecated since 94x)
   , min_BtagCSV_(-1.e+3)
 {}
 
