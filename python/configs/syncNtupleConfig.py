@@ -32,7 +32,7 @@ class syncNtupleConfig:
 
   def __init__(self, config_dir, output_dir, output_filename, version, era, channels, dry_run,
                resubmission_limit, disable_resubmission, check_input_files, isDebug, rle_select,
-               no_mem, use_nonnominal):
+               no_mem, use_nonnominal, tau_id_wp):
 
     self.dry_run           = dry_run
     self.check_input_files = check_input_files
@@ -82,6 +82,9 @@ class syncNtupleConfig:
       channel_outlog, channel_errlog = get_log_version((channel_outlog, channel_errlog))
 
       cmd_args = common_args if channel != 'inclusive' else inclusive_args
+      if tau_id_wp and 'tau' in channel:
+        additional_args += " -w %s" % tau_id_wp
+
       channel_cmd_run = '%s %s 2>%s 1>%s' % \
                         (channel_script, cmd_args, channel_errlog, channel_outlog)
       channel_cmd_clean = 'make -f %s clean' % channel_makefile

@@ -89,6 +89,12 @@ class tthAnalyzeParser(argparse.ArgumentParser):
       help = 'R|Use original central (i.e. non-nominal) values for jet/MET pt & mass/phi',
     )
 
+  def add_tau_id_wp(self, default_wp = ''):
+    self.add_argument('-w', '--tau-id-wp',
+      type = str, dest = 'tau_id_wp', metavar = 'WP', default = default_wp, required = False,
+      help = 'R|Overwrite tau ID working point',
+    )
+
   @staticmethod
   def cat(choices):
     return ', '.join(map(lambda choice: "'%s'" % str(choice), choices))

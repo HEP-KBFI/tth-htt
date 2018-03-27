@@ -13,6 +13,7 @@ systematics.full = systematics.an_jetToTauFR
 
 parser = tthAnalyzeParser()
 parser.add_sys(sys_choices)
+parser.add_tau_id_wp("dR03mvaVVLoose")
 args = parser.parse_args()
 
 # Common arguments
@@ -28,6 +29,7 @@ debug              = args.debug
 
 # Additional arguments
 systematics_label = args.systematics
+tau_id_wp         = args.tau_id_wp
 
 # Use the arguments
 max_job_resubmission = resubmission_limit if resubmit else 1
@@ -76,7 +78,7 @@ if __name__ == '__main__':
       jet_maxPt                        = 1.e+6,
       jet_minAbsEta                    = -1.,
       jet_maxAbsEta                    = 2.3,
-      hadTau_selection_denominator     = "dR03mvaVVLoose",
+      hadTau_selection_denominator     = tau_id_wp,
       hadTau_selections_numerator      = [
         ##"dR03mvaVLoose",
         "dR03mvaLoose",

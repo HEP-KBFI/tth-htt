@@ -9,6 +9,7 @@ from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser
 parser = tthAnalyzeParser()
 parser.add_rle_select()
 parser.add_nonnominal()
+parser.add_tau_id_wp('dR03mvaMedium')
 parser.add_argument('-o', '--output-tree',
   type = str, dest = 'output_tree', metavar = 'name', default = 'syncTree', required = False,
   help = 'R|Output TTree name',
@@ -32,6 +33,7 @@ debug              = args.debug
 # Additional arguments
 rle_select     = os.path.expanduser(args.rle_select)
 use_nonnominal = args.original_central
+tau_id_wp      = args.tau_id_wp
 
 # Custom arguments
 output_tree = args.output_tree
@@ -39,8 +41,6 @@ no_mem      = args.no_mem
 
 # Use the arguments
 max_job_resubmission = resubmission_limit if resubmit else 1
-
-hadTauSelection_tauIdWP = 'dR03mvaMedium'
 
 if era == "2017":
   if no_mem:
@@ -83,7 +83,7 @@ if __name__ == '__main__':
       dry_run                 = dry_run,
       isDebug                 = debug,
       rle_select              = rle_select,
-      hadTauSelection_tauIdWP = hadTauSelection_tauIdWP,
+      hadTauSelection_tauIdWP = tau_id_wp,
       use_nonnominal          = use_nonnominal,
     )
 

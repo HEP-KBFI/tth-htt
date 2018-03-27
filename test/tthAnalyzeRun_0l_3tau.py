@@ -14,6 +14,7 @@ systematics.full = systematics.an_common
 parser = tthAnalyzeParser()
 parser.add_modes(mode_choices)
 parser.add_sys(sys_choices)
+parser.add_tau_id_wp("dR03mvaVTight")
 args = parser.parse_args()
 
 # Common arguments
@@ -30,6 +31,7 @@ debug              = args.debug
 # Additional arguments
 mode              = args.mode
 systematics_label = args.systematics
+tau_id_wp         = args.tau_id_wp
 
 # Use the arguments
 max_job_resubmission = resubmission_limit if resubmit else 1
@@ -73,7 +75,7 @@ if __name__ == '__main__':
       executable_analyze                    = "analyze_0l_3tau",
       cfgFile_analyze                       = "analyze_0l_3tau_cfg.py",
       samples                               = samples,
-      hadTau_selection                      = "dR03mvaVTight",
+      hadTau_selection                      = tau_id_wp,
       hadTau_charge_selections              = [ "OS", "SS" ],
       applyFakeRateWeights                  = "3tau",
       central_or_shifts                     = central_or_shift,

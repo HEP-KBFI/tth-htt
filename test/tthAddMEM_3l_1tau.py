@@ -15,7 +15,7 @@ parser = tthAnalyzeParser(isAddMEM = True)
 parser.add_modes(mode_choices)
 parser.add_sys(sys_choices)
 parser.add_nonnominal()
-
+parser.add_tau_id_wp()
 parser.add_argument('-n', '--max-mem-integrations',
   type = int, dest = 'max_mem_integrations', metavar = 'integer', default = max_mem_integrations,
   required = False,
@@ -52,12 +52,14 @@ if mode == 'default':
   from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_prodNtuples import samples_2017
 
   leptonSelection = "Fakeable"
-  hadTauSelection = "Tight|dR03mvaMedium"
+  hadTauSelection = "Tight"
+  hadTauWP        = "dR03mvaMedium"
 elif mode == 'bdt':
   from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_FastSim import samples_2017
 
   leptonSelection = "Loose"
-  hadTauSelection = "Tight|dR03mvaVVLoose"
+  hadTauSelection = "Tight"
+  hadTauWP        = "dR03mvaVVLoose"
 else:
   raise ValueError("Internal logic error")
 
@@ -79,6 +81,11 @@ if __name__ == '__main__':
     ', '.join(central_or_shift)
   )
 
+  if args.tau_id_wp:
+    logging.info("Changing tau ID WP: %s -> %s" % (hadTauWP, args.tau_id_wp))
+    hadTauWP = args.tau_id_wp
+  hadTauSelectionAndWP = '%s|%s' % (hadTauSelection, hadTauWP)
+
   addMEMProduction = addMEMConfig_3l_1tau(
     treeName                 = 'Events',
     outputDir                = os.path.join("/hdfs/local", getpass.getuser(), "addMEM", era, version),
@@ -93,7 +100,7 @@ if __name__ == '__main__':
     max_mem_integrations     = max_mem_integrations, # use -1 if you don't want to limit the nof MEM integrations
     num_parallel_jobs        = 16,
     leptonSelection          = leptonSelection,
-    hadTauSelection          = hadTauSelection,
+    hadTauSelection          = hadTauSelectionAndWP,
     lowIntegrationPoints     = False, # has no effect in 3l1tau MEM, the nof integration points fixed
     isDebug                  = debug,
     central_or_shift         = central_or_shift,

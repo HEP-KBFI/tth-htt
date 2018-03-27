@@ -23,6 +23,7 @@ parser = tthAnalyzeParser()
 parser.add_modes(mode_choices)
 parser.add_sys(sys_choices)
 parser.add_preselect()
+parser.add_tau_id_wp()
 args = parser.parse_args()
 
 # Common arguments
@@ -90,6 +91,10 @@ if __name__ == '__main__':
     "Running the jobs with the following systematic uncertainties enabled: %s" % \
     ', '.join(central_or_shift)
   )
+
+  if args.tau_id_wp:
+    logging.info("Changing tau ID working point: %s -> %s" % (hadTau_selection, args.tau_id_wp))
+    hadTau_selection = args.tau_id_wp
 
   job_statistics_summary = {}
   run_analysis           = False

@@ -19,6 +19,7 @@ mode_choices = [ 'all', 'forBDTtraining_only', 'forBDTtraining_except', 'sync' ]
 parser = tthAnalyzeParser()
 parser.add_modes(mode_choices)
 parser.add_nonnominal()
+parser.add_tau_id_wp()
 parser.add_argument('-p', '--disable-preselection',
   dest = 'disable_preselection', action = 'store_false', default = True,
   help = 'R|Disable preselection (read this script for the list of cuts)',
@@ -76,11 +77,13 @@ for sample_key, sample_entry in samples.items():
 
 if mode in [ "all", "forBDTtraining_except", "sync" ]:
   leptonSelection   = 'Fakeable'
-  hadTauSelection   = 'Fakeable|dR03mvaMedium'
+  hadTauSelection   = 'Fakeable'
+  hadTauWP          = 'dR03mvaMedium'
   max_files_per_job = 1
 else:
   leptonSelection   = 'Loose'
-  hadTauSelection   = 'Loose|dR03mvaVVLoose'
+  hadTauSelection   = 'Loose'
+  hadTauWP          = 'dR03mvaVVLoose'
   max_files_per_job = 1
 
 if preselection:
@@ -109,6 +112,11 @@ if __name__ == '__main__':
     format = '%(asctime)s - %(levelname)s: %(message)s'
   )
 
+  if args.tau_id_wp:
+    logging.info("Changing tau ID WP: %s -> %s" % (hadTauWP, args.tau_id_wp))
+    hadTauWP = args.tau_id_wp
+  hadTauSelectionAndWP = '%s|%s' % (hadTauSelection, hadTauWP)
+
   run_ntupleProduction = False
 
   for resubmission_idx in range(resubmission_limit):
@@ -124,7 +132,7 @@ if __name__ == '__main__':
       era                   = era,
       preselection_cuts     = preselection_cuts,
       leptonSelection       = leptonSelection,
-      hadTauSelection       = hadTauSelection,
+      hadTauSelection       = hadTauSelectionAndWP,
       check_input_files     = check_input_files,
       running_method        = "sbatch",
       version               = version,

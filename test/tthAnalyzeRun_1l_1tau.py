@@ -15,6 +15,7 @@ parser = tthAnalyzeParser()
 parser.add_modes(mode_choices)
 parser.add_sys(sys_choices)
 parser.add_preselect()
+parser.add_tau_id_wp("dR03mvaVTight")
 args = parser.parse_args()
 
 # Common arguments
@@ -32,6 +33,7 @@ debug              = args.debug
 mode              = args.mode
 systematics_label = args.systematics
 use_preselected   = args.use_preselected
+tau_id_wp         = args.tau_id_wp
 
 # Use the arguments
 max_job_resubmission = resubmission_limit if resubmit else 1
@@ -83,7 +85,7 @@ if __name__ == '__main__':
       executable_analyze                    = "analyze_1l_1tau",
       cfgFile_analyze                       = "analyze_1l_1tau_cfg.py",
       samples                               = samples,
-      hadTau_selection                      = "dR03mvaVTight",
+      hadTau_selection                      = tau_id_wp,
       applyFakeRateWeights                  = "2L",
       chargeSumSelections                   = [ "OS", "SS" ],
       central_or_shifts                     = central_or_shift,

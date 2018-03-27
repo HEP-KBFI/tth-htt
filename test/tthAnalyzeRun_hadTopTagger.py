@@ -8,6 +8,7 @@ from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser
 # E.g.: ./tthAnalyzeRun_hadTopTagger.py -v 2017Dec13 -e 2017
 
 parser = tthAnalyzeParser()
+parser.add_tau_id_wp('dR03mvaMedium')
 args = parser.parse_args()
 
 # Common arguments
@@ -21,8 +22,12 @@ auto_exec          = args.auto_exec
 check_input_files  = args.check_input_files
 debug              = args.debug
 
+# Additional arguments
+tau_id_wp = args.tau_id_wp
+
 # Use the arguments
 max_job_resubmission = resubmission_limit if resubmit else 1
+hadTau_selection     = "Tight|%s" % tau_id_wp
 
 if era == "2017":
   from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_FastSim import samples_2017 as samples
@@ -53,7 +58,7 @@ if __name__ == '__main__':
       executable_analyze = "analyze_hadTopTagger",
       cfgFile_analyze    = "analyze_hadTopTagger_cfg.py",
       samples            = samples,
-      hadTau_selection   = "Tight|dR03mvaMedium",
+      hadTau_selection   = hadTau_selection,
       max_files_per_job  = 1,
       era                = era,
       use_lumi           = True,

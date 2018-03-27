@@ -13,6 +13,7 @@ systematics.full = systematics.an_ctrl
 
 parser = tthAnalyzeParser()
 parser.add_sys(sys_choices)
+parser.add_tau_id_wp("dR03mvaLoose")
 args = parser.parse_args()
 
 # Common arguments
@@ -28,6 +29,7 @@ debug              = args.debug
 
 # Additional arguments
 systematics_label = args.systematics
+tau_id_wp         = args.tau_id_wp
 
 # Use the arguments
 max_job_resubmission = resubmission_limit if resubmit else 1
@@ -66,7 +68,7 @@ if __name__ == '__main__':
       executable_analyze = "analyze_ttZctrl",
       cfgFile_analyze    = "analyze_ttZctrl_cfg.py",
       samples            = samples,
-      hadTau_selection   = "dR03mvaLoose",
+      hadTau_selection   = tau_id_wp,
       central_or_shifts  = central_or_shift,
       max_files_per_job  = 1,
       era                = era,
