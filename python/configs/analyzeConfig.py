@@ -344,15 +344,15 @@ class analyzeConfig:
                     # }
                     if 'auto_rebin' in histogramToFit_options:
                         lines.append("process.prepareDatacards.apply_automatic_rebinning = cms.bool(%s)" % \
-                                     histogramToFit_options['apply_automatic_rebinning'])
+                                     histogramToFit_options['auto_rebin'])
                     if 'min_auto_rebin' in histogramToFit_options:
                         lines.append("process.prepareDatacards.minEvents_automatic_rebinning = cms.double(%.3f)" % \
-                                     histogramToFit_options['minEvents_automatic_rebinning'])
+                                     histogramToFit_options['min_auto_rebin'])
                     if 'quantile_rebin' in histogramToFit_options:
                         lines.append("process.prepareDatacards.nbin_quantile_rebinning = cms.int32(%d)" % \
-                                     histogramToFit_options['nbin_quantile_rebinning'])
+                                     histogramToFit_options['quantile_rebin'])
                         lines.append("process.prepareDatacards.apply_quantile_rebinning = cms.bool(%s)" % \
-                                     histogramToFit_options['nbin_quantile_rebinning'] > 0)
+                                     histogramToFit_options['quantile_rebin'] > 0)
         # If self.histograms_to_fit is not a dictionary but a list, do not modify anything but
         # use the default settings specified in the original prepareDatacards template
 
