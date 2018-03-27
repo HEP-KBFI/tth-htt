@@ -311,6 +311,7 @@ class analyzeConfig:
         category_output = self.channel
         if jobOptions['label']:
             category_output += "_%s" % jobOptions['label']
+        histogramToFit = jobOptions['histogramToFit']
         lines = []
         lines.append("process.fwliteInput.fileNames = cms.vstring('%s')" % jobOptions['inputFile'])
         lines.append("process.fwliteOutput.fileName = cms.string('%s')" % jobOptions['datacardFile'])
@@ -323,7 +324,38 @@ class analyzeConfig:
         lines.append("        output = cms.string('ttH_%s')" % category_output)
         lines.append("    )")
         lines.append(")")
-        lines.append("process.prepareDatacards.histogramToFit = cms.string('%s')" % jobOptions['histogramToFit'])
+        lines.append("process.prepareDatacards.histogramToFit = cms.string('%s')" % histogramToFit)
+
+        # If the user has specified the binning options for a particular histogram, we expect to see
+        # a dictionary instead of a list of histogram names that's been passed to this class as histograms_to_fit
+        if type(self.histograms_to_fit) == dict:
+            if histogramToFit in self.histograms_to_fit:
+                histogramToFit_options = self.histograms_to_fit[histogramToFit]
+                # Check the binning options
+                if not histogramToFit_options:
+                    # Use whatever the default setting are in the original prepareDatacards template
+                    pass
+                else:
+                    # Expected syntax:
+                    # {
+                    #   "EventCounter"    : { 'auto_rebin' : True, 'min_auto_rebin' = 0.05 }, # no quantile
+                    #   "numJets"         : { 'quantile_rebin' : 5 }, # also enables quantile rebinning, no auto
+                    #   "mTauTauVis1_sel" : {}, # default settings (no auto or quantile rebinning)
+                    # }
+                    if 'auto_rebin' in histogramToFit_options:
+                        lines.append("process.prepareDatacards.apply_automatic_rebinning = cms.bool(%s)" % \
+                                     histogramToFit_options['apply_automatic_rebinning'])
+                    if 'min_auto_rebin' in histogramToFit_options:
+                        lines.append("process.prepareDatacards.minEvents_automatic_rebinning = cms.double(%.3f)" % \
+                                     histogramToFit_options['minEvents_automatic_rebinning'])
+                    if 'quantile_rebin' in histogramToFit_options:
+                        lines.append("process.prepareDatacards.nbin_quantile_rebinning = cms.int32(%d)" % \
+                                     histogramToFit_options['nbin_quantile_rebinning'])
+                        lines.append("process.prepareDatacards.apply_quantile_rebinning = cms.bool(%s)" % \
+                                     histogramToFit_options['nbin_quantile_rebinning'] > 0)
+        # If self.histograms_to_fit is not a dictionary but a list, do not modify anything but
+        # use the default settings specified in the original prepareDatacards template
+
         create_cfg(self.cfgFile_prep_dcard, jobOptions['cfgFile_modified'], lines)
 
     def createCfg_add_syst_dcard(self, jobOptions):
