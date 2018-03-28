@@ -58,9 +58,9 @@ central_or_shift     = getattr(systematics, systematics_label)
 max_files_per_job    = 50 if use_preselected else 1
 do_sync              = mode.startswith('sync')
 
-MEMbranch                          = ''
-hadTauFakeRateWeight_inputFileName = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016.root" #TODO update
-chargeSumSelections                = [ "OS" ] if "forBDTtraining" in mode else [ "OS", "SS" ]
+MEMbranch                      = ''
+hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016.root" #TODO update
+chargeSumSelections            = [ "OS" ] if "forBDTtraining" in mode else [ "OS", "SS" ]
 
 if mode == "VHbb":
   if use_preselected:
@@ -165,7 +165,10 @@ if __name__ == '__main__':
         "numJets",
         "mvaDiscr_3l",
         "mTauTauVis",
-        "mvaDiscr_3l_1tau",
+        "mvaOutput_plainKin_tt",
+        "mvaOutput_plainKin_ttV",
+        "mvaOutput_plainKin_SUM_M",
+        "mvaOutput_plainKin_1B_M",
       ],
       select_rle_output                     = True,
       select_root_output                    = False,
@@ -178,7 +181,16 @@ if __name__ == '__main__':
     )
 
     if mode.find("forBDTtraining") != -1:
-      analysis.set_BDT_training(hadTau_selection_relaxed, hadTauFakeRateWeight_inputFileName)
+      if hadTau_selection_relaxed == "dR03mvaVVLoose":
+        hadTauFakeRateWeight_inputFileName = "FR_tau_2016_vvLoosePresel.root"
+      elif hadTau_selection_relaxed == "dR03mvaVLoose":
+        hadTauFakeRateWeight_inputFileName = "FR_tau_2016_vLoosePresel.root"
+      else:
+        hadTauFakeRateWeight_inputFileName = "FR_tau_2016.root"
+      hadTauFakeRateWeight_inputFile = os.path.join(
+        "tthAnalysis/HiggsToTauTau/data", hadTauFakeRateWeight_inputFileName
+      )
+      analysis.set_BDT_training(hadTau_selection_relaxed, hadTauFakeRateWeight_inputFile)
 
     job_statistics = analysis.create()
     for job_type, num_jobs in job_statistics.items():

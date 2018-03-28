@@ -34,20 +34,16 @@ class EvtHistManager_2lss_1tau
                  double evtWeight,
                  //
                  double mvaOutput_2lss_ttV,
-                 double mvaOutput_2lss_ttbar,
-                 double mvaDiscr_2lss,
-                 double mvaOutput_2lss_1tau_ttV,
-                 double mvaOutput_2lss_1tau_ttbar,
-                 double mvaDiscr_2lss_1tau,
-                 double mvaOutput_2lss_1tau_ttV_wMEM,
-                 double mvaOutput_2lss_1tau_ttbar_wMEM,
-                 double mvaDiscr_2lss_1tau_wMEM,
-                 double mvaOutput_Hj_tagger,
-                 double mvaOutput_Hjj_tagger,
+                 double mvaOutput_2lss_tt,
+                 double mvaOutput_2lss_1tau_plainKin_tt,
+                 double mvaOutput_2lss_1tau_plainKin_ttV,
+                 double mvaOutput_2lss_1tau_plainKin_1B_M,
+                 double mvaOutput_2lss_1tau_plainKin_SUM_M,
+                 double mvaOutput_2lss_1tau_HTT_SUM_M,
+                 double mvaOutput_2lss_1tau_HTTMEM_SUM_M,
                  double mTauTauVis1,
                  double mTauTauVis2,
-                 double memOutput_LR,
-                 double memDiscr);
+                 double memOutput_LR);
 
   const TH1 *
   getHistogram_EventCounter() const;
@@ -69,24 +65,19 @@ class EvtHistManager_2lss_1tau
   TH2 * histogram_numBJets_medium_vs_numJets_;
 
   TH1 * histogram_mvaOutput_2lss_ttV_;
-  TH1 * histogram_mvaOutput_2lss_ttbar_;
-  TH1 * histogram_mvaDiscr_2lss_;
+  TH1 * histogram_mvaOutput_2lss_tt_;
 
-  TH1 * histogram_mvaOutput_2lss_1tau_ttV_;
-  TH1 * histogram_mvaOutput_2lss_1tau_ttbar_;
-  TH1 * histogram_mvaDiscr_2lss_1tau_;
-  TH1 * histogram_mvaOutput_2lss_1tau_ttV_wMEM_;
-  TH1 * histogram_mvaOutput_2lss_1tau_ttbar_wMEM_;
-  TH1 * histogram_mvaDiscr_2lss_1tau_wMEM_;
-
-  TH1 * histogram_mvaOutput_Hj_tagger_;
-  TH1 * histogram_mvaOutput_Hjj_tagger_;
+  TH1 * histogram_mvaOutput_2lss_1tau_plainKin_tt_;
+  TH1 * histogram_mvaOutput_2lss_1tau_plainKin_ttV_;
+  TH1 * histogram_mvaOutput_2lss_1tau_plainKin_1B_M_;
+  TH1 * histogram_mvaOutput_2lss_1tau_plainKin_SUM_M_;
+  TH1 * histogram_mvaOutput_2lss_1tau_HTT_SUM_M_;
+  TH1 * histogram_mvaOutput_2lss_1tau_HTTMEM_SUM_M_;
 
   TH1 * histogram_mTauTauVis1_;
   TH1 * histogram_mTauTauVis_;
   TH1 * histogram_mTauTauVis2_;
   TH1 * histogram_memOutput_LR_;
-  TH1 * histogram_memDiscr_;
 
   TH1 * histogram_EventCounter_;
 };

@@ -293,7 +293,7 @@ HadTopKinFit::fittedTop() const
 {
   if(nll_ == -1.)
   {
-    throw cmsException("HadTopKinFit") << "Kinematic fit has not yet run or failed !!";
+    throw cmsException(this, __func__) << "Kinematic fit has not yet run or failed !!";
   }
   return fittedBJetP4_ + fittedWJet1P4_ + fittedWJet2P4_;
 }
@@ -303,7 +303,7 @@ HadTopKinFit::fittedW() const
 {
   if(nll_ == -1.)
   {
-    throw cmsException("HadTopKinFit") << "Kinematic fit has not yet run or failed !!";
+    throw cmsException(this, __func__) << "Kinematic fit has not yet run or failed !!";
   }
   return fittedWJet1P4_ + fittedWJet2P4_;
 }
@@ -313,7 +313,7 @@ HadTopKinFit::alpha() const
 {
   if(nll_ == -1.)
   {
-    throw cmsException("HadTopKinFit") << "Kinematic fit has not yet run or failed !!";
+    throw cmsException(this, __func__) << "Kinematic fit has not yet run or failed !!";
   }
   return alpha_;
 }

@@ -62,6 +62,11 @@ EvtHistManager_3l_1tau::bookHistograms(TFileDirectory & dir)
   histogram_mem_logCPUTime_              = book1D(dir, "mem_logCPUTime",              "mem_logCPUTime",              400, -20., +20.);
   histogram_mem_logRealTime_             = book1D(dir, "mem_logRealTime",             "mem_logRealTime",             400, -20., +20.);
 
+  histogram_mvaOutput_plainKin_tt_    = book1D(dir, "mvaOutput_plainKin_tt",    "mvaOutput_plainKin_tt",    100, 0., 1.);
+  histogram_mvaOutput_plainKin_ttV_   = book1D(dir, "mvaOutput_plainKin_ttV",   "mvaOutput_plainKin_ttV",   100, 0., 1.);
+  histogram_mvaOutput_plainKin_SUM_M_ = book1D(dir, "mvaOutput_plainKin_SUM_M", "mvaOutput_plainKin_SUM_M", 100, 0., 1.);
+  histogram_mvaOutput_plainKin_1B_M_  = book1D(dir, "mvaOutput_plainKin_1B_M",  "mvaOutput_plainKin_1B_M",  100, 0., 1.);
+
   histogram_EventCounter_ = book1D(dir, "EventCounter", "EventCounter", 1, -0.5, +0.5);
 }
 
@@ -81,7 +86,11 @@ EvtHistManager_3l_1tau::fillHistograms(int numElectrons,
                                        double mTauTauVis1,
                                        double mTauTauVis2,
                                        const MEMOutput_3l_1tau * memOutput_3l_1tau,
-                                       double evtWeight)
+                                       double evtWeight,
+                                       double mvaOutput_plainKin_tt,
+                                       double mvaOutput_plainKin_ttV,
+                                       double mvaOutput_plainKin_SUM_M,
+                                       double mvaOutput_plainKin_1B_M)
 {
   const double evtWeightErr = 0.;
 
@@ -137,6 +146,11 @@ EvtHistManager_3l_1tau::fillHistograms(int numElectrons,
   {
     fillWithOverFlow(histogram_memOutput_isValid_, -1, evtWeight, evtWeightErr);
   }
+
+  fillWithOverFlow(histogram_mvaOutput_plainKin_tt_,    mvaOutput_plainKin_tt,    evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_mvaOutput_plainKin_ttV_,   mvaOutput_plainKin_ttV,   evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_mvaOutput_plainKin_SUM_M_, mvaOutput_plainKin_SUM_M, evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_mvaOutput_plainKin_1B_M_,  mvaOutput_plainKin_1B_M,  evtWeight, evtWeightErr);
 
   fillWithOverFlow(histogram_EventCounter_, 0., evtWeight, evtWeightErr);
 }

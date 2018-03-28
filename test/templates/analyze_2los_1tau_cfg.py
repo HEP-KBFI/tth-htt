@@ -84,6 +84,12 @@ process.analyze_2los_1tau = cms.PSet(
     branchName_genLeptons = cms.string('GenLep'),
     branchName_genHadTaus = cms.string('GenVisTau'),
     branchName_genJets = cms.string('GenJet'),
+
+    branchName_genTopQuarks = cms.string('GenTop'),
+    branchName_genBJets = cms.string('GenBQuarkFromTop'),
+    branchName_genWBosons = cms.string('GenVbosons'),
+    branchName_genWJets = cms.string('GenWZQuark'),
+
     redoGenMatching = cms.bool(True),
 
     selEventsFileName_input = cms.string(''),

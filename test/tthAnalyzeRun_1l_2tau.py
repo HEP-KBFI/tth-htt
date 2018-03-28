@@ -144,14 +144,10 @@ if __name__ == '__main__':
       histograms_to_fit                     = [
         "EventCounter",
         "numJets",
-        "mvaOutput_1l_2tau_ttbar_Old",
-        "mvaOutput_1l_2tau_ttbar_Old_5bins",
-        "mvaOutput_sum_HTT_4bins",
-        "mvaOutput_1B_HTT_4bins",
-        "mvaOutput_ttbar_HTT",
-        "mvaOutput_ttV_HTT",
-        "mvaDiscr_1l_2tau",
-        "mvaOutput_1B_HTT",
+        "mvaOutput_plainKin_ttV",
+        "mvaOutput_plainKin_tt",
+        "mvaOutput_plainKin_1B_VT",
+        "mvaOutput_HTT_SUM_VT",
         "mTauTauVis"
       ],
       select_rle_output                     = True,

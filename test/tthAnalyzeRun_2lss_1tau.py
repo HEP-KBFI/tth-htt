@@ -142,14 +142,6 @@ if __name__ == '__main__':
       continue
     logging.info("Job submission #%i:" % (idx_job_resubmission + 1))
 
-    # histograms for 2D bin optimization
-    listOfHistNames = [
-      '%s_from%i_to_%i' % (varName, nbinsStart, nbinsTarget)
-        for varName     in ['HTT', 'noHTT', 'HTTMEM', 'oldVarA']
-        for nbinsStart  in [15, 20]
-        for nbinsTarget in range(5, 11)
-    ]
-
     analysis = analyzeConfig_2lss_1tau(
       configDir                 = configDir,
       outputDir                 = outputDir,
@@ -179,38 +171,18 @@ if __name__ == '__main__':
         "EventCounter",
         "numJets",
         "mvaOutput_2lss_ttV",
-        "mvaOutput_2lss_ttbar",
-        "mvaDiscr_2lss",
-        "mvaOutput_2lss_1tau_ttV",
-        "mvaOutput_2lss_1tau_ttbar",
-        "mvaDiscr_2lss_1tau",
-        "mvaOutput_2lss_1tau_ttV_wMEM",
-        "mvaOutput_2lss_1tau_ttbar_wMEM",
-        "mvaDiscr_2lss_1tau_wMEM",
-        "mvaOutput_Hj_tagger",
-        "mvaOutput_Hjj_tagger",
-        "mTauTauVis1_sel",
-        "mTauTauVis2_sel",
+        "mvaOutput_2lss_tt",
+        "mvaOutput_2lss_1tau_plainKin_tt",
+        "mvaOutput_2lss_1tau_plainKin_ttV",
+        "mvaOutput_2lss_1tau_plainKin_1B_M",
+        "mvaOutput_2lss_1tau_plainKin_SUM_M",
+        "mvaOutput_2lss_1tau_HTT_SUM_M",
+        "mvaOutput_2lss_1tau_HTTMEM_SUM_M",
+        "mTauTauVis1",
+        "mTauTauVis2",
+        "mTauTauVis",
         "memOutput_LR",
-        "memDiscr",
-        #
-        "mvaOutput_2lss_oldVarA_tt",
-        "mvaOutput_2lss_oldVarA_ttV",
-        "mvaOutput_2lss_noHTT_tt",
-        "mvaOutput_2lss_noHTT_ttV",
-        "mvaOutput_2lss_HTT_tt",
-        "mvaOutput_2lss_HTTMEM_tt",
-        "mvaOutput_2lss_HTTMEM_ttV",
-        "mvaOutput_2lss_HTT_LepID_tt",
-        #
-        "mvaOutput_2lss_HTTMEM_1B",
-        "mvaOutput_2lss_HTT_1B",
-        "mvaOutput_2lss_noHTT_1B",
-        "mvaOutput_2lss_oldVarA_1B",
-        "mvaOutput_2lss_oldVarA_2MEM",
-        "mvaOutput_2lss_noHTT_2MEM",
-        "mvaOutput_2lss_noHTT_2HTT",
-      ] + listOfHistNames,
+      ],
       select_rle_output         = True,
       verbose                   = idx_job_resubmission > 0,
       dry_run                   = dry_run,
