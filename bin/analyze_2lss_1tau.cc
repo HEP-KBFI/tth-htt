@@ -1883,6 +1883,8 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     }
 
 //--- compute variables BDTs used to discriminate ttH vs. ttV and ttH vs. ttba -- they will be used more than once -- Xanda
+    const int nJet25_Recl = comp_n_jet25_recl(selJets);
+
     const double mindr_lep1_jet  = comp_mindr_lep1_jet(*selLepton_lead, selJets);
     const double mindr_lep2_jet  = comp_mindr_lep2_jet(*selLepton_sublead, selJets);
     const double max_lep_eta     = std::max(selLepton_lead->absEta(), selLepton_sublead->absEta());
@@ -1894,7 +1896,6 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     const double dr_lep1_tau     = deltaR(selLepton_lead->p4(),    selHadTau->p4());
     const double dr_lep2_tau     = deltaR(selLepton_sublead->p4(), selHadTau->p4());
     const double avg_dr_jet      = comp_avg_dr_jet(selJets);
-    const double nJet25_Recl     = comp_n_jet25_recl(selJets);
     const double lep1_conePt     = comp_lep1_conePt(*selLepton_lead);
     const double lep2_conePt     = comp_lep2_conePt(*selLepton_sublead);
     const double minMET400       = std::min(met.pt(), 400.);
@@ -1913,9 +1914,9 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       { "nJet25_Recl",                                                    nJet25_Recl                   },
       { "mindr_lep1_jet",                                                 std::min(10., mindr_lep1_jet) },
       { "mindr_lep2_jet",                                                 std::min(10., mindr_lep2_jet) },
-      { "lep1_conePt",                                                    lep1_conePt                   },
-      { "lep2_conePt",                                                    lep2_conePt                   },
-      { "minMET400",                                                      minMET400                     },
+      { "LepGood_conePt[iF_Recl[0]]",                                     lep1_conePt                   },
+      { "LepGood_conePt[iF_Recl[1]]",                                     lep2_conePt                   },
+      { "min(met_pt,400)",                                                minMET400                     },
       { "avg_dr_jet",                                                     avg_dr_jet                    },
     };
     check_mvaInputs(mvaInputs_2lss, eventInfo);
