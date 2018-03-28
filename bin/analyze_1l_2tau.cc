@@ -1618,6 +1618,10 @@ int main(int argc, char* argv[])
     const double tau2_pt            = selHadTau_sublead->pt();
     const double HTT                = max_mvaOutput_hadTopTaggerWithKinFit;
     const double HadTop_pt          = unfittedHadTopP4.pt();
+    const double mT_lepHadTopH      = comp_MT_met_lep1(
+      selLepton->p4() + fittedHadTopP4 + selHadTau_lead->p4() + selHadTau_sublead->p4(),
+      met.pt(), met.phi()
+    );
 
 //--- compute output of BDTs used to discriminate ttH vs. ttbar trained by Matthias for 1l_2tau category
     const std::map<std::string, double> mvaInputsplainKin_ttV = {
@@ -1795,7 +1799,7 @@ int main(int argc, char* argv[])
       bdt_filler -> operator()({ eventInfo.run, eventInfo.lumi, eventInfo.event })
           ("lep_pt",                         selLepton->pt())
           ("lep_conePt",                     lep_conePt)
-          ("lep_eta",                        std::fabs(selLepton->eta()))
+          ("lep_eta",                        selLepton->absEta())
           ("lep_tth_mva",                    selLepton->mvaRawTTH())
           ("mindr_lep_jet",                  mindr_lep_jet)
           ("mindr_tau1_jet",                 mindr_tau1_jet)
@@ -1808,8 +1812,8 @@ int main(int argc, char* argv[])
           ("tau2_mva",                       selHadTau_sublead->raw_mva_dR03())
           ("tau1_pt",                        selHadTau_lead->pt())
           ("tau2_pt",                        selHadTau_sublead->pt())
-          ("tau1_eta",                       std::abs(selHadTau_lead->eta()))
-          ("tau2_eta",                       std::abs(selHadTau_sublead->eta()))
+          ("tau1_eta",                       selHadTau_lead->absEta())
+          ("tau2_eta",                       selHadTau_sublead->absEta())
           ("dr_taus",                        dr_taus)
           ("dr_lep_tau_os",                  deltaR(selLepton->p4(), selHadTau_OS->p4()))
           ("dr_lep_tau_ss",                  dr_lep_tau_ss)
@@ -1833,7 +1837,7 @@ int main(int argc, char* argv[])
           ("nBJetMedium",                    selBJets_medium.size())
           ("bWj1Wj2_isGenMatchedWithKinFit", max_truth_hadTopTaggerWithKinFit)
           ("mT_lepHadTop",                   comp_MT_met_lep1(selLepton->p4() + fittedHadTopP4, met.pt(), met.phi()))
-          ("mT_lepHadTopH",                  comp_MT_met_lep1(selLepton->p4() + fittedHadTopP4 + selHadTau_lead->p4() + selHadTau_sublead->p4(), met.pt(), met.phi()))
+          ("mT_lepHadTopH",                  mT_lepHadTopH)
           ("dr_HadTop_tau_OS",               deltaR(fittedHadTopP4, selHadTau_OS->p4()))
           ("dr_HadTop_tau_SS",               deltaR(fittedHadTopP4, selHadTau_SS->p4()))
           ("ncombo",                         ncombo)
