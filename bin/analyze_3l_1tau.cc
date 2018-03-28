@@ -469,7 +469,6 @@ int main(int argc, char* argv[])
   TMVAInterface mva_3l_ttbar(mvaFileName_3l_ttbar, mvaInputVariables_3l_ttbar, { "iF_Recl[0]", "iF_Recl[1]", "iF_Recl[2]" });
 
   std::vector<std::string> mvaInputVariables_3l = get_mvaInputVariables(mvaInputVariables_3l_ttV, mvaInputVariables_3l_ttbar);
-  std::map<std::string, double> mvaInputs_3l;
 
   //    trained in XGB to 3l_1tau category
   std::string mvaFileName_plainKin_tt = "tthAnalysis/HiggsToTauTau/data/evtLevel_2018March/3l_1tau_XGB_plainKin_evtLevelTT_TTH_15Var.xml";
@@ -1499,33 +1498,52 @@ int main(int argc, char* argv[])
       if ( !selLepton1_OS ) selLepton1_OS = selLepton_third;
       else if ( !selLepton2_OS ) selLepton2_OS = selLepton_third;
     }
-    double mTauTauVis1_sel = ( selLepton1_OS ) ? (selLepton1_OS->p4() + selHadTau->p4()).mass() : -1.;
-    double mTauTauVis2_sel = ( selLepton2_OS ) ? (selLepton2_OS->p4() + selHadTau->p4()).mass() : -1.;
 
 //--- compute output of BDTs used to discriminate ttH vs. ttV and ttH vs. ttbar
 //    in 3l category of ttH multilepton analysis
-    const double lep1_conePt = comp_lep1_conePt(*selLepton_lead);
-    const double lep2_conePt = comp_lep2_conePt(*selLepton_sublead);
-    const double lep3_conePt = comp_lep3_conePt(*selLepton_third);
-    const double mindr_lep1_jet = comp_mindr_lep1_jet(*selLepton_lead, selJets);
-    const double mindr_lep2_jet = comp_mindr_lep2_jet(*selLepton_sublead, selJets);
-    const double mindr_lep3_jet = comp_mindr_lep3_jet(*selLepton_third, selJets);
-    const double mindr_tau_jet = comp_mindr_hadTau1_jet(*selHadTau, selJets);
-    const double avg_dr_jet = comp_avg_dr_jet(selJets);
-    mvaInputs_3l["max(abs(LepGood_eta[iF_Recl[0]]),abs(LepGood_eta[iF_Recl[1]]))"] = std::max(std::fabs(selLepton_lead->eta()), std::fabs(selLepton_sublead->eta()));
-    mvaInputs_3l["MT_met_lep1"]                = comp_MT_met_lep1(selLepton_lead->cone_p4(), met.pt(), met.phi());
-    mvaInputs_3l["nJet25_Recl"]                = comp_n_jet25_recl(selJets);
-    mvaInputs_3l["mindr_lep1_jet"]             = mindr_lep1_jet;
-    mvaInputs_3l["mindr_lep2_jet"]             = mindr_lep2_jet;
-    mvaInputs_3l["LepGood_conePt[iF_Recl[0]]"] = lep1_conePt;
-    mvaInputs_3l["LepGood_conePt[iF_Recl[2]]"] = lep3_conePt;
-    mvaInputs_3l["avg_dr_jet"]                 = avg_dr_jet;
-    mvaInputs_3l["mhtJet25_Recl"]              = mht_p4.pt();
+    const int nJet25_Recl = comp_n_jet25_recl(selJets);
+    const int nJet        = selJets.size();
 
+    const double mTauTauVis1_sel      = selLepton1_OS ? (selLepton1_OS->p4() + selHadTau->p4()).mass() : -1.;
+    const double mTauTauVis2_sel      = selLepton2_OS ? (selLepton2_OS->p4() + selHadTau->p4()).mass() : -1.;
+    const double max_lep12_eta        = std::max(selLepton_lead->absEta(), selLepton_sublead->absEta());
+    const double lep1_conePt          = comp_lep1_conePt(*selLepton_lead);
+    const double lep2_conePt          = comp_lep2_conePt(*selLepton_sublead);
+    const double lep3_conePt          = comp_lep3_conePt(*selLepton_third);
+    const double mindr_lep1_jet       = comp_mindr_lep1_jet(*selLepton_lead, selJets);
+    const double mindr_lep2_jet       = comp_mindr_lep2_jet(*selLepton_sublead, selJets);
+    const double mindr_lep3_jet       = comp_mindr_lep3_jet(*selLepton_third, selJets);
+    const double mindr_lep1_jet_min10 = std::min(10., mindr_lep1_jet);
+    const double mindr_lep2_jet_min10 = std::min(10., mindr_lep2_jet);
+    const double mindr_lep3_jet_min10 = std::min(10., mindr_lep3_jet);
+    const double mindr_tau_jet        = comp_mindr_hadTau1_jet(*selHadTau, selJets);
+    const double mindr_tau_jet_min10  = std::min(10., mindr_tau_jet);
+    const double avg_dr_jet           = comp_avg_dr_jet(selJets);
+    const double MT_met_lep1          = comp_MT_met_lep1(selLepton_lead->cone_p4(), met.pt(), met.phi());
+    const double mhtJet25_Recl        = mht_p4.pt();
+    const double mT_lep1              = comp_MT_met_lep1(*selLepton_lead, met.pt(), met.phi());
+    const double mT_lep2              = comp_MT_met_lep2(*selLepton_sublead, met.pt(), met.phi());
+    const double max_lep_eta          = std::max({ selLepton_lead->eta(), selLepton_sublead->eta(), selLepton_third->eta() });
+    const double ptmiss               = met.pt();
+    const double tau_pt               = selHadTau->pt();
+    const double dr_leps              = deltaR(selLepton_lead->p4(), selLepton_sublead->p4());
+    const double mbb_loose            = selBJets_medium.size() > 1 ?  (selBJets_loose[0]->p4() + selBJets_loose[1]->p4()).mass() : -1;
+
+    std::map<std::string, double> mvaInputs_3l = {
+      { "max(abs(LepGood_eta[iF_Recl[0]]),abs(LepGood_eta[iF_Recl[1]]))", max_lep12_eta  },
+      { "MT_met_lep1",                                                    MT_met_lep1    },
+      { "nJet25_Recl",                                                    nJet25_Recl    },
+      { "mindr_lep1_jet",                                                 mindr_lep1_jet },
+      { "mindr_lep2_jet",                                                 mindr_lep2_jet },
+      { "LepGood_conePt[iF_Recl[0]]",                                     lep1_conePt    },
+      { "LepGood_conePt[iF_Recl[2]]",                                     lep3_conePt    },
+      { "avg_dr_jet",                                                     avg_dr_jet     },
+      { "mhtJet25_Recl",                                                  mhtJet25_Recl  },
+    };
     check_mvaInputs(mvaInputs_3l, eventInfo);
 
-    double mvaOutput_3l_ttV = mva_3l_ttV(mvaInputs_3l);
-    double mvaOutput_3l_ttbar = mva_3l_ttbar(mvaInputs_3l);
+    const double mvaOutput_3l_ttV = mva_3l_ttV(mvaInputs_3l);
+    const double mvaOutput_3l_ttbar = mva_3l_ttbar(mvaInputs_3l);
 
 //--- compute integer discriminant based on both BDT outputs,
 //    as defined in Table 16 (10) of AN-2015/321 (AN-2016/211) for analysis of 2015 (2016) data
@@ -1538,57 +1556,57 @@ int main(int argc, char* argv[])
       else                                                                mvaDiscr_3l = 1.;
     } else assert(0);
 
-    //std::cout<<"filling BDTs plainKin_ttV"<<std::endl;
-    std::map<std::string, double>  mvaInputVariables_plainKin_ttV;
-    mvaInputVariables_plainKin_ttV["lep1_conePt"]          = comp_lep1_conePt(*selLepton_lead);
-    mvaInputVariables_plainKin_ttV["lep2_conePt"]          = comp_lep2_conePt(*selLepton_sublead);
-    mvaInputVariables_plainKin_ttV["mindr_lep1_jet"]       = TMath::Min(10., comp_mindr_lep1_jet(*selLepton_lead, selJets));
-    mvaInputVariables_plainKin_ttV["mindr_lep2_jet"]       = TMath::Min(10., comp_mindr_lep1_jet(*selLepton_sublead, selJets));
-    mvaInputVariables_plainKin_ttV["mT_lep1"]              = comp_MT_met_lep1(*selLepton_lead, met.pt(), met.phi());
-    mvaInputVariables_plainKin_ttV["mT_lep2"]              = comp_MT_met_lep1(*selLepton_sublead, met.pt(), met.phi());
-    mvaInputVariables_plainKin_ttV["max_lep_eta"]=TMath::Max(TMath::Max(selLepton_lead->eta(), selLepton_sublead->eta()), selLepton_third->eta());
-    mvaInputVariables_plainKin_ttV["avg_dr_jet"]           = comp_avg_dr_jet(selJets);
-    mvaInputVariables_plainKin_ttV["ptmiss"]               = met.pt();
-    mvaInputVariables_plainKin_ttV["tau_pt"]               = selHadTau->pt();
-    mvaInputVariables_plainKin_ttV["dr_leps"]              = deltaR(selLepton_lead -> p4(), selLepton_sublead -> p4());
-    mvaInputVariables_plainKin_ttV["mTauTauVis1"]=mTauTauVis1_sel;
-    mvaInputVariables_plainKin_ttV["mTauTauVis2"]=mTauTauVis2_sel;
-    double mvaOutput_plainKin_ttV=mva_plainKin_ttV(mvaInputVariables_plainKin_ttV);
+    const std::map<std::string, double>  mvaInputVariables_plainKin_ttV = {
+      { "lep1_conePt",    lep1_conePt          },
+      { "lep2_conePt",    lep2_conePt          },
+      { "mindr_lep1_jet", mindr_lep1_jet_min10 },
+      { "mindr_lep2_jet", mindr_lep2_jet_min10 },
+      { "mT_lep1",        mT_lep1              },
+      { "mT_lep2",        mT_lep2              },
+      { "max_lep_eta",    max_lep_eta          },
+      { "avg_dr_jet",     avg_dr_jet           },
+      { "ptmiss",         ptmiss               },
+      { "tau_pt",         tau_pt               },
+      { "dr_leps",        dr_leps              },
+      { "mTauTauVis1",    mTauTauVis1_sel      },
+      { "mTauTauVis2",    mTauTauVis2_sel      },
+    };
+    const double mvaOutput_plainKin_ttV = mva_plainKin_ttV(mvaInputVariables_plainKin_ttV);
 
-    //std::cout<<"filling BDTs plainKin_tt"<<std::endl;
-    std::map<std::string, double> mvaInputVariables_plainKin_tt;
-    mvaInputVariables_plainKin_tt["mindr_lep1_jet"]       = TMath::Min(10., comp_mindr_lep1_jet(*selLepton_lead, selJets));
-    mvaInputVariables_plainKin_tt["mindr_lep2_jet"]       = TMath::Min(10., comp_mindr_lep1_jet(*selLepton_sublead, selJets));
-    mvaInputVariables_plainKin_tt["mT_lep2"]              = comp_MT_met_lep1(*selLepton_sublead, met.pt(), met.phi());
-    mvaInputVariables_plainKin_tt["mT_lep1"]              = comp_MT_met_lep1(*selLepton_lead, met.pt(), met.phi());
-    mvaInputVariables_plainKin_tt["max_lep_eta"]=TMath::Max(TMath::Max(selLepton_lead->eta(), selLepton_sublead->eta()), selLepton_third->eta());
-    mvaInputVariables_plainKin_tt["lep3_conePt"]          = comp_lep1_conePt(*selLepton_third);
-    mvaInputVariables_plainKin_tt["mindr_lep3_jet"]       = TMath::Min(10., comp_mindr_lep1_jet(*selLepton_third, selJets));
-    mvaInputVariables_plainKin_tt["mindr_tau_jet"]        = TMath::Min(10., comp_mindr_hadTau1_jet(*selHadTau, selJets));
-    mvaInputVariables_plainKin_tt["avg_dr_jet"]           = comp_avg_dr_jet(selJets);
-    mvaInputVariables_plainKin_tt["ptmiss"]               = met.pt();
-    mvaInputVariables_plainKin_tt["tau_pt"]               = selHadTau->pt();
-    mvaInputVariables_plainKin_tt["dr_leps"]              = deltaR(selLepton_lead -> p4(), selLepton_sublead -> p4());
-    mvaInputVariables_plainKin_tt["mTauTauVis1"]          = mTauTauVis1_sel;
-    mvaInputVariables_plainKin_tt["mTauTauVis2"]          = mTauTauVis2_sel;
-    mvaInputVariables_plainKin_tt["mbb_loose"] = selBJets_medium.size()>1 ?  (selBJets_loose[0]->p4()+selBJets_loose[1]->p4()).mass() : -1;
-    double mvaOutput_plainKin_tt =mva_plainKin_tt(mvaInputVariables_plainKin_tt);
+    std::map<std::string, double> mvaInputVariables_plainKin_tt = {
+      { "mindr_lep1_jet", mindr_lep1_jet_min10 },
+      { "mindr_lep2_jet", mindr_lep2_jet_min10 },
+      { "mT_lep2",        mT_lep2              },
+      { "mT_lep1",        mT_lep1              },
+      { "max_lep_eta",    max_lep_eta          },
+      { "lep3_conePt",    lep3_conePt          },
+      { "mindr_lep3_jet", mindr_lep3_jet_min10 },
+      { "mindr_tau_jet",  mindr_tau_jet_min10  },
+      { "avg_dr_jet",     avg_dr_jet           },
+      { "ptmiss",         ptmiss               },
+      { "tau_pt",         tau_pt               },
+      { "dr_leps",        dr_leps              },
+      { "mTauTauVis1",    mTauTauVis1_sel      },
+      { "mTauTauVis2",    mTauTauVis2_sel      },
+      { "mbb_loose",      mbb_loose            },
+    };
+    const double mvaOutput_plainKin_tt =mva_plainKin_tt(mvaInputVariables_plainKin_tt);
 
-    //std::cout<<"filling BDTs plainKin_tt"<<std::endl;
-    std::map<std::string, double> mvaInputVariables_plainKin_SUM;
-    mvaInputVariables_plainKin_SUM["lep1_conePt"]          = comp_lep1_conePt(*selLepton_lead);
-    mvaInputVariables_plainKin_SUM["lep2_conePt"]          = comp_lep2_conePt(*selLepton_sublead);
-    mvaInputVariables_plainKin_SUM["mindr_lep1_jet"]       = TMath::Min(10., comp_mindr_lep1_jet(*selLepton_lead, selJets));
-    mvaInputVariables_plainKin_SUM["max_lep_eta"]=TMath::Max(TMath::Max(selLepton_lead->eta(), selLepton_sublead->eta()), selLepton_third->eta());
-    mvaInputVariables_plainKin_SUM["mindr_tau_jet"]        = TMath::Min(10., comp_mindr_hadTau1_jet(*selHadTau, selJets));
-    mvaInputVariables_plainKin_SUM["ptmiss"]               = met.pt();
-    mvaInputVariables_plainKin_SUM["tau_pt"]               = selHadTau->pt();
-    mvaInputVariables_plainKin_SUM["dr_leps"]              = deltaR(selLepton_lead -> p4(), selLepton_sublead -> p4());
-    mvaInputVariables_plainKin_SUM["mTauTauVis1"]          = mTauTauVis1_sel;
-    mvaInputVariables_plainKin_SUM["mTauTauVis2"]          = mTauTauVis2_sel;
-    mvaInputVariables_plainKin_SUM["mbb_loose"] = selBJets_medium.size()>1 ?  (selBJets_loose[0]->p4()+selBJets_loose[1]->p4()).mass() : -1;
-    mvaInputVariables_plainKin_SUM["nJet"]                 = selJets.size();
-    double mvaOutput_plainKin_SUM_M =mva_plainKin_SUM_M(mvaInputVariables_plainKin_SUM);
+    const std::map<std::string, double> mvaInputVariables_plainKin_SUM = {
+      { "lep1_conePt",    lep1_conePt          },
+      { "lep2_conePt",    lep2_conePt          },
+      { "mindr_lep1_jet", mindr_lep1_jet_min10 },
+      { "max_lep_eta",    max_lep_eta          },
+      { "mindr_tau_jet",  mindr_tau_jet_min10  },
+      { "ptmiss",         ptmiss               },
+      { "tau_pt",         tau_pt               },
+      { "dr_leps",        dr_leps              },
+      { "mTauTauVis1",    mTauTauVis1_sel      },
+      { "mTauTauVis2",    mTauTauVis2_sel      },
+      { "mbb_loose",      mbb_loose            },
+      { "nJet",           nJet                 },
+    };
+    const double mvaOutput_plainKin_SUM_M =mva_plainKin_SUM_M(mvaInputVariables_plainKin_SUM);
 
     //std::cout<<"filling BDTs plainKin_1B"<<std::endl;
     std::map<std::string, double> mvaInputVariables_plainKin_1B;
@@ -1767,72 +1785,72 @@ int main(int argc, char* argv[])
       }
 
       bdt_filler -> operator()({ eventInfo.run, eventInfo.lumi, eventInfo.event })
-          ("lep1_pt",             selLepton_lead -> pt())
-          ("lep1_conePt",         comp_lep1_conePt(*selLepton_lead))
-          ("lep1_eta",            selLepton_lead -> eta())
-          ("lep1_tth_mva",        selLepton_lead -> mvaRawTTH())
-          ("mindr_lep1_jet",      TMath::Min(10., mindr_lep1_jet))
-          ("mT_lep1",             comp_MT_met_lep1(*selLepton_lead, met.pt(), met.phi()))
-          ("dr_lep1_tau",         deltaR(selLepton_lead -> p4(), selHadTau -> p4()))
-          ("lep2_pt",             selLepton_sublead -> pt())
-          ("lep2_conePt",         comp_lep1_conePt(*selLepton_sublead))
-          ("lep2_eta",            selLepton_sublead -> eta())
-          ("lep2_tth_mva",        selLepton_sublead -> mvaRawTTH())
-          ("mindr_lep2_jet",      TMath::Min(10., mindr_lep2_jet))
-          ("mT_lep2",             comp_MT_met_lep1(*selLepton_sublead, met.pt(), met.phi()))
-          ("dr_lep2_tau",         deltaR(selLepton_sublead -> p4(), selHadTau -> p4()))
-          ("lep3_pt",             selLepton_third -> pt())
-          ("lep3_conePt",         comp_lep1_conePt(*selLepton_third))
-          ("lep3_eta",            selLepton_third -> eta())
-          ("lep3_tth_mva",        selLepton_third -> mvaRawTTH())
-          ("mindr_lep3_jet",      TMath::Min(10., mindr_lep3_jet))
+          ("lep1_pt",             selLepton_lead->pt())
+          ("lep1_conePt",         lep1_conePt)
+          ("lep1_eta",            selLepton_lead->eta())
+          ("lep1_tth_mva",        selLepton_lead->mvaRawTTH())
+          ("mindr_lep1_jet",      mindr_lep1_jet_min10)
+          ("mT_lep1",             mT_lep1)
+          ("dr_lep1_tau",         deltaR(selLepton_lead->p4(), selHadTau->p4()))
+          ("lep2_pt",             selLepton_sublead->pt())
+          ("lep2_conePt",         lep2_conePt)
+          ("lep2_eta",            selLepton_sublead->eta())
+          ("lep2_tth_mva",        selLepton_sublead->mvaRawTTH())
+          ("mindr_lep2_jet",      mindr_lep2_jet_min10)
+          ("mT_lep2",             mT_lep2)
+          ("dr_lep2_tau",         deltaR(selLepton_sublead->p4(), selHadTau->p4()))
+          ("lep3_pt",             selLepton_third->pt())
+          ("lep3_conePt",         lep3_conePt)
+          ("lep3_eta",            selLepton_third->eta())
+          ("lep3_tth_mva",        selLepton_third->mvaRawTTH())
+          ("mindr_lep3_jet",      mindr_lep3_jet_min10)
           ("mT_lep3",             comp_MT_met_lep1(*selLepton_third, met.pt(), met.phi()))
-          ("dr_lep3_tau",         deltaR(selLepton_third -> p4(), selHadTau -> p4()))
-          ("mindr_tau_jet",       TMath::Min(10., mindr_tau_jet))
+          ("dr_lep3_tau",         deltaR(selLepton_third->p4(), selHadTau->p4()))
+          ("mindr_tau_jet",       mindr_tau_jet_min10)
           ("avg_dr_jet",          avg_dr_jet)
-          ("ptmiss",              met.pt())
+          ("ptmiss",              ptmiss)
           ("htmiss",              mht_p4.pt())
-          ("tau_mva",             selHadTau -> raw_mva_dR03())
-          ("tau_pt",              selHadTau -> pt())
-          ("tau_eta",             selHadTau -> eta())
-          ("dr_leps",             deltaR(selLepton_lead -> p4(), selLepton_sublead -> p4()))
+          ("tau_mva",             selHadTau->raw_mva_dR03())
+          ("tau_pt",              tau_pt)
+          ("tau_eta",             selHadTau->eta())
+          ("dr_leps",             dr_leps)
           ("mTauTauVis1",         mTauTauVis1_sel)
           ("mTauTauVis2",         mTauTauVis2_sel)
-          ("lep1_genLepPt",       (selLepton_lead->genLepton() != 0) ? selLepton_lead->genLepton()->pt() : 0.)
-          ("lep2_genLepPt",       (selLepton_sublead->genLepton() != 0) ? selLepton_sublead->genLepton() ->pt() : 0.)
-          ("lep3_genLepPt",       (selLepton_third->genLepton() != 0) ? selLepton_third->genLepton() ->pt() : 0.)
-          ("tau_genTauPt",        (selHadTau->genHadTau() != 0) ? selHadTau->genHadTau()->pt() : 0.)
-          ("lep1_frWeight",          lep1_genLepPt > 0 ? 1.0 : prob_fake_lepton_lead)
-          ("lep2_frWeight",          lep2_genLepPt > 0 ? 1.0 : prob_fake_lepton_sublead)
-          ("lep3_frWeight",          lep3_genLepPt > 0 ? 1.0 : prob_fake_lepton_third)
-          ("tau_frWeight",           tau_genTauPt > 0 ? 1.0 : prob_fake_hadTau)
-          ("lep1_fake_prob", ( selLepton_lead->genLepton() != 0 ) ? 1.0 : prob_fake_lepton_lead )
-          ("lep2_fake_prob", ( selLepton_sublead->genLepton() != 0 ) ? 1.0 : prob_fake_lepton_sublead)
-          ("lep3_fake_prob", ( selLepton_third->genLepton() != 0 ) ? 1.0 : prob_fake_lepton_third)
-          ("tau_fake_prob", ( selHadTau->genHadTau() != 0 || selHadTau->genLepton() != 0 ) ? 1.0 : prob_fake_hadTau )
-          ("tau_fake_prob_test", ( selHadTau->genHadTau() != 0 ) ? 1.0 : prob_fake_hadTau )
-          ("weight_fakeRate",   weight_fakeRate)
+          ("lep1_genLepPt",       selLepton_lead->genLepton() ? selLepton_lead->genLepton()->pt() : 0.)
+          ("lep2_genLepPt",       selLepton_sublead->genLepton() ? selLepton_sublead->genLepton() ->pt() : 0.)
+          ("lep3_genLepPt",       selLepton_third->genLepton() ? selLepton_third->genLepton() ->pt() : 0.)
+          ("tau_genTauPt",        selHadTau->genHadTau() ? selHadTau->genHadTau()->pt() : 0.)
+          ("lep1_frWeight",       lep1_genLepPt > 0 ? 1.0 : prob_fake_lepton_lead)
+          ("lep2_frWeight",       lep2_genLepPt > 0 ? 1.0 : prob_fake_lepton_sublead)
+          ("lep3_frWeight",       lep3_genLepPt > 0 ? 1.0 : prob_fake_lepton_third)
+          ("tau_frWeight",        tau_genTauPt > 0 ? 1.0 : prob_fake_hadTau)
+          ("lep1_fake_prob",      selLepton_lead->genLepton() ? 1.0 : prob_fake_lepton_lead)
+          ("lep2_fake_prob",      selLepton_sublead->genLepton() ? 1.0 : prob_fake_lepton_sublead)
+          ("lep3_fake_prob",      selLepton_third->genLepton() ? 1.0 : prob_fake_lepton_third)
+          ("tau_fake_prob",       selHadTau->genHadTau() || selHadTau->genLepton() ? 1.0 : prob_fake_hadTau)
+          ("tau_fake_prob_test",  selHadTau->genHadTau() ? 1.0 : prob_fake_hadTau)
+          ("weight_fakeRate",     weight_fakeRate)
           ("mvaOutput_3l_ttV",    mvaOutput_3l_ttV)
           ("mvaOutput_3l_ttbar",  mvaOutput_3l_ttbar)
           ("mvaDiscr_3l",         mvaDiscr_3l)
           ("lumiScale",           lumiScale)
           ("genWeight",           eventInfo.genWeight)
           ("evtWeight",           evtWeight)
-          ("mbb_loose",           selBJets_loose.size()>1 ?  (selBJets_loose[0]->p4()+selBJets_loose[1]->p4()).mass() : -1000 )
-          ("mbb_medium",          selBJets_medium.size()>1 ?  (selBJets_medium[0]->p4()+selBJets_medium[1]->p4()).mass() : -1000 )
-          ("nJet",                selJets.size())
+          ("mbb_loose",           selBJets_loose.size() > 1 ?  (selBJets_loose[0]->p4() + selBJets_loose[1]->p4()).mass() : -1000)
+          ("mbb_medium",          selBJets_medium.size() > 1 ?  (selBJets_medium[0]->p4() + selBJets_medium[1]->p4()).mass() : -1000)
+          ("nJet",                nJet)
           ("nBJetLoose",          selBJets_loose.size())
           ("nBJetMedium",         selBJets_medium.size())
-          ("lep1_isTight",        int(selLepton_lead -> isTight()))
-          ("lep2_isTight",        int(selLepton_sublead -> isTight()))
-          ("lep3_isTight",        int(selLepton_third -> isTight()))
-          ("tau_isTight",         int(tightHadTauFilter(*selHadTau)))
-          ("dr_tau_los1", dr_tau_los1)
-          ("dr_tau_los2", dr_tau_los2)
-          ("dr_tau_lss", dr_tau_lss)
-          ("dr_lss", dr_lss)
-          ("dr_los1", dr_los1)
-          ("dr_los2", dr_los2)
+          ("lep1_isTight",        static_cast<int>(selLepton_lead->isTight()))
+          ("lep2_isTight",        static_cast<int>(selLepton_sublead->isTight()))
+          ("lep3_isTight",        static_cast<int>(selLepton_third->isTight()))
+          ("tau_isTight",         static_cast<int>(tightHadTauFilter(*selHadTau)))
+          ("dr_tau_los1",         dr_tau_los1)
+          ("dr_tau_los2",         dr_tau_los2)
+          ("dr_tau_lss",          dr_tau_lss)
+          ("dr_lss",              dr_lss)
+          ("dr_los1",             dr_los1)
+          ("dr_los2",             dr_los2)
         .fill()
       ;
     }
