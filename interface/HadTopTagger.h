@@ -39,7 +39,7 @@ protected:
   std::map<std::string, double> mvaInputsWithKinFit;
   std::vector<std::string> mvaInputsWithKinFitSort;
 
-  TMVAInterface * mva_hadTopTagger_tmva_;
+  TMVAInterface * mva_hadTopTagger_xgb_withKinFit_;
 };
 
 #endif // tthAnalysis_HiggsToTauTau_HadTopTagger_h

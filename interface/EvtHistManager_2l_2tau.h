@@ -28,7 +28,7 @@ public:
                  int numJets,
                  int numBJets_loose,
                  int numBJets_medium,
-		 double mTauTauVis,
+                 double mTauTauVis,
                  double leptonPairCharge,
                  double hadTauPairCharge,
                  double evtWeight,

@@ -117,7 +117,6 @@ double comp_cosThetaS(const Particle::LorentzVector& hadTauP4_lead, const Partic
   hadTauP4tlv_lead.SetPtEtaPhiM(hadTauP4_lead.pt(), hadTauP4_lead.eta(), hadTauP4_lead.phi(), hadTauP4_lead.mass());
   TLorentzVector hadTauP4tlv_sublead;
   hadTauP4tlv_sublead.SetPtEtaPhiM(hadTauP4_sublead.pt(), hadTauP4_sublead.eta(), hadTauP4_sublead.phi(), hadTauP4_sublead.mass());
-  TLorentzVector diTauP4 = hadTauP4tlv_lead + hadTauP4tlv_sublead;
   TLorentzVector hadTauBoost = hadTauP4tlv_lead;
   return std::fabs(hadTauBoost.CosTheta());
 }
@@ -1583,11 +1582,12 @@ int main(int argc, char* argv[])
       int is_OS=1;
       if (abs(selLepton_lead->charge() -selLepton_sublead->charge() ) < 0.1) is_OS=0;
 
-      double cosThetaS_hadTau=-100;
-      comp_cosThetaS(selHadTau_lead->p4(), selHadTau_sublead->p4(), cosThetaS_hadTau);
-      //double cosThetaS_hadTau = comp_cosThetaStar(selHadTau_lead->p4(), selHadTau_lead->p4()+selHadTau_sublead->p4());
+      double cosThetaS_hadTau = -100.;
       double cosThetaS_GenTau=-4;
-      if (selHadTau_lead->genHadTau() != 0 && selHadTau_sublead->genHadTau() != 0)  comp_cosThetaS(selHadTau_lead->p4(), selHadTau_sublead->p4(), cosThetaS_GenTau);
+      if (selHadTau_lead->genHadTau() != 0 && selHadTau_sublead->genHadTau() != 0)
+      {
+        cosThetaS_hadTau = comp_cosThetaS(selHadTau_lead->p4(), selHadTau_sublead->p4());
+      }
 
       bdt_filler -> operator()({ eventInfo.run, eventInfo.lumi, eventInfo.event })
           ("lep1_pt",              selLepton_lead -> pt())
