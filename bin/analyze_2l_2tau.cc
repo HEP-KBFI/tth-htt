@@ -1685,8 +1685,7 @@ int main(int argc, char* argv[])
       const double min_dr_tau_jet  = std::min(mindr_tau1_jet, mindr_tau2_jet);
       const double mTauTauVis1_sel = (selHadTau_lead->p4() + selLepton_lead->p4()).mass();
       const double mTauTauVis2_sel = (selHadTau_lead->p4() + selLepton_sublead->p4()).mass();
-      const double max_lep12_eta   = std::max(selLepton_lead->absEta(), selLepton_sublead->absEta());
-      const double max_lep_eta     = std::max(selLepton_lead->eta(), selLepton_sublead->eta());
+      const double max_lep_eta     = std::max(selLepton_lead->absEta(), selLepton_sublead->absEta());
       const double ptmiss          = met.pt();
 
       const bool isGenMatched =
@@ -1741,8 +1740,8 @@ int main(int argc, char* argv[])
       // dr_lep3_tau1 not filled
       snm->read(dr_lep2_tau2,                           FloatVariableType::dr_lep2_tau2);
 
-      snm->read(max_lep12_eta,                          FloatVariableType::max_lep12_eta); // abs
-      snm->read(max_lep_eta,                            FloatVariableType::max_lep_eta); // no abs
+      snm->read(max_lep_eta,                            FloatVariableType::max_lep12_eta);
+      snm->read(max_lep_eta,                            FloatVariableType::max_lep_eta);
 
       snm->read(mT_lep1,                                FloatVariableType::mT_met_lep1);
       snm->read(mT_lep2,                                FloatVariableType::mT_met_lep1);

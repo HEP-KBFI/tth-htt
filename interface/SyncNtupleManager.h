@@ -58,7 +58,7 @@ enum class FloatVariableType
   dr_lep3_tau1,             ///< dR between third lepton and (leading) tau
 
   max_lep12_eta,            ///< maximum absolute eta in two leading leptons
-  max_lep_eta,              ///< maximum (not absolute?) eta in all selected leptons
+  max_lep_eta,              ///< maximum absolute eta in all selected leptons
 
   mT_met_lep1,              ///< transverse mass of leading lepton and MET (using reco pt)
   mT_met_lep2,              ///< transverse mass of subleading lepton and MET (using reco pt)

@@ -1417,8 +1417,8 @@ int main(int argc, char* argv[])
     const double mindr_lep2_jet = comp_mindr_lep2_jet(*selLepton_sublead, selJets);
     const double mindr_lep3_jet = comp_mindr_lep3_jet(*selLepton_third, selJets);
     const double avg_dr_jet = comp_avg_dr_jet(selJets);
-    const double max_lep_eta = std::max(std::fabs(selLepton_lead->eta()), std::fabs(selLepton_sublead->eta()));
-    mvaInputs_3l["max(abs(LepGood_eta[iF_Recl[0]]),abs(LepGood_eta[iF_Recl[1]]))"] = max_lep_eta;
+    const double max_lep12_eta = std::max(selLepton_lead->absEta(), selLepton_sublead->absEta());
+    mvaInputs_3l["max(abs(LepGood_eta[iF_Recl[0]]),abs(LepGood_eta[iF_Recl[1]]))"] = max_lep12_eta;
     mvaInputs_3l["MT_met_lep1"]                = comp_MT_met_lep1(selLepton_lead->cone_p4(), met.pt(), met.phi());
     mvaInputs_3l["nJet25_Recl"]                = comp_n_jet25_recl(selJets);
     mvaInputs_3l["mindr_lep1_jet"]             = mindr_lep1_jet;
@@ -1637,7 +1637,7 @@ int main(int argc, char* argv[])
       const double ptmiss            = met.pt();
       const double min_dr_lep_jet    = std::min({ mindr_lep1_jet, mindr_lep2_jet, mindr_lep3_jet });
       const double dr_leps           = deltaR(selLepton_lead->p4(), selLepton_sublead->p4());
-      const double max_lep_eta_noAbs = std::max({ selLepton_lead->eta(), selLepton_sublead->eta(), selLepton_third->eta() });
+      const double max_lep_eta       = std::max({ selLepton_lead->absEta(), selLepton_sublead->absEta(), selLepton_third->absEta() });
 
       const bool isGenMatched =
         selLepton_lead->isGenMatched()    &&
@@ -1692,8 +1692,8 @@ int main(int argc, char* argv[])
       // dr_lep3_tau1 not filled
       // dr_lep2_tau2 not filled
 
-      snm->read(max_lep_eta,                            FloatVariableType::max_lep12_eta); // abs
-      snm->read(max_lep_eta_noAbs,                      FloatVariableType::max_lep_eta); // not abs
+      snm->read(max_lep12_eta,                          FloatVariableType::max_lep12_eta);
+      snm->read(max_lep_eta,                            FloatVariableType::max_lep_eta);
 
       snm->read(mT_lep1,                                FloatVariableType::mT_met_lep1);
       snm->read(mT_lep2,                                FloatVariableType::mT_met_lep2);

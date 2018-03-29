@@ -1523,7 +1523,7 @@ int main(int argc, char* argv[])
     const double mhtJet25_Recl        = mht_p4.pt();
     const double mT_lep1              = comp_MT_met_lep1(*selLepton_lead, met.pt(), met.phi());
     const double mT_lep2              = comp_MT_met_lep2(*selLepton_sublead, met.pt(), met.phi());
-    const double max_lep_eta          = std::max({ selLepton_lead->eta(), selLepton_sublead->eta(), selLepton_third->eta() });
+    const double max_lep_eta          = std::max({ selLepton_lead->absEta(), selLepton_sublead->absEta(), selLepton_third->absEta() });
     const double ptmiss               = met.pt();
     const double tau_pt               = selHadTau->pt();
     const double dr_leps              = deltaR(selLepton_lead->p4(), selLepton_sublead->p4());

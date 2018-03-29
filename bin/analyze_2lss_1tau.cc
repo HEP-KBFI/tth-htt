@@ -2247,7 +2247,6 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       const double max_dr_lep_tau = std::max(dr_lep2_tau1, dr_lep1_tau1);
       const double min_dr_lep_tau = std::min(dr_lep2_tau1, dr_lep1_tau1);
       const double min_dr_lep_jet = std::min(mindr_lep1_jet, mindr_lep2_jet);
-      const double max_lep12_eta  = std::max(selLepton_lead->eta(), selLepton_sublead->eta());
 
       const bool isGenMatched =
         selLepton_lead->isGenMatched()    &&
@@ -2300,8 +2299,8 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       // dr_lep3_tau1 not filled
       // dr_lep2_tau2 not filled
 
-      snm->read(max_lep_eta,                            FloatVariableType::max_lep12_eta); // abs
-      snm->read(max_lep12_eta,                          FloatVariableType::max_lep_eta); // not abs
+      snm->read(max_lep_eta,                            FloatVariableType::max_lep12_eta);
+      snm->read(max_lep_eta,                            FloatVariableType::max_lep_eta);
 
       snm->read(mT_lep1,                                FloatVariableType::mT_met_lep1);
       snm->read(mT_lep2,                                FloatVariableType::mT_met_lep2);
