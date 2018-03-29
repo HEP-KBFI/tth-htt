@@ -1527,7 +1527,7 @@ int main(int argc, char* argv[])
     const double ptmiss               = met.pt();
     const double tau_pt               = selHadTau->pt();
     const double dr_leps              = deltaR(selLepton_lead->p4(), selLepton_sublead->p4());
-    const double mbb_loose            = selBJets_medium.size() > 1 ?  (selBJets_loose[0]->p4() + selBJets_loose[1]->p4()).mass() : -1;
+    const double mbb_loose            = selBJets_loose.size() > 1 ?  (selBJets_loose[0]->p4() + selBJets_loose[1]->p4()).mass() : -1;
 
     std::map<std::string, double> mvaInputs_3l = {
       { "max(abs(LepGood_eta[iF_Recl[0]]),abs(LepGood_eta[iF_Recl[1]]))", max_lep12_eta  },
@@ -1836,7 +1836,7 @@ int main(int argc, char* argv[])
           ("lumiScale",           lumiScale)
           ("genWeight",           eventInfo.genWeight)
           ("evtWeight",           evtWeight)
-          ("mbb_loose",           selBJets_loose.size() > 1 ?  (selBJets_loose[0]->p4() + selBJets_loose[1]->p4()).mass() : -1000)
+          ("mbb_loose",           mbb_loose)
           ("mbb_medium",          selBJets_medium.size() > 1 ?  (selBJets_medium[0]->p4() + selBJets_medium[1]->p4()).mass() : -1000)
           ("nJet",                nJet)
           ("nBJetLoose",          selBJets_loose.size())

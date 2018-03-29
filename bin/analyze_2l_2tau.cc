@@ -1507,7 +1507,7 @@ int main(int argc, char* argv[])
       { "is_OS",            is_OS            },
       { "nJet",             nJet             },
     };
-    const double mvaOutput_plainKin_ttV=mva_plainKin_ttV(mvaInputVariables_plainKin_ttV);
+    const double mvaOutput_plainKin_ttV = mva_plainKin_ttV(mvaInputVariables_plainKin_ttV);
 
     std::map<std::string, double> mvaInputVariables_plainKin_SUM = {
       { "mTauTauVis",       mTauTauVis       },
