@@ -173,7 +173,7 @@ if __name__ == '__main__':
         "mvaOutput_2lss_ttV"                 : {},
         "mvaOutput_2lss_tt"                  : {},
         "mvaOutput_2lss_1tau_plainKin_tt"    : { 'quantile_rebin' : 15 }, # BDT2; quantile in fakes
-        "mvaOutput_2lss_1tau_plainKin_ttV"   : {}, # BDT1 => how many quantile bins in fakes?
+        "mvaOutput_2lss_1tau_plainKin_ttV"   : { 'quantile_rebin' : 15 }, # BDT1; quantile in fakes
         "mvaOutput_2lss_1tau_plainKin_1B_M"  : {},
         "mvaOutput_2lss_1tau_plainKin_SUM_M" : { 'quantile_rebin' : 11 }, # BDT3; quantile in fakes
         "mvaOutput_2lss_1tau_HTT_SUM_M"      : { 'quantile_rebin' : 11 }, # BDT4; quantile in fakes
