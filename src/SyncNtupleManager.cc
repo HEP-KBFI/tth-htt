@@ -331,7 +331,7 @@ SyncNtupleManager::read(const std::vector<const RecoMuon *> & muons,
     mu_miniRelIso[i] = muon -> relIso();
     mu_miniIsoCharged[i] = muon -> miniIsoCharged();
     mu_miniIsoNeutral[i] = muon -> miniIsoNeutral();
-    mu_jetNDauChargedMVASel[i] = -1; //TODO: implement jetNDauChargedMVASel() in RecoLepton
+    mu_jetNDauChargedMVASel[i] = muon -> jetNDauChargedMVASel();
     mu_jetPtRel[i] = muon -> jetPtRel();
     mu_jetPtRatio[i] = muon -> jetPtRatio();
     mu_jetCSV[i] = muon -> jetBtagCSV();
@@ -397,7 +397,7 @@ SyncNtupleManager::read(const std::vector<const RecoElectron *> & electrons,
     ele_miniRelIso[i] = electron -> relIso();
     ele_miniIsoCharged[i] = electron -> miniIsoCharged();
     ele_miniIsoNeutral[i] = electron -> miniIsoNeutral();
-    ele_jetNDauChargedMVASel[i] = -1; //TODO: implement jetNDauChargedMVASel() in RecoLepton
+    ele_jetNDauChargedMVASel[i] = electron -> jetNDauChargedMVASel();
     ele_jetPtRel[i] = electron -> jetPtRel();
     ele_jetPtRatio[i] = electron -> jetPtRatio();
     ele_jetCSV[i] = electron -> jetBtagCSV();
