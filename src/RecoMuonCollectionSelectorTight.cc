@@ -18,13 +18,13 @@ RecoMuonSelectorTight::RecoMuonSelectorTight(int era,
   , max_sip3d_(8.)
   , apply_looseIdPOG_(true)
   , apply_mediumIdPOG_(true)
-  , min_mvaTTH_(0.90)
+  , min_mvaTTH_(0.90) // Table 6 in AN2017_029_v5
 {
   switch(era_)
   {
     case kEra_2017:
     {
-      max_jetBtagCSV_ = 0.8484;
+      max_jetBtagCSV_ = BtagWP_CSV_2016.at(BtagWP::kMedium); // Table 6 in AN2017_029_v5
       break;
     }
     default: throw cmsException(this) << "Invalid era: " << era_;
@@ -128,28 +128,17 @@ RecoMuonSelectorTight::operator()(const RecoMuon & muon) const
   return true;
 }
 
+void
+RecoMuonSelectorTight::set_selection_flags(bool selection_flags)
+{
+  set_selection_flags_ = selection_flags;
+}
+
 RecoMuonCollectionSelectorTight::RecoMuonCollectionSelectorTight(int era,
                                                                  int index,
-                                                                 bool debug)
-  : selIndex_(index)
-  , selector_(era, index, debug)
-{}
-
-std::vector<const RecoMuon *>
-RecoMuonCollectionSelectorTight::operator()(const std::vector<const RecoMuon *> & muons) const
+                                                                 bool debug,
+                                                                 bool set_selection_flags)
+  : ParticleCollectionSelector<RecoMuon, RecoMuonSelectorTight>(era, index, debug)
 {
-  std::vector<const RecoMuon *> selMuons;
-  int idx = 0;
-  for(const RecoMuon * const & muon: muons)
-  {
-    if(selector_(*muon))
-    {
-      if(idx == selIndex_ || selIndex_ == -1)
-      {
-        selMuons.push_back(muon);
-      }
-      ++idx;
-    }
-  }
-  return selMuons;
+  selector_.set_selection_flags(set_selection_flags);
 }

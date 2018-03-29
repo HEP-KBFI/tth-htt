@@ -36,24 +36,24 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
      for documentation of further Args.
 
   """
-  def __init__(self, configDir, outputDir, executable_analyze, cfgFile_analyze, samples, changeBranchNames, MEMbranch,
+  def __init__(self, configDir, outputDir, executable_analyze, cfgFile_analyze, samples, MEMbranch,
                lepton_charge_selections, hadTau_selection, applyFakeRateWeights, chargeSumSelections, central_or_shifts,
-               max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,
+               max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
                executable_addBackgrounds, executable_addFakes, executable_addFlips, histograms_to_fit, select_rle_output = False,
                executable_prep_dcard = "prepareDatacards", executable_add_syst_dcard = "addSystDatacards",
-               do_sync = False, verbose = False, dry_run = False):
+               do_sync = False, verbose = False, dry_run = False, isDebug = False, rle_select = '', use_nonnominal = False):
     analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "2lss_1tau", central_or_shifts,
-      max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,
+      max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
       histograms_to_fit,
       executable_prep_dcard = executable_prep_dcard,
       executable_add_syst_dcard = executable_add_syst_dcard,
       do_sync = do_sync,
       verbose = verbose,
       dry_run = dry_run,
+      isDebug = isDebug,
     )
 
     self.samples = samples
-    self.changeBranchNames = changeBranchNames
     self.MEMbranch = MEMbranch
 
     ##self.lepton_and_hadTau_selections = [ "Tight", "Fakeable", "Fakeable_mcClosure" ]
@@ -129,6 +129,8 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
     self.cfgFile_make_plots_mcClosure = os.path.join(self.template_dir, "makePlots_mcClosure_2lss_1tau_cfg.py")
 
     self.select_rle_output = select_rle_output
+    self.rle_select = rle_select
+    self.use_nonnominal = use_nonnominal
 
     self.isBDTtraining = False
 
@@ -167,16 +169,10 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
       jobOptions['lepton_charge_selection'], jobOptions['chargeSumSelection'])
     lines.append("process.analyze_2lss_1tau.histogramDir = cms.string('%s')" % histogramDir)
     lines.append("process.analyze_2lss_1tau.era = cms.string('%s')" % self.era)
-    lines.append("process.analyze_2lss_1tau.triggers_1e = cms.vstring(%s)" % self.triggers_1e)
-    lines.append("process.analyze_2lss_1tau.use_triggers_1e = cms.bool(%s)" % ("1e" in jobOptions['triggers']))
-    lines.append("process.analyze_2lss_1tau.triggers_2e = cms.vstring(%s)" % self.triggers_2e)
-    lines.append("process.analyze_2lss_1tau.use_triggers_2e = cms.bool(%s)" % ("2e" in jobOptions['triggers']))
-    lines.append("process.analyze_2lss_1tau.triggers_1mu = cms.vstring(%s)" % self.triggers_1mu)
-    lines.append("process.analyze_2lss_1tau.use_triggers_1mu = cms.bool(%s)" % ("1mu" in jobOptions['triggers']))
-    lines.append("process.analyze_2lss_1tau.triggers_2mu = cms.vstring(%s)" % self.triggers_2mu)
-    lines.append("process.analyze_2lss_1tau.use_triggers_2mu = cms.bool(%s)" % ("2mu" in jobOptions['triggers']))
-    lines.append("process.analyze_2lss_1tau.triggers_1e1mu = cms.vstring(%s)" % self.triggers_1e1mu)
-    lines.append("process.analyze_2lss_1tau.use_triggers_1e1mu = cms.bool(%s)" % ("1e1mu" in jobOptions['triggers']))
+    for trigger in [ '1e', '1mu', '2e', '2mu', '1e1mu' ]:
+      lines.append("process.analyze_2lss_1tau.triggers_%s = cms.vstring(%s)" % \
+        (trigger, self.whitelist_triggers(getattr(self, 'triggers_%s' % trigger), jobOptions['process_name_specific'])))
+      lines.append("process.analyze_2lss_1tau.use_triggers_%s = cms.bool(%s)" % (trigger, trigger in jobOptions['triggers']))
     lines.append("process.analyze_2lss_1tau.leptonSelection = cms.string('%s')" % jobOptions['lepton_selection'])
     lines.append("process.analyze_2lss_1tau.apply_leptonGenMatching = cms.bool(%s)" % (jobOptions['apply_leptonGenMatching'] and jobOptions['is_mc']))
     lines.append("process.analyze_2lss_1tau.apply_leptonGenMatching_ttZ_workaround = cms.bool(%s)" % (jobOptions['sample_category'] in [ "TTZ", "TTW", "signal" ]))
@@ -215,16 +211,8 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
     lines.append("process.analyze_2lss_1tau.apply_trigger_bits = cms.bool(%s)" % jobOptions['apply_trigger_bits'])
     lines.append("process.analyze_2lss_1tau.selEventsFileName_output = cms.string('%s')" % jobOptions['rleOutputFile'])
     lines.append("process.analyze_2lss_1tau.selectBDT = cms.bool(%s)" % str(jobOptions['selectBDT']))
-    if jobOptions['changeBranchNames']:
-      lines.append("process.analyze_2lss_1tau.branchName_electrons = cms.string('Electron')")
-      lines.append("process.analyze_2lss_1tau.branchName_muons = cms.string('Muon')")
-      lines.append("process.analyze_2lss_1tau.branchName_hadTaus = cms.string('Tau')")
-      lines.append("process.analyze_2lss_1tau.branchName_genLeptons1 = cms.string('GenLep')")
-      lines.append("process.analyze_2lss_1tau.branchName_genLeptons2 = cms.string('')")
-      lines.append("process.analyze_2lss_1tau.branchName_genHadTaus = cms.string('GenVisTau')")
-      lines.append("process.analyze_2lss_1tau.branchName_genJets = cms.string('GenJet')")
-      lines.append("process.analyze_2lss_1tau.redoGenMatching = cms.bool(False)")
-      lines.append("process.analyze_2lss_1tau.fillGenEvtHistograms = cms.bool(True)")
+    lines.append("process.analyze_2lss_1tau.redoGenMatching = cms.bool(False)")
+    lines.append("process.analyze_2lss_1tau.fillGenEvtHistograms = cms.bool(True)")
     if jobOptions['MEMbranch']:
       lines.append(
         "process.analyze_2lss_1tau.branchName_memOutput = cms.string('%s_%s')" % (
@@ -236,6 +224,9 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
     if self.do_sync:
       lines.append("process.analyze_2lss_1tau.syncNtuple.tree   = cms.string('%s')" % jobOptions['syncTree'])
       lines.append("process.analyze_2lss_1tau.syncNtuple.output = cms.string('%s')" % os.path.basename(jobOptions['syncOutput']))
+      lines.append("process.analyze_2lss_1tau.selEventsFileName_input = cms.string('%s')" % jobOptions['syncRLE'])
+    lines.append("process.analyze_2lss_1tau.isDEBUG = cms.bool(%s)" % self.isDebug)
+    lines.append("process.analyze_2lss_1tau.useNonNominal = cms.bool(%s)" % self.use_nonnominal)
     create_cfg(self.cfgFile_analyze, jobOptions['cfgFile_modified'], lines)
 
   def createCfg_addFlips(self, jobOptions):
@@ -354,7 +345,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
       if not sample_info["use_it"] or sample_info["sample_category"] in [ "additional_signal_overlap", "background_data_estimate" ]:
         continue
       logging.info("Checking input files for sample %s" % sample_info["process_name_specific"])
-      inputFileLists[sample_name] = generateInputFileList(sample_name, sample_info, self.max_files_per_job, self.debug)
+      inputFileLists[sample_name] = generateInputFileList(sample_info, self.max_files_per_job, self.check_input_files)
 
     for lepton_and_hadTau_selection in self.lepton_and_hadTau_selections:
       lepton_selection = lepton_and_hadTau_selection
@@ -364,7 +355,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
         hadTau_selection = "|".join([ hadTau_selection, self.hadTau_selection_part2 ])
 
       if lepton_and_hadTau_selection == "forBDTtraining":
-        lepton_selection = "Loose" # "Tight" ## "Fakeable" ## Xanda
+        lepton_selection = "Loose" # "Tight" 
         if not self.applyFakeRateWeights == "2lepton":
             hadTau_selection = "Tight|%s" % self.hadTau_selection_relaxed
             # hadTau ID it is the same level of analysis if applyFakeRateWeights == "2lepton"
@@ -433,16 +424,22 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
                     if lepton_and_hadTau_selection_and_frWeight == 'Tight':
                       if lepton_charge_selection == 'SS':
                         syncOutput = os.path.join(self.dirs[key_dir][DKEY_SYNC], '%s_SR.root' % self.channel)
-                        syncTree   = 'syncTree_%s_SR' % self.channel.replace('_', '')
+                        syncTree   = 'syncTree_%s_SR' % self.channel.replace('_', '').replace('ss', 'SS')
                       elif lepton_charge_selection == 'OS':
                         syncOutput = os.path.join(self.dirs[key_dir][DKEY_SYNC], '%s_Flip.root' % self.channel)
-                        syncTree   = 'syncTree_%s_Flip' % self.channel.replace('_', '')
+                        syncTree   = 'syncTree_%s_Flip' % self.channel.replace('_', '').replace('ss', 'SS')
                     elif lepton_and_hadTau_selection_and_frWeight == 'Fakeable_wFakeRateWeights' and lepton_charge_selection == 'SS':
                       syncOutput = os.path.join(self.dirs[key_dir][DKEY_SYNC], '%s_Fake.root' % self.channel)
-                      syncTree   = 'syncTree_%s_Fake' % self.channel.replace('_', '')
+                      syncTree   = 'syncTree_%s_Fake' % self.channel.replace('_', '').replace('ss', 'SS')
                     else:
                       continue
                     self.inputFiles_sync['sync'].append(syncOutput)
+
+                  syncRLE = ''
+                  if self.do_sync and self.rle_select:
+                    syncRLE = self.rle_select % syncTree
+                    if not os.path.isfile(syncRLE):
+                      raise ValueError('Input RLE file for the sync is missing: %s' % syncRLE)
 
                   self.jobOptions_analyze[key_analyze_job] = {
                     'ntupleFiles' : ntupleFiles,
@@ -463,7 +460,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
                     'hadTau_selection' : hadTau_selection,
                     'apply_hadTauGenMatching' : self.apply_hadTauGenMatching,
                     'chargeSumSelection' : chargeSumSelection,
-                    'applyFakeRateWeights' : self.applyFakeRateWeights if not (lepton_selection == "Tight" and hadTau_selection.find("Tight") != -1) else "disabled",
+                    'applyFakeRateWeights' : self.applyFakeRateWeights if self.isBDTtraining or not  (lepton_selection == "Tight" and hadTau_selection.find("Tight") != -1) else "disabled",
                     ##'use_HIP_mitigation_mediumMuonId' : sample_info["use_HIP_mitigation_mediumMuonId"],
                     'use_HIP_mitigation_mediumMuonId' : False,
                     'is_mc' : is_mc,
@@ -472,10 +469,11 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
                     'apply_genWeight' : sample_info["genWeight"] if (is_mc and "genWeight" in sample_info) else False,
                     'apply_trigger_bits' : (is_mc and sample_info["reHLT"]) or not is_mc,
                     'selectBDT' : self.isBDTtraining,
-                    'changeBranchNames' : self.changeBranchNames,
                     'MEMbranch' : self.MEMbranch,
                     'syncOutput': syncOutput,
                     'syncTree'  : syncTree,
+                    'syncRLE': syncRLE,
+                    'process_name_specific' : sample_info['process_name_specific'],
                   }
                   self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job])
 

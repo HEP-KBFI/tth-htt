@@ -19,8 +19,10 @@ RecoElectronReader::RecoElectronReader(int era,
   : branchName_num_(Form("n%s", branchName_obj.data()))
   , branchName_obj_(branchName_obj)
   , leptonReader_(new RecoLeptonReader(branchName_obj_, readGenMatching))
-  , mvaRawPOG_GP_(nullptr)
-  , mvaRawPOG_HZZ_(nullptr)
+  , mvaRawPOG_(nullptr)
+  , mvaRawPOG_WP80_(nullptr)
+  , mvaRawPOG_WP90_(nullptr)
+  , mvaRawPOG_WPL_(nullptr)
   , sigmaEtaEta_(nullptr)
   , HoE_(nullptr)
   , deltaEta_(nullptr)
@@ -28,6 +30,7 @@ RecoElectronReader::RecoElectronReader(int era,
   , OoEminusOoP_(nullptr)
   , lostHits_(nullptr)
   , conversionVeto_(nullptr)
+  , cutbasedID_HLT_(nullptr)
 {
   setBranchNames();
 }
@@ -43,8 +46,10 @@ RecoElectronReader::~RecoElectronReader()
   {
     RecoElectronReader * const gInstance = instances_[branchName_obj_];
     assert(gInstance);
-    delete[] gInstance->mvaRawPOG_GP_;
-    delete[] gInstance->mvaRawPOG_HZZ_;
+    delete[] gInstance->mvaRawPOG_;
+    delete[] gInstance->mvaRawPOG_WP80_;
+    delete[] gInstance->mvaRawPOG_WP90_;
+    delete[] gInstance->mvaRawPOG_WPL_;
     delete[] gInstance->sigmaEtaEta_;
     delete[] gInstance->HoE_;
     delete[] gInstance->deltaEta_;
@@ -52,6 +57,7 @@ RecoElectronReader::~RecoElectronReader()
     delete[] gInstance->OoEminusOoP_;
     delete[] gInstance->lostHits_;
     delete[] gInstance->conversionVeto_;
+    delete[] gInstance->cutbasedID_HLT_;
     instances_[branchName_obj_] = nullptr;
   }
 }
@@ -61,20 +67,24 @@ RecoElectronReader::setBranchNames()
 {
   if (numInstances_[branchName_obj_] == 0)
   {
-    branchName_mvaRawPOG_GP_ = Form("%s_%s", branchName_obj_.data(), "mvaSpring16GP");
-    branchName_mvaRawPOG_HZZ_ = Form("%s_%s", branchName_obj_.data(), "mvaSpring16HZZ");
+    const std::string mvaString = RecoElectron::useNoIso ? "mvaFall17noIso" : "mvaFall17Iso";
+    branchName_mvaRawPOG_ = Form("%s_%s", branchName_obj_.data(), mvaString.data());
+    branchName_mvaRawPOG_WP80_ = Form("%s_%s", branchName_obj_.data(), Form("%s_WP80", mvaString.data()));
+    branchName_mvaRawPOG_WP90_ = Form("%s_%s", branchName_obj_.data(), Form("%s_WP90", mvaString.data()));
+    branchName_mvaRawPOG_WPL_ = Form("%s_%s", branchName_obj_.data(), Form("%s_WPL", mvaString.data()));
     branchName_sigmaEtaEta_ = Form("%s_%s", branchName_obj_.data(), "sieie");
     branchName_HoE_ = Form("%s_%s", branchName_obj_.data(), "hoe");
-    branchName_deltaEta_ = Form("%s_%s", branchName_obj_.data(), "eleDEta");
-    branchName_deltaPhi_ = Form("%s_%s", branchName_obj_.data(), "eleDPhi");
+    branchName_deltaEta_ = Form("%s_%s", branchName_obj_.data(), "deltaEtaSC_trackatVtx");
+    branchName_deltaPhi_ = Form("%s_%s", branchName_obj_.data(), "deltaPhiSC_trackatVtx");
     branchName_OoEminusOoP_ = Form("%s_%s", branchName_obj_.data(), "eInvMinusPInv");
     branchName_lostHits_ = Form("%s_%s", branchName_obj_.data(), "lostHits");
     branchName_conversionVeto_ = Form("%s_%s", branchName_obj_.data(), "convVeto");
+    branchName_cutbasedID_HLT_ = Form("%s_%s", branchName_obj_.data(), "cutBased_HLTPreSel");
     instances_[branchName_obj_] = this;
   }
   else
   {
-    if ( branchName_num_ != instances_[branchName_obj_]->branchName_num_)
+    if(branchName_num_ != instances_[branchName_obj_]->branchName_num_)
     {
       throw cmsException(this)
         << "Association between configuration parameters 'branchName_num' and 'branchName_obj' must be unique:"
@@ -95,15 +105,18 @@ RecoElectronReader::setBranchAddresses(TTree * tree)
     const unsigned int max_nLeptons = leptonReader_->max_nLeptons_;
 
     BranchAddressInitializer bai(tree, max_nLeptons);
-    bai.setBranchAddress(mvaRawPOG_GP_, branchName_mvaRawPOG_GP_);
-    bai.setBranchAddress(mvaRawPOG_HZZ_, branchName_mvaRawPOG_HZZ_);
+    bai.setBranchAddress(mvaRawPOG_, branchName_mvaRawPOG_);
+    bai.setBranchAddress(mvaRawPOG_WP80_, branchName_mvaRawPOG_WP80_);
+    bai.setBranchAddress(mvaRawPOG_WP90_, branchName_mvaRawPOG_WP90_);
+    bai.setBranchAddress(mvaRawPOG_WPL_, branchName_mvaRawPOG_WPL_);
     bai.setBranchAddress(sigmaEtaEta_, branchName_sigmaEtaEta_);
     bai.setBranchAddress(HoE_, branchName_HoE_);
-    bai.setBranchAddress(deltaEta_, ""); // Karl: ECAL-related variables missing in nanoAOD
-    bai.setBranchAddress(deltaPhi_, ""); // Karl: ECAL-related variables missing in nanoAOD
+    bai.setBranchAddress(deltaEta_, branchName_deltaEta_);
+    bai.setBranchAddress(deltaPhi_, branchName_deltaPhi_);
     bai.setBranchAddress(OoEminusOoP_, branchName_OoEminusOoP_);
     bai.setBranchAddress(lostHits_, branchName_lostHits_);
     bai.setBranchAddress(conversionVeto_, branchName_conversionVeto_);
+    bai.setBranchAddress(cutbasedID_HLT_, ""); // no safe HLT selection, yet
   }
 }
 
@@ -151,18 +164,22 @@ RecoElectronReader::read() const
             gLeptonReader->jetPtRatio_[idxLepton],
             gLeptonReader->jetPtRel_[idxLepton],
             gLeptonReader->jetBtagCSV_[idxLepton],
+            gLeptonReader->jetNDauChargedMVASel_[idxLepton],
             gLeptonReader->tightCharge_[idxLepton],
             gLeptonReader->charge_[idxLepton]
           },
-          gElectronReader->mvaRawPOG_GP_[idxLepton],
-          gElectronReader->mvaRawPOG_HZZ_[idxLepton],
+          gElectronReader->mvaRawPOG_[idxLepton],
+          gElectronReader->mvaRawPOG_WP80_[idxLepton],
+          gElectronReader->mvaRawPOG_WP90_[idxLepton],
+          gElectronReader->mvaRawPOG_WPL_[idxLepton],
           gElectronReader->sigmaEtaEta_[idxLepton],
           gElectronReader->HoE_[idxLepton],
           gElectronReader->deltaEta_[idxLepton],
           gElectronReader->deltaPhi_[idxLepton],
           gElectronReader->OoEminusOoP_[idxLepton],
           gElectronReader->lostHits_[idxLepton],
-          gElectronReader->conversionVeto_[idxLepton]
+          gElectronReader->conversionVeto_[idxLepton],
+          gElectronReader->cutbasedID_HLT_[idxLepton]
         });
       }
     }

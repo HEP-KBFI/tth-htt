@@ -7,7 +7,7 @@
 class GenHadTau;
 class GenJet;
 
-#include <memory> // std::shared_ptr
+#include <memory> // std::shared_ptr<>
 
 class RecoLepton
   : public GenLepton
@@ -26,8 +26,9 @@ public:
              Double_t jetPtRatio,
              Double_t jetPtRel,
              Double_t jetBtagCSV,
-             Int_t tightCharge,
-             Int_t charge);
+             Int_t    jetNDauChargedMVASel,
+             Int_t    tightCharge,
+             Int_t    charge);
 
   virtual ~RecoLepton();
 
@@ -125,6 +126,7 @@ public:
   Double_t jetPtRatio() const;
   Double_t jetPtRel() const;
   Double_t jetBtagCSV() const;
+  Int_t jetNDauChargedMVASel() const;
   Int_t tightCharge() const;
   Int_t charge() const;
   
@@ -133,6 +135,7 @@ public:
   const GenJet * genJet() const;
 
   bool isGenMatched() const;
+  bool hasAnyGenMatch() const;
 
   bool isLoose() const;
   bool isFakeable() const;
@@ -151,6 +154,7 @@ protected:
   Double_t jetPtRatio_;                 ///< ratio of lepton pT to pT of nearby jet
   Double_t jetPtRel_;                   ///< perpendicular component of the distance vector between lepton and its jet pT vectors
   Double_t jetBtagCSV_;                 ///< CSV b-tagging discriminator value of nearby jet
+  Int_t jetNDauChargedMVASel_;          ///< number of charged constituents in the nearest jet
   Int_t tightCharge_;                   ///< Flag indicating if lepton passes (>= 2) or fails (< 2) tight charge requirement
   Int_t charge_;                        ///< lepton charge
 

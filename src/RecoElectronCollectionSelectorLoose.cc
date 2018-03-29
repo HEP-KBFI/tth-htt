@@ -17,15 +17,11 @@ RecoElectronSelectorLoose::RecoElectronSelectorLoose(int era,
   , max_dz_(0.1)
   , max_relIso_(0.4)
   , max_sip3d_(8.)
-  , min_mvaRawPOG_({ 0.0, 0.0, 0.7 })
-  , binning_absEta_({ 0.8, 1.479 })
+  , mvaPOGwp_(EGammaPOG::kWPL)
   , apply_tightCharge_(false)
   , apply_conversionVeto_(false)
   , max_nLostHits_(1)
-{
-  assert(min_mvaRawPOG_.size() == 3);
-  assert(binning_absEta_.size() == 2);
-}
+{}
 
 bool
 RecoElectronSelectorLoose::operator()(const RecoElectron & electron) const
@@ -108,15 +104,11 @@ RecoElectronSelectorLoose::operator()(const RecoElectron & electron) const
     return false;
   }
 
-  const int idxBin = electron.absEta() <= binning_absEta_[0] ? 0 :
-                    (electron.absEta() <= binning_absEta_[1] ? 1 : 2)
-  ;
-
-  if(electron.mvaRawPOG_HZZ() < min_mvaRawPOG_[idxBin])
+  if(electron.mvaRawPOG_WP(mvaPOGwp_) < 1)
   {
     if(debug_)
     {
-      std::cout << "FAILS mvaPOG HZZ >= " << min_mvaRawPOG_[idxBin] << " loose cut\n";
+      std::cout << "FAILS mvaPOG = " << as_integer(mvaPOGwp_) << " loose cut\n";
     }
     return false;
   }

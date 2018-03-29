@@ -61,5 +61,6 @@ process.analyze_ttZctrl = cms.PSet(
     branchName_met = cms.string('MET'),
 
     selEventsFileName_input = cms.string(''),
-    selEventsFileName_output = cms.string('')
+    selEventsFileName_output = cms.string(''),
+    isDEBUG = cms.bool(False),
 )

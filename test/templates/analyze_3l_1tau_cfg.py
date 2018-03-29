@@ -101,8 +101,7 @@ process.analyze_3l_1tau = cms.PSet(
     branchName_met = cms.string('MET'),
     branchName_memOutput = cms.string(''),
 
-    branchName_genLeptons1 = cms.string('GenLep'),
-    branchName_genLeptons2 = cms.string(''),
+    branchName_genLeptons = cms.string('GenLep'),
     branchName_genHadTaus = cms.string('GenVisTau'),
     branchName_genJets = cms.string('GenJet'),
     redoGenMatching = cms.bool(True),
@@ -116,4 +115,6 @@ process.analyze_3l_1tau = cms.PSet(
         tree = cms.string(''),
         output = cms.string(''),
     ),
+    useNonNominal = cms.bool(False),
+    isDEBUG = cms.bool(False),
 )

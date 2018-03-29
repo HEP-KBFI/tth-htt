@@ -21,14 +21,11 @@ public:
                 const std::string & branchName_cov = "");
   ~RecoMEtReader();
 
-  enum {
-    kMEt_central,
-    kMEt_shifted_JetEnUp, kMEt_shifted_JetEnDown,
-    kMEt_shifted_JetResUp, kMEt_shifted_JetResDown,
-    kMEt_shifted_UnclusteredEnUp, kMEt_shifted_UnclusteredEnDown
-  };
   void
   setMEt_central_or_shift(int met_option);
+
+  void
+  read_ptPhi_systematics(bool flag);
 
   /**
    * @brief Call tree->SetBranchAddress for all RecoMEt branches
@@ -63,7 +60,8 @@ protected:
 
   RecoMEt met_;
 
-  int met_option_;
+  int ptPhiOption_;
+  bool read_ptPhi_systematics_;
 
   // CV: make sure that only one RecoMEtReader instance exists for a given branchName,
   //     as ROOT cannot handle multiple TTree::SetBranchAddress calls for the same branch.

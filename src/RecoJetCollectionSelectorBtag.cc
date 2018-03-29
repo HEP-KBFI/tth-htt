@@ -10,24 +10,52 @@ RecoJetSelectorBtag::RecoJetSelectorBtag(int era,
   , debug_(debug)
   , min_pt_(25.)
   , max_absEta_(2.4)
+  , min_jetId_(2) // 2 means tight (loose jet ID deprecated since 94x)
   , min_BtagCSV_(-1.e+3)
 {}
+
+void
+RecoJetSelectorBtag::set_min_pt(double min_pt)
+{
+  min_pt_ = min_pt;
+}
+
+void
+RecoJetSelectorBtag::set_max_absEta(double max_absEta)
+{
+  max_absEta_ = max_absEta;
+}
+
+void
+RecoJetSelectorBtag::set_min_jetId(int min_jetId)
+{
+  min_jetId_ = min_jetId;
+}
+
+double
+RecoJetSelectorBtag::get_min_pt() const
+{
+  return min_pt_;
+}
+
+double
+RecoJetSelectorBtag::get_max_absEta() const
+{
+  return max_absEta_;
+}
+
+int
+RecoJetSelectorBtag::get_min_jetId() const
+{
+  return min_jetId_;
+}
 
 RecoJetSelectorBtagLoose::RecoJetSelectorBtagLoose(int era,
                                                    int index,
                                                    bool debug)
   : RecoJetSelectorBtag(era, index, debug)
 {
-  switch(era_)
-  {
-    case kEra_2017:
-    {
-      // Karl: CSV loose WP, cf. https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation94X
-      min_BtagCSV_ = ! RecoJet::useDeepCSV ? 0.5803 : 0.1522;
-      break;
-    }
-    default: throw cmsException(this) << "Invalid era = " << era_;
-  }
+  min_BtagCSV_ = get_BtagWP(era_, BtagWP::kLoose);
 }
 
 RecoJetSelectorBtagMedium::RecoJetSelectorBtagMedium(int era,
@@ -35,16 +63,7 @@ RecoJetSelectorBtagMedium::RecoJetSelectorBtagMedium(int era,
                                                      bool debug)
   : RecoJetSelectorBtag(era, index, debug)
 {
-  switch(era_)
-  {
-    case kEra_2017:
-    {
-      // Karl: CSV medium WP, cf. https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation94X
-      min_BtagCSV_ = ! RecoJet::useDeepCSV ? 0.8838 : 0.4941;
-      break;
-    }
-    default: throw cmsException(this) << "Invalid era = " << era_;
-  }
+  min_BtagCSV_ = get_BtagWP(era_, BtagWP::kMedium);
 }
 
 bool
@@ -52,7 +71,7 @@ RecoJetSelectorBtag::operator()(const RecoJet & jet) const
 {
   if(debug_)
   {
-    std::cout << "<RecoJetSelectorBtag::operator()>:\n jet: " << jet << '\n';
+    std::cout << __func__ << ":\n jet: " << jet << '\n';
   }
 
   if(jet.pt() < min_pt_)
@@ -68,6 +87,14 @@ RecoJetSelectorBtag::operator()(const RecoJet & jet) const
     if(debug_)
     {
       std::cout << "FAILS abs(eta) <= " << max_absEta_ << " cut\n";
+    }
+    return false;
+  }
+  if(jet.jetId() < min_jetId_)
+  {
+    if(debug_)
+    {
+      std::cout << "FAILS jet ID >= " << min_jetId_ << " cut\n";
     }
     return false;
   }

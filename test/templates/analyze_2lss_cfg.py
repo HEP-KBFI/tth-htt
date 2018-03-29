@@ -70,8 +70,7 @@ process.analyze_2lss = cms.PSet(
     branchName_jets = cms.string('Jet'),
     branchName_met = cms.string('MET'),
 
-    branchName_genLeptons1 = cms.string('GenLep'),
-    branchName_genLeptons2 = cms.string(''),
+    branchName_genLeptons = cms.string('GenLep'),
     branchName_genHadTaus = cms.string('GenVisTau'),
     branchName_genJets = cms.string('GenJet'),
     redoGenMatching = cms.bool(True),
@@ -89,4 +88,6 @@ process.analyze_2lss = cms.PSet(
         tree = cms.string(''),
         output = cms.string(''),
     ),
+    useNonNominal = cms.bool(False),
+    isDEBUG = cms.bool(False),
 )

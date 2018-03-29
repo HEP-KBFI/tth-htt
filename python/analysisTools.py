@@ -54,7 +54,7 @@ def createFile(fileName, lines):
     f.write(content)
     f.close()
 
-def initializeInputFileIds(sample_name, sample_info, max_files_per_job):
+def initializeInputFileIds(sample_info, max_files_per_job):
     """Retrieves the number of input ROOT files (Ntuples) corresponding to a given sample
        and fills the number into the dictionary 'inputFileIds', with the name of the sample as key
 
@@ -78,9 +78,8 @@ def initializeInputFileIds(sample_name, sample_info, max_files_per_job):
     inputFileIds = generate_file_ids(nof_inputFiles, max_files_per_job, blacklist)
     return ( inputFileIds, secondary_files, primary_store, secondary_store )
 
-def generateInputFileList(sample_name, sample_info, max_files_per_job, debug = False):
-    #print "<generateInputFileList>:"
-    ( inputFileIds, secondary_files, primary_store, secondary_store ) = initializeInputFileIds(sample_name, sample_info, max_files_per_job)
+def generateInputFileList(sample_info, max_files_per_job, debug = False):
+    ( inputFileIds, secondary_files, primary_store, secondary_store ) = initializeInputFileIds(sample_info, max_files_per_job)
     inputFileList = {}
     if max_files_per_job > 1:
         for jobId in range(len(inputFileIds)):

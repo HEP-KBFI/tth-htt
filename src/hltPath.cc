@@ -8,11 +8,13 @@
 
 hltPath::hltPath(const std::string & branchName,
                  double minPt,
-                 double maxPt)
+                 double maxPt,
+                 const std::string & label)
   : branchName_(branchName)
   , value_(-1)
   , minPt_(minPt)
   , maxPt_(maxPt)
+  , label_(label)
 {}
 
 void
@@ -52,13 +54,20 @@ hltPath::getMaxPt() const
   return maxPt_;
 }
 
+const std::string &
+hltPath::getLabel() const
+{
+  return label_;
+}
+
 std::vector<hltPath *>
-create_hltPaths(const std::vector<std::string> & branchNames)
+create_hltPaths(const std::vector<std::string> & branchNames,
+                const std::string & label)
 {
   std::vector<hltPath *> hltPaths;
   for(const std::string & branchName: branchNames)
   {
-    hltPaths.push_back(new hltPath(branchName));
+    hltPaths.push_back(new hltPath(branchName, -1., -1., label));
   }
   return hltPaths;
 }
@@ -74,13 +83,19 @@ hltPaths_setBranchAddresses(TTree * tree,
 }
 
 bool
-hltPaths_isTriggered(const std::vector<hltPath *> & hltPaths)
+hltPaths_isTriggered(const std::vector<hltPath *> & hltPaths,
+                     bool verbose)
 {
   return std::any_of(
     hltPaths.cbegin(), hltPaths.cend(),
-    [](hltPath * const & path) -> bool
+    [verbose](hltPath * const & path) -> bool
     {
-      return path->getValue() >= 1;
+      const bool passes = path->getValue() >= 1;
+      if(verbose)
+      {
+        std::cout << "  " << path->getLabel() << ": " << *path;
+      }
+      return passes;
     }
   );
 }

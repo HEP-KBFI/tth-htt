@@ -36,31 +36,15 @@ RecoHadTau::RecoHadTau(const GenHadTau & particle,
   , antiElectron_(antiElectron)
   , antiMuon_(antiMuon)
   , genLepton_(nullptr)
-  , genLepton_isOwner_(false)
   , genHadTau_(nullptr)
-  , genHadTau_isOwner_(false)
   , genJet_(nullptr)
-  , genJet_isOwner_(false)
   , isLoose_(false)
   , isFakeable_(false)
   , isTight_(false)
 {}
 
 RecoHadTau::~RecoHadTau()
-{
-  if(genLepton_isOwner_ && genLepton_)
-  {
-    delete genLepton_;
-  }
-  if(genHadTau_isOwner_ && genHadTau_)
-  {
-    delete genHadTau_;
-  }
-  if(genJet_isOwner_ && genJet_)
-  {
-    delete genJet_;
-  }
-}
+{}
 
 void
 RecoHadTau::set_isLoose() const
@@ -81,27 +65,21 @@ RecoHadTau::set_isTight() const
 }
 
 void
-RecoHadTau::set_genLepton(const GenLepton * genLepton,
-                          bool isOwner)
+RecoHadTau::set_genLepton(const GenLepton * genLepton)
 {
-  genLepton_ = genLepton;
-  genLepton_isOwner_ = isOwner;
+  genLepton_.reset(genLepton);
 }
 
 void
-RecoHadTau::set_genHadTau(const GenHadTau * genHadTau,
-                          bool isOwner)
+RecoHadTau::set_genHadTau(const GenHadTau * genHadTau)
 {
-  genHadTau_ = genHadTau;
-  genHadTau_isOwner_ = isOwner;
+  genHadTau_.reset(genHadTau);
 }
 
 void
-RecoHadTau::set_genJet(const GenJet * genJet,
-                       bool isOwner)
+RecoHadTau::set_genJet(const GenJet * genJet)
 {
-  genJet_ = genJet;
-  genJet_isOwner_ = isOwner;
+  genJet_.reset(genJet);
 }
 
 Double_t
@@ -197,25 +175,31 @@ RecoHadTau::antiMuon() const
 const GenLepton *
 RecoHadTau::genLepton() const
 {
-  return genLepton_;
+  return genLepton_.get();
 }
 
 const GenHadTau *
 RecoHadTau::genHadTau() const
 {
-  return genHadTau_;
+  return genHadTau_.get();
 }
 
 const GenJet *
 RecoHadTau::genJet() const
 {
-  return genJet_;
+  return genJet_.get();
 }
 
 bool
 RecoHadTau::isGenMatched() const
 {
-  return ! genHadTau_;
+  return !! genHadTau_;
+}
+
+bool
+RecoHadTau::hasAnyGenMatch() const
+{
+  return !! genLepton_ || !! genHadTau_ || !! genJet_;
 }
 
 bool

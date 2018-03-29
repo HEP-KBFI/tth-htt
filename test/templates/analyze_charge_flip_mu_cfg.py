@@ -64,5 +64,6 @@ process.analyze_charge_flip = cms.PSet(
     fillGenEvtHistograms = cms.bool(False),
 
     selEventsFileName_input = cms.string(''),
-    selEventsFileName_output = cms.string('')
+    selEventsFileName_output = cms.string(''),
+    isDEBUG = cms.bool(False),
 )

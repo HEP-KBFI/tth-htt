@@ -17,6 +17,8 @@ public:
   void enable_offline_e_trigger_cuts();
   void disable_offline_e_trigger_cuts();
 
+  void set_selection_flags(bool selection_flags);
+
   /**
    * @brief Check if electron given as function argument passes "tight" electron selection, defined in Table 13 of AN-2015/321
    * @return True if electron passes selection; false otherwise
@@ -40,7 +42,7 @@ protected:
 //--- define cuts that dependent on eta
 //    format: central region (|eta| < 0.8) / transition region (0.8 < |eta| < 1.479) / forward region (|eta| > 1.479)
   typedef std::vector<Double_t> vDouble_t;
-  vDouble_t min_mvaRawPOG_;           ///< upper cut threshold on EGamma POG electron MVA value
+  EGammaPOG mvaPOGwp_;                ///< EGamma POG electron MVA WP ID
   vDouble_t binning_absEta_;          ///< eta values separating central, transition and forward region (0.8, 1.479)
   Double_t min_pt_trig_;              ///< lower pT threshold for applying shower shape cuts (to mimic selection applied on trigger level)
   vDouble_t max_sigmaEtaEta_trig_;    ///< upper cut threshold on second shower moment in eta-direction 
@@ -61,6 +63,7 @@ protected:
 };
 
 class RecoElectronCollectionSelectorFakeable
+  : public ParticleCollectionSelector<RecoElectron, RecoElectronSelectorFakeable>
 {
 public:
   explicit
@@ -72,13 +75,6 @@ public:
 
   void enable_offline_e_trigger_cuts();
   void disable_offline_e_trigger_cuts();
-
-  std::vector<const RecoElectron *>
-  operator()(const std::vector<const RecoElectron * > & electrons) const;
-
-protected:
-  int selIndex_;
-  RecoElectronSelectorFakeable selector_;
 };
 
 #endif // tthAnalysis_HiggsToTauTau_RecoElectronCollectionSelectorFakeable_h

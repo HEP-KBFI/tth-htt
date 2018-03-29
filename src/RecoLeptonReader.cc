@@ -16,7 +16,7 @@ RecoLeptonReader::RecoLeptonReader(const std::string & branchName_obj,
   : max_nLeptons_(64)
   , branchName_num_(Form("n%s", branchName_obj.data()))
   , branchName_obj_(branchName_obj)
-  , branchName_btag_(! RecoJet::useDeepCSV ? "csvv2" : "deep")
+  , branchName_btag_("csvv2")
   , genLeptonReader_(nullptr)
   , genHadTauReader_(nullptr)
   , genJetReader_(nullptr)
@@ -37,6 +37,7 @@ RecoLeptonReader::RecoLeptonReader(const std::string & branchName_obj,
   , jetPtRatio_(nullptr)
   , jetPtRel_(nullptr)
   , jetBtagCSV_(nullptr)
+  , jetNDauChargedMVASel_(nullptr)
   , tightCharge_(nullptr)
   , charge_(nullptr)
 {
@@ -61,24 +62,25 @@ RecoLeptonReader::~RecoLeptonReader()
     delete gInstance->genLeptonReader_;
     delete gInstance->genHadTauReader_;
     delete gInstance->genJetReader_;
-    delete gInstance->pt_;
-    delete gInstance->eta_;
-    delete gInstance->phi_;
-    delete gInstance->mass_;
-    delete gInstance->pdgId_;
-    delete gInstance->dxy_;
-    delete gInstance->dz_;
-    delete gInstance->relIso_all_;
-    delete gInstance->hadRelIso03_chg_;
-    delete gInstance->absIso_chg_;
-    delete gInstance->absIso_neu_;
-    delete gInstance->sip3d_;
-    delete gInstance->mvaRawTTH_;
-    delete gInstance->jetPtRatio_;
-    delete gInstance->jetPtRel_;
-    delete gInstance->jetBtagCSV_;
-    delete gInstance->tightCharge_;
-    delete gInstance->charge_;
+    delete[] gInstance->pt_;
+    delete[] gInstance->eta_;
+    delete[] gInstance->phi_;
+    delete[] gInstance->mass_;
+    delete[] gInstance->pdgId_;
+    delete[] gInstance->dxy_;
+    delete[] gInstance->dz_;
+    delete[] gInstance->relIso_all_;
+    delete[] gInstance->hadRelIso03_chg_;
+    delete[] gInstance->absIso_chg_;
+    delete[] gInstance->absIso_neu_;
+    delete[] gInstance->sip3d_;
+    delete[] gInstance->mvaRawTTH_;
+    delete[] gInstance->jetPtRatio_;
+    delete[] gInstance->jetPtRel_;
+    delete[] gInstance->jetBtagCSV_;
+    delete[] gInstance->jetNDauChargedMVASel_;
+    delete[] gInstance->tightCharge_;
+    delete[] gInstance->charge_;
     instances_[branchName_obj_] = nullptr;
   }
 }
@@ -101,14 +103,10 @@ RecoLeptonReader::setBranchNames()
     branchName_absIso_neu_ = Form("%s_%s", branchName_obj_.data(), "miniPFAbsIso_neu");
     branchName_sip3d_ = Form("%s_%s", branchName_obj_.data(), "sip3d");
     branchName_mvaRawTTH_ = Form("%s_%s", branchName_obj_.data(), "mvaTTH");
-    branchName_jetPtRatio_ = Form("%s_%s", branchName_obj_.data(), "jetPtRatio");
-#ifdef SYNC_NTUPLE
-#pragma message "Compiling in sync Ntuple mode: enabling jetPtRel branch"
-    branchName_jetPtRel_ = Form("%s_%s", branchName_obj_.data(), "jetPtRelv2");
-#else
-#pragma message "Compiling regular mode: jetPtRel branch remains disabled"
-#endif
-    branchName_jetBtagCSV_ = Form("%s_%s", branchName_obj_.data(), Form("jetBtag_%s", branchName_btag_.data()));
+    branchName_jetPtRatio_ = Form("%s_%s", branchName_obj_.data(), "jetPtRatio_TTHMVA");
+    branchName_jetPtRel_ = Form("%s_%s", branchName_obj_.data(), "jetPtRelv2_TTHMVA");
+    branchName_jetNDauChargedMVASel_ = Form("%s_%s", branchName_obj_.data(), "jetNDauChargedMVASel");
+    branchName_jetBtagCSV_ = Form("%s_%s", branchName_obj_.data(), "jetBTagCSV_TTHMVA");
     branchName_tightCharge_ = Form("%s_%s", branchName_obj_.data(), "tightCharge");
     branchName_charge_ = Form("%s_%s", branchName_obj_.data(), "charge");
     instances_[branchName_obj_] = this;
@@ -156,6 +154,7 @@ RecoLeptonReader::setBranchAddresses(TTree * tree)
     bai.setBranchAddress(jetPtRatio_, branchName_jetPtRatio_);
     bai.setBranchAddress(jetPtRel_, branchName_jetPtRel_, -1.);
     bai.setBranchAddress(jetBtagCSV_, branchName_jetBtagCSV_);
+    bai.setBranchAddress(jetNDauChargedMVASel_, branchName_jetNDauChargedMVASel_, -1);
     bai.setBranchAddress(tightCharge_, branchName_tightCharge_);
     bai.setBranchAddress(charge_, branchName_charge_);
   }

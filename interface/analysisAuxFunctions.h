@@ -9,6 +9,7 @@
 #include <vector> // std::vector<>
 #include <map> // std::map<,>
 #include <algorithm> // std::copy_n()
+#include <type_traits> // std::underlying_type<>
 
 // forward declarations
 class Particle;
@@ -30,28 +31,40 @@ enum
   kEra_undefined, kEra_2016, kEra_2017
 };
 
-//--- declare systematic uncertainties on data/MC corrections for
-//    b-tagging efficiency and mistag rates
-enum
-{
-  kBtag_central,
-
-  kBtag_hfUp,       kBtag_hfDown,
-  kBtag_hfStats1Up, kBtag_hfStats1Down,
-  kBtag_hfStats2Up, kBtag_hfStats2Down,
-
-  kBtag_lfUp,       kBtag_lfDown,
-  kBtag_lfStats1Up, kBtag_lfStats1Down,
-  kBtag_lfStats2Up, kBtag_lfStats2Down,
-
-  kBtag_cErr1Up, kBtag_cErr1Down,
-  kBtag_cErr2Up, kBtag_cErr2Down,
-
-  kBtag_jesUp, kBtag_jesDown
-};
-
 //--- declare selection criteria for leptons and hadronic taus
 enum { kLoose, kFakeable, kTight };
+
+//--- declare b-tagging working points
+
+enum class BtagWP { kLoose, kMedium, kTight };
+
+//--- source: https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation80XReReco
+const std::map<BtagWP, double> BtagWP_CSV_2016 =
+{
+  { BtagWP::kLoose,  0.5426 },
+  { BtagWP::kMedium, 0.8484 },
+  { BtagWP::kTight,  0.9535 },
+};
+
+//--- source: https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation94X
+const std::map<BtagWP, double> BtagWP_CSVv2_2017 =
+{
+  { BtagWP::kLoose,  0.5803 },
+  { BtagWP::kMedium, 0.8838 },
+  { BtagWP::kTight,  0.9693 },
+};
+
+//--- source: https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation94X
+const std::map<BtagWP, double> BtagWP_deepCSV_2017 =
+{
+  { BtagWP::kLoose,  0.1522 },
+  { BtagWP::kMedium, 0.4941 },
+  { BtagWP::kTight,  0.8001 },
+};
+
+double
+get_BtagWP(int era,
+           BtagWP wp);
 
 //--- selector class
 template <typename LeptonType>
@@ -148,26 +161,6 @@ isMatched(const Tfakeable & fakeableLepton,
 }
 
 /**
- * @brief Return branchName to read weights that need to be applied, per jet, to MC events
- *       in order to correct for data/MC differences in b-tagging efficiency and mistag rates
- */
-int
-getBTagWeight_option(const std::string & central_or_shift);
-
-std::string
-getBranchName_bTagWeight(const std::string & default_collectionName,
-                         int era,
-                         int central_or_shift);
-
-/**
- * @brief Return branch name to read MEt pt and phi
- */
-std::string
-getBranchName_MEt(int era,
-                  const std::string & default_branchName,
-                  int central_or_shift);
-
-/**
  * @brief Return first N objects from collection given as function argument. In case the input
  *        collection contains fewer than N objects, the whole input collection is returned
  */
@@ -223,8 +216,23 @@ set_selection_flags(std::vector<const T *> & leptons,
  * @brief Build collection of selected leptons by merging collections of selected electrons and selected muons
  */
 std::vector<const RecoLepton *>
+mergeLeptonCollectionsNoSort(const std::vector<const RecoElectron *> & electrons,
+                             const std::vector<const RecoMuon *> & muons);
+
+std::vector<const RecoLepton *>
 mergeLeptonCollections(const std::vector<const RecoElectron *> & electrons,
                        const std::vector<const RecoMuon *> & muons);
+
+template <typename T>
+std::vector<const RecoLepton *>
+mergeLeptonCollections(const std::vector<const RecoElectron *> & electrons,
+                       const std::vector<const RecoMuon *> & muons,
+                       bool (*sortFunction)(const T *, const T *))
+{
+  std::vector<const RecoLepton *> leptons = mergeLeptonCollectionsNoSort(electrons, muons);
+  std::sort(leptons.begin(), leptons.end(), sortFunction);
+  return leptons;
+}
 
 template <typename T,
           typename = typename std::enable_if<! std::is_pointer<T>::value>>
@@ -262,5 +270,20 @@ printCollection(const std::string & collection_name,
 int
 nCombinationsK(int n,
                int k);
+
+/**
+ * @brief Converts enum class value to corresponding integer value
+ *        which is determined by the order in which the enums are declared
+ * @param value Enum class value
+ * @return Corresponding integer value
+ *
+ * Taken from: https://stackoverflow.com/a/11421471
+ */
+template <typename Enumeration>
+auto as_integer(Enumeration const value)
+  -> typename std::underlying_type<Enumeration>::type
+{
+  return static_cast<typename std::underlying_type<Enumeration>::type>(value);
+}
 
 #endif

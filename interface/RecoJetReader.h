@@ -25,16 +25,17 @@ public:
                 bool readGenMatching = false);
   ~RecoJetReader();
 
-  enum { kJetPt_central, kJetPt_jecUp, kJetPt_jecDown };
-
   void
-  setJetPt_central_or_shift(int jetPt_option);
+  setPtMass_central_or_shift(int central_or_shift);
 
   void
   setBranchName_BtagWeight(int central_or_shift);
 
   void
   read_BtagWeight_systematics(bool flag);
+
+  void
+  read_ptMass_systematics(bool flag);
 
   /**
    * @brief Call tree->SetBranchAddress for all RecoJet branches
@@ -76,40 +77,39 @@ protected:
   GenJetReader * genJetReader_;
   bool readGenMatching_;
  
-  std::string branchName_pt_;
   std::string branchName_eta_;
   std::string branchName_phi_;
-  std::string branchName_mass_;
   std::string branchName_jetCharge_;
-  std::string branchName_jecUncertTotal_;
   std::string branchName_BtagCSV_;
   std::string branchName_BtagWeight_;
   std::string branchName_QGDiscr_;
   std::string branchName_pullEta_;
   std::string branchName_pullPhi_;
   std::string branchName_pullMag_;
+  std::string branchName_jetId_;
 
+  std::map<int, std::string> branchNames_pt_systematics_;
+  std::map<int, std::string> branchNames_mass_systematics_;
   std::map<int, std::string> branchNames_BtagWeight_systematics_;
 
-  int jetPt_option_;
-  int btagSF_option_;
-
+  bool read_ptMass_systematics_;
   bool read_BtagWeight_systematics_;
+  int ptMassOption_;
 
   UInt_t nJets_;
-  Float_t * jet_pt_;
   Float_t * jet_eta_;
   Float_t * jet_phi_;
-  Float_t * jet_mass_;
   Float_t * jet_charge_;
-  Float_t * jet_jecUncertTotal_;
   Float_t * jet_BtagCSV_;
   Float_t * jet_BtagWeight_;
   Float_t * jet_QGDiscr_;
   Float_t * jet_pullEta_;
   Float_t * jet_pullPhi_;
   Float_t * jet_pullMag_;
+  Int_t * jet_jetId_;
 
+  std::map<int, Float_t *> jet_pt_systematics_;
+  std::map<int, Float_t *> jet_mass_systematics_;
   std::map<int, Float_t *> jet_BtagWeights_systematics_; // CV: needed by RecoJetWriter
 
   // CV: make sure that only one RecoJetReader instance exists for a given branchName,

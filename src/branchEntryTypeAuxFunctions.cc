@@ -213,6 +213,10 @@ copyBranches_vectorType(TTree * inputTree,
       {
         outputTree_branch = new branchEntryTypeVCVC(branch_nElements, max_nElements, branchName, "b", branchName, "b");
       }
+      else if(branchType == "Bool_t")
+      {
+        outputTree_branch = new branchEntryTypeVBVB(branch_nElements, max_nElements, branchName, "O", branchName, "O");
+      }
       else
       {
         throw cmsException(__func__, __LINE__)

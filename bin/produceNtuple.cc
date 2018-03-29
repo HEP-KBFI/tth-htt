@@ -1,30 +1,3 @@
-
-#include "FWCore/ParameterSet/interface/ParameterSet.h" // edm::ParameterSet
-#include "FWCore/PythonParameterSet/interface/MakeParameterSets.h" // edm::readPSetsFrom()
-#include "FWCore/Utilities/interface/Exception.h" // cms::Exception
-#include "PhysicsTools/FWLite/interface/TFileService.h" // fwlite::TFileService
-#include "DataFormats/FWLite/interface/InputSource.h" // fwlite::InputSource
-#include "DataFormats/FWLite/interface/OutputFiles.h" // fwlite::OutputFiles
-#include "DataFormats/Math/interface/LorentzVector.h" // math::PtEtaPhiMLorentzVector
-#include "DataFormats/Math/interface/deltaR.h" // deltaR
-
-#include <Rtypes.h> // Int_t, Long64_t, Double_t
-#include <TChain.h> // TChain
-#include <TTree.h> // TTree
-#include <TBranch.h> // TBranch
-#include <TLeaf.h> // TLeaf
-#include <TBenchmark.h> // TBenchmark
-#include <TString.h> // TString, Form
-#include <TMatrixD.h> // TMatrixD
-#include <TError.h> // gErrorAbortLevel, kError
-
-#include "tthAnalysis/HiggsToTauTau/interface/RecoLepton.h" // RecoLepton
-#include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h" // RecoJet
-#include "tthAnalysis/HiggsToTauTau/interface/RecoHadTau.h" // RecoHadTau
-#include "tthAnalysis/HiggsToTauTau/interface/GenLepton.h" // GenLepton
-#include "tthAnalysis/HiggsToTauTau/interface/GenJet.h" // GenJet
-#include "tthAnalysis/HiggsToTauTau/interface/GenHadTau.h" // GenHadTau
-#include "tthAnalysis/HiggsToTauTau/interface/RecoMEt.h" // RecoMEt
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronReader.h" // RecoElectronReader
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonReader.h" // RecoMuonReader
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauReader.h" // RecoHadTauReader
@@ -35,8 +8,8 @@
 #include "tthAnalysis/HiggsToTauTau/interface/GenJetReader.h" // GenJetReader
 #include "tthAnalysis/HiggsToTauTau/interface/EventInfoReader.h" // EventInfoReader
 #include "tthAnalysis/HiggsToTauTau/interface/convert_to_ptrs.h" // convert_to_ptrs
-#include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionCleaner.h" // RecoElectronCollectionCleaner, RecoMuonCollectionCleaner, RecoHadTauCollectionCleaner, RecoJetCollectionCleaner
-#include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionGenMatcher.h" // RecoElectronCollectionGenMatcher, RecoMuonCollectionGenMatcher, RecoHadTauCollectionGenMatcher, RecoJetCollectionGenMatcher
+#include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionCleaner.h" // Reco*CollectionCleaner
+#include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionGenMatcher.h" // Reco*CollectionGenMatcher
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorLoose.h" // RecoElectronCollectionSelectorLoose
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorFakeable.h" // RecoElectronCollectionSelectorFakeable
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorTight.h" // RecoElectronCollectionSelectorTight
@@ -56,39 +29,40 @@
 #include "tthAnalysis/HiggsToTauTau/interface/GenParticleWriter.h" // GenParticleWriter
 #include "tthAnalysis/HiggsToTauTau/interface/MEMPermutationWriter.h" // MEMPermutationWriter
 #include "tthAnalysis/HiggsToTauTau/interface/EventInfoWriter.h" // EventInfoWriter
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // isHigherPt, random_start
 #include "tthAnalysis/HiggsToTauTau/interface/RunLumiEventSelector.h" // RunLumiEventSelector
 #include "tthAnalysis/HiggsToTauTau/interface/cutFlowTable.h" // cutFlowTableType
 #include "tthAnalysis/HiggsToTauTau/interface/histogramAuxFunctions.h" // createSubdirectory_recursively
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // z_mass, z_window
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2017, kLoose, kFakeable, kTight
+#include "tthAnalysis/HiggsToTauTau/interface/sysUncertOptions.h" // k*_central
+#include "tthAnalysis/HiggsToTauTau/interface/leptonTypes.h" // getLeptonType(), kElectron, kMuon
 #include "tthAnalysis/HiggsToTauTau/interface/branchEntryType.h"
 #include "tthAnalysis/HiggsToTauTau/interface/branchEntryTypeAuxFunctions.h"
 #include "tthAnalysis/HiggsToTauTau/interface/BranchAddressInitializer.h"
 
-#include <boost/algorithm/string/predicate.hpp> // boost::starts_with()
+#include <FWCore/ParameterSet/interface/ParameterSet.h> // edm::ParameterSet
+#include <FWCore/PythonParameterSet/interface/MakeParameterSets.h> // edm::readPSetsFrom()
+#include <PhysicsTools/FWLite/interface/TFileService.h> // fwlite::TFileService
+#include <DataFormats/FWLite/interface/InputSource.h> // fwlite::InputSource
+#include <DataFormats/FWLite/interface/OutputFiles.h> // fwlite::OutputFiles
+#include <FWCore/Utilities/interface/Parse.h> // edm::tokenize()
 
-#include <iostream> // std::cerr, std::fixed
-#include <iomanip> // std::setprecision(), std::setw()
-#include <string> // std::string
-#include <vector> // std::vector<>
-#include <cstdlib> // EXIT_SUCCESS, EXIT_FAILURE
-#include <algorithm> // std::sort
-#include <fstream> // std::ofstream
-#include <assert.h> // assert
+#include <TChain.h> // TChain
+#include <TBenchmark.h> // TBenchmark
 
-typedef math::PtEtaPhiMLorentzVector LV;
 typedef std::vector<std::string> vstring;
 
 template <typename GenParticleType>
 std::vector<GenParticle>
-convert_to_GenParticle(const std::vector<GenParticleType>& genOtherObjects)
+convert_to_GenParticle(const std::vector<GenParticleType> & genOtherObjects)
 {
   std::vector<GenParticle> genParticles;
-  for(const GenParticleType & genOtherObject: genOtherObjects)
-  {
-    const GenParticle p = static_cast<GenParticle>(genOtherObject);
-    genParticles.push_back(p);
-  }
+  std::transform(
+    genOtherObjects.cbegin(), genOtherObjects.cend(), std::back_inserter(genParticles),
+    [](const GenParticleType & genOtherObject) -> const GenParticle
+    {
+      return static_cast<GenParticle>(genOtherObject);
+    }
+  );
   return genParticles;
 }
 
@@ -98,122 +72,101 @@ convert_to_GenParticle(const std::vector<GenParticleType>& genOtherObjects)
  *        and add flag indicating for which events the MEM computation is to be run
  *       (the latter is necessary in order to split MEM computation into jobs that each perform ~50 MEM integrations)
  */
-int main(int argc, char* argv[]) 
+int
+main(int argc,
+     char ** argv)
 {
 //--- throw an exception in case ROOT encounters an error
   gErrorAbortLevel = kError;
 
 //--- parse command-line arguments
-  if ( argc < 2 ) {
-    std::cout << "Usage: " << argv[0] << " [parameters.py]" << std::endl;
+  if(argc < 2)
+  {
+    std::cout << "Usage: " << argv[0] << " [parameters.py]\n";
     return EXIT_FAILURE;
   }
 
-  std::cout << "<produceNtuple>:" << std::endl;
+  std::cout << "<produceNtuple>:\n";
 
 //--- keep track of time it takes the macro to execute
   TBenchmark clock;
   clock.Start("produceNtuple");
 
 //--- read python configuration parameters
-  if ( !edm::readPSetsFrom(argv[1])->existsAs<edm::ParameterSet>("process") ) 
-    throw cms::Exception("produceNtuple") 
-      << "No ParameterSet 'process' found in configuration file = " << argv[1] << " !!\n";
-
-  edm::ParameterSet cfg = edm::readPSetsFrom(argv[1])->getParameter<edm::ParameterSet>("process");
-
-  edm::ParameterSet cfg_produceNtuple = cfg.getParameter<edm::ParameterSet>("produceNtuple");
-
-  std::string treeName = cfg_produceNtuple.getParameter<std::string>("treeName");
-
-  std::string era_string = cfg_produceNtuple.getParameter<std::string>("era");
-  int era = -1;
-  if ( era_string == "2017" ) era = kEra_2017;
-  else throw cms::Exception("produceNtuple") 
-    << "Invalid Configuration parameter 'era' = " << era_string << " !!\n";
-
-  std::string leptonSelection_string = cfg_produceNtuple.getParameter<std::string>("leptonSelection").data();
-  int leptonSelection = -1;
-  if      ( leptonSelection_string == "Loose"    ) leptonSelection = kLoose;
-  else if ( leptonSelection_string == "Fakeable" ) leptonSelection = kFakeable;
-  else if ( leptonSelection_string == "Tight"    ) leptonSelection = kTight;
-  else throw cms::Exception("produceNtuple") 
-    << "Invalid Configuration parameter 'leptonSelection' = " << leptonSelection_string << " !!\n";
-  int minNumLeptons = cfg_produceNtuple.getParameter<int>("minNumLeptons");
-
-  TString hadTauSelection_string = cfg_produceNtuple.getParameter<std::string>("hadTauSelection").data();
-  TObjArray* hadTauSelection_parts = hadTauSelection_string.Tokenize("|");
-  assert(hadTauSelection_parts->GetEntries() >= 1);
-  std::string hadTauSelection_part1 = (dynamic_cast<TObjString*>(hadTauSelection_parts->At(0)))->GetString().Data();
-  int hadTauSelection = -1;
-  if      ( hadTauSelection_part1 == "Loose"    ) hadTauSelection = kLoose;
-  else if ( hadTauSelection_part1 == "Fakeable" ) hadTauSelection = kFakeable;
-  else if ( hadTauSelection_part1 == "Tight"    ) hadTauSelection = kTight;
-   else throw cms::Exception("produceNtuple") 
-    << "Invalid Configuration parameter 'hadTauSelection' = " << hadTauSelection_string << " !!\n";
-  std::string hadTauSelection_part2 = ( hadTauSelection_parts->GetEntries() == 2 ) ? (dynamic_cast<TObjString*>(hadTauSelection_parts->At(1)))->GetString().Data() : "";
-  delete hadTauSelection_parts;
-
-  const std::string branchName_electrons_in  = cfg_produceNtuple.getParameter<std::string>("branchName_electrons");
-  const std::string branchName_muons_in      = cfg_produceNtuple.getParameter<std::string>("branchName_muons");
-  const std::string branchName_hadTaus_in    = cfg_produceNtuple.getParameter<std::string>("branchName_hadTaus");
-  const std::string branchName_jets_in       = cfg_produceNtuple.getParameter<std::string>("branchName_jets");
-  const std::string branchName_met_in        = cfg_produceNtuple.getParameter<std::string>("branchName_met");
-  const std::string branchName_genLeptons_in = cfg_produceNtuple.getParameter<std::string>("branchName_genLeptons");
-  const std::string branchName_genHadTaus_in = cfg_produceNtuple.getParameter<std::string>("branchName_genHadTaus");
-  const std::string branchName_genJets_in    = cfg_produceNtuple.getParameter<std::string>("branchName_genJets");
-
-  int minNumHadTaus = cfg_produceNtuple.getParameter<int>("minNumHadTaus");
-
-  int minNumLeptons_and_HadTaus = cfg_produceNtuple.getParameter<int>("minNumLeptons_and_HadTaus");
-
-  int minNumJets = cfg_produceNtuple.getParameter<int>("minNumJets");
-
-  int minNumBJets_loose = cfg_produceNtuple.getParameter<int>("minNumBJets_loose");
-  int minNumBJets_medium = cfg_produceNtuple.getParameter<int>("minNumBJets_medium");
-  
-  bool use_HIP_mitigation_mediumMuonId = cfg_produceNtuple.getParameter<bool>("use_HIP_mitigation_mediumMuonId"); 
-  std::cout << "use_HIP_mitigation_mediumMuonId = " << use_HIP_mitigation_mediumMuonId << std::endl;
-
-  bool isMC = cfg_produceNtuple.getParameter<bool>("isMC"); 
-  const bool isDEBUG = cfg_produceNtuple.exists("isDEBUG") ? cfg_produceNtuple.getParameter<bool>("isDEBUG") : false;
-
-  std::string selEventsFileName_input = cfg_produceNtuple.getParameter<std::string>("selEventsFileName_input");
-  std::cout << "selEventsFileName_input = " << selEventsFileName_input << std::endl;
-  RunLumiEventSelector* run_lumi_eventSelector = 0;
-  if ( selEventsFileName_input != "" ) {
-    run_lumi_eventSelector = new RunLumiEventSelector(selEventsFileName_input);
+  if(! edm::readPSetsFrom(argv[1])->existsAs<edm::ParameterSet>("process"))
+  {
+    throw cmsException("produceNtuple", __LINE__)
+      << "No ParameterSet 'process' found in configuration file = " << argv[1] << "";
   }
 
-  vstring copy_histograms = cfg_produceNtuple.getParameter<vstring>("copy_histograms");
+  const edm::ParameterSet cfg = edm::readPSetsFrom(argv[1])->getParameter<edm::ParameterSet>("process");
+  const edm::ParameterSet cfg_produceNtuple = cfg.getParameter<edm::ParameterSet>("produceNtuple");
+  const std::string treeName = cfg_produceNtuple.getParameter<std::string>("treeName");
 
-  // CV: delay start by random time, to avoid that multiple analysis jobs
-  //     open all Ntuples at the same time, causing high load on /hdfs file system,
-  //     when running on batch
-  //unsigned random_seed = cfg_produceNtuple.getParameter<unsigned>("random_seed");
-  //random_start(random_seed);
+  const std::string era_string = cfg_produceNtuple.getParameter<std::string>("era");
+  const int era = get_era(era_string);
 
-  fwlite::InputSource inputFiles(cfg); 
-  int maxEvents = inputFiles.maxEvents();
-  std::cout << " maxEvents = " << maxEvents << std::endl;
-  unsigned reportEvery = inputFiles.reportAfter();
+  const std::string leptonSelection_string = cfg_produceNtuple.getParameter<std::string>("leptonSelection");
+  const int leptonSelection = get_selection(leptonSelection_string);
 
-  fwlite::OutputFiles outputFile(cfg);
+  const std::string hadTauSelection_string = cfg_produceNtuple.getParameter<std::string>("hadTauSelection");
+  const std::vector<std::string> hadTauSelection_parts = edm::tokenize(hadTauSelection_string, "|");
+  assert(hadTauSelection_parts.size());
+  const int hadTauSelection = get_selection(hadTauSelection_parts[0]);
+  const std::string hadTauSelection_tauIDwp = hadTauSelection_parts[1];
+
+  const std::string branchName_electrons  = cfg_produceNtuple.getParameter<std::string>("branchName_electrons");
+  const std::string branchName_muons      = cfg_produceNtuple.getParameter<std::string>("branchName_muons");
+  const std::string branchName_hadTaus    = cfg_produceNtuple.getParameter<std::string>("branchName_hadTaus");
+  const std::string branchName_jets       = cfg_produceNtuple.getParameter<std::string>("branchName_jets");
+  const std::string branchName_met        = cfg_produceNtuple.getParameter<std::string>("branchName_met");
+  const std::string branchName_genLeptons = cfg_produceNtuple.getParameter<std::string>("branchName_genLeptons");
+  const std::string branchName_genHadTaus = cfg_produceNtuple.getParameter<std::string>("branchName_genHadTaus");
+  const std::string branchName_genJets    = cfg_produceNtuple.getParameter<std::string>("branchName_genJets");
+
+  const int minNumLeptons             = cfg_produceNtuple.getParameter<int>("minNumLeptons");
+  const int minNumHadTaus             = cfg_produceNtuple.getParameter<int>("minNumHadTaus");
+  const int minNumLeptons_and_HadTaus = cfg_produceNtuple.getParameter<int>("minNumLeptons_and_HadTaus");
+  const int minNumJets                = cfg_produceNtuple.getParameter<int>("minNumJets");
+  const int minNumBJets_loose         = cfg_produceNtuple.getParameter<int>("minNumBJets_loose");
+  const int minNumBJets_medium        = cfg_produceNtuple.getParameter<int>("minNumBJets_medium");
+  
+  const bool isMC                            = cfg_produceNtuple.getParameter<bool>("isMC");
+  const bool isDEBUG                         = cfg_produceNtuple.getParameter<bool>("isDEBUG");
+  const bool use_HIP_mitigation_mediumMuonId = cfg_produceNtuple.getParameter<bool>("use_HIP_mitigation_mediumMuonId");
+  const bool useNonNominal                   = cfg_produceNtuple.getParameter<bool>("useNonNominal") || ! isMC;
+
+  const std::string selEventsFileName_input = cfg_produceNtuple.getParameter<std::string>("selEventsFileName_input");
+  std::cout << "selEventsFileName_input = " << selEventsFileName_input << '\n';
+  RunLumiEventSelector * const run_lumi_eventSelector = selEventsFileName_input.empty() ?
+    nullptr                                                                             :
+    new RunLumiEventSelector(selEventsFileName_input)
+  ;
+
+  const vstring copy_histograms = cfg_produceNtuple.getParameter<vstring>("copy_histograms");
+
+  const fwlite::InputSource inputFiles(cfg);
+  const int maxEvents = inputFiles.maxEvents();
+  std::cout << " maxEvents = " << maxEvents << '\n';
+  const unsigned reportEvery = inputFiles.reportAfter();
+
+  const fwlite::OutputFiles outputFile(cfg);
   fwlite::TFileService fs = fwlite::TFileService(outputFile.file().data());
 
-  TChain* inputTree = new TChain(treeName.data());
-  for ( std::vector<std::string>::const_iterator inputFileName = inputFiles.files().begin();
-        inputFileName != inputFiles.files().end(); ++inputFileName ) {
-    std::cout << "input Tree: adding file = " << (*inputFileName) << std::endl;
-    inputTree->AddFile(inputFileName->data());
-  }
-  
-  if ( !(inputTree->GetListOfFiles()->GetEntries() >= 1) ) {
-    throw cms::Exception("produceNtuple") 
-      << "Failed to identify input Tree !!\n";
+  TChain * const inputTree = new TChain(treeName.data());
+  for(const std::string & inputFileName: inputFiles.files())
+  {
+    std::cout << "input Tree: adding file = " << inputFileName << '\n';
+    inputTree->AddFile(inputFileName.data());
   }
 
-  std::cout << "input Tree contains " << inputTree->GetEntries() << " Entries in " << inputTree->GetListOfFiles()->GetEntries() << " files." << std::endl;
+  if(inputTree->GetListOfFiles()->GetEntries() < 1)
+  {
+    throw cmsException("produceNtuple", __LINE__) << "Failed to identify input Tree";
+  }
+
+  std::cout << "input Tree contains " << inputTree->GetEntries() << " entries in "
+            << inputTree->GetListOfFiles()->GetEntries() << " files\n";
   
 //--- declare event-level variables
   EventInfo eventInfo(false, false, false);
@@ -221,39 +174,55 @@ int main(int argc, char* argv[])
   eventInfoReader.setBranchAddresses(inputTree);
 
 //--- declare particle collections
-  RecoMuonReader* muonReader = new RecoMuonReader(era, branchName_muons_in);
+  RecoMuonReader * const muonReader = new RecoMuonReader(era, branchName_muons);
   muonReader->set_HIP_mitigation(use_HIP_mitigation_mediumMuonId);
   muonReader->setBranchAddresses(inputTree);
-  RecoMuonCollectionGenMatcher muonGenMatcher;
-  RecoMuonCollectionSelectorLoose preselMuonSelector(era);
-  RecoMuonCollectionSelectorFakeable fakeableMuonSelector(era);
-  RecoMuonCollectionSelectorTight tightMuonSelector(era);
+  const RecoMuonCollectionGenMatcher muonGenMatcher;
+  const RecoMuonCollectionSelectorLoose preselMuonSelector(era, -1, isDEBUG);
+  const RecoMuonCollectionSelectorFakeable fakeableMuonSelector(era, -1, isDEBUG);
+  const RecoMuonCollectionSelectorTight tightMuonSelector(era, -1, isDEBUG);
   
-  RecoElectronReader* electronReader = new RecoElectronReader(era, branchName_electrons_in);
+  RecoElectronReader * const electronReader = new RecoElectronReader(era, branchName_electrons);
   electronReader->setBranchAddresses(inputTree);
-  RecoElectronCollectionGenMatcher electronGenMatcher;
-  RecoElectronCollectionCleaner electronCleaner(0.3);
-  RecoElectronCollectionSelectorLoose preselElectronSelector(era);
-  RecoElectronCollectionSelectorFakeable fakeableElectronSelector(era);
-  RecoElectronCollectionSelectorTight tightElectronSelector(era);
+  const RecoElectronCollectionGenMatcher electronGenMatcher;
+  const RecoElectronCollectionCleaner electronCleaner(0.3, isDEBUG);
+  const RecoElectronCollectionSelectorLoose preselElectronSelector(era, -1, isDEBUG);
+  const RecoElectronCollectionSelectorFakeable fakeableElectronSelector(era, -1, isDEBUG);
+  const RecoElectronCollectionSelectorTight tightElectronSelector(era, -1, isDEBUG);
 
-  RecoHadTauReader* hadTauReader = new RecoHadTauReader(era, branchName_hadTaus_in);
+  double minPt_ele = -1.;
+  double minPt_mu  = -1.;
+  switch(era)
+  {
+    case kEra_2017: minPt_ele = 23.; minPt_mu = 18.; break;
+    default:        throw cmsException("produceNtuple", __LINE__) << "Unsupported era = " << era;
+  }
+
+  RecoHadTauReader * const hadTauReader = new RecoHadTauReader(era, branchName_hadTaus);
   hadTauReader->setBranchAddresses(inputTree);
-  RecoHadTauCollectionGenMatcher hadTauGenMatcher;
-  RecoHadTauCollectionCleaner hadTauCleaner(0.3);
-  std::cout << "Setting preselHadTauSelector\n";
-  RecoHadTauCollectionSelectorLoose preselHadTauSelector(era);
-  if ( hadTauSelection_part2 == "dR03mvaVLoose" || hadTauSelection_part2 == "dR03mvaVVLoose" ) preselHadTauSelector.set(hadTauSelection_part2);
+  const RecoHadTauCollectionGenMatcher hadTauGenMatcher;
+  const RecoHadTauCollectionCleaner hadTauCleaner(0.3, isDEBUG);
+  RecoHadTauCollectionSelectorLoose preselHadTauSelector(era, -1, isDEBUG);
+  if(hadTauSelection_tauIDwp == "dR03mvaVLoose" ||
+     hadTauSelection_tauIDwp == "dR03mvaVVLoose" )
+  {
+    preselHadTauSelector.set(hadTauSelection_tauIDwp);
+  }
   preselHadTauSelector.set_min_antiElectron(-1);
   preselHadTauSelector.set_min_antiMuon(-1);
-  std::cout << "Setting fakeableHadTauSelector\n";
-  RecoHadTauCollectionSelectorFakeable fakeableHadTauSelector(era);
-  if ( hadTauSelection_part2 == "dR03mvaVLoose" || hadTauSelection_part2 == "dR03mvaVVLoose" ) fakeableHadTauSelector.set(hadTauSelection_part2);
+  RecoHadTauCollectionSelectorFakeable fakeableHadTauSelector(era, -1, isDEBUG);
+  if(hadTauSelection_tauIDwp == "dR03mvaVLoose" ||
+     hadTauSelection_tauIDwp == "dR03mvaVVLoose" )
+  {
+    fakeableHadTauSelector.set(hadTauSelection_tauIDwp);
+  }
   fakeableHadTauSelector.set_min_antiElectron(-1);
   fakeableHadTauSelector.set_min_antiMuon(-1);
-  std::cout << "Setting tightHadTauSelector\n";
-  RecoHadTauCollectionSelectorTight tightHadTauSelector(era);
-  if ( hadTauSelection_part2 != "" ) tightHadTauSelector.set(hadTauSelection_part2);
+  RecoHadTauCollectionSelectorTight tightHadTauSelector(era, -1, isDEBUG);
+  if(! hadTauSelection_tauIDwp.empty())
+  {
+    tightHadTauSelector.set(hadTauSelection_tauIDwp);
+  }
   tightHadTauSelector.set_min_antiElectron(-1);
   tightHadTauSelector.set_min_antiMuon(-1);
   // CV: lower thresholds on hadronic taus by 2 GeV 
@@ -262,105 +231,125 @@ int main(int argc, char* argv[])
   preselHadTauSelector.set_min_pt(18.); 
   fakeableHadTauSelector.set_min_pt(18.);
   tightHadTauSelector.set_min_pt(18.);
-  std::cout << hadTauSelection_part2 <<'\n';
+  std::cout << "hadTauSelection_tauIDwp = " << hadTauSelection_tauIDwp <<'\n';
 
-  RecoJetReader* jetReader = new RecoJetReader(era, isMC, branchName_jets_in);
-  jetReader->setJetPt_central_or_shift(RecoJetReader::kJetPt_central); 
+  RecoJetReader * const jetReader = new RecoJetReader(era, isMC, branchName_jets);
+  jetReader->setPtMass_central_or_shift(useNonNominal ? kJet_central_nonNominal : kJet_central);
+  jetReader->read_ptMass_systematics(isMC);
   jetReader->read_BtagWeight_systematics(isMC);
   jetReader->setBranchAddresses(inputTree);
-  RecoJetCollectionGenMatcher jetGenMatcher;
-  RecoJetCollectionCleaner jetCleaner(0.4);
-  RecoJetSelector jetSelector(era);  
-  RecoJetCollectionSelectorBtagLoose jetSelectorBtagLoose(era);
-  RecoJetCollectionSelectorBtagMedium jetSelectorBtagMedium(era);
+  const RecoJetCollectionGenMatcher jetGenMatcher;
+  const RecoJetCollectionCleaner jetCleaner(0.4, isDEBUG);
+  const RecoJetSelector jetSelector(era);
+  RecoJetCollectionSelectorBtagLoose jetSelectorBtagLoose(era, -1, isDEBUG);
+  RecoJetCollectionSelectorBtagMedium jetSelectorBtagMedium(era, -1, isDEBUG);
+
+//--- save the default settings of jetSelector
+  const double min_jetSelector_pT     = jetSelector.get_min_pt();
+  const double max_jetSelector_absEta = jetSelector.get_max_absEta();
+
+//--- Disable pT cuts on the loose and medium b-tag selectors because we have to consider the effects
+//    due to JECs: the jet pT may fluctuate up or down, and because of this the jet may fail pT requirement
+//    depending on the choice of systematic uncertainties. The solution is to find maximum upwards
+//    fluctuation in pT due to JEC and select only such cleaned jets that pass the pT cut in any systematic
+//    setting. However, these jets that pass the pT cut due to JEC but otherwise wouldn't, would still be
+//    cut out by the loose and medium b-tag selectors (they also employ the pT cut on top of b-tagging
+//    requirements). The solution is to remove the pT cut in b-tagging selectors because the input jet
+//    collection all already passes the pT cut in at least one choice of systematic uncertainties.
+  jetSelectorBtagLoose.getSelector().set_min_pt(-1.);
+  jetSelectorBtagMedium.getSelector().set_min_pt(-1.);
 
 //--- declare missing transverse energy
-  RecoMEtReader* metReader = new RecoMEtReader(era, isMC, branchName_met_in);
-  metReader->setBranchAddresses(inputTree);  
+  RecoMEtReader * const metReader = new RecoMEtReader(era, isMC, branchName_met);
+  metReader->setMEt_central_or_shift(useNonNominal ? kMEt_central_nonNominal : kMEt_central);
+  metReader->read_ptPhi_systematics(isMC);
+  metReader->setBranchAddresses(inputTree);
 
 //--- declare generator level information
-  GenLeptonReader* genLeptonReader = 0;
-  GenHadTauReader* genHadTauReader = 0;
-  GenJetReader* genJetReader = 0;
-  if ( isMC ) {
-    genLeptonReader = new GenLeptonReader(branchName_genLeptons_in);
+  GenLeptonReader * genLeptonReader = nullptr;
+  GenHadTauReader * genHadTauReader = nullptr;
+  GenJetReader * genJetReader = nullptr;
+  if(isMC)
+  {
+    genLeptonReader = new GenLeptonReader(branchName_genLeptons);
     genLeptonReader->setBranchAddresses(inputTree);
-    genHadTauReader = new GenHadTauReader(branchName_genHadTaus_in);
+    genHadTauReader = new GenHadTauReader(branchName_genHadTaus);
     genHadTauReader->setBranchAddresses(inputTree);
-    genJetReader = new GenJetReader(branchName_genJets_in);
+    genJetReader = new GenJetReader(branchName_genJets);
     genJetReader->setBranchAddresses(inputTree);
   }
 
   std::string outputTreeName = treeName;
   std::string outputDirName = "";
-  if ( outputTreeName.find_last_of("/") != std::string::npos ) {
-    size_t pos = outputTreeName.find_last_of("/");
+  if(outputTreeName.find_last_of("/") != std::string::npos)
+  {
+    std::size_t pos = outputTreeName.find_last_of("/");
     outputTreeName = std::string(outputTreeName, pos + 1);
     outputDirName = std::string(outputTreeName, 0, pos);
   }
-  if ( outputDirName != "" ) {
-    TDirectory* dir = createSubdirectory_recursively(fs, outputDirName.data());
+  if(! outputDirName.empty())
+  {
+    TDirectory * const dir = createSubdirectory_recursively(fs, outputDirName.data());
     dir->cd();
-  } else {
+  }
+  else
+  {
     fs.cd();
   }
-  TTree* outputTree = new TTree(outputTreeName.data(), outputTreeName.data());
+  TTree * const outputTree = new TTree(outputTreeName.data(), outputTreeName.data());
 
   EventInfoWriter eventInfoWriter(false, false, false);
   eventInfoWriter.setBranches(outputTree);
 
-  std::string branchName_muons = branchName_muons_in;
-  RecoMuonWriter* muonWriter = new RecoMuonWriter(era, Form("n%s", branchName_muons.data()), branchName_muons);
+  RecoMuonWriter * const muonWriter = new RecoMuonWriter(era, branchName_muons);
   muonWriter->setBranches(outputTree);
-  std::cout << "writing RecoMuon objects to branch = '" << branchName_muons << "'" << std::endl;
+  std::cout << "writing RecoMuon objects to branch = '" << branchName_muons << "'\n";
 
-  std::string branchName_electrons = branchName_electrons_in;
-  RecoElectronWriter* electronWriter = new RecoElectronWriter(era, Form("n%s", branchName_electrons.data()), branchName_electrons);
+  RecoElectronWriter * const electronWriter = new RecoElectronWriter(era, branchName_electrons);
   electronWriter->setBranches(outputTree);
-  std::cout << "writing RecoElectron objects to branch = '" << branchName_electrons << "'" << std::endl;
+  std::cout << "writing RecoElectron objects to branch = '" << branchName_electrons << "'\n";
 
-  std::string branchName_hadTaus = branchName_hadTaus_in;
-  RecoHadTauWriter* hadTauWriter = new RecoHadTauWriter(era, Form("n%s", branchName_hadTaus.data()), branchName_hadTaus);
+  RecoHadTauWriter * const hadTauWriter = new RecoHadTauWriter(era, branchName_hadTaus);
   hadTauWriter->setBranches(outputTree);
-  std::cout << "writing RecoHadTau objects to branch = '" << branchName_hadTaus << "'" << std::endl;
+  std::cout << "writing RecoHadTau objects to branch = '" << branchName_hadTaus << "'\n";
 
-  std::string branchName_jets = branchName_jets_in;
-  RecoJetWriter* jetWriter = new RecoJetWriter(era, isMC, Form("n%s", branchName_jets.data()), branchName_jets);
+  RecoJetWriter * const jetWriter = new RecoJetWriter(era, isMC, branchName_jets);
+  jetWriter->setPtMass_central_or_shift(useNonNominal ? kJet_central_nonNominal : kJet_central);
+  jetWriter->write_ptMass_systematics(isMC);
+  jetWriter->write_BtagWeight_systematics(isMC);
   jetWriter->setBranches(outputTree);
-  std::cout << "writing RecoJet objects to branch = '" << branchName_jets << "'" << std::endl;
+  std::cout << "writing RecoJet objects to branch = '" << branchName_jets << "'\n";
 
-  std::string branchName_met = branchName_met_in;
-  RecoMEtWriter* metWriter = new RecoMEtWriter(era, isMC, branchName_met);
+  RecoMEtWriter * const metWriter = new RecoMEtWriter(era, isMC, branchName_met);
+  metWriter->setPtPhi_central_or_shift(useNonNominal ? kJet_central_nonNominal : kJet_central);
+  metWriter->write_ptPhi_systematics(isMC);
   metWriter->setBranches(outputTree);
-  std::cout << "writing RecoMEt object to branch = '" << branchName_met << "'" << std::endl;
+  std::cout << "writing RecoMEt object to branch = '" << branchName_met << "'\n";
 
-  GenParticleWriter* genLeptonWriter = 0;
-  GenParticleWriter* genHadTauWriter = 0;
-  GenParticleWriter* genJetWriter = 0;
-  if ( isMC ) {
-    std::string branchName_genLeptons = branchName_genLeptons_in;
-    genLeptonWriter = new GenParticleWriter(Form("n%s", branchName_genLeptons.data()), branchName_genLeptons);
+  GenParticleWriter * genLeptonWriter = nullptr;
+  GenParticleWriter * genHadTauWriter = nullptr;
+  GenParticleWriter * genJetWriter = nullptr;
+  if(isMC)
+  {
+    genLeptonWriter = new GenParticleWriter(branchName_genLeptons);
     genLeptonWriter->setBranches(outputTree);
-    std::cout << "writing GenLepton objects to branch = '" << branchName_genLeptons << "'" << std::endl;
+    std::cout << "writing GenLepton objects to branch = '" << branchName_genLeptons << "'\n";
 
-    std::string branchName_genHadTaus = branchName_genHadTaus_in;
-    genHadTauWriter = new GenParticleWriter(Form("n%s", branchName_genHadTaus.data()), branchName_genHadTaus);
+    genHadTauWriter = new GenParticleWriter(branchName_genHadTaus);
     genHadTauWriter->setBranches(outputTree);
-    std::cout << "writing GenHadTau objects to branch = '" << branchName_genHadTaus << "'" << std::endl;
+    std::cout << "writing GenHadTau objects to branch = '" << branchName_genHadTaus << "'\n";
 
-    std::string branchName_genJets = branchName_genJets_in;
-    genJetWriter = new GenParticleWriter(Form("n%s", branchName_genJets.data()), branchName_genJets);
+    genJetWriter = new GenParticleWriter(branchName_genJets);
     genJetWriter->setBranches(outputTree);
-    std::cout << "writing GenJet objects to branch = '" << branchName_genJets << "'" << std::endl;
+    std::cout << "writing GenJet objects to branch = '" << branchName_genJets << "'\n";
   }
-  
 
   // define the writer class for the nof MEM permutations
   MEMPermutationWriter memPermutationWriter;
   memPermutationWriter
     .setLepSelection       (leptonSelection, kTight)
     .setHadTauSelection    (hadTauSelection, kTight)
-    .setHadTauWorkingPoints(hadTauSelection_part2) // up until Tight
+    .setHadTauWorkingPoints(hadTauSelection_tauIDwp) // up until Tight
   ;
   // add conditions for computing the nof MEM permutations in 2lss1tau and 3l1tau channels
   // the arguments are: the name of the channel, minimum number of leptons, minimum number of hadronic taus
@@ -375,202 +364,222 @@ int main(int argc, char* argv[])
     Form("drop %s", eventInfoWriter.getBranchName_run().data()),
     Form("drop %s", eventInfoWriter.getBranchName_lumi().data()),
     Form("drop %s", eventInfoWriter.getBranchName_event().data()),
-    Form("drop n%s*", branchName_muons_in.data()),
-    Form("drop %s_*", branchName_muons_in.data()),
-    Form("drop n%s*", branchName_electrons_in.data()),
-    Form("drop %s_*", branchName_electrons_in.data()),
-    Form("drop n%s*", branchName_hadTaus_in.data()),
-    Form("drop %s_*", branchName_hadTaus_in.data()),
-    Form("drop n%s*", branchName_jets_in.data()),
-    Form("drop %s_*", branchName_jets_in.data()),
-    Form("drop %s_*", branchName_met_in.data()),
-    Form("drop n%s", branchName_genLeptons_in.data()),
-    Form("drop %s_*", branchName_genLeptons_in.data()),
-    Form("drop n%s", branchName_genHadTaus_in.data()),
-    Form("drop %s_*", branchName_genHadTaus_in.data()),
-    Form("drop n%s", branchName_genJets_in.data()),
-    Form("drop %s_*", branchName_genJets_in.data()),
+    Form("drop n%s*", branchName_muons.data()),
+    Form("drop %s_*", branchName_muons.data()),
+    Form("drop n%s*", branchName_electrons.data()),
+    Form("drop %s_*", branchName_electrons.data()),
+    Form("drop n%s*", branchName_hadTaus.data()),
+    Form("drop %s_*", branchName_hadTaus.data()),
+    Form("drop n%s*", branchName_jets.data()),
+    Form("drop %s_*", branchName_jets.data()),
+    Form("drop %s_*", branchName_met.data()),
+    Form("drop n%s", branchName_genLeptons.data()),
+    Form("drop %s_*", branchName_genLeptons.data()),
+    Form("drop n%s", branchName_genHadTaus.data()),
+    Form("drop %s_*", branchName_genHadTaus.data()),
+    Form("drop n%s", branchName_genJets.data()),
+    Form("drop %s_*", branchName_genJets.data()),
     Form("drop maxPermutations_*"),
   };
 
   std::vector<outputCommandEntry> outputCommands = getOutputCommands(outputCommands_string);
   std::map<std::string, bool> isBranchToKeep = getBranchesToKeep(inputTree, outputCommands); // key = branchName
-  std::map<std::string, branchEntryBaseType*> branchesToKeep; // key = branchName
+  std::map<std::string, branchEntryBaseType *> branchesToKeep; // key = branchName
   copyBranches_singleType(inputTree, outputTree, isBranchToKeep, branchesToKeep);
   copyBranches_vectorType(inputTree, outputTree, isBranchToKeep, branchesToKeep);
 
-  std::cout << "keeping branches:" << std::endl;
-  for ( std::map<std::string, branchEntryBaseType*>::const_iterator branchEntry = branchesToKeep.begin();
-        branchEntry != branchesToKeep.end(); ++branchEntry ) {
-    std::cout << " " << branchEntry->second->outputBranchName_ << " (type = " << branchEntry->second->outputBranchType_string_ << ")" << std::endl;
+  if(isDEBUG)
+  {
+    std::cout << "keeping branches:\n";
+    for(const auto & branchEntry: branchesToKeep)
+    {
+      std::cout << ' ' << branchEntry.second->outputBranchName_ << " (type ="
+                   " " << branchEntry.second->outputBranchType_string_ << ")\n"
+      ;
+    }
   }
 
-  int numEntries = inputTree->GetEntries();
+  const int numEntries = inputTree->GetEntries();
   int analyzedEntries = 0;
   int selectedEntries = 0;
   cutFlowTableType cutFlowTable;
-  for ( int idxEntry = 0; idxEntry < numEntries && (maxEvents == -1 || idxEntry < maxEvents); ++idxEntry ) {
-    
+
+  for(int idxEntry = 0; idxEntry < numEntries && (maxEvents == -1 || idxEntry < maxEvents); ++idxEntry)
+  {
     inputTree->GetEntry(idxEntry);
 
-    if ( idxEntry > 0 && (idxEntry % reportEvery) == 0 ) {
+    if(idxEntry > 0 && (idxEntry % reportEvery) == 0)
+    {
       std::cout << "processing Entry " << idxEntry << ':' << eventInfo
-                << " (" << selectedEntries << " Entries selected)\n";
+                << " (" << selectedEntries << " Entries selected)\n"
+      ;
     }
     ++analyzedEntries;
     
     cutFlowTable.update("read from file");
 
-    if ( run_lumi_eventSelector && !(*run_lumi_eventSelector)(eventInfo) ) continue;
+    if(run_lumi_eventSelector && !(*run_lumi_eventSelector)(eventInfo))
+    {
+      continue;
+    }
     cutFlowTable.update("run:ls:event selection");
 
-    if ( run_lumi_eventSelector || isDEBUG ) {
+    if(run_lumi_eventSelector || isDEBUG)
+    {
       std::cout << "processing Entry " << idxEntry << ':' << eventInfo << '\n';
-      if ( inputTree->GetFile() ) std::cout << "input File = " << inputTree->GetFile()->GetName() << std::endl;
+      if(inputTree->GetFile())
+      {
+        std::cout << "input File = " << inputTree->GetFile()->GetName() << '\n';
+      }
     }
 
 //--- build collections of electrons, muons and hadronic taus;
 //    resolve overlaps in order of priority: muon, electron,
-    std::vector<RecoMuon> muons = muonReader->read();
-    std::vector<const RecoMuon*> muon_ptrs = convert_to_ptrs(muons);
-    std::vector<const RecoMuon*> cleanedMuons = muon_ptrs; // CV: no cleaning needed for muons, as they have the highest priority in the overlap removal
-    std::vector<const RecoMuon*> preselMuons = preselMuonSelector(cleanedMuons);
-    std::vector<const RecoMuon*> fakeableMuons = fakeableMuonSelector(preselMuons);
-    std::vector<const RecoMuon*> tightMuons = tightMuonSelector(preselMuons);
-    std::vector<const RecoMuon*> selMuons;
-    if      ( leptonSelection == kLoose    ) selMuons = preselMuons;
-    else if ( leptonSelection == kFakeable ) selMuons = fakeableMuons;
-    else if ( leptonSelection == kTight    ) selMuons = tightMuons;
-    else assert(0);
+    const std::vector<RecoMuon> muons = muonReader->read();
+    const std::vector<const RecoMuon *> muon_ptrs = convert_to_ptrs(muons);
+    // CV: no cleaning needed for muons, as they have the highest priority in the overlap removal
+    const std::vector<const RecoMuon *> cleanedMuons  = muon_ptrs;
+    const std::vector<const RecoMuon *> preselMuons   = preselMuonSelector  (cleanedMuons, isHigherPt);
+    const std::vector<const RecoMuon *> fakeableMuons = fakeableMuonSelector(preselMuons,  isHigherPt);
+    const std::vector<const RecoMuon *> tightMuons    = tightMuonSelector   (preselMuons,  isHigherPt);
+    const std::vector<const RecoMuon *> selMuons      = selectObjects(
+      leptonSelection, preselMuons, fakeableMuons, tightMuons
+    );
 
-    std::vector<RecoElectron> electrons = electronReader->read();
-    std::vector<const RecoElectron*> electron_ptrs = convert_to_ptrs(electrons);
-    std::vector<const RecoElectron*> cleanedElectrons = electronCleaner(electron_ptrs, fakeableMuons);
-    std::vector<const RecoElectron*> preselElectrons = preselElectronSelector(cleanedElectrons);
-    std::vector<const RecoElectron*> fakeableElectrons = fakeableElectronSelector(preselElectrons);
-    std::vector<const RecoElectron*> tightElectrons = tightElectronSelector(preselElectrons);
-    std::vector<const RecoElectron*> selElectrons;
-    if      ( leptonSelection == kLoose    ) selElectrons = preselElectrons;
-    else if ( leptonSelection == kFakeable ) selElectrons = fakeableElectrons;
-    else if ( leptonSelection == kTight    ) selElectrons = tightElectrons;
-    else assert(0);
+    const std::vector<RecoElectron> electrons = electronReader->read();
+    const std::vector<const RecoElectron *> electron_ptrs = convert_to_ptrs(electrons);
+    const std::vector<const RecoElectron *> cleanedElectrons  = electronCleaner(electron_ptrs, fakeableMuons);
+    const std::vector<const RecoElectron *> preselElectrons   = preselElectronSelector  (cleanedElectrons, isHigherPt);
+    const std::vector<const RecoElectron *> fakeableElectrons = fakeableElectronSelector(preselElectrons,  isHigherPt);
+    const std::vector<const RecoElectron *> tightElectrons    = tightElectronSelector   (preselElectrons,  isHigherPt);
+    const std::vector<const RecoElectron *> selElectrons      = selectObjects(
+      leptonSelection, preselElectrons, fakeableElectrons, tightElectrons
+    );
 
-    std::vector<RecoHadTau> hadTaus = hadTauReader->read();
-    std::vector<const RecoHadTau*> hadTau_ptrs = convert_to_ptrs(hadTaus);
-    std::vector<const RecoHadTau*> cleanedHadTaus = hadTauCleaner(hadTau_ptrs, preselMuons, preselElectrons);
-    std::vector<const RecoHadTau*> preselHadTaus = preselHadTauSelector(cleanedHadTaus);
-    std::vector<const RecoHadTau*> fakeableHadTaus = fakeableHadTauSelector(cleanedHadTaus);
-    std::vector<const RecoHadTau*> tightHadTaus = tightHadTauSelector(cleanedHadTaus);
-    std::vector<const RecoHadTau*> selHadTaus;
-    if      ( hadTauSelection == kLoose    ) selHadTaus = preselHadTaus;
-    else if ( hadTauSelection == kFakeable ) selHadTaus = fakeableHadTaus;
-    else if ( hadTauSelection == kTight    ) selHadTaus = tightHadTaus;
-    else assert(0);
+    const std::vector<RecoHadTau> hadTaus = hadTauReader->read();
+    const std::vector<const RecoHadTau *> hadTau_ptrs = convert_to_ptrs(hadTaus);
+    const std::vector<const RecoHadTau *> cleanedHadTaus = hadTauCleaner(hadTau_ptrs, preselMuons, preselElectrons);
+    const std::vector<const RecoHadTau *> preselHadTaus   = preselHadTauSelector  (cleanedHadTaus, isHigherPt);
+    const std::vector<const RecoHadTau *> fakeableHadTaus = fakeableHadTauSelector(cleanedHadTaus, isHigherPt);
+    const std::vector<const RecoHadTau *> tightHadTaus    = tightHadTauSelector   (cleanedHadTaus, isHigherPt);
+    const std::vector<const RecoHadTau *> selHadTaus = selectObjects(
+      hadTauSelection, preselHadTaus, fakeableHadTaus, tightHadTaus
+    );
 
 //--- build collections of jets and select subset of jets passing b-tagging criteria
-    std::vector<RecoJet> jets = jetReader->read();
-    std::vector<const RecoJet*> jet_ptrs = convert_to_ptrs(jets);
+    const std::vector<RecoJet> jets = jetReader->read();
+    const std::vector<const RecoJet *> jet_ptrs = convert_to_ptrs(jets);
     // Karl: do not clean w.r.t the taus b/c their definition changes across the analyses
     //       we are better off if we keep a bit more jets per event
-    std::vector<const RecoJet*> cleanedJets = jetCleaner(jet_ptrs, fakeableMuons, fakeableElectrons);
-    std::vector<const RecoJet*> selJets;
-    for ( std::vector<const RecoJet*>::const_iterator cleanedJet = cleanedJets.begin();
-          cleanedJet != cleanedJets.end(); ++cleanedJet ) {
-      double cleanedJet_pt = (*cleanedJet)->pt();
-      double cleanedJet_pt_JECUp = cleanedJet_pt*(1. + (*cleanedJet)->jecUncertTotal());
-      double cleanedJet_pt_JECDown = cleanedJet_pt*(1. - (*cleanedJet)->jecUncertTotal());
-      double cleanedJet_absEta = (*cleanedJet)->absEta();
-      double min_pT = jetSelector.get_min_pt();
-      double max_absEta = jetSelector.get_max_absEta();
-      if ( (cleanedJet_pt >= min_pT || cleanedJet_pt_JECUp >= min_pT || cleanedJet_pt_JECDown >= min_pT ) && cleanedJet_absEta < max_absEta ) {
-        selJets.push_back(*cleanedJet);
+    const std::vector<const RecoJet *> cleanedJets = jetCleaner(jet_ptrs, fakeableMuons, fakeableElectrons);
+    std::vector<const RecoJet *> selJets;
+    for(const RecoJet * cleanedJet: cleanedJets)
+    {
+      // Karl: there are no JEC uncertainties for non-nominal (i.e. MET-adjusted) jet pT
+      const double cleanedJet_pt_max = useNonNominal ? cleanedJet->pt() : cleanedJet->maxPt();
+      const double cleanedJet_absEta = cleanedJet->absEta();
+      if(cleanedJet_pt_max >= min_jetSelector_pT && cleanedJet_absEta < max_jetSelector_absEta)
+      {
+        selJets.push_back(cleanedJet);
       }
     }
-    std::vector<const RecoJet*> selBJets_loose = jetSelectorBtagLoose(cleanedJets);
-    std::vector<const RecoJet*> selBJets_medium = jetSelectorBtagMedium(cleanedJets);
+
+//--- sort the collection by their pT so that if we hit the limit of maximum number of objects
+//--- in the Writer classes, we will drop the softer objects
+    std::sort(selJets.begin(), selJets.end(), isHigherPt);
+    const std::vector<const RecoJet *> selBJets_loose  = jetSelectorBtagLoose(selJets,  isHigherPt);
+    const std::vector<const RecoJet *> selBJets_medium = jetSelectorBtagMedium(selJets, isHigherPt);
 
     RecoMEt met = metReader->read();
 
 //--- construct the merged lepton collections
-    const std::vector<const RecoLepton*> preselLeptons   = mergeLeptonCollections(preselElectrons,   preselMuons);
-    const std::vector<const RecoLepton*> fakeableLeptons = mergeLeptonCollections(fakeableElectrons, fakeableMuons);
-    const std::vector<const RecoLepton*> tightLeptons    = mergeLeptonCollections(tightElectrons,    tightMuons);
-    const std::vector<const RecoLepton*> selLeptons      = mergeLeptonCollections(selElectrons, selMuons);
+    const std::vector<const RecoLepton *> preselLeptons   = mergeLeptonCollections(preselElectrons,   preselMuons,   isHigherPt);
+    const std::vector<const RecoLepton *> fakeableLeptons = mergeLeptonCollections(fakeableElectrons, fakeableMuons, isHigherPt);
+    const std::vector<const RecoLepton *> tightLeptons    = mergeLeptonCollections(tightElectrons,    tightMuons,    isHigherPt);
+    const std::vector<const RecoLepton *> selLeptons      = mergeLeptonCollections(selElectrons,      selMuons,      isHigherPt);
 
 //--- apply preselection
-    if ( !((int)selLeptons.size() >= minNumLeptons) ) {
-      if ( run_lumi_eventSelector || isDEBUG ) {
-        std::cout << "event FAILS selLeptons selection." << std::endl;
-        std::cout << " (#preselLeptons = " << preselLeptons.size() << ")" << std::endl;
-        for ( size_t idxPreselLepton = 0; idxPreselLepton < preselLeptons.size(); ++idxPreselLepton ) {
-          std::cout << "preselLepton #" << idxPreselLepton << ":" << std::endl;
-          std::cout << (*preselLeptons[idxPreselLepton]);
+    if(! (static_cast<int>(selLeptons.size()) >= minNumLeptons))
+    {
+      if(run_lumi_eventSelector || isDEBUG)
+      {
+        std::cout << "event FAILS selLeptons selection.\n"
+                     " (#preselLeptons = " << preselLeptons.size() << ")\n"
+        ;
+        for(std::size_t idxPreselLepton = 0; idxPreselLepton < preselLeptons.size(); ++idxPreselLepton)
+        {
+          std::cout << "preselLepton #" << idxPreselLepton << ":\n" << (*preselLeptons[idxPreselLepton]);
         }
-        std::cout << " (#selLeptons = " << selLeptons.size() << ")" << std::endl;
-        for ( size_t idxSelLepton = 0; idxSelLepton < selLeptons.size(); ++idxSelLepton ) {
-          std::cout << "selLepton #" << idxSelLepton << ":" << std::endl;
-          std::cout << (*selLeptons[idxSelLepton]);
+        std::cout << " (#selLeptons = " << selLeptons.size() << ")\n";
+        for(std::size_t idxSelLepton = 0; idxSelLepton < selLeptons.size(); ++idxSelLepton)
+        {
+          std::cout << "selLepton #" << idxSelLepton << ":\n" << (*selLeptons[idxSelLepton]);
         }
       }
       continue;
     }
     cutFlowTable.update(Form(">= %i sel leptons", minNumLeptons));
 
-    if ( minNumLeptons > 0 && selLeptons.size() >= 1 ) {
-      const RecoLepton* selLepton_lead = selLeptons[0];
+    if(minNumLeptons > 0 && selLeptons.size() >= 1)
+    {
+      const RecoLepton * const selLepton_lead = selLeptons[0];
       // CV: lower threshold on leading lepton by 2 GeV 
       //     with respect to thresholds applied on analysis level
       //     to allow for e-ES and mu-ES uncertainties to be estimated
-      double minPt_lead = -1.;
-      if ( era == kEra_2017 )
+      const double minPt_lead = selLepton_lead -> is_electron() ? minPt_ele : minPt_mu;
+      if(! (selLepton_lead->pt() > minPt_lead))
       {
-        minPt_lead = selLepton_lead -> is_electron() ? 23. : 18.;
-      }
-      else
-      {
-        throw cms::Exception("produceNtuple") << "Unsupported era = " << era;
-      }
-      if ( !(selLepton_lead->pt() > minPt_lead) ) {
-        if ( run_lumi_eventSelector || isDEBUG ) {
-          std::cout << "event FAILS lepton pT selection." << std::endl;
-          std::cout << " (leading selLepton pT = " << selLepton_lead->pt() << ", minPt_lead = " << minPt_lead << ")" << std::endl;
+        if(run_lumi_eventSelector || isDEBUG)
+        {
+          std::cout << "event FAILS lepton pT selection.\n"
+                       "( leading selLepton "
+                       "pT = "         << selLepton_lead->pt() << ", "
+                       "minPt_lead = " << minPt_lead << ")\n"
+          ;
         }
         continue;
       }
-      cutFlowTable.update("lead lepton pT > 23 (electron) / 18 (muon) GeV");
+      cutFlowTable.update(Form("lead lepton pT > %.1f (electron) / %.1f (muon) GeV", minPt_ele, minPt_mu));
     }
 
-    if ( !((int)selHadTaus.size() >= minNumHadTaus) ) {
-      if ( run_lumi_eventSelector || isDEBUG ) {
-        std::cout << "event FAILS selHadTaus selection." << std::endl;
-        std::cout << " (#preselHadTaus = " << preselHadTaus.size() << ")" << std::endl;
-        for ( size_t idxPreselHadTau = 0; idxPreselHadTau < preselHadTaus.size(); ++idxPreselHadTau ) {
-          std::cout << "preselHadTau #" << idxPreselHadTau << ":" << std::endl;
-          std::cout << (*preselHadTaus[idxPreselHadTau]);
+    if(! (static_cast<int>(selHadTaus.size()) >= minNumHadTaus))
+    {
+      if(run_lumi_eventSelector || isDEBUG)
+      {
+        std::cout << "event FAILS selHadTaus selection\n"
+                     " (#preselHadTaus = " << preselHadTaus.size() << ")\n"
+        ;
+        for(std::size_t idxPreselHadTau = 0; idxPreselHadTau < preselHadTaus.size(); ++idxPreselHadTau)
+        {
+          std::cout << "preselHadTau #" << idxPreselHadTau << ":\n" << (*preselHadTaus[idxPreselHadTau]);
         }
-        std::cout << " (#selHadTaus = " << selHadTaus.size() << ")" << std::endl;
-        for ( size_t idxSelHadTau = 0; idxSelHadTau < selHadTaus.size(); ++idxSelHadTau ) {
-          std::cout << "selHadTau #" << idxSelHadTau << ":" << std::endl;
-          std::cout << (*selHadTaus[idxSelHadTau]);
+        std::cout << " (#selHadTaus = " << selHadTaus.size() << ")\n";
+        for(std::size_t idxSelHadTau = 0; idxSelHadTau < selHadTaus.size(); ++idxSelHadTau )
+        {
+          std::cout << "selHadTau #" << idxSelHadTau << ":\n" << (*selHadTaus[idxSelHadTau]);
         }
       }
       continue;
     }
     cutFlowTable.update(Form(">= %i sel hadTaus", minNumHadTaus));
-    
-    if ( !((int)(selLeptons.size() + selHadTaus.size()) >= minNumLeptons_and_HadTaus) ) {
+
+    if (! (static_cast<int>(selLeptons.size() + selHadTaus.size()) >= minNumLeptons_and_HadTaus))
+    {
       continue;
     }
     cutFlowTable.update(Form(">= %i sel leptons+hadTaus", minNumLeptons_and_HadTaus));
 
     // apply requirement on jets 
-    if ( !((int)selJets.size() >= minNumJets) ) {
-      if ( run_lumi_eventSelector || isDEBUG ) {
-        std::cout << "event FAILS selJets selection." << std::endl;
-        std::cout << " (#selJets = " << selJets.size() << ")" << std::endl;
-        for ( size_t idxSelJet = 0; idxSelJet < selJets.size(); ++idxSelJet ) {
-          std::cout << "selJet #" << idxSelJet << ":" << std::endl;
-          std::cout << (*selJets[idxSelJet]);
+    if(! (static_cast<int>(selJets.size()) >= minNumJets))
+    {
+      if(run_lumi_eventSelector || isDEBUG)
+      {
+        std::cout << "event FAILS selJets selection\n"
+                     " (#selJets = " << selJets.size() << ")\n"
+        ;
+        for(std::size_t idxSelJet = 0; idxSelJet < selJets.size(); ++idxSelJet)
+        {
+          std::cout << "selJet #" << idxSelJet << ":\n" << (*selJets[idxSelJet]);
         }
       }
       continue;
@@ -578,76 +587,76 @@ int main(int argc, char* argv[])
     cutFlowTable.update(Form(">= %i jets", minNumJets));
 
     // apply requirement on b-jets 
-    if ( !((int)selBJets_loose.size() >= minNumBJets_loose || (int)selBJets_medium.size() >= minNumBJets_medium) ) {
-      if ( run_lumi_eventSelector || isDEBUG ) {
-        std::cout << "event FAILS selBJets selection." << std::endl;
-        std::cout << " (#selJets = " << selJets.size() << ")" << std::endl;
-        for ( size_t idxSelJet = 0; idxSelJet < selJets.size(); ++idxSelJet ) {
-          std::cout << "selJet #" << idxSelJet << ":" << std::endl;
-          std::cout << (*selJets[idxSelJet]);
+    if(! (static_cast<int>(selBJets_loose.size())  >= minNumBJets_loose  ||
+          static_cast<int>(selBJets_medium.size()) >= minNumBJets_medium ))
+    {
+      if(run_lumi_eventSelector || isDEBUG)
+      {
+        std::cout << "event FAILS selBJets selection\n"
+                     " (#selJets = " << selJets.size() << ")\n"
+        ;
+        for(std::size_t idxSelJet = 0; idxSelJet < selJets.size(); ++idxSelJet)
+        {
+          std::cout << "selJet #" << idxSelJet << ":\n" << (*selJets[idxSelJet]);
         }
-        std::cout << " (#selBJets_loose = " << selBJets_loose.size() << ")" << std::endl;
-        for ( size_t idxSelBJet_loose = 0; idxSelBJet_loose < selBJets_loose.size(); ++idxSelBJet_loose ) {
-          std::cout << "selBJet_loose #" << idxSelBJet_loose << ":" << std::endl;
-          std::cout << (*selBJets_loose[idxSelBJet_loose]);
+        std::cout << " (#selBJets_loose = " << selBJets_loose.size() << ")\n";
+        for(std::size_t idxSelBJet_loose = 0; idxSelBJet_loose < selBJets_loose.size(); ++idxSelBJet_loose)
+        {
+          std::cout << "selBJet_loose #" << idxSelBJet_loose << ":\n" << (*selBJets_loose[idxSelBJet_loose]);
         }
-        std::cout << " (#selBJets_medium = " << selBJets_medium.size() << ")" << std::endl;
-        for ( size_t idxSelBJet_medium = 0; idxSelBJet_medium < selBJets_medium.size(); ++idxSelBJet_medium ) {
-          std::cout << "selBJet_medium #" << idxSelBJet_medium << ":" << std::endl;
-          std::cout << (*selBJets_medium[idxSelBJet_medium]);
+        std::cout << " (#selBJets_medium = " << selBJets_medium.size() << ")\n";
+        for(std::size_t idxSelBJet_medium = 0; idxSelBJet_medium < selBJets_medium.size(); ++idxSelBJet_medium)
+        {
+          std::cout << "selBJet_medium #" << idxSelBJet_medium << ":\n" << (*selBJets_medium[idxSelBJet_medium]);
         }
       }
       continue;
     }
     cutFlowTable.update(Form(">= %i loose b-jets || %i medium b-jet", minNumBJets_loose, minNumBJets_medium));
-    
-//--- build collections of generator level particles (before any cuts are applied, to check distributions in unbiased event samples)
+
     std::vector<GenLepton> genLeptons;
     std::vector<GenLepton> genElectrons;
     std::vector<GenLepton> genMuons;
     std::vector<GenHadTau> genHadTaus;
     std::vector<GenJet> genJets;
-    if ( isMC ) {
+    if(isMC)
+    {
+//--- build collections of generator level particles
       genLeptons = genLeptonReader->read();
-      for ( std::vector<GenLepton>::const_iterator genLepton = genLeptons.begin();
-                genLepton != genLeptons.end(); ++genLepton ) {
-        int abs_pdgId = std::abs(genLepton->pdgId());
-        if      ( abs_pdgId == 11 ) genElectrons.push_back(*genLepton);
-        else if ( abs_pdgId == 13 ) genMuons.push_back(*genLepton);
+      for(const GenLepton genLepton: genLeptons)
+      {
+        const int genLeptonType = getLeptonType(genLepton.pdgId());
+        switch(genLeptonType)
+        {
+          case kElectron: genElectrons.push_back(genLepton); break;
+          case kMuon:     genMuons.push_back(genLepton);     break;
+          default: assert(0);
+        }
       }
       genHadTaus = genHadTauReader->read();
       genJets = genJetReader->read();
-    }
 
 //--- match reconstructed to generator level particles
-    if ( isMC ) {
       muonGenMatcher.addGenLeptonMatch(preselMuons, genLeptons, 0.2);
       muonGenMatcher.addGenHadTauMatch(preselMuons, genHadTaus, 0.2);
-      muonGenMatcher.addGenJetMatch(preselMuons, genJets, 0.2);
+      muonGenMatcher.addGenJetMatch   (preselMuons, genJets,    0.2);
 
       electronGenMatcher.addGenLeptonMatch(preselElectrons, genLeptons, 0.2);
       electronGenMatcher.addGenHadTauMatch(preselElectrons, genHadTaus, 0.2);
-      electronGenMatcher.addGenJetMatch(preselElectrons, genJets, 0.2);
+      electronGenMatcher.addGenJetMatch   (preselElectrons, genJets,    0.2);
 
       hadTauGenMatcher.addGenLeptonMatch(selHadTaus, genLeptons, 0.2);
       hadTauGenMatcher.addGenHadTauMatch(selHadTaus, genHadTaus, 0.2);
-      hadTauGenMatcher.addGenJetMatch(selHadTaus, genJets, 0.2);
+      hadTauGenMatcher.addGenJetMatch   (selHadTaus, genJets,    0.2);
 
       jetGenMatcher.addGenLeptonMatch(selJets, genLeptons, 0.2);
       jetGenMatcher.addGenHadTauMatch(selJets, genHadTaus, 0.2);
-      jetGenMatcher.addGenJetMatch(selJets, genJets, 0.2);
+      jetGenMatcher.addGenJetMatch   (selJets, genJets,    0.2);
     }
 
     memPermutationWriter.write(
       {{preselLeptons, fakeableLeptons, tightLeptons}}, {{selBJets_loose, selBJets_medium}}, cleanedHadTaus
     );
-
-//--- sort the collections by their pT so that if we hit the limit of maximum number of objects
-//--- in the Writer classes, we will drop the softer objects
-    std::sort(preselMuons.begin(),     preselMuons.end(),     isHigherPt);
-    std::sort(preselElectrons.begin(), preselElectrons.end(), isHigherPt);
-    std::sort(fakeableHadTaus.begin(), fakeableHadTaus.end(), isHigherPt);
-    std::sort(selJets.begin(),         selJets.end(),         isHigherPt);
 
     eventInfoWriter.write(eventInfo);
     muonWriter->write(preselMuons);
@@ -656,35 +665,33 @@ int main(int argc, char* argv[])
     jetWriter->write(selJets);
     metWriter->write(met);
 
-    if ( isMC ) {
+    if(isMC)
+    {
       genLeptonWriter->write(convert_to_GenParticle(genLeptons));
       genHadTauWriter->write(convert_to_GenParticle(genHadTaus));
-      genJetWriter->write(convert_to_GenParticle(genJets));
+      genJetWriter   ->write(convert_to_GenParticle(genJets));
     }
 
-    //std::cout << "copying branches:" << std::endl;
-    for ( std::map<std::string, branchEntryBaseType*>::const_iterator branchEntry = branchesToKeep.begin();
-          branchEntry != branchesToKeep.end(); ++branchEntry ) {
-      //std::cout << branchEntry->second->outputBranchName_ << std::endl;
-      branchEntry->second->copyBranch();
+    for(const auto & branchEntry: branchesToKeep)
+    {
+      branchEntry.second->copyBranch();
     }
 
     outputTree->Fill();
-
     ++selectedEntries;
   }
 
-  std::cout << "num. Entries = " << numEntries << std::endl;
-  std::cout << " analyzed = " << analyzedEntries << std::endl;
-  std::cout << " selected = " << selectedEntries << std::endl;
+  std::cout << "num. Entries = "  << numEntries      << "\n"
+               " analyzed = "     << analyzedEntries << "\n"
+               " selected = "     << selectedEntries << "\n"
+               "cut-flow table\n" << cutFlowTable    << '\n'
+  ;
 
-  std::cout << "cut-flow table" << std::endl;
-  cutFlowTable.print(std::cout);
-  std::cout << std::endl;
-
-  std::cout << "output Tree:" << std::endl;
-  outputTree->Print();
-  //outputTree->Scan("*", "", "", 20, 0);
+  if(isDEBUG)
+  {
+    std::cout << "output Tree:\n";
+    outputTree->Print();
+  }
 
   delete run_lumi_eventSelector;
 
@@ -705,41 +712,57 @@ int main(int argc, char* argv[])
   delete genJetWriter;
 
 //--- copy histograms keeping track of number of processed events from input files to output file
-  std::cout << "copying histograms:" << std::endl;
+  std::cout << "copying histograms:\n";
   delete inputTree;
-  std::map<std::string, TH1*> histograms;
-  for ( std::vector<std::string>::const_iterator inputFileName = inputFiles.files().begin();
-        inputFileName != inputFiles.files().end(); ++inputFileName ) {
-    TFile* inputFile = new TFile(inputFileName->data());
-    if ( !inputFile ) 
-      throw cms::Exception("produceNtuple") 
-        << "Failed to open input File = '" << (*inputFileName) << "' !!\n";
-    
-    for ( vstring::const_iterator histogramName = copy_histograms.begin();
-          histogramName != copy_histograms.end(); ++histogramName ) {
-      if ( inputFiles.files().size() > 1 ) {
-        std::cout << " " << (*histogramName) << " from input File = '" << (*inputFileName) << "'" << std::endl;
-      } else { 
-        std::cout << " " << (*histogramName) << std::endl;
-      }
-      TH1* histogram_input = dynamic_cast<TH1*>(inputFile->Get(histogramName->data()));
-      if ( !histogram_input ) continue;
+  std::map<std::string, TH1 *> histograms;
+  for(const std::string & inputFileName: inputFiles.files())
+  {
+    TFile * const inputFile = new TFile(inputFileName.data());
+    if(! inputFile)
+    {
+      throw cmsException("produceNtuple", __LINE__)
+        << "Failed to open input File = '" << inputFileName << '\''
+      ;
+    }
 
-      TH1* histogram_output = histograms[*histogramName];
-      if ( histogram_output ) {
+    for(const std::string & histogramName: copy_histograms)
+    {
+      if(inputFiles.files().size() > 1)
+      {
+        std::cout << ' ' << histogramName << " from input File = '" << inputFileName << "'\n";
+      }
+      else
+      {
+        std::cout << ' ' << histogramName << '\n';
+      }
+      TH1 * const histogram_input = dynamic_cast<TH1 *>(inputFile->Get(histogramName.data()));
+      if(! histogram_input)
+      {
+        continue;
+      }
+
+      TH1 * histogram_output = histograms[histogramName];
+      if(histogram_output)
+      {
         histogram_output->Add(histogram_input);
-      } else {
-        if      ( dynamic_cast<TH1F*>(histogram_input) ) histogram_output = fs.make<TH1F>(*(dynamic_cast<TH1F*>(histogram_input)));
-        else if ( dynamic_cast<TH1D*>(histogram_input) ) histogram_output = fs.make<TH1D>(*(dynamic_cast<TH1D*>(histogram_input)));
+      }
+      else
+      {
+        if(dynamic_cast<TH1F *>(histogram_input))
+        {
+          histogram_output = fs.make<TH1F>(*(dynamic_cast<TH1F *>(histogram_input)));
+        }
+        else if(dynamic_cast<TH1D*>(histogram_input))
+        {
+          histogram_output = fs.make<TH1D>(*(dynamic_cast<TH1D *>(histogram_input)));
+        }
         assert(histogram_output);
-        histograms[*histogramName] = histogram_output;
+        histograms[histogramName] = histogram_output;
       }
     }
     delete inputFile;
   }
 
   clock.Show("produceNtuple");
-
   return EXIT_SUCCESS;
 }
-

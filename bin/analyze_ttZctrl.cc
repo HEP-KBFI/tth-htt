@@ -75,7 +75,6 @@
 #include <string> // std::string
 #include <vector> // std::vector<>
 #include <cstdlib> // EXIT_SUCCESS, EXIT_FAILURE
-#include <algorithm> // std::sort
 #include <fstream> // std::ofstream
 #include <assert.h> // assert
 
@@ -100,12 +99,7 @@ double getEvtWeight(double lumiScale, double genWeight, bool apply_genWeight, do
   evtWeight *= lumiScale;
   if ( apply_genWeight ) evtWeight *= boost::math::sign(genWeight);
   evtWeight *= pileupWeight;
-  if ( lheScale_option != kLHE_scale_central ) {	
-    if      ( lheScale_option == kLHE_scale_xDown ) evtWeight *= lheInfoReader->getWeight_scale_xDown();
-    else if ( lheScale_option == kLHE_scale_xUp   ) evtWeight *= lheInfoReader->getWeight_scale_xUp();
-    else if ( lheScale_option == kLHE_scale_yDown ) evtWeight *= lheInfoReader->getWeight_scale_yDown();
-    else if ( lheScale_option == kLHE_scale_yUp   ) evtWeight *= lheInfoReader->getWeight_scale_yUp();
-  }
+  evtWeight *= lheInfoReader->getWeight_scale(lheScale_option);
   for ( std::vector<const RecoJet*>::const_iterator jet = selJets.begin();
 	jet != selJets.end(); ++jet ) {
     evtWeight *= (*jet)->BtagWeight();
@@ -232,49 +226,13 @@ int main(int argc, char* argv[])
   double lumiScale = ( process_string != "data_obs" ) ? cfg_analyze.getParameter<double>("lumiScale") : 1.;
   bool apply_genWeight = cfg_analyze.getParameter<bool>("apply_genWeight"); 
   bool apply_trigger_bits = cfg_analyze.getParameter<bool>("apply_trigger_bits"); 
+  bool isDEBUG __attribute__((unused)) = cfg_analyze.getParameter<bool>("isDEBUG");
 
-  int jetPt_option = RecoJetReader::kJetPt_central;
-  int hadTauPt_option = RecoHadTauReader::kHadTauPt_central;
-  int lheScale_option = kLHE_scale_central;
-  int jetBtagSF_option = kBtag_central;
-  if ( central_or_shift != "central" ) {
-    TString central_or_shift_tstring = central_or_shift.data();
-    std::string shiftUp_or_Down = "";
-    if      ( central_or_shift_tstring.EndsWith("Up")   ) shiftUp_or_Down = "Up";
-    else if ( central_or_shift_tstring.EndsWith("Down") ) shiftUp_or_Down = "Down";
-    else throw cms::Exception("analyze_ttZctrl")
-      << "Invalid Configuration parameter 'central_or_shift' = " << central_or_shift << " !!\n";
-    if ( central_or_shift_tstring.BeginsWith("CMS_ttHl_btag") ) {
-      if ( isMC ) jetBtagSF_option = getBTagWeight_option(central_or_shift);
-      else throw cms::Exception("analyze_ttZctrl")
-	<< "Configuration parameter 'central_or_shift' = " << central_or_shift << " not supported for data !!\n";
-    } else if ( central_or_shift_tstring.BeginsWith("CMS_ttHl_JES") ) {
-      if ( isMC ) {
-  jetBtagSF_option = getBTagWeight_option(central_or_shift);
-	if      ( shiftUp_or_Down == "Up"   ) jetPt_option = RecoJetReader::kJetPt_jecUp;
-	else if ( shiftUp_or_Down == "Down" ) jetPt_option = RecoJetReader::kJetPt_jecDown;
-	else assert(0);
-      } else throw cms::Exception("analyze_ttZctrl")
-	  << "Configuration parameter 'central_or_shift' = " << central_or_shift << " not supported for data !!\n";
-    } else if ( central_or_shift_tstring.BeginsWith("CMS_ttHl_tauES") ) {
-      if ( isMC ) {
-	if      ( shiftUp_or_Down == "Up"   ) hadTauPt_option = RecoHadTauReader::kHadTauPt_shiftUp;
-	else if ( shiftUp_or_Down == "Down" ) hadTauPt_option = RecoHadTauReader::kHadTauPt_shiftDown;
-	else assert(0);
-      } else throw cms::Exception("analyze_ttZctrl")
-	  << "Configuration parameter 'central_or_shift' = " << central_or_shift << " not supported for data !!\n";
-    } else if ( central_or_shift_tstring.BeginsWith("CMS_ttHl_thu_shape") ) {
-      if ( isMC ) {
-        if      ( central_or_shift_tstring.EndsWith("x1Down") ) lheScale_option = kLHE_scale_xDown;
-        else if ( central_or_shift_tstring.EndsWith("x1Up")   ) lheScale_option = kLHE_scale_xUp;
-	else if ( central_or_shift_tstring.EndsWith("y1Down") ) lheScale_option = kLHE_scale_yDown;
-	else if ( central_or_shift_tstring.EndsWith("y1Up")   ) lheScale_option = kLHE_scale_yUp;
-	else assert(0);
-      } else throw cms::Exception("analyze_ttZctrl")
-	  << "Configuration parameter 'central_or_shift' = " << central_or_shift << " not supported for data !!\n";
-    } else throw cms::Exception("analyze_ttZctrl")
-	<< "Invalid Configuration parameter 'central_or_shift' = " << central_or_shift << " !!\n";
-  }
+  const int jetPt_option     = getJet_option       (central_or_shift, isMC);
+  const int lheScale_option  = getLHEscale_option  (central_or_shift, isMC);
+  const int jetBtagSF_option = getBTagWeight_option(central_or_shift, isMC);
+  const int hadTauPt_option  = getHadTauPt_option  (central_or_shift, isMC);
+  const int met_option       = getMET_option       (central_or_shift, isMC);
 
   edm::ParameterSet cfg_dataToMCcorrectionInterface;
   cfg_dataToMCcorrectionInterface.addParameter<std::string>("era", era_string);
@@ -354,7 +312,7 @@ int main(int argc, char* argv[])
   hadTauSelector.set_min_antiMuon(hadTauSelection_antiMuon);
   
   RecoJetReader* jetReader = new RecoJetReader(era, isMC, branchName_jets);
-  jetReader->setJetPt_central_or_shift(jetPt_option);
+  jetReader->setPtMass_central_or_shift(jetPt_option);
   jetReader->setBranchName_BtagWeight(jetBtagSF_option);
   inputTree -> registerReader(jetReader);
   RecoJetCollectionGenMatcher jetGenMatcher;
@@ -365,6 +323,7 @@ int main(int argc, char* argv[])
 
 //--- declare missing transverse energy
   RecoMEtReader* metReader = new RecoMEtReader(era, isMC, branchName_met);
+  metReader->setMEt_central_or_shift(met_option);
   inputTree -> registerReader(metReader);
 
   GenLeptonReader* genLeptonReader = 0;
@@ -787,11 +746,7 @@ int main(int argc, char* argv[])
     }
   
 //--- apply preselection
-    std::vector<const RecoLepton*> preselLeptons;    
-    preselLeptons.reserve(preselElectrons.size() + preselMuons.size());
-    preselLeptons.insert(preselLeptons.end(), preselElectrons.begin(), preselElectrons.end());
-    preselLeptons.insert(preselLeptons.end(), preselMuons.begin(), preselMuons.end());
-    std::sort(preselLeptons.begin(), preselLeptons.end(), isHigherPt);
+    std::vector<const RecoLepton*> preselLeptons = mergeLeptonCollections(preselElectrons, preselMuons, isHigherPt);
     // require two or more leptons passing loose preselection criteria 
     if ( !(preselLeptons.size() >= 2) ) {
       if ( run_lumi_eventSelector ) {
@@ -858,11 +813,7 @@ int main(int argc, char* argv[])
       -1., -1., 0., 1.);
   
 //--- apply final event selection 
-    std::vector<const RecoLepton*> selLeptons;    
-    selLeptons.reserve(selElectrons.size() + selMuons.size());
-    selLeptons.insert(selLeptons.end(), selElectrons.begin(), selElectrons.end());
-    selLeptons.insert(selLeptons.end(), selMuons.begin(), selMuons.end());
-    std::sort(selLeptons.begin(), selLeptons.end(), isHigherPt);
+    std::vector<const RecoLepton*> selLeptons = mergeLeptonCollections(selElectrons, selMuons, isHigherPt);
     // require two or more leptons passing tight selection criteria of final event selection 
     if ( !(selLeptons.size() >= 2) ) {
       if ( run_lumi_eventSelector ) {
@@ -897,11 +848,7 @@ int main(int argc, char* argv[])
 	selLepton_lead, selLepton_sublead, 0, 0, selJets);
     }
   
-    std::vector<const RecoLepton*> tightLeptons;    
-    tightLeptons.reserve(tightElectrons.size() + tightMuons.size());
-    tightLeptons.insert(tightLeptons.end(), tightElectrons.begin(), tightElectrons.end());
-    tightLeptons.insert(tightLeptons.end(), tightMuons.begin(), tightMuons.end());
-    std::sort(tightLeptons.begin(), tightLeptons.end(), isHigherPt);
+    std::vector<const RecoLepton*> tightLeptons = mergeLeptonCollections(tightElectrons, tightMuons, isHigherPt);
     if ( !(tightLeptons.size() <= 3) ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS tightLeptons selection." << std::endl;

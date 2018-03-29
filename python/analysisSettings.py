@@ -1,5 +1,5 @@
 # Integrated luminosity
-lumi_2017 = 41.96e+3 # 1/pb
+lumi_2017 = 41.298e+3 # 1/pb
 
 # Systematic uncertainties
 
@@ -71,12 +71,11 @@ class systematics(object):
     full = jt_norm + jt_shape + et_shift + mt_shift
 
   class Electron_energy(object):
-    ES       = [ "CMS_ttHl_electronESUp",       "CMS_ttHl_electronESDown"       ]
     ER       = [ "CMS_ttHl_electronERUp",       "CMS_ttHl_electronERDown"       ]
     ESEndcap = [ "CMS_ttHl_electronESEndcapUp", "CMS_ttHl_electronESEndcapDown" ]
     ESBarrel = [ "CMS_ttHl_electronESBarrelUp", "CMS_ttHl_electronESBarrelDown" ]
 
-    full = ES + ER + ESEndcap + ESBarrel
+    full = ER + ESEndcap + ESBarrel
 
   class Muon_energy(object):
     ER        = [ "CMS_ttHl_muonERUp",        "CMS_ttHl_muonERDown"        ]

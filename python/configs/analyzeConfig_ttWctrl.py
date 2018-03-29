@@ -14,13 +14,13 @@ class analyzeConfig_ttWctrl(analyzeConfig):
 
   """
   def __init__(self, configDir, outputDir, executable_analyze, cfgFile_analyze, samples, hadTau_selection, central_or_shifts,
-               max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,
+               max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
                histograms_to_fit, select_rle_output = False,
-               executable_prep_dcard="prepareDatacards", verbose = False, dry_run = False):
+               executable_prep_dcard="prepareDatacards", verbose = False, dry_run = False, isDebug = False):
     analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "ttWctrl", central_or_shifts,
-      max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,
+      max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
       histograms_to_fit, executable_prep_dcard = executable_prep_dcard, verbose = verbose,
-      dry_run = dry_run)
+      dry_run = dry_run, isDebug = isDebug)
 
     self.samples = samples
 
@@ -54,16 +54,10 @@ class analyzeConfig_ttWctrl(analyzeConfig):
     lines.append("process.fwliteOutput.fileName = cms.string('%s')" % os.path.basename(jobOptions['histogramFile']))
     lines.append("process.analyze_ttWctrl.process = cms.string('%s')" % jobOptions['sample_category'])
     lines.append("process.analyze_ttWctrl.era = cms.string('%s')" % self.era)
-    lines.append("process.analyze_ttWctrl.triggers_1e = cms.vstring(%s)" % self.triggers_1e)
-    lines.append("process.analyze_ttWctrl.use_triggers_1e = cms.bool(%s)" % ("1e" in jobOptions['triggers']))
-    lines.append("process.analyze_ttWctrl.triggers_2e = cms.vstring(%s)" % self.triggers_2e)
-    lines.append("process.analyze_ttWctrl.use_triggers_2e = cms.bool(%s)" % ("2e" in jobOptions['triggers']))
-    lines.append("process.analyze_ttWctrl.triggers_1mu = cms.vstring(%s)" % self.triggers_1mu)
-    lines.append("process.analyze_ttWctrl.use_triggers_1mu = cms.bool(%s)" % ("1mu" in jobOptions['triggers']))
-    lines.append("process.analyze_ttWctrl.triggers_2mu = cms.vstring(%s)" % self.triggers_2mu)
-    lines.append("process.analyze_ttWctrl.use_triggers_2mu = cms.bool(%s)" % ("2mu" in jobOptions['triggers']))
-    lines.append("process.analyze_ttWctrl.triggers_1e1mu = cms.vstring(%s)" % self.triggers_1e1mu)
-    lines.append("process.analyze_ttWctrl.use_triggers_1e1mu = cms.bool(%s)" % ("1e1mu" in jobOptions['triggers']))
+    for trigger in [ '1e', '1mu', '2e', '2mu', '1e1mu' ]:
+      lines.append("process.analyze_ttWctrl.triggers_%s = cms.vstring(%s)" % \
+        (trigger, self.whitelist_triggers(getattr(self, 'triggers_%s' % trigger), jobOptions['process_name_specific'])))
+      lines.append("process.analyze_ttWctrl.use_triggers_%s = cms.bool(%s)" % (trigger, trigger in jobOptions['triggers']))
     lines.append("process.analyze_ttWctrl.hadTauSelection = cms.string('Tight|%s')" % jobOptions['hadTau_selection'])
     lines.append("process.analyze_ttWctrl.use_HIP_mitigation_mediumMuonId = cms.bool(%s)" % jobOptions['use_HIP_mitigation_mediumMuonId'])
     lines.append("process.analyze_ttWctrl.isMC = cms.bool(%s)" % jobOptions['is_mc'])
@@ -71,6 +65,7 @@ class analyzeConfig_ttWctrl(analyzeConfig):
     lines.append("process.analyze_ttWctrl.lumiScale = cms.double(%f)" % jobOptions['lumi_scale'])
     lines.append("process.analyze_ttWctrl.apply_trigger_bits = cms.bool(%s)" % jobOptions['apply_trigger_bits'])
     lines.append("process.analyze_ttWctrl.selEventsFileName_output = cms.string('%s')" % jobOptions['rleOutputFile'])
+    lines.append("process.analyze_ttWctrl.isDEBUG = cms.bool(%s)" % self.isDebug)
     create_cfg(self.cfgFile_analyze, jobOptions['cfgFile_modified'], lines)
 
   def create(self):
@@ -108,7 +103,7 @@ class analyzeConfig_ttWctrl(analyzeConfig):
       if not sample_info["use_it"] or sample_info["sample_category"] in [ "additional_signal_overlap", "background_data_estimate" ]:
         continue
       logging.info("Checking input files for sample %s" % sample_info["process_name_specific"])
-      inputFileLists[sample_name] = generateInputFileList(sample_name, sample_info, self.max_files_per_job, self.debug)
+      inputFileLists[sample_name] = generateInputFileList(sample_info, self.max_files_per_job, self.check_input_files)
 
     for sample_name, sample_info in self.samples.items():
       if not sample_info["use_it"] or sample_info["sample_category"] in [ "additional_signal_overlap", "background_data_estimate" ]:
@@ -160,6 +155,7 @@ class analyzeConfig_ttWctrl(analyzeConfig):
             'lumi_scale' : 1. if not (self.use_lumi and is_mc) else sample_info["xsection"] * self.lumi / sample_info["nof_events"],
             'apply_genWeight' : sample_info["genWeight"] if (is_mc and "genWeight" in sample_info.keys()) else False,
             'apply_trigger_bits' : (is_mc and sample_info["reHLT"]) or not is_mc,
+            'process_name_specific': sample_info['process_name_specific'],
           }
           self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job])
 
@@ -217,7 +213,7 @@ class analyzeConfig_ttWctrl(analyzeConfig):
         executable      = self.executable_analyze,
         sbatchFile      = self.sbatchFile_analyze,
         jobOptions      = self.jobOptions_analyze,
-        key_input_file  = 'ntupleFiles', 
+        key_input_file  = 'ntupleFiles',
         key_output_file = 'histogramFile',
       )
 

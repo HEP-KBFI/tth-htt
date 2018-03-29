@@ -3,6 +3,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMEtReader.h" // RecoMEtReader::kMEt_*
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // getBranchName_MEt()
 #include "tthAnalysis/HiggsToTauTau/interface/BranchAddressInitializer.h" // BranchAddressInitializer, TTree, Form()
+#include "tthAnalysis/HiggsToTauTau/interface/sysUncertOptions.h" // kMET_*
 
 RecoMEtWriter::RecoMEtWriter(int era,
                              bool isMC)
@@ -14,6 +15,8 @@ RecoMEtWriter::RecoMEtWriter(int era,
                              const std::string & branchName_obj)
   : era_(era)
   , isMC_(isMC)
+  , ptPhiOption_(isMC_ ? kMEt_central : kMEt_central_nonNominal)
+  , write_ptPhi_systematics_(false)
   , branchName_obj_(branchName_obj)
 {
   setBranchNames();
@@ -22,29 +25,61 @@ RecoMEtWriter::RecoMEtWriter(int era,
 RecoMEtWriter::~RecoMEtWriter()
 {}
 
-void RecoMEtWriter::setBranchNames()
+void
+RecoMEtWriter::setBranchNames()
 {
-  const std::string branchName_obj_pt  = Form("%s_pt",  branchName_obj_.data());
-  const std::string branchName_obj_phi = Form("%s_phi", branchName_obj_.data());
-  const int met_option_limit = isMC_ ? RecoMEtReader::kMEt_shifted_UnclusteredEnDown : RecoMEtReader::kMEt_central;
-  for(int met_option = RecoMEtReader::kMEt_central; met_option <= met_option_limit; ++met_option)
+  for(int met_option = kMEt_central_nonNominal; met_option <= kMEt_shifted_UnclusteredEnDown; ++met_option)
   {
-    branchName_pt_[met_option]  = getBranchName_MEt(era_, branchName_obj_pt,  met_option);
-    branchName_phi_[met_option] = getBranchName_MEt(era_, branchName_obj_phi, met_option);
+    branchName_pt_[met_option]  = getBranchName_MEt(branchName_obj_, era_, met_option, true);
+    branchName_phi_[met_option] = getBranchName_MEt(branchName_obj_, era_, met_option, false);
   }
   branchName_covXX_ = Form("%s_%s", branchName_obj_.data(), "covXX");
   branchName_covXY_ = Form("%s_%s", branchName_obj_.data(), "covXY");
   branchName_covYY_ = Form("%s_%s", branchName_obj_.data(), "covYY");
 }
 
-void RecoMEtWriter::setBranches(TTree * tree)
+void
+RecoMEtWriter::setPtPhi_central_or_shift(int central_or_shift)
+{
+  if(! isMC_ && central_or_shift != kMEt_central_nonNominal)
+  {
+    throw cmsException(this, __func__, __LINE__)
+      << "Data has only non-nominal pt and phi"
+    ;
+  }
+  ptPhiOption_ = central_or_shift;
+}
+
+void
+RecoMEtWriter::write_ptPhi_systematics(bool flag)
+{
+  if(! isMC_ && flag)
+  {
+    throw cmsException(this, __func__, __LINE__)
+      << "Cannot write MET systematics in data"
+    ;
+  }
+  write_ptPhi_systematics_ = flag;
+}
+
+void
+RecoMEtWriter::setBranches(TTree * tree)
 {
   BranchAddressInitializer bai(tree);
-  const int met_option_limit = isMC_ ? RecoMEtReader::kMEt_shifted_UnclusteredEnDown : RecoMEtReader::kMEt_central;
-  for(int met_option = RecoMEtReader::kMEt_central; met_option <= met_option_limit; ++met_option)
+
+  bai.setBranch(met_.systematics_[ptPhiOption_].pt_,  branchName_pt_[ptPhiOption_]);
+  bai.setBranch(met_.systematics_[ptPhiOption_].phi_, branchName_phi_[ptPhiOption_]);
+  if(write_ptPhi_systematics_)
   {
-    bai.setBranch(met_.systematics_[met_option].pt_,  branchName_pt_[met_option]);
-    bai.setBranch(met_.systematics_[met_option].phi_, branchName_phi_[met_option]);
+    for(int met_option = kMEt_central_nonNominal; met_option <= kMEt_shifted_UnclusteredEnDown; ++met_option)
+    {
+      if(met_option == ptPhiOption_)
+      {
+        continue; // do not overwrite the choice of branch
+      }
+      bai.setBranch(met_.systematics_[met_option].pt_, branchName_pt_[met_option]);
+      bai.setBranch(met_.systematics_[met_option].phi_, branchName_phi_[met_option]);
+    }
   }
   bai.setBranch(met_.covXX_, branchName_covXX_);
   bai.setBranch(met_.covXY_, branchName_covXY_);

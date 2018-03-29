@@ -26,6 +26,12 @@ hltPath_LeptonFakeRate::hltPath_LeptonFakeRate(const std::string & branchName,
   , is_trigger_2e_(is_trigger_2e)
 {}
 
+std::string 
+hltPath_LeptonFakeRate::getPathName() const
+{
+  return branchName_;
+}
+
 double
 hltPath_LeptonFakeRate::getMinJetPt() const
 {

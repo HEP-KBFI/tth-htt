@@ -21,11 +21,11 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
   def __init__(self, configDir, outputDir, executable_analyze, samples, charge_selections,
                jet_minPt, jet_maxPt, jet_minAbsEta, jet_maxAbsEta, hadTau_selection_denominator,
                hadTau_selections_numerator, absEtaBins, ptBins, central_or_shifts,
-               max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,
-               executable_comp_jetToTauFakeRate, verbose = False, dry_run = False):
+               max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
+               executable_comp_jetToTauFakeRate, verbose = False, dry_run = False, isDebug = False):
     analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "jetToTauFakeRate", central_or_shifts,
-      max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,
-      [], verbose = verbose, dry_run = dry_run)
+      max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
+      [], verbose = verbose, dry_run = dry_run, isDebug = isDebug)
 
     self.samples = samples
 
@@ -67,12 +67,10 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
     lines.append("process.fwliteOutput.fileName = cms.string('%s')" % os.path.basename(jobOptions['histogramFile']))
     lines.append("process.analyze_jetToTauFakeRate.process = cms.string('%s')" % jobOptions['sample_category'])
     lines.append("process.analyze_jetToTauFakeRate.era = cms.string('%s')" % self.era)
-    lines.append("process.analyze_jetToTauFakeRate.triggers_1e = cms.vstring(%s)" % self.triggers_1e)
-    lines.append("process.analyze_jetToTauFakeRate.use_triggers_1e = cms.bool(%s)" % ("1e" in jobOptions['triggers']))
-    lines.append("process.analyze_jetToTauFakeRate.triggers_1mu = cms.vstring(%s)" % self.triggers_1mu)
-    lines.append("process.analyze_jetToTauFakeRate.use_triggers_1mu = cms.bool(%s)" % ("1mu" in jobOptions['triggers']))
-    lines.append("process.analyze_jetToTauFakeRate.triggers_1e1mu = cms.vstring(%s)" % self.triggers_1e1mu)
-    lines.append("process.analyze_jetToTauFakeRate.use_triggers_1e1mu = cms.bool(%s)" % ("1e1mu" in jobOptions['triggers']))
+    for trigger in [ '1e', '1mu', '1e1mu' ]:
+      lines.append("process.analyze_jetToTauFakeRate.triggers_%s = cms.vstring(%s)" % \
+        (trigger, self.whitelist_triggers(getattr(self, 'triggers_%s' % trigger), jobOptions['process_name_specific'])))
+      lines.append("process.analyze_jetToTauFakeRate.use_triggers_%s = cms.bool(%s)" % (trigger, trigger in jobOptions['triggers']))
     lines.append("process.analyze_jetToTauFakeRate.chargeSelection = cms.string('%s')" % jobOptions['charge_selection'])
     lines.append("process.analyze_jetToTauFakeRate.jet_minPt = cms.double('%f')" % jobOptions['jet_minPt'])
     lines.append("process.analyze_jetToTauFakeRate.jet_maxPt = cms.double('%f')" % jobOptions['jet_maxPt'])
@@ -90,6 +88,7 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
     lines.append("process.analyze_jetToTauFakeRate.lumiScale = cms.double(%f)" % jobOptions['lumi_scale'])
     lines.append("process.analyze_jetToTauFakeRate.apply_genWeight = cms.bool(%s)" % jobOptions['apply_genWeight'])
     lines.append("process.analyze_jetToTauFakeRate.apply_trigger_bits = cms.bool(%s)" % jobOptions['apply_trigger_bits'])
+    lines.append("process.analyze_jetToTauFakeRate.isDEBUG = cms.bool(%s)" % self.isDebug)
     create_cfg(self.cfgFile_analyze, jobOptions['cfgFile_modified'], lines)
 
   def createCfg_comp_jetToTauFakeRate(self, jobOptions):
@@ -174,7 +173,7 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
       if not sample_info["use_it"] or sample_info["sample_category"] in [ "additional_signal_overlap", "background_data_estimate" ]:
         continue
       logging.info("Checking input files for sample %s" % sample_info["process_name_specific"])
-      inputFileLists[sample_name] = generateInputFileList(sample_name, sample_info, self.max_files_per_job, self.debug)
+      inputFileLists[sample_name] = generateInputFileList(sample_info, self.max_files_per_job, self.check_input_files)
 
     self.inputFileIds = {}
     for sample_name, sample_info in self.samples.items():
@@ -238,6 +237,7 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
               'lumi_scale' : 1. if not (self.use_lumi and is_mc) else sample_info["xsection"] * self.lumi / sample_info["nof_events"],
               'apply_genWeight' : sample_info["genWeight"] if (is_mc and "genWeight" in sample_info.keys()) else False,
               'apply_trigger_bits' : (is_mc and sample_info["reHLT"]) or not is_mc,
+              'process_name_specific': sample_info['process_name_specific'],
             }
             self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job])
 

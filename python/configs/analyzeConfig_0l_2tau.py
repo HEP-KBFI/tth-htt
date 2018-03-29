@@ -42,12 +42,12 @@ class analyzeConfig_0l_2tau(analyzeConfig):
   """
   def __init__(self, configDir, outputDir, executable_analyze, cfgFile_analyze, samples, hadTau_selection,
                hadTau_charge_selections, applyFakeRateWeights, central_or_shifts,
-               max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,
+               max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
                executable_addBackgrounds, executable_addBackgroundJetToTauFakes, histograms_to_fit,
-               select_rle_output = False, verbose = False, dry_run = False):
+               select_rle_output = False, verbose = False, dry_run = False, isDebug = False):
     analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "0l_2tau", central_or_shifts,
-      max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,
-      histograms_to_fit, verbose = verbose, dry_run = dry_run)
+      max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
+      histograms_to_fit, verbose = verbose, dry_run = dry_run, isDebug = isDebug)
 
     self.samples = samples
 
@@ -114,8 +114,10 @@ class analyzeConfig_0l_2tau(analyzeConfig):
     histogramDir = getHistogramDir(jobOptions['hadTau_selection'], hadTau_frWeight, jobOptions['hadTau_charge_selection'])
     lines.append("process.analyze_0l_2tau.histogramDir = cms.string('%s')" % histogramDir)
     lines.append("process.analyze_0l_2tau.era = cms.string('%s')" % self.era)
-    lines.append("process.analyze_0l_2tau.triggers_2tau = cms.vstring(%s)" % self.triggers_2tau)
-    lines.append("process.analyze_0l_2tau.use_triggers_2tau = cms.bool(%s)" % ("2tau" in jobOptions['triggers']))
+    for trigger in [ '2tau' ]:
+      lines.append("process.analyze_0l_2tau.triggers_%s = cms.vstring(%s)" % \
+        (trigger, self.whitelist_triggers(getattr(self, 'triggers_%s' % trigger), jobOptions['process_name_specific'])))
+      lines.append("process.analyze_0l_2tau.use_triggers_%s = cms.bool(%s)" % (trigger, trigger in jobOptions['triggers']))
     lines.append("process.analyze_0l_2tau.hadTauSelection = cms.string('%s')" % jobOptions['hadTau_selection'])
     lines.append("process.analyze_0l_2tau.hadTauChargeSelection = cms.string('%s')" % jobOptions['hadTau_charge_selection'])
     lines.append("process.analyze_0l_2tau.apply_hadTauGenMatching = cms.bool(%s)" % (jobOptions['apply_hadTauGenMatching'] and jobOptions['is_mc']))
@@ -141,6 +143,7 @@ class analyzeConfig_0l_2tau(analyzeConfig):
     lines.append("process.analyze_0l_2tau.apply_genWeight = cms.bool(%s)" % jobOptions['apply_genWeight'])
     lines.append("process.analyze_0l_2tau.apply_trigger_bits = cms.bool(%s)" % jobOptions['apply_trigger_bits'])
     lines.append("process.analyze_0l_2tau.selEventsFileName_output = cms.string('%s')" % jobOptions['rleOutputFile'])
+    lines.append("process.analyze_0l_2tau.isDEBUG = cms.bool(%s)" % self.isDebug)
     create_cfg(self.cfgFile_analyze, jobOptions['cfgFile_modified'], lines)
 
   def createCfg_makePlots_mcClosure(self, jobOptions):
@@ -212,7 +215,7 @@ class analyzeConfig_0l_2tau(analyzeConfig):
       if not sample_info["use_it"] or sample_info["sample_category"] in [ "additional_signal_overlap", "background_data_estimate" ]:
         continue
       logging.info("Checking input files for sample %s" % sample_info["process_name_specific"])
-      inputFileLists[sample_name] = generateInputFileList(sample_name, sample_info, self.max_files_per_job, self.debug)
+      inputFileLists[sample_name] = generateInputFileList(sample_info, self.max_files_per_job, self.check_input_files)
 
     for hadTau_selection in self.hadTau_selections:
       for hadTau_frWeight in self.hadTau_frWeights:

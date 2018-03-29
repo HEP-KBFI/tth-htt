@@ -1,7 +1,8 @@
 #ifndef tthAnalysis_HiggsToTauTau_JetToTauFakeRateInterface_h
 #define tthAnalysis_HiggsToTauTau_JetToTauFakeRateInterface_h
 
-#include "tthAnalysis/HiggsToTauTau/interface/JetToTauFakeRateWeightEntry.h" // JetToTauFakeRateWeightEntry, kFRjt_central
+#include "tthAnalysis/HiggsToTauTau/interface/JetToTauFakeRateWeightEntry.h" // JetToTauFakeRateWeightEntry
+#include "tthAnalysis/HiggsToTauTau/interface/sysUncertOptions.h" // kFRjt_*
 
 #include <vector> // std::vector<>
 

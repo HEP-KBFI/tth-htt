@@ -48,5 +48,7 @@ process.addMEM_3l_1tau = cms.PSet(
 
     central_or_shift = cms.vstring(
         "central",
-    )
+    ),
+    useNonNominal = cms.bool(False),
+    dryRun = cms.bool(False),
 )

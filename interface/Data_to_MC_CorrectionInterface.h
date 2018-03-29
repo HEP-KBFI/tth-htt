@@ -1,6 +1,8 @@
 #ifndef tthAnalysis_HiggsToTauTau_Data_to_MC_CorrectionInterface_h
 #define tthAnalysis_HiggsToTauTau_Data_to_MC_CorrectionInterface_h
 
+#include "tthAnalysis/HiggsToTauTau/interface/sysUncertOptions.h" // FRet, FRmt
+
 #include <FWCore/ParameterSet/interface/ParameterSet.h> // edm::ParameterSet
 
 // forward declarations
@@ -113,8 +115,8 @@ public:
   int hadTauSelection_; // 1: VVLoose, 2: VLoose, 3: Loose, 4: Medium, 5: Tight, 6: VTight
   int hadTauSelection_antiElectron_[3];
   int hadTauSelection_antiMuon_[3];
-  int eToTauFakeRate_option_;
-  int muToTauFakeRate_option_;
+  FRet eToTauFakeRate_option_;
+  FRmt muToTauFakeRate_option_;
 
   int numLeptons_;
   std::vector<int> lepton_type_;

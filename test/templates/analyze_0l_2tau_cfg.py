@@ -66,14 +66,14 @@ process.analyze_0l_2tau = cms.PSet(
     branchName_jets = cms.string('Jet'),
     branchName_met = cms.string('MET'),
 
-    branchName_genLeptons1 = cms.string('GenLep'),
-    branchName_genLeptons2 = cms.string(''),
+    branchName_genLeptons = cms.string('GenLep'),
     branchName_genHadTaus = cms.string('GenVisTau'),
     branchName_genJets = cms.string('GenJet'),
 
     selEventsFileName_input = cms.string(''),
     selEventsFileName_output = cms.string(''),
     selectBDT = cms.bool(False),
+    isDEBUG = cms.bool(False),
 )
 
 #--------------------------------------------------------------------------------

@@ -14,12 +14,12 @@ class analyzeConfig_charge_flip(analyzeConfig):
 
   """
   def __init__(self, configDir, outputDir, executable_analyze, samples, lepton_selections, central_or_shifts,
-               max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,
+               max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
                histograms_to_fit = [], select_rle_output = False, executable_prep_dcard="prepareDatacard",
-               verbose = False, dry_run = True):
+               verbose = False, dry_run = True, isDebug = False):
     analyzeConfig.__init__(self, configDir, outputDir, executable_analyze, "charge_flip", central_or_shifts,
-      max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,
-      histograms_to_fit, verbose = verbose, dry_run = dry_run)
+      max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
+      histograms_to_fit, verbose = verbose, dry_run = dry_run, isDebug = isDebug)
 
     self.samples = samples
 
@@ -69,14 +69,10 @@ class analyzeConfig_charge_flip(analyzeConfig):
     lines.append("process.fwliteOutput.fileName = cms.string('%s')" % os.path.basename(jobOptions["histogramFile"]))
     lines.append("process.analyze_charge_flip.process = cms.string('%s')" % jobOptions["sample_category"])
     lines.append("process.analyze_charge_flip.era = cms.string('%s')" % self.era)
-    lines.append("process.analyze_charge_flip.triggers_1e = cms.vstring(%s)" % self.triggers_1e)
-    lines.append("process.analyze_charge_flip.use_triggers_1e = cms.bool(%s)" % ("1e" in jobOptions["triggers"]))
-    lines.append("process.analyze_charge_flip.triggers_2e = cms.vstring(%s)" % self.triggers_2e)
-    lines.append("process.analyze_charge_flip.use_triggers_2e = cms.bool(%s)" % ("2e" in jobOptions["triggers"]))
-    lines.append("process.analyze_charge_flip.triggers_1mu = cms.vstring(%s)" % self.triggers_1mu)
-    lines.append("process.analyze_charge_flip.use_triggers_1mu = cms.bool(%s)" % ("1mu" in jobOptions["triggers"]))
-    lines.append("process.analyze_charge_flip.triggers_2mu = cms.vstring(%s)" % self.triggers_2mu)
-    lines.append("process.analyze_charge_flip.use_triggers_2mu = cms.bool(%s)" % ("2mu" in jobOptions["triggers"]))
+    for trigger in [ '1e', '1mu', '2e', '2mu' ]:
+      lines.append("process.analyze_charge_flip.triggers_%s = cms.vstring(%s)" % \
+        (trigger, self.whitelist_triggers(getattr(self, 'triggers_%s' % trigger), jobOptions['process_name_specific'])))
+      lines.append("process.analyze_charge_flip.use_triggers_%s = cms.bool(%s)" % (trigger, trigger in jobOptions['triggers']))
     lines.append("process.analyze_charge_flip.leptonSelection = cms.string('%s')" % jobOptions["lepton_selection"])
     lines.append("process.analyze_charge_flip.isMC = cms.bool(%s)" % jobOptions["is_mc"])
     lines.append("process.analyze_charge_flip.central_or_shift = cms.string('%s')" % jobOptions["central_or_shift"])
@@ -86,6 +82,7 @@ class analyzeConfig_charge_flip(analyzeConfig):
     lines.append("process.analyze_charge_flip.selEventsFileName_output = cms.string('%s')" % jobOptions["rleOutputFile"])
     lines.append("process.analyze_charge_flip.use_HIP_mitigation_mediumMuonId = cms.bool(%s)" % jobOptions["use_HIP_mitigation_mediumMuonId"])
     lines.append("process.analyze_charge_flip.applyFakeRateWeights = cms.string('%s')" % jobOptions["applyFakeRateWeights"])
+    lines.append("process.analyze_charge_flip.isDEBUG = cms.bool(%s)" % self.isDebug)
 
     create_cfg(self.cfgFile_analyze_original, jobOptions["cfgFile_modified"], lines)
 
@@ -165,7 +162,7 @@ class analyzeConfig_charge_flip(analyzeConfig):
       if not sample_info["use_it"] or sample_info["sample_category"] in [ "additional_signal_overlap", "background_data_estimate" ]:
         continue
       logging.info("Checking input files for sample %s" % sample_info["process_name_specific"])
-      inputFileLists[sample_name] = generateInputFileList(sample_name, sample_info, self.max_files_per_job, self.debug)
+      inputFileLists[sample_name] = generateInputFileList(sample_info, self.max_files_per_job, self.check_input_files)
 
     for lepton_selection in self.lepton_selections:
       for sample_name, sample_info in self.samples.items():
@@ -173,7 +170,7 @@ class analyzeConfig_charge_flip(analyzeConfig):
           continue
         process_name = sample_info["process_name_specific"]
 
-        logging.info("Creating configuration files to run '%s' for sample %s" % (self.executable_analyze, process_name))  
+        logging.info("Creating configuration files to run '%s' for sample %s" % (self.executable_analyze, process_name))
         sample_category = sample_info["sample_category"]
         is_mc = (sample_info["type"] == "mc")
         is_signal = (sample_category == "signal")
@@ -183,7 +180,7 @@ class analyzeConfig_charge_flip(analyzeConfig):
             #if central_or_shift != "central" and not (lepton_and_hadTau_selection.startswith("Tight") and lepton_charge_selection == "SS"):
             #  continue
             if central_or_shift != "central" and not is_mc:
-              continue                
+              continue
 
             # build config files for executing analysis code
             key_dir = getKey(process_name, lepton_selection)
@@ -214,7 +211,8 @@ class analyzeConfig_charge_flip(analyzeConfig):
               'central_or_shift' : central_or_shift,
               'lumi_scale' : 1. if not (self.use_lumi and is_mc) else sample_info["xsection"] * self.lumi / sample_info["nof_events"],
               'apply_genWeight' : sample_info["genWeight"] if (is_mc and "genWeight" in sample_info.keys()) else False,
-              'apply_trigger_bits' : (is_mc and sample_info["reHLT"]) or not is_mc
+              'apply_trigger_bits' : (is_mc and sample_info["reHLT"]) or not is_mc,
+              'process_name_specific': sample_info['process_name_specific'],
             }
 
             #applyFakeRateWeights = self.applyFakeRateWeights

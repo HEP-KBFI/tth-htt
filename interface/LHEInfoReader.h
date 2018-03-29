@@ -9,8 +9,6 @@
 #include <vector> // std::vector<>
 #include <map> // std::map<,>
 
-enum { kLHE_scale_central, kLHE_scale_xUp, kLHE_scale_xDown, kLHE_scale_yUp, kLHE_scale_yDown };
-
 class LHEInfoReader
   : public ReaderBase
 {
@@ -35,6 +33,8 @@ public:
   double getWeight_scale_xDown() const;
   double getWeight_scale_yUp() const;
   double getWeight_scale_yDown() const;
+
+  double getWeight_scale(int central_or_shift) const;
 
   int getNumWeights_pdf() const;
   double getWeight_pdf(unsigned int idx) const;

@@ -5,23 +5,23 @@
 
 RecoJet::RecoJet(const GenJet & jet,
                  Double_t charge,
-                 Double_t jecUncertTotal,
                  Double_t BtagCSV,
                  Double_t BtagWeight,
                  Double_t QGDiscr,
                  Double_t pullEta,
                  Double_t pullPhi,
                  Double_t pullMag,
+                 Int_t jetId,
                  Int_t idx)
   : RecoJetBase(jet, idx)
   , charge_(charge)
-  , jecUncertTotal_(jecUncertTotal)
   , BtagCSV_(BtagCSV)
   , BtagWeight_(BtagWeight)
   , QGDiscr_(QGDiscr)
   , pullEta_(pullEta)
   , pullPhi_(pullPhi)
   , pullMag_(pullMag)
+  , jetId_(jetId)
 {}
 
 RecoJet::~RecoJet()
@@ -31,12 +31,6 @@ Double_t
 RecoJet::charge() const
 {
   return charge_;
-}
-
-Double_t
-RecoJet::jecUncertTotal() const
-{
-  return jecUncertTotal_;
 }
 
 Double_t
@@ -75,13 +69,35 @@ RecoJet::pullMag() const
   return pullMag_;
 }
 
+Int_t
+RecoJet::jetId() const
+{
+  return jetId_;
+}
+
+Double_t
+RecoJet::maxPt() const
+{
+  double max_Pt = this->pt();
+  for(const auto & kv: pt_systematics_)
+  {
+    if(kv.second > max_Pt)
+    {
+      max_Pt = kv.second;
+    }
+  }
+  return max_Pt;
+}
+
 std::ostream &
 operator<<(std::ostream & stream,
            const RecoJet & jet)
 {
   stream << static_cast<const GenJet &>(jet)         << ","
             " charge = " << jet.charge()             << ","
-            " CSV = " << jet.BtagCSV()               << ",\n"
+            " CSV = "    << jet.BtagCSV()            << ","
+            " jet ID = " << jet.jetId()              << ","
+            "\n"
             " gen. matching:";
   stream << ",\n  lepton = " << jet.genLepton();
   if(jet.genLepton())

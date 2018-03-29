@@ -7,10 +7,11 @@ class addMEMConfig_3l_1tau(addMEMConfig):
 
   def __init__(self, treeName, outputDir, cfgDir, executable_addMEM, samples, era, debug, leptonSelection, hadTauSelection,
                running_method, max_files_per_job, mem_integrations_per_job, max_mem_integrations, num_parallel_jobs,
-               lowIntegrationPoints, isDebug, central_or_shift, pool_id = ''):
+               lowIntegrationPoints, isDebug, central_or_shift, dry_run, use_nonnominal, pool_id = ''):
     addMEMConfig.__init__(self, treeName, outputDir, cfgDir, executable_addMEM, samples, era, debug, running_method,
                           max_files_per_job, mem_integrations_per_job, max_mem_integrations, num_parallel_jobs,
-                          leptonSelection, hadTauSelection, lowIntegrationPoints, "3l_1tau", pool_id)
+                          leptonSelection, hadTauSelection, lowIntegrationPoints, dry_run, use_nonnominal,
+                          "3l_1tau", pool_id)
 
     self.cfgFile_addMEM_original = os.path.join(self.template_dir, "addMEM_3l_1tau_cfg.py")
     self.isDebug = isDebug
@@ -49,5 +50,7 @@ class addMEMConfig_3l_1tau(addMEMConfig):
     lines.append("process.addMEM_3l_1tau.isForBDTtraining = cms.bool(%s)" % self.isForBDTtraining)
     lines.append("process.addMEM_3l_1tau.isDEBUG = cms.bool(%s)" % self.isDebug)
     lines.append("process.addMEM_3l_1tau.central_or_shift = cms.vstring(%s)" % self.central_or_shift)
+    lines.append("process.addMEM_3l_1tau.dryRun = cms.bool(%s)" % self.dry_run)
+    lines.append("process.addMEM_3l_1tau.use_nonnominal = cms.bool(%s)" % self.use_nonnominal)
 
     create_cfg(self.cfgFile_addMEM_original, cfgFile_modified, lines)

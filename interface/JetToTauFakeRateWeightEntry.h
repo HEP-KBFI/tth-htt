@@ -8,8 +8,6 @@ class TFile;
 class TF1;
 class TGraphAsymmErrors;
 
-enum { kFRjt_central, kFRjt_normUp, kFRjt_normDown, kFRjt_shapeUp, kFRjt_shapeDown };
-
 class JetToTauFakeRateWeightEntry
 {
 public:

@@ -30,10 +30,10 @@ public:
                  int numJets,
                  int numBJets_loose,
                  int numBJets_medium,
-                 double mvaOutput_1l_2tau_ttbar,
-                 double mvaOutput_1l_2tau_ttbar_Old,
-                 double mvaOutput_1l_2tau_ttV,
-                 double mvaDiscr_1l_2tau,
+                 double mvaOutput_plainKin_ttV,
+                 double mvaOutput_plainKin_tt,
+                 double mvaOutput_plainKin_1B_VT,
+                 double mvaOutput_HTT_SUM_VT,
                  double mTauTauVis,
                  double evtWeight);
 
@@ -54,12 +54,10 @@ public:
   TH2 * histogram_numBJets_loose_vs_numJets_;
   TH2 * histogram_numBJets_medium_vs_numJets_;
 
-  TH1 * histogram_mvaOutput_1l_2tau_ttbar_;
-  TH1 * histogram_mvaOutput_1l_2tau_ttbar_Old_;
-  TH1 * histogram_mvaOutput_1l_2tau_ttbar_Old_5bins_;
-
-  TH1 * histogram_mvaOutput_1l_2tau_ttV_;
-  TH1 * histogram_mvaDiscr_1l_2tau_;
+  TH1 * histogram_mvaOutput_plainKin_ttV_;
+  TH1 * histogram_mvaOutput_plainKin_tt_;
+  TH1 * histogram_mvaOutput_plainKin_1B_VT_;
+  TH1 * histogram_mvaOutput_HTT_SUM_VT_;
 
   TH1 * histogram_mTauTauVis_;
   TH1 * histogram_EventCounter_;

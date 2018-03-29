@@ -30,11 +30,12 @@ clean:
 
 class syncNtupleConfig:
 
-  def __init__(self, config_dir, output_dir, output_filename,
-               version, era, channels, dry_run, resubmission_limit, disable_resubmission, verbose):
+  def __init__(self, config_dir, output_dir, output_filename, version, era, channels, dry_run,
+               resubmission_limit, disable_resubmission, check_input_files, isDebug, rle_select,
+               no_mem, use_nonnominal, tau_id_wp):
 
-    self.dry_run = dry_run
-    self.verbose = verbose
+    self.dry_run           = dry_run
+    self.check_input_files = check_input_files
     project_dir = os.path.join(os.getenv('CMSSW_BASE'), 'src', 'tthAnalysis', 'HiggsToTauTau')
     executable_pattern = os.path.join(project_dir, 'test', 'tthAnalyzeRun_%s.py')
 
@@ -47,14 +48,28 @@ class syncNtupleConfig:
     final_output_dir = os.path.join(output_dir, DKEY_SYNC)
     self.final_output_file = os.path.join(final_output_dir, output_filename)
 
-    common_args = "-m sync -v %s -e %s -r %d -A" % \
-      (version, era, resubmission_limit)
+    common_args = "-m %s -v %s -e %s -r %d" % \
+      ('sync_noMEM' if no_mem else 'sync',  version, era, resubmission_limit)
+    additional_args = " -A"
     if self.dry_run:
-      common_args += " -d"
+      additional_args += " -d"
     if disable_resubmission:
-      common_args += " -R"
-    if self.verbose:
-      common_args += " -V"
+      additional_args += " -R"
+    if check_input_files:
+      additional_args += " -C"
+    if isDebug:
+      additional_args += " -D"
+    if rle_select:
+      additional_args += " -S '%s'" % rle_select
+    if use_nonnominal:
+      additional_args += " -O"
+
+    inclusive_args = '-v %s -e %s' % (version, era)
+    if no_mem:
+      inclusive_args += ' -N'
+
+    inclusive_args += additional_args
+    common_args    += additional_args
 
     self.channel_info = {}
     for channel in channels:
@@ -66,8 +81,12 @@ class syncNtupleConfig:
       channel_errlog   = os.path.join(config_dir, 'stderr_sync_%s.log' % channel)
       channel_outlog, channel_errlog = get_log_version((channel_outlog, channel_errlog))
 
+      cmd_args = common_args if channel != 'inclusive' else inclusive_args
+      if tau_id_wp and 'tau' in channel:
+        additional_args += " -w %s" % tau_id_wp
+
       channel_cmd_run = '%s %s 2>%s 1>%s' % \
-                        (channel_script, common_args, channel_errlog, channel_outlog)
+                        (channel_script, cmd_args, channel_errlog, channel_outlog)
       channel_cmd_clean = 'make -f %s clean' % channel_makefile
       self.channel_info[input_file] = {
         'run'   : channel_cmd_run,
@@ -95,7 +114,7 @@ class syncNtupleConfig:
       waitForJobs             = True,
       auxDirName              = '',
       pool_id                 = uuid.uuid4(),
-      verbose                 = self.verbose,
+      verbose                 = False,
       dry_run                 = self.dry_run,
     )
     logging.info("Generated hadd config file: %s" % self.hadd_script_path)

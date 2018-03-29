@@ -52,5 +52,7 @@ process.produceNtuple = cms.PSet(
         "CountWeightedLHEWeightPdf",
     ),
 
-    random_seed = cms.uint32(4357)
+    random_seed = cms.uint32(4357),
+    useNonNominal = cms.bool(False),
+    isDEBUG = cms.bool(False),
 )

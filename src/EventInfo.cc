@@ -116,6 +116,7 @@ EventInfo::str() const
 {
   std::stringstream ss;
   ss << run << ':' << lumi << ':' << event;
+  // ss << "run " << run << " lumi " << lumi << " evt " << event; // Giovanni's format
   return ss.str();
 }
 

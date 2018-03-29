@@ -58,15 +58,16 @@ class analyzeConfig:
     """
 
     def __init__(self, configDir, outputDir, executable_analyze, channel, central_or_shifts,
-                 max_files_per_job, era, use_lumi, lumi, debug, running_method, num_parallel_jobs,
-                 histograms_to_fit,
+                 max_files_per_job, era, use_lumi, lumi, check_input_files, running_method,
+                 num_parallel_jobs, histograms_to_fit,
                  executable_prep_dcard = "prepareDatacards",
                  executable_add_syst_dcard = "addSystDatacards",
                  executable_make_plots = "makePlots",
                  executable_make_plots_mcClosure = "makePlots_mcClosure",
                  do_sync = False,
                  verbose = False,
-                 dry_run = False):
+                 dry_run = False,
+                 isDebug = False):
 
         self.configDir = configDir
         self.outputDir = outputDir
@@ -78,7 +79,7 @@ class analyzeConfig:
         self.era = era
         self.use_lumi = use_lumi
         self.lumi = lumi
-        self.debug = debug
+        self.check_input_files = check_input_files
         assert(running_method.lower() in [ "sbatch", "makefile" ]), "Invalid running method: %s" % running_method
         self.running_method = running_method
         self.is_sbatch = False
@@ -100,6 +101,7 @@ class analyzeConfig:
         self.executable_make_plots_mcClosure = executable_make_plots_mcClosure
         self.verbose = verbose
         self.dry_run = dry_run
+        self.isDebug = isDebug
 
         self.workingDir = os.getcwd()
         logging.info("Working directory is: %s" % self.workingDir)
@@ -158,33 +160,35 @@ class analyzeConfig:
                 'HLT_TripleMu_12_10_5',
             ]
             self.triggers_1e2mu = [
-                'HLT_DiMu9_Ele9_CaloIdL_TrackIdL',
-                'HLT_DiMu9_Ele9_CaloIdL_TrackIdL_DZ',
+#                'HLT_DiMu9_Ele9_CaloIdL_TrackIdL', # prescale of 2
+                'HLT_DiMu9_Ele9_CaloIdL_TrackIdL_DZ', # unprescaled
             ]
             self.triggers_2e1mu = [
                 'HLT_Mu8_DiEle12_CaloIdL_TrackIdL',
             ]
             self.triggers_3e = [
-                'HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL',
+                'HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL', # has PU dependence
             ]
             self.triggers_2mu = [
-                'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL',
-                'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ',
+#                'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL', # heavily prescaled throughout 2017 data-taking period
+                'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ', # unprescaled in 2017B; heavily prescaled since 2017C
+                'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8', # introduced in 2017C
             ]
             self.triggers_1e1mu = [
-                'HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL',
+                'HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL', # not present in 2017B
                 'HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ',
                 'HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ',
             ]
             self.triggers_2e = [
+                'HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL', # higher efficiency than non-DZ; not present in 2017B
                 'HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ',
             ]
             self.triggers_1mu = [
-                'HLT_IsoMu24',
+                'HLT_IsoMu24', # not enabled at high lumi
                 'HLT_IsoMu27',
             ]
             self.triggers_1e = [
-                'HLT_Ele32_WPTight_Gsf',
+                'HLT_Ele32_WPTight_Gsf', # not present in 2017BC (or, equivalently, not enabled at high lumi)
                 'HLT_Ele35_WPTight_Gsf',
             ]
             # CV: tau trigger paths taken from slide 6 of presentation given by Hale Sert at HTT workshop in December 2017
@@ -204,6 +208,14 @@ class analyzeConfig:
                 'HLT_DoubleMediumChargedIsoPFTau40_Trk1_TightID_eta2p1_Reg',
                 'HLT_DoubleTightChargedIsoPFTau40_Trk1_eta2p1_Reg',
             ]
+            self.triggers_missing_Run2017B = [
+                'HLT_Ele32_WPTight_Gsf', # 1e
+                'HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL', # 1e1mu
+                'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8', # 2mu
+            ]
+            self.triggers_missing_Run2017C = [
+                'HLT_Ele32_WPTight_Gsf', # 1e
+            ]
         else:
             raise ValueError("Invalid Configuration parameter 'era' = %s !!" % era)
 
@@ -222,6 +234,15 @@ class analyzeConfig:
             logging.error("Problem with cvmfs access: host = %s (%i jobs)" % (hostname, len(times)))
             for time in times:
                 logging.error(str(time))
+
+    def whitelist_triggers(self, triggers, process_name_specific):
+        triggers_to_blacklist = set()
+        if 'Run2017B' in process_name_specific:
+            triggers_to_blacklist = set(self.triggers_missing_Run2017B)
+        elif 'Run2017C' in process_name_specific:
+            triggers_to_blacklist = set(self.triggers_missing_Run2017C)
+        triggers = list(set(triggers) - triggers_to_blacklist)
+        return triggers
 
     def get_addMEM_systematics(self, central_or_shift):
         if central_or_shift in [
@@ -290,6 +311,7 @@ class analyzeConfig:
         category_output = self.channel
         if jobOptions['label']:
             category_output += "_%s" % jobOptions['label']
+        histogramToFit = jobOptions['histogramToFit']
         lines = []
         lines.append("process.fwliteInput.fileNames = cms.vstring('%s')" % jobOptions['inputFile'])
         lines.append("process.fwliteOutput.fileName = cms.string('%s')" % jobOptions['datacardFile'])
@@ -302,7 +324,38 @@ class analyzeConfig:
         lines.append("        output = cms.string('ttH_%s')" % category_output)
         lines.append("    )")
         lines.append(")")
-        lines.append("process.prepareDatacards.histogramToFit = cms.string('%s')" % jobOptions['histogramToFit'])
+        lines.append("process.prepareDatacards.histogramToFit = cms.string('%s')" % histogramToFit)
+
+        # If the user has specified the binning options for a particular histogram, we expect to see
+        # a dictionary instead of a list of histogram names that's been passed to this class as histograms_to_fit
+        if type(self.histograms_to_fit) == dict:
+            if histogramToFit in self.histograms_to_fit:
+                histogramToFit_options = self.histograms_to_fit[histogramToFit]
+                # Check the binning options
+                if not histogramToFit_options:
+                    # Use whatever the default setting are in the original prepareDatacards template
+                    pass
+                else:
+                    # Expected syntax:
+                    # {
+                    #   "EventCounter"    : { 'auto_rebin' : True, 'min_auto_rebin' = 0.05 }, # no quantile
+                    #   "numJets"         : { 'quantile_rebin' : 5 }, # also enables quantile rebinning, no auto
+                    #   "mTauTauVis1_sel" : {}, # default settings (no auto or quantile rebinning)
+                    # }
+                    if 'auto_rebin' in histogramToFit_options:
+                        lines.append("process.prepareDatacards.apply_automatic_rebinning = cms.bool(%s)" % \
+                                     histogramToFit_options['auto_rebin'])
+                    if 'min_auto_rebin' in histogramToFit_options:
+                        lines.append("process.prepareDatacards.minEvents_automatic_rebinning = cms.double(%.3f)" % \
+                                     histogramToFit_options['min_auto_rebin'])
+                    if 'quantile_rebin' in histogramToFit_options:
+                        lines.append("process.prepareDatacards.nbin_quantile_rebinning = cms.int32(%d)" % \
+                                     histogramToFit_options['quantile_rebin'])
+                        lines.append("process.prepareDatacards.apply_quantile_rebinning = cms.bool(%s)" % \
+                                     histogramToFit_options['quantile_rebin'] > 0)
+        # If self.histograms_to_fit is not a dictionary but a list, do not modify anything but
+        # use the default settings specified in the original prepareDatacards template
+
         create_cfg(self.cfgFile_prep_dcard, jobOptions['cfgFile_modified'], lines)
 
     def createCfg_add_syst_dcard(self, jobOptions):
@@ -342,7 +395,9 @@ class analyzeConfig:
         create_cfg(self.cfgFile_make_plots, jobOptions['cfgFile_modified'], lines)
 
     def createScript_sbatch(self, executable, sbatchFile, jobOptions,
-                            key_cfg_file = 'cfgFile_modified', key_input_file = 'inputFile', key_output_file = 'outputFile', key_log_file = 'logFile'):
+                            key_cfg_file = 'cfgFile_modified', key_input_file = 'inputFile',
+                            key_output_file = 'outputFile', key_log_file = 'logFile',
+                            skipFileSizeCheck = False):
         """Creates the python script necessary to submit 'generic' (addBackgrounds, addBackgroundFakes/addBackgroundFlips) jobs to the batch system
         """
         num_jobs = tools_createScript_sbatch(
@@ -359,14 +414,17 @@ class analyzeConfig:
             pool_id = uuid.uuid4(),
             verbose = self.verbose,
             dry_run = self.dry_run,
+            skipFileSizeCheck = skipFileSizeCheck,
         )
         return num_jobs
 
     def createScript_sbatch_syncNtuple(self, executable, sbatchFile, jobOptions):
         """Creates the python script necessary to submit the analysis jobs to the batch system
         """
-        self.num_jobs['analyze'] += self.createScript_sbatch(executable, sbatchFile, jobOptions,
-                                                             'cfgFile_modified', 'ntupleFiles', 'syncOutput', 'logFile')
+        self.num_jobs['analyze'] += self.createScript_sbatch(
+            executable, sbatchFile, jobOptions, 'cfgFile_modified', 'ntupleFiles', 'syncOutput',
+            'logFile', skipFileSizeCheck = True,
+        )
 
 
     def createScript_sbatch_analyze(self, executable, sbatchFile, jobOptions):

@@ -17,9 +17,9 @@ RecoElectronSelectorTight::RecoElectronSelectorTight(int era,
   , max_dz_(0.1)
   , max_relIso_(0.4)
   , max_sip3d_(8.)
-  , min_mvaRawPOG_({ 0.0, 0.0, 0.7 })
+  , mvaPOGwp_(EGammaPOG::kWPL)
   , binning_absEta_({ 0.8, 1.479 })
-  , min_pt_trig_(30.)
+  , min_pt_trig_(-1.) // Lines:237-240 in AN_2017_029_V5
   , max_sigmaEtaEta_trig_({ 0.011, 0.011, 0.030 })
   , max_HoE_trig_({ 0.10, 0.10, 0.07 })
   , max_deltaEta_trig_({ 0.01, 0.01, 0.008 })
@@ -28,18 +28,17 @@ RecoElectronSelectorTight::RecoElectronSelectorTight(int era,
   , max_OoEminusOoP_trig_({ 0.010, 0.010, 0.005 })
   , apply_conversionVeto_(true)
   , max_nLostHits_(0)
-  , min_mvaTTH_(0.90)
+  , min_mvaTTH_(0.90) // Table 7 in AN2017_029_v5
 {
   switch(era_)
   {
     case kEra_2017:
     {
-      max_jetBtagCSV_ = 0.8484;
+      max_jetBtagCSV_ = BtagWP_CSV_2016.at(BtagWP::kMedium); // Table 7 in AN2017_029_v5
       break;
     }
     default: throw cmsException(this) << "Invalid era: " << era_;
   }
-  assert(min_mvaRawPOG_.size() == 3);
   assert(binning_absEta_.size() == 2);
   assert(max_sigmaEtaEta_trig_.size() == 3);
   assert(max_HoE_trig_.size() == 3);
@@ -71,6 +70,12 @@ void
 RecoElectronSelectorTight::disable_conversionVeto()
 {
   apply_conversionVeto_ = false;
+}
+
+void
+RecoElectronSelectorTight::set_selection_flags(bool selection_flag)
+{
+  set_selection_flags_ = selection_flag;
 }
 
 bool
@@ -162,19 +167,19 @@ RecoElectronSelectorTight::operator()(const RecoElectron & electron) const
     return false;
   }
 
+  if(electron.mvaRawPOG_WP(mvaPOGwp_) < 1)
+  {
+    if(debug_)
+    {
+      std::cout << "FAILS mvaPOG = " << as_integer(mvaPOGwp_) << " tight cut\n";
+    }
+    return false;
+  }
+
   const int idxBin = electron.absEta() <= binning_absEta_[0] ? 0 :
                     (electron.absEta() <= binning_absEta_[1] ? 1 : 2)
   ;
 
-  if(electron.mvaRawPOG_HZZ() < min_mvaRawPOG_[idxBin])
-  {
-    if(debug_)
-    {
-      std::cout << "FAILS mvaPOG HZZ >= " << min_mvaRawPOG_[idxBin] << " tight cut\n";
-    }
-    return false;
-  }
-  
   // extra cuts for electrons passing pT threshold of single electron trigger,
   // as explained in section 3.3.4 of AN-2015/321
   if(apply_offline_e_trigger_cuts_ && electron.pt() >= min_pt_trig_)
@@ -195,7 +200,7 @@ RecoElectronSelectorTight::operator()(const RecoElectron & electron) const
       }
       return false;
     }
-    if(electron.deltaEta() > max_deltaEta_trig_[idxBin])
+    if(std::fabs(electron.deltaEta()) > max_deltaEta_trig_[idxBin])
     {
       if(debug_)
       {
@@ -203,7 +208,7 @@ RecoElectronSelectorTight::operator()(const RecoElectron & electron) const
       }
       return false;
     }
-    if(electron.deltaPhi() > max_deltaPhi_trig_[idxBin])
+    if(std::fabs(electron.deltaPhi()) > max_deltaPhi_trig_[idxBin])
     {
       if(debug_)
       {
@@ -233,10 +238,12 @@ RecoElectronSelectorTight::operator()(const RecoElectron & electron) const
 
 RecoElectronCollectionSelectorTight::RecoElectronCollectionSelectorTight(int era,
                                                                          int index,
-                                                                         bool debug)
-  : selIndex_(index)
-  , selector_(era, index, debug)
-{}
+                                                                         bool debug,
+                                                                         bool set_selection_flags)
+  : ParticleCollectionSelector<RecoElectron, RecoElectronSelectorTight>(era, index, debug)
+{
+  selector_.set_selection_flags(set_selection_flags);
+}
 
 void
 RecoElectronCollectionSelectorTight::enable_offline_e_trigger_cuts()
@@ -261,23 +268,4 @@ void
 RecoElectronCollectionSelectorTight::disable_conversionVeto()
 {
   selector_.disable_conversionVeto();
-}
-
-std::vector<const RecoElectron *>
-RecoElectronCollectionSelectorTight::operator()(const std::vector<const RecoElectron *> & electrons) const
-{
-  std::vector<const RecoElectron *> selElectrons;
-  int idx = 0;
-  for(const RecoElectron * electron: electrons)
-  {
-    if(selector_(*electron))
-    {
-      if(idx == selIndex_ || selIndex_ == -1)
-      {
-        selElectrons.push_back(electron);
-      }
-      ++idx;
-    }
-  }
-  return selElectrons;
 }

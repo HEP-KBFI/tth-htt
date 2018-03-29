@@ -26,8 +26,6 @@ public:
                    bool readGenMatching = false);
   ~RecoHadTauReader();
 
-  enum { kHadTauPt_central, kHadTauPt_shiftUp, kHadTauPt_shiftDown };
-
   void
   setHadTauPt_central_or_shift(int hadTauPt_option);
 
