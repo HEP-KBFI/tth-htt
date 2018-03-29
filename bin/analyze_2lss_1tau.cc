@@ -1822,8 +1822,6 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       }
     }
     double memOutput_LR = ( memOutput_2lss_1tau_matched.isValid() ) ? memOutput_2lss_1tau_matched.LR() : -1.;
-    double memOutput_ttZ_LR = ( memOutput_2lss_1tau_matched.isValid_ttZ_LR() ) ? memOutput_2lss_1tau_matched.ttZ_LR() : -1.;
-    double memOutput_ttbar_LR = ( memOutput_2lss_1tau_matched.isValid_ttbar_LR()  ) ? memOutput_2lss_1tau_matched.LR() : -1.;
 
     //--- compute output of hadronic top tagger BDT
     //TH2* histogram_mva_hadTopTagger = fs.make<TH2D>("mva_hadTopTagger", "mva_hadTopTagger", 200, -1., +1., 200, -1., +1.);
