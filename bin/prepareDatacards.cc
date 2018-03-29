@@ -186,6 +186,17 @@ namespace
     return isMatched;
   }
 
+  TArrayD
+  getTArraDfromVector(const std::vector<double> & histogramBinning)
+  {
+    TArrayD binning_tarray(histogramBinning.size());
+    for(std::size_t idxBin = 0; idxBin < histogramBinning.size(); ++idxBin)
+    {
+      binning_tarray[idxBin] = histogramBinning[idxBin];
+    }
+    return binning_tarray;
+  }
+
 }
 
 int main(int argc, char* argv[]) 
@@ -258,6 +269,8 @@ int main(int argc, char* argv[])
   double minEvents_automatic_rebinning = cfg_prepareDatacards.getParameter<double>("minEvents_automatic_rebinning");
   bool apply_quantile_rebinning = cfg_prepareDatacards.getParameter<bool>("apply_quantile_rebinning");
   int nbin_quantile_rebinning = cfg_prepareDatacards.getParameter<int>("nbin_quantile_rebinning");
+  const vdouble explicitBinning = cfg_prepareDatacards.getParameter<vdouble>("explicit_binning");
+
   fwlite::InputSource inputFiles(cfg); 
   if ( !(inputFiles.files().size() == 1) )
     throw cms::Exception("prepareDatacards") 
@@ -338,7 +351,18 @@ int main(int argc, char* argv[])
       }
     }
 
-    if ( apply_automatic_rebinning &&(!apply_quantile_rebinning)) {
+    if(! explicitBinning.empty() && ! apply_automatic_rebinning && ! apply_quantile_rebinning)
+    {
+      TDirectory* subsubdir_output = createSubdirectory_recursively(fs, Form("%s/rebinned", category->output_.c_str()));
+      subsubdir_output->cd();
+      // rebin histograms as the user requested
+      TArrayD histogramBinning = getTArraDfromVector(explicitBinning);
+      for(TH1 * histogram: histogramsToRebin)
+      {
+        getRebinnedHistogram1d(histogram, 4, histogramBinning);
+      }
+    }
+    if ( apply_automatic_rebinning &&(!apply_quantile_rebinning) && explicitBinning.empty()) {
       TDirectory* subsubdir_output = createSubdirectory_recursively(fs, Form("%s/rebinned", category->output_.c_str()));
       subsubdir_output->cd();
       // rebin histograms to avoid bins with zero background
@@ -349,7 +373,7 @@ int main(int argc, char* argv[])
 	getRebinnedHistogram1d(*histogram, 4, histogramBinning);
       }
     }
-    if ( apply_quantile_rebinning && (!apply_automatic_rebinning)) {
+    if ( apply_quantile_rebinning && (!apply_automatic_rebinning) && explicitBinning.empty()) {
       TDirectory* subsubdir_output = createSubdirectory_recursively(fs, Form("%s/rebinned", category->output_.c_str()));
       subsubdir_output->cd();
       assert(histogramBackgroundSum);
