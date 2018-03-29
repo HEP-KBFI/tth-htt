@@ -16,8 +16,9 @@ cfg_prepareDatacards
 #include "DataFormats/FWLite/interface/InputSource.h"
 #include "DataFormats/FWLite/interface/OutputFiles.h"
 
-#include "tthAnalysis/HiggsToTauTau/interface/histogramAuxFunctions.h" // compIntegral
-#include "tthAnalysis/HiggsToTauTau/interface/jetToTauFakeRateAuxFunctions.h" // getEtaBin, getPtBin 
+#include "tthAnalysis/HiggsToTauTau/interface/histogramAuxFunctions.h" // compIntegral()
+#include "tthAnalysis/HiggsToTauTau/interface/jetToTauFakeRateAuxFunctions.h" // getEtaBin(), getPtBin()
+#include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 
 #include <TFile.h>
 #include <TH1.h>
@@ -243,6 +244,7 @@ int main(int argc, char* argv[])
   }
 
   TPRegexp* data = new TPRegexp("data_obs");
+  TPRegexp* fakes = new TPRegexp("fakes_data");
 
   std::vector<categoryType> categories;
   edm::VParameterSet cfg_categories = cfg_prepareDatacards.getParameter<edm::VParameterSet>("categories");
@@ -267,8 +269,16 @@ int main(int argc, char* argv[])
   int histogramToFit_rebin = cfg_prepareDatacards.getParameter<int>("histogramToFit_rebin");
   bool apply_automatic_rebinning = cfg_prepareDatacards.getParameter<bool>("apply_automatic_rebinning");
   double minEvents_automatic_rebinning = cfg_prepareDatacards.getParameter<double>("minEvents_automatic_rebinning");
-  bool apply_quantile_rebinning = cfg_prepareDatacards.getParameter<bool>("apply_quantile_rebinning");
+  bool quantile_rebinning_in_fakes = cfg_prepareDatacards.getParameter<bool>("quantile_rebinning_in_fakes");
   int nbin_quantile_rebinning = cfg_prepareDatacards.getParameter<int>("nbin_quantile_rebinning");
+  bool apply_quantile_rebinning = nbin_quantile_rebinning > 0;
+  if(quantile_rebinning_in_fakes && ! apply_quantile_rebinning)
+  {
+    throw cmsException(__func__, __LINE__)
+      << "It doesn't make any sense to require quantile rebinning in fakes if you haven't provided "
+         "the number of bins"
+    ;
+  }
   const vdouble explicitBinning = cfg_prepareDatacards.getParameter<vdouble>("explicit_binning");
 
   fwlite::InputSource inputFiles(cfg); 
@@ -313,8 +323,8 @@ int main(int argc, char* argv[])
       bool isSignal = false;
       for ( std::vector<TPRegexp*>::iterator signal = signals.begin();
 	    signal != signals.end(); ++signal ) {
-	bool isMatched = compMatch(subdir->GetName(), *signal);
-	if ( isMatched ) {
+  bool isMatched_signal = compMatch(subdir->GetName(), *signal);
+  if ( isMatched_signal ) {
 	  std::cout << " matches signal = " << (*signal)->GetPattern() << std::endl;
 	  isSignal = true;
 	} else {
@@ -322,9 +332,10 @@ int main(int argc, char* argv[])
 	}
       }
       if ( isToCopy || isSignal ) {
-	for ( vstring::const_iterator central_or_shift = central_or_shifts.begin();
-	      central_or_shift != central_or_shifts.end(); ++central_or_shift ) {
-	  std::cout << "histogramToFit = " << histogramToFit << ", central_or_shift = " << (*central_or_shift) << std::endl;
+  for(const std::string & central_or_shift: central_or_shifts)
+  {
+    std::cout << "histogramToFit = " << histogramToFit << ", central_or_shift = " << central_or_shift << '\n';
+    const bool is_central = central_or_shift.empty()  || central_or_shift == "central";
 	  
 	  TFileDirectory* subdir_output = &fs;
 	  subdir_output->cd();
@@ -337,11 +348,13 @@ int main(int argc, char* argv[])
 	  double sf = ( isSignal ) ? sf_signal : 1.;
 	  TH1* histogram = copyHistogram(
 	    subdir, subdir->GetName(), histogramToFit, "", 
-	    sf, histogramToFit_xMin, histogramToFit_xMax, histogramToFit_rebin, *central_or_shift, (*central_or_shift) == "" || (*central_or_shift) == "central");	  
+      sf, histogramToFit_xMin, histogramToFit_xMax, histogramToFit_rebin, central_or_shift, is_central);
 	  if ( !histogram ) continue;
 	  bool isData = compMatch(subdir->GetName(), data);
+    bool isFakes = compMatch(subdir->GetName(), fakes);
 	  //	  if ( !(isData || isSignal) ) {
-	  if ( !(isData || isSignal) && ((*central_or_shift) == "" || (*central_or_shift) == "central") ) {
+    if(! (isData || isSignal) && is_central && ((quantile_rebinning_in_fakes && isFakes) || ! quantile_rebinning_in_fakes))
+    {
 	    std::cout << "adding background = '" << subdir->GetName() << "'" << std::endl;
 	    if   ( !histogramBackgroundSum ) histogramBackgroundSum = (TH1*)histogram->Clone(Form("%s_BackgroundSum", category->input_.data()));
 	    else                             histogramBackgroundSum->Add(histogram);  	    

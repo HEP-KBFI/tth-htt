@@ -146,9 +146,9 @@ if __name__ == '__main__':
         "EventCounter"              : {},
         "numJets"                   : {},
         "mTauTauVis"                : {},
-        "mvaOutput_plainKin_tt"     : { 'quantile_rebin' : 4 }, # BDT2; quantiles in fakes
-        "mvaOutput_plainKin_ttV"    : { 'quantile_rebin' : 4 }, # BDT1; quantiles in fakes
-        "mvaOutput_plainKin_SUM_VT" : { 'quantile_rebin' : 4 }, # BDT3; quantiles in fakes
+        "mvaOutput_plainKin_tt"     : { 'quantile_rebin' : 4, 'quantile_in_fakes' : True }, # BDT2; quantiles in fakes
+        "mvaOutput_plainKin_ttV"    : { 'quantile_rebin' : 4, 'quantile_in_fakes' : True }, # BDT1; quantiles in fakes
+        "mvaOutput_plainKin_SUM_VT" : { 'quantile_rebin' : 4, 'quantile_in_fakes' : True }, # BDT3; quantiles in fakes
         "mvaOutput_plainKin_1B_VT"  : {},
       },
       select_rle_output                     = True,
