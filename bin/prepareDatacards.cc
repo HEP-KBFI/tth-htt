@@ -42,101 +42,12 @@ typedef std::vector<std::string> vstring;
 typedef std::vector<double> vdouble;
 
 namespace
-{/*
-  std::vector<double> compBinning(TH1* histogram, double minEvents)
-  {
-    std::cout << "<compBinning>:" << std::endl;
-    std::vector<double> histogramBinning;
-    const TAxis* xAxis = histogram->GetXaxis();
-    histogramBinning.push_back(xAxis->GetBinLowEdge(1));
-    double sumEvents = 0.;
-    int numBins = xAxis->GetNbins();
-    for ( int idxBin = 1; idxBin <= numBins; ++idxBin ) {
-      std::cout << "bin #" << idxBin << " (x=" << xAxis->GetBinLowEdge(idxBin) << ".." << xAxis->GetBinUpEdge(idxBin) << "):"
-		<< " binContent = " << histogram->GetBinContent(idxBin) << " +/- " << histogram->GetBinError(idxBin) << std::endl;
-      sumEvents += histogram->GetBinContent(idxBin);
-      if ( sumEvents >= minEvents ) {
-	histogramBinning.push_back(xAxis->GetBinUpEdge(idxBin));
-	sumEvents = 0.;
-      }
-    }
-    if ( TMath::Abs(histogramBinning.back() - xAxis->GetBinUpEdge(numBins)) > 1.e-3 ) {
-      if ( histogramBinning.size() >= 2 ) histogramBinning.back() = xAxis->GetBinUpEdge(numBins);
-      else histogramBinning.push_back(xAxis->GetBinUpEdge(numBins));
-    }
-    assert(histogramBinning.size() >= 2);
-    std::cout << "binning = { ";
-    for ( std::vector<double>::const_iterator bin = histogramBinning.begin();
-	  bin != histogramBinning.end(); ++bin ) {
-      if ( bin != histogramBinning.begin() ) std::cout << ", ";
-      std::cout << (*bin);
-    }
-    std::cout << " }" << std::endl;
-    return histogramBinning;
-  }
- */ 
+{
+
   double square(double x)
   {
     return x*x;
   }
-
-  TH1* rebinHistogram(const std::vector<double>& histogramBinning, const TH1* histogram)
-  {
-    std::cout << "<rebinHistogram>: " << histogram->GetName() << std::endl;
-    std::cout << "integral(histogram) = " << compIntegral(histogram, false, false) << std::endl;
-
-    TArrayD histogramBinning_array(histogramBinning.size());
-    int idx = 0;
-    for ( std::vector<double>::const_iterator binEdge = histogramBinning.begin();
-	  binEdge != histogramBinning.end(); ++binEdge ) {
-      histogramBinning_array[idx] = (*binEdge);
-      ++idx;
-    }
-    std::cout << " nBins = " << histogramBinning_array.GetSize() - 1 << ",";
-    std::cout << " binning = { ";
-    for ( int idxBin = 0; idxBin < histogramBinning_array.GetSize(); ++idxBin ) {
-      if ( idxBin > 0 ) std::cout << ", ";
-      std::cout << histogramBinning_array[idxBin];
-    }
-    std::cout << " } " << std::endl;
-    std::string histogramName = histogram->GetName();
-    std::string histogramTitle = histogram->GetTitle();
-    int numBins_rebinned = histogramBinning_array.GetSize() - 1;
-    std::cout << "numBins_rebinned = " << numBins_rebinned << std::endl;
-    TH1* histogram_rebinned = new TH1D(histogramName.data(), histogramTitle.data(), numBins_rebinned, histogramBinning_array.GetArray());
-    if ( !histogram_rebinned->GetSumw2N() ) histogram_rebinned->Sumw2();
-    const TAxis* xAxis = histogram->GetXaxis();
-    int numBins = xAxis->GetNbins();
-    const TAxis* xAxis_rebinned = histogram_rebinned->GetXaxis();
-    double binContentSum = 0.;
-    double binError2Sum = 0.;
-    int idxBin_rebinned = 1;
-    for ( int idxBin = 1; idxBin <= numBins; ++idxBin ) {
-      double binContent = histogram->GetBinContent(idxBin);
-      binContentSum += binContent;
-      double binError = histogram->GetBinError(idxBin);
-      binError2Sum += (binError*binError);
-      bool isNextBin_rebinned = false;
-      if ( idxBin == numBins ) {
-	isNextBin_rebinned = true;
-      } else {
-	if ( xAxis->GetBinCenter(idxBin + 1) > xAxis_rebinned->GetBinLowEdge(idxBin_rebinned + 1) ) {
-	  isNextBin_rebinned = true;
-	}
-      }
-      if ( isNextBin_rebinned ) {
-	assert(idxBin_rebinned <= numBins_rebinned);
-	histogram_rebinned->SetBinContent(idxBin_rebinned, binContentSum);
-	histogram_rebinned->SetBinError(idxBin_rebinned, TMath::Sqrt(binError2Sum));
-	binContentSum = 0.;
-	binError2Sum = 0.;
-	++idxBin_rebinned;
-      }
-      //std::cout << "binCenter = " << binCenter << ": idxBin = " << idxBin << ", idxBin_rebinned = " << idxBin_rebinned << std::endl;
-    }
-    std::cout << "integral(histogram_rebinned) = " << compIntegral(histogram_rebinned, false, false) << std::endl;
-    return histogram_rebinned;
-  } 
 
   TH1* copyHistogram(TDirectory* dir_input, const std::string& process, const std::string& histogramName_input, 
 		     const std::string& histogramName_output, double sf, double xMin, double xMax, int rebin, const std::string& central_or_shift, 
@@ -274,16 +185,6 @@ namespace
     }
     return isMatched;
   }
-
-  TArrayD getTArraDfromVector(std::vector<double>& histogramBinning)
-  {
-    TArrayD binning_tarray(histogramBinning.size());
-    for ( int idxBin = 0; idxBin < (int)histogramBinning.size(); ++idxBin ) {
-      binning_tarray[idxBin] = histogramBinning[idxBin];
-    }
-    return binning_tarray;
-  }
-
 
 }
 
@@ -442,16 +343,9 @@ int main(int argc, char* argv[])
       subsubdir_output->cd();
       // rebin histograms to avoid bins with zero background
       assert(histogramBackgroundSum);
-      //std::vector<double> histogramBinning = compBinning(histogramBackgroundSum, minEvents_automatic_rebinning);
-      //std::vector<double> histogramBinningV = {0.0, 0.2052316258054663, 0.3595713262743688, 0.4265624045768703, 1.0}; // 1B BDT
-      std::vector<double> histogramBinningV = {0.0, 0.19111777466810542, 0.3723924099881871, 0.39747780534459615, 1.}; // SUM BDT
-      TArrayD histogramBinning = getTArraDfromVector(histogramBinningV);
-      
-      //TArrayD histogramBinning = getRebinnedBinning(histogramBackgroundSum, minEvents_automatic_rebinning);
-
+      TArrayD histogramBinning = getRebinnedBinning(histogramBackgroundSum, minEvents_automatic_rebinning);
       for ( std::vector<TH1*>::iterator histogram = histogramsToRebin.begin();
 	    histogram != histogramsToRebin.end(); ++histogram ) {
-	//rebinHistogram(histogramBinning, *histogram);
 	getRebinnedHistogram1d(*histogram, 4, histogramBinning);
       }
     }
