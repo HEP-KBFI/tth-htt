@@ -1936,7 +1936,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       { "mindr_lep1_jet", mindr_lep1_jet  },
       { "mindr_lep2_jet", mindr_lep2_jet  },
       { "mindr_tau_jet",  mindr_tau_jet   },
-      { "nJet25_Recl",    nJet25_Recl     },
+      { "nJet",           nJet25_Recl     },
       { "ptmiss",         ptmiss          },
       { "tau_pt",         tau_pt          },
     };
