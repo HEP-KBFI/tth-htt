@@ -17,41 +17,95 @@ class RecoHadTau;
 class RecoJet;
 class hltPath;
 
-enum FloatVariableType
+enum class FloatVariableType
 {
 //--- MET/MHT
   PFMET,
   PFMETphi,
   MHT,                      ///< vectorial sum of preselected leptons (including taus) + jets
-  metLD,
-//--- Additional event-level MVA variables
-  lep0_conept,              ///< cone pT of leading lepton : if the lepton is fakeable, 0.90*pT(jet) with JECLepAware, else pT(lep)
-  lep1_conept,              ///< cone pT of subleading lepton : if the lepton is fakeable, 0.90*pT(jet) with JECLepAware, else pT(lep)
-  mindr_lep0_jet,           ///< min dR between leading lepton and preselected jets
-  mindr_lep1_jet,           ///< min dR between subleading lepton and preselected jets
-  mindr_lep2_jet,           ///< min dR between third lepton and preselected jets
-  mindr_tau_jet,            ///< min dR between tau and preselected jets
-  MT_met_lep0,              ///< transverse mass of leading lepton and MET (using lep0_conept)
+  metLD,                    ///< linear discriminator based on MET
+
+//--- Additional event-level MVA input variables
+  lep1_conept,              ///< cone pT of leading lepton : if the lepton is fakeable, 0.90*pT(jet) with JECLepAware, else pT(lep)
+  lep2_conept,              ///< cone pT of subleading lepton : if the lepton is fakeable, 0.90*pT(jet) with JECLepAware, else pT(lep)
+  lep3_conept,              ///< cone pT of third lepton : if the lepton is fakeable, 0.90*pT(jet) with JECLepAware, else pT(lep)
+  lep4_conept,              ///< cone pT of fourth lepton : if the lepton is fakeable, 0.90*pT(jet) with JECLepAware, else pT(lep)
+
+  mindr_lep1_jet,           ///< min dR between leading lepton and preselected jets
+  mindr_lep2_jet,           ///< min dR between subleading lepton and preselected jets
+  mindr_lep3_jet,           ///< min dR between third lepton and preselected jets
+  mindr_lep4_jet,           ///< min dR between fourth lepton and preselected jets
+
+  mindr_tau1_jet,           ///< min dR between leading tau and preselected jets
+  mindr_tau2_jet,           ///< min dR between subleading tau and preselected jets
+
   avg_dr_jet,               ///< average dR between all the pairs of preselected jets
-  MVA_2lss_ttV,             ///< ttH vs ttV MVA for 2lss
-  MVA_2lss_ttbar,           ///< ttH vs ttbar MVA for 2lss
-  tt_deltaR,                ///< deltaR between 2 selected taus
-  tt_mvis,                  ///< visible mass of the 2 selected taus
-  tt_pt,                    ///< pT of the di-tau pair
-  max_dr_jet,               ///< maximum dR between preselected jets
+  avr_dr_lep_tau,           ///< average dR between all lepton and tau pairs
+  max_dr_jet,               ///< maximum dR between all preselected jets
+  max_dr_lep_tau,           ///< maximum dR between all lepton and tau pairs
+  min_dr_tau_jet,           ///< min dR between all tau + jets pairs (i.e. min(mindr_tau1_jet, mindr_tau2_jet, ...))
+  min_dr_lep_tau,           ///< minimum dR between all lepton and tau pairs
+  min_dr_lep_jet,           ///< minimum dR between all lepton and jet pairs
+
+  dr_leps,                  ///< deltaR between two leading leptons
+  dr_taus,                  ///< deltaR between two selected taus
+
+  dr_lep_tau_ss,            ///< dR between (leading) lepton and same-sign tau
+  dr_lep1_tau1,             ///< dR between leading lepton and leading tau
+  dr_lep1_tau2,             ///< dR between leading lepton and subleading tau
+  dr_lep2_tau1,             ///< dR between leading sublepton and leading tau
+  dr_lep2_tau2,             ///< dR between leading sublepton and subleading tau
+  dr_lep3_tau1,             ///< dR between third lepton and (leading) tau
+
+  max_lep12_eta,            ///< maximum absolute eta in two leading leptons
+  max_lep_eta,              ///< maximum (not absolute?) eta in all selected leptons
+
+  mT_met_lep1,              ///< transverse mass of leading lepton and MET (using reco pt)
+  mT_met_lep2,              ///< transverse mass of subleading lepton and MET (using reco pt)
+  mT_met_lep3,              ///< transverse mass of trailing lepton and MET (using reco pt)
+  mT_met_lep4,              ///< transverse mass of fourth lepton and MET (using reco pt)
+
+  MT_met_lep1,              ///< transverse mass of leading lepton and MET (using cone pt)
+  MT_met_lep2,              ///< transverse mass of subleading lepton and MET (using cone pt)
+  MT_met_lep3,              ///< transverse mass of trailing lepton and MET (using cone pt)
+  MT_met_lep4,              ///< transverse mass of fourth lepton and MET (using cone pt)
+
+  mTauTauVis,               ///< visible mass of the two selected taus
+  mvis_l1tau,               ///< visible mass of leading lepton and tau (of OS in 3l+1tau)
+  mvis_l2tau,               ///< visible mass of subleading lepton and tau (of OS in 3l+1tau)
+
   HT,                       ///< linear sum of preselected leptons (including taus) + jet pT
-  MVA_1l2tau_ttbar,         ///< ttH vs ttbar MVA for 1l2tau
-  MVA_1l2tau_ttbar_v2,      ///< ttH vs ttbar MVA for 1l2tau v2
-  MVA_1l2tau_ttZ_v2,        ///< ttH vs ttZ MVA for 1l2tau v2
-  MVA_1l2tau_2Dbin_v2,      ///< 2D bin ttH vs ttbar/ttZ MVA for 1l2tau v2
-  mvis_l1tau,               ///< visible mass of subleading lepton and tau
-  dR_l0tau,                 ///< deltaR between leading lepton and tau
-  dR_l1tau,                 ///< deltaR between subleading lepton and tau
-  dR_l2tau,                 ///< deltaR between trailing lepton and tau
-  MT_met_lep2,              ///< transverse mass of trailing lepton and MET (using cone pt)
-  MVA_3l1tau_ttbar,         ///< ttH vs ttbar MVA for 3l1tau
-  MVA_3l1tau_ttV,           ///< ttH vs ttV MVA for 3l1tau
-  MVA_3l1tau_2Dbin,         ///< 2D bin ttH vs ttbar/ttZ MVA for 3l1tau
+  ptmiss,                   ///< pT of vectorial MHT
+  mbb,                      ///< mass of two selected medium b-jets
+  mbb_loose,                ///< mass of two selected loose b-jets
+
+  cosThetaS_hadTau,         ///< cosine of the angle b/w leading tau and the beam axis in di-tau frame?
+  HTT,                      ///< output of hadronic top tagger with kin fit
+  HadTop_pt,                ///< pT of the unfitted hadronic top
+  mT_lepHadTopH,            ///< transverse mass of 1l+2tau system, fitted hadronic top and MET (all reco pt)
+
+//--- Additional event-level MVA output variables
+  mvaOutput_plainKin_ttV,   ///< 1l+2tau, 2l+2tau, 3l+1tau
+  mvaOutput_plainKin_tt,    ///< 1l+2tau, 2l+2tau, 3l+1tau
+  mvaOutput_plainKin_1B_VT, ///< 1l+2tau, 2l+2tau
+  mvaOutput_HTT_SUM_VT,     ///< 1l+2tau
+
+  mvaOutput_plainKin_SUM_VT, ///< 2l+2tau
+
+  mvaOutput_2lss_ttV,                 ///< 2lss+1tau
+  mvaOutput_2lss_tt,                  ///< 2lss+1tau
+  mvaOutput_2lss_1tau_plainKin_tt,    ///< 2lss+1tau
+  mvaOutput_2lss_1tau_plainKin_ttV,   ///< 2lss+1tau
+  mvaOutput_2lss_1tau_plainKin_1B_M,  ///< 2lss+1tau
+  mvaOutput_2lss_1tau_plainKin_SUM_M, ///< 2lss+1tau
+  mvaOutput_2lss_1tau_HTT_SUM_M,      ///< 2lss+1tau
+  mvaOutput_2lss_1tau_HTTMEM_SUM_M,   ///< 2lss+1tau
+
+  mvaOutput_3l_ttV,         ///< 3l+1tau
+  mvaOutput_3l_ttbar,       ///< 3l+1tau
+  mvaOutput_plainKin_SUM_M, ///< 3l+1tau
+  mvaOutput_plainKin_1B_M,  ///< 3l+1tau
+
 //--- Event weights
   FR_weight,                ///< weight used for fake rate reweighting
   triggerSF_weight,         ///< scale factor for trigger
@@ -60,27 +114,15 @@ enum FloatVariableType
   bTagSF_weight,            ///< scale factor for b-tagging
   PU_weight,                ///< PU weight
   MC_weight,                ///< MC weight
+
 //--- MEM variables
   Integral_ttH,             ///< ttH weight
   Integral_ttZ,             ///< ttZ (Ztautau) weight
   Integral_ttZ_Zll,         ///< ttZ Z->ll weight
   Integral_ttbar,           ///< ttbar weight
   integration_type,
-  MEM_LR,
-  dR_leps,                  ///< deltaR between two leading leptons
-  mvis_l0tau,               ///< visible mass of leading lepton and tau
-  MVA_2lSS1tau_noMEM_ttbar, ///< ttH vs ttbar MVA for 2lSS1tau w/o MEM LR as input
-  MVA_2lSS1tau_noMEM_ttV,   ///< ttH vs ttV MVA for 2lSS1tau w/o MEM LR as input
-  MVA_2lSS1tau_noMEM_2Dbin, ///< 2D bin ttH vs ttbar/ttZ MVA for 2lSS1tau w/o MEM LR as input
-  MVA_2lSS1tau_MEM_ttbar,   ///< ttH vs ttbar MVA for 2lSS1tau w/ MEM LR as input
-  MVA_2lSS1tau_MEM_ttV,     ///< ttH vs ttV MVA for 2lSS1tau w/ MEM LR as input
-  MVA_2lSS1tau_MEM_2Dbin,   ///< 2D bin ttH vs ttbar/ttZ MVA for 2lSS1tau w/ MEM LR as input
+  MEM_LR,                   ///< MEM likelihood ratio (the final score)
 //--- custom additional branches (not necessary in sync)
-  lep2_conept,              ///< cone pT of third lepton : if the lepton is fakeable, 0.90*pT(jet) with JECLepAware, else pT(lep)
-  lep3_conept,              ///< cone pT of fourth lepton : if the lepton is fakeable, 0.90*pT(jet) with JECLepAware, else pT(lep)
-  mindr_lep3_jet,           ///< min dR between fourth lepton and preselected jets
-  MT_met_lep1,              ///< transverse mass of subleading lepton and MET (using cone pt)
-  MT_met_lep3,              ///< transverse mass of fourth lepton and MET (using cone pt)
   genWeight
 };
 

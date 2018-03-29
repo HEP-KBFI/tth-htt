@@ -2238,12 +2238,18 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       const std::vector<const RecoElectron *> cutBasedElectrons = cutBasedElectronSelector(preselElectrons);
       const std::vector<const RecoElectron *> mvaBasedElectrons = mvaBasedElectronSelector(preselElectrons);
 
-      const double ht          = compHT(preselLeptons, preselHadTaus, selJets);
-      const double MT_met_lep0 = comp_MT_met_lep1(selLepton_lead->cone_p4(),    met.pt(), met.phi());
-      const double MT_met_lep1 = comp_MT_met_lep2(selLepton_sublead->cone_p4(), met.pt(), met.phi());
-      const double dR_l0tau    = deltaR(selLepton_lead->p4(),    selHadTau->p4());
-      const double dR_l1tau    = deltaR(selLepton_sublead->p4(), selHadTau->p4());
-      const double max_dr_jet  = comp_max_dr_jet(selJets);
+      const double ht             = compHT(preselLeptons, preselHadTaus, selJets);
+      const double MT_met_lep1    = comp_MT_met_lep1(selLepton_lead->cone_p4(), met.pt(), met.phi());
+      const double MT_met_lep2    = comp_MT_met_lep2(selLepton_sublead->cone_p4(), met.pt(), met.phi());
+      const double dr_lep1_tau1   = deltaR(selLepton_lead->p4(), selHadTau->p4());
+      const double dr_lep2_tau1   = deltaR(selLepton_sublead->p4(), selHadTau->p4());
+      const double max_dr_jet     = comp_max_dr_jet(selJets);
+      const double mbb_loose      = selBJets_loose.size() > 1 ? (selBJets_loose[0]->p4() + selBJets_loose[0]->p4()).mass() : -1.;
+      const double avr_dr_lep_tau = (dr_lep1_tau1 + dr_lep2_tau1) / 2;
+      const double max_dr_lep_tau = std::max(dr_lep2_tau1, dr_lep1_tau1);
+      const double min_dr_lep_tau = std::min(dr_lep2_tau1, dr_lep1_tau1);
+      const double min_dr_lep_jet = std::min(mindr_lep1_jet, mindr_lep2_jet);
+      const double max_lep12_eta  = std::max(selLepton_lead->eta(), selLepton_sublead->eta());
 
       const bool isGenMatched =
         selLepton_lead->isGenMatched()    &&
@@ -2265,33 +2271,84 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       snm->read(mht_p4.pt(),                            FloatVariableType::MHT);
       snm->read(met_LD,                                 FloatVariableType::metLD);
 
-      snm->read(lep1_conePt,                            FloatVariableType::lep0_conept);
-      snm->read(lep2_conePt,                            FloatVariableType::lep1_conept);
-      snm->read(mindr_lep1_jet,                         FloatVariableType::mindr_lep0_jet);
-      snm->read(mindr_lep2_jet,                         FloatVariableType::mindr_lep1_jet);
-      // mindr_lep2_jet not filled
-      snm->read(mindr_tau_jet,                          FloatVariableType::mindr_tau_jet);
-      snm->read(MT_met_lep0,                            FloatVariableType::MT_met_lep0);
+      snm->read(lep1_conePt,                            FloatVariableType::lep1_conept);
+      snm->read(lep2_conePt,                            FloatVariableType::lep2_conept);
+      // lep3_conePt not filled
+      // lep4_conept not filled
+
+      snm->read(mindr_lep1_jet,                         FloatVariableType::mindr_lep1_jet);
+      snm->read(mindr_lep2_jet,                         FloatVariableType::mindr_lep2_jet);
+      // mindr_lep3_jet not filled
+      // mindr_lep4_jet not filled
+
+      snm->read(mindr_tau_jet,                          FloatVariableType::mindr_tau1_jet);
+      // mindr_tau2_jet not filled
+
       snm->read(avg_dr_jet,                             FloatVariableType::avg_dr_jet);
-      snm->read(mvaOutput_2lss_ttV,                     FloatVariableType::MVA_2lss_ttV);
-      snm->read(mvaOutput_2lss_tt,                      FloatVariableType::MVA_2lss_ttbar);
-      // tt_deltaR not filled
-      // tt_mvis not filled
-      // tt_pt not filled
+      snm->read(avr_dr_lep_tau,                         FloatVariableType::avr_dr_lep_tau);
       snm->read(max_dr_jet,                             FloatVariableType::max_dr_jet);
+      snm->read(max_dr_lep_tau,                         FloatVariableType::max_dr_lep_tau);
+      snm->read(mindr_tau_jet,                          FloatVariableType::min_dr_tau_jet); // 1 tau
+      snm->read(min_dr_lep_tau,                         FloatVariableType::min_dr_lep_tau);
+      snm->read(min_dr_lep_jet,                         FloatVariableType::min_dr_lep_jet);
+
+      snm->read(dr_leps,                                FloatVariableType::dr_leps);
+      // dr_taus not filled
+
+      // dr_lep_tau_ss not filled
+      snm->read(dr_lep1_tau1,                           FloatVariableType::dr_lep1_tau1);
+      // dr_lep1_tau2 not filled
+      snm->read(dr_lep2_tau1,                           FloatVariableType::dr_lep2_tau1);
+      // dr_lep3_tau1 not filled
+      // dr_lep2_tau2 not filled
+
+      snm->read(max_lep_eta,                            FloatVariableType::max_lep12_eta); // abs
+      snm->read(max_lep12_eta,                          FloatVariableType::max_lep_eta); // not abs
+
+      snm->read(mT_lep1,                                FloatVariableType::mT_met_lep1);
+      snm->read(mT_lep2,                                FloatVariableType::mT_met_lep2);
+      // mT_met_lep3 not filled
+      // mT_met_lep4 not filled
+
+      snm->read(MT_met_lep1,                            FloatVariableType::MT_met_lep1);
+      snm->read(MT_met_lep2,                            FloatVariableType::MT_met_lep2);
+      // MT_met_lep3 not filled
+      // MT_met_lep4 not filled
+
+      // mTauTauVis not filled
+      snm->read(mTauTauVis1_sel,                        FloatVariableType::mvis_l1tau);
+      snm->read(mTauTauVis2_sel,                        FloatVariableType::mvis_l2tau);
+
       snm->read(ht,                                     FloatVariableType::HT);
-      // MVA_1l2tau_ttbar not filled
-      // MVA_1l2tau_ttbar_v2 not filled
-      // MVA_1l2tau_ttZ_v2 not filled
-      // MVA_1l2tau_2Dbin_v2 not filled
-      snm->read(mTauTauVis2_sel,                        FloatVariableType::mvis_l1tau);
-      snm->read(dR_l0tau,                               FloatVariableType::dR_l0tau);
-      snm->read(dR_l1tau,                               FloatVariableType::dR_l1tau);
-      // dR_l2tau not filled
-      // MT_met_lep2 not filled
-      // MVA_3l1tau_ttbar not filled
-      // MVA_3l1tau_ttV not filled
-      // MVA_3l1tau_2Dbin not filled
+      snm->read(ptmiss,                                 FloatVariableType::ptmiss);
+      snm->read(mbb,                                    FloatVariableType::mbb);
+      snm->read(mbb_loose,                              FloatVariableType::mbb_loose);
+
+      // cosThetaS_hadTau not filled
+      snm->read(HTT,                                    FloatVariableType::HTT);
+      snm->read(HadTop_pt,                              FloatVariableType::HadTop_pt);
+      // mT_lepHadTopH not filled
+
+      // mvaOutput_plainKin_ttV not filled
+      // mvaOutput_plainKin_tt not filled
+      // mvaOutput_plainKin_1B_VT not filled
+      // mvaOutput_HTT_SUM_VT not filled
+
+      // mvaOutput_plainKin_SUM_VT not filled
+
+      snm->read(mvaOutput_2lss_ttV,                     FloatVariableType::mvaOutput_2lss_ttV);
+      snm->read(mvaOutput_2lss_tt,                      FloatVariableType::mvaOutput_2lss_tt);
+      snm->read(mvaOutput_2lss_1tau_plainKin_tt,        FloatVariableType::mvaOutput_2lss_1tau_plainKin_tt);
+      snm->read(mvaOutput_2lss_1tau_plainKin_ttV,       FloatVariableType::mvaOutput_2lss_1tau_plainKin_ttV);
+      snm->read(mvaOutput_2lss_1tau_plainKin_1B_M,      FloatVariableType::mvaOutput_2lss_1tau_plainKin_1B_M);
+      snm->read(mvaOutput_2lss_1tau_plainKin_SUM_M,     FloatVariableType::mvaOutput_2lss_1tau_plainKin_SUM_M);
+      snm->read(mvaOutput_2lss_1tau_HTT_SUM_M,          FloatVariableType::mvaOutput_2lss_1tau_HTT_SUM_M);
+      snm->read(mvaOutput_2lss_1tau_HTTMEM_SUM_M,       FloatVariableType::mvaOutput_2lss_1tau_HTTMEM_SUM_M);
+
+      // mvaOutput_3l_ttV not filled
+      // mvaOutput_3l_ttbar not filled
+      // mvaOutput_plainKin_SUM_M not filled
+      // mvaOutput_plainKin_1B_M not filled
 
       snm->read(weight_fakeRate,                        FloatVariableType::FR_weight);
       snm->read(triggerWeight,                          FloatVariableType::triggerSF_weight);
@@ -2307,20 +2364,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       snm->read(memOutput_tt,                           FloatVariableType::Integral_ttbar);
       snm->read(memOutput_type,                         FloatVariableType::integration_type);
       snm->read(memOutput_LR,                           FloatVariableType::MEM_LR);
-      snm->read(dR_leps,                                FloatVariableType::dR_leps);
-      snm->read(mTauTauVis1_sel,                        FloatVariableType::mvis_l0tau);
-//      snm->read(mvaOutput_2lss_1tau_ttbar,              FloatVariableType::MVA_2lSS1tau_noMEM_ttbar);
-//      snm->read(mvaOutput_2lss_1tau_ttV,                FloatVariableType::MVA_2lSS1tau_noMEM_ttV);
-//      snm->read(mvaDiscr_2lss_1tau,                     FloatVariableType::MVA_2lSS1tau_noMEM_2Dbin);
-//      snm->read(mvaOutput_2lss_1tau_ttbar_wMEM,         FloatVariableType::MVA_2lSS1tau_MEM_ttbar);
-//      snm->read(mvaOutput_2lss_1tau_ttV_wMEM,           FloatVariableType::MVA_2lSS1tau_MEM_ttV);
-//      snm->read(mvaDiscr_2lss_1tau_wMEM,                FloatVariableType::MVA_2lSS1tau_MEM_2Dbin);
 
-      // lep2_conept not filled
-      // lep3_conept not filled
-      // mindr_lep4_jet not filled
-      snm->read(MT_met_lep1,                            FloatVariableType::MT_met_lep1);
-      // MT_met_lep3 not filled
       snm->read(eventInfo.genWeight,                    FloatVariableType::genWeight);
 
       snm->fill();
