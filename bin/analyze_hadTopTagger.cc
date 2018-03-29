@@ -1,3 +1,5 @@
+// latest
+
 #include "FWCore/ParameterSet/interface/ParameterSet.h" // edm::ParameterSet
 #include "FWCore/PythonParameterSet/interface/MakeParameterSets.h" // edm::readPSetsFrom()
 #include "FWCore/Utilities/interface/Exception.h" // cms::Exception
@@ -536,7 +538,13 @@ int main(int argc, char* argv[])
       "statusKinFit", "nllKinFit", "alphaKinFit", "logPKinFit", "logPErrKinFit",
 			//   "qg_b", "qg_Wj1", "qg_Wj2",
       "pT_bWj1Wj2", "pT_Wj1Wj2",
-      "max_dR_div_expRjet","genTopPt","genAntiTopPt"
+      "max_dR_div_expRjet","genTopPt","genAntiTopPt",
+			"charge", "pullEta", "pullPhi", "pullMag", "QjetVolatility", 
+			"msoftdrop", "tau1", "tau2", "tau3", "tau4",			
+			"charge_b", "charge_Wj1", "charge_Wj2",
+			"pullEta_b", "pullEta_Wj1", "pullEta_Wj2",
+			"pullPhi_b", "pullPhi_Wj1", "pullPhi_Wj2",
+			"pullMag_b", "pullMag_Wj1", "pullMag_Wj2" 
     );
 
 
@@ -578,7 +586,10 @@ int main(int argc, char* argv[])
       "statusKinFit", "nllKinFit", "alphaKinFit", "logPKinFit", "logPErrKinFit",
 			//   "qg_b", "qg_Wj1", "qg_Wj2",
       "pT_bWj1Wj2", "pT_Wj1Wj2",
-      "max_dR_div_expRjet","genTopPt","genAntiTopPt"
+      "max_dR_div_expRjet","genTopPt","genAntiTopPt",
+			"area", "fRec", "Ropt", "RoptCalc", "ptForRoptCalc", "tau1", "tau2", "tau3", 
+			"area_b", "area_Wj1", "area_Wj2",
+			"IDPassed_b", "IDPassed_Wj1", "IDPassed_Wj2"			
     );
 
 
@@ -589,6 +600,10 @@ int main(int argc, char* argv[])
 	//bdt_filler->register_variable<int_type>("mvaOutput_hadTopTagger");
     bdt_filler_HTTv2->bookTree(fs);
 	}
+
+
+
+
 
 	
   int analyzedEntries = 0;
@@ -601,6 +616,7 @@ int main(int argc, char* argv[])
   cutFlowTableType cutFlowTable_2lss_1tau_AK12;
   cutFlowTableType cutFlowTable_2lss_1tau_resolved;
 
+	/*
   TH1* histogram_ptTop = fs.make<TH1D>("ptTop", "ptTop", 100, 0., 500.);
   TH1* histogram_etaTop = fs.make<TH1D>("etaTop", "etaTop", 100, -5.0, +5.0);
   TH1* histogram_dRmaxTop = fs.make<TH1D>("dRmaxTop", "dRmaxTop", 200, -0.01, 9.99);
@@ -645,6 +661,8 @@ int main(int argc, char* argv[])
   TH1* histogram_resolved_theta_t_sublead = fs.make<TH1D>("resolved_theta_t_sublead", "resolved_theta_t_sublead", 36, 0., TMath::Pi());
 
 	TH1* histogram_crosscheck1 = fs.make<TH1D>("crosscheck1", "Stat", 71, -0.5, +70.5);
+	*/
+
 	
 //--- open output file containing run:lumi:event numbers of events passing final event selection criteria
   std::ostream* selEventsFile = ( selEventsFileName_output != "" ) ? new std::ofstream(selEventsFileName_output.data(), std::ios::out) : 0;
@@ -666,7 +684,7 @@ int main(int argc, char* argv[])
     }
     ++analyzedEntries;
     histogram_analyzedEntries->Fill(0.);
-		histogram_crosscheck1->Fill(1.);
+		//histogram_crosscheck1->Fill(1.);
 		
     if (run_lumi_eventSelector && !(*run_lumi_eventSelector)(eventInfo))
     {
@@ -1350,7 +1368,7 @@ int main(int argc, char* argv[])
       continue;
     }
     cutFlowTable_2lss_1tau.update("genJet triplet");
-		histogram_crosscheck1->Fill(2.);
+		//histogram_crosscheck1->Fill(2.);
 		
     Particle::LorentzVector genWBosonFromTopP4;
     if ( genWJetFromTop_lead && genWJetFromTop_sublead ) {
@@ -1376,372 +1394,102 @@ int main(int argc, char* argv[])
     //         reconstructed by hep-top-tagger (HTTv2) algorithm
 		
     cutFlowTable_2lss_1tau_HTTv2.update("genJet triplet");
-		histogram_crosscheck1->Fill(11.);
-    bool isHTTv2FromTop = false;
-    bool isHTTv2FromAntiTop = false;
-		
-    if ( (genBJetFromTop     && genWJetFromTop_lead     && genWJetFromTop_sublead     && genTopP4.pt()     > 200.) ||
-				 (genBJetFromAntiTop && genWJetFromAntiTop_lead && genWJetFromAntiTop_sublead && genAntiTopP4.pt() > 200.) ) {
-      cutFlowTable_2lss_1tau_HTTv2.update("genTop passes pT > 200 GeV");
-			histogram_crosscheck1->Fill(12.);
-			
-      if ( (genBJetFromTop             && genBJetFromTop->absEta()          < 5.0 && 
-						genWJetFromTop_lead        && genWJetFromTop_lead->absEta()     < 5.0 &&
-						genWJetFromTop_sublead     && genWJetFromTop_lead->absEta()     < 5.0) ||
-					 (genBJetFromAntiTop         && genBJetFromAntiTop->absEta()      < 5.0 && 
-						genWJetFromAntiTop_lead    && genWJetFromAntiTop_lead->absEta() < 5.0 &&
-						genWJetFromAntiTop_sublead && genWJetFromAntiTop_lead->absEta() < 5.0) ) {
-				cutFlowTable_2lss_1tau_HTTv2.update("genJet triplet passes abs(eta) < 5.0");
-				histogram_crosscheck1->Fill(13.);
-				
-				if ( (genBJetFromTop             && genBJetFromTop->absEta()      < 2.4) ||
-						 (genBJetFromAntiTop         && genBJetFromAntiTop->absEta()  < 2.4) ) {
-					cutFlowTable_2lss_1tau_HTTv2.update("genBJet passes abs(eta) < 2.4");
-					histogram_crosscheck1->Fill(14.);
-					
-					if ( (genBJetFromTop             && genBJetFromTop->absEta()          < 2.4 && 
-								genWJetFromTop_lead        && genWJetFromTop_lead->absEta()     < 2.4 &&
-								genWJetFromTop_sublead     && genWJetFromTop_lead->absEta()     < 2.4) ||
-							 (genBJetFromAntiTop         && genBJetFromAntiTop->absEta()      < 2.4 && 
-								genWJetFromAntiTop_lead    && genWJetFromAntiTop_lead->absEta() < 2.4 &&
-								genWJetFromAntiTop_sublead && genWJetFromAntiTop_lead->absEta() < 2.4) ) {
-						cutFlowTable_2lss_1tau_HTTv2.update("genJet triplet passes abs(eta) < 2.4");
-						histogram_crosscheck1->Fill(15.);
+
+		for ( std::vector<const RecoJetHTTv2*>::const_iterator jetHTTv2 = jet_ptrsHTTv2.begin();
+					jetHTTv2 != jet_ptrsHTTv2.end(); ++jetHTTv2 ) {
+			const RecoJetHTTv2*    recFatJet  = (*jetHTTv2);
+			const RecoSubjetHTTv2* recSubJet[3];			
+			recSubJet[0] = recFatJet->subJet1();
+			recSubJet[1] = recFatJet->subJet2();
+			recSubJet[2] = recFatJet->subJet3();
+			if (recSubJet[0]==0 || recSubJet[1]==0 || recSubJet[2]==0) continue;
+
+			//printf("HTTv2 area %f, fRec: %f, Ropt %f, RoptCal %f, ptForRoptCalc %f,  tau: %f, %f, %f ",
+			//		 recFatJet->area(),
+			//		 recFatJet->fRec(),recFatJet->Ropt(),recFatJet->RoptCalc(),recFatJet->ptForRoptCalc(),
+			//		 recFatJet->tau1(),recFatJet->tau2(),recFatJet->tau3());
+			for (int i=0; i<3; i++) {
+				//printf("\t sugjet %i area %f, IDPassed %i, BtagCSV %f ",
+				//		 i,recSubJet[i]->area(),recSubJet[i]->IDPassed(),recSubJet[i]->BtagCSV());
+				bool selBJet_isFromTop = deltaR(recSubJet[i]->p4(), genBJetFromTop->p4()) < 0.2;
+				bool selBJet_isFromAntiTop = deltaR(recSubJet[i]->p4(), genBJetFromAntiTop->p4()) < 0.2;
+				for (int j=0; j<3; j++) {
+					if (i==j) continue;
+					bool selWJet1_isFromTop =
+						(genWJetFromTop_lead        && deltaR(recSubJet[j]->p4(), genWJetFromTop_lead->p4())        < 0.2) ||
+						(genWJetFromTop_sublead     && deltaR(recSubJet[j]->p4(), genWJetFromTop_sublead->p4())     < 0.2);
+					bool selWJet1_isFromAntiTop =
+						(genWJetFromAntiTop_lead    && deltaR(recSubJet[j]->p4(), genWJetFromAntiTop_lead->p4())    < 0.2) ||
+						(genWJetFromAntiTop_sublead && deltaR(recSubJet[j]->p4(), genWJetFromAntiTop_sublead->p4()) < 0.2);
+					for (int k=0; k<3; k++) {
+						if (j==k) continue;
+						if (i==k) continue;
+						bool selWJet2_isFromTop =
+							(genWJetFromTop_lead        && deltaR(recSubJet[k]->p4(), genWJetFromTop_lead->p4())        < 0.2) ||
+							(genWJetFromTop_sublead     && deltaR(recSubJet[k]->p4(), genWJetFromTop_sublead->p4())     < 0.2);
+						bool selWJet2_isFromAntiTop =
+							(genWJetFromAntiTop_lead    && deltaR(recSubJet[k]->p4(), genWJetFromAntiTop_lead->p4())    < 0.2) ||
+							(genWJetFromAntiTop_sublead && deltaR(recSubJet[k]->p4(), genWJetFromAntiTop_sublead->p4()) < 0.2);
+
+						double  mvaOutput = (*hadTopTaggerFill)(*recSubJet[i], *recSubJet[j], *recSubJet[k]);
+						//std::cout << "Case1 here132 \t mvaOutput" << mvaOutput << std::endl;
+						const std::map<std::string, double>& mvaInputs =  hadTopTaggerFill->mvaInputs();
+						//std::cout << "Case1 here133 \t mvaInputs.size:" << mvaInputs.size() << std::endl;
+						int idxGenMatch_top     = getGenMatch(selBJet_isFromTop, selWJet1_isFromTop, selWJet2_isFromTop);
+						int idxGenMatch_antiTop = getGenMatch(selBJet_isFromAntiTop, selWJet1_isFromAntiTop, selWJet2_isFromAntiTop);
+						if ( (idxGenMatch_antiTop != kGen_bWj1Wj2) || (idxGenMatch_top != kGen_bWj1Wj2) ) {
+							// CV: don't consider top matching if reconstructed jet triplet is (fully) matched to anti-top
+							//if (DoHist) {
+							//assert(mvaInputHistManagers.find(idxGenMatch_top) != mvaInputHistManagers.end());
+							//mvaInputHistManagers[idxGenMatch_top]->fillHistograms(mvaInputs, evtWeight);
+							//fillWithOverFlow(mvaOutputHistManagers[idxGenMatch_top], mvaOutput[0], evtWeight);
+							//}
+							bdt_filler_HTTv2->operator()({ eventInfo.run, eventInfo.lumi, eventInfo.event });
+							for ( std::map<std::string, double>::const_iterator mvaInput = mvaInputs.begin();
+										mvaInput != mvaInputs.end(); ++mvaInput ) {
+								bdt_filler_HTTv2->operator()(mvaInput->first, mvaInput->second);
+							}
+							bdt_filler_HTTv2->operator()("b_isGenMatched", selBJet_isFromTop || selBJet_isFromAntiTop);
+							bdt_filler_HTTv2->operator()("Wj1_isGenMatched", selWJet1_isFromTop || selWJet1_isFromAntiTop);
+							bdt_filler_HTTv2->operator()("Wj2_isGenMatched", selWJet2_isFromTop || selWJet2_isFromAntiTop);
+							bool tripletTruth    = (selBJet_isFromTop == 1) &&				\
+								(selWJet1_isFromTop == 1) &&														\
+								(selWJet2_isFromTop == 1);
+							bool tripletTruthAnti= (selBJet_isFromAntiTop == 1) &&		\
+								(selWJet1_isFromAntiTop == 1) &&												\
+								(selWJet2_isFromAntiTop == 1);
+							bdt_filler_HTTv2->operator()("bWj1Wj2_isGenMatched", tripletTruth==1 && tripletTruthAnti==1);
+							bdt_filler_HTTv2->operator()("genTopPt", genTopQuark->pt());
+							bdt_filler_HTTv2->operator()("genAntiTopPt", genAntiTopQuark->pt());
+							std::vector<bool> truth_hadTopTagger; //= hadTopTaggerFill->isTruth(**selBJet, **selWJet1, **selWJet2,
+							//genTopQuarks, genBJets, genWBosons);
+							//std::vector<bool> truth_hadTopTagger3Jet; //= hadTopTaggerFill->isTruth3Jet(**selBJet, **selWJet1, **selWJet2,
+							// genTopQuarks, genBJets, genWBosons, genWJets);
+
+							// New addition--
+							bdt_filler_HTTv2->operator()("area", recFatJet->area());
+							bdt_filler_HTTv2->operator()("fRec", recFatJet->fRec());
+							bdt_filler_HTTv2->operator()("Ropt", recFatJet->Ropt());
+							bdt_filler_HTTv2->operator()("RoptCalc", recFatJet->RoptCalc());
+							bdt_filler_HTTv2->operator()("ptForRoptCalc", recFatJet->ptForRoptCalc());
+							bdt_filler_HTTv2->operator()("tau1", recFatJet->tau1());
+							bdt_filler_HTTv2->operator()("tau2", recFatJet->tau2());
+							bdt_filler_HTTv2->operator()("tau3", recFatJet->tau3());
+
+							if (mvaOutput==0){
+								bdt_filler_HTTv2->fill();
+								//histogram_crosscheck1->Fill(22.);
+							}
+						}		
+
 						
-						if ( (genBJetFromTop && genWJetFromTop_lead && genWJetFromTop_sublead             && 
-									deltaR(genTopP4, genBJetFromTop->p4())                                < 1.5 && 
-									deltaR(genTopP4, genWJetFromTop_lead->p4())                           < 1.5 && 
-									deltaR(genTopP4, genWJetFromTop_sublead->p4())                        < 1.5) ||
-								 (genBJetFromAntiTop && genWJetFromAntiTop_lead && genWJetFromAntiTop_sublead && 
-									deltaR(genAntiTopP4, genBJetFromAntiTop->p4())                        < 1.5 && 
-									deltaR(genAntiTopP4, genWJetFromAntiTop_lead->p4())                   < 1.5 && 
-									deltaR(genAntiTopP4, genWJetFromAntiTop_sublead->p4())                < 1.5) ) {
-							cutFlowTable_2lss_1tau_HTTv2.update("dR(genBJet, genWJet1, genWJet2) < 1.5");
-							histogram_crosscheck1->Fill(16.);
-							
-							const RecoJetHTTv2* recTop = 0;
-							const RecoJetHTTv2* recAntiTop = 0;
-							//std::cout<<"Case1 here1"<<std::endl;
-							for ( std::vector<const RecoJetHTTv2*>::const_iterator jetHTTv2 = jet_ptrsHTTv2.begin();
-										jetHTTv2 != jet_ptrsHTTv2.end(); ++jetHTTv2 ) {
-								if ( genBJetFromTop && genWJetFromTop_lead && genWJetFromTop_sublead && deltaR((*jetHTTv2)->p4(), genTopP4) < 0.75 ) {
-									recTop = (*jetHTTv2);
-									histManager_jetsHTTv2->fillHistograms({ recTop }, evtWeight);
-									//std::cout<<"Case1 here2 top"<<std::endl;
-								}
-								if ( genBJetFromAntiTop && genWJetFromAntiTop_lead && genWJetFromAntiTop_sublead && deltaR((*jetHTTv2)->p4(), genAntiTopP4) < 0.75 ) {
-									recAntiTop = (*jetHTTv2);
-									histManager_jetsHTTv2->fillHistograms({ recAntiTop }, evtWeight);
-									//std::cout<<"Case1 here2 antitop"<<std::endl;
-								}
-							}
-							
-							const RecoSubjetHTTv2* recBJetFromTop = 0;
-							const RecoSubjetHTTv2* recWJetFromTop_lead = 0;
-							const RecoSubjetHTTv2* recWJetFromTop_sublead = 0;
-							if ( recTop && recTop->subJet1() && recTop->subJet2() && recTop->subJet3() ) {
-								histogram_crosscheck1->Fill(17.);
-								double dR_b_1 = deltaR(genBJetFromTop->p4(), recTop->subJet1()->p4());
-								double dR_b_2 = deltaR(genBJetFromTop->p4(), recTop->subJet2()->p4());
-								double dR_b_3 = deltaR(genBJetFromTop->p4(), recTop->subJet3()->p4());
-								double dR_lead_1 = deltaR(genWJetFromTop_lead->p4(), recTop->subJet1()->p4());
-								double dR_lead_2 = deltaR(genWJetFromTop_lead->p4(), recTop->subJet2()->p4());
-								double dR_lead_3 = deltaR(genWJetFromTop_lead->p4(), recTop->subJet3()->p4());
-								double dR_sublead_1 = deltaR(genWJetFromTop_sublead->p4(), recTop->subJet1()->p4());
-								double dR_sublead_2 = deltaR(genWJetFromTop_sublead->p4(), recTop->subJet2()->p4());
-								double dR_sublead_3 = deltaR(genWJetFromTop_sublead->p4(), recTop->subJet3()->p4());
-								double dR2min = 1.e+3;
-								if ( (square(dR_b_1) + square(dR_lead_2) + square(dR_sublead_3)) < dR2min ) {
-									if ( dR_b_1 < 0.1 && dR_lead_2 < 0.1 && dR_sublead_3 < 0.1 ) {
-										recBJetFromTop         = recTop->subJet1();
-										recWJetFromTop_lead    = recTop->subJet2();
-										recWJetFromTop_sublead = recTop->subJet3();
-										dR2min = (square(dR_b_1) + square(dR_lead_2) + square(dR_sublead_3));
-									}
-								}
-								if ( (square(dR_b_1) + square(dR_lead_3) + square(dR_sublead_2)) < dR2min ) {
-									if ( dR_b_1 < 0.1 && dR_lead_3 < 0.1 && dR_sublead_2 < 0.1 ) {
-										recBJetFromTop         = recTop->subJet1();
-										recWJetFromTop_lead    = recTop->subJet3();
-										recWJetFromTop_sublead = recTop->subJet2();
-										dR2min = (square(dR_b_1) + square(dR_lead_3) + square(dR_sublead_2));
-									}
-								}
-								if ( (square(dR_b_2) + square(dR_lead_1) + square(dR_sublead_3)) < dR2min ) {
-									if ( dR_b_2 < 0.1 && dR_lead_1 < 0.1 && dR_sublead_3 < 0.1 ) {
-										recBJetFromTop         = recTop->subJet2();
-										recWJetFromTop_lead    = recTop->subJet1();
-										recWJetFromTop_sublead = recTop->subJet3();
-										dR2min = (square(dR_b_2) + square(dR_lead_1) + square(dR_sublead_3));
-									}
-								}
-								if ( (square(dR_b_2) + square(dR_lead_3) + square(dR_sublead_1)) < dR2min ) {
-									if ( dR_b_2 < 0.1 && dR_lead_3 < 0.1 && dR_sublead_1 < 0.1 ) {
-										recBJetFromTop         = recTop->subJet2();
-										recWJetFromTop_lead    = recTop->subJet3();
-										recWJetFromTop_sublead = recTop->subJet1();
-										dR2min = (square(dR_b_2) + square(dR_lead_3) + square(dR_sublead_1));
-									}
-								}
-								if ( (square(dR_b_3) + square(dR_lead_1) + square(dR_sublead_2)) < dR2min ) {
-									if ( dR_b_3 < 0.1 && dR_lead_1 < 0.1 && dR_sublead_2 < 0.1 ) {
-										recBJetFromTop         = recTop->subJet3();
-										recWJetFromTop_lead    = recTop->subJet1();
-										recWJetFromTop_sublead = recTop->subJet2();
-										dR2min = (square(dR_b_3) + square(dR_lead_1) + square(dR_sublead_2));
-									}
-								}
-								if ( (square(dR_b_3) + square(dR_lead_2) + square(dR_sublead_1)) < dR2min ) {
-									if ( dR_b_3 < 0.1 && dR_lead_2 < 0.1 && dR_sublead_1 < 0.1 ) {
-										recBJetFromTop         = recTop->subJet3();
-										recWJetFromTop_lead    = recTop->subJet2();
-										recWJetFromTop_sublead = recTop->subJet1();
-										dR2min = (square(dR_b_3) + square(dR_lead_2) + square(dR_sublead_1));
-									}
-								}
-                if ( recBJetFromTop && recWJetFromTop_lead && recWJetFromTop_sublead ) {
-									//std::cout << "here121" << std::endl;
-									//std::cout << "tmp " << (recWJetFromTop_lead->p4()).mass() << std::endl;
-									
-									Particle::LorentzVector recWBosonFromTopP4 = recWJetFromTop_lead->p4() + recWJetFromTop_sublead->p4();
-									if ( genWBosonFromTopP4.pt() > 100. ) {
-										fillWithOverFlow(histogram_HTTv2_W_ptRec_div_ptGen, recWBosonFromTopP4.pt()/genWBosonFromTopP4.pt(), evtWeight);
-									}
-									fillWithOverFlow(histogram_HTTv2_mW, recWBosonFromTopP4.mass(), evtWeight);
-									Particle::LorentzVector recTopP4 = recBJetFromTop->p4() + recWBosonFromTopP4;
-									if ( genTopP4.pt() > 200. ) {
-										fillWithOverFlow(histogram_HTTv2_Top_ptRec_div_ptGen, recTopP4.pt()/genTopP4.pt(), evtWeight);
-									}
-									fillWithOverFlow(histogram_HTTv2_mTop, recTopP4.mass(), evtWeight);
-									if ( genWJetFromTop_lead->pt() > 20. ) {
-										fillWithOverFlow(histogram_HTTv2_WJet1_ptRec_div_ptGen, recWJetFromTop_lead->pt()/genWJetFromTop_lead->pt(), evtWeight);
-										fillWithOverFlow(histogram_HTTv2_WJet1_dRmatch, deltaR(recWJetFromTop_lead->p4(), genWJetFromTop_lead->p4()), evtWeight);
-									}
-									if ( genWJetFromTop_sublead->pt() > 20. ) {
-										fillWithOverFlow(histogram_HTTv2_WJet2_ptRec_div_ptGen, recWJetFromTop_sublead->pt()/genWJetFromTop_sublead->pt(), evtWeight);
-										fillWithOverFlow(histogram_HTTv2_WJet2_dRmatch, deltaR(recWJetFromTop_sublead->p4(), genWJetFromTop_sublead->p4()), evtWeight);
-									}
-									if ( genBJetFromTop->pt() > 20. ) {
-										fillWithOverFlow(histogram_HTTv2_BJet_ptRec_div_ptGen, recBJetFromTop->pt()/genBJetFromTop->pt(), evtWeight);
-										fillWithOverFlow(histogram_HTTv2_BJet_dRmatch, deltaR(recBJetFromTop->p4(), genBJetFromTop->p4()), evtWeight);
-									}
-									isHTTv2FromTop = true;
-									histogram_crosscheck1->Fill(18.);
-								}
-							}
-							
-							
-							const RecoSubjetHTTv2* recBJetFromAntiTop = 0;
-							const RecoSubjetHTTv2* recWJetFromAntiTop_lead = 0;
-							const RecoSubjetHTTv2* recWJetFromAntiTop_sublead = 0;				
-							if ( recAntiTop && recAntiTop->subJet1() && recAntiTop->subJet2() && recAntiTop->subJet3() ) {
-								histogram_crosscheck1->Fill(19.);
-								double dR_b_1 = deltaR(genBJetFromAntiTop->p4(), recAntiTop->subJet1()->p4());
-								double dR_b_2 = deltaR(genBJetFromAntiTop->p4(), recAntiTop->subJet2()->p4());
-								double dR_b_3 = deltaR(genBJetFromAntiTop->p4(), recAntiTop->subJet3()->p4());
-								double dR_lead_1 = deltaR(genWJetFromAntiTop_lead->p4(), recAntiTop->subJet1()->p4());
-								double dR_lead_2 = deltaR(genWJetFromAntiTop_lead->p4(), recAntiTop->subJet2()->p4());
-								double dR_lead_3 = deltaR(genWJetFromAntiTop_lead->p4(), recAntiTop->subJet3()->p4());
-								double dR_sublead_1 = deltaR(genWJetFromAntiTop_sublead->p4(), recAntiTop->subJet1()->p4());
-								double dR_sublead_2 = deltaR(genWJetFromAntiTop_sublead->p4(), recAntiTop->subJet2()->p4());
-								double dR_sublead_3 = deltaR(genWJetFromAntiTop_sublead->p4(), recAntiTop->subJet3()->p4());
-								double dR2min = 1.e+3;
-								if ( (square(dR_b_1) + square(dR_lead_2) + square(dR_sublead_3)) < dR2min ) {
-									if ( dR_b_1 < 0.2 && dR_lead_2 < 0.2 && dR_sublead_3 < 0.2 ) {
-										recBJetFromAntiTop         = recAntiTop->subJet1();
-										recWJetFromAntiTop_lead    = recAntiTop->subJet2();
-										recWJetFromAntiTop_sublead = recAntiTop->subJet3();
-										dR2min = (square(dR_b_1) + square(dR_lead_2) + square(dR_sublead_3));
-									}
-								}
-								if ( (square(dR_b_1) + square(dR_lead_3) + square(dR_sublead_2)) < dR2min ) {
-									if ( dR_b_1 < 0.2 && dR_lead_3 < 0.2 && dR_sublead_2 < 0.2 ) {
-										recBJetFromAntiTop         = recAntiTop->subJet1();
-										recWJetFromAntiTop_lead    = recAntiTop->subJet3();
-										recWJetFromAntiTop_sublead = recAntiTop->subJet2();
-										dR2min = (square(dR_b_1) + square(dR_lead_3) + square(dR_sublead_2));
-									}
-								}
-								if ( (square(dR_b_2) + square(dR_lead_1) + square(dR_sublead_3)) < dR2min ) {
-									if ( dR_b_2 < 0.2 && dR_lead_1 < 0.2 && dR_sublead_3 < 0.2 ) {
-										recBJetFromAntiTop         = recAntiTop->subJet2();
-										recWJetFromAntiTop_lead    = recAntiTop->subJet1();
-										recWJetFromAntiTop_sublead = recAntiTop->subJet3();
-										dR2min = (square(dR_b_2) + square(dR_lead_1) + square(dR_sublead_3));
-									}
-								}
-								if ( (square(dR_b_2) + square(dR_lead_3) + square(dR_sublead_1)) < dR2min ) {
-									if ( dR_b_2 < 0.2 && dR_lead_3 < 0.2 && dR_sublead_1 < 0.2 ) {
-										recBJetFromAntiTop         = recAntiTop->subJet2();
-										recWJetFromAntiTop_lead    = recAntiTop->subJet3();
-										recWJetFromAntiTop_sublead = recAntiTop->subJet1();
-										dR2min = (square(dR_b_2) + square(dR_lead_3) + square(dR_sublead_1));
-									}
-								}
-								if ( (square(dR_b_3) + square(dR_lead_1) + square(dR_sublead_2)) < dR2min ) {
-									if ( dR_b_3 < 0.2 && dR_lead_1 < 0.2 && dR_sublead_2 < 0.2 ) {
-										recBJetFromAntiTop         = recAntiTop->subJet3();
-										recWJetFromAntiTop_lead    = recAntiTop->subJet1();
-										recWJetFromAntiTop_sublead = recAntiTop->subJet2();
-										dR2min = (square(dR_b_3) + square(dR_lead_1) + square(dR_sublead_2));
-									}
-								}
-								if ( (square(dR_b_3) + square(dR_lead_2) + square(dR_sublead_1)) < dR2min ) {
-									if ( dR_b_3 < 0.2 && dR_lead_2 < 0.2 && dR_sublead_1 < 0.2 ) {
-										recBJetFromAntiTop         = recAntiTop->subJet3();
-										recWJetFromAntiTop_lead    = recAntiTop->subJet2();
-										recWJetFromAntiTop_sublead = recAntiTop->subJet1();
-										dR2min = (square(dR_b_3) + square(dR_lead_2) + square(dR_sublead_1));
-									}
-								}
-                if ( recBJetFromAntiTop && recWJetFromAntiTop_lead && recWJetFromAntiTop_sublead ) {
-									Particle::LorentzVector recWBosonFromAntiTopP4 = recWJetFromAntiTop_lead->p4() + recWJetFromAntiTop_sublead->p4();
-									if ( genWBosonFromAntiTopP4.pt() > 100. ) {
-										fillWithOverFlow(histogram_HTTv2_W_ptRec_div_ptGen, recWBosonFromAntiTopP4.pt()/genWBosonFromAntiTopP4.pt(), evtWeight);
-									}
-									fillWithOverFlow(histogram_HTTv2_mW, recWBosonFromAntiTopP4.mass(), evtWeight);
-									Particle::LorentzVector recAntiTopP4 = recBJetFromAntiTop->p4() + recWBosonFromAntiTopP4;
-									if ( genAntiTopP4.pt() > 200. ) {
-										fillWithOverFlow(histogram_HTTv2_Top_ptRec_div_ptGen, recAntiTopP4.pt()/genAntiTopP4.pt(), evtWeight);
-									}
-									fillWithOverFlow(histogram_HTTv2_mTop, recAntiTopP4.mass(), evtWeight);
-									if ( genWJetFromAntiTop_lead->pt() > 20. ) {
-										fillWithOverFlow(histogram_HTTv2_WJet1_ptRec_div_ptGen, recWJetFromAntiTop_lead->pt()/genWJetFromAntiTop_lead->pt(), evtWeight);
-										fillWithOverFlow(histogram_HTTv2_WJet1_dRmatch, deltaR(recWJetFromAntiTop_lead->p4(), genWJetFromAntiTop_lead->p4()), evtWeight);
-									}
-									if ( genWJetFromAntiTop_sublead->pt() > 20. ) {
-										fillWithOverFlow(histogram_HTTv2_WJet2_ptRec_div_ptGen, recWJetFromAntiTop_sublead->pt()/genWJetFromAntiTop_sublead->pt(), evtWeight);
-										fillWithOverFlow(histogram_HTTv2_WJet2_dRmatch, deltaR(recWJetFromAntiTop_sublead->p4(), genWJetFromAntiTop_sublead->p4()), evtWeight);
-									}
-									if ( genBJetFromAntiTop->pt() > 20. ) {
-										fillWithOverFlow(histogram_HTTv2_BJet_ptRec_div_ptGen, recBJetFromAntiTop->pt()/genBJetFromAntiTop->pt(), evtWeight);
-										fillWithOverFlow(histogram_HTTv2_BJet_dRmatch, deltaR(recBJetFromAntiTop->p4(), genBJetFromAntiTop->p4()), evtWeight);
-									}
-									isHTTv2FromAntiTop = true;
-									histogram_crosscheck1->Fill(20.);
-								}								
-							}
-							
 
-              // Fill BDT -----------------------
-							for (int iTmp=0; iTmp<2; iTmp++) {
-								if ( !(isHTTv2FromTop || isHTTv2FromAntiTop)) continue;
-								bool fillBDT = false;
-								const RecoSubjetHTTv2* recBJetFromT = 0;
-								const RecoSubjetHTTv2* recWJetFromT_lead = 0;
-								const RecoSubjetHTTv2* recWJetFromT_sublead = 0;
-								bool selBJet_isFromTop = false;
-								bool selWJet1_isFromTop = false;
-								bool selWJet2_isFromTop = false;
-								bool selBJet_isFromAntiTop = false;
-								bool selWJet1_isFromAntiTop = false;
-								bool selWJet2_isFromAntiTop = false;								
-								if (isHTTv2FromTop == true && iTmp==0) {
-									//std::cout << "here124 \t isHTTv2FromTop "  << (recWJetFromTop_lead->p4()).mass() << std::endl;
-									recBJetFromT = recBJetFromTop;
-									recWJetFromT_lead = recWJetFromTop_lead;
-									recWJetFromT_sublead = recWJetFromTop_sublead;
-									//std::cout << "here125 \t isHTTv2FromTop "  << (recWJetFromT_lead->p4()).mass() << std::endl;
-
-									selBJet_isFromTop = deltaR((recBJetFromT)->p4(), genBJetFromTop->p4()) < 0.2;
-									selBJet_isFromAntiTop = deltaR((recBJetFromT)->p4(), genBJetFromAntiTop->p4()) < 0.2;
-									selWJet1_isFromTop =
-														(genWJetFromTop_lead        && deltaR((recWJetFromT_lead)->p4(), genWJetFromTop_lead->p4())        < 0.2) ||
-														(genWJetFromTop_sublead     && deltaR((recWJetFromT_lead)->p4(), genWJetFromTop_sublead->p4())     < 0.2);
-									selWJet1_isFromAntiTop =
-														(genWJetFromAntiTop_lead        && deltaR((recWJetFromT_lead)->p4(), genWJetFromAntiTop_lead->p4())        < 0.2) ||
-														(genWJetFromAntiTop_sublead     && deltaR((recWJetFromT_lead)->p4(), genWJetFromAntiTop_sublead->p4())     < 0.2);
-									selWJet2_isFromTop =
-														(genWJetFromTop_lead        && deltaR((recWJetFromT_sublead)->p4(), genWJetFromTop_lead->p4())        < 0.2) ||
-														(genWJetFromTop_sublead     && deltaR((recWJetFromT_sublead)->p4(), genWJetFromTop_sublead->p4())     < 0.2);
-									selWJet2_isFromAntiTop =
-														(genWJetFromAntiTop_lead        && deltaR((recWJetFromT_sublead)->p4(), genWJetFromAntiTop_lead->p4())        < 0.2) ||
-														(genWJetFromAntiTop_sublead     && deltaR((recWJetFromT_sublead)->p4(), genWJetFromAntiTop_sublead->p4())     < 0.2);
-										
-									fillBDT = true;
-								}
-								if (isHTTv2FromAntiTop == true && iTmp==1) {
-									//std::cout << "here124 \t isHTTv2FromAntiTop "  << (recWJetFromAntiTop_lead->p4()).mass() << std::endl;
-									recBJetFromT = recBJetFromAntiTop;
-									recWJetFromT_lead = recWJetFromAntiTop_lead;
-									recWJetFromT_sublead = recWJetFromAntiTop_sublead;
-
-									selBJet_isFromTop = deltaR((recBJetFromT)->p4(), genBJetFromTop->p4()) < 0.2;
-									selBJet_isFromAntiTop = deltaR((recBJetFromT)->p4(), genBJetFromAntiTop->p4()) < 0.2;
-									selWJet1_isFromTop =
-														(genWJetFromTop_lead        && deltaR((recWJetFromT_lead)->p4(), genWJetFromTop_lead->p4())        < 0.2) ||
-														(genWJetFromTop_sublead     && deltaR((recWJetFromT_lead)->p4(), genWJetFromTop_sublead->p4())     < 0.2);
-									selWJet1_isFromAntiTop =
-														(genWJetFromAntiTop_lead        && deltaR((recWJetFromT_lead)->p4(), genWJetFromAntiTop_lead->p4())        < 0.2) ||
-														(genWJetFromAntiTop_sublead     && deltaR((recWJetFromT_lead)->p4(), genWJetFromAntiTop_sublead->p4())     < 0.2);
-									selWJet2_isFromTop =
-														(genWJetFromTop_lead        && deltaR((recWJetFromT_sublead)->p4(), genWJetFromTop_lead->p4())        < 0.2) ||
-														(genWJetFromTop_sublead     && deltaR((recWJetFromT_sublead)->p4(), genWJetFromTop_sublead->p4())     < 0.2);
-									selWJet2_isFromAntiTop =
-														(genWJetFromAntiTop_lead        && deltaR((recWJetFromT_sublead)->p4(), genWJetFromAntiTop_lead->p4())        < 0.2) ||
-														(genWJetFromAntiTop_sublead     && deltaR((recWJetFromT_sublead)->p4(), genWJetFromAntiTop_sublead->p4())     < 0.2);
-									
-									fillBDT = true;
-								}
-								if (!fillBDT) continue;
-								histogram_crosscheck1->Fill(21.);
-								
-								//std::cout << "\nTreeEntry "<<analyzedEntries << " \t Case1 " << std::endl;
-                double  mvaOutput = (*hadTopTaggerFill)(*recBJetFromT, *recWJetFromT_lead, *recWJetFromT_sublead);
-								//std::cout << "Case1 here132 \t mvaOutput" << mvaOutput << std::endl;
-								const std::map<std::string, double>& mvaInputs =  hadTopTaggerFill->mvaInputs();
-								//std::cout << "Case1 here133 \t mvaInputs.size:" << mvaInputs.size() << std::endl;
-								int idxGenMatch_top     = getGenMatch(selBJet_isFromTop, selWJet1_isFromTop, selWJet2_isFromTop);
-								int idxGenMatch_antiTop = getGenMatch(selBJet_isFromAntiTop, selWJet1_isFromAntiTop, selWJet2_isFromAntiTop);
-								/*std::cout << "Case1 here134  idxGenMatch_top:" << idxGenMatch_top
-													<< ",  idxGenMatch_antiTop:" << idxGenMatch_antiTop
-													<< ",  kGen_bWj1Wj2:" << kGen_bWj1Wj2 << std::endl;*/
-								if ( (idxGenMatch_antiTop != kGen_bWj1Wj2) || (idxGenMatch_top != kGen_bWj1Wj2) ) {
-									// CV: don't consider top matching if reconstructed jet triplet is (fully) matched to anti-top
-									//if (DoHist) {
-									//assert(mvaInputHistManagers.find(idxGenMatch_top) != mvaInputHistManagers.end());
-									//mvaInputHistManagers[idxGenMatch_top]->fillHistograms(mvaInputs, evtWeight);
-									//fillWithOverFlow(mvaOutputHistManagers[idxGenMatch_top], mvaOutput[0], evtWeight);
-									//}
-									bdt_filler_HTTv2->operator()({ eventInfo.run, eventInfo.lumi, eventInfo.event });
-									for ( std::map<std::string, double>::const_iterator mvaInput = mvaInputs.begin();
-												mvaInput != mvaInputs.end(); ++mvaInput ) {
-										bdt_filler_HTTv2->operator()(mvaInput->first, mvaInput->second);
-									}
-									bdt_filler_HTTv2->operator()("b_isGenMatched", selBJet_isFromTop || selBJet_isFromAntiTop);
-									bdt_filler_HTTv2->operator()("Wj1_isGenMatched", selWJet1_isFromTop || selWJet1_isFromAntiTop);
-									bdt_filler_HTTv2->operator()("Wj2_isGenMatched", selWJet2_isFromTop || selWJet2_isFromAntiTop);
-									bool tripletTruth    = (selBJet_isFromTop == 1) &&		\
-										(selWJet1_isFromTop == 1) &&												\
-										(selWJet2_isFromTop == 1);
-									bool tripletTruthAnti= (selBJet_isFromAntiTop == 1) && \
-										(selWJet1_isFromAntiTop == 1) &&										\
-											(selWJet2_isFromAntiTop == 1);
-									bdt_filler_HTTv2->operator()("bWj1Wj2_isGenMatched", tripletTruth==1 && tripletTruthAnti==1);
-									bdt_filler_HTTv2->operator()("genTopPt", genTopQuark->pt());
-									bdt_filler_HTTv2->operator()("genAntiTopPt", genAntiTopQuark->pt());
-									std::vector<bool> truth_hadTopTagger; //= hadTopTaggerFill->isTruth(**selBJet, **selWJet1, **selWJet2,
-									//genTopQuarks, genBJets, genWBosons);
-									//std::vector<bool> truth_hadTopTagger3Jet; //= hadTopTaggerFill->isTruth3Jet(**selBJet, **selWJet1, **selWJet2,
-									// genTopQuarks, genBJets, genWBosons, genWJets);
-									if (mvaOutput==0){
-										bdt_filler_HTTv2->fill();
-										histogram_crosscheck1->Fill(22.);
-									}
-								}
-								
-							}
-							
-						}
 					}
 				}
-      }
-    }
-    
-    if ( isHTTv2FromTop || isHTTv2FromAntiTop ) {
-      cutFlowTable_2lss_1tau_HTTv2.update("rec HTTv2");
-			histogram_crosscheck1->Fill(23.);
-    }
+			}
+
+
+		}
     //-------------------------------------------------------------------------------------------------------------------
     
     //-------------------------------------------------------------------------------------------------------------------
@@ -1751,396 +1499,98 @@ int main(int argc, char* argv[])
     //         reconstructed by anti-kT algorithm with dR=0.4 (AK4)
 		
     cutFlowTable_2lss_1tau_AK12.update("genJet triplet");
-    histogram_crosscheck1->Fill(31.);
-		
-    bool isAK12FromTop = false;
-    bool isBJetFromTop = false;
-    bool selBJetFromTop_passesLoose = false;
-    bool isAK12FromAntiTop = false;
-    bool isBJetFromAntiTop = false;
-		bool selBJetFromAntiTop_passesLoose = false;
-    //bool isAK4FromTop = false; // b-jet
-    //bool isAK4FromAntiTop = false;
-		
-    if ( (genBJetFromTop                                        && genBJetFromTop->pt()         >  20. && 
-					genWJetFromTop_lead && genWJetFromTop_sublead         && genWBosonFromTopP4.pt()      > 100.) ||
-				 (genBJetFromAntiTop                                    && genBJetFromAntiTop->pt()     >  20. && 
-					genWJetFromAntiTop_lead && genWJetFromAntiTop_sublead && genWBosonFromAntiTopP4.pt()  > 100.) ) {
-      cutFlowTable_2lss_1tau_AK12.update("genBJet passes pT > 20 GeV && genW passes pT > 100 GeV");
-			histogram_crosscheck1->Fill(32.);
-			
-      if ( (genBJetFromTop             && genBJetFromTop->absEta()          < 5.0 && 
-						genWJetFromTop_lead        && genWJetFromTop_lead->absEta()     < 5.0 &&
-						genWJetFromTop_sublead     && genWJetFromTop_lead->absEta()     < 5.0) ||
-					 (genBJetFromAntiTop         && genBJetFromAntiTop->absEta()      < 5.0 && 
-						genWJetFromAntiTop_lead    && genWJetFromAntiTop_lead->absEta() < 5.0 &&
-						genWJetFromAntiTop_sublead && genWJetFromAntiTop_lead->absEta() < 5.0) ) {
-				cutFlowTable_2lss_1tau_AK12.update("genJet triplet passes abs(eta) < 5.0");
-				histogram_crosscheck1->Fill(33.);
-				
-				if ( (genBJetFromTop             && genBJetFromTop->absEta()      < 2.4) ||
-						 (genBJetFromAntiTop         && genBJetFromAntiTop->absEta()  < 2.4) ) {
-					cutFlowTable_2lss_1tau_AK12.update("genBJet passes abs(eta) < 2.4");
-					histogram_crosscheck1->Fill(34.);
+
+		for ( std::vector<const RecoJet*>::const_iterator selBJet = selJets.begin(); selBJet != selJets.end(); ++selBJet ) {
+			bool selBJet_isFromTop = deltaR((*selBJet)->p4(), genBJetFromTop->p4()) < 0.2;
+			bool selBJet_isFromAntiTop = deltaR((*selBJet)->p4(), genBJetFromAntiTop->p4()) < 0.2;
+			for ( std::vector<const RecoJetAK12*>::const_iterator jetAK12 = jet_ptrsAK12.begin();
+						jetAK12 != jet_ptrsAK12.end(); ++jetAK12 ) {
+				const RecoSubjetAK12* recWJet[2];
+				recWJet[0] = (*jetAK12)->subJet1();				
+				recWJet[1] = (*jetAK12)->subJet2();
+				if (recWJet[0]==0 || recWJet[1]==0) continue;
 					
-					if ( (genBJetFromTop             && genBJetFromTop->absEta()          < 2.4 && 
-								genWJetFromTop_lead        && genWJetFromTop_lead->absEta()     < 2.4 &&
-								genWJetFromTop_sublead     && genWJetFromTop_lead->absEta()     < 2.4) ||
-							 (genBJetFromAntiTop         && genBJetFromAntiTop->absEta()      < 2.4 && 
-								genWJetFromAntiTop_lead    && genWJetFromAntiTop_lead->absEta() < 2.4 &&
-								genWJetFromAntiTop_sublead && genWJetFromAntiTop_lead->absEta() < 2.4) ) {
-						cutFlowTable_2lss_1tau_AK12.update("genJet triplet passes abs(eta) < 2.4");
-						histogram_crosscheck1->Fill(35.);
+				//printf("AK12  charge %f, pullEta %f, PullPhi %f, pullMag %f, QjetVolatility %f, msoftdrop %f, tau: %f, %f, %f, %f ",
+				//		 (*jetAK12)->charge(),(*jetAK12)->pullEta(),(*jetAK12)->pullPhi(),(*jetAK12)->pullMag(),
+				//		 (*jetAK12)->QjetVolatility(),(*jetAK12)->msoftdrop(),
+				//		 (*jetAK12)->tau1(),(*jetAK12)->tau2(),(*jetAK12)->tau3(),(*jetAK12)->tau4()					);
+				for (int i=0; i<2; i++) {
+					//printf("\t %i  charge %f, pullEta %f, PullPhi %f, pullMag %f ",
+					//		 i, recWJet[i]->charge(),recWJet[i]->pullEta(),recWJet[i]->pullPhi(),recWJet[i]->pullMag()						);
+
+					for (int j=0; j<2; j++) {
+						if (i==j) continue;
+						bool selWJet1_isFromTop =
+							(genWJetFromTop_lead        && deltaR(recWJet[i]->p4(), genWJetFromTop_lead->p4())        < 0.2) ||
+							(genWJetFromTop_sublead     && deltaR(recWJet[i]->p4(), genWJetFromTop_sublead->p4())     < 0.2);
+						bool selWJet1_isFromAntiTop =
+							(genWJetFromAntiTop_lead    && deltaR(recWJet[i]->p4(), genWJetFromAntiTop_lead->p4())    < 0.2) ||
+							(genWJetFromAntiTop_sublead && deltaR(recWJet[i]->p4(), genWJetFromAntiTop_sublead->p4()) < 0.2);
+						bool selWJet2_isFromTop =
+							(genWJetFromTop_lead        && deltaR(recWJet[j]->p4(), genWJetFromTop_lead->p4())        < 0.2) ||
+							(genWJetFromTop_sublead     && deltaR(recWJet[j]->p4(), genWJetFromTop_sublead->p4())     < 0.2);
+						bool selWJet2_isFromAntiTop =
+							(genWJetFromAntiTop_lead    && deltaR(recWJet[j]->p4(), genWJetFromAntiTop_lead->p4())    < 0.2) ||
+							(genWJetFromAntiTop_sublead && deltaR(recWJet[j]->p4(), genWJetFromAntiTop_sublead->p4()) < 0.2);
+
+						double  mvaOutput = (*hadTopTaggerFill)(**selBJet, *recWJet[i], *recWJet[j]);
+						//std::cout << "Case2 here132 \t mvaOutput" << mvaOutput << std::endl;
+						const std::map<std::string, double>& mvaInputs =  hadTopTaggerFill->mvaInputs();
+						//std::cout << "Case2 here133 \t mvaInputs.size:" << mvaInputs.size() << std::endl;
+						int idxGenMatch_top     = getGenMatch(selBJet_isFromTop, selWJet1_isFromTop, selWJet2_isFromTop);
+						int idxGenMatch_antiTop = getGenMatch(selBJet_isFromAntiTop, selWJet1_isFromAntiTop, selWJet2_isFromAntiTop);
+						if ( (idxGenMatch_antiTop != kGen_bWj1Wj2) || (idxGenMatch_top != kGen_bWj1Wj2) ) {
+							// CV: don't consider top matching if reconstructed jet triplet is (fully) matched to anti-top
+							//if (DoHist) {
+							//assert(mvaInputHistManagers.find(idxGenMatch_top) != mvaInputHistManagers.end());
+							//mvaInputHistManagers[idxGenMatch_top]->fillHistograms(mvaInputs, evtWeight);
+							//fillWithOverFlow(mvaOutputHistManagers[idxGenMatch_top], mvaOutput[0], evtWeight);
+							//}
+							bdt_filler_FatJetAK12->operator()({ eventInfo.run, eventInfo.lumi, eventInfo.event });
+							for ( std::map<std::string, double>::const_iterator mvaInput = mvaInputs.begin();
+										mvaInput != mvaInputs.end(); ++mvaInput ) {
+								bdt_filler_FatJetAK12->operator()(mvaInput->first, mvaInput->second);
+							}
+							bdt_filler_FatJetAK12->operator()("b_isGenMatched", selBJet_isFromTop || selBJet_isFromAntiTop);
+							bdt_filler_FatJetAK12->operator()("Wj1_isGenMatched", selWJet1_isFromTop || selWJet1_isFromAntiTop);
+							bdt_filler_FatJetAK12->operator()("Wj2_isGenMatched", selWJet2_isFromTop || selWJet2_isFromAntiTop);
+							bool tripletTruth    = (selBJet_isFromTop == 1) &&				\
+								(selWJet1_isFromTop == 1) &&														\
+								(selWJet2_isFromTop == 1);
+							bool tripletTruthAnti= (selBJet_isFromAntiTop == 1) &&		\
+								(selWJet1_isFromAntiTop == 1) &&												\
+								(selWJet2_isFromAntiTop == 1);
+							bdt_filler_FatJetAK12->operator()("bWj1Wj2_isGenMatched", tripletTruth==1 && tripletTruthAnti==1);
+							bdt_filler_FatJetAK12->operator()("genTopPt", genTopQuark->pt());
+							bdt_filler_FatJetAK12->operator()("genAntiTopPt", genAntiTopQuark->pt());
+							std::vector<bool> truth_hadTopTagger; //= hadTopTaggerFill->isTruth(**selBJet, **selWJet1, **selWJet2,
+							//genTopQuarks, genBJets, genWBosons);
+							//std::vector<bool> truth_hadTopTagger3Jet; //= hadTopTaggerFill->isTruth3Jet(**selBJet, **selWJet1, **selWJet2,
+							// genTopQuarks, genBJets, genWBosons, genWJets);
+
+							// New addition--
+							bdt_filler_FatJetAK12->operator()("charge", (*jetAK12)->charge());
+							bdt_filler_FatJetAK12->operator()("pullEta", (*jetAK12)->pullEta());
+							bdt_filler_FatJetAK12->operator()("pullPhi", (*jetAK12)->pullPhi());
+							bdt_filler_FatJetAK12->operator()("pullMag", (*jetAK12)->pullMag());
+							bdt_filler_FatJetAK12->operator()("QjetVolatility", (*jetAK12)->QjetVolatility());
+							bdt_filler_FatJetAK12->operator()("msoftdrop", (*jetAK12)->msoftdrop());
+							bdt_filler_FatJetAK12->operator()("tau1", (*jetAK12)->tau1());
+							bdt_filler_FatJetAK12->operator()("tau2", (*jetAK12)->tau2());
+							bdt_filler_FatJetAK12->operator()("tau3", (*jetAK12)->tau3());
+							bdt_filler_FatJetAK12->operator()("tau4", (*jetAK12)->tau4());
+
+							if (mvaOutput==0){
+								bdt_filler_FatJetAK12->fill();
+								//histogram_crosscheck1->Fill(43.);
+							}
+						}							
 						
-						if ( (genWJetFromTop_lead && genWJetFromTop_sublead                          && 
-									deltaR(genWBosonFromTopP4, genWJetFromTop_lead->p4())            < 1.2 && 
-									deltaR(genWBosonFromTopP4, genWJetFromTop_sublead->p4())         < 1.2) ||
-								 (genWJetFromAntiTop_lead && genWJetFromAntiTop_sublead                  && 
-									deltaR(genWBosonFromAntiTopP4, genWJetFromAntiTop_lead->p4())    < 1.2 &&
-									deltaR(genWBosonFromAntiTopP4, genWJetFromAntiTop_sublead->p4()) < 1.2) ) {
-							cutFlowTable_2lss_1tau_AK12.update("dR(genWJet1, genWJet2) < 1.2");
-							histogram_crosscheck1->Fill(36.);
-							const RecoJetAK12* recWBosonFromTop = 0;
-							const RecoJetAK12* recWBosonFromAntiTop = 0;
-							// boosted W jet
-							for ( std::vector<const RecoJetAK12*>::const_iterator jetAK12 = jet_ptrsAK12.begin();
-										jetAK12 != jet_ptrsAK12.end(); ++jetAK12 ) {
-								if ( genWJetFromTop_lead && genWJetFromTop_sublead && deltaR((*jetAK12)->p4(), genWBosonFromTopP4) < 0.6 ) {
-									recWBosonFromTop = (*jetAK12);
-									histManager_jetsAK12->fillHistograms({ recWBosonFromTop }, evtWeight);
-									if ( !isHTTv2FromTop ) {
-										histManager_jetsAK12_notHTTv2->fillHistograms({ recWBosonFromTop }, evtWeight);
-									}
-								}
-								if ( genWJetFromAntiTop_lead && genWJetFromAntiTop_sublead && deltaR((*jetAK12)->p4(), genWBosonFromAntiTopP4) < 0.6 ) {
-									recWBosonFromAntiTop = (*jetAK12);
-									histManager_jetsAK12->fillHistograms({ recWBosonFromAntiTop }, evtWeight);
-									if ( !isHTTv2FromAntiTop ) {
-										histManager_jetsAK12_notHTTv2->fillHistograms({ recWBosonFromAntiTop }, evtWeight);
-									}
-								}
-							}
-
-							// b-jet
-							const RecoJet* selBJetFromTop = 0;
-							double dRmin_selBJetFromTop = 1.e+3;
-							const RecoJet* selBJetFromAntiTop = 0;
-							double dRmin_selBJetFromAntiTop = 1.e+3;
-							for ( std::vector<const RecoJet*>::const_iterator selJet = selJets.begin(); selJet != selJets.end(); ++selJet ) {
-								if ( genBJetFromTop ) {
-									double dR_selBJetFromTop = deltaR((*selJet)->p4(), genBJetFromTop->p4());
-									if ( dR_selBJetFromTop < 0.3 && dR_selBJetFromTop < dRmin_selBJetFromTop ) {
-										selBJetFromTop = (*selJet);
-										dRmin_selBJetFromTop = dR_selBJetFromTop;
-									}
-								}
-								if ( genBJetFromAntiTop ) {
-									double dR_selBJetFromAntiTop = deltaR((*selJet)->p4(), genBJetFromAntiTop->p4());
-									if ( dR_selBJetFromAntiTop < 0.3 && dR_selBJetFromAntiTop < dRmin_selBJetFromAntiTop ) {
-										selBJetFromAntiTop = (*selJet);
-										dRmin_selBJetFromAntiTop = dR_selBJetFromAntiTop;
-									}
-								}
-							}
-							
-							if ( selBJetFromTop ) {
-								isBJetFromTop = true;
-							}
-							if ( selBJetFromAntiTop ) {
-								isBJetFromAntiTop = true;
-							}
-
-							for ( std::vector<const RecoJet*>::const_iterator selBJet_loose = selBJets_loose.begin();
-										selBJet_loose != selBJets_loose.end(); ++selBJet_loose ) {
-								if ( selBJetFromTop && deltaR(selBJetFromTop->p4(), (*selBJet_loose)->p4()) < 0.3 ) {
-									selBJetFromTop_passesLoose = true;
-								}
-								if ( selBJetFromAntiTop && deltaR(selBJetFromAntiTop->p4(), (*selBJet_loose)->p4()) < 0.3 ) {
-									selBJetFromAntiTop_passesLoose = true;
-								}
-							}
-
-							const RecoJet* recBJetFromTop = selBJetFromTop;
-							const RecoJet* recBJetFromAntiTop = selBJetFromAntiTop;
-							//-------									
-							
-							const RecoSubjetAK12* recWJetFromTop_lead = 0;
-							const RecoSubjetAK12* recWJetFromTop_sublead = 0;
-							if ( recWBosonFromTop && recWBosonFromTop->subJet1() && recWBosonFromTop->subJet2() ) {		
-								double dR_lead_1 = deltaR(genWJetFromTop_lead->p4(), recWBosonFromTop->subJet1()->p4());  
-								double dR_lead_2 = deltaR(genWJetFromTop_lead->p4(), recWBosonFromTop->subJet2()->p4());
-								double dR_sublead_1 = deltaR(genWJetFromTop_sublead->p4(), recWBosonFromTop->subJet1()->p4());
-								double dR_sublead_2 = deltaR(genWJetFromTop_sublead->p4(), recWBosonFromTop->subJet2()->p4());
-								if ( (square(dR_lead_1) + square(dR_sublead_2)) < (square(dR_lead_2) + square(dR_sublead_1)) ) {
-									if ( dR_lead_1 < 0.2 && dR_sublead_2 < 0.2 ) {
-										recWJetFromTop_lead = recWBosonFromTop->subJet1();
-										recWJetFromTop_sublead = recWBosonFromTop->subJet2();
-									}
-								} else {
-									if ( dR_lead_2 < 0.2 && dR_sublead_1 < 0.2 ) {
-										recWJetFromTop_lead = recWBosonFromTop->subJet2();
-										recWJetFromTop_sublead = recWBosonFromTop->subJet1();
-									}
-								}
-                if ( recWJetFromTop_lead && recWJetFromTop_sublead ) {
-									Particle::LorentzVector recWBosonFromTopP4 = recWJetFromTop_lead->p4() + recWJetFromTop_sublead->p4();
-                  if ( genWBosonFromTopP4.pt() > 100. ) {
-										fillWithOverFlow(histogram_AK12_W_ptRec_div_ptGen, recWBosonFromTopP4.pt()/genWBosonFromTopP4.pt(), evtWeight);
-									}
-									fillWithOverFlow(histogram_AK12_mW, recWBosonFromTopP4.mass(), evtWeight);
-									if ( genWJetFromTop_lead->pt() > 20. ) {
-										fillWithOverFlow(histogram_AK12_WJet1_ptRec_div_ptGen, recWJetFromTop_lead->pt()/genWJetFromTop_lead->pt(), evtWeight);
-										fillWithOverFlow(histogram_AK12_WJet1_dRmatch, deltaR(recWJetFromTop_lead->p4(), genWJetFromTop_lead->p4()), evtWeight);
-									}
-									if ( genWJetFromTop_sublead->pt() > 20. ) {
-										fillWithOverFlow(histogram_AK12_WJet2_ptRec_div_ptGen, recWJetFromTop_sublead->pt()/genWJetFromTop_sublead->pt(), evtWeight);
-										fillWithOverFlow(histogram_AK12_WJet2_dRmatch, deltaR(recWJetFromTop_sublead->p4(), genWJetFromTop_sublead->p4()), evtWeight);
-									}
-									double theta_t_lead = comp_theta_t(
-                    recWJetFromTop_lead->p4(), recWBosonFromTop->pullEta(), recWBosonFromTop->pullPhi(), 
-										recWJetFromTop_sublead->p4());
-									fillWithOverFlow(histogram_AK12_theta_t_lead, theta_t_lead, evtWeight);
-									double theta_t_sublead = comp_theta_t(
-                    recWJetFromTop_sublead->p4(), recWBosonFromTop->pullEta(), recWBosonFromTop->pullPhi(), 
-										recWJetFromTop_lead->p4());
-									fillWithOverFlow(histogram_AK12_theta_t_sublead, theta_t_sublead, evtWeight);
-									isAK12FromTop = true;
-									/*std::cout << "Case2 here11 : \t Wjet mass:" << recWJetFromTop_lead->mass() << ", "
-										<< recWJetFromTop_sublead->mass() << std::endl;*/
-									
-								}
-							}
-
-							const RecoSubjetAK12* recWJetFromAntiTop_lead = 0;
-							const RecoSubjetAK12* recWJetFromAntiTop_sublead = 0;							
-							if ( recWBosonFromAntiTop && recWBosonFromAntiTop->subJet1() && recWBosonFromAntiTop->subJet2() ) {
-								double dR_lead_1 = deltaR(genWJetFromAntiTop_lead->p4(), recWBosonFromAntiTop->subJet1()->p4());
-								double dR_lead_2 = deltaR(genWJetFromAntiTop_lead->p4(), recWBosonFromAntiTop->subJet2()->p4());
-								double dR_sublead_1 = deltaR(genWJetFromAntiTop_sublead->p4(), recWBosonFromAntiTop->subJet1()->p4());
-								double dR_sublead_2 = deltaR(genWJetFromAntiTop_sublead->p4(), recWBosonFromAntiTop->subJet2()->p4());
-								if ( (square(dR_lead_1) + square(dR_sublead_2)) < (square(dR_lead_2) + square(dR_sublead_1)) ) {
-									if ( dR_lead_1 < 0.2 && dR_sublead_2 < 0.2 ) {
-										recWJetFromAntiTop_lead = recWBosonFromAntiTop->subJet1();
-										recWJetFromAntiTop_sublead = recWBosonFromAntiTop->subJet2();
-									}
-								} else {
-									if ( dR_lead_2 < 0.2 && dR_sublead_1 < 0.2 ) {
-										recWJetFromAntiTop_lead = recWBosonFromAntiTop->subJet2();
-										recWJetFromAntiTop_sublead = recWBosonFromAntiTop->subJet1();
-									}
-								}
-								if ( recWJetFromAntiTop_lead && recWJetFromAntiTop_sublead ) {
-									Particle::LorentzVector recWBosonFromAntiTopP4 = recWJetFromAntiTop_lead->p4() + recWJetFromAntiTop_sublead->p4();
-									if ( genWBosonFromAntiTopP4.pt() > 100. ) {
-										fillWithOverFlow(histogram_AK12_W_ptRec_div_ptGen, recWBosonFromAntiTopP4.pt()/genWBosonFromAntiTopP4.pt(), evtWeight);
-									}
-									fillWithOverFlow(histogram_AK12_mW, recWBosonFromAntiTopP4.mass(), evtWeight);
-									if ( genWJetFromAntiTop_lead->pt() > 20. ) {
-										fillWithOverFlow(histogram_AK12_WJet1_ptRec_div_ptGen, recWJetFromAntiTop_lead->pt()/genWJetFromAntiTop_lead->pt(), evtWeight);
-										fillWithOverFlow(histogram_AK12_WJet1_dRmatch, deltaR(recWJetFromAntiTop_lead->p4(), genWJetFromAntiTop_lead->p4()), evtWeight);
-									}
-									if ( genWJetFromAntiTop_sublead->pt() > 20. ) {
-										fillWithOverFlow(histogram_AK12_WJet2_ptRec_div_ptGen, recWJetFromAntiTop_sublead->pt()/genWJetFromAntiTop_sublead->pt(), evtWeight);
-										fillWithOverFlow(histogram_AK12_WJet2_dRmatch, deltaR(recWJetFromAntiTop_sublead->p4(), genWJetFromAntiTop_sublead->p4()), evtWeight);
-									}
-									double theta_t_lead = comp_theta_t(
-                    recWJetFromAntiTop_lead->p4(), recWBosonFromAntiTop->pullEta(), recWBosonFromAntiTop->pullPhi(), 
-										recWJetFromAntiTop_sublead->p4());
-									fillWithOverFlow(histogram_AK12_theta_t_lead, theta_t_lead, evtWeight);
-									double theta_t_sublead = comp_theta_t(
-                    recWJetFromAntiTop_sublead->p4(), recWBosonFromAntiTop->pullEta(), recWBosonFromAntiTop->pullPhi(), 
-										recWJetFromAntiTop_lead->p4());
-									fillWithOverFlow(histogram_AK12_theta_t_sublead, theta_t_sublead, evtWeight);
-									isAK12FromAntiTop = true;
-									/*std::cout << "Case2 here12 : \t Wjet mass:" << recWJetFromAntiTop_lead->mass() << ", "
-										<< recWJetFromAntiTop_sublead->mass() << std::endl;*/
-								}								
-							}
-							
-							/* // B-jet Siddh version
-							const RecoJet* recBJetFromTop = 0;
-							const RecoJet* recBJetFromAntiTop = 0;
-							// separate b-jet
-							double dRmin_selBJetFromTop = 1.e+3;
-							double dRmin_selBJetFromAntiTop = 1.e+3;
-							for ( std::vector<const RecoJet*>::const_iterator selJet = selJets.begin(); selJet != selJets.end(); ++selJet ) {
-								if ( genBJetFromTop ) {
-									double dR_selBJetFromTop = deltaR((*selJet)->p4(), genBJetFromTop->p4());
-									if ( dR_selBJetFromTop < 0.3 && dR_selBJetFromTop < dRmin_selBJetFromTop ) {
-										recBJetFromTop = (*selJet);
-										dRmin_selBJetFromTop = dR_selBJetFromTop;
-									}
-								}								
-								if ( genBJetFromAntiTop ) {
-									double dR_selBJetFromAntiTop = deltaR((*selJet)->p4(), genBJetFromAntiTop->p4());
-									if ( dR_selBJetFromAntiTop < 0.3 && dR_selBJetFromAntiTop < dRmin_selBJetFromAntiTop ) {
-										recBJetFromTop = (*selJet);
-										dRmin_selBJetFromAntiTop = dR_selBJetFromAntiTop;
-									}
-								}								
-							}
-							if (recBJetFromTop) {
-								if (genBJetFromTop && deltaR((recBJetFromTop)->p4(), genBJetFromTop->p4()) < 0.2 ) {
-										isAK4FromTop = true;
-								}
-							}
-							if (recBJetFromAntiTop) {
-								if (genBJetFromAntiTop && deltaR((recBJetFromAntiTop)->p4(), genBJetFromAntiTop->p4()) < 0.2 ) {
-										isAK4FromAntiTop = true;
-								}
-							}							
-							//if (recBJetFromTop) std::cout << "Case2 here10 : \t bjetFromTop mass:" << recBJetFromTop->mass() << std::endl;
-							//if (recBJetFromAntiTop) std::cout << "Case2 here10 : \t bjetFromAntiTop mass:" << recBJetFromAntiTop->mass() << std::endl;
-							
-							
-							if (isAK12FromTop || isAK12FromAntiTop) histogram_crosscheck1->Fill(37.);
-							if (isAK4FromTop || isAK4FromAntiTop) histogram_crosscheck1->Fill(38.);
-							if ((isAK12FromTop && isAK4FromTop) || (isAK12FromAntiTop && isAK4FromAntiTop)) histogram_crosscheck1->Fill(39.);
-							*/
-
-							if (isAK12FromTop || isAK12FromAntiTop) histogram_crosscheck1->Fill(37.);
-							if (isBJetFromTop || isBJetFromAntiTop) histogram_crosscheck1->Fill(38.);
-							if (selBJetFromTop_passesLoose || selBJetFromAntiTop_passesLoose)
-								histogram_crosscheck1->Fill(39.);							
-							if ((isAK12FromTop && isBJetFromTop) || (isAK12FromAntiTop && isBJetFromAntiTop))
-								histogram_crosscheck1->Fill(40.);
-							if ((isAK12FromTop && selBJetFromTop_passesLoose) || (isAK12FromAntiTop || selBJetFromAntiTop_passesLoose))
-								histogram_crosscheck1->Fill(41.);
-
-							// Fill BDT -----------------------
-							for (int iTmp=0; iTmp<2; iTmp++) {
-								//if ( !((isAK12FromTop && isAK4FromTop) || (isAK12FromAntiTop && isAK4FromAntiTop))) continue;
-								//if ( !((isAK12FromTop && isBJetFromTop) || (isAK12FromAntiTop && isBJetFromAntiTop))) continue;
-								if ( !((isAK12FromTop && selBJetFromTop_passesLoose) || (isAK12FromAntiTop || selBJetFromAntiTop_passesLoose))) continue;
-								bool fillBDT = false;
-								//const RecoJetAK12*    recWBosonFromT = 0;
-								const RecoSubjetAK12* recWJetFromT_lead = 0;
-								const RecoSubjetAK12* recWJetFromT_sublead = 0;
-								const RecoJet*    recBJetFromT = 0;
-								bool selBJet_isFromTop = false;
-								bool selWJet1_isFromTop = false;
-								bool selWJet2_isFromTop = false;
-								bool selBJet_isFromAntiTop = false;
-								bool selWJet1_isFromAntiTop = false;
-								bool selWJet2_isFromAntiTop = false;
-								if ((isAK12FromTop && selBJetFromTop_passesLoose) && iTmp==0) {
-									//recWBosonFromT = recWBosonFromTop;
-									recWJetFromT_lead = recWJetFromTop_lead;
-									recWJetFromT_sublead = recWJetFromTop_sublead;
-									recBJetFromT = recBJetFromTop;
-
-									selBJet_isFromTop = deltaR((recBJetFromT)->p4(), genBJetFromTop->p4()) < 0.2;
-									selBJet_isFromAntiTop = deltaR((recBJetFromT)->p4(), genBJetFromAntiTop->p4()) < 0.2;
-									selWJet1_isFromTop =
-														(genWJetFromTop_lead        && deltaR((recWJetFromT_lead)->p4(), genWJetFromTop_lead->p4())        < 0.2) ||
-														(genWJetFromTop_sublead     && deltaR((recWJetFromT_lead)->p4(), genWJetFromTop_sublead->p4())     < 0.2);
-									selWJet1_isFromAntiTop =
-														(genWJetFromAntiTop_lead        && deltaR((recWJetFromT_lead)->p4(), genWJetFromAntiTop_lead->p4())        < 0.2) ||
-														(genWJetFromAntiTop_sublead     && deltaR((recWJetFromT_lead)->p4(), genWJetFromAntiTop_sublead->p4())     < 0.2);
-									selWJet2_isFromTop =
-														(genWJetFromTop_lead        && deltaR((recWJetFromT_sublead)->p4(), genWJetFromTop_lead->p4())        < 0.2) ||
-														(genWJetFromTop_sublead     && deltaR((recWJetFromT_sublead)->p4(), genWJetFromTop_sublead->p4())     < 0.2);
-									selWJet2_isFromAntiTop =
-														(genWJetFromAntiTop_lead        && deltaR((recWJetFromT_sublead)->p4(), genWJetFromAntiTop_lead->p4())        < 0.2) ||
-														(genWJetFromAntiTop_sublead     && deltaR((recWJetFromT_sublead)->p4(), genWJetFromAntiTop_sublead->p4())     < 0.2);
-									
-									fillBDT = true;
-								}
-								if ((isAK12FromAntiTop && selBJetFromAntiTop_passesLoose) && iTmp==1) {
-									//recWBosonFromT       = recWBosonFromAntiTop;
-									recWJetFromT_lead    = recWJetFromAntiTop_lead;
-									recWJetFromT_sublead = recWJetFromAntiTop_sublead;			
-									recBJetFromT = recBJetFromAntiTop;
-									
-									selBJet_isFromTop = deltaR((recBJetFromT)->p4(), genBJetFromTop->p4()) < 0.2;
-									selBJet_isFromAntiTop = deltaR((recBJetFromT)->p4(), genBJetFromAntiTop->p4()) < 0.2;
-									selWJet1_isFromTop =
-														(genWJetFromTop_lead        && deltaR((recWJetFromT_lead)->p4(), genWJetFromTop_lead->p4())        < 0.2) ||
-														(genWJetFromTop_sublead     && deltaR((recWJetFromT_lead)->p4(), genWJetFromTop_sublead->p4())     < 0.2);
-									selWJet1_isFromAntiTop =
-														(genWJetFromAntiTop_lead        && deltaR((recWJetFromT_lead)->p4(), genWJetFromAntiTop_lead->p4())        < 0.2) ||
-														(genWJetFromAntiTop_sublead     && deltaR((recWJetFromT_lead)->p4(), genWJetFromAntiTop_sublead->p4())     < 0.2);
-									selWJet2_isFromTop =
-														(genWJetFromTop_lead        && deltaR((recWJetFromT_sublead)->p4(), genWJetFromTop_lead->p4())        < 0.2) ||
-														(genWJetFromTop_sublead     && deltaR((recWJetFromT_sublead)->p4(), genWJetFromTop_sublead->p4())     < 0.2);
-									selWJet2_isFromAntiTop =
-														(genWJetFromAntiTop_lead        && deltaR((recWJetFromT_sublead)->p4(), genWJetFromAntiTop_lead->p4())        < 0.2) ||
-														(genWJetFromAntiTop_sublead     && deltaR((recWJetFromT_sublead)->p4(), genWJetFromAntiTop_sublead->p4())     < 0.2);
-									
-									fillBDT = true;
-								}
-								if (!fillBDT) continue;
-								histogram_crosscheck1->Fill(42.);
-								
-								//std::cout << "\nTreeEntry "<<analyzedEntries << " \t Case2 " << std::endl;
-								//std::cout << "Case2 here131" << std::endl;
-                double  mvaOutput = (*hadTopTaggerFill)(*recBJetFromT, *recWJetFromT_lead, *recWJetFromT_sublead);
-								//std::cout << "Case2 here132 \t mvaOutput" << mvaOutput << std::endl;
-								const std::map<std::string, double>& mvaInputs =  hadTopTaggerFill->mvaInputs();
-								//std::cout << "Case2 here133 \t mvaInputs.size:" << mvaInputs.size() << std::endl;
-								int idxGenMatch_top     = getGenMatch(selBJet_isFromTop, selWJet1_isFromTop, selWJet2_isFromTop);
-								int idxGenMatch_antiTop = getGenMatch(selBJet_isFromAntiTop, selWJet1_isFromAntiTop, selWJet2_isFromAntiTop);
-								/*std::cout << "Case2 here134  idxGenMatch_top:" << idxGenMatch_top
-													<< ",  idxGenMatch_antiTop:" << idxGenMatch_antiTop
-													<< ",  kGen_bWj1Wj2:" << kGen_bWj1Wj2 << std::endl;*/
-								if ( (idxGenMatch_antiTop != kGen_bWj1Wj2) || (idxGenMatch_top != kGen_bWj1Wj2) ) {
-									// CV: don't consider top matching if reconstructed jet triplet is (fully) matched to anti-top
-									//if (DoHist) {
-									//assert(mvaInputHistManagers.find(idxGenMatch_top) != mvaInputHistManagers.end());
-									//mvaInputHistManagers[idxGenMatch_top]->fillHistograms(mvaInputs, evtWeight);
-									//fillWithOverFlow(mvaOutputHistManagers[idxGenMatch_top], mvaOutput[0], evtWeight);
-									//}
-									bdt_filler_FatJetAK12->operator()({ eventInfo.run, eventInfo.lumi, eventInfo.event });
-									for ( std::map<std::string, double>::const_iterator mvaInput = mvaInputs.begin();
-												mvaInput != mvaInputs.end(); ++mvaInput ) {
-										bdt_filler_FatJetAK12->operator()(mvaInput->first, mvaInput->second);
-									}
-									bdt_filler_FatJetAK12->operator()("b_isGenMatched", selBJet_isFromTop || selBJet_isFromAntiTop);
-									bdt_filler_FatJetAK12->operator()("Wj1_isGenMatched", selWJet1_isFromTop || selWJet1_isFromAntiTop);
-									bdt_filler_FatJetAK12->operator()("Wj2_isGenMatched", selWJet2_isFromTop || selWJet2_isFromAntiTop);
-									bool tripletTruth    = (selBJet_isFromTop == 1) &&		\
-										(selWJet1_isFromTop == 1) &&												\
-										(selWJet2_isFromTop == 1);
-									bool tripletTruthAnti= (selBJet_isFromAntiTop == 1) && \
-										(selWJet1_isFromAntiTop == 1) &&										\
-											(selWJet2_isFromAntiTop == 1);
-									bdt_filler_FatJetAK12->operator()("bWj1Wj2_isGenMatched", tripletTruth==1 && tripletTruthAnti==1);
-									bdt_filler_FatJetAK12->operator()("genTopPt", genTopQuark->pt());
-									bdt_filler_FatJetAK12->operator()("genAntiTopPt", genAntiTopQuark->pt());
-									std::vector<bool> truth_hadTopTagger; //= hadTopTaggerFill->isTruth(**selBJet, **selWJet1, **selWJet2,
-									//genTopQuarks, genBJets, genWBosons);
-									//std::vector<bool> truth_hadTopTagger3Jet; //= hadTopTaggerFill->isTruth3Jet(**selBJet, **selWJet1, **selWJet2,
-									// genTopQuarks, genBJets, genWBosons, genWJets);
-									if (mvaOutput==0){
-										bdt_filler_FatJetAK12->fill();
-										histogram_crosscheck1->Fill(43.);
-									}
-								}
-								
-							}
-							
-						}
 					}
 				}
-      }
-    }
-
-		if ( isAK12FromTop || isAK12FromAntiTop ) {
-      cutFlowTable_2lss_1tau_AK12.update("rec AK12");
-			histogram_crosscheck1->Fill(44.);
-      if ( isBJetFromTop || isBJetFromAntiTop ) {
-				cutFlowTable_2lss_1tau_resolved.update("rec AK12 + BJet pair");
-				histogram_crosscheck1->Fill(45.);
-				if ( selBJetFromTop_passesLoose || selBJetFromAntiTop_passesLoose ) {
-					cutFlowTable_2lss_1tau_AK12.update("rec BJet passes loose b-tagging working-point");
-					histogram_crosscheck1->Fill(46.);
-					if ( !(isHTTv2FromTop || isHTTv2FromAntiTop) ) {
-						cutFlowTable_2lss_1tau_AK12.update("!HTTv2");
-						histogram_crosscheck1->Fill(47.);
-					}
-				}
-      }
-		}		
+				
+			}
+		}
     //-------------------------------------------------------------------------------------------------------------------
     
 		
@@ -2149,346 +1599,74 @@ int main(int argc, char* argv[])
     //         reconstructed by anti-kT algorithm with dR=0.4 (AK4)
 		
     cutFlowTable_2lss_1tau_resolved.update("genJet triplet");
-		histogram_crosscheck1->Fill(51.);
-    bool isResolved = false;
-		
-    if ( (genBJetFromTop             && genBJetFromTop->pt()          > 20. && 
-					genWJetFromTop_lead        && genWJetFromTop_lead->pt()     > 20. &&
-					genWJetFromTop_sublead     && genWJetFromTop_lead->pt()     > 20.) ||
-				 (genBJetFromAntiTop         && genBJetFromAntiTop->pt()      > 20. && 
-					genWJetFromAntiTop_lead    && genWJetFromAntiTop_lead->pt() > 20. &&
-					genWJetFromAntiTop_sublead && genWJetFromAntiTop_lead->pt() > 20.) ) {
-      cutFlowTable_2lss_1tau_resolved.update("genJet triplet passes pT > 20 GeV");
-			histogram_crosscheck1->Fill(52.);
-			
-      if ( (genBJetFromTop             && genBJetFromTop->absEta()          < 5.0 && 
-						genWJetFromTop_lead        && genWJetFromTop_lead->absEta()     < 5.0 &&
-						genWJetFromTop_sublead     && genWJetFromTop_lead->absEta()     < 5.0) ||
-					 (genBJetFromAntiTop         && genBJetFromAntiTop->absEta()      < 5.0 && 
-						genWJetFromAntiTop_lead    && genWJetFromAntiTop_lead->absEta() < 5.0 &&
-						genWJetFromAntiTop_sublead && genWJetFromAntiTop_lead->absEta() < 5.0) ) {
-				cutFlowTable_2lss_1tau_resolved.update("genJet triplet passes abs(eta) < 5.0");
-				histogram_crosscheck1->Fill(53.);
-				
-				if ( (genBJetFromTop             && genBJetFromTop->absEta()      < 2.4) ||
-						 (genBJetFromAntiTop         && genBJetFromAntiTop->absEta()  < 2.4) ) {
-					cutFlowTable_2lss_1tau_resolved.update("genBJet passes abs(eta) < 2.4");
-					histogram_crosscheck1->Fill(54.);
-					
-					if ( (genBJetFromTop             && genBJetFromTop->pt()          > 25. && 
-								genWJetFromTop_lead        && genWJetFromTop_lead->pt()     > 25. &&
-								genWJetFromTop_sublead     && genWJetFromTop_lead->pt()     > 25.) ||
-							 (genBJetFromAntiTop         && genBJetFromAntiTop->pt()      > 25. && 
-								genWJetFromAntiTop_lead    && genWJetFromAntiTop_lead->pt() > 25. &&
-								genWJetFromAntiTop_sublead && genWJetFromAntiTop_lead->pt() > 25.) ) {
-						cutFlowTable_2lss_1tau_resolved.update("genJet triplet passes pT > 25 GeV");
-						histogram_crosscheck1->Fill(55.);
-						
-						if ( (genBJetFromTop             && genBJetFromTop->absEta()          < 2.4 && 
-									genWJetFromTop_lead        && genWJetFromTop_lead->absEta()     < 2.4 &&
-									genWJetFromTop_sublead     && genWJetFromTop_lead->absEta()     < 2.4) ||
-								 (genBJetFromAntiTop         && genBJetFromAntiTop->absEta()      < 2.4 && 
-									genWJetFromAntiTop_lead    && genWJetFromAntiTop_lead->absEta() < 2.4 &&
-									genWJetFromAntiTop_sublead && genWJetFromAntiTop_lead->absEta() < 2.4) ) {
-							cutFlowTable_2lss_1tau_resolved.update("genJet triplet passes abs(eta) < 2.4");
-							histogram_crosscheck1->Fill(56.);
-							
-							if ( genTopQuark && genWBosonFromTop && genBJetFromTop && genWJetFromTop_lead && genWJetFromTop_sublead ) {
-								fillWithOverFlow(histogram_ptTop, genTopQuark->pt(), evtWeight);
-								fillWithOverFlow(histogram_etaTop, genTopQuark->eta(), evtWeight);
-								double dRmaxTop = -1.;
-								dRmaxTop = TMath::Max(dRmaxTop, deltaR(genTopQuark->p4(), genBJetFromTop->p4()));
-								dRmaxTop = TMath::Max(dRmaxTop, deltaR(genTopQuark->p4(), genWJetFromTop_lead->p4()));
-								dRmaxTop = TMath::Max(dRmaxTop, deltaR(genTopQuark->p4(), genWJetFromTop_sublead->p4()));
-								fillWithOverFlow(histogram_dRmaxTop, dRmaxTop, evtWeight);
-								fillWithOverFlow(histogram_ptW, genWBosonFromTop->pt(), evtWeight);
-								fillWithOverFlow(histogram_etaW, genWBosonFromTop->eta(), evtWeight);
-								double dRmaxW = -1.;
-								dRmaxW = TMath::Max(dRmaxW, deltaR(genWBosonFromTop->p4(), genWJetFromTop_lead->p4()));
-								dRmaxW = TMath::Max(dRmaxW, deltaR(genWBosonFromTop->p4(), genWJetFromTop_sublead->p4()));
-								fillWithOverFlow(histogram_dRmaxW, dRmaxW, evtWeight);
-								if ( dRmaxTop > 1.2 ) fillWithOverFlow(histogram_dRmaxW_dRmaxTopGt1p2, dRmaxW, evtWeight);
-								if ( dRmaxTop > 1.5 ) fillWithOverFlow(histogram_dRmaxW_dRmaxTopGt1p5, dRmaxW, evtWeight);
-								fillWithOverFlow(histogram_ptB, genBJetFromTop->pt(), evtWeight);
-								fillWithOverFlow(histogram_etaB, genBJetFromTop->eta(), evtWeight);
-							}
-							if ( genAntiTopQuark && genWBosonFromAntiTop && genBJetFromAntiTop && genWJetFromAntiTop_lead && genWJetFromAntiTop_sublead ) {
-								fillWithOverFlow(histogram_ptTop, genAntiTopQuark->pt(), evtWeight);
-								fillWithOverFlow(histogram_etaTop, genAntiTopQuark->eta(), evtWeight);
-								double dRmaxAntiTop = -1.;
-								dRmaxAntiTop = TMath::Max(dRmaxAntiTop, deltaR(genAntiTopQuark->p4(), genBJetFromAntiTop->p4()));
-								dRmaxAntiTop = TMath::Max(dRmaxAntiTop, deltaR(genAntiTopQuark->p4(), genWJetFromAntiTop_lead->p4()));
-								dRmaxAntiTop = TMath::Max(dRmaxAntiTop, deltaR(genAntiTopQuark->p4(), genWJetFromAntiTop_sublead->p4()));
-								fillWithOverFlow(histogram_dRmaxTop, dRmaxAntiTop, evtWeight);
-								fillWithOverFlow(histogram_ptW, genWBosonFromAntiTop->pt(), evtWeight);
-								fillWithOverFlow(histogram_etaW, genWBosonFromAntiTop->eta(), evtWeight);
-								double dRmaxW = -1.;
-								dRmaxW = TMath::Max(dRmaxW, deltaR(genWBosonFromAntiTop->p4(), genWJetFromAntiTop_lead->p4()));
-								dRmaxW = TMath::Max(dRmaxW, deltaR(genWBosonFromAntiTop->p4(), genWJetFromAntiTop_sublead->p4()));
-								fillWithOverFlow(histogram_dRmaxW, dRmaxW, evtWeight);
-								if ( dRmaxAntiTop > 1.2 ) fillWithOverFlow(histogram_dRmaxW_dRmaxTopGt1p2, dRmaxW, evtWeight);
-								if ( dRmaxAntiTop > 1.5 ) fillWithOverFlow(histogram_dRmaxW_dRmaxTopGt1p5, dRmaxW, evtWeight);
-								fillWithOverFlow(histogram_ptB, genBJetFromAntiTop->pt(), evtWeight);
-								fillWithOverFlow(histogram_etaB, genBJetFromAntiTop->eta(), evtWeight);
-							}
-							
-							if ( (genBJetFromTop                                                                && 
-										genWJetFromTop_lead                                                           && 
-										genWJetFromTop_sublead                                                        &&
-										deltaR(genBJetFromTop->p4(),          genWJetFromTop_lead->p4())        > 0.4 && 
-										deltaR(genBJetFromTop->p4(),          genWJetFromTop_sublead->p4())     > 0.4 && 
-										deltaR(genWJetFromTop_lead->p4(),     genWJetFromTop_sublead->p4())     > 0.4) ||
-									 (genBJetFromAntiTop                                                            && 
-										genWJetFromAntiTop_lead                                                       && 
-										genWJetFromAntiTop_sublead                                                    &&
-										deltaR(genBJetFromAntiTop->p4(),      genWJetFromAntiTop_lead->p4())    > 0.4 && 
-										deltaR(genBJetFromAntiTop->p4(),      genWJetFromAntiTop_sublead->p4()) > 0.4 && 
-										deltaR(genWJetFromAntiTop_lead->p4(), genWJetFromAntiTop_sublead->p4()) > 0.4) ) {
-								cutFlowTable_2lss_1tau_resolved.update("dR(jet1,jet2) > 0.4 for any pair of genJets in triplet");
-								histogram_crosscheck1->Fill(57.);
-								
-								const RecoJet* selBJetFromTop = 0;
-								double dRmin_selBJetFromTop = 1.e+3;
-								const RecoJet* selWJetFromTop_lead = 0;
-								double dRmin_selWJetFromTop_lead = 1.e+3;
-								const RecoJet* selWJetFromTop_sublead = 0;
-								double dRmin_selWJetFromTop_sublead = 1.e+3;
-								const RecoJet* selBJetFromAntiTop = 0;
-								double dRmin_selBJetFromAntiTop = 1.e+3;
-								const RecoJet* selWJetFromAntiTop_lead = 0;
-								double dRmin_selWJetFromAntiTop_lead = 1.e+3;
-								const RecoJet* selWJetFromAntiTop_sublead = 0;
-								double dRmin_selWJetFromAntiTop_sublead = 1.e+3; 
-								for ( std::vector<const RecoJet*>::const_iterator selJet = selJets.begin(); selJet != selJets.end(); ++selJet ) {
-									//for ( std::vector<const RecoJet*>::const_iterator selJet = jet_ptrs.begin(); selJet != jet_ptrs.end(); ++selJet ) {
-									//if ( !((*selJet)->pt() > 25. && (*selJet)->absEta() < 2.4) ) continue;
-									if ( genBJetFromTop ) {
-										double dR_selBJetFromTop = deltaR((*selJet)->p4(), genBJetFromTop->p4());
-										if ( dR_selBJetFromTop < 0.3 && dR_selBJetFromTop < dRmin_selBJetFromTop ) {
-											selBJetFromTop = (*selJet);
-											dRmin_selBJetFromTop = dR_selBJetFromTop;
-										}
-									}
-									if ( genWJetFromTop_lead ) {
-										double dR_selWJetFromTop_lead = deltaR((*selJet)->p4(), genWJetFromTop_lead->p4());
-										if ( dR_selWJetFromTop_lead < 0.3 && dR_selWJetFromTop_lead < dRmin_selWJetFromTop_lead ) {
-											selWJetFromTop_lead = (*selJet);
-											dRmin_selWJetFromTop_lead = dR_selWJetFromTop_lead;
-										}
-									}
-									if ( genWJetFromTop_sublead ) {
-										double dR_selWJetFromTop_sublead = deltaR((*selJet)->p4(), genWJetFromTop_sublead->p4());
-										if ( dR_selWJetFromTop_sublead < 0.3 && dR_selWJetFromTop_sublead < dRmin_selWJetFromTop_sublead ) {
-											selWJetFromTop_sublead = (*selJet);
-											dRmin_selWJetFromTop_sublead = dR_selWJetFromTop_sublead;
-										}
-									}
-									if ( genBJetFromAntiTop ) {
-										double dR_selBJetFromAntiTop = deltaR((*selJet)->p4(), genBJetFromAntiTop->p4());
-										if ( dR_selBJetFromAntiTop < 0.3 && dR_selBJetFromAntiTop < dRmin_selBJetFromAntiTop ) {
-											selBJetFromAntiTop = (*selJet);
-											dRmin_selBJetFromAntiTop = dR_selBJetFromAntiTop;
-										}
-									}
-									if ( genWJetFromAntiTop_lead ) {
-										double dR_selWJetFromAntiTop_lead = deltaR((*selJet)->p4(), genWJetFromAntiTop_lead->p4());
-										if ( dR_selWJetFromAntiTop_lead < 0.3 && dR_selWJetFromAntiTop_lead < dRmin_selWJetFromAntiTop_lead ) {
-											selWJetFromAntiTop_lead = (*selJet);
-											dRmin_selWJetFromAntiTop_lead = dR_selWJetFromAntiTop_lead;
-										}
-									}
-									if ( genWJetFromAntiTop_sublead ) {
-										double dR_selWJetFromAntiTop_sublead = deltaR((*selJet)->p4(), genWJetFromAntiTop_sublead->p4());
-										if ( dR_selWJetFromAntiTop_sublead < 0.3 && dR_selWJetFromAntiTop_sublead < dRmin_selWJetFromAntiTop_sublead ) {
-											selWJetFromAntiTop_sublead = (*selJet);
-											dRmin_selWJetFromAntiTop_sublead = dR_selWJetFromAntiTop_sublead;
-										}
-									}
-								}
-								if ( (selBJetFromTop             && 
-											selWJetFromTop_lead        && 
-											selWJetFromTop_sublead    ) ||
-										 (selBJetFromAntiTop         && 
-											selWJetFromAntiTop_lead    && 
-											selWJetFromAntiTop_sublead) ) {
-									cutFlowTable_2lss_1tau_resolved.update("selJet triplet");
-									histogram_crosscheck1->Fill(58.);
-									
-									if ( (selBJetFromTop                                                                && 
-												selWJetFromTop_lead                                                           && 
-												selWJetFromTop_sublead                                                        &&
-												deltaR(selBJetFromTop->p4(),          selWJetFromTop_lead->p4())        > 0.3 && 
-												deltaR(selBJetFromTop->p4(),          selWJetFromTop_sublead->p4())     > 0.3 && 
-												deltaR(selWJetFromTop_lead->p4(),     selWJetFromTop_sublead->p4())     > 0.3) ||
-											 (selBJetFromAntiTop                                                            && 
-												selWJetFromAntiTop_lead                                                       && 
-												selWJetFromAntiTop_sublead                                                    &&
-												deltaR(selBJetFromAntiTop->p4(),      selWJetFromAntiTop_lead->p4())    > 0.3 && 
-												deltaR(selBJetFromAntiTop->p4(),      selWJetFromAntiTop_sublead->p4()) > 0.3 && 
-												deltaR(selWJetFromAntiTop_lead->p4(), selWJetFromAntiTop_sublead->p4()) > 0.3) ) {
-										cutFlowTable_2lss_1tau_resolved.update("dR(jet1,jet2) > 0.3 for any pair of selJets in triplet");
-										histogram_crosscheck1->Fill(59.);
-										
-										if ( selWJetFromTop_lead && selWJetFromTop_sublead ) {
-											double theta_t_lead = comp_theta_t(
-                        selWJetFromTop_lead->p4(), selWJetFromTop_lead->pullEta(), selWJetFromTop_lead->pullPhi(), 
-												selWJetFromTop_sublead->p4());
-											fillWithOverFlow(histogram_resolved_theta_t_lead, theta_t_lead, evtWeight);
-											double theta_t_sublead = comp_theta_t(
-                        selWJetFromTop_sublead->p4(), selWJetFromTop_sublead->pullEta(), selWJetFromTop_sublead->pullPhi(), 
-												selWJetFromTop_lead->p4());
-											fillWithOverFlow(histogram_resolved_theta_t_sublead, theta_t_sublead, evtWeight);
-										}
-										if ( selWJetFromAntiTop_lead && selWJetFromAntiTop_sublead ) {
-											double theta_t_lead = comp_theta_t(
-                        selWJetFromAntiTop_lead->p4(), selWJetFromAntiTop_lead->pullEta(), selWJetFromAntiTop_lead->pullPhi(), 
-												selWJetFromAntiTop_sublead->p4());
-											fillWithOverFlow(histogram_resolved_theta_t_lead, theta_t_lead, evtWeight);
-											double theta_t_sublead = comp_theta_t(
-                        selWJetFromAntiTop_sublead->p4(), selWJetFromAntiTop_sublead->pullEta(), selWJetFromAntiTop_sublead->pullPhi(), 
-												selWJetFromAntiTop_lead->p4());
-											fillWithOverFlow(histogram_resolved_theta_t_sublead, theta_t_sublead, evtWeight);
-										}
-										
-										bool selBJetFromTop_passesLoose = false;
-										bool selBJetFromAntiTop_passesLoose = false;
-										for ( std::vector<const RecoJet*>::const_iterator selBJet_loose = selBJets_loose.begin();
-													selBJet_loose != selBJets_loose.end(); ++selBJet_loose ) {
-											if ( selBJetFromTop && deltaR(selBJetFromTop->p4(), (*selBJet_loose)->p4()) < 0.3 ) {
-												selBJetFromTop_passesLoose = true;
-											}
-											if ( selBJetFromAntiTop && deltaR(selBJetFromAntiTop->p4(), (*selBJet_loose)->p4()) < 0.3 ) {
-												selBJetFromAntiTop_passesLoose = true;
-											}
-										}
-										if ( selBJetFromTop_passesLoose || selBJetFromAntiTop_passesLoose ) {
-											cutFlowTable_2lss_1tau_resolved.update(">= 1 selBJet passes loose b-tagging working-point");
-											histogram_crosscheck1->Fill(60.);
-											
-											isResolved = true;
 
+		for ( std::vector<const RecoJet*>::const_iterator selBJet = selJets.begin(); selBJet != selJets.end(); ++selBJet ) {
+			bool selBJet_isFromTop = deltaR((*selBJet)->p4(), genBJetFromTop->p4()) < 0.2;
+			bool selBJet_isFromAntiTop = deltaR((*selBJet)->p4(), genBJetFromAntiTop->p4()) < 0.2;			
+			for ( std::vector<const RecoJet*>::const_iterator selWJet1 = selJets.begin(); selWJet1 != selJets.end(); ++selWJet1 ) {
+				if ( &(*selWJet1) == &(*selBJet) ) continue;
+				bool selWJet1_isFromTop =
+					(genWJetFromTop_lead        && deltaR((*selWJet1)->p4(), genWJetFromTop_lead->p4())        < 0.2) ||
+					(genWJetFromTop_sublead     && deltaR((*selWJet1)->p4(), genWJetFromTop_sublead->p4())     < 0.2);
+				bool selWJet1_isFromAntiTop =
+					(genWJetFromAntiTop_lead    && deltaR((*selWJet1)->p4(), genWJetFromAntiTop_lead->p4())    < 0.2) ||
+					(genWJetFromAntiTop_sublead && deltaR((*selWJet1)->p4(), genWJetFromAntiTop_sublead->p4()) < 0.2);
+				for ( std::vector<const RecoJet*>::const_iterator selWJet2 = selWJet1 + 1; selWJet2 != selJets.end(); ++selWJet2 ) {
+					if ( &(*selWJet2) == &(*selBJet) ) continue;
+					if ( &(*selWJet1) == &(*selWJet2) ) continue;
+				  bool selWJet2_isFromTop =
+						(genWJetFromTop_lead        && deltaR((*selWJet2)->p4(), genWJetFromTop_lead->p4())        < 0.2) ||
+					  (genWJetFromTop_sublead     && deltaR((*selWJet2)->p4(), genWJetFromTop_sublead->p4())     < 0.2);
+				  bool selWJet2_isFromAntiTop =
+						(genWJetFromAntiTop_lead    && deltaR((*selWJet2)->p4(), genWJetFromAntiTop_lead->p4())    < 0.2) ||
+					  (genWJetFromAntiTop_sublead && deltaR((*selWJet2)->p4(), genWJetFromAntiTop_sublead->p4()) < 0.2);
 
-											// Fill BDT trees for case 3: resolved jets ------
-											const RecoJet* selBJet = 0;
-											const RecoJet* selWJet1 = 0;
-											const RecoJet* selWJet2 = 0;
-											bool selBJet_isFromTop = false;
-											bool selWJet1_isFromTop = false;
-											bool selWJet2_isFromTop = false;
-											bool selBJet_isFromAntiTop = false;
-											bool selWJet1_isFromAntiTop = false;
-											bool selWJet2_isFromAntiTop = false;
-											if (selBJetFromTop             && 
-													selWJetFromTop_lead        && 
-													selWJetFromTop_sublead    ) {
-												selBJet = selBJetFromTop;
-												selWJet1 = selWJetFromTop_lead;
-												selWJet2 = selWJetFromTop_sublead;
-												
-												selBJet_isFromTop = deltaR((selBJet)->p4(), genBJetFromTop->p4()) < 0.2;
-												selBJet_isFromAntiTop = deltaR((selBJet)->p4(), genBJetFromAntiTop->p4()) < 0.2;
-												selWJet1_isFromTop =
-															   (genWJetFromTop_lead        && deltaR((selWJet1)->p4(), genWJetFromTop_lead->p4())        < 0.2) ||
-													       (genWJetFromTop_sublead     && deltaR((selWJet1)->p4(), genWJetFromTop_sublead->p4())     < 0.2);
-												selWJet1_isFromAntiTop =
-													       (genWJetFromAntiTop_lead        && deltaR((selWJet1)->p4(), genWJetFromAntiTop_lead->p4())        < 0.2) ||
-													       (genWJetFromAntiTop_sublead     && deltaR((selWJet1)->p4(), genWJetFromAntiTop_sublead->p4())     < 0.2);
-												selWJet2_isFromTop =
-													       (genWJetFromTop_lead        && deltaR((selWJet2)->p4(), genWJetFromTop_lead->p4())        < 0.2) ||
-													       (genWJetFromTop_sublead     && deltaR((selWJet2)->p4(), genWJetFromTop_sublead->p4())     < 0.2);
-										selWJet2_isFromAntiTop =
-														     (genWJetFromAntiTop_lead        && deltaR((selWJet2)->p4(), genWJetFromAntiTop_lead->p4())        < 0.2) ||
-														     (genWJetFromAntiTop_sublead     && deltaR((selWJet2)->p4(), genWJetFromAntiTop_sublead->p4())     < 0.2);
-											} //else {
-											if (selBJetFromAntiTop         && 
-													selWJetFromAntiTop_lead    && 
-													selWJetFromAntiTop_sublead) {
-												selBJet = selBJetFromAntiTop;
-												selWJet1 = selWJetFromAntiTop_lead;
-												selWJet2 = selWJetFromAntiTop_sublead;
-												
-												selBJet_isFromTop = deltaR((selBJet)->p4(), genBJetFromTop->p4()) < 0.2;
-												selBJet_isFromAntiTop = deltaR((selBJet)->p4(), genBJetFromAntiTop->p4()) < 0.2;
-												selWJet1_isFromTop =
-														     (genWJetFromTop_lead        && deltaR((selWJet1)->p4(), genWJetFromTop_lead->p4())        < 0.2) ||
-														     (genWJetFromTop_sublead     && deltaR((selWJet1)->p4(), genWJetFromTop_sublead->p4())     < 0.2);
-												selWJet1_isFromAntiTop =
-														     (genWJetFromAntiTop_lead        && deltaR((selWJet1)->p4(), genWJetFromAntiTop_lead->p4())        < 0.2) ||
-														     (genWJetFromAntiTop_sublead     && deltaR((selWJet1)->p4(), genWJetFromAntiTop_sublead->p4())     < 0.2);
-												selWJet2_isFromTop =
-														     (genWJetFromTop_lead        && deltaR((selWJet2)->p4(), genWJetFromTop_lead->p4())        < 0.2) ||
-														     (genWJetFromTop_sublead     && deltaR((selWJet2)->p4(), genWJetFromTop_sublead->p4())     < 0.2);
-												selWJet2_isFromAntiTop =
-														     (genWJetFromAntiTop_lead        && deltaR((selWJet2)->p4(), genWJetFromAntiTop_lead->p4())        < 0.2) ||
-														     (genWJetFromAntiTop_sublead     && deltaR((selWJet2)->p4(), genWJetFromAntiTop_sublead->p4())     < 0.2);				
-											}
-
-											//double  mvaOutput = (*hadTopTaggerFill)(**selBJet, **selWJet1, **selWJet2);
-											double  mvaOutput = (*hadTopTaggerFill)(*selBJet, *selWJet1, *selWJet2);
-											const std::map<std::string, double>& mvaInputs =  hadTopTaggerFill->mvaInputs();
-											int idxGenMatch_top     = getGenMatch(selBJet_isFromTop, selWJet1_isFromTop, selWJet2_isFromTop);
-											int idxGenMatch_antiTop = getGenMatch(selBJet_isFromAntiTop, selWJet1_isFromAntiTop, selWJet2_isFromAntiTop);
-											if ( (idxGenMatch_antiTop != kGen_bWj1Wj2) || (idxGenMatch_top != kGen_bWj1Wj2) ) {
-												//std::cout << "Case 3: here5" << std::endl;
-												// CV: don't consider top matching if reconstructed jet triplet is (fully) matched to anti-top
-												//if (DoHist) {
-												//assert(mvaInputHistManagers.find(idxGenMatch_top) != mvaInputHistManagers.end());
-												//mvaInputHistManagers[idxGenMatch_top]->fillHistograms(mvaInputs, evtWeight);
-												//fillWithOverFlow(mvaOutputHistManagers[idxGenMatch_top], mvaOutput[0], evtWeight);
-												//}
-												bdt_filler->operator()({ eventInfo.run, eventInfo.lumi, eventInfo.event });
-												for ( std::map<std::string, double>::const_iterator mvaInput = mvaInputs.begin();
-															mvaInput != mvaInputs.end(); ++mvaInput ) {
-													bdt_filler->operator()(mvaInput->first, mvaInput->second);
-												}
-												bdt_filler->operator()("b_isGenMatched", selBJet_isFromTop || selBJet_isFromAntiTop);
-												bdt_filler->operator()("Wj1_isGenMatched", selWJet1_isFromTop || selWJet1_isFromAntiTop);
-												bdt_filler->operator()("Wj2_isGenMatched", selWJet2_isFromTop || selWJet2_isFromAntiTop);
-												bool tripletTruth    = (selBJet_isFromTop == 1) && \
-													(selWJet1_isFromTop == 1) &&									\
-													(selWJet2_isFromTop == 1);
-												bool tripletTruthAnti= (selBJet_isFromAntiTop == 1) && \
-													(selWJet1_isFromAntiTop == 1) &&							\
-													(selWJet2_isFromAntiTop == 1);
-												bdt_filler->operator()("bWj1Wj2_isGenMatched", tripletTruth==1 && tripletTruthAnti==1);
-												bdt_filler->operator()("genTopPt", genTopQuark->pt());
-												bdt_filler->operator()("genAntiTopPt", genAntiTopQuark->pt());
-												std::vector<bool> truth_hadTopTagger; //= hadTopTaggerFill->isTruth(**selBJet, **selWJet1, **selWJet2,
-												//genTopQuarks, genBJets, genWBosons);
-												//std::vector<bool> truth_hadTopTagger3Jet; //= hadTopTaggerFill->isTruth3Jet(**selBJet, **selWJet1, **selWJet2,
-												// genTopQuarks, genBJets, genWBosons, genWJets);
-												if (mvaOutput==0){
-													bdt_filler->fill();
-													histogram_crosscheck1->Fill(61.);
-												}
-											}
-											
-											//---------------------											
-											
-										}
-									}
-								}
-							}
+					double  mvaOutput = (*hadTopTaggerFill)(**selBJet, **selWJet1, **selWJet2);
+					const std::map<std::string, double>& mvaInputs =  hadTopTaggerFill->mvaInputs();
+					//std::cout << "mvaInputs:" << std::endl;
+					int idxGenMatch_top     = getGenMatch(selBJet_isFromTop, selWJet1_isFromTop, selWJet2_isFromTop);
+					int idxGenMatch_antiTop = getGenMatch(selBJet_isFromAntiTop, selWJet1_isFromAntiTop, selWJet2_isFromAntiTop);
+					if ( (idxGenMatch_antiTop != kGen_bWj1Wj2) || (idxGenMatch_top != kGen_bWj1Wj2) ) {
+						// CV: don't consider top matching if reconstructed jet triplet is (fully) matched to anti-top
+						//if (DoHist) {
+						//assert(mvaInputHistManagers.find(idxGenMatch_top) != mvaInputHistManagers.end());
+						//mvaInputHistManagers[idxGenMatch_top]->fillHistograms(mvaInputs, evtWeight);
+							//fillWithOverFlow(mvaOutputHistManagers[idxGenMatch_top], mvaOutput[0], evtWeight);
+						//}
+						//std::cout<<"eventInfo.run:" << eventInfo.run<<", lumi:"<<eventInfo.lumi<<", event:"<<eventInfo.event <<std::endl;
+						bdt_filler->operator()({ eventInfo.run, eventInfo.lumi, eventInfo.event });
+						for ( std::map<std::string, double>::const_iterator mvaInput = mvaInputs.begin();
+									mvaInput != mvaInputs.end(); ++mvaInput ) {
+							bdt_filler->operator()(mvaInput->first, mvaInput->second);
+						}
+						bdt_filler->operator()("b_isGenMatched", selBJet_isFromTop || selBJet_isFromAntiTop);
+						bdt_filler->operator()("Wj1_isGenMatched", selWJet1_isFromTop || selWJet1_isFromAntiTop);
+						bdt_filler->operator()("Wj2_isGenMatched", selWJet2_isFromTop || selWJet2_isFromAntiTop);
+						bool tripletTruth    = (selBJet_isFromTop == 1) &&	\
+											 (selWJet1_isFromTop == 1) && \
+											 (selWJet2_isFromTop == 1);
+						bool tripletTruthAnti= (selBJet_isFromAntiTop == 1) &&	\
+											 (selWJet1_isFromAntiTop == 1) && \
+											 (selWJet2_isFromAntiTop == 1);
+						bdt_filler->operator()("bWj1Wj2_isGenMatched", tripletTruth==1 && tripletTruthAnti==1);
+						bdt_filler->operator()("genTopPt", genTopQuark->pt());
+						bdt_filler->operator()("genAntiTopPt", genAntiTopQuark->pt());
+						std::vector<bool> truth_hadTopTagger; //= hadTopTaggerFill->isTruth(**selBJet, **selWJet1, **selWJet2,
+																						//genTopQuarks, genBJets, genWBosons);
+					//std::vector<bool> truth_hadTopTagger3Jet; //= hadTopTaggerFill->isTruth3Jet(**selBJet, **selWJet1, **selWJet2,
+														// genTopQuarks, genBJets, genWBosons, genWJets);
+						if (mvaOutput==0){
+							bdt_filler->fill();
 						}
 					}
+											
 				}
-      }
-    }
-		
-    if ( isResolved ) {
-      cutFlowTable_2lss_1tau_resolved.update("rec resolved");
-			histogram_crosscheck1->Fill(62.);
-      if ( !(isHTTv2FromTop || isHTTv2FromAntiTop) ) {
-				cutFlowTable_2lss_1tau_resolved.update("rec resolved && !HTTv2");
-				histogram_crosscheck1->Fill(63.);
-				if ( !(isAK12FromTop || isAK12FromAntiTop) ) {
-					cutFlowTable_2lss_1tau_resolved.update("rec resolved && !HTTv2 && !AK12");
-					histogram_crosscheck1->Fill(64.);
-				}
-      }
-    }
+			}
+		}
     //-------------------------------------------------------------------------------------------------------------------
-    ++selectedEntries;
+
+
+		++selectedEntries;
     selectedEntries_weighted += evtWeight;
     histogram_selectedEntries->Fill(0.);
   }

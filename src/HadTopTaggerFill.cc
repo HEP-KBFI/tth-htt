@@ -568,6 +568,15 @@ HadTopTaggerFill::operator()(const RecoSubjetHTTv2 & recBJet,
   const double expRjet = p4_bWj1Wj2.pt() > 0. ? 327. / p4_bWj1Wj2.pt() : -1.;
   mvaInputs_["max_dR_div_expRjet"]     = std::max({dR_bWj1, dR_bWj2, dR_Wj1Wj2}) / expRjet;
 #endif
+
+
+	// New addition--
+	mvaInputs_["area_b"]       = recBJet.area();
+	mvaInputs_["IDPassed_b"]   = recBJet.IDPassed();
+	mvaInputs_["area_Wj1"]     = recWJet1.area();
+	mvaInputs_["IDPassed_Wj1"] = recWJet1.IDPassed();
+	mvaInputs_["area_Wj2"]     = recWJet2.area();
+	mvaInputs_["IDPassed_Wj2"] = recWJet2.IDPassed();
 	
 	return 0;
 }
@@ -587,7 +596,7 @@ HadTopTaggerFill::operator()(const RecoJet & recBJet,
   const double dR_bWj1   = deltaR(recBJet.p4(), recWJet1.p4());
   const double dR_bWj2   = deltaR(recBJet.p4(), recWJet2.p4());
   const double dR_Wj1Wj2 = deltaR(recWJet1.p4(), recWJet2.p4());
-
+ 
   mvaInputs_["m_bWj1Wj2"]              = p4_bWj1Wj2.mass();
   mvaInputs_["m_Wj1Wj2"]               = p4_Wj1Wj2.mass();
   mvaInputs_["m_bWj1"]                 = (recBJet.p4() + recWJet1.p4()).mass();
@@ -784,5 +793,21 @@ HadTopTaggerFill::operator()(const RecoJet & recBJet,
   mvaInputs_["max_dR_div_expRjet"]     = std::max({dR_bWj1, dR_bWj2, dR_Wj1Wj2}) / expRjet;
 #endif
 
+	// New addition--
+	mvaInputs_["charge_b"]       = recBJet.charge();
+	mvaInputs_["pullEta_b"]      = recBJet.pullEta();
+	mvaInputs_["pullPhi_b"]      = recBJet.pullPhi();
+	mvaInputs_["pullMag_b"]      = recBJet.pullMag();	
+	mvaInputs_["charge_Wj1"]     = recWJet1.charge();
+	mvaInputs_["pullEta_Wj1"]    = recWJet1.pullEta();
+	mvaInputs_["pullPhi_Wj1"]    = recWJet1.pullPhi();
+	mvaInputs_["pullMag_Wj1"]    = recWJet1.pullMag();
+	mvaInputs_["charge_Wj2"]     = recWJet2.charge();
+	mvaInputs_["pullEta_Wj2"]    = recWJet2.pullEta();
+	mvaInputs_["pullPhi_Wj2"]    = recWJet2.pullPhi();
+	mvaInputs_["pullMag_Wj2"]    = recWJet2.pullMag();
+	
 	return 0;
 }
+
+
