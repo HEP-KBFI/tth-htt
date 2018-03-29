@@ -1923,22 +1923,22 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
 
 //--- compute output of BDTs used to discriminate ttH vs. ttV and  tt trained with XGB
     const std::map<std::string, double> mvaInputVariables_plainKin_tt = {
-      { "avg_dr_jet",      avg_dr_jet      },
-      { "dr_lep1_tau",     dr_lep1_tau     },
-      { "dr_lep2_tau",     dr_lep2_tau     },
-      { "dr_leps",         dr_leps         },
-      { "lep1_conePt",     lep1_conePt     },
-      { "lep2_conePt",     lep2_conePt     },
-      { "mT_lep2",         mT_lep2         },
-      { "mTauTauVis1_sel", mTauTauVis1_sel },
-      { "mTauTauVis2_sel", mTauTauVis2_sel },
-      { "mbb",             mbb             },
-      { "mindr_lep1_jet",  mindr_lep1_jet  },
-      { "mindr_lep2_jet",  mindr_lep2_jet  },
-      { "mindr_tau_jet",   mindr_tau_jet   },
-      { "nJet25_Recl",     nJet25_Recl     },
-      { "ptmiss",          ptmiss          },
-      { "tau_pt",          tau_pt          },
+      { "avg_dr_jet",     avg_dr_jet      },
+      { "dr_lep1_tau",    dr_lep1_tau     },
+      { "dr_lep2_tau",    dr_lep2_tau     },
+      { "dr_leps",        dr_leps         },
+      { "lep1_conePt",    lep1_conePt     },
+      { "lep2_conePt",    lep2_conePt     },
+      { "mT_lep2",        mT_lep2         },
+      { "mTauTauVis1",    mTauTauVis1_sel },
+      { "mTauTauVis2",    mTauTauVis2_sel },
+      { "mbb",            mbb             },
+      { "mindr_lep1_jet", mindr_lep1_jet  },
+      { "mindr_lep2_jet", mindr_lep2_jet  },
+      { "mindr_tau_jet",  mindr_tau_jet   },
+      { "nJet25_Recl",    nJet25_Recl     },
+      { "ptmiss",         ptmiss          },
+      { "tau_pt",         tau_pt          },
     };
     const double mvaOutput_2lss_1tau_plainKin_tt = mva_2lss_1tau_plainKin_tt(mvaInputVariables_plainKin_tt);
 
