@@ -160,16 +160,16 @@ if __name__ == '__main__':
       executable_addBackgrounds             = "addBackgrounds",
       # CV: use common executable for estimating jet->lepton and jet->tau_h fake background
       executable_addBackgroundJetToTauFakes = "addBackgroundLeptonFakes",
-      histograms_to_fit                     = [
-        "EventCounter",
-        "numJets",
-        "mvaDiscr_3l",
-        "mTauTauVis",
-        "mvaOutput_plainKin_tt",
-        "mvaOutput_plainKin_ttV",
-        "mvaOutput_plainKin_SUM_M",
-        "mvaOutput_plainKin_1B_M",
-      ],
+      histograms_to_fit                     = {
+        "EventCounter"             : {},
+        "numJets"                  : {},
+        "mvaDiscr_3l"              : {},
+        "mTauTauVis"               : {},
+        "mvaOutput_plainKin_tt"    : { 'quantile_rebin' : 6 }, # BDT2; quantile in all bkg
+        "mvaOutput_plainKin_ttV"   : { 'quantile_rebin' : 6 }, # BDT1; quantile in all bkg
+        "mvaOutput_plainKin_SUM_M" : { 'quantile_rebin' : 6 }, # BDT3; quantile in all bkg
+        "mvaOutput_plainKin_1B_M"  : {},
+      },
       select_rle_output                     = True,
       select_root_output                    = False,
       verbose                               = idx_job_resubmission > 0,

@@ -144,8 +144,8 @@ if __name__ == '__main__':
       histograms_to_fit                     = [
         "EventCounter",
         "numJets",
-        "mvaOutput_plainKin_ttV",
-        "mvaOutput_plainKin_tt",
+        "mvaOutput_plainKin_ttV", # BDT2; 7 regular bin in range [0, 1]
+        "mvaOutput_plainKin_tt", # BDT1; 6 regular bin in range [0, 1]
         "mvaOutput_plainKin_1B_VT",
         "mvaOutput_HTT_SUM_VT",
         "mTauTauVis"

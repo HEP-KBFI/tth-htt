@@ -1590,7 +1590,7 @@ int main(int argc, char* argv[])
       { "mTauTauVis2",    mTauTauVis2_sel      },
       { "mbb_loose",      mbb_loose            },
     };
-    const double mvaOutput_plainKin_tt =mva_plainKin_tt(mvaInputVariables_plainKin_tt);
+    const double mvaOutput_plainKin_tt = mva_plainKin_tt(mvaInputVariables_plainKin_tt);
 
     const std::map<std::string, double> mvaInputVariables_plainKin_SUM = {
       { "lep1_conePt",    lep1_conePt          },
@@ -1606,7 +1606,7 @@ int main(int argc, char* argv[])
       { "mbb_loose",      mbb_loose            },
       { "nJet",           nJet                 },
     };
-    const double mvaOutput_plainKin_SUM_M =mva_plainKin_SUM_M(mvaInputVariables_plainKin_SUM);
+    const double mvaOutput_plainKin_SUM_M = mva_plainKin_SUM_M(mvaInputVariables_plainKin_SUM);
 
     const std::map<std::string, double> mvaInputVariables_plainKin_1B = {
       { "BDTtt",  mvaOutput_plainKin_tt  },

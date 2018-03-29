@@ -167,22 +167,22 @@ if __name__ == '__main__':
       # CV: use common executable for estimating jet->lepton and jet->tau_h fake background
       executable_addFakes       = "addBackgroundLeptonFakes",
       executable_addFlips       = "addBackgroundLeptonFlips",
-      histograms_to_fit         = [
-        "EventCounter",
-        "numJets",
-        "mvaOutput_2lss_ttV",
-        "mvaOutput_2lss_tt",
-        "mvaOutput_2lss_1tau_plainKin_tt",
-        "mvaOutput_2lss_1tau_plainKin_ttV",
-        "mvaOutput_2lss_1tau_plainKin_1B_M",
-        "mvaOutput_2lss_1tau_plainKin_SUM_M",
-        "mvaOutput_2lss_1tau_HTT_SUM_M",
-        "mvaOutput_2lss_1tau_HTTMEM_SUM_M",
-        "mTauTauVis1",
-        "mTauTauVis2",
-        "mTauTauVis",
-        "memOutput_LR",
-      ],
+      histograms_to_fit         = {
+        "EventCounter"                       : {},
+        "numJets"                            : {},
+        "mvaOutput_2lss_ttV"                 : {},
+        "mvaOutput_2lss_tt"                  : {},
+        "mvaOutput_2lss_1tau_plainKin_tt"    : { 'quantile_rebin' : 15 }, # BDT2; quantile in fakes
+        "mvaOutput_2lss_1tau_plainKin_ttV"   : {}, # BDT1 => how many quantile bins in fakes?
+        "mvaOutput_2lss_1tau_plainKin_1B_M"  : {},
+        "mvaOutput_2lss_1tau_plainKin_SUM_M" : { 'quantile_rebin' : 11 }, # BDT3; quantile in fakes
+        "mvaOutput_2lss_1tau_HTT_SUM_M"      : { 'quantile_rebin' : 11 }, # BDT4; quantile in fakes
+        "mvaOutput_2lss_1tau_HTTMEM_SUM_M"   : { 'quantile_rebin' : 15 }, # BDT5; quantile in fakes
+        "mTauTauVis1"                        : {},
+        "mTauTauVis2"                        : {},
+        "mTauTauVis"                         : {},
+        "memOutput_LR"                       : {},
+      },
       select_rle_output         = True,
       verbose                   = idx_job_resubmission > 0,
       dry_run                   = dry_run,
