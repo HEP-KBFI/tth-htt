@@ -10,12 +10,8 @@
 #include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionCleaner.h" // Reco*CollectionCleaner
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorLoose.h" // RecoElectronCollectionSelectorLoose
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorFakeable.h" // RecoElectronCollectionSelectorFakeable
-#include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorCutBased.h" // RecoElectronCollectionSelectorCutBased
-#include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorMVABased.h" // RecoElectronCollectionSelectorMVABased
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorLoose.h" // RecoMuonCollectionSelectorLoose
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorFakeable.h" // RecoMuonCollectionSelectorFakeable
-#include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorCutBased.h" // RecoMuonCollectionSelectorCutBased
-#include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorMVABased.h" // RecoMuonCollectionSelectorMVABased
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelectorLoose.h" // RecoHadTauCollectionSelectorLoose
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelectorFakeable.h" // RecoHadTauCollectionSelectorFakeable
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelector.h" // RecoJetCollectionSelector
@@ -217,16 +213,12 @@ main(int argc,
   inputTree->registerReader(muonReader);
   const RecoMuonCollectionSelectorLoose preselMuonSelector(era, -1, isDEBUG);
   const RecoMuonCollectionSelectorFakeable fakeableMuonSelector(era, -1, isDEBUG);
-  const RecoMuonCollectionSelectorCutBased cutBasedMuonSelector(era, -1, isDEBUG);
-  const RecoMuonCollectionSelectorMVABased mvaBasedMuonSelector(era, -1, isDEBUG);
 
   RecoElectronReader * const electronReader = new RecoElectronReader(era, branchName_electrons, false);
   inputTree->registerReader(electronReader);
   const RecoElectronCollectionCleaner electronCleaner(0.3);
   const RecoElectronCollectionSelectorLoose preselElectronSelector(era, -1, isDEBUG);
   RecoElectronCollectionSelectorFakeable fakeableElectronSelector(era, -1, isDEBUG);
-  const RecoElectronCollectionSelectorCutBased cutBasedElectronSelector(era, -1, isDEBUG);
-  const RecoElectronCollectionSelectorMVABased mvaBasedElectronSelector(era, -1, isDEBUG);
 
   RecoHadTauReader * const hadTauReader = new RecoHadTauReader(era, branchName_hadTaus, false);
   hadTauReader->setHadTauPt_central_or_shift(kHadTauPt_central);
@@ -347,22 +339,18 @@ main(int argc,
     const std::vector<const RecoMuon *> cleanedMuons = muon_ptrs;
     const std::vector<const RecoMuon *> preselMuons   = preselMuonSelector  (cleanedMuons, isHigherPt);
     const std::vector<const RecoMuon *> fakeableMuons = fakeableMuonSelector(preselMuons,  isHigherConePt);
-    const std::vector<const RecoMuon *> cutBasedMuons = cutBasedMuonSelector(preselMuons,  isHigherPt);
-    const std::vector<const RecoMuon *> mvaBasedMuons = mvaBasedMuonSelector(preselMuons,  isHigherPt);
     const std::vector<const RecoMuon *> selMuons = preselMuons;
 
-    snm->read(preselMuons, fakeableMuons, cutBasedMuons, mvaBasedMuons);
+    snm->read(preselMuons, fakeableMuons);
 
     const std::vector<RecoElectron> electrons = electronReader->read();
     const std::vector<const RecoElectron *> electron_ptrs = convert_to_ptrs(electrons);
     const std::vector<const RecoElectron *> cleanedElectrons = electronCleaner(electron_ptrs, selMuons);
     const std::vector<const RecoElectron *> preselElectrons   = preselElectronSelector  (cleanedElectrons, isHigherPt);
     const std::vector<const RecoElectron *> fakeableElectrons = fakeableElectronSelector(preselElectrons,  isHigherConePt);
-    const std::vector<const RecoElectron *> cutBasedElectrons = cutBasedElectronSelector(preselElectrons,  isHigherPt);
-    const std::vector<const RecoElectron *> mvaBasedElectrons = mvaBasedElectronSelector(preselElectrons,  isHigherPt);
     const std::vector<const RecoElectron *> selElectrons = preselElectrons;
 
-    snm->read(preselElectrons, fakeableElectrons, cutBasedElectrons, mvaBasedElectrons);
+    snm->read(preselElectrons, fakeableElectrons);
 
     const std::vector<const RecoLepton *> preselLeptons   = mergeLeptonCollections(preselElectrons,   preselMuons,   isHigherPt);
     const std::vector<const RecoLepton *> fakeableLeptons = mergeLeptonCollections(fakeableElectrons, fakeableMuons, isHigherPt);

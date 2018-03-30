@@ -48,12 +48,8 @@ SyncNtupleManager::initializeBranches()
 
   const std::string n_presel_mu_str       = Form("n_presel_%s",      mstr);
   const std::string n_fakeablesel_mu_str  = Form("n_fakeablesel_%s", mstr);
-  const std::string n_cutsel_mu_str       = Form("n_cutsel_%s",      mstr);
-  const std::string n_mvasel_mu_str       = Form("n_mvasel_%s",      mstr);
   const std::string n_presel_ele_str      = Form("n_presel_%s",      estr);
   const std::string n_fakeablesel_ele_str = Form("n_fakeablesel_%s", estr);
-  const std::string n_cutsel_ele_str      = Form("n_cutsel_%s",      estr);
-  const std::string n_mvasel_ele_str      = Form("n_mvasel_%s",      estr);
   const std::string n_presel_tau_str      = Form("n_presel_%s",      tstr);
   const std::string n_presel_jet_str      = Form("n_presel_%s",      jstr);
 
@@ -63,12 +59,8 @@ SyncNtupleManager::initializeBranches()
     run,               "run",
     n_presel_mu,       n_presel_mu_str,
     n_fakeablesel_mu,  n_fakeablesel_mu_str,
-    n_cutsel_mu,       n_cutsel_mu_str,
-    n_mvasel_mu,       n_mvasel_mu_str,
     n_presel_ele,      n_presel_ele_str,
     n_fakeablesel_ele, n_fakeablesel_ele_str,
-    n_cutsel_ele,      n_cutsel_ele_str,
-    n_mvasel_ele,      n_mvasel_ele_str,
     n_presel_tau,      n_presel_tau_str,
     n_presel_jet,      n_presel_jet_str,
 
@@ -206,9 +198,7 @@ SyncNtupleManager::initializeBranches()
     mu_leptonMVA,            "leptonMVA",
     mu_mediumID,             "mediumID",
     mu_dpt_div_pt,           "dpt_div_pt",
-    mu_isfakeablesel,        "isfakeablesel",
-    mu_iscutsel,             "iscutsel",
-    mu_ismvasel,             "ismvasel"
+    mu_isfakeablesel,        "isfakeablesel"
   );
 
   setBranches(
@@ -234,9 +224,7 @@ SyncNtupleManager::initializeBranches()
     ele_isChargeConsistent,   "isChargeConsistent",
     ele_passesConversionVeto, "passesConversionVeto",
     ele_nMissingHits,         "nMissingHits",
-    ele_isfakeablesel,        "isfakeablesel",
-    ele_iscutsel,             "iscutsel",
-    ele_ismvasel,             "ismvasel"
+    ele_isfakeablesel,        "isfakeablesel"
   );
 
   setBranches(
@@ -309,14 +297,10 @@ SyncNtupleManager::read(const EventInfo & eventInfo)
 
 void
 SyncNtupleManager::read(const std::vector<const RecoMuon *> & muons,
-                        const std::vector<const RecoMuon *> & fakeable_muons,
-                        const std::vector<const RecoMuon *> & cutbased_muons,
-                        const std::vector<const RecoMuon *> & mvabased_muons)
+                        const std::vector<const RecoMuon *> & fakeable_muons)
 {
   n_presel_mu = muons.size();
   n_fakeablesel_mu = fakeable_muons.size();
-  n_cutsel_mu = cutbased_muons.size();
-  n_mvasel_mu = mvabased_muons.size();
 
   const Int_t nof_iterations = std::min(n_presel_mu, nof_mus);
   for(Int_t i = 0; i < nof_iterations; ++i)
@@ -352,37 +336,15 @@ SyncNtupleManager::read(const std::vector<const RecoMuon *> & muons,
         break;
       }
     }
-    mu_iscutsel[i] = 0;
-    for(const auto & cutbased_muon: cutbased_muons)
-    {
-      if(muon == cutbased_muon)
-      {
-        mu_iscutsel[i] = 1;
-        break;
-      }
-    }
-    mu_ismvasel[i] = 0;
-    for(const auto & mvabased_muon: mvabased_muons)
-    {
-      if(muon == mvabased_muon)
-      {
-        mu_ismvasel[i] = 1;
-        break;
-      }
-    }
   }
 }
 
 void
 SyncNtupleManager::read(const std::vector<const RecoElectron *> & electrons,
-                        const std::vector<const RecoElectron *> & fakeable_electrons,
-                        const std::vector<const RecoElectron *> & cutbased_electrons,
-                        const std::vector<const RecoElectron *> & mvabased_electrons)
+                        const std::vector<const RecoElectron *> & fakeable_electrons)
 {
   n_presel_ele = electrons.size();
   n_fakeablesel_ele = fakeable_electrons.size();
-  n_cutsel_ele = cutbased_electrons.size();
-  n_mvasel_ele = mvabased_electrons.size();
 
   const Int_t nof_iterations = std::min(n_presel_ele, nof_eles);
   for(Int_t i = 0; i < nof_iterations; ++i)
@@ -416,24 +378,6 @@ SyncNtupleManager::read(const std::vector<const RecoElectron *> & electrons,
       if(electron == fakeable_electron)
       {
         ele_isfakeablesel[i] = 1;
-        break;
-      }
-    }
-    ele_iscutsel[i] = 0;
-    for(const auto & cutbased_electron: cutbased_electrons)
-    {
-      if(electron == cutbased_electron)
-      {
-        ele_iscutsel[i] = 1;
-        break;
-      }
-    }
-    ele_ismvasel[i] = 0;
-    for(const auto & mvabased_electron: mvabased_electrons)
-    {
-      if(electron == mvabased_electron)
-      {
-        ele_ismvasel[i] = 1;
         break;
       }
     }
@@ -543,12 +487,8 @@ SyncNtupleManager::reset(bool is_initializing)
   reset(
     n_presel_mu,
     n_fakeablesel_mu,
-    n_cutsel_mu,
-    n_mvasel_mu,
     n_presel_ele,
     n_fakeablesel_ele,
-    n_cutsel_ele,
-    n_mvasel_ele,
     n_presel_tau,
     n_presel_jet
   );
@@ -585,9 +525,7 @@ SyncNtupleManager::reset(bool is_initializing)
     mu_leptonMVA,
     mu_mediumID,
     mu_dpt_div_pt,
-    mu_isfakeablesel,
-    mu_iscutsel,
-    mu_ismvasel
+    mu_isfakeablesel
   );
 
   const Int_t nof_ele_iterations = is_initializing ? nof_eles : std::min(n_presel_ele, nof_eles);
@@ -614,9 +552,7 @@ SyncNtupleManager::reset(bool is_initializing)
     ele_isChargeConsistent,
     ele_passesConversionVeto,
     ele_nMissingHits,
-    ele_isfakeablesel,
-    ele_iscutsel,
-    ele_ismvasel
+    ele_isfakeablesel
   );
 
   const Int_t nof_tau_iterations = is_initializing ? nof_taus : std::min(n_presel_tau, nof_taus);

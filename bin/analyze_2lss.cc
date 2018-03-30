@@ -44,13 +44,9 @@
 #include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionGenMatcher.h" // RecoElectronCollectionGenMatcher, RecoMuonCollectionGenMatcher, RecoHadTauCollectionGenMatcher, RecoJetCollectionGenMatcher
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorLoose.h" // RecoElectronCollectionSelectorLoose
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorFakeable.h" // RecoElectronCollectionSelectorFakeable
-#include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorCutBased.h" // RecoElectronCollectionSelectorCutBased
-#include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorMVABased.h" // RecoElectronCollectionSelectorMVABased
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorTight.h" // RecoElectronCollectionSelectorTight
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorLoose.h" // RecoMuonCollectionSelectorLoose
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorFakeable.h" // RecoMuonCollectionSelectorFakeable
-#include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorCutBased.h" // RecoMuonCollectionSelectorCutBased
-#include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorMVABased.h" // RecoMuonCollectionSelectorMVABased
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorTight.h" // RecoMuonCollectionSelectorTight
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelectorLoose.h" // RecoHadTauCollectionSelectorLoose
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelectorFakeable.h" // RecoHadTauCollectionSelectorFakeable
@@ -323,8 +319,6 @@ int main(int argc, char* argv[])
   RecoMuonCollectionGenMatcher muonGenMatcher;
   RecoMuonCollectionSelectorLoose preselMuonSelector(era, -1, isDEBUG);
   RecoMuonCollectionSelectorFakeable fakeableMuonSelector(era, -1, isDEBUG);
-  RecoMuonCollectionSelectorCutBased cutBasedMuonSelector(era, -1, isDEBUG); // needed for sync
-  RecoMuonCollectionSelectorMVABased mvaBasedMuonSelector(era, -1, isDEBUG); // needed for sync
   RecoMuonCollectionSelectorTight tightMuonSelector(era, -1, isDEBUG);
 
   RecoElectronReader* electronReader = new RecoElectronReader(era, branchName_electrons, readGenObjects);
@@ -333,8 +327,6 @@ int main(int argc, char* argv[])
   RecoElectronCollectionCleaner electronCleaner(0.3, isDEBUG);
   RecoElectronCollectionSelectorLoose preselElectronSelector(era, -1, isDEBUG);
   RecoElectronCollectionSelectorFakeable fakeableElectronSelector(era, -1, isDEBUG);
-  RecoElectronCollectionSelectorCutBased cutBasedElectronSelector(era, -1, isDEBUG); // needed for sync
-  RecoElectronCollectionSelectorMVABased mvaBasedElectronSelector(era, -1, isDEBUG); // needed for sync
   RecoElectronCollectionSelectorTight tightElectronSelector(era, -1, isDEBUG);
 
   RecoHadTauReader* hadTauReader = new RecoHadTauReader(era, branchName_hadTaus, readGenObjects);
@@ -1876,11 +1868,6 @@ int main(int argc, char* argv[])
 
     if(snm)
     {
-      const std::vector<const RecoMuon *> cutBasedMuons = cutBasedMuonSelector(preselMuons);
-      const std::vector<const RecoMuon *> mvaBasedMuons = mvaBasedMuonSelector(preselMuons);
-      const std::vector<const RecoElectron *> cutBasedElectrons = cutBasedElectronSelector(preselElectrons);
-      const std::vector<const RecoElectron *> mvaBasedElectrons = mvaBasedElectronSelector(preselElectrons);
-
       const double ht             = compHT(preselLeptons, {}, selJets);
       const double MT_met_lep1    = comp_MT_met_lep1(selLepton_lead->cone_p4(), met.pt(), met.phi());
       const double MT_met_lep2    = comp_MT_met_lep2(selLepton_sublead->cone_p4(), met.pt(), met.phi());
@@ -1900,8 +1887,8 @@ int main(int argc, char* argv[])
       ;
 
       snm->read(eventInfo);
-      snm->read(preselMuons,     fakeableMuons,     cutBasedMuons,     mvaBasedMuons);
-      snm->read(preselElectrons, fakeableElectrons, cutBasedElectrons, mvaBasedElectrons);
+      snm->read(preselMuons,     fakeableMuons    );
+      snm->read(preselElectrons, fakeableElectrons);
       snm->read(selJets);
 
       snm->read({ triggers_1e, triggers_2e, triggers_1mu, triggers_2mu, triggers_1e1mu });
