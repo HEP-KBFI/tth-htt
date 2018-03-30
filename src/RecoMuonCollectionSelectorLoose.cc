@@ -83,7 +83,7 @@ RecoMuonSelectorLoose::operator()(const RecoMuon & muon) const
     return false;
   }
 
-  if(muon.passesLooseIdPOG() || ! apply_looseIdPOG_)
+  if(! muon.passesLooseIdPOG() && apply_looseIdPOG_)
   {
     if(debug_)
     {
@@ -92,7 +92,7 @@ RecoMuonSelectorLoose::operator()(const RecoMuon & muon) const
     return false;
   }
 
-  if(muon.passesMediumIdPOG() || ! apply_mediumIdPOG_)
+  if(! muon.passesMediumIdPOG() && apply_mediumIdPOG_)
   {
     if(debug_)
     {
