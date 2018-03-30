@@ -216,14 +216,14 @@ main(int argc,
 
   RecoElectronReader * const electronReader = new RecoElectronReader(era, branchName_electrons, false);
   inputTree->registerReader(electronReader);
-  const RecoElectronCollectionCleaner electronCleaner(0.3);
+  const RecoElectronCollectionCleaner electronCleaner(0.3, isDEBUG);
   const RecoElectronCollectionSelectorLoose preselElectronSelector(era, -1, isDEBUG);
   RecoElectronCollectionSelectorFakeable fakeableElectronSelector(era, -1, isDEBUG);
 
   RecoHadTauReader * const hadTauReader = new RecoHadTauReader(era, branchName_hadTaus, false);
   hadTauReader->setHadTauPt_central_or_shift(kHadTauPt_central);
   inputTree->registerReader(hadTauReader);
-  const RecoHadTauCollectionCleaner hadTauCleaner(0.3);
+  const RecoHadTauCollectionCleaner hadTauCleaner(0.3, isDEBUG);
   RecoHadTauCollectionSelectorLoose preselHadTauSelector(era, -1, isDEBUG);
   if(hadTauSelection_tauIdWP == "dR03mvaVLoose" ||
      hadTauSelection_tauIdWP == "dR03mvaVVLoose" )
@@ -237,7 +237,7 @@ main(int argc,
   jetReader->setPtMass_central_or_shift(useNonNominal ? kJet_central_nonNominal : kJet_central);
   jetReader->setBranchName_BtagWeight(kBtag_central);
   inputTree->registerReader(jetReader);
-  const RecoJetCollectionCleaner jetCleaner(0.4);
+  const RecoJetCollectionCleaner jetCleaner(0.4, isDEBUG);
   const RecoJetCollectionSelector jetSelector(era, -1, isDEBUG);
   const RecoJetCollectionSelectorBtagLoose jetSelectorBtagLoose(era, -1, isDEBUG);
   const RecoJetCollectionSelectorBtagMedium jetSelectorBtagMedium(era, -1, isDEBUG);
