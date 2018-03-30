@@ -270,11 +270,6 @@ main(int argc,
     }
     ++analyzedEntries;
 
-    if(isDEBUG)
-    {
-      std::cout << "event #" << inputTree->getCurrentMaxEventIdx() << ' ' << eventInfo << '\n';
-    }
-
     if(run_lumi_eventSelector && ! (*run_lumi_eventSelector)(eventInfo))
     {
       continue;
