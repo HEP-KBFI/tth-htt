@@ -75,7 +75,6 @@ enum class FloatVariableType
   mvis_l2tau,               ///< visible mass of subleading lepton and tau (of OS in 3l+1tau)
 
   HT,                       ///< linear sum of preselected leptons (including taus) + jet pT
-  ptmiss,                   ///< pT of vectorial MHT
   mbb,                      ///< mass of two selected medium b-jets
   mbb_loose,                ///< mass of two selected loose b-jets
 

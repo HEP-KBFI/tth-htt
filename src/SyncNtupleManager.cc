@@ -122,7 +122,6 @@ SyncNtupleManager::initializeBranches()
     floatMap[FloatVariableType::mvis_l2tau],               "mvis_l2tau",
 
     floatMap[FloatVariableType::HT],                       "HT",
-    floatMap[FloatVariableType::ptmiss],                   "ptmiss",
     floatMap[FloatVariableType::mbb],                      "mbb",
     floatMap[FloatVariableType::mbb_loose],                "mbb_loose",
 

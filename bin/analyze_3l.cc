@@ -1621,7 +1621,6 @@ int main(int argc, char* argv[])
       const double max_dr_jet        = comp_max_dr_jet(selJets);
       const double mbb               = selBJets_medium.size() > 1 ? (selBJets_medium[0]->p4() + selBJets_medium[0]->p4()).mass() : -1.;
       const double mbb_loose         = selBJets_loose.size() > 1 ? (selBJets_loose[0]->p4() + selBJets_loose[0]->p4()).mass() : -1.;
-      const double ptmiss            = met.pt();
       const double min_dr_lep_jet    = std::min({ mindr_lep1_jet, mindr_lep2_jet, mindr_lep3_jet });
       const double dr_leps           = deltaR(selLepton_lead->p4(), selLepton_sublead->p4());
       const double max_lep_eta       = std::max({ selLepton_lead->absEta(), selLepton_sublead->absEta(), selLepton_third->absEta() });
@@ -1697,7 +1696,6 @@ int main(int argc, char* argv[])
       // mvis_l2tau not filled
 
       snm->read(ht,                                     FloatVariableType::HT);
-      snm->read(ptmiss,                                 FloatVariableType::ptmiss);
       snm->read(mbb,                                    FloatVariableType::mbb);
       snm->read(mbb_loose,                              FloatVariableType::mbb_loose);
 

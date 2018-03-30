@@ -2304,7 +2304,6 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       snm->read(mTauTauVis2_sel,                        FloatVariableType::mvis_l2tau);
 
       snm->read(ht,                                     FloatVariableType::HT);
-      snm->read(ptmiss,                                 FloatVariableType::ptmiss);
       snm->read(mbb,                                    FloatVariableType::mbb);
       snm->read(mbb_loose,                              FloatVariableType::mbb_loose);
 

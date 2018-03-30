@@ -1936,7 +1936,6 @@ int main(int argc, char* argv[])
       snm->read(mTauTauVis2_sel,                        FloatVariableType::mvis_l2tau);
 
       snm->read(ht,                                     FloatVariableType::HT);
-      snm->read(ptmiss,                                 FloatVariableType::ptmiss);
       snm->read(mbb,                                    FloatVariableType::mbb);
       snm->read(mbb_loose,                              FloatVariableType::mbb_loose);
 

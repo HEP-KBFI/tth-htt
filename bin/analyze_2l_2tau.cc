@@ -1673,7 +1673,6 @@ int main(int argc, char* argv[])
       const double mTauTauVis1_sel = (selHadTau_lead->p4() + selLepton_lead->p4()).mass();
       const double mTauTauVis2_sel = (selHadTau_lead->p4() + selLepton_sublead->p4()).mass();
       const double max_lep_eta     = std::max(selLepton_lead->absEta(), selLepton_sublead->absEta());
-      const double ptmiss          = met.pt();
 
       const bool isGenMatched =
         selLepton_lead->isGenMatched()    &&
@@ -1745,7 +1744,6 @@ int main(int argc, char* argv[])
       snm->read(mTauTauVis2_sel,                        FloatVariableType::mvis_l2tau);
 
       snm->read(ht,                                     FloatVariableType::HT);
-      snm->read(ptmiss,                                 FloatVariableType::ptmiss);
       snm->read(mbb,                                    FloatVariableType::mbb);
       snm->read(mbb_loose,                              FloatVariableType::mbb_loose);
 

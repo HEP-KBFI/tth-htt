@@ -397,14 +397,12 @@ main(int argc,
     const Particle::LorentzVector mht_p4 = compMHT(fakeableLeptons, selHadTaus, selJets);
     const double met_LD = compMEt_LD(met.p4(), mht_p4);
     const double ht     = compHT(selLeptons, preselHadTaus, selJets);
-    const double ptmiss = met.pt();
 
     snm->read(met.pt(),    FloatVariableType::PFMET);
     snm->read(met.phi(),   FloatVariableType::PFMETphi);
     snm->read(mht_p4.pt(), FloatVariableType::MHT);
     snm->read(met_LD,      FloatVariableType::metLD);
     snm->read(ht,          FloatVariableType::HT);
-    snm->read(ptmiss,      FloatVariableType::ptmiss);
 
     if(selLeptons.size() > 0)
     {

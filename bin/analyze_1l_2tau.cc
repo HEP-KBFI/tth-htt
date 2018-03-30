@@ -1957,7 +1957,6 @@ int main(int argc, char* argv[])
       // mvis_l2tau not filled
 
       snm->read(ht,                                     FloatVariableType::HT);
-      snm->read(ptmiss,                                 FloatVariableType::ptmiss);
       snm->read(mbb,                                    FloatVariableType::mbb);
       snm->read(mbb_loose,                              FloatVariableType::mbb_loose);
 
