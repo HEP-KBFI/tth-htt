@@ -27,6 +27,7 @@ public:
 
 protected:
   int era_;
+  bool debug_;
   bool set_selection_flags_;
   bool apply_offline_e_trigger_cuts_;
 
