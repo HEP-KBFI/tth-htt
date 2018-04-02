@@ -267,7 +267,7 @@ SyncNtupleManager::initializeBranches()
     jet_CSV,          "CSV"
   );
 
-  reset(true);
+  reset();
 }
 
 void
@@ -477,7 +477,7 @@ SyncNtupleManager::read(bool is_genMatched,
 }
 
 void
-SyncNtupleManager::reset(bool is_initializing)
+SyncNtupleManager::reset()
 {
   nEvent = 0;
   ls = 0;
@@ -501,9 +501,8 @@ SyncNtupleManager::reset(bool is_initializing)
     kv.second = placeholder_value;
   }
 
-  const Int_t nof_mu_iterations = is_initializing ? nof_mus : std::min(n_presel_mu, nof_mus);
   reset(
-    nof_mu_iterations,
+    nof_mus,
     mu_pt,
     mu_conept,
     mu_eta,
@@ -527,9 +526,8 @@ SyncNtupleManager::reset(bool is_initializing)
     mu_isfakeablesel
   );
 
-  const Int_t nof_ele_iterations = is_initializing ? nof_eles : std::min(n_presel_ele, nof_eles);
   reset(
-    nof_ele_iterations,
+    nof_eles,
     ele_pt,
     ele_conept,
     ele_eta,
@@ -554,9 +552,8 @@ SyncNtupleManager::reset(bool is_initializing)
     ele_isfakeablesel
   );
 
-  const Int_t nof_tau_iterations = is_initializing ? nof_taus : std::min(n_presel_tau, nof_taus);
   reset(
-    nof_tau_iterations,
+    nof_taus,
     tau_pt,
     tau_eta,
     tau_phi,
@@ -587,10 +584,8 @@ SyncNtupleManager::reset(bool is_initializing)
     tau_againstElectronVTightMVA6
   );
 
-
-  const Int_t nof_jet_iterations = is_initializing ? nof_jets : std::min(n_presel_jet, nof_jets);
   reset(
-    nof_jet_iterations,
+    nof_jets,
     jet_pt,
     jet_eta,
     jet_phi,
@@ -608,7 +603,7 @@ void
 SyncNtupleManager::fill()
 {
   outputTree -> Fill();
-  reset(false);
+  reset();
 }
 
 void

@@ -263,7 +263,7 @@ private:
     reset(remainingVars...);
   }
 
-  void reset(bool is_initializing);
+  void reset();
 
   TFile * outputFile;
   TTree * outputTree;
