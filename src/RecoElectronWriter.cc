@@ -18,7 +18,9 @@ RecoElectronWriter::RecoElectronWriter(int era,
                                        const std::string & branchName_obj)
   : branchName_num_(branchName_num)
   , branchName_obj_(branchName_obj)
+  , writeUncorrected_(false)
   , leptonWriter_(nullptr)
+  , eCorr_(nullptr)
   , mvaRawPOG_(nullptr)
   , mvaRawPOG_WP80_(nullptr)
   , mvaRawPOG_WP90_(nullptr)
@@ -39,6 +41,7 @@ RecoElectronWriter::RecoElectronWriter(int era,
 RecoElectronWriter::~RecoElectronWriter()
 {
   delete leptonWriter_;
+  delete[] eCorr_;
   delete[] mvaRawPOG_;
   delete[] mvaRawPOG_WP80_;
   delete[] mvaRawPOG_WP90_;
@@ -57,6 +60,7 @@ void
 RecoElectronWriter::setBranchNames()
 {
   const std::string mvaString = RecoElectron::useNoIso ? "mvaFall17noIso" : "mvaFall17Iso";
+  branchName_eCorr_ = Form("%s_%s", branchName_obj_.data(), "eCorr");
   branchName_mvaRawPOG_ = Form("%s_%s", branchName_obj_.data(), mvaString.data());
   branchName_mvaRawPOG_WP80_ = Form("%s_%s", branchName_obj_.data(), Form("%s_WP80", mvaString.data()));
   branchName_mvaRawPOG_WP90_ = Form("%s_%s", branchName_obj_.data(), Form("%s_WP90", mvaString.data()));
@@ -77,6 +81,7 @@ RecoElectronWriter::setBranches(TTree * tree)
   leptonWriter_->setBranches(tree);
   unsigned int max_nLeptons = leptonWriter_->max_nLeptons_;
   BranchAddressInitializer bai(tree, max_nLeptons, branchName_num_);
+  bai.setBranch(eCorr_, branchName_eCorr_);
   bai.setBranch(mvaRawPOG_, branchName_mvaRawPOG_);
   bai.setBranch(mvaRawPOG_WP80_, branchName_mvaRawPOG_WP80_);
   bai.setBranch(mvaRawPOG_WP90_, branchName_mvaRawPOG_WP90_);
@@ -92,14 +97,37 @@ RecoElectronWriter::setBranches(TTree * tree)
 }
 
 void
+RecoElectronWriter::writeUncorrected(bool flag)
+{
+  writeUncorrected_ = flag;
+}
+
+void
 RecoElectronWriter::write(const std::vector<const RecoElectron *> & leptons)
 {
-  leptonWriter_->write(leptons);
   Int_t nLeptons = leptons.size();
+  if(writeUncorrected_)
+  {
+    Double_t * eCorr = new Double_t[nLeptons];
+    std::transform(
+      leptons.begin(), leptons.end(), eCorr,
+      [](const RecoElectron * lepton) -> Double_t
+      {
+        return lepton->eCorr();
+      }
+    );
+    leptonWriter_->write(leptons, eCorr);
+    delete eCorr;
+  }
+  else
+  {
+    leptonWriter_->write(leptons);
+  }
   for(Int_t idxLepton = 0; idxLepton < nLeptons; ++idxLepton)
   {
     const RecoElectron * lepton = leptons[idxLepton];
     assert(lepton);
+    eCorr_[idxLepton] = lepton->eCorr();
     mvaRawPOG_[idxLepton] = lepton->mvaRawPOG();
     mvaRawPOG_WP80_[idxLepton] = lepton->mvaRawPOG_WP80();
     mvaRawPOG_WP90_[idxLepton] = lepton->mvaRawPOG_WP90();

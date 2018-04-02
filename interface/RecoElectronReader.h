@@ -34,6 +34,9 @@ public:
   std::vector<RecoElectron>
   read() const;
 
+  void
+  readUncorrected(bool flag);
+
 protected:
  /**
    * @brief Initialize names of branches to be read from tree
@@ -44,8 +47,11 @@ protected:
   std::string branchName_num_;
   std::string branchName_obj_;
 
+  bool readUncorrected_;
+
   RecoLeptonReader * leptonReader_;
 
+  std::string branchName_eCorr_;
   std::string branchName_mvaRawPOG_;
   std::string branchName_mvaRawPOG_WP80_;
   std::string branchName_mvaRawPOG_WP90_;
@@ -59,6 +65,7 @@ protected:
   std::string branchName_conversionVeto_;
   std::string branchName_cutbasedID_HLT_;
 
+  Float_t * eCorr_;
   Float_t * mvaRawPOG_;
   Bool_t * mvaRawPOG_WP80_;
   Bool_t * mvaRawPOG_WP90_;
