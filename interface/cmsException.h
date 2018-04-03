@@ -8,17 +8,27 @@
 
 template <typename T,
           typename = typename std::enable_if<! std::is_null_pointer<T>::value>>
+std::string
+get_human_line(const T * const this_,
+               const std::string & func = "",
+               int line = -1)
+{
+  return
+    std::string(abi::__cxa_demangle(typeid(T).name(), 0, 0, 0)) +
+      (func.empty() ? "" : "::" + func)                         +
+      (line >= 0 ? ":" + std::to_string(line) : "")             +
+      " "
+  ;
+}
+
+template <typename T,
+          typename = typename std::enable_if<! std::is_null_pointer<T>::value>>
 cms::Exception
 cmsException(const T * const this_,
              const std::string & func = "",
              int line = -1)
 {
-  return cms::Exception(
-    std::string(abi::__cxa_demangle(typeid(T).name(), 0, 0, 0)) +
-      (func.empty() ? "" : "::" + func)                         +
-      (line >= 0 ? ":" + std::to_string(line) : "")             +
-      " "
-  );
+  return cms::Exception(get_human_line(this_, func, line));
 }
 
 cms::Exception

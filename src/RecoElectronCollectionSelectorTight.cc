@@ -83,7 +83,7 @@ RecoElectronSelectorTight::operator()(const RecoElectron & electron) const
 {
   if(debug_)
   {
-    std::cout << __func__ << ":\n" << electron;
+    std::cout << get_human_line(this, __func__) << ":\n" << electron;
   }
 
   if(electron.pt() < min_pt_)

@@ -26,7 +26,7 @@ RecoMuonSelectorLoose::operator()(const RecoMuon & muon) const
 {
   if(debug_)
   {
-    std::cout << __func__ << ":\n" << muon;
+    std::cout << get_human_line(this, __func__) << ":\n" << muon;
   }
 
   if(muon.pt() < min_pt_)

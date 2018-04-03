@@ -40,7 +40,7 @@ RecoMuonSelectorFakeable::operator()(const RecoMuon & muon) const
 {
   if(debug_)
   {
-    std::cout << __func__ << ":\n" << muon;
+    std::cout << get_human_line(this, __func__) << ":\n" << muon;
   }
 
   if(muon.cone_pt() < min_cone_pt_)

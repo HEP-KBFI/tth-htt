@@ -204,7 +204,7 @@ RecoHadTauSelectorBase::operator()(const RecoHadTau & hadTau) const
 {
   if(debug_)
   {
-    std::cout << "<RecoHadTauSelectorBase::operator()>:\n hadTau: " << hadTau << '\n';
+    std::cout << get_human_line(this, __func__) << ":\n hadTau: " << hadTau << '\n';
   }
 
   if(hadTau.pt() < min_pt_)
