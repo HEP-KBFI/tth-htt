@@ -10,12 +10,8 @@
 #include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionCleaner.h" // Reco*CollectionCleaner
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorLoose.h" // RecoElectronCollectionSelectorLoose
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorFakeable.h" // RecoElectronCollectionSelectorFakeable
-#include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorCutBased.h" // RecoElectronCollectionSelectorCutBased
-#include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorMVABased.h" // RecoElectronCollectionSelectorMVABased
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorLoose.h" // RecoMuonCollectionSelectorLoose
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorFakeable.h" // RecoMuonCollectionSelectorFakeable
-#include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorCutBased.h" // RecoMuonCollectionSelectorCutBased
-#include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorMVABased.h" // RecoMuonCollectionSelectorMVABased
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelectorLoose.h" // RecoHadTauCollectionSelectorLoose
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelectorFakeable.h" // RecoHadTauCollectionSelectorFakeable
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelector.h" // RecoJetCollectionSelector
@@ -150,7 +146,8 @@ main(int argc,
   const bool isMC_tH            = process_string == "tH";
   const bool apply_trigger_bits = cfg_analyze.getParameter<bool>("apply_trigger_bits");
   const bool isTriggered        = isMC && ! apply_trigger_bits;
-  const bool useNonNominal      = cfg_analyze.getParameter<bool>("useNonNominal") || ! isMC;
+  const bool useNonNominal      = cfg_analyze.getParameter<bool>("useNonNominal");
+  const bool useNonNominal_jetmet = useNonNominal || ! isMC;
 
   const bool isDEBUG = cfg_analyze.getParameter<bool>("isDEBUG");
 
@@ -217,21 +214,18 @@ main(int argc,
   inputTree->registerReader(muonReader);
   const RecoMuonCollectionSelectorLoose preselMuonSelector(era, -1, isDEBUG);
   const RecoMuonCollectionSelectorFakeable fakeableMuonSelector(era, -1, isDEBUG);
-  const RecoMuonCollectionSelectorCutBased cutBasedMuonSelector(era, -1, isDEBUG);
-  const RecoMuonCollectionSelectorMVABased mvaBasedMuonSelector(era, -1, isDEBUG);
 
   RecoElectronReader * const electronReader = new RecoElectronReader(era, branchName_electrons, false);
+  electronReader->readUncorrected(useNonNominal);
   inputTree->registerReader(electronReader);
-  const RecoElectronCollectionCleaner electronCleaner(0.3);
+  const RecoElectronCollectionCleaner electronCleaner(0.3, isDEBUG);
   const RecoElectronCollectionSelectorLoose preselElectronSelector(era, -1, isDEBUG);
   RecoElectronCollectionSelectorFakeable fakeableElectronSelector(era, -1, isDEBUG);
-  const RecoElectronCollectionSelectorCutBased cutBasedElectronSelector(era, -1, isDEBUG);
-  const RecoElectronCollectionSelectorMVABased mvaBasedElectronSelector(era, -1, isDEBUG);
 
   RecoHadTauReader * const hadTauReader = new RecoHadTauReader(era, branchName_hadTaus, false);
   hadTauReader->setHadTauPt_central_or_shift(kHadTauPt_central);
   inputTree->registerReader(hadTauReader);
-  const RecoHadTauCollectionCleaner hadTauCleaner(0.3);
+  const RecoHadTauCollectionCleaner hadTauCleaner(0.3, isDEBUG);
   RecoHadTauCollectionSelectorLoose preselHadTauSelector(era, -1, isDEBUG);
   if(hadTauSelection_tauIdWP == "dR03mvaVLoose" ||
      hadTauSelection_tauIdWP == "dR03mvaVVLoose" )
@@ -242,17 +236,17 @@ main(int argc,
   preselHadTauSelector.set_min_antiMuon(-1);
 
   RecoJetReader * const jetReader = new RecoJetReader(era, isMC, branchName_jets, false);
-  jetReader->setPtMass_central_or_shift(useNonNominal ? kJet_central_nonNominal : kJet_central);
+  jetReader->setPtMass_central_or_shift(useNonNominal_jetmet ? kJet_central_nonNominal : kJet_central);
   jetReader->setBranchName_BtagWeight(kBtag_central);
   inputTree->registerReader(jetReader);
-  const RecoJetCollectionCleaner jetCleaner(0.4);
+  const RecoJetCollectionCleaner jetCleaner(0.4, isDEBUG);
   const RecoJetCollectionSelector jetSelector(era, -1, isDEBUG);
   const RecoJetCollectionSelectorBtagLoose jetSelectorBtagLoose(era, -1, isDEBUG);
   const RecoJetCollectionSelectorBtagMedium jetSelectorBtagMedium(era, -1, isDEBUG);
 
 //--- declare missing transverse energy
   RecoMEtReader * const metReader = new RecoMEtReader(era, isMC, branchName_met);
-  metReader->setMEt_central_or_shift(useNonNominal ? kMEt_central_nonNominal : kMEt_central);
+  metReader->setMEt_central_or_shift(useNonNominal_jetmet ? kMEt_central_nonNominal : kMEt_central);
   inputTree->registerReader(metReader);
 
   int analyzedEntries = 0;
@@ -269,11 +263,6 @@ main(int argc,
                 << ") file (" << selectedEntries << " Entries selected)\n";
     }
     ++analyzedEntries;
-
-    if(isDEBUG)
-    {
-      std::cout << "event #" << inputTree->getCurrentMaxEventIdx() << ' ' << eventInfo << '\n';
-    }
 
     if(run_lumi_eventSelector && ! (*run_lumi_eventSelector)(eventInfo))
     {
@@ -350,31 +339,29 @@ main(int argc,
     const std::vector<const RecoMuon *> muon_ptrs = convert_to_ptrs(muons);
     // CV: no cleaning needed for muons, as they have the highest priority in the overlap removal
     const std::vector<const RecoMuon *> cleanedMuons = muon_ptrs;
-    const std::vector<const RecoMuon *> preselMuons    = preselMuonSelector  (cleanedMuons, isHigherPt);
-    const std::vector<const RecoMuon *> fakeableMuons  = fakeableMuonSelector(preselMuons,  isHigherConePt);
-    const std::vector<const RecoMuon *> cutBasedMuons = cutBasedMuonSelector(preselMuons,   isHigherPt);
-    const std::vector<const RecoMuon *> mvaBasedMuons = mvaBasedMuonSelector(preselMuons,   isHigherPt);
+    const std::vector<const RecoMuon *> preselMuons   = preselMuonSelector  (cleanedMuons, isHigherPt);
+    const std::vector<const RecoMuon *> fakeableMuons = fakeableMuonSelector(preselMuons,  isHigherConePt);
     const std::vector<const RecoMuon *> selMuons = preselMuons;
 
-    snm->read(preselMuons, fakeableMuons, cutBasedMuons, mvaBasedMuons);
+    snm->read(preselMuons, fakeableMuons);
 
     const std::vector<RecoElectron> electrons = electronReader->read();
     const std::vector<const RecoElectron *> electron_ptrs = convert_to_ptrs(electrons);
     const std::vector<const RecoElectron *> cleanedElectrons = electronCleaner(electron_ptrs, selMuons);
     const std::vector<const RecoElectron *> preselElectrons   = preselElectronSelector  (cleanedElectrons, isHigherPt);
     const std::vector<const RecoElectron *> fakeableElectrons = fakeableElectronSelector(preselElectrons,  isHigherConePt);
-    const std::vector<const RecoElectron *> cutBasedElectrons = cutBasedElectronSelector(preselElectrons,  isHigherPt);
-    const std::vector<const RecoElectron *> mvaBasedElectrons = mvaBasedElectronSelector(preselElectrons,  isHigherPt);
     const std::vector<const RecoElectron *> selElectrons = preselElectrons;
 
-    snm->read(preselElectrons, fakeableElectrons, cutBasedElectrons, mvaBasedElectrons);
+    snm->read(preselElectrons, fakeableElectrons);
 
-    const std::vector<const RecoLepton *> selLeptons = mergeLeptonCollections(selElectrons, selMuons, isHigherPt);
+    const std::vector<const RecoLepton *> preselLeptons   = mergeLeptonCollections(preselElectrons,   preselMuons,   isHigherPt);
+    const std::vector<const RecoLepton *> fakeableLeptons = mergeLeptonCollections(fakeableElectrons, fakeableMuons, isHigherPt);
+    const std::vector<const RecoLepton *> selLeptons      = mergeLeptonCollections(selElectrons,      selMuons,      isHigherPt);
 
     const std::vector<RecoHadTau> hadTaus = hadTauReader->read();
     const std::vector<const RecoHadTau *> hadTau_ptrs = convert_to_ptrs(hadTaus);
-    const std::vector<const RecoHadTau *> cleanedHadTaus = hadTauCleaner(hadTau_ptrs, preselMuons, preselElectrons);
-    const std::vector<const RecoHadTau *> preselHadTaus  = preselHadTauSelector  (cleanedHadTaus, isHigherPt);
+    const std::vector<const RecoHadTau *> cleanedHadTaus = hadTauCleaner(hadTau_ptrs, preselLeptons);
+    const std::vector<const RecoHadTau *> preselHadTaus  = preselHadTauSelector(cleanedHadTaus, isHigherPt);
     const std::vector<const RecoHadTau *> selHadTaus = preselHadTaus;
 
     snm->read(selHadTaus);
@@ -382,7 +369,7 @@ main(int argc,
 //--- build collections of jets and select subset of jets passing b-tagging criteria
     const std::vector<RecoJet> jets = jetReader->read();
     const std::vector<const RecoJet *> jet_ptrs = convert_to_ptrs(jets);
-    const std::vector<const RecoJet *> cleanedJets = jetCleaner(jet_ptrs, selLeptons);
+    const std::vector<const RecoJet *> cleanedJets = jetCleaner(jet_ptrs, fakeableLeptons, preselHadTaus);
     const std::vector<const RecoJet *> selJets         = jetSelector          (cleanedJets, isHigherPt);
     const std::vector<const RecoJet *> selBJets_loose  = jetSelectorBtagLoose (cleanedJets, isHigherPt);
     const std::vector<const RecoJet *> selBJets_medium = jetSelectorBtagMedium(cleanedJets, isHigherPt);
@@ -409,18 +396,15 @@ main(int argc,
 
 //--- compute MHT and linear MET discriminant (met_LD)
     RecoMEt met = metReader->read();
-    const std::vector<const RecoLepton *> fakeableLeptons = mergeLeptonCollections(fakeableElectrons, fakeableMuons);
     const Particle::LorentzVector mht_p4 = compMHT(fakeableLeptons, selHadTaus, selJets);
     const double met_LD = compMEt_LD(met.p4(), mht_p4);
     const double ht     = compHT(selLeptons, preselHadTaus, selJets);
-    const double ptmiss = met.pt();
 
     snm->read(met.pt(),    FloatVariableType::PFMET);
     snm->read(met.phi(),   FloatVariableType::PFMETphi);
     snm->read(mht_p4.pt(), FloatVariableType::MHT);
     snm->read(met_LD,      FloatVariableType::metLD);
     snm->read(ht,          FloatVariableType::HT);
-    snm->read(ptmiss,      FloatVariableType::ptmiss);
 
     if(selLeptons.size() > 0)
     {

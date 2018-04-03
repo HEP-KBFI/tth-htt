@@ -83,7 +83,7 @@ RecoElectronSelectorTight::operator()(const RecoElectron & electron) const
 {
   if(debug_)
   {
-    std::cout << "<RecoElectronSelectorTight::operator()>:\n" << electron;
+    std::cout << __func__ << ":\n" << electron;
   }
 
   if(electron.pt() < min_pt_)
@@ -167,7 +167,7 @@ RecoElectronSelectorTight::operator()(const RecoElectron & electron) const
     return false;
   }
 
-  if(electron.mvaRawPOG_WP(mvaPOGwp_) < 1)
+  if(! electron.mvaRawPOG_WP(mvaPOGwp_))
   {
     if(debug_)
     {
@@ -176,14 +176,14 @@ RecoElectronSelectorTight::operator()(const RecoElectron & electron) const
     return false;
   }
 
-  const int idxBin = electron.absEta() <= binning_absEta_[0] ? 0 :
-                    (electron.absEta() <= binning_absEta_[1] ? 1 : 2)
-  ;
-
   // extra cuts for electrons passing pT threshold of single electron trigger,
   // as explained in section 3.3.4 of AN-2015/321
   if(apply_offline_e_trigger_cuts_ && electron.pt() >= min_pt_trig_)
   {
+    const int idxBin = electron.absEta() <= binning_absEta_[0] ? 0 :
+                      (electron.absEta() <= binning_absEta_[1] ? 1 : 2)
+    ;
+
     if(electron.sigmaEtaEta() > max_sigmaEtaEta_trig_[idxBin])
     {
       if(debug_)

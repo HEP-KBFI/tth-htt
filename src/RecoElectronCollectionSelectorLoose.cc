@@ -28,7 +28,7 @@ RecoElectronSelectorLoose::operator()(const RecoElectron & electron) const
 {
   if(debug_)
   {
-    std::cout << "<RecoElectronSelectorTight::operator()>:\n" << electron;
+    std::cout << __func__ << ":\n" << electron;
   }
 
   if(electron.pt() < min_pt_)

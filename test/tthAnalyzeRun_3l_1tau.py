@@ -165,9 +165,9 @@ if __name__ == '__main__':
         "numJets"                  : {},
         "mvaDiscr_3l"              : {},
         "mTauTauVis"               : {},
-        "mvaOutput_plainKin_tt"    : { 'quantile_rebin' : 6 }, # BDT2; quantile in all bkg
-        "mvaOutput_plainKin_ttV"   : { 'quantile_rebin' : 6 }, # BDT1; quantile in all bkg
-        "mvaOutput_plainKin_SUM_M" : { 'quantile_rebin' : 6 }, # BDT3; quantile in all bkg
+        "mvaOutput_plainKin_tt"    : { 'quantile_rebin' : 6, 'quantile_in_fakes' : False }, # BDT2; quantile in all bkg
+        "mvaOutput_plainKin_ttV"   : { 'quantile_rebin' : 6, 'quantile_in_fakes' : False }, # BDT1; quantile in all bkg
+        "mvaOutput_plainKin_SUM_M" : { 'quantile_rebin' : 6, 'quantile_in_fakes' : False }, # BDT3; quantile in all bkg
         "mvaOutput_plainKin_1B_M"  : {},
       },
       select_rle_output                     = True,

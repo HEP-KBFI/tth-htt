@@ -36,7 +36,7 @@ RecoMuonSelectorTight::operator()(const RecoMuon & muon) const
 {
   if(debug_)
   {
-    std::cout << "<RecoMuonSelectorTight::operator()>:\n muon: " << muon << '\n';
+    std::cout << __func__ << ":\n muon: " << muon << '\n';
   }
 
   if(muon.pt() < min_pt_)

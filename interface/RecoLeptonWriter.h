@@ -29,14 +29,16 @@ public:
    * @brief Write branches common to RecoElectrons and RecoMuons to tree
    */
   template<typename T>
-  void write(const std::vector<const T *> & leptons)
+  void write(const std::vector<const T *> & leptons,
+             Double_t * eCorrs = nullptr)
   {
     nLeptons_ = leptons.size();
     for(UInt_t idxLepton = 0; idxLepton < nLeptons_; ++idxLepton)
     {
       const T * lepton = leptons[idxLepton];
       assert(lepton);
-      pt_[idxLepton] = lepton->lepton_pt();
+      const double eCorr = eCorrs ? eCorrs[idxLepton] : 1.;
+      pt_[idxLepton] = lepton->lepton_pt() * eCorr;
       eta_[idxLepton] = lepton->eta();
       phi_[idxLepton] = lepton->phi();
       mass_[idxLepton] = lepton->mass();

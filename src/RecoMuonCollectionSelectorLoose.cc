@@ -5,9 +5,10 @@
 RecoMuonSelectorLoose::RecoMuonSelectorLoose(int era,
                                              int index,
                                              bool debug,
-                                             bool set_selection_flags)
-  : set_selection_flags_(set_selection_flags)
-  , era_(era)
+                                             bool set_selection_flags) 
+  : era_(era)
+  , debug_(debug)
+  , set_selection_flags_(set_selection_flags)
   , tightMuonSelector_(era_, index, debug, false)
   , min_pt_(5.)
   , max_absEta_(2.4)
@@ -23,24 +24,91 @@ RecoMuonSelectorLoose::RecoMuonSelectorLoose(int era,
 bool
 RecoMuonSelectorLoose::operator()(const RecoMuon & muon) const
 {
-  if(muon.pt()             >= min_pt_                &&
-     muon.absEta()         <= max_absEta_            &&
-     std::fabs(muon.dxy()) <= max_dxy_               &&
-     std::fabs(muon.dz())  <= max_dz_                &&
-     muon.relIso()         <= max_relIso_            &&
-     muon.sip3d()          <= max_sip3d_             &&
-     (muon.passesLooseIdPOG() || !apply_looseIdPOG_) &&
-     (muon.passesMediumIdPOG() || !apply_mediumIdPOG_))
+  if(debug_)
   {
-    if(set_selection_flags_)
-    {
-      muon.set_isLoose();
-      if(tightMuonSelector_(muon))
-      {
-        muon.set_isTight();
-      }
-    }
-    return true;
+    std::cout << __func__ << ":\n" << muon;
   }
-  return false;
+
+  if(muon.pt() < min_pt_)
+  {
+    if(debug_)
+    {
+      std::cout << "FAILS pT >= " << min_pt_ << " loose cut\n";
+    }
+    return false;
+  }
+
+  if(muon.absEta() > max_absEta_)
+  {
+    if(debug_)
+    {
+      std::cout << "FAILS pT <= " << max_absEta_ << " loose cut\n";
+    }
+    return false;
+  }
+
+  if(std::fabs(muon.dxy()) > max_dxy_)
+  {
+    if(debug_)
+    {
+      std::cout << "FAILS abs(dxy) <= " << max_dxy_ << " loose cut\n";
+    }
+    return false;
+  }
+
+  if(std::fabs(muon.dz()) > max_dz_)
+  {
+    if(debug_)
+    {
+      std::cout << "FAILS abs(dz) <= " << max_dz_ << " loose cut\n";
+    }
+    return false;
+  }
+
+  if(muon.relIso() > max_relIso_)
+  {
+    if(debug_)
+    {
+      std::cout << "FAILS relIso <= " << max_relIso_ << " loose cut\n";
+    }
+    return false;
+  }
+
+  if(muon.sip3d() > max_sip3d_)
+  {
+    if(debug_)
+    {
+      std::cout << "FAILS sip3d <= " << max_sip3d_ << " loose cut\n";
+    }
+    return false;
+  }
+
+  if(! muon.passesLooseIdPOG() && apply_looseIdPOG_)
+  {
+    if(debug_)
+    {
+      std::cout << "FAILS loose POG loose cut\n";
+    }
+    return false;
+  }
+
+  if(! muon.passesMediumIdPOG() && apply_mediumIdPOG_)
+  {
+    if(debug_)
+    {
+      std::cout << "FAILS medium POG loose cut\n";
+    }
+    return false;
+  }
+
+  if(set_selection_flags_)
+  {
+    muon.set_isLoose();
+    if(tightMuonSelector_(muon))
+    {
+      muon.set_isTight();
+    }
+  }
+
+  return true;
 }

@@ -48,12 +48,8 @@ SyncNtupleManager::initializeBranches()
 
   const std::string n_presel_mu_str       = Form("n_presel_%s",      mstr);
   const std::string n_fakeablesel_mu_str  = Form("n_fakeablesel_%s", mstr);
-  const std::string n_cutsel_mu_str       = Form("n_cutsel_%s",      mstr);
-  const std::string n_mvasel_mu_str       = Form("n_mvasel_%s",      mstr);
   const std::string n_presel_ele_str      = Form("n_presel_%s",      estr);
   const std::string n_fakeablesel_ele_str = Form("n_fakeablesel_%s", estr);
-  const std::string n_cutsel_ele_str      = Form("n_cutsel_%s",      estr);
-  const std::string n_mvasel_ele_str      = Form("n_mvasel_%s",      estr);
   const std::string n_presel_tau_str      = Form("n_presel_%s",      tstr);
   const std::string n_presel_jet_str      = Form("n_presel_%s",      jstr);
 
@@ -63,12 +59,8 @@ SyncNtupleManager::initializeBranches()
     run,               "run",
     n_presel_mu,       n_presel_mu_str,
     n_fakeablesel_mu,  n_fakeablesel_mu_str,
-    n_cutsel_mu,       n_cutsel_mu_str,
-    n_mvasel_mu,       n_mvasel_mu_str,
     n_presel_ele,      n_presel_ele_str,
     n_fakeablesel_ele, n_fakeablesel_ele_str,
-    n_cutsel_ele,      n_cutsel_ele_str,
-    n_mvasel_ele,      n_mvasel_ele_str,
     n_presel_tau,      n_presel_tau_str,
     n_presel_jet,      n_presel_jet_str,
 
@@ -130,7 +122,6 @@ SyncNtupleManager::initializeBranches()
     floatMap[FloatVariableType::mvis_l2tau],               "mvis_l2tau",
 
     floatMap[FloatVariableType::HT],                       "HT",
-    floatMap[FloatVariableType::ptmiss],                   "ptmiss",
     floatMap[FloatVariableType::mbb],                      "mbb",
     floatMap[FloatVariableType::mbb_loose],                "mbb_loose",
 
@@ -206,9 +197,7 @@ SyncNtupleManager::initializeBranches()
     mu_leptonMVA,            "leptonMVA",
     mu_mediumID,             "mediumID",
     mu_dpt_div_pt,           "dpt_div_pt",
-    mu_isfakeablesel,        "isfakeablesel",
-    mu_iscutsel,             "iscutsel",
-    mu_ismvasel,             "ismvasel"
+    mu_isfakeablesel,        "isfakeablesel"
   );
 
   setBranches(
@@ -234,9 +223,7 @@ SyncNtupleManager::initializeBranches()
     ele_isChargeConsistent,   "isChargeConsistent",
     ele_passesConversionVeto, "passesConversionVeto",
     ele_nMissingHits,         "nMissingHits",
-    ele_isfakeablesel,        "isfakeablesel",
-    ele_iscutsel,             "iscutsel",
-    ele_ismvasel,             "ismvasel"
+    ele_isfakeablesel,        "isfakeablesel"
   );
 
   setBranches(
@@ -280,7 +267,7 @@ SyncNtupleManager::initializeBranches()
     jet_CSV,          "CSV"
   );
 
-  reset(true);
+  reset();
 }
 
 void
@@ -309,14 +296,10 @@ SyncNtupleManager::read(const EventInfo & eventInfo)
 
 void
 SyncNtupleManager::read(const std::vector<const RecoMuon *> & muons,
-                        const std::vector<const RecoMuon *> & fakeable_muons,
-                        const std::vector<const RecoMuon *> & cutbased_muons,
-                        const std::vector<const RecoMuon *> & mvabased_muons)
+                        const std::vector<const RecoMuon *> & fakeable_muons)
 {
   n_presel_mu = muons.size();
   n_fakeablesel_mu = fakeable_muons.size();
-  n_cutsel_mu = cutbased_muons.size();
-  n_mvasel_mu = mvabased_muons.size();
 
   const Int_t nof_iterations = std::min(n_presel_mu, nof_mus);
   for(Int_t i = 0; i < nof_iterations; ++i)
@@ -331,7 +314,7 @@ SyncNtupleManager::read(const std::vector<const RecoMuon *> & muons,
     mu_miniRelIso[i] = muon -> relIso();
     mu_miniIsoCharged[i] = muon -> miniIsoCharged();
     mu_miniIsoNeutral[i] = muon -> miniIsoNeutral();
-    mu_jetNDauChargedMVASel[i] = -1; //TODO: implement jetNDauChargedMVASel() in RecoLepton
+    mu_jetNDauChargedMVASel[i] = muon -> jetNDauChargedMVASel();
     mu_jetPtRel[i] = muon -> jetPtRel();
     mu_jetPtRatio[i] = muon -> jetPtRatio();
     mu_jetCSV[i] = muon -> jetBtagCSV();
@@ -352,37 +335,15 @@ SyncNtupleManager::read(const std::vector<const RecoMuon *> & muons,
         break;
       }
     }
-    mu_iscutsel[i] = 0;
-    for(const auto & cutbased_muon: cutbased_muons)
-    {
-      if(muon == cutbased_muon)
-      {
-        mu_iscutsel[i] = 1;
-        break;
-      }
-    }
-    mu_ismvasel[i] = 0;
-    for(const auto & mvabased_muon: mvabased_muons)
-    {
-      if(muon == mvabased_muon)
-      {
-        mu_ismvasel[i] = 1;
-        break;
-      }
-    }
   }
 }
 
 void
 SyncNtupleManager::read(const std::vector<const RecoElectron *> & electrons,
-                        const std::vector<const RecoElectron *> & fakeable_electrons,
-                        const std::vector<const RecoElectron *> & cutbased_electrons,
-                        const std::vector<const RecoElectron *> & mvabased_electrons)
+                        const std::vector<const RecoElectron *> & fakeable_electrons)
 {
   n_presel_ele = electrons.size();
   n_fakeablesel_ele = fakeable_electrons.size();
-  n_cutsel_ele = cutbased_electrons.size();
-  n_mvasel_ele = mvabased_electrons.size();
 
   const Int_t nof_iterations = std::min(n_presel_ele, nof_eles);
   for(Int_t i = 0; i < nof_iterations; ++i)
@@ -397,7 +358,7 @@ SyncNtupleManager::read(const std::vector<const RecoElectron *> & electrons,
     ele_miniRelIso[i] = electron -> relIso();
     ele_miniIsoCharged[i] = electron -> miniIsoCharged();
     ele_miniIsoNeutral[i] = electron -> miniIsoNeutral();
-    ele_jetNDauChargedMVASel[i] = -1; //TODO: implement jetNDauChargedMVASel() in RecoLepton
+    ele_jetNDauChargedMVASel[i] = electron -> jetNDauChargedMVASel();
     ele_jetPtRel[i] = electron -> jetPtRel();
     ele_jetPtRatio[i] = electron -> jetPtRatio();
     ele_jetCSV[i] = electron -> jetBtagCSV();
@@ -416,24 +377,6 @@ SyncNtupleManager::read(const std::vector<const RecoElectron *> & electrons,
       if(electron == fakeable_electron)
       {
         ele_isfakeablesel[i] = 1;
-        break;
-      }
-    }
-    ele_iscutsel[i] = 0;
-    for(const auto & cutbased_electron: cutbased_electrons)
-    {
-      if(electron == cutbased_electron)
-      {
-        ele_iscutsel[i] = 1;
-        break;
-      }
-    }
-    ele_ismvasel[i] = 0;
-    for(const auto & mvabased_electron: mvabased_electrons)
-    {
-      if(electron == mvabased_electron)
-      {
-        ele_ismvasel[i] = 1;
         break;
       }
     }
@@ -534,7 +477,7 @@ SyncNtupleManager::read(bool is_genMatched,
 }
 
 void
-SyncNtupleManager::reset(bool is_initializing)
+SyncNtupleManager::reset()
 {
   nEvent = 0;
   ls = 0;
@@ -543,12 +486,8 @@ SyncNtupleManager::reset(bool is_initializing)
   reset(
     n_presel_mu,
     n_fakeablesel_mu,
-    n_cutsel_mu,
-    n_mvasel_mu,
     n_presel_ele,
     n_fakeablesel_ele,
-    n_cutsel_ele,
-    n_mvasel_ele,
     n_presel_tau,
     n_presel_jet
   );
@@ -562,9 +501,8 @@ SyncNtupleManager::reset(bool is_initializing)
     kv.second = placeholder_value;
   }
 
-  const Int_t nof_mu_iterations = is_initializing ? nof_mus : std::min(n_presel_mu, nof_mus);
   reset(
-    nof_mu_iterations,
+    nof_mus,
     mu_pt,
     mu_conept,
     mu_eta,
@@ -585,14 +523,11 @@ SyncNtupleManager::reset(bool is_initializing)
     mu_leptonMVA,
     mu_mediumID,
     mu_dpt_div_pt,
-    mu_isfakeablesel,
-    mu_iscutsel,
-    mu_ismvasel
+    mu_isfakeablesel
   );
 
-  const Int_t nof_ele_iterations = is_initializing ? nof_eles : std::min(n_presel_ele, nof_eles);
   reset(
-    nof_ele_iterations,
+    nof_eles,
     ele_pt,
     ele_conept,
     ele_eta,
@@ -614,14 +549,11 @@ SyncNtupleManager::reset(bool is_initializing)
     ele_isChargeConsistent,
     ele_passesConversionVeto,
     ele_nMissingHits,
-    ele_isfakeablesel,
-    ele_iscutsel,
-    ele_ismvasel
+    ele_isfakeablesel
   );
 
-  const Int_t nof_tau_iterations = is_initializing ? nof_taus : std::min(n_presel_tau, nof_taus);
   reset(
-    nof_tau_iterations,
+    nof_taus,
     tau_pt,
     tau_eta,
     tau_phi,
@@ -652,10 +584,8 @@ SyncNtupleManager::reset(bool is_initializing)
     tau_againstElectronVTightMVA6
   );
 
-
-  const Int_t nof_jet_iterations = is_initializing ? nof_jets : std::min(n_presel_jet, nof_jets);
   reset(
-    nof_jet_iterations,
+    nof_jets,
     jet_pt,
     jet_eta,
     jet_phi,
@@ -673,7 +603,7 @@ void
 SyncNtupleManager::fill()
 {
   outputTree -> Fill();
-  reset(false);
+  reset();
 }
 
 void

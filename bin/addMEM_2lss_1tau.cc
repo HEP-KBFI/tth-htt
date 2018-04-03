@@ -94,7 +94,8 @@ int main(int argc,
   const bool lowIntegrationPoints           = cfg_addMEM.getParameter<bool>("lowIntegrationPoints");
   const bool copy_all_branches              = cfg_addMEM.getParameter<bool>("copy_all_branches");
   const bool readGenObjects                 = cfg_addMEM.getParameter<bool>("readGenObjects");
-  const bool useNonNominal                  = cfg_addMEM.getParameter<bool>("useNonNominal") || ! isMC;
+  const bool useNonNominal                  = cfg_addMEM.getParameter<bool>("useNonNominal");
+  const bool useNonNominal_jetmet           = useNonNominal || ! isMC;
 
   const std::string branchName_electrons = cfg_addMEM.getParameter<std::string>("branchName_electrons");
   const std::string branchName_muons     = cfg_addMEM.getParameter<std::string>("branchName_muons");
@@ -187,6 +188,7 @@ int main(int argc,
   const RecoMuonCollectionSelectorTight    tightMuonSelector   (era);
   
   RecoElectronReader* electronReader = new RecoElectronReader(era, branchName_electrons, readGenObjects);
+  electronReader->readUncorrected(useNonNominal);
   electronReader->setBranchAddresses(inputTree);
   const RecoElectronCollectionCleaner electronCleaner(0.3);
   const RecoElectronCollectionSelectorLoose    preselElectronSelector  (era);
@@ -224,7 +226,7 @@ int main(int argc,
   RecoJetReader* jetReader = new RecoJetReader(era, isMC, branchName_jets, readGenObjects);
   // CV: apply jet pT cut on JEC upward shift, to make sure pT cut is loose enough
   //     to allow systematic uncertainty on JEC to be estimated on analysis level
-  jetReader->setPtMass_central_or_shift(useNonNominal ? kJet_central_nonNominal : kJet_central);
+  jetReader->setPtMass_central_or_shift(useNonNominal_jetmet ? kJet_central_nonNominal : kJet_central);
   jetReader->read_ptMass_systematics(isMC);
   jetReader->read_BtagWeight_systematics(isMC);
   jetReader->setBranchAddresses(inputTree);
@@ -233,7 +235,7 @@ int main(int argc,
 
 //--- declare missing transverse energy
   RecoMEtReader* metReader = new RecoMEtReader(era, isMC, branchName_met);
-  metReader->setMEt_central_or_shift(useNonNominal ? kMEt_central_nonNominal : kMEt_central);
+  metReader->setMEt_central_or_shift(useNonNominal_jetmet ? kMEt_central_nonNominal : kMEt_central);
   metReader->read_ptPhi_systematics(isMC);
   metReader->setBranchAddresses(inputTree);
 
@@ -272,16 +274,17 @@ int main(int argc,
     muonWriter = new RecoMuonWriter(era, Form("n%s", branchName_muons.data()), branchName_muons);
     muonWriter->setBranches(outputTree);
     electronWriter = new RecoElectronWriter(era, Form("n%s", branchName_electrons.data()), branchName_electrons);
+    electronWriter->writeUncorrected(useNonNominal);
     electronWriter->setBranches(outputTree);
     hadTauWriter = new RecoHadTauWriter(era, Form("n%s", branchName_hadTaus.data()), branchName_hadTaus);
     hadTauWriter->setBranches(outputTree);
     jetWriter = new RecoJetWriter(era, isMC, Form("n%s", branchName_jets.data()), branchName_jets);
-    jetWriter->setPtMass_central_or_shift(useNonNominal ? kJet_central_nonNominal : kJet_central);
+    jetWriter->setPtMass_central_or_shift(useNonNominal_jetmet ? kJet_central_nonNominal : kJet_central);
     jetWriter->write_ptMass_systematics(isMC);
     jetWriter->write_BtagWeight_systematics(isMC);
     jetWriter->setBranches(outputTree);
     metWriter = new RecoMEtWriter(era, isMC, branchName_met);
-    metWriter->setPtPhi_central_or_shift(useNonNominal ? kMEt_central_nonNominal : kMEt_central);
+    metWriter->setPtPhi_central_or_shift(useNonNominal_jetmet ? kMEt_central_nonNominal : kMEt_central);
     metWriter->write_ptPhi_systematics(isMC);
     metWriter->setBranches(outputTree);
 

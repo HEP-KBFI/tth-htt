@@ -18,7 +18,9 @@ RecoElectronReader::RecoElectronReader(int era,
                                        bool readGenMatching)
   : branchName_num_(Form("n%s", branchName_obj.data()))
   , branchName_obj_(branchName_obj)
+  , readUncorrected_(false)
   , leptonReader_(new RecoLeptonReader(branchName_obj_, readGenMatching))
+  , eCorr_(nullptr)
   , mvaRawPOG_(nullptr)
   , mvaRawPOG_WP80_(nullptr)
   , mvaRawPOG_WP90_(nullptr)
@@ -46,6 +48,7 @@ RecoElectronReader::~RecoElectronReader()
   {
     RecoElectronReader * const gInstance = instances_[branchName_obj_];
     assert(gInstance);
+    delete[] gInstance->eCorr_;
     delete[] gInstance->mvaRawPOG_;
     delete[] gInstance->mvaRawPOG_WP80_;
     delete[] gInstance->mvaRawPOG_WP90_;
@@ -68,6 +71,7 @@ RecoElectronReader::setBranchNames()
   if (numInstances_[branchName_obj_] == 0)
   {
     const std::string mvaString = RecoElectron::useNoIso ? "mvaFall17noIso" : "mvaFall17Iso";
+    branchName_eCorr_ = Form("%s_%s", branchName_obj_.data(), "eCorr");
     branchName_mvaRawPOG_ = Form("%s_%s", branchName_obj_.data(), mvaString.data());
     branchName_mvaRawPOG_WP80_ = Form("%s_%s", branchName_obj_.data(), Form("%s_WP80", mvaString.data()));
     branchName_mvaRawPOG_WP90_ = Form("%s_%s", branchName_obj_.data(), Form("%s_WP90", mvaString.data()));
@@ -105,6 +109,7 @@ RecoElectronReader::setBranchAddresses(TTree * tree)
     const unsigned int max_nLeptons = leptonReader_->max_nLeptons_;
 
     BranchAddressInitializer bai(tree, max_nLeptons);
+    bai.setBranchAddress(eCorr_, branchName_eCorr_);
     bai.setBranchAddress(mvaRawPOG_, branchName_mvaRawPOG_);
     bai.setBranchAddress(mvaRawPOG_WP80_, branchName_mvaRawPOG_WP80_);
     bai.setBranchAddress(mvaRawPOG_WP90_, branchName_mvaRawPOG_WP90_);
@@ -118,6 +123,12 @@ RecoElectronReader::setBranchAddresses(TTree * tree)
     bai.setBranchAddress(conversionVeto_, branchName_conversionVeto_);
     bai.setBranchAddress(cutbasedID_HLT_, ""); // no safe HLT selection, yet
   }
+}
+
+void
+RecoElectronReader::readUncorrected(bool flag)
+{
+  readUncorrected_ = flag;
 }
 
 std::vector<RecoElectron>
@@ -144,10 +155,11 @@ RecoElectronReader::read() const
     {
       if(std::abs(gLeptonReader->pdgId_[idxLepton]) == 11)
       {
+        const double ptCorr = readUncorrected_ ? gElectronReader->eCorr_[idxLepton] : 1.;
         electrons.push_back({
           {
             {
-              gLeptonReader->pt_[idxLepton],
+              gLeptonReader->pt_[idxLepton] / ptCorr,
               gLeptonReader->eta_[idxLepton],
               gLeptonReader->phi_[idxLepton],
               gLeptonReader->mass_[idxLepton],
@@ -168,6 +180,7 @@ RecoElectronReader::read() const
             gLeptonReader->tightCharge_[idxLepton],
             gLeptonReader->charge_[idxLepton]
           },
+          gElectronReader->eCorr_[idxLepton],
           gElectronReader->mvaRawPOG_[idxLepton],
           gElectronReader->mvaRawPOG_WP80_[idxLepton],
           gElectronReader->mvaRawPOG_WP90_[idxLepton],

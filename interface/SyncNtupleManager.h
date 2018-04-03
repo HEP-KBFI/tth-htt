@@ -58,7 +58,7 @@ enum class FloatVariableType
   dr_lep3_tau1,             ///< dR between third lepton and (leading) tau
 
   max_lep12_eta,            ///< maximum absolute eta in two leading leptons
-  max_lep_eta,              ///< maximum (not absolute?) eta in all selected leptons
+  max_lep_eta,              ///< maximum absolute eta in all selected leptons
 
   mT_met_lep1,              ///< transverse mass of leading lepton and MET (using reco pt)
   mT_met_lep2,              ///< transverse mass of subleading lepton and MET (using reco pt)
@@ -75,7 +75,6 @@ enum class FloatVariableType
   mvis_l2tau,               ///< visible mass of subleading lepton and tau (of OS in 3l+1tau)
 
   HT,                       ///< linear sum of preselected leptons (including taus) + jet pT
-  ptmiss,                   ///< pT of vectorial MHT
   mbb,                      ///< mass of two selected medium b-jets
   mbb_loose,                ///< mass of two selected loose b-jets
 
@@ -137,13 +136,9 @@ public:
   void initializeHLTBranches(const std::vector<std::vector<hltPath *>> & hltPaths);
   void read(const EventInfo & eventInfo);
   void read(const std::vector<const RecoMuon *> & muons,
-            const std::vector<const RecoMuon *> & fakeable_muons,
-            const std::vector<const RecoMuon *> & cutbased_muons,
-            const std::vector<const RecoMuon *> & mvabased_muons);
+            const std::vector<const RecoMuon *> & fakeable_muons);
   void read(const std::vector<const RecoElectron *> & electrons,
-            const std::vector<const RecoElectron *> & fakeable_electrons,
-            const std::vector<const RecoElectron *> & cutbased_electrons,
-            const std::vector<const RecoElectron *> & mvabased_electrons);
+            const std::vector<const RecoElectron *> & fakeable_electrons);
   void read(const std::vector<const RecoHadTau *> & hadtaus);
   void read(const std::vector<const RecoJet *> & jets);
   void read(Float_t value,
@@ -268,7 +263,7 @@ private:
     reset(remainingVars...);
   }
 
-  void reset(bool is_initializing);
+  void reset();
 
   TFile * outputFile;
   TTree * outputTree;
@@ -284,14 +279,8 @@ private:
 
   Int_t n_presel_mu;
   Int_t n_fakeablesel_mu;
-  Int_t n_cutsel_mu;
-  Int_t n_mvasel_mu;
-
   Int_t n_presel_ele;
   Int_t n_fakeablesel_ele;
-  Int_t n_cutsel_ele;
-  Int_t n_mvasel_ele;
-
   Int_t n_presel_tau;
   Int_t n_presel_jet;
 
@@ -320,8 +309,6 @@ private:
   Bool_t * mu_mediumID;
   Float_t * mu_dpt_div_pt;
   Bool_t * mu_isfakeablesel;
-  Bool_t * mu_iscutsel;
-  Bool_t * mu_ismvasel;
 
   Float_t * ele_pt;
   Float_t * ele_conept;
@@ -345,8 +332,6 @@ private:
   Bool_t * ele_passesConversionVeto;
   Int_t * ele_nMissingHits;
   Bool_t * ele_isfakeablesel;
-  Bool_t * ele_iscutsel;
-  Bool_t * ele_ismvasel;
 
   Float_t * tau_pt;
   Float_t * tau_eta;

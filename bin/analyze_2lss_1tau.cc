@@ -46,13 +46,9 @@
 #include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionGenMatcher.h" // RecoElectronCollectionGenMatcher, RecoMuonCollectionGenMatcher, RecoHadTauCollectionGenMatcher, RecoJetCollectionGenMatcher
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorLoose.h" // RecoElectronCollectionSelectorLoose
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorFakeable.h" // RecoElectronCollectionSelectorFakeable
-#include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorCutBased.h" // RecoElectronCollectionSelectorCutBased
-#include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorMVABased.h" // RecoElectronCollectionSelectorMVABased
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorTight.h" // RecoElectronCollectionSelectorTight
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorLoose.h" // RecoMuonCollectionSelectorLoose
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorFakeable.h" // RecoMuonCollectionSelectorFakeable
-#include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorCutBased.h" // RecoMuonCollectionSelectorCutBased
-#include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorMVABased.h" // RecoMuonCollectionSelectorMVABased
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorTight.h" // RecoMuonCollectionSelectorTight
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelectorLoose.h" // RecoHadTauCollectionSelectorLoose
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelectorFakeable.h" // RecoHadTauCollectionSelectorFakeable
@@ -311,7 +307,8 @@ int main(int argc, char* argv[])
   bool apply_genWeight = cfg_analyze.getParameter<bool>("apply_genWeight");
   bool apply_trigger_bits = cfg_analyze.getParameter<bool>("apply_trigger_bits");
   bool apply_hadTauFakeRateSF = cfg_analyze.getParameter<bool>("apply_hadTauFakeRateSF");
-  const bool useNonNominal = cfg_analyze.getParameter<bool>("useNonNominal") || ! isMC;
+  const bool useNonNominal = cfg_analyze.getParameter<bool>("useNonNominal");
+  const bool useNonNominal_jetmet = useNonNominal || ! isMC;
 
   const edm::ParameterSet syncNtuple_cfg = cfg_analyze.getParameter<edm::ParameterSet>("syncNtuple");
   const std::string syncNtuple_tree = syncNtuple_cfg.getParameter<std::string>("tree");
@@ -327,8 +324,8 @@ int main(int argc, char* argv[])
   const int lheScale_option            = getLHEscale_option     (central_or_shift, isMC);
   const int jetBtagSF_option           = getBTagWeight_option   (central_or_shift, isMC);
 
-  const int met_option   = useNonNominal ? kMEt_central_nonNominal : getMET_option(central_or_shift, isMC);
-  const int jetPt_option = useNonNominal ? kJet_central_nonNominal : getJet_option(central_or_shift, isMC);
+  const int met_option   = useNonNominal_jetmet ? kMEt_central_nonNominal : getMET_option(central_or_shift, isMC);
+  const int jetPt_option = useNonNominal_jetmet ? kJet_central_nonNominal : getJet_option(central_or_shift, isMC);
 
   edm::ParameterSet cfg_dataToMCcorrectionInterface;
   cfg_dataToMCcorrectionInterface.addParameter<std::string>("era", era_string);
@@ -434,18 +431,15 @@ int main(int argc, char* argv[])
   RecoMuonCollectionGenMatcher muonGenMatcher;
   RecoMuonCollectionSelectorLoose preselMuonSelector(era, -1, isDEBUG);
   RecoMuonCollectionSelectorFakeable fakeableMuonSelector(era, -1, isDEBUG);
-  RecoMuonCollectionSelectorCutBased cutBasedMuonSelector(era, -1, isDEBUG); // needed for sync
-  RecoMuonCollectionSelectorMVABased mvaBasedMuonSelector(era, -1, isDEBUG); // needed for sync
   RecoMuonCollectionSelectorTight tightMuonSelector(era, -1, isDEBUG);
 
   RecoElectronReader* electronReader = new RecoElectronReader(era, branchName_electrons, readGenObjects);
+  electronReader->readUncorrected(useNonNominal);
   inputTree -> registerReader(electronReader);
   RecoElectronCollectionGenMatcher electronGenMatcher;
   RecoElectronCollectionCleaner electronCleaner(0.3, isDEBUG);
   RecoElectronCollectionSelectorLoose preselElectronSelector(era, -1, isDEBUG);
   RecoElectronCollectionSelectorFakeable fakeableElectronSelector(era, -1, isDEBUG);
-  RecoElectronCollectionSelectorCutBased cutBasedElectronSelector(era, -1, isDEBUG); // needed for sync
-  RecoElectronCollectionSelectorMVABased mvaBasedElectronSelector(era, -1, isDEBUG); // needed for sync
   RecoElectronCollectionSelectorTight tightElectronSelector(era, -1, isDEBUG);
 
   RecoHadTauReader* hadTauReader = new RecoHadTauReader(era, branchName_hadTaus, readGenObjects);
@@ -1265,7 +1259,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
         }
       }
     }
-    std::vector<const RecoJet*> cleanedJets = jetCleaner(jet_ptrs, fakeableElectrons, tightElectrons, fakeableMuons, tightMuons, fakeableHadTaus);
+    std::vector<const RecoJet*> cleanedJets = jetCleaner(jet_ptrs, fakeableMuons, fakeableElectrons, preselHadTaus);
     std::vector<const RecoJet*> selJets = jetSelector(cleanedJets, isHigherPt);
     std::vector<const RecoJet*> selBJets_loose = jetSelectorBtagLoose(cleanedJets, isHigherPt);
     std::vector<const RecoJet*> selBJets_medium = jetSelectorBtagMedium(cleanedJets, isHigherPt);
@@ -1923,22 +1917,22 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
 
 //--- compute output of BDTs used to discriminate ttH vs. ttV and  tt trained with XGB
     const std::map<std::string, double> mvaInputVariables_plainKin_tt = {
-      { "avg_dr_jet",      avg_dr_jet      },
-      { "dr_lep1_tau",     dr_lep1_tau     },
-      { "dr_lep2_tau",     dr_lep2_tau     },
-      { "dr_leps",         dr_leps         },
-      { "lep1_conePt",     lep1_conePt     },
-      { "lep2_conePt",     lep2_conePt     },
-      { "mT_lep2",         mT_lep2         },
-      { "mTauTauVis1_sel", mTauTauVis1_sel },
-      { "mTauTauVis2_sel", mTauTauVis2_sel },
-      { "mbb",             mbb             },
-      { "mindr_lep1_jet",  mindr_lep1_jet  },
-      { "mindr_lep2_jet",  mindr_lep2_jet  },
-      { "mindr_tau_jet",   mindr_tau_jet   },
-      { "nJet25_Recl",     nJet25_Recl     },
-      { "ptmiss",          ptmiss          },
-      { "tau_pt",          tau_pt          },
+      { "avg_dr_jet",     avg_dr_jet      },
+      { "dr_lep1_tau",    dr_lep1_tau     },
+      { "dr_lep2_tau",    dr_lep2_tau     },
+      { "dr_leps",        dr_leps         },
+      { "lep1_conePt",    lep1_conePt     },
+      { "lep2_conePt",    lep2_conePt     },
+      { "mT_lep2",        mT_lep2         },
+      { "mTauTauVis1",    mTauTauVis1_sel },
+      { "mTauTauVis2",    mTauTauVis2_sel },
+      { "mbb",            mbb             },
+      { "mindr_lep1_jet", mindr_lep1_jet  },
+      { "mindr_lep2_jet", mindr_lep2_jet  },
+      { "mindr_tau_jet",  mindr_tau_jet   },
+      { "nJet",           nJet25_Recl     },
+      { "ptmiss",         ptmiss          },
+      { "tau_pt",         tau_pt          },
     };
     const double mvaOutput_2lss_1tau_plainKin_tt = mva_2lss_1tau_plainKin_tt(mvaInputVariables_plainKin_tt);
 
@@ -2231,11 +2225,6 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
 
     if(snm)
     {
-      const std::vector<const RecoMuon *> cutBasedMuons = cutBasedMuonSelector(preselMuons);
-      const std::vector<const RecoMuon *> mvaBasedMuons = mvaBasedMuonSelector(preselMuons);
-      const std::vector<const RecoElectron *> cutBasedElectrons = cutBasedElectronSelector(preselElectrons);
-      const std::vector<const RecoElectron *> mvaBasedElectrons = mvaBasedElectronSelector(preselElectrons);
-
       const double ht             = compHT(preselLeptons, preselHadTaus, selJets);
       const double MT_met_lep1    = comp_MT_met_lep1(selLepton_lead->cone_p4(), met.pt(), met.phi());
       const double MT_met_lep2    = comp_MT_met_lep2(selLepton_sublead->cone_p4(), met.pt(), met.phi());
@@ -2247,7 +2236,6 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       const double max_dr_lep_tau = std::max(dr_lep2_tau1, dr_lep1_tau1);
       const double min_dr_lep_tau = std::min(dr_lep2_tau1, dr_lep1_tau1);
       const double min_dr_lep_jet = std::min(mindr_lep1_jet, mindr_lep2_jet);
-      const double max_lep12_eta  = std::max(selLepton_lead->eta(), selLepton_sublead->eta());
 
       const bool isGenMatched =
         selLepton_lead->isGenMatched()    &&
@@ -2256,8 +2244,8 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       ;
 
       snm->read(eventInfo);
-      snm->read(preselMuons,     fakeableMuons,     cutBasedMuons,     mvaBasedMuons);
-      snm->read(preselElectrons, fakeableElectrons, cutBasedElectrons, mvaBasedElectrons);
+      snm->read(preselMuons,     fakeableMuons    );
+      snm->read(preselElectrons, fakeableElectrons);
       snm->read(preselHadTaus);
       snm->read(selJets);
 
@@ -2300,8 +2288,8 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       // dr_lep3_tau1 not filled
       // dr_lep2_tau2 not filled
 
-      snm->read(max_lep_eta,                            FloatVariableType::max_lep12_eta); // abs
-      snm->read(max_lep12_eta,                          FloatVariableType::max_lep_eta); // not abs
+      snm->read(max_lep_eta,                            FloatVariableType::max_lep12_eta);
+      snm->read(max_lep_eta,                            FloatVariableType::max_lep_eta);
 
       snm->read(mT_lep1,                                FloatVariableType::mT_met_lep1);
       snm->read(mT_lep2,                                FloatVariableType::mT_met_lep2);
@@ -2318,7 +2306,6 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       snm->read(mTauTauVis2_sel,                        FloatVariableType::mvis_l2tau);
 
       snm->read(ht,                                     FloatVariableType::HT);
-      snm->read(ptmiss,                                 FloatVariableType::ptmiss);
       snm->read(mbb,                                    FloatVariableType::mbb);
       snm->read(mbb_loose,                              FloatVariableType::mbb_loose);
 

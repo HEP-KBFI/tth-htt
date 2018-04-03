@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import os, logging, sys, getpass
+import os, logging, sys, getpass, numpy as np
 from tthAnalysis.HiggsToTauTau.configs.analyzeConfig_1l_2tau import analyzeConfig_1l_2tau
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 from tthAnalysis.HiggsToTauTau.analysisSettings import systematics
@@ -141,15 +141,15 @@ if __name__ == '__main__':
       executable_addBackgrounds             = "addBackgrounds",
       # CV: use common executable for estimating jet->lepton and jet->tau_h fake background
       executable_addBackgroundJetToTauFakes = "addBackgroundLeptonFakes",
-      histograms_to_fit                     = [
-        "EventCounter",
-        "numJets",
-        "mvaOutput_plainKin_ttV", # BDT2; 7 regular bin in range [0, 1]
-        "mvaOutput_plainKin_tt", # BDT1; 6 regular bin in range [0, 1]
-        "mvaOutput_plainKin_1B_VT",
-        "mvaOutput_HTT_SUM_VT",
-        "mTauTauVis"
-      ],
+      histograms_to_fit                     = {
+        "EventCounter"             : {},
+        "numJets"                  : {},
+        "mvaOutput_plainKin_ttV"   : { 'explicit_binning' : list(np.linspace(0., 1., 7 + 1)) }, # BDT2; 7 regular bin in range [0, 1]
+        "mvaOutput_plainKin_tt"    : { 'explicit_binning' : list(np.linspace(0., 1., 6 + 1)) }, # BDT1; 6 regular bin in range [0, 1]
+        "mvaOutput_plainKin_1B_VT" : {},
+        "mvaOutput_HTT_SUM_VT"     : {},
+        "mTauTauVis"               : {},
+      },
       select_rle_output                     = True,
       verbose                               = idx_job_resubmission > 0,
       dry_run                               = dry_run,

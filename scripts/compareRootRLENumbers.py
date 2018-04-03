@@ -6,9 +6,29 @@
 # Example usage:
 #
 # compareRootRLENumbers.py \
-# -i sync_LLR_v1.root -I sync_Tallinn_v5.root -o ~/sandbox/rle_venn_v1 -f -R LLR -T Tallinn
+# -i sync_LLR_v1.root sync_Tallinn_v5.root -o ~/sandbox/rle_venn_v1 -f -n LLR Tallinn
 
-import argparse, ROOT, array, os, logging, sys, re
+import argparse, ROOT, array, os, logging, sys, re, itertools
+
+def get_venn(sets, select_idxs, reject_idxs):
+  assert(select_idxs)
+  select = sets[select_idxs[0]]
+  for i in range(1, len(select_idxs)):
+    select = select & sets[select_idxs[i]]
+  if not reject_idxs:
+    return select
+  reject = sets[reject_idxs[0]]
+  for i in range(1, len(reject_idxs)):
+    reject = reject | sets[reject_idxs[i]]
+  return select - reject
+
+def get_idx_combinations(x):
+  # Generates two groups of combinations
+  return list(
+    [list(y), list(set(range(x)) - set(y))]        \
+      for i in range(1, x + 1)                     \
+      for y in itertools.combinations(range(x), i)
+  )
 
 class SmartFormatter(argparse.HelpFormatter):
   def _split_lines(self, text, width):
@@ -17,16 +37,12 @@ class SmartFormatter(argparse.HelpFormatter):
     return argparse.HelpFormatter._split_lines(self, text, width)
 
 parser = argparse.ArgumentParser(
-  formatter_class = lambda prog: SmartFormatter(prog, max_help_position = 45)
+  formatter_class = lambda prog: SmartFormatter(prog, max_help_position = 50)
 )
 
-parser.add_argument('-i', '--input-ref',
-  type = str, dest = 'input_ref', metavar = 'file', default = None, required = True,
-  help = 'R|Reference input file',
-)
-parser.add_argument('-I', '--input-test',
-  type = str, dest = 'input_test', metavar = 'file', default = None, required = True,
-  help = 'R|Test input file',
+parser.add_argument('-i', '--input',
+  type = str, nargs = '+', dest = 'input_fns', metavar = 'file', default = None, required = True,
+  help = 'R|Input files',
 )
 parser.add_argument('-t', '--trees',
   type = str, nargs = '+', dest = 'trees', metavar = 'tree', default = [], required = False,
@@ -48,13 +64,9 @@ parser.add_argument('-o', '--output-dir',
   type = str, dest = 'output_dir', metavar = 'path', default = None, required = True,
   help = 'R|Output directory where the RLE text files will be written to'
 )
-parser.add_argument('-R', '--ref-name',
-  type = str, dest = 'ref_name', metavar = 'name', default = 'ref', required = False,
-  help = 'R|Some name that refers to the reference input file (e.g. LLR)',
-)
-parser.add_argument('-T', '--test-name',
-  type = str, dest = 'test_name', metavar = 'name', default = 'test', required = False,
-  help = 'R|Some name that refers to the test input file (e.g. Tallinn)',
+parser.add_argument('-n', '--names',
+  type = str, nargs = '+', dest = 'names', metavar = 'name', default = None, required = True,
+  help = 'R|Labels that refer to the input files (e.g. LLR, Tallinn, Cornell)',
 )
 parser.add_argument('-v', '--verbose',
   dest = 'verbose', action = 'store_true', default = False,
@@ -64,26 +76,25 @@ parser.add_argument('-f', '--force',
   dest = 'force', action = 'store_true', default = False,
   help = "R|Force creating the output directory if it doesn't exist",
 )
-args          = parser.parse_args()
-input_ref_fn  = args.input_ref
-input_test_fn = args.input_test
-trees         = args.trees
-run_name      = args.run_name
-lumi_name     = args.lumi_name
-event_name    = args.event_name
-output_dir    = args.output_dir
-ref_name      = args.ref_name
-test_name     = args.test_name
-verbose       = args.verbose
-force         = args.force
+args       = parser.parse_args()
+input_fns  = args.input_fns
+trees      = args.trees
+run_name   = args.run_name
+lumi_name  = args.lumi_name
+event_name = args.event_name
+output_dir = args.output_dir
+names      = args.names
+verbose    = args.verbose
+force      = args.force
+
+nof_groups = len(input_fns)
+assert(nof_groups == len(names) and nof_groups > 1)
 
 name_regex = re.compile(r'^[a-zA-Z0-9_]+$')
-ref_name_match  = name_regex.match(ref_name)
-if not ref_name_match:
-  raise ValueError('The reference name %s contains invalid characters' % ref_name)
-test_name_match = name_regex.match(test_name)
-if not test_name_match:
-  raise ValueError('The test name %s contains invalid characters' % test_name)
+for name in names:
+  name_match  = name_regex.match(name)
+  if not name_match:
+    raise ValueError('The name %s contains invalid characters' % name)
 
 logging.basicConfig(
   stream = sys.stdout,
@@ -92,67 +103,50 @@ logging.basicConfig(
 )
 
 # Check if the input files actually exist
-if not os.path.isfile(input_ref_fn):
-  raise ValueError('Input file %s does not exist' % input_ref_fn)
-if not os.path.isfile(input_test_fn):
-  raise ValueError('Input file %s does not exist' % input_test_fn)
+for input_fn in input_fns:
+  if not os.path.isfile(input_fn):
+    raise ValueError('Input file %s does not exist' % input_fn)
 if not os.path.isdir(output_dir):
   if not force:
     raise ValueError('Output directory %s does not exist (use -f/--force to create it)' % output_dir)
   else:
     try:
+      logging.debug("Creating directory: %s" % output_dir)
       os.makedirs(output_dir)
     except IOError as err:
       raise ValueError('Unable to create directory %s because: %s' % (output_dir, err))
 
 # Open the ROOT files
-input_ref_file  = ROOT.TFile.Open(input_ref_fn)
-if not input_ref_file:
-  raise ValueError('Unable to open %s ROOT file: %s' % (ref_name, input_ref_fn))
-
-input_test_file = ROOT.TFile.Open(input_test_fn)
-if not input_test_file:
-  raise ValueError('Unable to open %s ROOT file: %s' % (test_name, input_test_fn))
+file_handles = [ ROOT.TFile.Open(input_fn, 'read') for input_fn in input_fns ]
+for i, file_handle in enumerate(file_handles):
+  if not file_handle:
+    raise ValueError('Unable to open %s ROOT file: %s' % (i, input_fns[i]))
 
 # Check if the user requested to find the RLE Venn diagram for all the branches or for specific ones
 # In case all branches were requested, the user should've left the trees argument empty
 if not trees:
-  ref_ts  = { key.GetName() for key in input_ref_file.GetListOfKeys()  if key.GetClassName() == 'TTree' }
-  test_ts = { key.GetName() for key in input_test_file.GetListOfKeys() if key.GetClassName() == 'TTree' }
-  trees = list(sorted(list(ref_ts & test_ts)))
-  if not trees:
-    raise ValueError('No common TTrees found in the input files')
-  only_in_ref_ts  = list(sorted(list(ref_ts  - test_ts)))
-  only_in_test_ts = list(sorted(list(test_ts - ref_ts)))
-  if only_in_ref_ts:
-    logging.debug(
-      'Found the following TTree(s) present only in %s file %s: %s' % \
-      (ref_name, input_ref_fn, ', '.join(only_in_ref_ts))
-    )
-  if only_in_test_ts:
-    logging.debug(
-      'Found the following TTree(s) present only in %s file %s: %s' % \
-      (test_name, input_test_fn, ', '.join(only_in_test_ts))
-    )
+  # Let's get common list of TTree names
+  input_trees = [
+    { key.GetName() for key in file_handle.GetListOfKeys() if key.GetClassName() == 'TTree' } \
+    for file_handle in file_handles
+  ]
+  common_trees = input_trees[0]
+  for i in range(1, nof_groups):
+    common_trees = common_trees & input_trees[i]
+  trees = common_trees
   logging.debug('Found the following common TTree(s): %s' % ', '.join(trees))
 
-# Make sure that the run, lumi and event branch names are present in all the TTrees
+# Make sure that the run, lumi and event branch names are present in all common TTrees in all files
 rle_brs = { run_name, lumi_name, event_name }
-for tree in trees:
-  ref_t  = input_ref_file.Get(tree)
-  test_t = input_test_file.Get(tree)
-  ref_brs  = { br.GetName() for br in ref_t.GetListOfBranches()  }
-  test_brs = { br.GetName() for br in test_t.GetListOfBranches() }
-  if (rle_brs & ref_brs) != rle_brs:
-    raise ValueError(
-      'Could not find the run, lumi and event branches (%s, %s and %s) in tree %s of the %s file %s' % \
-      (run_name, lumi_name, event_name, tree, ref_name, input_ref_fn)
-    )
-  if (rle_brs & test_brs) != rle_brs:
-    raise ValueError(
-      'Could not find the run, lumi and event branches (%s, %s and %s) in tree %s of the %s file %s' % \
-      (run_name, lumi_name, event_name, tree, test_name, input_test_fn)
-    )
+for i, file_handle in enumerate(file_handles):
+  for tree in trees:
+    tree_handle = file_handle.Get(tree)
+    brs = { br.GetName() for br in tree_handle.GetListOfBranches()  }
+    if (rle_brs & brs) != rle_brs:
+      raise ValueError(
+        'Could not find the run, lumi and event branches (%s, %s and %s) in tree %s of the %s file %s' % \
+        (run_name, lumi_name, event_name, tree, names[i], input_fns[i])
+      )
 
 typeMap = {
   'Int_t'     : 'i',
@@ -186,58 +180,51 @@ def write_rles(fn, rles):
   logging.debug('Writing file %s' % fn)
   with open(fn, 'w') as f:
     f.write('\n'.join(rles))
+    f.write('\n')
 
-# Now we can start looping over the entries in each TTree simulatanously and construct the so-called
+# Now we can start looping over the entries in each TTree simultaneously and construct the so-called
 # Venn diagram
 for tree in trees:
-  ref_t  = input_ref_file.Get(tree)
-  test_t = input_test_file.Get(tree)
-  logging.debug(
-    'Opened TTree %s in files %s (%s) and %s (%s)' % \
-    (tree, input_ref_fn, ref_name, input_test_fn, test_name)
-  )
+  sets = []
+  for idx in range(nof_groups):
+    tree_handle = file_handles[idx].Get(tree)
+    nentries = tree_handle.GetEntries()
 
-  ref_nof_entries  = ref_t.GetEntries()
-  test_nof_entries = test_t.GetEntries()
-  logging.debug(
-    'Found %d entries in the ref file and %d entries in the test file' % \
-    (ref_nof_entries, test_nof_entries)
-  )
+    logging.debug('Found %d entries in tree %s of file %s' % (nentries, tree, input_fns[idx]))
 
-  # Construct the array objects that will be bound to the TTree
-  ref_run   = get_branch_array(ref_t, run_name)
-  ref_lumi  = get_branch_array(ref_t, lumi_name)
-  ref_event = get_branch_array(ref_t, event_name)
+    # Construct the array objects that will be bound to the TTree
+    run_array = get_branch_array(tree_handle, run_name)
+    lumi_array = get_branch_array(tree_handle, lumi_name)
+    event_array = get_branch_array(tree_handle, event_name)
 
-  test_run   = get_branch_array(test_t, run_name)
-  test_lumi  = get_branch_array(test_t, lumi_name)
-  test_event = get_branch_array(test_t, event_name)
+    rles = set()
+    for j in range(nentries):
+      tree_handle.GetEntry(j)
+      rles.add(':'.join(map(lambda br: str(br[0]), [run_array, lumi_array, event_array])))
+    sets.append(rles)
 
-  ref_rles  = set()
-  for i in range(ref_nof_entries):
-    ref_t.GetEntry(i)
-    ref_rles.add(':'.join(map(lambda br: str(br[0]), [ref_run, ref_lumi, ref_event])))
+  # Generate the combinations of groups that select and reject events
+  idx_combinations = get_idx_combinations(nof_groups)
+  for idx_combination in idx_combinations:
+    select_idxs = idx_combination[0]
+    reject_idxs = idx_combination[1]
 
-  test_rles = set()
-  for i in range(test_nof_entries):
-    test_t.GetEntry(i)
-    test_rles.add(':'.join(map(lambda br: str(br[0]), [test_run, test_lumi, test_event])))
+    venn = get_venn(sets, select_idxs, reject_idxs)
 
-  rles_common    = list(sorted(list(ref_rles & test_rles)))
-  rles_ref_only  = list(sorted(list(ref_rles - test_rles)))
-  rles_test_only = list(sorted(list(test_rles - ref_rles)))
+    # Construct the file name
+    select_names = list(sorted([ names[select_idx] for select_idx in select_idxs ]))
+    reject_names = list(sorted([ names[reject_idx] for reject_idx in reject_idxs ]))
+    logging.debug(
+      'Found %d event(s) which are selected by %s, but rejected by %s' % \
+      (len(venn), ', '.join(select_names), ', '.join(reject_names))
+    )
+    out_fn = '%s_%s_select' % (tree, '_'.join(select_names))
+    if reject_names:
+      out_fn += '_%s_reject' % '_'.join(reject_names)
+    out_fn += '.txt'
+    out_fn_full = os.path.join(output_dir, out_fn)
 
-  logging.debug('Found %d common events in TTree %s'     % (len(rles_common), tree))
-  logging.debug('Found %d events present in %s TTree %s' % (len(rles_ref_only), ref_name, tree))
-  logging.debug('Found %d events present in %s TTree %s' % (len(rles_test_only), test_name, tree))
-
-  # Write the files to the output
-  common_fn    = os.path.join(output_dir, '%s_common.txt' % tree)
-  ref_only_fn  = os.path.join(output_dir, '%s_%s.txt'     % (tree, ref_name))
-  test_only_fn = os.path.join(output_dir, '%s_%s.txt'     % (tree, test_name))
-
-  write_rles(common_fn,    rles_common)
-  write_rles(ref_only_fn,  rles_ref_only)
-  write_rles(test_only_fn, rles_test_only)
+    # Write the files to the output
+    write_rles(out_fn_full, venn)
 
 logging.info('All done: check the results in %s' % output_dir)
