@@ -717,7 +717,7 @@ int main(int argc, char* argv[])
     ">= N jets (1)",
     ">= 2 loose b-jets || 1 medium b-jet (1)",
     ">= 2 sel leptons",
-    "sel lepton trigger match",
+    "fakeable lepton trigger match",
     ">= 2 sel taus",
     "<= 2 tight leptons",
     ">= N jets (2)",
@@ -1121,13 +1121,13 @@ int main(int argc, char* argv[])
     cutFlowHistManager->fillHistograms("<= 2 tight leptons", evtWeight);
 
     // require that trigger paths match event category (with event category based on selLeptons)
-    if ( !((selElectrons.size() >= 2 &&                         (selTrigger_2e    || selTrigger_1e                  )) ||
-	   (selElectrons.size() >= 1 && selMuons.size() >= 1 && (selTrigger_1e1mu || selTrigger_1mu || selTrigger_1e)) ||
-	   (                            selMuons.size() >= 2 && (selTrigger_2mu   || selTrigger_1mu                 ))) ) {
+    if ( !((fakeableElectrons.size() >= 2 &&                              (selTrigger_2e    || selTrigger_1e                  )) ||
+	   (fakeableElectrons.size() >= 1 && fakeableMuons.size() >= 1 && (selTrigger_1e1mu || selTrigger_1mu || selTrigger_1e)) ||
+	   (                                 fakeableMuons.size() >= 2 && (selTrigger_2mu   || selTrigger_1mu                 ))) ) {
       if ( run_lumi_eventSelector ) {
-	std::cout << "event FAILS trigger selection for given selLepton multiplicity." << std::endl;
-	std::cout << " (#selElectrons = " << preselElectrons.size()
-		  << ", #selMuons = " << preselMuons.size()
+	std::cout << "event FAILS trigger selection for given fakeableLepton multiplicity." << std::endl;
+	std::cout << " (#fakeableElectrons = " << fakeableElectrons.size()
+		  << ", #fakeableMuons = " << fakeableMuons.size()
 		  << ", selTrigger_2mu = " << selTrigger_2mu
 		  << ", selTrigger_1e1mu = " << selTrigger_1e1mu
 		  << ", selTrigger_2e = " << selTrigger_2e
@@ -1136,8 +1136,8 @@ int main(int argc, char* argv[])
       }
       continue;
     }
-    cutFlowTable.update("sel lepton trigger match", evtWeight);
-    cutFlowHistManager->fillHistograms("sel lepton trigger match", evtWeight);
+    cutFlowTable.update("fakeable lepton trigger match", evtWeight);
+    cutFlowHistManager->fillHistograms("fakeable lepton trigger match", evtWeight);
 
     if ( !(selHadTaus.size() >= 2) ) continue;
     cutFlowTable.update(">= 2 sel taus", evtWeight);

@@ -820,7 +820,7 @@ int main(int argc, char* argv[])
     ">= 2 loose b-jets || 1 medium b-jet (1)",
     "1 sel lepton",
     "<= 1 tight leptons",
-    "sel lepton trigger match",
+    "fakeable lepton trigger match",
     ">= 2 sel taus",
     ">= 3 jets",
     ">= 2 loose b-jets || 1 medium b-jet (2)",
@@ -1315,12 +1315,12 @@ int main(int argc, char* argv[])
     cutFlowHistManager->fillHistograms("<= 1 tight leptons", evtWeight);
 
     // require that trigger paths match event category (with event category based on selLeptons)
-    if ( !((selElectrons.size() >= 1 && (selTrigger_1e  || selTrigger_1e1tau )) ||
-           (selMuons.size()     >= 1 && (selTrigger_1mu || selTrigger_1mu1tau))) ) {
+    if ( !((fakeableElectrons.size() >= 1 && (selTrigger_1e  || selTrigger_1e1tau )) ||
+           (fakeableMuons.size()     >= 1 && (selTrigger_1mu || selTrigger_1mu1tau))) ) {
       if ( run_lumi_eventSelector ) {
-        std::cout << "event FAILS trigger selection for given selLepton multiplicity." << std::endl;
-        std::cout << " (#selElectrons = " << selElectrons.size()
-                  << ", #selMuons = " << selMuons.size()
+        std::cout << "event FAILS trigger selection for given fakeableLepton multiplicity." << std::endl;
+        std::cout << " (#fakeableElectrons = " << fakeableElectrons.size()
+                  << ", #fakeableMuons = " << fakeableMuons.size()
                   << ", selTrigger_1mu = " << selTrigger_1mu
                   << ", selTrigger_1mu1tau = " << selTrigger_1mu1tau
                   << ", selTrigger_1e = " << selTrigger_1e
@@ -1328,8 +1328,8 @@ int main(int argc, char* argv[])
       }
       continue;
     }
-    cutFlowTable.update("sel lepton trigger match", evtWeight);
-    cutFlowHistManager->fillHistograms("sel lepton trigger match", evtWeight);
+    cutFlowTable.update("fakeable lepton trigger match", evtWeight);
+    cutFlowHistManager->fillHistograms("fakeable lepton trigger match", evtWeight);
 
     // require presence of exactly two hadronic taus passing tight selection criteria of final event selection
     if ( !(selHadTaus.size() >= 2) ) continue;

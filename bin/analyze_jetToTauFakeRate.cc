@@ -793,12 +793,12 @@ int main(int argc, char* argv[])
     double mT_mu = ( selLepton_e ) ? comp_MT_met_lep1(*selLepton_mu, met.pt(), met.phi()) : -1.;
 
     // require that trigger paths match event category (with event category based on selLeptons)
-    if ( !((selElectrons.size() >= 2 &&                          selTrigger_1e                                       ) ||
-	   (selElectrons.size() >= 1 && selMuons.size() >= 1 && (selTrigger_1e1mu || selTrigger_1mu || selTrigger_1e)) ||
-	   (                            selMuons.size() >= 2 &&  selTrigger_1mu                                      )) ) {
+    if ( !((fakeableElectrons.size() >= 2 &&                               selTrigger_1e                                       ) ||
+	   (fakeableElectrons.size() >= 1 && fakeableMuons.size() >= 1 && (selTrigger_1e1mu || selTrigger_1mu || selTrigger_1e)) ||
+	   (                                 fakeableMuons.size() >= 2 &&  selTrigger_1mu                                      )) ) {
       continue;
     } 
-    cutFlowTable.update("sel lepton trigger match", evtWeight);
+    cutFlowTable.update("fakeable lepton trigger match", evtWeight);
 
     // apply requirement on jets (incl. b-tagged jets) 
     if ( !(selJets.size() >= 2) ) {
