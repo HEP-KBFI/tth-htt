@@ -1,4 +1,3 @@
-
 /** \macro compareSyncNtuples.C
  *
  * Compare branches in synchronization Ntuples produced by different groups for ttH, H -> tautau analysis
@@ -8,7 +7,8 @@
  * \authors Thomas Strebler, LLR
  *          Christian Veelken, Tallinn
  *
- * (modified by Karl Ehatäht)
+ * (modified by Karl Ehatäht and Ram Krishna)
+ * to execute the macro do =>  root -l ../macros/compareSyncNtuples.C++
  */
 
 #include <TFile.h>
@@ -79,33 +79,83 @@ NtupleMetaData
                  const std::string & dirName_,
                  const std::string & treeName_,
                  const std::string & legendEntry_,
-                 const std::string & selection_)
+                 const std::string & selection_,
+                 const std::string & category_)
   : inputFilePath(inputFilePath_)
   , inputFileName(inputFileName_)
   , dirName(dirName_)
   , treeName(treeName_)
   , legendEntry(legendEntry_)
   , selection(selection_)
-  {}
+  , category(category_)
+ {}
   const std::string inputFilePath;
   const std::string inputFileName;
   const std::string dirName;
   const std::string treeName;
   const std::string legendEntry;
   const std::string selection;
+  const std::string category;
 };
 
 //-------------------------------------------------------------------------------
-/* *************************** EDIT THIS ***************************************/
+/* NOTE: sync ntuples are constantly updated as new changes/bug fixes are implemented by the groups  */
+/*       see the link in the line below to get the latest files from all the groups:            */
+/*       https://gitlab.cern.ch/ttH_leptons/doc/blob/master/2017/synchronization_taus.md             */
 
-const std::string base_dir = "/home/" + _whoami() + "/sandbox/sync_ntuples/";
-const std::string inputbase_dir = "/hdfs/local/karl/syncNtuples/comparison/";
+
+const std::string base_dir = "/home/" + _whoami() + "/sandbox/sync_ntuples/"; 
+const std::string inputbase_dir = "/hdfs/local/ram/sync_2017/";               
+
+
+
+
+/*
+// -------UNCOMMENT THIS BLOCK FOR RUNNING ON EXCLUSIVE CATEGORIES (EVENT SYNC) -----
+const std::string type = "event";
+const std::string channel_sel = "1l2tau_SR";
+// const std::string channel_sel = "1l2tau_Fake";
+
+// const std::string channel_sel = "3l1tau_SR";
+// const std::string channel_sel = "3l1tau_Fake";
+
+// const std::string channel_sel = "2lSS1tau_SR";
+// const std::string channel_sel = "2lSS1tau_Fake";
+// const std::string channel_sel = "2lSS1tau_Flip";
+
+const std::string tree_name = "syncTree_" + channel_sel;
+
 const std::map<std::string, std::map<std::string, NtupleMetaData>> ntupleMetadataMap = {
-  { "tth", { { "llr",     { inputbase_dir + "llr",     "syncNtuple_ttH_80X.root",               "", "syncTree", "LLR",     "" } },
-             { "tallinn", { inputbase_dir + "tallinn", "ttHJetToNonbb_M125_13TeV_sync_v0.root", "", "tree",     "Tallinn", "" } },
-             { "cornell", { inputbase_dir + "cornell", "syncNtuple.root",                       "", "syncTree", "Cornell", "" } },
-             { "nd",      { inputbase_dir + "nd",      "sync_ntuple.root",                      "", "syncTree", "ND",      "" } } } }
+  { "tth", { 
+             { "LLR",     { inputbase_dir + "LLR" + "/" + type + "/",     "syncNtuple_event_ttH_tautau_v2.root", "", tree_name, "LLR", "", channel_sel} },
+	     { "Tallinn", { inputbase_dir + "Tallinn" + "/" + type + "/", "sync_Tallinn_v9.root", "", tree_name, "Tallinn", "", channel_sel} },
+	     //	     { "Cornell", { inputbase_dir + "Cornell" + "/" + type + "/", "syncNtuple_event.root", "", tree_name, "Cornell", "", channel_sel } }
+           } 
+  }
 };
+// -----------------------------------
+*/
+
+
+
+// ------ UNCOMMENT THIS BLOCK FOR RUNNING ON INCLUSIVE CATEGORY (OBJECT SYNC) ------
+const std::string type = "object";
+const std::string channel_sel = "inclusive";
+const std::string tree_name = "syncTree";
+
+const std::map<std::string, std::map<std::string, NtupleMetaData>> ntupleMetadataMap = {
+  { "tth", { 
+             { "LLR",     { inputbase_dir + "LLR" + "/" + type + "/", "syncNtuple_ttH_object_v2.root", "", tree_name, "LLR", "", channel_sel} },
+	     { "Tallinn", { inputbase_dir + "Tallinn" + "/" + type + "/", "sync_Tallinn_v9.root", "", tree_name, "Tallinn", "", channel_sel} },
+	     { "Cornell", { inputbase_dir + "Cornell" + "/" + type + "/", "syncNtuple_object.root", "", tree_name, "Cornell", "", channel_sel } }
+           } 
+  }
+};
+// -----------------------------------
+
+
+
+
 
 //-------------------------------------------------------------------------------
 
@@ -516,7 +566,7 @@ void compareSyncNtuples(const std::string & ref_str,
   TTree* tree_test = loadTree(inputFile_test, test.treeName, test.dirName);
 
   const std::string outputFilePath = base_dir + "plots/" +
-                                     sample_str + "/" + ref.legendEntry + "_vs_" + test.legendEntry;
+                                     sample_str + "/" + ref.legendEntry + "_vs_" + test.legendEntry + "/" + test.category;
   struct stat st = {0};
   if(stat(outputFilePath.c_str(), &st) == -1)
     _mkdir(outputFilePath.c_str());
@@ -538,7 +588,7 @@ void compareSyncNtuples(const std::string & ref_str,
   branchesToCompare.push_back(new branchEntryType("mu0_miniIsoNeutral", "F", "n_presel_mu >= 1", 100, -0.01, 100.));
   branchesToCompare.push_back(new branchEntryType("mu0_miniIsoCharged", "F", "n_presel_mu >= 1", 100, -0.01, 100.));
   branchesToCompare.push_back(new branchEntryType("mu0_E", "F", "n_presel_mu >= 1", 100, 0., 250.));
-  branchesToCompare.push_back(new branchEntryType("mu0_conept", "F", "", 100, 0., 1000.));
+  branchesToCompare.push_back(new branchEntryType("mu0_conept", "F", "n_presel_mu >= 1", 100, 0., 1000.)); // Added the "n_presel_mu >= 1" cut
   branchesToCompare.push_back(new branchEntryType("mu0_jetPtRatio", "F", "n_presel_mu >= 1", 100, -0.01, 3.));
   branchesToCompare.push_back(new branchEntryType("mu0_leptonMVA", "F", "n_presel_mu >= 1", 100, -1., +1.));
   branchesToCompare.push_back(new branchEntryType("mu0_jetCSV", "F", "n_presel_mu >= 1", 100, 0., +1.));
@@ -560,7 +610,7 @@ void compareSyncNtuples(const std::string & ref_str,
   branchesToCompare.push_back(new branchEntryType("mu1_miniIsoNeutral", "F", "n_presel_mu >= 2", 100, -0.01, 100.));
   branchesToCompare.push_back(new branchEntryType("mu1_miniIsoCharged", "F", "n_presel_mu >= 2", 100, -0.01, 100.));
   branchesToCompare.push_back(new branchEntryType("mu1_E", "F", "n_presel_mu >= 2", 100, 0., 250.));
-  branchesToCompare.push_back(new branchEntryType("mu1_conept", "F", "", 100, 0., 500.));
+  branchesToCompare.push_back(new branchEntryType("mu1_conept", "F", "n_presel_mu >= 2", 100, 0., 500.));  // Added the "n_presel_mu >= 2" cut 
   branchesToCompare.push_back(new branchEntryType("mu1_jetPtRatio", "F", "n_presel_mu >= 2", 100, -0.01, 3.));
   branchesToCompare.push_back(new branchEntryType("mu1_leptonMVA", "F", "n_presel_mu >= 2", 100, -1., +1.));
   branchesToCompare.push_back(new branchEntryType("mu1_jetCSV", "F", "n_presel_mu >= 2", 100, 0., +1.));
@@ -583,7 +633,7 @@ void compareSyncNtuples(const std::string & ref_str,
   branchesToCompare.push_back(new branchEntryType("ele0_miniIsoNeutral", "F", "n_presel_ele >= 1", 100, -0.01, 100.));
   branchesToCompare.push_back(new branchEntryType("ele0_miniIsoCharged", "F", "n_presel_ele >= 1", 100, -0.01, 100.));
   branchesToCompare.push_back(new branchEntryType("ele0_E", "F", "n_presel_ele >= 1", 100, 0., 250.));
-  branchesToCompare.push_back(new branchEntryType("ele0_conept", "F", "", 100, 0., 1000.));
+  branchesToCompare.push_back(new branchEntryType("ele0_conept", "F", "n_presel_ele >= 1", 100, 0., 1000.));  // Added the "n_presel_ele >= 1" cut
   branchesToCompare.push_back(new branchEntryType("ele0_jetPtRatio", "F", "n_presel_ele >= 1", 100, -0.01, 3.));
   branchesToCompare.push_back(new branchEntryType("ele0_leptonMVA", "F", "n_presel_ele >= 1", 100, -1., +1.));
   branchesToCompare.push_back(new branchEntryType("ele0_jetCSV", "F", "n_presel_ele >= 1", 100, 0., +1.));
@@ -606,7 +656,7 @@ void compareSyncNtuples(const std::string & ref_str,
   branchesToCompare.push_back(new branchEntryType("ele1_miniIsoNeutral", "F", "n_presel_ele >= 2", 100, -0.01, 100.));
   branchesToCompare.push_back(new branchEntryType("ele1_miniIsoCharged", "F", "n_presel_ele >= 2", 100, -0.01, 100.));
   branchesToCompare.push_back(new branchEntryType("ele1_E", "F", "n_presel_ele >= 2", 100, 0., 250.));
-  branchesToCompare.push_back(new branchEntryType("ele1_conept", "F", "", 100, 0., 500.));
+  branchesToCompare.push_back(new branchEntryType("ele1_conept", "F", "n_presel_ele >= 2", 100, 0., 500.));   // Added the "n_presel_mu >= 1" cut
   branchesToCompare.push_back(new branchEntryType("ele1_jetPtRatio", "F", "n_presel_ele >= 2", 100, -0.01, 3.));
   branchesToCompare.push_back(new branchEntryType("ele1_leptonMVA", "F", "n_presel_ele >= 2", 100, -1., +1.));
   branchesToCompare.push_back(new branchEntryType("ele1_jetCSV", "F", "n_presel_ele >= 2", 100, 0., +1.));
@@ -700,12 +750,12 @@ void compareSyncNtuples(const std::string & ref_str,
   branchesToCompare.push_back(new branchEntryType("PFMETphi", "F", "", 36, -TMath::Pi(), +TMath::Pi()));
   branchesToCompare.push_back(new branchEntryType("MHT", "F", "", 100, 0., 600.));
   branchesToCompare.push_back(new branchEntryType("metLD", "F", "", 100, 0., 2.));
-  branchesToCompare.push_back(new branchEntryType("lep0_conept", "F", "", 100, 0., 1000.));
-  branchesToCompare.push_back(new branchEntryType("lep1_conept", "F", "", 100, 0., 500.));
-  branchesToCompare.push_back(new branchEntryType("mindr_lep0_jet", "F", "", 100, 0., 5.));
-  branchesToCompare.push_back(new branchEntryType("mindr_lep1_jet", "F", "", 100, 0., 5.));
+  branchesToCompare.push_back(new branchEntryType("lep0_conept", "F", "(n_presel_ele + n_presel_mu) >= 1", 100, 0., 1000.));
+  branchesToCompare.push_back(new branchEntryType("lep1_conept", "F", "(n_presel_ele + n_presel_mu) >= 2", 100, 0., 500.));
+  branchesToCompare.push_back(new branchEntryType("mindr_lep0_jet", "F", "(n_presel_ele + n_presel_mu) >= 1", 100, 0., 5.));
+  branchesToCompare.push_back(new branchEntryType("mindr_lep1_jet", "F", "(n_presel_ele + n_presel_mu) >= 2", 100, 0., 5.));
 //  branchesToCompare.push_back(new branchEntryType("n_jet25_recl", "F", "", 100, 0., 50.));
-  branchesToCompare.push_back(new branchEntryType("MT_met_lep0", "F", "", 100, 0., 500.));
+  branchesToCompare.push_back(new branchEntryType("MT_met_lep0", "F", "(n_presel_ele + n_presel_mu) >= 1", 100, 0., 500.));
   branchesToCompare.push_back(new branchEntryType("avg_dr_jet", "F", "", 100, 0., 6.));
   branchesToCompare.push_back(new branchEntryType("MVA_2lss_ttV", "F", "(n_fakeablesel_mu + n_fakeablesel_ele) >= 2", 100, -1., 1.));
   branchesToCompare.push_back(new branchEntryType("MVA_2lss_ttbar", "F", "(n_fakeablesel_mu + n_fakeablesel_ele) >= 2", 100, -1., 1.));
@@ -754,7 +804,9 @@ void compareSyncNtuples(const std::string & ref_str,
 
 void compareSyncNtuples()
 {
-  const std::string test_str = "tallinn";
+  // const std::string test_str = "Tallinn";
+  const std::string test_str = "LLR";
+
   const std::string sample_str = "tth";
   for(const auto & kv: ntupleMetadataMap.at(sample_str))
     if(test_str != kv.first)
