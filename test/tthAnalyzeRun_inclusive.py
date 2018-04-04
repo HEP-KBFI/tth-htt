@@ -2,9 +2,9 @@
 import os, logging, sys, getpass
 from tthAnalysis.HiggsToTauTau.configs.analyzeConfig_inclusive import analyzeConfig_inclusive
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
-from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser
+from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
 
-# E.g. to run: ./tthAnalyzeRun_inclusive.py -v 2017Dec13 -e 2017 -o inclusive.root -O syncTree
+# E.g. to run: ./tthAnalyzeRun_inclusive.py -v 2017Dec13 -e 2017 -o syncTree
 
 parser = tthAnalyzeParser()
 parser.add_rle_select()
@@ -29,6 +29,7 @@ no_exec            = args.no_exec
 auto_exec          = args.auto_exec
 check_input_files  = args.check_input_files
 debug              = args.debug
+sample_filter      = args.filter
 
 # Additional arguments
 rle_select     = os.path.expanduser(args.rle_select)
@@ -56,6 +57,9 @@ if __name__ == '__main__':
     level  = logging.INFO,
     format = '%(asctime)s - %(levelname)s: %(message)s',
   )
+
+  if sample_filter:
+    samples = filter_samples(samples, sample_filter)
 
   configDir = os.path.join("/home",       getpass.getuser(), "ttHAnalysis", era, version)
   outputDir = os.path.join("/hdfs/local", getpass.getuser(), "ttHAnalysis", era, version)

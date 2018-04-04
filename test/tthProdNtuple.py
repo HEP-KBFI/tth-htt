@@ -3,7 +3,7 @@ import os, logging, sys, getpass
 
 from tthAnalysis.HiggsToTauTau.configs.prodNtupleConfig import prodNtupleConfig
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
-from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser
+from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
 
 #--------------------------------------------------------------------------------
 # NOTE: set mode flag to
@@ -36,6 +36,7 @@ no_exec            = args.no_exec
 auto_exec          = args.auto_exec
 check_input_files  = args.check_input_files
 debug              = args.debug
+sample_filter      = args.filter
 
 # Additional arguments
 mode           = args.mode
@@ -116,6 +117,9 @@ if __name__ == '__main__':
     logging.info("Changing tau ID WP: %s -> %s" % (hadTauWP, args.tau_id_wp))
     hadTauWP = args.tau_id_wp
   hadTauSelectionAndWP = '%s|%s' % (hadTauSelection, hadTauWP)
+
+  if sample_filter:
+    samples = filter_samples(samples, sample_filter)
 
   run_ntupleProduction = False
 

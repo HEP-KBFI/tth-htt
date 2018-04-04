@@ -3,7 +3,7 @@ import os, logging, sys, getpass
 from tthAnalysis.HiggsToTauTau.configs.analyzeConfig_3l import analyzeConfig_3l
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 from tthAnalysis.HiggsToTauTau.analysisSettings import systematics
-from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser
+from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
 
 #--------------------------------------------------------------------------------
 # NOTE: set mode flag to
@@ -36,6 +36,7 @@ no_exec            = args.no_exec
 auto_exec          = args.auto_exec
 check_input_files  = args.check_input_files
 debug              = args.debug
+sample_filter      = args.filter
 
 # Additional arguments
 mode              = args.mode
@@ -91,6 +92,9 @@ if __name__ == '__main__':
     "Running the jobs with the following systematic uncertainties enabled: %s" % \
     ', '.join(central_or_shift)
   )
+
+  if sample_filter:
+    samples = filter_samples(samples, sample_filter)
 
   job_statistics_summary = {}
   run_analysis           = False

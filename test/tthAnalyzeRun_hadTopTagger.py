@@ -3,7 +3,7 @@ import os, logging, sys, getpass
 
 from tthAnalysis.HiggsToTauTau.configs.analyzeConfig_hadTopTagger import analyzeConfig_hadTopTagger
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
-from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser
+from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
 
 # E.g.: ./tthAnalyzeRun_hadTopTagger.py -v 2017Dec13 -e 2017
 
@@ -21,6 +21,7 @@ no_exec            = args.no_exec
 auto_exec          = args.auto_exec
 check_input_files  = args.check_input_files
 debug              = args.debug
+sample_filter      = args.filter
 
 # Additional arguments
 tau_id_wp = args.tau_id_wp
@@ -41,6 +42,9 @@ if __name__ == '__main__':
     level  = logging.INFO,
     format = '%(asctime)s - %(levelname)s: %(message)s'
   )
+
+  if sample_filter:
+    samples = filter_samples(samples, sample_filter)
 
   job_statistics_summary = {}
   run_analysis           = False
