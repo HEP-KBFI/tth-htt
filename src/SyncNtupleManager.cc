@@ -48,8 +48,10 @@ SyncNtupleManager::initializeBranches()
 
   const std::string n_presel_mu_str       = Form("n_presel_%s",      mstr);
   const std::string n_fakeablesel_mu_str  = Form("n_fakeablesel_%s", mstr);
+  const std::string n_mvasel_mu_str       = Form("n_mvasel_%s",      mstr);
   const std::string n_presel_ele_str      = Form("n_presel_%s",      estr);
   const std::string n_fakeablesel_ele_str = Form("n_fakeablesel_%s", estr);
+  const std::string n_mvasel_ele_str      = Form("n_mvasel_%s",      estr);
   const std::string n_presel_tau_str      = Form("n_presel_%s",      tstr);
   const std::string n_presel_jet_str      = Form("n_presel_%s",      jstr);
 
@@ -59,8 +61,10 @@ SyncNtupleManager::initializeBranches()
     run,               "run",
     n_presel_mu,       n_presel_mu_str,
     n_fakeablesel_mu,  n_fakeablesel_mu_str,
+    n_mvasel_mu,       n_mvasel_mu_str,
     n_presel_ele,      n_presel_ele_str,
     n_fakeablesel_ele, n_fakeablesel_ele_str,
+    n_mvasel_ele,      n_mvasel_ele_str,
     n_presel_tau,      n_presel_tau_str,
     n_presel_jet,      n_presel_jet_str,
 
