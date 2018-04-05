@@ -1,5 +1,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelector.h" // RecoJetSelector
 
+#include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // get_human_line()
+
 RecoJetSelector::RecoJetSelector(int era,
                                  int index,
                                  bool debug)
@@ -48,16 +50,34 @@ RecoJetSelector::get_min_jetId() const
 bool
 RecoJetSelector::operator()(const RecoJet & jet) const
 {
-  const bool passes =
-    jet.pt()     >= min_pt_     &&
-    jet.absEta() <= max_absEta_ &&
-    jet.jetId()  >= min_jetId_
-  ;
   if(debug_)
   {
-    std::cout << "<RecoJetSelector::operator()>:\n jet: " << jet << " "
-                 "(" << (passes ? "passes" : "fails") << ")\n"
-    ;
+    std::cout << get_human_line(this, __func__) << ":\n jet: " << jet << '\n';
   }
-  return passes;
+
+  if(jet.pt() < min_pt_)
+  {
+    if(debug_)
+    {
+      std::cout << "FAILS pT >= " << min_pt_ << " cut\n";
+    }
+    return false;
+  }
+  if(jet.absEta() > max_absEta_)
+  {
+    if(debug_)
+    {
+      std::cout << "FAILS abs(eta) <= " << max_absEta_ << " cut\n";
+    }
+    return false;
+  }
+  if(jet.jetId() < min_jetId_)
+  {
+    if(debug_)
+    {
+      std::cout << "FAILS jet ID >= " << min_jetId_ << " cut\n";
+    }
+    return false;
+  }
+  return true;
 }

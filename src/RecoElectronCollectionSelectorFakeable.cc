@@ -76,7 +76,7 @@ RecoElectronSelectorFakeable::operator()(const RecoElectron & electron) const
 {
   if(debug_)
   {
-    std::cout << __func__ << ":\n" << electron;
+    std::cout << get_human_line(this, __func__) << ":\n" << electron;
   }
 
   if(electron.cone_pt() < min_cone_pt_)

@@ -1,4 +1,39 @@
-import argparse, datetime
+import argparse, datetime, re, logging
+
+ALLOWED_CONDITION_KEYS = {
+  'name' : 'process_name_specific',
+  'cat'  : 'sample_category',
+}
+
+def condition_type(value):
+  value_split = value.split(':')
+  if len(value_split) != 2:
+    raise argparse.ArgumentTypeError("You must provide the condition in the form of '<key>:<regex>'")
+
+  key = value_split[0]
+  regex = re.compile(value_split[1])
+
+  if key not in ALLOWED_CONDITION_KEYS:
+    raise argparse.ArgumentTypeError(
+      "Allowed keys are: %s (corresponding to %s sample keys)" % (
+        ', '.join(ALLOWED_CONDITION_KEYS),
+        ', '.join(map(lambda k: ALLOWED_CONDITION_KEYS[k], ALLOWED_CONDITION_KEYS))
+      )
+    )
+  return (key, regex)
+
+def filter_samples(sample, condition):
+  key = condition[0]
+  regex = condition[1]
+
+  sample_key = ALLOWED_CONDITION_KEYS[key]
+  for sample_entry in sample.values():
+    use_it = bool(regex.match(sample_entry[sample_key]))
+    sample_entry['use_it'] = use_it
+    logging_str = 'Enabling' if use_it else 'Disabling'
+    logging.info('%s sample %s' % (logging_str, sample_entry[ALLOWED_CONDITION_KEYS['name']]))
+
+  return sample
 
 class SmartFormatter(argparse.ArgumentDefaultsHelpFormatter):
   def _split_lines(self, text, width):
@@ -25,6 +60,11 @@ class tthAnalyzeParser(argparse.ArgumentParser):
     self.add_argument('-v', '--version',
       type = str, dest = 'version', metavar = 'version', default = None, required = True,
       help = 'R|Analysis version (e.g. %s)' % datetime.date.today().strftime('%Y%b%d'),
+    )
+    self.add_argument('-f', '--filter',
+      type = condition_type, dest = 'filter', metavar = 'condition', default = None, required = False,
+      help = 'R|Filter samples based on condition <key>:<regex> (allowed keys: %s)' % \
+             (', '.join(ALLOWED_CONDITION_KEYS))
     )
     run_parser = self.add_mutually_exclusive_group()
     self.add_argument('-d', '--dry-run',
