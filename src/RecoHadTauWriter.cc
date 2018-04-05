@@ -89,8 +89,8 @@ void RecoHadTauWriter::setBranchNames()
   branchName_decayMode_ = Form("%s_%s", branchName_obj_.data(), "decayMode");
   branchName_idDecayMode_ = Form("%s_%s", branchName_obj_.data(), "idDecayMode");
   branchName_idDecayModeNewDMs_ = Form("%s_%s", branchName_obj_.data(), "idDecayModeNewDMs");
-  branchName_idMVA_dR03_ = Form("%s_%s", branchName_obj_.data(), "idMVAoldDMdR03_log");
-  branchName_rawMVA_dR03_ = Form("%s_%s", branchName_obj_.data(), "rawMVAoldDMdR03");
+  branchName_idMVA_dR03_ = Form("%s_%s", branchName_obj_.data(), "idMVAoldDMdR032017v2_log");
+  branchName_rawMVA_dR03_ = Form("%s_%s", branchName_obj_.data(), "rawMVAoldDMdR032017v2");
   branchName_idMVA_dR05_ = Form("%s_%s", branchName_obj_.data(), "idMVAoldDM_log");
   branchName_rawMVA_dR05_ = Form("%s_%s", branchName_obj_.data(), "rawMVAoldDM");
   branchName_idCombIso_dR03_ = Form("%s_%s", branchName_obj_.data(), "idCI3hitdR03");
@@ -135,7 +135,7 @@ void RecoHadTauWriter::write(const std::vector<const RecoHadTau *> & hadTaus)
   nHadTaus_ = hadTaus.size();
   for(UInt_t idxHadTau = 0; idxHadTau < nHadTaus_; ++idxHadTau)
   {
-    const RecoHadTau* hadTau = hadTaus[idxHadTau];
+    const RecoHadTau * hadTau = hadTaus[idxHadTau];
     assert(hadTau);
     hadTau_pt_[idxHadTau] = hadTau->pt();
     hadTau_eta_[idxHadTau] = hadTau->eta();
