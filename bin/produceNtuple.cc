@@ -187,7 +187,7 @@ main(int argc,
   electronReader->readUncorrected(useNonNominal);
   electronReader->setBranchAddresses(inputTree);
   const RecoElectronCollectionGenMatcher electronGenMatcher;
-  const RecoElectronCollectionCleaner electronCleaner(0.3, isDEBUG);
+  const RecoElectronCollectionCleaner electronCleaner(0.05, isDEBUG);
   const RecoElectronCollectionSelectorLoose preselElectronSelector(era, -1, isDEBUG);
   const RecoElectronCollectionSelectorFakeable fakeableElectronSelector(era, -1, isDEBUG);
   const RecoElectronCollectionSelectorTight tightElectronSelector(era, -1, isDEBUG);
