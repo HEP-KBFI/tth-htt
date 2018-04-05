@@ -1643,8 +1643,8 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     cutFlowHistManager->fillHistograms("lead lepton pT > 25 GeV && sublead lepton pT > 15(e)/10(mu) GeV", evtWeight);
 
     bool failsTightChargeCut = false;
-    for ( std::vector<const RecoLepton*>::const_iterator lepton = selLeptons.begin();
-          lepton != selLeptons.end(); ++lepton ) {
+    for ( std::vector<const RecoLepton*>::const_iterator lepton = fakeableLeptons.begin();
+          lepton != fakeableLeptons.end(); ++lepton ) {
       if ( (*lepton)->is_electron() ) {
         const RecoElectron* electron = dynamic_cast<const RecoElectron*>(*lepton);
         assert(electron);

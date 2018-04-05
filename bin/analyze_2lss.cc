@@ -1429,8 +1429,8 @@ int main(int argc, char* argv[])
     cutFlowHistManager->fillHistograms("lead lepton pT > 25 GeV && sublead lepton pT > 15 GeV", evtWeight);
 
     bool failsTightChargeCut = false;
-    for ( std::vector<const RecoLepton*>::const_iterator lepton = selLeptons.begin();
-	  lepton != selLeptons.end(); ++lepton ) {
+    for ( std::vector<const RecoLepton*>::const_iterator lepton = fakeableLeptons.begin();
+	  lepton != fakeableLeptons.end(); ++lepton ) {
       if ( (*lepton)->is_electron() ) {
 	const RecoElectron* electron = dynamic_cast<const RecoElectron*>(*lepton);
 	assert(electron);
