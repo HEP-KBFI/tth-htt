@@ -301,6 +301,7 @@ private:
   Float_t * mu_jetPtRatio;
   Float_t * mu_jetCSV;
   Float_t * mu_sip3D;
+  Float_t * mu_dxyAbs;
   Float_t * mu_dxy;
   Float_t * mu_dz;
   Float_t * mu_segmentCompatibility;
@@ -324,6 +325,7 @@ private:
   Float_t * ele_jetPtRatio;
   Float_t * ele_jetCSV;
   Float_t * ele_sip3D;
+  Float_t * ele_dxyAbs;
   Float_t * ele_dxy;
   Float_t * ele_dz;
   Float_t * ele_ntMVAeleID;

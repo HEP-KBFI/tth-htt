@@ -186,6 +186,7 @@ SyncNtupleManager::initializeBranches()
     mu_jetPtRatio,           "jetPtRatio",
     mu_jetCSV,               "jetCSV",
     mu_sip3D,                "sip3D",
+    mu_dxyAbs,               "dxyAbs",
     mu_dxy,                  "dxy",
     mu_dz,                   "dz",
     mu_segmentCompatibility, "segmentCompatibility",
@@ -212,6 +213,7 @@ SyncNtupleManager::initializeBranches()
     ele_jetPtRatio,           "jetPtRatio",
     ele_jetCSV,               "jetCSV",
     ele_sip3D,                "sip3D",
+    ele_dxyAbs,               "dxyAbs",
     ele_dxy,                  "dxy",
     ele_dz,                   "dz",
     ele_ntMVAeleID,           "ntMVAeleID",
@@ -318,6 +320,7 @@ SyncNtupleManager::read(const std::vector<const RecoMuon *> & muons,
     mu_jetPtRatio[i] = muon -> jetPtRatio();
     mu_jetCSV[i] = muon -> jetBtagCSV();
     mu_sip3D[i] = muon -> sip3d();
+    mu_dxyAbs[i] = std::fabs(muon -> dxy());
     mu_dxy[i] = muon -> dxy();
     mu_dz[i] = muon -> dz();
     mu_segmentCompatibility[i] = muon -> segmentCompatibility();
@@ -373,6 +376,7 @@ SyncNtupleManager::read(const std::vector<const RecoElectron *> & electrons,
     ele_jetPtRatio[i] = electron -> jetPtRatio();
     ele_jetCSV[i] = electron -> jetBtagCSV();
     ele_sip3D[i] = electron -> sip3d();
+    ele_dxyAbs[i] = std::fabs(electron -> dxy());
     ele_dxy[i] = electron -> dxy();
     ele_dz[i] = electron -> dz();
     ele_ntMVAeleID[i] = electron -> mvaRawPOG();
