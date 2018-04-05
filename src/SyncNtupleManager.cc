@@ -73,72 +73,66 @@ SyncNtupleManager::initializeBranches()
 //--- Additional event-level MVA input variables
     isGenMatched,                                          "isGenMatched",
 
-    floatMap[FloatVariableType::lep1_conept],              "lep0_conept",
-    floatMap[FloatVariableType::lep2_conept],              "lep1_conept",
-    floatMap[FloatVariableType::lep3_conept],              "lep2_conept",
-    floatMap[FloatVariableType::lep4_conept],              "lep3_conept",
+    floatMap[FloatVariableType::lep1_conept],              "lep1_conePt",
+    floatMap[FloatVariableType::lep2_conept],              "lep2_conePt",
+    floatMap[FloatVariableType::lep3_conept],              "lep3_conePt",
+    floatMap[FloatVariableType::lep4_conept],              "lep4_conePt",
 
-    floatMap[FloatVariableType::mindr_lep1_jet],           "mindr_lep0_jet",
-    floatMap[FloatVariableType::mindr_lep2_jet],           "mindr_lep1_jet",
-    floatMap[FloatVariableType::mindr_lep3_jet],           "mindr_lep2_jet",
-    floatMap[FloatVariableType::mindr_lep4_jet],           "mindr_lep3_jet",
+    floatMap[FloatVariableType::mindr_lep1_jet],           "mindr_lep1_jet",
+    floatMap[FloatVariableType::mindr_lep2_jet],           "mindr_lep2_jet",
+    floatMap[FloatVariableType::mindr_lep3_jet],           "mindr_lep3_jet",
+    floatMap[FloatVariableType::mindr_lep4_jet],           "mindr_lep4_jet",
 
-    floatMap[FloatVariableType::mindr_tau1_jet],           "mindr_tau0_jet",
-    floatMap[FloatVariableType::mindr_tau2_jet],           "mindr_tau1_jet",
+    floatMap[FloatVariableType::mindr_tau1_jet],           "mindr_tau1_jet",
+    floatMap[FloatVariableType::mindr_tau2_jet],           "mindr_tau2_jet",
 
     floatMap[FloatVariableType::avg_dr_jet],               "avg_dr_jet",
-    floatMap[FloatVariableType::avr_dr_lep_tau],           "avg_dr_lep_tau",
+    floatMap[FloatVariableType::avr_dr_lep_tau],           "avr_dr_lep_tau",
     floatMap[FloatVariableType::max_dr_jet],               "max_dr_jet",
     floatMap[FloatVariableType::max_dr_lep_tau],           "max_dr_lep_tau",
-    floatMap[FloatVariableType::min_dr_tau_jet],           "min_dr_tau_jet",
+    floatMap[FloatVariableType::min_dr_tau_jet],           "mindr_tau_jet",
     floatMap[FloatVariableType::min_dr_lep_tau],           "min_dr_lep_tau",
     floatMap[FloatVariableType::min_dr_lep_jet],           "min_dr_lep_jet",
 
-    floatMap[FloatVariableType::dr_leps],                  "dR_leps",
-    floatMap[FloatVariableType::dr_taus],                  "dR_taus",
+    floatMap[FloatVariableType::dr_leps],                  "dr_leps",
+    floatMap[FloatVariableType::dr_taus],                  "dr_taus",
 
     floatMap[FloatVariableType::dr_lep_tau_ss],            "dR_lep_tau_ss",
-    floatMap[FloatVariableType::dr_lep1_tau1],             "dR_lep0_tau0",
-    floatMap[FloatVariableType::dr_lep1_tau2],             "dR_lep0_tau1",
-    floatMap[FloatVariableType::dr_lep2_tau1],             "dR_lep1_tau0",
-    floatMap[FloatVariableType::dr_lep2_tau2],             "dR_lep1_tau1",
-    floatMap[FloatVariableType::dr_lep3_tau1],             "dR_lep2_tau0",
+    floatMap[FloatVariableType::dr_lep1_tau1],             "dr_lep1_tau",
+    floatMap[FloatVariableType::dr_lep2_tau1],             "dr_lep2_tau",
+    floatMap[FloatVariableType::dr_lep3_tau1],             "dR_lep3_tau",
+    floatMap[FloatVariableType::dr_lep1_tau2],             "dR_lep1_tau2",
+    floatMap[FloatVariableType::dr_lep2_tau2],             "dR_lep2_tau2",
 
-    floatMap[FloatVariableType::max_lep12_eta],            "max_lep01_eta",
     floatMap[FloatVariableType::max_lep_eta],              "max_lep_eta",
 
-    floatMap[FloatVariableType::mT_met_lep1],              "mT_met_lep0",
-    floatMap[FloatVariableType::mT_met_lep2],              "mT_met_lep1",
-    floatMap[FloatVariableType::mT_met_lep3],              "mT_met_lep2",
-    floatMap[FloatVariableType::mT_met_lep4],              "mT_met_lep3",
+    floatMap[FloatVariableType::mT_met_lep1],              "mT_lep1",
+    floatMap[FloatVariableType::mT_met_lep2],              "mT_lep2",
+    floatMap[FloatVariableType::mT_met_lep3],              "mT_lep3",
+    floatMap[FloatVariableType::mT_met_lep4],              "mT_lep4",
 
-    floatMap[FloatVariableType::MT_met_lep1],              "MT_met_lep0",
-    floatMap[FloatVariableType::MT_met_lep2],              "MT_met_lep1",
-    floatMap[FloatVariableType::MT_met_lep3],              "MT_met_lep2",
-    floatMap[FloatVariableType::MT_met_lep4],              "MT_met_lep3",
+    floatMap[FloatVariableType::mTauTauVis],               "mTauTauVis",
+    floatMap[FloatVariableType::mvis_l1tau],               "mTauTauVis1",
+    floatMap[FloatVariableType::mvis_l2tau],               "mTauTauVis2",
 
-    floatMap[FloatVariableType::mTauTauVis],               "mvis_tautau",
-    floatMap[FloatVariableType::mvis_l1tau],               "mvis_l0tau",
-    floatMap[FloatVariableType::mvis_l2tau],               "mvis_l1tau",
-
-    floatMap[FloatVariableType::HT],                       "HT",
     floatMap[FloatVariableType::mbb],                      "mbb",
     floatMap[FloatVariableType::mbb_loose],                "mbb_loose",
 
     floatMap[FloatVariableType::cosThetaS_hadTau],         "cosThetaS_hadTau",
     floatMap[FloatVariableType::HTT],                      "HTT",
     floatMap[FloatVariableType::HadTop_pt],                "HadTop_pt",
-    floatMap[FloatVariableType::mT_lepHadTopH],            "mT_lepHadTopH",
+    floatMap[FloatVariableType::Hj_tagger],                "Hj_tagger",
 
-    ntags,                                                 "ntags",
-    ntags_loose,                                           "ntags_loose",
+    ntags,                                                 "nBJetMedium",
+    ntags_loose,                                           "nBJetLoose",
 
 //--- Additional event-level MVA output variables
     floatMap[FloatVariableType::mvaOutput_plainKin_ttV],   "mvaOutput_plainKin_ttV",
     floatMap[FloatVariableType::mvaOutput_plainKin_tt],    "mvaOutput_plainKin_ttbar",
-    floatMap[FloatVariableType::mvaOutput_plainKin_1B_VT], "mvaOutput_plainKin_1B_VT",
+
     floatMap[FloatVariableType::mvaOutput_HTT_SUM_VT],     "mvaOutput_1l_2tau_HTT_SUM_VT",
 
+    floatMap[FloatVariableType::mvaOutput_plainKin_1B_VT], "mvaOutput_2l_2tau_plainKin_1B_VT",
     floatMap[FloatVariableType::mvaOutput_plainKin_SUM_VT], "mvaOutput_2l_2tau_plainKin_SUM_VT",
 
     floatMap[FloatVariableType::mvaOutput_2lss_ttV],                 "mvaOutput_2lss_ttV",
@@ -170,7 +164,7 @@ SyncNtupleManager::initializeBranches()
     floatMap[FloatVariableType::Integral_ttZ_Zll],         "Integral_ttZ_Zll",
     floatMap[FloatVariableType::Integral_ttbar],           "Integral_ttbar",
     floatMap[FloatVariableType::integration_type],         "integration_type",
-    floatMap[FloatVariableType::MEM_LR],                   "MEM_LR",
+    floatMap[FloatVariableType::MEM_LR],                   "memOutput_LR",
 
 //--- custom additional branches (not necessary in sync)
     floatMap[FloatVariableType::genWeight],                "genWeight"

@@ -402,20 +402,17 @@ main(int argc,
     RecoMEt met = metReader->read();
     const Particle::LorentzVector mht_p4 = compMHT(fakeableLeptons, selHadTaus, selJets);
     const double met_LD = compMEt_LD(met.p4(), mht_p4);
-    const double ht     = compHT(selLeptons, preselHadTaus, selJets);
 
     snm->read(met.pt(),    FloatVariableType::PFMET);
     snm->read(met.phi(),   FloatVariableType::PFMETphi);
     snm->read(mht_p4.pt(), FloatVariableType::MHT);
     snm->read(met_LD,      FloatVariableType::metLD);
-    snm->read(ht,          FloatVariableType::HT);
 
     if(selLeptons.size() > 0)
     {
       const RecoLepton * selLepton_lead = selLeptons[0];
       const double lep1_conePt    = comp_lep1_conePt(*selLepton_lead);
       const double mindr_lep1_jet = comp_mindr_lep1_jet(*selLepton_lead, selJets);
-      const double MT_met_lep1    = comp_MT_met_lep1(selLepton_lead->cone_p4(), met.pt(), met.phi());
       const double mT_met_lep1    = comp_MT_met_lep1(selLepton_lead->p4(), met.pt(), met.phi());
       double mTauTauVis1_sel      = selHadTaus.size() > 0      ?
         (selLepton_lead->p4() + selHadTaus.at(0)->p4()).mass() :
@@ -424,7 +421,6 @@ main(int argc,
 
       snm->read(lep1_conePt,     FloatVariableType::lep1_conept);
       snm->read(mindr_lep1_jet,  FloatVariableType::mindr_lep1_jet);
-      snm->read(MT_met_lep1,     FloatVariableType::MT_met_lep1);
       snm->read(mT_met_lep1,     FloatVariableType::mT_met_lep1);
       snm->read(mTauTauVis1_sel, FloatVariableType::mvis_l1tau);
     }
@@ -435,7 +431,6 @@ main(int argc,
       const RecoLepton * selLepton_sublead = selLeptons[1];
       const double lep2_conePt    = comp_lep2_conePt(*selLepton_sublead);
       const double mindr_lep2_jet = comp_mindr_lep2_jet(*selLepton_sublead, selJets);
-      const double MT_met_lep2    = comp_MT_met_lep2(selLepton_sublead->cone_p4(), met.pt(), met.phi());
       const double mT_met_lep2    = comp_MT_met_lep2(selLepton_sublead->p4(), met.pt(), met.phi());
       const double dR_leps        = deltaR(selLepton_lead->p4(), selLepton_sublead->p4());
       double mTauTauVis2_sel      = selHadTaus.size() > 0  ?
@@ -445,7 +440,6 @@ main(int argc,
 
       snm->read(lep2_conePt,     FloatVariableType::lep1_conept);
       snm->read(mindr_lep2_jet,  FloatVariableType::mindr_lep1_jet);
-      snm->read(MT_met_lep2,     FloatVariableType::MT_met_lep1);
       snm->read(mT_met_lep2,     FloatVariableType::mT_met_lep2);
       snm->read(dR_leps,         FloatVariableType::dr_leps);
       snm->read(mTauTauVis2_sel, FloatVariableType::mvis_l2tau);
@@ -454,13 +448,11 @@ main(int argc,
     if(selLeptons.size() > 2)
     {
       const RecoLepton * selLepton_third = selLeptons[2];
-      const double MT_met_lep3    = comp_MT_met_lep3(selLepton_third->cone_p4(), met.pt(), met.phi());
       const double mT_met_lep3    = comp_MT_met_lep3(selLepton_third->p4(), met.pt(), met.phi());
       const double lep3_conePt    = comp_lep3_conePt(*selLepton_third);
       const double mindr_lep3_jet = comp_mindr_lep3_jet(*selLepton_third, selJets);
 
       snm->read(lep3_conePt,    FloatVariableType::lep3_conept);
-      snm->read(MT_met_lep3,    FloatVariableType::MT_met_lep3);
       snm->read(mT_met_lep3,    FloatVariableType::mT_met_lep3);
       snm->read(mindr_lep3_jet, FloatVariableType::mindr_lep3_jet);
     }
@@ -468,13 +460,11 @@ main(int argc,
     if(selLeptons.size() > 3)
     {
       const RecoLepton * selLepton_fourth = selLeptons[3];
-      const double MT_met_lep4    = comp_MT_met_lep4(selLepton_fourth->cone_p4(), met.pt(), met.phi());
       const double mT_met_lep4    = comp_MT_met_lep3(selLepton_fourth->p4(), met.pt(), met.phi());
       const double lep4_conePt    = comp_lep4_conePt(*selLepton_fourth);
       const double mindr_lep4_jet = comp_mindr_lep4_jet(*selLepton_fourth, selJets);
 
       snm->read(lep4_conePt,    FloatVariableType::lep4_conept);
-      snm->read(MT_met_lep4,    FloatVariableType::MT_met_lep4);
       snm->read(mT_met_lep4,    FloatVariableType::mT_met_lep4);
       snm->read(mindr_lep4_jet, FloatVariableType::mindr_lep4_jet);
     }

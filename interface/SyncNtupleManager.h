@@ -52,12 +52,11 @@ enum class FloatVariableType
 
   dr_lep_tau_ss,            ///< dR between (leading) lepton and same-sign tau
   dr_lep1_tau1,             ///< dR between leading lepton and leading tau
-  dr_lep1_tau2,             ///< dR between leading lepton and subleading tau
   dr_lep2_tau1,             ///< dR between leading sublepton and leading tau
-  dr_lep2_tau2,             ///< dR between leading sublepton and subleading tau
   dr_lep3_tau1,             ///< dR between third lepton and (leading) tau
+  dr_lep1_tau2,             ///< dR between leading lepton and subleading tau
+  dr_lep2_tau2,             ///< dR between leading sublepton and subleading tau
 
-  max_lep12_eta,            ///< maximum absolute eta in two leading leptons
   max_lep_eta,              ///< maximum absolute eta in all selected leptons
 
   mT_met_lep1,              ///< transverse mass of leading lepton and MET (using reco pt)
@@ -65,45 +64,40 @@ enum class FloatVariableType
   mT_met_lep3,              ///< transverse mass of trailing lepton and MET (using reco pt)
   mT_met_lep4,              ///< transverse mass of fourth lepton and MET (using reco pt)
 
-  MT_met_lep1,              ///< transverse mass of leading lepton and MET (using cone pt)
-  MT_met_lep2,              ///< transverse mass of subleading lepton and MET (using cone pt)
-  MT_met_lep3,              ///< transverse mass of trailing lepton and MET (using cone pt)
-  MT_met_lep4,              ///< transverse mass of fourth lepton and MET (using cone pt)
-
   mTauTauVis,               ///< visible mass of the two selected taus
   mvis_l1tau,               ///< visible mass of leading lepton and tau (of OS in 3l+1tau)
   mvis_l2tau,               ///< visible mass of subleading lepton and tau (of OS in 3l+1tau)
 
-  HT,                       ///< linear sum of preselected leptons (including taus) + jet pT
   mbb,                      ///< mass of two selected medium b-jets
   mbb_loose,                ///< mass of two selected loose b-jets
 
   cosThetaS_hadTau,         ///< cosine of the angle b/w leading tau and the beam axis in di-tau frame?
   HTT,                      ///< output of hadronic top tagger with kin fit
   HadTop_pt,                ///< pT of the unfitted hadronic top
-  mT_lepHadTopH,            ///< transverse mass of 1l+2tau system, fitted hadronic top and MET (all reco pt)
+  Hj_tagger,                ///< MVA output of Hj-tagger
 
 //--- Additional event-level MVA output variables
-  mvaOutput_plainKin_ttV,   ///< 1l+2tau, 2l+2tau, 3l+1tau
-  mvaOutput_plainKin_tt,    ///< 1l+2tau, 2l+2tau, 3l+1tau
-  mvaOutput_plainKin_1B_VT, ///< 1l+2tau, 2l+2tau
-  mvaOutput_HTT_SUM_VT,     ///< 1l+2tau
+  mvaOutput_plainKin_ttV,   ///< 2l+2tau (BDT1), 3l+1tau (BDT1)
+  mvaOutput_plainKin_tt,    ///< 1l+2tau (BDT1), 2l+2tau (BDT2), 3l+1tau (BDT2)
 
-  mvaOutput_plainKin_SUM_VT, ///< 2l+2tau
+  mvaOutput_HTT_SUM_VT,     ///< 1l+2tau (BDT2)
+
+  mvaOutput_plainKin_1B_VT,  ///< 2l+2tau (BDT4)
+  mvaOutput_plainKin_SUM_VT, ///< 2l+2tau (BDT3)
 
   mvaOutput_2lss_ttV,                 ///< 2lss+1tau
   mvaOutput_2lss_tt,                  ///< 2lss+1tau
-  mvaOutput_2lss_1tau_plainKin_tt,    ///< 2lss+1tau
-  mvaOutput_2lss_1tau_plainKin_ttV,   ///< 2lss+1tau
-  mvaOutput_2lss_1tau_plainKin_1B_M,  ///< 2lss+1tau
-  mvaOutput_2lss_1tau_plainKin_SUM_M, ///< 2lss+1tau
-  mvaOutput_2lss_1tau_HTT_SUM_M,      ///< 2lss+1tau
-  mvaOutput_2lss_1tau_HTTMEM_SUM_M,   ///< 2lss+1tau
+  mvaOutput_2lss_1tau_plainKin_tt,    ///< 2lss+1tau (BDT2)
+  mvaOutput_2lss_1tau_plainKin_ttV,   ///< 2lss+1tau (BDT1)
+  mvaOutput_2lss_1tau_plainKin_1B_M,  ///< 2lss+1tau (BDT6)
+  mvaOutput_2lss_1tau_plainKin_SUM_M, ///< 2lss+1tau (BDT3)
+  mvaOutput_2lss_1tau_HTT_SUM_M,      ///< 2lss+1tau (BDT4)
+  mvaOutput_2lss_1tau_HTTMEM_SUM_M,   ///< 2lss+1tau (BDT5)
 
   mvaOutput_3l_ttV,         ///< 3l+1tau
   mvaOutput_3l_ttbar,       ///< 3l+1tau
-  mvaOutput_plainKin_SUM_M, ///< 3l+1tau
-  mvaOutput_plainKin_1B_M,  ///< 3l+1tau
+  mvaOutput_plainKin_SUM_M, ///< 3l+1tau (BDT3)
+  mvaOutput_plainKin_1B_M,  ///< 3l+1tau (BDT4)
 
 //--- Event weights
   FR_weight,                ///< weight used for fake rate reweighting
@@ -121,6 +115,7 @@ enum class FloatVariableType
   Integral_ttbar,           ///< ttbar weight
   integration_type,
   MEM_LR,                   ///< MEM likelihood ratio (the final score)
+
 //--- custom additional branches (not necessary in sync)
   genWeight
 };

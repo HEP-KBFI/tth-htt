@@ -2249,9 +2249,6 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
 
     if(snm)
     {
-      const double ht             = compHT(preselLeptons, preselHadTaus, selJets);
-      const double MT_met_lep1    = comp_MT_met_lep1(selLepton_lead->cone_p4(), met.pt(), met.phi());
-      const double MT_met_lep2    = comp_MT_met_lep2(selLepton_sublead->cone_p4(), met.pt(), met.phi());
       const double dr_lep1_tau1   = deltaR(selLepton_lead->p4(), selHadTau->p4());
       const double dr_lep2_tau1   = deltaR(selLepton_sublead->p4(), selHadTau->p4());
       const double max_dr_jet     = comp_max_dr_jet(selJets);
@@ -2312,7 +2309,6 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       // dr_lep3_tau1 not filled
       // dr_lep2_tau2 not filled
 
-      snm->read(max_lep_eta,                            FloatVariableType::max_lep12_eta);
       snm->read(max_lep_eta,                            FloatVariableType::max_lep_eta);
 
       snm->read(mT_lep1,                                FloatVariableType::mT_met_lep1);
@@ -2320,23 +2316,17 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       // mT_met_lep3 not filled
       // mT_met_lep4 not filled
 
-      snm->read(MT_met_lep1,                            FloatVariableType::MT_met_lep1);
-      snm->read(MT_met_lep2,                            FloatVariableType::MT_met_lep2);
-      // MT_met_lep3 not filled
-      // MT_met_lep4 not filled
-
       // mTauTauVis not filled
       snm->read(mTauTauVis1_sel,                        FloatVariableType::mvis_l1tau);
       snm->read(mTauTauVis2_sel,                        FloatVariableType::mvis_l2tau);
 
-      snm->read(ht,                                     FloatVariableType::HT);
       snm->read(mbb,                                    FloatVariableType::mbb);
       snm->read(mbb_loose,                              FloatVariableType::mbb_loose);
 
       // cosThetaS_hadTau not filled
       snm->read(HTT,                                    FloatVariableType::HTT);
       snm->read(HadTop_pt,                              FloatVariableType::HadTop_pt);
-      // mT_lepHadTopH not filled
+      snm->read(mvaOutput_Hj_tagger,                    FloatVariableType::Hj_tagger);
 
       // mvaOutput_plainKin_ttV not filled
       // mvaOutput_plainKin_tt not filled

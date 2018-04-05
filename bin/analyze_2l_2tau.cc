@@ -1665,9 +1665,6 @@ int main(int argc, char* argv[])
 
     if(snm)
     {
-      const double ht              = compHT(preselLeptons, preselHadTaus, selJets);
-      const double MT_met_lep1     = comp_MT_met_lep1(selLepton_lead->cone_p4(), met.pt(), met.phi());
-      const double MT_met_lep2     = comp_MT_met_lep1(selLepton_sublead->cone_p4(), met.pt(), met.phi());
       const double max_dr_jet      = comp_max_dr_jet(selJets);
       const double mbb             = selBJets_medium.size() > 1 ? (selBJets_medium[0]->p4() + selBJets_medium[0]->p4()).mass() : -1.;
       const double mbb_loose       = selBJets_loose.size() > 1 ? (selBJets_loose[0]->p4() + selBJets_loose[0]->p4()).mass() : -1.;
@@ -1728,7 +1725,6 @@ int main(int argc, char* argv[])
       // dr_lep3_tau1 not filled
       snm->read(dr_lep2_tau2,                           FloatVariableType::dr_lep2_tau2);
 
-      snm->read(max_lep_eta,                            FloatVariableType::max_lep12_eta);
       snm->read(max_lep_eta,                            FloatVariableType::max_lep_eta);
 
       snm->read(mT_lep1,                                FloatVariableType::mT_met_lep1);
@@ -1736,23 +1732,17 @@ int main(int argc, char* argv[])
       // mT_met_lep3 not filled
       // mT_met_lep4 not filled
 
-      snm->read(MT_met_lep1,                            FloatVariableType::MT_met_lep1);
-      snm->read(MT_met_lep2,                            FloatVariableType::MT_met_lep1);
-      // MT_met_lep3 not filled
-      // MT_met_lep4 not filled
-
       snm->read(mTauTauVis,                             FloatVariableType::mTauTauVis);
       snm->read(mTauTauVis1_sel,                        FloatVariableType::mvis_l1tau);
       snm->read(mTauTauVis2_sel,                        FloatVariableType::mvis_l2tau);
 
-      snm->read(ht,                                     FloatVariableType::HT);
       snm->read(mbb,                                    FloatVariableType::mbb);
       snm->read(mbb_loose,                              FloatVariableType::mbb_loose);
 
       snm->read(cosThetaS_hadTau,                       FloatVariableType::cosThetaS_hadTau);
       // HTT not filled
       // HadTop_pt not filled
-      // mT_lepHadTopH not filled
+      // Hj_tagger not filled
 
       snm->read(mvaOutput_plainKin_ttV,                 FloatVariableType::mvaOutput_plainKin_ttV);
       snm->read(mvaOutput_plainKin_tt,                  FloatVariableType::mvaOutput_plainKin_tt);

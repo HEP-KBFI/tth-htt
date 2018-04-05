@@ -1870,9 +1870,6 @@ int main(int argc, char* argv[])
 
     if(snm)
     {
-      const double ht             = compHT(preselLeptons, {}, selJets);
-      const double MT_met_lep1    = comp_MT_met_lep1(selLepton_lead->cone_p4(), met.pt(), met.phi());
-      const double MT_met_lep2    = comp_MT_met_lep2(selLepton_sublead->cone_p4(), met.pt(), met.phi());
       const double mT_lep1        = comp_MT_met_lep1(selLepton_lead->p4(), met.pt(), met.phi());
       const double mT_lep2        = comp_MT_met_lep2(selLepton_sublead->p4(), met.pt(), met.phi());
       const double max_dr_jet     = comp_max_dr_jet(selJets);
@@ -1931,7 +1928,6 @@ int main(int argc, char* argv[])
       // dr_lep3_tau1 not filled
       // dr_lep2_tau2 not filled
 
-      snm->read(max_lep_eta,                            FloatVariableType::max_lep12_eta);
       snm->read(max_lep_eta,                            FloatVariableType::max_lep_eta);
 
       snm->read(mT_lep1,                                FloatVariableType::mT_met_lep1);
@@ -1939,23 +1935,17 @@ int main(int argc, char* argv[])
       // mT_met_lep3 not filled
       // mT_met_lep4 not filled
 
-      snm->read(MT_met_lep1,                            FloatVariableType::MT_met_lep1);
-      snm->read(MT_met_lep2,                            FloatVariableType::MT_met_lep2);
-      // MT_met_lep3 not filled
-      // MT_met_lep4 not filled
-
       // mTauTauVis not filled
       // mvis_l1tau not filled
       // mvis_l2tau not filled
 
-      snm->read(ht,                                     FloatVariableType::HT);
       snm->read(mbb,                                    FloatVariableType::mbb);
       snm->read(mbb_loose,                              FloatVariableType::mbb_loose);
 
       // cosThetaS_hadTau not filled
       // HTT not filled
       // HadTop_pt not filled
-      // mT_lepHadTopH not filled
+      // Hj_tagger not filled
 
       // mvaOutput_plainKin_ttV not filled
       // mvaOutput_plainKin_tt not filled
