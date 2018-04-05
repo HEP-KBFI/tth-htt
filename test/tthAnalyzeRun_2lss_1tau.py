@@ -60,6 +60,7 @@ max_files_per_job    = 50 if use_preselected else 1
 do_sync              = mode.startswith('sync')
 
 MEMbranch                          = ''
+hadTau_selection_veto              = "dR03mvaVTight"
 hadTauFakeRateWeight_inputFileName = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016.root" #TODO update
 lepton_charge_selections           = [ "SS" ] if mode.find("forBDTtraining") != -1 else [ "OS", "SS" ]
 chargeSumSelections                = [ "OS" ] if mode.find("forBDTtraining") != -1 else [ "OS", "SS" ]
@@ -70,13 +71,11 @@ if mode == "VHbb":
   else:
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017
   hadTau_selection      = "dR03mvaMedium"
-  hadTau_selection_veto = "dR03mvaVTight"
   applyFakeRateWeights  = "2lepton"
 elif mode == "addMEM":
   from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_addMEM_2lss1tau import samples_2017
   MEMbranch             = 'memObjects_2lss_1tau_lepFakeable_tauTight_dR03mvaMedium'
   hadTau_selection      = "dR03mvaMedium"
-  hadTau_selection_veto = "dR03mvaVTight"
   applyFakeRateWeights  = "2lepton"
   max_files_per_job     = 1
 elif mode == "forBDTtraining_beforeAddMEM":
