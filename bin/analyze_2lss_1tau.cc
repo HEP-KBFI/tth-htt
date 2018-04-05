@@ -106,6 +106,8 @@ enum { kFR_disabled, kFR_2lepton, kFR_3L, kFR_1tau };
 //const int hadTauSelection_antiMuon = 1; // Loose
 const int hadTauSelection_antiElectron = -1; // not applied
 const int hadTauSelection_antiMuon = -1; // not applied
+const int hadTauSelection_veto_antiElectron = -1; // CV: needs to match anti-electron discriminator applied in 2l+2tau category
+const int hadTauSelection_veto_antiMuon = -1; // CV: needs to match anti-muon discriminator applied in 2l+2tau category
 
 double comp_mvaOutput_Hj_tagger(const RecoJet* jet,
                                 const std::vector<const RecoLepton*>& leptons,
@@ -281,6 +283,7 @@ int main(int argc, char* argv[])
     << "Invalid Configuration parameter 'hadTauSelection' = " << hadTauSelection_string << " !!\n";
   std::string hadTauSelection_part2 = ( hadTauSelection_parts->GetEntries() == 2 ) ? (dynamic_cast<TObjString*>(hadTauSelection_parts->At(1)))->GetString().Data() : "";
   delete hadTauSelection_parts;
+  std::string hadTauSelection_veto = cfg_analyze.getParameter<std::string>("hadTauSelection_veto");
 
   bool apply_hadTauGenMatching = cfg_analyze.getParameter<bool>("apply_hadTauGenMatching");
   std::vector<hadTauGenMatchEntry> hadTauGenMatch_definitions = getHadTauGenMatch_definitions_1tau(apply_hadTauGenMatching);
@@ -463,6 +466,12 @@ int main(int argc, char* argv[])
   tightHadTauFilter.set("dR03mvaMedium");
   tightHadTauFilter.set_min_antiElectron(hadTauSelection_antiElectron);
   tightHadTauFilter.set_min_antiMuon(hadTauSelection_antiMuon);
+
+  // CV: veto events containing more than one tau passing the VTight WP, to avoid overlap with the 2l+2tau category
+  RecoHadTauCollectionSelectorTight vetoHadTauSelector(era, -1, isDEBUG);
+  vetoHadTauSelector.set(hadTauSelection_veto);
+  vetoHadTauSelector.set_min_antiElectron(hadTauSelection_veto_antiElectron);
+  vetoHadTauSelector.set_min_antiMuon(hadTauSelection_veto_antiMuon);
 
   RecoJetReader* jetReader = new RecoJetReader(era, isMC, branchName_jets, readGenObjects);
   jetReader->setPtMass_central_or_shift(jetPt_option);
@@ -894,6 +903,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     ">= 3 jets",
     ">= 2 loose b-jets || 1 medium b-jet (2)",
     ">= 1 sel tau (2)",
+    "<= 1 veto taus",
     "m(ll) > 12 GeV",
     "lead lepton pT > 25 GeV && sublead lepton pT > 15(e)/10(mu) GeV",
     "tight lepton charge",
@@ -1246,6 +1256,9 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       }
     }
     selHadTaus = pickFirstNobjects(selHadTaus, 1);
+
+    // CV: veto events containing more than one tau passing the VTight WP, to avoid overlap with the 2l+2tau category
+    std::vector<const RecoHadTau*> vetoHadTaus = vetoHadTauSelector(cleanedHadTaus, isHigherPt); 
 
 //--- build collections of jets and select subset of jets passing b-tagging criteria
     std::vector<RecoJet> jets = jetReader->read();
@@ -1606,6 +1619,17 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     }
     cutFlowTable.update(">= 1 sel tau (2)", evtWeight);
     cutFlowHistManager->fillHistograms(">= 1 sel tau (2)", evtWeight);
+
+    // veto events containing more than one tau passing the VTight WP, to avoid overlap with the 2l+2tau category
+    if ( !(vetoHadTaus.size() <= 1) ) {
+      if ( run_lumi_eventSelector ) {
+        std::cout << "event FAILS vetoHadTaus selection." << std::endl;
+        printCollection("vetoHadTaus", vetoHadTaus);
+      }
+      continue;
+    }
+    cutFlowTable.update("<= 1 veto taus", evtWeight);
+    cutFlowHistManager->fillHistograms("<= 1 veto taus", evtWeight);
 
     bool failsLowMassVeto = false;
     for ( std::vector<const RecoLepton*>::const_iterator lepton1 = preselLeptons.begin();

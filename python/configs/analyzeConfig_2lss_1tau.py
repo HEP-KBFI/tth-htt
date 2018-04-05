@@ -37,7 +37,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
 
   """
   def __init__(self, configDir, outputDir, executable_analyze, cfgFile_analyze, samples, MEMbranch,
-               lepton_charge_selections, hadTau_selection, applyFakeRateWeights, chargeSumSelections, central_or_shifts,
+               lepton_charge_selections, hadTau_selection, hadTau_selection_veto, applyFakeRateWeights, chargeSumSelections, central_or_shifts,
                max_files_per_job, era, use_lumi, lumi, check_input_files, running_method, num_parallel_jobs,
                executable_addBackgrounds, executable_addFakes, executable_addFlips, histograms_to_fit, select_rle_output = False,
                executable_prep_dcard = "prepareDatacards", executable_add_syst_dcard = "addSystDatacards",
@@ -61,6 +61,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
     self.lepton_and_hadTau_frWeights = [ "enabled", "disabled" ]
     self.lepton_charge_selections = lepton_charge_selections
     self.hadTau_selection_part2 = hadTau_selection
+    self.hadTau_selection_veto = hadTau_selection_veto
     self.applyFakeRateWeights = applyFakeRateWeights
 
     self.lepton_genMatches = [ "2l0j", "1l1j", "0l2j" ]
@@ -178,6 +179,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
     lines.append("process.analyze_2lss_1tau.apply_leptonGenMatching_ttZ_workaround = cms.bool(%s)" % (jobOptions['sample_category'] in [ "TTZ", "TTW", "signal" ]))
     lines.append("process.analyze_2lss_1tau.leptonChargeSelection = cms.string('%s')" % jobOptions['lepton_charge_selection'])
     lines.append("process.analyze_2lss_1tau.hadTauSelection = cms.string('%s')" % jobOptions['hadTau_selection'])
+    lines.append("process.analyze_2lss_1tau.hadTauSelection_veto = cms.string('%s')" % jobOptions['hadTau_selection_veto'])
     lines.append("process.analyze_2lss_1tau.apply_hadTauGenMatching = cms.bool(%s)" % (jobOptions['apply_hadTauGenMatching'] and jobOptions['is_mc']))
     lines.append("process.analyze_2lss_1tau.applyFakeRateWeights = cms.string('%s')" % jobOptions['applyFakeRateWeights'])
     fitFunctionName = None
@@ -458,6 +460,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
                     'apply_leptonGenMatching' : self.apply_leptonGenMatching,
                     'lepton_charge_selection' : lepton_charge_selection,
                     'hadTau_selection' : hadTau_selection,
+                    'hadTau_selection_veto' : self.hadTau_selection_veto,
                     'apply_hadTauGenMatching' : self.apply_hadTauGenMatching,
                     'chargeSumSelection' : chargeSumSelection,
                     'applyFakeRateWeights' : self.applyFakeRateWeights if self.isBDTtraining or not  (lepton_selection == "Tight" and hadTau_selection.find("Tight") != -1) else "disabled",

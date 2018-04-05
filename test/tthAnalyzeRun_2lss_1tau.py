@@ -69,14 +69,16 @@ if mode == "VHbb":
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_preselected import samples_2017
   else:
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017
-  hadTau_selection     = "dR03mvaMedium"
-  applyFakeRateWeights = "2lepton"
+  hadTau_selection      = "dR03mvaMedium"
+  hadTau_selection_veto = "dR03mvaVTight"
+  applyFakeRateWeights  = "2lepton"
 elif mode == "addMEM":
   from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_addMEM_2lss1tau import samples_2017
-  MEMbranch            = 'memObjects_2lss_1tau_lepFakeable_tauTight_dR03mvaMedium'
-  hadTau_selection     = "dR03mvaMedium"
-  applyFakeRateWeights = "2lepton"
-  max_files_per_job    = 1
+  MEMbranch             = 'memObjects_2lss_1tau_lepFakeable_tauTight_dR03mvaMedium'
+  hadTau_selection      = "dR03mvaMedium"
+  hadTau_selection_veto = "dR03mvaVTight"
+  applyFakeRateWeights  = "2lepton"
+  max_files_per_job     = 1
 elif mode == "forBDTtraining_beforeAddMEM":
   if use_preselected:
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_FastSim_preselected import samples_2017
@@ -155,6 +157,7 @@ if __name__ == '__main__':
       MEMbranch                 = MEMbranch,
       lepton_charge_selections  = lepton_charge_selections,
       hadTau_selection          = hadTau_selection,
+      hadTau_selection_veto     = hadTau_selection_veto,
       # CV: apply "fake" background estimation to leptons only and not to hadronic taus, as discussed on slide 10 of
       #     https://indico.cern.ch/event/597028/contributions/2413742/attachments/1391684/2120220/16.12.22_ttH_Htautau_-_Review_of_systematics.pdf
       applyFakeRateWeights      = applyFakeRateWeights,
