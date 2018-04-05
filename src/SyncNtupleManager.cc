@@ -73,53 +73,53 @@ SyncNtupleManager::initializeBranches()
 //--- Additional event-level MVA input variables
     isGenMatched,                                          "isGenMatched",
 
-    floatMap[FloatVariableType::lep1_conept],              "lep1_conept",
-    floatMap[FloatVariableType::lep2_conept],              "lep2_conept",
-    floatMap[FloatVariableType::lep3_conept],              "lep3_conept",
-    floatMap[FloatVariableType::lep4_conept],              "lep4_conept",
+    floatMap[FloatVariableType::lep1_conept],              "lep0_conept",
+    floatMap[FloatVariableType::lep2_conept],              "lep1_conept",
+    floatMap[FloatVariableType::lep3_conept],              "lep2_conept",
+    floatMap[FloatVariableType::lep4_conept],              "lep3_conept",
 
-    floatMap[FloatVariableType::mindr_lep1_jet],           "mindr_lep1_jet",
-    floatMap[FloatVariableType::mindr_lep2_jet],           "mindr_lep2_jet",
-    floatMap[FloatVariableType::mindr_lep3_jet],           "mindr_lep3_jet",
-    floatMap[FloatVariableType::mindr_lep4_jet],           "mindr_lep4_jet",
+    floatMap[FloatVariableType::mindr_lep1_jet],           "mindr_lep0_jet",
+    floatMap[FloatVariableType::mindr_lep2_jet],           "mindr_lep1_jet",
+    floatMap[FloatVariableType::mindr_lep3_jet],           "mindr_lep2_jet",
+    floatMap[FloatVariableType::mindr_lep4_jet],           "mindr_lep3_jet",
 
-    floatMap[FloatVariableType::mindr_tau1_jet],           "mindr_tau1_jet",
-    floatMap[FloatVariableType::mindr_tau2_jet],           "mindr_tau2_jet",
+    floatMap[FloatVariableType::mindr_tau1_jet],           "mindr_tau0_jet",
+    floatMap[FloatVariableType::mindr_tau2_jet],           "mindr_tau1_jet",
 
     floatMap[FloatVariableType::avg_dr_jet],               "avg_dr_jet",
-    floatMap[FloatVariableType::avr_dr_lep_tau],           "avr_dr_lep_tau",
+    floatMap[FloatVariableType::avr_dr_lep_tau],           "avg_dr_lep_tau",
     floatMap[FloatVariableType::max_dr_jet],               "max_dr_jet",
     floatMap[FloatVariableType::max_dr_lep_tau],           "max_dr_lep_tau",
     floatMap[FloatVariableType::min_dr_tau_jet],           "min_dr_tau_jet",
     floatMap[FloatVariableType::min_dr_lep_tau],           "min_dr_lep_tau",
     floatMap[FloatVariableType::min_dr_lep_jet],           "min_dr_lep_jet",
 
-    floatMap[FloatVariableType::dr_leps],                  "dr_leps",
-    floatMap[FloatVariableType::dr_taus],                  "dr_taus",
+    floatMap[FloatVariableType::dr_leps],                  "dR_leps",
+    floatMap[FloatVariableType::dr_taus],                  "dR_taus",
 
-    floatMap[FloatVariableType::dr_lep_tau_ss],            "dr_lep_tau_ss",
-    floatMap[FloatVariableType::dr_lep1_tau1],             "dr_lep1_tau1",
-    floatMap[FloatVariableType::dr_lep1_tau2],             "dr_lep1_tau2",
-    floatMap[FloatVariableType::dr_lep2_tau1],             "dr_lep2_tau1",
-    floatMap[FloatVariableType::dr_lep2_tau2],             "dr_lep2_tau2",
-    floatMap[FloatVariableType::dr_lep3_tau1],             "dr_lep3_tau1",
+    floatMap[FloatVariableType::dr_lep_tau_ss],            "dR_lep_tau_ss",
+    floatMap[FloatVariableType::dr_lep1_tau1],             "dR_lep0_tau0",
+    floatMap[FloatVariableType::dr_lep1_tau2],             "dR_lep0_tau1",
+    floatMap[FloatVariableType::dr_lep2_tau1],             "dR_lep1_tau0",
+    floatMap[FloatVariableType::dr_lep2_tau2],             "dR_lep1_tau1",
+    floatMap[FloatVariableType::dr_lep3_tau1],             "dR_lep2_tau0",
 
-    floatMap[FloatVariableType::max_lep12_eta],            "max_lep12_eta",
+    floatMap[FloatVariableType::max_lep12_eta],            "max_lep01_eta",
     floatMap[FloatVariableType::max_lep_eta],              "max_lep_eta",
 
-    floatMap[FloatVariableType::mT_met_lep1],              "mT_met_lep1",
-    floatMap[FloatVariableType::mT_met_lep2],              "mT_met_lep2",
-    floatMap[FloatVariableType::mT_met_lep3],              "mT_met_lep3",
-    floatMap[FloatVariableType::mT_met_lep4],              "mT_met_lep4",
+    floatMap[FloatVariableType::mT_met_lep1],              "mT_met_lep0",
+    floatMap[FloatVariableType::mT_met_lep2],              "mT_met_lep1",
+    floatMap[FloatVariableType::mT_met_lep3],              "mT_met_lep2",
+    floatMap[FloatVariableType::mT_met_lep4],              "mT_met_lep3",
 
-    floatMap[FloatVariableType::MT_met_lep1],              "MT_met_lep1",
-    floatMap[FloatVariableType::MT_met_lep2],              "MT_met_lep2",
-    floatMap[FloatVariableType::MT_met_lep3],              "MT_met_lep3",
-    floatMap[FloatVariableType::MT_met_lep4],              "MT_met_lep4",
+    floatMap[FloatVariableType::MT_met_lep1],              "MT_met_lep0",
+    floatMap[FloatVariableType::MT_met_lep2],              "MT_met_lep1",
+    floatMap[FloatVariableType::MT_met_lep3],              "MT_met_lep2",
+    floatMap[FloatVariableType::MT_met_lep4],              "MT_met_lep3",
 
-    floatMap[FloatVariableType::mTauTauVis],               "mTauTauVis",
-    floatMap[FloatVariableType::mvis_l1tau],               "mvis_l1tau",
-    floatMap[FloatVariableType::mvis_l2tau],               "mvis_l2tau",
+    floatMap[FloatVariableType::mTauTauVis],               "tt_mvis",
+    floatMap[FloatVariableType::mvis_l1tau],               "mvis_l0tau",
+    floatMap[FloatVariableType::mvis_l2tau],               "mvis_l1tau",
 
     floatMap[FloatVariableType::HT],                       "HT",
     floatMap[FloatVariableType::mbb],                      "mbb",
@@ -129,6 +129,9 @@ SyncNtupleManager::initializeBranches()
     floatMap[FloatVariableType::HTT],                      "HTT",
     floatMap[FloatVariableType::HadTop_pt],                "HadTop_pt",
     floatMap[FloatVariableType::mT_lepHadTopH],            "mT_lepHadTopH",
+
+    ntags,                                                 "ntags",
+    ntags_loose,                                           "ntags_loose",
 
 //--- Additional event-level MVA output variables
     floatMap[FloatVariableType::mvaOutput_plainKin_ttV],   "mvaOutput_plainKin_ttV",
@@ -170,8 +173,6 @@ SyncNtupleManager::initializeBranches()
     floatMap[FloatVariableType::MEM_LR],                   "MEM_LR",
 
 //--- custom additional branches (not necessary in sync)
-    ntags,                                                 "ntags",
-    ntags_loose,                                           "ntags_loose",
     floatMap[FloatVariableType::genWeight],                "genWeight"
   );
 
@@ -197,7 +198,8 @@ SyncNtupleManager::initializeBranches()
     mu_leptonMVA,            "leptonMVA",
     mu_mediumID,             "mediumID",
     mu_dpt_div_pt,           "dpt_div_pt",
-    mu_isfakeablesel,        "isfakeablesel"
+    mu_isfakeablesel,        "isfakeablesel",
+    mu_ismvasel,             "ismvasel"
   );
 
   setBranches(
@@ -223,7 +225,8 @@ SyncNtupleManager::initializeBranches()
     ele_isChargeConsistent,   "isChargeConsistent",
     ele_passesConversionVeto, "passesConversionVeto",
     ele_nMissingHits,         "nMissingHits",
-    ele_isfakeablesel,        "isfakeablesel"
+    ele_isfakeablesel,        "isfakeablesel",
+    ele_ismvasel,             "ismvasel"
   );
 
   setBranches(
@@ -296,10 +299,12 @@ SyncNtupleManager::read(const EventInfo & eventInfo)
 
 void
 SyncNtupleManager::read(const std::vector<const RecoMuon *> & muons,
-                        const std::vector<const RecoMuon *> & fakeable_muons)
+                        const std::vector<const RecoMuon *> & fakeable_muons,
+                        const std::vector<const RecoMuon *> & tight_muons)
 {
   n_presel_mu = muons.size();
   n_fakeablesel_mu = fakeable_muons.size();
+  n_mvasel_mu = tight_muons.size();
 
   const Int_t nof_iterations = std::min(n_presel_mu, nof_mus);
   for(Int_t i = 0; i < nof_iterations; ++i)
@@ -335,15 +340,26 @@ SyncNtupleManager::read(const std::vector<const RecoMuon *> & muons,
         break;
       }
     }
+    mu_ismvasel[i] = 0;
+    for(const auto & tight_muon: tight_muons)
+    {
+      if(muon == tight_muon)
+      {
+        mu_ismvasel[i] = 1;
+        break;
+      }
+    }
   }
 }
 
 void
 SyncNtupleManager::read(const std::vector<const RecoElectron *> & electrons,
-                        const std::vector<const RecoElectron *> & fakeable_electrons)
+                        const std::vector<const RecoElectron *> & fakeable_electrons,
+                        const std::vector<const RecoElectron *> & tight_electrons)
 {
   n_presel_ele = electrons.size();
   n_fakeablesel_ele = fakeable_electrons.size();
+  n_mvasel_ele = tight_electrons.size();
 
   const Int_t nof_iterations = std::min(n_presel_ele, nof_eles);
   for(Int_t i = 0; i < nof_iterations; ++i)
@@ -377,6 +393,15 @@ SyncNtupleManager::read(const std::vector<const RecoElectron *> & electrons,
       if(electron == fakeable_electron)
       {
         ele_isfakeablesel[i] = 1;
+        break;
+      }
+    }
+    ele_ismvasel[i] = 0;
+    for(const auto & tight_electron: tight_electrons)
+    {
+      if(electron == tight_electron)
+      {
+        ele_ismvasel[i] = 1;
         break;
       }
     }
@@ -486,8 +511,10 @@ SyncNtupleManager::reset()
   reset(
     n_presel_mu,
     n_fakeablesel_mu,
+    n_mvasel_mu,
     n_presel_ele,
     n_fakeablesel_ele,
+    n_mvasel_ele,
     n_presel_tau,
     n_presel_jet
   );
@@ -523,7 +550,8 @@ SyncNtupleManager::reset()
     mu_leptonMVA,
     mu_mediumID,
     mu_dpt_div_pt,
-    mu_isfakeablesel
+    mu_isfakeablesel,
+    mu_ismvasel
   );
 
   reset(
@@ -549,7 +577,8 @@ SyncNtupleManager::reset()
     ele_isChargeConsistent,
     ele_passesConversionVeto,
     ele_nMissingHits,
-    ele_isfakeablesel
+    ele_isfakeablesel,
+    ele_ismvasel
   );
 
   reset(
