@@ -41,14 +41,14 @@ enum class FloatVariableType
 
   avg_dr_jet,               ///< average dR between all the pairs of preselected jets
   avr_dr_lep_tau,           ///< average dR between all lepton and tau pairs
-  max_dr_jet,               ///< maximum dR between all preselected jets
+  max_dr_jet,               ///< maximum dR between all preselected jet pairs
   max_dr_lep_tau,           ///< maximum dR between all lepton and tau pairs
-  min_dr_tau_jet,           ///< min dR between all tau + jets pairs (i.e. min(mindr_tau1_jet, mindr_tau2_jet, ...))
+  min_dr_tau_jet,           ///< min dR between all tau and jets pairs (i.e. min(mindr_tau0_jet, mindr_tau1_jet, ...))
   min_dr_lep_tau,           ///< minimum dR between all lepton and tau pairs
   min_dr_lep_jet,           ///< minimum dR between all lepton and jet pairs
 
   dr_leps,                  ///< deltaR between two leading leptons
-  dr_taus,                  ///< deltaR between two selected taus
+  dr_taus,                  ///< deltaR between two leading taus
 
   dr_lep_tau_ss,            ///< dR between (leading) lepton and same-sign tau
   dr_lep1_tau1,             ///< dR between leading lepton and leading tau

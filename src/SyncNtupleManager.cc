@@ -117,7 +117,7 @@ SyncNtupleManager::initializeBranches()
     floatMap[FloatVariableType::MT_met_lep3],              "MT_met_lep2",
     floatMap[FloatVariableType::MT_met_lep4],              "MT_met_lep3",
 
-    floatMap[FloatVariableType::mTauTauVis],               "tt_mvis",
+    floatMap[FloatVariableType::mTauTauVis],               "mvis_tautau",
     floatMap[FloatVariableType::mvis_l1tau],               "mvis_l0tau",
     floatMap[FloatVariableType::mvis_l2tau],               "mvis_l1tau",
 
@@ -135,15 +135,15 @@ SyncNtupleManager::initializeBranches()
 
 //--- Additional event-level MVA output variables
     floatMap[FloatVariableType::mvaOutput_plainKin_ttV],   "mvaOutput_plainKin_ttV",
-    floatMap[FloatVariableType::mvaOutput_plainKin_tt],    "mvaOutput_plainKin_tt",
+    floatMap[FloatVariableType::mvaOutput_plainKin_tt],    "mvaOutput_plainKin_ttbar",
     floatMap[FloatVariableType::mvaOutput_plainKin_1B_VT], "mvaOutput_plainKin_1B_VT",
-    floatMap[FloatVariableType::mvaOutput_HTT_SUM_VT],     "mvaOutput_HTT_SUM_VT",
+    floatMap[FloatVariableType::mvaOutput_HTT_SUM_VT],     "mvaOutput_1l_2tau_HTT_SUM_VT",
 
-    floatMap[FloatVariableType::mvaOutput_plainKin_SUM_VT], "mvaOutput_plainKin_SUM_VT",
+    floatMap[FloatVariableType::mvaOutput_plainKin_SUM_VT], "mvaOutput_2l_2tau_plainKin_SUM_VT",
 
     floatMap[FloatVariableType::mvaOutput_2lss_ttV],                 "mvaOutput_2lss_ttV",
-    floatMap[FloatVariableType::mvaOutput_2lss_tt],                  "mvaOutput_2lss_tt",
-    floatMap[FloatVariableType::mvaOutput_2lss_1tau_plainKin_tt],    "mvaOutput_2lss_1tau_plainKin_tt",
+    floatMap[FloatVariableType::mvaOutput_2lss_tt],                  "mvaOutput_2lss_ttbar",
+    floatMap[FloatVariableType::mvaOutput_2lss_1tau_plainKin_tt],    "mvaOutput_2lss_1tau_plainKin_ttbar",
     floatMap[FloatVariableType::mvaOutput_2lss_1tau_plainKin_ttV],   "mvaOutput_2lss_1tau_plainKin_ttV",
     floatMap[FloatVariableType::mvaOutput_2lss_1tau_plainKin_1B_M],  "mvaOutput_2lss_1tau_plainKin_1B_M",
     floatMap[FloatVariableType::mvaOutput_2lss_1tau_plainKin_SUM_M], "mvaOutput_2lss_1tau_plainKin_SUM_M",
@@ -152,8 +152,8 @@ SyncNtupleManager::initializeBranches()
 
     floatMap[FloatVariableType::mvaOutput_3l_ttV],         "mvaOutput_3l_ttV",
     floatMap[FloatVariableType::mvaOutput_3l_ttbar],       "mvaOutput_3l_ttbar",
-    floatMap[FloatVariableType::mvaOutput_plainKin_SUM_M], "mvaOutput_plainKin_SUM_M",
-    floatMap[FloatVariableType::mvaOutput_plainKin_1B_M],  "mvaOutput_plainKin_1B_M",
+    floatMap[FloatVariableType::mvaOutput_plainKin_SUM_M], "mvaOutput_3l_1tau_plainKin_SUM_M",
+    floatMap[FloatVariableType::mvaOutput_plainKin_1B_M],  "mvaOutput_3l_1tau_plainKin_1B_M",
 
 //--- Event weights
     floatMap[FloatVariableType::FR_weight],                "FR_weight",
