@@ -1634,8 +1634,8 @@ int main(int argc, char* argv[])
       ;
 
       snm->read(eventInfo);
-      snm->read(preselMuons,     fakeableMuons    );
-      snm->read(preselElectrons, fakeableElectrons);
+      snm->read(preselMuons,     fakeableMuons,     tightMuons);
+      snm->read(preselElectrons, fakeableElectrons, tightElectrons);
       snm->read(selJets);
 
       snm->read({

@@ -2244,8 +2244,8 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       ;
 
       snm->read(eventInfo);
-      snm->read(preselMuons,     fakeableMuons    );
-      snm->read(preselElectrons, fakeableElectrons);
+      snm->read(preselMuons,     fakeableMuons,     tightMuons);
+      snm->read(preselElectrons, fakeableElectrons, tightElectrons);
       snm->read(preselHadTaus);
       snm->read(selJets);
 

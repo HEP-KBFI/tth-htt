@@ -197,7 +197,8 @@ SyncNtupleManager::initializeBranches()
     mu_leptonMVA,            "leptonMVA",
     mu_mediumID,             "mediumID",
     mu_dpt_div_pt,           "dpt_div_pt",
-    mu_isfakeablesel,        "isfakeablesel"
+    mu_isfakeablesel,        "isfakeablesel",
+    mu_ismvasel,             "ismvasel"
   );
 
   setBranches(
@@ -223,7 +224,8 @@ SyncNtupleManager::initializeBranches()
     ele_isChargeConsistent,   "isChargeConsistent",
     ele_passesConversionVeto, "passesConversionVeto",
     ele_nMissingHits,         "nMissingHits",
-    ele_isfakeablesel,        "isfakeablesel"
+    ele_isfakeablesel,        "isfakeablesel",
+    ele_ismvasel,             "ismvasel"
   );
 
   setBranches(
@@ -296,10 +298,12 @@ SyncNtupleManager::read(const EventInfo & eventInfo)
 
 void
 SyncNtupleManager::read(const std::vector<const RecoMuon *> & muons,
-                        const std::vector<const RecoMuon *> & fakeable_muons)
+                        const std::vector<const RecoMuon *> & fakeable_muons,
+                        const std::vector<const RecoMuon *> & tight_muons)
 {
   n_presel_mu = muons.size();
   n_fakeablesel_mu = fakeable_muons.size();
+  n_mvasel_mu = tight_muons.size();
 
   const Int_t nof_iterations = std::min(n_presel_mu, nof_mus);
   for(Int_t i = 0; i < nof_iterations; ++i)
@@ -335,15 +339,26 @@ SyncNtupleManager::read(const std::vector<const RecoMuon *> & muons,
         break;
       }
     }
+    mu_ismvasel[i] = 0;
+    for(const auto & tight_muon: tight_muons)
+    {
+      if(muon == tight_muon)
+      {
+        mu_ismvasel[i] = 1;
+        break;
+      }
+    }
   }
 }
 
 void
 SyncNtupleManager::read(const std::vector<const RecoElectron *> & electrons,
-                        const std::vector<const RecoElectron *> & fakeable_electrons)
+                        const std::vector<const RecoElectron *> & fakeable_electrons,
+                        const std::vector<const RecoElectron *> & tight_electrons)
 {
   n_presel_ele = electrons.size();
   n_fakeablesel_ele = fakeable_electrons.size();
+  n_mvasel_ele = tight_electrons.size();
 
   const Int_t nof_iterations = std::min(n_presel_ele, nof_eles);
   for(Int_t i = 0; i < nof_iterations; ++i)
@@ -377,6 +392,15 @@ SyncNtupleManager::read(const std::vector<const RecoElectron *> & electrons,
       if(electron == fakeable_electron)
       {
         ele_isfakeablesel[i] = 1;
+        break;
+      }
+    }
+    ele_ismvasel[i] = 0;
+    for(const auto & tight_electron: tight_electrons)
+    {
+      if(electron == tight_electron)
+      {
+        ele_ismvasel[i] = 1;
         break;
       }
     }
@@ -486,8 +510,10 @@ SyncNtupleManager::reset()
   reset(
     n_presel_mu,
     n_fakeablesel_mu,
+    n_mvasel_mu,
     n_presel_ele,
     n_fakeablesel_ele,
+    n_mvasel_ele,
     n_presel_tau,
     n_presel_jet
   );
@@ -523,7 +549,8 @@ SyncNtupleManager::reset()
     mu_leptonMVA,
     mu_mediumID,
     mu_dpt_div_pt,
-    mu_isfakeablesel
+    mu_isfakeablesel,
+    mu_ismvasel
   );
 
   reset(
@@ -549,7 +576,8 @@ SyncNtupleManager::reset()
     ele_isChargeConsistent,
     ele_passesConversionVeto,
     ele_nMissingHits,
-    ele_isfakeablesel
+    ele_isfakeablesel,
+    ele_ismvasel
   );
 
   reset(
