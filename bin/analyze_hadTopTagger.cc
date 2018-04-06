@@ -166,6 +166,17 @@ int getGenMatch(bool b_isGenMatched, bool Wj1_isGenMatched, bool Wj2_isGenMatche
   return idxGenMatch;
 }
 
+void openFile_and_printContent(const std::string& inputFileName, const std::string& treeName)
+{
+  TFile* inputFile = TFile::Open(inputFileName.data());
+  if ( !inputFile ) throw cms::Exception("openFile_and_printContent")
+    << " Failed to open file = " << inputFileName << " !!\n";
+  //inputFile->ls();
+  TTree* tree = dynamic_cast<TTree*>(inputFile->Get(treeName.data()));
+  if ( tree ) std::cout << "\t (input Tree '" << treeName << "' contains " << tree->GetEntries() << " Entries)" << std::endl;
+  delete inputFile;
+}
+
 /**
  * @brief Check why only 25% of ttH signal events selected in 2lss_1tau category
  *        contain a reconstructible hadronic top
@@ -192,6 +203,7 @@ int main(int argc, char* argv[])
     throw cms::Exception("analyze_hadTopTagger")
       << "No ParameterSet 'process' found in configuration file = " << argv[1] << " !!\n";
 
+	std::cout<<"here2"<<std::endl;
   edm::ParameterSet cfg = edm::readPSetsFrom(argv[1])->getParameter<edm::ParameterSet>("process");
 
   edm::ParameterSet cfg_analyze = cfg.getParameter<edm::ParameterSet>("analyze_hadTopTagger");
@@ -208,7 +220,7 @@ int main(int argc, char* argv[])
   if      ( era_string == "2017" ) era = kEra_2017;
   else throw cms::Exception("analyze_hadTopTagger")
     << "Invalid Configuration parameter 'era' = " << era_string << " !!\n";
-
+/*
   vstring triggerNames_1e = cfg_analyze.getParameter<vstring>("triggers_1e");
   std::vector<hltPath*> triggers_1e = create_hltPaths(triggerNames_1e);
   bool use_triggers_1e = cfg_analyze.getParameter<bool>("use_triggers_1e");
@@ -233,11 +245,12 @@ int main(int argc, char* argv[])
 
   enum { kOS, kSS };
   std::string leptonChargeSelection_string = cfg_analyze.getParameter<std::string>("leptonChargeSelection");
-  int leptonChargeSelection = -1;
+  //int leptonChargeSelection = -1;
   if      ( leptonChargeSelection_string == "OS" ) leptonChargeSelection = kOS;
   else if ( leptonChargeSelection_string == "SS" ) leptonChargeSelection = kSS;
   else throw cms::Exception("analyze_hadTopTagger")
     << "Invalid Configuration parameter 'leptonChargeSelection' = " << leptonChargeSelection_string << " !!\n";
+*/
 
   std::string leptonSelection_string = cfg_analyze.getParameter<std::string>("leptonSelection").data();
   std::cout << "leptonSelection_string = " << leptonSelection_string << std::endl;
@@ -248,13 +261,15 @@ int main(int argc, char* argv[])
   else throw cms::Exception("analyze_hadTopTagger")
     << "Invalid Configuration parameter 'leptonSelection' = " << leptonSelection_string << " !!\n";
 
+	/*
   bool apply_leptonGenMatching = cfg_analyze.getParameter<bool>("apply_leptonGenMatching");
   std::vector<leptonGenMatchEntry> leptonGenMatch_definitions = getLeptonGenMatch_definitions_2lepton(apply_leptonGenMatching);
   std::cout << "leptonGenMatch_definitions:" << std::endl;
   std::cout << leptonGenMatch_definitions;
   bool apply_leptonGenMatching_ttZ_workaround = cfg_analyze.getParameter<bool>("apply_leptonGenMatching_ttZ_workaround");
   std::cout << "apply_leptonGenMatching_ttZ_workaround = " << apply_leptonGenMatching_ttZ_workaround << std::endl;
-
+*/
+	
   TString hadTauSelection_string = cfg_analyze.getParameter<std::string>("hadTauSelection").data();
   TObjArray* hadTauSelection_parts = hadTauSelection_string.Tokenize("|");
   assert(hadTauSelection_parts->GetEntries() >= 1);
@@ -268,40 +283,44 @@ int main(int argc, char* argv[])
   std::string hadTauSelection_part2 = ( hadTauSelection_parts->GetEntries() == 2 ) ? (dynamic_cast<TObjString*>(hadTauSelection_parts->At(1)))->GetString().Data() : "";
   delete hadTauSelection_parts;
 
+	/*
   bool apply_hadTauGenMatching = cfg_analyze.getParameter<bool>("apply_hadTauGenMatching");
   std::vector<hadTauGenMatchEntry> hadTauGenMatch_definitions = getHadTauGenMatch_definitions_1tau(apply_hadTauGenMatching);
   std::cout << "hadTauGenMatch_definitions:" << std::endl;
   std::cout << hadTauGenMatch_definitions;
 
   std::string chargeSumSelection_string = cfg_analyze.getParameter<std::string>("chargeSumSelection");
-  int chargeSumSelection = -1;
+  //int chargeSumSelection = -1;
   if      ( chargeSumSelection_string == "OS" ) chargeSumSelection = kOS;
   else if ( chargeSumSelection_string == "SS" ) chargeSumSelection = kSS;
   else throw cms::Exception("analyze_hadTopTagger")
     << "Invalid Configuration parameter 'chargeSumSelection' = " << chargeSumSelection_string << " !!\n";
-
+  */
   bool use_HIP_mitigation_mediumMuonId = cfg_analyze.getParameter<bool>("use_HIP_mitigation_mediumMuonId");
   std::cout << "use_HIP_mitigation_mediumMuonId = " << use_HIP_mitigation_mediumMuonId << std::endl;
 
+	/*
   bool apply_lepton_and_hadTauCharge_cut = cfg_analyze.getParameter<bool>("apply_lepton_and_hadTauCharge_cut");
   std::cout << "apply_lepton_and_hadTauCharge_cut = " << apply_lepton_and_hadTauCharge_cut << std::endl;
-
+	*/
+	
   bool isMC = cfg_analyze.getParameter<bool>("isMC");
   bool isMC_tH = ( process_string == "tH" ) ? true : false;
   std::string central_or_shift = cfg_analyze.getParameter<std::string>("central_or_shift");
   double lumiScale = ( process_string != "data_obs" ) ? cfg_analyze.getParameter<double>("lumiScale") : 1.;
   bool apply_genWeight = cfg_analyze.getParameter<bool>("apply_genWeight");
-  bool apply_trigger_bits = cfg_analyze.getParameter<bool>("apply_trigger_bits");
+  //bool apply_trigger_bits = cfg_analyze.getParameter<bool>("apply_trigger_bits");
   
   bool isDEBUG = cfg_analyze.getParameter<bool>("isDEBUG");
   if ( isDEBUG ) std::cout << "Warning: DEBUG mode enabled -> trigger selection will not be applied for data !!" << std::endl;
 
+	
   const int jetPt_option     = getJet_option       (central_or_shift, isMC);
   const int hadTauPt_option  = getHadTauPt_option  (central_or_shift, isMC);
-  const int lheScale_option  = getLHEscale_option  (central_or_shift, isMC);
+  //const int lheScale_option  = getLHEscale_option  (central_or_shift, isMC);
   const int jetBtagSF_option = getBTagWeight_option(central_or_shift, isMC);
-  const int met_option       = getMET_option       (central_or_shift, isMC);
-
+  const int met_option       = getMET_option       (central_or_shift, isMC);	
+	/*
   edm::ParameterSet cfg_dataToMCcorrectionInterface;
   cfg_dataToMCcorrectionInterface.addParameter<std::string>("era", era_string);
   cfg_dataToMCcorrectionInterface.addParameter<std::string>("hadTauSelection", hadTauSelection_part2);
@@ -309,6 +328,7 @@ int main(int argc, char* argv[])
   cfg_dataToMCcorrectionInterface.addParameter<int>("hadTauSelection_antiMuon", hadTauSelection_antiMuon);
   cfg_dataToMCcorrectionInterface.addParameter<std::string>("central_or_shift", central_or_shift);
   Data_to_MC_CorrectionInterface* dataToMCcorrectionInterface = new Data_to_MC_CorrectionInterface(cfg_dataToMCcorrectionInterface);
+	*/
 
   std::string branchName_electrons = cfg_analyze.getParameter<std::string>("branchName_electrons");
   std::string branchName_muons = cfg_analyze.getParameter<std::string>("branchName_muons");
@@ -320,17 +340,19 @@ int main(int argc, char* argv[])
   std::string branchName_subjetsAK12 = cfg_analyze.getParameter<std::string>("branchName_subjetsAK12");
   std::string branchName_met = cfg_analyze.getParameter<std::string>("branchName_met");
 
+	/*
   std::string branchName_genLeptons = cfg_analyze.getParameter<std::string>("branchName_genLeptons");
   std::string branchName_genHadTaus = cfg_analyze.getParameter<std::string>("branchName_genHadTaus");
   std::string branchName_genJets = cfg_analyze.getParameter<std::string>("branchName_genJets");
-
+	*/
+	
   std::string branchName_genTopQuarks = cfg_analyze.getParameter<std::string>("branchName_genTopQuarks");
   std::string branchName_genBJets = cfg_analyze.getParameter<std::string>("branchName_genBJets");
   std::string branchName_genWBosons = cfg_analyze.getParameter<std::string>("branchName_genWBosons");
   std::string branchName_genWJets = cfg_analyze.getParameter<std::string>("branchName_genWJets");
 
   bool redoGenMatching = cfg_analyze.getParameter<bool>("redoGenMatching");
-
+	
   std::string selEventsFileName_input = cfg_analyze.getParameter<std::string>("selEventsFileName_input");
   std::cout << "selEventsFileName_input = " << selEventsFileName_input << std::endl;
   RunLumiEventSelector* run_lumi_eventSelector = 0;
@@ -341,7 +363,7 @@ int main(int argc, char* argv[])
     run_lumi_eventSelector = new RunLumiEventSelector(cfgRunLumiEventSelector);
   }
 
-  std::string selEventsFileName_output = cfg_analyze.getParameter<std::string>("selEventsFileName_output");
+  //std::string selEventsFileName_output = cfg_analyze.getParameter<std::string>("selEventsFileName_output");
 
 	bool selectBDT = ( cfg_analyze.exists("selectBDT") ) ? cfg_analyze.getParameter<bool>("selectBDT") : false;
 	//bool selectBDT = cfg_analyze.getParameter<bool>("selectBDT");
@@ -350,6 +372,14 @@ int main(int argc, char* argv[])
   int maxEvents = inputFiles.maxEvents();
   std::cout << " maxEvents = " << maxEvents << std::endl;
   unsigned reportEvery = inputFiles.reportAfter();
+
+	  // CV: open all input ROOT files and print content,
+  //     to see why analysis jobs run fine when executed interactively on quasar, but fail when executed on Tallinn batch system
+  for ( std::vector<std::string>::const_iterator inputFileName = inputFiles.files().begin();
+  	  inputFileName != inputFiles.files().end(); ++inputFileName ) {
+    std::cout << "checking input file = " << (*inputFileName) << ":" << std::endl;
+    openFile_and_printContent(*inputFileName, treeName);
+  }
 
   fwlite::OutputFiles outputFile(cfg);
   fwlite::TFileService fs = fwlite::TFileService(outputFile.file().data());
@@ -363,9 +393,10 @@ int main(int argc, char* argv[])
   EventInfoReader eventInfoReader(&eventInfo);
   inputTree -> registerReader(&eventInfoReader);
 
+	/*
   for ( const std::vector<hltPath*> hltPaths: { triggers_1e, triggers_2e, triggers_1mu, triggers_2mu, triggers_1e1mu } ) {
     inputTree -> registerReader(hltPaths);
-  }
+		}*/
 
 //--- declare particle collections
   const bool readGenObjects = isMC && !redoGenMatching;
@@ -421,13 +452,14 @@ int main(int argc, char* argv[])
 
   RecoJetReaderAK12* jetReaderAK12 = new RecoJetReaderAK12(era, branchName_jetsAK12, branchName_subjetsAK12);
   inputTree -> registerReader(jetReaderAK12);
-
+	
 //--- declare missing transverse energy
   RecoMEtReader* metReader = new RecoMEtReader(era, isMC, branchName_met);
   metReader->setMEt_central_or_shift(met_option);
   inputTree -> registerReader(metReader);
 
 //--- declare generator level information
+	/*
   GenLeptonReader* genLeptonReader = 0;
   GenHadTauReader* genHadTauReader = 0;
   GenJetReader* genJetReader = 0;
@@ -449,7 +481,7 @@ int main(int argc, char* argv[])
     }
     lheInfoReader = new LHEInfoReader();
     inputTree -> registerReader(lheInfoReader);
-  }
+		}*/
 
   GenParticleReader* genTopQuarkReader = new GenParticleReader(branchName_genTopQuarks);
   GenParticleReader* genBJetReader = new GenParticleReader(branchName_genBJets);
@@ -462,7 +494,6 @@ int main(int argc, char* argv[])
     inputTree->registerReader(genWBosonReader);
     inputTree->registerReader(genWJetReader);
   }
-
 
 	// Case III] Non-boosted top --------------------
   HadTopTaggerFill* hadTopTaggerFill = new HadTopTaggerFill();
@@ -602,9 +633,6 @@ int main(int argc, char* argv[])
 	}
 
 
-
-
-
 	
   int analyzedEntries = 0;
   int selectedEntries = 0;
@@ -665,16 +693,16 @@ int main(int argc, char* argv[])
 
 	
 //--- open output file containing run:lumi:event numbers of events passing final event selection criteria
-  std::ostream* selEventsFile = ( selEventsFileName_output != "" ) ? new std::ofstream(selEventsFileName_output.data(), std::ios::out) : 0;
-  std::cout << "selEventsFileName_output = " << selEventsFileName_output << std::endl;
-	
+  //std::ostream* selEventsFile = ( selEventsFileName_output != "" ) ? new std::ofstream(selEventsFileName_output.data(), std::ios::out) : 0;
+  //std::cout << "selEventsFileName_output = " << selEventsFileName_output << std::endl;
+
   while(inputTree -> hasNextEvent() && (! run_lumi_eventSelector || (run_lumi_eventSelector && ! run_lumi_eventSelector -> areWeDone())))
   {
     if ( isDEBUG ) {
       std::cout << "processing run = " << eventInfo.run << ", ls = " << eventInfo.lumi << ", event = " << eventInfo.event << std::endl;
     }
 		
-    if(inputTree -> canReport(reportEvery))
+    if(inputTree -> canReport(reportEvery) )
     {
       std::cout << "processing Entry " << inputTree -> getCurrentMaxEventIdx()
                 << " or " << inputTree -> getCurrentEventIdx() << " entry in #"
@@ -690,7 +718,8 @@ int main(int argc, char* argv[])
     {
       continue;
     }
-		
+
+		/*  // Trigger conditions
     bool isTriggered_1e = hltPaths_isTriggered(triggers_1e) || (isMC && !apply_trigger_bits);
     bool isTriggered_2e = hltPaths_isTriggered(triggers_2e) || (isMC && !apply_trigger_bits);
     bool isTriggered_1mu = hltPaths_isTriggered(triggers_1mu) || (isMC && !apply_trigger_bits);
@@ -736,6 +765,8 @@ int main(int argc, char* argv[])
       fakeableElectronSelector.enable_offline_e_trigger_cuts();
       tightElectronSelector.enable_offline_e_trigger_cuts();
     }
+		*/
+
 		
 //--- build collections of electrons, muons and hadronic taus;
 //    resolve overlaps in order of priority: muon, electron,
@@ -759,7 +790,7 @@ int main(int argc, char* argv[])
     //    std::cout << "selMuon #" << idxSelMuon << ":" << std::endl;
     //    std::cout << (*selMuons[idxSelMuon]);
     //  }
-    //}
+    //} 
 		
     std::vector<RecoElectron> electrons = electronReader->read();
     std::vector<const RecoElectron*> electron_ptrs = convert_to_ptrs(electrons);
@@ -807,6 +838,7 @@ int main(int argc, char* argv[])
     //}
     selHadTaus = pickFirstNobjects(selHadTaus, 1);
 		
+			
 //--- build collections of jets and select subset of jets passing b-tagging criteria
     std::vector<RecoJet> jets = jetReader->read();
     std::vector<const RecoJet*> jet_ptrs = convert_to_ptrs(jets);
@@ -827,71 +859,9 @@ int main(int argc, char* argv[])
     std::vector<RecoJetAK12> jetsAK12 = jetReaderAK12->read();
     std::vector<const RecoJetAK12*> jet_ptrsAK12 = convert_to_ptrs(jetsAK12);
 		
-//--- build collections of generator level particles (after some cuts are applied, to safe computing time)
-    std::vector<GenLepton> genLeptons;
-    std::vector<GenLepton> genElectrons;
-    std::vector<GenLepton> genMuons;
-    std::vector<GenHadTau> genHadTaus;
-    std::vector<GenJet> genJets;
-    if ( isMC && redoGenMatching ) {
-      if ( genLeptonReader ) {
-				genLeptons = genLeptonReader->read();
-				for ( std::vector<GenLepton>::const_iterator genLepton = genLeptons.begin();
-							genLepton != genLeptons.end(); ++genLepton ) {
-					int abs_pdgId = std::abs(genLepton->pdgId());
-					if      ( abs_pdgId == 11 ) genElectrons.push_back(*genLepton);
-					else if ( abs_pdgId == 13 ) genMuons.push_back(*genLepton);
-				}
-      }
-      if ( genHadTauReader ) {
-				genHadTaus = genHadTauReader->read();
-      }
-      if ( genJetReader ) {
-				genJets = genJetReader->read();
-      }
-    }
-		
-//--- match reconstructed to generator level particles
-    if ( isMC && redoGenMatching ) {
-      muonGenMatcher.addGenLeptonMatch(preselMuons, genLeptons, 0.2);
-      muonGenMatcher.addGenHadTauMatch(preselMuons, genHadTaus, 0.2);
-      muonGenMatcher.addGenJetMatch(preselMuons, genJets, 0.2);
-			
-      electronGenMatcher.addGenLeptonMatch(preselElectrons, genLeptons, 0.2);
-      electronGenMatcher.addGenHadTauMatch(preselElectrons, genHadTaus, 0.2);
-      electronGenMatcher.addGenJetMatch(preselElectrons, genJets, 0.2);
-			
-      hadTauGenMatcher.addGenLeptonMatch(selHadTaus, genLeptons, 0.2);
-      hadTauGenMatcher.addGenHadTauMatch(selHadTaus, genHadTaus, 0.2);
-      hadTauGenMatcher.addGenJetMatch(selHadTaus, genJets, 0.2);
-			
-      jetGenMatcher.addGenLeptonMatch(selJets, genLeptons, 0.2);
-      jetGenMatcher.addGenHadTauMatch(selJets, genHadTaus, 0.2);
-      jetGenMatcher.addGenJetMatch(selJets, genJets, 0.2);
-    }
-		
-//--- apply preselection
-    std::vector<const RecoLepton*> preselLeptons = mergeLeptonCollections(preselElectrons, preselMuons, isHigherConePt);
-    // require at least two leptons passing loose preselection criteria
-    if ( !(preselLeptons.size() >= 2) ) {
-      continue;
-    }
-    cutFlowTable_2lss_1tau.update(">= 2 presel leptons");
-    const RecoLepton* preselLepton_lead = preselLeptons[0];
-    const RecoLepton* preselLepton_sublead = preselLeptons[1];
-    const leptonGenMatchEntry& preselLepton_genMatch = getLeptonGenMatch(leptonGenMatch_definitions, preselLepton_lead, preselLepton_sublead);
-    int idxPreselLepton_genMatch = preselLepton_genMatch.idx_;
-    if ( apply_leptonGenMatching_ttZ_workaround ) idxPreselLepton_genMatch = kGen_2l0j;
-    assert(idxPreselLepton_genMatch != kGen_LeptonUndefined2);
-		
-    // require that trigger paths match event category (with event category based on preselLeptons)
-    if ( !((preselElectrons.size() >= 2 &&                            (selTrigger_2e    || selTrigger_1e                  )) ||
-					 (preselElectrons.size() >= 1 && preselMuons.size() >= 1 && (selTrigger_1e1mu || selTrigger_1mu || selTrigger_1e)) ||
-					 (                               preselMuons.size() >= 2 && (selTrigger_2mu   || selTrigger_1mu                 ))) ) {
-      continue;
-    }
-    cutFlowTable_2lss_1tau.update("presel lepton trigger match");
-		
+
+
+		/*
     // apply requirement on jets (incl. b-tagged jets) and hadronic taus on preselection level
     if ( !(selJets.size() >= 2) ) {
       continue;
@@ -905,7 +875,10 @@ int main(int argc, char* argv[])
       continue;
     }
     cutFlowTable_2lss_1tau.update(">= 1 sel tau (1)");
-    const RecoHadTau* selHadTau = selHadTaus[0];
+		*/
+
+		/*
+		const RecoHadTau* selHadTau = selHadTaus[0];
     const hadTauGenMatchEntry& selHadTau_genMatch = getHadTauGenMatch(hadTauGenMatch_definitions, selHadTau);
     int idxSelHadTau_genMatch = selHadTau_genMatch.idx_;
     assert(idxSelHadTau_genMatch != kGen_HadTauUndefined1);
@@ -916,10 +889,10 @@ int main(int argc, char* argv[])
     Particle::LorentzVector mht_p4 = compMHT(fakeableLeptons, selHadTaus, selJets);
     double met_LD = compMEt_LD(met.p4(), mht_p4);
 		
-//--- apply final event selection
-    if ( !(selLeptons.size() >= 2) ) {
+//--- apply final event selection    
+		if ( !(selLeptons.size() >= 2) ) {
       continue;
-    }
+			}
     cutFlowTable_2lss_1tau.update(">= 2 sel leptons", 1.);
     const RecoLepton* selLepton_lead = selLeptons[0];
     int selLepton_lead_type = getLeptonType(selLepton_lead->pdgId());
@@ -932,7 +905,9 @@ int main(int argc, char* argv[])
 		
     if ( isMC ) {
       lheInfoReader->read();
-    }
+			} */
+
+		
 		
 //--- compute event-level weight for data/MC correction of b-tagging efficiency and mistag rate
 //   (using the method "Event reweighting using scale factors calculated with a tag and probe method",
@@ -943,6 +918,8 @@ int main(int argc, char* argv[])
       if ( apply_genWeight ) evtWeight *= boost::math::sign(eventInfo.genWeight);
       if ( isMC_tH ) evtWeight *= eventInfo.genWeight_tH;
       evtWeight *= eventInfo.pileupWeight;
+
+			/*
       evtWeight *= lheInfoReader->getWeight_scale(lheScale_option);
       double btagWeight = 1.;
       for ( std::vector<const RecoJet*>::const_iterator jet = selJets.begin();
@@ -950,8 +927,10 @@ int main(int argc, char* argv[])
 				btagWeight *= (*jet)->BtagWeight();
       }
       evtWeight *= btagWeight;
+			*/
     }
-		
+
+		/*
     double weight_data_to_MC_correction = 1.;
     double triggerWeight = 1.;
     if ( isMC ) {
@@ -990,8 +969,10 @@ int main(int argc, char* argv[])
       weight_data_to_MC_correction *= dataToMCcorrectionInterface->getSF_muToTauFakeRate();
 			
       evtWeight *= weight_data_to_MC_correction;
-    }
-		
+    }  */
+
+
+		/*
     // require exactly two leptons passing tight selection criteria, to avoid overlap with other channels
     std::vector<const RecoLepton*> tightLeptons = mergeLeptonCollections(tightElectrons, tightMuons, isHigherPt);
     if ( !(tightLeptons.size() <= 2) ) {
@@ -1000,11 +981,12 @@ int main(int argc, char* argv[])
     cutFlowTable_2lss_1tau.update("<= 2 tight leptons", evtWeight);
     
     // require that trigger paths match event category (with event category based on selLeptons)
-    if ( !((selElectrons.size() >= 2 &&                         (selTrigger_2e    || selTrigger_1e                  )) ||
-					 (selElectrons.size() >= 1 && selMuons.size() >= 1 && (selTrigger_1e1mu || selTrigger_1mu || selTrigger_1e)) ||
-					 (                            selMuons.size() >= 2 && (selTrigger_2mu   || selTrigger_1mu                 ))) ) {
+		if ( !((selElectrons.size() >= 2  ) ||
+					 (selElectrons.size() >= 1 && selMuons.size() >= 1 ) ||
+					 (                            selMuons.size() >= 2 )) ) {
       continue;
     }
+		
     cutFlowTable_2lss_1tau.update("sel lepton trigger match", evtWeight);
 		
     // apply requirement on jets (incl. b-tagged jets) and hadronic taus on level of final event selection
@@ -1109,7 +1091,8 @@ int main(int argc, char* argv[])
     if ( selEventsFile ) {
       (*selEventsFile) << eventInfo.run << ':' << eventInfo.lumi << ':' << eventInfo.event << '\n';
     }
-		
+		*/
+			
 //--- build collections of generator level particles
     std::vector<GenParticle> genTopQuarks = genTopQuarkReader->read();
     std::vector<GenParticle> genBJets = genBJetReader->read();
@@ -1687,17 +1670,17 @@ int main(int argc, char* argv[])
   cutFlowTable_2lss_1tau_resolved.print(std::cout);
   std::cout << std::endl;
 	
-  delete dataToMCcorrectionInterface;
+  //delete dataToMCcorrectionInterface;
 
   delete muonReader;
   delete electronReader;
   delete hadTauReader;
   delete jetReader;
   delete metReader;
-  delete genLeptonReader;
-  delete genHadTauReader;
-  delete genJetReader;
-  delete lheInfoReader;
+  //delete genLeptonReader;
+  //delete genHadTauReader;
+  //delete genJetReader;
+  //delete lheInfoReader;
 /*
   delete hadTopTagger;
 */
