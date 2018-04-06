@@ -7,7 +7,7 @@ process = cms.PSet()
 process.fwliteInput = cms.PSet(
     fileNames = cms.vstring('/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau/MC/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/VHBB_HEPPY_V25tthtautau_ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_Py8_mWCutfix__RunIISummer16MAv2-PUMoriond17_80r2as_2016_TrancheIV_v6_ext1-v1/170207_122849/0000/tree_1.root'),
     maxEvents = cms.int32(-1),
-    outputEvery = cms.uint32(10000)
+    outputEvery = cms.uint32(1000)
 )
 
 process.fwliteOutput = cms.PSet(
@@ -89,10 +89,12 @@ process.analyze_hadTopTagger = cms.PSet(
 )
 
 #inputFilePath = "/hdfs/local/karl/ttHNtupleProduction/2017/2018Feb15_1to1_wNanoPrep_woPresel_all/ntuples/ttHJetToNonbb_M125_amcatnlo/0000/"
-inputFilePath = "/hdfs/local/karl/ttHNtupleProduction/2017/2018Feb28_wNanoPrep_woPresel_all/ntuples/ttHJetToNonbb_M125_amcatnlo/0000/"
-maxInputFiles = 10 #50
+#inputFilePath = "/hdfs/local/karl/ttHNtupleProduction/2017/2018Feb28_wNanoPrep_woPresel_all/ntuples/ttHJetToNonbb_M125_amcatnlo/0000/"
+inputFilePath = "/hdfs/local/karl/ttHNtupleProduction/2017/2018Apr04_woPresel_nom_all/ntuples/ttHJetToNonbb_M125_amcatnlo/0000/"
+maxInputFiles = 50
 #zombie_files = [ "tree_110.root", ]
-zombie_files = [ "tree_110.root", "tree_168.root"]
+#zombie_files = [ "tree_110.root", "tree_168.root"]
+zombie_files = [ ]
 import os
 def getInputFiles(inputFilePath):
     inputFiles = []
