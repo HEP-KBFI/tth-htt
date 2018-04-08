@@ -44,18 +44,6 @@ public:
 
 protected:
   /**
-   * @brief Compute "VVLose" (95% signal efficiency) working point for tau ID MVA trained for dR=0.3 isolation cone,
-   *        used to enhance background event statistics for training of event-level MVAs that separate ttH signal from backgrounds
-   */
-
-  void
-  readDBdR03oldDMwLTEff95();
-
-  TFile * tauIdMVArun2dR03DB_wpFile_;
-  TGraph * DBdR03oldDMwLTEff95_;
-  TFormula * mvaOutput_normalization_DBdR03oldDMwLT_;
-
-  /**
    * @brief Initialize names of branches to be read from tree
    */
   void
@@ -71,7 +59,8 @@ protected:
    *        to generator level electrons, muons, hadronic taus, and jets from tree
    *        and add this information to collection of RecoHadTau objects given as function argument
    */
-  void readGenMatching(std::vector<RecoHadTau>& hadTaus) const;
+  void
+  readGenMatching(std::vector<RecoHadTau> & hadTaus) const;
 
   GenLeptonReader * genLeptonReader_;
   GenHadTauReader * genHadTauReader_;
