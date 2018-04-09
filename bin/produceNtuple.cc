@@ -664,7 +664,7 @@ main(int argc,
     eventInfoWriter.write(eventInfo);
     muonWriter->write(preselMuons);
     electronWriter->write(preselElectrons);
-    hadTauWriter->write(fakeableHadTaus);
+    hadTauWriter->write(preselHadTaus);
     jetWriter->write(selJets);
     metWriter->write(met);
 
