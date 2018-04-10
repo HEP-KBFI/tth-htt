@@ -12,7 +12,6 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorFakeable.h" // RecoElectronCollectionSelectorFakeable
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorLoose.h" // RecoMuonCollectionSelectorLoose
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorFakeable.h" // RecoMuonCollectionSelectorFakeable
-#include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelectorLoose.h" // RecoHadTauCollectionSelectorLoose
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelectorFakeable.h" // RecoHadTauCollectionSelectorFakeable
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelector.h" // RecoJetCollectionSelector
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelectorBtag.h" // RecoJetCollectionSelectorBtag*
@@ -228,14 +227,14 @@ main(int argc,
   hadTauReader->setHadTauPt_central_or_shift(kHadTauPt_central);
   inputTree->registerReader(hadTauReader);
   const RecoHadTauCollectionCleaner hadTauCleaner(0.3, isDEBUG);
-  RecoHadTauCollectionSelectorLoose preselHadTauSelector(era, -1, isDEBUG);
+  RecoHadTauCollectionSelectorFakeable fakeableHadTauSelector(era, -1, isDEBUG);
   if(hadTauSelection_tauIdWP == "dR03mvaVLoose" ||
      hadTauSelection_tauIdWP == "dR03mvaVVLoose" )
   {
-    preselHadTauSelector.set(hadTauSelection_tauIdWP);
+    fakeableHadTauSelector.set(hadTauSelection_tauIdWP);
   }
-  preselHadTauSelector.set_min_antiElectron(-1);
-  preselHadTauSelector.set_min_antiMuon(-1);
+  fakeableHadTauSelector.set_min_antiElectron(-1);
+  fakeableHadTauSelector.set_min_antiMuon(-1);
 
   RecoJetReader * const jetReader = new RecoJetReader(era, isMC, branchName_jets, false);
   jetReader->setPtMass_central_or_shift(useNonNominal_jetmet ? kJet_central_nonNominal : kJet_central);
@@ -364,16 +363,16 @@ main(int argc,
 
     const std::vector<RecoHadTau> hadTaus = hadTauReader->read();
     const std::vector<const RecoHadTau *> hadTau_ptrs = convert_to_ptrs(hadTaus);
-    const std::vector<const RecoHadTau *> cleanedHadTaus = hadTauCleaner(hadTau_ptrs, preselLeptons);
-    const std::vector<const RecoHadTau *> preselHadTaus  = preselHadTauSelector(cleanedHadTaus, isHigherPt);
-    const std::vector<const RecoHadTau *> selHadTaus = preselHadTaus;
+    const std::vector<const RecoHadTau *> cleanedHadTaus  = hadTauCleaner(hadTau_ptrs, preselLeptons);
+    const std::vector<const RecoHadTau *> fakeableHadTaus = fakeableHadTauSelector(cleanedHadTaus, isHigherPt);
+    const std::vector<const RecoHadTau *> selHadTaus = fakeableHadTaus;
 
     snm->read(selHadTaus);
 
 //--- build collections of jets and select subset of jets passing b-tagging criteria
     const std::vector<RecoJet> jets = jetReader->read();
     const std::vector<const RecoJet *> jet_ptrs = convert_to_ptrs(jets);
-    const std::vector<const RecoJet *> cleanedJets = jetCleaner(jet_ptrs, fakeableLeptons, preselHadTaus);
+    const std::vector<const RecoJet *> cleanedJets = jetCleaner(jet_ptrs, fakeableLeptons, fakeableHadTaus);
     const std::vector<const RecoJet *> selJets         = jetSelector          (cleanedJets, isHigherPt);
     const std::vector<const RecoJet *> selBJets_loose  = jetSelectorBtagLoose (cleanedJets, isHigherPt);
     const std::vector<const RecoJet *> selBJets_medium = jetSelectorBtagMedium(cleanedJets, isHigherPt);

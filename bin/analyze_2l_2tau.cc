@@ -1683,7 +1683,7 @@ int main(int argc, char* argv[])
       snm->read(eventInfo);
       snm->read(preselMuons,     fakeableMuons,     tightMuons);
       snm->read(preselElectrons, fakeableElectrons, tightElectrons);
-      snm->read(preselHadTaus);
+      snm->read(fakeableHadTaus);
       snm->read(selJets);
 
       snm->read({ triggers_1e, triggers_2e, triggers_1mu, triggers_2mu, triggers_1e1mu });
