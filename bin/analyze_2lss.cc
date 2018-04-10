@@ -501,9 +501,9 @@ int main(int argc, char* argv[])
   };
   std::map<int, selHistManagerType*> selHistManagers;
 
-  vstring categories = { 
-    "ee_neg", "ee_pos", 
-    "em_bl_neg", "em_bl_pos", "em_bt_neg", "em_bt_pos", 
+  vstring categories = {
+    "ee_neg", "ee_pos",
+    "em_bl_neg", "em_bl_pos", "em_bt_neg", "em_bt_pos",
     "mm_bl_neg", "mm_bl_pos", "mm_bt_neg", "mm_bt_pos"
   };
   for ( std::vector<leptonGenMatchEntry>::const_iterator leptonGenMatch_definition = leptonGenMatch_definitions.begin();
@@ -511,9 +511,9 @@ int main(int argc, char* argv[])
 
     std::string process_and_genMatch = process_string;
     if ( apply_leptonGenMatching ) process_and_genMatch += leptonGenMatch_definition->name_;
-    
+
     int idxLepton = leptonGenMatch_definition->idx_;
-    
+
     preselHistManagerType* preselHistManager = new preselHistManagerType();
     preselHistManager->electrons_ = new ElectronHistManager(makeHistManager_cfg(process_and_genMatch,
       Form("%s/presel/electrons", histogramDir.data()), central_or_shift));
@@ -550,8 +550,8 @@ int main(int argc, char* argv[])
 	    category != categories.end(); ++category ) {
       TString histogramDir_category = histogramDir.data();
       histogramDir_category.ReplaceAll("2lss", Form("2lss_%s", category->data()));
-      selHistManager->electrons_in_categories_[*category] = new ElectronHistManager(makeHistManager_cfg(process_and_genMatch, 
-        Form("%s/sel/electrons", histogramDir_category.Data()), central_or_shift));	
+      selHistManager->electrons_in_categories_[*category] = new ElectronHistManager(makeHistManager_cfg(process_and_genMatch,
+        Form("%s/sel/electrons", histogramDir_category.Data()), central_or_shift));
       selHistManager->electrons_in_categories_[*category]->bookHistograms(fs);
     }
     selHistManager->muons_ = new MuonHistManager(makeHistManager_cfg(process_and_genMatch,
@@ -561,8 +561,8 @@ int main(int argc, char* argv[])
 	  category != categories.end(); ++category ) {
       TString histogramDir_category = histogramDir.data();
       histogramDir_category.ReplaceAll("2lss", Form("2lss_%s", category->data()));
-      selHistManager->muons_in_categories_[*category] = new MuonHistManager(makeHistManager_cfg(process_and_genMatch, 
-        Form("%s/sel/muons", histogramDir_category.Data()), central_or_shift));	
+      selHistManager->muons_in_categories_[*category] = new MuonHistManager(makeHistManager_cfg(process_and_genMatch,
+        Form("%s/sel/muons", histogramDir_category.Data()), central_or_shift));
       selHistManager->muons_in_categories_[*category]->bookHistograms(fs);
     }
     selHistManager->hadTaus_ = new HadTauHistManager(makeHistManager_cfg(process_and_genMatch,
@@ -602,7 +602,7 @@ int main(int argc, char* argv[])
 	    category != categories.end(); ++category ) {
       TString histogramDir_category = histogramDir.data();
       histogramDir_category.ReplaceAll("2lss", Form("2lss_%s", category->data()));
-      selHistManager->evt_in_categories_[*category] = new EvtHistManager_2lss(makeHistManager_cfg(process_and_genMatch, 
+      selHistManager->evt_in_categories_[*category] = new EvtHistManager_2lss(makeHistManager_cfg(process_and_genMatch,
         Form("%s/sel/evt", histogramDir_category.Data()), era_string, central_or_shift));
       selHistManager->evt_in_categories_[*category]->bookHistograms(fs);
     }
@@ -1218,7 +1218,7 @@ int main(int argc, char* argv[])
       preselElectrons.size(), preselMuons.size(), selHadTaus.size(),
       selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
       1.0, // evtWeight is first to be sure of not being loosing counting
-      -1., -1., -1., 
+      -1., -1., -1.,
       -1., -1.
     );
 
@@ -1601,8 +1601,8 @@ int main(int argc, char* argv[])
     	    if ( genWJets.size() >= 2 && genBJets.size() >= 1 && genTopQuarks.size() >= 1 && genWBosons.size() >= 1 ){
 	      double genTopPtProbeTop=-10;
 	      double genTopPtProbeAntiTop=-10;
-            std::map<int, bool> genMatchingTop = isGenMatchedJetTriplet(**selBJet, **selWJet1, **selWJet2, genTopQuarks, genBJets, genWBosons, genWJets, kGenTop, genTopPtProbeTop);
-            std::map<int, bool> genMatchingAntiTop = isGenMatchedJetTriplet(**selBJet, **selWJet1, **selWJet2, genTopQuarks, genBJets, genWBosons, genWJets, kGenAntiTop, genTopPtProbeAntiTop);
+            std::map<int, bool> genMatchingTop = isGenMatchedJetTriplet((*selBJet)->p4(), (*selWJet1)->p4(),  (*selWJet2)->p4(), genTopQuarks, genBJets, genWBosons, genWJets, kGenTop, genTopPtProbeTop);
+            std::map<int, bool> genMatchingAntiTop = isGenMatchedJetTriplet((*selBJet)->p4(), (*selWJet1)->p4(),  (*selWJet2)->p4(), genTopQuarks, genBJets, genWBosons, genWJets, kGenAntiTop, genTopPtProbeAntiTop);
 	      if ( genMatchingTop[kGenMatchedTriplet]     ) genTopPt = genTopPtProbeTop;
 	      if ( genMatchingAntiTop[kGenMatchedTriplet] ) genTopPt = genTopPtProbeAntiTop;
 	      isGenMatched = (genMatchingTop[kGenMatchedTriplet] || genMatchingAntiTop[kGenMatchedTriplet]);
@@ -1659,7 +1659,7 @@ int main(int argc, char* argv[])
       category += "ee";
       if      ( selLepton_lead->charge() < 0 && selLepton_sublead->charge() < 0 ) category += "_neg";
       else if ( selLepton_lead->charge() > 0 && selLepton_sublead->charge() > 0 ) category += "_pos";
-    } else if (  selLepton_lead_type == kMuon     && selLepton_sublead_type == kMuon      ) { 
+    } else if (  selLepton_lead_type == kMuon     && selLepton_sublead_type == kMuon      ) {
       category += "mm";
       if ( selBJets_medium.size() >= 2 ) category += "_bt";
       else category += "_bl";
@@ -1992,9 +1992,9 @@ int main(int argc, char* argv[])
 
     std::string process_and_genMatch = process_string;
     if ( apply_leptonGenMatching ) process_and_genMatch += leptonGenMatch_definition->name_;
-    
+
     int idxLepton = leptonGenMatch_definition->idx_;
-    
+
     const TH1* histogram_EventCounter = selHistManagers[idxLepton]->evt_->getHistogram_EventCounter();
     std::cout << " " << process_and_genMatch << " = " << histogram_EventCounter->GetEntries() << " (weighted = " << histogram_EventCounter->Integral() << ")" << std::endl;
   }
