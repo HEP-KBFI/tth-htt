@@ -113,8 +113,29 @@ template <typename T> std::vector<size_t> sort_indexes(const std::vector<T> &v) 
   std::vector<size_t> idx(v.size());
   iota(idx.begin(), idx.end(), 0);
   // sort indexes based on comparing values in v
-  sort(idx.begin(), idx.end(), [&v](size_t i1, size_t i2) {return v[i1] < v[i2];});
+  sort(idx.begin(), idx.end(), [&v](size_t i1, size_t i2) {return v[i1] > v[i2];});
   return idx;
+}
+
+std::vector<size_t> calRank(std::vector<const RecoJet*>& selJetsIt) {
+  std::vector<double> btag_disc;
+  for ( std::vector<const RecoJet*>::const_iterator jetIterB = selJetsIt.begin();
+    jetIterB != selJetsIt.end(); ++jetIterB ) {
+      btag_disc.push_back((*jetIterB)->BtagCSV());
+    }
+    std::vector<size_t> result(btag_disc.size(),0);
+    //sorted index
+    std::vector<size_t> indx(btag_disc.size());
+    iota(indx.begin(),indx.end(),0);
+    sort(indx.begin(),indx.end(),[&btag_disc](int i1, int i2){return btag_disc[i1]>btag_disc[i2];});
+    //return ranking
+    for(size_t iter=0;iter<btag_disc.size();++iter){
+        result[indx[iter]]=iter+1;
+    }
+    std::cout<<"btag discriminant  ";
+    for (auto i: btag_disc) std::cout << i << " ";
+    std::cout<<std::endl;
+    return result;
 }
 
 void dumpGenParticles(const std::string& label, const std::vector<GenParticle>& particles)
@@ -366,7 +387,7 @@ int main(int argc, char* argv[])
   int countFatAK12 = 0;
   int countResolved8 = 0;
   int countResolved12 = 0;
-  int typeTop = -1; // 1 - FatTop; 21 - countFatAK8; 22 countFatAK12; 31 - countResolved8; 32 - countResolved12;
+
   while(inputTree -> hasNextEvent() && (! run_lumi_eventSelector || (run_lumi_eventSelector && ! run_lumi_eventSelector -> areWeDone())))
   {
     if ( isDEBUG ) {
@@ -451,6 +472,7 @@ int main(int argc, char* argv[])
     double genTopPtProbeAntiTop = -1.;
     double genTopPt = -1.;
     //bool hadtruth = false;
+    int typeTop = -1; // 1 - FatTop; 21 - countFatAK8; 22 countFatAK12; 31 - countResolved8; 32 - countResolved12;
     if (jet_ptrsHTTv2.size() > 0) {
       countFatTop++;
       typeTop = 1;
@@ -463,7 +485,7 @@ int main(int argc, char* argv[])
           typeTop = 2;
           collectionSize = jet_ptrsAK12.size();
         }
-        else {
+        else if (selJets.size() >0) {
           countResolved12++;
           typeTop = 3;
           collectionSize = selJets.size();
@@ -474,7 +496,7 @@ int main(int argc, char* argv[])
           typeTop = 2;
           collectionSize = jet_ptrsAK8.size();
         }
-        else {
+        else if (selJets.size() >0) {
           countResolved8++;
           typeTop = 3;
           collectionSize = selJets.size();
@@ -497,18 +519,19 @@ int main(int argc, char* argv[])
           selBJet = recSubJet[btag_order[0]]->p4();
           selWJet1 = recSubJet[btag_order[1]]->p4();
           selWJet2 = recSubJet[btag_order[2]]->p4();
-          std::cout<<"Toppt = "<< (*jetIter)->pt() <<std::endl;
-          std::cout<<"Topeta = "<< (*jetIter)->eta() <<std::endl;
-          std::cout<<"Top mass = "<< (*jetIter)->mass() <<" "<< unfittedHadTopP4.mass() <<std::endl;
-          std::cout<<"subjet pt = "<< selBJet.pt() <<std::endl;
-          std::cout<<" tau3 tau2 = "<< (*jetIter)->tau3()<<" "<< (*jetIter)->tau2() <<std::endl;
+          //std::cout<<"Toppt = "<< (*jetIter)->pt() <<std::endl;
+          //std::cout<<"Topeta = "<< (*jetIter)->eta() <<std::endl;
+          //std::cout<<"Top mass = "<< (*jetIter)->mass() <<" "<< unfittedHadTopP4.mass() <<std::endl;
+          //std::cout<<"subjet pt = "<< selBJet.pt() <<std::endl;
+          //std::cout<<" tau3 tau2 = "<< (*jetIter)->tau3()<<" "<< (*jetIter)->tau2() <<std::endl;
+          // checking btag ordering
           std::cout<<"btag ordering  ";
-          for(size_t i = btag_order.size(); i--;) std::cout << btag_order[i] << " ";
+          for (auto i: btag_order) std::cout << i << " ";
           std::cout<<" typeTop = "<<typeTop<<std::endl;
           std::cout<<"btag discriminant  ";
-          for(size_t i = btag_disc.size(); i--;) std::cout << btag_disc[i] << " ";
+          for (auto i: btag_disc) std::cout << i << " ";
           std::cout<<std::endl;
-          std::cout<<"max btag "<< btag_disc[0] <<std::endl;
+          std::cout<<"max btag position "<< btag_order[0] <<" value "<< btag_disc[btag_order[0]] <<std::endl;
           // calculate matching
           std::map<int, bool> genMatchingTop = isGenMatchedJetTriplet(selBJet, selWJet1, selWJet2, genTopQuarks, genBJets, genWBosons, genWJets, kGenTop, genTopPtProbeTop);
           std::map<int, bool> genMatchingAntiTop = isGenMatchedJetTriplet(selBJet, selWJet1,  selWJet2, genTopQuarks, genBJets, genWBosons, genWJets, kGenAntiTop, genTopPtProbeAntiTop);
@@ -525,26 +548,19 @@ int main(int argc, char* argv[])
             ("massW_SD",             -1.)
             ("genTopPt",             genTopPt)
             ("collectionSize",       collectionSize)
-            ("bjet_tag_position",    0)
+            ("bjet_tag_position",    1)
             ("bWj1Wj2_isGenMatched", isGenMatched)
             ("counter",              (inputTree -> getProcessedFileCount() - 1))
                 .fill();
           }
-          std::cout<<"filled "<<typeTop<<std::endl;
         }
-    } else {
+    } else if (typeTop!=-1) {
     // store b-tag classification
     std::cout<<std::endl;
-    std::vector<double> btag_disc;
-    for ( std::vector<const RecoJet*>::const_iterator jetIterB = selJets.begin();
-      jetIterB != selJets.end(); ++jetIterB ) btag_disc.push_back((*jetIterB)->BtagCSV());
-    auto btag_order = sort_indexes(btag_disc);
+    auto btag_order = calRank(selJets);
     std::cout<<"btag ordering  ";
-    for(size_t i = btag_order.size(); i--;) std::cout << btag_order[i] << " ";
+    for (auto i: btag_order) std::cout << i << " ";
     std::cout<<" typeTop = "<<typeTop<<std::endl;
-    std::cout<<"btag discriminant  ";
-    for(size_t i = btag_disc.size(); i--;) std::cout << btag_disc[i] << " ";
-    std::cout<<std::endl;
     // classify between 2 and 3
     if (typeTop == 2 and inAK12) {
       std::cout<<"filling "<<typeTop<<std::endl;
@@ -552,20 +568,20 @@ int main(int argc, char* argv[])
         jetIter != jet_ptrsAK12.end(); ++jetIter ) {
           for ( unsigned int bjetCandidate = 0; bjetCandidate < selJets.size(); bjetCandidate++ ) {
               unfittedHadTopP4 = (*jetIter)->p4() + (*selJets[bjetCandidate]).p4();
-              std::cout<<"TopPt = "<<unfittedHadTopP4.pt()<<std::endl;
-              std::cout<<"Wtau21 = "<< (*jetIter)->tau2()/(*jetIter)->tau1() <<std::endl;
-              std::cout<<"Wmass = "<< (*jetIter)->mass() <<std::endl;
-              std::cout<<"WmassSD = "<< (*jetIter)->msoftdrop() <<std::endl;
-              std::cout<<"btag position = "<< btag_order[bjetCandidate] <<std::endl;
+              //std::cout<<"TopPt = "<<unfittedHadTopP4.pt()<<std::endl;
+              //std::cout<<"Wtau21 = "<< (*jetIter)->tau2()/(*jetIter)->tau1() <<std::endl;
+              //std::cout<<"Wmass = "<< (*jetIter)->mass() <<std::endl;
+              //std::cout<<"WmassSD = "<< (*jetIter)->msoftdrop() <<std::endl;
+              //std::cout<<"btag position = "<< btag_order[bjetCandidate] <<std::endl;
               selBJet = (*selJets[bjetCandidate]).p4();
-              std::cout<<"loaded bjet "<< selBJet.pt()<<std::endl;
-              std::cout<<"Wpt = "<< (*jetIter)->pt() <<std::endl;
-              std::cout<<"Weta = "<< (*jetIter)->eta() <<std::endl;
+              //std::cout<<"loaded bjet "<< selBJet.pt()<<std::endl;
+              //std::cout<<"Wpt = "<< (*jetIter)->pt() <<std::endl;
+              //std::cout<<"Weta = "<< (*jetIter)->eta() <<std::endl;
               //std::cout<<" subjet index = "<< (*jetIter)->subJetIdx1()<<" "<< (*jetIter)->subJetIdx2() <<std::endl;
               //if (massMD_typeTop22 < 1) continue;
               selWJet1 = (*jetIter)->subJet1()->p4();
               selWJet2 = (*jetIter)->subJet2()->p4();
-              std::cout<<"loaded subjets "<<selWJet1.pt()<<" "<<selWJet2.pt()<<std::endl;
+              //std::cout<<"loaded subjets "<<selWJet1.pt()<<" "<<selWJet2.pt()<<std::endl;
               // calculate matching
               std::map<int, bool> genMatchingTop = isGenMatchedJetTriplet(selBJet, selWJet1, selWJet2, genTopQuarks, genBJets, genWBosons, genWJets, kGenTop, genTopPtProbeTop);
               std::map<int, bool> genMatchingAntiTop = isGenMatchedJetTriplet(selBJet, selWJet1,  selWJet2, genTopQuarks, genBJets, genWBosons, genWJets, kGenAntiTop, genTopPtProbeAntiTop);
@@ -587,8 +603,6 @@ int main(int argc, char* argv[])
                 ("counter",              (inputTree -> getProcessedFileCount() - 1))
                     .fill();
               }
-              std::cout<<"filled "<<typeTop<<std::endl;
-
           }
         }
     } else if (typeTop == 2) {
@@ -597,12 +611,12 @@ int main(int argc, char* argv[])
           jetIter != jet_ptrsAK8.end(); ++jetIter ) {
             for ( unsigned int bjetCandidate = 0; bjetCandidate < selJets.size(); bjetCandidate++ ) {
                 unfittedHadTopP4 = (*jetIter)->p4() + (*selJets[bjetCandidate]).p4();
-                std::cout<<"TopPt = "<<unfittedHadTopP4.pt()<<std::endl;
-                std::cout<<"Wtau21 = "<< (*jetIter)->tau2()/(*jetIter)->tau1() <<std::endl;
-                std::cout<<"Wmass = "<< (*jetIter)->mass() <<std::endl;
-                std::cout<<"WmassSD = "<< (*jetIter)->msoftdrop() <<std::endl;
-                std::cout<<"Wpt = "<< (*jetIter)->pt() <<std::endl;
-                std::cout<<"Weta = "<< (*jetIter)->eta() <<std::endl;
+                //std::cout<<"TopPt = "<<unfittedHadTopP4.pt()<<std::endl;
+                //std::cout<<"Wtau21 = "<< (*jetIter)->tau2()/(*jetIter)->tau1() <<std::endl;
+                //std::cout<<"Wmass = "<< (*jetIter)->mass() <<std::endl;
+                //std::cout<<"WmassSD = "<< (*jetIter)->msoftdrop() <<std::endl;
+                //std::cout<<"Wpt = "<< (*jetIter)->pt() <<std::endl;
+                //std::cout<<"Weta = "<< (*jetIter)->eta() <<std::endl;
                 selBJet = (*selJets[bjetCandidate]).p4();
                 //std::cout<<" subjet index = "<< (*jetIter)->subjet_idx1()<<" "<< (*jetIter)->subjet_idx2() <<std::endl;
                 selWJet1 = (*jetIter)->subJet1()->p4();
@@ -629,7 +643,6 @@ int main(int argc, char* argv[])
                   ("counter",              (inputTree -> getProcessedFileCount() - 1))
                       .fill();
                 }
-                std::cout<<"filled "<<typeTop<<std::endl;
             }
             }
         } else if (typeTop == 3) {
@@ -650,7 +663,7 @@ int main(int argc, char* argv[])
                   if(genMatchingTop[kGenMatchedTriplet]) genTopPt=genTopPtProbeTop;
                   if(genMatchingAntiTop[kGenMatchedTriplet]) genTopPt=genTopPtProbeAntiTop;
                   isGenMatched = (genMatchingTop[kGenMatchedTriplet] || genMatchingAntiTop[kGenMatchedTriplet]);
-                  std::cout<<"btag position = "<< btag_order[bjetCandidate] <<std::endl;
+                  //std::cout<<"btag position = "<< btag_order[bjetCandidate] <<std::endl;
                   if ( bdt_filler ) {
                     bdt_filler -> operator()({ eventInfo.run, eventInfo.lumi, eventInfo.event })
                     ("typeTop",              typeTop)
@@ -669,8 +682,8 @@ int main(int argc, char* argv[])
                }
             }
           }
-    } else throw cms::Exception("analyze_hadTopTagger")
-      << "Does not fall in any category " << " !!\n";
+    } //else throw cms::Exception("analyze_hadTopTagger")
+      //<< "Does not fall in any category " << " !!\n";
   }
 
 		++selectedEntries;
