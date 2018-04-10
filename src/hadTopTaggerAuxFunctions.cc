@@ -6,9 +6,9 @@
 #include <algorithm> // std::sort()
 
 std::map<int, bool>
-isGenMatchedJetTriplet(const RecoJet & recBJet,
-                       const RecoJet & recWJet1,
-                       const RecoJet & recWJet2,
+isGenMatchedJetTriplet(const Particle::LorentzVector & recBJet,
+                       const Particle::LorentzVector & recWJet1,
+                       const Particle::LorentzVector & recWJet2,
                        const std::vector<GenParticle> & genTopQuarks,
                        const std::vector<GenParticle> & genBJets,
                        const std::vector<GenParticle> & genWBosons,
@@ -107,14 +107,14 @@ isGenMatchedJetTriplet(const RecoJet & recBJet,
     genWJetFromTop_lead, genWJetFromTop_sublead, genWBosonFromTop
   );
 
-  genMatchFlags[kGenMatchedBJet]    = deltaR(recBJet.p4(), genBJetFromTop->p4()) < 0.2;
+  genMatchFlags[kGenMatchedBJet]    = deltaR(recBJet, genBJetFromTop->p4()) < 0.2;
   genMatchFlags[kGenMatchedWJet1]   =
-    (genWJetFromTop_lead    && deltaR(recWJet1.p4(), genWJetFromTop_lead->p4())    < 0.2) ||
-    (genWJetFromTop_sublead && deltaR(recWJet1.p4(), genWJetFromTop_sublead->p4()) < 0.2)
+    (genWJetFromTop_lead    && deltaR(recWJet1, genWJetFromTop_lead->p4())    < 0.2) ||
+    (genWJetFromTop_sublead && deltaR(recWJet1, genWJetFromTop_sublead->p4()) < 0.2)
   ;
   genMatchFlags[kGenMatchedWJet2]   =
-    (genWJetFromTop_lead    && deltaR(recWJet2.p4(), genWJetFromTop_lead->p4())    < 0.2) ||
-    (genWJetFromTop_sublead && deltaR(recWJet2.p4(), genWJetFromTop_sublead->p4()) < 0.2)
+    (genWJetFromTop_lead    && deltaR(recWJet2, genWJetFromTop_lead->p4())    < 0.2) ||
+    (genWJetFromTop_sublead && deltaR(recWJet2, genWJetFromTop_sublead->p4()) < 0.2)
   ;
   genMatchFlags[kGenMatchedTriplet] =
     genMatchFlags[kGenMatchedBJet]  &&

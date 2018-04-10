@@ -19,9 +19,9 @@ enum {
 };
 
 std::map<int, bool>
-isGenMatchedJetTriplet(const RecoJet & recBJet,
-                       const RecoJet & recWJet1,
-                       const RecoJet & recWJet2,
+isGenMatchedJetTriplet(const Particle::LorentzVector & recBJet,
+                       const Particle::LorentzVector & recWJet1,
+                       const Particle::LorentzVector & recWJet2,
                        const std::vector<GenParticle> & genTopQuarks,
                        const std::vector<GenParticle> & genBJets,
                        const std::vector<GenParticle> & genWBosons,

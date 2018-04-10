@@ -30,7 +30,7 @@ max_job_resubmission = resubmission_limit if resubmit else 1
 hadTau_selection     = "Tight|%s" % tau_id_wp
 
 if era == "2017":
-  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_FastSim import samples_2017 as samples
+  from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync import samples_2017 as samples
   from tthAnalysis.HiggsToTauTau.analysisSettings import lumi_2017 as lumi
 else:
   raise ValueError("Invalid era: %s" % era)

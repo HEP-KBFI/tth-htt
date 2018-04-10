@@ -120,7 +120,7 @@ class analyzeConfig_hadTopTagger(analyzeConfig):
           'hadTau_selection' : self.hadTau_selection,
           'use_HIP_mitigation_mediumMuonId' : True,
           'is_mc' : is_mc,
-          'lumi_scale' : 1. if not (self.use_lumi and is_mc) else sample_info["xsection"] * self.lumi / sample_info["nof_events"],
+          'lumi_scale' : 1., # if not (self.use_lumi and is_mc) else sample_info["xsection"] * self.lumi / sample_info["nof_events"],
           'apply_genWeight' : sample_info["genWeight"] if (is_mc and "genWeight" in sample_info) else False,
           'selectBDT' : True,
         }
