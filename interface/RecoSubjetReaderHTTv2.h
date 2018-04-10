@@ -42,13 +42,13 @@ protected:
   const unsigned int max_nJets_;
   std::string branchName_num_;
   std::string branchName_obj_;
- 
+
   std::string branchName_pt_;
   std::string branchName_eta_;
   std::string branchName_phi_;
   std::string branchName_mass_;
   std::string branchName_IDPassed_;
-  std::string branchName_BtagCSV_;
+  std::string branchName_btagDeepB_;
   std::string branchName_area_;
 
   UInt_t nJets_;
@@ -57,7 +57,7 @@ protected:
   Float_t * jet_phi_;
   Float_t * jet_mass_;
   Float_t * jet_IDPassed_;
-  Float_t * jet_BtagCSV_;
+  Float_t * jet_btagDeepB_;
   Float_t * jet_area_;
 
   // CV: make sure that only one RecoSubjetReaderHTTv2 instance exists for a given branchName,
@@ -67,4 +67,3 @@ protected:
 };
 
 #endif // tthAnalysis_HiggsToTauTau_RecoSubjetReaderHTTv2_h
-

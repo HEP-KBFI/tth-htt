@@ -71,4 +71,3 @@ operator<<(std::ostream & stream,
            const RecoJetHTTv2 & jet);
 
 #endif // tthAnalysis_HiggsToTauTau_RecoJetHTTv2_h
-

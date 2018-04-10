@@ -45,7 +45,7 @@ protected:
   std::string branchName_obj_;
 
   RecoSubjetReaderAK12 * subjetReader_;
- 
+
   std::string branchName_pt_;
   std::string branchName_eta_;
   std::string branchName_phi_;
@@ -88,4 +88,3 @@ protected:
 };
 
 #endif // tthAnalysis_HiggsToTauTau_RecoJetReaderAK12_h
-

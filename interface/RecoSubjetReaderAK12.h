@@ -42,7 +42,7 @@ protected:
   const unsigned int max_nJets_;
   std::string branchName_num_;
   std::string branchName_obj_;
- 
+
   std::string branchName_pt_;
   std::string branchName_eta_;
   std::string branchName_phi_;
@@ -69,4 +69,3 @@ protected:
 };
 
 #endif // tthAnalysis_HiggsToTauTau_RecoSubjetReaderAK12_h
-

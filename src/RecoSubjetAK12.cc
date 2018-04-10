@@ -16,25 +16,25 @@ RecoSubjetAK12::RecoSubjetAK12(const GenJet & jet,
 RecoSubjetAK12::~RecoSubjetAK12()
 {}
 
-Double_t 
+Double_t
 RecoSubjetAK12::charge() const
 {
   return charge_;
 }
 
-Double_t 
+Double_t
 RecoSubjetAK12::pullEta() const
 {
   return pullEta_;
 }
 
-Double_t 
+Double_t
 RecoSubjetAK12::pullPhi() const
 {
   return pullPhi_;
 }
 
-Double_t 
+Double_t
 RecoSubjetAK12::pullMag() const
 {
   return pullMag_;

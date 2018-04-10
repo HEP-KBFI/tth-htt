@@ -22,7 +22,7 @@ RecoSubjetReaderHTTv2::RecoSubjetReaderHTTv2(int era,
   , jet_phi_(nullptr)
   , jet_mass_(nullptr)
   , jet_IDPassed_(nullptr)
-  , jet_BtagCSV_(nullptr)
+  , jet_btagDeepB_(nullptr)
   , jet_area_(nullptr)
 {
   setBranchNames();
@@ -41,7 +41,7 @@ RecoSubjetReaderHTTv2::~RecoSubjetReaderHTTv2()
     delete[] gInstance->jet_phi_;
     delete[] gInstance->jet_mass_;
     delete[] gInstance->jet_IDPassed_;
-    delete[] gInstance->jet_BtagCSV_;
+    delete[] gInstance->jet_btagDeepB_;
     delete[] gInstance->jet_area_;
     instances_[branchName_obj_] = nullptr;
   }
@@ -57,7 +57,7 @@ RecoSubjetReaderHTTv2::setBranchNames()
     branchName_phi_ = Form("%s_%s", branchName_obj_.data(), "phi");
     branchName_mass_ = Form("%s_%s", branchName_obj_.data(), "mass");
     branchName_IDPassed_ = Form("%s_%s", branchName_obj_.data(), "IDPassed");
-    branchName_BtagCSV_ = Form("%s_%s", branchName_obj_.data(), "btag");
+    branchName_btagDeepB_ = Form("%s_%s", branchName_obj_.data(), "btag");
     branchName_area_ = Form("%s_%s", branchName_obj_.data(), "area");
     instances_[branchName_obj_] = this;
   }
@@ -87,7 +87,7 @@ RecoSubjetReaderHTTv2::setBranchAddresses(TTree * tree)
     bai.setBranchAddress(jet_phi_, branchName_phi_);
     bai.setBranchAddress(jet_mass_, branchName_mass_);
     bai.setBranchAddress(jet_IDPassed_, branchName_IDPassed_);
-    bai.setBranchAddress(jet_BtagCSV_, branchName_BtagCSV_);
+    bai.setBranchAddress(jet_btagDeepB_, branchName_btagDeepB_);
     bai.setBranchAddress(jet_area_, branchName_area_);
   }
 }
@@ -119,7 +119,7 @@ RecoSubjetReaderHTTv2::read() const
           gInstance->jet_mass_[idxJet]
         },
 	( gInstance->jet_IDPassed_[idxJet] > 0.5 ) ? true : false ,
-        gInstance->jet_BtagCSV_[idxJet],
+        gInstance->jet_btagDeepB_[idxJet],
         gInstance->jet_area_[idxJet],
         static_cast<Int_t>(idxJet)
       });

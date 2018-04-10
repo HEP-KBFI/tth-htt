@@ -32,73 +32,73 @@ RecoJetAK12::RecoJetAK12(const GenJet & jet,
 RecoJetAK12::~RecoJetAK12()
 {}
 
-Double_t 
+Double_t
 RecoJetAK12::charge() const
 {
   return charge_;
 }
 
-Double_t 
+Double_t
 RecoJetAK12::pullEta() const
 {
   return pullEta_;
 }
 
-Double_t 
+Double_t
 RecoJetAK12::pullPhi() const
 {
   return pullPhi_;
 }
 
-Double_t 
+Double_t
 RecoJetAK12::pullMag() const
 {
   return pullMag_;
 }
 
-Double_t 
+Double_t
 RecoJetAK12::QjetVolatility() const
 {
   return QjetVolatility_;
 }
 
-Double_t 
+Double_t
 RecoJetAK12::msoftdrop() const
 {
   return msoftdrop_;
 }
 
-const RecoSubjetAK12* 
+const RecoSubjetAK12*
 RecoJetAK12::subJet1() const
 {
   return subJet1_.get();
 }
- 
-const RecoSubjetAK12* 
+
+const RecoSubjetAK12*
 RecoJetAK12::subJet2() const
 {
   return subJet2_.get();
 }
- 
-Double_t 
+
+Double_t
 RecoJetAK12::tau1() const
 {
   return tau1_;
 }
 
-Double_t 
+Double_t
 RecoJetAK12::tau2() const
 {
   return tau2_;
 }
 
-Double_t 
+Double_t
 RecoJetAK12::tau3() const
 {
   return tau3_;
 }
 
-Double_t 
+Double_t
 RecoJetAK12::tau4() const
 {
   return tau4_;

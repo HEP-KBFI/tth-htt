@@ -74,4 +74,3 @@ operator<<(std::ostream & stream,
            const RecoJetAK12 & jet);
 
 #endif // tthAnalysis_HiggsToTauTau_RecoJetAK12_h
-

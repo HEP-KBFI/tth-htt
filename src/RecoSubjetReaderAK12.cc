@@ -62,6 +62,7 @@ RecoSubjetReaderAK12::setBranchNames()
     branchName_pullEta_ = Form("%s_%s", branchName_obj_.data(), "pullEta");
     branchName_pullPhi_ = Form("%s_%s", branchName_obj_.data(), "pullPhi");
     branchName_pullMag_ = Form("%s_%s", branchName_obj_.data(), "pullMag");
+
     instances_[branchName_obj_] = this;
   }
   else
@@ -120,7 +121,7 @@ RecoSubjetReaderAK12::read() const
           gInstance->jet_pt_[idxJet],
           gInstance->jet_eta_[idxJet],
           gInstance->jet_phi_[idxJet],
-          gInstance->jet_mass_[idxJet]	    
+          gInstance->jet_mass_[idxJet]
         },
 	gInstance->jet_charge_[idxJet],
 	gInstance->jet_pullEta_[idxJet],

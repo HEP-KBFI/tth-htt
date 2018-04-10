@@ -14,19 +14,20 @@ RecoSubjetHTTv2::RecoSubjetHTTv2(const GenJet & jet,
 RecoSubjetHTTv2::~RecoSubjetHTTv2()
 {}
 
-Bool_t 
+Bool_t
 RecoSubjetHTTv2::IDPassed() const
 {
   return IDPassed_;
 }
 
-Double_t 
+Double_t
 RecoSubjetHTTv2::BtagCSV() const
 {
   return BtagCSV_;
 }
 
-Double_t RecoSubjetHTTv2::area() const
+Double_t
+RecoSubjetHTTv2::area() const
 {
   return area_;
 }

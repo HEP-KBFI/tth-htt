@@ -12,6 +12,10 @@ RecoJetHTTv2::RecoJetHTTv2(const GenJet & jet,
 			   Double_t tau1,
 			   Double_t tau2,
 			   Double_t tau3,
+				 //Double_t mass, // quantities calculated on filtered jets
+				 //Double_t pt,
+				 //Double_t phi,
+				 //Double_t eta,
 			   Int_t idx)
   : RecoJetBase(jet, idx)
   , area_(area)
@@ -24,78 +28,107 @@ RecoJetHTTv2::RecoJetHTTv2(const GenJet & jet,
   , ptForRoptCalc_(ptForRoptCalc)
   , tau1_(tau1)
   , tau2_(tau2)
-  , tau3_(tau3)
+  , tau3_(tau3) //
+	//, mass_(mass)
+	//, pt_(pt)
+	//, phi_(phi)
+	//, eta_(eta)
 {}
 
 RecoJetHTTv2::~RecoJetHTTv2()
 {}
 
-Double_t 
+Double_t
 RecoJetHTTv2::area() const
 {
   return area_;
 }
 
-const RecoSubjetHTTv2* 
+const RecoSubjetHTTv2*
 RecoJetHTTv2::subJet1() const
 {
   return subJet1_.get();
 }
- 
-const RecoSubjetHTTv2* 
+
+const RecoSubjetHTTv2*
 RecoJetHTTv2::subJet2() const
 {
   return subJet2_.get();
 }
- 
-const RecoSubjetHTTv2* 
+
+const RecoSubjetHTTv2*
 RecoJetHTTv2::subJet3() const
 {
   return subJet3_.get();
 }
 
-Double_t 
+Double_t
 RecoJetHTTv2::fRec() const
 {
   return fRec_;
 }
- 
-Double_t 
+
+Double_t
 RecoJetHTTv2::Ropt() const
 {
   return Ropt_;
 }
 
-Double_t 
-RecoJetHTTv2::RoptCalc() const 
+Double_t
+RecoJetHTTv2::RoptCalc() const
 {
   return RoptCalc_;
 }
 
-Double_t 
+Double_t
 RecoJetHTTv2::ptForRoptCalc() const
 {
   return ptForRoptCalc_;
 }
 
-Double_t 
+Double_t
 RecoJetHTTv2::tau1() const
 {
   return tau1_;
 }
 
-Double_t 
+Double_t
 RecoJetHTTv2::tau2() const
 {
   return tau2_;
 }
 
-Double_t 
+Double_t
 RecoJetHTTv2::tau3() const
 {
   return tau3_;
 }
 
+/*
+Double_t
+RecoJetHTTv2::mass() const
+{
+  return mass_;
+}
+
+Double_t
+RecoJetHTTv2::pt() const
+{
+  return pt_;
+}
+
+Double_t
+RecoJetHTTv2::eta() const
+{
+  return eta_;
+}
+
+Double_t
+RecoJetHTTv2::phi() const
+{
+  return phi_;
+}
+*/
 std::ostream &
 operator<<(std::ostream & stream,
            const RecoJetHTTv2 & jet)
@@ -107,6 +140,10 @@ operator<<(std::ostream & stream,
             " tau1 = " << jet.tau1()                 << ","
             " tau2 = " << jet.tau2()                 << ","
             " tau3 = " << jet.tau3()                 << ",\n"
+						//" mass = " << jet.mass()                 << ","
+						//" pt = " << jet.pt()                     << ","
+						//" eta = " << jet.eta()                   << ","
+						//" phi = " << jet.phi()                   << ",\n"
             " subjets:";
   stream << ",\n  idx1 = " << jet.subJet1();
   if(jet.subJet1())
