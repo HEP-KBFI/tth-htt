@@ -3,7 +3,7 @@ import os, logging, sys, getpass
 from tthAnalysis.HiggsToTauTau.configs.analyzeConfig_2lss_1tau import analyzeConfig_2lss_1tau
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 from tthAnalysis.HiggsToTauTau.analysisSettings import systematics
-from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser
+from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
 
 #--------------------------------------------------------------------------------
 # NOTE: set mode flag to
@@ -44,6 +44,7 @@ no_exec            = args.no_exec
 auto_exec          = args.auto_exec
 check_input_files  = args.check_input_files
 debug              = args.debug
+sample_filter      = args.filter
 
 # Additional arguments
 mode              = args.mode
@@ -59,6 +60,7 @@ max_files_per_job    = 50 if use_preselected else 1
 do_sync              = mode.startswith('sync')
 
 MEMbranch                          = ''
+hadTau_selection_veto              = "dR03mvaVTight"
 hadTauFakeRateWeight_inputFileName = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016.root" #TODO update
 lepton_charge_selections           = [ "SS" ] if mode.find("forBDTtraining") != -1 else [ "OS", "SS" ]
 chargeSumSelections                = [ "OS" ] if mode.find("forBDTtraining") != -1 else [ "OS", "SS" ]
@@ -68,14 +70,14 @@ if mode == "VHbb":
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_preselected import samples_2017
   else:
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017
-  hadTau_selection     = "dR03mvaMedium"
-  applyFakeRateWeights = "2lepton"
+  hadTau_selection      = "dR03mvaMedium"
+  applyFakeRateWeights  = "2lepton"
 elif mode == "addMEM":
   from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_addMEM_2lss1tau import samples_2017
-  MEMbranch            = 'memObjects_2lss_1tau_lepFakeable_tauTight_dR03mvaMedium'
-  hadTau_selection     = "dR03mvaMedium"
-  applyFakeRateWeights = "2lepton"
-  max_files_per_job    = 1
+  MEMbranch             = 'memObjects_2lss_1tau_lepFakeable_tauTight_dR03mvaMedium'
+  hadTau_selection      = "dR03mvaMedium"
+  applyFakeRateWeights  = "2lepton"
+  max_files_per_job     = 1
 elif mode == "forBDTtraining_beforeAddMEM":
   if use_preselected:
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_FastSim_preselected import samples_2017
@@ -126,6 +128,9 @@ if __name__ == '__main__':
     ', '.join(central_or_shift)
   )
 
+  if sample_filter:
+    samples = filter_samples(samples, sample_filter)
+
   if args.tau_id_wp:
     logging.info("Changing tau ID working point: %s -> %s" % (hadTau_selection, args.tau_id_wp))
     hadTau_selection = args.tau_id_wp
@@ -151,6 +156,7 @@ if __name__ == '__main__':
       MEMbranch                 = MEMbranch,
       lepton_charge_selections  = lepton_charge_selections,
       hadTau_selection          = hadTau_selection,
+      hadTau_selection_veto     = hadTau_selection_veto,
       # CV: apply "fake" background estimation to leptons only and not to hadronic taus, as discussed on slide 10 of
       #     https://indico.cern.ch/event/597028/contributions/2413742/attachments/1391684/2120220/16.12.22_ttH_Htautau_-_Review_of_systematics.pdf
       applyFakeRateWeights      = applyFakeRateWeights,
@@ -167,22 +173,22 @@ if __name__ == '__main__':
       # CV: use common executable for estimating jet->lepton and jet->tau_h fake background
       executable_addFakes       = "addBackgroundLeptonFakes",
       executable_addFlips       = "addBackgroundLeptonFlips",
-      histograms_to_fit         = [
-        "EventCounter",
-        "numJets",
-        "mvaOutput_2lss_ttV",
-        "mvaOutput_2lss_tt",
-        "mvaOutput_2lss_1tau_plainKin_tt",
-        "mvaOutput_2lss_1tau_plainKin_ttV",
-        "mvaOutput_2lss_1tau_plainKin_1B_M",
-        "mvaOutput_2lss_1tau_plainKin_SUM_M",
-        "mvaOutput_2lss_1tau_HTT_SUM_M",
-        "mvaOutput_2lss_1tau_HTTMEM_SUM_M",
-        "mTauTauVis1",
-        "mTauTauVis2",
-        "mTauTauVis",
-        "memOutput_LR",
-      ],
+      histograms_to_fit         = {
+        "EventCounter"                       : {},
+        "numJets"                            : {},
+        "mvaOutput_2lss_ttV"                 : {},
+        "mvaOutput_2lss_tt"                  : {},
+        "mvaOutput_2lss_1tau_plainKin_tt"    : { 'quantile_rebin' : 15, 'quantile_in_fakes' : True }, # BDT2; quantile in fakes
+        "mvaOutput_2lss_1tau_plainKin_ttV"   : { 'quantile_rebin' : 15, 'quantile_in_fakes' : True }, # BDT1; quantile in fakes
+        "mvaOutput_2lss_1tau_plainKin_1B_M"  : {},
+        "mvaOutput_2lss_1tau_plainKin_SUM_M" : { 'quantile_rebin' : 11, 'quantile_in_fakes' : True }, # BDT3; quantile in fakes
+        "mvaOutput_2lss_1tau_HTT_SUM_M"      : { 'quantile_rebin' : 11, 'quantile_in_fakes' : True }, # BDT4; quantile in fakes
+        "mvaOutput_2lss_1tau_HTTMEM_SUM_M"   : { 'quantile_rebin' : 15, 'quantile_in_fakes' : True }, # BDT5; quantile in fakes
+        "mTauTauVis1"                        : {},
+        "mTauTauVis2"                        : {},
+        "mTauTauVis"                         : {},
+        "memOutput_LR"                       : {},
+      },
       select_rle_output         = True,
       verbose                   = idx_job_resubmission > 0,
       dry_run                   = dry_run,

@@ -8,6 +8,7 @@ RecoMuonSelectorFakeable::RecoMuonSelectorFakeable(int era,
                                                    bool debug,
                                                    bool set_selection_flags)
   : era_(era)
+  , debug_(debug)
   , set_selection_flags_(set_selection_flags)
   , tightMuonSelector_(era_, index, debug, false)
   , min_cone_pt_(10.)
@@ -37,33 +38,130 @@ RecoMuonSelectorFakeable::RecoMuonSelectorFakeable(int era,
 bool
 RecoMuonSelectorFakeable::operator()(const RecoMuon & muon) const
 {
-  if(muon.cone_pt()        >= min_cone_pt_            &&
-     muon.lepton_pt()      >= min_lepton_pt_          &&
-     muon.absEta()         <= max_absEta_             &&
-     std::fabs(muon.dxy()) <= max_dxy_                &&
-     std::fabs(muon.dz())  <= max_dz_                 &&
-     muon.relIso()         <= max_relIso_             &&
-     muon.sip3d()          <= max_sip3d_              &&
-     (muon.passesLooseIdPOG() || ! apply_looseIdPOG_) &&
-     (muon.passesMediumIdPOG() || ! apply_mediumIdPOG_))
+  if(debug_)
   {
-    const int idxBin = muon.mvaRawTTH() <= binning_mvaTTH_[0] ? 0 : 1;
-    if(muon.jetPtRatio() >= min_jetPtRatio_[idxBin] &&
-       muon.jetBtagCSV() <= max_jetBtagCSV_[idxBin] &&
-       muon.segmentCompatibility() > min_segmentCompatibility_[idxBin])
-    {
-      if(set_selection_flags_)
-      {
-        muon.set_isFakeable();
-        if(tightMuonSelector_(muon))
-        {
-          muon.set_isTight();
-        }
-      } // set_selection_flags
-      return true;
-    } // muon.jetPtRatio, muon.jetBtagCSV
+    std::cout << get_human_line(this, __func__) << ":\n" << muon;
   }
-  return false;
+
+  if(muon.cone_pt() < min_cone_pt_)
+  {
+    if(debug_)
+    {
+      std::cout << "FAILS cone pT >= " << min_cone_pt_ << " fakeable cut\n";
+    }
+    return false;
+  }
+
+  if(muon.lepton_pt() < min_lepton_pt_)
+  {
+    if(debug_)
+    {
+      std::cout << "FAILS pT >= " << min_lepton_pt_ << " fakeable cut\n";
+    }
+  }
+
+  if(muon.absEta() > max_absEta_)
+  {
+    if(debug_)
+    {
+      std::cout << "FAILS abs(eta) <= " << max_absEta_ << " fakeable cut\n";
+    }
+    return false;
+  }
+
+  if(std::fabs(muon.dxy()) > max_dxy_)
+  {
+    if(debug_)
+    {
+      std::cout << "FAILS abs(dxy) <= " << max_dxy_ << " fakeable cut\n";
+    }
+    return false;
+  }
+
+  if(std::fabs(muon.dz()) > max_dz_)
+  {
+    if(debug_)
+    {
+      std::cout << "FAILS abs(dz) <= " << max_dz_ << " fakeable cut\n";
+    }
+    return false;
+  }
+
+  if(muon.relIso() > max_relIso_)
+  {
+    if(debug_)
+    {
+      std::cout << "FAILS relIso <= " << max_relIso_ << " fakeable cut\n";
+    }
+    return false;
+  }
+
+  if(muon.sip3d() > max_sip3d_)
+  {
+    if(debug_)
+    {
+      std::cout << "FAILS sip3d <= " << max_sip3d_ << " fakeable cut\n";
+    }
+    return false;
+  }
+
+  if(! muon.passesLooseIdPOG() && apply_looseIdPOG_)
+  {
+    if(debug_)
+    {
+      std::cout << "FAILS loose POG fakeable cut\n";
+    }
+    return false;
+  }
+
+  if(! muon.passesMediumIdPOG() && apply_mediumIdPOG_)
+  {
+    if(debug_)
+    {
+      std::cout << "FAILS medium POG fakeable cut\n";
+    }
+    return false;
+  }
+
+  const int idxBin = muon.mvaRawTTH() <= binning_mvaTTH_[0] ? 0 : 1;
+
+  if(muon.jetPtRatio() < min_jetPtRatio_[idxBin])
+  {
+    if(debug_)
+    {
+      std::cout << "FAILS jetPtRatio >= " << min_jetPtRatio_[idxBin] << " fakeable cut\n";
+    }
+    return false;
+  }
+
+  if(muon.jetBtagCSV() > max_jetBtagCSV_[idxBin])
+  {
+    if(debug_)
+    {
+      std::cout << "FAILS jetBtagCSV <= " << max_jetBtagCSV_[idxBin] << " fakeable cut\n";
+    }
+    return false;
+  }
+
+  if(muon.segmentCompatibility() <= min_segmentCompatibility_[idxBin])
+  {
+    if(debug_)
+    {
+      std::cout << "FAILS segmentCompatibility > " << min_segmentCompatibility_[idxBin] << " fakeable cut\n";
+    }
+    return false;
+  }
+
+  if(set_selection_flags_)
+  {
+    muon.set_isFakeable();
+    if(tightMuonSelector_(muon))
+    {
+      muon.set_isTight();
+    }
+  }
+
+  return true;
 }
 
 void

@@ -660,7 +660,7 @@ int main(int argc, char* argv[])
     ">= 2 loose b-jets || 1 medium b-jet (1)",
     "1 sel lepton",
     "<= 1 tight leptons",
-    "sel lepton trigger match",
+    "fakeable lepton trigger match",
     ">= 1 sel taus",
     "<= 1 tight taus",
     ">= 4 jets",
@@ -809,9 +809,9 @@ int main(int argc, char* argv[])
     std::vector<RecoMuon> muons = muonReader->read();
     std::vector<const RecoMuon*> muon_ptrs = convert_to_ptrs(muons);
     std::vector<const RecoMuon*> cleanedMuons = muon_ptrs; // CV: no cleaning needed for muons, as they have the highest priority in the overlap removal
-    std::vector<const RecoMuon*> preselMuons = preselMuonSelector(cleanedMuons, isHigherPt);
+    std::vector<const RecoMuon*> preselMuons = preselMuonSelector(cleanedMuons, isHigherConePt);
     std::vector<const RecoMuon*> fakeableMuons = fakeableMuonSelector(preselMuons, isHigherConePt);
-    std::vector<const RecoMuon*> tightMuons = tightMuonSelector(preselMuons, isHigherPt);
+    std::vector<const RecoMuon*> tightMuons = tightMuonSelector(preselMuons, isHigherConePt);
     std::vector<const RecoMuon*> selMuons;
     if      ( leptonSelection == kLoose    ) selMuons = preselMuons;
     else if ( leptonSelection == kFakeable ) selMuons = fakeableMuons;
@@ -821,9 +821,9 @@ int main(int argc, char* argv[])
     std::vector<RecoElectron> electrons = electronReader->read();
     std::vector<const RecoElectron*> electron_ptrs = convert_to_ptrs(electrons);
     std::vector<const RecoElectron*> cleanedElectrons = electronCleaner(electron_ptrs, selMuons);
-    std::vector<const RecoElectron*> preselElectrons = preselElectronSelector(cleanedElectrons, isHigherPt);
+    std::vector<const RecoElectron*> preselElectrons = preselElectronSelector(cleanedElectrons, isHigherConePt);
     std::vector<const RecoElectron*> fakeableElectrons = fakeableElectronSelector(preselElectrons, isHigherConePt);
-    std::vector<const RecoElectron*> tightElectrons = tightElectronSelector(preselElectrons, isHigherPt);
+    std::vector<const RecoElectron*> tightElectrons = tightElectronSelector(preselElectrons, isHigherConePt);
     std::vector<const RecoElectron*> selElectrons;
     if      ( leptonSelection == kLoose    ) selElectrons = preselElectrons;
     else if ( leptonSelection == kFakeable ) selElectrons = fakeableElectrons;
@@ -846,7 +846,7 @@ int main(int argc, char* argv[])
 //--- build collections of jets and select subset of jets passing b-tagging criteria
     std::vector<RecoJet> jets = jetReader->read();
     std::vector<const RecoJet*> jet_ptrs = convert_to_ptrs(jets);
-    std::vector<const RecoJet*> cleanedJets = jetCleaner(jet_ptrs, fakeableMuons, fakeableElectrons, selHadTaus);
+    std::vector<const RecoJet*> cleanedJets = jetCleaner(jet_ptrs, fakeableMuons, fakeableElectrons, preselHadTaus);
     std::vector<const RecoJet*> selJets = jetSelector(cleanedJets, isHigherPt);
     std::vector<const RecoJet*> selBJets_loose = jetSelectorBtagLoose(cleanedJets, isHigherPt);
     std::vector<const RecoJet*> selBJets_medium = jetSelectorBtagMedium(cleanedJets, isHigherPt);
@@ -962,7 +962,7 @@ int main(int argc, char* argv[])
       mTauTauVis_presel, -1., 1.);
 
 //--- apply final event selection 
-    std::vector<const RecoLepton*> selLeptons = mergeLeptonCollections(selElectrons, selMuons, isHigherPt);
+    std::vector<const RecoLepton*> selLeptons = mergeLeptonCollections(selElectrons, selMuons, isHigherConePt);
     if ( !(selLeptons.size() >= 1) ) continue;
     cutFlowTable.update(">= 1 sel lepton", lumiScale);
     cutFlowHistManager->fillHistograms(">= 1 sel lepton", lumiScale);
@@ -1001,7 +1001,7 @@ int main(int argc, char* argv[])
     }
 
     // require exactly one lepton passing tight selection criteria, to avoid overlap with other channels
-    std::vector<const RecoLepton*> tightLeptons = mergeLeptonCollections(tightElectrons, tightMuons, isHigherPt);
+    std::vector<const RecoLepton*> tightLeptons = mergeLeptonCollections(tightElectrons, tightMuons, isHigherConePt);
     if ( !(tightLeptons.size() <= 1) ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS tightLeptons selection." << std::endl;
@@ -1013,12 +1013,12 @@ int main(int argc, char* argv[])
     cutFlowHistManager->fillHistograms("<= 1 tight leptons", evtWeight);
 
     // require that trigger paths match event category (with event category based on selLeptons)
-    if ( !((selElectrons.size() >= 1 && (selTrigger_1e  || selTrigger_1e1tau )) ||
-	   (selMuons.size()     >= 1 && (selTrigger_1mu || selTrigger_1mu1tau))) ) {
+    if ( !((fakeableElectrons.size() >= 1 && (selTrigger_1e  || selTrigger_1e1tau )) ||
+	   (fakeableMuons.size()     >= 1 && (selTrigger_1mu || selTrigger_1mu1tau))) ) {
       if ( run_lumi_eventSelector ) {
-	std::cout << "event FAILS trigger selection for given selLepton multiplicity." << std::endl; 
-	std::cout << " (#selElectrons = " << selElectrons.size() 
-		  << ", #selMuons = " << selMuons.size() 
+	std::cout << "event FAILS trigger selection for given fakeableLepton multiplicity." << std::endl; 
+	std::cout << " (#fakeableElectrons = " << fakeableElectrons.size() 
+		  << ", #fakeableMuons = " << fakeableMuons.size() 
 		  << ", selTrigger_1mu = " << selTrigger_1mu 
 		  << ", selTrigger_1mu1tau = " << selTrigger_1mu1tau 
 		  << ", selTrigger_1e = " << selTrigger_1e 
@@ -1026,8 +1026,8 @@ int main(int argc, char* argv[])
       }
       continue;
     } 
-    cutFlowTable.update("sel lepton trigger match", evtWeight);
-    cutFlowHistManager->fillHistograms("sel lepton trigger match", evtWeight);
+    cutFlowTable.update("fakeable lepton trigger match", evtWeight);
+    cutFlowHistManager->fillHistograms("fakeable lepton trigger match", evtWeight);
 
     // require presence of exactly two hadronic taus passing tight selection criteria of final event selection
     if ( !(selHadTaus.size() >= 1) ) continue;
@@ -1228,7 +1228,8 @@ int main(int argc, char* argv[])
     svFitAlgo.addLogM_dynamic(false);
     svFitAlgo.addLogM_fixed(true, 4.);
     svFitAlgo.integrate(measuredTauLeptons, met.p4().px(), met.p4().py(), met.cov());
-    double mTauTau = ( svFitAlgo.isValidSolution() ) ? static_cast<classic_svFit::DiTauSystemHistogramAdapter*>(svFitAlgo.getHistogramAdapter())->getMass() : -1.;
+    double mTauTau = -1.; // CV: temporarily comment-out the following line, to make code compile with "old" and "new" version of ClassicSVfit
+    //double mTauTau = ( svFitAlgo.isValidSolution() ) ? static_cast<classic_svFit::HistogramAdapterDiTau*>(svFitAlgo.getHistogramAdapter())->getMass() : -1.;
 
 //--- compute output of BDTs used to discriminate ttH vs. ttbar trained by Arun for 1l_2tau category
     mvaInputs_ttbar["lep_pt"]              = selLepton->pt();

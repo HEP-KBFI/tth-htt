@@ -27,10 +27,7 @@ RecoHadTauReader::RecoHadTauReader(int era,
 RecoHadTauReader::RecoHadTauReader(int era,
                                    const std::string & branchName_obj,
                                    bool readGenMatching)
-  : tauIdMVArun2dR03DB_wpFile_(nullptr)
-  , DBdR03oldDMwLTEff95_(nullptr)
-  , mvaOutput_normalization_DBdR03oldDMwLT_(nullptr)
-  , era_(era)
+  : era_(era)
   , max_nHadTaus_(32)
   , branchName_num_(Form("n%s", branchName_obj.data()))
   , branchName_obj_(branchName_obj)
@@ -66,7 +63,6 @@ RecoHadTauReader::RecoHadTauReader(int era,
     genJetReader_    = new GenJetReader   (Form("%s_genJet",    branchName_obj_.data()));
   }
   setBranchNames();
-  readDBdR03oldDMwLTEff95();
 }
 
 RecoHadTauReader::~RecoHadTauReader()
@@ -77,14 +73,6 @@ RecoHadTauReader::~RecoHadTauReader()
   if(numInstances_[branchName_obj_] == 0)
   {
     numInstances_.erase(branchName_obj_);
-
-    const int numInstances_total = boost::accumulate(numInstances_ | boost::adaptors::map_values, 0);
-    if(numInstances_total == 0)
-    {
-      const RecoHadTauReader * const gInstance = instances_.begin()->second;
-      assert(gInstance);
-      delete gInstance->tauIdMVArun2dR03DB_wpFile_;
-    }
     RecoHadTauReader * const gInstance = instances_[branchName_obj_];
     assert(gInstance);
 
@@ -123,27 +111,6 @@ RecoHadTauReader::setHadTauPt_central_or_shift(int hadTauPt_option)
 }
 
 void
-RecoHadTauReader::readDBdR03oldDMwLTEff95()
-{
-  RecoHadTauReader * gInstance = instances_.begin()->second;
-  assert(gInstance);
-
-  if(! gInstance->tauIdMVArun2dR03DB_wpFile_)
-  {
-    LocalFileInPath tauIdMVArun2dR03DB_wpFilePath = LocalFileInPath(
-      "tthAnalysis/HiggsToTauTau/data/wpDiscriminationByIsolationMVARun2v1_DBdR03oldDMwLT.root"
-    );
-    gInstance->tauIdMVArun2dR03DB_wpFile_ = new TFile(tauIdMVArun2dR03DB_wpFilePath.fullPath().c_str());
-  }
-  DBdR03oldDMwLTEff95_ = dynamic_cast<TGraph *>(
-    gInstance->tauIdMVArun2dR03DB_wpFile_->Get("DBdR03oldDMwLTEff95")
-  );
-  mvaOutput_normalization_DBdR03oldDMwLT_ = dynamic_cast<TFormula *>(
-    gInstance->tauIdMVArun2dR03DB_wpFile_->Get("mvaOutput_normalization_DBdR03oldDMwLT")
-  );
-}
-
-void
 RecoHadTauReader::setBranchNames()
 {
   if(numInstances_[branchName_obj_] == 0)
@@ -158,8 +125,8 @@ RecoHadTauReader::setBranchNames()
     branchName_decayMode_ = Form("%s_%s", branchName_obj_.data(), "decayMode");
     branchName_idDecayMode_ = Form("%s_%s", branchName_obj_.data(), "idDecayMode");
     branchName_idDecayModeNewDMs_ = Form("%s_%s", branchName_obj_.data(), "idDecayModeNewDMs");
-    branchName_idMVA_dR03_ = Form("%s_%s", branchName_obj_.data(), "idMVAoldDMdR03_log");
-    branchName_rawMVA_dR03_ = Form("%s_%s", branchName_obj_.data(), "rawMVAoldDMdR03");
+    branchName_idMVA_dR03_ = Form("%s_%s", branchName_obj_.data(), "idMVAoldDMdR032017v2_log");
+    branchName_rawMVA_dR03_ = Form("%s_%s", branchName_obj_.data(), "rawMVAoldDMdR032017v2");
     branchName_idMVA_dR05_ = Form("%s_%s", branchName_obj_.data(), "idMVAoldDM_log");
     branchName_rawMVA_dR05_ = Form("%s_%s", branchName_obj_.data(), "rawMVAoldDM");
     branchName_idCombIso_dR03_ = Form("%s_%s", branchName_obj_.data(), "idCI3hitdR03");
@@ -248,27 +215,6 @@ RecoHadTauReader::read() const
         case kHadTauPt_shiftDown: hadTau_pt = 0.97 * gInstance->hadTau_pt_[idxHadTau]; break;
         default: throw cmsException(this) << "Invalid tau ES option: " << hadTauPt_option_;
       }
-      // compute "VVLose" (95% signal efficiency) working point for tau ID MVA trained for dR=0.3 isolation cone,
-      // used to enhance background event statistics for training of event-level MVAs that separate
-      // ttH signal from backgrounds
-      Int_t hadTau_idMVA_dR03 = hadTau_idMVA_dR03_[idxHadTau];
-      if(hadTau_idMVA_dR03 >= 1)
-      {
-        hadTau_idMVA_dR03 += 1;
-      }
-      else
-      {
-        assert(DBdR03oldDMwLTEff95_ && mvaOutput_normalization_DBdR03oldDMwLT_);
-        if(mvaOutput_normalization_DBdR03oldDMwLT_->Eval(gInstance->hadTau_rawMVA_dR03_[idxHadTau]) >
-           DBdR03oldDMwLTEff95_->Eval(gInstance->hadTau_pt_[idxHadTau])                             )
-        {
-           hadTau_idMVA_dR03 = 1;
-        }
-        else
-        {
-          hadTau_idMVA_dR03 = 0;
-        }
-      } // hadTau_idMVA_dR03 >= 1
 
       hadTaus.push_back({
         {
@@ -283,7 +229,7 @@ RecoHadTauReader::read() const
         gInstance->hadTau_decayMode_[idxHadTau],
         gInstance->hadTau_idDecayMode_[idxHadTau],
         gInstance->hadTau_idDecayModeNewDMs_[idxHadTau],
-        hadTau_idMVA_dR03,
+        gInstance->hadTau_idMVA_dR03_[idxHadTau],
         gInstance->hadTau_rawMVA_dR03_[idxHadTau],
         gInstance->hadTau_idMVA_dR05_[idxHadTau],
         gInstance->hadTau_rawMVA_dR05_[idxHadTau],

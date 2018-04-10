@@ -13,6 +13,7 @@ class RecoElectron
 public:
   RecoElectron() = default;
   RecoElectron(const RecoLepton & lepton,
+               Double_t eCorr,
                Double_t mvaRawPOG,
                Bool_t mvaRawPOG_WP80,
                Bool_t mvaRawPOG_WP90,
@@ -30,6 +31,7 @@ public:
    * @brief Funtions to access data-members
    * @return Values of data-members
    */
+  Double_t eCorr() const;
   Double_t mvaRawPOG() const;
   Bool_t mvaRawPOG_WP80() const;
   Bool_t mvaRawPOG_WP90() const;
@@ -61,6 +63,7 @@ public:
   const static bool useNoIso = true;
 
 //--- observables specific to electrons
+  Double_t eCorr_;              ///< ratio of the calibrated energy/miniaod energy
   Double_t mvaRawPOG_;          ///< raw output value of EGamma POG electron id MVA (continuous range -1..+1)
   Bool_t mvaRawPOG_WP80_;       ///< ID of EGamma POG electron id MVA, corresponding to 80% efficiency WP (1 -- pass; 0 -- fail)
   Bool_t mvaRawPOG_WP90_;       ///< ID of EGamma POG electron id MVA, corresponding to 90% efficiency WP (1 -- pass; 0 -- fail)

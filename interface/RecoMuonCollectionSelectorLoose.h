@@ -21,8 +21,9 @@ public:
   operator()(const RecoMuon & muon) const;
 
 protected:
-  bool set_selection_flags_;
   int era_;
+  bool debug_;
+  bool set_selection_flags_;
   RecoMuonSelectorTight tightMuonSelector_;
 
   Double_t min_pt_;        ///< lower cut threshold on pT

@@ -46,13 +46,9 @@
 #include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionGenMatcher.h" // RecoElectronCollectionGenMatcher, RecoMuonCollectionGenMatcher, RecoHadTauCollectionGenMatcher, RecoJetCollectionGenMatcher
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorLoose.h" // RecoElectronCollectionSelectorLoose
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorFakeable.h" // RecoElectronCollectionSelectorFakeable
-#include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorCutBased.h" // RecoElectronCollectionSelectorCutBased
-#include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorMVABased.h" // RecoElectronCollectionSelectorMVABased
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorTight.h" // RecoElectronCollectionSelectorTight
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorLoose.h" // RecoMuonCollectionSelectorLoose
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorFakeable.h" // RecoMuonCollectionSelectorFakeable
-#include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorCutBased.h" // RecoMuonCollectionSelectorCutBased
-#include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorMVABased.h" // RecoMuonCollectionSelectorMVABased
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorTight.h" // RecoMuonCollectionSelectorTight
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelectorLoose.h" // RecoHadTauCollectionSelectorLoose
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelectorFakeable.h" // RecoHadTauCollectionSelectorFakeable
@@ -110,6 +106,8 @@ enum { kFR_disabled, kFR_2lepton, kFR_3L, kFR_1tau };
 //const int hadTauSelection_antiMuon = 1; // Loose
 const int hadTauSelection_antiElectron = -1; // not applied
 const int hadTauSelection_antiMuon = -1; // not applied
+const int hadTauSelection_veto_antiElectron = -1; // CV: needs to match anti-electron discriminator applied in 2l+2tau category
+const int hadTauSelection_veto_antiMuon = -1; // CV: needs to match anti-muon discriminator applied in 2l+2tau category
 
 double comp_mvaOutput_Hj_tagger(const RecoJet* jet,
                                 const std::vector<const RecoLepton*>& leptons,
@@ -285,6 +283,7 @@ int main(int argc, char* argv[])
     << "Invalid Configuration parameter 'hadTauSelection' = " << hadTauSelection_string << " !!\n";
   std::string hadTauSelection_part2 = ( hadTauSelection_parts->GetEntries() == 2 ) ? (dynamic_cast<TObjString*>(hadTauSelection_parts->At(1)))->GetString().Data() : "";
   delete hadTauSelection_parts;
+  std::string hadTauSelection_veto = cfg_analyze.getParameter<std::string>("hadTauSelection_veto");
 
   bool apply_hadTauGenMatching = cfg_analyze.getParameter<bool>("apply_hadTauGenMatching");
   std::vector<hadTauGenMatchEntry> hadTauGenMatch_definitions = getHadTauGenMatch_definitions_1tau(apply_hadTauGenMatching);
@@ -311,7 +310,8 @@ int main(int argc, char* argv[])
   bool apply_genWeight = cfg_analyze.getParameter<bool>("apply_genWeight");
   bool apply_trigger_bits = cfg_analyze.getParameter<bool>("apply_trigger_bits");
   bool apply_hadTauFakeRateSF = cfg_analyze.getParameter<bool>("apply_hadTauFakeRateSF");
-  const bool useNonNominal = cfg_analyze.getParameter<bool>("useNonNominal") || ! isMC;
+  const bool useNonNominal = cfg_analyze.getParameter<bool>("useNonNominal");
+  const bool useNonNominal_jetmet = useNonNominal || ! isMC;
 
   const edm::ParameterSet syncNtuple_cfg = cfg_analyze.getParameter<edm::ParameterSet>("syncNtuple");
   const std::string syncNtuple_tree = syncNtuple_cfg.getParameter<std::string>("tree");
@@ -327,8 +327,8 @@ int main(int argc, char* argv[])
   const int lheScale_option            = getLHEscale_option     (central_or_shift, isMC);
   const int jetBtagSF_option           = getBTagWeight_option   (central_or_shift, isMC);
 
-  const int met_option   = useNonNominal ? kMEt_central_nonNominal : getMET_option(central_or_shift, isMC);
-  const int jetPt_option = useNonNominal ? kJet_central_nonNominal : getJet_option(central_or_shift, isMC);
+  const int met_option   = useNonNominal_jetmet ? kMEt_central_nonNominal : getMET_option(central_or_shift, isMC);
+  const int jetPt_option = useNonNominal_jetmet ? kJet_central_nonNominal : getJet_option(central_or_shift, isMC);
 
   edm::ParameterSet cfg_dataToMCcorrectionInterface;
   cfg_dataToMCcorrectionInterface.addParameter<std::string>("era", era_string);
@@ -434,18 +434,15 @@ int main(int argc, char* argv[])
   RecoMuonCollectionGenMatcher muonGenMatcher;
   RecoMuonCollectionSelectorLoose preselMuonSelector(era, -1, isDEBUG);
   RecoMuonCollectionSelectorFakeable fakeableMuonSelector(era, -1, isDEBUG);
-  RecoMuonCollectionSelectorCutBased cutBasedMuonSelector(era, -1, isDEBUG); // needed for sync
-  RecoMuonCollectionSelectorMVABased mvaBasedMuonSelector(era, -1, isDEBUG); // needed for sync
   RecoMuonCollectionSelectorTight tightMuonSelector(era, -1, isDEBUG);
 
   RecoElectronReader* electronReader = new RecoElectronReader(era, branchName_electrons, readGenObjects);
+  electronReader->readUncorrected(useNonNominal);
   inputTree -> registerReader(electronReader);
   RecoElectronCollectionGenMatcher electronGenMatcher;
-  RecoElectronCollectionCleaner electronCleaner(0.3, isDEBUG);
+  RecoElectronCollectionCleaner electronCleaner(0.05, isDEBUG);
   RecoElectronCollectionSelectorLoose preselElectronSelector(era, -1, isDEBUG);
   RecoElectronCollectionSelectorFakeable fakeableElectronSelector(era, -1, isDEBUG);
-  RecoElectronCollectionSelectorCutBased cutBasedElectronSelector(era, -1, isDEBUG); // needed for sync
-  RecoElectronCollectionSelectorMVABased mvaBasedElectronSelector(era, -1, isDEBUG); // needed for sync
   RecoElectronCollectionSelectorTight tightElectronSelector(era, -1, isDEBUG);
 
   RecoHadTauReader* hadTauReader = new RecoHadTauReader(era, branchName_hadTaus, readGenObjects);
@@ -469,6 +466,12 @@ int main(int argc, char* argv[])
   tightHadTauFilter.set("dR03mvaMedium");
   tightHadTauFilter.set_min_antiElectron(hadTauSelection_antiElectron);
   tightHadTauFilter.set_min_antiMuon(hadTauSelection_antiMuon);
+
+  // CV: veto events containing more than one tau passing the VTight WP, to avoid overlap with the 2l+2tau category
+  RecoHadTauCollectionSelectorTight vetoHadTauSelector(era, -1, isDEBUG);
+  vetoHadTauSelector.set(hadTauSelection_veto);
+  vetoHadTauSelector.set_min_antiElectron(hadTauSelection_veto_antiElectron);
+  vetoHadTauSelector.set_min_antiMuon(hadTauSelection_veto_antiMuon);
 
   RecoJetReader* jetReader = new RecoJetReader(era, isMC, branchName_jets, readGenObjects);
   jetReader->setPtMass_central_or_shift(jetPt_option);
@@ -896,10 +899,11 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     ">= 1 sel tau (1)",
     ">= 2 sel leptons",
     "<= 2 tight leptons",
-    "sel lepton trigger match",
+    "fakeable lepton trigger match",
     ">= 3 jets",
     ">= 2 loose b-jets || 1 medium b-jet (2)",
     ">= 1 sel tau (2)",
+    "<= 1 veto taus",
     "m(ll) > 12 GeV",
     "lead lepton pT > 25 GeV && sublead lepton pT > 15(e)/10(mu) GeV",
     "tight lepton charge",
@@ -1188,9 +1192,9 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     std::vector<RecoMuon> muons = muonReader->read();
     std::vector<const RecoMuon*> muon_ptrs = convert_to_ptrs(muons);
     std::vector<const RecoMuon*> cleanedMuons = muon_ptrs; // CV: no cleaning needed for muons, as they have the highest priority in the overlap removal
-    std::vector<const RecoMuon*> preselMuons = preselMuonSelector(cleanedMuons, isHigherPt);
+    std::vector<const RecoMuon*> preselMuons = preselMuonSelector(cleanedMuons, isHigherConePt);
     std::vector<const RecoMuon*> fakeableMuons = fakeableMuonSelector(preselMuons, isHigherConePt);
-    std::vector<const RecoMuon*> tightMuons = tightMuonSelector(preselMuons, isHigherPt);
+    std::vector<const RecoMuon*> tightMuons = tightMuonSelector(preselMuons, isHigherConePt);
     std::vector<const RecoMuon*> selMuons;
     if      ( leptonSelection == kLoose    ) selMuons = preselMuons;
     else if ( leptonSelection == kFakeable ) selMuons = fakeableMuons;
@@ -1210,9 +1214,9 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     std::vector<RecoElectron> electrons = electronReader->read();
     std::vector<const RecoElectron*> electron_ptrs = convert_to_ptrs(electrons);
     std::vector<const RecoElectron*> cleanedElectrons = electronCleaner(electron_ptrs, selMuons);
-    std::vector<const RecoElectron*> preselElectrons = preselElectronSelector(cleanedElectrons, isHigherPt);
+    std::vector<const RecoElectron*> preselElectrons = preselElectronSelector(cleanedElectrons, isHigherConePt);
     std::vector<const RecoElectron*> fakeableElectrons = fakeableElectronSelector(preselElectrons, isHigherConePt);
-    std::vector<const RecoElectron*> tightElectrons = tightElectronSelector(preselElectrons, isHigherPt);
+    std::vector<const RecoElectron*> tightElectrons = tightElectronSelector(preselElectrons, isHigherConePt);
     std::vector<const RecoElectron*> selElectrons;
     if      ( leptonSelection == kLoose    ) selElectrons = preselElectrons;
     else if ( leptonSelection == kFakeable ) selElectrons = fakeableElectrons;
@@ -1253,6 +1257,9 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     }
     selHadTaus = pickFirstNobjects(selHadTaus, 1);
 
+    // CV: veto events containing more than one tau passing the VTight WP, to avoid overlap with the 2l+2tau category
+    std::vector<const RecoHadTau*> vetoHadTaus = vetoHadTauSelector(cleanedHadTaus, isHigherPt);
+
 //--- build collections of jets and select subset of jets passing b-tagging criteria
     std::vector<RecoJet> jets = jetReader->read();
     std::vector<const RecoJet*> jet_ptrs = convert_to_ptrs(jets);
@@ -1265,7 +1272,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
         }
       }
     }
-    std::vector<const RecoJet*> cleanedJets = jetCleaner(jet_ptrs, fakeableElectrons, tightElectrons, fakeableMuons, tightMuons, fakeableHadTaus);
+    std::vector<const RecoJet*> cleanedJets = jetCleaner(jet_ptrs, fakeableMuons, fakeableElectrons, preselHadTaus);
     std::vector<const RecoJet*> selJets = jetSelector(cleanedJets, isHigherPt);
     std::vector<const RecoJet*> selBJets_loose = jetSelectorBtagLoose(cleanedJets, isHigherPt);
     std::vector<const RecoJet*> selBJets_medium = jetSelectorBtagMedium(cleanedJets, isHigherPt);
@@ -1553,7 +1560,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     } // end if !selectBDT
 
     // require exactly two leptons passing tight selection criteria, to avoid overlap with other channels
-    std::vector<const RecoLepton*> tightLeptons = mergeLeptonCollections(tightElectrons, tightMuons, isHigherPt);
+    std::vector<const RecoLepton*> tightLeptons = mergeLeptonCollections(tightElectrons, tightMuons, isHigherConePt);
     if ( !(tightLeptons.size() <= 2) ) {
       if ( run_lumi_eventSelector ) {
         std::cout << "event FAILS tightLeptons selection." << std::endl;
@@ -1564,13 +1571,13 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     cutFlowTable.update("<= 2 tight leptons", evtWeight);
     cutFlowHistManager->fillHistograms("<= 2 tight leptons", evtWeight);
     // require that trigger paths match event category (with event category based on selLeptons)
-    if ( !((selElectrons.size() >= 2 &&                         (selTrigger_2e    || selTrigger_1e                  )) ||
-           (selElectrons.size() >= 1 && selMuons.size() >= 1 && (selTrigger_1e1mu || selTrigger_1mu || selTrigger_1e)) ||
-           (                            selMuons.size() >= 2 && (selTrigger_2mu   || selTrigger_1mu                 ))) ) {
+    if ( !((fakeableElectrons.size() >= 2 &&                              (selTrigger_2e    || selTrigger_1e                  )) ||
+           (fakeableElectrons.size() >= 1 && fakeableMuons.size() >= 1 && (selTrigger_1e1mu || selTrigger_1mu || selTrigger_1e)) ||
+           (                                 fakeableMuons.size() >= 2 && (selTrigger_2mu   || selTrigger_1mu                 ))) ) {
       if ( run_lumi_eventSelector ) {
-        std::cout << "event FAILS trigger selection for given selLepton multiplicity." << std::endl;
-        std::cout << " (#selElectrons = " << preselElectrons.size()
-                  << ", #selMuons = " << preselMuons.size()
+        std::cout << "event FAILS trigger selection for given fakeableLepton multiplicity." << std::endl;
+        std::cout << " (#fakeableElectrons = " << fakeableElectrons.size()
+                  << ", #fakeableMuons = " << fakeableMuons.size()
                   << ", selTrigger_2mu = " << selTrigger_2mu
                   << ", selTrigger_1e1mu = " << selTrigger_1e1mu
                   << ", selTrigger_2e = " << selTrigger_2e
@@ -1579,8 +1586,8 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       }
       continue;
     }
-    cutFlowTable.update("sel lepton trigger match", evtWeight);
-    cutFlowHistManager->fillHistograms("sel lepton trigger match", evtWeight);
+    cutFlowTable.update("fakeable lepton trigger match", evtWeight);
+    cutFlowHistManager->fillHistograms("fakeable lepton trigger match", evtWeight);
     // apply requirement on jets (incl. b-tagged jets) and hadronic taus on level of final event selection
     if ( !(selJets.size() >= 3) ) {
       if ( run_lumi_eventSelector ) {
@@ -1612,6 +1619,17 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     }
     cutFlowTable.update(">= 1 sel tau (2)", evtWeight);
     cutFlowHistManager->fillHistograms(">= 1 sel tau (2)", evtWeight);
+
+    // veto events containing more than one tau passing the VTight WP, to avoid overlap with the 2l+2tau category
+    if ( !(vetoHadTaus.size() <= 1) ) {
+      if ( run_lumi_eventSelector ) {
+        std::cout << "event FAILS vetoHadTaus selection." << std::endl;
+        printCollection("vetoHadTaus", vetoHadTaus);
+      }
+      continue;
+    }
+    cutFlowTable.update("<= 1 veto taus", evtWeight);
+    cutFlowHistManager->fillHistograms("<= 1 veto taus", evtWeight);
 
     bool failsLowMassVeto = false;
     for ( std::vector<const RecoLepton*>::const_iterator lepton1 = preselLeptons.begin();
@@ -1649,8 +1667,8 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
     cutFlowHistManager->fillHistograms("lead lepton pT > 25 GeV && sublead lepton pT > 15(e)/10(mu) GeV", evtWeight);
 
     bool failsTightChargeCut = false;
-    for ( std::vector<const RecoLepton*>::const_iterator lepton = selLeptons.begin();
-          lepton != selLeptons.end(); ++lepton ) {
+    for ( std::vector<const RecoLepton*>::const_iterator lepton = fakeableLeptons.begin();
+          lepton != fakeableLeptons.end(); ++lepton ) {
       if ( (*lepton)->is_electron() ) {
         const RecoElectron* electron = dynamic_cast<const RecoElectron*>(*lepton);
         assert(electron);
@@ -1822,8 +1840,6 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       }
     }
     double memOutput_LR = ( memOutput_2lss_1tau_matched.isValid() ) ? memOutput_2lss_1tau_matched.LR() : -1.;
-    //double memOutput_ttZ_LR = ( memOutput_2lss_1tau_matched.isValid_ttZ_LR() ) ? memOutput_2lss_1tau_matched.ttZ_LR() : -1.;
-    //double memOutput_ttbar_LR = ( memOutput_2lss_1tau_matched.isValid_ttbar_LR()  ) ? memOutput_2lss_1tau_matched.LR() : -1.;
 
     //--- compute output of hadronic top tagger BDT
     //TH2* histogram_mva_hadTopTagger = fs.make<TH2D>("mva_hadTopTagger", "mva_hadTopTagger", 200, -1., +1., 200, -1., +1.);
@@ -1925,22 +1941,22 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
 
 //--- compute output of BDTs used to discriminate ttH vs. ttV and  tt trained with XGB
     const std::map<std::string, double> mvaInputVariables_plainKin_tt = {
-      { "avg_dr_jet",      avg_dr_jet      },
-      { "dr_lep1_tau",     dr_lep1_tau     },
-      { "dr_lep2_tau",     dr_lep2_tau     },
-      { "dr_leps",         dr_leps         },
-      { "lep1_conePt",     lep1_conePt     },
-      { "lep2_conePt",     lep2_conePt     },
-      { "mT_lep2",         mT_lep2         },
-      { "mTauTauVis1_sel", mTauTauVis1_sel },
-      { "mTauTauVis2_sel", mTauTauVis2_sel },
-      { "mbb",             mbb             },
-      { "mindr_lep1_jet",  mindr_lep1_jet  },
-      { "mindr_lep2_jet",  mindr_lep2_jet  },
-      { "mindr_tau_jet",   mindr_tau_jet   },
-      { "nJet25_Recl",     nJet25_Recl     },
-      { "ptmiss",          ptmiss          },
-      { "tau_pt",          tau_pt          },
+      { "avg_dr_jet",     avg_dr_jet      },
+      { "dr_lep1_tau",    dr_lep1_tau     },
+      { "dr_lep2_tau",    dr_lep2_tau     },
+      { "dr_leps",        dr_leps         },
+      { "lep1_conePt",    lep1_conePt     },
+      { "lep2_conePt",    lep2_conePt     },
+      { "mT_lep2",        mT_lep2         },
+      { "mTauTauVis1",    mTauTauVis1_sel },
+      { "mTauTauVis2",    mTauTauVis2_sel },
+      { "mbb",            mbb             },
+      { "mindr_lep1_jet", mindr_lep1_jet  },
+      { "mindr_lep2_jet", mindr_lep2_jet  },
+      { "mindr_tau_jet",  mindr_tau_jet   },
+      { "nJet",           nJet25_Recl     },
+      { "ptmiss",         ptmiss          },
+      { "tau_pt",         tau_pt          },
     };
     const double mvaOutput_2lss_1tau_plainKin_tt = mva_2lss_1tau_plainKin_tt(mvaInputVariables_plainKin_tt);
 
@@ -2233,17 +2249,14 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
 
     if(snm)
     {
-      const std::vector<const RecoMuon *> cutBasedMuons = cutBasedMuonSelector(preselMuons);
-      const std::vector<const RecoMuon *> mvaBasedMuons = mvaBasedMuonSelector(preselMuons);
-      const std::vector<const RecoElectron *> cutBasedElectrons = cutBasedElectronSelector(preselElectrons);
-      const std::vector<const RecoElectron *> mvaBasedElectrons = mvaBasedElectronSelector(preselElectrons);
-
-      const double ht          = compHT(preselLeptons, preselHadTaus, selJets);
-      const double MT_met_lep0 = comp_MT_met_lep1(selLepton_lead->cone_p4(),    met.pt(), met.phi());
-      const double MT_met_lep1 = comp_MT_met_lep2(selLepton_sublead->cone_p4(), met.pt(), met.phi());
-      const double dR_l0tau    = deltaR(selLepton_lead->p4(),    selHadTau->p4());
-      const double dR_l1tau    = deltaR(selLepton_sublead->p4(), selHadTau->p4());
-      const double max_dr_jet  = comp_max_dr_jet(selJets);
+      const double dr_lep1_tau1   = deltaR(selLepton_lead->p4(), selHadTau->p4());
+      const double dr_lep2_tau1   = deltaR(selLepton_sublead->p4(), selHadTau->p4());
+      const double max_dr_jet     = comp_max_dr_jet(selJets);
+      const double mbb_loose      = selBJets_loose.size() > 1 ? (selBJets_loose[0]->p4() + selBJets_loose[0]->p4()).mass() : -1.;
+      const double avr_dr_lep_tau = (dr_lep1_tau1 + dr_lep2_tau1) / 2;
+      const double max_dr_lep_tau = std::max(dr_lep2_tau1, dr_lep1_tau1);
+      const double min_dr_lep_tau = std::min(dr_lep2_tau1, dr_lep1_tau1);
+      const double min_dr_lep_jet = std::min(mindr_lep1_jet, mindr_lep2_jet);
 
       const bool isGenMatched =
         selLepton_lead->isGenMatched()    &&
@@ -2252,9 +2265,9 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       ;
 
       snm->read(eventInfo);
-      snm->read(preselMuons,     fakeableMuons,     cutBasedMuons,     mvaBasedMuons);
-      snm->read(preselElectrons, fakeableElectrons, cutBasedElectrons, mvaBasedElectrons);
-      snm->read(preselHadTaus);
+      snm->read(preselMuons,     fakeableMuons,     tightMuons);
+      snm->read(preselElectrons, fakeableElectrons, tightElectrons);
+      snm->read(fakeableHadTaus);
       snm->read(selJets);
 
       snm->read({ triggers_1e, triggers_2e, triggers_1mu, triggers_2mu, triggers_1e1mu });
@@ -2265,33 +2278,76 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       snm->read(mht_p4.pt(),                            FloatVariableType::MHT);
       snm->read(met_LD,                                 FloatVariableType::metLD);
 
-      snm->read(lep1_conePt,                            FloatVariableType::lep0_conept);
-      snm->read(lep2_conePt,                            FloatVariableType::lep1_conept);
-      snm->read(mindr_lep1_jet,                         FloatVariableType::mindr_lep0_jet);
-      snm->read(mindr_lep2_jet,                         FloatVariableType::mindr_lep1_jet);
-      // mindr_lep2_jet not filled
-      snm->read(mindr_tau_jet,                          FloatVariableType::mindr_tau_jet);
-      snm->read(MT_met_lep0,                            FloatVariableType::MT_met_lep0);
+      snm->read(lep1_conePt,                            FloatVariableType::lep1_conept);
+      snm->read(lep2_conePt,                            FloatVariableType::lep2_conept);
+      // lep3_conePt not filled
+      // lep4_conept not filled
+
+      snm->read(mindr_lep1_jet,                         FloatVariableType::mindr_lep1_jet);
+      snm->read(mindr_lep2_jet,                         FloatVariableType::mindr_lep2_jet);
+      // mindr_lep3_jet not filled
+      // mindr_lep4_jet not filled
+
+      snm->read(mindr_tau_jet,                          FloatVariableType::mindr_tau1_jet);
+      // mindr_tau2_jet not filled
+
       snm->read(avg_dr_jet,                             FloatVariableType::avg_dr_jet);
-      snm->read(mvaOutput_2lss_ttV,                     FloatVariableType::MVA_2lss_ttV);
-      snm->read(mvaOutput_2lss_tt,                      FloatVariableType::MVA_2lss_ttbar);
-      // tt_deltaR not filled
-      // tt_mvis not filled
-      // tt_pt not filled
+      snm->read(avr_dr_lep_tau,                         FloatVariableType::avr_dr_lep_tau);
       snm->read(max_dr_jet,                             FloatVariableType::max_dr_jet);
-      snm->read(ht,                                     FloatVariableType::HT);
-      // MVA_1l2tau_ttbar not filled
-      // MVA_1l2tau_ttbar_v2 not filled
-      // MVA_1l2tau_ttZ_v2 not filled
-      // MVA_1l2tau_2Dbin_v2 not filled
-      snm->read(mTauTauVis2_sel,                        FloatVariableType::mvis_l1tau);
-      snm->read(dR_l0tau,                               FloatVariableType::dR_l0tau);
-      snm->read(dR_l1tau,                               FloatVariableType::dR_l1tau);
-      // dR_l2tau not filled
-      // MT_met_lep2 not filled
-      // MVA_3l1tau_ttbar not filled
-      // MVA_3l1tau_ttV not filled
-      // MVA_3l1tau_2Dbin not filled
+      snm->read(max_dr_lep_tau,                         FloatVariableType::max_dr_lep_tau);
+      snm->read(mindr_tau_jet,                          FloatVariableType::min_dr_tau_jet); // 1 tau
+      snm->read(min_dr_lep_tau,                         FloatVariableType::min_dr_lep_tau);
+      snm->read(min_dr_lep_jet,                         FloatVariableType::min_dr_lep_jet);
+
+      snm->read(dr_leps,                                FloatVariableType::dr_leps);
+      // dr_taus not filled
+
+      // dr_lep_tau_ss not filled
+      snm->read(dr_lep1_tau1,                           FloatVariableType::dr_lep1_tau1);
+      // dr_lep1_tau2 not filled
+      snm->read(dr_lep2_tau1,                           FloatVariableType::dr_lep2_tau1);
+      // dr_lep3_tau1 not filled
+      // dr_lep2_tau2 not filled
+
+      snm->read(max_lep_eta,                            FloatVariableType::max_lep_eta);
+
+      snm->read(mT_lep1,                                FloatVariableType::mT_met_lep1);
+      snm->read(mT_lep2,                                FloatVariableType::mT_met_lep2);
+      // mT_met_lep3 not filled
+      // mT_met_lep4 not filled
+
+      // mTauTauVis not filled
+      snm->read(mTauTauVis1_sel,                        FloatVariableType::mvis_l1tau);
+      snm->read(mTauTauVis2_sel,                        FloatVariableType::mvis_l2tau);
+
+      snm->read(mbb,                                    FloatVariableType::mbb);
+      snm->read(mbb_loose,                              FloatVariableType::mbb_loose);
+
+      // cosThetaS_hadTau not filled
+      snm->read(HTT,                                    FloatVariableType::HTT);
+      snm->read(HadTop_pt,                              FloatVariableType::HadTop_pt);
+      snm->read(mvaOutput_Hj_tagger,                    FloatVariableType::Hj_tagger);
+
+      // mvaOutput_plainKin_ttV not filled
+      // mvaOutput_plainKin_tt not filled
+      // mvaOutput_plainKin_1B_VT not filled
+      // mvaOutput_HTT_SUM_VT not filled
+
+      // mvaOutput_plainKin_SUM_VT not filled
+
+      snm->read(mvaOutput_2lss_ttV,                     FloatVariableType::mvaOutput_2lss_ttV);
+      snm->read(mvaOutput_2lss_tt,                      FloatVariableType::mvaOutput_2lss_tt);
+      snm->read(mvaOutput_2lss_1tau_plainKin_tt,        FloatVariableType::mvaOutput_2lss_1tau_plainKin_tt);
+      snm->read(mvaOutput_2lss_1tau_plainKin_ttV,       FloatVariableType::mvaOutput_2lss_1tau_plainKin_ttV);
+      snm->read(mvaOutput_2lss_1tau_plainKin_1B_M,      FloatVariableType::mvaOutput_2lss_1tau_plainKin_1B_M);
+      snm->read(mvaOutput_2lss_1tau_plainKin_SUM_M,     FloatVariableType::mvaOutput_2lss_1tau_plainKin_SUM_M);
+      snm->read(mvaOutput_2lss_1tau_HTT_SUM_M,          FloatVariableType::mvaOutput_2lss_1tau_HTT_SUM_M);
+      snm->read(mvaOutput_2lss_1tau_HTTMEM_SUM_M,       FloatVariableType::mvaOutput_2lss_1tau_HTTMEM_SUM_M);
+
+      // mvaOutput_3l_ttV not filled
+      // mvaOutput_3l_ttbar not filled
+      // mvaOutput_plainKin_SUM_M not filled
+      // mvaOutput_plainKin_1B_M not filled
 
       snm->read(weight_fakeRate,                        FloatVariableType::FR_weight);
       snm->read(triggerWeight,                          FloatVariableType::triggerSF_weight);
@@ -2307,20 +2363,7 @@ TMVAInterface mva_Hjj_tagger(mvaFileName_Hjj_tagger, mvaInputVariables_Hjj_tagge
       snm->read(memOutput_tt,                           FloatVariableType::Integral_ttbar);
       snm->read(memOutput_type,                         FloatVariableType::integration_type);
       snm->read(memOutput_LR,                           FloatVariableType::MEM_LR);
-      snm->read(dR_leps,                                FloatVariableType::dR_leps);
-      snm->read(mTauTauVis1_sel,                        FloatVariableType::mvis_l0tau);
-//      snm->read(mvaOutput_2lss_1tau_ttbar,              FloatVariableType::MVA_2lSS1tau_noMEM_ttbar);
-//      snm->read(mvaOutput_2lss_1tau_ttV,                FloatVariableType::MVA_2lSS1tau_noMEM_ttV);
-//      snm->read(mvaDiscr_2lss_1tau,                     FloatVariableType::MVA_2lSS1tau_noMEM_2Dbin);
-//      snm->read(mvaOutput_2lss_1tau_ttbar_wMEM,         FloatVariableType::MVA_2lSS1tau_MEM_ttbar);
-//      snm->read(mvaOutput_2lss_1tau_ttV_wMEM,           FloatVariableType::MVA_2lSS1tau_MEM_ttV);
-//      snm->read(mvaDiscr_2lss_1tau_wMEM,                FloatVariableType::MVA_2lSS1tau_MEM_2Dbin);
 
-      // lep2_conept not filled
-      // lep3_conept not filled
-      // mindr_lep4_jet not filled
-      snm->read(MT_met_lep1,                            FloatVariableType::MT_met_lep1);
-      // MT_met_lep3 not filled
       snm->read(eventInfo.genWeight,                    FloatVariableType::genWeight);
 
       snm->fill();

@@ -71,7 +71,7 @@ RecoJetSelectorBtag::operator()(const RecoJet & jet) const
 {
   if(debug_)
   {
-    std::cout << __func__ << ":\n jet: " << jet << '\n';
+    std::cout << get_human_line(this, __func__) << ":\n jet: " << jet << '\n';
   }
 
   if(jet.pt() < min_pt_)

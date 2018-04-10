@@ -24,6 +24,7 @@ public:
 
 protected:
   int era_;
+  bool debug_;
   bool set_selection_flags_;
 
   RecoMuonSelectorTight tightMuonSelector_;

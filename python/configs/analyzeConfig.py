@@ -351,8 +351,13 @@ class analyzeConfig:
                     if 'quantile_rebin' in histogramToFit_options:
                         lines.append("process.prepareDatacards.nbin_quantile_rebinning = cms.int32(%d)" % \
                                      histogramToFit_options['quantile_rebin'])
-                        lines.append("process.prepareDatacards.apply_quantile_rebinning = cms.bool(%s)" % \
-                                     histogramToFit_options['quantile_rebin'] > 0)
+                        if 'quantile_in_fakes' in histogramToFit_options:
+                            lines.append("process.prepareDatacards.quantile_rebinning_in_fakes = cms.bool(%d)" % \
+                                         histogramToFit_options['quantile_in_fakes'])
+                    if 'explicit_binning' in histogramToFit_options:
+                        explicit_binning = histogramToFit_options['explicit_binning']
+                        assert(type(explicit_binning) == list and sorted(explicit_binning) == explicit_binning)
+                        lines.append("process.prepareDatacards.explicit_binning = cms.vdouble(%s)" % explicit_binning)
         # If self.histograms_to_fit is not a dictionary but a list, do not modify anything but
         # use the default settings specified in the original prepareDatacards template
 

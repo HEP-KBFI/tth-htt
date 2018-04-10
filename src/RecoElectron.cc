@@ -1,6 +1,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectron.h"
 
 RecoElectron::RecoElectron(const RecoLepton & lepton,
+                           Double_t eCorr,
                            Double_t mvaRawPOG,
                            Bool_t mvaRawPOG_WP80,
                            Bool_t mvaRawPOG_WP90,
@@ -14,6 +15,7 @@ RecoElectron::RecoElectron(const RecoLepton & lepton,
                            Bool_t   passesConversionVeto,
                            Int_t cutbasedID_HLT)
   : RecoLepton(lepton)
+  , eCorr_(eCorr)
   , mvaRawPOG_(mvaRawPOG)
   , mvaRawPOG_WP80_(mvaRawPOG_WP80)
   , mvaRawPOG_WP90_(mvaRawPOG_WP90)
@@ -27,6 +29,12 @@ RecoElectron::RecoElectron(const RecoLepton & lepton,
   , passesConversionVeto_(passesConversionVeto)
   , cutbasedID_HLT_(cutbasedID_HLT)
 {}
+
+Double_t
+RecoElectron::eCorr() const
+{
+  return eCorr_;
+}
 
 Double_t
 RecoElectron::mvaRawPOG() const
@@ -129,6 +137,7 @@ operator<<(std::ostream & stream,
            const RecoElectron & electron)
 {
   stream << static_cast<const RecoLepton & >(electron)                   << ",\n "
+            "eCorr = "                << electron.eCorr()                << ", "
             "mvaRawPOG = "            << electron.mvaRawPOG()            << " ("
             "80/90/Loose = "          << electron.mvaRawPOG_WP80()       << '/'
                                       << electron.mvaRawPOG_WP90()       << '/'

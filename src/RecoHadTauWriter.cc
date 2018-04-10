@@ -89,8 +89,8 @@ void RecoHadTauWriter::setBranchNames()
   branchName_decayMode_ = Form("%s_%s", branchName_obj_.data(), "decayMode");
   branchName_idDecayMode_ = Form("%s_%s", branchName_obj_.data(), "idDecayMode");
   branchName_idDecayModeNewDMs_ = Form("%s_%s", branchName_obj_.data(), "idDecayModeNewDMs");
-  branchName_idMVA_dR03_ = Form("%s_%s", branchName_obj_.data(), "idMVAoldDMdR03_log");
-  branchName_rawMVA_dR03_ = Form("%s_%s", branchName_obj_.data(), "rawMVAoldDMdR03");
+  branchName_idMVA_dR03_ = Form("%s_%s", branchName_obj_.data(), "idMVAoldDMdR032017v2_log");
+  branchName_rawMVA_dR03_ = Form("%s_%s", branchName_obj_.data(), "rawMVAoldDMdR032017v2");
   branchName_idMVA_dR05_ = Form("%s_%s", branchName_obj_.data(), "idMVAoldDM_log");
   branchName_rawMVA_dR05_ = Form("%s_%s", branchName_obj_.data(), "rawMVAoldDM");
   branchName_idCombIso_dR03_ = Form("%s_%s", branchName_obj_.data(), "idCI3hitdR03");
@@ -135,7 +135,7 @@ void RecoHadTauWriter::write(const std::vector<const RecoHadTau *> & hadTaus)
   nHadTaus_ = hadTaus.size();
   for(UInt_t idxHadTau = 0; idxHadTau < nHadTaus_; ++idxHadTau)
   {
-    const RecoHadTau* hadTau = hadTaus[idxHadTau];
+    const RecoHadTau * hadTau = hadTaus[idxHadTau];
     assert(hadTau);
     hadTau_pt_[idxHadTau] = hadTau->pt();
     hadTau_eta_[idxHadTau] = hadTau->eta();
@@ -147,9 +147,7 @@ void RecoHadTauWriter::write(const std::vector<const RecoHadTau *> & hadTaus)
     hadTau_decayMode_[idxHadTau] = hadTau->decayMode();
     hadTau_idDecayMode_[idxHadTau] = hadTau->decayModeFinding();
     hadTau_idDecayModeNewDMs_[idxHadTau] = hadTau->decayModeFindingNew();
-    // "undo" insertion of "VVLose" (95% signal efficiency) working point for tau ID MVA trained for dR=0->3 isolation cone
-    // and store discriminator information in the same format as in the VHbb Ntuples v24 produced by Andrea for 2016 data
-    hadTau_idMVA_dR03_[idxHadTau] = ( hadTau->id_mva_dR03() >= 2 ) ? hadTau->id_mva_dR03() - 1 : 0;
+    hadTau_idMVA_dR03_[idxHadTau] = hadTau->id_mva_dR03();
     hadTau_rawMVA_dR03_[idxHadTau] = hadTau->raw_mva_dR03();
     hadTau_idMVA_dR05_[idxHadTau] = hadTau->id_mva_dR05();
     hadTau_rawMVA_dR05_[idxHadTau] = hadTau->raw_mva_dR05();

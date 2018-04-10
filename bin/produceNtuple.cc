@@ -134,7 +134,8 @@ main(int argc,
   const bool isMC                            = cfg_produceNtuple.getParameter<bool>("isMC");
   const bool isDEBUG                         = cfg_produceNtuple.getParameter<bool>("isDEBUG");
   const bool use_HIP_mitigation_mediumMuonId = cfg_produceNtuple.getParameter<bool>("use_HIP_mitigation_mediumMuonId");
-  const bool useNonNominal                   = cfg_produceNtuple.getParameter<bool>("useNonNominal") || ! isMC;
+  const bool useNonNominal                   = cfg_produceNtuple.getParameter<bool>("useNonNominal");
+  const bool useNonNominal_jetmet            = useNonNominal || ! isMC;
 
   const std::string selEventsFileName_input = cfg_produceNtuple.getParameter<std::string>("selEventsFileName_input");
   std::cout << "selEventsFileName_input = " << selEventsFileName_input << '\n';
@@ -183,9 +184,10 @@ main(int argc,
   const RecoMuonCollectionSelectorTight tightMuonSelector(era, -1, isDEBUG);
   
   RecoElectronReader * const electronReader = new RecoElectronReader(era, branchName_electrons);
+  electronReader->readUncorrected(useNonNominal);
   electronReader->setBranchAddresses(inputTree);
   const RecoElectronCollectionGenMatcher electronGenMatcher;
-  const RecoElectronCollectionCleaner electronCleaner(0.3, isDEBUG);
+  const RecoElectronCollectionCleaner electronCleaner(0.05, isDEBUG);
   const RecoElectronCollectionSelectorLoose preselElectronSelector(era, -1, isDEBUG);
   const RecoElectronCollectionSelectorFakeable fakeableElectronSelector(era, -1, isDEBUG);
   const RecoElectronCollectionSelectorTight tightElectronSelector(era, -1, isDEBUG);
@@ -234,7 +236,7 @@ main(int argc,
   std::cout << "hadTauSelection_tauIDwp = " << hadTauSelection_tauIDwp <<'\n';
 
   RecoJetReader * const jetReader = new RecoJetReader(era, isMC, branchName_jets);
-  jetReader->setPtMass_central_or_shift(useNonNominal ? kJet_central_nonNominal : kJet_central);
+  jetReader->setPtMass_central_or_shift(useNonNominal_jetmet ? kJet_central_nonNominal : kJet_central);
   jetReader->read_ptMass_systematics(isMC);
   jetReader->read_BtagWeight_systematics(isMC);
   jetReader->setBranchAddresses(inputTree);
@@ -261,7 +263,7 @@ main(int argc,
 
 //--- declare missing transverse energy
   RecoMEtReader * const metReader = new RecoMEtReader(era, isMC, branchName_met);
-  metReader->setMEt_central_or_shift(useNonNominal ? kMEt_central_nonNominal : kMEt_central);
+  metReader->setMEt_central_or_shift(useNonNominal_jetmet ? kMEt_central_nonNominal : kMEt_central);
   metReader->read_ptPhi_systematics(isMC);
   metReader->setBranchAddresses(inputTree);
 
@@ -306,6 +308,7 @@ main(int argc,
   std::cout << "writing RecoMuon objects to branch = '" << branchName_muons << "'\n";
 
   RecoElectronWriter * const electronWriter = new RecoElectronWriter(era, branchName_electrons);
+  electronWriter->writeUncorrected(useNonNominal);
   electronWriter->setBranches(outputTree);
   std::cout << "writing RecoElectron objects to branch = '" << branchName_electrons << "'\n";
 
@@ -314,14 +317,14 @@ main(int argc,
   std::cout << "writing RecoHadTau objects to branch = '" << branchName_hadTaus << "'\n";
 
   RecoJetWriter * const jetWriter = new RecoJetWriter(era, isMC, branchName_jets);
-  jetWriter->setPtMass_central_or_shift(useNonNominal ? kJet_central_nonNominal : kJet_central);
+  jetWriter->setPtMass_central_or_shift(useNonNominal_jetmet ? kJet_central_nonNominal : kJet_central);
   jetWriter->write_ptMass_systematics(isMC);
   jetWriter->write_BtagWeight_systematics(isMC);
   jetWriter->setBranches(outputTree);
   std::cout << "writing RecoJet objects to branch = '" << branchName_jets << "'\n";
 
   RecoMEtWriter * const metWriter = new RecoMEtWriter(era, isMC, branchName_met);
-  metWriter->setPtPhi_central_or_shift(useNonNominal ? kJet_central_nonNominal : kJet_central);
+  metWriter->setPtPhi_central_or_shift(useNonNominal_jetmet ? kJet_central_nonNominal : kJet_central);
   metWriter->write_ptPhi_systematics(isMC);
   metWriter->setBranches(outputTree);
   std::cout << "writing RecoMEt object to branch = '" << branchName_met << "'\n";
@@ -439,9 +442,9 @@ main(int argc,
     const std::vector<const RecoMuon *> muon_ptrs = convert_to_ptrs(muons);
     // CV: no cleaning needed for muons, as they have the highest priority in the overlap removal
     const std::vector<const RecoMuon *> cleanedMuons  = muon_ptrs;
-    const std::vector<const RecoMuon *> preselMuons   = preselMuonSelector  (cleanedMuons, isHigherPt);
-    const std::vector<const RecoMuon *> fakeableMuons = fakeableMuonSelector(preselMuons,  isHigherPt);
-    const std::vector<const RecoMuon *> tightMuons    = tightMuonSelector   (preselMuons,  isHigherPt);
+    const std::vector<const RecoMuon *> preselMuons   = preselMuonSelector  (cleanedMuons, isHigherConePt);
+    const std::vector<const RecoMuon *> fakeableMuons = fakeableMuonSelector(preselMuons,  isHigherConePt);
+    const std::vector<const RecoMuon *> tightMuons    = tightMuonSelector   (preselMuons,  isHigherConePt);
     const std::vector<const RecoMuon *> selMuons      = selectObjects(
       leptonSelection, preselMuons, fakeableMuons, tightMuons
     );
@@ -449,9 +452,9 @@ main(int argc,
     const std::vector<RecoElectron> electrons = electronReader->read();
     const std::vector<const RecoElectron *> electron_ptrs = convert_to_ptrs(electrons);
     const std::vector<const RecoElectron *> cleanedElectrons  = electronCleaner(electron_ptrs, fakeableMuons);
-    const std::vector<const RecoElectron *> preselElectrons   = preselElectronSelector  (cleanedElectrons, isHigherPt);
-    const std::vector<const RecoElectron *> fakeableElectrons = fakeableElectronSelector(preselElectrons,  isHigherPt);
-    const std::vector<const RecoElectron *> tightElectrons    = tightElectronSelector   (preselElectrons,  isHigherPt);
+    const std::vector<const RecoElectron *> preselElectrons   = preselElectronSelector  (cleanedElectrons, isHigherConePt);
+    const std::vector<const RecoElectron *> fakeableElectrons = fakeableElectronSelector(preselElectrons,  isHigherConePt);
+    const std::vector<const RecoElectron *> tightElectrons    = tightElectronSelector   (preselElectrons,  isHigherConePt);
     const std::vector<const RecoElectron *> selElectrons      = selectObjects(
       leptonSelection, preselElectrons, fakeableElectrons, tightElectrons
     );
@@ -476,7 +479,7 @@ main(int argc,
     for(const RecoJet * cleanedJet: cleanedJets)
     {
       // Karl: there are no JEC uncertainties for non-nominal (i.e. MET-adjusted) jet pT
-      const double cleanedJet_pt_max = useNonNominal ? cleanedJet->pt() : cleanedJet->maxPt();
+      const double cleanedJet_pt_max = useNonNominal_jetmet ? cleanedJet->pt() : cleanedJet->maxPt();
       const double cleanedJet_absEta = cleanedJet->absEta();
       if(cleanedJet_pt_max >= min_jetSelector_pT && cleanedJet_absEta < max_jetSelector_absEta)
       {
@@ -493,10 +496,10 @@ main(int argc,
     RecoMEt met = metReader->read();
 
 //--- construct the merged lepton collections
-    const std::vector<const RecoLepton *> preselLeptons   = mergeLeptonCollections(preselElectrons,   preselMuons,   isHigherPt);
-    const std::vector<const RecoLepton *> fakeableLeptons = mergeLeptonCollections(fakeableElectrons, fakeableMuons, isHigherPt);
-    const std::vector<const RecoLepton *> tightLeptons    = mergeLeptonCollections(tightElectrons,    tightMuons,    isHigherPt);
-    const std::vector<const RecoLepton *> selLeptons      = mergeLeptonCollections(selElectrons,      selMuons,      isHigherPt);
+    const std::vector<const RecoLepton *> preselLeptons   = mergeLeptonCollections(preselElectrons,   preselMuons,   isHigherConePt);
+    const std::vector<const RecoLepton *> fakeableLeptons = mergeLeptonCollections(fakeableElectrons, fakeableMuons, isHigherConePt);
+    const std::vector<const RecoLepton *> tightLeptons    = mergeLeptonCollections(tightElectrons,    tightMuons,    isHigherConePt);
+    const std::vector<const RecoLepton *> selLeptons      = mergeLeptonCollections(selElectrons,      selMuons,      isHigherConePt);
 
 //--- apply preselection
     if(! (static_cast<int>(selLeptons.size()) >= minNumLeptons))
@@ -661,7 +664,7 @@ main(int argc,
     eventInfoWriter.write(eventInfo);
     muonWriter->write(preselMuons);
     electronWriter->write(preselElectrons);
-    hadTauWriter->write(fakeableHadTaus);
+    hadTauWriter->write(preselHadTaus);
     jetWriter->write(selJets);
     metWriter->write(met);
 

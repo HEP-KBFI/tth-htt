@@ -179,7 +179,7 @@ RecoHadTauSelectorBase::set(const std::string & cut)
   set_max_raw_cut_dR03(1.e+6);
   set_min_id_cut_dR05(-1000);
   set_max_raw_cut_dR05(1.e+6);
-  if      ( cut == "dR03mvaVVLoose" ) set_min_id_mva_dR03(1); // custom WP with 95% signal efficiency, computed in RecoHadTauReader
+  if      ( cut == "dR03mvaVVLoose" ) set_min_id_mva_dR03(1);
   else if ( cut == "dR03mvaVLoose"  ) set_min_id_mva_dR03(2);
   else if ( cut == "dR03mvaLoose"   ) set_min_id_mva_dR03(3);
   else if ( cut == "dR03mvaMedium"  ) set_min_id_mva_dR03(4);
@@ -204,7 +204,7 @@ RecoHadTauSelectorBase::operator()(const RecoHadTau & hadTau) const
 {
   if(debug_)
   {
-    std::cout << "<RecoHadTauSelectorBase::operator()>:\n hadTau: " << hadTau << '\n';
+    std::cout << get_human_line(this, __func__) << ":\n hadTau: " << hadTau << '\n';
   }
 
   if(hadTau.pt() < min_pt_)

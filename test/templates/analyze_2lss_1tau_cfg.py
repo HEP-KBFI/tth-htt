@@ -46,6 +46,7 @@ process.analyze_2lss_1tau = cms.PSet(
     leptonChargeSelection = cms.string('SS'),
 
     hadTauSelection = cms.string('Tight|dR03mvaMedium'),
+    hadTauSelection_veto = cms.string('dR03mvaVTight'), # CV: veto events containing more than one tau passing the VTight WP, to avoid overlap with the 2l+2tau category
     apply_hadTauGenMatching = cms.bool(True),
 
     chargeSumSelection = cms.string('OS'),

@@ -36,6 +36,9 @@ class analyzeConfig_inclusive(analyzeConfig):
       "process.analyze_inclusive.isDEBUG = cms.bool(%s)" % self.isDebug,
       "process.analyze_inclusive.useNonNominal = cms.bool(%s)" % self.use_nonnominal,
     ]
+    if self.rle_select and '%s' not in self.rle_select:
+      lines.append("process.analyze_inclusive.selEventsFileName_input = cms.string('%s')" % self.rle_select)
+
     for trigger in [ '1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '1e2mu', '2e1mu', '1e1tau', '1mu1tau', '2tau' ]:
       lines.append("process.analyze_inclusive.triggers_%s = cms.vstring(%s)" % \
         (trigger, self.whitelist_triggers(getattr(self, 'triggers_%s' % trigger), jobOptions['process_name_specific'])))
