@@ -108,7 +108,8 @@ const int hadTauSelection_antiMuon = -1; // not applied
 enum { kGen_bWj1Wj2, kGen_bWj1, kGen_bWj2, kGen_Wj1Wj2, kGen_b, kGen_Wj1, kGen_Wj2, kGen_none };
 bool inAK12 = true;
 
-template <typename T> std::vector<size_t> sort_indexes(const std::vector<T> &v) {
+template <typename T>
+std::vector<size_t> sort_indexes(const std::vector<T> &v) {
   // initialize original index locations
   std::vector<size_t> idx(v.size());
   iota(idx.begin(), idx.end(), 0);
@@ -129,9 +130,7 @@ std::vector<size_t> calRank(std::vector<const RecoJet*>& selJetsIt) {
     iota(indx.begin(),indx.end(),0);
     sort(indx.begin(),indx.end(),[&btag_disc](int i1, int i2){return btag_disc[i1]>btag_disc[i2];});
     //return ranking
-    for(size_t iter=0;iter<btag_disc.size();++iter){
-        result[indx[iter]]=iter+1;
-    }
+    for(size_t iter=0;iter<btag_disc.size();++iter) result[indx[iter]]=iter+1;
     std::cout<<"btag discriminant  ";
     for (auto i: btag_disc) std::cout << i << " ";
     std::cout<<std::endl;
