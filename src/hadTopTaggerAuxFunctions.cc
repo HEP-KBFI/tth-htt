@@ -14,13 +14,16 @@ isGenMatchedJetTriplet(const Particle::LorentzVector & recBJet,
                        const std::vector<GenParticle> & genWBosons,
                        const std::vector<GenParticle> & genWJets,
                        int mode,
-                       double & genTopPt)
+                       double & genTopPt,
+											 int TypeTop,
+											 const Particle::LorentzVector & recFatJet)
 {
   std::map<int, bool> genMatchFlags = {
-    { kGenMatchedBJet ,    false },
-    { kGenMatchedWJet1 ,   false },
-    { kGenMatchedWJet2 ,   false },
-    { kGenMatchedTriplet , false },
+    { kGenMatchedBJet ,     false },
+    { kGenMatchedWJet1 ,    false },
+    { kGenMatchedWJet2 ,    false },
+    { kGenMatchedTriplet ,  false },
+		{ kGenMatchedFatJet ,   false },
   };
 
   int pddIdTop, pddIdWBoson, pdgIdBJet;
@@ -107,14 +110,22 @@ isGenMatchedJetTriplet(const Particle::LorentzVector & recBJet,
     genWJetFromTop_lead, genWJetFromTop_sublead, genWBosonFromTop
   );
 
-  genMatchFlags[kGenMatchedBJet]    = deltaR(recBJet, genBJetFromTop->p4()) < 0.2;
+	double jetGenMatchdRThrsh = 0.2;
+	double fatjetGenMatchdRThrsh = 0.2;
+	if (TypeTop==1 || TypeTop==2) {
+		jetGenMatchdRThrsh = 0.15;
+		fatjetGenMatchdRThrsh = 0.15;
+	}
+
+	
+  genMatchFlags[kGenMatchedBJet]    = deltaR(recBJet, genBJetFromTop->p4()) < jetGenMatchdRThrsh;
   genMatchFlags[kGenMatchedWJet1]   =
-    (genWJetFromTop_lead    && deltaR(recWJet1, genWJetFromTop_lead->p4())    < 0.2) ||
-    (genWJetFromTop_sublead && deltaR(recWJet1, genWJetFromTop_sublead->p4()) < 0.2)
+    (genWJetFromTop_lead    && deltaR(recWJet1, genWJetFromTop_lead->p4())    < jetGenMatchdRThrsh) ||
+    (genWJetFromTop_sublead && deltaR(recWJet1, genWJetFromTop_sublead->p4()) < jetGenMatchdRThrsh)
   ;
   genMatchFlags[kGenMatchedWJet2]   =
-    (genWJetFromTop_lead    && deltaR(recWJet2, genWJetFromTop_lead->p4())    < 0.2) ||
-    (genWJetFromTop_sublead && deltaR(recWJet2, genWJetFromTop_sublead->p4()) < 0.2)
+    (genWJetFromTop_lead    && deltaR(recWJet2, genWJetFromTop_lead->p4())    < jetGenMatchdRThrsh) ||
+    (genWJetFromTop_sublead && deltaR(recWJet2, genWJetFromTop_sublead->p4()) < jetGenMatchdRThrsh)
   ;
   genMatchFlags[kGenMatchedTriplet] =
     genMatchFlags[kGenMatchedBJet]  &&
@@ -123,6 +134,14 @@ isGenMatchedJetTriplet(const Particle::LorentzVector & recBJet,
     passWbosonMassVeto_top
   ;
 
+	if (TypeTop==1) {
+		genMatchFlags[kGenMatchedFatJet] =
+    (recFatJet.pt() > 0. && recFatJet.mass() > 0.  && deltaR(recFatJet, genTop->p4()) < fatjetGenMatchdRThrsh);
+	} else if (TypeTop==2) {
+		genMatchFlags[kGenMatchedFatJet] =
+    (recFatJet.pt() > 0. && recFatJet.mass() > 0.  && deltaR(recFatJet, genWBosonFromTop->p4()) < fatjetGenMatchdRThrsh);
+	}
+	
   return genMatchFlags;
 }
 
