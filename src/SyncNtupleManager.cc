@@ -252,6 +252,7 @@ SyncNtupleManager::initializeBranches()
     tau_byMediumIsolationMVArun2v1DBdR03oldDMwLT,        "byMediumIsolationMVArun2v1DBdR03oldDMwLT",
     tau_byTightIsolationMVArun2v1DBdR03oldDMwLT,         "byTightIsolationMVArun2v1DBdR03oldDMwLT",
     tau_byVTightIsolationMVArun2v1DBdR03oldDMwLT,        "byVTightIsolationMVArun2v1DBdR03oldDMwLT",
+    tau_rawMVArun2v1DBdR03oldDMwLT,                      "rawMVArun2v1DBdR03oldDMwLT",
     tau_againstMuonLoose3,                               "againstMuonLoose3",
     tau_againstMuonTight3,                               "againstMuonTight3",
     tau_againstElectronVLooseMVA6,                       "againstElectronVLooseMVA6",
@@ -444,6 +445,7 @@ SyncNtupleManager::read(const std::vector<const RecoHadTau *> & hadtaus)
     tau_byMediumIsolationMVArun2v1DBdR03oldDMwLT[i] = idMVArun2dR03 >= 4 ? 1 : 0;
     tau_byTightIsolationMVArun2v1DBdR03oldDMwLT[i] = idMVArun2dR03 >= 5 ? 1 : 0;
     tau_byVTightIsolationMVArun2v1DBdR03oldDMwLT[i] = idMVArun2dR03 >= 6 ? 1 : 0;
+    tau_rawMVArun2v1DBdR03oldDMwLT[i] = hadtau -> raw_mva_dR03();
 
     const Int_t idAntiMu = hadtau -> antiMuon();
     tau_againstMuonLoose3[i] = idAntiMu >= 1 ? 1 : 0;
@@ -606,6 +608,7 @@ SyncNtupleManager::reset()
     tau_byMediumIsolationMVArun2v1DBdR03oldDMwLT,
     tau_byTightIsolationMVArun2v1DBdR03oldDMwLT,
     tau_byVTightIsolationMVArun2v1DBdR03oldDMwLT,
+    tau_rawMVArun2v1DBdR03oldDMwLT,
     tau_againstMuonLoose3,
     tau_againstMuonTight3,
     tau_againstElectronVLooseMVA6,

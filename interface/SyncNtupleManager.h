@@ -357,6 +357,7 @@ private:
   Int_t * tau_byMediumIsolationMVArun2v1DBdR03oldDMwLT;
   Int_t * tau_byTightIsolationMVArun2v1DBdR03oldDMwLT;
   Int_t * tau_byVTightIsolationMVArun2v1DBdR03oldDMwLT;
+  Float_t * tau_rawMVArun2v1DBdR03oldDMwLT;
   Int_t * tau_againstMuonLoose3;
   Int_t * tau_againstMuonTight3;
   Int_t * tau_againstElectronVLooseMVA6;

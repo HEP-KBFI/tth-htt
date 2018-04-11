@@ -4,7 +4,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h" // RecoJet
 
 enum {
-  kGenMatchedBJet, kGenMatchedWJet1, kGenMatchedWJet2, kGenMatchedTriplet
+  kGenMatchedBJet, kGenMatchedWJet1, kGenMatchedWJet2, kGenMatchedTriplet, kGenMatchedFatJet
 };
 
 enum {
@@ -27,7 +27,9 @@ isGenMatchedJetTriplet(const Particle::LorentzVector & recBJet,
                        const std::vector<GenParticle> & genWBosons,
                        const std::vector<GenParticle> & genWJets,
                        int mode,
-                       double & genTopPt);
+                       double & genTopPt,
+											 int TypeTop = 3,
+											 const Particle::LorentzVector & recFatJet = Particle::LorentzVector(0., 0., 0., 0.));
 
 std::map<int, double>
 isGenMatchedJetTripletVar(const std::vector<GenParticle> & genTopQuarks,

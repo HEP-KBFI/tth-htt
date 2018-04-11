@@ -12,7 +12,7 @@ RecoHadTauSelectorLoose::RecoHadTauSelectorLoose(int era,
   apply_decayModeFinding_ = true;
   min_antiElectron_       = -1000;
   min_antiMuon_           = -1000;
-  set("dR03mvaVLoose");
+  set("dR03mvaLoose");
 }
 
 void
