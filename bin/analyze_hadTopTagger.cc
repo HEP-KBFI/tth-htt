@@ -364,7 +364,7 @@ int main(int argc, char* argv[])
 
 
     bdt_filler->register_variable<int_type>(
-      "typeTop", "collectionSize", "bjet_tag_position", "bWj1Wj2_isGenMatched", "counter"
+      "typeTop", "collectionSize", "bjet_tag_position", "bWj1Wj2_isGenMatched", "counter", "fatjet_isGenMatched"
       //"b_isGenMatched", "Wj1_isGenMatched", "Wj2_isGenMatched",
       //"bWj1Wj2_isGenMatched"
     );
@@ -468,6 +468,7 @@ int main(int argc, char* argv[])
     int collectionSize = 0;
     Particle::LorentzVector unfittedHadTopP4, selBJet, selWJet1, selWJet2 ;
     bool isGenMatched = false;
+		bool fatjet_isGenMatched = false;
     double genTopPtProbeTop = -1.;
     double genTopPtProbeAntiTop = -1.;
     double genTopPt = -1.;
@@ -538,6 +539,7 @@ int main(int argc, char* argv[])
           if(genMatchingTop[kGenMatchedTriplet]) genTopPt=genTopPtProbeTop;
           if(genMatchingAntiTop[kGenMatchedTriplet]) genTopPt=genTopPtProbeAntiTop;
           isGenMatched = (genMatchingTop[kGenMatchedTriplet] || genMatchingAntiTop[kGenMatchedTriplet]);
+					fatjet_isGenMatched = (genMatchingTop[kGenMatchedFatJet] || genMatchingAntiTop[kGenMatchedFatJet]);
           if ( bdt_filler ) {
             bdt_filler -> operator()({ eventInfo.run, eventInfo.lumi, eventInfo.event })
             ("typeTop",              typeTop)
@@ -550,6 +552,7 @@ int main(int argc, char* argv[])
             ("collectionSize",       collectionSize)
             ("bjet_tag_position",    1)
             ("bWj1Wj2_isGenMatched", isGenMatched)
+						("fatjet_isGenMatched",  fatjet_isGenMatched)
             ("counter",              (inputTree -> getProcessedFileCount() - 1))
                 .fill();
           }
@@ -588,6 +591,7 @@ int main(int argc, char* argv[])
               if(genMatchingTop[kGenMatchedTriplet]) genTopPt=genTopPtProbeTop;
               if(genMatchingAntiTop[kGenMatchedTriplet]) genTopPt=genTopPtProbeAntiTop;
               isGenMatched = (genMatchingTop[kGenMatchedTriplet] || genMatchingAntiTop[kGenMatchedTriplet]);
+							fatjet_isGenMatched = (genMatchingTop[kGenMatchedFatJet] || genMatchingAntiTop[kGenMatchedFatJet]);
               if ( bdt_filler ) {
                 bdt_filler -> operator()({ eventInfo.run, eventInfo.lumi, eventInfo.event })
                 ("typeTop",              typeTop)
@@ -600,6 +604,7 @@ int main(int argc, char* argv[])
                 ("collectionSize",       collectionSize)
                 ("bjet_tag_position",    btag_order[bjetCandidate])
                 ("bWj1Wj2_isGenMatched", isGenMatched)
+								("fatjet_isGenMatched",  fatjet_isGenMatched)
                 ("counter",              (inputTree -> getProcessedFileCount() - 1))
                     .fill();
               }
@@ -627,7 +632,7 @@ int main(int argc, char* argv[])
                 if(genMatchingTop[kGenMatchedTriplet]) genTopPt=genTopPtProbeTop;
                 if(genMatchingAntiTop[kGenMatchedTriplet]) genTopPt=genTopPtProbeAntiTop;
                 isGenMatched = (genMatchingTop[kGenMatchedTriplet] || genMatchingAntiTop[kGenMatchedTriplet]);
-                //
+                fatjet_isGenMatched = (genMatchingTop[kGenMatchedFatJet] || genMatchingAntiTop[kGenMatchedFatJet]);
                 if ( bdt_filler ) {
                   bdt_filler -> operator()({ eventInfo.run, eventInfo.lumi, eventInfo.event })
                   ("typeTop",              typeTop)
@@ -640,6 +645,7 @@ int main(int argc, char* argv[])
                   ("collectionSize",       collectionSize)
                   ("bjet_tag_position",    btag_order[bjetCandidate])
                   ("bWj1Wj2_isGenMatched", isGenMatched)
+									("fatjet_isGenMatched",  fatjet_isGenMatched)	
                   ("counter",              (inputTree -> getProcessedFileCount() - 1))
                       .fill();
                 }
@@ -663,6 +669,7 @@ int main(int argc, char* argv[])
                   if(genMatchingTop[kGenMatchedTriplet]) genTopPt=genTopPtProbeTop;
                   if(genMatchingAntiTop[kGenMatchedTriplet]) genTopPt=genTopPtProbeAntiTop;
                   isGenMatched = (genMatchingTop[kGenMatchedTriplet] || genMatchingAntiTop[kGenMatchedTriplet]);
+									fatjet_isGenMatched = (genMatchingTop[kGenMatchedFatJet] || genMatchingAntiTop[kGenMatchedFatJet]);
                   //std::cout<<"btag position = "<< btag_order[bjetCandidate] <<std::endl;
                   if ( bdt_filler ) {
                     bdt_filler -> operator()({ eventInfo.run, eventInfo.lumi, eventInfo.event })
@@ -676,6 +683,7 @@ int main(int argc, char* argv[])
                     ("collectionSize",       collectionSize)
                     ("bjet_tag_position",    btag_order[bjetCandidate])
                     ("bWj1Wj2_isGenMatched", isGenMatched)
+										("fatjet_isGenMatched",  fatjet_isGenMatched)
                     ("counter",              (inputTree -> getProcessedFileCount() - 1))
                         .fill();
                   }
