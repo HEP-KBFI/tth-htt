@@ -1872,7 +1872,7 @@ int main(int argc, char* argv[])
       snm->read(eventInfo);
       snm->read(preselMuons,     fakeableMuons,     tightMuons);
       snm->read(preselElectrons, fakeableElectrons, tightElectrons);
-      snm->read(fakeableHadTaus);
+      snm->read(preselHadTaus);
       snm->read(selJets);
 
       snm->read({
