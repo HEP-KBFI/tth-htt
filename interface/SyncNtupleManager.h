@@ -353,6 +353,7 @@ private:
   Int_t * tau_byLooseCombinedIsolationDeltaBetaCorr3HitsdR03;
   Int_t * tau_byMediumCombinedIsolationDeltaBetaCorr3HitsdR03;
   Int_t * tau_byTightCombinedIsolationDeltaBetaCorr3HitsdR03;
+  Int_t * tau_byVLooseIsolationMVArun2v1DBdR03oldDMwLT;
   Int_t * tau_byLooseIsolationMVArun2v1DBdR03oldDMwLT;
   Int_t * tau_byMediumIsolationMVArun2v1DBdR03oldDMwLT;
   Int_t * tau_byTightIsolationMVArun2v1DBdR03oldDMwLT;
