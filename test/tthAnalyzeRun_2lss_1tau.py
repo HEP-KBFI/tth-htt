@@ -70,12 +70,12 @@ if mode == "VHbb":
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_preselected import samples_2017
   else:
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017
-  hadTau_selection      = "dR03mvaMedium"
+  hadTau_selection      = "dR03mvaLoose"
   applyFakeRateWeights  = "2lepton"
 elif mode == "addMEM":
   from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_addMEM_2lss1tau import samples_2017
-  MEMbranch             = 'memObjects_2lss_1tau_lepFakeable_tauTight_dR03mvaMedium'
-  hadTau_selection      = "dR03mvaMedium"
+  MEMbranch             = 'memObjects_2lss_1tau_lepFakeable_tauTight_dR03mvaLoose'
+  hadTau_selection      = "dR03mvaLoose"
   applyFakeRateWeights  = "2lepton"
   max_files_per_job     = 1
 elif mode == "forBDTtraining_beforeAddMEM":
@@ -83,25 +83,25 @@ elif mode == "forBDTtraining_beforeAddMEM":
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_FastSim_preselected import samples_2017
   else:
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_FastSim import samples_2017
-  hadTau_selection         = "dR03mvaMedium"
-  hadTau_selection_relaxed = "dR03mvaMedium"
+  hadTau_selection         = "dR03mvaLoose"
+  hadTau_selection_relaxed = "dR03mvaLoose"
   applyFakeRateWeights     = "2lepton"
 elif mode == "forBDTtraining_afterAddMEM":
   from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_FastSim_addMEM_2lss1tau import samples_2017
-  MEMbranch                = 'memObjects_2lss_1tau_lepLoose_tauTight_dR03mvaMedium'
-  hadTau_selection         = "dR03mvaMedium"
-  hadTau_selection_relaxed = "dR03mvaMedium"
+  MEMbranch                = 'memObjects_2lss_1tau_lepLoose_tauTight_dR03mvaLoose'
+  hadTau_selection         = "dR03mvaLoose"
+  hadTau_selection_relaxed = "dR03mvaLoose"
   applyFakeRateWeights     = "2lepton"
   max_files_per_job        = 1
 elif mode.startswith("sync"):
   if mode == "sync":
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_addMEM_sync import samples_2017
-    MEMbranch = 'memObjects_2lss_1tau_lepFakeable_tauTight_dR03mvaMedium'
+    MEMbranch = 'memObjects_2lss_1tau_lepFakeable_tauTight_dR03mvaLoose'
   elif mode == "sync_noMEM":
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync import samples_2017
   else:
     raise ValueError("Internal logic error")
-  hadTau_selection     = "dR03mvaMedium"
+  hadTau_selection     = "dR03mvaLoose"
   applyFakeRateWeights = "2lepton"
 else:
   raise ValueError("Internal logic error")

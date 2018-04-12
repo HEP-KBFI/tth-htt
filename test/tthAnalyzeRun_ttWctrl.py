@@ -13,7 +13,7 @@ systematics.full = systematics.an_ctrl
 
 parser = tthAnalyzeParser()
 parser.add_sys(sys_choices)
-parser.add_tau_id_wp("dR03mvaLoose")
+parser.add_tau_id_wp("dR03mvaVLoose")
 args = parser.parse_args()
 
 # Common arguments
