@@ -162,7 +162,7 @@ private:
       for(int i = 0; i < count; ++i)
       {
         var[i] = placeholder_value;
-        const std::string branchName = Form("%s%d_%s", infix.c_str(), i, label.c_str());
+        const std::string branchName = Form("%s%d_%s", infix.c_str(), i + 1, label.c_str());
         outputTree -> Branch(branchName.c_str(), &(var[i]), Form("%s/%s", branchName.c_str(), Traits<T>::TYPE_NAME));
       }
     }
