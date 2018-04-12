@@ -4,6 +4,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 
 #include <algorithm> // std::sort()
+#include <numeric> // iota
 
 std::map<int, bool>
 isGenMatchedJetTriplet(const Particle::LorentzVector & recBJet,
@@ -117,7 +118,7 @@ isGenMatchedJetTriplet(const Particle::LorentzVector & recBJet,
 		fatjetGenMatchdRThrsh = 0.15;
 	}
 
-	
+
   genMatchFlags[kGenMatchedBJet]    = deltaR(recBJet, genBJetFromTop->p4()) < jetGenMatchdRThrsh;
   genMatchFlags[kGenMatchedWJet1]   =
     (genWJetFromTop_lead    && deltaR(recWJet1, genWJetFromTop_lead->p4())    < jetGenMatchdRThrsh) ||
@@ -141,7 +142,7 @@ isGenMatchedJetTriplet(const Particle::LorentzVector & recBJet,
 		genMatchFlags[kGenMatchedFatJet] =
     (recFatJet.pt() > 0. && recFatJet.mass() > 0.  && deltaR(recFatJet, genWBosonFromTop->p4()) < fatjetGenMatchdRThrsh);
 	}
-	
+
   return genMatchFlags;
 }
 
@@ -284,4 +285,44 @@ passWbosonMassVeto(const GenParticle * genWJetFromTop_lead,
 {
   const double genWJetFromTop_mass = (genWJetFromTop_lead->p4() + genWJetFromTop_sublead->p4()).mass();
   return std::fabs(genWJetFromTop_mass - genWBosonFromTop->mass()) < 15. && genWJetFromTop_mass > 60.;
+}
+
+int
+getType(size_t sizeHTTv2, size_t sizeFatW, size_t sizeResolved){
+  int typeTop = -1;
+  if (sizeHTTv2 > 0) typeTop = 1;
+  else if (sizeFatW >0) typeTop = 2;
+  else if (sizeResolved >0) typeTop = 3;
+  return typeTop;
+}
+
+//template <typename T>
+std::vector<size_t>
+sort_indexes(const std::vector<double> &v) {
+  // initialize original index locations
+  std::vector<size_t> idx(v.size());
+  iota(idx.begin(), idx.end(), 0);
+  // sort indexes based on comparing values in v
+  sort(idx.begin(), idx.end(), [&v](size_t i1, size_t i2) {return v[i1] > v[i2];});
+  return idx;
+}
+
+std::vector<size_t>
+calRank(std::vector<const RecoJet*>& selJetsIt) {
+  std::vector<double> btag_disc;
+  for ( std::vector<const RecoJet*>::const_iterator jetIterB = selJetsIt.begin();
+    jetIterB != selJetsIt.end(); ++jetIterB ) {
+      btag_disc.push_back((*jetIterB)->BtagCSV());
+    }
+    std::vector<size_t> result(btag_disc.size(),0);
+    //sorted index
+    std::vector<size_t> indx(btag_disc.size());
+    iota(indx.begin(),indx.end(),0);
+    sort(indx.begin(),indx.end(),[&btag_disc](int i1, int i2){return btag_disc[i1]>btag_disc[i2];});
+    //return ranking
+    for(size_t iter=0;iter<btag_disc.size();++iter) result[indx[iter]]=iter+1;
+    std::cout<<"btag discriminant  ";
+    for (auto i: btag_disc) std::cout << i << " ";
+    std::cout<<std::endl;
+    return result;
 }

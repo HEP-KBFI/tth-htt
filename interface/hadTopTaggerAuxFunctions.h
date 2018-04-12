@@ -43,4 +43,14 @@ passWbosonMassVeto(const GenParticle * genWJetFromTop_lead,
                    const GenParticle * genWJetFromTop_sublead,
                    const GenParticle * genWBosonFromTop);
 
+int
+getType(size_t sizeHTTv2, size_t sizeFatW, size_t sizeResolved);
+
+//template <typename T>
+std::vector<size_t>
+sort_indexes(const std::vector<double> &v);
+
+std::vector<size_t>
+calRank(std::vector<const RecoJet*>& selJetsIt);
+
 #endif
