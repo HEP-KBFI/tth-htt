@@ -60,7 +60,7 @@ max_files_per_job    = 50 if use_preselected else 1
 do_sync              = mode.startswith('sync')
 
 MEMbranch                          = ''
-hadTau_selection_veto              = "dR03mvaVTight"
+hadTau_selection_veto              = "dR03mvaTight"
 hadTauFakeRateWeight_inputFileName = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016.root" #TODO update
 lepton_charge_selections           = [ "SS" ] if mode.find("forBDTtraining") != -1 else [ "OS", "SS" ]
 chargeSumSelections                = [ "OS" ] if mode.find("forBDTtraining") != -1 else [ "OS", "SS" ]
