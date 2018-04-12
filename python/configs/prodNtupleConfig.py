@@ -145,6 +145,7 @@ class prodNtupleConfig:
             "inputFiles = %s"   % jobOptions['inputFiles'],
             "executable = '%s'" % self.executable_prodNtuple,
             "isMC = %s" % str(jobOptions['is_mc']),
+            "era = %s" % str(self.era),
         ])
         create_cfg(self.cfgFile_prodNtuple_original, jobOptions['cfgFile_modified'], lines)
 
