@@ -116,7 +116,7 @@ if __name__ == '__main__':
       samples                   = samples,
       MEMbranch                 = None, # CV: MEM not implemented for 2lss channel yet
       lepton_charge_selections  = lepton_charge_selections,
-      hadTauVeto_selection      = "dR03mvaMedium", # veto events containing taus that pass tau ID WP applied in 2lss+1tau channel,
+      hadTauVeto_selection      = "dR03mvaLoose", # veto events containing taus that pass tau ID WP applied in 2lss+1tau channel,
       applyFakeRateWeights      = "2lepton",
       central_or_shifts         = central_or_shift,
       max_files_per_job         = max_files_per_job,

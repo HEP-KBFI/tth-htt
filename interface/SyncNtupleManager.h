@@ -162,7 +162,7 @@ private:
       for(int i = 0; i < count; ++i)
       {
         var[i] = placeholder_value;
-        const std::string branchName = Form("%s%d_%s", infix.c_str(), i, label.c_str());
+        const std::string branchName = Form("%s%d_%s", infix.c_str(), i + 1, label.c_str());
         outputTree -> Branch(branchName.c_str(), &(var[i]), Form("%s/%s", branchName.c_str(), Traits<T>::TYPE_NAME));
       }
     }
@@ -353,6 +353,7 @@ private:
   Int_t * tau_byLooseCombinedIsolationDeltaBetaCorr3HitsdR03;
   Int_t * tau_byMediumCombinedIsolationDeltaBetaCorr3HitsdR03;
   Int_t * tau_byTightCombinedIsolationDeltaBetaCorr3HitsdR03;
+  Int_t * tau_byVLooseIsolationMVArun2v1DBdR03oldDMwLT;
   Int_t * tau_byLooseIsolationMVArun2v1DBdR03oldDMwLT;
   Int_t * tau_byMediumIsolationMVArun2v1DBdR03oldDMwLT;
   Int_t * tau_byTightIsolationMVArun2v1DBdR03oldDMwLT;

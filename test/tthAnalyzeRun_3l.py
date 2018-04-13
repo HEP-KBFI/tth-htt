@@ -112,7 +112,7 @@ if __name__ == '__main__':
       cfgFile_analyze                       = "analyze_3l_cfg.py",
       samples                               = samples,
       MEMbranch                             = None, # CV: MEM not implemented for 3l channel yet
-      hadTauVeto_selection                  = "dR03mvaMedium", # veto events containing taus that pass tau ID WP applied in 3l+1tau channel,
+      hadTauVeto_selection                  = "dR03mvaLoose", # veto events containing taus that pass tau ID WP applied in 3l+1tau channel,
       applyFakeRateWeights                  = "3lepton",
       chargeSumSelections                   = chargeSumSelections,
       central_or_shifts                     = central_or_shift,

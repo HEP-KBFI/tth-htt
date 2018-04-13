@@ -72,19 +72,19 @@ if mode == 'default':
 
   leptonSelection = "Fakeable"
   hadTauSelection = "Tight"
-  hadTauWP        = "dR03mvaMedium"
+  hadTauWP        = "dR03mvaLoose"
 elif mode == 'bdt':
   from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_FastSim import samples_2017
 
   leptonSelection = "Loose"
   hadTauSelection = "Tight"
-  hadTauWP        = "dR03mvaMedium"
+  hadTauWP        = "dR03mvaLoose"
 elif mode == 'sync':
   from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync import samples_2017
 
   leptonSelection = "Fakeable"
   hadTauSelection = "Tight"
-  hadTauWP        = "dR03mvaMedium"
+  hadTauWP        = "dR03mvaLoose"
 else:
   raise ValueError("Internal logic error")
 

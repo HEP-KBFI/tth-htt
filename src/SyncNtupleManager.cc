@@ -248,6 +248,7 @@ SyncNtupleManager::initializeBranches()
     tau_byLooseCombinedIsolationDeltaBetaCorr3HitsdR03,  "byLooseCombinedIsolationDeltaBetaCorr3HitsdR03",
     tau_byMediumCombinedIsolationDeltaBetaCorr3HitsdR03, "byMediumCombinedIsolationDeltaBetaCorr3HitsdR03",
     tau_byTightCombinedIsolationDeltaBetaCorr3HitsdR03,  "byTightCombinedIsolationDeltaBetaCorr3HitsdR03",
+    tau_byVLooseIsolationMVArun2v1DBdR03oldDMwLT,        "byVLooseIsolationMVArun2v1DBdR03oldDMwLT",
     tau_byLooseIsolationMVArun2v1DBdR03oldDMwLT,         "byLooseIsolationMVArun2v1DBdR03oldDMwLT",
     tau_byMediumIsolationMVArun2v1DBdR03oldDMwLT,        "byMediumIsolationMVArun2v1DBdR03oldDMwLT",
     tau_byTightIsolationMVArun2v1DBdR03oldDMwLT,         "byTightIsolationMVArun2v1DBdR03oldDMwLT",
@@ -441,6 +442,7 @@ SyncNtupleManager::read(const std::vector<const RecoHadTau *> & hadtaus)
     tau_byTightCombinedIsolationDeltaBetaCorr3HitsdR03[i] = idCI3hitdR03 >= 3 ? 1 : 0;
 
     const Int_t idMVArun2dR03 = hadtau -> id_mva_dR03();
+    tau_byVLooseIsolationMVArun2v1DBdR03oldDMwLT[i] = idMVArun2dR03 >= 2 ? 1 : 0;
     tau_byLooseIsolationMVArun2v1DBdR03oldDMwLT[i] = idMVArun2dR03 >= 3 ? 1 : 0;
     tau_byMediumIsolationMVArun2v1DBdR03oldDMwLT[i] = idMVArun2dR03 >= 4 ? 1 : 0;
     tau_byTightIsolationMVArun2v1DBdR03oldDMwLT[i] = idMVArun2dR03 >= 5 ? 1 : 0;
@@ -604,6 +606,7 @@ SyncNtupleManager::reset()
     tau_byLooseCombinedIsolationDeltaBetaCorr3HitsdR03,
     tau_byMediumCombinedIsolationDeltaBetaCorr3HitsdR03,
     tau_byTightCombinedIsolationDeltaBetaCorr3HitsdR03,
+    tau_byVLooseIsolationMVArun2v1DBdR03oldDMwLT,
     tau_byLooseIsolationMVArun2v1DBdR03oldDMwLT,
     tau_byMediumIsolationMVArun2v1DBdR03oldDMwLT,
     tau_byTightIsolationMVArun2v1DBdR03oldDMwLT,

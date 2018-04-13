@@ -9,7 +9,7 @@ from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
 parser = tthAnalyzeParser()
 parser.add_rle_select()
 parser.add_nonnominal()
-parser.add_tau_id_wp('dR03mvaMedium')
+parser.add_tau_id_wp('dR03mvaLoose')
 parser.add_argument('-o', '--output-tree',
   type = str, dest = 'output_tree', metavar = 'name', default = 'syncTree', required = False,
   help = 'R|Output TTree name',

@@ -33,6 +33,7 @@ echo "Parsing $SCRIPT_BASE"
 FILES=$(python -c "from $SCRIPT_FILE import inputFiles; print(' '.join(inputFiles))")
 EXECUTABLE=$(python -c "from $SCRIPT_FILE import executable; print(executable)")
 IS_MC=$(python -c "from $SCRIPT_FILE import isMC; print(isMC)")
+ERA=$(python -c "from $SCRIPT_FILE import era; print(era)")
 echo "Found the following file(s): '$FILES'"
 echo "Found the following executable: '$EXECUTABLE'"
 echo "Is MC? '$IS_MC'"
@@ -44,7 +45,7 @@ if [[ -z $(which "$EXECUTABLE" 2>/dev/null) ]]; then
   exit 2;
 fi
 
-NANO_MODULES_DATA="lepJetVarBTagAll,absIso,tauIDLog,jetSubstructureObservablesHTTv2"
+NANO_MODULES_DATA="lepJetVarBTagAll,absIso,tauIDLog_$ERA,jetSubstructureObservablesHTTv2"
 NANO_MODULES_MC="$NANO_MODULES_DATA,genHiggsDecayMode,genAll,btagSF_csvv2,btagSF_deep,puWeight,jetmetUncertainties"
 
 if [ "$IS_MC" == "True" ]; then

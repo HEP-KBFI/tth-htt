@@ -186,8 +186,8 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
     if self.era == "2017":
       # TODO: update the FR file for 2017 analysis
       lines.append("process.analyze_2lss_1tau.hadTauFakeRateWeight.inputFileName = cms.string('tthAnalysis/HiggsToTauTau/data/FR_tau_2016.root')")
-      # CV: use data/MC corrections determined for dR03mvaMedium discriminator for 2016 data
-      fitFunctionName = "jetToTauFakeRate/dR03mvaMedium/$etaBin/fitFunction_data_div_mc_hadTaus_pt"
+      # CV: use data/MC corrections determined for dR03mvaLoose discriminator for 2016 data
+      fitFunctionName = "jetToTauFakeRate/dR03mvaLoose/$etaBin/fitFunction_data_div_mc_hadTaus_pt"
     else:
       raise ValueError("Invalid parameter 'era' = %s !!" % self.era)
     lines.append("process.analyze_2lss_1tau.hadTauFakeRateWeight.lead.fitFunctionName = cms.string('%s')" % fitFunctionName)
@@ -357,7 +357,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
         hadTau_selection = "|".join([ hadTau_selection, self.hadTau_selection_part2 ])
 
       if lepton_and_hadTau_selection == "forBDTtraining":
-        lepton_selection = "Loose" # "Tight" 
+        lepton_selection = "Loose" # "Tight"
         if not self.applyFakeRateWeights == "2lepton":
             hadTau_selection = "Tight|%s" % self.hadTau_selection_relaxed
             # hadTau ID it is the same level of analysis if applyFakeRateWeights == "2lepton"

@@ -84,7 +84,7 @@ if __name__ == '__main__':
       jet_maxAbsEta                    = 2.3,
       hadTau_selection_denominator     = tau_id_wp,
       hadTau_selections_numerator      = [
-        ##"dR03mvaVLoose",
+        "dR03mvaVLoose",
         "dR03mvaLoose",
         "dR03mvaMedium",
         "dR03mvaTight",

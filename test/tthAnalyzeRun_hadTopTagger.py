@@ -8,7 +8,7 @@ from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
 # E.g.: ./tthAnalyzeRun_hadTopTagger.py -v 2017Dec13 -e 2017
 
 parser = tthAnalyzeParser()
-parser.add_tau_id_wp('dR03mvaMedium')
+parser.add_tau_id_wp('dR03mvaLoose')
 args = parser.parse_args()
 
 # Common arguments
