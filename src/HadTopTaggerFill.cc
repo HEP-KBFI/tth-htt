@@ -205,9 +205,9 @@ HadTopTaggerFill::operator()(const Particle::LorentzVector & recBJet,
   mvaInputs_["cosThetaWj1_restW"]   = PWj1boost.CosTheta();
   mvaInputs_["cosThetaKinWj_restW"] = kinFit_PWj1boost.CosTheta();
 
-  kinFit_->integrate(recBJet, recWJet1, recWJet2);
-  mvaInputs_["logPKinFit"]         = kinFit_->p()    > 0. ? std::log(kinFit_->p())    : -1.e+3;
-  mvaInputs_["logPErrKinFit"]      = kinFit_->pErr() > 0. ? std::log(kinFit_->pErr()) : -1.e+3;
+  //kinFit_->integrate(recBJet, recWJet1, recWJet2);
+  //mvaInputs_["logPKinFit"]         = kinFit_->p()    > 0. ? std::log(kinFit_->p())    : -1.e+3;
+  //mvaInputs_["logPErrKinFit"]      = kinFit_->pErr() > 0. ? std::log(kinFit_->pErr()) : -1.e+3;
 
   mvaInputs_["pT_bWj1Wj2"]         = p4_bWj1Wj2.pt();
   mvaInputs_["pT_Wj1Wj2"]          = p4_Wj1Wj2.pt();
