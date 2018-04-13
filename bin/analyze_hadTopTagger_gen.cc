@@ -315,6 +315,9 @@ int main(int argc, char* argv[])
   }
 
   std::string selEventsFileName_output = cfg_analyze.getParameter<std::string>("selEventsFileName_output");
+  std::string selEventsFileName_output_boosted = cfg_analyze.getParameter<std::string>("selEventsFileName_output_boosted");
+  std::string selEventsFileName_output_semiboosted = cfg_analyze.getParameter<std::string>("selEventsFileName_output_semiboosted");
+  std::string selEventsFileName_output_resolved = cfg_analyze.getParameter<std::string>("selEventsFileName_output_resolved");
 
   fwlite::InputSource inputFiles(cfg);
   int maxEvents = inputFiles.maxEvents();
@@ -497,6 +500,12 @@ int main(int argc, char* argv[])
 //--- open output file containing run:lumi:event numbers of events passing final event selection criteria
   std::ostream* selEventsFile = ( selEventsFileName_output != "" ) ? new std::ofstream(selEventsFileName_output.data(), std::ios::out) : 0;
   std::cout << "selEventsFileName_output = " << selEventsFileName_output << std::endl;
+  std::ostream* selEventsFile_boosted = ( selEventsFileName_output_boosted != "" ) ? new std::ofstream(selEventsFileName_output_boosted.data(), std::ios::out) : 0;
+  std::cout << "selEventsFileName_output_boosted = " << selEventsFileName_output_boosted << std::endl;
+  std::ostream* selEventsFile_semiboosted = ( selEventsFileName_output_semiboosted != "" ) ? new std::ofstream(selEventsFileName_output_semiboosted.data(), std::ios::out) : 0;
+  std::cout << "selEventsFileName_output_semiboosted = " << selEventsFileName_output_semiboosted << std::endl;
+  std::ostream* selEventsFile_resolved = ( selEventsFileName_output_resolved != "" ) ? new std::ofstream(selEventsFileName_output_resolved.data(), std::ios::out) : 0;
+  std::cout << "selEventsFileName_output_resolved = " << selEventsFileName_output_resolved << std::endl;
 
   while(inputTree -> hasNextEvent() && (! run_lumi_eventSelector || (run_lumi_eventSelector && ! run_lumi_eventSelector -> areWeDone())))
   {
@@ -1374,6 +1383,10 @@ int main(int argc, char* argv[])
 		    if ( recTop->subJet1()->pt() && recTop->subJet2()->pt() && recTop->subJet3()->pt() ) {
 		      isHTTv2FromTop_fatjetPtGt200_and_subjetPtGt30 = true;
 		      if ( jetSelectorHTTv2(*recTop) ) {
+			std::cout << "found boosted hadronic top:" 
+				  << " run = " << eventInfo.run << ", ls = " << eventInfo.lumi << ", event = " << eventInfo.event << std::endl;
+			std::cout << "HTTv2 jet:" << std::endl;
+			std::cout << (*recTop);
 			isHTTv2FromTop_selected = true;
 		      }
 		    }
@@ -1476,6 +1489,10 @@ int main(int argc, char* argv[])
 		    if ( recAntiTop->subJet1()->pt() && recAntiTop->subJet2()->pt() && recAntiTop->subJet3()->pt() ) {
 		      isHTTv2FromAntiTop_fatjetPtGt200_and_subjetPtGt30 = true;
 		      if ( jetSelectorHTTv2(*recAntiTop) ) {
+			std::cout << "found boosted hadronic anti-top:" 
+				  << " run = " << eventInfo.run << ", ls = " << eventInfo.lumi << ", event = " << eventInfo.event << std::endl;
+			std::cout << "HTTv2 jet:" << std::endl;
+			std::cout << (*recAntiTop);
 			isHTTv2FromAntiTop_selected = true;
 		      }
 		    }
@@ -1499,6 +1516,9 @@ int main(int argc, char* argv[])
     }
     if ( isHTTv2FromTop_selected || isHTTv2FromAntiTop_selected ) {
       cutFlowTable_2lss_1tau_HTTv2.update("rec HTTv2 passes all cuts");
+      if ( selEventsFile_boosted ) {
+	(*selEventsFile_boosted) << eventInfo.run << ':' << eventInfo.lumi << ':' << eventInfo.event << '\n';
+      }
     }
     //-------------------------------------------------------------------------------------------------------------------
 
@@ -1668,6 +1688,14 @@ int main(int argc, char* argv[])
 		    if ( recWBosonFromTop->subJet1()->pt() > 10. && recWBosonFromTop->subJet2()->pt() > 10. ) {
 		      isAK12FromTop_fatjetPtGt130_and_subjetPtGt10 = true;
 		      if ( jetSelectorAK12(*recWBosonFromTop) ) {
+			if ( selBJetFromTop ) {
+			  std::cout << "found semi-boosted hadronic top:" 
+				    << " run = " << eventInfo.run << ", ls = " << eventInfo.lumi << ", event = " << eventInfo.event << std::endl;
+			  std::cout << "AK12 jet:" << std::endl;
+			  std::cout << (*recWBosonFromTop);
+			  std::cout << "b-jet:" << std::endl;
+			  std::cout << (*selBJetFromTop);
+			}
 			isAK12FromTop_selected = true;
 		      }
 		    }
@@ -1727,6 +1755,14 @@ int main(int argc, char* argv[])
 		    if ( recWBosonFromAntiTop->subJet1()->pt() > 10. && recWBosonFromAntiTop->subJet2()->pt() > 10. ) {
 		      isAK12FromAntiTop_fatjetPtGt130_and_subjetPtGt10 = true;
 		      if ( jetSelectorAK12(*recWBosonFromAntiTop) ) {
+			if ( selBJetFromAntiTop ) {
+			  std::cout << "found semi-boosted hadronic anti-top:" 
+				    << " run = " << eventInfo.run << ", ls = " << eventInfo.lumi << ", event = " << eventInfo.event << std::endl;
+			  std::cout << "AK12 jet:" << std::endl;
+			  std::cout << (*recWBosonFromAntiTop);
+			  std::cout << "b-jet:" << std::endl;
+			  std::cout << (*selBJetFromAntiTop);
+			}
 			isAK12FromAntiTop_selected = true;
 		      }
 		    }
@@ -1749,9 +1785,12 @@ int main(int argc, char* argv[])
 	if ( isAK12FromTop_selected || isAK12FromAntiTop_selected ) {
 	  cutFlowTable_2lss_1tau_AK12.update("rec AK12 passes all cuts");
 	  if ( isBJetFromTop || isBJetFromAntiTop ) {
-	    cutFlowTable_2lss_1tau_AK12.update("rec AK12 + BJet pair");
+	    cutFlowTable_2lss_1tau_AK12.update("rec AK12 + BJet pair");	    
 	    if ( selBJetFromTop_passesLoose || selBJetFromAntiTop_passesLoose ) {
 	      cutFlowTable_2lss_1tau_AK12.update("rec BJet passes loose b-tagging working-point");
+	      if ( selEventsFile_semiboosted ) {
+		(*selEventsFile_semiboosted) << eventInfo.run << ':' << eventInfo.lumi << ':' << eventInfo.event << '\n';
+	      }
 	      if ( !(isHTTv2FromTop_selected || isHTTv2FromAntiTop_selected) ) {
 		cutFlowTable_2lss_1tau_AK12.update("!HTTv2");
 	      }
@@ -1979,7 +2018,18 @@ int main(int argc, char* argv[])
 		    }
 		    if ( selBJetFromTop_passesLoose || selBJetFromAntiTop_passesLoose ) {
 		      cutFlowTable_2lss_1tau_resolved.update(">= 1 selBJet passes loose b-tagging working-point");
-
+		      if ( selBJetFromTop_passesLoose     ) std::cout << "found semi-boosted hadronic top:";
+		      if ( selBJetFromAntiTop_passesLoose ) std::cout << "found semi-boosted hadronic anti-top:";	      
+		      std::cout << " run = " << eventInfo.run << ", ls = " << eventInfo.lumi << ", event = " << eventInfo.event << std::endl;
+		      std::cout << "1st jet from W:" << std::endl;
+		      if ( selWJetFromTop_lead     ) std::cout << (*selWJetFromTop_lead);
+		      if ( selWJetFromAntiTop_lead ) std::cout << (*selWJetFromAntiTop_lead);
+		      std::cout << "2nd jet from W:" << std::endl;
+		      if ( selWJetFromTop_sublead     ) std::cout << (*selWJetFromTop_sublead);
+		      if ( selWJetFromAntiTop_sublead ) std::cout << (*selWJetFromAntiTop_sublead);
+		      std::cout << "b-jet:" << std::endl;
+		      if ( selBJetFromTop     ) std::cout << (*selBJetFromTop);
+		      if ( selBJetFromAntiTop ) std::cout << (*selBJetFromAntiTop);
 		      isResolved = true;
 		    }
 		  }
@@ -1993,6 +2043,9 @@ int main(int argc, char* argv[])
 
     if ( isResolved ) {
       cutFlowTable_2lss_1tau_resolved.update("rec resolved");
+      if ( selEventsFile_resolved ) {
+	(*selEventsFile_resolved) << eventInfo.run << ':' << eventInfo.lumi << ':' << eventInfo.event << '\n';
+      }
       if ( !(isHTTv2FromTop_selected || isHTTv2FromAntiTop_selected) ) {
 	cutFlowTable_2lss_1tau_resolved.update("!HTTv2");
 	if ( !((isAK12FromTop_selected && isBJetFromTop) || (isAK12FromAntiTop_selected && isBJetFromAntiTop)) ) {
@@ -2024,6 +2077,11 @@ int main(int argc, char* argv[])
   std::cout << std::endl;
 
   delete dataToMCcorrectionInterface;
+
+  delete selEventsFile;
+  delete selEventsFile_boosted;
+  delete selEventsFile_semiboosted;
+  delete selEventsFile_resolved;
 
   delete muonReader;
   delete electronReader;
