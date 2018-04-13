@@ -33,7 +33,9 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauReader.h" // RecoHadTauReader
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetReader.h" // RecoJetReader
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetReaderHTTv2.h" // RecoJetReaderHTTv2
+#include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelectorHTTv2.h" // RecoJetSelectorHTTv2
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetReaderAK12.h" // RecoJetReaderAK12
+#include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelectorAK12.h" // RecoJetSelectorAK12
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMEtReader.h" // RecoMEtReader
 #include "tthAnalysis/HiggsToTauTau/interface/MEMOutputReader_2lss_1tau.h" // MEMOutputReader_2lss_1tau
 #include "tthAnalysis/HiggsToTauTau/interface/GenLeptonReader.h" // GenLeptonReader
@@ -386,9 +388,11 @@ int main(int argc, char* argv[])
 
   RecoJetReaderHTTv2* jetReaderHTTv2 = new RecoJetReaderHTTv2(era, branchName_jetsHTTv2, branchName_subjetsHTTv2);
   inputTree -> registerReader(jetReaderHTTv2);
+  RecoJetSelectorHTTv2 jetSelectorHTTv2(era);
 
   RecoJetReaderAK12* jetReaderAK12 = new RecoJetReaderAK12(era, branchName_jetsAK12, branchName_subjetsAK12);
   inputTree -> registerReader(jetReaderAK12);
+  RecoJetSelectorAK12 jetSelectorAK12(era);
 
 //--- declare missing transverse energy
   RecoMEtReader* metReader = new RecoMEtReader(era, isMC, branchName_met);
@@ -1219,7 +1223,13 @@ int main(int argc, char* argv[])
     cutFlowTable_2lss_1tau_HTTv2.update("genJet triplet");
 
     bool isHTTv2FromTop = false;
+    bool isHTTv2FromTop_fatjetPtGt200 = false;
+    bool isHTTv2FromTop_fatjetPtGt200_and_subjetPtGt30 = false;
+    bool isHTTv2FromTop_selected = false;
     bool isHTTv2FromAntiTop = false;
+    bool isHTTv2FromAntiTop_fatjetPtGt200 = false;
+    bool isHTTv2FromAntiTop_fatjetPtGt200_and_subjetPtGt30 = false;
+    bool isHTTv2FromAntiTop_selected = false;
 
     if ( (genBJetFromTop     && genWJetFromTop_lead     && genWJetFromTop_sublead     && genTopP4.pt()     > 200.) ||
 	 (genBJetFromAntiTop && genWJetFromAntiTop_lead && genWJetFromAntiTop_sublead && genAntiTopP4.pt() > 200.) ) {
@@ -1359,6 +1369,15 @@ int main(int argc, char* argv[])
 		    fillWithOverFlow(histogram_HTTv2_BJet_cosThetaStar, cosThetaStar_BJet, evtWeight);
 		  }
 		  isHTTv2FromTop = true;
+		  if ( recTop->pt() > 200 ) {
+		    isHTTv2FromTop_fatjetPtGt200 = true;
+		    if ( recTop->subJet1()->pt() && recTop->subJet2()->pt() && recTop->subJet3()->pt() ) {
+		      isHTTv2FromTop_fatjetPtGt200_and_subjetPtGt30 = true;
+		      if ( jetSelectorHTTv2(*recTop) ) {
+			isHTTv2FromTop_selected = true;
+		      }
+		    }
+		  }
 		}
 	      }
 
@@ -1452,6 +1471,15 @@ int main(int argc, char* argv[])
 		    fillWithOverFlow(histogram_HTTv2_BJet_cosThetaStar, cosThetaStar_BJet, evtWeight);
 		  }
 		  isHTTv2FromAntiTop = true;
+		  if ( recAntiTop->pt() > 200 ) {
+		    isHTTv2FromAntiTop_fatjetPtGt200 = true;
+		    if ( recAntiTop->subJet1()->pt() && recAntiTop->subJet2()->pt() && recAntiTop->subJet3()->pt() ) {
+		      isHTTv2FromAntiTop_fatjetPtGt200_and_subjetPtGt30 = true;
+		      if ( jetSelectorHTTv2(*recAntiTop) ) {
+			isHTTv2FromAntiTop_selected = true;
+		      }
+		    }
+		  }
 		}
 	      }
 	    }
@@ -1462,6 +1490,15 @@ int main(int argc, char* argv[])
     
     if ( isHTTv2FromTop || isHTTv2FromAntiTop ) {
       cutFlowTable_2lss_1tau_HTTv2.update("rec HTTv2");
+    }
+    if ( isHTTv2FromTop_fatjetPtGt200 || isHTTv2FromAntiTop_fatjetPtGt200 ) {
+      cutFlowTable_2lss_1tau_HTTv2.update("rec HTTv2 passes fat-jet pT > 200 GeV");
+    }
+    if ( isHTTv2FromTop_fatjetPtGt200_and_subjetPtGt30 || isHTTv2FromAntiTop_fatjetPtGt200_and_subjetPtGt30 ) {
+      cutFlowTable_2lss_1tau_HTTv2.update("rec HTTv2 passes sub-jet pT > 30 GeV for all subjets");
+    }
+    if ( isHTTv2FromTop_selected || isHTTv2FromAntiTop_selected ) {
+      cutFlowTable_2lss_1tau_HTTv2.update("rec HTTv2 passes all cuts");
     }
     //-------------------------------------------------------------------------------------------------------------------
     
@@ -1474,9 +1511,15 @@ int main(int argc, char* argv[])
     cutFlowTable_2lss_1tau_AK12.update("genJet triplet");
     
     bool isAK12FromTop = false;
+    bool isAK12FromTop_fatjetPtGt130 = false;
+    bool isAK12FromTop_fatjetPtGt130_and_subjetPtGt10 = false;
+    bool isAK12FromTop_selected = false;
     bool isBJetFromTop = false;
     bool selBJetFromTop_passesLoose = false;
     bool isAK12FromAntiTop = false;
+    bool isAK12FromAntiTop_fatjetPtGt130 = false;
+    bool isAK12FromAntiTop_fatjetPtGt130_and_subjetPtGt10 = false;
+    bool isAK12FromAntiTop_selected = false;
     bool isBJetFromAntiTop = false;
     bool selBJetFromAntiTop_passesLoose = false;
 
@@ -1571,7 +1614,6 @@ int main(int argc, char* argv[])
 		  selBJetFromAntiTop_passesLoose = true;
 		}
 	      }
-	     
 
 	      if ( recWBosonFromTop && recWBosonFromTop->subJet1() && recWBosonFromTop->subJet2() ) {		
 		const RecoSubjetAK12* recWJetFromTop_lead = 0;
@@ -1620,6 +1662,15 @@ int main(int argc, char* argv[])
 		    recWJetFromTop_lead->p4());
 		  fillWithOverFlow(histogram_AK12_theta_t_sublead, theta_t_sublead, evtWeight);
 		  isAK12FromTop = true;
+		  if ( recWBosonFromTop->pt() > 130 ) {
+		    isAK12FromTop_fatjetPtGt130 = true;
+		    if ( recWBosonFromTop->subJet1()->pt() > 10. && recWBosonFromTop->subJet2()->pt() > 10. ) {
+		      isAK12FromTop_fatjetPtGt130_and_subjetPtGt10 = true;
+		      if ( jetSelectorAK12(*recWBosonFromTop) ) {
+			isAK12FromTop_selected = true;
+		      }
+		    }
+		  }
 		}
 	      }
 
@@ -1670,6 +1721,15 @@ int main(int argc, char* argv[])
 		    recWJetFromAntiTop_lead->p4());
 		  fillWithOverFlow(histogram_AK12_theta_t_sublead, theta_t_sublead, evtWeight);
 		  isAK12FromAntiTop = true;
+		  if ( recWBosonFromAntiTop->pt() > 130 ) {
+		    isAK12FromAntiTop_fatjetPtGt130 = true;
+		    if ( recWBosonFromAntiTop->subJet1()->pt() > 10. && recWBosonFromAntiTop->subJet2()->pt() > 10. ) {
+		      isAK12FromAntiTop_fatjetPtGt130_and_subjetPtGt10 = true;
+		      if ( jetSelectorAK12(*recWBosonFromAntiTop) ) {
+			isAK12FromAntiTop_selected = true;
+		      }
+		    }
+		  }
 		}
 	      }
 	    }
@@ -1677,15 +1737,24 @@ int main(int argc, char* argv[])
 	}
       }
     }
-
+    
     if ( isAK12FromTop || isAK12FromAntiTop ) {
-      cutFlowTable_2lss_1tau_AK12.update("rec AK12");
-      if ( isBJetFromTop || isBJetFromAntiTop ) {
-	cutFlowTable_2lss_1tau_resolved.update("rec AK12 + BJet pair");
-	if ( selBJetFromTop_passesLoose || selBJetFromAntiTop_passesLoose ) {
-	  cutFlowTable_2lss_1tau_AK12.update("rec BJet passes loose b-tagging working-point");
-	  if ( !(isHTTv2FromTop || isHTTv2FromAntiTop) ) {
-	    cutFlowTable_2lss_1tau_AK12.update("!HTTv2");
+      cutFlowTable_2lss_1tau_AK12.update("rec AK12");    
+      if ( isAK12FromTop_fatjetPtGt130 || isAK12FromAntiTop_fatjetPtGt130 ) {
+	cutFlowTable_2lss_1tau_AK12.update("rec AK12 passes fat-jet pT > 130 GeV");
+	if ( isAK12FromTop_fatjetPtGt130_and_subjetPtGt10 || isAK12FromAntiTop_fatjetPtGt130_and_subjetPtGt10 ) {
+	  cutFlowTable_2lss_1tau_AK12.update("rec AK12 passes sub-jet pT > 10 GeV for all subjets");
+	}
+	if ( isAK12FromTop_selected || isAK12FromAntiTop_selected ) {
+	  cutFlowTable_2lss_1tau_AK12.update("rec AK12 passes all cuts");
+	  if ( isBJetFromTop || isBJetFromAntiTop ) {
+	    cutFlowTable_2lss_1tau_AK12.update("rec AK12 + BJet pair");
+	    if ( selBJetFromTop_passesLoose || selBJetFromAntiTop_passesLoose ) {
+	      cutFlowTable_2lss_1tau_AK12.update("rec BJet passes loose b-tagging working-point");
+	      if ( !(isHTTv2FromTop_selected || isHTTv2FromAntiTop_selected) ) {
+		cutFlowTable_2lss_1tau_AK12.update("!HTTv2");
+	      }
+	    }
 	  }
 	}
       }
@@ -1923,9 +1992,9 @@ int main(int argc, char* argv[])
 
     if ( isResolved ) {
       cutFlowTable_2lss_1tau_resolved.update("rec resolved");
-      if ( !(isHTTv2FromTop || isHTTv2FromAntiTop) ) {
+      if ( !(isHTTv2FromTop_selected || isHTTv2FromAntiTop_selected) ) {
 	cutFlowTable_2lss_1tau_resolved.update("!HTTv2");
-	if ( !(isAK12FromTop || isAK12FromAntiTop) ) {
+	if ( !((isAK12FromTop_selected && isBJetFromTop) || (isAK12FromAntiTop_selected && isBJetFromAntiTop)) ) {
 	  cutFlowTable_2lss_1tau_resolved.update("!HTTv2 && !AK12");
 	}
       }

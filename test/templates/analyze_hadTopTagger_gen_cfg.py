@@ -5,7 +5,7 @@ import os
 process = cms.PSet()
 
 process.fwliteInput = cms.PSet(
-    fileNames = cms.vstring('/hdfs/cms/store/user/atiko/VHBBHeppyV25tthtautau/MC/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/VHBB_HEPPY_V25tthtautau_ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_Py8_mWCutfix__RunIISummer16MAv2-PUMoriond17_80r2as_2016_TrancheIV_v6_ext1-v1/170207_122849/0000/tree_1.root'),
+    fileNames = cms.vstring('/hdfs/local/karl/ttHNtupleProduction/2017/2018Apr08_woPresel_nonNom_sync/ntuples/ttHJetToNonbb_M125_amcatnlo/0000/tree_1.root'),
     maxEvents = cms.int32(-1),
     outputEvery = cms.uint32(100000)
 )
@@ -87,26 +87,26 @@ process.analyze_hadTopTagger_gen = cms.PSet(
     isDEBUG = cms.bool(False),
 )
 
-inputFilePath = "/hdfs/local/karl/ttHNtupleProduction/2017/2018Feb28_wNanoPrep_woPresel_all/ntuples/ttHJetToNonbb_M125_amcatnlo/0000/"
-maxInputFiles = 50
-zombie_files = []
-import os
-def getInputFiles(inputFilePath):
-    inputFiles = []
-    files_and_subdirectories = os.listdir(inputFilePath)
-    for file_or_subdirectory in files_and_subdirectories:
-        if file_or_subdirectory in zombie_files:
-            continue
-        file_or_subdirectory = os.path.join(inputFilePath, file_or_subdirectory)
-        if os.path.isfile(file_or_subdirectory):
-            if file_or_subdirectory.endswith(".root"):
-                inputFiles.append(file_or_subdirectory)
-        if os.path.isdir(file_or_subdirectory):
-            inputFiles.extend(getInputFiles(file_or_subdirectory))
-    return inputFiles
-inputFiles = getInputFiles(inputFilePath)
-process.fwliteInput.fileNames = cms.vstring(inputFiles[0:maxInputFiles])
-print "inputFiles = ", process.fwliteInput.fileNames
+## inputFilePath = "/hdfs/local/karl/ttHNtupleProduction/2017/2018Feb28_wNanoPrep_woPresel_all/ntuples/ttHJetToNonbb_M125_amcatnlo/0000/"
+## maxInputFiles = 50
+## zombie_files = []
+## import os
+## def getInputFiles(inputFilePath):
+##     inputFiles = []
+##     files_and_subdirectories = os.listdir(inputFilePath)
+##     for file_or_subdirectory in files_and_subdirectories:
+##         if file_or_subdirectory in zombie_files:
+##             continue
+##         file_or_subdirectory = os.path.join(inputFilePath, file_or_subdirectory)
+##         if os.path.isfile(file_or_subdirectory):
+##             if file_or_subdirectory.endswith(".root"):
+##                 inputFiles.append(file_or_subdirectory)
+##         if os.path.isdir(file_or_subdirectory):
+##             inputFiles.extend(getInputFiles(file_or_subdirectory))
+##     return inputFiles
+## inputFiles = getInputFiles(inputFilePath)
+## process.fwliteInput.fileNames = cms.vstring(inputFiles[0:maxInputFiles])
+## print "inputFiles = ", process.fwliteInput.fileNames
 
 process.fwliteOutput.fileName = cms.string('analyze_hadTopTagger_gen.root')
 process.analyze_hadTopTagger_gen.process = cms.string('signal')
