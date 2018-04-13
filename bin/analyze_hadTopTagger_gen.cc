@@ -2018,8 +2018,12 @@ int main(int argc, char* argv[])
 		    }
 		    if ( selBJetFromTop_passesLoose || selBJetFromAntiTop_passesLoose ) {
 		      cutFlowTable_2lss_1tau_resolved.update(">= 1 selBJet passes loose b-tagging working-point");
-		      if ( selBJetFromTop_passesLoose     ) std::cout << "found resolved hadronic top:";
-		      if ( selBJetFromAntiTop_passesLoose ) std::cout << "found resolved hadronic anti-top:";	      
+		      if ( selWJetFromTop_lead && selWJetFromTop_sublead && selBJetFromTop_passesLoose ) {
+			std::cout << "found resolved hadronic top:";
+		      }
+		      if ( selBJetFromAntiTop_passesLoose && selWJetFromAntiTop_lead && selWJetFromAntiTop_sublead ) {
+			std::cout << "found resolved hadronic anti-top:";	
+		      }      
 		      std::cout << " run = " << eventInfo.run << ", ls = " << eventInfo.lumi << ", event = " << eventInfo.event << std::endl;
 		      std::cout << "1st jet from W:" << std::endl;
 		      if ( selWJetFromTop_lead     ) std::cout << (*selWJetFromTop_lead);
