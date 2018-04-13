@@ -128,8 +128,8 @@ class analyzeConfig_0l_3tau(analyzeConfig):
       if self.era == "2017":
         # TODO: update the FR file for 2017 analysis
         lines.append("process.analyze_0l_3tau.hadTauFakeRateWeight.inputFileName = cms.string('tthAnalysis/HiggsToTauTau/data/FR_tau_2016.root')")
-        # CV: use data/MC corrections determined for dR03mvaMedium discriminator for 2016 data
-        fitFunctionName = "jetToTauFakeRate/dR03mvaMedium/$etaBin/fitFunction_data_div_mc_hadTaus_pt"
+        # CV: use data/MC corrections determined for dR03mvaLoose discriminator for 2016 data
+        fitFunctionName = "jetToTauFakeRate/dR03mvaLoose/$etaBin/fitFunction_data_div_mc_hadTaus_pt"
       else:
         raise ValueError("Invalid parameter 'era' = %s !!" % era)
       lines.append("process.analyze_0l_3tau.hadTauFakeRateWeight.lead.fitFunctionName = cms.string('%s')" % fitFunctionName)

@@ -79,7 +79,7 @@ for sample_key, sample_entry in samples.items():
 if mode in [ "all", "forBDTtraining_except", "sync" ]:
   leptonSelection   = 'Fakeable'
   hadTauSelection   = 'Fakeable'
-  hadTauWP          = 'dR03mvaMedium'
+  hadTauWP          = 'dR03mvaLoose'
   max_files_per_job = 1
 else:
   leptonSelection   = 'Loose'

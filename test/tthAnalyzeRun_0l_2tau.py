@@ -14,7 +14,7 @@ systematics.full = systematics.an_common
 parser = tthAnalyzeParser()
 parser.add_modes(mode_choices)
 parser.add_sys(sys_choices)
-parser.add_tau_id_wp("dR03mvaVTight")
+parser.add_tau_id_wp("dR03mvaTight")
 args = parser.parse_args()
 
 # Common arguments

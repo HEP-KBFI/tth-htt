@@ -68,7 +68,7 @@ if mode == "VHbb":
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_preselected import samples_2017
   else:
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017
-  hadTau_selection     = "dR03mvaMedium"
+  hadTau_selection     = "dR03mvaLoose"
   applyFakeRateWeights = "3lepton"
 
   for sample_name, sample_info in samples_2017.items():
@@ -78,21 +78,21 @@ if mode == "VHbb":
       sample_info["use_it"] = False
 elif mode == "addMEM":
   from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_addMEM_3l1tau import samples_2017
-  hadTau_selection     = "dR03mvaMedium"
+  hadTau_selection     = "dR03mvaLoose"
   applyFakeRateWeights = "3lepton"
-  MEMbranch            = 'memObjects_3l_1tau_lepFakeable_tauTight_dR03mvaMedium'
+  MEMbranch            = 'memObjects_3l_1tau_lepFakeable_tauTight_dR03mvaLoose'
 elif mode == "forBDTtraining_beforeAddMEM":
   if use_preselected:
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_FastSim_preselected import samples_2017
   else:
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_FastSim import samples_2017
   applyFakeRateWeights     = "4L"
-  hadTau_selection         = "dR03mvaVTight"
+  hadTau_selection         = "dR03mvaTight"
   hadTau_selection_relaxed = "dR03mvaVVLoose"
 elif mode == "forBDTtraining_afterAddMEM":
   from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_FastSim_addMEM_3l1tau import samples_2017
   applyFakeRateWeights     = "4L"
-  hadTau_selection         = "dR03mvaVTight"
+  hadTau_selection         = "dR03mvaTight"
   hadTau_selection_relaxed = "dR03mvaVVLoose"
   MEMbranch                = 'memObjects_3l_1tau_lepLoose_tauTight_dR03mvaVVLoose'
 elif mode.startswith("sync"):
@@ -102,7 +102,7 @@ elif mode.startswith("sync"):
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync import samples_2017
   else:
     raise ValueError("Internal logic error")
-  hadTau_selection     = "dR03mvaMedium"
+  hadTau_selection     = "dR03mvaLoose"
   applyFakeRateWeights = "3lepton"
 else:
   raise ValueError("Internal logic error")
@@ -185,15 +185,16 @@ if __name__ == '__main__':
     )
 
     if mode.find("forBDTtraining") != -1:
-      if hadTau_selection_relaxed == "dR03mvaVVLoose":
-        hadTauFakeRateWeight_inputFileName = "FR_tau_2016_vvLoosePresel.root"
-      elif hadTau_selection_relaxed == "dR03mvaVLoose":
-        hadTauFakeRateWeight_inputFileName = "FR_tau_2016_vLoosePresel.root"
-      else:
-        hadTauFakeRateWeight_inputFileName = "FR_tau_2016.root"
-      hadTauFakeRateWeight_inputFile = os.path.join(
-        "tthAnalysis/HiggsToTauTau/data", hadTauFakeRateWeight_inputFileName
-      )
+      if era == "2016":
+        if hadTau_selection_relaxed == "dR03mvaVVLoose":
+          hadTauFakeRateWeight_inputFileName = "FR_tau_2016_vvLoosePresel.root"
+        elif hadTau_selection_relaxed == "dR03mvaVLoose":
+          hadTauFakeRateWeight_inputFileName = "FR_tau_2016_vLoosePresel.root"
+        else:
+          hadTauFakeRateWeight_inputFileName = "FR_tau_2016.root"
+        hadTauFakeRateWeight_inputFile = os.path.join(
+          "tthAnalysis/HiggsToTauTau/data", hadTauFakeRateWeight_inputFileName
+        )
       analysis.set_BDT_training(hadTau_selection_relaxed, hadTauFakeRateWeight_inputFile)
 
     job_statistics = analysis.create()

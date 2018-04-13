@@ -60,14 +60,14 @@ if mode == "VHbb":
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_preselected import samples_2017
   else:
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017 import samples_2017
-  hadTau_selection     = "dR03mvaVTight"
+  hadTau_selection     = "dR03mvaTight"
   applyFakeRateWeights = "4L"
 elif mode == "forBDTtraining":
   if use_preselected:
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_FastSim_preselected import samples_2017
   else:
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_FastSim import samples_2017
-  hadTau_selection         = "dR03mvaVTight"
+  hadTau_selection         = "dR03mvaTight"
   hadTau_selection_relaxed = "dR03mvaVVLoose"
   applyFakeRateWeights     = "4L"
   chargeSumSelections      = [ "OS" ]
@@ -78,17 +78,10 @@ elif mode.startswith("sync"):
     from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_sync import samples_2017
   else:
     raise ValueError("Internal logic error")
-  hadTau_selection     = "dR03mvaVTight"
+  hadTau_selection     = "dR03mvaTight"
   applyFakeRateWeights = "4L"
 else:
   raise ValueError("Internal logic error")
-
-if hadTau_selection_relaxed == "dR03mvaVVLoose":
-  hadTauFakeRateWeight_inputFileName = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016_vvLoosePresel.root"
-elif hadTau_selection_relaxed == "dR03mvaVLoose":
-  hadTauFakeRateWeight_inputFileName = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016_vLoosePresel.root"
-else:
-  hadTauFakeRateWeight_inputFileName = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016.root"
 
 if era == "2017":
   from tthAnalysis.HiggsToTauTau.analysisSettings import lumi_2017 as lumi
@@ -165,7 +158,17 @@ if __name__ == '__main__':
     )
 
     if mode.find("forBDTtraining") != -1:
-      analysis.set_BDT_training(hadTau_selection_relaxed, hadTauFakeRateWeight_inputFileName)
+      if era == "2016":
+        if hadTau_selection_relaxed == "dR03mvaVVLoose":
+          hadTauFakeRateWeight_inputFileName = "FR_tau_2016_vvLoosePresel.root"
+        elif hadTau_selection_relaxed == "dR03mvaVLoose":
+          hadTauFakeRateWeight_inputFileName = "FR_tau_2016_vLoosePresel.root"
+        else:
+          hadTauFakeRateWeight_inputFileName = "FR_tau_2016.root"
+        hadTauFakeRateWeight_inputFile = os.path.join(
+          "tthAnalysis/HiggsToTauTau/data", hadTauFakeRateWeight_inputFileName
+        )
+      analysis.set_BDT_training(hadTau_selection_relaxed, hadTauFakeRateWeight_inputFile)
 
     job_statistics = analysis.create()
     for job_type, num_jobs in job_statistics.items():
