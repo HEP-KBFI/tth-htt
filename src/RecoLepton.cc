@@ -16,7 +16,8 @@ RecoLepton::RecoLepton(const GenLepton & lepton,
                        Double_t jetBtagCSV,
                        Int_t    jetNDauChargedMVASel,
                        Int_t    tightCharge,
-                       Int_t    charge)
+                       Int_t    charge,
+                       Int_t    filterBits)
   : GenLepton(lepton)
   , dxy_(dxy)
   , dz_(dz)
@@ -32,6 +33,7 @@ RecoLepton::RecoLepton(const GenLepton & lepton,
   , jetNDauChargedMVASel_(jetNDauChargedMVASel)
   , tightCharge_(tightCharge)
   , charge_(charge)
+  , filterBits_(filterBits)
   , assocJet_pt_(jetPtRatio_ > 1.e-3 ? 0.90 * pt_ / jetPtRatio_ : pt_)
   , assocJet_p4_(assocJet_pt_, eta_, phi_, mass_)
   , genLepton_(nullptr)
@@ -223,6 +225,12 @@ Int_t
 RecoLepton::charge() const
 {
   return charge_;
+}
+
+Int_t
+RecoLepton::filterBits() const
+{
+  return filterBits_;
 }
 
 const GenLepton *

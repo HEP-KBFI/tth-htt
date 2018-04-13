@@ -29,7 +29,8 @@ public:
              Int_t id_cut_dR05,
              Double_t raw_cut_dR05,
              Int_t antiElectron,
-             Int_t antiMuon);
+             Int_t antiMuon,
+             Int_t filterBits);
 
   virtual ~RecoHadTau();
 
@@ -66,6 +67,7 @@ public:
   Double_t raw_cut_dR05() const;
   Int_t antiElectron() const;
   Int_t antiMuon() const;
+  Int_t filterBits() const;
 
   const GenLepton * genLepton() const;
   const GenHadTau * genHadTau() const;
@@ -95,6 +97,7 @@ protected:
   Double_t raw_cut_dR05_;      ///< raw isolation pT-sum of cut-based tau id computed with dR=0.5 isolation cone
   Int_t antiElectron_;         ///< discriminator against electrons
   Int_t antiMuon_;             ///< discriminator against muons
+  Int_t filterBits_;           ///< bitmask of matching with trigger objects
 
 //--- matching to generator level particles
   std::shared_ptr<const GenLepton> genLepton_;

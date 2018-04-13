@@ -35,6 +35,7 @@ RecoLeptonWriter::RecoLeptonWriter(const std::string & branchName_num,
   , jetNDauChargedMVASel_(nullptr)
   , tightCharge_(nullptr)
   , charge_(nullptr)
+  , filterBits_(nullptr)
 {
   genLeptonWriter_ = new GenParticleWriter(Form("%s_genLepton", branchName_obj_.data()));
   genHadTauWriter_ = new GenParticleWriter(Form("%s_genTau",    branchName_obj_.data()));
@@ -66,6 +67,7 @@ RecoLeptonWriter::~RecoLeptonWriter()
   delete[] jetNDauChargedMVASel_;
   delete[] tightCharge_;
   delete[] charge_;
+  delete[] filterBits_;
 }
 
 void RecoLeptonWriter::setBranchNames()
@@ -89,6 +91,7 @@ void RecoLeptonWriter::setBranchNames()
   branchName_jetNDauChargedMVASel_ = Form("%s_%s", branchName_obj_.data(), "jetNDauChargedMVASel");
   branchName_tightCharge_ = Form("%s_%s", branchName_obj_.data(), "tightCharge");
   branchName_charge_ = Form("%s_%s", branchName_obj_.data(), "charge");
+  branchName_filterBits_ = Form("%s_%s", branchName_obj_.data(), "filterBits");
 }
 
 void RecoLeptonWriter::setBranches(TTree * tree)
@@ -117,4 +120,5 @@ void RecoLeptonWriter::setBranches(TTree * tree)
   bai.setBranch(jetNDauChargedMVASel_, branchName_jetNDauChargedMVASel_);
   bai.setBranch(tightCharge_, branchName_tightCharge_);
   bai.setBranch(charge_, branchName_charge_);
+  bai.setBranch(filterBits_, branchName_filterBits_);
 }

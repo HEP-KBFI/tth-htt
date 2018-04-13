@@ -178,7 +178,8 @@ RecoElectronReader::read() const
             gLeptonReader->jetBtagCSV_[idxLepton],
             gLeptonReader->jetNDauChargedMVASel_[idxLepton],
             gLeptonReader->tightCharge_[idxLepton],
-            gLeptonReader->charge_[idxLepton]
+            gLeptonReader->charge_[idxLepton],
+            gLeptonReader->filterBits_[idxLepton]
           },
           gElectronReader->eCorr_[idxLepton],
           gElectronReader->mvaRawPOG_[idxLepton],

@@ -88,6 +88,7 @@ protected:
   std::string branchName_isoCombIso_dR05_;
   std::string branchName_idAgainstElec_;
   std::string branchName_idAgainstMu_;
+  std::string branchName_filterBits_;
 
   int hadTauPt_option_;
 
@@ -112,6 +113,7 @@ protected:
   Float_t * hadTau_rawCombIso_dR05_;
   Int_t * hadTau_idAgainstElec_;
   Int_t * hadTau_idAgainstMu_;
+  Int_t * hadTau_filterBits_;
 
   // CV: make sure that only one RecoHadronicTauReader instance exists for a given branchName,
   //     as ROOT cannot handle multiple TTree::SetBranchAddress calls for the same branch.

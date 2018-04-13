@@ -57,6 +57,7 @@ public:
       jetNDauChargedMVASel_[idxLepton] = lepton->jetNDauChargedMVASel();
       tightCharge_[idxLepton] = lepton->tightCharge();
       charge_[idxLepton] = lepton->charge();
+      filterBits_[idxLepton] = lepton->filterBits();
     }
     writeGenMatching(leptons);
   }
@@ -131,6 +132,7 @@ protected:
   std::string branchName_jetNDauChargedMVASel_;
   std::string branchName_tightCharge_;
   std::string branchName_charge_;
+  std::string branchName_filterBits_;
 
   UInt_t nLeptons_;
   Float_t * pt_;
@@ -152,6 +154,7 @@ protected:
   Int_t * jetNDauChargedMVASel_;
   Int_t * tightCharge_;
   Int_t * charge_;
+  Int_t * filterBits_;
 };
 
 #endif // tthAnalysis_HiggsToTauTau_RecoLeptonWriter_h

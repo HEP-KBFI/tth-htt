@@ -74,7 +74,8 @@ protected:
   std::string branchName_rawCombIso_dR05_;
   std::string branchName_idAgainstElec_;
   std::string branchName_idAgainstMu_;
-  
+  std::string branchName_filterBits_;
+
   UInt_t nHadTaus_;
   Float_t * hadTau_pt_;
   Float_t * hadTau_eta_;
@@ -96,6 +97,7 @@ protected:
   Float_t * hadTau_rawCombIso_dR05_;
   Int_t * hadTau_idAgainstElec_;
   Int_t * hadTau_idAgainstMu_;
+  Int_t * hadTau_filterBits_;
 };
 
 #endif // tthAnalysis_HiggsToTauTau_RecoHadTauWriter_h

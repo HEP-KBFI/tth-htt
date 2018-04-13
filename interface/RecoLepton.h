@@ -28,7 +28,8 @@ public:
              Double_t jetBtagCSV,
              Int_t    jetNDauChargedMVASel,
              Int_t    tightCharge,
-             Int_t    charge);
+             Int_t    charge,
+             Int_t    filterBits);
 
   virtual ~RecoLepton();
 
@@ -129,7 +130,8 @@ public:
   Int_t jetNDauChargedMVASel() const;
   Int_t tightCharge() const;
   Int_t charge() const;
-  
+  Int_t filterBits() const;
+
   const GenLepton * genLepton() const;
   const GenHadTau * genHadTau() const;
   const GenJet * genJet() const;
@@ -143,20 +145,21 @@ public:
 
 protected:
 //--- common observables for electrons and muons
-  Double_t dxy_;                        ///< d_{xy}, distance in the transverse plane w.r.t PV
-  Double_t dz_;                         ///< d_{z}, distance on the z axis w.r.t PV
-  Double_t relIso_;                     ///< relative mini-isolation
-  Double_t chargedHadRelIso03_;         ///< PF relative isolation dR=0.3, charged component
-  Double_t miniIsoCharged_;             ///< absolute charged mini-isolation
-  Double_t miniIsoNeutral_;             ///< absolute neutral mini-isolation (PU corrected)
-  Double_t sip3d_;                      ///< significance of IP
-  Double_t mvaRawTTH_;                  ///< raw output of lepton MVA of ttH multilepton analysis
-  Double_t jetPtRatio_;                 ///< ratio of lepton pT to pT of nearby jet
-  Double_t jetPtRel_;                   ///< perpendicular component of the distance vector between lepton and its jet pT vectors
-  Double_t jetBtagCSV_;                 ///< CSV b-tagging discriminator value of nearby jet
-  Int_t jetNDauChargedMVASel_;          ///< number of charged constituents in the nearest jet
-  Int_t tightCharge_;                   ///< Flag indicating if lepton passes (>= 2) or fails (< 2) tight charge requirement
-  Int_t charge_;                        ///< lepton charge
+  Double_t dxy_;                ///< d_{xy}, distance in the transverse plane w.r.t PV
+  Double_t dz_;                 ///< d_{z}, distance on the z axis w.r.t PV
+  Double_t relIso_;             ///< relative mini-isolation
+  Double_t chargedHadRelIso03_; ///< PF relative isolation dR=0.3, charged component
+  Double_t miniIsoCharged_;     ///< absolute charged mini-isolation
+  Double_t miniIsoNeutral_;     ///< absolute neutral mini-isolation (PU corrected)
+  Double_t sip3d_;              ///< significance of IP
+  Double_t mvaRawTTH_;          ///< raw output of lepton MVA of ttH multilepton analysis
+  Double_t jetPtRatio_;         ///< ratio of lepton pT to pT of nearby jet
+  Double_t jetPtRel_;           ///< perpendicular component of the distance vector between lepton and its jet pT vectors
+  Double_t jetBtagCSV_;         ///< CSV b-tagging discriminator value of nearby jet
+  Int_t jetNDauChargedMVASel_;  ///< number of charged constituents in the nearest jet
+  Int_t tightCharge_;           ///< Flag indicating if lepton passes (>= 2) or fails (< 2) tight charge requirement
+  Int_t charge_;                ///< lepton charge
+  Int_t filterBits_;            ///< bitmask of matching with trigger objects
 
   Double_t assocJet_pt_;
   Particle::LorentzVector assocJet_p4_;
