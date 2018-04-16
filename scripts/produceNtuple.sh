@@ -46,7 +46,12 @@ if [[ -z $(which "$EXECUTABLE" 2>/dev/null) ]]; then
 fi
 
 NANO_MODULES_DATA="lepJetVarBTagAll,absIso,tauIDLog_$ERA,jetSubstructureObservablesHTTv2"
-NANO_MODULES_MC="$NANO_MODULES_DATA,genHiggsDecayMode,genAll,btagSF_csvv2,btagSF_deep,puWeight_$ERA,jetmetUncertainties$ERA"
+NANO_MODULES_MC="$NANO_MODULES_DATA,genHiggsDecayMode,genAll,puWeight_$ERA,jetmetUncertainties$ERA,btagSF_csvv2_$ERA"
+if [ "$ERA" = "2016" ]; then
+  NANO_MODULES_MC="$NANO_MODULES_MC,btagSF_cmva_$ERA";
+elif [ "$ERA" == "2017" ]; then
+  NANO_MODULES_MC="$NANO_MODULES_MC,btagSF_deep_$ERA";
+fi
 
 if [ "$IS_MC" == "True" ]; then
   NANO_MODULES=$NANO_MODULES_MC;
