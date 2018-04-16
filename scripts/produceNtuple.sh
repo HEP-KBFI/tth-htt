@@ -46,7 +46,7 @@ if [[ -z $(which "$EXECUTABLE" 2>/dev/null) ]]; then
 fi
 
 NANO_MODULES_DATA="lepJetVarBTagAll,absIso,tauIDLog_$ERA,jetSubstructureObservablesHTTv2"
-NANO_MODULES_MC="$NANO_MODULES_DATA,genHiggsDecayMode,genAll,btagSF_csvv2,btagSF_deep,puWeight_$ERA,jetmetUncertainties"
+NANO_MODULES_MC="$NANO_MODULES_DATA,genHiggsDecayMode,genAll,btagSF_csvv2,btagSF_deep,puWeight_$ERA,jetmetUncertainties$ERA"
 
 if [ "$IS_MC" == "True" ]; then
   NANO_MODULES=$NANO_MODULES_MC;
