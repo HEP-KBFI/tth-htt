@@ -43,6 +43,11 @@ RecoMuonSelectorFakeable::operator()(const RecoMuon & muon) const
     std::cout << get_human_line(this, __func__) << ":\n" << muon;
   }
 
+  if(set_selection_flags_ && tightMuonSelector_(muon))
+  {
+    muon.set_isTight();
+  }
+
   if(muon.cone_pt() < min_cone_pt_)
   {
     if(debug_)
@@ -155,10 +160,6 @@ RecoMuonSelectorFakeable::operator()(const RecoMuon & muon) const
   if(set_selection_flags_)
   {
     muon.set_isFakeable();
-    if(tightMuonSelector_(muon))
-    {
-      muon.set_isTight();
-    }
   }
 
   return true;
