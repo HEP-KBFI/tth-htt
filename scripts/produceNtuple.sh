@@ -69,8 +69,8 @@ for F in $FILES; do
   nano_postproc.py -s _i -I tthAnalysis.NanoAODTools.postprocessing.tthModules $NANO_MODULES . $F
   test_exit_code $?
   echo "Removing useless branches: $F_i -> $F_ii"
-  nano_postproc.py -s i -I tthAnalysis.NanoAODTools.postprocessing.tthModules countHistogramAll \
-                   -b $CMSSW_BASE/src/tthAnalysis/NanoAODTools/data/keep_or_drop.txt            \
+  nano_postproc.py -s i -I tthAnalysis.NanoAODTools.postprocessing.tthModules "countHistogramAll_$ERA" \
+                   -b $CMSSW_BASE/src/tthAnalysis/NanoAODTools/data/keep_or_drop.txt                   \
                    . $F_i
   test_exit_code $?
 done
