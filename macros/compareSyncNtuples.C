@@ -620,7 +620,7 @@ void compareSyncNtuples(const std::string & ref_str,
   branchesToCompare.push_back(new branchEntryType("mu2_dxyAbs", "F", "n_presel_mu >= 2", 100, -0.1, +0.1));
   branchesToCompare.push_back(new branchEntryType("mu2_eta", "F", "n_presel_mu >= 2", 100, -3., +3.));
   branchesToCompare.push_back(new branchEntryType("mu2_dz", "F", "n_presel_mu >= 2", 100, -0.2, +0.2));
-  branchesToCompare.push_back(new branchEntryType("mu2_isfakeablesel", "I", "n_presel_mu >= 1", 2, -0.5, +1.5));
+  branchesToCompare.push_back(new branchEntryType("mu2_isfakeablesel", "I", "n_presel_mu >= 2", 2, -0.5, +1.5));
   branchesToCompare.push_back(new branchEntryType("mu2_ismvasel", "I", "n_presel_mu >= 2", 2, -0.5, +1.5));
   branchesToCompare.push_back(new branchEntryType("ele1_ntMVAeleID", "F", "n_presel_ele >= 1", 100, -1., +1.));
   branchesToCompare.push_back(new branchEntryType("ele1_charge", "I", "n_presel_ele >= 1", 3, -1.5, +1.5));
@@ -686,6 +686,8 @@ void compareSyncNtuples(const std::string & ref_str,
   branchesToCompare.push_back(new branchEntryType("tau1_byMediumCombinedIsolationDeltaBetaCorr3HitsdR03", "I", "n_presel_tau >= 1", 2, -0.5, +1.5));
   branchesToCompare.push_back(new branchEntryType("tau1_byTightCombinedIsolationDeltaBetaCorr3HitsdR03", "I", "n_presel_tau >= 1", 2, -0.5, +1.5));
   branchesToCompare.push_back(new branchEntryType("tau1_byLooseIsolationMVArun2v1DBdR03oldDMwLT", "F", "n_presel_tau >= 1", 2, -0.5, +1.5));
+  branchesToCompare.push_back(new branchEntryType("tau1_byVLooseIsolationMVArun2v1DBdR03oldDMwLT", "F", "n_presel_tau >= 1", 2, -0.5, +1.5));
+  branchesToCompare.push_back(new branchEntryType("tau1_rawMVArun2v1DBdR03oldDMwLT", "F", "n_presel_tau >= 1", 100, -0.5, +1.1));
   branchesToCompare.push_back(new branchEntryType("tau1_byCombinedIsolationDeltaBetaCorr3Hits", "F", "n_presel_tau >= 1", 100, -0.01, 5.));
   branchesToCompare.push_back(new branchEntryType("tau1_dz", "F", "n_presel_tau >= 1", 100, -0.3, +0.3));
   branchesToCompare.push_back(new branchEntryType("tau1_dxy", "F", "n_presel_tau >= 1", 100, -0.2, +0.2));
@@ -713,6 +715,8 @@ void compareSyncNtuples(const std::string & ref_str,
   branchesToCompare.push_back(new branchEntryType("tau2_byMediumCombinedIsolationDeltaBetaCorr3HitsdR03", "I", "n_presel_tau >= 2", 2, -0.5, +1.5));
   branchesToCompare.push_back(new branchEntryType("tau2_byTightCombinedIsolationDeltaBetaCorr3HitsdR03", "I", "n_presel_tau >= 2", 2, -0.5, +1.5));
   branchesToCompare.push_back(new branchEntryType("tau2_byLooseIsolationMVArun2v1DBdR03oldDMwLT", "F", "n_presel_tau >= 2", 2, -0.5, +1.5));
+  branchesToCompare.push_back(new branchEntryType("tau2_byVLooseIsolationMVArun2v1DBdR03oldDMwLT", "F", "n_presel_tau >= 2", 2, -0.5, +1.5));
+  branchesToCompare.push_back(new branchEntryType("tau2_rawMVArun2v1DBdR03oldDMwLT", "F", "n_presel_tau >= 2", 100, -0.5, +1.1));
   branchesToCompare.push_back(new branchEntryType("tau2_byCombinedIsolationDeltaBetaCorr3Hits", "F", "n_presel_tau >= 2", 100, -0.01, 5.));
   branchesToCompare.push_back(new branchEntryType("tau2_dz", "F", "n_presel_tau >= 2", 100, -0.3, +0.3));
   branchesToCompare.push_back(new branchEntryType("tau2_dxy", "F", "n_presel_tau >= 2", 100, -0.2, +0.2));
