@@ -448,7 +448,7 @@ main(int argc,
       ;
 
       snm->read(lep2_conePt,     FloatVariableType::lep1_conept);
-      snm->read(mindr_lep2_jet,  FloatVariableType::mindr_lep1_jet);
+      snm->read(mindr_lep2_jet,  FloatVariableType::mindr_lep2_jet);
       snm->read(mT_met_lep2,     FloatVariableType::mT_met_lep2);
       snm->read(dR_leps,         FloatVariableType::dr_leps);
       snm->read(mTauTauVis2_sel, FloatVariableType::mvis_l2tau);
