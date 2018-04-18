@@ -104,37 +104,8 @@ NtupleMetaData
 /*       https://gitlab.cern.ch/ttH_leptons/doc/blob/master/2017/synchronization_taus.md             */
 
 
-const std::string base_dir = "/home/" + _whoami() + "/sandbox/sync_ntuples/";
-const std::string inputbase_dir = "/hdfs/local/ram/sync_2017/";
-
-
-
-
-/*
-// -------UNCOMMENT THIS BLOCK FOR RUNNING ON EXCLUSIVE CATEGORIES (EVENT SYNC) -----
-const std::string type = "event";
-const std::string channel_sel = "1l2tau_SR";
-// const std::string channel_sel = "1l2tau_Fake";
-
-// const std::string channel_sel = "3l1tau_SR";
-// const std::string channel_sel = "3l1tau_Fake";
-
-// const std::string channel_sel = "2lSS1tau_SR";
-// const std::string channel_sel = "2lSS1tau_Fake";
-// const std::string channel_sel = "2lSS1tau_Flip";
-
-const std::string tree_name = "syncTree_" + channel_sel;
-
-const std::map<std::string, std::map<std::string, NtupleMetaData>> ntupleMetadataMap = {
-  { "tth", {
-             { "LLR",     { inputbase_dir + "LLR" + "/" + type + "/",     "syncNtuple_event_ttH_tautau_v2.root", "", tree_name, "LLR", "", channel_sel} },
-	     { "Tallinn", { inputbase_dir + "Tallinn" + "/" + type + "/", "sync_Tallinn_v9.root", "", tree_name, "Tallinn", "", channel_sel} },
-	     //	     { "Cornell", { inputbase_dir + "Cornell" + "/" + type + "/", "syncNtuple_event.root", "", tree_name, "Cornell", "", channel_sel } }
-           }
-  }
-};
-// -----------------------------------
-*/
+const std::string base_dir      = "/home/" + _whoami() + "/sandbox/sync_2017/plots_Cornell_v4_vs_Tallinn_v14_vs_IHEP_v4/";
+const std::string inputbase_dir = "/home/" + _whoami() + "/sandbox/sync_2017/";
 
 
 
@@ -144,11 +115,13 @@ const std::string channel_sel = "inclusive";
 const std::string tree_name = "syncTree";
 
 const std::map<std::string, std::map<std::string, NtupleMetaData>> ntupleMetadataMap = {
-  { "tth", {
-             { "LLR",     { inputbase_dir + "LLR" + "/" + type + "/", "syncNtuple_ttH_object_v2.root", "", tree_name, "LLR", "", channel_sel} },
-	     { "Tallinn", { inputbase_dir + "Tallinn" + "/" + type + "/", "sync_Tallinn_v9.root", "", tree_name, "Tallinn", "", channel_sel} },
-	     { "Cornell", { inputbase_dir + "Cornell" + "/" + type + "/", "syncNtuple_object.root", "", tree_name, "Cornell", "", channel_sel } }
-           }
+  { "tth",
+    {
+//      { "LLR",     { inputbase_dir + "LLR/"     + type + "/", "syncNtuple_ttH_object_v5.root",     "", tree_name, "LLR",     "", channel_sel } },
+      { "Tallinn", { inputbase_dir + "Tallinn/" + type + "/", "sync_Tallinn_v14.root",             "", tree_name, "Tallinn", "", channel_sel } },
+      { "Cornell", { inputbase_dir + "Cornell/" + type + "/", "syncNtuple_object_cornell_v4.root", "", tree_name, "Cornell", "", channel_sel } },
+      { "IHEP",    { inputbase_dir + "Cornell/" + type + "/", "IHEP_ttHsyncV4.root",               "", tree_name, "IHEP",    "", channel_sel } },
+    }
   }
 };
 // -----------------------------------
@@ -857,12 +830,18 @@ void compareSyncNtuples(const std::string & ref_str,
 
 void compareSyncNtuples()
 {
-  // const std::string test_str = "Tallinn";
-  const std::string test_str = "LLR";
-
   const std::string sample_str = "tth";
+  std::vector<std::string> keys;
   for(const auto & kv: ntupleMetadataMap.at(sample_str))
-    if(test_str != kv.first)
-      compareSyncNtuples(kv.first, test_str, sample_str);
+  {
+    keys.push_back(kv.first);
+  }
+  for(std::size_t i = 0; i < keys.size(); ++i)
+  {
+    for(std::size_t j = i + 1; j < keys.size(); ++j)
+    {
+      compareSyncNtuples(keys.at(i), keys.at(j), sample_str);
+    }
+  }
 }
 
