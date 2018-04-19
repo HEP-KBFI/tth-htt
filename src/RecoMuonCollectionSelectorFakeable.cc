@@ -10,7 +10,6 @@ RecoMuonSelectorFakeable::RecoMuonSelectorFakeable(int era,
   : era_(era)
   , debug_(debug)
   , set_selection_flags_(set_selection_flags)
-  , tightMuonSelector_(era_, index, debug, false)
   , min_cone_pt_(10.)
   , min_lepton_pt_(5.)
   , max_absEta_(2.4)
@@ -41,11 +40,6 @@ RecoMuonSelectorFakeable::operator()(const RecoMuon & muon) const
   if(debug_)
   {
     std::cout << get_human_line(this, __func__) << ":\n" << muon;
-  }
-
-  if(set_selection_flags_ && tightMuonSelector_(muon))
-  {
-    muon.set_isTight();
   }
 
   if(muon.cone_pt() < min_cone_pt_)

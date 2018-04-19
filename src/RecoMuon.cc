@@ -57,13 +57,13 @@ RecoMuon::is_muon() const
 Double_t
 RecoMuon::cone_pt() const
 {
-  return passesMediumIdPOG() && mvaRawTTH() > 0.90 ? pt() : assocJet_pt();
+  return passesMediumIdPOG() && mvaRawTTH() >= 0.90 ? pt() : assocJet_pt();
 }
 
 const Particle::LorentzVector &
 RecoMuon::cone_p4() const
 {
-  return passesMediumIdPOG() && mvaRawTTH() > 0.90 ? p4() : assocJet_p4();
+  return passesMediumIdPOG() && mvaRawTTH() >= 0.90 ? p4() : assocJet_p4();
 }
 
 std::ostream &

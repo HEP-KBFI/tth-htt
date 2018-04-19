@@ -122,13 +122,13 @@ RecoLepton::p4() const
 Double_t
 RecoLepton::cone_pt() const
 {
-  return ! isTight_ ? assocJet_pt_ : pt_;
+  return mvaRawTTH() >= 0.90 ? pt_ : assocJet_pt_;
 }
 
 const Particle::LorentzVector &
 RecoLepton::cone_p4() const
 {
-  return ! isTight_ ? assocJet_p4_ : p4_;
+  return mvaRawTTH() >= 0.90 ? p4_ : assocJet_p4_;
 }
 
 Double_t

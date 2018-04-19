@@ -1,7 +1,8 @@
 #ifndef tthAnalysis_HiggsToTauTau_RecoMuonCollectionSelectorFakeable_h
 #define tthAnalysis_HiggsToTauTau_RecoMuonCollectionSelectorFakeable_h
 
-#include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorTight.h" // RecoMuonSelectorTight
+#include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionSelector.h" // ParticleCollectionSelector
+#include "tthAnalysis/HiggsToTauTau/interface/RecoMuon.h" // RecoMuon
 
 class RecoMuonSelectorFakeable
 {
@@ -26,8 +27,6 @@ protected:
   int era_;
   bool debug_;
   bool set_selection_flags_;
-
-  RecoMuonSelectorTight tightMuonSelector_;
 
   Double_t min_cone_pt_;    ///< lower cut threshold on cone pT
   Double_t min_lepton_pt_;  ///< lower cut threshold on "raw" lepton pT  

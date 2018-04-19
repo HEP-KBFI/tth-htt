@@ -10,7 +10,6 @@ RecoElectronSelectorLoose::RecoElectronSelectorLoose(int era,
   : set_selection_flags_(set_selection_flags)
   , debug_(debug)
   , era_(era)
-  , tightElectronSelector_(era_, index, debug, false)
   , min_pt_(7.)
   , max_absEta_(2.5)
   , max_dxy_(0.05)
@@ -116,10 +115,6 @@ RecoElectronSelectorLoose::operator()(const RecoElectron & electron) const
   if(set_selection_flags_)
   {
     electron.set_isLoose();
-  }
-  if(tightElectronSelector_(electron))
-  {
-    electron.set_isTight();
   }
 
   return true;

@@ -9,7 +9,6 @@ RecoMuonSelectorLoose::RecoMuonSelectorLoose(int era,
   : era_(era)
   , debug_(debug)
   , set_selection_flags_(set_selection_flags)
-  , tightMuonSelector_(era_, index, debug, false)
   , min_pt_(5.)
   , max_absEta_(2.4)
   , max_dxy_(0.05)
@@ -104,10 +103,6 @@ RecoMuonSelectorLoose::operator()(const RecoMuon & muon) const
   if(set_selection_flags_)
   {
     muon.set_isLoose();
-    if(tightMuonSelector_(muon))
-    {
-      muon.set_isTight();
-    }
   }
 
   return true;

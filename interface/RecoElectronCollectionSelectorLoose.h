@@ -2,7 +2,7 @@
 #define tthAnalysis_HiggsToTauTau_RecoElectronCollectionSelectorLoose_h
 
 #include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionSelector.h" // ParticleCollectionSelector
-#include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorTight.h" // RecoElectronSelectorTight, RecoElectron
+#include "tthAnalysis/HiggsToTauTau/interface/RecoElectron.h" // RecoElectron
 
 class RecoElectronSelectorLoose
 {
@@ -24,8 +24,6 @@ protected:
   bool set_selection_flags_;
   bool debug_;                        ///< enable printout for debugging purposes
   int era_;
-
-  RecoElectronSelectorTight tightElectronSelector_;
 
   Double_t min_pt_;                   ///< lower cut threshold on pT
   Double_t max_absEta_;               ///< upper cut threshold on absolute value of eta

@@ -1,7 +1,8 @@
 #ifndef tthAnalysis_HiggsToTauTau_RecoElectronCollectionSelectorFakeable_h
 #define tthAnalysis_HiggsToTauTau_RecoElectronCollectionSelectorFakeable_h
 
-#include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorTight.h" // RecoElectronSelectorTight, RecoElectron
+#include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionSelector.h" // ParticleCollectionSelector
+#include "tthAnalysis/HiggsToTauTau/interface/RecoElectron.h" // RecoElectron
 
 class RecoElectronSelectorFakeable
 {
@@ -30,8 +31,6 @@ protected:
   bool debug_;
   bool set_selection_flags_;
   bool apply_offline_e_trigger_cuts_;
-
-  RecoElectronSelectorTight tightElectronSelector_;
 
   Double_t min_cone_pt_;              ///< lower cut threshold on cone pT
   Double_t min_lepton_pt_;            ///< lower cut threshold on "raw" lepton pT

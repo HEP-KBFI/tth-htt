@@ -132,18 +132,6 @@ RecoElectron::is_muon() const
   return false;
 }
 
-Double_t
-RecoElectron::cone_pt() const
-{
-  return mvaRawTTH() > 0.90 ? pt() : assocJet_pt();
-}
-
-const Particle::LorentzVector &
-RecoElectron::cone_p4() const
-{
-  return mvaRawTTH() > 0.90 ? p4() : assocJet_p4();
-}
-
 std::ostream &
 operator<<(std::ostream & stream,
            const RecoElectron & electron)

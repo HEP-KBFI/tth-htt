@@ -11,7 +11,6 @@ RecoElectronSelectorFakeable::RecoElectronSelectorFakeable(int era,
   , debug_(debug)
   , set_selection_flags_(set_selection_flags)
   , apply_offline_e_trigger_cuts_(true)
-  , tightElectronSelector_(era_, index, debug, false)
   , min_cone_pt_(10.)
   , min_lepton_pt_(7.)
   , max_absEta_(2.5)
@@ -77,11 +76,6 @@ RecoElectronSelectorFakeable::operator()(const RecoElectron & electron) const
   if(debug_)
   {
     std::cout << get_human_line(this, __func__) << ":\n" << electron;
-  }
-
-  if(set_selection_flags_ && tightElectronSelector_(electron))
-  {
-    electron.set_isTight();
   }
 
   if(electron.cone_pt() < min_cone_pt_)

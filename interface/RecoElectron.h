@@ -60,12 +60,6 @@ public:
   bool
   is_muon() const override;
 
-  Double_t
-  cone_pt() const;
-
-  const Particle::LorentzVector &
-  cone_p4() const;
-
   const static bool useNoIso = true;
 
 //--- observables specific to electrons
