@@ -333,6 +333,11 @@ private:
   Bool_t * ele_isChargeConsistent;
   Bool_t * ele_passesConversionVeto;
   Int_t * ele_nMissingHits;
+  Float_t * ele_sigmaEtaEta;
+  Float_t * ele_HoE;
+  Float_t * ele_deltaEta;
+  Float_t * ele_deltaPhi;
+  Float_t * ele_OoEminusOoP;
   Bool_t * ele_isfakeablesel;
   Bool_t * ele_ismvasel;
 

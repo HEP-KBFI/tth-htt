@@ -225,6 +225,11 @@ SyncNtupleManager::initializeBranches()
     ele_isChargeConsistent,   "isChargeConsistent",
     ele_passesConversionVeto, "passesConversionVeto",
     ele_nMissingHits,         "nMissingHits",
+    ele_sigmaEtaEta,          "sigmaEtaEta",
+    ele_HoE,                  "HoE",
+    ele_deltaEta,             "deltaEta",
+    ele_deltaPhi,             "deltaPhi",
+    ele_OoEminusOoP,          "OoEminusOoP",
     ele_isfakeablesel,        "isfakeablesel",
     ele_ismvasel,             "ismvasel"
   );
@@ -390,6 +395,11 @@ SyncNtupleManager::read(const std::vector<const RecoElectron *> & electrons,
     ele_isChargeConsistent[i] = electron -> tightCharge() == 2 ? 1 : 0;
     ele_passesConversionVeto[i] = electron -> passesConversionVeto();
     ele_nMissingHits[i] = electron -> nLostHits();
+    ele_sigmaEtaEta[i] = electron -> sigmaEtaEta();
+    ele_HoE[i] = electron -> HoE();
+    ele_deltaEta[i] = electron -> deltaEta();
+    ele_deltaPhi[i] = electron -> deltaPhi();
+    ele_OoEminusOoP[i] = electron -> OoEminusOoP();
 
     ele_isfakeablesel[i] = 0;
     for(const auto & fakeable_electron: fakeable_electrons)
@@ -583,6 +593,11 @@ SyncNtupleManager::reset()
     ele_isChargeConsistent,
     ele_passesConversionVeto,
     ele_nMissingHits,
+    ele_sigmaEtaEta,
+    ele_HoE,
+    ele_deltaEta,
+    ele_deltaPhi,
+    ele_OoEminusOoP,
     ele_isfakeablesel,
     ele_ismvasel
   );
