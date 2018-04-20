@@ -1,5 +1,5 @@
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h"
-
+#include "tthAnalysis/HiggsToTauTau/interface/EventInfoReader.h" // EventInfoReader, EventInfo
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMEtReader.h" // RecoMEtReader::kMEt_central, RecoMEtReader::kMEt_shifted_JetEnUp...
 
 #include <TRandom3.h> // TRandom3
@@ -167,13 +167,13 @@ Particle::LorentzVector compMHT(const std::vector<const RecoLepton*>& leptons, c
 
 double compMEt_LD(const Particle::LorentzVector& met_p4, const Particle::LorentzVector& mht_p4)
 {
-  double met_LD = met_coef*met_p4.pt() + mht_coef*mht_p4.pt(); 
+  double met_LD = met_coef*met_p4.pt() + mht_coef*mht_p4.pt();
   return met_LD;
 }
 
 std::vector<const RecoLepton*> mergeLeptonCollections(const std::vector<const RecoElectron*>& electrons, const std::vector<const RecoMuon*>& muons)
-{ 
-  std::vector<const RecoLepton*> leptons;  
+{
+  std::vector<const RecoLepton*> leptons;
   size_t nLeptons = electrons.size() + muons.size();
   if ( nLeptons > 0 ) {
     leptons.reserve(nLeptons);
@@ -191,7 +191,7 @@ void printGenLeptonCollection(const std::string& collection_name, const std::vec
     std::cout << collection_name << "  #" << idxGenLepton << ":" << std::endl;
     std::cout << genLeptons[idxGenLepton];
   }
-} 
+}
 
 void printLeptonCollection(const std::string& collection_name, const std::vector<const RecoLepton*>& leptons)
 {
@@ -210,7 +210,7 @@ void printLeptonCollection(const std::string& collection_name, const std::vector
     }
     std::cout << (*leptons[idxLepton]);
   }
-} 
+}
 
 void printGenHadTauCollection(const std::string& collection_name, const std::vector<GenHadTau>& genHadTaus)
 {
@@ -265,4 +265,3 @@ nCombinationsK(int n,
   }
   return result;
 }
-

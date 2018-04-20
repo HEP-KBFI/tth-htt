@@ -10,13 +10,15 @@ from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 #                      to increase the BDT training statistics
 #--------------------------------------------------------------------------------
 
-# E.g. to run: python tthAnalyzeRun_2lss_1tau.py --version "2017Oct24" --mode "forBDTtraining_afterAddMEM" --use_prod_ntuples 
+# E.g. to run: python tthAnalyzeRun_2lss_1tau.py --version "2017Oct24" --mode "forBDTtraining_afterAddMEM" --use_prod_ntuples
 from optparse import OptionParser
 parser = OptionParser()
 parser.add_option("--version ", type="string", dest="version", help="Name of output reository with results\n Trees will be stored in /hdfs/local/USER/ttHAnalysis/2016/VERSION/", default='dumb')
 parser.add_option("--mode", type="string", dest="mode", help="Set the mode flag, read the script for options", default="VHbb")
 parser.add_option("--ERA", type="string", dest="ERA", help="Era of data", default='2016')
 parser.add_option("--use_prod_ntuples", action="store_true", dest="use_prod_ntuples", help="Production flag", default=False)
+parser.add_option("--tauWP", type="string", dest="tauWP", help="Set the mode flag, read the script for options", default="dR03mvaMedium")
+parser.add_option("--noQuery", action="store_true", dest="noQuery", help="run (in bkg), do not ask", default=False)
 (options, args) = parser.parse_args()
 
 use_prod_ntuples     = options.use_prod_ntuples #True
@@ -25,7 +27,7 @@ ERA                  = options.ERA #"2016"
 version              = options.version #"2017Oct24"
 max_job_resubmission = 10
 changeBranchNames    = use_prod_ntuples
-max_files_per_job    = 10 if use_prod_ntuples else 100
+max_files_per_job    = 5 if use_prod_ntuples else 100 ## there are too many passing events/file in this channel
 
 samples                            = None
 LUMI                               = None
@@ -33,6 +35,7 @@ hadTau_selection                   = None
 hadTau_selection_relaxed           = None
 applyFakeRateWeights               = None
 hadTauFakeRateWeight_inputFileName = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016.root"
+doShapeSyst=False
 
 if use_prod_ntuples and ERA == "2015":
   raise ValueError("No production Ntuples for 2015 data & MC")
@@ -57,7 +60,7 @@ if mode == "VHbb":
       "/Tau/Run2016G-PromptReco-v1/MINIAOD"]:
       sample_info["use_it"] = False
 
-  hadTau_selection = "dR03mvaMedium"
+  hadTau_selection = options.tauWP
   applyFakeRateWeights = "3L"
 
 elif mode == "forBDTtraining":
@@ -66,7 +69,7 @@ elif mode == "forBDTtraining":
   else:
     from tthAnalysis.HiggsToTauTau.tthAnalyzeSamples_2016_FastSim import samples_2016
   hadTau_selection         = "dR03mvaVTight"
-  hadTau_selection_relaxed = "dR03mvaLoose"
+  hadTau_selection_relaxed = options.tauWP
   applyFakeRateWeights     = "3L"
 else:
   raise ValueError("Invalid Configuration parameter 'mode' = %s !!" % mode)
@@ -91,6 +94,66 @@ if __name__ == '__main__':
   run_analysis           = False
   is_last_resubmission   = False
 
+  shapesToDo=["central"]
+  if doShapeSyst==True:
+      shapesToDo=[
+         "central",
+         "CMS_ttHl_btag_HFUp",
+         "CMS_ttHl_btag_HFDown",
+         "CMS_ttHl_btag_HFStats1Up",
+         "CMS_ttHl_btag_HFStats1Down",
+         "CMS_ttHl_btag_HFStats2Up",
+         "CMS_ttHl_btag_HFStats2Down",
+         "CMS_ttHl_btag_LFUp",
+         "CMS_ttHl_btag_LFDown",
+         "CMS_ttHl_btag_LFStats1Up",
+         "CMS_ttHl_btag_LFStats1Down",
+         "CMS_ttHl_btag_LFStats2Up",
+         "CMS_ttHl_btag_LFStats2Down",
+         "CMS_ttHl_btag_cErr1Up",
+         "CMS_ttHl_btag_cErr1Down",
+         "CMS_ttHl_btag_cErr2Up",
+         "CMS_ttHl_btag_cErr2Down",
+         "CMS_ttHl_JESUp",
+         "CMS_ttHl_JESDown",
+        #------------------------------------------------------
+        # CV: enable the CMS_ttHl_FRe_shape and CMS_ttHl_FRm_shape only
+        #     if you plan to run compShapeSyst 1!
+         "CMS_ttHl_FRe_shape_ptUp",
+         "CMS_ttHl_FRe_shape_ptDown",
+         "CMS_ttHl_FRe_shape_etaUp",
+         "CMS_ttHl_FRe_shape_etaDown",
+         "CMS_ttHl_FRe_shape_eta_barrelUp",
+         "CMS_ttHl_FRe_shape_eta_barrelDown",
+         "CMS_ttHl_FRm_shape_ptUp",
+         "CMS_ttHl_FRm_shape_ptDown",
+         "CMS_ttHl_FRm_shape_etaUp",
+         "CMS_ttHl_FRm_shape_etaDown",
+        #------------------------------------------------------
+         "CMS_ttHl_tauESUp",
+         "CMS_ttHl_tauESDown",
+         "CMS_ttHl_FRjt_normUp",
+         "CMS_ttHl_FRjt_normDown",
+         "CMS_ttHl_FRjt_shapeUp",
+         "CMS_ttHl_FRjt_shapeDown",
+         "CMS_ttHl_FRet_shiftUp",
+         "CMS_ttHl_FRet_shiftDown",
+         "CMS_ttHl_FRmt_shiftUp",
+         "CMS_ttHl_FRmt_shiftDown",
+         "CMS_ttHl_thu_shape_ttH_x1Up",
+         "CMS_ttHl_thu_shape_ttH_x1Down",
+         "CMS_ttHl_thu_shape_ttH_y1Up",
+         "CMS_ttHl_thu_shape_ttH_y1Down",
+         "CMS_ttHl_thu_shape_ttW_x1Up",
+         "CMS_ttHl_thu_shape_ttW_x1Down",
+         "CMS_ttHl_thu_shape_ttW_y1Up",
+         "CMS_ttHl_thu_shape_ttW_y1Down",
+         "CMS_ttHl_thu_shape_ttZ_x1Up",
+         "CMS_ttHl_thu_shape_ttZ_x1Down",
+         "CMS_ttHl_thu_shape_ttZ_y1Up",
+         "CMS_ttHl_thu_shape_ttZ_y1Down",
+      ]
+
   for idx_job_resubmission in range(max_job_resubmission):
     if is_last_resubmission:
       continue
@@ -105,63 +168,7 @@ if __name__ == '__main__':
       changeBranchNames    = changeBranchNames,
       hadTau_selection     = hadTau_selection,
       applyFakeRateWeights = applyFakeRateWeights,
-      central_or_shifts    = [
-        "central",
-##         "CMS_ttHl_btag_HFUp",
-##         "CMS_ttHl_btag_HFDown",
-##         "CMS_ttHl_btag_HFStats1Up",
-##         "CMS_ttHl_btag_HFStats1Down",
-##         "CMS_ttHl_btag_HFStats2Up",
-##         "CMS_ttHl_btag_HFStats2Down",
-##         "CMS_ttHl_btag_LFUp",
-##         "CMS_ttHl_btag_LFDown",
-##         "CMS_ttHl_btag_LFStats1Up",
-##         "CMS_ttHl_btag_LFStats1Down",
-##         "CMS_ttHl_btag_LFStats2Up",
-##         "CMS_ttHl_btag_LFStats2Down",
-##         "CMS_ttHl_btag_cErr1Up",
-##         "CMS_ttHl_btag_cErr1Down",
-##         "CMS_ttHl_btag_cErr2Up",
-##         "CMS_ttHl_btag_cErr2Down",
-##         "CMS_ttHl_JESUp",
-##         "CMS_ttHl_JESDown",
-        #------------------------------------------------------
-        # CV: enable the CMS_ttHl_FRe_shape and CMS_ttHl_FRm_shape only
-        #     if you plan to run compShapeSyst 1!
-##         "CMS_ttHl_FRe_shape_ptUp",
-##         "CMS_ttHl_FRe_shape_ptDown",
-##         "CMS_ttHl_FRe_shape_etaUp",
-##         "CMS_ttHl_FRe_shape_etaDown",
-##         "CMS_ttHl_FRe_shape_eta_barrelUp",
-##         "CMS_ttHl_FRe_shape_eta_barrelDown",
-##         "CMS_ttHl_FRm_shape_ptUp",
-##         "CMS_ttHl_FRm_shape_ptDown",
-##         "CMS_ttHl_FRm_shape_etaUp",
-##         "CMS_ttHl_FRm_shape_etaDown",
-        #------------------------------------------------------
-##         "CMS_ttHl_tauESUp",
-##         "CMS_ttHl_tauESDown",
-##         "CMS_ttHl_FRjt_normUp",
-##         "CMS_ttHl_FRjt_normDown",
-##         "CMS_ttHl_FRjt_shapeUp",
-##         "CMS_ttHl_FRjt_shapeDown",
-##         "CMS_ttHl_FRet_shiftUp",
-##         "CMS_ttHl_FRet_shiftDown",
-##         "CMS_ttHl_FRmt_shiftUp",
-##         "CMS_ttHl_FRmt_shiftDown",
-##         "CMS_ttHl_thu_shape_ttH_x1Up",
-##         "CMS_ttHl_thu_shape_ttH_x1Down",
-##         "CMS_ttHl_thu_shape_ttH_y1Up",
-##         "CMS_ttHl_thu_shape_ttH_y1Down",
-##         "CMS_ttHl_thu_shape_ttW_x1Up",
-##         "CMS_ttHl_thu_shape_ttW_x1Down",
-##         "CMS_ttHl_thu_shape_ttW_y1Up",
-##         "CMS_ttHl_thu_shape_ttW_y1Down",
-##         "CMS_ttHl_thu_shape_ttZ_x1Up",
-##         "CMS_ttHl_thu_shape_ttZ_x1Down",
-##         "CMS_ttHl_thu_shape_ttZ_y1Up",
-##         "CMS_ttHl_thu_shape_ttZ_y1Down",
-      ],
+      central_or_shifts    = shapesToDo,
       max_files_per_job         = max_files_per_job,
       era                       = ERA,
       use_lumi                  = True,
@@ -184,6 +191,9 @@ if __name__ == '__main__':
     )
 
     if mode.find("forBDTtraining") != -1:
+      if hadTau_selection_relaxed=="dR03mvaVVLoose" : hadTauFakeRateWeight_inputFileName = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016_vvLoosePresel.root"
+      elif hadTau_selection_relaxed=="dR03mvaVLoose" : hadTauFakeRateWeight_inputFileName = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016_vLoosePresel.root"
+      else : hadTauFakeRateWeight_inputFileName = "tthAnalysis/HiggsToTauTau/data/FR_tau_2016.root"
       analysis.set_BDT_training(hadTau_selection_relaxed, hadTauFakeRateWeight_inputFileName)
 
     job_statistics = analysis.create()
@@ -191,12 +201,14 @@ if __name__ == '__main__':
       logging.info(" #jobs of type '%s' = %i" % (job_type, num_jobs))
     job_statistics_summary[idx_job_resubmission] = job_statistics
 
-    if idx_job_resubmission == 0:
-      run_analysis = query_yes_no("Start jobs ?")
-    if run_analysis:
-      analysis.run()
-    else:
-      sys.exit(0)
+    if not options.noQuery :
+        if idx_job_resubmission == 0:
+          run_analysis = query_yes_no("Start jobs ?")
+        if run_analysis:
+          analysis.run()
+        else:
+          sys.exit(0)
+    else : analysis.run()
 
     if job_statistics['analyze'] == 0:
       is_last_resubmission = True

@@ -1,5 +1,6 @@
 #include "tthAnalysis/HiggsToTauTau/interface/hadTopTaggerAuxFunctions.h"
-
+#include "tthAnalysis/HiggsToTauTau/interface/TMVAInterface.h" // TMVAInterface
+#include "tthAnalysis/HiggsToTauTau/interface/mvaAuxFunctions.h" // check_mvaInputs, get_mvaInputVariables
 #include "FWCore/Utilities/interface/Exception.h" // cms::Exception
 #include "DataFormats/Math/interface/deltaR.h" // deltaR
 

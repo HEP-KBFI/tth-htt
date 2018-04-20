@@ -435,7 +435,8 @@ TArrayD getBinning(const TH1* histogram, double xMin, double xMax)
 TH1* getRebinnedHistogram1d(const TH1* histoOriginal, 
 			    unsigned numBins_rebinned, const TArrayD& binEdges_rebinned)
 {
-  std::string histoRebinnedName = std::string(histoOriginal->GetName()).append("_rebinned");
+  //  std::string histoRebinnedName = std::string(histoOriginal->GetName()).append("_rebinned");
+  std::string histoRebinnedName = std::string(histoOriginal->GetName());
   TH1* histoRebinned = new TH1D(
     histoRebinnedName.data(), histoOriginal->GetTitle(), 
     binEdges_rebinned.GetSize() - 1, binEdges_rebinned.GetArray());
@@ -488,3 +489,40 @@ TH2* getRebinnedHistogram2d(const TH1* histoOriginal,
   }
   return histoRebinned;
 }
+
+
+TArrayD getRebinnedBinning(TH1* histogram, double minEvents)
+{
+  std::cout << "<compBinning>:" << std::endl;
+  std::vector<double> histogramBinning;
+  const TAxis* xAxis = histogram->GetXaxis();
+  histogramBinning.push_back(xAxis->GetBinLowEdge(1));
+  double sumEvents = 0.;
+  int numBins = xAxis->GetNbins();
+  for ( int idxBin = 1; idxBin <= numBins; ++idxBin ) {
+    sumEvents += histogram->GetBinContent(idxBin);
+    if ( sumEvents >= minEvents ) {
+      histogramBinning.push_back(xAxis->GetBinUpEdge(idxBin));
+      sumEvents = 0.;
+    }
+  }
+  if ( TMath::Abs(histogramBinning.back() - xAxis->GetBinUpEdge(numBins)) > 1.e-3 ) {
+    if ( histogramBinning.size() >= 2 ) histogramBinning.back() = xAxis->GetBinUpEdge(numBins);
+    else histogramBinning.push_back(xAxis->GetBinUpEdge(numBins));
+  }
+  assert(histogramBinning.size() >= 2);
+  TArrayD binning_tarray(histogramBinning.size());
+  for ( int idxBin = 0; idxBin < (int)histogramBinning.size(); ++idxBin ) {
+    binning_tarray[idxBin] = histogramBinning[idxBin];
+  }
+
+  std::cout << "binning = { ";
+  for ( std::vector<double>::const_iterator bin = histogramBinning.begin();
+	bin != histogramBinning.end(); ++bin ) {
+    if ( bin != histogramBinning.begin() ) std::cout << ", ";
+    std::cout << (*bin);
+  }
+  std::cout << " }" << std::endl;
+  return binning_tarray;
+}
+

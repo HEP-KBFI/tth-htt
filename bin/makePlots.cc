@@ -21,6 +21,7 @@
 
 #include <TFile.h>
 #include <TH1.h>
+#include <TArrayD.h>
 #include <THStack.h>
 #include <TBenchmark.h>
 #include <TMath.h>
@@ -37,6 +38,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <cstdlib> // EXIT_SUCCESS, EXIT_FAILURE
 #include <assert.h>
 
 typedef std::vector<std::string> vstring;
@@ -55,6 +57,55 @@ namespace
     std::string name_;
     std::string label_;
   };
+  std::vector<histogramEntryType*> GethistogramsBackground_clone(std::vector<histogramEntryType*>& histogramsBackground){
+    std::vector<histogramEntryType*> histogramsBackground_clone;
+    for ( std::vector<histogramEntryType*>::iterator histogramBackground_entry = histogramsBackground.begin();
+          histogramBackground_entry != histogramsBackground.end(); ++histogramBackground_entry ) {
+      std::string histogramNameBackground = Form("%s_", (*histogramBackground_entry)->histogram_->GetName() );
+      TH1* histogramBackground = (TH1*)(*histogramBackground_entry)->histogram_->Clone(histogramNameBackground.data());
+      const std::string& process = (*histogramBackground_entry)->process_;
+      histogramsBackground_clone.push_back(new histogramEntryType(process, histogramBackground));
+    }
+    return histogramsBackground_clone ;
+  }
+
+  std::vector<histogramEntryType*> GethistogramsBackground_rebin(std::vector<histogramEntryType*>& histogramsBackground, int rebin){
+    std::vector<histogramEntryType*> histogramsBackground_rebin;
+    for ( std::vector<histogramEntryType*>::iterator histogramBackground_entry = histogramsBackground.begin();
+          histogramBackground_entry != histogramsBackground.end(); ++histogramBackground_entry ) {
+      TH1* histogramBackground = (TH1*)(*histogramBackground_entry)->histogram_;
+      histogramBackground->Rebin(rebin);
+      const std::string& process = (*histogramBackground_entry)->process_;
+      histogramsBackground_rebin.push_back(new histogramEntryType(process, histogramBackground));
+    }
+    return histogramsBackground_rebin ;
+  }
+
+
+  std::vector<pdouble> GetBlindedRanges(TH1* histogramData, std::vector<histogramEntryType*>& histogramsBackground, TH1* histogramSignal){
+    std::vector<pdouble> range;
+    TH1* histogramBackgroundSum = 0;
+    for ( std::vector<histogramEntryType*>::iterator histogramBackground_entry = histogramsBackground.begin();
+          histogramBackground_entry != histogramsBackground.end(); ++histogramBackground_entry ) {
+      TH1* histogramBackground = (*histogramBackground_entry)->histogram_;
+      checkCompatibleBinning(histogramSignal, histogramBackground);
+      if(!histogramBackgroundSum) histogramBackgroundSum = (TH1*) histogramBackground->Clone("histogramBackgroundSum");
+      histogramBackgroundSum->Add(histogramBackground);
+    }
+    int numBins = histogramData->GetNbinsX();
+    for ( int iBin = 1; iBin <= numBins; ++iBin ) {
+      double x = histogramData->GetBinCenter(iBin);
+      double w = histogramData->GetBinWidth(iBin);
+      double s = histogramSignal->GetBinContent(iBin);
+      double b = histogramBackgroundSum->GetBinContent(iBin);
+      if((s/sqrt(b+pow(0.09*b, 2))) >= 0.5){
+	double xmin = x - 0.5*w;
+	double xmax = x + 0.5*w;
+	range.push_back(pdouble(xmin, xmax));
+      }
+    }
+    return range;
+  }
   
   TH1* blindHistogram(TH1* histogram, const std::vector<pdouble>& keepBlinded)
   {
@@ -73,7 +124,7 @@ namespace
 	  break;
 	}
       }
-      //std::cout << "x = " << x << ": isBlinded = " << isBlinded << std::endl;
+      //      std::cout << "BinCenter = " << x << ": isBlinded = " << isBlinded << std::endl;
       if ( isBlinded ) {
 	blindedHistogram->SetBinContent(iBin, -10.);
 	blindedHistogram->SetBinError(iBin, 0.);
@@ -95,20 +146,28 @@ namespace
 		double labelPosX, double labelPosY, double labelSizeX, double labelSizeY,
 	        double xMin, double xMax, const std::string& xAxisTitle, double xAxisOffset,
 		bool useLogScale, double yMin, double yMax, const std::string& yAxisTitle, double yAxisOffset,
-		const std::string& outputFileName)
+		const std::string& outputFileName, bool isRebinned, bool DivideByBinwidth)
   {
     std::cout << "<makePlot>:" << std::endl;
     std::cout << " outputFileName = " << outputFileName << std::endl;
 
     TH1* histogramData_density = 0;
     if ( histogramData ) {
-      histogramData_density = divideHistogramByBinWidth(histogramData);      
+      if (DivideByBinwidth)histogramData_density = divideHistogramByBinWidth(histogramData);      
+      else {
+	std::string histogramNameData_density = Form("%s_NotDivided", histogramData->GetName());	
+	histogramData_density = (TH1*)histogramData->Clone(histogramNameData_density.data());
+      }
     }
 
     TH1* histogramData_blinded_density = 0;
     if ( histogramData_blinded ) {
       if ( histogramData ) checkCompatibleBinning(histogramData_blinded, histogramData);
-      histogramData_blinded_density = divideHistogramByBinWidth(histogramData_blinded);
+      if (DivideByBinwidth)histogramData_blinded_density = divideHistogramByBinWidth(histogramData_blinded);
+      else {
+	std::string histogramNameData_blinded_density = Form("%s_NotDivide", histogramData_blinded->GetName());
+	histogramData_blinded_density = (TH1*)histogramData_blinded->Clone(histogramNameData_blinded_density.data());
+      }
     }
 
     std::vector<TH1*> histogramsBackground_density;
@@ -136,12 +195,18 @@ namespace
     TH1* histogramFlips_density = 0;
     for ( std::vector<histogramEntryType*>::iterator histogramBackground_entry = histogramsBackground.begin();
 	  histogramBackground_entry != histogramsBackground.end(); ++histogramBackground_entry ) {
-      TH1* histogramBackground = (*histogramBackground_entry)->histogram_;
+      std::string histogramNameBackground = Form("%s_", (*histogramBackground_entry)->histogram_->GetName());
+      TH1* histogramBackground = (TH1*)(*histogramBackground_entry)->histogram_->Clone(histogramNameBackground.data());
       const std::string& process = (*histogramBackground_entry)->process_;
-      std::cout << "process = " << process << ": histogramBackground = " << histogramBackground << std::endl;
-      printHistogram(histogramBackground);
+      //      std::cout << "process = " << process << ": histogramBackground = " << histogramBackground << std::endl;
+      //printHistogram(histogramBackground);
       checkCompatibleBinning(histogramBackground, histogramData);
-      TH1* histogramBackground_density = divideHistogramByBinWidth(histogramBackground); 
+      TH1* histogramBackground_density ;
+      if(DivideByBinwidth) histogramBackground_density = divideHistogramByBinWidth(histogramBackground); 
+      else {
+	std::string histogramNameBackground_density = Form("%s_NotDivided", histogramBackground->GetName());
+	histogramBackground_density = (TH1*)histogramBackground->Clone(histogramNameBackground_density.data());
+      }
       if ( process.find("TTWW") != std::string::npos ) {
 	histogramTTWW = histogramBackground;
 	histogramTTWW_density = histogramBackground_density;
@@ -178,14 +243,18 @@ namespace
       }
       histogramsBackground_density.push_back(histogramBackground_density);
     }
-    std::cout << "histogramTTW_density = " << histogramTTW_density << std::endl;
-    std::cout << "histogramTTWW_density = " << histogramTTWW_density << std::endl;
-    std::cout << "histogramTTZ_density = " << histogramTTZ_density << std::endl;
+    //    std::cout << "histogramTTW_density = " << histogramTTW_density << std::endl;
+    //    std::cout << "histogramTTWW_density = " << histogramTTWW_density << std::endl;
+    //    std::cout << "histogramTTZ_density = " << histogramTTZ_density << std::endl;
 
     TH1* histogramSignal_density = 0;
     if ( histogramSignal ) {
       if ( histogramSignal ) checkCompatibleBinning(histogramSignal, histogramData);
-      histogramSignal_density = divideHistogramByBinWidth(histogramSignal); 
+      if(DivideByBinwidth)histogramSignal_density = divideHistogramByBinWidth(histogramSignal); 
+      else {
+	std::string histogramNameSignal_density = Form("%s_NotDivided",histogramSignal->GetName());
+	histogramSignal_density = (TH1*)histogramSignal->Clone(histogramNameSignal_density.data());
+      }
     }
 
     TH1* histogramSum_density = 0;
@@ -201,7 +270,11 @@ namespace
     TH1* histogramUncertainty_density = 0;
     if ( histogramUncertainty ) {
       if ( histogramData ) checkCompatibleBinning(histogramUncertainty, histogramData);
-      histogramUncertainty_density = divideHistogramByBinWidth(histogramUncertainty);
+      if(DivideByBinwidth)histogramUncertainty_density = divideHistogramByBinWidth(histogramUncertainty);
+      else {
+	std::string histogramNameUncertainty_density = Form("%s_NotDivided",histogramUncertainty->GetName());
+	histogramUncertainty_density = (TH1*)histogramUncertainty->Clone(histogramNameUncertainty_density.data());
+      }
     }
 
     //---------------------------------------------------------------------------
@@ -277,7 +350,7 @@ namespace
 	yMin = 0.;
       }
     }
-    std::cout << "yMin = " << yMin << ", yMax = " << yMax << std::endl;
+    //    std::cout << "yMin = " << yMin << ", yMax = " << yMax << std::endl;
 
     if ( histogramData_blinded_density ) {
       histogramData_blinded_density->SetTitle("");
@@ -291,7 +364,7 @@ namespace
       legend->AddEntry(histogramData_blinded_density, "observed", "p");
       histogramData_blinded_density->Draw("ep");
     }
-        
+
     const int color_ttW     = 823; // dark green
     const int color_ttZ     = 822; // dark green
     const int color_ttH     = 628; // red
@@ -400,30 +473,67 @@ namespace
     }
     if ( histogramData_blinded_density ) histogramStack_density->Draw("histsame");
     else histogramStack_density->Draw("hist");
-    
+    std::string histogramNameBkg_bins = Form("%s_bins", histogramData_blinded_density->GetName());
+    TH1* histogramBkg_bins = (TH1*)histogramData_blinded_density->Clone(histogramNameBkg_bins.data());
+    //    if ( histogramUncertainty_density ) {
+    //      int numBins_top = histogramUncertainty_density->GetNbinsX();
+    int numBins_top = histogramBkg_bins->GetNbinsX();
+    for ( int iBin = 1; iBin <= numBins_top; ++iBin ) {
+      double sumBinContents = 0.;
+      if      ( histogramSignal_density  ) sumBinContents += histogramSignal_density->GetBinContent(iBin);
+      if      ( histogramTTW_density     ) sumBinContents += histogramTTW_density->GetBinContent(iBin);
+      if      ( histogramTTZ_density     ) sumBinContents += histogramTTZ_density->GetBinContent(iBin);
+      if      ( histogramTTH_density     ) sumBinContents += histogramTTH_density->GetBinContent(iBin);
+      if      ( histogramTT_density      ) sumBinContents += histogramTT_density->GetBinContent(iBin);
+      if      ( histogramEWK_density     ) sumBinContents += histogramEWK_density->GetBinContent(iBin);
+      if      ( histogramDiboson_density ) sumBinContents += histogramDiboson_density->GetBinContent(iBin);
+      else if ( histogramWZ_density      ) sumBinContents += histogramWZ_density->GetBinContent(iBin);
+      if      ( histogramRares_density   ) sumBinContents += histogramRares_density->GetBinContent(iBin);
+      if      ( histogramFakes_density   ) sumBinContents += histogramFakes_density->GetBinContent(iBin);
+      if      ( histogramFlips_density   ) sumBinContents += histogramFlips_density->GetBinContent(iBin);
+      if ( histogramUncertainty_density )histogramUncertainty_density->SetBinContent(iBin, sumBinContents);
+      histogramBkg_bins->SetBinContent(iBin, sumBinContents);
+    }
     if ( histogramUncertainty_density ) {
-      int numBins_top = histogramUncertainty_density->GetNbinsX();
-      for ( int iBin = 1; iBin <= numBins_top; ++iBin ) {
-	double sumBinContents = 0.;
-	if      ( histogramSignal_density  ) sumBinContents += histogramSignal_density->GetBinContent(iBin);
-	if      ( histogramTTW_density     ) sumBinContents += histogramTTW_density->GetBinContent(iBin);
-	if      ( histogramTTZ_density     ) sumBinContents += histogramTTZ_density->GetBinContent(iBin);
-	if      ( histogramTTH_density     ) sumBinContents += histogramTTH_density->GetBinContent(iBin);
-	if      ( histogramTT_density      ) sumBinContents += histogramTT_density->GetBinContent(iBin);
-	if      ( histogramEWK_density     ) sumBinContents += histogramEWK_density->GetBinContent(iBin);
-	if      ( histogramDiboson_density ) sumBinContents += histogramDiboson_density->GetBinContent(iBin);
-	else if ( histogramWZ_density      ) sumBinContents += histogramWZ_density->GetBinContent(iBin);
-	if      ( histogramRares_density   ) sumBinContents += histogramRares_density->GetBinContent(iBin);
-	if      ( histogramFakes_density   ) sumBinContents += histogramFakes_density->GetBinContent(iBin);
-	if      ( histogramFlips_density   ) sumBinContents += histogramFlips_density->GetBinContent(iBin);
-	histogramUncertainty_density->SetBinContent(iBin, sumBinContents);
-      }
       histogramUncertainty_density->SetFillColor(kBlack);
       histogramUncertainty_density->SetFillStyle(3344);    
       histogramUncertainty_density->Draw("e2same");
       legend->AddEntry(histogramUncertainty_density, "Uncertainty", "f");
     }
+    //    }
     
+    if ( histogramData_blinded_density ) {
+      std::string histogramNameData_blinded_bins = Form("%s_bins", histogramData_blinded_density->GetName());
+      TH1* histogramData_blinded_bins = (TH1*)histogramData_blinded_density->Clone(histogramNameData_blinded_bins.data());
+      int numBins = histogramData_blinded_density->GetNbinsX();
+      for ( int iBin = 1; iBin <= numBins; ++iBin ) {
+        double iData = histogramData_blinded_density->GetBinContent(iBin);
+	double iBkg = histogramBkg_bins->GetBinContent(iBin);
+        if(iData==-10){
+	  histogramData_blinded_bins->SetBinContent(iBin, (iBkg+0.2*iBkg));
+        }
+	else{
+	  histogramData_blinded_bins->SetBinContent(iBin, yMin);
+	}
+      }
+      const int color_int = 12;
+      const double alpha = 0.40;
+      TColor* color = gROOT->GetColor(color_int);
+      static int newColor_int = -1;
+      static TColor* newColor = 0;
+      if ( !newColor ) {
+	newColor_int = gROOT->GetListOfColors()->GetSize() + 1;
+	newColor = new TColor(newColor_int, color->GetRed(), color->GetGreen(), color->GetBlue(), "", alpha);
+      }
+      histogramData_blinded_bins->SetLineColor(newColor_int);
+      histogramData_blinded_bins->SetLineWidth(0);
+      histogramData_blinded_bins->SetFillColor(newColor_int);
+      histogramData_blinded_bins->SetFillStyle(1001);
+
+      histogramData_blinded_bins->Draw("histsame");
+      legend->AddEntry(histogramData_blinded_bins, "blinded", "f");
+    }
+
     if ( histogramData_blinded_density ) {
       histogramData_blinded_density->Draw("epsame");
       histogramData_blinded_density->Draw("axissame");
@@ -557,6 +667,7 @@ namespace
     std::string outputFileName_plot(outputFileName, 0, idx);
     if ( useLogScale ) outputFileName_plot.append("_log");
     else outputFileName_plot.append("_linear");
+    if(isRebinned)outputFileName_plot.append("_rebinned");
     if ( idx != std::string::npos ) canvas->Print(std::string(outputFileName_plot).append(std::string(outputFileName, idx)).data());
     canvas->Print(std::string(outputFileName_plot).append(".png").data());
     canvas->Print(std::string(outputFileName_plot).append(".pdf").data());
@@ -565,15 +676,27 @@ namespace
     delete histogramData_density;
     delete histogramData_blinded_density;
     delete histogramSignal_density;
+    delete histogramTTW;
     delete histogramTTW_density;
+    delete histogramTTWW;
+    delete histogramTTWW_density;
+    delete histogramTTZ;
     delete histogramTTZ_density;
+    delete histogramTTH;
     delete histogramTTH_density;
+    delete histogramTT;
     delete histogramTT_density;
+    delete histogramWZ;
     delete histogramWZ_density;
+    delete histogramDiboson;
     delete histogramDiboson_density;
+    delete histogramEWK;
     delete histogramEWK_density;
+    delete histogramRares;
     delete histogramRares_density;
+    delete histogramFakes;
     delete histogramFakes_density;
+    delete histogramFlips;
     delete histogramFlips_density;
     delete histogramSum_density;
     delete histogramUncertainty_density;
@@ -583,7 +706,7 @@ namespace
     delete topPad;
     delete histogramSum;
     delete histogramRatio;
-    delete histogramRatioUncertainty;
+    delete histogramRatioUncertainty;        
     delete line;
     delete bottomPad;    
     delete canvas;
@@ -627,13 +750,19 @@ int main(int argc, char* argv[])
     categories.push_back(category);
     categoryNames.push_back(category->name_);
   }
-
   std::string processData  = cfgMakePlots.getParameter<std::string>("processData");
   vstring processesBackground = cfgMakePlots.getParameter<vstring>("processesBackground");
   std::string processSignal = cfgMakePlots.getParameter<std::string>("processSignal");
 
   edm::VParameterSet cfgDistributions = cfgMakePlots.getParameter<edm::VParameterSet>("distributions");
   std::vector<plotEntryType*> distributions = readDistributions(cfgDistributions);
+
+  bool applyRebinning  = cfgMakePlots.getParameter<bool>("applyRebinning");
+  int apply_fixed_rebinning = cfgMakePlots.getParameter<int>("apply_fixed_rebinning");
+  bool apply_automatic_rebinning = cfgMakePlots.getParameter<bool>("apply_automatic_rebinning");
+  double minEvents_automatic_rebinning = cfgMakePlots.getParameter<double>("minEvents_automatic_rebinning");
+  bool applyAutoBlinding  = cfgMakePlots.getParameter<bool>("applyAutoBlinding");
+  bool DivideByBinwidth  = cfgMakePlots.getParameter<bool>("DivideByBinwidth");
 
   edm::ParameterSet cfgNuisanceParameters = cfgMakePlots.getParameter<edm::ParameterSet>("nuisanceParameters");
   HistogramManager histogramManager(processesBackground, processSignal, categoryNames, cfgNuisanceParameters);
@@ -662,11 +791,8 @@ int main(int argc, char* argv[])
 	  distribution != distributions.end(); ++distribution ) {
 
       TH1* histogramData = 0;
-      TH1* histogramData_blinded = 0;
       if ( processData != "" ) {
 	histogramData = getHistogram_wrapper(dir, processData, (*distribution)->histogramName_, "central", true);
-	if ( (*distribution)->keepBlinded_.size() >= 1 ) histogramData_blinded = blindHistogram(histogramData, (*distribution)->keepBlinded_);
-	else histogramData_blinded = histogramData; 
       }
 
       histogramManager.setDirectory(dir);
@@ -674,20 +800,85 @@ int main(int argc, char* argv[])
       histogramManager.setHistogram((*distribution)->histogramName_);
       histogramManager.update();
 
+      TH1* histogramBackgroundSum = 0;
       std::vector<histogramEntryType*> histogramsBackground;
       for ( vstring::const_iterator processBackground = processesBackground.begin();
 	    processBackground != processesBackground.end(); ++processBackground ) {
 	TH1* histogramBackground = histogramManager.getHistogramPrefit(*processBackground, true);
 	histogramsBackground.push_back(new histogramEntryType(*processBackground, histogramBackground));
+	if   ( !histogramBackgroundSum ) histogramBackgroundSum = (TH1*)histogramBackground->Clone(Form("%s_BackgroundSum", (*category)->name_.data()));
+	else                             histogramBackgroundSum->Add(histogramBackground);
       }
       
       TH1* histogramSignal = histogramManager.getHistogramPrefit(processSignal, true);
-      
+
+      std::vector<pdouble> keepBlinded =GetBlindedRanges(histogramData, histogramsBackground, histogramSignal);
+      TH1* histogramData_blinded = 0;
+      if ( processData != "" ) {
+          if ( keepBlinded.size() >= 1 && applyAutoBlinding) histogramData_blinded = blindHistogram(histogramData, keepBlinded);
+	  else{
+	    std::string histogramNameData_blinded = Form("%s_blinded", histogramData->GetName());
+	    histogramData_blinded = (TH1*)histogramData->Clone(histogramNameData_blinded.data());
+	  }
+      }
+
       TH1* histogramUncertainty = 0;
       if ( showUncertainty ) {
-	histogramUncertainty = histogramManager.getHistogramUncertainty();
+        histogramUncertainty = histogramManager.getHistogramUncertainty();
       }
-            
+
+      std::string histogramNameData_rebinned = Form("%s_rebinned", histogramData->GetName());
+      TH1* histogramData_rebinned = (TH1*)histogramData->Clone(histogramNameData_rebinned.data());
+      std::vector<histogramEntryType*> histogramsBackground_rebinned = GethistogramsBackground_clone(histogramsBackground);
+      std::string histogramNameSignal_rebinned = Form("%s_rebinned_fixed", histogramSignal->GetName()); 
+      TH1* histogramSignal_rebinned = (TH1*)histogramSignal->Clone(histogramNameSignal_rebinned.data());
+      std::string histogramNameBackgroundSum_rebinned = Form("%s_rebinned",histogramBackgroundSum->GetName());
+      TH1* histogramBackgroundSum_rebinned = (TH1*)histogramBackgroundSum->Clone(histogramNameBackgroundSum_rebinned.data());
+      TH1* histogramData_blinded_rebinned = 0;
+      TH1* histogramUncertainty_rebinned = 0;
+      if (applyRebinning){
+	if ( apply_fixed_rebinning > 1 ) {
+	  TArrayD histogramBinning_output = getBinning(histogramData_rebinned);
+	  int numBins_output = histogramBinning_output.GetSize() - 1;
+	  if (numBins_output < 10)continue;
+	  if (numBins_output <= 20) apply_fixed_rebinning = 2;
+	  else if(numBins_output <= 40) apply_fixed_rebinning = 2;
+	  else apply_fixed_rebinning = 4;
+	  histogramData_rebinned->Rebin(apply_fixed_rebinning);
+	  histogramSignal_rebinned->Rebin(apply_fixed_rebinning);
+	  GethistogramsBackground_rebin(histogramsBackground_rebinned, apply_fixed_rebinning);
+	  histogramBackgroundSum_rebinned->Rebin(apply_fixed_rebinning); 
+	}
+	
+	TH1* histogramData_tmp = 0;
+	std::vector<histogramEntryType*>histogramsBackground_tmp;
+	TH1* histogramSignal_tmp = 0;
+	if ( apply_automatic_rebinning ) {
+	  TArrayD histogramBinning = getRebinnedBinning(histogramBackgroundSum_rebinned, minEvents_automatic_rebinning);
+	  histogramData_tmp = getRebinnedHistogram1d(histogramData_rebinned, 4, histogramBinning);
+	  histogramSignal_tmp = getRebinnedHistogram1d(histogramSignal_rebinned, 4, histogramBinning);
+	  for ( std::vector<histogramEntryType*>::iterator histogramBackground_entry = histogramsBackground_rebinned.begin(); histogramBackground_entry != histogramsBackground_rebinned.end(); ++histogramBackground_entry ) {
+	    TH1* histogramBackground = (*histogramBackground_entry)->histogram_;
+	    const std::string& process = (*histogramBackground_entry)->process_;
+	    TH1* histogramBackground_tmp = getRebinnedHistogram1d(histogramBackground, 4, histogramBinning);
+	    histogramsBackground_tmp.push_back(new histogramEntryType(process, histogramBackground_tmp));
+	  }
+	  histogramData_rebinned = histogramData_tmp;
+	  histogramsBackground_rebinned = histogramsBackground_tmp;
+	  histogramSignal_rebinned = histogramSignal_tmp;
+	}
+	
+	std::vector<pdouble> keepBlinded =GetBlindedRanges(histogramData_rebinned, histogramsBackground_rebinned, histogramSignal_rebinned);
+	if ( processData != "" ) {
+	  if ( keepBlinded.size() >= 1 && applyAutoBlinding) histogramData_blinded_rebinned = blindHistogram(histogramData_rebinned, keepBlinded);
+	  else histogramData_blinded_rebinned = (TH1*)histogramData_rebinned->Clone("rebinned_data");
+	}
+
+	if ( showUncertainty ) {
+	  histogramUncertainty_rebinned = histogramManager.getHistogramUncertainty();
+	}
+      }
+   
       vstring extraLabels;
       if ( (*category)->label_ != "" ) extraLabels.push_back((*category)->label_);
       double extraLabelsSizeX = 0.12;
@@ -697,32 +888,32 @@ int main(int argc, char* argv[])
       outputFileName_plot.append(Form("_%s", (*distribution)->outputFileName_.data()));
       if ( idx != std::string::npos ) outputFileName_plot.append(std::string(outputFileName, idx));
 	  
-      makePlot(
-	800, 900,
-	histogramData, histogramData_blinded,
-	histogramsBackground,
-	histogramSignal,
-	histogramUncertainty,
-	(*distribution)->legendTextSize_, (*distribution)->legendPosX_, (*distribution)->legendPosY_, (*distribution)->legendSizeX_, (*distribution)->legendSizeY_, 
-	labelOnTop,
-	extraLabels, 0.055, 0.185, 0.915 - 0.055*extraLabels.size(), extraLabelsSizeX, 0.055*extraLabels.size(),
-	(*distribution)->xMin_, (*distribution)->xMax_, (*distribution)->xAxisTitle_, (*distribution)->xAxisOffset_, 
-	true, (*distribution)->yMin_, (*distribution)->yMax_, (*distribution)->yAxisTitle_, (*distribution)->yAxisOffset_, 
-	outputFileName_plot);
-      makePlot(
-	800, 900,
-	histogramData, histogramData_blinded,
-	histogramsBackground,
-	histogramSignal,
-	histogramUncertainty,
-	(*distribution)->legendTextSize_, (*distribution)->legendPosX_, (*distribution)->legendPosY_, (*distribution)->legendSizeX_, (*distribution)->legendSizeY_, 
-	labelOnTop,
-	extraLabels, 0.055, 0.185, 0.915 - 0.055*extraLabels.size(), extraLabelsSizeX, 0.055*extraLabels.size(),
-	(*distribution)->xMin_, (*distribution)->xMax_, (*distribution)->xAxisTitle_, (*distribution)->xAxisOffset_, 
-	false, (*distribution)->yMin_, (*distribution)->yMax_, (*distribution)->yAxisTitle_, (*distribution)->yAxisOffset_, 
-	outputFileName_plot);
+      makePlot(800, 900, histogramData, histogramData_blinded, histogramsBackground, histogramSignal, histogramUncertainty, (*distribution)->legendTextSize_, (*distribution)->legendPosX_, (*distribution)->legendPosY_, (*distribution)->legendSizeX_, (*distribution)->legendSizeY_, labelOnTop,  extraLabels, 0.055, 0.185, 0.915 - 0.055*extraLabels.size(), extraLabelsSizeX, 0.055*extraLabels.size(), (*distribution)->xMin_, (*distribution)->xMax_, (*distribution)->xAxisTitle_, (*distribution)->xAxisOffset_, true, (*distribution)->yMin_, (*distribution)->yMax_, (*distribution)->yAxisTitle_, (*distribution)->yAxisOffset_, outputFileName_plot, false, DivideByBinwidth);
 
-      if ( histogramData_blinded != histogramData ) delete histogramData_blinded;
+      makePlot(800, 900, histogramData, histogramData_blinded, histogramsBackground, histogramSignal, histogramUncertainty, (*distribution)->legendTextSize_, (*distribution)->legendPosX_, (*distribution)->legendPosY_, (*distribution)->legendSizeX_, (*distribution)->legendSizeY_, labelOnTop, extraLabels, 0.055, 0.185, 0.915 - 0.055*extraLabels.size(), extraLabelsSizeX, 0.055*extraLabels.size(), (*distribution)->xMin_, (*distribution)->xMax_, (*distribution)->xAxisTitle_, (*distribution)->xAxisOffset_, false, (*distribution)->yMin_, (*distribution)->yMax_, (*distribution)->yAxisTitle_, (*distribution)->yAxisOffset_, outputFileName_plot, false, DivideByBinwidth);
+
+      if (applyRebinning){
+	makePlot(800, 900, histogramData_rebinned, histogramData_blinded_rebinned, histogramsBackground_rebinned, histogramSignal_rebinned, histogramUncertainty_rebinned, (*distribution)->legendTextSize_, (*distribution)->legendPosX_, (*distribution)->legendPosY_, (*distribution)->legendSizeX_, (*distribution)->legendSizeY_, labelOnTop,	extraLabels, 0.055, 0.185, 0.915 - 0.055*extraLabels.size(), extraLabelsSizeX, 0.055*extraLabels.size(), (*distribution)->xMin_, (*distribution)->xMax_, (*distribution)->xAxisTitle_, (*distribution)->xAxisOffset_, true, (*distribution)->yMin_, (*distribution)->yMax_, (*distribution)->yAxisTitle_, (*distribution)->yAxisOffset_, outputFileName_plot, true, DivideByBinwidth);
+	makePlot(800, 900, histogramData_rebinned, histogramData_blinded_rebinned, histogramsBackground_rebinned, histogramSignal_rebinned, histogramUncertainty_rebinned, (*distribution)->legendTextSize_, (*distribution)->legendPosX_, (*distribution)->legendPosY_, (*distribution)->legendSizeX_, (*distribution)->legendSizeY_, labelOnTop, extraLabels, 0.055, 0.185, 0.915 - 0.055*extraLabels.size(), extraLabelsSizeX, 0.055*extraLabels.size(), (*distribution)->xMin_, (*distribution)->xMax_, (*distribution)->xAxisTitle_, (*distribution)->xAxisOffset_, false, (*distribution)->yMin_, (*distribution)->yMax_, (*distribution)->yAxisTitle_, (*distribution)->yAxisOffset_, outputFileName_plot, true, DivideByBinwidth);
+      }
+      delete histogramData;
+      delete histogramSignal;
+      delete histogramBackgroundSum;
+      histogramsBackground.clear();
+      delete histogramData_blinded;
+      delete histogramUncertainty;
+      delete histogramData_rebinned;
+      delete histogramSignal_rebinned;
+      delete histogramBackgroundSum_rebinned;
+      delete histogramData_blinded_rebinned;
+      histogramsBackground_rebinned.clear();
+      delete histogramUncertainty_rebinned;
+      for ( std::vector<histogramEntryType*>::iterator histogramBackground_entry = histogramsBackground.begin(); histogramBackground_entry != histogramsBackground.end(); ++histogramBackground_entry ) {
+        delete (*histogramBackground_entry)->histogram_;
+      }
+      for ( std::vector<histogramEntryType*>::iterator histogramBackground_entry = histogramsBackground_rebinned.begin(); histogramBackground_entry != histogramsBackground_rebinned.end(); ++histogramBackground_entry ) {
+	delete (*histogramBackground_entry)->histogram_;
+      }
     }
   }
 

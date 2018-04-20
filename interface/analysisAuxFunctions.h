@@ -11,7 +11,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h" // RecoJet
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorTight.h" // RecoElectronSelectorTight
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorTight.h" // RecoMuonSelectorTight
-
+#include "tthAnalysis/HiggsToTauTau/interface/EventInfoReader.h" // EventInfoReader, EventInfo
 #include <vector>
 
 //--- declare constants

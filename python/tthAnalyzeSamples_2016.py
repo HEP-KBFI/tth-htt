@@ -4,6 +4,7 @@ from collections import OrderedDict as OD
 # ./scripts/create_dictionary.py -v -m python/metaDict_2016.py -p python/sampleLocations_2016.txt -Z zeroes_2016.txt -z zombies_2016.txt -N samples_2016 -J /home/karl/sandbox/create_dictionary_2016 -F -E 2016
 
 samples_2016 = OD()
+
 samples_2016["/TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM"] = OD([
   ("type",                            "mc"),
   ("sample_category",                 "TT"),
@@ -51,6 +52,7 @@ samples_2016["/TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer1
     ]
   ),
 ])
+
 samples_2016["/WGToLNuG_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM"] = OD([
   ("type",                            "mc"),
   ("sample_category",                 "Rares"),
@@ -2338,7 +2340,3 @@ samples_2016["/SingleElectron/Run2016G-23Sep2016-v1/MINIAOD"] = OD([
     ]
   ),
 ])
-
-
-
-

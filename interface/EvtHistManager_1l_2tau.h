@@ -11,6 +11,7 @@
  */
 
 #include "tthAnalysis/HiggsToTauTau/interface/HistManagerBase.h" // HistManagerBase
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h"
 
 class EvtHistManager_1l_2tau
   : public HistManagerBase
@@ -22,14 +23,12 @@ class EvtHistManager_1l_2tau
   /// book and fill histograms
   void bookHistograms(TFileDirectory& dir);
   void fillHistograms(int numElectrons, int numMuons, int numHadTaus, int numJets, int numBJets_loose, int numBJets_medium,
-    double mvaOutput_1l_2tau_ttbar,
-    double mvaOutput_1l_2tau_ttbar_HTTWithKinFit_MVAonly,
-    double mvaOutput_1l_2tau_ttbar_HTTNoKinFit_MVAonly,
-    double mvaOutput_1l_2tau_ttbar_Old,
-    double mvaOutput_1l_2tau_ttbar_HTTLepID,
-    double mvaOutput_1l_2tau_ttbar_OldVar,
-    double mvaOutput_1l_2tau_ttbar_OldVarHTT,
-    double mvaOutput_1l_2tau_ttV, double mvaDiscr_1l_2tau, double mTauTauVis, double evtWeight);
+    double mvaOutput_plainKin_ttV,
+    double mvaOutput_plainKin_tt,
+    double mvaOutput_plainKin_1B_VT,
+    double mvaOutput_HTT_SUM_VT,
+    double mTauTauVis,
+    double evtWeight);
 
   const TH1* getHistogram_EventCounter() const { return histogram_EventCounter_; }
 
@@ -44,22 +43,14 @@ class EvtHistManager_1l_2tau
   TH2* histogram_numBJets_loose_vs_numJets_;  // CV: used to check loss in signal efficiency in case events with high jet and b-jet multiplicity are vetoed
   TH2* histogram_numBJets_medium_vs_numJets_; //     to avoid overlap with ttH, H->bb analysis (alternative: ttH, H->bb analysis adds hadronic tau veto)
 
-  TH1* histogram_mvaOutput_1l_2tau_ttbar_;
-  TH1* histogram_mvaOutput_1l_2tau_ttbar_HTTWithKinFit_MVAonly_;
-  TH1* histogram_mvaOutput_1l_2tau_ttbar_HTTWithKinFit_;
-  TH1* histogram_mvaOutput_1l_2tau_ttbar_Old_;
-  TH1* histogram_mvaOutput_1l_2tau_ttbar_HTTLepID_;
-  TH1* histogram_mvaOutput_1l_2tau_ttbar_OldVar_;
-  TH1* histogram_mvaOutput_1l_2tau_ttbar_OldVarHTT_;
-
-  TH1* histogram_mvaOutput_1l_2tau_ttV_;
-  TH1* histogram_mvaDiscr_1l_2tau_;
+  TH1* histogram_mvaOutput_plainKin_ttV_;
+  TH1* histogram_mvaOutput_plainKin_tt_;
+  TH1* histogram_mvaOutput_plainKin_1B_VT_;
+  TH1* histogram_mvaOutput_HTT_SUM_VT_;
 
   TH1* histogram_mTauTauVis_;
-
   TH1* histogram_EventCounter_;
 
-  std::vector<TH1*> histograms_;
 };
 
 #endif
