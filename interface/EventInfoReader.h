@@ -11,8 +11,8 @@ class EventInfoReader
   : public ReaderBase
 {
 public:
-  EventInfoReader();
-  EventInfoReader(EventInfo * info);
+  EventInfoReader(bool read_genHiggsDecayMode = true, bool read_puWeight = true);
+  EventInfoReader(EventInfo * info, bool read_genHiggsDecayMode = true, bool read_puWeight = true);
   ~EventInfoReader() {}
 
   void
@@ -22,6 +22,9 @@ public:
   setEventInfo(EventInfo * info);
 
 protected:
+  bool read_genHiggsDecayMode_;
+  bool read_puWeight_;
+
   EventInfo * info_;
 
 public:
