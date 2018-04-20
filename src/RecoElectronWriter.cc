@@ -58,14 +58,15 @@ void
 RecoElectronWriter::setBranchNames()
 {
   branchName_eCorr_ = Form("%s_%s", branchName_obj_.data(), "eCorr");
-  if ( era_ == kEra_2016 ) {
-    branchName_mvaRaw_POG_ = Form("%s_%s", branchName_obj_.data(), "");
-    branchName_mvaID_POG_ = Form("%s_%s", branchName_obj_.data(), "");
-  } else if ( era_ == kEra_2017 ) {
-    std::string mvaString = RecoElectron::useNoIso ? "mvaFall17noIso" : "mvaFall17Iso";
-    branchName_mvaRaw_POG_ = Form("%s_%s", branchName_obj_.data(), mvaString.data());
-    branchName_mvaID_POG_ = Form("%s_%s", branchName_obj_.data(), Form("%s_WPL", mvaString.data()));
-  } else assert(0);
+  std::string mvaString;
+  switch(era_)
+  {
+    case kEra_2016: mvaString = "mvaSpring16";                                              break;
+    case kEra_2017: mvaString = RecoElectron::useNoIso ? "mvaFall17noIso" : "mvaFall17Iso"; break;
+    default:        throw cmsException(this, __func__, __LINE__) << "Invalid era: " << era_;
+  }
+  branchName_mvaRaw_POG_ = Form("%s_%s", branchName_obj_.data(), mvaString.data());
+  branchName_mvaID_POG_ = Form("%s_%s", branchName_obj_.data(), Form("%s_WPL", mvaString.data()));
   branchName_sigmaEtaEta_ = Form("%s_%s", branchName_obj_.data(), "sieie");
   branchName_HoE_ = Form("%s_%s", branchName_obj_.data(), "hoe");
   branchName_deltaEta_ = Form("%s_%s", branchName_obj_.data(), "deltaEtaSC_trackatVtx");
