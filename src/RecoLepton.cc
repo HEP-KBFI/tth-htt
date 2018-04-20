@@ -6,7 +6,7 @@ RecoLepton::RecoLepton(const GenLepton & lepton,
                        Double_t dxy,
                        Double_t dz,
                        Double_t relIso,
-                       Double_t chargedHadRelIso03,
+                       Double_t pfRelIso04All,
                        Double_t miniIsoCharged,
                        Double_t miniIsoNeutral,
                        Double_t sip3d,
@@ -22,7 +22,7 @@ RecoLepton::RecoLepton(const GenLepton & lepton,
   , dxy_(dxy)
   , dz_(dz)
   , relIso_(relIso)
-  , chargedHadRelIso03_(chargedHadRelIso03)
+  , pfRelIso04All_(pfRelIso04All)
   , miniIsoCharged_(miniIsoCharged)
   , miniIsoNeutral_(miniIsoNeutral)
   , sip3d_(sip3d)
@@ -162,9 +162,9 @@ RecoLepton::relIso() const
 }
 
 Double_t
-RecoLepton::chargedHadRelIso03() const
+RecoLepton::pfRelIso04All() const
 {
-  return chargedHadRelIso03_;
+  return pfRelIso04All_;
 }
 
 Double_t
@@ -285,18 +285,18 @@ std::ostream &
 operator<<(std::ostream & stream,
            const RecoLepton & lepton)
 {
-  stream << static_cast<const GenLepton &>(lepton)                  << ",\n"
-            " cone_pT = "            << lepton.cone_pt()            << ","
-            " dxy = "                << lepton.dxy()                << ","
-            " dz = "                 << lepton.dz()                 << ",\n"
-            " sip3d = "              << lepton.sip3d()              << ","
-            " relIso = "             << lepton.relIso()             << ","
-            " chargedHadRelIso03 = " << lepton.chargedHadRelIso03() << ",\n"
-            " tightCharge = "        << lepton.tightCharge()        << ","
-            " jetBtagCSV = "         << lepton.jetBtagCSV()         << ","
-            " jetPtRatio = "         << lepton.jetPtRatio()         << ",\n"
-            " jetPtRel = "           << lepton.jetPtRel()           << ","
-            " mvaRawTTH = "          << lepton.mvaRawTTH()          << ",\n"
+  stream << static_cast<const GenLepton &>(lepton)        << ",\n"
+            " cone_pT = "       << lepton.cone_pt()       << ","
+            " dxy = "           << lepton.dxy()           << ","
+            " dz = "            << lepton.dz()            << ",\n"
+            " sip3d = "         << lepton.sip3d()         << ","
+            " relIso = "        << lepton.relIso()        << ","
+            " pfRelIso04All = " << lepton.pfRelIso04All() << ",\n"
+            " tightCharge = "   << lepton.tightCharge()   << ","
+            " jetBtagCSV = "    << lepton.jetBtagCSV()    << ","
+            " jetPtRatio = "    << lepton.jetPtRatio()    << ",\n"
+            " jetPtRel = "      << lepton.jetPtRel()      << ","
+            " mvaRawTTH = "     << lepton.mvaRawTTH()     << ",\n"
             " gen. matching:";
   stream << ",\n  lepton = " << lepton.genLepton();
   if(lepton.genLepton())

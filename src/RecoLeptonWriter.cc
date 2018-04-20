@@ -24,7 +24,7 @@ RecoLeptonWriter::RecoLeptonWriter(const std::string & branchName_num,
   , dxy_(nullptr)
   , dz_(nullptr)
   , relIso_all_(nullptr)
-  , hadRelIso03_chg_(nullptr)
+  , pfRelIso04_all_(nullptr)
   , absIso_chg_(nullptr)
   , absIso_neu_(nullptr)
   , sip3d_(nullptr)
@@ -56,7 +56,7 @@ RecoLeptonWriter::~RecoLeptonWriter()
   delete[] dxy_;
   delete[] dz_;
   delete[] relIso_all_;
-  delete[] hadRelIso03_chg_;
+  delete[] pfRelIso04_all_;
   delete[] absIso_chg_;
   delete[] absIso_neu_;
   delete[] sip3d_;
@@ -80,7 +80,7 @@ void RecoLeptonWriter::setBranchNames()
   branchName_dxy_ = Form("%s_%s", branchName_obj_.data(), "dxy");
   branchName_dz_ = Form("%s_%s", branchName_obj_.data(), "dz");
   branchName_relIso_all_ = Form("%s_%s", branchName_obj_.data(), "miniPFRelIso_all");
-  branchName_hadRelIso03_chg_ = Form("%s_%s", branchName_obj_.data(), "pfRelIso03_chg");
+  branchName_pfRelIso04_all_ = Form("%s_%s", branchName_obj_.data(), "pfRelIso03_chg");
   branchName_absIso_chg_ = Form("%s_%s", branchName_obj_.data(), "miniPFAbsIso_chg");
   branchName_absIso_neu_ = Form("%s_%s", branchName_obj_.data(), "miniPFAbsIso_neu");
   branchName_sip3d_ = Form("%s_%s", branchName_obj_.data(), "sip3d");
@@ -109,7 +109,7 @@ void RecoLeptonWriter::setBranches(TTree * tree)
   bai.setBranch(dxy_, branchName_dxy_);
   bai.setBranch(dz_, branchName_dz_);
   bai.setBranch(relIso_all_, branchName_relIso_all_);
-  bai.setBranch(hadRelIso03_chg_, branchName_hadRelIso03_chg_);
+  bai.setBranch(pfRelIso04_all_, branchName_pfRelIso04_all_);
   bai.setBranch(absIso_chg_, branchName_absIso_chg_);
   bai.setBranch(absIso_neu_, branchName_absIso_neu_);
   bai.setBranch(sip3d_, branchName_sip3d_);

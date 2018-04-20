@@ -46,7 +46,7 @@ public:
       dxy_[idxLepton] = lepton->dxy();
       dz_[idxLepton] = lepton->dz();
       relIso_all_[idxLepton] = lepton->relIso();
-      hadRelIso03_chg_[idxLepton] = lepton->chargedHadRelIso03();
+      pfRelIso04_all_[idxLepton] = lepton->pfRelIso04All();
       absIso_chg_[idxLepton] = lepton->miniIsoCharged();
       absIso_neu_[idxLepton] = lepton->miniIsoNeutral();
       sip3d_[idxLepton] = lepton->sip3d();
@@ -121,7 +121,7 @@ protected:
   std::string branchName_dxy_;
   std::string branchName_dz_;
   std::string branchName_relIso_all_;
-  std::string branchName_hadRelIso03_chg_;
+  std::string branchName_pfRelIso04_all_;
   std::string branchName_absIso_chg_;
   std::string branchName_absIso_neu_;
   std::string branchName_sip3d_;
@@ -143,7 +143,7 @@ protected:
   Float_t * dxy_;
   Float_t * dz_;
   Float_t * relIso_all_;
-  Float_t * hadRelIso03_chg_;
+  Float_t * pfRelIso04_all_;
   Float_t * absIso_chg_;
   Float_t * absIso_neu_;
   Float_t * sip3d_;

@@ -18,7 +18,7 @@ public:
              Double_t dxy,
              Double_t dz,
              Double_t relIso,
-             Double_t chargedHadRelIso03,
+             Double_t pfRelIso04All,
              Double_t miniIsoCharged,
              Double_t miniIsoNeutral,
              Double_t sip3d,
@@ -119,7 +119,7 @@ public:
   Double_t dxy() const;
   Double_t dz() const;
   Double_t relIso() const;
-  Double_t chargedHadRelIso03() const;
+  Double_t pfRelIso04All() const;
   Double_t miniIsoCharged() const;
   Double_t miniIsoNeutral() const;
   Double_t sip3d() const;
@@ -148,7 +148,7 @@ protected:
   Double_t dxy_;                ///< d_{xy}, distance in the transverse plane w.r.t PV
   Double_t dz_;                 ///< d_{z}, distance on the z axis w.r.t PV
   Double_t relIso_;             ///< relative mini-isolation
-  Double_t chargedHadRelIso03_; ///< PF relative isolation dR=0.3, charged component
+  Double_t pfRelIso04All_; ///< PF relative isolation dR=0.3, charged component
   Double_t miniIsoCharged_;     ///< absolute charged mini-isolation
   Double_t miniIsoNeutral_;     ///< absolute neutral mini-isolation (PU corrected)
   Double_t sip3d_;              ///< significance of IP

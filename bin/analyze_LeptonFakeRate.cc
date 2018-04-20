@@ -1162,7 +1162,7 @@ main(int argc,
                 " lep dz() " << preselElectron.dz() <<
                 " lep sip3d() " << preselElectron.sip3d() <<
                 " lep relIso() " << preselElectron.relIso() <<
-                " lep chargedHadRelIso03() " << preselElectron.chargedHadRelIso03() <<
+                " lep pfRelIso04All() " << preselElectron.pfRelIso04All() <<
                 " lep miniIsoNeutral() " << preselElectron.miniIsoNeutral() <<
                 " lep miniIsoCharged() " << preselElectron.miniIsoCharged() <<
 
@@ -1207,7 +1207,7 @@ main(int argc,
                 " lep dz() " << preselElectron.dz() <<
                 " lep sip3d() " << preselElectron.sip3d() <<
                 " lep relIso() " << preselElectron.relIso() <<
-                " lep chargedHadRelIso03() " << preselElectron.chargedHadRelIso03() <<
+                " lep pfRelIso04All() " << preselElectron.pfRelIso04All() <<
                 " lep miniIsoNeutral() " << preselElectron.miniIsoNeutral() <<
                 " lep miniIsoCharged() " << preselElectron.miniIsoCharged() <<
 

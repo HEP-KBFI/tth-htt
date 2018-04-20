@@ -126,7 +126,7 @@ RecoMuonReader::read() const
             gLeptonReader->dxy_[idxLepton],
             gLeptonReader->dz_[idxLepton],
             gLeptonReader->relIso_all_[idxLepton],
-            gLeptonReader->hadRelIso03_chg_[idxLepton],
+            gLeptonReader->pfRelIso04_all_[idxLepton],
             gLeptonReader->absIso_chg_[idxLepton],
             gLeptonReader->absIso_neu_[idxLepton],
             gLeptonReader->sip3d_[idxLepton],
