@@ -296,6 +296,7 @@ private:
   Float_t * mu_miniRelIso;
   Float_t * mu_miniIsoCharged;
   Float_t * mu_miniIsoNeutral;
+  Float_t * mu_pfRelIso04All;
   Int_t * mu_jetNDauChargedMVASel;
   Float_t * mu_jetPtRel;
   Float_t * mu_jetPtRatio;
@@ -320,6 +321,7 @@ private:
   Float_t * ele_miniRelIso;
   Float_t * ele_miniIsoCharged;
   Float_t * ele_miniIsoNeutral;
+  Float_t * ele_pfRelIso04All;
   Int_t * ele_jetNDauChargedMVASel;
   Float_t * ele_jetPtRel;
   Float_t * ele_jetPtRatio;

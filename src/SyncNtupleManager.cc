@@ -185,6 +185,7 @@ SyncNtupleManager::initializeBranches()
     mu_miniRelIso,           "miniRelIso",
     mu_miniIsoCharged,       "miniIsoCharged",
     mu_miniIsoNeutral,       "miniIsoNeutral",
+    mu_pfRelIso04All,        "PFRelIso04",
     mu_jetNDauChargedMVASel, "jetNDauChargedMVASel",
     mu_jetPtRel,             "jetPtRel",
     mu_jetPtRatio,           "jetPtRatio",
@@ -212,6 +213,7 @@ SyncNtupleManager::initializeBranches()
     ele_miniRelIso,           "miniRelIso",
     ele_miniIsoCharged,       "miniIsoCharged",
     ele_miniIsoNeutral,       "miniIsoNeutral",
+    ele_pfRelIso04All,        "PFRelIso04",
     ele_jetNDauChargedMVASel, "jetNDauChargedMVASel",
     ele_jetPtRel,             "jetPtRel",
     ele_jetPtRatio,           "jetPtRatio",
@@ -326,6 +328,7 @@ SyncNtupleManager::read(const std::vector<const RecoMuon *> & muons,
     mu_miniRelIso[i] = muon -> relIso();
     mu_miniIsoCharged[i] = muon -> miniIsoCharged();
     mu_miniIsoNeutral[i] = muon -> miniIsoNeutral();
+    mu_pfRelIso04All[i] = muon -> pfRelIso04All();
     mu_jetNDauChargedMVASel[i] = muon -> jetNDauChargedMVASel();
     mu_jetPtRel[i] = muon -> jetPtRel();
     mu_jetPtRatio[i] = muon -> jetPtRatio();
@@ -382,6 +385,7 @@ SyncNtupleManager::read(const std::vector<const RecoElectron *> & electrons,
     ele_miniRelIso[i] = electron -> relIso();
     ele_miniIsoCharged[i] = electron -> miniIsoCharged();
     ele_miniIsoNeutral[i] = electron -> miniIsoNeutral();
+    ele_pfRelIso04All[i] = electron -> pfRelIso04All();
     ele_jetNDauChargedMVASel[i] = electron -> jetNDauChargedMVASel();
     ele_jetPtRel[i] = electron -> jetPtRel();
     ele_jetPtRatio[i] = electron -> jetPtRatio();
@@ -555,6 +559,7 @@ SyncNtupleManager::reset()
     mu_miniRelIso,
     mu_miniIsoCharged,
     mu_miniIsoNeutral,
+    mu_pfRelIso04All,
     mu_jetNDauChargedMVASel,
     mu_jetPtRel,
     mu_jetPtRatio,
@@ -581,6 +586,7 @@ SyncNtupleManager::reset()
     ele_miniRelIso,
     ele_miniIsoCharged,
     ele_miniIsoNeutral,
+    ele_pfRelIso04All,
     ele_jetNDauChargedMVASel,
     ele_jetPtRel,
     ele_jetPtRatio,
